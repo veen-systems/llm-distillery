@@ -12,6 +12,7 @@ Loaded every session. Topic files loaded on demand via triggers below.
 | `gotcha-log.md` | Stuck on infra, tooling, or something weird | Problem → Root cause → Fix archive |
 | `thriving-v1-scoring.md` | Understanding thriving v1 attempts | PAUSED — bimodal distribution, MAE 0.94, findings and open questions |
 | `uplifting-v7-training.md` | Understanding thriving v1 history | v7 prompt evolution → thriving v1 rename (ADR-012) |
+| `calibration-history.md` | Starting any calibration / scorer-training / oracle-prompt experiment | Dead Ends section: which approaches are already known dead — don't retry (#69) |
 
 ## Universal Gotchas
 
