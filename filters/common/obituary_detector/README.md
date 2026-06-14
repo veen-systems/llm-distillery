@@ -11,7 +11,16 @@ frozen `paraphrase-multilingual-mpnet-base-v2` → StandardScaler → sklearn ML
 |---|---|---|---|
 | v1 | gate-reason-substring labels (777) | **0/22 block precision** (4-lab panel) | ❌ rejected |
 | v2 | gemini-relabeled clean labels (777) | held-out FP **22→1** (0 @ 0.95); recall ~33% @ 0.90 | proof-of-fix only |
-| **v3** | **raw-ingest, DeepSeek oracle, sharpened-broad rule (11,295 train / 1,562 held-out; 23.5% pos)** | **block precision 0.85 @ 0.90 → 0.94 @ 0.99** (excl-split 0.97); recall-check 1/10 FN; 4-lab held-out panel | **shadow-ready** |
+| **v3** | **raw-ingest, DeepSeek oracle, sharpened-broad rule (11,295 train / 1,562 held-out; 23.5% pos)** | in-corpus held-out (leaky) 0.85 @ 0.90; **temporally-disjoint June holdout: 0.97 @ 0.90, 0 FP @ ≥0.95 (0/58), 1.00 @ 0.99** | **shadow-ready** |
+
+> **Honest validation note (2026-06-14 review):** the in-corpus held-out had train/held-out
+> leakage (7% exact-title / 22% near-dup twins, same death from many sources via id-hash
+> split). Re-validated on **sadalsuud's fresh June ingest** (zero time overlap, 6 exact-title
+> leaks pre-dropped): block precision is *higher* clean — **0 false positives at threshold
+> ≥0.95** on 58 model-blocked, never-seen June obituaries. The 0.85 in-corpus figure was the
+> pessimistic small-n sample, not leakage inflation. Recommended operating point **~0.95**
+> (more recall than 0.99, still 0 FP here). A cluster-dedup retrain (v4) would tidy recall /
+> CV-honesty but is not a Phase-3 blocker. See `validation/artifacts/v3_june_validation.json`.
 
 ### v3 build (Phase 1–2 of the build plan)
 - **Corpus from RAW INGEST** (585K FluxusSource `content_items_*.jsonl`) — where obituaries

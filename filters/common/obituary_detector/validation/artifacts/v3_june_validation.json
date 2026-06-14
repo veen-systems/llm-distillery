@@ -1,0 +1,51 @@
+{
+  "model": "obituary_detector v3",
+  "validation": "temporally-disjoint June holdout (sadalsuud fresh ingest 2026-06-06..14, ZERO train overlap; 6 exact-title leaks pre-dropped)",
+  "candidates": 1870,
+  "worksheet": {
+    "block": 60,
+    "boundary": 15,
+    "recall_chk": 15
+  },
+  "block_precision_sweep": [
+    {
+      "threshold": 0.9,
+      "n": 60,
+      "tp": 58,
+      "fp": 1,
+      "split": 1,
+      "precision": 0.967,
+      "precision_excl_split": 0.983
+    },
+    {
+      "threshold": 0.95,
+      "n": 58,
+      "tp": 57,
+      "fp": 0,
+      "split": 1,
+      "precision": 0.983,
+      "precision_excl_split": 1.0
+    },
+    {
+      "threshold": 0.97,
+      "n": 56,
+      "tp": 55,
+      "fp": 0,
+      "split": 1,
+      "precision": 0.982,
+      "precision_excl_split": 1.0
+    },
+    {
+      "threshold": 0.99,
+      "n": 45,
+      "tp": 45,
+      "fp": 0,
+      "split": 0,
+      "precision": 1.0,
+      "precision_excl_split": 1.0
+    }
+  ],
+  "panel_unanimous": "68/90",
+  "recall_check_fn": "2/15",
+  "note": "Clean leakage-free precision EXCEEDS the leaky Nov-Jan holdout (0.85): 0 FP at thr>=0.95 (0/58). Enforce-grade. Recommended operating point ~0.95 (more recall than 0.99, still 0 FP here). Cluster-dedup retrain (v4) is nice-to-have for recall/CV-honesty, not a Phase-3 blocker."
+}
