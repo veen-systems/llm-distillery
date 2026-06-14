@@ -5,12 +5,37 @@ Multilingual obituary/death-memorial classifier for the constructive-news pipeli
 frozen `paraphrase-multilingual-mpnet-base-v2` → StandardScaler → sklearn MLP(256,128)
 → `predict_proba`. Block obituaries upstream of lens scoring.
 
-## Status — NOT production (2026-06-14)
+## Status — v3 trained + validated, NOT yet enforced (2026-06-14)
 
 | Model | Corpus | Held-out result | Verdict |
 |---|---|---|---|
 | v1 | gate-reason-substring labels (777) | **0/22 block precision** (4-lab panel) | ❌ rejected |
 | v2 | gemini-relabeled clean labels (777) | held-out FP **22→1** (0 @ 0.95); recall ~33% @ 0.90 | proof-of-fix only |
+| **v3** | **raw-ingest, DeepSeek oracle, sharpened-broad rule (11,295 train / 1,562 held-out; 23.5% pos)** | **block precision 0.85 @ 0.90 → 0.94 @ 0.99** (excl-split 0.97); recall-check 1/10 FN; 4-lab held-out panel | **shadow-ready** |
+
+### v3 build (Phase 1–2 of the build plan)
+- **Corpus from RAW INGEST** (585K FluxusSource `content_items_*.jsonl`) — where obituaries
+  actually live, fixing v2's depleted-warm-DB recall. 12,857 death-adjacent candidates
+  (word-boundary multilingual regex) → **DeepSeek** oracle-labeled (`relabel_deepseek.py`,
+  independent of the Ollama audit panel; runs on owner credits, frees gemini for the panel).
+- **Owner labeling decision (broad → sharpened):** block hard-news death EVENTS (accident,
+  crime, disaster) of a specific person, but KEEP politics / opinion / advocacy / reaction
+  pieces that merely use a death, and non-person deaths. Decisive "primary purpose" test.
+  Landed at 3,016 positives (23.5%); narrow-rule (18.7%) and full-broad (31%) corpora kept
+  as `*_narrow` / `*_broad_partial` for comparison.
+- **Audit:** panel-vs-DeepSeek 91% headline, **97% on panel-consensus cases** (3 of 4
+  disagreements are panel-internal-split accident/crime death-events; ~2% real oracle error).
+- **Held-out validation** (the oracle-independent gate): model-blocked worksheet graded blind
+  by gemini + gemma3 + qwen3 + phi4. Enforce-grade precision (~0.95–0.97) at threshold ~0.99,
+  recall ~0.55 there. Residual FPs = crime-investigation / survivor-resilience profiles /
+  split accident cases — **the over-block risk to watch in shadow.** See
+  `validation/artifacts/v3_heldout_validation.json` + `v3/calibration_report.json`.
+
+### Phase-1/2 harness (new)
+- `training/build_candidates.py` — raw-ingest → death-adjacent candidates (dedup, word-boundary regex).
+- `validation/relabel_deepseek.py` — DeepSeek oracle labeling (resumable; key from `config/credentials/secrets.ini`).
+- `validation/panel_audit_deepseek.py` — 3-lab Ollama audit of the oracle.
+- `training/build_train_split.py` — stable hash split into train / disjoint held-out.
 
 **v1 lesson (the important one):** training labels bootstrapped from the editorial
 gate's reject *reasons* were ~51% contaminated — the gate writes "death" for many

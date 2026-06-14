@@ -23,12 +23,14 @@ WORKSHEET = HERE / "worksheet_obit.jsonl"
 OUT = HERE / "grades_panel_obit.jsonl"
 OLLAMA = "http://gpu-server:11434/api/generate"
 
-# load GEMINI key from repo .env
+# load GEMINI key from ovr.news/.env (run this panel LOCALLY: gemini REST + Ollama@gpu-server)
 ENV = {}
-for line in (HERE.parent / ".env").read_text(encoding="utf-8").splitlines():
-    if "=" in line and not line.strip().startswith("#"):
-        k, _, v = line.partition("=")
-        ENV[k.strip()] = v.strip().strip('"').strip("'")
+_envp = Path(r"C:/local_dev/ovr.news/.env")
+if _envp.exists():
+    for line in _envp.read_text(encoding="utf-8").splitlines():
+        if "=" in line and not line.strip().startswith("#"):
+            k, _, v = line.partition("=")
+            ENV[k.strip()] = v.strip().strip('"').strip("'")
 GEMINI_KEY = ENV.get("GEMINI_BILLING_API_KEY") or ENV.get("GEMINI_API_KEY", "")
 
 MODELS = [
@@ -39,16 +41,27 @@ MODELS = [
     # {"name": "deepseek-chat",  "kind": "openai", "base": "https://api.deepseek.com", "key_env": "DEEPSEEK_API_KEY"},
 ]
 
+# SHARPENED-BROAD rule (owner decision 2026-06-14) — must match relabel_deepseek.py /
+# panel_audit_deepseek.py so the held-out panel grades the trained definition.
 PROMPT = """You screen articles for a CONSTRUCTIVE news feed (progress, recovery, community, solutions).
 
-We BLOCK obituaries and death-memorial pieces — articles whose PRIMARY purpose is to mark a person's death, mourn, or memorialize the dead.
+DECISIVE TEST: Is this article PRIMARILY telling readers that a specific PERSON has recently died -- who they were, how they died, the loss? If yes -> "obituary". If the death is instead a hook for politics, policy, law, opinion, activism, or society -> "not_obituary".
 
-We do NOT block articles that merely mention death in passing: a death toll inside a recovery story, historical commemoration that is really about living heritage, a profile of a living person, a policy/justice outcome involving past deaths, etc.
+BLOCK ("obituary"):
+- obituaries, death notices, mourning, tribute and memorial pieces for a person who recently died;
+- hard-news reports whose MAIN SUBJECT is a specific person's recent death: fatal accidents, crime / homicide / shootings, disasters -- where the story is about that person dying.
 
-Classify THIS article:
-- "obituary"      = primary purpose is marking/mourning a death or memorializing the dead (block it)
-- "not_obituary"  = anything else (let it pass)
-- "borderline"    = genuinely ambiguous
+KEEP ("not_obituary"):
+- political, electoral, legislative, or governmental stories, even when triggered by or reacting to a recent death (e.g. a party's seat math after a member dies, a politician's floor speech about a killing);
+- opinion, advocacy, activism, protest, or commentary that uses a death to argue a broader point;
+- justice / legal / investigation / inheritance / estate follow-ups and consequences of a death;
+- commemoration or anniversaries of long-past deaths, and legacy tributes to figures who died long ago;
+- profiles of people who are still alive;
+- aggregate death tolls or mass-casualty counts with no single specific individual at the center;
+- deaths of animals or other non-persons;
+- any story that merely mentions death in passing.
+
+"borderline" = genuinely ambiguous.
 
 Reply with ONLY a JSON object, no prose:
 {{"verdict":"obituary|not_obituary|borderline","confidence":"low|med|high","reason":"one short sentence"}}

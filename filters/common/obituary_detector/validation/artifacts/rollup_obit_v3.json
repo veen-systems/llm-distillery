@@ -1,0 +1,927 @@
+{
+  "rows": [
+    {
+      "id": "german_tagesschau_91efc48ac975",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9972,
+      "title": "Deichkind",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "newsapi_general_44c6e6cf27fc",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9919,
+      "title": "Woman dies in suspected mountain lion attack, Colorado's first deadly encounter since 1999 - NBC News",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 3
+    },
+    {
+      "id": "south_american_perfil_ba974000f9de",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9997,
+      "title": "Murió Fats Fernández, el \"trompetista de Buenos Aires\"",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "us_news_wapo_5987a3066197",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.978,
+      "title": "In a Venezuelan home, a father grieves ‘hero’ son killed in U.S. raid",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "austrian_kleine_zeitung_7f3870f14ca7",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9968,
+      "title": "Tödlicher Skiunfall in Salzburg: 14-Jähriger stellte sich nach Flucht",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "split",
+      "n_obituary_votes": 2
+    },
+    {
+      "id": "newsapi_general_7e2a955aac08",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 1.0,
+      "title": "Bangladesh’s former Prime Minister Khaleda Zia dies - Al Jazeera",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "german_deutschlandfunk_ff9a1724d9f6",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 1.0,
+      "title": "Außerirdische - Schweizer Erfolgsautor Erich von Däniken mit 90 Jahren gestorben",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "canadian_cbc_e4a0d6134090",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9983,
+      "title": "Toronto Maple Leafs player pays tribute to late grocery store worker who loved team",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 3
+    },
+    {
+      "id": "british_irish_bbc_scotland_936e0798fb25",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9761,
+      "title": "Man who went overboard fishing boat dies",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "canadian_cbc_2b8bf86db447",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9994,
+      "title": "Aldrich Ames, CIA agent who spied for Moscow for almost a decade, dead at 84",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 3
+    },
+    {
+      "id": "french_le_parisien_57b32f430b7e",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9992,
+      "title": "Obsèques de Brigitte Bardot : « Où étaient les gens du cinéma ? », s’agace Mireille Mathieu",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 3
+    },
+    {
+      "id": "british_irish_bbc_news_top_0934b7afa6e7",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9999,
+      "title": "Bob Weir, Grateful Dead co-founder, dies aged 78",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "south_asian_the_hindu_28180bd4a3e6",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 1.0,
+      "title": "Sugar factory worker dies in accident in Belagavi district",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "spanish_20minutos_es_99731b4047a3",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9997,
+      "title": "Muere Irene de Grecia, hermana de la reina Sofía",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "global_news_le_monde_57f0ae26a5d3",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 1.0,
+      "title": "Vince Zampella, co-creator of 'Call of Duty,' killed in California car crash",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "british_irish_rte_news_483f86f470a3",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.986,
+      "title": "Funeral of Brian Crowley to be held in Bandon",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "global_south_south_china_morning_post_be1388cfcb61",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9627,
+      "title": "Tributes pour in after former Hong Kong commerce minister Gregory So dies at 67",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "australian_guardian_au_179254cd7795",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9997,
+      "title": "Man dies in Sydney after being pepper-sprayed by NSW police during arrest",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "global_news_spiegel_2933c8e4b736",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9771,
+      "title": "Warburg: 22-Jähriger erschießt Bekannten bei mutmaßlichem Jagdunfall",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "split",
+      "n_obituary_votes": 2
+    },
+    {
+      "id": "global_news_BBC_world_9dc596e0b472",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9995,
+      "title": "Tatiana Schlossberg, granddaughter of John F Kennedy, dies aged 35",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "dutch_news_nos_algemeen_a67df69200a0",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 1.0,
+      "title": "Toneelschrijver en Oscarwinnaar Tom Stoppard (88) overleden",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "spanish_el_pais_a3c0064a8f5f",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9931,
+      "title": "Fernando, el maquinista sevillano fallecido en el accidente de Rodalies en Gelida",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "west_african_thisday_efe3b5b7c9b7",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9994,
+      "title": "Civil War Nurse, Pharma Executive Regina Okeke, Dies at 88",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "dutch_news_ad_algemeen_75b9a9b5980f",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9636,
+      "title": "Mathilde verloor zoontje Jona (2) en man Sebastiaan, nu is ze opnieuw verliefd: ‘Ik mis ze ontzettend’",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 1
+    },
+    {
+      "id": "british_irish_irish_times_34e9efde7e8d",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9996,
+      "title": "Irish man (20) who died on Alps skiing trip is named locally",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "luxembourg_tageblatt_main_725547ce09af",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9998,
+      "title": "Der Luxemburger Architekt von Schengen: Robert Goebbels ist tot",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "south_asian_hindustan_times_68cca3c3bd54",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9991,
+      "title": "Man dies by suicide after jumping off Delhi's Saket court building, note recovered",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "dutch_news_nos_algemeen_e39b7e49c718",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9843,
+      "title": "Bedroefde reacties na overlijden Robert Jensen: 'Mooie ziel met zijn bulderende lach'",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "german_tagesschau_5db853e780dc",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9905,
+      "title": "Attentat in Australien: Vater und Sohn als Angreifer identifiziert",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "south_asian_indian_express_22983a77c82a",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 1.0,
+      "title": "Surat boy dies after kite string slashes his neck, throat",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "british_irish_rte_news_4e4508f3bbb2",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9247,
+      "title": "Teens held as Dutch police probe death after snowball row",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "austrian_kurier_f5a455dbaf04",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9993,
+      "title": "\"Er war mein Hero\": Vater von Dieter Bohlen verstorben",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "us_news_fox_news_11e6ea625ca6",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 1.0,
+      "title": "Boy, 12, dies after shark attack while swimming at popular cliff-jumping spot: 'We are heartbroken'",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "belgian_het_laatste_nieuws_00508dbd19d6",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 1.0,
+      "title": "Bob Weir, medeoprichter en gitarist van The Grateful Dead, op 78-jarige leeftijd overleden",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "south_asian_mint_f3a45e6990bb",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9985,
+      "title": "Proloy Chakki, noted Bangladeshi singer, dies while in custody at Rajshahi hospital",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "china_nikkei_asia_30b8bd23a82d",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 1.0,
+      "title": "Khaleda Zia, Bangladesh's first female PM, dies at 80",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "swiss_tagesanzeiger_ffce919c9043",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9952,
+      "title": "Tödlicher Skiunfall: Skifahrer nach Zusammenprall in Melchsee-Frutt verstorben",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "china_taipei_times_1b067f78562b",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9868,
+      "title": "METRO RAMPAGE: Man died trying to stop Taipei stabbing suspect",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 1
+    },
+    {
+      "id": "british_irish_channel4_news_aaed23b9996b",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 1.0,
+      "title": "Man dies after tree falls on caravan during storm Goretti",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "australian_the_age_a5841f6409c0",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9924,
+      "title": "Woodbridge pays tribute to McKenzie-McHarg",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "spanish_20minutos_es_e95830a3e2ab",
+      "bucket": "boundary",
+      "lens": null,
+      "obit_score": 0.8234,
+      "title": "Muere un hombre en su casa de Oleiros y la acumulación de basura impide retirar su cadáver",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "spanish_eldiario_2f70a7e33a97",
+      "bucket": "boundary",
+      "lens": null,
+      "obit_score": 0.7887,
+      "title": "Al menos un muerto y nueve heridos en Carabanchel por una explosión, que derrumba parte de un edificio en obras",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 1
+    },
+    {
+      "id": "british_irish_breakingnews_ie_c4ae59d5d795",
+      "bucket": "boundary",
+      "lens": null,
+      "obit_score": 0.8556,
+      "title": "Man shot during Minneapolis immigration crackdown ‘has died’",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "borderline",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "british_irish_guardian_society_4ea4f493cb3e",
+      "bucket": "boundary",
+      "lens": null,
+      "obit_score": 0.7137,
+      "title": "Dame Gillian Wagner obituary",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "dutch_news_rtl_nieuws_b88a753d2f4f",
+      "bucket": "boundary",
+      "lens": null,
+      "obit_score": 0.873,
+      "title": "Dode vrouw gevonden omringd door dingo's op populair Australisch eiland K'gari",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "borderline",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 2
+    },
+    {
+      "id": "french_le_parisien_573901d25aa2",
+      "bucket": "boundary",
+      "lens": null,
+      "obit_score": 0.8608,
+      "title": "Dans le Val-d’Oise, la disparition d’une septuagénaire inquiète ses voisins, des recherches sont lancées",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 1
+    },
+    {
+      "id": "dutch_news_nos_algemeen_511a4a77a5f7",
+      "bucket": "boundary",
+      "lens": null,
+      "obit_score": 0.8319,
+      "title": "Politie vindt lichaam in zoektocht naar vermiste Milan (16)",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "borderline",
+        "phi4:14b": "borderline",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "borderline",
+      "n_obituary_votes": 1
+    },
+    {
+      "id": "south_asian_the_hindu_ddcc4fc34c76",
+      "bucket": "boundary",
+      "lens": null,
+      "obit_score": 0.7592,
+      "title": "Technician at government hospital dies by suicide",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "healthcare_stat_news_edad654228d7",
+      "bucket": "boundary",
+      "lens": null,
+      "obit_score": 0.8017,
+      "title": "With political savvy and outrage over drug prices, advocate David Mitchell was ahead of his time",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "dutch_news_ad_algemeen_d022b8319f4f",
+      "bucket": "boundary",
+      "lens": null,
+      "obit_score": 0.8327,
+      "title": "Brigitte Bardot wilde een abortus en kreeg nooit een band met zoon, vlak voor haar dood wilde ze strijdbijl begraven",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 3
+    },
+    {
+      "id": "arabic_aljazeera_en_caa885f88be8",
+      "bucket": "recall_chk",
+      "lens": null,
+      "obit_score": 0.0,
+      "title": "Palestine Action hunger strikers near death ‘intent’ on continuing protests",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "global_news_NPR_world_b57d30f37e0a",
+      "bucket": "recall_chk",
+      "lens": null,
+      "obit_score": 0.0,
+      "title": "U.S. lawmakers wrap reassurance tour in Denmark as tensions around Greenland grow",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "global_news_deutsche_welle_a2cbac326e45",
+      "bucket": "recall_chk",
+      "lens": null,
+      "obit_score": 0.0,
+      "title": "Minneapolis: Alex Pretti's family slams Trump admin 'lies'",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "positive_news_the_better_india_5573ef5b4ea5",
+      "bucket": "recall_chk",
+      "lens": null,
+      "obit_score": 0.0002,
+      "title": "From Snake Rescues to Safer Honey Collection: These Heroes Protect the Sundarbans",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "positive_news_upworthy_c51d152d3f11",
+      "bucket": "recall_chk",
+      "lens": null,
+      "obit_score": 0.0112,
+      "title": "The Cranberries' Dolores O'Riordan sang a 'so very Irish' Fleetwood Mac cover people adore",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "science_nature_news_7aa21fda5f23",
+      "bucket": "recall_chk",
+      "lens": null,
+      "obit_score": 0.0,
+      "title": "Annual flu vaccines are far from ideal — this is why",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "healthcare_medrxiv_f80b954f8dbd",
+      "bucket": "recall_chk",
+      "lens": null,
+      "obit_score": 0.0,
+      "title": "Uncovering Hidden Pathogens in Culture Negative Cases: Enhancing Diagnostic Utility in Post",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "global_south_south_china_morning_post_c96e41a18e18",
+      "bucket": "recall_chk",
+      "lens": null,
+      "obit_score": 0.0,
+      "title": "Japan risks 199,000 deaths in overdue megaquake amid fresh tremor swarm",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "russian_tass_en_6687108711a5",
+      "bucket": "recall_chk",
+      "lens": null,
+      "obit_score": 0.0,
+      "title": "Most of those who died in protests in Iran were killed by terrorists — Iranian diplomat",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "global_news_el_pais_50d795adf462",
+      "bucket": "recall_chk",
+      "lens": null,
+      "obit_score": 0.0023,
+      "title": "La burocracia retrasa el entierro de Yamina tras el accidente de Adamuz: “Sigue en una nevera y lleva ya una semana muerta”",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    }
+  ],
+  "adjudicate_ids": [
+    "newsapi_general_44c6e6cf27fc",
+    "austrian_kleine_zeitung_7f3870f14ca7",
+    "canadian_cbc_e4a0d6134090",
+    "canadian_cbc_2b8bf86db447",
+    "french_le_parisien_57b32f430b7e",
+    "global_news_spiegel_2933c8e4b736",
+    "dutch_news_ad_algemeen_75b9a9b5980f",
+    "german_tagesschau_5db853e780dc",
+    "british_irish_rte_news_4e4508f3bbb2",
+    "china_taipei_times_1b067f78562b",
+    "spanish_20minutos_es_e95830a3e2ab",
+    "spanish_eldiario_2f70a7e33a97",
+    "british_irish_guardian_society_4ea4f493cb3e",
+    "dutch_news_rtl_nieuws_b88a753d2f4f",
+    "french_le_parisien_573901d25aa2",
+    "dutch_news_nos_algemeen_511a4a77a5f7",
+    "south_asian_the_hindu_ddcc4fc34c76",
+    "healthcare_stat_news_edad654228d7",
+    "dutch_news_ad_algemeen_d022b8319f4f",
+    "global_news_el_pais_50d795adf462"
+  ],
+  "block_precision_lb": 0.85
+}

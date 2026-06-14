@@ -3,6 +3,13 @@ validation/artifacts/*corpus*.jsonl
 validation/artifacts/seed*.jsonl
 validation/artifacts/worksheet*.jsonl
 validation/artifacts/*candidates*.jsonl
+# scripts also write a worksheet + corpus copies to the validation/ root — content-bearing
+validation/worksheet*.jsonl
+validation/*corpus*.jsonl
+training/data/
+# stray validation-root panel outputs (committed provenance lives in artifacts/*_v3.*)
+validation/grades_panel_obit.jsonl
+validation/rollup_obit.json
 # Model binaries live on gpu-server (v1 broken, v2 proof); regenerate via training/
 models/
 v1/

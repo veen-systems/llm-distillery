@@ -1,0 +1,125 @@
+{
+  "model": "obituary_detector v3 (raw-ingest, sharpened-broad DeepSeek oracle)",
+  "method": "held-out 1,562-row split, model-blocked worksheet graded blind by 4 independent labs (gemini-2.5-flash + gemma3:27b + qwen3:14b + phi4:14b); panel-majority = ground truth, independent of the DeepSeek training oracle",
+  "block_precision_sweep": [
+    {
+      "threshold": 0.9,
+      "n_blocked": 40,
+      "tp": 34,
+      "fp": 4,
+      "split": 2,
+      "precision": 0.85,
+      "precision_excl_split": 0.895
+    },
+    {
+      "threshold": 0.925,
+      "n_blocked": 39,
+      "tp": 34,
+      "fp": 3,
+      "split": 2,
+      "precision": 0.872,
+      "precision_excl_split": 0.919
+    },
+    {
+      "threshold": 0.95,
+      "n_blocked": 39,
+      "tp": 34,
+      "fp": 3,
+      "split": 2,
+      "precision": 0.872,
+      "precision_excl_split": 0.919
+    },
+    {
+      "threshold": 0.97,
+      "n_blocked": 37,
+      "tp": 33,
+      "fp": 2,
+      "split": 2,
+      "precision": 0.892,
+      "precision_excl_split": 0.943
+    },
+    {
+      "threshold": 0.99,
+      "n_blocked": 31,
+      "tp": 29,
+      "fp": 1,
+      "split": 1,
+      "precision": 0.935,
+      "precision_excl_split": 0.967
+    }
+  ],
+  "recall_check": {
+    "n": 10,
+    "false_negatives": 1
+  },
+  "panel_unanimous": "46/60",
+  "false_positives_and_splits": [
+    {
+      "score": 0.997,
+      "majority": "split",
+      "title": "T�dlicher Skiunfall in Salzburg: 14-J�hriger stellte sich nach Flucht",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      }
+    },
+    {
+      "score": 0.991,
+      "majority": "not_obituary",
+      "title": "Attentat in Australien: Vater und Sohn als Angreifer identifiziert",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      }
+    },
+    {
+      "score": 0.987,
+      "majority": "not_obituary",
+      "title": "METRO RAMPAGE: Man died trying to stop Taipei stabbing suspect",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "obituary"
+      }
+    },
+    {
+      "score": 0.977,
+      "majority": "split",
+      "title": "Warburg: 22-J�hriger erschie�t Bekannten bei mutma�lichem Jagdunfall",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "not_obituary"
+      }
+    },
+    {
+      "score": 0.964,
+      "majority": "not_obituary",
+      "title": "Mathilde verloor zoontje Jona (2) en man Sebastiaan, nu is ze opnieuw verliefd: �Ik mis ze ontzettend�",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      }
+    },
+    {
+      "score": 0.925,
+      "majority": "not_obituary",
+      "title": "Teens held as Dutch police probe death after snowball row",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      }
+    }
+  ],
+  "note": "enforce-grade precision (~0.95-0.97 excl-split) reached at threshold ~0.99; residual FPs are crime-investigation / survivor-profile / split accident death-events. Shadow-mode (Phase 3) before any enforce (Phase 4, owner sign-off)."
+}
