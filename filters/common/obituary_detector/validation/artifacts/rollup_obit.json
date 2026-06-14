@@ -1,0 +1,660 @@
+{
+  "rows": [
+    {
+      "id": "south_american_perfil_edf898d46c3f",
+      "bucket": "block",
+      "lens": "uplifting",
+      "obit_score": 0.939,
+      "title": "Córdoba Passes “Joaquín Law” to Protect Victims",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "spanish_la_vanguardia_c0db63b5f571",
+      "bucket": "block",
+      "lens": "cultural_discovery",
+      "obit_score": 0.9213,
+      "title": "Sami Shaman Lived in Iceland, Died in Finland",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "korean_hankyung_74bea006b508",
+      "bucket": "block",
+      "lens": "uplifting",
+      "obit_score": 0.9744,
+      "title": "Korea Streamlines Death Reporting for Pension Recipients",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "swedish_dagens_industri_fca7b47b0fe4",
+      "bucket": "block",
+      "lens": "sustainability_technology",
+      "obit_score": 0.9197,
+      "title": "Trump Advised to Lose Weight",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "british_irish_rte_news_4656e04ee369",
+      "bucket": "block",
+      "lens": "uplifting",
+      "obit_score": 0.9127,
+      "title": "Garda Sergeant Drives Ambulances to Uganda",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "spanish_20minutos_es_784f29a05b76",
+      "bucket": "block",
+      "lens": "belonging",
+      "obit_score": 0.9899,
+      "title": "Honduras Activist Seeks Justice for Mother’s 2016 Murder",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "science_sciencedaily_sustainability_082209f805a5",
+      "bucket": "block",
+      "lens": "cultural_discovery",
+      "obit_score": 0.9259,
+      "title": "Montana Bison Hunt Site’s 700-Year Run Ended with Drought",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "professional_business_forbes_innovation_c3882853dec0",
+      "bucket": "block",
+      "lens": "foresight",
+      "obit_score": 0.9652,
+      "title": "US Ebola Response Mirrors COVID-19 Failures in Proactive Planning",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "british_irish_bbc_news_top_61fc65bc40c6",
+      "bucket": "block",
+      "lens": "foresight",
+      "obit_score": 0.9722,
+      "title": "Oregon Passes “Kristil’s Law” for Faster Warrants",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 1
+    },
+    {
+      "id": "legal_policy_opinio_juris_f89a7f135b91",
+      "bucket": "block",
+      "lens": "foresight",
+      "obit_score": 0.9117,
+      "title": "Law Struggles to Address Unequal Pandemic Risks",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "us_media_the_atlantic_e4156366b020",
+      "bucket": "block",
+      "lens": "foresight",
+      "obit_score": 0.9308,
+      "title": "Student Shares Advice For Shooting Survivors",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "south_african_timeslive_b0ac366b9eeb",
+      "bucket": "block",
+      "lens": "cultural_discovery",
+      "obit_score": 0.9993,
+      "title": "ÖTzi the Iceman’s Microbes Reveal Ancient Gut Health",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "positive_news_reasons_to_be_cheerful_e3c0f7e6c078",
+      "bucket": "block",
+      "lens": "uplifting",
+      "obit_score": 0.9881,
+      "title": "Utah Aims to Support Children After Parental Loss",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "mexican_la_jornada_4e395f97e54e",
+      "bucket": "block",
+      "lens": "uplifting",
+      "obit_score": 0.9251,
+      "title": "Mexico City Program Prevents Over 150 Suicides",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "korean_hankyung_ee7a6b13ad27",
+      "bucket": "block",
+      "lens": "uplifting",
+      "obit_score": 0.9586,
+      "title": "Police in South Korea Rush Sick Child to Hospital",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "professional_business_forbes_innovation_586bb3926b28",
+      "bucket": "block",
+      "lens": "foresight",
+      "obit_score": 0.9911,
+      "title": "AI Chatbots Linked to Suicide Risk",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "new_zealand_the_spinoff_e5a69f1e006a",
+      "bucket": "block",
+      "lens": "belonging",
+      "obit_score": 0.9453,
+      "title": "Moana Pasifika Ends Super Rugby Play",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "pan_african_all_africa_478f15f0e3ac",
+      "bucket": "block",
+      "lens": "uplifting",
+      "obit_score": 0.9419,
+      "title": "Ebola Outbreak in DRC and Uganda Tests “Fortress” Strategies",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "science_smithsonian_65fdeb0eaff9",
+      "bucket": "block",
+      "lens": "cultural_discovery",
+      "obit_score": 0.9174,
+      "title": "Lincoln Steffens and the Rise of Objective Journalism",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "south_african_timeslive_e7e09c19a6c6",
+      "bucket": "block",
+      "lens": "foresight",
+      "obit_score": 0.9044,
+      "title": "WHO Report Finds World Unprepared for Next Pandemic",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "british_irish_irish_times_71119d0b3c67",
+      "bucket": "block",
+      "lens": "belonging",
+      "obit_score": 0.9965,
+      "title": "Man Meets Grandfather of Holocaust Victim",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "west_african_thisday_7aeee3df1fcd",
+      "bucket": "block",
+      "lens": "foresight",
+      "obit_score": 0.933,
+      "title": "Africa CDC and WHO Unite to Combat Ebola, Seek $518 Million",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "southeast_asian_thaiger_f08a53e0d907",
+      "bucket": "boundary",
+      "lens": "uplifting",
+      "obit_score": 0.8153,
+      "title": "The symptoms women overlook and what a gynecologic oncologist in Bangkok wants you to know",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "positive_news_the_better_india_89bdc6232964",
+      "bucket": "boundary",
+      "lens": "foresight",
+      "obit_score": 0.8357,
+      "title": "Maharashtra Man Revives 350 Native Plants, Empowering Villagers",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "geography_nature_mongabay_65e2a0f32a44",
+      "bucket": "boundary",
+      "lens": "nature_recovery",
+      "obit_score": 0.8632,
+      "title": "Nepal Farmers Face Hurdles Accessing Wildlife Crop Damage Relief",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "pan_african_allAfrica_environment_fd57d270fbf9",
+      "bucket": "boundary",
+      "lens": "cultural_discovery",
+      "obit_score": 0.7835,
+      "title": "Morocco Evacuated 140,000 Before Floods",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "positive_news_greater_good_berkeley_13fec1d83324",
+      "bucket": "boundary",
+      "lens": "belonging",
+      "obit_score": 0.7122,
+      "title": "Oberlin Grads Show Hope Despite Gloomy Forecast",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "spanish_eldiario_2408dbfd26b0",
+      "bucket": "boundary",
+      "lens": "uplifting",
+      "obit_score": 0.856,
+      "title": "Spanish Court Rules for Full Disability Pension Despite Reduced Hours",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "german_faz_917e9764bf06",
+      "bucket": "boundary",
+      "lens": "cultural_discovery",
+      "obit_score": 0.8178,
+      "title": "Martin Heideggers Todestag: An seiner Philosophie führt auch heute kein Weg vorbei",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "canadian_vancouver_sun_4f4de1e98879",
+      "bucket": "boundary",
+      "lens": "belonging",
+      "obit_score": 0.7309,
+      "title": "Polish Sailor Thanks Vancouver Hospital 45 Years After Rescue",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "mexican_la_jornada_31375ff8572a",
+      "bucket": "boundary",
+      "lens": "belonging",
+      "obit_score": 0.7555,
+      "title": "Mexican Senate Honors Young Woman Representing President at World Cup",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "community_social_hackernews_newest_e62e80570ab5",
+      "bucket": "boundary",
+      "lens": "foresight",
+      "obit_score": 0.8537,
+      "title": "Moksha Publishes 89 XAPI Vulnerabilities, Withholds Patches",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "industry_intelligence_fast_company_1f3ea830ba69",
+      "bucket": "recall_chk",
+      "lens": "belonging",
+      "obit_score": 0.0243,
+      "title": "E.l.f. Beauty CEO Credits Family Motel with Business Lessons",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "science_arxiv_cs_f6e82355f1e8",
+      "bucket": "recall_chk",
+      "lens": "foresight",
+      "obit_score": 0.0,
+      "title": "AI Could Expand Access to Intangible Cultural Heritage Skills",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "belgian_bruzz_84c033bb33f4",
+      "bucket": "recall_chk",
+      "lens": "belonging",
+      "obit_score": 0.0239,
+      "title": "Belgian Athletics Meet & Five Groups Receive Royal Titles",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "science_arxiv_cs_dc63162f9d2d",
+      "bucket": "recall_chk",
+      "lens": "cultural_discovery",
+      "obit_score": 0.0001,
+      "title": "AI Struggles with Cultural Nuance in Math Problems",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "south_asian_economic_times_7510697bea19",
+      "bucket": "recall_chk",
+      "lens": "uplifting",
+      "obit_score": 0.1627,
+      "title": "Maharashtra Groom Insures Entire Village",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "science_smithsonian_16eacdecf534",
+      "bucket": "recall_chk",
+      "lens": "cultural_discovery",
+      "obit_score": 0.0599,
+      "title": "Ether Dome: Landmark Honors Pain Relief’s Bitter Beginnings",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "british_irish_bbc_scotland_d46e3624b2cb",
+      "bucket": "recall_chk",
+      "lens": "nature_recovery",
+      "obit_score": 0.1178,
+      "title": "Falcon Chicks Named After Sitcom Characters",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "central_asian_times_ca_ad3ea8603421",
+      "bucket": "recall_chk",
+      "lens": "cultural_discovery",
+      "obit_score": 0.0,
+      "title": "Kazakh Language Finds New Life Online",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "south_african_sabcnews_7232e970f369",
+      "bucket": "recall_chk",
+      "lens": "cultural_discovery",
+      "obit_score": 0.4154,
+      "title": "Ted Dumitru Lecture Honors Football Pioneer",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 1
+    },
+    {
+      "id": "climate_solutions_inside_climate_news_d1c4d4951e7c",
+      "bucket": "recall_chk",
+      "lens": "uplifting",
+      "obit_score": 0.5268,
+      "title": "Forest Treatments Averted Millions of Tons of Emissions",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    }
+  ],
+  "adjudicate_ids": [
+    "south_american_perfil_edf898d46c3f",
+    "spanish_la_vanguardia_c0db63b5f571",
+    "korean_hankyung_74bea006b508",
+    "swedish_dagens_industri_fca7b47b0fe4",
+    "british_irish_rte_news_4656e04ee369",
+    "spanish_20minutos_es_784f29a05b76",
+    "science_sciencedaily_sustainability_082209f805a5",
+    "professional_business_forbes_innovation_c3882853dec0",
+    "british_irish_bbc_news_top_61fc65bc40c6",
+    "legal_policy_opinio_juris_f89a7f135b91",
+    "us_media_the_atlantic_e4156366b020",
+    "south_african_timeslive_b0ac366b9eeb",
+    "positive_news_reasons_to_be_cheerful_e3c0f7e6c078",
+    "mexican_la_jornada_4e395f97e54e",
+    "korean_hankyung_ee7a6b13ad27",
+    "professional_business_forbes_innovation_586bb3926b28",
+    "new_zealand_the_spinoff_e5a69f1e006a",
+    "pan_african_all_africa_478f15f0e3ac",
+    "science_smithsonian_65fdeb0eaff9",
+    "south_african_timeslive_e7e09c19a6c6",
+    "british_irish_irish_times_71119d0b3c67",
+    "west_african_thisday_7aeee3df1fcd",
+    "south_african_sabcnews_7232e970f369"
+  ],
+  "block_precision_lb": 0.0
+}

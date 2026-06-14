@@ -1,0 +1,217 @@
+{
+  "threshold_sweep": [
+    {
+      "threshold": 0.5,
+      "precision": 0.8317,
+      "recall": 0.6512,
+      "tp": 84,
+      "fp": 17,
+      "fn": 45,
+      "tn": 631
+    },
+    {
+      "threshold": 0.6,
+      "precision": 0.8681,
+      "recall": 0.6124,
+      "tp": 79,
+      "fp": 12,
+      "fn": 50,
+      "tn": 636
+    },
+    {
+      "threshold": 0.7,
+      "precision": 0.9079,
+      "recall": 0.5349,
+      "tp": 69,
+      "fp": 7,
+      "fn": 60,
+      "tn": 641
+    },
+    {
+      "threshold": 0.8,
+      "precision": 0.931,
+      "recall": 0.4186,
+      "tp": 54,
+      "fp": 4,
+      "fn": 75,
+      "tn": 644
+    },
+    {
+      "threshold": 0.85,
+      "precision": 0.94,
+      "recall": 0.3643,
+      "tp": 47,
+      "fp": 3,
+      "fn": 82,
+      "tn": 645
+    },
+    {
+      "threshold": 0.9,
+      "precision": 0.9348,
+      "recall": 0.3333,
+      "tp": 43,
+      "fp": 3,
+      "fn": 86,
+      "tn": 645
+    },
+    {
+      "threshold": 0.92,
+      "precision": 0.9333,
+      "recall": 0.3256,
+      "tp": 42,
+      "fp": 3,
+      "fn": 87,
+      "tn": 645
+    },
+    {
+      "threshold": 0.95,
+      "precision": 0.9512,
+      "recall": 0.3023,
+      "tp": 39,
+      "fp": 2,
+      "fn": 90,
+      "tn": 646
+    },
+    {
+      "threshold": 0.97,
+      "precision": 0.9444,
+      "recall": 0.2636,
+      "tp": 34,
+      "fp": 2,
+      "fn": 95,
+      "tn": 646
+    },
+    {
+      "threshold": 0.99,
+      "precision": 0.9655,
+      "recall": 0.2171,
+      "tp": 28,
+      "fp": 1,
+      "fn": 101,
+      "tn": 647
+    }
+  ],
+  "per_lens_false_positives": {
+    "0.8": {
+      "belonging": {
+        "neg_total": 207,
+        "false_positives": 2
+      },
+      "cultural_discovery": {
+        "neg_total": 193,
+        "false_positives": 2
+      },
+      "foresight": {
+        "neg_total": 50,
+        "false_positives": 0
+      },
+      "nature_recovery": {
+        "neg_total": 53,
+        "false_positives": 0
+      },
+      "sustainability_technology": {
+        "neg_total": 77,
+        "false_positives": 0
+      },
+      "uplifting": {
+        "neg_total": 68,
+        "false_positives": 0
+      }
+    },
+    "0.9": {
+      "belonging": {
+        "neg_total": 207,
+        "false_positives": 1
+      },
+      "cultural_discovery": {
+        "neg_total": 193,
+        "false_positives": 2
+      },
+      "foresight": {
+        "neg_total": 50,
+        "false_positives": 0
+      },
+      "nature_recovery": {
+        "neg_total": 53,
+        "false_positives": 0
+      },
+      "sustainability_technology": {
+        "neg_total": 77,
+        "false_positives": 0
+      },
+      "uplifting": {
+        "neg_total": 68,
+        "false_positives": 0
+      }
+    },
+    "0.95": {
+      "belonging": {
+        "neg_total": 207,
+        "false_positives": 0
+      },
+      "cultural_discovery": {
+        "neg_total": 193,
+        "false_positives": 2
+      },
+      "foresight": {
+        "neg_total": 50,
+        "false_positives": 0
+      },
+      "nature_recovery": {
+        "neg_total": 53,
+        "false_positives": 0
+      },
+      "sustainability_technology": {
+        "neg_total": 77,
+        "false_positives": 0
+      },
+      "uplifting": {
+        "neg_total": 68,
+        "false_positives": 0
+      }
+    },
+    "0.97": {
+      "belonging": {
+        "neg_total": 207,
+        "false_positives": 0
+      },
+      "cultural_discovery": {
+        "neg_total": 193,
+        "false_positives": 2
+      },
+      "foresight": {
+        "neg_total": 50,
+        "false_positives": 0
+      },
+      "nature_recovery": {
+        "neg_total": 53,
+        "false_positives": 0
+      },
+      "sustainability_technology": {
+        "neg_total": 77,
+        "false_positives": 0
+      },
+      "uplifting": {
+        "neg_total": 68,
+        "false_positives": 0
+      }
+    }
+  },
+  "training_config": {
+    "embedder_model": "paraphrase-multilingual-mpnet-base-v2",
+    "embedding_dim": 768,
+    "classifier_type": "MLPClassifier",
+    "hidden_layers": [
+      256,
+      128
+    ],
+    "n_samples": 777,
+    "n_positive": 129,
+    "n_negative": 648,
+    "cv": "5-fold stratified OOF",
+    "oof_f1_at_0.95": 0.4588,
+    "oof_precision_at_0.95": 0.9512,
+    "oof_recall_at_0.95": 0.3023,
+    "note": "AUDIT-ONLY baseline. Do not enforce before threshold sign-off."
+  }
+}

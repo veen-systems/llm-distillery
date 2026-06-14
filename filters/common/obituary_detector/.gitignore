@@ -1,0 +1,10 @@
+# Corpora and worksheets contain raw article content — keep on disk, never commit
+validation/artifacts/*corpus*.jsonl
+validation/artifacts/seed*.jsonl
+validation/artifacts/worksheet*.jsonl
+validation/artifacts/*candidates*.jsonl
+# Model binaries live on gpu-server (v1 broken, v2 proof); regenerate via training/
+models/
+v1/
+v2/
+*.pkl
