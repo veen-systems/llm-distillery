@@ -2,7 +2,7 @@
 stack: Python 3.12, PyTorch, Transformers, PEFT/LoRA
 status: Production
 repo: github.com/ducroq/llm-distillery
-framework: agent-ready-projects v1.9.0
+framework: agent-ready-projects v1.10.4
 ---
 
 # CLAUDE.md - LLM Distillery
@@ -79,6 +79,7 @@ See `docs/adr/README.md` for full ADR index, `docs/decisions/` for detailed reco
 | When you're... | Read... |
 |----------------|---------|
 | Starting a new session | `memory/MEMORY.md` — project memory index, current work status |
+| Starting any session (framework drift) | Compare the `framework: agent-ready-projects vX.Y.Z` header above against `~/repos/agent-ready-projects/CHANGELOG.md`. If behind, surface the drift; don't auto-adopt (engineer's call). |
 | Resuming thriving v1 work | `memory/thriving-v1-scoring.md` — scoring status, resume commands, full pipeline |
 | Starting calibration / scorer-training / oracle-prompt work | `memory/calibration-history.md` — Dead Ends section: which approaches are already known dead (#69) |
 | Developing a new filter | `docs/agents/filter-development-guide.md` — full lifecycle, or `docs/guides/filter-creation-workflow.md` — quick steps |
@@ -133,4 +134,4 @@ This project is a source project for [agentic-engineering](https://github.com/du
 
 ---
 
-*Last updated: 2026-05-31*
+*Last updated: 2026-07-04*

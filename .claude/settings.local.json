@@ -168,7 +168,9 @@
       "Bash(PYTHONIOENCODING=utf-8 python scripts/compare_3way_softpenalty.py)",
       "Bash(PYTHONIOENCODING=utf-8 python *)",
       "Bash(curl -s http://gpu-server:11434/api/tags)",
-      "Read(//tmp/**)"
+      "Read(//tmp/**)",
+      "Read(//home/jeroen/repos/agent-ready-projects/templates/**)",
+      "Read(//home/jeroen/repos/agent-ready-projects/**)"
     ],
     "deny": [],
     "ask": []

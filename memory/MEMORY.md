@@ -96,7 +96,20 @@ Loaded every session. Topic files loaded on demand via triggers below.
 - Solutions broadening v4 DRAFT scaffolded — `filters/sustainability_technology/v4/` (2026-05-05). Forks signed off: C (broaden ST v3 in place), combine ST v3 + foresight v1 corpora, foresight retired when v4 supersedes ST v3. 7 dims, weight=1.00, calibration batch spec inline (300 articles, ~$0.30). Awaiting prompt drafting before any oracle spend. <!-- verify: test -f filters/sustainability_technology/v4/config.yaml && echo PASS || echo FAIL -->
 - cultural_discovery v5 DEPLOYED 2026-05-31 — resolves #62 discovery-lens leakage. Val MAE 0.697 (v4 was 0.74). Soft-penalty F/G/H/I/K flags (historical_harm_reckoning, commemoration_memorial, perpetrator_biography, decline_loss, launch_announcement). DeepSeek V4 Flash oracle (first non-Gemini lineage in production, ~7x cheaper). End-to-end verified: Pope apology 9.65→2.31, Indus/Sumer 9.12 (gradient preserved). v4 deleted from gpu-server post-verification; still in llm-distillery + git + HF Hub for rollback. **Provisional reference example for ADR-020 methodology** (multi-oracle batch + agent judging) and DeepSeek-as-default-oracle; solutions v4 is the validation case. <!-- verify: ssh gpu-server 'test -d ~/NexusMind/filters/cultural_discovery/v5/model' && echo PASS || echo FAIL -->
 
-## Last Session Recap (2026-05-31)
+## Last Session Recap (2026-07-04)
+
+Light hygiene session — no code or filter changes. Memory correction + issue triage + framework adoption.
+
+- **DeepSeek V4 peak/valley pricing** (email 2026-07-04). Mid-July 2026 pricing introduces 2x peak surcharge (peak UTC 01:00–04:00 + 06:00–10:00 = 08:00–12:00 CEST is the trap). Rule: run oracle batches off-peak (noon–midnight CEST). New reference memory `oracle-pricing-scheduling.md`; solutions v4 pickup annotated. Commit `7f5ee4a`.
+- **gpu-server scorer architecture correction.** Chased a phantom "scorer down" alarm — it was stale memory, not an outage. `nexusmind-scorer.service` is a `static`, **on-demand** unit fired per run in the FluxusSource → NexusMind (sadalsuud) → gpu-server chain; inactive-between-runs is normal. Confirmed via `FluxusSource/memory/nexusmind.md` + `systemctl show` (`Result=success`). Fixed MEMORY.md prose + replaced two curl-`localhost:8000/health` verify snippets with disk-based checks. New gotcha logged. Commit `ca23efa`.
+- **Issue triage** (24 → 22 open). Closed **#39** (dup of #23) and **#53** (hyphen/underscore divergence — resolved on disk to underscore-only + NexusMind `filter_loader` now enforces underscore-only per their ADR-019). Re-scoped **#23** (cd `evidence_quality` 1.31 → ~0.90 in v5, cliff removed via ADR-015 soft-penalty) to a v6 target, and **#52** (residual = class-name drift `sustech/v3`→PreFilterV2 + `NR/v2`→PreFilterV1, + #66 fully-declarative remainder).
+- **Framework adoption v1.9.0 → v1.10.4.** Bumped `CLAUDE.md` pin; added the v1.10.0 session-start drift-check row to Before You Start (the change we were missing — which is *why* the drift went unnoticed). curate skill already carried v1.10.0 Step-0 sub-steps 6/7. v1.10.1–v1.10.4 are docs/maintainer-only, no adopter action. Optional not-yet-adopted: `hypothesis-log.md` pattern (v1.10.0).
+
+**Freshness flags raised (not yet fixed):**
+- The **2026-05-31 recap below claims "6 new memory entries"** (`cd-v5-reference-status`, `filter-doc-standard`, `feedback-conservative-oracle-better`, `feedback-oracle-not-ground-truth`, `feedback-oracle-selection-criteria`, `ovr-lens-set-current`) — **none exist on disk**; they were never committed. `oracle-pricing-scheduling.md`'s `[[cd-v5-reference-status]]` link is therefore dangling. Decide next session: recreate or drop the claim.
+- MEMORY.md recap is a **month behind git** — the June obituary_detector v3 work (#51, commits `87e9962`/`9692bcb`/`dd9c3c4`) has no recap entry here.
+
+## Session Recap (2026-05-31)
 
 Shipped cultural_discovery v5 to production — closes the cd v5 retrain arc (started 2026-05-29). #62 leakage resolved end-to-end: Pope apology 9.65 → 2.31, Indus/Sumer trade discovery 9.12 (gradient preserved). Filter is live on gpu-server scorer, ovr.news Discovery tab picks it up on next pipeline cycle.
 
@@ -123,9 +136,17 @@ Took ducroq/llm-distillery#62 (cultural_discovery v5 hard-negatives) from issue 
 
 Cost this session: ~$0.07 total (2 calibration runs at $0.01 each + 49-article batch at $0.05).
 
-## Next Session Pickup (set 2026-05-31 EOD)
+## Next Session Pickup (updated 2026-07-04 EOD)
 
-**cd v5 post-ship cleanup + solutions v4 prompt drafting.** cd v5 ship is complete; first-week monitoring runs in parallel.
+**Housekeeping carried from 2026-07-04 (do first, cheap):**
+1. **Resolve the phantom-memory-files claim** — either recreate the 6 files the 2026-05-31 recap says exist (`cd-v5-reference-status`, `filter-doc-standard`, `feedback-*`, `ovr-lens-set-current`) or strike the claim + fix the `[[cd-v5-reference-status]]` dangling link in `oracle-pricing-scheduling.md`.
+2. **Reconstruct the June #51 recap gap** — obituary_detector v3 (commits `87e9962`/`9692bcb`/`dd9c3c4`) has no MEMORY.md entry; add a Session Recap from git if the detail matters, else note it's git-only.
+3. **Optional framework pattern** — decide whether to adopt agent-ready-projects v1.10.0's `hypothesis-log.md` (`~/repos/agent-ready-projects/templates/hypothesis-log.md`). Not currently used here.
+4. **#23 / #52 are re-scoped, not done** — #23 → cd v6 `evidence_quality`; #52 → class-name drift + #66.
+
+---
+
+**cd v5 post-ship cleanup + solutions v4 prompt drafting** (standing backlog from 2026-05-31; still valid). cd v5 ship is complete; first-week monitoring runs in parallel.
 
 Priority TODOs (in order):
 1. **First-week #62 leakage monitoring** (2026-05-31 → 2026-06-07). Pull cd v5 scores from ovr.news Discovery tab. Verify the #62 leakage examples (Pope apology, Belgium Congo, Modigliani repatriation, residential schools, Antwerp Congolese memorial) score below 4.5. Any leak → capture in `datasets/raw/cd_v6_leakage_candidates.jsonl`.

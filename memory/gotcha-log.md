@@ -538,3 +538,17 @@ Captured outputs (this is the deploy-claim verification trail the rule requires)
 
 **Promoted to**: not promoted yet — tracked as #68 (verify_filter_package.py schema check for per-dim description + weight fields, before --check-hub round-trip).
 
+
+---
+
+## Stale `curl localhost:8000/health` Verify Snippets Manufacture a Phantom "Scorer Down" Alarm (2026-07-04)
+
+**Problem**: While triaging open issues, a routine gpu-server check reported `nexusmind-scorer.service` inactive, nothing on :8000, health returning 000 — read as a production outage. It was not.
+
+**Root cause**: MEMORY.md described gpu-server as running a *persistent* scorer daemon and embedded two `<!-- verify: -->` snippets that `curl http://localhost:8000/health`. The architecture had since moved to an on-demand chain (FluxusSource harvest → NexusMind pipeline on sadalsuud → gpu-server scorer spun up per run → exits). `nexusmind-scorer.service` is a `static` unit; **inactive between runs is the healthy resting state**. The verify snippets only answer mid-run, so they FALSE-FAIL the rest of the time — and read as an outage.
+
+**Fix**: Confirmed via `FluxusSource/memory/nexusmind.md` (authoritative) + gpu-server `systemctl show` (`Result=success`, ran ~11min earlier that day). Corrected MEMORY.md architecture prose to the on-demand chain model, and replaced both curl-based verify snippets with disk-based checks (`test -d ~/NexusMind/filters/<f>/v<N>/model`) that hold regardless of run state. Commit `ca23efa`.
+
+**Lesson**: A `<!-- verify: -->` command must probe a **stable** condition (artifact on disk, `Result=success`), never a transient runtime port that's only up during an on-demand run. A verify snippet that false-fails is worse than none — it manufactures phantom regressions and cries wolf for the next session. When a cross-repo memory (FluxusSource) and a local memory (llm-distillery) disagree about a shared component's architecture, the repo that *owns* the component is authoritative.
+
+**Promoted to**: candidate MEMORY.md pattern if it recurs — "verify snippets probe stable disk/exit-state, not transient ports."
