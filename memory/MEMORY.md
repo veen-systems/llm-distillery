@@ -13,6 +13,7 @@ Loaded every session. Topic files loaded on demand via triggers below.
 | `thriving-v1-scoring.md` | Understanding thriving v1 attempts | PAUSED — bimodal distribution, MAE 0.94, findings and open questions |
 | `uplifting-v7-training.md` | Understanding thriving v1 history | v7 prompt evolution → thriving v1 rename (ADR-012) |
 | `calibration-history.md` | Starting any calibration / scorer-training / oracle-prompt experiment | Dead Ends section: which approaches are already known dead — don't retry (#69) |
+| `oracle-pricing-scheduling.md` | Planning any oracle batch scoring run | DeepSeek V4 peak/valley pricing — run batches off-peak (avoid 08:00–12:00 CEST) for 2x savings |
 
 ## Universal Gotchas
 
@@ -128,7 +129,7 @@ Cost this session: ~$0.07 total (2 calibration runs at $0.01 each + 49-article b
 Priority TODOs (in order):
 1. **First-week #62 leakage monitoring** (2026-05-31 → 2026-06-07). Pull cd v5 scores from ovr.news Discovery tab. Verify the #62 leakage examples (Pope apology, Belgium Congo, Modigliani repatriation, residential schools, Antwerp Congolese memorial) score below 4.5. Any leak → capture in `datasets/raw/cd_v6_leakage_candidates.jsonl`.
 2. **Revise `docs/adr/draft-020-extended-oracle-calibration.md`** per 4-reviewer convergent feedback: mark PROVISIONAL, cut 5→3 oracles default, split soft-penalty into separate ADR (extension of ADR-015), replace "Expected outcome: DS wins" with actual results, address Alternative 5, add conservative-oracle vs consensus-alignment precedence rule.
-3. **Solutions v4 prompt drafting** (`filters/sustainability_technology/v4/prompt-compressed.md`) — 7 dims encoded, calibration batch ready (~$0.30). **This is the ADR-020 validation case**: follow cd v5's playbook end-to-end. If it lands cleanly, ADR-020 graduates PROVISIONAL → Accepted; if it hits issues, capture divergence in ADR-020 revision.
+3. **Solutions v4 prompt drafting** (`filters/sustainability_technology/v4/prompt-compressed.md`) — 7 dims encoded, calibration batch ready (~$0.30). **This is the ADR-020 validation case**: follow cd v5's playbook end-to-end. If it lands cleanly, ADR-020 graduates PROVISIONAL → Accepted; if it hits issues, capture divergence in ADR-020 revision. **Schedule the full oracle batch off-peak** (after ~noon CEST) — DeepSeek V4 peak/valley pricing (mid-July 2026) doubles cost during 08:00–12:00 CEST. See `memory/oracle-pricing-scheduling.md`.
 4. **Code refactor**: extract `extract_dim_score`, `smart_compress`, `build_prompt`, `pearson`, `spearman`, `wavg` into `ground_truth/oracle_utils.py` (9 scripts have copy-pasted variants). ~1hr work.
 5. **OracleClient ABC refactor of `ground_truth/batch_scorer.py`**: currently hardcoded if/elif over `claude/gemini/gemini-pro/gemini-flash/gpt4`. No DeepSeek/Ollama support → caused fork pressure during cd v5. 2-4hr work.
 6. **Apply remaining v5 prompt tightenings** per oracle-calibration agent final review (K/G/I anti-triggers) — defer to v6.
