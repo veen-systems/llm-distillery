@@ -14,6 +14,12 @@ Loaded every session. Topic files loaded on demand via triggers below.
 | `uplifting-v7-training.md` | Understanding thriving v1 history | v7 prompt evolution → thriving v1 rename (ADR-012) |
 | `calibration-history.md` | Starting any calibration / scorer-training / oracle-prompt experiment | Dead Ends section: which approaches are already known dead — don't retry (#69) |
 | `oracle-pricing-scheduling.md` | Planning any oracle batch scoring run | DeepSeek V4 peak/valley pricing — run batches off-peak (avoid 08:00–12:00 CEST) for 2x savings |
+| `feedback-oracle-selection-criteria.md` | Picking an oracle for a new filter | Multi-oracle calibration + agent judging on a disagreement set (ADR-020 method); don't default to one |
+| `feedback-conservative-oracle-better.md` | Choosing/tuning an oracle with penalty flags | Prefer the oracle that under-fires penalties; conservativism > raw consensus |
+| `feedback-oracle-not-ground-truth.md` | High-MAE dimension, or optimizing student | Oracle is a consistent labeler, not truth — suspect label noise first, fix the prompt |
+| `cd-v5-reference-status.md` | DeepSeek-oracle or ADR-020 methodology questions | cd v5 = reference example; solutions v4 = the validation case |
+| `filter-doc-standard.md` | Documenting a new/deployed filter | belonging v1's 7-file core + cd v5's 2 optional extensions |
+| `ovr-lens-set-current.md` | Which filter powers which ovr.news tab | Lens→filter mapping; authoritative tab config lives in ovr.news |
 
 ## Universal Gotchas
 
@@ -106,7 +112,7 @@ Light hygiene session — no code or filter changes. Memory correction + issue t
 - **Framework adoption v1.9.0 → v1.10.4.** Bumped `CLAUDE.md` pin; added the v1.10.0 session-start drift-check row to Before You Start (the change we were missing — which is *why* the drift went unnoticed). curate skill already carried v1.10.0 Step-0 sub-steps 6/7. v1.10.1–v1.10.4 are docs/maintainer-only, no adopter action. Optional not-yet-adopted: `hypothesis-log.md` pattern (v1.10.0).
 
 **Freshness flags raised (not yet fixed):**
-- The **2026-05-31 recap below claims "6 new memory entries"** (`cd-v5-reference-status`, `filter-doc-standard`, `feedback-conservative-oracle-better`, `feedback-oracle-not-ground-truth`, `feedback-oracle-selection-criteria`, `ovr-lens-set-current`) — **none exist on disk**; they were never committed. `oracle-pricing-scheduling.md`'s `[[cd-v5-reference-status]]` link is therefore dangling. Decide next session: recreate or drop the claim.
+- ~~The 2026-05-31 recap claimed "6 new memory entries" that never existed on disk.~~ **RESOLVED 2026-07-05**: verified absent everywhere (repo + user-level), then reconstructed all 6 from the recap description + verifiable repo content (ADR-020 draft, CLAUDE.md, ADR-010/012/013/015). Recap claim corrected; index pointers added; `[[cd-v5-reference-status]]` link now resolves. Each file carries a reconstruction note.
 - MEMORY.md recap is a **month behind git** — the June obituary_detector v3 work (#51, commits `87e9962`/`9692bcb`/`dd9c3c4`) has no recap entry here.
 
 ## Session Recap (2026-05-31)
@@ -118,7 +124,7 @@ Shipped cultural_discovery v5 to production — closes the cd v5 retrain arc (st
 - **Calibration + Hub + NexusMind deploy**. Isotonic regression per dim → `calibration.json` + `score_scale_factor` 1.2829. Hub upload `jeergrvgreg/cultural-discovery-filter-v5` (private). Deploy chain: llm-distillery `6acd013` → HF Hub → NexusMind `f9a3fe9` → sadalsuud → gpu-server. v4 deleted from gpu-server post-verification (provably picked v5 via `_find_latest_version()` + actual response `filter_version: "5.0"`); still recoverable from llm-distillery + git + HF Hub.
 - **End-to-end verification** (addressed "things have gone badly wrong before"). Triggered actual `/score` requests on gpu-server: Pope apology (9.65 under v4) → **2.31** (F penalty fires, demoted below 4.5 threshold), Indus/Sumer trade discovery → **9.12** (no penalty, tier "high"). Health endpoint confirms `cultural_discovery_v5.0` loaded.
 - **Documentation standard locked in** (`memory: filter-doc-standard.md`). Belonging v1's 7-file core (config + prompt + prefilter + STATUS + DEEP_ROOTS + README + README_MODEL) is the project standard from 2026-05-31. cd v5 adds 2 optional extensions for complex calibrations: `calibration_report.md` + `dimension_analysis/`.
-- **6 new memory entries**: `filter-doc-standard.md`, `feedback-conservative-oracle-better.md`, `feedback-oracle-not-ground-truth.md`, `feedback-oracle-selection-criteria.md`, `ovr-lens-set-current.md`, `cd-v5-reference-status.md`. ADR-020 DRAFT (`docs/adr/draft-020-extended-oracle-calibration.md`) drafted but marked PROVISIONAL pending solutions v4 validation.
+- **6 memory entries described here were never committed in the 2026-05-31 session** (`filter-doc-standard.md`, `feedback-conservative-oracle-better.md`, `feedback-oracle-not-ground-truth.md`, `feedback-oracle-selection-criteria.md`, `ovr-lens-set-current.md`, `cd-v5-reference-status.md`) — the recap over-claimed. **Reconstructed 2026-07-05** from this description + verifiable repo content (see each file's reconstruction note). ADR-020 DRAFT (`docs/adr/draft-020-extended-oracle-calibration.md`) *does* exist and is marked PROVISIONAL pending solutions v4 validation.
 - **2 new gotchas** (see `memory/gotcha-log.md`): "deploy_filters.sh rsync Excludes model/ Subdir" + "Hub Upload Fails on Missing per-Dim description Field". Both surfaced during cd v5 deploy; both have a clear fix path for next filter cycle.
 
 Cost this session: ~$10.50 (DeepSeek 8K labeling ~$10.36 + Gemini calibration ~$0.10). v4 → v5 development total: ~$11 (vs v4's ~$25 under Gemini, validating DeepSeek economics).
@@ -139,7 +145,7 @@ Cost this session: ~$0.07 total (2 calibration runs at $0.01 each + 49-article b
 ## Next Session Pickup (updated 2026-07-04 EOD)
 
 **Housekeeping carried from 2026-07-04 (do first, cheap):**
-1. **Resolve the phantom-memory-files claim** — either recreate the 6 files the 2026-05-31 recap says exist (`cd-v5-reference-status`, `filter-doc-standard`, `feedback-*`, `ovr-lens-set-current`) or strike the claim + fix the `[[cd-v5-reference-status]]` dangling link in `oracle-pricing-scheduling.md`.
+1. ~~Resolve the phantom-memory-files claim.~~ **DONE 2026-07-05** — all 6 reconstructed + indexed, recap corrected, dangling link resolved. (Optional follow-up: sanity-check `ovr-lens-set-current.md`'s tab mapping against the actual ovr.news repo, which is authoritative.)
 2. **Reconstruct the June #51 recap gap** — obituary_detector v3 (commits `87e9962`/`9692bcb`/`dd9c3c4`) has no MEMORY.md entry; add a Session Recap from git if the detail matters, else note it's git-only.
 3. **Optional framework pattern** — decide whether to adopt agent-ready-projects v1.10.0's `hypothesis-log.md` (`~/repos/agent-ready-projects/templates/hypothesis-log.md`). Not currently used here.
 4. **#23 / #52 are re-scoped, not done** — #23 → cd v6 `evidence_quality`; #52 → class-name drift + #66.
