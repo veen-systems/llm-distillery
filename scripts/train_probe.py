@@ -9,6 +9,23 @@ Usage:
         --filter filters/cultural-discovery/v4 \
         --data-dir datasets/training/cultural-discovery_v4 \
         --embedding-model intfloat/multilingual-e5-small
+
+⚠️ KNOWN DEFECT FOR NEEDLE FILTERS (nature_recovery v4, H3) — DO NOT USE AS-IS:
+This trainer minimizes L1Loss on the raw 6-dim labels (an L1 REGRESSION) and
+selects on val_mae. On a ~85% zero-floor corpus that collapses to a floor
+predictor — exactly the recall bug v4 exists to fix (see
+docs/agents/filter-development-guide.md Issue 4). The e5 probe for
+nature_recovery v4 MUST be a RECALL-FIRST CLASSIFIER instead:
+  - target: BINARY  y = 1 if weighted-avg (gatekeepered) >= 4.0 (MEDIUM+), else 0
+  - loss:   class-weighted BCE (or balanced sampling) — positives are ~14%
+  - select: threshold from the VAL RECALL CURVE at a target FN rate on MEDIUM+
+            (uplifting hit ~0.9% FN at threshold 1.00), NOT val_mae
+  - validate: FN rate on the 129 known-blocked positives (recall-side)
+  - embedding: intfloat/multilingual-e5-small (multilingual screening)
+Implementation + validation is a gpu-server step (needs torch + embeddings +
+the 129 cohort). Full spec and commands: docs/nature_recovery_v4_RUNBOOK.md.
+The threshold-from-recall-curve and FN-rate logic should be written as pure
+functions and unit-tested (as done for agreement_gate.py) before the gpu run.
 """
 
 import argparse

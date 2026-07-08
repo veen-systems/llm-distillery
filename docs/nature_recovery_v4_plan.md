@@ -4,6 +4,13 @@
 
 ---
 
+## 📍 PROGRESS (2026-07-08 autonomous session) — see docs/nature_recovery_v4_RUNBOOK.md
+**DONE + committed** (branch nature-recovery-v4): C1(b); commerce-only prefilter (recall 21.6%→1.3%); prompt+config revision; §A.5 pilot PASS; **full re-label 3892 ($4.81, 0 err)**; 4-model review battery → all findings fixed (CRITICAL v4 inference stack repoint v2→v4, POSITIVE_PATTERNS regex, prompt consistency, pipeline latent bugs); **settled ranking metrics (Recall@20/NDCG@10/FN@MEDIUM+) instrumented in train.py + checkpoint selection off aggregate MAE**; splits (3112/389/391, held-out disjoint); **agreement_gate.py** (logic unit-tested). All committed + pushed.
+**STAGED (gpu-server / HF-token — see RUNBOOK §1-6)**: rewrite train_probe.py recall-first (H3 defect documented in its header); train student (`--sample-weight-scale 2.0`); runtime-verify the inference-stack fix (needs torch); calibrate (⚠️ only 2 articles in 8-10 band); run gate (needs v2 student from Hub → **huggingface_token still empty**); deploy (blocked, C4).
+**Judgment call**: did NOT re-spend to re-label after prompt fixes (integrity check: nil impact on the $4.81 labels).
+
+---
+
 ## ⚠️ 0. Plan-review corrections — READ FIRST (4-model review, 2026-07-08)
 
 **CRITICAL — settle before spending any money:**
