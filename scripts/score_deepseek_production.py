@@ -164,6 +164,9 @@ def parse_response(resp: dict):
 
 
 def load_already_scored(output_path: Path) -> set:
+    """IDs that were SUCCESSFULLY scored. Error rows (which also carry `id`,
+    but no analysis field) are deliberately excluded so a resumed run RETRIES
+    previously-failed articles instead of silently dropping them."""
     if not output_path.exists():
         return set()
     ids = set()
@@ -171,6 +174,8 @@ def load_already_scored(output_path: Path) -> set:
         for line in f:
             try:
                 r = json.loads(line)
+                if "error" in r:
+                    continue  # transient failure — retry on resume, don't skip
                 ids.add(r["id"])
             except (json.JSONDecodeError, KeyError):
                 continue

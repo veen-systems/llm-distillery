@@ -67,9 +67,21 @@ def old_v2_apply_filter(article):
     return (True, "passed")
 
 
+GATEKEEPER_MIN = 3.0   # recovery_evidence gatekeeper (base_scorer.py)
+GATEKEEPER_CAP = 3.5
+
+
 def weighted_avg(rec):
+    """Weighted average WITH the recovery_evidence gatekeeper applied, matching
+    how the scorer defines a surfacing score (base_scorer.py). Applying the
+    gatekeeper here makes the 'genuine positive' count (598) consistent with
+    prefilter.py's quoted figure; without it, 12 gatekeeper-capped articles
+    are over-counted (610)."""
     a = rec["nature_recovery_analysis"]
-    return sum(a[d]["score"] * w for d, w in DIMENSION_WEIGHTS.items())
+    wa = sum(a[d]["score"] * w for d, w in DIMENSION_WEIGHTS.items())
+    if a["recovery_evidence"]["score"] < GATEKEEPER_MIN and wa > GATEKEEPER_CAP:
+        wa = GATEKEEPER_CAP
+    return wa
 
 
 def main():
