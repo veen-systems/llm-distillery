@@ -552,3 +552,27 @@ Captured outputs (this is the deploy-claim verification trail the rule requires)
 **Lesson**: A `<!-- verify: -->` command must probe a **stable** condition (artifact on disk, `Result=success`), never a transient runtime port that's only up during an on-demand run. A verify snippet that false-fails is worse than none — it manufactures phantom regressions and cries wolf for the next session. When a cross-repo memory (FluxusSource) and a local memory (llm-distillery) disagree about a shared component's architecture, the repo that *owns* the component is authoritative.
 
 **Promoted to**: candidate MEMORY.md pattern if it recurs — "verify snippets probe stable disk/exit-state, not transient ports."
+
+## SSH Heredoc Mangles `$` and Special Chars (2026-07-07)
+**Problem**: Running Python against `ovr.db` on sadalsuud via `ssh sadalsuud 'python3 <<PY ... PY'` broke twice — the `$.content_type` JSON path and a `CASE WHEN wa>=4` clause got shell-interpolated, once producing a stray repo-root file literally named `=7 WHEN weighted_average>=4 THEN mid4-7 ELSE low`.
+**Root cause**: The remote command string passes through two shells (local + remote); `$`, `>=`, quotes get re-interpreted. Single-quoting the heredoc delimiter doesn't help when the whole thing is already inside an outer quoted `ssh '...'`.
+**Fix**: Write the script to a local file, pipe via stdin: `ssh host 'python3 -' < script.py`. Zero interpolation. Standard for all remote DB/analysis this session.
+**Lesson**: never inline multi-line Python with `$`/comparison operators into an `ssh '...'` string; always stdin-pipe a real file.
+
+## gpu-server SSH: Keys in gcr Keyring Agent, Config Forces a Different (Empty) Socket (2026-07-07)
+**Problem**: `ssh gpu-server` failed `publickey` non-interactively even though `ssh-add -l` listed the authorized key; verbose showed "Server accepts key" then denial.
+**Root cause**: The workstation's keys live in the GNOME-keyring agent (`SSH_AUTH_SOCK=/run/user/1000/gcr/ssh`), but the `gpu-server` host block pins `IdentityAgent /run/user/1000/openssh_agent` — a *different*, empty socket. ssh then falls back to the passphrase-protected key file, which can't unlock without a TTY.
+**Fix**: load the key into the forced socket: `SSH_AUTH_SOCK=/run/user/1000/openssh_agent ssh-add ~/.ssh/id_ed25519` (enter passphrase once). In a cold shell, `eval $(ssh-agent)` first.
+**Lesson**: when `ssh-add -l` shows a key but auth still fails, check whether the host config's `IdentityAgent` points at a *different* agent socket than `$SSH_AUTH_SOCK`.
+
+## Prefilter English Keyword-Gate Silently Drops ~21.6% of Non-English Positives (2026-07-07)
+**Problem**: nature_recovery's prefilter blocks 129/598 genuine-recovery articles (measured on DeepSeek labels) — 94 as `not_nature_topic`, mostly Spanish/Portuguese/German/etc. recovery stories.
+**Root cause**: `_is_nature_related` is an *inclusion* gate requiring an English `NATURE_KEYWORDS` hit to pass; the firehose is 20+ languages (~40% non-English). Inclusion-gating on English keywords fails-closed on everything the list doesn't enumerate. Project-wide: 13 prefilters use this pattern; only belonging ships an e5 probe. ADR-004 says commerce is the *only* universal prefilter — topic-inclusion is over-reach.
+**Fix (planned, v4)**: strip topic/decline keyword gates; screen with a multilingual `multilingual-e5-small` probe (ADR-006/011) + base `POSITIVE_PATTERNS` force-pass. See `docs/nature_recovery_v4_plan.md` §B.
+**Lesson**: never inclusion-gate a multilingual corpus on English keywords. Prefilters exclude known-bad (commerce); topic/trajectory belong to the multilingual embedding probe + the model.
+
+## DeepSeek Key Belongs in secrets.ini, Not .env (2026-07-07)
+**Problem**: A DeepSeek key placed in a repo `.env` didn't work, and a redaction assuming `NAME=value` leaked the (invalid) key into the transcript because the `.env` used `NAME value` (space).
+**Root cause**: The scorers read `os.environ['DEEPSEEK_API_KEY']` OR `config/credentials/secrets.ini [api_keys] deepseek_api_key` — a `.env` file is not auto-loaded into `os.environ`. secrets.ini is read directly, is gitignored, and is visible in the file explorer (not a dotfile).
+**Fix**: put keys in `config/credentials/secrets.ini` under `[api_keys]`. When echoing a secret file for inspection, never assume the delimiter — prefer reading only the key name via configparser, never `cat`.
+**Lesson**: this project's credential convention is `secrets.ini`, not `.env`; and a review finding can be locally-correct yet context-wrong (e.g. the `sample_weight_scale` "inverted" call was right in isolation but reversed once the needle-in-haystack purpose was weighed — verify review claims against the mechanism's actual purpose before acting).

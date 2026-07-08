@@ -1,0 +1,286 @@
+# Nature Recovery Filter - Version 2.0
+# Detects documented ecosystem recovery when human pressure is removed or restoration is applied
+# Grounded in restoration ecology, rewilding science, and empirical recovery evidence
+# See DEEP_ROOTS.md for scientific foundations
+
+filter:
+  name: nature_recovery
+  version: "4.0"
+  created: "2026-04-15"
+  updated: "2026-07-07"
+  description: "Rate content for evidence of measurable ecosystem recovery - nature bouncing back when we stop harming it"
+  focus: "Documented ecological outcomes, not technologies, pledges, or doom"
+
+  core_insight: |
+    Nature's capacity for recovery is routinely underestimated. The ozone layer is healing,
+    wolves transformed Yellowstone, fish returned to the Thames. This filter finds the evidence.
+    Deliberately excludes climate tech (sustainability_technology), doom reporting, and
+    corporate pledges without ecological outcomes.
+
+  changelog_v1_reiteration: |
+    Phase 1 reiteration (2026-03-05):
+    - Dimensions consolidated from 8 to 6 (dropped connectivity, historical_validation, attribution;
+      merged permanence+connectivity into protection_durability; reframed attribution as human_agency)
+    - Inline critical filters added per dimension (ADR-010 pattern)
+    - Content type caps added for 6 lookalike categories
+    - recovery_evidence added as gatekeeper dimension (threshold 3.0)
+    - Model updated from Qwen2.5-7B to Gemma-3-1B
+    - head_tail preprocessing added (256+256 tokens)
+    - target_samples increased from 2000 to 7000
+    - Anti-hallucination rule: evidence must be EXACT QUOTE
+
+# Per-filter source-type allowlist (NexusMind#189). Excludes items from
+# aggregator-style sources whose identity makes them unsuitable for
+# constructive scoring. shadow_mode flipped to false in Phase 4a after
+# 4 production cycles showed 0 articles ≥4.0 score would be lost.
+# Vocabulary set: llm-distillery/tests/unit/test_filter_config_schema.py
+source_filter:
+  excluded_source_types: [code_repo, developer_aggregator, firehose_aggregator]
+  shadow_mode: false
+
+prefilter:
+  enabled: true
+  expected_pass_rate: 0.20
+  description: "Blocks non-environmental content and pure doom; passes recovery/improvement stories"
+
+oracle:
+  recommended: gemini-flash
+  candidates:
+    - gemini-flash
+    - gemini-pro
+    - claude-sonnet
+
+scoring:
+  score_scale_factor: 1.3708  # 10.0 / 7.29 (calibrated max)
+
+  dimensions:
+    # === EVIDENCE DIMENSIONS ===
+
+    recovery_evidence:
+      weight: 0.25
+      category: evidence
+      description: "Is nature actually recovering? Species returning, populations growing, habitats regenerating, pollution declining"
+      gatekeeper: true
+      gatekeeper_threshold: 3
+      gatekeeper_max_score: 3.5
+      scale: |
+        0-2: No recovery described, only decline/doom/plans/pledges
+        3-4: Anecdotal recovery mentioned, single observation, preliminary signs
+        5-6: Clear recovery trend with some supporting data
+        7-8: Strong documented recovery with multiple data points over time
+        9-10: Landmark recovery — ecosystem transformation with sustained multi-year evidence
+      evidence_focus: "Species returning, populations increasing, habitats regrowing, pollution levels dropping, ecosystem functions restoring"
+      critical_filters: |
+        Score 0-2 if: Only decline or destruction reported (extinction, deforestation, coral bleaching),
+        only future plans or pledges without current outcomes,
+        only fundraising or donation appeals,
+        only policy announcements without evidence of ecological results,
+        projections or models without observed data
+
+    measurable_outcomes:
+      weight: 0.20
+      category: evidence
+      description: "Quantified results with data: before/after comparisons, population counts, area measurements, concentration reductions"
+      scale: |
+        0-2: No numbers or data cited, only qualitative claims
+        3-4: Single data point or vague quantification ("significantly improved")
+        5-6: Multiple data points, clear before/after comparison on one metric
+        7-8: Comprehensive data: multiple metrics, time series, percentage improvements
+        9-10: Publication-quality data: peer-reviewed, long-term monitoring, multiple independent measurements
+      evidence_focus: "Population counts, percentage changes, hectares restored, concentration levels (ppm, PM2.5), species counts, before/after comparisons"
+      critical_filters: |
+        Score 0-2 if: No numbers or data anywhere in article,
+        only qualitative claims ("nature is doing better", "the environment improved"),
+        only projected or modeled outcomes without observed measurements,
+        data cited is about technology performance not ecological outcomes
+
+    # === SIGNIFICANCE DIMENSIONS ===
+
+    ecological_significance:
+      weight: 0.20
+      category: significance
+      description: "How ecologically important is the recovery? Keystone species, critical habitats, ecosystem function, trophic cascades"
+      scale: |
+        0-2: Cosmetic or trivial change (decorative planting, non-native ornamentals, single-species without ecosystem context)
+        3-4: Modest ecological value — common species, small habitat, limited ecosystem function
+        5-6: Meaningful recovery of ecologically important species or habitat type
+        7-8: Recovery of keystone species, critical habitat, or demonstrated trophic cascade effects
+        9-10: Ecosystem-level transformation — multiple species, restored food webs, recovered ecosystem services
+      evidence_focus: "Keystone species, endangered species, critical habitats (wetland, mangrove, coral, old-growth), trophic cascades, ecosystem services restored (water filtration, carbon sequestration, flood control)"
+      critical_filters: |
+        Score 0-2 if: Only ornamental or cosmetic greening (highway median planting, corporate campus landscaping),
+        recovery of non-native or invasive species,
+        single-species recovery without broader ecosystem context (unless species is keystone or critically endangered),
+        urban beautification projects framed as ecological recovery
+
+    restoration_scale:
+      weight: 0.15
+      category: significance
+      description: "Geographic scope and temporal duration of recovery"
+      scale: |
+        0-2: Garden, schoolyard, or single-site scale (<10 hectares)
+        3-4: Local scale (10-1,000 hectares), or short-term observation (<2 years)
+        5-6: Landscape scale (1,000-100,000 hectares), or multi-year trend (2-10 years)
+        7-8: Regional scale (100,000-1M hectares), or decade-long sustained recovery
+        9-10: Continental or planetary scale (>1M hectares), or multi-decade recovery trend
+      evidence_focus: "Hectares, square kilometers, watershed scale, national scale, time span of monitoring, sustained vs temporary change"
+      critical_filters: |
+        Score 0-2 if: Single tree planting events or Earth Day cleanups,
+        temporary changes that reversed (e.g., COVID lockdown air quality that rebounded),
+        scope described only in marketing terms ("massive project") without actual numbers,
+        time horizon less than one year of observation
+
+    # === CONTEXT DIMENSIONS ===
+
+    human_agency:
+      weight: 0.10
+      category: context
+      description: "Was recovery caused by deliberate human action — policy, restoration project, community effort, cessation of harm?"
+      scale: |
+        0-2: Natural fluctuation, seasonal variation, no identified human role
+        3-4: Human role suggested but not clearly established
+        5-6: Human action contributed — policy or project mentioned, causal link plausible
+        7-8: Clear causal link between specific human action and recovery outcome
+        9-10: Textbook policy success — named policy/law/treaty with documented ecological result (Montreal Protocol, DDT ban)
+      evidence_focus: "Named policies, laws, bans, treaties, restoration programs, community initiatives, land management changes, pollution regulations"
+      critical_filters: |
+        Score 0-2 if: Recovery attributed entirely to natural cycles or weather patterns,
+        no human action mentioned or implied,
+        article only describes the ecological change without discussing causes
+
+    protection_durability:
+      weight: 0.10
+      category: context
+      description: "Will this recovery last? Legal protection, threat removal, sustainable management, ecological connectivity"
+      scale: |
+        0-2: No protection, threats ongoing, recovery could easily reverse
+        3-4: Temporary or partial protection, some threats addressed
+        5-6: Formal protection in place (national park, marine reserve), major threats reduced
+        7-8: Strong legal protection with enforcement, ecological corridors, community stewardship
+        9-10: Permanent protection (constitutional, international treaty), self-sustaining recovery, threats eliminated, connected to wider ecosystem network
+      evidence_focus: "Legal designation, protected area status, wildlife corridors, buffer zones, enforcement mechanisms, community management agreements, threat removal confirmation"
+      critical_filters: |
+        Score 0-2 if: Temporary cessation of harm (factory shutdown, seasonal moratorium),
+        protection exists only on paper (declared but not enforced),
+        ongoing threats remain unaddressed (poaching, upstream pollution, adjacent development),
+        recovery depends on continued active intervention with no funding guarantee
+
+  tiers:
+    high:
+      threshold: 7.0
+      description: "Significant recovery - strong documented ecosystem recovery with data, ecological importance, and lasting protection"
+
+    medium:
+      threshold: 4.0
+      description: "Meaningful progress - some recovery evidence with partial data or limited scale"
+
+    low:
+      threshold: 0.0
+      description: "No meaningful recovery evidence, or doom/plans/greenwashing content"
+
+  gatekeepers:
+    recovery_evidence_gatekeeper:
+      dimension: recovery_evidence
+      threshold: 3
+      max_score: 3.5
+      reason: "Without evidence of actual ecological recovery, content cannot score as nature recovery regardless of other dimensions"
+
+  content_type_caps:
+    climate_doom:
+      max_score: 2.0
+      triggers:
+        - "Extinction crisis, species collapse, habitat destruction as main topic"
+        - "Climate disaster, flood/fire/drought without recovery framing"
+        - "'We're running out of time', 'point of no return', alarm without evidence of recovery"
+        - "Decline statistics without improvement data"
+      exceptions:
+        - "Doom framing followed by documented recovery outcome"
+        - "Historical decline used as baseline for measured recovery"
+
+    climate_tech:
+      max_score: 3.0
+      triggers:
+        - "Solar panels, wind turbines, EVs, battery technology"
+        - "Carbon capture, hydrogen fuel, green chemistry"
+        - "Clean energy deployment, grid modernization"
+        - "Technology readiness, cost curves, efficiency metrics"
+      exceptions:
+        - "Technology enabling specific ecological outcome (e.g., sensor network documenting species return)"
+        - "Renewable energy leading to measured pollution reduction with ecological data"
+
+    greenwashing:
+      max_score: 2.0
+      triggers:
+        - "Corporate ESG reports, sustainability rankings"
+        - "Carbon offset marketing, 'carbon neutral' claims"
+        - "'Net zero by 2050' pledges without current outcomes"
+        - "Green bonds, sustainable finance without ecological evidence"
+      exceptions:
+        - "Corporate-funded restoration with documented ecological outcomes"
+
+    conservation_appeal:
+      max_score: 2.0
+      triggers:
+        - "'Donate to save the...', fundraising campaigns"
+        - "Awareness campaigns, petition drives, celebrity endorsements"
+        - "Endangered species profiles without recovery data"
+        - "Conservation urgency framing without improvement evidence"
+      exceptions:
+        - "Appeal that includes documented outcomes of previous donations"
+
+    policy_announcement:
+      max_score: 3.0
+      triggers:
+        - "Government pledges to protect X% by year Y"
+        - "New environmental regulations without compliance data"
+        - "International commitments (COP, G7) without implementation evidence"
+        - "Proposed legislation, draft policies, framework agreements"
+      exceptions:
+        - "Policy retrospective showing measured ecological outcomes"
+        - "Implementation report with monitoring data"
+
+    symbolic_gesture:
+      max_score: 3.0
+      triggers:
+        - "Earth Day cleanups, school tree planting events"
+        - "'Plant a tree for every purchase' marketing"
+        - "Green ribbon campaigns, environmental awareness days"
+        - "Celebrity-led planting events without scale or follow-up"
+      exceptions:
+        - "Community restoration project with measurable multi-year outcomes"
+
+preprocessing:
+  head_tail:
+    enabled: true
+    head_tokens: 256
+    tail_tokens: 256
+    separator: " [...] "
+
+training:
+  target_samples: 7000
+  train_val_test_split: [0.8, 0.1, 0.1]
+  quality_threshold: 0.7
+  recommended_model: "google/gemma-3-1b-pt"
+  expected_mae: "<0.55 per dimension (calibrated)"
+  sample_weight_scale: 2.0  # Score-based weighting for needle-in-haystack imbalance
+  train_examples: 2811
+  val_examples: 352
+  test_examples: 354
+
+hybrid_inference:
+  stage1:
+    embedding_model: "intfloat/multilingual-e5-small"
+    probe_path: "probe/embedding_probe_e5small.pkl"
+    threshold: 0.75  # TODO: recalibrate on v2 production data
+  stage2:
+    model: "current"
+
+deployment:
+  inference_time: "~20ms"
+  inference_time_hybrid: "~12ms avg"
+  cost_per_article: "$0.00"
+  use_cases:
+    - "Curating evidence that ecosystem recovery works"
+    - "Countering climate doom with documented success stories"
+    - "Tracking policy effectiveness through ecological outcomes"
+    - "ovr.news 'Herstel' tab — recovery stories for Dutch audience"

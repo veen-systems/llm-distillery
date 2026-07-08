@@ -102,7 +102,17 @@ Loaded every session. Topic files loaded on demand via triggers below.
 - Solutions broadening v4 DRAFT scaffolded — `filters/sustainability_technology/v4/` (2026-05-05). Forks signed off: C (broaden ST v3 in place), combine ST v3 + foresight v1 corpora, foresight retired when v4 supersedes ST v3. 7 dims, weight=1.00, calibration batch spec inline (300 articles, ~$0.30). Awaiting prompt drafting before any oracle spend. <!-- verify: test -f filters/sustainability_technology/v4/config.yaml && echo PASS || echo FAIL -->
 - cultural_discovery v5 DEPLOYED 2026-05-31 — resolves #62 discovery-lens leakage. Val MAE 0.697 (v4 was 0.74). Soft-penalty F/G/H/I/K flags (historical_harm_reckoning, commemoration_memorial, perpetrator_biography, decline_loss, launch_announcement). DeepSeek V4 Flash oracle (first non-Gemini lineage in production, ~7x cheaper). End-to-end verified: Pope apology 9.65→2.31, Indus/Sumer 9.12 (gradient preserved). v4 deleted from gpu-server post-verification; still in llm-distillery + git + HF Hub for rollback. **Provisional reference example for ADR-020 methodology** (multi-oracle batch + agent judging) and DeepSeek-as-default-oracle; solutions v4 is the validation case. <!-- verify: ssh gpu-server 'test -d ~/NexusMind/filters/cultural_discovery/v5/model' && echo PASS || echo FAIL -->
 
-## Last Session Recap (2026-07-04)
+## Last Session Recap (2026-07-07/08) — nature_recovery v3 → v4 planning
+
+Big planning session; **no filter shipped** (deliberately paused). Full plan: **`docs/nature_recovery_v4_plan.md`** (read `## 0` first — 4-model review corrections).
+
+- **v3 → v4 pivot.** Started as v3 decline-framing retrain (lld#60/#56); pivoted to **v4** (#70) when the oracle exercise showed delivered protection wins (MPAs / protected acreage) should surface as recovery — a prompt change. #70 filed.
+- **DeepSeek single-oracle re-score DONE** ($3.99, balance ~$0.51): 3,641 corpus+negs + 831 editorial-publish positives → 448 confirmed positives (**high-band 3→36**) + 383 boundary negs. Validated: decline→1.5, positives preserved, DeepSeek correctly demotes Gemini/editorial over-labels (conservative-correct). **Labels gitignored on disk + backed up → `~/backups/nr_v4_labels_20260708.tar.gz`.**
+- **4-model label audit** surfaced: (1) prefilter drops **21.6% of genuine recovery** — English keyword gate on a 20+-language firehose (project-wide: 13 prefilters, only belonging ships a probe); fix = strip to commerce-only + **multilingual e5-small probe**; (2) 6 dims ≈ 1 (PC1=91% halo) → protection can't be elevated by weighting, needs prompt/gatekeeper change; (3) conservation_appeal hard cap = MAE cliff → soft-penalty (cd v5 mechanism); (4) high-band too sparse to calibrate.
+- **4-model PLAN review** (folded into `§0`): **C1** — the runtime `recovery_evidence` gatekeeper (cap 3.5 < 4.0) defeats #70 by construction → decide gatekeeper treatment first; **commit-nothing** risk; **deploy=NO** (no model/gate yet); reorder probe-last; full re-label (not partial); merge via `merge_cd_v5_deepseek_final.py` shape.
+- **Also filed:** ovr.news **#262** (data archiving is lossy/unreliable — why rotted articles were unrecoverable). Scorer `score_deepseek_production.py` generalized (`--config`/`--prompt`). Branch `nature-recovery-v3` (rename to v4 on resume).
+
+### Previous Session Recap (2026-07-04)
 
 Light hygiene session — no code or filter changes. Memory correction + issue triage + framework adoption.
 
@@ -142,7 +152,9 @@ Took ducroq/llm-distillery#62 (cultural_discovery v5 hard-negatives) from issue 
 
 Cost this session: ~$0.07 total (2 calibration runs at $0.01 each + 49-article batch at $0.05).
 
-## Next Session Pickup (updated 2026-07-04 EOD)
+## Next Session Pickup (updated 2026-07-08 EOD)
+
+**🎯 PRIMARY: nature_recovery v4** — execute from **`docs/nature_recovery_v4_plan.md`**. Read its `## 0` first (plan-review corrections). **Decide C1 (gatekeeper vs #70 protection) before spending anything.** Prereqs: back up already at `~/backups/nr_v4_labels_20260708.tar.gz`; re-verify DeepSeek balance + top up $10; fill `huggingface_token`; reload gpu-server SSH; rename branch → `nature-recovery-v4`. Corrected order: strip prefilter → prompt/config revision + **full** re-label → train probe (recall-first) → train student → calibrate → agreement-gate → deploy (deploy is deferred; nothing shipped yet).
 
 **Housekeeping carried from 2026-07-04 (do first, cheap):**
 1. ~~Resolve the phantom-memory-files claim.~~ **DONE 2026-07-05** — all 6 reconstructed + indexed, recap corrected, dangling link resolved. (Optional follow-up: sanity-check `ovr-lens-set-current.md`'s tab mapping against the actual ovr.news repo, which is authoritative.)

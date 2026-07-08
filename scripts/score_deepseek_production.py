@@ -23,6 +23,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 import requests
+import yaml
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
@@ -30,11 +31,14 @@ from ground_truth.text_cleaning import (
     clean_article as clean_article_comprehensive,
     sanitize_text_comprehensive,
 )
+from ground_truth import analysis_field_name
 
 SECRETS_INI = PROJECT_ROOT / "config" / "credentials" / "secrets.ini"
 V5_PROMPT_PATH = PROJECT_ROOT / "filters" / "cultural_discovery" / "v5" / "prompt-compressed.md"
 DEEPSEEK_URL = "https://api.deepseek.com/v1/chat/completions"
 PROMPT_PLACEHOLDER = "[Paste the summary of the article here]"
+
+# Defaults preserve cultural_discovery v5 back-compat; overridden by --config (see main()).
 DIMENSIONS = [
     "discovery_novelty",
     "heritage_significance",
@@ -42,6 +46,18 @@ DIMENSIONS = [
     "human_resonance",
     "evidence_quality",
 ]
+ANALYSIS_FIELD = "cultural_discovery_analysis"
+FILTER_VERSION = "5.0-deepseek-production"
+
+
+def load_filter_spec(config_path: Path):
+    """Derive (dimensions, analysis_field, filter_version, prompt_path) from a filter config.yaml."""
+    cfg = yaml.safe_load(config_path.read_text(encoding="utf-8"))
+    name = cfg["filter"]["name"]
+    version = str(cfg["filter"]["version"])
+    dims = list(cfg["scoring"]["dimensions"].keys())
+    prompt_path = config_path.parent / "prompt-compressed.md"
+    return dims, analysis_field_name(name), f"{version}-deepseek", prompt_path
 
 
 def get_deepseek_key():
@@ -168,10 +184,21 @@ def main():
     parser.add_argument("--model", default="deepseek-chat", help="DeepSeek model name")
     parser.add_argument("--concurrency", type=int, default=15)
     parser.add_argument("--progress-every", type=int, default=50)
+    parser.add_argument("--config", help="Filter config.yaml; derives dimensions, "
+                        "analysis field, version, and prompt path (default: cultural_discovery v5)")
+    parser.add_argument("--prompt", help="Prompt template path (overrides the config-derived one)")
     args = parser.parse_args()
 
+    global DIMENSIONS, ANALYSIS_FIELD, FILTER_VERSION
+    prompt_path = V5_PROMPT_PATH
+    if args.config:
+        DIMENSIONS, ANALYSIS_FIELD, FILTER_VERSION, prompt_path = load_filter_spec(Path(args.config))
+    if args.prompt:
+        prompt_path = Path(args.prompt)
+
     api_key = get_deepseek_key()
-    prompt_template = V5_PROMPT_PATH.read_text(encoding="utf-8")
+    prompt_template = prompt_path.read_text(encoding="utf-8")
+    print(f"Scoring with: dims={DIMENSIONS} | field={ANALYSIS_FIELD} | prompt={prompt_path.name}")
     input_path = Path(args.input)
     output_path = Path(args.output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -245,7 +272,7 @@ def main():
                         for d in DIMENSIONS
                     }
                     analysis["content_type"] = parsed["content_type"]
-                    analysis["filter_version"] = "5.0-deepseek-production"
+                    analysis["filter_version"] = FILTER_VERSION
                     analysis["analyzed_by"] = f"deepseek-{args.model}"
                     analysis["analyzed_at"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
                     record = {
@@ -256,7 +283,7 @@ def main():
                         "source": article.get("source", ""),
                         "published_date": article.get("published_date", ""),
                         "language": article.get("language", ""),
-                        "cultural_discovery_analysis": analysis,
+                        ANALYSIS_FIELD: analysis,
                     }
 
                 f.write(json.dumps(record, ensure_ascii=False) + "\n")
