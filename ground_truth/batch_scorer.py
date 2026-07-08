@@ -36,10 +36,11 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 # Third-party imports
-import anthropic
-import google.generativeai as genai
-from google import genai as genai_new
-from google.genai import types as genai_types
+# Cloud-provider SDKs (anthropic, google-genai) are imported LAZILY at their
+# client-factory / call sites below, so this module loads without them
+# installed — only the selected provider's SDK is needed at runtime (same
+# pattern as the openai path). The old google.generativeai import was unused
+# and has been removed.
 
 # Local imports
 from . import analysis_field_name
@@ -522,6 +523,7 @@ class GenericBatchScorer:
                 raise ValueError(
                     "Claude API key not found. Set ANTHROPIC_API_KEY in environment or secrets.ini"
                 )
+            import anthropic
             return anthropic.Anthropic(api_key=api_key)
 
         elif self.llm_provider in ("gemini", "gemini-flash"):
@@ -532,6 +534,7 @@ class GenericBatchScorer:
             # Use new SDK with thinking disabled to reduce costs
             # Thinking tokens were adding ~80% to output token costs
             self._gemini_model = 'gemini-2.5-flash'
+            from google import genai as genai_new
             return genai_new.Client(api_key=api_key)
 
         elif self.llm_provider == "gemini-pro":
@@ -541,6 +544,7 @@ class GenericBatchScorer:
                 )
             # Use new SDK with thinking disabled
             self._gemini_model = 'gemini-2.5-pro'
+            from google import genai as genai_new
             return genai_new.Client(api_key=api_key)
 
         elif self.llm_provider == "gpt4":
@@ -737,6 +741,7 @@ class GenericBatchScorer:
                     result[0] = message.content[0].text.strip()
 
                 elif self.llm_provider in ["gemini", "gemini-pro", "gemini-flash"]:
+                    from google.genai import types as genai_types
                     # Use new SDK with configurable thinking budget
                     # thinking_budget=0 (default) eliminates ~80% of output tokens
                     # Set higher (1024-8192) for complex reasoning if needed
