@@ -1,5 +1,5 @@
-# Nature Recovery Filter - Version 2.0
-# Detects documented ecosystem recovery when human pressure is removed or restoration is applied
+# Nature Recovery Filter - Version 4.0
+# Detects documented ecosystem recovery OR delivered structural protection (#70)
 # Grounded in restoration ecology, rewilding science, and empirical recovery evidence
 # See DEEP_ROOTS.md for scientific foundations
 
@@ -7,7 +7,7 @@ filter:
   name: nature_recovery
   version: "4.0"
   created: "2026-04-15"
-  updated: "2026-07-07"
+  updated: "2026-07-08"
   description: "Rate content for evidence of measurable ecosystem recovery - nature bouncing back when we stop harming it"
   focus: "Documented ecological outcomes, not technologies, pledges, or doom"
 
@@ -29,6 +29,25 @@ filter:
     - target_samples increased from 2000 to 7000
     - Anti-hallucination rule: evidence must be EXACT QUOTE
 
+  changelog_v4: |
+    v4 (2026-07-08) — #70 protection scope + recall + oracle pivot:
+    - C1(b): recovery_evidence redefined so DELIVERED structural protection
+      (enacted + in-force enforcement / pressure-removal) scores >=3, so
+      protection clears the runtime gatekeeper via labels (gatekeeper code
+      unchanged). Pledges/drafts/paper parks stay 0-2 -> capped.
+    - conservation_appeal: hard max_score 2.0 -> SOFT PENALTY (ADR-015);
+      penalty value PROVISIONAL, to be calibrated on the DeepSeek pilot
+      (DeepSeek under-fires ~2.3x vs Gemini, cd v5 finding).
+    - Individual-animal contrastive example added (zoo/IVF/single rescue is
+      not population recovery; lld#56 cat 4).
+    - Prefilter stripped to commerce-only pass-through + multilingual
+      POSITIVE_PATTERNS (fixes 21.6% English-only recall bug; 123/131
+      blocked positives recovered in self-test).
+    - Oracle -> DeepSeek single-oracle full re-score.
+    - Retained tiers + score_scale_factor for config-schema conformance
+      (REQUIRED_SCORING_KEYS); ADR-016/ADR-014 make them non-product, but the
+      cross-filter schema cleanup is tracked separately, not in v4.
+
 # Per-filter source-type allowlist (NexusMind#189). Excludes items from
 # aggregator-style sources whose identity makes them unsuitable for
 # constructive scoring. shadow_mode flipped to false in Phase 4a after
@@ -40,18 +59,27 @@ source_filter:
 
 prefilter:
   enabled: true
-  expected_pass_rate: 0.20
-  description: "Blocks non-environmental content and pure doom; passes recovery/improvement stories"
+  # v4: commerce-only pass-through (topic/decline gates removed — the model's
+  # job, and English-only, costing 21.6% recall). Effective Stage-1 screening
+  # now lives in the multilingual e5 probe (hybrid_inference), not here.
+  # expected_pass_rate is a loose bootstrap pending probe calibration (step 4).
+  expected_pass_rate: 0.85
+  description: "Commerce-only pass-through (commerce handled upstream in NexusMind); multilingual POSITIVE_PATTERNS force-pass. Topic/decline judgment delegated to the e5 probe + student."
 
 oracle:
-  recommended: gemini-flash
+  recommended: deepseek        # v4: DeepSeek single-oracle full re-score (conservative-correct; ~$0.0013/article with auto-cache)
   candidates:
+    - deepseek
     - gemini-flash
     - gemini-pro
     - claude-sonnet
 
 scoring:
-  score_scale_factor: 1.3708  # 10.0 / 7.29 (calibrated max)
+  # STALE v2 value (10.0/7.29). ADR-014 (percentile normalization) is the primary
+  # scaling path now; score_scale_factor is only a linear fallback and must be
+  # refit from the v4 production CDF post-deploy. Retained (not stripped) because
+  # the config-schema gate requires it (REQUIRED_SCORING_KEYS). TBD post-retrain.
+  score_scale_factor: 1.3708
 
   dimensions:
     # === EVIDENCE DIMENSIONS ===
@@ -219,7 +247,13 @@ scoring:
         - "Corporate-funded restoration with documented ecological outcomes"
 
     conservation_appeal:
-      max_score: 2.0
+      # ADR-015 SOFT PENALTY (converted from hard max_score 2.0, v4 2026-07-08):
+      # subtract penalty from EACH dim, floor 0. Preserves gradient — the cliff-cap
+      # audit found ~69% of conservation_appeal articles scored above the old 2.0
+      # cap. The prompt (Section 4-D) is authoritative and self-applies this; this
+      # block is model-card metadata. PROVISIONAL value: calibrate on the DeepSeek
+      # pilot (DeepSeek under-fires this flag ~2.3x vs Gemini, cd v5 finding).
+      soft_penalty: 2.5
       triggers:
         - "'Donate to save the...', fundraising campaigns"
         - "Awareness campaigns, petition drives, celebrity endorsements"

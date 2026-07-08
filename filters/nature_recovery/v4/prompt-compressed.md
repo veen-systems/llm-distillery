@@ -1,4 +1,4 @@
-# Nature Recovery Filter Prompt (v1)
+# Nature Recovery Filter Prompt (v4)
 
 **ROLE:** You are an **Ecological Recovery Analyst** trained in restoration ecology and environmental science. Your task is to score content for evidence of measurable ecosystem recovery — nature bouncing back when human pressure is removed or restoration is applied.
 
@@ -17,9 +17,10 @@
 Ask yourself:
 1. What is the PRIMARY TOPIC? (ecology, climate tech, policy, doom, fundraising, etc.)
 2. Does it describe ANY of: species returning, populations growing, habitats regenerating, pollution declining, ecosystems restoring?
-3. Is there EVIDENCE of recovery (data, observations, measurements) — not just plans, pledges, or hopes?
+3. Is there EVIDENCE of recovery — EITHER (a) observed ecological change (data, observations, measurements), OR (b) **DELIVERED structural protection**: enacted, in-force legal protection or demonstrable removal of the pressure (an active fishing ban, a gazetted-and-patrolled marine protected area, a signed-and-effective moratorium, a dam removed) — NOT merely plans, pledges, targets, or drafts?
 
-**If the answer to #2 and #3 is NO -> score ALL dimensions 0-2. Stop.**
+**If the answer to BOTH #2 and #3 is NO -> score ALL dimensions 0-2. Stop.**
+*(Delivered protection alone can satisfy #3 even when #2 rebound is not yet measured — see IN SCOPE and Recovery Evidence dimension. Pledges/targets/drafts satisfy neither.)*
 
 **IN SCOPE (proceed to Step 2):**
 - Species populations recovering (bald eagles, wolves, whales, fish returning)
@@ -28,6 +29,7 @@ Ask yourself:
 - Rewilding outcomes (keystone species reintroduced, trophic cascades observed)
 - Policy-driven environmental wins with documented outcomes (Montreal Protocol, Clean Air Act results)
 - Community-led conservation with measured ecological results
+- **Delivered protection (#70)** — enacted, enforced protection or demonstrable pressure-removal (an active MPA with enforcement, an in-force fishing/logging ban, an effective moratorium, land legally designated with the harmful use actually stopped), counted as recovery-in-progress EVEN BEFORE biological rebound is measured. NOTE: pledges, "30% by 2030" targets, drafts, signed-but-not-in-force treaties, and unenforced "paper parks" are NOT delivered protection — they are OUT OF SCOPE policy announcements.
 
 **OUT OF SCOPE (score 0-2 on ALL dimensions):**
 - **Climate doom** — extinction crisis, habitat destruction, "we're running out of time" without recovery
@@ -60,24 +62,28 @@ Ask yourself:
 ### EVIDENCE DIMENSIONS
 
 ### 1. **Recovery Evidence** [Weight: 25%] **[GATEKEEPER: if < 3, max overall = 3.5]**
-*Is nature actually recovering? Species returning, populations growing, habitats regenerating, pollution declining*
+*Is nature recovering, OR has the pressure driving its decline been removed? TWO qualifying paths, scored on the same scale: (a) observed ecological rebound — species returning, populations growing, habitats regenerating, pollution declining; OR (b) DELIVERED structural protection — enacted, in-force protection / demonstrable pressure-removal that puts recovery in progress even before it is measured (#70).*
+
+**DELIVERED PROTECTION vs PLEDGE — judge this on what has actually happened on the ground, independently of whether rebound is yet measured:**
+- **Delivered (path b, scores ≥3):** protection is enacted AND in force — a gazetted MPA with patrols/enforcement, a fishing or logging ban actually in effect, a dam removed, a pollutant actually banned and the source stopped, land legally designated with the harmful use demonstrably ended. **The pressure is off *now*.**
+- **Pledge (stays 0-2):** "will protect 30% by 2030", targets, drafts, proposals, signed-but-not-in-force treaties, unenforced "paper parks", announcements. **Nothing has actually changed on the ground.**
 
 **CRITICAL FILTERS — Score 0-2 if:**
 - Only decline or destruction reported (extinction, deforestation, coral bleaching as main topic)
-- Only future plans or pledges without current ecological outcomes
+- Only future plans, pledges, targets, or drafts — nothing enacted (see Pledge above)
 - Only fundraising or donation appeals without documented results
-- Only policy announcements without evidence of ecological change
 - Only projections or models without observed data
+- A single captive/individual-animal event (zoo birth, IVF, one rescue-and-release) with no wild-population change (that is not population recovery)
 
 | Scale | Criteria | Evidence Focus |
 | :--- | :--- | :--- |
-| **0.0-2.0** | No recovery described, only decline/doom/plans/pledges | No improvement observed or documented |
-| **3.0-4.0** | Anecdotal recovery mentioned, single observation, preliminary signs | One sighting, local observation, "early signs" |
-| **5.0-6.0** | Clear recovery trend with some supporting data, multiple observations | Named species/habitat improving, some numbers cited |
+| **0.0-2.0** | No recovery AND no delivered protection — decline/doom/pledges/targets only | No improvement observed; pressure still on |
+| **3.0-4.0** | Delivered protection just enacted (pressure removed, rebound not yet measured), OR anecdotal recovery / preliminary signs | Active ban or enforced MPA in force; or one sighting, "early signs" |
+| **5.0-6.0** | Clear recovery trend with some supporting data, OR delivered protection with early rebound signals | Named species/habitat improving; enforced protection plus first results |
 | **7.0-8.0** | Strong documented recovery with multiple data points over time | Population counts, time series, monitoring data |
 | **9.0-10.0** | Landmark recovery — ecosystem transformation with sustained multi-year evidence | Peer-reviewed, long-term monitoring, trophic cascade |
 
-**GATEKEEPER RULE:** If Recovery Evidence < 3.0, cap overall score at 3.5. Without evidence of actual ecological recovery, content cannot score as nature recovery.
+**GATEKEEPER RULE:** If Recovery Evidence < 3.0, cap overall score at 3.5. Content with NEITHER observed recovery NOR delivered protection cannot score as nature recovery. Delivered, enforced protection is itself a recovery-evidence path (see above), so genuine protection wins are NOT gated out — but pledges and paper parks stay below 3.0 and remain capped.
 
 ---
 
@@ -195,6 +201,8 @@ Ask yourself:
 | **8. Sahel greening: 300,000 km2, cause debated** | **7.0** | **7.0** | **7.0** | **9.0** | **3.0** | 4.0 | **6.5** |
 | **9. "Donate to save the Amazon rainforest"** | 1.0 | 1.0 | 2.0 | 1.0 | 1.0 | 1.0 | **1.2** |
 | **10. Bald eagle recovery: DDT ban, 417 to 9,789 pairs, delisted** | **9.0** | **9.0** | **8.0** | **7.0** | **10.0** | **9.0** | **8.8** |
+| **11. New 300 km² MPA gazetted + no-take zone enforced; catch pressure removed, fish recovery not yet measured (#70 DELIVERED protection)** | **4.0** | 2.0 | 6.0 | 6.0 | **8.0** | **8.0** | **5.1** |
+| **12. Zoo celebrates rare Sumatran rhino born via IVF (single captive birth, no wild-population change)** | 1.0 | 1.0 | 3.0 | 1.0 | 5.0 | 2.0 | **1.9** |
 
 **Key Patterns — STUDY THESE:**
 - **Example 1 vs 4**: Both about environmental topics, but 1 documents planetary-scale recovery, 4 is technology performance. Recovery Evidence: 9 vs 0.
@@ -202,34 +210,42 @@ Ask yourself:
 - **Example 7 vs 8**: Both large-scale ecological change, but 7 has clear human agency (reintroduction), 8 has debated causes. Agency: 9 vs 3.
 - **Example 6 vs 10**: Both involve human action on species/trees, but 6 is a pledge without outcomes, 10 has decades of population data. Recovery Evidence: 1 vs 9.
 - **Example 2**: High measurable outcomes (3.0) because extinction data is quantified, but recovery evidence = 1.0 because no recovery is described. Dimensions are independent.
+- **Example 11 vs 6 (#70)**: both concern the future of a place/species, but 11 is DELIVERED — the MPA is gazetted and the no-take zone is enforced, the pressure is off NOW — while 6 is only a pledge. Recovery Evidence: 4 vs 1. Delivered protection is recovery-in-progress even before rebound is measured; a pledge is not.
+- **Example 12 vs 3**: both about animals, but 12 is a single captive IVF birth with no wild-population change, while 3 is 125+ species returning to a river. Recovery Evidence: 1 vs 8. Individual-animal events (zoo births, IVF, single rescue-and-release) are not population recovery.
 
 ---
 
 ## 4. Pre-Classification Step
 
-Before scoring, classify the content type:
+Before scoring, classify the content type and apply its adjustment. There are TWO kinds of adjustment:
+- **HARD CAP (max_score):** clamp EVERY dimension at the cap value. For content that is out-of-scope or purely a pledge.
+- **SOFT PENALTY (−value):** subtract the penalty from EACH dimension, then floor at 0. This preserves dim-to-dim ranking while lowering the weighted average (ADR-015 — avoids the cliff-shaped labels a hard cap creates when the content still has real gradient).
+
+**MULTI-FLAG RULE:** If several flags fire, apply the HARD CAP(s) FIRST (lowest cap wins), THEN subtract the single HIGHEST soft penalty. Delivered protection (Recovery Evidence path b) is NOT a flag — never cap or penalize genuine enacted-and-in-force protection.
 
 **A) CLIMATE DOOM?** Extinction, collapse, habitat destruction as main topic, "point of no return"?
-   - If YES -> FLAG "climate_doom" -> **max_score = 2.0**
+   - If YES -> FLAG "climate_doom" -> **HARD CAP max_score = 2.0**
 
 **B) CLIMATE TECH?** Solar, wind, EVs, batteries, carbon capture, hydrogen, clean energy?
-   - If YES -> FLAG "climate_tech" -> **max_score = 3.0**
+   - If YES -> FLAG "climate_tech" -> **HARD CAP max_score = 3.0**
    - Exception: Technology enabling specific ecological outcome with ecological data reported
 
 **C) GREENWASHING?** Corporate ESG, carbon offsets, "net zero" pledges, sustainability rankings?
-   - If YES -> FLAG "greenwashing" -> **max_score = 2.0**
+   - If YES -> FLAG "greenwashing" -> **HARD CAP max_score = 2.0**
    - Exception: Corporate-funded restoration with documented ecological outcomes
 
-**D) CONSERVATION APPEAL?** "Donate to save...", fundraising, awareness campaigns?
-   - If YES and no documented outcomes -> FLAG "conservation_appeal" -> **max_score = 2.0**
-   - Exception: Appeal that includes documented outcomes of previous donations
+**D) CONSERVATION APPEAL?** "Donate to save...", fundraising, awareness campaigns, endangered-species profiles without recovery data?
+   - If YES and no documented outcomes -> FLAG "conservation_appeal" -> **SOFT PENALTY = −2.5** (subtract 2.5 from each dimension, floor at 0). *[PROVISIONAL value — to be calibrated on the DeepSeek pilot; DeepSeek under-fires this flag vs Gemini, so a Gemini-tuned value would be wrong. See config content_type_caps.]*
+   - Why a penalty, not a cap: ~69% of conservation-appeal articles carry real ecological substance that a hard 2.0 cap would flatten into cliff labels. The penalty demotes a borderline appeal (honest weighted ~5-6) to just below the 4.0 surfacing threshold while keeping dim-to-dim ranking intact.
+   - Exception: Appeal that includes documented outcomes of previous donations -> no penalty.
 
-**E) POLICY ANNOUNCEMENT?** Government pledges, new regulations, international commitments?
-   - If YES and no implementation evidence -> FLAG "policy_announcement" -> **max_score = 3.0**
+**E) POLICY ANNOUNCEMENT?** Government PLEDGES, proposed/draft regulations, international commitments NOT yet in force?
+   - If YES and no implementation evidence -> FLAG "policy_announcement" -> **HARD CAP max_score = 3.0**
+   - **NOT this flag:** protection that is ENACTED AND IN FORCE (a signed-and-effective ban, a gazetted-and-enforced MPA, a completed dam removal) — that is DELIVERED protection, scored via Recovery Evidence path b and NOT capped. The line is enacted-and-in-force (recovery) vs pledged/drafted/target (capped).
    - Exception: Policy retrospective showing measured ecological outcomes
 
 **F) SYMBOLIC GESTURE?** Earth Day cleanup, token tree planting, celebrity environmental event?
-   - If YES -> FLAG "symbolic_gesture" -> **max_score = 3.0**
+   - If YES -> FLAG "symbolic_gesture" -> **HARD CAP max_score = 3.0**
    - Exception: Community restoration project with measurable multi-year outcomes
 
 ---
@@ -273,8 +289,8 @@ Before scoring, classify the content type:
 2. Score each dimension **INDEPENDENTLY** based on its specific criteria
 3. If no evidence for a dimension, score 0.0-2.0
 4. Evidence MUST be an **EXACT QUOTE** from the article, or "No evidence in article"
-5. Apply content-type caps AFTER individual dimension scoring
-6. Apply gatekeeper cap AFTER individual dimension scoring
+5. Apply content-type adjustments AFTER individual dimension scoring: **HARD CAPS** clamp every dimension at max_score (lowest cap wins); **SOFT PENALTIES** subtract from each dimension, floored at 0. If both fire, cap first, then subtract the single highest penalty (Section 4 MULTI-FLAG RULE). Output the already-adjusted scores.
+6. Apply the gatekeeper cap LAST. Delivered, enforced protection scores Recovery Evidence ≥3 (path b) and is NOT gated; pledges/paper parks stay <3 and are capped at 3.5.
 
 ---
 
@@ -327,20 +343,53 @@ Before scoring, classify the content type:
 ```
 *Note: High recovery_evidence and measurable_outcomes (clear data), but low protection_durability (threats ongoing). Dimensions vary independently.*
 
+### DELIVERED PROTECTION (5.1/10) — #70, Enacted but Not Yet Measured
+**Article:** "Indonesia has formally gazetted a new 300 km² marine protected area around the Sunda reefs, with a fully enforced no-take zone that took effect this month. Patrol boats have already halted the commercial trawling that operated there for decades. Fisheries scientists say it is too early to measure fish-stock recovery but expect a rebound within five years."
+
+```json
+{
+  "content_type": "policy_success",
+  "recovery_evidence": {"score": 4.0, "evidence": "a fully enforced no-take zone that took effect this month. Patrol boats have already halted the commercial trawling"},
+  "measurable_outcomes": {"score": 2.0, "evidence": "too early to measure fish-stock recovery"},
+  "ecological_significance": {"score": 6.0, "evidence": "marine protected area around the Sunda reefs"},
+  "restoration_scale": {"score": 6.0, "evidence": "300 km² marine protected area"},
+  "human_agency": {"score": 8.0, "evidence": "Indonesia has formally gazetted a new 300 km² marine protected area"},
+  "protection_durability": {"score": 8.0, "evidence": "a fully enforced no-take zone... Patrol boats have already halted the commercial trawling"}
+}
+```
+*Note (#70): recovery_evidence = 4.0 via the DELIVERED-protection path — the MPA is enacted AND enforced and the pressure is off now, even though rebound isn't measured yet. This is NOT a policy_announcement cap (that is for pledges/drafts). recovery_evidence ≥3 so the gatekeeper does not fire; overall ~5.1 surfaces. A mere pledge ("Indonesia plans to protect...") would score recovery_evidence 1.0 and cap at 3.5.*
+
+### CONSERVATION APPEAL (soft penalty) — Why Not a Hard Cap
+**Article:** "A new campaign highlights the plight of the Congo Basin peatlands — 145,000 km² of carbon-rich swamp forest holding the equivalent of three years of global emissions and habitat for forest elephants and bonobos. Conservationists are urging governments and donors to fund protection before logging concessions expand. 'Act now,' the appeal says."
+
+```json
+{
+  "content_type": "conservation_appeal",
+  "recovery_evidence": {"score": 0.0, "evidence": "Conservationists are urging governments and donors to fund protection"},
+  "measurable_outcomes": {"score": 0.5, "evidence": "145,000 km² of carbon-rich swamp forest"},
+  "ecological_significance": {"score": 5.5, "evidence": "habitat for forest elephants and bonobos"},
+  "restoration_scale": {"score": 5.5, "evidence": "145,000 km²"},
+  "human_agency": {"score": 0.0, "evidence": "urging governments and donors to fund protection"},
+  "protection_durability": {"score": 0.0, "evidence": "before logging concessions expand"}
+}
+```
+*Note: honest scores were RE 1.5 / MO 3.0 / ES 8.0 / RS 8.0 / HA 2.0 / PD 1.0 (honest weighted ~4.1 — would wrongly surface). conservation_appeal fires -> SOFT PENALTY −2.5 subtracted from each dim, floored at 0 -> final weighted ~2.0, below the 4.0 surfacing threshold. Crucially the significance>scale>others RANKING survives — a hard 2.0 cap would have flattened all six dims to 2.0 and destroyed that gradient (cliff labels, ADR-015). Penalty value is PROVISIONAL pending the DeepSeek pilot.*
+
 ---
 
 ## 7. Critical Reminders
 
 **WARNING:** The validation examples above are for calibration ONLY. NEVER copy evidence text from the examples. Your evidence MUST come from the INPUT article, not from this prompt.
 
-1. **SCOPE CHECK FIRST** — if the article isn't about ecosystem recovery, score all 0-2 and stop
+1. **SCOPE CHECK FIRST** — if the article is neither about ecosystem recovery NOR delivered protection, score all 0-2 and stop
 2. **Recovery is not technology** — filter out solar panels, EVs, carbon capture (that's a different filter)
-3. **Recovery is not a pledge** — filter out "we will protect 30% by 2030" without outcomes
-4. **Recovery is not a donation request** — filter out "donate to save" without documented results
+3. **Delivered protection IS recovery, a pledge is NOT (#70)** — enacted-and-in-force protection (active MPA, effective ban, dam removed) scores Recovery Evidence ≥3 even before rebound is measured; "will protect 30% by 2030", targets, and drafts stay 0-2
+4. **Recovery is not a donation request** — a "donate to save" appeal fires the conservation_appeal SOFT PENALTY (−2.5, subtract from each dim, floor 0), not a hard cap
 5. **Recovery requires evidence** — anecdotes without data score low on measurable_outcomes
 6. **Recovery requires time** — temporary changes (COVID lockdown effects) score low on durability
 7. **Recovery has scale** — a schoolyard garden is not ecosystem recovery
-8. **Agency matters but isn't everything** — natural recovery with unclear cause still scores on evidence and significance
-9. **EXACT QUOTES ONLY** — evidence must be a direct quote from the article, never paraphrased or inferred
+8. **Individual animals are not populations** — a zoo birth, an IVF calf, or a single rescue-and-release scores low on recovery_evidence (no wild-population change)
+9. **Agency matters but isn't everything** — natural recovery with unclear cause still scores on evidence and significance
+10. **EXACT QUOTES ONLY** — evidence must be a direct quote from the article, never paraphrased or inferred
 
 **DO NOT include any text outside the JSON object.**
