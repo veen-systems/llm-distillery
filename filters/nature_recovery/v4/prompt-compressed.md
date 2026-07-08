@@ -65,7 +65,7 @@ Ask yourself:
 *Is nature recovering, OR has the pressure driving its decline been removed? TWO qualifying paths, scored on the same scale: (a) observed ecological rebound — species returning, populations growing, habitats regenerating, pollution declining; OR (b) DELIVERED structural protection — enacted, in-force protection / demonstrable pressure-removal that puts recovery in progress even before it is measured (#70).*
 
 **DELIVERED PROTECTION vs PLEDGE — judge this on what has actually happened on the ground, independently of whether rebound is yet measured:**
-- **Delivered (path b, scores ≥3):** protection is enacted AND in force — a gazetted MPA with patrols/enforcement, a fishing or logging ban actually in effect, a dam removed, a pollutant actually banned and the source stopped, land legally designated with the harmful use demonstrably ended. **The pressure is off *now*.**
+- **Delivered (path b, scores ≥3):** protection is enacted AND in force — a gazetted MPA with patrols/enforcement, a fishing or logging ban actually in effect, a dam removed, a pollutant actually banned and the source stopped, land legally designated with the harmful use demonstrably ended. **The pressure is off *now*.** This must be **structural / durable** (legal designation, enforced ban, permanent removal) — a **temporary or incidental** cessation (COVID lockdown, seasonal moratorium, one-off factory shutdown) is NOT delivered protection and scores 0-2 on this path.
 - **Pledge (stays 0-2):** "will protect 30% by 2030", targets, drafts, proposals, signed-but-not-in-force treaties, unenforced "paper parks", announcements. **Nothing has actually changed on the ground.**
 
 **CRITICAL FILTERS — Score 0-2 if:**
@@ -193,14 +193,14 @@ Ask yourself:
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | **1. Ozone layer healing: Montreal Protocol, 40-year trend, on track for 2066** | **9.0** | **9.0** | **9.0** | **10.0** | **9.0** | **9.0** | **9.2** |
 | **2. "Extinction crisis: 1 million species at risk"** | 1.0 | 3.0 | 1.0 | 1.0 | 1.0 | 1.0 | **1.4** |
-| **3. Fish returning to Thames, 125+ species documented** | **8.0** | **7.0** | **7.0** | 5.0 | **7.0** | 6.0 | **7.0** |
+| **3. Fish returning to Thames, 125+ species documented** | **8.0** | **7.0** | **7.0** | 5.0 | **7.0** | 6.0 | **6.9** |
 | **4. "New solar panel breaks efficiency record"** | 0.0 | 1.0 | 0.0 | 0.0 | 1.0 | 1.0 | **0.4** |
 | **5. COVID lockdown: "dolphins in Venice canals"** | 4.0 | 3.0 | 3.0 | 3.0 | 3.0 | **0.0** | **2.9** |
-| **6. "Company pledges to plant 1 million trees by 2030"** | 1.0 | 1.0 | 2.0 | 3.0 | 2.0 | 2.0 | **1.6** |
-| **7. Yellowstone wolves: trophic cascade, rivers changed, 25 years** | **9.0** | **8.0** | **10.0** | 6.0 | **9.0** | **8.0** | **8.6** |
-| **8. Sahel greening: 300,000 km2, cause debated** | **7.0** | **7.0** | **7.0** | **9.0** | **3.0** | 4.0 | **6.5** |
+| **6. "Company pledges to plant 1 million trees by 2030"** | 1.0 | 1.0 | 2.0 | 3.0 | 2.0 | 2.0 | **1.7** |
+| **7. Yellowstone wolves: trophic cascade, rivers changed, 25 years** | **9.0** | **8.0** | **10.0** | 6.0 | **9.0** | **8.0** | **8.5** |
+| **8. Sahel greening: 300,000 km2, cause debated** | **7.0** | **7.0** | **7.0** | **9.0** | **3.0** | 4.0 | **6.6** |
 | **9. "Donate to save the Amazon rainforest"** | 1.0 | 1.0 | 2.0 | 1.0 | 1.0 | 1.0 | **1.2** |
-| **10. Bald eagle recovery: DDT ban, 417 to 9,789 pairs, delisted** | **9.0** | **9.0** | **8.0** | **7.0** | **10.0** | **9.0** | **8.8** |
+| **10. Bald eagle recovery: DDT ban, 417 to 9,789 pairs, delisted** | **9.0** | **9.0** | **8.0** | **7.0** | **10.0** | **9.0** | **8.6** |
 | **11. New 300 km² MPA gazetted + no-take zone enforced; catch pressure removed, fish recovery not yet measured (#70 DELIVERED protection)** | **4.0** | 2.0 | 6.0 | 6.0 | **8.0** | **8.0** | **5.1** |
 | **12. Zoo celebrates rare Sumatran rhino born via IVF (single captive birth, no wild-population change)** | 1.0 | 1.0 | 3.0 | 1.0 | 5.0 | 2.0 | **1.9** |
 
@@ -289,14 +289,14 @@ Before scoring, classify the content type and apply its adjustment. There are TW
 2. Score each dimension **INDEPENDENTLY** based on its specific criteria
 3. If no evidence for a dimension, score 0.0-2.0
 4. Evidence MUST be an **EXACT QUOTE** from the article, or "No evidence in article"
-5. Apply content-type adjustments AFTER individual dimension scoring: **HARD CAPS** clamp every dimension at max_score (lowest cap wins); **SOFT PENALTIES** subtract from each dimension, floored at 0. If both fire, cap first, then subtract the single highest penalty (Section 4 MULTI-FLAG RULE). Output the already-adjusted scores.
-6. Apply the gatekeeper cap LAST. Delivered, enforced protection scores Recovery Evidence ≥3 (path b) and is NOT gated; pledges/paper parks stay <3 and are capped at 3.5.
+5. Content-type adjustments: **SOFT PENALTIES** (conservation_appeal) — subtract the penalty from each dimension, floor at 0, and EMIT the penalized scores (the penalty must be reflected in the dimension scores you output). **HARD CAPS** (climate_doom / climate_tech / greenwashing / policy_announcement / symbolic_gesture) — score each dimension on its merits and emit those raw; the cap is a postprocessing ceiling on the OVERALL score, you do NOT clamp individual dimensions yourself. If both apply, emit the soft-penalized dimensions (the hard cap is enforced downstream).
+6. The gatekeeper (recovery_evidence < 3 → overall capped at 3.5) and any hard cap are applied in POSTPROCESSING, not by you. Delivered, enforced protection scores Recovery Evidence ≥3 (path b) so it is not gated; pledges/paper parks stay <3.
 
 ---
 
 ## 6. Validation Examples
 
-### HIGH SCORE (8.5/10) — Landmark Species Recovery
+### HIGH SCORE (8.6/10) — Landmark Species Recovery
 **Article:** "Thirty years after the DDT ban, bald eagle populations have surged from 417 nesting pairs in 1963 to 9,789 pairs by 2006. The U.S. Fish and Wildlife Service officially delisted the species in 2007. 'This is the greatest conservation success story in American history,' said agency director Dale Hall. Eagle populations continue to grow, with over 300,000 individuals estimated in 2024."
 
 ```json
@@ -311,7 +311,7 @@ Before scoring, classify the content type and apply its adjustment. There are TW
 }
 ```
 
-### LOW SCORE (1.2/10) — Climate Doom
+### LOW SCORE (raw ~1.3/10, hard-capped to ≤2.0) — Climate Doom
 **Article:** "A new UN report warns that over 1 million species face extinction within decades. Deforestation in the Amazon reached record levels last year, with 13,000 square kilometers lost. 'We are eroding the very foundations of our economies, livelihoods, and food security,' said the IPBES chair."
 
 ```json
@@ -325,7 +325,7 @@ Before scoring, classify the content type and apply its adjustment. There are TW
   "protection_durability": {"score": 0.0, "evidence": "No evidence in article"}
 }
 ```
-*Note: measurable_outcomes = 3.0 because decline IS quantified ("13,000 square kilometers"), but recovery_evidence = 1.0 because no recovery is described. Content-type cap (climate_doom) -> max_score = 2.0.*
+*Note: dimensions are emitted RAW (per Rule 5, hard caps are NOT self-applied) — measurable_outcomes = 3.0 because decline IS quantified ("13,000 square kilometers"), recovery_evidence = 1.0 because no recovery is described. The raw weighted average is ~1.3; the climate_doom hard cap (max_score 2.0) and the recovery_evidence gatekeeper are applied downstream, so it cannot surface regardless.*
 
 ### MEDIUM SCORE (5.8/10) — Emerging Recovery
 **Article:** "Five years after the fishing moratorium in the Adriatic Marine Reserve, researchers report a 40% increase in commercial fish biomass. Grouper and sea bass populations have tripled in the protected zone, though scientists warn that illegal trawling along the reserve borders threatens long-term gains. 'The results are encouraging but fragile,' said marine biologist Dr. Rossi."

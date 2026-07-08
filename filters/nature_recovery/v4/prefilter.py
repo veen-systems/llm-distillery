@@ -69,17 +69,21 @@ class NatureRecoveryPreFilterV4(BasePreFilter):
     # partial-word (`recuper` matches recupera/recuperación) and intentionally
     # broad; base counts total matches and bypasses pattern exclusions when the
     # count reaches POSITIVE_THRESHOLD.
+    # NOTE: leading \b only — NO trailing \b. These are word-START stems meant to
+    # match inflected forms (recover->recovery/recovering, recuper->recuperación),
+    # so a trailing boundary would defeat the purpose (\brecover\b does NOT match
+    # "recovery"). Verified in test_prefilter.
     POSITIVE_PATTERNS = [
         # English
-        r'\b(recover|restor|rebound|rewild|reintroduc|bounce back)\b',
+        r'\b(recover|restor|rebound|rewild|reintroduc|bounce back)',
         # Spanish / Portuguese
-        r'\b(recuper|restaur|reintroduc|se recupera|rehabilitaç|rehabilitac)\b',
+        r'\b(recuper|restaur|reintroduc|se recupera|rehabilitaç|rehabilitac)',
         # French
-        r'\b(rétabli|restaur|réintroduc|se rétablit|renaturation)\b',
+        r'\b(rétabli|restaur|réintroduc|se rétablit|renaturation)',
         # German / Dutch
-        r'\b(erholung|wiederherstell|renaturierung|herstel|wordt hersteld|terugkeer)\b',
+        r'\b(erholung|wiederherstell|renaturierung|herstel|wordt hersteld|terugkeer)',
         # Italian
-        r'\b(ripristin|si riprende|reintroduzione)\b',
+        r'\b(ripristin|si riprende|reintroduzione)',
     ]
     POSITIVE_THRESHOLD = 2
 
@@ -150,6 +154,16 @@ def test_prefilter():
         print(f"\nTest {i}: {status} - {test['description']}")
         print(f"  Expected: {expected}")
         print(f"  Got:      {result}")
+
+    # POSITIVE_PATTERNS must match INFLECTED forms across languages — regression
+    # guard for the trailing-\b bug that made stems match only bare words.
+    _pos = [re.compile(p, re.IGNORECASE) for p in prefilter.POSITIVE_PATTERNS]
+    _inflected = ["recovery", "recovering", "restoration", "recuperación",
+                  "restauración", "réintroduction", "wiederherstellung", "ripristino"]
+    _missing = [w for w in _inflected if not any(p.search(w) for p in _pos)]
+    print(f"\nPOSITIVE_PATTERNS inflection check: "
+          f"{'PASS' if not _missing else 'FAIL — unmatched: ' + str(_missing)}")
+    assert not _missing, f"POSITIVE_PATTERNS fail to match inflected forms: {_missing}"
 
     print("\n" + "=" * 60)
     print(f"Results: {passed}/{passed + failed} tests passed")

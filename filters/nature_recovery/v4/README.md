@@ -1,6 +1,6 @@
 # Nature Recovery Filter
 
-**Version**: 2.0
+**Version**: 4.0
 **Status**: Deployed (HuggingFace Hub, gpu-server, sadalsuud)
 **Philosophy**: "Nature recovers when we let it, and faster than we expect"
 **Purpose**: Detect documented ecosystem recovery — hope grounded in data, not aspiration

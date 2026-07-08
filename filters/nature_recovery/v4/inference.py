@@ -1,5 +1,5 @@
 """
-Nature Recovery Filter v2 - Production Inference Pipeline
+Nature Recovery Filter v4 - Production Inference Pipeline
 
 Scores articles for evidence of measurable ecosystem recovery:
 species rebounds, habitat restoration, pollution reversal.
@@ -8,12 +8,12 @@ Pipeline: Article -> Prefilter -> Model -> Calibration -> Gatekeeper -> Tier
 
 Usage:
     # Python API
-    from filters.nature_recovery.v2.inference import NatureRecoveryScorer
+    from filters.nature_recovery.v4.inference import NatureRecoveryScorer
     scorer = NatureRecoveryScorer()
     result = scorer.score_article(article)
 
     # CLI
-    python filters/nature_recovery/v2/inference.py --input articles.jsonl --output results.jsonl
+    python filters/nature_recovery/v4/inference.py --input articles.jsonl --output results.jsonl
 """
 
 import json
@@ -22,7 +22,7 @@ from pathlib import Path
 from typing import Optional
 
 from filters.common.model_loading import load_lora_local
-from filters.nature_recovery.v2.base_scorer import BaseNatureRecoveryScorer
+from filters.nature_recovery.v4.base_scorer import BaseNatureRecoveryScorer
 
 logger = logging.getLogger(__name__)
 

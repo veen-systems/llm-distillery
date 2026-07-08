@@ -1,5 +1,5 @@
 """
-Nature Recovery Filter v2 - Hybrid Inference Pipeline
+Nature Recovery Filter v4 - Hybrid Inference Pipeline
 
 Two-stage scorer that uses embedding + MLP probe for fast screening (Stage 1)
 and the trained Gemma-3-1B model for precise scoring (Stage 2).
@@ -10,14 +10,14 @@ below threshold are classified as LOW without running the expensive model.
 Stage 2 (~19ms): Full fine-tuned model scoring for articles that pass Stage 1.
 
 Usage:
-    from filters.nature_recovery.v2.inference_hybrid import NatureRecoveryHybridScorer
+    from filters.nature_recovery.v4.inference_hybrid import NatureRecoveryHybridScorer
 
     scorer = NatureRecoveryHybridScorer()
     result = scorer.score_article(article)
     # result["stage_used"] -> "stage1_low" or "stage2"
 
     # CLI
-    python filters/nature_recovery/v2/inference_hybrid.py --input articles.jsonl --output results.jsonl
+    python filters/nature_recovery/v4/inference_hybrid.py --input articles.jsonl --output results.jsonl
 """
 
 import json
@@ -26,7 +26,7 @@ from pathlib import Path
 from typing import Dict, Optional
 
 from filters.common.hybrid_scorer import HybridScorer
-from filters.nature_recovery.v2.inference import NatureRecoveryScorer
+from filters.nature_recovery.v4.inference import NatureRecoveryScorer
 
 logger = logging.getLogger(__name__)
 
