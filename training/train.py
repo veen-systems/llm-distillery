@@ -238,7 +238,7 @@ class FilterModel(torch.nn.Module):
         return outputs
 
 
-def compute_metrics(predictions: torch.Tensor, labels: torch.Tensor, dimension_names: List[str]) -> Dict:
+def compute_metrics(predictions: torch.Tensor, labels: torch.Tensor, dimension_names: List[str], dimension_weights: List[float] = None) -> Dict:
     """
     Compute evaluation metrics per dimension.
 
@@ -270,6 +270,60 @@ def compute_metrics(predictions: torch.Tensor, labels: torch.Tensor, dimension_n
         metrics[f"{dim_name}_mae"] = dim_mae
         metrics[f"{dim_name}_rmse"] = dim_rmse
 
+    # --- Needle-in-haystack RANKING metrics (SETTLED: docs/agents/
+    # filter-development-guide.md Issue 4, verified nature_recovery v1->v2).
+    # Aggregate MAE is misleading on an ~85% floor (a floor-predictor wins it),
+    # so these are the metrics that judge model quality. Computed on the
+    # weighted-average score (per-dim weights from config).
+    if dimension_weights is not None:
+        import math
+        w = torch.tensor(dimension_weights, dtype=predictions.dtype)
+        pred_wa = (predictions * w).sum(dim=1)
+        true_wa = (labels * w).sum(dim=1)
+        n = int(pred_wa.shape[0])
+        MEDIUM = 4.0  # medium/surfacing tier boundary (base_scorer TIER_THRESHOLDS)
+
+        # Recall@k: overlap of top-k predicted with top-k true, divided by k
+        # ("finds X% of the top-k articles" — v1/STATUS.md definition).
+        for k in (10, 20, 50):
+            kk = min(k, n)
+            if kk == 0:
+                continue
+            top_pred = set(torch.topk(pred_wa, kk).indices.tolist())
+            top_true = set(torch.topk(true_wa, kk).indices.tolist())
+            metrics[f"recall_at_{k}"] = len(top_pred & top_true) / kk
+
+        # NDCG@k: true_wa as graded relevance, ranked by predicted_wa
+        def _ndcg(k):
+            kk = min(k, n)
+            if kk == 0:
+                return 0.0
+            order = torch.topk(pred_wa, kk).indices.tolist()
+            dcg = sum(true_wa[idx].item() / math.log2(r + 2) for r, idx in enumerate(order))
+            ideal = torch.topk(true_wa, kk).values.tolist()
+            idcg = sum(g / math.log2(r + 2) for r, g in enumerate(ideal))
+            return dcg / idcg if idcg > 0 else 0.0
+        metrics["ndcg_at_10"] = _ndcg(10)
+        metrics["ndcg_at_20"] = _ndcg(20)
+
+        # FN-rate / recall on MEDIUM+ — true positives predicted below threshold
+        # ("misses X% of positives" — the recall-side product metric).
+        pos = true_wa >= MEDIUM
+        n_pos = int(pos.sum().item())
+        if n_pos > 0:
+            fn = int(((pred_wa < MEDIUM) & pos).sum().item())
+            metrics["fn_rate_medium"] = fn / n_pos
+            metrics["recall_medium"] = 1.0 - fn / n_pos
+            metrics["n_positives"] = n_pos
+
+        # Per-band MAE on the weighted average (diagnostic; H4 top-band sparsity)
+        for lo, hi in ((0, 2), (2, 4), (4, 6), (6, 8), (8, 10.01)):
+            m = (true_wa >= lo) & (true_wa < hi)
+            cnt = int(m.sum().item())
+            if cnt > 0:
+                metrics[f"mae_band_{lo}_{int(hi)}"] = torch.mean(torch.abs(pred_wa[m] - true_wa[m])).item()
+                metrics[f"n_band_{lo}_{int(hi)}"] = cnt
+
     return metrics
 
 
@@ -281,6 +335,7 @@ def train_epoch(
     device,
     dimension_names: List[str],
     use_sample_weights: bool = False,
+    dimension_weights: List[float] = None,
 ):
     """Train for one epoch."""
     model.train()
@@ -341,13 +396,13 @@ def train_epoch(
     avg_loss = total_loss / len(dataloader)
     all_predictions = torch.cat(all_predictions, dim=0)
     all_labels = torch.cat(all_labels, dim=0)
-    metrics = compute_metrics(all_predictions, all_labels, dimension_names)
+    metrics = compute_metrics(all_predictions, all_labels, dimension_names, dimension_weights)
     metrics["loss"] = avg_loss
 
     return metrics
 
 
-def evaluate(model, dataloader, device, dimension_names: List[str]):
+def evaluate(model, dataloader, device, dimension_names: List[str], dimension_weights: List[float] = None):
     """Evaluate model on validation/test set."""
     model.eval()
 
@@ -381,7 +436,7 @@ def evaluate(model, dataloader, device, dimension_names: List[str]):
     avg_loss = total_loss / len(dataloader)
     all_predictions = torch.cat(all_predictions, dim=0)
     all_labels = torch.cat(all_labels, dim=0)
-    metrics = compute_metrics(all_predictions, all_labels, dimension_names)
+    metrics = compute_metrics(all_predictions, all_labels, dimension_names, dimension_weights)
     metrics["loss"] = avg_loss
 
     return metrics
@@ -666,6 +721,7 @@ def main():
                 training_history = json.load(f)
             start_epoch = training_history[-1]["epoch"]
             best_val_mae = training_history[-1]["val"]["mae"]
+            best_val_recall = training_history[-1]["val"].get("recall_at_20", -1.0)
             print(f"  Resuming from epoch {start_epoch} (best val MAE: {best_val_mae:.4f})")
         else:
             training_history = []
@@ -676,6 +732,7 @@ def main():
         model = FilterModel(args.model_name, num_dimensions, use_gradient_checkpointing=True, use_fp16=False)
         training_history = []
         best_val_mae = float("inf")
+        best_val_recall = -1.0
 
     # Set pad_token_id in model config to match tokenizer
     if model.base_model.config.pad_token_id is None and tokenizer.pad_token_id is not None:
@@ -723,6 +780,7 @@ def main():
             device,
             dimension_names,
             use_sample_weights=args.sample_weight_scale > 0,
+            dimension_weights=dimension_weights_list,
         )
 
         print(f"\nTraining metrics:")
@@ -731,12 +789,17 @@ def main():
         print(f"  RMSE: {train_metrics['rmse']:.4f}")
 
         # Validate
-        val_metrics = evaluate(model, val_dataloader, device, dimension_names)
+        val_metrics = evaluate(model, val_dataloader, device, dimension_names, dimension_weights_list)
 
         print(f"\nValidation metrics:")
         print(f"  Loss: {val_metrics['loss']:.4f}")
-        print(f"  MAE: {val_metrics['mae']:.4f}")
+        print(f"  MAE: {val_metrics['mae']:.4f}  (aggregate — misleading on a needle filter)")
         print(f"  RMSE: {val_metrics['rmse']:.4f}")
+        if "recall_at_20" in val_metrics:
+            print(f"  Recall@20: {val_metrics['recall_at_20']:.3f} | Recall@10: {val_metrics.get('recall_at_10', float('nan')):.3f} "
+                  f"| NDCG@10: {val_metrics.get('ndcg_at_10', float('nan')):.3f}")
+            print(f"  FN-rate MEDIUM+: {val_metrics.get('fn_rate_medium', float('nan')):.3f} "
+                  f"(recall {val_metrics.get('recall_medium', float('nan')):.3f} on {val_metrics.get('n_positives', 0)} positives)")
 
         # Save metrics
         epoch_history = {
@@ -746,10 +809,22 @@ def main():
         }
         training_history.append(epoch_history)
 
-        # Save best model
+        # Checkpoint selection: RECALL@20 (needle metric) when available, NOT
+        # aggregate MAE — a floor-predictor wins MAE on an ~85% floor (settled:
+        # filter-development-guide Issue 4). Falls back to MAE if weights absent.
+        val_recall = val_metrics.get("recall_at_20")
         if val_metrics["mae"] < best_val_mae:
             best_val_mae = val_metrics["mae"]
-            print(f"\n✓ New best validation MAE: {best_val_mae:.4f}")
+        if val_recall is not None:
+            improved = val_recall > best_val_recall
+        else:
+            improved = val_metrics["mae"] <= best_val_mae
+        if improved:
+            if val_recall is not None:
+                best_val_recall = val_recall
+                print(f"\n✓ New best checkpoint (Recall@20={val_recall:.3f}, MAE={val_metrics['mae']:.4f})")
+            else:
+                print(f"\n✓ New best checkpoint (MAE={val_metrics['mae']:.4f})")
 
             # Save model
             args.output_dir.mkdir(parents=True, exist_ok=True)
