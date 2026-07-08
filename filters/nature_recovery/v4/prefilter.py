@@ -1,235 +1,159 @@
 """
-Nature Recovery Pre-Filter v2 (file) / V1 class — passes recovery/nature
-stories, blocks non-environmental content.
+Nature Recovery Pre-Filter v4 — commerce-only screening.
 
-ADR-018 declarative shape (data-only): the single text-pattern exclusion
-category (disaster_no_recovery, with a recovery-pattern exception) lives in
-EXCLUSION_PATTERNS / EXCEPTION_PATTERNS_PER_CATEGORY dicts compiled by
-BasePreFilter.__init__. apply_filter stays custom because:
+WHY v4 REWRITES v2's PREFILTER (llm-distillery #70 / recall bug):
+v2's prefilter did two things that are the *model's* job and were both
+English-only, costing 21.6% recall (129/598 genuine positives blocked,
+mostly non-English — ~34% of nature-recovery content is es/pt/fr/de/it/
+nl/id/vi/…, 20+ languages in production):
 
-- The nature-relatedness check (`_is_nature_related`) runs FIRST in the
-  current flow — block reason "not_nature_topic" precedes the disaster
-  check. Base's standard pipeline runs `_filter_specific_final_check`
-  LAST, which would change reason ordering on articles that are both
-  off-topic and disaster-themed.
-- Reason strings are bare category names ("disaster_no_recovery"), not
-  "excluded_<category>" — the base pipeline's prefix would be a behavior
-  change in this commit.
-- This filter intentionally does not call `check_content_length` (gap is
-  documented separately under Prefilter Quality, like CD v4's similar
-  regression). Base pipeline would add that check.
+  1. `_is_nature_related` — a topic-INCLUSION gate: an article was blocked
+     ("not_nature_topic") unless it contained an English nature keyword.
+     Non-English positives ("se recupera", "wordt hersteld", …) carry no
+     English keyword → silently dropped before the oracle ever saw them.
+  2. `disaster_no_recovery` — a decline-DETECTION gate (English regex, ~43%
+     precision). Deciding decline-vs-recovery is exactly what the v3/v4
+     dimensional student is trained to do; doing it again here with brittle
+     English regex both leaks recall and duplicates the model.
 
-Class-name drift (V1 in the v2 directory, VERSION="1.0") is intentional —
-deferred to the cleanup-batch rename per the #52 plan, because NexusMind
-imports the V1 name. Will fix together with sustech V2→V3 once the cross-
-repo coordination is done.
+v4 strips both. Per ADR-004, commerce is the ONLY universal prefilter, and
+it runs UPSTREAM in NexusMind's CommercePreprocessor (see base_prefilter
+module docstring) — so this per-filter prefilter keeps only base's
+validate + content-length checks and otherwise passes everything to the
+recall-first e5 probe (Stage 1) + student (Stage 2). Final architecture:
+
+    commerce (upstream) + this pass-through prefilter
+      -> multilingual e5 probe (Stage 1, recall-first)
+      -> Gemma-3-1B student (Stage 2).
+
+MULTILINGUAL FORCE-PASS (POSITIVE_PATTERNS / POSITIVE_THRESHOLD):
+Wired per the plan (§B.2) as the ADR-018 base mechanism — a strong-positive
+count bypasses *pattern* exclusions. NOTE: it is INSURANCE-ONLY today. Base's
+override bypasses only EXCLUSION_PATTERNS (not domain/source/length), and this
+filter declares no local EXCLUSION_PATTERNS (commerce is upstream), so the
+bypass is currently inert. It is kept so (a) the multilingual recovery
+vocabulary lives in code, and (b) if a cheap local pattern exclusion is ever
+added, the multilingual bypass is already in place. The real recall fix is the
+gate removal above + the e5 probe — not this list.
 
 History:
-- v2.0 (2026-04-29): migrated to declarative BasePreFilter shape (#52,
-  ADR-018). No behavior change — pattern set, override semantics, and
-  iteration order preserved verbatim. Self-test 6/6 passes.
-- v2.0 prior: identical logic, lists declared inline in apply_filter and
-  _is_nature_related; class kept the V1 name from the file move.
+- v4.0 (2026-07): strip topic-inclusion + decline-detection gates -> commerce-
+  only pass-through; add multilingual POSITIVE_PATTERNS (insurance). Class
+  renamed V1->V4 to match this package's base_scorer loader.
+- v2.0 (2026-04-29): declarative BasePreFilter migration (#52, ADR-018).
 """
 
 import re
-from typing import Dict, List, Tuple
+from typing import Dict
 
 from filters.common.base_prefilter import BasePreFilter
 
 
 class NatureRecoveryPreFilterV4(BasePreFilter):
-    """Fast rule-based pre-filter for nature recovery content.
+    """Commerce-only pass-through pre-filter for nature recovery content.
 
-    Class-name drift retained intentionally — see module docstring.
+    Inherits BasePreFilter.apply_filter unchanged (validate -> length ->
+    exclusions[none] -> passed). Topic/decline gating is delegated to the
+    e5 probe + student, not done here (see module docstring / #70).
     """
 
-    VERSION = "1.0"
+    VERSION = "4.0"
 
-    # === ADR-018 EXCLUSION_PATTERNS ===
-    # Single category — block when disaster framing fires WITHOUT any recovery
-    # framing also present. Category key matches the (False, "disaster_no_recovery")
-    # tuple this filter emits — no "excluded_" prefix because callers match
-    # the bare reason string.
-    EXCLUSION_PATTERNS = {
-        # Pure disaster/decline language. Note: these are partial-word stems
-        # (e.g. `catastroph` matches catastrophe / catastrophic) intentionally.
-        'disaster_no_recovery': [
-            r'\b(extinction|collapse|dying|destroyed|devastating|catastroph|irreversible)\b',
-        ],
-    }
+    # No local EXCLUSION_PATTERNS: commerce runs upstream (ADR-004), and the
+    # v2 topic/decline gates are removed (the model's job). Left empty on
+    # purpose — base's apply_filter then reduces to validate + length + pass.
+    EXCLUSION_PATTERNS: Dict[str, list] = {}
 
-    # Per-category exceptions — recovery framing within the disaster category
-    # bypasses the block. Same parallel-dict pattern as CD v4 / uplifting v7,
-    # but only one category here.
-    EXCEPTION_PATTERNS_PER_CATEGORY = {
-        # Recovery framing — partial-word stems (`recover` matches recovery /
-        # recovered, `thriv` matches thriving, etc.) — preserved verbatim from
-        # the inline regex in v2's prior apply_filter.
-        'disaster_no_recovery': [
-            r'\b(recover|restor|rebound|return|improv|increas|grow|thriv|heal|reintroduc|rewild)\b',
-        ],
-    }
-
-    # Nature-related keywords — substring match (preserved semantics:
-    # `kw in text_lower` works on the partial stems below). Used by the
-    # initial gate-check; off-topic articles short-circuit before the
-    # exclusion loop even runs.
-    NATURE_KEYWORDS = [
-        'ecosystem', 'biodiversity', 'habitat', 'deforestation', 'reforestation',
-        'coral', 'reef', 'ocean', 'marine', 'wildlife', 'species', 'extinction',
-        'pollution', 'air quality', 'water quality', 'environment', 'climate',
-        'carbon', 'wetland', 'mangrove', 'conservation', 'restoration', 'recovery',
-        'rewilding', 'endangered', 'protected area', 'national park', 'nature reserve',
-        'emission', 'ozone', 'deforestation', 'afforestation', 'fish stock',
+    # Multilingual recovery signals — the ADR-018 force-pass slot. Insurance
+    # only while EXCLUSION_PATTERNS is empty (see module docstring). Stems are
+    # partial-word (`recuper` matches recupera/recuperación) and intentionally
+    # broad; base counts total matches and bypasses pattern exclusions when the
+    # count reaches POSITIVE_THRESHOLD.
+    POSITIVE_PATTERNS = [
+        # English
+        r'\b(recover|restor|rebound|rewild|reintroduc|bounce back)\b',
+        # Spanish / Portuguese
+        r'\b(recuper|restaur|reintroduc|se recupera|rehabilitaç|rehabilitac)\b',
+        # French
+        r'\b(rétabli|restaur|réintroduc|se rétablit|renaturation)\b',
+        # German / Dutch
+        r'\b(erholung|wiederherstell|renaturierung|herstel|wordt hersteld|terugkeer)\b',
+        # Italian
+        r'\b(ripristin|si riprende|reintroduzione)\b',
     ]
-
-    def __init__(self):
-        """Compile per-category exceptions; base compiles EXCLUSION_PATTERNS
-        into self._compiled_exclusions."""
-        super().__init__()
-        self.filter_name = "nature_recovery"
-        self.version = self.VERSION
-        self._compiled_exceptions_per_category: Dict[str, List[re.Pattern]] = {
-            cat: [re.compile(p, re.IGNORECASE) for p in patterns]
-            for cat, patterns in self.EXCEPTION_PATTERNS_PER_CATEGORY.items()
-        }
-
-    def apply_filter(self, article: Dict) -> Tuple[bool, str]:
-        """
-        Determine if article should be sent to oracle for scoring.
-
-        Custom flow (not BasePreFilter.apply_filter): preserves the original
-        v2 order — nature-relatedness check FIRST, disaster check SECOND.
-        Base's pipeline runs the final-check hook LAST, which would change
-        reason precedence for articles that are both off-topic and disaster-
-        themed.
-
-        Returns:
-            (should_score, reason)
-            - (True, "passed"): Send to oracle
-            - (False, "not_nature_topic"): Article isn't environmental at all
-            - (False, "disaster_no_recovery"): Disaster framing without
-                  recovery framing (no exception keyword found)
-        """
-        title = article.get('title', '')
-        content = article.get('content', '') or article.get('text', '')
-        text_lower = (title + ' ' + content[:self.MAX_PREFILTER_CONTENT]).lower()
-
-        # Gate: must be about nature/ecosystem/environment first.
-        if not self._is_nature_related(text_lower):
-            return (False, "not_nature_topic")
-
-        # Iterate exclusions; first blocking category wins (only one category
-        # here today, but kept generic for shape consistency with the other
-        # #52-migrated filters).
-        for category, compiled_patterns in self._compiled_exclusions.items():
-            if not self.has_any_pattern(text_lower, compiled_patterns):
-                continue
-            exceptions = self._compiled_exceptions_per_category.get(category, [])
-            if self.has_any_pattern(text_lower, exceptions):
-                continue
-            return (False, category)
-
-        return (True, "passed")
-
-    def _is_nature_related(self, text_lower: str) -> bool:
-        """Check if article is about nature/ecosystem/environmental issues
-        (PERMISSIVE — any keyword hit lets it through)."""
-        return any(kw in text_lower for kw in self.NATURE_KEYWORDS)
+    POSITIVE_THRESHOLD = 2
 
     def get_statistics(self) -> Dict:
         """Return filter statistics."""
-        stats = {
+        return {
             'version': self.VERSION,
-            'nature_keywords': len(self.NATURE_KEYWORDS),
+            'mode': 'commerce_only_passthrough',
+            'exclusion_categories': len(self.EXCLUSION_PATTERNS),
+            'positive_patterns': len(self.POSITIVE_PATTERNS),
+            'positive_threshold': self.POSITIVE_THRESHOLD,
         }
-        for category, patterns in self.EXCLUSION_PATTERNS.items():
-            stats[f'{category}_patterns'] = len(patterns)
-            stats[f'{category}_exceptions'] = len(
-                self.EXCEPTION_PATTERNS_PER_CATEGORY.get(category, [])
-            )
-        return stats
 
 
 def test_prefilter():
-    """Self-test — hand-crafted cases covering each branch of the flow.
-    Lifted from the #52 baseline probe."""
+    """Self-test — v4 pass-through behavior.
 
+    Confirms the two v2 recall-bug blocks are GONE: off-topic-but-valid and
+    non-English recovery now PASS (topic/decline judgment is the model's job).
+    Only base's structural checks (empty/short) still block.
+    """
     prefilter = NatureRecoveryPreFilterV4()
 
     pad = ' Lorem ipsum filler text to extend article length. ' * 8
 
     test_cases = [
-        # PASS - nature recovery
         {
             'title': 'Coral Reef Recovery After Decade of Restoration',
             'text': 'Marine biologists report significant biodiversity recovery in protected reef areas.' + pad,
             'expected': (True, 'passed'),
-            'description': 'Nature recovery (reef)',
+            'description': 'English nature recovery',
         },
-        # BLOCK - not nature topic
         {
-            'title': 'Stock Market Soars to New Highs',
-            'text': 'Wall Street traders celebrated record gains today as the index hit a new milestone.' + pad,
-            'expected': (False, 'not_nature_topic'),
-            'description': 'Off-topic (markets)',
+            # v2 blocked this as not_nature_topic (no English nature keyword).
+            # The model, not the prefilter, should judge relevance now.
+            'title': 'El lince ibérico se recupera en Andalucía',
+            'text': 'La población del lince ibérico se recupera tras décadas de conservación; los censos muestran un aumento sostenido.' + pad,
+            'expected': (True, 'passed'),
+            'description': 'Non-English recovery (v2 would have blocked)',
         },
-        # BLOCK - disaster without recovery framing
         {
+            # v2 blocked this as disaster_no_recovery. Demotion is the
+            # student's job (dimensional scoring), not a prefilter regex.
             'title': 'Devastating Forest Collapse Threatens Wildlife',
             'text': 'The ecosystem is dying. Habitat destruction has been catastrophic. Extinction is irreversible for several species.' + pad,
-            'expected': (False, 'disaster_no_recovery'),
-            'description': 'Disaster framing without recovery',
-        },
-        # PASS - disaster WITH recovery framing (exception bypass)
-        {
-            'title': 'Ecosystem Recovery Strategy After Devastating Wildfire',
-            'text': 'Despite catastrophic devastation, biodiversity is rebounding. Wildlife is returning, vegetation is regrowing, and conservation efforts have helped the habitat heal.' + pad,
             'expected': (True, 'passed'),
-            'description': 'Disaster + recovery framing (exception)',
+            'description': 'Pure decline now passes (student demotes it)',
         },
-        # PASS - generic conservation story
         {
-            'title': 'Wetland Conservation Project Expands',
-            'text': 'The mangrove restoration program is improving water quality and protecting endangered species along the coast.' + pad,
-            'expected': (True, 'passed'),
-            'description': 'Generic conservation',
-        },
-        # BLOCK - off-topic with no environmental context
-        {
-            'title': 'Best Hotels in Paris for 2026',
-            'text': 'Travelers will find luxury accommodation, fine dining, and museums in this guide to the French capital.' + pad,
-            'expected': (False, 'not_nature_topic'),
-            'description': 'Off-topic (travel)',
+            'title': 'x',
+            'text': 'too short',
+            'expected': (False, 'content_too_short_9chars'),
+            'description': 'Structural block: content too short',
         },
     ]
 
-    print("Testing Nature Recovery Pre-Filter v2 (class V1)")
+    print("Testing Nature Recovery Pre-Filter v4 (commerce-only pass-through)")
     print("=" * 60)
 
-    passed = 0
-    failed = 0
-
+    passed = failed = 0
     for i, test in enumerate(test_cases, 1):
         result = prefilter.apply_filter(test)
         expected = test['expected']
         match = (result[0] == expected[0] and result[1] == expected[1])
-
         status = "[PASS]" if match else "[FAIL]"
-        if match:
-            passed += 1
-        else:
-            failed += 1
-
+        passed += match
+        failed += (not match)
         print(f"\nTest {i}: {status} - {test['description']}")
-        print(f"  Title: {test['title'][:60]}")
         print(f"  Expected: {expected}")
         print(f"  Got:      {result}")
 
     print("\n" + "=" * 60)
     print(f"Results: {passed}/{passed + failed} tests passed")
-    print("\nPre-filter Statistics:")
+    print("\nStatistics:")
     for key, value in prefilter.get_statistics().items():
         print(f"  {key}: {value}")
 

@@ -1,8 +1,15 @@
 """
-Nature Recovery Filter v2 - Base Scorer Class
+Nature Recovery Filter v4 - Base Scorer Class
 
 Inherits all shared logic from FilterBaseScorer.
 Defines filter-specific constants and prefilter loading.
+
+v4 note (#70 / C1): the recovery_evidence gatekeeper below is UNCHANGED from
+v2. The #70 delivered-protection goal is met not by exempting content from the
+gatekeeper (content_type never reaches inference) but by REDEFINING
+recovery_evidence in the oracle prompt so documented pressure-removal / enacted
+enforcement scores >= 3 — so protection clears the gatekeeper via labels, not
+via runtime code. See docs/nature_recovery_v4_plan.md §0 C1.
 """
 
 from filters.common.filter_base_scorer import FilterBaseScorer
@@ -17,7 +24,7 @@ class BaseNatureRecoveryScorer(FilterBaseScorer):
     """
 
     FILTER_NAME = "nature_recovery"
-    FILTER_VERSION = "2.0"
+    FILTER_VERSION = "4.0"
 
     DIMENSION_NAMES = [
         "recovery_evidence",
@@ -53,4 +60,4 @@ class BaseNatureRecoveryScorer(FilterBaseScorer):
         spec = importlib.util.spec_from_file_location("prefilter", prefilter_path)
         prefilter_module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(prefilter_module)
-        self.prefilter = prefilter_module.NatureRecoveryPreFilterV1()
+        self.prefilter = prefilter_module.NatureRecoveryPreFilterV4()
