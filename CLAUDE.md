@@ -50,7 +50,7 @@ framework: agent-ready-projects v1.10.4
 | **thriving** | v1 | PARKED indefinitely — orthogonal lens design caused bimodal distribution (ADR-015); uplifting v7 stays as Thriving tab |  |
 | **sustainability_technology → solutions** | v4 | Design phase — broaden from clean-tech to include governance/community solutions (#43) | ovr.news Solutions tab |
 | **ai-engineering-practice** | v2 | Ready for oracle scoring; rename to augmented-engineering at next bump | Separate product (not ovr.news) |
-| **nature_recovery** | v4 | Code + re-label done (3892 DeepSeek labels; #70 protection scope, commerce-only prefilter, settled ranking metrics, agreement gate). Student training + gate + deploy STAGED on gpu-server / HF-token — see `docs/nature_recovery_v4_RUNBOOK.md`. DO NOT deploy until gate passes. | ovr.news Recovery tab |
+| **nature_recovery** | v4 | Trained + calibrated + **ground-truth gate PASSED** (2026-07-09). Beats deployed v2 on every metric vs held-out DeepSeek labels (precision 0.844, recall 0.66, spec 0.98, Spearman 0.825 at operating point **3.75**, gatekeeper-safe). `agreement_gate.py` was found flawed (judged v4 against a v2-era **Gemini** reference cohort → false FAIL) and is **superseded by `scripts/gate/ground_truth_gate.py`**. Recall (0.66) is the soft axis → v5 (#71). **Ready to deploy** pending final checkpoint pick (retrained scale-3.0 vs first scale-2.0) + go-ahead. Oracle stays DeepSeek (chosen for conservative *bias*, not consistency — see `feedback-oracle-bias-vs-noise`). | ovr.news Recovery tab |
 
 ## Key Decisions
 
