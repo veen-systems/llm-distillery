@@ -40,7 +40,7 @@ framework: agent-ready-projects v1.10.4
 | **investment-risk** | v6 | 0.47 | 10.4K articles | Deployed (HF Hub, private) |
 | **cultural-discovery** | v5 | 0.70 | 8.5K articles | Deployed (HF Hub + gpu-server, private) — resolves #62 discovery-lens leakage via F-K soft-penalty flags; DeepSeek oracle (first non-Gemini) |
 | **belonging** | v1 | 0.49 | 7.4K articles | Deployed (HF Hub, private) |
-| **nature_recovery** | v2 | 0.53 | 3.5K articles | Deployed (HF Hub, private) — v1 had no discrimination (#41), v2 uses sample weighting |
+| **nature_recovery** | v2 | 0.53 | 3.5K articles | Deployed (HF Hub, private) — v1 had no discrimination (#41), v2 uses sample weighting. **v4 in development** (#70 protection scope, multilingual recall fix) — see In Development below. |
 | **foresight** | v1 | 0.75 | 3.5K articles | PARKED — captures governance solutions, not foresight; merging into broadened Solutions lens (#43) |
 
 ### In Development (priority: ovr.news tabs)
@@ -50,6 +50,7 @@ framework: agent-ready-projects v1.10.4
 | **thriving** | v1 | PARKED indefinitely — orthogonal lens design caused bimodal distribution (ADR-015); uplifting v7 stays as Thriving tab |  |
 | **sustainability_technology → solutions** | v4 | Design phase — broaden from clean-tech to include governance/community solutions (#43) | ovr.news Solutions tab |
 | **ai-engineering-practice** | v2 | Ready for oracle scoring; rename to augmented-engineering at next bump | Separate product (not ovr.news) |
+| **nature_recovery** | v4 | Code + re-label done (3892 DeepSeek labels; #70 protection scope, commerce-only prefilter, settled ranking metrics, agreement gate). Student training + gate + deploy STAGED on gpu-server / HF-token — see `docs/nature_recovery_v4_RUNBOOK.md`. DO NOT deploy until gate passes. | ovr.news Recovery tab |
 
 ## Key Decisions
 
@@ -134,4 +135,4 @@ This project is a source project for [agentic-engineering](https://github.com/du
 
 ---
 
-*Last updated: 2026-07-04*
+*Last updated: 2026-07-09*

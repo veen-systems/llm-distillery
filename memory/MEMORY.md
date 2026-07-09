@@ -82,7 +82,8 @@ Loaded every session. Topic files loaded on demand via triggers below.
      Retire entries once they appear in their destination. -->
 
 - if [landing a non-trivial migration or refactor], then [fire code-reviewer + refactoring-guide + security-auditor in parallel before considering it shipped — they have non-overlapping blind spots] — promoted from gotcha-log 2026-04-29
-- if [a regex correctness bug is found], then [audit siblings in the same file/author-style — same-shape bugs cluster] — promoted from gotcha-log 2026-04-29 (recurrence of #45 RIP issue → today's multilingual sweep)
+- if [a regex correctness bug is found], then [audit siblings in the same file/author-style — same-shape bugs cluster] — promoted from gotcha-log 2026-04-29 (recurrence of #45 RIP issue → today's multilingual sweep; recurred AGAIN 2026-07-08: POSITIVE_PATTERNS trailing `\b`)
+- if [bumping a filter to vN by copying vN-1's package], then [repoint the inference modules' imports to vN and CONSTRUCT the real production scorer class — `load_filter_package` discovers the prefilter by name-substring and masks a stale `vN-1` import that crashes the actual entrypoint] — promoted from gotcha-log 2026-07-08 (3rd in the cluster: #44 v2→v1 imports, #52 class-name drift, v4 inference stack)
 - if [writing or auditing a deploy/sync script that runs `git add` (or rsync-then-commit) against a directory it doesn't fully own], then [require fail-closed dirty-check + explicit path staging; blanket `git add -A` is a latent origin-contamination bug that fires on the first multi-author day] — promoted from gotcha-log 2026-05-23
 
 ## Active Decisions
@@ -102,7 +103,17 @@ Loaded every session. Topic files loaded on demand via triggers below.
 - Solutions broadening v4 DRAFT scaffolded — `filters/sustainability_technology/v4/` (2026-05-05). Forks signed off: C (broaden ST v3 in place), combine ST v3 + foresight v1 corpora, foresight retired when v4 supersedes ST v3. 7 dims, weight=1.00, calibration batch spec inline (300 articles, ~$0.30). Awaiting prompt drafting before any oracle spend. <!-- verify: test -f filters/sustainability_technology/v4/config.yaml && echo PASS || echo FAIL -->
 - cultural_discovery v5 DEPLOYED 2026-05-31 — resolves #62 discovery-lens leakage. Val MAE 0.697 (v4 was 0.74). Soft-penalty F/G/H/I/K flags (historical_harm_reckoning, commemoration_memorial, perpetrator_biography, decline_loss, launch_announcement). DeepSeek V4 Flash oracle (first non-Gemini lineage in production, ~7x cheaper). End-to-end verified: Pope apology 9.65→2.31, Indus/Sumer 9.12 (gradient preserved). v4 deleted from gpu-server post-verification; still in llm-distillery + git + HF Hub for rollback. **Provisional reference example for ADR-020 methodology** (multi-oracle batch + agent judging) and DeepSeek-as-default-oracle; solutions v4 is the validation case. <!-- verify: ssh gpu-server 'test -d ~/NexusMind/filters/cultural_discovery/v5/model' && echo PASS || echo FAIL -->
 
-## Last Session Recap (2026-07-07/08) — nature_recovery v3 → v4 planning
+## Last Session Recap (2026-07-08/09) — nature_recovery v4 EXECUTED (code + re-label)
+
+Executed the v4 plan through the code + oracle-labeling phases; **nothing deployed** (no model yet — training/gate/deploy staged, see `docs/nature_recovery_v4_RUNBOOK.md`). 8 commits `edc117a..046fa0d` on `nature-recovery-v4`, pushed.
+
+- **C1 → (b)**: redefined `recovery_evidence` so delivered protection (enacted+in-force) scores ≥3 → clears the runtime gatekeeper via labels (gatekeeper code untouched; `content_type` never reaches inference, so the exemption option was unbuildable). Prefilter → commerce-only pass-through (recall bug 21.6%→1.3%, 129/598). Prompt+config: #70 path, `conservation_appeal` cap→soft-penalty, individual-animal example, oracle→deepseek.
+- **§A.5 falsification pilot PASS** ($0.04, 28 stratified incl. multilingual): delivered protection surfaces (Central Arctic ban 1.8→5.15), pledges/decline/appeals stay capped. Then **full re-label 3892** (DeepSeek, **$4.81**, 0 err). Integrity-checked (hard caps not self-applied but gatekeeper handles it — see gotcha); 187 non-English positives score correctly.
+- **4-model review battery** (opus×2 + sonnet×2) caught what my self-verify missed — esp. the **CRITICAL** v4 inference stack still importing v2 (would crash `NatureRecoveryScorer()`; my "verified both paths" only tested a replicated loader). All findings fixed: inference repoint, POSITIVE_PATTERNS regex, prompt consistency, pipeline latent bugs.
+- **Metrics settled, not reinvented**: per filter-dev-guide Issue 4 (nr v1→v2 lineage), needle filters use **Recall@20/NDCG@10/FN@MEDIUM+** not MAE. Instrumented in `train.py` + checkpoint selection moved off aggregate MAE. `agreement_gate.py` written (4 NM#229 metrics; Source-A-not-independent + missing-protection-cohort caveats baked in).
+- Balance ~$5.60. `huggingface_token` still empty. 3 new gotchas logged (version-bump imports; DeepSeek hard-cap non-application; review-before-spend).
+
+## Earlier Session Recap (2026-07-07/08) — nature_recovery v3 → v4 planning
 
 Big planning session; **no filter shipped** (deliberately paused). Full plan: **`docs/nature_recovery_v4_plan.md`** (read `## 0` first — 4-model review corrections).
 
@@ -152,9 +163,9 @@ Took ducroq/llm-distillery#62 (cultural_discovery v5 hard-negatives) from issue 
 
 Cost this session: ~$0.07 total (2 calibration runs at $0.01 each + 49-article batch at $0.05).
 
-## Next Session Pickup (updated 2026-07-08 EOD)
+## Next Session Pickup (updated 2026-07-09)
 
-**🎯 PRIMARY: nature_recovery v4** — execute from **`docs/nature_recovery_v4_plan.md`**. Read its `## 0` first (plan-review corrections). **Decide C1 (gatekeeper vs #70 protection) before spending anything.** Prereqs: back up already at `~/backups/nr_v4_labels_20260708.tar.gz`; re-verify DeepSeek balance + top up $10; fill `huggingface_token`; reload gpu-server SSH; rename branch → `nature-recovery-v4`. Corrected order: strip prefilter → prompt/config revision + **full** re-label → train probe (recall-first) → train student → calibrate → agreement-gate → deploy (deploy is deferred; nothing shipped yet).
+**🎯 PRIMARY: nature_recovery v4 — code + re-label DONE; training/gate/deploy STAGED.** Remaining-steps runbook: **`docs/nature_recovery_v4_RUNBOOK.md`** (read first). State: C1(b) resolved; commerce-only prefilter (recall 21.6%→1.3%); prompt+config revised; §A.5 pilot PASS; full re-label 3892 (DeepSeek, $4.81, 0 err); 4-model review battery → all fixed (incl. **CRITICAL** inference-stack repoint v2→v4); settled ranking metrics in `train.py`; splits ready (3112/389/391); `agreement_gate.py` written+unit-tested. All committed+pushed (branch `nature-recovery-v4`, `edc117a..046fa0d`). **DO NEXT (needs gpu-server / HF token):** (1) **fill `huggingface_token`** (still empty — blocks the gate's v2-student download); (2) rewrite `train_probe.py` recall-first (H3 — spec in its header + RUNBOOK §1); (3) train student `--sample-weight-scale 2.0`, runtime-verify inference construction on gpu-server (needs torch); (4) calibrate (⚠️ only **2** articles in the 8-10 band); (5) run agreement_gate; (6) **deploy ONLY if the gate passes** (still blocked — no model yet). Judgment call to review: did NOT re-spend ~$5 to re-label after prompt fixes (integrity check showed nil label impact).
 
 **Housekeeping carried from 2026-07-04 (do first, cheap):**
 1. ~~Resolve the phantom-memory-files claim.~~ **DONE 2026-07-05** — all 6 reconstructed + indexed, recap corrected, dangling link resolved. (Optional follow-up: sanity-check `ovr-lens-set-current.md`'s tab mapping against the actual ovr.news repo, which is authoritative.)
