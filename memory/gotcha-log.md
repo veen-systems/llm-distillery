@@ -632,3 +632,18 @@ in the tree; grep for it before writing the claim. Backfilled `tests/unit/test_a
 **Lesson:** when a doc/commit/log says "promoted to X" or "unit-tested", that is a file-existence
 claim — verify the artifact before trusting it, and when authoring, create the file in the same
 change. The most-referenced piece of process guidance can be the one that was never written down.
+
+## `pgrep -f "<cmd>"` Matches Your Own SSH Command → Phantom "Still Running" Processes (2026-07-09)
+**Problem**: Repeatedly saw fit_calibration/score_cohort "still running" (tiny 2.8MB RSS, 0% CPU) that were actually my own `ssh gpu-server 'pgrep -f "score_cohort" ...'` shells — the remote command line *contains* the search string, so `pgrep -f` matches itself. Wasted several cycles "killing" phantom jobs.
+**Root cause**: `pgrep -f` matches the full command line of every process, including the shell running the pgrep (whose argv contains the literal pattern). Compounded by a flaky link making launches look like they hadn't landed.
+**Fix**: Verify a real job by its FOOTPRINT, not pgrep name-match: check GPU memory climbing / large RSS / the output log growing. For launch confirmation, grep the job's own log for its first real output line (e.g. "LOAD REPORT"), not `pgrep`. When you must pgrep, narrow to `python.*<script>` AND sanity-check RSS.
+
+## Fresh Re-Train With Same Seed Produced a WORSE Model (CUDA Nondeterminism) (2026-07-09)
+**Problem**: Re-ran the "first checkpoint" training (scale 2.0, seed 42, identical command) to regenerate clean training_metadata for deploy. The re-trained model scored **recall 0.552** on held-out test vs the original first checkpoint's **0.672** — worse on the exact axis we cared about, and a recall *regression vs v2*.
+**Root cause**: CUDA ops aren't fully deterministic even with a fixed seed; a 1B model on a small val set has real training variance. "Re-run to get clean artifacts" silently swapped in a different (worse) draw.
+**Fix**: Deployed the ORIGINAL approved checkpoint (backed up in /tmp), not the re-train. Lesson: never assume a re-run reproduces an evaluated model — if you must re-train for artifact hygiene, re-run the GATE on the re-trained weights and compare before shipping. Better: back up the approved model+calibration+metadata together at approval time so no re-train is needed.
+
+## Deploy Staged, Not Activated: sadalsuud Down + Discovery=Latest = Partial-Deploy Landmine (2026-07-09)
+**Problem**: At deploy time, `ssh sadalsuud` timed out (the host that rsyncs NexusMind→gpu-server) and the gpu-server link was flaky. NexusMind `filter_loader` discovers the LATEST version, so v4 landing in gpu-server's NexusMind dir would auto-activate on the next pipeline run — but `deploy_filters.sh` excludes `model/` (#67), so a code-only rsync would crash the whole scorer on the strict startup weight-check.
+**Root cause**: The canonical persistent chain requires sadalsuud; bypassing it risks a code-without-weights activation that the discovery=latest + strict-weight-check turns into a full-scorer outage — exactly the class of failure the user flagged.
+**Fix**: Staged v4 in Hub + llm-distillery git only (prod untouched); did NOT push to NexusMind git (would queue the broken activation). Documented the remaining atomic activation + layered safety gate in `docs/nature_recovery_v4_DEPLOY_COMPLETION.md`. Deferred activation is the right call when a required host is down and the pipeline can't be verified end-to-end. deploy_to_nexusmind.sh also still Windows-pathed (`C:/local_dev` + `python` not `python3`) — needs Linux porting.

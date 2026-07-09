@@ -88,6 +88,10 @@ Loaded every session. Topic files loaded on demand via triggers below.
 - if [a regex correctness bug is found], then [audit siblings in the same file/author-style — same-shape bugs cluster] — promoted from gotcha-log 2026-04-29 (recurrence of #45 RIP issue → today's multilingual sweep; recurred AGAIN 2026-07-08: POSITIVE_PATTERNS trailing `\b`)
 - if [bumping a filter to vN by copying vN-1's package], then [repoint the inference modules' imports to vN and CONSTRUCT the real production scorer class — `load_filter_package` discovers the prefilter by name-substring and masks a stale `vN-1` import that crashes the actual entrypoint] — promoted from gotcha-log 2026-07-08 (3rd in the cluster: #44 v2→v1 imports, #52 class-name drift, v4 inference stack)
 - if [writing or auditing a deploy/sync script that runs `git add` (or rsync-then-commit) against a directory it doesn't fully own], then [require fail-closed dirty-check + explicit path staging; blanket `git add -A` is a latent origin-contamination bug that fires on the first multi-author day] — promoted from gotcha-log 2026-05-23
+- if [a candidate oracle looks better on self-consistency/agreement], then [STOP — that's noise, not bias; judge the disagreement set editorially before switching, and cut noise by averaging k runs of the correctly-biased oracle, never by switching to a cleaner-but-differently-biased one] — promoted from gotcha-log 2026-07-09 ([[feedback-oracle-bias-vs-noise]]; engineer caught a $100-200-class error)
+- if [a deploy gate / eval reports a surprising FAIL or a batch of "model errors"], then [reproduce — read the actual per-item labels the metric was computed from — before retraining/switching; the reference cohort may be labeled by a different oracle/version (check for a `_v2_split`-style provenance field)] — promoted from gotcha-log 2026-07-09 (ground-truth gate vs Gemini-labeled reference)
+- if [re-running a training to regenerate clean artifacts], then [do NOT assume same-seed reproduces the evaluated model — CUDA is nondeterministic; re-run the gate on the re-trained weights, or back up the approved model+calibration+metadata together at approval time] — promoted from gotcha-log 2026-07-09
+- if [checking whether a remote job is running with `pgrep -f "<pattern>"`], then [it matches your own ssh command line too — verify by footprint (GPU mem / large RSS / log growth), not name-match] — promoted from gotcha-log 2026-07-09
 
 ## Active Decisions
 
@@ -138,6 +142,9 @@ Light hygiene session — no code or filter changes. Memory correction + issue t
 **Freshness flags raised (not yet fixed):**
 - ~~The 2026-05-31 recap claimed "6 new memory entries" that never existed on disk.~~ **RESOLVED 2026-07-05**: verified absent everywhere (repo + user-level), then reconstructed all 6 from the recap description + verifiable repo content (ADR-020 draft, CLAUDE.md, ADR-010/012/013/015). Recap claim corrected; index pointers added; `[[cd-v5-reference-status]]` link now resolves. Each file carries a reconstruction note.
 - MEMORY.md recap is a **month behind git** — the June obituary_detector v3 work (#51, commits `87e9962`/`9692bcb`/`dd9c3c4`) has no recap entry here.
+
+## Session pointers
+- [project_session_2026_07_09.md](project_session_2026_07_09.md) — nature_recovery v4 to the deploy boundary: recall-first probe, ground-truth gate (ADR-021), oracle bias-vs-noise ($100-200 catch), Hub-uploaded + **staged not activated** (sadalsuud down; `docs/nature_recovery_v4_DEPLOY_COMPLETION.md`).
 
 ## Session Recap (2026-05-31)
 
