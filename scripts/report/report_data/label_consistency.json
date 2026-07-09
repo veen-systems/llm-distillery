@@ -1,0 +1,35 @@
+{
+  "n": 65,
+  "cost_usd": 0.09,
+  "wa_self_mae": 0.38,
+  "perdim_self_mae": {
+    "recovery_evidence": 0.408,
+    "measurable_outcomes": 0.5,
+    "ecological_significance": 0.431,
+    "restoration_scale": 0.362,
+    "human_agency": 0.554,
+    "protection_durability": 0.415
+  },
+  "mean_perdim_self_mae": 0.445,
+  "surfacing_flip_rate": 0.03,
+  "student_calibrated_mae": 0.575,
+  "student_perdim_calibrated_mae": {
+    "recovery_evidence": 0.564,
+    "measurable_outcomes": 0.633,
+    "ecological_significance": 0.637,
+    "restoration_scale": 0.536,
+    "human_agency": 0.712,
+    "protection_durability": 0.513
+  },
+  "underfit_relabel_stable": true,
+  "verdict": "Labels are reasonably consistent (self-MAE 0.38 WA, 3% surfacing flips). Under-fit articles re-label STABLE-HIGH -> student genuinely fails them, not label noise. Student is below the label floor on every dim (~0.1-0.15/dim headroom) so student CAN improve, but human_agency (0.55) + measurable_outcomes (0.50) are the noisy dims capping both.",
+  "gemini_wa_self_mae": 0.173,
+  "gemini_perdim_self_mae": 0.212,
+  "gemini_surfacing_flip_rate": 0.0,
+  "deepseek_wa_self_mae": 0.38,
+  "cross_oracle_wa_absdiff": 1.018,
+  "gemini_mean_wa": 4.94,
+  "deepseek_mean_wa": 4.09,
+  "underfit_both_oracles_surface": "3/3",
+  "conclusion": "Gemini 2.2x more self-consistent (0.173 vs 0.380) -> lower student MAE floor. DeepSeek is the wrong oracle for nature_recovery (inherited from cd v5 cost decision, skipped per-filter bake-off). Recommend re-label with Gemini + v4 prompt (keeps #70), retrain, re-gate. Matches v2's proven Gemini->83% recall."
+}

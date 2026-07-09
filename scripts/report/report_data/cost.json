@@ -1,0 +1,17 @@
+{
+  "train_cost_usd": 4.81,
+  "per_article": [
+    {"name": "This scorer\n(local)", "usd": 0.0},
+    {"name": "DeepSeek\n(oracle)", "usd": 0.0013},
+    {"name": "Gemini Flash\n2.5", "usd": 0.0035},
+    {"name": "Commercial\nvendor (est.)", "usd": 0.01}
+  ],
+  "volume_curve": {
+    "articles": [0, 2000, 4000, 6000, 8000, 10000, 20000, 40000],
+    "lines": [
+      {"name": "this scorer", "usd_per_article": 0.0, "fixed": 4.81},
+      {"name": "cloud API (cheap)", "usd_per_article": 0.0013, "fixed": 0.0},
+      {"name": "commercial vendor", "usd_per_article": 0.01, "fixed": 0.0}
+    ]
+  }
+}

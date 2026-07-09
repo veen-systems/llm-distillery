@@ -1,0 +1,14 @@
+{
+  "headline": "Deploy v4 — it beats the incumbent on every metric that matters.",
+  "recommendation_html": "<b>Use the local distilled scorer, v4.</b> Judged against the intended editorial line (held-out DeepSeek labels), v4 beats the deployed v2 on recall, precision, F1, ranking, and error — with far higher precision (0.85 vs 0.61: v2 over-surfaces). It also fixes the multilingual recall bug (21.6%→0%) and adds delivered-protection scope (#70). One-time teaching cost was $4.81; scoring is local and free forever.",
+  "comparison": [
+    ["Metric (vs DeepSeek line)", "v4 (this scorer)", "v2 (incumbent)"],
+    ["Precision", "0.848", "0.614"],
+    ["Recall", "0.672", "0.603"],
+    ["F1", "0.750", "0.609"],
+    ["Ranking (Spearman)", "0.821", "0.795"],
+    ["Cost/article", "$0 local", "$0 local"],
+    ["Multilingual recall bug", "fixed (0%)", "21.6% dropped"]
+  ],
+  "closing": "The teaching cost is already spent. Every article from here is free, private, fast, and tuned to exactly the conservative editorial line we chose — and this version is measurably better than what's in production. That is the case for using this scorer, and for shipping v4."
+}

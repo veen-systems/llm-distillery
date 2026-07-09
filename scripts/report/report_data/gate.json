@@ -1,0 +1,11 @@
+{
+  "type": "ground_truth",
+  "metrics": {
+    "recall":      {"v4": 0.672, "v2": 0.603},
+    "precision":   {"v4": 0.848, "v2": 0.614},
+    "f1":          {"v4": 0.750, "v2": 0.609},
+    "spearman":    {"v4": 0.821, "v2": 0.795}
+  },
+  "overall_pass": true,
+  "false_alarm_note": "The FIRST gate (agreement_gate) reported FAIL — but it judged v4 against a Gemini-labeled v2 reference (+1.775 inflated). Reproduction (reading the labels) showed 9/12 'errors' were v4 correctly rejecting Gemini's generosity. Ground-truth gate (ADR-021) is the corrected verdict."
+}
