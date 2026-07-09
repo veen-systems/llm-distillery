@@ -43,7 +43,7 @@ For foresight (counters short-termism):
 
 An oracle (Gemini Flash) scores articles on these dimensions. Each score has explicit rubrics with calibration examples, critical filters, and anti-hallucination rules (evidence must be exact quotes from the article). The oracle outputs only scores — tier classification (high/medium/low) happens in post-processing, so thresholds can be adjusted without re-labeling.
 
-This is expensive: ~$0.001 per article, 1-2 seconds per call. We can't run this on every article forever. But we can use it to *teach* a smaller model.
+This is expensive: roughly $0.0013–0.004 per article depending on the oracle (DeepSeek Flash at the low end, an 8K-token Gemini prompt at the high end), 1-2 seconds per call. We can't run this on every article forever. But we can use it to *teach* a smaller model.
 
 ## Knowledge distillation: invest energy once, infer forever
 
@@ -85,6 +85,10 @@ This same pattern appeared across our filters, and the correlation is clear:
 
 The rarer the concept, the worse the bimodal distribution, the harder the student model's job. This is a general property of semantic filtering for constructive concepts, not a bug in any particular filter.
 
+But there's a trap in that table itself, and it took us longest to internalize: **for a needle filter, MAE is the wrong yardstick.** When 90% of articles are noise near zero, a model that predicts "low" for everything scores a *great* MAE — and is useless. MAE rewards being accurate on the majority you don't care about. Nature recovery made this concrete: v1 had a *better* MAE than v2 (0.45 vs 0.53) while having essentially zero discrimination — in production 98.6% of articles scored below 1.0. v2 looked "worse" on MAE but lifted **Recall@20 from 0.55 to 0.70** and NDCG@10 from 0.71 to 0.86 — it actually surfaced the right stories.
+
+So we judge needle filters on **ranking metrics** — Recall@k, NDCG@k, and false-negative rate on the medium-plus articles — not on aggregate error. MAE is still fine for the balanced filters (investment-risk, belonging), which is why the table above tracks with rarity; but the moment a filter is a genuine needle, MAE stops measuring anything you care about and you have to switch instruments. (Reading the MAE numbers as the quality story is the single most common way to ship a needle filter that "looks fine" and finds nothing.)
+
 ## Two-stage screening: solving the needle problem
 
 The solution separates two questions that the oracle was trying to answer simultaneously:
@@ -111,6 +115,8 @@ The cost of this pre-screening step? Embedding 178,000 articles takes 15 minutes
 
 This pattern generalizes. Nature recovery used it first. Foresight proved it works for an even rarer concept. Thriving — currently paused at MAE 0.94 — is the next candidate.
 
+The same embedding idea reappears at *inference* time, but with a twist. Once a filter is deployed, we don't want to run the 1B student on every article either, so a small e5 probe screens first and only promising articles reach the student. Here the probe isn't cosine-similarity to seeds — it's a small classifier trained on the labeled data, and crucially it's tuned **recall-first**: we pick its threshold off the validation recall curve at a target false-negative rate, not by minimizing error. On a floor-dominated corpus a probe trained to minimize error collapses to "reject everything" and silently drops the needles it exists to catch. Nature recovery's inference probe keeps ~98% of true medium-plus articles while skipping ~64% of the haystack — a screen has to be measured by what it *doesn't* wrongly discard, not by average accuracy.
+
 ## Distillation as energy investment
 
 The standard framing of knowledge distillation is cost reduction: replace an expensive API with a cheap local model. That's true but insufficient.
@@ -133,18 +139,42 @@ Honesty requires listing what's hard and what's still broken.
 
 **The 95% we throw away.** Pre-screening selects 2-3% of the corpus for oracle scoring. That means 97% of articles are never evaluated by the oracle. If a foresighted decision is described in unusual language that doesn't resemble our seed articles, the embedding screener won't find it. We accept this false-negative rate as the price of tractability.
 
+**The top of the scale.** Our models can't reliably produce 8–10 scores, because there are almost no 8–10 examples to learn from — in one filter, 2 articles out of ~3,900. A regression model interpolates within the data it has seen; it won't extrapolate into a near-empty band, and the loss actively rewards hedging toward the populated middle. Calibration can't rescue this — isotonic calibration is monotonic and bounded by the range the model actually emits, so it can't invent range it never learned. The real fix is more top-end training data (active learning), which we haven't done. For now we clip the top and accept a compressed high end. It rarely matters for *surfacing* (the decision lives at the medium threshold); it only blurs "great" versus "exceptional."
+
+## Comparing across filters: calibrate within, normalize across
+
+A subtle consequence of all this: you cannot compare raw scores *between* filters. One filter surfaces 60% of articles as medium-plus, another 0.3% — a "5" means completely different things in each, and the compressed top band differs per filter too.
+
+The tempting fix — linearly rescale each filter to 0–10 — is wrong, and we shipped that bug once. Linear stretching over-promotes the compressed filter: a mediocre nature-recovery article gets stretched up until it outranks a genuinely great uplifting one, and on a shared feed that ranks by max-score-across-filters, the compressed filter hijacks the front page.
+
+There are two different jobs. **Calibration** makes a score honest *within* a filter — isotonic regression aligning the student to its oracle. It does not make filters comparable. **Cross-filter comparison** needs a separate, *non-linear* step: map each score to its **percentile in that filter's own production distribution**. Then "top 5% of recovery" and "top 5% of thriving" compare as equals — and the compressed top band stops mattering, because you're comparing standings within each population, never raw values across them.
+
+## Choosing the oracle: noise is not bias
+
+The oracle isn't ground truth — it's a *labeler*, and a labeler has two independent failure modes. We conflated them once and it cost real money.
+
+**Noise** is self-inconsistency: score the same article twice and the labeler disagrees with itself. It's easy to measure — re-score a sample, compute the spread — and it sets a floor on the student, which can never be more consistent than its teacher.
+
+**Bias** is where the labeler sits relative to *your* editorial judgment: too generous, too harsh, rewarding the wrong things. Bias is *not* measurable by self-consistency. You have to read the articles where two candidate oracles disagree and judge which one is right.
+
+These two axes pull apart, and optimizing the easy one wrecks the hard one. On nature recovery we tested two oracles on the same articles. One was 2.2× more self-consistent (noise 0.17 vs 0.38) — and it was also systematically more *generous*, scoring a corporate "sustainability changemaker" profile at 5.6 and a "6 practices" how-to listicle at 5.6: exactly the content the filter exists to reject. The conservative, noisier oracle matched our editorial line; the clean one did not. Switching to the low-noise oracle to "improve the labels" would have re-labeled the entire corpus toward the wrong bias — a mistake that's expensive precisely because clean, consistent, wrong labels look like progress.
+
+The lesson: **choose the oracle for bias, and choose it per filter — never inherit a default, and never switch oracles just to cut noise.** If a correctly-biased oracle is too noisy, average several of its runs (noise falls as 1/√k) rather than swapping in a differently-biased one. Self-consistency is seductive because it's a number you can compute without judgment; bias is the one that matters and the one you can only see by reading.
+
 ## The pattern
 
 The negativity bias in news isn't just an editorial problem. It's an engineering problem. It creates data distributions that defeat standard ML pipelines. When you filter for what's working in a world that selects for what's broken, you will hit the needle-in-haystack problem.
 
 The solution is not a single technique but a pipeline:
 
-1. **Dimensional scoring** — decompose judgment into measurable sub-factors
-2. **Embedding pre-screening** — find the needles before you score them
-3. **Soft scope gating** — let the oracle grade on a gradient, not a binary
-4. **Knowledge distillation** — invest energy once, infer sustainably forever
+1. **Oracle selection** — choose the labeler for editorial *bias*, per filter; noise you can average away, bias you can't
+2. **Dimensional scoring** — decompose judgment into measurable sub-factors
+3. **Embedding pre-screening** — find the needles before you score them (and screen recall-first)
+4. **Soft scope gating** — let the oracle grade on a gradient, not a binary
+5. **Knowledge distillation** — invest energy once, infer sustainably forever
+6. **Measure with ranking metrics** — Recall@k / NDCG / false-negatives, not MAE; and compare across filters by percentile, not raw score
 
-Each step addresses a specific failure mode. Skip the dimensional scoring and you're back to sentiment analysis. Skip the pre-screening and your training data is 90% noise. Skip the soft gating and you create dead zones in your score distribution. Skip the distillation and you're paying cloud API costs on every article forever.
+Each step addresses a specific failure mode. Pick the oracle for convenience instead of bias and you distill the wrong judgment. Skip the dimensional scoring and you're back to sentiment analysis. Skip the pre-screening and your training data is 90% noise. Skip the soft gating and you create dead zones in your score distribution. Skip the distillation and you're paying cloud API costs on every article forever. Judge it by MAE and you'll ship a needle filter that looks fine and finds nothing.
 
 We didn't design this pipeline in advance. We discovered it by failing — thriving v1's bimodal distribution, foresight's first 300-article calibration batch, the seeds that got contaminated by corpus composition. Each failure taught us one piece.
 

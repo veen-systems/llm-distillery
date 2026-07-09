@@ -541,6 +541,16 @@ def main():
              "Weight = 1 + WA * scale. Use 2-3 for needle-in-haystack filters "
              "with extreme class imbalance (e.g. nature_recovery).",
     )
+    parser.add_argument(
+        "--select-metric",
+        choices=["recall_at_20", "recall_medium"],
+        default="recall_at_20",
+        help="Validation metric to select the best checkpoint on (both maximized). "
+             "recall_at_20 = top-20 ranking precision (default). recall_medium = "
+             "recall on MEDIUM+ positives (1 - FN-rate); prefer this when the "
+             "deploy gate penalizes missing/over-demoting positives (needle filters "
+             "where not-missing-positives matters more than top-20 precision).",
+    )
 
     args = parser.parse_args()
 
@@ -721,7 +731,7 @@ def main():
                 training_history = json.load(f)
             start_epoch = training_history[-1]["epoch"]
             best_val_mae = training_history[-1]["val"]["mae"]
-            best_val_recall = training_history[-1]["val"].get("recall_at_20", -1.0)
+            best_val_recall = training_history[-1]["val"].get(args.select_metric, -1.0)
             print(f"  Resuming from epoch {start_epoch} (best val MAE: {best_val_mae:.4f})")
         else:
             training_history = []
@@ -809,10 +819,13 @@ def main():
         }
         training_history.append(epoch_history)
 
-        # Checkpoint selection: RECALL@20 (needle metric) when available, NOT
-        # aggregate MAE — a floor-predictor wins MAE on an ~85% floor (settled:
-        # filter-development-guide Issue 4). Falls back to MAE if weights absent.
-        val_recall = val_metrics.get("recall_at_20")
+        # Checkpoint selection: a needle metric (--select-metric) when available,
+        # NOT aggregate MAE — a floor-predictor wins MAE on an ~85% floor (settled:
+        # filter-development-guide Issue 4). recall_at_20 = top-20 ranking precision;
+        # recall_medium = recall on MEDIUM+ (1 - FN-rate), preferred when the deploy
+        # gate penalizes over-demoting/missing positives. Falls back to MAE if the
+        # chosen metric is absent (no dimension weights).
+        val_recall = val_metrics.get(args.select_metric)
         if val_metrics["mae"] < best_val_mae:
             best_val_mae = val_metrics["mae"]
         if val_recall is not None:
@@ -822,7 +835,10 @@ def main():
         if improved:
             if val_recall is not None:
                 best_val_recall = val_recall
-                print(f"\n✓ New best checkpoint (Recall@20={val_recall:.3f}, MAE={val_metrics['mae']:.4f})")
+                print(f"\n✓ New best checkpoint ({args.select_metric}={val_recall:.3f}, "
+                      f"Recall@20={val_metrics.get('recall_at_20', float('nan')):.3f}, "
+                      f"recall_medium={val_metrics.get('recall_medium', float('nan')):.3f}, "
+                      f"MAE={val_metrics['mae']:.4f})")
             else:
                 print(f"\n✓ New best checkpoint (MAE={val_metrics['mae']:.4f})")
 

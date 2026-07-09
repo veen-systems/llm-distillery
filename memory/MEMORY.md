@@ -18,6 +18,7 @@ Loaded every session. Topic files loaded on demand via triggers below.
 | `feedback-conservative-oracle-better.md` | Choosing/tuning an oracle with penalty flags | Prefer the oracle that under-fires penalties; conservativism > raw consensus |
 | `feedback-oracle-not-ground-truth.md` | High-MAE dimension, or optimizing student | Oracle is a consistent labeler, not truth — suspect label noise first, fix the prompt |
 | `feedback-claim-requires-verify.md` | Writing any "deployed/shipped/tested/uploaded" claim | A claim is false until a check that probes THAT specific claim runs and its output is captured — grep the artifact exists before "promoted to X" |
+| `feedback-oracle-bias-vs-noise.md` | Tempted to switch/pick an oracle on consistency numbers | NOISE (self-consistency) ≠ BIAS (editorial alignment). Never switch oracle to cut noise — bias is primary; average k runs of the correctly-biased oracle instead. Cost the engineer $100-200 before |
 | `cd-v5-reference-status.md` | DeepSeek-oracle or ADR-020 methodology questions | cd v5 = reference example; solutions v4 = the validation case |
 | `filter-doc-standard.md` | Documenting a new/deployed filter | belonging v1's 7-file core + cd v5's 2 optional extensions |
 | `ovr-lens-set-current.md` | Which filter powers which ovr.news tab | Lens→filter mapping; authoritative tab config lives in ovr.news |

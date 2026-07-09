@@ -305,7 +305,11 @@ hybrid_inference:
   stage1:
     embedding_model: "intfloat/multilingual-e5-small"
     probe_path: "probe/embedding_probe_e5small.pkl"
-    threshold: 0.75  # TODO: recalibrate on v2 production data
+    # Recall-first screen (train_probe.py --objective recall, 2026-07-09):
+    # highest threshold with val FN-rate <= 2% on MEDIUM+ positives. Achieves
+    # val recall 98.2% (FN 1.8%, 1/56 positives) while routing only 36% of
+    # articles to Stage 2 (screens out ~64%). See probe metrics + val recall curve.
+    threshold: 3.225
   stage2:
     model: "current"
 
