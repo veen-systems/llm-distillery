@@ -30,6 +30,7 @@ ADRs are short documents that capture important architectural decisions along wi
 - [ADR-017: Inter-Oracle MAE as Distillation Floor](017-inter-oracle-mae-as-distillation-floor.md) - Frontier LLMs disagree by 0.6-1.0 MAE; distilled models at or below this floor need prompt improvements, not more training
 - [ADR-018: Declarative Prefilter Shape](018-prefilter-shape-harmonization.md) - Extend BasePreFilter with EXCLUSION_PATTERNS / OVERRIDE_KEYWORDS / POSITIVE_PATTERNS; per-filter migration in priority order (#52)
 - [ADR-019: Per-Category Exclusion Overrides](019-per-category-exclusion-overrides.md) - Extend `_is_excluded` with per-category override config dict (`CATEGORY_OVERRIDES`) + `_category_override_applies()` hook so 4/7 filters can drop custom `apply_filter`; unblocks #51 per-filter consumption
+- [ADR-021: Ground-Truth Deploy Gate](021-ground-truth-gate.md) - A deploy gate judges each model against held-out ORACLE ground truth (the chosen editorial line), not against the prior deployed model; supersedes `agreement_gate.py` (which false-FAILed v4 by judging it against a Gemini-labeled v2 reference)
 
 ## Format
 

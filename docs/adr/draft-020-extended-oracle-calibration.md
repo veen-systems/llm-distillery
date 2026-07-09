@@ -3,7 +3,20 @@
 **Date:** 2026-05-31
 **Status:** DRAFT — under review
 **Supersedes (in part):** docs/agents/filter-development-guide.md Phase 3 (extends, doesn't replace)
-**Related:** ADR-015 (lenses as perspectives, not partitions), ADR-017 (inter-oracle MAE floor), ADR-010 (oracle consistency over data volume)
+**Related:** ADR-015 (lenses as perspectives, not partitions), ADR-017 (inter-oracle MAE floor), ADR-010 (oracle consistency over data volume), ADR-021 (ground-truth deploy gate)
+
+> **Amendment 2026-07-09 — separate NOISE from BIAS in oracle selection.** The multi-oracle
+> calibration below (decision 2) implicitly optimizes *agreement/consistency*. nature_recovery
+> v4 surfaced a sharp lesson worth folding in: **self-consistency (noise) and editorial
+> alignment (bias) are orthogonal, and bias is the primary criterion.** DeepSeek vs Gemini on
+> the same 65 articles — Gemini 2.2× *less* noisy (WA self-MAE 0.17 vs 0.38) yet systematically
+> *more generous*, surfacing promo/how-to/listicle content the filter rejects. Selecting the
+> low-noise oracle would have distilled the wrong judgment. Rule: **choose the oracle for bias
+> (per filter), then cut noise by averaging k runs of the correctly-biased oracle — never by
+> switching to a cleaner-but-differently-biased one.** Self-consistency is easy to compute and
+> therefore seductive; bias requires reading the disagreement set. Composes with the
+> conservative-oracle principle (decision 3). See `memory/feedback-oracle-bias-vs-noise`,
+> augmented-engineering#26.
 
 ---
 

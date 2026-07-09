@@ -4,6 +4,7 @@
 
 - **belonging v1 → ovr.news** - Add Belonging tab (filter deployed, frontend work only). Prefilter obituary leak patched 2026-04-28 (#45).
 - **nature_recovery v2** - Deployed (val MAE 0.53 calibrated, Recall@20 0.70) → ovr.news Recovery tab (normalization + frontend)
+- **nature_recovery v4** - Ground-truth gate PASSED 2026-07-09 (beats v2 on every metric vs held-out DeepSeek: precision 0.85 vs 0.61, recall 0.67 vs 0.60 at op-point 3.75). #70 protection scope + multilingual prefilter fix (21.6%→0%) + recall-first e5 probe. Deploying (first checkpoint, scale 2.0). Recall is the soft axis → v5 active-learning enrichment (#71). Oracle stays DeepSeek for conservative *bias*.
 - **sustainability_technology v3** - Prefilter clickbait leak patched 2026-04-28 (#46). v4 retraining still on the cards for classifier-side off-topic (Eiffel Tower etc.)
 - ~~**thriving v1**~~ - PARKED indefinitely. Uplifting v7 stays as Thriving tab. Orthogonal lens design caused bimodal distribution (ADR-015); a fixed v2 would just be uplifting v7 again
 - ~~**foresight v1**~~ - PARKED 2026-04-16 (#43). Captures governance solutions, not foresight. Lens folding into broadened Solutions at sustainability_technology v4.
