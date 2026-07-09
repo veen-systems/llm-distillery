@@ -37,7 +37,7 @@ class NatureRecoveryScorerHub(BaseNatureRecoveryScorer):
 
     def __init__(
         self,
-        repo_id: str = "jeergrvgreg/nature-recovery-filter-v2",
+        repo_id: str = "jeergrvgreg/nature-recovery-filter-v4",
         token: Optional[str] = None,
         device: Optional[str] = None,
         use_prefilter: bool = True,
