@@ -1844,30 +1844,72 @@ Hybrid inference uses a cheap Stage 1 (e5-small embedding + MLP probe) to quickl
 
 ### Process
 
-See `filters/common/embedding_stage.py` and `filters/common/hybrid_scorer.py` for the shared infrastructure.
+See `filters/common/embedding_stage.py` and `filters/common/hybrid_scorer.py` for the shared infrastructure. `scripts/train_probe.py` generates the e5 embeddings inline (no separate embeddings step) and writes the probe pickle in the format `EmbeddingStage` reconstructs.
 
 ```bash
-# Generate embeddings
-PYTHONPATH=. python scripts/embeddings/generate_embeddings.py \
+# Balanced filter (default L1-regression objective)
+PYTHONPATH=. python scripts/train_probe.py \
+    --filter filters/{filter_name}/v{N} \
     --data-dir datasets/training/{filter_name}_v{N} \
-    --output-dir filters/{filter_name}/v{N}/probe
-
-# Train probe
-PYTHONPATH=. python scripts/embeddings/train_probe.py \
-    --embeddings-dir filters/{filter_name}/v{N}/probe \
-    --output-dir filters/{filter_name}/v{N}/probe
+    --embedding-model intfloat/multilingual-e5-small
 ```
 
-**Output**: `filters/{filter_name}/v{N}/probe/` directory with probe weights and threshold config.
+**Output**: `filters/{filter_name}/v{N}/probe/embedding_probe_e5small.pkl` plus the selected threshold (set it in `config.yaml` → `hybrid_inference.stage1.threshold`).
+
+#### How the shared screen works (READ before choosing an objective)
+
+`EmbeddingStage` (shared, used by every filter) makes the Stage-1 decision as
+**`needs_stage2 = weighted_avg(probe_output) >= threshold`**, where the probe emits a
+**6-dim per-dimension vector**, each dim is clamped to [0,10], and the weighted sum uses
+the filter's dimension weights. Two consequences that constrain any probe redesign:
+
+- The gatekeeper is **NOT** applied at Stage 1 (`hybrid_scorer.py`) — the screen statistic
+  is the plain clamped weighted average. Threshold selection must use *that* statistic, not
+  the gatekeepered one.
+- You cannot make the probe emit a bare probability/scalar without changing shared code for
+  **every** filter. Keep the 6-dim output contract.
+
+#### Needle filters: train the probe RECALL-FIRST (`--objective recall`)
+
+For a needle-in-haystack filter (MEDIUM+ positives well under ~25% of the corpus — check
+with Issue 4's balance one-liner), the default L1 regression **collapses to a floor
+predictor**: it minimises average error by predicting ~0 for everything, so the Stage-1
+screen silently drops genuine positives (a false negative here means the article never
+reaches the student and can never surface). That is the exact recall bug — verify FN on
+MEDIUM+, never trust probe MAE here (same trap as Issue 4 for the student).
+
+The fix keeps the 6-dim contract but changes the *objective*:
+
+```bash
+PYTHONPATH=. python scripts/train_probe.py \
+    --filter filters/{filter_name}/v{N} \
+    --data-dir datasets/training/{filter_name}_v{N} \
+    --embedding-model intfloat/multilingual-e5-small \
+    --objective recall --target-fn 0.02
+```
+
+- **Target**: binary `y = 1` if the *gatekeepered* oracle weighted-average ≥ 4.0 (MEDIUM+).
+- **Loss**: class-weighted BCE on `sigmoid(wa_scale·(wa_pred − 4.0))` — i.e. train the probe's
+  *weighted average* as the MEDIUM+ classifier — plus a light auxiliary L1 so the per-dim
+  outputs stay interpretable (they surface as `scores` for Stage-1-LOW articles).
+- **Threshold**: chosen from the **validation recall curve** as the highest value with
+  FN-rate ≤ `--target-fn` on MEDIUM+ positives (FN-rate is monotonic in threshold), using the
+  *exact* deployed screen statistic. This maximises screen-out while bounding recall loss.
+- The threshold-selection and FN-rate helpers are pure functions, unit-tested in
+  `tests/unit/test_train_probe.py` — mirror that pattern for any new gate/selection logic.
+
+**Rule of thumb:** if <25% of training articles are MEDIUM+, use `--objective recall` and
+report FN@MEDIUM+ / recall, not probe MAE. Otherwise the default regression path is fine.
 
 ### Reference Stats (Production Filters)
 
-| Filter | Probe MAE | Threshold | FN Rate | Speedup |
-|--------|-----------|-----------|---------|---------|
-| uplifting v5 | 0.49 | 4.5 | 1.7% | 2.09x |
-| sustainability_technology v2 | 0.707 | 1.25 | 1.2% | 1.25x |
-| investment-risk v5 | 0.497 | 1.50 | 0.8% | 1.07x |
-| cultural-discovery v3 | 0.609 | 1.25 | 0.0% | 1.52x |
+| Filter | Objective | Probe MAE | Threshold | Recall / FN @ MEDIUM+ | Speedup |
+|--------|-----------|-----------|-----------|------------------------|---------|
+| uplifting v5 | regression | 0.49 | 4.5 | 1.7% FN | 2.09x |
+| sustainability_technology v2 | regression | 0.707 | 1.25 | 1.2% FN | 1.25x |
+| investment-risk v5 | regression | 0.497 | 1.50 | 0.8% FN | 1.07x |
+| cultural-discovery v3 | regression | 0.609 | 1.25 | 0.0% FN | 1.52x |
+| nature_recovery v4 | **recall** | n/a (classifier) | 3.225 | 98.2% recall / 1.8% FN | ~1.6x (36% to Stage 2) |
 
 ---
 

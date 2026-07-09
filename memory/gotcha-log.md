@@ -594,3 +594,41 @@ Captured outputs (this is the deploy-claim verification trail the rule requires)
 **Root cause**: Momentum + an eager reading of "finish it" led to spending before the checks. Also skipped reading `docs/agents/filter-development-guide.md` at the start of filter work (CLAUDE.md's "Before You Start" says to read it), so metrics/process were reconstructed from memory instead of the settled guide.
 **Fix**: none needed this time; recorded as process. Recurrence of the "multi-agent review battery catches what a single pass misses" pattern (2026-04-29) — it fired again here (caught the CRITICAL inference-import crash + broken regexes).
 **Lesson**: read the filter-development-guide BEFORE filter work, and run the review battery BEFORE any paid oracle run or "verified/deployed" claim — not after. The `\b(stem)\b` trailing-boundary regex bug ALSO recurred this session (POSITIVE_PATTERNS), re-confirming the promoted "found one regex bug → audit siblings" pattern.
+
+## Recall-First Probe for Needle Filters + "Promoted" Feedback Memories That Never Existed (2026-07-09)
+
+**Two findings from nature_recovery v4 probe work, both generalizable to filter creation.**
+
+**1. The Stage-1 probe must be trained recall-first for needle filters — and the shared
+`EmbeddingStage` contract constrains how.** `scripts/train_probe.py` minimized L1Loss on the
+6-dim labels and selected on val_mae. On a ~85% zero-floor corpus that collapses to a floor
+predictor: the Stage-1 screen (`needs_stage2 = weighted_avg(probe) >= threshold`, gatekeeper
+NOT applied — `hybrid_scorer.py`) then drops genuine positives, which never reach the student
+and can never surface. Fix without touching shared code: keep the 6-dim output contract but
+train the probe's *weighted average* as a binary MEDIUM+ classifier (class-weighted BCE on
+`sigmoid(wa_scale·(wa_pred−4.0))` + light aux L1), and pick the threshold from the val recall
+curve at a target FN. nature_recovery v4: 98.2% recall / 1.8% FN at threshold 3.225, 36% routed
+to Stage 2. Added as `--objective recall` (default stays `regression` for balanced filters) and
+documented in `docs/agents/filter-development-guide.md` Phase 6c. Pure selection helpers
+unit-tested in `tests/unit/test_train_probe.py`. Same MAE-is-misleading trap as Issue 4 for the
+student, one stage earlier.
+
+**2. Three `feedback-*` memories referenced as "PROMOTED" were never created.**
+`feedback-claim-requires-verify.md` is cited 5+ times across this log (#44, the overnight-outage
+entry adds "point #4"/"point #5") and in CLAUDE.md, yet `ls memory/feedback-claim-requires-verify.md`
+returned nothing until 2026-07-09. `feedback-multi-agent-review-default.md` and
+`feedback-regex-ignorecase-trap.md` are in the same state. This is the "claim requires verify"
+rule failing about *itself* — "promoted to X.md" was written from intent, and the file was never
+committed (recurrence of the 6-memories-never-committed finding, 2026-07-05, and the same shape as
+today's agreement_gate.py "written+unit-tested" claim with no committed test).
+
+**Fix:** created `feedback-claim-requires-verify.md` (grounded in this log's entries) with an
+explicit point #3 — a "shipped/tested/promoted" claim about a FILE is false until the file exists
+in the tree; grep for it before writing the claim. Backfilled `tests/unit/test_agreement_gate.py`
+(13) and `tests/unit/test_train_probe.py` (17) so both "unit-tested" claims are now true.
+`feedback-multi-agent-review-default.md` + `feedback-regex-ignorecase-trap.md` still need creating
+(flagged for /curate).
+
+**Lesson:** when a doc/commit/log says "promoted to X" or "unit-tested", that is a file-existence
+claim — verify the artifact before trusting it, and when authoring, create the file in the same
+change. The most-referenced piece of process guidance can be the one that was never written down.
