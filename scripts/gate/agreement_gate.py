@@ -1,5 +1,18 @@
 """Agreement gate for nature_recovery v4 (blocks deploy — plan §E, NM#229).
 
+⚠️ SUPERSEDED 2026-07-09 by scripts/gate/ground_truth_gate.py — DO NOT USE for a
+deploy verdict. This gate judged the candidate against the *previous student* (v2)
+as the baseline, and drew its Source-A cohort from `nr_v4_sourceA_reference.jsonl`,
+which turned out to be v2-era **Gemini** labels (+1.775 inflated vs the DeepSeek
+labels v4 was trained on). A DeepSeek-trained (deliberately conservative) student
+was therefore scored against a generous Gemini baseline, and its *correct*
+demotions of Gemini-inflated content counted as `over_demotion` failures — a false
+FAIL. Judge candidates against held-out ORACLE ground truth instead (the oracle the
+model was trained on = the chosen editorial line). See ground_truth_gate.py,
+augmented-engineering#25, memory/feedback-oracle-bias-vs-noise. Kept for provenance.
+
+
+
 Dual-scores the FROZEN gate cohorts with the v2 student (baseline) and the v4
 student (candidate), then computes NM#229's 4 acceptance metrics. Emits a report
 and an overall PASS/FAIL. This is the deploy gate: v4 ships only if it passes.
