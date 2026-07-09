@@ -69,9 +69,9 @@ See `DEEP_ROOTS.md` for full scientific and philosophical grounding.
 
 ## Deployment
 
-- HuggingFace Hub: `jeergrvgreg/nature-recovery-filter-v2` (private)
-- gpu-server: `~/NexusMind/filters/nature_recovery/v2/`
-- sadalsuud: `~/local_dev/NexusMind/filters/nature_recovery/v2/`
+- HuggingFace Hub: `jeergrvgreg/nature-recovery-filter-v4` (private)
+- gpu-server: `~/NexusMind/filters/nature_recovery/v4/`
+- sadalsuud: `~/local_dev/NexusMind/filters/nature_recovery/v4/`
 
 ## Remaining
 
