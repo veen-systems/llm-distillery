@@ -50,7 +50,6 @@ framework: agent-ready-projects v1.10.6
 | **thriving** | v1 | PARKED indefinitely — orthogonal lens design caused bimodal distribution (ADR-015); uplifting v7 stays as Thriving tab |  |
 | **sustainability_technology → solutions** | v4 | Design phase — broaden from clean-tech to include governance/community solutions (#43) | ovr.news Solutions tab |
 | **ai-engineering-practice** | v2 | Ready for oracle scoring; rename to augmented-engineering at next bump | Separate product (not ovr.news) |
-| ~~**nature_recovery** v4~~ | — | **DEPLOYED 2026-07-10** — moved to Production Filters above. Ground-truth gate (ADR-021) beat v2 on every metric; deployed via canonical chain (NexusMind git → sadalsuud `deploy_filters.sh` → gpu-server; model pre-placed to survive the `*/model/` rsync exclude), live smoke test `wa=7.31`. Caught two pre-deploy bugs: stale v2 `normalization.json` (removed — fresh version refits) + obituary_detector `filters/common` contamination. Old `agreement_gate.py` superseded (false-FAILed v4 vs a Gemini-labeled reference). Report: `docs/reports/nature_recovery_v4_report.pdf`. Oracle = DeepSeek for conservative *bias* (`feedback-oracle-bias-vs-noise`). | done |
 
 ## Key Decisions
 
