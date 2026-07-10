@@ -7,9 +7,11 @@ metadata:
 
 # Session 2026-07-09 — nature_recovery v4 to the deploy boundary
 
-**Outcome:** v4 is **gate-passed, Hub-uploaded, and STAGED** — production activation
-deliberately deferred (sadalsuud was down + flaky link + discovery=latest landmine).
-Completion runbook: `docs/nature_recovery_v4_DEPLOY_COMPLETION.md`.
+**Outcome:** v4 **DEPLOYED 2026-07-10** — gate-passed, Hub-uploaded, then shipped via the
+canonical chain once sadalsuud recovered from a power-cycle. Live smoke test `nature_recovery
+wa=7.31`, all 7 filters healthy. Caught 2 pre-deploy bugs (stale v2 normalization.json;
+obituary filters/common contamination). v2 kept as fallback. Full Fluxus→Nexus→ovr run
+confirms on next harvest cycle.
 
 ## What shipped (committed acbfe7c..f2879d7)
 - **Recall-first e5 probe** (`scripts/train_probe.py --objective recall`, H3 fix): 98.2%
