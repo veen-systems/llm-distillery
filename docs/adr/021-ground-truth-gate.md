@@ -58,9 +58,11 @@ rank agreement (Spearman). A candidate deploys if it does not regress the incumb
 these metrics. Implemented in `scripts/gate/ground_truth_gate.py` (pure functions
 unit-tested); `agreement_gate.py` is Deprecated.
 
-nature_recovery v4 result (vs held-out DeepSeek labels, operating point 3.75): v4
-precision 0.85 / recall 0.67 / Spearman 0.82 vs v2 0.61 / 0.60 / 0.80 — v4 dominates,
-where the old gate reported FAIL.
+nature_recovery v4 result (vs held-out DeepSeek labels, operating point 3.75,
+reproduced on the deployed adapter 2026-07-10, n=391): v4 precision 0.85 / recall
+0.65 / Spearman 0.82 vs v2 0.61 / 0.58 / 0.80 — v4 dominates, where the old gate
+reported FAIL. (The committed gate hardcoded 4.0 until 2026-07-10; it now defaults
+to the config's tiers.medium.threshold so it always evaluates at what deploys.)
 
 ## Consequences
 
