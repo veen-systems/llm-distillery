@@ -16,10 +16,10 @@ source (ADR / memory / gotcha) so it stays maintainable — fix the source, not 
 | `memory/gpu-server.md` | gpu-server env (venv, PYTHONPATH, HF_HUB_OFFLINE, scp-not-rsync) | live |
 | `docs/adr/README.md` | Settled decisions (21 ADRs) | live |
 | `memory/gotcha-log.md` + `memory/feedback-*.md` | Problem→fix archive + behavioral rules (the source of the pits below) | live |
-| `docs/guides/getting-started.md` | — | **DEPRECATED** (Qwen-era) |
-| `docs/guides/ground-truth-generation.md` | batch-scorer mechanics only | **DEPRECATED** (rest is stale) |
-| `docs/guides/gpu-training-guide.md` | — | **superseded** → RUNBOOK + `memory/gpu-server.md` |
-| `docs/guides/remote-sync-guide.md` | — | **superseded** (FreeFileSync → scp/rsync; see `memory/gpu-server.md`) |
+| `docs/_archive/guides/getting-started.md` | — | **DEPRECATED** (Qwen-era) |
+| `docs/_archive/guides/ground-truth-generation.md` | batch-scorer mechanics only | **DEPRECATED** (rest is stale) |
+| `docs/_archive/guides/gpu-training-guide.md` | — | **superseded** → RUNBOOK + `memory/gpu-server.md` |
+| `docs/_archive/guides/remote-sync-guide.md` | — | **superseded** (FreeFileSync → scp/rsync; see `memory/gpu-server.md`) |
 
 ---
 
