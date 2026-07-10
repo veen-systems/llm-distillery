@@ -59,7 +59,7 @@ Format: **the pit → the rule** (source). Skim the bold before each stage.
 ### 4. Stage-1 probe (hybrid inference, ADR-006)
 - **Probe trained as L1 regression → floor-collapsed, dropped needles.** Train it **recall-first** on the FULL labeled set (`scripts/train_probe.py --objective recall`): binary MEDIUM+ target, class-weighted BCE, threshold from the val recall curve at a target FN — not by minimizing error. Report FN@MEDIUM+, not probe MAE. `feedback-probe-training-data`.
 - The shared `EmbeddingStage` screens on `weighted_avg(6-dim) >= threshold` and does NOT apply the gatekeeper at Stage 1 — keep the 6-dim output contract; don't change shared math for one filter. dev-guide Phase 6c.
-- **`.gitignore` has `filters/**/probe/` — the probe pkl won't be committed by default**, leaving the source package non-reproducible (the pkl is ~0.5 MB and needed for hybrid inference). **`git add -f` the probe pkl** (belonging v1 + nature_recovery v4 both track theirs). Found 2026-07-10 checking v4's components.
+- **Commit the probe pkl** (`filters/<name>/v<N>/probe/*.pkl`) — it's ~0.5 MB, needed for hybrid inference, and the source package isn't reproducible without it. As of 2026-07-10 the `.gitignore` commits filter probes by default (the old blanket `filters/**/probe/` + `*.pkl` double-ignore was fixed with a `!filters/*/v*/probe/*.pkl` negation); just confirm `git status` shows it staged.
 
 ### 5. Calibration + the top band
 - **Fit `calibration.json` after every training run** (per-dim isotonic on val, ADR-008). Auto-loaded by the base scorer. Commit it.
