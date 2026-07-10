@@ -48,6 +48,23 @@ ssh gpu-server "journalctl -u nexusmind-scorer -f"
 
 Canonical scorer source is `deploy/gpu-server/main.py` in NexusMind repo (not llm-distillery).
 
+## Long-running jobs + monitoring (salvaged from the retired gpu-training-guide, 2026-07-10)
+
+- **Long jobs (training/scoring) must survive SSH drops** — the Tailscale link to gpu-server is
+  intermittently flaky. Preferred: `setsid nohup … </dev/null >~/llm-distillery/<job>.log 2>&1 &`
+  then poll the log (grep the job's own first real output line to confirm it launched — do NOT
+  trust `pgrep -f "<script>"`, which matches your own ssh command line; verify by GPU memory /
+  large RSS / log growth). `tmux new -s train` / `tmux attach -t train` also works if you prefer
+  an interactive session.
+- **OOM → reduce `--batch-size`** (e.g. 8 → 4) and/or check what else holds VRAM first:
+  `nvidia-smi --query-gpu=memory.free --format=csv,noheader`. **ollama shares this GPU** and can
+  hold 15+ GB (`ollama ps` shows loaded models + keep-alive expiry) — a job that OOMs at launch
+  may just need to wait for ollama's idle model to unload, or run on CPU (`CUDA_VISIBLE_DEVICES=`).
+- **Monitor:** `watch -n 1 nvidia-smi`, or one-shot
+  `nvidia-smi --query-gpu=memory.used,memory.free,utilization.gpu --format=csv,noheader`.
+- **CPU fallback** for small scoring jobs (a few hundred articles): set `CUDA_VISIBLE_DEVICES=`
+  to dodge GPU contention entirely — ~1 s/article, reliable.
+
 ## Tailscale DNS Limitation
 
 DNS resolution to external hosts (huggingface.co) may fail. This is why `HF_HUB_OFFLINE=1` is required and models must be pre-cached.

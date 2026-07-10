@@ -1,6 +1,6 @@
 # GPU Training Guide
 
-> **SUPERSEDED (2026-07-10).** Current GPU training/deploy operations live in `docs/RUNBOOK.md` and the gpu-server env in `memory/gpu-server.md`. This 2025-11 tmux-based guide is kept for reference only. Start from `docs/FILTER_PLAYBOOK.md`.
+> **SUPERSEDED (2026-07-10).** Current GPU training/deploy operations live in `docs/RUNBOOK.md` and the gpu-server env in `memory/gpu-server.md`. Its still-useful operational tips (long-job pattern, OOM→batch-size, nvidia-smi monitoring, CPU fallback) were ported to `memory/gpu-server.md` 2026-07-10; the rest is Qwen-era and kept for reference only. Start from `docs/FILTER_PLAYBOOK.md`.
 
 
 **Last Updated:** 2025-11-10
