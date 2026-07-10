@@ -79,7 +79,7 @@ scoring:
   # scaling path now; score_scale_factor is only a linear fallback and must be
   # refit from the v4 production CDF post-deploy. Retained (not stripped) because
   # the config-schema gate requires it (REQUIRED_SCORING_KEYS). TBD post-retrain.
-  score_scale_factor: 1.3708
+  score_scale_factor: 1.0  # v4 fresh version: no linear stretch until normalization.json is refit on v4 production CDF (ADR-014). Was stale v2 1.3708 which inflated scores + defeated the gatekeeper/threshold design (found via live-scoring proof 2026-07-10).
 
   dimensions:
     # === EVIDENCE DIMENSIONS ===

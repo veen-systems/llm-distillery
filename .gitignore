@@ -56,13 +56,15 @@ secrets.ini
 # Model checkpoints (large files)
 inference/models/*/
 filters/**/model/
-filters/**/probe/
+# probe pkls (e5-small, ~0.5MB) ARE committed — needed for hybrid inference + reproducibility.
+# (removed blanket filters/**/probe/ ignore 2026-07-10). Large probe variants: ignore explicitly.
 *.pt
 *.pth
 *.onnx
 *.safetensors
 *.bin
 *.pkl
+!filters/*/v*/probe/*.pkl  # ...except filter hybrid-inference probes (small, needed, reproducible)
 # But track model metadata
 !filters/**/training_*.json
 
