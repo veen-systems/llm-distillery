@@ -10,6 +10,7 @@ Loaded every session. Topic files loaded on demand via triggers below.
 |------|-------------|-------------|
 | `gemma3-model.md` | Model loading, PEFT, or Hub upload issues | Auto mapping fix, OLD vs NEW key format, torch float16 |
 | `gpu-server.md` | Training on GPU or deploying to gpu-server | HF_HUB_OFFLINE, scp not rsync, venv path, PYTHONPATH |
+| `feedback-scorer-always-rest.md` | Scorer looks "down" / tempted to restart it | ALWAYS let the on-demand scorer rest; never restart or curl /health (2026-07-10 rule) |
 | `filter-status.md` | Checking filter versions, MAE, or hybrid probe stats | Per-filter deployment status and in-dev blockers |
 | `gotcha-log.md` | Stuck on infra, tooling, or something weird | Problem → Root cause → Fix archive |
 | `thriving-v1-scoring.md` | Understanding thriving v1 attempts | PAUSED — bimodal distribution, MAE 0.94, findings and open questions |
