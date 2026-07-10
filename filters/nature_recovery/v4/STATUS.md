@@ -28,4 +28,4 @@ Reproduced 2026-07-10 by re-scoring the held-out test set with the **deployed** 
 ## Deployed weights
 The shipped adapter is the seed-42 scale-2.0/Recall@20/3-epoch run (reproduced test recall 0.650 @3.75 on the deployed adapter; 0.672 original run). `training_metadata.json` reflects the identical recipe (val_MAE 0.7730; the seed-42 draw deployed measured val_MAE 0.7725 — immaterial 0.0005 difference; the load-bearing numbers are the held-out test metrics above).
 
-<!-- verify (disk-based, on gpu-server): test -f ~/NexusMind/filters/nature_recovery/v4/model/adapter_model.safetensors && grep -q '"3.75"\|3.75' ~/NexusMind/filters/nature_recovery/v4/config.yaml -->
+<!-- verify (disk-based, on gpu-server): test -f ~/NexusMind/filters/nature_recovery/v4/model/adapter_model.safetensors && grep -q '"medium", 3.75' ~/NexusMind/filters/nature_recovery/v4/base_scorer.py  # the RUNTIME tier source (config.yaml's 3.75 is inert — F1) -->
