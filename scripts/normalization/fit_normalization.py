@@ -60,7 +60,14 @@ def load_weighted_averages_local(
                     attrs = article.get("nexus_mind_attributes", {})
                     for key, analysis in attrs.items():
                         if isinstance(analysis, dict) and "weighted_average" in analysis:
-                            if filter_version is not None and analysis.get("filter_version") != filter_version:
+                            # Production writes the version as "version" inside the
+                            # per-filter nexus_mind_attributes block (e.g. {"version":"5.0"}).
+                            # Older code/data used "filter_version"; accept either.
+                            # str()-compare so "5.0" (arg) matches "5.0" (data). Bug fixed
+                            # 2026-07-10: was reading only "filter_version", excluding ALL
+                            # articles when --filter-version was passed (production uses "version").
+                            art_ver = analysis.get("version", analysis.get("filter_version"))
+                            if filter_version is not None and str(art_ver) != str(filter_version):
                                 n_wrong_version += 1
                                 continue
                             # Use raw_weighted_average to avoid double-normalization
@@ -125,7 +132,7 @@ for fp in files:
                 attrs = d.get("nexus_mind_attributes", {})
                 for k, v in attrs.items():
                     if isinstance(v, dict) and "weighted_average" in v:
-                        if filter_version is not None and v.get("filter_version") != filter_version:
+                        if filter_version is not None and str(v.get("version", v.get("filter_version"))) != str(filter_version):
                             n_wrong_version += 1
                             continue
                         raw = v.get("raw_weighted_average")
