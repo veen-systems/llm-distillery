@@ -732,6 +732,7 @@ def main():
             start_epoch = training_history[-1]["epoch"]
             best_val_mae = training_history[-1]["val"]["mae"]
             best_val_recall = training_history[-1]["val"].get(args.select_metric, -1.0)
+            saved_val_mae = best_val_mae  # approx on resume; overwritten on next save
             print(f"  Resuming from epoch {start_epoch} (best val MAE: {best_val_mae:.4f})")
         else:
             training_history = []
@@ -743,6 +744,7 @@ def main():
         training_history = []
         best_val_mae = float("inf")
         best_val_recall = -1.0
+        saved_val_mae = float("inf")  # val MAE of the checkpoint actually on disk
 
     # Set pad_token_id in model config to match tokenizer
     if model.base_model.config.pad_token_id is None and tokenizer.pad_token_id is not None:
@@ -847,13 +849,19 @@ def main():
             model_path = args.output_dir / "model"
             model.base_model.save_pretrained(model_path)
             tokenizer.save_pretrained(model_path)
+            # The val MAE that BELONGS to the checkpoint now on disk. When selecting
+            # on a recall metric the saved epoch is NOT the global-min-MAE epoch, so
+            # metadata must report this, not best_val_mae, or the model card cites an
+            # MAE the deployed model never achieved (found 2026-07-10, F3).
+            saved_val_mae = val_metrics["mae"]
 
             print(f"  Model saved to: {model_path}")
 
     # Save training history
     print(f"\n{'='*60}")
     print(f"Training complete!")
-    print(f"Best validation MAE: {best_val_mae:.4f}")
+    print(f"Deployed checkpoint val MAE: {saved_val_mae:.4f} "
+          f"(min val MAE any epoch: {best_val_mae:.4f})")
 
     history_path = args.output_dir / "training_history.json"
     with open(history_path, "w", encoding="utf-8") as f:
@@ -877,7 +885,8 @@ def main():
         "warmup_steps": args.warmup_steps,
         "train_examples": len(train_dataset),
         "val_examples": len(val_dataset),
-        "best_val_mae": best_val_mae,
+        "best_val_mae": saved_val_mae,          # val MAE of the deployed checkpoint (F3, 2026-07-10)
+        "min_val_mae_observed": best_val_mae,    # global min across epochs (may be a different epoch)
         "include_prompt": args.include_prompt,
         "training_mode": "instruction_tuning" if args.include_prompt else "knowledge_distillation",
         "use_head_tail": args.use_head_tail,

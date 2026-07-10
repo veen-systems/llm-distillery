@@ -44,9 +44,17 @@ class BaseNatureRecoveryScorer(FilterBaseScorer):
         "protection_durability": 0.10,
     }
 
+    # medium=3.75 is the tuned operating point. Reproduced on the held-out test set
+    # (n=391, 2026-07-10): 3.75 beats 4.0 for v4 on BOTH recall (0.638->0.650) and
+    # precision (0.841->0.848); v4 dominates v2 at 3.75 on every metric.
+    # MUST match config.yaml scoring.tiers.medium.threshold. This is the SOLE runtime source
+    # for tier assignment (no scoring code reads config's tiers section); a mismatch
+    # silently reverts the recall gain and ovr.news hides the [3.75,4.0) band as 'low'
+    # (found 2026-07-10: shipped at inert 4.0 for the whole v4 deploy). Stays above the
+    # 3.5 gatekeeper cap so capped articles cannot reach medium.
     TIER_THRESHOLDS = [
         ("high", 7.0, "Strong documented ecosystem recovery with measurable outcomes"),
-        ("medium", 4.0, "Some recovery evidence, partial data or limited scope"),
+        ("medium", 3.75, "Some recovery evidence, partial data or limited scope"),
         ("low", 0.0, "No recovery evidence, doom/decline only, or non-ecological content"),
     ]
 

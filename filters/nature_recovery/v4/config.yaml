@@ -199,13 +199,15 @@ scoring:
       description: "Significant recovery - strong documented ecosystem recovery with data, ecological importance, and lasting protection"
 
     medium:
-      # Operating point tuned on the held-out DeepSeek-labeled test set (2026-07-09
-      # ground-truth gate + threshold sweep): 3.75 dominates the old 4.0 on BOTH
-      # recall (0.60->0.66) and precision (0.833->0.844). MUST stay strictly ABOVE
-      # the recovery_evidence gatekeeper cap (3.5) — a cut <=3.5 lets every
-      # no-evidence article (capped at 3.5) surface and defeats the gatekeeper;
-      # the enriched test set hides that firehose precision cost. Lower cuts
-      # (3.25/3.0 buy more recall) are a v5 decision pending production validation.
+      # Operating point tuned on the held-out DeepSeek-labeled test set. Reproduced
+      # 2026-07-10 (n=391): 3.75 beats the old 4.0 for v4 on BOTH recall (0.638->0.650)
+      # and precision (0.841->0.848). WIRED INTO base_scorer.py TIER_THRESHOLDS (they
+      # MUST match; no scoring code reads this field — it was inert 4.0 the whole v4
+      # deploy until 2026-07-10, F1). MUST stay strictly ABOVE the recovery_evidence
+      # gatekeeper cap (3.5) — a cut <=3.5 lets every no-evidence article (capped at
+      # 3.5) surface and defeats the gatekeeper; the enriched test set hides that
+      # firehose precision cost. Lower cuts (3.25/3.0 buy more recall) are a v5
+      # decision pending production validation.
       threshold: 3.75
       description: "Meaningful progress - some recovery evidence with partial data or limited scale"
 

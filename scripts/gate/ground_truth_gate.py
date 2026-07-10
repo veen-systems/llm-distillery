@@ -99,12 +99,28 @@ def load_scores(path):
     return out
 
 
-def evaluate(truth, pred):
+def load_medium_threshold(config_path):
+    """Read tiers.medium.threshold from a filter config.yaml so the gate ALWAYS
+    evaluates at the operating point the filter actually deploys. Without this the
+    gate silently drifts from production (found 2026-07-10: gate hardcoded 4.0 while
+    the deployed op-point was 3.75, so the committed gate could not reproduce the
+    recall/precision numbers cited for the deploy). Falls back to MEDIUM on any miss."""
+    try:
+        import yaml
+        cfg = yaml.safe_load(Path(config_path).read_text(encoding="utf-8"))
+        # tiers live under scoring: in this schema; tolerate top-level too.
+        tiers = cfg.get("scoring", {}).get("tiers") or cfg.get("tiers")
+        return float(tiers["medium"]["threshold"])
+    except Exception:
+        return MEDIUM
+
+
+def evaluate(truth, pred, medium=MEDIUM):
     ids = [i for i in pred if i in truth]
-    tp = sum(1 for i in ids if truth[i] >= MEDIUM and pred[i] >= MEDIUM)
-    fn = sum(1 for i in ids if truth[i] >= MEDIUM and pred[i] < MEDIUM)
-    fp = sum(1 for i in ids if truth[i] < MEDIUM and pred[i] >= MEDIUM)
-    tn = sum(1 for i in ids if truth[i] < MEDIUM and pred[i] < MEDIUM)
+    tp = sum(1 for i in ids if truth[i] >= medium and pred[i] >= medium)
+    fn = sum(1 for i in ids if truth[i] >= medium and pred[i] < medium)
+    fp = sum(1 for i in ids if truth[i] < medium and pred[i] >= medium)
+    tn = sum(1 for i in ids if truth[i] < medium and pred[i] < medium)
     pos = tp + fn
     recall = tp / pos if pos else 0.0
     precision = tp / (tp + fp) if (tp + fp) else 0.0
@@ -123,19 +139,25 @@ def main():
     ap.add_argument("--model", action="append", required=True,
                     help="name=scored.jsonl (repeatable; e.g. v4=..., v2=...)")
     ap.add_argument("--report", default="filters/nature_recovery/v4/ground_truth_gate.json")
+    ap.add_argument("--config", default="filters/nature_recovery/v4/config.yaml",
+                    help="filter config.yaml; the MEDIUM threshold defaults to its "
+                         "tiers.medium.threshold so the gate matches what deploys")
+    ap.add_argument("--threshold", type=float, default=None,
+                    help="override the MEDIUM surfacing threshold (default: read from --config)")
     args = ap.parse_args()
 
+    medium = args.threshold if args.threshold is not None else load_medium_threshold(args.config)
     truth = load_labels(args.labels)
-    report = {"threshold": MEDIUM, "n_labeled": len(truth), "models": {}}
+    report = {"threshold": medium, "n_labeled": len(truth), "models": {}}
     for spec in args.model:
         name, path = spec.split("=", 1)
-        report["models"][name] = evaluate(truth, load_scores(path))
+        report["models"][name] = evaluate(truth, load_scores(path), medium)
 
     Path(args.report).parent.mkdir(parents=True, exist_ok=True)
     Path(args.report).write_text(json.dumps(report, indent=2))
 
     hdr = f"{'model':6} {'recall':>7} {'prec':>7} {'spec':>7} {'f1':>7} {'spearman':>9} {'mae':>6}"
-    print(f"\nGround-truth gate vs held-out oracle labels (threshold {MEDIUM}, n={len(truth)})")
+    print(f"\nGround-truth gate vs held-out oracle labels (threshold {medium}, n={len(truth)})")
     print(hdr)
     print("-" * len(hdr))
     for name, m in report["models"].items():
