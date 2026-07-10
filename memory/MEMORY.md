@@ -146,6 +146,7 @@ Light hygiene session — no code or filter changes. Memory correction + issue t
 - MEMORY.md recap is a **month behind git** — the June obituary_detector v3 work (#51, commits `87e9962`/`9692bcb`/`dd9c3c4`) has no recap entry here.
 
 ## Session pointers
+- [project_session_2026_07_10.md](project_session_2026_07_10.md) — v4 op-point 3.75 fix (was wired to nothing, ran at 4.0) + cd/invR normalization refit (version/filter_version fitter bug), both **validated in production output**; 12-agent adversarial review (F1/F2/F3); framework → v1.10.6.
 - [project_session_2026_07_09.md](project_session_2026_07_09.md) — nature_recovery v4 to the deploy boundary: recall-first probe, ground-truth gate (ADR-021), oracle bias-vs-noise ($100-200 catch), Hub-uploaded + **staged not activated** (sadalsuud down; `docs/nature_recovery_v4_DEPLOY_COMPLETION.md`).
 
 ## Session Recap (2026-05-31)
@@ -175,9 +176,13 @@ Took ducroq/llm-distillery#62 (cultural_discovery v5 hard-negatives) from issue 
 
 Cost this session: ~$0.07 total (2 calibration runs at $0.01 each + 49-article batch at $0.05).
 
-## Next Session Pickup (updated 2026-07-09)
+## Next Session Pickup (updated 2026-07-10)
 
-**🎯 PRIMARY: nature_recovery v4 — code + re-label DONE; training/gate/deploy STAGED.** Remaining-steps runbook: **`docs/nature_recovery_v4_RUNBOOK.md`** (read first). State: C1(b) resolved; commerce-only prefilter (recall 21.6%→1.3%); prompt+config revised; §A.5 pilot PASS; full re-label 3892 (DeepSeek, $4.81, 0 err); 4-model review battery → all fixed (incl. **CRITICAL** inference-stack repoint v2→v4); settled ranking metrics in `train.py`; splits ready (3112/389/391); `agreement_gate.py` written+unit-tested. All committed+pushed (branch `nature-recovery-v4`, `edc117a..046fa0d`). **DO NEXT (needs gpu-server / HF token):** (1) **fill `huggingface_token`** (still empty — blocks the gate's v2-student download); (2) rewrite `train_probe.py` recall-first (H3 — spec in its header + RUNBOOK §1); (3) train student `--sample-weight-scale 2.0`, runtime-verify inference construction on gpu-server (needs torch); (4) calibrate (⚠️ only **2** articles in the 8-10 band); (5) run agreement_gate; (6) **deploy ONLY if the gate passes** (still blocked — no model yet). Judgment call to review: did NOT re-spend ~$5 to re-label after prompt fixes (integrity check showed nil label impact).
+**✅ nature_recovery v4 is DEPLOYED + VALIDATED IN PRODUCTION** (2026-07-10). The op-point 3.75 is now actually wired into `TIER_THRESHOLDS` (was inert, ran at 4.0), and the fix is confirmed in real `filtered_*.jsonl` output. cd v5 + invR v6 normalization refit (percentile) also validated in prod. Full detail: **`memory/project_session_2026_07_10.md`**. Nothing left to deploy.
+
+**🎯 PRIMARY (next): solutions v4 (#43)** — broaden sustech to governance/community solutions; the ADR-020 validation case (follow cd v5's playbook end-to-end; graduates ADR-020 PROVISIONAL → Accepted). Prompt not yet drafted (`filters/sustainability_technology/v4/prompt-compressed.md` planned). **Schedule the oracle batch off-peak** (after ~noon CEST) — see `memory/oracle-pricing-scheduling.md`.
+
+**Tracked follow-ups (no action until triggered):** (1) **#72** — v4 normalization refit once ≥200 v4 prod MEDIUM+ articles accumulate (~5/batch, so weeks out); (2) **#71** — v5 recall (harvest false-negatives + high-scorers from saved NexusMind output); (3) blog draft `bias-without-a-self.md` ship steps (user's call, in dev.jeroenveen.nl).
 
 **Housekeeping carried from 2026-07-04 (do first, cheap):**
 1. ~~Resolve the phantom-memory-files claim.~~ **DONE 2026-07-05** — all 6 reconstructed + indexed, recap corrected, dangling link resolved. (Optional follow-up: sanity-check `ovr-lens-set-current.md`'s tab mapping against the actual ovr.news repo, which is authoritative.)

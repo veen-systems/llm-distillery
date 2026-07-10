@@ -201,3 +201,6 @@ README_MODEL.md
 # Claude Code temp files
 tmpclaude-*
 *-cwd
+
+# Reference PDFs: track the README pointer, keep binaries local
+docs/references/*.pdf

@@ -2,7 +2,7 @@
 stack: Python 3.12, PyTorch, Transformers, PEFT/LoRA
 status: Production
 repo: github.com/ducroq/llm-distillery
-framework: agent-ready-projects v1.10.4
+framework: agent-ready-projects v1.10.6
 ---
 
 # CLAUDE.md - LLM Distillery
@@ -40,7 +40,7 @@ framework: agent-ready-projects v1.10.4
 | **investment-risk** | v6 | 0.47 | 10.4K articles | Deployed (HF Hub, private) |
 | **cultural-discovery** | v5 | 0.70 | 8.5K articles | Deployed (HF Hub + gpu-server, private) — resolves #62 discovery-lens leakage via F-K soft-penalty flags; DeepSeek oracle (first non-Gemini) |
 | **belonging** | v1 | 0.49 | 7.4K articles | Deployed (HF Hub, private) |
-| **nature_recovery** | v4 | recall 0.65 / prec 0.85 @3.75 (reproduced n=391) | 3.9K articles (DeepSeek) | **DEPLOYED 2026-07-10** (HF Hub + NexusMind + gpu-server; live smoke test `nature_recovery wa=7.31`). Beats v2 on every ground-truth metric (ADR-021 gate); #70 protection scope + multilingual prefilter fix + recall-first probe. Op-point 3.75 was inert (ran at 4.0) until wired into TIER_THRESHOLDS 2026-07-10 (multi-model review F1). v2 kept as fallback. Recall is the soft axis → v5 (#71). |
+| **nature_recovery** | v4 | recall 0.65 / prec 0.85 @3.75 (reproduced n=391) | 3.9K articles (DeepSeek) | **DEPLOYED 2026-07-10** (HF Hub + NexusMind + gpu-server; live smoke test `nature_recovery wa=7.31`). Beats v2 on every ground-truth metric (ADR-021 gate); #70 protection scope + multilingual prefilter fix + recall-first probe. Op-point 3.75 was inert (ran at 4.0) until wired into TIER_THRESHOLDS 2026-07-10 (multi-model review F1); validated in production output same day ([3.75,4.0)→medium confirmed live). v2 kept as fallback. Recall is the soft axis → v5 (#71). |
 | **foresight** | v1 | 0.75 | 3.5K articles | PARKED — captures governance solutions, not foresight; merging into broadened Solutions lens (#43) |
 
 ### In Development (priority: ovr.news tabs)
@@ -135,4 +135,4 @@ This project is a source project for [agentic-engineering](https://github.com/du
 
 ---
 
-*Last updated: 2026-07-09*
+*Last updated: 2026-07-10*

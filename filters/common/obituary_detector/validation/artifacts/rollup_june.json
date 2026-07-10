@@ -1,0 +1,1223 @@
+{
+  "rows": [
+    {
+      "id": "southeast_asian_thaiger_173b7b1f9342",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9999,
+      "title": "Princess Bajrakitiyabha passes away at 47 after years of treatment",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "error",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 3
+    },
+    {
+      "id": "austrian_vol_at_80936c7d0967",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9977,
+      "title": "Ein totes Schulkind und Verletzte bei Bus-Zusammenstoß in Bayern",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "error",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 2
+    },
+    {
+      "id": "global_south_al_jazeera_science_f6210dc17048",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9996,
+      "title": "Renowned British artist David Hockney dies aged 88",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "error",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 3
+    },
+    {
+      "id": "global_news_deutsche_welle_4e8fe93e5252",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9536,
+      "title": "Nigeria: Abducted former general dies in captivity",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "error",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 3
+    },
+    {
+      "id": "us_news_cnn_dd109be4c13b",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9999,
+      "title": "Gene Shalit, longtime ‘Today’ show movie critic with bushy hair and massive mustache, dies at 100 - CNN",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "error",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 3
+    },
+    {
+      "id": "french_france_info_84c2a00aabe3",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9811,
+      "title": "\"Notre petit monde s'est effondré\" : la famille et les habitants de Fleurance rendent hommage à Lyhanna",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "error",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 3
+    },
+    {
+      "id": "gdelt_conflict_3096319ab7d2",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9628,
+      "title": "Rtd General Rabe Laid to Rest in Katsina",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "error",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 3
+    },
+    {
+      "id": "global_south_al_jazeera_science_d04ead185645",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 1.0,
+      "title": "Thai Princess Bajrakitiyabha dies after years in coma",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "error",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 3
+    },
+    {
+      "id": "south_asian_times_of_india_e6559af82a47",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9724,
+      "title": "Dalit man beaten to death in UP's Lalitpur after refusing to massage feet",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "error",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 2
+    },
+    {
+      "id": "south_asian_hindustan_times_60cfe77fa150",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.994,
+      "title": "Dalit teen beaten to death in Uttarakhand's Tehri Garhwal over inter-caste friendship",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "south_asian_indian_express_d25e10cc27ab",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9999,
+      "title": "Bharathiraja, the director who took Tamil cinema beyond studio walls, dies at 84",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "south_asian_hindustan_times_f9cdd5bb6e4b",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.992,
+      "title": "Only surviving member of Gurugram family killed in Delhi B&B fire dies",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "british_irish_guardian_uk_294fb191ea16",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9374,
+      "title": "Stormzy and Oritsé Williams join tributes to musician stabbed to death in east London",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "british_irish_sky_news_cdd3c89f6120",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 1.0,
+      "title": "British tourist died after falling into Venice canal, inquest hears",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "austrian_der_standard_c59a1ec812c7",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9999,
+      "title": "Die Fotografin Elfie Semotan ist im Alter von 84 Jahren gestorben",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "british_irish_guardian_uk_b16285e3379d",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9998,
+      "title": "David Hockney, pioneering British artist famed for his pools and portraits, dies aged 88",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "french_bfmtv_bfda4c6e8e5a",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9966,
+      "title": "\"Tout notre amour à Lyhanna\": l'adieu bouleversant lors des obsèques à Fleurance",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "gdelt_conflict_bb8edcf19477",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9976,
+      "title": "Obituary : Jonathan Foote",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "southeast_asian_thaiger_c14289d5893f",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9996,
+      "title": "The life and legacy of Thailand’s princess",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "french_rfi_0cc8c9fa0516",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9899,
+      "title": "Argentine: décès de Carlos Solari, leader du groupe Patricio Rey y sus Redonditos de Ricota",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "south_american_buenos_aires_times_60dd092e6070",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9837,
+      "title": "Salta honours legacy of physician and scientist Dr. Joseph Redhead",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "split",
+      "n_obituary_votes": 2
+    },
+    {
+      "id": "dutch_news_nos_algemeen_c73d494334d8",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9851,
+      "title": "Drie kinderen uit groep 8 en directeur overleden bij ongeluk Zeeuws-Vlaanderen",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "dutch_news_rtl_nieuws_6445a405067b",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9984,
+      "title": "Automobilist komt om door omvallende boom in Boxtel, code geel om zwaar onweer",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "british_irish_breakingnews_ie_f464ba85d675",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9956,
+      "title": "Motorcyclist (30s) dies following collision with car in Tipperary",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "south_asian_the_hindu_bd3f6957991f",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 1.0,
+      "title": "Child dies after coconut falls on head",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "british_irish_bbc_news_top_a237f1f0c5f7",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9993,
+      "title": "Popular US movie critic Gene Shalit dies aged 100",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "southeast_asian_vn_express_en_3254eabb6549",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.999,
+      "title": "Thailand in mourning after Princess Bajrakitiyabha's death at 47",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "austrian_kleine_zeitung_bb401d670f11",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9997,
+      "title": "Trauer in Thailand: Prinzessin Bha stirbt nach dreieinhalb Jahren im Koma",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "dutch_news_nos_algemeen_d7020c48071f",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.991,
+      "title": "Schoenontwerper Jan Jansen (85) overleden",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "southeast_asian_free_malaysia_762d13a82482",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9874,
+      "title": "Cops search for suspect after man dies in brawl",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 3
+    },
+    {
+      "id": "british_irish_bbc_news_top_f3367a5ebec4",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 1.0,
+      "title": "Watford great Jackett dies aged 64",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "french_bfmtv_bfaaed17cb73",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.991,
+      "title": "\"On est une grande famille\": les Thaïlandais rendent hommage à la princesse Bha, fille aînée du roi, morte après trois ans de coma",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "australian_sbs_39cd8cca56f8",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 1.0,
+      "title": "David Hockney, star of 20th-century art, dies at age 88",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "belgian_de_tijd_6df3a577fd92",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9997,
+      "title": "David Hockney (1937-2026) was een oude meester in maatpak",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "southeast_asian_nst_5d08e9e21bf5",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 1.0,
+      "title": "Contemporary art giant David Hockney dies aged 88",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "german_die_welt_0f0b455dfcba",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.985,
+      "title": "Dreiköpfige Familie stirbt bei Autounfall in Oberbayern",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "british_irish_irish_times_c01bbb14c290",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9959,
+      "title": "Blackrock mourns the loss of larger-than-life Michael ‘Bomber’ Browne",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "belgian_vrt_nieuws_nl_a0f9ce29cf32",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 1.0,
+      "title": "Duitser overleden bij ongeval met wingsuit in Zwitserland",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "german_ntv_ebb67f309260",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9955,
+      "title": "Nach fast vier Jahren im Koma: Thailand trauert um Prinzessin Bajrakitiyabha",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "south_asian_times_of_india_511d32e23279",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 1.0,
+      "title": "Veteran actor Dinyar Tirandaz passes away in Mumbai",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "spanish_20minutos_es_0e147e407487",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.978,
+      "title": "Muere a los 47 años la princesa Bha, primogénita del rey de Tailandia, tras tres años en coma",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "french_france_info_politique_79ced6c34b0f",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9896,
+      "title": "Mort de Bernadette Chirac : vague de réactions pour une première dame qui aura marqué les esprits",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "australian_smh_a1990ad3ae2a",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.996,
+      "title": "Man dies after being tasered by police",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "dutch_news_nu_nl_algemeen_6009b79f9366",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9999,
+      "title": "Jongen (14) op e-step overleden na botsing met auto in Almere",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "east_asian_scmp_33b14a9e79e8",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9995,
+      "title": "Bernadette Chirac, formidable French first lady dubbed ‘last queen of France’, dies at 93",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "dutch_news_ad_algemeen_b3b7d0b65e92",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.996,
+      "title": "Leerling overleden bij botsing met touringcar vol kinderen op schoolreis in Duitsland",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 3
+    },
+    {
+      "id": "australian_abc_au_d217b6f1ce96",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9999,
+      "title": "Family remembers 'good bloke' chopper pilot Wilson Sprague",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "east_asian_scmp_268c1429fc0d",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 1.0,
+      "title": "Veteran Hong Kong actress Barbara Chan dies at 66",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "us_news_abc_news_b3fda4505e6c",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9989,
+      "title": "2 US pilots die after plane crashes in the Dominican Republic",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "australian_abc_au_285f75c54748",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 1.0,
+      "title": "'Cherished' Bulls player and ex-Michael Jordan teammate dies",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "southeast_asian_gma_news_761772883148",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9999,
+      "title": "Indonesia-based Jesuit spiritual adviser to Mary Jane Veloso passes away",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "global_news_deutsche_welle_ad20e0b06e20",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 1.0,
+      "title": "Thai princess Bajrakitiyabha dies after years in coma",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "belgian_gazet_van_antwerpen_2dc4a16d0473",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 1.0,
+      "title": "Oudste dochter van Thaise koning overleden na lange ziekte",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "belgian_la_libre_578a3b78d881",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9962,
+      "title": "De nombreuse personnalités présentes pour rendre un dernier hommage à Bernadette Chirac à Paris",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "east_asian_japan_times_0fdd2dd47b1f",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.996,
+      "title": "Former Lower House speaker Yohei Kono dies at 89",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "british_irish_bbc_wales_27679140262b",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9867,
+      "title": "'Devoted' father-of-three dies in motorbike crash",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "southeast_asian_free_malaysia_b60c8b7d59f7",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 1.0,
+      "title": "Girl dies, brother hurt in fall from apartment unit in Tampoi",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "belgian_dh_les_sports_1b7f9f61da59",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9862,
+      "title": "La station Beekkant fermée après le décès d’une personne",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 3
+    },
+    {
+      "id": "british_irish_sky_news_b9b6e7c9d386",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9087,
+      "title": "Teen driver and adult passenger face murder charges after boy dies following collision",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "gdelt_conflict_8ecef93e68ce",
+      "bucket": "block",
+      "lens": null,
+      "obit_score": 0.9997,
+      "title": "Marjane Satrapi Dies :  Persepoli Author Marjane Satrapi Passes Away at 56",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "us_news_wapo_f9d4e1283e88",
+      "bucket": "boundary",
+      "lens": null,
+      "obit_score": 0.7784,
+      "title": "An airstrike trapped a journalist. She died as rescuers waited for permission to save her.",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "split",
+      "n_obituary_votes": 2
+    },
+    {
+      "id": "southeast_asian_vn_express_en_fcf3f23638bf",
+      "bucket": "boundary",
+      "lens": null,
+      "obit_score": 0.8061,
+      "title": "Funeral-home owner rides coffin through streets in birthday, drawing police probe",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "spanish_la_vanguardia_ca9877dfb1eb",
+      "bucket": "boundary",
+      "lens": null,
+      "obit_score": 0.8536,
+      "title": "Prozac, bromas de parejas y champán: la cartas privadas entre lady Di y el actor Terence Stamp",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "newsapi_general_ad4699c53c92",
+      "bucket": "boundary",
+      "lens": null,
+      "obit_score": 0.7882,
+      "title": "Man with leptospirosis died after breeding rats in his RV, city says - The Berkeley Scanner",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "split",
+      "n_obituary_votes": 2
+    },
+    {
+      "id": "spanish_eldiario_996c3b2fa3d7",
+      "bucket": "boundary",
+      "lens": null,
+      "obit_score": 0.8355,
+      "title": "Mar de Marchis, la fundadora fantasma de Jot Down que, sin dejarse ver, todo lo veía",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "split",
+      "n_obituary_votes": 2
+    },
+    {
+      "id": "south_american_la_nacion_ar_2650e26e59a4",
+      "bucket": "boundary",
+      "lens": null,
+      "obit_score": 0.7293,
+      "title": "Un canadiense mostró desde Plaza de Mayo cómo vivieron los argentinos la muerte del Indio Solari y se viralizó: “Apocalipsis”",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 1
+    },
+    {
+      "id": "spanish_eldiario_cd5f8e4cc1e9",
+      "bucket": "boundary",
+      "lens": null,
+      "obit_score": 0.8657,
+      "title": "Muere David Hockney, el pintor más influyente que convirtió las piscinas en objeto de culto",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "french_ouest_france_58baf906801c",
+      "bucket": "boundary",
+      "lens": null,
+      "obit_score": 0.7156,
+      "title": "EN IMAGES. Obsèques de Bernadette Chirac : de nombreuses personnalités ont participé à la cérémonie à Paris",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "us_media_business_insider_ca74046cc1f9",
+      "bucket": "boundary",
+      "lens": null,
+      "obit_score": 0.8869,
+      "title": "David Hockney has died at 88. One theme was constant in his 7-decade career: Never stop working.",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "southeast_asian_vn_express_en_d62442e65133",
+      "bucket": "boundary",
+      "lens": null,
+      "obit_score": 0.8554,
+      "title": "British AI company's CEO found stabbed to death just weeks into the job",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "south_american_perfil_93a68e9e3f17",
+      "bucket": "boundary",
+      "lens": null,
+      "obit_score": 0.8536,
+      "title": "Entre mundiales y funerales",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "borderline",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "austrian_orf_news_b55f251472c8",
+      "bucket": "boundary",
+      "lens": null,
+      "obit_score": 0.8398,
+      "title": "Trauerfeier für getötete Elfjährige in Frankreich",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "french_le_parisien_58de53079725",
+      "bucket": "boundary",
+      "lens": null,
+      "obit_score": 0.7617,
+      "title": "Les obsèques de Bernadette Chirac auront lieu vendredi 12 juin à Paris avec un hommage dimanche 14 juin en Corrèze",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "canadian_cbc_8f151b29c1fb",
+      "bucket": "boundary",
+      "lens": null,
+      "obit_score": 0.7395,
+      "title": "Police name 18-year-old charged with 1st-degree murder of constable near Hearst, Ontario",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "british_irish_guardian_uk_ef1c58dd463d",
+      "bucket": "boundary",
+      "lens": null,
+      "obit_score": 0.7119,
+      "title": "Family pay tribute to ‘altruistic’ London woman as her killer is jailed",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "split",
+      "n_obituary_votes": 2
+    },
+    {
+      "id": "healthcare_google_news_medtech_9421e7654e1e",
+      "bucket": "recall_chk",
+      "lens": null,
+      "obit_score": 0.0,
+      "title": "Sophia Genetics, Memorial Sloan Kettering Sign Strategic Collaboration for AI-Powered Precision Oncology Hub - Digital Health News",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "australian_guardian_au_d212b473f91b",
+      "bucket": "recall_chk",
+      "lens": null,
+      "obit_score": 0.6743,
+      "title": "David Hockney obituary",
+      "verdicts": {
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "obituary"
+      },
+      "majority": "obituary",
+      "n_obituary_votes": 4
+    },
+    {
+      "id": "caucasus_civil_ge_ddbd05c25b73",
+      "bucket": "recall_chk",
+      "lens": null,
+      "obit_score": 0.3995,
+      "title": "Georgian Migrant Dies in ICE Custody in Louisiana",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "split",
+      "n_obituary_votes": 2
+    },
+    {
+      "id": "arabic_aljazeera_en_ec944b0a35cf",
+      "bucket": "recall_chk",
+      "lens": null,
+      "obit_score": 0.0008,
+      "title": "Gaza post-‘ceasefire’ deaths hit 983 as Israeli attack targets refugee camp",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "east_asian_hk_free_press_fe3da5c83dcd",
+      "bucket": "recall_chk",
+      "lens": null,
+      "obit_score": 0.0,
+      "title": "Hong Kong minister defends hospital decision to send girl home after mother’s death",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "pubmed_8b1f998d1449",
+      "bucket": "recall_chk",
+      "lens": null,
+      "obit_score": 0.0003,
+      "title": "Trends and future projections of Hodgkin and Non-Hodgkin lymphoma burden in Chinese children and adolescents (1990-2043): insights from the GBD 2023 database.",
+      "verdicts": {
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary",
+        "gemini-2.5-flash": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obituary_votes": 0
+    },
+    {
+      "id": "new_zealand_rnz_5b6abc8b28fa",
+      "bucket": "recall_chk",
+      "lens": null,
+      "obit_score": 0.0198,
+      "title": 
