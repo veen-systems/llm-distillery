@@ -114,7 +114,7 @@ def chart_needle():
     ax1.axvline(4.0, color=RED, linestyle="--", linewidth=1.3)
     ax1.text(4.1, max(counts) * 0.85, "MEDIUM+\nsurfacing (4.0)", color=RED, fontsize=8)
     ax1.set_xlabel("oracle weighted-average score"); ax1.set_ylabel("articles")
-    ax1.set_title("The needle problem: most content is not recovery", fontsize=10, fontweight="bold")
+    ax1.set_title("Enriched training distribution (raw feed is ~0.3% recovery)", fontsize=10, fontweight="bold")
     _style_ax(ax1)
     bands = d["bands"]
     names = list(bands.keys()); vals = list(bands.values())
@@ -341,9 +341,14 @@ def build_pdf():
          "that screens out obvious non-matches before the student runs, plus <b>isotonic calibration</b> "
          "so the numbers stay honest. Finally an automated <b>agreement gate</b> must pass before anything ships.")
     body("<b>Why this filter is hard:</b> nature-recovery stories are a <i>needle in a haystack</i>. "
-         f"In our data only <b>{100*d_needle.get('medium_plus_frac',0.147):.0f}%</b> of articles are genuine "
-         "recovery; the rest are doom, pledges, or unrelated. A model that lazily says “no” to everything "
-         "looks accurate but is useless. That single fact drives every design choice below.")
+         "In the <b>raw production feed only ~0.3%</b> of articles are genuine recovery — roughly "
+         "<b>1 in 330</b>; the rest are doom, pledges, or unrelated. A model that lazily says “no” to "
+         "everything is 99.7% “accurate” and completely useless. That single fact drives every design choice below.")
+    body("So we don’t train on the raw feed. We deliberately <b>enrich</b> the training set — screening the "
+         "corpus for likely-recovery articles first (ADR-003/005) — until about <b>15%</b> are genuine "
+         f"recovery ({d_needle.get('n_total','~3,900')} articles). Without that enrichment the model would see "
+         "almost no positive examples and never learn what recovery looks like. The chart below is that "
+         "<i>enriched</i> training distribution, not the raw feed.")
     img("needle.png", width=175)
     story.append(PageBreak())
 
