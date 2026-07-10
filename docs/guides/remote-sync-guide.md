@@ -1,5 +1,8 @@
 # Remote Server Sync Guide
 
+> **SUPERSEDED (2026-07-10).** We use `scp`/`rsync` (see `memory/gpu-server.md`) and the `deploy_filters.sh` chain (`docs/RUNBOOK.md`), not FreeFileSync. Kept for reference only. Start from `docs/FILTER_PLAYBOOK.md`.
+
+
 This guide explains how to develop locally with Claude Code and run batch jobs on a remote server using FreeFileSync.
 
 ## Problem

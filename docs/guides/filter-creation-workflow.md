@@ -1,6 +1,8 @@
 # Filter Creation Workflow
 
-Practical step-by-step for creating a new production filter. Uses **uplifting v6** as the reference template (`filters/uplifting/v6/`).
+> **Start from `docs/FILTER_PLAYBOOK.md`** (the SSoT: compiled lessons + the canonical reference). This is the quick-commands companion to it. The **canonical reference filter is now `nature_recovery v4`** — the uplifting v6 examples below still illustrate the file structure correctly, but for a current end-to-end example (recall-first probe, ground-truth gate, deploy) see `filters/nature_recovery/v4/` + `docs/reports/nature_recovery_v4_report.pdf`.
+
+Practical step-by-step for creating a new production filter. Uses **uplifting v6** for its file-structure illustrations (`filters/uplifting/v6/`).
 
 For detailed validation checklists per phase, see `docs/agents/filter-development-guide.md`.
 

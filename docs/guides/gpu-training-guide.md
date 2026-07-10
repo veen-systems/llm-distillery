@@ -1,5 +1,8 @@
 # GPU Training Guide
 
+> **SUPERSEDED (2026-07-10).** Current GPU training/deploy operations live in `docs/RUNBOOK.md` and the gpu-server env in `memory/gpu-server.md`. This 2025-11 tmux-based guide is kept for reference only. Start from `docs/FILTER_PLAYBOOK.md`.
+
+
 **Last Updated:** 2025-11-10
 **Purpose:** Train models on remote GPU server using tmux for long-running jobs
 

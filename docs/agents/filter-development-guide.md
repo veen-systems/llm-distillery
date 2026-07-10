@@ -19,6 +19,8 @@ output: "Interactive checklists with status indicators, validation reports, and 
 
 **Philosophy**: "Measure twice, cut once" - validate each phase before proceeding. Catch issues early when they're cheap to fix.
 
+> **Read `docs/FILTER_PLAYBOOK.md` first.** It is the single source of truth — every compiled lesson (the pits to avoid) + the canonical reference (`nature_recovery v4`). This guide is the *depth* behind the playbook's stages.
+
 ---
 
 ## Overview: The Filter Development Lifecycle

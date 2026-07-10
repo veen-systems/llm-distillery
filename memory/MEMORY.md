@@ -2,6 +2,8 @@
 
 Loaded every session. Topic files loaded on demand via triggers below.
 
+> **Creating or retraining a filter? START at `docs/FILTER_PLAYBOOK.md`** — the SSoT that compiles every lesson (the pits) + the canonical example (`nature_recovery v4`). It indexes all filter docs so you never scavenge.
+
 ## Topic Files
 
 | File | When to load | Key insight |

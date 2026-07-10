@@ -83,7 +83,7 @@ See `docs/adr/README.md` for full ADR index, `docs/decisions/` for detailed reco
 | Starting any session (framework drift) | Compare the `framework: agent-ready-projects vX.Y.Z` header above against `~/repos/agent-ready-projects/CHANGELOG.md`. If behind, surface the drift; don't auto-adopt (engineer's call). |
 | Resuming thriving v1 work | `memory/thriving-v1-scoring.md` — scoring status, resume commands, full pipeline |
 | Starting calibration / scorer-training / oracle-prompt work | `memory/calibration-history.md` — Dead Ends section: which approaches are already known dead (#69) |
-| Developing a new filter | `docs/agents/filter-development-guide.md` — full lifecycle, or `docs/guides/filter-creation-workflow.md` — quick steps |
+| **Creating OR retraining ANY filter (START HERE)** | **`docs/FILTER_PLAYBOOK.md`** — the single source of truth: every compiled lesson + the canonical reference (`nature_recovery v4`). Read before touching filter code. Then `docs/agents/filter-development-guide.md` (depth) / `docs/guides/filter-creation-workflow.md` (quick steps). |
 | Deploying to NexusMind or gpu-server | `docs/RUNBOOK.md` — deployment, training, scoring how-to |
 | Training on GPU server | `memory/gpu-server.md` — venv, PYTHONPATH, HF_HUB_OFFLINE |
 | Debugging model loading or PEFT issues | `memory/gemma3-model.md` — Auto mapping fix, key format details |
