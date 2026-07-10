@@ -40,7 +40,7 @@ framework: agent-ready-projects v1.10.4
 | **investment-risk** | v6 | 0.47 | 10.4K articles | Deployed (HF Hub, private) |
 | **cultural-discovery** | v5 | 0.70 | 8.5K articles | Deployed (HF Hub + gpu-server, private) — resolves #62 discovery-lens leakage via F-K soft-penalty flags; DeepSeek oracle (first non-Gemini) |
 | **belonging** | v1 | 0.49 | 7.4K articles | Deployed (HF Hub, private) |
-| **nature_recovery** | v2 | 0.53 | 3.5K articles | Deployed (HF Hub, private) — v1 had no discrimination (#41), v2 uses sample weighting. **v4 in development** (#70 protection scope, multilingual recall fix) — see In Development below. |
+| **nature_recovery** | v4 | recall 0.67 / prec 0.85 | 3.9K articles (DeepSeek) | **DEPLOYED 2026-07-10** (HF Hub + NexusMind + gpu-server; live smoke test `nature_recovery wa=7.31`). Beats v2 on every ground-truth metric (ADR-021 gate); #70 protection scope + multilingual prefilter fix + recall-first probe; op-point 3.75. v2 kept as fallback. Recall is the soft axis → v5 (#71). |
 | **foresight** | v1 | 0.75 | 3.5K articles | PARKED — captures governance solutions, not foresight; merging into broadened Solutions lens (#43) |
 
 ### In Development (priority: ovr.news tabs)
@@ -50,7 +50,7 @@ framework: agent-ready-projects v1.10.4
 | **thriving** | v1 | PARKED indefinitely — orthogonal lens design caused bimodal distribution (ADR-015); uplifting v7 stays as Thriving tab |  |
 | **sustainability_technology → solutions** | v4 | Design phase — broaden from clean-tech to include governance/community solutions (#43) | ovr.news Solutions tab |
 | **ai-engineering-practice** | v2 | Ready for oracle scoring; rename to augmented-engineering at next bump | Separate product (not ovr.news) |
-| **nature_recovery** | v4 | **Gate PASSED + Hub-uploaded + STAGED, not yet activated in prod.** Deploy model = first checkpoint (seed-42 scale-2.0/Recall@20): vs held-out DeepSeek labels beats v2 on every metric — precision **0.848**, recall **0.672**, F1 0.750, Spearman 0.821 at operating point **3.75** (v2: 0.614/0.603/0.609/0.795). Hub `jeergrvgreg/nature-recovery-filter-v4` uploaded + verified (OLD keys). **Production activation deliberately deferred** (sadalsuud was DOWN + flaky gpu-server link; NexusMind discovery=latest-version auto-activates → a code-only rsync without model/ would crash the whole scorer). Remaining atomic steps + layered safety gate: `docs/nature_recovery_v4_DEPLOY_COMPLETION.md`. Old `agreement_gate.py` superseded by `ground_truth_gate.py` (ADR-021; it false-FAILed v4 vs a Gemini-labeled reference). Recall 0.672 is the soft axis → v5 active-learning (#71). Oracle stays DeepSeek for conservative *bias* (`feedback-oracle-bias-vs-noise`). Report: `docs/reports/nature_recovery_v4_report.pdf`. | ovr.news Recovery tab |
+| ~~**nature_recovery** v4~~ | — | **DEPLOYED 2026-07-10** — moved to Production Filters above. Ground-truth gate (ADR-021) beat v2 on every metric; deployed via canonical chain (NexusMind git → sadalsuud `deploy_filters.sh` → gpu-server; model pre-placed to survive the `*/model/` rsync exclude), live smoke test `wa=7.31`. Caught two pre-deploy bugs: stale v2 `normalization.json` (removed — fresh version refits) + obituary_detector `filters/common` contamination. Old `agreement_gate.py` superseded (false-FAILed v4 vs a Gemini-labeled reference). Report: `docs/reports/nature_recovery_v4_report.pdf`. Oracle = DeepSeek for conservative *bias* (`feedback-oracle-bias-vs-noise`). | done |
 
 ## Key Decisions
 

@@ -1,7 +1,7 @@
 # Nature Recovery Filter v4 — Deployment Status
 
 **Last Updated:** 2026-07-09
-**Status:** 🟢 DEPLOYING — ground-truth gate PASSED; shipping the first checkpoint (scale 2.0, Recall@20 selection)
+**Status:** 🟢 DEPLOYED 2026-07-10 — live on gpu-server (smoke test `nature_recovery wa=7.31 in expected range`); v2 kept as fallback
 **Target:** ovr.news Recovery tab (replaces nature_recovery v2)
 
 ## What v4 changes over v2

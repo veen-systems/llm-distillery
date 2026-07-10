@@ -1,3 +1,15 @@
+# ✅ COMPLETED 2026-07-10
+
+**Deploy finished** once sadalsuud recovered (it had been power-cycled; back up ~05:4x).
+Canonical chain ran clean: NexusMind git `8d2b8d0` → sadalsuud `git pull` + `deploy_filters.sh`
+→ gpu-server (model pre-placed to survive the `*/model/` rsync exclude) → **scorer healthy,
+all 7 filters smoke-passed, `nature_recovery wa=7.31`**. Two pre-deploy bugs caught + fixed:
+stale v2 `normalization.json` (removed) and obituary_detector `filters/common` contamination.
+Only the full Fluxus→Nexus→ovr end-to-end confirmation remains (fires on the next harvest run).
+The historical runbook below is retained for reference.
+
+---
+
 # nature_recovery v4 — Deploy Completion Runbook
 
 *State as of 2026-07-09. v4 is STAGED and gate-passed but NOT yet activated in
