@@ -1,0 +1,31 @@
+{
+  "metrics": {
+    "probe_demotion": {
+      "demoted": 40,
+      "n": 42,
+      "rate": 0.9523809523809523,
+      "wilson_lower": 0.8420986468452026,
+      "pass": false
+    },
+    "over_demotion": {
+      "high_band_shift": 0.10101010101010101,
+      "n_v2_high": 99,
+      "pass": false
+    },
+    "protection_acceptance": {
+      "surfaced": 8,
+      "n": 11,
+      "rate": 0.7272727272727273,
+      "pass": true
+    },
+    "agreement_spearman": {
+      "rho": 0.7164583706569856,
+      "n": 154,
+      "pass": true
+    }
+  },
+  "warnings": [
+    "Source-A is ~93% inside the v4 training set \u2014 metrics 2/4 partly reflect memorization, not generalization."
+  ],
+  "overall_pass": false
+}

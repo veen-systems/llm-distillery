@@ -1,0 +1,7 @@
+{
+  "deploy_recall": 0.672, "deploy_precision": 0.848, "deploy_f1": 0.750,
+  "deploy_spearman": 0.821, "deploy_mae": 0.496, "op_point": 3.75,
+  "v2_recall": 0.603, "v2_precision": 0.614, "v2_f1": 0.609, "v2_spearman": 0.795, "v2_mae": 0.842,
+  "checkpoint": "seed-42 scale-2.0 Recall@20", "oracle": "deepseek",
+  "note": "held-out DeepSeek test n=391; v4 beats v2 on every metric, no regression"
+}

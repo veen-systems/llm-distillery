@@ -1,0 +1,29 @@
+{
+  "selected_threshold": 3.225,
+  "target_fn": 0.02,
+  "val_fn_rate": 0.0179,
+  "val_recall_medium": 0.9821,
+  "val_stage2_rate": 0.3625,
+  "val_positives": 56,
+  "val_bce": 0.5015,
+  "train_positive_frac": 0.147,
+  "pos_weight": 5.81,
+  "embedding_dim": 384,
+  "recall_curve": [
+    {"t":0.00,"fn":0.000,"recall":1.000,"stage2":1.000},
+    {"t":0.25,"fn":0.000,"recall":1.000,"stage2":0.758},
+    {"t":0.50,"fn":0.000,"recall":1.000,"stage2":0.668},
+    {"t":0.75,"fn":0.000,"recall":1.000,"stage2":0.609},
+    {"t":1.00,"fn":0.000,"recall":1.000,"stage2":0.558},
+    {"t":1.25,"fn":0.000,"recall":1.000,"stage2":0.530},
+    {"t":1.50,"fn":0.000,"recall":1.000,"stage2":0.488},
+    {"t":1.75,"fn":0.000,"recall":1.000,"stage2":0.463},
+    {"t":2.00,"fn":0.000,"recall":1.000,"stage2":0.445},
+    {"t":2.25,"fn":0.000,"recall":1.000,"stage2":0.419},
+    {"t":2.50,"fn":0.000,"recall":1.000,"stage2":0.414},
+    {"t":2.75,"fn":0.000,"recall":1.000,"stage2":0.380},
+    {"t":3.00,"fn":0.000,"recall":1.000,"stage2":0.375},
+    {"t":3.25,"fn":0.036,"recall":0.964,"stage2":0.357},
+    {"t":3.50,"fn":0.036,"recall":0.964,"stage2":0.339}
+  ]
+}
