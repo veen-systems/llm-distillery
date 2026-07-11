@@ -4,6 +4,16 @@ Problems encountered and resolved. Format: Problem → Root cause → Fix.
 
 ---
 
+## Fresh-version normalization cold-start starves the ovr feed (2026-07-11)
+
+**Problem**: After nature_recovery v4 deployed (2026-07-10), ovr.news showed "no new nature articles." Scorer was healthy and producing v4.0 MEDIUM+ output the whole time.
+
+**Root cause**: A fresh version ships with **no `normalization.json`** (correct — ADR-014 forbids reusing the old CDF), so `production_scorer.py` emits RAW `weighted_average`. Every *other* lens emits *normalized* scores. Two ovr mechanisms then mis-handle the raw filter: (1) cross-lens assignment (`canonical-lens.ts`) picks the highest `weighted_average` across scorers, and (2) the uniform display gate (`ranking.displayScoreThreshold: 4.5`) is calibrated for normalized scores. Compounding it: for the ~10-day v2→v4 window overlap, still-in-window v2 rows carried *inflated* normalized scores (percentile CDF mapped raw≈2.0 / tier=low up to normalized 5–7) and **out-ranked** fresh v4 rows — so new v4 articles were buried, not absent. v2's "fuller" feed was ~90% inflation; v4's raw≥4.5 count (3–4/batch) actually *exceeded* v2's (0–2/batch).
+
+**Fix**: (a) No ovr action needed — the inflated v2 rows age out of the 10-day `published_date` window by ~2026-07-19, leaving the honest v4 steady state (~3–4 genuine MEDIUM+/batch; nature is ~0.3% of feed — volume is a v5/#71 recall decision, not a normalization bug). (b) **Process fix**: fit normalization *at deploy time* from a production-representative historical rescore instead of waiting weeks for live accumulation — the missing runbook step. Documented in `docs/FILTER_PLAYBOOK.md` §6 + `docs/RUNBOOK.md` "Fit normalization". A thin fit doesn't help: `MIN_NORMALIZATION_ARTICLES=200` silently rejects it (a 33-article fit attempted here was inert), and the sample must be at production base rate (~145K rescored articles for 200 MEDIUM+), NOT the enriched val set. Normalization buys cross-lens *fairness*, not volume.
+
+---
+
 ## PEFT Adapter Resave Breaks Hub Loading (Feb 2026)
 
 **Problem**: After running `resave_adapter.py`, `PeftModel.from_pretrained()` fails to load the adapter from HuggingFace Hub.

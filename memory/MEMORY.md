@@ -95,6 +95,7 @@ Loaded every session. Topic files loaded on demand via triggers below.
 - if [a deploy gate / eval reports a surprising FAIL or a batch of "model errors"], then [reproduce — read the actual per-item labels the metric was computed from — before retraining/switching; the reference cohort may be labeled by a different oracle/version (check for a `_v2_split`-style provenance field)] — promoted from gotcha-log 2026-07-09 (ground-truth gate vs Gemini-labeled reference)
 - if [re-running a training to regenerate clean artifacts], then [do NOT assume same-seed reproduces the evaluated model — CUDA is nondeterministic; re-run the gate on the re-trained weights, or back up the approved model+calibration+metadata together at approval time] — promoted from gotcha-log 2026-07-09
 - if [checking whether a remote job is running with `pgrep -f "<pattern>"`], then [it matches your own ssh command line too — verify by footprint (GPU mem / large RSS / log growth), not name-match] — promoted from gotcha-log 2026-07-09
+- if [shipping a fresh filter version that needs cross-filter normalization], then [fit `normalization.json` at deploy from a *production-representative historical* rescore — do NOT ship raw and wait weeks for live accumulation; a raw filter is under-ranked/under-shown against every normalized lens (ovr `canonical-lens.ts` + `displayScoreThreshold`). Must be production base-rate, not the enriched val set; `MIN_NORMALIZATION_ARTICLES=200` rejects thin fits. Playbook §6] — promoted from gotcha-log 2026-07-11
 
 ## Active Decisions
 
@@ -117,6 +118,7 @@ Loaded every session. Topic files loaded on demand via triggers below.
 
 Full per-session narratives live below the auto-loading cliff (read on demand). Newest first.
 
+- [2026-07-11](project_session_2026_07_11.md) — "ovr shows no new nature articles" → **not broken**: v2's fuller feed was ~90% normalization inflation; fresh-v4 raw scores are under-ranked vs still-in-window inflated v2 rows (self-corrects ~Jul 19 as v2 ages out). Exposed the **normalization cold-start** doc gap → fit at deploy from a production-representative historical rescore (playbook §6 + RUNBOOK). Doc-only, no deploy.
 - [2026-07-10](project_session_2026_07_10.md) — v4 op-point 3.75 fix (was wired to nothing, ran at 4.0) + cd/invR normalization refit (version/filter_version fitter bug), both **validated in production output**; 12-agent adversarial review (F1/F2/F3); framework → v1.10.6.
 - [2026-07-09](project_session_2026_07_09.md) — nature_recovery v4 to the deploy boundary: recall-first probe, ground-truth gate (ADR-021), oracle bias-vs-noise ($100-200 catch), Hub-uploaded + staged-not-activated.
 - [2026-07-07→09](project_session_2026_07_08.md) — v4 build pre-deploy: v3→v4 pivot (#70), DeepSeek re-label 3892 ($4.81), commerce-only prefilter (recall 21.6%→1.3%), 4-model review battery (caught CRITICAL v2 import), ranking metrics settled.
@@ -130,7 +132,9 @@ Full per-session narratives live below the auto-loading cliff (read on demand). 
 
 **🎯 PRIMARY (next): solutions v4 (#43)** — broaden sustech to governance/community solutions; the ADR-020 validation case (follow cd v5's playbook end-to-end; graduates ADR-020 PROVISIONAL → Accepted). Prompt not yet drafted (`filters/sustainability_technology/v4/prompt-compressed.md` planned). **Schedule the oracle batch off-peak** (after ~noon CEST) — see `memory/oracle-pricing-scheduling.md`.
 
-**Tracked follow-ups (no action until triggered):** (1) **#72** — v4 normalization refit once ≥200 v4 prod MEDIUM+ articles accumulate (~5/batch, so weeks out); (2) **#71** — v5 recall (harvest false-negatives + high-scorers from saved NexusMind output); (3) blog draft `bias-without-a-self.md` ship steps (user's call, in dev.jeroenveen.nl).
+**ovr "no new nature articles" (2026-07-11): diagnosed, NOT broken, no action.** v2's fuller feed was ~90% normalization inflation; fresh-v4 raw scores are under-ranked vs still-in-window inflated v2 rows → self-corrects as v2 ages out of the 10-day window (~Jul 19). Fuller Nature tab = #71 recall lever, not a normalization fix. Full detail: `memory/project_session_2026_07_11.md`.
+
+**Tracked follow-ups (no action until triggered):** (1) **#72** — v4 normalization: no longer must wait ~2wk for 200 live MEDIUM+ — fit at deploy/anytime from a *production-representative historical rescore* (`--min-score 3.75 --filter-version 4.0`; playbook §6 + RUNBOOK "Fit normalization"). Buys cross-lens fairness, not volume; (2) **#71** — v5 recall (harvest false-negatives + high-scorers from saved NexusMind output); (3) blog draft `bias-without-a-self.md` ship steps (user's call, in dev.jeroenveen.nl).
 
 **Housekeeping carried from 2026-07-04 (do first, cheap):**
 1. ~~Resolve the phantom-memory-files claim.~~ **DONE 2026-07-05** — all 6 reconstructed + indexed, recap corrected, dangling link resolved. (Optional follow-up: sanity-check `ovr-lens-set-current.md`'s tab mapping against the actual ovr.news repo, which is authoritative.)

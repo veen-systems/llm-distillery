@@ -144,6 +144,26 @@ PYTHONPATH=. python scripts/calibration/fit_calibration.py \
 
 Calibration writes `calibration.json` and `score_scale_factor` to config.yaml. Commit both with the filter package.
 
+### Fit normalization (cross-filter comparability, ADR-014)
+
+A fresh version ships with **no** `normalization.json` and emits RAW `weighted_average`, while every other lens emits *normalized* scores — so the new version is under-ranked/under-shown in the shared feed until normalization is fitted (see FILTER_PLAYBOOK §6). Fit it **at deploy time** by rescoring a *production-representative historical* corpus rather than waiting weeks for live production to accumulate:
+
+```bash
+# Fit from production filtered output (sadalsuud). --min-score = this filter's
+# MEDIUM tier threshold (e.g. 3.75 for nature_recovery v4, 4.0 for most).
+# --filter-version isolates the current version's rows from older leftovers.
+PYTHONPATH=. python3 scripts/normalization/fit_normalization.py \
+    --filter filters/{name}/v{N} --ssh sadalsuud \
+    --remote-dir /home/jeroen/local_dev/NexusMind/data/filtered/{name} \
+    --min-score {medium_threshold} --filter-version {N}.0
+```
+
+Requirements (enforced by `production_scorer.py` guards — a fit that violates them is silently ignored and the filter stays raw):
+- **≥200 MEDIUM+ articles** (`MIN_NORMALIZATION_ARTICLES`). A needle filter at ~0.3% base rate needs ~145K rescored articles to reach 200 — rescore a large historical harvest (FluxusSource `~/local_dev/FluxusSource/data`) with the deployed model to get there without waiting.
+- **At the production base rate**, NOT the enriched training/val set (enrichment skews the CDF harsh; `raw_min > 4.5` is also rejected, `MAX_NORMALIZATION_RAW_MIN`).
+
+Writes `normalization.json` to the filter dir; commit it and deploy to both servers. Refit per version.
+
 ---
 
 ## Filter Development Lifecycle
@@ -160,7 +180,7 @@ Calibration writes `calibration.json` and `score_scale_factor` to config.yaml. C
 | 6. Training | Distill to Gemma-3-1B + LoRA | Train on gpu-server |
 | 7. Calibration | Fit isotonic calibration | `fit_calibration.py` on val set |
 | 8. Testing | Benchmark vs oracle | `pytest tests/`, manual review of 30 articles |
-| 9. Deployment | Upload to Hub, copy to NexusMind | See deployment section above |
+| 9. Deployment | Upload to Hub, copy to NexusMind; fit normalization from a production-representative historical rescore to avoid the cold-start | See deployment + "Fit normalization" sections above |
 
 ---
 
