@@ -9,10 +9,20 @@ ssh gpu-server   # configured in ~/.ssh/config — direct from situla over Tails
 ```
 
 **Direct access works. `Permission denied` means the key is LOCKED, not absent.**
-`~/.ssh/id_ed25519` is passphrase-protected, and gnome-keyring's gcr agent
-(`SSH_AUTH_SOCK=/run/user/1000/gcr/ssh`) only holds it after someone has unlocked
-it once — typically by running `ssh gpu-server` interactively and typing the
-passphrase. Until then a non-interactive shell gets:
+
+Situla runs **two ssh agents**, and gpu-server deliberately uses the smaller one:
+
+| agent | holds | used by |
+|-------|-------|---------|
+| `/run/user/1000/gcr/ssh` (gnome-keyring, = `$SSH_AUTH_SOCK`) | the unattended fleet keys (`situla-to-sadalsuud-admin`, `situla-bots-admin`, `restic-storagebox@situla`, `veen-demo-admin@situla`) | sadalsuud, bots, storagebox, veen-demo |
+| `/run/user/1000/openssh_agent` | **only** `situla@veen` (= `~/.ssh/id_ed25519`, passphrase-protected) | **gpu-server and github.com** — both pin `IdentityAgent` in `~/.ssh/config` |
+
+This split is intentional: the fleet automation keys are passphrase-less, while
+the two highest-value targets (gpu-server, GitHub) sit behind the passphrase.
+`AddKeysToAgent yes` caches the key into `openssh_agent` after one interactive
+unlock, so gpu-server works for the rest of the session and looks unattended.
+
+On a cold agent, a non-interactive shell instead gets:
 
 ```
 ssh_askpass: exec(/usr/bin/ssh-askpass): No such file or directory
@@ -22,17 +32,31 @@ hcl@gpu-server: Permission denied (publickey,password).
 That is a locked key, NOT a missing link. Do **not** conclude "there's no
 gpu-server access from this box" and do **not** route around it via a
 `ssh sadalsuud "ssh gpu-server ..."` hop — the hop works only because
-sadalsuud's own key is unattended, and it hides the real problem.
+sadalsuud's key is unattended, so the workaround succeeds and the wrong
+diagnosis never gets falsified.
 
-- Check first: `ssh-add -l` (look for the key), then `ssh -o BatchMode=yes gpu-server true`.
-- Fix: run `ssh gpu-server` once interactively to unlock into the agent.
-- In scripts/assertions: use `-o BatchMode=yes -o ConnectTimeout=10` so a locked
-  key fails fast instead of hanging on a prompt, and report the transport failure
-  as ERROR — never as a FAIL of whatever you were checking (2026-07-14: three
+- **Diagnose with the agent gpu-server actually uses** — `ssh-add -l` reads
+  `$SSH_AUTH_SOCK` (gcr), which lists `situla@veen` even when `openssh_agent` is
+  empty and gpu-server is failing. That reading is a false positive. Use:
+  ```bash
+  SSH_AUTH_SOCK=/run/user/1000/openssh_agent ssh-add -l   # must list situla@veen
+  ssh -o BatchMode=yes -o ConnectTimeout=10 gpu-server true
+  ```
+- **Fix**: run `ssh gpu-server` once interactively and type the passphrase.
+- **In scripts/assertions**: `-o BatchMode=yes -o ConnectTimeout=10` so a locked
+  key fails fast instead of hanging on a prompt, and report transport failure as
+  ERROR — never as a FAIL of whatever you were checking (2026-07-14: three
   MEMORY.md verify assertions reported FAIL on true claims for exactly this).
+- **Nothing in production depends on this link.** The pipeline reaches gpu-server
+  from sadalsuud using `nexusmind-scorer@sadalsuud`, an unattended key on the
+  machine that needs it. Situla→gpu-server is ad-hoc/human only, so the
+  passphrase costs nothing operationally — don't "fix" it by stripping it.
 
 *Recorded 2026-07-14 — the agent hit this, inferred "no key from situla, must hop
-via sadalsuud", and stated it twice as fact before the engineer corrected it.*
+via sadalsuud", and stated it twice as fact before the engineer corrected it. The
+first version of this note then documented the wrong agent (gcr instead of
+openssh_agent), which would have made `ssh-add -l` report a key that gpu-server
+cannot see.*
 
 ## Environment
 
