@@ -59,6 +59,24 @@ if [ ! -f "$VERIFY" ]; then
     exit 1
 fi
 
+# Resolve the interpreter rather than assuming `python` is on PATH. On a stock
+# Debian/Ubuntu box only `python3` exists, so a bare `python` made every
+# verification fail with "command not found" — fail-closed, but for the wrong
+# reason: the gate could never actually pass, which trains --no-verify as a
+# habit and hands back the silent-stale-deploy hole this hook exists to close.
+PYTHON_BIN=""
+for candidate in python3 python; do
+    if command -v "$candidate" > /dev/null 2>&1; then
+        PYTHON_BIN="$candidate"
+        break
+    fi
+done
+
+if [ -z "$PYTHON_BIN" ]; then
+    echo "commit-msg: ERROR — no python3/python interpreter on PATH. Cannot verify."
+    exit 1
+fi
+
 FAILED=0
 # Per-invocation temp file so parallel commits don't clobber each other.
 LOG_FILE=$(mktemp -t commit-msg-verify.XXXXXX 2>/dev/null || echo "/tmp/commit-msg-verify-$$.log")
@@ -66,7 +84,7 @@ trap 'rm -f "$LOG_FILE"' EXIT
 while IFS= read -r d; do
     [ -z "$d" ] && continue
     echo "  verifying $d ..."
-    if ! (cd "$REPO_ROOT" && PYTHONPATH=. python "$VERIFY" --filter "$d" --check-hub > "$LOG_FILE" 2>&1); then
+    if ! (cd "$REPO_ROOT" && PYTHONPATH=. "$PYTHON_BIN" "$VERIFY" --filter "$d" --check-hub > "$LOG_FILE" 2>&1); then
         echo "  [FAIL] $d"
         sed 's/^/    /' "$LOG_FILE"
         FAILED=$((FAILED + 1))
