@@ -137,11 +137,13 @@ Full per-session narratives live below the auto-loading cliff (read on demand). 
 
 ## Next Session Pickup (updated 2026-07-14)
 
-**⏳ FIRST THING: confirm the climate_doom RETIREMENT deployed.** NexusMind `1dd5e49` was pushed ~17:00 but not hand-deployed — the scorer restart happens legitimately inside `nexusmind.service`'s `ExecStartPre=deploy_filters.sh` on the next cycle (fluxus fires 00/04/08/12/16/20). Running `deploy_filters.sh` by hand would start the scorer outside a run and starve ollama of the GPU (see [[feedback-scorer-always-rest]]). Check:
-```bash
-ssh gpu-server 'cat ~/NexusMind/filters/CODE_REVISION'   # expect 29d3e3a0…
-```
-Was `3bbfcf93…` (the override-window fix, deployed 12:11). If it's still `3bbfcf93…` after a cycle has run, the auto-pull didn't fire — `journalctl -u nexusmind.service` on sadalsuud. **No manual pull needed this time**: the fixed freshness gate (`4e25934`) covers `src/scoring/`, and this is a `src/scoring`-only commit — the exact case the old gate missed. That the auto-pull delivers it *is* the gate fix proving itself. Live signal: `cap_applied` should be `None` on every article, forever. Full detail: **`memory/project_session_2026_07_14.md`**.
+**✅ climate_doom retirement DEPLOYED + VERIFIED 2026-07-14 20:08.** gpu-server `CODE_REVISION=d3c2f8d8…`, `_TRIGGER_REGISTRY` empty on disk, `cap_applied` is now permanently `null`. The auto-pull fired for a `src/scoring`-only change — the exact case the old freshness gate missed — so `4e25934` proved itself in production the same day. **Outstanding: confirm `cap_applied: 0` in the first post-20:08 batch** (any `filtered_2026071*_20*.jsonl` or later); the 16:40 and earlier batches are pre-retirement and legitimately show 1.
+
+**Two decisions are yours, both deliberately left alone:**
+1. **cd v5's 5 config exemptions** (`tests/unit/test_filter_config_schema.py`) — ratify the leaner shape or backfill. v5 may be RIGHT: nothing reads `deployment`/`hybrid_inference`/`training`, and `gatekeepers`/`tiers` live in `base_scorer.py`. Tracked debt, not silence.
+2. **`MIN_NORMALIZATION_RAW_MIN`** — a symmetric runtime backstop to `MAX_NORMALIZATION_RAW_MIN=4.5` would make #161 impossible even with a bad file on disk, but NR v2's `raw_min=1.5` is the rollback fallback, so it changes what a rollback restores.
+
+**#72 still blocked on data, not code:** the fitter now correctly refuses — only 66 v4 articles reach 3.75 against a 200 floor. Needs the production-representative historical rescore (playbook §6), not live waiting.
 
 **✅ nature_recovery v4 is DEPLOYED + VALIDATED IN PRODUCTION** (2026-07-10). The op-point 3.75 is now actually wired into `TIER_THRESHOLDS` (was inert, ran at 4.0), and the fix is confirmed in real `filtered_*.jsonl` output. cd v5 + invR v6 normalization refit (percentile) also validated in prod. Full detail: **`memory/project_session_2026_07_10.md`**.
 
