@@ -33,10 +33,10 @@ REPO_ROOT = Path(__file__).parent.parent.parent
 ACTIVE_FILTERS = [
     ("sustainability_technology", "v3"),
     ("uplifting", "v7"),
-    ("cultural_discovery", "v4"),
+    ("cultural_discovery", "v5"),
     ("investment_risk", "v6"),
     ("belonging", "v1"),
-    ("nature_recovery", "v2"),
+    ("nature_recovery", "v4"),
     ("foresight", "v1"),
 ]
 
@@ -101,7 +101,31 @@ KNOWN_SOURCE_TYPES = {
 # When fixing a drift during the B migration, remove the exemption(s) in
 # the same commit as the config fix.
 
-EXEMPTIONS: set[tuple[str, str, str]] = set()
+EXEMPTIONS: set[tuple[str, str, str]] = {
+    # cultural_discovery v5 (deployed 2026-05-31) shipped a deliberately leaner
+    # config: 87 lines vs v4's 160, dropping five sections this schema requires.
+    # Surfaced 2026-07-14 when ACTIVE_FILTERS was corrected — it had still named
+    # v4, so the deployed version was never checked and the drift was invisible
+    # for six weeks.
+    #
+    # These are NOT obviously bugs, which is why they are exemptions rather than
+    # fixes. Nothing under filters/common/ reads deployment / hybrid_inference /
+    # training — they are documentation-only. gatekeepers and tiers DO have
+    # runtime meaning, but the runtime reads them from base_scorer.py's
+    # GATEKEEPER_* / TIER_THRESHOLDS constants, not from config (that is the
+    # 2026-07-10 "inert config value" lesson: config's tiers section is read by
+    # no code). So v5 may well be right and this schema stale.
+    #
+    # OPEN DECISION (engineer): either ratify the leaner shape and drop these
+    # from REQUIRED_TOP_LEVEL / REQUIRED_SCORING_KEYS, or backfill v5's config.
+    # Do not let these sit here indefinitely — an exemption is a tracked debt,
+    # not a resolution.
+    ("cultural_discovery", "v5", "missing_top_level:deployment"),
+    ("cultural_discovery", "v5", "missing_top_level:hybrid_inference"),
+    ("cultural_discovery", "v5", "missing_top_level:training"),
+    ("cultural_discovery", "v5", "scoring_missing:gatekeepers"),
+    ("cultural_discovery", "v5", "scoring_missing:tiers"),
+}
 # Migration B complete (2026-05-04): all 7 active filters conform to the
 # canonical schema. Add an exemption here only with a written justification
 # explaining why the deviation is intentional and what would unblock removal.
