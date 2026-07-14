@@ -223,6 +223,17 @@ scoring:
       reason: "Without evidence of actual ecological recovery, content cannot score as nature recovery regardless of other dimensions"
 
   content_type_caps:
+    # SCOPE (2026-07-14): these declare the ORACLE contract — the prompt classifies
+    # content_type at labelling time and prompt-compressed.md Rule 5 tells it how to
+    # emit dimensions under a cap. They are NOT enforced at runtime. NexusMind's
+    # cap_triggers.py registry is empty: nature_recovery/climate_doom was the only
+    # runtime cap ever deployed and was retired after 3 production bites, 3 false
+    # positives, 0 saves (all three were the trigger word inside a non-doom
+    # construction: "para evitar su extinción", "en peligro crítico de extinción",
+    # "deforestation-free"). #161's root cause was a normalization fit threshold, not
+    # the model — the v4 model scores those doom articles raw 0.36-1.89 on its own.
+    # The scorer's startup log now reports these categories as INERT. Do not read
+    # this block as "production caps these"; see NexusMind src/scoring/cap_triggers.py.
     climate_doom:
       max_score: 2.0
       triggers:

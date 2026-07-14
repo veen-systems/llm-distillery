@@ -49,7 +49,16 @@ See `DEEP_ROOTS.md` for full scientific and philosophical grounding.
 
 ## Anti-Contamination (ADR-010)
 
-| Content Type | Max Score | Example |
+> **Runtime status (2026-07-14): these caps are NOT enforced in production.** They
+> declare the *oracle* contract — the prompt classifies `content_type` at labelling
+> time, and the model learned low dimensions for doom directly (the five articles
+> that motivated NexusMind#161 score raw 0.36–1.89 under v4). The one runtime cap
+> ever deployed, `climate_doom`, was retired after 3 bites / 3 false positives /
+> 0 saves; #161 turned out to be a normalization fit-threshold error, not a model
+> error. `recovery_evidence < 3 → cap 3.5` (below the 3.75 op-point) is what keeps
+> doom off the lens.
+
+| Content Type | Max Score (oracle contract) | Example |
 |---|---|---|
 | climate_doom | 2.0 | "Extinction crisis accelerates" |
 | climate_tech | 3.0 | "New solar panel efficiency record" |
