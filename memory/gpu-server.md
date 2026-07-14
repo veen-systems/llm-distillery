@@ -17,10 +17,24 @@ Situla runs **two ssh agents**, and gpu-server deliberately uses the smaller one
 | `/run/user/1000/gcr/ssh` (gnome-keyring, = `$SSH_AUTH_SOCK`) | the unattended fleet keys (`situla-to-sadalsuud-admin`, `situla-bots-admin`, `restic-storagebox@situla`, `veen-demo-admin@situla`) | sadalsuud, bots, storagebox, veen-demo |
 | `/run/user/1000/openssh_agent` | **only** `situla@veen` (= `~/.ssh/id_ed25519`, passphrase-protected) | **gpu-server and github.com** — both pin `IdentityAgent` in `~/.ssh/config` |
 
-This split is intentional: the fleet automation keys are passphrase-less, while
-the two highest-value targets (gpu-server, GitHub) sit behind the passphrase.
-`AddKeysToAgent yes` caches the key into `openssh_agent` after one interactive
-unlock, so gpu-server works for the rest of the session and looks unattended.
+**Origin unknown** — the engineer doesn't recall setting this up, so don't read
+intent into it (an earlier version of this note claimed the split was a
+deliberate security posture; that was invention). What is *established*:
+
+- Both agents advertise `situla@veen`, and it is the same key
+  (`SHA256:VLV24LZ…` = `~/.ssh/id_ed25519.pub`) — not two credentials.
+- **gnome-keyring's gcr agent lists keys it has not unlocked**, reading them from
+  `~/.ssh/*.pub`, and only prompts when one is actually used. So a gcr listing
+  proves nothing about usability — this is exactly why `ssh-add -l` is a
+  false-positive diagnostic here.
+- Forcing gpu-server through gcr **hangs** rather than connecting (it tries to
+  prompt; `BatchMode=yes` can't suppress the agent's own dialog). The passphrase
+  gate is therefore real, not bypassable via gcr.
+- Pinning `IdentityAgent` to the real openssh agent is the common, sane
+  workaround for gcr's deficiencies — so the config is probably right even if
+  nobody remembers writing it. `AddKeysToAgent yes` then caches the key into
+  `openssh_agent` after one interactive unlock, and it looks unattended for the
+  rest of the session.
 
 On a cold agent, a non-interactive shell instead gets:
 
@@ -52,11 +66,14 @@ diagnosis never gets falsified.
   machine that needs it. Situla→gpu-server is ad-hoc/human only, so the
   passphrase costs nothing operationally — don't "fix" it by stripping it.
 
-*Recorded 2026-07-14 — the agent hit this, inferred "no key from situla, must hop
-via sadalsuud", and stated it twice as fact before the engineer corrected it. The
-first version of this note then documented the wrong agent (gcr instead of
-openssh_agent), which would have made `ssh-add -l` report a key that gpu-server
-cannot see.*
+*Recorded 2026-07-14. Three corrections were needed to get this note right, which
+is itself the lesson: (1) the agent inferred "no key from situla, must hop via
+sadalsuud" and stated it twice as fact — the hop worked, so the wrong model kept
+being confirmed; (2) the first note documented the wrong agent (gcr instead of
+openssh_agent), which would have made `ssh-add -l` report a key gpu-server cannot
+see; (3) the second note asserted the two-agent split was a deliberate security
+design — the engineer doesn't recall creating it at all. Each claim was plausible,
+none was checked before being written down.*
 
 ## Environment
 
