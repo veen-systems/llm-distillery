@@ -5,8 +5,34 @@ Proxmox LXC container on HCL edge server, accessed via Tailscale.
 ## Access
 
 ```bash
-ssh gpu-server   # configured in ~/.ssh/config
+ssh gpu-server   # configured in ~/.ssh/config — direct from situla over Tailscale
 ```
+
+**Direct access works. `Permission denied` means the key is LOCKED, not absent.**
+`~/.ssh/id_ed25519` is passphrase-protected, and gnome-keyring's gcr agent
+(`SSH_AUTH_SOCK=/run/user/1000/gcr/ssh`) only holds it after someone has unlocked
+it once — typically by running `ssh gpu-server` interactively and typing the
+passphrase. Until then a non-interactive shell gets:
+
+```
+ssh_askpass: exec(/usr/bin/ssh-askpass): No such file or directory
+hcl@gpu-server: Permission denied (publickey,password).
+```
+
+That is a locked key, NOT a missing link. Do **not** conclude "there's no
+gpu-server access from this box" and do **not** route around it via a
+`ssh sadalsuud "ssh gpu-server ..."` hop — the hop works only because
+sadalsuud's own key is unattended, and it hides the real problem.
+
+- Check first: `ssh-add -l` (look for the key), then `ssh -o BatchMode=yes gpu-server true`.
+- Fix: run `ssh gpu-server` once interactively to unlock into the agent.
+- In scripts/assertions: use `-o BatchMode=yes -o ConnectTimeout=10` so a locked
+  key fails fast instead of hanging on a prompt, and report the transport failure
+  as ERROR — never as a FAIL of whatever you were checking (2026-07-14: three
+  MEMORY.md verify assertions reported FAIL on true claims for exactly this).
+
+*Recorded 2026-07-14 — the agent hit this, inferred "no key from situla, must hop
+via sadalsuud", and stated it twice as fact before the engineer corrected it.*
 
 ## Environment
 
