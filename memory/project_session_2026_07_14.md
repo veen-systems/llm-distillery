@@ -100,3 +100,44 @@ the old freshness gate missed. Verified on sadalsuud — old gate MISSES, new ga
 detects and auto-pulls. No manual bootstrap needed this time.
 
 Deploy queued for the 20:00 cycle; expect `CODE_REVISION` `29d3e3a0…` (was `3bbfcf93…`).
+
+---
+
+## Part 2 (evening) — two review rounds, and what they cost
+
+**Round 1** (`2598ffa..1dd5e49` / `ffe4172..bef87d4`): 10 confirmed. Its **top finding was wrong** — it claimed the normalization guard "mixes scales" and would collapse recall. I amplified it into a plan and a quantified table ("2,776 hidden articles across 5 lenses"), and framed linear `score_scale_factor` as the healthy baseline.
+
+The engineer stopped it with a question, not a check: *"Can it be that you are not understanding the normalization procedure? … I think not the linear scaling?"*
+
+ADR-014 specifies the pipeline as "…normalize → **reassign tier on normalized** → display_rank". `production_scorer.py`'s docstring says it 250 lines above the line I'd read. So `raw >= threshold` + `tier: low` is **correct by design**. And foresight uses `scale_factor` only because its fit was REJECTED by `MAX_NORMALIZATION_RAW_MIN` (#205) — the opposite of healthy.
+
+The evidence that settles it, and which nobody had ever written down:
+
+| filter | raw_min | |
+|---|---|---|
+| belonging, cd v4/v5, invR v6, sustech v3, uplifting v6/v7 | **4.00** | == tier threshold |
+| foresight v1 | 5.01 | drifted HIGH → #205 |
+| nature_recovery v1 / v2 | 1.51 / 1.50 | drifted LOW → **#161** |
+
+7 of 9 comply. The 3 that don't are the only 2 normalization incidents this project has ever had. **One assertion catches both** — now `tests/unit/test_normalization_invariant.py`.
+
+**Round 2** (`1dd5e49..ba827e4` / `bef87d4..a608da0`): 8 distinct, **4 of them inside round 1's fixes**:
+
+- The dirty-check premise I wrote in a comment and never ran. `git diff --quiet <paths>` is worktree-vs-**INDEX**; `git add` defeats it. Verified: a staged edit passed while the hash named a blob without it and rsync shipped the worktree.
+- My invariant test was **too strict** — `raw_min` is the smallest score *observed*, not the fit threshold. It passed only because the files are dense (invR 4.0003, cd v5 4.0006) and the tolerance absorbed it by luck. Now a range: `[op_point, 4.5]`.
+- My invariant test **re-implemented its own subject**, and the copy drifted within the same commit.
+- The #205 mirror gated on `args.min_score` instead of the written `stats.raw_min`; `--filter-version` fell back to the directory name; `--allow-thin-fit` clobbered the package it says never to deploy to.
+
+## Deployed and verified 20:08
+
+`d3c2f8d8` live on gpu-server; registry empty; `cap_applied` permanently `null`. The log line that matters:
+
+> `Local main is 4 commit(s) behind origin/main on filters/ src/filters/ src/scoring/ (clean fast-forward) — auto-pulling`
+
+That is the `src/scoring`-only case the old gate missed. **The morning's gate fix proved itself in production the same day it was written.** Also checked, not assumed: three of those commits modify `deploy_filters.sh` *while bash executes it* — git writes-and-renames, the running shell holds the old inode, old content runs to completion.
+
+## The scorecard
+
+Five of the day's corrections came from adversarial review. **The two most consequential came from the engineer** — "go read the design" killed a false narrative already baked into a plan, and "I don't remember the intent" sent me to an ADR that said the opposite of my conclusion.
+
+Reviews catch what I can't see in myself. They do not catch what the reviews and I both get wrong — and today that was the single most expensive error.

@@ -4,6 +4,29 @@ Problems encountered and resolved. Format: Problem → Root cause → Fix.
 
 ---
 
+## Two review rounds found 18 defects; 4 were in the FIXES from round 1 (2026-07-14)
+
+**Problem**: A day of careful fixes, each individually verified, still shipped defects that only an adversarial second model found — and round 2's worst findings were *inside* round 1's fixes.
+
+**Root cause**: Two distinct failure modes, and they need different countermeasures.
+1. **Premises asserted in comments, never executed.** `a95c3d6` moved the deploy revision hash to HEAD, justified by: *"the uncommitted-changes check covers exactly SCORER_PATHS, so HEAD and the working tree are guaranteed identical."* False. `git diff --quiet <paths>` compares worktree-vs-**INDEX**, so `git add` defeats it — verified: a staged edit passed the guard while the hash named a blob without it and rsync shipped the worktree. The sentence was the bug; nobody runs a sentence.
+2. **Tests that re-implement their subject.** `test_normalization_invariant.py` carried a private copy of `_op_point_from_base_scorer`, and the copy had already drifted **within the same commit** — it omitted the ambiguity check added right beside it. A test that reimplements what it tests, tests the reimplementation.
+Plus: the invariant itself was **too strict** (`raw_min` is the smallest score *observed*, not the fit threshold; it only passed because the files are dense — invR is 4.0003, cd v5 is 4.0006, and the tolerance absorbed that by luck), guards keyed on the wrong quantity (`args.min_score` instead of the written `stats.raw_min`), and `--allow-thin-fit` — documented "never deploy it" — wrote straight into the deployed package.
+
+**Fix**: All 18 closed, each verified against pre-fix behaviour rather than assumed (pre-fix resolved `3.0` from stale config; pre-fix resolved `1.5` on two definitions; pre-fix crashed on dict-shaped thresholds; pre-fix passed a staged edit). The durable lessons: (a) a claim written in a comment is not a control — if the comment asserts a property, *test the property*; (b) never re-implement the subject in its own test — import it; (c) run two rounds, because round 1 reviews the code and round 2 reviews the fixes, and the second one is where your own blind spots live.
+
+---
+
+## Reviewers misread design as defect too — and confidently (2026-07-14)
+
+**Problem**: Round 1's top finding claimed the normalization guard "mixes scales" because `TIER_THRESHOLDS` is a normalized-scale cut used as a raw floor, predicting recall collapse. I amplified it into a plan, quantified "2,776 hidden articles across 5 lenses", and framed linear `score_scale_factor` as the healthy baseline. All of it wrong.
+
+**Root cause**: Neither I nor the reviewer opened ADR-014, which **specifies** the pipeline as "…normalize → **reassign tier on normalized** → display_rank". `production_scorer.py`'s module docstring says the same thing 250 lines above the line I read. So `raw >= threshold` + `tier: low` is correct by design — the article sits at the bottom of its own MEDIUM+ population. And linear scaling isn't healthy, it's *superseded*: foresight only uses it because its fit was REJECTED by `MAX_NORMALIZATION_RAW_MIN` (#205). The engineer caught it by asking "are you not understanding the normalization procedure? … I think not the linear scaling?" — not by any check either of us ran.
+
+**Fix**: Retraction recorded; round 2 was explicitly told the retraction *and invited to overturn it with evidence* (it didn't). The guard turned out **correct**, filling the missing LOW-side bound symmetric to the existing HIGH-side one. Evidence that settles it: 7 of 9 fitted `normalization.json` files sit at `raw_min == exactly the tier threshold`; the 3 that don't are the only 2 normalization incidents ever. Now enforced by `tests/unit/test_normalization_invariant.py`. **Generalisable**: a review finding is a hypothesis, not a verdict — verify it against the design docs before acting, especially when it is dramatic. Both a model and an agent reading the same code reached the same wrong conclusion, which means "two models agree" is not evidence.
+
+---
+
 ## The #161 climate_doom cap was a band-aid over a normalization-fitting error (2026-07-14)
 
 **Problem**: nature_recovery v4 capped two Spanish conservation stories to 2.0 (`cap_applied: ['climate_doom']`) — seed-banking Chile's last wild *Dendroseris neriifolia* (raw 3.79) and buying habitat for the Ecuadorian vizcacha (raw 4.28). Both are genuine recovery/protection content; neither is doom.
