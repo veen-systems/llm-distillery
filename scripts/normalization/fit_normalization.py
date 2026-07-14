@@ -44,6 +44,15 @@ from filters.common.score_normalization import fit_normalization, save_normaliza
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
 
+# Mirrors of the CONSUMER's guards in NexusMind src/scoring/production_scorer.py.
+# A fit that production will reject is worse than no fit: the operator sees
+# "Normalization fitted on N articles" plus a sample-mapping table, believes
+# percentile normalization is live, and it silently is not — ProductionScorer
+# falls back to the linear score_scale_factor at load. Keep these in step with
+# NexusMind; if they drift, this script cheerfully produces dead files.
+MIN_NORMALIZATION_ARTICLES = 200   # ADR-018 safety valve; below this the CDF is sampling noise
+MAX_NORMALIZATION_RAW_MIN = 4.5    # NexusMind#205: raw_min above this clamps the band below it to ~0
+
 
 def _lowest_nonzero(thresholds) -> Optional[float]:
     """The operating point is the lowest threshold above 0.0 — i.e. the score at
@@ -68,17 +77,42 @@ def _op_point_from_base_scorer(filter_dir: Path) -> Optional[float]:
         tree = ast.parse(path.read_text(encoding="utf-8"))
     except SyntaxError:
         return None
+
+    # Collect EVERY TIER_THRESHOLDS assignment, not the first ast.walk happens to
+    # yield. A file with two (a legacy/experimental class above the live one, or a
+    # subclass overriding its parent) would otherwise resolve silently to whichever
+    # came first — and the guard could not catch it, because it compares --min-score
+    # against that same wrong value. Ambiguity must fail closed, not pick.
+    found = []
     for node in ast.walk(tree):
         if not isinstance(node, ast.Assign):
             continue
         for target in node.targets:
-            if isinstance(target, ast.Name) and target.id == "TIER_THRESHOLDS":
-                try:
-                    tiers = ast.literal_eval(node.value)
-                except (ValueError, SyntaxError):
-                    return None
-                return _lowest_nonzero([t[1] for t in tiers])
-    return None
+            if not (isinstance(target, ast.Name) and target.id == "TIER_THRESHOLDS"):
+                continue
+            try:
+                tiers = ast.literal_eval(node.value)
+                # Indexing belongs inside the guard: TIER_THRESHOLDS reshaped to
+                # dicts (mirroring config.yaml) or bare floats raises TypeError /
+                # KeyError here, and an uncaught traceback is not the documented
+                # "degrade to None" contract.
+                thresholds = [t[1] for t in tiers]
+            except (ValueError, SyntaxError, TypeError, KeyError, IndexError):
+                return None
+            op = _lowest_nonzero(thresholds)
+            if op is not None:
+                found.append(op)
+
+    if not found:
+        return None
+    if len(set(found)) > 1:
+        logger.error(
+            f"Ambiguous operating point: {path} contains multiple TIER_THRESHOLDS "
+            f"definitions resolving to different values {sorted(set(found))}. Refusing "
+            f"to guess — pass --min-score explicitly, or collapse them to one."
+        )
+        return None
+    return found[0]
 
 
 def _op_point_from_config(config: dict) -> Optional[float]:
@@ -95,22 +129,43 @@ def _op_point_from_config(config: dict) -> Optional[float]:
 def resolve_op_point(filter_dir: Path, config: dict) -> Optional[float]:
     """Resolve the filter's operating point (the visibility threshold).
 
-    TIER_THRESHOLDS in base_scorer.py wins: it is the sole runtime source for
-    tier assignment — no scoring code reads config's tiers section. config.yaml
-    is documentation that must mirror it, so a mismatch is reported rather than
-    silently resolved (the two drifted for the whole v4 deploy: config said
-    3.75, code ran an inert 4.0).
+    base_scorer.py's TIER_THRESHOLDS is the ONLY authoritative source: it is what
+    the runtime actually assigns tiers from — no scoring code reads config's tiers
+    section. config.yaml is documentation that must mirror it, and is used here
+    solely to cross-check and report drift.
+
+    If TIER_THRESHOLDS cannot be resolved we return None rather than falling back
+    to config, because config is demonstrably unreliable: sustainability_technology
+    v3 and investment_risk v6 both ship a stale `scoring.tiers` medium=3.0 against
+    a live code value of 4.0. Silently adopting 3.0 as the fit floor would map the
+    3.0-4.0 band — currently clamped to ~0 — into the visible band, which is
+    precisely the NexusMind#161 failure this guard exists to prevent, delivered by
+    the guard's own default. An earlier version of this function did exactly that,
+    and its drift warning could never fire on that path (it required BOTH sources
+    to be non-None). Returning None makes main() demand an explicit --min-score,
+    which is the safe degradation — including under ADR-016, should tiers ever be
+    dropped from the filters entirely.
     """
     from_code = _op_point_from_base_scorer(filter_dir)
     from_config = _op_point_from_config(config)
 
-    if from_code is not None and from_config is not None and from_code != from_config:
+    if from_code is None:
+        if from_config is not None:
+            logger.warning(
+                f"Could not resolve the operating point from base_scorer.py "
+                f"TIER_THRESHOLDS. config.yaml says {from_config}, but config is NOT "
+                f"authoritative and is known to go stale — refusing to use it as the "
+                f"fit floor. Pass --min-score explicitly if {from_config} is correct."
+            )
+        return None
+
+    if from_config is not None and from_code != from_config:
         logger.warning(
             f"Operating point drift: base_scorer.py TIER_THRESHOLDS says {from_code}, "
             f"config.yaml scoring.tiers says {from_config}. TIER_THRESHOLDS is the runtime "
             f"source and wins here — but fix the mismatch, one of them is a lie."
         )
-    return from_code if from_code is not None else from_config
+    return from_code
 
 
 def load_weighted_averages_local(
@@ -316,10 +371,21 @@ def main():
              "refused — see --allow-below-op-point.",
     )
     parser.add_argument(
+        "--allow-thin-fit", action="store_true",
+        help=f"Write the CDF even with fewer than {MIN_NORMALIZATION_ARTICLES} articles. "
+             f"Production will reject the result — analysis only, never deploy it.",
+    )
+    parser.add_argument(
         "--allow-below-op-point", action="store_true",
         help="Permit --min-score below the filter's operating point. This is what caused "
              "NexusMind#161 — it maps sub-visibility articles into the visible band. Only "
              "use with a specific reason and verify the resulting mappings.",
+    )
+    parser.add_argument(
+        "--all-versions", action="store_true",
+        help="Fit across EVERY filter_version present in the data. Almost never right: "
+             "different versions are different models with different score distributions, "
+             "so the CDF becomes a bimodal blend. Only for deliberate cross-version analysis.",
     )
     parser.add_argument(
         "--filter-version", type=str, default=None,
@@ -365,9 +431,12 @@ def main():
     if args.min_score is None:
         if op_point is None:
             logger.error(
-                "Could not resolve the operating point from base_scorer.py TIER_THRESHOLDS "
-                "or config.yaml scoring.tiers, and no --min-score was given. Pass --min-score "
-                "explicitly (it should be the filter's visibility threshold)."
+                "Could not resolve the operating point from base_scorer.py TIER_THRESHOLDS, "
+                "and no --min-score was given. config.yaml is NOT consulted as a fallback — it "
+                "is documentation and is known to go stale (sustainability_technology v3 and "
+                "investment_risk v6 both ship 3.0 against a live 4.0). Pass --min-score "
+                "explicitly: it must be the filter's visibility threshold, the value the "
+                "runtime assigns tiers from."
             )
             sys.exit(1)
         args.min_score = op_point
@@ -387,9 +456,44 @@ def main():
             f"--allow-below-op-point. Verify the sample mappings below before deploying."
         )
     elif op_point is not None and args.min_score > op_point:
+        logger.warning(
+            f"--min-score {args.min_score} is above the operating point {op_point}: the CDF "
+            f"will not cover [{op_point}, {args.min_score}), so np.interp clamps that whole "
+            f"band to ~0 at inference — articles ABOVE the threshold get normalized to nothing. "
+            f"This is NexusMind#205 (foresight fitted at raw_min 5.01; raw 4.60 -> wavg 0.02)."
+        )
+
+    # Mirror the consumer's #205 guard. ProductionScorer rejects a CDF whose raw_min
+    # exceeds MAX_NORMALIZATION_RAW_MIN at load and silently falls back to the linear
+    # score_scale_factor, so writing one produces a file that looks fitted and is inert.
+    if args.min_score > MAX_NORMALIZATION_RAW_MIN:
+        logger.error(
+            f"--min-score {args.min_score} exceeds MAX_NORMALIZATION_RAW_MIN "
+            f"({MAX_NORMALIZATION_RAW_MIN}). NexusMind's ProductionScorer REJECTS such a fit at "
+            f"load and falls back to score_scale_factor, so the file would be dead on arrival "
+            f"(NexusMind#205). Fit at the operating point instead."
+        )
+        sys.exit(1)
+
+    # Scope to one filter version. Different versions are different models with
+    # different score distributions; blending them yields a bimodal CDF in which
+    # this version's articles are ranked against another version's population. The
+    # documented invocation omitted --filter-version, and the rolling production
+    # window straddles version cutovers — this already happened once, with 19,948
+    # v1 leftovers (gotcha-log "fit_normalization.py Blends Across Filter Versions").
+    if args.all_versions:
+        if args.filter_version:
+            logger.error("--all-versions and --filter-version are mutually exclusive.")
+            sys.exit(1)
+        logger.warning(
+            "--all-versions: fitting across EVERY filter_version in the data. The CDF will "
+            "blend distinct model distributions. Only correct for deliberate analysis."
+        )
+    elif args.filter_version is None:
+        args.filter_version = filter_version
         logger.info(
-            f"--min-score {args.min_score} is above the operating point {op_point} — allowed "
-            f"(a stricter fit set), but the CDF will not cover [{op_point}, {args.min_score})."
+            f"Scoping to filter_version={args.filter_version} (from config.yaml). "
+            f"Override with --filter-version, or --all-versions to disable scoping."
         )
 
     # Load production weighted averages
@@ -408,9 +512,26 @@ def main():
             args.data_dir, filter_name, min_score=args.min_score, filter_version=args.filter_version,
         )
 
-    if len(was) < 10:
-        logger.error(f"Only {len(was)} weighted averages found — need at least 10")
-        sys.exit(1)
+    if len(was) < MIN_NORMALIZATION_ARTICLES:
+        logger.error(
+            f"Only {len(was)} articles at/above {args.min_score} — production requires "
+            f"{MIN_NORMALIZATION_ARTICLES} (MIN_NORMALIZATION_ARTICLES in NexusMind "
+            f"production_scorer.py).\n"
+            f"  Fitting anyway would produce a normalization.json that ProductionScorer "
+            f"SILENTLY REJECTS at load, falling back to the linear score_scale_factor —\n"
+            f"  you would see a sample-mapping table describing a curve production never "
+            f"applies.\n"
+            f"  For a needle filter this is weeks of live accumulation. Don't wait: rescore a "
+            f"production-representative historical harvest (playbook §6) — it must be at the\n"
+            f"  production base rate, NOT the enriched val set. Use --allow-thin-fit only for "
+            f"throwaway analysis whose output you will not deploy."
+        )
+        if not args.allow_thin_fit:
+            sys.exit(1)
+        logger.warning(
+            f"--allow-thin-fit set: writing a {len(was)}-article CDF that production will "
+            f"reject. Do not deploy this file."
+        )
 
     logger.info(f"Loaded {len(was)} weighted averages")
 

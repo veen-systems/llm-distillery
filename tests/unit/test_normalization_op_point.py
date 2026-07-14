@@ -123,9 +123,58 @@ class TestResolveOpPoint:
             assert fitter.resolve_op_point(tmp_path, config) == 4.0
         assert "drift" in caplog.text.lower()
 
-    def test_falls_back_to_config_when_no_base_scorer(self, tmp_path):
+    def test_refuses_to_fall_back_to_config_when_no_base_scorer(self, tmp_path, caplog):
+        """config.yaml must NEVER become the fit floor. It is documentation, not the
+        runtime source, and it is demonstrably stale in production: sustech v3 and
+        invR v6 both ship scoring.tiers medium=3.0 against a live code value of 4.0.
+
+        An earlier version of resolve_op_point fell back to config here, and its drift
+        warning could not fire on this path (it required both sources non-None). Given
+        a filter whose TIER_THRESHOLDS is unreadable — e.g. reshaped to a call, or
+        removed per ADR-016 — it would silently adopt 3.0 and fit the CDF there,
+        mapping the 3.0-4.0 band into the visible band. That is NexusMind#161,
+        delivered by the guard built to prevent it. Verified against the pre-fix code:
+        it logged 'Operating point: 3.0 (resolved)'.
+        """
         config = {"scoring": {"tiers": {"medium": {"threshold": 4.0}, "low": {"threshold": 0.0}}}}
-        assert fitter.resolve_op_point(tmp_path, config) == 4.0
+        with caplog.at_level("WARNING"):
+            assert fitter.resolve_op_point(tmp_path, config) is None
+        assert "not authoritative" in caplog.text.lower()
+
+    def test_ambiguous_multiple_definitions_refuses_rather_than_picking_first(self, tmp_path, caplog):
+        """ast.walk yields definitions in source order. A legacy or experimental class
+        above the live one would silently win — and the guard cannot catch that,
+        because it validates --min-score against the same wrong value. Pre-fix this
+        returned 1.5 (the literal #161 fit floor); it must now refuse."""
+        (tmp_path / "base_scorer.py").write_text(
+            'class Legacy:\n    TIER_THRESHOLDS = [("medium", 1.5, "d"), ("low", 0.0, "d")]\n'
+            'class Real:\n    TIER_THRESHOLDS = [("medium", 4.0, "d"), ("low", 0.0, "d")]\n'
+        )
+        with caplog.at_level("ERROR"):
+            assert fitter._op_point_from_base_scorer(tmp_path) is None
+        assert "ambiguous" in caplog.text.lower()
+
+    def test_identical_duplicate_definitions_are_not_ambiguous(self, tmp_path):
+        """Two definitions agreeing on the value is not ambiguity — don't refuse work
+        over a harmless duplication (e.g. a subclass restating its parent's literal)."""
+        (tmp_path / "base_scorer.py").write_text(
+            'class A:\n    TIER_THRESHOLDS = [("medium", 4.0, "d"), ("low", 0.0, "d")]\n'
+            'class B:\n    TIER_THRESHOLDS = [("medium", 4.0, "d"), ("low", 0.0, "d")]\n'
+        )
+        assert fitter._op_point_from_base_scorer(tmp_path) == 4.0
+
+    @pytest.mark.parametrize("literal,label", [
+        ('[{"name": "medium", "threshold": 3.75}]', "dict-shaped (mirrors config.yaml)"),
+        ('[7.0, 4.0, 0.0]', "bare floats"),
+        ('[("medium",)]', "short tuple"),
+    ])
+    def test_non_tuple_shapes_degrade_to_none_instead_of_crashing(self, tmp_path, literal, label):
+        """The indexing `t[1]` used to sit outside the try/except, so a reshaped
+        TIER_THRESHOLDS raised TypeError/KeyError/IndexError and every fit for that
+        filter died on a traceback — not the documented 'degrade to None' contract.
+        Verified against the pre-fix code: the dict shape produced a traceback."""
+        (tmp_path / "base_scorer.py").write_text(f"class S:\n    TIER_THRESHOLDS = {literal}\n")
+        assert fitter._op_point_from_base_scorer(tmp_path) is None, f"should degrade on {label}"
 
     def test_no_warning_when_they_agree(self, tmp_path, caplog):
         (tmp_path / "base_scorer.py").write_text(
