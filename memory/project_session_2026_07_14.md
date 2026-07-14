@@ -68,3 +68,35 @@ Three plausible claims, none checked before being written down — the same defe
 ## The lesson
 
 Not "add more checks." Every one of these **was** a check. The distinguishing property of a real control is that **someone has watched it fail**. Today's fixes only count because the new tests were run against the *old* code and observed failing — that is the only reason they're known to test anything.
+
+
+## Coda — the cap was retired the same day (17:00)
+
+The override-window fix deployed at **12:11** and worked: the deployed detector on
+gpu-server releases both Spanish articles. But the **16:40** batch surfaced a third
+false positive the fix cannot touch:
+
+> **"Ecuador's Amazon coffee farmers get ahead of Europe's deforestation rules"** —
+> raw **4.66**, capped to 2.0. Trips on `deforestation` inside **`deforestation-free`**
+> (`\b` matches across the hyphen). Zero recovery vocabulary in 12,627 chars, so no
+> override could rescue it. Scores were a coherent conservation story:
+> recovery_evidence 4.58, human_agency 6.91, 400 producers, 5,000 hectares.
+
+All three bites share one shape — the trigger word in a **non-doom construction**
+(`evitar su extinción`, `en peligro crítico de extinción`, `deforestation-free`).
+The regex is polarity-blind; patching each is whack-a-mole across five languages.
+
+**Final scoreboard: 3 bites, 3 false positives, 0 saves.** Retired in NexusMind
+`1dd5e49`. The principled reason: the `recovery_evidence` gatekeeper (`<3 → cap 3.5`,
+below the 3.75 op-point) already does this semantically — doom scores
+recovery_evidence 0.07–1.08, the coffee FP scored 4.58. The cap was a regex
+overriding the model's *correct* judgement, costing exactly the recall #71 chases.
+
+I had recommended keeping it as defence-in-depth six hours earlier. That was wrong;
+the evidence since was one-directional.
+
+**The gate fix proved itself**: `1dd5e49` touches only `src/scoring/`, the exact case
+the old freshness gate missed. Verified on sadalsuud — old gate MISSES, new gate
+detects and auto-pulls. No manual bootstrap needed this time.
+
+Deploy queued for the 20:00 cycle; expect `CODE_REVISION` `29d3e3a0…` (was `3bbfcf93…`).
