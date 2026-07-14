@@ -4,6 +4,43 @@ Problems encountered and resolved. Format: Problem → Root cause → Fix.
 
 ---
 
+## The #161 climate_doom cap was a band-aid over a normalization-fitting error (2026-07-14)
+
+**Problem**: nature_recovery v4 capped two Spanish conservation stories to 2.0 (`cap_applied: ['climate_doom']`) — seed-banking Chile's last wild *Dendroseris neriifolia* (raw 3.79) and buying habitat for the Ecuadorian vizcacha (raw 4.28). Both are genuine recovery/protection content; neither is doom.
+
+**Root cause**: Two independent defects, and the deeper one reframes #161 entirely.
+1. **Window asymmetry**: `detect_caps` scanned title+500 chars for triggers *and* overrides. Both articles tripped on the single word `extinción` in the lede — used as *prevention* ("para evitar su extinción") and as the IUCN status label ("en peligro crítico de extinción"), never as a doom claim. Their recovery signals (`restauración`, `reintroducciones`) sat at char 2551+, outside the window. The asymmetry is structural: a conservation story states its threat context up front and reports the outcome later, so a lede-only override can never win on the articles it exists to rescue.
+2. **#161 was never a model failure**: v2's model scored the five motivating doom articles **2.2–3.3** — correctly low. `normalization.json`, fitted at `raw >= 1.5` (fit-set median 2.19), mapped them to **5.2–8.3** and put them on the lens at up to 8.34/10 "high". Replaying all five raw scores through v2's `normalization.json` reproduces production **exactly** (5/5 match). The cap was a keyword band-aid over a threshold error.
+
+**Fix**: (a) Overrides now scan the full body; triggers stay bound to the lede (NexusMind `8681efa`). A/B over 10,625 production articles: 33 change state, only 2 above the 2.0 ceiling — exactly the two false positives; nothing else moves. (b) The durable fix is upstream: `fit_normalization.py` now derives `--min-score` from the operating point and refuses below it (`33fba44`). Rescoring the five #161 articles under v4 gives raw **0.36–1.89** — all below the 3.75 op-point *and* below the cap's own 2.0 ceiling, so the cap cannot act on them at all. Under v4 it is a dormant safety net, not the thing keeping doom off the lens; its only measured effect in 24h was the two false positives (165 triggers, 163 no-ops, 2 bites, both wrong). Simulation confirms the conditionality: fit at 3.75 → all five clip to ~0.56 (cap moot); fit at v2's 1.5 → `burns` re-inflates to 5.32 and the cap becomes load-bearing again.
+
+---
+
+## Controls that were never executed against the thing they claim to control (2026-07-14)
+
+**Problem**: Five separate "protections" found dead in one session — each added in good faith, none ever observed firing.
+
+**Root cause**: Not a shortage of checks. Every one *was* a check; none had ever been watched fail.
+- `.githooks/commit-msg` (the #44 deploy-claim gate): committed mode **100644**. Git silently ignores non-executable hooks, so every clone that followed CLAUDE.md's `git config core.hooksPath .githooks` step got a no-op. It also invoked bare `python` (only `python3` exists), so even once executable it could never *pass* — which trains `--no-verify` and hands back the hole it was written to close.
+- `deploy_filters.sh` freshness gate: the deploy **hash** covers `src/scoring/`, but the origin/auto-pull gate only diffed `filters/` + `src/filters/`. A `src/scoring`-only commit merged to origin therefore skipped the pull, hashed the stale checkout, matched gpu-server's equally-stale revision, printed *"Filters already in sync — skipping deploy"* and exited 0. Reproduced live against the #161 fix, which touches only `src/scoring/`.
+- `config.yaml` `content_type_caps.*.exceptions:` — documented ("Doom framing followed by documented recovery outcome"), never compiled into `cap_triggers.py`. Only `triggers:` were.
+- `config.yaml` `scoring.tiers` — read by nothing; `TIER_THRESHOLDS` is the sole runtime source (found 2026-07-10, op-point 3.75 inert). Still live in **sustainability_technology v3**: config says `medium: 3.0`, code runs `4.0`.
+- Three `MEMORY.md` `<!-- verify: -->` assertions reported FAIL on claims that were all **true** — `cmd && echo PASS || echo FAIL` collapses three states into two and cannot distinguish "claim is false" from "check could not run", making curate's own documented ERROR branch unreachable.
+
+**Fix**: Hook made executable + interpreter resolved (`9b6126d`); freshness gate hoisted to a `SCORER_PATHS` array covering exactly what the hash covers (NexusMind `4e25934`); assertions rewritten so the *claim* decides PASS/FAIL and *transport/deps* surface ERROR (`7be2368`), each state verified to fire. Standing rule: **a control is not real until you have watched it fail.** New tests were run against the *old* code to confirm they fail; that is the only reason they are known to test anything.
+
+---
+
+## A wrong diagnosis that its own workaround kept alive (2026-07-14)
+
+**Problem**: `ssh gpu-server` from situla returned `ssh_askpass ... Permission denied (publickey,password)`. I concluded "no gpu-server key from this workstation; it needs the sadalsuud hop", routed the #161 rescore through `ssh sadalsuud "ssh gpu-server ..."`, and stated the conclusion twice as fact. The engineer checked and corrected it: the link works fine.
+
+**Root cause**: `~/.ssh/id_ed25519` is passphrase-protected, and situla runs **two** agents — `gcr/ssh` (gnome-keyring, `$SSH_AUTH_SOCK`, the unattended fleet keys) and `openssh_agent`, which holds only `situla@veen` and is pinned via `IdentityAgent` by gpu-server **and** github.com. On a cold `openssh_agent` the key isn't there; one interactive unlock caches it (`AddKeysToAgent yes`) and everything works for the rest of the session. What made the error durable is that **the workaround succeeded**: the hop works because sadalsuud's key is unattended, so a passing result kept confirming a wrong model. An error that produces green results never falsifies itself.
+
+**Fix**: Recorded in `memory/gpu-server.md` (`fe07211`, corrected `4254487`). The first version of the note documented the *wrong agent* — it told the reader to run `ssh-add -l`, which reads gcr and lists `situla@veen` even when `openssh_agent` is empty and gpu-server is failing, i.e. a false-positive diagnostic. Corrected to name `SSH_AUTH_SOCK=/run/user/1000/openssh_agent` explicitly and to treat the `BatchMode` probe as authoritative. Note also records that nothing in production depends on this link (the pipeline reaches gpu-server from sadalsuud via `nexusmind-scorer@sadalsuud`), so the passphrase costs nothing operationally and must not be "fixed" by stripping it.
+
+---
+
 ## Fresh-version normalization cold-start starves the ovr feed (2026-07-11)
 
 **Problem**: After nature_recovery v4 deployed (2026-07-10), ovr.news showed "no new nature articles." Scorer was healthy and producing v4.0 MEDIUM+ output the whole time.

@@ -10,12 +10,12 @@ ssh gpu-server   # configured in ~/.ssh/config — direct from situla over Tails
 
 **Direct access works. `Permission denied` means the key is LOCKED, not absent.**
 
-Situla runs **two ssh agents**, and gpu-server deliberately uses the smaller one:
+Situla runs **two ssh agents**, and gpu-server uses the smaller one:
 
-| agent | holds | used by |
-|-------|-------|---------|
-| `/run/user/1000/gcr/ssh` (gnome-keyring, = `$SSH_AUTH_SOCK`) | the unattended fleet keys (`situla-to-sadalsuud-admin`, `situla-bots-admin`, `restic-storagebox@situla`, `veen-demo-admin@situla`) | sadalsuud, bots, storagebox, veen-demo |
-| `/run/user/1000/openssh_agent` | **only** `situla@veen` (= `~/.ssh/id_ed25519`, passphrase-protected) | **gpu-server and github.com** — both pin `IdentityAgent` in `~/.ssh/config` |
+| agent | advertises | used by |
+|-------|-----------|---------|
+| `/run/user/1000/gcr/ssh` (gnome-keyring, = `$SSH_AUTH_SOCK`) | the fleet keys (`situla-to-sadalsuud-admin`, `situla-bots-admin`, `restic-storagebox@situla`, `veen-demo-admin@situla`) **plus** `situla@veen` — but see below: it advertises keys it may not have unlocked | sadalsuud, bots, storagebox, veen-demo |
+| `/run/user/1000/openssh_agent` | **only** `situla@veen` (= `~/.ssh/id_ed25519`, passphrase-protected), and genuinely holds it | **gpu-server and github.com** — both pin `IdentityAgent` in `~/.ssh/config` |
 
 **Origin unknown** — the engineer doesn't recall setting this up, so don't read
 intent into it (an earlier version of this note claimed the split was a
