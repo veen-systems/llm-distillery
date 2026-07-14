@@ -2,8 +2,15 @@
 Fit cross-filter percentile normalization from production data (ADR-014).
 
 Reads raw_weighted_average scores from NexusMind filtered output, filters
-by score threshold (default >= 4.0, the MEDIUM threshold), fits a percentile
-CDF, and saves normalization.json to the filter directory.
+by score threshold (the filter's operating point), fits a percentile CDF,
+and saves normalization.json to the filter directory.
+
+The score threshold is resolved from the filter's operating point rather than
+being a free parameter — see `resolve_op_point()`. Fitting below the op-point
+is what caused NexusMind#161: nature_recovery v2's CDF was fitted at
+raw >= 1.5, giving the fit set a median of 2.19, so correctly-scored doom
+articles (raw 2.2-3.3) mapped to normalized 5.2-8.3 and reached the
+visibility band. The model was right; the fit threshold put it on screen.
 
 Usage:
     # From local JSONL files (e.g., after scp from sadalsuud)
@@ -19,12 +26,14 @@ Usage:
 """
 
 import argparse
+import ast
 import json
 import logging
 import subprocess
 import sys
 import tempfile
 from pathlib import Path
+from typing import Optional
 
 import numpy as np
 
@@ -36,10 +45,78 @@ logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
 
 
+def _lowest_nonzero(thresholds) -> Optional[float]:
+    """The operating point is the lowest threshold above 0.0 — i.e. the score at
+    which an article first becomes visible. Derived positionally rather than by
+    tier name, because names vary across filters (sustainability_technology uses
+    medium/medium_high/high_sustainability, not high/medium/low)."""
+    nonzero = [t for t in thresholds if isinstance(t, (int, float)) and t > 0]
+    return min(nonzero) if nonzero else None
+
+
+def _op_point_from_base_scorer(filter_dir: Path) -> Optional[float]:
+    """Read TIER_THRESHOLDS out of base_scorer.py without importing it.
+
+    base_scorer imports torch (via filters.common.filter_base_scorer), which
+    isn't installed on the workstation where this script runs — so parse the
+    literal instead of importing the module.
+    """
+    path = filter_dir / "base_scorer.py"
+    if not path.exists():
+        return None
+    try:
+        tree = ast.parse(path.read_text(encoding="utf-8"))
+    except SyntaxError:
+        return None
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.Assign):
+            continue
+        for target in node.targets:
+            if isinstance(target, ast.Name) and target.id == "TIER_THRESHOLDS":
+                try:
+                    tiers = ast.literal_eval(node.value)
+                except (ValueError, SyntaxError):
+                    return None
+                return _lowest_nonzero([t[1] for t in tiers])
+    return None
+
+
+def _op_point_from_config(config: dict) -> Optional[float]:
+    scoring = config.get("scoring") or {}
+    tiers = scoring.get("tiers") or scoring.get("tier_thresholds") or {}
+    if not isinstance(tiers, dict):
+        return None
+    thresholds = []
+    for spec in tiers.values():
+        thresholds.append(spec.get("threshold") if isinstance(spec, dict) else spec)
+    return _lowest_nonzero(thresholds)
+
+
+def resolve_op_point(filter_dir: Path, config: dict) -> Optional[float]:
+    """Resolve the filter's operating point (the visibility threshold).
+
+    TIER_THRESHOLDS in base_scorer.py wins: it is the sole runtime source for
+    tier assignment — no scoring code reads config's tiers section. config.yaml
+    is documentation that must mirror it, so a mismatch is reported rather than
+    silently resolved (the two drifted for the whole v4 deploy: config said
+    3.75, code ran an inert 4.0).
+    """
+    from_code = _op_point_from_base_scorer(filter_dir)
+    from_config = _op_point_from_config(config)
+
+    if from_code is not None and from_config is not None and from_code != from_config:
+        logger.warning(
+            f"Operating point drift: base_scorer.py TIER_THRESHOLDS says {from_code}, "
+            f"config.yaml scoring.tiers says {from_config}. TIER_THRESHOLDS is the runtime "
+            f"source and wins here — but fix the mismatch, one of them is a lie."
+        )
+    return from_code if from_code is not None else from_config
+
+
 def load_weighted_averages_local(
     data_dir: Path,
     filter_name: str,
-    min_score: float = 4.0,
+    min_score: float,
     filter_version: str | None = None,
 ) -> list:
     """Load weighted averages from local filtered JSONL files."""
@@ -108,7 +185,7 @@ def load_weighted_averages_local(
 def load_weighted_averages_ssh(
     ssh_host: str,
     remote_dir: str,
-    min_score: float = 4.0,
+    min_score: float,
     filter_version: str | None = None,
 ) -> list:
     """Load weighted averages from a remote host via SSH."""
@@ -233,9 +310,16 @@ def main():
         help="Number of breakpoints in the lookup table (default: 200)",
     )
     parser.add_argument(
-        "--min-score", type=float, default=4.0,
-        help="Minimum raw_weighted_average to include (default: 4.0, the MEDIUM threshold). "
-             "Use 0.0 to include all scored articles.",
+        "--min-score", type=float, default=None,
+        help="Minimum raw_weighted_average to include. Defaults to the filter's operating "
+             "point (lowest non-zero TIER_THRESHOLDS entry). Values below the op-point are "
+             "refused — see --allow-below-op-point.",
+    )
+    parser.add_argument(
+        "--allow-below-op-point", action="store_true",
+        help="Permit --min-score below the filter's operating point. This is what caused "
+             "NexusMind#161 — it maps sub-visibility articles into the visible band. Only "
+             "use with a specific reason and verify the resulting mappings.",
     )
     parser.add_argument(
         "--filter-version", type=str, default=None,
@@ -272,6 +356,41 @@ def main():
         filter_version = str(filter_info.get("version", filter_version))
 
     logger.info(f"Filter: {filter_name} v{filter_version}")
+
+    # Resolve the operating point and reconcile it with --min-score. Fitting the CDF
+    # on articles below the visibility threshold maps invisible content into the
+    # visible band by construction (NexusMind#161), so the op-point is the floor.
+    op_point = resolve_op_point(args.filter, config if config_path.exists() else {})
+
+    if args.min_score is None:
+        if op_point is None:
+            logger.error(
+                "Could not resolve the operating point from base_scorer.py TIER_THRESHOLDS "
+                "or config.yaml scoring.tiers, and no --min-score was given. Pass --min-score "
+                "explicitly (it should be the filter's visibility threshold)."
+            )
+            sys.exit(1)
+        args.min_score = op_point
+        logger.info(f"Operating point: {op_point} (resolved) — using as --min-score")
+    elif op_point is not None and args.min_score < op_point:
+        if not args.allow_below_op_point:
+            logger.error(
+                f"--min-score {args.min_score} is below the operating point {op_point}.\n"
+                f"  Fitting below the op-point maps sub-visibility articles into the visible\n"
+                f"  band: it is exactly what put doom articles on the Recovery lens at 8.34/10\n"
+                f"  (NexusMind#161 — v2 fitted at 1.5, fit-set median 2.19).\n"
+                f"  Use --min-score {op_point} , or --allow-below-op-point if you truly mean it."
+            )
+            sys.exit(1)
+        logger.warning(
+            f"--min-score {args.min_score} is below the operating point {op_point}, allowed via "
+            f"--allow-below-op-point. Verify the sample mappings below before deploying."
+        )
+    elif op_point is not None and args.min_score > op_point:
+        logger.info(
+            f"--min-score {args.min_score} is above the operating point {op_point} — allowed "
+            f"(a stricter fit set), but the CDF will not cover [{op_point}, {args.min_score})."
+        )
 
     # Load production weighted averages
     score_label = f"raw_weighted_average >= {args.min_score}"
@@ -314,11 +433,16 @@ def main():
     logger.info(f"  Percentiles (raw):  p25={pcts['p25']:.2f}  p50={pcts['p50']:.2f}  "
                 f"p75={pcts['p75']:.2f}  p90={pcts['p90']:.2f}  p95={pcts['p95']:.2f}")
 
-    # Show what key raw scores map to after normalization
+    # Show what key raw scores map to after normalization. Anchor the sample points on
+    # the op-point rather than a fixed 4.0 — a filter whose op-point is 3.75 would
+    # otherwise never show the [3.75, 4.0) band, which is where tier flips happen.
     logger.info(f"\n  Sample mappings (raw -> normalized):")
-    for raw in [4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 7.0, 8.0]:
+    anchor = op_point if op_point is not None else args.min_score
+    sample_points = [anchor] + [anchor + step for step in (0.25, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 4.0)]
+    for raw in sample_points:
         norm = float(np.interp(raw, norm_data["x"], norm_data["y"]))
-        logger.info(f"    {raw:.1f} -> {norm:.2f}")
+        marker = "  <- operating point" if raw == anchor else ""
+        logger.info(f"    {raw:.2f} -> {norm:.2f}{marker}")
 
     # Save
     output_path = args.filter / "normalization.json"
