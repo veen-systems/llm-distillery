@@ -371,6 +371,12 @@ def main():
              "refused — see --allow-below-op-point.",
     )
     parser.add_argument(
+        "--out", type=Path, default=None,
+        help="Write normalization.json here instead of into the filter package. Required "
+             "with --allow-thin-fit, which by definition produces a file that must never "
+             "reach production.",
+    )
+    parser.add_argument(
         "--allow-thin-fit", action="store_true",
         help=f"Write the CDF even with fewer than {MIN_NORMALIZATION_ARTICLES} articles. "
              f"Production will reject the result — analysis only, never deploy it.",
@@ -463,17 +469,11 @@ def main():
             f"This is NexusMind#205 (foresight fitted at raw_min 5.01; raw 4.60 -> wavg 0.02)."
         )
 
-    # Mirror the consumer's #205 guard. ProductionScorer rejects a CDF whose raw_min
-    # exceeds MAX_NORMALIZATION_RAW_MIN at load and silently falls back to the linear
-    # score_scale_factor, so writing one produces a file that looks fitted and is inert.
-    if args.min_score > MAX_NORMALIZATION_RAW_MIN:
-        logger.error(
-            f"--min-score {args.min_score} exceeds MAX_NORMALIZATION_RAW_MIN "
-            f"({MAX_NORMALIZATION_RAW_MIN}). NexusMind's ProductionScorer REJECTS such a fit at "
-            f"load and falls back to score_scale_factor, so the file would be dead on arrival "
-            f"(NexusMind#205). Fit at the operating point instead."
-        )
-        sys.exit(1)
+    # NOTE: the consumer's #205 guard keys on the WRITTEN stats.raw_min — the lowest
+    # score actually observed — not on --min-score. raw_min >= min_score always, and
+    # on a sparse fit it can land well above it, so checking --min-score here would
+    # let through exactly the dead-on-arrival file it claims to prevent. The real
+    # check runs after the fit, once raw_min is known (see below).
 
     # Scope to one filter version. Different versions are different models with
     # different score distributions; blending them yields a bimodal CDF in which
@@ -490,9 +490,23 @@ def main():
             "blend distinct model distributions. Only correct for deliberate analysis."
         )
     elif args.filter_version is None:
-        args.filter_version = filter_version
+        # filter_version falls back to the DIRECTORY NAME ("v4") when config.yaml has
+        # no filter.version. Production writes "4.0", so scoping to "v4" matches
+        # nothing and the run dies on the article-count floor — an error blaming data
+        # volume for what is actually a version-scope bug. Refuse instead of guessing.
+        config_version = (config.get("filter") or {}).get("version") if config_path.exists() else None
+        if config_version is None:
+            logger.error(
+                f"Cannot scope the fit: config.yaml has no filter.version, so the only "
+                f"candidate is the directory name {filter_version!r} — production writes a "
+                f"numeric string like '4.0' and would match zero articles.\n"
+                f"  Pass --filter-version explicitly (the value production writes to "
+                f"nexus_mind_attributes.<filter>.version), or --all-versions to disable scoping."
+            )
+            sys.exit(1)
+        args.filter_version = str(config_version)
         logger.info(
-            f"Scoping to filter_version={args.filter_version} (from config.yaml). "
+            f"Scoping to filter_version={args.filter_version} (from config.yaml filter.version). "
             f"Override with --filter-version, or --all-versions to disable scoping."
         )
 
@@ -528,12 +542,29 @@ def main():
         )
         if not args.allow_thin_fit:
             sys.exit(1)
+        if args.out is None:
+            logger.error(
+                "--allow-thin-fit requires --out. Without it the thin CDF would be written "
+                "straight to the filter package's normalization.json — clobbering the "
+                "deployed fit with a file this very flag documents as undeployable."
+            )
+            sys.exit(1)
         logger.warning(
-            f"--allow-thin-fit set: writing a {len(was)}-article CDF that production will "
-            f"reject. Do not deploy this file."
+            f"--allow-thin-fit: writing a {len(was)}-article CDF to {args.out}. Production "
+            f"REJECTS fits under {MIN_NORMALIZATION_ARTICLES} — analysis only, never deploy it."
         )
 
     logger.info(f"Loaded {len(was)} weighted averages")
+
+    # fit_normalization() itself raises ValueError below 10 scores. --allow-thin-fit
+    # bypassed the article floor and walked straight into that as an unhandled
+    # traceback; fail with a readable message instead.
+    if len(was) < 10:
+        logger.error(
+            f"Only {len(was)} articles — fit_normalization() cannot build a CDF from fewer "
+            f"than 10 scores. Not even --allow-thin-fit can rescue this; widen the corpus."
+        )
+        sys.exit(1)
 
     # Fit normalization
     wa_array = np.array(was, dtype=np.float64)
@@ -565,8 +596,25 @@ def main():
         marker = "  <- operating point" if raw == anchor else ""
         logger.info(f"    {raw:.2f} -> {norm:.2f}{marker}")
 
+    # The consumer's #205 guard, applied to what we are about to write. raw_min is
+    # min(observed), so this can trip even when --min-score was correct: a sparse fit
+    # whose lowest article sits above 4.5 produces a CDF that ProductionScorer rejects
+    # at load, silently falling back to the linear score_scale_factor while the
+    # operator reads a sample-mapping table describing a curve production never applies.
+    if stats["raw_min"] > MAX_NORMALIZATION_RAW_MIN:
+        logger.error(
+            f"stats.raw_min={stats['raw_min']:.4f} exceeds MAX_NORMALIZATION_RAW_MIN "
+            f"({MAX_NORMALIZATION_RAW_MIN}) — NexusMind's ProductionScorer REJECTS this fit at "
+            f"load (NexusMind#205: foresight fitted at raw_min 5.01 sent raw 4.60 -> wavg 0.02).\n"
+            f"  Nothing is written. The fit set does not reach down to the visibility "
+            f"threshold, so the whole band below {stats['raw_min']:.2f} would clamp to ~0.\n"
+            f"  Usually means the sample is drawn from already-filtered/oracle-biased output "
+            f"rather than a production-representative slice (playbook §6)."
+        )
+        sys.exit(1)
+
     # Save
-    output_path = args.filter / "normalization.json"
+    output_path = args.out if args.out is not None else (args.filter / "normalization.json")
     save_normalization(norm_data, str(output_path))
     logger.info(f"\nSaved to {output_path}")
 

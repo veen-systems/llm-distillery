@@ -29,13 +29,31 @@ cultural_discovery v4 and nature_recovery v2 while v5 and v4 are deployed), whic
 is exactly the rot this test must not inherit.
 """
 
-import ast
+import importlib.util
 import json
+import sys
 from pathlib import Path
 
 import pytest
 
 REPO_ROOT = Path(__file__).parent.parent.parent
+
+# Import the REAL resolver rather than re-implementing it. The first version of
+# this test carried a private copy of _op_point_from_base_scorer, and the copy had
+# already drifted within the same commit — it omitted the multiple-definition
+# ambiguity check added alongside it, so the two disagreed on precisely the input
+# the fix targeted. A test that reimplements its subject tests the reimplementation.
+_spec = importlib.util.spec_from_file_location(
+    "fit_normalization", REPO_ROOT / "scripts" / "normalization" / "fit_normalization.py"
+)
+_fitter = importlib.util.module_from_spec(_spec)
+sys.modules["fit_normalization"] = _fitter
+_spec.loader.exec_module(_fitter)
+
+# The consumer's upper bound (NexusMind production_scorer.py). Above this,
+# ProductionScorer rejects the CDF at load and silently falls back to the linear
+# score_scale_factor — the #205 failure mode.
+MAX_RAW_MIN = _fitter.MAX_NORMALIZATION_RAW_MIN
 
 # Filters allowed to violate the invariant, each with the incident that made it
 # permanent. Every entry must remain a REAL violation — test_no_stale_normalization_exemptions
@@ -58,37 +76,18 @@ EXEMPTIONS = {
     ),
 }
 
-# Tolerance for the float compare. The convention is an exact match in practice
-# (7/9 files sit at exactly 4.0); this only absorbs float round-tripping.
-TOL = 0.01
-
-
-def _op_point(filter_dir: Path):
-    """Lowest non-zero TIER_THRESHOLDS entry — the filter's visibility threshold.
-
-    AST-parsed rather than imported: base_scorer.py pulls in torch transitively.
-    Mirrors resolve_op_point() in scripts/normalization/fit_normalization.py.
-    """
-    path = filter_dir / "base_scorer.py"
-    if not path.exists():
-        return None
-    try:
-        tree = ast.parse(path.read_text(encoding="utf-8"))
-    except SyntaxError:
-        return None
-    for node in ast.walk(tree):
-        if not isinstance(node, ast.Assign):
-            continue
-        for target in node.targets:
-            if isinstance(target, ast.Name) and target.id == "TIER_THRESHOLDS":
-                try:
-                    tiers = ast.literal_eval(node.value)
-                    thresholds = [t[1] for t in tiers]
-                except (ValueError, SyntaxError, TypeError, KeyError, IndexError):
-                    return None
-                nonzero = [t for t in thresholds if isinstance(t, (int, float)) and t > 0]
-                return min(nonzero) if nonzero else None
-    return None
+# raw_min is the SMALLEST SCORE OBSERVED in the fit set, not the --min-score
+# parameter. On a dense fit it lands essentially on the threshold (invR v6:
+# 4.0003, cd v5: 4.0006 — note: not exactly 4.0), but on a sparser one the lowest
+# article legitimately sits above it. So the invariant is a RANGE, not equality:
+# an earlier equality form would have false-positived on any legitimate thin fit.
+#
+#   raw_min <  op_point  -> sub-visibility content maps into the visible band (#161)
+#   raw_min >  4.5       -> the band below raw_min clamps to ~0, and production
+#                           rejects the file outright (#205)
+#
+# EPS absorbs float round-tripping at the lower bound only.
+EPS = 0.01
 
 
 def _fitted_filters():
@@ -123,7 +122,7 @@ def test_normalization_fitted_at_the_tier_threshold(filter_name, version):
         pytest.skip(f"{filter_name}/{version}: {EXEMPTIONS[(filter_name, version)]}")
 
     raw_min = _raw_min(filter_name, version)
-    op_point = _op_point(REPO_ROOT / "filters" / filter_name / version)
+    op_point = _fitter._op_point_from_base_scorer(REPO_ROOT / "filters" / filter_name / version)
 
     assert raw_min is not None, f"{filter_name}/{version}: normalization.json has no stats.raw_min"
     assert op_point is not None, (
@@ -132,9 +131,9 @@ def test_normalization_fitted_at_the_tier_threshold(filter_name, version):
         f"invariant needs rewriting against whatever replaced them — do not just "
         f"exempt the filter."
     )
-    assert abs(raw_min - op_point) < TOL, (
-        f"{filter_name}/{version}: normalization fitted at raw_min={raw_min} but "
-        f"the tier threshold is {op_point}. "
+    assert op_point - EPS <= raw_min <= MAX_RAW_MIN, (
+        f"{filter_name}/{version}: raw_min={raw_min} outside the valid range "
+        f"[{op_point}, {MAX_RAW_MIN}] (tier threshold .. consumer's reject bound). "
         + (
             f"Fitting BELOW the threshold maps sub-visibility articles into the "
             f"visible band — this is NexusMind#161 (v2 fitted at 1.5, doom at raw "
@@ -160,13 +159,13 @@ def test_no_stale_normalization_exemptions():
             stale.append(f"{filter_name}/{version}: exempted but has no normalization.json")
             continue
         raw_min = _raw_min(filter_name, version)
-        op_point = _op_point(REPO_ROOT / "filters" / filter_name / version)
+        op_point = _fitter._op_point_from_base_scorer(REPO_ROOT / "filters" / filter_name / version)
         if raw_min is None or op_point is None:
             continue
-        if abs(raw_min - op_point) < TOL:
+        if op_point - EPS <= raw_min <= MAX_RAW_MIN:
             stale.append(
-                f"{filter_name}/{version}: now conforms (raw_min={raw_min} == "
-                f"op_point={op_point}) — remove its EXEMPTIONS entry"
+                f"{filter_name}/{version}: now conforms (raw_min={raw_min} within "
+                f"[{op_point}, {MAX_RAW_MIN}]) — remove its EXEMPTIONS entry"
             )
     assert not stale, "Stale normalization exemptions:\n  " + "\n  ".join(stale)
 
