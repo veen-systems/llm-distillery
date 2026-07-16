@@ -155,7 +155,8 @@ round-4 review found defects in my own round-3 fixes — the pattern held a 5th 
   op_point in `fit_normalization` so `raw_min == op_point` deterministically → dissolves the margin
   question; (2) align deploy dirty-check + CODE_REVISION hash + rsync to ONE deployed-set definition
   (e.g. `git archive` of HEAD) → dissolves untracked + gitignored gaps. This is a real next-session
-  goal alongside solutions v4.
+  goal alongside solutions v4. **Turnkey fix plan (READY TO EXECUTE): `docs/normalization-deploy-hardening-plan.md`** —
+  step-by-step for both fixes + verification gates; open it and press go.
 
 **✅ #62 leakage check DONE 2026-07-16 — cd v5 holds, no leak.** See the ✅ entry lower in this file.
 
