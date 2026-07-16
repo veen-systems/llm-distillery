@@ -67,6 +67,7 @@ Format: **the pit → the rule** (source). Skim the bold before each stage.
 
 ### 6. Cross-filter comparability
 
+- **The complete method (math, fit convention, guard table, reproduction steps, incident numbers) is `docs/NORMALIZATION_METHOD.md`** — the canonical reference; this section is the operational digest.
 - **Read `docs/adr/014-cross-filter-percentile-normalization.md` before touching normalization.** Everything below is a consequence of it, and on 2026-07-14 an agent spent hours "discovering" a bug that ADR-014 specifies on purpose. The three things it gets wrong when unread:
   - **Normalization exists ONLY for ovr.news** — HOME-tab cross-lens ranking and article-tab assignment. It is *not* a filter-quality mechanism. Uplifting passes 62.8% MEDIUM+ and nature_recovery 0.3%, so raw scores are not comparable across lenses; percentile rank makes "how exceptional is this *for its own lens*" comparable. Don't reason about it as if it gates quality.
   - **Tier is REASSIGNED on the normalized score, by design** (ADR-014's pipeline: calibrate → weighted average → gatekeeper → normalize → *reassign tier* → display_rank). So **`raw >= threshold` together with `tier: low` is CORRECT, not a bug** — the article is at the bottom of its own MEDIUM+ population. Both an agent and a review model read this as a defect on the same day. `production_scorer.py`'s module docstring explains it; read that before filing anything.

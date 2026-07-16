@@ -2,6 +2,9 @@
 
 **Date:** 2026-03-30
 **Status:** Accepted
+**Method reference:** `docs/NORMALIZATION_METHOD.md` — the canonical, self-contained write-up of
+the final method (op-point-anchored CDF, 2026-07-16), including the guard architecture and
+reproduction steps this ADR predates.
 
 ## Decision
 

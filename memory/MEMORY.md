@@ -59,6 +59,7 @@ Loaded every session. Topic files loaded on demand via triggers below.
 | `scripts/oracle/average_oracle_runs.py` | Multi-run oracle score averaging |
 | `filters/common/score_normalization.py` | Cross-filter percentile normalization (ADR-014) |
 | `scripts/normalization/fit_normalization.py` | Fit normalization CDF from production data |
+| `docs/NORMALIZATION_METHOD.md` | Canonical normalization method reference (anchored CDF, guards, reproduction) + article source material |
 | `docs/adr/README.md` | ADR index (001-019) |
 | `filters/common/obit_signal.py` | Hoisted regex obit probe — used by belonging v1 prefilter and NexusMind#199 cross-lens leak measurement |
 
