@@ -1,10 +1,14 @@
 # Publication Pipeline — Index & Plan
 
 **Rule (the whole consolidation):** every draft has exactly ONE home — the repo that holds its
-evidence — and every other location gets a pointer, never a copy. A duplicated draft diverges
-silently (the needle draft already did: the ovr.news copy is frozen at 2026-04-19 while this
-repo's copy kept evolving — same failure shape as the 2026-05-04 "manifest as anti-pattern"
-gotcha). This file is the single cross-track index; update it when a piece moves stage.
+evidence — and every other location gets a pointer, never a silent copy. The needle draft showed
+why: its ovr.news copy diverged for 3 months before anyone noticed (same failure shape as the
+2026-05-04 "manifest as anti-pattern" gotcha) — and on inspection the divergence ran BOTH ways
+(the ovr copy carried the correct 5-lens taxonomy and real editorial softening). Where a second
+copy is *deliberate* — a public/reader edition of a technical master — both files carry an
+**EDITION NOTE** naming the master; all updates land in the master, factual fixes port to the
+master first, and the derived edition is re-derived from it before publishing. This file is the
+single cross-track index; update it when a piece moves stage.
 
 **Stages:** `idea → pitch (claim + evidence list) → draft → review → published`.
 **Maintenance rule:** an article that cites a mechanism gets updated in the SAME session the
@@ -19,7 +23,7 @@ Technical/ML pieces whose evidence is llm-distillery's committed artifacts.
 
 | Piece | Stage | Venue | Next step |
 |---|---|---|---|
-| `needle-in-haystack-draft.md` — the umbrella narrative (why constructive-news filtering breaks standard ML; the 6-step pipeline) | **draft, near-complete** | blog / long-form (ovr.news or dev.jeroenveen.nl) | final numbers pass; retire the stale ovr.news copy (below); publish FIRST — it frames every other piece |
+| `needle-in-haystack-draft.md` — the umbrella narrative (why constructive-news filtering breaks standard ML; the 6-step pipeline). TWO EDITIONS: this technical master + a public/reader edition in `ovr.news/docs/articles/` (edition notes in both) | **draft, near-complete** | public edition → ovr.news; technical master → dev.jeroenveen.nl or blog | final numbers pass on the master; re-derive the public edition from it before publish; publish FIRST — it frames every other piece |
 | `cross-filter-score-normalization.md` — two-stage calibrate-within/normalize-across + population-pinning | **pitch, ready to draft** | arXiv tech report, 6–8 p | draft FROM `docs/NORMALIZATION_METHOD.md` (canonical, all numbers sourced); needs lit/novelty check + raw-vs-normalized baseline experiment |
 | `hybrid-two-stage-needle-filter.md` — e5 probe (two recipes) + fine-tuned scorer cascade | pitch | arXiv or blog | needs the fixed-compute comparison run (scorer-alone vs cascade) |
 | `oracle-consistency-beats-data-volume.md` — prompt precision predicts student MAE better than dataset size | pitch | blog first (natural experiment, n=6 filters) | tighten the cross-filter table; consider folding oracle bias-vs-noise ($100–200 catch) into it |
@@ -31,13 +35,10 @@ already structured for citation).
 
 Pieces about the product mechanics rather than the ML: lens taxonomy (5 lenses, scorers
 decoupled — ADR-038 there), cross-lens ranking & tab assignment as a product story, "constructive
-≠ positive" editorially, the bias-countering mission framing. Nothing drafted yet; the needle
-draft's intro sections are the seed material. Start a mirror of this index there when the first
-piece begins.
-
-**Action needed (engineer sign-off):** `ovr.news/docs/articles/needle-in-haystack-draft.md` is a
-stale 2026-04-19 duplicate of Track A's lead draft — replace it with a one-line pointer to this
-repo's copy.
+≠ positive" editorially, the bias-countering mission framing. First piece already exists: the
+needle draft's **public edition** (`ovr.news/docs/articles/needle-in-haystack-draft.md`,
+de-vendored + publisher CTA) — re-derive it from this repo's master before publishing (edition
+notes in both files, 2026-07-16). Start a mirror of this index there when a second piece begins.
 
 ## Track C — Agent-engineering practice (homes: `dev.jeroenveen.nl/drafts/` + `augmented-engineering`)
 

@@ -2,6 +2,11 @@
 
 *Draft for llm-distillery#30*
 
+> **EDITION NOTE (2026-07-16).** This is the **technical master** — full numbers, model/oracle
+> names, methods sections; all ongoing updates land here. A **public/reader edition**
+> (de-vendored, softer, publisher CTA) lives at `ovr.news/docs/articles/needle-in-haystack-draft.md`
+> and is re-derived from this master before publishing — never edited independently.
+
 ---
 
 ## The promise and the trap
@@ -10,7 +15,7 @@
 
 We tried. It took us a year, seven filters, and a few humbling failures before we understood why this is fundamentally harder than it looks. Not because the technology is immature, but because the problem has a structural property that defeats standard approaches: **the thing you're looking for is rare, and the reason it's rare is the same bias you're trying to correct.**
 
-ovr.news filters global news through seven constructive lenses — Thriving, Belonging, Recovery, Solutions, Discovery, Breakthroughs, and Foresight. Each lens counters a specific cognitive bias: negativity bias, atomization, eco-anxiety, learned helplessness, declinism, and short-termism. Together they surface evidence that the world is more functional than the news makes it appear.
+ovr.news filters global news through five constructive lenses — from community bonds to ecosystem recovery to rediscovered historical knowledge. Each lens counters one or more cognitive biases that shape what the daily news cycle covers: negativity bias, atomization, eco-anxiety, learned helplessness, declinism, short-termism. Together they surface evidence that the world is more functional than the news makes it appear.
 
 The engineering challenge: constructive news is a needle in a haystack, and the haystack is *designed* to hide the needle.
 
@@ -20,7 +25,7 @@ The first instinct is keyword matching. Surely "community" finds belonging, "lon
 
 It doesn't. What we're looking for isn't a topic — it's a *judgment*.
 
-Our belonging filter scores articles on six dimensions: intergenerational bonds, community fabric, reciprocal care, rootedness, purpose beyond self, and slow presence. A LinkedIn article about "building community at work" contains all the right keywords. It scores 1.3 out of 10. A story about a 94-year-old making pasta with her granddaughter using her mother's recipe scores 8.5. No keyword distinguishes them. The difference is *what kind of community* — commodified versus organic, optimized versus lived.
+Our belonging filter scores articles on six dimensions (defined in [llm-distillery/filters/belonging](https://github.com/ducroq/llm-distillery)): intergenerational bonds, community fabric, reciprocal care, rootedness, purpose beyond self, and slow presence. A LinkedIn article about "building community at work" contains all the right keywords. It scores 1.3 out of 10. A story about a 94-year-old making pasta with her granddaughter using her mother's recipe scores 8.5. No keyword distinguishes them. The difference is *what kind of community* — commodified versus organic, optimized versus lived.
 
 Sentiment analysis fails in the opposite direction. Constructive news isn't positive news. A country admitting its drug war failed and shifting to treatment — that reads as negative. Our foresight filter scores it 6.1 because the *decision-making process* shows evidence-based course correction, systems awareness, and institutional durability. Meanwhile, a cheerful wellness listicle about living longer scores 1.3 on belonging because it commodifies community as a longevity hack.
 
@@ -61,13 +66,13 @@ When we trained the foresight filter, we scored 300 random articles from our new
 
 | Score range | % of articles |
 |-------------|---------------|
-| 0-2 (noise) | 90% |
+| 0-2 (outside this lens) | 90% |
 | 2-5 (some foresight) | 9% |
 | 5+ (genuine foresight) | 1% |
 
-Ninety percent of articles pile up at the noise floor. The 2-5 range — where the model needs to learn the *gradient* from "a bit of foresight" to "strong foresight" — is almost empty. And the high-scoring articles that define what foresight looks like? Three articles out of 300.
+A low score does not mean bad journalism — it means the article covers territory outside what this particular lens looks for; most of the 90% is competent, well-reported work on topics that simply aren't about long-term institutional decision-making. But from a training-data perspective, ninety percent of articles pile up at the bottom of the scale. The 2-5 range — where the model needs to learn the *gradient* from "a bit of foresight" to "strong foresight" — is almost empty. And the high-scoring articles that define what foresight looks like? Three articles out of 300.
 
-This is not a labeling error. This is the negativity bias, measured. News selects for immediacy: this week's crisis, this quarter's earnings, this election's polls. Genuine foresight — decisions made for generations ahead — is not what newsrooms cover. It happens in governance documents, policy journals, institutional reforms. It's real, but it's rare in the daily news cycle.
+This is not a labeling error. This is the negativity bias, measured. News selects for immediacy: this week's crisis, this quarter's earnings, this election's polls — and our corpus amplifies it, being composed mostly of general news outlets rather than policy journals or governance publications. Genuine foresight — decisions made for generations ahead — is not what newsrooms cover. It happens in governance documents, policy journals, institutional reforms. It's real, but it's rare in the daily news cycle.
 
 A student model trained on this distribution learns exactly one thing: predict low scores for everything. That minimizes average error when 90% of your training data is noise. The resulting model has a technically acceptable loss but is useless — it can't distinguish a New Zealand wellbeing budget reform from a celebrity interview.
 
@@ -105,7 +110,7 @@ The result:
 
 | Score range | Before screening | After screening |
 |-------------|-----------------|-----------------|
-| 0-2 (noise) | 90% | 23% |
+| 0-2 (outside lens) | 90% | 23% |
 | 2-5 (some foresight) | 9% | 55% |
 | 5+ (genuine foresight) | 1% | 20% |
 
