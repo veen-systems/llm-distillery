@@ -96,6 +96,10 @@ See `filters/common/commerce_prefilter/docs/` for full documentation.
 - [ ] **sustainability_economic_viability** - Sustainability sub-dimension (not ovr.news)
 - [ ] **sustainability_policy_effectiveness** - Sustainability sub-dimension (not ovr.news)
 
+### Parked Ideas
+
+- [ ] **Re-enchantment outlets (wonder lens / standalone digests)** - PARKED 2026-07-16 by Jeroen ("some other time"). Byung-Chul Han-inspired exploration: wonder/mystery/myth as lens or standalone oracle-only outlet (no distillation needed at digest scale, ~$6.50/wk). Six ideas + four cheap probe plans (<$3 total: Residue query $0 → Wonder probe ~$0.50 → form-scoring feasibility ~$1-2 → Ledger design note $0) with kill criteria in **`docs/ideas/re-enchantment-outlets.md`**. Hard constraint if resumed: "unexplained" needs an `epistemic_honesty` gatekeeper (misinformation magnet otherwise). Below solutions v4 (#43) and the #62 check in priority.
+
 ## Training Pipeline
 
 - [x] **Data preparation pipeline** - Stratified splits working
@@ -248,7 +252,7 @@ Items surfaced by the multi-agent code review of the migration commits (2026-04-
 
 ---
 
-*Last updated: 2026-05-23*
+*Last updated: 2026-07-16*
 
 ## #52 belonging v1 migration notes (2026-04-29)
 
