@@ -130,6 +130,7 @@ Loaded every session. Topic files loaded on demand via triggers below.
 
 Full per-session narratives live below the auto-loading cliff (read on demand). Newest first.
 
+- [2026-07-16](project_session_2026_07_16.md) — **#62 leakage check DONE (cd v5 holds, 96% suppressed)** + cap retirement behaviorally confirmed. Ran round-3 review of round-2's normalization/deploy fixes → made 4 fixes → then ran **round-4 on my OWN round-3 fixes**, which found defects in both including a NexusMind **production-halt regression** (porcelain flags untracked `model/` config → blocks 4-hourly deploy). **Both fixes HELD, unpushed** — no deployed filter is affected, and the findings point to ROOT fixes (anchor CDF to op_point; align deploy dirty-check+hash+rsync to one set), not inline patches. Re-enchantment outlets parked.
 - [2026-07-14](project_session_2026_07_14.md) — health check → **five dead controls**. #161 reframed: v2's model scored the doom articles 2.2–3.3 *correctly*; `normalization.json` fitted at raw>=1.5 inflated them to 5.2–8.3 (reproduced 5/5 exactly). v4 rescore: 0/5 surface → the `climate_doom` cap is dormant, and was 0-for-2 in prod. Fixed: fitter refuses below op-point, cap override window, commit-msg hook (never executable), deploy gate blind to `src/scoring/`, 3 verify assertions FAILing on true claims.
 - [2026-07-11](project_session_2026_07_11.md) — "ovr shows no new nature articles" → **not broken**: v2's fuller feed was ~90% normalization inflation; fresh-v4 raw scores are under-ranked vs still-in-window inflated v2 rows (self-corrects ~Jul 19 as v2 ages out). Exposed the **normalization cold-start** doc gap → fit at deploy from a production-representative historical rescore (playbook §6 + RUNBOOK). Doc-only, no deploy.
 - [2026-07-10](project_session_2026_07_10.md) — v4 op-point 3.75 fix (was wired to nothing, ran at 4.0) + cd/invR normalization refit (version/filter_version fitter bug), both **validated in production output**; 12-agent adversarial review (F1/F2/F3); framework → v1.10.6.
@@ -139,7 +140,27 @@ Full per-session narratives live below the auto-loading cliff (read on demand). 
 - [2026-05-31](project_session_2026_05_31.md) — cultural_discovery **v5 SHIPPED** (DeepSeek oracle, val MAE 0.697, #62 leakage resolved end-to-end).
 - [2026-05-29/30](project_session_2026_05_29.md) — cd v5 hard-negatives cohort (49 articles, 5 buckets) + v5 prompt drafted (flags F/G/H/I/K).
 
-## Next Session Pickup (updated 2026-07-14)
+## Next Session Pickup (updated 2026-07-16)
+
+**⚠️ TWO HELD FIXES, unpushed, do NOT merge until a focused hardening session** (2026-07-16
+round-4 review found defects in my own round-3 fixes — the pattern held a 5th time; full detail
+`project_session_2026_07_16.md`):
+- llm-distillery `nature-recovery-v4` carries `a8309d4` (normalization invariant + fitter guards).
+  Held: 0.25 margin false-positives sparse needle fits (blocks the imminent #72 v5 fit), fitter
+  write-guard inconsistent with the test, `--out`-can-point-at-package assumption wrong.
+- NexusMind `fix/deploy-dirty-check-untracked` (`7e525ee`). Held: **production-halt regression** —
+  porcelain flags untracked `model/` config files → blocks the 4-hourly ExecStartPre deploy.
+  NexusMind `main` stays at stable `7ef6029`.
+- **ROOT fixes for the hardening session** (not inline patches): (1) anchor the CDF's lower edge to
+  op_point in `fit_normalization` so `raw_min == op_point` deterministically → dissolves the margin
+  question; (2) align deploy dirty-check + CODE_REVISION hash + rsync to ONE deployed-set definition
+  (e.g. `git archive` of HEAD) → dissolves untracked + gitignored gaps. This is a real next-session
+  goal alongside solutions v4.
+
+**✅ #62 leakage check DONE 2026-07-16 — cd v5 holds, no leak.** See the ✅ entry lower in this file.
+
+---
+
 
 **✅ climate_doom retirement DEPLOYED + VERIFIED 2026-07-14 20:08.** gpu-server `CODE_REVISION=d3c2f8d8…`, `_TRIGGER_REGISTRY` empty on disk, `cap_applied` is now permanently `null`. The auto-pull fired for a `src/scoring`-only change — the exact case the old freshness gate missed — so `4e25934` proved itself in production the same day. **Outstanding: confirm `cap_applied: 0` in the first post-20:08 batch** (any `filtered_2026071*_20*.jsonl` or later); the 16:40 and earlier batches are pre-retirement and legitimately show 1.
 
