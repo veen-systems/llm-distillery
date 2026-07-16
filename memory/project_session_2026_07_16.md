@@ -81,3 +81,50 @@ Full round-4 findings: task outputs `ww59k1uwh.output` (NexusMind, 6 findings) a
 - NexusMind: `fix/deploy-dirty-check-untracked` (`7e525ee`, held) — UNMERGED. `main` stays at
   the stable `7ef6029`. Do not merge; the real fix is different (align deployed-set), so this
   commit is a reference, not a foundation.
+
+---
+
+# Session 2026-07-16 (evening) — hardening session: Fix A EXECUTED, review-hardened, merged
+
+## What shipped
+
+- **Fix A (normalization anchor) DONE.** `fit_normalization(anchor_min=...)` PREPENDS an
+  `(op_point, 0.0)` breakpoint — the original 200-point grid stays bit-identical, so anchoring
+  is provably inert for scores >= sample_min. `stats.raw_min == op_point` by construction;
+  `stats.sample_min` (new) records the lowest observed score for bias audit. Invariant test back
+  to near-equality (`EPS = OP_POINT_EPS = 0.01`, single-sourced from the fitter; the round-3
+  0.25 margin DELETED). All 4 plan gates ran; gate 4 as worded ("byte-identical refit") is
+  unsatisfiable for ANY code — the production window rolls (cd v5: 26 new articles in 6 days
+  moved the curve 0.195 normalized, 44x the code effect); the code-isolating old-vs-new
+  comparison on one identical live pull ran instead: delta 0 above sample_min.
+- **3-model review battery (opus/sonnet/fable), 11 findings, all verified ones fixed same-session.**
+  The one that mattered (adversarial): anchoring made gross biased-sample fits (#205 root cause,
+  sample_min > 4.5) LOADABLE where the pre-anchor fitter hard-blocked them — my root fix
+  dissolved a guard's trigger and with it the guard. Restored as a deploy-path gate on
+  `sample_min > 4.5` + the same assertion in the invariant test. Also fixed: deploy path now
+  REQUIRES a resolved op-point; `--allow-below-op-point`/`--all-versions`/`--allow-thin-fit`
+  all require `--analysis-only` (--out must not be/resolve to `normalization.json`; symlink-proof);
+  `--out` cannot retarget another package; NaN excluded at load (passed `wa < min_score` and the
+  article floor, then vanished in the fit); loaders match only the filter's own attribute block
+  (hyphen/underscore-normalized — config says `cultural-discovery`, production writes
+  `cultural_discovery`); empty config.yaml readable error; "Refit at --min-score None" advice bug.
+- **Residual accepted gap (documented, not fixable statically):** a subtly biased sample
+  (sample_min <= 4.5, gap <= 0.5) is indistinguishable from a legitimately sparse needle fit.
+  `stats.sample_min` + >0.5-gap advisory; representativeness stays an operator check (playbook §6).
+- **Holds:** llm-distillery hold RESOLVED → branch merged to main + pushed. NexusMind
+  `fix/deploy-dirty-check-untracked` (`7e525ee`) still HELD, do NOT merge — Fix B replaces it.
+- Verification: 194 unit tests green; 15+ control-failure checks each watched failing closed
+  (nothing written); happy paths (sparse deploy fit, SSH cd v5 pull with new arg order,
+  analysis escape hatches) all confirmed live.
+
+## The pattern held a SIXTH time
+
+Round-5 (the 3-model battery) found real defects in my round-executed root fix — including one
+where the root fix itself created a regression (the biased-sample hole). Multi-model review of
+freshly-written guards is now demonstrably load-bearing, not ceremony.
+
+## Fix B pointer
+
+`docs/normalization-deploy-hardening-plan.md` Fix B — unchanged, READY. Needs the dry-run
+harness (scratch clone; untracked src/scoring blocks, untracked model/ config does NOT block,
+clean tree round-trips). Do NOT run live-untested as ExecStartPre.

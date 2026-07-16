@@ -28,6 +28,7 @@ def fit_normalization(
     filter_version: str = "",
     source_description: str = "production MEDIUM+ data",
     n_bins: int = 200,
+    anchor_min: Optional[float] = None,
 ) -> Dict:
     """
     Fit percentile normalization from a set of weighted average scores.
@@ -42,6 +43,18 @@ def fit_normalization(
         source_description: Description of data source
         n_bins: Number of evenly-spaced breakpoints for the lookup table.
                 Higher = smoother interpolation, but 200 is more than enough.
+        anchor_min: The filter's operating point (visibility threshold). When
+                given and below the lowest observed score, the lookup table is
+                extended down to it with a (anchor_min, 0.0) breakpoint, so
+                stats.raw_min == anchor_min regardless of how sparse the sample
+                is. Without the anchor, raw_min floats to the sample minimum:
+                dense fits land ~0.0006 above the op-point, sparse fits drift
+                arbitrarily high, and everything in [op_point, raw_min) clamps
+                to y[0] at inference — the NexusMind#205 edge artifact. The
+                anchor gives that band a proper 0-percentile ramp instead and
+                makes the fit-convention invariant (raw_min == op_point,
+                tests/unit/test_normalization_invariant.py) hold by
+                construction. Scores at/below anchor_min normalize to 0.0.
 
     Returns:
         JSON-serializable normalization dict with lookup table and stats
@@ -57,14 +70,25 @@ def fit_normalization(
 
     # Build lookup table: evenly-spaced x values across the observed range,
     # with y = percentile rank at each x, scaled to 0-10.
-    x_min = float(wa_sorted[0])
+    sample_min = float(wa_sorted[0])
     x_max = float(wa_sorted[-1])
-    x_points = np.linspace(x_min, x_max, n_bins)
+    x_points = np.linspace(sample_min, x_max, n_bins)
 
     y_points = np.array([
         np.searchsorted(wa_sorted, x, side="right") / n * 10.0
         for x in x_points
     ])
+
+    # Anchor the lower edge by PREPENDING a breakpoint rather than re-spanning
+    # the linspace grid: the n_bins points over the observed range stay
+    # bit-identical to an unanchored fit, so anchoring changes nothing for any
+    # score >= sample_min. Only the [anchor_min, sample_min) band changes, from
+    # a clamp at y[0] to a linear ramp from percentile 0.
+    if anchor_min is not None and float(anchor_min) < sample_min:
+        x_points = np.concatenate([[float(anchor_min)], x_points])
+        y_points = np.concatenate([[0.0], y_points])
+
+    x_min = float(x_points[0])
 
     # Compute stats
     percentiles = {
@@ -87,7 +111,15 @@ def fit_normalization(
         "x": [round(float(v), 6) for v in x_points],
         "y": [round(float(v), 6) for v in y_points],
         "stats": {
+            # raw_min is the CDF's lower coverage edge (x[0]) — the anchor when
+            # one was given, else the sample minimum. It is what NexusMind's
+            # ProductionScorer keys its #205 load guard on. sample_min is the
+            # lowest score actually observed, kept for audit: a sample_min far
+            # above the anchor means the fit population never reached down to
+            # the visibility threshold (biased/pre-filtered sample — the #205
+            # root cause), which anchoring makes loadable but not correct.
             "raw_min": round(x_min, 4),
+            "sample_min": round(sample_min, 4),
             "raw_max": round(x_max, 4),
             "raw_mean": round(float(np.mean(wa)), 4),
             "raw_std": round(float(np.std(wa)), 4),

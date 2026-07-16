@@ -737,3 +737,28 @@ change. The most-referenced piece of process guidance can be the one that was ne
 **Problem**: Round-3 review found real defects in round-2's normalization/deploy fixes; I fixed them (llm-distillery `a8309d4`, NexusMind `7e525ee`) and verified each by watching it fail on bad input. Before pushing, I ran a **round-4 review of my OWN round-3 fixes** — and it found defects in both. The worst: my NexusMind dirty-check change (`git diff --quiet HEAD` → `git status --porcelain`) **flags untracked `model/` config files and blocks the 4-hourly ExecStartPre deploy** → scorer never starts → production scores zero. Reproduced live: `?? filters/foresight/v1/model/generation_config.json` where the old guard returned rc=0. My fix traded a rare latent silent-wrong-deploy for a common active production halt.
 **Root cause**: (1) `.gitignore` ignores only `*.safetensors` + tokenizer files INSIDE `model/`, not the dir — my code comment asserting gitignore shields `model/` was false (a comment stating a property I never tested). (2) `git status --porcelain` respects `.gitignore` but `rsync`'s excludes are NARROWER — the dirty-check, the CODE_REVISION hash, and rsync each define "the deployed set" differently, so a guard built on one can't match the others. The llm-distillery fix had the sibling failure: the `0.25` invariant margin false-positives a legitimately sparse needle fit (the imminent #72 v5 fit), and the fitter's own write-guard stayed inconsistent with the test I changed.
 **Fix**: Held BOTH fixes — unpushed, unmerged (NexusMind `main` stays at stable `7ef6029`). No deployed filter is affected (all 10 conform to within 0.0006 of op-point), so zero cost to holding. Filed ROOT fixes for a focused session: anchor the CDF's lower edge to op_point in the fitter (dissolves the margin question); align dirty-check + hash + rsync to ONE deployed-set definition (dissolves untracked + gitignored gaps). **Rule: run a review round on your OWN fixes before shipping — the "each round finds defects in the last round's fixes" pattern includes the round you just did. And a fix is only an improvement if it's net-positive: reproduce the regression it might introduce (here, the production halt) before trusting it, especially when a guard's acceptance set must match a SEPARATE mechanism's (git vs rsync).**
+
+## A Root Fix That Dissolves a Guard's Trigger Also Dissolves the Guard (2026-07-16)
+**Problem**: Anchoring `raw_min` to the op-point (Fix A) made gross biased-sample fits — the #205
+ROOT CAUSE, every article >= 5.2 with op-point 4.0 — write a loadable, invariant-test-green
+`normalization.json` where the pre-anchor code hard-blocked them. The old block was *incidental*:
+`raw_min` used to BE the sample minimum, so the `raw_min > 4.5` reject doubled as a bias detector.
+Anchoring severed that, and nothing machine-read the bias signal anymore. Caught by the
+adversarial reviewer in a 3-model battery, not by me or the 4 verification gates.
+**Root cause**: The guard's trigger (`raw_min` = sample minimum) and the guard's *purpose*
+(reject unrepresentative fit populations) were conflated in one variable. The root fix changed
+the variable's semantics and silently retired the purpose.
+**Fix**: Before changing what a value means, inventory every guard keying on it and re-express
+each guard's PURPOSE against the new semantics. Here: bias moved to a new `stats.sample_min`
+field, gated at > 4.5 on the deploy path (fitter) and asserted in the invariant test.
+
+## NaN Passes `wa < min_score` and Counts Toward the Article Floor, Then Vanishes in the Fit (2026-07-16)
+**Problem**: Articles with `raw_weighted_average: NaN` sailed through the fitter's score filter
+(`NaN < x` is False → kept), were counted against MIN_NORMALIZATION_ARTICLES=200, then were
+silently dropped by `fit_normalization`'s `isfinite` mask — a 250-headcount run can write a
+190-article CDF that production silently rejects at load. Degenerate case (245 NaN + 5 finite)
+died as a raw ValueError traceback.
+**Root cause**: Comparison-based filters pass NaN by construction; the finite-ness check lived
+two layers down, after every count-based guard had already run.
+**Fix**: Exclude non-finite/non-numeric scores AT LOAD in both loaders (local + SSH extraction
+script), with an explicit excluded-count warning, so every downstream floor counts real articles.

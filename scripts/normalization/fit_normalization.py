@@ -12,6 +12,12 @@ raw >= 1.5, giving the fit set a median of 2.19, so correctly-scored doom
 articles (raw 2.2-3.3) mapped to normalized 5.2-8.3 and reached the
 visibility band. The model was right; the fit threshold put it on screen.
 
+The CDF's lower edge is ANCHORED to the operating point (2026-07-16): the
+lookup table is extended down to it, so stats.raw_min == op_point by
+construction, dense or sparse. Sparse fits can no longer drift raw_min upward
+into the band NexusMind#205 lives in, and the repo invariant
+(tests/unit/test_normalization_invariant.py) can assert near-equality.
+
 Usage:
     # From local JSONL files (e.g., after scp from sadalsuud)
     PYTHONPATH=. python scripts/normalization/fit_normalization.py \
@@ -29,6 +35,7 @@ import argparse
 import ast
 import json
 import logging
+import math
 import subprocess
 import sys
 import tempfile
@@ -51,7 +58,18 @@ logger = logging.getLogger(__name__)
 # falls back to the linear score_scale_factor at load. Keep these in step with
 # NexusMind; if they drift, this script cheerfully produces dead files.
 MIN_NORMALIZATION_ARTICLES = 200   # ADR-018 safety valve; below this the CDF is sampling noise
-MAX_NORMALIZATION_RAW_MIN = 4.5    # NexusMind#205: raw_min above this clamps the band below it to ~0
+MAX_NORMALIZATION_RAW_MIN = 4.5    # NexusMind#205: the loader REJECTS files whose raw_min exceeds this
+
+# How far stats.raw_min may sit from the operating point. Since 2026-07-16 the
+# fitter anchors the CDF's lower edge to the op-point (fit_normalization's
+# anchor_min), so new fits satisfy raw_min == op_point EXACTLY; this epsilon
+# only absorbs float round-tripping plus the pre-anchor legacy fits, whose
+# raw_min is the sample minimum and lands within +0.0006 of the op-point on
+# every conforming filter. tests/unit/test_normalization_invariant.py imports
+# this value — the fitter's post-fit guard and the repo-wide invariant test
+# must agree on ONE band, or the fitter writes files the test rejects (the
+# round-3/round-4 inconsistency of 2026-07-16).
+OP_POINT_EPS = 0.01
 
 
 def _lowest_nonzero(thresholds) -> Optional[float]:
@@ -180,6 +198,15 @@ def load_weighted_averages_local(
     n_fallback = 0
     n_below_threshold = 0
     n_wrong_version = 0
+    n_foreign = 0
+    n_nonfinite = 0
+    # Match only THIS filter's attribute block. An article scored by several
+    # filters carries several blocks; iterating them all blends foreign filters'
+    # score distributions into the CDF whenever version strings coincide.
+    # Normalize hyphen/underscore: config.yaml says "cultural-discovery" while
+    # production keys say "cultural_discovery" — a strict compare would silently
+    # match zero articles for those filters.
+    want = filter_name.replace("-", "_")
 
     # Read flat JSONL files (NexusMind#144: flat output, no tier subdirs)
     jsonl_files = sorted(data_dir.glob("filtered_*.jsonl"))
@@ -192,6 +219,9 @@ def load_weighted_averages_local(
                     attrs = article.get("nexus_mind_attributes", {})
                     for key, analysis in attrs.items():
                         if isinstance(analysis, dict) and "weighted_average" in analysis:
+                            if key.replace("-", "_") != want:
+                                n_foreign += 1
+                                continue
                             # Production writes the version as "version" inside the
                             # per-filter nexus_mind_attributes block (e.g. {"version":"5.0"}).
                             # Older code/data used "filter_version"; accept either.
@@ -205,6 +235,13 @@ def load_weighted_averages_local(
                             # Use raw_weighted_average to avoid double-normalization
                             raw = analysis.get("raw_weighted_average")
                             wa = raw if raw is not None else analysis["weighted_average"]
+                            # NaN passes `wa < min_score` (False) and would count
+                            # toward the article floor while fit_normalization()
+                            # silently drops it — a <200-article CDF shipping under
+                            # a 250-article headcount. Exclude at load.
+                            if not isinstance(wa, (int, float)) or not math.isfinite(wa):
+                                n_nonfinite += 1
+                                continue
                             if wa < min_score:
                                 n_below_threshold += 1
                                 continue
@@ -216,6 +253,10 @@ def load_weighted_averages_local(
                 except (json.JSONDecodeError, KeyError):
                     continue
 
+    if n_foreign > 0:
+        logger.info(f"Excluded {n_foreign} attribute blocks belonging to other filters (matching {want!r})")
+    if n_nonfinite > 0:
+        logger.warning(f"Excluded {n_nonfinite} articles with non-finite/non-numeric scores")
     if n_wrong_version > 0:
         logger.info(f"Excluded {n_wrong_version} articles not matching filter_version={filter_version}")
     if n_below_threshold > 0:
@@ -240,20 +281,27 @@ def load_weighted_averages_local(
 def load_weighted_averages_ssh(
     ssh_host: str,
     remote_dir: str,
+    filter_name: str,
     min_score: float,
     filter_version: str | None = None,
 ) -> list:
     """Load weighted averages from a remote host via SSH."""
-    # Write extraction script to temp file, scp to remote, execute, retrieve results
-    script_content = """import json, glob, os, sys
+    # Write extraction script to temp file, scp to remote, execute, retrieve results.
+    # Mirrors load_weighted_averages_local exactly — own-filter block matching
+    # (hyphen/underscore-normalized) and non-finite exclusion included; keep the
+    # two in step.
+    script_content = """import json, glob, math, os, sys
 remote_dir = sys.argv[1]
 min_score = float(sys.argv[2]) if len(sys.argv) > 2 else 4.0
-filter_version = sys.argv[3] if len(sys.argv) > 3 and sys.argv[3] else None
+want = sys.argv[3].replace("-", "_") if len(sys.argv) > 3 else ""
+filter_version = sys.argv[4] if len(sys.argv) > 4 and sys.argv[4] else None
 was = []
 n_raw = 0
 n_fallback = 0
 n_below = 0
 n_wrong_version = 0
+n_foreign = 0
+n_nonfinite = 0
 # Read flat JSONL files (NexusMind#144: flat output, no tier subdirs)
 files = sorted(glob.glob(os.path.join(remote_dir, "filtered_*.jsonl")))
 for fp in files:
@@ -264,11 +312,17 @@ for fp in files:
                 attrs = d.get("nexus_mind_attributes", {})
                 for k, v in attrs.items():
                     if isinstance(v, dict) and "weighted_average" in v:
+                        if want and k.replace("-", "_") != want:
+                            n_foreign += 1
+                            continue
                         if filter_version is not None and str(v.get("version", v.get("filter_version"))) != str(filter_version):
                             n_wrong_version += 1
                             continue
                         raw = v.get("raw_weighted_average")
                         wa = raw if raw is not None else v["weighted_average"]
+                        if not isinstance(wa, (int, float)) or not math.isfinite(wa):
+                            n_nonfinite += 1
+                            continue
                         if wa < min_score:
                             n_below += 1
                             continue
@@ -281,7 +335,7 @@ for fp in files:
                 pass
 for w in was:
     print(w)
-print("META:raw=%d,fallback=%d,below=%d,wrong_version=%d" % (n_raw, n_fallback, n_below, n_wrong_version), file=sys.stderr)
+print("META:raw=%d,fallback=%d,below=%d,wrong_version=%d,foreign=%d,nonfinite=%d" % (n_raw, n_fallback, n_below, n_wrong_version, n_foreign, n_nonfinite), file=sys.stderr)
 """
     with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
         f.write(script_content)
@@ -291,7 +345,7 @@ print("META:raw=%d,fallback=%d,below=%d,wrong_version=%d" % (n_raw, n_fallback, 
     try:
         subprocess.run(["scp", local_script, f"{ssh_host}:{remote_script}"],
                        capture_output=True, timeout=30, check=True)
-        ssh_args = ["ssh", ssh_host, "python3", remote_script, remote_dir, str(min_score)]
+        ssh_args = ["ssh", ssh_host, "python3", remote_script, remote_dir, str(min_score), filter_name]
         if filter_version is not None:
             ssh_args.append(filter_version)
         result = subprocess.run(
@@ -313,12 +367,21 @@ print("META:raw=%d,fallback=%d,below=%d,wrong_version=%d" % (n_raw, n_fallback, 
 
     # Parse field-usage metadata from remote script stderr
     import re
-    meta_match = re.search(r"META:raw=(\d+),fallback=(\d+),below=(\d+),wrong_version=(\d+)", result.stderr or "")
+    meta_match = re.search(
+        r"META:raw=(\d+),fallback=(\d+),below=(\d+),wrong_version=(\d+),foreign=(\d+),nonfinite=(\d+)",
+        result.stderr or "",
+    )
     if meta_match:
         n_raw = int(meta_match.group(1))
         n_fallback = int(meta_match.group(2))
         n_below = int(meta_match.group(3))
         n_wrong_version = int(meta_match.group(4))
+        n_foreign = int(meta_match.group(5))
+        n_nonfinite = int(meta_match.group(6))
+        if n_foreign > 0:
+            logger.info(f"Excluded {n_foreign} attribute blocks belonging to other filters")
+        if n_nonfinite > 0:
+            logger.warning(f"Excluded {n_nonfinite} articles with non-finite/non-numeric scores")
         if n_wrong_version > 0:
             logger.info(f"Excluded {n_wrong_version} articles not matching filter_version={filter_version}")
         if n_below > 0:
@@ -372,26 +435,33 @@ def main():
     )
     parser.add_argument(
         "--out", type=Path, default=None,
-        help="Write normalization.json here instead of into the filter package. Required "
-             "with --allow-thin-fit, which by definition produces a file that must never "
-             "reach production.",
+        help="Write the result here instead of into the filter package. NOTE: --out does "
+             "NOT relax any guard — it can point at a package normalization.json, so it is "
+             "just a location. To fit something the guards would refuse, use --analysis-only.",
+    )
+    parser.add_argument(
+        "--analysis-only", action="store_true",
+        help="Downgrade the deploy guards (thin fit, raw_min off the op-point) from errors "
+             "to warnings, for throwaway inspection fits. Requires --out, and the output "
+             "file must NOT be named normalization.json — an analysis artifact must not be "
+             "deployable by a stray copy.",
     )
     parser.add_argument(
         "--allow-thin-fit", action="store_true",
-        help=f"Write the CDF even with fewer than {MIN_NORMALIZATION_ARTICLES} articles. "
-             f"Production will reject the result — analysis only, never deploy it.",
+        help=f"Fit even with fewer than {MIN_NORMALIZATION_ARTICLES} articles. Production "
+             f"rejects such a CDF at load, so this requires --analysis-only.",
     )
     parser.add_argument(
         "--allow-below-op-point", action="store_true",
         help="Permit --min-score below the filter's operating point. This is what caused "
-             "NexusMind#161 — it maps sub-visibility articles into the visible band. Only "
-             "use with a specific reason and verify the resulting mappings.",
+             "NexusMind#161 — it maps sub-visibility articles into the visible band, so the "
+             "result is undeployable by definition and this requires --analysis-only.",
     )
     parser.add_argument(
         "--all-versions", action="store_true",
-        help="Fit across EVERY filter_version present in the data. Almost never right: "
-             "different versions are different models with different score distributions, "
-             "so the CDF becomes a bimodal blend. Only for deliberate cross-version analysis.",
+        help="Fit across EVERY filter_version present in the data. Different versions are "
+             "different models with different score distributions, so the CDF becomes a "
+             "bimodal blend — cross-version analysis only; requires --analysis-only.",
     )
     parser.add_argument(
         "--filter-version", type=str, default=None,
@@ -405,6 +475,64 @@ def main():
     if not args.filter.is_dir():
         logger.error(f"Filter directory not found: {args.filter}")
         sys.exit(1)
+
+    # --analysis-only is the ONLY thing that relaxes the deploy guards. Round-4
+    # (2026-07-16) proved "--out means analysis" is false — --out can point AT a
+    # package normalization.json — so the escape hatch must be an explicit flag,
+    # and its output must be un-deployable by filename: nothing that loads
+    # normalization data will ever pick up a file not named normalization.json.
+    if args.analysis_only:
+        if args.out is None:
+            logger.error(
+                "--analysis-only requires --out: without it the fit would be written to "
+                "the filter package's normalization.json, which is the deploy path."
+            )
+            sys.exit(1)
+        # Check the RESOLVED name too: a pre-placed symlink called foo_analysis.json
+        # pointing at a package normalization.json would otherwise carry a
+        # guard-relaxed fit straight onto the deploy path.
+        if "normalization.json" in (args.out.name, args.out.resolve().name):
+            logger.error(
+                f"--analysis-only refuses to write to {args.out}: an analysis artifact "
+                f"must not be (or resolve to) a file named normalization.json — a copy or "
+                f"a mispointed --out would make it deployable. Name it e.g. "
+                f"{args.out.stem}_analysis.json."
+            )
+            sys.exit(1)
+    elif args.out is not None:
+        # --out without --analysis-only is a full-guard fit written to a custom
+        # location — but it must not silently retarget ANOTHER package: a valid fit
+        # for filter A written into filter B's normalization.json is loadable and
+        # invariant-test-green whenever their op-points coincide (8 of 10 deployed
+        # filters sit at 4.0), so B would deploy A's score distribution with no
+        # signal anywhere.
+        out_r = args.out.resolve()
+        if out_r.name == "normalization.json" and out_r.parent != args.filter.resolve():
+            logger.error(
+                f"--out {args.out} is a package normalization.json that does not belong to "
+                f"--filter {args.filter}. Point --filter at that package instead, or choose "
+                f"a different output name."
+            )
+            sys.exit(1)
+
+    # Every flag that by definition produces an undeployable file demands the
+    # analysis path — validated UPFRONT, before any (possibly minutes-long --ssh)
+    # data pull. Round-4 lesson: a control that contradicts another control at the
+    # END of the run is itself an operational defect.
+    for flag, is_set, why in (
+        ("--allow-thin-fit", args.allow_thin_fit,
+         f"produces a CDF production rejects at load (< {MIN_NORMALIZATION_ARTICLES} articles)"),
+        ("--allow-below-op-point", args.allow_below_op_point,
+         "produces raw_min below the op-point, which the invariant test rejects (the #161 shape)"),
+        ("--all-versions", args.all_versions,
+         "blends distinct model distributions into one CDF (gotcha-log: 19,948 v1 leftovers)"),
+    ):
+        if is_set and not args.analysis_only:
+            logger.error(
+                f"{flag} {why} — it is analysis by definition. "
+                f"Pass --analysis-only (with an --out not named normalization.json)."
+            )
+            sys.exit(1)
 
     if args.ssh and not args.remote_dir:
         logger.error("--remote-dir is required when using --ssh")
@@ -422,7 +550,9 @@ def main():
     if config_path.exists():
         import yaml
         with open(config_path) as f:
-            config = yaml.safe_load(f)
+            # `or {}`: yaml.safe_load returns None for an empty file, and every
+            # downstream .get would die on an AttributeError traceback.
+            config = yaml.safe_load(f) or {}
         filter_info = config.get("filter", {})
         filter_name = filter_info.get("name", filter_name)
         filter_version = str(filter_info.get("version", filter_version))
@@ -433,6 +563,22 @@ def main():
     # on articles below the visibility threshold maps invisible content into the
     # visible band by construction (NexusMind#161), so the op-point is the floor.
     op_point = resolve_op_point(args.filter, config if config_path.exists() else {})
+
+    # A deploy-path fit REQUIRES a resolved op-point, --min-score or not: the anchor
+    # and the post-fit guard would otherwise key on --min-score alone, making them
+    # tautological (any value <= 4.5 would ship), and the invariant test fails the
+    # written package anyway because IT can only resolve the op-point from
+    # base_scorer.py. Writing a file the repo's own test then rejects is the exact
+    # fitter/test inconsistency this file must not reintroduce.
+    if op_point is None and not args.analysis_only:
+        logger.error(
+            "Cannot resolve the operating point from base_scorer.py TIER_THRESHOLDS, so a "
+            "deploy-path fit cannot be validated against it — and "
+            "tests/unit/test_normalization_invariant.py will fail the package for the same "
+            "reason, whatever --min-score says. Fix TIER_THRESHOLDS so it parses as one "
+            "literal list, or use --analysis-only with --out for inspection fits."
+        )
+        sys.exit(1)
 
     if args.min_score is None:
         if op_point is None:
@@ -459,38 +605,53 @@ def main():
             sys.exit(1)
         logger.warning(
             f"--min-score {args.min_score} is below the operating point {op_point}, allowed via "
-            f"--allow-below-op-point. Verify the sample mappings below before deploying."
+            f"--allow-below-op-point (analysis path). The result maps sub-visibility articles "
+            f"into the visible band — never deploy it."
         )
     elif op_point is not None and args.min_score > op_point:
-        logger.warning(
-            f"--min-score {args.min_score} is above the operating point {op_point}: the CDF "
-            f"will not cover [{op_point}, {args.min_score}), so np.interp clamps that whole "
-            f"band to ~0 at inference — articles ABOVE the threshold get normalized to nothing. "
-            f"This is NexusMind#205 (foresight fitted at raw_min 5.01; raw 4.60 -> wavg 0.02)."
+        # Pre-anchor, this only hard-failed above the 4.5 reject bound; anchoring
+        # would now make the result LOADABLE, so the guard must move to the
+        # op-point itself or a mistyped --min-score ships a population that
+        # zeroes part of the visible band.
+        msg = (
+            f"--min-score {args.min_score} is above the operating point {op_point}: articles "
+            f"in [{op_point}, {args.min_score}) are visible in production but excluded from "
+            f"the reference population. The CDF is still anchored at {op_point}, so that "
+            f"band normalizes onto a 0-percentile ramp — near-invisible in ranking."
         )
+        if not args.analysis_only:
+            logger.error(
+                msg + f"\n  There is no deploy-path reason to do this. Use --min-score "
+                f"{op_point}, or --analysis-only with --out for inspection fits."
+            )
+            sys.exit(1)
+        logger.warning(msg)
 
-    # NOTE: the consumer's #205 guard keys on the WRITTEN stats.raw_min — the lowest
-    # score actually observed — not on --min-score. raw_min >= min_score always, and
-    # on a sparse fit it can land well above it, so a general --min-score check here
-    # would MISS a sparse fit whose raw_min drifts up. The real check runs after the
-    # fit, once raw_min is known (see below).
-    #
-    # But the ONE case decidable pre-fit is --min-score already above the reject bound:
-    # raw_min >= min_score > MAX means the fit is GUARANTEED dead regardless of article
-    # count. Fail fast with THAT diagnosis — otherwise a too-high --min-score falls
-    # through to the article-count floor and gets misreported as data scarcity (a
-    # --min-score typo blamed on the corpus — the #205-shape misdiagnosis this file
-    # fights). --out (throwaway analysis) is allowed above the bound; the post-fit
-    # guard warns-not-exits there.
-    if args.min_score > MAX_NORMALIZATION_RAW_MIN and args.out is None:
+    # The CDF's lower edge is ANCHORED to the op-point (fit_normalization's
+    # anchor_min), so stats.raw_min equals the anchor by construction and cannot
+    # drift up on a sparse fit. The anchor is the op-point when it resolves, else
+    # the explicit --min-score the operator was forced to supply.
+    anchor = op_point if op_point is not None else args.min_score
+
+    # One case is decidable pre-fit: an anchor already above the consumer's reject
+    # bound writes stats.raw_min > MAX, which NexusMind's ProductionScorer REJECTS
+    # at load — the fit is guaranteed dead regardless of article count. Fail fast
+    # with THAT diagnosis — otherwise it falls through to the article-count floor
+    # and gets misreported as data scarcity (the #205-shape misdiagnosis this file
+    # fights). On the deploy path the op-point is guaranteed resolved (guard above)
+    # and the anchor IS the op-point — so no --min-score advice can apply here: an
+    # earlier draft's "Refit at --min-score {op_point}" rendered as "--min-score
+    # None" on the one path that could reach it.
+    if anchor > MAX_NORMALIZATION_RAW_MIN and not args.analysis_only:
         logger.error(
-            f"--min-score {args.min_score} exceeds MAX_NORMALIZATION_RAW_MIN "
-            f"({MAX_NORMALIZATION_RAW_MIN}): every fitted article sits at/above --min-score, so "
-            f"stats.raw_min will too and NexusMind's ProductionScorer REJECTS the file at load — "
-            f"no article count can rescue it.\n"
-            f"  This is a --min-score mistake, not data scarcity. Refit at --min-score "
-            f"{op_point if op_point is not None else 'the op-point'}. For throwaway analysis "
-            f"above the bound, pass --out."
+            f"The fit anchor {anchor} exceeds MAX_NORMALIZATION_RAW_MIN "
+            f"({MAX_NORMALIZATION_RAW_MIN}): stats.raw_min would land above the bound and "
+            f"NexusMind's ProductionScorer REJECTS the file at load, silently falling back "
+            f"to score_scale_factor (NexusMind#205).\n"
+            f"  The operating point itself ({op_point}) exceeds the bound, so NO fit for "
+            f"this filter can load: fix base_scorer.py TIER_THRESHOLDS (or NexusMind's "
+            f"MAX_NORMALIZATION_RAW_MIN) first — do not work around it with --min-score.\n"
+            f"  For throwaway inspection above the bound, pass --analysis-only with --out."
         )
         sys.exit(1)
 
@@ -536,7 +697,8 @@ def main():
         logger.info(f"Loading production data ({score_label}{version_label}) from {args.ssh}:{args.remote_dir}")
         source_desc = f"production {score_label}{version_label} from {args.ssh}:{args.remote_dir}"
         was = load_weighted_averages_ssh(
-            args.ssh, args.remote_dir, min_score=args.min_score, filter_version=args.filter_version,
+            args.ssh, args.remote_dir, filter_name,
+            min_score=args.min_score, filter_version=args.filter_version,
         )
     else:
         logger.info(f"Loading production data ({score_label}{version_label}) from {args.data_dir}")
@@ -546,7 +708,7 @@ def main():
         )
 
     if len(was) < MIN_NORMALIZATION_ARTICLES:
-        logger.error(
+        msg = (
             f"Only {len(was)} articles at/above {args.min_score} — production requires "
             f"{MIN_NORMALIZATION_ARTICLES} (MIN_NORMALIZATION_ARTICLES in NexusMind "
             f"production_scorer.py).\n"
@@ -559,15 +721,20 @@ def main():
             f"  production base rate, NOT the enriched val set. Use --allow-thin-fit only for "
             f"throwaway analysis whose output you will not deploy."
         )
-        if not args.allow_thin_fit:
-            sys.exit(1)
-        if args.out is None:
-            logger.error(
-                "--allow-thin-fit requires --out. Without it the thin CDF would be written "
-                "straight to the filter package's normalization.json — clobbering the "
-                "deployed fit with a file this very flag documents as undeployable."
+        if len(was) == 0:
+            msg += (
+                "\n  ZERO articles usually is not scarcity at all: check the data files parse, "
+                "the directory holds filtered_*.jsonl, and --filter-version matches what "
+                "production writes (a version-scope or parse failure reports as 0 here)."
             )
+        if not args.allow_thin_fit:
+            logger.error(msg)
             sys.exit(1)
+        # --allow-thin-fit already implies --analysis-only (+ a non-package --out),
+        # validated upfront — the thin CDF cannot land on the deploy path. WARNING,
+        # not ERROR: an ERROR that is followed by a successful write poisons
+        # log-grepping.
+        logger.warning(msg)
         logger.warning(
             f"--allow-thin-fit: writing a {len(was)}-article CDF to {args.out}. Production "
             f"REJECTS fits under {MIN_NORMALIZATION_ARTICLES} — analysis only, never deploy it."
@@ -593,6 +760,7 @@ def main():
         filter_version=filter_version,
         source_description=source_desc,
         n_bins=args.n_bins,
+        anchor_min=anchor,
     )
 
     # Report
@@ -604,43 +772,99 @@ def main():
     logger.info(f"  Percentiles (raw):  p25={pcts['p25']:.2f}  p50={pcts['p50']:.2f}  "
                 f"p75={pcts['p75']:.2f}  p90={pcts['p90']:.2f}  p95={pcts['p95']:.2f}")
 
-    # Show what key raw scores map to after normalization. Anchor the sample points on
-    # the op-point rather than a fixed 4.0 — a filter whose op-point is 3.75 would
-    # otherwise never show the [3.75, 4.0) band, which is where tier flips happen.
+    # Show what key raw scores map to after normalization. Sample points sit on
+    # the fit anchor (the op-point) rather than a fixed 4.0 — a filter whose
+    # op-point is 3.75 would otherwise never show the [3.75, 4.0) band, which is
+    # where tier flips happen.
     logger.info(f"\n  Sample mappings (raw -> normalized):")
-    anchor = op_point if op_point is not None else args.min_score
     sample_points = [anchor] + [anchor + step for step in (0.25, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 4.0)]
     for raw in sample_points:
         norm = float(np.interp(raw, norm_data["x"], norm_data["y"]))
         marker = "  <- operating point" if raw == anchor else ""
         logger.info(f"    {raw:.2f} -> {norm:.2f}{marker}")
 
-    # The consumer's #205 guard, applied to what we are about to write. raw_min is
-    # min(observed), so this can trip even when --min-score was correct: a sparse fit
-    # whose lowest article sits above 4.5 produces a CDF that ProductionScorer rejects
-    # at load, silently falling back to the linear score_scale_factor while the
-    # operator reads a sample-mapping table describing a curve production never applies.
-    if stats["raw_min"] > MAX_NORMALIZATION_RAW_MIN:
+    # A sample whose lowest article sits well above the anchor is the #205
+    # ROOT-CAUSE signature: the reference population never reached down to the
+    # visibility threshold, usually because it was drawn from already-filtered /
+    # oracle-biased output rather than a production-representative slice
+    # (playbook §6). Anchoring makes such a file LOADABLE (raw_min == op_point),
+    # so without a gate here the gross case would ship where the pre-anchor
+    # fitter hard-blocked it (raw_min was the sample minimum, > 4.5 → rejected).
+    # Two tiers, honestly imperfect:
+    #   sample_min > 4.5 (the old reject bound)  -> HARD ERROR on the deploy path;
+    #       exactly the protection the pre-anchor code gave, no false-block
+    #       possible for any real op-point (3.75/4.0).
+    #   gap > 0.5 but sample_min <= 4.5          -> advisory WARNING only. No
+    #       static threshold separates a subtly biased sample from a legitimately
+    #       sparse needle fit — they are indistinguishable in the data. The gap
+    #       is recorded as stats.sample_min for audit; representativeness is the
+    #       operator's verification, playbook §6.
+    sample_gap = stats["sample_min"] - anchor
+    if stats["sample_min"] > MAX_NORMALIZATION_RAW_MIN:
         msg = (
-            f"stats.raw_min={stats['raw_min']:.4f} exceeds MAX_NORMALIZATION_RAW_MIN "
-            f"({MAX_NORMALIZATION_RAW_MIN}) — NexusMind's ProductionScorer REJECTS this fit at "
-            f"load (NexusMind#205: foresight fitted at raw_min 5.01 sent raw 4.60 -> wavg 0.02).\n"
-            f"  The fit set does not reach down to the visibility threshold, so the whole band "
-            f"below {stats['raw_min']:.2f} would clamp to ~0.\n"
-            f"  Usually means the sample is drawn from already-filtered/oracle-biased output "
-            f"rather than a production-representative slice (playbook §6)."
+            f"Lowest observed article ({stats['sample_min']:.2f}) is above "
+            f"MAX_NORMALIZATION_RAW_MIN ({MAX_NORMALIZATION_RAW_MIN}): the reference "
+            f"population never reaches the visibility threshold {anchor} — the #205 "
+            f"root-cause signature (sample drawn from already-filtered/oracle-biased "
+            f"output; playbook §6). The anchor would make this file loadable, hiding "
+            f"what the pre-anchor fitter hard-blocked."
         )
-        # A deploy-path fit (--out unset, writes into the package) that would be rejected
-        # at load is a hard error. But --out is the throwaway-analysis path — the whole
-        # reason to fit a biased/enriched sample to a side file is to INSPECT exactly this,
-        # so blocking it would defeat the escape hatch (--allow-thin-fit REQUIRES --out).
-        if args.out is None:
+        if not args.analysis_only:
             logger.error(msg + "\n  Nothing is written.")
             sys.exit(1)
+        logger.warning(msg + f"\n  Writing to {args.out} anyway (--analysis-only); never "
+                             f"deploy this file.")
+    elif sample_gap > 0.5:
         logger.warning(
-            msg + f"\n  Writing to {args.out} anyway — --out is the analysis path; NEVER deploy "
-            f"this file."
+            f"Lowest observed article ({stats['sample_min']:.2f}) sits {sample_gap:.2f} above "
+            f"the anchor {anchor}: the whole [{anchor}, {stats['sample_min']:.2f}) band was "
+            f"never observed and normalizes onto a 0-percentile ramp. For a gap this large, "
+            f"check the sample isn't drawn from already-filtered output (#205's root cause) "
+            f"before deploying."
         )
+
+    # Post-fit mirror of the repo invariant (tests/unit/test_normalization_invariant.py)
+    # and of the consumer's load guard, applied to what we are about to write. With the
+    # anchor in place raw_min deviates from the op-point only when something is actually
+    # wrong: --allow-below-op-point pulled data under the anchor (raw_min < op_point,
+    # the #161 shape), or the anchor itself is off. Two regimes above the op-point:
+    #   op_point+eps < raw_min <= 4.5  loader ACCEPTS the file and silently clamps
+    #                                  [op_point, raw_min) to ~0 — the #205 blind spot
+    #   raw_min > 4.5                  loader REJECTS the file at load and silently
+    #                                  falls back to score_scale_factor — #205 proper
+    raw_min = stats["raw_min"]
+    reference = op_point if op_point is not None else args.min_score
+    if abs(raw_min - reference) > OP_POINT_EPS or raw_min > MAX_NORMALIZATION_RAW_MIN:
+        if raw_min < reference:
+            regime = (
+                f"Below the op-point: sub-visibility articles are in the reference population, "
+                f"mapping invisible content into the visible band (NexusMind#161 — v2 fitted "
+                f"at 1.5 put doom on the Recovery lens at 8.34/10)."
+            )
+        elif raw_min <= MAX_NORMALIZATION_RAW_MIN:
+            regime = (
+                f"Above the op-point but under MAX_NORMALIZATION_RAW_MIN "
+                f"({MAX_NORMALIZATION_RAW_MIN}): NexusMind's ProductionScorer ACCEPTS this "
+                f"file and silently clamps everything in [{reference}, {raw_min}) to ~0 — "
+                f"the load guard's blind spot."
+            )
+        else:
+            regime = (
+                f"Above MAX_NORMALIZATION_RAW_MIN ({MAX_NORMALIZATION_RAW_MIN}): NexusMind's "
+                f"ProductionScorer REJECTS this file at load and silently falls back to the "
+                f"linear score_scale_factor (NexusMind#205: foresight fitted at raw_min 5.01 "
+                f"sent raw 4.60 -> wavg 0.02)."
+            )
+        msg = (
+            f"stats.raw_min={raw_min:.4f} is off the fit anchor {reference} "
+            f"(±{OP_POINT_EPS}) — tests/unit/test_normalization_invariant.py rejects this "
+            f"file.\n  {regime}"
+        )
+        if not args.analysis_only:
+            logger.error(msg + "\n  Nothing is written.")
+            sys.exit(1)
+        logger.warning(msg + f"\n  Writing to {args.out} anyway (--analysis-only); this file "
+                             f"must never be deployed.")
 
     # Save
     output_path = args.out if args.out is not None else (args.filter / "normalization.json")
