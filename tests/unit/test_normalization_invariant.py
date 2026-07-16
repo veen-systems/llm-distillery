@@ -79,15 +79,32 @@ EXEMPTIONS = {
 # raw_min is the SMALLEST SCORE OBSERVED in the fit set, not the --min-score
 # parameter. On a dense fit it lands essentially on the threshold (invR v6:
 # 4.0003, cd v5: 4.0006 — note: not exactly 4.0), but on a sparser one the lowest
-# article legitimately sits above it. So the invariant is a RANGE, not equality:
-# an earlier equality form would have false-positived on any legitimate thin fit.
+# article can sit a little above it. So the invariant is a tight RANGE, not
+# equality (an earlier equality form false-positived on legitimate jitter) — but
+# the range must stay ANCHORED TO THE OP-POINT:
 #
-#   raw_min <  op_point  -> sub-visibility content maps into the visible band (#161)
-#   raw_min >  4.5       -> the band below raw_min clamps to ~0, and production
-#                           rejects the file outright (#205)
+#   raw_min <  op_point                          -> sub-visibility content maps
+#                                                   into the visible band (#161)
+#   raw_min >  op_point + ABOVE_OP_POINT_MARGIN   -> the band [op_point, raw_min)
+#                                                   clamps to ~0 at inference (#205)
 #
-# EPS absorbs float round-tripping at the lower bound only.
+# The upper bound is DELIBERATELY NOT MAX_RAW_MIN (4.5). 4.5 is the consumer's hard
+# *reject* bound — above it the loader drops the file entirely. Between op_point and
+# 4.5 the loader ACCEPTS the file and silently clamps the band: that gap is the blind
+# spot this test exists to catch. A round-3 review (2026-07-16) found the bound had
+# been set to 4.5, which for a low-op-point filter (nature_recovery op 3.75) blesses a
+# fit at raw_min 4.3 that hides the entire [3.75, 4.3) medium band. Every deployed
+# filter lands within +0.0006 of its op-point; 0.25 absorbs sparse-fit jitter while
+# still catching real #205 drift. EPS absorbs float round-tripping at the lower bound.
 EPS = 0.01
+ABOVE_OP_POINT_MARGIN = 0.25
+
+
+def _within_invariant(raw_min, op_point):
+    """The ONE place the raw_min band is defined. Both the per-filter test and the
+    stale-exemptions test call this — a second inlined copy is exactly how the
+    round-1 fix and its own test drifted apart within a single commit."""
+    return op_point - EPS <= raw_min <= op_point + ABOVE_OP_POINT_MARGIN
 
 
 def _fitted_filters():
@@ -112,11 +129,16 @@ def test_some_filters_are_fitted():
 @pytest.mark.parametrize("filter_name,version", _fitted_filters(),
                          ids=lambda x: str(x))
 def test_normalization_fitted_at_the_tier_threshold(filter_name, version):
-    """normalization.json's raw_min must equal the filter's tier threshold.
+    """normalization.json's raw_min must sit AT the filter's tier threshold.
 
-    Fit BELOW it and you map sub-visibility content into the visible band
-    (NexusMind#161). Fit ABOVE it and everything between the threshold and
-    raw_min clamps to ~0 via np.interp's edge behaviour (NexusMind#205).
+    raw_min is the lowest score in the fit set, so it lands just above the op-point
+    on a dense fit and a little higher on a sparse one — the valid band is
+    [op_point, op_point + ABOVE_OP_POINT_MARGIN], NOT up to the consumer's 4.5
+    reject bound.
+
+    Fit BELOW op_point and you map sub-visibility content into the visible band
+    (NexusMind#161). Fit ABOVE it and everything in [op_point, raw_min) clamps to
+    ~0 via np.interp's edge behaviour (NexusMind#205).
     """
     if (filter_name, version) in EXEMPTIONS:
         pytest.skip(f"{filter_name}/{version}: {EXEMPTIONS[(filter_name, version)]}")
@@ -131,18 +153,20 @@ def test_normalization_fitted_at_the_tier_threshold(filter_name, version):
         f"invariant needs rewriting against whatever replaced them — do not just "
         f"exempt the filter."
     )
-    assert op_point - EPS <= raw_min <= MAX_RAW_MIN, (
+    assert _within_invariant(raw_min, op_point), (
         f"{filter_name}/{version}: raw_min={raw_min} outside the valid range "
-        f"[{op_point}, {MAX_RAW_MIN}] (tier threshold .. consumer's reject bound). "
+        f"[{op_point}, {op_point + ABOVE_OP_POINT_MARGIN}] (tier threshold .. threshold "
+        f"+ {ABOVE_OP_POINT_MARGIN} jitter margin). "
         + (
             f"Fitting BELOW the threshold maps sub-visibility articles into the "
             f"visible band — this is NexusMind#161 (v2 fitted at 1.5, doom at raw "
             f"2.2-3.3 surfaced at normalized 5.2-8.3)."
             if raw_min < op_point else
-            f"Fitting ABOVE the threshold clamps everything in [{op_point}, "
-            f"{raw_min}) to ~0 — this is NexusMind#205 (foresight fitted at 5.01, "
-            f"raw 4.60 -> wavg 0.02). Note production_scorer.py rejects raw_min > "
-            f"4.5 at load, so such a fit is silently inert."
+            f"raw_min sits {raw_min - op_point:.2f} above the threshold: everything in "
+            f"[{op_point}, {raw_min}) clamps to ~0 — this is NexusMind#205 (foresight "
+            f"fitted at 5.01, raw 4.60 -> wavg 0.02). The band ({op_point + ABOVE_OP_POINT_MARGIN}, "
+            f"{MAX_RAW_MIN}] is the blind spot the consumer's load-time guard MISSES: it only "
+            f"rejects raw_min > {MAX_RAW_MIN}, so a fit here is ACCEPTED and clamps silently."
         )
         + f" Refit with --min-score {op_point} (the fitter now defaults to this)."
     )
@@ -162,10 +186,10 @@ def test_no_stale_normalization_exemptions():
         op_point = _fitter._op_point_from_base_scorer(REPO_ROOT / "filters" / filter_name / version)
         if raw_min is None or op_point is None:
             continue
-        if op_point - EPS <= raw_min <= MAX_RAW_MIN:
+        if _within_invariant(raw_min, op_point):
             stale.append(
                 f"{filter_name}/{version}: now conforms (raw_min={raw_min} within "
-                f"[{op_point}, {MAX_RAW_MIN}]) — remove its EXEMPTIONS entry"
+                f"[{op_point}, {op_point + ABOVE_OP_POINT_MARGIN}]) — remove its EXEMPTIONS entry"
             )
     assert not stale, "Stale normalization exemptions:\n  " + "\n  ".join(stale)
 

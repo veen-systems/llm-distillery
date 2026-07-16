@@ -471,9 +471,28 @@ def main():
 
     # NOTE: the consumer's #205 guard keys on the WRITTEN stats.raw_min — the lowest
     # score actually observed — not on --min-score. raw_min >= min_score always, and
-    # on a sparse fit it can land well above it, so checking --min-score here would
-    # let through exactly the dead-on-arrival file it claims to prevent. The real
-    # check runs after the fit, once raw_min is known (see below).
+    # on a sparse fit it can land well above it, so a general --min-score check here
+    # would MISS a sparse fit whose raw_min drifts up. The real check runs after the
+    # fit, once raw_min is known (see below).
+    #
+    # But the ONE case decidable pre-fit is --min-score already above the reject bound:
+    # raw_min >= min_score > MAX means the fit is GUARANTEED dead regardless of article
+    # count. Fail fast with THAT diagnosis — otherwise a too-high --min-score falls
+    # through to the article-count floor and gets misreported as data scarcity (a
+    # --min-score typo blamed on the corpus — the #205-shape misdiagnosis this file
+    # fights). --out (throwaway analysis) is allowed above the bound; the post-fit
+    # guard warns-not-exits there.
+    if args.min_score > MAX_NORMALIZATION_RAW_MIN and args.out is None:
+        logger.error(
+            f"--min-score {args.min_score} exceeds MAX_NORMALIZATION_RAW_MIN "
+            f"({MAX_NORMALIZATION_RAW_MIN}): every fitted article sits at/above --min-score, so "
+            f"stats.raw_min will too and NexusMind's ProductionScorer REJECTS the file at load — "
+            f"no article count can rescue it.\n"
+            f"  This is a --min-score mistake, not data scarcity. Refit at --min-score "
+            f"{op_point if op_point is not None else 'the op-point'}. For throwaway analysis "
+            f"above the bound, pass --out."
+        )
+        sys.exit(1)
 
     # Scope to one filter version. Different versions are different models with
     # different score distributions; blending them yields a bimodal CDF in which
@@ -602,16 +621,26 @@ def main():
     # at load, silently falling back to the linear score_scale_factor while the
     # operator reads a sample-mapping table describing a curve production never applies.
     if stats["raw_min"] > MAX_NORMALIZATION_RAW_MIN:
-        logger.error(
+        msg = (
             f"stats.raw_min={stats['raw_min']:.4f} exceeds MAX_NORMALIZATION_RAW_MIN "
             f"({MAX_NORMALIZATION_RAW_MIN}) — NexusMind's ProductionScorer REJECTS this fit at "
             f"load (NexusMind#205: foresight fitted at raw_min 5.01 sent raw 4.60 -> wavg 0.02).\n"
-            f"  Nothing is written. The fit set does not reach down to the visibility "
-            f"threshold, so the whole band below {stats['raw_min']:.2f} would clamp to ~0.\n"
+            f"  The fit set does not reach down to the visibility threshold, so the whole band "
+            f"below {stats['raw_min']:.2f} would clamp to ~0.\n"
             f"  Usually means the sample is drawn from already-filtered/oracle-biased output "
             f"rather than a production-representative slice (playbook §6)."
         )
-        sys.exit(1)
+        # A deploy-path fit (--out unset, writes into the package) that would be rejected
+        # at load is a hard error. But --out is the throwaway-analysis path — the whole
+        # reason to fit a biased/enriched sample to a side file is to INSPECT exactly this,
+        # so blocking it would defeat the escape hatch (--allow-thin-fit REQUIRES --out).
+        if args.out is None:
+            logger.error(msg + "\n  Nothing is written.")
+            sys.exit(1)
+        logger.warning(
+            msg + f"\n  Writing to {args.out} anyway — --out is the analysis path; NEVER deploy "
+            f"this file."
+        )
 
     # Save
     output_path = args.out if args.out is not None else (args.filter / "normalization.json")
