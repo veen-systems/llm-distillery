@@ -128,3 +128,20 @@ freshly-written guards is now demonstrably load-bearing, not ceremony.
 `docs/normalization-deploy-hardening-plan.md` Fix B — unchanged, READY. Needs the dry-run
 harness (scratch clone; untracked src/scoring blocks, untracked model/ config does NOT block,
 clean tree round-trips). Do NOT run live-untested as ExecStartPre.
+
+## Post-curate addendum (late evening) — normalization documented + publication pipeline
+
+- **`docs/NORMALIZATION_METHOD.md`** — canonical method reference (math, anchor construction,
+  fit convention, 4-layer guard table, §6 reproduction steps for new filters, §7 article
+  numbers). Entry point wired into CLAUDE.md row / ADR-014 / playbook §6 / MEMORY key paths.
+- **`docs/articles/README.md`** — publication index + plan: 3 tracks (A methods here, B ovr.news
+  product, C practice essays via dev.jeroenveen.nl + augmented-engineering), one-home-per-draft
+  rule, order: needle article → normalization arXiv paper (draft FROM the method doc; needs lit
+  check + raw-vs-normalized baseline) → oracle-consistency → hybrid two-stage.
+- **Needle draft = TWO deliberate editions now** (edition notes in both): technical master here,
+  public/reader edition in `ovr.news/docs/articles/` (was NOT a stale duplicate — it carried the
+  correct 5-lens taxonomy + editorial softening; nearly deleted it on a timestamp judgment —
+  "look at the target before overwriting" earned its keep). Ovr-side factual fixes ported to the
+  master (5-lens sentence, low-score≠bad-journalism, corpus nuance, links, table labels).
+- Pushed: llm-distillery `ebdf18f` (branch+main), ovr.news `a4b47bc` (master, incl. the earlier
+  session's a085487 that had been sitting unpushed).
