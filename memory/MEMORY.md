@@ -131,7 +131,7 @@ Loaded every session. Topic files loaded on demand via triggers below.
 
 Full per-session narratives live below the auto-loading cliff (read on demand). Newest first.
 
-- [2026-07-17](project_session_2026_07_17.md) — Wrap-up: 11-agent multi-model battery over the merged Fix A range → 5 confirmed findings fixed (dead `sample_min` assertion now exercised by synthetic-package tests; `n_bins < 2` fails closed; 3 stale doc facts), 2 refuted. 196 tests green. Framework current (v1.10.6 = latest); uplifting v7 weights flagged as gpu-server-only (NO_HUB, absent locally).
+- [2026-07-17](project_session_2026_07_17.md) — Wrap-up: 11-agent multi-model battery over the merged Fix A range → 5 confirmed findings fixed (dead `sample_min` assertion now exercised by synthetic-package tests; `n_bins < 2` fails closed; 3 stale doc facts), 2 refuted. 196 tests green. Framework current (v1.10.6 = latest); uplifting v7 weights flagged as gpu-server-only (NO_HUB, absent locally). Addendum: **sustech v3 op-point drift FIXED** (`65484f4`, last cheap 2026-07-14 follow-up).
 - [2026-07-16](project_session_2026_07_16.md) — Morning: **#62 leakage check DONE (cd v5 holds, 96% suppressed)** + cap retirement behaviorally confirmed; round-4 review found defects in my own round-3 fixes → both HELD; re-enchantment outlets parked. Evening: **Fix A EXECUTED** — CDF lower edge anchored to op-point (prepended breakpoint; `raw_min == op_point` by construction, `stats.sample_min` added for bias audit), invariant back to near-equality ±0.01 single-sourced, round-3 margin deleted. 3-model review battery found 11 findings incl. a regression my own root fix created (biased-sample fits became loadable → restored as `sample_min > 4.5` deploy gate + test assertion); all verified ones fixed. **llm-distillery hold RESOLVED, merged to main.** NexusMind hold (`7e525ee`) remains — Fix B replaces it.
 - [2026-07-14](project_session_2026_07_14.md) — health check → **five dead controls**. #161 reframed: v2's model scored the doom articles 2.2–3.3 *correctly*; `normalization.json` fitted at raw>=1.5 inflated them to 5.2–8.3 (reproduced 5/5 exactly). v4 rescore: 0/5 surface → the `climate_doom` cap is dormant, and was 0-for-2 in prod. Fixed: fitter refuses below op-point, cap override window, commit-msg hook (never executable), deploy gate blind to `src/scoring/`, 3 verify assertions FAILing on true claims.
 - [2026-07-11](project_session_2026_07_11.md) — "ovr shows no new nature articles" → **not broken**: v2's fuller feed was ~90% normalization inflation; fresh-v4 raw scores are under-ranked vs still-in-window inflated v2 rows (self-corrects ~Jul 19 as v2 ages out). Exposed the **normalization cold-start** doc gap → fit at deploy from a production-representative historical rescore (playbook §6 + RUNBOOK). Doc-only, no deploy.
@@ -142,7 +142,29 @@ Full per-session narratives live below the auto-loading cliff (read on demand). 
 - [2026-05-31](project_session_2026_05_31.md) — cultural_discovery **v5 SHIPPED** (DeepSeek oracle, val MAE 0.697, #62 leakage resolved end-to-end).
 - [2026-05-29/30](project_session_2026_05_29.md) — cd v5 hard-negatives cohort (49 articles, 5 buckets) + v5 prompt drafted (flags F/G/H/I/K).
 
-## Next Session Pickup (updated 2026-07-16 evening)
+## Next Session Pickup (updated 2026-07-17)
+
+**🎯 NEXT SESSION: NexusMind Fix B** (engineer's explicit choice, 2026-07-17) — ONE definition
+of the deployed set (dirty-check + CODE_REVISION hash + rsync all derive from it). Read
+`docs/normalization-deploy-hardening-plan.md` (Fix B) + `project_session_2026_07_16.md` (evening)
+first. Held branch `fix/deploy-dirty-check-untracked` (`7e525ee`) is REFERENCE ONLY — do not
+merge; NexusMind `main` stays at `7ef6029`. Decide git-archive vs interim diff+untracked check;
+build the dry-run harness in a scratch clone; watch all three gates fail/pass ((a) untracked
+`src/scoring/*.py` BLOCKS, (b) untracked `model/` config does NOT block, (c) clean tree deploys
+with matching round-trip hash). NEVER test live as ExecStartPre. Nothing merges or deploys
+without engineer sign-off.
+
+**2026-07-17 wrap-up state**: Fix A review-hardened (`61265f7`: dead sample_min assertion now
+exercised, n_bins fails closed, doc facts fixed — 196 tests green); sustech v3 op-point drift
+fixed (`65484f4`); framework current (v1.10.6); all cheap 2026-07-14 follow-ups now DONE except
+#7-on-situla (needs venv deps, cosmetic) and `policy_announcement` cap (a gap, not a regression).
+Flagged for engineer: uplifting v7 weights exist ONLY on gpu-server + old Windows box (NO_HUB,
+gitignored locally) — backup decision pending; vlonder pins agent-ready-papers v1.3.0 vs v2.3.1
+(that repo's concern, not this one's).
+
+---
+
+## Pickup history (2026-07-16 evening — superseded above, kept for context)
 
 **✅ Fix A (normalization anchor) DONE 2026-07-16 evening — llm-distillery hold RESOLVED, merged
 to main.** `raw_min == op_point` by construction; review-hardened (3-model battery, 11 findings
