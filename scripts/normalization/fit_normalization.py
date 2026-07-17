@@ -476,6 +476,18 @@ def main():
         logger.error(f"Filter directory not found: {args.filter}")
         sys.exit(1)
 
+    # A degenerate table (n_bins 0 or 1) still gets raw_min anchored to the
+    # op-point, so it passes every deploy guard while normalizing the whole
+    # visible range to ~0 — a typo'd --n-bins must fail here, not ship.
+    if args.n_bins < 2:
+        logger.error(
+            f"--n-bins {args.n_bins} cannot span the observed score range: the fit "
+            f"degenerates to a flat table that anchoring makes deployable and "
+            f"guard-green while every article normalizes to ~0. Use >= 2 "
+            f"(default 200)."
+        )
+        sys.exit(1)
+
     # --analysis-only is the ONLY thing that relaxes the deploy guards. Round-4
     # (2026-07-16) proved "--out means analysis" is false — --out can point AT a
     # package normalization.json — so the escape hatch must be an explicit flag,
@@ -503,9 +515,10 @@ def main():
         # --out without --analysis-only is a full-guard fit written to a custom
         # location — but it must not silently retarget ANOTHER package: a valid fit
         # for filter A written into filter B's normalization.json is loadable and
-        # invariant-test-green whenever their op-points coincide (8 of 10 deployed
-        # filters sit at 4.0), so B would deploy A's score distribution with no
-        # signal anywhere.
+        # invariant-test-green whenever their op-points coincide (all 10 currently
+        # fitted packages resolve to 4.0; only nature_recovery v4, not yet fitted,
+        # sits elsewhere at 3.75), so B would deploy A's score distribution with
+        # no signal anywhere.
         out_r = args.out.resolve()
         if out_r.name == "normalization.json" and out_r.parent != args.filter.resolve():
             logger.error(

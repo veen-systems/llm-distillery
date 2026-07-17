@@ -762,3 +762,23 @@ died as a raw ValueError traceback.
 two layers down, after every count-based guard had already run.
 **Fix**: Exclude non-finite/non-numeric scores AT LOAD in both loaders (local + SSH extraction
 script), with an explicit excluded-count warning, so every downstream floor counts real articles.
+
+## The Bias Guard Added to Fix "A Guard Never Observed Failing" Was Itself Never Observed Failing (2026-07-17)
+**Problem**: The wrap-up review battery (3 lenses × 3 models, adversarially verified) found that
+the `stats.sample_min` assertion added 2026-07-16 — the ONE signal catching the #205 root cause
+for anchored fits — was dead code from the moment it was written: all 10 committed
+`normalization.json` files are legacy pre-anchor fits without the field, so
+`if sample_min is not None:` short-circuited on every input CI ever sees. A flipped comparator
+would have shipped green. Second finding, same shape: `--n-bins 0/1` produces a degenerate flat
+table that anchoring makes guard-green and deployable (pre-anchor, the off-op-point `raw_min`
+incidentally blocked it) — a SECOND guard dissolved by Fix A's semantics change, sibling of the
+2026-07-16 "root fix dissolves the guard" entry. Also: a justificatory comment claimed "8 of 10
+deployed filters sit at 4.0" — the real count is 10 of 10; unsourced precision, invented.
+**Root cause**: The 2026-07-14 rule ("watch every control fail before trusting it") was applied
+to the fitter's runtime guards but NOT to the new test assertion — a test is also a control, and
+its failure was never observed against a real or synthetic input carrying the field.
+**Fix**: Synthetic-package tests now drive the REAL parametrized test body both ways
+(sample_min above the bound must raise, below must pass); `n_bins < 2` fails closed in both the
+shared lib and the CLI; comment corrected. 196 unit tests green. **Recurrences**: "watch it
+fail" (2026-07-14, 2nd), "root fix dissolves guard" (2026-07-16, 2nd — same fix, different
+guard), unsourced-precision stat (feedback-claim-requires-verify).

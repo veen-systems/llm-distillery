@@ -199,6 +199,43 @@ def test_normalization_fitted_at_the_tier_threshold(filter_name, version):
         )
 
 
+def _write_synthetic_package(root: Path, sample_min: float):
+    """A minimal anchored-fit package: raw_min pinned to the op-point (as the
+    fitter guarantees by construction), sample_min set by the caller."""
+    pkg = root / "filters" / "synthetic" / "v1"
+    pkg.mkdir(parents=True)
+    (pkg / "base_scorer.py").write_text(
+        'TIER_THRESHOLDS = [("high", 7.0), ("medium", 3.75), ("low", 0.0)]\n',
+        encoding="utf-8",
+    )
+    (pkg / "normalization.json").write_text(
+        json.dumps({"stats": {"raw_min": 3.75, "sample_min": sample_min}}),
+        encoding="utf-8",
+    )
+
+
+def test_sample_min_guard_fires_on_biased_anchored_fit(tmp_path, monkeypatch):
+    """The sample_min assertion above is dead code against the committed packages
+    — all 10 are legacy pre-anchor fits without the field (2026-07-17 review
+    finding), so a regression in the one guard that catches the #205 ROOT cause
+    for anchored fits (biased fit population, raw_min anchored green anyway)
+    would ship without any test executing it. Drive the REAL parametrized test
+    body against a synthetic anchored package so the whole path runs, including
+    the stats-key lookup: sample_min above the consumer bound must fail..."""
+    monkeypatch.setattr(sys.modules[__name__], "REPO_ROOT", tmp_path)
+    _write_synthetic_package(tmp_path, sample_min=MAX_RAW_MIN + 0.5)
+    with pytest.raises(AssertionError, match="sample_min"):
+        test_normalization_fitted_at_the_tier_threshold("synthetic", "v1")
+
+
+def test_sample_min_guard_passes_a_representative_fit(tmp_path, monkeypatch):
+    """...and a representative population (sample_min under the bound) must pass,
+    so the guard can't rot into rejecting every anchored fit either."""
+    monkeypatch.setattr(sys.modules[__name__], "REPO_ROOT", tmp_path)
+    _write_synthetic_package(tmp_path, sample_min=3.9)
+    test_normalization_fitted_at_the_tier_threshold("synthetic", "v1")
+
+
 def test_no_stale_normalization_exemptions():
     """Every exemption must still describe a real violation. Refit a filter and
     forget to drop its exemption, and the allow-list silently rots — the same

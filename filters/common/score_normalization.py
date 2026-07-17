@@ -65,6 +65,16 @@ def fit_normalization(
     if len(wa) < 10:
         raise ValueError(f"Need at least 10 scores to fit normalization, got {len(wa)}")
 
+    # n_bins < 2 cannot span [sample_min, sample_max]: linspace yields one point
+    # (or none), the whole visible range collapses to a single breakpoint, and —
+    # because the anchor pins raw_min to the op-point regardless of table shape —
+    # the degenerate file passes every deploy guard while normalizing everything
+    # to ~0. Fail closed instead.
+    if n_bins < 2:
+        raise ValueError(
+            f"n_bins must be >= 2 to span the observed score range, got {n_bins}"
+        )
+
     wa_sorted = np.sort(wa)
     n = len(wa_sorted)
 
