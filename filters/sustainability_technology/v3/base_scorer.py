@@ -45,7 +45,7 @@ class BaseSustainabilityTechnologyScorer(FilterBaseScorer):
 
     GATEKEEPER_DIMENSION = "technology_readiness_level"
     GATEKEEPER_MIN = 3.0
-    GATEKEEPER_CAP = 2.2  # 2.2 × 1.35 = 2.97, just below medium tier (3.0)
+    GATEKEEPER_CAP = 2.2  # 2.2 × 1.3535 ≈ 2.98, below the medium tier (4.0)
 
     def _load_prefilter(self):
         from filters.sustainability_technology.v3.prefilter import SustainabilityTechnologyPreFilterV2

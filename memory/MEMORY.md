@@ -175,7 +175,7 @@ solutions v4 (#43); the #72 nature_recovery v4 normalization refit is now unbloc
 **✅ nature_recovery v4 is DEPLOYED + VALIDATED IN PRODUCTION** (2026-07-10). The op-point 3.75 is now actually wired into `TIER_THRESHOLDS` (was inert, ran at 4.0), and the fix is confirmed in real `filtered_*.jsonl` output. cd v5 + invR v6 normalization refit (percentile) also validated in prod. Full detail: **`memory/project_session_2026_07_10.md`**.
 
 **🔧 Cheap follow-ups from 2026-07-14 (do when convenient):**
-1. **sustech v3 op-point drift** — `config.yaml` says `medium: 3.0`, `base_scorer.py TIER_THRESHOLDS` runs `4.0`. Runtime uses the code, and v3's normalization was fitted at 4.0, so no live damage — but the config is lying. The new fitter warns on it every run.
+1. ~~**sustech v3 op-point drift**~~ **DONE 2026-07-17** — config `tiers` now mirrors `TIER_THRESHOLDS` exactly (medium 4.0; phantom `medium_high: 5.0` removed; both stale "3.0" gatekeeper comments fixed). Verified: `resolve_op_point` returns 4.0 with no drift warning. Source-side only — deployed config copies still carry the old block, but nothing reads them; next deploy syncs.
 2. **#7 verify assertion reports ERROR on situla** — correct and honest (no project venv here, so `huggingface_hub` is absent). Fix is `pip install -r requirements.txt` in a venv, not touching the assertion. Verified separately with deps+token: 8/8 PASS, so the v2 Hub claim is sound.
 3. **`policy_announcement` cap still unimplemented** (deferred by #161). The vizcacha article will now surface at 4.28 → medium, which is arguably wrong on its merits — the land purchase is only *proposed* ("plantearse adquirir"). Not a regression from the window fix; it's the gap #161 left.
 

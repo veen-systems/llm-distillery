@@ -46,20 +46,20 @@ scoring:
       weight: 0.10
       description: "Systemic disruption potential"
 
+  # Mirrors base_scorer.py TIER_THRESHOLDS, the runtime source of truth — this
+  # block is documentation (read by no code; the normalization fitter reads it
+  # only to warn on drift). Until 2026-07-17 it claimed medium: 3.0 plus a
+  # medium_high: 5.0 the runtime never had; the op-point is and was 4.0, and
+  # v3's normalization is fitted at 4.0.
   tiers:
     high_sustainability:
       threshold: 7.0
       description: "Mass deployed, proven sustainable, competitive"
       translate: true
 
-    medium_high:
-      threshold: 5.0
-      description: "Commercial deployment, good sustainability"
-      translate: true
-
     medium:
-      threshold: 3.0
-      description: "Pilot/early commercial, mixed profile"
+      threshold: 4.0
+      description: "Commercial deployment or pilot with good sustainability"
       translate: true
 
     low:
@@ -71,7 +71,7 @@ scoring:
     trl_gatekeeper:
       dimension: technology_readiness_level
       threshold: 3.0
-      max_score: 2.2  # Raw cap matching base_scorer.py GATEKEEPER_CAP; scaled to ~2.97 by score_scale_factor 1.3535 (just below medium tier 3.0)
+      max_score: 2.2  # Raw cap matching base_scorer.py GATEKEEPER_CAP; scaled to ~2.98 by score_scale_factor 1.3535 (below the medium tier, 4.0)
       reason: "Lab-only technologies cannot achieve high overall sustainability scores"
 
 oracle:
