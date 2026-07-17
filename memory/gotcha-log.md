@@ -820,3 +820,13 @@ rules, anchor with a leading slash unless every-depth matching is genuinely inte
 `gh` however is authenticated (https protocol, repo scope).
 **Fix**: Push to the explicit HTTPS URL (`git push https://github.com/<owner>/<repo>.git main`)
 — gh's credential helper supplies the token. Remote URL can stay ssh for interactive use.
+
+## Gemini 2.5 via OpenAI-Compat Endpoint: Reasoning Tokens Eat max_tokens → Truncated JSON (2026-07-17)
+**Problem**: Scoring the solutions v4 calibration batch with `gemini-2.5-flash` through the OpenAI-compatible endpoint, 39/350 responses failed JSON parsing ("Unterminated string"), while the identical prompt/params on DeepSeek had 0 errors.
+**Root cause**: Gemini 2.5 is a reasoning model; on the OpenAI-compat endpoint its thinking tokens are spent from the same `max_tokens` budget as the visible completion. With `max_tokens: 4096` the JSON payload got cut off mid-string whenever thinking ran long.
+**Fix**: Added `--max-tokens` to `scripts/score_deepseek_production.py`; retried at 16384 → 38/39 recovered (last one at 32768). The script's resume logic (skip successes, retry error rows) made the recovery a plain re-run. Rule: when pointing the scorer at a reasoning model, budget max_tokens ~4x the expected JSON size.
+
+## Calibration Gate Was Defined Over a String the Oracle Never Emits (2026-07-17)
+**Problem**: solutions v4 `config.yaml` decision criterion required ">50% resolve to not_a_solution_article", but the prompt's JSON schema emits `content_type: "not_a_solution"` (and carries no `reason` field at all). The gate would have counted 0 forever and false-FAILed the calibration batch.
+**Root cause**: The config scaffold (2026-05-05) predated the prompt; the prompt drafted the enum independently and nothing tied the two strings together. Same shape as "a config value read by no code is inert" — a *gate* defined over a field no artifact produces is equally inert, but fails noisy instead of silent.
+**Fix**: Caught pre-spend by the round-1 contract-consistency reviewer (checked every config string against the prompt's actual output schema). Config aligned to `content_type=not_a_solution`. Rule: when a spec and its implementing artifact are written at different times, review must diff the literal strings, not the intent.

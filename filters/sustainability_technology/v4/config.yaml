@@ -85,17 +85,27 @@ scoring:
              institutionalized. Community practice shifting cultural norms.
       critical_filters: |
         Score 0-2 if: no actor identified taking the action,
-        outcome is described in passive ("will be") rather than active voice,
+        the intended outcome has no identifiable doer (language-neutral test;
+        do not key on grammatical voice — many languages use passive or
+        impersonal constructions for concrete, funded actions),
         no resources/funding/labor committed,
         the article describes a problem with no proposed action.
 
     # === IMPACT (broadened from v3's life_cycle_environmental_impact) ===
+    # 2026-07-17 review fix: the original description ("scale of the problem
+    # ... if deployed at full scope"; "Community: replicability factor")
+    # contradicted this dim's own critical_filters AND the drafted prompt.
+    # Reconciled toward the critical_filters: this dim measures the
+    # SOLUTION's reach; community replicability is scored in
+    # community_practice_strength.
     systemic_impact:
       weight: 0.20
       description: |
-        Scale of the problem this solution addresses if deployed at full
-        scope. Tech: kgCO2/lifecycle equivalent. Governance: % population
-        affected. Community: replicability factor.
+        Scale of the SOLUTION'S actual or credibly-planned reach — NOT the
+        size of the problem it addresses. Tech: deployment scope.
+        Governance: population covered by the mechanism. Community: current
+        reach (replicability across communities belongs to
+        community_practice_strength).
       scale: |
         0-2: Trivial scale. Single household / single firm / one-off.
         3-4: Local scale. Single neighborhood / municipality / industry niche.
@@ -258,6 +268,10 @@ scoring:
   # foresight-v1-lessons.md item 3). Hard caps at 2.0-3.0 create dead zones;
   # soft caps at 4.0-5.0 let false positives land in mid-range as useful
   # training data.
+  # NOTE (2026-07-17): these caps are ORACLE-applied — encoded as arithmetic
+  # clamps in prompt-compressed.md. This block documents the oracle contract
+  # only; runtime must NOT re-apply them (cf. nature_recovery's climate_doom
+  # cap retirement, 2026-07-14).
   content_type_caps:
     crisis_reporting_no_solution:
       max_score: 4.0
@@ -267,7 +281,7 @@ scoring:
       max_score: 5.0
       triggers:
         - "Long-term language but no concrete action or policy change"
-    corporate_PR_unverifiable:
+    corporate_pr_unverifiable:  # lowercase matches the prompt's content_type enum
       max_score: 5.0
       triggers:
         - "Company announcement without independent verification or unit economics"
@@ -283,7 +297,9 @@ scoring:
 # Before any dimension scoring, the oracle answers:
 #   "Is this article describing a SOLUTION (concrete action by an actor toward
 #    a problem)?"
-#   If NO -> all dimensions = 0 with reason="not_a_solution_article".
+#   If NO -> all dimensions = 0 with content_type="not_a_solution" (the
+#   string the prompt's JSON schema actually emits; there is no separate
+#   `reason` field).
 #   If YES -> proceed to per-dim scoring.
 # This prevents the v3-era inflation where well-written news articles scored
 # mid-range on every dim regardless of whether they described a solution.
@@ -315,9 +331,18 @@ training:
 
 calibration_batch:
   # Step 3b per memory/foresight-v1-lessons.md — non-negotiable.
-  size: 300
+  # AS-RUN 2026-07-17: composition updated to what was actually sampled and
+  # scored (both oracles, ADR-020 method). Two deliberate deviations from the
+  # original spec: (1) bucket 1 is TOP-100 by raw weighted score, not random —
+  # the tech-ceiling decision criterion is defined over v3's top scorers and
+  # is unevaluable on a random slice; (2) a 4th bucket of 50 community-shaped
+  # articles (belonging v1 top scorers) was added because the original
+  # composition contained no sample for the one genuinely NEW solution type.
+  # Raw sample + scored outputs: datasets/calibration/ (gitignored; see
+  # calibration_report.md for the durable results record).
+  size: 350
   composition:
-    - source: "filters/sustainability_technology/v3 production output (random sample)"
+    - source: "filters/sustainability_technology/v3 production output (TOP-100 by raw weighted_average)"
       n: 100
       validates: "tech bias correction — v4 should not score lower than v3 on pure-tech high scorers, but should free up space for governance/community to score equally well"
     - source: "filters/foresight/v1 production output (top scorers)"
@@ -325,13 +350,23 @@ calibration_batch:
       validates: "governance capture — v4 should score these in 5-8 range with non-zero governance_intervention_strength"
     - source: "NexusMind raw stream random sample"
       n: 100
-      validates: "scope-filter precision — most should resolve to not_a_solution_article via Step-1 check"
-  cost_estimate: "~$0.30 USD (Gemini Flash, 300 articles)"
+      validates: "scope-filter precision — most should resolve to content_type=not_a_solution via Step-1 check"
+    - source: "filters/belonging/v1 production output (TOP-50 by raw weighted_average — community-practice-skewed)"
+      n: 50
+      validates: "community capture — the new community_practice_strength dim has a real gradient on community-shaped content (added 2026-07-17; original composition had no community sample)"
+  cost_estimate: "~$1.00 USD actual (350 articles x 2 oracles: DeepSeek $0.43 + Gemini $0.56, 2026-07-17)"
   decision_criteria:
     - "No dimension shows bimodal distribution"
     - "Mid-range (3-5) has >15% of mass per dim"
     - "Tech / governance / community type tag distribution roughly 40/30/30 (empirical, not target)"
-    - "Step-1 scope check resolves >50% of NexusMind raw stream to not_a_solution_article"
+    - "Step-1 scope check resolves >50% of NexusMind raw stream to content_type=not_a_solution"
+    - "Cap adherence: 0 dimension scores above the flag's max_score on flagged
+       articles (arithmetic clamp verified — the 2026-05-29 advisory-cap gotcha
+       check)"
+    - "Foresight capture (numeric gate, added 2026-07-17 review): >=60% of the
+       100 foresight-v1 top scorers that pass Step-1 score weighted >=4.5, and
+       the Step-1 kill rate on that bucket is reported explicitly (op-ed
+       exclusion volume is an engineer decision, not a silent outcome)"
     # Pure-tech articles structurally ceiling at the weighted sum of
     # solution_concreteness + systemic_impact + evidence_strength +
     # equity_access + economic_viability = 0.75 of total weight (because

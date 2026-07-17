@@ -1,8 +1,10 @@
-# Sustainability Technology v4 — DRAFT
+# Sustainability Technology v4 — CALIBRATED, AWAITING RE-SCORE SIGN-OFF
 
-**Status: DRAFT.** Do not score the full corpus against this config until
-the 300-article calibration batch (`config.yaml :: calibration_batch`)
-confirms the dimension distributions are not bimodal/dead-zone.
+**Status: calibration batch COMPLETE (2026-07-17).** 350 articles scored by
+DeepSeek + Gemini (ADR-020 method), disagreement set judged, criteria
+evaluated — see `calibration_report.md` for results and the open engineer
+decisions. Do NOT score the full corpus until those decisions are made
+(oracle ratification, tab-volume acceptance, gate rewrite).
 
 ## What this is
 
@@ -23,7 +25,10 @@ to capture — see [llm-distillery#43](https://github.com/ducroq/llm-distillery/
 | **Added pre-step** | (implicit) | Step-1 scope check (`is this an article about a solution?`) before per-dim scoring |
 | **Added pre-step** | (implicit) | Step-2 type tag (tech / governance / community / hybrid) |
 
-Total weight: 1.00. Six scored dimensions plus the type tag.
+Total weight: 1.00. Seven scored dimensions (solution_concreteness,
+systemic_impact, evidence_strength, governance_intervention_strength,
+community_practice_strength, equity_access, economic_viability) plus the
+type tag.
 
 ## Decisions inherited from #43 sign-off
 
@@ -35,20 +40,23 @@ Total weight: 1.00. Six scored dimensions plus the type tag.
 
 ## Next step
 
-Run the 300-article calibration batch with the v4 prompt (prompt itself
-not yet written; will live at `prompt-compressed.md` and `prompt-full.md`
-once drafted). Decision criteria are listed in `config.yaml ::
-calibration_batch.decision_criteria`. Cost ~$0.30.
+~~Run the calibration batch~~ **DONE 2026-07-17** — 350 articles (as-run
+composition in `config.yaml :: calibration_batch`), both oracles, $1.00.
+Results, criteria tally, judge verdicts, and DeepSeek recommendation:
+`calibration_report.md`. Prompt is `prompt-compressed.md` (the form
+`batch_scorer.load_filter_package()` prefers; no separate `prompt-full.md`,
+matching cd v5's single-prompt shape); review-hardened over two rounds.
 
-If criteria pass: re-score the combined ST v3 + foresight v1 corpora
-with v4 prompt (~$15) and proceed to training.
-
-If criteria fail: iterate on dimension scales / prompt / weights and
-re-run the calibration batch before any further spend.
+Next: engineer decides the 4 open items in `calibration_report.md`; then
+apply the small prompt/pipeline fixes listed there and re-score the combined
+ST v3 (10.6K) + foresight v1 (3.5K) corpora with DeepSeek off-peak (~$10-15),
+then proceed to training.
 
 ## Files in this directory at draft stage
 
 - `config.yaml` — dimension architecture, weights, gatekeeper, calibration batch spec
+- `prompt-compressed.md` — v4 oracle prompt (drafted 2026-07-17; encodes the
+  Step-1 scope check, Step-2 type tag, A/B/C soft caps, and all 7 dims)
 - `README.md` — this file
-- (no model, no prompt, no calibration.json yet — those land after the
-  calibration batch decides direction)
+- (no model, no calibration.json yet — those land after the calibration
+  batch decides direction)

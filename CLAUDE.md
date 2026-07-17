@@ -48,7 +48,7 @@ framework: agent-ready-projects v1.10.6
 | Filter | Version | Status | Target |
 |--------|---------|--------|--------|
 | **thriving** | v1 | PARKED indefinitely — orthogonal lens design caused bimodal distribution (ADR-015); uplifting v7 stays as Thriving tab |  |
-| **sustainability_technology → solutions** | v4 | Design phase — broaden from clean-tech to include governance/community solutions (#43) | ovr.news Solutions tab |
+| **sustainability_technology → solutions** | v4 | **Calibration batch DONE 2026-07-17** (350 articles × 2 oracles, ADR-020 method; both judges → DeepSeek; see `filters/sustainability_technology/v4/calibration_report.md`). Awaiting engineer sign-off on 4 decisions before the ~$10-15 corpus re-score (#43). NB: ovr's Solutions tab is currently ~91% foresight-v1-fed (934 vs 88 visible/24h) — v4 replaces both scorers | ovr.news Solutions tab |
 | **ai-engineering-practice** | v2 | Ready for oracle scoring; rename to augmented-engineering at next bump | Separate product (not ovr.news) |
 
 ## Key Decisions
