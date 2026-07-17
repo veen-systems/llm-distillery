@@ -152,7 +152,7 @@ Full per-session narratives live below the auto-loading cliff (read on demand). 
 plan fixes executed, deployed, validated live; both held branches resolved (llm-distillery
 merged, NexusMind `7e525ee` deleted-superseded). Full record: `project_session_2026_07_17.md`
 (afternoon section) + the EXECUTED addendum in `docs/normalization-deploy-hardening-plan.md`.
-NexusMind main: `f6497fa`. New standing rules live in "Cross-Project: NexusMind" above
+NexusMind main: `0150f67` (post-close polish: alert→email integration `29fe798`, diagnosis-conditional body `0150f67`). New standing rules live in "Cross-Project: NexusMind" above
 (committed-only deploys; run `tests/deploy_dryrun/` before any deploy-script merge).
 
 **🎯 NEXT SESSION: solutions v4 (#43)** — the standing primary product goal, no longer competing

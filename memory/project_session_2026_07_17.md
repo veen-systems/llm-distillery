@@ -148,3 +148,11 @@ not silence the next real alert), log-only fallback if creds absent. Topic file 
 Self-test delivered to the engineer's inbox. Lesson for the log: before adding a notification
 channel, inventory the channels the engineer already reads — the integration question should
 come before the zero-install convenience argument.
+
+Second polish same hour (`0150f67`): the self-test email hardcoded "Most likely cause: the
+fail-closed deploy gate" for EVERY unit — the engineer pasted it back and the misdirection was
+obvious (recurrence of the session's own theme: smoke test's "wrong values" race, swallowed
+GIT-ERROR sentinel). Body now leads with journal evidence; the gate hypothesis appears only for
+nexusmind.service, framed ExecStartPre-vs-crash. Embedded python re-verified via the no-creds
+path. Final NexusMind main: `0150f67` (dev tracking ref resynced — https-URL pushes don't
+update refs/remotes; fetch with an explicit refspec fixes it).
