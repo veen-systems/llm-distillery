@@ -137,3 +137,14 @@ follow-ups and action too").
 - prompt-file question answered by production state: sadalsuud never had prompt-compressed.md /
   prompt.md → old rsync never shipped them → `prompt_hash` already null in production; the
   Fix B "deletion regression" concern was moot.
+
+## Post-close addendum — alert channel swapped to email (engineer feedback)
+
+"I do not want more services, I get health checks and emails from the chain several times a
+week. Can't we integrate?" → ntfy retired same-day (`29fe798`): the handler now sends through
+FluxusSource's existing Gmail `[email_credentials]` on sadalsuud (same sender/inbox as the
+chain's emails), 3h burst guard whose marker arms only on a CONFIRMED send (a creds hiccup must
+not silence the next real alert), log-only fallback if creds absent. Topic file deleted.
+Self-test delivered to the engineer's inbox. Lesson for the log: before adding a notification
+channel, inventory the channels the engineer already reads — the integration question should
+come before the zero-install convenience argument.

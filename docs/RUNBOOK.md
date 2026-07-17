@@ -71,8 +71,9 @@ The wrapped `NexusMind/scripts/deploy_filters.sh` (Fix B, 2026-07-17: ships the
 sadalsuud but not committed+pushed no longer ships silently — it BLOCKS the
 every-4h pipeline cycle (fail-closed by design) until committed or removed.
 Deploy flow is now strictly: commit → push → pull on sadalsuud → deploy. A
-blocked gate fires the `nexusmind-alert@` ntfy alert (topic in sadalsuud's
-`config/credentials/ntfy_topic`; alerts also append to `data/alerts.log`).
+blocked gate fires the `nexusmind-alert@` EMAIL alert (sent via the chain's
+existing Gmail sender — FluxusSource `[email_credentials]` on sadalsuud; 3h
+burst guard; alerts also append to `data/alerts.log`).
 
 **Why not run `deploy_filters.sh` directly from the workstation?** Its rsync fails
 intermittently from Windows Git Bash with `dup() in/out/err failed`. `remote_deploy.sh`

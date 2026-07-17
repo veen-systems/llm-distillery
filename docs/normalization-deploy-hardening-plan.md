@@ -136,10 +136,11 @@ Sign-off sequence ran same-day after user approval ("ok!" to the recommended ord
   recoverable from the sha recorded here); merged branch + worktree removed.
 - **Follow-ups: ALL CLOSED same-day (user: "do the follow-ups and action too").**
   1. **Alert LIVE:** `OnFailure=nexusmind-alert@%n.service` drop-in on `nexusmind.service` +
-     handler `scripts/alert_failure.sh` (NexusMind `395326c`) → ntfy.sh push (topic in
-     sadalsuud's gitignored `config/credentials/ntfy_topic` — never commit it) + append to
-     `data/alerts.log`. Installed, daemon-reloaded, self-tested end-to-end (message verified
-     delivered on the topic). Handler is best-effort, always exits 0.
+     handler `scripts/alert_failure.sh` (NexusMind `395326c`, reworked `29fe798`) → **EMAIL via
+     the chain's existing Gmail sender** (FluxusSource `[email_credentials]` on sadalsuud;
+     engineer: "I do not want more services" — the initial ntfy.sh channel was retired same-day)
+     + append to `data/alerts.log`; 3h burst guard armed only on confirmed send. Installed,
+     self-tested end-to-end (delivery confirmed to the engineer's inbox). Best-effort, exits 0.
   2. **RUNBOOK updated** (§4 deploy): stale bullets fixed (full SCORER_PATHS, archive staging,
      push-completeness, per-fixture smoke bounds) + committed-only-deploys warning block.
   3. **Carve-out decision SETTLED BY EVIDENCE — stays.** One-time sha256 diff of all 36 tracked
