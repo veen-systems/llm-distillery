@@ -72,3 +72,68 @@ picks it up the moment one exists).
 - **#44 commit-msg hook earned its keep**: "deploy"-class word in the first commit message
   triggered full filter verification (Hub check → honest ERROR on this machine); resolved by
   softening the message, not `--no-verify`.
+
+---
+
+# Session 2026-07-17 (afternoon) — Fix B EXECUTED end-to-end: decided, built, reviewed, deployed, validated live
+
+The deploy-hardening arc (2026-07-14 → today) is CLOSED. Everything below happened in one
+session with explicit engineer sign-off gates ("ok!" to the recommended sequence; "do the
+follow-ups and action too").
+
+## What shipped (NexusMind `7ef6029` → `f6497fa`)
+
+- **Decision: git-archive staging (plan option 1).** The "loses rsync --delete" caveat dissolved
+  once the archive is extracted to a staging dir and rsync runs FROM it. Recon that shaped it:
+  gpu-server's `filters/*/models/` holds out-of-band safetensors NEXT TO tracked pkls, and
+  `*/model/` holds out-of-band LoRA weights next to tracked configs → the two-pass rsync
+  structure and both excludes had to survive verbatim.
+- **`dcf6fc8` — the fix.** `git archive HEAD -- SCORER_PATHS` → mktemp staging (trap-cleaned) →
+  all rsync/scp source from staging. Untracked operator gate (`git ls-files --others
+  --exclude-standard` filtered to exempt only `filters/**/model/`) shared by the auto-pull guard
+  and the main gate; fail-closed on git error via sentinel with git-failure-specific messages;
+  runtime push-completeness assertion (every SCORER_PATHS entry must record itself shipped);
+  smoke fixtures moved INTO SCORER_PATHS and shipped from staging; rsync excludes switched to
+  component form (`model/` not `*/model/` — depth-1 dirs were deletable while the gate called
+  them protected); `.gitignore` `models/` scoped to `/models/` (bare form made new prefilter
+  pkls silently un-addable — the #67 silent-503 shape, invisible to `git add`).
+- **Verification: 52-assertion dry-run harness** (scratch clone pair + fake remote + ssh/scp
+  shims; rsync REAL so --delete/--exclude semantics were genuinely exercised). All three plan
+  gates + auto-pull variants of each + git-failure paths + planted out-of-band weights surviving
+  --delete at every depth + gitignored stragglers removed + hash recomputed post-auto-pull.
+  Preserved as a permanent fixture: `NexusMind/tests/deploy_dryrun/setup_and_run.sh` (`f6497fa`),
+  validated green from its repo location.
+- **The pattern held a SEVENTH time.** 3-model round-5 battery (correctness / adversarial-ops /
+  contract) on the freshly harness-verified rewrite found 7 verified defects, all fixed +
+  re-harnessed: two false "by construction" comments (one became the push-completeness
+  assertion), swallowed GIT-ERROR sentinel in the auto-pull branch (git failures misdiagnosed as
+  dirty trees), depth-1 exclude/gate contradiction, bare-`models/` gitignore trap, plus the
+  hashed-but-never-shipped tracked model configs surfaced as a documented carve-out.
+- **Deploy + live validation.** Sign-off checks both clean (sadalsuud untracked: empty; --delete
+  dry-run: nothing deleted). Merged, pushed (via gh https — ssh key has no askpass in agent
+  shell), pulled, manual watched deploy: hash round-tripped, then smoke "failed"
+  connection-refused — NOT a crash: the 16:08 timer cycle's ExecStartPre stopped the scorer
+  mid-smoke (deploy-vs-timer race, new gotcha entry). The canonical chain then validated the
+  whole thing unattended: ExecStartPre status=0/SUCCESS, all fixtures green, gpu-server
+  `CODE_REVISION=6f0458f3… @16:08:58`. Held `7e525ee` deleted.
+
+## Follow-ups (all closed same-day)
+
+1. **OnFailure→ntfy alert LIVE** (`395326c`): `nexusmind-alert@` template + best-effort handler
+   (ntfy topic in gitignored `config/credentials/ntfy_topic`; also appends `data/alerts.log`).
+   Installed, daemon-reloaded, self-tested — message verified delivered on the topic.
+   **Engineer must subscribe** (see MEMORY pickup).
+2. **RUNBOOK §4 updated**: stale bullets fixed + committed-only-deploys warning block.
+3. **Model-config carve-out SETTLED BY EVIDENCE**: sha256 diff of all 36 tracked `*/model/`
+   files vs gpu-server → ~half missing/differing (incl. foresight v1 adapter_config.json content
+   mismatch). Shipping repo copies would overwrite Hub-provenance files → hashed-but-not-shipped
+   stays, documented in-script. Revisit only if tracked copies are re-synced from Hub pushes.
+
+## Incidental
+
+- fluxus-{health,collection}.timer executable-bit warnings fixed on sadalsuud (chmod 644).
+- Surfaced: sadalsuud `config/app.yaml` has uncommitted `healthcheck.enabled: true→false` (#91
+  dead-man's switch disabled locally) — engineer to confirm intent.
+- prompt-file question answered by production state: sadalsuud never had prompt-compressed.md /
+  prompt.md → old rsync never shipped them → `prompt_hash` already null in production; the
+  Fix B "deletion regression" concern was moot.

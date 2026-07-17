@@ -58,12 +58,21 @@ Then `cd C:/local_dev/NexusMind && git push origin main`.
 bash scripts/remote_deploy.sh
 ```
 
-The wrapped `NexusMind/scripts/deploy_filters.sh`:
-- Verifies local HEAD matches `origin/$CURRENT_BRANCH` for `filters/` + `src/filters/` (fails closed on origin-unreachable; set `SKIP_ORIGIN_CHECK=1` to override).
-- rsyncs filters to gpu-server (model/ directories deliberately excluded — weights live out-of-band).
+The wrapped `NexusMind/scripts/deploy_filters.sh` (Fix B, 2026-07-17: ships the
+`git archive` of HEAD, never the working tree):
+- Verifies local HEAD matches `origin/$CURRENT_BRANCH` for the full `SCORER_PATHS` set (fails closed on origin-unreachable; set `SKIP_ORIGIN_CHECK=1` to override).
+- Blocks on uncommitted OR untracked files under `SCORER_PATHS` (untracked `*/model/` configs exempt — out-of-band channel).
+- rsyncs a git-archive staging tree of HEAD to gpu-server (model/ directories deliberately excluded — weights live out-of-band).
 - Restarts `nexusmind-scorer` systemd service.
-- Round-trips a CODE_REVISION hash via `/health`.
-- Runs a post-deploy smoke test (`deploy/smoke_test_articles.jsonl`) — POSTs known positives, asserts `weighted_average >= 4.0`. Catches "weights loaded but nonsense."
+- Round-trips a CODE_REVISION hash via `/health`, then asserts push-completeness (every `SCORER_PATHS` entry shipped).
+- Runs a post-deploy smoke test (`deploy/smoke_test_articles.jsonl`) — POSTs known positives, asserts per-fixture `weighted_average` bounds. Catches "weights loaded but nonsense."
+
+**⚠ Committed-only deploys (Fix B).** A filter package that is file-copied onto
+sadalsuud but not committed+pushed no longer ships silently — it BLOCKS the
+every-4h pipeline cycle (fail-closed by design) until committed or removed.
+Deploy flow is now strictly: commit → push → pull on sadalsuud → deploy. A
+blocked gate fires the `nexusmind-alert@` ntfy alert (topic in sadalsuud's
+`config/credentials/ntfy_topic`; alerts also append to `data/alerts.log`).
 
 **Why not run `deploy_filters.sh` directly from the workstation?** Its rsync fails
 intermittently from Windows Git Bash with `dup() in/out/err failed`. `remote_deploy.sh`

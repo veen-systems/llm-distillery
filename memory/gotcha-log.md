@@ -782,3 +782,41 @@ its failure was never observed against a real or synthetic input carrying the fi
 shared lib and the CLI; comment corrected. 196 unit tests green. **Recurrences**: "watch it
 fail" (2026-07-14, 2nd), "root fix dissolves guard" (2026-07-16, 2nd — same fix, different
 guard), unsourced-precision stat (feedback-claim-requires-verify).
+
+## Manual Deploy Races the 4h Timer — Smoke "Failure" Was the Next Cycle Stopping the Scorer (2026-07-17)
+**Problem**: The first watched manual run of the Fix B deploy failed its smoke test with
+`Connection refused` on fixtures 4-7 (first 3 passed) and the OOM classifier found nothing, so
+the script exited 1 claiming "weights may be returning wrong values". The scorer had not
+crashed: journalctl showed no death signature at all.
+**Root cause**: The 16:08 `nexusmind.service` cycle started during the manual run; its
+ExecStartPre (the same deploy script) ran `systemctl stop nexusmind-scorer` mid-smoke. Two
+deploy chains share the scorer with no mutual exclusion — a manual deploy always races the
+timer, and the failure it produces (clean stop, no journal evidence) points AWAY from the
+actual cause.
+**Fix**: Benign this time — the canonical cycle's own deploy completed green minutes later
+(status=0/SUCCESS), which is the stronger validation anyway. Practice: before a manual deploy,
+check proximity to the next cycle (last `nexusmind.service` start + 4h); if close, just pull
+and let ExecStartPre do it. A connection-refused smoke failure with no crash evidence =
+check for a concurrent deploy first.
+
+## Bare `models/` .gitignore Rule Made New Prefilter Pkls Silently Un-addable (2026-07-17)
+**Problem**: Round-5 review of Fix B: a NEW prefilter version's `filters/<f>/vN/models/*.pkl`
+could not be added — `git add filters/<f>/vN/` exits 0 and silently skips the pkl — so it was
+invisible to the untracked deploy gate AND absent from the git-archive ship set. The existing
+tracked pkls only exist because someone once used `add -f`. Structurally reintroduces the #67
+silent-503 (prefilter artifact missing on first deploy).
+**Root cause**: A gitignore dir pattern without a leading slash (`models/`, meant for the
+repo-root logo-classifier blobs, #158) matches at EVERY depth. Ignore rules are also
+invisible failures: `git add` doesn't warn.
+**Fix**: Scoped to `/models/` (NexusMind `dcf6fc8`); untracked-gate filter narrowed so
+untracked pkls now BLOCK until committed (harness S11 asserts it). When writing gitignore dir
+rules, anchor with a leading slash unless every-depth matching is genuinely intended.
+
+## Git SSH Push Fails From Agent Shell (no askpass/agent) — Use gh's HTTPS Credentials (2026-07-17)
+**Problem**: `git push` over the `git@github.com:` remote failed with
+`ssh_askpass: exec(/usr/bin/ssh-askpass): No such file or directory` + `Permission denied
+(publickey)` — the key needs a passphrase prompt the non-interactive shell can't show.
+**Root cause**: The agent shell has no usable askpass/agent for the passphrase-protected key;
+`gh` however is authenticated (https protocol, repo scope).
+**Fix**: Push to the explicit HTTPS URL (`git push https://github.com/<owner>/<repo>.git main`)
+— gh's credential helper supplies the token. Remote URL can stay ssh for interactive use.

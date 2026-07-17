@@ -1,10 +1,12 @@
 # Normalization + Deploy-Guard Hardening — Fix Plan
 
-**Status:** Fix A EXECUTED + review-hardened 2026-07-16 (see the addendum inside Fix A).
-Fix B remains READY TO EXECUTE — do it in a dedicated session with the dry-run harness.
-**Held-branch note:** llm-distillery's hold is RESOLVED (the anchor root fix superseded
-`a8309d4`'s margin; branch merged to main). NexusMind's `fix/deploy-dirty-check-untracked`
-(`7e525ee`) remains held and must NOT be merged — Fix B replaces it.
+**Status:** BOTH FIXES EXECUTED. Fix A 2026-07-16 (review-hardened, merged). Fix B 2026-07-17
+(git-archive staging, 52-assertion dry-run harness, 3-model round-5 review, merged `dcf6fc8`,
+deployed + validated live through the canonical ExecStartPre chain — see the addendum inside
+Fix B for the live evidence and remaining follow-ups).
+**Held-branch note:** both holds RESOLVED. llm-distillery: anchor root fix superseded `a8309d4`'s
+margin; branch merged to main. NexusMind: `fix/deploy-dirty-check-untracked` (`7e525ee`) was
+superseded by Fix B and DELETED 2026-07-17 (recoverable from the sha).
 **Why a plan, not a patch:** rounds 2→3→4 each found defects in the prior round's fixes,
 including a production-halt regression in my own round-3 fix. These are ROOT fixes, done
 with fresh context + full verification — not more inline patches under end-of-cycle pressure.
@@ -110,6 +112,85 @@ guard HALTS on untracked `model/` config files (production-halt regression, roun
 (b) untracked `model/generation_config.json` → does NOT block; (c) clean tree → deploys and the
 round-trip hash matches. Only after all three, deploy through the canonical chain.
 **Blast radius:** production deploy path. HIGH.
+
+### EXECUTED 2026-07-17 — merged (`dcf6fc8`), DEPLOYED, validated live
+
+Sign-off sequence ran same-day after user approval ("ok!" to the recommended order):
+- **Pre-deploy checks both CLEAN.** sadalsuud: HEAD=7ef6029, zero untracked/dirty under deploy
+  paths. Archive-staged `--delete` dry-run vs gpu-server: NOTHING deleted (three
+  `cannot delete non-empty directory` warnings for retired versions whose exclude-protected
+  model dirs block dir removal — pre-existing, non-fatal, rc=0).
+- **Prompt-file decision MOOT:** sadalsuud has NO prompt-compressed.md/prompt.md in its tree, so
+  the old rsync never shipped them — `prompt_hash` was already null in production; nothing to
+  fold, nothing regressed. (Only prompt file on gpu-server is sustech v2's
+  prompt-compressed-backup.md, which is tracked and ships.) Un-ignoring stays future hygiene for
+  the next filter package that carries one.
+- **Merged** ff-only to main (`7ef6029..dcf6fc8`), pushed. Manual watched deploy on sadalsuud:
+  staging + both rsync passes + hash round-trip (`6f0458f3…`) all green; smoke then hit
+  connection-refused mid-run — NOT a crash: the 16:08 pipeline cycle's ExecStartPre (new script)
+  stopped/restarted the scorer under the manual run's smoke. Benign deploy-vs-timer race.
+- **Definitive validation came from the canonical chain itself:** the 16:08:55 unattended cycle
+  ran the new script as ExecStartPre → `status=0/SUCCESS`, all smoke fixtures passed, gpu-server
+  `CODE_REVISION = 6f0458f3… @ 16:08:58`, `/health` healthy on CUDA.
+- Cleanup: held branch `fix/deploy-dirty-check-untracked` (7e525ee) DELETED (superseded;
+  recoverable from the sha recorded here); merged branch + worktree removed.
+- **Follow-ups: ALL CLOSED same-day (user: "do the follow-ups and action too").**
+  1. **Alert LIVE:** `OnFailure=nexusmind-alert@%n.service` drop-in on `nexusmind.service` +
+     handler `scripts/alert_failure.sh` (NexusMind `395326c`) → ntfy.sh push (topic in
+     sadalsuud's gitignored `config/credentials/ntfy_topic` — never commit it) + append to
+     `data/alerts.log`. Installed, daemon-reloaded, self-tested end-to-end (message verified
+     delivered on the topic). Handler is best-effort, always exits 0.
+  2. **RUNBOOK updated** (§4 deploy): stale bullets fixed (full SCORER_PATHS, archive staging,
+     push-completeness, per-fixture smoke bounds) + committed-only-deploys warning block.
+  3. **Carve-out decision SETTLED BY EVIDENCE — stays.** One-time sha256 diff of all 36 tracked
+     `*/model/` files vs gpu-server: ~half missing or differing (mostly READMEs / parked or
+     superseded versions, but incl. a real content mismatch on foresight v1 adapter_config.json).
+     Shipping repo copies would overwrite Hub-provenance files with drifted tracked copies —
+     hashed-but-not-shipped remains the correct, documented behavior. Revisit only if the
+     tracked copies are ever re-synced from the actual Hub pushes.
+
+### Original implementation record (pre-sign-off)
+
+**Decision: option 1, git-archive staging.** `git archive HEAD -- <SCORER_PATHS>` is extracted
+to a mktemp staging dir (trap-cleaned) and every rsync/scp sources from it — the "loses
+rsync `--delete`" caveat dissolves because rsync runs from the extracted tree. The two-pass
+rsync structure survives unchanged (pass-1 `--delete` must keep excluding `model/`+`models/`:
+gpu-server holds out-of-band LoRA weights under `*/model/` AND out-of-band safetensors next to
+tracked pkls under `*/models/`). Option 2's untracked gate is included anyway as an
+operator-intent guard (under archive, untracked files silently DON'T ship — the inverse wrong-deploy).
+Branch: NexusMind `fix/deploy-set-git-archive` (`dcf6fc8`, off `main` 7ef6029). The held
+`fix/deploy-dirty-check-untracked` (`7e525ee`) is superseded — delete after merge.
+
+All round-4 checklist items closed: shared dirty definition between auto-pull guard and main
+gate; no porcelain anywhere (`git ls-files` is config-independent); fail-CLOSED on git error via
+sentinel; `|| true` diagnostics kept. Beyond the plan: push-completeness assertion (every
+SCORER_PATHS entry must record itself shipped — a staged-but-never-pushed entry deployed green
+in review round 5, now fails loudly); smoke fixtures moved into SCORER_PATHS and shipped from
+staging; component-form rsync excludes (depth-1 `filters/model(s)/` was deletable while the gate
+called it protected); `.gitignore` `models/` scoped to `/models/` (bare form made NEW prefilter
+pkls silently un-addable + invisible to the gate — the #67 silent-503 shape).
+
+**Verification:** 52-assertion dry-run harness in a scratch clone (session scratchpad `fixb/`),
+real rsync against a fake remote with planted out-of-band weights — all three plan gates plus:
+auto-pull-path variants of (a)/(b), git-failure fail-closed in both gates, depth-1 model-dir
+survival, gitignored-straggler removal, staging-leak checks, hash recomputation post-auto-pull.
+**The pattern held a SEVENTH time:** a 3-model review battery (correctness / adversarial-ops /
+contract) on the freshly written fix found 7 verified defects (incl. two false "by construction"
+comments and the swallowed GIT-ERROR sentinel); all fixed + re-harnessed same session.
+
+**Pre-deploy checklist (sign-off gates):**
+1. On sadalsuud: `git ls-files --others --exclude-standard -- filters/ src/filters/ src/scoring/ deploy/`
+   must be clean (any file-copied-but-uncommitted filter package now BLOCKS every 4h cycle — by design).
+2. On sadalsuud: run pass-1 rsync with `--dry-run --delete -v` against gpu-server and eyeball the
+   deletion list (first archive deploy removes previously-shipped strays; runtime read-set audit
+   says all enabled filters' artifacts are tracked, but gpu-server-only strays are unverifiable
+   from the dev machine).
+3. Decide `prompt-compressed.md`: recommended un-ignore + commit for deployed filters (it is
+   runtime-read by `_compute_prompt_hash`; otherwise first deploy nulls `prompt_hash` provenance).
+4. Decide tracked `*/model/` configs: currently hashed-but-never-shipped (documented carve-out,
+   recommended status quo); closing it needs a one-time gpu-server config diff first.
+5. RUNBOOK note + ideally an alert on `nexusmind.service` start failure (fail-closed gate means
+   halts are now the failure mode, and they repeat every 4h unattended).
 
 ---
 
