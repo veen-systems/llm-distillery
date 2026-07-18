@@ -177,11 +177,13 @@ STATUS.md). Posture for Solutions v4:
 - **SAFE — v4 prompt** mandates original-language evidence quotes; **Step-2.5
   random holdout** carries the true ~29 % non-English mix and will expose any
   screening language gap in held-out recall.
-- **ACTION — no runtime `prefilter.py` exists for Solutions v4 yet.** This is the
-  exact nr failure component. Build it BEFORE deploy on the **nr v4 template**:
-  commerce-only pass-through (ADR-004) + **multilingual `POSITIVE_PATTERNS`
-  matching inflected forms**, plus nr's regression test asserting the patterns
-  fire across languages. Do NOT reintroduce English topic-inclusion/keyword gates.
+- **DONE (draft) — runtime `prefilter.py`** now exists
+  (`SustainabilityTechnologyPreFilterV4`), built on the nr v4 template:
+  commerce-only pass-through (ADR-004), no English topic/decline gate, and
+  **multilingual `POSITIVE_PATTERNS` (en/es/it/de/nl/pt/fr)** with the
+  inflected-forms regression test (it already caught the radical-changing
+  `desplegar → despliega` miss). Self-test 4/4 + inflection PASS. Remaining at
+  go-live: wire it into the NexusMind loader and confirm the class-name binding.
 - **GUARDED — screening seed skew** (69 % English) → the Part-A gate now hard-
   checks the screened set's non-English share (below).
 
