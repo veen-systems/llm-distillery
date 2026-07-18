@@ -29,6 +29,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 from ground_truth.text_cleaning import (
     clean_article as clean_article_comprehensive,
+    is_scrape_junk,
     sanitize_text_comprehensive,
 )
 from ground_truth import analysis_field_name
@@ -244,6 +245,9 @@ def main():
         return
 
     def _process(article):
+        is_junk, reason = is_scrape_junk(article)
+        if is_junk:
+            return article, {"skipped": reason}
         prompt = build_prompt(prompt_template, article)
         resp = call_deepseek(api_key, args.model, prompt, base_url=args.base_url,
                              max_tokens=args.max_tokens)
@@ -252,6 +256,7 @@ def main():
 
     successes = 0
     errors = 0
+    skipped = 0
     total_input_tokens = 0
     total_output_tokens = 0
     total_cached_tokens = 0
@@ -269,7 +274,21 @@ def main():
                 except Exception as e:
                     parsed = {"error": f"Exception: {e}"}
 
-                if "error" in parsed:
+                if "skipped" in parsed:
+                    # Scrape-junk (cookie/consent wall, error page, empty stub):
+                    # never sent to the oracle. Recorded (no analysis field) so
+                    # resume treats it as done and prepare_data ignores it.
+                    skipped += 1
+                    record = {
+                        "id": article["id"],
+                        "title": article.get("title", "")[:200],
+                        "url": article.get("url", ""),
+                        "source": article.get("source", ""),
+                        "published_date": article.get("published_date", ""),
+                        "language": article.get("language", ""),
+                        "skipped": parsed["skipped"],
+                    }
+                elif "error" in parsed:
                     errors += 1
                     record = {
                         "id": article["id"],
@@ -318,13 +337,14 @@ def main():
                     eta_min = (len(articles) - completed) / max(rate, 0.01) / 60
                     cache_hit_pct = 100 * total_cached_tokens / max(total_input_tokens, 1)
                     print(f"  [{completed:>4}/{len(articles)}] {successes} OK | {errors} err | "
-                          f"{rate:.1f} art/s | ETA {eta_min:.0f} min | cache hit {cache_hit_pct:.0f}%")
+                          f"{skipped} junk | {rate:.1f} art/s | ETA {eta_min:.0f} min | "
+                          f"cache hit {cache_hit_pct:.0f}%")
 
     wall = (time.time() - start) / 60
     print(f"\n{'='*60}")
     print(f"COMPLETE")
     print(f"{'='*60}")
-    print(f"Successful: {successes}  Errors: {errors}")
+    print(f"Successful: {successes}  Errors: {errors}  Scrape-junk skipped: {skipped}")
     print(f"Wall clock: {wall:.1f} min")
     print(f"Tokens: input {total_input_tokens:,}  output {total_output_tokens:,}  cached {total_cached_tokens:,}")
     print(f"Cache hit rate: {100*total_cached_tokens/max(total_input_tokens,1):.1f}%")

@@ -253,6 +253,70 @@ def sanitize_text_comprehensive(text: str) -> str:
     return text
 
 
+# Boilerplate signatures of scrape artifacts that carry no article body:
+# cookie/consent walls, JS-required notices, paywall/registration stubs, bot
+# checks, and HTTP error pages. Kept deliberately narrow — these phrases do not
+# occur as the SUBJECT of a real article, only as scrape residue.
+_SCRAPE_JUNK_PATTERNS = [
+    r'\benable\s+javascript\b',
+    r'\bjavascript\s+is\s+(?:disabled|required|not\s+available|turned\s+off)\b',
+    r'\bwe\s+(?:and\s+our\s+partners\s+)?use\s+cookies\b',
+    r'\baccept(?:ing)?\s+(?:all\s+)?cookies\b',
+    r'\bcookie\s+(?:policy|consent|preferences|settings|notice)\b',
+    r'\bconsent\s+to\s+the\s+use\s+of\s+cookies\b',
+    r'\bmanage\s+(?:your\s+)?(?:cookie\s+)?preferences\b',
+    r'\bsubscribe\s+to\s+(?:continue|read)\b',
+    r'\bsign\s+in\s+to\s+(?:continue|read)\b',
+    r'\bregister\s+to\s+(?:continue|read)\b',
+    r'\bthis\s+(?:content|page|article|video)\s+is\s+(?:not\s+available|unavailable)\b',
+    r'\bpage\s+not\s+found\b',
+    r'\b40[34]\b[^.]{0,40}\b(?:not\s+found|forbidden|error)\b',
+    r'\baccess\s+denied\b',
+    r'\b(?:are\s+you\s+a\s+(?:robot|human)|verify\s+you\s+are\s+human)\b',
+    r'\bchecking\s+your\s+browser\b',
+    r'\benable\s+cookies\s+and\s+reload\b',
+]
+_SCRAPE_JUNK_RE = [re.compile(p, re.IGNORECASE) for p in _SCRAPE_JUNK_PATTERNS]
+
+
+def is_scrape_junk(article: Dict, max_words: int = 120) -> tuple:
+    """Detect scrape artifacts that have no article body and must NOT be sent to
+    the oracle (scoring one from its headline is an anti-hallucination violation —
+    see Solutions v4 calibration, DeepSeek defect 3).
+
+    Conservative by design: fires only when the cleaned content is short
+    (<= max_words) AND matches a boilerplate junk signature, OR is effectively
+    empty. A genuine article that merely mentions cookies in passing is far longer
+    than max_words and is never flagged.
+
+    Args:
+        article: Article dict with 'content'/'text' and optional 'title'.
+        max_words: Upper bound on body length for pattern-based junk. Real news
+            briefs run longer than this; boilerplate stubs do not.
+
+    Returns:
+        (is_junk: bool, reason: str) — reason is "" when not junk.
+    """
+    content = article.get("content") or article.get("text") or ""
+    content = sanitize_text_comprehensive(content)
+    words = content.split()
+
+    # Effectively empty — no body to score, regardless of pattern.
+    if len(words) < 5:
+        return True, "empty_or_stub_content"
+
+    # Only short bodies can be pure boilerplate; long articles are real content.
+    if len(words) > max_words:
+        return False, ""
+
+    haystack = f"{article.get('title', '')} {content}"
+    for pattern in _SCRAPE_JUNK_RE:
+        if pattern.search(haystack):
+            return True, f"scrape_junk:{pattern.pattern}"
+
+    return False, ""
+
+
 def clean_article(article: Union[Dict, List, str, Any]) -> Union[Dict, List, str, Any]:
     """
     Recursively sanitize all text fields in an article or data structure.

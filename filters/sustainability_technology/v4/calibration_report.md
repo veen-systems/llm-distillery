@@ -98,18 +98,52 @@ best; nothing reaches 7.0 under config weights (absolute compression), which
 percentile normalization at deploy largely neutralizes for ovr ranking —
 but the config's absolute-tier gates need rewriting regardless.
 
-## Open engineer decisions (blocking the ~$10-15 corpus re-score)
+## Engineer decisions — RESOLVED 2026-07-18
 
-1. **Ratify DeepSeek** as v4 oracle (both judges, cd v5 precedent,
-   conservative-oracle rule; optionally k=2 runs with Step-1 majority vote).
-2. **Accept the thinner-but-cleaner tab**: judges found most of the foresight
-   "loss" is correct rejection of lens-bleed (appointments, op-eds, rhetoric).
-   Alternative: recall-side prompt revision first.
-3. **Weights/gates**: rewrite the unsatisfiable pure-tech gate (rank-based
-   suggested); choose config vs type-renormalized weighting — decidable at
-   eval time, does not block re-score.
-4. Apply the 4 prompt/pipeline fixes above, then re-score ST v3 (10.6K) +
-   foresight v1 (3.5K) corpora with DeepSeek, off-peak (after ~noon CEST).
+1. **Ratify DeepSeek as v4 oracle — DONE.** Both judges, cd v5 precedent,
+   conservative-oracle rule. Single-run (not k=2); the compression is monotone
+   and calibration-benign, so the k=2 majority-vote hedge was judged unneeded.
+2. **Accept the thinner-but-cleaner tab — DONE.** Proceed with DeepSeek's strict
+   scope; the foresight "loss" is mostly correct lens-bleed rejection. No
+   recall-side prompt revision beyond the governance-recall reinforcement in
+   fix (2) below.
+3. **Weights/gates — DEFERRED to eval time (as designed; does not block the
+   re-score).** The unsatisfiable pure-tech ≥7.0 gate still needs a rank-based
+   rewrite and the config-vs-type-renormalized weighting choice still stands —
+   both decidable post-labelling since labels are per-dim.
+4. **Apply the 4 prompt/pipeline fixes, then re-score — fixes DONE 2026-07-18;
+   re-score BLOCKED on corpus availability (see below).** The four fixes are
+   applied and verified end-to-end against the live DeepSeek oracle (5-article
+   smoke test: scrape-junk skipped without being scored; a governance op-ed that
+   previously risked a false-zero scored governance_intervention_strength 6.5):
+   - **(1) router-crisis** — "default to pass on mediation/proposal/response
+     shapes; when uncertain between Step 1 and Flag A choose Flag A" line added
+     to the Step-1/Flag-A router.
+   - **(2) governance-recall** — legal-status/rights reforms (legal personhood,
+     statutory rights) and deployed government programs with real output added
+     to STEP 1 IN SCOPE as explicit do-not-zero cases.
+   - **(3) corporate_pr** — "apply this test readily; it is the common case"
+     encouragement added to Flag C.
+   - **(4) scrape-junk** — `is_scrape_junk()` ingestion check
+     (`ground_truth/text_cleaning.py`) wired into
+     `scripts/score_deepseek_production.py` before oracle scoring; skipped rows
+     are recorded (no analysis field) and counted/logged, never sent to the
+     oracle. Unit test: `tests/unit/test_scrape_junk.py` (11 cases).
+
+## BLOCKER — corpus re-score cannot run yet (2026-07-18)
+
+The re-score reads article text from `datasets/scored/sustainability_technology_v3.jsonl`
+(10.6K) + `datasets/scored/foresight_v1.jsonl` (3.5K) (RUNBOOK corpus convention).
+Neither file is present on this host (`datasets/` is gitignored), on sadalsuud
+(`~/local_dev/NexusMind/data/filtered/` holds only the production stream, not the
+fixed training corpora), or in the veen-storagebox top-level backups. The
+gpu-server — where training data lived and where training must run — is currently
+ssh-unreachable (`hcl@gpu-server: Permission denied (publickey,password)`).
+
+**Needs the engineer to either** (a) point to / restore the two scored corpus
+JSONLs so the ~$10-15 DeepSeek re-score can run locally from this host, and/or
+(b) restore gpu-server access (required for training regardless). Everything
+upstream of the corpus is done and committed.
 
 ## Review provenance
 

@@ -30,6 +30,8 @@ Answer: **"Is this article describing a SOLUTION — a concrete action by an ide
 - Running community practice (repair cafés, mutual-aid networks, cooperatives, community land trusts, tool libraries)
 - Proposed-but-funded programs with named actors and timelines (score low-mid on concreteness, but in scope)
 - Course corrections: an institution abandoning a failed approach for an evidenced better one
+- **Legal-status and rights reforms** — granting legal personhood to a river or ecosystem, constitutional or statutory rights changes, a passed reform altering who holds legal standing. These ARE governance solutions even with no physical deployment; the mechanism *is* the action. Do NOT route them to a Step-1 zero for lacking hardware or a construction site.
+- **Deployed government programs with real output** — a national food-security, crop self-sufficiency, or resettlement program with named actors and reported outputs (hectares planted, yields, households served) is in scope even when the framing is economic, agricultural, or political rather than "environmental tech."
 
 **NOT A SOLUTION (all dims 0.0):**
 - Pure problem/crisis reporting with NO action, proposal, or call-for-action of any kind mentioned anywhere in the article
@@ -45,6 +47,8 @@ Answer: **"Is this article describing a SOLUTION — a concrete action by an ide
 **STEP-1 vs FLAG-A ROUTER (deterministic):** Step 1 fires ONLY when no action, proposal, or call-for-action of ANY kind appears in the article. If ANY action is mentioned — even vague, merely urged, proposed, or hypothetical — the article PASSES Step 1; evaluate Flag A (crisis shape) instead. "Floods devastate region; experts urge policy change" = passes Step 1, gets Flag A. "Floods devastate region" full stop = Step 1, all 0.0.
 
 **One exception — opinion/commentary:** the AUTHOR'S OWN urging never counts as "action mentioned." For opinion pieces the router looks only at real-world actions, programs, or proposals DOCUMENTED in the piece. "We must fix equalization" with nothing documented = Step 1, all 0.0 (matches the opinion exclusion above). A CEO op-ed advocating their company's actually-proposed pipeline = the proposal is a documented real-world action → passes Step 1; then Flags B/C apply as warranted.
+
+**DEFAULT TO PASS ON MEDIATION / PROPOSAL / RESPONSE SHAPES:** If the article documents ANY negotiated settlement, mediation, response measure, or concrete proposal toward the problem — even one you are tempted to dismiss as inadequate, partial, or unlikely to work — route it PAST Step 1 and evaluate Flag A, never to all-0.0. Step-1's zero is reserved for pure problem description with nothing done or proposed anywhere in the piece. **When genuinely uncertain between Step 1 and Flag A, choose Flag A** — the crisis cap (4.0) already bounds the score, so the cost of a wrong "pass" is small while a wrong "zero" is unrecoverable label noise.
 
 **ADR-015 REMINDER — LENSES OVERLAP, DO NOT EXCLUDE ADJACENT-LENS CONTENT:** An article that also fits Nature/Recovery (ecosystem restoration), Thriving (human flourishing), or Belonging (community cohesion) is NOT out of scope here. A wetland-restoration program IS a solution; score it on its solution merits. Other scorers run independently — never zero an article because it "belongs to another lens."
 
@@ -86,6 +90,7 @@ These catch in-scope-adjacent articles that passed Step 1 but have the wrong sha
    - If YES and NOT (independent study/audit cited | quantified outcomes from a named third party | published unit economics):
    - → FLAG `corporate_pr_unverifiable` → **max_score = 5.0**
    - *Test:* Is every effectiveness claim sourced to the company itself? If YES, flag. (This is the selling-their-own-thing dynamic — it also caps `evidence_strength` at 0-2 on its own merits.)
+   - **Apply this test readily — it is the COMMON case in this stream.** Company announcements about their own products dominate the corporate feed; when the only source for a solution's effectiveness is the company, its CEO, or its spokesperson, fire the flag. Do NOT withhold it because the technology sounds impressive or the company is well-known — an impressive-sounding unverified claim is exactly what this flag exists to catch.
    - *Carve-out example:* "Steelmaker's hydrogen plant cuts emissions 90%, confirmed by independent LCA published in peer-reviewed journal" = NOT flagged. "Steelmaker announces breakthrough green steel, says CEO" = FLAGGED.
 
 **ENFORCEMENT (HARD RULE — ARITHMETIC, NOT ADVISORY):** When a flag fires, NO dimension score may exceed its max_score. Clamp ALL SEVEN dimensions at or below the max_score in the `score` field. Honest assessment goes in the `evidence` text first; then state the adjustment. If multiple flags fire, use the LOWEST max_score, and set `content_type` to the flag with the lowest max_score.
