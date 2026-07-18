@@ -1,5 +1,6 @@
 """
-Solutions Pre-Filter v4 (package: sustainability_technology; lens: Solutions).
+Solutions Pre-Filter v4 (package: solutions — renamed from sustainability_technology
+per ADR-012/013 at the v4 bump; lens: Solutions).
 
 WHY THIS IS COMMERCE-ONLY PASS-THROUGH (the nature_recovery #70 lesson):
 nature_recovery v2's prefilter gated on English keywords and silently dropped
@@ -36,8 +37,8 @@ desplegado). A trailing boundary would defeat that (\\bdeploy\\b misses
 "deployment"). Verified in test_prefilter's inflection regression check.
 
 History:
-- v4.0 (2026-07): first prefilter for the Solutions lens (package broadened from
-  sustainability_technology, ADR-012). Commerce-only pass-through from the start
+- v4.0 (2026-07): first prefilter for the Solutions lens (package renamed from
+  sustainability_technology to solutions, ADR-012/013). Commerce-only pass-through from the start
   — no English topic/decline gates, per the nature_recovery #70 lesson.
 """
 
@@ -47,7 +48,7 @@ from typing import Dict
 from filters.common.base_prefilter import BasePreFilter
 
 
-class SustainabilityTechnologyPreFilterV4(BasePreFilter):
+class SolutionsPreFilterV4(BasePreFilter):
     """Commerce-only pass-through pre-filter for the Solutions lens.
 
     Inherits BasePreFilter.apply_filter unchanged (validate -> length ->
@@ -106,7 +107,7 @@ def test_prefilter():
     and non-English solution content PASS (solution judgment is the model's job).
     Only base's structural checks (empty/short) still block.
     """
-    prefilter = SustainabilityTechnologyPreFilterV4()
+    prefilter = SolutionsPreFilterV4()
 
     pad = ' Lorem ipsum filler text to extend article length. ' * 8
 

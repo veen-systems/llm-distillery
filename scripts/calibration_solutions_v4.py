@@ -44,7 +44,7 @@ FLAG_CAPS = {
     "rhetoric_only": 5.0,
     "corporate_pr_unverifiable": 5.0,
 }
-ANALYSIS_FIELD = "sustainability_technology_analysis"
+ANALYSIS_FIELD = "solutions_analysis"
 GATEKEEPER_DIM, GATEKEEPER_MIN, GATEKEEPER_CAP = "solution_concreteness", 3.0, 3.0
 
 

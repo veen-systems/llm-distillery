@@ -19,13 +19,13 @@
 #   Fork 3     (foresight v1 stays parked through v4 calibration; retire later)
 
 filter:
-  name: sustainability_technology
+  name: solutions
   version: "4.0-DRAFT"
   created: "2026-05-05"
-  updated: "2026-05-05"
+  updated: "2026-07-18"
   description: "Solutions lens (DRAFT) — concrete actions toward problems across tech, governance, and community"
   framework: "LCSA-grounded, broadened to multi-type solutions"
-  rename_pending: true  # ADR-012/013: rename to 'solutions' at v4 release after calibration
+  renamed: "2026-07-18 from sustainability_technology (ADR-012/013 lens rename at v4). Package moved to filters/solutions/v4; analysis field is now solutions_analysis."
 
   core_insight: |
     News rewards crisis. Solutions is the counter-lens: concrete actions by

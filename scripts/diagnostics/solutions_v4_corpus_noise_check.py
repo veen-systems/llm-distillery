@@ -31,7 +31,7 @@ Usage:
         --corpus <corpus> --sample 80 --seed 43 --sample-out /tmp/diag_in.jsonl
     # ...score /tmp/diag_in.jsonl with scripts/score_deepseek_production.py...
     python scripts/diagnostics/solutions_v4_corpus_noise_check.py \
-        --scored /tmp/diag_out.jsonl --config filters/sustainability_technology/v4/config.yaml
+        --scored /tmp/diag_out.jsonl --config filters/solutions/v4/config.yaml
 """
 
 import argparse
@@ -84,7 +84,7 @@ def noise_rate(scored_path, config_path):
     dims = yaml.safe_load(open(config_path))["scoring"]["dimensions"]
     weights = {k: v.get("weight", 0) for k, v in dims.items()}
     gk = next((k for k, v in dims.items() if v.get("gatekeeper")), None)
-    af = "sustainability_technology_analysis"
+    af = "solutions_analysis"
     rows = [r for r in load(scored_path) if af in r]
     ct = Counter()
     was = []
@@ -113,7 +113,7 @@ def main():
     ap.add_argument("--sample-out", type=Path)
     ap.add_argument("--scored", type=Path, help="already-scored JSONL for the noise-rate check")
     ap.add_argument("--config", type=Path,
-                    default=Path("filters/sustainability_technology/v4/config.yaml"))
+                    default=Path("filters/solutions/v4/config.yaml"))
     args = ap.parse_args()
 
     if args.corpus and not args.sample:

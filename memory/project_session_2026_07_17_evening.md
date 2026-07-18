@@ -18,7 +18,7 @@ agent re-counted 934/88 on the same window).
 
 ## 2. Prompt drafted + two review rounds
 
-`filters/sustainability_technology/v4/prompt-compressed.md` drafted (Step-1
+`filters/solutions/v4/prompt-compressed.md` drafted (Step-1
 scope check + deterministic Step-1/Flag-A router with opinion exception, Step-2
 type tag with tech-vs-hybrid tiebreak, 7 dims, A/B/C soft caps with arithmetic
 clamps, binding-clamp validation example, multilingual-safe critical filters).
@@ -45,7 +45,7 @@ community; as-run composition recorded in config.yaml), scored by DeepSeek
   healthy on type-matched slices; **pure-tech ≥7.0 gate empirically confirmed
   unsatisfiable** (0/95, max wa anywhere 5.80); foresight capture = engineer
   decision (31% Step-1 kill judged mostly-correct rejection of lens-bleed).
-- Full record: `filters/sustainability_technology/v4/calibration_report.md`
+- Full record: `filters/solutions/v4/calibration_report.md`
   (durable; raw jsonl in gitignored `datasets/calibration/`).
 
 ## 4. Session engineering artifacts

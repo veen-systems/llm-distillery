@@ -136,8 +136,8 @@ scrape-junk check active, resume-capable:
 ```
 PYTHONPATH=. python scripts/score_deepseek_production.py \
     --input datasets/scored/solutions_v4_enriched_input.jsonl \
-    --output datasets/scored/sustainability_technology_v4.jsonl \
-    --config filters/sustainability_technology/v4/config.yaml --concurrency 20
+    --output datasets/scored/solutions_v4.jsonl \
+    --config filters/solutions/v4/config.yaml --concurrency 20
 ```
 
 ### Step 5 — prepare_data (free)
