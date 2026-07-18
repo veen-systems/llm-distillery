@@ -253,13 +253,22 @@ def sanitize_text_comprehensive(text: str) -> str:
     return text
 
 
-# Boilerplate signatures of scrape artifacts that carry no article body:
-# cookie/consent walls, JS-required notices, paywall/registration stubs, bot
-# checks, and HTTP error pages. Kept deliberately narrow — these phrases do not
-# occur as the SUBJECT of a real article, only as scrape residue.
-_SCRAPE_JUNK_PATTERNS = [
+# Boilerplate signatures of scrape artifacts that carry no article body.
+# Two tiers, because false-positives here silently discard genuine articles:
+#   STRONG — pure UI / bot-check / JS-shim text that never forms a real article
+#     subject. A single hit in a short body is junk.
+#   WEAK — topical phrases a genuine article can legitimately be ABOUT (cookie
+#     law, a paywall debate, a 404 postmortem). One hit alone is NOT enough;
+#     junk only when the body is boilerplate-dominated (>=2 distinct weak hits,
+#     or a single weak hit in an essentially body-less stub).
+_SCRAPE_JUNK_STRONG = [
     r'\benable\s+javascript\b',
     r'\bjavascript\s+is\s+(?:disabled|required|not\s+available|turned\s+off)\b',
+    r'\bchecking\s+your\s+browser\b',
+    r'\b(?:are\s+you\s+a\s+(?:robot|human)|verify\s+you\s+are\s+human)\b',
+    r'\benable\s+cookies\s+and\s+reload\b',
+]
+_SCRAPE_JUNK_WEAK = [
     r'\bwe\s+(?:and\s+our\s+partners\s+)?use\s+cookies\b',
     r'\baccept(?:ing)?\s+(?:all\s+)?cookies\b',
     r'\bcookie\s+(?:policy|consent|preferences|settings|notice)\b',
@@ -272,11 +281,13 @@ _SCRAPE_JUNK_PATTERNS = [
     r'\bpage\s+not\s+found\b',
     r'\b40[34]\b[^.]{0,40}\b(?:not\s+found|forbidden|error)\b',
     r'\baccess\s+denied\b',
-    r'\b(?:are\s+you\s+a\s+(?:robot|human)|verify\s+you\s+are\s+human)\b',
-    r'\bchecking\s+your\s+browser\b',
-    r'\benable\s+cookies\s+and\s+reload\b',
 ]
-_SCRAPE_JUNK_RE = [re.compile(p, re.IGNORECASE) for p in _SCRAPE_JUNK_PATTERNS]
+_SCRAPE_JUNK_STRONG_RE = [re.compile(p, re.IGNORECASE) for p in _SCRAPE_JUNK_STRONG]
+_SCRAPE_JUNK_WEAK_RE = [re.compile(p, re.IGNORECASE) for p in _SCRAPE_JUNK_WEAK]
+
+# A body this short (in words) with even one weak signature is a boilerplate
+# stub, not an article that happens to mention the topic.
+_STUB_WORD_CEIL = 8
 
 
 def is_scrape_junk(article: Dict, max_words: int = 120) -> tuple:
@@ -284,10 +295,13 @@ def is_scrape_junk(article: Dict, max_words: int = 120) -> tuple:
     the oracle (scoring one from its headline is an anti-hallucination violation —
     see Solutions v4 calibration, DeepSeek defect 3).
 
-    Conservative by design: fires only when the cleaned content is short
-    (<= max_words) AND matches a boilerplate junk signature, OR is effectively
-    empty. A genuine article that merely mentions cookies in passing is far longer
-    than max_words and is never flagged.
+    Conservative by design — two guards keep genuine content safe:
+    - Emptiness is measured in CHARACTERS, not whitespace tokens, so genuine
+      CJK/Thai (non-space-delimited) articles are not mistaken for empty stubs.
+    - Only SHORT bodies (<= max_words) are pattern-checked; a long article is
+      never dropped for leading with a boilerplate line. A single topical ("weak")
+      signature does not flag a real short brief — that needs >=2 distinct weak
+      hits, or a single hit in a body-less (<= _STUB_WORD_CEIL words) stub.
 
     Args:
         article: Article dict with 'content'/'text' and optional 'title'.
@@ -297,22 +311,31 @@ def is_scrape_junk(article: Dict, max_words: int = 120) -> tuple:
     Returns:
         (is_junk: bool, reason: str) — reason is "" when not junk.
     """
-    content = article.get("content") or article.get("text") or ""
-    content = sanitize_text_comprehensive(content)
-    words = content.split()
+    content = sanitize_text_comprehensive(article.get("content") or article.get("text") or "")
+    stripped = content.strip()
 
-    # Effectively empty — no body to score, regardless of pattern.
-    if len(words) < 5:
+    # Effectively empty — no body to score. Character-based so CJK/Thai (which
+    # split() collapses to ~1 "word") is not falsely dropped.
+    if len(stripped) < 25:
         return True, "empty_or_stub_content"
 
+    words = content.split()
     # Only short bodies can be pure boilerplate; long articles are real content.
+    # (Word count is an English-boilerplate proxy; a long CJK body has few
+    # "words" but matches none of the English signatures below, so it passes.)
     if len(words) > max_words:
         return False, ""
 
     haystack = f"{article.get('title', '')} {content}"
-    for pattern in _SCRAPE_JUNK_RE:
+    for pattern in _SCRAPE_JUNK_STRONG_RE:
         if pattern.search(haystack):
-            return True, f"scrape_junk:{pattern.pattern}"
+            return True, f"scrape_junk_strong:{pattern.pattern}"
+
+    weak_hits = [p.pattern for p in _SCRAPE_JUNK_WEAK_RE if p.search(haystack)]
+    if len(weak_hits) >= 2:
+        return True, f"scrape_junk_weak:{len(weak_hits)}:{weak_hits[0]}"
+    if weak_hits and len(words) <= _STUB_WORD_CEIL:
+        return True, f"scrape_junk_stub:{weak_hits[0]}"
 
     return False, ""
 

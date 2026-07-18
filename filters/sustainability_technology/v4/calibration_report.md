@@ -130,7 +130,17 @@ but the config's absolute-tier gates need rewriting regardless.
      are recorded (no analysis field) and counted/logged, never sent to the
      oracle. Unit test: `tests/unit/test_scrape_junk.py` (11 cases).
 
-## BLOCKER — corpus re-score cannot run yet (2026-07-18)
+## SUPERSEDED — corpus sourcing moved to DATA_SETUP_PLAN.md (2026-07-18)
+
+**The "re-score the old ST v3 + foresight corpora as-is" approach below is
+retired.** A diagnostic showed those corpora are ~85% `not_a_solution` under the
+Solutions lens (see `scripts/diagnostics/solutions_v4_corpus_noise_check.py`).
+Corpus sourcing now follows `DATA_SETUP_PLAN.md` (e5-seed screening → enriched
+corpus → scored). The "not on this host / gpu-server unreachable" notes below are
+also stale — gpu-server is reachable and the corpora were located there. Kept for
+provenance only.
+
+## (stale) BLOCKER — corpus re-score cannot run yet (2026-07-18)
 
 The re-score reads article text from `datasets/scored/sustainability_technology_v3.jsonl`
 (10.6K) + `datasets/scored/foresight_v1.jsonl` (3.5K) (RUNBOOK corpus convention).
