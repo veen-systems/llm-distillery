@@ -1,17 +1,19 @@
-# Sustainability Technology v4 — CALIBRATED, AWAITING RE-SCORE SIGN-OFF
+# Solutions v4 (renamed from sustainability_technology, ADR-012) — labeling designed, model NOT built
 
-**Status: calibration batch COMPLETE (2026-07-17).** 350 articles scored by
-DeepSeek + Gemini (ADR-020 method), disagreement set judged, criteria
-evaluated — see `calibration_report.md` for results and the open engineer
-decisions. Do NOT score the full corpus until those decisions are made
-(oracle ratification, tab-volume acceptance, gate rewrite).
+**Status (2026-07-18): oracle/prompt/prefilter designed + validated; no trained
+model yet.** Calibration is done and the oracle is ratified (DeepSeek). The
+training corpus is NOT built and NO model exists — see `DATA_SETUP_PLAN.md` for
+the remaining pipeline. **Do not re-score the old corpora as-is** (see the pivot
+below).
 
 ## What this is
 
-v4 is the broadened Solutions lens design. It keeps ST v3's LCSA spine
-but covers governance and community solutions in addition to clean tech.
-Foresight v1's top governance articles are the gap this version is meant
-to capture — see [llm-distillery#43](https://github.com/ducroq/llm-distillery/issues/43).
+v4 is the broadened **Solutions** lens. It keeps ST v3's LCSA spine but covers
+governance and community solutions in addition to clean tech. Foresight v1's top
+governance articles are the gap this version is meant to capture — see
+[llm-distillery#43](https://github.com/ducroq/llm-distillery/issues/43). v4
+replaces BOTH the old sustainability_technology-v3 and foresight-v1 scorers that
+feed ovr.news's Solutions tab.
 
 ## What changed from v3
 
@@ -27,36 +29,36 @@ to capture — see [llm-distillery#43](https://github.com/ducroq/llm-distillery/
 
 Total weight: 1.00. Seven scored dimensions (solution_concreteness,
 systemic_impact, evidence_strength, governance_intervention_strength,
-community_practice_strength, equity_access, economic_viability) plus the
-type tag.
+community_practice_strength, equity_access, economic_viability) plus the type tag.
 
-## Decisions inherited from #43 sign-off
+## Engineer decisions (#43) — RATIFIED 2026-07-18
 
-- **Fork 1 = C** — broaden v3 in place rather than redesign from scratch
-- **Fork 2** — combine ST v3 (10.6K) + foresight v1 (3.5K) corpora and
-  re-score with v4 prompt after the calibration batch
-- **Fork 3** — foresight v1 stays parked through v4 calibration; retire
-  on v4 production deploy
+- **Fork 1 = C** — broaden v3 in place rather than redesign.
+- **Oracle** = DeepSeek (both ADR-020 judges); thinner-but-cleaner tab accepted.
+- **Fork 2 (combine ST v3 10.6K + foresight v1 3.5K and re-score as-is) —
+  SUPERSEDED.** A diagnostic showed those corpora are ~85% `not_a_solution`
+  under the Solutions lens (reproducible:
+  `scripts/diagnostics/solutions_v4_corpus_noise_check.py`). Corpus sourcing
+  moved to e5-seed screening → enriched corpus. See `DATA_SETUP_PLAN.md`.
+- **Fork 3** — foresight v1 retires at v4 go-live (two repos + normalization).
 
-## Next step
+## What's next → `DATA_SETUP_PLAN.md`
 
-~~Run the calibration batch~~ **DONE 2026-07-17** — 350 articles (as-run
-composition in `config.yaml :: calibration_batch`), both oracles, $1.00.
-Results, criteria tally, judge verdicts, and DeepSeek recommendation:
-`calibration_report.md`. Prompt is `prompt-compressed.md` (the form
-`batch_scorer.load_filter_package()` prefers; no separate `prompt-full.md`,
-matching cd v5's single-prompt shape); review-hardened over two rounds.
+The remaining pipeline (all gated; no paid step until the pre-spend gate passes):
+seed → per-type e5 screen → enriched corpus → **DeepSeek score (~$13–18, the one
+paid step)** → prepare_data → train Gemma-3-1B student + e5 probe → calibration →
+ground-truth gate (ADR-021) → runtime scorer → go-live (Hub + NexusMind + ovr +
+normalization). The runtime `prefilter.py` (`SolutionsPreFilterV4`) is drafted;
+wiring it into the NexusMind loader is a go-live step.
 
-Next: engineer decides the 4 open items in `calibration_report.md`; then
-apply the small prompt/pipeline fixes listed there and re-score the combined
-ST v3 (10.6K) + foresight v1 (3.5K) corpora with DeepSeek off-peak (~$10-15),
-then proceed to training.
-
-## Files in this directory at draft stage
+## Files in this directory (draft stage)
 
 - `config.yaml` — dimension architecture, weights, gatekeeper, calibration batch spec
-- `prompt-compressed.md` — v4 oracle prompt (drafted 2026-07-17; encodes the
-  Step-1 scope check, Step-2 type tag, A/B/C soft caps, and all 7 dims)
+- `prompt-compressed.md` — v4 oracle prompt (Step-1 scope, Step-2 type tag, A/B/C soft caps, 7 dims); review-hardened over two rounds + 4 calibration fixes
+- `prefilter.py` — `SolutionsPreFilterV4`, multilingual commerce-only pass-through (nr v4 template)
+- `calibration_report.md` — oracle bake-off + the superseded-corpus pointer
+- `DATA_SETUP_PLAN.md` — the corpus/model pipeline (source of truth for what's left)
 - `README.md` — this file
-- (no model, no calibration.json yet — those land after the calibration
-  batch decides direction)
+- **Not present yet** (land during the pipeline): `model/`, `probe/`,
+  `calibration.json`, `normalization.json`, `ground_truth_gate.json`,
+  `base_scorer.py`, `inference*.py`, `training_metadata.json`.

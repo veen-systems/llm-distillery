@@ -178,7 +178,7 @@ STATUS.md). Posture for Solutions v4:
   random holdout** carries the true ~29 % non-English mix and will expose any
   screening language gap in held-out recall.
 - **DONE (draft) — runtime `prefilter.py`** now exists
-  (`SustainabilityTechnologyPreFilterV4`), built on the nr v4 template:
+  (`SolutionsPreFilterV4`), built on the nr v4 template:
   commerce-only pass-through (ADR-004), no English topic/decline gate, and
   **multilingual `POSITIVE_PATTERNS` (en/es/it/de/nl/pt/fr)** with the
   inflected-forms regression test (it already caught the radical-changing
