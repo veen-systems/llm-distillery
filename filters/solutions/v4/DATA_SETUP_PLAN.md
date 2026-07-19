@@ -149,6 +149,22 @@ per-type mass, and high-band count before training.
 Per FILTER_PLAYBOOK. Report recall/precision **against the random holdout**;
 inspect the `community_practice_strength` gradient and high-band reachability.
 
+### Step 6.5 — Cross-lens leakage check (post-train, verification not gate)
+The Solutions lens is broad (tech/governance/community) and its community type
+is *genuinely* adjacent to belonging/thriving — under ADR-015 that overlap is
+**correct and must NOT be engineered out of the oracle prompt** (excluding
+adjacent-lens content is an explicitly rejected anti-pattern). This step only
+**confirms the `solution_concreteness` gatekeeper is doing its job** — i.e. pure
+social-warmth with no concrete/replicable/deployed practice caps below MEDIUM as
+`not_a_solution`, rather than the Solutions lens over-absorbing belonging content.
+Procedure (cd-v5 `#62` precedent): sample belonging + thriving high-scorers from
+saved NexusMind output, score them with the v4 solutions scorer, and verify the
+concreteness gate suppresses warmth-without-a-practice while genuine dual-members
+(a replicated community practice that also fosters connection) legitimately score
+on both. **Measure, don't partition.** Presentation-level overlap (same article,
+two tabs) is resolved downstream in ovr (canonical-lens routing + ADR-014
+normalization), dedup-later per ADR-009 — never by crippling the scorer.
+
 ### Step 7 — Active learning round (ADR-005) → v2
 Use v1 + `export_active_learning_candidates.py` to surface thin tiers. Note the
 ADR-005 caveat: AL enriches the mid-band but does **not** reliably find HIGH
@@ -322,3 +338,51 @@ Round-2 battery (3 reviewers / Opus+Sonnet) on the fixed state:
 
 **State: code clean + committed-ready; plan executable pending the pinned
 defaults' final sign-off. No paid step until Part A + Part B(HARD) pass.**
+
+### Round 3 — corpus-build EXECUTION review (2026-07-19), verdict: corpus SOUND, 2 code fixes applied, 3 forward fixes queued
+
+The free corpus build actually ran (enrich → screen → assemble → Part-A). A 3-reviewer
+battery (Opus×2 + Sonnet: correctness / claims-reproduction / methodology-fitness) ran
+against the live artifacts on gpu-server. **Corpus verified sound — no re-run of
+screening/enrichment needed.** Reproduction confirmed 8/9 headline numbers exactly
+(re-embedding the 350 calib from scratch to reconfirm near-dup=10); the 9th ("0 Swahili in
+candidates") was a check-script bug — real value **10/331**, corrected in
+`docs/ideas/access-bias-and-the-haystack.md`.
+
+**Applied + verified this session (watched the controls FAIL, per project rule):**
+- **Part-A seed gate was decoration** (seeds folded into `cand` before being counted →
+  `seeds_present ≡ 33` always). Rewritten to reject null/dup/**boilerplate** seeds and assert
+  the literal count; proven to FAIL on a consent-tampered seed (32/33 → FAIL).
+- **`--reuse-embeddings` had no fingerprint** — armed landmine (enriched vs consent-reverted
+  survivors are same-ids/same-order, so reuse would pair enriched embeddings with reverted
+  records for 17% of rows). Added a **content-sensitive** fingerprint (id|len|head80) that
+  refuses reuse on mismatch; proven content-sensitive (clean≠enriched fp).
+
+**Forward fixes — status after the 2026-07-19 execution session:**
+1. **[STAGED/turnkey] Multilingual gate → Part-B, counting non-English POSITIVES.** Part-A's
+   non-EN≥20% passes at 41.6% while non-EN *positives* may be ~0 (English-only `is_scrape_junk`
+   + paywall stubs make non-EN candidates mostly negatives — the nature_recovery failure in a
+   new costume). Built as `partB_gate.py`: positives = `solution_type != "not_a_solution"`;
+   HARD "non-EN positives present (0 ⇒ STOP)"; WARN if non-EN positive share <15%. Part-B
+   sample drawn (`partB_sample.jsonl`, 160 rows, 32% non-EN) — one DeepSeek call from running.
+   Still optional pre-spend: add non-EN boilerplate patterns to `is_scrape_junk`.
+2. **[DONE 2026-07-19] Near-dup vs the Step-2.5 random holdout.** Drew a 1,500-row random
+   unscreened holdout (`solutions_v4_holdout.jsonl`, 42.3% non-EN) and ran train↔holdout
+   near-dup off the cached embeddings — **42 syndicated leakers dropped** (≥0.95 cosine;
+   candidates 7,475 → 7,433 in `solutions_v4_candidates_input_dedup.jsonl`). Closes the
+   train↔test leak that id-exclusion alone missed.
+3. **[STAGED/turnkey] Negatives from production-representative bodies only.** Built as
+   `sample_negatives.py`: excludes candidates/holdout/calib AND <200-char rows (the 29,585
+   consent-reverted ~84-char stubs), so the student can't learn "short → not-a-solution" /
+   bake in the access bias. `N` is set from Part-B's positive rate (the gate prints the hint).
+   Real remedy for production stays the NexusMind `should_replace_content` consent guard.
+
+**Lower-priority (drift/hygiene):** share ONE boilerplate signature list between the screener
+(`_CONSENT_SIGS`) and assembler (`BOILER`) — currently two lists, paywall only in the
+assembler, so a new paywall variant in the screener's blind spot would reach the oracle.
+
+**Accepted trade-offs (reviewers concurred, no action):** 12 external seeds are oracle-*scored*
+(no calibration poison) but define the entire high-band-community manifold → do NOT report
+high-band-community recall as validated off v1 (route to Step-7 hunt); European-multilingual
+skew documented; 20-30% positive target optimistic given e5's flat gradient → plan for ~15%,
+Part-B decides.

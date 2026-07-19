@@ -4,6 +4,32 @@ Problems encountered and resolved. Format: Problem → Root cause → Fix.
 
 ---
 
+## Enrichment silently poisoned 17.3% of the pool with consent-wall text (2026-07-19)
+
+**Problem**: Solutions v4 e5 screening returned **99% junk candidates** — the top-k for all three types was dominated by Google "Before you continue… We use cookies and data…" consent-page text instead of articles. 17.3% of the survivor pool (29,585/171,050) had this as its "content."
+
+**Root cause**: Our enrich-first step reused NexusMind's `ArticleFetcher.pre_enrich`, which follows Google-News redirect URLs; trafilatura extracts the GDPR **consent interstitial**, and `should_replace_content` swaps it in because it's longer than the RSS stub. The junk is >500 chars, so it **evades both guards** — `is_scrape_junk` only pattern-checks bodies ≤120 words, and re-enrichment only triggers <500 chars — and its generic service-language embeds near every solution centroid, so it out-ranks real content. Confirmed all 29,585 were enrichment-introduced (0 in the original scrape). **This is also a live NexusMind production bug**: `should_replace_content` has no consent/paywall guard, so production feeds the same consent pages to the scorer (tolerated only because it scores low).
+
+**Fix**: Added a length-independent consent/paywall signature detector; reverted the 29,585 rows to their original raw RSS stubs (median 84 chars, real) by id-join with the raw pool; re-screened → 0% consent junk. Corpus-side only; the real remedy is a consent guard in NexusMind `should_replace_content` (filed as a cross-repo follow-up). **Durable lesson**: when you reuse a production fetch/enrich path on a *screening* corpus, its tolerated-in-production failure modes become *ranking* poison — an item scored-and-discarded in prod becomes a top-ranked candidate here. Audit enriched content for boilerplate BEFORE embedding, not after scoring.
+
+## `pkill -f <pattern>` self-kills when the pattern is in its own command line (2026-07-19)
+
+**Problem**: `pkill -f solutions_screen.py` inside an ssh'd shell silently aborted the *rest of the script* (a 669 MB transfer never ran); output truncated with no error.
+
+**Root cause**: The remote shell's own command line contained "solutions_screen.py" (it was running a script that referenced it), so `pkill -f` matched and killed its own parent shell. This is the destructive twin of the already-logged `pgrep -f matches your own ssh command line` gotcha — `pgrep` gives a false positive; `pkill` executes it.
+
+**Fix**: Don't `pkill -f` a pattern that appears in the wrapping command; match by pid, or use a bracket trick (`solutions[_]screen`) so the pattern-string doesn't match itself. Verify a kill by footprint (process gone / GPU mem freed), not by the pkill's own exit.
+
+## A check-script bug reported a false "0", and reuse-caching can silently misalign (2026-07-19)
+
+**Problem**: Two "wrong-but-green" issues found by the corpus-build review battery. (1) I told the engineer "0 Swahili articles in candidates"; the reproduction reviewer found **10** — my check had a nested-quote mangling (`.get(chr(39)…)` → looked up key `"'"`), so it returned 0 for *every* language. (2) The screener's `--reuse-embeddings` loaded cached vectors while rebuilding records from a file, with no fingerprint — and `survivors_enriched` (consent) vs `survivors_clean` (reverted) are **same-ids/same-order, different content**, so a reuse re-cut would pair the wrong embeddings with 17% of records and nothing would crash.
+
+**Root cause**: Both are the project's own "a control never observed failing is decoration" lesson, extended to *measurement* scripts and *caches*: a check that can't detect the thing it counts, and a cache keyed on identity that ignores content. Nested double-quoting through two ssh hops is a bug factory that manufactured the false-0.
+
+**Fix**: (a) For anything counting/gating, **watch it fail** — the fixed Part-A seed gate was proven to FAIL on a boilerplate seed, and the reproduction reviewer re-derived every number from disk (caught the false-0). (b) Content-sensitive embedding fingerprint (`id|len|head80`) that refuses reuse on mismatch (proven content-sensitive). (c) Through a double-ssh hop, **scp a script and run it** — never inline nested-quoted python.
+
+---
+
 ## Two review rounds found 18 defects; 4 were in the FIXES from round 1 (2026-07-14)
 
 **Problem**: A day of careful fixes, each individually verified, still shipped defects that only an adversarial second model found — and round 2's worst findings were *inside* round 1's fixes.

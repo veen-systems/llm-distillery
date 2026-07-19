@@ -48,7 +48,7 @@ framework: agent-ready-projects v1.10.6
 | Filter | Version | Status | Target |
 |--------|---------|--------|--------|
 | **thriving** | v1 | PARKED indefinitely — orthogonal lens design caused bimodal distribution (ADR-015); uplifting v7 stays as Thriving tab |  |
-| **solutions** (renamed from sustainability_technology, ADR-012, 2026-07-18; pkg `filters/solutions/v4`, field `solutions_analysis`) | v4 | Calibration DONE; 4 engineer decisions ratified (DeepSeek oracle, thinner tab, go). **Corpus re-score NOT run** — the old ST v3 + foresight corpora are ~85% not_a_solution under the Solutions lens, so sourcing moved to e5-seed screening per `filters/solutions/v4/DATA_SETUP_PLAN.md`. Prompt/scrape-junk/dedup fixes + multilingual prefilter landed. NB: v4 replaces both the sustech-v3 and foresight-v1 scorers feeding the tab | ovr.news Solutions tab |
+| **solutions** (renamed from sustainability_technology, ADR-012, 2026-07-18; pkg `filters/solutions/v4`, field `solutions_analysis`) | v4 | **Corpus BUILT (free, 2026-07-19) — turnkey to Part-B ($0 spent).** e5-seed screening executed on gpu-server (enrich-first); 4 poisons caught (thin-stubs, multilingual-skew, near-dup-over-drop, consent-wall); 7,433 candidates + 33 community seeds (21 pool + 12 external high-band) + 1,500 unscreened holdout staged on `gpu-server:~/solutions_screen_work/`. 3-reviewer battery → corpus SOUND. First paid step ~$0.20 (Part-B). Source of truth: `filters/solutions/v4/DATA_SETUP_PLAN.md` (Round 3). NB: v4 replaces both the sustech-v3 and foresight-v1 scorers feeding the tab | ovr.news Solutions tab |
 | **ai-engineering-practice** | v2 | Ready for oracle scoring; rename to augmented-engineering at next bump | Separate product (not ovr.news) |
 
 ## Key Decisions

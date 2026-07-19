@@ -98,12 +98,12 @@ Loaded every session. Topic files loaded on demand via triggers below.
 - if [a candidate oracle looks better on self-consistency/agreement], then [STOP — that's noise, not bias; judge the disagreement set editorially before switching, and cut noise by averaging k runs of the correctly-biased oracle, never by switching to a cleaner-but-differently-biased one] — promoted from gotcha-log 2026-07-09 ([[feedback-oracle-bias-vs-noise]]; engineer caught a $100-200-class error)
 - if [a deploy gate / eval reports a surprising FAIL or a batch of "model errors"], then [reproduce — read the actual per-item labels the metric was computed from — before retraining/switching; the reference cohort may be labeled by a different oracle/version (check for a `_v2_split`-style provenance field)] — promoted from gotcha-log 2026-07-09 (ground-truth gate vs Gemini-labeled reference)
 - if [re-running a training to regenerate clean artifacts], then [do NOT assume same-seed reproduces the evaluated model — CUDA is nondeterministic; re-run the gate on the re-trained weights, or back up the approved model+calibration+metadata together at approval time] — promoted from gotcha-log 2026-07-09
-- if [checking whether a remote job is running with `pgrep -f "<pattern>"`], then [it matches your own ssh command line too — verify by footprint (GPU mem / large RSS / log growth), not name-match] — promoted from gotcha-log 2026-07-09
+- if [checking whether a remote job is running with `pgrep -f "<pattern>"`], then [it matches your own ssh command line too — verify by footprint (GPU mem / large RSS / log growth), not name-match] — promoted from gotcha-log 2026-07-09 (recurred 2026-07-19 as the DESTRUCTIVE twin: `pkill -f solutions_screen.py` killed its own parent shell and silently aborted a 669 MB transfer — pkill *executes* the false self-match; use a bracket trick `solutions[_]screen` or match by pid)
 - if [a comment asserts a property the code depends on], then [TEST the property — a sentence is not a control. "The dirty-check guarantees HEAD == worktree" was false (`git diff --quiet <paths>` is worktree-vs-INDEX; `git add` defeats it) and shipped a deploy that could stamp a revision naming bytes production wasn't running] — promoted from gotcha-log 2026-07-14 (recurred 2026-07-17: two fresh Fix B "by construction"/"nowhere else to update" comments falsified by contract review — one became the runtime push-completeness assertion)
 - if [writing a test for a function], then [IMPORT the function, never re-implement it — a private copy in `test_normalization_invariant.py` drifted from its subject *within the same commit*, omitting the ambiguity check added beside it] — promoted from gotcha-log 2026-07-14
 - if [a review finding is dramatic], then [treat it as a hypothesis and check it against the ADRs before acting — round 1's top finding was a misread of ADR-014's documented design, and an agent independently reached the same wrong conclusion. Two models agreeing is not evidence] — promoted from gotcha-log 2026-07-14
 - if [running a review at all], then [run TWO rounds — round 1 reviews the code, round 2 reviews the fixes, and 4 of round 2's 8 findings were defects inside round 1's fixes (including the test meant to catch them)] — promoted from gotcha-log 2026-07-14 (pattern held an EIGHTH consecutive time 2026-07-17 evening: solutions v4 prompt round-2 found 3 defects inside round-1's fixes — opinion-vs-router contradiction, unpropagated community-gov rule, conflicting proposed-bill anchor; held a NINTH time 2026-07-18: solutions v4 data-setup plan round-2 caught a self-contradictory *unpassable* pre-spend gate created by round-1's own stratification fix)
-- if [adding ANY control — hook, gate, cap, assertion, guard, test], then [watch it fail before trusting it; a control never observed failing is decoration. For tests: run against the OLD code and confirm they fail — AND confirm CI actually feeds them an input that exercises the assertion; a guarded `if field is not None:` over a corpus that never carries the field is dead code] — promoted from gotcha-log 2026-07-14 (5 dead controls in one session; recurred 2026-07-17: the sample_min assertion added by Fix A hardening ran on zero inputs)
+- if [adding ANY control — hook, gate, cap, assertion, guard, test], then [watch it fail before trusting it; a control never observed failing is decoration. For tests: run against the OLD code and confirm they fail — AND confirm CI actually feeds them an input that exercises the assertion; a guarded `if field is not None:` over a corpus that never carries the field is dead code] — promoted from gotcha-log 2026-07-14 (5 dead controls in one session; recurred 2026-07-17: the sample_min assertion added by Fix A hardening ran on zero inputs; held AGAIN 2026-07-19: a Part-A seed gate was tautologically-true (seeds folded into `cand` before being counted → `seeds_present ≡ 33`) and a Swahili check-script returned false-`0` for every language — the fix is watch-it-fail: the rewritten gate was proven to FAIL on a boilerplate seed, and reproduction-from-disk caught the false-0. Applies to *measurement* scripts, not just runtime gates)
 - if [a check reports FAIL], then [ask whether it FAILED or couldn't RUN — `cmd && echo PASS || echo FAIL` collapses the two, and a check that cries wolf trains you to skim past it. Let the *claim* decide PASS/FAIL and let transport/deps/creds surface ERROR] — promoted from gotcha-log 2026-07-14
 - if [a diagnosis is backed by a workaround that works], then [distrust it — an error whose workaround produces green results never falsifies itself. Test the original path directly] — promoted from gotcha-log 2026-07-14 (sadalsuud hop kept "no gpu-server key from situla" alive; engineer caught it)
 - if [a model looks like it's scoring badly in production], then [check `normalization.json`'s fit threshold FIRST — #161 was v2 scoring 2.2–3.3 *correctly* and a CDF fitted at raw>=1.5 inflating it to 5.2–8.3] — promoted from gotcha-log 2026-07-14
@@ -136,6 +136,7 @@ Loaded every session. Topic files loaded on demand via triggers below.
 
 Full per-session narratives live below the auto-loading cliff (read on demand). Newest first.
 
+- [2026-07-19](project_session_2026_07_19.md) — **Solutions v4 corpus build EXECUTED (free), 4 poisons caught, turnkey to Part-B.** Enrich-first reframe (mirror production `pre_enrich`); GPU-screened on gpu-server; caught thin-stubs / multilingual-skew / near-dup-over-drop / **consent-wall poison (99% of candidates!)**. 33 community seeds (21 pool + 12 external high-band). 3-reviewer battery → corpus SOUND, 2 control fixes watched-failing, holdout near-dup (42 leakers dropped → 7,433), Part-B tooling staged. Access-bias → **ovr positioning doc + 3 article seeds**. $0 spent. Cross-repo: NexusMind enrichment consent-guard bug.
 - [2026-07-18](project_session_2026_07_18.md) — **solutions v4: decisions ratified, corpus trap caught, rename, pipeline scaffolded.** 4 decisions ratified (DeepSeek/thinner-tab/go); 4 calibration fixes + scrape-junk check live-oracle-verified. The re-score-old-corpora plan was caught as a ~85%-noise trap ($0.09 diagnostic) → pivoted to e5-seed screening (`DATA_SETUP_PLAN.md`). Renamed sustainability_technology → **solutions** (ADR-012), pre-corpus-scoring. Multilingual `prefilter.py` drafted (nr #70 lesson). 2 review batteries (round-2 pattern held a 9th time). Corpus-build tooling scaffolded. Zero spend beyond ~$0.20 diagnostics. Blocked on 2 engineer inputs (community seeds + defaults sign-off).
 - [2026-07-17 evening](project_session_2026_07_17_evening.md) — **Solutions v4 (#43): scaffold → calibrated in one session.** Foresight/Solutions mixing confirmed+quantified (tab ~91% foresight-fed, 934 vs 88/24h); v4 prompt drafted + 2 review rounds (round-2 pattern held an 8th time); 350-article calibration batch scored by BOTH oracles ($1.00, ADR-020 method); two judges → DeepSeek; pure-tech ≥7.0 gate empirically unsatisfiable. Stopped at engineer sign-off. Record: `filters/solutions/v4/calibration_report.md`.
 - [2026-07-17](project_session_2026_07_17.md) — Morning wrap-up: 11-agent multi-model battery over the merged Fix A range → 5 confirmed findings fixed (dead `sample_min` assertion now exercised by synthetic-package tests; `n_bins < 2` fails closed; 3 stale doc facts), 2 refuted. 196 tests green. Framework current (v1.10.6 = latest); uplifting v7 weights flagged as gpu-server-only (NO_HUB, absent locally). Addendum: **sustech v3 op-point drift FIXED** (`65484f4`). Afternoon: **Fix B EXECUTED end-to-end** — git-archive deploy chosen+built+52-assertion-harnessed, 3-model round-5 review (7 verified defects fixed, pattern held a 7th time), merged `dcf6fc8`, deployed, **validated live by the canonical 4h chain itself**; held `7e525ee` deleted; OnFailure alert shipped+tested (ntfy first, swapped same-day to the chain's Gmail sender on engineer feedback); harness preserved as `tests/deploy_dryrun/` fixture (`f6497fa`); model-config carve-out SETTLED by sha256 evidence (keep).
@@ -149,29 +150,38 @@ Full per-session narratives live below the auto-loading cliff (read on demand). 
 - [2026-05-31](project_session_2026_05_31.md) — cultural_discovery **v5 SHIPPED** (DeepSeek oracle, val MAE 0.697, #62 leakage resolved end-to-end).
 - [2026-05-29/30](project_session_2026_05_29.md) — cd v5 hard-negatives cohort (49 articles, 5 buckets) + v5 prompt drafted (flags F/G/H/I/K).
 
-## Next Session Pickup (updated 2026-07-18)
+## Next Session Pickup (updated 2026-07-19)
 
-**🎯 solutions v4 (#43): decisions ratified, corpus REPLANNED (not re-scored), rename DONE.**
-Branch `solutions-v4-calibration` pushed (`70473ca..dfc9937`). Full record:
-`project_session_2026_07_18.md`. Source of truth for what's left:
-`filters/solutions/v4/DATA_SETUP_PLAN.md`.
+**🎯 solutions v4 (#43): corpus build EXECUTED (free) — TURNKEY to Part-B.** Both 2026-07-18
+blockers resolved (33 community seeds built; defaults set from screening telemetry). Full
+record: `project_session_2026_07_19.md`. Source of truth: `filters/solutions/v4/DATA_SETUP_PLAN.md`
+(Round 3 review has the exact state). **$0 spent so far.**
 
-**BLOCKED on 2 engineer inputs before the corpus build runs:**
-1. **~20–30 hand-curated high-concreteness community seeds** — the one input e5 screening +
-   active learning can't manufacture (that cell is the known soft spot). I offered to draft
-   candidates for approval.
-2. **Sign-off on pinned Execution defaults** (top-k tech3000/gov3000/community2000; ~2000
-   random + ~1000 hard negatives; near-dup e5-cosine 0.93).
+**All artifacts staged on `gpu-server:~/solutions_screen_work/`** (reach via the sadalsuud hop;
+see `gpu-server.md`). The remaining path is mechanical — **first paid step is ~$0.20**:
+```
+score partB_sample.jsonl (~$0.20, DeepSeek)  →  python3 partB_gate.py partB_sample_scored.jsonl
+   →  python3 sample_negatives.py <N from gate hint>  →  assemble final input
+   →  full DeepSeek score (~$11–13: 7,433 candidates + 33 seeds + negatives + 1,500 holdout)
+   →  prepare_data  →  train (gpu-server)  →  calibration  →  ground-truth gate (ADR-021)  →  go-live
+```
+Key staged files: `solutions_v4_candidates_input_dedup.jsonl` (7,433, holdout-near-dup-cleaned),
+`solutions_v4_holdout.jsonl` (1,500 random unscreened test, 42% non-EN), `seeds_community_pool.jsonl`
+(21) + `seeds_community_external.jsonl` (12), `partB_sample.jsonl` (160, drawn), `partB_gate.py`,
+`sample_negatives.py`, `survivor_emb.npy` + `survivor_meta.jsonl` (166,112, fresh/aligned).
+Optional pre-spend: add non-EN boilerplate patterns to `is_scrape_junk`.
 
-**Then** (mostly free until ONE paid step; nothing paid runs until the gate passes): per-type
-e5 screen (`extract_solution_seeds.py` seeds done; `near_dup_filter.py` done) over
-`NexusMind/data/raw` (commerce-filtered) → enriched corpus + Step-2.5 random unscreened test
-holdout → **deterministic Part-A gate (free)** → **~$0.20 Part-B gate** → **~$13–18 DeepSeek
-score off-peak** → prepare_data → train (gpu-server) → calibration.json → ground-truth gate
-(ADR-021) → wire base_scorer/inference → go-live. Tasks #7–#15 mirror this.
+**The scratch corpus-build scripts are NOT in the repo** (session scratchpad, ephemeral) — they
+live on gpu-server. If the pipeline needs to be re-run from scratch, the logic is documented in
+`project_session_2026_07_19.md` + `DATA_SETUP_PLAN.md` Round 3; re-author from there.
 
 **Reminder — the old "re-score ST v3 + foresight as-is" plan is DEAD** (85% not_a_solution under
 the Solutions lens; `scripts/diagnostics/solutions_v4_corpus_noise_check.py`). Do not resurrect it.
+
+**⚠️ Cross-repo follow-up (NexusMind):** file an issue — `ArticleFetcher.should_replace_content`
+has no consent/paywall guard, so `pre_enrich` replaces real RSS summaries with Google consent
+pages for Google-News articles (~17% of short articles); degrades live scoring input. See
+gotcha-log 2026-07-19 + `docs/ideas/access-bias-and-the-haystack.md`.
 
 **Go-live:** wire `SolutionsPreFilterV4` into the NexusMind loader; retire foresight (NexusMind
 app.yaml + ovr filters.ts); normalization from a production-base-rate rescore (NOT the enriched
