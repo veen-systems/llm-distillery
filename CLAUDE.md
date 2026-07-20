@@ -48,7 +48,7 @@ framework: agent-ready-projects v1.10.6
 | Filter | Version | Status | Target |
 |--------|---------|--------|--------|
 | **thriving** | v1 | PARKED indefinitely — orthogonal lens design caused bimodal distribution (ADR-015); uplifting v7 stays as Thriving tab |  |
-| **solutions** (renamed from sustainability_technology, ADR-012, 2026-07-18; pkg `filters/solutions/v4`, field `solutions_analysis`) | v4 | **Corpus BUILT (free, 2026-07-19) — turnkey to Part-B ($0 spent).** e5-seed screening executed on gpu-server (enrich-first); 4 poisons caught (thin-stubs, multilingual-skew, near-dup-over-drop, consent-wall); 7,433 candidates + 33 community seeds (21 pool + 12 external high-band) + 1,500 unscreened holdout staged on `gpu-server:~/solutions_screen_work/`. 3-reviewer battery → corpus SOUND. First paid step ~$0.20 (Part-B). Source of truth: `filters/solutions/v4/DATA_SETUP_PLAN.md` (Round 3). NB: v4 replaces both the sustech-v3 and foresight-v1 scorers feeding the tab | ovr.news Solutions tab |
+| **solutions** (renamed from sustainability_technology, ADR-012, 2026-07-18; pkg `filters/solutions/v4`, field `solutions_analysis`) | v4 | **Corpus SCORED + TRAIN-READY (2026-07-20, ~$14 DeepSeek).** train 9,265 / val 1,032 / test 1,500 (test = isolated unscreened holdout) in `datasets/training/solutions_v4/`; train mix 31.5% positive, holdout 11.5% (true prod base rate); 90 high-band community/hybrid positives; 34-44% of positives non-EN. Part-B <50% gate was unachievable-by-design (flat e5 gradient — reframed, not a fault); arXiv contamination (18,628 rows) excluded; high-band-community hunt → pool dry (external source-expansion is a v2 item). Scored corpus is gitignored → backed up to `gpu-server:~/solutions_screen_work/scored_backup/`. **NEXT: train on gpu-server (its `~/llm-distillery` is a non-git file-copy → sync + verify `train.py` currency first) → calibration → holdout recall gate (ADR-021) → deploy.** Source of truth: `filters/solutions/v4/DATA_SETUP_PLAN.md` (Round 4). NB: v4 replaces both the sustech-v3 and foresight-v1 scorers feeding the tab | ovr.news Solutions tab |
 | **ai-engineering-practice** | v2 | Ready for oracle scoring; rename to augmented-engineering at next bump | Separate product (not ovr.news) |
 
 ## Key Decisions
@@ -135,4 +135,4 @@ This project is a source project for [augmented-engineering](https://github.com/
 
 ---
 
-*Last updated: 2026-07-18*
+*Last updated: 2026-07-20*
