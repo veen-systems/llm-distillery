@@ -72,6 +72,94 @@ class TestJunkIsCaught:
         assert is_junk is True
 
 
+class TestNonEnglishJunkIsCaught:
+    # Solutions v4: production is ~29% non-English; the English-only list let
+    # non-English consent/JS walls reach the oracle (nature_recovery gate in
+    # embedding form). STRONG shims fire on a single hit; WEAK need >=2 or a stub.
+    def test_javascript_disabled_german(self):
+        art = {"title": "Fehler", "content": "Bitte aktivieren Sie JavaScript, um diese Seite anzuzeigen."}
+        is_junk, _ = is_scrape_junk(art)
+        assert is_junk is True
+
+    def test_javascript_disabled_french(self):
+        art = {"title": "", "content": "Veuillez activer le JavaScript pour afficher ce contenu."}
+        is_junk, _ = is_scrape_junk(art)
+        assert is_junk is True
+
+    def test_javascript_disabled_spanish(self):
+        art = {"title": "", "content": "JavaScript está desactivado en tu navegador."}
+        is_junk, _ = is_scrape_junk(art)
+        assert is_junk is True
+
+    def test_google_consent_wall_german(self):
+        # The exact Solutions v4 consent-wall poison, in German — STRONG.
+        art = {"title": "Google", "content": "Bevor Sie zu Google weitergehen. Wir verwenden Cookies."}
+        is_junk, _ = is_scrape_junk(art)
+        assert is_junk is True
+
+    def test_google_consent_wall_french(self):
+        art = {"title": "Google", "content": "Avant d'accéder à Google, acceptez les cookies."}
+        is_junk, _ = is_scrape_junk(art)
+        assert is_junk is True
+
+    def test_cookie_wall_two_weak_spanish(self):
+        # Two distinct weak Spanish signatures -> boilerplate-dominated -> junk.
+        art = {
+            "title": "Aviso",
+            "content": "Usamos cookies para mejorar tu experiencia. "
+                       "Acepta todas las cookies para continuar navegando.",
+        }
+        is_junk, reason = is_scrape_junk(art)
+        assert is_junk is True, reason
+        assert "scrape_junk" in reason
+
+    def test_paywall_stub_french(self):
+        # Single weak signature but body-less stub (<= 8 words) -> junk.
+        art = {"title": "Réservé aux abonnés", "content": "Abonnez-vous pour lire la suite."}
+        is_junk, _ = is_scrape_junk(art)
+        assert is_junk is True
+
+    def test_page_not_found_italian(self):
+        # "pagina non trovata" (weak) + English "404 ... error" (weak) = 2 hits.
+        art = {"title": "404", "content": "Errore 404 - Pagina non trovata sul server."}
+        is_junk, _ = is_scrape_junk(art)
+        assert is_junk is True
+
+
+class TestNonEnglishRealContentPasses:
+    def test_short_spanish_brief_single_weak_passes(self):
+        # A genuine short Spanish brief mentioning cookie law ONCE must survive.
+        art = {
+            "title": "España adopta reglas de cookies",
+            "content": "El gobierno español aprobó el martes una nueva política "
+                       "de cookies que exige consentimiento explícito de los "
+                       "usuarios en todos los sitios web, según anunció el ministerio.",
+        }
+        is_junk, reason = is_scrape_junk(art)
+        assert is_junk is False, reason
+
+    def test_long_german_article_mentioning_cookies_passes(self):
+        body = " ".join(
+            ["Das Europäische Parlament verabschiedete eine verbindliche Reform "
+             "der ePrivacy-Richtlinie, die von Webseiten eine ausdrückliche "
+             "Einwilligung vor dem Setzen von Cookies verlangt, mit einer "
+             "benannten Aufsichtsbehörde und einer zweijährigen Frist."] * 6
+        )
+        art = {"title": "EU verabschiedet Cookie-Reform", "content": body}
+        is_junk, reason = is_scrape_junk(art)
+        assert is_junk is False, reason
+
+    def test_normal_french_solution_brief_passes(self):
+        art = {
+            "title": "Paris étend le budget participatif",
+            "content": "La ville de Paris a étendu son budget participatif à "
+                       "cent millions d'euros, permettant aux habitants de voter "
+                       "directement sur les projets de quartier chaque année.",
+        }
+        is_junk, _ = is_scrape_junk(art)
+        assert is_junk is False
+
+
 class TestRealContentPasses:
     def test_long_article_mentioning_cookies_passes(self):
         # A genuine article about cookie regulation — long body, must NOT be dropped.

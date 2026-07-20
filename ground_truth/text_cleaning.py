@@ -267,6 +267,31 @@ _SCRAPE_JUNK_STRONG = [
     r'\bchecking\s+your\s+browser\b',
     r'\b(?:are\s+you\s+a\s+(?:robot|human)|verify\s+you\s+are\s+human)\b',
     r'\benable\s+cookies\s+and\s+reload\b',
+    # Non-English UI / bot-check shims (es/it/de/nl/pt/fr) — production is ~29%
+    # non-English (Solutions v4); an English-only list is the nature_recovery
+    # dropped-non-English gate in embedding form. These never form a real article
+    # subject, so a single hit in a short body is junk (STRONG tier).
+    r'\bactiv(?:er|ez)\s+(?:le\s+)?javascript\b',                # fr
+    r'\bjavascript\s+est\s+d[ée]sactiv[ée]\b',                   # fr
+    r'\b(?:bitte\s+)?aktivieren\s+sie\s+javascript\b',           # de
+    r'\bjavascript\s+ist\s+deaktiviert\b',                       # de
+    r'\bactiv(?:a|e|ar)\s+(?:el\s+)?javascript\b',               # es
+    r'\bjavascript\s+est[áa]\s+desactivad[oa]\b',                # es
+    r'\babilita(?:re)?\s+(?:il\s+)?javascript\b',                # it
+    r'\bjavascript\s+[èe]\s+disabilitato\b',                     # it
+    r'\bschakel\s+javascript\s+in\b',                            # nl
+    r'\bjavascript\s+is\s+uitgeschakeld\b',                      # nl
+    r'\bative\s+o\s+javascript\b',                               # pt
+    r'\bjavascript\s+est[áa]\s+desativad[oa]\b',                 # pt
+    # Google consent interstitial (the Solutions v4 consent-wall poison, all
+    # languages) — the exact "before you continue to Google" wall. Never a body.
+    r'\bbefore\s+you\s+continue\s+to\s+google\b',                # en
+    r'\bavant\s+d.?acc[ée]der\s+[àa]\s+google\b',                # fr
+    r'\bbevor\s+sie\s+zu\s+google\s+weitergehen\b',              # de
+    r'\bantes\s+de\s+ir\s+a\s+google\b',                         # es
+    r'\bprima\s+di\s+continuare\s+su\s+google\b',                # it
+    r'\bvoordat\s+u\s+verdergaat\s+naar\s+google\b',             # nl
+    r'\bantes\s+de\s+(?:ir\s+para|continuar\s+no)\s+google\b',   # pt
 ]
 _SCRAPE_JUNK_WEAK = [
     r'\bwe\s+(?:and\s+our\s+partners\s+)?use\s+cookies\b',
@@ -281,6 +306,29 @@ _SCRAPE_JUNK_WEAK = [
     r'\bpage\s+not\s+found\b',
     r'\b40[34]\b[^.]{0,40}\b(?:not\s+found|forbidden|error)\b',
     r'\baccess\s+denied\b',
+    # Non-English cookie / consent / paywall / error (es/it/de/nl/pt/fr) — topical
+    # phrases a genuine article can be ABOUT, so WEAK: needs >=2 distinct hits or a
+    # body-less stub, never a single hit in a real brief (mirrors the English tier).
+    r'\b(?:verwenden|utilisons|usamos|utilizamos|utilizziamo|gebruiken)\s+cookies\b',
+    r'\bcookie[- ]?(?:richtlinie|einstellungen|einwilligung)\b',          # de
+    r'\b(?:politique|param[èe]tres|gestion)\s+(?:des\s+)?cookies\b',      # fr
+    r'\b(?:pol[íi]tica|configuraci[óo]n|preferencias)\s+de\s+cookies\b',  # es/pt
+    r'\b(?:informativa|impostazioni|preferenze)\s+(?:sui\s+)?cookie\b',   # it
+    r'\bcookie(?:beleid|instellingen|voorkeuren)\b',                      # nl
+    r'\bacept(?:ar|a|e)\s+(?:todas\s+)?(?:las\s+)?cookies\b',             # es
+    r'\baccepter\s+(?:tous\s+)?les\s+cookies\b',                          # fr
+    r'\b(?:alle\s+)?cookies\s+akzeptieren\b',                             # de
+    r'\baccetta(?:re)?\s+(?:tutti\s+)?i\s+cookie\b',                      # it
+    r'\babonn(?:ez[- ]vous|er)\s+pour\s+(?:lire|continuer)\b',            # fr
+    r'\bsuscr[íi]b[a-z]*\s+para\s+(?:seguir\s+)?(?:leyendo|continuar)\b', # es
+    r'\babonnieren\s+sie[,\s]+um\s+weiterzulesen\b',                      # de
+    r'\babbonati\s+per\s+(?:continuare|leggere)\b',                       # it
+    r'\bseite\s+nicht\s+gefunden\b',                                      # de
+    r'\bpage\s+(?:introuvable|non\s+trouv[ée]e)\b',                       # fr
+    r'\bp[áa]gina\s+no\s+encontrada\b',                                   # es
+    r'\bpagina\s+non\s+trovata\b',                                        # it
+    r'\bpagina\s+niet\s+gevonden\b',                                      # nl
+    r'\bp[áa]gina\s+n[ãa]o\s+encontrada\b',                               # pt
 ]
 _SCRAPE_JUNK_STRONG_RE = [re.compile(p, re.IGNORECASE) for p in _SCRAPE_JUNK_STRONG]
 _SCRAPE_JUNK_WEAK_RE = [re.compile(p, re.IGNORECASE) for p in _SCRAPE_JUNK_WEAK]
