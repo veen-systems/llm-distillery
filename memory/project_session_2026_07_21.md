@@ -69,7 +69,10 @@ recall **0.45** / prec **0.78** / spec 0.99 / F1 0.57 / Spearman 0.46. 111 posit
 - Upstream the OFF_LENS source-exclusion mask into `scripts/screening/embedding_screener.py`
   (still an ephemeral gpu-server scratch screener).
 - File the NexusMind `ArticleFetcher.should_replace_content` consent-guard bug.
-- **Ollama summarization model A/B** (gemma4:12b vs gpt-oss:20b vs qwen3:14b vs gemma3:27b) — staged
-  in `scratchpad/model_ab_plan.md`; judge panel = in-session Opus/Sonnet/Fable (no API key). The
-  5.8GB VRAM "phantom" that forced 27b offload was **student jobs, now gone** (per engineer) — but 27b
-  (19GB w/ 8192 ctx) still offloads ~19% > 16GB, so a fully-fitting smaller model keeps a speed edge.
+- **Ollama summarization model A/B — DONE** (ran end of session). Result:
+  `docs/ideas/summarization-model-bakeoff-2026-07-21.md` (untracked → commit/move to ovr.news).
+  Faithful gen (real `getBrandVoicePrompt`, 6 non-EN feed articles) + blinded in-session 3-judge
+  panel (Opus/Sonnet/Fable, no API key). **`gpt-oss:20b` = 9.2× the offloaded 27b, ~0.5 quality
+  behind, fully on-GPU → pragmatic swap; `qwen3:14b` OUT (unanimous Chinese-script leak); 27b =
+  quality ceiling.** An ovr.news `ollamaConfig.model` decision. Re-run if `summaryMaxWords` changes.
+  The 5.8GB VRAM "phantom" was student jobs (now gone); 27b still offloads ~20% (19-20GB > 16GB).

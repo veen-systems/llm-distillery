@@ -157,15 +157,14 @@ Full per-session narratives live below the auto-loading cliff (read on demand). 
 **🎯 TWO fronts. Priority per engineer 2026-07-21: the Ollama model A/B is prio now; solutions v4
 deploy is tomorrow.**
 
-**(A) Ollama summarization model A/B — PRIORITY.** Compare gemma4:12b · gpt-oss:20b · qwen3:14b ·
-gemma3:27b (baseline) on real non-EN feed articles: tokens/sec + a **blinded, position-swapped,
-3-judge panel (Opus 4.8 / Sonnet 5 / Fable 5)** run **in-session** (no API key — the ovr.news
-`tools/judge-panel/` *method* reproduced via Claude Code subagents). Faithful generation = drive
-ovr.news's own summarization code (`getBrandVoicePrompt`/`buildUserPrompt`, `num_ctx 8192`). Full
-staged design: `scratchpad/model_ab_plan.md`. Context: 27b needs ~19GB @8192ctx → offloads ~19%
-on the 16GB card even with the (student-caused, now-gone) 5.8GB phantom cleared → a fully-fitting
-smaller model likely wins on speed; measure `size_vram`/split per model. **Held until solutions
-wrap-up; then run.**
+**(A) Ollama summarization model A/B — ANSWERED (2026-07-21).** Result:
+`docs/ideas/summarization-model-bakeoff-2026-07-21.md` (untracked → commit or move to ovr.news).
+Faithful gen (real `getBrandVoicePrompt`, 6 non-EN feed articles) + blinded in-session 3-judge
+panel (Opus/Sonnet/Fable). **`gpt-oss:20b` = 9.2× the offloaded 27b's throughput, ~0.5 quality
+points behind, fully on-GPU → the pragmatic swap. `qwen3:14b` OUT (unanimous Chinese-script leak).
+27b stays the quality ceiling. gemma4:12b isn't on Ollama (412).** It's an ovr.news
+`ollamaConfig.model` decision (summarizer lives in `ovr.news/src/lib/summarization.ts`); re-run if
+`summaryMaxWords` changes (moves both speed and quality). So (B) below is the only live front.
 
 **(B) solutions v4 (#43): TRAINED + GATED, deploy decision pending.** Full record:
 `project_session_2026_07_21.md`; `DATA_SETUP_PLAN.md` Round 5; `filters/solutions/v4/README.md`.

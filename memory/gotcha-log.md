@@ -920,3 +920,13 @@ touched it.
 **Fix**: don't put launch + wait in the same ssh-blocked script. Launch in one call (accept the channel
 hold / background it), then verify liveness in a *separate* ssh, and detect completion by the artifact
 appearing (model dir / "Training complete" in the log), not by a fixed post-launch process probe.
+
+## f-strings with double-quoted keys break inside an ssh-embedded `python3 -c "..."` (2026-07-21)
+**Problem**: `ssh host 'python3 -c "... print(f\"{\"model\":>5}\") ..."'` failed twice this session
+with `SyntaxError: f-string: expecting '}'` — the inner `f"{"model"...}"` double-quotes collide with
+the outer double-quoted `-c` string (and pre-3.12 f-strings can't reuse the delimiter quote inside `{}`).
+**Root cause**: nested-quote hell in one-liners shipped over ssh; the f-string's `{...}` contains
+double-quoted dict keys / format specs that clash with the command's own quoting.
+**Fix**: don't ship non-trivial python as an ssh `-c` one-liner. Write it to a `.py` file, `scp` it,
+and run `python3 file.py` (used for `gen_ab.py`, `gate_diag.py`). If a one-liner is unavoidable, use a
+heredoc (`python3 - <<'EOF'`) so quotes aren't doubly escaped, and single-quote f-string keys.
