@@ -1,55 +1,119 @@
+#!/usr/bin/env python3
 """
-Ground-truth deploy gate for nature_recovery (corrected methodology, 2026-07-09).
+Ground-truth deploy gate (ADR-021).
 
-WHY THIS EXISTS — the flaw in agreement_gate.py it replaces:
-  agreement_gate.py judged v4 against the *v2 student* as the baseline
-  (`over_demotion` = "articles v2 surfaced but v4 didn't") and drew its Source-A
-  cohort from `nr_v4_sourceA_reference.jsonl`, which carries a `_v2_split` field
-  and turned out to be **v2-era Gemini labels** — systematically +1.775 higher
-  than the DeepSeek labels v4 was trained on. So a DeepSeek-trained (deliberately
-  conservative) student was scored against a generous Gemini baseline, and its
-  correct demotions of Gemini-inflated content counted as failures. See
-  augmented-engineering#25 (reproduce-don't-assess) + memory/feedback-oracle-bias-vs-noise.
+Judge each candidate model against held-out ORACLE ground truth (the chosen
+editorial line) at the MEDIUM surfacing threshold — recall / precision /
+specificity / F1 / Spearman — NOT against the prior deployed model.
 
-THE CORRECTION: judge each model against **held-out oracle ground truth** (the
-same oracle the model was trained on = the chosen editorial line), not against
-the previous model. A model is deployable if it matches the intended oracle's
-surfacing decisions on data it never trained on — and we compare candidate vs
-incumbent on that same footing.
-
-Metrics per model, at the MEDIUM surfacing threshold (4.0), vs oracle labels:
-  - recall      : of true MEDIUM+ articles, fraction the model surfaces
-  - precision   : of surfaced articles, fraction truly MEDIUM+
-  - specificity : of true-LOW articles, fraction correctly kept out
-  - f1          : harmonic mean of precision/recall
-  - spearman    : rank agreement with the oracle weighted average
+Filter-agnostic: the dimensions, weights, gatekeeper, and surfacing threshold are
+read from the filter's config.yaml via --config. When --config lacks a
+scoring.dimensions block (or is omitted), the gate falls back to the
+nature_recovery v4 constants below, so the existing unit tests and prior
+invocations reproduce exactly.
 
 Usage:
+    # nature_recovery (defaults reproduce the original behavior)
     PYTHONPATH=. python scripts/gate/ground_truth_gate.py \
-        --labels datasets/training/nature_recovery_v4/test.jsonl \
+        --labels datasets/gate/nr_v4_test_labels.jsonl \
+        --config filters/nature_recovery/v4/config.yaml \
         --model v4=datasets/gate/nr_v4_test_scored_by_v4.jsonl \
         --model v2=datasets/gate/nr_v4_test_scored_by_v2.jsonl
+
+    # any other filter — dims/weights/gatekeeper come from its config
+    PYTHONPATH=. python scripts/gate/ground_truth_gate.py \
+        --labels datasets/training/solutions_v4/test.jsonl \
+        --config filters/solutions/v4/config.yaml \
+        --model v4=datasets/gate/solutions_v4_test_scored.jsonl
+
+    # sweep the gatekeeper cap (demote-vs-exclude); recompute is auto-enabled so
+    # the model side uses the same cap as the oracle side.
+    ... --gatekeeper-cap 2.9
 """
 import argparse
 import json
 import math
 from pathlib import Path
 
+# --- nature_recovery v4 defaults (kept so the unit tests + prior runs are
+#     unchanged when no scoring spec is supplied via --config) ---
 MEDIUM = 4.0
 GATEKEEPER_MIN, GATEKEEPER_CAP = 3.0, 3.5
+GATEKEEPER_DIM = "recovery_evidence"
 WEIGHTS = {"recovery_evidence": .25, "measurable_outcomes": .20,
            "ecological_significance": .20, "restoration_scale": .15,
            "human_agency": .10, "protection_durability": .10}
 DIMS = list(WEIGHTS)
 
 
-def label_wa(labels):
-    """Gatekeepered weighted average from a 6-vector of oracle scores."""
-    d = dict(zip(DIMS, labels))
-    wa = sum(d[k] * WEIGHTS[k] for k in DIMS)
-    if d["recovery_evidence"] < GATEKEEPER_MIN and wa > GATEKEEPER_CAP:
-        wa = GATEKEEPER_CAP
+def _spec(dims=None, weights=None, gk_dim=None, gk_min=None, gk_cap=None):
+    """A scoring spec (dims / weights / gatekeeper); unset fields fall back to the
+    nature_recovery defaults above."""
+    return {
+        "dims": dims if dims is not None else DIMS,
+        "weights": weights if weights is not None else WEIGHTS,
+        "gk_dim": gk_dim if gk_dim is not None else GATEKEEPER_DIM,
+        "gk_min": gk_min if gk_min is not None else GATEKEEPER_MIN,
+        "gk_cap": gk_cap if gk_cap is not None else GATEKEEPER_CAP,
+    }
+
+
+def _wa(dim_scores, spec):
+    """Gatekeepered weighted average from a {dim: score} mapping."""
+    weights = spec["weights"]
+    wa = sum(dim_scores[k] * weights[k] for k in weights)
+    gk = spec["gk_dim"]
+    if gk is not None and gk in dim_scores and dim_scores[gk] < spec["gk_min"] and wa > spec["gk_cap"]:
+        wa = spec["gk_cap"]
     return wa
+
+
+def label_wa(labels, spec=None, dim_names=None):
+    """Gatekeepered weighted average from an oracle label vector.
+
+    labels: per-dim oracle scores. dim_names: the order of `labels` (defaults to
+    the spec's dims). spec defaults to the nature_recovery constants.
+    """
+    spec = spec or _spec()
+    names = dim_names if dim_names is not None else spec["dims"]
+    return _wa(dict(zip(names, labels)), spec)
+
+
+def load_scoring_spec(config_path):
+    """Build a scoring spec from a filter config.yaml, or None if the config has no
+    scoring.dimensions block (→ caller uses the nature_recovery defaults).
+
+    Gatekeeper is read from scoring.gatekeepers.<first> (dimension / threshold /
+    max_score), falling back to a dimension flagged `gatekeeper: true`.
+    """
+    try:
+        import yaml
+        cfg = yaml.safe_load(Path(config_path).read_text(encoding="utf-8"))
+        scoring = cfg.get("scoring", {})
+        dim_cfg = scoring.get("dimensions")
+        if not dim_cfg:
+            return None
+        dims = list(dim_cfg.keys())
+        weights = {d: float(dim_cfg[d].get("weight", 0.0)) for d in dims}
+        gk_dim = gk_min = gk_cap = None
+        gks = scoring.get("gatekeepers") or {}
+        if gks:
+            g = next(iter(gks.values()))
+            gk_dim = g.get("dimension")
+            if g.get("threshold") is not None:
+                gk_min = float(g["threshold"])
+            if g.get("max_score") is not None:
+                gk_cap = float(g["max_score"])
+        else:
+            for d in dims:
+                if dim_cfg[d].get("gatekeeper"):
+                    gk_dim = d
+                    gk_min = float(dim_cfg[d].get("gatekeeper_threshold", 0))
+                    gk_cap = float(dim_cfg[d].get("gatekeeper_max_score", 0))
+                    break
+        return _spec(dims=dims, weights=weights, gk_dim=gk_dim, gk_min=gk_min, gk_cap=gk_cap)
+    except Exception:
+        return None
 
 
 def spearman(xs, ys):
@@ -77,25 +141,39 @@ def spearman(xs, ys):
     return cov / (vx * vy) if vx and vy else 0.0
 
 
-def load_labels(path):
+def load_labels(path, spec=None):
     out = {}
     for line in open(path, encoding="utf-8"):
         line = line.strip()
         if line:
             r = json.loads(line)
-            out[r["id"]] = label_wa(r["labels"])
+            # Use the record's own dimension order if present (robust to any
+            # config/label ordering drift); else the spec's dims.
+            names = r.get("dimension_names")
+            out[r["id"]] = label_wa(r["labels"], spec=spec, dim_names=names)
     return out
 
 
-def load_scores(path):
+def load_scores(path, spec=None):
+    """Read model predictions. With a spec (and per-dim `scores` in the record),
+    recompute the gatekeepered weighted average so the model side uses the same
+    weights + gatekeeper cap as the oracle side (needed when sweeping the cap).
+    Otherwise read the stored `weighted_average` (the original behavior)."""
     out = {}
     for line in open(path, encoding="utf-8"):
         line = line.strip()
-        if line:
-            r = json.loads(line)
-            rid = r.get("id") or r.get("article_id")
-            if rid is not None and r.get("weighted_average") is not None:
-                out[rid] = float(r["weighted_average"])
+        if not line:
+            continue
+        r = json.loads(line)
+        rid = r.get("id") or r.get("article_id")
+        if rid is None:
+            continue
+        if spec is not None and isinstance(r.get("scores"), dict) and all(
+            d in r["scores"] for d in spec["weights"]
+        ):
+            out[rid] = _wa(r["scores"], spec)
+        elif r.get("weighted_average") is not None:
+            out[rid] = float(r["weighted_average"])
     return out
 
 
@@ -134,30 +212,47 @@ def evaluate(truth, pred, medium=MEDIUM):
 
 
 def main():
-    ap = argparse.ArgumentParser(description="nature_recovery ground-truth deploy gate")
+    ap = argparse.ArgumentParser(description="filter-agnostic ground-truth deploy gate (ADR-021)")
     ap.add_argument("--labels", required=True, help="held-out oracle-labeled JSONL (id + labels)")
     ap.add_argument("--model", action="append", required=True,
-                    help="name=scored.jsonl (repeatable; e.g. v4=..., v2=...)")
+                    help="name=path.jsonl of model-scored articles (repeatable)")
     ap.add_argument("--report", default="filters/nature_recovery/v4/ground_truth_gate.json")
     ap.add_argument("--config", default="filters/nature_recovery/v4/config.yaml",
-                    help="filter config.yaml; the MEDIUM threshold defaults to its "
-                         "tiers.medium.threshold so the gate matches what deploys")
+                    help="filter config.yaml; dims/weights/gatekeeper AND the MEDIUM "
+                         "threshold default to its scoring block so the gate matches "
+                         "what deploys")
     ap.add_argument("--threshold", type=float, default=None,
                     help="override the MEDIUM surfacing threshold (default: read from --config)")
+    ap.add_argument("--gatekeeper-cap", type=float, default=None,
+                    help="override the gatekeeper cap (sweep the demote-vs-exclude boundary); "
+                         "auto-enables --recompute-model-wa so model+oracle use the same cap")
+    ap.add_argument("--recompute-model-wa", action="store_true",
+                    help="recompute each model's weighted_average from its per-dim scores using "
+                         "the config spec (instead of the stored weighted_average)")
     args = ap.parse_args()
 
+    spec = load_scoring_spec(args.config)
+    if spec is not None and args.gatekeeper_cap is not None:
+        spec = dict(spec)
+        spec["gk_cap"] = args.gatekeeper_cap
+    recompute = args.recompute_model_wa or (args.gatekeeper_cap is not None)
+
     medium = args.threshold if args.threshold is not None else load_medium_threshold(args.config)
-    truth = load_labels(args.labels)
-    report = {"threshold": medium, "n_labeled": len(truth), "models": {}}
-    for spec in args.model:
-        name, path = spec.split("=", 1)
-        report["models"][name] = evaluate(truth, load_scores(path), medium)
+    truth = load_labels(args.labels, spec=spec)
+    report = {"threshold": medium,
+              "gatekeeper_cap": (spec or _spec())["gk_cap"],
+              "n_labeled": len(truth), "models": {}}
+    for model_arg in args.model:
+        name, path = model_arg.split("=", 1)
+        model_spec = spec if recompute else None
+        report["models"][name] = evaluate(truth, load_scores(path, spec=model_spec), medium)
 
     Path(args.report).parent.mkdir(parents=True, exist_ok=True)
     Path(args.report).write_text(json.dumps(report, indent=2))
 
     hdr = f"{'model':6} {'recall':>7} {'prec':>7} {'spec':>7} {'f1':>7} {'spearman':>9} {'mae':>6}"
-    print(f"\nGround-truth gate vs held-out oracle labels (threshold {medium}, n={len(truth)})")
+    print(f"\nGround-truth gate vs held-out oracle labels "
+          f"(threshold {medium}, gatekeeper_cap {report['gatekeeper_cap']}, n={len(truth)})")
     print(hdr)
     print("-" * len(hdr))
     for name, m in report["models"].items():

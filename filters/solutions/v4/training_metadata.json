@@ -1,0 +1,32 @@
+{
+  "filter_name": "solutions",
+  "filter_version": "4.0-DRAFT",
+  "dimension_names": [
+    "solution_concreteness",
+    "systemic_impact",
+    "evidence_strength",
+    "governance_intervention_strength",
+    "community_practice_strength",
+    "equity_access",
+    "economic_viability"
+  ],
+  "num_dimensions": 7,
+  "model_name": "google/gemma-3-1b-pt",
+  "num_parameters": 1012947840,
+  "num_trainable_parameters": 13053824,
+  "epochs": 3,
+  "batch_size": 8,
+  "learning_rate": 2e-05,
+  "max_length": 512,
+  "warmup_steps": 500,
+  "train_examples": 9265,
+  "val_examples": 1032,
+  "best_val_mae": 0.5638365149497986,
+  "min_val_mae_observed": 0.5638365149497986,
+  "include_prompt": false,
+  "training_mode": "knowledge_distillation",
+  "use_head_tail": true,
+  "head_tokens": 256,
+  "tail_tokens": 256,
+  "sample_weight_scale": 0.0
+}

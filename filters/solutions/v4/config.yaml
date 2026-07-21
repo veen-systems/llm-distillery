@@ -54,7 +54,7 @@ oracle:
 
 scoring:
   # Calibration TBD — fit isotonic on the val set after training (ADR-008).
-  score_scale_factor: 1.0  # placeholder; recalibrate from production CDF
+  score_scale_factor: 1.6093  # 10.0 / 6.21 (calibrated max)
 
   dimensions:
     # === SCOPE GATEKEEPER (NEW shape — replaces v3's TRL gatekeeper) ===

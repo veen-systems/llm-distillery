@@ -445,3 +445,28 @@ this branch BEFORE training, or the model builds on stale code. Then: `train.py`
 foresight, normalization from production-base-rate rescore, Hub repo). Scored corpus backed up to
 `gpu-server:~/solutions_screen_work/scored_backup/` (it is gitignored — local disk + that backup
 are the only copies).
+
+### Round 5 — TRAIN + CALIBRATE + GATE EXECUTION (2026-07-21), verdict: model gated, deploy pending
+
+The build finished; the student is trained, calibrated, and through the ADR-021 gate. Full
+metrics + interpretation live in `README.md` ("Training + gate results"). Summary:
+
+- **Train** (gpu-server, ~68 min): Gemma-3-1B+LoRA, 3 epochs, head-tail 256+256, no sample-weight.
+  Val MAE 0.564 (0.73→0.64→0.56, no overfit). **NB — a gap the build left:** the Step-8 runtime
+  scorer (`base_scorer.py` + `inference.py` + package `__init__.py`) was NEVER written; calibration
+  failed on the missing `filters.solutions.v4.inference` import until it was added (workflow Step 8,
+  copy-from-`nature_recovery v4`).
+- **Calibrate** (ADR-008): per-dim isotonic on val; marginal (+0.3% on test — already well-fit to
+  DeepSeek). `score_scale_factor 1.6093`.
+- **Gate** (ADR-021, 1,500 unscreened holdout, op 3.0): recall **0.45** / prec **0.78** / spec 0.99 /
+  F1 0.57 / Spearman 0.46. The `ground_truth_gate.py` was nature_recovery-hardcoded — **generalized to
+  read dims/weights/gatekeeper from `--config`** (nr behavior provably unchanged, 8/8 unit tests + a
+  spec-equality regression check).
+- **Findings:** gatekeeper cap 3.0≡2.9 (inert → keep 3.0). Recall ceiling ~0.58 is **structural**
+  (52/61 misses scored <2.5, incl. 13 high-band) — the e5-screened training corpus taught the model
+  the screenable manifold; unscreened production solutions outside it are missed (the access-bias
+  limitation, `docs/ideas/access-bias-and-the-haystack.md`). Op-point/quick-retrain can't fix it → v2.
+
+**DEPLOY DECISION (next session):** op-point 2.25 (recall 0.56) vs 3.0 (recall 0.45) vs hold-for-v2.
+Compare to other filters' gate metrics first. Then: op-point → `inference_hub.py` → normalization
+(prod-base-rate rescore) → Hub → NexusMind wire-in → retire foresight → deploy checklist.

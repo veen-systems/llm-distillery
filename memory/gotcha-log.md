@@ -881,3 +881,42 @@ rules, anchor with a leading slash unless every-depth matching is genuinely inte
 **Problem**: Preparing to train solutions v4, found gpu-server's `~/llm-distillery` has the files but **no `.git`** (`git branch` → "fatal: not a git repository"), and lacks `filters/solutions/v4`. Can't `git pull` to bring it current.
 **Root cause**: The gpu-server working copy was seeded by file-copy/scp, not `git clone`, so it has no branch/HEAD and drifts silently from the repo.
 **Fix (deferred to next session)**: Before training, sync the current filter package + verify `train.py` and its imports match this branch (copy the needed dirs, or re-establish it as a clone). Rule: **never assume the gpu-server training tree is current — it has no git to tell you; verify code currency before every training run**, or the model builds on stale code.
+
+## A filter can be "train-ready" yet have NO runtime scorer — Step 8 is separate from training (2026-07-21)
+**Problem**: `fit_calibration.py` died with `ModuleNotFoundError: filters.solutions.v4.inference`.
+The solutions v4 package had config/prompt/prefilter + trained model + data, and was tracked as
+"TRAIN-READY / TRAINED", but had NO `base_scorer.py`, `inference.py`, or package `__init__.py`.
+**Root cause**: workflow Step 8 ("write inference code") sits *between* train (Step 7) and calibrate
+(Step 9) and is easy to skip — training only needs `train.py` + config + data; it never imports the
+filter's scorer class. Calibration is the first step that constructs `filters.<name>.v<N>.inference`.
+So "the model trained fine" gives false confidence the package is complete.
+**Fix**: wrote `__init__.py`×2 + `base_scorer.py` (`BaseSolutionsScorer` — constants only, logic in
+`FilterBaseScorer`) + `inference.py` (`SolutionsScorer`, local LoRA), copy-from-`nature_recovery v4`
+per the workflow. Verify a package is complete before/at training: `ls filters/<name>/v<N>/` must show
+`inference.py` + `base_scorer.py` + `__init__.py`, or `python -c "from filters.<name>.v<N>.inference
+import *"` must import.
+
+## ground_truth_gate.py (ADR-021) was nature_recovery-hardcoded — generalize before the 2nd filter (2026-07-21)
+**Problem**: The "reusable" deploy gate hardcoded nr's 6 DIMS, WEIGHTS, and gatekeeper
+(`recovery_evidence`, cap 3.5) in `label_wa()`. Solutions (7 dims, `solution_concreteness` gatekeeper)
+would `KeyError`. It only read the *threshold* from config, not the scoring spec.
+**Root cause**: written for nr v4 (the first filter through ADR-021); the "read from config" pattern was
+applied to the threshold only. Looked filter-agnostic, wasn't.
+**Fix**: generalized to derive dims/weights/gatekeeper from `--config` (`load_scoring_spec`); nr
+constants kept as defaults so behavior is unchanged when no spec is supplied. Guarded by the existing
+8 unit tests (all green) PLUS a regression check that `load_scoring_spec(nr_config)` equals the nr
+defaults exactly. Added `--gatekeeper-cap` sweep + `--recompute-model-wa`. Pattern: when a "shared"
+tool has only ever run for one filter, assume it's secretly coupled — the 2nd caller is when you find out.
+
+## Detached-job watcher misfired "LAUNCH FAILED" because the launch ssh held the channel open (2026-07-21)
+**Problem**: A background watcher that did `ssh gpu-server "setsid nohup train.py …&"; sleep 25;
+<check procs>` reported "LAUNCH FAILED — train_procs=0, exit 4" — but training had actually run to
+completion successfully (all artifacts saved).
+**Root cause**: the launch ssh channel stayed open for the *entire* 68-min run (the backgrounded
+process's inherited fds kept the channel from closing), so the watcher blocked at the launch step until
+training finished, THEN ran its +25s "did it start?" check — which saw 0 procs because training was
+already *done*, not because it failed to start. `setsid` detached the job, so the watcher's death never
+touched it.
+**Fix**: don't put launch + wait in the same ssh-blocked script. Launch in one call (accept the channel
+hold / background it), then verify liveness in a *separate* ssh, and detect completion by the artifact
+appearing (model dir / "Training complete" in the log), not by a fixed post-launch process probe.
