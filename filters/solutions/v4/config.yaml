@@ -1,9 +1,10 @@
-# Sustainability Technology -> Solutions Filter v4 (DRAFT)
+# Sustainability Technology -> Solutions Filter v4
 #
-# Status: DRAFT, pending calibration batch validation. Do NOT score the full
-# corpus against this config until the 300-article calibration batch (Step 3b
-# per memory/foresight-v1-lessons.md) confirms the dimension distributions
-# are not bimodal/dead-zone.
+# Status: TRAINED + CALIBRATED + GATED, DEPLOYING (2026-07-22). Gemma-3-1B+LoRA,
+# val MAE 0.564; ADR-021 ground-truth gate passed. Operating point set to 2.25
+# (best-F1 on the unscreened holdout sweep: recall 0.56 / precision 0.77) — the
+# editorial deploy decision of 2026-07-22 (see README "Training + gate results").
+# Recall ceiling ~0.58 is the documented access-bias limitation -> solutions v2.
 #
 # Why v4: ST v3 captures clean tech well (solar, EVs, biogas) but misses
 # governance and community solutions — exactly what the Solutions tab is
@@ -20,7 +21,7 @@
 
 filter:
   name: solutions
-  version: "4.0-DRAFT"
+  version: "4.0"
   created: "2026-05-05"
   updated: "2026-07-18"
   description: "Solutions lens (DRAFT) — concrete actions toward problems across tech, governance, and community"
@@ -249,7 +250,11 @@ scoring:
       description: "Active deployment with credible evidence"
       translate: true
     medium:
-      threshold: 3.0
+      # OPERATING POINT (2026-07-22 deploy decision): 2.25, the best-F1 point on
+      # the unscreened-holdout op-point sweep (recall 0.56 / prec 0.77 vs
+      # 0.45/0.78 at 3.0). This is the surfacing threshold the ADR-021 gate and
+      # NexusMind TIER_THRESHOLDS both key on — keep base_scorer.py in sync.
+      threshold: 2.25
       description: "Concrete pilot or early-stage solution"
       translate: true
     low:

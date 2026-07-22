@@ -25,9 +25,23 @@ ground-truth gate. Deploy decision deferred to next session.** The model exists
   missed. This is the documented **access-bias limitation** → a v2 item (external source
   expansion + active-learning on these misses), NOT fixable by op-point or a quick retrain.
 
-**Open deploy decision (next session):** op-point 2.25 (recall 0.56, looser) vs 3.0
-(recall 0.45, stricter) — an editorial trade at ~flat precision; or hold v1 and do v2
-source-expansion first. Compare to other filters' gate metrics before deciding.
+**Deploy decision (2026-07-22): DEPLOY at op-point 2.25.** Chosen over 3.0 (stricter,
+recall 0.45) and hold-for-v2. Rationale: v4 replaces sustech v3 (tech-only) AND parked
+foresight v1 (wrong lens — the Solutions tab is currently ~91% foresight-fed), so even a
+recall-weak but high-precision (0.77) purpose-built Solutions scorer is a relevance
+upgrade over the status quo; 2.25 buys +0.11 recall (0.45→0.56) at −0.01 precision. The
+recall/Spearman weakness (Spearman 0.46 vs nature_recovery v4's 0.82) is the structural
+access-bias limitation → the explicit solutions v2 mandate (external source expansion +
+active learning on the misses), not a reason to keep running the worse status quo.
+Comparison context: nature_recovery v4 gate = recall 0.65 / prec 0.85 / F1 0.74 /
+Spearman 0.82 (op 3.75); nr v2 (prev deployed) = 0.58 / 0.61 / 0.60 / 0.80.
+
+Config now reflects 2.25: `config.yaml scoring.tiers.medium.threshold` and
+`base_scorer.py TIER_THRESHOLDS` both = 2.25; `filter.version` = "4.0";
+`inference_hub.py` written (`SolutionsScorerHub`, Hub repo `jeergrvgreg/solutions-filter-v4`).
+Gatekeeper cap stays 3.0 (near-inert; see `base_scorer.py` for why it's safe above the
+op-point). **`ground_truth_gate.json` still records the op-3.0 evaluation — regenerate at
+2.25 when the model is next loaded (Phase B).**
 
 ## What this is
 

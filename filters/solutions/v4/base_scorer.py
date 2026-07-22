@@ -59,7 +59,7 @@ class BaseSolutionsScorer(FilterBaseScorer):
     TIER_THRESHOLDS = [
         ("high_solution", 7.0, "Mature, evidence-backed solution at meaningful scale"),
         ("medium_high", 5.0, "Active deployment with credible evidence"),
-        ("medium", 3.0, "Concrete pilot or early-stage solution"),
+        ("medium", 2.25, "Concrete pilot or early-stage solution"),
         ("low", 0.0, "Aspirational, lab-stage, or no concrete action"),
     ]
 
@@ -68,12 +68,18 @@ class BaseSolutionsScorer(FilterBaseScorer):
     # average is capped at GATEKEEPER_CAP so aspirational rhetoric without a
     # concrete commitment cannot reach the higher solution tiers.
     #
-    # NB boundary: GATEKEEPER_CAP (3.0) == the medium surfacing threshold (3.0),
-    # so a gatekept article caps at exactly the bottom of `medium` and still
-    # surfaces (contrast nature_recovery v4, where cap 3.5 sits BELOW medium 3.75
-    # so gatekept content stays `low`/hidden). This is faithful to the current
-    # config; flagged for review — see README / the deploy decision. It changes
-    # what the ADR-021 gate counts as surfaced at 3.0.
+    # NB boundary (RESOLVED at the 2026-07-22 deploy decision): with the op-point
+    # lowered to medium=2.25, GATEKEEPER_CAP (3.0) now sits ABOVE the medium
+    # threshold, so a gatekept article (concreteness < 3.0, high on other dims)
+    # caps at 3.0 and DOES surface as `medium`. This is intentional and safe:
+    # pure aspirational rhetoric scores low on ALL dims (raw wa well below 3.0 ->
+    # never reaches the cap -> stays `low`/hidden); the only articles the cap
+    # actually clamps are substance-rich-but-early-concreteness solutions, which
+    # legitimately belong in `medium` ("concrete pilot or early-stage solution").
+    # Empirically the cap is near-inert here anyway — precision held 0.78->0.77
+    # across the 3.0->2.25 sweep and cap 3.0 == 2.9 was byte-identical at op 3.0
+    # (ground-truth gate, 2026-07-21). Contrast nature_recovery v4, where the
+    # gatekeeper is meant to EXCLUDE (cap 3.5 < medium 3.75) — different intent.
     GATEKEEPER_DIMENSION = "solution_concreteness"
     GATEKEEPER_MIN = 3.0
     GATEKEEPER_CAP = 3.0
