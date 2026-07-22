@@ -179,9 +179,15 @@ smoke-tested (wa 3.95 medium); `test_filter_integrity` 8/8 + 872 unit tests gree
 production (ssf 1.0 → method 'none'; verified 31,852/31,852 records under-ranked vs normalized lenses).
 Fit it: same `content_items` rescore as solutions, `--min-score 3.75 --filter-version 4.0` (playbook §6).
 
-**Commerce detector — DEPLOY v2, don't retrain.** `commerce_prefilter` **v2** already exists (embeddings+MLP,
-97.8% F1) but NexusMind still imports **v1** (`src/preprocessing/commerce.py:271`). Task = repoint the
-import v1→v2 + validate — training is already done. Obituary detector v3 (trained 2026-06-14, #51): **there IS evidence
+**Commerce detector — DEPLOY v2 FIRST (owner priority), don't retrain.** `commerce_prefilter` **v2** is
+trained (embeddings+MLP, 97.8% F1) but was never actually deployed. NexusMind `commerce.py` ALREADY has
+the v2 path: line **178** uses `commerce_prefilter_v2` IF the gpu-server scorer `has_model(...)`, ELSE
+falls back to the **v1** import (line **271**) — so production is almost certainly on the v1 fallback.
+Deploy = verify `has_model("commerce_prefilter_v2")` on the scorer; if false, place/register the v2 model
+on gpu-server → NexusMind auto-switches (v2 weights are gitignored, like the filter models). **Holds:**
+review `filters/common/commerce_prefilter/docs/V2_DESIGN.md` §Open Questions + the "v1 needs rework for
+multilingual embeddings + context size" note (`filter-status.md`) before relying on it. Training is done;
+this is a deploy, not a retrain. Obituary detector v3 (trained 2026-06-14, #51): **there IS evidence
 of false-negatives** — owner flagged many obituaries that sailed through over past months. They're
 COLLECTED: reader flags in Cloudflare KV `ovr-news-flags` (pull via ovr `scripts/flag-audit.mjs`; a
 2026-06-25 audit is at `ovr.news/data/flag-evidence/`), plus the existing labeled set
