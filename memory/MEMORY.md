@@ -175,22 +175,42 @@ smoke-tested (wa 3.95 medium); `test_filter_integrity` 8/8 + 872 unit tests gree
 (merged to main) pushed. **Retirement is config-level; sustech/foresight package dirs KEPT for rollback
 (delete post-drain).** Summarization bake-off → `ovr.news/docs/decisions/` + ovr.news issue **#270**.
 
-**CARRIED — report-only, address next session:**
-- **nr v4 runs raw-passthrough in production** (no normalization.json, ssf 1.0 → method 'none';
-  31,852/31,852 recent records). #72 — fit its normalization.json (content_items rescore, op 3.75).
-  Surfaced by the value-based artifact check (which was reverted to keep CI green).
-- **`filters/common/score_normalization.py`** — 44-line llm-distillery↔NexusMind divergence (fit-side code
-  NexusMind doesn't run at runtime); kept out of the solutions deploy to stay scoped — sync separately.
+**Confirmed live bug — #72 nr v4 raw-passthrough.** nature_recovery v4 has NO `normalization.json` in
+production (ssf 1.0 → method 'none'; verified 31,852/31,852 records under-ranked vs normalized lenses).
+Fit it: same `content_items` rescore as solutions, `--min-score 3.75 --filter-version 4.0` (playbook §6).
+
+**Commerce detector — DEPLOY v2, don't retrain.** `commerce_prefilter` **v2** already exists (embeddings+MLP,
+97.8% F1) but NexusMind still imports **v1** (`src/preprocessing/commerce.py:271`). Task = repoint the
+import v1→v2 + validate — training is already done. Obituary detector v3: no flagged perf issue (retrain
+only on evidence); the open thread is **NexusMind#199** (regex P(obit) probe integration — this side ready
+via `obit_signal.py`). NB **don't build a second "universal noise" filter** — only commerce is universal
+(ADR-004; calibration-history Dead Ends). Training detectors is llm-distillery's job (they live in
+`filters/common/`, NexusMind imports them).
+
+**Follow-ups:**
+- ✅ **DONE 2026-07-22:** consent-guard bug FILED → **NexusMind #276**; OFF_LENS source-exclusion mask
+  UPSTREAMED into `scripts/screening/embedding_screener.py` (opt-in `--exclude-off-lens`, logged, 6/6 tested).
+- Sync **`filters/common/score_normalization.py`** — 44-line llm-distillery↔NexusMind divergence
+  (fit-side code NexusMind doesn't run at runtime).
+- **ovr.news #270** — actually swap `ollamaConfig.model` → `gpt-oss:20b`.
+- **Post-drain (~2026-08-01):** delete the retired sustech/foresight package dirs from NexusMind + servers.
 - ovr **content pages** (`architecture.astro`, `lenses.astro`) + dev-analysis scripts + `db-articles.ts`
   narrow helper still say sustainability_technology — non-functional doc follow-ups.
-- **Recall caveat:** production tiers on the normalized score → effective raw surfacing floor ~2.64, so
-  real recall < the raw-gate 0.559 (systemic across normalized filters; doesn't flip the 2.25 decision).
-- **Ollama summarization A/B (answered 2026-07-21):** `gpt-oss:20b` = the pragmatic swap
-  (`ovr.news src/lib/summarization.ts ollamaConfig.model`); `docs/ideas/summarization-model-bakeoff-2026-07-21.md`.
+- **solutions v2** = external source expansion + active-learning on the recall misses
+  (`docs/ideas/access-bias-and-the-haystack.md`); the recall caveat (prod surfaces at effective raw ~2.64,
+  so real recall < the raw-gate 0.559 — systemic, doesn't flip the 2.25 decision) is the v2 motivation.
 
-**Carried follow-ups:** upstream OFF_LENS mask into `scripts/screening/embedding_screener.py`;
-file the NexusMind `should_replace_content` consent-guard bug; solutions v2 = external source
-expansion + active-learning on the recall misses (`docs/ideas/access-bias-and-the-haystack.md`).
+**Your decisions (parked):** #91 sadalsuud `app.yaml healthcheck.enabled` drift (commit or revert);
+uplifting v7 NO_HUB weights backup (only gpu-server + old Windows box); cd v5's 5 config-schema exemptions
+(ratify or backfill).
+
+**Optional:** file augmented-engineering evidence — the free-diagnostic-pass caught 4 poisons pre-spend +
+the 3-round battery caught 15 defects-in-fixes incl. a fail-closed guard that would've halted the whole
+pipeline (verification-pattern evidence).
+
+**Standing:** deploys are committed-only (file-copy blocks the 4h cycle + emails you); run
+`NexusMind/tests/deploy_dryrun/setup_and_run.sh` before touching `deploy_filters.sh`. Session close:
+review battery → cleanup → docs → curate → commit → push → report.
 
 **Reminder — the old "re-score ST v3 + foresight as-is" plan is DEAD** (85% not_a_solution under
 the Solutions lens; `scripts/diagnostics/solutions_v4_corpus_noise_check.py`). Do not resurrect it.

@@ -25,6 +25,36 @@ sys.stdout = open(sys.stdout.fileno(), mode='w', encoding='utf-8', closefd=False
 sys.stderr = open(sys.stderr.fileno(), mode='w', encoding='utf-8', closefd=False)
 
 
+# --- OFF_LENS source-exclusion mask (upstreamed from the solutions v4 gpu-server
+# scratch screener, 2026-07-20). A similarity centroid pulls in off-lens
+# ML/science/preprint/code rows (arxiv/pubmed/github/…) — the same contamination
+# that made sustainability_technology v3 ~85% not_a_solution. These are noise for
+# every news-shaped lens here. When --exclude-off-lens is set, off-lens rows are
+# dropped BEFORE the top-k slice, so the quota backfills with the next-ranked news
+# (embeddings are already computed — no re-embed). Opt-in so existing screening
+# reproductions are unchanged; recommended for any needle filter. ---
+OFF_LENS_SOURCE_TYPES = {
+    "code_repo", "developer_aggregator", "firehose_aggregator",
+    "preprint", "academic", "research_paper",
+}
+# Domain substrings matched against source / url (lowercased).
+OFF_LENS_DOMAIN_SUBSTR = (
+    "arxiv.org", "biorxiv.org", "medrxiv.org", "chemrxiv.org", "ssrn.com",
+    "pubmed", "ncbi.nlm.nih.gov", "semanticscholar.org", "openreview.net",
+    "researchgate.net", "github.com", "gitlab.com", "huggingface.co/papers",
+)
+
+
+def is_off_lens(article: dict) -> bool:
+    """True if the article is off-lens ML/science/preprint/code noise (arxiv,
+    pubmed, github, …) — see OFF_LENS_* above."""
+    st = str(article.get("source_type", "")).strip().lower()
+    if st in OFF_LENS_SOURCE_TYPES:
+        return True
+    hay = f"{article.get('source', '')} {article.get('url', '')}".lower()
+    return any(dom in hay for dom in OFF_LENS_DOMAIN_SUBSTR)
+
+
 def load_articles(path: Path, max_articles: int = 0) -> list:
     """Load articles from JSONL, handling both .json and .jsonl."""
     articles = []
@@ -71,6 +101,11 @@ def main():
                         help='Embedding batch size')
     parser.add_argument('--max-corpus', type=int, default=0,
                         help='Max corpus articles (0 = all)')
+    parser.add_argument('--exclude-off-lens', action='store_true',
+                        help='Drop off-lens ML/science/preprint/code rows '
+                             '(arxiv/pubmed/github/…) before top-k, backfilling '
+                             'the quota with next-ranked news. Recommended for '
+                             'needle filters (see OFF_LENS_* constants).')
     args = parser.parse_args()
 
     # Load positive examples
@@ -116,6 +151,16 @@ def main():
                 print(f"    {total:,} articles embedded...")
 
     print(f"  Total: {total:,} articles embedded")
+
+    # OFF_LENS mask (before top-k so the quota backfills with next-ranked news).
+    # Log the drop count — never a silent cap.
+    if args.exclude_off_lens:
+        before = len(all_scores)
+        all_scores = [(s, a) for (s, a) in all_scores if not is_off_lens(a)]
+        dropped = before - len(all_scores)
+        print(f"  OFF_LENS mask: dropped {dropped:,} off-lens rows "
+              f"(arxiv/pubmed/github/science); {len(all_scores):,} remain, "
+              f"top-{args.top_k} backfilled from next-ranked news.")
 
     # Sort by similarity, take top-k
     all_scores.sort(key=lambda x: x[0], reverse=True)
