@@ -154,20 +154,41 @@ Full per-session narratives live below the auto-loading cliff (read on demand). 
 - [2026-05-31](project_session_2026_05_31.md) — cultural_discovery **v5 SHIPPED** (DeepSeek oracle, val MAE 0.697, #62 leakage resolved end-to-end).
 - [2026-05-29/30](project_session_2026_05_29.md) — cd v5 hard-negatives cohort (49 articles, 5 buckets) + v5 prompt drafted (flags F/G/H/I/K).
 
-## Next Session Pickup (updated 2026-07-22)
+## Next Session Pickup (updated 2026-07-22 evening)
 
-**🎯 solutions v4 is DEPLOYED (ARMED) — all 3 repos committed + pushed; the cutover was EXECUTED
-2026-07-22 (owner returned, said go-ahead). It goes live on the NEXT ~16:00 FluxusSource cron.**
-Full record: `project_session_2026_07_22.md`.
+**The 2026-07-22 *evening* session was ops/triage (no filter-building).** Solutions cutover EXECUTED +
+live-scoring; a **P1 commerce regression** was found; infra fixed. Full record: `project_session_2026_07_22.md`.
+Pick up in this order:
 
-**FIRST THING NEXT SESSION — verify the cutover fired:**
-1. Check the first post-16:00 `filtered_*.jsonl` on sadalsuud has `nexus_mind_attributes.solutions`
-   articles (and sustech/foresight stopped). `ssh sadalsuud 'ls -t ~/local_dev/NexusMind/data/filtered/... '`.
-   If yes → **ADR-020 PROVISIONAL→Accepted**. If the cron didn't pull, check NexusMind ExecStartPre / CI.
-2. Confirm the ovr Solutions tab renders solutions articles once data flows (draining sustech/foresight
-   age out of ovr's 10-day window).
+**① VERIFY SOLUTIONS — still pending; the ONLY thing blocking ADR-020 Accepted.**
+The cutover fired but first-cycle verification never completed: the 16:09 cron was blocked by a stale
+smoke fixture (fixed NexusMind `e2a102e`, fixture repointed to solutions), then the manual re-run spent
+3h+ on a one-time new-filter image+enrichment catch-up (backfill→hero→enrichment each fetching ~20k
+pages) and had NOT written `filtered/solutions/*.jsonl` by session end.
+→ `ssh sadalsuud 'ls -t ~/local_dev/NexusMind/data/filtered/solutions/'` — if solutions output exists
+with sane scores (live smoke was **wa 4.43**, method gpu-server) → **ADR-020 PROVISIONAL→Accepted**.
+A normal cron cycle will also have run by then (cheaper/cleaner sample than the catch-up run).
 
-**DEPLOYED 2026-07-22 (armed):** op-point **2.25** (gate 0.559/0.768/0.647); `score_scale_factor` 1.0;
+**② P1 — COMMERCE v2 IS A LIVE REGRESSION (#80, P1-high/bug).** Shadow run this session proved v2 (live
+on the gpu-server scorer) UNDERPERFORMS the v1 it replaced: blocks 2.1% vs 5.2%, misses obvious product
+listings AND over-blocks multilingual (Greek) news — NOT the 128-token cut (v2-misses are shorter than
+avg). Report: `filters/common/commerce_prefilter/docs/SHADOW_REPORT_v1_vs_v2.md`.
+→ DECIDE: roll back to v1 (BLOCKED — v1 weights only on gpu-server, `commerce.py:271` local fallback
+would `FileNotFoundError`) OR retrain v2 on representative multilingual traffic. Also: **back up v1+v2
+weights to HF Hub** (gitignored; v1 is a single copy on the borrowed gpu-server = unrecoverable if it dies).
+
+**③ Standing filter work (unchanged): #76 calibration crush.** Deployed filters demote good content below
+the medium boundary — likely ONE normalization/`raw_min`-drift root cause across #74/#75/#76/#72; start at
+#76, cross-ref `calibration-history.md` Dead Ends. (Owner flagged commerce #80 as higher priority.)
+
+**Infra fixed this session (durable):** gpu-server now has **direct headless ssh from situla** (copied the
+passphrase-less `nexusmind_gpu` key; `gpu-server.md` updated — no more sadalsuud hop). **git push works
+repo-wide** via the gh HTTPS token (`gh auth setup-git` + global `insteadOf`). Idea issues **#78**
+(manipulation/propaganda *technique* scorer — new cross-cutting category) + **#79** (calm/ND + media-literacy
+outlets) filed. NexusMind **#277** filed-then-closed (hero extraction DOES self-cap at 3600s — I'd misread
+the code; runtime disproved it).
+
+**DEPLOYED 2026-07-22 (LIVE-SCORING; first-output verification pending):** op-point **2.25** (gate 0.559/0.768/0.647); `score_scale_factor` 1.0;
 `normalization.json` fitted (40K non-commerce rescore, 536≥2.25); Hub `solutions-filter-v4` published
 (card=DeepSeek); 3-round review clean. NexusMind `61ecc10` pushed (package + `enabled_filters` +solutions
 −sustech −foresight); model pre-placed on gpu-server (`~/NexusMind/filters/solutions/v4/model/`);

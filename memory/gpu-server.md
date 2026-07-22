@@ -5,10 +5,17 @@ Proxmox LXC container on HCL edge server, accessed via Tailscale.
 ## Access
 
 ```bash
-ssh gpu-server   # configured in ~/.ssh/config — direct from situla over Tailscale
+ssh gpu-server   # direct, headless, passphrase-less from situla — just works
 ```
 
-**Direct access works. `Permission denied` means the key is LOCKED, not absent.**
+**FIXED 2026-07-22 — situla now has direct headless access; the two-agent /
+passphrase saga below is SUPERSEDED (kept for history).** Root fix: copied the
+dedicated **`~/.ssh/nexusmind_gpu`** key (passphrase-less — the same key sadalsuud
+uses) from sadalsuud → situla, and rewrote the `gpu-server` block in `~/.ssh/config`
+to `HostName 100.84.103.16` + `IdentityFile ~/.ssh/nexusmind_gpu` + `IdentitiesOnly
+yes`, dropping the empty-`openssh_agent` pin that offered no key. A non-interactive
+`ssh gpu-server` now authenticates as `hcl@gpu-server` with no prompt — no more
+`ssh sadalsuud "ssh gpu-server …"` hop needed. Everything below is historical.
 
 Situla runs **two ssh agents**, and gpu-server uses the smaller one:
 

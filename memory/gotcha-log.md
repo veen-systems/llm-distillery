@@ -4,6 +4,30 @@ Problems encountered and resolved. Format: Problem → Root cause → Fix.
 
 ---
 
+## Retiring a filter but leaving its smoke fixture fail-closes the whole deploy (2026-07-22)
+**Problem**: The first cron after the solutions v4 cutover (retired sustech + foresight from
+`enabled_filters`) aborted every 4h with `ERROR: smoke fixture references filters not in app.yaml
+enabled_filters: ['foresight', 'sustainability_technology']`. Looked like the new lens broke the pipeline.
+**Root cause**: `NexusMind/scripts/deploy_filters.sh` has a fail-closed name-alignment gate: every filter
+in `deploy/smoke_test_articles.jsonl` must be in `enabled_filters`. The cutover updated `enabled_filters`
+but left the two retired filters' smoke fixtures behind → orphan fixtures → gate abort (correct behavior,
+just an incomplete cutover).
+**Fix**: repoint the iron-air-battery fixture (a clean solutions positive) to `solutions`, drop the
+foresight fixture (`e2a102e`). **Lesson**: retiring a filter is a *3-place* edit — `enabled_filters` AND
+the smoke fixture AND (for llm-distillery) the package. Add "update `smoke_test_articles.jsonl`" to any
+filter-retirement checklist.
+
+## Filed a wrong issue from a partial code grep — the runtime disproved it (2026-07-22)
+**Problem**: Filed NexusMind #277 claiming hero image extraction has "no overall budget" (uncapped),
+based on a grep that found only the per-page `hero_extraction_timeout=5.0` and no budget. Hours later the
+journal printed `Hero extraction: budget exhausted at 3600s — completed 15890/21251` — it DOES self-cap,
+exactly like og:image backfill. Closed #277 as not-planned.
+**Root cause**: concluded "no budget exists" from "grep didn't find one" (absence-of-evidence) + the phase
+running >40 min (which was just heading toward its own 1h cap). A partial read of one file, asserted as fact.
+**Fix**: for "does X have a guard?" questions, prefer runtime evidence (run it / read the logs) over a
+keyword grep, or read the whole function — grep proves presence, never absence. Reproduce-don't-assume
+caught it, but only after the wrong issue was already filed.
+
 ## First pipeline run after adding a NEW filter is ~5–8× slower (one-time backlog catch-up), NOT a regression (2026-07-22)
 
 **Problem**: The first NexusMind cycle after the solutions v4 cutover ran for **>1h20m** (still going) vs the normal ~16 min, with the journal stuck for ~1h on `og:image backfill: fetching 20303 article pages`. Looked like a hang / a problem introduced by the new lens — worrying enough to ask "is this broken?"
