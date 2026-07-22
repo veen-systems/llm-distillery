@@ -4,6 +4,19 @@ Problems encountered and resolved. Format: Problem → Root cause → Fix.
 
 ---
 
+## First pipeline run after adding a NEW filter is ~5–8× slower (one-time backlog catch-up), NOT a regression (2026-07-22)
+
+**Problem**: The first NexusMind cycle after the solutions v4 cutover ran for **>1h20m** (still going) vs the normal ~16 min, with the journal stuck for ~1h on `og:image backfill: fetching 20303 article pages`. Looked like a hang / a problem introduced by the new lens — worrying enough to ask "is this broken?"
+
+**Root cause**: A **brand-new filter has no processing history**, so its entire surfaced-article backlog gets dedup-clustered and image-backfilled in one go. Evidence from same-day cron runs (all healthy) vs this run, with *near-identical article input* (~2.6–3.6k in each):
+| Run | Dedup clusters / time | og:image backfill |
+|---|---|---|
+| 04:08 / 08:08 / 12:10 (cron) | ~2,000 / **150–200s** | **1,570–1,952 pages** |
+| 17:58 (first run w/ solutions) | **29,132 / 1,327s** | **20,303 pages** |
+~10× dedup + backfill despite normal input → not backlog-from-the-failed-16:09-deploy (a 5h gap can't do 10×), but solutions' never-before-seen surfaced articles. The og:image backfill is network-bound (dead-domain timeout tail, ~5 concurrent conns crawling the last few thousand) — but it is **already guarded by a 3600s budget**: this run hit it (`budget exhausted at 3600s — completed 18775/20303, dropped 1528 at budget`) and moved on gracefully, so it self-bounds at ~1h and never hangs forever.
+
+**Fix**: None needed — it's a one-time onboarding cost; the **next** cron cycle returns to the ~16 min / ~180s dedup / ~1.6k backfill norm. Expect exactly one slow catch-up run **per new-filter launch** — recognize it, don't panic, and DON'T kill it (aborting discards the scored output, which is only written at pipeline end). The 3600s backfill budget caps the pain at ~1h and drops the tail (1528 images just miss hero-image enrichment for one cycle — cosmetic, self-heals next run). Latent improvement if new-filter launches get frequent: lower the backfill budget for the first catch-up cycle so it drops the tail sooner.
+
 ## deploy_to_nexusmind.sh: Windows-only paths + `filters/common` sync pulls unrelated artifacts (2026-07-22)
 
 **Problem**: Running the solutions v4 cutover from situla (Linux), `deploy_to_nexusmind.sh` (1) failed immediately with `ERROR: Filter not found: C:/local_dev/llm-distillery/...` — the script hardcoded the Windows workstation paths; and (2) after fixing that, its "sync all of `filters/common/`" step pulled **unrelated `obituary_detector` training/validation dirs + a `calibration_report.json` into NexusMind** (mtime = the copy), plus surfaced a real 44-line `score_normalization.py` divergence — none of which belonged in a solutions deploy. `git add filters/common/` would have bundled the obituary artifacts (origin-contamination shape).

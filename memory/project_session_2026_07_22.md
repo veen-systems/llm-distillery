@@ -57,6 +57,20 @@ solutions package is copied into NexusMind — this is the correct guard, resolv
    (CI-gated). foresight drains out of ovr's 10-day window automatically.
 5. Live smoke on the next cycle's `filtered_*.jsonl`; ADR-020 PROVISIONAL→Accepted.
 
+## Post-cutover ops note (2026-07-22 evening)
+- **Smoke gate blocked the first cron** after `61ecc10`: retired sustech+foresight from
+  `enabled_filters` but left their smoke fixtures → `deploy_filters.sh` name-alignment gate (fail-closed)
+  aborted every cycle. Fixed in NexusMind `e2a102e` (repoint iron-air fixture → solutions, min_wa 2.5;
+  drop foresight fixture). Fixtures now match enabled_filters 6/6. **Live smoke PASSED — `solutions
+  wa=4.43 in expected range`; pipeline ran `['solutions', ...]`, sustech/foresight gone.**
+- **First run w/ solutions is a one-time slow catch-up** (~1h20m+ vs ~16 min): 20,303 og:image backfills
+  + 29,132 dedup clusters (10× normal) because solutions has no processing history. NOT a regression —
+  next cron returns to normal. Expect one slow run per new-filter launch. See gotcha-log 2026-07-22.
+- **git push once-and-for-all fix**: situla's github SSH path was fully broken (empty openssh_agent +
+  GNOME-keyring gcr agent hangs on headless signing + passphrase-locked key). Routed git through the
+  already-working `gh` token instead: `gh auth setup-git` + `git config --global
+  url."https://github.com/".insteadOf "git@github.com:"`. All repos push over HTTPS now, no agent.
+
 ## Carried / report-only
 - **nr v4 runs raw-passthrough in production** (no normalization.json, ssf 1.0 → method 'none';
   31,852/31,852 recent records). Tracked #72 — fit its normalization.json (content_items rescore, op 3.75).
