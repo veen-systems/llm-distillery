@@ -10,8 +10,10 @@ ground-truth gate. Deploy decision deferred to next session.** The model exists
 - **Training:** Gemma-3-1B + LoRA, 3 epochs, head-tail 256+256, no sample-weighting
   (train mix 31.5% positive). Val MAE **0.564** (steady 0.73→0.64→0.56, no overfit).
 - **Calibration:** per-dim isotonic on val (ADR-008); marginal effect (+0.3% on test —
-  the model is already well-fit to DeepSeek). `calibration.json` committed,
-  `score_scale_factor: 1.6093`.
+  the model is already well-fit to DeepSeek). `calibration.json` committed. Calibration
+  produced `score_scale_factor 1.6093`, but the deployed config sets it to **1.0** —
+  cross-lens scaling is `normalization.json` (ADR-014); a non-1.0 fallback is the nr v2
+  stale-inflation trap (#167/#205).
 - **ADR-021 gate** (1,500-article *unscreened* holdout, oracle = DeepSeek, op-point 3.0):
   recall **0.45** / precision **0.78** / specificity 0.99 / F1 0.57 / Spearman 0.46
   (`ground_truth_gate.json`). Precision-strong, **recall-weak**.

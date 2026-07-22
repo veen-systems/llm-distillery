@@ -54,8 +54,14 @@ oracle:
     - gemini-pro
 
 scoring:
-  # Calibration TBD — fit isotonic on the val set after training (ADR-008).
-  score_scale_factor: 1.6093  # 10.0 / 6.21 (calibrated max)
+  # Calibrated: per-dim isotonic on the val set (ADR-008), calibration.json.
+  # score_scale_factor MUST be 1.0 on a fresh version: production_scorer applies
+  # percentile normalization.json (ADR-014) and only falls back to this linear
+  # stretch if normalization is missing (#167/#205). A non-1.0 value here is the
+  # nature_recovery v2 trap — a stale 1.3708 inflated scores and DEFEATED the
+  # gatekeeper/op-point when the fallback fired (live-scoring proof 2026-07-10).
+  # The old 1.6093 (10.0/6.21 calibrated max) is superseded by normalization.json.
+  score_scale_factor: 1.0
 
   dimensions:
     # === SCOPE GATEKEEPER (NEW shape — replaces v3's TRL gatekeeper) ===
