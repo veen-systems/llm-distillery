@@ -181,9 +181,13 @@ Fit it: same `content_items` rescore as solutions, `--min-score 3.75 --filter-ve
 
 **Commerce detector — DEPLOY v2, don't retrain.** `commerce_prefilter` **v2** already exists (embeddings+MLP,
 97.8% F1) but NexusMind still imports **v1** (`src/preprocessing/commerce.py:271`). Task = repoint the
-import v1→v2 + validate — training is already done. Obituary detector v3: no flagged perf issue (retrain
-only on evidence); the open thread is **NexusMind#199** (regex P(obit) probe integration — this side ready
-via `obit_signal.py`). NB **don't build a second "universal noise" filter** — only commerce is universal
+import v1→v2 + validate — training is already done. Obituary detector v3 (trained 2026-06-14, #51): **there IS evidence
+of false-negatives** — owner flagged many obituaries that sailed through over past months. They're
+COLLECTED: reader flags in Cloudflare KV `ovr-news-flags` (pull via ovr `scripts/flag-audit.mjs`; a
+2026-06-25 audit is at `ovr.news/data/flag-evidence/`), plus the existing labeled set
+`ovr.news/data/obituary-phase1-prelabels.jsonl` (gate-reject/harvest provenance). → **retrain
+obituary_detector v4** on the flagged false-negatives as hard negatives. Other thread: **NexusMind#199**
+(regex P(obit) probe integration — this side ready via `obit_signal.py`). NB **don't build a second "universal noise" filter** — only commerce is universal
 (ADR-004; calibration-history Dead Ends). Training detectors is llm-distillery's job (they live in
 `filters/common/`, NexusMind imports them).
 
