@@ -20,9 +20,10 @@
 
 set -e  # Exit on error
 
-# Configuration
-DISTILLERY_ROOT="C:/local_dev/llm-distillery"
-NEXUSMIND_ROOT="C:/local_dev/NexusMind"
+# Configuration. Env-overridable so this runs on any workstation (the defaults are
+# the Windows box; on situla/Linux export DISTILLERY_ROOT + NEXUSMIND_ROOT).
+DISTILLERY_ROOT="${DISTILLERY_ROOT:-C:/local_dev/llm-distillery}"
+NEXUSMIND_ROOT="${NEXUSMIND_ROOT:-C:/local_dev/NexusMind}"
 
 # Parse arguments
 FILTER_NAME=""
