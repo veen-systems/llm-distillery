@@ -160,14 +160,19 @@ Full per-session narratives live below the auto-loading cliff (read on demand). 
 live-scoring; a **P1 commerce regression** was found; infra fixed. Full record: `project_session_2026_07_22.md`.
 Pick up in this order:
 
-**① SOLUTIONS VERIFIED ✅ (2026-07-22 ~21:04) — ADR-020 clear to mark Accepted.**
+**① SOLUTIONS — LIVENESS verified ✅, CONTENT-QUALITY review STILL OWED before ADR-020 Accept.**
 First cron (16:09) was blocked by a stale smoke fixture (fixed NexusMind `e2a102e`); the manual re-run
-spent 3h+ on a one-time new-filter image+enrichment catch-up, then completed `Result=success` and wrote
-`filtered/solutions/filtered_20260722_210402.jsonl` — **9,334 articles scored**, normalization applied,
-tiers **8,834 low / 118 medium / 137 medium_high / 245 high_solution** (~500 = 5.4% surface medium+),
-multilingual (en 5388 / es 867 / de 545 / fr 339 / nl 339 / el 289), normalized 0–10 (surfacing p50 6.16),
-raw 0–5.37 — consistent with op-point 2.25. → **Formally flip ADR-020 PROVISIONAL→Accepted** and confirm
-the ovr Solutions tab renders once sustech/foresight age out of ovr's 10-day window.
+completed `Result=success` and wrote `filtered/solutions/filtered_20260722_210402.jsonl` — **9,334 scored**,
+normalization applied, tiers **8,834 low / 118 medium / 137 medium_high / 245 high_solution** (~5.4% medium+),
+multilingual, normalized 0–10 — **structurally sane** (not collapsed like nr v2 #75). BUT a title-only
+eyeball of surfaced articles shows real quality caveats, NOT yet a clean pass:
+  - high_solution has **policy/regulation-news bleed** (gambling rules, Airbnb enforcement, smoking bans)
+    — echoes the old foresight "governance-solutions not foresight" problem;
+  - medium tier **drifts into belonging/uplifting** (community soccer, seniors' friendships, warm meals);
+  - ≥1 **branded/promotional** bleed (Nedbank accelerator, cf. uplifting v8 #63).
+→ **Do a proper quality gate before flipping ADR-020**: read full content of borderline high/medium items,
+re-score a sample with the DeepSeek oracle and compare to the deployed model (production calibration check),
+inspect dimensional breakdowns (not just aggregate). Distribution-shape ✅ ≠ output-quality ✅.
 
 **② P1 — COMMERCE v2 IS A LIVE REGRESSION (#80, P1-high/bug).** Shadow run this session proved v2 (live
 on the gpu-server scorer) UNDERPERFORMS the v1 it replaced: blocks 2.1% vs 5.2%, misses obvious product
