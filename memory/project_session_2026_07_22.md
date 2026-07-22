@@ -1,8 +1,17 @@
-# Session 2026-07-22 — Solutions v4 op-point 2.25, Hub published, 3-round review, DEPLOY-READY (live cutover held)
+# Session 2026-07-22 — Solutions v4 op-point 2.25, Hub published, 3-round review, DEPLOYED (armed for next cron)
 
-**Branch:** `solutions-v4-calibration` (pushed). **Spend: ~$0** (GPU rescore only; Hub free).
-**State: solutions v4 fully prepared + reviewed across 3 repos; live production cutover HELD for a
-coordinated go (unattended session — irreversible flagship-tab flip not done blind).**
+**Branch:** `solutions-v4-calibration` → merged to `main` (pushed). **Spend: ~$0** (GPU rescore only; Hub free).
+**State: solutions v4 committed to all 3 repos + pushed; deploy ARMED (fires on the next ~16:00 FluxusSource
+cron). NexusMind `61ecc10`, ovr `c279dc4` (owner pushed) + `47cca67`, llm-distillery merged to main. Model
+pre-placed on gpu-server, smoke-tested (wa 3.95 medium, dims differentiate). Retirement of sustech+foresight
+is config-level (armed); package dirs KEPT on servers for rollback.**
+
+> Update (session back-half): the "held for coordinated go" plan below was superseded — the owner returned,
+> said "go ahead", and the cutover was EXECUTED: `deploy_to_nexusmind.sh` (Windows-path bug fixed to run on
+> situla), clean staging (no weights, no obituary contamination), `test_filter_integrity` 8/8 + 872 unit
+> tests green, model placed, smoke passed, all 3 repos pushed. Summarization bake-off moved to
+> `ovr.news/docs/decisions/` + tracked as ovr.news #270. **Next session: verify solutions in the first
+> post-16:00 `filtered_*.jsonl` → ADR-020 Accepted; then nr v4 #72 + the score_normalization.py sync.**
 
 ## What happened
 Resumed at the solutions v4 deploy decision. Drove it end to end, then ran the engineer's requested

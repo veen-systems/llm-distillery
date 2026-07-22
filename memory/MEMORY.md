@@ -156,30 +156,31 @@ Full per-session narratives live below the auto-loading cliff (read on demand). 
 
 ## Next Session Pickup (updated 2026-07-22)
 
-**🎯 solutions v4 is DEPLOY-READY + REVIEWED (3 rounds). The live production cutover was HELD
-(2026-07-22 session ran unattended — an irreversible flagship-tab flip should not go blind).
-Do the coordinated cutover, then the carried items.** Full record: `project_session_2026_07_22.md`.
+**🎯 solutions v4 is DEPLOYED (ARMED) — all 3 repos committed + pushed; the cutover was EXECUTED
+2026-07-22 (owner returned, said go-ahead). It goes live on the NEXT ~16:00 FluxusSource cron.**
+Full record: `project_session_2026_07_22.md`.
 
-**COORDINATED CUTOVER (do first, ~15 min):**
-1. `deploy_to_nexusmind.sh --filter filters/solutions/v4` — copies package + `filters/common`,
-   verifies, commits NexusMind WITH the staged `config/app.yaml` (solutions enabled, sustech+foresight
-   removed) — atomic. `tests/unit/test_filter_integrity.py` is RED until this runs (correct guard).
-2. Pre-place model: `ssh gpu-server 'cp -r ~/llm-distillery/filters/solutions/v4/model
-   ~/NexusMind/filters/solutions/v4/model'` (survives the `*/model/` rsync exclude, checklist #5).
-3. Smoke-test scoring on gpu-server (score a fixture; confirm sane).
-4. `git push` NexusMind + ovr (ovr already committed `c279dc4`); merge llm-distillery branch → main.
-   Next 4h cron deploys (CI-gated). foresight drains out of ovr's 10-day window automatically.
-5. Live smoke on the next `filtered_*.jsonl`; **ADR-020 PROVISIONAL→Accepted**.
+**FIRST THING NEXT SESSION — verify the cutover fired:**
+1. Check the first post-16:00 `filtered_*.jsonl` on sadalsuud has `nexus_mind_attributes.solutions`
+   articles (and sustech/foresight stopped). `ssh sadalsuud 'ls -t ~/local_dev/NexusMind/data/filtered/... '`.
+   If yes → **ADR-020 PROVISIONAL→Accepted**. If the cron didn't pull, check NexusMind ExecStartPre / CI.
+2. Confirm the ovr Solutions tab renders solutions articles once data flows (draining sustech/foresight
+   age out of ovr's 10-day window).
 
-**Already done (2026-07-22):** op-point **2.25** (gate 0.559/0.768/0.647, regenerated); `score_scale_factor`
-1.0; `normalization.json` fitted (40K non-commerce prod rescore, 536≥2.25); `inference_hub.py`; Hub
-`solutions-filter-v4` published+verified (card = DeepSeek). llm-distillery pushed; ovr committed;
-NexusMind staged. 3-round review battery clean (R3 = 0 blocking).
+**DEPLOYED 2026-07-22 (armed):** op-point **2.25** (gate 0.559/0.768/0.647); `score_scale_factor` 1.0;
+`normalization.json` fitted (40K non-commerce rescore, 536≥2.25); Hub `solutions-filter-v4` published
+(card=DeepSeek); 3-round review clean. NexusMind `61ecc10` pushed (package + `enabled_filters` +solutions
+−sustech −foresight); model pre-placed on gpu-server (`~/NexusMind/filters/solutions/v4/model/`);
+smoke-tested (wa 3.95 medium); `test_filter_integrity` 8/8 + 872 unit tests green. ovr + llm-distillery
+(merged to main) pushed. **Retirement is config-level; sustech/foresight package dirs KEPT for rollback
+(delete post-drain).** Summarization bake-off → `ovr.news/docs/decisions/` + ovr.news issue **#270**.
 
-**CARRIED — report-only, address after cutover:**
+**CARRIED — report-only, address next session:**
 - **nr v4 runs raw-passthrough in production** (no normalization.json, ssf 1.0 → method 'none';
   31,852/31,852 recent records). #72 — fit its normalization.json (content_items rescore, op 3.75).
   Surfaced by the value-based artifact check (which was reverted to keep CI green).
+- **`filters/common/score_normalization.py`** — 44-line llm-distillery↔NexusMind divergence (fit-side code
+  NexusMind doesn't run at runtime); kept out of the solutions deploy to stay scoped — sync separately.
 - ovr **content pages** (`architecture.astro`, `lenses.astro`) + dev-analysis scripts + `db-articles.ts`
   narrow helper still say sustainability_technology — non-functional doc follow-ups.
 - **Recall caveat:** production tiers on the normalized score → effective raw surfacing floor ~2.64, so
