@@ -160,14 +160,14 @@ Full per-session narratives live below the auto-loading cliff (read on demand). 
 live-scoring; a **P1 commerce regression** was found; infra fixed. Full record: `project_session_2026_07_22.md`.
 Pick up in this order:
 
-**① VERIFY SOLUTIONS — still pending; the ONLY thing blocking ADR-020 Accepted.**
-The cutover fired but first-cycle verification never completed: the 16:09 cron was blocked by a stale
-smoke fixture (fixed NexusMind `e2a102e`, fixture repointed to solutions), then the manual re-run spent
-3h+ on a one-time new-filter image+enrichment catch-up (backfill→hero→enrichment each fetching ~20k
-pages) and had NOT written `filtered/solutions/*.jsonl` by session end.
-→ `ssh sadalsuud 'ls -t ~/local_dev/NexusMind/data/filtered/solutions/'` — if solutions output exists
-with sane scores (live smoke was **wa 4.43**, method gpu-server) → **ADR-020 PROVISIONAL→Accepted**.
-A normal cron cycle will also have run by then (cheaper/cleaner sample than the catch-up run).
+**① SOLUTIONS VERIFIED ✅ (2026-07-22 ~21:04) — ADR-020 clear to mark Accepted.**
+First cron (16:09) was blocked by a stale smoke fixture (fixed NexusMind `e2a102e`); the manual re-run
+spent 3h+ on a one-time new-filter image+enrichment catch-up, then completed `Result=success` and wrote
+`filtered/solutions/filtered_20260722_210402.jsonl` — **9,334 articles scored**, normalization applied,
+tiers **8,834 low / 118 medium / 137 medium_high / 245 high_solution** (~500 = 5.4% surface medium+),
+multilingual (en 5388 / es 867 / de 545 / fr 339 / nl 339 / el 289), normalized 0–10 (surfacing p50 6.16),
+raw 0–5.37 — consistent with op-point 2.25. → **Formally flip ADR-020 PROVISIONAL→Accepted** and confirm
+the ovr Solutions tab renders once sustech/foresight age out of ovr's 10-day window.
 
 **② P1 — COMMERCE v2 IS A LIVE REGRESSION (#80, P1-high/bug).** Shadow run this session proved v2 (live
 on the gpu-server scorer) UNDERPERFORMS the v1 it replaced: blocks 2.1% vs 5.2%, misses obvious product
