@@ -24,6 +24,19 @@ def create_model_card(
     final_epoch = training_history[-1]
     val_mae = final_epoch['val']['mae']
 
+    # Oracle provenance must come from config, NOT a hardcoded string — solutions
+    # v4 and cultural-discovery v5 use DeepSeek, not Gemini. Prefer an explicit
+    # training_metadata.oracle, else config.yaml oracle.recommended, else generic.
+    oracle = (
+        training_metadata.get('oracle')
+        or filter_config.get('oracle', {}).get('recommended')
+        or 'the configured oracle'
+    )
+    oracle_label = {
+        'deepseek': 'DeepSeek', 'gemini-flash': 'Gemini Flash',
+        'gemini-pro': 'Gemini Pro',
+    }.get(str(oracle).lower(), str(oracle))
+
     card = f"""---
 license: eupl-1.2
 language: en
@@ -43,7 +56,7 @@ pipeline_tag: text-classification
 This model is a fine-tuned version of [{training_metadata['model_name']}](https://huggingface.co/{training_metadata['model_name']})
 for multi-dimensional content scoring using the **{filter_config['filter']['name']}** filter.
 
-The model was trained using **knowledge distillation** from Gemini Flash, learning to replicate
+The model was trained using **knowledge distillation** from {oracle_label}, learning to replicate
 its judgment patterns on content evaluation.
 
 **Filter Focus**: {filter_config['filter'].get('focus', filter_config['filter'].get('description', 'Multi-dimensional content scoring'))}
@@ -64,7 +77,7 @@ This model scores articles across {training_metadata['num_dimensions']} semantic
 
 - **Training samples**: {training_metadata['train_examples']:,}
 - **Validation samples**: {training_metadata['val_examples']:,}
-- **Oracle**: Gemini Flash (for ground truth generation)
+- **Oracle**: {oracle_label} (for ground truth generation)
 - **Quality threshold**: Articles with quality_score >= 0.7
 
 ## Training Procedure

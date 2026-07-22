@@ -125,7 +125,27 @@ def load_labels(input_path: Path) -> List[Dict[str, Any]]:
                 if line.strip():
                     labels.append(json.loads(line))
 
-    return labels
+    # Defensive de-dup by id. Merging multiple scored files (or a resumed run
+    # that appended) can repeat an article, and the e5 screen can legitimately
+    # surface the same id across pool files. Keep the LAST occurrence (newest
+    # label) and report the collapse. Records without an "id" are kept as-is.
+    # (Review 2026-07-18: prepare_data had no dedup; upstream exact-id exclusion
+    # does not protect this stage. Near-duplicate *distinct* ids are handled at
+    # pool assembly, not here.)
+    by_id: Dict[str, Any] = {}
+    no_id: List[Dict[str, Any]] = []
+    for rec in labels:
+        rid = rec.get("id")
+        if rid is None:
+            no_id.append(rec)
+        else:
+            by_id[rid] = rec  # last wins
+    deduped = list(by_id.values()) + no_id
+    dropped = len(labels) - len(deduped)
+    if dropped:
+        print(f"  De-duplicated {dropped} repeated id(s): {len(labels)} -> {len(deduped)}")
+
+    return deduped
 
 
 def calculate_overall_score(

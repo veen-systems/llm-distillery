@@ -1,0 +1,57 @@
+# Session 2026-07-22 — Solutions v4 op-point 2.25, Hub published, 3-round review, DEPLOY-READY (live cutover held)
+
+**Branch:** `solutions-v4-calibration` (pushed). **Spend: ~$0** (GPU rescore only; Hub free).
+**State: solutions v4 fully prepared + reviewed across 3 repos; live production cutover HELD for a
+coordinated go (unattended session — irreversible flagship-tab flip not done blind).**
+
+## What happened
+Resumed at the solutions v4 deploy decision. Drove it end to end, then ran the engineer's requested
+review loop (battery → fix critical→minor → battery → redo) to convergence, then prepped deploy.
+
+**Deploy decision (engineer): op-point 2.25** over 3.0 / hold-for-v2. Compared to nature_recovery v4
+(gate 0.65/0.85). 2.25 = best-F1 (recall 0.559 / prec 0.768 / F1 0.647, gate regenerated at 2.25).
+
+**Built (all committed on the branch):**
+- Op-point 2.25 → `config.yaml tiers.medium` + `base_scorer.py TIER_THRESHOLDS`; version 4.0.
+- `score_scale_factor` 1.6093 → **1.0** (normalization.json is the scaling path; non-1.0 = the nr v2
+  stale-inflation trap #167/#205).
+- `normalization.json` fitted from a **40K non-commerce production rescore** (sadalsuud
+  `content_items_*.jsonl`, seed 20260722 → 11,178 prefilter-passers → 536 ≥ 2.25). Anchored raw_min=2.25.
+- `inference_hub.py` (`SolutionsScorerHub`). Hub `jeergrvgreg/solutions-filter-v4` **published + verified**
+  (adapter hash == tested weights; card corrected to DeepSeek, no DRAFT).
+
+**3-round multi-model review battery** (opus+sonnet+fable, adversarial verify, each finding by a
+different model):
+- **R1: 15 confirmed.** Scoring math CLEARED (no double-norm, ssf 1.0 correct, field-key `solutions`
+  correct). Fixed: doc drift, wrong Hub card oracle, normalization provenance, + surfaced the
+  raw-gate-vs-normalized-surfacing recall caveat.
+- **R2: 31 confirmed, 15 defects-in-fixes.** CRITICAL: my R1 fail-closed `_resolve_filters` raise
+  **halted the whole pipeline** + broke 2 tests — reverted (the existing `test_filter_integrity` is the
+  right guard). Added `solutions` to the **missed `summarize.ts` production driver** + image/ops maps.
+  Reverted the value-based artifact check (git-archive deploy already prevents lost-copy; it flagged the
+  tracked nr v4 #72 gap). Fixed nr v4 + cd v5 Hub cards (same wrong-oracle bug).
+- **R3: 7 confirmed, 0 blocking.** ovr `ScoreBlob` + `/lens` methodology page still used v3 dimensions →
+  updated to solutions v4's 7 dims + nl/en translations. QA tooling + own exhaustive grep.
+
+## Deploy state (HELD for coordinated go)
+llm-distillery committed+pushed. ovr committed (`c279dc4`, not pushed). NexusMind: app.yaml +
+main.py/filter_loader comment reverts staged (uncommitted). **`test_filter_integrity` is RED until the
+solutions package is copied into NexusMind — this is the correct guard, resolves at deploy.**
+
+**Coordinated cutover sequence (engineer, ~15 min):**
+1. `deploy_to_nexusmind.sh --filter filters/solutions/v4` (copies package + `filters/common`, verifies,
+   commits NexusMind WITH the staged app.yaml — atomic; `test_filter_integrity` then green).
+2. Pre-place model: gpu-server `cp -r ~/llm-distillery/filters/solutions/v4/model
+   ~/NexusMind/filters/solutions/v4/model` (survives the `*/model/` rsync exclude, checklist #5).
+3. Smoke-test scoring on gpu-server (score a fixture; confirm sane).
+4. Push NexusMind + ovr (`git push`) + merge llm-distillery branch → main. Next 4h cron deploys
+   (CI-gated). foresight drains out of ovr's 10-day window automatically.
+5. Live smoke on the next cycle's `filtered_*.jsonl`; ADR-020 PROVISIONAL→Accepted.
+
+## Carried / report-only
+- **nr v4 runs raw-passthrough in production** (no normalization.json, ssf 1.0 → method 'none';
+  31,852/31,852 recent records). Tracked #72 — fit its normalization.json (content_items rescore, op 3.75).
+- ovr content pages (`architecture.astro`, `lenses.astro`) + dev-analysis scripts + `db-articles.ts`
+  narrow helper still say sustainability_technology — non-functional doc follow-ups.
+- Recall caveat: production surfaces at effective raw ~2.64 (normalized tiering), so real recall < the
+  raw-gate 0.559 — systemic, doesn't flip the 2.25 decision.

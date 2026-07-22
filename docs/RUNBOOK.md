@@ -138,7 +138,7 @@ export PYTHONPATH=.
 export HF_HUB_OFFLINE=1
 
 python training/train.py \
-    --config filters/{name}/v{N}/config.yaml \
+    --filter filters/{name}/v{N} \
     --data-dir datasets/training/{name}_v{N} \
     --output-dir filters/{name}/v{N}/model
 ```

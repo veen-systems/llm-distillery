@@ -29,6 +29,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 from ground_truth.text_cleaning import (
     clean_article as clean_article_comprehensive,
+    is_scrape_junk,
     sanitize_text_comprehensive,
 )
 from ground_truth import analysis_field_name
@@ -60,16 +61,16 @@ def load_filter_spec(config_path: Path):
     return dims, analysis_field_name(name), f"{version}-deepseek", prompt_path
 
 
-def get_deepseek_key():
-    env_key = os.environ.get("DEEPSEEK_API_KEY")
+def get_deepseek_key(key_name: str = "deepseek_api_key"):
+    env_key = os.environ.get("DEEPSEEK_API_KEY") if key_name == "deepseek_api_key" else None
     if env_key:
         return env_key.strip()
     if SECRETS_INI.exists():
         cp = configparser.ConfigParser()
         cp.read(SECRETS_INI, encoding="utf-8")
-        if "api_keys" in cp and "deepseek_api_key" in cp["api_keys"]:
-            return cp["api_keys"]["deepseek_api_key"].strip()
-    raise SystemExit("DeepSeek API key not found. See scripts/validate_deepseek_oracle.py for setup.")
+        if "api_keys" in cp and key_name in cp["api_keys"]:
+            return cp["api_keys"][key_name].strip()
+    raise SystemExit(f"API key '{key_name}' not found. See scripts/validate_deepseek_oracle.py for setup.")
 
 
 def smart_compress(content: str, max_words: int = 800) -> str:
@@ -93,19 +94,20 @@ def build_prompt(prompt_template: str, article: dict) -> str:
     return prompt_template.replace(PROMPT_PLACEHOLDER, summary)
 
 
-def call_deepseek(api_key: str, model: str, prompt: str, max_retries: int = 3):
+def call_deepseek(api_key: str, model: str, prompt: str, max_retries: int = 3,
+                  base_url: str = DEEPSEEK_URL, max_tokens: int = 4096):
     headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
     body = {
         "model": model,
         "messages": [{"role": "user", "content": prompt}],
         "temperature": 0.3,
-        "max_tokens": 4096,
+        "max_tokens": max_tokens,
         "response_format": {"type": "json_object"},
     }
     last_err = None
     for attempt in range(max_retries):
         try:
-            resp = requests.post(DEEPSEEK_URL, headers=headers, json=body, timeout=120)
+            resp = requests.post(base_url, headers=headers, json=body, timeout=120)
             if resp.status_code == 200:
                 return resp.json()
             if resp.status_code in (401, 403):
@@ -149,9 +151,15 @@ def parse_response(resp: dict):
         dims = {d: extract_dim_score(parsed.get(d)) for d in DIMENSIONS}
         if any(v is None for v in dims.values()):
             return {"error": f"Missing dims: {[d for d, v in dims.items() if v is None]}", "raw": text[:300]}
+        evidence = {
+            d: (parsed.get(d, {}).get("evidence", "") if isinstance(parsed.get(d), dict) else "")
+            for d in DIMENSIONS
+        }
         return {
             "dims": dims,
+            "evidence": evidence,
             "content_type": parsed.get("content_type", "unknown"),
+            "solution_type": parsed.get("solution_type"),  # v4+; None for filters without it
             "usage": resp.get("usage", {}),
         }
     except (json.JSONDecodeError, KeyError, IndexError) as e:
@@ -192,6 +200,15 @@ def main():
     parser.add_argument("--config", help="Filter config.yaml; derives dimensions, "
                         "analysis field, version, and prompt path (default: cultural_discovery v5)")
     parser.add_argument("--prompt", help="Prompt template path (overrides the config-derived one)")
+    parser.add_argument("--base-url", default=DEEPSEEK_URL,
+                        help="OpenAI-compatible chat-completions endpoint (default: DeepSeek). "
+                        "For Gemini: https://generativelanguage.googleapis.com/v1beta/openai/chat/completions")
+    parser.add_argument("--key-name", default="deepseek_api_key",
+                        help="secrets.ini [api_keys] entry to use (e.g. gemini_api_key)")
+    parser.add_argument("--oracle-label", help="analyzed_by label override (default: deepseek-<model>)")
+    parser.add_argument("--max-tokens", type=int, default=4096,
+                        help="Completion token budget (reasoning models like gemini-2.5 "
+                        "spend thinking tokens from this budget; raise if JSON truncates)")
     args = parser.parse_args()
 
     global DIMENSIONS, ANALYSIS_FIELD, FILTER_VERSION
@@ -201,7 +218,7 @@ def main():
     if args.prompt:
         prompt_path = Path(args.prompt)
 
-    api_key = get_deepseek_key()
+    api_key = get_deepseek_key(args.key_name)
     prompt_template = prompt_path.read_text(encoding="utf-8")
     print(f"Scoring with: dims={DIMENSIONS} | field={ANALYSIS_FIELD} | prompt={prompt_path.name}")
     input_path = Path(args.input)
@@ -228,13 +245,18 @@ def main():
         return
 
     def _process(article):
+        is_junk, reason = is_scrape_junk(article)
+        if is_junk:
+            return article, {"skipped": reason}
         prompt = build_prompt(prompt_template, article)
-        resp = call_deepseek(api_key, args.model, prompt)
+        resp = call_deepseek(api_key, args.model, prompt, base_url=args.base_url,
+                             max_tokens=args.max_tokens)
         parsed = parse_response(resp)
         return article, parsed
 
     successes = 0
     errors = 0
+    skipped = 0
     total_input_tokens = 0
     total_output_tokens = 0
     total_cached_tokens = 0
@@ -252,7 +274,21 @@ def main():
                 except Exception as e:
                     parsed = {"error": f"Exception: {e}"}
 
-                if "error" in parsed:
+                if "skipped" in parsed:
+                    # Scrape-junk (cookie/consent wall, error page, empty stub):
+                    # never sent to the oracle. Recorded (no analysis field) so
+                    # resume treats it as done and prepare_data ignores it.
+                    skipped += 1
+                    record = {
+                        "id": article["id"],
+                        "title": article.get("title", "")[:200],
+                        "url": article.get("url", ""),
+                        "source": article.get("source", ""),
+                        "published_date": article.get("published_date", ""),
+                        "language": article.get("language", ""),
+                        "skipped": parsed["skipped"],
+                    }
+                elif "error" in parsed:
                     errors += 1
                     record = {
                         "id": article["id"],
@@ -273,12 +309,14 @@ def main():
                     total_cached_tokens += usage.get("prompt_cache_hit_tokens", 0)
                     # Match the format prepare_data.py expects: nested {dim: {score, evidence}} under cultural_discovery_analysis
                     analysis = {
-                        d: {"score": parsed["dims"][d], "evidence": ""}
+                        d: {"score": parsed["dims"][d], "evidence": parsed.get("evidence", {}).get(d, "")}
                         for d in DIMENSIONS
                     }
                     analysis["content_type"] = parsed["content_type"]
+                    if parsed.get("solution_type") is not None:
+                        analysis["solution_type"] = parsed["solution_type"]
                     analysis["filter_version"] = FILTER_VERSION
-                    analysis["analyzed_by"] = f"deepseek-{args.model}"
+                    analysis["analyzed_by"] = args.oracle_label or f"deepseek-{args.model}"
                     analysis["analyzed_at"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
                     record = {
                         "id": article["id"],
@@ -299,13 +337,14 @@ def main():
                     eta_min = (len(articles) - completed) / max(rate, 0.01) / 60
                     cache_hit_pct = 100 * total_cached_tokens / max(total_input_tokens, 1)
                     print(f"  [{completed:>4}/{len(articles)}] {successes} OK | {errors} err | "
-                          f"{rate:.1f} art/s | ETA {eta_min:.0f} min | cache hit {cache_hit_pct:.0f}%")
+                          f"{skipped} junk | {rate:.1f} art/s | ETA {eta_min:.0f} min | "
+                          f"cache hit {cache_hit_pct:.0f}%")
 
     wall = (time.time() - start) / 60
     print(f"\n{'='*60}")
     print(f"COMPLETE")
     print(f"{'='*60}")
-    print(f"Successful: {successes}  Errors: {errors}")
+    print(f"Successful: {successes}  Errors: {errors}  Scrape-junk skipped: {skipped}")
     print(f"Wall clock: {wall:.1f} min")
     print(f"Tokens: input {total_input_tokens:,}  output {total_output_tokens:,}  cached {total_cached_tokens:,}")
     print(f"Cache hit rate: {100*total_cached_tokens/max(total_input_tokens,1):.1f}%")

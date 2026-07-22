@@ -48,7 +48,7 @@ framework: agent-ready-projects v1.10.6
 | Filter | Version | Status | Target |
 |--------|---------|--------|--------|
 | **thriving** | v1 | PARKED indefinitely — orthogonal lens design caused bimodal distribution (ADR-015); uplifting v7 stays as Thriving tab |  |
-| **sustainability_technology → solutions** | v4 | Design phase — broaden from clean-tech to include governance/community solutions (#43) | ovr.news Solutions tab |
+| **solutions** (renamed from sustainability_technology, ADR-012, 2026-07-18; pkg `filters/solutions/v4`, field `solutions_analysis`) | v4 | **TRAINED + CALIBRATED + GATED + REVIEWED. Op-point 2.25 chosen; Hub published; DEPLOY-READY, live cutover HELD for a coordinated go (2026-07-22).** Gemma-3-1B+LoRA, val MAE 0.564. Op-point **2.25** (best-F1; gate recall **0.559** / prec 0.768 / F1 0.647 at 2.25, regenerated `4b3776b`). `score_scale_factor` set **1.0** (normalization.json is the scaling path; non-1.0 is the nr v2 trap). `normalization.json` fitted from a 40K non-commerce production rescore (536 ≥ 2.25). `inference_hub.py` written; Hub `jeergrvgreg/solutions-filter-v4` published (card corrected: DeepSeek, not Gemini). **3-round multi-model review battery** (15+31+7 confirmed): reverted a bad fail-closed guard, added `solutions` across the ovr pipeline (incl. the missed `summarize.ts` driver + v4-dimension display), fixed nr v4 + cd v5 Hub cards. **Caveat:** gate recall is raw-domain; production tiers on the normalized score (effective raw floor ~2.64) → real surfacing recall < 0.559 (systemic, doesn't flip the decision). **Recall ceiling ~0.58 STRUCTURAL** (access-bias → v2). **NEXT: coordinated live cutover** — `deploy_to_nexusmind.sh` (package + app.yaml, atomic) → pre-place model on gpu-server `~/NexusMind/filters/solutions/v4/model/` → smoke-test scoring → push NexusMind + ovr → retire foresight drains over ovr's 10-day window. `test_filter_integrity` is red until the package is copied (correct guard). NB: v4 replaces both sustech-v3 and foresight-v1 scorers. **Sibling (report-only): nr v4 runs raw-passthrough in prod (no normalization.json, #72).** | ovr.news Solutions tab |
 | **ai-engineering-practice** | v2 | Ready for oracle scoring; rename to augmented-engineering at next bump | Separate product (not ovr.news) |
 
 ## Key Decisions
@@ -135,4 +135,4 @@ This project is a source project for [augmented-engineering](https://github.com/
 
 ---
 
-*Last updated: 2026-07-17*
+*Last updated: 2026-07-21*

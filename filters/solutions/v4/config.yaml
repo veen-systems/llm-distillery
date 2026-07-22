@@ -1,9 +1,10 @@
-# Sustainability Technology -> Solutions Filter v4 (DRAFT)
+# Sustainability Technology -> Solutions Filter v4
 #
-# Status: DRAFT, pending calibration batch validation. Do NOT score the full
-# corpus against this config until the 300-article calibration batch (Step 3b
-# per memory/foresight-v1-lessons.md) confirms the dimension distributions
-# are not bimodal/dead-zone.
+# Status: TRAINED + CALIBRATED + GATED, DEPLOYING (2026-07-22). Gemma-3-1B+LoRA,
+# val MAE 0.564; ADR-021 ground-truth gate passed. Operating point set to 2.25
+# (best-F1 on the unscreened holdout sweep: recall 0.56 / precision 0.77) — the
+# editorial deploy decision of 2026-07-22 (see README "Training + gate results").
+# Recall ceiling ~0.58 is the documented access-bias limitation -> solutions v2.
 #
 # Why v4: ST v3 captures clean tech well (solar, EVs, biogas) but misses
 # governance and community solutions — exactly what the Solutions tab is
@@ -19,13 +20,13 @@
 #   Fork 3     (foresight v1 stays parked through v4 calibration; retire later)
 
 filter:
-  name: sustainability_technology
-  version: "4.0-DRAFT"
+  name: solutions
+  version: "4.0"
   created: "2026-05-05"
-  updated: "2026-05-05"
-  description: "Solutions lens (DRAFT) — concrete actions toward problems across tech, governance, and community"
+  updated: "2026-07-18"
+  description: "Solutions lens — concrete actions toward problems across tech, governance, and community"
   framework: "LCSA-grounded, broadened to multi-type solutions"
-  rename_pending: true  # ADR-012/013: rename to 'solutions' at v4 release after calibration
+  renamed: "2026-07-18 from sustainability_technology (ADR-012/013 lens rename at v4). Package moved to filters/solutions/v4; analysis field is now solutions_analysis."
 
   core_insight: |
     News rewards crisis. Solutions is the counter-lens: concrete actions by
@@ -47,20 +48,33 @@ prefilter:
   description: "Blocks off-topic and shopping content; broad solutions keyword net passes tech, policy, and community coverage"
 
 oracle:
-  recommended: gemini-flash
+  # Ratified DeepSeek for v4 (ADR-020 two-judge bake-off, 2026-07-17) — see
+  # calibration_report.md. The gemini candidates below are the losing bake-off
+  # entries, kept for the record.
+  recommended: deepseek
   candidates:
+    - deepseek
     - gemini-flash
     - gemini-pro
 
 scoring:
-  # Calibration TBD — fit isotonic on the val set after training (ADR-008).
-  score_scale_factor: 1.0  # placeholder; recalibrate from production CDF
+  # Calibrated: per-dim isotonic on the val set (ADR-008), calibration.json.
+  # score_scale_factor MUST be 1.0 on a fresh version: production_scorer applies
+  # percentile normalization.json (ADR-014) and only falls back to this linear
+  # stretch if normalization is missing (#167/#205). A non-1.0 value here is the
+  # nature_recovery v2 trap — a stale 1.3708 inflated scores and DEFEATED the
+  # gatekeeper/op-point when the fallback fired (live-scoring proof 2026-07-10).
+  # The old 1.6093 (10.0/6.21 calibrated max) is superseded by normalization.json.
+  score_scale_factor: 1.0
 
   dimensions:
     # === SCOPE GATEKEEPER (NEW shape — replaces v3's TRL gatekeeper) ===
     # solution_concreteness is the single gatekeeper across all solution types.
-    # Lab-stage tech, speculative policy, and aspirational community projects
-    # all cap below MEDIUM tier here. Replaces v3's technology_readiness_level
+    # Lab-stage tech, speculative policy, and aspirational community projects are
+    # capped at GATEKEEPER_CAP (3.0). NB since the op-point dropped to 2.25, that
+    # cap sits ABOVE medium, so a gatekept-but-substantive article surfaces AS
+    # medium by design (pure rhetoric scores low on ALL dims and stays below 2.25);
+    # see base_scorer.py. Replaces v3's technology_readiness_level
     # gatekeeper (which only captured tech-readiness, not governance- or
     # community-readiness equivalents).
     solution_concreteness:
@@ -85,17 +99,27 @@ scoring:
              institutionalized. Community practice shifting cultural norms.
       critical_filters: |
         Score 0-2 if: no actor identified taking the action,
-        outcome is described in passive ("will be") rather than active voice,
+        the intended outcome has no identifiable doer (language-neutral test;
+        do not key on grammatical voice — many languages use passive or
+        impersonal constructions for concrete, funded actions),
         no resources/funding/labor committed,
         the article describes a problem with no proposed action.
 
     # === IMPACT (broadened from v3's life_cycle_environmental_impact) ===
+    # 2026-07-17 review fix: the original description ("scale of the problem
+    # ... if deployed at full scope"; "Community: replicability factor")
+    # contradicted this dim's own critical_filters AND the drafted prompt.
+    # Reconciled toward the critical_filters: this dim measures the
+    # SOLUTION's reach; community replicability is scored in
+    # community_practice_strength.
     systemic_impact:
       weight: 0.20
       description: |
-        Scale of the problem this solution addresses if deployed at full
-        scope. Tech: kgCO2/lifecycle equivalent. Governance: % population
-        affected. Community: replicability factor.
+        Scale of the SOLUTION'S actual or credibly-planned reach — NOT the
+        size of the problem it addresses. Tech: deployment scope.
+        Governance: population covered by the mechanism. Community: current
+        reach (replicability across communities belongs to
+        community_practice_strength).
       scale: |
         0-2: Trivial scale. Single household / single firm / one-off.
         3-4: Local scale. Single neighborhood / municipality / industry niche.
@@ -239,7 +263,11 @@ scoring:
       description: "Active deployment with credible evidence"
       translate: true
     medium:
-      threshold: 3.0
+      # OPERATING POINT (2026-07-22 deploy decision): 2.25, the best-F1 point on
+      # the unscreened-holdout op-point sweep (recall 0.56 / prec 0.77 vs
+      # 0.45/0.78 at 3.0). This is the surfacing threshold the ADR-021 gate and
+      # NexusMind TIER_THRESHOLDS both key on — keep base_scorer.py in sync.
+      threshold: 2.25
       description: "Concrete pilot or early-stage solution"
       translate: true
     low:
@@ -258,6 +286,10 @@ scoring:
   # foresight-v1-lessons.md item 3). Hard caps at 2.0-3.0 create dead zones;
   # soft caps at 4.0-5.0 let false positives land in mid-range as useful
   # training data.
+  # NOTE (2026-07-17): these caps are ORACLE-applied — encoded as arithmetic
+  # clamps in prompt-compressed.md. This block documents the oracle contract
+  # only; runtime must NOT re-apply them (cf. nature_recovery's climate_doom
+  # cap retirement, 2026-07-14).
   content_type_caps:
     crisis_reporting_no_solution:
       max_score: 4.0
@@ -267,7 +299,7 @@ scoring:
       max_score: 5.0
       triggers:
         - "Long-term language but no concrete action or policy change"
-    corporate_PR_unverifiable:
+    corporate_pr_unverifiable:  # lowercase matches the prompt's content_type enum
       max_score: 5.0
       triggers:
         - "Company announcement without independent verification or unit economics"
@@ -283,7 +315,9 @@ scoring:
 # Before any dimension scoring, the oracle answers:
 #   "Is this article describing a SOLUTION (concrete action by an actor toward
 #    a problem)?"
-#   If NO -> all dimensions = 0 with reason="not_a_solution_article".
+#   If NO -> all dimensions = 0 with content_type="not_a_solution" (the
+#   string the prompt's JSON schema actually emits; there is no separate
+#   `reason` field).
 #   If YES -> proceed to per-dim scoring.
 # This prevents the v3-era inflation where well-written news articles scored
 # mid-range on every dim regardless of whether they described a solution.
@@ -315,9 +349,18 @@ training:
 
 calibration_batch:
   # Step 3b per memory/foresight-v1-lessons.md — non-negotiable.
-  size: 300
+  # AS-RUN 2026-07-17: composition updated to what was actually sampled and
+  # scored (both oracles, ADR-020 method). Two deliberate deviations from the
+  # original spec: (1) bucket 1 is TOP-100 by raw weighted score, not random —
+  # the tech-ceiling decision criterion is defined over v3's top scorers and
+  # is unevaluable on a random slice; (2) a 4th bucket of 50 community-shaped
+  # articles (belonging v1 top scorers) was added because the original
+  # composition contained no sample for the one genuinely NEW solution type.
+  # Raw sample + scored outputs: datasets/calibration/ (gitignored; see
+  # calibration_report.md for the durable results record).
+  size: 350
   composition:
-    - source: "filters/sustainability_technology/v3 production output (random sample)"
+    - source: "filters/sustainability_technology/v3 production output (TOP-100 by raw weighted_average)"
       n: 100
       validates: "tech bias correction — v4 should not score lower than v3 on pure-tech high scorers, but should free up space for governance/community to score equally well"
     - source: "filters/foresight/v1 production output (top scorers)"
@@ -325,13 +368,23 @@ calibration_batch:
       validates: "governance capture — v4 should score these in 5-8 range with non-zero governance_intervention_strength"
     - source: "NexusMind raw stream random sample"
       n: 100
-      validates: "scope-filter precision — most should resolve to not_a_solution_article via Step-1 check"
-  cost_estimate: "~$0.30 USD (Gemini Flash, 300 articles)"
+      validates: "scope-filter precision — most should resolve to content_type=not_a_solution via Step-1 check"
+    - source: "filters/belonging/v1 production output (TOP-50 by raw weighted_average — community-practice-skewed)"
+      n: 50
+      validates: "community capture — the new community_practice_strength dim has a real gradient on community-shaped content (added 2026-07-17; original composition had no community sample)"
+  cost_estimate: "~$1.00 USD actual (350 articles x 2 oracles: DeepSeek $0.43 + Gemini $0.56, 2026-07-17)"
   decision_criteria:
     - "No dimension shows bimodal distribution"
     - "Mid-range (3-5) has >15% of mass per dim"
     - "Tech / governance / community type tag distribution roughly 40/30/30 (empirical, not target)"
-    - "Step-1 scope check resolves >50% of NexusMind raw stream to not_a_solution_article"
+    - "Step-1 scope check resolves >50% of NexusMind raw stream to content_type=not_a_solution"
+    - "Cap adherence: 0 dimension scores above the flag's max_score on flagged
+       articles (arithmetic clamp verified — the 2026-05-29 advisory-cap gotcha
+       check)"
+    - "Foresight capture (numeric gate, added 2026-07-17 review): >=60% of the
+       100 foresight-v1 top scorers that pass Step-1 score weighted >=4.5, and
+       the Step-1 kill rate on that bucket is reported explicitly (op-ed
+       exclusion volume is an engineer decision, not a silent outcome)"
     # Pure-tech articles structurally ceiling at the weighted sum of
     # solution_concreteness + systemic_impact + evidence_strength +
     # equity_access + economic_viability = 0.75 of total weight (because

@@ -4,6 +4,40 @@ Problems encountered and resolved. Format: Problem → Root cause → Fix.
 
 ---
 
+## A runtime fail-closed `raise` halted the whole pipeline; the existing CI test was already the right guard (2026-07-22)
+
+**Problem**: A round-1 review wanted to prevent the "app.yaml enables a filter whose package isn't copied → silent dark tab" hazard. The fix added a `raise RuntimeError` in NexusMind `scripts/main.py _resolve_filters` on any enabled-but-undiscovered filter. Round 2 caught it as a **critical defect-in-fix**: the raise fires before `valid` is returned, so ONE not-yet-copied filter aborts scoring for **all** filters (uplifting/investment_risk/cultural_discovery/belonging/nature_recovery too), turning a routine config-lag into a full pipeline outage — and it broke 2 pre-existing tests (`test_pipeline_stages.py::TestResolveFilters`) plus made `test_filter_integrity.py` 8/8 red.
+
+**Root cause**: Added a runtime fail-closed control without (a) checking whether an existing guard already covered the case, and (b) bounding its blast radius. `tests/unit/test_filter_integrity.py` ALREADY reads `config/app.yaml` and asserts every enabled filter is discoverable — the hazard was already caught fail-closed at CI/deploy time. The runtime raise duplicated it in the wrong layer (production scoring) and over-broadly (halt-everything).
+
+**Fix**: Reverted to warn-and-skip (resilient runtime: run the filters that ARE present). The silent-dark-tab hazard is handled by `test_filter_integrity.py` at CI + atomic package-with-config deploy. **Durable lesson** (promoted to MEMORY.md): before adding a runtime fail-closed control, check for an existing CI/deploy-time guard and bound the blast radius — fail-closed belongs at the CI/deploy layer, not inside runtime scoring; a runtime control that halts everything on one missing item is over-broad. Meta: this is exactly why the "run 2+ review rounds" rule exists — R2 found 15 defects-in-fixes, this being the worst; a R1 fix became a R2 critical.
+
+## Enrichment silently poisoned 17.3% of the pool with consent-wall text (2026-07-19)
+
+**Problem**: Solutions v4 e5 screening returned **99% junk candidates** — the top-k for all three types was dominated by Google "Before you continue… We use cookies and data…" consent-page text instead of articles. 17.3% of the survivor pool (29,585/171,050) had this as its "content."
+
+**Root cause**: Our enrich-first step reused NexusMind's `ArticleFetcher.pre_enrich`, which follows Google-News redirect URLs; trafilatura extracts the GDPR **consent interstitial**, and `should_replace_content` swaps it in because it's longer than the RSS stub. The junk is >500 chars, so it **evades both guards** — `is_scrape_junk` only pattern-checks bodies ≤120 words, and re-enrichment only triggers <500 chars — and its generic service-language embeds near every solution centroid, so it out-ranks real content. Confirmed all 29,585 were enrichment-introduced (0 in the original scrape). **This is also a live NexusMind production bug**: `should_replace_content` has no consent/paywall guard, so production feeds the same consent pages to the scorer (tolerated only because it scores low).
+
+**Fix**: Added a length-independent consent/paywall signature detector; reverted the 29,585 rows to their original raw RSS stubs (median 84 chars, real) by id-join with the raw pool; re-screened → 0% consent junk. Corpus-side only; the real remedy is a consent guard in NexusMind `should_replace_content` (filed as a cross-repo follow-up). **Durable lesson**: when you reuse a production fetch/enrich path on a *screening* corpus, its tolerated-in-production failure modes become *ranking* poison — an item scored-and-discarded in prod becomes a top-ranked candidate here. Audit enriched content for boilerplate BEFORE embedding, not after scoring.
+
+## `pkill -f <pattern>` self-kills when the pattern is in its own command line (2026-07-19)
+
+**Problem**: `pkill -f solutions_screen.py` inside an ssh'd shell silently aborted the *rest of the script* (a 669 MB transfer never ran); output truncated with no error.
+
+**Root cause**: The remote shell's own command line contained "solutions_screen.py" (it was running a script that referenced it), so `pkill -f` matched and killed its own parent shell. This is the destructive twin of the already-logged `pgrep -f matches your own ssh command line` gotcha — `pgrep` gives a false positive; `pkill` executes it.
+
+**Fix**: Don't `pkill -f` a pattern that appears in the wrapping command; match by pid, or use a bracket trick (`solutions[_]screen`) so the pattern-string doesn't match itself. Verify a kill by footprint (process gone / GPU mem freed), not by the pkill's own exit.
+
+## A check-script bug reported a false "0", and reuse-caching can silently misalign (2026-07-19)
+
+**Problem**: Two "wrong-but-green" issues found by the corpus-build review battery. (1) I told the engineer "0 Swahili articles in candidates"; the reproduction reviewer found **10** — my check had a nested-quote mangling (`.get(chr(39)…)` → looked up key `"'"`), so it returned 0 for *every* language. (2) The screener's `--reuse-embeddings` loaded cached vectors while rebuilding records from a file, with no fingerprint — and `survivors_enriched` (consent) vs `survivors_clean` (reverted) are **same-ids/same-order, different content**, so a reuse re-cut would pair the wrong embeddings with 17% of records and nothing would crash.
+
+**Root cause**: Both are the project's own "a control never observed failing is decoration" lesson, extended to *measurement* scripts and *caches*: a check that can't detect the thing it counts, and a cache keyed on identity that ignores content. Nested double-quoting through two ssh hops is a bug factory that manufactured the false-0.
+
+**Fix**: (a) For anything counting/gating, **watch it fail** — the fixed Part-A seed gate was proven to FAIL on a boilerplate seed, and the reproduction reviewer re-derived every number from disk (caught the false-0). (b) Content-sensitive embedding fingerprint (`id|len|head80`) that refuses reuse on mismatch (proven content-sensitive). (c) Through a double-ssh hop, **scp a script and run it** — never inline nested-quoted python.
+
+---
+
 ## Two review rounds found 18 defects; 4 were in the FIXES from round 1 (2026-07-14)
 
 **Problem**: A day of careful fixes, each individually verified, still shipped defects that only an adversarial second model found — and round 2's worst findings were *inside* round 1's fixes.
@@ -820,3 +854,87 @@ rules, anchor with a leading slash unless every-depth matching is genuinely inte
 `gh` however is authenticated (https protocol, repo scope).
 **Fix**: Push to the explicit HTTPS URL (`git push https://github.com/<owner>/<repo>.git main`)
 — gh's credential helper supplies the token. Remote URL can stay ssh for interactive use.
+
+## Gemini 2.5 via OpenAI-Compat Endpoint: Reasoning Tokens Eat max_tokens → Truncated JSON (2026-07-17)
+**Problem**: Scoring the solutions v4 calibration batch with `gemini-2.5-flash` through the OpenAI-compatible endpoint, 39/350 responses failed JSON parsing ("Unterminated string"), while the identical prompt/params on DeepSeek had 0 errors.
+**Root cause**: Gemini 2.5 is a reasoning model; on the OpenAI-compat endpoint its thinking tokens are spent from the same `max_tokens` budget as the visible completion. With `max_tokens: 4096` the JSON payload got cut off mid-string whenever thinking ran long.
+**Fix**: Added `--max-tokens` to `scripts/score_deepseek_production.py`; retried at 16384 → 38/39 recovered (last one at 32768). The script's resume logic (skip successes, retry error rows) made the recovery a plain re-run. Rule: when pointing the scorer at a reasoning model, budget max_tokens ~4x the expected JSON size.
+
+## Calibration Gate Was Defined Over a String the Oracle Never Emits (2026-07-17)
+**Problem**: solutions v4 `config.yaml` decision criterion required ">50% resolve to not_a_solution_article", but the prompt's JSON schema emits `content_type: "not_a_solution"` (and carries no `reason` field at all). The gate would have counted 0 forever and false-FAILed the calibration batch.
+**Root cause**: The config scaffold (2026-05-05) predated the prompt; the prompt drafted the enum independently and nothing tied the two strings together. Same shape as "a config value read by no code is inert" — a *gate* defined over a field no artifact produces is equally inert, but fails noisy instead of silent.
+**Fix**: Caught pre-spend by the round-1 contract-consistency reviewer (checked every config string against the prompt's actual output schema). Config aligned to `content_type=not_a_solution`. Rule: when a spec and its implementing artifact are written at different times, review must diff the literal strings, not the intent.
+
+## An Old-Lens Training Corpus Is ~85% Noise Under a New Lens — Diagnose Before Re-Scoring (2026-07-18)
+**Problem**: The plan of record for solutions v4 was to re-score the old ST v3 (10.6K) + foresight v1 (3.5K) training corpora with the new DeepSeek+v4-prompt oracle → 13,796 unique articles. One command from a ~$18 spend. A cheap diagnostic (80-article random sample, seed 43, $0.09) found the corpus is **85% `not_a_solution` under the Solutions lens** — median weighted-avg 0.00, 1/80 ovr-visible, ~42% arXiv/science preprints.
+**Root cause**: Those corpora were screened/enriched for their OLD lenses (tech-readiness, foresight-governance), where the same articles — including thousands of arXiv papers — scored HIGH. Under the deployment-focused Solutions lens, research-without-deployment collapses to `not_a_solution` (Step-1 / concreteness gatekeeper). The article *population* was mismatched to the new lens, even though the prompt+oracle were validated. Re-scoring as-is would have (a) burned ~$15 labelling obvious negatives, and (b) produced a ~85%-zero training set — the "student trained on noise predicts zero" failure (FILTER_PLAYBOOK §2).
+**Fix**: Stopped the paid re-score. Built `scripts/diagnostics/solutions_v4_corpus_noise_check.py` (reproducible composition + noise-rate). Pivoted corpus sourcing to e5-seed screening (ADR-011) → enriched corpus, per `filters/solutions/v4/DATA_SETUP_PLAN.md`. Rule: **when retraining a filter for a broadened/renamed lens, the old corpus's positive-rate under the NEW lens is unknown — measure it with an ~$0.10 scored sample BEFORE any full re-score.** Prompt/oracle validation says nothing about whether the article population still has signal.
+
+## scrape-junk / any content prefilter must gate emptiness by CHARACTERS, not `split()` — CJK/Thai (2026-07-18)
+**Problem**: The new `is_scrape_junk()` ingestion check dropped genuine short Chinese/Thai articles as `empty_or_stub_content`. `content.split()` on non-space-delimited languages yields ~1 "word", tripping a `len(words) < 5` empty gate — on a corpus that is ~29% non-English.
+**Root cause**: Same shape as nature_recovery #70 (English-only prefilter dropping non-English positives), but via whitespace tokenization instead of keyword matching. A word-count length proxy is an English assumption.
+**Fix**: Gate emptiness on `len(content.strip()) < 25` (characters). Also split the junk signatures into STRONG (single-hit) vs WEAK (needs ≥2, or one in a ≤8-word stub) so genuine short in-lens briefs mentioning one topical phrase ("cookie consent") survive. Caught by the round-1 code-review battery; regression tests added. Rule: any length/emptiness heuristic on multilingual text must be character-based, and English signature regexes must never be the *only* thing standing between content and the model — they let non-English junk through (acceptable; the oracle catches it) but must never DROP non-English real content.
+
+## A scored-gate defined over the WRONG sentinel reports a false PASS — RECURRENCE (2026-07-20)
+**Problem**: The staged `partB_gate.py` (pre-spend gate on solutions v4) computed positives as `solution_type != "not_a_solution"`, but the v4 prompt emits `solution_type == "none"` for negatives (`content_type == "not_a_solution"` is the *other* field). So the sentinel never matched → the gate counted **all 160 rows as positive → reported 100% positive → PASS** on its first run. A second bug in the same script: `solution_concreteness` is a scored dimension, nested `{score, evidence}`, but the gate did `(sa(r).get("solution_concreteness") or 0) >= 7` on the dict → `TypeError`. Correct numbers were 39% positive / 61% not_a_solution (a literal `<50%` gate FAIL).
+**Root cause**: **Second occurrence of the 2026-07-17 "gate defined over a string the oracle never emits" gotcha** (that one: config `not_a_solution_article` reason; this one: gate `!= "not_a_solution"` vs actual `"none"`). Same shape: the gate script was authored against an *assumed* output schema, never diffed against a real scored row. The nested-dim crash is the same "read the field the scorer actually writes" failure in structural form.
+**Fix**: Ran the gate against a real DeepSeek-scored sample, saw the nonsensical 100%, traced both bugs. Fixed `is_pos` to `not in ("none", None)` and `conc()` to unwrap `.score`. **Rule (now 2×): before trusting ANY scored-gate PASS, run it on one real oracle-scored row and eyeball the numbers — a gate whose positive-rate reads 0% or 100% is almost always keyed on the wrong sentinel, not a real result. Diff the gate's literal enum strings + field nesting against an actual scored record, not the prompt's prose.** Promoted to MEMORY.md.
+
+## DeepSeek balance ran out mid-score → HTTP 402; resume auto-retries error rows (2026-07-20)
+**Problem**: The full solutions v4 score (~11.8K rows) died partway — after 5,106 successful rows every call returned `HTTP 402 {"message":"Insufficient Balance"}`. The output file then held 5,106 good rows + ~6,700 error rows. The old key was provisioned for a prior re-score and quietly hit $0.
+**Root cause**: No pre-flight balance check; the DeepSeek account simply drained mid-run.
+**Fix**: Topped up the account, then re-ran the *same* command. `load_already_scored()` deliberately returns only SUCCESSFULLY-scored ids (excludes error rows), so resume auto-retries every failure — but appends, so I first stripped error rows (`keep rows with 'solutions_analysis'`) to avoid dup ids (prepare_data last-wins would handle it anyway). Rule: for a multi-dollar score, expect mid-run balance/quota death; the resume is safe and idempotent, and **schedule big DeepSeek runs in valley pricing** — peak is 2× at UTC 01-04 + 06-10 = **CEST 03:00-06:00 + 08:00-12:00** (valley = CEST 00-03, 06-08, 12-24).
+
+## gpu-server ~/llm-distillery is a non-git file-copy, not a clone (2026-07-20)
+**Problem**: Preparing to train solutions v4, found gpu-server's `~/llm-distillery` has the files but **no `.git`** (`git branch` → "fatal: not a git repository"), and lacks `filters/solutions/v4`. Can't `git pull` to bring it current.
+**Root cause**: The gpu-server working copy was seeded by file-copy/scp, not `git clone`, so it has no branch/HEAD and drifts silently from the repo.
+**Fix (deferred to next session)**: Before training, sync the current filter package + verify `train.py` and its imports match this branch (copy the needed dirs, or re-establish it as a clone). Rule: **never assume the gpu-server training tree is current — it has no git to tell you; verify code currency before every training run**, or the model builds on stale code.
+
+## A filter can be "train-ready" yet have NO runtime scorer — Step 8 is separate from training (2026-07-21)
+**Problem**: `fit_calibration.py` died with `ModuleNotFoundError: filters.solutions.v4.inference`.
+The solutions v4 package had config/prompt/prefilter + trained model + data, and was tracked as
+"TRAIN-READY / TRAINED", but had NO `base_scorer.py`, `inference.py`, or package `__init__.py`.
+**Root cause**: workflow Step 8 ("write inference code") sits *between* train (Step 7) and calibrate
+(Step 9) and is easy to skip — training only needs `train.py` + config + data; it never imports the
+filter's scorer class. Calibration is the first step that constructs `filters.<name>.v<N>.inference`.
+So "the model trained fine" gives false confidence the package is complete.
+**Fix**: wrote `__init__.py`×2 + `base_scorer.py` (`BaseSolutionsScorer` — constants only, logic in
+`FilterBaseScorer`) + `inference.py` (`SolutionsScorer`, local LoRA), copy-from-`nature_recovery v4`
+per the workflow. Verify a package is complete before/at training: `ls filters/<name>/v<N>/` must show
+`inference.py` + `base_scorer.py` + `__init__.py`, or `python -c "from filters.<name>.v<N>.inference
+import *"` must import.
+
+## ground_truth_gate.py (ADR-021) was nature_recovery-hardcoded — generalize before the 2nd filter (2026-07-21)
+**Problem**: The "reusable" deploy gate hardcoded nr's 6 DIMS, WEIGHTS, and gatekeeper
+(`recovery_evidence`, cap 3.5) in `label_wa()`. Solutions (7 dims, `solution_concreteness` gatekeeper)
+would `KeyError`. It only read the *threshold* from config, not the scoring spec.
+**Root cause**: written for nr v4 (the first filter through ADR-021); the "read from config" pattern was
+applied to the threshold only. Looked filter-agnostic, wasn't.
+**Fix**: generalized to derive dims/weights/gatekeeper from `--config` (`load_scoring_spec`); nr
+constants kept as defaults so behavior is unchanged when no spec is supplied. Guarded by the existing
+8 unit tests (all green) PLUS a regression check that `load_scoring_spec(nr_config)` equals the nr
+defaults exactly. Added `--gatekeeper-cap` sweep + `--recompute-model-wa`. Pattern: when a "shared"
+tool has only ever run for one filter, assume it's secretly coupled — the 2nd caller is when you find out.
+
+## Detached-job watcher misfired "LAUNCH FAILED" because the launch ssh held the channel open (2026-07-21)
+**Problem**: A background watcher that did `ssh gpu-server "setsid nohup train.py …&"; sleep 25;
+<check procs>` reported "LAUNCH FAILED — train_procs=0, exit 4" — but training had actually run to
+completion successfully (all artifacts saved).
+**Root cause**: the launch ssh channel stayed open for the *entire* 68-min run (the backgrounded
+process's inherited fds kept the channel from closing), so the watcher blocked at the launch step until
+training finished, THEN ran its +25s "did it start?" check — which saw 0 procs because training was
+already *done*, not because it failed to start. `setsid` detached the job, so the watcher's death never
+touched it.
+**Fix**: don't put launch + wait in the same ssh-blocked script. Launch in one call (accept the channel
+hold / background it), then verify liveness in a *separate* ssh, and detect completion by the artifact
+appearing (model dir / "Training complete" in the log), not by a fixed post-launch process probe.
+
+## f-strings with double-quoted keys break inside an ssh-embedded `python3 -c "..."` (2026-07-21)
+**Problem**: `ssh host 'python3 -c "... print(f\"{\"model\":>5}\") ..."'` failed twice this session
+with `SyntaxError: f-string: expecting '}'` — the inner `f"{"model"...}"` double-quotes collide with
+the outer double-quoted `-c` string (and pre-3.12 f-strings can't reuse the delimiter quote inside `{}`).
+**Root cause**: nested-quote hell in one-liners shipped over ssh; the f-string's `{...}` contains
+double-quoted dict keys / format specs that clash with the command's own quoting.
+**Fix**: don't ship non-trivial python as an ssh `-c` one-liner. Write it to a `.py` file, `scp` it,
+and run `python3 file.py` (used for `gen_ab.py`, `gate_diag.py`). If a one-liner is unavoidable, use a
+heredoc (`python3 - <<'EOF'`) so quotes aren't doubly escaped, and single-quote f-string keys.
