@@ -2,7 +2,7 @@
   "method": "percentile",
   "filter_name": "solutions",
   "filter_version": "4.0",
-  "fitted_from": "production raw_weighted_average >= 2.25, filter_version=4.0 from /tmp/claude-1000/-home-jeroen-repos-veen-systems-llm-distillery/95e6f1e0-64cb-4ba5-b2e5-99565fd60ea9/scratchpad/normfit/datadir",
+  "fitted_from": "production base-rate rescore: 40000 random non-commerce (_is_commerce=false) raw articles from sadalsuud:~/local_dev/NexusMind/data/raw/content_items_*.jsonl (seed 20260722), scored by solutions v4 -> 11178 prefilter-passers -> 536 at raw_weighted_average >= 2.25 (op-point), filter_version=4.0",
   "fitted_at": "2026-07-22T08:39:31.774404+00:00",
   "n_articles": 536,
   "x": [

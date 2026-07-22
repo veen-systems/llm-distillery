@@ -13,8 +13,13 @@ The constants below MIRROR config.yaml (scoring.dimensions / scoring.tiers /
 scoring.gatekeepers). Keep them in sync. TIER_THRESHOLDS is the SOLE runtime
 source for tier assignment — no scoring code reads config's tiers section — so a
 drift here silently changes what surfaces (FILTER_PLAYBOOK §8 F1: nature_recovery
-shipped an inert config threshold for its whole deploy). medium = 3.0 is the
-surfacing/operating point the ADR-021 ground-truth gate evaluates at.
+shipped an inert config threshold for its whole deploy). medium = 2.25 is the
+surfacing/operating point (2026-07-22 deploy decision) the ADR-021 ground-truth
+gate evaluates at. NB: the gate scores in the RAW domain; production reassigns
+tier on the NORMALIZED score (ADR-014), whose op-point-anchored ramp puts the
+effective raw surfacing floor near 2.64 (~p22) — so production surfacing recall
+runs below the gate's raw-domain 0.559. This is systemic (every filter gates raw,
+tiers normalized) and does not change the relative op-point decision.
 """
 
 from filters.common.filter_base_scorer import FilterBaseScorer

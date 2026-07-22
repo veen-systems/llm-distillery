@@ -18,6 +18,20 @@ ground-truth gate. Deploy decision deferred to next session.** The model exists
   recall **0.45** / precision **0.78** / specificity 0.99 / F1 0.57 / Spearman 0.46
   (`ground_truth_gate.json`). Precision-strong, **recall-weak**.
 - **Op-point frontier** (threshold sweep): best F1 at ~2.25 → recall 0.56 / precision 0.77.
+- **⚠️ Gate recall is RAW-domain; production surfaces on the NORMALIZED score.** The gate
+  classifies at raw ≥ 2.25 (recall 0.559). Production reassigns tier on `normalize(raw)`
+  with the same numeric 2.25 (ADR-014), and `normalize(2.25)=0` by op-point anchoring, so
+  the *effective* raw surfacing floor is ≈ **2.64** (~p22 of the fit CDF) — real production
+  surfacing recall runs below 0.559, nearer the raw≥3.0 figure. **Systemic** (every filter
+  gates raw / tiers normalized, incl. the nature_recovery 0.65 comparator), so it does NOT
+  change the relative 2.25-vs-3.0 decision — but the absolute "+0.11 recall" gain is
+  optimistic; the real gain is smaller. (predeploy review 2026-07-22, finding #3.)
+- **Gate reproducibility:** the model-scored holdout (`datasets/gate/solutions_v4_test_scored.jsonl`)
+  and labels (`datasets/training/solutions_v4/test.jsonl`) are `datasets/`-gitignored by
+  convention (metadata-only), so `ground_truth_gate.json`'s numbers are NOT reproducible from
+  a bare clone — regenerate from the gpu-server copy or a re-score. (Commit 4b3776b's message
+  overstated "commits the holdout"; it does not — the file is gitignored. Numbers do reproduce
+  locally against the on-disk scored holdout.)
 - **Gatekeeper cap 3.0 vs 2.9 = identical** → the demote-vs-exclude boundary is **inert**
   on this distribution; cap stays config-faithful at 3.0.
 - **Recall ceiling ~0.58 is structural, not an op-point knob:** of 61 missed positives, 52

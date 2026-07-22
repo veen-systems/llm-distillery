@@ -24,7 +24,7 @@ filter:
   version: "4.0"
   created: "2026-05-05"
   updated: "2026-07-18"
-  description: "Solutions lens (DRAFT) — concrete actions toward problems across tech, governance, and community"
+  description: "Solutions lens — concrete actions toward problems across tech, governance, and community"
   framework: "LCSA-grounded, broadened to multi-type solutions"
   renamed: "2026-07-18 from sustainability_technology (ADR-012/013 lens rename at v4). Package moved to filters/solutions/v4; analysis field is now solutions_analysis."
 
@@ -48,8 +48,12 @@ prefilter:
   description: "Blocks off-topic and shopping content; broad solutions keyword net passes tech, policy, and community coverage"
 
 oracle:
-  recommended: gemini-flash
+  # Ratified DeepSeek for v4 (ADR-020 two-judge bake-off, 2026-07-17) — see
+  # calibration_report.md. The gemini candidates below are the losing bake-off
+  # entries, kept for the record.
+  recommended: deepseek
   candidates:
+    - deepseek
     - gemini-flash
     - gemini-pro
 
@@ -66,8 +70,11 @@ scoring:
   dimensions:
     # === SCOPE GATEKEEPER (NEW shape — replaces v3's TRL gatekeeper) ===
     # solution_concreteness is the single gatekeeper across all solution types.
-    # Lab-stage tech, speculative policy, and aspirational community projects
-    # all cap below MEDIUM tier here. Replaces v3's technology_readiness_level
+    # Lab-stage tech, speculative policy, and aspirational community projects are
+    # capped at GATEKEEPER_CAP (3.0). NB since the op-point dropped to 2.25, that
+    # cap sits ABOVE medium, so a gatekept-but-substantive article surfaces AS
+    # medium by design (pure rhetoric scores low on ALL dims and stays below 2.25);
+    # see base_scorer.py. Replaces v3's technology_readiness_level
     # gatekeeper (which only captured tech-readiness, not governance- or
     # community-readiness equivalents).
     solution_concreteness:
