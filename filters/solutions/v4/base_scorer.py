@@ -18,8 +18,11 @@ surfacing/operating point (2026-07-22 deploy decision) the ADR-021 ground-truth
 gate evaluates at. NB: the gate scores in the RAW domain; production reassigns
 tier on the NORMALIZED score (ADR-014), whose op-point-anchored ramp puts the
 effective raw surfacing floor near 2.64 (~p22) — so production surfacing recall
-runs below the gate's raw-domain 0.559. This is systemic (every filter gates raw,
-tiers normalized) and does not change the relative op-point decision.
+runs below the gate's raw-domain 0.559. This applies to any filter that ships a
+normalization.json (the general ADR-014 mechanism); it does not change the relative
+op-point decision. NB the nature_recovery v4 comparator currently runs raw-passthrough
+(no normalization.json, #72), so ITS gate recall 0.65 is close to its true surfacing
+recall — don't read the two absolute numbers as like-for-like.
 """
 
 from filters.common.filter_base_scorer import FilterBaseScorer

@@ -14,18 +14,22 @@ ground-truth gate. Deploy decision deferred to next session.** The model exists
   produced `score_scale_factor 1.6093`, but the deployed config sets it to **1.0** —
   cross-lens scaling is `normalization.json` (ADR-014); a non-1.0 fallback is the nr v2
   stale-inflation trap (#167/#205).
-- **ADR-021 gate** (1,500-article *unscreened* holdout, oracle = DeepSeek, op-point 3.0):
-  recall **0.45** / precision **0.78** / specificity 0.99 / F1 0.57 / Spearman 0.46
-  (`ground_truth_gate.json`). Precision-strong, **recall-weak**.
-- **Op-point frontier** (threshold sweep): best F1 at ~2.25 → recall 0.56 / precision 0.77.
+- **ADR-021 gate** (1,500-article *unscreened* holdout, oracle = DeepSeek). At the **deployed
+  op-point 2.25** (`ground_truth_gate.json`, regenerated `4b3776b`): recall **0.559** /
+  precision **0.768** / specificity 0.983 / F1 **0.647** / Spearman 0.462. Precision-strong,
+  **recall-weak**. For reference, the stricter op 3.0 gives recall 0.45 / prec 0.78 / F1 0.57.
+- **Op-point frontier** (threshold sweep): 2.25 is best-F1 (recall 0.56 / prec 0.77 vs
+  0.45 / 0.78 at 3.0) — the 2026-07-22 deploy decision.
 - **⚠️ Gate recall is RAW-domain; production surfaces on the NORMALIZED score.** The gate
   classifies at raw ≥ 2.25 (recall 0.559). Production reassigns tier on `normalize(raw)`
   with the same numeric 2.25 (ADR-014), and `normalize(2.25)=0` by op-point anchoring, so
   the *effective* raw surfacing floor is ≈ **2.64** (~p22 of the fit CDF) — real production
-  surfacing recall runs below 0.559, nearer the raw≥3.0 figure. **Systemic** (every filter
-  gates raw / tiers normalized, incl. the nature_recovery 0.65 comparator), so it does NOT
-  change the relative 2.25-vs-3.0 decision — but the absolute "+0.11 recall" gain is
-  optimistic; the real gain is smaller. (predeploy review 2026-07-22, finding #3.)
+  surfacing recall runs below 0.559, nearer the raw≥3.0 figure. This applies to any filter
+  shipping a `normalization.json` (the general ADR-014 mechanism), so it does NOT change the
+  relative 2.25-vs-3.0 decision — but the absolute "+0.11 recall" gain is optimistic; the real
+  gain is smaller. **NB** the nature_recovery v4 comparator currently runs raw-passthrough
+  (no normalization.json, #72), so ITS gate 0.65 ≈ its true surfacing recall — the two absolute
+  numbers are not like-for-like. (predeploy review 2026-07-22, findings #3/#22.)
 - **Gate reproducibility:** the model-scored holdout (`datasets/gate/solutions_v4_test_scored.jsonl`)
   and labels (`datasets/training/solutions_v4/test.jsonl`) are `datasets/`-gitignored by
   convention (metadata-only), so `ground_truth_gate.json`'s numbers are NOT reproducible from
@@ -56,8 +60,8 @@ Config now reflects 2.25: `config.yaml scoring.tiers.medium.threshold` and
 `base_scorer.py TIER_THRESHOLDS` both = 2.25; `filter.version` = "4.0";
 `inference_hub.py` written (`SolutionsScorerHub`, Hub repo `jeergrvgreg/solutions-filter-v4`).
 Gatekeeper cap stays 3.0 (near-inert; see `base_scorer.py` for why it's safe above the
-op-point). **`ground_truth_gate.json` still records the op-3.0 evaluation — regenerate at
-2.25 when the model is next loaded (Phase B).**
+op-point). `ground_truth_gate.json` was **regenerated at 2.25** (`4b3776b`): recall 0.559 /
+prec 0.768 / F1 0.647. `normalization.json` fitted (`6692709`); Hub published + card corrected.
 
 ## What this is
 

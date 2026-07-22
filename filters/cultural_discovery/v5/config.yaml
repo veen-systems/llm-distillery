@@ -47,8 +47,10 @@ prefilter:
   description: "Blocks political conflict framing, tourism fluff, celebrity news, cultural war content"
 
 oracle:
-  recommended: gemini-flash
-  target_model: "Gemini Flash 2.5"
+  # cd v5 was trained on DeepSeek V4 Flash (first non-Gemini lineage in production,
+  # #62 resolution) — the gemini-flash value here was stale (predeploy review 2026-07-22).
+  recommended: deepseek
+  target_model: "DeepSeek V4 Flash"
 
 preprocessing:
   head_tail:
