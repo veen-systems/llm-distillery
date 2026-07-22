@@ -179,15 +179,24 @@ smoke-tested (wa 3.95 medium); `test_filter_integrity` 8/8 + 872 unit tests gree
 production (ssf 1.0 → method 'none'; verified 31,852/31,852 records under-ranked vs normalized lenses).
 Fit it: same `content_items` rescore as solutions, `--min-score 3.75 --filter-version 4.0` (playbook §6).
 
-**Commerce detector — DEPLOY v2 FIRST (owner priority), don't retrain.** `commerce_prefilter` **v2** is
-trained (embeddings+MLP, 97.8% F1) but was never actually deployed. NexusMind `commerce.py` ALREADY has
-the v2 path: line **178** uses `commerce_prefilter_v2` IF the gpu-server scorer `has_model(...)`, ELSE
-falls back to the **v1** import (line **271**) — so production is almost certainly on the v1 fallback.
-Deploy = verify `has_model("commerce_prefilter_v2")` on the scorer; if false, place/register the v2 model
-on gpu-server → NexusMind auto-switches (v2 weights are gitignored, like the filter models). **Holds:**
-review `filters/common/commerce_prefilter/docs/V2_DESIGN.md` §Open Questions + the "v1 needs rework for
-multilingual embeddings + context size" note (`filter-status.md`) before relying on it. Training is done;
-this is a deploy, not a retrain. Obituary detector v3 (trained 2026-06-14, #51): **there IS evidence
+**Commerce detector — v2 is ALREADY DEPLOYED & LIVE (verified 2026-07-22), NOT on the v1 fallback.**
+`commerce_prefilter` **v2** (embeddings+MLP, 97.8% F1) is loaded on the gpu-server scorer: `models_loaded`
+includes `commerce_prefilter_v2`, so `has_model(...)` is TRUE and NexusMind `commerce.py:178` routes to
+gpu-server v2 — the v1 import at :271 is never hit. Confirmed *used*, not just loaded: runs log
+`Commerce preprocessing complete: … (method: gpu-server)` (12:10 → 67 flagged, 17:58 → 107 flagged) and
+commerce articles are flagged + dropped at load. The earlier "deploy v2 first / prod on v1 fallback"
+premise was STALE. v2 weights live in the **NexusMind** checkout (`filters/common/commerce_prefilter/v2/
+models/*.pkl`); gitignored/absent in llm-distillery. **Open follow-ups (NOT a deploy):** (a) was v2 ever
+formally validated per `V2_DESIGN.md` Phases 4–5 (edge cases + shadow-vs-v1)? check `docs/…/BACKTEST_REPORT.md`;
+(b) v2 dropped context 512→**128 tokens** + multilingual embedder — docs/TODO flags "redo for multilingual +
+context size"; decide if it warrants rework; (c) gpu-server filter *code* is drifted (rev 916588a6 vs local
+be3b163e) — resync via `deploy_filters.sh`. **→ SHADOW RUN DONE 2026-07-22 (#80, P1-high): v2
+UNDERPERFORMS v1 in production** — blocks 2.1% vs v1's 5.2%, misses obvious product listings AND
+over-blocks multilingual (Greek) news; NOT a 128-token issue (v2-misses are *shorter* than avg). v1 is
+the better model on the sample. Report: `commerce_prefilter/docs/SHADOW_REPORT_v1_vs_v2.md`. Decide:
+roll back to v1 (blocked — v1 weights only on gpu-server, local fallback would FileNotFoundError) or
+retrain v2 on representative multilingual traffic. Also: **back up v1+v2 weights to HF Hub** (gitignored;
+v1 is a single copy on the borrowed gpu-server). Obituary detector v3 (trained 2026-06-14, #51): **there IS evidence
 of false-negatives** — owner flagged many obituaries that sailed through over past months. They're
 COLLECTED: reader flags in Cloudflare KV `ovr-news-flags` (pull via ovr `scripts/flag-audit.mjs`; a
 2026-06-25 audit is at `ovr.news/data/flag-evidence/`), plus the existing labeled set
