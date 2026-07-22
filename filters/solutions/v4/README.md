@@ -101,9 +101,15 @@ Deferred to next session, pending the op-point decision above:
 - `base_scorer.py` — `BaseSolutionsScorer` (constants + prefilter binding; logic in `FilterBaseScorer`)
 - `inference.py` — `SolutionsScorer` (local LoRA load)
 - `calibration.json` — per-dim isotonic (ADR-008)
-- `ground_truth_gate.json` — ADR-021 gate result (op-point 3.0)
+- `ground_truth_gate.json` — ADR-021 gate result (op-point **2.25**: recall 0.559 / prec 0.768 / F1 0.647)
+- `inference_hub.py` — `SolutionsScorerHub` (Hub load; NexusMind production path)
+- `normalization.json` — anchored-CDF cross-lens normalization (ADR-014), fit at deploy.
+  **Provenance:** 40,000 random *non-commerce* raw production articles (sadalsuud
+  `data/raw/content_items_*.jsonl`, seed 20260722) scored by solutions v4 →
+  11,178 prefilter-passers → 536 at raw≥2.25 (the op-point). raw_min anchored to
+  2.25; range 2.25–5.23; NOT the enriched corpus (production base-rate per §6).
 - `training_metadata.json` / `training_history.json` — hyperparameters + per-epoch curves
 - `model/` — LoRA adapter + tokenizer (gitignored; on gpu-server + local backup)
 - `calibration_report.md` — oracle bake-off + the superseded-corpus pointer
 - `DATA_SETUP_PLAN.md` — the corpus/model pipeline (source of truth for the build)
-- **Not present yet** (land at deploy): `inference_hub.py`, `normalization.json`; probe (v2, held)
+- **Not present yet**: hybrid Stage-1 probe (v2, held)
