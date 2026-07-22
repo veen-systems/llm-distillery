@@ -4,6 +4,14 @@ Problems encountered and resolved. Format: Problem → Root cause → Fix.
 
 ---
 
+## A runtime fail-closed `raise` halted the whole pipeline; the existing CI test was already the right guard (2026-07-22)
+
+**Problem**: A round-1 review wanted to prevent the "app.yaml enables a filter whose package isn't copied → silent dark tab" hazard. The fix added a `raise RuntimeError` in NexusMind `scripts/main.py _resolve_filters` on any enabled-but-undiscovered filter. Round 2 caught it as a **critical defect-in-fix**: the raise fires before `valid` is returned, so ONE not-yet-copied filter aborts scoring for **all** filters (uplifting/investment_risk/cultural_discovery/belonging/nature_recovery too), turning a routine config-lag into a full pipeline outage — and it broke 2 pre-existing tests (`test_pipeline_stages.py::TestResolveFilters`) plus made `test_filter_integrity.py` 8/8 red.
+
+**Root cause**: Added a runtime fail-closed control without (a) checking whether an existing guard already covered the case, and (b) bounding its blast radius. `tests/unit/test_filter_integrity.py` ALREADY reads `config/app.yaml` and asserts every enabled filter is discoverable — the hazard was already caught fail-closed at CI/deploy time. The runtime raise duplicated it in the wrong layer (production scoring) and over-broadly (halt-everything).
+
+**Fix**: Reverted to warn-and-skip (resilient runtime: run the filters that ARE present). The silent-dark-tab hazard is handled by `test_filter_integrity.py` at CI + atomic package-with-config deploy. **Durable lesson** (promoted to MEMORY.md): before adding a runtime fail-closed control, check for an existing CI/deploy-time guard and bound the blast radius — fail-closed belongs at the CI/deploy layer, not inside runtime scoring; a runtime control that halts everything on one missing item is over-broad. Meta: this is exactly why the "run 2+ review rounds" rule exists — R2 found 15 defects-in-fixes, this being the worst; a R1 fix became a R2 critical.
+
 ## Enrichment silently poisoned 17.3% of the pool with consent-wall text (2026-07-19)
 
 **Problem**: Solutions v4 e5 screening returned **99% junk candidates** — the top-k for all three types was dominated by Google "Before you continue… We use cookies and data…" consent-page text instead of articles. 17.3% of the survivor pool (29,585/171,050) had this as its "content."

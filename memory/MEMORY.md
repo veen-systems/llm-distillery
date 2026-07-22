@@ -109,6 +109,7 @@ Loaded every session. Topic files loaded on demand via triggers below.
 - if [a model looks like it's scoring badly in production], then [check `normalization.json`'s fit threshold FIRST — #161 was v2 scoring 2.2–3.3 *correctly* and a CDF fitted at raw>=1.5 inflating it to 5.2–8.3] — promoted from gotcha-log 2026-07-14
 - if [shipping a fresh filter version that needs cross-filter normalization], then [fit `normalization.json` at deploy from a *production-representative historical* rescore — do NOT ship raw and wait weeks for live accumulation; a raw filter is under-ranked/under-shown against every normalized lens (ovr `canonical-lens.ts` + `displayScoreThreshold`). Must be production base-rate, not the enriched val set; `MIN_NORMALIZATION_ARTICLES=200` rejects thin fits. Playbook §6] — promoted from gotcha-log 2026-07-11
 - if [retraining/broadening a filter by re-scoring an OLD-lens corpus under a NEW lens], then [the article population's positive-rate under the new lens is UNKNOWN — measure it with a ~$0.10 scored random sample BEFORE any full re-score. solutions v4's old ST v3 + foresight corpora were 85% not_a_solution under the Solutions lens (median wa 0.00); prompt/oracle validation says nothing about whether the population still has signal. Enrich via e5-seed screening (ADR-011), don't re-score noise] — promoted from gotcha-log 2026-07-18
+- if [tempted to add a runtime fail-closed control (raise/halt) to catch a deploy/config mistake], then [FIRST check whether an existing CI/deploy-time guard already covers it, and bound the blast radius. A raise in NexusMind `_resolve_filters` on one enabled-but-missing filter aborted scoring for ALL filters and broke 2 tests — while `tests/unit/test_filter_integrity.py` already asserts every enabled filter is discoverable at CI time. Fail-closed belongs at the CI/deploy layer, not inside runtime scoring; a runtime control that halts everything on one missing item is over-broad. Round 2 of the review caught it as a defect-in-fix] — promoted from gotcha-log 2026-07-22 (3-round battery: R1 fix became R2 critical; the "run 2+ rounds" rule held again — 15 defects-in-fixes in R2 alone)
 
 ## Active Decisions
 
@@ -136,6 +137,7 @@ Loaded every session. Topic files loaded on demand via triggers below.
 
 Full per-session narratives live below the auto-loading cliff (read on demand). Newest first.
 
+- [2026-07-22](project_session_2026_07_22.md) — **Solutions v4 op-point 2.25, Hub published, 3-round multi-model review, DEPLOY-READY (live cutover HELD).** Op-point **2.25** (gate recall 0.559/prec 0.768/F1 0.647 regenerated); `score_scale_factor`→1.0; `normalization.json` fitted from a 40K non-commerce prod rescore (536≥2.25); Hub `solutions-filter-v4` published+verified (card fixed to DeepSeek). **3 review rounds (15+31+7 confirmed, 15 defects-in-fixes in R2)**: reverted a bad fail-closed `_resolve_filters` raise that **halted the whole pipeline**+broke tests (existing `test_filter_integrity` is the right guard); added `solutions` across the ovr pipeline incl. the **missed `summarize.ts` driver** + v4-dimension display; fixed nr v4 + cd v5 Hub cards (wrong-oracle). llm-distillery pushed; ovr committed (`c279dc4`); NexusMind staged. **Live cutover HELD (unattended) — coordinated go sequence in the session file.** Sibling report-only: **nr v4 runs raw-passthrough in prod (#72)**. Recall caveat: prod surfaces at effective raw ~2.64 (normalized tiering) < gate 0.559 (systemic).
 - [2026-07-21](project_session_2026_07_21.md) — **Solutions v4 TRAINED + CALIBRATED + GATED ($0), deploy decision pending.** Trained (val MAE 0.564), then hit 2 gaps the build left: (1) **Step-8 runtime scorer never written** — calibration failed on the missing `filters.solutions.v4.inference`; wrote `base_scorer.py`/`inference.py`/`__init__.py` (copy-from-nr-v4). (2) **`ground_truth_gate.py` was nr-hardcoded** → generalized filter-agnostic (nr-safe, 8/8 tests + regression check). **ADR-021 gate (op 3.0): recall 0.45 / prec 0.78** — precision-strong, recall-weak. Op-point sweep best F1 ~2.25 (recall 0.56). Gatekeeper cap 3.0≡2.9 (inert→keep 3.0). **Recall ceiling ~0.58 STRUCTURAL** (52/61 misses scored <2.5, incl. 13 high-band = e5-screened training manifold misses unscreened prod = access-bias, v2 fix). Model gitignored → gpu-server + local backup. **NEXT: compare to other filters → op-point decision → deploy.**
 - [2026-07-20](project_session_2026_07_20.md) — **Solutions v4 corpus SCORED + TRAIN-READY (~$14 DeepSeek), paused at train boundary.** Drove Part-B → full score → prepare_data. Caught 2 bugs in the staged `partB_gate.py` (wrong `"none"` sentinel → false 100%-PASS; dict/scalar concreteness crash). Part-B `<50%` gate FAILED on the literal line but is **unachievable-by-design** (flat e5 gradient, empirically confirmed; 39-40% positive beats the ~15% forecast). arXiv contamination (**18,628 off-lens rows**) excluded via an OFF_LENS screener mask (quality win, didn't move the rate). High-band-community hunt → **pool is dry** (external source-expansion is a v2 item). Full score crashed mid-run on **HTTP 402 Insufficient Balance** ($5.95) → topped up → resumed in valley pricing → **10,297 + 1,500 scored, 0 err**; prepped **train 9,265 / val 1,032 / test 1,500** (test=isolated holdout). **NEXT: train (gpu-server is a non-git file-copy → sync + verify `train.py` currency FIRST).** Non-EN scrape-junk patterns committed (24 tests).
 - [2026-07-19](project_session_2026_07_19.md) — **Solutions v4 corpus build EXECUTED (free), 4 poisons caught, turnkey to Part-B.** Enrich-first reframe (mirror production `pre_enrich`); GPU-screened on gpu-server; caught thin-stubs / multilingual-skew / near-dup-over-drop / **consent-wall poison (99% of candidates!)**. 33 community seeds (21 pool + 12 external high-band). 3-reviewer battery → corpus SOUND, 2 control fixes watched-failing, holdout near-dup (42 leakers dropped → 7,433), Part-B tooling staged. Access-bias → **ovr positioning doc + 3 article seeds**. $0 spent. Cross-repo: NexusMind enrichment consent-guard bug.
@@ -152,30 +154,38 @@ Full per-session narratives live below the auto-loading cliff (read on demand). 
 - [2026-05-31](project_session_2026_05_31.md) — cultural_discovery **v5 SHIPPED** (DeepSeek oracle, val MAE 0.697, #62 leakage resolved end-to-end).
 - [2026-05-29/30](project_session_2026_05_29.md) — cd v5 hard-negatives cohort (49 articles, 5 buckets) + v5 prompt drafted (flags F/G/H/I/K).
 
-## Next Session Pickup (updated 2026-07-21)
+## Next Session Pickup (updated 2026-07-22)
 
-**🎯 TWO fronts. Priority per engineer 2026-07-21: the Ollama model A/B is prio now; solutions v4
-deploy is tomorrow.**
+**🎯 solutions v4 is DEPLOY-READY + REVIEWED (3 rounds). The live production cutover was HELD
+(2026-07-22 session ran unattended — an irreversible flagship-tab flip should not go blind).
+Do the coordinated cutover, then the carried items.** Full record: `project_session_2026_07_22.md`.
 
-**(A) Ollama summarization model A/B — ANSWERED (2026-07-21).** Result:
-`docs/ideas/summarization-model-bakeoff-2026-07-21.md` (untracked → commit or move to ovr.news).
-Faithful gen (real `getBrandVoicePrompt`, 6 non-EN feed articles) + blinded in-session 3-judge
-panel (Opus/Sonnet/Fable). **`gpt-oss:20b` = 9.2× the offloaded 27b's throughput, ~0.5 quality
-points behind, fully on-GPU → the pragmatic swap. `qwen3:14b` OUT (unanimous Chinese-script leak).
-27b stays the quality ceiling. gemma4:12b isn't on Ollama (412).** It's an ovr.news
-`ollamaConfig.model` decision (summarizer lives in `ovr.news/src/lib/summarization.ts`); re-run if
-`summaryMaxWords` changes (moves both speed and quality). So (B) below is the only live front.
+**COORDINATED CUTOVER (do first, ~15 min):**
+1. `deploy_to_nexusmind.sh --filter filters/solutions/v4` — copies package + `filters/common`,
+   verifies, commits NexusMind WITH the staged `config/app.yaml` (solutions enabled, sustech+foresight
+   removed) — atomic. `tests/unit/test_filter_integrity.py` is RED until this runs (correct guard).
+2. Pre-place model: `ssh gpu-server 'cp -r ~/llm-distillery/filters/solutions/v4/model
+   ~/NexusMind/filters/solutions/v4/model'` (survives the `*/model/` rsync exclude, checklist #5).
+3. Smoke-test scoring on gpu-server (score a fixture; confirm sane).
+4. `git push` NexusMind + ovr (ovr already committed `c279dc4`); merge llm-distillery branch → main.
+   Next 4h cron deploys (CI-gated). foresight drains out of ovr's 10-day window automatically.
+5. Live smoke on the next `filtered_*.jsonl`; **ADR-020 PROVISIONAL→Accepted**.
 
-**(B) solutions v4 (#43): TRAINED + GATED, deploy decision pending.** Full record:
-`project_session_2026_07_21.md`; `DATA_SETUP_PLAN.md` Round 5; `filters/solutions/v4/README.md`.
-Model on `gpu-server:~/llm-distillery/filters/solutions/v4/model/` + local backup (gitignored).
-- **Decide the op-point** first: gate op 3.0 → recall 0.45 / prec 0.78; sweep best F1 ~2.25 →
-  recall 0.56 / prec 0.77 (editorial trade, flat precision). **Compare to other filters'** gate
-  metrics before committing (nr v4 = 0.65/0.85). Recall ceiling ~0.58 is structural (access-bias,
-  v2) — don't chase it with op-point/retrain.
-- Then deploy: op-point (config tiers + `TIER_THRESHOLDS`) → `inference_hub.py` (Step-8 remainder)
-  → normalization from prod-base-rate rescore (NOT enriched) → Hub → NexusMind wire-in → retire
-  foresight (app.yaml + ovr filters.ts) → checklist (FILTER_PLAYBOOK §8) → ADR-020 →Accepted.
+**Already done (2026-07-22):** op-point **2.25** (gate 0.559/0.768/0.647, regenerated); `score_scale_factor`
+1.0; `normalization.json` fitted (40K non-commerce prod rescore, 536≥2.25); `inference_hub.py`; Hub
+`solutions-filter-v4` published+verified (card = DeepSeek). llm-distillery pushed; ovr committed;
+NexusMind staged. 3-round review battery clean (R3 = 0 blocking).
+
+**CARRIED — report-only, address after cutover:**
+- **nr v4 runs raw-passthrough in production** (no normalization.json, ssf 1.0 → method 'none';
+  31,852/31,852 recent records). #72 — fit its normalization.json (content_items rescore, op 3.75).
+  Surfaced by the value-based artifact check (which was reverted to keep CI green).
+- ovr **content pages** (`architecture.astro`, `lenses.astro`) + dev-analysis scripts + `db-articles.ts`
+  narrow helper still say sustainability_technology — non-functional doc follow-ups.
+- **Recall caveat:** production tiers on the normalized score → effective raw surfacing floor ~2.64, so
+  real recall < the raw-gate 0.559 (systemic across normalized filters; doesn't flip the 2.25 decision).
+- **Ollama summarization A/B (answered 2026-07-21):** `gpt-oss:20b` = the pragmatic swap
+  (`ovr.news src/lib/summarization.ts ollamaConfig.model`); `docs/ideas/summarization-model-bakeoff-2026-07-21.md`.
 
 **Carried follow-ups:** upstream OFF_LENS mask into `scripts/screening/embedding_screener.py`;
 file the NexusMind `should_replace_content` consent-guard bug; solutions v2 = external source
