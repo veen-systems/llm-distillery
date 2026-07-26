@@ -7,6 +7,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [July 2026] — violence_promotion Prefilter Scaffolded
+
+### Added (2026-07-26)
+
+**violence_promotion v1** — stamp-only cross-cutting binary classifier for the ovr.news constructive-news feed. Flags articles that promote, normalize, or present as desirable any form of mass violence: active combat, weapons manufacturing as progress, military force as solution, state violence against citizens, or instruments of violence as normal.
+
+- `filters/common/violence_promotion/v1/prompt.md` — DeepSeek oracle rubric: 0–10 violence_score scale, key signals, 11 contrastive examples (active combat, weapons-as-progress, recovery, peace, disarmament, demining tech)
+- `filters/common/violence_promotion/v1/oracle.py` — `ViolencePromotionOracle` wrapping DeepSeek API (deepseek-chat, temp=0), resumable ThreadPoolExecutor batch scoring, per-status-code HTTP retry logic
+- `filters/common/violence_promotion/training/collect_examples.py` — collects calibration (~300) and training (~2000) samples from NexusMind filtered JSONLs, with cookie-wall detection and date-filtered file selection
+- Calibration gate passed: 300 articles scored, 89.3% at 0–3 (clean negatives), 1.7% ambiguous middle (4–6), 8.7% at 7–10 (positives), 0.3% errors. Total DeepSeek spend <$0.10
+- Architecture: two-stage (embedding-similarity probe → MLP classifier), per ADR-006/ADR-011. Phase 2 (full training) pending
+- Downstream: NexusMind wiring tracked in NM#274, ovr.news exclusion in cross-repo-dependencies.md Chain 1
+
+### Changed
+- `filters/common/armed_conflict/` renamed to `filters/common/violence_promotion/` (broader scope: weapons industry, state violence, not just active combat)
+
+---
+
 ## [November 2025] - Training Data Validation Complete
 
 ### Added (2025-11-20)

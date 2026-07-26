@@ -204,3 +204,4 @@ tmpclaude-*
 
 # Reference PDFs: track the README pointer, keep binaries local
 docs/references/*.pdf
+filters/common/violence_promotion/training/*.jsonl
