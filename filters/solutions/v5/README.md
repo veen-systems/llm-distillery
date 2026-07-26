@@ -1,4 +1,4 @@
-# Solutions v4 (renamed from sustainability_technology, ADR-012) — TRAINED + GATED, deploy decision pending
+# Solutions v5 — Two-stage hybrid scorer (e5 probe + Gemma-3-1B)
 
 **Status (2026-07-21): student trained, calibrated, and through the ADR-021
 ground-truth gate. Deploy decision deferred to next session.** The model exists

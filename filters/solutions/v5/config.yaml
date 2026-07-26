@@ -1,418 +1,335 @@
-# Sustainability Technology -> Solutions Filter v4
-#
-# Status: TRAINED + CALIBRATED + GATED, DEPLOYING (2026-07-22). Gemma-3-1B+LoRA,
-# val MAE 0.564; ADR-021 ground-truth gate passed. Operating point set to 2.25
-# (best-F1 on the unscreened holdout sweep: recall 0.56 / precision 0.77) — the
-# editorial deploy decision of 2026-07-22 (see README "Training + gate results").
-# Recall ceiling ~0.58 is the documented access-bias limitation -> solutions v2.
-#
-# Why v4: ST v3 captures clean tech well (solar, EVs, biogas) but misses
-# governance and community solutions — exactly what the Solutions tab is
-# meant to surface. Foresight v1's top articles turn out to be governance
-# solutions. v4 broadens ST v3's LCSA spine to cover all three solution
-# types (tech / governance / community / hybrid) without a dedicated lens
-# per type. See llm-distillery#43, ADR-015 (lenses as perspectives).
-#
-# Decisions inherited from #43 sign-off:
-#   Fork 1 = C  (broaden ST v3 in place; keep LCSA spine; soften TRL gatekeeper)
-#   Fork 2     (combine ST v3 + foresight v1 corpora; re-score with v4 prompt
-#              after calibration batch)
-#   Fork 3     (foresight v1 stays parked through v4 calibration; retire later)
-
 filter:
   name: solutions
-  version: "5.0"
-  created: "2026-05-05"
-  updated: "2026-07-26"
-  description: "Solutions lens — concrete actions toward problems across tech, governance, and community"
-  framework: "LCSA-grounded, broadened to multi-type solutions"
-  renamed: "2026-07-18 from sustainability_technology (ADR-012/013 lens rename at v4). Package moved to filters/solutions/v4; analysis field is now solutions_analysis."
+  version: '5.0'
+  created: '2026-05-05'
+  updated: '2026-07-26'
+  description: Solutions lens — concrete actions toward problems across tech, governance,
+    and community
+  framework: LCSA-grounded, broadened to multi-type solutions
+  renamed: 2026-07-18 from sustainability_technology (ADR-012/013 lens rename at v4).
+    Package moved to filters/solutions/v4; analysis field is now solutions_analysis.
+  core_insight: 'News rewards crisis. Solutions is the counter-lens: concrete actions
+    by
 
-  core_insight: |
-    News rewards crisis. Solutions is the counter-lens: concrete actions by
     actors toward problems, with measurable outputs and credible evidence.
+
     A solution can be a piece of technology, a governance reform, or a
+
     community practice — or any combination. Aspirational rhetoric without
+
     concrete commitment scores low across all three.
 
-# Inherit ST v3's source filtering (stable across versions).
+    '
 source_filter:
-  excluded_source_types: [code_repo, developer_aggregator, firehose_aggregator]
+  excluded_source_types:
+  - code_repo
+  - developer_aggregator
+  - firehose_aggregator
   shadow_mode: false
-
-# Two-stage prefilter same shape as v3; will swap embedding seeds at training
-# time for v4-specific positives.
 prefilter:
   enabled: true
-  expected_pass_rate: 0.20
-  description: "Blocks off-topic and shopping content; broad solutions keyword net passes tech, policy, and community coverage"
-
+  expected_pass_rate: 0.2
+  description: Blocks off-topic and shopping content; broad solutions keyword net
+    passes tech, policy, and community coverage
 oracle:
-  # Ratified DeepSeek for v4 (ADR-020 two-judge bake-off, 2026-07-17) — see
-  # calibration_report.md. The gemini candidates below are the losing bake-off
-  # entries, kept for the record.
   recommended: deepseek
   candidates:
-    - deepseek
-    - gemini-flash
-    - gemini-pro
-
+  - deepseek
+  - gemini-flash
+  - gemini-pro
 scoring:
-  # Calibrated: per-dim isotonic on the val set (ADR-008), calibration.json.
-  # score_scale_factor MUST be 1.0 on a fresh version: production_scorer applies
-  # percentile normalization.json (ADR-014) and only falls back to this linear
-  # stretch if normalization is missing (#167/#205). A non-1.0 value here is the
-  # nature_recovery v2 trap — a stale 1.3708 inflated scores and DEFEATED the
-  # gatekeeper/op-point when the fallback fired (live-scoring proof 2026-07-10).
-  # The old 1.6093 (10.0/6.21 calibrated max) is superseded by normalization.json.
   score_scale_factor: 1.0
-
   dimensions:
-    # === SCOPE GATEKEEPER (NEW shape — replaces v3's TRL gatekeeper) ===
-    # solution_concreteness is the single gatekeeper across all solution types.
-    # Lab-stage tech, speculative policy, and aspirational community projects are
-    # capped at GATEKEEPER_CAP (3.0). NB since the op-point dropped to 2.25, that
-    # cap sits ABOVE medium, so a gatekept-but-substantive article surfaces AS
-    # medium by design (pure rhetoric scores low on ALL dims and stays below 2.25);
-    # see base_scorer.py. Replaces v3's technology_readiness_level
-    # gatekeeper (which only captured tech-readiness, not governance- or
-    # community-readiness equivalents).
     solution_concreteness:
-      weight: 0.20
+      weight: 0.2
       gatekeeper: true
       gatekeeper_threshold: 3
       gatekeeper_max_score: 3.0
-      description: |
-        Is this a CONCRETE ACTION with measurable outputs, or aspirational
+      description: 'Is this a CONCRETE ACTION with measurable outputs, or aspirational
+
         rhetoric? Universal across tech / governance / community.
-      scale: |
-        0-2: Pure rhetoric. "We will end X by 2030." No concrete actor, no
-             measurable output, no resource commitment.
-        3-4: Stated intent + some specifics, but execution unclear. "Plan to
-             build a pilot" without funded timeline.
-        5-6: Active deployment. Tech in pilot/early commercial. Policy passed
-             but unproven. Community practice running locally.
-        7-8: At-scale deployment with verified outputs. Tech beyond pilot.
-             Policy with multi-year track record. Community practice
-             replicated across locations.
-        9-10: Mature, deeply embedded. Tech at standard-of-practice. Policy
-             institutionalized. Community practice shifting cultural norms.
-      critical_filters: |
-        Score 0-2 if: no actor identified taking the action,
+
+        '
+      scale: "0-2: Pure rhetoric. \"We will end X by 2030.\" No concrete actor, no\n\
+        \     measurable output, no resource commitment.\n3-4: Stated intent + some\
+        \ specifics, but execution unclear. \"Plan to\n     build a pilot\" without\
+        \ funded timeline.\n5-6: Active deployment. Tech in pilot/early commercial.\
+        \ Policy passed\n     but unproven. Community practice running locally.\n\
+        7-8: At-scale deployment with verified outputs. Tech beyond pilot.\n     Policy\
+        \ with multi-year track record. Community practice\n     replicated across\
+        \ locations.\n9-10: Mature, deeply embedded. Tech at standard-of-practice.\
+        \ Policy\n     institutionalized. Community practice shifting cultural norms.\n"
+      critical_filters: 'Score 0-2 if: no actor identified taking the action,
+
         the intended outcome has no identifiable doer (language-neutral test;
+
         do not key on grammatical voice — many languages use passive or
+
         impersonal constructions for concrete, funded actions),
+
         no resources/funding/labor committed,
+
         the article describes a problem with no proposed action.
 
-    # === IMPACT (broadened from v3's life_cycle_environmental_impact) ===
-    # 2026-07-17 review fix: the original description ("scale of the problem
-    # ... if deployed at full scope"; "Community: replicability factor")
-    # contradicted this dim's own critical_filters AND the drafted prompt.
-    # Reconciled toward the critical_filters: this dim measures the
-    # SOLUTION's reach; community replicability is scored in
-    # community_practice_strength.
+        '
     systemic_impact:
-      weight: 0.20
-      description: |
-        Scale of the SOLUTION'S actual or credibly-planned reach — NOT the
-        size of the problem it addresses. Tech: deployment scope.
-        Governance: population covered by the mechanism. Community: current
-        reach (replicability across communities belongs to
-        community_practice_strength).
-      scale: |
-        0-2: Trivial scale. Single household / single firm / one-off.
-        3-4: Local scale. Single neighborhood / municipality / industry niche.
-        5-6: Regional scale. Multi-city, state, or industry-wide pilot.
-        7-8: National scale. Country-wide deployment or law-of-the-land policy.
-        9-10: Global / civilizational scale. Treaty, planetary infrastructure,
-              cultural shift across societies.
-      critical_filters: |
-        Score 0-2 if: scope-of-deployment unstated,
-        scale claims rely on extrapolation rather than measurement,
-        the "scale" is the problem's scale, not the solution's reach.
+      weight: 0.2
+      description: 'Scale of the SOLUTION''S actual or credibly-planned reach — NOT
+        the
 
-    # === EVIDENCE (replaces v3's TRL gatekeeper as standalone dim) ===
+        size of the problem it addresses. Tech: deployment scope.
+
+        Governance: population covered by the mechanism. Community: current
+
+        reach (replicability across communities belongs to
+
+        community_practice_strength).
+
+        '
+      scale: "0-2: Trivial scale. Single household / single firm / one-off.\n3-4:\
+        \ Local scale. Single neighborhood / municipality / industry niche.\n5-6:\
+        \ Regional scale. Multi-city, state, or industry-wide pilot.\n7-8: National\
+        \ scale. Country-wide deployment or law-of-the-land policy.\n9-10: Global\
+        \ / civilizational scale. Treaty, planetary infrastructure,\n      cultural\
+        \ shift across societies.\n"
+      critical_filters: 'Score 0-2 if: scope-of-deployment unstated,
+
+        scale claims rely on extrapolation rather than measurement,
+
+        the "scale" is the problem''s scale, not the solution''s reach.
+
+        '
     evidence_strength:
       weight: 0.15
-      description: |
-        Is the solution claim supported by data, cases, peer review, or only
+      description: 'Is the solution claim supported by data, cases, peer review, or
+        only
+
         by stakeholder quotes? Cross-cuts all solution types.
-      scale: |
-        0-2: Press release. Stakeholder quotes only. No data.
-        3-4: Some data, but cherry-picked or unsourced. "Reports show" without
-             citation.
-        5-6: Solid data + named sources. One independent study, or one
-             documented case.
-        7-8: Multiple independent studies. Counter-evidence acknowledged and
-             addressed. Quantitative outcomes published.
-        9-10: Peer-reviewed evidence synthesis. Methodology transparent.
-              Replication attempts published.
-      critical_filters: |
-        Score 0-2 if: only the actor implementing the solution is quoted
+
+        '
+      scale: "0-2: Press release. Stakeholder quotes only. No data.\n3-4: Some data,\
+        \ but cherry-picked or unsourced. \"Reports show\" without\n     citation.\n\
+        5-6: Solid data + named sources. One independent study, or one\n     documented\
+        \ case.\n7-8: Multiple independent studies. Counter-evidence acknowledged\
+        \ and\n     addressed. Quantitative outcomes published.\n9-10: Peer-reviewed\
+        \ evidence synthesis. Methodology transparent.\n      Replication attempts\
+        \ published.\n"
+      critical_filters: 'Score 0-2 if: only the actor implementing the solution is
+        quoted
+
         about its effectiveness (selling-their-own-thing dynamic),
+
         no quantitative metrics cited,
+
         evidence mentioned but contradicted by other quoted sources.
 
-    # === SOLUTION TYPE — TECH (kept implicitly via systemic + evidence) ===
-    # Note: there is no dedicated "tech_solution_strength" dimension. Tech-only
-    # articles can score well via solution_concreteness + systemic_impact +
-    # evidence_strength + economic_viability without governance or community
-    # signal. Governance/community dims default to 0 for pure-tech articles.
-
-    # === SOLUTION TYPE — GOVERNANCE (NEW) ===
+        '
     governance_intervention_strength:
       weight: 0.15
-      description: |
-        Captures policy reform, institutional design, regulatory innovation.
+      description: 'Captures policy reform, institutional design, regulatory innovation.
+
         Score 0 for pure-tech articles with no governance angle. Scores
+
         ALONGSIDE community_practice_strength for hybrid solutions — they
+
         are not mutually exclusive.
-      scale: |
-        0: No governance/policy mechanism in the solution.
-        1-2: Solution mentions a regulator or policy actor but no design
-             specifics.
-        3-4: Specific policy named (existing regulation, proposed bill).
-             No structural innovation.
-        5-6: Named policy reform with concrete mechanism (incentive,
-             mandate, allocation rule).
-        7-8: Institutional design — new agency, treaty, governance
-             mechanism. Multi-party support.
-        9-10: Constitutional / international-treaty-level governance with
-              self-reinforcing design. Independent enforcement.
-      critical_filters: |
-        Score 0 if: solution operates entirely outside the policy/regulatory
+
+        '
+      scale: "0: No governance/policy mechanism in the solution.\n1-2: Solution mentions\
+        \ a regulator or policy actor but no design\n     specifics.\n3-4: Specific\
+        \ policy named (existing regulation, proposed bill).\n     No structural innovation.\n\
+        5-6: Named policy reform with concrete mechanism (incentive,\n     mandate,\
+        \ allocation rule).\n7-8: Institutional design — new agency, treaty, governance\n\
+        \     mechanism. Multi-party support.\n9-10: Constitutional / international-treaty-level\
+        \ governance with\n      self-reinforcing design. Independent enforcement.\n"
+      critical_filters: 'Score 0 if: solution operates entirely outside the policy/regulatory
+
         sphere (e.g., a new battery chemistry with no regulatory dependency).
 
-    # === SOLUTION TYPE — COMMUNITY (NEW) ===
+        '
     community_practice_strength:
-      weight: 0.10
-      description: |
-        Captures grassroots, mutual aid, local initiatives, behavioral
+      weight: 0.1
+      description: 'Captures grassroots, mutual aid, local initiatives, behavioral
+
         practices. Score 0 for pure-tech / pure-policy articles. Scores
+
         ALONGSIDE governance_intervention_strength for hybrid solutions.
-      scale: |
-        0: No community/grassroots practice in the solution.
-        1-2: Solution mentions community involvement vaguely ("residents
-             support…").
-        3-4: Identifiable community actors (named org, named neighborhood)
-             but practice fragile.
-        5-6: Concrete recurring practice (weekly mutual-aid network,
-             monthly cooperative meeting, established local initiative).
-        7-8: Replicated across multiple communities with documented
-             knowledge-transfer.
-        9-10: Cultural-shift practice — embedded in everyday life across
-              many communities, self-reproducing.
-      critical_filters: |
-        Score 0 if: solution is implemented entirely by an institution
+
+        '
+      scale: "0: No community/grassroots practice in the solution.\n1-2: Solution\
+        \ mentions community involvement vaguely (\"residents\n     support…\").\n\
+        3-4: Identifiable community actors (named org, named neighborhood)\n     but\
+        \ practice fragile.\n5-6: Concrete recurring practice (weekly mutual-aid network,\n\
+        \     monthly cooperative meeting, established local initiative).\n7-8: Replicated\
+        \ across multiple communities with documented\n     knowledge-transfer.\n\
+        9-10: Cultural-shift practice — embedded in everyday life across\n      many\
+        \ communities, self-reproducing.\n"
+      critical_filters: 'Score 0 if: solution is implemented entirely by an institution
+
         (firm, state) without grassroots participation.
 
-    # === EQUITY (kept from v3 social_equity_impact, slimmed) ===
+        '
     equity_access:
-      weight: 0.10
-      description: |
-        Does the solution distribute benefits equitably, or concentrate them
+      weight: 0.1
+      description: 'Does the solution distribute benefits equitably, or concentrate
+        them
+
         among existing advantaged groups?
-      scale: |
-        0-2: Benefits accrue to existing high-resource groups only.
-        3-4: Mostly accrues to advantaged groups; passive trickle-down.
-        5-6: Mixed — some explicit attention to equitable access.
-        7-8: Active design for equitable access. Affordable / accessible /
-             low-barrier deployment.
-        9-10: Solution targets historically excluded groups as primary
-              beneficiaries; barriers structurally addressed.
-      critical_filters: |
-        Score 0-2 if: cost / access / language / digital barriers ignored,
+
+        '
+      scale: "0-2: Benefits accrue to existing high-resource groups only.\n3-4: Mostly\
+        \ accrues to advantaged groups; passive trickle-down.\n5-6: Mixed — some explicit\
+        \ attention to equitable access.\n7-8: Active design for equitable access.\
+        \ Affordable / accessible /\n     low-barrier deployment.\n9-10: Solution\
+        \ targets historically excluded groups as primary\n      beneficiaries; barriers\
+        \ structurally addressed.\n"
+      critical_filters: 'Score 0-2 if: cost / access / language / digital barriers
+        ignored,
+
         beneficiaries are described only by income or geography proxies,
+
         equity is mentioned rhetorically but not in the design.
 
-    # === ECONOMIC VIABILITY (kept from v3 at reduced weight — hedge for
-    # investment due-diligence use case in v3 deployment.use_cases) ===
+        '
     economic_viability:
-      weight: 0.10
-      description: |
-        Is the solution financially / resource sustainable? Tech: cost-
+      weight: 0.1
+      description: 'Is the solution financially / resource sustainable? Tech: cost-
+
         competitive at scale. Governance: fiscally feasible. Community:
+
         sustainable resource model (volunteer time, funding stream).
-      scale: |
-        0-2: No viable economic model. Subsidy-only or pure goodwill at
-             scale impossible.
-        3-4: Subsidy-dependent at current state, with no unit-economics
-             story.
-        5-6: Approaching cost competitiveness or fiscal feasibility with
-             modest support.
-        7-8: Cost-competitive without subsidy / fiscally durable / community
-             practice with stable resource base.
-        9-10: Cheaper / more efficient than the alternative it displaces.
-              Self-funding via the value it creates.
-      critical_filters: |
-        Score 0-2 if: viability claims rely on projected scale not yet
+
+        '
+      scale: "0-2: No viable economic model. Subsidy-only or pure goodwill at\n  \
+        \   scale impossible.\n3-4: Subsidy-dependent at current state, with no unit-economics\n\
+        \     story.\n5-6: Approaching cost competitiveness or fiscal feasibility\
+        \ with\n     modest support.\n7-8: Cost-competitive without subsidy / fiscally\
+        \ durable / community\n     practice with stable resource base.\n9-10: Cheaper\
+        \ / more efficient than the alternative it displaces.\n      Self-funding\
+        \ via the value it creates.\n"
+      critical_filters: 'Score 0-2 if: viability claims rely on projected scale not
+        yet
+
         achieved,
+
         no unit economics or resource-flow accounting cited,
+
         the article frames the cost question as "out of scope for now".
 
-  # Total weight: 0.20 + 0.20 + 0.15 + 0.15 + 0.10 + 0.10 + 0.10 = 1.00
-
+        '
   tiers:
     high_solution:
       threshold: 7.0
-      description: "Mature, evidence-backed solution at meaningful scale"
+      description: Mature, evidence-backed solution at meaningful scale
       translate: true
     medium_high:
       threshold: 5.0
-      description: "Active deployment with credible evidence"
+      description: Active deployment with credible evidence
       translate: true
     medium:
-      # OPERATING POINT (2026-07-22 deploy decision): 2.25, the best-F1 point on
-      # the unscreened-holdout op-point sweep (recall 0.56 / prec 0.77 vs
-      # 0.45/0.78 at 3.0). This is the surfacing threshold the ADR-021 gate and
-      # NexusMind TIER_THRESHOLDS both key on — keep base_scorer.py in sync.
       threshold: 2.25
-      description: "Concrete pilot or early-stage solution"
+      description: Concrete pilot or early-stage solution
       translate: true
     low:
       threshold: 0.0
-      description: "Aspirational, lab-stage, or no concrete action"
+      description: Aspirational, lab-stage, or no concrete action
       translate: false
-
   gatekeepers:
     concreteness_gatekeeper:
       dimension: solution_concreteness
       threshold: 3
       max_score: 3.0
-      reason: "Aspirational rhetoric without concrete commitment cannot achieve high overall solution scores"
-
-  # Soft content_type_caps — pattern from foresight v1 lessons (memory:
-  # foresight-v1-lessons.md item 3). Hard caps at 2.0-3.0 create dead zones;
-  # soft caps at 4.0-5.0 let false positives land in mid-range as useful
-  # training data.
-  # NOTE (2026-07-17): these caps are ORACLE-applied — encoded as arithmetic
-  # clamps in prompt-compressed.md. This block documents the oracle contract
-  # only; runtime must NOT re-apply them (cf. nature_recovery's climate_doom
-  # cap retirement, 2026-07-14).
+      reason: Aspirational rhetoric without concrete commitment cannot achieve high
+        overall solution scores
   content_type_caps:
     crisis_reporting_no_solution:
-      max_score: 4.0
+      max_score: 3.0
       triggers:
-        - "Article describes a problem in detail with no proposed action"
+      - Article describes a problem in detail with no proposed action
     rhetoric_only:
-      max_score: 5.0
+      max_score: 3.5
       triggers:
-        - "Long-term language but no concrete action or policy change"
-    corporate_pr_unverifiable:  # lowercase matches the prompt's content_type enum
-      max_score: 5.0
+      - Long-term language but no concrete action or policy change
+    corporate_pr_unverifiable:
+      max_score: 3.5
       triggers:
-        - "Company announcement without independent verification or unit economics"
-
-# === ANTI-HALLUCINATION RULE (cross-cuts all dimensions) ===
-# Every score citation MUST reference an EXACT QUOTE from the article.
-# Standard rule across belonging v1, foresight v1, et al. — see
-# memory/foresight-v1-lessons.md item 4 (added to filter-creation-workflow.md).
-# Final prompt (prompt-compressed.md, prompt-full.md) will encode this rule
-# verbatim; not duplicated here.
-
-# === STEP-1 SCOPE CHECK (cross-cuts all dimensions) ===
-# Before any dimension scoring, the oracle answers:
-#   "Is this article describing a SOLUTION (concrete action by an actor toward
-#    a problem)?"
-#   If NO -> all dimensions = 0 with content_type="not_a_solution" (the
-#   string the prompt's JSON schema actually emits; there is no separate
-#   `reason` field).
-#   If YES -> proceed to per-dim scoring.
-# This prevents the v3-era inflation where well-written news articles scored
-# mid-range on every dim regardless of whether they described a solution.
-# Pattern reused from uplifting v7 (README "Fix 3").
-
-# === SOLUTION TYPE TAG (Step-2) ===
-# Step-2 tags the article as: tech / governance / community / hybrid.
-# Hybrid scores both governance AND community dims. Tag is metadata for
-# downstream tab display, NOT a tier-blocking field. Lenses are perspectives
-# (ADR-015) — overlap is intentional.
-
+      - Company announcement without independent verification or unit economics
 preprocessing:
   head_tail:
     enabled: true
     head_tokens: 256
     tail_tokens: 256
-    separator: " [...] "
-
+    separator: ' [...] '
 training:
-  target_samples: 8000  # provisional — combine ST v3 (10.6K) + foresight v1 (3.5K), re-score with v4 prompt, dedupe, sample down
-  train_val_test_split: [0.8, 0.1, 0.1]
-  recommended_model: "google/gemma-3-1b-pt"
-  expected_mae: "<1.0 per dimension; target <0.7 weighted"
-  notes: |
-    Re-score combined ST v3 + foresight v1 corpora with v4 prompt after the
+  target_samples: 8000
+  train_val_test_split:
+  - 0.8
+  - 0.1
+  - 0.1
+  recommended_model: google/gemma-3-1b-pt
+  expected_mae: <1.0 per dimension; target <0.7 weighted
+  notes: 'Re-score combined ST v3 + foresight v1 corpora with v4 prompt after the
+
     300-article calibration batch confirms dimension distributions. Foresight
-    v1's top governance pieces are the gap v4 is meant to cover — keep them
+
+    v1''s top governance pieces are the gap v4 is meant to cover — keep them
+
     in the pool.
 
+    '
 calibration_batch:
-  # Step 3b per memory/foresight-v1-lessons.md — non-negotiable.
-  # AS-RUN 2026-07-17: composition updated to what was actually sampled and
-  # scored (both oracles, ADR-020 method). Two deliberate deviations from the
-  # original spec: (1) bucket 1 is TOP-100 by raw weighted score, not random —
-  # the tech-ceiling decision criterion is defined over v3's top scorers and
-  # is unevaluable on a random slice; (2) a 4th bucket of 50 community-shaped
-  # articles (belonging v1 top scorers) was added because the original
-  # composition contained no sample for the one genuinely NEW solution type.
-  # Raw sample + scored outputs: datasets/calibration/ (gitignored; see
-  # calibration_report.md for the durable results record).
   size: 350
   composition:
-    - source: "filters/sustainability_technology/v3 production output (TOP-100 by raw weighted_average)"
-      n: 100
-      validates: "tech bias correction — v4 should not score lower than v3 on pure-tech high scorers, but should free up space for governance/community to score equally well"
-    - source: "filters/foresight/v1 production output (top scorers)"
-      n: 100
-      validates: "governance capture — v4 should score these in 5-8 range with non-zero governance_intervention_strength"
-    - source: "NexusMind raw stream random sample"
-      n: 100
-      validates: "scope-filter precision — most should resolve to content_type=not_a_solution via Step-1 check"
-    - source: "filters/belonging/v1 production output (TOP-50 by raw weighted_average — community-practice-skewed)"
-      n: 50
-      validates: "community capture — the new community_practice_strength dim has a real gradient on community-shaped content (added 2026-07-17; original composition had no community sample)"
-  cost_estimate: "~$1.00 USD actual (350 articles x 2 oracles: DeepSeek $0.43 + Gemini $0.56, 2026-07-17)"
+  - source: filters/sustainability_technology/v3 production output (TOP-100 by raw
+      weighted_average)
+    n: 100
+    validates: tech bias correction — v4 should not score lower than v3 on pure-tech
+      high scorers, but should free up space for governance/community to score equally
+      well
+  - source: filters/foresight/v1 production output (top scorers)
+    n: 100
+    validates: governance capture — v4 should score these in 5-8 range with non-zero
+      governance_intervention_strength
+  - source: NexusMind raw stream random sample
+    n: 100
+    validates: scope-filter precision — most should resolve to content_type=not_a_solution
+      via Step-1 check
+  - source: filters/belonging/v1 production output (TOP-50 by raw weighted_average
+      — community-practice-skewed)
+    n: 50
+    validates: community capture — the new community_practice_strength dim has a real
+      gradient on community-shaped content (added 2026-07-17; original composition
+      had no community sample)
+  cost_estimate: '~$1.00 USD actual (350 articles x 2 oracles: DeepSeek $0.43 + Gemini
+    $0.56, 2026-07-17)'
   decision_criteria:
-    - "No dimension shows bimodal distribution"
-    - "Mid-range (3-5) has >15% of mass per dim"
-    - "Tech / governance / community type tag distribution roughly 40/30/30 (empirical, not target)"
-    - "Step-1 scope check resolves >50% of NexusMind raw stream to content_type=not_a_solution"
-    - "Cap adherence: 0 dimension scores above the flag's max_score on flagged
-       articles (arithmetic clamp verified — the 2026-05-29 advisory-cap gotcha
-       check)"
-    - "Foresight capture (numeric gate, added 2026-07-17 review): >=60% of the
-       100 foresight-v1 top scorers that pass Step-1 score weighted >=4.5, and
-       the Step-1 kill rate on that bucket is reported explicitly (op-ed
-       exclusion volume is an engineer decision, not a silent outcome)"
-    # Pure-tech articles structurally ceiling at the weighted sum of
-    # solution_concreteness + systemic_impact + evidence_strength +
-    # equity_access + economic_viability = 0.75 of total weight (because
-    # governance + community dims are 0-floored for pure-tech). A pure-tech
-    # article scoring 8/10 across its applicable dims reaches ~6.0 weighted
-    # — short of high_solution (7.0). Validate this is intentional, not a
-    # bug, by checking that ST v3's top-100 pure-tech articles still cluster
-    # appropriately. If structural ceiling is too low for v4 to match v3's
-    # tech recall, rebalance weights (consider raising solution_concreteness
-    # to 0.25 + systemic_impact to 0.25) before full corpus re-score.
-    - "Top-100 ST v3 production articles (pure-tech) reach high_solution
-       tier (>=7.0) at >=60% rate, OR weights have been rebalanced to
-       restore tech recall after deliberate review"
-
+  - No dimension shows bimodal distribution
+  - Mid-range (3-5) has >15% of mass per dim
+  - Tech / governance / community type tag distribution roughly 40/30/30 (empirical,
+    not target)
+  - Step-1 scope check resolves >50% of NexusMind raw stream to content_type=not_a_solution
+  - 'Cap adherence: 0 dimension scores above the flag''s max_score on flagged articles
+    (arithmetic clamp verified — the 2026-05-29 advisory-cap gotcha check)'
+  - 'Foresight capture (numeric gate, added 2026-07-17 review): >=60% of the 100 foresight-v1
+    top scorers that pass Step-1 score weighted >=4.5, and the Step-1 kill rate on
+    that bucket is reported explicitly (op-ed exclusion volume is an engineer decision,
+    not a silent outcome)'
+  - Top-100 ST v3 production articles (pure-tech) reach high_solution tier (>=7.0)
+    at >=60% rate, OR weights have been rebalanced to restore tech recall after deliberate
+    review
 hybrid_inference:
   stage1:
-    embedding_model: "intfloat/multilingual-e5-small"
-    probe_path: "probe/embedding_probe_e5small.pkl"
-    threshold: 1.225  # calibrated via scripts/train_probe.py --objective recall --target-fn 0.02 (val recall 98.3%, stage2-rate 56.7%)
+    embedding_model: intfloat/multilingual-e5-small
+    probe_path: probe/embedding_probe_e5small.pkl
+    threshold: 1.225
   stage2:
-    model: "current"
-
+    model: current
 deployment:
-  inference_time: "~20ms"
-  inference_time_hybrid: "~12ms avg"
-  cost_per_article: "$0.00"
+  inference_time: ~20ms
+  inference_time_hybrid: ~12ms avg
+  cost_per_article: $0.00
   use_cases:
-    - "ovr.news Solutions tab (broadened from clean-tech-only)"
-    - "Investment due diligence (tech subset; economic_viability dim retained for this)"
-    - "Counter-programming to crisis-reporting bias"
-    - "Tracking governance reform and community-practice replication"
+  - ovr.news Solutions tab (broadened from clean-tech-only)
+  - Investment due diligence (tech subset; economic_viability dim retained for this)
+  - Counter-programming to crisis-reporting bias
+  - Tracking governance reform and community-practice replication
