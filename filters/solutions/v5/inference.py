@@ -1,5 +1,5 @@
 """
-Solutions Filter v4 - Production Inference Pipeline
+Solutions Filter v5 - Production Inference Pipeline
 
 Scores articles for concrete solutions across tech / governance / community:
 deployed practices, enacted policy, running community initiatives.
@@ -13,7 +13,7 @@ Usage:
     result = scorer.score_article(article)
 
     # CLI
-    python filters/solutions/v4/inference.py --input articles.jsonl --output results.jsonl
+    python filters/solutions/v5/inference.py --input articles.jsonl --output results.jsonl
 
 For loading from HuggingFace Hub, use SolutionsScorerHub (inference_hub.py).
 """
@@ -31,10 +31,10 @@ logger = logging.getLogger(__name__)
 
 class SolutionsScorer(BaseSolutionsScorer):
     """
-    Production scorer for the solutions filter v4.
+    Production scorer for the solutions filter v5.
 
     Loads the trained LoRA model from local files and provides scoring with:
-    - Optional prefiltering for efficiency (SolutionsPreFilterV4)
+    - Optional prefiltering for efficiency (SolutionsPreFilterV5)
     - Per-dimension scores (7 dimensions)
     - Score calibration (isotonic regression, calibration.json)
     - solution_concreteness gatekeeper
@@ -67,7 +67,7 @@ def main():
     """CLI interface for batch scoring."""
     import argparse
 
-    parser = argparse.ArgumentParser(description="Score articles with the solutions filter v4")
+    parser = argparse.ArgumentParser(description="Score articles with the solutions filter v5")
     parser.add_argument("--input", "-i", type=Path, help="Input JSONL file with articles")
     parser.add_argument("--output", "-o", type=Path, help="Output JSONL file for results")
     parser.add_argument("--no-prefilter", action="store_true", help="Skip prefilter")

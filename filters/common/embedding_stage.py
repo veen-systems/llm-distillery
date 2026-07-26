@@ -157,7 +157,7 @@ class EmbeddingStage:
         if not self.probe_path.exists():
             raise FileNotFoundError(
                 f"Probe file not found: {self.probe_path}\n"
-                f"Train a probe first with: python research/embedding_vs_finetuning/train_probes.py"
+                f"Train a probe first with: PYTHONPATH=. python scripts/train_probe.py --filter <filter_path> --data-dir <data_dir> --objective recall"
             )
 
         # Verify probe file integrity if SHA-256 hash file exists

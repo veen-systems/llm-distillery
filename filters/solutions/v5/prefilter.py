@@ -1,6 +1,6 @@
 """
-Solutions Pre-Filter v4 (package: solutions — renamed from sustainability_technology
-per ADR-012/013 at the v4 bump; lens: Solutions).
+Solutions Pre-Filter v5 (package: solutions — renamed from sustainability_technology
+per ADR-012/013 at the v4 bump; lens: Solutions. v5 adds e5 probe stage per ADR-006).
 
 WHY THIS IS COMMERCE-ONLY PASS-THROUGH (the nature_recovery #70 lesson):
 nature_recovery v2's prefilter gated on English keywords and silently dropped
@@ -48,7 +48,7 @@ from typing import Dict
 from filters.common.base_prefilter import BasePreFilter
 
 
-class SolutionsPreFilterV4(BasePreFilter):
+class SolutionsPreFilterV5(BasePreFilter):
     """Commerce-only pass-through pre-filter for the Solutions lens.
 
     Inherits BasePreFilter.apply_filter unchanged (validate -> length ->
@@ -107,7 +107,7 @@ def test_prefilter():
     and non-English solution content PASS (solution judgment is the model's job).
     Only base's structural checks (empty/short) still block.
     """
-    prefilter = SolutionsPreFilterV4()
+    prefilter = SolutionsPreFilterV5()
 
     pad = ' Lorem ipsum filler text to extend article length. ' * 8
 
@@ -142,7 +142,7 @@ def test_prefilter():
         },
     ]
 
-    print("Testing Solutions Pre-Filter v4 (commerce-only pass-through)")
+    print("Testing Solutions Pre-Filter v5 (commerce-only pass-through)")
     print("=" * 60)
 
     passed = failed = 0

@@ -1,5 +1,5 @@
 """
-Solutions Filter v4 - Base Scorer Class
+Solutions Filter v5 - Base Scorer Class
 
 Inherits all shared logic from FilterBaseScorer (calibration loading + apply,
 head+tail preprocessing, score clamping, weighted average, gatekeeper, tiering,
@@ -99,4 +99,4 @@ class BaseSolutionsScorer(FilterBaseScorer):
         spec = importlib.util.spec_from_file_location("prefilter", prefilter_path)
         prefilter_module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(prefilter_module)
-        self.prefilter = prefilter_module.SolutionsPreFilterV4()
+        self.prefilter = prefilter_module.SolutionsPreFilterV5()

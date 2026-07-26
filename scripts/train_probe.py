@@ -98,13 +98,10 @@ def _load_filter_constants(filter_path):
     from pathlib import Path
 
     filter_path = Path(filter_path)
-    # Resolve relative to cwd
-    if not filter_path.is_absolute():
-        filter_path = Path.cwd() / filter_path
-
-    # Build module path: filters/solutions/v5 -> filters.solutions.v5.base_scorer
+    # Strip leading './' if present, but do NOT resolve to absolute —
+    # importlib.import_module needs a relative dotted path like
+    # 'filters.solutions.v5.base_scorer', not an absolute filesystem path.
     parts = list(filter_path.parts)
-    # Strip leading '.' if present
     if parts[0] == '.':
         parts = parts[1:]
     module_name = '.'.join(parts) + '.base_scorer'
@@ -142,18 +139,20 @@ def _load_filter_constants(filter_path):
             f"defining these constants."
         )
 
-    # MEDIUM = lowest non-zero tier threshold (the surfacing boundary)
+    # MEDIUM = lowest non-zero tier threshold (the surfacing boundary).
+    # TIER_THRESHOLDS is always highest-first (e.g. high_solution=7.0, medium_high=5.0,
+    # medium=2.25, low=0.0), so we must scan ALL entries and take the minimum > 0,
+    # not the first non-zero encountered.
     medium = None
-    for tier_name, threshold, _desc in tiers:
-        if threshold > 0:
+    for _tier_name, threshold, _desc in tiers:
+        if threshold > 0 and (medium is None or threshold < medium):
             medium = threshold
-            break
     if medium is None:
         medium = 4.0  # safe fallback
 
     cfg = {
         'MEDIUM': medium,
-        'GATEKEEPER_DIM': gk_dim or 'recovery_evidence',  # fallback for old filters
+        'GATEKEEPER_DIM': gk_dim if gk_dim is not None else None,
         'GATEKEEPER_MIN': gk_min if gk_min is not None else 3.0,
         'GATEKEEPER_CAP': gk_cap if gk_cap is not None else 3.5,
         'DIMENSION_NAMES': dim_names,
@@ -175,12 +174,16 @@ def gatekeepered_wa(scores):
     `scores` is a dict keyed by dimension name or a sequence aligned to
     DIMENSION_NAMES. Used to build the binary MEDIUM+ *target* — matches the
     surfacing signal in agreement_gate.py / base_scorer.
+
+    If GATEKEEPER_DIM is None (filter has no gatekeeper), returns the raw
+    weighted average without any capping.
     """
     d = scores if isinstance(scores, dict) else dict(zip(DIMENSION_NAMES, scores))
     wa = sum(float(d[k]) * WEIGHTS[k] for k in DIMENSION_NAMES)
-    gk_val = float(d.get(GATEKEEPER_DIM, 0))
-    if gk_val < GATEKEEPER_MIN and wa > GATEKEEPER_CAP:
-        wa = GATEKEEPER_CAP
+    if GATEKEEPER_DIM is not None:
+        gk_val = float(d.get(GATEKEEPER_DIM, 0))
+        if gk_val < GATEKEEPER_MIN and wa > GATEKEEPER_CAP:
+            wa = GATEKEEPER_CAP
     return wa
 
 

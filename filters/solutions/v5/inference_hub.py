@@ -1,5 +1,5 @@
 """
-Solutions Filter v4 - HuggingFace Hub Inference
+Solutions Filter v5 - HuggingFace Hub Inference
 
 Loads the model directly from HuggingFace Hub for inference.
 Use this when you don't have local model files or want to use a shared model
@@ -10,7 +10,7 @@ Usage:
     from filters.solutions.v5.inference_hub import SolutionsScorerHub
 
     scorer = SolutionsScorerHub(
-        repo_id="jeergrvgreg/solutions-filter-v4",
+        repo_id="jeergrvgreg/solutions-filter-v5",
         token="hf_..."  # Only needed for private repos
     )
     result = scorer.score_article(article)
