@@ -137,6 +137,7 @@ Loaded every session. Topic files loaded on demand via triggers below.
 
 Full per-session narratives live below the auto-loading cliff (read on demand). Newest first.
 
+- [2026-07-26](project_session_2026_07_26.md) — **Multi-repo triage + wrap-up.** Issue landscape survey across 4 repos (LD/NM/ovr/FS); P0-P4 priority ranking confirmed; FluxusSource quick-check items surfaced. No code changes — review/planning session.
 - [2026-07-22](project_session_2026_07_22.md) — **Solutions v4 op-point 2.25, Hub published, 3-round multi-model review, DEPLOY-READY (live cutover HELD).** Op-point **2.25** (gate recall 0.559/prec 0.768/F1 0.647 regenerated); `score_scale_factor`→1.0; `normalization.json` fitted from a 40K non-commerce prod rescore (536≥2.25); Hub `solutions-filter-v4` published+verified (card fixed to DeepSeek). **3 review rounds (15+31+7 confirmed, 15 defects-in-fixes in R2)**: reverted a bad fail-closed `_resolve_filters` raise that **halted the whole pipeline**+broke tests (existing `test_filter_integrity` is the right guard); added `solutions` across the ovr pipeline incl. the **missed `summarize.ts` driver** + v4-dimension display; fixed nr v4 + cd v5 Hub cards (wrong-oracle). llm-distillery pushed; ovr committed (`c279dc4`); NexusMind staged. **Live cutover HELD (unattended) — coordinated go sequence in the session file.** Sibling report-only: **nr v4 runs raw-passthrough in prod (#72)**. Recall caveat: prod surfaces at effective raw ~2.64 (normalized tiering) < gate 0.559 (systemic).
 - [2026-07-21](project_session_2026_07_21.md) — **Solutions v4 TRAINED + CALIBRATED + GATED ($0), deploy decision pending.** Trained (val MAE 0.564), then hit 2 gaps the build left: (1) **Step-8 runtime scorer never written** — calibration failed on the missing `filters.solutions.v4.inference`; wrote `base_scorer.py`/`inference.py`/`__init__.py` (copy-from-nr-v4). (2) **`ground_truth_gate.py` was nr-hardcoded** → generalized filter-agnostic (nr-safe, 8/8 tests + regression check). **ADR-021 gate (op 3.0): recall 0.45 / prec 0.78** — precision-strong, recall-weak. Op-point sweep best F1 ~2.25 (recall 0.56). Gatekeeper cap 3.0≡2.9 (inert→keep 3.0). **Recall ceiling ~0.58 STRUCTURAL** (52/61 misses scored <2.5, incl. 13 high-band = e5-screened training manifold misses unscreened prod = access-bias, v2 fix). Model gitignored → gpu-server + local backup. **NEXT: compare to other filters → op-point decision → deploy.**
 - [2026-07-20](project_session_2026_07_20.md) — **Solutions v4 corpus SCORED + TRAIN-READY (~$14 DeepSeek), paused at train boundary.** Drove Part-B → full score → prepare_data. Caught 2 bugs in the staged `partB_gate.py` (wrong `"none"` sentinel → false 100%-PASS; dict/scalar concreteness crash). Part-B `<50%` gate FAILED on the literal line but is **unachievable-by-design** (flat e5 gradient, empirically confirmed; 39-40% positive beats the ~15% forecast). arXiv contamination (**18,628 off-lens rows**) excluded via an OFF_LENS screener mask (quality win, didn't move the rate). High-band-community hunt → **pool is dry** (external source-expansion is a v2 item). Full score crashed mid-run on **HTTP 402 Insufficient Balance** ($5.95) → topped up → resumed in valley pricing → **10,297 + 1,500 scored, 0 err**; prepped **train 9,265 / val 1,032 / test 1,500** (test=isolated holdout). **NEXT: train (gpu-server is a non-git file-copy → sync + verify `train.py` currency FIRST).** Non-EN scrape-junk patterns committed (24 tests).
@@ -154,83 +155,35 @@ Full per-session narratives live below the auto-loading cliff (read on demand). 
 - [2026-05-31](project_session_2026_05_31.md) — cultural_discovery **v5 SHIPPED** (DeepSeek oracle, val MAE 0.697, #62 leakage resolved end-to-end).
 - [2026-05-29/30](project_session_2026_05_29.md) — cd v5 hard-negatives cohort (49 articles, 5 buckets) + v5 prompt drafted (flags F/G/H/I/K).
 
-## Next Session Pickup (updated 2026-07-22 evening)
+## Next Session Pickup (updated 2026-07-26)
 
-**The 2026-07-22 *evening* session was ops/triage (no filter-building).** Solutions cutover EXECUTED +
-live-scoring; a **P1 commerce regression** was found; infra fixed. Full record: `project_session_2026_07_22.md`.
+**The 2026-07-26 session was multi-repo triage + wrap-up (no filter-building).** Full issue landscape survey
+across LD/NM/ovr/FS; P0-P4 priority ranking confirmed. Full record: `project_session_2026_07_26.md`.
 Pick up in this order:
 
-**① SOLUTIONS — LIVENESS verified ✅, CONTENT-QUALITY review STILL OWED before ADR-020 Accept.**
-First cron (16:09) was blocked by a stale smoke fixture (fixed NexusMind `e2a102e`); the manual re-run
-completed `Result=success` and wrote `filtered/solutions/filtered_20260722_210402.jsonl` — **9,334 scored**,
-normalization applied, tiers **8,834 low / 118 medium / 137 medium_high / 245 high_solution** (~5.4% medium+),
-multilingual, normalized 0–10 — **structurally sane** (not collapsed like nr v2 #75). BUT a title-only
-eyeball of surfaced articles shows real quality caveats, NOT yet a clean pass:
-  - high_solution has **policy/regulation-news bleed** (gambling rules, Airbnb enforcement, smoking bans)
-    — echoes the old foresight "governance-solutions not foresight" problem;
-  - medium tier **drifts into belonging/uplifting** (community soccer, seniors' friendships, warm meals);
-  - ≥1 **branded/promotional** bleed (Nedbank accelerator, cf. uplifting v8 #63).
-→ **Do a proper quality gate before flipping ADR-020**: read full content of borderline high/medium items,
-re-score a sample with the DeepSeek oracle and compare to the deployed model (production calibration check),
-inspect dimensional breakdowns (not just aggregate). Distribution-shape ✅ ≠ output-quality ✅.
+**① SOLUTIONS v4 — QUALITY GATE OWED before ADR-020 Accept.**
+LIVENESS verified ✅ (9,334 scored, sane multi-tier dist, multilingual). BUT content-quality NOT validated:
+title-eyeball flagged policy/regulation bleed in high_solution, belonging/uplifting drift in medium, ≥1 branded
+bleed. → Read full content of borderline items + re-score a sample with DeepSeek oracle + inspect dimensional
+breakdowns. File: `filtered/solutions/filtered_20260722_210402.jsonl`.
 
-**② P1 — COMMERCE v2 IS A LIVE REGRESSION (#80, P1-high/bug).** Shadow run this session proved v2 (live
-on the gpu-server scorer) UNDERPERFORMS the v1 it replaced: blocks 2.1% vs 5.2%, misses obvious product
-listings AND over-blocks multilingual (Greek) news — NOT the 128-token cut (v2-misses are shorter than
-avg). Report: `filters/common/commerce_prefilter/docs/SHADOW_REPORT_v1_vs_v2.md`.
-→ DECIDE: roll back to v1 (BLOCKED — v1 weights only on gpu-server, `commerce.py:271` local fallback
-would `FileNotFoundError`) OR retrain v2 on representative multilingual traffic. Also: **back up v1+v2
-weights to HF Hub** (gitignored; v1 is a single copy on the borrowed gpu-server = unrecoverable if it dies).
+**② P1 — COMMERCE v2 IS A LIVE REGRESSION (#80).** Shadow proved v2 (live) < v1: blocks 2.1% vs 5.2%,
+misses product listings, over-blocks multilingual (Greek) news. Report: `filters/common/commerce_prefilter/docs/SHADOW_REPORT_v1_vs_v2.md`.
+→ DECIDE: roll back to v1 (BLOCKED — v1 weights only on gpu-server) OR retrain v2. Back up v1+v2 weights to HF Hub regardless.
 
-**③ Standing filter work (unchanged): #76 calibration crush.** Deployed filters demote good content below
-the medium boundary — likely ONE normalization/`raw_min`-drift root cause across #74/#75/#76/#72; start at
-#76, cross-ref `calibration-history.md` Dead Ends. (Owner flagged commerce #80 as higher priority.)
+**③ #76 CALIBRATION CRUSH (standing filter work).** Deployed filters demote good content below medium —
+likely ONE raw_min-drift root cause across #74/#75/#76/#72. Start at #76, cross-ref `calibration-history.md` Dead Ends.
 
-**Infra fixed this session (durable):** gpu-server now has **direct headless ssh from situla** (copied the
-passphrase-less `nexusmind_gpu` key; `gpu-server.md` updated — no more sadalsuud hop). **git push works
-repo-wide** via the gh HTTPS token (`gh auth setup-git` + global `insteadOf`). Idea issues **#78**
-(manipulation/propaganda *technique* scorer — new cross-cutting category) + **#79** (calm/ND + media-literacy
-outlets) filed. NexusMind **#277** filed-then-closed (hero extraction DOES self-cap at 3600s — I'd misread
-the code; runtime disproved it).
+**④ nr v4 NORMALIZATION (#72).** Confirmed raw-passthrough in prod (31,852 records under-ranked). Fit normalization.json
+(`content_items` rescore, --min-score 3.75 --filter-version 4.0).
 
-**DEPLOYED 2026-07-22 (LIVE-SCORING; first-output verification pending):** op-point **2.25** (gate 0.559/0.768/0.647); `score_scale_factor` 1.0;
-`normalization.json` fitted (40K non-commerce rescore, 536≥2.25); Hub `solutions-filter-v4` published
-(card=DeepSeek); 3-round review clean. NexusMind `61ecc10` pushed (package + `enabled_filters` +solutions
-−sustech −foresight); model pre-placed on gpu-server (`~/NexusMind/filters/solutions/v4/model/`);
-smoke-tested (wa 3.95 medium); `test_filter_integrity` 8/8 + 872 unit tests green. ovr + llm-distillery
-(merged to main) pushed. **Retirement is config-level; sustech/foresight package dirs KEPT for rollback
-(delete post-drain).** Summarization bake-off → `ovr.news/docs/decisions/` + ovr.news issue **#270**.
+**⑤ Obituary detector v4.** Retrain on collected false-negatives (reader flags KV + ovr `data/obituary-phase1-prelabels.jsonl`). LD#77 over-flags → LD#51 universal detector → NM#185 → ovr#204 chain.
 
-**Confirmed live bug — #72 nr v4 raw-passthrough.** nature_recovery v4 has NO `normalization.json` in
-production (ssf 1.0 → method 'none'; verified 31,852/31,852 records under-ranked vs normalized lenses).
-Fit it: same `content_items` rescore as solutions, `--min-score 3.75 --filter-version 4.0` (playbook §6).
+**⑥ ovr.news #270** — swap summarizer gpt-oss:20b (~9.2× throughput), test with #235 prompt-gate.
 
-**Commerce detector — v2 is ALREADY DEPLOYED & LIVE (verified 2026-07-22), NOT on the v1 fallback.**
-`commerce_prefilter` **v2** (embeddings+MLP, 97.8% F1) is loaded on the gpu-server scorer: `models_loaded`
-includes `commerce_prefilter_v2`, so `has_model(...)` is TRUE and NexusMind `commerce.py:178` routes to
-gpu-server v2 — the v1 import at :271 is never hit. Confirmed *used*, not just loaded: runs log
-`Commerce preprocessing complete: … (method: gpu-server)` (12:10 → 67 flagged, 17:58 → 107 flagged) and
-commerce articles are flagged + dropped at load. The earlier "deploy v2 first / prod on v1 fallback"
-premise was STALE. v2 weights live in the **NexusMind** checkout (`filters/common/commerce_prefilter/v2/
-models/*.pkl`); gitignored/absent in llm-distillery. **Open follow-ups (NOT a deploy):** (a) was v2 ever
-formally validated per `V2_DESIGN.md` Phases 4–5 (edge cases + shadow-vs-v1)? check `docs/…/BACKTEST_REPORT.md`;
-(b) v2 dropped context 512→**128 tokens** + multilingual embedder — docs/TODO flags "redo for multilingual +
-context size"; decide if it warrants rework; (c) gpu-server filter *code* is drifted (rev 916588a6 vs local
-be3b163e) — resync via `deploy_filters.sh`. **→ SHADOW RUN DONE 2026-07-22 (#80, P1-high): v2
-UNDERPERFORMS v1 in production** — blocks 2.1% vs v1's 5.2%, misses obvious product listings AND
-over-blocks multilingual (Greek) news; NOT a 128-token issue (v2-misses are *shorter* than avg). v1 is
-the better model on the sample. Report: `commerce_prefilter/docs/SHADOW_REPORT_v1_vs_v2.md`. Decide:
-roll back to v1 (blocked — v1 weights only on gpu-server, local fallback would FileNotFoundError) or
-retrain v2 on representative multilingual traffic. Also: **back up v1+v2 weights to HF Hub** (gitignored;
-v1 is a single copy on the borrowed gpu-server). Obituary detector v3 (trained 2026-06-14, #51): **there IS evidence
-of false-negatives** — owner flagged many obituaries that sailed through over past months. They're
-COLLECTED: reader flags in Cloudflare KV `ovr-news-flags` (pull via ovr `scripts/flag-audit.mjs`; a
-2026-06-25 audit is at `ovr.news/data/flag-evidence/`), plus the existing labeled set
-`ovr.news/data/obituary-phase1-prelabels.jsonl` (gate-reject/harvest provenance). → **retrain
-obituary_detector v4** on the flagged false-negatives as hard negatives. Other thread: **NexusMind#199**
-(regex P(obit) probe integration — this side ready via `obit_signal.py`). NB **don't build a second "universal noise" filter** — only commerce is universal
-(ADR-004; calibration-history Dead Ends). Training detectors is llm-distillery's job (they live in
-`filters/common/`, NexusMind imports them).
+**Quick:** sync `filters/common/score_normalization.py` (44-line divergence with NexusMind); ~2026-08-01 delete retired sustech/foresight dirs post-drain. FluxusSource: feed-health check, 71 DEAD disable decision, OVER_POLLED audit.
+
+**Your calls (parked):** NM#91 sadalsuud healthcheck drift; uplifting v7 NO_HUB backup; cd v5 config-schema exemptions.
 
 **Follow-ups:**
 - ✅ **DONE 2026-07-22:** consent-guard bug FILED → **NexusMind #276**; OFF_LENS source-exclusion mask
