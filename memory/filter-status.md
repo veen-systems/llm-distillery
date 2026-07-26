@@ -33,8 +33,8 @@ All use Gemma-3-1B base + LoRA. All have local, Hub, and hybrid inference paths.
 | Filter | Ver | Status |
 |--------|-----|--------|
 | thriving | v1 | PARKED indefinitely (ADR-015) — orthogonal lens design caused bimodal distribution |
-| sustainability_technology | v4 | Design phase (#43) — broadened scope (governance/community solutions + clean-tech) |
-| foresight | v1 | PARKED (#43) — merging into sustainability_technology v4 |
+| solutions | v4 | **DEPLOYED & LIVE-SCORING 2026-07-22** (renamed from sustainability_technology, ADR-012). Op-point 2.25. LIVENESS ✅, content-quality NOT validated — quality gate owed before ADR-020 Accept |
+| foresight | v1 | PARKED (#43) — merged into solutions v4 2026-07-22. Dir kept for rollback, delete ~2026-08-01 |
 
 <!-- NOTE: consumer-side concerns (which ovr.news lens/tab uses which filter, frontend rollout)
      live in the NexusMind and ovr.news repos. This repo produces filters; mapping filters to
@@ -42,11 +42,7 @@ All use Gemma-3-1B base + LoRA. All have local, Hub, and hybrid inference paths.
 
 ## Repo-wide audit (2026-04-19)
 
-Ran `scripts/deployment/verify_filter_package.py --check-hub` across every `filters/*/v*/`. Current-production filters all pass except uplifting v7 (no Hub repo — production uses file-copy via `deploy_to_nexusmind.sh`, not Hub download; CLAUDE.md's "HF Hub, private" claim for v7 is inaccurate).
-
-**Historical / superseded versions that fail verification** (not in production, low urgency):
-
-- `sustainability_technology/v2` — cross-version imports from v1 (#44 failure mode, pre-v3)
+Ran `scripts/deployment/verify_filter_package.py --check-hub` across every `filters/*/v*/`. - `sustainability_technology/v2` — cross-version imports from v1 (#44 failure mode, pre-v3)
 - `ai-engineering-practice/v2` — `config.yaml filter.version` says 1.0 in a v2 dir
 - `cultural-discovery/v3` — no default `repo_id` in inference_hub.py signature
 - `investment-risk/v5` — references placeholder `your-username/investment-risk-filter-v5` (deploy abandoned mid-flow)
