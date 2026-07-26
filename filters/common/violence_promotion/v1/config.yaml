@@ -1,0 +1,36 @@
+# Violence Promotion Filter v1 Configuration
+# Uses embedding + MLP classifier (mirrors commerce_prefilter v2 architecture)
+
+version: "1.0"
+name: "violence_promotion_v1"
+
+# Model configuration
+model:
+  embedder: "paraphrase-multilingual-mpnet-base-v2"
+  embedder_dim: 768
+  embedder_max_tokens: 128  # Note: Articles truncated, but violence signals are front-loaded
+  classifier: "mlp"
+  classifier_path: "models/mlp_classifier.pkl"
+  scaler_path: "models/scaler.pkl"
+
+# Inference settings
+inference:
+  default_threshold: 0.95
+  batch_size: 32
+
+# Training
+training:
+  oracle_model: "deepseek-chat"
+  oracle_threshold_positive: 7   # score >= 7 → positive
+  oracle_threshold_negative: 3   # score <= 3 → negative
+  oracle_discard_range: [4, 6]   # ambiguous middle, discarded
+  cv_folds: 5
+  mlp_hidden: [256, 128]
+
+# Notes
+notes:
+  - "Context window is 128 tokens — shorter than fine-tuned models"
+  - "Violence promotion signals are front-loaded (title, first paragraph)"
+  - "Multilingual support: 50+ languages via paraphrase-multilingual-mpnet-base-v2"
+  - "Stamp-only per ADR-004: ovr.news excludes at selection, other consumers keep"
+  - "Mirrors commerce_prefilter v2 architecture (frozen embedder + small MLP)"

@@ -1,0 +1,17 @@
+{
+  "embedder_model": "paraphrase-multilingual-mpnet-base-v2",
+  "embedding_dim": 768,
+  "classifier_type": "MLPClassifier",
+  "hidden_layers": [
+    256,
+    128
+  ],
+  "n_samples": 1957,
+  "n_positive": 211,
+  "n_negative": 1746,
+  "cv": "5-fold stratified OOF",
+  "oof_f1_at_0.95": 0.6925,
+  "oof_precision_at_0.95": 0.9355,
+  "oof_recall_at_0.95": 0.5498,
+  "note": "AUDIT-ONLY baseline. Do not enforce before threshold sign-off."
+}

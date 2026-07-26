@@ -1,0 +1,137 @@
+{
+  "threshold_sweep": [
+    {
+      "threshold": 0.5,
+      "precision": 0.8763,
+      "recall": 0.8057,
+      "tp": 170,
+      "fp": 24,
+      "fn": 41,
+      "tn": 1722
+    },
+    {
+      "threshold": 0.6,
+      "precision": 0.877,
+      "recall": 0.7773,
+      "tp": 164,
+      "fp": 23,
+      "fn": 47,
+      "tn": 1723
+    },
+    {
+      "threshold": 0.7,
+      "precision": 0.8807,
+      "recall": 0.7346,
+      "tp": 155,
+      "fp": 21,
+      "fn": 56,
+      "tn": 1725
+    },
+    {
+      "threshold": 0.8,
+      "precision": 0.8896,
+      "recall": 0.6872,
+      "tp": 145,
+      "fp": 18,
+      "fn": 66,
+      "tn": 1728
+    },
+    {
+      "threshold": 0.85,
+      "precision": 0.9026,
+      "recall": 0.6588,
+      "tp": 139,
+      "fp": 15,
+      "fn": 72,
+      "tn": 1731
+    },
+    {
+      "threshold": 0.9,
+      "precision": 0.8958,
+      "recall": 0.6114,
+      "tp": 129,
+      "fp": 15,
+      "fn": 82,
+      "tn": 1731
+    },
+    {
+      "threshold": 0.92,
+      "precision": 0.9044,
+      "recall": 0.5829,
+      "tp": 123,
+      "fp": 13,
+      "fn": 88,
+      "tn": 1733
+    },
+    {
+      "threshold": 0.95,
+      "precision": 0.9355,
+      "recall": 0.5498,
+      "tp": 116,
+      "fp": 8,
+      "fn": 95,
+      "tn": 1738
+    },
+    {
+      "threshold": 0.97,
+      "precision": 0.9623,
+      "recall": 0.4834,
+      "tp": 102,
+      "fp": 4,
+      "fn": 109,
+      "tn": 1742
+    },
+    {
+      "threshold": 0.99,
+      "precision": 0.9747,
+      "recall": 0.3649,
+      "tp": 77,
+      "fp": 2,
+      "fn": 134,
+      "tn": 1744
+    }
+  ],
+  "per_filter_false_positives": {
+    "0.8": {
+      "unknown": {
+        "neg_total": 1746,
+        "false_positives": 18
+      }
+    },
+    "0.9": {
+      "unknown": {
+        "neg_total": 1746,
+        "false_positives": 15
+      }
+    },
+    "0.95": {
+      "unknown": {
+        "neg_total": 1746,
+        "false_positives": 8
+      }
+    },
+    "0.97": {
+      "unknown": {
+        "neg_total": 1746,
+        "false_positives": 4
+      }
+    }
+  },
+  "training_config": {
+    "embedder_model": "paraphrase-multilingual-mpnet-base-v2",
+    "embedding_dim": 768,
+    "classifier_type": "MLPClassifier",
+    "hidden_layers": [
+      256,
+      128
+    ],
+    "n_samples": 1957,
+    "n_positive": 211,
+    "n_negative": 1746,
+    "cv": "5-fold stratified OOF",
+    "oof_f1_at_0.95": 0.6925,
+    "oof_precision_at_0.95": 0.9355,
+    "oof_recall_at_0.95": 0.5498,
+    "note": "AUDIT-ONLY baseline. Do not enforce before threshold sign-off."
+  }
+}
