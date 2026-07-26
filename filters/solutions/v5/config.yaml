@@ -403,7 +403,7 @@ hybrid_inference:
   stage1:
     embedding_model: "intfloat/multilingual-e5-small"
     probe_path: "probe/embedding_probe_e5small.pkl"
-    threshold: 1.50  # placeholder — calibrate via scripts/train_probe.py --objective recall
+    threshold: 1.225  # calibrated via scripts/train_probe.py --objective recall --target-fn 0.02 (val recall 98.3%, stage2-rate 56.7%)
   stage2:
     model: "current"
 

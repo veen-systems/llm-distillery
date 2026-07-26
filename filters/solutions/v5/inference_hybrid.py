@@ -41,7 +41,7 @@ logger = logging.getLogger(__name__)
 # and the recall-first threshold is calibrated. After running train_probe.py,
 # update this AND config.yaml hybrid_inference.stage1.threshold to the
 # calibrated value.
-DEFAULT_THRESHOLD = 1.50
+DEFAULT_THRESHOLD = 1.225  # calibrated via train_probe.py --objective recall --target-fn 0.02
 
 
 class SolutionsHybridScorer(HybridScorer):
