@@ -56,7 +56,15 @@ Format: **the pit → the rule** (source). Skim the bold before each stage.
 ### 3. Metrics (needle filters especially)
 - **Judged by MAE → shipped a floor-predictor that surfaces nothing.** For needle filters (MEDIUM+ < ~25%), MAE is the wrong yardstick — a "no to everything" model wins MAE and is useless. Use **Recall@k / NDCG@k / FN@MEDIUM+**. MAE is fine only for balanced filters. gotcha "MAE Is Misleading", dev-guide Issue 4.
 
-### 4. Stage-1 probe (hybrid inference, ADR-006)
+### 4. Stage-1 probe (hybrid inference, ADR-006) — **REQUIRED for needle-in-haystack filters**
+
+**Gate check before deploy: `probe/embedding_probe_e5small.pkl` must exist.**
+A 1B-param model cannot simultaneously screen for topic relevance AND score
+dimensional quality in a single forward pass. The solutions v4 quality gate
+(2026-07-26) proved this: without the probe, 27% of medium+ articles were
+policy/regulation false positives. The e5 probe handles screening; the model
+only has to score. See `memory/gotcha-log.md` 2026-07-26 entry.
+
 - **Probe trained as L1 regression → floor-collapsed, dropped needles.** Train it **recall-first** on the FULL labeled set (`scripts/train_probe.py --objective recall`): binary MEDIUM+ target, class-weighted BCE, threshold from the val recall curve at a target FN — not by minimizing error. Report FN@MEDIUM+, not probe MAE. `feedback-probe-training-data`.
 - The shared `EmbeddingStage` screens on `weighted_avg(6-dim) >= threshold` and does NOT apply the gatekeeper at Stage 1 — keep the 6-dim output contract; don't change shared math for one filter. dev-guide Phase 6c.
 - **Commit the probe pkl** (`filters/<name>/v<N>/probe/*.pkl`) — it's ~0.5 MB, needed for hybrid inference, and the source package isn't reproducible without it. As of 2026-07-10 the `.gitignore` commits filter probes by default (the old blanket `filters/**/probe/` + `*.pkl` double-ignore was fixed with a `!filters/*/v*/probe/*.pkl` negation); just confirm `git status` shows it staged.

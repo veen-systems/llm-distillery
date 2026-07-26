@@ -68,12 +68,12 @@ logger = logging.getLogger(__name__)
 # Pure functions (no torch) — unit-tested in tests/unit/test_train_probe.py
 # --------------------------------------------------------------------------- #
 
-# nature_recovery v4 surfacing definition. Mirrors scripts/gate/agreement_gate.py
-# and filters/nature_recovery/v4/config.yaml (single source of truth for the
-# gatekeeper + weights). These constants describe the *target* (built from the
-# oracle labels); the *screen* replicates EmbeddingStage (clamp, weighted sum,
-# NO gatekeeper).
+# Filter-specific constants — populated by _load_filter_constants() from the
+# filter's base_scorer.py when run as a script (via --filter). The defaults below
+# are nature_recovery v4 values — they keep existing unit tests and any direct
+# imports working. Running main() with --filter overrides them.
 MEDIUM = 4.0
+GATEKEEPER_DIM = "recovery_evidence"
 GATEKEEPER_MIN, GATEKEEPER_CAP = 3.0, 3.5
 DIMENSION_NAMES = [
     "recovery_evidence", "measurable_outcomes", "ecological_significance",
@@ -86,8 +86,91 @@ WEIGHTS = {
 }
 
 
+def _load_filter_constants(filter_path):
+    """Import the filter's base_scorer and return its dimensional constants.
+
+    Dynamically imports {filter_path}.base_scorer and reads DIMENSION_NAMES,
+    DIMENSION_WEIGHTS, GATEKEEPER_*, and the lowest non-zero TIER_THRESHOLD
+    (the MEDIUM surfacing boundary used for binary target construction).
+    """
+    import importlib
+    import sys
+    from pathlib import Path
+
+    filter_path = Path(filter_path)
+    # Resolve relative to cwd
+    if not filter_path.is_absolute():
+        filter_path = Path.cwd() / filter_path
+
+    # Build module path: filters/solutions/v5 -> filters.solutions.v5.base_scorer
+    parts = list(filter_path.parts)
+    # Strip leading '.' if present
+    if parts[0] == '.':
+        parts = parts[1:]
+    module_name = '.'.join(parts) + '.base_scorer'
+
+    logger.info(f"Loading filter constants from {module_name}")
+    mod = importlib.import_module(module_name)
+
+    # Read the scorer class (first non-imported class extending FilterBaseScorer)
+    dim_names = getattr(mod, 'DIMENSION_NAMES', None)
+    dim_weights = getattr(mod, 'DIMENSION_WEIGHTS', None)
+    tiers = getattr(mod, 'TIER_THRESHOLDS', None)
+    gk_dim = getattr(mod, 'GATEKEEPER_DIMENSION', None)
+    gk_min = getattr(mod, 'GATEKEEPER_MIN', None)
+    gk_cap = getattr(mod, 'GATEKEEPER_CAP', None)
+
+    # Fall back to reading from the class if module-level attrs aren't set
+    if dim_names is None:
+        # Find the scorer class
+        for name in dir(mod):
+            obj = getattr(mod, name)
+            if (isinstance(obj, type) and name != 'FilterBaseScorer'
+                    and hasattr(obj, 'DIMENSION_NAMES')):
+                dim_names = obj.DIMENSION_NAMES
+                dim_weights = obj.DIMENSION_WEIGHTS
+                tiers = obj.TIER_THRESHOLDS
+                gk_dim = getattr(obj, 'GATEKEEPER_DIMENSION', None)
+                gk_min = getattr(obj, 'GATEKEEPER_MIN', None)
+                gk_cap = getattr(obj, 'GATEKEEPER_CAP', None)
+                break
+
+    if dim_names is None:
+        raise SystemExit(
+            f"Could not find DIMENSION_NAMES in {module_name}. "
+            f"Ensure the filter has a base_scorer.py with a scorer class "
+            f"defining these constants."
+        )
+
+    # MEDIUM = lowest non-zero tier threshold (the surfacing boundary)
+    medium = None
+    for tier_name, threshold, _desc in tiers:
+        if threshold > 0:
+            medium = threshold
+            break
+    if medium is None:
+        medium = 4.0  # safe fallback
+
+    cfg = {
+        'MEDIUM': medium,
+        'GATEKEEPER_DIM': gk_dim or 'recovery_evidence',  # fallback for old filters
+        'GATEKEEPER_MIN': gk_min if gk_min is not None else 3.0,
+        'GATEKEEPER_CAP': gk_cap if gk_cap is not None else 3.5,
+        'DIMENSION_NAMES': dim_names,
+        'WEIGHTS': dim_weights,
+    }
+
+    logger.info(
+        f"Filter constants: MEDIUM={cfg['MEDIUM']}, "
+        f"dims={len(cfg['DIMENSION_NAMES'])} "
+        f"({', '.join(cfg['DIMENSION_NAMES'][:3])}...), "
+        f"gatekeeper={cfg['GATEKEEPER_DIM']}<{cfg['GATEKEEPER_MIN']}→{cfg['GATEKEEPER_CAP']}"
+    )
+    return cfg
+
+
 def gatekeepered_wa(scores):
-    """Weighted average of oracle labels WITH the recovery_evidence gatekeeper.
+    """Weighted average of oracle labels WITH the filter's gatekeeper applied.
 
     `scores` is a dict keyed by dimension name or a sequence aligned to
     DIMENSION_NAMES. Used to build the binary MEDIUM+ *target* — matches the
@@ -95,7 +178,8 @@ def gatekeepered_wa(scores):
     """
     d = scores if isinstance(scores, dict) else dict(zip(DIMENSION_NAMES, scores))
     wa = sum(float(d[k]) * WEIGHTS[k] for k in DIMENSION_NAMES)
-    if float(d["recovery_evidence"]) < GATEKEEPER_MIN and wa > GATEKEEPER_CAP:
+    gk_val = float(d.get(GATEKEEPER_DIM, 0))
+    if gk_val < GATEKEEPER_MIN and wa > GATEKEEPER_CAP:
         wa = GATEKEEPER_CAP
     return wa
 
@@ -347,6 +431,8 @@ def _predict_screen_wa(model, scaler, X, device):
 
 
 def main():
+    global MEDIUM, GATEKEEPER_DIM, GATEKEEPER_MIN, GATEKEEPER_CAP, DIMENSION_NAMES, WEIGHTS
+
     parser = argparse.ArgumentParser(description="Train e5-small MLP probe for hybrid inference")
     parser.add_argument("--filter", type=Path, required=True)
     parser.add_argument("--data-dir", type=Path, required=True)
@@ -363,6 +449,15 @@ def main():
     parser.add_argument("--device", type=str, default=None)
     parser.add_argument("--output", type=Path, default=None)
     args = parser.parse_args()
+
+    # Load filter-specific dimensional constants from the filter's base_scorer.
+    cfg = _load_filter_constants(args.filter)
+    MEDIUM = cfg['MEDIUM']
+    GATEKEEPER_DIM = cfg['GATEKEEPER_DIM']
+    GATEKEEPER_MIN = cfg['GATEKEEPER_MIN']
+    GATEKEEPER_CAP = cfg['GATEKEEPER_CAP']
+    DIMENSION_NAMES = cfg['DIMENSION_NAMES']
+    WEIGHTS = cfg['WEIGHTS']
 
     import torch
     device = args.device or ("cuda" if torch.cuda.is_available() else "cpu")

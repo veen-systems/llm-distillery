@@ -4,6 +4,46 @@ Problems encountered and resolved. Format: Problem → Root cause → Fix.
 
 ---
 
+## solutions v4 Deployed Without e5 Probe — Model Can't Screen AND Score (2026-07-26)
+
+**Problem**: Solutions v4 quality gate found 27% policy/regulation bleed in medium+
+articles (135/500, 63 in high_solution tier) and severe score discretization (only
+10 unique concreteness values across 500 medium+ articles). The 1B-param model was
+trying to do BOTH screening ("is this a solution?") AND scoring ("how good?") in a
+single forward pass — it can't do both reliably.
+
+**Root cause**: The e5 embedding probe stage (ADR-006, FILTER_PLAYBOOK.md §4) was
+marked "optional but recommended" in the dev-guide and was deferred during the 6-day
+solutions v4 build sprint (July 17-22, 2026). The config.yaml had a placeholder
+`hybrid_inference` section with `threshold: 1.50` marked "recalibrate after
+training," but no `inference_hybrid.py` was created, no probe was trained, and no
+`probe/` directory exists. The architecture was deployed as single-stage: commerce
+prefilter → model — missing the e5 probe screening stage that nature_recovery v4
+and other needle filters use.
+
+The prompt's Step-1 "DEFAULT TO PASS" bias amplified the problem: it routes
+government regulation announcements, policy proposals, and enforcement actions past
+the scope check, and the content-type caps (4.0-5.0) sit above the 2.25 op-point,
+so capped articles still surface in medium+ tiers.
+
+**Fix** (solutions v5, in progress):
+1. Generalized `scripts/train_probe.py` to read filter-specific constants
+   (dimensions, weights, gatekeeper) from the filter's `base_scorer.py` instead
+   of hardcoding nature_recovery values.
+2. Created `filters/solutions/v5/` with `inference_hybrid.py` (following
+   nature_recovery v4's pattern) and `probe/` directory.
+3. Probe training pending: `PYTHONPATH=. python scripts/train_probe.py --filter
+   filters/solutions/v5 --data-dir datasets/training/solutions_v4 --objective
+   recall --target-fn 0.02`
+4. **Process fix**: FILTER_PLAYBOOK.md §4 updated — probe is now **REQUIRED for
+   needle-in-haystack filters**, not "optional but recommended."
+
+**Promoted to**: FILTER_PLAYBOOK.md §4 (probe requirement gate check). Candidate
+for a deploy-gate automation: `test_filter_integrity` should verify
+`probe/embedding_probe_e5small.pkl` exists for needle filters.
+
+---
+
 ## Retiring a filter but leaving its smoke fixture fail-closes the whole deploy (2026-07-22)
 **Problem**: The first cron after the solutions v4 cutover (retired sustech + foresight from
 `enabled_filters`) aborted every 4h with `ERROR: smoke fixture references filters not in app.yaml
