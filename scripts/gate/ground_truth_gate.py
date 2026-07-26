@@ -168,12 +168,14 @@ def load_scores(path, spec=None):
         rid = r.get("id") or r.get("article_id")
         if rid is None:
             continue
-        if spec is not None and isinstance(r.get("scores"), dict) and all(
-            d in r["scores"] for d in spec["weights"]
+        scores_map = r.get("scores") or r.get("model_scores")
+        wa = r.get("weighted_average") or r.get("model_weighted_average")
+        if spec is not None and isinstance(scores_map, dict) and all(
+            d in scores_map for d in spec["weights"]
         ):
-            out[rid] = _wa(r["scores"], spec)
-        elif r.get("weighted_average") is not None:
-            out[rid] = float(r["weighted_average"])
+            out[rid] = _wa(scores_map, spec)
+        elif wa is not None:
+            out[rid] = float(wa)
     return out
 
 
