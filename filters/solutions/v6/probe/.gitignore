@@ -1,0 +1,3 @@
+# Probe .pkl files ARE committed (needed for hybrid inference + reproducibility).
+# Overrides the root .gitignore *.pkl rule.
+!*.pkl

@@ -1023,3 +1023,13 @@ double-quoted dict keys / format specs that clash with the command's own quoting
 **Fix**: don't ship non-trivial python as an ssh `-c` one-liner. Write it to a `.py` file, `scp` it,
 and run `python3 file.py` (used for `gen_ab.py`, `gate_diag.py`). If a one-liner is unavoidable, use a
 heredoc (`python3 - <<'EOF'`) so quotes aren't doubly escaped, and single-quote f-string keys.
+
+### Ollama hogs GPU during training (2026-07-26)
+**Problem**: Training fails with CUDA OOM even on a 16GB RTX 4080.
+**Root cause**: Ollama process holds 15.7GB of 16GB GPU memory. The nexusmind-scorer stop hook restarts ollama.
+**Fix**: `sudo systemctl stop ollama` before training, restart after. Check with `nvidia-smi`.
+
+### Prefilter blocks scoring of prepared training data (2026-07-26)
+**Problem**: `SolutionsScorer.score_batch()` returns `scores: None, passed_prefilter: False` for training/test articles.
+**Root cause**: prepare_data.py output doesn't match the prefilter's expected article format (URL/source fields may differ).
+**Fix**: Pass `use_prefilter=False` and `skip_prefilter=True` when scoring training/test splits. Only relevant for gate/calibration scoring, not production.
