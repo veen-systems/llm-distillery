@@ -7,7 +7,7 @@ metadata:
 
 ## Status
 
-v3 trained + validated. **Ready for NM#185 shadow deploy.**
+v3 trained + validated. **NM#185 Phase 3 DEPLOYED 2026-07-27** — owner gate removed, shadow mode live (`_obituary_score` / `_is_obituary` stamps in harvest output, drops nothing). v4 corrective retrain next.
 
 ## What it is
 
@@ -30,13 +30,13 @@ Scored 203 ovr.news Phase-1 borderlines with v3 MLP:
 
 ## Dependency chain
 
-LD#51 (train v3) ✅ → LD#77 (ovr.news validation) ✅ → **NM#185 (NexusMind shadow deploy)** ← NEXT → ovr#204 (ovr removes hardcoded filter)
+LD#51 (train v3) ✅ → LD#77 (ovr.news validation) ✅ → **NM#185 (NexusMind shadow deploy)** ✅ deployed 2026-07-27 → **v4 corrective retrain** ← NEXT → ovr#204 (ovr removes hardcoded filter)
 
 ## v4 corrective retrain plan (§4b pattern)
 
 8 confirmed FPs from ovr.news investigation (3 at ≥0.95 + 5 at 0.70–0.90), all the same error class: historical legacy/tribute pieces in non-English. Add as hard negatives to training → retrain → re-validate. $0 oracle cost (labels from investigation). See `docs/FILTER_PLAYBOOK.md` §4b for the pattern.
 
-**Why not do v4 before NM#185:** shadow mode is safe (scores only, no drops), the chain has been waiting since June 14, and v3 at 0.95 blocks only ~1.5% of production with 0 FPs on English content. Ship v3, retrain v4 in parallel.
+**Why not do v4 before NM#185 (retrospective):** shadow mode is safe (scores only, no drops), the chain had been waiting since June 14, and v3 at 0.95 blocks only ~1.5% of production with 0 FPs on English content. Shipped v3 first — v4 retrains next.
 
 ## Validation harness
 
