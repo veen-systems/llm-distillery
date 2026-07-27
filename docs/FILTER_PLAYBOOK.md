@@ -105,6 +105,56 @@ continuous (median 0.17, gradual taper).
 **Important:** the probe itself stays unchanged. This technique improves the Stage-2
 model; the Stage-1 probe is a separate recall-first training problem (§4).
 
+#### 4b. Production-feedback retraining — the same pattern without a probe
+
+The probe-split pattern assumes a runtime probe that partitions the corpus for free.
+Not every filter has one — sklearn-MLP filters (obituary detector, commerce prefilter)
+are single-stage: embed → classify → score. But the same principle applies: **the model's
+own production predictions tell you where to spend labeling budget.**
+
+**When to use:** a deployed single-stage filter is flagging articles in production, and
+you've verified (via panel or spot-check) that some flags are false positives. You want
+to fix the error pattern without a full re-labeling campaign.
+
+**The method** (obituary detector v3→v4, 2026-07-27):
+
+1. **Shadow-deploy the model** on the production stream. Every article gets a score;
+   articles above the enforcement threshold are candidate blocks.
+2. **Collect the flagged articles** — these are the model's production positives. They
+   represent the distribution the model actually faces, not the training distribution.
+3. **Panel-verify a sample.** A multi-model blind panel (or owner spot-check) labels
+   each flagged article against the labeling rule. FPs are articles the model would
+   wrongly block; TPs confirm the model is working.
+4. **Add confirmed FPs as hard negatives to training.** You already know they're wrong —
+   no oracle re-scoring needed. Each FP is one row: `label: negative`, same features.
+5. **Retrain on the augmented corpus.** The model now has explicit counterexamples for
+   the error pattern. For sklearn-MLP filters this is a full retrain (same as §4a step 5);
+   for fine-tuned models it's a fine-tuning epoch on the augmented set.
+
+**Results (obituary detector ovr.news investigation, 2026-07-27):** 203 ovr.news
+borderlines scored with v3 MLP → 3 flagged at ≥0.95 threshold, all 3 confirmed FPs
+(historical legacy/tribute pieces in Greek/Spanish/Chinese — the model confuses
+posthumous-legacy language with obituary language in non-English text). 5 more FPs
+in the 0.70–0.90 band. Adding these 8 hard negatives costs $0 in oracle budget
+(the labels come from the investigation, not from re-scoring) and closes a known
+multilingual blind spot. Same pattern as §4a step 2–5 but at article-scale instead
+of corpus-scale, and the "uncertainty oracle" is the model score threshold, not a
+probe-model disagreement band.
+
+**How this differs from probe-split (§4a):**
+
+| | Probe-split (§4a) | Production-feedback (§4b) |
+|---|---|---|
+| Acquisition function | Probe-model disagreement band | Model score ≥ threshold |
+| Scale | Corpus-wide (2,401 re-scored) | Article-scale (8–50 FPs) |
+| Oracle cost | Yes — re-score mid-range with tightened prompt | Usually none — FPs confirmed by panel |
+| Zeroing step | Yes — probe-negatives zeroed in training | No — no probe to partition with |
+| Best for | Improving recall AND precision simultaneously | Fixing a specific production error pattern |
+| Example | solutions v6 (MAE 0.564→0.476) | obituary detector v3→v4 (multilingual legacy FP) |
+
+The two patterns compose: use §4b for quick targeted fixes, escalate to §4a when the
+error pattern is broad enough to justify corpus-wide re-scoring.
+
 ### 5. Calibration + the top band
 - **Fit `calibration.json` after every training run** (per-dim isotonic on val, ADR-008). Auto-loaded by the base scorer. Commit it.
 - **Top of the scale is unreachable** (data density: ~2 articles at 8–10). Calibration can't invent range. Clip/ceiling the top; do NOT per-band-isotonic 2–3 points. Fix = more high-band data (active learning), not loss tricks.
@@ -177,3 +227,10 @@ Say *"new filter"* or *"retrain <filter>"* or *"improve <filter>"* and start fro
 3. Re-score the probe-pass / model-uncertain mid-range with a tightened oracle prompt.
 4. Retrain on the cleaned corpus (zeroed negatives + re-scored mid-range + kept positives).
 5. Re-run the gate, compare against incumbent, deploy via the checklist.
+
+**Fix a specific production error pattern (production-feedback retrain, §4b):**
+1. Shadow-deploy, collect model-flagged articles from production.
+2. Panel-verify a sample — confirm which flags are FPs.
+3. Add confirmed FPs as hard negatives to training ($0 oracle cost).
+4. Retrain on the augmented corpus.
+5. Re-run the gate, confirm the error pattern is closed, deploy via the checklist.
