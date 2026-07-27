@@ -115,11 +115,11 @@ def get_hf_token():
 def main():
     parser = argparse.ArgumentParser(description="Benchmark hybrid vs standard inference")
     parser.add_argument("--data", type=Path, required=True, help="Calibration JSONL file")
-    parser.add_argument("--probe", type=Path, default=Path("filters/uplifting/v5/probe/embedding_probe_v2.pkl"))
+    parser.add_argument("--probe", type=Path, default=Path("filters/uplifting/v7/probe/embedding_probe.pkl"))
     parser.add_argument("--n", type=int, default=1000, help="Number of articles to benchmark")
     parser.add_argument("--batch-size", type=int, default=16, help="Batch size")
     parser.add_argument("--threshold", type=float, default=3.5, help="Stage 1 threshold")
-    parser.add_argument("--repo-id", default="jeergrvgreg/uplifting-filter-v5", help="HF Hub repo")
+    parser.add_argument("--repo-id", default="jeergrvgreg/uplifting-filter-v7", help="HF Hub repo")
     parser.add_argument("--embedding-model", default="intfloat/multilingual-e5-large", help="Embedding model for Stage 1")
     args = parser.parse_args()
 

@@ -200,6 +200,6 @@ python filters/common/commerce_prefilter/training/train.py \
 
 ## References
 
-- [Jackery case study](../filters/sustainability_technology/v2/prefilter.py) - v2.2 regex fix
+- [Jackery case study](../filters/sustainability_technology/v3/prefilter.py) - v3 prefilter patterns
 - [Prefilter harmonization](./PREFILTER_HARMONIZATION_TASK.md)
 - [Filter architecture](./ARCHITECTURE.md)

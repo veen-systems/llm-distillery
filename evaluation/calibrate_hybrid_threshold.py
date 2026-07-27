@@ -10,16 +10,16 @@ Target: <2% false negative rate on MEDIUM+ articles.
 Usage:
     python evaluation/calibrate_hybrid_threshold.py \
         --filter uplifting \
-        --version v5 \
-        --val-data datasets/training/uplifting_v5/val.jsonl \
-        --probe-path filters/uplifting/v5/probe/embedding_probe.pkl
+        --version v7 \
+        --val-data datasets/training/uplifting_v7/val.jsonl \
+        --probe-path filters/uplifting/v7/probe/embedding_probe.pkl
 
     # With ground truth labels (oracle scores) for more accurate calibration:
     python evaluation/calibrate_hybrid_threshold.py \
         --filter uplifting \
-        --version v5 \
-        --val-data datasets/training/uplifting_v5/val.jsonl \
-        --probe-path filters/uplifting/v5/probe/embedding_probe.pkl \
+        --version v7 \
+        --val-data datasets/training/uplifting_v7/val.jsonl \
+        --probe-path filters/uplifting/v7/probe/embedding_probe.pkl \
         --use-ground-truth
 """
 

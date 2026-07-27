@@ -15,7 +15,7 @@ Local inference.py handles key remapping at load time for either format.
 
 Usage (for LOCAL inference fixes only):
     python scripts/deployment/resave_adapter.py --filter filters/sustainability_technology/v1
-    python scripts/deployment/resave_adapter.py --filter filters/uplifting/v5
+    python scripts/deployment/resave_adapter.py --filter filters/uplifting/v7
 """
 
 import argparse

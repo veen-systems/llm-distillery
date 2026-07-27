@@ -38,5 +38,5 @@ python evaluation/sustainability_technology/compare_prefilters.py
 
 ## Related Documentation
 
-- **Filter reports:** [`filters/sustainability_technology/v2/reports/`](../../filters/sustainability_technology/v2/reports/)
-- **Prefilter source:** [`filters/sustainability_technology/v2/prefilter.py`](../../filters/sustainability_technology/v2/prefilter.py)
+- **Filter reports:** [`filters/sustainability_technology/v3/reports/`](../../filters/sustainability_technology/v3/reports/)
+- **Prefilter source:** [`filters/sustainability_technology/v3/prefilter.py`](../../filters/sustainability_technology/v3/prefilter.py)

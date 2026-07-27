@@ -8,7 +8,7 @@ Articles with low Stage 1 estimates skip Stage 2, reducing average inference
 time by ~40% while maintaining accuracy on MEDIUM/HIGH tier articles.
 
 Usage:
-    # Subclass for a specific filter (see filters/uplifting/v5/inference_hybrid.py)
+    # Subclass for a specific filter (see filters/uplifting/v7/inference_hybrid.py)
     class MyHybridScorer(HybridScorer):
         def _create_stage2_scorer(self):
             return MyScorer(device=self.device_str, use_prefilter=False)

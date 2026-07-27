@@ -10,7 +10,7 @@ Usage:
 
     stage = EmbeddingStage(
         embedding_model_name="intfloat/multilingual-e5-large",
-        probe_path="filters/uplifting/v5/probe/embedding_probe.pkl",
+        probe_path="filters/uplifting/v7/probe/embedding_probe.pkl",
         threshold=3.0,
         dimension_weights={"human_wellbeing_impact": 0.25, ...},
         dimension_names=["human_wellbeing_impact", ...],

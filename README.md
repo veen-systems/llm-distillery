@@ -246,10 +246,15 @@ Article → [Prefilter] → [Student Model] → [Postfilter] → Tier + Scores
 ```
 llm-distillery/
 ├── filters/                    # Versioned filter packages
-│   ├── uplifting/v5/          # Uplifting content filter (production ready)
-│   ├── sustainability_tech_innovation/v2/  # Sustainability tech
-│   ├── investment-risk/v4/    # Investment risk signals
-│   └── README.md              # Filter development guide
+│   ├── uplifting/v7/          # Uplifting content filter (production, hybrid inference)
+│   ├── solutions/v6/          # Solutions lens (gate passed 2026-07-27)
+│   ├── belonging/v1/          # Belonging/community filter
+│   ├── nature_recovery/v4/    # Nature recovery (needle-in-haystack)
+│   ├── cultural_discovery/v5/ # Cultural discovery (DeepSeek oracle)
+│   ├── investment_risk/v6/    # Investment risk signals
+│   ├── foresight/v1/          # PARKED — merged into solutions
+│   ├── common/                # Shared components (base scorer, hybrid, calibration)
+│   └── README.md              # Filter package overview
 │
 ├── ground_truth/              # Oracle scoring pipeline
 │   ├── batch_scorer.py        # Universal scoring engine

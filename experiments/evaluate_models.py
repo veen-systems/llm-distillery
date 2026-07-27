@@ -10,8 +10,8 @@ Loads each trained model, scores the uplifting v5 val set, and reports:
 Usage (on gpu-server):
     cd ~/llm-distillery-calibration
     python experiments/evaluate_models.py \
-        --data-dir datasets/training/uplifting_v5 \
-        --config filters/uplifting/v5/config.yaml
+        --data-dir datasets/training/uplifting_v7 \
+        --config filters/uplifting/v7/config.yaml
 """
 
 import argparse

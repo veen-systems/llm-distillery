@@ -40,16 +40,18 @@ All use Gemma-3-1B base + LoRA. All have local, Hub, and hybrid inference paths.
      live in the NexusMind and ovr.news repos. This repo produces filters; mapping filters to
      product surfaces is a downstream concern. -->
 
-## Repo-wide audit (2026-04-19)
+## Repo-wide audit (2026-07-27)
 
-Ran `scripts/deployment/verify_filter_package.py --check-hub` across every `filters/*/v*/`. - `sustainability_technology/v2` — cross-version imports from v1 (#44 failure mode, pre-v3)
-- `ai-engineering-practice/v2` — `config.yaml filter.version` says 1.0 in a v2 dir
-- `cultural-discovery/v3` — no default `repo_id` in inference_hub.py signature
-- `investment-risk/v5` — references placeholder `your-username/investment-risk-filter-v5` (deploy abandoned mid-flow)
-- `uplifting/v5` — Hub `last_modified` is before local `training_history.json` (weights never uploaded after training re-ran)
-- `signs_of_wisdom/v1` — package structure incomplete (0 checks pass)
+Ran `scripts/deployment/verify_filter_package.py --check-hub` across every `filters/*/v*/`.
 
-These are all superseded by newer versions in production. Clean up or delete at next audit.
+- `ai-engineering-practice/v2` — `config.yaml filter.version` says 1.0 in a v2 dir → **REMOVED** (LD#49)
+- `sustainability_technology/v2` — cross-version imports from v1 (#44 failure mode, pre-v3) → **REMOVED** (LD#49)
+- `cultural-discovery/v3` — no default `repo_id` in inference_hub.py signature → **REMOVED** (LD#49)
+- `investment-risk/v5` — references placeholder `your-username/investment-risk-filter-v5` → **REMOVED** (LD#49)
+- `uplifting/v5` — Hub `last_modified` before local `training_history.json` → **REMOVED** (LD#49)
+- `signs_of_wisdom/v1` — package structure incomplete (0 checks pass) → **REMOVED** (LD#49)
+
+All 6 superseded by newer versions in production. Cleaned up 2026-07-27.
 
 <!-- verify: PYTHONPATH=. python scripts/deployment/verify_filter_package.py --filter filters/nature_recovery/v2 --check-hub > /dev/null && echo PASS || echo FAIL -->
 

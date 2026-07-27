@@ -261,7 +261,7 @@ def main():
     print(f"  1. Copy to llm-distiller: scp {output_file} llm-distiller:~/llm-distillery/datasets/raw/")
     print(f"  2. Run batch scoring with v2 oracle:")
     print(f"     python -m ground_truth.batch_scorer \\")
-    print(f"       --filter filters/sustainability_technology/v2 \\")
+    print(f"       --filter filters/sustainability_technology/v3 \\")
     print(f"       --source datasets/raw/{output_file.name} \\")
     print(f"       --output-dir datasets/scored/sustainability_technology_v2 \\")
     print(f"       --llm gemini-flash \\")

@@ -60,7 +60,7 @@ def load_filter_package(filter_path: Path) -> Tuple[Optional[object], Path, Dict
         └── config.yaml       # Optional: Filter configuration
 
     Args:
-        filter_path: Path to filter directory (e.g., Path("filters/uplifting/v5"))
+        filter_path: Path to filter directory (e.g., Path("filters/uplifting/v7"))
 
     Returns:
         Tuple of (prefilter_instance, prompt_path, config_dict):
@@ -73,7 +73,7 @@ def load_filter_package(filter_path: Path) -> Tuple[Optional[object], Path, Dict
 
     Example:
         >>> prefilter, prompt_path, config = load_filter_package(
-        ...     Path("filters/uplifting/v5")
+        ...     Path("filters/uplifting/v7")
         ... )
         >>> if prefilter:
         ...     passed, reason = prefilter.apply_filter(article)
@@ -372,7 +372,7 @@ class GenericBatchScorer:
 
     Example:
         >>> scorer = GenericBatchScorer(
-        ...     prompt_path="filters/uplifting/v5/prompt.md",
+        ...     prompt_path="filters/uplifting/v7/prompt-compressed.md",
         ...     llm_provider="gemini-flash",
         ...     output_dir="datasets/scored/uplifting",
         ... )
