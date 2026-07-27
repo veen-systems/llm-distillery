@@ -14,3 +14,4 @@
 - [ovr lens set](ovr-lens-set-current.md) — current lens→filter→tab mapping (authoritative tab config lives in ovr.news, not here)
 - [Uplifting v7 training](uplifting-v7-training.md) — training history; v7 is deployed (hybrid inference), thriving v1 parked (ADR-015)
 - [Session 2026-07-27](project_session_2026_07_27.md) — v6 production perf check, gate re-run, playbook update (probe-split retraining), audit-context cleanup
+- [Obituary detector](project-obituary-detector.md) — v3 shadow-ready for NM#185, ovr.news investigation (3 FPs at ≥0.95), v4 corrective retrain plan (§4b), dependency chain LD#51/#77→NM#185→ovr#204
