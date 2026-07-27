@@ -72,21 +72,38 @@ class ObituaryDetectorV3:
         if self._loaded:
             return
 
+        if not self.model_dir.is_dir():
+            raise FileNotFoundError(
+                f"Model directory not found: {self.model_dir}\n"
+                f"Train the model first (see filters/common/obituary_detector/training/train_v1.py) "
+                f"or copy artifacts from gpu-server."
+            )
+
         # Load embedder
         self._embedder = SentenceTransformer(
             'paraphrase-multilingual-mpnet-base-v2',
             device=self.device
         )
 
-        # Load classifier
+        # Load classifier (with optional integrity check)
         from filters.common.embedding_stage import _verify_pickle_integrity
         classifier_path = self.model_dir / 'mlp_classifier.pkl'
+        if not classifier_path.exists():
+            raise FileNotFoundError(
+                f"Classifier not found: {classifier_path}\n"
+                f"Expected artifact contract: mlp_classifier.pkl + scaler.pkl in {self.model_dir}"
+            )
         _verify_pickle_integrity(classifier_path)
         with open(classifier_path, 'rb') as f:
             self._classifier = pickle.load(f)
 
-        # Load scaler
+        # Load scaler (with optional integrity check)
         scaler_path = self.model_dir / 'scaler.pkl'
+        if not scaler_path.exists():
+            raise FileNotFoundError(
+                f"Scaler not found: {scaler_path}\n"
+                f"Expected artifact contract: mlp_classifier.pkl + scaler.pkl in {self.model_dir}"
+            )
         _verify_pickle_integrity(scaler_path)
         with open(scaler_path, 'rb') as f:
             self._scaler = pickle.load(f)
@@ -101,15 +118,30 @@ class ObituaryDetectorV3:
             article: Article dict with 'title' and 'content', or raw text string
 
         Returns:
-            Combined text for embedding
+            Combined text for embedding. Note: the embedder has a 128-token limit,
+            so only the first ~100 words of content are seen by the model.
+
+        Raises:
+            TypeError: if article is not a dict or str
         """
         if isinstance(article, str):
-            return article
+            return article.strip()
 
-        title = article.get('title', '')
-        content = article.get('content', '')
+        if not isinstance(article, dict):
+            raise TypeError(
+                f"Expected dict or str for article, got {type(article).__name__}. "
+                f"Article dict should have 'title' and 'content' keys."
+            )
 
-        return f"{title} {content}"
+        # Coerce None values to empty strings (avoids "None" token in embedding)
+        title = article.get('title') or ''
+        content = article.get('content') or ''
+
+        # Coerce non-string values to strings
+        title = str(title) if not isinstance(title, str) else title
+        content = str(content) if not isinstance(content, str) else content
+
+        return f"{title} {content}".strip()
 
     def is_obituary(self, article: Union[dict, str]) -> dict:
         """
@@ -161,6 +193,9 @@ class ObituaryDetectorV3:
         Returns:
             List of result dicts (same format as is_obituary)
         """
+        if not articles:
+            return []
+
         self._load_models()
 
         start_time = time.perf_counter()
@@ -198,6 +233,9 @@ class ObituaryDetectorV3:
     def get_score(self, article: Union[dict, str]) -> float:
         """
         Get raw obituary score without threshold application.
+
+        Note: First call triggers lazy model loading (~1-2 seconds for the
+        SentenceTransformer embedder). Subsequent calls are fast (~1-5ms).
 
         Args:
             article: Article dict or text string
