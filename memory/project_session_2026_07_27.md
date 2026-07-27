@@ -27,7 +27,31 @@ metadata:
 - [augmented-engineering#32](https://github.com/ducroq/augmented-engineering/issues/32) — methodology pattern: probe-split retraining
 - [llm-distillery#72](https://github.com/veen-systems/llm-distillery/issues/72#issuecomment-5087547202) — solutions v6 normalization added to issue
 
+## Obituary detector (LD#51/#77 → NM#185)
+
+- **ovr.news investigation**: Scored 203 Phase-1 borderlines with v3 MLP. 3/203 flagged at ≥0.95 (1.5%), all multilingual historical-legacy FPs. Model correctly passes 200/203. v3 generalizes well to ovr.news — the Phase-1 concern was driven by a different model (Claude screener), not the v3 MLP.
+- **v3/inference.py**: Created `ObituaryDetectorV3` class mirroring `CommercePrefilterV2`. Hardened with multi-model review battery (4 reviewers: correctness, security, edge cases, integration → 8 issues fixed, 0 CRITICAL/HIGH remaining).
+- **NexusMind NM#185**: Phase 3 deployed — owner gate removed. Pipeline enabled (`obituary_detector.enabled: true`). Next harvest cycle stamps `_obituary_score` / `_is_obituary` in shadow mode (drops nothing).
+- **NexusMind `obituary.py:182`**: Fixed to use `result["is_obituary"]` instead of recalculating threshold.
+
+## Documentation updates
+
+- **FILTER_PLAYBOOK.md §4b**: Added "Production-feedback retraining" — generalizes probe-split pattern to single-stage filters without a runtime probe. Comparison table, composition rule (§4b → §4a escalation).
+- **FILTER_PLAYBOOK.md quick-reference**: Added 5-step checklist for §4b path.
+- **memory/project-obituary-detector.md**: New project memory — v3 status, NM#185 handoff, v4 corrective retrain plan, labeling rule, dependency chain.
+- **memory/MEMORY.md**: Added obituary detector pointer, removed 3 dead links (standalone-outlets, session-close-ritual, github-push — files never created).
+- **NexusMind `docs/obituary-detector-build-plan.md`**: Phase 3 marked deployed, owner gate removed.
+
+## Cross-repo
+
+- NexusMind `2e8c66e`: Phase 3 build plan updated
+- NexusMind `36d1cdc`: obituary.py fix (use result["is_obituary"])
+- NexusMind `scripts/main.py`: UNRELATED uncommitted change (atomic file writes #206) — left as-is
+
 ## Next session
 
-- Fit normalization.json once ≥200 v6 articles accumulate (~1-2 more runs)
+- NexusMind: verify obituary shadow scores appear in next harvest cycle output
+- Obituary v4 corrective retrain: add 8 ovr.news FPs as hard negatives (§4b), retrain, re-validate
+- Solutions v6: fit normalization.json once ≥200 articles accumulate (~1-2 more runs)
 - Nature_recovery v5 planning: apply probe-split technique to nr v4
+- Quality monitoring: draft §8 of FILTER_PLAYBOOK.md (periodic filter health checks + retrain triggers)
