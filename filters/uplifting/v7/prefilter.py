@@ -95,6 +95,28 @@ class UpliftingPreFilterV7(BasePreFilter):
         "excluded_domain_code": CODE_HOSTING_DOMAINS,
     }
 
+    # === BRANDED / SPONSORED CONTENT URL PATH PATTERNS ===
+    # Publishers self-label paid content in URL paths. These patterns catch
+    # advertorials, sponsored content, and branded sections that read as
+    # genuine positive news at the text level but are paid placement.
+    # LD#63 — production failure cases: El País /aniversario/branded/,
+    # RCR Wireless /sponsored/, Politico EU /sponsored-content/, Kleine
+    # Zeitung /advertorials/sponsored/, Energy Monitor /sponsored/.
+    BRANDED_CONTENT_PATH_PATTERNS = [
+        r'/branded/',
+        r'/sponsored/',
+        r'/sponsored-content/',
+        r'/advertorials?/',
+        r'/partner-content/',
+        r'/brand-studio/',
+        r'/paid-post/',
+        r'/native-ad/',
+        r'/promoted/',
+        r'/patrocinado/',
+        r'/publireportage/',
+        r'/advertise-with-us/',  # landing pages, not content — catch as noise
+    ]
+
     # === ADR-018 EXCLUSION_PATTERNS ===
     # Iteration order matches the legacy apply_filter() order: corporate_finance,
     # military_security, crime_violence. Category keys match the (False, "<reason>")
@@ -386,6 +408,14 @@ class UpliftingPreFilterV7(BasePreFilter):
             if domain_result:
                 return False, domain_result
 
+            # Check for branded/sponsored content URL path patterns.
+            # Publishers self-label paid content in URL paths — these read
+            # as genuine positive news at the text level but are paid placement.
+            # (LD#63, 2026-05-12: El País branded piece scored 9.1, got hero slot)
+            for pattern in self.BRANDED_CONTENT_PATH_PATTERNS:
+                if re.search(pattern, url, re.IGNORECASE):
+                    return False, "branded_content"
+
         # Get text content (limit for prefilter efficiency)
         title = article.get('title', '')
         text = article.get('text', article.get('content', ''))[:self.MAX_PREFILTER_CONTENT]
@@ -464,6 +494,7 @@ class UpliftingPreFilterV7(BasePreFilter):
             'code_hosting_domains': len(self.CODE_HOSTING_DOMAINS),
             'speculation_patterns': len(self.SPECULATION_PATTERNS),
             'outcome_evidence_patterns': len(self.OUTCOME_EVIDENCE_PATTERNS),
+            'branded_content_path_patterns': len(self.BRANDED_CONTENT_PATH_PATTERNS),
         }
         for category, patterns in self.EXCLUSION_PATTERNS.items():
             stats[f'{category}_patterns'] = len(patterns)
@@ -568,6 +599,15 @@ def test_prefilter():
             'text': 'Scientists say the experimental breakthrough could potentially revolutionize global energy production within the next decade. The technology might help address climate change and may become the future of clean energy. Experts believe it promises to transform the entire industry and is poised to disrupt existing fossil fuel markets. The innovation could democratize access to power and might enable communities to achieve energy independence. Researchers aim to begin pilot testing next year.',
             'expected': (False, 'pure_speculation'),
             'description': 'Pure speculation (no outcomes) — `\\b` fix restores v5 behavior'
+        },
+
+        # Should BLOCK - Publisher branded/sponsored content URL patterns (LD#63)
+        {
+            'title': 'ONCE Shifts Focus to Full Integration of Disabled Workers',
+            'url': 'https://elpais.com/aniversario/branded/un-futuro-por-escribir/once-integracion-laboral',
+            'text': 'The ONCE foundation has shifted its focus to full integration of disabled workers into the Spanish labor market. In 2024, the organization placed 1,200 workers with disabilities into competitive employment positions across 500 partner companies, a 15% increase from the previous year. The foundation invested 254.1 million euros in social projects, with 77% of profits directed to social outcomes including job training, accessibility programs, and direct employment support. Independent audit verified these figures, and the Spanish government recognized ONCE as a model for disability integration in the EU.',
+            'expected': (False, 'branded_content'),
+            'description': 'Publisher branded content — /aniversario/branded/ URL path (LD#63)'
         },
 
         # Should PASS - Documented Outcomes
