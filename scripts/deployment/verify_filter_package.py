@@ -9,7 +9,8 @@ Static checks (always run):
   1. inference_hub.py default repo_id ends with -v{N} matching the directory version.
   2. inference*.py files import from filters.{name}.v{N}.* matching the directory version.
   3. config.yaml filter.version matches the directory version.
-  4. base_scorer.py FILTER_VERSION matches the directory version.
+  4. config.yaml scoring.dimensions[*] each have a 'description' field (required by Hub upload).
+  5. base_scorer.py FILTER_VERSION matches the directory version.
 
 Hub check (run when --check-hub is passed):
   5. HfApi().repo_info(repo_id) succeeds; auth errors (401/403/Gated) are distinguished
@@ -133,6 +134,47 @@ def check_config_yaml(filter_dir: Path, version: str) -> tuple[bool, str]:
         f"config.yaml: filter.version={cfg['filter']['version']!r} "
         f"does not match directory v{version}"
     )
+
+
+def check_config_schema(filter_dir: Path) -> list[tuple[bool, str]]:
+    """Check config.yaml dimensions each have a 'description' field.
+
+    The Hub uploader's model-card template reads per-dim description lines.
+    If any dim lacks one, upload_to_huggingface.py fails with KeyError
+    after model files have already been transferred. Catches it early.
+    """
+    path = filter_dir / "config.yaml"
+    if not path.exists():
+        return [(True, "config.yaml: skip schema check — file not present")]
+
+    with path.open(encoding="utf-8") as f:
+        cfg = yaml.safe_load(f)
+
+    scoring = cfg.get("scoring", {})
+    dims = scoring.get("dimensions", {})
+    if not dims:
+        return [(True, "config.yaml: no scoring.dimensions to check")]
+
+    results: list[tuple[bool, str]] = []
+    missing: list[str] = []
+    for dim_name, dim_cfg in dims.items():
+        if not isinstance(dim_cfg, dict):
+            missing.append(f"{dim_name} (not a dict)")
+        elif "description" not in dim_cfg:
+            missing.append(dim_name)
+
+    if missing:
+        results.append((
+            False,
+            f"config.yaml: {len(missing)} dimension(s) missing 'description' field "
+            f"(required by Hub upload): {', '.join(missing)}"
+        ))
+    else:
+        results.append((
+            True,
+            f"config.yaml: all {len(dims)} dimension(s) have description"
+        ))
+    return results
 
 
 def check_base_scorer_version(filter_dir: Path, version: str) -> tuple[bool, str]:
@@ -293,6 +335,7 @@ def main() -> int:
     all_checks.append((passed, msg))
     all_checks.extend(check_imports(filter_dir, filter_name, version))
     all_checks.append(check_config_yaml(filter_dir, version))
+    all_checks.extend(check_config_schema(filter_dir))
     all_checks.append(check_base_scorer_version(filter_dir, version))
 
     if args.check_hub:
