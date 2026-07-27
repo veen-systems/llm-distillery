@@ -25,7 +25,9 @@ OLLAMA = "http://gpu-server:11434/api/generate"
 
 # load GEMINI key from ovr.news/.env (run this panel LOCALLY: gemini REST + Ollama@gpu-server)
 ENV = {}
-_envp = Path(r"C:/local_dev/ovr.news/.env")
+_envp = Path("/home/jeroen/repos/veen-systems/ovr.news/.env")
+if not _envp.exists():
+    _envp = Path(r"C:/local_dev/ovr.news/.env")  # Windows fallback
 if _envp.exists():
     for line in _envp.read_text(encoding="utf-8").splitlines():
         if "=" in line and not line.strip().startswith("#"):
