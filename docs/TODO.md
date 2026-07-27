@@ -252,7 +252,14 @@ Items surfaced by the multi-agent code review of the migration commits (2026-04-
 
 ---
 
-*Last updated: 2026-07-16*
+*Last updated: 2026-07-27*
+
+## 2026-07-27 Session — Small LD Issues Closed
+
+- [x] **LD#49** — Remove 6 broken/superseded filter version dirs (`3e1ccec`). −61,314 lines.
+- [x] **LD#68** — Add per-dim `description` field check to `verify_filter_package.py` (`c2ab571`).
+- [x] **LD#63** — Branded/sponsored URL path blocking in uplifting v7 prefilter (`623ea51`).
+- [x] **LD#57** — Schema gate for `source_filter:` block. Already implemented; closed.
 
 ## #52 belonging v1 migration notes (2026-04-29)
 

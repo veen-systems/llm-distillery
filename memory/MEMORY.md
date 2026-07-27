@@ -1,5 +1,6 @@
 # Memory Index
 
+- [Cross-repo prioritization](cross-repo-prioritization.md) — master issue landscape across all 4 repos: P0-P4, 7 dependency chains, 5 work batches
 - [Filter status](filter-status.md) — current state of all production filters and in-development versions
 - [GPU server](gpu-server.md) — venv, PYTHONPATH, HF_HUB_OFFLINE, ollama conflict, training setup
 - [Gotcha log](gotcha-log.md) — problem/fix archive (ollama GPU hog, prefilter blocks test scoring, more)
@@ -11,5 +12,5 @@
 - [ovr lens set](ovr-lens-set-current.md) — current lens→filter→tab mapping (authoritative tab config lives in ovr.news, not here)
 - [Uplifting v7 training](uplifting-v7-training.md) — training history; v7 is deployed (hybrid inference), thriving v1 parked (ADR-015)
 - [Session 2026-07-27](project_session_2026_07_27.md) — v6 production perf check, gate re-run, playbook update (probe-split retraining), audit-context cleanup
+- [Session 2026-07-27 evening](project_session_2026_07_27_evening.md) — LD#49 superseded cleanup, LD#68 verify check, LD#63 branded-content prefilter, LD#57 closed; NM#276/NM#206 closed
 - [Obituary detector](project-obituary-detector.md) — v3 shadow-ready for NM#185, ovr.news investigation (3 FPs at ≥0.95), v4 corrective retrain plan (§4b), dependency chain LD#51/#77→NM#185→ovr#204
-- [Cross-repo prioritization](cross-repo-prioritization.md) — master issue landscape: P0-P4 rankings, 7 dependency chains, 5 sequenced work batches across all 4 repos
