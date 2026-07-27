@@ -30,7 +30,7 @@ lifecycle + the V&V/gate/oracle-selection methodology (deployed 2026-07-10).
 
 - **Package:** `filters/nature_recovery/v4/` · **Report:** `docs/reports/nature_recovery_v4_report.pdf`
 - **Evidence data:** `docs/articles/nature_recovery_v4_evidence/` · **Deploy write-up:** `docs/nature_recovery_v4_DEPLOY_COMPLETION.md`
-- Other references, each for its domain: **`belonging v1`** = prompt precision / oracle consistency (ADR-010) · **`cd v5`** = multi-oracle bake-off (ADR-020 draft).
+- Other references, each for its domain: **`belonging v1`** = prompt precision / oracle consistency (ADR-010) · **`cd v5`** = multi-oracle bake-off (ADR-020 draft) · **`solutions v6`** = probe-split retraining + iterative improvement of deployed filters (the technique that dropped MAE 0.564→0.476 while improving recall).
 
 ---
 
@@ -69,9 +69,46 @@ only has to score. See `memory/gotcha-log.md` 2026-07-26 entry.
 - The shared `EmbeddingStage` screens on `weighted_avg(6-dim) >= threshold` and does NOT apply the gatekeeper at Stage 1 — keep the 6-dim output contract; don't change shared math for one filter. dev-guide Phase 6c.
 - **Commit the probe pkl** (`filters/<name>/v<N>/probe/*.pkl`) — it's ~0.5 MB, needed for hybrid inference, and the source package isn't reproducible without it. As of 2026-07-10 the `.gitignore` commits filter probes by default (the old blanket `filters/**/probe/` + `*.pkl` double-ignore was fixed with a `!filters/*/v*/probe/*.pkl` negation); just confirm `git status` shows it staged.
 
+#### 4a. Probe-split retraining — the improvement loop for deployed filters
+
+Once a filter is live, you can improve it without starting from scratch. The key insight:
+**the probe knows which articles are out-of-domain, and those articles are free to zero out
+in training.** The oracle only needs to re-label the mid-range where the model and probe
+disagree.
+
+**When to use:** a deployed filter has too many false positives (low precision) or
+too many false negatives (low recall), and you want to improve both without a full
+re-labeling campaign.
+
+**The method** (proven on solutions v6, 2026-07-26):
+
+1. **Score the full production corpus** with the current probe + model. Every article
+   now has a probe score and a model score.
+2. **Zero out probe-negatives in training.** Articles the probe correctly screened out
+   are non-solutions — set their oracle labels to all-zero. These cost nothing (no
+   oracle re-scoring needed).
+3. **Re-score the mid-range.** Articles where the probe passes but the model score
+   is in the ambiguous band (roughly raw 1.5–4.5 for a 0–10 scale) are the ones worth
+   re-labeling. Use a **tightened oracle prompt** (same dimensions, sharper
+   critical-filters — close the blind spots you found in production). These cost
+   oracle money (~$0.001/article) but are a small fraction of the corpus.
+4. **Keep probe-high + model-high articles as-is** — the model already gets them right.
+5. **Retrain on the cleaned corpus.** The combination of zeroed noise + re-scored
+   mid-range + kept high-quality positives produces a model with better precision AND
+   better recall.
+
+**Results (solutions v6):** 702 false positives dropped from training, 2,401 articles
+re-scored ($2.96), val MAE 0.564→0.476, gate recall 0.559→0.671, gate F1 0.647→0.739.
+The production score distribution shifted from bimodal (median 0.0, spike at 7–10) to
+continuous (median 0.17, gradual taper).
+
+**Important:** the probe itself stays unchanged. This technique improves the Stage-2
+model; the Stage-1 probe is a separate recall-first training problem (§4).
+
 ### 5. Calibration + the top band
 - **Fit `calibration.json` after every training run** (per-dim isotonic on val, ADR-008). Auto-loaded by the base scorer. Commit it.
 - **Top of the scale is unreachable** (data density: ~2 articles at 8–10). Calibration can't invent range. Clip/ceiling the top; do NOT per-band-isotonic 2–3 points. Fix = more high-band data (active learning), not loss tricks.
+- **Retrained models produce compressed raw scores — that's correct, don't stretch.** A model trained on a probe-split corpus (false positives zeroed out) naturally maxes at ~5–6 on the raw 0–10 scale, not 10. The old inflated scores came from training on noise — the model learned to shout to be heard. The compressed range is a *better* representation (cleaner signal, continuous distribution, no bimodal spike). Do NOT fight it with `score_scale_factor` — set it to 1.0 and let `normalization.json` handle the 0–10 mapping (ADR-014). Stretching via scale factor recreates the v2 trap: inflated scores defeat the gatekeeper/threshold design. `feedback-score-compression-is-correct`, solutions v6.
 
 ### 6. Cross-filter comparability
 
@@ -94,6 +131,7 @@ only has to score. See `memory/gotcha-log.md` 2026-07-26 entry.
 - **Reference cohort was a different oracle's labels** (a `_v2_split`-tagged Gemini cohort +1.775 inflated) → the whole "12 student errors" was an artifact. On any surprising FAIL, **reproduce** — read the actual per-item labels before retraining. gotcha 2026-07-09, augmented-engineering#25.
 - **"unit-tested"/"promoted to X.md" claimed but the file didn't exist.** A claim is false until the artifact exists — grep for it. `feedback-claim-requires-verify`.
 - **Run the multi-agent review battery BEFORE any paid oracle run or "verified" claim**, not after. gotcha 2026-07-08.
+- **Gate file cross-contamination: `ground_truth_gate.json` is filter-specific, not a shared template.** The gate script's `--report` path must point to the correct filter's directory. Running the gate for `solutions/v6` and writing to `nature_recovery/v4/ground_truth_gate.json` silently replaces nr's gate results with solutions data (found 2026-07-27: nr v4's gate file had solutions v6 model data with threshold 2.25 instead of nr's 3.75). Verify after every gate run: the threshold, model names, and n_labeled must match the filter. `feedback-gate-file-hygiene`.
 
 ### 8. Deploy (the outage-prone part — follow the checklist below)
 - **Version-bump: inference modules still imported vN-1 → crashed the real entrypoint.** Repoint imports AND the `inference_hub.py` `repo_id: str = "...-vN"` default; construct the REAL scorer class (not `load_filter_package`, which masks stale imports by name-substring). `verify_filter_package.py` catches the repo_id. gotcha 2026-07-08, cluster #44/#52.
@@ -125,8 +163,17 @@ Canonical chain: **llm-distillery git → NexusMind git → sadalsuud `deploy_fi
 
 ## When you point me here
 
-Say *"new filter"* or *"retrain <filter>"* and start from this page. I will:
+Say *"new filter"* or *"retrain <filter>"* or *"improve <filter>"* and start from this page. I will:
+
+**New filter / full retrain:**
 1. Read this + the canonical `nature_recovery v4` package.
 2. Run the oracle bake-off (bias first), design/verify the prompt, enrich the data.
 3. Train student + recall-first probe, judge on ranking metrics, calibrate.
 4. Gate against held-out oracle ground truth, then deploy via the checklist above.
+
+**Improve a deployed filter (probe-split retrain, §4a):**
+1. Score the full production corpus with current probe + model.
+2. Zero out probe-negatives in training (free — they're noise).
+3. Re-score the probe-pass / model-uncertain mid-range with a tightened oracle prompt.
+4. Retrain on the cleaned corpus (zeroed negatives + re-scored mid-range + kept positives).
+5. Re-run the gate, compare against incumbent, deploy via the checklist.

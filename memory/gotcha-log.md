@@ -4,6 +4,27 @@ Problems encountered and resolved. Format: Problem → Root cause → Fix.
 
 ---
 
+## Gate file cross-contamination: solutions v6 gate overwrote nature_recovery v4 gate (2026-07-27)
+
+**Problem**: `filters/nature_recovery/v4/ground_truth_gate.json` contained solutions v6 gate
+data (threshold 2.25, model "v6" with solutions metrics) instead of nature_recovery v4 data
+(threshold 3.75, models "v4" and "v2"). The nr gate results were lost.
+
+**Root cause**: The gate script's `--report` argument was pointed at the wrong filter's
+directory during a previous session (Jul 26, before this session). The script writes to
+whatever path `--report` specifies — there's no guard that the report path matches the
+config or labels being evaluated.
+
+**Fix**: Restored from git (`git checkout HEAD -- filters/nature_recovery/v4/ground_truth_gate.json`).
+The original gate data was committed and recoverable.
+
+**Prevention**: Documented in FILTER_PLAYBOOK.md §7: verify after every gate run that the
+threshold, model names, and n_labeled match the filter. The gate file is filter-specific,
+not a shared template. A `--report` path that points to the wrong filter silently replaces
+that filter's gate results.
+
+---
+
 ## solutions v4 Deployed Without e5 Probe — Model Can't Screen AND Score (2026-07-26)
 
 **Problem**: Solutions v4 quality gate found 27% policy/regulation bleed in medium+
