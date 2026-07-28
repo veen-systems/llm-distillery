@@ -22,8 +22,9 @@ Covers: **llm-distillery** (30 open), **NexusMind** (36 open), **ovr.news** (73 
 | **Corroboration system** | NM#275 title-only E5 deployed | **VERIFIED** — 47% coverage, cross-run persistence active, cross-language ceiling at ~0.84 (Veurne procession = known edge case, not fixing). |
 | **A11y smoke test** | 2 WCAG violations (link-name, color-contrast) | **FIXED** — aria-label on article links, darker gradient-text stops. |
 | **LD#77 obituary v4 retrain** | 8 ovr.news FPs + 4 heldout FPs to fix | **TRAINED 2026-07-28** — 12 hard negatives, all resolved (max score 0.65). Heldout precision 0.977 (v3: 0.973), FP 5 (v3: 7). |
-| **NM#274 violence_promotion v1** | Classifier built but not enabled in NexusMind | **SHADOW-DEPLOYED 2026-07-28** — code + models already in NexusMind; config flag enabled. Stamp-only, drops nothing. |
-| **solutions v6 normalization** | Normalization pending, needed ≥200 articles at ≥2.25 | **FITTED 2026-07-28** — 845 articles, percentile CDF, anchored at op-point 2.25. Deployed to NexusMind + gpu-server. |
+| **NM#274 violence_promotion v1** | Classifier built but not enabled in NexusMind | **SHADOW-DEPLOYED 2026-07-28** — first run: 53/4,864 (1.1%) flagged. #82 open for audit. |
+| **solutions v6 normalization** | Normalization pending, needed ≥200 articles at ≥2.25 | **FITTED 2026-07-28** — 845 articles, percentile CDF deployed. Scorer restarted. |
+| **Pipeline health** | First run with violence + normalization | **RUNNING 2026-07-28** — obituary OK (15 flagged), violence OK (53 flagged), solutions scoring in progress. sklearn 1.8→1.9 warning (#81). |
 
 ## Cross-Repo Dependency Chains
 
