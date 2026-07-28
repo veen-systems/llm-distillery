@@ -7,18 +7,20 @@ metadata:
 
 # Cross-Repo Prioritization
 
-**Last updated: 2026-07-27** (baseline: 2026-07-26 session triage + today's changes)
+**Last updated: 2026-07-28** (post-session wrap-up: LD#80 resolved, NM#276 verified, solutions score collapse fixed, corroboration confirmed)
 
 Covers: **llm-distillery** (30 open), **NexusMind** (36 open), **ovr.news** (73 open), **FluxusSource** (6 open).
 
-## Changes Since 2026-07-26 Triage
+## Changes Since 2026-07-27 Session
 
-| What | Was (Jul 26) | Now (Jul 27) |
+| What | Was (Jul 27) | Now (Jul 28) |
 |------|-------------|--------------|
-| **solutions v6 gate** | Pending (format mismatch) | **PASSED** — recall 0.671, prec 0.824, F1 0.739. Normalization pending (167/200 articles, ~1-2 more runs) |
-| **Obituary detector NM#185** | Phase 3 planned, owner-gated | **Phase 3 DEPLOYED** — owner gate removed, shadow mode live (`_obituary_score` / `_is_obituary` stamps in harvest output) |
-| **ovr#204** (remove hardcoded obit) | Blocked on NM#185 | **Unblocked** — waiting for shadow scores to accumulate, then remove hardcoded detection |
-| **solutions v4 quality gate** | Owed before ADR-020 Accept | Still owed — not yet done |
+| **LD#80 commerce v2→v1** | P0 — v2 underperforms v1 | **RESOLVED** — v1 rolled back, weights on HF Hub + NexusMind. v2 was deployed without Phase 5 shadow comparison. |
+| **solutions score collapse** | v6 compressed scores (0-5) vs 4.5 threshold | **FIXED** — score_scale_factor=2.0 with raw>5.0 guard in summarize.ts. 69 articles live on site. |
+| **Hot DB creation** | Silent 0-byte failure during fix run | **FIXED** — manual recreate + R2 upload. Root cause not yet diagnosed. |
+| **NM#276 consent guard** | Listed as P0 | **VERIFIED WORKING** — deployed Jul 26, 161 quality rejects/run. Doc was stale. |
+| **Corroboration system** | NM#275 title-only E5 deployed | **VERIFIED** — 47% coverage, cross-run persistence active, cross-language ceiling at ~0.84 (Veurne procession = known edge case, not fixing). |
+| **A11y smoke test** | 2 WCAG violations (link-name, color-contrast) | **FIXED** — aria-label on article links, darker gradient-text stops. |
 
 ## Cross-Repo Dependency Chains
 
@@ -57,11 +59,12 @@ LD#43 (broaden Solutions) → solutions v4 (deployed Jul 22) → solutions v6 (g
 ```
 **Status:** v6 trained, gate passed. Normalization pending. NM#204 likely closable as superseded.
 
-### Chain 6: Commerce Prefilter v2 Regression (ACTIVE — P0)
+### Chain 6: Commerce Prefilter v2 Regression (RESOLVED — v1 rollback)
 ```
-LD#80 (v2 underperforms v1 on production) → all 7 production filters (commerce is cross-cutting prefilter, ADR-004)
+LD#80 (v2 underperforms v1) → ROLLED BACK to v1 (2026-07-28). v1 weights on HF Hub + NexusMind.
+Root cause: v2 deployed without Phase 5 shadow comparison. 190-sample test set was not production-representative.
 ```
-**Status:** v2 under-blocks commerce + over-blocks multilingual news. Decision needed: rollback to v1 (needs weight backup) or retrain v2.
+**Status:** v1 active. v2 code retained for reference. Revisit only if v1 shows quality gaps on production data.
 
 ### Chain 7: Summarizer Model Swap (ovr.news standalone, low dep)
 ```
@@ -75,14 +78,11 @@ ovr#270 (swap gemma3:27b → gpt-oss:20b) ↔ ovr#235 (held-out validation gate)
 
 | ID | Repo | Title | Why P0 |
 |----|------|-------|--------|
-| **LD#80** | llm-distillery | Commerce v2 underperforms v1 — under-blocks commerce, over-blocks multilingual | Cross-cutting prefilter for ALL 7 filters. v1 weights need backup before rollback decision. |
 | **LD#76** | llm-distillery | Calibration audit: deployed filters crush good content below medium boundary | Umbrella for #74/#75/#72. Likely ONE raw_min-drift root cause. |
 | **LD#74** | llm-distillery | Belonging v1: raw ordering intact, medium boundary too high | Good content scoring 3-4, should be higher. |
 | **LD#75** | llm-distillery | nature_recovery v2/v4: raw-scale collapse | Model fires near-zero for ~everything. |
 | **LD#72** | llm-distillery | nr v4 normalization — running raw-passthrough, 31,852 records under-ranked | Blocked on ≥200 articles at ≥2.25 (currently 167). |
-| **NM#276** | NexusMind | ArticleFetcher consent/paywall guard — swaps real RSS for Google consent pages | Data quality — silently corrupts article content. |
 | **NM#206** | NexusMind | Filter timeout handling | Production reliability. |
-| **ovr#263** | ovr.news | Re-enable Healthchecks.io pings (disabled Jul 14 stopgap) | Production monitoring blind spot. |
 
 ### P1 — Important / This Quarter
 
@@ -148,13 +148,11 @@ ovr#270 (swap gemma3:27b → gpt-oss:20b) ↔ ovr#235 (held-out validation gate)
 
 ## Sequenced Work Batches (Recommended Execution Order)
 
-### Batch A: This Week (quick wins + unblock)
+### Batch A: This Week (remaining after 2026-07-28 session)
 
-1. **Verify NM#185 obituary shadow output** — confirm `_obituary_score` / `_is_obituary` in harvest output
-2. **LD#80 commerce v2 decision** — back up v1 weights to HF Hub → decide rollback vs retrain
-3. **LD#76 calibration audit** — diagnose root cause across #74/#75/#72
-4. **ovr#263 Healthchecks re-enable** — fix dashboard schedule, re-enable pings
-5. **NM#276 consent/paywall guard** — stop silent content corruption
+1. **LD#76 calibration audit** — diagnose root cause across #74/#75/#72
+2. **solutions v6 normalization** — fit when ≥200 articles at ≥2.25 accumulate
+3. **NM#206 filter timeout handling** — production reliability
 
 ### Batch B: Next Week (normalization + obituary)
 
