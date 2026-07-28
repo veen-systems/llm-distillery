@@ -23,6 +23,7 @@ Covers: **llm-distillery** (30 open), **NexusMind** (36 open), **ovr.news** (73 
 | **A11y smoke test** | 2 WCAG violations (link-name, color-contrast) | **FIXED** — aria-label on article links, darker gradient-text stops. |
 | **LD#77 obituary v4 retrain** | 8 ovr.news FPs + 4 heldout FPs to fix | **TRAINED 2026-07-28** — 12 hard negatives, all resolved (max score 0.65). Heldout precision 0.977 (v3: 0.973), FP 5 (v3: 7). |
 | **NM#274 violence_promotion v1** | Classifier built but not enabled in NexusMind | **SHADOW-DEPLOYED 2026-07-28** — code + models already in NexusMind; config flag enabled. Stamp-only, drops nothing. |
+| **solutions v6 normalization** | Normalization pending, needed ≥200 articles at ≥2.25 | **FITTED 2026-07-28** — 845 articles, percentile CDF, anchored at op-point 2.25. Deployed to NexusMind + gpu-server. |
 
 ## Cross-Repo Dependency Chains
 
@@ -159,7 +160,7 @@ ovr#270 (swap gemma3:27b → gpt-oss:20b) ↔ ovr#235 (held-out validation gate)
 ### Batch B: This Week (normalization + obituary enforcement)
 
 1. **LD#72 nr v4 normalization** — fit once ≥200 articles accumulate (~1-2 more runs)
-2. **solutions v6 normalization** — same, fit when ≥200 articles at ≥2.25
+2. **solutions v6 normalization** — ✅ DONE 2026-07-28 (845 articles, percentile CDF deployed)
 3. **LD#77 obituary v4 retrain** — ✅ DONE 2026-07-28 (12 hard negatives, all resolved)
 4. **Obituary v4 → enforce** — after ≥1 production cycle of shadow accumulation, replace v3 with v4 in NexusMind, then flip enforcement
 5. **ovr#204 remove hardcoded obit** — after v4 enforced
