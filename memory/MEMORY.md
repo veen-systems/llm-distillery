@@ -10,7 +10,8 @@
 - [ovr lens set](ovr-lens-set-current.md) — current lens→filter→tab mapping
 - [Filter doc standard](filter-doc-standard.md) — deployed filter documentation set
 - [CD v5 reference status](cd-v5-reference-status.md) — cultural_discovery v5 as DeepSeek-oracle reference example, ADR-020 methodology
-- [Obituary detector](project-obituary-detector.md) — v3 shadow-ready, v4 retrain plan, dependency chain LD#51/#77→NM#185→ovr#204
+- [Obituary detector](project-obituary-detector.md) — v3 shadow-deployed, v4 trained 2026-07-28, pending enforcement
+- [Obituary v4 hypotheses](obituary-v4-hypotheses.md) — small-N hard negatives work, panel beats oracle labels, FP class matters
 - [Uplifting v7 training](uplifting-v7-training.md) — training history; v7 deployed (hybrid inference)
 - [Thriving v1 scoring](thriving-v1-scoring.md) — PARKED indefinitely (ADR-015); scoring status, resume commands
 

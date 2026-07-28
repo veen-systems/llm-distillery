@@ -21,18 +21,19 @@ Covers: **llm-distillery** (30 open), **NexusMind** (36 open), **ovr.news** (73 
 | **NM#276 consent guard** | Listed as P0 | **VERIFIED WORKING** — deployed Jul 26, 161 quality rejects/run. Doc was stale. |
 | **Corroboration system** | NM#275 title-only E5 deployed | **VERIFIED** — 47% coverage, cross-run persistence active, cross-language ceiling at ~0.84 (Veurne procession = known edge case, not fixing). |
 | **A11y smoke test** | 2 WCAG violations (link-name, color-contrast) | **FIXED** — aria-label on article links, darker gradient-text stops. |
+| **LD#77 obituary v4 retrain** | 8 ovr.news FPs + 4 heldout FPs to fix | **TRAINED 2026-07-28** — 12 hard negatives, all resolved (max score 0.65). Heldout precision 0.977 (v3: 0.973), FP 5 (v3: 7). |
 
 ## Cross-Repo Dependency Chains
 
 Chains that must be sequenced in order. Each `→` means "blocked on" or "feeds into."
 
-### Chain 1: Obituary Detector (ACTIVE — Phase 3 deployed)
+### Chain 1: Obituary Detector (ACTIVE — v4 trained, pending enforcement)
 ```
-LD#51 (design) → LD#77 (v3 classifier) → NM#185 (shadow wiring) → ovr#204 (remove hardcoded)
-                                                    │
-                                                    └─ v4 corrective retrain (LD#77 §4b: 8 ovr.news FPs as hard negatives)
+LD#51 (design) ✅ → LD#77 (v3 classifier) ✅ → NM#185 (shadow wiring) ✅ → v4 corrective retrain ✅ → ovr#204 (remove hardcoded)
+                                                                              │
+                                                                              └─ EXECUTED 2026-07-28: 12 hard negatives, all resolved
 ```
-**Status:** NM#185 Phase 3 LIVE. Shadow scores flowing. Next: verify shadow output → v4 retrain → ovr#204 removal.
+**Status:** v3 shadow live (NM#185). v4 trained, ready to replace v3. Next: ≥1 production cycle → v4 replace v3 shadow → enforce → ovr#204.
 
 ### Chain 2: Armed Conflict Prefilter (NOT STARTED)
 ```
@@ -101,7 +102,7 @@ ovr#270 (swap gemma3:27b → gpt-oss:20b) ↔ ovr#235 (held-out validation gate)
 |----|------|-------|--------|
 | **ovr#270** | ovr.news | Swap summarizer model: gemma3:27b → gpt-oss:20b (9.2× throughput) | Cheap win, fully on-GPU. Test with #235 gate. |
 | **ovr#235** | ovr.news | Held-out validation set + deploy gate for prompt changes | Quality gate for all summarizer changes. |
-| **LD#51/#77→NM#185→ovr#204** | chain | Obituary detector chain (see Chain 1) | Phase 3 deployed; v4 retrain + ovr removal next. |
+| **LD#51/#77→NM#185→ovr#204** | chain | Obituary detector chain (see Chain 1) | Phase 3 deployed; **v4 trained 2026-07-28** (12 hard negatives, all resolved). v4 shadow replace + enforce next, then ovr#204. |
 | **LD#73→NM#274** | chain | Armed conflict prefilter (see Chain 2) | Biggest build, lowest urgency. NM blocked on LD. |
 | **NM#275** | NexusMind | Cross-language story dedup (MapBiomas case) | Content quality — EN orphaned from NL/ES/PT clusters. |
 | **ovr#214** | ovr.news | Summarizer returns source-language output in english_* fields | Content quality bug. |
@@ -154,13 +155,14 @@ ovr#270 (swap gemma3:27b → gpt-oss:20b) ↔ ovr#235 (held-out validation gate)
 2. **solutions v6 normalization** — fit when ≥200 articles at ≥2.25 accumulate
 3. **NM#206 filter timeout handling** — production reliability
 
-### Batch B: Next Week (normalization + obituary)
+### Batch B: This Week (normalization + obituary enforcement)
 
 1. **LD#72 nr v4 normalization** — fit once ≥200 articles accumulate (~1-2 more runs)
 2. **solutions v6 normalization** — same, fit when ≥200 articles at ≥2.25
-3. **LD#77 obituary v4 retrain** — add 8 ovr.news FPs as hard negatives (§4b), retrain, re-validate
-4. **ovr#204 remove hardcoded obit** — after v4 retrain validated
-5. **LD#74/#75 calibration fixes** — apply root-cause fix from #76 audit
+3. **LD#77 obituary v4 retrain** — ✅ DONE 2026-07-28 (12 hard negatives, all resolved)
+4. **Obituary v4 → enforce** — after ≥1 production cycle of shadow accumulation, replace v3 with v4 in NexusMind, then flip enforcement
+5. **ovr#204 remove hardcoded obit** — after v4 enforced
+6. **LD#74/#75 calibration fixes** — apply root-cause fix from #76 audit
 
 ### Batch C: Content Quality Sweep
 

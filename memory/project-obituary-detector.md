@@ -7,7 +7,7 @@ metadata:
 
 ## Status
 
-v3 trained + validated. **NM#185 Phase 3 DEPLOYED 2026-07-27** — owner gate removed, shadow mode live (`_obituary_score` / `_is_obituary` stamps in harvest output, drops nothing). v4 corrective retrain next.
+v3 shadow-deployed (NM#185, 2026-07-27). **v4 trained 2026-07-28** — corrective retrain with 12 hard negatives. Passes all gates. Ready to replace v3 shadow; waiting for ≥1 full production cycle of shadow accumulation before enforcement.
 
 ## What it is
 
@@ -30,13 +30,25 @@ Scored 203 ovr.news Phase-1 borderlines with v3 MLP:
 
 ## Dependency chain
 
-LD#51 (train v3) ✅ → LD#77 (ovr.news validation) ✅ → **NM#185 (NexusMind shadow deploy)** ✅ deployed 2026-07-27 → **v4 corrective retrain** ← NEXT → ovr#204 (ovr removes hardcoded filter)
+LD#51 (train v3) ✅ → LD#77 (ovr.news validation) ✅ → NM#185 (NexusMind shadow deploy) ✅ deployed 2026-07-27 → **v4 corrective retrain** ✅ trained 2026-07-28 → **v4 shadow replace + enforce** ← NEXT (after ≥1 production cycle of shadow accumulation) → ovr#204 (ovr removes hardcoded filter)
 
-## v4 corrective retrain plan (§4b pattern)
+## v4 corrective retrain (EXECUTED 2026-07-28)
 
-8 confirmed FPs from ovr.news investigation (3 at ≥0.95 + 5 at 0.70–0.90), all the same error class: historical legacy/tribute pieces in non-English. Add as hard negatives to training → retrain → re-validate. $0 oracle cost (labels from investigation). See `docs/FILTER_PLAYBOOK.md` §4b for the pattern.
+12 hard negatives added to training (11,295 → 11,308 rows):
+- 8 ovr.news production FPs (legacy/tribute pieces in Greek/Spanish/Chinese)
+- 4 heldout panel-confirmed FPs (crime/accident reports)
 
-**Why not do v4 before NM#185 (retrospective):** shadow mode is safe (scores only, no drops), the chain had been waiting since June 14, and v3 at 0.95 blocks only ~1.5% of production with 0 FPs on English content. Shipped v3 first — v4 retrains next.
+**Results at threshold 0.95:**
+- All 12 FPs score <0.65 (max 0.65, most <0.15)
+- Heldout precision: **0.977** (v3: 0.973), FP count: **5** (v3: 7)
+- Heldout recall: **0.608** (v3: 0.744) — tradeoff from added conservatism, not a concern for shadow mode
+- Bharathiraja TP: **0.954** (v3: 0.913) — stronger
+
+Artifacts: `filters/common/obituary_detector/v4/models/` (mlp_classifier.pkl + scaler.pkl). Same architecture, drop-in replacement for v3.
+
+### Old v4 plan (pre-execution, kept for reference)
+
+(Superseded — executed 2026-07-28, see above.)
 
 ## Validation harness
 

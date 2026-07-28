@@ -1,0 +1,137 @@
+{
+  "threshold_sweep": [
+    {
+      "threshold": 0.5,
+      "precision": 0.863,
+      "recall": 0.8485,
+      "tp": 2268,
+      "fp": 360,
+      "fn": 405,
+      "tn": 8275
+    },
+    {
+      "threshold": 0.6,
+      "precision": 0.8716,
+      "recall": 0.8331,
+      "tp": 2227,
+      "fp": 328,
+      "fn": 446,
+      "tn": 8307
+    },
+    {
+      "threshold": 0.7,
+      "precision": 0.883,
+      "recall": 0.8159,
+      "tp": 2181,
+      "fp": 289,
+      "fn": 492,
+      "tn": 8346
+    },
+    {
+      "threshold": 0.8,
+      "precision": 0.8958,
+      "recall": 0.7942,
+      "tp": 2123,
+      "fp": 247,
+      "fn": 550,
+      "tn": 8388
+    },
+    {
+      "threshold": 0.85,
+      "precision": 0.9044,
+      "recall": 0.7748,
+      "tp": 2071,
+      "fp": 219,
+      "fn": 602,
+      "tn": 8416
+    },
+    {
+      "threshold": 0.9,
+      "precision": 0.9158,
+      "recall": 0.7486,
+      "tp": 2001,
+      "fp": 184,
+      "fn": 672,
+      "tn": 8451
+    },
+    {
+      "threshold": 0.92,
+      "precision": 0.9199,
+      "recall": 0.7344,
+      "tp": 1963,
+      "fp": 171,
+      "fn": 710,
+      "tn": 8464
+    },
+    {
+      "threshold": 0.95,
+      "precision": 0.9274,
+      "recall": 0.7026,
+      "tp": 1878,
+      "fp": 147,
+      "fn": 795,
+      "tn": 8488
+    },
+    {
+      "threshold": 0.97,
+      "precision": 0.9363,
+      "recall": 0.6655,
+      "tp": 1779,
+      "fp": 121,
+      "fn": 894,
+      "tn": 8514
+    },
+    {
+      "threshold": 0.99,
+      "precision": 0.9551,
+      "recall": 0.581,
+      "tp": 1553,
+      "fp": 73,
+      "fn": 1120,
+      "tn": 8562
+    }
+  ],
+  "per_lens_false_positives": {
+    "0.8": {
+      "unknown": {
+        "neg_total": 8635,
+        "false_positives": 247
+      }
+    },
+    "0.9": {
+      "unknown": {
+        "neg_total": 8635,
+        "false_positives": 184
+      }
+    },
+    "0.95": {
+      "unknown": {
+        "neg_total": 8635,
+        "false_positives": 147
+      }
+    },
+    "0.97": {
+      "unknown": {
+        "neg_total": 8635,
+        "false_positives": 121
+      }
+    }
+  },
+  "training_config": {
+    "embedder_model": "paraphrase-multilingual-mpnet-base-v2",
+    "embedding_dim": 768,
+    "classifier_type": "MLPClassifier",
+    "hidden_layers": [
+      256,
+      128
+    ],
+    "n_samples": 11308,
+    "n_positive": 2673,
+    "n_negative": 8635,
+    "cv": "5-fold stratified OOF",
+    "oof_f1_at_0.95": 0.7995,
+    "oof_precision_at_0.95": 0.9274,
+    "oof_recall_at_0.95": 0.7026,
+    "note": "AUDIT-ONLY baseline. Do not enforce before threshold sign-off."
+  }
+}

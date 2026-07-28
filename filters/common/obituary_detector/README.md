@@ -5,13 +5,14 @@ Multilingual obituary/death-memorial classifier for the constructive-news pipeli
 frozen `paraphrase-multilingual-mpnet-base-v2` → StandardScaler → sklearn MLP(256,128)
 → `predict_proba`. Block obituaries upstream of lens scoring.
 
-## Status — v3 trained + validated, NOT yet enforced (2026-06-14)
+## Status — v4 trained, v3 shadow-deployed (2026-07-28)
 
 | Model | Corpus | Held-out result | Verdict |
 |---|---|---|---|
 | v1 | gate-reason-substring labels (777) | **0/22 block precision** (4-lab panel) | ❌ rejected |
 | v2 | gemini-relabeled clean labels (777) | held-out FP **22→1** (0 @ 0.95); recall ~33% @ 0.90 | proof-of-fix only |
-| **v3** | **raw-ingest, DeepSeek oracle, sharpened-broad rule (11,295 train / 1,562 held-out; 23.5% pos)** | in-corpus held-out (leaky) 0.85 @ 0.90; **temporally-disjoint June holdout: 0.97 @ 0.90, 0 FP @ ≥0.95 (0/58), 1.00 @ 0.99** | **shadow-ready** |
+| v3 | raw-ingest, DeepSeek oracle, sharpened-broad rule (11,295 train / 1,562 held-out; 23.5% pos) | in-corpus held-out (leaky) 0.85 @ 0.90; **temporally-disjoint June holdout: 0.97 @ 0.90, 0 FP @ ≥0.95 (0/58), 1.00 @ 0.99** | shadow-deployed NM#185 (2026-07-27) |
+| **v4** | **v3 seed + 12 hard negatives (8 ovr.news FPs + 4 heldout panel FPs; 11,308 rows)** | **All 12 FPs score <0.65 (threshold 0.95). Heldout precision 0.977 (v3: 0.973), FP 5 (v3: 7), recall 0.608 (v3: 0.744).** | **ready to replace v3 shadow** |
 
 > **Honest validation note (2026-06-14 review):** the in-corpus held-out had train/held-out
 > leakage (7% exact-title / 22% near-dup twins, same death from many sources via id-hash
