@@ -4,6 +4,59 @@ Problems encountered and resolved. Format: Problem → Root cause → Fix.
 
 ---
 
+## Commerce v2 deployed without Phase 5 shadow comparison — production regression (2026-07-28)
+
+**Problem**: Commerce prefilter v2 was blocking only 2.1% of articles vs v1's 5.2%,
+and generating false positives on multilingual (Greek/Hungarian) news. The v2 design
+explicitly required a 1-week shadow comparison (Phase 5) before cutover.
+
+**Root cause**: v2 was deployed based on 190-sample test-set parity (97.8% F1) alone.
+Phase 5 was never run. The 190-sample test set from Jan 2026 was not representative of
+production's short (median 125 chars), multilingual, Greek-heavy July 2026 traffic.
+
+**Fix**: Rolled back to v1. v1 weights (541MB DistilBERT) uploaded to HF Hub
+(`jeergrvgreg/commerce-prefilter-v1`) and copied to NexusMind. commerce.py switched
+from GPU v2 path to local v1 CPU path.
+
+## Solutions v6 score compression broke display threshold — tab went empty (2026-07-28)
+
+**Problem**: Solutions v6 compresses model output to ~0-5 range (by design), but the
+shared `displayScoreThreshold` (4.5) and summarization pipeline assume 0-10. Only
+top ~1% of articles cleared the threshold. Solutions tab collapsed from ~100 to 1-3
+articles/day across Jul 26-28.
+
+**Root cause**: Normalization.json was pending for v6 ("needs ≥200 articles at ≥2.25")
+but never fitted. Score range mismatch between v6 (0-5) and v5 (0-10) with no bridge.
+
+**Fix**: Added `SCORE_SCALE_FACTORS` map in `summarize.ts` with `solutions: 2.0` +
+guard (`raw > 5.0 → skip scaling` to prevent double-scaling old v5 articles).
+Bridge until normalization.json is fitted.
+
+## Hot DB creation silently produced 0-byte file — site deployed with empty DB (2026-07-28)
+
+**Problem**: `scripts/create-hot-db.ts` ran without error but produced a 0-byte
+`ovr-hot.db`. This was uploaded to R2 and Cloudflare Pages built the site with it.
+Solutions page showed only 2 articles (hero + one standard) despite 497 in DB.
+
+**Root cause**: Not yet diagnosed. The script succeeded when re-run manually with
+identical parameters. Possible race condition or transient resource issue.
+
+**Fix**: Manual hot DB recreate + R2 upload + Cloudflare deploy hook re-trigger.
+Root cause diagnosis deferred — monitor for recurrence.
+
+## Score scale factor double-scaled pre-v6 articles to 16-20 (2026-07-28)
+
+**Problem**: Applying `score_scale_factor=2.0` to ALL solutions articles multiplied
+old v5 scores (8-10) to 16-20 in the DB. QA alert fired: avg 13.8, deviating 6.8
+from baseline.
+
+**Root cause**: The summarize script reads ALL recent NexusMind JSONL files (10-day
+window), including v5-era articles. The initial scale factor had no version awareness.
+
+**Fix**: Added guard `if scale > 1.0 && raw > 5.0: return raw`. v6 max raw is ~4.6,
+v5 min display is ~6.8 — clean gap for the heuristic. Ran DB fix to halve 90
+inflated scores (49 in `article_filter_scores`, 41 in `articles`).
+
 ## Gate file cross-contamination: solutions v6 gate overwrote nature_recovery v4 gate (2026-07-27)
 
 **Problem**: `filters/nature_recovery/v4/ground_truth_gate.json` contained solutions v6 gate
