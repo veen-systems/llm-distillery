@@ -33,25 +33,20 @@ framework: agent-ready-projects v1.10.6
 
 ## Production Filters
 
-| Filter | Version | MAE | Training Data | Status |
-|--------|---------|-----|---------------|--------|
-| **uplifting** | v7 | — | 5.3K articles | Deployed to NexusMind via file-copy — intentionally no Hub repo (NO_HUB sentinel; v7 file-copy from gpu-server skipped training_metadata.json artifacts needed for the model card, and reconstructing them risks fabricating MAE numbers). Hybrid inference added. |
-| **sustainability_technology** | v3 | 0.72 | 10.6K articles | Deployed (HF Hub, private) |
-| **investment-risk** | v6 | 0.47 | 10.4K articles | Deployed (HF Hub, private) |
-| **cultural-discovery** | v5 | 0.70 | 8.5K articles | Deployed (HF Hub + gpu-server, private) — resolves #62 discovery-lens leakage via F-K soft-penalty flags; DeepSeek oracle (first non-Gemini) |
-| **belonging** | v1 | 0.49 | 7.4K articles | Deployed (HF Hub, private) |
-| **nature_recovery** | v4 | recall 0.65 / prec 0.85 @3.75 (reproduced n=391) | 3.9K articles (DeepSeek) | **DEPLOYED 2026-07-10** (HF Hub + NexusMind + gpu-server; live smoke test `nature_recovery wa=7.31`). Beats v2 on every ground-truth metric (ADR-021 gate); #70 protection scope + multilingual prefilter fix + recall-first probe. Op-point 3.75 was inert (ran at 4.0) until wired into TIER_THRESHOLDS 2026-07-10 (multi-model review F1); validated in production output same day ([3.75,4.0)→medium confirmed live). v2 kept as fallback. Recall is the soft axis → v5 (#71). **2026-07-14: the `climate_doom` runtime cap was RETIRED** (NexusMind `1dd5e49`, live 20:08) — 3 production bites, 3 false positives, 0 saves; #161's root cause was a normalization fit threshold, not the model. `cap_applied` is now permanently `null`; the `recovery_evidence<3 → 3.5` gatekeeper (below the 3.75 op-point) is what keeps doom off the lens. Config's `content_type_caps` now document the *oracle* contract only. |
-| **foresight** | v1 | 0.75 | 3.5K articles | PARKED — captures governance solutions, not foresight; merging into broadened Solutions lens (#43) |
+Full details in `memory/filter-status.md`. Summary:
 
-### In Development (priority: ovr.news tabs)
-
-| Filter | Version | Status | Target |
-|--------|---------|--------|--------|
-| **thriving** | v1 | PARKED indefinitely — orthogonal lens design caused bimodal distribution (ADR-015); uplifting v7 stays as Thriving tab |  |
-| **solutions** (renamed from sustainability_technology, ADR-012, 2026-07-18; pkg `filters/solutions/v4`, field `solutions_analysis`) | v4 | **DEPLOYED & LIVE-SCORING 2026-07-22 — cutover EXECUTED; solutions is scoring in production (live smoke wa 4.43, method gpu-server).** NexusMind `61ecc10` (package + `enabled_filters` +solutions −sustech −foresight); model pre-placed on gpu-server; `test_filter_integrity` 8/8 + 872 unit tests green. Retirement is config-level; sustech/foresight dirs KEPT for rollback. **First cron (16:09) was BLOCKED by a stale smoke fixture referencing retired filters → fixed NexusMind `e2a102e` (fixture repointed to solutions); pipeline then ran with solutions live.** **LIVENESS VERIFIED ✅ 2026-07-22 ~21:04** (structural only): first `filtered/solutions/filtered_20260722_210402.jsonl` = 9,334 scored, tiers 8,834 low / 118 medium / 137 medium_high / 245 high_solution (~5.4% medium+), multilingual, normalized 0–10 — sane distribution, not collapsed. **CONTENT-QUALITY NOT yet validated:** title-eyeball shows policy/regulation-news bleed in high tier + belonging/uplifting drift in medium + ≥1 branded bleed → **do a real quality gate (full-content read + oracle re-score of a sample + dimensional check) BEFORE flipping ADR-020 Accepted.** Gemma-3-1B+LoRA, val MAE 0.564. Op-point **2.25** (best-F1; gate recall **0.559** / prec 0.768 / F1 0.647 at 2.25, regenerated `4b3776b`). `score_scale_factor` set **1.0** (normalization.json is the scaling path; non-1.0 is the nr v2 trap). `normalization.json` fitted from a 40K non-commerce production rescore (536 ≥ 2.25). `inference_hub.py` written; Hub `jeergrvgreg/solutions-filter-v4` published (card corrected: DeepSeek, not Gemini). **3-round multi-model review battery** (15+31+7 confirmed): reverted a bad fail-closed guard, added `solutions` across the ovr pipeline (incl. the missed `summarize.ts` driver + v4-dimension display), fixed nr v4 + cd v5 Hub cards. **Caveat:** gate recall is raw-domain; production tiers on the normalized score (effective raw floor ~2.64) → real surfacing recall < 0.559 (systemic, doesn't flip the decision). **Recall ceiling ~0.58 STRUCTURAL** (access-bias → v2). NB: v4 replaces both sustech-v3 and foresight-v1 scorers (retirement is config-level; dirs KEPT for rollback, delete ~2026-08-01 post-drain). **Sibling (report-only): nr v4 runs raw-passthrough in prod (no normalization.json, #72).** | ovr.news Solutions tab |
-| **solutions** | v5 | **DEPLOYED 2026-07-26** — two-stage hybrid scorer (e5 probe + Gemma-3-1B). Probe screens ~96% at Stage 1. v4 model carried forward (concreteness inflation inherited from v4 oracle prompt). 62 medium+ per run, ~20 false positives. Serves as fallback during v6 validation. | ovr.news Solutions tab |
-| **solutions** | v6 | **DEPLOYED 2026-07-26, gate PASSED 2026-07-27, normalization FITTED 2026-07-28.** Retrained on probe-split corpus: probe-negative articles zeroed (free), mid-range rescored with tightened v5 oracle prompt ($2.96, 2,401 articles). 702 false positives dropped from training data. Val MAE **0.476** (vs v4's 0.564). Gate: recall **0.671** / precision **0.824** / F1 **0.739** at threshold 2.25 (vs v4: 0.559/0.768/0.647). Score compression to ~0-5 is by design (score_scale_factor=1.0); **normalization.json FITTED** — 845 production articles at raw ≥2.25, percentile CDF anchored at op-point. Prompt-compressed.md tightened for science/research, product reviews, regulatory enforcement blind spots. Probe unchanged from v5. | ovr.news Solutions tab |
-| **ai-engineering-practice** | v2 | Ready for oracle scoring; rename to augmented-engineering at next bump | Separate product (not ovr.news) |
+| Filter | Version | MAE | Status |
+|--------|---------|-----|--------|
+| **uplifting** | v7 | — | Deployed (NO_HUB, hybrid inference) |
+| **sustainability_technology** | v3 | 0.72 | Retired — replaced by solutions |
+| **investment-risk** | v6 | 0.47 | Deployed (HF Hub) |
+| **cultural-discovery** | v5 | 0.70 | Deployed (HF Hub, DeepSeek oracle) |
+| **belonging** | v1 | 0.49 | Deployed (HF Hub) |
+| **nature_recovery** | v4 | recall 0.65 / prec 0.85 | Deployed (recall-first probe, v5 planned #71) |
+| **solutions** | v6 | 0.48 | **LIVE** — gate passed 2026-07-27, normalization fitted 2026-07-28 |
+| **foresight** | v1 | 0.75 | PARKED — merged into solutions (#43) |
+| **thriving** | v1 | — | PARKED indefinitely (ADR-015) |
+| **ai-engineering-practice** | v2 | — | Separate product, not ovr.news |
 
 ## Key Decisions
 
@@ -81,7 +76,6 @@ See `docs/adr/README.md` for full ADR index, `docs/decisions/` for detailed reco
 | When you're... | Read... |
 |----------------|---------|
 | Starting a new session | `memory/MEMORY.md` — project memory index, current work status |
-| Starting any session (framework drift) | Compare the `framework: agent-ready-projects vX.Y.Z` header above against `~/repos/agent-ready-projects/CHANGELOG.md`. If behind, surface the drift; don't auto-adopt (engineer's call). |
 | Resuming thriving v1 work | `memory/thriving-v1-scoring.md` — scoring status, resume commands, full pipeline |
 | Starting calibration / scorer-training / oracle-prompt work | `memory/calibration-history.md` — Dead Ends section: which approaches are already known dead (#69) |
 | **Touching normalization (fitting, debugging a score/tier that looks wrong, ovr ranking)** | **`docs/NORMALIZATION_METHOD.md`** — canonical method (anchored CDF, guards, reproduction steps); ADR-014 for the decision record, `docs/FILTER_PLAYBOOK.md` §6 for the digest. Normalization exists only for ovr.news cross-lens ranking; tier is reassigned on the *normalized* score by design, so `raw >= threshold` + `tier: low` is expected. Fit at `raw >= the filter's tier threshold` — enforced by `tests/unit/test_normalization_invariant.py`. Both #161 and #205 were `raw_min` drifting off that threshold. |
