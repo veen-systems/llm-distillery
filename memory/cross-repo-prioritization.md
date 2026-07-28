@@ -22,6 +22,7 @@ Covers: **llm-distillery** (30 open), **NexusMind** (36 open), **ovr.news** (73 
 | **Corroboration system** | NM#275 title-only E5 deployed | **VERIFIED** — 47% coverage, cross-run persistence active, cross-language ceiling at ~0.84 (Veurne procession = known edge case, not fixing). |
 | **A11y smoke test** | 2 WCAG violations (link-name, color-contrast) | **FIXED** — aria-label on article links, darker gradient-text stops. |
 | **LD#77 obituary v4 retrain** | 8 ovr.news FPs + 4 heldout FPs to fix | **TRAINED 2026-07-28** — 12 hard negatives, all resolved (max score 0.65). Heldout precision 0.977 (v3: 0.973), FP 5 (v3: 7). |
+| **NM#274 violence_promotion v1** | Classifier built but not enabled in NexusMind | **SHADOW-DEPLOYED 2026-07-28** — code + models already in NexusMind; config flag enabled. Stamp-only, drops nothing. |
 
 ## Cross-Repo Dependency Chains
 
@@ -35,11 +36,11 @@ LD#51 (design) ✅ → LD#77 (v3 classifier) ✅ → NM#185 (shadow wiring) ✅ 
 ```
 **Status:** v3 shadow live (NM#185). v4 trained, ready to replace v3. Next: ≥1 production cycle → v4 replace v3 shadow → enforce → ovr#204.
 
-### Chain 2: Armed Conflict Prefilter (NOT STARTED)
+### Chain 2: Armed Conflict / Violence Promotion Prefilter (ACTIVE — v1 shadow-deployed)
 ```
-LD#73 (classifier build) → NM#274 (shadow/stamp wiring) → ovr.news (consumer-side exclusion, issue not yet filed)
+LD#73 (classifier build) ✅ → NM#274 (shadow wiring) ✅ → shadow accumulation → validate → enforce
 ```
-**Status:** NM blocked until LD classifier exists. Lowest urgency of the active chains.
+**Status:** v1 shadow-deployed 2026-07-28. Code + models already in NexusMind; config enabled (stamp-only, no drops). Next: let shadow accumulate → panel-validate top scorers → retrain if needed → enforce.
 
 ### Chain 3: Normalization Refits (SHARED ROOT CAUSE)
 ```
@@ -103,7 +104,7 @@ ovr#270 (swap gemma3:27b → gpt-oss:20b) ↔ ovr#235 (held-out validation gate)
 | **ovr#270** | ovr.news | Swap summarizer model: gemma3:27b → gpt-oss:20b (9.2× throughput) | Cheap win, fully on-GPU. Test with #235 gate. |
 | **ovr#235** | ovr.news | Held-out validation set + deploy gate for prompt changes | Quality gate for all summarizer changes. |
 | **LD#51/#77→NM#185→ovr#204** | chain | Obituary detector chain (see Chain 1) | Phase 3 deployed; **v4 trained 2026-07-28** (12 hard negatives, all resolved). v4 shadow replace + enforce next, then ovr#204. |
-| **LD#73→NM#274** | chain | Armed conflict prefilter (see Chain 2) | Biggest build, lowest urgency. NM blocked on LD. |
+| **LD#73→NM#274** | chain | Armed conflict / violence promotion prefilter (see Chain 2) | **v1 shadow-deployed 2026-07-28** — code + models already in NexusMind; config enabled. Shadow accumulation next. |
 | **NM#275** | NexusMind | Cross-language story dedup (MapBiomas case) | Content quality — EN orphaned from NL/ES/PT clusters. |
 | **ovr#214** | ovr.news | Summarizer returns source-language output in english_* fields | Content quality bug. |
 | **LD#23** | llm-distillery | Fix cultural-discovery evidence_quality dimension (MAE 1.31) | Long-standing scoring quality gap. |
@@ -182,8 +183,9 @@ ovr#270 (swap gemma3:27b → gpt-oss:20b) ↔ ovr#235 (held-out validation gate)
 
 ### Batch E: New Filter Builds (lower urgency)
 
-1. **LD#73 → NM#274** — armed_conflict classifier → shadow wiring
-2. **LD#71 + LD#70** — nature_recovery v5 recall lift + protection scope
+1. **LD#73 → NM#274** — ✅ DONE 2026-07-28: violence_promotion v1 shadow-deployed
+2. **violence_promotion v2** — shadow accumulation → panel validate → retrain with more data (currently 1,957 samples, recall 0.55)
+3. **LD#71 + LD#70** — nature_recovery v5 recall lift + protection scope
 3. **LD#23** — cultural-discovery evidence_quality fix
 
 ## Housekeeping (do opportunistically)
