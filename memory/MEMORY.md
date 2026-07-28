@@ -18,6 +18,7 @@
 
 ## Recent Sessions
 
+- [2026-07-28](project_session_2026_07_28.md) — obituary v4 retrain, violence_promotion v1 shadow-deploy, solutions v6 normalization fitted
 - [2026-07-27 evening](project_session_2026_07_27_evening.md) — LD#49/#68/#63/#57 closed; NM#276/#206 closed; curate
 - [2026-07-27](project_session_2026_07_27.md) — solutions v6 gate PASSED, obituary NM#185 Phase 3 deployed, playbook update
 - [2026-07-26 evening](project_session_2026_07_26_evening.md) — solutions v6 train (probe-split retraining, val MAE 0.476)

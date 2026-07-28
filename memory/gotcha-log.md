@@ -1107,3 +1107,28 @@ heredoc (`python3 - <<'EOF'`) so quotes aren't doubly escaped, and single-quote 
 **Problem**: `SolutionsScorer.score_batch()` returns `scores: None, passed_prefilter: False` for training/test articles.
 **Root cause**: prepare_data.py output doesn't match the prefilter's expected article format (URL/source fields may differ).
 **Fix**: Pass `use_prefilter=False` and `skip_prefilter=True` when scoring training/test splits. Only relevant for gate/calibration scoring, not production.
+
+### Solutions Production Scores Live at `nexus_mind_attributes.solutions`, Not Top-Level `weighted_average` (2026-07-28)
+**Problem**: Counted 0 articles at ≥2.25 for normalization fitting — every article appeared to have `weighted_average: 0.00`. Reality was 5,198 articles at ≥2.25 (5.0%).
+**Root cause**: Solutions (and all lenses) nest scores under `nexus_mind_attributes.{lens_name}.weighted_average`. The top-level `weighted_average` field exists only in older output formats. Same shape as the "read the field the scorer actually writes" gotcha — checked the wrong layer.
+**Fix**: Read `r['nexus_mind_attributes']['solutions']['weighted_average']`. All lenses follow this pattern (uplifting, belonging, nature_recovery, solutions).
+
+### gpu-server Scorer Restart Canceled by systemd (Mid-Run Cycle) (2026-07-28)
+**Problem**: `systemctl restart nexusmind-scorer` failed with "Job canceled" — the service was in the middle of a pipeline run.
+**Root cause**: The `nexusmind-scorer.service` is a `static` unit controlled by `nexusmind.service`'s ExecStartPre. The timer cycle was running; `restart` on a oneshot-dependent unit that's mid-run gets blocked.
+**Fix**: Use `systemctl start` (not `restart`) if the service is inactive, or wait for the cycle to complete. Check with `systemctl is-active` first.
+
+### sentence_transformers Not Available Locally — Smoke Tests Need gpu-server (2026-07-28)
+**Problem**: Both obituary v4 and violence_promotion v1 import tests failed locally with `ModuleNotFoundError: No module named 'sentence_transformers'`.
+**Root cause**: The workstation has torch but not sentence-transformers. Only gpu-server and sadalsuud carry the full ML stack.
+**Fix**: Run model-load smoke tests on gpu-server (`ssh gpu-server "cd ~/NexusMind && PYTHONPATH=. python3 -c '...'"`). Local env can verify module structure and version strings but not load the embedder.
+
+### Adding Hard Negatives to Frozen-Embedder+MLP Training Shifts All Boundaries, Not Just the Targeted FPs (2026-07-28)
+**Problem**: Adding 8 ovr.news FPs as hard negatives to obituary v4 training caused 4 heldout FPs to get WORSE (scores went from 0.92-0.99 to 0.05-1.00 — 3 got worse, 1 improved).
+**Root cause**: The MLP learns a separating hyperplane across the entire embedding space. Adding negatives of one FP class (legacy/tribute) shifts the boundary globally — some articles of other FP classes (crime/accident reports) land on the wrong side.
+**Fix**: Add ALL known FP classes as hard negatives in the same retrain (8 ovr.news + 4 heldout = 12 total). After adding heldout FPs too, all 12 resolved. Lesson: when doing a corrective retrain, add every panel-confirmed FP you have, not just the ones from the most recent investigation.
+
+### Duplicate Config Block from Rebase Merge (2026-07-28)
+**Problem**: After `git pull --rebase` on NexusMind, `config/app.yaml` had TWO `violence_promotion` blocks — one from upstream, one from the rebased commit. YAML parses last-wins silently.
+**Root cause**: Both the upstream and our commit added a `violence_promotion` section in the same neighborhood. The rebase didn't flag a conflict because they weren't on adjacent lines.
+**Fix**: Manual dedup after noticing the duplication. Check config files after rebase merges, especially when both sides add new sections.
