@@ -7,9 +7,20 @@ metadata:
 
 # Cross-Repo Prioritization
 
-**Last updated: 2026-07-30** (LD#83 obituary v4 op-point evidence: promote at 0.90 not 0.95; NexusMind swap committed, deploy pending; owner FN-delta gate before enforcement)
+**Last updated: 2026-07-30 evening** (re-triage against live issue lists; LD#83 CLOSED — obituary enforcement live v5@0.85; LD#85 opened+parked; ovr#204 unblocked; LD#72 closed; new: LD#84, NM#278/#279, FS#118)
 
-Covers: **llm-distillery** (30 open), **NexusMind** (36 open), **ovr.news** (73 open), **FluxusSource** (6 open).
+Covers: **llm-distillery** (29 open), **NexusMind** (34 open), **ovr.news** (76 open), **FluxusSource** (7 open). Repos: veen-systems/llm-distillery, ducroq/{NexusMind,ovr.news,FluxusSource}.
+
+## Changes 2026-07-30 evening (session 3)
+
+| What | Now |
+|------|-----|
+| **LD#83 obituary chain** | **CLOSED** — v5 trained + 3-reviewer battery + owner adjudication (grief-vs-news rule) + recall-first sign-off → **enforcement live v5@0.85** (b904edc; 1,158 blocked in 20:12 cycle, verified). |
+| **LD#85 (v6 relabel)** | Opened + **PARKED indefinitely** (owner) — reactivate on obit-flag or visible over-block harm. |
+| **ovr#204** | UNBLOCKED — the hardcoded ovr.news filter is now redundant. |
+| **LD#72** | CLOSED (normalization refit superseded). |
+| **b650 (Arian's 3090 Ti)** | Commissioned as training node — see `memory/b650-gpu.md`. |
+| **New issues** | LD#84 (solutions prompt router), NM#278 (dedup retune), NM#279 (stale normalizations — Chain 3), FS#118 (GN redirect — Chain 8). |
 
 ## Changes Since 2026-07-27 Session
 
@@ -30,11 +41,11 @@ Covers: **llm-distillery** (30 open), **NexusMind** (36 open), **ovr.news** (73 
 
 Chains that must be sequenced in order. Each `→` means "blocked on" or "feeds into."
 
-### Chain 1: Obituary Detector (ACTIVE — v4@0.90 swap committed, deploy pending)
+### Chain 1: Obituary Detector (COMPLETE 2026-07-30 — enforcement live)
 ```
-LD#51 (design) ✅ → LD#77 (v3 classifier) ✅ → NM#185 (shadow wiring) ✅ → v4 corrective retrain ✅ → LD#83 op-point evidence ✅ → deploy v4@0.90 shadow → FN-delta check (owner gate) → enforce → ovr#204 (remove hardcoded)
+LD#51 ✅ → LD#77 (v3) ✅ → NM#185 (shadow) ✅ → v4 retrain ✅ → LD#83: v5 retrain + battery + owner adjudication + ENFORCE v5@0.85 ✅ CLOSED → ovr#204 (remove hardcoded) ← ONLY REMAINING LINK
 ```
-**Status (2026-07-30):** Owner-flagged Farouq obituary proved v4@0.95 would miss real obituaries (v3 0.977, v4 0.937). Evidence gathered (heldout sweep + 37-article panel): v4 promoted at **0.90** — zero marginal heldout FPs, band precision 0.946. NexusMind `02da4fe` (v3→v4 swap + threshold 0.90, still SHADOW) pushed; **auto-deploys on the next pipeline cycle** (ExecStartPre auto-pull — main.py ∈ SCORER_PATHS; verified 2026-07-30). Next session: verify deploy landed (`/health` → `obituary_detector_v4`), then the owner gate before enforcement: quantify which obituaries v4@0.90 misses that v3@0.95 caught (~20 on heldout). Shadow stamps are a v3/v4 mix for ~7 days (no model-version stamp — LD#83 comment item 2). See LD#83 comments, `memory/project-obituary-detector.md` (llm-distillery).
+**Status (2026-07-30 evening):** Enforcement live and verified (NexusMind `b904edc`; 20:12 cycle blocked 1,158 obituary-flagged articles; health = `obituary_detector_v5`). Rollback = `pipeline.obituary_detector.enforce: false`. LD#85 (v6 relabel under the owner's grief-vs-news rule) opened and **PARKED indefinitely** — reactivate only on an owner obit-flag or visible over-blocking harm. Next action in this chain: **ovr#204**.
 
 ### Chain 2: Armed Conflict / Violence Promotion Prefilter (ACTIVE — v1 shadow-deployed)
 ```
@@ -45,9 +56,9 @@ LD#73 (classifier build) ✅ → NM#274 (shadow wiring) ✅ → shadow accumulat
 ### Chain 3: Normalization Refits (SHARED ROOT CAUSE)
 ```
 LD#76 (calibration audit — umbrella) → LD#74 (belonging boundary) + LD#75 (nr raw-scale collapse) + LD#72 (nr v4 normalization) + LD#64 (foresight refit)
-                                        ↔ NM#205 (foresight normalization) ↔ NM#167 (general normalization tracking)
+                                        ↔ NM#205 (foresight normalization) ↔ NM#167 (general normalization tracking) + NM#279 (stale uplifting-v7/belonging-v1 normalization — NEW 2026-07-30)
 ```
-**Status:** All share the raw_min-drift root cause (#161, #205 pattern). LD#76 is the umbrella — fix the method, then refit all affected filters.
+**Status:** All share the raw_min-drift root cause (#161, #205 pattern). LD#76 is the umbrella — fix the method, then refit all affected filters. NM#279 adds two more stale-normalization instances (uplifting v7 fitted Apr 6, belonging v1 Mar 30 — both measurably depressing their lenses); fold into the same refit pass. Note LD#72 CLOSED (superseded/refit done).
 
 ### Chain 4: Source Classification (FluxusSource → NexusMind)
 ```
@@ -66,13 +77,19 @@ LD#43 (broaden Solutions) → solutions v4 (deployed Jul 22) → solutions v6 (g
 LD#80 (v2 underperforms v1) → rollback COMMITTED 2026-07-28 but was a production no-op; actually fixed 2026-07-30 (NexusMind 96d9acc). v1 weights on HF Hub + NexusMind.
 Root cause: v2 deployed without Phase 5 shadow comparison. 190-sample test set was not production-representative.
 ```
-**Status:** v1 active. v2 code retained for reference. Revisit only if v1 shows quality gaps on production data.
+**Status:** v1 active, VERIFIED 2026-07-30 16:00 cycle (log "LD#80: ignoring gpu-server", zero /commerce/predict on gpu-server since). v2 code retained for reference.
 
 ### Chain 7: Summarizer Model Swap (ovr.news standalone, low dep)
 ```
 ovr#270 (swap gemma3:27b → gpt-oss:20b) ↔ ovr#235 (held-out validation gate) ↔ ovr#267 (summarizer audit findings)
 ```
 **Status:** Self-contained in ovr.news. Test with #235 gate.
+
+### Chain 8: Google News Stub Fix (NEW 2026-07-30 — ovr#275 root cause)
+```
+FS#118 (resolve CBMi redirect at collection time) → ovr#275 (gn_* stubs never get summaries) [+ NM#278 dedup-threshold retune catches the dup-stub symptom]
+```
+**Status:** Owner leaned toward ingestion-time resolution (session 2026-07-30). FS#118 is the implementation home; ovr#275 closes behind it.
 
 ## Priority Rankings
 
@@ -83,8 +100,8 @@ ovr#270 (swap gemma3:27b → gpt-oss:20b) ↔ ovr#235 (held-out validation gate)
 | **LD#76** | llm-distillery | Calibration audit: deployed filters crush good content below medium boundary | Umbrella for #74/#75/#72. Likely ONE raw_min-drift root cause. |
 | **LD#74** | llm-distillery | Belonging v1: raw ordering intact, medium boundary too high | Good content scoring 3-4, should be higher. |
 | **LD#75** | llm-distillery | nature_recovery v2/v4: raw-scale collapse | Model fires near-zero for ~everything. |
-| **LD#72** | llm-distillery | nr v4 normalization — running raw-passthrough, 31,852 records under-ranked | Blocked on ≥200 articles at ≥2.25 (currently 167). |
 | **NM#206** | NexusMind | Filter timeout handling | Production reliability. |
+| **NM#279** | NexusMind | Stale normalization: uplifting v7 (Apr 6) + belonging v1 (Mar 30) | NEW — same refit pass as LD#76 umbrella. |
 
 ### P1 — Important / This Quarter
 
@@ -103,7 +120,6 @@ ovr#270 (swap gemma3:27b → gpt-oss:20b) ↔ ovr#235 (held-out validation gate)
 |----|------|-------|--------|
 | **ovr#270** | ovr.news | Swap summarizer model: gemma3:27b → gpt-oss:20b (9.2× throughput) | Cheap win, fully on-GPU. Test with #235 gate. |
 | **ovr#235** | ovr.news | Held-out validation set + deploy gate for prompt changes | Quality gate for all summarizer changes. |
-| **LD#51/#77→NM#185→ovr#204** | chain | Obituary detector chain (see Chain 1) | Phase 3 deployed; **v4 trained 2026-07-28** (12 hard negatives, all resolved). v4 shadow replace + enforce next, then ovr#204. |
 | **LD#73→NM#274** | chain | Armed conflict / violence promotion prefilter (see Chain 2) | **v1 shadow-deployed 2026-07-28** — code + models already in NexusMind; config enabled. Shadow accumulation next. |
 | **NM#275** | NexusMind | Cross-language story dedup (MapBiomas case) | Content quality — EN orphaned from NL/ES/PT clusters. |
 | **ovr#214** | ovr.news | Summarizer returns source-language output in english_* fields | Content quality bug. |
@@ -113,7 +129,7 @@ ovr#270 (swap gemma3:27b → gpt-oss:20b) ↔ ovr#235 (held-out validation gate)
 | **ovr#255** | ovr.news | Academic articles get irrelevant stock photos | Content presentation. |
 | **ovr#256** | ovr.news | US-centric abbreviations in titles | International readability. |
 | **NM#231** | NexusMind | uplifting v7 under-scores non-English documented-outcome news | 19 panel-confirmed examples. |
-| **ovr#204** | ovr.news | Remove hardcoded obituary detection (NM#185 Phase 3 shipped) | **Updated today** — unblocked, waiting for shadow accumulation. |
+| **ovr#204** | ovr.news | Remove hardcoded obituary detection | **UNBLOCKED 2026-07-30** — enforcement live upstream; do after one overnight sanity check. Effectively P1. |
 
 ### P3 — Later / Backlog
 
@@ -150,20 +166,21 @@ ovr#270 (swap gemma3:27b → gpt-oss:20b) ↔ ovr#235 (held-out validation gate)
 
 ## Sequenced Work Batches (Recommended Execution Order)
 
-### Batch A: This Week (remaining after 2026-07-28 session)
+### Batch A: Next Session
 
-1. **LD#76 calibration audit** — diagnose root cause across #74/#75/#72
-2. **solutions v6 normalization** — fit when ≥200 articles at ≥2.25 accumulate
-3. **NM#206 filter timeout handling** — production reliability
+1. **Overnight enforcement sanity check** (15 min) — blocked-count stable, spot-read ~10 blocked titles
+2. **ovr#204** — remove ovr.news hardcoded obituary filter (Chain 1 final link)
+3. **LD#76 calibration audit (P0)** — diagnose root cause across #74/#75/#64; fold NM#279 refits into the fix pass
+4. **LD#82 violence v1 shadow audit** — 53 flagged articles from first run
+5. **NM#206 filter timeout handling** — production reliability
 
-### Batch B: This Week (normalization + obituary enforcement)
+### Batch B: Shortly After
 
-1. **LD#72 nr v4 normalization** — fit once ≥200 articles accumulate (~1-2 more runs)
-2. **solutions v6 normalization** — ✅ DONE 2026-07-28 (845 articles, percentile CDF deployed)
-3. **LD#77 obituary v4 retrain** — ✅ DONE 2026-07-28 (12 hard negatives, all resolved)
-4. **Obituary v4 → enforce** — after ≥1 production cycle of shadow accumulation, replace v3 with v4 in NexusMind, then flip enforcement
-5. **ovr#204 remove hardcoded obit** — after v4 enforced
-6. **LD#74/#75 calibration fixes** — apply root-cause fix from #76 audit
+1. **LD#74/#75 + NM#205/#279 refits** — apply the root-cause fix from the #76 audit across all stale filters
+2. **LD#84** — solutions oracle prompt router fix (v7 prompt only; do NOT edit committed v5/v6 prompts)
+3. **LD#81** — pin/align sklearn across training+inference (b650 skew gotcha 2026-07-30 is corroborating evidence)
+4. **FS#118 → ovr#275** — Google News redirect resolution at collection (Chain 8)
+5. **NM#278** — dedup threshold retune for title-only E5 space
 
 ### Batch C: Content Quality Sweep
 
