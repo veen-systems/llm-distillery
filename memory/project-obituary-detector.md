@@ -17,21 +17,49 @@ recipe). Results (heldout n=1529 after excluding the 33 panel-graded rows —
 28 FN-delta + 5 FP5, labels suspect/moved to training; eval:
 `validation/artifacts/v5_eval_2026-07-30.json`, script `validation/eval_v5.py`):
 
-- **v5@0.90: precision 0.983 / recall 0.750** (4 FPs: elephant obit, Einstein
-  historical, Comédie Française tribute, dead-diplomat report — last two look
-  like oracle mislabels again). v5@0.92: 0.987 / 0.734. Compare v3@0.95:
-  0.987 / 0.722; v4@0.90: 1.000 / 0.744 *on this subset, which omits v4's 21
-  confirmed misses* — on the gate set itself v5 fits 19/21 at ≥0.90 (2 near
-  misses at 0.866 / 0.876), v4 caught 0/21.
-- **Farouq: v5 = 0.9546** (v4 0.9372, v3 0.9768) — caught at 0.90, even at 0.95.
-- **No hard-negative regression**: all 12 v4 hard negatives ≤ 0.44 under v5;
-  Bharathiraja TP strengthened to 0.976.
-- **June (unlabeled) flag volume**: v5@0.90 flags 432/1870 ≈ v3@0.95's 427
-  (v4@0.90: 377) — recall recovered to v3 level. v5-new flags are dominated by
-  recent-death/crime-death pieces (the class v4 overcorrected on).
-- Proposed op-point: **0.90** (0.92 if the owner wants the extra precision at
-  −1.6pt recall). Next: owner sign-off → shadow deploy v5 (NexusMind swap, same
-  path as v4) → shadow cycle → enforce → ovr#204.
+**3-reviewer battery 2026-07-30 (correctness/methodology/deploy-risk, all
+findings below verified by hand before recording):** the original excl-33 table
+was misleading — it deleted v4's own 5 FPs (hence its fake "precision 1.000")
+and 12 panel-graded rows NOT in v5's training set, which are exactly where v5's
+over-block signal lives (v5 flags 6/7 panel-REJECTED FN-delta rows + both
+panel-confirmed-real FP5 rows). **Corrected table** (exclude only the 21
+training rows + 3 v4-hard-negatives that sat unexcluded in heldout since
+07-28, n=1538): v3@0.95 prec 0.979 / rec 0.728; v4@0.90 0.979 / 0.728;
+**v5@0.90 0.964 / 0.749 (+7 TP, +4 FP)**; **v5@0.92 0.967 / 0.734** —
+statistically marginal either way (in-corpus heldout also has ~15% near-dup
+contamination vs training; June is the only clean holdout and is unlabeled).
+
+- **v5@0.92 dominates 0.90**: fits the same 19/21 gate articles (misses are
+  0.866/0.876, below both), catches Farouq (0.9546), one fewer heldout FP,
+  12 fewer June flags. Propose 0.92.
+- **Strongest v5 evidence** (reviewer-added): ovr.news 203 production
+  borderlines — v5 flags only the known Bharathiraja TP at 0.90 (v3 flagged 4).
+  No over-blocking on the production distribution; v4's legacy-tribute fix kept.
+- Hard-negative regression: none (12 v4 hard negatives ≤0.4402); Farouq caught.
+- **OPEN before ENFORCE sign-off** (shadow-deploy at 0.92 is low-risk anytime):
+  (1) panel-grade ~40 of the 65 v5-new June flags — est. 17–20% are
+  rule-violating over-blocks (health explainers, alive-person stories, TV
+  schedule pieces); "June recall recovered" is partly precision lost, increment
+  unmeasured; (2) owner adjudication of ~10 disputed labels — the 4-model panel
+  drifts broader than the owner rule (memorial events / legal-process /
+  legacy-tribute classes graded "obituary"; ≥2 of the 21 hard positives violate
+  the KEEP clause, e.g. the Filip memorial festival) — circular since the same
+  panel failed v4 and labeled v5's training rows; (3) v5's own new FPs (elephant
+  obit 0.994, Einstein 0.989) are NOT oracle mislabels — earlier framing wrong.
+- OOF sweeps are fold-seed-noisy ±5pt (v4b spans 0.61–0.71 rec@0.95 across
+  seeds) — never compare OOF across versions; the 0.70→0.60 "drop" is mostly
+  noise, real shift ≈2pt.
+- Deploy prep for the eventual swap (from deploy-risk review): NexusMind
+  `deploy/gpu-server/main.py` pins v4 pickle SHA256s (`EXPECTED_HASHES`,
+  enforce-on, load in lifespan without try/except — stale hashes crash the
+  WHOLE scorer). v5 hashes: mlp `6f271360d42a…`, scaler `16c79508a516…`. Swap
+  blast radius: main.py + src/preprocessing/obituary.py + config/app.yaml
+  (~9 literals). v5 pkls + .sha256 companions must be vendored into NexusMind's
+  own repo first — deploy_filters.sh archives NexusMind HEAD, never reads
+  llm-distillery. Until then gpu-server is the only v5 binary holder besides
+  the workstation working tree.
+- Reproducibility fixed post-review: `training/build_v5_seed.py` +
+  `validation/artifacts/graded_ids_2026-07-30.json` committed.
 
 **v4@0.90 shadow DEPLOYED + VERIFIED 2026-07-30 12:08 cycle** (auto-pull clean
 fast-forward to c5f1df2; scorer logs "Obituary detector v4 loaded successfully";
