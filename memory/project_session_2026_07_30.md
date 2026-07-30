@@ -31,3 +31,48 @@ Owner flagged an obituary on ovr.news the night before (`arabic_thearabweekly_d0
 - [[obituary-v4-hypotheses]] — item 3 falsified
 - [[cross-repo-prioritization]] — Chain 1 updated
 - [[gotcha-log]] — 3 new entries (blocking-prefilter recall framing, Ollama panel contention, RUNBOOK vs SCORER_PATHS)
+
+---
+
+# Session 2 (2026-07-30, ~09:00-12:30) — deploy verified, gate FAILED, DeepSeek-commit review
+
+## Obituary v4 (LD#83)
+
+1. **Deploy verified**: push (08:28) postdated the 08:08 cycle start — NOT a failure;
+   12:08 cycle auto-pulled (clean ff to c5f1df2), loaded v4, Farouq → 0.9372 flagged
+   via deployed endpoint. deploy_filters.sh auto-pull worked exactly as designed.
+2. **FN-delta owner gate FAILED**: 21/28 gap articles are real obituaries (panel);
+   five <0.70 on v4 → v5 retrain needed, enforcement sign-off blocked. FP5: 3/5 of
+   v4's "FPs" are oracle mislabels. Evidence aaef1d0; decision rule + owner question
+   in LD#83 comment. See [[project-obituary-detector]].
+3. Carry-overs shipped (NexusMind 3f5c328): `_obituary_model` stamp, has_model guard
+   hoisted to production path.
+
+## DeepSeek-commit review (owner request): 4 parallel reviewers over Jul 26-30 commits
+
+Fixes: llm-distillery 403429d + aaef1d0 (pushed), NexusMind 3f5c328 + 6728a77
+(pushed after deploy verification, ships next cycle). Headliners:
+- **LD#80 rollback was a production no-op** (`if False:` gated the wrong branch;
+  66 /commerce/predict calls post-"rollback") — commerce now forced local v1.
+  Verify next cycle: journal "LD#80: ignoring gpu-server", zero /commerce/predict.
+- **Code-drift check false-fired every run** (hash missing smoke_test component,
+  3rd occurrence of the same drift) — fixed, verified byte-exact vs deploy stamp.
+- solutions v6: FILTER_VERSION/hub repo_id said v5; v6 weights now on Hub
+  (jeergrvgreg/solutions-filter-v6); verifier 7/7.
+- ground_truth_gate falsy-0.0 record drop; violence oracle label poisoning +
+  empty-batch crash (NM#274 shadow module); story_dedup embedding_version loss
+  ("query: query:" corruption) + empty-text cluster collapse; consent-guard
+  substring negation; EXPECTED_FILTERS stale (would've blocked scorer startup
+  ~2026-08-01); .gitignore probe negation inert.
+- Issues filed: LD#84 (v6/v7 prompt router contradiction — don't edit committed
+  prompts, prompt_hash provenance), NM#278 (dedup thresholds unretuned for new
+  embedding space).
+
+## Next session
+
+1. Owner: LD#83 interim-shadow decision (v4@0.90 vs v3@0.95) + v5 retrain kickoff
+   (21 panel-graded hard positives ready in rollup_fn_delta_fp5_2026-07-30.json).
+2. Verify next cycle (~16:00): commerce local-v1 ("LD#80: ignoring gpu-server",
+   no /commerce/predict), no CODE DRIFT warnings, `_obituary_model` stamps present.
+3. Then still queued: LD#76 calibration audit (P0), #82 violence shadow audit,
+   NM#206 timeout handling.

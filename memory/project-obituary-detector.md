@@ -7,9 +7,27 @@ metadata:
 
 ## Status
 
-**v4@0.90 swap committed (NexusMind `02da4fe`, pushed 2026-07-30); production ran v3@0.95 at wrap-up.** No manual deploy needed: `nexusmind.service` ExecStartPre `deploy_filters.sh` auto-pulls on the next cycle (commit touches `deploy/gpu-server/main.py`, which IS in `SCORER_PATHS` — the RUNBOOK §durability note claiming main.py doesn't auto-propagate is stale) and ships scorer + config atomically, so the mixed v3@0.90 regime can't occur via the timer. **Never `git pull` on sadalsuud without `deploy_filters.sh`** — that WOULD create v3@0.90 stamps. Next session step 1: VERIFY the auto-deploy landed — `curl gpu-server:8000/health` lists `obituary_detector_v4`; rescore Farouq article → 0.937, flagged at 0.90.
+**v4@0.90 shadow DEPLOYED + VERIFIED 2026-07-30 12:08 cycle** (auto-pull clean
+fast-forward to c5f1df2; scorer logs "Obituary detector v4 loaded successfully";
+health lists `obituary_detector_v4`; Farouq rescores **0.9372 → flagged** via the
+deployed endpoint). `_obituary_model` version stamp + hoisted `has_model` guard
+shipped in NexusMind `3f5c328` (next cycle).
 
-**Owner gate before enforcement (2026-07-30):** quantify the FN delta — which articles does v4@0.90 miss that v3@0.95 caught (~20 on heldout, recall 0.744 vs 0.683)? Panel-grade them; if they're real obituaries of the class the owner flags, consider v5 or a lower op-point. See LD#83 comments.
+**OWNER GATE FAILED (2026-07-30): enforcement sign-off BLOCKED, v5 retrain needed.**
+FN-delta panel (4-model blind, n=28 gap articles v3@0.95 catches / v4@0.90 misses):
+**21/28 majority-obituary** (12 unanimous), 5 split, 2 not. Five confirmed misses
+score <0.70 on v4 — unrecoverable by threshold; the v4 hard-negative set
+overcorrected on the crime/accident-death class (which the sharpened-broad rule
+BLOCKS when death is the main subject). FP5 counter-check: only 2/5 of v4's
+heldout FPs are real (3 are oracle mislabels incl. "Bardot funeral hoax") — v4
+true precision > measured 0.979. Evidence: `validation/artifacts/
+rollup_fn_delta_fp5_2026-07-30.json` + grades files (aaef1d0); LD#83 comment.
+
+**v5 retrain direction:** add the 21 panel-confirmed FN-delta articles as hard
+POSITIVES (ready-made, panel-graded) to balance v4's 12 hard negatives.
+**Open owner decision:** interim shadow = keep v4@0.90 (Farouq class + ovr-FP fix,
+stamps attributable via `_obituary_model`) vs revert to v3@0.95 (better recall,
+21 real obits, near-equal precision). Asked in LD#83 comment 2026-07-30.
 
 ## What it is
 
