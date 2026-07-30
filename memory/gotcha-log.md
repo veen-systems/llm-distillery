@@ -1209,3 +1209,18 @@ heredoc (`python3 - <<'EOF'`) so quotes aren't doubly escaped, and single-quote 
 **Problem**: Session first planned a manual scorer deploy ("pull + deploy_filters.sh next session"), then a reviewer warned the pushed threshold change could produce an unvalidated v3@0.90 regime. Both assessments were wrong about propagation: RUNBOOK §durability says changes to `deploy/gpu-server/main.py` "will not auto-propagate", but `SCORER_PATHS` in `deploy_filters.sh` has included `deploy/gpu-server/main.py` (and `src/scoring/`, smoke articles) since after that note was written.
 **Root cause**: Stale doc prose treated as authoritative over the script it describes. Recurrence of the "'by design' is a claim about the implementation — read the runtime" lesson (2026-05-04 manifest entry).
 **Fix**: Read `deploy_filters.sh` directly: ExecStartPre auto-fast-forwards when any SCORER_PATHS entry differs from origin, pulling the whole commit and shipping config + scorer atomically — so a pushed scorer-touching commit deploys itself next cycle, and the mixed regime can only arise from a manual `git pull` without `deploy_filters.sh`. RUNBOOK corrected (NexusMind, 2026-07-30).
+
+### Evaluation Exclusion Sets Must Be Symmetric — Excluding All Panel-Graded Rows Biased the v5 Table Both Ways (2026-07-30)
+**Problem**: The v5 heldout table excluded all 33 panel-graded ids. That deleted v4's own 5 FPs (v4 showed a fake precision 1.000) AND removed the only rows where v5's over-block signal lived (v5 flagged 6/7 panel-REJECTED rows). The published comparison favored whichever model's errors happened to be graded.
+**Root cause**: Exclusion was keyed on "labels are suspect" instead of "row is in the candidate model's training set." Only the 21 rows actually moved into v5's training required exclusion.
+**Fix**: Exclude exactly training-contaminated rows (21 + the 3 v4 hard negatives that had sat unexcluded in heldout since 07-28). Rule: for each model column, exclude only rows that model trained on; rows with disputed labels get relabeled or reported separately, never silently dropped.
+
+### Panel Grades File Is Per-Model Rows, Not Majority Rows — eval_v5.py Join Was Dead Code (2026-07-30)
+**Problem**: eval_v5.py expected a `majority` field in grades_panel_*.jsonl; the file has one row per (model, article) with `verdict`. Every June `panel` field silently became null and hid that 5/10 June flags v5 lost were panel-confirmed obituaries.
+**Root cause**: Assumed rollup schema (majority) where the raw grades schema (per-model) applies; silent `gp.exists()` guard meant no error either way.
+**Fix**: Compute majority from per-model rows (rollup_obit.py does this). Never join on a field without asserting it exists in row 1.
+
+### b650 Commissioning: System venv Broken, Version Skew Shifts MLP Scores Cross-Box (2026-07-30)
+**Problem**: `python3 -m venv` fails on b650 (no ensurepip, sudo needed for python3.12-venv); and after uv-venv setup, v5 MLP scores differ from gpu-server by up to 0.16 on identical rows.
+**Root cause**: Missing python3.12-venv package; sentence-transformers 5.6.1 (b650) vs 5.2.2 (gpu-server) + torch 2.13 vs 2.11 produce slightly different embeddings, which the MLP amplifies near its decision boundary. sklearn was also unpinned at first (1.9 vs 1.8 pickle warnings) — pinned to 1.8.0.
+**Fix**: Use `~/.local/bin/uv` (no sudo). Rule: frozen-embedder+MLP scores are only comparable computed on ONE box with ONE env; evaluate on the box that trained. Account on b650 is `jeroen`, not jwasys.

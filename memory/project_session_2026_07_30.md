@@ -92,3 +92,28 @@ Fixes: llm-distillery 403429d + aaef1d0 (pushed), NexusMind 3f5c328 + 6728a77
   NM#278). The solutions avg-9.0 score_anomaly warning = stale QA baseline of 7
   (solutions has averaged ~9 for a week, pre- and post-normalization) — owner
   one-liner to bump the baseline, no scoring problem.
+
+## Session 3 (same day, ~16:00–20:30) — obituary DONE through enforcement
+
+1. 16:00-cycle verification all green (LD#80 local-v1 line, zero /commerce/predict
+   since 16:00, no drift lines, `_obituary_model: "v4"` stamps live).
+2. **v5 trained** (gpu-server; v4 corpus + 21 FN-delta hard positives) →
+   **3-reviewer battery** (correctness: all numbers reproduce; methodology:
+   excl-33 eval biased both ways → corrected excl-24 table; deploy-risk: swap
+   map incl. EXPECTED_HASHES crash risk) → **June-increment panel**: 0.71–0.83
+   precision, threshold-insensitive.
+3. **Owner adjudicated 14 boundary rows**: grief-vs-news rule (flips both
+   sharpened-broad clauses) → LD#85 (v6 relabel + retrain on b650).
+4. **Owner recall-first directive** ("I just hate obits coming through") →
+   **ENFORCEMENT SHIPPED: v5 @ 0.85**, NexusMind `b904edc` (after shadow swap
+   `89f3c58`): `obituary_blocked` in dedup gate after commerce, config-gated
+   (`pipeline.obituary_detector.enforce`), stamps always written. CI green.
+   <!-- verify: ssh sadalsuud "journalctl -u nexusmind.service --since today --no-pager | grep -m1 'obituary,'" -->
+5. **b650 commissioned** (3090 Ti 24GB, account `jeroen`, uv venv, corpora +
+   v3/v4/v5 copied, 831 rows/s embed; ST-version cross-box skew gotcha logged).
+6. Lens scoring proven NOT an obit backstop (102 flagged rows passed lens
+   thresholds in one cycle, mostly belonging).
+
+**Next session first**: verify first enforced cycle (log `N obituary` in Loaded
+line, `obituary_blocked>0`, health `obituary_detector_v5`, stamps v5) → ovr#204
+→ LD#85 (owner reviews new rule wording before relabel) → LD#76 (P0), #82, NM#206.
