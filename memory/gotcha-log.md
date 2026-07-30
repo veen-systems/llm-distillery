@@ -4,6 +4,26 @@ Problems encountered and resolved. Format: Problem → Root cause → Fix.
 
 ---
 
+## Pre-push battery ran tests/unit only — CI runs tests/ incl. root-level files (2026-07-30)
+
+**Problem**: NexusMind 6728a77 passed the local battery (890 tests) but broke CI:
+`tests/test_gpu_client.py` (root-level, not under tests/unit/) mocked 5 subprocess
+results for a function that now makes 6 calls -> StopIteration.
+
+**Root cause**: local run was `pytest tests/unit`; CI runs `pytest tests/` (minus
+integration). Root-level test files were invisible to the battery.
+
+**Fix**: 85aac22 (test now derives its mocks from _SCORER_PATHS and asserts the
+exact call list). **Lesson**: before pushing NexusMind, run the full
+non-integration suite: `pytest tests/ --ignore=tests/integration` (952 tests).
+
+**Pattern promoted (3rd occurrence of restated-set drift, same file!)**: when two
+artifacts must agree on a set (deploy_filters.sh SCORER_PATHS vs gpu_client
+_SCORER_PATHS vs its test), derive one side from the other or add a test that
+asserts equality — comment-enforced sync ("keep in sync with X") WILL drift.
+Occurrences: 2-of-5 components (pre-07-16), hash-object-vs-HEAD (07-16),
+missing smoke_test component (07-30).
+
 ## LD#80 rollback was a production no-op — the diff looked right, the call path was wrong (2026-07-30)
 
 **Problem**: Two days after the commerce v2→v1 "rollback" (a7771c9), gpu-server logged
