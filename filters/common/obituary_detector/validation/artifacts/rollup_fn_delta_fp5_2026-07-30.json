@@ -1,0 +1,468 @@
+{
+  "fn_delta": [
+    {
+      "id": "german_ntv_074004206339",
+      "title": "Nach Notruf aufgefunden: US-Schauspieler T. K. Carter ist tot",
+      "v3": 0.985171,
+      "v4": 0.896632,
+      "verdicts": {
+        "gemini-2.5-flash": "obituary",
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary"
+      },
+      "majority": "obituary",
+      "n_obit": 4
+    },
+    {
+      "id": "spanish_expansion_698a7cd31b78",
+      "title": "10 edificios y una silla que han hecho inmortal a Frank Gehry",
+      "v3": 0.989455,
+      "v4": 0.894392,
+      "verdicts": {
+        "gemini-2.5-flash": "obituary",
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "obituary"
+      },
+      "majority": "obituary",
+      "n_obit": 3
+    },
+    {
+      "id": "dutch_news_ad_algemeen_6840631d2eef",
+      "title": "Broertje van influencer Selma Omari overleden: ‘De rust waar hij altij",
+      "v3": 0.990657,
+      "v4": 0.889233,
+      "verdicts": {
+        "gemini-2.5-flash": "obituary",
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary"
+      },
+      "majority": "obituary",
+      "n_obit": 4
+    },
+    {
+      "id": "german_die_welt_bdeacdbd2e32",
+      "title": "„Er muss einer der Jüngsten gewesen sein“ – 24-Jähriger stirbt an Deme",
+      "v3": 0.990112,
+      "v4": 0.888559,
+      "verdicts": {
+        "gemini-2.5-flash": "obituary",
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary"
+      },
+      "majority": "obituary",
+      "n_obit": 4
+    },
+    {
+      "id": "newsapi_general_3e5a8d4283a6",
+      "title": "2-year-old with ‘beautiful smile’ identified as first child flu death ",
+      "v3": 0.985479,
+      "v4": 0.8871,
+      "verdicts": {
+        "gemini-2.5-flash": "obituary",
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "obituary"
+      },
+      "majority": "obituary",
+      "n_obit": 3
+    },
+    {
+      "id": "dutch_news_nu_nl_algemeen_13aa3586170a",
+      "title": "Kind omgekomen door aanrijding in Bergen op Zoom kort na jaarwisseling",
+      "v3": 0.963156,
+      "v4": 0.878854,
+      "verdicts": {
+        "gemini-2.5-flash": "not_obituary",
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "obituary"
+      },
+      "majority": "split",
+      "n_obit": 2
+    },
+    {
+      "id": "british_irish_bbc_scotland_936e0798fb25",
+      "title": "Man who went overboard fishing boat dies",
+      "v3": 0.976065,
+      "v4": 0.856538,
+      "verdicts": {
+        "gemini-2.5-flash": "obituary",
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "not_obituary"
+      },
+      "majority": "obituary",
+      "n_obit": 3
+    },
+    {
+      "id": "newsapi_general_a4d5d47b3ab7",
+      "title": "UK’s youngest dementia patient dies at 24; doctors say he had the brai",
+      "v3": 0.992062,
+      "v4": 0.855943,
+      "verdicts": {
+        "gemini-2.5-flash": "obituary",
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary"
+      },
+      "majority": "obituary",
+      "n_obit": 4
+    },
+    {
+      "id": "french_le_figaro_6260bc752586",
+      "title": "Alain Orsoni, un personnage sulfureux, entre nationalisme et grand ban",
+      "v3": 0.956315,
+      "v4": 0.85061,
+      "verdicts": {
+        "gemini-2.5-flash": "obituary",
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary"
+      },
+      "majority": "obituary",
+      "n_obit": 4
+    },
+    {
+      "id": "newsapi_general_01ed6f9c8a3c",
+      "title": "Jeff Garcia, Voice of Sheen on ‘Jimmy Neutron,’ Dies at 50 - Variety",
+      "v3": 0.99957,
+      "v4": 0.846048,
+      "verdicts": {
+        "gemini-2.5-flash": "obituary",
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary"
+      },
+      "majority": "obituary",
+      "n_obit": 4
+    },
+    {
+      "id": "dutch_news_ad_algemeen_f4072a2e0c4c",
+      "title": "Overleden man werd bekogeld met sneeuwballen toen hij in auto zat, daa",
+      "v3": 0.957067,
+      "v4": 0.839898,
+      "verdicts": {
+        "gemini-2.5-flash": "obituary",
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary"
+      },
+      "majority": "obituary",
+      "n_obit": 4
+    },
+    {
+      "id": "italian_ansa_7aaf8d128867",
+      "title": "L'ultimo saluto a Valentino, immerso dal bianco della camera ardente",
+      "v3": 0.961574,
+      "v4": 0.835426,
+      "verdicts": {
+        "gemini-2.5-flash": "obituary",
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary"
+      },
+      "majority": "obituary",
+      "n_obit": 4
+    },
+    {
+      "id": "french_france_info_politique_42e038b30a44",
+      "title": "Obsèques de Brigitte Bardot : pourquoi Marine Le Pen sera présente",
+      "v3": 0.98323,
+      "v4": 0.833986,
+      "verdicts": {
+        "gemini-2.5-flash": "obituary",
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "obituary"
+      },
+      "majority": "obituary",
+      "n_obit": 3
+    },
+    {
+      "id": "south_asian_the_hindu_a6b2d26617b6",
+      "title": "Erich von Daeniken, Swiss author who popularised ancient‑alien theorie",
+      "v3": 0.954744,
+      "v4": 0.83115,
+      "verdicts": {
+        "gemini-2.5-flash": "obituary",
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary"
+      },
+      "majority": "obituary",
+      "n_obit": 4
+    },
+    {
+      "id": "belgian_gazet_van_antwerpen_e54bdbf24b3c",
+      "title": "Vrienden organiseren muziekfestival ter ere van overleden Filip (47): ",
+      "v3": 0.961644,
+      "v4": 0.824515,
+      "verdicts": {
+        "gemini-2.5-flash": "obituary",
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "obituary"
+      },
+      "majority": "obituary",
+      "n_obit": 3
+    },
+    {
+      "id": "global_news_spiegel_2933c8e4b736",
+      "title": "Warburg: 22-Jähriger erschießt Bekannten bei mutmaßlichem Jagdunfall",
+      "v3": 0.977094,
+      "v4": 0.817917,
+      "verdicts": {
+        "gemini-2.5-flash": "not_obituary",
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "obituary"
+      },
+      "majority": "split",
+      "n_obit": 2
+    },
+    {
+      "id": "south_asian_hindustan_times_68cca3c3bd54",
+      "title": "Man dies by suicide after jumping off Delhi's Saket court building, no",
+      "v3": 0.999064,
+      "v4": 0.806145,
+      "verdicts": {
+        "gemini-2.5-flash": "obituary",
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary"
+      },
+      "majority": "obituary",
+      "n_obit": 4
+    },
+    {
+      "id": "global_news_spiegel_5c38612cdb97",
+      "title": "23-Jähriger offenbar erstochen – Polizei fasst zwei Verdächtige",
+      "v3": 0.972873,
+      "v4": 0.799849,
+      "verdicts": {
+        "gemini-2.5-flash": "obituary",
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "obituary"
+      },
+      "majority": "obituary",
+      "n_obit": 3
+    },
+    {
+      "id": "pacific_fiji_times_7b4a4f06a57d",
+      "title": "House fire in Nakasi claims two lives",
+      "v3": 0.992536,
+      "v4": 0.797438,
+      "verdicts": {
+        "gemini-2.5-flash": "not_obituary",
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "obituary"
+      },
+      "majority": "split",
+      "n_obit": 2
+    },
+    {
+      "id": "new_zealand_rnz_749c85478b40",
+      "title": "One dead after Christchurch apartment fire",
+      "v3": 0.996858,
+      "v4": 0.784557,
+      "verdicts": {
+        "gemini-2.5-flash": "not_obituary",
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary"
+      },
+      "majority": "obituary",
+      "n_obit": 3
+    },
+    {
+      "id": "south_asian_the_hindu_53cb471de113",
+      "title": "Scrap dealer hacked to death",
+      "v3": 0.958683,
+      "v4": 0.783378,
+      "verdicts": {
+        "gemini-2.5-flash": "obituary",
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary"
+      },
+      "majority": "obituary",
+      "n_obit": 4
+    },
+    {
+      "id": "new_zealand_rnz_468d19cef77c",
+      "title": "Homicide investigation launched after woman’s death in Clutha",
+      "v3": 0.977994,
+      "v4": 0.760749,
+      "verdicts": {
+        "gemini-2.5-flash": "not_obituary",
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "not_obituary"
+      },
+      "majority": "split",
+      "n_obit": 2
+    },
+    {
+      "id": "new_zealand_stuff_nz_e6fe5544434b",
+      "title": "Sister says she was in contact with brother in hour before shooting",
+      "v3": 0.97555,
+      "v4": 0.690688,
+      "verdicts": {
+        "gemini-2.5-flash": "obituary",
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary"
+      },
+      "majority": "split",
+      "n_obit": 2
+    },
+    {
+      "id": "us_news_wapo_5987a3066197",
+      "title": "In a Venezuelan home, a father grieves ‘hero’ son killed in U.S. raid",
+      "v3": 0.978013,
+      "v4": 0.621846,
+      "verdicts": {
+        "gemini-2.5-flash": "obituary",
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary"
+      },
+      "majority": "obituary",
+      "n_obit": 4
+    },
+    {
+      "id": "british_irish_sky_news_f57948162e77",
+      "title": "Teenager among four killed in car crash was 'my heart, my soul, my eve",
+      "v3": 0.964403,
+      "v4": 0.575126,
+      "verdicts": {
+        "gemini-2.5-flash": "obituary",
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary"
+      },
+      "majority": "obituary",
+      "n_obit": 4
+    },
+    {
+      "id": "french_le_parisien_74dbd724095a",
+      "title": "« J’en ai rêvé trois fois » : il le redoutait, le chanteur colombien Y",
+      "v3": 0.958643,
+      "v4": 0.49267,
+      "verdicts": {
+        "gemini-2.5-flash": "obituary",
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary"
+      },
+      "majority": "obituary",
+      "n_obit": 4
+    },
+    {
+      "id": "newsapi_general_849827291def",
+      "title": "One dead after 2 helicopters crash mid-air in, New Jersey, Hammonton p",
+      "v3": 0.982084,
+      "v4": 0.227071,
+      "verdicts": {
+        "gemini-2.5-flash": "not_obituary",
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obit": 1
+    },
+    {
+      "id": "china_taipei_times_1b067f78562b",
+      "title": "METRO RAMPAGE: Man died trying to stop Taipei stabbing suspect",
+      "v3": 0.986847,
+      "v4": 0.059148,
+      "verdicts": {
+        "gemini-2.5-flash": "obituary",
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obit": 1
+    }
+  ],
+  "fp5": [
+    {
+      "id": "dutch_news_ad_algemeen_291bef952b6d",
+      "title": "Vader die kinderen en buren doodstak in Suriname overleden in cel",
+      "v3": 0.998794,
+      "v4": 0.950298,
+      "verdicts": {
+        "gemini-2.5-flash": "obituary",
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary"
+      },
+      "majority": "obituary",
+      "n_obit": 4
+    },
+    {
+      "id": "portuguese_rtp_noticias_97a95df47263",
+      "title": "Realizou-se esta quarta-feira o funeral de Brigitte Bardot",
+      "v3": 0.999998,
+      "v4": 0.999961,
+      "verdicts": {
+        "gemini-2.5-flash": "obituary",
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary"
+      },
+      "majority": "obituary",
+      "n_obit": 4
+    },
+    {
+      "id": "belgian_dh_les_sports_1e0556ff9a09",
+      "title": "”Tu me manques à Manchester” : l’hommage d’Erling Haaland à Kevin De B",
+      "v3": 0.992324,
+      "v4": 0.966494,
+      "verdicts": {
+        "gemini-2.5-flash": "not_obituary",
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "not_obituary",
+        "phi4:14b": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obit": 0
+    },
+    {
+      "id": "british_irish_irish_independent_b765027efc8d",
+      "title": "‘I miss you every day, Ash’ – Ryan Casey posts tribute to Ashling Murp",
+      "v3": 0.948367,
+      "v4": 0.959576,
+      "verdicts": {
+        "gemini-2.5-flash": "not_obituary",
+        "gemma3:27b": "obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "obituary"
+      },
+      "majority": "obituary",
+      "n_obit": 3
+    },
+    {
+      "id": "british_irish_rte_news_38f2d8adc8ae",
+      "title": "Murder probe launched following death of man in Co Derry",
+      "v3": 0.996437,
+      "v4": 0.975582,
+      "verdicts": {
+        "gemini-2.5-flash": "not_obituary",
+        "gemma3:27b": "not_obituary",
+        "qwen3:14b": "obituary",
+        "phi4:14b": "not_obituary"
+      },
+      "majority": "not_obituary",
+      "n_obit": 1
+    }
+  ]
+}

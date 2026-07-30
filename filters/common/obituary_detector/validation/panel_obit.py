@@ -15,12 +15,18 @@ later: add one MODELS entry with kind="openai" once DEEPSEEK_API_KEY is set.
 Output: grades_panel_obit.jsonl, one row per (model, article).
 Pure stdlib (urllib) — no SDKs.
 """
-import json, os, re, time, urllib.request, urllib.error
+import argparse, json, os, re, time, urllib.request, urllib.error
 from pathlib import Path
 
 HERE = Path(__file__).parent
-WORKSHEET = HERE / "worksheet_obit.jsonl"
-OUT = HERE / "grades_panel_obit.jsonl"
+_ap = argparse.ArgumentParser()
+_ap.add_argument("--worksheet", default=str(HERE / "worksheet_obit.jsonl"))
+_ap.add_argument("--out", default=str(HERE / "grades_panel_obit.jsonl"))
+_ap.add_argument("--models", default="", help="comma-separated subset of MODELS names")
+_ap.add_argument("--bucket", default="", help="fallback bucket when worksheet rows lack one")
+_args = _ap.parse_args()
+WORKSHEET = Path(_args.worksheet)
+OUT = Path(_args.out)
 OLLAMA = "http://gpu-server:11434/api/generate"
 
 # load GEMINI key from ovr.news/.env (run this panel LOCALLY: gemini REST + Ollama@gpu-server)
@@ -122,6 +128,13 @@ def parse(raw):
     except Exception as e:
         return "parse_error", "", f"RAW:{raw[:120]}"
 
+if _args.models:
+    _want = {m.strip() for m in _args.models.split(",")}
+    _known = {m["name"] for m in MODELS}
+    if _want - _known:
+        raise SystemExit(f"unknown model(s): {_want - _known}")
+    MODELS = [m for m in MODELS if m["name"] in _want]
+
 rows = [json.loads(l) for l in open(WORKSHEET, encoding="utf-8") if l.strip()]
 print(f"worksheet: {len(rows)} articles x {len(MODELS)} models = {len(rows)*len(MODELS)} calls")
 
@@ -137,7 +150,7 @@ for m in MODELS:
             verdict, conf, reason = parse(raw)
         except Exception as e:
             verdict, conf, reason = "error", "", str(e)[:160]
-        results.append({"model": name, "id": r["id"], "bucket": r["bucket"],
+        results.append({"model": name, "id": r["id"], "bucket": r.get("bucket", _args.bucket),
                         "verdict": verdict, "confidence": conf, "reason": reason})
         print(f"  [{i+1:>2}/{len(rows)}] {verdict:<13} {r['id'][:40]:<40} ({time.time()-t0:.1f}s)")
 
