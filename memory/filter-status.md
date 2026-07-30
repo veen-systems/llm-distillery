@@ -12,7 +12,7 @@
 |--------|-----|-----|----------|------|----------|----------|
 | uplifting | v7 | — | — | 5.3K | (none — file-copy to NexusMind only) | 2026-04 (hybrid inference added) |
 | sustainability_technology | v3 | 0.72 | — | 10.6K | `jeergrvgreg/sustainability-technology-v3` | 2026-02-21 (retired from ovr.news — superseded by solutions v6) |
-| solutions | v6 | 0.476 | — | 8.2K | `jeergrvgreg/solutions-filter-v4` (shared) | 2026-07-27 gate passed; normalization pending. v5 serving as fallback in prod. |
+| solutions | v6 | 0.476 | — | 8.2K | `jeergrvgreg/solutions-filter-v6` | 2026-07-27 gate passed; normalization fitted 2026-07-28; LIVE. v6 weights on Hub 2026-07-30 (was: v4 repo shared — that mismatch + FILTER_VERSION 5.0 fixed in 403429d). |
 | investment-risk | v6 | 0.497 | 0.465 | 10.4K | `jeergrvgreg/investment-risk-v6` | 2026-02-21 |
 | cultural_discovery | v5 | — | 0.697 (val) | 8.5K | `jeergrvgreg/cultural-discovery-filter-v5` | 2026-05-31 (resolves #62 leakage via F/G/H/I/K soft-penalty flags; DeepSeek oracle) |
 | cultural-discovery | v4 | 0.74 | — | 8K | `jeergrvgreg/cultural-discovery-v4` | 2026-02-20 (superseded by v5) |
@@ -34,7 +34,7 @@ All use Gemma-3-1B base + LoRA. All have local, Hub, and hybrid inference paths.
 | Filter | Ver | Status |
 |--------|-----|--------|
 | thriving | v1 | PARKED indefinitely (ADR-015) — orthogonal lens design caused bimodal distribution |
-| solutions | v6 | **Gate PASSED 2026-07-27** (F1 0.739). Normalization pending. v5 fallback in prod. |
+| solutions | v6 | **LIVE** — gate passed 2026-07-27 (F1 0.739), normalization fitted 2026-07-28, own Hub repo since 2026-07-30. |
 | foresight | v1 | PARKED (#43) — merged into solutions. Dir kept for rollback, delete ~2026-08-01 |
 
 <!-- NOTE: consumer-side concerns (which ovr.news lens/tab uses which filter, frontend rollout)

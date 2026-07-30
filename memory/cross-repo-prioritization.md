@@ -15,7 +15,7 @@ Covers: **llm-distillery** (30 open), **NexusMind** (36 open), **ovr.news** (73 
 
 | What | Was (Jul 27) | Now (Jul 28) |
 |------|-------------|--------------|
-| **LD#80 commerce v2→v1** | P0 — v2 underperforms v1 | **RESOLVED** — v1 rolled back, weights on HF Hub + NexusMind. v2 was deployed without Phase 5 shadow comparison. |
+| **LD#80 commerce v2→v1** | P0 — v2 underperforms v1 | **RESOLVED 2026-07-30** (not 07-28: the a7771c9 rollback was a no-op — `if False:` gated a branch production never takes; gpu-server v2 kept scoring, 66 calls on 07-30. Real fix NexusMind 96d9acc forces local v1. Verify first cycle post-deploy: journal shows 'LD#80: ignoring gpu-server' + zero POST /commerce/predict.) |
 | **solutions score collapse** | v6 compressed scores (0-5) vs 4.5 threshold | **FIXED** — score_scale_factor=2.0 with raw>5.0 guard in summarize.ts. 69 articles live on site. |
 | **Hot DB creation** | Silent 0-byte failure during fix run | **FIXED** — manual recreate + R2 upload. Root cause not yet diagnosed. |
 | **NM#276 consent guard** | Listed as P0 | **VERIFIED WORKING** — deployed Jul 26, 161 quality rejects/run. Doc was stale. |
@@ -63,7 +63,7 @@ LD#43 (broaden Solutions) → solutions v4 (deployed Jul 22) → solutions v6 (g
 
 ### Chain 6: Commerce Prefilter v2 Regression (RESOLVED — v1 rollback)
 ```
-LD#80 (v2 underperforms v1) → ROLLED BACK to v1 (2026-07-28). v1 weights on HF Hub + NexusMind.
+LD#80 (v2 underperforms v1) → rollback COMMITTED 2026-07-28 but was a production no-op; actually fixed 2026-07-30 (NexusMind 96d9acc). v1 weights on HF Hub + NexusMind.
 Root cause: v2 deployed without Phase 5 shadow comparison. 190-sample test set was not production-representative.
 ```
 **Status:** v1 active. v2 code retained for reference. Revisit only if v1 shows quality gaps on production data.
