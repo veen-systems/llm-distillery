@@ -3,6 +3,7 @@
 - [Cross-repo prioritization](cross-repo-prioritization.md) — master issue landscape across all 4 repos: P0-P4, 7 dependency chains, 5 work batches
 - [Filter status](filter-status.md) — current state of all production filters and in-development versions
 - [GPU server](gpu-server.md) — venv, PYTHONPATH, HF_HUB_OFFLINE, ollama conflict, training setup
+- [b650 GPU](b650-gpu.md) — Arian's 3090 Ti training node: access (account jeroen), uv venv, staged data, cross-box score-skew warning
 - [Gotcha log](gotcha-log.md) — problem/fix archive
 - [Calibration history](calibration-history.md) — Dead Ends section: approaches known to fail (#69); read before calibration/scorer/oracle-prompt work
 - [Gemma-3 model](gemma3-model.md) — Auto mapping fix, key format details; read before debugging model loading or PEFT issues

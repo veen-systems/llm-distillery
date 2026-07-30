@@ -33,19 +33,18 @@ are obituaries"; not the violence filter's job either — that's promotion/
 glorification). Flips BOTH clauses of sharpened-broad. Worksheet with
 verdicts: `adjudication_worksheet_2026-07-30.md`. Feeds LD#85 (v6 relabel).
 
-**b650 training env READY**: uv venv + torch 2.13/cu130 + sklearn pinned
-1.8.0 (pickle parity), ST 5.6.1 (gpu-server has 5.2.2 — cross-box score skew
-max|diff|=0.16, so evals must be computed on the box that trained; corpora +
-v3/v4/v5 artifacts copied). Embed benchmark: 1562 rows in 1.9 s (~830/s).
+**b650 training env READY** — see `memory/b650-gpu.md` (all machine facts + gotchas).
 
-**v5@0.92 SHADOW swap committed 2026-07-30 evening (owner: "do it all") —
+## History 2026-07-30 (superseded strata — kept as evidence; Status above is current)
+
+**[SUPERSEDED by v5@0.85 enforcement] v5@0.92 SHADOW swap committed 2026-07-30 evening (owner: "do it all") —
 NexusMind `89f3c58`, CI green, auto-deploys next pipeline cycle (~20:00; verify
 same way as the v4 deploy: health lists `obituary_detector_v5`, log "Obituary
 detector v5 loaded successfully", stamps `_obituary_model: "v5"`).** Vendored
 v5 pkl+sha256 into NexusMind, updated EXPECTED_HASHES + all 9 swap literals
 (deploy-risk review map). Threshold 0.92.
 
-**June-increment panel MEASURED (2026-07-30, 40/65 v5-new flags, 4-model):
+**[Enforcement-blocked framing SUPERSEDED by owner recall-first directive] June-increment panel MEASURED (2026-07-30, 40/65 v5-new flags, 4-model):
 29 obit / 6 unanimous-not / 5 split → maj-prec 0.725, strict 0.829; at deployed
 0.92: 0.714/0.806; at 0.95: 0.684 — THRESHOLD-INSENSITIVE (all 6 over-blocks
 score ≥0.92).** v4's marginal band was 0.946. Enforcement stays blocked:
@@ -54,12 +53,7 @@ awaiting owner verdicts) feeding a v6 with owner-authoritative labels on the
 crime/accident-death + memorial/tribute boundary. Grades:
 `grades_panel_v5_june_increment_2026-07-30.jsonl` (d332edc).
 
-**b650 (Arian's box) ONLINE 2026-07-30: RTX 3090 Ti 24GB, CUDA 12.0, account
-`jeroen` (not jwasys), sudo pw in owner's Bitwarden, Ollama at
-100.87.225.76:11434 (qwen3:14b pulled). uv venv at ~/llm-distillery/venv
-(system python3.12-venv is broken — use `~/.local/bin/uv`); obituary corpora +
-v3/v4/v5 models copied to ~/llm-distillery/filters/... — target box for the v6
-retrain; ends Ollama-vs-training contention on gpu-server.**
+(b650 details moved to `memory/b650-gpu.md`.)
 
 Owner decisions (2026-07-30): keep v4@0.90 as interim shadow (superseded same
 evening by the v5@0.92 swap on "do it all"); v5 retrain on gpu-server approved
@@ -83,9 +77,8 @@ training rows + 3 v4-hard-negatives that sat unexcluded in heldout since
 statistically marginal either way (in-corpus heldout also has ~15% near-dup
 contamination vs training; June is the only clean holdout and is unlabeled).
 
-- **v5@0.92 dominates 0.90**: fits the same 19/21 gate articles (misses are
-  0.866/0.876, below both), catches Farouq (0.9546), one fewer heldout FP,
-  12 fewer June flags. Propose 0.92.
+- **v5@0.92 dominates 0.90** [op-point superseded: owner chose 0.85 recall-first]: fits the same 19/21 gate
+  articles, catches Farouq (0.9546), one fewer heldout FP, 12 fewer June flags.
 - **Strongest v5 evidence** (reviewer-added): ovr.news 203 production
   borderlines — v5 flags only the known Bharathiraja TP at 0.90 (v3 flagged 4).
   No over-blocking on the production distribution; v4's legacy-tribute fix kept.
@@ -121,7 +114,7 @@ health lists `obituary_detector_v4`; Farouq rescores **0.9372 → flagged** via 
 deployed endpoint). `_obituary_model` version stamp + hoisted `has_model` guard
 shipped in NexusMind `3f5c328` (next cycle).
 
-**OWNER GATE FAILED (2026-07-30): enforcement sign-off BLOCKED, v5 retrain needed.**
+**[RESOLVED same day — v5 trained, enforcement shipped @0.85] OWNER GATE FAILED (2026-07-30): enforcement sign-off BLOCKED, v5 retrain needed.**
 FN-delta panel (4-model blind, n=28 gap articles v3@0.95 catches / v4@0.90 misses):
 **21/28 majority-obituary** (12 unanimous), 5 split, 2 not. Five confirmed misses
 score <0.70 on v4 — unrecoverable by threshold; the v4 hard-negative set
