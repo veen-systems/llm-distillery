@@ -76,3 +76,19 @@ Fixes: llm-distillery 403429d + aaef1d0 (pushed), NexusMind 3f5c328 + 6728a77
    no /commerce/predict), no CODE DRIFT warnings, `_obituary_model` stamps present.
 3. Then still queued: LD#76 calibration audit (P0), #82 violence shadow audit,
    NM#206 timeout handling.
+
+## Post-wrap addenda (same session)
+
+- **CI break + fix**: 6728a77 broke `tests/test_gpu_client.py` (mock had 5 subprocess
+  results, fixed code makes 6 calls). Fixed in 85aac22 (mock derived from
+  _SCORER_PATHS, asserts rev-parse HEAD: calls), CI green. **Gotcha: the pre-push
+  battery ran `tests/unit` only — CI runs `tests/` incl. root-level files. Always
+  run the full non-integration suite (952 tests) before pushing NexusMind.**
+- **QA health check (12:43) diagnosed**: nature_recovery 7/52 missing summaries =
+  Google News RSS stubs (news.google.com/rss/articles/CBMi… redirect URLs, content
+  79-99 chars < 100-char summarize floor; enrichment can't resolve the redirect).
+  Chronic ingestion issue, not an incident → **ovr#275** (3 fix options). Bonus:
+  5/7 are the same Nepal-tiger story surviving same-source dedup at 0.92 (feeds
+  NM#278). The solutions avg-9.0 score_anomaly warning = stale QA baseline of 7
+  (solutions has averaged ~9 for a week, pre- and post-normalization) — owner
+  one-liner to bump the baseline, no scoring problem.
