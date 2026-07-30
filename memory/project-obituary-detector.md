@@ -7,6 +7,33 @@ metadata:
 
 ## Status
 
+**ENFORCEMENT ON — v5 @ 0.85, owner-signed-off 2026-07-30 ~19:50 (NexusMind
+`b904edc`, after the 0.92 shadow swap `89f3c58` same evening).** Owner
+directive: RECALL-FIRST — "I don't mind stuff getting blocked that is not
+strictly obituary… I just hate obits coming through." Over-blocking
+death-adjacent news = accepted collateral; this supersedes the precision
+framing of the review battery for OPERATING decisions (the adjudicated rule
+still governs v6 LABELS, LD#85). 0.85 catches all 21 gate obits + Farouq;
+drop happens in the dedup gate (`obituary_blocked`, after commerce, mirrors
+it), config-gated: rollback = `pipeline.obituary_detector.enforce: false`.
+Stamps always written. Lens scoring is NOT a backstop (verified: 102
+obit-flagged rows passed lens thresholds in the 16:00 cycle, mostly
+belonging). **Verify next cycle:** log line "N obituary" in Loaded stats,
+`obituary_blocked > 0`, health lists `obituary_detector_v5`, filtered rows
+stamp `_obituary_model: "v5"`. Then ovr#204.
+
+**Owner adjudication 2026-07-30 (14/14 rows)**: boundary = grief/mourning
+content (block: funerals any angle, memorial events, mourning tributes any
+age) vs death-as-news (keep: accidents/crime/investigations — "none of those
+are obituaries"; not the violence filter's job either — that's promotion/
+glorification). Flips BOTH clauses of sharpened-broad. Worksheet with
+verdicts: `adjudication_worksheet_2026-07-30.md`. Feeds LD#85 (v6 relabel).
+
+**b650 training env READY**: uv venv + torch 2.13/cu130 + sklearn pinned
+1.8.0 (pickle parity), ST 5.6.1 (gpu-server has 5.2.2 — cross-box score skew
+max|diff|=0.16, so evals must be computed on the box that trained; corpora +
+v3/v4/v5 artifacts copied). Embed benchmark: 1562 rows in 1.9 s (~830/s).
+
 **v5@0.92 SHADOW swap committed 2026-07-30 evening (owner: "do it all") —
 NexusMind `89f3c58`, CI green, auto-deploys next pipeline cycle (~20:00; verify
 same way as the v4 deploy: health lists `obituary_detector_v5`, log "Obituary
