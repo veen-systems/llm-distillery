@@ -1,0 +1,943 @@
+{
+ "heldout_excl33": {
+  "n": 1529,
+  "n_excluded": 33,
+  "v3": [
+   {
+    "threshold": 0.9,
+    "precision": 0.9569,
+    "recall": 0.7722,
+    "tp": 244,
+    "fp": 11,
+    "fn": 72,
+    "tn": 1202
+   },
+   {
+    "threshold": 0.95,
+    "precision": 0.987,
+    "recall": 0.7215,
+    "tp": 228,
+    "fp": 3,
+    "fn": 88,
+    "tn": 1210
+   }
+  ],
+  "v4": [
+   {
+    "threshold": 0.9,
+    "precision": 1.0,
+    "recall": 0.7437,
+    "tp": 235,
+    "fp": 0,
+    "fn": 81,
+    "tn": 1213
+   },
+   {
+    "threshold": 0.95,
+    "precision": 1.0,
+    "recall": 0.6614,
+    "tp": 209,
+    "fp": 0,
+    "fn": 107,
+    "tn": 1213
+   }
+  ],
+  "v5": [
+   {
+    "threshold": 0.8,
+    "precision": 0.9533,
+    "recall": 0.7753,
+    "tp": 245,
+    "fp": 12,
+    "fn": 71,
+    "tn": 1201
+   },
+   {
+    "threshold": 0.85,
+    "precision": 0.9717,
+    "recall": 0.7595,
+    "tp": 240,
+    "fp": 7,
+    "fn": 76,
+    "tn": 1206
+   },
+   {
+    "threshold": 0.9,
+    "precision": 0.9834,
+    "recall": 0.75,
+    "tp": 237,
+    "fp": 4,
+    "fn": 79,
+    "tn": 1209
+   },
+   {
+    "threshold": 0.92,
+    "precision": 0.9872,
+    "recall": 0.7342,
+    "tp": 232,
+    "fp": 3,
+    "fn": 84,
+    "tn": 1210
+   },
+   {
+    "threshold": 0.95,
+    "precision": 0.9864,
+    "recall": 0.6899,
+    "tp": 218,
+    "fp": 3,
+    "fn": 98,
+    "tn": 1210
+   }
+  ]
+ },
+ "heldout_full_v5": [
+  {
+   "threshold": 0.9,
+   "precision": 0.9667,
+   "recall": 0.7587,
+   "tp": 261,
+   "fp": 9,
+   "fn": 83,
+   "tn": 1209
+  },
+  {
+   "threshold": 0.95,
+   "precision": 0.9677,
+   "recall": 0.6977,
+   "tp": 240,
+   "fp": 8,
+   "fn": 104,
+   "tn": 1210
+  }
+ ],
+ "june_holdout": {
+  "flag_counts": {
+   "n": 1870,
+   "v3@0.95": 427,
+   "v4@0.90": 377,
+   "v5": {
+    "0.85": 454,
+    "0.9": 432,
+    "0.92": 420,
+    "0.95": 394
+   }
+  },
+  "v5_new_vs_v4@0.90": [
+   {
+    "id": "south_asian_times_of_india_8290259ac35d",
+    "title": "J&K anti-terror operation: Army officer dies during military action in",
+    "v3": 0.988,
+    "v4": 0.87,
+    "v5": 0.978,
+    "panel": null
+   },
+   {
+    "id": "french_le_figaro_c8a9ab58e334",
+    "title": "Mort de Bernadette Chirac : France Télévisions bouleverse ses programm",
+    "v3": 0.968,
+    "v4": 0.897,
+    "v5": 0.949,
+    "panel": null
+   },
+   {
+    "id": "french_le_parisien_abf18b3663a8",
+    "title": "« Une colombe est partie » : devant l’Élysée, les Français rendent hom",
+    "v3": 0.948,
+    "v4": 0.844,
+    "v5": 0.957,
+    "panel": null
+   },
+   {
+    "id": "arabic_ammonnews_en_66bc1068b930",
+    "title": "Husband kills wife and two employees in Hesban, found dead later",
+    "v3": 0.884,
+    "v4": 0.647,
+    "v5": 0.912,
+    "panel": null
+   },
+   {
+    "id": "south_american_el_nacional_efbb4da85560",
+    "title": "Niño de dos años murió tras atragantarse con una semilla de mamón en P",
+    "v3": 0.95,
+    "v4": 0.77,
+    "v5": 0.921,
+    "panel": null
+   },
+   {
+    "id": "east_asian_japan_today_664d5e111e05",
+    "title": "Shark attack kills man off Western Australia coast",
+    "v3": 0.995,
+    "v4": 0.868,
+    "v5": 0.962,
+    "panel": null
+   },
+   {
+    "id": "british_irish_thejournal_ie_23131e6efdc7",
+    "title": "Teenage boy arrested as part of investigation into Qayyum Balogun rele",
+    "v3": 0.999,
+    "v4": 0.812,
+    "v5": 0.949,
+    "panel": null
+   },
+   {
+    "id": "south_asian_the_hindu_965ca5da72a0",
+    "title": "CM Satheesan remembers Salim Kumar as a brother as condolences pour in",
+    "v3": 0.583,
+    "v4": 0.862,
+    "v5": 0.906,
+    "panel": null
+   },
+   {
+    "id": "british_irish_bbc_uk_cc15d23389c6",
+    "title": "EuroMillions winner dies in suspected hit-and-run",
+    "v3": 0.919,
+    "v4": 0.577,
+    "v5": 0.916,
+    "panel": null
+   },
+   {
+    "id": "austrian_kurier_cbdcad80e065",
+    "title": "Schweres Zug-Unglück in NÖ: Eltern gestorben, kleine Tochter (2) überl",
+    "v3": 0.877,
+    "v4": 0.783,
+    "v5": 0.983,
+    "panel": null
+   },
+   {
+    "id": "french_20_minutes_67b4cc12d8b3",
+    "title": "Affaire Lyhanna : Environ 6.000 personnes à Fleurance pour rendre homm",
+    "v3": 0.964,
+    "v4": 0.809,
+    "v5": 0.908,
+    "panel": null
+   },
+   {
+    "id": "us_news_cnn_5c6be903bfed",
+    "title": "Sen. Warner pays tribute to his daughter who passed away | CNN Politic",
+    "v3": 0.929,
+    "v4": 0.862,
+    "v5": 0.959,
+    "panel": null
+   },
+   {
+    "id": "swiss_nzz_8bf4beb12b1b",
+    "title": "Sie verhalf einem Mann zur Macht, der sie demütigte: Bernadette Chirac",
+    "v3": 0.942,
+    "v4": 0.594,
+    "v5": 0.931,
+    "panel": null
+   },
+   {
+    "id": "french_france_info_84c2a00aabe3",
+    "title": "\"Notre petit monde s'est effondré\" : la famille et les habitants de Fl",
+    "v3": 0.981,
+    "v4": 0.899,
+    "v5": 0.952,
+    "panel": null
+   },
+   {
+    "id": "spanish_20minutos_es_a3a98e974ebf",
+    "title": "El controvertido vídeo de Miguel Bosé, de rodillas, en homenaje a Henr",
+    "v3": 0.98,
+    "v4": 0.868,
+    "v5": 0.961,
+    "panel": null
+   },
+   {
+    "id": "australian_smh_a1990ad3ae2a",
+    "title": "Man dies after being tasered by police",
+    "v3": 0.996,
+    "v4": 0.819,
+    "v5": 0.925,
+    "panel": null
+   },
+   {
+    "id": "science_arxiv_math_5fa499dbd54f",
+    "title": "Obituary: Aristophanes Dimakis",
+    "v3": 0.992,
+    "v4": 0.861,
+    "v5": 0.954,
+    "panel": null
+   },
+   {
+    "id": "spanish_la_vanguardia_e3c0ad61305b",
+    "title": "Dos motoristas fallecen este fin de semana en las carreteras catalanas",
+    "v3": 0.97,
+    "v4": 0.547,
+    "v5": 0.966,
+    "panel": null
+   },
+   {
+    "id": "french_bfmtv_efdf7a91ae39",
+    "title": "Mort de Bernadette Chirac: des obsèques vendredi à Paris et un hommage",
+    "v3": 0.962,
+    "v4": 0.79,
+    "v5": 0.946,
+    "panel": null
+   },
+   {
+    "id": "us_news_abc_news_2c3e54a0ebbc",
+    "title": "Maverick GOP Sen. Packwood of Oregon, who resigned after scandal, dies",
+    "v3": 0.379,
+    "v4": 0.71,
+    "v5": 0.904,
+    "panel": null
+   },
+   {
+    "id": "british_irish_guardian_uk_294fb191ea16",
+    "title": "Stormzy and Oritsé Williams join tributes to musician stabbed to death",
+    "v3": 0.937,
+    "v4": 0.809,
+    "v5": 0.955,
+    "panel": null
+   },
+   {
+    "id": "newsapi_general_74b07e5b552d",
+    "title": "Pioneering Australian doctor Richard Scolyer dies after brain cancer b",
+    "v3": 0.981,
+    "v4": 0.804,
+    "v5": 0.984,
+    "panel": null
+   },
+   {
+    "id": "south_american_el_comercio_pe_4a8a918c64b2",
+    "title": "Síndrome de corazón roto: ¿Realmente se puede morir de pena por la pér",
+    "v3": 0.975,
+    "v4": 0.714,
+    "v5": 0.978,
+    "panel": null
+   },
+   {
+    "id": "australian_guardian_au_e4d944f72492",
+    "title": "Richard Scolyer, acclaimed melanoma researcher who tried experimental ",
+    "v3": 0.939,
+    "v4": 0.814,
+    "v5": 0.977,
+    "panel": null
+   },
+   {
+    "id": "us_news_pbs_c13afed9f5ca",
+    "title": "Gordon Wood, Pulitzer Prize-winning historian of American Revolution, ",
+    "v3": 0.997,
+    "v4": 0.821,
+    "v5": 0.99,
+    "panel": null
+   },
+   {
+    "id": "british_irish_guardian_society_a7157668328f",
+    "title": "Richard Scolyer shares his ‘greatest lesson’ in open letter to Austral",
+    "v3": 0.821,
+    "v4": 0.471,
+    "v5": 0.954,
+    "panel": null
+   },
+   {
+    "id": "new_zealand_stuff_nz_3499da7eb5a5",
+    "title": "Two dead, two injured after State Highway 1 crash",
+    "v3": 0.951,
+    "v4": 0.491,
+    "v5": 0.989,
+    "panel": null
+   },
+   {
+    "id": "new_zealand_stuff_nz_6495898505b6",
+    "title": "Investigation into Hulk Hogan’s death released",
+    "v3": 0.987,
+    "v4": 0.892,
+    "v5": 0.963,
+    "panel": null
+   },
+   {
+    "id": "south_asian_times_of_india_2dc84cc5a72d",
+    "title": "Tragic end for Aggarwal family: After losing 8 relatives in Delhi fire",
+    "v3": 0.991,
+    "v4": 0.888,
+    "v5": 0.952,
+    "panel": null
+   },
+   {
+    "id": "spanish_el_mundo_242f42792abb",
+    "title": "Muere de forma súbita el exgerente de Cantabria Labs, Ernesto Quintana",
+    "v3": 0.918,
+    "v4": 0.772,
+    "v5": 0.967,
+    "panel": null
+   },
+   {
+    "id": "southeast_asian_khaosod_en_7beece0a8ae5",
+    "title": "Two-year-old baby dies after alleged drink-driving crash",
+    "v3": 0.846,
+    "v4": 0.764,
+    "v5": 0.969,
+    "panel": null
+   },
+   {
+    "id": "dutch_news_nos_algemeen_ea720fa57e86",
+    "title": "Boom valt op bestelbus in Boxtel, bestuurder overleden",
+    "v3": 0.963,
+    "v4": 0.868,
+    "v5": 0.958,
+    "panel": null
+   },
+   {
+    "id": "new_zealand_rnz_77726ea3e54c",
+    "title": "Two dead after collision on SH1 north of Whangārei",
+    "v3": 0.983,
+    "v4": 0.729,
+    "v5": 0.973,
+    "panel": null
+   },
+   {
+    "id": "spanish_eldiario_b2356be5cc24",
+    "title": "Un coronel de Rusia muere en un atentado con coche bomba cerca de Mosc",
+    "v3": 0.615,
+    "v4": 0.435,
+    "v5": 0.927,
+    "panel": null
+   },
+   {
+    "id": "british_irish_bbc_wales_27679140262b",
+    "title": "'Devoted' father-of-three dies in motorbike crash",
+    "v3": 0.987,
+    "v4": 0.612,
+    "v5": 0.936,
+    "panel": null
+   },
+   {
+    "id": "south_american_el_nacional_4e0134284ff1",
+    "title": "Alfredo Bryce Echenique era un acontecimiento para Venezuela",
+    "v3": 0.942,
+    "v4": 0.832,
+    "v5": 0.928,
+    "panel": null
+   },
+   {
+    "id": "australian_guardian_au_fbf444350146",
+    "title": "‘We will play on for you, Dad’: Neale Daniher’s family pay tribute to ",
+    "v3": 0.868,
+    "v4": 0.782,
+    "v5": 0.974,
+    "panel": null
+   },
+   {
+    "id": "spanish_eldiario_6a6c4613ab5f",
+    "title": "Dos muertos y ocho bomberos heridos en un incendio en un bloque de viv",
+    "v3": 0.98,
+    "v4": 0.799,
+    "v5": 0.926,
+    "panel": null
+   },
+   {
+    "id": "british_irish_sky_news_b9b6e7c9d386",
+    "title": "Teen driver and adult passenger face murder charges after boy dies fol",
+    "v3": 0.909,
+    "v4": 0.491,
+    "v5": 0.921,
+    "panel": null
+   },
+   {
+    "id": "southeast_asian_vn_express_en_d62442e65133",
+    "title": "British AI company's CEO found stabbed to death just weeks into the jo",
+    "v3": 0.855,
+    "v4": 0.475,
+    "v5": 0.909,
+    "panel": null
+   },
+   {
+    "id": "british_irish_bbc_scotland_7054b87d9d0e",
+    "title": "Family blame teenage son's death in Spain on vape oil",
+    "v3": 0.99,
+    "v4": 0.663,
+    "v5": 0.977,
+    "panel": null
+   },
+   {
+    "id": "german_sueddeutsche_638ba4d8ff10",
+    "title": "Nachruf: Ein britischer Nationalschatz",
+    "v3": 0.994,
+    "v4": 0.887,
+    "v5": 0.995,
+    "panel": null
+   },
+   {
+    "id": "german_die_welt_d07b1c73eafc",
+    "title": "Der Maler am Pool, der die reine Schönheit des Diesseits feierte",
+    "v3": 0.99,
+    "v4": 0.885,
+    "v5": 0.979,
+    "panel": null
+   },
+   {
+    "id": "dutch_news_nos_algemeen_c73d494334d8",
+    "title": "Drie kinderen uit groep 8 en directeur overleden bij ongeluk Zeeuws-Vl",
+    "v3": 0.985,
+    "v4": 0.737,
+    "v5": 0.946,
+    "panel": null
+   },
+   {
+    "id": "south_asian_times_of_india_90e1de4fac65",
+    "title": "'Jaspal Rana was heading to Germany when ... ': Uncle reveals final de",
+    "v3": 0.885,
+    "v4": 0.578,
+    "v5": 0.911,
+    "panel": null
+   },
+   {
+    "id": "french_le_monde_39febb4f24f1",
+    "title": "Mort de Lyhanna : revivez la journée d’hommage à la collégienne de Fle",
+    "v3": 0.952,
+    "v4": 0.887,
+    "v5": 0.978,
+    "panel": null
+   },
+   {
+    "id": "french_le_parisien_c86ab29bf945",
+    "title": "DIRECT. Obsèques de Lyhanna : « Nous disons au revoir à une enfant de ",
+    "v3": 0.972,
+    "v4": 0.898,
+    "v5": 0.978,
+    "panel": null
+   },
+   {
+    "id": "global_south_al_jazeera_science_6f4e91d5601b",
+    "title": "Family mourn Indian sailor killed in US strike on oil tanker",
+    "v3": 0.753,
+    "v4": 0.82,
+    "v5": 0.926,
+    "panel": null
+   },
+   {
+    "id": "south_asian_express_tribune_f972ed883ca3",
+    "title": "Former PML-N senator Taj Afridi dies in crash on M-1 motorway",
+    "v3": 0.994,
+    "v4": 0.789,
+    "v5": 0.96,
+    "panel": null
+   },
+   {
+    "id": "dutch_news_nos_algemeen_040d5b34d36b",
+    "title": "Overleden kunstenaar David Hockney 'al die jaren relevant geweest'",
+    "v3": 0.924,
+    "v4": 0.844,
+    "v5": 0.984,
+    "panel": null
+   },
+   {
+    "id": "french_france_info_12864651b469",
+    "title": "\"On aurait pu éviter ce drame\" : aux obsèques de Lyhanna à Fleurance, ",
+    "v3": 0.865,
+    "v4": 0.733,
+    "v5": 0.933,
+    "panel": null
+   },
+   {
+    "id": "french_france_info_a2b2bb1a3686",
+    "title": "Mort de Frank Michael : quelle empreinte laisse le crooner populaire d",
+    "v3": 0.887,
+    "v4": 0.629,
+    "v5": 0.965,
+    "panel": null
+   },
+   {
+    "id": "new_zealand_stuff_nz_977ec0b68381",
+    "title": "How Mexico goalscorer escaped death to be World Cup hero",
+    "v3": 0.995,
+    "v4": 0.598,
+    "v5": 0.969,
+    "panel": null
+   },
+   {
+    "id": "british_irish_bbc_news_top_5e11098ce5dd",
+    "title": "The Papers: 'Starmer braced for exodus' and 'Giant of art'",
+    "v3": 0.846,
+    "v4": 0.607,
+    "v5": 0.913,
+    "panel": null
+   },
+   {
+    "id": "belgian_bruzz_e10a93f43d77",
+    "title": "Derde dodelijk slachtoffer van brand in Anderlecht is Bogdan, een 55-j",
+    "v3": 0.971,
+    "v4": 0.884,
+    "v5": 0.907,
+    "panel": null
+   },
+   {
+    "id": "south_asian_dawn_af8034076728",
+    "title": "Former senator Taj Afridi dies in M-1 motorway crash",
+    "v3": 0.995,
+    "v4": 0.879,
+    "v5": 0.996,
+    "panel": null
+   },
+   {
+    "id": "australian_the_age_25ebb034eab7",
+    "title": "2WAY PAKISTAN DEATH",
+    "v3": 0.969,
+    "v4": 0.855,
+    "v5": 0.955,
+    "panel": null
+   },
+   {
+    "id": "german_die_welt_0f0b455dfcba",
+    "title": "Dreiköpfige Familie stirbt bei Autounfall in Oberbayern",
+    "v3": 0.985,
+    "v4": 0.75,
+    "v5": 0.988,
+    "panel": null
+   },
+   {
+    "id": "us_news_cnn_de5e10f6610d",
+    "title": "49ers mourn the sudden death of former All-Pro linebacker Aldon Smith ",
+    "v3": 0.786,
+    "v4": 0.829,
+    "v5": 0.935,
+    "panel": null
+   },
+   {
+    "id": "newsapi_general_365cdf49cfa9",
+    "title": "Californian Dies from Rare Disease After 'Trapping, Feeding and Breedi",
+    "v3": 0.862,
+    "v4": 0.495,
+    "v5": 0.91,
+    "panel": null
+   },
+   {
+    "id": "south_american_perfil_93a68e9e3f17",
+    "title": "Entre mundiales y funerales",
+    "v3": 0.854,
+    "v4": 0.589,
+    "v5": 0.916,
+    "panel": null
+   },
+   {
+    "id": "south_american_clarin_90924491aa04",
+    "title": "“¿Quién fue el loco que me dejó saltar de un puente?”: el último mensa",
+    "v3": 0.957,
+    "v4": 0.773,
+    "v5": 0.973,
+    "panel": null
+   },
+   {
+    "id": "east_asian_scmp_d8ebd5220246",
+    "title": "Drowning of student athletes in Philippines throws spotlight on colleg",
+    "v3": 0.992,
+    "v4": 0.884,
+    "v5": 0.99,
+    "panel": null
+   },
+   {
+    "id": "east_asian_scmp_f72795374d9b",
+    "title": "How did a Venezuelan school dropout become a crime boss on the US hit ",
+    "v3": 0.959,
+    "v4": 0.367,
+    "v5": 0.938,
+    "panel": null
+   },
+   {
+    "id": "newsapi_general_624c1706752d",
+    "title": "Californian Dies from Rare Disease After 'Trapping, Feeding and Breedi",
+    "v3": 0.905,
+    "v4": 0.565,
+    "v5": 0.927,
+    "panel": null
+   }
+  ],
+  "v5_lost_vs_v4@0.90": [
+   {
+    "id": "southeast_asian_khaosod_en_4f3f3a181942",
+    "title": "Boy, 6, bit to death by grandfather’s monkey in Nakhon Si Thammarat",
+    "v3": 0.958,
+    "v4": 0.917,
+    "v5": 0.808,
+    "panel": null
+   },
+   {
+    "id": "south_asian_the_hindu_92d3b8ddda7c",
+    "title": "Prime Minister Narendra Modi, Leader of the Opposition Rahul Gandhi mo",
+    "v3": 0.898,
+    "v4": 0.973,
+    "v5": 0.823,
+    "panel": null
+   },
+   {
+    "id": "southeast_asian_nst_b80ec099549a",
+    "title": "Hundreds attend burial of five family members killed in Sungai Petani ",
+    "v3": 0.853,
+    "v4": 0.911,
+    "v5": 0.865,
+    "panel": null
+   },
+   {
+    "id": "south_african_timeslive_471971c6f2df",
+    "title": "Mzoli’s butchery owner remembered for helping others and creating town",
+    "v3": 0.994,
+    "v4": 0.949,
+    "v5": 0.831,
+    "panel": null
+   },
+   {
+    "id": "south_asian_hindustan_times_60cfe77fa150",
+    "title": "Dalit teen beaten to death in Uttarakhand's Tehri Garhwal over inter-c",
+    "v3": 0.994,
+    "v4": 0.983,
+    "v5": 0.823,
+    "panel": null
+   },
+   {
+    "id": "new_zealand_rnz_ea6e367080e0",
+    "title": "Inmate dies at Rimutaka Prison",
+    "v3": 0.988,
+    "v4": 0.955,
+    "v5": 0.889,
+    "panel": null
+   },
+   {
+    "id": "belgian_vrt_nieuws_nl_dae563dba33f",
+    "title": "Lichaam van man (60) gevonden op parking in Maldegem, parket onderzoek",
+    "v3": 0.915,
+    "v4": 0.943,
+    "v5": 0.7,
+    "panel": null
+   },
+   {
+    "id": "south_asian_times_of_india_ae981d3550c9",
+    "title": "Remembering Jaspal Rana: Indian shooting icon behind Manu Bhaker's Oly",
+    "v3": 0.677,
+    "v4": 0.917,
+    "v5": 0.831,
+    "panel": null
+   },
+   {
+    "id": "southeast_asian_khaosod_en_cba8ef34801c",
+    "title": "Long-time royal supporter mourns Princess Bajrakitiyabha",
+    "v3": 0.887,
+    "v4": 0.983,
+    "v5": 0.848,
+    "panel": null
+   },
+   {
+    "id": "british_irish_thejournal_ie_b3b1c0ceff72",
+    "title": "Man (30s) arrested after man dies following stabbing at house in Co Le",
+    "v3": 0.998,
+    "v4": 0.921,
+    "v5": 0.767,
+    "panel": null
+   }
+  ]
+ },
+ "hard_positives_21": {
+  "n": 21,
+  "v5_ge_090": 19,
+  "v5_ge_095": 17,
+  "scores": {
+   "newsapi_general_01ed6f9c8a3c": {
+    "v3": 0.99957,
+    "v4": 0.846048,
+    "v5": 0.9944
+   },
+   "spanish_expansion_698a7cd31b78": {
+    "v3": 0.989455,
+    "v4": 0.894392,
+    "v5": 0.9454
+   },
+   "global_news_spiegel_5c38612cdb97": {
+    "v3": 0.972873,
+    "v4": 0.799849,
+    "v5": 0.9596
+   },
+   "french_france_info_politique_42e038b30a44": {
+    "v3": 0.98323,
+    "v4": 0.833986,
+    "v5": 0.9909
+   },
+   "dutch_news_ad_algemeen_f4072a2e0c4c": {
+    "v3": 0.957067,
+    "v4": 0.839898,
+    "v5": 0.9923
+   },
+   "german_die_welt_bdeacdbd2e32": {
+    "v3": 0.990112,
+    "v4": 0.888559,
+    "v5": 0.9962
+   },
+   "south_asian_hindustan_times_68cca3c3bd54": {
+    "v3": 0.999064,
+    "v4": 0.806145,
+    "v5": 0.9855
+   },
+   "german_ntv_074004206339": {
+    "v3": 0.985171,
+    "v4": 0.896632,
+    "v5": 0.9934
+   },
+   "french_le_parisien_74dbd724095a": {
+    "v3": 0.958643,
+    "v4": 0.49267,
+    "v5": 0.9966
+   },
+   "us_news_wapo_5987a3066197": {
+    "v3": 0.978013,
+    "v4": 0.621846,
+    "v5": 0.9675
+   },
+   "south_asian_the_hindu_a6b2d26617b6": {
+    "v3": 0.954744,
+    "v4": 0.83115,
+    "v5": 0.963
+   },
+   "french_le_figaro_6260bc752586": {
+    "v3": 0.956315,
+    "v4": 0.85061,
+    "v5": 0.968
+   },
+   "new_zealand_rnz_749c85478b40": {
+    "v3": 0.996858,
+    "v4": 0.784557,
+    "v5": 0.9875
+   },
+   "south_asian_the_hindu_53cb471de113": {
+    "v3": 0.958683,
+    "v4": 0.783378,
+    "v5": 0.9495
+   },
+   "british_irish_bbc_scotland_936e0798fb25": {
+    "v3": 0.976065,
+    "v4": 0.856538,
+    "v5": 0.866
+   },
+   "newsapi_general_3e5a8d4283a6": {
+    "v3": 0.985479,
+    "v4": 0.8871,
+    "v5": 0.8764
+   },
+   "newsapi_general_a4d5d47b3ab7": {
+    "v3": 0.992062,
+    "v4": 0.855943,
+    "v5": 0.9942
+   },
+   "dutch_news_ad_algemeen_6840631d2eef": {
+    "v3": 0.990657,
+    "v4": 0.889233,
+    "v5": 0.9798
+   },
+   "italian_ansa_7aaf8d128867": {
+    "v3": 0.961574,
+    "v4": 0.835426,
+    "v5": 0.9732
+   },
+   "belgian_gazet_van_antwerpen_e54bdbf24b3c": {
+    "v3": 0.961644,
+    "v4": 0.824515,
+    "v5": 0.9586
+   },
+   "british_irish_sky_news_f57948162e77": {
+    "v3": 0.964403,
+    "v4": 0.575126,
+    "v5": 0.9948
+   }
+  }
+ },
+ "v4_added_rows": [
+  {
+   "id": "china_sciencenet_cn_65e138413c15",
+   "label": "negative",
+   "title": "Veteran Botanist Worked Through Blindness to Advance Plant Science",
+   "v4": 0.0149,
+   "v5": 0.027
+  },
+  {
+   "id": "greek_to_vima_32086902b4ac",
+   "label": "negative",
+   "title": "Italian Historian Carlo Ginzburg Explored Hidden Histories",
+   "v4": 0.0621,
+   "v5": 0.0398
+  },
+  {
+   "id": "global_news_el_pais_america_d0235f4188cb",
+   "label": "negative",
+   "title": "Belita Gracia, León Photographer, Receives Recognition Late in Life",
+   "v4": 0.6528,
+   "v5": 0.4402
+  },
+  {
+   "id": "greek_to_vima_f1a037a31877",
+   "label": "negative",
+   "title": "Greek Linguist Founded Modern Language Study",
+   "v4": 0.1377,
+   "v5": 0.0805
+  },
+  {
+   "id": "mexican_la_jornada_bd2451bd81f0",
+   "label": "negative",
+   "title": "Floral Tributes Honor Rosario Castellanos in Mexico City",
+   "v4": 0.3619,
+   "v5": 0.4181
+  },
+  {
+   "id": "south_asian_the_hindu_441c66d2c3f0",
+   "label": "positive",
+   "title": "Bharathiraja’s Films Capture Lost Tamil Nadu Villages",
+   "v4": 0.954,
+   "v5": 0.976
+  },
+  {
+   "id": "south_asian_the_hindu_c8d6c3b7587d",
+   "label": "negative",
+   "title": "Kempe Gowda Celebrated as Bengaluru’s Founder",
+   "v4": 0.0571,
+   "v5": 0.0055
+  },
+  {
+   "id": "spanish_la_vanguardia_28e9e347022b",
+   "label": "negative",
+   "title": "Eugène Carrière: A Symbolist Painter of Childhood",
+   "v4": 0.1905,
+   "v5": 0.1051
+  },
+  {
+   "id": "us_media_new_yorker_c6997f3293a8",
+   "label": "negative",
+   "title": "Jack Kerouac's last cigarette ashes shown at exhibit",
+   "v4": 0.0323,
+   "v5": 0.1595
+  },
+  {
+   "id": "german_tagesschau_5db853e780dc",
+   "label": "negative",
+   "title": "Attentat in Australien: Vater und Sohn als Angreifer identifiziert",
+   "v4": 0.1493,
+   "v5": 0.1563
+  },
+  {
+   "id": "china_taipei_times_1b067f78562b",
+   "label": "negative",
+   "title": "METRO RAMPAGE: Man died trying to stop Taipei stabbing suspect",
+   "v4": 0.0591,
+   "v5": 0.0164
+  },
+  {
+   "id": "dutch_news_ad_algemeen_75b9a9b5980f",
+   "label": "negative",
+   "title": "Mathilde verloor zoontje Jona (2) en man Sebastiaan, nu is ze opnieuw ",
+   "v4": 0.0466,
+   "v5": 0.1773
+  },
+  {
+   "id": "british_irish_rte_news_4e4508f3bbb2",
+   "label": "negative",
+   "title": "Teens held as Dutch police probe death after snowball row",
+   "v4": 0.0537,
+   "v5": 0.0686
+  }
+ ],
+ "farouq": [
+  {
+   "id": "arabic_thearabweekly_d056412bf8cf",
+   "v3": 0.9768,
+   "v4": 0.9372,
+   "v5": 0.9546
+  }
+ ]
+}

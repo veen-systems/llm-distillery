@@ -7,6 +7,32 @@ metadata:
 
 ## Status
 
+**v5 TRAINED + EVALUATED 2026-07-30 (afternoon session) — awaiting owner op-point
+sign-off, then deploy to shadow.** Owner decisions (2026-07-30): keep v4@0.90 as
+interim shadow; v5 retrain on gpu-server approved and executed same day.
+
+v5 = v4 corpus + the 21 panel-graded FN-delta hard positives (11,329 rows, 2,694
+pos; seed `training/data/v5_train_seed.jsonl` on gpu-server, same train_v1.py
+recipe). Results (heldout n=1529 after excluding the 33 panel-graded rows —
+28 FN-delta + 5 FP5, labels suspect/moved to training; eval:
+`validation/artifacts/v5_eval_2026-07-30.json`, script `validation/eval_v5.py`):
+
+- **v5@0.90: precision 0.983 / recall 0.750** (4 FPs: elephant obit, Einstein
+  historical, Comédie Française tribute, dead-diplomat report — last two look
+  like oracle mislabels again). v5@0.92: 0.987 / 0.734. Compare v3@0.95:
+  0.987 / 0.722; v4@0.90: 1.000 / 0.744 *on this subset, which omits v4's 21
+  confirmed misses* — on the gate set itself v5 fits 19/21 at ≥0.90 (2 near
+  misses at 0.866 / 0.876), v4 caught 0/21.
+- **Farouq: v5 = 0.9546** (v4 0.9372, v3 0.9768) — caught at 0.90, even at 0.95.
+- **No hard-negative regression**: all 12 v4 hard negatives ≤ 0.44 under v5;
+  Bharathiraja TP strengthened to 0.976.
+- **June (unlabeled) flag volume**: v5@0.90 flags 432/1870 ≈ v3@0.95's 427
+  (v4@0.90: 377) — recall recovered to v3 level. v5-new flags are dominated by
+  recent-death/crime-death pieces (the class v4 overcorrected on).
+- Proposed op-point: **0.90** (0.92 if the owner wants the extra precision at
+  −1.6pt recall). Next: owner sign-off → shadow deploy v5 (NexusMind swap, same
+  path as v4) → shadow cycle → enforce → ovr#204.
+
 **v4@0.90 shadow DEPLOYED + VERIFIED 2026-07-30 12:08 cycle** (auto-pull clean
 fast-forward to c5f1df2; scorer logs "Obituary detector v4 loaded successfully";
 health lists `obituary_detector_v4`; Farouq rescores **0.9372 → flagged** via the
