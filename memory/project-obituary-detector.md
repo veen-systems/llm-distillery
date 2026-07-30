@@ -24,7 +24,7 @@ blocked (vs 5415 commerce); gpu-server health lists `obituary_detector_v5`
 Transitional note: articles stamped during the 0.90/0.95 shadow eras keep
 their old `_is_obituary` flags (preprocessor skips already-scored rows), so
 the 0.85–0.90 band only blocks for newly scored articles; washes out within
-max_age_days (7d). Next: ovr#204.
+max_age_days (7d). Next: ovr#204. **LD#85 (v6) PARKED indefinitely (owner 2026-07-30)** — reactivate on an owner obit-flag or visible over-blocking harm; nothing else.
 
 **Owner adjudication 2026-07-30 (14/14 rows)**: boundary = grief/mourning
 content (block: funerals any angle, memorial events, mourning tributes any
