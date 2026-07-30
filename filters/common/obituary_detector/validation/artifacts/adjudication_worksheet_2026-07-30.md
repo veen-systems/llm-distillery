@@ -9,7 +9,7 @@ keep: 1,2,3,4,5,6,7,10,12,14 — block: 8,9,11,13
 
 **Owner-restated rule (supersedes sharpened-broad 2026-06-14):**
 - **BLOCK = grief/mourning content**: funeral coverage (any editorial angle, incl. politics), memorial events, mourning tributes/posts — regardless of how long ago the death was.
-- **KEEP = death-as-news**: fatal accidents, fires, crashes, homicide/crime reports, investigations, perpetrator deaths — "none of those are obituaries." Violent ones are the violence_promotion filter's job (next stage, NM#274).
+- **KEEP = death-as-news**: fatal accidents, fires, crashes, homicide/crime reports, investigations, perpetrator deaths — "none of those are obituaries." (Owner note: not the violence filter's job either — that targets violence promotion/glorification. The practical backstop is lens scoring itself: this class doesn't rank on any constructive lens.)
 - Tributes to living people: keep (obviously; persistent model FP class).
 
 ## Original instructions
