@@ -170,7 +170,10 @@
       "Bash(curl -s http://gpu-server:11434/api/tags)",
       "Read(//tmp/**)",
       "Read(//home/jeroen/repos/agent-ready-projects/templates/**)",
-      "Read(//home/jeroen/repos/agent-ready-projects/**)"
+      "Read(//home/jeroen/repos/agent-ready-projects/**)",
+      "Read(//home/jeroen/repos/veen-systems/**)",
+      "Read(//home/jeroen/repos/**)",
+      "Bash(PYTHONPATH=. timeout 30 python -c ' *)"
     ],
     "deny": [],
     "ask": []

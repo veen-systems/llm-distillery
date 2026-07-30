@@ -10,14 +10,15 @@
 - [ovr lens set](ovr-lens-set-current.md) — current lens→filter→tab mapping
 - [Filter doc standard](filter-doc-standard.md) — deployed filter documentation set
 - [CD v5 reference status](cd-v5-reference-status.md) — cultural_discovery v5 as DeepSeek-oracle reference example, ADR-020 methodology
-- [Obituary detector](project-obituary-detector.md) — v3 shadow-deployed, v4 trained 2026-07-28, pending enforcement
-- [Obituary v4 hypotheses](obituary-v4-hypotheses.md) — small-N hard negatives work, panel beats oracle labels, FP class matters
+- [Obituary detector](project-obituary-detector.md) — v4@0.90 swap committed 2026-07-30 (auto-deploys next cycle, still shadow); FN-delta owner gate before enforcement
+- [Obituary v4 hypotheses](obituary-v4-hypotheses.md) — small-N hard negatives work, panel beats oracle labels; "FNs are cheap" FALSIFIED 2026-07-30
 - [Violence promotion v1 hypotheses](violence-promotion-v1-hypotheses.md) — recipe transfer confirmed, prompt boundary holds, recall gap is the key open question
 - [Uplifting v7 training](uplifting-v7-training.md) — training history; v7 deployed (hybrid inference)
 - [Thriving v1 scoring](thriving-v1-scoring.md) — PARKED indefinitely (ADR-015); scoring status, resume commands
 
 ## Recent Sessions
 
+- [2026-07-30](project_session_2026_07_30.md) — obituary v4 op-point evidence (0.90 not 0.95), v4@0.90 swap committed, FN-delta owner gate
 - [2026-07-28](project_session_2026_07_28.md) — obituary v4 retrain, violence_promotion v1 shadow-deploy, solutions v6 normalization fitted
 - [2026-07-27 evening](project_session_2026_07_27_evening.md) — LD#49/#68/#63/#57 closed; NM#276/#206 closed; curate
 - [2026-07-27](project_session_2026_07_27.md) — solutions v6 gate PASSED, obituary NM#185 Phase 3 deployed, playbook update

@@ -7,7 +7,7 @@ metadata:
 
 # Cross-Repo Prioritization
 
-**Last updated: 2026-07-28** (post-session wrap-up: LD#80 resolved, NM#276 verified, solutions score collapse fixed, corroboration confirmed)
+**Last updated: 2026-07-30** (LD#83 obituary v4 op-point evidence: promote at 0.90 not 0.95; NexusMind swap committed, deploy pending; owner FN-delta gate before enforcement)
 
 Covers: **llm-distillery** (30 open), **NexusMind** (36 open), **ovr.news** (73 open), **FluxusSource** (6 open).
 
@@ -30,13 +30,11 @@ Covers: **llm-distillery** (30 open), **NexusMind** (36 open), **ovr.news** (73 
 
 Chains that must be sequenced in order. Each `→` means "blocked on" or "feeds into."
 
-### Chain 1: Obituary Detector (ACTIVE — v4 trained, pending enforcement)
+### Chain 1: Obituary Detector (ACTIVE — v4@0.90 swap committed, deploy pending)
 ```
-LD#51 (design) ✅ → LD#77 (v3 classifier) ✅ → NM#185 (shadow wiring) ✅ → v4 corrective retrain ✅ → ovr#204 (remove hardcoded)
-                                                                              │
-                                                                              └─ EXECUTED 2026-07-28: 12 hard negatives, all resolved
+LD#51 (design) ✅ → LD#77 (v3 classifier) ✅ → NM#185 (shadow wiring) ✅ → v4 corrective retrain ✅ → LD#83 op-point evidence ✅ → deploy v4@0.90 shadow → FN-delta check (owner gate) → enforce → ovr#204 (remove hardcoded)
 ```
-**Status:** v3 shadow live (NM#185). v4 trained, ready to replace v3. Next: ≥1 production cycle → v4 replace v3 shadow → enforce → ovr#204.
+**Status (2026-07-30):** Owner-flagged Farouq obituary proved v4@0.95 would miss real obituaries (v3 0.977, v4 0.937). Evidence gathered (heldout sweep + 37-article panel): v4 promoted at **0.90** — zero marginal heldout FPs, band precision 0.946. NexusMind `02da4fe` (v3→v4 swap + threshold 0.90, still SHADOW) pushed; **auto-deploys on the next pipeline cycle** (ExecStartPre auto-pull — main.py ∈ SCORER_PATHS; verified 2026-07-30). Next session: verify deploy landed (`/health` → `obituary_detector_v4`), then the owner gate before enforcement: quantify which obituaries v4@0.90 misses that v3@0.95 caught (~20 on heldout). Shadow stamps are a v3/v4 mix for ~7 days (no model-version stamp — LD#83 comment item 2). See LD#83 comments, `memory/project-obituary-detector.md` (llm-distillery).
 
 ### Chain 2: Armed Conflict / Violence Promotion Prefilter (ACTIVE — v1 shadow-deployed)
 ```

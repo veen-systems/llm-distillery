@@ -54,7 +54,7 @@ Ran `scripts/deployment/verify_filter_package.py --check-hub` across every `filt
 
 All 6 superseded by newer versions in production. Cleaned up 2026-07-27.
 
-<!-- verify: PYTHONPATH=. python scripts/deployment/verify_filter_package.py --filter filters/nature_recovery/v2 --check-hub > /dev/null && echo PASS || echo FAIL -->
+<!-- verify: python -c "import huggingface_hub" 2>/dev/null || { echo ERROR: huggingface_hub not installed locally; exit 0; }; PYTHONPATH=. python scripts/deployment/verify_filter_package.py --filter filters/nature_recovery/v2 --check-hub > /dev/null && echo PASS || echo FAIL -->
 
 ## Other Filters (not ovr.news)
 

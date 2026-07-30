@@ -1132,3 +1132,18 @@ heredoc (`python3 - <<'EOF'`) so quotes aren't doubly escaped, and single-quote 
 **Problem**: After `git pull --rebase` on NexusMind, `config/app.yaml` had TWO `violence_promotion` blocks — one from upstream, one from the rebased commit. YAML parses last-wins silently.
 **Root cause**: Both the upstream and our commit added a `violence_promotion` section in the same neighborhood. The rebase didn't flag a conflict because they weren't on adjacent lines.
 **Fix**: Manual dedup after noticing the duplication. Check config files after rebase merges, especially when both sides add new sections.
+
+### Prefilter Recall Framed as Costless ("FN Just Wastes 5ms") Nearly Shipped a Regression (2026-07-30)
+**Problem**: LD#83 planned to promote obituary v4 at op-point 0.95, waving off the recall drop (0.744→0.608) as "acceptable for a prefilter — FN just wastes 5ms scoring." The owner then flagged a real obituary (Farouq Hilal tribute) that v3 catches at 0.977 but v4 scores 0.937 — v4@0.95 would have made that miss permanent.
+**Root cause**: For a *blocking* prefilter, an FN is the product failure (unwanted content reaches the site), not a compute cost. The "FN is cheap" framing is only true for *routing* prefilters where downstream scoring catches the miss.
+**Fix**: Op-point evidence gathered (heldout sweep + 37-article panel) → v4 promoted at 0.90, where the heldout FP set is identical to 0.95. FN-delta check vs v3 recorded as owner gate before enforcement. Lesson: when changing a blocking classifier, sweep the op-point against the *product* metric on both error directions before accepting a headline tradeoff.
+
+### Ollama Died Mid-Panel When a Pipeline Cycle Started (2026-07-30)
+**Problem**: 4-model blind panel (37 articles × 4 labs) lost phi4:14b for 33/37 calls — `Connection refused` from gpu-server Ollama mid-run. Ollama was up when the panel started.
+**Root cause**: A NexusMind pipeline cycle started on sadalsuud during the panel; Ollama on gpu-server went `inactive` around the same time (scorer needs the VRAM; exact stop mechanism not diagnosed this session). Related: "Ollama hogs GPU during training" (2026-07-26) — same contention, other direction.
+**Fix**: Panel survived on 3-lab majority (every article kept ≥3 valid votes — verified before trusting the result). Lesson: before a multi-model Ollama panel, check no pipeline cycle is due (`systemctl list-timers`/`pgrep -f scripts/main.py` on sadalsuud); after any partial-error panel, recompute per-article valid-vote counts before using majorities.
+
+### RUNBOOK Durability Note Contradicted deploy_filters.sh — Wrong Deploy Plan Twice (2026-07-30)
+**Problem**: Session first planned a manual scorer deploy ("pull + deploy_filters.sh next session"), then a reviewer warned the pushed threshold change could produce an unvalidated v3@0.90 regime. Both assessments were wrong about propagation: RUNBOOK §durability says changes to `deploy/gpu-server/main.py` "will not auto-propagate", but `SCORER_PATHS` in `deploy_filters.sh` has included `deploy/gpu-server/main.py` (and `src/scoring/`, smoke articles) since after that note was written.
+**Root cause**: Stale doc prose treated as authoritative over the script it describes. Recurrence of the "'by design' is a claim about the implementation — read the runtime" lesson (2026-05-04 manifest entry).
+**Fix**: Read `deploy_filters.sh` directly: ExecStartPre auto-fast-forwards when any SCORER_PATHS entry differs from origin, pulling the whole commit and shipping config + scorer atomically — so a pushed scorer-touching commit deploys itself next cycle, and the mixed regime can only arise from a manual `git pull` without `deploy_filters.sh`. RUNBOOK corrected (NexusMind, 2026-07-30).

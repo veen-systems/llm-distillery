@@ -15,7 +15,7 @@ metadata:
 
 2. **Panel ground truth beats oracle labels for FP measurement.** The heldout showed 7 "FPs" at 0.95 against oracle labels, but the 4-model panel found only 4 actual FPs among the top scorers. Measuring FP fixes against oracle labels alone overstates the regression and understates the improvement.
 
-3. **Precision/recall tradeoff is real but acceptable for prefilter classifiers.** v4 gained precision (0.977 vs 0.973) at the cost of recall (0.608 vs 0.744). For a prefilter where FPs block real content visible to users and FNs just waste 5ms of lens scoring, this is the correct direction.
+3. ~~**Precision/recall tradeoff is real but acceptable for prefilter classifiers.**~~ **FALSIFIED 2026-07-30.** The original claim ("FNs just waste 5ms of lens scoring") confused a *blocking* prefilter with a *routing* one: once enforcement flips, an FN is an obituary on the site — the exact failure the owner keeps flagging (Farouq Hilal tribute, 2026-07-29: v3 0.977, v4 0.937 → v4@0.95 would miss it). Resolution: op-point moved to 0.90, where v4's heldout FP set is identical to 0.95 (zero precision cost) and recall recovers to 0.683. For blocking classifiers, sweep the op-point on both error directions against the product metric; never accept a recall drop on "FNs are cheap" grounds. See LD#83.
 
 ## Learned
 

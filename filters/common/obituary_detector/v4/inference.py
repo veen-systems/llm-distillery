@@ -8,7 +8,7 @@ and death-memorial pieces upstream of lens scoring.
 v4 corrective retrain: 12 hard negatives added (8 ovr.news production FPs +
 4 heldout panel-confirmed FPs). All were historical legacy/tribute pieces and
 crime/accident reports misclassified as obituaries. v4 fixes all 12 — none
-score above 0.65 (threshold is 0.95). Precision improved, recall tradeoff
+score above 0.65 (production op-point: 0.90, LD#83). Precision improved, recall tradeoff
 documented in calibration_report.json.
 
 Shadow-deployed via NexusMind NM#185: stamps _obituary_score / _is_obituary,
@@ -259,7 +259,7 @@ def is_obituary(article: Union[dict, str], threshold: float = 0.95) -> bool:
     Quick check if article is an obituary.
 
     Note: Creates new detector instance each call. For batch processing,
-    use ObituaryDetectorV3 class directly.
+    use ObituaryDetectorV4 class directly.
     """
     detector = ObituaryDetectorV4(threshold=threshold)
     return detector.is_obituary(article)['is_obituary']
