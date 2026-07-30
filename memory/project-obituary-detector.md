@@ -7,9 +7,32 @@ metadata:
 
 ## Status
 
-**v5 TRAINED + EVALUATED 2026-07-30 (afternoon session) — awaiting owner op-point
-sign-off, then deploy to shadow.** Owner decisions (2026-07-30): keep v4@0.90 as
-interim shadow; v5 retrain on gpu-server approved and executed same day.
+**v5@0.92 SHADOW swap committed 2026-07-30 evening (owner: "do it all") —
+NexusMind `89f3c58`, CI green, auto-deploys next pipeline cycle (~20:00; verify
+same way as the v4 deploy: health lists `obituary_detector_v5`, log "Obituary
+detector v5 loaded successfully", stamps `_obituary_model: "v5"`).** Vendored
+v5 pkl+sha256 into NexusMind, updated EXPECTED_HASHES + all 9 swap literals
+(deploy-risk review map). Threshold 0.92.
+
+**June-increment panel MEASURED (2026-07-30, 40/65 v5-new flags, 4-model):
+29 obit / 6 unanimous-not / 5 split → maj-prec 0.725, strict 0.829; at deployed
+0.92: 0.714/0.806; at 0.95: 0.684 — THRESHOLD-INSENSITIVE (all 6 over-blocks
+score ≥0.92).** v4's marginal band was 0.946. Enforcement stays blocked:
+the fix is owner adjudication (`adjudication_worksheet_2026-07-30.md`, 14 rows,
+awaiting owner verdicts) feeding a v6 with owner-authoritative labels on the
+crime/accident-death + memorial/tribute boundary. Grades:
+`grades_panel_v5_june_increment_2026-07-30.jsonl` (d332edc).
+
+**b650 (Arian's box) ONLINE 2026-07-30: RTX 3090 Ti 24GB, CUDA 12.0, account
+`jeroen` (not jwasys), sudo pw in owner's Bitwarden, Ollama at
+100.87.225.76:11434 (qwen3:14b pulled). uv venv at ~/llm-distillery/venv
+(system python3.12-venv is broken — use `~/.local/bin/uv`); obituary corpora +
+v3/v4/v5 models copied to ~/llm-distillery/filters/... — target box for the v6
+retrain; ends Ollama-vs-training contention on gpu-server.**
+
+Owner decisions (2026-07-30): keep v4@0.90 as interim shadow (superseded same
+evening by the v5@0.92 swap on "do it all"); v5 retrain on gpu-server approved
+and executed same day.
 
 v5 = v4 corpus + the 21 panel-graded FN-delta hard positives (11,329 rows, 2,694
 pos; seed `training/data/v5_train_seed.jsonl` on gpu-server, same train_v1.py
