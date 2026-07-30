@@ -1,0 +1,207 @@
+{
+ "heldout_sweep": {
+  "v3": [
+   {
+    "th": 0.85,
+    "blocked": 299,
+    "tp": 277,
+    "fp": 22,
+    "precision": 0.9264,
+    "recall": 0.8052
+   },
+   {
+    "th": 0.9,
+    "blocked": 288,
+    "tp": 272,
+    "fp": 16,
+    "precision": 0.9444,
+    "recall": 0.7907
+   },
+   {
+    "th": 0.92,
+    "blocked": 281,
+    "tp": 266,
+    "fp": 15,
+    "precision": 0.9466,
+    "recall": 0.7733
+   },
+   {
+    "th": 0.95,
+    "blocked": 263,
+    "tp": 256,
+    "fp": 7,
+    "precision": 0.9734,
+    "recall": 0.7442
+   }
+  ],
+  "v4": [
+   {
+    "th": 0.85,
+    "blocked": 255,
+    "tp": 248,
+    "fp": 7,
+    "precision": 0.9725,
+    "recall": 0.7209
+   },
+   {
+    "th": 0.9,
+    "blocked": 240,
+    "tp": 235,
+    "fp": 5,
+    "precision": 0.9792,
+    "recall": 0.6831
+   },
+   {
+    "th": 0.92,
+    "blocked": 233,
+    "tp": 228,
+    "fp": 5,
+    "precision": 0.9785,
+    "recall": 0.6628
+   },
+   {
+    "th": 0.95,
+    "blocked": 214,
+    "tp": 209,
+    "fp": 5,
+    "precision": 0.9766,
+    "recall": 0.6076
+   }
+  ]
+ },
+ "june_blocked": {
+  "v3": {
+   "0.85": 496,
+   "0.9": 459,
+   "0.92": 447,
+   "0.95": 427
+  },
+  "v4": {
+   "0.85": 404,
+   "0.9": 377,
+   "0.92": 367,
+   "0.95": 340
+  }
+ },
+ "v4_fps_at_090": [
+  {
+   "id": "dutch_news_ad_algemeen_291bef952b6d",
+   "score": 0.9503,
+   "v3_score": 0.9988,
+   "lang": "en",
+   "title": "Vader die kinderen en buren doodstak in Suriname overleden in cel",
+   "deepseek_reason": "The article focuses on the suspect's suicide in custody, not primarily on his death as a loss."
+  },
+  {
+   "id": "portuguese_rtp_noticias_97a95df47263",
+   "score": 1.0,
+   "v3_score": 1.0,
+   "lang": "en",
+   "title": "Realizou-se esta quarta-feira o funeral de Brigitte Bardot",
+   "deepseek_reason": "The title says 'funeral of Brigitte Bardot' but Brigitte Bardot is still alive; this is likely a hoax or error, so not a real obituary."
+  },
+  {
+   "id": "belgian_dh_les_sports_1e0556ff9a09",
+   "score": 0.9665,
+   "v3_score": 0.9923,
+   "lang": "en",
+   "title": "”Tu me manques à Manchester” : l’hommage d’Erling Haaland à Kevin De Bruyne avant la cérémonie du Soulier d’or",
+   "deepseek_reason": "The article is about a tribute to a living footballer, not a recent death."
+  },
+  {
+   "id": "british_irish_irish_independent_b765027efc8d",
+   "score": 0.9596,
+   "v3_score": 0.9484,
+   "lang": "en",
+   "title": "‘I miss you every day, Ash’ – Ryan Casey posts tribute to Ashling Murphy on fourth anniversary of her death",
+   "deepseek_reason": "The article is a commemoration of a death that occurred four years ago, not a report of a recent death."
+  },
+  {
+   "id": "british_irish_rte_news_38f2d8adc8ae",
+   "score": 0.9756,
+   "v3_score": 0.9964,
+   "lang": "en",
+   "title": "Murder probe launched following death of man in Co Derry",
+   "deepseek_reason": "The article focuses on the police investigation and legal proceedings, not primarily on the deceased person's life or death."
+  }
+ ],
+ "v4_new_blocks_june": [
+  {
+   "id": "south_asian_the_hindu_92d3b8ddda7c",
+   "v4": 0.9727,
+   "v3": 0.8975,
+   "lang": "en",
+   "title": "Prime Minister Narendra Modi, Leader of the Opposition Rahul Gandhi mourn Malayalam actor Salim Kumar"
+  },
+  {
+   "id": "southeast_asian_nst_b80ec099549a",
+   "v4": 0.9109,
+   "v3": 0.8526,
+   "lang": "en",
+   "title": "Hundreds attend burial of five family members killed in Sungai Petani crash"
+  },
+  {
+   "id": "southeast_asian_rappler_7714b0c789a9",
+   "v4": 0.9304,
+   "v3": 0.8825,
+   "lang": "en",
+   "title": "Baterbonia’s remains to be autopsied, Adili’s body to be returned to Nigeria"
+  },
+  {
+   "id": "south_asian_times_of_india_61d3a24701c6",
+   "v4": 0.9339,
+   "v3": 0.6382,
+   "lang": "en",
+   "title": "Salman Khan controls his tears as he attends close friend's funeral with family"
+  },
+  {
+   "id": "south_african_iol_27133e73c7d8",
+   "v4": 0.9632,
+   "v3": 0.9331,
+   "lang": "en",
+   "title": "Parklands College in mourning after loss of Head Boy, Connor Niske"
+  },
+  {
+   "id": "belgian_vrt_nieuws_nl_dae563dba33f",
+   "v4": 0.9428,
+   "v3": 0.9154,
+   "lang": "nl",
+   "title": "Lichaam van man (60) gevonden op parking in Maldegem, parket onderzoekt verdacht overlijden"
+  },
+  {
+   "id": "south_asian_times_of_india_f9fa8035a509",
+   "v4": 0.985,
+   "v3": 0.8713,
+   "lang": "en",
+   "title": "'From an opponent to a friend': Kohli pens heartfelt farewell message for Kane"
+  },
+  {
+   "id": "south_asian_times_of_india_ae981d3550c9",
+   "v4": 0.9174,
+   "v3": 0.677,
+   "lang": "en",
+   "title": "Remembering Jaspal Rana: Indian shooting icon behind Manu Bhaker's Olympic success"
+  },
+  {
+   "id": "us_media_business_insider_ca74046cc1f9",
+   "v4": 0.9068,
+   "v3": 0.8869,
+   "lang": "en",
+   "title": "David Hockney has died at 88. One theme was constant in his 7-decade career: Never stop working."
+  },
+  {
+   "id": "southeast_asian_khaosod_en_cba8ef34801c",
+   "v4": 0.983,
+   "v3": 0.887,
+   "lang": "en",
+   "title": "Long-time royal supporter mourns Princess Bajrakitiyabha"
+  },
+  {
+   "id": "south_african_businesslive_bd2574763382",
+   "v4": 0.9525,
+   "v3": 0.9188,
+   "lang": "en",
+   "title": "Limpopo police probe deaths of German heiress Caroline von Rantzau and lodge manager"
+  }
+ ]
+}
