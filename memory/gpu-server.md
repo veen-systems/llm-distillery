@@ -4,14 +4,8 @@ Proxmox LXC container on HCL edge server, accessed via Tailscale.
 
 ## Access
 
-**⚠️ Tailscale node key expiry (noted 2026-07-30): expires 2026-07-31T08:39Z.**
-The node lives in the healthconceptlab@ tailnet (shared in). If it lapses, SSH
-AND the sadalsuud→gpu-server scoring/deploy path die; deploy_filters.sh is
-fail-closed so the pipeline halts from the 12:01 cycle on. Fix: admin console
-as healthconceptlab@gmail.com → Machines → gpu-server → Disable key expiry
-(permanent; recommended for a server node) — or `sudo tailscale up` + browser
-login (recurs ~180d). Verify: `tailscale status --json` → Self.KeyExpiry null
-or far-future. Remove this block once expiry is disabled.
+Tailscale key expiry is **disabled** for this node (2026-07-30, verified
+`Self.KeyExpiry: null`) — no periodic re-auth needed.
 
 ```bash
 ssh gpu-server   # direct, headless, passphrase-less from situla — just works
