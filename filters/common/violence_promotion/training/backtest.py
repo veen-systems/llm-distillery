@@ -1,12 +1,20 @@
 #!/usr/bin/env python3
-"""Backtest violence_promotion v1 MLP against Phase 1 calibration set."""
+"""Backtest violence_promotion v1 MLP against Phase 1 calibration set.
+
+Usage: PYTHONPATH=. python backtest.py <calibration_scored.jsonl>
+(The original hardcoded /tmp/calibration_scored_v2.jsonl, making the
+"independent calibration validation" unreproducible once /tmp cleared.)
+"""
 import sys, json
 sys.path.insert(0, ".")
 from filters.common.violence_promotion.v1.inference import ViolencePromotionFilterV1
 
+if len(sys.argv) != 2:
+    sys.exit("usage: backtest.py <calibration_scored.jsonl>")
+
 # Load calibration set
 cal = []
-with open("/tmp/calibration_scored_v2.jsonl") as f:
+with open(sys.argv[1]) as f:
     for line in f:
         if line.strip():
             cal.append(json.loads(line))

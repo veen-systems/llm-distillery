@@ -21,7 +21,6 @@ import time
 from pathlib import Path
 from typing import Optional, Union
 
-import numpy as np
 from sentence_transformers import SentenceTransformer
 
 
@@ -105,14 +104,25 @@ class ViolencePromotionFilterV1:
             Combined text for embedding
         """
         if isinstance(article, str):
-            return article
+            return article.strip()
 
-        title = article.get("title", "")
-        content = article.get("content", "")
+        if not isinstance(article, dict):
+            raise TypeError(
+                f"Expected dict or str for article, got {type(article).__name__}. "
+                f"Article dict should have 'title' and 'content' keys."
+            )
+
+        # Coerce None values to empty strings (avoids "None" token in embedding)
+        title = article.get("title") or ""
+        content = article.get("content") or ""
+
+        # Coerce non-string values to strings
+        title = str(title) if not isinstance(title, str) else title
+        content = str(content) if not isinstance(content, str) else content
 
         # Combine title and content
         # Note: Embedder has 128-token limit, so title + first ~100 words is used
-        return f"{title} {content}"
+        return f"{title} {content}".strip()
 
     def is_violence_promotion(self, article: Union[dict, str]) -> dict:
         """
@@ -164,6 +174,9 @@ class ViolencePromotionFilterV1:
         Returns:
             List of result dicts (same format as is_violence_promotion)
         """
+        if not articles:
+            return []
+
         self._load_models()
 
         start_time = time.perf_counter()

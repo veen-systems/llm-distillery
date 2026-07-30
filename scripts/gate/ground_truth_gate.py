@@ -168,8 +168,22 @@ def load_scores(path, spec=None):
         rid = r.get("id") or r.get("article_id")
         if rid is None:
             continue
-        scores_map = r.get("scores") or r.get("model_scores")
-        wa = r.get("weighted_average") or r.get("model_weighted_average")
+        # `is not None` chains, NOT `or`: a legitimate weighted_average of
+        # exactly 0.0 is falsy — `or` would fall through and, with no
+        # model_weighted_average key, silently DROP the record from the gate.
+        # v6-style training data has ~46% all-zero labels and the calibration
+        # maps floor logits to exactly 0.0, so 0.0 predictions are realistic;
+        # dropped records are predicted-negatives, inflating recall/specificity.
+        # model_* keys FIRST: this loader reads the model side only (the
+        # oracle side goes through load_labels), so if a file ever carries
+        # both, `scores` would be the oracle's dict and the gate would score
+        # oracle-vs-oracle with near-perfect metrics and no warning.
+        scores_map = r.get("model_scores")
+        if scores_map is None:
+            scores_map = r.get("scores")
+        wa = r.get("model_weighted_average")
+        if wa is None:
+            wa = r.get("weighted_average")
         if spec is not None and isinstance(scores_map, dict) and all(
             d in scores_map for d in spec["weights"]
         ):

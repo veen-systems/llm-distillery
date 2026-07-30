@@ -21,7 +21,6 @@ import time
 from pathlib import Path
 from typing import Optional, Union
 
-import numpy as np
 from sentence_transformers import SentenceTransformer
 
 

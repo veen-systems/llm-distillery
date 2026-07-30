@@ -5,6 +5,14 @@ ground-truth gate. Deploy decision deferred to next session.** The model exists
 (`model/`, gitignored; backed up on gpu-server + locally). Oracle is ratified
 (DeepSeek). **Do not re-score the old corpora as-is** (see the pivot below).
 
+> **Package-contents note (2026-07-30):** several sections below narrate the v4
+> lineage this package inherits and were carried over from the v4 README. In THIS
+> v5 directory `filter.version` is **"5.0"**, the prefilter class is
+> `SolutionsPreFilterV5`, and `ground_truth_gate.json` / `normalization.json` are
+> **not** package files — the gate JSON referenced below lives in the v4 package
+> (regenerated `4b3776b`), v6 carries the current gate, and v5 deployed without
+> its own normalization fit (raw passthrough during its fallback window).
+
 ## Training + gate results (2026-07-21)
 
 - **Training:** Gemma-3-1B + LoRA, 3 epochs, head-tail 256+256, no sample-weighting

@@ -318,9 +318,14 @@ def collect_calibration(
     # ----- Positives: conflict sources first, then keyword scan -----
     # Read from ALL filters (conflict articles could be in any filter's
     # sub-threshold output, or in uplifting/cultural_discovery)
+    # Keep the source filter name attached to each file: NexusMind rows
+    # don't carry a "filter" field, so without stamping it below the
+    # BOUNDARY_FILTERS prioritization never fires and the per-filter FP
+    # analysis collapses into a single "unknown" bucket (v1 defect —
+    # the boundary guarantee was never actually measured).
     all_files = []
     for filter_name in sorted(files_by_filter):
-        all_files.extend(files_by_filter[filter_name])
+        all_files.extend((filter_name, fp) for fp in files_by_filter[filter_name])
 
     # Shuffle to avoid source ordering bias
     rng.shuffle(all_files)
@@ -328,7 +333,7 @@ def collect_calibration(
     print(f"Scanning {len(all_files)} JSONL files for calibration candidates...")
     articles_scanned = 0
 
-    for fp in all_files:
+    for source_filter, fp in all_files:
         if not fp.exists():
             continue
         with open(fp, encoding="utf-8") as f:
@@ -355,7 +360,10 @@ def collect_calibration(
                     continue
 
                 source = (article.get("source") or "").lower()
-                article_filter = (article.get("filter") or "").lower()
+                # Stamp provenance from the directory the file came from —
+                # the row itself has no "filter" field in NexusMind output.
+                article_filter = (article.get("filter") or source_filter or "").lower()
+                article["filter"] = article_filter
 
                 # Positive candidate?
                 if len(positives) < limit_positives:

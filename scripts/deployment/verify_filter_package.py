@@ -150,6 +150,11 @@ def check_config_schema(filter_dir: Path) -> list[tuple[bool, str]]:
     with path.open(encoding="utf-8") as f:
         cfg = yaml.safe_load(f)
 
+    if not isinstance(cfg, dict):
+        # yaml.safe_load returns None for an empty file — report a failed
+        # check instead of crashing the verifier with AttributeError.
+        return [(False, "config.yaml: empty or not a mapping")]
+
     scoring = cfg.get("scoring", {})
     dims = scoring.get("dimensions", {})
     if not dims:

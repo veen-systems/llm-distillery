@@ -115,12 +115,15 @@ def get_hf_token():
 def main():
     parser = argparse.ArgumentParser(description="Benchmark hybrid vs standard inference")
     parser.add_argument("--data", type=Path, required=True, help="Calibration JSONL file")
-    parser.add_argument("--probe", type=Path, default=Path("filters/uplifting/v7/probe/embedding_probe.pkl"))
+    # Defaults target solutions v6 — the only deployed filter with BOTH a
+    # committed probe and a Hub repo (uplifting v7 is NO_HUB and has no
+    # probe dir; the old defaults failed at runtime on either path).
+    parser.add_argument("--probe", type=Path, default=Path("filters/solutions/v6/probe/embedding_probe_e5small.pkl"))
     parser.add_argument("--n", type=int, default=1000, help="Number of articles to benchmark")
     parser.add_argument("--batch-size", type=int, default=16, help="Batch size")
-    parser.add_argument("--threshold", type=float, default=3.5, help="Stage 1 threshold")
-    parser.add_argument("--repo-id", default="jeergrvgreg/uplifting-filter-v7", help="HF Hub repo")
-    parser.add_argument("--embedding-model", default="intfloat/multilingual-e5-large", help="Embedding model for Stage 1")
+    parser.add_argument("--threshold", type=float, default=1.225, help="Stage 1 threshold (solutions v6 probe op-point)")
+    parser.add_argument("--repo-id", default="jeergrvgreg/solutions-filter-v6", help="HF Hub repo")
+    parser.add_argument("--embedding-model", default="intfloat/multilingual-e5-small", help="Embedding model for Stage 1")
     args = parser.parse_args()
 
     device = "cuda" if torch.cuda.is_available() else "cpu"

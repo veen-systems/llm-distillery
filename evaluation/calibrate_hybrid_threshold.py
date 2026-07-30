@@ -233,11 +233,16 @@ def run_model_calibration(
 
     # Load Stage 2 (the fine-tuned model)
     logger.info("Loading Stage 2 model for comparison...")
+    # Current deployed versions (2026-07-30). The previous map imported four
+    # deleted or never-importable modules (hyphenated dir names are not valid
+    # module paths), so every invocation died with ModuleNotFoundError.
     scorer_map = {
-        "uplifting": ("filters.uplifting.v5.inference", "UpliftingScorer"),
-        "sustainability_technology": ("filters.sustainability_technology.v2.inference", "SustainabilityTechnologyScorer"),
-        "investment-risk": ("filters.investment-risk.v5.inference", "InvestmentRiskScorer"),
-        "cultural-discovery": ("filters.cultural-discovery.v3.inference", "CulturalDiscoveryScorer"),
+        "uplifting": ("filters.uplifting.v7.inference", "UpliftingScorer"),
+        "solutions": ("filters.solutions.v6.inference", "SolutionsScorer"),
+        "investment_risk": ("filters.investment_risk.v6.inference", "InvestmentRiskScorer"),
+        "cultural_discovery": ("filters.cultural_discovery.v5.inference", "CulturalDiscoveryScorer"),
+        "belonging": ("filters.belonging.v1.inference", "BelongingScorer"),
+        "nature_recovery": ("filters.nature_recovery.v4.inference", "NatureRecoveryScorer"),
     }
     if filter_name not in scorer_map:
         raise ValueError(

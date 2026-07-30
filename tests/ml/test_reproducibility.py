@@ -195,7 +195,7 @@ class TestModelReproducibility:
     def check_model_available(self):
         """Check if a trained model is available."""
         project_root = Path(__file__).parent.parent.parent
-        model_path = project_root / "filters" / "uplifting" / "v5" / "model"
+        model_path = project_root / "filters" / "uplifting" / "v7" / "model"
 
         if not (model_path / "adapter_model.safetensors").exists():
             pytest.skip("Model not available for reproducibility test")
@@ -205,7 +205,7 @@ class TestModelReproducibility:
         """Same input should produce same output (deterministic inference)."""
         try:
             import torch
-            from filters.uplifting.v5.inference import UpliftingScorer
+            from filters.uplifting.v7.inference import UpliftingScorer
         except ImportError:
             pytest.skip("Required packages not available")
 

@@ -38,7 +38,7 @@ class BaseSolutionsScorer(FilterBaseScorer):
     """
 
     FILTER_NAME = "solutions"
-    FILTER_VERSION = "5.0"
+    FILTER_VERSION = "6.0"
 
     DIMENSION_NAMES = [
         "solution_concreteness",
@@ -99,4 +99,4 @@ class BaseSolutionsScorer(FilterBaseScorer):
         spec = importlib.util.spec_from_file_location("prefilter", prefilter_path)
         prefilter_module = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(prefilter_module)
-        self.prefilter = prefilter_module.SolutionsPreFilterV5()
+        self.prefilter = prefilter_module.SolutionsPreFilterV6()

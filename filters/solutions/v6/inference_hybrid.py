@@ -24,7 +24,7 @@ Usage:
     # result["stage_used"] -> "stage1_low" or "stage2"
 
     # CLI
-    python filters/solutions/v5/inference_hybrid.py --input articles.jsonl --output results.jsonl
+    python filters/solutions/v6/inference_hybrid.py --input articles.jsonl --output results.jsonl
 """
 
 import json

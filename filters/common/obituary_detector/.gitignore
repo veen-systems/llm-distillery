@@ -3,6 +3,9 @@ validation/artifacts/*corpus*.jsonl
 validation/artifacts/seed*.jsonl
 validation/artifacts/worksheet*.jsonl
 validation/artifacts/*candidates*.jsonl
+# FN-delta / FP worksheets (LD#83 owner gate) — content-bearing like worksheets
+validation/artifacts/fn_delta_*.jsonl
+validation/artifacts/fp5_*.jsonl
 # scripts also write a worksheet + corpus copies to the validation/ root — content-bearing
 validation/worksheet*.jsonl
 validation/*corpus*.jsonl

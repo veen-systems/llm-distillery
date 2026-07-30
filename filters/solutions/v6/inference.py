@@ -13,7 +13,7 @@ Usage:
     result = scorer.score_article(article)
 
     # CLI
-    python filters/solutions/v5/inference.py --input articles.jsonl --output results.jsonl
+    python filters/solutions/v6/inference.py --input articles.jsonl --output results.jsonl
 
 For loading from HuggingFace Hub, use SolutionsScorerHub (inference_hub.py).
 """
@@ -34,7 +34,7 @@ class SolutionsScorer(BaseSolutionsScorer):
     Production scorer for the solutions filter v6.
 
     Loads the trained LoRA model from local files and provides scoring with:
-    - Optional prefiltering for efficiency (SolutionsPreFilterV5)
+    - Optional prefiltering for efficiency (SolutionsPreFilterV6)
     - Per-dimension scores (7 dimensions)
     - Score calibration (isotonic regression, calibration.json)
     - solution_concreteness gatekeeper

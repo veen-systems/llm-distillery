@@ -48,7 +48,7 @@ from typing import Dict
 from filters.common.base_prefilter import BasePreFilter
 
 
-class SolutionsPreFilterV5(BasePreFilter):
+class SolutionsPreFilterV6(BasePreFilter):
     """Commerce-only pass-through pre-filter for the Solutions lens.
 
     Inherits BasePreFilter.apply_filter unchanged (validate -> length ->
@@ -56,7 +56,7 @@ class SolutionsPreFilterV5(BasePreFilter):
     e5 probe + student, NOT done here (see module docstring / nature_recovery #70).
     """
 
-    VERSION = "5.0"
+    VERSION = "6.0"
 
     # No local EXCLUSION_PATTERNS: commerce runs upstream (ADR-004), and no
     # topic/decline gate is added (the model's job). Left empty on purpose — base's
@@ -107,7 +107,7 @@ def test_prefilter():
     and non-English solution content PASS (solution judgment is the model's job).
     Only base's structural checks (empty/short) still block.
     """
-    prefilter = SolutionsPreFilterV5()
+    prefilter = SolutionsPreFilterV6()
 
     pad = ' Lorem ipsum filler text to extend article length. ' * 8
 

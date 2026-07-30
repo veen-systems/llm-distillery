@@ -17,7 +17,7 @@ drops nothing. Enforcement is a separate owner-signed-off step.
 Usage:
     from filters.common.obituary_detector.v4.inference import ObituaryDetectorV4
 
-    detector = ObituaryDetectorV4(threshold=0.95)
+    detector = ObituaryDetectorV4(threshold=0.90)
     result = detector.is_obituary(article)
     # {"is_obituary": True, "score": 0.97, "version": "v4"}
 """
@@ -27,7 +27,6 @@ import time
 from pathlib import Path
 from typing import Optional, Union
 
-import numpy as np
 from sentence_transformers import SentenceTransformer
 
 
@@ -47,7 +46,7 @@ class ObituaryDetectorV4:
 
     def __init__(
         self,
-        threshold: float = 0.95,
+        threshold: float = 0.90,
         model_dir: Optional[Path] = None,
         device: str = 'cpu'
     ):
@@ -55,7 +54,8 @@ class ObituaryDetectorV4:
         Initialize the obituary detector.
 
         Args:
-            threshold: Classification threshold (default 0.95 per June holdout)
+            threshold: Classification threshold (default 0.90 — LD#83 op-point;
+                0.95 was the pre-LD#83 June-holdout recommendation)
             model_dir: Path to directory containing classifier and scaler
             device: Device for embedder ('cpu' or 'cuda')
         """
@@ -254,7 +254,7 @@ class ObituaryDetectorV4:
 
 
 # Convenience function for quick checks
-def is_obituary(article: Union[dict, str], threshold: float = 0.95) -> bool:
+def is_obituary(article: Union[dict, str], threshold: float = 0.90) -> bool:
     """
     Quick check if article is an obituary.
 

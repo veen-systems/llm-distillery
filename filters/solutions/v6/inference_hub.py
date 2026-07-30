@@ -10,7 +10,7 @@ Usage:
     from filters.solutions.v6.inference_hub import SolutionsScorerHub
 
     scorer = SolutionsScorerHub(
-        repo_id="jeergrvgreg/solutions-filter-v5",
+        repo_id="jeergrvgreg/solutions-filter-v6",
         token="hf_..."  # Only needed for private repos
     )
     result = scorer.score_article(article)
@@ -38,7 +38,7 @@ class SolutionsScorerHub(BaseSolutionsScorer):
 
     def __init__(
         self,
-        repo_id: str = "jeergrvgreg/solutions-filter-v5",
+        repo_id: str = "jeergrvgreg/solutions-filter-v6",
         token: Optional[str] = None,
         device: Optional[str] = None,
         use_prefilter: bool = True,

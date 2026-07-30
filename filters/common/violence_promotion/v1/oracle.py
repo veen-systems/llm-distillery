@@ -186,7 +186,15 @@ class ViolencePromotionOracle:
             for line in out_path.read_text(encoding="utf-8").splitlines():
                 if line.strip():
                     try:
-                        done_ids.add(json.loads(line)["id"])
+                        row = json.loads(line)
+                        # Error rows don't count as done: a transient parse
+                        # failure would otherwise permanently exclude the
+                        # article from every "resumable" re-run. The retry
+                        # appends a second row with the same id; training
+                        # filters out label=="error" rows, so the duplicate
+                        # is harmless there.
+                        if row.get("label") != "error":
+                            done_ids.add(row["id"])
                     except Exception:
                         pass
 
@@ -334,7 +342,15 @@ class ViolencePromotionOracle:
             if not match:
                 raise ValueError(f"No JSON object found in: {text[:200]}")
             obj = json.loads(match.group(0))
-            score = int(obj.get("violence_score", -1))
+            if "violence_score" not in obj:
+                # Parseable JSON with the wrong/missing key must be an ERROR,
+                # not a score: clamping the missing-key sentinel (-1) up to 0
+                # silently converted these rows into confident hard negatives
+                # and poisoned training labels.
+                raise ValueError(
+                    f"JSON lacks 'violence_score' key: {sorted(obj.keys())[:8]}"
+                )
+            score = int(obj["violence_score"])
             # Clamp to valid range
             if score < 0:
                 score = 0

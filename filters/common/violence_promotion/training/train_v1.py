@@ -53,6 +53,21 @@ report_dir.mkdir(parents=True, exist_ok=True)
 
 # ---- load corpus -----------------------------------------------------------
 rows = [json.loads(l) for l in open(args.seed, encoding="utf-8") if l.strip()]
+# Train ONLY on definitive labels. Oracle output also contains
+# label="error" (scoring/parse failures) and label="discard" (ambiguous
+# middle 4-6); `label == "positive" else 0` silently turned both into
+# hard negatives.
+skipped = {}
+kept_rows = []
+for r in rows:
+    lbl = r.get("label")
+    if lbl not in ("positive", "negative"):
+        skipped[lbl] = skipped.get(lbl, 0) + 1
+        continue
+    kept_rows.append(r)
+if skipped:
+    print(f"skipped non-definitive labels: {skipped}")
+rows = kept_rows
 texts, y, filters = [], [], []
 for r in rows:
     title = r.get("title") or ""
