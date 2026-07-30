@@ -18,9 +18,13 @@ drop happens in the dedup gate (`obituary_blocked`, after commerce, mirrors
 it), config-gated: rollback = `pipeline.obituary_detector.enforce: false`.
 Stamps always written. Lens scoring is NOT a backstop (verified: 102
 obit-flagged rows passed lens thresholds in the 16:00 cycle, mostly
-belonging). **Verify next cycle:** log line "N obituary" in Loaded stats,
-`obituary_blocked > 0`, health lists `obituary_detector_v5`, filtered rows
-stamp `_obituary_model: "v5"`. Then ovr#204.
+belonging). **VERIFIED LIVE 2026-07-30 20:12 cycle**: Loaded line shows **1158 obituary**
+blocked (vs 5415 commerce); gpu-server health lists `obituary_detector_v5`
+(hash gate passed). <!-- verify: ssh sadalsuud "journalctl -u nexusmind.service --since today --no-pager | grep -m1 ' obituary,'" -->
+Transitional note: articles stamped during the 0.90/0.95 shadow eras keep
+their old `_is_obituary` flags (preprocessor skips already-scored rows), so
+the 0.85–0.90 band only blocks for newly scored articles; washes out within
+max_age_days (7d). Next: ovr#204.
 
 **Owner adjudication 2026-07-30 (14/14 rows)**: boundary = grief/mourning
 content (block: funerals any angle, memorial events, mourning tributes any
