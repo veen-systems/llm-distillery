@@ -21,6 +21,16 @@ obit-flagged rows passed lens thresholds in the 16:00 cycle, mostly
 belonging). **VERIFIED LIVE 2026-07-30 20:12 cycle**: Loaded line shows **1158 obituary**
 blocked (vs 5415 commerce); gpu-server health lists `obituary_detector_v5`
 (hash gate passed). <!-- verify: ssh sadalsuud "journalctl -u nexusmind.service --since today --no-pager | grep -m1 ' obituary,'" -->
+**Overnight sanity check PASSED 2026-07-31**: blocked count 1158 (20:12) →
+1208 (00:17) → 1249 (04:14), ~40-50 new/cycle ≈1% of loaded; v5 hash-verified
+each cycle; 26 new flags in `content_items_20260731_041042.jsonl` all stamped
+`_obituary_model: "v5"`. Spot-read: high band = clear obits; 0.85–0.95 band =
+death-as-news collateral (accepted per recall-first) + 2 alive-person
+survival-story over-blocks (0.893, 0.937 — known v5 failure class, no owner
+action per parked LD#85). ovr#204 handoff comment posted (issuecomment-5139810271).
+<!-- verify: ssh sadalsuud "journalctl -u nexusmind.service --since '2026-07-31' --no-pager | grep -m1 ' obituary,'" -->
+Note: gpu-server:8000 is DOWN between cycles by design (static unit, started
+per cycle, ExecStopPost restarts ollama; gpu-server logs are UTC = local−2).
 Transitional note: articles stamped during the 0.90/0.95 shadow eras keep
 their old `_is_obituary` flags (preprocessor skips already-scored rows), so
 the 0.85–0.90 band only blocks for newly scored articles; washes out within
