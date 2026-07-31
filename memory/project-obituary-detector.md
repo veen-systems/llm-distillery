@@ -45,6 +45,16 @@ community-mourning class, likely v4 hard-negative legacy-tribute pull).
 Rescore reproduced the production stamp exactly (0.4376). FN-class evidence
 for LD#85 if the owner calls the sighting a reactivation trigger.
 <!-- verify: ssh gpu-server "~/gpu-server/nexusmind-scorer/venv/bin/python /tmp/rescore_obit.py" (inputs /tmp/obit_recheck.jsonl) -->
+
+**Owner verdict on carryover (2026-07-31): "it is what it is" — no purge, no
+LD#85 reactivation; let it wash out.** ovr-side session independently verified
+enforcement AND measured the downstream effect: belonging death-pattern rate
+**7.9% pre-enforcement (220/2769) → 2.9% post (1/35)** — first
+past-the-boundary measurement (keyword proxy, so 2.9% is an upper bound).
+ovr editorial gate retired entirely 2026-07-30 (permanent). ovr sentinel
+re-derivation (~5%, not 2%) scheduled after Aug 6. Three washout windows —
+QA sentinel (3d published) ~Aug 2-3; pipeline max_age (7d) ~Aug 6; site
+live view (14d) ~Aug 13 — reconciled on ovr#204 (issuecomment-5139876852).
 Transitional note: articles stamped during the 0.90/0.95 shadow eras keep
 their old `_is_obituary` flags (preprocessor skips already-scored rows), so
 the 0.85–0.90 band only blocks for newly scored articles; washes out within
