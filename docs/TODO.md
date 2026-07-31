@@ -254,7 +254,21 @@ Items surfaced by the multi-agent code review of the migration commits (2026-04-
 
 ---
 
-*Last updated: 2026-07-27*
+*Last updated: 2026-07-31*
+
+## 2026-07-31 — LD#76 Calibration Audit (11-agent battery, all verdicts adversarially verified)
+
+Full synthesis: LD#76 issuecomment-5140079896. Headline: **no shared root cause, no scale-collapse anywhere, no retrains needed**. `% norm < 0.5` retired as health metric (≈ 1−base-rate by construction; healthy investment_risk is itself 75% "invisible" by it). Healthy criteria going forward (from ir reference): raw p90 above op-point + populated spread-out MEDIUM+ band + separation intact + anchored fresh fit.
+
+- [ ] **uplifting v7 normalization refit** (NM#279) — PROVEN unit mismatch: Apr-06 fit window contained pre-ADR-014 score_scale_factor-stretched scores (×1.1976; stored raw_max 9.54 > calibration ceiling 8.35). 62% of MEDIUM+ output demoted invisible. Sanctioned refit per NORMALIZATION_METHOD §6A. *Awaiting owner go.*
+- [ ] **belonging v1 normalization refit** (NM#279 / #74) — real drift: upper tail contracted 1.2–1.9 raw pts since Mar-30 fit; survivors under-ranked +1.0–2.1 norm pts. Refit only; do NOT bundle threshold change. *Awaiting owner go.*
+- [ ] **NexusMind `_assign_tier` double-cut** — the only shared mechanism: raw-scale TIER_THRESHOLDS applied to NORMALIZED scores demotes bottom ~40% of every filter's passing population. Product decision (visibility = raw ≥ op-point; normalized = rank/badge). Ticketed NM-side. *Owner decision.*
+- [ ] **cd v5 dead prefilter** — exclusion-only, passes 2828/2828 vs declared expected_pass_rate 0.15. Code bugfix, ticketed. Fix before any cd op-point discussion.
+- [ ] **cd v6 lens fidelity scope** — ccc 0.25 weight ceiling (mean 0.64), 27% off-lens hard science in visible band, "4.5 display threshold" vs shipped 4.0 unreconciled. Design ticket; not urgent. The 3.5 op-point proposal was REFUTED (sampling artifact) — any re-derivation needs a randomized [3.0,4.5) sample after the prefilter fix.
+- [ ] **#75 close as measurement artifact** — nature_recovery v4 is HEALTHY: 94% of production rows are stage-1 probe outputs capped at 0.75, and the Jul-21 evidence files predate normalization (`normalization_method='none'`). *Owner confirm.*
+- [ ] **Hygiene batch** — emit `stage_used` into row attrs; document nr runtime stage-1 threshold 0.75 (config.yaml says 3.225, inert); fix stale ir config tiers (3.0 vs live 4.0); note nr raw HIGH tier 7.0 > calibrated ceiling 6.8 (structurally dead).
+- [ ] **NM#231 re-measure after uplifting refit** — non-English under-scoring is real but secondary; size the residual model-side gap before considering v8 work.
+- [ ] **Drift guard** — uplifting violated the >20%-relative-pass-rate refit trigger by an order of magnitude for ~4 months, undetected. Add per-cycle pass-rate logging or a scheduled drift check (owner question).
 
 ## 2026-07-27 Session — Small LD Issues Closed
 
