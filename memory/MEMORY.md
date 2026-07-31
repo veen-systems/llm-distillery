@@ -1,6 +1,6 @@
 # Memory Index
 
-- [Cross-repo prioritization](cross-repo-prioritization.md) — master issue landscape across all 4 repos: P0-P4, 7 dependency chains, 5 work batches
+- [Cross-repo prioritization](cross-repo-prioritization.md) — master issue landscape across all 4 repos: P0-P4, 8 dependency chains, 5 work batches. Chain 3 (calibration): LD#76 AUDITED 2026-07-31, fixes EXECUTED same day (refits + cd gate + NM#280) — verify next cycle.
 - [Filter status](filter-status.md) — current state of all production filters and in-development versions
 - [GPU server](gpu-server.md) — venv, PYTHONPATH, HF_HUB_OFFLINE, ollama conflict, training setup
 - [b650 GPU](b650-gpu.md) — Arian's 3090 Ti training node: access (account jeroen), uv venv, staged data, cross-box score-skew warning
@@ -11,7 +11,7 @@
 - [ovr lens set](ovr-lens-set-current.md) — current lens→filter→tab mapping
 - [Filter doc standard](filter-doc-standard.md) — deployed filter documentation set
 - [CD v5 reference status](cd-v5-reference-status.md) — cultural_discovery v5 as DeepSeek-oracle reference example, ADR-020 methodology
-- [Obituary detector](project-obituary-detector.md) — ENFORCEMENT ON v5@0.85 (NexusMind b904edc, 2026-07-30 S3, verify first cycle); owner grief-vs-news rule → v6 relabel on b650 (LD#85)
+- [Obituary detector](project-obituary-detector.md) — ENFORCEMENT ON v5@0.85, VERIFIED + overnight-checked 2026-07-31; site carryover washes out ~Aug 13 (owner: no purge); 2 live v5 FNs banked on LD#85 (parked)
 - [Obituary v4 hypotheses](obituary-v4-hypotheses.md) — small-N hard negatives work, panel beats oracle labels; "FNs are cheap" FALSIFIED 2026-07-30
 - [Violence promotion v1 hypotheses](violence-promotion-v1-hypotheses.md) — recipe transfer confirmed, prompt boundary holds, recall gap is the key open question
 - [Uplifting v7 training](uplifting-v7-training.md) — training history; v7 deployed (hybrid inference)
@@ -19,6 +19,7 @@
 
 ## Recent Sessions
 
+- [2026-07-31](project_session_2026_07_31.md) — obit carryover diagnosed (47 shadow-era + 2 v5 FNs); LD#76 11-agent audit falsified shared-root-cause; EXECUTED: uplifting+belonging refits, cd topic gate (#86), NM#280 tier fix — all deployed; ADR-022 written; LD#90 harmonization program (renames: thriving/discovery/recovery). **NEXT: verify ~12:00 cycle (3 checks), then close NM#279/#280, LD#74/#76/#86**
 - [2026-07-30](project_session_2026_07_30.md) — S1: v4 op-point evidence + swap. S2: deploy verified, FN-delta gate FAILED, DeepSeek-commit review. S3: v5 trained + review battery + June panel, owner adjudication (grief-vs-news), ENFORCEMENT v5@0.85 shipped, b650 commissioned
 - [2026-07-28](project_session_2026_07_28.md) — obituary v4 retrain, violence_promotion v1 shadow-deploy, solutions v6 normalization fitted
 - [2026-07-27 evening](project_session_2026_07_27_evening.md) — LD#49/#68/#63/#57 closed; NM#276/#206 closed; curate

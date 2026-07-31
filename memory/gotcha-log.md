@@ -878,6 +878,8 @@ Captured outputs (this is the deploy-claim verification trail the rule requires)
 
 **Promoted to**: candidate MEMORY.md pattern if it recurs — "verify snippets probe stable disk/exit-state, not transient ports."
 
+**Recurred 2026-07-31** (2nd occurrence): during the obituary overnight check, `curl gpu-server:8000/health` → connection refused was briefly chased as a possible outage (compounded by gpu-server logging in UTC while sadalsuud logs local, making the last run look stale). **PROMOTED**: pattern now lives at the top of `memory/gpu-server.md` "NexusMind Scorer Service" — scorer is DOWN between cycles by design; check `journalctl -u nexusmind-scorer` load lines, never port 8000; gpu-server timestamps are UTC = local−2.
+
 ## SSH Heredoc Mangles `$` and Special Chars (2026-07-07)
 **Problem**: Running Python against `ovr.db` on sadalsuud via `ssh sadalsuud 'python3 <<PY ... PY'` broke twice — the `$.content_type` JSON path and a `CASE WHEN wa>=4` clause got shell-interpolated, once producing a stray repo-root file literally named `=7 WHEN weighted_average>=4 THEN mid4-7 ELSE low`.
 **Root cause**: The remote command string passes through two shells (local + remote); `$`, `>=`, quotes get re-interpreted. Single-quoting the heredoc delimiter doesn't help when the whole thing is already inside an outer quoted `ssh '...'`.
@@ -1224,3 +1226,23 @@ heredoc (`python3 - <<'EOF'`) so quotes aren't doubly escaped, and single-quote 
 **Problem**: `python3 -m venv` fails on b650 (no ensurepip, sudo needed for python3.12-venv); and after uv-venv setup, v5 MLP scores differ from gpu-server by up to 0.16 on identical rows.
 **Root cause**: Missing python3.12-venv package; sentence-transformers 5.6.1 (b650) vs 5.2.2 (gpu-server) + torch 2.13 vs 2.11 produce slightly different embeddings, which the MLP amplifies near its decision boundary. sklearn was also unpinned at first (1.9 vs 1.8 pickle warnings) — pinned to 1.8.0.
 **Fix**: Use `~/.local/bin/uv` (no sudo). Rule: frozen-embedder+MLP scores are only comparable computed on ONE box with ONE env; evaluate on the box that trained. Account on b650 is `jeroen`, not jwasys.
+
+---
+
+### Workstation pip Is PEP 668 Externally-Managed — Deploy Verify Gate Needs `--user --break-system-packages` (2026-07-31)
+
+**Problem**: `deploy_to_nexusmind.sh belonging v1` aborted at the verify gate with "hub: huggingface_hub not installed"; plain `pip install huggingface_hub` refused (externally-managed environment). Uplifting deployed fine first — it's NO_HUB, so the gap only surfaces on Hub-checked filters.
+
+**Root cause**: situla's system python3 is PEP 668-managed; the repo `.venv` exists but the deploy script and fitters run under system `python3`. `verify_filter_package.py --check-hub` also needs `HF_TOKEN` exported (read it from `config/credentials/secrets.ini` `huggingface_token`).
+
+**Fix**: `pip install --user --break-system-packages huggingface_hub` (now done on situla), and `export HF_TOKEN=$(grep '^huggingface_token' config/credentials/secrets.ini | cut -d= -f2 | tr -d ' ')` before Hub-checked deploys.
+
+---
+
+### NexusMind Full Test Suite Has ~35 Pre-Existing Env Failures on situla — Diff Failure Sets, Don't Read Absolute Counts (2026-07-31)
+
+**Problem**: After the NM#280 change, the NexusMind suite showed "35 failed, 62 errors" on the workstation — alarming, but none of it was the change.
+
+**Root cause**: situla lacks optional deps (trafilatura, GPU stack, etc.); those failures/collection errors are environmental and permanent on this box. CI/sadalsuud has the full env (954 green there).
+
+**Fix**: Baseline discipline: run the suite with the change stashed and applied (`--continue-on-collection-errors`), diff the sorted `^FAILED` sets — identical sets = zero introduced failures. Used for NM#280 (`73c1ec3`).

@@ -66,6 +66,8 @@ Full details in `memory/filter-status.md`. Summary:
 - **Drop tier assignments** — filters output pass/block + continuous score only; tiers add no value over the score itself (ADR-016)
 - **Declarative prefilter shape** — extend `BasePreFilter` with `EXCLUSION_PATTERNS` / `OVERRIDE_KEYWORDS` / `POSITIVE_PATTERNS` / `POSITIVE_THRESHOLD` class attrs; standard `apply_filter()` pipeline lives on the base (ADR-018, #52)
 - **Per-category exclusion overrides** — `CATEGORY_OVERRIDES` dict (TypedDict-typed) + `_compound_override_applies()` Template Method hook on `BasePreFilter`. Subclasses inject only special-case rules; base owns the fallback chain (compound hook → dict → global `_has_override`). Unblocks belonging/foresight/sustech/cultural-discovery from custom `apply_filter()` (ADR-019, #52)
+- **Ground-truth deploy gate** — judge each model against held-out ORACLE ground truth, never against the prior deployed model (ADR-021)
+- **Stamp always, decide once** — gate modules stamp score+flag+model version always; exactly one config-gated drop point per concern; every enforcement decision is a config flip. Tier semantics follow the same principle: visibility = raw ≥ op-point, normalized score is rank/badge only (ADR-022, NM#280)
 
 See `docs/adr/README.md` for full ADR index, `docs/decisions/` for detailed records.
 
@@ -131,4 +133,4 @@ This project is a source project for [augmented-engineering](https://github.com/
 
 ---
 
-*Last updated: 2026-07-30*
+*Last updated: 2026-07-31*
