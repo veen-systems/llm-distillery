@@ -31,6 +31,20 @@ action per parked LD#85). ovr#204 handoff comment posted (issuecomment-513981027
 <!-- verify: ssh sadalsuud "journalctl -u nexusmind.service --since '2026-07-31' --no-pager | grep -m1 ' obituary,'" -->
 Note: gpu-server:8000 is DOWN between cycles by design (static unit, started
 per cycle, ExecStopPost restarts ollama; gpu-server logs are UTC = local−2).
+
+**2026-07-31 owner obit sighting on ovr.news — diagnosed, NOT an enforcement
+failure.** Of 133 post-enforcement articles: zero obits (enforcement works).
+But **47 obit-flagged shadow-era carryovers (all ≥0.85) are live on the site**
+— shadow stamped, never dropped; the ovr `live_articles` view is **14 days by
+published_date**, so washout runs to ~**Aug 13** (not Aug 6 / max_age 7d —
+that governs only the NexusMind pipeline). Purge list posted on ovr#204
+(issuecomment-5139853211). Plus **2 true v5 FNs live**: Teresa Alonso obit
+(v3 .284/v4 .195/**v5 .277** — biography-rich obit reads as history) and Yves
+Devos mourning piece (v3 .682/v4 .438/**v5 .122** — v5 REGRESSED on the
+community-mourning class, likely v4 hard-negative legacy-tribute pull).
+Rescore reproduced the production stamp exactly (0.4376). FN-class evidence
+for LD#85 if the owner calls the sighting a reactivation trigger.
+<!-- verify: ssh gpu-server "~/gpu-server/nexusmind-scorer/venv/bin/python /tmp/rescore_obit.py" (inputs /tmp/obit_recheck.jsonl) -->
 Transitional note: articles stamped during the 0.90/0.95 shadow eras keep
 their old `_is_obituary` flags (preprocessor skips already-scored rows), so
 the 0.85–0.90 band only blocks for newly scored articles; washes out within
