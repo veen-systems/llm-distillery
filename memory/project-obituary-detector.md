@@ -1,6 +1,6 @@
 ---
 name: project-obituary-detector
-description: Obituary detector v3 status, NM#185 handoff, v4 corrective retrain plan
+description: Obituary detector — ENFORCEMENT LIVE v5@0.85 (recall-first), carryover washout ~Aug 13, v6 relabel parked (LD#85); architecture, key numbers, validation harness
 metadata:
   type: project
 ---
@@ -69,100 +69,9 @@ verdicts: `adjudication_worksheet_2026-07-30.md`. Feeds LD#85 (v6 relabel).
 
 **b650 training env READY** — see `memory/b650-gpu.md` (all machine facts + gotchas).
 
-## History 2026-07-30 (superseded strata — kept as evidence; Status above is current)
+## History 2026-07-30
 
-**[SUPERSEDED by v5@0.85 enforcement] v5@0.92 SHADOW swap committed 2026-07-30 evening (owner: "do it all") —
-NexusMind `89f3c58`, CI green, auto-deploys next pipeline cycle (~20:00; verify
-same way as the v4 deploy: health lists `obituary_detector_v5`, log "Obituary
-detector v5 loaded successfully", stamps `_obituary_model: "v5"`).** Vendored
-v5 pkl+sha256 into NexusMind, updated EXPECTED_HASHES + all 9 swap literals
-(deploy-risk review map). Threshold 0.92.
-
-**[Enforcement-blocked framing SUPERSEDED by owner recall-first directive] June-increment panel MEASURED (2026-07-30, 40/65 v5-new flags, 4-model):
-29 obit / 6 unanimous-not / 5 split → maj-prec 0.725, strict 0.829; at deployed
-0.92: 0.714/0.806; at 0.95: 0.684 — THRESHOLD-INSENSITIVE (all 6 over-blocks
-score ≥0.92).** v4's marginal band was 0.946. Enforcement stays blocked:
-the fix is owner adjudication (`adjudication_worksheet_2026-07-30.md`, 14 rows,
-awaiting owner verdicts) feeding a v6 with owner-authoritative labels on the
-crime/accident-death + memorial/tribute boundary. Grades:
-`grades_panel_v5_june_increment_2026-07-30.jsonl` (d332edc).
-
-(b650 details moved to `memory/b650-gpu.md`.)
-
-Owner decisions (2026-07-30): keep v4@0.90 as interim shadow (superseded same
-evening by the v5@0.92 swap on "do it all"); v5 retrain on gpu-server approved
-and executed same day.
-
-v5 = v4 corpus + the 21 panel-graded FN-delta hard positives (11,329 rows, 2,694
-pos; seed `training/data/v5_train_seed.jsonl` on gpu-server, same train_v1.py
-recipe). Results (heldout n=1529 after excluding the 33 panel-graded rows —
-28 FN-delta + 5 FP5, labels suspect/moved to training; eval:
-`validation/artifacts/v5_eval_2026-07-30.json`, script `validation/eval_v5.py`):
-
-**3-reviewer battery 2026-07-30 (correctness/methodology/deploy-risk, all
-findings below verified by hand before recording):** the original excl-33 table
-was misleading — it deleted v4's own 5 FPs (hence its fake "precision 1.000")
-and 12 panel-graded rows NOT in v5's training set, which are exactly where v5's
-over-block signal lives (v5 flags 6/7 panel-REJECTED FN-delta rows + both
-panel-confirmed-real FP5 rows). **Corrected table** (exclude only the 21
-training rows + 3 v4-hard-negatives that sat unexcluded in heldout since
-07-28, n=1538): v3@0.95 prec 0.979 / rec 0.728; v4@0.90 0.979 / 0.728;
-**v5@0.90 0.964 / 0.749 (+7 TP, +4 FP)**; **v5@0.92 0.967 / 0.734** —
-statistically marginal either way (in-corpus heldout also has ~15% near-dup
-contamination vs training; June is the only clean holdout and is unlabeled).
-
-- **v5@0.92 dominates 0.90** [op-point superseded: owner chose 0.85 recall-first]: fits the same 19/21 gate
-  articles, catches Farouq (0.9546), one fewer heldout FP, 12 fewer June flags.
-- **Strongest v5 evidence** (reviewer-added): ovr.news 203 production
-  borderlines — v5 flags only the known Bharathiraja TP at 0.90 (v3 flagged 4).
-  No over-blocking on the production distribution; v4's legacy-tribute fix kept.
-- Hard-negative regression: none (12 v4 hard negatives ≤0.4402); Farouq caught.
-- **OPEN before ENFORCE sign-off** (shadow-deploy at 0.92 is low-risk anytime):
-  (1) panel-grade ~40 of the 65 v5-new June flags — est. 17–20% are
-  rule-violating over-blocks (health explainers, alive-person stories, TV
-  schedule pieces); "June recall recovered" is partly precision lost, increment
-  unmeasured; (2) owner adjudication of ~10 disputed labels — the 4-model panel
-  drifts broader than the owner rule (memorial events / legal-process /
-  legacy-tribute classes graded "obituary"; ≥2 of the 21 hard positives violate
-  the KEEP clause, e.g. the Filip memorial festival) — circular since the same
-  panel failed v4 and labeled v5's training rows; (3) v5's own new FPs (elephant
-  obit 0.994, Einstein 0.989) are NOT oracle mislabels — earlier framing wrong.
-- OOF sweeps are fold-seed-noisy ±5pt (v4b spans 0.61–0.71 rec@0.95 across
-  seeds) — never compare OOF across versions; the 0.70→0.60 "drop" is mostly
-  noise, real shift ≈2pt.
-- Deploy prep for the eventual swap (from deploy-risk review): NexusMind
-  `deploy/gpu-server/main.py` pins v4 pickle SHA256s (`EXPECTED_HASHES`,
-  enforce-on, load in lifespan without try/except — stale hashes crash the
-  WHOLE scorer). v5 hashes: mlp `6f271360d42a…`, scaler `16c79508a516…`. Swap
-  blast radius: main.py + src/preprocessing/obituary.py + config/app.yaml
-  (~9 literals). v5 pkls + .sha256 companions must be vendored into NexusMind's
-  own repo first — deploy_filters.sh archives NexusMind HEAD, never reads
-  llm-distillery. Until then gpu-server is the only v5 binary holder besides
-  the workstation working tree.
-- Reproducibility fixed post-review: `training/build_v5_seed.py` +
-  `validation/artifacts/graded_ids_2026-07-30.json` committed.
-
-**v4@0.90 shadow DEPLOYED + VERIFIED 2026-07-30 12:08 cycle** (auto-pull clean
-fast-forward to c5f1df2; scorer logs "Obituary detector v4 loaded successfully";
-health lists `obituary_detector_v4`; Farouq rescores **0.9372 → flagged** via the
-deployed endpoint). `_obituary_model` version stamp + hoisted `has_model` guard
-shipped in NexusMind `3f5c328` (next cycle).
-
-**[RESOLVED same day — v5 trained, enforcement shipped @0.85] OWNER GATE FAILED (2026-07-30): enforcement sign-off BLOCKED, v5 retrain needed.**
-FN-delta panel (4-model blind, n=28 gap articles v3@0.95 catches / v4@0.90 misses):
-**21/28 majority-obituary** (12 unanimous), 5 split, 2 not. Five confirmed misses
-score <0.70 on v4 — unrecoverable by threshold; the v4 hard-negative set
-overcorrected on the crime/accident-death class (which the sharpened-broad rule
-BLOCKS when death is the main subject). FP5 counter-check: only 2/5 of v4's
-heldout FPs are real (3 are oracle mislabels incl. "Bardot funeral hoax") — v4
-true precision > measured 0.979. Evidence: `validation/artifacts/
-rollup_fn_delta_fp5_2026-07-30.json` + grades files (aaef1d0); LD#83 comment.
-
-**v5 retrain direction:** add the 21 panel-confirmed FN-delta articles as hard
-POSITIVES (ready-made, panel-graded) to balance v4's 12 hard negatives.
-**Open owner decision:** interim shadow = keep v4@0.90 (Farouq class + ovr-FP fix,
-stamps attributable via `_obituary_model`) vs revert to v3@0.95 (better recall,
-21 real obits, near-equal precision). Asked in LD#83 comment 2026-07-30.
+Superseded strata (v5@0.92 shadow era, June-increment panel pre-recall-first framing, v5 training/eval detail incl. corrected excl-24 table, v4@0.90 deploy, FN-delta gate failure) archived 2026-07-31 context audit → [[project_session_2026_07_30]] "Archived obituary history strata" section. Status above is current; v5 eval artifacts live in `filters/common/obituary_detector/validation/artifacts/`.
 
 ## What it is
 
@@ -185,7 +94,7 @@ Scored 203 ovr.news Phase-1 borderlines with v3 MLP:
 
 ## Dependency chain
 
-LD#51 (train v3) ✅ → LD#77 (ovr.news validation) ✅ → NM#185 (NexusMind shadow deploy) ✅ deployed 2026-07-27 → **v4 corrective retrain** ✅ trained 2026-07-28 → **v4 shadow replace + enforce** ← NEXT (after ≥1 production cycle of shadow accumulation) → ovr#204 (ovr removes hardcoded filter)
+LD#51 (train v3) ✅ → LD#77 (ovr.news validation) ✅ → NM#185 (shadow deploy) ✅ → v4 retrain ✅ → v5 retrain + **ENFORCEMENT v5@0.85** ✅ 2026-07-30 (LD#83 CLOSED) → ovr#204 (ovr-side handled: hardcoded filter removal in progress, editorial gate retired) → **chain COMPLETE** — only LD#85 (v6 relabel) remains, parked.
 
 ## v4 corrective retrain (EXECUTED 2026-07-28)
 

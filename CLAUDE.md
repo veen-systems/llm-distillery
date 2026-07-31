@@ -17,7 +17,7 @@ framework: agent-ready-projects v1.10.6
 
 ## Tech Stack
 
-- **Oracle**: Gemini Flash 2.5 (~$0.003-0.004/article with current v5-class 8K-token prompts; the $0.001 figure from 1.5 Flash days is stale). Cheaper alternatives proven in cd v5 retrain (May 2026): DeepSeek V4 Flash ~$0.0013/article with auto-cache ($10.36 for 8K articles, 14% cache hit); Gemini Batch API ~$0.0018/article (50% off, 24h async).
+- **Oracle**: Gemini Flash 2.5; DeepSeek V4 Flash proven cheaper alternative (cd v5). Per-article pricing + scheduling levers: `memory/oracle-pricing-scheduling.md`.
 - **Student**: Gemma-3-1B (`google/gemma-3-1b-pt`) with PEFT/LoRA adapters
 - **Calibration**: Per-dimension isotonic regression (ADR-008)
 - **Hybrid inference**: e5-small embedding probe (Stage 1) + fine-tuned model (Stage 2, ADR-006)
