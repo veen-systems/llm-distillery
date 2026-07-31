@@ -131,6 +131,14 @@ As of 2026-05-23 the canonical deploy is `scripts/deploy_to_nexusmind.{sh,ps1}` 
 
 ## NexusMind Scorer Service
 
+**The scorer is DOWN between pipeline cycles BY DESIGN** (learned 2026-07-31 after
+chasing a phantom outage): `nexusmind-scorer.service` is a *static* unit that
+sadalsuud starts per pipeline cycle and stops afterward — `ExecStopPost`
+restarts ollama, handing the GPU back. `curl gpu-server:8000/health` refusing
+connections mid-day is normal; check `journalctl -u nexusmind-scorer` for the
+last run's load lines instead. Also: **gpu-server logs are UTC; sadalsuud logs
+are local (UTC+2)** — a "02:10" scorer run IS the "04:14" pipeline cycle.
+
 ```bash
 # Restart after deploying new filters
 ssh gpu-server "sudo systemctl restart nexusmind-scorer"

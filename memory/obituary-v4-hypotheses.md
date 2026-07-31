@@ -7,7 +7,7 @@ metadata:
 
 # Obituary Detector v4 — Hypotheses from Corrective Retrain
 
-**Date:** 2026-07-28
+**Date:** 2026-07-28 (v5 production-FN addendum 2026-07-31)
 
 ## Confirmed
 
@@ -25,8 +25,16 @@ metadata:
 
 6. **Belita Gracia at 0.65 is the residual uncertainty.** The model isn't confident enough to call it an obituary (below 0.95) but isn't confident it's clean either (above 0.10). This is a legitimate ambiguous case — a profile of a deceased photographer published posthumously. The labeling rule says KEEP (legacy tribute), but the text has genuine obituary-like structure. Worth watching in production shadow.
 
+## v5 production-FN addendum (2026-07-31, owner obit sighting on ovr.news)
+
+7. **Open question 1 ANSWERED: yes, the recall loss appears in production, and it is structured, not noise.** Two live obituaries on ovr.news are true v5 FNs (rescored on gpu-server with the exact production text format `title + " " + content`; the rescore reproduces the production v4 stamp to 4 decimals — 0.4376 vs stamped 0.4375612):
+   - **Community-mourning class — MONOTONE REGRESSION across versions.** "Namur mourns Yves Devos, captain of stilt walkers": v3 **0.682** → v4 **0.438** → v5 **0.122**. Each round of hard negatives (v4's legacy tributes, then v5's mix) pulled the community/festival-mourning style further from the obituary region. The correction mechanism from hypothesis 1 cuts both ways: small-N hard negatives shift the boundary effectively — including *over* genuine positives that share surface structure with the negatives. Under the owner's grief-vs-news rule this class is unambiguously BLOCK.
+   - **Biography-rich obit class — STABLE BLIND SPOT, not a regression.** "Muere Teresa Alonso, la 'niña de Rusia'… dies at 101": v3 0.284 / v4 0.195 / v5 **0.277** — every version misses it. The article is dominated by decades of biography (Civil War evacuation, Leningrad siege), so it embeds as a history piece; the death-announcement frame is a small fraction of the text. Threshold changes cannot reach it (all versions <0.30); this class needs training examples (or title-weighted features — the title alone says "Muere…").
+   Evidence for LD#85 when reactivated; both articles left on site per owner washout decision ("it is what it is").
+
 ## Open questions for v5+
 
-- Does the recall loss on the heldout appear in production, or was it concentrated in noisily-labeled regions?
+- ~~Does the recall loss on the heldout appear in production, or was it concentrated in noisily-labeled regions?~~ **Answered 2026-07-31 — see addendum 7.**
 - Is Belita Gracia a one-off or a whole class of Spanish-language legacy profiles that need dedicated hard negatives?
 - Would the same fix work for a different architecture (e.g., fine-tuning the embedder instead of a frozen MLP)?
+- **NEW: does the hard-negative↔positive interference (addendum 7) mean v6 needs paired examples** — for every hard-negative class added, a matched hard-positive set from the same surface style (memorial-events-blocked vs festivals-kept now inverts under the grief-vs-news rule anyway)?
