@@ -31,6 +31,7 @@ ADRs are short documents that capture important architectural decisions along wi
 - [ADR-018: Declarative Prefilter Shape](018-prefilter-shape-harmonization.md) - Extend BasePreFilter with EXCLUSION_PATTERNS / OVERRIDE_KEYWORDS / POSITIVE_PATTERNS; per-filter migration in priority order (#52)
 - [ADR-019: Per-Category Exclusion Overrides](019-per-category-exclusion-overrides.md) - Extend `_is_excluded` with per-category override config dict (`CATEGORY_OVERRIDES`) + `_category_override_applies()` hook so 4/7 filters can drop custom `apply_filter`; unblocks #51 per-filter consumption
 - [ADR-021: Ground-Truth Deploy Gate](021-ground-truth-gate.md) - A deploy gate judges each model against held-out ORACLE ground truth (the chosen editorial line), not against the prior deployed model; supersedes `agreement_gate.py` (which false-FAILed v4 by judging it against a Gemini-labeled v2 reference)
+- [ADR-022: Stamp Always, Decide Once](022-stamp-always-single-gate.md) - Gate-module contract: every stage stamps what it saw (score + flag + model version), exactly one config-gated drop point per concern, every decision reversible by config flip. No drops inside detectors, no consumer-side enforcement.
 
 ## Format
 
