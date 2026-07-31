@@ -43,8 +43,13 @@ source_filter:
 
 prefilter:
   enabled: true
-  expected_pass_rate: ~0.15
-  description: "Blocks political conflict framing, tourism fluff, celebrity news, cultural war content"
+  # Measured 24.5% on 14,923 production rows (5 days, 2026-07-31) with the
+  # LD#86 topic gate; before the gate the exclusion-only prefilter passed
+  # ~100%. Kept slightly above the original ~0.15 target: tightening further
+  # starts blocking model-visible content (35 rows >= raw 4.0 blocked at
+  # this setting, mostly off-lens hard science — see LD#86/#87).
+  expected_pass_rate: ~0.25
+  description: "Topic gate (cultural signal required, multilingual) + blocks political conflict framing, tourism fluff, celebrity news, cultural war content"
 
 oracle:
   # cd v5 was trained on DeepSeek V4 Flash (first non-Gemini lineage in production,

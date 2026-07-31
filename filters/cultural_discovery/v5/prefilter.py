@@ -285,6 +285,62 @@ class CulturalDiscoveryPreFilterV5(BasePreFilter):
         r'\b(peer-reviewed|published in|academic journal)\b',
     ]
 
+    # === TOPIC GATE (LD#86) ===
+    # Positive gate: an article must show at least one cultural-topic signal
+    # (this list OR DISCOVERY_PATTERNS) to reach the scorer. Without it the
+    # prefilter was exclusion-only and passed ~100% of the production
+    # firehose vs the declared expected_pass_rate (audit 2026-07-31:
+    # 2828/2828 passed). Multilingual by design: Latin-root stems cover most
+    # European languages; explicit keywords for Cyrillic/Greek/Arabic/CJK/
+    # Korean. Validated on 14,923 production rows (5 days, 2026-07-31):
+    # pass rate 24.5%; only 35 rows (0.23%) blocked despite model raw >= 4.0,
+    # dominated by off-lens hard-science wire copy (the #87 pollution class).
+    # NOT base's POSITIVE_PATTERNS slot — that has bypass semantics (see
+    # DISCOVERY_PATTERNS note above); this is a gate, separate slot.
+    TOPIC_GATE_PATTERNS = [
+        r'cultur', r'kultur', r'\bcultura\b',
+        r'patrimon', r'heritage', r'erfgoed', r'kulturerbe', r'\berbe\b',
+        r'muse[ou]', r'mus[ée]e', r'muzeum', r'museum',
+        r'arch[aä]?[eé]?olog', r'arqueolog', r'arkeolog',
+        r'histor', r'geschichte', r'geschiedenis',
+        r'\bart\b', r'\barte\b', r'\bkunst\b', r'\barts\b',
+        r'm[uú]si[ckq]', r'muziek', r'musik',
+        r'festival', r'\bferia\b', r'carnaval', r'carnival',
+        r'tradi[tzc]i', r'traditie', r'folklor', r'folclor',
+        r'linguist', r'\blengua\b', r'\blangue\b', r'\blingua\b', r'\btaal\b', r'sprache', r'language',
+        r'\bancient\b', r'antig[uü]', r'\bancien(ne)?\b', r'antik',
+        r'monument', r'\btemple?\b', r'templo', r'tempel', r'cathedr', r'catedral', r'kathedra', r'mosque', r'mezquita', r'moskee', r'shrine', r'pagoda',
+        r'ind[ií]gen', r'inheems', r'\btribe\b', r'tribal', r'aborigin', r'\bmaori\b', r'inuit',
+        r'manuscri', r'artefa[ck]t', r'artifact', r'papyrus', r'fresco', r'mosaic', r'mosaico',
+        r'civili[zs]a', r'zivilisation', r'beschaving',
+        r'mytholog', r'mitolog', r'\bmythe?\b', r'legend', r'leyenda',
+        r'exposici[oó]n', r'exposition', r'ausstellung', r'tentoonstelling', r'\bmostra\b', r'exhibit',
+        r'\bopera\b', r'theat[er]', r'teatro', r'th[eé][aâ]tre', r'ballet', r'danza', r'\bdanse\b', r'\bdance\b', r'\bdans\b',
+        r'poe[st][ir]', r'literatur', r'litt[eé]ratur', r'literatuur', r'\bnovel\b', r'escritor', r'\bauteur\b', r'writer', r'dichter', r'poet',
+        r'gastronom', r'culinar', r'cuisine', r'\bcocina\b', r'keuken',
+        r'ritual', r'ceremon', r'cérémon',
+        r'artesan', r'ambacht', r'handwerk', r'craft',
+        r'excava', r'opgraving', r'ausgrabung',
+        r'restaur[ao]', r'restauratie',
+        r'dynasty', r'dinast', r'empire', r'imperio', r'\bimperi\b', r'medieval', r'middeleeuw', r'renaissance', r'\broman\b', r'\bmaya\b', r'aztec', r'\binca\b', r'viking', r'pharaoh', r'fara[oó]n',
+        r'restor', r'tresor', r'tr[eé]sor', r'\btesoro\b', r'schatz',
+        r'descubr', r'd[eé]couv', r'scopert', r'descobert', r'ontdek', r'entdeck', r'oppdag', r'upptäck', r'opdag', r'odkry', r'felfedez', r'descoper',
+        r'forsch', r'\bfund\b', r'steinzeit', r'eiszeit', r'bronzezeit', r'ijstijd', r'stone age', r'ice age', r'edad de piedra', r'epoca de gheață',
+        r'otkri', r'pronađ', r'iskop', r'налаз', r'находк', r'откры',
+        r'ερευνητ', r'αρχαι', r'ανακαλυ', r'μο[υύ]μι',
+        r'fossil', r'f[oó]ssil', r'paleont', r'palæont', r'paläont', r'prehistor', r'pr[eé]histo', r'prähistor', r'preistor', r'praistor',
+        r'architec', r'arquitect', r'architekt', r'architett', r'建築', r'건축',
+        r'mumm[iy]', r'\bmumie\b', r'momia', r'm[uú]mia', r'mumij',
+        r'\bruins?\b', r'ruinas', r'\bruine[sn]?\b', r'rovine',
+        r'出土', r'발굴', r'化石',
+        r'hominin', r'hominid', r'p[a]?l[ae]olit', r'paleolith', r'palaeolith', r'neolit', r'pleistocen', r'holocen', r'mesolit',
+        r'культур', r'музе', r'наследи', r'археолог', r'истори',
+        r'πολιτισμ', r'μουσε', r'κληρονομι', r'αρχαιολογ', r'ιστορ',
+        r'ثقاف', r'متحف', r'تراث', r'آثار', r'تاريخ',
+        r'文化', r'博物', r'遗产', r'遺産', r'考古', r'历史', r'歴史',
+        r'문화', r'박물관', r'유산', r'역사',
+    ]
+
     def __init__(self):
         """Compile per-category exceptions + discovery patterns; base compiles
         EXCLUSION_PATTERNS into self._compiled_exclusions."""
@@ -295,6 +351,9 @@ class CulturalDiscoveryPreFilterV5(BasePreFilter):
         }
         self._compiled_discovery: List[re.Pattern] = [
             re.compile(p, re.IGNORECASE) for p in self.DISCOVERY_PATTERNS
+        ]
+        self._compiled_topic_gate: List[re.Pattern] = [
+            re.compile(p, re.IGNORECASE) for p in self.TOPIC_GATE_PATTERNS
         ]
 
     def apply_filter(self, article: Dict) -> Tuple[bool, str]:
@@ -340,6 +399,16 @@ class CulturalDiscoveryPreFilterV5(BasePreFilter):
                 continue
             return False, category
 
+        # Topic gate (LD#86): require at least one cultural-topic signal.
+        # Runs after category exclusions so their specific reasons keep
+        # precedence; anything reaching here is blocked only for lacking any
+        # positive signal, giving the bare reason below.
+        if not (
+            self.has_any_pattern(combined_text, self._compiled_discovery)
+            or self.has_any_pattern(combined_text, self._compiled_topic_gate)
+        ):
+            return False, "no_cultural_topic_signal"
+
         return True, "passed"
 
     def classify_content_type(self, article: Dict) -> str:
@@ -378,6 +447,7 @@ class CulturalDiscoveryPreFilterV5(BasePreFilter):
             'defense_domains': len(self.DEFENSE_DOMAINS),
             'code_hosting_domains': len(self.CODE_HOSTING_DOMAINS),
             'discovery_patterns': len(self.DISCOVERY_PATTERNS),
+            'topic_gate_patterns': len(self.TOPIC_GATE_PATTERNS),
         }
         for category, patterns in self.EXCLUSION_PATTERNS.items():
             stats[f'{category}_patterns'] = len(patterns)
@@ -504,6 +574,38 @@ def test_prefilter():
                     "The archaeological find was documented by university historians studying ancient intercultural trade routes.",
             'expected': (True, 'passed'),
             'description': 'Heritage restoration'
+        },
+
+        # Should BLOCK - Topic gate (LD#86): no cultural-topic signal
+        {
+            'title': 'Local Team Wins Regional Football Championship',
+            'text': "The team secured a decisive victory in the final match on Saturday. "
+                    "Coach praised the players for their dedication throughout the season. "
+                    "Fans celebrated in the streets as the club lifted the trophy for the third time. "
+                    "The winning goal came in the closing minutes of the game.",
+            'expected': (False, 'no_cultural_topic_signal'),
+            'description': 'Sports news (topic gate)'
+        },
+
+        # Should BLOCK - Topic gate (LD#86): tech/business wire copy
+        {
+            'title': 'Chipmaker Reports Higher Quarterly Revenue',
+            'text': "The semiconductor company posted revenue growth driven by demand for data center processors. "
+                    "Analysts noted improved margins across the product portfolio. "
+                    "The firm expects supply constraints to ease in the coming quarters. "
+                    "Shares rose in after-hours trading following the announcement.",
+            'expected': (False, 'no_cultural_topic_signal'),
+            'description': 'Tech earnings (topic gate)'
+        },
+
+        # Should PASS - Topic gate: non-English cultural content (multilingual stems)
+        {
+            'title': 'Nuevo hallazgo en el museo del patrimonio andino',
+            'text': "Los investigadores presentaron piezas de la cultura precolombina restauradas durante los últimos años. "
+                    "La colección incluye textiles y cerámica de gran valor para el patrimonio de la región. "
+                    "El museo organizará una exposición dedicada a las tradiciones andinas.",
+            'expected': (True, 'passed'),
+            'description': 'Spanish cultural content (topic gate multilingual)'
         },
     ]
 
