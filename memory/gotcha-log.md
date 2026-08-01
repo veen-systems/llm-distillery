@@ -46,9 +46,21 @@ lines) is worse than no alarm — it trains everyone to ignore the signal.
 
 ## Every filter's prefilter was dead in production for ~6 months — config said enabled, runtime hard-coded it off (2026-08-01)
 
-**Problem**: Verifying the LD#86 cultural_discovery topic gate showed production
-still stamping `passed_prefilter: true` on 2647/2647 rows. Widening the check:
-**all eight deployed filters stamp 0 prefilter blocks**, every cycle.
+**Problem**: Verifying the LD#86 cultural_discovery topic gate showed the deployed
+gate having no effect. Scope precisely: the dead layer is the **per-lens rule
+prefilter** (`filters/{name}/v{N}/prefilter.py`, ADR-018/019 `BasePreFilter`
+subclasses). The e5 probe, commerce/obituary/violence gates, and the NM#189
+source-type allowlist all run normally — each verified, not assumed.
+
+⚠️ **The first evidence for this was invalid and had to be retracted** (same day,
+after the owner asked what the prefilter actually was). The claim "all eight
+filters stamp 0 prefilter blocks per cycle" came from counting `passed_prefilter`
+in `data/filtered/*/filtered_*.jsonl` — but `scripts/main.py:1151` only writes a
+row `if result["passed_prefilter"]`, so that file is 100% passers **by
+construction** and can never contain a block. Reading "no blocked rows in a file
+that excludes blocked rows" as evidence of no blocking is circular. The pipeline
+log in fact reports ~350–360 prefiltered per lens per cycle (source-type
+allowlist + validation failures, not lens rules).
 
 **Root cause**: `deploy/gpu-server/main.py` builds every scorer with
 `use_prefilter=False` (L915) and calls `score_batch(..., skip_prefilter=True)`
@@ -61,11 +73,19 @@ silently overrode the config, and nothing compared declared against observed.
 env lever (ADR-022), shadow first, flip per filter, plus a declared-vs-observed
 pass-rate assertion.
 
-**Lesson — the diagnostic that found it**: replay the gate over the exact rows
-production already stamped. `CulturalDiscoveryPreFilterV5.apply_filter()` on
-`filtered_20260801_085259.jsonl` gave 28.8% pass vs the stamped 100%. That one
-comparison separates "gate logic is wrong" from "gate is never called" in a
-single step — and no amount of reading the (correct) gate source would have.
+**Lesson — the diagnostic that actually settles it**: measure the component
+**in-path, on the pre-drop stream**. The NM#284 shadow log reports cd
+`observed_pass=0.244` over 1,300 articles at the scorer; if the gate were
+enforcing upstream the scorer would only see the ~24% that passed and the same
+measurement would read ≈1.000. That is the load-bearing proof.
+
+**Second lesson — check what your evidence source can physically contain.** The
+replay-over-production-rows trick (28.8% vs a stamped 100%) *looked* decisive and
+was the first thing I reached for, but its baseline came from an output file that
+excludes the very rows in question, so the "100%" was an artifact. A reproduction
+is only as good as the population you reproduce it on. Before using a data source
+as a denominator, ask what it is filtered on — here, one `if` statement at
+`scripts/main.py:1151`. Related: the wrong-shaped-verify entries below.
 
 **Pattern (4th occurrence of verify-the-call-path, cf. LD#80 below)**: a config
 key named `enabled` is not evidence that anything is enabled. When a component
