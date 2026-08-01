@@ -1,257 +1,155 @@
 # Datasets Directory
 
-Organized storage for all datasets in the LLM Distillery project following ML best practices.
+Local-only data used to train, calibrate and gate the filter scorers.
 
-## Directory Structure
+**Nothing here is in git** except this README and `.gitkeep` — `datasets/` is
+gitignored. Treat every path below as "exists on the machine that produced it",
+not "available after a clone".
 
-```
-datasets/
-├── raw/                    # Raw merged datasets (source of truth)
-│   ├── master_dataset.jsonl             # 51,869 articles (204 MB)
-│   └── master_dataset_metadata.json     # Merge statistics
-│
-├── processed/              # Processed/filtered datasets (future use)
-│
-├── splits/                 # Train/val/test splits for model training
-│   ├── train.jsonl                      # 36,177 articles (69.7%)
-│   ├── val.jsonl                        # 7,667 articles (14.8%)
-│   ├── test.jsonl                       # 8,025 articles (15.5%)
-│   └── splits_metadata.json             # Split statistics
-│
-├── test/                   # Test datasets for development
-│   ├── test_1k.jsonl                    # 1,000 sample articles
-│   ├── test_1k_metadata.json
-│   └── test_articles.jsonl              # Old test file
-│
-└── uplifting/              # Filter-specific labeled datasets (future)
-    ├── uplifting_labeled.jsonl          # Ground truth from Claude/Gemini
-    ├── uplifting_train.jsonl
-    ├── uplifting_val.jsonl
-    └── uplifting_test.jsonl
-```
+---
 
-## Dataset Descriptions
+## What is actually here
 
-### Raw Datasets (`raw/`)
+| Directory      | Holds                                                             | Used for                            |
+| -------------- | ----------------------------------------------------------------- | ----------------------------------- |
+| `training/`    | `train/val/test.jsonl`, one subdirectory per filter version        | student training                    |
+| `scored/`      | Oracle-scored corpora, plus the batch inputs and logs that made them | label production, hard-case mining |
+| `calibration/` | The same articles scored by several oracles, plus disagreements     | calibration, oracle-bias analysis   |
+| `gate/`        | Held-out probes and per-model scored outputs — see below            | deploy gating                       |
+| `screening/`   | Topic seed sets for finding candidate articles                      | corpus screening                    |
 
-**Purpose**: Source of truth - raw merged data from historical database
+Present at time of writing: `training/{nature_recovery_v4, solutions_v4,
+solutions_v6}`; `gate/` and `scored/` dominated by `nr_v4_*` (nature_recovery v4)
+and `solutions_v*`. Filters absent here have not been through this pipeline.
 
-**master_dataset.jsonl** (51,869 articles)
-- Complete merged dataset from `I:/Mijn Drive/NexusMind/historical-database`
-- Deduplicated by article ID (4,914 duplicates removed)
-- Quality validated (required fields, non-empty content)
-- Created: 2025-10-26
-- Sources: 66 JSONL files from historical database
+**Naming**: `<filter>_<version>_<purpose>.jsonl`. `nr_` abbreviates
+`nature_recovery`, but the abbreviation is not applied consistently
+(`solutions_v4_*` is spelled out), so match on version and purpose rather than
+prefix.
 
-**Article Format**:
+**A note on these names.** Most directories here are named for a *stage*
+(`training`, `calibration`, `screening`) rather than a property of the data, and
+`gate/` is named for its *consumer*. The data-honest name for `gate/` would be
+`heldout/` — held out of training, carrying oracle labels — but it is referenced
+by `scripts/gate/*.py`, the nature-recovery runbook and the plan docs, so it stays.
+Know that the directory name describes who reads the file, not what is in it.
+
+---
+
+## "gate" means deploy-blocking evidence
+
+A **gate** answers one question: _may this trained student be deployed?_ Score a
+held-out cohort with the candidate, compare against oracle ground truth, and if it
+fails, do not ship. `datasets/gate/` holds the evidence such a run needs —
+deliberately **held out of training**, so the comparison is honest.
+
+### Not the *gatekeeper*
+
+`filters/*/base_scorer.py` defines `GATEKEEPER_DIMENSION`: a rule applied at
+**inference** that caps an article when a required dimension is too low (for
+nature_recovery v4, `recovery_evidence < 3.0` caps the article at 3.5, below the
+surfacing threshold).
+
+|              | gate                              | gatekeeper                 |
+| ------------ | --------------------------------- | -------------------------- |
+| **blocks**   | a model deploy                    | an individual article      |
+| **runs at**  | release time                      | inference time             |
+| **lives in** | `scripts/gate/`, `datasets/gate/` | `filters/*/base_scorer.py` |
+
+Same root word, opposite objects. From an ovr.news context, note that "the
+editorial gate" there is a third, unrelated thing — a retired LLM rule that
+dropped articles.
+
+### Probe kinds
+
+- `*_heldout_probes.jsonl` / `*_heldout_ids.txt` — test-split articles kept out of
+  training, with oracle scores. The main agreement cohort.
+- `*_protection_probes.jsonl` — a curated cohort for one editorial claim (for
+  nature_recovery: delivered protection). Note these are **positives** that must
+  keep scoring well, not adverse examples.
+- `*_named_probes.jsonl` — individually chosen articles that must score correctly;
+  regression tests for known-hard cases.
+- `*_oos_trainpool.jsonl` — out-of-sample pool; not a gating verdict.
+- `*_test_scored.jsonl` / `*_scored_by_<version>.jsonl` — a cohort after scoring by
+  one model. `ground_truth_gate.py` takes one per model plus a labels file.
+- `*_sourceA_reference.jsonl` — **historical; do not gate on it** (see below).
+
+Record shape, from `nr_v4_protection_probes.jsonl`:
+
 ```json
 {
-  "id": "github_1175a04f0e39",
-  "title": "Repository: zhouyuan888888/CARETrans",
-  "content": "CARE Transformer: Mobile-Friendly...",
-  "source": "github",
-  "source_type": "api",
-  "url": "https://github.com/...",
-  "published_date": "2025-10-07T04:54:53",
-  "collected_date": "2025-10-09T12:51:30.357274",
-  "language": "en",
-  "tags": ["github", "repository", "code"],
-  "metadata": {...}
+  "id": "positive_news_mongabay_bdb6a20f9553",
+  "title": "In Kyrgyzstan, a climate-ready corridor gives snow leopards and herders room to roam",
+  "content": "...",
+  "url": "https://news.mongabay.com/...",
+  "oracle_wa": 5.25,
+  "recovery_evidence": 4.0,
+  "protection_durability": 6.0,
+  "protection_primary": true,
+  "provenance": "test_split_heldout"
 }
 ```
 
-### Train/Val/Test Splits (`splits/`)
+### Which gate script
 
-**Purpose**: Stratified splits for model training and evaluation
+Use **`scripts/gate/ground_truth_gate.py`**.
 
-**Creation**:
-```bash
-python -m ground_truth.create_splits \
-    --input datasets/raw/master_dataset.jsonl \
-    --output-dir datasets/splits \
-    --stratify-by source
-```
+`scripts/gate/agreement_gate.py` is **superseded and must not produce a deploy
+verdict.** It judged a candidate against the *previous student* rather than oracle
+ground truth, and drew its cohort from `nr_v4_sourceA_reference.jsonl` — v2-era
+Gemini labels, +1.775 inflated relative to the DeepSeek labels v4 trained on. A
+deliberately conservative DeepSeek-trained student was measured against a generous
+baseline, so its *correct* demotions counted as failures: a false FAIL. Judge
+against held-out oracle labels; the oracle a model trained on is the chosen
+editorial line. Kept for provenance only.
 
-**Split Ratios**:
-- **Train** (70%): 36,177 articles - For model training
-- **Val** (15%): 7,667 articles - For hyperparameter tuning
-- **Test** (15%): 8,025 articles - For final evaluation
+---
 
-**Stratification**: By `source` field to ensure balanced representation across all 250+ sources
+## `adverse/` — curated hard negatives (proposed)
 
-**Top Sources in Dataset**:
-- science_arxiv_cs: 10,361 (20.0%)
-- newsapi_general: 4,095 (7.9%)
-- science_arxiv_math: 2,917 (5.6%)
-- arxiv: 2,148 (4.1%)
-- global_news_el_pais: 1,576 (3.0%)
-- dutch_news_ad_algemeen: 1,416 (2.7%)
-- ...and 244 more sources
+Not yet created. Reserved for articles that **look like the lens and are not**,
+with oracle labels near zero.
 
-### Test Datasets (`test/`)
+This is a property of the data, not a stage, which is why it gets its own
+directory rather than living in `gate/`: adverse examples are useful as training
+signal *and* as gate probes, and mixing them into a directory of positives-that-
+must-keep-scoring makes both harder to reason about.
 
-**Purpose**: Small datasets for quick development and testing
+Why they need curating rather than sampling: random negatives
+(`scripts/experiments/sample_v7_negatives.py`) teach the boundary between "in the
+lens" and "unrelated" — a boundary the scorers already handle. They teach nothing
+about the boundary that actually fails, between a story *about* a good outcome and
+a story about harm that *contains* one.
 
-**test_1k.jsonl** (1,000 articles)
-- First 1,000 articles from master dataset
-- Use for quick experiments, debugging, and prototyping
+Worked example — issue #91: an investigation into a community where girls are
+raised into sex work scored **6.77 raw on `uplifting`, 6th highest of 3,530
+articles**, against a median of 1.37. It opens on a mother determined her daughters
+will escape, and the filter scored that thread rather than the article's subject. A
+handful of such cases is worth thousands of random negatives.
 
-**test_articles.jsonl**
-- Legacy test file from previous development
+Suggested shape: the probe record above, with `oracle_wa` near zero, a
+`provenance` naming where the failure was observed, and a short `why_adverse`
+string stating which surface feature misleads.
 
-## Usage
+---
 
-### 1. Training a Model
+## Adding a filter to this pipeline
 
-```python
-from pathlib import Path
-import json
+1. Screen candidates (`screening/` seeds) → oracle-score → `scored/`.
+2. Split into `training/<filter>_<version>/{train,val,test}.jsonl`, holding out the
+   probes you intend to gate on.
+3. Put those probes in `gate/` with oracle scores and `provenance`.
+4. Train, score the held-out cohort with the candidate, gate with
+   `ground_truth_gate.py`, and only then deploy.
 
-# Load training data
-def load_dataset(path):
-    with open(path) as f:
-        return [json.loads(line) for line in f]
+---
 
-train = load_dataset('datasets/splits/train.jsonl')
-val = load_dataset('datasets/splits/val.jsonl')
+## History
 
-# Train model
-# model.fit(train, validation_data=val)
-```
+Before 2026 this directory held a single 51,869-article `master_dataset.jsonl`
+under `raw/` with global `splits/`, and this README documented that layout. The
+project moved to per-filter, per-version datasets; `raw/`, `processed/`, `splits/`
+and `test/` no longer exist. `.gitignore` still lists them, harmlessly.
 
-### 2. Evaluating a Model
-
-```python
-# Load test set
-test = load_dataset('datasets/splits/test.jsonl')
-
-# Evaluate on held-out test set
-# metrics = model.evaluate(test)
-```
-
-### 3. Quick Prototyping
-
-```bash
-# Use test_1k for fast iteration
-python experiment.py --data datasets/test/test_1k.jsonl
-```
-
-### 4. Creating New Splits
-
-```bash
-# Custom split ratios
-python -m ground_truth.create_splits \
-    --input datasets/raw/master_dataset.jsonl \
-    --output-dir datasets/splits_custom \
-    --train-ratio 0.8 \
-    --val-ratio 0.1 \
-    --test-ratio 0.1
-
-# Different stratification
-python -m ground_truth.create_splits \
-    --input datasets/raw/master_dataset.jsonl \
-    --output-dir datasets/splits \
-    --stratify-by language
-```
-
-## Metadata Files
-
-Each dataset includes a metadata JSON file documenting:
-- Creation timestamp
-- Source files/patterns
-- Number of articles
-- Statistics (duplicates, invalid entries, etc.)
-- Split ratios (for train/val/test)
-
-**Example** (`raw/master_dataset_metadata.json`):
-```json
-{
-  "created": "2025-10-26T07:56:11.911492",
-  "source_pattern": "I:/Mijn Drive/NexusMind/historical-database/current/*/*.jsonl",
-  "total_articles": 51869,
-  "unique_articles": 51869,
-  "duplicates_removed": 4914,
-  "invalid_articles": 0
-}
-```
-
-## Git Tracking
-
-**Tracked** (committed to repository):
-- ✅ Metadata files (`*_metadata.json`)
-- ✅ This README
-- ✅ Directory structure (.gitkeep files)
-
-**NOT Tracked** (local only, regenerated as needed):
-- ❌ Large JSONL files (`*.jsonl`)
-- ❌ Subdirectory contents (raw/, processed/, splits/)
-
-**Rationale**: Large datasets (>200MB) are too big for git. Keep metadata in git to document what datasets exist, regenerate locally when needed.
-
-## Regenerating Datasets
-
-If you clone the repository, regenerate datasets locally:
-
-```bash
-# 1. Merge historical database
-python -m ground_truth.prepare_dataset \
-    --source "I:/Mijn Drive/NexusMind/historical-database/current/*/*.jsonl" \
-    --output datasets/raw/master_dataset.jsonl
-
-# 2. Create splits
-python -m ground_truth.create_splits \
-    --input datasets/raw/master_dataset.jsonl \
-    --output-dir datasets/splits \
-    --stratify-by source
-```
-
-## Best Practices
-
-### DO:
-✅ Use `raw/` for source of truth datasets
-✅ Use `splits/` for train/val/test data
-✅ Use `test/` for quick development experiments
-✅ Stratify splits by relevant field (source, language, etc.)
-✅ Document datasets with metadata files
-✅ Keep splits reproducible (use fixed seed)
-
-### DON'T:
-❌ Modify files in `raw/` after creation
-❌ Mix training and test data
-❌ Use test set for hyperparameter tuning (use validation set)
-❌ Commit large JSONL files to git
-❌ Delete metadata files
-
-## Dataset Statistics
-
-| Dataset | Articles | Size | Purpose |
-|---------|----------|------|---------|
-| Master (raw) | 51,869 | 204 MB | Source of truth |
-| Train | 36,177 | ~143 MB | Model training |
-| Val | 7,667 | ~30 MB | Hyperparameter tuning |
-| Test | 8,025 | ~31 MB | Final evaluation |
-| Test 1K | 1,000 | 2.4 MB | Quick experiments |
-
-**Total Storage**: ~410 MB (excluding processed datasets)
-
-## Future Additions
-
-Planned dataset types:
-
-- **Labeled Datasets**: Ground truth from Claude/Gemini
-  `uplifting/uplifting_50k_labeled.jsonl`
-
-- **Filter-Specific Splits**: Train/val/test for each filter
-  `uplifting/uplifting_train.jsonl`
-
-- **Processed Datasets**: Cleaned/filtered/augmented data
-  `processed/master_filtered.jsonl`
-
-- **Sampled Datasets**: Stratified samples for specific purposes
-  `processed/arxiv_only.jsonl`
-
-## See Also
-
-- [Data Preparation Guide](../docs/guides/data-preparation.md) - How to merge and prepare datasets
-- [Architecture Overview](../docs/architecture/overview.md) - Overall system design
-- [Calibration Guide](../docs/guides/calibration.md) - Comparing LLM oracles
+_Rewritten 2026-08-01: the previous version documented only directories that no
+longer exist, and none of the five that do._
