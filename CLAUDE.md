@@ -28,6 +28,8 @@ framework: agent-ready-projects v1.10.6
 - **Oracle outputs scores only.** Dimensional scores (0-10), never tier/stage classifications. Tier assignment is postprocessing. Changing thresholds must never require re-labeling.
 - **Use `load_base_model_for_seq_cls()`** from `filters/common/model_loading.py`. Never use `AutoModelForSequenceClassification` directly — Gemma-3-1B's `gemma3_text` config isn't in the Auto mapping.
 - **Keep PEFT adapters in OLD key format.** `.lora_A.weight` / `score.weight`, not `.lora_A.default.weight`. Never run `resave_adapter.py` before Hub upload — it breaks `PeftModel.from_pretrained()`.
+- **A filter's `prefilter` config does NOT mean the prefilter runs in production.** Per-filter prefilters (`filters/{name}/v{N}/prefilter.py`) have never executed in the production scoring path — the GPU scorer builds every scorer with `use_prefilter=False` and calls `score_batch(skip_prefilter=True)` (NM#284, found 2026-08-01; dead since 2026-02-10). They *do* run in the llm-distillery oracle/training path, which is why this survived six months. NM#284 stage 1 now logs observed vs declared pass rate per batch; enforcement is not yet on. Unaffected: the commerce prefilter (ADR-004) and the obituary/violence gates. **Don't infer runtime behavior from config keys** — see `memory/calibration-history.md` Dead Ends.
+
 - **Fit `calibration.json` after every training run.** Isotonic regression on the val set. Commit with the filter package. The base scorer auto-loads it.
 - **`.nexusmind-owns` is empty by default.** The manifest mechanism stays in place as a controlled-divergence escape hatch — entries get added only with a tracked issue and a resolution deadline. Long-term silent divergence between repos is the failure shape that the 2026-05-04 "manifest as anti-pattern" gotcha-log entry warns against (concrete: normalization plumbing was deleted from NexusMind on 2026-04-16 and went unnoticed for 18 days because the manifest masked it). Production-runtime concerns now live in `NexusMind/src/scoring/production_scorer.py`, which composes the shared base scorer rather than mutating it. `filters/common/filter_base_scorer.py` and `filters/common/hybrid_scorer.py` are pure shared math; sync freely.
 
@@ -133,4 +135,4 @@ This project is a source project for [augmented-engineering](https://github.com/
 
 ---
 
-*Last updated: 2026-07-31*
+*Last updated: 2026-08-01*

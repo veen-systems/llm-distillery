@@ -185,7 +185,7 @@ Writes `normalization.json` to the filter dir; commit it and deploy to both serv
 | 1. Planning | Define dimensions, tiers, gatekeepers | Create `filters/{name}/v1/config.yaml` |
 | 2. Architecture | Write oracle prompt with scope check + inline critical filters | Create `prompt-compressed.md` |
 | 3. Validation | Calibrate oracle on ~100 articles | Small batch scoring run |
-| 4. Prefilter | Rule-based noise filter | Create `prefilter.py` inheriting `base_prefilter.py` |
+| 4. Prefilter | Rule-based noise filter — **saves oracle spend in phases 3/5; NOT yet enforced in production scoring (NM#284)** | Create `prefilter.py` inheriting `base_prefilter.py` |
 | 5. Training Data | Score 5K-10K articles | Full batch scoring run |
 | 6. Training | Distill to Gemma-3-1B + LoRA | Train on gpu-server |
 | 7. Calibration | Fit isotonic calibration | `fit_calibration.py` on val set |

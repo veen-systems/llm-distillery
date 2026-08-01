@@ -4,6 +4,46 @@ Problems encountered and resolved. Format: Problem → Root cause → Fix.
 
 ---
 
+## `git stash push` + a long test run in ONE chained command lost work to the Bash timeout (2026-08-01)
+
+**Problem**: Comparing a test failure-set before/after a change, written as one
+command: `pytest > after.txt; git stash push <files>; pytest > before.txt; git
+stash pop`. The harness killed it at the 2-minute limit **between the stash and
+the pop** (the suite takes ~60s and ran twice). The working-tree changes were
+gone — silently, since the command reported only a timeout.
+
+**Root cause**: Chaining a state-mutating step and its matching restore step
+inside a single timeout-bounded command makes the restore conditional on the
+whole chain finishing. Any timeout lands the repo in the intermediate state.
+
+**Fix**: `git stash list` → `git stash pop` recovered it (nothing was lost).
+**Lesson**: never put `stash push` and `stash pop` in the same timeout-bounded
+command. Run the baseline as its own step, or use `git worktree` / a second
+checkout so no stash is involved. Generally: **any push/pop, mv/mv-back,
+disable/re-enable pair belongs in separate commands** — the second half must not
+depend on the first half's command surviving.
+
+## Unit-tested observability shipped two defects that its first six lines of real output exposed (2026-08-01)
+
+**Problem**: NM#284's shadow prefilter logging shipped with 6 passing unit tests.
+Its first production run immediately showed two bugs: (1) drift was judged at
+n=1, because the post-deploy smoke test scores exactly ONE curated article per
+filter — so all six filters logged `observed_pass=1.000` and got flagged
+`DRIFT(gate appears inert)`; (2) `expected_pass_rate: ~0.25` (the "approximately"
+form, used by 3 filters) loads in YAML as the **string** `"~0.25"`, so a strict
+`isinstance(rate, (int, float))` check silently dropped it — exactly the filters
+the work cared about logged no declared rate at all.
+
+**Root cause**: Both defects depend on properties of the real environment (what
+the smoke test actually does; how the config files are actually authored). Unit
+tests encoded the author's model of the environment, so they could not see either.
+
+**Fix**: `5d53774` — `MIN_SHADOW_SAMPLE = 50` before judging drift, and parse the
+`~N` form. **Lesson**: for *observability* changes specifically, deploy-then-read
+beats test-then-trust; the first real output is the cheapest and highest-yield
+review it will get. Corollary: a false alarm on every deploy (6 of the first 6
+lines) is worse than no alarm — it trains everyone to ignore the signal.
+
 ## Every filter's prefilter was dead in production for ~6 months — config said enabled, runtime hard-coded it off (2026-08-01)
 
 **Problem**: Verifying the LD#86 cultural_discovery topic gate showed production

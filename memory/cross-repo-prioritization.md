@@ -7,9 +7,21 @@ metadata:
 
 # Cross-Repo Prioritization
 
-**Last updated: 2026-07-30 evening** (re-triage against live issue lists; LD#83 CLOSED — obituary enforcement live v5@0.85; LD#85 opened+parked; ovr#204 unblocked; LD#72 closed; new: LD#84, NM#278/#279, FS#118)
+**Last updated: 2026-08-01** (Chain 3 calibration CLOSED — refits + tier gate verified live; new chain head **NM#284**)
 
 Covers: **llm-distillery** (29 open), **NexusMind** (34 open), **ovr.news** (76 open), **FluxusSource** (7 open). Repos: veen-systems/llm-distillery, ducroq/{NexusMind,ovr.news,FluxusSource}.
+
+## Changes 2026-08-01 — Chain 3 closed, NM#284 opened as a new chain head
+
+| What | Now |
+|------|-----|
+| **Chain 3 (calibration)** | **CLOSED.** 2026-07-31 deploys verified live 08-01: uplifting raw 5.00 → norm ≈5.18; belonging MEDIUM+ p90 norm 8.71; NM#280 invariant `count(tier != low) == count(raw >= op-point)` exact for all six live filters across six consecutive cycles. **Closed NM#279, NM#280, LD#74, LD#76.** |
+| **NM#284 (NEW — P1, new chain head)** | Per-filter prefilters have **never run in production** (since 2026-02-10): gpu-server scorer sets `use_prefilter=False` + `skip_prefilter=True` while every `config.yaml` declares `enabled: true`. Stage 1 (shadow measurement) shipped + deployed + verified live same day (`5d53774`). **Blocks LD#86; gates LD#87; constrains LD#90.** |
+| **LD#86** | Stays OPEN — the topic gate is correct and now production-validated (0.244 observed vs 0.25 declared, n=1300) but not enforced. Closes on the NM#284 stage-3 flip; cd is the first candidate. |
+| **LD#87 (cd v6 op-point)** | Now explicitly **downstream of NM#284** — v5's op-point and normalization CDF were fitted on a distribution still containing the ~71% the prefilter should have removed. |
+| **LD#90 (harmonization)** | Criterion corrected: **not** "lens block rate must be non-zero" (that wrongly fails nature_recovery v4, whose pass-through is deliberate and documented) but "observed matches declared, and `description` matches actual behavior". solutions v6 is the real mismatch (declares 0.20, passes 0.59). |
+| **NM#206** | Already **CLOSED** — drop from Batch A. |
+| **NM#281** | Unblocked, next in queue. |
 
 ## Changes 2026-07-30 evening (session 3)
 
