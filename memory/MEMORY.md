@@ -1,6 +1,6 @@
 # Memory Index
 
-- [Cross-repo prioritization](cross-repo-prioritization.md) — master issue landscape across all 4 repos: P0-P4, 8 dependency chains, 5 work batches. Chain 3 (calibration): LD#76 AUDITED 2026-07-31, fixes EXECUTED same day (refits + cd gate + NM#280) — verify next cycle.
+- [Cross-repo prioritization](cross-repo-prioritization.md) — master issue landscape across all 4 repos (156 open): P0-P4, **12 dependency chains**, 5 work batches. Re-inventoried 2026-08-01 evening: Chain 3 CLOSED, Chain 8 now deadline-driven (FS#120 ~2026-08-14), new primary chain is NM#284→#285 prefilter resurrection; new chains 9-11 (hero images, dedup, score provenance).
 - [Filter status](filter-status.md) — current state of all production filters and in-development versions
 - [GPU server](gpu-server.md) — venv, PYTHONPATH, HF_HUB_OFFLINE, ollama conflict, training setup
 - [b650 GPU](b650-gpu.md) — Arian's 3090 Ti training node: access (account jeroen), uv venv, staged data, cross-box score-skew warning
