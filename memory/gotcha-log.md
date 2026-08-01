@@ -52,7 +52,7 @@ the wrong object returned a clean, unambiguous zero that read as proof.
 
 1. **Mine (NM#284)**: counted `passed_prefilter` in
    `data/filtered/*/filtered_*.jsonl` to prove prefilters weren't blocking. That
-   file only receives `passed_prefilter: true` rows `scripts/main.py`’s `if result["passed_prefilter"]:` write guard —
+   file only receives `passed_prefilter: true` rows NexusMind `scripts/main.py`’s `if result["passed_prefilter"]:` write guard —
    0 blocks by construction.
 2. **ovr#280**: concluded "NexusMind never sends `cluster_id`" from
    `metadata.quality` (FluxusSource's block: `bias_category, credibility_score,
@@ -123,14 +123,14 @@ source-type allowlist all run normally — each verified, not assumed.
 ⚠️ **The first evidence for this was invalid and had to be retracted** (same day,
 after the owner asked what the prefilter actually was). The claim "all eight
 filters stamp 0 prefilter blocks per cycle" came from counting `passed_prefilter`
-in `data/filtered/*/filtered_*.jsonl` — but `scripts/main.py`’s `if result["passed_prefilter"]:` write guard only writes a
+in `data/filtered/*/filtered_*.jsonl` — but NexusMind `scripts/main.py`’s `if result["passed_prefilter"]:` write guard only writes a
 row `if result["passed_prefilter"]`, so that file is 100% passers **by
 construction** and can never contain a block. Reading "no blocked rows in a file
 that excludes blocked rows" as evidence of no blocking is circular. The pipeline
 log in fact reports ~350–360 prefiltered per lens per cycle (source-type
 allowlist + validation failures, not lens rules).
 
-**Root cause**: `deploy/gpu-server/main.py` builds every scorer with
+**Root cause**: NexusMind `deploy/gpu-server/main.py` builds every scorer with
 `use_prefilter=False` (L915) and calls `score_batch(..., skip_prefilter=True)`
 (L1318) — present since `66582e7` (2026-02-10), i.e. since the GPU scorer
 service was first written. Meanwhile every filter's `config.yaml` declares
@@ -153,7 +153,7 @@ was the first thing I reached for, but its baseline came from an output file tha
 excludes the very rows in question, so the "100%" was an artifact. A reproduction
 is only as good as the population you reproduce it on. Before using a data source
 as a denominator, ask what it is filtered on — here, one `if` statement at
-`scripts/main.py`’s `if result["passed_prefilter"]:` write guard. Related: the wrong-shaped-verify entries below.
+NexusMind `scripts/main.py`’s `if result["passed_prefilter"]:` write guard. Related: the wrong-shaped-verify entries below.
 
 **Pattern (4th occurrence of verify-the-call-path, cf. LD#80 below)**: a config
 key named `enabled` is not evidence that anything is enabled. When a component
@@ -914,7 +914,7 @@ Captured outputs (this is the deploy-claim verification trail the rule requires)
 
 **Why the 2026-04-29 "Not a bug — by design" gotcha entry didn't catch it**: that investigation read the current `filter_base_scorer.py`, observed it didn't write `raw_weighted_average`, and (correctly) concluded those fields are added downstream by NexusMind's runtime. It assumed the runtime addition existed. It didn't grep NexusMind to verify. Pattern: "by design" is an architectural claim; verifying it requires reading the implementation, not the design doc. See the 2026-04-29 entry, now marked RESOLVED.
 
-**Fix** (NexusMind merge `0e80d92`, 2026-05-04): Path B over Path A. Extract production-runtime concerns into `NexusMind/src/scoring/production_scorer.py` — a wrapper class that composes any `FilterBaseScorer`/`HybridScorer` instance, loads `normalization.json` and `score_scale_factor` independently, and post-processes the base scorer's output to add `raw_weighted_average`, set `normalization_method ∈ {"percentile", "scale_factor", "none"}`, replace `weighted_average` with the normalized value, and reassign tier on normalized. Single composition site at `state.get_or_load_filter()` in `deploy/gpu-server/main.py`. `filter_base_scorer.py` returns to pure shared math, byte-identical between repos. `.nexusmind-owns` goes empty; mechanism stays as escape hatch for genuine short-lived divergence with a tracked deadline. ADR-014 amended (application site → `production_scorer.py`; tier reassigned on normalized).
+**Fix** (NexusMind merge `0e80d92`, 2026-05-04): Path B over Path A. Extract production-runtime concerns into `NexusMind/src/scoring/production_scorer.py` — a wrapper class that composes any `FilterBaseScorer`/`HybridScorer` instance, loads `normalization.json` and `score_scale_factor` independently, and post-processes the base scorer's output to add `raw_weighted_average`, set `normalization_method ∈ {"percentile", "scale_factor", "none"}`, replace `weighted_average` with the normalized value, and reassign tier on normalized. Single composition site at `state.get_or_load_filter()` in NexusMind `deploy/gpu-server/main.py`. `filter_base_scorer.py` returns to pure shared math, byte-identical between repos. `.nexusmind-owns` goes empty; mechanism stays as escape hatch for genuine short-lived divergence with a tracked deadline. ADR-014 amended (application site → `production_scorer.py`; tier reassigned on normalized).
 
 **Verification**: Fresh sustainability_technology JSONL on sadalsuud, 2026-05-04 19:22 UTC pipeline run, 1142 articles: `weighted_average=1.81`, `raw_weighted_average=4.42`, `normalization_method="percentile"`, `tier="low"`. Both audit fields populated end-to-end for the first time since 2026-04-16. All 7 filters working post-deploy.
 
@@ -1364,7 +1364,7 @@ heredoc (`python3 - <<'EOF'`) so quotes aren't doubly escaped, and single-quote 
 **Fix**: Panel survived on 3-lab majority (every article kept ≥3 valid votes — verified before trusting the result). Lesson: before a multi-model Ollama panel, check no pipeline cycle is due (`systemctl list-timers`/`pgrep -f scripts/main.py` on sadalsuud); after any partial-error panel, recompute per-article valid-vote counts before using majorities.
 
 ### RUNBOOK Durability Note Contradicted deploy_filters.sh — Wrong Deploy Plan Twice (2026-07-30)
-**Problem**: Session first planned a manual scorer deploy ("pull + deploy_filters.sh next session"), then a reviewer warned the pushed threshold change could produce an unvalidated v3@0.90 regime. Both assessments were wrong about propagation: RUNBOOK §durability says changes to `deploy/gpu-server/main.py` "will not auto-propagate", but `SCORER_PATHS` in `deploy_filters.sh` has included `deploy/gpu-server/main.py` (and `src/scoring/`, smoke articles) since after that note was written.
+**Problem**: Session first planned a manual scorer deploy ("pull + deploy_filters.sh next session"), then a reviewer warned the pushed threshold change could produce an unvalidated v3@0.90 regime. Both assessments were wrong about propagation: RUNBOOK §durability says changes to NexusMind `deploy/gpu-server/main.py` "will not auto-propagate", but `SCORER_PATHS` in `deploy_filters.sh` has included NexusMind `deploy/gpu-server/main.py` (and `src/scoring/`, smoke articles) since after that note was written.
 **Root cause**: Stale doc prose treated as authoritative over the script it describes. Recurrence of the "'by design' is a claim about the implementation — read the runtime" lesson (2026-05-04 manifest entry).
 **Fix**: Read `deploy_filters.sh` directly: ExecStartPre auto-fast-forwards when any SCORER_PATHS entry differs from origin, pulling the whole commit and shipping config + scorer atomically — so a pushed scorer-touching commit deploys itself next cycle, and the mixed regime can only arise from a manual `git pull` without `deploy_filters.sh`. RUNBOOK corrected (NexusMind, 2026-07-30).
 

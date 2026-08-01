@@ -19,6 +19,34 @@ metadata:
 
 4. **Shadow-deploy is the correct first step for prefilter classifiers.** The model has known gaps (recall 0.55, only 1,957 training samples) but shadow mode costs nothing in content loss. Production data will reveal which error classes actually matter.
 
+## Settled 2026-08-01 (NM#281)
+
+9. **The enforcement path now exists, default-off, and is a config flip.**
+   `pipeline.violence_promotion.enforce: false` → `_enforce_violence_promotion()`
+   in `scripts/main.py`. Flipping it after LD#82 needs no new mechanism and no
+   deploy. **Caveat carried in the config comment:** at recall 0.55, enforcing
+   gates roughly half of true positives — precision-first by construction, so
+   question 5 below becomes an owner decision, not a modelling one.
+
+10. **Fail-open is now an explicit decision, not an accident.** If the detector
+    errors, articles are unstamped and **admitted**. Correct for a
+    precision-first gate — fail-closed would empty the corpus on any model
+    failure — but it means a silent model failure admits everything, with only
+    an ERROR line as signal. `_enforce_violence_promotion` keys on `is True`
+    (not truthiness) so unstamped and non-bool values can never cause a drop.
+
+11. **The first gate implementation could not fire** (found by adversarial
+    review the same day, before any flip). It was placed in `_is_duplicate`,
+    which runs *before* violence stamping — `enforce: true` would have dropped
+    zero while logging `0 violence`. Fixed in `b85a467`. **Lesson for whoever
+    flips it: verify from the `Violence promotion ENFORCED: dropped N` line,
+    not from `filtered_*.jsonl`,** which only ever contains survivors.
+
+12. **Three run modes silently skip stamping entirely** (NM#286): single-filter
+    runs, `--no-dedup`, and a shared-dedup exception all leave `_article_cache`
+    empty, so the detector never runs. Combined with fail-open, those modes
+    admit everything. Fix before enforcing.
+
 ## Open questions
 
 5. **How low can recall go before it matters?** At 0.55 recall, ~45% of violence-promoting content leaks through. For a stamp-only prefilter, this is invisible to users (no content dropped). But when ovr.news starts excluding stamped articles, the false-negative rate determines how much off-brand content reaches the lens. The calibration scan found 8.7% of pipeline articles are violence-promoting — at 55% recall, ~3.9% would still reach ovr.news. Acceptable?
