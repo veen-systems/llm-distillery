@@ -17,6 +17,7 @@ not "available after a clone".
 | `calibration/` | The same articles scored by several oracles, plus disagreements     | calibration, oracle-bias analysis   |
 | `gate/`        | Held-out probes and per-model scored outputs — see below            | deploy gating                       |
 | `screening/`   | Topic seed sets for finding candidate articles                      | corpus screening                    |
+| `adverse/`     | Curated hard negatives from production failures — **in git**        | gate probes, future training signal |
 
 Present at time of writing: `training/{nature_recovery_v4, solutions_v4,
 solutions_v6}`; `gate/` and `scored/` dominated by `nr_v4_*` (nature_recovery v4)
@@ -105,10 +106,11 @@ editorial line. Kept for provenance only.
 
 ---
 
-## `adverse/` — curated hard negatives (proposed)
+## `adverse/` — curated hard negatives
 
-Not yet created. Reserved for articles that **look like the lens and are not**,
-with oracle labels near zero.
+Articles that **look like the lens and are not**, curated from observed production
+failures. One file per filter, plus its own README. **Committed to git**, unlike
+everything else here — a few kilobytes each, hand-curated, unregenerable.
 
 This is a property of the data, not a stage, which is why it gets its own
 directory rather than living in `gate/`: adverse examples are useful as training
@@ -127,9 +129,10 @@ articles**, against a median of 1.37. It opens on a mother determined her daught
 will escape, and the filter scored that thread rather than the article's subject. A
 handful of such cases is worth thousands of random negatives.
 
-Suggested shape: the probe record above, with `oracle_wa` near zero, a
-`provenance` naming where the failure was observed, and a short `why_adverse`
-string stating which surface feature misleads.
+These carry `max_acceptable_wa` (an upper-bound assertion, derived from a real
+batch percentile) rather than `oracle_wa` — nobody oracle-scored them, and the
+field name should not imply otherwise. Usable as gate probes immediately; oracle-
+score them before using as training labels. See `adverse/README.md`.
 
 ---
 
