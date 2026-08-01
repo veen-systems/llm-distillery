@@ -1,5 +1,17 @@
 # Memory Index
 
+## Standing rule (promoted from gotcha log 2026-08-01 — 3 instances in one day)
+
+**Before using any source as evidence, establish what it excludes.** This applies
+to data (`filtered_*.jsonl` is 100% passers by construction), to nested structures
+(`metadata.quality` is not `nexus_mind_attributes.<lens>.source_quality`), to prior
+work (`gh repo list` misses repos with no remote), and to literature (a search
+snippet reported a model's *worst* two techniques as its best). A clean-looking
+result from an unexamined source is the hardest kind to falsify, because being
+right supplies no pressure to check how you got there. If it's a denominator, a
+baseline, or a claim of absence — enumerate the source first, and if the owner
+knows the set, ask them rather than inferring it.
+
 - [Cross-repo prioritization](cross-repo-prioritization.md) — master issue landscape across all 4 repos (156 open): P0-P4, **12 dependency chains**, 5 work batches. Re-inventoried 2026-08-01 evening: Chain 3 CLOSED, Chain 8 now deadline-driven (FS#120 ~2026-08-14), new primary chain is NM#284→#285 prefilter resurrection; new chains 9-11 (hero images, dedup, score provenance).
 - [Filter status](filter-status.md) — current state of all production filters and in-development versions
 - [GPU server](gpu-server.md) — venv, PYTHONPATH, HF_HUB_OFFLINE, ollama conflict, training setup
@@ -19,6 +31,7 @@
 
 ## Recent Sessions
 
+- [2026-08-01 afternoon](project_session_2026_08_01_afternoon.md) — four-repo re-inventory (156 open, **12 chains**, new P0 set incl. LD#91/ovr#284/ovr#285); **persuasion-scorer split out** as a verified system under three agent-ready frameworks (LD#78/#79 externalized); post-deploy checks 1+3 PASS (`_commerce_model: v1`, `violence_blocked` gone from Loaded line), 2+4 pending mid-cycle. **NEXT: finish checks 2/4, then NM#285 measurement**
 - [2026-07-31](project_session_2026_07_31.md) — obit carryover diagnosed (47 shadow-era + 2 v5 FNs); LD#76 11-agent audit falsified shared-root-cause; EXECUTED: uplifting+belonging refits, cd topic gate (#86), NM#280 tier fix — all deployed; ADR-022 written; LD#90 harmonization program (renames: thriving/discovery/recovery). **NEXT: verify ~12:00 cycle (3 checks), then close NM#279/#280, LD#74/#76/#86**
 - [2026-07-30](project_session_2026_07_30.md) — S1: v4 op-point evidence + swap. S2: deploy verified, FN-delta gate FAILED, DeepSeek-commit review. S3: v5 trained + review battery + June panel, owner adjudication (grief-vs-news), ENFORCEMENT v5@0.85 shipped, b650 commissioned
 - [2026-07-28](project_session_2026_07_28.md) — obituary v4 retrain, violence_promotion v1 shadow-deploy, solutions v6 normalization fitted

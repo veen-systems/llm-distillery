@@ -15,6 +15,8 @@ framework: agent-ready-projects v1.10.6
 
 **System context:** llm-distillery creates filters. NexusMind deploys them for production scoring. The interface is the filter package: `filters/{name}/v{N}/` directories copied between repos, plus HuggingFace Hub uploads.
 
+**Downstream consumer (2026-08-01):** `veen-systems/persuasion-scorer` — the #78/#79 persuasion-technique scorer, split out because a verified taxonomy is a research project, not a deploy package (its DR-003). It **depends on** this repo's distillation machinery; it must never vendor a copy. #78/#79 stay open here as definition/origin.
+
 ## Tech Stack
 
 - **Oracle**: Gemini Flash 2.5; DeepSeek V4 Flash proven cheaper alternative (cd v5). Per-article pricing + scheduling levers: `memory/oracle-pricing-scheduling.md`.
@@ -135,4 +137,4 @@ This project is a source project for [augmented-engineering](https://github.com/
 
 ---
 
-*Last updated: 2026-08-01*
+*Last updated: 2026-08-01 (afternoon — persuasion-scorer split)*

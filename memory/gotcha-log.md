@@ -1404,3 +1404,17 @@ heredoc (`python3 - <<'EOF'`) so quotes aren't doubly escaped, and single-quote 
 **Fix**: **Always run NexusMind tests with `venv/bin/python -m pytest`, never bare `pytest`/`python -m pytest`.** The failure-set-diff workaround is unnecessary; a green suite is the baseline.
 
 **Lesson — this is the expensive shape.** A wrong diagnosis that comes with a *working workaround* stops generating error signal: the diff-the-failure-sets trick genuinely detected introduced failures, so nobody re-examined why there were 35 to begin with. It then propagated into two commit messages, a session memory, and this log as accepted fact. Same family as the wrong-shaped-verify entries: a check that appears to work is the hardest kind to falsify. When a baseline is *non-zero*, treat that as a finding to explain, not a constant to subtract.
+
+---
+
+### Reasoned about a body of prior work instead of enumerating it — third instance of one shape in a day (2026-08-01)
+
+**Problem**: Started a new scorer by writing an 8-dimension taxonomy from first principles. A canonical one already existed (SemEval-2023 Task 3: 23 techniques in 6 coarse categories, EC-published annotation guidelines) and differed materially — the invented set omitted *Attack on Reputation* entirely, which is the category models detect best. Separately, registered a hypothesis asserting no framework in the `agent-ready-*` family covered agent-facing instruments; `agent-ready-assessment` already covered most of it. That was falsified the same day by the owner mentioning the repo exists.
+
+**Root cause**: In both cases a conclusion was drawn from the *reachable* subset of a body of work and treated as covering the whole. `gh repo list ducroq` showed two of the three framework repos; the third has no git remote, so absence from the searchable surface read as absence in fact. The two-repo conclusion was internally coherent, which is exactly why it generated no pressure to check whether the set was complete.
+
+**Fix**: Before claiming a gap in prior work — literature or internal — enumerate the body from the owner, not from what is machine-discoverable. The unasked question cost a day's design: *"is there anything else in this family?"* For literature specifically: search for the canonical taxonomy/benchmark **before** designing one, and never verify a claim against a search snippet — one summary reported GPT-4 as performing *well* on appeal-to-fear and flag-waving; the paper itself reports those as its two *worst* techniques.
+
+**Recurrence — same shape, third time today.** (1) Prefilter state read from `data/filtered/*/filtered_*.jsonl`, which is 100% passers by construction. (2) ovr#280's cluster_id read from `metadata.quality` instead of the per-lens `nexus_mind_attributes.<lens>.source_quality`. (3) This one. Also adjacent: the phantom "35 pre-existing test failures" (wrong interpreter), corrected the same day.
+
+**Promoted** → `memory/MEMORY.md` as a standing rule. See Promoted table.
