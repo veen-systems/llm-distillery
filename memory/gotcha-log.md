@@ -4,6 +4,34 @@ Problems encountered and resolved. Format: Problem → Root cause → Fix.
 
 ---
 
+## Two similarly-named structures, sampled the wrong one, got a clean zero — twice in one day, in two repos (2026-08-01)
+
+**Problem**: Two independent investigations reached confident wrong conclusions
+by measuring a *different* object than the one under discussion, and both times
+the wrong object returned a clean, unambiguous zero that read as proof.
+
+1. **Mine (NM#284)**: counted `passed_prefilter` in
+   `data/filtered/*/filtered_*.jsonl` to prove prefilters weren't blocking. That
+   file only receives `passed_prefilter: true` rows (`scripts/main.py:1151`) —
+   0 blocks by construction.
+2. **ovr#280**: concluded "NexusMind never sends `cluster_id`" from
+   `metadata.quality` (FluxusSource's block: `bias_category, credibility_score,
+   source_tier, type_classification` — quoted verbatim in the issue). The field
+   is in `nexus_mind_attributes.<lens>.source_quality`, one level deeper, on
+   7,629 / 16,128 rows (~47%). Two shipped features were declared no-ops and an
+   upstream change was proposed, for a field already on the wire.
+
+**Root cause (shared)**: an article row carries several `quality`/`source_quality`
+-shaped blocks from different producers. Nothing in the name distinguishes them,
+and each is individually plausible as "the" block.
+
+**Fix / lesson**: **a zero is a claim about the thing you measured, not about the
+thing you asked.** Before believing a 0% or 100%, name the exact path you read
+and confirm a *positive* control on it — find at least one row where the field IS
+populated. Both errors die instantly under that check. Note also the asymmetry:
+these read as clean results (0 of 3202, 2647 of 2647), and clean numbers get
+quoted onward without re-derivation — mine reached four docs and a commit message.
+
 ## `git stash push` + a long test run in ONE chained command lost work to the Bash timeout (2026-08-01)
 
 **Problem**: Comparing a test failure-set before/after a change, written as one

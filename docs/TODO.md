@@ -256,6 +256,11 @@ Items surfaced by the multi-agent code review of the migration commits (2026-04-
 
 *Last updated: 2026-08-01*
 
+## 2026-08-01 — Cross-repo: ovr#280 cluster_id diagnosis corrected
+
+- [x] **ovr#280 "upstream never sends cluster_id" — REFUTED 2026-08-01.** Measured on the live 12:4x cycle: **7,629 / 16,128 rows (~47%)** carry `nexus_mind_attributes.<lens>.source_quality.cluster_id`, with `corroborating_sources` + `other_sources` on exactly the same rows; present in the 2026-07-22 files too. The diagnosis had sampled `metadata.quality` (FluxusSource's block — its key list `bias_category, credibility_score, source_tier, type_classification` is quoted verbatim in the issue) instead of the per-lens NexusMind block one level deeper. **No NexusMind change needed**; ovr#280's Option A is already done, and the break is downstream between the JSONL and their DB. Posted to ovr#280.
+- [ ] **NM#278 is the real fix for the reported symptom** — the five-articles-on-one-story report is a *threshold* problem, not a plumbing one: NexusMind clusters on source text pre-summarization, where cross-outlet paraphrases look far apart; two of the five only converge after ovr.news summarizes. Caution recorded on NM#278: NexusMind *removes* rather than *labels* (32%/run), and anything removed upstream can never surface as an "N sources" badge — so prefer labelling over dropping when re-tuning.
+
 ## 2026-08-01 — Post-deploy verification + NM#284 (prefilters never ran in production)
 
 Verification of the 2026-07-31 deploys: **refits and the NM#280 tier gate both green** (closed NM#279, NM#280, LD#74, LD#76). The third check — LD#86's cultural_discovery topic gate — was red, and the cause turned out to be architectural rather than cd-specific: **per-filter prefilters have never run in the production scoring path** since 2026-02-10. See the NM#284 items below and `memory/calibration-history.md` Dead Ends (two new entries).

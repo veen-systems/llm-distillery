@@ -21,7 +21,8 @@ Covers: **llm-distillery** (29 open), **NexusMind** (34 open), **ovr.news** (76 
 | **LD#87 (cd v6 op-point)** | Now explicitly **downstream of NM#284** — v5's op-point and normalization CDF were fitted on a distribution still containing the ~71% the prefilter should have removed. |
 | **LD#90 (harmonization)** | Criterion corrected: **not** "lens block rate must be non-zero" (that wrongly fails nature_recovery v4, whose pass-through is deliberate and documented) but "observed matches declared, and `description` matches actual behavior". solutions v6 is the real mismatch (declares 0.20, passes 0.59). |
 | **NM#206** | Already **CLOSED** — drop from Batch A. |
-| **NM#281** | Unblocked, next in queue. |
+| **NM#281** | **DONE + DEPLOYED 2026-08-01** (`0fd462b`, llm-distillery `290ab29`): `_commerce_model` / `_violence_model` stamps, `pipeline.violence_promotion.enforce` (default false) wired into the central gate, `violence_blocked` counter. Ships inert. 969 tests green. |
+| **ovr#280 cluster_id** | **Diagnosis REFUTED 2026-08-01.** cluster_id IS on the wire (7,629/16,128 rows, ~47%); the issue sampled `metadata.quality` instead of `nexus_mind_attributes.<lens>.source_quality`. No NexusMind work needed — the break is downstream in ovr.news ingestion. **NM#278 (threshold re-tune) is the real fix** for the five-articles-one-story symptom, since clustering happens on source text pre-summarization. |
 
 ## Changes 2026-07-30 evening (session 3)
 
