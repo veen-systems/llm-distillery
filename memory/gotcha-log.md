@@ -4,6 +4,34 @@ Problems encountered and resolved. Format: Problem → Root cause → Fix.
 
 ---
 
+## Every filter's prefilter was dead in production for ~6 months — config said enabled, runtime hard-coded it off (2026-08-01)
+
+**Problem**: Verifying the LD#86 cultural_discovery topic gate showed production
+still stamping `passed_prefilter: true` on 2647/2647 rows. Widening the check:
+**all eight deployed filters stamp 0 prefilter blocks**, every cycle.
+
+**Root cause**: `deploy/gpu-server/main.py` builds every scorer with
+`use_prefilter=False` (L915) and calls `score_batch(..., skip_prefilter=True)`
+(L1318) — present since `66582e7` (2026-02-10), i.e. since the GPU scorer
+service was first written. Meanwhile every filter's `config.yaml` declares
+`prefilter: enabled: true` with a documented `expected_pass_rate`. The runtime
+silently overrode the config, and nothing compared declared against observed.
+
+**Fix**: NM#284 — stamp the prefilter verdict always, enforce via config with an
+env lever (ADR-022), shadow first, flip per filter, plus a declared-vs-observed
+pass-rate assertion.
+
+**Lesson — the diagnostic that found it**: replay the gate over the exact rows
+production already stamped. `CulturalDiscoveryPreFilterV5.apply_filter()` on
+`filtered_20260801_085259.jsonl` gave 28.8% pass vs the stamped 100%. That one
+comparison separates "gate logic is wrong" from "gate is never called" in a
+single step — and no amount of reading the (correct) gate source would have.
+
+**Pattern (4th occurrence of verify-the-call-path, cf. LD#80 below)**: a config
+key named `enabled` is not evidence that anything is enabled. When a component
+declares an expected rate, assert the observed rate against it in production —
+otherwise a component can declare 0.15, stamp 1.00, and stay green for months.
+
 ## Pre-push battery ran tests/unit only — CI runs tests/ incl. root-level files (2026-07-30)
 
 **Problem**: NexusMind 6728a77 passed the local battery (890 tests) but broke CI:
