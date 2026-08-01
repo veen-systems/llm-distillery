@@ -4,18 +4,30 @@
 > counts that don't fit in CLAUDE.md; if you just want current production state, read
 > CLAUDE.md's Production Filters table. The tables below must be reconciled against it.
 >
-> <!-- verify: comm -23 <(awk '/^## Production Filters/,/^## Key Decisions/' CLAUDE.md | grep -E "^\| \*\*" | sed -E 's/^\| \*\*([a-z_-]+)\*\* \| (v[0-9]+).*/\1 \2/' | tr '-' '_' | grep -Ev "^(thriving|ai_engineering_practice) " | sort -u) <(awk '/^## Production Filters/,/^\*\*Per-filter/' memory/filter-status.md | grep -E "^\| [a-z]" | awk -F'|' '{gsub(/ /,"",$2);gsub(/ /,"",$3); print $2, $3}' | tr '-' '_' | sort -u) | grep . && echo FAIL || echo PASS -->
+> <!-- verify: grep -qxF '<!-- prod-filters-table:start -->' memory/filter-status.md && grep -qxF '<!-- prod-filters-table:end -->' memory/filter-status.md && grep -q '^## Key Decisions' CLAUDE.md || { echo "FAIL: verify anchors missing"; exit 0; }; comm -23 <(awk '/^## Production Filters/,/^## Key Decisions/' CLAUDE.md | grep -E "^\| \*\*" | sed -E 's/^\| \*\*([a-z_-]+)\*\* \| (v[0-9]+).*/\1 \2/' | tr '-' '_' | grep -Ev "^(thriving|ai_engineering_practice) " | sort -u) <(awk '/prod-filters-table:start/,/prod-filters-table:end/' memory/filter-status.md | grep -E "^\| [a-z]" | awk -F'|' '{gsub(/ /,"",$2);gsub(/ /,"",$3); print $2, $3}' | tr '-' '_' | sort -u) | grep . && echo FAIL || echo PASS -->
 >
 > The check asserts every filter in CLAUDE.md's Production Filters table has a
 > same-version row here (name separators normalized; `thriving` and
 > `ai-engineering-practice` excluded — neither is a production filter here).
 > This file may carry *extra* historical rows (cd v4, nr v2) — that's its job.
-> Reshaped 2026-08-01: the previous `diff | head -20` form compared two
-> differently-formatted tables and so could only ever emit MANUAL CHECK NEEDED —
-> a verify that can never PASS teaches everyone to ignore it (same failure shape
-> as the two wrong-shaped-verify entries in `memory/gotcha-log.md`).
+>
+> **Anchoring history — two failures, both of the same kind.** (1) The original
+> `diff | head -20` form compared two differently-formatted tables and could
+> only ever emit MANUAL CHECK NEEDED. (2) Its 2026-08-01 replacement anchored
+> its awk range on the literal `**Per-filter`, and the very next commit renamed
+> that heading to `**Per-lens RULE prefilters:` — the range then ran unbounded
+> to EOF and swept in unrelated sections. It still printed PASS, because
+> `comm -23` tolerates junk in the second stream, so it looked healthy while
+> checking something else entirely. Caught by adversarial review the same day.
+>
+> Hence: the range is now bounded by dedicated `prod-filters-table:{start,end}`
+> HTML sentinels that carry no other meaning and so have no reason to be
+> renamed, and the check **fails loudly if any anchor is missing** rather than
+> silently widening. A verify that cannot fail is worse than no verify.
 
 ## Production Filters
+
+<!-- prod-filters-table:start -->
 
 | Filter | Ver | MAE | Cal. MAE | Data | Hub Repo | Deployed |
 |--------|-----|-----|----------|------|----------|----------|
@@ -23,26 +35,28 @@
 | sustainability_technology | v3 | 0.72 | — | 10.6K | `jeergrvgreg/sustainability-technology-v3` | 2026-02-21 (retired from ovr.news — superseded by solutions v6) |
 | solutions | v6 | 0.476 | — | 8.2K | `jeergrvgreg/solutions-filter-v6` | 2026-07-27 gate passed; normalization fitted 2026-07-28; LIVE. v6 weights on Hub 2026-07-30 (was: v4 repo shared — that mismatch + FILTER_VERSION 5.0 fixed in 403429d). |
 | investment-risk | v6 | 0.497 | 0.465 | 10.4K | `jeergrvgreg/investment-risk-v6` | 2026-02-21 |
-| cultural_discovery | v5 | — | 0.697 (val) | 8.5K | `jeergrvgreg/cultural-discovery-filter-v5` | 2026-07-31 multilingual topic gate added to prefilter (LD#86); **gate VALIDATED in production 2026-08-01 via NM#284 shadow: observed pass 0.244 vs declared 0.25 (n=1300)** — but still NOT ENFORCED (NM#284); 2026-05-31 v5 (#62 flags; DeepSeek oracle) |
+| cultural_discovery | v5 | — | 0.697 (val) | 8.5K | `jeergrvgreg/cultural-discovery-filter-v5` | 2026-07-31 multilingual topic gate added to prefilter (LD#86); **gate VALIDATED in production 2026-08-01 via NM#284 shadow: observed pass 0.255 vs declared 0.25 (n=2099, full cycle)** — but still NOT ENFORCED (NM#284); 2026-05-31 v5 (#62 flags; DeepSeek oracle) |
 | cultural-discovery | v4 | 0.74 | — | 8K | `jeergrvgreg/cultural-discovery-v4` | 2026-02-20 (superseded by v5) |
 | belonging | v1 | 0.534 | 0.489 | 7.4K | `jeergrvgreg/belonging-filter-v1` | 2026-07-31 normalization REFIT (Mar-30 fit drifted, survivors under-ranked +1.0–2.1; NM#279) |
 | nature_recovery | v4 | recall 0.65 / prec 0.85 @3.75 | 0.48 | 3.9K | `jeergrvgreg/nature-recovery-filter-v4` | 2026-07-10 (DeepSeek oracle; #70 protection scope; op-point 3.75 wired into TIER_THRESHOLDS + validated in prod output, F1) |
 | nature_recovery | v2 | 0.63 | 0.53 | 3.5K | `jeergrvgreg/nature-recovery-filter-v2` | 2026-04-19 — kept as fallback (rollback = delete v4 dir; discovery falls back) |
 | foresight | v1 | 0.744 | 0.75 | 3.5K | `jeergrvgreg/foresight-filter-v1` | PARKED 2026-04-16 (#43) |
 
+<!-- prod-filters-table:end -->
+
 **Per-lens RULE prefilters: DECLARED but NOT ENFORCED in production (NM#284, found 2026-08-01).** Scope precisely: this is the per-lens rule prefilter only — `filters/{name}/v{N}/prefilter.py`, the ADR-018/019 `BasePreFilter` subclasses (regex/keyword on title+content). Every filter's `config.yaml` says `prefilter: enabled: true`, but the GPU scorer builds each with `use_prefilter=False` (`deploy/gpu-server/main.py` L915) and calls `score_batch(skip_prefilter=True)` (L1318), which makes the guard `if self.use_prefilter and not skip_prefilter` false in **both** `filter_base_scorer.score_batch` and `hybrid_scorer.score_batch`. Dead since `66582e7` (2026-02-10).
 
 **Verified NOT affected** (each checked, not assumed): the **e5 probe** (Phase 2 of `hybrid_scorer.score_batch`, ungated by `skip_prefilter` — live log shows `stage1_low=7..19, stage2=77..85` per 100 articles); **commerce / obituary / violence** (separate `src/preprocessing/` stages with their own stamps); the **NM#189 source-type allowlist** (`shadow_mode: false`, enforced in `src/scoring/source_filter.py`); and the same rule prefilters in the llm-distillery oracle/training path.
 
-⚠️ **Do NOT verify prefilter state from `data/filtered/{name}/filtered_*.jsonl`.** That file only receives rows where `passed_prefilter` is true (`scripts/main.py:1151`), so it is 100% passers by construction and can never show a block. An earlier version of this note cited "0 blocks per cycle" from exactly that file — invalid evidence, corrected 2026-08-01. Use instead the pipeline line `Filter X complete (N scored, M prefiltered)` and the NM#284 shadow log, both of which see pre-drop counts. The ~350–360 `prefiltered` per lens per cycle is the source-type allowlist plus validation failures, **not** lens rules (five lenses with different rules landing within 10 of each other is the tell; investment_risk differs at 821 because it also excludes `academic` + `social`).
+⚠️ **Do NOT verify prefilter state from `data/filtered/{name}/filtered_*.jsonl`.** That file only receives rows where `passed_prefilter` is true `scripts/main.py`’s `if result["passed_prefilter"]:` write guard, so it is 100% passers by construction and can never show a block. An earlier version of this note cited "0 blocks per cycle" from exactly that file — invalid evidence, corrected 2026-08-01. Use instead the pipeline line `Filter X complete (N scored, M prefiltered)` and the NM#284 shadow log, both of which see pre-drop counts. The ~350–360 `prefiltered` per lens per cycle is the source-type allowlist plus validation failures, **not** lens rules (five lenses with different rules landing within 10 of each other is the tell; investment_risk differs at 821 because it also excludes `academic` + `social`).
 
-The finding rests on: (1) the code above; (2) the in-path shadow measurement — cd reports `observed_pass=0.244` over 1,300 articles *at the scorer*, which would read ≈1.000 if the gate were already enforcing upstream; (3) magnitude — cd's gate blocks 71% on replay vs 15.6% actually dropped.
+The finding rests on: (1) the code above; (2) the in-path shadow measurement — cd reports `observed_pass` 0.255 pooled over 2,099 articles *at the scorer*, which would read ≈1.000 if the gate were already enforcing upstream; (3) magnitude — cd's gate blocks 71% on replay vs 15.6% actually dropped.
 
 NM#284 stage 1 (shadow measurement, deployed 2026-08-01 `5d53774`) logs observed vs declared pass rate per batch. First cycle:
 
 | filter | observed | declared | verdict |
 |---|---|---|---|
-| cultural_discovery | 0.244 (n=1300) | 0.25 | **matches** — LD#86 gate validated |
+| cultural_discovery | 0.255 (n=2099) | 0.25 | **matches** — LD#86 gate validated |
 | uplifting | 0.525 (n=2100) | 0.20 | mismatch |
 | solutions | 0.591 (n=2099) | 0.20 | mismatch (see LD#90 — inherited nr v4's pass-through) |
 | investment_risk | 0.589 (n=2099) | *(none declared)* | no contract to check |

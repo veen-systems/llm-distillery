@@ -4,6 +4,46 @@ Problems encountered and resolved. Format: Problem → Root cause → Fix.
 
 ---
 
+## Copied a gate to a new concern without copying the mechanism that feeds it — the gate could never fire (2026-08-01)
+
+**Problem**: NM#281 added a violence-promotion drop point next to the existing
+commerce and obituary checks in `_is_duplicate`. It was a no-op: `enforce: true`
+would have dropped **zero** articles while logging `0 violence` — a false
+all-clear. Caught by adversarial review the same day, before anyone flipped it.
+
+**Root cause**: `_is_duplicate` runs inside `load_articles`, called from
+`_run_shared_dedup`, which happens *before* `_run_violence_promotion_prefilter`
+stamps `_is_violence_promotion`. Commerce and obituary work there only because
+their preprocessors **rewrite the input JSONL** earlier in the run, so their
+flags are physically in the file `load_articles` reads. Violence stamps only
+in-memory, and deliberately later — it runs on the *enriched* superset. The
+neighbouring code looked like a template; the load-bearing part was somewhere
+else entirely.
+
+**Fix**: `b85a467` — move the drop to the stamps (`_enforce_violence_promotion`,
+called immediately after stamping), not the stamps to the drop. Mirroring
+obituary would have scored un-enriched text and cost recall on a gate already at
+0.55. The dead check was **removed** rather than left in place.
+
+**Lesson 1 — the tests were the problem, not just the code.** All three unit
+tests fabricated `_is_violence_promotion: True` on a load-time article and
+called the gate in isolation. That state never occurs in production. 24/24
+green against a gate that could not fire. **When a test constructs the input
+itself, ask whether the real pipeline ever produces that input at that point.**
+The replacement asserts the ordering structurally (AST: drop-call must follow
+stamp-call) and exercises stamps in `_article_cache`, which is the real state.
+
+**Lesson 2 — "next to the similar code" is not a safe default.** Three gates
+sharing a function looked like consistency; two of them depended on a
+write-back step the third does not have. Before copying a control into a new
+concern, verify *when* its input comes into existence, not just where similar
+controls live.
+
+**Pattern (5th occurrence of verify-the-call-path)**: previous four are #161
+climate_doom, the 2026-07-22 partial-grep issue, LD#80's no-op rollback, and
+NM#284's dead prefilters. Every one: correct-looking code at a point in the
+flow where it cannot act.
+
 ## Two similarly-named structures, sampled the wrong one, got a clean zero — twice in one day, in two repos (2026-08-01)
 
 **Problem**: Two independent investigations reached confident wrong conclusions
@@ -12,7 +52,7 @@ the wrong object returned a clean, unambiguous zero that read as proof.
 
 1. **Mine (NM#284)**: counted `passed_prefilter` in
    `data/filtered/*/filtered_*.jsonl` to prove prefilters weren't blocking. That
-   file only receives `passed_prefilter: true` rows (`scripts/main.py:1151`) —
+   file only receives `passed_prefilter: true` rows `scripts/main.py`’s `if result["passed_prefilter"]:` write guard —
    0 blocks by construction.
 2. **ovr#280**: concluded "NexusMind never sends `cluster_id`" from
    `metadata.quality` (FluxusSource's block: `bias_category, credibility_score,
@@ -83,7 +123,7 @@ source-type allowlist all run normally — each verified, not assumed.
 ⚠️ **The first evidence for this was invalid and had to be retracted** (same day,
 after the owner asked what the prefilter actually was). The claim "all eight
 filters stamp 0 prefilter blocks per cycle" came from counting `passed_prefilter`
-in `data/filtered/*/filtered_*.jsonl` — but `scripts/main.py:1151` only writes a
+in `data/filtered/*/filtered_*.jsonl` — but `scripts/main.py`’s `if result["passed_prefilter"]:` write guard only writes a
 row `if result["passed_prefilter"]`, so that file is 100% passers **by
 construction** and can never contain a block. Reading "no blocked rows in a file
 that excludes blocked rows" as evidence of no blocking is circular. The pipeline
@@ -103,7 +143,7 @@ pass-rate assertion.
 
 **Lesson — the diagnostic that actually settles it**: measure the component
 **in-path, on the pre-drop stream**. The NM#284 shadow log reports cd
-`observed_pass=0.244` over 1,300 articles at the scorer; if the gate were
+`observed_pass` 0.255 pooled over 2,099 articles at the scorer; if the gate were
 enforcing upstream the scorer would only see the ~24% that passed and the same
 measurement would read ≈1.000. That is the load-bearing proof.
 
@@ -113,7 +153,7 @@ was the first thing I reached for, but its baseline came from an output file tha
 excludes the very rows in question, so the "100%" was an artifact. A reproduction
 is only as good as the population you reproduce it on. Before using a data source
 as a denominator, ask what it is filtered on — here, one `if` statement at
-`scripts/main.py:1151`. Related: the wrong-shaped-verify entries below.
+`scripts/main.py`’s `if result["passed_prefilter"]:` write guard. Related: the wrong-shaped-verify entries below.
 
 **Pattern (4th occurrence of verify-the-call-path, cf. LD#80 below)**: a config
 key named `enabled` is not evidence that anything is enabled. When a component
