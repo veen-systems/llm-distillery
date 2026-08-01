@@ -38,6 +38,13 @@ class ViolencePromotionFilterV1:
         scaler: StandardScaler for normalizing embeddings
     """
 
+    # Model identity, stamped as `_violence_model` on every scored article
+    # (NM#281 / ADR-022). Authoritative source for the stamp — NexusMind reads
+    # it off this class rather than hardcoding, so a future v2 cannot leave
+    # production rows claiming v1. Mirrors ObituaryPreprocessor.MODEL_VERSION.
+    MODEL_ID = "violence_promotion_v1"
+    MODEL_VERSION = "v1"
+
     def __init__(
         self,
         threshold: float = 0.95,
