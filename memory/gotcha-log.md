@@ -1327,10 +1327,12 @@ heredoc (`python3 - <<'EOF'`) so quotes aren't doubly escaped, and single-quote 
 
 ---
 
-### NexusMind Full Test Suite Has ~35 Pre-Existing Env Failures on situla — Diff Failure Sets, Don't Read Absolute Counts (2026-07-31)
+### [CORRECTED 2026-08-01] The "~35 pre-existing NexusMind failures on situla" never existed — wrong interpreter (2026-07-31 → corrected 2026-08-01)
 
-**Problem**: After the NM#280 change, the NexusMind suite showed "35 failed, 62 errors" on the workstation — alarming, but none of it was the change.
+**Problem**: After the NM#280 change, the NexusMind suite showed "35 failed, 62 errors" on the workstation. This was written up as environmental and permanent, and a failure-set-diffing workaround was adopted to work around it. Both NM#280 (2026-07-31) and NM#284 (2026-08-01) were verified against that phantom baseline and their commit messages assert it.
 
-**Root cause**: situla lacks optional deps (trafilatura, GPU stack, etc.); those failures/collection errors are environmental and permanent on this box. CI/sadalsuud has the full env (954 green there).
+**Actual root cause (found 2026-08-01)**: `python` on situla resolves to `/home/jeroen/.local/bin/python` → system `/usr`, which lacks `trafilatura`, so `import scripts.main` raises and every test module that touches it errors out. **The repo has `venv/` with all deps present** (`trafilatura 2.1.0`). Running `venv/bin/python -m pytest tests/ --ignore=tests/integration` gives **969 passed, 0 failed**. Nothing was missing, nothing was environmental, and nothing was permanent — the wrong interpreter was being invoked.
 
-**Fix**: Baseline discipline: run the suite with the change stashed and applied (`--continue-on-collection-errors`), diff the sorted `^FAILED` sets — identical sets = zero introduced failures. Used for NM#280 (`73c1ec3`).
+**Fix**: **Always run NexusMind tests with `venv/bin/python -m pytest`, never bare `pytest`/`python -m pytest`.** The failure-set-diff workaround is unnecessary; a green suite is the baseline.
+
+**Lesson — this is the expensive shape.** A wrong diagnosis that comes with a *working workaround* stops generating error signal: the diff-the-failure-sets trick genuinely detected introduced failures, so nobody re-examined why there were 35 to begin with. It then propagated into two commit messages, a session memory, and this log as accepted fact. Same family as the wrong-shaped-verify entries: a check that appears to work is the hardest kind to falsify. When a baseline is *non-zero*, treat that as a finding to explain, not a constant to subtract.
