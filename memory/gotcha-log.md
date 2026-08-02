@@ -1456,3 +1456,19 @@ heredoc (`python3 - <<'EOF'`) so quotes aren't doubly escaped, and single-quote 
 **Fix**: Resolve the checkout by probing known layouts (sibling of this repo, `~/repos/veen-systems/NexusMind`, then the Windows path), with `NEXUSMIND_LOCAL` from the environment still winning. The resolved path is now echoed at the top of the run. Verified it selects `/home/jeroen/repos/veen-systems/NexusMind`.
 
 **Same shape as the session's main findings** (NM#284, NM#281, and the LD#86 gate): a mechanism that exists, is configured, and cannot fire. The tell here was the same one as the others — the failure path was a *log line*, not an error, so nothing ever contradicted the belief that the guard was working.
+
+### Three statistical errors in one write-up, all in the direction of my own conclusion (2026-08-02)
+
+**Problem**: A review battery over the session's own measurement work found that three published claims did not hold: (a) uplifting's DiD was labelled SIGNIFICANT at +0.44 when the exact permutation p is 0.054 and it fails Holm across the six filters tested; (b) "P(DiD ≤ −1.24) = 0.0000" was produced by resampling *without* replacement — a finite-population correction that deflates sd by exactly √(1−15/60) — where the correct value with replacement is 8.0e-5, and 20k draws cannot resolve that anyway; (c) the solutions −1.13 headline is not identified, because the design selects on the student's own score and the two arms sit at different depths of their own distributions, an artifact that reaches −0.82 to −1.61 under differential noise.
+
+**Root cause**: Every one of the three erred *toward* the conclusion being argued. The permutation test wasn't run because the bootstrap CI already said what was wanted. The resampling scheme wasn't questioned because P=0 was a satisfying answer to "was the old result noise?". The selection design wasn't examined because it was inherited from the n=15 study being corrected — the part under scrutiny was the *sample size*, so the *design* went unexamined. Correcting someone's number using their method silently ratifies their method.
+
+**Fix**: For any DiD-style claim in this repo: run an exact permutation test, correct for the number of filters tested, cluster by source, and state whether selection into the sample depends on the quantity being compared. Recorded as method notes in `memory/prefilter-length-floor-hypotheses.md`. The load-bearing conclusions (uplifting doesn't replicate; the op-point mix-up; truncation is ~0) all survived on independent evidence — but three of the supporting numbers did not, and none of them would have been caught without an adversarial pass.
+
+### "Verified live" that was verified at n=1 (2026-08-02)
+
+**Problem**: Reported a deploy as verified against four production checks. All four were true — of the **n=1 post-deploy smoke test**. No real cycle had run. I had also told the user to check "the ~12:45 CEST cycle", a time no cycle starts.
+
+**Root cause**: Assumed the cycle schedule from the *filtered-file timestamps* (`:48–:57`), which are when a cycle **finishes**. Cycles start at `:07–:11` and run ~48 minutes. The last real cycle ended 08:59 CEST, 70 minutes before the 10:08 deploy — so the smoke test was the only post-deploy evidence that could exist, and the smoke test scores exactly one article per filter.
+
+**Fix**: `nexusmind.service` has no timer of its own; it is chained off `fluxus-collection.timer` (`systemctl list-timers fluxus-collection.timer`). Read cycle boundaries from `journalctl -u nexusmind.service | grep -E "Starting|Finished"`, never from output filenames. And state the n behind any "verified" — a marker that appears on a 1-article batch has not been tested at 2,000.

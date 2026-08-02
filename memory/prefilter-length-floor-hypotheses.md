@@ -26,12 +26,17 @@ the length floor blocks*.
    <!-- verify: rerun the same-row A/B; nature_recovery and solutions must still return 0.0000 -->
 
 2. **"uplifting v7 over-scores sub-300-char stubs" (LD#92 at n=15) — REFUTED at
-   n=60/group.** DiD **+0.44** [+0.01, +0.87], MAE ratio 0.88× (short is
-   *better*). Clears rate short/long is flat at every bar: 90/88 @2.25,
-   87/87 @3.0, 67/65 @4.0, 28/32 @5.0.
-   **And it was not small-sample noise** — 20,000 n=15 bootstrap draws from the
-   n=60 population give **P(DiD ≤ −1.24) = 0.0000**. Something systematically
-   differed between the runs; see hypothesis 6.
+   n=60/group.** DiD **+0.44**, but **not significant**: exact permutation
+   p = 0.054, and under Holm across the six filters tested it does not survive
+   (only solutions and cultural_discovery do). Read it as **"no detectable
+   length effect"**, not as the student under-scoring stubs. MAE ratio 0.88×.
+   Clears rate short/long is flat at every bar: 90/88 @2.25, 87/87 @3.0,
+   67/65 @4.0, 28/32 @5.0 — that flatness is the robust part.
+   ⚠️ **The "P(DiD ≤ −1.24) = 0.0000" claim is WITHDRAWN** (2026-08-02 review):
+   it sampled *without* replacement (finite-population correction deflates sd by
+   √(1−15/60)), and 20k draws cannot resolve a true 8.0e-5. It also asked the
+   wrong question — resampling the 40-cycle window says nothing about an n=15
+   draw from a different 8-cycle window. See hypothesis 6 for what does hold.
 
 3. **"Promote `content_too_short` to one global pre-fan-out gate" (08-01) —
    still refuted, but for a different reason than recorded.** The 08-01 argument
@@ -51,14 +56,27 @@ the length floor blocks*.
    because they are the same filter. Their declared `expected_pass_rate` (0.85 /
    0.20) described gates that do not exist; both deleted 2026-08-02.
 
-5. **`solutions v6` carries the short-content defect LD#92 attributed to
-   uplifting.** DiD **−1.13** [−1.74, −0.52], MAE ratio 1.51×, oracle clears
-   53% (short) vs 85% (long). Failure mode is exactly as LD#92 described it —
-   development/progress vocabulary in a headline with no subject: *"ABD Grants
-   $250m Loan to Shield Cambodia's Vulnerable Households"* student 4.21 / oracle
-   0.00. Makes sense: the solutions lens is *about* concrete interventions, so
-   development-finance headlines are its maximally confusable case.
-   Corrected exposure ~49 false positives per 8 cycles, not ~460.
+5. **`solutions v6` shows the short-content defect LD#92 attributed to
+   uplifting — but it is NOT IDENTIFIED.** DiD **−1.13** [−1.74, −0.52], MAE
+   ratio 1.51×, oracle clears 53% (short) vs 85% (long).
+   ⚠️ **Do not fit a cap on this.** The design selects on the student's own
+   score at each filter's op-point, and the two arms sit at very different
+   depths of their own distributions (solutions: 2.3% of short vs 4.6% of long
+   clear it). Simulation shows that artifact is negative in every filter, and
+   under *differential* noise — which the 1.51× MAE ratio itself suggests — it
+   reaches −0.82 to −1.61, i.e. it can fully reproduce this headline.
+   Controlling for `student_raw` within the sample does nothing (−1.13 →
+   −1.13): selection already flattened it inside the band. Discriminating test:
+   re-draw from matched *percentile* bands, or re-run at a second op-point — an
+   artifact moves with the threshold, a real effect does not.
+
+   What is *not* in doubt is the failure mode, which is exactly as LD#92
+   described it — development/progress vocabulary in a headline with no subject:
+   *"ABD Grants $250m Loan to Shield Cambodia's Vulnerable Households"* student
+   4.21 / oracle 0.00. That the solutions lens is *about* concrete interventions
+   makes development-finance headlines its maximally confusable case, which is a
+   mechanism a selection artifact does not supply. Corrected exposure ~49 false
+   positives per 8 cycles (**36–62** at n=60), not ~460.
 
 6. **The oracle-test design is sound; the 08-01 execution mixed up a filter
    parameter.** LD#92 states uplifting's tier threshold as **2.25**, which is
@@ -71,9 +89,17 @@ the length floor blocks*.
 7. **A matching pass rate says nothing about recall (LD#86).** cultural_discovery
    v5's observed 0.2605 matches its declared 0.25 — the one MATCH on the board —
    and enforcing it anyway costs **15.5% of surfacing articles** (135/871 over
-   20 cycles), **19.9% for non-English vs 13.0% English** (z≈2.6, p≈0.01), 0% of
-   high tier. `no_cultural_topic_signal` is 86% of the loss. Rate-agreement and
-   safety-to-enforce are independent properties.
+   20 cycles), 0% of high tier. Rate-agreement and safety-to-enforce are
+   independent properties.
+   ⚠️ **"Skewed non-English" was the wrong framing** (corrected 2026-08-02).
+   German 4.9% and French 5.3% are blocked at *less than half* the English rate
+   (13.0%); pooling ten languages into "non-English 19.9%" describes no real
+   population, and with source clustering z is 2.3 not 2.6. The sharper, true
+   finding: **the entire gap is `no_cultural_topic_signal`** (9.9% en vs 19.2%
+   non-en) while `celebrity_art`, `political_conflict` and `tourism_fluff` all
+   fire *more* on English. It is uneven multilingual keyword coverage in
+   `TOPIC_GATE_PATTERNS`, not a demographic bias — and that is fixable and
+   falsifiable (extend the keywords, re-run, check the rates converge).
 
 ## Open questions
 
@@ -83,10 +109,15 @@ the length floor blocks*.
    NM#231's under-served set. The cap must be weighed against that recall cost,
    not fitted to the FP count alone.
 
-9. **Is `no_cultural_topic_signal`'s non-English coverage the cause of LD#86's
-   language skew, or is it the corpus?** 1.5× is real but modest. Falsification:
-   improve the multilingual keyword set, re-run the identical recall check, and
-   see whether the non-English block rate converges on the English one.
+9. **Does extending `TOPIC_GATE_PATTERNS` close LD#86's per-language spread?**
+   Now a sharp question rather than a demographic one: the gap is entirely
+   `no_cultural_topic_signal`, and German (4.9%) and French (5.3%) already sit
+   *below* English (13.0%) while Italian (28.6%) and Korean (37.5%) sit well
+   above — consistent with keyword coverage, not with language per se.
+   Falsification: extend the keyword set for the poorly-covered languages, re-run
+   `scripts/measure_prefilter_recall_cost.py`, and check whether the per-language
+   rates converge. If they do, the residual 15.5% is genuine editorial blocking
+   and enforcement can be re-argued on its merits.
 
 10. **Is exposure predictive of defect? Evidence so far says no.**
     investment_risk has by far the largest short-content exposure (635 clearing
@@ -103,9 +134,19 @@ the length floor blocks*.
 - **Difference-of-differences cancels oracle bias**, which is what makes DeepSeek
   usable as a judge for filters whose teacher was gemini. Read the short-vs-long
   *gap*, never the absolute agreement (FILTER_PLAYBOOK §0).
-- **Bootstrap the original n before calling a replication failure "noise".** The
-  P=0.0000 result is what turned "the first sample was unlucky" into "the two
-  runs measured different things", which is a completely different bug.
+- **Bootstrap the original n before calling a replication failure "noise" — but
+  get the resampling right.** The instinct was correct and the conclusion held;
+  the execution did not. Sample **with** replacement (without-replacement
+  subsampling silently applies a finite-population correction), check the draw
+  count can resolve the probability you are claiming, and remember that
+  resampling window B cannot answer a question about window A. The filter
+  mix-up conclusion survived on three independent lines of evidence, none of
+  which was the bootstrap.
+- **Selection on the dependent variable is the standing hazard in this whole
+  design.** Matching two groups on the *student's own score* is not matching
+  when the two arms sit at different depths of their own distributions. Prefer
+  matched percentile bands, and always re-run at a second threshold: an
+  artifact moves with the threshold, a real effect does not.
 - **Reconcile denominators before diffing two sources.** See
   [[reference-nexusmind-data-sources]] — the log and the file count different
   sets, and `data/raw/` is pre-enrichment.

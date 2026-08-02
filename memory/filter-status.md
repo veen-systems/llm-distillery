@@ -81,13 +81,21 @@ Three things this replaced:
    87–100% of blocking for four of six filters, and a length gate is the wrong
    shape — short content clearing an op-point is as likely to be genuine as long
    content (uplifting 67% vs 65% oracle-validated). Fix is a cap/penalty.
-3. **investment_risk's logged rate is biased −0.129** by the shadow denominator,
-   which counts articles `source_filter` discards after scoring. See
-   `memory/nexusmind-data-sources.md`.
+3. **investment_risk's logged rate is biased by the shadow denominator**, which
+   counts articles `source_filter` discards *after* scoring (2,193 of 8,765).
+   ⚠️ Treat **0.129 as an upper bound on the discrepancy, not a measured bias**
+   (corrected 2026-08-02): the excluded rows' true pass rate is UNMEASURED. The
+   0.008 figure I first quoted came from `data/raw/`, which is pre-enrichment
+   and therefore invalid for anything length-dependent; the only other estimate
+   is circular. Measuring it properly needs the pipeline instrumented, not a
+   file replayed. See `memory/nexusmind-data-sources.md`.
 
 **cultural_discovery's rate matches and is still not safe to enforce** — 15.5%
-of surfacing articles blocked (19.9% non-English vs 13.0% English, z≈2.6), #86.
-Rate agreement and safety-to-enforce are independent properties.
+of surfacing articles blocked, 0% of high tier (#86). Rate agreement and
+safety-to-enforce are independent properties. The loss is **entirely
+`no_cultural_topic_signal`** (9.9% en vs 19.2% non-en; the other three rules fire
+*more* on English) — uneven `TOPIC_GATE_PATTERNS` keyword coverage, not a
+language effect: German 4.9% and French 5.3% sit *below* English.
 
 **Runtime content-type caps: NONE (2026-07-14).** NexusMind's `cap_triggers.py` `_TRIGGER_REGISTRY` is empty, so `cap_applied` is permanently `null` on every filter. `nature_recovery/climate_doom` was the only one ever deployed (2026-05-08, #161) and was retired: 3 production bites, 3 false positives, 0 saves — all three the trigger word inside a non-doom construction (`evitar su extinción`, `en peligro crítico de extinción`, `deforestation-free`), which a polarity-blind regex cannot see. #161's actual cause was `normalization.json` fitted at raw ≥ 1.5 instead of the 4.0 tier threshold, inflating correctly-scored doom (raw 2.2–3.3) to normalized 5.2–8.3. Filters' `config.yaml` `content_type_caps` still declare the **oracle** contract and are inert at runtime; the scorer log reports them as INERT. Enforced by `tests/unit/test_normalization_invariant.py` (since 2026-07-16: raw_min must equal the op-point ±0.01 — the fitter anchors the CDF's lower edge there by construction; the old `[op_point, 4.5]` band is gone).
 

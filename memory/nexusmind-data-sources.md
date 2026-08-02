@@ -34,9 +34,19 @@ Measured 2026-08-02 over 4 cycles:
 | investment_risk | 8,765 | 6,572 | **2,193** (also `academic`, `social`) |
 
 Consequence: **log-derived and file-derived denominators are different sets.**
-For investment_risk this moved the prefilter pass rate from 0.642 (as logged by
-the NM#284 shadow) to 0.770 (on the population that can actually surface) — a
-0.129 gap that looks like a measurement bug and is not.
+For investment_risk the logged 0.642 and the written-set 0.770 differ by 0.129.
+
+⚠️ **Treat 0.129 as an upper bound on the discrepancy, not a measured bias**
+(corrected 2026-08-02 by adversarial review). The excluded rows' actual pass
+rate is **unmeasured**: reconstructing them from `data/raw/` gave 0.008, which
+is invalid for the reason in the next section, and the only other estimate
+(0.647, as a residual) is derived from the reconciliation it would support.
+Measuring it properly means instrumenting the pipeline, not replaying a file.
+
+A related trap: two numbers computed over these two different populations may
+*agree* closely and that agreement proves nothing. The replay's 0.5901 and the
+shadow's 0.5934 for uplifting look like harness validation and are not — the
+extra 476 rows simply happen to pass at a rate near the overall one.
 
 > Reconcile the two explicitly before diffing them. Sum the per-batch `n` from
 > the scorer log for one cycle and compare against `wc -l` of that cycle's
