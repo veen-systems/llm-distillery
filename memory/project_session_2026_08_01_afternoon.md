@@ -90,9 +90,40 @@ Against the 16:08 cycle, first since the 13:35 NM#281 deploy.
   `commerce, obituary, dup-url, dup-id, dup-title, old, future, no date`. This is
   the `b85a467` fix confirmed in production: the drop moved out of load time,
   where it sat inside `_is_duplicate` and could never have fired.
-- **`_violence_model` and the belonging/nature_recovery shadow lines: PENDING** —
-  both land during enrichment/scoring and the cycle was still mid-run (og:image
-  backfill at 16:24). A background watcher was armed.
+- **`_violence_model` PASS** (resolved 2026-08-02) — `v1` on all 2,091 enriched
+  rows, not `unknown`.
+- **Shadow log PASS** (resolved 2026-08-02) — all six filters report,
+  **`errors=0`** across 570 lines / ~8,765 scorings per filter.
+
+### Shadow rollup (2026-08-01 14:00 → 2026-08-02 06:33 UTC)
+
+| filter | observed | n | declared | verdict | top block |
+|---|---|---|---|---|---|
+| investment_risk | 0.642 | 8,770 | — | NO CONTRACT | `content_too_short_Nchars` (3,074) |
+| uplifting | 0.593 | 8,764 | 0.20 | DRIFT | `content_too_short_Nchars` (3,074) |
+| **cultural_discovery** | **0.263** | 8,764 | **0.25** | **MATCH** | `no_cultural_topic_signal` (6,164) |
+| nature_recovery | 0.649 | 8,763 | 0.85 | DRIFT (downward) | `content_too_short_Nchars` (3,029) |
+| belonging | 0.638 | 8,763 | 0.15 | DRIFT | `content_too_short_Nchars` (3,029) |
+| solutions | 0.649 | 8,763 | 0.20 | DRIFT | `content_too_short_Nchars` (3,029) |
+
+**The filter that MATCHes is the only one not dominated by the shared length
+floor.** `content_too_short_Nchars` is top block for five of six at near-identical
+counts — the same articles blocked five times by a `BasePreFilter` rule. Only cd's
+dominant block is a real lens rule. Confirms the 08-01 sizing at ~3× the sample and
+sharpens the case for **one global short-content gate before fan-out**.
+
+**Four filters cluster at 0.638–0.649 = the NM#285 signature.** Truncated `Article`
+means url/source/description rules cannot fire, so filters whose blocking doesn't
+survive truncation converge on what the length floor alone yields. **Five of six
+numbers cannot gate enforcement until NM#285 is measured; cd's can** (content-based
+rule, and its in-path 0.263 agrees with full-row offline replay 0.245).
+
+Written up on NM#284 (rollup), NM#281 (all four checks), LD#86 (cd validated at
+n=8,764), LD#90 (drift table, three distinct failure shapes).
+
+⚠️ **Do not re-declare any `expected_pass_rate` from these numbers yet** — a value
+fitted to a truncation artifact bakes the artifact into config. Only nature_recovery
+and cultural_discovery are safe to correct now.
 
 **Incidental**: og:image backfill logged `528/2398 extracted, 1870 failed` (78%
 failure). Same surface as ovr#281, which currently rests on an n=25 probe. Worth
@@ -100,10 +131,15 @@ adding as evidence *after* confirming the two failure counts mean the same thing
 
 ## Lessons
 
-- **Third instance in one day of one shape** — see the standing rule promoted to
+- **Five instances in one day of one shape** — see the standing rule promoted to
   `memory/MEMORY.md`. Prefilter counted from a 100%-passers file; ovr#280 sampled
   the wrong nested structure; the framework family enumerated from
-  `gh repo list`, which misses repos with no remote. Each produced a
+  `gh repo list`, which misses repos with no remote. Then twice more during the
+  verification itself: **gpu-server logs UTC, sadalsuud CEST**, so `journalctl -S
+  "16:45"` on a host whose clock read 14:54 returned nothing, and I nearly filed
+  "shadow log not emitting" as a finding; the same 2h offset also made a
+  `flagged_..._145144` filename look like a stale run-id when it was simply UTC.
+  **Timezone is a form of "what does this source exclude?"** Each produced a
   clean-looking, wrong result, and being right supplied no pressure to check.
 - **The framework question answered itself.** Asked whether llm-distillery's other
   prompts should be grounded the same way. Mostly no: the existing lens prompts
@@ -119,9 +155,10 @@ adding as evidence *after* confirming the two failure counts mean the same thing
 
 ## Next session
 
-1. **Finish post-deploy checks 2 and 4** — watcher output, or re-run against the
-   next completed cycle.
-2. **NM#285 measurement** — gates every queued enforcement decision.
+1. ~~Finish post-deploy checks 2 and 4~~ **DONE 2026-08-02 — all four PASS.**
+2. **NM#285 measurement** — gates every queued enforcement decision. Now sharper:
+   the four-filter cluster at 0.638–0.649 is the predicted artifact, so the
+   per-filter truncation diff is the exact number needed.
 3. **persuasion-scorer Phase 1** in its own session — brief already written into
    that repo's `MEMORY.md` and CLAUDE.md phase table.
 
