@@ -30,6 +30,7 @@ framework: agent-ready-projects v1.10.6
 - **Oracle outputs scores only.** Dimensional scores (0-10), never tier/stage classifications. Tier assignment is postprocessing. Changing thresholds must never require re-labeling.
 - **Use `load_base_model_for_seq_cls()`** from `filters/common/model_loading.py`. Never use `AutoModelForSequenceClassification` directly — Gemma-3-1B's `gemma3_text` config isn't in the Auto mapping.
 - **Keep PEFT adapters in OLD key format.** `.lora_A.weight` / `score.weight`, not `.lora_A.default.weight`. Never run `resave_adapter.py` before Hub upload — it breaks `PeftModel.from_pretrained()`.
+- **Most per-filter prefilters have no lens rules at all — and a matching pass rate does not mean a gate is safe to enforce.** Measured 2026-08-02 over 8,283 production articles (NM#285): length's share of all blocking is **100%** for `nature_recovery v4` and `solutions v6` (both declare `EXCLUSION_PATTERNS = {}` by design — commerce is upstream, ADR-004 — and their `POSITIVE_PATTERNS` are force-pass overrides, a no-op with nothing to override), 96.8% belonging, 92.6% investment_risk, 86.3% uplifting, **0% cultural_discovery**. So "enforce the prefilter" mostly means "enforce a 300-char length floor" — which is why `expected_pass_rate` was **deleted** from nr/solutions rather than corrected, and why #93 exists. Separately: cd's observed rate *matches* its declared 0.25 and enforcing it still costs 15.5% of surfacing articles (19.9% non-English vs 13.0% English). **Rate agreement and safety-to-enforce are independent properties — measure recall before any flip (ADR-021).**
 - **A filter's `prefilter` config does NOT mean the prefilter runs in production.** The per-lens *rule* prefilter (`filters/{name}/v{N}/prefilter.py`, ADR-018/019) has never executed in the production scoring path — the GPU scorer builds every scorer with `use_prefilter=False` and calls `score_batch(skip_prefilter=True)` (NM#284, found 2026-08-01; dead since 2026-02-10). It *does* run in the llm-distillery oracle/training path, which is why this survived six months. Unaffected: the e5 probe, the commerce prefilter (ADR-004), the obituary/violence gates, the NM#189 source-type allowlist. NM#284 stage 1 logs observed vs declared pass rate; enforcement is not yet on. **Never check prefilter state from `data/filtered/*/filtered_*.jsonl`** — it only receives `passed_prefilter: true` rows NexusMind’s pipeline writes it only under an `if result["passed_prefilter"]:` guard, so it is 100% passers by construction; use the pipeline's `N scored, M prefiltered` line or the shadow log. **Don't infer runtime behavior from config keys** — see `memory/calibration-history.md` Dead Ends.
 
 - **Fit `calibration.json` after every training run.** Isotonic regression on the val set. Commit with the filter package. The base scorer auto-loads it.
@@ -84,12 +85,14 @@ See `docs/adr/README.md` for full ADR index, `docs/decisions/` for detailed reco
 | Starting a new session | `memory/MEMORY.md` — project memory index, current work status |
 | Resuming thriving v1 work | `memory/thriving-v1-scoring.md` — scoring status, resume commands, full pipeline |
 | Starting calibration / scorer-training / oracle-prompt work | `memory/calibration-history.md` — Dead Ends section: which approaches are already known dead (#69) |
+| **Touching a prefilter, or considering an enforcement flip** | **`memory/prefilter-length-floor-hypotheses.md`** — what each prefilter actually blocks (measured), why `expected_pass_rate` was deleted from two filters, and why a matching rate is not a safety argument. Then #93. |
+| **Reading a number off NexusMind production data** | **`memory/nexusmind-data-sources.md`** — `filtered_*.jsonl` ALSO drops source-type-excluded rows (scored, then discarded — worth 0.129 on investment_risk), and `data/raw/` is pre-enrichment. Reconcile denominators before diffing two sources. |
 | **Touching normalization (fitting, debugging a score/tier that looks wrong, ovr ranking)** | **`docs/NORMALIZATION_METHOD.md`** — canonical method (anchored CDF, guards, reproduction steps); ADR-014 for the decision record, `docs/FILTER_PLAYBOOK.md` §6 for the digest. Normalization exists only for ovr.news cross-lens ranking; tier is reassigned on the *normalized* score by design, so `raw >= threshold` + `tier: low` is expected. Fit at `raw >= the filter's tier threshold` — enforced by `tests/unit/test_normalization_invariant.py`. Both #161 and #205 were `raw_min` drifting off that threshold. |
 | **Creating OR retraining ANY filter (START HERE)** | **`docs/FILTER_PLAYBOOK.md`** — the single source of truth: every compiled lesson + the canonical reference (`nature_recovery v4`). Read before touching filter code. Then `docs/agents/filter-development-guide.md` (depth) / `docs/guides/filter-creation-workflow.md` (quick steps). |
 | Deploying to NexusMind or gpu-server | `docs/RUNBOOK.md` — deployment, training, scoring how-to |
 | Training on GPU server | `memory/gpu-server.md` — venv, PYTHONPATH, HF_HUB_OFFLINE |
 | Debugging model loading or PEFT issues | `memory/gemma3-model.md` — Auto mapping fix, key format details |
-| Making architectural decisions | `docs/adr/README.md` — 19 settled ADRs |
+| Making architectural decisions | `docs/adr/README.md` — 21 settled ADRs (001–019, 021, 022; 020 is a draft) |
 | Checking priorities or planning work | `docs/TODO.md` and `docs/ROADMAP.md` |
 | Understanding system design | `docs/ARCHITECTURE.md` |
 | Reviewing work quality | `docs/checklists/` — architect, test, implement, QA gates |
@@ -137,4 +140,4 @@ This project is a source project for [augmented-engineering](https://github.com/
 
 ---
 
-*Last updated: 2026-08-01 (afternoon — persuasion-scorer split)*
+*Last updated: 2026-08-02 (Chain 4 measured — prefilter reality, length floor -> #93)*

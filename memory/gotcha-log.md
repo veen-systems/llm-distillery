@@ -1418,3 +1418,31 @@ heredoc (`python3 - <<'EOF'`) so quotes aren't doubly escaped, and single-quote 
 **Recurrence — same shape, third time today.** (1) Prefilter state read from `data/filtered/*/filtered_*.jsonl`, which is 100% passers by construction. (2) ovr#280's cluster_id read from `metadata.quality` instead of the per-lens `nexus_mind_attributes.<lens>.source_quality`. (3) This one. Also adjacent: the phantom "35 pre-existing test failures" (wrong interpreter), corrected the same day.
 
 **Promoted** → `memory/MEMORY.md` as a standing rule. See Promoted table.
+
+---
+
+### `data/raw/` is pre-enrichment — using it as a stand-in for scored content gave an 80× error (2026-08-02)
+
+**Problem**: Measuring the truncation effect on the population that `filtered_*.jsonl` excludes, I sourced those rows from `data/raw/content_items_*.jsonl` and got a prefilter pass rate of **0.008** for uplifting. Arithmetic against the shadow log said the true in-path rate for the same population was **0.647**. The number was clean, self-consistent, and wrong by 80×.
+
+**Root cause**: `ArticleFetcher.pre_enrich` fetches full article text **before** scoring and deliberately targets exactly the short-content articles. A raw row is therefore the RSS stub as *collected*, not what the scorer saw — nearly all of them fail the 300-char floor at collection time and pass it after enrichment. The standing "establish what a source excludes" rule had been applied to *rows*; what this source excludes is **time**.
+
+**Fix**: Raw is fine for `url` / `source` / `source_type` / `id` / `metadata` (enrichment doesn't touch them) and wrong for anything keyed on `content` or its length. Recorded in `memory/nexusmind-data-sources.md`. The catch came from refusing to accept a reconciliation gap: replay-trunc agreed with the shadow to ≤0.006 for five filters, so the sixth's 0.13 gap had to have a cause.
+
+### `filtered_*.jsonl` excludes a SECOND population nobody had written down (2026-08-02)
+
+**Problem**: The shadow log counted 8,759 articles for a cycle where the filtered file held 8,283 — and 8,765 vs 6,572 for investment_risk. Read as the same set, investment_risk's prefilter pass rate came out 0.129 low.
+
+**Root cause**: `src/scoring/source_filter.py` sets `passed_prefilter = False` **after** scoring for articles whose `type_classification` is in the filter's `excluded_source_types` (all six filters enforce). `scripts/main.py` writes only passers, so those articles are scored — hence counted by any scorer-side log — and then discarded. CLAUDE.md documented the *first* exclusion on this file (the passers-only write guard) which made it feel like a known, understood artefact.
+
+**Fix**: `memory/nexusmind-data-sources.md`, and the shadow log now emits `pre_source_filter=true` on every line so the caveat travels with the number. **Generalisation worth keeping: knowing one thing a source excludes actively suppresses the question of whether it excludes anything else.** The first exclusion was in CLAUDE.md, which is precisely why the second went unlooked-for.
+
+**Promoted to**: `memory/MEMORY.md` standing rule (extended 2026-08-02 with two new axes — *time*, and *a second exclusion on an artefact you already thought you understood*) and `memory/nexusmind-data-sources.md`. Instances 5 and 6 of this family in two days.
+
+### A failed replication is not automatically "small-sample noise" — bootstrap the original n (2026-08-02)
+
+**Problem**: LD#92's n=15 oracle test reported uplifting over-scoring short content (DiD ≈ −1.24, MAE ratio 2.3×). At n=60/group it came out **+0.44** — opposite sign. The natural reading was "n=15 was unlucky", which would have closed the issue as noise and moved on.
+
+**Root cause**: Not noise. Resampling 20,000 n=15 subsamples from the n=60 population gave **P(DiD ≤ −1.24) = 0.0000** — the original result is unreachable from this population by sampling variation, so the two runs measured *different things*. That reframed it from a statistics problem to a bug hunt, and the bug was findable: LD#92 states uplifting's tier threshold as 2.25, which is *solutions'* op-point (uplifting's is 4.0), and its "924 / 15.0%" scale figure reproduces exactly at a 2.25 bar. The same defect it described is real — in solutions.
+
+**Fix**: When a replication flips sign, bootstrap the original sample size before attributing it to noise. "Could the first result have come from this population?" is a cheap, decisive question, and a *no* is much more informative than a *yes*.

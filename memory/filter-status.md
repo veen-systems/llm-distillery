@@ -52,16 +52,42 @@
 
 The finding rests on: (1) the code above; (2) the in-path shadow measurement — cd reports `observed_pass` 0.255 pooled over 2,099 articles *at the scorer*, which would read ≈1.000 if the gate were already enforcing upstream; (3) magnitude — cd's gate blocks 71% on replay vs 15.6% actually dropped.
 
-NM#284 stage 1 (shadow measurement, deployed 2026-08-01 `5d53774`) logs observed vs declared pass rate per batch. First cycle:
+NM#284 stage 1 (shadow measurement, deployed 2026-08-01 `5d53774`) logs observed
+vs declared pass rate per batch. **Superseded by the 2026-08-02 measurement
+(NM#285) — the first-cycle n≈2,099 table is no longer the reference.**
 
-| filter | observed | declared | verdict |
-|---|---|---|---|
-| cultural_discovery | 0.255 (n=2099) | 0.25 | **matches** — LD#86 gate validated |
-| uplifting | 0.525 (n=2100) | 0.20 | mismatch |
-| solutions | 0.591 (n=2099) | 0.20 | mismatch (see LD#90 — inherited nr v4's pass-through) |
-| investment_risk | 0.589 (n=2099) | *(none declared)* | no contract to check |
+Full-contract replay, 4 cycles, n=8,283 per filter (same-row FULL vs
+`{title, content}` A/B, so the truncation effect is isolated):
 
-belonging + nature_recovery not yet captured in the log window. Note ~25 of the ~39 avoidable-inference points is the shared `content_too_short` base rule, not lens logic — so NM#284 stage 2 is a **global** short-content gate, not six per-filter flips.
+| filter | observed (full) | declared | length blocks | lens blocks | truncation effect |
+|---|---|---|---|---|---|
+| cultural_discovery v5 | 0.2605 | 0.25 | 0 | 6,103 | +0.0005 |
+| uplifting v7 | 0.5873 | 0.20 | 2,949 | 469 | +0.0028 |
+| investment_risk v6 | 0.7605 | *(none)* | 1,454 | 117 | +0.0097 |
+| belonging v1 | 0.6321 | 0.15 | 2,950 | 99 | +0.0008 |
+| nature_recovery v4 | 0.6438 | ~~0.85~~ **deleted** | 2,950 | **0** | +0.0000 |
+| solutions v6 | 0.6438 | ~~0.20~~ **deleted** | 2,950 | **0** | +0.0000 |
+
+Three things this replaced:
+
+1. **The "mismatch" verdicts were not drift.** `nature_recovery v4` and
+   `solutions v6` declare `EXCLUSION_PATTERNS = {}` by design (commerce upstream,
+   ADR-004) and their `POSITIVE_PATTERNS` are force-pass overrides — a no-op with
+   nothing to override. Both reduce to `validate_article()` +
+   `MIN_CONTENT_LENGTH` and are byte-identical because they are the same filter.
+   `expected_pass_rate` **deleted** from both (`3ed47e1`), not corrected: 0.644 is
+   "fraction of articles ≥300 chars", a corpus statistic.
+2. **"Stage 2 is a global short-content gate" is REFUTED** (#93). Length is
+   87–100% of blocking for four of six filters, and a length gate is the wrong
+   shape — short content clearing an op-point is as likely to be genuine as long
+   content (uplifting 67% vs 65% oracle-validated). Fix is a cap/penalty.
+3. **investment_risk's logged rate is biased −0.129** by the shadow denominator,
+   which counts articles `source_filter` discards after scoring. See
+   `memory/nexusmind-data-sources.md`.
+
+**cultural_discovery's rate matches and is still not safe to enforce** — 15.5%
+of surfacing articles blocked (19.9% non-English vs 13.0% English, z≈2.6), #86.
+Rate agreement and safety-to-enforce are independent properties.
 
 **Runtime content-type caps: NONE (2026-07-14).** NexusMind's `cap_triggers.py` `_TRIGGER_REGISTRY` is empty, so `cap_applied` is permanently `null` on every filter. `nature_recovery/climate_doom` was the only one ever deployed (2026-05-08, #161) and was retired: 3 production bites, 3 false positives, 0 saves — all three the trigger word inside a non-doom construction (`evitar su extinción`, `en peligro crítico de extinción`, `deforestation-free`), which a polarity-blind regex cannot see. #161's actual cause was `normalization.json` fitted at raw ≥ 1.5 instead of the 4.0 tier threshold, inflating correctly-scored doom (raw 2.2–3.3) to normalized 5.2–8.3. Filters' `config.yaml` `content_type_caps` still declare the **oracle** contract and are inert at runtime; the scorer log reports them as INERT. Enforced by `tests/unit/test_normalization_invariant.py` (since 2026-07-16: raw_min must equal the op-point ±0.01 — the fitter anchors the CDF's lower edge there by construction; the old `[op_point, 4.5]` band is gone).
 

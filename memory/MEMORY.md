@@ -5,15 +5,21 @@
 **Before using any source as evidence, establish what it excludes.** This applies
 to data (`filtered_*.jsonl` is 100% passers by construction), to nested structures
 (`metadata.quality` is not `nexus_mind_attributes.<lens>.source_quality`), to prior
-work (`gh repo list` misses repos with no remote), and to literature (a search
-snippet reported a model's *worst* two techniques as its best). A clean-looking
+work (`gh repo list` misses repos with no remote), to literature (a search
+snippet reported a model's *worst* two techniques as its best), and — added
+2026-08-02 — to **time** (`data/raw/` is pre-enrichment, so it cannot stand in
+for what the scorer saw: 0.008 vs a true 0.647) and to **a second exclusion on
+an artefact you already thought you understood** (`filtered_*.jsonl` drops
+source-type-excluded rows too, worth 0.129 on investment_risk). A clean-looking
 result from an unexamined source is the hardest kind to falsify, because being
 right supplies no pressure to check how you got there. If it's a denominator, a
 baseline, or a claim of absence — enumerate the source first, and if the owner
 knows the set, ask them rather than inferring it.
 
-- [Cross-repo prioritization](cross-repo-prioritization.md) — master issue landscape across all 4 repos (156 open): P0-P4, **12 dependency chains**, 5 work batches. Re-inventoried 2026-08-01 evening: Chain 3 CLOSED, Chain 8 now deadline-driven (FS#120 ~2026-08-14), new primary chain is NM#284→#285 prefilter resurrection; new chains 9-11 (hero images, dedup, score provenance).
+- [Cross-repo prioritization](cross-repo-prioritization.md) — master issue landscape across all 4 repos (156 open): P0-P4, **12 dependency chains**, 5 work batches. Re-inventoried 2026-08-01 evening: Chain 3 CLOSED, Chain 8 now deadline-driven (FS#120 ~2026-08-14), new chains 9-11 (hero images, dedup, score provenance). **Updated 2026-08-02: Chain 4 re-rooted — NM#285 closed (truncation measured, not the cause); the root is now #93, the length-floor split.**
 - [Filter status](filter-status.md) — current state of all production filters and in-development versions
+- [NexusMind data sources](nexusmind-data-sources.md) — what each production artefact EXCLUDES; `filtered_*.jsonl` also drops source-type-excluded rows, `data/raw/` is pre-enrichment
+- [Prefilter & length-floor hypotheses](prefilter-length-floor-hypotheses.md) — what each prefilter actually blocks (measured 2026-08-02); read before any enforcement flip
 - [GPU server](gpu-server.md) — venv, PYTHONPATH, HF_HUB_OFFLINE, ollama conflict, training setup
 - [b650 GPU](b650-gpu.md) — Arian's 3090 Ti training node: access (account jeroen), uv venv, staged data, cross-box score-skew warning
 - [Gotcha log](gotcha-log.md) — problem/fix archive
