@@ -7,7 +7,14 @@ metadata:
 
 # Cross-Repo Prioritization
 
-**Last updated: 2026-08-01 (evening re-inventory)**
+**Last updated: 2026-08-02** (Chain 4 measured + re-rooted; NM#285 and NM#286
+items 1+2 resolved; LD#92 corrected; LD#86 answered). Counts below are the
+2026-08-01 evening re-inventory and have not been re-run.
+
+> The "Changes since the 2026-08-01 morning update" table below is a historical
+> changelog — its NM#285 and LD#92 rows record what was believed on 08-01, and
+> both were **overturned on 08-02**. Chain 4 and the P0 table are current.
+
 Open: **llm-distillery 32 · NexusMind 36 · ovr.news 80 · FluxusSource 8 = 156.**
 Repos: veen-systems/llm-distillery, ducroq/{NexusMind,ovr.news,FluxusSource}.
 
@@ -62,24 +69,40 @@ of true positives) and NM#286 item 3 (violence stamping skipped in 3 run modes).
 ### Chain 3: Normalization Refits — **CLOSED 2026-08-01**
 Verified live across six consecutive cycles. No open links.
 
-### Chain 4: Prefilter Resurrection — **NEW PRIMARY CHAIN**
+### Chain 4: Prefilter Resurrection — **MEASURED 2026-08-02; RE-ROOTED**
 ```
-NM#284 (stage 1 shadow) ✅ → NM#285 (truncation — gates the measurement)
-                              → decide Option C (pipeline-side prefilters)
-                              → LD#86 (cd enforce) → LD#87 (cd v6 op-point)
-                              → LD#90 (harmonization: observed == declared)
+NM#284 (stage 1 shadow) ✅ → NM#285 (measured, Option B shipped 89f2e5b) ✅
+   → NEW ROOT: split the length floor out of prefilters into a cap/penalty
+                              → LD#86 (cd enforce — measured, DO NOT FLIP)
+                              → LD#87 (cd v6 op-point) → LD#90 (harmonization)
 ```
-**Everything downstream of NM#285 is measuring a biased number.** Four filters
-cluster at ~0.59 by artifact; cd's 0.255 survives the objection, ir's does not.
-Option C also dissolves NM#285, subsumes stage 1b, and matches how
-commerce/obituary/violence already work. **Measure per-filter truncation effect
-before committing.**
+**Truncation was NOT the problem** — measured at +0.0000 (nr, solutions) to
++0.0097 (ir) on the production-relevant population. Option C declined: its cost
+saving came almost entirely from the length floor, which is the rule we now
+don't want to enforce. Option A buys a rounding error.
+
+**The real findings.** (1) `nature_recovery v4` and `solutions v6` prefilters are
+pure length floors by design (`EXCLUSION_PATTERNS = {}`); their
+`expected_pass_rate` is deleted, not corrected — 0.644 is a corpus statistic.
+(2) A **larger, opposite-signed denominator bias**: the shadow counts articles
+`source_filter` discards post-scoring — ir logs 0.642 vs 0.770 on articles that
+can actually surface. (3) "Enforce the prefilter" = "enforce a 300-char length
+floor" for 87–100% of blocking on four of six filters.
+
+**LD#86 is now measured and the answer is NO:** enforcing cd's gate costs 15.5%
+of surfacing articles (135/871 over 20 cycles), skewed non-English (19.9% vs
+13.0% English, p≈0.01). Zero high-tier losses. `no_cultural_topic_signal` is 86%
+of the loss — fix its multilingual coverage, then re-run the check.
 
 ### Chain 5: Solutions Lens — largely complete
 ```
 LD#43 ✅ → v4 ✅ → v6 (gate passed, normalized) ✅ → LD#84 (prompt router, v7 only) → NM#204 (closable as superseded)
 ```
-solutions v6 is also the **real LD#90 mismatch** (declares 0.20, passes 0.59).
+~~solutions v6 is the real LD#90 mismatch (declares 0.20, passes 0.59).~~
+**RESOLVED 2026-08-02** — not drift: solutions v6's prefilter has no lens rules
+at all (`EXCLUSION_PATTERNS = {}` by design), so there was no gate to miss.
+`expected_pass_rate` deleted rather than corrected. solutions v6 *is* now the
+filter carrying the LD#92 short-content defect (DiD −1.13).
 
 ### Chain 6: Commerce — resolved, but contract gap reopened
 ```
@@ -143,9 +166,10 @@ Neither side urgent.
 | ID | Repo | Title | Why P0 |
 |----|------|-------|--------|
 | **(carryover)** | NexusMind | Verify the post-14:04 cycle: 4 first-time-in-production checks | NM#281's corrected gate has never been observed live. `gpu-server-unpinned` = LD#80 regression. |
-| **NM#285** | NexusMind | Shadow measures a truncated Article | Gates NM#284 → LD#86/#87/#90. Every queued enforcement decision waits on this number. |
+| ~~NM#285~~ | NexusMind | ~~Shadow measures a truncated Article~~ | **RESOLVED 2026-08-02** — Option B shipped (`89f2e5b`). Truncation ≤0.01; no longer blocks LD#86/#87/#90. |
+| **NEW: length floor → cap** | both | Split `MIN_CONTENT_LENGTH` out of per-filter prefilters into a cap/penalty (ADR-022 shape) | Replaces NM#285 as Chain 4's root. Blocks every NM#284 enforce flip: for 4 of 6 filters "enforce the prefilter" is 87–100% "enforce a length floor". |
 | **LD#91** | llm-distillery | uplifting ranks child-trafficking investigation top-6 of 3,530 | Reputational, reader-visible, live. Scorer fidelity, not threshold. |
-| **LD#92** | llm-distillery | uplifting over-scores sub-300-char stubs by ~1.9 raw pts | NEW 2026-08-02. ~460 false-positive articles per 8 cycles reaching the feed, uplifting alone. Oracle-verified (MAE 1.98 vs 0.87 control). Fix = cap/penalty, **not** a length gate — a gate drops ~half genuine content, skewed to non-English/global-south. |
+| **LD#92** | llm-distillery | ~~uplifting~~ **solutions** over-scores sub-300-char stubs | **CORRECTED 2026-08-02 at n=60/group.** uplifting does NOT replicate (DiD +0.44; P(original result from n=15)=0.0000). The effect is in **solutions v6** (DiD −1.13 [−1.74,−0.52], MAE 1.51×), ~49 FPs/8 cycles — not 460. Root cause of the original: op-point mix-up (2.25 is solutions', uplifting's is 4.0). Retitle/relocate. |
 | **ovr#284** | ovr.news | Comscore beacon as hero image | Real processing-without-basis event; needs an Art. 5(2) record. Legal, not just code. |
 | **ovr#285** | ovr.news | Orphan reclamation NULLs raw_weighted_average + source_quality | Silent per-cycle data loss; blocks ovr#283. |
 
@@ -197,12 +221,13 @@ ovr#242, ovr#133, FS#19, plus the ovr `positioning`/`outreach` block
 
 ## Sequenced Work Batches
 
-### Batch A — Next session (forced order)
-1. **Verify the post-14:04 cycle** — `_commerce_model` reads `v1`; `_violence_model` present; `violence_blocked` gone from the Loaded line; belonging + nature_recovery appear in the shadow log with `errors=N`.
-2. **NM#285 measurement** — per-filter diff of in-path shadow vs offline replay over full rows. Then decide Option C.
-3. **NM#286** — items 1+2 together; item 3 before any violence flip.
-4. **LD#82** violence audit.
-5. Only then: **LD#90** program, **LD#87** op-point re-derivation.
+### Batch A — status after 2026-08-02
+1. ~~Verify the post-14:04 cycle~~ **DONE — all 4 checks PASS.**
+2. ~~NM#285 measurement + Option C decision~~ **DONE — Option B shipped (`89f2e5b`); C declined on the measurement.**
+3. ~~NM#286 items 1+2~~ **DONE (`23a9068`, on main).** Item 3 still open, still blocks any violence flip.
+4. **LD#82** violence audit — next, with NM#286 item 3.
+5. **NEW ROOT: length floor → cap/penalty.** Blocks LD#86/#87/#90. Do this before any NM#284 enforce flip.
+6. **Verify next cycle** after `89f2e5b`: shadow lines carry `contract=title+content` + `pre_source_filter=true`, four filters show `INCOMPLETE(inert:…)`, and nature_recovery/solutions log **no** `declared=` (key deleted).
 
 ### Batch B — Reader-visible quality (can run in parallel with A)
 1. **LD#91** — uplifting dominant-subject failure. Read alongside LD#61 and NM#231; likely one shared mechanism.
@@ -233,7 +258,7 @@ ovr#242, ovr#133, FS#19, plus the ovr `positioning`/`outreach` block
 
 ## Standing Operator Decisions (Jeroen's call)
 
-- **NM#285 Option C** — run prefilters pipeline-side? (recommendation on file)
+- ~~NM#285 Option C~~ — DECLINED 2026-08-02 on the measurement (Option B shipped). Reopen only if prefilters regain lens rules worth enforcing.
 - **ovr#283** — publication floor: yes/no/won't-do.
 - **ovr#284** — how the Art. 5(2) record is written and by whom.
 - **LD#85** obituary v6 relabel — PARKED; reactivate on obit-flag or over-block harm.
