@@ -73,7 +73,7 @@ filters/**/model/
 !filters/**/training_*.json
 
 # Datasets and data (large files - track metadata only)
-datasets/
+datasets/*
 datasets/*.jsonl
 datasets/raw/
 datasets/processed/
@@ -209,3 +209,8 @@ tmpclaude-*
 # Reference PDFs: track the README pointer, keep binaries local
 docs/references/*.pdf
 filters/common/violence_promotion/training/*.jsonl
+
+# Adverse examples are hand-curated evidence and ARE committed (datasets/adverse/README.md).
+# Without these negations a new case is silently ignored by the datasets/ rule above.
+!datasets/adverse/
+!datasets/adverse/*.jsonl
