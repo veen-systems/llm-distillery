@@ -15,10 +15,15 @@ source for tier assignment — no scoring code reads config's tiers section — 
 drift here silently changes what surfaces (FILTER_PLAYBOOK §8 F1: nature_recovery
 shipped an inert config threshold for its whole deploy). medium = 2.25 is the
 surfacing/operating point (2026-07-22 deploy decision) the ADR-021 ground-truth
-gate evaluates at. NB: the gate scores in the RAW domain; production reassigns
-tier on the NORMALIZED score (ADR-014), whose op-point-anchored ramp puts the
-effective raw surfacing floor near 2.64 (~p22) — so production surfacing recall
-runs below the gate's raw-domain 0.559. This applies to any filter that ships a
+gate evaluates at. NB: the gate scores in the RAW domain. This paragraph used to
+say production reassigns tier on the NORMALIZED score (ADR-014) with an
+op-point-anchored ramp putting the effective raw surfacing floor near 2.64
+(~p22), so surfacing recall ran below the gate's raw-domain 0.559. **STALE since
+NM#280** (verified against production 2026-08-02): visibility is now decided on
+the RAW op-point and the normalized score only grades passers, so the effective
+floor IS 2.25 — live rows show tier `low` topping out at raw 2.250 and `medium`
+starting at 2.252. Surfacing recall therefore tracks the gate's raw-domain
+figure rather than running below it. This applies to any filter that ships a
 normalization.json (the general ADR-014 mechanism); it does not change the relative
 op-point decision. NB the nature_recovery v4 comparator currently runs raw-passthrough
 (no normalization.json, #72), so ITS gate recall 0.65 is close to its true surfacing
