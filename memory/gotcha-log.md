@@ -1446,3 +1446,13 @@ heredoc (`python3 - <<'EOF'`) so quotes aren't doubly escaped, and single-quote 
 **Root cause**: Not noise. Resampling 20,000 n=15 subsamples from the n=60 population gave **P(DiD ≤ −1.24) = 0.0000** — the original result is unreachable from this population by sampling variation, so the two runs measured *different things*. That reframed it from a statistics problem to a bug hunt, and the bug was findable: LD#92 states uplifting's tier threshold as 2.25, which is *solutions'* op-point (uplifting's is 4.0), and its "924 / 15.0%" scale figure reproduces exactly at a 2.25 bar. The same defect it described is real — in solutions.
 
 **Fix**: When a replication flips sign, bootstrap the original sample size before attributing it to noise. "Could the first result have come from this population?" is a cheap, decisive question, and a *no* is much more informative than a *yes*.
+
+### `remote_deploy.sh`'s unpushed-commits pre-flight never ran on Linux (2026-08-02)
+
+**Problem**: The guard deployment-review added on 2026-04-19 — refuse to deploy when the local NexusMind has unpushed filter commits, because sadalsuud's `git pull` would silently no-op and ship stale filters with no signal — has been skipped on every run from the Linux workstation.
+
+**Root cause**: `NEXUSMIND_LOCAL` was hardcoded to `C:/local_dev/NexusMind`. On Linux that path does not exist, so `[ -d "$NEXUSMIND_LOCAL/.git" ]` fell to the `else` branch, which prints `WARNING: not a git checkout — skipping unpushed-commits check` and **continues**. A warning in a wall of deploy output is not a stop.
+
+**Fix**: Resolve the checkout by probing known layouts (sibling of this repo, `~/repos/veen-systems/NexusMind`, then the Windows path), with `NEXUSMIND_LOCAL` from the environment still winning. The resolved path is now echoed at the top of the run. Verified it selects `/home/jeroen/repos/veen-systems/NexusMind`.
+
+**Same shape as the session's main findings** (NM#284, NM#281, and the LD#86 gate): a mechanism that exists, is configured, and cannot fire. The tell here was the same one as the others — the failure path was a *log line*, not an error, so nothing ever contradicted the belief that the guard was working.

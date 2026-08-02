@@ -17,7 +17,30 @@
 set -euo pipefail
 
 SADALSUUD_NEXUSMIND="/home/jeroen/local_dev/NexusMind"
-NEXUSMIND_LOCAL="C:/local_dev/NexusMind"
+
+# Local NexusMind checkout. This was hardcoded to the Windows path, so on the
+# Linux workstation the directory never existed, the `-d` test below fell to the
+# "not a git checkout" branch, and the unpushed-commits pre-flight — the guard
+# deployment-review added on 2026-04-19 precisely to stop stale deploys — was
+# skipped silently on every run. Same shape as NM#284/NM#281: configured,
+# present, and unable to fire. Found 2026-08-02.
+#
+# Resolve by probing the known layouts, newest first. NEXUSMIND_LOCAL in the
+# environment still wins, for checkouts in neither place.
+if [ -z "${NEXUSMIND_LOCAL:-}" ]; then
+    for _candidate in \
+        "$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." 2>/dev/null && pwd)/NexusMind" \
+        "$HOME/repos/veen-systems/NexusMind" \
+        "C:/local_dev/NexusMind"
+    do
+        if [ -d "$_candidate/.git" ]; then
+            NEXUSMIND_LOCAL="$_candidate"
+            break
+        fi
+    done
+fi
+NEXUSMIND_LOCAL="${NEXUSMIND_LOCAL:-C:/local_dev/NexusMind}"
+echo "Local NexusMind checkout: $NEXUSMIND_LOCAL"
 
 echo "=== Remote deploy via sadalsuud ==="
 echo ""
