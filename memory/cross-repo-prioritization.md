@@ -145,6 +145,7 @@ Neither side urgent.
 | **(carryover)** | NexusMind | Verify the post-14:04 cycle: 4 first-time-in-production checks | NM#281's corrected gate has never been observed live. `gpu-server-unpinned` = LD#80 regression. |
 | **NM#285** | NexusMind | Shadow measures a truncated Article | Gates NM#284 → LD#86/#87/#90. Every queued enforcement decision waits on this number. |
 | **LD#91** | llm-distillery | uplifting ranks child-trafficking investigation top-6 of 3,530 | Reputational, reader-visible, live. Scorer fidelity, not threshold. |
+| **LD#92** | llm-distillery | uplifting over-scores sub-300-char stubs by ~1.9 raw pts | NEW 2026-08-02. ~460 false-positive articles per 8 cycles reaching the feed, uplifting alone. Oracle-verified (MAE 1.98 vs 0.87 control). Fix = cap/penalty, **not** a length gate — a gate drops ~half genuine content, skewed to non-English/global-south. |
 | **ovr#284** | ovr.news | Comscore beacon as hero image | Real processing-without-basis event; needs an Art. 5(2) record. Legal, not just code. |
 | **ovr#285** | ovr.news | Orphan reclamation NULLs raw_weighted_average + source_quality | Silent per-cycle data loss; blocks ovr#283. |
 

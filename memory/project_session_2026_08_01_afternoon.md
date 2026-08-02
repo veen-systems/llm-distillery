@@ -125,6 +125,44 @@ n=8,764), LD#90 (drift table, three distinct failure shapes).
 fitted to a truncation artifact bakes the artifact into config. Only nature_recovery
 and cultural_discovery are safe to correct now.
 
+### The length floor: two hypotheses proposed, both refuted (→ LD#92)
+
+`content_too_short_Nchars` dominating five of six filters raised two readings, and
+**the oracle test killed both**:
+
+1. *"Promote it to one global gate before fan-out"* (~33% scoring saving) — **no**,
+   it drops ~half genuine content, skewed toward `spanish_*` / `gn_africa_*` /
+   `gn_central_america` / `french_*`. That is NM#231's under-served population.
+2. *"Drop it — `MIN_CONTENT_LENGTH=300`'s framework-leakage rationale is an ORACLE
+   hazard, mis-transplanted to a student with no prompt"* — **no**, it is
+   measurably protecting precision.
+
+**Test** (difference-of-differences, so DeepSeek-vs-gemini oracle bias cancels):
+two groups matched at student `raw >= 4.0`, differing only in length.
+
+| group | n | MAE | bias (oracle−student) | oracle ≥2.25 |
+|---|---|---|---|---|
+| <300 chars | 15 | **1.98** | **−1.85** | **8/15** |
+| ≥300 chars | 15 | 0.87 | −0.61 | **15/15** |
+
+2.3× worse error on short content. gemini-2.5-flash partial run agrees
+(bias −2.57). Failure mode: title-only stubs pattern-match progress vocabulary
+with no subject — *"Canyon Delivers 7 Locomotives to Cameroon"* student 4.45 /
+oracle 0.45. Half genuine, half not.
+
+**Live impact:** 924 sub-300 uplifting articles per 8 cycles clear the tier
+threshold; ~half are false positives ⇒ **~460 bad articles per 8 cycles**, uplifting
+alone. Fix should be a **cap/penalty** (ADR-022 shape), not a drop. → **LD#92**.
+
+### Field trap (cost two wrong conclusions in a row)
+
+`nexus_mind_attributes.<lens>.weighted_average` is **NORMALIZED**;
+`raw_weighted_average` is raw. On the normalized field sub-300 looks like
+near-zeros (mean 0.049, p90 0.000) and I twice concluded "they score nothing /
+no CDF distortion". On **raw**: mean 1.597, p50 1.334 vs 2.124 / 1.409 — nearly
+identical medians, and ~19% of the normalization fit population.
+**Always use `raw_weighted_average` for scorer-behaviour analysis.**
+
 **Incidental**: og:image backfill logged `528/2398 extracted, 1870 failed` (78%
 failure). Same surface as ovr#281, which currently rests on an n=25 probe. Worth
 adding as evidence *after* confirming the two failure counts mean the same thing.
