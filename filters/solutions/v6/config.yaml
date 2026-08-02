@@ -28,9 +28,24 @@ source_filter:
   shadow_mode: false
 prefilter:
   enabled: true
-  expected_pass_rate: 0.2
-  description: Blocks off-topic and shopping content; broad solutions keyword net
-    passes tech, policy, and community coverage
+  # NO expected_pass_rate — deliberately, not by omission (NM#285, 2026-08-02).
+  # This prefilter declares EXCLUSION_PATTERNS = {} (commerce runs upstream,
+  # ADR-004) and its POSITIVE_PATTERNS are a force-pass override, a no-op with
+  # nothing to override. It reduces to validate_article() + MIN_CONTENT_LENGTH.
+  # Measured over 8,283 production articles it emits exactly one block reason,
+  # content_too_short (2,950), and zero lens blocks — byte-identical to
+  # nature_recovery v4, because they are the same filter.
+  #
+  # The old value (0.2) was the largest declared/observed gap on the board
+  # (observed 0.644) and read as drift; it is not drift, there is no gate. Do
+  # NOT re-declare as 0.644 — that is "fraction of articles >= 300 chars", a
+  # corpus statistic, not a lens spec (LD#90).
+  description: >-
+    No lens-specific blocking. Structural validation plus the shared 300-char
+    minimum only; commerce is handled upstream (ADR-004) and topic screening by
+    the e5 probe. The previous description ("blocks off-topic and shopping
+    content; broad solutions keyword net") described behaviour this filter has
+    never had.
 oracle:
   recommended: deepseek
   candidates:

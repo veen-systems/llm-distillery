@@ -62,8 +62,21 @@ prefilter:
   # v4: commerce-only pass-through (topic/decline gates removed — the model's
   # job, and English-only, costing 21.6% recall). Effective Stage-1 screening
   # now lives in the multilingual e5 probe (hybrid_inference), not here.
-  # expected_pass_rate is a loose bootstrap pending probe calibration (step 4).
-  expected_pass_rate: 0.85
+  #
+  # NO expected_pass_rate — deliberately, not by omission (NM#285, 2026-08-02).
+  # This prefilter declares EXCLUSION_PATTERNS = {} and its POSITIVE_PATTERNS
+  # are a force-pass override, which is a no-op with nothing to override. It
+  # therefore reduces to validate_article() + MIN_CONTENT_LENGTH. Measured over
+  # 8,283 production articles, the ONLY block reason it emits is
+  # content_too_short (2,950; 0 lens blocks) — so its observed pass rate of
+  # 0.644 is "fraction of articles >= 300 chars", a property of the corpus, not
+  # a specification of this lens.
+  #
+  # The old value (0.85, "a loose bootstrap pending probe calibration") was
+  # never met and never could be. Do NOT re-declare it as 0.644: that would
+  # encode a corpus statistic as if it were a gate spec, which is the failure
+  # shape LD#90 exists to remove. Re-add a rate only if this filter gains real
+  # lens rules.
   description: "Commerce-only pass-through (commerce handled upstream in NexusMind); multilingual POSITIVE_PATTERNS force-pass. Topic/decline judgment delegated to the e5 probe + student."
 
 oracle:
