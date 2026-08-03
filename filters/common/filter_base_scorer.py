@@ -170,6 +170,10 @@ class FilterBaseScorer(ABC):
         self.tail_tokens = 256
         self.head_tail_separator = " [...] "
 
+        # #93 short-content cap — off unless config.yaml opts in.
+        self.short_content_min_chars = 300
+        self.short_content_cap = None
+
         if config_path.exists():
             with open(config_path, "r", encoding="utf-8") as f:
                 config = yaml.safe_load(f)
@@ -186,6 +190,34 @@ class FilterBaseScorer(ABC):
                 logger.info(
                     f"Head+tail preprocessing enabled: {self.head_tokens} + {self.tail_tokens} tokens"
                 )
+
+            self._load_short_content_config(config)
+
+    def _load_short_content_config(self, config: Dict):
+        """Load the #93 short-content cap from config.yaml.
+
+        ADR-022 shape: content length is stamped on every result unconditionally
+        (see `score_article`); this is the single config-gated decision point
+        that acts on it. Default is no cap — the floor was measured to discard
+        as much genuine content as bad, and only `solutions v6` has a candidate
+        short-content defect, which is not yet identified (see #92: the DiD is
+        confounded with a selection artifact). Do not set `cap` on any filter
+        until that measurement separates the two.
+
+        config.yaml shape:
+            short_content:
+              min_chars: 300   # what counts as short
+              cap: 2.0         # raw weighted score ceiling; omit/null = off
+        """
+        short_content = config.get("short_content") or {}
+        self.short_content_min_chars = short_content.get("min_chars", 300)
+        self.short_content_cap = short_content.get("cap")
+
+        if self.short_content_cap is not None:
+            logger.info(
+                f"Short-content cap active: content < {self.short_content_min_chars} "
+                f"chars capped at {self.short_content_cap}"
+            )
 
     # --- Abstract methods ---
 
@@ -225,7 +257,48 @@ class FilterBaseScorer(ABC):
             "tier": None,
             "tier_description": None,
             "gatekeeper_applied": False,
+            # #93 — stamped on every result, including prefilter-blocked ones
+            # (None until _stamp_content_length runs for that article).
+            "content_length": None,
+            "short_content_cap_applied": False,
         }
+
+    def _stamp_content_length(self, article: Dict, result: Dict) -> Dict:
+        """Record the article's content length on the result (ADR-022: stamp always).
+
+        Unconditional and independent of any enforcement decision — the cap in
+        `_process_raw_scores` reads this, and so can any downstream consumer
+        that wants to reason about short content without re-deriving it.
+        """
+        from filters.common.base_prefilter import BasePreFilter
+
+        result["content_length"] = BasePreFilter.content_length(article)
+        return result
+
+    def _apply_short_content_cap(self, weighted_avg: float, result: Dict) -> float:
+        """The #93 short-content rule — the one place it is decided.
+
+        Off unless `config.yaml` sets `short_content.cap`. Reads the stamp on
+        `result` rather than the article, so every scoring path that stamps
+        reaches the same verdict; HybridScorer's Stage-1 branch calls this
+        directly for the same reason (a second inline copy is exactly the
+        second-drop-point shape ADR-022's Risks section warns about).
+
+        Returns the (possibly capped) weighted average and records
+        `short_content_cap_applied` on the result.
+        """
+        if self.short_content_cap is None:
+            return weighted_avg
+
+        length = result.get("content_length")
+        if length is None or length >= self.short_content_min_chars:
+            return weighted_avg
+
+        if weighted_avg > self.short_content_cap:
+            result["short_content_cap_applied"] = True
+            return self.short_content_cap
+
+        return weighted_avg
 
     # --- Tier assignment ---
 
@@ -260,6 +333,8 @@ class FilterBaseScorer(ABC):
                     weighted_avg = self.GATEKEEPER_CAP
                     result["gatekeeper_applied"] = True
 
+        weighted_avg = self._apply_short_content_cap(weighted_avg, result)
+
         result["weighted_average"] = weighted_avg
 
         tier, tier_desc = self._assign_tier(weighted_avg)
@@ -288,6 +363,7 @@ class FilterBaseScorer(ABC):
         self._validate_article(article)
 
         result = self._create_empty_result()
+        self._stamp_content_length(article, result)
 
         if self.use_prefilter and not skip_prefilter:
             passed, reason = self.prefilter.apply_filter(article)
@@ -369,6 +445,8 @@ class FilterBaseScorer(ABC):
                 result["prefilter_reason"] = f"Invalid article: {e}"
                 results.append(result)
                 continue
+
+            self._stamp_content_length(article, result)
 
             if self.use_prefilter and not skip_prefilter:
                 passed, reason = self.prefilter.apply_filter(article)

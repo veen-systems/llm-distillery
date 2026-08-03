@@ -136,6 +136,38 @@ def load_filter_package(filter_path: Path) -> Tuple[Optional[object], Path, Dict
     return prefilter, prompt_path, config_dict
 
 
+def make_oracle_prefilter(prefilter_obj):
+    """Build the oracle-path gate: labelling precondition + the lens rules.
+
+    The 300-char floor lives HERE and not in `apply_filter()` (#93). Its
+    rationale is framework leakage in the oracle *prompt* — short articles make
+    the LLM analyse the evaluation framework instead of the article — so it
+    belongs to the path that has a prompt. The scoring path stamps content
+    length instead and applies at most one config-gated cap.
+
+    Dropping the length check here changes what gets *labelled*, not what gets
+    *scored*; since #93 those are no longer the same decision.
+
+    Args:
+        prefilter_obj: An instantiated filter-package prefilter, or None.
+
+    Returns:
+        A callable article -> bool with a `.prefilter_obj` attribute (used
+        downstream for Unicode cleaning), or None if there is no prefilter.
+    """
+    if not prefilter_obj:
+        return None
+
+    def oracle_prefilter(article):
+        check_length = getattr(prefilter_obj, "check_content_length", None)
+        if check_length is not None and not check_length(article)[0]:
+            return False
+        return prefilter_obj.apply_filter(article)[0]
+
+    oracle_prefilter.prefilter_obj = prefilter_obj
+    return oracle_prefilter
+
+
 class ErrorType(Enum):
     """Classification of errors during distillation."""
     TIMEOUT = "timeout"
@@ -1538,12 +1570,7 @@ if __name__ == '__main__':
 
         # Wrap prefilter object to match batch_scorer interface
         # Filter packages return (bool, reason) but batch_scorer expects just bool
-        if prefilter_obj:
-            prefilter = lambda article: prefilter_obj.apply_filter(article)[0]
-            # Store prefilter object for Unicode cleaning
-            prefilter.prefilter_obj = prefilter_obj
-        else:
-            prefilter = None
+        prefilter = make_oracle_prefilter(prefilter_obj)
         print()
     else:
         # Legacy --prompt mode (NO PREFILTER SUPPORT)

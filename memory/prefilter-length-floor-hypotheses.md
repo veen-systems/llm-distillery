@@ -129,6 +129,41 @@ the length floor blocks*.
     student *under*-scores short content there. That is NM#231's direction, not
     LD#92's — possibly the same underlying mechanism seen from the other side.
 
+## What shipped (2026-08-03, #93 — llm-distillery side)
+
+The floor is split three ways, per ADR-022 "stamp always, decide once":
+
+- **Labelling:** `ground_truth.batch_scorer.make_oracle_prefilter()` composes
+  `check_content_length` + `apply_filter`. The framework-leakage rationale is a
+  property of the oracle prompt, so the floor lives on the path that has one.
+- **Scoring:** no `apply_filter` checks length (base + the three filters that
+  did it inline: uplifting v7, belonging v1, investment_risk v6). Every scoring
+  result carries `content_length`; `HybridScorer`'s Stage-1 branch stamps too.
+- **Enforcement:** one `short_content.cap` per filter in `config.yaml`, read by
+  `FilterBaseScorer._apply_short_content_cap`. **Off on every filter** — the
+  only candidate defect (solutions, hypothesis 5) is still confounded.
+
+**A/B verification, n=2,917** (`data/raw` — pre-enrichment, so a short-skewed
+*stress* corpus at 65.8% sub-300; not a rate estimate). Oracle-gate verdicts at
+HEAD vs after the split: **byte-identical for five of six filters**. The
+composition is order-preserving because every rule ANDs into the verdict, so
+only the *reason* string can move, not the boolean.
+<!-- verify: rerun scratch ab_gate.py against a fresh content_items file; diffs must stay 0 for all but cd -->
+
+**The one intended exception: cultural_discovery v5.** Its custom `apply_filter`
+never called `check_content_length` — a v3→v4 regression recorded in its own
+module docstring and in TODO "Prefilter Quality". So cd was the only filter
+whose *labelling* path had no floor, and hoisting the floor restores one there:
+**190/474 = ~40% of what cd would have sent to the oracle** on the stress
+corpus. Production-realistic share is lower (enriched corpora run ~35% sub-300,
+not 66%) and **unmeasured**. Pinned by a test so it stays a decision, not an
+accident. **Re-measure before the next cd oracle run (#87).**
+
+**Not done:** the NexusMind sync (its `filters/` copy still has the old base),
+and therefore the NM#284 shadow re-run that would finally read as lens
+behaviour. Nothing live changed — the per-filter prefilter does not execute in
+production (NM#284).
+
 ## Method notes worth reusing
 
 - **Difference-of-differences cancels oracle bias**, which is what makes DeepSeek

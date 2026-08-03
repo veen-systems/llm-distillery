@@ -41,7 +41,7 @@ class BasePreFilter:
     1. **Declarative form (preferred)**: Override the class attributes
        EXCLUSION_PATTERNS, OVERRIDE_KEYWORDS, POSITIVE_PATTERNS, POSITIVE_THRESHOLD.
        The default apply_filter() drives the standard pipeline:
-            validate -> length check -> exclusions-with-override
+            validate -> exclusions-with-override
             -> _filter_specific_final_check (optional hook) -> passed
 
        Subclasses can override _filter_specific_final_check() for filter-specific
@@ -54,7 +54,9 @@ class BasePreFilter:
     """
 
     VERSION = "0.0"  # Override in subclass
-    MIN_CONTENT_LENGTH = 300  # Minimum content length to prevent framework leakage
+    # Labelling-time floor only — prevents oracle framework leakage. NOT applied
+    # by apply_filter() (#93); see check_content_length().
+    MIN_CONTENT_LENGTH = 300
     MAX_PREFILTER_CONTENT = 2000  # Content chars to analyze in prefilter (for efficiency)
 
     # --- ADR-018 declarative pattern registry (subclasses override these) ---
@@ -239,27 +241,52 @@ class BasePreFilter:
         return clean_article_comprehensive(article)
 
     @staticmethod
+    def content_length(article: Dict) -> int:
+        """Length in characters of the article's content field.
+
+        The stamp half of the #93 split: every scoring path records this so a
+        short-content decision can be made (or reversed) downstream without
+        re-deriving it. See `check_content_length` for the labelling-time gate.
+
+        Null-safe on purpose: `check_content_length` inherited the bare
+        `get('text', get('content'))` expression, which raises on an explicit
+        `text: None` alongside a valid `content`. That was harmless while the
+        expression only ran on the oracle path; since #93 it runs on every
+        scored article, so a malformed row must stamp 0 rather than kill a batch.
+        """
+        content = article.get('text') or article.get('content') or ''
+        return len(content)
+
+    @staticmethod
     def check_content_length(article: Dict, min_length: int = None) -> Tuple[bool, str]:
         """
-        Check if article content meets minimum length requirement.
+        LABELLING-TIME precondition: is this article long enough to *oracle-score*?
 
         Short articles (<300 chars) often cause LLMs to analyze the evaluation
         framework/prompt instead of the article content itself (framework leakage).
+        That hazard exists only where a prompt does — i.e. in the oracle path
+        (`ground_truth/batch_scorer.py`), which calls this directly.
+
+        **Not a scoring gate (#93).** It is deliberately NOT part of
+        `apply_filter()`: the student sees no prompt, and measurement showed a
+        length gate discards as much genuine content as bad (uplifting: 67% of
+        sub-300 articles above the op-point are oracle-validated vs 65% of long
+        ones). The scoring-path treatment is stamp + one config-gated cap —
+        see `FilterBaseScorer` `short_content` config.
 
         Args:
             article: Dict with 'title' and 'text'/'content' keys
             min_length: Minimum content length in characters (defaults to MIN_CONTENT_LENGTH)
 
         Returns:
-            (apply_filter, reason)
-            - (True, "passed"): Content is long enough
-            - (False, "content_too_short"): Content below minimum threshold
+            (should_label, reason)
+            - (True, "passed"): Content is long enough to send to the oracle
+            - (False, "content_too_short_<n>chars"): Below minimum threshold
         """
         if min_length is None:
             min_length = BasePreFilter.MIN_CONTENT_LENGTH
 
-        content = article.get('text', article.get('content', ''))
-        content_length = len(content)
+        content_length = BasePreFilter.content_length(article)
 
         if content_length < min_length:
             return (False, f"content_too_short_{content_length}chars")
@@ -292,9 +319,14 @@ class BasePreFilter:
         Determine if article should be sent to LLM for scoring.
 
         Default implementation drives the ADR-018 standard pipeline:
-            validate -> length check -> _pre_exclusion_check
-            -> exclusions-with-override -> _filter_specific_final_check
-            -> passed
+            validate -> _pre_exclusion_check -> exclusions-with-override
+            -> _filter_specific_final_check -> passed
+
+        There is deliberately NO length check here (#93). The 300-char floor is
+        a labelling-time precondition, enforced by the oracle path via
+        `check_content_length()`; the scoring path stamps length and applies at
+        most one config-gated cap. `validate_article` still rejects genuinely
+        empty content — empty is a different case from short.
 
         Subclasses with custom flow can override this entirely (legacy shape).
 
@@ -309,10 +341,6 @@ class BasePreFilter:
         valid, validation_reason = self.validate_article(article)
         if not valid:
             return (False, validation_reason)
-
-        length_ok, length_reason = self.check_content_length(article)
-        if not length_ok:
-            return (False, length_reason)
 
         text = self._get_combined_clean_text(article)
         title = article.get('title', '').lower()

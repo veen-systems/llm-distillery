@@ -210,6 +210,7 @@ class HybridScorer(ABC):
                 passed, reason = self.stage2_scorer.prefilter.apply_filter(article)
                 if not passed:
                     result = self.stage2_scorer._create_empty_result()
+                    self.stage2_scorer._stamp_content_length(article, result)
                     result["passed_prefilter"] = False
                     result["prefilter_reason"] = reason
                     result["stage_used"] = None
@@ -243,10 +244,19 @@ class HybridScorer(ABC):
                 # below the gatekeeper cap (3.0), so any article that would be
                 # capped by the gatekeeper already falls below the threshold.
                 result = self.stage2_scorer._create_empty_result()
+                self.stage2_scorer._stamp_content_length(articles[idx], result)
                 result["passed_prefilter"] = True
                 result["scores"] = screen.scores
-                result["weighted_average"] = screen.weighted_avg
-                tier, tier_desc = self.stage2_scorer._assign_tier(screen.weighted_avg)
+                # Short-content cap (#93) IS applied here, unlike the evidence
+                # gatekeeper: the gatekeeper is skipped because its cap sits
+                # above the Stage-1 threshold, and nothing guarantees that of a
+                # per-filter short-content cap. Delegates to the base scorer so
+                # the rule has one implementation.
+                weighted_avg = self.stage2_scorer._apply_short_content_cap(
+                    screen.weighted_avg, result
+                )
+                result["weighted_average"] = weighted_avg
+                tier, tier_desc = self.stage2_scorer._assign_tier(weighted_avg)
                 result["tier"] = tier
                 result["tier_description"] = tier_desc
                 result["stage_used"] = "stage1_low"

@@ -56,6 +56,18 @@ Symptoms this divergence has produced:
 
 Extend `BasePreFilter` with a declarative registry of class attributes (`EXCLUSION_PATTERNS`, `OVERRIDE_KEYWORDS`, `POSITIVE_PATTERNS`, `POSITIVE_THRESHOLD`) plus a default `apply_filter()` that drives the standard pipeline (validate → length check → exclusions-with-override → filter-specific final check → passed). Existing filters that override `apply_filter()` directly continue to work unchanged; new and migrated filters use the declarative form.
 
+> **Amendment 2026-08-03 (llm-distillery#93):** the length check is no longer a
+> stage of this pipeline. It reduces to *validate → exclusions-with-override →
+> filter-specific final check → passed*. Measurement (NexusMind#284/#285, #92)
+> showed the 300-char floor was 87–100% of everything four of six production
+> prefilters blocked, and that short content clearing an op-point is as likely
+> to be genuine as long content. Its actual rationale — LLM framework leakage —
+> is labelling-time, so it moved to the oracle path
+> (`ground_truth.batch_scorer.make_oracle_prefilter`). The scoring path stamps
+> `content_length` on every result and applies at most one config-gated cap
+> (`short_content.cap`, off everywhere until #92's confound is resolved), per
+> ADR-022. `validate_article` still rejects empty content — empty is not short.
+
 Each filter migrates as its own PR with a smoke test, in priority order:
 sustainability_technology/v3 → belonging/v1 → cultural-discovery/v4 → uplifting/v7 → investment-risk/v6 → nature_recovery/v2 → foresight/v1.
 

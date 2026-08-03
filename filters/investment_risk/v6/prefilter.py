@@ -268,10 +268,8 @@ class InvestmentRiskPreFilterV6(BasePreFilter):
         Returns:
             Tuple of (should_score: bool, reason: str)
         """
-        # 1. Content length
-        length_ok, length_reason = self.check_content_length(article)
-        if not length_ok:
-            return False, length_reason
+        # 1. No content-length check (#93): the 300-char floor is a
+        #    labelling-time precondition enforced by the oracle path.
 
         source = article.get('source', '').lower()
         source_type = article.get('source_type', '').lower()

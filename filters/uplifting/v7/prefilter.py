@@ -396,10 +396,8 @@ class UpliftingPreFilterV7(BasePreFilter):
             - (True, "passed"): Send to oracle
             - (False, reason): Block with specific reason
         """
-        # Check content length first
-        passed, reason = self.check_content_length(article)
-        if not passed:
-            return False, reason
+        # No content-length check (#93): the 300-char floor is a labelling-time
+        # precondition enforced by the oracle path, not a lens rule.
 
         # Check domain exclusions
         url = article.get('url', '')

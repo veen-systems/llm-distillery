@@ -317,9 +317,8 @@ class BelongingPreFilterV1(BasePreFilter):
         if not is_valid:
             return False, validation_reason
 
-        passed, reason = self.check_content_length(article)
-        if not passed:
-            return False, reason
+        # No content-length check (#93): the 300-char floor is a labelling-time
+        # precondition enforced by the oracle path, not a lens rule.
 
         url = article.get('url', '')
         if url:
