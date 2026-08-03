@@ -67,6 +67,7 @@ class InvestmentRiskPreFilterV6(BasePreFilter):
         r'nasa',
         r'smithsonian',
         r'science_news',
+        r'arxiv',
 
         # Positive/lifestyle news (uplifting filter's domain)
         r'upworthy',
@@ -81,6 +82,12 @@ class InvestmentRiskPreFilterV6(BasePreFilter):
         r'olhar_digital',
         r'tecnoblog',
         r'punto_informatico',
+
+        # Social platforms (niche commentary, no market signal for this lens).
+        # `mastodon_` with trailing underscore avoids FP on funds like
+        # "Mastodon Capital"; production slugs are always `mastodon_<topic>`.
+        r'mastodon_',
+        r'bluesky',
     ]
 
     # Sources to ALWAYS ALLOW (high investment signal probability).
@@ -395,6 +402,42 @@ def test_prefilter():
             "content": "New study shows economic impact of climate change." + pad,
             "expected": (True, "investment_keyword:recession"),
             "description": "Investment keyword override (recession)",
+        },
+
+        # Should BLOCK - arxiv academic preprint (CS), no investment signal
+        {
+            "id": "science_arxiv_cs_abc123", "title": "A New Neural Network Architecture",
+            "source": "science_arxiv_cs",
+            "content": "We propose a novel attention mechanism for transformer models." + pad,
+            "expected": (False, "blocked_source:arxiv"),
+            "description": "Blocked source (arxiv CS preprint)",
+        },
+
+        # Should PASS - arxiv paper with macro context overrides blocked-source via keyword check at step 3
+        {
+            "id": "science_arxiv_cs_xyz", "title": "Recession Forecasting with Large Language Models",
+            "source": "science_arxiv_cs",
+            "content": "We apply LLMs to economic time series for recession prediction." + pad,
+            "expected": (True, "investment_keyword:recession"),
+            "description": "arxiv with macro context (keyword override beats blocked-source)",
+        },
+
+        # Should BLOCK - mastodon social tech commentary
+        {
+            "id": "mastodon_general_tech_123", "title": "Cool new ML library released",
+            "source": "mastodon_general_tech",
+            "content": "Just discovered this awesome library for training neural networks." + pad,
+            "expected": (False, "blocked_source:mastodon_"),
+            "description": "Blocked source (mastodon)",
+        },
+
+        # Should BLOCK - bluesky AI/ML chat
+        {
+            "id": "bluesky_ai_ml_456", "title": "AI ethics discussion",
+            "source": "bluesky_ai_ml",
+            "content": "Interesting debate about LLM training data and bias." + pad,
+            "expected": (False, "blocked_source:bluesky"),
+            "description": "Blocked source (bluesky)",
         },
 
         # Should PASS - general tech article, default allow
