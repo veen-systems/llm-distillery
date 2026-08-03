@@ -19,7 +19,8 @@ knows the set, ask them rather than inferring it.
 - [Cross-repo prioritization](cross-repo-prioritization.md) — master issue landscape across all 4 repos (156 open): P0-P4, **12 dependency chains**, 5 work batches. Re-inventoried 2026-08-01 evening: Chain 3 CLOSED, Chain 8 now deadline-driven (FS#120 ~2026-08-14), new chains 9-11 (hero images, dedup, score provenance). **Updated 2026-08-02: Chain 4 re-rooted — NM#285 closed (truncation measured, not the cause); the root is now #93, the length-floor split.**
 - [Filter status](filter-status.md) — current state of all production filters and in-development versions
 - [NexusMind data sources](nexusmind-data-sources.md) — what each production artefact EXCLUDES; `filtered_*.jsonl` also drops source-type-excluded rows, `data/raw/` is pre-enrichment
-- [Prefilter & length-floor hypotheses](prefilter-length-floor-hypotheses.md) — what each prefilter actually blocks (measured 2026-08-02); read before any enforcement flip
+- [Prefilter & length-floor hypotheses](prefilter-length-floor-hypotheses.md) — what each prefilter actually blocks (measured 2026-08-02); #93 shipped + synced 2026-08-03; read before any enforcement flip
+- [Batch-shape score noise](score-batch-shape-noise.md) — **a score is not a function of the article alone**: batch composition moves it up to 0.17 and flips 7-9% of near-boundary surfacing decisions (#95). Read before any threshold/op-point measurement
 - [GPU server](gpu-server.md) — venv, PYTHONPATH, HF_HUB_OFFLINE, ollama conflict, training setup
 - [b650 GPU](b650-gpu.md) — Arian's 3090 Ti training node: access (account jeroen), uv venv, staged data, cross-box score-skew warning
 - [Gotcha log](gotcha-log.md) — problem/fix archive

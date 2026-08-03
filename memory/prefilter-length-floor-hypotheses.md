@@ -159,10 +159,18 @@ corpus. Production-realistic share is lower (enriched corpora run ~35% sub-300,
 not 66%) and **unmeasured**. Pinned by a test so it stays a decision, not an
 accident. **Re-measure before the next cd oracle run (#87).**
 
-**Not done:** the NexusMind sync (its `filters/` copy still has the old base),
-and therefore the NM#284 shadow re-run that would finally read as lens
-behaviour. Nothing live changed — the per-filter prefilter does not execute in
-production (NM#284).
+**Synced to NexusMind 2026-08-03** (`c932065` content + `c1df13c` record; 950
+NM tests pass). Syncing surfaced a second drift: `investment_risk v6` blocked
+`arxiv` / `mastodon_` / `bluesky` in NexusMind since 2026-05-18 and never
+upstream, so the oracle was labelling a population production never scores. A
+blind LD→NM copy would have deleted all three; they were ported *back* to
+llm-distillery instead (`e51309d`). **Diff the two copies before every sync —
+`.nexusmind-owns` is empty, so nothing else compares them.**
+
+**Still not done:** the NM#284 shadow re-run. Its pass rates will jump, and for
+the first time describe lens behaviour rather than a length floor (LD#90 item
+2). Nothing live changed — the per-filter prefilter does not execute in the
+production scoring path (NM#284).
 
 ## Method notes worth reusing
 
