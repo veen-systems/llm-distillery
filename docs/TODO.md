@@ -76,7 +76,7 @@ See `filters/common/commerce_prefilter/docs/` for full documentation.
   - Remaining: ovr.news Foresight tab frontend integration
 
 ### Active Learning In Progress
-- [ ] **cultural-discovery v5** - Training data ready (8,551 articles = v4 8,029 + 473 active-learning + 49 hard-negatives via #62)
+- [x] **cultural-discovery v5** - **DEPLOYED** (HF Hub, DeepSeek oracle, MAE 0.70). Stale `[ ]` corrected 2026-08-03 — the entry below describes the training-data prep that has long since shipped. Live follow-ups are #86 (prefilter is dead in production — measured, DO NOT enforce) and #87 (v6 scope: lens-fidelity + op-point re-derivation).
   - Oracle-scored 473 production MEDIUM+ articles with Gemini Flash (active-learning lane, 2026-04-06)
   - Smooth distribution (bell curve centered at WA 4.8), no bimodality
   - 2026-05-29: #62 hard-negatives cohort added — 49 articles labeled with v5 oracle prompt (5 new pre-classification flags F,G,H,I,K)

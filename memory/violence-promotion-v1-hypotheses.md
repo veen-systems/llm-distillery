@@ -49,6 +49,19 @@ metadata:
 
 ## Open questions
 
+**Measured 2026-08-03 — shadow flag rate, four consecutive cycles.** 95/2,172
+(4.4%), 61/2,082 (2.9%), 58/2,627 (2.2%), 53/2,626 (2.0%). Stamps present on
+**100%** of live rows (`_violence_model: v1`), so the detector is running
+everywhere it should in the scheduled path.
+
+Worth noting against question 5: the calibration scan put prevalence at 8.7%,
+and 8.7% × 0.55 recall ≈ **4.8% expected flag rate**. The observed rate sits at
+or below that (4.4% falling to 2.0%), which is *consistent* with the recall
+estimate rather than contradicting it. **Do not read the decline across cycles
+as a trend** — corpus composition differs per cycle and n is 4. What this does
+give #82 is a concrete prior: expect to audit ~50–95 articles per cycle, and
+expect roughly as many true positives again to be sitting unflagged.
+
 5. **How low can recall go before it matters?** At 0.55 recall, ~45% of violence-promoting content leaks through. For a stamp-only prefilter, this is invisible to users (no content dropped). But when ovr.news starts excluding stamped articles, the false-negative rate determines how much off-brand content reaches the lens. The calibration scan found 8.7% of pipeline articles are violence-promoting — at 55% recall, ~3.9% would still reach ovr.news. Acceptable?
 
 6. **Is the single calibration FP (Korean Su-57 crash) a class or an outlier?** The independent calibration found 1 FP at 0.95 — a Korean article about an Su-57 fighter jet crash. Is this "weapons system in headline but framed as news reporting" a recurring pattern? Shadow data will tell us.
