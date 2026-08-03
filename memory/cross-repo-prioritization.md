@@ -7,7 +7,34 @@ metadata:
 
 # Cross-Repo Prioritization
 
-**Last updated: 2026-08-03 16:35** — second pass the same day. The 16:25 curate
+**Last updated: 2026-08-03 evening** — third pass. What shipped after the 16:35 pass:
+
+| What | Where | State |
+|---|---|---|
+| Commerce provenance fix — the already-scored guard keyed on `_commerce_score` alone, so 205,444 of 237,813 corpus rows (86.4%) had a verdict with no model version and could never be back-filled | NexusMind `c696ea3` | **DEPLOYED.** One-time cost bounded by the age check: 21,024 rows re-scored, ~15 min, then drains to zero |
+| Seeded per-run shuffle — `random.shuffle` was unseeded, so a cycle could not reproduce its own scores | NexusMind `f7fef85` | **DEPLOYED.** Replay via `NEXUSMIND_RUN_SEED`, logged in the start banner. **Replay, not stability** |
+| Score noise floor recorded | LD `efab69d` | `FILTER_PLAYBOOK` §7 + `ground_truth_gate.py` docstring + CLAUDE.md hard constraint |
+| sustech v3 + foresight v1 packages removed; 333 MB of production output archived then deleted | LD `289bda1` | Archive: sadalsuud `~/retired_filters_foresight_sustech_20260803.tar.gz`. **#64 closed** as superseded |
+| Chain 14 root filed | NM#292 | Non-English thread now has an owner-visible root |
+
+**Verify on the next cycle:** a `Run seed: … (from clock)` banner line, and the commerce line showing `processed` ≈ 21,000 once, then normal.
+
+**Call path settled (was an open worry):** the gpu-server scorer unit sets
+`PYTHONPATH=/home/hcl/NexusMind`, so it loads `/home/hcl/NexusMind/filters/` —
+which *does* carry the #93 changes. `/home/hcl/llm-distillery/` is on no path; it
+is a stale decoy that reads as authoritative. Worth deleting.
+
+**#90 is not ready to start.** Both `nature_recovery v4` (recall 0.65 / prec 0.85
+/ F1 0.736, n=391) and `solutions v6` (0.67 / 0.82 / F1 0.739, n=1032) already
+passed ground-truth gates, so "do the latest scorers work?" is answered. The
+open question is **which template elements are load-bearing** — #94 (gatekeeper
+never binds in 191,616 articles) and #92 (short-content defect) say at least two
+of the six things #90 proposes copying do not do what the config claims. Audit
+before spreading.
+
+---
+
+*Previous pass, 2026-08-03 16:35 — second pass the same day.* The 16:25 curate
 pass recorded the *narrative* correctly but left **nine issues from the last 22
 hours unplaced** in the chains and priority tables: LD#94, LD#95, NM#289,
 NM#290, NM#291, FS#122, FS#124, ovr#287, and ovr#254 (closed 14:01). All are

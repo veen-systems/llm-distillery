@@ -16,7 +16,21 @@ right supplies no pressure to check how you got there. If it's a denominator, a
 baseline, or a claim of absence — enumerate the source first, and if the owner
 knows the set, ask them rather than inferring it.
 
-- [Cross-repo prioritization](cross-repo-prioritization.md) — master issue landscape across all 4 repos (156 open): P0-P4, **12 dependency chains**, 5 work batches. Re-inventoried 2026-08-01 evening: Chain 3 CLOSED, Chain 8 now deadline-driven (FS#120 ~2026-08-14), new chains 9-11 (hero images, dedup, score provenance). **Updated 2026-08-02: Chain 4 re-rooted — NM#285 closed (truncation measured, not the cause); the root is now #93, the length-floor split.**
+## Standing rule (promoted from gotcha log 2026-08-03 — 2nd occurrence in this tree)
+
+**A parallel agent session may be working in the same checkout, so no git verb
+may take the whole tree as its argument.** `git add -A`, `git stash` with no
+pathspec, `git checkout .`, `git clean` — each one's blast radius is every
+modified file, including work you did not make and cannot see. First occurrence
+(2026-08-03 morning) swept a seven-file filter sync into a docs commit; second
+(same day, evening) stashed another session's `image_analysis.py` while
+baselining a test suite, producing a "before" measurement of a tree that never
+existed and 8 phantom failures. **Always pass explicit paths**, and before
+committing in a shared repo run `git status --porcelain` and stage only what you
+recognise. If a sweep is discovered after push, record it — do not rebase
+history another session may hold.
+
+- [Cross-repo prioritization](cross-repo-prioritization.md) — master issue landscape across 5 repos (**177 open**): P0-P4, **14 dependency chains**, 6 work batches, plus a Coverage section naming the 57 issues in no band. Chain 3 CLOSED; Chain 4 re-rooted on #93; Chain 8 deadline-driven (FS#120 ~2026-08-14). **Updated 2026-08-03: new Chain 13 (score reproducibility — #95 sits under every threshold decision) and Chain 14 (non-English quality, four repos, root NM#292). Third pass records the four changes shipped that evening.**
 - [Filter status](filter-status.md) — current state of all production filters and in-development versions
 - [NexusMind data sources](nexusmind-data-sources.md) — what each production artefact EXCLUDES; `filtered_*.jsonl` also drops source-type-excluded rows, `data/raw/` is pre-enrichment
 - [Prefilter & length-floor hypotheses](prefilter-length-floor-hypotheses.md) — what each prefilter actually blocks (measured 2026-08-02); #93 shipped + synced 2026-08-03; read before any enforcement flip
@@ -38,6 +52,7 @@ knows the set, ask them rather than inferring it.
 
 ## Recent Sessions
 
+- [2026-08-03 evening](project_session_2026_08_03_evening.md) — **all three junk gates verified against the running box**: obituary enforcing (max surviving score 0.8488, zero ≥0.85), commerce enforcing (LD#80 `v1` pin holds), violence inert by design. **Commerce provenance fix** (86.4% of corpus had a verdict with no model version) and **seeded cycle replay for #95** both DEPLOYED. sustech v3 + foresight v1 REMOVED (#64 closed). Scorer call path settled — `/home/hcl/llm-distillery/` on gpu-server is a stale decoy. **#90 not ready: audit which template elements are load-bearing (#94, #92) before spreading.** **NEXT: verify next cycle (run-seed line + commerce `processed` ≈21,000 once)**
 - [2026-08-01 afternoon](project_session_2026_08_01_afternoon.md) — four-repo re-inventory (156 open, **12 chains**, new P0 set incl. LD#91/ovr#284/ovr#285); **persuasion-scorer split out** as a verified system under three agent-ready frameworks (LD#78/#79 externalized); post-deploy checks 1+3 PASS (`_commerce_model: v1`, `violence_blocked` gone from Loaded line), 2+4 pending mid-cycle. **NEXT: finish checks 2/4, then NM#285 measurement**
 - [2026-07-31](project_session_2026_07_31.md) — obit carryover diagnosed (47 shadow-era + 2 v5 FNs); LD#76 11-agent audit falsified shared-root-cause; EXECUTED: uplifting+belonging refits, cd topic gate (#86), NM#280 tier fix — all deployed; ADR-022 written; LD#90 harmonization program (renames: thriving/discovery/recovery). **NEXT: verify ~12:00 cycle (3 checks), then close NM#279/#280, LD#74/#76/#86**
 - [2026-07-30](project_session_2026_07_30.md) — S1: v4 op-point evidence + swap. S2: deploy verified, FN-delta gate FAILED, DeepSeek-commit review. S3: v5 trained + review battery + June panel, owner adjudication (grief-vs-news), ENFORCEMENT v5@0.85 shipped, b650 commissioned

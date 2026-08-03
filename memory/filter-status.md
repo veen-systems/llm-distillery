@@ -111,7 +111,8 @@ All use Gemma-3-1B base + LoRA. All have local, Hub, and hybrid inference paths.
 |--------|-----|--------|
 | thriving | v1 | PARKED indefinitely (ADR-015) — orthogonal lens design caused bimodal distribution |
 | solutions | v6 | **LIVE** — gate passed 2026-07-27 (F1 0.739), normalization fitted 2026-07-28, own Hub repo since 2026-07-30. |
-| foresight | v1 | PARKED (#43) — merged into solutions. Dir kept for rollback, delete ~2026-08-01 |
+| foresight | v1 | **REMOVED 2026-08-03** (#43) — merged into solutions; the ~2026-08-01 delete-after date passed and the drain completed. Package in git history; production output archived to sadalsuud `~/retired_filters_foresight_sustech_20260803.tar.gz`. Closed #64 (its normalization refit) as superseded. |
+| sustainability_technology | v3 | **REMOVED 2026-08-03** — replaced by solutions (ADR-012). Same archive. |
 
 <!-- NOTE: consumer-side concerns (which ovr.news lens/tab uses which filter, frontend rollout)
      live in the NexusMind and ovr.news repos. This repo produces filters; mapping filters to

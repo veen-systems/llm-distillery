@@ -1,6 +1,6 @@
 ---
 name: score-batch-shape-noise
-description: A student score is not a function of the article alone — batch composition moves it up to 0.17, flipping 7-9% of near-boundary surfacing decisions (#95)
+description: A student score is not a function of the article alone — batch composition moves it up to 0.16, flipping 7-9% of near-boundary surfacing decisions (#95); cycles are replayable since 2026-08-03 but scores are not stable
 metadata:
   type: project
 ---
@@ -38,7 +38,27 @@ cause.
   figures and calibration fits are unaffected.
 - **Threshold tests are not.** Under ADR-022 visibility is `raw >= op-point`,
   so a flip is a *surfacing* flip. Tier, op-point and any per-article
-  before/after comparison inherit a noise floor of ~0.17 worst case.
+  before/after comparison inherit a noise floor of **0.16** worst case (the
+  measured max is 0.162 — do not round it up to 0.17, as an earlier draft of
+  this file and its description did).
+
+## What shipped 2026-08-03 evening
+
+- **Seeded per-run shuffle** (NexusMind `f7fef85`, deployed). The variable was
+  never batch *size* — `DEFAULT_BATCH_SIZE = 16` is fixed and never varies in
+  production. It was batch *composition*, from an unseeded
+  `random.shuffle(articles)` in `scripts/main.py`. Now seeded per (run, filter),
+  logged in the start banner, replayable via `NEXUSMIND_RUN_SEED`.
+  **This is replay, not stability** — the next cycle reshuffles and the article
+  moves again. Do not cite it as a fix for #95.
+- **Noise floor recorded** (LD `efab69d`) in `docs/FILTER_PLAYBOOK.md` §7, the
+  `ground_truth_gate.py` docstring, and CLAUDE.md's hard constraints.
+
+**Still open:** whether scores can be made a function of the article alone.
+Untested hypothesis — if batches pad to the longest article *in the batch*, an
+article's computation depends on its batch-mates, and fixed-length padding
+would remove the dependence. Falsifiable in a few hours on GPU; deferred until
+something needs batch-invariant scores.
 - **The #92 second-op-point re-run is directly exposed** — it selects on
   "clears the op-point" and re-selects at another op-point, which is exactly
   the movement measured here. Pin `batch_size` for that test, or treat the

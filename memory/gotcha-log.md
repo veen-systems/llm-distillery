@@ -1481,7 +1481,11 @@ heredoc (`python3 - <<'EOF'`) so quotes aren't doubly escaped, and single-quote 
 
 **Root cause**: Nothing serialises two agents on one working tree. Each saw a tree containing its own changes plus changes it had not made, and `git add -A` cannot tell the difference. The staging session had deliberately *not* committed yet — it was still verifying — which is exactly the window that made the sweep possible.
 
+**RECURRED 2026-08-03 (2nd occurrence), same tree, different verb.** The NexusMind checkout again held another session's uncommitted work (`image_analysis.py`, `contracts/`, `docs/hypothesis-log.md`). This time the sweep was `git stash` with no pathspec, run to baseline a test suite: it stashed the other session's changes too, so the "before" run measured a tree that had never existed and reported 8 phantom failures. Corrected by re-running with `git stash push <paths>`. **The rule below generalises beyond `git add`: any whole-tree verb — `add -A`, `stash`, `checkout .`, `clean` — has the whole tree as its blast radius, including work you cannot see.**
+
 **Fix**: Two rules. (1) **Stage explicitly** — `git add <paths>`, never `-A`, whenever a parallel session might be active; the blast radius of `-A` is the whole tree, not your edit. (2) When a sweep is discovered **after push**, do not rebase — record it. `c1df13c` documents what `c932065` actually carries. History surgery on a pushed commit that another session may hold is worse than a wrong message with a correction next to it. Detection: `git show --stat <sha> -- <path>` on a commit whose message does not mention that path.
+
+**Promoted to**: `memory/MEMORY.md` standing rule (2026-08-03), generalised from `git add -A` to **any whole-tree git verb** — `add -A`, `stash` without pathspec, `checkout .`, `clean`.
 
 ### The `/curate` skill was invisible for months because of a one-word frontmatter drift (2026-08-03)
 
@@ -1514,3 +1518,27 @@ heredoc (`python3 - <<'EOF'`) so quotes aren't doubly escaped, and single-quote 
 **Root cause**: Both hypotheses explained the evidence and neither was tested before being stated. The timing fact was real, so it *felt* like a finding; the mojibake was real and genuinely does degrade embeddings, so it *felt* like a mechanism. In both cases the correct target was one step further on.
 
 **Fix**: Run the current code against the current input. (1) `_extract_hero_image_from_page()` on the same URLs still returns the Google Play badge — the fix does not cover that defect at all (NM#290). (2) Cosine similarity of the pair: **0.8227 as stored, 0.8355 encoding-repaired**, against a 0.88 threshold — the corruption costs 0.013 and the pair was never going to cluster (NM#291). Both refutations took one command each. **A mechanism that is real is not thereby the cause; the test is whether removing it changes the outcome.** Same shape as the 2026-08-02 entry where a correctly-identified mechanism was attached to the first plausible target.
+
+### Recommended a fix for a mechanism I had not read — the thing I proposed pinning was already pinned (2026-08-03)
+
+**Problem**: Asked how to make scores reproducible (#95), I recommended "pin the production batch size," said so to the owner, and got approval to implement it. `DEFAULT_BATCH_SIZE = 16` was already fixed and never varies in production. The change would have been a no-op shipped with a confident rationale.
+
+**Root cause**: #95's own text says "consistent with GPU kernel reduction order varying with the batch dimension," and I reasoned from that sentence to a remedy without opening the code that forms batches. The real variable was one line away — `random.shuffle(articles)`, unseeded, in `scripts/main.py` — batch *size* was constant and batch *composition* was not. Diagnosing from a symptom description rather than the mechanism produces a fix aimed at the wrong noun.
+
+**Fix**: Before recommending a change to a mechanism, read the code that implements it, not the issue that describes it. Detection: if the proposed fix is "pin/disable/configure X," grep for X's current value first — if it is already pinned, the diagnosis is wrong. Same family as "don't infer runtime behavior from config keys," one level up: don't infer runtime behavior from an issue's prose either.
+
+### `pgrep -f "<pattern>"` run over ssh matches the ssh command carrying the pattern (2026-08-03)
+
+**Problem**: Twice concluded "CYCLE RUNNING — not pulling" and skipped a production deploy. No cycle was running. The bracket trick (`[m]ain\.py`) did not help either, because the shell stripped the backslash before `pgrep` saw it.
+
+**Root cause**: `ssh host 'pgrep -f "python.*main\.py"'` spawns a remote shell whose own `/proc/<pid>/cmdline` contains the pattern text. `pgrep -f` matches against full command lines, so it matches itself. The classic `[m]` workaround assumes the pattern survives quoting intact; through `ssh` + double quotes it does not.
+
+**Fix**: Use `ps -eo pid,etime,cmd | grep -i "[m]ain\.py"` and read the output, or exclude the current process explicitly. Better for a liveness check: ask the service manager (`systemctl is-active`) or look at the log's last timestamp. Detection: if a process check reports exactly one match and the deploy "must not proceed," print the matching line before believing it — a self-match is obvious on sight.
+
+### A glob-and-slice over per-lens directories silently measured one lens, and retired dirs inflated it 40x (2026-08-03)
+
+**Problem**: Measuring how many production rows lacked a `_commerce_model` stamp, I reported "1.2% of live rows" from `sorted(glob("data/filtered/*/filtered_*.jsonl"))[-6:]`. All six files happened to be `uplifting`. A second pass across all lenses read 5,130 rows as unstamped — 86% of which came from `foresight` and `sustainability_technology`, two retired filters whose last output was 12 days old.
+
+**Root cause**: Two independent traps in one line. `sorted()` orders by path, so a tail slice lands inside whichever lens sorts last, not across lenses. And a wildcard over a data directory picks up retired subdirectories that no longer receive writes but still hold files.
+
+**Fix**: When sampling per-entity data, iterate entities explicitly and take the newest file *per entity* — never a global sort-and-slice. State the denominator per entity in the output so a single-entity sample is visible. Delete retired output dirs promptly (done for these two the same day); until they are gone, exclude them by name rather than trusting a glob.
