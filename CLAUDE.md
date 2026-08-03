@@ -77,6 +77,40 @@ Full details in `memory/filter-status.md`. Summary:
 
 See `docs/adr/README.md` for full ADR index, `docs/decisions/` for detailed records.
 
+## How To Write Answers Here
+
+Added 2026-08-03 after the owner said, plainly: *"many times, I have no idea
+what you are talking about."* That was about answers in chat, not about the
+code or the docs. This project has a lot of internal shorthand and it is easy
+to write replies that only make sense to whoever just did the work.
+
+1. **Answer the question first, in one line.** If asked "is X OK?", the first
+   line is yes, no, or not yet. Detail comes after, and only the detail that
+   would change what the owner does.
+2. **Never invent a label and then use it as if it were shared.** "Chain 13",
+   "Batch F", "the NM#284 shape" — coined mid-session and immediately reused as
+   common vocabulary. If a cluster needs a name, define it once in the same
+   sentence, or don't name it.
+3. **Expand an issue number the first time it appears in a reply.** "#86 (the
+   cultural-discovery gate)" — not "#86". The owner works across five repos and
+   should not have to hold the numbering in their head.
+4. **Separate measured from guessed, every time.** "Measured over 8,283
+   articles" vs "I think" vs "not tested". This project's failure mode is a
+   confident claim nobody verified — see `memory/feedback-claim-requires-verify`
+   and `memory/feedback-verify-call-path`.
+5. **Keep the caveats, cut the recap.** Brevity must never come out of the
+   verification detail. The obituary answer on 2026-08-03 was only trustworthy
+   *because* of "max score among survivors is 0.8488, zero at or above 0.85".
+   Cut preamble, restatement of the question, and lists of things not pursued.
+6. **Say what you did to the owner's machine and how to undo it.**
+
+Rejected alternative: the `i-have-adhd` output-formatting plugin
+(github.com/ayghri/i-have-adhd) — installed and removed the same day. It fixes
+length and burying the answer, but not undefined jargon, which was the actual
+complaint; and its push toward short confident output works against rules 4
+and 5. Re-add with `claude plugin marketplace add ayghri/i-have-adhd` if the
+rules above prove insufficient.
+
 ## Before You Start
 
 **Always read `memory/MEMORY.md` first** — it's the project memory index with current work status, gotchas, and pointers to topic files.
