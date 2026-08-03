@@ -30,14 +30,17 @@ REPO_ROOT = Path(__file__).parent.parent.parent
 # are archived and intentionally not validated. When a filter is promoted to
 # a new version, update this list AND the NexusMind CLAUDE.md table.
 
+# sustainability_technology v3 and foresight v1 were removed 2026-08-03: both
+# were replaced by solutions (ADR-012, #43), NexusMind stopped scoring them on
+# 2026-07-22, and their production output drained from ovr's 10-day window by
+# ~2026-08-01. Packages recoverable from git history.
 ACTIVE_FILTERS = [
-    ("sustainability_technology", "v3"),
+    ("solutions", "v6"),
     ("uplifting", "v7"),
     ("cultural_discovery", "v5"),
     ("investment_risk", "v6"),
     ("belonging", "v1"),
     ("nature_recovery", "v4"),
-    ("foresight", "v1"),
 ]
 
 # --- Canonical schema ---------------------------------------------------

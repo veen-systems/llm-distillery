@@ -59,12 +59,10 @@ MAX_RAW_MIN = _fitter.MAX_NORMALIZATION_RAW_MIN
 # permanent. Every entry must remain a REAL violation — test_no_stale_normalization_exemptions
 # fails if someone refits one and forgets to remove its exemption.
 EXEMPTIONS = {
-    ("foresight", "v1"): (
-        "raw_min 5.01 — NexusMind#205. Fit from already-filtered output rather "
-        "than a representative production slice. PARKED (#43, merging into "
-        "solutions v4) and rejected at load by MAX_NORMALIZATION_RAW_MIN=4.5, so "
-        "it cannot reach production. Do not refit; the filter is being retired."
-    ),
+    # ("foresight", "v1") removed 2026-08-03 along with the filter package
+    # itself — retirement into solutions (#43) completed, so there is no
+    # normalization.json left to exempt. #64 (refit foresight normalization)
+    # is superseded by that removal.
     ("nature_recovery", "v1"): (
         "raw_min 1.51 — the original NexusMind#161 defect. Superseded by v4 "
         "(deployed 2026-07-10). Package retained for history only."

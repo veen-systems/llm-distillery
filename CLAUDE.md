@@ -44,13 +44,13 @@ Full details in `memory/filter-status.md`. Summary:
 | Filter | Version | MAE | Status |
 |--------|---------|-----|--------|
 | **uplifting** | v7 | — | Deployed (NO_HUB, hybrid inference) |
-| **sustainability_technology** | v3 | 0.72 | Retired — replaced by solutions |
+| **sustainability_technology** | v3 | 0.72 | **REMOVED 2026-08-03** — replaced by solutions; package deleted, recover from git history |
 | **investment-risk** | v6 | 0.47 | Deployed (HF Hub) |
 | **cultural-discovery** | v5 | 0.70 | Deployed (HF Hub, DeepSeek oracle) |
 | **belonging** | v1 | 0.49 | Deployed (HF Hub) |
 | **nature_recovery** | v4 | recall 0.65 / prec 0.85 | Deployed (recall-first probe, v5 planned #71) |
 | **solutions** | v6 | 0.48 | **LIVE** — gate passed 2026-07-27, normalization fitted 2026-07-28 |
-| **foresight** | v1 | 0.75 | PARKED — merged into solutions (#43) |
+| **foresight** | v1 | 0.75 | **REMOVED 2026-08-03** — merged into solutions (#43); package deleted, recover from git history. Closes out #64. |
 | **thriving** | v1 | — | PARKED indefinitely (ADR-015) |
 | **ai-engineering-practice** | v2 | — | Separate product, not ovr.news |
 
