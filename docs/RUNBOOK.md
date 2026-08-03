@@ -41,14 +41,29 @@ fails, check adapter format (must be OLD key format — ADR-007). Re-run step 1 
 ### 3. Copy to NexusMind checkout + commit
 
 ```bash
-# bash (runs verify_filter_package.py first, aborts on failure + refuses dirty tree)
-bash scripts/deploy_to_nexusmind.sh {name} v{N}
+# ALWAYS --dry-run first and read the file list (see the drift warning below).
+# On Linux the two roots must be exported; the defaults are the Windows box.
+# HF_TOKEN is required or the Hub freshness gate fails as "repo not found"
+# (the Hub returns 404 for a private repo a token cannot see).
+export HF_TOKEN=$(python -c "import configparser;c=configparser.ConfigParser();c.read('config/credentials/secrets.ini');print(c['api_keys']['huggingface_token'].strip())")
+DISTILLERY_ROOT=$PWD NEXUSMIND_ROOT=/home/jeroen/repos/veen-systems/NexusMind \
+  bash scripts/deploy_to_nexusmind.sh {name} v{N} --dry-run
 
-# or PowerShell
+# then without --dry-run, or PowerShell:
 .\scripts\deploy_to_nexusmind.ps1 {name} v{N}
 ```
 
-Then `cd C:/local_dev/NexusMind && git push origin main`.
+> **Diff before you sync.** The script overwrites NexusMind's copies and honours
+> only `.nexusmind-owns`, which is **empty by design** — so a NexusMind-side
+> change that never came upstream is deleted silently, not reported. After the
+> `--dry-run`, run `git -C $NEXUSMIND_ROOT diff --stat` and account for every
+> file you did not edit. Production-behaviour additions belong back in
+> llm-distillery *first*, so the sync preserves them; cosmetic drift can be let
+> go. On 2026-08-03 this caught three `investment_risk v6` source blocks
+> (`arxiv`/`mastodon_`/`bluesky`) that had been production-only since
+> 2026-05-18 — see llm-distillery#93.
+
+Then `cd $NEXUSMIND_ROOT && git push origin main`.
 
 ### 4. Deploy to gpu-server (via sadalsuud)
 

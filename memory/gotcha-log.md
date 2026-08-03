@@ -1474,3 +1474,27 @@ heredoc (`python3 - <<'EOF'`) so quotes aren't doubly escaped, and single-quote 
 **Root cause**: Assumed the cycle schedule from the *filtered-file timestamps* (`:48–:57`), which are when a cycle **finishes**. Cycles start at `:07–:11` and run ~48 minutes. The last real cycle ended 08:59 CEST, 70 minutes before the 10:08 deploy — so the smoke test was the only post-deploy evidence that could exist, and the smoke test scores exactly one article per filter.
 
 **Fix**: `nexusmind.service` has no timer of its own; it is chained off `fluxus-collection.timer` (`systemctl list-timers fluxus-collection.timer`). Read cycle boundaries from `journalctl -u nexusmind.service | grep -E "Starting|Finished"`, never from output filenames. And state the n behind any "verified" — a marker that appears on a 1-article batch has not been tested at 2,000.
+
+### Two agent sessions in one working tree — `git add -A` swept a filter sync into a docs commit (2026-08-03)
+
+**Problem**: While one session staged a seven-file llm-distillery→NexusMind filter sync, a second session working in the same NexusMind checkout committed `git add -A` under the message "docs: correct NM#287 status — merged and deployed, not pending" (`c932065`) and pushed it. The commit's content is correct and tested; its message describes about a fifth of what it contains. Anyone reading `git log` for when the LD#93 sync landed will not find it.
+
+**Root cause**: Nothing serialises two agents on one working tree. Each saw a tree containing its own changes plus changes it had not made, and `git add -A` cannot tell the difference. The staging session had deliberately *not* committed yet — it was still verifying — which is exactly the window that made the sweep possible.
+
+**Fix**: Two rules. (1) **Stage explicitly** — `git add <paths>`, never `-A`, whenever a parallel session might be active; the blast radius of `-A` is the whole tree, not your edit. (2) When a sweep is discovered **after push**, do not rebase — record it. `c1df13c` documents what `c932065` actually carries. History surgery on a pushed commit that another session may hold is worse than a wrong message with a correction next to it. Detection: `git show --stat <sha> -- <path>` on a commit whose message does not mention that path.
+
+### The `/curate` skill was invisible for months because of a one-word frontmatter drift (2026-08-03)
+
+**Problem**: `/curate` — the end-of-session ritual this framework is built around — was absent from the agent's available-skills list. The agent completed a full session, was asked to curate, could not invoke the skill, and did the work by hand instead. `audit-context` and `test-verify-memory`, in the same directory, loaded fine.
+
+**Root cause**: `.claude/skills/curate/SKILL.md` carried `disable-model-invocation: true`. The agent-ready-projects template and the upstream copy both say `false`, and both sibling skills say `false` — so this was local drift in one field of one file. Nothing reports a skill that fails to register; it simply is not there, and its absence looks identical to it never having existed.
+
+**Fix**: Set the flag to `false`. Then check the whole set at once — `grep -H "disable-model-invocation" .claude/skills/*/SKILL.md` — because a per-file drift is invisible until compared against siblings. The same sweep found the local copy was 16 lines behind upstream, missing the hypothesis-log surface (step 6) and the project-file size budget (step 7); both were ported, keeping this project's specialisations. **Diff project skill copies against the framework repo during curation** — skills are code that nothing tests.
+
+### A test asserted numerical identity the platform does not provide (2026-08-03)
+
+**Problem**: A smoke test on the real model failed on "single-article path agrees with the batch path" at a 1e-6 tolerance. The first instinct was that the change under test had broken something.
+
+**Root cause**: Neither. With the new code path fully inert, `score_article` and `score_batch` already disagreed on 8 of 24 articles, and `batch_size=1` vs `8` reproduced the same set — GPU kernel reduction order depends on the batch dimension. The assertion was measuring the platform, not the change. Chasing it as a regression would have found nothing; accepting it by loosening the tolerance would have hidden a real finding.
+
+**Fix**: Check each path against **its own** baseline rather than against the other path, and compare cross-path only on the *decision* outside the measured noise band. Then measure the noise properly rather than absorbing it — it turned out to be #95 (max |Δ| 0.162; 7-9% of near-boundary articles flip tier/visibility). **When a test fails on a comparison you did not design as the subject, first ask what the comparison would do with the change removed.**

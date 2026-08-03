@@ -1,7 +1,7 @@
 ---
 name: curate
 description: End-of-session curation — freshness check, review gotcha log, promote patterns, update memory index
-disable-model-invocation: true
+disable-model-invocation: false
 ---
 
 End-of-session curation for the agent-ready-projects framework.
@@ -20,6 +20,17 @@ Check for context rot from *previous* sessions. This catches what the session-fo
    - **Has `<!-- verify: ... -->` comment**: Run the command. Report **PASS** or **FAIL**. If FAIL, flag the entry for correction or removal — the claimed state is no longer true. If the command errors (non-zero exit, command not found, no output), report **ERROR** and flag for investigation — the verify command itself may be stale.
    - **Has `<!-- verify: manual — ... -->` comment**: Flag as **MANUAL CHECK NEEDED** with the noted reason. Surface to the engineer.
    - **No verification comment**: Flag as **UNVERIFIED**. These claims decay immediately after the session that wrote them. Suggest adding a `<!-- verify: -->` comment or requalifying the claim as a session observation.
+
+6. **Hypothesis log surface**: If `docs/hypothesis-log.md` exists, scan its `## Open` section. For each entry:
+   - **Past `Review by:`**: Flag as **DUE FOR REVIEW** — the deadline has arrived. Surface to the engineer with the entry's Position and Method so they can resolve (move to `## Resolved`) or extend the deadline.
+   - **`Revisit trigger:` fired**: If the trigger references an evidence threshold ("once 7 days of cycles complete," "after 14 contiguous eval rows"), check whether that threshold is now met. If yes, flag as **TRIGGERED**. Don't resolve the hypothesis — only surface it; resolution requires reading the Method and applying it, which is the engineer's call.
+   - **Stale (no movement, no trigger)**: Just count how many open entries exist. If more than ~10, flag as memory-cluttering — entries that never resolve should either be promoted to ADRs or marked `dormant` / closed.
+
+7. **Project file size budget**: Check `CLAUDE.md`. Claude Code warns at 40k chars; the soft target is under 35k to leave headroom. If approaching or over:
+   - The most common cause is **session-narrative footers** (blocks like `_Last updated: ..._` / `_Earlier ..._`) accreting from prior sessions. These duplicate content that already lives in `memory/project_session_*.md` and is indexed in `MEMORY.md`.
+   - Rule: keep at most **one** session footer block (the most recent), and only if it adds at-a-glance value the index can't carry. Drop older `_Earlier ..._` blocks.
+   - Don't trim structural sections (Hard Constraints, Before You Start, Production Filters, Key Decisions). Those are what the project file is *for*.
+   - If trimming wouldn't get under budget, surface to the engineer — structural restructuring is their call.
 
 Report findings before proceeding. Don't fix anything in this step — just surface what's stale so the engineer can decide.
 
