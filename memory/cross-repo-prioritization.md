@@ -21,8 +21,9 @@ reader-reported defects filed upstream; ovr.news triaged.) Counts re-run
 > changelog — its NM#285 and LD#92 rows record what was believed on 08-01, and
 > both were **overturned on 08-02**. Chain 4 and the P0 table are current.
 
-Open, **re-counted 2026-08-03**: llm-distillery **36** · NexusMind **38** ·
-ovr.news **80** · FluxusSource **10** · persuasion-scorer **12** = **176**.
+Open, **re-counted 2026-08-03**: llm-distillery **36** · NexusMind **39**
+(38 + NM#292, filed on this pass) · ovr.news **80** · FluxusSource **10** ·
+persuasion-scorer **12** = **177**.
 Repos: veen-systems/{llm-distillery,persuasion-scorer}, ducroq/{NexusMind,ovr.news,FluxusSource}.
 
 > **The count is not the workload — 102 of these had not been touched in 30+ days.**
@@ -259,8 +260,9 @@ wa 7.7–9.7 on raw 5.7–6.8. Raw scores are unremarkable; the percentile mappi
 is stretching the upper-middle. **Chain 3 is closed for the boundary it was
 opened on, not for the CDF as a whole.**
 
-### Chain 14: Non-English Content Quality — **NEW 2026-08-03, no owner**
+### Chain 14: Non-English Content Quality — **NEW 2026-08-03; root = NM#292**
 ```
+NM#292 (tracking root, filed 2026-08-03)
 FS#124 (mojibake at collection, 5.0%, non-English-concentrated)
    → NM#231 (uplifting under-scores non-English documented-outcome news, 19 panel-confirmed)
    → NM#291 (dedup threshold misses cross-language same-story pairs at 0.836)
@@ -273,10 +275,21 @@ per the topology rule — but the result is that no single issue states the
 pattern: non-English content is disadvantaged at collection (corrupted text),
 scoring (under-scored), dedup (never clustered), and gating (over-blocked).
 
-This chain has no root issue and no owner. **Consider filing one** — probably in
-NexusMind as the stage that sees all four effects, or as an ovr.news editorial
-concern, since the reader-visible symptom is a feed that under-represents the
-non-Anglophone world. Not started; recorded here so it stops being invisible.
+**Root filed 2026-08-03 as NM#292** — in NexusMind because it is the stage that
+composes all four effects (consumes FluxusSource text, runs the scorers, owns
+dedup). The reader-visible symptom is on ovr.news — a feed that
+under-represents the non-Anglophone world — but no *fix* belongs there, which is
+why this went unnoticed until the four were placed side by side.
+
+**NM#292 asserts nothing beyond direction.** The four numbers come from separate
+studies on separate populations and are **not reconciled to a common
+denominator** — they must not be multiplied together. The shared-root hypothesis
+(English-centric training data, English-first rules, English-tuned thresholds)
+is a hypothesis, not a finding. The next step NM#292 proposes is the one
+measurement that would settle it: English vs non-English surfacing rate, mean
+score and corroboration rate on **one** denominator, controlling for source
+type. Small gap → close won't-do and let the four proceed on their own merits;
+large gap → pull FS#124 and NM#291 forward.
 
 ## Priority Rankings
 
@@ -363,7 +376,7 @@ So the label filter over-counts by one: **24 non-engineering, 56 engineering.**
 ## Coverage — what this memo does *not* band
 
 Stated explicitly so the priority tables are not mistaken for full coverage.
-**57 of the 176 open issues appear in no chain and no P0–P4 band**, of which
+**57 of the 177 open issues appear in no chain and no P0–P4 band**, of which
 ~37 are engineering:
 
 | repo | unbanded | numbers |
@@ -447,8 +460,10 @@ on it.
 - **LD#95 (NEW)** — pin the production batch size for reproducibility? It does
   not remove the noise, only makes a cycle repeatable. The alternative is a
   noise margin around each op-point, which is a bigger change.
-- **Chain 14 (NEW)** — file a root issue for the non-English thread, or leave the
-  four issues where they are and accept that nobody sees the pattern?
+- ~~**Chain 14** — file a root issue?~~ **DONE 2026-08-03 — NM#292.** The open
+  call is now the one NM#292 asks for: run the common-denominator English vs
+  non-English comparison, or close it won't-do on the grounds that the four
+  constituent issues are already banded.
 - **LD#85** obituary v6 relabel — PARKED; reactivate on obit-flag or over-block harm.
 - NM#91 healthcheck drift; uplifting v7 NO_HUB backup; cd v5 config-schema exemptions.
 - FluxusSource: 71 DEAD disable candidates; OVER_POLLED audit; global-broadening yield check.
