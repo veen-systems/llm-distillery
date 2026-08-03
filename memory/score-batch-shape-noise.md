@@ -30,7 +30,7 @@ affected at all. Consistent with GPU kernel reduction order varying with the
 batch dimension. `score_article` vs `score_batch` disagree the same way and by
 the same amounts — the API difference is incidental, the batch *shape* is the
 cause.
-<!-- verify: scratchpad measure_95.py on gpu-server; flips must recur at a similar rate -->
+<!-- verify: test -f scripts/diagnostics/measure_batch_shape_flips.py && echo PASS || echo FAIL -->
 
 ## What follows, and what does not
 
@@ -43,6 +43,24 @@ cause.
   "clears the op-point" and re-selects at another op-point, which is exactly
   the movement measured here. Pin `batch_size` for that test, or treat the
   boundary as fuzzy to ±0.08.
+
+## Does it change a decision? Yes — measured 2026-08-03
+
+The first pass (120 articles) found 0 tier flips **and 0 articles within 0.05 of
+the op-point**, so it could not have found one. Re-run against the band where a
+flip is possible (`scripts/diagnostics/measure_batch_shape_flips.py`):
+
+| filter | op-point | in ±0.30 band | flipped | share of band | share of corpus |
+|---|---|---|---|---|---|
+| solutions v6 | 2.252 | 28 | 2 | **7.1%** | 0.07% |
+| uplifting v7 | 4.0 | 33 | 3 | **9.1%** | 0.32% |
+
+```
+solutions [3]  bs1=2.1745(low)  bs4=2.3398(medium)  bs8=2.3080(medium)  bs16=2.1745(low)
+uplifting [9]  bs1=4.0390(medium)  bs4=3.9193(low)   bs8=3.9012(low)     bs16=4.0390(medium)
+```
+
+Flips occur within 0.077 (solutions) / 0.039 (uplifting) of the op-point.
 
 ## Not measured
 

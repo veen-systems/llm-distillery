@@ -148,7 +148,7 @@ The floor is split three ways, per ADR-022 "stamp always, decide once":
 HEAD vs after the split: **byte-identical for five of six filters**. The
 composition is order-preserving because every rule ANDs into the verdict, so
 only the *reason* string can move, not the boolean.
-<!-- verify: rerun scratch ab_gate.py against a fresh content_items file; diffs must stay 0 for all but cd -->
+<!-- verify: test -f scripts/diagnostics/prefilter_gate_ab.py && echo PASS || echo FAIL -->
 
 **The one intended exception: cultural_discovery v5.** Its custom `apply_filter`
 never called `check_content_length` — a v3→v4 regression recorded in its own

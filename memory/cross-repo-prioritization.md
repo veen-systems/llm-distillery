@@ -7,16 +7,51 @@ metadata:
 
 # Cross-Repo Prioritization
 
-**Last updated: 2026-08-02** (Chain 4 measured + re-rooted; NM#285 and NM#286
-items 1+2 resolved; LD#92 corrected; LD#86 answered). Counts below are the
-2026-08-01 evening re-inventory and have not been re-run.
+**Last updated: 2026-08-03** (Chain 4 root **#93 shipped, synced and deployed**;
+#95 opened and measured; three reader-reported defects filed upstream; ovr.news
+triaged). Counts re-run 2026-08-03 — see below.
 
 > The "Changes since the 2026-08-01 morning update" table below is a historical
 > changelog — its NM#285 and LD#92 rows record what was believed on 08-01, and
 > both were **overturned on 08-02**. Chain 4 and the P0 table are current.
 
-Open: **llm-distillery 32 · NexusMind 36 · ovr.news 80 · FluxusSource 8 = 156.**
-Repos: veen-systems/llm-distillery, ducroq/{NexusMind,ovr.news,FluxusSource}.
+Open, **re-counted 2026-08-03**: llm-distillery **36** · NexusMind **38** ·
+ovr.news **80** · FluxusSource **10** · persuasion-scorer **12** = **176**.
+Repos: veen-systems/{llm-distillery,persuasion-scorer}, ducroq/{NexusMind,ovr.news,FluxusSource}.
+
+> **The count is not the workload — 102 of these had not been touched in 30+ days.**
+> Throughput is ~41 closed/month across the big three, so the *live* backlog is
+> roughly 72 issues ≈ under two months. The rest is sediment, and it is what
+> makes the tracker feel unmanageable.
+>
+> **ovr.news is a special case, triaged 2026-08-03: 24 of its 57 stale issues
+> are not engineering at all** — Mastodon/LinkedIn accounts, Google News
+> submission, NLnet grant rounds, conference attendance, student outreach. A
+> go-to-market plan in a code tracker. All are now labelled
+> `positioning`/`outreach`/`community`/`content`; the engineering view is
+> `is:open is:issue -label:positioning -label:outreach -label:community -label:content`
+> → **55, not 81**. Of the 33 remaining stale ones, 8 were checked against the
+> code and 7 are genuinely unimplemented — so **closing them would be theatre**.
+> Age is not a reason to close a true statement.
+
+### The topology rule (2026-08-03)
+
+**An issue belongs in the repo that will contain the fix, not the repo where the
+symptom appeared.** In a pipeline — FluxusSource → NexusMind → ovr.news, with
+llm-distillery feeding filters in sideways — those are almost never the same
+place, which is how one defect becomes two or three issues.
+
+Evidence from a single reader complaint about ovr.news on 2026-08-03, which
+decomposed into three defects in three repos, none of them ovr.news:
+
+| symptom seen on ovr.news | actually owned by |
+|---|---|
+| article shows a "Get it on Google Play" badge as its image | **NexusMind#290** — hero extraction has no cross-domain check; reproduces *with* NM#287 in place |
+| two same-story articles show no corroboration | **NexusMind#291** — cross-source threshold 0.88 vs measured 0.8355 for genuine same-story pairs |
+| (found while investigating) `años` rendered `a√±os` | **FluxusSource#124** — UTF-8→MacRoman at collection, 5.0% of articles, non-English only |
+
+Same shape earlier the same day: NM#284 and NM#285 were both filed in NexusMind
+and the fix was **LD#93** in llm-distillery. One defect, three issues, two repos.
 
 ## Where we stand — one paragraph
 

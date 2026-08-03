@@ -1498,3 +1498,19 @@ heredoc (`python3 - <<'EOF'`) so quotes aren't doubly escaped, and single-quote 
 **Root cause**: Neither. With the new code path fully inert, `score_article` and `score_batch` already disagreed on 8 of 24 articles, and `batch_size=1` vs `8` reproduced the same set — GPU kernel reduction order depends on the batch dimension. The assertion was measuring the platform, not the change. Chasing it as a regression would have found nothing; accepting it by loosening the tolerance would have hidden a real finding.
 
 **Fix**: Check each path against **its own** baseline rather than against the other path, and compare cross-path only on the *decision* outside the measured noise band. Then measure the noise properly rather than absorbing it — it turned out to be #95 (max |Δ| 0.162; 7-9% of near-boundary articles flip tier/visibility). **When a test fails on a comparison you did not design as the subject, first ask what the comparison would do with the change removed.**
+
+### Nearly diagnosed an image bug from a file that has no image fields (2026-08-03)
+
+**Problem**: Investigating two reader-reported bad article images, the first move was to read `image_url` / `extracted_image_url` / `cluster_id` out of `data/filtered/*/filtered_*.jsonl`. Every field came back `None` for all five articles under investigation — which reads exactly like "the image pipeline produced nothing".
+
+**Root cause**: `filtered_*.jsonl` is the *scoring* artifact. It is written before enrichment and dedup run, so those fields are structurally null for every row, always. A clean, consistent, entirely meaningless answer. This is the third distinct trap in the same file family (the first two: it only receives `passed_prefilter: true` rows; it also drops source-type-excluded rows), and `data/raw/` has its own — pre-enrichment, so its image and content fields are equally not-what-the-pipeline-saw.
+
+**Fix**: Answer image and cluster questions from the *rendered page* (`curl` the live URL and read `og:image` / `<img>`) or by re-running the extractor against the source URL — not from an intermediate artifact. General rule, now on its fourth instance: **before reading a field out of a pipeline artifact, establish at which stage that artifact is written and which fields exist by then.** A null is not evidence of absence if the writer never had the value.
+
+### The first plausible cause was measured and refuted — twice in one investigation (2026-08-03)
+
+**Problem**: Two hypotheses, both plausible, both mine, both wrong. (1) Two reader-reported bad images were "pre-fix data" because the articles were processed 56 minutes before NM#287 reached production — timing that was true and irrelevant. (2) The missing corroboration between a Russian and a Spanish article about the same discovery was caused by stored UTF-8→MacRoman mojibake degrading the multilingual embedding.
+
+**Root cause**: Both hypotheses explained the evidence and neither was tested before being stated. The timing fact was real, so it *felt* like a finding; the mojibake was real and genuinely does degrade embeddings, so it *felt* like a mechanism. In both cases the correct target was one step further on.
+
+**Fix**: Run the current code against the current input. (1) `_extract_hero_image_from_page()` on the same URLs still returns the Google Play badge — the fix does not cover that defect at all (NM#290). (2) Cosine similarity of the pair: **0.8227 as stored, 0.8355 encoding-repaired**, against a 0.88 threshold — the corruption costs 0.013 and the pair was never going to cluster (NM#291). Both refutations took one command each. **A mechanism that is real is not thereby the cause; the test is whether removing it changes the outcome.** Same shape as the 2026-08-02 entry where a correctly-identified mechanism was attached to the first plausible target.
