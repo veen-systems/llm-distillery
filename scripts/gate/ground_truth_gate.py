@@ -6,6 +6,24 @@ Judge each candidate model against held-out ORACLE ground truth (the chosen
 editorial line) at the MEDIUM surfacing threshold — recall / precision /
 specificity / F1 / Spearman — NOT against the prior deployed model.
 
+NOISE FLOOR — read before calling any difference here an effect (#95)
+--------------------------------------------------------------------
+A score is not a function of the article alone: it also depends on which
+batch the article was scored in. Same model, same weights, same GPU, same
+process, only batch composition differs — measured max |delta| 0.16
+(2026-08-03, real Gemma-3-1B + LoRA, 120 production articles).
+
+So: a difference below ~0.1 near the surfacing threshold is indistinguishable
+from batch noise, and every metric this script prints is a threshold test on
+exactly that quantity. Re-scoring only the +/-0.30 band around the op-point
+flipped the verdict or tier for 7.1% of solutions v6 and 9.1% of uplifting
+v7 articles.
+
+If two runs need to be comparable, replay the same NexusMind cycle seed
+(NEXUSMIND_RUN_SEED, logged in the pipeline start banner) so batch
+composition is identical. Never compare scores produced on different
+machines — cross-box skew is |0.16| on its own (gotcha 2026-07-30).
+
 Filter-agnostic: the dimensions, weights, gatekeeper, and surfacing threshold are
 read from the filter's config.yaml via --config. When --config lacks a
 scoring.dimensions block (or is omitted), the gate falls back to the
