@@ -247,6 +247,99 @@ class TestShortContentCap:
         assert result["short_content_cap_applied"] is False
 
 
+class TestHybridStage1Branch:
+    """HybridScorer's Stage-1 branch builds its own result dict.
+
+    That branch bypasses `score_batch`/`_process_raw_scores` entirely, so it
+    needs its own stamp and its own call into the cap — the two lines #93 added
+    there. A regression would be silent: scores would simply stop being capped
+    for whichever articles the probe resolves early, which on solutions v6 is
+    most of them.
+    """
+
+    def _hybrid(self, cap=None):
+        from filters.common.hybrid_scorer import HybridScorer
+
+        stage2 = _FakeScorer(cap=cap)
+        stage2.DIMENSION_NAMES = ["a", "b"]
+        stage2.TIER_THRESHOLDS = [("high", 4.0, "high"), ("low", 0.0, "low")]
+        stage2.prefilter = None
+        stage2._validate_article = lambda article: None
+        stage2._assign_tier = lambda avg: (
+            ("high", "high") if avg >= 4.0 else ("low", "low")
+        )
+
+        class _ConcreteHybrid(HybridScorer):
+            # HybridScorer is an ABC; __new__ still refuses the abstract base.
+            def _create_stage2_scorer(self):  # pragma: no cover - not reached
+                return stage2
+
+            def _get_embedding_stage_config(self):  # pragma: no cover
+                return {"threshold": 3.0}
+
+        # __new__ rather than __init__: the real constructor builds an
+        # EmbeddingStage, which loads a sentence-transformer. The branch under
+        # test is score_batch's, not the probe's.
+        hybrid = _ConcreteHybrid.__new__(_ConcreteHybrid)
+        hybrid.device_str = "cpu"
+        hybrid.use_prefilter = False
+        hybrid.stage2_scorer = stage2
+        hybrid.threshold = 3.0
+        hybrid.embedding_stage = _FakeEmbeddingStage(weighted_avg=6.0)
+        return hybrid
+
+    def test_stage1_stamps_content_length(self):
+        hybrid = self._hybrid()
+        results = hybrid.score_batch([_article(SHORT_CONTENT), _article(LONG_CONTENT)])
+        assert [r["content_length"] for r in results] == [
+            len(SHORT_CONTENT),
+            len(LONG_CONTENT),
+        ]
+
+    def test_stage1_uncapped_by_default(self):
+        results = self._hybrid().score_batch([_article(SHORT_CONTENT)])
+        assert results[0]["weighted_average"] == 6.0
+        assert results[0]["short_content_cap_applied"] is False
+
+    def test_stage1_honours_the_cap(self):
+        results = self._hybrid(cap=2.0).score_batch(
+            [_article(SHORT_CONTENT), _article(LONG_CONTENT)]
+        )
+        short, long_ = results
+        assert short["weighted_average"] == 2.0
+        assert short["short_content_cap_applied"] is True
+        assert long_["weighted_average"] == 6.0
+        assert long_["short_content_cap_applied"] is False
+
+    def test_stage1_tier_follows_the_capped_score(self):
+        results = self._hybrid(cap=2.0).score_batch([_article(SHORT_CONTENT)])
+        assert results[0]["tier"] == "low"
+
+    def test_stage1_estimate_keeps_the_uncapped_probe_value(self):
+        """The probe's own number is provenance — capping must not rewrite it."""
+        results = self._hybrid(cap=2.0).score_batch([_article(SHORT_CONTENT)])
+        assert results[0]["stage1_estimate"] == 6.0
+
+
+class _FakeEmbeddingStage:
+    """Resolves every article at Stage 1, above any cap under test."""
+
+    def __init__(self, weighted_avg):
+        self.weighted_avg = weighted_avg
+
+    def screen_batch(self, articles, batch_size=None):
+        from filters.common.embedding_stage import ScreeningResult
+
+        return [
+            ScreeningResult(
+                needs_stage2=False,
+                weighted_avg=self.weighted_avg,
+                scores={"a": self.weighted_avg, "b": self.weighted_avg},
+            )
+            for _ in articles
+        ]
+
+
 def _load_prefilter(module_path: str, class_name):
     """Load a filter-package prefilter the way batch_scorer does."""
     import importlib.util
