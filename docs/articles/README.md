@@ -40,6 +40,18 @@ needle draft's **public edition** (`ovr.news/docs/articles/needle-in-haystack-dr
 de-vendored + publisher CTA) — re-derive it from this repo's master before publishing (edition
 notes in both files, 2026-07-16). Start a mirror of this index there when a second piece begins.
 
+## Track D — Pipeline / retrieval methods (home: `NexusMind/docs/articles/`)
+
+Pieces whose evidence is NexusMind's committed artifacts and production logs. Per the one-home
+rule above, they live there and get a pointer row here — never a copy.
+
+| Piece | Stage | Venue | Next step |
+|---|---|---|---|
+| `percolation-in-similarity-clustering-pitch.md` — a global cosine threshold is a percolation parameter, not a similarity knob; what matters is `rate × candidates`, not the per-pair FP rate. Includes the author's own diagnosis being proposed and retracted the same day, and a controlled experiment that had been running unexamined in production for months | **pitch** | blog or short tech report | BLOCKED on one measurement: complete-linkage declines ~39% of what production merges and nothing yet separates "false merges refused" from "real corroboration destroyed". If that inverts, so does the conclusion |
+
+Evidence: `NexusMind/docs/hypothesis-log.md` (2026-08-04), NM#188/#278/#295/#215/#228,
+`NexusMind/docs/investigation/story-dedup-centroid-design.md`.
+
 ## Track C — Agent-engineering practice (homes: `dev.jeroenveen.nl/drafts/` + `augmented-engineering`)
 
 Already a working pipeline (27 drafts, writing-guide, `adding-an-article` workflow, published
