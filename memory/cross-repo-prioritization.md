@@ -114,15 +114,22 @@ non-English quality pattern that no single issue currently states.
 | What | Now |
 |------|-----|
 | **NM#295** | **DEPLOYED THEN REVERTED** (`3b25373` → `88a681b`, 5 production cycles). Restoring article body to the dedup embedding did what the n=384 measurement said — a five-language cluster formed that was structurally impossible before — but roughly doubled an existing over-merging defect (clusters ≥20 up 2.01× per-1000-articles after normalisation). **Do not re-land before NM#278.** Operational trap recorded: a plain revert is insufficient, because the staleness check is `version < EMBEDDING_VERSION`, so clusters saved at the *higher* version pass as current into the older space — the store must be cleared too. |
-| **NM#278 is now the LEAD, not a follow-up** | Replay over 20 seeded cycles: tightening `cross_source_threshold` 0.88 → 0.90 alone drops the largest cluster 427 → 210 and clusters ≥20 from 93 → 54, **with no code change**. The pathology looks substantially like a *calibration* problem — consistent with NM#170 having fitted 0.88 against a representation NM#275 replaced on 07-27 and never refit. This re-sequences the whole dedup thread. |
+| **Dedup sequence: LINKAGE first, then NM#278** | An earlier read of this same replay said NM#278 leads, on the grounds that tightening `cross_source_threshold` 0.88 → 0.90 drops the largest cluster 427 → 210 with no code change. **That was overturned the same day.** Size metrics are blind to cross-language loss — dropping those pairs *improves* every number in the grid. Measured directly: tightening 0.88 → 0.90 → 0.92 destroys **94% of cross-language corroboration** (450 → 184 → 26 pairs), which NM#291 had already located at 0.836-0.845. A refit chosen on size metrics would have fixed NM#188 by breaking NM#291/#295. **Complete-linkage at UNCHANGED thresholds dominates**: comparable size control (largest 76, ≥20 32 vs 101/25), comparable entity quality, ~3× the cross-language pairs retained, NM#170's calibration intact. Sequence is therefore: complete-linkage via **NM#228**'s shadow-mode protocol, *then* re-assess NM#278 on the new geometry — where 0.88 finally becomes a guarantee about real article pairs rather than about a centroid. |
 | **NM#296 (NEW)** | Load-time `duplicate_title` drop was source-blind and ran *before* dedup embedded anything, deleting 1,189 genuinely cross-outlet corroboration pairs per 7-day window (46.7% of title collisions). PR #299 open, green at 1047 tests, **deliberately held** — it routes more articles into a clusterer that is currently mis-clustering. |
 | **NM#188** | Root cause **still open**, but a within-run centroid-chaining diagnosis was proposed and **retracted the same day** — 71 of 85 clusters ≥50 members form on the *pinned* seed path where drift is impossible. Live candidates are NM#278 (uncalibrated thresholds) and the issue's original register-collapse hypothesis. A cluster-size circuit breaker (`max_cluster_members: 25`, `d13ef5b`) is deployed as a blast-radius bound only. |
 | **NM#291 (was "unplaced")** | Placed. Its dedup-stage member is **not** a Chain 14 non-English effect in the way assumed: the load-time defect found alongside it (NM#296) skews **English** — 1.42× over-represented, with every major non-English language except Swedish *under*-represented. So NM#291's contribution to Chain 14 stands undiluted rather than being partly reattributed. |
 | **Article pitch (NEW)** | `NexusMind/docs/articles/percolation-in-similarity-clustering-pitch.md`, indexed here as **Track D** in `docs/articles/README.md`. Blocked on one measurement — complete-linkage declines ~39% of what production merges and nothing yet separates false merges refused from real corroboration destroyed. |
 
-**Sequencing consequence:** NM#278 (threshold refit) now precedes any linkage or centroid-policy
-change, and NM#228 already holds the pre-committed shadow-mode protocol for the latter. NM#296 lands
-after NM#188 has a root cause, not before.
+**Sequencing consequence:** the linkage change (complete-linkage) precedes NM#278, not the other way
+round — a threshold refit decided on size metrics would destroy the cross-language corroboration
+NM#291/#295 exist to recover. NM#228 holds the pre-committed shadow-mode protocol and is the vehicle.
+NM#296 lands after NM#188 has a root cause, not before.
+
+**Method note worth carrying across repos:** the same size-only metrics produced a confident
+recommendation that was overturned within hours, *after* the trap had been explicitly named. Any
+dedup/clustering/threshold decision here needs a retention axis for the population it is most likely
+to silently drop — for us that is cross-language pairs, which are marginal by construction and so
+look like noise to every similarity-based screen, including token-overlap ones.
 
 ## Changes since the 2026-08-01 morning update
 
