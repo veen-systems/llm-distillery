@@ -109,6 +109,21 @@ Chain 4's enforce flips and Chain 3's refits, which is why Batch F now precedes
 the remaining threshold work. Separately, Chain 14 records a four-repo
 non-English quality pattern that no single issue currently states.
 
+## Changes since the 2026-08-04 evening session (NexusMind corroboration thread)
+
+| What | Now |
+|------|-----|
+| **NM#295** | **DEPLOYED THEN REVERTED** (`3b25373` → `88a681b`, 5 production cycles). Restoring article body to the dedup embedding did what the n=384 measurement said — a five-language cluster formed that was structurally impossible before — but roughly doubled an existing over-merging defect (clusters ≥20 up 2.01× per-1000-articles after normalisation). **Do not re-land before NM#278.** Operational trap recorded: a plain revert is insufficient, because the staleness check is `version < EMBEDDING_VERSION`, so clusters saved at the *higher* version pass as current into the older space — the store must be cleared too. |
+| **NM#278 is now the LEAD, not a follow-up** | Replay over 20 seeded cycles: tightening `cross_source_threshold` 0.88 → 0.90 alone drops the largest cluster 427 → 210 and clusters ≥20 from 93 → 54, **with no code change**. The pathology looks substantially like a *calibration* problem — consistent with NM#170 having fitted 0.88 against a representation NM#275 replaced on 07-27 and never refit. This re-sequences the whole dedup thread. |
+| **NM#296 (NEW)** | Load-time `duplicate_title` drop was source-blind and ran *before* dedup embedded anything, deleting 1,189 genuinely cross-outlet corroboration pairs per 7-day window (46.7% of title collisions). PR #299 open, green at 1047 tests, **deliberately held** — it routes more articles into a clusterer that is currently mis-clustering. |
+| **NM#188** | Root cause **still open**, but a within-run centroid-chaining diagnosis was proposed and **retracted the same day** — 71 of 85 clusters ≥50 members form on the *pinned* seed path where drift is impossible. Live candidates are NM#278 (uncalibrated thresholds) and the issue's original register-collapse hypothesis. A cluster-size circuit breaker (`max_cluster_members: 25`, `d13ef5b`) is deployed as a blast-radius bound only. |
+| **NM#291 (was "unplaced")** | Placed. Its dedup-stage member is **not** a Chain 14 non-English effect in the way assumed: the load-time defect found alongside it (NM#296) skews **English** — 1.42× over-represented, with every major non-English language except Swedish *under*-represented. So NM#291's contribution to Chain 14 stands undiluted rather than being partly reattributed. |
+| **Article pitch (NEW)** | `NexusMind/docs/articles/percolation-in-similarity-clustering-pitch.md`, indexed here as **Track D** in `docs/articles/README.md`. Blocked on one measurement — complete-linkage declines ~39% of what production merges and nothing yet separates false merges refused from real corroboration destroyed. |
+
+**Sequencing consequence:** NM#278 (threshold refit) now precedes any linkage or centroid-policy
+change, and NM#228 already holds the pre-committed shadow-mode protocol for the latter. NM#296 lands
+after NM#188 has a root cause, not before.
+
 ## Changes since the 2026-08-01 morning update
 
 | What | Now |
