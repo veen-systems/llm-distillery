@@ -76,6 +76,12 @@ the length floor blocks*.
    p=0.0002). Residual: matched percentiles equalise selection *severity* but
    not *noise* (short-arm MAE ratio 1.91×), so some negative DiD is still
    expected in D3 — D2 is the independent check and it barely moved.
+   **Second oracle confirms it.** `gemini-2.5-flash` on the same D3 sample
+   (160/160, 0 errors) gives DiD **−1.351** [−1.73, −0.96] vs deepseek's −1.119.
+   The two disagree per article (mean |diff| 1.18) and gemini is more generous
+   on *both* arms (2.80/4.95 vs 2.40/4.31) — different absolute bias, same gap.
+   That is the convergence DiD exists to produce, and it rules out "the judge
+   penalises short input" as the explanation.
    ⚠️ **Still do not fit the cap VALUE**: that is a threshold fit and inherits
    #95's |Δ| ≤ 0.16 noise floor (Batch F.1 first). Identification is cleared;
    calibration is not.
