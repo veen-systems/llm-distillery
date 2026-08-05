@@ -7,7 +7,11 @@ metadata:
 
 # Cross-Repo Prioritization
 
-**Last updated: 2026-08-03 evening** — third pass. What shipped after the 16:35 pass:
+**Last updated: 2026-08-05 (late)** — board re-queried against GitHub; corrections
+and two new clusters are in **[Board refresh 2026-08-05](#board-refresh-2026-08-05-late--re-queried-against-github)**
+below. Read that first: two entries in the P0/P1 tables name issues that are closed.
+
+*The 2026-08-03 evening pass, third pass that day. What shipped after the 16:35 pass:*
 
 | What | Where | State |
 |---|---|---|
@@ -48,10 +52,15 @@ reader-reported defects filed upstream; ovr.news triaged.) Counts re-run
 > changelog — its NM#285 and LD#92 rows record what was believed on 08-01, and
 > both were **overturned on 08-02**. Chain 4 and the P0 table are current.
 
-Open, **re-counted 2026-08-03**: llm-distillery **36** · NexusMind **39**
-(38 + NM#292, filed on this pass) · ovr.news **80** · FluxusSource **10** ·
-persuasion-scorer **12** = **177**.
+Open, **re-counted 2026-08-05 (late)**: llm-distillery **36** · NexusMind **40** ·
+ovr.news **90** (63 engineering, after the label filter) · FluxusSource **13** ·
+persuasion-scorer **12** = **191**.
+*Previous count, 2026-08-03: 36 · 39 · 80 · 10 · 12 = 177. All growth is
+downstream — ovr.news +10, FluxusSource +3, NexusMind +1; nothing new filed in
+llm-distillery since LD#96.*
 Repos: veen-systems/{llm-distillery,persuasion-scorer}, ducroq/{NexusMind,ovr.news,FluxusSource}.
+Note the org: FluxusSource and NexusMind are under **ducroq**, not veen-systems —
+`gh issue list -R veen-systems/NexusMind` fails with "could not resolve".
 
 > **The count is not the workload — 102 of these had not been touched in 30+ days.**
 > Throughput is ~41 closed/month across the big three, so the *live* backlog is
@@ -108,6 +117,99 @@ has never bound in 191,616 articles). Chain 13 collects them. They sit *under*
 Chain 4's enforce flips and Chain 3's refits, which is why Batch F now precedes
 the remaining threshold work. Separately, Chain 14 records a four-repo
 non-English quality pattern that no single issue currently states.
+
+## Board refresh 2026-08-05 (late) — re-queried against GitHub
+
+Not a work session: the board was re-read from the tracker because the owner
+asked whether it was still current. It was not, in two places.
+
+<!-- verify: gh issue list -R ducroq/ovr.news --state open --limit 300 --json number --jq 'length' -->
+<!-- verify: for r in ducroq/NexusMind ducroq/FluxusSource ducroq/ovr.news veen-systems/llm-distillery veen-systems/persuasion-scorer; do gh issue list -R $r -s closed --search "closed:>=2026-08-03" --json number,title; done -->
+
+### Corrections — two banded entries are closed
+
+| Entry | Band it still sits in | Actual state |
+|---|---|---|
+| **ovr#285** (orphan reclamation NULLs `raw_weighted_average` + `source_quality`) | **P0**, and Batch B item 2 | **CLOSED 2026-08-03.** So **ovr#283** (publication floor) is unblocked — it is now a decision waiting on the owner, not on code. |
+| **NM#290** (hero extractor still picks third-party chrome post-#288) | **P1**, and Chain 9's live link, and Batch B item 6 | **CLOSED 2026-08-03.** |
+
+Also closed since the 08-03 pass and referenced above as open or in-flight:
+**NM#293** and **NM#295** (the latter is the deploy-then-revert already recorded
+in the 08-04 section), **FS#121** (banded P2), **LD#64**.
+
+**ovr#299 was filed *and* closed COMPLETED on 2026-08-05** (`closedAt
+15:27Z`) — the 08-05 session table above records it as new, which was true when
+written. Its closing comment cross-links **ovr#298**; the two touch the same
+generation step from opposite ends (how much is invented vs. what gets led with).
+
+### llm-distillery's own 36, grouped
+
+Because "what is open here" had no single view on this board — the P-bands
+interleave five repos.
+
+| Group | Issues | n |
+|---|---|---|
+| Live / blocking | #95, #92, #93, #91, #94, #86, #87, #82 | 8 |
+| Lens architecture | #90, #96, #61, #66, #52, #48 | 6 |
+| Filter quality / retrain | #23, #25, #55, #56, #60, #70, #71, #84, #85 | 9 |
+| New filters & lenses | #38, #40, #73, #78, #79 | 5 |
+| Infra / hygiene / writing | #24, #28, #30, #33, #42, #81, #88, #89 | 8 |
+
+**14 of the 36 have not been touched in 30+ days** — #23, #24, #25, #28, #30,
+#33, #38, #40, #42, #48, #52, #55, #56, #66. The live backlog here is ~22.
+(#93 stays open by design: steps 1–3 shipped, step 4 — sizing the cap — is the
+part still blocked, on #95.)
+
+### Two clusters the chains do not model yet
+
+**A. Lens commensurability.** LD#96 and **ovr#296** were filed independently the
+same day and are the same defect from both ends: LD#96 says lens placement
+compares scorer outputs that are not the same construct; ovr#296 says
+`toCanonicalLens` breaks near-ties between exactly those outputs — its case is
+*Kixikila lost Belonging to Discovery by **0.043***. That margin is well inside
+**LD#95**'s measured |Δ| ≤ 0.16 batch-composition noise floor, so the placement
+was decided by noise. **LD#61** (cross-filter trajectory mis-lensing) is the
+same family, and **ovr#298** (summary framing can make a qualifying story read
+as disqualifying) is its reader-visible end.
+
+```
+LD#95 (noise floor) ⟂ LD#96 (constructs not commensurable)
+   → ovr#296 (toCanonicalLens near-ties, 0.043 < 0.16)
+   ↔ LD#61 (trajectory mis-lensing)  ↔ ovr#298 (framing flips the read)
+   → gates LD#90 (harmonization assumes one comparable score)
+```
+**Partly measured, and better than this memo first said.** ovr.news's hypothesis
+log already carries the numbers (2026-08-05): **16.1%** of published articles are
+scored by 2+ filters, and among those the **median top-two margin is 0.479**, with
+**52.6% decided under 0.5** on a 0–10 scale. So "decided by a small margin" is
+established. What is *not* measured is the share under **0.16** specifically — the
+LD#95 noise floor — which is the number that says whether these are close calls or
+coin flips. ovr#296's sizing work (the tie-break epsilon) is the natural place for it.
+
+**B. Legal / compliance, upstream half.** Batch C currently holds only ovr#284,
+ovr#274, ovr#278. Three new ovr items and one dormant LD item are the same
+programme: **ovr#292** (333 of 1,357 source domains signal an AI opt-out —
+decide whether they bind us), **ovr#293** (AI Act art. 50: unfurl cards carry AI
+headlines with no marker), **ovr#294** (unassessed art. 4 / EMFA art. 6 / the
+reported 2026-06-10 Code of Practice). **LD#28** — TDM opt-out compliance for
+*training* data — is the same question one stage upstream, and has been
+untouched since 2026-03-14. If ovr#292 is answered "they bind us", LD#28 stops
+being backlog.
+
+### Unbanded new issues
+
+Filed since the 08-03 pass, placed nowhere:
+
+- **NM#294** — hero validation cap (200) leaves ~79% of extracted heroes unvalidated. **Chain 9.**
+- **ovr#295** / **ovr#297** — domain og-reuse cache blind to upstream images (publisher logo on 68 articles); `looksLikePublisherLogo` misses `logo300.png` and `/images/`. **Chain 9**, and they are the concrete residue NM#290's closure did not cover.
+- **ovr#288**, **ovr#289**, **ovr#290** — orphan re-enrichment decision; `COALESCE` guards `undefined` but not `'{}'`; obituary-summary funeral exclusion is comma-dependent. The last is **Chain 1**'s only new link.
+- **FS#128** — `rferl_kazakh` has never collected Kazakh; both RFE/RL feeds point at a generic endpoint. **Chain 14** — a non-English source that produces no non-English content is the collection stage failing silently.
+- **FS#125** / **FS#126** / **FS#127** — gdelt firehose collects nothing in ~75% of runs; a zero-yielding aggregator raises no alarm; feed-cadence metric unreliable for 2/3 of OVER_POLLED feeds. FS#126 is the general case of FS#121 *and* FS#128: **nothing notices a source that stops producing.**
+
+**Not re-run on this refresh:** the Coverage table's unbanded set (it was computed
+against the 177 total and is now stale by at least these 14), and the ovr
+non-engineering list (the label filter now yields 63 engineering / 27 not, vs 56/24
+on 08-03).
 
 ## Changes since the 2026-08-05 session
 
@@ -253,9 +355,17 @@ NM#282 ✅ (ML logo classifier dead since 06-16) → ovr#281 (stock sticky + val
    ↔ NM#227 / NM#222 / NM#183 / NM#182
 
 NM#287 ✅ (lazy-load: any src= beat the hero) → fixed by NM#288 ✅
-   → NM#290 (STILL WRONG post-fix: no cross-domain check — allAfrica ships a Google Play badge)
+   → NM#290 ✅ CLOSED 08-03 (cross-domain check — allAfrica Google Play badge)
    → ovr#287 (backfill ~36 already-stored wrong-story rows) ← DECISION NEEDED
+   → NM#294 (validation cap 200 ⇒ ~79% of heroes unvalidated) ← NEW, unbanded
+   → ovr#295 (og-reuse cache blind to upstream images: publisher logo on 68 articles)
+   → ovr#297 (looksLikePublisherLogo misses logo300.png and /images/) ← NEW, unbanded
 ```
+**Refreshed 2026-08-05:** NM#290 closed, but the class did not close with it —
+ovr#295/#297 are publisher-logo heroes reaching readers by a *different* route
+(upstream-supplied images the cache never sees), and NM#294 says ~79% of heroes
+are never validated at all. Chain 9 is the longest-lived chain on the board and
+each fix has so far revealed one more path to the same reader-visible symptom.
 ovr#281 measured: of 25 rescuable, 11 would succeed today (stickiness), 12 are
 `validateImageUrl` false-rejects, 2 fetch failures. ~10% of articles affected.
 
@@ -334,6 +444,11 @@ FS#124 (mojibake at collection, 5.0%, non-English-concentrated)
    → NM#291 (dedup threshold misses cross-language same-story pairs at 0.836)
    → LD#86 (cd prefilter enforce would cost 19.9% non-English vs 13.0% English, p≈0.01)
    ↔ LD#93 (sub-300 population is dominated by gn_* / spanish_* / french_* / gn_africa_*)
+   ↔ FS#128 (rferl_kazakh has never collected Kazakh — both feeds hit a generic
+              endpoint) ← NEW 08-04: the collection stage failing *before* text quality
+   ↔ ovr#299 ✅ CLOSED COMPLETED 08-05 (headline-only summaries 83.4% invented).
+              **Not verified here what shipped** — only that it closed as completed;
+              the proposed fix was an input-scaled output budget
 ```
 **Four independent measurements in four repos, all pointing the same way, none
 of them owned as one problem.** Each was filed where its fix lives — correctly,
@@ -357,6 +472,23 @@ score and corroboration rate on **one** denominator, controlling for source
 type. Small gap → close won't-do and let the four proceed on their own merits;
 large gap → pull FS#124 and NM#291 forward.
 
+### Chain 15: Lens Commensurability — **NEW 2026-08-05**
+```
+LD#95 (noise floor |Δ| ≤ 0.16) ⟂ LD#96 (lens placement compares scorer outputs
+                                        that are not the same construct)
+   → ovr#296 (toCanonicalLens breaks near-ties: Kixikila lost Belonging to
+              Discovery by 0.043 — inside the noise floor)
+   ↔ LD#61 (cross-filter trajectory-framing mis-lensing)
+   ↔ ovr#298 (summary framing makes a qualifying story read as disqualifying)
+   → gates LD#90 (harmonization presumes one comparable score across lenses)
+```
+Two repos derived the same defect independently on the same day, from opposite
+ends — which is the topology rule working, and also why neither issue states the
+pattern. **The unmeasured quantity is the one that decides how urgent this is:
+what share of lens placements is settled by a margin smaller than 0.16?** Nobody
+owns that count. Until it exists, Chain 15 is a hypothesis with two filed
+symptoms, not a finding.
+
 ## Priority Rankings
 
 ### P0 — Now
@@ -370,7 +502,7 @@ large gap → pull FS#124 and NM#291 forward.
 | **LD#92** | llm-distillery | ~~uplifting~~ **solutions** over-scores sub-300-char stubs | **CORRECTED 2026-08-02 at n=60/group.** uplifting does NOT replicate (DiD +0.44; P(original result from n=15)=0.0000). The effect is in **solutions v6** (DiD −1.13 [−1.74,−0.52], MAE 1.51×), ~49 FPs/8 cycles — not 460. Root cause of the original: op-point mix-up (2.25 is solutions', uplifting's is 4.0). Retitle/relocate. |
 | **LD#95** | llm-distillery | Inference scores depend on batch composition (max \|Δ\| 0.162) | **Same shape that made NM#285 a P0: it gates the validity of decisions queued behind it.** Measured to flip 7.1% / 9.1% of near-boundary articles. Every op-point flip, cap fit, refit and ADR-021 gate on this board compares this quantity. Pinning the production batch size is cheap and buys reproducibility today. |
 | **ovr#284** | ovr.news | Comscore beacon as hero image | Real processing-without-basis event; needs an Art. 5(2) record. Legal, not just code. |
-| **ovr#285** | ovr.news | Orphan reclamation NULLs raw_weighted_average + source_quality | Silent per-cycle data loss; blocks ovr#283. |
+| ~~**ovr#285**~~ | ovr.news | ~~Orphan reclamation NULLs raw_weighted_average + source_quality~~ | **CLOSED 2026-08-03.** ovr#283 (publication floor) is unblocked and is now an owner decision. |
 
 ### P1 — This week
 
@@ -385,7 +517,7 @@ large gap → pull FS#124 and NM#291 forward.
 | **ovr#204** | ovr.news | Remove hardcoded obituary detection | Chain 1's last link; upstream verified. |
 | **ovr#262** | ovr.news | Data archiving lossy & unreliable | Irreplaceable editorial signal lost forever. |
 | **NM#244** | NexusMind | gpu-server 422s drop whole chunks, reason not logged | Silent data loss in scoring. |
-| **NM#290** | NexusMind | Hero extractor still picks third-party chrome post-#288 | The fix shipped and the class survived it — no cross-domain check. Reader-visible. |
+| ~~**NM#290**~~ | NexusMind | ~~Hero extractor still picks third-party chrome post-#288~~ | **CLOSED 2026-08-03.** The *class* outlived it — see Chain 9: NM#294, ovr#295, ovr#297. |
 | **ovr#287** | ovr.news | Backfill ~36 wrong-story heroes | Reader-visible and *already stored*; needs an operator call (re-extract vs blank) and the `image_source` stamp fixed first. |
 | **NM#291** | NexusMind | Cross-source dedup threshold 0.88 vs measured 0.836 | Unblocks NM#278 with a measured number instead of a guess. |
 | **NM#289** | NexusMind | Medium fixture scores into high on the three percentile filters | Possible upper-tail counterpart to the Chain 3 crush; if the CDFs are stale this is an llm-distillery refit, not a NexusMind fix. Check refit dates first — cheap. |
@@ -402,7 +534,7 @@ large gap → pull FS#124 and NM#291 forward.
 | **NM#231** | NexusMind | uplifting under-scores non-English documented-outcome news (sibling of LD#91) |
 | **LD#61** | llm-distillery | Cross-filter trajectory-framing mis-lensing (sibling of LD#91) |
 | **ovr#283** | ovr.news | Publication floor — decide or close won't-do (behind ovr#285) |
-| **FS#121** | FluxusSource | fda/patent aggregators never run (hardcoded `all_sources`) |
+| ~~**FS#121**~~ | FluxusSource | ~~fda/patent aggregators never run~~ — **CLOSED 08-03.** Generalized by **FS#126**: nothing alarms on a zero-yielding aggregator, so FS#121, FS#125 and FS#128 are three instances of one missing check. |
 | **LD#84** | llm-distillery | solutions oracle prompt router self-contradictory |
 | **LD#94** | llm-distillery | solutions v6 `concreteness_gatekeeper` inert — 0 binds in 191,616 articles (benign NM#284 shape: a config key that declares an enforcement point with no runtime effect). Recommend remove-or-document; raising the threshold is a real behavior change needing an ADR-021 recall check. **Run the same two-condition count on `nature_recovery v4`'s `recovery_evidence`** — the redundancy argument generalizes. |
 | **LD#81** | llm-distillery | Align sklearn across training + inference |
@@ -477,17 +609,26 @@ is already banded, in Chain 7.
 
 ### Batch B — Reader-visible quality (can run in parallel with A)
 1. **LD#91** — uplifting dominant-subject failure. Read alongside LD#61 and NM#231; likely one shared mechanism.
-2. **ovr#285** → then **ovr#283** decision.
-3. **ovr#280** ingestion fix → **NM#278** retune, now with **NM#291**'s measured 0.836.
+2. ~~ovr#285~~ **CLOSED 08-03** → **ovr#283** decision is unblocked and is the owner's.
+3. **ovr#280** ingestion fix → **NM#278** retune, now with **NM#291**'s measured 0.836. *(Sequencing: complete-linkage via NM#228 first — see the 08-04 section.)*
 4. **ovr#281** — stock heroes (two independent halves: stickiness, validate false-rejects).
 5. **ovr#204** — remove hardcoded obituary filter.
-6. **NM#290** — hero cross-domain check; the class survived NM#288.
+6. ~~NM#290~~ **CLOSED 08-03** → replaced by **NM#294** (~79% of heroes unvalidated) and **ovr#295 / ovr#297** (publisher logos via the upstream-supplied path).
 7. **ovr#287** — hero backfill, after the `image_source` stamp is disambiguated.
 
-### Batch C — Legal / compliance
+### Batch C — Legal / compliance — **grew 08-04/08-05**
 1. **ovr#284** — Art. 5(2) record + a hero-image egress control that is deliberate rather than accidental.
-2. **ovr#274** — full threat-surface security review (standing).
-3. **ovr#278** — safe-fetch defence-in-depth leftovers.
+2. **ovr#292 (NEW)** — TDM opt-out sweep: **333 of 1,357 source domains signal an AI opt-out.** Decide whether they bind us. This is the head of the group — the other three follow from its answer.
+3. **LD#28** — TDM opt-out for *training* data: the same question one stage upstream, filed 2026-03-14 and untouched since. **If ovr#292 is answered "they bind us", LD#28 stops being backlog.**
+4. **ovr#293 (NEW)** — AI Act art. 50: social unfurl cards carry AI-generated headlines with no marker.
+5. **ovr#294 (NEW)** — unassessed obligations: AI Act art. 4 (AI literacy), EMFA art. 6, and the reported 2026-06-10 Code of Practice.
+6. **ovr#274** — full threat-surface security review (standing).
+7. **ovr#278** — safe-fetch defence-in-depth leftovers.
+
+Batch C was three code-adjacent items; it is now the only batch on the board
+whose head item (ovr#292) is a **policy decision with a corpus-wide consequence**
+— 333 domains is 24.5% of sources, and dropping them changes what every lens
+downstream can see. Sequence it before anything that fits a distribution.
 
 ### Batch D — Deadline track
 1. **FS#120** — eval readout, ADR-007 gate, **~2026-08-14**. Start the readout script well before the date; ovr#275's attribution export is live.
@@ -507,6 +648,13 @@ on it.
    two-condition count on `nature_recovery v4`.
 4. Only then: **LD#93 step 4** (fit the solutions short-content cap) and any
    Chain 4 enforce flip. Both are threshold fits that inherit LD#95's noise.
+5. **NEW 08-05 — Chain 15's missing count:** what share of lens placements is
+   decided by a margin smaller than **0.16**? Already known: 16.1% of published
+   articles are scored by 2+ filters and 52.6% of those are placed under a 0.5
+   margin (ovr.news hypothesis log). The sub-0.16 slice is the part that is not
+   measured, and it is the part that distinguishes a close call from a coin flip.
+   ovr#296's tie-break epsilon is where it belongs. Same family as items 1–3: it
+   says whether a comparison means anything before anyone acts on one.
 
 ## Housekeeping (opportunistic)
 
@@ -521,6 +669,10 @@ on it.
 - ~~NM#285 Option C~~ — DECLINED 2026-08-02 on the measurement (Option B shipped). Reopen only if prefilters regain lens rules worth enforcing.
 - **ovr#283** — publication floor: yes/no/won't-do.
 - **ovr#284** — how the Art. 5(2) record is written and by whom.
+- **ovr#292 (NEW 08-05)** — do the 333 opt-out-signalling domains bind us? This
+  is a policy call, not an engineering one, and **LD#28 (training-data TDM)
+  inherits the answer.**
+- **ovr#283** — now unblocked (ovr#285 closed 08-03): floor yes/no/won't-do.
 - **ovr#287 (NEW)** — the ~36 wrong-story heroes: **re-extract or blank?**
   Blanking is cheap, certain, and consistent with NM#288's own stated principle.
 - **LD#95 (NEW)** — pin the production batch size for reproducibility? It does
@@ -536,6 +688,7 @@ on it.
 
 ## Related Memories
 
+- [[project_session_2026_08_05]] — LD#92 identified, GN evidence into FS#120, ovr#299 filed
 - [[project_session_2026_08_03]] — LD#93 ship + sync, LD#95, the three upstream defects
 - [[project_session_2026_08_01]] — the session the prior update followed
 - [[project_session_2026_07_31]] — Chain 3 deploys

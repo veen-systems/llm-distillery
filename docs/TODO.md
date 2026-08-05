@@ -256,6 +256,14 @@ Items surfaced by the multi-agent code review of the migration commits (2026-04-
 
 *Last updated: 2026-08-01*
 
+## 2026-08-05 — TDM / training-data position, and the two carve-outs it leaves open
+
+- [x] **#28 decided — AI-crawler opt-out directives do not bar distillation training.** Record: `docs/decisions/2026-08-05-tdm-opt-out-training-data.md`. Grounds, strongest first: the directives name **other parties' crawlers** (GPTBot 401 domains, CCBot 359, Google-Extended 327, ClaudeBot 320 — we operate none); the student has a **regression head and cannot emit text at all**, so no output can substitute for a publisher's work; and the use is referral, not substitution. Sibling decision for the fetching layer is ovr.news ADR-043. **Recorded against itself:** *"modelling is not mining"* is not a distinction the DSM Directive draws — its TDM definition covers fitting a model to text. The position rests on the **Art. 4(3) reservation** question and on harm, not on being outside the definition; do not carry the shorter phrasing forward.
+- [x] **#28's numbers were stale** — it cited 238/971 domains from March; the 2026-08-04 scan says **333/1,357**. Also **117 domains failed open** (unreachable, counted as clean) — a publisher behind a WAF that 403s non-browser agents scores clean, and that is exactly the publisher most likely to be reserving. Any future "we checked" is only as strong as those 117.
+- [ ] **CARVE-OUT 1 — the seven already-trained deployed filters were never assessed.** uplifting v7, investment-risk v6, cultural-discovery v5, belonging v1, nature_recovery v4, solutions v6 (+ the removed sustech/foresight packages in git history) were all trained before the question was asked. The decision record is written entirely forward-looking, exactly as #28 was. On grounds 2–3 there is probably nothing to say — **but "probably nothing" is not an assessment.**
+- [x] **CARVE-OUT 2 — the oracle ships full article text to third parties.** Gemini Flash (Google) and DeepSeek receive complete article content under their own terms. None of the three grounds cover it, and ground 2 specifically fails because **the recipient is a generative model**. **Owner decision 2026-08-05: risk identified and knowingly accepted** — *"this is the only way I can do this, so if someone objects in future, let's see then."* Recorded with revisit triggers in `ovr.news/docs/compliance-register.md` §3 (it lives there because the summarisation path makes the same transfer; this repo is one of two callers).
+- [ ] **The `tdm_opt_outs.json` scan is unscheduled.** It has run exactly once (2026-08-04). A reservation added tomorrow is invisible. Quarterly is enough for a signal that moves this slowly — the implementation sketch in #28 is retained there as the thing to build **if this decision is ever reversed**, not as work to do now.
+
 ## 2026-08-02 — Chain 4 measured: two of the previous day's own P0 conclusions overturned
 
 Both P0 issues carried into this session had the **mechanism right and the target wrong**. Neither correction needed new tooling — one came from widening a sample, the other from reconciling a denominator.
@@ -282,7 +290,7 @@ Both P0 issues carried into this session had the **mechanism right and the targe
 - [ ] **Re-run the NM#284 shadow** now that the length floor is out of the prefilters *(deployed to gpu-server 2026-08-03 ~15:45 CEST, rev `2d5c54aa…`; first cycle carrying it is 16:10)* — its pass rates finally describe lens behaviour, which is what LD#90 item 2 needs. Rates measured before 2026-08-03 are not comparable to ones measured after.
 - [ ] **NM#286 item 3** (violence stamping skipped in single-filter / `--no-dedup` / dedup-exception runs). Verified in code; **live blast radius zero today** (production runs multi-filter, violence `enforce: false`), so it is an audit gap, not admitted violence. Still a hard prerequisite for any violence enforce flip, with LD#82.
 - [ ] **Fix `no_cultural_topic_signal` multilingual coverage**, then re-run the identical LD#86 recall check — falsifies whether the language skew is the gate or the corpus.
-- [ ] **Retitle/relocate LD#92 to solutions** and correct the op-point in its body.
+- [x] **Retitle/relocate LD#92 to solutions** and correct the op-point in its body — done; the issue now reads "solutions v6 over-scores sub-300-char stubs (DiD −1.13) — NOT uplifting; original n=15 result did not replicate".
 
 ## 2026-08-01 — NM#281 gate contract + adversarial review of the day's own work
 

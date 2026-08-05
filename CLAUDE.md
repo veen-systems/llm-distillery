@@ -97,8 +97,9 @@ to write replies that only make sense to whoever just did the work.
    should not have to hold the numbering in their head.
 4. **Separate measured from guessed, every time.** "Measured over 8,283
    articles" vs "I think" vs "not tested". This project's failure mode is a
-   confident claim nobody verified — see `memory/feedback-claim-requires-verify`
-   and `memory/feedback-verify-call-path`.
+   confident claim nobody verified — see the `feedback-claim-requires-verify` and
+   `feedback-verify-call-path` entries in the assistant's own memory (they live in
+   the Claude Code auto-memory directory, **not** in this repo's `memory/`).
 5. **Keep the caveats, cut the recap.** Brevity must never come out of the
    verification detail. The obituary answer on 2026-08-03 was only trustworthy
    *because* of "max score among survivors is 0.8488, zero at or above 0.85".
@@ -122,6 +123,7 @@ rules above prove insufficient.
 | Resuming thriving v1 work | `memory/thriving-v1-scoring.md` — scoring status, resume commands, full pipeline |
 | Starting calibration / scorer-training / oracle-prompt work | `memory/calibration-history.md` — Dead Ends section: which approaches are already known dead (#69) |
 | **Touching a prefilter, or considering an enforcement flip** | **`memory/prefilter-length-floor-hypotheses.md`** — what each prefilter actually blocks (measured), why `expected_pass_rate` was deleted from two filters, and why a matching rate is not a safety argument. Then #93. |
+| **A legal/compliance question, or changing where training data comes from** | `docs/decisions/2026-08-05-tdm-opt-out-training-data.md` — why AI-crawler opt-outs don't bar training here, and the two carve-outs still open (the oracle ships full article text to Gemini/DeepSeek; the seven already-trained filters were never assessed). Cross-repo companion: `ovr.news/docs/compliance-register.md`. |
 | **Reading a number off NexusMind production data** | **`memory/nexusmind-data-sources.md`** — `filtered_*.jsonl` ALSO drops source-type-excluded rows (scored, then discarded — worth 0.129 on investment_risk), and `data/raw/` is pre-enrichment. Reconcile denominators before diffing two sources. |
 | **Touching normalization (fitting, debugging a score/tier that looks wrong, ovr ranking)** | **`docs/NORMALIZATION_METHOD.md`** — canonical method (anchored CDF, guards, reproduction steps); ADR-014 for the decision record, `docs/FILTER_PLAYBOOK.md` §6 for the digest. Normalization exists only for ovr.news cross-lens ranking; tier is reassigned on the *normalized* score by design, so `raw >= threshold` + `tier: low` is expected. Fit at `raw >= the filter's tier threshold` — enforced by `tests/unit/test_normalization_invariant.py`. Both #161 and #205 were `raw_min` drifting off that threshold. |
 | **Creating OR retraining ANY filter (START HERE)** | **`docs/FILTER_PLAYBOOK.md`** — the single source of truth: every compiled lesson + the canonical reference (`nature_recovery v4`). Read before touching filter code. Then `docs/agents/filter-development-guide.md` (depth) / `docs/guides/filter-creation-workflow.md` (quick steps). |
@@ -176,4 +178,4 @@ This project is a source project for [augmented-engineering](https://github.com/
 
 ---
 
-*Last updated: 2026-08-03 (score noise floor #95 + seeded cycle replay; commerce provenance fix; sustech/foresight removed)*
+*Last updated: 2026-08-05 (TDM/training-data position recorded — #28; score noise floor #95 + seeded cycle replay; commerce provenance fix; sustech/foresight removed)*

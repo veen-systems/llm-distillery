@@ -1629,3 +1629,63 @@ to the full file size, which ruled out slow I/O and pointed straight at the comp
 **Fix**: Hoist the threshold to a named constant before the comprehension. Detection: a
 process stuck in state `R` with RSS flat and `rchar` complete is compute-bound on something
 already loaded — look for work inside a loop condition.
+
+### WebFetch on EUR-Lex never reaches the articles — three summaries, two wrong answers (2026-08-05)
+
+**Problem**: Two EU legal questions were answered by secondary sources and both answers
+were unreliable in opposite directions. A search summary and an academic commentary
+(Centre for Media Pluralism, EUI) both stated that EMFA art. 6 exempts micro
+enterprises — the fact ovr.news's whole "out of scope" position rested on. It does
+not exist. Separately, a Code of Practice that an issue recorded as merely *reported*
+turned out to be real, published 2026-06-10 and Commission-endorsed 2026-07-08.
+
+**Root cause**: two compounding failures. (1) `WebFetch` on EUR-Lex returns the
+document *preamble* and truncates before the operative articles — three attempts
+against two different EUR-Lex URLs and a regulation mirror all came back "the article
+text is not present on this page". (2) Search-engine synthesis and law-firm commentary
+often describe the **proposal** rather than the adopted text; the micro-enterprise
+carve-out was most likely in the 2022 draft and did not survive.
+
+**Fix**: `curl` the full HTML and grep locally instead of asking a fetch tool to read
+it. `curl -sL "https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=OJ:L_202401083"`
+returned 347 KB; stripping tags and searching gave art. 6 verbatim in one pass, plus
+**zero** occurrences of "micro enterprise" in the entire regulation. A zero-hit count
+over the whole text is a much stronger negative than any summary's silence.
+**Rule: for a claim that a legal exemption exists, only the operative text counts —
+and if a fetch tool returns preamble, it has not read the law.**
+
+### Guarded one field against over-labelling, then proposed exactly that on another (2026-08-05)
+
+**Problem**: ADR-044 recommended stamping the EU "AI GENERATED" icon onto
+`public/og-image.png`. That file is the shared branded card for the homepage, lens
+pages and every static page as well as image-less articles (ADR-023) — so the change
+would have labelled `/about` and `/accountability`, both hand-written, as
+AI-generated content.
+
+**Root cause**: the text disclosure had *just* been built as an opt-in per-route prop
+precisely to avoid crediting a machine for a person's words. The image recommendation
+was written in the same session and reasoned about the asset by the role it played in
+the case at hand ("the article fallback card") without checking what else pointed at
+it. One asset, five page types, one `grep` away.
+
+**Fix**: caught before implementing; a second asset (`og-image-article.png`) is
+referenced only by the article route, verified in the build as 42 of 2,894 article
+pages and **zero** non-article pages. Recorded as a correction inside ADR-044 rather
+than deleted. **Rule: before adding a marker to a shared asset, enumerate every route
+that references it — the guard you just wrote for one field applies to the other.**
+
+### An empty build directory was read as a coverage gap, not as a disabled feature (2026-08-05)
+
+**Problem**: a rebuild produced no `dist/nl/` pages, and this was reported as "the
+Dutch disclosure strings are unverified" — implying a hole in the change under test.
+
+**Root cause**: absence of output has at least two causes — *not exercised* and *not
+built at all* — and the first was assumed without checking. `src/i18n/translations.ts`
+says at the top that Dutch was paused project-wide on 2026-04-21 and `languages` is
+`en` + `src` only. There were no Dutch pages to render for **any** string, so the
+observation said nothing about the new code.
+
+**Fix**: read the feature flag before drawing an inference from missing artifacts.
+Corrected in ADR-044 the same session. Same shape as the older "verify the call path,
+not just the code" entries: the artifact was missing for a reason upstream of the
+thing being tested.
