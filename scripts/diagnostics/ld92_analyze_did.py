@@ -6,17 +6,25 @@ design file from sample_designs.py, and reports for each of the three designs:
 
   DiD = mean(oracle - student | short) - mean(oracle - student | long)
 
-with an exact-style permutation test, Holm correction across the three designs,
-and a source-clustered bootstrap CI. Also reports the two known asymmetries
+with a source-clustered bootstrap CI and p, Holm-corrected across the three
+designs. (An article-level permutation p is also printed, parenthesised: it
+ignores clustering and is anticonservative, so it is shown for continuity with
+the first write-up, not to be quoted.) Also reports the two known asymmetries
 (scrape-junk skip rate, smart_compress rate) per arm, because both differ
 between short and long by construction and both sit inside the DiD.
 
 RESULT, 2026-08-05 (n=80/arm, 456 articles, deepseek-chat, 0 errors, 0 junk):
 
-    design        DiD    cluster 95% CI   p_holm   MAE ratio
-    D1_op2.25   -0.790   [-1.30, -0.28]   0.0022     1.24
-    D2_op4.00   -0.861   [-1.34, -0.38]   0.0007     1.58
-    D3_pct2.3   -1.119   [-1.62, -0.60]   0.0000     1.91
+    design        DiD    cluster 95% CI   cluster p   +Holm    MAE ratio
+    D1_op2.25   -0.790   [-1.29, -0.28]     0.0032    0.0032      1.24
+    D2_op4.00   -0.861   [-1.34, -0.38]     0.0006    0.0012      1.58
+    D3_pct2.3   -1.119   [-1.61, -0.61]     <5e-5     <1.5e-4     1.91
+
+Reproduce from the committed fixture (no API calls, no sadalsuud access):
+
+    PYTHONPATH=. python3 scripts/diagnostics/ld92_analyze_did.py \
+        --design tests/fixtures/ld92/design.json \
+        --scored tests/fixtures/ld92/deepseek_scored.jsonl
 
 The selection-artifact hypothesis predicted D2 markedly more negative than D1
 (arm depth ratio worsens 0.50 -> 0.19) and D3 collapsing toward zero (depth
@@ -83,10 +91,15 @@ def perm_test(short, lon, n=200000, seed=7):
     return obs, (hits + 1) / (n + 1)
 
 
-def cluster_boot(short_rows, long_rows, n=10000, seed=11):
+def cluster_boot(short_rows, long_rows, n=20000, seed=11):
     """Resample SOURCES with replacement, not articles — a single feed can
     supply a large share of one arm (nature_recovery's CI was understated ~2x
-    for exactly this reason)."""
+    for exactly this reason).
+
+    n and seed are pinned here and matched in ld92_crosscheck.py. They were
+    10000 vs 20000, which made the two scripts report D3 as [-1.62,-0.60] and
+    [-1.61,-0.61] for the same quantity — a discrepancy with no meaning.
+    """
     by_src = {}
     for r, arm in [(r, "s") for r in short_rows] + [(r, "l") for r in long_rows]:
         by_src.setdefault(r["source"], []).append((arm, r["delta"]))
@@ -101,7 +114,13 @@ def cluster_boot(short_rows, long_rows, n=10000, seed=11):
         if s and l:
             out.append(did(s, l))
     out.sort()
-    return out[int(0.025 * len(out))], out[int(0.975 * len(out))]
+    m = len(out)
+    # Cluster-aware two-sided bootstrap p, consistent with the CI beside it.
+    # The article-level permutation below ignores clustering and is therefore
+    # anticonservative; this is the number to quote.
+    p = min(1.0, 2 * min(sum(1 for v in out if v >= 0) / m,
+                         sum(1 for v in out if v <= 0) / m))
+    return out[int(0.025 * m)], out[int(0.975 * m)], p
 
 
 def holm(pvals):
@@ -121,6 +140,7 @@ def main():
     ap.add_argument("--design", required=True)
     ap.add_argument("--scored", required=True)
     ap.add_argument("--no-gate", action="store_true", help="omit the deployed gatekeeper")
+    ap.add_argument("--out", help="optional path to dump the per-design results as JSON")
     args = ap.parse_args()
 
     design = json.load(open(args.design))
@@ -140,7 +160,12 @@ def main():
             continue
         wa = oracle_weighted(a, apply_gate=not args.no_gate)
         if wa is not None:
-            oracle[r["id"]] = {"wa": wa, "words": len((r.get("content") or "").split())}
+            # Raw scorer output carries `content`; the committed fixture carries
+            # a precomputed `words` instead, so article bodies stay out of git.
+            words = r.get("words")
+            if words is None:
+                words = len((r.get("content") or "").split())
+            oracle[r["id"]] = {"wa": wa, "words": words}
 
     print(f"oracle scored={len(oracle)}  scrape-junk skipped={len(skipped)}  errors={len(errored)}")
     print(f"gatekeeper: {'OFF' if args.no_gate else 'ON'}\n")
@@ -174,11 +199,11 @@ def main():
         ds = [r["delta"] for r in s]
         dl = [r["delta"] for r in l]
         obs, p = perm_test(ds, dl)
-        lo, hi = cluster_boot(s, l)
+        lo, hi, p_clust = cluster_boot(s, l)
         mae_s = st.mean(abs(x) for x in ds)
         mae_l = st.mean(abs(x) for x in dl)
         results.append({
-            "design": dname, "did": obs, "p": p, "ci": (lo, hi),
+            "design": dname, "did": obs, "p": p, "p_clust": p_clust, "ci": (lo, hi),
             "n_s": len(s), "n_l": len(l),
             "mae_ratio": mae_s / mae_l if mae_l else float("nan"),
             "student_s": st.mean(r["student"] for r in s),
@@ -192,16 +217,19 @@ def main():
             "err_s": arms["short"]["n_err"], "err_l": arms["long"]["n_err"],
         })
 
-    adj = holm([r["p"] for r in results])
-    for r, pa in zip(results, adj):
+    for r, pa in zip(results, holm([r["p"] for r in results])):
         r["p_holm"] = pa
+    for r, pa in zip(results, holm([r["p_clust"] for r in results])):
+        r["p_clust_holm"] = pa
 
     print(f"{'design':11} {'n_s':>4} {'n_l':>4} {'DiD':>7} {'cluster 95% CI':>18} "
-          f"{'p_perm':>8} {'p_holm':>8} {'MAEratio':>9}")
+          f"{'p_clust':>8} {'+Holm':>8} {'MAEratio':>9} {'(p_perm)':>9}")
     for r in results:
         print(f"{r['design']:11} {r['n_s']:4} {r['n_l']:4} {r['did']:+7.3f} "
-              f"[{r['ci'][0]:+6.2f},{r['ci'][1]:+6.2f}] {r['p']:8.4f} {r['p_holm']:8.4f} "
-              f"{r['mae_ratio']:9.2f}")
+              f"[{r['ci'][0]:+6.2f},{r['ci'][1]:+6.2f}] {r['p_clust']:8.5f} "
+              f"{r['p_clust_holm']:8.5f} {r['mae_ratio']:9.2f} {r['p']:9.4f}")
+    print("  quote p_clust/+Holm. (p_perm) is article-level and ignores source "
+          "clustering, so it is anticonservative — shown only for continuity.")
 
     print(f"\n{'design':11} {'stu_s':>6} {'stu_l':>6} {'ora_s':>6} {'ora_l':>6} "
           f"{'junk s/l':>10} {'compr s/l':>10} {'err s/l':>8}")
@@ -219,7 +247,11 @@ def main():
     print(f"  observed: D1={d1:+.3f}  D2={d2:+.3f}  D3={d3:+.3f}")
     print(f"  D2-D1 = {d2-d1:+.3f}   D3 magnitude vs D1 = {abs(d3)/abs(d1) if d1 else float('nan'):.2f}x")
 
-    json.dump(results, open("ld92_results.json", "w"), indent=2)
+    # Opt-in: this used to write ld92_results.json into the CWD unconditionally,
+    # which drops an untracked file in the repo root every time it is run.
+    if args.out:
+        json.dump(results, open(args.out, "w"), indent=2)
+        print(f"\nwrote {args.out}")
 
 
 if __name__ == "__main__":

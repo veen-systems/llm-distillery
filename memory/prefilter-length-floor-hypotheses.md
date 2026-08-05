@@ -62,11 +62,18 @@ the length floor blocks*.
    0 junk skips). Predictions were pre-registered in the sampler before any
    oracle call.
 
-   | design | arm depth ratio | DiD | cluster 95% CI | p_holm |
-   |---|---|---|---|---|
-   | D1 both arms `raw >= 2.25` | 0.50 | −0.790 | [−1.30, −0.28] | 0.0022 |
-   | D2 both arms `raw >= 4.00` | 0.19 | −0.861 | [−1.34, −0.38] | 0.0007 |
-   | D3 top 2.3% **within** each arm | 1.00 | **−1.119** | [−1.62, −0.60] | <1e-5 |
+   | design | arm depth ratio | DiD | cluster 95% CI | cluster p | + Holm |
+   |---|---|---|---|---|---|
+   | D1 both arms `raw >= 2.25` | 0.50 | −0.790 | [−1.29, −0.28] | 0.0032 | 0.0032 |
+   | D2 both arms `raw >= 4.00` | 0.19 | −0.861 | [−1.34, −0.38] | 0.0006 | 0.0012 |
+   | D3 top 2.3% **within** each arm | 1.00 | **−1.119** | [−1.61, −0.61] | <5e-5 | <1.5e-4 |
+
+   ⚠️ The p-values are the **source-clustered bootstrap** p, Holm-corrected
+   across the three designs. An earlier version of this table carried
+   article-level *permutation* p (0.0022 / 0.0007 / <1e-5), which ignores
+   clustering and is anticonservative. Both sets support the same conclusion,
+   but quote the clustered ones. The scripts print the permutation p in a
+   parenthesised column for continuity only.
 
    The artifact predicted D2 markedly more negative and **D3 → 0**. Observed:
    D2 moved −0.071 and **D3 is the largest**. At matched depth the oracle puts
@@ -85,11 +92,18 @@ the length floor blocks*.
    ⚠️ **Still do not fit the cap VALUE**: that is a threshold fit and inherits
    #95's |Δ| ≤ 0.16 noise floor (Batch F.1 first). Identification is cleared;
    calibration is not.
-   <!-- verify: scripts/diagnostics/ld92_analyze_did.py reproduces D3 = -1.119 -->
+   <!-- verify: PYTHONPATH=. python3 scripts/diagnostics/ld92_analyze_did.py --design tests/fixtures/ld92/design.json --scored tests/fixtures/ld92/deepseek_scored.jsonl | grep D3_pct2.3 -->
 
-   **Harness now committed** (`scripts/diagnostics/ld92_*.py`, `a10e084`). The
-   n=15 and n=60 originals were not, which is why this had to be rebuilt from
-   the production pool up — the single most expensive part of the re-run.
+   **Harness AND data committed.** Scripts in `scripts/diagnostics/ld92_*.py`
+   (`a10e084`; `ld92_crosscheck.py` came later in `c587b78`), fixtures in
+   `tests/fixtures/ld92/` — the 456 deepseek rows, the 160 gemini rows and the
+   design file, with article bodies stripped (only the word count is used, for
+   the `smart_compress` flag) so no scraped text enters git. Every number in
+   this hypothesis reproduces from those three files.
+
+   The n=15 and n=60 originals committed **neither** script nor data, which is
+   why this had to be rebuilt from the production pool up — the single most
+   expensive part of the re-run, and the reason the fixture is here.
 
    What is *not* in doubt is the failure mode, which is exactly as LD#92
    described it — development/progress vocabulary in a headline with no subject:
