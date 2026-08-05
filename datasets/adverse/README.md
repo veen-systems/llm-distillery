@@ -8,6 +8,16 @@ kilobytes, hand-curated, and cannot be regenerated: each one records a specific
 failure someone noticed on a specific day. Losing them means losing the only
 evidence of the boundary they mark.
 
+## Adjudication notes
+
+Some cases are considered and **rejected** — the article looks adverse and is not. That
+reasoning is worth as much as an accepted row and has nowhere to live in the JSONL, so it
+goes in a dated note beside it:
+
+- [`2026-08-05-ovr-flag-adjudication.md`](2026-08-05-ovr-flag-adjudication.md) — five ovr.news
+  reader flags; four accepted, one rejected (forensic accountability work qualifies for
+  Discovery). Also records a scale caveat on the `nature_recovery` row.
+
 ## Why these are not sampled
 
 `scripts/experiments/sample_v7_negatives.py` draws random negatives. Those teach
