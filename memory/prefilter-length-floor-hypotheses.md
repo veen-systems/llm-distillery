@@ -138,11 +138,41 @@ the length floor blocks*.
 
 ## Open questions
 
-8. **Does a short-content cap actually help solutions?** ~49 FPs per 8 cycles is
-   modest, and the same populations appear in solutions' short-and-clearing list
-   (`gn_africa_gn_sudan`, `gn_asia_gn_afghanistan`, `gn_africa_gn_zimbabwe`) as in
-   NM#231's under-served set. The cap must be weighed against that recall cost,
-   not fitted to the FP count alone.
+8. **Does a short-content cap actually help solutions? Still open — but it is now
+   the only question left, and it is a *value* question, not an existence one.**
+   Identification is settled (hypothesis 5). What is not settled is the number,
+   and two things constrain it:
+   - **#95 first.** The cap is a threshold fit and inherits the measured
+     |Δ| ≤ 0.16 batch-composition noise floor. Batch F.1 (pin `batch_size`)
+     precedes any value.
+   - **Recall cost against NM#231/#292.** The same populations lead solutions'
+     short-and-clearing list (`gn_africa_gn_sudan`, `gn_asia_gn_afghanistan`,
+     `gn_africa_gn_zimbabwe`) as NM#231's under-served set, and two of the
+     worst-gap D3 examples are real interventions the lens arguably *should*
+     surface. Weigh against recall, never fit to the FP count alone.
+
+   **A cheaper alternative appeared 2026-08-05 and should be priced first.**
+   Google News is 14–17% of scored articles but **48–56% of all sub-300-char
+   stubs** (~3× over-represented; measured within-period). Pre-enrichment already
+   rescues ~62% of short content and fires below 500 chars, so the net is not too
+   small — GN survives because its `url` is a `news.google.com/rss/articles/…`
+   redirect, so the fetcher gets Google's redirect page, not the publisher's.
+   **Retiring the GN proxies (FS#120, decision due ~2026-08-14) removes roughly
+   half the population the cap exists to handle, at no recall cost to genuine
+   articles.** Fix upstream before trading precision for recall downstream.
+   <!-- verify: manual — FS#120 readout; check GN share of sub-300 rows after any retirement -->
+
+12. **Does the same defect exist in the summariser, and is it the same
+    mechanism?** Filed as ovr#299 on 2026-08-05. For English sources the share of
+    summary content words absent from the article *and* its title runs 31.6% at
+    1000+ chars → 73.9% at 120–299 → **83.4% under 120**, monotone. Mechanism is
+    *not* the same as the scorer's: median summary length is 1159/968/875/1065
+    against a 40× input range, i.e. a fixed output budget the model fills — with
+    a full article it compresses, with a headline it generates. Open question for
+    this file: **whether the scorer has an analogous fixed-budget behaviour**, or
+    whether its short-content error is purely a vocabulary-without-subject
+    effect. Worth testing because the fixes differ — one is a budget, the other a
+    cap.
 
 9. **Does extending `TOPIC_GATE_PATTERNS` close LD#86's per-language spread?**
    Now a sharp question rather than a demographic one: the gap is entirely
