@@ -50,8 +50,22 @@ history another session may hold.
 - [Uplifting v7 training](uplifting-v7-training.md) — training history; v7 deployed (hybrid inference)
 - [Thriving v1 scoring](thriving-v1-scoring.md) — PARKED indefinitely (ADR-015); scoring status, resume commands
 
+## Standing rule (promoted 2026-08-05 — 3rd occurrence, twice in one session)
+
+**`pgrep -f "<pattern>"` cannot answer "is it running?" — it matches the shell
+carrying the pattern, and over ssh the bracket trick does not survive quoting.**
+It has now produced a wrong answer three times: twice blocking a production
+deploy on 2026-08-03, twice more on 2026-08-05 (a false "still running" reported
+to the owner, and a restart that silently did not launch). The failure is
+convincing because the output *looks* like an answer. Use
+`ps -eo pid,etime,args | grep -v grep`, or ask the service manager
+(`systemctl is-active`), or read the log's last timestamp. **If a process check
+decides whether you act, print the matching line before believing it** — a
+self-match is obvious on sight and invisible in a count.
+
 ## Recent Sessions
 
+- [2026-08-05](project_session_2026_08_05.md) — **LD#92 IDENTIFIED**: D3 (matched percentile depth) −1.119 is the *largest* effect, not the collapse the selection artifact predicted; gemini cross-check −1.351 kills the "judge penalises short input" alternative. Cap value now blocked **only** on #95. **`review-changes` skill adopted (framework v1.10.6 → v1.14.0), re-mapped not copied — its first run caught four of my own same-day errors.** GN measured as the stub source (14–17% of articles, 48–56% of stubs) → evidence into FS#120; **ovr#299 filed** (headline-only summaries are 83.4% invented; the model has a fixed length target and fills it). Harness **and fixtures** committed at last. **NEXT: FS#120 (deadline ~08-14), then #95 batch pinning.**
 - [2026-08-03 evening](project_session_2026_08_03_evening.md) — **all three junk gates verified against the running box**: obituary enforcing (max surviving score 0.8488, zero ≥0.85), commerce enforcing (LD#80 `v1` pin holds), violence inert by design. **Commerce provenance fix** (86.4% of corpus had a verdict with no model version) and **seeded cycle replay for #95** both DEPLOYED. sustech v3 + foresight v1 REMOVED (#64 closed). Scorer call path settled — `/home/hcl/llm-distillery/` on gpu-server is a stale decoy. **#90 not ready: audit which template elements are load-bearing (#94, #92) before spreading.** **NEXT: verify next cycle (run-seed line + commerce `processed` ≈21,000 once)**
 - [2026-08-01 afternoon](project_session_2026_08_01_afternoon.md) — four-repo re-inventory (156 open, **12 chains**, new P0 set incl. LD#91/ovr#284/ovr#285); **persuasion-scorer split out** as a verified system under three agent-ready frameworks (LD#78/#79 externalized); post-deploy checks 1+3 PASS (`_commerce_model: v1`, `violence_blocked` gone from Loaded line), 2+4 pending mid-cycle. **NEXT: finish checks 2/4, then NM#285 measurement**
 - [2026-07-31](project_session_2026_07_31.md) — obit carryover diagnosed (47 shadow-era + 2 v5 FNs); LD#76 11-agent audit falsified shared-root-cause; EXECUTED: uplifting+belonging refits, cd topic gate (#86), NM#280 tier fix — all deployed; ADR-022 written; LD#90 harmonization program (renames: thriving/discovery/recovery). **NEXT: verify ~12:00 cycle (3 checks), then close NM#279/#280, LD#74/#76/#86**

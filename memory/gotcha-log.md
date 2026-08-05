@@ -1529,6 +1529,14 @@ heredoc (`python3 - <<'EOF'`) so quotes aren't doubly escaped, and single-quote 
 
 ### `pgrep -f "<pattern>"` run over ssh matches the ssh command carrying the pattern (2026-08-03)
 
+**RECURRED 2026-08-05 — twice in one session, both times believed.** Checking whether a
+sampler had finished on sadalsuud and whether a scorer was still running locally, `pgrep -f`
+reported "running" in both cases when nothing was. It cost a wasted restart cycle and a
+false "still running" report to the owner. The fix below was already written and was not
+reached for, because the output *looked* like an answer. **Third occurrence: treat
+`pgrep -f` over ssh as unusable and go straight to `ps -eo pid,etime,args | grep -v grep`,
+which is what finally gave the truth both times.**
+
 **Problem**: Twice concluded "CYCLE RUNNING — not pulling" and skipped a production deploy. No cycle was running. The bracket trick (`[m]ain\.py`) did not help either, because the shell stripped the backslash before `pgrep` saw it.
 
 **Root cause**: `ssh host 'pgrep -f "python.*main\.py"'` spawns a remote shell whose own `/proc/<pid>/cmdline` contains the pattern text. `pgrep -f` matches against full command lines, so it matches itself. The classic `[m]` workaround assumes the pattern survives quoting intact; through `ssh` + double quotes it does not.
@@ -1542,3 +1550,82 @@ heredoc (`python3 - <<'EOF'`) so quotes aren't doubly escaped, and single-quote 
 **Root cause**: Two independent traps in one line. `sorted()` orders by path, so a tail slice lands inside whichever lens sorts last, not across lenses. And a wildcard over a data directory picks up retired subdirectories that no longer receive writes but still hold files.
 
 **Fix**: When sampling per-entity data, iterate entities explicitly and take the newest file *per entity* — never a global sort-and-slice. State the denominator per entity in the output so a single-entity sample is visible. Delete retired output dirs promptly (done for these two the same day); until they are gone, exclude them by name rather than trusting a glob.
+
+### A NUL byte written into a .ts source made git call it binary — and hid a real bug (2026-08-05)
+
+**Problem**: A new `scripts/summary-invention-audit.ts` committed in ovr.news as
+`Bin 0 -> 8964 bytes`. Git treated a plain TypeScript file as binary, which would have
+made every future diff and review of it unreadable.
+
+**Root cause**: Three NUL bytes, written where a space was intended, as the separator in a
+composite map key (`` `${bucket}\0${label}` ``). `file` reported "data" rather than
+"JavaScript source"; `grep -c $'\0'` found nothing, because bash strips NUL from `$'\0'` —
+so the first check for the obvious cause came back clean and was believed. Only
+`python3 -c "d.count(b'\x00')"` found them.
+
+**The worse half**: the NUL was *masking a genuine defect*. The report derived its bucket
+list with `key.split(' ')[0]`, and the bucket labels themselves contain spaces
+(`'1. <120 (headline only)'`). With the intended space, that list would have been
+`['1.','2.','3.','4.']`, every `groups.get()` would have missed, and the tables would have
+printed **empty**. The invisible character was the only reason the script worked.
+
+**Fix**: Buckets became an explicit ordered `const`, and the composite key goes through a
+single `gkey()` helper, so nothing is re-parsed out of a key. Detection: if git reports a
+text file as `Bin`, count NUL bytes with Python, not grep — and treat a delimiter you
+cannot see as a bug even when the output looks right.
+
+### `git commit --amend` under husky/lint-staged did not amend, and swept an unrelated file (2026-08-05)
+
+**Problem**: `git commit --amend` on an ovr.news branch produced a *second* commit with the
+same subject rather than replacing the first, and pulled another session's in-progress
+`docs/BRAND.md` edit into it. The original commit — carrying the binary blob above —
+survived as an ancestor.
+
+**Root cause**: lint-staged stashes unstaged changes, runs prettier, then restores them
+(`Backing up original state... Applying modifications from tasks...`). Under `--amend` that
+stash/restore cycle re-staged the unrelated working-tree modification and the amend
+resolved into a child commit. Confirmed by `git log --format="%h %p"`: the "amended"
+commit's parent was the commit it was supposed to replace.
+
+**Fix**: `git reset --soft <base>`, `git restore --staged <not-mine>`, then
+`git commit --no-verify` (the file had already been prettier-formatted by the earlier hook
+runs). Verified the rescued file byte-for-byte against a `git diff` captured *before*
+touching anything. **Rule: in a repo with commit hooks, never `--amend` with unrelated
+unstaged changes present — and always `git show --name-only` after any amend, because the
+sweep is silent.** This is the same blast-radius family as the `git add -A` entry
+(2026-08-03); the standing rule about explicit paths does not protect against a hook that
+re-stages behind you.
+
+### The harness was committed; the data was not — so the claim could not be re-derived (2026-08-05)
+
+**Problem**: Re-running the LD#92 short-content test required rebuilding the entire sampling
+pipeline from the production corpus. Both prior attempts (n=15 and n=60) had been run,
+reported, and argued over — and neither committed its script *or* its scored output. The
+rebuild was the single most expensive part of the session.
+
+**Root cause**: The n=60 write-up explicitly offered the raw output "as a fixture if
+useful" and nobody took it. A `<!-- verify: -->` comment was then added pointing at a
+script whose input files existed only in a session scratchpad, so the verification command
+could never run — the exact failure `feedback-claim-requires-verify` exists to prevent, one
+level down.
+
+**Fix**: Committed `tests/fixtures/ld92/` — 456 deepseek rows, 160 gemini rows, the design
+file — with article bodies stripped (only the word count is used) so no scraped text enters
+git, consistent with `datasets/*` being gitignored. 1.0 MB. The verify line is now the exact
+invocation and was executed to confirm it prints `-1.119`. **Rule: a verify command whose
+inputs are not committed is not a verify command. Commit the fixture with the finding, and
+run the verify line as written before committing it.**
+
+### A function call inside a list-comprehension condition re-ran per element (2026-08-05)
+
+**Problem**: A sampler over 149k production rows hung at 100% CPU with no output for four
+minutes and had to be killed.
+
+**Root cause**: `[r for r in short_all if r["raw"] >= pctile_cut([x["raw"] for x in short_all], 0.023)]`
+— the `pctile_cut(...)` call is part of the *condition*, so it rebuilt and sorted a
+46,078-element list once per element. Reading `/proc/<pid>/io` showed `rchar` already equal
+to the full file size, which ruled out slow I/O and pointed straight at the comprehension.
+
+**Fix**: Hoist the threshold to a named constant before the comprehension. Detection: a
+process stuck in state `R` with RSS flat and `rchar` complete is compute-bound on something
+already loaded — look for work inside a loop condition.

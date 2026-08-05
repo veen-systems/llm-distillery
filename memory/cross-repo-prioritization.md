@@ -109,6 +109,23 @@ Chain 4's enforce flips and Chain 3's refits, which is why Batch F now precedes
 the remaining threshold work. Separately, Chain 14 records a four-repo
 non-English quality pattern that no single issue currently states.
 
+## Changes since the 2026-08-05 session
+
+| What | Now |
+|------|-----|
+| **LD#92** | **IDENTIFIED.** Both discriminating tests run with predictions pre-registered: D1 (≥2.25) −0.790, D2 (≥4.00) −0.861, **D3 (matched percentile depth) −1.119** [−1.61,−0.61], cluster p Holm-corrected 0.0032 / 0.0012 / <1.5e-4. The artifact predicted D2 markedly more negative and D3 → 0; D2 moved −0.071 and **D3 is the largest**. `gemini-2.5-flash` cross-check on the same sample: **−1.351** — two oracles, different absolute bias, same gap. Harness + fixtures committed (`tests/fixtures/ld92/`), so the claim is re-derivable for the first time in three attempts. **Chain 4's cap value is now blocked only on Batch F.1 (#95).** |
+| **Batch F.1 (#95)** | Unchanged and now the *sole* blocker on the solutions cap. Promoted in practice: every threshold decision on this board waits on it. |
+| **FS#120** | **Strengthened, and it is still the only calendar-bound item (~2026-08-14).** Measured: GN is 14–17% of articles but **48–56% of all sub-300-char stubs**. Retiring the proxies drains *three* separately-measured problems — LD#92's stub population, ovr#299's summary population, and part of Chain 14. Suggested a new readout column: **enrichable rate** per candidate per country. |
+| **ovr#299 (NEW)** | Summaries of headline-only articles are 83.4% material absent from the source (vs 31.6% for full articles), monotone across four buckets. Mechanism: the model has a fixed output length target (medians 1159/968/875/1065 against a 40× input range) and fills it. Fix is an input-scaled output budget, **not** skipping the summary — refusing would hit non-English readers hardest, i.e. Chain 14. Joins Chain 14 and sits downstream of FS#120. |
+| **Framework** | llm-distillery was pinned at agent-ready-projects **v1.10.6**, four releases behind; now **v1.14.0** with `review-changes` adopted and re-mapped to this repo's paths. Its first run found five defects, four of them same-day errors of mine. |
+
+**Method note.** Twice this session a conclusion of mine was overturned — once by
+the owner (skipping summaries for stubs would harm the population Chain 14
+protects), once by the newly-adopted review skill (p-values I had publicly
+corrected and then re-introduced into memory). Both were caught *before* anything
+depended on them. The pattern worth carrying: the errors were never in the
+measurements, always in how the evidence was stated.
+
 ## Changes since the 2026-08-04 evening session (NexusMind corroboration thread)
 
 | What | Now |
