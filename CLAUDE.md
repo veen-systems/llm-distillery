@@ -2,7 +2,7 @@
 stack: Python 3.12, PyTorch, Transformers, PEFT/LoRA
 status: Production
 repo: github.com/ducroq/llm-distillery
-framework: agent-ready-projects v1.10.6
+framework: agent-ready-projects v1.14.0
 ---
 
 # CLAUDE.md - LLM Distillery

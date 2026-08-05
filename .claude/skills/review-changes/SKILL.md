@@ -1,0 +1,219 @@
+---
+name: review-changes
+description: Diff-driven pre-commit review — picks review lenses based on what changed, from single-pass adversarial to full multi-model battery
+disable-model-invocation: false
+---
+
+Pre-commit review of pending changes. Scope and depth are driven by what changed,
+not a fixed checklist.
+
+Adapted from agent-ready-projects v1.12.0, **re-mapped rather than copied**. The
+framework template's tiers key on its own paths (`templates/*`, `docs/GUIDE.md`,
+`tests/lint/*`), none of which exist here; installed verbatim, every change in
+this repo would fall through to LOW and the skill would quietly do nothing —
+which is this repo's own signature defect (NM#284, LD#94, NM#281). Tiers below
+key on what llm-distillery actually ships.
+
+## Step 1 — Diff and classify
+
+Run `git diff --stat` and `git diff --cached --stat`. Classify each changed file:
+
+| Tier | File patterns | Depth |
+|------|-------------|-------|
+| **HIGH** | `filters/common/*.py` · `filters/*/v*/config.yaml` · `filters/*/v*/{calibration,normalization,ground_truth_gate}.json` · `filters/*/v*/prefilter.py` · `filters/*/v*/base_scorer.py` · `ground_truth/batch_scorer.py` · `scripts/{gate,normalization,calibration,deployment}/*` · `.githooks/*` | Full battery (4–5 lenses) |
+| **MEDIUM** | `CLAUDE.md` · `ground_truth/*` · `training/*` · `scripts/**` (other) · `tests/**` · `docs/adr/**` · `docs/FILTER_PLAYBOOK.md` · `docs/NORMALIZATION_METHOD.md` · `docs/RUNBOOK.md` · `docs/ARCHITECTURE.md` · **anything matching no tier** | Adversarial + doc-accuracy (+ claim-verification if numbers changed) |
+| **LOW** | `memory/*` · `docs/TODO.md` · `docs/ROADMAP.md` · session files | Adversarial (+ claim-verification if numbers changed) |
+
+Pick the **highest** tier that applies. **Unmatched files are MEDIUM, not LOW** —
+silence must never read as safe.
+
+`filters/common/*.py` is HIGH regardless of how small the diff looks: it is pure
+shared math synced verbatim into NexusMind, and `.nexusmind-owns` is empty, so a
+mistake here reaches production scoring on the next deploy.
+
+If no files changed, report "nothing to review" and stop.
+
+## Step 2 — Execute review lenses
+
+Spawn a subagent per lens, concurrently. (Running them inline is acceptable if
+subagents are unavailable; the lens prompts are unchanged either way.)
+
+### Lens: guarantee-preservation (HIGH only)
+
+```
+You are reviewing changes to surfaces that carry hard invariants in
+llm-distillery. For each changed file, check the guarantees it carries:
+
+- filters/common/model_loading.py: load_base_model_for_seq_cls() stays the only
+  entry point. AutoModelForSequenceClassification must NEVER be used directly —
+  Gemma-3-1B's gemma3_text config is not in the Auto mapping.
+- PEFT adapters: OLD key format only (.lora_A.weight / score.weight, NOT
+  .lora_A.default.weight). resave_adapter.py must never run before Hub upload —
+  it breaks PeftModel.from_pretrained().
+- filters/common/filter_base_scorer.py: _apply_short_content_cap is the ONE
+  place the #93 short-content rule is decided, reading the stamp on `result`,
+  not the article. A second inline copy is the ADR-022 second-drop-point defect.
+- No apply_filter() on a SCORING path may check content length (#93). The floor
+  is labelling-time only, in ground_truth.batch_scorer.make_oracle_prefilter.
+  Adding check_content_length to a prefilter re-creates what #93 removed.
+  (validate_article rejecting EMPTY content is separate and legitimate.)
+- ADR-022 "stamp always, decide once": gate modules stamp score+flag+model
+  version unconditionally; exactly ONE config-gated drop point per concern;
+  every enforcement decision is a config flip, never a code revert.
+- ADR-001/016: the oracle outputs dimensional scores (0-10) only, never tiers or
+  stages. Changing a threshold must never require re-labelling.
+- Normalization (ADR-014, docs/NORMALIZATION_METHOD.md): fit at
+  `raw >= the filter's tier threshold`. Pinned by
+  tests/unit/test_normalization_invariant.py. Both #161 and #205 were raw_min
+  drifting off that threshold.
+- calibration.json is refit after every training run and committed with the
+  filter package.
+- ADR-004: commerce is the only universal prefilter.
+
+For each guarantee touched: does the change preserve it? Flag any weakening.
+Then ask: is the change broader than its stated intent?
+
+Report: GUARANTEE OK or GUARANTEE WEAKENED per surface.
+```
+
+### Lens: reachability (HIGH and MEDIUM — this repo's signature defect)
+
+```
+This repo's recurring failure is a mechanism that is present, configured, and
+CANNOT FIRE. Four instances: per-filter prefilters never ran in production for
+six months (NM#284); solutions v6's concreteness_gatekeeper binds 0 times in
+191,616 articles (LD#94); a violence gate wired so it could never fire (NM#281);
+a shadow loader arming a dead branch.
+
+For every gate, cap, threshold, flag or config key touched:
+1. Trace the CALL PATH. Is it reached in the production scoring path, the
+   oracle/labelling path, both, or neither? Name the caller.
+2. Does its INPUT exist at that point in the flow? (The GPU scorer reconstructs
+   an Article of {title, content} only — rules reading url/source/source_type/
+   description are inert in-path.)
+3. Could the condition ever be true on real data? If it declares a rate or
+   threshold, what does production actually show?
+4. If it is a config key: does any runtime code read it, or does it only LOOK
+   like an enforcement point?
+
+Do NOT infer runtime behaviour from the presence of a config key. Do NOT check
+prefilter state from data/filtered/*/filtered_*.jsonl — that file is 100%
+passers by construction AND drops source-type-excluded rows.
+
+Report: REACHABLE (with the call path) or UNREACHABLE/INERT (with why).
+```
+
+### Lens: claim-verification (any tier, when the diff asserts measured numbers)
+
+```
+You are checking measured claims added or changed in this diff — in docs,
+memory files, ADRs, issue text or commit messages.
+
+For each numeric or empirical claim:
+1. Is it labelled MEASURED, or is it an inference presented as measurement?
+   This repo's stated failure mode is a confident claim nobody verified.
+2. Is the denominator stated, and is the source's EXCLUSIONS established?
+   (filtered_*.jsonl = passers only + source-type drops; data/raw/ is
+   pre-enrichment.)
+3. If it is a difference near an operating point: is it above the #95 noise
+   floor? A run-to-run delta below ~0.1 near an op-point is indistinguishable
+   from batch-composition noise (measured |delta| <= 0.16) and must NOT be
+   reported as an effect. Scores from different machines must never be compared
+   (cross-box skew |0.16|).
+4. If it is a difference-of-differences or similar comparison, does it carry:
+   a permutation (or cluster-aware) test, multiplicity correction, source
+   clustering, AND an explicit statement of whether selection into the sample
+   depends on the quantity being compared?
+5. Does the claim carry a verification command, so it can decay loudly?
+
+Report: CLAIM SUPPORTED or CLAIM UNSUPPORTED, naming the missing evidence.
+```
+
+### Lens: adversarial (all tiers)
+
+```
+You are an adversarial reviewer. Refute the changes — find what breaks, what
+edge cases fail, what assumptions do not hold.
+
+For each changed file:
+1. What is the change trying to accomplish?
+2. What could go wrong? Find at least one concrete failure scenario.
+3. Are there SILENT failure modes — things that pass but are wrong?
+4. If this is a test change: what real failure does the weaker test now pass?
+5. If this touches filters/common/: what breaks in NexusMind on the next sync?
+6. If this touches a threshold, weight or op-point: what is the recall cost, and
+   was it measured or assumed?
+
+Default stance: refuted=true. Mark NOT REFUTED only after a thorough attempt.
+
+Report: REFUTED (with failure scenario) or NOT REFUTED.
+```
+
+### Lens: doc-accuracy (MEDIUM and HIGH)
+
+```
+Review documentation changes for accuracy against disk state.
+
+1. Does every file path mentioned actually exist? (Filter versions are removed
+   over time — sustainability_technology v3 and foresight v1 are gone.)
+2. Does every command use correct flags and syntax? Do the PYTHONPATH= and
+   MSYS_NO_PATHCONV= prefixes match the documented ones?
+3. Do version numbers, MAE figures, dates and issue references match what is
+   actually shipped? Cross-check the CLAUDE.md filter table against
+   filters/*/v*/ on disk.
+4. Is an issue number expanded on first use, per CLAUDE.md "How To Write
+   Answers Here"?
+5. Internal inconsistencies between two places in the same doc set?
+
+Report: ACCURATE or INACCURATE, with the specific mismatch.
+```
+
+### Lens: sync-safety (HIGH only, when filters/common/ or a deployed filter changed)
+
+```
+This change may propagate to NexusMind via deploy_to_nexusmind.sh, which
+OVERWRITES and whose .nexusmind-owns manifest is EMPTY — so any drift on the
+NexusMind side is deleted silently. That has nearly cost three production source
+blocks, and investment_risk v6 carried arxiv/mastodon_/bluesky blocks in
+NexusMind that never existed upstream.
+
+1. Does the NexusMind copy of each changed file differ today? Diff before
+   concluding.
+2. Would a blind LD -> NM copy DELETE anything NexusMind added? If so, port it
+   back to llm-distillery first rather than overwriting.
+3. Is the change pure shared math (safe to sync) or does it encode a
+   production-runtime concern that belongs in NexusMind's production_scorer.py?
+
+Report: SYNC SAFE or SYNC WOULD DROP <files/blocks>.
+```
+
+## Step 3 — Synthesize
+
+Combine all lens reports. For each finding:
+- **Severity**: BLOCKER (fix before commit) / WARNING (should fix) / NOTE (consider)
+- **Lens**, **File**, **Finding**, **Fix**
+
+An UNREACHABLE verdict on a newly-added gate is a BLOCKER, not a NOTE — shipping
+an inert enforcement point is how NM#284 and LD#94 happened.
+
+## Step 4 — Report
+
+```
+## Review: [N] files changed, [tier] risk, [M] lenses
+
+### Findings
+
+| # | Severity | Lens | File | Finding |
+|---|----------|------|------|---------|
+| 1 | BLOCKER | reachability | ... | ... |
+
+### Summary
+
+- **Lenses run**: [list]
+- **Blockers**: [N] · **Warnings**: [N] · **Notes**: [N]
+- **Verdict**: [READY TO COMMIT | FIX BLOCKERS FIRST | REVIEW WARNINGS]
+```
+
+Report findings faithfully: if a lens found nothing, say so; do not pad. If a
+lens could not run (missing data, unreachable host), say that rather than
+letting its silence read as a pass.
