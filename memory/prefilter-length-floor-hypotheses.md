@@ -56,19 +56,34 @@ the length floor blocks*.
    because they are the same filter. Their declared `expected_pass_rate` (0.85 /
    0.20) described gates that do not exist; both deleted 2026-08-02.
 
-5. **`solutions v6` shows the short-content defect LD#92 attributed to
-   uplifting — but it is NOT IDENTIFIED.** DiD **−1.13** [−1.74, −0.52], MAE
-   ratio 1.51×, oracle clears 53% (short) vs 85% (long).
-   ⚠️ **Do not fit a cap on this.** The design selects on the student's own
-   score at each filter's op-point, and the two arms sit at very different
-   depths of their own distributions (solutions: 2.3% of short vs 4.6% of long
-   clear it). Simulation shows that artifact is negative in every filter, and
-   under *differential* noise — which the 1.51× MAE ratio itself suggests — it
-   reaches −0.82 to −1.61, i.e. it can fully reproduce this headline.
-   Controlling for `student_raw` within the sample does nothing (−1.13 →
-   −1.13): selection already flattened it inside the band. Discriminating test:
-   re-draw from matched *percentile* bands, or re-run at a second op-point — an
-   artifact moves with the threshold, a real effect does not.
+5. **`solutions v6` has a real short-content defect — IDENTIFIED 2026-08-05.**
+   The discriminating tests the 08-02 review asked for were run (both of them,
+   plus a replication in the same oracle run; n=80/arm, 456 articles, 0 errors,
+   0 junk skips). Predictions were pre-registered in the sampler before any
+   oracle call.
+
+   | design | arm depth ratio | DiD | cluster 95% CI | p_holm |
+   |---|---|---|---|---|
+   | D1 both arms `raw >= 2.25` | 0.50 | −0.790 | [−1.30, −0.28] | 0.0022 |
+   | D2 both arms `raw >= 4.00` | 0.19 | −0.861 | [−1.34, −0.38] | 0.0007 |
+   | D3 top 2.3% **within** each arm | 1.00 | **−1.119** | [−1.62, −0.60] | <1e-5 |
+
+   The artifact predicted D2 markedly more negative and **D3 → 0**. Observed:
+   D2 moved −0.071 and **D3 is the largest**. At matched depth the oracle puts
+   35.0% of the short arm below op-point vs 5.0% of the long arm, across 55
+   distinct sources in 80 rows. Unchanged with the gatekeeper off (corroborates
+   #94); survives dropping `smart_compress`-truncated long rows (D3 −1.024,
+   p=0.0002). Residual: matched percentiles equalise selection *severity* but
+   not *noise* (short-arm MAE ratio 1.91×), so some negative DiD is still
+   expected in D3 — D2 is the independent check and it barely moved.
+   ⚠️ **Still do not fit the cap VALUE**: that is a threshold fit and inherits
+   #95's |Δ| ≤ 0.16 noise floor (Batch F.1 first). Identification is cleared;
+   calibration is not.
+   <!-- verify: scripts/diagnostics/ld92_analyze_did.py reproduces D3 = -1.119 -->
+
+   **Harness now committed** (`scripts/diagnostics/ld92_*.py`, `a10e084`). The
+   n=15 and n=60 originals were not, which is why this had to be rebuilt from
+   the production pool up — the single most expensive part of the re-run.
 
    What is *not* in doubt is the failure mode, which is exactly as LD#92
    described it — development/progress vocabulary in a headline with no subject:
