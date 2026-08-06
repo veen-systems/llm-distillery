@@ -3,6 +3,17 @@
 **IN DEVELOPMENT. Not deployed. Not on the Hub.** (#98, opened on the owner's
 2026-08-06 directive; scope agreed the same day: *probe first, dimensions later*.)
 
+> **This package cannot score an article.** It contains `base_scorer.py`,
+> `prefilter.py`, `config.yaml` and `probe/` — and nothing else. There is no
+> `inference.py`, `inference_hybrid.py` or `inference_hub.py`, so nothing reads
+> the `hybrid_inference` block or the probe pickle. There is also no
+> `calibration.json` and no `normalization.json`, and **nothing inherits them
+> from v5** — `_load_calibration` sets `self.calibration = None` *silently* when
+> the file is absent, so adding an inference module and deploying would yield an
+> uncalibrated scorer with no warning. Both gaps are in "Still to do" below.
+> Recorded this loudly because a config block wired to nothing is this repo's
+> signature defect (NexusMind#284, #94, NexusMind#281).
+
 ## What v6 is
 
 One change: topic screening moves from keyword rules to a
@@ -67,9 +78,16 @@ every other language sits at 0.0%.
 
 Criterion 2 is the one place the probe is **worse** than the gate: at 2.50 it
 screens 63.7% of the firehose against the gate's 70.2%, i.e. ~6.5 points less.
-Accepted, because 63.7% lands on `nature_recovery v4`'s ~64% — the reference
-point criterion 2 itself cites — and because the surfacing cost falls from 337
-articles to 1.
+Accepted because the surfacing cost falls from 337 articles to 1 — the screening
+given up is screening of material that was never going to surface.
+
+**Not a valid justification, though it reads like one:** "63.7% matches
+`nature_recovery v4`'s ~64%". nr v4's figure is a **val** screening rate on its
+own label set; 63.7% is a **production firehose** rate. Different populations,
+different denominators. cd v6's own val-set equivalent is 51.2%, which is not
+~64%. An earlier version of this file made that comparison; it was a review
+finding on 2026-08-06 and is the same category error as the screening-parity
+claim corrected below.
 
 Do not carry the test-split screening figures over to production: the label set
 is positive-enriched (9% MEDIUM+) against a 1.7% surfacing rate in the firehose,
@@ -83,8 +101,15 @@ the test split and is wrong for production.
 # on sadalsuud, from the NexusMind repo root (the post-#86 gate must be staged —
 # sadalsuud's own checkout still carries the 235-stem pre-fix version)
 scp <llm-distillery>/filters/cultural_discovery/v5/prefilter.py sadalsuud:/tmp/cd_v5_gate_postfix.py
+# --offset counts back from a GROWING file list, so 15 selects a different
+# window every day. The window measured here is the 64 cycles ending
+# filtered_20260803_210045 (first: filtered_20260724_085740). To reproduce it,
+# recompute the offset against today's listing:
+#   ls data/filtered/cultural_discovery/filtered_2026*.jsonl | \
+#     grep -n filtered_20260803_210045   # -> N
+#   offset = (total files) - N
 python3 scripts/gate/extract_probe_ab_rows.py --gate /tmp/cd_v5_gate_postfix.py \
-    --cycles 64 --offset 15 --sample 30000 --seed 42
+    --cycles 64 --offset "$OFFSET" --sample 30000 --seed 42
 
 # on gpu-server
 HF_HUB_OFFLINE=1 PYTHONPATH=. python scripts/gate/score_probe_ab.py \
@@ -145,6 +170,14 @@ surfacing rows (13.1%) sit within |0.16| of the 4.0 op-point, which is the
 batch-composition noise floor #95 measured. Claims of the form "the probe agreed
 with the gate on this article" are not evidence for those rows.
 
+That caveat applies to the **raw student score** side of the comparison only.
+**The probe itself is batch-invariant** — measured 2026-08-06 across shuffled
+order, chunk size 256 → 97 and encode batch 64 → 13 → 1: max |Δ| **3×10⁻⁶**,
+mean 5×10⁻⁷, **zero threshold flips at 2.50**, and zero articles sitting within
+max|Δ| of the threshold. So unlike student scores (#95, |Δ| ≤ 0.162), a probe
+decision on a given article is reproducible. Reproduce with
+`scripts/gate/probe_batch_invariance.py`.
+
 **The window is not byte-identical to #86's.** #86's held-out run was 64 cycles
 07-23..08-03 with 2,768 surfacing rows; this is 64 cycles 07-24..08-03 with
 2,653, because another production cycle has landed since. The baseline
@@ -160,8 +193,18 @@ reproduces closely (12.70% vs 12.6% surfacing blocked; pass rate 0.2983 vs
 3. #99 — `DISCOVERY_PATTERNS` also feeds `classify_content_type`, which the probe
    does *not* replace. Decide in scope, not by omission.
 4. ADR-012 rename to the exact lens name (Discovery) belongs with this bump.
-5. Calibration and normalization are inherited from v5 and have **not** been
-   refitted; there is no new student model in v6, so this is consistent, but it
-   must be revisited if #87 changes the scorer.
-6. Ships stamping-only per ADR-022 — a probe actually runs, unlike the rule
+5. **Make the package loadable.** It has no `inference.py`,
+   `inference_hybrid.py` or `inference_hub.py`, so nothing reads
+   `hybrid_inference` or the probe. Port them from v5 when v6 gets a model.
+6. **Add `calibration.json` and `normalization.json`.** They are *not* inherited
+   from v5 — there is no such mechanism, and `_load_calibration` fails silent
+   (`self.calibration = None`, no warning) when the file is missing. An earlier
+   version of this file claimed inheritance made it "consistent"; that was
+   wrong, and it is the failure mode where a deploy scores uncalibrated and
+   nothing says so. Either copy v5's (valid only while v6 reuses v5's student)
+   or refit — but the file must exist.
+7. Ships stamping-only per ADR-022 — a probe actually runs, unlike the rule
    prefilter (ducroq/NexusMind#284), so enforcement is a separate config flip.
+
+Items 5 and 6 were both review findings on 2026-08-06, not known gaps — the
+package read as complete until the lenses were run against it.

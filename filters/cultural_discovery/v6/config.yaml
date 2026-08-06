@@ -70,8 +70,20 @@ prefilter:
   # observed has drifted up with the corpus, not with the gate. Enforcement
   # is still DO-NOT-FLIP on recall cost (12.6% of surfacing articles) and the
   # rule prefilter does not run in production at all (ducroq/NexusMind#284).
-  expected_pass_rate: ~0.25
-  description: "Topic gate (cultural signal required, multilingual) + blocks political conflict framing, tourism fluff, celebrity news, cultural war content"
+  # NO expected_pass_rate in v6 — deliberately, not by omission.
+  #
+  # v5 declared ~0.25 as a design target. It is dropped here for the same reason
+  # it was DELETED from nature_recovery v4 and solutions v6 rather than corrected
+  # (ducroq/NexusMind#285): a declared rate is not a safety property, and a rate
+  # that merely agrees with observation reads as if enforcement had been
+  # validated when it has not. cd is the one filter whose observed rate did
+  # match its declared one, and enforcing it still cost 15.5% of surfacing
+  # articles — rate agreement and safety-to-enforce are independent (ADR-021).
+  #
+  # v6 additionally intends to DELETE this prefilter's topic gate outright once
+  # #98 criterion 4 is executed, so re-declaring a target for it would be
+  # encoding a number for a mechanism scheduled for removal.
+  description: "Topic gate (cultural signal required, multilingual) + blocks political conflict framing, tourism fluff, celebrity news, cultural war content. CARRIED OVER FROM v5 UNCHANGED so #98's probe can be A/B'd against it on identical rows; removal is #98 criterion 4."
 
 oracle:
   # cd v5 was trained on DeepSeek V4 Flash (first non-Gemini lineage in production,
@@ -87,7 +99,13 @@ preprocessing:
     separator: " [...] "
 
 scoring:
-  score_scale_factor: 1.2829  # 10.0 / 7.79 (calibrated max)
+  # STALE, and knowingly carried over. 1.2829 = 10.0 / 7.79 where 7.79 was v5's
+  # calibrated max — but v6 ships NO calibration.json (see the hybrid_inference
+  # header above), so this refers to a calibration that is not in this package.
+  # Retained only because the config-schema gate requires the key; ADR-014
+  # percentile normalization is the primary scaling path regardless. Refit or
+  # delete when v6 gains a student model and a calibration of its own.
+  score_scale_factor: 1.2829
 
   # score_scale_factor TBD post-retrain. v4 used 1.1364.
   dimensions:
@@ -115,6 +133,26 @@ scoring:
       gatekeeper_max_score: 4.0
       description: "Quality of sources, research depth, and documentation — from clickbait/speculation to peer-reviewed primary sources"
 
+# ---------------------------------------------------------------------------
+# READ FIRST — NOTHING IN THIS PACKAGE READS THE BLOCK BELOW.
+#
+# v6 ships base_scorer.py, prefilter.py, config.yaml and probe/, and NOTHING
+# ELSE. There is no inference.py, inference_hybrid.py or inference_hub.py here,
+# so no code path loads `hybrid_inference`, the probe pickle, or a model. The
+# package cannot score an article today.
+#
+# This is declared ahead of its consumer deliberately — the threshold is the
+# measured output of #98's acceptance run and belongs with the probe that
+# produced it — but a config key wired to nothing is this repo's signature
+# defect (ducroq/NexusMind#284, LD#94, ducroq/NexusMind#281). Flagged loudly
+# rather than left to be discovered.
+#
+# Also absent: calibration.json and normalization.json. `_load_calibration`
+# sets `self.calibration = None` SILENTLY when the file is missing — no warning,
+# no error — so a future session that adds an inference module and deploys would
+# get an UNCALIBRATED scorer with no signal that anything is wrong. There is no
+# mechanism that inherits either file from v5. See STATUS.md "Still to do".
+# ---------------------------------------------------------------------------
 hybrid_inference:
   stage1:
     embedding_model: "intfloat/multilingual-e5-small"
@@ -153,10 +191,18 @@ hybrid_inference:
     #     probe @ 2.50    passes 0.3629  -> screens 63.7%
     #     probe @ 3.025   passes 0.2204  -> screens 78.0%
     # So 2.50 screens ~6.5 points LESS than the gate it replaces. That is a real
-    # cost and #98 criterion 2 asks about it. It is accepted because 63.7% lands
-    # on nature_recovery v4's ~64%, the reference point the criterion itself
-    # cites, and because the surfacing cost falls to 1 article in 2,653 (0.04%)
-    # against the gate's 337 (12.7%).
+    # cost and #98 criterion 2 asks about it. It is accepted because the
+    # surfacing cost falls to 1 article in 2,653 (0.04%) against the gate's 337
+    # (12.7%) — i.e. the screening we give up is screening of material that was
+    # never going to surface.
+    #
+    # NOT a valid justification, though it is tempting: "63.7% matches
+    # nature_recovery v4's ~64%". nr v4's figure is a VAL screening rate on its
+    # own label set; 63.7% here is a PRODUCTION firehose rate. Different
+    # populations, different denominators, not comparable. cd v6's own val-set
+    # equivalent is 51.2%, which is NOT ~64%. Comparing those two numbers was a
+    # review finding on 2026-08-06, and it is the same category error that put a
+    # wrong screening-parity claim in this file earlier the same day.
     #
     # HONEST LIMIT of the recall argument: of the 5 held-out positives the probe
     # misses at 3.025 and keeps at 2.50, FOUR read as off-lens on inspection —

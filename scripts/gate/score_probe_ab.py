@@ -121,7 +121,14 @@ def run_labelled(stage, path, dim_names, dim_weights, threshold, gate_path=None)
 
     if gate_path:
         gate = load_prefilter_local(gate_path)
-        gp = [gate.apply_filter({"title": r["title"], "content": r["content"]})[0] for r in rows]
+        # Pass `url` through: the gate's three domain blocklists
+        # (VC_STARTUP_DOMAINS / DEFENSE_DOMAINS / CODE_HOSTING_DOMAINS) are
+        # checked before any pattern, and silently never fire without it. Every
+        # row in the label set carries a url, so omitting it would have measured
+        # a weaker gate than the one that actually runs. The probe arm needs no
+        # url — EmbeddingStage embeds title+content only.
+        gp = [gate.apply_filter({"title": r["title"], "content": r["content"],
+                                 "url": r.get("url", "")})[0] for r in rows]
         gfn = sum(1 for t, p in zip(truths, gp) if t and not p)
         gpass = sum(gp)
         glo, ghi = wilson(gfn, pos)
@@ -182,7 +189,14 @@ def run_ab(stage, rows_path, summary_path, threshold):
     n_samp = len(samp)
     surf_frac = summary["n_surfacing"] / n
     cand_rate = (1 - surf_frac) * (s_pass / n_samp) + surf_frac * (sum(r["cand_pass"] for r in surf) / n_surf)
-    lo, hi = wilson(s_pass, n_samp)
+    # All the uncertainty lives in the non-surfacing stratum — the surfacing
+    # stratum is measured exhaustively, not sampled — so the interval on the
+    # combined estimate is the stratum's interval scaled by that stratum's
+    # weight. Reporting the unscaled stratum CI here would overstate the
+    # combined uncertainty by a factor of 1/(1-surf_frac).
+    slo, shi = wilson(s_pass, n_samp)
+    lo = cand_rate - (1 - surf_frac) * (s_pass / n_samp - slo)
+    hi = cand_rate + (1 - surf_frac) * (shi - s_pass / n_samp)
 
     print(f"{'':<28}{'BASELINE':>12}{'CANDIDATE':>12}")
     print(f"{'gate pass rate (all rows)':<28}{summary['base_pass_rate']:>12.4f}{cand_rate:>12.4f}")
