@@ -34,7 +34,10 @@ precisely because the current models rank them highest.
 
 ```json
 {
-  "id": "...", "title": "...", "url": "...", "content": "...",
+  "id": "...", "title": "...", "url": "...",
+  "content": "...",                          // 300-char excerpt, see below
+  "content_excerpt": true,                   // present only when truncated
+  "content_original_length": 3975,
   "filter": "uplifting",
   "label": "adverse",
   "max_acceptable_wa": 3.85,
@@ -65,6 +68,23 @@ for them. The block above is the uplifting row with `scorer_version` spliced in,
 so it matches no single row on disk; treat it as the target shape, not a sample.
 `scripts/flag-evidence.ts` in the ovr.news repo emits this shape directly from a
 reader flag, leaving `why_adverse` and `misleading_features` as TODOs.
+
+### `content` is a 300-char excerpt, not the article
+
+Truncated repo-wide on 2026-08-06 (#97). These rows previously carried complete
+article bodies — median 3,975 characters here, several ending on a full sentence
+— and this repository is public, so they were republication rather than evidence.
+The excerpt keeps enough to recognise the article; `url` is the route to the rest.
+
+`content_excerpt: true` and `content_original_length` appear only on rows that
+were actually cut, so a short row is distinguishable from a truncated one. Nothing
+else changed: `id`, `url`, `title`, every score, label and note is byte-identical.
+
+**What this costs.** A row's `why_adverse` reasoning sometimes cites material past
+character 300 — the reasoning still stands, but you can no longer check it against
+the text without fetching the URL. That was the trade accepted when the excerpt
+length was chosen; 300 matches the labelling-time floor used elsewhere in this
+repo (#93) rather than being picked arbitrarily.
 
 ### `max_acceptable_wa` is an assertion, not a label
 

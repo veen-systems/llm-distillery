@@ -253,8 +253,37 @@ owner decision, but the shape of the options is:
    `ovr.news/docs/compliance-register.md`. A defensible option; it just has to be a
    decision rather than an oversight, which until today it was.
 
-**Not chosen here.** #97 asked for an assessment, and an assessment that quietly
-performed a 60-file redaction would be doing something else. Filed for the owner.
+**Chosen the same day: option 1, truncate in place.** Owner: *"812 committed
+article rows in a public repo is probably not a big deal. we can remove it now."*
+
+Executed 2026-08-06. `content` / `text` capped at **300 characters** across every
+tracked `*.jsonl` — 45 files, 834 rows, **1,889,627 characters removed**. 300 is
+the labelling-time floor this repo already uses (#93), not an arbitrary pick.
+Truncated rows gain `content_excerpt: true` and `content_original_length`, so a
+genuinely short row stays distinguishable from a cut one; `id`, `url`, `title`
+and every score, label and note are byte-identical. 269 unit tests still pass.
+
+**One file was deliberately left alone:
+`filters/common/commerce_prefilter/training/splits/test.jsonl` — 115 rows,
+276,981 characters, 8 rows from opted-out domains.** It is the live evaluation
+input for a *deployed* gate: `evaluate_models.py`, `benchmark_inference.py` and
+`benchmark_models.py` all read it, at `max_length=512` **tokens** (~2,000+
+characters), so a 300-character cap changes what the model sees on most rows and
+silently invalidates the metrics published in the commerce prefilter's
+`docs/TRAINING_REPORT.md`. The delta could not be measured from this box —
+`transformers` is not installed here — and shipping an unverified change to a
+deployed gate's benchmark is the failure this repo keeps re-learning. Two ways to
+close it, both needing gpu-server or b650:
+
+- truncate, re-run `evaluate_models.py`, and record the new baseline in
+  `TRAINING_REPORT.md` as the reproducible one; or
+- untrack the file (it is a train/test split, the exact category `.gitignore`
+  already excludes at `datasets/*`) and note where the copy lives.
+
+**What truncation does not do:** the removed text remains in this repository's
+public git history. This reduces the surface going forward; it does not unpublish
+what was already published. Rewriting history was considered and not done — the
+working rule here is that history another session may hold does not get rebased.
 
 ### Reproduce
 
