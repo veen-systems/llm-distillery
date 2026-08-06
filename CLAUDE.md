@@ -67,7 +67,8 @@ Full details in `memory/filter-status.md`. Summary:
 | **uplifting** | v7 | — | Deployed (NO_HUB, hybrid inference) |
 | **sustainability_technology** | v3 | 0.72 | **REMOVED 2026-08-03** — replaced by solutions; package deleted, recover from git history |
 | **investment-risk** | v6 | 0.47 | Deployed (HF Hub) |
-| **cultural-discovery** | v5 | 0.70 | Deployed (HF Hub, DeepSeek oracle) |
+| **cultural-discovery** | v5 | 0.70 | Deployed (HF Hub, DeepSeek oracle) — **still the live version** |
+| **cultural-discovery** | v6 | (v5's) | **NOT LIVE.** Package parity 2026-08-06 (#98): v5's student + e5 probe + commerce-only prefilter, no retrain. Cutover blocked on two things — the Hub repo `cultural-discovery-filter-v6` does not exist, and `normalization.json` must be fitted from a historical rescore (v5's is invalid: the probe changes which articles survive to the student) |
 | **belonging** | v1 | 0.49 | Deployed (HF Hub) |
 | **nature_recovery** | v4 | recall 0.65 / prec 0.85 | Deployed (recall-first probe, v5 planned #71) |
 | **solutions** | v6 | 0.48 | **LIVE** — gate passed 2026-07-27, normalization fitted 2026-07-28 |
@@ -201,4 +202,4 @@ This project is a source project for [augmented-engineering](https://github.com/
 
 ---
 
-*Last updated: 2026-08-06 afternoon (cd v6 e5 probe measured and committed — #98, held-out oracle FN 0/75 vs the keyword gate's 10/75; #99 English-only escape hatch filed; FS#120 answered — `pre_enrich` fires at 500; ducroq/NexusMind#300 — the `content_length` stamp does not reach disk)*
+*Last updated: 2026-08-06 evening (four owner decisions: #95 step 2 — the 0.16 batch-noise floor became a **band the deploy gate prints**, unblocking #87 and #93 step 4; #98 criterion 4 + cd v6 **package parity**, blocked only on a non-existent Hub repo and an unfitted normalization; #94 static gatekeeper invariant; ADR-012 **rename backlog closed** — cd + nature_recovery keep their names, uplifting → `human_thriving` at v8. Also #97: 812 committed rows of article text in this public repo, truncated to 300-char excerpts — git history still carries them)*

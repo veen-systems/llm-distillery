@@ -82,11 +82,37 @@ policy), not on the FN count.
   production; unlike the rule prefilter (NexusMind#284) a probe actually
   executes, so this turns cd screening reader-visible for the first time.
 
+## RESOLVED 2026-08-06 evening (owner decisions)
+
+- **Criterion 4 executed.** Keyword gate, four exclusion categories, three domain
+  blocklists and the custom `apply_filter` deleted; `prefilter.py` 800 → ~90
+  lines. `classify_content_type` went with them — **the open question above
+  ("what replaces it") resolved to "nothing, because nothing consumed it"**:
+  grepped before deleting, its only callers repo-wide were the self-tests inside
+  each cd version's own `prefilter.py`. #99 closes by removal.
+- **Package parity reached.** Three inference modules, `calibration.json` copied
+  from v5, `score_scale_factor` corrected 1.2829 → 1.0. Stage 2 loads from the
+  **Hub by default**, unlike nature_recovery v4 — cd ships no local `model/`.
+- **The gatekeeper is gone** (#94). Never bound on 8,551 labelled articles, and
+  its cap equalled the op-point, so it could not change visibility.
+- **The student is UNCHANGED.** v6 = v5's weights + new screening. This is why
+  copying v5's calibration is correct and copying its normalization would not be.
+
 ## Traps
 
-- **v6 cannot score anything.** No inference module, no `calibration.json`, no
-  `normalization.json`, and `_load_calibration` fails **silently** when the file
-  is missing. Do not read "acceptance passed" as "ready to deploy".
+- **v6 still cannot score in production, for two remaining reasons** (it *can*
+  now be constructed and run locally). `jeergrvgreg/cultural-discovery-filter-v6`
+  **does not exist** — verified with `--check-hub`, the one failing check — and
+  `normalization.json` has not been fitted. Do not read "acceptance passed" or
+  "parity reached" as "ready to cut over".
+- **`normalization.json` must NOT be copied from v5**, even though the student is
+  identical. The probe screens ~50-65% of the firehose *before* the student, so
+  the surviving population and its CDF are not v5's. Fit it from a
+  production-representative historical rescore at cutover; waiting for live
+  accumulation costs weeks of cd being under-ranked against every other lens.
+- **`_load_calibration` fails silently** when the file is missing (`self.calibration
+  = None`, no warning). It is present now — but that is why its absence was
+  invisible for as long as it was.
 - **`--offset` in the reproduce commands counts back from a growing file list**,
   so the same offset selects a different window every day. Pin by filename.
 - **sadalsuud's NexusMind still carries the 235-stem pre-`80dd399` gate.** Do not

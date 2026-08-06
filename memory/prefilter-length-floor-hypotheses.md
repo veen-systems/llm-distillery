@@ -215,6 +215,19 @@ composition is order-preserving because every rule ANDs into the verdict, so
 only the *reason* string can move, not the boolean.
 <!-- verify: test -f scripts/diagnostics/prefilter_gate_ab.py && echo PASS || echo FAIL -->
 
+> **SUPERSEDED FOR cd AT v6 (2026-08-06).** Everything below about
+> cultural_discovery's prefilter describes **v5**, which is still the version
+> NexusMind runs — so it stays accurate for production today. But **cd v6's
+> prefilter has no lens rules at all**: the topic gate (453 stems), the four
+> exclusion categories and the three domain blocklists were deleted after the e5
+> probe beat the gate on held-out oracle labels (FN 0/75 vs 10/75, ADR-021).
+> Screening moved to the probe. So the enforcement question this file exists to
+> answer — *is it safe to enforce cd's declared 0.25 pass rate?* — **does not
+> carry forward to v6**: there is nothing left to enforce but `validate_article`.
+> The recall measurement that mattered (15.5% of surfacing articles, below) is
+> what justified deleting the gate rather than turning it on. See
+> [[cd-v6-probe-hypotheses]].
+
 **The one intended exception: cultural_discovery v5.** Its custom `apply_filter`
 never called `check_content_length` — a v3→v4 regression recorded in its own
 module docstring and in TODO "Prefilter Quality". So cd was the only filter

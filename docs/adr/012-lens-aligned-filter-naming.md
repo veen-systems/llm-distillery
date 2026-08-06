@@ -131,9 +131,16 @@ directory, no field name, no Hub repo, no NexusMind attribute. The one rename
 that survives — `uplifting` → `human_thriving` — is scheduled for v8 and changes
 nothing until then.
 
-Worth recording plainly: **of the five scheduled renames, one was carried out**
-(sustainability_technology → solutions), and that filter has since been deleted.
-An ADR that has been followed once in five opportunities across five months is
+Worth recording plainly: **of the four renames this ADR scheduled for filters
+that actually shipped, one was carried out** (sustainability_technology →
+solutions), and that filter has since been deleted. The other three — uplifting,
+nature_recovery, cultural-discovery — were still pending on 2026-08-06. (The
+seven-row table above overstates it: `belonging` "already matches" is not a
+rename, and `wisdom` / `education` were never built, so they were never
+opportunities to miss. An earlier draft of this amendment said "five", which was
+wrong — corrected during the session-close review the same day.)
+
+An ADR followed once in four opportunities across five months is
 not a policy being applied; it is an aspiration generating recurring cleanup
 tickets. This amendment closes the backlog rather than re-scheduling it a fourth
 time: two cancelled, one confirmed as already correct, one given a concrete name
