@@ -257,9 +257,14 @@ below cannot be done from a laptop.
    production (ducroq/NexusMind#284) but this probe *does*, so v6 turns cd's
    screening on for readers for the first time. Enforcement is a separate config
    flip after production numbers exist.
-5. **ADR-012 rename to the exact lens name (Discovery)** is still open and is now
-   the second bump in a row to skip it. Parked with #90 by owner decision, not
-   forgotten.
+5. ~~ADR-012 rename to the exact lens name (Discovery).~~ **CANCELLED
+   2026-08-06, not deferred.** Owner decision: the Hub is a public standalone
+   surface, and `discovery-filter-v6` says less about the model than
+   `cultural-discovery-filter-v6` does. ADR-012's three stated audiences were all
+   internal, so the Hub was never weighed. `nature_recovery` keeps its name on the
+   same grounds. Recorded as an amendment in
+   `docs/adr/012-lens-aligned-filter-naming.md` — **do not re-open this at the
+   next bump.**
 6. **#87** — dimension weights, the `heritage_significance` near-constant, and
    the 4.5-vs-4.0 op-point provenance gap. Deliberately *not* folded in here:
    #98 was scoped "probe first, dimensions later", and merging them would make it

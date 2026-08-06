@@ -84,7 +84,7 @@ Full details in `memory/filter-status.md`. Summary:
 - **Fine-tuning beats embedding probes** — research confirmed
 - **Gemma-3-1B** — replaced Qwen2.5; better MAE, faster inference
 - **Add filters first, reduce later** — deploy as separate tabs, dedup later (ADR-009)
-- **Lens-aligned filter naming** — rename filters to match ovr.news lens names at version bumps (ADR-012)
+- **Lens-aligned filter naming** — rename filters to match ovr.news lens names at version bumps, **but only where the lens name is at least as descriptive out of context**. `cultural_discovery` and `nature_recovery` keep their names (ADR-012, amended 2026-08-06): their Hub repos are public standalone artefacts, and `discovery-filter-vN` / `recovery-filter-vN` drop the qualifier that says what the model is about. Neither rename had happened, so nothing was undone (ADR-012)
 - **Oracle consistency over data volume** — prompt precision predicts MAE better than dataset size; use belonging v1 as template (ADR-010)
 - **Embedding screening for needle filters** — use Phase 3 positives as e5-small seeds to screen corpora; replaces keyword screening (ADR-011)
 - **English lens names** — all lens/tab names in English, no Dutch (ADR-013)

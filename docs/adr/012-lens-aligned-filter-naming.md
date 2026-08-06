@@ -1,7 +1,7 @@
 # ADR-012: Lens-Aligned Filter Naming
 
 **Date:** 2026-03-18
-**Status:** Accepted (amended by ADR-013: English Lens Names)
+**Status:** Accepted (amended by ADR-013: English Lens Names; **amended 2026-08-06 — see "Amendment: the Hub is a public surface" below, which cancels two of the five scheduled renames**)
 **Decision:** Rename filters to match ovr.news editorial lens names at each filter's next version bump. Use underscores only in filter names.
 
 ## Context
@@ -64,6 +64,79 @@ Rename each filter to its lens name at the next version bump. This is a natural 
 - Transition period: two field names coexist in NexusMind during parallel running
 - Historical oracle data uses old field names (e.g., `uplifting_analysis`)
 - grep/search across the codebase must check both old and new names during transition
+
+## Amendment: the Hub is a public surface (2026-08-06)
+
+**Owner decision. `cultural_discovery` and `nature_recovery` keep their names.
+The renames to `discovery` and `recovery` are cancelled, not deferred.**
+
+### The audience this ADR did not account for
+
+Every rationale above is about an **internal** reader: NexusMind attribute field
+names, our documentation, our contributor onboarding. All three see the filter
+name *in context* — beside a lens, in a table, in a repo that explains itself.
+
+Model repositories on HuggingFace have none of that context. A repo page is a
+standalone artefact with a global namespace, read by people who have never heard
+of ovr.news and have no lens list to map it against. There,
+`cultural-discovery-filter-v6` says what the model does and `discovery-filter-v6`
+does not. Same for `nature-recovery-filter-v4` versus `recovery-filter-v4` —
+recovery of *what*?
+
+This ADR was written on 2026-03-18, before the Hub was a routine part of the
+pipeline. The omission is not that the trade-off was judged wrongly; it is that
+this surface was never one of the three.
+
+### The rule, stated so it can be applied to the next filter
+
+> Rename to the lens name only when the lens name is **at least as descriptive
+> as the internal name to a reader who has no other context**. Where the internal
+> name carries a qualifier the lens name drops — the domain, the subject, the
+> *of what* — keep the internal name and accept that the filter name and the lens
+> name differ.
+
+Losing an adjective is not a cosmetic difference when the noun that remains is
+generic. `solutions` survives alone; `discovery` and `recovery` do not.
+
+### Applying it to the schedule above
+
+| Lens | Filter | Hub repo | Verdict |
+|---|---|---|---|
+| Discovery | `cultural_discovery` | `cultural-discovery-filter-v{N}` (public) | **Keep `cultural_discovery`.** Rename cancelled. |
+| Recovery | `nature_recovery` | `nature-recovery-filter-v{N}` (public) | **Keep `nature_recovery`.** Rename cancelled. |
+| Solutions | `solutions` | — | Already executed at v4. `solutions` stands alone fine. Filter since removed (2026-08-03). |
+| Belonging | `belonging` | `belonging-filter-v1` (public) | Already matches. No change. |
+| Thriving | `uplifting` | **NO_HUB** — file-copy deploy only | **Not resolved by this amendment.** The Hub argument does not apply: there is no public repo. Independently complicated — `thriving` already exists as a *separate* filter at v1, parked under ADR-015, so "rename uplifting to thriving" would collide with a real directory. Left open for the owner. |
+| Wisdom / Education | not shipped | — | Apply the rule at creation: pick the more descriptive of the two names from day one, rather than renaming later. |
+
+`investment_risk` was already out of scope (not an ovr.news lens) and keeps its
+name; its Hub repo `investment-risk-filter-v6` is unaffected.
+
+### Why this is cheaper than it looks
+
+Nothing has to be undone. **Neither rename had happened** — the schedule above
+set them for "at v2" (nature_recovery, now at v4) and "at v5"
+(cultural-discovery, now at v6), and both bumps passed without it. Cancelling
+them changes no directory, no field name, no Hub repo, no NexusMind attribute.
+
+Worth recording plainly: **of the five scheduled renames, one was carried out**
+(sustainability_technology → solutions), and that filter has since been deleted.
+An ADR that has been followed once in five opportunities across five months is
+not a policy being applied; it is an aspiration generating recurring cleanup
+tickets. This amendment resolves two of the four outstanding cases by deciding
+them, rather than re-scheduling them to the next bump for a fourth time.
+
+### Interaction with #48 (Hub repo naming convention)
+
+#48 proposes standardising on `{name-hyphenated}-filter-v{N}` and adding a check
+to `verify_filter_package.py` that **fails when `repo_id` does not match the
+filter's own name**. That check and a rename-internally-but-keep-the-Hub-name
+compromise are mutually exclusive by construction — it would have needed a
+permanent exception list, which is precisely what #48 exists to remove.
+
+Keeping both names aligned makes #48's rule enforceable with no exceptions for
+these two filters. That is an argument *for* this amendment, discovered while
+writing it — not a reason it was made.
 
 ## Appendix: Cross-Lens Boundary Map
 
