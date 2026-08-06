@@ -28,7 +28,7 @@ See `filters/common/commerce_prefilter/docs/` for full documentation.
   - Val MAE: 0.68, 10,000 training articles
 - [x] **sustainability_technology v1** - Deployed on HuggingFace Hub
   - Test MAE: 0.690
-- [x] **sustainability_technology v3** - Deployed on HuggingFace Hub (private)
+- [x] ~~**sustainability_technology v3**~~ — **REMOVED 2026-08-03**, replaced by solutions. Package deleted; recover from git history. Entry kept for the training record below, not as a statement of what is deployed.
   - Val MAE: 0.734 (calibrated test: 0.724), Gemma-3-1B
   - 10,608 training articles (v2 10,039 + 569 active learning enrichment)
   - All 3 inference paths: local, Hub, hybrid (probe MAE 0.91)
@@ -70,7 +70,7 @@ See `filters/common/commerce_prefilter/docs/` for full documentation.
   - Root cause: orthogonal lens design created bimodal distribution (ADR-015)
   - A fixed thriving v2 would converge back to uplifting v7. Not worth retraining.
   - Assets preserved in `memory/thriving-v1-scoring.md` if ever revisited
-- [x] **foresight v1** - Deployed on HuggingFace Hub (private) — was signs_of_wisdom
+- [x] ~~**foresight v1**~~ — **REMOVED 2026-08-03**, merged into solutions (#43, closing out #64). Was signs_of_wisdom. Package deleted; recover from git history.
   - Val MAE 0.75, 3,480 training articles, 6 dimensions
   - Hybrid inference: probe trained, threshold 2.25 (default, calibrate on production data)
   - Remaining: ovr.news Foresight tab frontend integration
@@ -255,6 +255,19 @@ Items surfaced by the multi-agent code review of the migration commits (2026-04-
 ---
 
 *Last updated: 2026-08-01*
+
+## 2026-08-06 — cd v6 probe (#98), the English escape hatch (#99), and an instrument for FS#120
+
+- [x] **#98 probe trained and measured; all three acceptance criteria pass.** `filters/cultural_discovery/v6/`. Held-out oracle labels (test split, 75 MEDIUM+ positives): probe @ 2.50 FN **0/75**, keyword gate **10/75**. Production, 64 cycles / 156,226 rows / 2,653 surfacing, both arms in one pass over identical rows: surfacing blocked **337 (12.7%) → 1 (0.04%)**, high-tier **0 → 0**, every language except Portuguese at 0.0%. Full write-up in that directory's `STATUS.md`.
+- [x] **Threshold is 2.50, not `train_probe.py`'s 3.025.** The trainer selects off the **val** recall curve, so val FN is optimistic by construction — it reported 1.3% where held-out gives 6.7%. Val and test independently both give FN 0.000 at ≤ 2.50 (0/152 positives).
+- [x] **Two self-corrections, both recorded in the package rather than only in chat.** (a) Criterion 2 is a **regression** — on production the probe screens 63.7% against the gate's 70.2%; an earlier claim of parity came from the test split, which does not transfer (label set is 9% MEDIUM+ against a 1.7% production surfacing rate). (b) **Four of the five held-out positives** recovered by the lower threshold read as **off-lens** on inspection, so the FN gain is partly #87's lens dilution appearing inside the labels. 2.50 rests on recall being Stage 1's job, not on those five being losses.
+- [x] **The probe is batch-invariant** — max |Δ| **3×10⁻⁶** across shuffled order, chunk 256→97, encode batch 64→1; zero threshold flips. Unlike student scores (#95, |Δ| ≤ 0.162), a probe decision is reproducible. `scripts/gate/probe_batch_invariance.py`.
+- [ ] **#98 criterion 4 NOT started, deliberately** — the v5 keyword gate is still live in `prefilter.py` and only comes out on an owner call. Also open on v6: it has **no inference module and no `calibration.json`/`normalization.json`**, so the package cannot score and would fail *silently* uncalibrated if one were added. Both were review findings, not known gaps.
+- [x] **#99 filed** — `DISCOVERY_PATTERNS` is an English-only escape hatch: 66/516 English surfacing articles pass the cultural gate on lens-neutral science-journalism words, 0/265 non-English, all 66 read and none cultural. Also feeds `classify_content_type`, which a probe does **not** replace.
+- [x] **FS#120 (~08-14) answered; the measurement is ours.** `pre_enrich` fires at **500**, not 300 (`config/app.yaml:171`). Their proposed denominator confounds enrichment success with native article length — supplied a third, conditional instrument. Blocking them back: `eval_query` is stamped on **28 of 547** eval rows, so their "drop Chad, keep Tchad" cut is unexecutable; and three of eight arms project to n≈13–35 by the 14th.
+- [x] **ducroq/NexusMind#300 filed** — the #93 `content_length` stamp is computed by the scorer and lost before persistence: **0 of 50,605** rows carry it, though the deployed code is md5-identical to the repo. ADR-022's stamp half is not holding. Does **not** block FS#120.
+- [x] **Four SSH-dependent verify assertions re-run** after slipping three curate passes; all PASS. Obituary blocked count 1208 → 2573 with no gap; rescore reproduces 07-31 to four decimals.
+- [ ] **sadalsuud carries the pre-`80dd399` cd gate** (235 topic stems vs 453). Zero production effect — that prefilter does not run (NexusMind#284) — but flipping enforcement without syncing restores the exact skew #86 removed. Recorded on #86 as a trap; **do not close it by syncing**, since #98 deletes the file.
 
 ## 2026-08-05 — TDM / training-data position, and the two carve-outs it leaves open
 

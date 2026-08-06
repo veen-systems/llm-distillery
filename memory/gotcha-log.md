@@ -1789,3 +1789,35 @@ front of you.
 **For future sessions in this repo**: do **not** re-create `.claude/skills/curate` or `.claude/skills/audit-context` here — they were deleted deliberately and a copy would be inert. Keep `review-changes` local. If `/curate` or `/audit-context` seems wrong, fix it in `agent-ready-projects/.claude/skills/` and re-run the install script; editing `~/.claude/skills/` directly puts the change somewhere unversioned.
 
 **Lesson**: **installing a skill globally is exclusive, not merely shared** — it forecloses per-repo variants of that name forever. The test is not "is this generic today?" but "will any repo ever need its own version?" (Monorepo exception: directory-scoped skills such as `apps/web/.claude/skills/…` are *namespaced* as `apps/web:curate`, not shadowed.) Second: **a config that is never loaded and a config that is correct look identical** — the only difference is a check that asserts the artifact actually registers.
+
+### The commit-msg hook blocks on negated deploy words (2026-08-06)
+
+**Problem**: Committing the cd v6 package aborted with `deploy-class word detected in message; verifying staged filters... [FAIL] filters/cultural_discovery/v6`. The message said, in full, *"Nothing here is live: no Hub repo, no NexusMind sync"* — the trigger was the phrase **"Not deployed, not on the Hub"** in an earlier draft. The hook cannot parse negation, so a commit whose message goes out of its way to say the thing is *not* deployed is treated as claiming it is.
+
+**Root cause**: `.githooks/commit-msg` greps for deploy-class words and then requires every staged filter to pass `verify_filter_package.py`. v6 has no `inference_hub.py`, so the Hub check reports `no repo_id extracted` — correctly, since there is no Hub repo. Two correct behaviours composing into a false positive.
+
+**Fix**: rewrote the message without the trigger words (option 2 of the three the hook itself offers). **Did not use `--no-verify`** — llm-distillery#44 was three days of production scoring on wrong weights after exactly that override, and the bar is deliberately very high.
+
+**Note for next time**: this `[FAIL]` is *not* the `HF_TOKEN`-missing artifact described elsewhere in this log. That one reports "repo not found" for a filter that has a Hub repo; this one reports "no repo_id extracted" for a filter that has no `inference_hub.py` at all. Same red text, different cause — check which before chasing a token.
+
+**Lesson**: a keyword gate over prose has no notion of polarity. When a hook fires on a message that is *disclaiming* the thing it guards, reword rather than override — the reword costs thirty seconds and the override costs the guarantee.
+
+### I shipped the repo's own signature defect, and only the review lens caught it (2026-08-06)
+
+**Problem**: `filters/cultural_discovery/v6/` was committed with a `hybrid_inference` config block and a trained probe pickle — and **no `inference.py`, `inference_hybrid.py` or `inference_hub.py`**, so nothing in the package can read either. Also no `calibration.json` and no `normalization.json`. `STATUS.md` asserted these were "inherited from v5 … so this is consistent". There is no inheritance mechanism: `_load_calibration` sets `self.calibration = None` **silently** when the file is absent.
+
+**Root cause**: the package was built by copying v5's *rule* files (prefilter, base_scorer, config) and adding a probe, which produces something that reads as complete — a config with a threshold, a model artifact on disk, passing self-tests — while being unable to score a single article. Every individual step was right; nobody asked "what loads this?"
+
+**Fix**: loud headers in `config.yaml` and at the top of `STATUS.md` stating the package cannot score, both gaps moved into "Still to do", and the false inheritance claim replaced with the silent-failure warning.
+
+**Lesson**: **this is the fourth instance of the same shape in one week** — ducroq/NexusMind#284 (per-filter prefilters never ran, six months), #94 (a gatekeeper that binds 0 times in 191,616 articles), ducroq/NexusMind#281 (a gate that could never fire), ducroq/NexusMind#300 (a stamp computed and then dropped before persistence). The novel part is that this one is **mine, written the same day I documented the other three**. Knowing the failure mode is not protection against it; only running the reachability lens against your own work is. See the promoted rule below.
+
+### Compared a val rate to a production rate, twice, in one day (2026-08-06)
+
+**Problem**: Two claims in the cd v6 package compared numbers computed on different populations. (a) *"2.50 screens ~51%, the gate screens 50.8% — parity"* — both figures from the **test split**, presented as a production property; the production figures are 63.7% vs 70.2%, a 6.5-point regression. (b) After correcting (a), the replacement justification was *"63.7% matches nature_recovery v4's ~64%"* — but nr v4's ~64% is a **val** screening rate on its own label set. cd v6's val-set equivalent is 51.2%.
+
+**Root cause**: the label set is positive-enriched (9% MEDIUM+) against a 1.7% production surfacing rate, so screening rates on the two populations are simply different quantities. Both errors ran in the direction of making the change look better, and (b) was written *while correcting* (a) — the correction reached for the nearest other number without re-checking its provenance.
+
+**Fix**: both corrected in `config.yaml`, `STATUS.md` and on #98, each with an explicit note of what the wrong comparison was, so the next reader sees the trap rather than just the right number.
+
+**Lesson**: **a screening/pass/block rate is meaningless without its population.** Before comparing two of them, state the denominator of each out loud. And when correcting a comparison error, the replacement is the *most* likely place to repeat it — the corrected sentence deserves the same check as the original, not the benefit of the doubt for being newer.
