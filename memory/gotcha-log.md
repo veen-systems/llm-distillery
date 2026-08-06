@@ -1689,3 +1689,56 @@ observation said nothing about the new code.
 Corrected in ADR-044 the same session. Same shape as the older "verify the call path,
 not just the code" entries: the artifact was missing for a reason upstream of the
 thing being tested.
+
+### A commit about accuracy shipped four false claims, all in prose beside correct measurements (2026-08-06)
+
+**Problem**: A four-lens review of the previous evening's two commits found 4 blockers
+and 13 warnings. Every measurement in that work held up — 333/117/907 summed, every EU
+date verified against primary sources, the issue counts reproduced to the measurement
+window, 44 ADRs, 1,103 tests. **What failed was the sentences around the numbers.**
+
+**Root cause**: three distinct mechanisms, worth separating because they need different
+guards.
+
+1. **Stale text left inside a document the same commit edited.** ADR-003 gained a table
+   row saying the marker shipped, while prose twelve lines below still said "not yet
+   shipped — awaits go-ahead". ADR-044's near-miss record closed with "`og-image.png` is
+   untouched" in the commit that regenerated it. The compliance register's review
+   trigger told future readers to watch "micro-enterprise status" two sections after
+   proving that concept does not exist. In each case the *new* text was right and an
+   *old* sentence three paragraphs away was not re-read.
+2. **A fact about the codebase asserted without checking.** A footer link was added with
+   the comment "reachable only from in-page links until 2026-08-05". The link had been
+   in the footer since `3a64f0f`; the result was a duplicate anchor, identical text and
+   href, live on every page.
+3. **A derived statistic published without a sanity check.** "GPTBot 401 domains" went
+   into a public ADR and two other files. The total flagged was 333, stated four lines
+   above. The figures were counts of matching *lines*, not domains, and dropped
+   case variants.
+
+**Fix**: after editing any document, re-read the *whole* section, not the diff — the
+diff shows what changed, never what the change contradicted. Before writing "X was
+only Y until today", grep for X. Before publishing a derived count, check it against
+the total it is a subset of. All three are cheaper than the review that caught them.
+
+**Detection that worked**: running four lenses concurrently over the same diff. Three
+lenses independently flagged the ADR-003 contradiction, and two independently flagged
+the missing test guard — convergence from different prompts is a much stronger signal
+than one reviewer's confidence.
+
+### The guard test existed, the surface table grew, and nobody connected them (2026-08-06)
+
+**Problem**: `tests/ai-disclosure.test.ts` exists to enforce ADR-003's surface table and
+says so in its own header: *"Keep this file in sync with the surface table in ADR-003."*
+Three rows were added to that table and the test file was not touched. Measured: delete
+the entire disclosure block from `Layout.astro` and the suite still passes 1,103/1,103.
+
+**Root cause**: the instruction to keep them in sync lived in the *test*, and the work
+happened in the *ADR*. Nothing in the ADR pointed back. A one-directional pointer is
+only followed by someone who happens to open the file it lives in.
+
+**Fix**: extended `SURFACES` and `KEYS`, and verified the guard now bites — deleting the
+disclosure fails 3 tests, restoring it passes 26/26. Two new describe blocks also pin
+the budget split and the EMFA financial year. **General rule: when a document and a test
+must move together, put the pointer in both, and prove the test fails without the thing
+it guards.** A guard nobody has watched fail is a guard nobody has tested.

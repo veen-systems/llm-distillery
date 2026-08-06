@@ -8,7 +8,9 @@ metadata:
 # Session 2026-08-05 (evening) — board refresh, then the legal arc
 
 Almost all execution landed in **ovr.news**, not here. This repo contributed one
-decision record and the memory updates. Nothing was committed in either repo.
+decision record and the memory updates. *(Written before the commits; both repos were
+committed and pushed later the same evening — llm-distillery `df64213`, ovr.news
+`2118a21` + `08d176b`.)*
 
 ## 1. Cross-repo board refresh
 
@@ -88,7 +90,7 @@ for a publisher's work; and the use is referral, not substitution.
 Directive draws — its TDM definition is broad enough to cover fitting a model to text.
 The position rests on the **reservation** question and on harm, not on being outside
 the definition. Two carve-outs stay open: the oracle transfer (decided above, recorded
-in ovr.news) and **the seven already-trained deployed filters**, which nobody has
+in ovr.news) and **the six already-trained deployed filters**, which nobody has
 assessed.
 
 ## Open
@@ -99,9 +101,12 @@ assessed.
 - `/accountability` source-opt-out copy is now a *knowing* omission: it does not
   mention that 333 carried domains signal an opt-out we decided to keep. Flagged, not
   rewritten.
-- Nothing committed in either repo. `data/chief_editor_config.json` was already dirty
-  in ovr.news; two `datasets/adverse/*.jsonl` rows appeared in llm-distillery during
-  the session and are not mine.
+- Committed and pushed after this was written. `data/chief_editor_config.json` was
+  already dirty in ovr.news and stayed out; four `datasets/adverse/*` files changed in
+  llm-distillery during the session (another ovr session writing) and stayed out too.
+- **A four-lens review the next morning found 4 blockers and 13 warnings in this work**
+  — see the 2026-08-06 gotcha entries. Most were stale sentences left inside documents
+  the same commit edited.
 
 ## Related
 

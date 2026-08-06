@@ -23,6 +23,17 @@ Use `docs/agents/templates/ADR-TEMPLATE.md` as the starting point for new ADRs.
 
 ## Active ADRs
 
+### 2026-08-05: TDM Opt-Out Does Not Bar Distillation Training (#28)
+**File:** `2026-08-05-tdm-opt-out-training-data.md`
+
+AI-crawler opt-out directives in publisher `robots.txt` do not bar training here.
+Grounds: they name third-party crawlers we do not operate; the student has a
+regression head and cannot emit text, so no output substitutes for a publisher's work;
+and the use is referral. Records the counter-argument against itself — "modelling is
+not mining" is *not* a distinction the DSM Directive draws. Two carve-outs stay open:
+the oracle ships full article text to Gemini/DeepSeek (risk accepted, recorded in
+ovr.news's compliance register), and the six deployed filters were never assessed (#97).
+
 ### 2025-11-15: Dimensional Scoring Terminology
 **File:** `2025-11-15-dimensional-scoring-terminology.md`
 

@@ -29,8 +29,10 @@ the form that survives scrutiny, along with the form that does not.
 ### Grounds
 
 **1. The directives are addressed to other parties.** Every one names a specific
-third-party crawler — GPTBot (401 domains), CCBot (359), Google-Extended (327),
-ClaudeBot (320), anthropic-ai (272), and others. We operate none of them. The
+third-party crawler — of the 333 flagged domains, GPTBot is named on **286**,
+CCBot **270**, Bytespider **235**, ClaudeBot **231**, Google-Extended **230**,
+and seven others below that. (A domain usually names several, so these do not sum
+to 333.) We operate none of them. The
 publishers overwhelmingly leave `User-agent: *` permissive, which is the line that
 would address us. This is ovr.news ADR-043's ground 1, and it transfers here intact
 because it is a claim about *who was addressed*, not about *what was done*.
@@ -65,8 +67,11 @@ resulting artefact is non-reproductive and non-substitutional (grounds 2–3).* 
 arguments about the **reservation** and about **harm**, not about the definition.
 
 Anyone re-reading this record should not carry forward the shorter phrasing. It is the
-kind of confident-and-untested claim `memory/feedback-claim-requires-verify` exists to
-catch, and it would be the weakest sentence in the file if a publisher ever asked.
+kind of confident-and-untested claim the `feedback-claim-requires-verify` memory exists
+to catch, and it would be the weakest sentence in the file if a publisher ever asked.
+(That memory lives in the Claude Code auto-memory directory, **not** in this repo's
+`memory/`. This record originally wrote it as a repo path — the identical broken
+reference its own commit was fixing in `CLAUDE.md`. Corrected 2026-08-06.)
 
 ## What this decision does *not* cover
 
@@ -100,6 +105,11 @@ Three things, each genuinely separate and none of them settled here:
 - **Numbers are stale.** #28 cites *238 of 971 domains (25%)* from the March scan. The
   2026-08-04 scan says **333 of 1,357 (24.5%)** — proportion nearly identical, absolute
   numbers up by half.
+- **And this record's own first numbers were wrong (corrected 2026-08-06).** Ground 1
+  originally read "GPTBot (401 domains), CCBot (359)…". Those were case-sensitive counts
+  of matching *lines* in the scan output, not domains — over-counting domains that name
+  an agent twice and dropping case variants. **401 exceeded the 333 total, which is
+  impossible on its face.** Ground 1 is unaffected in substance; the figures were not.
 - **117 domains failed open.** The scan could not check them and they aggregate into the
   "clean" 907. A publisher behind a WAF that 403s non-browser agents scores clean, and
   that is exactly the publisher most likely to be reserving. Any future claim that "we
