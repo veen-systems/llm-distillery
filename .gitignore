@@ -214,3 +214,9 @@ filters/common/violence_promotion/training/*.jsonl
 # Without these negations a new case is silently ignored by the datasets/ rule above.
 !datasets/adverse/
 !datasets/adverse/*.jsonl
+
+# Claude Code user-local settings — machine-specific permission list, never shared.
+# Untracked 2026-08-06 (context audit): it had been committed and carried a
+# different machine and user (C:/local_dev/..., C:/Users/scbry/...). The tracked
+# .claude/skills/ reference installs stay tracked; only this file is local.
+.claude/settings.local.json

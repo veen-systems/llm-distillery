@@ -1,56 +1,9 @@
 # Memory Index
 
-## Standing rule (promoted from gotcha log 2026-08-01 — 3 instances in one day)
-
-**Before using any source as evidence, establish what it excludes.** This applies
-to data (`filtered_*.jsonl` is 100% passers by construction), to nested structures
-(`metadata.quality` is not `nexus_mind_attributes.<lens>.source_quality`), to prior
-work (`gh repo list` misses repos with no remote), to literature (a search
-snippet reported a model's *worst* two techniques as its best), and — added
-2026-08-02 — to **time** (`data/raw/` is pre-enrichment, so it cannot stand in
-for what the scorer saw: 0.008 vs a true 0.647) and to **a second exclusion on
-an artefact you already thought you understood** (`filtered_*.jsonl` drops
-source-type-excluded rows too, worth 0.129 on investment_risk). A clean-looking
-result from an unexamined source is the hardest kind to falsify, because being
-right supplies no pressure to check how you got there. If it's a denominator, a
-baseline, or a claim of absence — enumerate the source first, and if the owner
-knows the set, ask them rather than inferring it.
-
-## Standing rule (promoted from gotcha log 2026-08-03 — 2nd occurrence in this tree)
-
-**A parallel agent session may be working in the same checkout, so no git verb
-may take the whole tree as its argument.** `git add -A`, `git stash` with no
-pathspec, `git checkout .`, `git clean` — each one's blast radius is every
-modified file, including work you did not make and cannot see. First occurrence
-(2026-08-03 morning) swept a seven-file filter sync into a docs commit; second
-(same day, evening) stashed another session's `image_analysis.py` while
-baselining a test suite, producing a "before" measurement of a tree that never
-existed and 8 phantom failures. **Always pass explicit paths**, and before
-committing in a shared repo run `git status --porcelain` and stage only what you
-recognise. If a sweep is discovered after push, record it — do not rebase
-history another session may hold.
-
-## Standing rule (promoted from gotcha log 2026-08-06 — 5th occurrence, one of them self-inflicted)
-
-**Before shipping any gate, cap, threshold, config key or stamp, name the caller
-that loads it — in writing.** A mechanism that is present, configured and
-unreachable is this repo's defining failure, and it now has five instances:
-ducroq/NexusMind#284 (per-filter prefilters never ran, six months), #94 (a
-gatekeeper binding 0 times in 191,616 articles), ducroq/NexusMind#281 (a gate
-that could never fire), ducroq/NexusMind#300 (the #93 `content_length` stamp
-computed and then dropped before persistence — 0 of 50,605 rows), and
-`filters/cultural_discovery/v6` (a `hybrid_inference` block and a probe pickle
-shipped into a package with no inference module — **written the same day the
-other four were documented**). The last one is the important one: knowing this
-failure mode does not prevent it. Only running the check against your own work
-does. **Do not infer runtime behaviour from the presence of a config key**, and
-treat "the code is correct" as answering a different question from "the code
-runs". Two smells that should trigger the check every time: a package that
-passes its self-tests but has never been loaded end-to-end, and a field that is
-initialised to `None` and populated somewhere you have not read.
+*Standing rules moved to `CLAUDE.md` § Hard Constraints → "Working rules" on 2026-08-06 (context audit): they are always-needed constraints, and this file is navigational. This index is pointers + session log only.*
 
 - [CD v6 probe hypotheses](cd-v6-probe-hypotheses.md) — #98: what the e5 probe confirmed (per-language gap gone; batch-invariant, unlike #95), what it refuted (screening is a REGRESSION; 4 of 5 "recovered" positives are off-lens), and the traps (v6 cannot score — no inference module, no calibration)
-- [Cross-repo prioritization](cross-repo-prioritization.md) — master issue landscape across 5 repos (**191 open**, re-queried 2026-08-05): P0-P4, **15 dependency chains**, 6 work batches, plus a Coverage section (stale — computed against 177). Chain 3 CLOSED; Chain 4 re-rooted on #93; Chain 8 deadline-driven (FS#120 ~2026-08-14). **Refreshed 2026-08-05 (late): two banded entries were closed (ovr#285 P0, NM#290 P1); new Chain 15 (lens commensurability — LD#96 + ovr#296, a placement decided by 0.043, inside #95's 0.16 noise floor); Batch C grew into a real compliance programme headed by ovr#292 (333 of 1,357 domains signal an AI opt-out), which LD#28 inherits. Also: llm-distillery's own 36 are grouped there, 14 of them untouched 30+ days.**
+- [Cross-repo prioritization](cross-repo-prioritization.md) — master issue landscape across 5 repos (**195 open**, re-queried 2026-08-06 afternoon: LD 38 · NM 42 · ovr 89 · FS 14 · ps 12 — the file's own body still describes the 191/08-05 snapshot): P0-P4, **15 dependency chains**, 6 work batches, plus a Coverage section (stale — computed against 177). Chain 3 CLOSED; Chain 4 re-rooted on #93; Chain 8 deadline-driven (FS#120 ~2026-08-14). **Refreshed 2026-08-05 (late): two banded entries were closed (ovr#285 P0, NM#290 P1); new Chain 15 (lens commensurability — LD#96 + ovr#296, a placement decided by 0.043, inside #95's 0.16 noise floor); Batch C grew into a real compliance programme headed by ovr#292 (333 of 1,357 domains signal an AI opt-out), which LD#28 inherits. Also: llm-distillery's own 36 are grouped there, 14 of them untouched 30+ days.**
 - [Filter status](filter-status.md) — current state of all production filters and in-development versions
 - [NexusMind data sources](nexusmind-data-sources.md) — what each production artefact EXCLUDES; `filtered_*.jsonl` also drops source-type-excluded rows, `data/raw/` is pre-enrichment
 - [Prefilter & length-floor hypotheses](prefilter-length-floor-hypotheses.md) — what each prefilter actually blocks (measured 2026-08-02); #93 shipped + synced 2026-08-03; read before any enforcement flip
@@ -69,19 +22,6 @@ initialised to `None` and populated somewhere you have not read.
 - [Violence promotion v1 hypotheses](violence-promotion-v1-hypotheses.md) — recipe transfer confirmed, prompt boundary holds, recall gap is the key open question
 - [Uplifting v7 training](uplifting-v7-training.md) — training history; v7 deployed (hybrid inference)
 - [Thriving v1 scoring](thriving-v1-scoring.md) — PARKED indefinitely (ADR-015); scoring status, resume commands
-
-## Standing rule (promoted 2026-08-05 — 3rd occurrence, twice in one session)
-
-**`pgrep -f "<pattern>"` cannot answer "is it running?" — it matches the shell
-carrying the pattern, and over ssh the bracket trick does not survive quoting.**
-It has now produced a wrong answer three times: twice blocking a production
-deploy on 2026-08-03, twice more on 2026-08-05 (a false "still running" reported
-to the owner, and a restart that silently did not launch). The failure is
-convincing because the output *looks* like an answer. Use
-`ps -eo pid,etime,args | grep -v grep`, or ask the service manager
-(`systemctl is-active`), or read the log's last timestamp. **If a process check
-decides whether you act, print the matching line before believing it** — a
-self-match is obvious on sight and invisible in a count.
 
 ## Recent Sessions
 

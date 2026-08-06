@@ -52,7 +52,7 @@ the wrong object returned a clean, unambiguous zero that read as proof.
 
 1. **Mine (NM#284)**: counted `passed_prefilter` in
    `data/filtered/*/filtered_*.jsonl` to prove prefilters weren't blocking. That
-   file only receives `passed_prefilter: true` rows NexusMind `scripts/main.py`’s `if result["passed_prefilter"]:` write guard —
+   file only receives `passed_prefilter: true` rows NexusMind `NexusMind/scripts/main.py`’s `if result["passed_prefilter"]:` write guard —
    0 blocks by construction.
 2. **ovr#280**: concluded "NexusMind never sends `cluster_id`" from
    `metadata.quality` (FluxusSource's block: `bias_category, credibility_score,
@@ -123,7 +123,7 @@ source-type allowlist all run normally — each verified, not assumed.
 ⚠️ **The first evidence for this was invalid and had to be retracted** (same day,
 after the owner asked what the prefilter actually was). The claim "all eight
 filters stamp 0 prefilter blocks per cycle" came from counting `passed_prefilter`
-in `data/filtered/*/filtered_*.jsonl` — but NexusMind `scripts/main.py`’s `if result["passed_prefilter"]:` write guard only writes a
+in `data/filtered/*/filtered_*.jsonl` — but NexusMind `NexusMind/scripts/main.py`’s `if result["passed_prefilter"]:` write guard only writes a
 row `if result["passed_prefilter"]`, so that file is 100% passers **by
 construction** and can never contain a block. Reading "no blocked rows in a file
 that excludes blocked rows" as evidence of no blocking is circular. The pipeline
@@ -153,7 +153,7 @@ was the first thing I reached for, but its baseline came from an output file tha
 excludes the very rows in question, so the "100%" was an artifact. A reproduction
 is only as good as the population you reproduce it on. Before using a data source
 as a denominator, ask what it is filtered on — here, one `if` statement at
-NexusMind `scripts/main.py`’s `if result["passed_prefilter"]:` write guard. Related: the wrong-shaped-verify entries below.
+NexusMind `NexusMind/scripts/main.py`’s `if result["passed_prefilter"]:` write guard. Related: the wrong-shaped-verify entries below.
 
 **Pattern (4th occurrence of verify-the-call-path, cf. LD#80 below)**: a config
 key named `enabled` is not evidence that anything is enabled. When a component
@@ -163,7 +163,7 @@ otherwise a component can declare 0.15, stamp 1.00, and stay green for months.
 ## Pre-push battery ran tests/unit only — CI runs tests/ incl. root-level files (2026-07-30)
 
 **Problem**: NexusMind 6728a77 passed the local battery (890 tests) but broke CI:
-`tests/test_gpu_client.py` (root-level, not under tests/unit/) mocked 5 subprocess
+`NexusMind/tests/test_gpu_client.py` (root-level, not under tests/unit/) mocked 5 subprocess
 results for a function that now makes 6 calls -> StopIteration.
 
 **Root cause**: local run was `pytest tests/unit`; CI runs `pytest tests/` (minus
@@ -246,13 +246,13 @@ articles/day across Jul 26-28.
 **Root cause**: Normalization.json was pending for v6 ("needs ≥200 articles at ≥2.25")
 but never fitted. Score range mismatch between v6 (0-5) and v5 (0-10) with no bridge.
 
-**Fix**: Added `SCORE_SCALE_FACTORS` map in `summarize.ts` with `solutions: 2.0` +
+**Fix**: Added `SCORE_SCALE_FACTORS` map in `ovr.news/summarize.ts` with `solutions: 2.0` +
 guard (`raw > 5.0 → skip scaling` to prevent double-scaling old v5 articles).
 Bridge until normalization.json is fitted.
 
 ## Hot DB creation silently produced 0-byte file — site deployed with empty DB (2026-07-28)
 
-**Problem**: `scripts/create-hot-db.ts` ran without error but produced a 0-byte
+**Problem**: `ovr.news/scripts/create-hot-db.ts` ran without error but produced a 0-byte
 `ovr-hot.db`. This was uploaded to R2 and Cloudflare Pages built the site with it.
 Solutions page showed only 2 articles (hero + one standard) despite 497 in DB.
 
@@ -341,12 +341,12 @@ for a deploy-gate automation: `test_filter_integrity` should verify
 `enabled_filters`) aborted every 4h with `ERROR: smoke fixture references filters not in app.yaml
 enabled_filters: ['foresight', 'sustainability_technology']`. Looked like the new lens broke the pipeline.
 **Root cause**: `NexusMind/scripts/deploy_filters.sh` has a fail-closed name-alignment gate: every filter
-in `deploy/smoke_test_articles.jsonl` must be in `enabled_filters`. The cutover updated `enabled_filters`
+in `NexusMind/deploy/smoke_test_articles.jsonl` must be in `enabled_filters`. The cutover updated `enabled_filters`
 but left the two retired filters' smoke fixtures behind → orphan fixtures → gate abort (correct behavior,
 just an incomplete cutover).
 **Fix**: repoint the iron-air-battery fixture (a clean solutions positive) to `solutions`, drop the
 foresight fixture (`e2a102e`). **Lesson**: retiring a filter is a *3-place* edit — `enabled_filters` AND
-the smoke fixture AND (for llm-distillery) the package. Add "update `smoke_test_articles.jsonl`" to any
+the smoke fixture AND (for llm-distillery) the package. Add "update `NexusMind/smoke_test_articles.jsonl`" to any
 filter-retirement checklist.
 
 ## Filed a wrong issue from a partial code grep — the runtime disproved it (2026-07-22)
@@ -383,11 +383,11 @@ caught it, but only after the wrong issue was already filed.
 
 ## A runtime fail-closed `raise` halted the whole pipeline; the existing CI test was already the right guard (2026-07-22)
 
-**Problem**: A round-1 review wanted to prevent the "app.yaml enables a filter whose package isn't copied → silent dark tab" hazard. The fix added a `raise RuntimeError` in NexusMind `scripts/main.py _resolve_filters` on any enabled-but-undiscovered filter. Round 2 caught it as a **critical defect-in-fix**: the raise fires before `valid` is returned, so ONE not-yet-copied filter aborts scoring for **all** filters (uplifting/investment_risk/cultural_discovery/belonging/nature_recovery too), turning a routine config-lag into a full pipeline outage — and it broke 2 pre-existing tests (`test_pipeline_stages.py::TestResolveFilters`) plus made `test_filter_integrity.py` 8/8 red.
+**Problem**: A round-1 review wanted to prevent the "app.yaml enables a filter whose package isn't copied → silent dark tab" hazard. The fix added a `raise RuntimeError` in NexusMind `scripts/main.py _resolve_filters` on any enabled-but-undiscovered filter. Round 2 caught it as a **critical defect-in-fix**: the raise fires before `valid` is returned, so ONE not-yet-copied filter aborts scoring for **all** filters (uplifting/investment_risk/cultural_discovery/belonging/nature_recovery too), turning a routine config-lag into a full pipeline outage — and it broke 2 pre-existing tests (`test_pipeline_stages.py::TestResolveFilters`) plus made `NexusMind/test_filter_integrity.py` 8/8 red.
 
-**Root cause**: Added a runtime fail-closed control without (a) checking whether an existing guard already covered the case, and (b) bounding its blast radius. `tests/unit/test_filter_integrity.py` ALREADY reads `config/app.yaml` and asserts every enabled filter is discoverable — the hazard was already caught fail-closed at CI/deploy time. The runtime raise duplicated it in the wrong layer (production scoring) and over-broadly (halt-everything).
+**Root cause**: Added a runtime fail-closed control without (a) checking whether an existing guard already covered the case, and (b) bounding its blast radius. `NexusMind/tests/unit/test_filter_integrity.py` ALREADY reads `NexusMind/config/app.yaml` and asserts every enabled filter is discoverable — the hazard was already caught fail-closed at CI/deploy time. The runtime raise duplicated it in the wrong layer (production scoring) and over-broadly (halt-everything).
 
-**Fix**: Reverted to warn-and-skip (resilient runtime: run the filters that ARE present). The silent-dark-tab hazard is handled by `test_filter_integrity.py` at CI + atomic package-with-config deploy. **Durable lesson** (promoted to MEMORY.md): before adding a runtime fail-closed control, check for an existing CI/deploy-time guard and bound the blast radius — fail-closed belongs at the CI/deploy layer, not inside runtime scoring; a runtime control that halts everything on one missing item is over-broad. Meta: this is exactly why the "run 2+ review rounds" rule exists — R2 found 15 defects-in-fixes, this being the worst; a R1 fix became a R2 critical.
+**Fix**: Reverted to warn-and-skip (resilient runtime: run the filters that ARE present). The silent-dark-tab hazard is handled by `NexusMind/test_filter_integrity.py` at CI + atomic package-with-config deploy. **Durable lesson** (promoted to MEMORY.md): before adding a runtime fail-closed control, check for an existing CI/deploy-time guard and bound the blast radius — fail-closed belongs at the CI/deploy layer, not inside runtime scoring; a runtime control that halts everything on one missing item is over-broad. Meta: this is exactly why the "run 2+ review rounds" rule exists — R2 found 15 defects-in-fixes, this being the worst; a R1 fix became a R2 critical.
 
 ## Enrichment silently poisoned 17.3% of the pool with consent-wall text (2026-07-19)
 
@@ -432,7 +432,7 @@ Plus: the invariant itself was **too strict** (`raw_min` is the smallest score *
 
 **Problem**: Round 1's top finding claimed the normalization guard "mixes scales" because `TIER_THRESHOLDS` is a normalized-scale cut used as a raw floor, predicting recall collapse. I amplified it into a plan, quantified "2,776 hidden articles across 5 lenses", and framed linear `score_scale_factor` as the healthy baseline. All of it wrong.
 
-**Root cause**: Neither I nor the reviewer opened ADR-014, which **specifies** the pipeline as "…normalize → **reassign tier on normalized** → display_rank". `production_scorer.py`'s module docstring says the same thing 250 lines above the line I read. So `raw >= threshold` + `tier: low` is correct by design — the article sits at the bottom of its own MEDIUM+ population. And linear scaling isn't healthy, it's *superseded*: foresight only uses it because its fit was REJECTED by `MAX_NORMALIZATION_RAW_MIN` (#205). The engineer caught it by asking "are you not understanding the normalization procedure? … I think not the linear scaling?" — not by any check either of us ran.
+**Root cause**: Neither I nor the reviewer opened ADR-014, which **specifies** the pipeline as "…normalize → **reassign tier on normalized** → display_rank". `NexusMind/production_scorer.py`'s module docstring says the same thing 250 lines above the line I read. So `raw >= threshold` + `tier: low` is correct by design — the article sits at the bottom of its own MEDIUM+ population. And linear scaling isn't healthy, it's *superseded*: foresight only uses it because its fit was REJECTED by `MAX_NORMALIZATION_RAW_MIN` (#205). The engineer caught it by asking "are you not understanding the normalization procedure? … I think not the linear scaling?" — not by any check either of us ran.
 
 **Fix**: Retraction recorded; round 2 was explicitly told the retraction *and invited to overturn it with evidence* (it didn't). The guard turned out **correct**, filling the missing LOW-side bound symmetric to the existing HIGH-side one. Evidence that settles it: 7 of 9 fitted `normalization.json` files sit at `raw_min == exactly the tier threshold`; the 3 that don't are the only 2 normalization incidents ever. Now enforced by `tests/unit/test_normalization_invariant.py`. **Generalisable**: a review finding is a hypothesis, not a verdict — verify it against the design docs before acting, especially when it is dramatic. Both a model and an agent reading the same code reached the same wrong conclusion, which means "two models agree" is not evidence.
 
@@ -456,8 +456,8 @@ Plus: the invariant itself was **too strict** (`raw_min` is the smallest score *
 
 **Root cause**: Not a shortage of checks. Every one *was* a check; none had ever been watched fail.
 - `.githooks/commit-msg` (the #44 deploy-claim gate): committed mode **100644**. Git silently ignores non-executable hooks, so every clone that followed CLAUDE.md's `git config core.hooksPath .githooks` step got a no-op. It also invoked bare `python` (only `python3` exists), so even once executable it could never *pass* — which trains `--no-verify` and hands back the hole it was written to close.
-- `deploy_filters.sh` freshness gate: the deploy **hash** covers `src/scoring/`, but the origin/auto-pull gate only diffed `filters/` + `src/filters/`. A `src/scoring`-only commit merged to origin therefore skipped the pull, hashed the stale checkout, matched gpu-server's equally-stale revision, printed *"Filters already in sync — skipping deploy"* and exited 0. Reproduced live against the #161 fix, which touches only `src/scoring/`.
-- `config.yaml` `content_type_caps.*.exceptions:` — documented ("Doom framing followed by documented recovery outcome"), never compiled into `cap_triggers.py`. Only `triggers:` were.
+- `NexusMind/deploy_filters.sh` freshness gate: the deploy **hash** covers `src/scoring/`, but the origin/auto-pull gate only diffed `filters/` + `src/filters/`. A `src/scoring`-only commit merged to origin therefore skipped the pull, hashed the stale checkout, matched gpu-server's equally-stale revision, printed *"Filters already in sync — skipping deploy"* and exited 0. Reproduced live against the #161 fix, which touches only `src/scoring/`.
+- `config.yaml` `content_type_caps.*.exceptions:` — documented ("Doom framing followed by documented recovery outcome"), never compiled into `NexusMind/cap_triggers.py`. Only `triggers:` were.
 - `config.yaml` `scoring.tiers` — read by nothing; `TIER_THRESHOLDS` is the sole runtime source (found 2026-07-10, op-point 3.75 inert). Still live in **sustainability_technology v3**: config says `medium: 3.0`, code runs `4.0`.
 - Three `MEMORY.md` `<!-- verify: -->` assertions reported FAIL on claims that were all **true** — `cmd && echo PASS || echo FAIL` collapses three states into two and cannot distinguish "claim is false" from "check could not run", making curate's own documented ERROR branch unreachable.
 
@@ -479,7 +479,7 @@ Plus: the invariant itself was **too strict** (`raw_min` is the smallest score *
 
 **Problem**: After nature_recovery v4 deployed (2026-07-10), ovr.news showed "no new nature articles." Scorer was healthy and producing v4.0 MEDIUM+ output the whole time.
 
-**Root cause**: A fresh version ships with **no `normalization.json`** (correct — ADR-014 forbids reusing the old CDF), so `production_scorer.py` emits RAW `weighted_average`. Every *other* lens emits *normalized* scores. Two ovr mechanisms then mis-handle the raw filter: (1) cross-lens assignment (`canonical-lens.ts`) picks the highest `weighted_average` across scorers, and (2) the uniform display gate (`ranking.displayScoreThreshold: 4.5`) is calibrated for normalized scores. Compounding it: for the ~10-day v2→v4 window overlap, still-in-window v2 rows carried *inflated* normalized scores (percentile CDF mapped raw≈2.0 / tier=low up to normalized 5–7) and **out-ranked** fresh v4 rows — so new v4 articles were buried, not absent. v2's "fuller" feed was ~90% inflation; v4's raw≥4.5 count (3–4/batch) actually *exceeded* v2's (0–2/batch).
+**Root cause**: A fresh version ships with **no `normalization.json`** (correct — ADR-014 forbids reusing the old CDF), so `NexusMind/production_scorer.py` emits RAW `weighted_average`. Every *other* lens emits *normalized* scores. Two ovr mechanisms then mis-handle the raw filter: (1) cross-lens assignment (`ovr.news/canonical-lens.ts`) picks the highest `weighted_average` across scorers, and (2) the uniform display gate (`ranking.displayScoreThreshold: 4.5`) is calibrated for normalized scores. Compounding it: for the ~10-day v2→v4 window overlap, still-in-window v2 rows carried *inflated* normalized scores (percentile CDF mapped raw≈2.0 / tier=low up to normalized 5–7) and **out-ranked** fresh v4 rows — so new v4 articles were buried, not absent. v2's "fuller" feed was ~90% inflation; v4's raw≥4.5 count (3–4/batch) actually *exceeded* v2's (0–2/batch).
 
 **Fix**: (a) No ovr action needed — the inflated v2 rows age out of the 10-day `published_date` window by ~2026-07-19, leaving the honest v4 steady state (~3–4 genuine MEDIUM+/batch; nature is ~0.3% of feed — volume is a v5/#71 recall decision, not a normalization bug). (b) **Process fix**: fit normalization *at deploy time* from a production-representative historical rescore instead of waiting weeks for live accumulation — the missing runbook step. Documented in `docs/FILTER_PLAYBOOK.md` §6 + `docs/RUNBOOK.md` "Fit normalization". A thin fit doesn't help: `MIN_NORMALIZATION_ARTICLES=200` silently rejects it (a 33-article fit attempted here was inert), and the sample must be at production base rate (~145K rescored articles for 200 MEDIUM+), NOT the enriched val set. Normalization buys cross-lens *fairness*, not volume.
 
@@ -658,7 +658,7 @@ Plus: the invariant itself was **too strict** (`raw_min` is the smallest score *
 
 **Root cause**: Windows Git Bash / MSYS runtime doesn't cleanly hand rsync's fd management to the Tailscale SSH subprocess. Specific to the workstation runtime, not gpu-server. This is an old gotcha (Feb 2026, originally fixed by switching to scp) that recurred when NexusMind switched the deploy script back to rsync (Apr 2026, to preserve model/ directories via `--exclude`).
 
-**Fix**: Run `deploy_filters.sh` from a Linux host (sadalsuud) instead of Windows. `llm-distillery/scripts/remote_deploy.sh` wraps the SSH hop — single command from the workstation, Linux→Linux rsync inside. Structurally unreachable on Windows now.
+**Fix**: Run `NexusMind/deploy_filters.sh` from a Linux host (sadalsuud) instead of Windows. `llm-distillery/scripts/remote_deploy.sh` wraps the SSH hop — single command from the workstation, Linux→Linux rsync inside. Structurally unreachable on Windows now.
 
 ---
 
@@ -715,7 +715,7 @@ The first command failed during this session: actual sadalsuud user is implicit 
 
 ## v2 Filter Without normalization.json Looks Like a raw_weighted_average Bug (2026-04-29) — RESOLVED 2026-05-04
 
-> **2026-05-04 RESOLVED**: This entry's "Not a bug — by design" framing was right about the *intended* architecture (NexusMind's runtime applies normalization downstream) but failed to verify the runtime actually existed. It didn't. The application code in `NexusMind/filters/common/filter_base_scorer.py` had been deleted on 2026-04-16 and was not restored — the byte-identical copies between repos masked the absence. All 7 filters were silently de-normalized for 18 days. See the "Manifest as Anti-Pattern" entry below for the full diagnosis and fix (NexusMind merge `0e80d92`: extracted normalization into `src/scoring/production_scorer.py` wrapper). The 2026-04-29 "fit on `weighted_average` directly" guidance below is still correct for first-fit on a fresh filter version, but the implication ("null `raw_weighted_average` is expected") is no longer load-bearing — production now populates both fields whenever `normalization.json` is present and `n_articles >= 200`. Methodological lesson: "by design" is a claim about the implementation, not the design doc; verify by reading the runtime.
+> **2026-05-04 RESOLVED**: This entry's "Not a bug — by design" framing was right about the *intended* architecture (NexusMind's runtime applies normalization downstream) but failed to verify the runtime actually existed. It didn't. The application code in `NexusMind/filters/common/filter_base_scorer.py` had been deleted on 2026-04-16 and was not restored — the byte-identical copies between repos masked the absence. All 7 filters were silently de-normalized for 18 days. See the "Manifest as Anti-Pattern" entry below for the full diagnosis and fix (NexusMind merge `0e80d92`: extracted normalization into `NexusMind/src/scoring/production_scorer.py` wrapper). The 2026-04-29 "fit on `weighted_average` directly" guidance below is still correct for first-fit on a fresh filter version, but the implication ("null `raw_weighted_average` is expected") is no longer load-bearing — production now populates both fields whenever `normalization.json` is present and `n_articles >= 200`. Methodological lesson: "by design" is a claim about the implementation, not the design doc; verify by reading the runtime.
 
 **Problem**: Investigating nature_recovery v2 normalization, found production output showing `raw_weighted_average: null` and `normalization_method: null` for 100% of v2 articles after 2026-04-17 (~129K articles, 12 days). Looked like the #36 "raw_weighted_average passthrough" fix had regressed.
 
@@ -878,7 +878,7 @@ Captured outputs (this is the deploy-claim verification trail the rule requires)
 - The defensive comments in earlier MEMORY.md / gotcha-log entries about "applied band-aid symlink" — replaced with structural verify gate.
 
 **What's still open** (deferred, separate PRs):
-- `deploy_filters.sh` rsync `--delete` deletes symlinks despite `*/model/` exclude. Real bug but no acute harm now that no symlink is needed.
+- `NexusMind/deploy_filters.sh` rsync `--delete` deletes symlinks despite `*/model/` exclude. Real bug but no acute harm now that no symlink is needed.
 - `nexusmind.service.d/override.conf` wait loop is broken for `Type=oneshot` services (`is-active --quiet` returns non-zero for `activating` state). Means the collision-prevention against ovrnews-summarize has been silently no-op since it was added. Needs `[[ "$(systemctl is-active ...)" =~ ^(active|activating)$ ]]` or `systemctl show -p ActiveState --value`.
 - The longer-term canonical alignment: migrate weights to `investment-risk/v6/model/` (matches llm-distillery's source-of-truth convention), remove the `investment_risk/` directory entirely, then the discovery winner flips to hyphen and everything matches.
 
@@ -910,22 +910,22 @@ Captured outputs (this is the deploy-claim verification trail the rule requires)
 
 1. **Architectural conflation.** `filters/common/filter_base_scorer.py` mixed shared model logic (calibration, gatekeeper, weighted average, tier) with NexusMind-only production runtime (normalization application, `score_scale_factor` fallback, `raw_weighted_average` audit). One file, two owners.
 2. **Manifest as response to (1).** `.nexusmind-owns` (introduced 2026-04-28 as #50) listed `filter_base_scorer.py` and `hybrid_scorer.py` and made `deploy_to_nexusmind.sh` skip them. The intent: prevent llm-distillery's copy from clobbering NexusMind's runtime additions. The effect: declared "this file is allowed to silently diverge between repos" — and the deploy script no longer actively maintained the relationship between the two copies.
-3. **Silent revert with no detector.** On 2026-04-16, NexusMind's normalization application code in `filter_base_scorer.py` was deleted (likely a `deploy_filters.sh` rerun that pulled from sadalsuud's main checkout before the wrapper code had been re-merged there — see lesson 1 below). Both copies became byte-identical (399 lines, no normalization). The manifest still claimed divergence. Nothing checked. The `_create_empty_result()` schema documented `weighted_average` as the field consumers read, and that field still got populated (with the raw score), so per-article logs looked structurally fine. Distribution-level sanity would have caught it; no one was watching at that granularity for 18 days.
+3. **Silent revert with no detector.** On 2026-04-16, NexusMind's normalization application code in `filter_base_scorer.py` was deleted (likely a `NexusMind/deploy_filters.sh` rerun that pulled from sadalsuud's main checkout before the wrapper code had been re-merged there — see lesson 1 below). Both copies became byte-identical (399 lines, no normalization). The manifest still claimed divergence. Nothing checked. The `_create_empty_result()` schema documented `weighted_average` as the field consumers read, and that field still got populated (with the raw score), so per-article logs looked structurally fine. Distribution-level sanity would have caught it; no one was watching at that granularity for 18 days.
 
 **Why the 2026-04-29 "Not a bug — by design" gotcha entry didn't catch it**: that investigation read the current `filter_base_scorer.py`, observed it didn't write `raw_weighted_average`, and (correctly) concluded those fields are added downstream by NexusMind's runtime. It assumed the runtime addition existed. It didn't grep NexusMind to verify. Pattern: "by design" is an architectural claim; verifying it requires reading the implementation, not the design doc. See the 2026-04-29 entry, now marked RESOLVED.
 
-**Fix** (NexusMind merge `0e80d92`, 2026-05-04): Path B over Path A. Extract production-runtime concerns into `NexusMind/src/scoring/production_scorer.py` — a wrapper class that composes any `FilterBaseScorer`/`HybridScorer` instance, loads `normalization.json` and `score_scale_factor` independently, and post-processes the base scorer's output to add `raw_weighted_average`, set `normalization_method ∈ {"percentile", "scale_factor", "none"}`, replace `weighted_average` with the normalized value, and reassign tier on normalized. Single composition site at `state.get_or_load_filter()` in NexusMind `deploy/gpu-server/main.py`. `filter_base_scorer.py` returns to pure shared math, byte-identical between repos. `.nexusmind-owns` goes empty; mechanism stays as escape hatch for genuine short-lived divergence with a tracked deadline. ADR-014 amended (application site → `production_scorer.py`; tier reassigned on normalized).
+**Fix** (NexusMind merge `0e80d92`, 2026-05-04): Path B over Path A. Extract production-runtime concerns into `NexusMind/src/scoring/production_scorer.py` — a wrapper class that composes any `FilterBaseScorer`/`HybridScorer` instance, loads `normalization.json` and `score_scale_factor` independently, and post-processes the base scorer's output to add `raw_weighted_average`, set `normalization_method ∈ {"percentile", "scale_factor", "none"}`, replace `weighted_average` with the normalized value, and reassign tier on normalized. Single composition site at `state.get_or_load_filter()` in NexusMind `deploy/gpu-server/main.py`. `filter_base_scorer.py` returns to pure shared math, byte-identical between repos. `.nexusmind-owns` goes empty; mechanism stays as escape hatch for genuine short-lived divergence with a tracked deadline. ADR-014 amended (application site → `NexusMind/production_scorer.py`; tier reassigned on normalized).
 
 **Verification**: Fresh sustainability_technology JSONL on sadalsuud, 2026-05-04 19:22 UTC pipeline run, 1142 articles: `weighted_average=1.81`, `raw_weighted_average=4.42`, `normalization_method="percentile"`, `tier="low"`. Both audit fields populated end-to-end for the first time since 2026-04-16. All 7 filters working post-deploy.
 
 **Lessons captured by NexusMind during the implementation** (cross-applicable here):
 
-1. **Hash-gated deploy scripts hide regressions outside the hashed paths.** `deploy_filters.sh` short-circuits if its inputs hash matches the previous run. The hash didn't include `src/scoring/`, so a wrapper-only change never busted it — and a fluxus-tick-triggered `nexusmind.service` ExecStartPre would silently re-deploy the *previous* (broken) state from sadalsuud's main branch, rolling back gpu-server every tick until the new code reached main. Compounding factor: `systemd`-driven self-correction in the wrong direction. Mitigation upstream of any future similar work: the hash MUST cover every directory whose contents the deploy script copies. Fix landed in NexusMind commit `66423ec`.
+1. **Hash-gated deploy scripts hide regressions outside the hashed paths.** `NexusMind/deploy_filters.sh` short-circuits if its inputs hash matches the previous run. The hash didn't include `src/scoring/`, so a wrapper-only change never busted it — and a fluxus-tick-triggered `nexusmind.service` ExecStartPre would silently re-deploy the *previous* (broken) state from sadalsuud's main branch, rolling back gpu-server every tick until the new code reached main. Compounding factor: `systemd`-driven self-correction in the wrong direction. Mitigation upstream of any future similar work: the hash MUST cover every directory whose contents the deploy script copies. Fix landed in NexusMind commit `66423ec`.
 2. **`HybridScorer` and `FilterBaseScorer` have asymmetric public surfaces.** NexusMind's wrapper threw three layered `AttributeError`s in production because `HybridScorer` doesn't expose `_get_filter_dir`, `FILTER_NAME`, or `_assign_tier` — those live on the `FilterBaseScorer` it composes via `stage2_scorer`. The wrapper now derives all three independently (filter_dir from `inspect.getfile(type(base))`, name from path, tier_thresholds from `base.TIER_THRESHOLDS` with `base.stage2_scorer.TIER_THRESHOLDS` fallback). Mitigation here: this gotcha follows up with a llm-distillery commit promoting `filter_dir` to a public property on both abstract bases so wrappers can rely on a stable API.
 
 **Meta-pattern (the load-bearing lesson)**: a manifest that says "this file is expected to diverge silently between repos" is, in steady state, indistinguishable from "this file's relationship is unmaintained." If divergence isn't actively maintained — or if the divergence reason resolves (BFloat16 casts back-ported, normalization wrapper extracted) — the entry stops protecting anything and starts hiding regressions. Default to extraction (composition over inheritance, wrapper classes over special-case manifests). Reserve the manifest for short-lived divergence with a tracked issue and a deadline; empty is the steady state. Cross-references: `.nexusmind-owns` updated header (2026-05-04), CLAUDE.md Hard Constraints amended, ADR-014 amended, NexusMind merge `0e80d92`, original llm-distillery#50.
 
-**Closure (2026-05-05)**: Cross-repo cleanup landed end-to-end. llm-distillery commit `1b7fef8` (this side) synced to NexusMind via `deploy_to_nexusmind.sh sustainability_technology v3` as `63c62f3` on the NexusMind side; NexusMind's wrapper-cleanup follow-up `3471c82` then collapsed the three-element fallback chain (`base.filter_dir`, `base.FILTER_NAME`, `base.TIER_THRESHOLDS` now resolve uniformly on either base type), dropping 17 lines from `production_scorer.py` and the `inspect` import along with them. Smoke battery on all 7 filters returned bit-identical scores to the pre-cleanup state (nature_recovery 9.36, belonging 6.82, sustainability_technology 7.57, uplifting 6.89, cultural-discovery 8.92, investment_risk 7.25 via scale_factor, foresight 6.07), confirming the simplification is functionally a no-op. Coordination shape that worked: NexusMind-first sequencing for the application-site move (Path B); llm-distillery-first sequencing for the API surface change (so the wrapper had stable properties to call before its cleanup landed). Both sequencings flow from "the side that *consumes* a contract waits for the side that *defines* it."
+**Closure (2026-05-05)**: Cross-repo cleanup landed end-to-end. llm-distillery commit `1b7fef8` (this side) synced to NexusMind via `deploy_to_nexusmind.sh sustainability_technology v3` as `63c62f3` on the NexusMind side; NexusMind's wrapper-cleanup follow-up `3471c82` then collapsed the three-element fallback chain (`base.filter_dir`, `base.FILTER_NAME`, `base.TIER_THRESHOLDS` now resolve uniformly on either base type), dropping 17 lines from `NexusMind/production_scorer.py` and the `inspect` import along with them. Smoke battery on all 7 filters returned bit-identical scores to the pre-cleanup state (nature_recovery 9.36, belonging 6.82, sustainability_technology 7.57, uplifting 6.89, cultural-discovery 8.92, investment_risk 7.25 via scale_factor, foresight 6.07), confirming the simplification is functionally a no-op. Coordination shape that worked: NexusMind-first sequencing for the application-site move (Path B); llm-distillery-first sequencing for the API surface change (so the wrapper had stable properties to call before its cleanup landed). Both sequencings flow from "the side that *consumes* a contract waits for the side that *defines* it."
 
 **Post-deploy fixture incompatibility (NexusMind `18ab194`, also 2026-05-05)**: After the `1b7fef8` sync landed in NexusMind as `63c62f3`, three tests in NexusMind's `tests/unit/test_shared_infrastructure.py` started failing: `_build_scorer` patched only `_get_filter_dir`, but my internal-caller migration in `1b7fef8` switched `_load_calibration` and `_load_preprocessing_config` from `self._get_filter_dir()` to `self.filter_dir`, and the property body returns `inspect.getfile(type(self)).parent` directly instead of delegating through the method — so the patched method was bypassed. NexusMind landed `18ab194` (fixture patches both surfaces with `PropertyMock` + `patch.object`, suite back to 659/659). I argued for the inverse fix on this side (flip the delegation so the property body becomes `return self._get_filter_dir()`, restoring single-patch idiom) but the cost-benefit didn't justify reverting working production code for a stylistic gain — "shipped + verified" outranks "architecturally cleaner that requires re-deploy."
 
@@ -995,13 +995,13 @@ Captured outputs (this is the deploy-claim verification trail the rule requires)
 
 ## deploy_filters.sh rsync Excludes model/ Subdir (cd v5 deploy, 2026-05-31)
 
-**Problem**: After running `deploy_filters.sh` from sadalsuud to gpu-server for cd v5, the scorer service started but threw `Missing model weights: cultural_discovery/v5/model` on first scoring request. Filter package, config, calibration, probe — all present. Only `model/adapter_model.safetensors` + `tokenizer.json` were missing.
+**Problem**: After running `NexusMind/deploy_filters.sh` from sadalsuud to gpu-server for cd v5, the scorer service started but threw `Missing model weights: cultural_discovery/v5/model` on first scoring request. Filter package, config, calibration, probe — all present. Only `model/adapter_model.safetensors` + `tokenizer.json` were missing.
 
-**Root cause**: `deploy_filters.sh` uses `rsync --exclude='model/'` for delivery from sadalsuud → gpu-server. The reasoning is sound on sadalsuud's side (sadalsuud uses Hub inference, no local model/ needed), but applies the same exclude when pushing onward to gpu-server, which DOES need the model/ on disk for local LoRA loading. The model arrived on sadalsuud via the llm-distillery deploy commit but never made the second hop.
+**Root cause**: `NexusMind/deploy_filters.sh` uses `rsync --exclude='model/'` for delivery from sadalsuud → gpu-server. The reasoning is sound on sadalsuud's side (sadalsuud uses Hub inference, no local model/ needed), but applies the same exclude when pushing onward to gpu-server, which DOES need the model/ on disk for local LoRA loading. The model arrived on sadalsuud via the llm-distillery deploy commit but never made the second hop.
 
 **Fix**: scp model files directly from sadalsuud (or local llm-distillery checkout) to `/home/hcl/NexusMind/filters/cultural_discovery/v5/model/`: `scp -p adapter_model.safetensors tokenizer.json tokenizer_config.json adapter_config.json README.md gpu-server:/home/hcl/NexusMind/filters/cultural_discovery/v5/model/`. After scp, scorer restart loaded v5 successfully.
 
-**Lesson**: The two NexusMind hosts have different filter-package requirements (sadalsuud: Hub inference, model/ optional; gpu-server: local LoRA load, model/ required). A single rsync exclude rule can't be right for both. Either (a) split the deploy into two rsync invocations with different exclude lists, or (b) drop the exclude entirely and let model/ replicate everywhere. Worth a fix to `deploy_filters.sh` before the next filter cycle — first-deploy of a new filter version will hit this every time.
+**Lesson**: The two NexusMind hosts have different filter-package requirements (sadalsuud: Hub inference, model/ optional; gpu-server: local LoRA load, model/ required). A single rsync exclude rule can't be right for both. Either (a) split the deploy into two rsync invocations with different exclude lists, or (b) drop the exclude entirely and let model/ replicate everywhere. Worth a fix to `NexusMind/deploy_filters.sh` before the next filter cycle — first-deploy of a new filter version will hit this every time.
 
 **Promoted to**: not promoted yet — tracked as #67 with proposed fix (Option B: drop the model/ exclude, add post-deploy /score smoke test). Promote to MEMORY.md if it recurs before fix lands.
 
@@ -1127,13 +1127,13 @@ change. The most-referenced piece of process guidance can be the one that was ne
 **Fix**: Deployed the ORIGINAL approved checkpoint (backed up in /tmp), not the re-train. Lesson: never assume a re-run reproduces an evaluated model — if you must re-train for artifact hygiene, re-run the GATE on the re-trained weights and compare before shipping. Better: back up the approved model+calibration+metadata together at approval time so no re-train is needed.
 
 ## Deploy Staged, Not Activated: sadalsuud Down + Discovery=Latest = Partial-Deploy Landmine (2026-07-09)
-**Problem**: At deploy time, `ssh sadalsuud` timed out (the host that rsyncs NexusMind→gpu-server) and the gpu-server link was flaky. NexusMind `filter_loader` discovers the LATEST version, so v4 landing in gpu-server's NexusMind dir would auto-activate on the next pipeline run — but `deploy_filters.sh` excludes `model/` (#67), so a code-only rsync would crash the whole scorer on the strict startup weight-check.
+**Problem**: At deploy time, `ssh sadalsuud` timed out (the host that rsyncs NexusMind→gpu-server) and the gpu-server link was flaky. NexusMind `filter_loader` discovers the LATEST version, so v4 landing in gpu-server's NexusMind dir would auto-activate on the next pipeline run — but `NexusMind/deploy_filters.sh` excludes `model/` (#67), so a code-only rsync would crash the whole scorer on the strict startup weight-check.
 **Root cause**: The canonical persistent chain requires sadalsuud; bypassing it risks a code-without-weights activation that the discovery=latest + strict-weight-check turns into a full-scorer outage — exactly the class of failure the user flagged.
 **Fix**: Staged v4 in Hub + llm-distillery git only (prod untouched); did NOT push to NexusMind git (would queue the broken activation). Documented the remaining atomic activation + layered safety gate in `docs/nature_recovery_v4_DEPLOY_COMPLETION.md`. Deferred activation is the right call when a required host is down and the pipeline can't be verified end-to-end. deploy_to_nexusmind.sh also still Windows-pathed (`C:/local_dev` + `python` not `python3`) — needs Linux porting.
 
 ## Stale `score_scale_factor` Applied as Normalization Fallback on a Fresh Version (2026-07-10)
 **Problem**: nature_recovery v4 deployed with `normalization.json` correctly removed (fresh version), but a live-scoring proof showed production still inflating scores: `raw_weighted_average 5.34 → weighted_average 7.32`, `normalization_method: "scale_factor"`. The config's `score_scale_factor` was the STALE v2 value (1.3708).
-**Root cause**: NexusMind's `production_scorer.py` applies `score_scale_factor` as the LINEAR FALLBACK when `normalization.json` is absent (ADR-014). Removing normalization.json (right for a fresh version) makes production fall back to whatever `score_scale_factor` is — and it was copied from v2 (1.3708). The 1.37× stretch both mis-set the surfacing threshold (my op-point 3.75 was tuned on the CALIBRATED score, not the stretched one) and DEFEATED the gatekeeper design (capped 3.5 → 4.8, above the 3.75 medium cut → junk would surface).
+**Root cause**: NexusMind's `NexusMind/production_scorer.py` applies `score_scale_factor` as the LINEAR FALLBACK when `normalization.json` is absent (ADR-014). Removing normalization.json (right for a fresh version) makes production fall back to whatever `score_scale_factor` is — and it was copied from v2 (1.3708). The 1.37× stretch both mis-set the surfacing threshold (my op-point 3.75 was tuned on the CALIBRATED score, not the stretched one) and DEFEATED the gatekeeper design (capped 3.5 → 4.8, above the 3.75 medium cut → junk would surface).
 **Fix**: set `score_scale_factor: 1.0` for the fresh version (no stretch until normalization refits on production CDF). Verified live: weighted_average now = raw calibrated (5.34), normalization_method "none", tier medium. **Rule: a fresh version must ship BOTH no normalization.json AND `score_scale_factor: 1.0` — removing one without the other silently applies the old linear stretch.** Only a live-scoring check (not the base-scorer smoke test, which doesn't apply the wrapper) catches this.
 
 ## Documented "Operating Point 3.75" Was Wired Into Nothing — Ran at Hardcoded 4.0 (2026-07-10)
@@ -1255,7 +1255,7 @@ rules, anchor with a leading slash unless every-depth matching is genuinely inte
 **Fix**: Gate emptiness on `len(content.strip()) < 25` (characters). Also split the junk signatures into STRONG (single-hit) vs WEAK (needs ≥2, or one in a ≤8-word stub) so genuine short in-lens briefs mentioning one topical phrase ("cookie consent") survive. Caught by the round-1 code-review battery; regression tests added. Rule: any length/emptiness heuristic on multilingual text must be character-based, and English signature regexes must never be the *only* thing standing between content and the model — they let non-English junk through (acceptable; the oracle catches it) but must never DROP non-English real content.
 
 ## A scored-gate defined over the WRONG sentinel reports a false PASS — RECURRENCE (2026-07-20)
-**Problem**: The staged `partB_gate.py` (pre-spend gate on solutions v4) computed positives as `solution_type != "not_a_solution"`, but the v4 prompt emits `solution_type == "none"` for negatives (`content_type == "not_a_solution"` is the *other* field). So the sentinel never matched → the gate counted **all 160 rows as positive → reported 100% positive → PASS** on its first run. A second bug in the same script: `solution_concreteness` is a scored dimension, nested `{score, evidence}`, but the gate did `(sa(r).get("solution_concreteness") or 0) >= 7` on the dict → `TypeError`. Correct numbers were 39% positive / 61% not_a_solution (a literal `<50%` gate FAIL).
+**Problem**: The staged `partB_gate.py` (pre-spend gate on solutions v4; a session scratch script staged on the remote host, never committed to this repo) computed positives as `solution_type != "not_a_solution"`, but the v4 prompt emits `solution_type == "none"` for negatives (`content_type == "not_a_solution"` is the *other* field). So the sentinel never matched → the gate counted **all 160 rows as positive → reported 100% positive → PASS** on its first run. A second bug in the same script: `solution_concreteness` is a scored dimension, nested `{score, evidence}`, but the gate did `(sa(r).get("solution_concreteness") or 0) >= 7` on the dict → `TypeError`. Correct numbers were 39% positive / 61% not_a_solution (a literal `<50%` gate FAIL).
 **Root cause**: **Second occurrence of the 2026-07-17 "gate defined over a string the oracle never emits" gotcha** (that one: config `not_a_solution_article` reason; this one: gate `!= "not_a_solution"` vs actual `"none"`). Same shape: the gate script was authored against an *assumed* output schema, never diffed against a real scored row. The nested-dim crash is the same "read the field the scorer actually writes" failure in structural form.
 **Fix**: Ran the gate against a real DeepSeek-scored sample, saw the nonsensical 100%, traced both bugs. Fixed `is_pos` to `not in ("none", None)` and `conc()` to unwrap `.score`. **Rule (now 2×): before trusting ANY scored-gate PASS, run it on one real oracle-scored row and eyeball the numbers — a gate whose positive-rate reads 0% or 100% is almost always keyed on the wrong sentinel, not a real result. Diff the gate's literal enum strings + field nesting against an actual scored record, not the prompt's prose.** Promoted to MEMORY.md.
 
@@ -1315,7 +1315,7 @@ the outer double-quoted `-c` string (and pre-3.12 f-strings can't reuse the deli
 **Root cause**: nested-quote hell in one-liners shipped over ssh; the f-string's `{...}` contains
 double-quoted dict keys / format specs that clash with the command's own quoting.
 **Fix**: don't ship non-trivial python as an ssh `-c` one-liner. Write it to a `.py` file, `scp` it,
-and run `python3 file.py` (used for `gen_ab.py`, `gate_diag.py`). If a one-liner is unavoidable, use a
+and run `python3 file.py` (used for `gen_ab.py`, `gate_diag.py` — both session scratch scripts living in gpu-server's `~/llm-distillery/`, not in this repo). If a one-liner is unavoidable, use a
 heredoc (`python3 - <<'EOF'`) so quotes aren't doubly escaped, and single-quote f-string keys.
 
 ### Ollama hogs GPU during training (2026-07-26)
@@ -1349,7 +1349,7 @@ heredoc (`python3 - <<'EOF'`) so quotes aren't doubly escaped, and single-quote 
 **Fix**: Add ALL known FP classes as hard negatives in the same retrain (8 ovr.news + 4 heldout = 12 total). After adding heldout FPs too, all 12 resolved. Lesson: when doing a corrective retrain, add every panel-confirmed FP you have, not just the ones from the most recent investigation.
 
 ### Duplicate Config Block from Rebase Merge (2026-07-28)
-**Problem**: After `git pull --rebase` on NexusMind, `config/app.yaml` had TWO `violence_promotion` blocks — one from upstream, one from the rebased commit. YAML parses last-wins silently.
+**Problem**: After `git pull --rebase` on NexusMind, `NexusMind/config/app.yaml` had TWO `violence_promotion` blocks — one from upstream, one from the rebased commit. YAML parses last-wins silently.
 **Root cause**: Both the upstream and our commit added a `violence_promotion` section in the same neighborhood. The rebase didn't flag a conflict because they weren't on adjacent lines.
 **Fix**: Manual dedup after noticing the duplication. Check config files after rebase merges, especially when both sides add new sections.
 
@@ -1364,9 +1364,9 @@ heredoc (`python3 - <<'EOF'`) so quotes aren't doubly escaped, and single-quote 
 **Fix**: Panel survived on 3-lab majority (every article kept ≥3 valid votes — verified before trusting the result). Lesson: before a multi-model Ollama panel, check no pipeline cycle is due (`systemctl list-timers`/`pgrep -f scripts/main.py` on sadalsuud); after any partial-error panel, recompute per-article valid-vote counts before using majorities.
 
 ### RUNBOOK Durability Note Contradicted deploy_filters.sh — Wrong Deploy Plan Twice (2026-07-30)
-**Problem**: Session first planned a manual scorer deploy ("pull + deploy_filters.sh next session"), then a reviewer warned the pushed threshold change could produce an unvalidated v3@0.90 regime. Both assessments were wrong about propagation: RUNBOOK §durability says changes to NexusMind `deploy/gpu-server/main.py` "will not auto-propagate", but `SCORER_PATHS` in `deploy_filters.sh` has included NexusMind `deploy/gpu-server/main.py` (and `src/scoring/`, smoke articles) since after that note was written.
+**Problem**: Session first planned a manual scorer deploy ("pull + deploy_filters.sh next session"), then a reviewer warned the pushed threshold change could produce an unvalidated v3@0.90 regime. Both assessments were wrong about propagation: RUNBOOK §durability says changes to NexusMind `deploy/gpu-server/main.py` "will not auto-propagate", but `SCORER_PATHS` in `NexusMind/deploy_filters.sh` has included NexusMind `deploy/gpu-server/main.py` (and `src/scoring/`, smoke articles) since after that note was written.
 **Root cause**: Stale doc prose treated as authoritative over the script it describes. Recurrence of the "'by design' is a claim about the implementation — read the runtime" lesson (2026-05-04 manifest entry).
-**Fix**: Read `deploy_filters.sh` directly: ExecStartPre auto-fast-forwards when any SCORER_PATHS entry differs from origin, pulling the whole commit and shipping config + scorer atomically — so a pushed scorer-touching commit deploys itself next cycle, and the mixed regime can only arise from a manual `git pull` without `deploy_filters.sh`. RUNBOOK corrected (NexusMind, 2026-07-30).
+**Fix**: Read `NexusMind/deploy_filters.sh` directly: ExecStartPre auto-fast-forwards when any SCORER_PATHS entry differs from origin, pulling the whole commit and shipping config + scorer atomically — so a pushed scorer-touching commit deploys itself next cycle, and the mixed regime can only arise from a manual `git pull` without `NexusMind/deploy_filters.sh`. RUNBOOK corrected (NexusMind, 2026-07-30).
 
 ### Evaluation Exclusion Sets Must Be Symmetric — Excluding All Panel-Graded Rows Biased the v5 Table Both Ways (2026-07-30)
 **Problem**: The v5 heldout table excluded all 33 panel-graded ids. That deleted v4's own 5 FPs (v4 showed a fake precision 1.000) AND removed the only rows where v5's over-block signal lived (v5 flagged 6/7 panel-REJECTED rows). The published comparison favored whichever model's errors happened to be graded.
@@ -1433,7 +1433,7 @@ heredoc (`python3 - <<'EOF'`) so quotes aren't doubly escaped, and single-quote 
 
 **Problem**: The shadow log counted 8,759 articles for a cycle where the filtered file held 8,283 — and 8,765 vs 6,572 for investment_risk. Read as the same set, investment_risk's prefilter pass rate came out 0.129 low.
 
-**Root cause**: `src/scoring/source_filter.py` sets `passed_prefilter = False` **after** scoring for articles whose `type_classification` is in the filter's `excluded_source_types` (all six filters enforce). `scripts/main.py` writes only passers, so those articles are scored — hence counted by any scorer-side log — and then discarded. CLAUDE.md documented the *first* exclusion on this file (the passers-only write guard) which made it feel like a known, understood artefact.
+**Root cause**: `NexusMind/src/scoring/source_filter.py` sets `passed_prefilter = False` **after** scoring for articles whose `type_classification` is in the filter's `excluded_source_types` (all six filters enforce). `NexusMind/scripts/main.py` writes only passers, so those articles are scored — hence counted by any scorer-side log — and then discarded. CLAUDE.md documented the *first* exclusion on this file (the passers-only write guard) which made it feel like a known, understood artefact.
 
 **Fix**: `memory/nexusmind-data-sources.md`, and the shadow log now emits `pre_source_filter=true` on every line so the caveat travels with the number. **Generalisation worth keeping: knowing one thing a source excludes actively suppresses the question of whether it excludes anything else.** The first exclusion was in CLAUDE.md, which is precisely why the second went unlooked-for.
 
@@ -1481,7 +1481,7 @@ heredoc (`python3 - <<'EOF'`) so quotes aren't doubly escaped, and single-quote 
 
 **Root cause**: Nothing serialises two agents on one working tree. Each saw a tree containing its own changes plus changes it had not made, and `git add -A` cannot tell the difference. The staging session had deliberately *not* committed yet — it was still verifying — which is exactly the window that made the sweep possible.
 
-**RECURRED 2026-08-03 (2nd occurrence), same tree, different verb.** The NexusMind checkout again held another session's uncommitted work (`image_analysis.py`, `contracts/`, `docs/hypothesis-log.md`). This time the sweep was `git stash` with no pathspec, run to baseline a test suite: it stashed the other session's changes too, so the "before" run measured a tree that had never existed and reported 8 phantom failures. Corrected by re-running with `git stash push <paths>`. **The rule below generalises beyond `git add`: any whole-tree verb — `add -A`, `stash`, `checkout .`, `clean` — has the whole tree as its blast radius, including work you cannot see.**
+**RECURRED 2026-08-03 (2nd occurrence), same tree, different verb.** The NexusMind checkout again held another session's uncommitted work (`NexusMind/image_analysis.py`, `contracts/`, `docs/hypothesis-log.md`). This time the sweep was `git stash` with no pathspec, run to baseline a test suite: it stashed the other session's changes too, so the "before" run measured a tree that had never existed and reported 8 phantom failures. Corrected by re-running with `git stash push <paths>`. **The rule below generalises beyond `git add`: any whole-tree verb — `add -A`, `stash`, `checkout .`, `clean` — has the whole tree as its blast radius, including work you cannot see.**
 
 **Fix**: Two rules. (1) **Stage explicitly** — `git add <paths>`, never `-A`, whenever a parallel session might be active; the blast radius of `-A` is the whole tree, not your edit. (2) When a sweep is discovered **after push**, do not rebase — record it. `c1df13c` documents what `c932065` actually carries. History surgery on a pushed commit that another session may hold is worse than a wrong message with a correction next to it. Detection: `git show --stat <sha> -- <path>` on a commit whose message does not mention that path.
 
@@ -1523,7 +1523,7 @@ heredoc (`python3 - <<'EOF'`) so quotes aren't doubly escaped, and single-quote 
 
 **Problem**: Asked how to make scores reproducible (#95), I recommended "pin the production batch size," said so to the owner, and got approval to implement it. `DEFAULT_BATCH_SIZE = 16` was already fixed and never varies in production. The change would have been a no-op shipped with a confident rationale.
 
-**Root cause**: #95's own text says "consistent with GPU kernel reduction order varying with the batch dimension," and I reasoned from that sentence to a remedy without opening the code that forms batches. The real variable was one line away — `random.shuffle(articles)`, unseeded, in `scripts/main.py` — batch *size* was constant and batch *composition* was not. Diagnosing from a symptom description rather than the mechanism produces a fix aimed at the wrong noun.
+**Root cause**: #95's own text says "consistent with GPU kernel reduction order varying with the batch dimension," and I reasoned from that sentence to a remedy without opening the code that forms batches. The real variable was one line away — `random.shuffle(articles)`, unseeded, in `NexusMind/scripts/main.py` — batch *size* was constant and batch *composition* was not. Diagnosing from a symptom description rather than the mechanism produces a fix aimed at the wrong noun.
 
 **Fix**: Before recommending a change to a mechanism, read the code that implements it, not the issue that describes it. Detection: if the proposed fix is "pin/disable/configure X," grep for X's current value first — if it is already pinned, the diagnosis is wrong. Same family as "don't infer runtime behavior from config keys," one level up: don't infer runtime behavior from an issue's prose either.
 
@@ -1578,7 +1578,7 @@ cannot see as a bug even when the output looks right.
 
 **Problem**: `git commit --amend` on an ovr.news branch produced a *second* commit with the
 same subject rather than replacing the first, and pulled another session's in-progress
-`docs/BRAND.md` edit into it. The original commit — carrying the binary blob above —
+`ovr.news/docs/BRAND.md` edit into it. The original commit — carrying the binary blob above —
 survived as an ancestor.
 
 **Root cause**: lint-staged stashes unstaged changes, runs prettier, then restores them
@@ -1680,7 +1680,7 @@ that references it — the guard you just wrote for one field applies to the oth
 Dutch disclosure strings are unverified" — implying a hole in the change under test.
 
 **Root cause**: absence of output has at least two causes — *not exercised* and *not
-built at all* — and the first was assumed without checking. `src/i18n/translations.ts`
+built at all* — and the first was assumed without checking. `ovr.news/src/i18n/translations.ts`
 says at the top that Dutch was paused project-wide on 2026-04-21 and `languages` is
 `en` + `src` only. There were no Dutch pages to render for **any** string, so the
 observation said nothing about the new code.
@@ -1728,7 +1728,7 @@ than one reviewer's confidence.
 
 ### The guard test existed, the surface table grew, and nobody connected them (2026-08-06)
 
-**Problem**: `tests/ai-disclosure.test.ts` exists to enforce ADR-003's surface table and
+**Problem**: `ovr.news/tests/ai-disclosure.test.ts` exists to enforce ADR-003's surface table and
 says so in its own header: *"Keep this file in sync with the surface table in ADR-003."*
 Three rows were added to that table and the test file was not touched. Measured: delete
 the entire disclosure block from `Layout.astro` and the suite still passes 1,103/1,103.
@@ -1747,7 +1747,7 @@ it guards.** A guard nobody has watched fail is a guard nobody has tested.
 
 **Problem**: `/review-changes` in llm-distillery ran a checklist written for the
 *personal notes* repo — tiering on `Nieuw huis/`, `career/jobspy/`, `modellen/*.py`,
-`principes.md`, and asserting *"the container itself has no git"*, which is false here.
+`ovr.news/principes.md` (paths in the *personal notes* repo — `principes.md` is at `personal/Nieuw huis/principes.md`; none of them resolve in this estate, which is the point), and asserting *"the container itself has no git"*, which is false here.
 The tier table had to be rewritten mid-run to mean anything. Meanwhile this repo's own
 `.claude/skills/review-changes/` — 219 lines, re-mapped to `filters/common/*.py`,
 `ground_truth/batch_scorer.py` and the gate/normalization scripts — sat unused.
