@@ -32,6 +32,14 @@ action per parked LD#85). ovr#204 handoff comment posted (issuecomment-513981027
 Note: gpu-server:8000 is DOWN between cycles by design (static unit, started
 per cycle, ExecStopPost restarts ollama; gpu-server logs are UTC = local−2).
 
+**Re-verified 2026-08-06** (first run of these assertions since 07-31; they had
+slipped three curate passes). Blocked count still climbing monotonically:
+1208 (Jul 31 00:17) → **2573** (Aug 6 08:18), 234 Loaded lines in the window,
+no gap. Rescore reproduced the 07-31 numbers to 4 decimals on both articles —
+Alonso v3 0.2838 / v4 0.1954 / v5 0.2766, Devos v3 0.6817 / v4 0.4376 /
+v5 0.1218 — so the two live v5 FNs below are still exactly as characterised,
+and the 0.4376 production stamp reproduces.
+
 **2026-07-31 owner obit sighting on ovr.news — diagnosed, NOT an enforcement
 failure.** Of 133 post-enforcement articles: zero obits (enforcement works).
 But **47 obit-flagged shadow-era carryovers (all ≥0.85) are live on the site**

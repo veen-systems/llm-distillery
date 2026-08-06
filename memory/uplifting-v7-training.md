@@ -7,6 +7,7 @@ type: project
 # Uplifting v7 (current Thriving-tab filter)
 
 ## Status: Deployed to NexusMind (local file copy — v7 has NO HF Hub repo, no inference_hub.py). Hybrid inference added 2026-04. Serves the ovr.news Thriving tab. Thriving v1 was the intended successor but is PARKED indefinitely per ADR-015. (CLAUDE.md table now correctly says NO_HUB — the 2026-04-19 audit finding was fixed; stale-note corrected 2026-07-30.) <!-- verify: ssh -o BatchMode=yes -o ConnectTimeout=10 gpu-server 'test -f ~/NexusMind/filters/uplifting/v7/model/adapter_model.safetensors && echo PASS || echo FAIL' 2>/dev/null || echo ERROR -->
+<!-- 2026-08-06: PASS — /home/hcl/NexusMind/filters/uplifting/v7/model/adapter_model.safetensors, 52,259,056 bytes, mtime Apr 14 06:19; dir also holds adapter_config.json + tokenizer{,_config}.json + README.md. First run of this assertion since it was rewritten. -->
 <!-- 2026-07-17: verify command rewritten — the old one probed C:/local_dev (Windows workstation, stale) and the LOCAL clone's model/, which is gitignored and absent on this Linux machine. The deployment claim is about gpu-server, so probe gpu-server; ERROR here means no SSH route from this workstation, not a false claim. NB: v7 weights are NO_HUB and absent from both local repos on this machine — the only copies are gpu-server + the old Windows box. -->
 
 The sections below are kept as training-run history — useful when re-training or comparing future successors, but no longer the current production status.
