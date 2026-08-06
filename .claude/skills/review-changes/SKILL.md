@@ -14,9 +14,27 @@ this repo would fall through to LOW and the skill would quietly do nothing —
 which is this repo's own signature defect (NM#284, LD#94, NM#281). Tiers below
 key on what llm-distillery actually ships.
 
+**This file is deliberately PROJECT-LOCAL.** Until 2026-08-06 a
+`~/.claude/skills/review-changes` symlink pointed at the *personal notes* repo and
+**won over this file** — `/review-changes` here ran a checklist tiered on
+`Nieuw huis/` and `modellen/*.py`. The symlink is gone; if a global of this name
+ever reappears, this adaptation is silently shadowed again. Check the "Base
+directory" line the invocation prints. See `memory/gotcha-log.md` (2026-08-06).
+
+Four items were ported on 2026-08-06 from that divergent copy before its symlink
+was removed, and from a parallel harvest in ovr.news: the untracked-file scan, two
+adversarial questions, the re-derive-every-number rule, and the read-the-whole-
+section rule.
+
 ## Step 1 — Diff and classify
 
-Run `git diff --stat` and `git diff --cached --stat`. Classify each changed file:
+Run `git diff --stat` and `git diff --cached --stat`, **and `git status -s` for
+untracked files**. Untracked files show in no diff, and they are usually brand-new
+code rather than an edit to already-reviewed code — so they are the *highest*-risk
+part of a change, not the lowest. A new `scripts/diagnostics/*.py` or a new
+`filters/*/v*/` package is exactly what a diff-only scan walks past.
+
+Classify each changed file:
 
 | Tier | File patterns | Depth |
 |------|-------------|-------|
@@ -125,6 +143,12 @@ For each numeric or empirical claim:
    clustering, AND an explicit statement of whether selection into the sample
    depends on the quantity being compared?
 5. Does the claim carry a verification command, so it can decay loudly?
+6. **Re-derive every number from the tool that produced it — never carry one
+   across from adjacent prose, including prose already committed here.** On
+   2026-08-06 a review found `GPTBot 401 domains` published in a public ADR and
+   two other files: it exceeded the 333 total stated four lines above it, and was
+   a count of matching *lines*, not domains. A figure that is a subset of a stated
+   total must be checked against that total before it ships.
 
 Report: CLAIM SUPPORTED or CLAIM UNSUPPORTED, naming the missing evidence.
 ```
@@ -141,7 +165,12 @@ For each changed file:
 3. Are there SILENT failure modes — things that pass but are wrong?
 4. If this is a test change: what real failure does the weaker test now pass?
 5. If this touches filters/common/: what breaks in NexusMind on the next sync?
-6. If this touches a threshold, weight or op-point: what is the recall cost, and
+6. If this touches a skill, agent, template or ADR: what would a future session
+   break by following the new version? These are read by someone who was not here.
+7. If this writes a field consumed downstream (a score, a flag, a label, a tier):
+   could it be confidently WRONG rather than merely absent? A wrong score that
+   looks plausible outranks a missing one — see LD#91, ovr#296.
+8. If this touches a threshold, weight or op-point: what is the recall cost, and
    was it measured or assumed?
 
 Default stance: refuted=true. Mark NOT REFUTED only after a thorough attempt.
@@ -154,16 +183,20 @@ Report: REFUTED (with failure scenario) or NOT REFUTED.
 ```
 Review documentation changes for accuracy against disk state.
 
-1. Does every file path mentioned actually exist? (Filter versions are removed
+1. **Re-read the whole section, not the diff.** The diff shows what changed and
+   never what the change contradicted. On 2026-08-06 three of four blockers were
+   stale sentences sitting a few paragraphs from correct new text, inside files
+   the same commit had edited.
+2. Does every file path mentioned actually exist? (Filter versions are removed
    over time — sustainability_technology v3 and foresight v1 are gone.)
-2. Does every command use correct flags and syntax? Do the PYTHONPATH= and
+3. Does every command use correct flags and syntax? Do the PYTHONPATH= and
    MSYS_NO_PATHCONV= prefixes match the documented ones?
-3. Do version numbers, MAE figures, dates and issue references match what is
+4. Do version numbers, MAE figures, dates and issue references match what is
    actually shipped? Cross-check the CLAUDE.md filter table against
    filters/*/v*/ on disk.
-4. Is an issue number expanded on first use, per CLAUDE.md "How To Write
+5. Is an issue number expanded on first use, per CLAUDE.md "How To Write
    Answers Here"?
-5. Internal inconsistencies between two places in the same doc set?
+6. Internal inconsistencies between two places in the same doc set?
 
 Report: ACCURATE or INACCURATE, with the specific mismatch.
 ```

@@ -178,4 +178,4 @@ This project is a source project for [augmented-engineering](https://github.com/
 
 ---
 
-*Last updated: 2026-08-05 (TDM/training-data position recorded — #28; score noise floor #95 + seeded cycle replay; commerce provenance fix; sustech/foresight removed)*
+*Last updated: 2026-08-06 (review battery over the 08-05 work — 4 blockers fixed; `review-changes` is project-local again after a global symlink shadowed it; TDM/training-data position recorded — #28; score noise floor #95)*
