@@ -54,6 +54,37 @@ cause.
 - **Noise floor recorded** (LD `efab69d`) in `docs/FILTER_PLAYBOOK.md` §7, the
   `ground_truth_gate.py` docstring, and CLAUDE.md's hard constraints.
 
+## The owner decision, 2026-08-06 (#95 step 2)
+
+**Budget for the floor; do not try to remove it.** Options put to the owner were
+(a) declare a noise margin, (b) test the fixed-length-padding hypothesis first,
+(c) both. Chosen: **(a), no experiment.** The padding test stays unrun.
+
+Note the option that was *not* available: "pin a batch size in production."
+`DEFAULT_BATCH_SIZE = 16` (`filters/common/filter_base_scorer.py:50`) is already
+fixed and never varies in production — the variable is batch *composition*, which
+is what the seeding addressed. #95's own "suggested next steps" text offered
+pinning as a live option; it was not one.
+
+**The rule, as shipped:** an article predicted within **0.16** of the surfacing
+threshold is *indeterminate* — the batch decided it, not the model. Every metric
+computed at that threshold carries a band, and **two models whose bands overlap
+are NOT DISTINGUISHABLE**. Binds the ground-truth gate, FN-deltas, op-point
+re-derivations (#87) and short-content cap measurements (#93 step 4).
+
+`scripts/gate/ground_truth_gate.py` computes it (`--noise-floor`, default 0.16;
+`0` reproduces pre-2026-08-06 runs). Worked example — `solutions v6` on its own
+held-out test set, 19 of 1,032 indeterminate:
+
+```
+F1     0.739 [0.712, 0.771]
+recall 0.671 [0.659, 0.707]
+prec   0.824 [0.775, 0.849]
+```
+
+A candidate landing anywhere inside that band has not beaten v6.
+<!-- verify: grep -q "NOT DISTINGUISHABLE" scripts/gate/ground_truth_gate.py && echo PASS || echo FAIL -->
+
 **Still open:** whether scores can be made a function of the article alone.
 Untested hypothesis — if batches pad to the longest article *in the batch*, an
 article's computation depends on its batch-mates, and fixed-length padding
