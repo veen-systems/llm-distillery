@@ -1,0 +1,180 @@
+# Cultural Discovery Filter - Version 6.0 (IN DEVELOPMENT — #98)
+#
+# v6 target: move topic screening from keyword rules to a multilingual e5 probe.
+# Scope agreed with the owner 2026-08-06: PROBE FIRST, DIMENSIONS LATER. The
+# scoring strand (dimension weights, the 4.0 op-point, heritage_significance's
+# apparent near-constant output) stays on #87 and is blocked on #95 regardless.
+#
+# Status: probe trained and under measurement. The keyword topic gate below is
+# STILL LIVE and unchanged from v5 — it is not removed until the probe beats it
+# on held-out ground truth (#98 criteria 1-3, ADR-021). Do not read the presence
+# of hybrid_inference as "the gate is gone".
+
+filter:
+  name: cultural_discovery
+  version: "6.0"
+  created: "2026-08-06"
+  description: "Rate content for cultural discovery and cross-cultural connection value"
+  focus: "DISCOVERIES about art, culture, history AND CONNECTIONS between peoples/civilizations"
+
+  changelog:
+    - version: "6.0"
+      date: "2026-08-06"
+      changes:
+        - "#98: added a multilingual-e5-small Stage-1 probe (hybrid_inference). Rationale: cultural_discovery was the only lens filter screening on keyword stems; nature_recovery v4 and solutions v6 delegate topic judgment to an e5 probe, and an embedding probe cannot have a per-language keyword-coverage gap by construction — which is exactly the defect #86 spent 2026-08-06 patching by hand (453 stems, ~25 languages)."
+        - "Probe trained recall-first (--objective recall --target-fn 0.02), NOT with the default L1 regression objective. MEDIUM+ is 9.0% of the label set (771/8,551), well under the ~25% line in docs/FILTER_PLAYBOOK.md, and L1 floor-collapses on that balance."
+        - "Prefilter carried over from v5 UNCHANGED, keyword topic gate included. Removal is gated on the probe beating the gate on held-out ground truth (ADR-021), not on the template saying so."
+        - "Dimensions, weights, tier thresholds and the evidence_quality gatekeeper unchanged from v5 — the scoring strand is #87 and is blocked on #95."
+        - "Reused v5's label set (datasets/training/cultural-discovery_v5, 6839/855/857). No new oracle scoring in this version."
+    - version: "5.0-draft"
+      date: "2026-05-29"
+      changes:
+        - "Prompt v2.0: added 5 pre-classification flags (F, G, H, I, K) for historical-harm reckoning, commemoration, perpetrator-biography, decline-loss, launch-without-outcomes"
+        - "J (personal death/grief) intentionally omitted — handled by universal obit detector (filters/common/obit_signal.py; trained detector per llm-distillery#51)"
+        - "Added KEY PRINCIPLE — TRAJECTORY OVER VOCABULARY block"
+        - "Added 7 contrastive examples (#13-19) covering each new pattern + repatriation carve-out"
+        - "Added 'lowest max_score wins' rule when multiple flags apply"
+        - "Added CAP ENFORCEMENT (HARD RULE) — clamp all dimension scores at max_score (calibration revealed v4-style 'soft cap' fails to enforce arithmetic)"
+        - "Broadened F carve-out: repatriation/restitution INCLUDES wartime looting (Nazi-stolen art, colonial seizures) — calibration revealed model parsed carve-out too narrowly"
+        - "Added 2 validation examples: Pope apology (F cap), Mengele dossier (H cap)"
+        - "Hard-negative cohort for retrain: 49 articles (#62, datasets/raw/cd_v5_hard_negatives_candidates.jsonl)"
+        - "Inherits v4 model loading + dimensional weights pending retrain"
+        - "G carve-out broadened (2026-05-30) to mirror F's pattern after critical lens-design audit found ~4 v5-scored articles (Antwerp 7-Congolese memorial, Muslim WWII memorial, Stolperstein explainer, Ghanaian genocide monument) hitting G cap despite arguably falling in carve-out intent. Now explicitly INCLUDES: (1) victim names surfaced from local/community/journalistic/descendant-led research, not only academic papers; (2) explainer pieces about commemorative practice mechanics (Stolpersteine, monument design); (3) first-of-kind regional commemorative practices. Replaces the prior narrowing Note ('Memorial unveiled for X victims is reckoning even if names listed') with a forward Test + worked examples. Same parsing-too-narrowly bug F had pre-Modigliani broadening."
+        - "Added validation example #20 (Antwerp 7-Congolese memorial) demonstrating G carve-out application"
+        - "F/G/H/I/K converted from hard max_score caps to SOFT PENALTIES (2026-05-30) per critical lens-design audit + ADR-015 (orthogonal lens design causes MAE cliffs; thriving v1 was parked at MAE 0.94 for this failure mode). Hard caps clamped all dims to a single value (e.g., max_score=3.5 → all dims 3.5), destroying gradient and creating cliff-shaped training labels. New penalty mechanism: subtract penalty from each dim, floor at 0. Preserves dim-to-dim ranking (heritage > novelty stays meaningful for slavery topics) while reducing overall weighted average. Penalty values calibrated to demote borderline content (honest weighted ~5-6) just below the 4.5 display threshold without disappearing high-content articles entirely. Penalty values: F=2.5, G=2.5, H=3.5 (strictest; perpetrator-centered framing should not be promoted on Discovery), I=2.0 (lightest; environmental-decline articles are mostly a prefilter routing problem upstream), K=2.5."
+        - "A–E flags (political_conflict, tourism_fluff, celebrity_art, appropriation_debate, speculation) RETAINED as max_score hard caps — v4-era proven behavior, not affected by ADR-015 concern."
+        - "Validation examples 13-18 + Section 5 full-JSON examples (Pope, Mengele) updated to show penalty math: 'honest X.X; penalty −Y.Y → final Z.Z' format. Examples demonstrate gradient preservation (heritage > novelty for harm-reckoning content)."
+        - "Multi-flag interaction rule updated (Section 3 header + Scoring Rule 6 + Critical Reminder 13): when both max_score and penalty flags fire, apply max_score clamp FIRST then subtract highest penalty."
+        - "Lens-fit context (2026-05-30): Phase 3 lens-fit (ADR-037, ovr.news) is NOT shipping near-term — config slot exists but disabled, no rule file, no scheduled work. v5 penalty mechanism is designed to work WITHOUT lens-fit: capped content stays in the pool with demoted scores rather than disappearing. If lens-fit ships later, harder cap behavior can be reinstated."
+        - "OUT-OF-SCOPE wording restructured (2026-05-31) after 3-way validation (Gemini-hard vs Gemini-soft vs DeepSeek-soft) showed Gemini-soft was under-applying A-E max_score flags (political_conflict, tourism_fluff): articles like 'The Manosphere is Lying About Who Built Society' and 'Murcia hiking trail to Europe's largest noria' got reclassified as cultural_discovery (score 6+) under the soft-penalty prompt vs correctly flagged as A/B under hard-cap. Diagnosis: the new 'OUT OF DISCOVERY — may fit other lenses' framing was being read as a permissive escape from A-E categories. Fix: relabeled the two sections as CATEGORY A (inherently low-substance) and CATEGORY B (high-substance wrong-trajectory) with explicit 'choosing between A and B' guidance. Added Flag E (speculation) to the A list (was implicit). Made it explicit that 'may fit other lenses' is downstream-routing info, NOT an excuse to skip the penalty."
+        - "3-way vendor validation finding (2026-05-31, 522 articles): Gemini-soft fires F-K penalty flags on 60% of articles; DeepSeek-soft on 26% (same prompt, 2.3x difference). content_type agreement 58%. Per-dim Pearson 0.66-0.75 (moderate). No ground truth to declare winner. Sticking with Gemini for retrain (matches v4 lineage); investigating 30 F-K disagreement articles by hand to inform v6 prompt-tightening."
+        - "F-K trigger tightening (2026-05-31) following oracle-calibration agent's hand-judgment of 22 disagreement cases: DeepSeek 12 / Gemini 6 / Unclear 4 — DeepSeek's restraint is more aligned with prompt-as-written. Three over-firing patterns by Gemini fixed: (1) K over-fires on event coverage — added 7 explicit anti-triggers: award ceremonies, individual speeches, diplomatic interviews, opinion essays, book/film/theater reviews of already-released works, retrospective coverage, obituaries; narrowed K's scope to 'future-tense institutional initiatives'. (2) I over-fires on rebound stories — added 'article ENDS on rebound/adaptive-reuse/resurgence' carve-out, paleontological/archaeological prehistoric-extinction exclusion, and READ THE FINAL PARAGRAPHS test; added 4 carve-out examples (oldest American mall, Catholic Mass resurgence, Neanderthal extinction, vanishing Welsh dialects). (3) G over-fires on obituaries — added explicit lead text 'G does NOT fire on obituaries of recently-deceased public figures' with named examples (Theo van Boven, Lionel Jospin); restated upstream obit-detector delegation."
+
+  target_publications:
+    - ovr.news (Discovery tab)
+
+source_filter:
+  excluded_source_types: [code_repo, developer_aggregator, firehose_aggregator]
+  shadow_mode: false
+
+prefilter:
+  enabled: true
+  # Measured 24.5% on 14,923 production rows (5 days, 2026-07-31) with the
+  # LD#86 topic gate; before the gate the exclusion-only prefilter passed
+  # ~100%. Kept slightly above the original ~0.15 target: tightening further
+  # starts blocking model-visible content (35 rows >= raw 4.0 blocked at
+  # this setting, mostly off-lens hard science — see LD#86/#87).
+  # Re-measured 2026-08-06 after the LD#86 multilingual coverage extension:
+  # 0.2876 -> 0.3014 over 158,609 scored rows (64 cycles, 07-23..08-03).
+  # The declared value below is the design target, not the observed rate —
+  # observed has drifted up with the corpus, not with the gate. Enforcement
+  # is still DO-NOT-FLIP on recall cost (12.6% of surfacing articles) and the
+  # rule prefilter does not run in production at all (ducroq/NexusMind#284).
+  expected_pass_rate: ~0.25
+  description: "Topic gate (cultural signal required, multilingual) + blocks political conflict framing, tourism fluff, celebrity news, cultural war content"
+
+oracle:
+  # cd v5 was trained on DeepSeek V4 Flash (first non-Gemini lineage in production,
+  # #62 resolution) — the gemini-flash value here was stale (predeploy review 2026-07-22).
+  recommended: deepseek
+  target_model: "DeepSeek V4 Flash"
+
+preprocessing:
+  head_tail:
+    enabled: true
+    head_tokens: 256
+    tail_tokens: 256
+    separator: " [...] "
+
+scoring:
+  score_scale_factor: 1.2829  # 10.0 / 7.79 (calibrated max)
+
+  # score_scale_factor TBD post-retrain. v4 used 1.1364.
+  dimensions:
+    discovery_novelty:
+      weight: 0.25
+      category: discovery
+      description: "Degree to which the article surfaces a new finding, revelation, or insight — not a known fact rehashed"
+    heritage_significance:
+      weight: 0.20
+      category: discovery
+      description: "Cultural or historical importance of the subject matter — from local interest to UNESCO-level world heritage"
+    cross_cultural_connection:
+      weight: 0.25
+      category: connection
+      description: "Bridges between different peoples, traditions, or civilizations — documented exchange, shared origins, or meaningful dialogue"
+    human_resonance:
+      weight: 0.15
+      category: connection
+      description: "Personal stories, emotional depth, lived experience — connection to human meaning beyond dry facts"
+    evidence_quality:
+      weight: 0.15
+      category: assessment
+      gatekeeper: true
+      gatekeeper_threshold: 3
+      gatekeeper_max_score: 4.0
+      description: "Quality of sources, research depth, and documentation — from clickbait/speculation to peer-reviewed primary sources"
+
+hybrid_inference:
+  stage1:
+    embedding_model: "intfloat/multilingual-e5-small"
+    probe_path: "probe/embedding_probe_e5small.pkl"
+    # Trained 2026-08-06 on the v5 label set (6839/855/857) with
+    #   scripts/train_probe.py --objective recall --target-fn 0.02
+    # MEDIUM+ is 9.0% of the label set, so the default L1 regression objective
+    # would floor-collapse — see #98 and docs/FILTER_PLAYBOOK.md.
+    #
+    # 2.50, NOT the 3.025 that train_probe.py selected. Owner decision
+    # 2026-08-06; the reasoning is worth keeping, because the selected value
+    # looks better on the metric the trainer prints.
+    #
+    # train_probe picks the threshold off the VAL recall curve, so val FN is
+    # optimistic by construction. At 3.025 it reported val FN 1.3% (1/77); the
+    # held-out TEST split gives 6.7% (5/75) at the same threshold — five times
+    # higher and well above the --target-fn 0.02 that was asked for.
+    #
+    # At 2.50, val and test independently both give FN exactly 0.000 — 0/152
+    # MEDIUM+ positives missed across the two splits. 2.50 is therefore not a
+    # value fitted to the test set; it is the value the split that was NOT
+    # selected on also supports.
+    #
+    # The trade is asymmetric, which is what settles it. A Stage-1 false
+    # negative is permanent — the article never reaches the student, so it can
+    # never surface. A Stage-1 false pass costs one local Gemma-3-1B inference
+    # (~20ms, $0.00). Recall is Stage 1's job; precision is Stage 2's. Being too
+    # conservative here costs compute; being too aggressive costs articles, on a
+    # lens where MEDIUM+ is only 9% of the corpus to begin with.
+    #
+    # SCREENING COST, measured on the production firehose (156,226 rows, 64
+    # cycles) — NOT the test-split figure, which does not transfer because the
+    # label set is positive-enriched (9% MEDIUM+ vs 1.7% surfacing in
+    # production):
+    #     keyword gate    passes 0.2983  -> screens 70.2%
+    #     probe @ 2.50    passes 0.3629  -> screens 63.7%
+    #     probe @ 3.025   passes 0.2204  -> screens 78.0%
+    # So 2.50 screens ~6.5 points LESS than the gate it replaces. That is a real
+    # cost and #98 criterion 2 asks about it. It is accepted because 63.7% lands
+    # on nature_recovery v4's ~64%, the reference point the criterion itself
+    # cites, and because the surfacing cost falls to 1 article in 2,653 (0.04%)
+    # against the gate's 337 (12.7%).
+    #
+    # HONEST LIMIT of the recall argument: of the 5 held-out positives the probe
+    # misses at 3.025 and keeps at 2.50, FOUR read as off-lens on inspection —
+    # an immunogenicity-prediction paper, AI surveillance cameras, ad-data
+    # deanonymisation of French spies, a sea-level-rise dyke. The oracle scored
+    # them >= 4.0 on discovery_novelty + evidence_quality with
+    # cross_cultural_connection at 0-2. That is #87's lens-fidelity dilution
+    # showing up in the labels, so "FN 6.7% -> 0.0%" overstates what 2.50 buys.
+    # 2.50 is still the right choice, but NOT because those five are losses:
+    # tightening a screening threshold to suppress off-lens content would hide
+    # lens policy in the wrong layer, and those articles reach the student and
+    # the 4.0 op-point either way.
+    threshold: 2.50
+  stage2:
+    model: "current"
+
+# Deployment note (ADR-022): unlike the rule prefilter — which has never
+# executed in the production scoring path (ducroq/NexusMind#284, dead since
+# 2026-02-10) — a probe actually runs. Turning this on makes cultural_discovery
+# screening reader-visible for the first time, so it ships stamping-only and
+# enforcement is a separate, explicit config flip on the NexusMind side.
