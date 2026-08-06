@@ -87,11 +87,78 @@ no gpu-server filter deploy. The only remote changes were to gpu-server's
 refreshed from pre-#93) — not the deploy path (`~/NexusMind/filters/`), so
 production scoring is untouched.
 
-## NEXT
+## Later in the same session (after the NEXT list below was first written)
 
-1. **FS#120 harness** — the only dated commitment (~08-14). Build and validate
-   against 08-03→08-06 so the 14th is one command. Their three answers
-   (`eval_query`, pooling, time-of-day) do not change its shape.
-2. **#98 criterion 4** — owner call: strip the gate, move to declarative
-   `BasePreFilter`. Also v6's two package gaps before it can ever deploy.
-3. **#99**, the ADR-012 rename, and #94/#97/#84 remain untouched.
+**Context audit run (`547e9a9`).** Untracked `.claude/settings.local.json` (12.4 KB
+of another machine's config, `C:/Users/scbry/...`, no credentials). Recovered two
+auto-memory files whose "Promoted to" claims pointed at files that never existed.
+Framework stamp 1.14.0 -> **1.15.0** with a reconciliation record. Moved the four
+standing rules out of `MEMORY.md` into CLAUDE.md Hard Constraints (index is
+navigational; 116 -> 56 lines). 36 unresolved doc references -> 0. **My first
+reference check reported 31 broken + 67 collisions, essentially all false** — it
+double-prefixed cross-repo paths and counted class nouns like `config.yaml` as
+collisions. Fixed the check rather than reporting the noise.
+
+**FS#120 answered and the harness built (`b5135c0`).** `scripts/gate/measure_enrichable_rate.py`,
+dry-run on 08-03..08-06. Told FluxusSource their denominator confounded enrichment
+success with native article length and supplied a conditional instrument (column C).
+Answered their question back: **no GN proxy is typed `firehose_aggregator`** — and
+in fact those three excluded types match *no source in the estate*, so they drop
+nothing for six filters; `investment_risk`'s `social` is the only real one, which
+narrows the "worth 0.129" claim in `nexusmind-data-sources.md`. Recorded on #88.
+
+**The GN finding that reframes their gate.** GN proxy enrichment succeeds **0 times
+in 14,198** (max content 277 chars). Verified it is "always failed" not "never
+attempted": `SKIP_DOMAINS` is empty, `pre_enrich()` gets the same list about to be
+scored, and replacement needs 300+ chars while the longest GN row is 277. Then read
+all 49 GN articles that surfaced: **not junk** — Niger health insurance, South Sudan
+rangers, Somalia formula-advertising ban, Burundi trachoma elimination — from **~40
+distinct national outlets**. I had predicted UN/institutional publishers and was
+**wrong**; it is local journalism. Also found **240 of FluxusSource's 312 GN sources
+are `q=... site:<one-domain>`** — a named outlet fetched through Google for no
+reason. That is a conversion, not a decision, and does not belong in the 08-14 gate.
+
+**Two errors of mine, both corrected publicly on FS#120.** (1) I reported feed-
+discovery hit rates of 17% then 8%; the second was *worse* because I raised
+concurrency and got throttled. Neither is a measurement — told them not to use
+either. (2) I proposed *building* a discovery job that **already exists** in
+FluxusSource as `scripts/gn_to_native_upgrade.py` (plus `discover_country_feeds.py`
+for the country half). My throwaway script is deleted, uncommitted. Lesson worth a
+gotcha entry: I applied "check what a source excludes" to data all session and then
+did not apply it to a sibling repo's `scripts/` before building.
+
+## NEXT — agreed with the owner at the end of this session
+
+**The bottleneck is three decisions, not work.** Three threads are parked behind them:
+
+1. **#98 criterion 4** — strip cd v6's keyword gate, move to declarative
+   `BasePreFilter`. Acceptance passed decisively (held-out oracle FN 0/75 vs the
+   gate's 10/75). Owner call.
+2. **#94** — static invariant (`GATEKEEPER_CAP < medium TIER_THRESHOLD`) vs
+   case-by-case removal. Evidence added: cd's gatekeeper fires 34.8% of the time and
+   can never change an outcome because cap == threshold. Owner call.
+3. **#95 step 2** — measurement and docs are DONE (±0.30 band re-score flipped 7.1%
+   of solutions / 9.1% of uplifting). What remains is the call: pin a batch size in
+   production, or give op-points a noise margin. Seeding shipped, but that is
+   *replay*, not stability. **#87 and #93 step 4 are both stuck behind this.**
+   If only one decision gets made, make this one — it unblocks two others.
+
+**Work to do without the owner, in this order:**
+
+1. **#97** — ~30 min. Assess the six deployed filters against the #28 training-data
+   position. Expected answer "nothing to do"; deliverable is that sentence appended
+   to `docs/decisions/2026-08-05-tdm-opt-out-training-data.md`. Open since 08-05.
+2. **#88** — execute the hygiene batch, including today's finding: delete the three
+   dead `excluded_source_types` values and narrow the `nexusmind-data-sources.md`
+   claim to investment_risk.
+3. **#84** — solutions oracle Step-1/Flag-A router self-contradiction. Self-contained.
+
+**Leave alone:** #99 (only its `classify_content_type` half survives whatever is
+decided on criterion 4), #87 and #93 step 4 (blocked on #95), #90 (three data
+points against it), and the v6 package gaps (defer until #87 settles the student,
+so it is not done twice).
+
+**FS#120 needs nothing until 08-14**, then one command — see
+`filters/cultural_discovery/v6/STATUS.md` and the reproduce block in
+`scripts/gate/measure_enrichable_rate.py`. The native-feed conversion work lives in
+**FluxusSource**, not here, and uses their existing tooling.
