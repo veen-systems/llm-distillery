@@ -1777,3 +1777,15 @@ points at — a symlink's *name* says nothing about its target's provenance.
 same shape as the `.nexusmind-owns` manifest warning in CLAUDE.md — indirection that
 masks divergence between repos, discovered only when the wrong content shows up in
 front of you.
+
+### A user-global skill shadows the project-local one — silently (2026-08-06)
+
+**Problem**: `~/.claude/skills/<name>/` wins over `<repo>/.claude/skills/<name>/`. The local copy is not merged, not preferred, and not warned about — it is simply never loaded. Across this estate that meant **45 project-local copies of `curate` and `audit-context` in 23 repos**, each reading as the authoritative version while none of them ran. Three had already diverged in three different directions. Separately, the only frontmatter-correct copies lived in `agent-ready-projects`' *gitignored* `.claude/`, so the canonical artifact was invisible to git and had drifted from `templates/` with nothing able to detect it.
+
+**Root cause**: the framework told adopters to install *every* skill project-locally, and never documented the shadowing rule. A skill that does not load fails by doing nothing, so nothing reports it — the same shape as a template copied verbatim with its frontmatter still inside the `<!-- SAVE AS: -->` comment, which had three skills in one repo registering as zero for months.
+
+**Fix**: scope is now a framework decision (`agent-ready-projects` v1.15.0 candidate, commit `27edba8`). `curate` and `audit-context` are **user-global**; `review-changes` and `release` are **project-local, never global** — their content names files in one tree, so one global copy would silently disable every repo's own. All 45 inert copies removed. The global install now derives from the (newly tracked) `agent-ready-projects/.claude/skills/`, and `scripts/install-global-skills.sh --check ~/repos` verifies it and finds inert copies.
+
+**For future sessions in this repo**: do **not** re-create `.claude/skills/curate` or `.claude/skills/audit-context` here — they were deleted deliberately and a copy would be inert. Keep `review-changes` local. If `/curate` or `/audit-context` seems wrong, fix it in `agent-ready-projects/.claude/skills/` and re-run the install script; editing `~/.claude/skills/` directly puts the change somewhere unversioned.
+
+**Lesson**: **installing a skill globally is exclusive, not merely shared** — it forecloses per-repo variants of that name forever. The test is not "is this generic today?" but "will any repo ever need its own version?" (Monorepo exception: directory-scoped skills such as `apps/web/.claude/skills/…` are *namespaced* as `apps/web:curate`, not shadowed.) Second: **a config that is never loaded and a config that is correct look identical** — the only difference is a check that asserts the artifact actually registers.
