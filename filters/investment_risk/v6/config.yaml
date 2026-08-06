@@ -107,18 +107,25 @@ scoring:
         7-8: "Good (simple rebalancing, clear direction, ETF-level)"
         9-10: "High (immediate simple action, clear triggers, raise cash/buy index)"
 
-  # Simplified tier classification (weighted_avg thresholds)
+  # Simplified tier classification (weighted_avg thresholds).
+  #
+  # ALIGNED TO RUNTIME 2026-08-06 (#88 item 3). No scoring code reads this block —
+  # base_scorer.py's TIER_THRESHOLDS is the sole runtime source (see
+  # docs/FILTER_PLAYBOOK.md §8). Two drifts were found and both are corrected
+  # here, in the direction of what actually runs:
+  #   - medium said 3.0; the deployed op-point is 4.0.
+  #   - a `medium_high: 5.0` tier was declared that the runtime does not have at
+  #     all — investment_risk v6 runs three tiers (high / medium / low).
+  # If you want to CHANGE either, edit base_scorer.py and mirror it here; editing
+  # this block alone changes nothing (that is how nature_recovery v4 ran a whole
+  # deploy at 4.0 while every doc said 3.75).
   tiers:
     high:
       threshold: 7.0
       description: "Critical risk signal - act now to reduce exposure"
 
-    medium_high:
-      threshold: 5.0
-      description: "Elevated risk - monitor closely and prepare defense"
-
     medium:
-      threshold: 3.0
+      threshold: 4.0
       description: "Moderate signal - worth tracking, limited immediate action"
 
     low:

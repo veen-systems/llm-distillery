@@ -208,6 +208,13 @@ scoring:
 
   tiers:
     high:
+      # STRUCTURALLY DEAD on raw scores (#88 item 4, 2026-08-06). The calibrated
+      # ceiling for this model is 6.8, so no article can reach 7.0 raw and this
+      # tier is never assigned from `raw_weighted_average`. Kept, not dropped,
+      # because under ADR-022 tier is reassigned on the NORMALIZED score for
+      # ovr.news ranking, where the band is reachable — the dead one is the raw
+      # path only. Do not read a `high` tier in production output as evidence
+      # that a raw score cleared 7.0.
       threshold: 7.0
       description: "Significant recovery - strong documented ecosystem recovery with data, ecological importance, and lasting protection"
 
@@ -338,11 +345,22 @@ hybrid_inference:
   stage1:
     embedding_model: "intfloat/multilingual-e5-small"
     probe_path: "probe/embedding_probe_e5small.pkl"
-    # Recall-first screen (train_probe.py --objective recall, 2026-07-09):
+    # DOCUMENTATION ONLY — NO CODE READS THIS FIELD (#88 item 2, verified
+    # 2026-08-06). The runtime value is `DEFAULT_THRESHOLD = 0.75` in
+    # inference_hybrid.py:37; nothing loads `hybrid_inference.stage1.threshold`
+    # from this file. Left in place rather than deleted because it records what
+    # the trainer selected, but do not cite it as the operating threshold and do
+    # not "fix" production by editing it — see docs/FILTER_PLAYBOOK.md §8, "a
+    # config value read by NO code is inert".
+    #
+    # What the trainer selected (train_probe.py --objective recall, 2026-07-09):
     # highest threshold with val FN-rate <= 2% on MEDIUM+ positives. Achieves
     # val recall 98.2% (FN 1.8%, 1/56 positives) while routing only 36% of
     # articles to Stage 2 (screens out ~64%). See probe metrics + val recall curve.
-    threshold: 3.225
+    #
+    # Why the runtime sits far lower: 0.75 is recall-safe (probe.json reports
+    # FN 0.0 at t <= 3.0), so the deployed screen is looser than the tuned one.
+    threshold: 3.225  # inert; runtime = 0.75
   stage2:
     model: "current"
 
