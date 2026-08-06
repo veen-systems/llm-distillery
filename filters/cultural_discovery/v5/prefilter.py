@@ -339,6 +339,93 @@ class CulturalDiscoveryPreFilterV5(BasePreFilter):
         r'ثقاف', r'متحف', r'تراث', r'آثار', r'تاريخ',
         r'文化', r'博物', r'遗产', r'遺産', r'考古', r'历史', r'歴史',
         r'문화', r'박물관', r'유산', r'역사',
+
+        # --- Multilingual coverage extension (LD#86 follow-up, 2026-08-06) ---
+        # The 2026-08-02 recall measurement localised 86% of enforcement's
+        # cost to this gate and showed per-language block rates spanning
+        # 2%–100%. Diagnosis over 20 cycles: the languages at the top of that
+        # range had no vocabulary here at all (vi, he, lt, cs, sl, fi, hu, id,
+        # sv beyond 'kultur'), while the families they were missing are ones
+        # already covered for EN/DE/FR/ES above. These are systematic
+        # translations of those existing families, NOT words lifted from the
+        # blocked articles — see the held-out re-run in the issue thread.
+
+        # Baltic (lt, lv)
+        r'kult[uū]r', r'muziej', r'muze[juaí]', r'paveld', r'mantojum',
+        r'v[eē]stur', r'ra[sš][yý]toj', r'rakstniek', r'\bknyg', r'\bgr[aā]mat',
+        r'dailinink', r'm[eė]ninink', r'izst[aā]d',
+        # noun forms only — bare 'parod' also matches parodė / parodo ("showed"),
+        # which admitted 7 political/sports articles and 0 cultural ones
+        r'\bparoda\b', r'\bparodos\b', r'\bparodoje\b', r'\bparodą\b',
+        # West Slavic (cs, sk, pl)
+        r'd[eě]jin', r'\bdzieje\b', r'pam[aá]tk', r'zabytk', r'dziedzictw',
+        r'spisovatel', r'pisarz', r'\bknih', r'\bksi[aą][zż]',
+        r'um[eě]n[ií]', r'sztuk', r'hudb', r'muzyk', r'muzik',
+        r'v[yý]stav', r'wystaw', r'archeolog',
+        # South Slavic (sl, hr, sr, bs)
+        r'dedi[sš][cč]in', r'ba[sš]tin', r'zgodovin', r'povijes', r'istorij',
+        r'pisatelj', r'knji[zž]evn', r'umjetnos', r'umetnos', r'umjetni[cčk]',
+        r'glasb', r'glazb', r'razstav', r'izlo[zž]b', r'arheolog',
+        # Finno-Ugric (fi, et, hu)
+        r'kulttuur', r'\bmuseo', r'\bmuuseum', r'm[uú]zeum',
+        # 'pärand' alone also matches Estonian parandada ("to improve")
+        r'perinn', r'perint[oö]', r'kultuurip[aä]rand', r'taitee', r'\btaide\b',
+        r'musiik', r'kirjalli', r'kirjailij',
+        r'\br[eé]g[eé]sz', r't[oö]rt[eé]ne', r'm[uű]v[eé]sz', r'\bzenei?\b',
+        r'irodal', r'hagyom[aá]ny', r'[oö]r[oö]ks[eé]g', r'\berőd\b',
+        # Nordic (sv, da, no, is)
+        r'\bkonst\b', r'konstn[aä]r', r'konstverk', r'konsthistori',
+        r'utst[aä]lln', r'udstilling', r'utstilling',
+        r'f[oö]rfattare', r'forfatter', r'kulturarv',
+        r'fornl[aä]mn', r'forntid', r'fornleif', r'\bmenning',
+        # Vietnamese
+        r'văn ho[aá]', r'văn học', r'di sản', r'bảo tàng', r'khảo cổ',
+        r'lịch sử', r'nghệ thuật', r'[aâ]m nhạc', r'truyền thống',
+        r'lễ hội', r'thần thoại', r'cổ đại', r'di t[ií]ch', r'ẩm thực',
+        r'nhà văn', r'triều đại',
+        # Indonesian / Malay
+        r'\bbudaya\b', r'kebudayaan', r'warisan', r'sejarah', r'\bseni\b',
+        r'kesenian', r'purbakala', r'\badat\b', r'sastra', r'kuliner', r'\bcandi\b',
+        # Turkish
+        r'k[uü]lt[uü]r', r'\bm[uü]ze', r'\btarih', r'arkeolo',
+        r'\bsanat\b', r'sanat[cç][ıi]', r'sanatsal', r'gelenek', r'edebiyat',
+        # Hebrew
+        r'תרבות', r'מוזיאון', r'ארכיאולוג', r'ארכאולוג', r'מורשת',
+        r'היסטורי', r'אמנות', r'עתיק', r'חפיר', r'ספרות',
+        # Devanagari (hi, ne, mr)
+        r'संस्कृति', r'विरासत', r'संग्रहालय', r'इतिहास', r'पुरात',
+        r'\bकला\b', r'परंपरा', r'परम्परा', r'साहित्य',
+        # Cyrillic additions (ru, uk, bg, sr, kk)
+        r'искусств', r'литератур', r'писател', r'выставк', r'виставк',
+        r'музык', r'музик', r'традиц', r'спадщин', r'розкопк', r'фотограф',
+        r'м[аә]дениет', r'мұражай', r'\bмұра\b',
+        # Greek additions. παράδοση ("tradition") is excluded: it is also the
+        # everyday word for delivery/surrender and admitted 20 rows, none cultural.
+        r'καλλιτ[εέ]χν', r'λογοτεχν', r'μουσικ',
+        # Arabic additions
+        r'موسيق', r'حضار', r'تقاليد', r'فنون',
+        # CJK additions
+        r'艺术', r'藝術', r'展览', r'展覽', r'传统', r'傳統',
+        r'音乐', r'音樂', r'文学', r'文學', r'遗址', r'遺址', r'古代',
+        r'美術', r'芸術', r'展覧', r'伝統', r'音楽', r'遺跡', r'小説',
+        r'예술', r'미술', r'전시', r'작가', r'소설', r'문학', r'음악',
+        r'유적', r'고고학', r'전통', r'지휘',
+        # Romance gaps in the same pass (ro, it)
+        r'\bart[ăa]\b', r'tradiți', r'\bstoria\b', r'storic[ihoa]',
+        # Families that were missing in EVERY language, found while grouping
+        # the blocked set by concept rather than by language.
+        r'fotogra', r'photogra',                                    # photography
+        # castle / fortress. Four stems were measured and dropped rather than
+        # guessed at: 'schloss' also matches geschlossen/beschlossen (165 rows,
+        # 0 cultural), 'twierdz' matches twierdzi = "claims" (50), 'fortaleza'
+        # is a Brazilian city and football club (31), 'castillo' is a common
+        # Spanish surname (21). German keeps the unambiguous plural.
+        r'\bcastle\b', r'ch[aâ]teau', r'kasteel', r'schlösser',
+        r'fortress', r'festung',
+        r'\bburial\b', r'necropol', r'nekropol', r'n[eé]cropol',
+        r'\btombs?\b', r'mausole', r'sarcoph', r'sarkofa', r'sarc[oó]fag',
+        r'grabst[aä]tte', r'gr[aä]berfeld', r'begraafplaats', r'beisetzung',
+        r'mammoth', r'mamut', r'mammut',                            # ice-age fauna
     ]
 
     def __init__(self):
@@ -606,6 +693,64 @@ def test_prefilter():
                     "El museo organizará una exposición dedicada a las tradiciones andinas.",
             'expected': (True, 'passed'),
             'description': 'Spanish cultural content (topic gate multilingual)'
+        },
+
+        # --- LD#86 follow-up (2026-08-06): languages that had no vocabulary in
+        # the topic gate at all, and were consequently blocked at 27%-100% of
+        # their surfacing articles. One pass case per script family, plus one
+        # block case in a newly-covered language so the extension cannot be
+        # "verified" by a gate that now passes everything.
+
+        # Should PASS - Korean (was 27% blocked; 예술/전시/작가 were missing)
+        {
+            'title': '소설가 편혜영 "벼린 칼 대신 손 내미는 심정으로 썼죠"',
+            'text': "작가는 신작 소설을 두고 오랜 시간 고민했다고 말했다. "
+                    "이번 전시와 함께 열린 문학 행사에서 독자들과 만난 그는 "
+                    "예술이 사람들 사이의 거리를 좁힐 수 있다고 믿는다고 밝혔다.",
+            'expected': (True, 'passed'),
+            'description': 'Korean literature/exhibition (topic gate)'
+        },
+
+        # Should PASS - Vietnamese (was 100% blocked; no Vietnamese stems existed)
+        {
+            'title': 'Lộ diện hào sâu thời nhà Nguyễn dưới chân đèo Hải Vân',
+            'text': "Các nhà khảo cổ đã phát hiện một đoạn hào sâu thuộc di tích "
+                    "thời triều đại nhà Nguyễn. Di sản này sẽ được bảo tàng địa phương "
+                    "nghiên cứu và bảo tồn, góp phần làm rõ lịch sử của khu vực.",
+            'expected': (True, 'passed'),
+            'description': 'Vietnamese archaeology (topic gate)'
+        },
+
+        # Should PASS - Hebrew (was 100% blocked; no Hebrew stems existed)
+        {
+            'title': 'בתוך תלי קבורה בני 6,000 שנה: נחשפו "גופות אבן" מסתוריות',
+            'text': "ארכיאולוגים חשפו ממצאים עתיקים באתר החפירות. "
+                    "לדברי החוקרים, הממצא מעיד על תרבות שהתקיימה באזור לפני אלפי שנים "
+                    "ויוצג במוזיאון לצד פריטי מורשת נוספים.",
+            'expected': (True, 'passed'),
+            'description': 'Hebrew archaeology (topic gate)'
+        },
+
+        # Should PASS - Czech (was 62% blocked; knih/muzeum stems were missing)
+        {
+            'title': 'Do australské knihovny se po 150 letech vrátila ztracená kniha',
+            'text': "Kniha byla zazděná v krbu a knihovna ji považovala za ztracenou. "
+                    "Podle historiků jde o cenný doklad dějin regionu; "
+                    "svazek bude vystaven v muzeu spolu s dalšími památkami.",
+            'expected': (True, 'passed'),
+            'description': 'Czech library/heritage (topic gate)'
+        },
+
+        # Should BLOCK - a newly-covered language must NOT become a free pass.
+        # Regression guard: the Lithuanian stems added above are cultural nouns,
+        # not the everyday verb forms that share their prefixes.
+        {
+            'title': 'Šalies vadovų reakcijos po išpuolio Berlyne nebuvo',
+            'text': "Prezidentas ir ministrė pirmininkė neišreiškė solidarumo po incidento. "
+                    "Opozicijos atstovai kritikavo vyriausybės sprendimą ir ragino "
+                    "skirti daugiau lėšų saugumui bei gynybos biudžetui.",
+            'expected': (False, 'no_cultural_topic_signal'),
+            'description': 'Lithuanian politics stays blocked (topic gate guard)'
         },
     ]
 

@@ -48,6 +48,12 @@ prefilter:
   # ~100%. Kept slightly above the original ~0.15 target: tightening further
   # starts blocking model-visible content (35 rows >= raw 4.0 blocked at
   # this setting, mostly off-lens hard science — see LD#86/#87).
+  # Re-measured 2026-08-06 after the LD#86 multilingual coverage extension:
+  # 0.2876 -> 0.3014 over 158,609 scored rows (64 cycles, 07-23..08-03).
+  # The declared value below is the design target, not the observed rate —
+  # observed has drifted up with the corpus, not with the gate. Enforcement
+  # is still DO-NOT-FLIP on recall cost (12.6% of surfacing articles) and the
+  # rule prefilter does not run in production at all (ducroq/NexusMind#284).
   expected_pass_rate: ~0.25
   description: "Topic gate (cultural signal required, multilingual) + blocks political conflict framing, tourism fluff, celebrity news, cultural war content"
 
