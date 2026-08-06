@@ -1742,3 +1742,38 @@ disclosure fails 3 tests, restoring it passes 26/26. Two new describe blocks als
 the budget split and the EMFA financial year. **General rule: when a document and a test
 must move together, put the pointer in both, and prove the test fails without the thing
 it guards.** A guard nobody has watched fail is a guard nobody has tested.
+
+### A global skill symlink pointed at the wrong repo, and silently won over the project's own (2026-08-06)
+
+**Problem**: `/review-changes` in llm-distillery ran a checklist written for the
+*personal notes* repo — tiering on `Nieuw huis/`, `career/jobspy/`, `modellen/*.py`,
+`principes.md`, and asserting *"the container itself has no git"*, which is false here.
+The tier table had to be rewritten mid-run to mean anything. Meanwhile this repo's own
+`.claude/skills/review-changes/` — 219 lines, re-mapped to `filters/common/*.py`,
+`ground_truth/batch_scorer.py` and the gate/normalization scripts — sat unused.
+
+**Root cause**: two compounding facts.
+
+1. `~/.claude/skills/` held **symlinks into other repos**, and one was wrong:
+   `review-changes -> /home/jeroen/repos/personal/.claude/skills/review-changes`
+   while its siblings pointed at `agent-ready-projects`. Set 2026-08-05, wrong from
+   the first day.
+2. **A global skill wins over a project-local one of the same name.** Both existed;
+   the invocation reported `Base directory: /home/jeroen/.claude/skills/…` for
+   `curate` *and* `review-changes`. So a project-adapted skill can be completely
+   shadowed with no warning anywhere — the project copy is not consulted, not merged,
+   and not mentioned.
+
+**Fix**: removed the global `review-changes` symlink so the project copy is reachable;
+deleted the two genuinely stale local copies (`curate`, `audit-context` — older
+framework versions with nothing repo-specific), leaving the globals to serve those.
+
+**Detection**: read the "Base directory for this skill" line the invocation prints. If
+it is under `~/.claude/skills/`, a global is running, and any project-local skill of
+that name is being ignored. `ls -l ~/.claude/skills/` resolves what each one actually
+points at — a symlink's *name* says nothing about its target's provenance.
+
+**Generalises**: a symlink farm is a silent single point of failure for behaviour. The
+same shape as the `.nexusmind-owns` manifest warning in CLAUDE.md — indirection that
+masks divergence between repos, discovered only when the wrong content shows up in
+front of you.
