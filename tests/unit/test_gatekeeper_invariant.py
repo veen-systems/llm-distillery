@@ -54,8 +54,11 @@ EXEMPTIONS = {
     ("cultural_discovery", "v5", "#94"): (
         "GATEKEEPER_CAP 4.0 == medium threshold 4.0, so a gatekept article stays "
         "exactly at the op-point and remains visible. The gatekeeper fires on 34.8% "
-        "of articles and has never changed an outcome. Closed by cultural_discovery "
-        "v6 (#98), which re-derives the op-point (#87) with the gatekeeper resolved."
+        "of articles and has never changed an outcome. "
+        "ALREADY FIXED IN v6 — that package declares no GATEKEEPER_DIMENSION at all "
+        "(owner decision 2026-08-06, at the version bump). This entry survives only "
+        "because v5 is still the version NexusMind runs; delete it in the same commit "
+        "that moves cultural_discovery to v6 in ACTIVE_FILTERS."
     ),
     ("solutions", "v6", "#94"): (
         "GATEKEEPER_CAP 3.0 > medium threshold 2.25. The scorer's own comment calls "

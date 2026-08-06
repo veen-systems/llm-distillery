@@ -23,8 +23,10 @@ filter:
       changes:
         - "#98: added a multilingual-e5-small Stage-1 probe (hybrid_inference). Rationale: cultural_discovery was the only lens filter screening on keyword stems; nature_recovery v4 and solutions v6 delegate topic judgment to an e5 probe, and an embedding probe cannot have a per-language keyword-coverage gap by construction — which is exactly the defect #86 spent 2026-08-06 patching by hand (453 stems, ~25 languages)."
         - "Probe trained recall-first (--objective recall --target-fn 0.02), NOT with the default L1 regression objective. MEDIUM+ is 9.0% of the label set (771/8,551), well under the ~25% line in docs/FILTER_PLAYBOOK.md, and L1 floor-collapses on that balance."
-        - "Prefilter carried over from v5 UNCHANGED, keyword topic gate included. Removal is gated on the probe beating the gate on held-out ground truth (ADR-021), not on the template saying so."
-        - "Dimensions, weights, tier thresholds and the evidence_quality gatekeeper unchanged from v5 — the scoring strand is #87 and is blocked on #95."
+        - "#98 criterion 4 EXECUTED 2026-08-06: keyword topic gate (453 stems), four exclusion categories and three domain blocklists all removed; prefilter is now a commerce-only pass-through on the ADR-018/019 declarative shape. Gated on held-out oracle ground truth first, per ADR-021 — probe FN 0/75 vs the gate's 10/75. Closes #99 by removal."
+        - "#94: the evidence_quality gatekeeper is REMOVED. It never bound on any of the 8,551 labelled articles, and its cap (4.0) equalled the medium threshold, so it could not change visibility even when it fired. No-op by definition."
+        - "Package parity with nature_recovery v4 / solutions v6: inference.py, inference_hub.py, inference_hybrid.py added; calibration.json copied from v5 (the student is unchanged, so the fit still applies); score_scale_factor corrected 1.2829 -> 1.0; normalization.json deliberately absent."
+        - "Dimensions, weights and tier thresholds unchanged from v5 — the scoring strand is #87. It is no longer blocked: #95's noise band shipped 2026-08-06."
         - "Reused v5's label set (datasets/training/cultural-discovery_v5, 6839/855/857). No new oracle scoring in this version."
     - version: "5.0-draft"
       date: "2026-05-29"
@@ -103,15 +105,19 @@ preprocessing:
     separator: " [...] "
 
 scoring:
-  # STALE, and knowingly carried over. 1.2829 = 10.0 / 7.79 where 7.79 was v5's
-  # calibrated max — but v6 ships NO calibration.json (see the hybrid_inference
-  # header above), so this refers to a calibration that is not in this package.
-  # Retained only because the config-schema gate requires the key; ADR-014
-  # percentile normalization is the primary scaling path regardless. Refit or
-  # delete when v6 gains a student model and a calibration of its own.
-  score_scale_factor: 1.2829
+  # 1.0 — REQUIRED for a fresh version, and now correct rather than carried over.
+  # production_scorer.py applies score_scale_factor as the LINEAR FALLBACK when
+  # normalization.json is absent, which is exactly v6's state. v5's 1.2829
+  # (= 10.0 / 7.79, its calibrated max) sat here until 2026-08-06 and would have
+  # silently stretched every v6 score by 28% while defeating the tier design.
+  # That is the pit in docs/FILTER_PLAYBOOK.md §8, and only a LIVE-scoring check
+  # catches it — the base-scorer smoke test skips the wrapper.
+  #
+  # Set a real value only if this filter ever runs WITHOUT percentile
+  # normalization by design. Otherwise the path is: accumulate/synthesize the
+  # production CDF -> fit normalization.json (ADR-014) -> this stays 1.0.
+  score_scale_factor: 1.0
 
-  # score_scale_factor TBD post-retrain. v4 used 1.1364.
   dimensions:
     discovery_novelty:
       weight: 0.25
@@ -132,30 +138,39 @@ scoring:
     evidence_quality:
       weight: 0.15
       category: assessment
-      gatekeeper: true
-      gatekeeper_threshold: 3
-      gatekeeper_max_score: 4.0
+      # NO gatekeeper in v6 (#94, owner decision at this bump). v5 declared
+      # gatekeeper_threshold 3 / gatekeeper_max_score 4.0. It never bound on any
+      # of the 8,551 labelled articles, and the cap EQUALLED the medium threshold
+      # (4.0), so a capped article stayed at exactly the op-point and remained
+      # visible — it could not change an outcome even when it fired (34.8% of
+      # production articles). Removal is a no-op by definition; this dimension
+      # self-enforces through its 0.15 weight. Runtime source of truth is
+      # base_scorer.py, which no longer declares GATEKEEPER_DIMENSION.
       description: "Quality of sources, research depth, and documentation — from clickbait/speculation to peer-reviewed primary sources"
 
 # ---------------------------------------------------------------------------
-# READ FIRST — NOTHING IN THIS PACKAGE READS THE BLOCK BELOW.
+# WHO READS THIS BLOCK (resolved 2026-08-06 — it previously read nothing).
 #
-# v6 ships base_scorer.py, prefilter.py, config.yaml and probe/, and NOTHING
-# ELSE. There is no inference.py, inference_hybrid.py or inference_hub.py here,
-# so no code path loads `hybrid_inference`, the probe pickle, or a model. The
-# package cannot score an article today.
+# `inference_hybrid.py` now exists and builds the Stage-1 EmbeddingStage from
+# the same three values. BUT the runtime source of truth is the module, not this
+# block: `DEFAULT_THRESHOLD = 2.50` in inference_hybrid.py is what executes, and
+# nothing here is loaded by the scorer. Keep the two in sync; if they ever
+# disagree, the module wins. Same relationship as nature_recovery v4's inert
+# 3.225 vs its runtime 0.75 (#88 item 2).
 #
-# This is declared ahead of its consumer deliberately — the threshold is the
-# measured output of #98's acceptance run and belongs with the probe that
-# produced it — but a config key wired to nothing is this repo's signature
-# defect (ducroq/NexusMind#284, LD#94, ducroq/NexusMind#281). Flagged loudly
-# rather than left to be discovered.
+# `calibration.json` is now present — a byte-identical copy of v5's, which is
+# CORRECT because v6 does not retrain the student. Worth knowing that
+# `_load_calibration` sets `self.calibration = None` SILENTLY when the file is
+# missing, so its absence would never have raised.
 #
-# Also absent: calibration.json and normalization.json. `_load_calibration`
-# sets `self.calibration = None` SILENTLY when the file is missing — no warning,
-# no error — so a future session that adds an inference module and deploys would
-# get an UNCALIBRATED scorer with no signal that anything is wrong. There is no
-# mechanism that inherits either file from v5. See STATUS.md "Still to do".
+# `normalization.json` is still deliberately ABSENT, and must stay absent until
+# fitted on v6 data. v5's cannot be inherited even though the student is
+# identical: the probe screens ~50-65% of the firehose BEFORE the student, so
+# the surviving population — and therefore the production CDF — is not v5's.
+# Until it is fitted, production emits RAW weighted_average while every other
+# lens emits normalized, which under-ranks cd on ovr.news (the cold-start in
+# docs/FILTER_PLAYBOOK.md §6). Close it at cutover by rescoring a
+# production-representative historical harvest, not by waiting for accumulation.
 # ---------------------------------------------------------------------------
 hybrid_inference:
   stage1:

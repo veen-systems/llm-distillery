@@ -1,0 +1,101 @@
+[
+  {
+    "epoch": 1,
+    "train": {
+      "mae": 1.447259783744812,
+      "rmse": 2.131904125213623,
+      "discovery_novelty_mae": 1.7347525358200073,
+      "discovery_novelty_rmse": 2.5175716876983643,
+      "heritage_significance_mae": 1.1784460544586182,
+      "heritage_significance_rmse": 1.6995042562484741,
+      "cross_cultural_connection_mae": 1.054499626159668,
+      "cross_cultural_connection_rmse": 1.6189310550689697,
+      "human_resonance_mae": 1.4184092283248901,
+      "human_resonance_rmse": 1.9903762340545654,
+      "evidence_quality_mae": 1.8501909971237183,
+      "evidence_quality_rmse": 2.629840612411499,
+      "loss": 4.544533479387997
+    },
+    "val": {
+      "mae": 0.8344219326972961,
+      "rmse": 1.2191624641418457,
+      "discovery_novelty_mae": 0.9973537921905518,
+      "discovery_novelty_rmse": 1.4779549837112427,
+      "heritage_significance_mae": 0.6744303107261658,
+      "heritage_significance_rmse": 0.9758312702178955,
+      "cross_cultural_connection_mae": 0.6708146929740906,
+      "cross_cultural_connection_rmse": 1.0538386106491089,
+      "human_resonance_mae": 0.8103471398353577,
+      "human_resonance_rmse": 1.124239444732666,
+      "evidence_quality_mae": 1.019163727760315,
+      "evidence_quality_rmse": 1.385892391204834,
+      "loss": 1.4863587403408836
+    }
+  },
+  {
+    "epoch": 2,
+    "train": {
+      "mae": 0.7674611806869507,
+      "rmse": 1.1299176216125488,
+      "discovery_novelty_mae": 0.9218814373016357,
+      "discovery_novelty_rmse": 1.3675415515899658,
+      "heritage_significance_mae": 0.6364347338676453,
+      "heritage_significance_rmse": 0.902967095375061,
+      "cross_cultural_connection_mae": 0.538512647151947,
+      "cross_cultural_connection_rmse": 0.8842974901199341,
+      "human_resonance_mae": 0.743506908416748,
+      "human_resonance_rmse": 1.0008971691131592,
+      "evidence_quality_mae": 0.9969704747200012,
+      "evidence_quality_rmse": 1.3835728168487549,
+      "loss": 1.2766462524906237
+    },
+    "val": {
+      "mae": 0.7363200187683105,
+      "rmse": 1.0938844680786133,
+      "discovery_novelty_mae": 0.9156026840209961,
+      "discovery_novelty_rmse": 1.3604686260223389,
+      "heritage_significance_mae": 0.5944391489028931,
+      "heritage_significance_rmse": 0.862403154373169,
+      "cross_cultural_connection_mae": 0.5203824043273926,
+      "cross_cultural_connection_rmse": 0.88653165102005,
+      "human_resonance_mae": 0.7121376395225525,
+      "human_resonance_rmse": 0.9705361723899841,
+      "evidence_quality_mae": 0.9390380382537842,
+      "evidence_quality_rmse": 1.28857421875,
+      "loss": 1.1964963777600048
+    }
+  },
+  {
+    "epoch": 3,
+    "train": {
+      "mae": 0.6739386916160583,
+      "rmse": 1.005997896194458,
+      "discovery_novelty_mae": 0.8096551299095154,
+      "discovery_novelty_rmse": 1.2240442037582397,
+      "heritage_significance_mae": 0.5479754209518433,
+      "heritage_significance_rmse": 0.7727246880531311,
+      "cross_cultural_connection_mae": 0.45096826553344727,
+      "cross_cultural_connection_rmse": 0.7419570088386536,
+      "human_resonance_mae": 0.6461412310600281,
+      "human_resonance_rmse": 0.871702253818512,
+      "evidence_quality_mae": 0.9149535894393921,
+      "evidence_quality_rmse": 1.286237359046936,
+      "loss": 1.0121530402822103
+    },
+    "val": {
+      "mae": 0.6968438625335693,
+      "rmse": 1.0532187223434448,
+      "discovery_novelty_mae": 0.8622025847434998,
+      "discovery_novelty_rmse": 1.323252558708191,
+      "heritage_significance_mae": 0.5647287368774414,
+      "heritage_significance_rmse": 0.8282901644706726,
+      "cross_cultural_connection_mae": 0.48672419786453247,
+      "cross_cultural_connection_rmse": 0.8251619338989258,
+      "human_resonance_mae": 0.675553023815155,
+      "human_resonance_rmse": 0.9171949625015259,
+      "evidence_quality_mae": 0.8950108289718628,
+      "evidence_quality_rmse": 1.2598202228546143,
+      "loss": 1.109199790754051
+    }
+  }
+]

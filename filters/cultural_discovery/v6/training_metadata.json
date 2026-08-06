@@ -1,0 +1,29 @@
+{
+  "filter_name": "cultural_discovery",
+  "filter_version": "5.0",
+  "dimension_names": [
+    "discovery_novelty",
+    "heritage_significance",
+    "cross_cultural_connection",
+    "human_resonance",
+    "evidence_quality"
+  ],
+  "num_dimensions": 5,
+  "model_name": "google/gemma-3-1b-pt",
+  "num_parameters": 1012943232,
+  "num_trainable_parameters": 13051520,
+  "epochs": 3,
+  "batch_size": 8,
+  "learning_rate": 2e-05,
+  "max_length": 512,
+  "warmup_steps": 500,
+  "train_examples": 6839,
+  "val_examples": 855,
+  "best_val_mae": 0.6968438625335693,
+  "include_prompt": false,
+  "training_mode": "knowledge_distillation",
+  "use_head_tail": true,
+  "head_tokens": 256,
+  "tail_tokens": 256,
+  "sample_weight_scale": 0.0
+}

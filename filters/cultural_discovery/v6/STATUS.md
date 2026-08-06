@@ -3,16 +3,20 @@
 **IN DEVELOPMENT. Not deployed. Not on the Hub.** (#98, opened on the owner's
 2026-08-06 directive; scope agreed the same day: *probe first, dimensions later*.)
 
-> **This package cannot score an article.** It contains `base_scorer.py`,
-> `prefilter.py`, `config.yaml` and `probe/` — and nothing else. There is no
-> `inference.py`, `inference_hybrid.py` or `inference_hub.py`, so nothing reads
-> the `hybrid_inference` block or the probe pickle. There is also no
-> `calibration.json` and no `normalization.json`, and **nothing inherits them
-> from v5** — `_load_calibration` sets `self.calibration = None` *silently* when
-> the file is absent, so adding an inference module and deploying would yield an
-> uncalibrated scorer with no warning. Both gaps are in "Still to do" below.
-> Recorded this loudly because a config block wired to nothing is this repo's
-> signature defect (NexusMind#284, #94, NexusMind#281).
+> **Package parity reached 2026-08-06. Two things still stand between this and
+> cutover, and neither can be done from a laptop:** the Hub repo
+> `jeergrvgreg/cultural-discovery-filter-v6` does not exist yet (it is the one
+> failing check in `verify_filter_package.py --check-hub`), and
+> `normalization.json` has not been fitted. Everything else — the three inference
+> modules, `calibration.json`, the declarative prefilter, the corrected
+> `score_scale_factor` — is in place. See "Still to do before cutover".
+>
+> The earlier warning here said the package could not score an article at all: no
+> inference module, no calibration, and `_load_calibration` failing *silently*
+> when the file is absent. That is fixed. Keeping the note because it was a
+> review finding, not a known gap — the package read as complete until the review
+> lenses were run against it, which is this repo's signature defect
+> (NexusMind#284, #94, NexusMind#281).
 
 ## What v6 is
 
@@ -22,11 +26,14 @@ One change: topic screening moves from keyword rules to a
 per-language keyword-coverage gap by construction — which is the defect #86 spent
 2026-08-06 patching by hand (453 stems across ~25 languages).
 
-Not changed: dimensions, weights, tier thresholds, the `evidence_quality`
-gatekeeper, the oracle prompt, the student model. Those are #87, blocked on #95.
+Not changed: dimensions, weights, tier thresholds, the oracle prompt, the student
+model. Those are #87 — which is **no longer blocked**, since #95's noise band
+shipped 2026-08-06.
 
-The v5 keyword gate is **still in `prefilter.py`, unchanged**. It is not removed
-until the owner acts on the results below — that is #98 criterion 4.
+Also changed at this bump, on separate owner decisions: the keyword gate is
+**gone** (#98 criterion 4, executed after it lost to the probe on held-out oracle
+labels), and the `evidence_quality` gatekeeper is **gone** (#94 — it never bound,
+and its cap equalled the op-point, so it could not change visibility).
 
 ## Acceptance measurement (2026-08-06)
 
@@ -184,27 +191,81 @@ decision on a given article is reproducible. Reproduce with
 reproduces closely (12.70% vs 12.6% surfacing blocked; pass rate 0.2983 vs
 0.3014), and the A/B itself is internally exact — both arms walk the same rows.
 
-## Still to do before this can deploy
+## Still to do before cutover
 
-1. ~~Owner decision on the threshold.~~ **Settled 2026-08-06: 2.50.**
-2. Criterion 4 — strip the topic gate and the four exclusion categories, bring
-   `prefilter.py` to the `BasePreFilter` declarative shape (ADR-018/019).
-   **Not started; deliberately.**
-3. #99 — `DISCOVERY_PATTERNS` also feeds `classify_content_type`, which the probe
-   does *not* replace. Decide in scope, not by omission.
-4. ADR-012 rename to the exact lens name (Discovery) belongs with this bump.
-5. **Make the package loadable.** It has no `inference.py`,
-   `inference_hybrid.py` or `inference_hub.py`, so nothing reads
-   `hybrid_inference` or the probe. Port them from v5 when v6 gets a model.
-6. **Add `calibration.json` and `normalization.json`.** They are *not* inherited
-   from v5 — there is no such mechanism, and `_load_calibration` fails silent
-   (`self.calibration = None`, no warning) when the file is missing. An earlier
-   version of this file claimed inheritance made it "consistent"; that was
-   wrong, and it is the failure mode where a deploy scores uncalibrated and
-   nothing says so. Either copy v5's (valid only while v6 reuses v5's student)
-   or refit — but the file must exist.
-7. Ships stamping-only per ADR-022 — a probe actually runs, unlike the rule
-   prefilter (ducroq/NexusMind#284), so enforcement is a separate config flip.
+Package parity with `nature_recovery v4` / `solutions v6` was reached
+2026-08-06. Items 1-3, 5, 6 and the #94 gatekeeper are **done**; what remains
+below cannot be done from a laptop.
 
-Items 5 and 6 were both review findings on 2026-08-06, not known gaps — the
-package read as complete until the lenses were run against it.
+### Done 2026-08-06
+
+1. ~~Owner decision on the threshold.~~ **Settled: 2.50.** Lives in
+   `inference_hybrid.py` as `DEFAULT_THRESHOLD`; the config field mirrors it and
+   is documentation.
+2. ~~Criterion 4.~~ **Executed.** Topic gate (453 stems), four exclusion
+   categories, per-category exception lists and three domain blocklists deleted;
+   `prefilter.py` is now a commerce-only pass-through on the ADR-018/019
+   declarative shape, 800 lines -> ~90.
+3. ~~#99 / `DISCOVERY_PATTERNS`.~~ **Closed by removal**, along with
+   `classify_content_type` — grepped first, and its only callers repo-wide were
+   the self-tests inside each cd version's own `prefilter.py`. Nothing in a
+   pipeline consumed it.
+4. ~~#94 gatekeeper.~~ **Removed at this bump** (owner decision). Never bound on
+   any of the 8,551 labelled articles, and its cap equalled the medium threshold,
+   so it could not change visibility even when it fired on 34.8% of production
+   articles. No-op by definition.
+5. ~~Make the package loadable.~~ `inference.py`, `inference_hub.py` and
+   `inference_hybrid.py` added. `verify_filter_package.py` passes 7/7 offline.
+   Stage 2 loads from the **Hub by default**, unlike nature_recovery v4 — cd
+   ships no local `model/` and never has, so a local default would point at a
+   directory that does not exist.
+6. ~~`calibration.json`.~~ Copied from v5 and annotated. This is correct rather
+   than stale: a calibration belongs to a *model*, and v6 does not retrain the
+   student. `filter_version` stays `5.0` on purpose. Refit only if the student
+   changes (#87).
+7. `score_scale_factor` corrected **1.2829 -> 1.0**. The stale v5 value would
+   have stretched every v6 score by 28% through `production_scorer.py`'s linear
+   fallback, silently, and only a live-scoring check catches that
+   (`docs/FILTER_PLAYBOOK.md` §8).
+
+### Remaining — all of it needs gpu-server or a decision
+
+1. **Create `jeergrvgreg/cultural-discovery-filter-v6` on the Hub.** It does not
+   exist — verified 2026-08-06 with `--check-hub`, which is the only failing
+   check in the package. Copy the v5 adapter **verbatim**; there is no retrain.
+   Keep the OLD PEFT key format; never run `resave_adapter.py` first (ADR-007).
+   *Why a duplicate repo rather than pointing at v5's:* the verifier requires
+   `repo_id` to end in `-v6`, a guard that exists because of #44 — three days of
+   production scoring v_new config x v_old weights. That is literally this
+   configuration, intentional or not, and defeating the guard to express an
+   intention is how it stops working when the intention is absent.
+2. **Fit `normalization.json` before cutover — do not wait for accumulation.**
+   Deliberately absent now, and v5's must not be copied even though the student
+   is identical: the probe screens ~50-65% of the firehose *before* the student,
+   so the surviving population and its CDF are not v5's. Shipping without one
+   means production emits raw `weighted_average` while every other lens emits
+   normalized, and ovr.news under-ranks and under-shows cd until 200 production
+   MEDIUM+ accrue — weeks, for a filter at cd's rate. Close it by rescoring a
+   production-representative historical harvest with the probe in the path
+   (`docs/FILTER_PLAYBOOK.md` §6).
+3. **Run the ground-truth gate on the real model** and commit
+   `ground_truth_gate.json`. Needs the student, so gpu-server or b650 — this box
+   has no `transformers`. Judge against held-out oracle labels, never against v5
+   (ADR-021), and read the result through the batch-noise band the gate now
+   prints (#95): metrics whose ranges overlap are not distinguishable.
+4. **Stamping-only on first cutover** (ADR-022). The rule prefilter never ran in
+   production (ducroq/NexusMind#284) but this probe *does*, so v6 turns cd's
+   screening on for readers for the first time. Enforcement is a separate config
+   flip after production numbers exist.
+5. **ADR-012 rename to the exact lens name (Discovery)** is still open and is now
+   the second bump in a row to skip it. Parked with #90 by owner decision, not
+   forgotten.
+6. **#87** — dimension weights, the `heritage_significance` near-constant, and
+   the 4.5-vs-4.0 op-point provenance gap. Deliberately *not* folded in here:
+   #98 was scoped "probe first, dimensions later", and merging them would make it
+   impossible to attribute a change in the numbers. No longer blocked — #95's
+   noise band shipped 2026-08-06.
+
+Items 5 and 6 of the old list were review findings on 2026-08-06, not known gaps
+— the package read as complete until the lenses were run against it. Worth
+remembering next time this file says "ready".
