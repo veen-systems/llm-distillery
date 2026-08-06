@@ -80,10 +80,14 @@ prefilter:
   # match its declared one, and enforcing it still cost 15.5% of surfacing
   # articles — rate agreement and safety-to-enforce are independent (ADR-021).
   #
-  # v6 additionally intends to DELETE this prefilter's topic gate outright once
-  # #98 criterion 4 is executed, so re-declaring a target for it would be
-  # encoding a number for a mechanism scheduled for removal.
-  description: "Topic gate (cultural signal required, multilingual) + blocks political conflict framing, tourism fluff, celebrity news, cultural war content. CARRIED OVER FROM v5 UNCHANGED so #98's probe can be A/B'd against it on identical rows; removal is #98 criterion 4."
+  # EXECUTED 2026-08-06 (#98 criterion 4, owner decision): the topic gate, the
+  # four exclusion categories and the three domain blocklists are DELETED. The
+  # rates above are therefore history — they describe v5's gate and the v6
+  # prefilter that carried it, not this one. The prefilter now blocks only
+  # empty/missing title or body; screening is the e5 probe's job. Removal was
+  # gated on held-out ORACLE ground truth per ADR-021, not on the template:
+  # probe FN 0/75 vs the keyword gate's 10/75.
+  description: "Commerce-only pass-through (ADR-004). No lens rules: topic screening is delegated to the multilingual e5 probe (hybrid_inference.stage1) + student. Only validate_article blocks. Same shape as nature_recovery v4 / solutions v6."
 
 oracle:
   # cd v5 was trained on DeepSeek V4 Flash (first non-Gemini lineage in production,
