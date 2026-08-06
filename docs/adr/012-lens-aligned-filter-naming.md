@@ -1,7 +1,7 @@
 # ADR-012: Lens-Aligned Filter Naming
 
 **Date:** 2026-03-18
-**Status:** Accepted (amended by ADR-013: English Lens Names; **amended 2026-08-06 — see "Amendment: the Hub is a public surface" below, which cancels two of the five scheduled renames**)
+**Status:** Accepted (amended by ADR-013: English Lens Names; **amended 2026-08-06 — see "Amendment: the Hub is a public surface" below. It closes the whole rename backlog: `cultural_discovery` and `nature_recovery` cancelled, `solutions` confirmed as-is, `uplifting` → `human_thriving` at v8**)
 **Decision:** Rename filters to match ovr.news editorial lens names at each filter's next version bump. Use underscores only in filter names.
 
 ## Context
@@ -89,14 +89,23 @@ this surface was never one of the three.
 
 ### The rule, stated so it can be applied to the next filter
 
-> Rename to the lens name only when the lens name is **at least as descriptive
-> as the internal name to a reader who has no other context**. Where the internal
-> name carries a qualifier the lens name drops — the domain, the subject, the
-> *of what* — keep the internal name and accept that the filter name and the lens
-> name differ.
+The test is: **does the name still say what the model does to a reader who has no
+other context?** Three cases follow from it, and every filter lands in one.
+
+1. **The lens name is descriptive on its own → rename to it.**
+   `solutions` survives alone; there is no competing sense of the word in this
+   system.
+2. **The lens name drops a qualifier the filter name already carries → keep the
+   filter name.** `cultural_discovery`, `nature_recovery`. The filter name and
+   the lens name differ permanently, and that is fine.
+3. **The lens name drops a qualifier and the filter name does not carry one
+   either → rename to `{qualifier}_{lens}`.** `uplifting` → **`human_thriving`**.
+   Neither the old name nor the bare lens name says what is thriving.
 
 Losing an adjective is not a cosmetic difference when the noun that remains is
-generic. `solutions` survives alone; `discovery` and `recovery` do not.
+generic. Case 3 is the one worth naming explicitly, because the obvious reading of
+this ADR — "rename to the lens name, or don't rename" — has no room for it, and
+that false binary is what left `uplifting` unresolved for five months.
 
 ### Applying it to the schedule above
 
@@ -104,9 +113,9 @@ generic. `solutions` survives alone; `discovery` and `recovery` do not.
 |---|---|---|---|
 | Discovery | `cultural_discovery` | `cultural-discovery-filter-v{N}` (public) | **Keep `cultural_discovery`.** Rename cancelled. |
 | Recovery | `nature_recovery` | `nature-recovery-filter-v{N}` (public) | **Keep `nature_recovery`.** Rename cancelled. |
-| Solutions | `solutions` | — | Already executed at v4. `solutions` stands alone fine. Filter since removed (2026-08-03). |
-| Belonging | `belonging` | `belonging-filter-v1` (public) | Already matches. No change. |
-| Thriving | `uplifting` | **NO_HUB** — file-copy deploy only | **Not resolved by this amendment.** The Hub argument does not apply: there is no public repo. Independently complicated — `thriving` already exists as a *separate* filter at v1, parked under ADR-015, so "rename uplifting to thriving" would collide with a real directory. Left open for the owner. |
+| Solutions | `solutions` | `solutions-filter-v6` (public) | **Keep `solutions`.** Case 1. Re-examined 2026-08-06 and confirmed: generic but not ambiguous, and it is the one filter that already *paid* a migration (`sustainability_technology` → `solutions` at v4, July 2026). A second rename for the same lens inside a year would cost another cross-repo field change — `nexus_mind_attributes.solutions` is read by NexusMind and by ovr.news `article-analysis.ts` / `types.ts` / `transform.ts` — plus a new Hub repo and a parallel-running period, against the smallest descriptiveness gain of the three. Not worth it. |
+| Belonging | `belonging` | `belonging-filter-v1` (public) | Already matches. Case 1. No change. |
+| Thriving | `uplifting` → **`human_thriving`** | **NO_HUB** today — file-copy deploy only | **RESOLVED: rename to `human_thriving` at the next version bump (v8).** Case 3 — `uplifting` describes a tone, not a subject, and bare `thriving` does not say *what* thrives. `human_thriving` reads as the exact counterpart of `nature_recovery`, which matters because those two are the pair the boundary map says are most often confused. It also dissolves a blocker: `filters/thriving/v1` exists as a *separate* parked filter (ADR-015), so renaming to bare `thriving` would have landed on an occupied directory — `human_thriving` does not. The parked `thriving/v1` stays where it is as history. |
 | Wisdom / Education | not shipped | — | Apply the rule at creation: pick the more descriptive of the two names from day one, rather than renaming later. |
 
 `investment_risk` was already out of scope (not an ovr.news lens) and keeps its
@@ -114,17 +123,30 @@ name; its Hub repo `investment-risk-filter-v6` is unaffected.
 
 ### Why this is cheaper than it looks
 
-Nothing has to be undone. **Neither rename had happened** — the schedule above
-set them for "at v2" (nature_recovery, now at v4) and "at v5"
-(cultural-discovery, now at v6), and both bumps passed without it. Cancelling
-them changes no directory, no field name, no Hub repo, no NexusMind attribute.
+Nothing has to be undone **today**. None of the outstanding renames had happened
+— the schedule above set them for "at v2" (nature_recovery, now at v4), "at v5"
+(cultural-discovery, now at v6) and "at v1 (now)" (uplifting, now at v7), and
+every one of those bumps passed without it. The two cancellations change no
+directory, no field name, no Hub repo, no NexusMind attribute. The one rename
+that survives — `uplifting` → `human_thriving` — is scheduled for v8 and changes
+nothing until then.
 
 Worth recording plainly: **of the five scheduled renames, one was carried out**
 (sustainability_technology → solutions), and that filter has since been deleted.
 An ADR that has been followed once in five opportunities across five months is
 not a policy being applied; it is an aspiration generating recurring cleanup
-tickets. This amendment resolves two of the four outstanding cases by deciding
-them, rather than re-scheduling them to the next bump for a fourth time.
+tickets. This amendment closes the backlog rather than re-scheduling it a fourth
+time: two cancelled, one confirmed as already correct, one given a concrete name
+and a bump to land at. Nothing here is left as "at the next version bump" with no
+decision attached — that phrasing is what let this drift.
+
+**What `uplifting` → `human_thriving` will cost when it happens**, so the v8 work
+is not sized as a directory rename: the NexusMind attribute field name changes
+(`uplifting` → `human_thriving`), which ovr.news reads in `article-analysis.ts`,
+`types.ts` and `transform.ts`; historical scored rows keep the old key, so a
+parallel-running period is required exactly as the Consequences section above
+says; and uplifting is currently NO_HUB, so a Hub repo is optional rather than
+implied — if one is ever created it should be `human-thriving-filter-v8` per #48.
 
 ### Interaction with #48 (Hub repo naming convention)
 

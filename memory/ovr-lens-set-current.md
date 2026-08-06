@@ -7,7 +7,18 @@ metadata:
 
 Filters are named to match ovr.news **lens/tab** names at version bumps (ADR-012), all English (ADR-013). Lenses are *perspectives, not partitions* — overlap between them is correct (ADR-015).
 
-**A filter name and its lens name are allowed to differ, and for two of them they permanently do.** ADR-012 amended 2026-08-06: `cultural_discovery` (Discovery lens) and `nature_recovery` (Recovery lens) **keep their names** — their HuggingFace repos are public standalone artefacts, and `discovery-filter-vN` / `recovery-filter-vN` drop the qualifier that says what the model is about. ADR-012's three stated audiences were all internal, so the Hub was never weighed. Neither rename had happened, so nothing was undone. **Do not re-open either at the next version bump.** Still open: uplifting → thriving, which the Hub argument does not touch (uplifting is NO_HUB) but which collides with the real parked `filters/thriving/v1` directory.
+**A filter name and its lens name are allowed to differ, and for three of them they permanently will.** ADR-012 amended 2026-08-06 — the whole rename backlog is closed, so **do not re-open any of these at a version bump**:
+
+| Lens | Filter name | Decision |
+|---|---|---|
+| Discovery | `cultural_discovery` | **Keeps its name.** Rename cancelled. |
+| Recovery | `nature_recovery` | **Keeps its name.** Rename cancelled. |
+| Solutions | `solutions` | **Confirmed as-is.** Already migrated once at v4; a second cross-repo field change is not worth the smallest descriptiveness gain of the set. |
+| Thriving | `uplifting` → **`human_thriving`** | **Renames at v8**, not before. Not to bare `thriving` — that dir exists (parked, ADR-015). |
+| Belonging | `belonging` | Already matches. |
+
+The reason in one line: ADR-012's three stated audiences were all *internal*, and a HuggingFace repo page is a public standalone artefact where `discovery-filter-vN` / `recovery-filter-vN` drop the qualifier that says what the model is about. The rule that follows — rename to the lens name only if it stands alone; otherwise keep or build `{qualifier}_{lens}`.
+<!-- verify: grep -q "human_thriving" docs/adr/012-lens-aligned-filter-naming.md && echo PASS || echo FAIL -->
 <!-- verify: grep -q "renames to \`discovery\` and \`recovery\` are cancelled" docs/adr/012-lens-aligned-filter-naming.md && echo PASS || echo FAIL -->
 
 **Lens → filter powering it** (as of 2026-07-27; grounded in CLAUDE.md filter table):
