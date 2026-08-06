@@ -44,11 +44,49 @@ which had been left explicitly open pending this call.
   the magnitude does not, because that batch's raw distribution is collapsed (median 0.2383)
   and the normalization producing its p99 is itself under investigation in #75/#76. Do not
   quote its "3.4× p99" as a clean figure.
-- `heritage_significance` is **7.10 on all four** `cultural_discovery` cases, identically.
-  Possible saturation, worth checking independently of these rows (#87).
+- ~~`heritage_significance` is **7.10 on all four** `cultural_discovery` cases, identically.~~
+  **Wrong — corrected 2026-08-06.** Atapuerca is **6.40**; the other three are 7.10. See the
+  second-batch section below for the accurate version and why the observation still stands.
+
+## Second batch, same day (`--days 1`, four flags)
+
+Four more flags arrived later on 2026-08-05. Two were accepted (`cultural_discovery` Kixikila,
+`solutions` Hong Kong drones) and are described in the README's 2026-08-05 section. Two were
+image-pipeline failures — a Times of India default share image (`msid-47529300.cms`) served as
+the hero on four articles — and are **not** lens adverse examples; they belong to ovr.news.
+
+Three things from this batch that outlive the rows:
+
+- **`heritage_significance` = 7.10 on FOUR of five `cultural_discovery` cases — and the
+  "all four" claim in the section above was wrong when it was written.** Actual values:
+  Atapuerca **6.40**, smallpox DE 7.10, smallpox ES 7.10, Inca 7.10, Kixikila 7.10. So it was
+  three of four then, four of five now. Corrected here rather than silently, because the wrong
+  version was the basis for the #87 suggestion and anyone re-deriving it would not reproduce it.
+
+  What survives the correction is the part that matters. The three earlier 7.10s share a subject
+  cluster (ancient remains, archaeological science), so their agreement could be coincidence.
+  Kixikila shares nothing with them — it is a living financial practice in Angola — and lands on
+  the identical 7.0999999. That is the observation worth probing in #87: the dimension may be
+  near-constant for anything the scorer recognises as heritage at all, in which case it carries
+  no discriminative signal and its weight is doing harm. Atapuerca at 6.40 does not refute this;
+  it just means the constant is not universal.
+- **The draft `filter` from `flag-evidence.ts` cannot be trusted.** It reads ovr.news
+  `articles.filter` (last-writer-wins at ingestion), not the published lens. Kixikila was
+  drafted as a `belonging` adverse row when belonging is the lens it *should* have published
+  under; it lost to `cultural_discovery` by 0.043 normalized. Appending that draft unedited
+  would have taught belonging to reject a correct belonging article — a sign-flipped label,
+  which is worse than a missing one. Cross-check `published_observations.lens` and
+  `article_filter_scores` before accepting any draft.
+- **A near-miss on scoping.** Both accepted rows are the kind that generalise badly if the
+  rationale is dropped: one is about a non-Western cultural practice, the other about
+  workplace-safety enforcement after a fatal fire. Each carries an explicit "do not learn
+  this" paragraph in `why_adverse`. If these rows are ever reduced to (text, label) pairs for
+  training, that scoping is lost and both become harmful. They are gate probes first.
 
 ## Provenance
 
 Rationales were operator-drafted and owner-confirmed on 2026-08-05; `labelled_by` on each row
 says so. They are editorial judgement, not oracle scores — `max_acceptable_wa` is an
-upper-bound assertion.
+upper-bound assertion. The second-batch rationales were drafted from a joint operator/owner
+triage of the four flags on 2026-08-05 and follow the same rule: the observed block is
+mechanical, `why_adverse` and `misleading_features` are judgement.

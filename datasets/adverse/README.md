@@ -90,15 +90,22 @@ the part worth generalising from: it says what a fix has to learn to discount.
 
 ## Current contents
 
-| File                        | n   | Cases                                                                                 |
-| --------------------------- | --- | ------------------------------------------------------------------------------------- |
-| `uplifting.jsonl`           | 2   | child sex trafficking investigation (raw 6.77, 6th of 3,530); greyhound export (5.86) |
-| `solutions.jsonl`           | 1   | greyhound export as "delivered solution" (raw 4.52, above p99)                        |
-| `cultural_discovery.jsonl`  | 1   | Homo antecessor cannibalism find (raw 6.14, batch p99 4.92)                           |
-| `belonging.jsonl`           | 1   | expropriated Venezuelan estate in ruins (raw 6.36, batch p99 5.10)                    |
+Kept current as of **2026-08-05**. This table drifted once already (it read n=1 for
+`cultural_discovery` while four rows were on disk, and omitted `nature_recovery`
+entirely) — if you add a row, edit this table in the same commit.
 
-The first two source articles scored high in **more than one lens simultaneously**,
-which is why the greyhound case appears twice. The failure is not lens-specific.
+| File                       | n   | Cases                                                                                                                                                                                                       |
+| -------------------------- | --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `cultural_discovery.jsonl` | 5   | Homo antecessor cannibalism (raw 6.14); smallpox genomes, DE + ES same study (6.56 / 6.67); Inca child sacrifice (6.44); **Kixikila, a living Angolan savings practice with no finding in it (6.78)**       |
+| `uplifting.jsonl`          | 2   | child sex trafficking investigation (raw 6.77, 6th of 3,530); greyhound export (5.86)                                                                                                                       |
+| `solutions.jsonl`          | 2   | greyhound export as "delivered solution" (raw 4.51, above its batch p99 of 4.07); **Hong Kong AI facial-recognition enforcement drones, scored 9-12 months before they exist (4.68, batch p99 3.87)**        |
+| `belonging.jsonl`          | 1   | expropriated Venezuelan estate in ruins (raw 6.36, batch p99 5.10)                                                                                                                                          |
+| `nature_recovery.jsonl`    | 1   | Madagascar invasive rats blocking small-mammal recovery (raw 5.21 — **scale caveat**, see the 2026-08-05 adjudication note)                                                                                  |
+
+The greyhound article appears in two files: it scored high in **more than one lens
+simultaneously**, so that failure is not lens-specific. The smallpox pair is the same
+study in two languages, which is a different thing — evidence for the cross-language
+dedup gap (NexusMind#291/#295), not for a shared failure mode.
 
 See [issue #91](https://github.com/veen-systems/llm-distillery/issues/91) for the
 diagnosis.
@@ -127,6 +134,43 @@ Two obituaries in the same flag batch were deliberately **not** added here — t
 shape is owned by the universal obituary detector, per the v5 hard-negative cohort
 decision (#62). They are recorded as v5 production FNs in
 `memory/obituary-v4-hypotheses.md` addendum 8.
+
+### 2026-08-05 additions (second reader-flag batch, ovr.news)
+
+Two rows from four flags. Both break the *about vs contains* pattern that every earlier
+row shares, and each names a **different** failure layer:
+
+- **cultural_discovery — Kixikila.** The first row in this file where the failure is
+  neither a lens-definition gap nor a feature trap, but a **weighting** problem with a
+  concrete target. `discovery_novelty` (5.58) is the lowest of the five dimensions and
+  the only one encoding whether an epistemic event occurred; `cross_cultural_connection`
+  (8.00) and `heritage_significance` (7.10) are the highest and both fire on subject
+  matter. The lens-defining dimension was outvoted 2:1 by topic-proximity dimensions.
+  Unlike the smallpox and Inca rows, a fix has something to grip.
+- **solutions — Hong Kong enforcement drones.** A **temporal** failure the earlier rows
+  do not cover: the intervention does not exist yet (9-12 months of research, zero fines
+  issued on drone evidence), and `solution_concreteness` (6.56, the top dimension) fired
+  on the enforcement statistics of the *already-live* smoking ban described in the same
+  article. Generalisable shape: an article about a proposed extension to a working
+  programme inherits the working programme's evidence.
+
+Both rows carry explicit **scope warnings** in `why_adverse`, and they should survive any
+distillation. Kixikila must not teach suppression of non-Western traditional practice —
+the article is good and belongs in `belonging`, which lost the placement by 0.043. The
+Hong Kong row must not teach that workplace-safety enforcement is adverse; the objection
+is biometric surveillance as the mechanism, scored above p99 before it is built.
+
+A **process note** that cost real accuracy: `scripts/flag-evidence.ts` emits its draft
+`filter` from ovr.news `articles.filter`, which is a last-writer-wins ingestion artifact,
+not the lens the article published under. It filed Kixikila as a **belonging** adverse
+row. Belonging is the *correct* lens for that article — accepting the draft would have
+trained belonging to reject something that genuinely belongs to it. Check the draft
+`filter` against `published_observations.lens` and `article_filter_scores` before
+appending anything this script produces.
+
+The other two flags in the batch were image failures (a Times of India default share
+image served as the hero on four articles) and are not lens adverse examples. They are
+an ovr.news `domain_og_images` warm-up problem, tracked there.
 
 ## Adding a case
 
