@@ -118,6 +118,39 @@ Chain 4's enforce flips and Chain 3's refits, which is why Batch F now precedes
 the remaining threshold work. Separately, Chain 14 records a four-repo
 non-English quality pattern that no single issue currently states.
 
+## Count refresh 2026-08-06 — re-queried before quoting anything
+
+Open, re-counted **2026-08-06 morning**: llm-distillery **36** · NexusMind
+**40** · ovr.news **87** · FluxusSource **14** · persuasion-scorer **12** =
+**189** (was 191 on 08-05).
+
+Closed since the 08-05 refresh: **LD#28** (TDM position recorded — but see
+**LD#97**, filed the same day, which carries the unfinished half), **ovr#292,
+#293, #294, #300** (the whole compliance arc from the 08-05 evening session)
+and **ovr#299**; **FS#125, #126, #128** closed 2026-08-06 06:14–06:15Z. Nothing
+closed in NexusMind or persuasion-scorer.
+
+llm-distillery's own count was 36 at the morning re-query (#28 closed, **#97**
+opened the same day — swap #28 for #97 in the *Infra / hygiene / writing* row
+below). **#98 was then filed on 08-06, taking it to 37** — cultural_discovery
+v6's *architecture* strand, split out of #87 on an owner directive: move topic
+screening from the 453-stem keyword gate to a `multilingual-e5-small` probe,
+the way `nature_recovery v4` and `solutions v6` already do. Belongs in the
+*Lens architecture* group and sits directly under #90.
+
+Measured the same day and worth carrying into #90's audit: `nature_recovery
+v4` and `solutions v6` prefilters are **inert**, not merely loose — four junk
+articles pass both — while cultural_discovery's gate removes ~70% of the
+firehose. So the current template's empty prefilter is a *consequence* of
+having a probe, not a design to copy on its own.
+
+FluxusSource went **13 → 14** despite three closures, so five were filed there;
+re-read that repo before sequencing Chain 8. The **Coverage** section further
+down is still computed against the old **177** and remains stale — do not band
+anything off it.
+
+---
+
 ## Board refresh 2026-08-05 (late) — re-queried against GitHub
 
 Not a work session: the board was re-read from the tracker because the owner
