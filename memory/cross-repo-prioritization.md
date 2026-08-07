@@ -7,10 +7,13 @@ metadata:
 
 # Cross-Repo Prioritization
 
-**Last updated: 2026-08-07** — full re-query against GitHub. **Read the
-[2026-08-07 ordering](#ordering-2026-08-07--re-queried-full-board) first**; the
-P0–P4 tables further down are the 08-05 state and several of their entries have
-moved or closed. The older
+**Last updated: 2026-08-07 (late)** — full re-query against GitHub, then a
+**second pass that re-queried every link in every chain**. Read the
+[2026-08-07 ordering](#ordering-2026-08-07--re-queried-full-board) first, then
+[chain verification](#chain-verification-2026-08-07-late--every-link-re-queried)
+— the latter corrects **two chain links that were marked ✅ while open**, one of
+them substantively. The P0–P4 tables further down are the 08-05 state and
+several of their entries have moved or closed. The older
 **[Board refresh 2026-08-05](#board-refresh-2026-08-05-late--re-queried-against-github)**
 section is kept as history.
 
@@ -23,7 +26,14 @@ section is kept as history.
 Open, re-queried **2026-08-07 after the day's own filings**: llm-distillery
 **38** · NexusMind **43** · ovr.news **90** · FluxusSource **14** ·
 persuasion-scorer **12** = **197**. **83 have not been touched in 30+ days** —
-LD 13 · NM 22 · ovr 48 · FS 0 · ps 0. FluxusSource and persuasion-scorer have
+LD 13 · NM 22 · ovr 48 · FS 0 · ps 0.
+
+> **Superseded the same day by the late re-query: 196** (ovr.news **89**), and
+> sediment **82** (LD **12**). The drop is ovr#303, which **this section itself
+> records as closed** two paragraphs down — the count was taken before the
+> closure and the prose after it, so the two disagreed by one within one
+> section. Same shape as the ✅-but-open links found below: a number and its own
+> narrative drifting apart inside a single pass. FluxusSource and persuasion-scorer have
 no sediment at all; **53% of ovr.news's own issues are sediment** (48/90 — an
 earlier draft said 59%, which is 48/82, ovr's share *of the board's* sediment,
 a different quantity).
@@ -88,7 +98,7 @@ this repo's. Fifth instance of the repo's defining failure shape.
 
 | # | Item | Repo | Why here |
 |---|---|---|---|
-| 1 | **FS#120** GN eval readout + ADR-007 gate | FS | Only hard date (~2026-08-14). Harness exists; one run + one decision. |
+| 1 | **FS#120** GN eval readout + ADR-007 gate | FS | Only hard date (~2026-08-14). ~~Harness exists; one run + one decision.~~ **Understated — corrected 08-07 from the issue's 13 comments.** Two of four hypotheses are already answered *without* eval data: **H2 FAILED 08-03** (gdelt_constructive 0 items on 12 of 19 ticks, 63% against a >50% failing threshold; free tier measured ~1 req/~2 min per IP) and **H4 answered 08-06** (**0 of 14,198** GN-proxy rows ever enriched, vs 0.0–19.9% column-C failure for the three eval arms). H1 on track (GN proxies 27.6% published share vs 90.8% for the other 366 sources). **The live remainder is bigger than one run:** the last comment argues **240 of the 312 GN sources are `q=… site:<domain>` single named outlets, not proxies for anything**, and that this reframing must land *before* the gate. `scripts/gn_to_native_upgrade.py` already exists, so that half is a **run, not a build**. |
 | 2 | **NM#301** corroboration precision **0.560** at 2 sources (+ **ovr#303**) | NM/ovr | Live, reader-visible, violates a published principle. **Wording half SHIPPED 08-07**; the ranking half is open as decision 7 — and it is ovr's OWN 1.3/1.5/1.7x rule, not the NexusMind boost `1bbadb5` bounded. |
 | 3 | **LD#91** uplifting ranks a trafficking investigation 6th of 3,530 | LD | Reputational, live, untouched since 08-01. Fold into **`human_thriving` v8** as an acceptance criterion rather than patching v7. |
 | 4 | **cd v6 cutover** (#98 → #87) | LD | Closest to done: 7/7 verify. Blocked only on creating `cultural-discovery-filter-v6` on the Hub and fitting normalization from a historical rescore. |
@@ -460,23 +470,133 @@ look like noise to every similarity-based screen, including token-overlap ones.
 | **ovr#280 cluster_id** | Diagnosis **REFUTED** — cluster_id IS on the wire (7,629/16,128 rows). Break is **downstream in ovr.news ingestion**; NM#278 is the real fix for the reader-visible symptom. |
 | **NM#206** | Was already CLOSED — dropped from all batches. |
 
+## Chain verification 2026-08-07 (late) — every link re-queried
+
+<!-- verify: for r in veen-systems/llm-distillery ducroq/NexusMind ducroq/ovr.news ducroq/FluxusSource veen-systems/persuasion-scorer; do gh issue list -R $r --state open --limit 400 --json number --jq 'length'; done -->
+
+Every issue named in Chains 1–15 was fetched with `gh issue view` rather than
+read off this memo. **The narrative was broadly right; the diagrams were not.**
+
+Open, re-queried: llm-distillery **38** · NexusMind **43** · ovr.news **89** ·
+FluxusSource **14** · persuasion-scorer **12** = **196**. One below the
+morning's 197 because **ovr#303 closed after that count was taken** — the
+ordering section's own text already records the closure, so the number and the
+prose disagreed by one. Sediment (untouched 30+ days) recounts to **82**, not
+83: LD 12 · NM 22 · ovr 48 · FS 0 · ps 0.
+
+### Two links were marked ✅ while OPEN
+
+| Link | Marked | Actual | Verdict |
+|---|---|---|---|
+| **LD#73** (Chain 2 head) | ✅ | **OPEN**, untouched since 2026-07-28 | **Bookkeeping — closable as done.** |
+| **NM#185** (Chain 1) | ✅ | **OPEN**, untouched since 2026-07-27 | **NOT bookkeeping — it carries an unstarted half.** |
+
+**LD#73 is closable.** The deliverable shipped under a different name:
+`filters/common/violence_promotion/v1/` exists in this checkout, LD#73's own
+2026-07-28 comment records the shadow deploy (OOF precision 0.936 / recall 0.550
+@ 0.95), and its one blocking design question — *"confirm ADR-004 stamp-only
+before training"* — was answered stamp-only. Its downstream **NM#274 is
+closed**, which is how a head issue outlived the chain hanging off it.
+
+**NM#185 is not.** It bundles two filters and only one of them shipped:
+
+- *Obituary blocker* — done, enforcing at v5@0.85, verified live.
+- *Commerce prefilter v3 retrain* — **never started.**
+  `filters/common/commerce_prefilter/` holds **v1 and v2 only**, and v1 is the
+  force-pinned one (LD#80) precisely because v2 underperformed on production
+  traffic. There is no v3 and no training run.
+
+So **Chain 1 is not "complete except one cosmetic link."** And the commerce
+half's evidence has decayed underneath it: the 2026-06-25 reader-flag audit
+inside NM#185 found the miss set was **100% scored by
+`sustainability_technology`** — a filter **deleted 2026-08-03**. Whatever v3
+should catch has to be re-measured against `solutions v6`, which absorbed that
+content. That re-measurement is the actual next step, not a training run.
+
+**Consequence for ovr#204:** its title reads *"Remove hardcoded obituary
+detection (after NexusMind#185 ships)"*. That dependency **is satisfied for the
+obituary half** — enforcement has been live since 07-30 — so ovr#204 is
+actionable today. But a reader of either issue would conclude it is blocked.
+This is the topology rule's failure mode inverted: one issue holding two
+filters means neither can be closed and the dependency it advertises is
+unreadable.
+
+### Coverage hole: persuasion-scorer is counted but never banded
+
+All **12** of `veen-systems/persuasion-scorer`'s open issues appear in **no
+chain, no P0–P4 band, and no row of the Coverage table** — which enumerates
+unbanded issues for the other four repos and lists none for this one. They are
+counted in every total on this board and sequenced nowhere. All were last
+touched **2026-08-02**, so they are not sediment; they are a stalled block.
+Banded below.
+
+### Diagrams carrying closed links
+
+The prose records these closures, the ASCII chains did not: **ovr#295** (closed
+08-06, drawn as a live Chain 9 link) and **FS#128** (closed 08-06, drawn as a
+live Chain 14 link). Both struck below. Still **mentioned but placed in no
+chain**: **ovr#301** (Chain 7 material), **FS#127**, **FS#132**.
+
+### Two issues confirmed closable
+
+- **LD#97** — the ordering section says "looks closable"; verified it is. All
+  three questions discharged: **zero of the 333 opted-out domains carry a
+  `User-agent: *` reservation**; the Q2 remedy shipped (`d558a40`, 834 rows /
+  1,889,627 chars truncated); the appendix is committed (`0cc3382`).
+- **NM#204** ("scope a dedicated solutions lens") — superseded by shipped
+  `solutions v6`. Chain 5 already says "closable as superseded"; nothing has
+  changed since, and it has not been touched since 2026-05-11.
+
+### Method note
+
+The two ✅-but-open links were found by fetching state per issue rather than
+trusting the diagram, and the substantive one (NM#185) was invisible from the
+issue's *title* — it reads as an obituary issue. **A chain link whose ✅ was
+earned by one half of a bundled issue looks identical to a finished one.** The
+generalisation for this board: mark chain links against *deliverables*, not
+against issues, whenever one issue carries two.
+
+---
+
 ## Cross-Repo Dependency Chains
 
 `→` means "blocked on" or "feeds into."
 
-### Chain 1: Obituary Detector — COMPLETE except one link
+### Chain 1: Obituary Detector — **CORRECTED 2026-08-07: NOT complete**
 ```
-LD#51 ✅ → LD#77 ✅ → NM#185 ✅ → v4 ✅ → LD#83 (v5 + ENFORCE @0.85) ✅ → ovr#204 ← ONLY LINK LEFT
+LD#51 ✅ → LD#77 ✅ → NM#185 obituary half ✅ → v4 ✅ → LD#83 (v5 + ENFORCE @0.85) ✅
+   → ovr#204 (remove the hardcoded filter) ← ACTIONABLE NOW, not blocked
+   → NM#185 commerce half ← OPEN AND UNSTARTED (no v3 exists)
 ```
-Enforcement live + verified (1,158 blocked). Carryover washes out ~Aug 2–6 by
-window. LD#85 (v6 relabel) PARKED indefinitely by owner.
+The obituary strand is done: enforcement live + verified (1,158 blocked),
+carryover washed out ~Aug 2–6 by window. LD#85 (v6 relabel) PARKED indefinitely
+by owner.
+
+**NM#185 was marked ✅ here and is open.** It bundles the obituary blocker
+*and* a **commerce prefilter v3 retrain that was never started** —
+`filters/common/commerce_prefilter/` has v1 and v2 only, with v1 force-pinned
+(LD#80) because v2 underperformed. Before any v3 work: its evidence is stale.
+The commerce miss set recorded in NM#185 was **100% `sustainability_technology`
+articles**, and that filter was **deleted 2026-08-03**. Re-measure against
+`solutions v6` first; the retrain may not be warranted on the surviving lens
+set.
+
+**ovr#204 is not blocked.** Its title says "after NexusMind#185 ships", which is
+true of the half it depends on.
 
 ### Chain 2: Violence Promotion — shadow, enforcement gated
 ```
-LD#73 ✅ → NM#274 ✅ → NM#281 gate wiring ✅ (inert) → LD#82 (audit) + NM#286 item 3 → enforce
+LD#73 (OPEN, but done — close it) → NM#274 ✅ → NM#281 gate wiring ✅ (inert)
+   → LD#82 (audit) + NM#286 item 3 → enforce
 ```
 **Two hard gates before any flip:** LD#82 (v1 recall 0.55 → enforcing gates ~half
 of true positives) and NM#286 item 3 (violence stamping skipped in 3 run modes).
+
+**LD#73 was marked ✅ and is open — bookkeeping only.** The classifier shipped
+under a different name (`filters/common/violence_promotion/v1/`, verified
+present in this checkout), its ADR-004 stamp-only question was answered, and
+its downstream NM#274 is closed. Close LD#73 as done; nothing in Chain 2
+depends on it.
 
 ### Chain 3: Normalization Refits — **CLOSED 2026-08-01**
 Verified live across six consecutive cycles. No open links.
@@ -551,8 +671,11 @@ NM#287 ✅ (lazy-load: any src= beat the hero) → fixed by NM#288 ✅
    → NM#290 ✅ CLOSED 08-03 (cross-domain check — allAfrica Google Play badge)
    → ovr#287 (backfill wrong-story rows) ← DECIDED 2026-08-07: BLANK, scoped per row
    → NM#294 (validation cap 200 ⇒ ~79% of heroes unvalidated) ← NEW, unbanded
-   → ovr#295 (og-reuse cache blind to upstream images: publisher logo on 68 articles)
-   → ovr#297 (looksLikePublisherLogo misses logo300.png and /images/) ← NEW, unbanded
+   → ovr#295 ✅ CLOSED 2026-08-06 (og-reuse cache blind to upstream images)
+   → ovr#302 ✅ CLOSED 2026-08-06 (author byline portraits as heroes, pv-magazine)
+   → ovr#297 (looksLikePublisherLogo misses logo300.png and /images/) ← still OPEN
+   → ovr#305 (image_source='og' collapses self-extracted and upstream-supplied)
+   → ovr#306 (threat-FMEA: no entry for a third-party URL in a hotlinked field)
 ```
 **Refreshed 2026-08-05:** NM#290 closed, but the class did not close with it —
 ovr#295/#297 are publisher-logo heroes reaching readers by a *different* route
@@ -665,8 +788,12 @@ FS#124 (mojibake at collection, 5.0%, non-English-concentrated)
    → NM#291 (dedup threshold misses cross-language same-story pairs at 0.836)
    → LD#86 (cd prefilter enforce would cost 19.9% non-English vs 13.0% English, p≈0.01)
    ↔ LD#93 (sub-300 population is dominated by gn_* / spanish_* / french_* / gn_africa_*)
-   ↔ FS#128 (rferl_kazakh has never collected Kazakh — both feeds hit a generic
-              endpoint) ← NEW 08-04: the collection stage failing *before* text quality
+   ↔ FS#128 ✅ CLOSED 2026-08-06 (rferl_kazakh never collected Kazakh — both feeds
+              hit a generic endpoint). The *class* survives it as FS#126 (also closed):
+              the collection stage failing *before* text quality
+   ↔ FS#129 / FS#130 / FS#131 (language tagging: two conventions; langdetect
+              confidently wrong on 8 regional languages; use the feed's declared
+              language when there is no profile) ← the live non-English links
    ↔ ovr#299 ✅ CLOSED COMPLETED 08-05 (headline-only summaries 83.4% invented).
               **Not verified here what shipped** — only that it closed as completed;
               the proposed fix was an input-scaled output budget
@@ -718,6 +845,40 @@ pattern. **The unmeasured quantity is the one that decides how urgent this is:
 what share of lens placements is settled by a margin smaller than 0.16?** Nobody
 owns that count. Until it exists, Chain 15 is a hypothesis with two filed
 symptoms, not a finding.
+
+### Chain 16: persuasion-scorer verification track — **NEW 2026-08-07, was never banded**
+
+```
+ps#4 (verify the Gemini backend against the live API)  ← SPEND GATE
+ps#2 (DR-011 Pass 2: outside review of all 34 registry rows) ← PHASE GATE, "before Phase 3, not after"
+   ↔ ps#10 (re-derive the 0–10 shape: degree vs presence was never decided, only inherited)
+      → ps#12 (S5-2 thresholds: absolute deltas reward the flat scale they should catch)
+      → ps#9  (reader-facing rendering for #79-B: raw 0–10 must not ship)
+      → ps#5  (re-map the six guard cases to the six coarse dimensions)
+   ↔ ps#8  (probe: test–retest / paraphrase / mirrored-framing consistency modes for S5-2)
+ps#3 / ps#6 (source work: Sproule 2001 + Roozenbeek 2022; NLP4IF-2019 licence, Maarouf 2024, Sahitaj 2025)
+ps#7 / ps#11 / ps#13 (DR numbering collision at DR-008; ADR citations; the pre-commitment-override protocol)
+```
+
+**Why this exists: all 12 of persuasion-scorer's open issues were counted in
+every total on this board and sequenced in nothing.** The Coverage table
+enumerates unbanded issues for the other four repos and has no row for this
+one. They are not sediment — every one was last touched **2026-08-02** — they
+are a block that stopped moving five days ago.
+
+**Two are gates and should be read as such before any work there resumes:**
+**ps#4** blocks corpus spend (the Gemini backend has never been checked against
+the live API), and **ps#2** says the outside review of all 34 registry rows
+belongs *before* Phase 3. **ps#10** is the one that could invalidate the others
+— whether the 0–10 scale measures degree or presence "was never decided, only
+inherited", and ps#12, ps#9 and ps#5 all assume an answer.
+
+**Scope caveat:** this chain is assembled from issue *titles* only. Nothing in
+persuasion-scorer's own docs was read, and the arrows are inferred, not
+confirmed by that repo. Treat the grouping as a placement so the block stops
+being invisible, not as a verified sequence. Per CLAUDE.md the dependency runs
+one way — persuasion-scorer depends on this repo's distillation machinery and
+must never vendor a copy — so nothing here blocks llm-distillery work.
 
 ## Priority Rankings
 
@@ -813,6 +974,11 @@ Stated explicitly so the priority tables are not mistaken for full coverage.
 | NexusMind | 6 | 104, 225, 226, 228, 229, 251 |
 | ovr.news | 42 (20 of them non-engineering) | engineering: 41, 59, 68, 115, 177, 180, 207, 210, 224, 228, 229, 230, 233, 234, 239, 243, 245, 247, 248, 263, 265, 271 |
 | FluxusSource | 0 | — |
+| **persuasion-scorer** | **12 → 0** | **This row did not exist until 2026-08-07 and the omission was the point: all 12 were counted in every total and banded nowhere. Now [Chain 16](#chain-16-persuasion-scorer-verification-track--new-2026-08-07-was-never-banded).** |
+
+**Also mentioned somewhere on this board but placed in no chain and no band
+(checked 2026-08-07):** ovr#301 (Chain 7 material — the re-summarisation test
+that picks between the two #29x candidates), FS#127, FS#132.
 
 This is sediment, not a hidden backlog — most predates the current chains. Two
 are worth a second look, though, because they are *methodology* items the last
