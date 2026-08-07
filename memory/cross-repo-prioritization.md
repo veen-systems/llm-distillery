@@ -909,14 +909,20 @@ on it.
 > drifted furthest: it still listed all six of the 08-07 decisions as open, two
 > of them (ovr#283, ovr#292/LD#28) against issues already CLOSED on GitHub, and
 > ovr#283 twice. See [Ordering 2026-08-07](#ordering-2026-08-07--re-queried-full-board).
-> **Exactly one genuinely open decision remains, and it is new — item 7 below.**
+> **All seven are now taken.** Item 7 was created by this session's own review and closed the same day.
 
-- **7. ovr.news's own corroboration boost (NEW, 2026-08-07)** — `1.3× / 1.5× /
-  1.7×` in `src/lib/data/editor/rules/corroboration-boost.ts:33-37`, applied to
-  the locally-recomputed `_displayRank`. It is the boost that actually orders
-  the feed; NexusMind's `1bbadb5` fix does **not** reach it, because ovr.news
-  never reads NexusMind's `display_rank`. Keep, bound (as NexusMind did), or
-  remove? Any change reorders the site.
+- ~~**7. ovr.news's own corroboration boost**~~ — **DECIDED + SHIPPED
+  2026-08-07** (`1ecf853`): **bounded to a flat 1.3× for 2–10 total sources,
+  1.0× above**, matching NexusMind's shape in `1bbadb5`. The ladder was removed
+  rather than retuned because precision is **not monotone** in cluster size and
+  no band beats the 2-source case (0.560). Subtractive by construction.
+  `under-the-hood/ranking.astro` updated in the same commit — and while there,
+  **a separate published defect**: decay published as **0.95** against a
+  configured **0.85** (0.70 vs 0.32 at 7 days), so the worked table understated
+  decay roughly twofold. ovr#303 closed. **Still open in the hypothesis log:
+  whether the remaining 1.3× is earned at all — decidable ~2026-08-18**, once
+  the TTL drains the oversized clusters and precision can be measured on the
+  *capped* system.
 - ~~NM#285 Option C~~ — DECLINED 2026-08-02 on the measurement (Option B shipped). Reopen only if prefilters regain lens rules worth enforcing.
 - ~~**ovr#283** publication floor~~ — **CLOSED won't-do 2026-08-07.** Listed twice here; both are dead.
 - ~~**ovr#284** who writes the Art. 5(2) record~~ — **stale when written**; the record was authored 2026-08-05. The live decision was the control shape, taken 08-07: deny-list, stamp not block, no allowlist.

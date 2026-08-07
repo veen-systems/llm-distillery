@@ -25,10 +25,14 @@ errors, nearly all in work written the same day.**
 | 5 | `/accountability` TDM sweep | **Say nothing.** |
 | 6 | ducroq/NexusMind#292 non-English root | **Keep open, retarget.** Transfer the scoring stage into `human_thriving` v8. |
 
-**Decision 7 is newly open** and was created by the review: ovr.news's **own**
-corroboration boost, `1.3× / 1.5× / 1.7×` in
-`src/lib/data/editor/rules/corroboration-boost.ts:33-37`. Keep, bound, or
-remove — any change reorders the feed.
+**Decision 7 was created by the review and taken the same day** (`1ecf853`):
+ovr.news's **own** corroboration boost, `1.3× / 1.5× / 1.7×`, **bounded to a
+flat 1.3× for 2–10 total sources, 1.0× above**. The ladder was removed rather
+than retuned — precision is not monotone in cluster size and no band beats the
+2-source case (0.560), so under the old ladder the *best*-measured band got the
+*smallest* boost. Subtractive by construction. **This is the first time the
+reader-facing promotion has ever been bounded**, because NexusMind's `1bbadb5`
+never reached readers.
 
 ## What the walk-through itself produced (none of it was the decision being asked)
 
@@ -89,24 +93,37 @@ found the **priority tables** — the part an operator reads first — still
 recommending an action three other sections had just been corrected to call
 impossible.
 
-## Commits (nothing pushed)
+## Commits — ALL PUSHED
 
-- ovr.news: `5f7feb3`, `55b2e06`, `dc1fc9c`, `2da519f`
-- llm-distillery: `ff79cfb`, `261ec2f`, `54c3cef`
+- **ovr.news** (`master`): `85811f2`, `a2974cc`, `68db118`, `420eb74`,
+  `1ecf853`, `80a8401`. Note the first four were **rebased** onto three
+  automated `Update summary/translation cache from sadalsuud` commits that
+  landed on the remote mid-session — zero file overlap, my commits were
+  unpushed and held by nobody, so the rebase was safe. The pre-rebase hashes
+  (`5f7feb3`, `55b2e06`, `dc1fc9c`, `2da519f`) no longer exist.
+- **llm-distillery** (`main`): `ff79cfb`, `261ec2f`, `54c3cef`, `1ccb9f1`, +
+  this curate pass.
 
-Tests: **1,186 pass** (+32 today).
+Tests: **1,187 pass** (+33 today).
+
+**Deploy:** ovr.news is a static Astro build; pushing `master` is what ships it,
+so decision 1 (wording + glyph), decision 7 (bounded boost) and the corrected
+`ranking.astro` are live on the next build. Nothing was deployed to sadalsuud or
+gpu-server — no filter package changed.
 
 ## NEXT
 
-1. **Decision 7** — ovr.news's own 1.3/1.5/1.7× boost. Owner call.
-2. **The 6 rows are not cleared.** Needs the R2 round-trip:
+1. **The 6 rows are not cleared.** Needs the R2 round-trip:
    `npm run db:download` → `npx tsx scripts/clear-wrong-story-heroes.ts` →
    `npm run db:upload`. Not durable alone — if NexusMind still holds the bad
    `extracted_image_url`, the next ingest writes it back.
-3. **ovr#284 exposure window** — approved, not started. The one UNKNOWN that
+2. **ovr#284 exposure window** — approved, not started. The one UNKNOWN that
    could reopen the Art. 33 conclusion.
-4. **FS#120** is 7 days out (~2026-08-14) and remains the only calendar item.
-5. The glyph change is **unverified on a real device**.
+3. **FS#120** is 7 days out (~2026-08-14) and remains the only calendar item.
+4. **~2026-08-18**: re-measure corroboration precision on the **capped** system.
+   Both new hypothesis-log entries hang off that date.
+5. The glyph change is **unverified on a real device** — and that is the whole
+   premise of decision 1's icon swap.
 
 ## Related
 
