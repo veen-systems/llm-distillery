@@ -4,6 +4,29 @@
 
 Full record: `memory/project_session_2026_08_07_night.md`.
 
+### 🔴 LD#101 — evaluation arms are scored AND PUBLISHED (filed tonight, needs an owner decision)
+
+- [ ] **Decide: may an experimental collection arm publish at all?** FluxusSource
+      stamps `type_classification: eval_aggregator` and **nothing reads it** —
+      zero hits across NexusMind `src/`, this repo's `filters/`, and ovr.news
+      `src/`. **No filter's `excluded_source_types` includes it** (they list only
+      `code_repo`, `developer_aggregator`, `firehose_aggregator`, plus
+      `academic`/`social` for investment_risk). Present, configured, unreachable —
+      the NM#284 / NM#300 / LD#94 shape, in the code I was measuring.
+      **28 eval articles are in `ovr.news/data/ovr.db`** (a floor; that copy stops
+      at 08-05), including *"Zimbabwe funeral held for family believed to have
+      been murdered in the UK"* at tier **high**, Borneo credited to Madagascar,
+      and Tanzanian articles credited to Burundi. ~840 rows per lens were scored.
+      This is a direct hit on `ovr.news/docs/SUSTAINABILITY.md:85`, the
+      **editorial-cleanliness gate on the donation track** — the same gate Chain 17
+      records as NM#232's blocker.
+      **The easy fix is the wrong default:** adding `eval_aggregator` to every
+      filter's exclusions silently deletes FS#120's "share reaching the site"
+      metric, which that gate is due to report on 2026-08-14.
+- [ ] **Check the Zimbabwe funeral row against the obituary gate** (enforcement is
+      ON at v5@0.85). If it scored under threshold it is a live false negative and
+      belongs in `memory/project-obituary-detector.md`.
+
 - [x] **FS#133's open question ANSWERED — "arbitrary", and it did not need the
       30-day wait.** The dedup survivor is whichever item appears first in
       `all_items`, with no publisher preference. Both observed drops happened
@@ -38,12 +61,22 @@ Full record: `memory/project_session_2026_08_07_night.md`.
 
 ### ⚠️ FS#120 (due ~2026-08-14, 7 days) — two measurement defects found
 
-- [ ] **`newsdata_eval` is returning 77–97% off-topic content.** Measured over 8
-      runs: Chad 23.1% on-topic, Burundi 4.2%, Madagascar 2.9%. It is the **same
-      defect already fixed for GNews on 2026-08-05** by adding `country_queries`
-      with unambiguous exonyms — `newsdata_eval` has no such mapping. **H3 and
-      €/usable-article for NewsData are currently measuring a pan-African default
-      feed.** Fix + re-baseline; pre-fix days are not usable.
+- [ ] **`newsdata_eval`: the local-publisher share is 40% / 12% / 8%, and that is
+      probably H3's ANSWER, not a defect to fix.** ~~Same defect as GNews; add
+      `country_queries`~~ — **WITHDRAWN, and it would have damaged the gate.**
+      NewsData sends `country=` with **no `q=` at all**: it filters on *publisher
+      location*, so it is the **geographic** arm, while `gnews_eval` uses `q=`
+      only because its free tier can search topic alone. A comment at
+      `newsdata_eval_aggregator.py:104-108` says exactly this and I read past it.
+      Adding `country_queries` would convert the only geographic arm into a second
+      topical one and destroy the like-for-like comparison against GDELT.
+      My "77–97% off-topic" therefore measured the **wrong property** — an article
+      from a Chadian publisher about cricket is *correctly* returned. Re-measured
+      on publisher over the same 8 runs: **Chad 40.0%** genuinely local
+      (`alwihdainfo`), **Madagascar 11.8%** (58.8% is `ign_za`, a South African
+      video-game site), **Burundi 8.3%** (79.2% is `thecitizen_co_tz`, Tanzanian).
+      **Score H3 on `metadata.publisher_name`, not article topic**, and re-derive
+      at the API response — those denominators (65/34/24) survive a 49% dedup drop.
 - [ ] **`items/day` is censored** — every eval identity is capped per run
       (`max_articles: 10` × 3 countries = 30; GDELT `max_records` 30–50 hardcoded).
       `gnews_eval` sat at exactly 30 in **13 of 44 runs (29.5%)** — and the more
@@ -63,7 +96,7 @@ Full record: `memory/project_session_2026_08_07_night.md`.
 
 ## 2026-08-07 (late) — coverage pass, a refuted plan, one instrument shipped
 
-Board is unchanged at **195 open**; the work was in what it does not cover, and in
+Board was reported unchanged at **195 open** — *corrected 2026-08-07 night to **198**; this pass never re-counted after filing FS#133/#134*. The work was in what it does not cover, and in
 one finding upstream. Full record: `memory/project_session_2026_08_07_late.md`.
 Feature-level detail: `memory/corroboration-feature-hypotheses.md`.
 

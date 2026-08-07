@@ -1878,7 +1878,7 @@ front of you.
 
 ### A dependency pointer that reads as satisfied because the issue was re-homed, not resolved (2026-08-07 late)
 
-**Problem**: ducroq/NexusMind#223 and ducroq/ovr.news#222 both list `FluxusSource#85` under **Dependencies**. FS#85 is CLOSED — so both read as unblocked. It was closed `NOT_PLANNED` and **moved to ducroq/NexusMind#232**, which is open and has never been touched. Two issues advertise a green light for a prerequisite that was relocated, not delivered.
+**Problem**: ducroq/NexusMind#223 and ducroq/ovr.news#222 both list `FluxusSource#85` under **Dependencies**. FS#85 is CLOSED — so both read as unblocked. It was closed `NOT_PLANNED` and **moved to ducroq/NexusMind#232**, which is open and has never been touched. **Five** issues advertise a green light for a prerequisite that was relocated, not delivered — NM#223, ovr#222, ovr#223, ovr#231 and ovr#232 (the last three found 2026-08-07 night, and ovr#231 carries a *second* stale dependency, NM#224, closed NOT_PLANNED and re-homed nowhere).
 
 **Root cause**: closing-with-relocation updates the *closed* issue (FS#85's comment names its successor correctly) but nothing walks the inbound links. GitHub shows no "blocked by" edge, so the dependents keep pointing at a tombstone.
 

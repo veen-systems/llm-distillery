@@ -49,14 +49,26 @@ list, not what the dedup function does. The function was never the variable.*
 Went looking at the only calendar-bound item on the board (due ~2026-08-14) and
 found two defects in the data it will be read from.
 
-- **`newsdata_eval` is 77–97% off-topic.** On-topic share over 8 runs: Chad
-  **23.1%** (15/65), Burundi **4.2%** (1/24), Madagascar **2.9%** (1/34). The
-  20:06 Chad batch is entirely Somalia, Angola, South African mining, cricket and
-  Pakistan. **This is the same defect already caught and fixed for GNews on
-  2026-08-05** — `td: Chad` returning Chad Johnson and Chad le Clos — fixed there
-  by adding `country_queries` with unambiguous exonyms. `newsdata_eval` has no
-  such mapping. H3 and €/usable-article for NewsData are measuring a pan-African
-  default feed.
+- **`newsdata_eval`: the local-publisher share is 40% / 12% / 8% — and that is
+  probably H3's ANSWER, not a defect.** My first reading was that it is "77–97%
+  off-topic", the same defect fixed for GNews on 08-05, remedied by adding
+  `country_queries`. **Both halves were wrong**, and the fix would have damaged
+  the gate. NewsData sends `country=` with **no `q=` at all** — it filters on
+  *publisher location*, so it is the **geographic** arm; `gnews_eval` uses `q=`
+  only because its free tier can search topic alone. A comment at
+  `newsdata_eval_aggregator.py:104-108` states this and says the readout needs
+  the distinction per row. I read past it. Adding `country_queries` would have
+  converted the only geographic arm into a second topical one and destroyed the
+  like-for-like comparison against GDELT that the gate exists to make.
+  So "does the article mention the country" measured the **wrong property** — an
+  article from a Chadian publisher about cricket is *correctly* returned by a
+  publisher-location filter. Re-measured on publisher, same 8 runs:
+  **Chad 40.0% genuinely local** (`alwihdainfo`); **Madagascar 11.8%**
+  (`ign_za`, a South African video-game site, is **58.8%**); **Burundi 8.3%**
+  (`thecitizen_co_tz`, Tanzanian, is **79.2%**). Chad partly works, the other two
+  do not — a property of the vendor's filter, and close to H3's result for the
+  paid geographic candidate. My "pre-fix days are not usable, re-baseline" would
+  have discarded a week of data *and* the finding.
   **Three caveats from the fact-check lens — the headline survives, the
   denominator is not what it looks like.** (i) Those denominators are **post-dedup
   persisted rows**, not API returns: the logs show `✓ newsdata_eval: 30 items` on
@@ -136,6 +148,38 @@ Also corrected on the board: NM#220, NM#91 (closed *and* mis-described — it is
 LD#43, LD#49, FS#125, FS#126. And a count error — **198 open, not 195**: the
 coverage pass never re-counted after filing FS#133 and FS#134, so the two issues
 it says are covered are missing from the total it cites.
+
+## The biggest finding came from the completeness lens, not from me
+
+**LD#101, filed tonight: the FS#120 evaluation arms are scored by every
+production filter and published to readers.** I had framed `newsdata_eval` purely
+as a *measurement* defect and never asked where those articles went.
+
+FluxusSource stamps `type_classification: eval_aggregator`
+(`newsdata_eval_aggregator.py:112`). **Nothing reads it** — zero hits across
+NexusMind `src/`, this repo's `filters/`, and ovr.news `src/`. No filter's
+`excluded_source_types` includes it. The stamp exists precisely so downstream can
+exclude, and no downstream does: **present, configured, unreachable**, the
+NM#284 / NM#300 / LD#94 shape, sitting inside the exact code I spent the evening
+measuring.
+
+Verified independently before filing: **28 eval rows in `ovr.news/data/ovr.db`**
+(a floor — that copy's `max(collected_date)` is 2026-08-05), and ~840 rows per
+lens scored. Published examples: *"Zimbabwe funeral held for family believed to
+have been murdered in the UK"* at tier **high**; Borneo's giant trees credited to
+Madagascar; Tanzanian articles credited to Burundi.
+
+This is a direct hit on `ovr.news/docs/SUSTAINABILITY.md:85` — the
+**editorial-cleanliness gate on the donation track**, whose criterion is "no
+off-topic content leaking into feeds… no articles landing in the wrong lens".
+Chain 17 cites that same gate as NM#232's blocker, so the file was in hand and
+the connection was never made.
+
+**The trap in the fix:** adding `eval_aggregator` to every filter's exclusions is
+the obvious move and the wrong default — it silently deletes FS#120's "share
+reaching the site" metric, an explicit checklist item on a gate due 2026-08-14.
+The decision (may an experimental arm publish at all?) has to come before the
+code.
 
 ## Board maintenance done
 

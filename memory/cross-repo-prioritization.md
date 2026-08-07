@@ -7,7 +7,7 @@ metadata:
 
 # Cross-Repo Prioritization
 
-**Last updated: 2026-08-07 (late)** — full re-query against GitHub, then a
+**Last updated: 2026-08-07 (night)** — chain placements, seven stale entries corrected and the total fixed to **198**. Previously: full re-query against GitHub, then a
 **second pass that re-queried every link in every chain**. Read the
 [2026-08-07 ordering](#ordering-2026-08-07--re-queried-full-board) first, then
 [chain verification](#chain-verification-2026-08-07-late--every-link-re-queried)
@@ -180,7 +180,7 @@ this repo's. Fifth instance of the repo's defining failure shape.
 
 | # | Item | Repo | Why here |
 |---|---|---|---|
-| 1 | **FS#120** GN eval readout + ADR-007 gate | FS | Only hard date (~2026-08-14). ~~Harness exists; one run + one decision.~~ **Understated — corrected 08-07 from the issue's 13 comments.** Two of four hypotheses are already answered *without* eval data: **H2 FAILED 08-03** (gdelt_constructive 0 items on 12 of 19 ticks, 63% against a >50% failing threshold; free tier measured ~1 req/~2 min per IP) and **H4 answered 08-06** (**0 of 14,198** GN-proxy rows ever enriched, vs 0.0–19.9% column-C failure for the three eval arms). H1 on track (GN proxies 27.6% published share vs 90.8% for the other 366 sources). **The live remainder is bigger than one run:** the last comment argues **240 of the 312 GN sources are `q=… site:<domain>` single named outlets, not proxies for anything**, and that this reframing must land *before* the gate. `scripts/gn_to_native_upgrade.py` already exists, so that half is a **run, not a build**. |
+| 1 | **FS#120** GN eval readout + ADR-007 gate | FS | Only hard date (~2026-08-14). ~~Harness exists; one run + one decision.~~ **Understated — corrected 08-07 from the issue's 13 comments.** Two of four hypotheses are already answered *without* eval data: **H2 FAILED 08-03** (gdelt_constructive 0 items on 12 of 19 ticks, 63% against a >50% failing threshold; free tier measured ~1 req/~2 min per IP) and **H4 answered 08-06** (**0 of 14,198** GN-proxy rows ever enriched, vs 0.0–19.9% column-C failure for the three eval arms). H1 on track (GN proxies 27.6% published share vs 90.8% for the other 366 sources). **The live remainder is bigger than one run:** the last comment argues **240 of the 312 GN sources are `q=… site:<domain>` single named outlets, not proxies for anything**, and that this reframing must land *before* the gate. `scripts/gn_to_native_upgrade.py` already exists, so that half is a **run, not a build**. **Critical path re-checked 2026-08-07 night — three things sit on it that no chain named.** (a) **FS#132 is a gate blocker, not housekeeping**: `gdelt_constructive` is phase-locked so each country is only ever sampled at two fixed hours, and that arm measured **unchanged at 66% zero-yield** while `gdelt`'s FS#125 fix moved it 76%→66%. Its arm cannot be window-comparable to the others; it is currently filed under "mentioned but in no chain". (b) **The usable common window is ~6 days, not 14**: it starts at the *last* config change across all arms — GNews `country_queries` 08-05, FS#125 08-06, FS#128 08-06 — at a censored 30 items/run. (c) **LD#101**: the eval arms are scored and published, so the checklist's "share reaching the site" metric depends on a decision that has not been taken. |
 | 2 | **NM#301** corroboration precision **0.560** at 2 sources (+ **ovr#303**) | NM/ovr | Live, reader-visible, violates a published principle. **Wording half SHIPPED 08-07**; the ranking half is open as decision 7 — and it is ovr's OWN 1.3/1.5/1.7x rule, not the NexusMind boost `1bbadb5` bounded. |
 | 3 | **LD#91** uplifting ranks a trafficking investigation 6th of 3,530 | LD | Reputational, live, untouched since 08-01. Fold into **`human_thriving` v8** as an acceptance criterion rather than patching v7. |
 | 4 | **cd v6 cutover** (#98 → #87) | LD | Closest to done: 7/7 verify. Blocked only on creating `cultural-discovery-filter-v6` on the Hub and fitting normalization from a historical rescore. |
@@ -1049,6 +1049,49 @@ being invisible, not as a verified sequence. Per CLAUDE.md the dependency runs
 one way — persuasion-scorer depends on this repo's distillation machinery and
 must never vendor a copy — so nothing here blocks llm-distillery work.
 
+### Stale cross-repo dependencies — the full sweep, 2026-08-07 (night)
+
+**Enumerated, not just counted** — this board's own rule is that a findings list
+is a sample unless it names its members and its method, and the previous pass
+reported "13 instances" without either.
+
+**Method** (re-runnable): `gh issue list -R <repo> --state all --limit 1000 --json
+number,title,state,stateReason,body` for all seven repos, extract cross-repo
+references from **issue bodies**, join against actual state. Counts returned:
+LD 100 · NM 273 · ovr 288 · FS 117 · ps 13 · pipeline-atlas 3 ·
+augmented-engineering 35. **Not covered: issue *comments*, docs, and code
+comments** — NM#254's taxonomy decision arrived by comment cross-post and this
+method would have missed it. Rate limit never hit.
+
+| # | Citing (OPEN) | Cites | State of cited | Corrected? |
+|---|---|---|---|---|
+| 1 | NM#223 | FS#85 | CLOSED NOT_PLANNED | yes (08-07 late) |
+| 2 | ovr#222 | FS#85 | CLOSED NOT_PLANNED | yes (08-07 late) |
+| 3 | ovr#223 | FS#85 | CLOSED NOT_PLANNED | **yes (08-07 night)** |
+| 4 | ovr#231 | FS#85 | CLOSED NOT_PLANNED | **yes (08-07 night)** |
+| 5 | ovr#231 | NM#224 | CLOSED NOT_PLANNED — **abandoned, not re-homed** ("superseded by v3: frozen embeddings alone achieve 0 FPs") | **yes (08-07 night)** |
+| 6 | ovr#232 | FS#85 | CLOSED NOT_PLANNED (soft — body also says "not gated on NER bundle") | **yes (08-07 night)** |
+| 7 | **LD#38** | NM#108 | CLOSED COMPLETED 2026-05-10 — and LD#38 asserts it is *"open, waiting on this"*, which is the filter's whole justification | **yes (08-07 night)** |
+| 8 | **LD#56** | NM#161 | CLOSED COMPLETED 2026-05-11 (parent closed, child open) | **yes (08-07 night)** |
+| 9 | **LD#23** | NM#88 | CLOSED COMPLETED 2026-03-06 — *same defect*, closed upstream 5 months ago | **yes (08-07 night)** |
+| 10 | ovr#177 | NM#126 | CLOSED COMPLETED 2026-04-06 ("awaiting upstream fix" — it landed) | no |
+| 11 | ovr#210 | LD#62 | CLOSED COMPLETED 2026-06-01 (step 7 reads as pending; is actionable) | no |
+| 12 | **FS#133** | NM#213 | CLOSED COMPLETED 2026-05-23 | **yes — mine, filed 08-07 late** |
+| 13 | **FS#134** | NM#213 | CLOSED COMPLETED 2026-05-23 | **yes — mine, filed 08-07 late** |
+
+**Rows 12 and 13 were filed by the same pass that documented this trap.** Knowing
+a failure mode does not prevent it; only checking your own work against it does.
+
+**Also stale, inside this file** (all corrected 08-07 night): NM#213 cited as the
+live matching-model consumer, NM#220 (closed 07-07), NM#91 (closed 03-06 **and
+mis-described** — it is "Pipeline-run summary notification", not healthcheck
+drift), LD#43 (closed 07-28), LD#49 (closed 07-27), FS#125/#126 (closed 08-06).
+**And one non-issue:** NM#288, cited at two places, is a merged **pull request**,
+not an issue — `gh issue view` returns a PR object, which is why it reads as one.
+
+**Still open, not chased:** rows 10 and 11 are in ovr.news and were left for a
+session working in that repo.
+
 ### Chain 17: NER Enrichment — **NEW 2026-08-07; one blocked root, five dependents**
 ```
 NM#232 (NER as an early enrichment stage; persist per-article entities)
@@ -1071,6 +1114,12 @@ for spacy/gliner/stanza/nltk over `src/` and requirements returns nothing; spaCy
 appears only under `scripts/research/`. `ovr.news/src/lib/db-schema.ts:385`
 creates an `entities` table plus two indexes with **no writer and no reader** —
 the same present-configured-unreachable shape as NM#284 and NM#300.
+
+**Careful: two different sets of five.** The diagram's five are *consumers of
+NM#232* (NM#223, NM#185, ovr#222, ovr#223, the matching model). The trap below
+lists *citers of the closed FS#85* (NM#223, ovr#222, ovr#223, ovr#231, ovr#232).
+**ovr#231 and ovr#232 are FS#85 citers but not NM#232 consumers**, which is why
+they appear in one list and not the other.
 
 **Two traps recorded here.** (1) **NM#223, ovr#222, ovr#223, ovr#231 and ovr#232
 all name `FluxusSource#85` as their prerequisite and it is CLOSED**, so a reader
@@ -1182,7 +1231,7 @@ Stated explicitly so the priority tables are not mistaken for full coverage.
 | repo | unbanded | numbers |
 |---|---|---|
 | llm-distillery | 9 | 25, 28, 30, 33, 42, 55, 56, 60, 64 |
-| NexusMind | 6 | 104, 225, 226, 228, 229, 251 |
+| NexusMind | 4 | 104, 228, 229, 251 | *(225 → Chain 15 and 226 → Chain 13, 2026-08-07 night. This row is independently stale: it omits 232, 223 and 254, while the same-day coverage pass says **11** NexusMind issues are uncovered — two different definitions, never reconciled.)* |
 | ovr.news | 42 (20 of them non-engineering) | engineering: 41, 59, 68, 115, 177, 180, 207, 210, 224, 228, 229, 230, 233, 234, 239, 243, 245, 247, 248, 263, 265, 271 |
 | FluxusSource | 0 | — |
 | **persuasion-scorer** | **12 → 0** | **This row did not exist until 2026-08-07 and the omission was the point: all 12 were counted in every total and banded nowhere. Now [Chain 16](#chain-16-persuasion-scorer-verification-track--new-2026-08-07-was-never-banded).** |
