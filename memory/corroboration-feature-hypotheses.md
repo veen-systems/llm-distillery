@@ -18,7 +18,10 @@ Canonical sources, both in NexusMind:
   the first-run readout (§P5.5). This is the one with the numbers.
 - `docs/investigation/corroboration-next-phase-plan.md` — **DRAFT, its ordering
   refuted by a review 2026-08-06**; read the `RECOMMENDED ORDER` block, not §2.
-- Parent issue: ducroq/NexusMind#213.
+- Parent issue: **ducroq/NexusMind#188** (open) and **NM#301** (open). *NM#213 is
+  the origin issue and has been **CLOSED/COMPLETED since 2026-05-23** — corrected
+  2026-08-07 after it was cited as live in four places, including two issues filed
+  the same day. Cite #188/#301 for anything actionable.*
 
 ## The feature set already exists, and it is exactly the obvious three
 
@@ -74,6 +77,31 @@ hard requirement, not a preference.
   is quality, not schema** — which argues for persisting per-entity confidence
   and having consumers gate on it.
 
+- **Which copy of a duplicated wire story survives is decided by HTTP completion
+  order — it is arbitrary, not a source policy.** Traced 2026-08-07 (night) by
+  reading the call path, not by waiting for counts. `_deduplicate_by_hash`
+  (`src/aggregators/content_aggregator.py:352`) keeps the **first item it meets
+  in `all_items`**; there is no publisher preference anywhere in it. `all_items`
+  is assembled in `enabled_sources` order (`content_aggregator.py:~683`,
+  commented "Deterministic order preserves dedup semantics (first-seen wins)") —
+  **but that ordering cannot explain the observed drops**, because both of them
+  happened *inside a single source*. The 10 top-level sources are
+  `concurrent_rss`, `bluesky`, `mastodon`, `devto`, `github`, `gdelt`,
+  `gdelt_constructive`, `news`, `gnews_eval`, `newsdata_eval`;
+  `gn_asia_gn_yemen` and `us_news_cnn` are **feeds inside `concurrent_rss`**
+  (6,177 of 6,650 items that run). Within that aggregator, results are harvested
+  by `concurrent.futures.as_completed()` and folded in with
+  `all_items.extend(items)` (`concurrent_rss_aggregator.py:175` and `:91`), so
+  feed order is **network latency on the night**. Same story, two outlets: the
+  one whose HTTP fetch returns first wins, and the next run may reverse it.
+  **This is LD#95's family — a reproducibility defect, not a systematic bias.**
+- **Google News is not favoured by any mechanism.** Both observed survivors were
+  `gn_*` feeds, which reads as favouritism at n=2 and is fully explained without
+  it: GN contributes hundreds of feeds (FS#120: 240 of 312 GN sources are single
+  named outlets), so GN has far more tickets in a lottery decided by which fetch
+  returns first. A base-rate effect, not a policy. **Do not cite the n=2 pattern
+  as evidence of GN precedence.**
+
 ## REFUTED
 
 - **"NER is a bad corroboration feature."** Not established. It was measured
@@ -104,10 +132,28 @@ hard requirement, not a preference.
   Latin-script token collision — ids fix that by construction, and fix the
   cross-language half at the same time ("Verenigde Naties" ↔ "United Nations").
   Raised in the next-phase plan; never tried.
-- **MinHash from FluxusSource.** `compute_minhash` / `jaccard_similarity` are
-  implemented, `datasketch` is pinned — and there are **zero call sites**
-  (ducroq/FluxusSource#134). A real-valued similarity at collection time,
-  already built, never evaluated as a feature.
+- ~~**MinHash from FluxusSource.**~~ **RESOLVED 2026-08-07 (night): recommend
+  DELETE, do not evaluate as a feature** (ducroq/FluxusSource#134). Four
+  independent grounds, none of which need a measurement: (a) the signal already
+  exists downstream and better — NexusMind `story_dedup.py` runs E5 multilingual
+  cosine with a dedicated `cross_source_threshold=0.88`, and char-3-gram Jaccard
+  is strictly weaker; (b) it **degrades cross-language** — running the real
+  functions gives reworded-same-story 0.508, unrelated 0.023, but
+  **cross-language same story 0.195**, nearer to unrelated than related, on a
+  corpus that is multilingual by construction; (c) wiring it into collection-stage
+  dedup makes corroboration **worse** — a fuzzier matcher drops *more* of the
+  evidence FS#133 is about; (d) emitting the signature instead is blocked by a
+  live bug (`numpy.uint64` is not JSON-serializable, while the code comment
+  claims it is) and would cost ~19 MB/cycle and ~206 s of added CPU, **2619×**
+  the current hash cost, on the must-not-fail stage.
+  Correction to the claim as first written here: it is **not** literally zero
+  call sites — `compute_all_hashes` calls it twice and 14 of 37 tests exercise
+  it — but `compute_all_hashes` has no production caller, so the chain is dead
+  from the top and has **never executed in ~8 months**. Deleting also drops
+  `scipy` (nothing else needs it): **114 MB of a 450 MB venv**, and removes the
+  module-level import that caused a **26-hour production outage** on 2026-06-30.
+  The one honest gap: nobody has measured how many cross-source near-duplicates
+  MinHash would catch above exact match. Not worth blocking the delete on.
 - **Whether the labelled set is even representative.** See below — this may
   invalidate the denominator for everything above.
 
@@ -120,12 +166,39 @@ positives, removed at collection.
 
 Consequence for this file: **the next-phase plan's step 3 ("mine the labels we
 already hold") draws from a corpus that has already had its easiest positives
-deleted.** Any feature measured on that set is measured on a biased sample, and
-the bias runs against exactly the signal being tested. A cross-source stamp
-shipped 2026-08-07 (`4994d61`, FluxusSource) so the size becomes knowable; the
-count is a floor for ~30 days while the hash store turns over.
+deleted.** Any feature measured on that set is measured on a depleted sample,
+and the depletion runs against exactly the signal being tested. A cross-source
+stamp shipped 2026-08-07 (`4994d61`, FluxusSource) so the size becomes knowable;
+the count is a floor for ~30 days while the hash store turns over.
 
-**Do this before trusting any n from step 3.**
+**Refined 2026-08-07 (night), and the refinement matters for step 3.** The
+deletion is *arbitrary with respect to publisher* (see the completion-order
+entry under CONFIRMED), not slanted toward or away from any outlet. Two
+consequences pull in opposite directions and both are load-bearing:
+
+- **Good for step 3's validity**: the surviving copy is a uniform-ish draw from
+  each duplicate set, so the corpus is **depleted, not skewed by source**. A
+  source-conditioned feature (`source_pair_prior`, deferred to V2) is therefore
+  not silently poisoned — the missing rows are missing at random across
+  publishers, not concentrated in one.
+- **Bad for step 3's power, and this is the binding one**: what is removed is
+  one whole side of every easy positive *pair*. Corroboration labels are
+  pair-shaped, so deleting either member destroys the pair outright. The loss is
+  unbiased in *which* member goes and total in *whether the pair survives*.
+  At n=23 with case_1 supplying 21, this is not a rounding error.
+
+So: arbitrariness rescues the feature semantics and does nothing for the sample
+size. **Still do this before trusting any n from step 3** — but expect the
+answer to be "the pairs were never there", not "the pairs are biased".
+
+**Status of the measurement (2026-08-07 21:00):** not yet answerable
+empirically, and it will not be for weeks. Only **one** collection run has
+carried the stamp (20:06), yielding **2** cross-source drops. The timer is
+`fluxus-collection.timer`, `OnCalendar=*-*-* 00/4:00:00` — **6 runs/day**,
+next at 00:02. The 4 grep hits in `logs/` are those same 2 drops written to both
+`aggregator.log` and `scheduled_20260807.log`; **do not read 4 as a count of
+events.** The mechanism above was settled by reading the call path instead, which
+is why it did not need the wait.
 
 ## Sequencing as it stands
 

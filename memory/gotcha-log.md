@@ -1888,7 +1888,7 @@ front of you.
 
 ### Planned off an issue's consumer list as if it were the inventory of consumers (2026-08-07 late)
 
-**Problem**: wrote a full implementation plan for ducroq/NexusMind#232 (NER enrichment), choosing its lead consumer from the four the issue names. A six-lens review found a **fifth** consumer that the issue does not mention — the story-dedup matching model (NM#213) — and it is the **only one with code, a trained model and a published readout**. The one I chose, ovr#222, is display-layer and cannot improve the decision it renders; the reviewers argued rendering entity evidence under a 0.560-precision claim makes it look substantiated rather than correct, and that is right.
+**Problem**: wrote a full implementation plan for ducroq/NexusMind#232 (NER enrichment), choosing its lead consumer from the four the issue names. A six-lens review found a **fifth** consumer that the issue does not mention — the story-dedup matching model (**NM#188/NM#301**; NM#213, as first written here, is CLOSED) — and it is the **only one with code, a trained model and a published readout**. The one I chose, ovr#222, is display-layer and cannot improve the decision it renders; the reviewers argued rendering entity evidence under a 0.560-precision claim makes it look substantiated rather than correct, and that is right.
 
 **Root cause**: the issue's consumer list was treated as an enumeration of who wants the field. It is a snapshot of who wanted it *on the day it was written* (2026-06-14). Being able to rank four options gave no signal that a fifth existed — a complete-looking list is the hardest kind of incomplete.
 
@@ -1905,3 +1905,53 @@ front of you.
 **Fix**: owner reopened 8099; verified from off-box (HTTP 200, 39,159 bytes, 0.058s) rather than on-box.
 
 **Lesson**: **when a service answers locally and not remotely, the next command is `tcpdump`, not another firewall query** — "did the packet arrive?" discriminates between every host-level cause and every network-level one in a single observation. And the standing consequence: the atlas's smoke test runs on-box, so it passes throughout an outage that makes the site unreadable to every actual reader. **A reachability check must run from where the reader is.**
+
+### A measurement window that straddles a fix silently averages two different systems (2026-08-07 night)
+
+**Problem**: published "GDELT returns 0 items in **61 of 84 attempts = 72.6%**, measured 2026-08-01…08-07" as a finding on FS#120, the one calendar-bound gate on the board. The window straddles **FS#125**, closed COMPLETED on 2026-08-06 06:15 with a strategy-rotation fix — so most of the sample was pre-fix data for a problem that had already been worked. The same figure also pooled `gdelt` with `gdelt_constructive`, whose identical fix was **deferred** as FS#132: a fixed source averaged with an unfixed one. Corrected per source: `gdelt` 76% → **66%**, `gdelt_constructive` unchanged at 66%.
+
+**Root cause**: treated a date range as a homogeneous population. The rule already on the books — *"before using any source as evidence, establish what it excludes"* — names **time** as one of the exclusions, and I applied it to `data/raw/` being pre-enrichment while missing that a config change inside my own window does the same thing. A 7-day window over a system under active repair is not one system.
+
+**Fix**: re-measured per source with the fix boundary as a split point, posted a correction to FS#120, and added a checklist item that every rate in the 08-14 readout must carry a "measured over which window, across which config changes" line — that window contains FS#125, FS#128 and the GNews `country_queries` change.
+
+**Lesson**: **before quoting a rate over a date range, `git log` and the issue tracker for that range are part of the measurement, not context.** And note how it was caught: **by accident**, while fixing an unrelated stale board entry that still listed FS#125 as open. Nothing in the method would have surfaced it — which is the argument for the board being accurate, not merely tidy.
+
+### `errors.log` excludes WARNINGs, and two log files hold the same run (2026-08-07 night)
+
+**Problem**: two false readings in one investigation. (1) `grep -ci "429\|rate limit" logs/errors.log` returned **0**, which reads as "no throttling" — the 429s are logged at WARNING to `aggregator.log`, and `errors.log` only receives ERROR. There were ~49/day. (2) `grep -r "Dedup cross-source drop:" logs/` returned **4**, which reads as 4 events; it is the *same 2 drops* written to both `aggregator.log` and the per-day `scheduled_YYYYMMDD.log`. Cross-file `grep -c` sums double-count every same-day event.
+
+**Root cause**: both are the "establish what your source excludes" rule applied to log files — a severity-filtered sink excludes by *level*, and overlapping sinks double-count by *destination*. In both cases the output looked like a clean answer, which is what makes it dangerous.
+
+**Fix**: counted 429s per-file rather than summed, and used the per-day `scheduled_*.log` series (non-overlapping) for every rate. Recorded both traps in the FS#120 comment so the next reader does not repeat them.
+
+**Lesson**: **a zero from a filtered log is not evidence of absence — check what that sink accepts before believing it.** Same family as `pgrep -f`: the output has the shape of an answer. When a log directory has both a rolling file and per-period files, pick one series and say which.
+
+### Asked what ordered the list, not what the function did — and skipped a month of waiting (2026-08-07 night)
+
+**Problem** (a method that worked, recorded so it is repeatable): the open question on FS#133 was whether one source is systematically favoured when duplicate wire copy collides. The plan on file was to wait ~30 days for enough cross-source drops to accumulate, because the count is a floor until the legacy hash entries age out. After one run there were 2 events — no statistical answer available, and none coming soon.
+
+**Root cause of the delay**: the question was framed as *"what does the dedup function decide?"* The function decides nothing — `_deduplicate_by_hash` keeps whichever item it meets **first** and has no publisher preference at all. The variable was never in the function; it was in whatever orders its input.
+
+**Fix**: traced `all_items`. It is reduced in `enabled_sources` order (deterministic) — but both observed drops happened *inside one source*, `concurrent_rss`, whose feeds are harvested by `concurrent.futures.as_completed()` and appended in completion order. So the winner is **whichever HTTP fetch returned first**, i.e. network latency. Answer: **arbitrary** — a reproducibility defect in [[score-batch-shape-noise]]'s family, not a structural bias. Settled at n=2, in minutes.
+
+**Lesson**: **when a selection looks biased, find what orders the candidates before measuring which one wins.** A first-wins rule pushes the entire decision into its input order, and that is usually somewhere else in the code and often not a policy at all. Corollary for reading small samples: both survivors here were Google News feeds, which reads as precedence and is a **base-rate effect** — GN contributes hundreds of feeds, so it holds more tickets in a lottery. Explain an apparent pattern by exposure before by mechanism.
+
+### Wrote the warning and made the error in the same comment (2026-08-07 night)
+
+**Problem**: in a comment on FS#120 I wrote *"do not sum grep hits across `aggregator.log` and `scheduled_YYYYMMDD.log` — today's run is written to both, so cross-file totals double-count"*, and then in the **same comment** reported `gnews_eval` saturating its cap in **"26 of 59 runs (44%)"**. The real figure is **13 of 44 (29.5%)**: the 26 is the double-counted 13, and the denominator 59 reconciles with nothing — not 44 real runs, not 43 scheduled-log runs, not 87 raw grep lines. It was a *mixed* denominator paired with a double-counted numerator, which inflated the rate by ~1.5×. Caught by an independent re-derivation that recomputed all 13 published numbers from scratch; 11 reproduced exactly.
+
+**Root cause**: the warning was written from the *dedup* investigation, where the trap had just been paid for. The cap figure was computed in a different pass, on a different grep, and never re-examined — the knowledge was attached to one finding rather than to the log directory. There is no mechanism by which stating a rule applies it to numbers already in the buffer.
+
+**Fix**: corrected on FS#120 and in `docs/TODO.md` / the session record. Emphasis also moved to the more informative half — 30 is the ceiling by *arithmetic* (3 countries × `max_articles: 10`), so "never exceeded 30" is not an observation; the finding is the **floor**, 21 of 44 runs returning only 10, i.e. two of three countries yielding nothing.
+
+**Lesson**: **a rule you state in prose is not applied to your own numbers until you re-run them under it.** The specific mechanical guard: any count over a log directory must **dedupe by timestamp** before reporting and must state which runs its source captures. And the general one, which this session hit three times in four errors — every miss was source hygiene (a severity-filtered sink read as absence, two overlapping sinks summed, a date window spanning a config change), never arithmetic. **The numbers were never the risk; the denominators were.**
+
+### Verified an agent's claim and lost the argument it supported (2026-08-07 night)
+
+**Problem**: recommended deleting FluxusSource's unused MinHash on four grounds, one being *"it removes a hard module-level import from the must-not-fail collector — that import has already caused a 26-hour production outage"* (2026-06-30). Published to FS#134. On checking the cited entry, the outage was caused by a **renamed venv**: `bin/activate` retained a dead `.venv` path, `python3` fell through to *system* Python, and `from datasketch import MinHash` was merely **the first missing import to raise**. `feedparser` is equally absent there and would have failed next. Deleting `datasketch` would not have prevented that outage or any repeat. Ground withdrawn; the other three stand.
+
+**Root cause**: a subagent supplied a well-sourced, correctly-cited fact (the outage is real, the traceback is real, the line number is right) and an inference attached to it that did not follow. Citation quality is not inference quality, and the correct citation is what made the inference feel checked. Same session: a "only datasketch requires scipy" claim was *true in effect* but reached by an incomplete check — `pandas` and `yfinance` also name scipy, under optional extras that are not requested.
+
+**Fix**: correction posted to FS#134 withdrawing the ground. Noted that the guard which actually addresses the 2026-06-30 failure mode is the venv preflight in `scripts/scheduled_collection.sh` — which uses `import datasketch` as its canary and must be repointed at `feedparser` if the delete proceeds.
+
+**Lesson**: **this is the "green check answered a different question" pattern inverted — a red failure attributed to the line that reported it.** A crash names where execution stopped, not what was wrong. Before citing a past incident as evidence for a change, check that the change would have prevented it. And when relaying a subagent's finding, the fact and the inference need separate verification — the strength of the citation is what disguises the weakness of the step after it.

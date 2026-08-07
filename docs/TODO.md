@@ -1,5 +1,66 @@
 # LLM Distillery - TODO
 
+## 2026-08-07 (night) — the dedup question answered by mechanism, and a deadline in trouble
+
+Full record: `memory/project_session_2026_08_07_night.md`.
+
+- [x] **FS#133's open question ANSWERED — "arbitrary", and it did not need the
+      30-day wait.** The dedup survivor is whichever item appears first in
+      `all_items`, with no publisher preference. Both observed drops happened
+      *inside* `concurrent_rss`, whose feeds are harvested by `as_completed()` —
+      so the winner is **whichever HTTP fetch returned first**. LD#95's family
+      (reproducibility), not a structural bias. The n=2 "Google News always wins"
+      pattern is a base-rate effect of GN having hundreds of feeds. **Do not cite
+      it as GN precedence.** Posted to FS#133.
+- [x] **FS#134 DECIDED: delete.** Four independent grounds; the signal already
+      exists downstream (E5 cosine at `cross_source_threshold=0.88`), it degrades
+      cross-language, wiring it into dedup makes corroboration *worse*, and the
+      emit-instead option is blocked by a live `numpy.uint64` JSON bug. Deleting
+      drops `scipy` too — **114 MB of a 450 MB venv** — and removes the import
+      that caused a 26-hour outage on 2026-06-30. Posted to FS#134.
+- [x] **Board maintenance DONE** — NM#225 → Chain 15 (**re-dated 2026-05-28; the
+      chain is 71 days old, not 2, and NM#225 is its root and the most actionable
+      of the three derivations**), NM#226 → Chain 13, NM#254 → Chain 16 (it holds
+      the SemEval-2023 taxonomy decision), **Chain 17 (NER) promoted** into the
+      canonical chain list with five dependents.
+- [x] **Cross-repo dependency audit: 13 live instances** of an OPEN issue citing a
+      CLOSED dependency. FS#85 alone has **five** dependents (NM#223, ovr#222,
+      ovr#223, ovr#231, ovr#232). Correcting comments filed on all uncorrected
+      ones plus LD#38 (→NM#108), LD#56 (→NM#161), LD#23 (→NM#88).
+      **Two were my own, filed the previous session** — FS#133 and FS#134 both
+      cited NM#213 as the live consumer; NM#213 has been closed since 2026-05-23.
+- [x] **Framework adoption verified by content, not by stamp** —
+      `agent-ready-projects` v1.15.1 is genuinely installed (five marker strings
+      present; installed mtime matches the commit to the second), `curate` body
+      identical to template, no global `review-changes` shadowing the project one.
+      `agent-ready-papers` is at v2.4.0 + 2 doc-only commits and is **not adopted
+      here by design**.
+
+### ⚠️ FS#120 (due ~2026-08-14, 7 days) — two measurement defects found
+
+- [ ] **`newsdata_eval` is returning 77–97% off-topic content.** Measured over 8
+      runs: Chad 23.1% on-topic, Burundi 4.2%, Madagascar 2.9%. It is the **same
+      defect already fixed for GNews on 2026-08-05** by adding `country_queries`
+      with unambiguous exonyms — `newsdata_eval` has no such mapping. **H3 and
+      €/usable-article for NewsData are currently measuring a pan-African default
+      feed.** Fix + re-baseline; pre-fix days are not usable.
+- [ ] **`items/day` is censored** — every eval identity is capped per run
+      (`max_articles: 10` × 3 countries = 30; GDELT `max_records` 30–50 hardcoded).
+      `gnews_eval` sat at exactly 30 in **13 of 44 runs (29.5%)** — and the more
+      informative half is the floor: **21 of 44 runs returned only 10**, i.e. two of
+      three countries yielded nothing. (30 is the ceiling *by arithmetic*, 3 countries
+      × `max_articles: 10`, not an empirical discovery.) The readout must say it
+      compares *tier ceilings* against the GN proxies' uncapped RSS supply.
+- [ ] **H2 (GDELT starvation) — FS#125's fix is real but partial.** `gdelt` went
+      76% → **66%** zero-yield; `gdelt_constructive` is unchanged at 66% because
+      its phase-lock fix was deferred as **FS#132**. Option 3 (pay for a key, or
+      declare the free firehose non-viable) is still undecided and belongs in this
+      gate.
+- [ ] **Every rate in the readout needs a "measured over which window, across
+      which config changes" line.** The eval period contains FS#125 (08-06),
+      FS#128 (08-06) and the GNews `country_queries` change (08-05). I published a
+      72.6% figure that straddled the FS#125 boundary and had to correct it.
+
 ## 2026-08-07 (late) — coverage pass, a refuted plan, one instrument shipped
 
 Board is unchanged at **195 open**; the work was in what it does not cover, and in
@@ -15,17 +76,21 @@ Feature-level detail: `memory/corroboration-feature-hypotheses.md`.
       **zero call sites**. Wire it up as a corroboration feature or delete it.
 - [x] **NM#232 planned, then refuted by a six-lens review.** Findings filed on the
       issue. Do not build as specified: its consumer list omits the only consumer
-      with code (the NM#213 matching model), which wants a cross-lingual *offline
+      with code (the matching model — **NM#188/NM#301**; NM#213 is CLOSED), which wants a cross-lingual *offline
       re-run*, not a CPU pipeline stage.
 - [x] **Dependency corrections filed** on NM#223 and ovr#222 — both cite
       `FluxusSource#85`, which is CLOSED and re-homed to NM#232.
-- [ ] **Read the cross-source count** off the 20:00+ collection runs
-      (`ssh sadalsuud 'grep "Dedup: " ~/local_dev/FluxusSource/logs/aggregator.log | tail'`).
-      **It is a floor until ~2026-09-06** while 36,577 legacy source-less hash
-      entries age out. This number decides FS#133 — and it gates the corroboration
-      track's step 3, which would otherwise mine a pre-depleted corpus.
-- [ ] **Board maintenance**: place NM#225 in Chain 15 (re-dating it to 2026-05-28,
-      71 days), NM#226 in Chain 13, NM#254 in Chain 16.
+- [x] **Read the cross-source count** — done 2026-08-07 night, and the count is
+      **not yet readable**: only one run has carried the stamp (20:06), giving 2
+      drops; the timer is 6 runs/day and the figure stays a floor until
+      ~2026-09-06. **The question it was meant to answer was settled by reading
+      the call path instead** (see the night block above). Step 3 of the
+      corroboration track is still gated — but expect "the pairs were never
+      there", not "the pairs are biased".
+- [x] **Board maintenance** — done 2026-08-07 night, plus Chain 17 promoted and
+      seven stale entries corrected (NM#213/#220/#91, LD#43/#49, FS#125/#126) and
+      a count error fixed (**198 open, not 195** — the pass never re-counted after
+      filing FS#133/#134).
 - [ ] **Owner call**: does `ducroq/augmented-engineering` (34 open, **1 closed
       ever**) belong on the board? CLAUDE.md mandates filing evidence into it.
 

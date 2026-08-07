@@ -84,7 +84,8 @@ wrong.** Detail in [[corroboration-feature-hypotheses]]; the short version:
   is unbuildable. And the intervention was already measured here as **anti-signal**.
 - **I picked the wrong consumer.** ovr#222 is display-layer and cannot improve
   the decision it renders; at 0.560 precision it makes a wrong claim look
-  *evidenced*. The consumer that matters — the matching model, NM#213 — **is not
+  *evidenced*. The consumer that matters — the matching model, **NM#188/NM#301**
+  (NM#213, written here, is CLOSED — corrected 2026-08-07) — **is not
   on NM#232's list at all** and is the only one with code and a readout.
 - **Dutch**: I claimed only English gets the rich label set. A reviewer installed
   spaCy and printed it — **English and Dutch both carry the full 18-label set**;

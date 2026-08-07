@@ -30,39 +30,23 @@ unchanged. This pass tested *coverage* instead: which open issues appear nowhere
 in this memo. LD, FS and ps are fully covered; **26 ovr engineering issues and 11
 NexusMind issues are not.**
 
-### Chain 17 (NEW): NER enrichment — one blocked prerequisite, four dependents
+> **Count corrected 2026-08-07 (night): the real total was 198, not 195.** Re-running
+> the verify command above gives FS **16** (not 14) and pipeline-atlas **3** (not 2).
+> The FS gap is exactly **FS#133 and FS#134** — the two issues *this same pass filed* and
+> never added to its own total; the atlas gap is **pipeline-atlas#3**, filed after the
+> pass. So the claim "LD, FS and ps are fully covered" was true of the prose and false of
+> the count it cited. A pass that files issues has to re-count after filing them.
 
-```
-NM#232 (NER as an early enrichment stage)  ← BLOCKED ROOT, open, untouched 54 days
-   ↑ re-homed from FS#85 (CLOSED NOT_PLANNED 2026-06-14 — reads as satisfied)
-   → NM#223 (entity-density into commerce_prefilter) → NM#185's commerce v3 half
-   → NM#185 obit-classifier NER input
-   → ovr#222 (corroboration explainability)   ← cites the CLOSED FS#85
-   → ovr /places/{country} discovery surface
-   ⟂ NM#213 (the matching model) ← THE FIFTH CONSUMER, absent from NM#232's list
-```
+### Chain 17: NER enrichment
 
-Verified 2026-08-07: **no NER exists in the NexusMind pipeline** (grep for
-spacy/gliner/stanza/nltk over `src/` and requirements returns nothing; spaCy
-appears only in `scripts/research/`). `ovr.news/src/lib/db-schema.ts:385` creates
-an `entities` table plus two indexes with **no writer and no reader**.
-
-**Two traps recorded here.** (1) **NM#223 and ovr#222 both list `FluxusSource#85`
-as their dependency and it is CLOSED** — a reader concludes they are unblocked.
-Inverse of this board's "✅ while open" finding: there a link looked done and was
-not; here a blocker looks cleared and is not. Both come from reading an issue's
-*state* rather than its *deliverable*. (2) **NM#232's consumer list is not the
-inventory of consumers.** The matching model (NM#213) is the only consumer with
-code, a trained model and a readout, and the issue does not mention it — so
-prioritising NM#232 off its own list prioritises it wrong. A full plan was written
-off that list and refuted by a six-lens review the same day; see
-`memory/corroboration-feature-hypotheses.md`.
-
-**Recommendation on file (NM#232 comment):** do not build as specified. The
-highest-value consumer wants an *offline re-run with a cross-lingual extractor*,
-not a CPU pipeline stage. Also: NM#232's "do not start" gate is ovr.news's
-**donation-solicitation** gate (SUSTAINABILITY.md Tier 1 track #1, "Finish
-donation pathway"), inherited rather than chosen.
+**Promoted 2026-08-07 (night) into the canonical chain list — see
+[Chain 17: NER Enrichment](#chain-17-ner-enrichment--new-2026-08-07-one-blocked-root-five-dependents)
+under Cross-Repo Dependency Chains, which is where every other chain is looked up.**
+The draft that sat here is superseded; it named **four** dependents (there are five)
+and cited **NM#213** as the live matching-model consumer, **which has been
+CLOSED/COMPLETED since 2026-05-23**. The live thread is NM#188 / NM#301. That error
+is the same trap the draft itself documents, which is why it is recorded rather
+than silently dropped.
 
 ### Chain 15 is 71 days old, not 2 — NM#225 stated it first
 
@@ -505,7 +489,8 @@ Filed since the 08-03 pass, placed nowhere:
 - **ovr#295** / **ovr#297** — domain og-reuse cache blind to upstream images (publisher logo on 68 articles); `looksLikePublisherLogo` misses `logo300.png` and `/images/`. **Chain 9**, and they are the concrete residue NM#290's closure did not cover.
 - **ovr#288**, **ovr#289**, **ovr#290** — orphan re-enrichment decision; `COALESCE` guards `undefined` but not `'{}'`; obituary-summary funeral exclusion is comma-dependent. The last is **Chain 1**'s only new link.
 - **FS#128** — `rferl_kazakh` has never collected Kazakh; both RFE/RL feeds point at a generic endpoint. **Chain 14** — a non-English source that produces no non-English content is the collection stage failing silently.
-- **FS#125** / **FS#126** / **FS#127** — gdelt firehose collects nothing in ~75% of runs; a zero-yielding aggregator raises no alarm; feed-cadence metric unreliable for 2/3 of OVER_POLLED feeds. FS#126 is the general case of FS#121 *and* FS#128: **nothing notices a source that stops producing.**
+- ~~**FS#125**~~ / ~~**FS#126**~~ / **FS#127** — gdelt firehose collects nothing in ~75% of runs; a zero-yielding aggregator raises no alarm; feed-cadence metric unreliable for 2/3 of OVER_POLLED feeds. FS#126 is the general case of FS#121 *and* FS#128: **nothing notices a source that stops producing.** **FS#125 and FS#126 CLOSED/COMPLETED 2026-08-06 06:15; only FS#127 is open** (verified 2026-08-07 — this line contradicted the same file's own lines 378 and 921).
+  **Re-measured 2026-08-07 (night), and FS#125's fix is real but partial:** `gdelt` zero-yield went 76% (23/30 runs, 08-01…08-05) → **66%** (4/6 runs, 08-07); `gdelt_constructive`, whose phase-lock fix was **deferred as FS#132**, is unchanged at 66% before and after. FS#125 was closed on a 3-tick post-deploy sample; the sustained rate is better than pre-fix but far from resolved. Daily 429 counts corroborate: 57/63/50/56/44 → 34/38. Feeds the FS#120 gate — see the correction comment there.
 
 **Not re-run on this refresh:** the Coverage table's unbanded set (it was computed
 against the 177 total and is now stale by at least these 14), and the ovr
@@ -880,6 +865,9 @@ LD#95 (batch composition moves a score up to 0.162; 7.1% / 9.1% of near-boundary
                  · before/after deploy checks · op-point comparisons (Chain 4)
    ↔ NM#289 (medium fixture scores into high on the three percentile-normalized filters)
    ↔ gotcha-log 2026-07-30 cross-box skew |0.16| — same magnitude, different cause
+   ↔ NM#226 (document raw → isotonic → percentile → tier as a chain of transformations
+              with a stated invariant per step)  ← created 2026-05-28, zero comments,
+              banded nowhere until 2026-08-07; documentation-only scope
 ```
 **This one is not a defect in a component, it is a noise floor under the
 measurements the rest of the board is made of.** Same model, same weights, same
@@ -899,6 +887,20 @@ per-cycle shuffle (`f7fef85`) giving **replay, not stability** — the next cycl
 reshuffles and the article moves again — plus the floor as a **band the deploy
 gate prints** (`--noise-floor`, default 0.16). Two models whose bands overlap
 are NOT DISTINGUISHABLE.
+
+**NM#226 placed here 2026-08-07 — it is this chain's missing write-up artefact.**
+Filed by the owner on 2026-05-28T16:42 (34 seconds after NM#225, Chain 15's
+root), open, zero comments. It asks for the four-step pipeline — raw model output
+→ isotonic calibration → percentile normalization → tier thresholding — to be
+documented as a sequence of transformations with a stated invariant per step, so
+that *"which invariant changed at which step"* becomes a localised question
+instead of implicit knowledge. That is precisely what LD#95 and NM#289 are stuck
+on: LD#95 shows the **raw** step carries no batch-invariance guarantee, and
+NM#289 shows the **percentile** step stretching the upper-middle — neither was
+localisable because the invariants were never written down. NM#226 already states
+three of them (isotonic preserves order and discards absolute distance;
+percentile preserves rank and is population-relative; tiers are discrete cutoffs
+on that population-relative space). Scope is documentation only, so it is cheap.
 
 **NM#289 may be the same family seen from the other end.** Chain 3 was closed on
 the *lower* boundary (good content crushed below medium); NM#289 reports the
@@ -957,22 +959,38 @@ obvious way to run that measurement (`filtered_*.jsonl`) is 100% passers by
 construction and drops source-type-excluded rows, so it would flatter the
 pipeline.
 
-### Chain 15: Lens Commensurability — **NEW 2026-08-05**
+### Chain 15: Lens Commensurability — **NEW 2026-05-28** *(re-dated 2026-08-07; was filed here as "NEW 2026-08-05")*
 ```
-LD#95 (noise floor |Δ| ≤ 0.16) ⟂ LD#96 (lens placement compares scorer outputs
-                                        that are not the same construct)
+NM#225 (audit every cross-filter score comparison; document the policy as an ADR)
+        ← ROOT, open, created 2026-05-28T16:42, zero comments, banded nowhere for 71 days
+   ⟂ LD#95 (noise floor |Δ| ≤ 0.16)
+   ⟂ LD#96 (lens placement compares scorer outputs that are not the same construct)
    → ovr#296 (toCanonicalLens breaks near-ties: Kixikila lost Belonging to
               Discovery by 0.043 — inside the noise floor)
    ↔ LD#61 (cross-filter trajectory-framing mis-lensing)
    ↔ ovr#298 (summary framing makes a qualifying story read as disqualifying)
    → gates LD#90 (harmonization presumes one comparable score across lenses)
 ```
-Two repos derived the same defect independently on the same day, from opposite
-ends — which is the topology rule working, and also why neither issue states the
-pattern. **The unmeasured quantity is the one that decides how urgent this is:
-what share of lens placements is settled by a margin smaller than 0.16?** Nobody
-owns that count. Until it exists, Chain 15 is a hypothesis with two filed
-symptoms, not a finding.
+**Re-dated 2026-08-07: this chain is 71 days old, not 2.** The previous text said
+"two repos derived the same defect independently on the same day, which is the
+topology rule working". There are **three** derivations and the earliest is
+**NM#225**, filed 2026-05-28T16:42 with zero comments. LD#96 (2026-08-05T07:09)
+and ovr#296 (2026-08-05T06:34) came 69 days later. Verified with
+`gh issue view 225 --repo ducroq/NexusMind --json state,createdAt,comments`.
+
+**NM#225 is also the most actionable of the three**, because it names audit
+*targets* rather than one instance: tier assignment that mixes filters, **lens
+routing in ovr.news** (`toCanonicalLens`), and any "primary topic" logic that
+picks the highest-scoring filter — plus the deliverable, an ADR stating which
+comparison method is used, on what assumptions, and what changes when any filter
+is recalibrated. ovr#296 is one instance of its second target, found
+independently 69 days later.
+
+**The unmeasured quantity is the one that decides how urgent this is: what share
+of lens placements is settled by a margin smaller than 0.16?** Nobody owns that
+count — but it is a **subset of NM#225 step 1**, so scope it inside that audit
+rather than filing it separately. Until it exists, Chain 15 is a hypothesis with
+three filed symptoms and one filed root, not a finding.
 
 ### Chain 16: persuasion-scorer verification track — **NEW 2026-08-07, was never banded**
 
@@ -986,6 +1004,12 @@ ps#2 (DR-011 Pass 2: outside review of all 34 registry rows) ← PHASE GATE, "be
    ↔ ps#8  (probe: test–retest / paraphrase / mirrored-framing consistency modes for S5-2)
 ps#3 / ps#6 (source work: Sproule 2001 + Roozenbeek 2022; NLP4IF-2019 licence, Maarouf 2024, Sahitaj 2025)
 ps#7 / ps#11 / ps#13 (DR numbering collision at DR-008; ADR citations; the pre-commitment-override protocol)
+
+── the NexusMind + ovr.news side, added 2026-08-07 ──
+NM#254 (content-level propaganda-technique extractor — reader signals, never a verdict)
+   ← HOLDS THE TAXONOMY DECISION, in a 2026-08-02 cross-post FROM persuasion-scorer
+   → constrains ps#10 / ps#12 / ps#9 / ps#5 (scale shape, thresholds, rendering, guard-case mapping)
+   ↔ ovr#253 (summary-fidelity: surface provenance/confidence) ← NM#254's stated pair, also unbanded
 ```
 
 **Why this exists: all 12 of persuasion-scorer's open issues were counted in
@@ -1001,12 +1025,71 @@ belongs *before* Phase 3. **ps#10** is the one that could invalidate the others
 — whether the 0–10 scale measures degree or presence "was never decided, only
 inherited", and ps#12, ps#9 and ps#5 all assume an answer.
 
+**NM#254 added 2026-08-07 — the chain had no NexusMind link, and the taxonomy
+decision lives there.** NM#254 (open, created 2026-06-28, last updated
+2026-08-02 — the same day all 12 ps issues were) is the enrichment-path sibling
+of this work. Its second comment is a cross-post *from* persuasion-scorer
+carrying the decision: use the canonical **SemEval-2023 Task 3** taxonomy and
+score the **6 coarse categories, not the 23 fine** — inter-annotator agreement on
+the fine labels is Krippendorff **α = 0.342** against the organisers' own 0.667
+threshold, and LLMs fail hardest exactly there (GPT-4 macro-F1 0.13–0.16 vs 0.67
+for a supervised baseline). Three further constraints in that comment bind
+ps#10/#12/#9/#5 directly: annotations **overlap and nest**, so a single-label
+contract is wrong; **zero-technique articles are real**, not an edge case; and
+**SemEval-2023 / PTC licensing bars any shipped training use** (prompt validation
+only). It also records US 12,223,265 B2 as patent-adjacent to per-sentence labels
+in a reader UI. **ovr#253** (summary-fidelity provenance, open since 2026-06-26)
+is NM#254's stated pair and is likewise banded nowhere; it joins here as the
+reader-facing end.
+
 **Scope caveat:** this chain is assembled from issue *titles* only. Nothing in
 persuasion-scorer's own docs was read, and the arrows are inferred, not
 confirmed by that repo. Treat the grouping as a placement so the block stops
 being invisible, not as a verified sequence. Per CLAUDE.md the dependency runs
 one way — persuasion-scorer depends on this repo's distillation machinery and
 must never vendor a copy — so nothing here blocks llm-distillery work.
+
+### Chain 17: NER Enrichment — **NEW 2026-08-07; one blocked root, five dependents**
+```
+NM#232 (NER as an early enrichment stage; persist per-article entities)
+        ← BLOCKED ROOT, open, created 2026-06-14, untouched 54 days until 2026-08-07
+        ← re-homed from FS#85, CLOSED NOT_PLANNED 2026-06-14 (reads as satisfied — it is not)
+   → NM#223 (entity-density as additive signal to commerce_prefilter) — open, 2026-05-27
+        → NM#185's commerce v2 → v3 half
+   → NM#185 (obit-classifier NER feature input) — open, 2026-04-22
+   → ovr#222 (corroboration explainability: shared-entity evidence in the rationale) — open
+        ← cites the CLOSED FS#85 as its prerequisite
+   → ovr#223 (/places/{country} discovery surface across all five lenses) — open
+        ← needs canonical country IDs, i.e. entity *disambiguation*, which NM#232 scopes OUT
+   ⟂ the story-dedup matching model — NM#188 (open) / NM#301 (open); NM#213 is CLOSED
+        ← THE FIFTH CONSUMER, and it appears nowhere in NM#232's own list
+⊘ gate: ovr.news SUSTAINABILITY.md Tier 1 track #1 "Finish donation pathway"
+        (pipeline-stability + audience-signal) — inherited from FS#85, not chosen here
+```
+**Verified 2026-08-07: no NER exists anywhere in the NexusMind pipeline.** grep
+for spacy/gliner/stanza/nltk over `src/` and requirements returns nothing; spaCy
+appears only under `scripts/research/`. `ovr.news/src/lib/db-schema.ts:385`
+creates an `entities` table plus two indexes with **no writer and no reader** —
+the same present-configured-unreachable shape as NM#284 and NM#300.
+
+**Two traps recorded here.** (1) **NM#223, ovr#222, ovr#223, ovr#231 and ovr#232
+all name `FluxusSource#85` as their prerequisite and it is CLOSED**, so a reader
+concludes they are unblocked. This is the inverse of this board's "✅ while open"
+finding: there a link looked done and was not; here a blocker looks cleared and
+is not. Both come from reading an issue's *state* instead of its *deliverable*.
+Correcting comments filed on all five, 2026-08-07. (2) **NM#232's consumer list
+is not the inventory of consumers.** The story-dedup matching model is the only
+consumer with code, a trained model and a readout, and NM#232 does not mention
+it — so prioritising NM#232 off its own list prioritises it wrong. Note the
+numbering: **NM#213 is CLOSED**; the live thread is NM#188 and NM#301 (Chain 10's
+root). A full plan written off NM#232's list was refuted by a six-lens review the
+same day — see [[corroboration-feature-hypotheses]].
+
+**Recommendation on file (NM#232 comment, 2026-08-07): do not build as
+specified.** The highest-value consumer wants an *offline re-run with a
+cross-lingual extractor*, not a CPU pipeline stage. Cross-references Chain 10
+(corroboration precision) and Chain 14 (any entity work must be
+per-language-pair aware).
 
 ## Priority Rankings
 
@@ -1060,7 +1143,7 @@ must never vendor a copy — so nothing here blocks llm-distillery work.
 | **LD#89** | llm-distillery | Share frozen-mpnet embed pass between obituary + violence |
 | **LD#23 / LD#70 / LD#71** | llm-distillery | cd evidence_quality; nr protection scope; nr v5 recall |
 | **ovr#214 / ovr#255 / ovr#256** | ovr.news | Language leak; academic stock photos; US-centric abbreviations |
-| **NM#221 / NM#220 / NM#96** | NexusMind | GPU multi-tenancy, Ollama coexistence, sustainable hosting |
+| **NM#221 / ~~NM#220~~ / NM#96** | NexusMind | GPU multi-tenancy, ~~Ollama coexistence~~, sustainable hosting — **NM#220 CLOSED/COMPLETED 2026-07-07, verified 2026-08-07** |
 
 ### P3 — Backlog
 
@@ -1079,7 +1162,7 @@ it should be cited before anyone re-proposes an economy lens (cf. LD#40).
 
 ### P4 — Future
 
-LD#38, LD#40, LD#43, LD#24, LD#78, LD#79, ovr#232, ovr#223, ovr#211, ovr#213,
+LD#38, LD#40, LD#24, LD#78, LD#79, ovr#232, ovr#223, ovr#211, ovr#213,
 ovr#242, ovr#133, FS#19, plus the ovr non-engineering track.
 
 **That track is now 25 issues, and it is no longer the `#137–#160` range** the
@@ -1192,9 +1275,9 @@ on it.
 
 - Delete retired sustech/foresight dirs (post-drain — due now).
 - Sync `score_normalization.py` (44-line divergence LD ↔ NM).
-- LD#49 / LD#48 — remove superseded filter versions; normalize Hub naming.
+- ~~LD#49~~ / LD#48 — remove superseded filter versions; normalize Hub naming. **LD#49 CLOSED/COMPLETED 2026-07-27** (verified 2026-08-07); LD#48 still open.
 - FS#105 — version systemd units in-repo (ovr#254, its twin, **closed 08-03**).
-- NM#91 sadalsuud healthcheck drift (operator decision).
+- ~~NM#91 sadalsuud healthcheck drift~~ — **CLOSED/COMPLETED 2026-03-06, and the description was wrong**: NM#91 is *"Pipeline-run summary notification on success (not just failure)"*, nothing to do with healthcheck drift (verified 2026-08-07). If healthcheck drift is still a live operator concern it has no issue.
 
 ## Standing Operator Decisions (Jeroen's call)
 
@@ -1225,7 +1308,7 @@ on it.
 - ~~**LD#95** pin the production batch size~~ — **not available and superseded.** Batch size is already fixed at 16; the variable is *composition*. Settled 08-06: the floor became a band the deploy gate prints, and two models whose bands overlap are not distinguishable.
 - ~~**Chain 14** run the common-denominator comparison, or close won't-do~~ — **NEITHER, 2026-08-07:** NM#292 stays open and is retargeted as the index plus the cross-cutting constraint list; the aggregate measurement is dropped.
 - **LD#85** obituary v6 relabel — PARKED; reactivate on obit-flag or over-block harm.
-- NM#91 healthcheck drift; uplifting v7 NO_HUB backup; cd v5 config-schema exemptions.
+- ~~NM#91 healthcheck drift~~ (closed 2026-03-06, and mis-described — see above); uplifting v7 NO_HUB backup; cd v5 config-schema exemptions.
 - FluxusSource: 71 DEAD disable candidates; OVER_POLLED audit; global-broadening yield check.
 
 ## Related Memories
