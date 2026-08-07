@@ -126,18 +126,27 @@ being discussed:**
 
 1. **NM#301's own comment says readers are shown no corroboration claim. They
    are.** The comment searched for the field `corroborating_sources` and the
-   string "N sources reported this" — neither exists. The same cluster
-   membership reaches readers by another route: `source_quality.other_sources`
-   → `getIndependentSources()` → `[lang]/artikel/[id].astro:521`, a badge plus
-   named, hyperlinked publisher domains. **Textbook "establish what your source
-   excludes": a grep for one field name proved absence of a feature.**
+   string "N sources reported this". That exact string does not exist, but the
+   *field* does (`types.ts:49`, `transform.ts:42`) — what is absent is a
+   rendered claim keyed on it. The same cluster membership reaches readers by
+   another route: `source_quality.other_sources` → `getIndependentSources()` →
+   the badge block in `[lang]/artikel/[id].astro` (~:506-528; cite the block,
+   not a line — this session's own comment insertion moved it), rendering a
+   badge plus named, hyperlinked publisher domains. **Textbook "establish what
+   your source excludes": a grep for one field name proved absence of a
+   feature.**
 2. **A publication floor already exists, on the wrong quantity.**
-   `config.ts:388` `displayScoreThreshold: 4.5` is applied at build
-   (`pipeline.ts:81`) to the **normalized** score — the one that means "rank in
-   batch". ADR-022 says visibility should key on `raw >= op-point`. Binds 193
-   of 21,905 stored rows (0.9%); of the 15 that carry a raw score the highest
-   is 4.76, i.e. above its op-point and dropped anyway. Small, thinly
-   evidenced, **filed rather than fixed.**
+   `config.ts:388` `displayScoreThreshold: 4.5` is read at `pipeline.ts:75` and
+   applied at `:82` to the **normalized** score — the one that means "rank in
+   batch". ADR-022 says visibility should key on `raw >= op-point`. 193 of
+   21,905 stored rows sit below it, but it **binds 18**: `getArticlesForBuild`
+   also joins `summaries` and applies the 10-day window, and 34 of the 193 are
+   `sustainability_technology`, a filter removed 2026-08-03 that can never
+   build. All 15 raw-carrying rows are `nature_recovery` (op-point **3.75**) at
+   4.44-4.76 — so it is not "the highest was dropped anyway", **all 15 clear
+   their op-point by 0.69-1.01 and are dropped anyway**, far outside the 0.16
+   band. A single-filter normalization artifact, not a cross-filter floor.
+   **Filed (ovr#304) rather than fixed.**
 3. **Decision 5 was over-engineered and the owner was right to push back.**
    Recommended disclosing the TDM sweep on `/accountability`; the argument
    rested on the finding being publicly discoverable. **`ducroq/ovr.news` is
@@ -536,7 +545,7 @@ NM#282 ✅ (ML logo classifier dead since 06-16) → ovr#281 (stock sticky + val
 
 NM#287 ✅ (lazy-load: any src= beat the hero) → fixed by NM#288 ✅
    → NM#290 ✅ CLOSED 08-03 (cross-domain check — allAfrica Google Play badge)
-   → ovr#287 (backfill ~36 already-stored wrong-story rows) ← DECISION NEEDED
+   → ovr#287 (backfill wrong-story rows) ← DECIDED 2026-08-07: BLANK, scoped per row
    → NM#294 (validation cap 200 ⇒ ~79% of heroes unvalidated) ← NEW, unbanded
    → ovr#295 (og-reuse cache blind to upstream images: publisher logo on 68 articles)
    → ovr#297 (looksLikePublisherLogo misses logo300.png and /images/) ← NEW, unbanded
@@ -560,12 +569,22 @@ stamped on upstream-supplied *and* self-extracted rows, so the backfill cannot
 currently tell them apart; fix that stamp first or the backfill re-fetches
 everything.
 
-### Chain 10: Dedup / Corroboration — **NEW; NM#291 gives NM#278 its number**
+### Chain 10: Dedup / Corroboration — **RE-ROOTED 2026-08-07 on NM#301**
 ```
+NM#301 (merged-pair precision 0.560 at 2 sources — the reader-facing claim)  ← NEW ROOT
+   ↔ ovr#303 (the site publishes boost values NexusMind has never computed)
+   → LD#100 (event-identity encoder: production is beaten on F1 by merging everything)
+   → OPEN DECISION 7 (ovr.news's OWN 1.3/1.5/1.7x boost — NOT fixed by NM's 1bbadb5)
 ovr#280 (ovr-side ingestion of cluster_id — data IS on the wire) → NM#278 (threshold retune for title-only E5)
    ← NM#291 (cross-source threshold 0.88 vs measured 0.836 for genuine cross-language same-story pairs)
+   ↔ NM#228 (complete-linkage shadow — SEQUENCED BEFORE NM#278, see the 08-04 section)
    ↔ NM#188 / NM#170 / NM#215 / NM#275(closed)
 ```
+**Why NM#301 roots this and is not just another link:** every other member is
+about *which articles get merged*. NM#301 is about *what we tell the reader we
+merged* — live today at ~0.560 precision, and actionable without waiting on any
+retune. Its wording half shipped 2026-08-07; its ranking half is open.
+
 Do the ovr ingestion fix first — it is cheap and the data already exists.
 **Caution on NM#278:** NexusMind *removes* rather than *labels* (~32%/run);
 anything removed upstream can never surface as an "N sources" badge.
@@ -573,11 +592,21 @@ anything removed upstream can never surface as an "N sources" badge.
 **NM#291 is the measured input NM#278 was missing** — the retune is no longer a
 "pick a number" task. Note the failure is *cross-language*: see Chain 14.
 
-### Chain 11: Score Provenance / Publication Floor — **NEW**
+### Chain 11: Score Provenance / Publication Floor — **CLOSED 2026-08-07**
 ```
-ovr#285 (stop NULLing raw_weighted_average) → ovr#283 (floor: decide or close won't-do)
+ovr#285 ✅ (stop NULLing raw_weighted_average) → ovr#283 ✅ CLOSED won't-do 08-07
    ← informed by LD#91 (a floor would NOT have caught it — raw 6.77 is genuinely 99.9th pct)
 ```
+**No floor.** Measured before deciding: no stored row carries a raw score below
+4.03, so a floor binds nothing — and the monitoring alternative is
+*mis-specified against its own motivating case*, since LD#91's article scored
+6.77 (6th highest) and a low-raw-at-high-rank alert stays silent through it.
+`raw_weighted_average` keeps being stored; it costs nothing and is the input to
+any future check.
+
+**Reopened one level down as ovr#304**: a floor already exists
+(`displayScoreThreshold: 4.5`) and keys on the *normalized* score, against
+ADR-022. Different defect, different issue.
 
 ### Chain 12: Source Classification (dormant)
 ```
@@ -604,9 +633,14 @@ within ±0.30 of the op-point. Flips occur within 0.077 / 0.039 of the op-point.
 Consequence for everything else here: **a run-to-run delta below ~0.1 near an
 op-point is currently indistinguishable from batch noise, and nothing on the
 board states that.** Chain 4's enforce flips, Chain 3's refits, and every
-ADR-021 gate compare exactly this quantity. Cheapest mitigation is pinning the
-production batch size — that does not remove the noise but makes a cycle
-reproducible.
+ADR-021 gate compare exactly this quantity. ~~Cheapest mitigation is pinning
+the production batch size.~~ **Not available — settled 2026-08-06.**
+`DEFAULT_BATCH_SIZE` is already fixed at 16; the variable is batch
+*composition*, which a size pin cannot touch. What shipped instead: a seeded
+per-cycle shuffle (`f7fef85`) giving **replay, not stability** — the next cycle
+reshuffles and the article moves again — plus the floor as a **band the deploy
+gate prints** (`--noise-floor`, default 0.16). Two models whose bands overlap
+are NOT DISTINGUISHABLE.
 
 **NM#289 may be the same family seen from the other end.** Chain 3 was closed on
 the *lower* boundary (good content crushed below medium); NM#289 reports the
@@ -649,8 +683,17 @@ denominator** — they must not be multiplied together. The shared-root hypothes
 is a hypothesis, not a finding. The next step NM#292 proposes is the one
 measurement that would settle it: English vs non-English surfacing rate, mean
 score and corroboration rate on **one** denominator, controlling for source
-type. Small gap → close won't-do and let the four proceed on their own merits;
-large gap → pull FS#124 and NM#291 forward.
+type. ~~Small gap → close won't-do; large gap → pull FS#124 and NM#291
+forward.~~ **DROPPED 2026-08-07.** The decision rule no longer discriminates:
+FS#124's collection defect is fixed (verified 0.00% on the first run after
+`ea25ae8`) and NM#291 is already prioritised inside the dedup programme, which
+is proceeding on merged-pair precision rather than on language. A large gap
+would now say "do what you are already doing". NM#292 stays open, retargeted as
+the stage index plus the cross-cutting constraint list — first constraint: any
+corroboration confidence bar must be **per-language-pair aware**. Also note the
+obvious way to run that measurement (`filtered_*.jsonl`) is 100% passers by
+construction and drops source-type-excluded rows, so it would flatter the
+pipeline.
 
 ### Chain 15: Lens Commensurability — **NEW 2026-08-05**
 ```
@@ -794,14 +837,18 @@ is already banded, in Chain 7.
 4. **ovr#281** — stock heroes (two independent halves: stickiness, validate false-rejects).
 5. **ovr#204** — remove hardcoded obituary filter.
 6. ~~NM#290~~ **CLOSED 08-03** → replaced by **NM#294** (~79% of heroes unvalidated) and **ovr#295 / ovr#297** (publisher logos via the upstream-supplied path).
-7. **ovr#287** — hero backfill, after the `image_source` stamp is disambiguated.
+7. ~~**ovr#287** — hero backfill, after the `image_source` stamp is disambiguated.~~ **DONE differently 2026-08-07:** the stamp was a blocker for a DB-wide re-fetch, not for blanking known ids. Blanking targets by URL pattern; the stamp ambiguity went to **ovr#305**.
 
 ### Batch C — Legal / compliance — **grew 08-04/08-05**
-1. **ovr#284** — Art. 5(2) record + a hero-image egress control that is deliberate rather than accidental.
-2. **ovr#292 (NEW)** — TDM opt-out sweep: **333 of 1,357 source domains signal an AI opt-out.** Decide whether they bind us. This is the head of the group — the other three follow from its answer.
-3. **LD#28** — TDM opt-out for *training* data: the same question one stage upstream, filed 2026-03-14 and untouched since. **If ovr#292 is answered "they bind us", LD#28 stops being backlog.**
-4. **ovr#293 (NEW)** — AI Act art. 50: social unfurl cards carry AI-generated headlines with no marker.
-5. **ovr#294 (NEW)** — unassessed obligations: AI Act art. 4 (AI literacy), EMFA art. 6, and the reported 2026-06-10 Code of Practice.
+> **Mostly CLOSED as of 2026-08-07.** Items 2-5 are all closed issues; the
+> batch's framing ("sequence it before anything that fits a distribution")
+> is void. Only 1, 6 and 7 carry live work.
+
+1. **ovr#284** — record DISCHARGED 2026-08-05; control shape decided 08-07 (deny-list shipped, off-domain host stamped not blocked). **Live remainder: recover the exposure window**, the one UNKNOWN that could reopen the Art. 33 conclusion.
+2. ~~**ovr#292** TDM opt-out sweep~~ — **CLOSED 2026-08-05, ADR-043: the directives do not bind our fetcher.** Live remainder is operational, not policy: **schedule the scan** (it has run once) and **fix the 117 fail-open errors** — a publisher behind a WAF that 403s non-browser agents is the one most likely to be reserving.
+3. ~~**LD#28** TDM for training data~~ — **CLOSED 2026-08-05**, its own record rather than inheriting ovr#292's. See **LD#97** for the already-trained-models half.
+4. ~~**ovr#293** AI Act art. 50~~ — **CLOSED 2026-08-06.**
+5. ~~**ovr#294** unassessed obligations~~ — **CLOSED 2026-08-06.**
 6. **ovr#274** — full threat-surface security review (standing).
 7. **ovr#278** — safe-fetch defence-in-depth leftovers.
 
@@ -820,8 +867,12 @@ downstream can see. Sequence it before anything that fits a distribution.
 ### Batch F — Measurement trust (NEW 08-03; **precedes any threshold decision**)
 Listed last but sequenced first: Batch A.5 and every Chain 4 enforce flip depend
 on it.
-1. **LD#95** — pin the batch size, or state the measured noise floor where
-   claims get made against it (`docs/FILTER_PLAYBOOK.md`, the ground-truth gate).
+1. ~~**LD#95** — pin the batch size~~ **SETTLED 2026-08-06: the second half only.**
+   Pinning was never available — `DEFAULT_BATCH_SIZE` is already fixed at 16
+   and the variable is batch *composition*. The floor is now a **band the
+   deploy gate prints** (`--noise-floor`, default 0.16), and two models whose
+   bands overlap are NOT DISTINGUISHABLE. This is what unblocked #87 and #93
+   step 4.
 2. **NM#289** — check the three percentile CDFs' refit dates against current
    production raw percentiles. Cheap; may reopen Chain 3 at the upper tail.
 3. **LD#94** — remove or document the inert gatekeeper, and run the same
