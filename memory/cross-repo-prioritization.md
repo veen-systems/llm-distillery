@@ -107,7 +107,7 @@ this repo's. Fifth instance of the repo's defining failure shape.
 | 7 | **LD#82 + NM#286 item 3** violence audit → enforce flip | LD/NM | Once audited, enforcement is a config flip; recall 0.55 is the trade to decide. |
 | 8 | **NM#302** circuit-breaker telemetry is false | NM | 33% of cap-blocked articles are deleted; the dedup work in tier 9 leans on this telemetry. |
 | 9 | **Dedup programme**: NM#228 complete-linkage shadow → NM#278 retune; ovr#280 ingestion; LD#100 encoder. **NM#296 lands AFTER NM#188 has a root cause** (see the 08-04 section — an earlier draft of this row had it before) | NM/ovr/LD | Sequenced, not fast. Do **not** let LD#100 (a training project) block the cheap links. |
-| 10 | **Legal**: ovr#284 **exposure-window recovery** (the record itself was written 08-05); **LD#97 looks closable** (models assessed clean, excerpt remedy shipped `d558a40`); ovr#274/#278 | ovr/LD | Not "who writes the record" — that was stale when written. |
+| 10 | **Legal**: ovr#284 **exposure-window recovery** (the record itself was written 08-05); ~~LD#97~~ **CLOSED 08-07**; ovr#274/#278. Live remainder from LD#97: **schedule the TDM scan** and **fix the 117 fail-open errors** — both ovr-side | ovr | Not "who writes the record" — that was stale when written. |
 | 11 | **Measurement trust residue**: NM#289 CDF upper tail; Chain 15's missing count (share of lens placements decided under 0.16); LD#96/ovr#296; LD#61 | all | Unmeasured; decides how urgent Chain 15 is. |
 | 12 | **Chain 14 non-English**: **ovr#291** (474 stored mojibake rows — FS#124's *cause* is fixed), FS#129/#130/#131 language tagging, **NM#231** (the one live stage, now a `human_thriving` v8 criterion) | all | Four repos, one pattern. NM#292's aggregate measurement is **dropped**, not pending; the tracker is retargeted as the stage index plus the per-language-pair-bar constraint. |
 
@@ -537,6 +537,36 @@ The prose records these closures, the ASCII chains did not: **ovr#295** (closed
 live Chain 14 link). Both struck below. Still **mentioned but placed in no
 chain**: **ovr#301** (Chain 7 material), **FS#127**, **FS#132**.
 
+### Acted on the same day — four issues closed, two comments filed
+
+| Issue | Action |
+|---|---|
+| **LD#73** | **CLOSED done.** Deliverable shipped as `violence_promotion v1`; ADR-004 stamp-only question resolved. Remaining work is LD#82 + NM#286 item 3, which are already banded. |
+| **LD#97** | **CLOSED.** All three questions discharged; appendix committed `0cc3382`, remedy `d558a40`. Live remainder is ovr-side and operational (schedule the scan, fix the 117 fail-open errors). |
+| **NM#204** | **CLOSED superseded** by shipped `solutions v6`. Untouched since 2026-05-11. |
+| **NM#185** | **Comment filed.** Not closable — the commerce v3 half is real, unstarted work. Recommended splitting it out so ovr#204's dependency reads true, and re-measuring before any training run. |
+| **ovr#204** | **Comment filed** — not blocked; the half it depends on shipped 5 weeks ago. |
+
+**Board after: LD 36 · NM 42 · ovr 89 · FS 14 · ps 12 = 193, plus a sixth repo.**
+
+### Sixth repo on the board: veen-systems/pipeline-atlas
+
+Created 2026-08-07. The whole-chain architecture site, written as a signal path,
+replacing ovr.news's hand-maintained `/ops/architecture` (deleted, ovr `83e0b7c`).
+Two open issues: **#1** fill the eight stage stubs, **#2** cross-link it from the
+four repos it describes and decide whether their own `ARCHITECTURE.md` files
+should shrink.
+
+Served from **sadalsuud on Tailscale** (`http://100.78.93.76:8099/`), not GitHub
+Pages — `veen-systems` is on the free plan, where Pages serves public repos only,
+and the site carries internal host names and a defect inventory. Unit files live
+in the repo under `ops/`, not only in `/etc`, which is the thing FS#105 is open
+about.
+
+**Why it exists, in one line:** eight partial architecture documents across four
+repos, no whole-chain view, and at least two of the eight were found stating
+things that were no longer true.
+
 ### Two issues confirmed closable
 
 - **LD#97** — the ordering section says "looks closable"; verified it is. All
@@ -628,7 +658,7 @@ of the loss — fix its multilingual coverage, then re-run the check.
 
 ### Chain 5: Solutions Lens — largely complete
 ```
-LD#43 ✅ → v4 ✅ → v6 (gate passed, normalized) ✅ → LD#84 (prompt router, v7 only) → NM#204 (closable as superseded)
+LD#43 ✅ → v4 ✅ → v6 (gate passed, normalized) ✅ → LD#84 (prompt router, v7 only) → NM#204 ✅ CLOSED superseded 08-07
 ```
 ~~solutions v6 is the real LD#90 mismatch (declares 0.20, passes 0.59).~~
 **RESOLVED 2026-08-02** — not drift: solutions v6's prefilter has no lens rules
