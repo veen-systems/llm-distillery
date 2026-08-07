@@ -212,11 +212,25 @@
     "content_md5": "a69f5df710e6394a442803c592aaedf3",
     "title_md5": "0cd2b4f4e1b400a3ea931116ef7bf531",
     "url_normalized": "809bdf7feae18ecc2efda8f88e62da4e",
-    "combined_hash": "a0f7296f52da920115c18e37f4e8c8cc",
-    "minhash_signature": ["9837667", "42063958", ...]
+    "combined_hash": "a0f7296f52da920115c18e37f4e8c8cc"
   }
 }
 ```
+
+> **`minhash_signature` was documented here and never existed on the wire
+> (corrected 2026-08-07).** No producer and no reader: `compute_minhash` has had
+> no production caller in ~8 months, so the field was never emitted. It could not
+> have been even if wired up — `compute_minhash` returns `numpy.uint64` elements
+> and `json.dumps` raises `TypeError: Object of type uint64 is not JSON
+> serializable`, while the code comment beside it claims the opposite.
+> **The recommendation on ducroq/FluxusSource#134 is to delete the implementation**
+> (measured: 3 cross-source pairs per cycle at Jaccard ≥0.6, one of them a false
+> positive, against the ~2 exact hashing already finds; real cross-language
+> same-story pairs land at 0.094–0.297, below any usable threshold).
+> Two NexusMind docs still assert the same non-existent capability —
+> `docs/ARCHITECTURE.md:56` and `docs/downstream-apps/business/pitch-document.md:39`.
+> A schema that documents a field nothing writes is the same
+> present-configured-unreachable shape as NM#284 and LD#101.
 
 ---
 

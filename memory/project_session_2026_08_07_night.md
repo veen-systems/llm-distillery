@@ -11,38 +11,54 @@ Fourth context on 2026-08-07. The session opened on a measurement that was
 supposed to need a month of accumulation, and closed on a deadline item that
 turned out to be measuring the wrong thing.
 
-## The headline: the question did not need the wait
+## The headline — and its retraction, the same night
 
-The previous session left a first command: read the cross-source dedup count off
-the aggregator log, and treat it as a floor until ~2026-09-06 while 36,577
-legacy source-less hash entries age out. The question was *"is Google News
+The previous session left a first command: read the cross-source dedup count and
+treat it as a floor until ~2026-09-06. The question was *"is Google News
 consistently on the winning side, or is it arbitrary?"*
 
 **The count is not readable and will not be for weeks** — one run has carried the
 stamp (20:06), producing 2 drops; the timer is `OnCalendar=*-*-* 00/4:00:00`,
-6 runs/day. A trap worth recording: `grep -r "Dedup cross-source drop:" logs/`
-returns **4** lines, which is the *same 2 drops* written to both `aggregator.log`
-and `scheduled_20260807.log`. Four is not an event count.
+6 runs/day. A trap worth keeping: `grep -r "Dedup cross-source drop:" logs/`
+returns **4** lines, which is the *same 2 drops* in two files.
 
-**But the question was answerable by reading the call path, and the answer is
-ARBITRARY.** `_deduplicate_by_hash` keeps the first item it meets in `all_items`
-and has no publisher preference. `all_items` is reduced in `enabled_sources`
-order — deterministic, and the code comment says so — **but that cannot explain
-the observed drops, because both happened inside a single source.** The ten
-top-level sources are `concurrent_rss`, `bluesky`, `mastodon`, `devto`, `github`,
-`gdelt`, `gdelt_constructive`, `news`, `gnews_eval`, `newsdata_eval`;
-`gn_asia_gn_yemen` and `us_news_cnn` are **feeds inside `concurrent_rss`**
-(6,177 of 6,650 items). Inside that aggregator, futures are harvested by
-`concurrent.futures.as_completed()` and folded in with `all_items.extend(items)`
-— so the winner is **whichever HTTP fetch returned first that night**, and the
-next run may reverse it. This is [[score-batch-shape-noise]]'s family: a
-reproducibility defect, not a structural bias.
+I answered it by reading the call path instead, published **"ARBITRARY —
+completion order"**, and **an adversarial lens refuted it hours later.** The
+mechanism I found is real for *within-run* collisions: `_deduplicate_by_hash`
+keeps the first item it meets, and inside `concurrent_rss` futures are harvested
+by `as_completed()`, so the winner is fetch order. **But my premise was the
+instrument, not the world.**
 
-**The tempting wrong reading:** both survivors were `gn_*` feeds. That is a
-base-rate effect — GN contributes hundreds of feeds — not precedence. n=2.
+A cross-source drop is only *countable* when the incumbent hash carries a source.
+**4,116 of 40,693 hashes (10.1%) carry one**, all from that single run — so
+cross-run drops are structurally undetectable and **every countable drop is
+same-run by construction**. "Both happened inside `concurrent_rss`" restates the
+detector's blind spot. FS#133's own first comment says not to conclude from 2.
 
-*Method note worth keeping: the generalisable move was asking what ORDERS the
-list, not what the dedup function does. The function was never the variable.*
+**The cross-run mechanism is the larger one, and it is systematic in the opposite
+direction.** `seen_hashes` persists 30 days and is consulted first, so the winner
+is whichever *run* polled first, set by `update_frequency`: GN-hosted feeds have
+**1 sub-12h** against **159 non-GN sub-12h**. Cadence is a per-publisher
+property, so the loss is **publisher-correlated**. And it is **sticky for up to
+30 days** — a content-dropped item never reaches the `seen_urls` write, so it is
+re-dropped every run until the TTL expires. My "the next run may reverse it" was
+wrong. My "network latency decides it" is **untestable**: no fetch-duration field
+exists anywhere.
+
+I also over-corrected the other way. Dismissing the "GN always wins" pattern as a
+base-rate effect was itself unearned — GN is **27.4%** of that run's items, and
+3-of-3 gives **p ≈ 0.02**. *Dismissing a small-n pattern is as much a claim as
+asserting one.*
+
+**And the finding that may reframe the issue:** in the same run **6 cross-source
+syndicated stories SURVIVED** dedup against **2 dropped** — one survivor the same
+story as a drop, via a third outlet. Exact-hash dedup may not be where the
+corroboration evidence goes at all.
+
+*Method note, now with its correction: asking what ORDERS the list was the right
+move and found a real mechanism. The error was treating "explains all my
+observations" as "is the mechanism", when the observations were one stratum of a
+population I could not yet see.*
 
 ## FS#120 is 7 days out and its eval is partly measuring noise
 
@@ -96,13 +112,38 @@ COMPLETED on 2026-08-06 06:15 with a strategy-rotation fix, so most of the sampl
 is pre-fix; and it pooled `gdelt` with `gdelt_constructive`, whose identical fix
 was **deferred as FS#132**. Corrected per source:
 
-| source | pre-fix (08-01…08-05) | post-fix (08-07) |
-|---|---|---|
-| `gdelt` (FS#125 applied) | 23/30 = **76%** | 4/6 = **66%** |
-| `gdelt_constructive` (deferred) | 20/30 = 66% | 4/6 = 66% |
+I then published a corrected split — `gdelt` 76%→66%, `gdelt_constructive`
+unchanged — and **that was refuted too, by the adversarial lens, and the sign is
+backwards.** Two compounding errors:
 
-So the fix is real but partial, and FS#125 was closed on a 3-tick post-deploy
-sample. Correction posted.
+1. **I used the GitHub close time as the deploy time.** The real pulls, from
+   `git reflog` on sadalsuud, are `0fa9ffa` at **2026-08-05 18:09** and
+   `61be1b1` (a *phase-lock correction to the fix itself*) at **2026-08-06
+   07:49**. Two commits, and the first shipped a still-broken sampler.
+2. **Both my windows were cherry-picked, in opposite directions.** My "76% pre"
+   was the issue body's last-8-runs snapshot; my "66% post" was Aug 7 alone,
+   dropping four Aug-6 runs that ran identical fixed code and all yielded zero.
+
+Full record:
+
+| window | zero-yield |
+|---|---|
+| pre-fix, all 122 runs | **66.4%** |
+| post-`0fa9ffa`, all 13 | **76.9%** |
+| post-`61be1b1`, all 10 | **80.0%** |
+| Aug-7 only (n=6) | 66.7% ← my "66%" |
+
+Fisher pre vs post-all: **p = 0.546**. Items/run **19.1 → 10.0**. **79 of 117**
+pre-fix six-run windows were already ≤66.7%, so n=6 could never have carried the
+claim. And a *third* config change sat inside my window unnoticed: `3c08a6d`
+(08-03) raised `gdelt_constructive`'s `budget_sec` 120→300 on the shared per-IP
+quota, moving firehose zero-yield 64.7%→91.7%.
+
+**What holds:** FS#125's *coverage* half is real — `protests` and `geopolitical`
+are now reachable. The *yield* half is unchanged and cannot move; the ceiling is
+an external per-IP quota shared by two identities, and the plan doc already says
+"~50% zero is the designed behaviour". H2's real question for the gate is whether
+the free tier is viable at all — FS#125's Option 3, still undecided.
 
 **How I found it: by accident**, while fixing an unrelated stale board entry that
 listed FS#125 as open. Nothing in my method would have caught it. This is the

@@ -27,14 +27,25 @@ Full record: `memory/project_session_2026_08_07_night.md`.
       ON at v5@0.85). If it scored under threshold it is a live false negative and
       belongs in `memory/project-obituary-detector.md`.
 
-- [x] **FS#133's open question ANSWERED — "arbitrary", and it did not need the
-      30-day wait.** The dedup survivor is whichever item appears first in
-      `all_items`, with no publisher preference. Both observed drops happened
-      *inside* `concurrent_rss`, whose feeds are harvested by `as_completed()` —
-      so the winner is **whichever HTTP fetch returned first**. LD#95's family
-      (reproducibility), not a structural bias. The n=2 "Google News always wins"
-      pattern is a base-rate effect of GN having hundreds of feeds. **Do not cite
-      it as GN precedence.** Posted to FS#133.
+- [ ] **FS#133's question is STILL OPEN — my "arbitrary" answer was retracted
+      the same night.** The dedup survivor *within a run* is decided by
+      `as_completed()` completion order — that part holds, though it is
+      **untestable**: no fetch-duration field exists anywhere. But my premise
+      ("both drops happened inside one source") is an **instrument artefact** —
+      only **4,116 of 40,693 hashes (10.1%) carry a source**, so cross-run drops
+      are structurally undetectable and every countable drop is same-run *by
+      construction*. FS#133's own first comment said not to conclude from n=2; I
+      did. **The cross-run mechanism is the bigger one and it is systematic**:
+      `seen_hashes` persists 30 days, so the winner is whichever *run* polled
+      first, set by `update_frequency` — GN feeds are **1 sub-12h vs 159 non-GN
+      sub-12h**, i.e. **publisher-correlated**. And the loss is **sticky for up to
+      30 days**, not reversible next run. Re-read after the next cycle: incumbents
+      now carry sources, so cross-run drops become visible for the first time.
+- [ ] **Measure near-duplicate SURVIVAL, not just deletion.** In the 20:06 run,
+      **6 cross-source syndicated stories survived** dedup (different snippet →
+      different hash) against **2 dropped** — one survivor being the same story as
+      a drop, via a third outlet. Exact-hash dedup may not be where the
+      corroboration evidence goes at all. Nobody has measured this.
 - [x] **FS#134 DECIDED: delete.** Four independent grounds; the signal already
       exists downstream (E5 cosine at `cross_source_threshold=0.88`), it degrades
       cross-language, wiring it into dedup makes corroboration *worse*, and the
@@ -84,11 +95,18 @@ Full record: `memory/project_session_2026_08_07_night.md`.
       three countries yielded nothing. (30 is the ceiling *by arithmetic*, 3 countries
       × `max_articles: 10`, not an empirical discovery.) The readout must say it
       compares *tier ceilings* against the GN proxies' uncapped RSS supply.
-- [ ] **H2 (GDELT starvation) — FS#125's fix is real but partial.** `gdelt` went
-      76% → **66%** zero-yield; `gdelt_constructive` is unchanged at 66% because
-      its phase-lock fix was deferred as **FS#132**. Option 3 (pay for a key, or
-      declare the free firehose non-viable) is still undecided and belongs in this
-      gate.
+- [ ] **H2 (GDELT starvation) — my "76% → 66%" was REFUTED; the sign is backwards.**
+      Full record: pre-fix **66.4%** (122 runs) → post **76.9%** (13) / **80.0%**
+      (10); Fisher **p = 0.546**; items/run 19.1 → 10.0. My "76% pre" was the
+      issue's last-8-runs snapshot and my "66% post" was Aug 7 alone, dropping four
+      post-fix Aug-6 runs that all yielded zero. I also split on the GitHub **close
+      time** rather than the deploy time (`git reflog`: `0fa9ffa` 08-05 18:09,
+      `61be1b1` 08-06 07:49 — two commits, the first still broken). **What holds:**
+      FS#125's *coverage* half is real; the *yield* half cannot move — it is an
+      external per-IP quota shared by two identities, and the plan doc already says
+      "~50% zero is the designed behaviour". **H2's real question is whether the
+      free tier is viable at all** — FS#125's Option 3, still undecided, and
+      FS#132 still gates `gdelt_constructive`'s half.
 - [ ] **Every rate in the readout needs a "measured over which window, across
       which config changes" line.** The eval period contains FS#125 (08-06),
       FS#128 (08-06) and the GNews `country_queries` change (08-05). I published a

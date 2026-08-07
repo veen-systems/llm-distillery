@@ -77,30 +77,55 @@ hard requirement, not a preference.
   is quality, not schema** — which argues for persisting per-entity confidence
   and having consumers gate on it.
 
-- **Which copy of a duplicated wire story survives is decided by HTTP completion
-  order — it is arbitrary, not a source policy.** Traced 2026-08-07 (night) by
-  reading the call path, not by waiting for counts. `_deduplicate_by_hash`
-  (`src/aggregators/content_aggregator.py:352`) keeps the **first item it meets
-  in `all_items`**; there is no publisher preference anywhere in it. `all_items`
-  is assembled in `enabled_sources` order (`content_aggregator.py:~683`,
-  commented "Deterministic order preserves dedup semantics (first-seen wins)") —
-  **but that ordering cannot explain the observed drops**, because both of them
-  happened *inside a single source*. The 10 top-level sources are
-  `concurrent_rss`, `bluesky`, `mastodon`, `devto`, `github`, `gdelt`,
-  `gdelt_constructive`, `news`, `gnews_eval`, `newsdata_eval`;
-  `gn_asia_gn_yemen` and `us_news_cnn` are **feeds inside `concurrent_rss`**
-  (6,177 of 6,650 items that run). Within that aggregator, results are harvested
-  by `concurrent.futures.as_completed()` and folded in with
-  `all_items.extend(items)` (`concurrent_rss_aggregator.py:175` and `:91`), so
-  feed order is **network latency on the night**. Same story, two outlets: the
-  one whose HTTP fetch returns first wins, and the next run may reverse it.
-  **This is LD#95's family — a reproducibility defect, not a systematic bias.**
-- **Google News is not favoured by any mechanism.** Both observed survivors were
-  `gn_*` feeds, which reads as favouritism at n=2 and is fully explained without
-  it: GN contributes hundreds of feeds (FS#120: 240 of 312 GN sources are single
-  named outlets), so GN has far more tickets in a lottery decided by which fetch
-  returns first. A base-rate effect, not a policy. **Do not cite the n=2 pattern
-  as evidence of GN precedence.**
+- **Which copy of a duplicated wire story survives: THE QUESTION IS STILL OPEN.**
+  *An earlier version of this entry claimed "decided by HTTP completion order —
+  arbitrary, not a source policy" and filed it under CONFIRMED. An adversarial
+  review refuted the evidence on 2026-08-07 (night). Kept here in corrected form
+  because the failure is instructive.*
+
+  **Why my evidence was circular.** The argument was: both observed drops
+  happened inside `concurrent_rss`, so `enabled_sources` order cannot explain
+  them, so the winner is `as_completed()` completion order. But a cross-source
+  drop is only **detectable** when the incumbent hash carries a source, and
+  sourced entries exist only from the single run that deployed the stamp:
+  **4,116 of 40,693 hashes carry a source (10.1%); 36,577 (89.9%) are legacy bare
+  floats.** Cross-run collisions are therefore *structurally undetectable* right
+  now — "both drops were within one aggregator" is a restatement of what the
+  detector can see, not a fact about the world. FS#133's own first comment said
+  "do not conclude anything from `2` until roughly 2026-09-06". I concluded from
+  those 2.
+
+  **There are two mechanisms; I described the smaller one.**
+  - *Within a run* — completion order via `as_completed()`. Arbitrary. This part
+    stands, but it is **untestable with current instrumentation**: `feed_health.json`
+    has 24 fields per feed and **none is a fetch duration**. I presented a guessed
+    mechanism as a traced one.
+  - *Across runs* — the larger and currently invisible population. `seen_hashes`
+    persists (30-day TTL) and is consulted first, so the winner is whichever run
+    **polled first**, set by `_filter_due_feeds` + per-feed `update_frequency`.
+    Measured: GN-hosted feeds are **1 sub-12h, 201@24h, 110@≥48h**; non-GN are
+    **159 sub-12h**. Cadence is a per-publisher property, so **cross-run loss is
+    publisher-correlated, not unbiased.**
+
+  **Two further claims of mine that are wrong.** (i) "The next run may reverse
+  it" — false cross-run: a content-dropped item never reaches the `seen_urls`
+  write, so its URL is never learned and it is **re-dropped every run until the
+  TTL expires — sticky for up to 30 days**, deterministically. (ii) The base-rate
+  dismissal was overstated: GN is **27.4% of items** in that run, all three
+  sources in the two drops are GN-hosted, **p ≈ 0.02**. Not proof of precedence,
+  but not the comfortable wash I claimed either. I over-corrected against my own
+  earlier over-reading.
+
+  **The finding that reframes the issue:** in the same run **6 cross-source
+  syndicated stories SURVIVED dedup** (different snippet → different hash) against
+  **2 dropped** — one survivor being the same story as one of the drops, via a
+  third outlet. So exact-hash dedup is **not** what decides which outlet's copy
+  reaches NexusMind. Near-duplicate survival, not exact-duplicate deletion, is
+  probably where the corroboration evidence actually goes.
+
+  **Consequence for step 3, correcting what this file said below:** the loss is
+  **not** demonstrably unbiased across publishers, so a future `source_pair_prior`
+  **cannot** yet be assumed safe from it.
 
 ## REFUTED
 
@@ -132,28 +157,46 @@ hard requirement, not a preference.
   Latin-script token collision — ids fix that by construction, and fix the
   cross-language half at the same time ("Verenigde Naties" ↔ "United Nations").
   Raised in the next-phase plan; never tried.
-- ~~**MinHash from FluxusSource.**~~ **RESOLVED 2026-08-07 (night): recommend
-  DELETE, do not evaluate as a feature** (ducroq/FluxusSource#134). Four
-  independent grounds, none of which need a measurement: (a) the signal already
-  exists downstream and better — NexusMind `story_dedup.py` runs E5 multilingual
-  cosine with a dedicated `cross_source_threshold=0.88`, and char-3-gram Jaccard
-  is strictly weaker; (b) it **degrades cross-language** — running the real
-  functions gives reworded-same-story 0.508, unrelated 0.023, but
-  **cross-language same story 0.195**, nearer to unrelated than related, on a
-  corpus that is multilingual by construction; (c) wiring it into collection-stage
-  dedup makes corroboration **worse** — a fuzzier matcher drops *more* of the
-  evidence FS#133 is about; (d) emitting the signature instead is blocked by a
-  live bug (`numpy.uint64` is not JSON-serializable, while the code comment
-  claims it is) and would cost ~19 MB/cycle and ~206 s of added CPU, **2619×**
-  the current hash cost, on the must-not-fail stage.
-  Correction to the claim as first written here: it is **not** literally zero
-  call sites — `compute_all_hashes` calls it twice and 14 of 37 tests exercise
-  it — but `compute_all_hashes` has no production caller, so the chain is dead
-  from the top and has **never executed in ~8 months**. Deleting also drops
-  `scipy` (nothing else needs it): **114 MB of a 450 MB venv**, and removes the
-  module-level import that caused a **26-hour production outage** on 2026-06-30.
-  The one honest gap: nobody has measured how many cross-source near-duplicates
-  MinHash would catch above exact match. Not worth blocking the delete on.
+- ~~**MinHash from FluxusSource.**~~ **RESOLVED 2026-08-07 (night): DELETE, and
+  the recommendation is now measurement-backed** (ducroq/FluxusSource#134).
+  The measurement the issue named as its own honest gap was run: on one
+  production collection (4,109 items, post-exact-dedup), MinHash over
+  **cross-source pairs only** gives 51 pairs at 0.4, 4 at 0.5, **3 at 0.6** (one
+  of those a false positive at 0.688 — two AFCON fixture lists 17 years apart),
+  1 at 0.7, 0 at 0.8. That is **~2 true positives per cycle against the ~2 the
+  exact matcher already finds**. A full day (25,482 rows) gives 11 pairs at 0.6
+  and **zero cross-language**. On real production text, 1,074 candidate
+  same-story cross-language pairs land at **0.094–0.297** — below the 0.4
+  threshold that already yields mostly junk. **MinHash cannot separate same-story
+  from unrelated on this corpus at any threshold.**
+  Also confirmed live: `jaccard('','') == 1.0`, and **1,374 of 25,482 rows in a
+  real day have empty content** — run unguarded that is ~866,000 spurious
+  "identical" cross-source pairs. Deleting drops `scipy`, **114 MB of a 450 MB
+  venv**, nothing else needs it.
+
+  **FOUR of my own supporting claims here were wrong; the conclusion never moved.**
+  Recording them because the pattern matters more than the outcome:
+  - ~~"cross-language same story scores 0.195"~~ — **no script, notebook or data
+    file produced it**; it was one hand-written sentence pair, and different
+    hand-written sentences give 0.078. **Never quote 0.195 again.** The direction
+    replicates on real data; the number is not evidence.
+  - ~~"~206 s/cycle, 2619× the current hash cost"~~ — overstated **~11×**;
+    measured 4.34 ms/doc → **~19 s/cycle**.
+  - ~~"the signal exists downstream and better — strictly weaker"~~ — *inferred*.
+    NexusMind `story_dedup.py` is live at `cross_source_threshold=0.88` but embeds
+    **title-only**; MinHash is full-content. Not a like-for-like comparison.
+  - ~~"it removes the import that caused a 26-hour outage"~~ — **withdrawn**. That
+    outage was a renamed venv; `datasketch` merely raised first, and `feedparser`
+    would have failed next.
+  Independent third datum against wiring it up: lexical Jaccard was already tried
+  downstream and **disabled** as ineffective for paraphrased titles
+  (`ovr.news/src/lib/data/editor/config.ts:67`). And the delete does **not** serve
+  NM#170 / NM#291, which want more signal than a title.
+  Stale docs to fix regardless: `NexusMind/docs/ARCHITECTURE.md:56`,
+  `NexusMind/docs/downstream-apps/business/pitch-document.md:39` (a business pitch
+  claiming a capability that has never executed), and this repo's
+  `docs/article-metadata-schema.md:216` (`minhash_signature`, no producer, no
+  reader, and unemittable given the uint64 bug).
 - **Whether the labelled set is even representative.** See below — this may
   invalidate the denominator for everything above.
 
@@ -171,25 +214,37 @@ and the depletion runs against exactly the signal being tested. A cross-source
 stamp shipped 2026-08-07 (`4994d61`, FluxusSource) so the size becomes knowable;
 the count is a floor for ~30 days while the hash store turns over.
 
-**Refined 2026-08-07 (night), and the refinement matters for step 3.** The
-deletion is *arbitrary with respect to publisher* (see the completion-order
-entry under CONFIRMED), not slanted toward or away from any outlet. Two
-consequences pull in opposite directions and both are load-bearing:
+**Refined 2026-08-07 (night) — then the refinement was REFUTED the same night.**
+I wrote that the deletion is "arbitrary with respect to publisher", so the corpus
+is "depleted, not skewed by source", and therefore a future `source_pair_prior`
+is "not silently poisoned". **Do not rely on that.** The arbitrariness claim
+rested on evidence that an adversarial review showed to be an instrument artefact
+(see the corrected entry under CONFIRMED). What is actually known:
 
-- **Good for step 3's validity**: the surviving copy is a uniform-ish draw from
-  each duplicate set, so the corpus is **depleted, not skewed by source**. A
-  source-conditioned feature (`source_pair_prior`, deferred to V2) is therefore
-  not silently poisoned — the missing rows are missing at random across
-  publishers, not concentrated in one.
-- **Bad for step 3's power, and this is the binding one**: what is removed is
-  one whole side of every easy positive *pair*. Corroboration labels are
-  pair-shaped, so deleting either member destroys the pair outright. The loss is
-  unbiased in *which* member goes and total in *whether the pair survives*.
-  At n=23 with case_1 supplying 21, this is not a rounding error.
+- **Cross-run loss is publisher-correlated, not unbiased.** `seen_hashes` persists
+  30 days and is consulted first, so a story is claimed by whichever *run* saw it
+  first — set by per-feed `update_frequency`. GN-hosted feeds: **1 sub-12h,
+  201@24h, 110@≥48h**. Non-GN: **159 sub-12h**. Cadence is a per-publisher
+  property. **So `source_pair_prior` cannot yet be assumed safe from this.**
+- **The loss is sticky, not a coin flip.** A content-dropped item never reaches
+  the `seen_urls` write, so it is re-dropped every run until the TTL expires —
+  **up to 30 days**, deterministically.
+- **What survives unchanged, and is the binding constraint for step 3**: whatever
+  the mechanism, what is removed is one whole side of an easy positive *pair*.
+  Corroboration labels are pair-shaped, so deleting either member destroys the
+  pair outright. At n=23 with case_1 supplying 21, that is not a rounding error.
 
-So: arbitrariness rescues the feature semantics and does nothing for the sample
-size. **Still do this before trusting any n from step 3** — but expect the
-answer to be "the pairs were never there", not "the pairs are biased".
+So: the sample-size problem is real and unaffected by the retraction; the
+"semantics are safe" reassurance is withdrawn. **Expect "the pairs were never
+there" rather than "the pairs are biased" — but do not assume the survivors are
+an unbiased draw either.**
+
+**And a finding that may matter more than either:** in the 20:06 run, **6
+cross-source syndicated stories SURVIVED dedup against 2 dropped** — different
+snippet, different hash — one survivor being the same story as one of the drops
+via a third outlet. Exact-hash dedup may simply not be where the corroboration
+evidence goes; near-duplicate *survival* is the larger population and nobody has
+measured it.
 
 **Status of the measurement (2026-08-07 21:00):** not yet answerable
 empirically, and it will not be for weeks. Only **one** collection run has
