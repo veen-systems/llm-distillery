@@ -155,6 +155,36 @@ chromium and asserts on the DOM at 11 routes — including `#%`, which threw
 dot-directory, and **snap confinement does not grant access to hidden
 directories in `$HOME`** (nor to the host's `/tmp` — snap has a private one).
 
+### The sixth lens found eight more, and one said my own fix made it worse
+
+- **`StartLimitIntervalSec` was written in `[Service]`.** It is a `[Unit]` key;
+  systemd parses it, warns, and ignores it. `systemd-analyze verify` said so and
+  nothing else did — **half a fix landed, with a comment asserting both halves.**
+- **My straddle detector made the problem worse.** The taps never shared a
+  denominator (Collected = one run; the scorers read a multi-day window), so
+  the banner's advice — re-run when idle — yields an *aligned* pair and a
+  confident, fictional ~23% "loss" that reads like a rejection rate. **A
+  visible defect turned into an invisible one.** Bars now scope to the
+  comparable group; the cross-group comparison is refused, not rendered.
+- **The filter table showed two retired packages as healthy green rows**, which
+  is the exact defect the note above that table warns about, in a new form.
+- **`read_last_run` hunted four stage blocks that do not exist**, matched 0 of
+  4, and said nothing.
+- **`serve.sh`'s guard could not print in 2 of 3 failure modes** — `set -e`
+  killed the script at the assignment, before the check. The safety property
+  always held; only the diagnosis was unreachable, which is its own dead
+  mechanism.
+- **The verify mechanism had no batch runner** despite the site promising one,
+  and 2 of 3 commands returned false all-clears. `ops/run_verifies.sh` now
+  treats **empty output as failure** — a command that prints nothing has
+  verified nothing, whatever its exit code. 6/6 pass with output.
+- **The CI guard could not fail** (`--self-test` always returns 0).
+- `Persistent=true` on a monotonic-only timer is inert.
+
+**The reviewer also hit the `pgrep -f` trap while working — 4th occurrence.**
+Its `pkill -f "http.server 8199"` matched its own ssh command line and killed
+the session.
+
 ## Carry forward
 
 - **Mark chain links against *deliverables*, not issues.** A ✅ earned by one
@@ -163,6 +193,11 @@ directories in `$HOME`** (nor to the host's `/tmp` — snap has a private one).
   returned confident false all-clears. Run them when you write them.
 - **Harden the unit that pulls and builds, not the one that reads.**
 - Snap browsers: private `/tmp`, no dot-directories in `$HOME`.
+- **`systemd-analyze verify` is free and nothing else catches a key in the
+  wrong section.** Run it on any unit you write.
+- **A guard that removes a wrong-looking number without fixing the underlying
+  incomparability is worse than no guard** — it converts something a reader
+  would have questioned into something they will believe.
 
 ## NEXT
 
