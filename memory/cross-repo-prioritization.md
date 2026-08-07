@@ -7,9 +7,156 @@ metadata:
 
 # Cross-Repo Prioritization
 
-**Last updated: 2026-08-05 (late)** — board re-queried against GitHub; corrections
-and two new clusters are in **[Board refresh 2026-08-05](#board-refresh-2026-08-05-late--re-queried-against-github)**
-below. Read that first: two entries in the P0/P1 tables name issues that are closed.
+**Last updated: 2026-08-07** — full re-query against GitHub. **Read the
+[2026-08-07 ordering](#ordering-2026-08-07--re-queried-full-board) first**; the
+P0–P4 tables further down are the 08-05 state and several of their entries have
+moved or closed. The older
+**[Board refresh 2026-08-05](#board-refresh-2026-08-05-late--re-queried-against-github)**
+section is kept as history.
+
+---
+
+## Ordering 2026-08-07 — re-queried, full board
+
+<!-- verify: for r in veen-systems/llm-distillery ducroq/NexusMind ducroq/ovr.news ducroq/FluxusSource veen-systems/persuasion-scorer; do gh issue list -R $r --state open --limit 300 --json number --jq 'length'; done -->
+
+Open, re-queried **2026-08-07 after the day's own filings**: llm-distillery
+**38** · NexusMind **43** · ovr.news **90** · FluxusSource **14** ·
+persuasion-scorer **12** = **197**. **83 have not been touched in 30+ days** —
+LD 13 · NM 22 · ovr 48 · FS 0 · ps 0. FluxusSource and persuasion-scorer have
+no sediment at all; **53% of ovr.news's own issues are sediment** (48/90 — an
+earlier draft said 59%, which is 48/82, ovr's share *of the board's* sediment,
+a different quantity).
+
+*The engineering-only count is deliberately not given here.* The label filter
+yields 64, 60 or 55 depending on whether `content` is excluded, and no
+canonical rule is written down. Either state the rule beside the number or do
+not quote one.
+
+Closed since the 08-06 morning re-query: LD#99, ovr#295, ovr#302. Filed since:
+LD#100, NM#300, NM#301, NM#302, ovr#301, ovr#303, **and ovr#304, ovr#305,
+ovr#306 filed by this session** (see the decisions table). FS#125/#126/#128
+closed and FS#129–#132 opened *before* the 08-06 morning re-query and are
+already booked there — do not count them twice.
+
+### What changed the ordering
+
+**1. A new cluster head appeared, and it is the strongest live item on the
+board: NM#301.** Merged-pair corroboration precision on 2-article clusters —
+the durable, cap-immune stratum and the one production actually runs — is
+**0.560**, against `INTEGRITY.md`'s "attribution is non-negotiable". So when we
+name a second outlet, we are right a little over half the time.
+
+**Use 0.560, not the 0.283 headline.** 0.283 was measured with the production
+25-member cap **disabled**, and the `giant` (51+) stratum that is unreachable
+under the live cap carries **82.6%** of its weight; that population also
+self-liquidates via the 14-day TTL around 2026-08-18. 0.283 [0.163–0.445] also
+overlaps its own candidate comparison 0.360 [0.265–0.467] and is recorded in
+the V&V registry as **not significant**. An earlier draft of this section
+quoted 0.283 and glossed it as "most sources credited did not report it" —
+at 0.560 a majority *did*, so the sentence inverted its own evidence.
+
+**The ranking half is NOT fixed — this was wrong in an earlier draft and it
+matters.** `1bbadb5` bounded *NexusMind's* `display_ranking.py` boost to a flat
+1.10× for [2,10]. But **ovr.news never reads NexusMind's `display_rank`.** It
+recomputes `_displayRank` locally as `score × decay × language_boost ×
+recency_boost` (`src/lib/ranking.ts`, `src/lib/data/pipeline.ts:91`) with **no
+corroboration term**, and the corroboration reordering readers actually get is
+ovr.news's own editor rule — **1.3× at ≥1, 1.5× at ≥2, 1.7× at ≥3**
+(`src/lib/data/editor/rules/corroboration-boost.ts:33-37`), untouched, keyed on
+the same 0.560-precision clustering. That is ~6× the promotion the NexusMind
+fix removed, and it is still live. **Open owner decision.**
+
+**ovr#303** is the published-claims twin (the under-the-hood page documents
+boost values NexusMind has never computed) and **LD#100** (event-identity
+encoder) is the real upstream fix. This absorbs Chain 10 and outranks it.
+
+**2. Three llm-distillery blockers were cleared by the 08-06 owner decisions**
+— #95 step 2 (noise floor became a printed band), #94, #98 criterion 4. So
+**#87 and #93 step 4 are movable for the first time**, and cd v6 is two
+mechanical steps from cutover (a Hub repo that does not exist; a
+`normalization.json` that must be fitted from a historical rescore).
+
+**3. FS#120 is now 7 days out** and is still the only calendar-bound item. Its
+harness was built 08-06; it needs one run and one decision.
+
+**4. NM#300 re-opens the #93 stamp half.** `content_length` is populated on
+**0 of 50,605** persisted rows although the deployed scorer is md5-identical to
+this repo's. Fifth instance of the repo's defining failure shape.
+
+### The order
+
+| # | Item | Repo | Why here |
+|---|---|---|---|
+| 1 | **FS#120** GN eval readout + ADR-007 gate | FS | Only hard date (~2026-08-14). Harness exists; one run + one decision. |
+| 2 | **NM#301** corroboration precision 0.283 (+ **ovr#303**) | NM/ovr | Live, reader-visible, violates a published principle, and boosts the site's sort key. The stop-displaying/stop-boosting half needs no research result. |
+| 3 | **LD#91** uplifting ranks a trafficking investigation 6th of 3,530 | LD | Reputational, live, untouched since 08-01. Fold into **`human_thriving` v8** as an acceptance criterion rather than patching v7. |
+| 4 | **cd v6 cutover** (#98 → #87) | LD | Closest to done: 7/7 verify. Blocked only on creating `cultural-discovery-filter-v6` on the Hub and fitting normalization from a historical rescore. |
+| 5 | **NM#300** content_length stamp lost | NM | Cheap; FS#120 and #93 step 4 both want the field. |
+| 6 | **LD#93 step 4** fit the solutions short-content cap | LD | Newly unblocked (#92 identified, #95 decided). Must carry the 0.16 band. |
+| 7 | **LD#82 + NM#286 item 3** violence audit → enforce flip | LD/NM | Once audited, enforcement is a config flip; recall 0.55 is the trade to decide. |
+| 8 | **NM#302** circuit-breaker telemetry is false | NM | 33% of cap-blocked articles are deleted; the dedup work in tier 9 leans on this telemetry. |
+| 9 | **Dedup programme**: NM#228 complete-linkage shadow → NM#278 retune → NM#296 → NM#188; ovr#280 ingestion; LD#100 encoder | NM/ovr/LD | Sequenced, not fast. Do **not** let LD#100 (a training project) block the cheap links. |
+| 10 | **Legal**: ovr#284 Art. 5(2) record; **LD#97 looks closable** (models assessed clean, excerpt remedy shipped `d558a40`); ovr#274/#278 | ovr/LD | ovr#284 is an owner call on who writes the record. |
+| 11 | **Measurement trust residue**: NM#289 CDF upper tail; Chain 15's missing count (share of lens placements decided under 0.16); LD#96/ovr#296; LD#61 | all | Unmeasured; decides how urgent Chain 15 is. |
+| 12 | **Chain 14 non-English**: FS#124 + ovr#291 (474 stored rows), FS#129/#130/#131 language tagging, NM#292's common-denominator measurement, NM#231 | all | Four repos, one pattern; NM#292 still asserts direction only. |
+
+Below that: ~82 stale issues, 48 of them in ovr.news. Age is not a reason to
+close a true statement (08-03 finding: 7 of 8 sampled stale ovr issues were
+genuinely unimplemented).
+
+### Owner decisions — ALL SIX TAKEN 2026-08-07
+
+Walked one at a time with the owner. Two of the six were **stale as listed**,
+which is the reusable lesson: this board's decision list drifts faster than its
+issue list, because a decision can be taken and recorded in a repo the board
+does not read.
+
+| # | Question as listed | Decision |
+|---|---|---|
+| 1 | **NM#301** — stop crediting, stop boosting, or both | **Hedge the wording.** "{n} sources" → "{n} related sources" / "{n} gerelateerde bronnen", every link kept, and the ✓-in-circle glyph swapped for a link glyph. **The boosting half is NOT closed** — see above: `1bbadb5` fixed NexusMind's boost, which ovr.news does not read. ovr's own 1.3/1.5/1.7× editor rule still stands. **A seventh decision is now open.** |
+| 2 | **ovr#283** publication floor | **Close won't-do.** Keep storing `raw_weighted_average`. |
+| 3 | **ovr#284** — who writes the Art. 5(2) record | *Stale — the record was written 2026-08-05* (`docs/security/incident-2026-08-01-comscore-beacon.md`). Real decision: **ad-tech deny-list in ovr's image path, off-domain host as a STAMP not a block, no allowlist, recover the exposure window.** |
+| 4 | **ovr#287** — ~36 wrong-story heroes | **Blank the 5 still in the build window, leave the 31 already outside it, close.** |
+| 5 | **ovr#292 → LD#28** — do the 333 domains bind us | *Stale — decided 2026-08-05, ADR-043, they do not.* Real decision: **say nothing on `/accountability`.** |
+| 6 | **NM#292** — measure or close Chain 14's root | **Keep open, retarget.** Drop the aggregate measurement as its next step; transfer the scoring stage into `human_thriving` v8's acceptance criteria. |
+
+**Three findings came out of the walk-through, none of which was the decision
+being discussed:**
+
+1. **NM#301's own comment says readers are shown no corroboration claim. They
+   are.** The comment searched for the field `corroborating_sources` and the
+   string "N sources reported this" — neither exists. The same cluster
+   membership reaches readers by another route: `source_quality.other_sources`
+   → `getIndependentSources()` → `[lang]/artikel/[id].astro:521`, a badge plus
+   named, hyperlinked publisher domains. **Textbook "establish what your source
+   excludes": a grep for one field name proved absence of a feature.**
+2. **A publication floor already exists, on the wrong quantity.**
+   `config.ts:388` `displayScoreThreshold: 4.5` is applied at build
+   (`pipeline.ts:81`) to the **normalized** score — the one that means "rank in
+   batch". ADR-022 says visibility should key on `raw >= op-point`. Binds 193
+   of 21,905 stored rows (0.9%); of the 15 that carry a raw score the highest
+   is 4.76, i.e. above its op-point and dropped anyway. Small, thinly
+   evidenced, **filed rather than fixed.**
+3. **Decision 5 was over-engineered and the owner was right to push back.**
+   Recommended disclosing the TDM sweep on `/accountability`; the argument
+   rested on the finding being publicly discoverable. **`ducroq/ovr.news` is
+   PRIVATE.** With that leg gone, disclosure has no audience and solicits
+   removal requests nobody would otherwise make. What survives is operational,
+   not cosmetic: ADR-043 promises that a reservation *addressed to us* removes
+   the source — a promise that needs the scan **scheduled** (it has run once)
+   and the **117 fail-open errors** fixed, since a publisher behind a WAF that
+   403s non-browser agents is the one most likely to be reserving.
+
+**Carry into the dedup work regardless:** any confidence bar on corroboration
+must be **per-language-pair aware**. Cross-lingual pairs sit structurally lower
+on the similarity scale — 72.9% of what we compare, 23.5% of what we accept,
+recall 38.7% vs 68.5% — so one global bar suppresses exactly the international
+coverage the product exists to surface. That constraint is NM#292's most
+valuable output and belongs to no single stage, which is the case for keeping
+it open.
+
+---
 
 *The 2026-08-03 evening pass, third pass that day. What shipped after the 16:35 pass:*
 
@@ -699,22 +846,26 @@ on it.
 
 ## Standing Operator Decisions (Jeroen's call)
 
+> **CLEARED 2026-08-07 — every item that was open here has been decided.**
+> This section is the one an operator reads as the live to-do list, and it had
+> drifted furthest: it still listed all six of the 08-07 decisions as open, two
+> of them (ovr#283, ovr#292/LD#28) against issues already CLOSED on GitHub, and
+> ovr#283 twice. See [Ordering 2026-08-07](#ordering-2026-08-07--re-queried-full-board).
+> **Exactly one genuinely open decision remains, and it is new — item 7 below.**
+
+- **7. ovr.news's own corroboration boost (NEW, 2026-08-07)** — `1.3× / 1.5× /
+  1.7×` in `src/lib/data/editor/rules/corroboration-boost.ts:33-37`, applied to
+  the locally-recomputed `_displayRank`. It is the boost that actually orders
+  the feed; NexusMind's `1bbadb5` fix does **not** reach it, because ovr.news
+  never reads NexusMind's `display_rank`. Keep, bound (as NexusMind did), or
+  remove? Any change reorders the site.
 - ~~NM#285 Option C~~ — DECLINED 2026-08-02 on the measurement (Option B shipped). Reopen only if prefilters regain lens rules worth enforcing.
-- **ovr#283** — publication floor: yes/no/won't-do.
-- **ovr#284** — how the Art. 5(2) record is written and by whom.
-- **ovr#292 (NEW 08-05)** — do the 333 opt-out-signalling domains bind us? This
-  is a policy call, not an engineering one, and **LD#28 (training-data TDM)
-  inherits the answer.**
-- **ovr#283** — now unblocked (ovr#285 closed 08-03): floor yes/no/won't-do.
-- **ovr#287 (NEW)** — the ~36 wrong-story heroes: **re-extract or blank?**
-  Blanking is cheap, certain, and consistent with NM#288's own stated principle.
-- **LD#95 (NEW)** — pin the production batch size for reproducibility? It does
-  not remove the noise, only makes a cycle repeatable. The alternative is a
-  noise margin around each op-point, which is a bigger change.
-- ~~**Chain 14** — file a root issue?~~ **DONE 2026-08-03 — NM#292.** The open
-  call is now the one NM#292 asks for: run the common-denominator English vs
-  non-English comparison, or close it won't-do on the grounds that the four
-  constituent issues are already banded.
+- ~~**ovr#283** publication floor~~ — **CLOSED won't-do 2026-08-07.** Listed twice here; both are dead.
+- ~~**ovr#284** who writes the Art. 5(2) record~~ — **stale when written**; the record was authored 2026-08-05. The live decision was the control shape, taken 08-07: deny-list, stamp not block, no allowlist.
+- ~~**ovr#292 / LD#28** do the 333 domains bind us~~ — **DECIDED 2026-08-05, ADR-043: they do not.** Both issues CLOSED. The 08-07 follow-on (disclose on `/accountability`?) was answered **no**.
+- ~~**ovr#287** re-extract or blank~~ — **BLANK, 2026-08-07**, scoped to rows still inside the build window.
+- ~~**LD#95** pin the production batch size~~ — **not available and superseded.** Batch size is already fixed at 16; the variable is *composition*. Settled 08-06: the floor became a band the deploy gate prints, and two models whose bands overlap are not distinguishable.
+- ~~**Chain 14** run the common-denominator comparison, or close won't-do~~ — **NEITHER, 2026-08-07:** NM#292 stays open and is retargeted as the index plus the cross-cutting constraint list; the aggregate measurement is dropped.
 - **LD#85** obituary v6 relabel — PARKED; reactivate on obit-flag or over-block harm.
 - NM#91 healthcheck drift; uplifting v7 NO_HUB backup; cd v5 config-schema exemptions.
 - FluxusSource: 71 DEAD disable candidates; OVER_POLLED audit; global-broadening yield check.
