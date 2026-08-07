@@ -1865,3 +1865,43 @@ front of you.
 **Fix**: enumerated every section type in the file and repaired the tables, cluster block and prose. Also four contradictions **inside the new 08-07 section itself** — including a row still titling an issue by the 0.283 figure that the same section explains 42 lines above is the wrong number to quote.
 
 **Lesson**: **a findings list is a sample, not an inventory.** When a review reports N instances of a class of error, fix the class by sweeping the document's own structure — otherwise "all findings addressed" reads as "the document is correct" when it means "the sampled parts are". Corollary already learned and re-learned here: my own line-number citation (`[id].astro:521`) went stale **within the same review round**, because my own comment insertion pushed it to `:526`.
+
+### A log glob that silently skipped 30 days of rotated files, and the sample flattered nothing (2026-08-07 late)
+
+**Problem**: measured the shared pre-enrichment superset with `grep ... logs/*.log`, and reported "2,590–6,202 articles per cycle, 33.0% excluded by dedup" into a plan. The log directory rotates to `nexusmind.log.YYYY-MM-DD`, which `*.log` does **not** match. Every number came from a single day. Over the 8 days actually retained: kept 1,828–4,444 (so 6,202 exceeds the real maximum and 2,590 is above the real floor), and the exclusion share runs **27.1%–57.4%, mean 39.7%** — one day sits at 48–57% for five consecutive cycles. The quoted 33.0% is near the *low* end.
+
+**Root cause**: `*.log` reads as "the logs". It is a glob over one naming convention, and rotation is a second convention that the same directory uses. The failure is invisible because the command succeeds and returns plausible data.
+
+**Fix**: re-derived from `nexusmind.log*`. Corrected in the plan before it was acted on.
+
+**Lesson**: **a glob is a claim about a naming convention, not about a set.** `ls` the directory before trusting `*.ext` — rotated, compressed and dated variants are exactly the history you wanted. Note the direction of the error here: the cherry-picked sample *understated* the argument it was supporting, which is why nothing felt wrong. Being accidentally conservative supplies no pressure to check. Same family as "establish what your source excludes"; this is the filesystem instance of it.
+
+### A dependency pointer that reads as satisfied because the issue was re-homed, not resolved (2026-08-07 late)
+
+**Problem**: ducroq/NexusMind#223 and ducroq/ovr.news#222 both list `FluxusSource#85` under **Dependencies**. FS#85 is CLOSED — so both read as unblocked. It was closed `NOT_PLANNED` and **moved to ducroq/NexusMind#232**, which is open and has never been touched. Two issues advertise a green light for a prerequisite that was relocated, not delivered.
+
+**Root cause**: closing-with-relocation updates the *closed* issue (FS#85's comment names its successor correctly) but nothing walks the inbound links. GitHub shows no "blocked by" edge, so the dependents keep pointing at a tombstone.
+
+**Fix**: comments filed on both dependents naming NM#232 as the real blocker; verified by grep that no NER exists in the NexusMind pipeline at all.
+
+**Lesson**: this is the **inverse** of the 08-07 "✅ while open" finding — there, a chain link looked done and was not; here, a blocker looks cleared and is not. Both come from reading an issue's *state* instead of its *deliverable*. When closing an issue by moving it, grep the org for inbound references and comment on each; a `NOT_PLANNED` closure is the most misleading state there is, because it looks like a decision rather than a forwarding address.
+
+### Planned off an issue's consumer list as if it were the inventory of consumers (2026-08-07 late)
+
+**Problem**: wrote a full implementation plan for ducroq/NexusMind#232 (NER enrichment), choosing its lead consumer from the four the issue names. A six-lens review found a **fifth** consumer that the issue does not mention — the story-dedup matching model (NM#213) — and it is the **only one with code, a trained model and a published readout**. The one I chose, ovr#222, is display-layer and cannot improve the decision it renders; the reviewers argued rendering entity evidence under a 0.560-precision claim makes it look substantiated rather than correct, and that is right.
+
+**Root cause**: the issue's consumer list was treated as an enumeration of who wants the field. It is a snapshot of who wanted it *on the day it was written* (2026-06-14). Being able to rank four options gave no signal that a fifth existed — a complete-looking list is the hardest kind of incomplete.
+
+**Fix**: findings filed on NM#232 recommending re-scope or closure in favour of the corroboration track's own sequencing. New memory file `corroboration-feature-hypotheses.md` records what is actually confirmed/refuted/untested about these features.
+
+**Lesson**: **"establish what your source excludes" applies to issue bodies, not just to data.** I applied that rule to `filtered_*.jsonl` and to a closed dependency in the same session, then failed to apply it to a list of consumers. Before planning off any enumeration inside an issue, grep the codebase for who *actually reads or would read* the thing — and prefer the consumer that changes a decision over the consumer that displays one, regardless of which sits higher on the board.
+
+### A Tailscale ACL drop is invisible to every host-level diagnostic (2026-08-07 late)
+
+**Problem**: the pipeline-atlas site returned HTTP 200 on-box and timed out from everywhere else. On the host: `ufw` inactive, `iptables -S` showing `INPUT ACCEPT` and `ts-input -i tailscale0 -j ACCEPT`, `ShieldsUp: false`, the listener correctly bound to `100.78.93.76:8099`, and the service `active`. Every check said healthy. `tcpdump -ni any port 8099` during a 9-second connect attempt captured **zero packets** — the cause was a tailnet ACL closing all TCP except 22, enforced inside `tailscaled` before packets reach the host stack.
+
+**Root cause**: the mental model was "firewall = host firewall". An overlay network has its own policy layer, above the kernel and invisible to the tools that inspect it.
+
+**Fix**: owner reopened 8099; verified from off-box (HTTP 200, 39,159 bytes, 0.058s) rather than on-box.
+
+**Lesson**: **when a service answers locally and not remotely, the next command is `tcpdump`, not another firewall query** — "did the packet arrive?" discriminates between every host-level cause and every network-level one in a single observation. And the standing consequence: the atlas's smoke test runs on-box, so it passes throughout an outage that makes the site unreadable to every actual reader. **A reachability check must run from where the reader is.**

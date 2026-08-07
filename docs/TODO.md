@@ -1,5 +1,34 @@
 # LLM Distillery - TODO
 
+## 2026-08-07 (late) — coverage pass, a refuted plan, one instrument shipped
+
+Board is unchanged at **195 open**; the work was in what it does not cover, and in
+one finding upstream. Full record: `memory/project_session_2026_08_07_late.md`.
+Feature-level detail: `memory/corroboration-feature-hypotheses.md`.
+
+- [x] **Cross-source dedup stamp SHIPPED + DEPLOYED** — `ducroq/FluxusSource@4994d61`,
+      live on sadalsuud. Collection dedup drops on `md5(title + content[:500])`
+      **with no source comparison**, so the same wire copy from two outlets is
+      deleted before NexusMind ever embeds it. Drop behaviour unchanged; the
+      collision is now counted and reported at INFO. **FS#133.**
+- [x] **FS#134 filed** — MinHash + Jaccard implemented, `datasketch` pinned,
+      **zero call sites**. Wire it up as a corroboration feature or delete it.
+- [x] **NM#232 planned, then refuted by a six-lens review.** Findings filed on the
+      issue. Do not build as specified: its consumer list omits the only consumer
+      with code (the NM#213 matching model), which wants a cross-lingual *offline
+      re-run*, not a CPU pipeline stage.
+- [x] **Dependency corrections filed** on NM#223 and ovr#222 — both cite
+      `FluxusSource#85`, which is CLOSED and re-homed to NM#232.
+- [ ] **Read the cross-source count** off the 20:00+ collection runs
+      (`ssh sadalsuud 'grep "Dedup: " ~/local_dev/FluxusSource/logs/aggregator.log | tail'`).
+      **It is a floor until ~2026-09-06** while 36,577 legacy source-less hash
+      entries age out. This number decides FS#133 — and it gates the corroboration
+      track's step 3, which would otherwise mine a pre-depleted corpus.
+- [ ] **Board maintenance**: place NM#225 in Chain 15 (re-dating it to 2026-05-28,
+      71 days), NM#226 in Chain 13, NM#254 in Chain 16.
+- [ ] **Owner call**: does `ducroq/augmented-engineering` (34 open, **1 closed
+      ever**) belong on the board? CLAUDE.md mandates filing evidence into it.
+
 ## Commerce Prefilter SLM - NEEDS REWORK
 
 ML classifier for commerce/promotional content detection. Cross-cutting prefilter for all filters.
@@ -11,6 +40,11 @@ ML classifier for commerce/promotional content detection. Cross-cutting prefilte
 - [x] **v1 Model training** - DistilBERT, MiniLM, XLM-RoBERTa compared
 - [x] **v1 Backtesting** - 56,336 articles, threshold optimization
 - [ ] **Re-measure the miss rate before retraining** ← **DO THIS FIRST (added 2026-08-07)**
+- [ ] **NM#223 is a live input to this and is blocked** (found 2026-08-07 late) —
+      NER entity-density as an *additive* commerce signal, explicitly "does not
+      replace the v3 retrain planned in NM#185 Phase 2". It is blocked on
+      **NM#232**, not on the closed `FluxusSource#85` its body still names.
+      Nothing here should assume entity features will be available.
 - [ ] **Redo with proper multilingual embeddings** - Current approach may not handle Dutch/multilingual well
 - [ ] **Redo with proper context size** - May need longer context
 

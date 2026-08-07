@@ -19,6 +19,104 @@ section is kept as history.
 
 ---
 
+## Coverage pass 2026-08-07 (late) — what the board does NOT cover
+
+<!-- verify: for r in veen-systems/llm-distillery ducroq/NexusMind ducroq/ovr.news ducroq/FluxusSource veen-systems/persuasion-scorer veen-systems/pipeline-atlas; do gh issue list -R $r --state open --limit 400 --json number --jq 'length'; done -->
+
+Re-queried: LD **36** · NM **42** · ovr **89** · FS **14** · ps **12** ·
+pipeline-atlas **2** = **195**, sediment **81**. **Nothing opened or closed since
+the previous pass's own closures**, so the Ordering section below stands
+unchanged. This pass tested *coverage* instead: which open issues appear nowhere
+in this memo. LD, FS and ps are fully covered; **26 ovr engineering issues and 11
+NexusMind issues are not.**
+
+### Chain 17 (NEW): NER enrichment — one blocked prerequisite, four dependents
+
+```
+NM#232 (NER as an early enrichment stage)  ← BLOCKED ROOT, open, untouched 54 days
+   ↑ re-homed from FS#85 (CLOSED NOT_PLANNED 2026-06-14 — reads as satisfied)
+   → NM#223 (entity-density into commerce_prefilter) → NM#185's commerce v3 half
+   → NM#185 obit-classifier NER input
+   → ovr#222 (corroboration explainability)   ← cites the CLOSED FS#85
+   → ovr /places/{country} discovery surface
+   ⟂ NM#213 (the matching model) ← THE FIFTH CONSUMER, absent from NM#232's list
+```
+
+Verified 2026-08-07: **no NER exists in the NexusMind pipeline** (grep for
+spacy/gliner/stanza/nltk over `src/` and requirements returns nothing; spaCy
+appears only in `scripts/research/`). `ovr.news/src/lib/db-schema.ts:385` creates
+an `entities` table plus two indexes with **no writer and no reader**.
+
+**Two traps recorded here.** (1) **NM#223 and ovr#222 both list `FluxusSource#85`
+as their dependency and it is CLOSED** — a reader concludes they are unblocked.
+Inverse of this board's "✅ while open" finding: there a link looked done and was
+not; here a blocker looks cleared and is not. Both come from reading an issue's
+*state* rather than its *deliverable*. (2) **NM#232's consumer list is not the
+inventory of consumers.** The matching model (NM#213) is the only consumer with
+code, a trained model and a readout, and the issue does not mention it — so
+prioritising NM#232 off its own list prioritises it wrong. A full plan was written
+off that list and refuted by a six-lens review the same day; see
+`memory/corroboration-feature-hypotheses.md`.
+
+**Recommendation on file (NM#232 comment):** do not build as specified. The
+highest-value consumer wants an *offline re-run with a cross-lingual extractor*,
+not a CPU pipeline stage. Also: NM#232's "do not start" gate is ovr.news's
+**donation-solicitation** gate (SUSTAINABILITY.md Tier 1 track #1, "Finish
+donation pathway"), inherited rather than chosen.
+
+### Chain 15 is 71 days old, not 2 — NM#225 stated it first
+
+**NM#225** ("Audit cross-filter score comparisons; document policy as ADR") was
+created **2026-05-28T16:42**, has zero comments and is banded nowhere. LD#96 and
+ovr#296 were created **2026-08-05** (07:09 / 06:34). So Chain 15's note that
+"two repos derived the same defect independently on the same day" misses a third,
+earlier derivation — **and it is the most actionable of the three**, naming the
+audit targets (tier assignment mixing filters, **lens routing in ovr.news** =
+`toCanonicalLens`, "primary topic" logic) and asking for the ADR. The unmeasured
+share-under-0.16 that Chain 15 wants is a subset of NM#225 step 1.
+
+**NM#226** (same author, same day, also unbanded) belongs to **Chain 13**: its
+"which invariant changed at which step" is exactly what NM#289 and LD#95 are
+stuck on.
+
+### Chain 16 is missing its NexusMind link
+
+**NM#254** (content-level propaganda-technique extractor) was updated
+**2026-08-02** — the same day all 12 persuasion-scorer issues were — and carries
+the cross-post holding the taxonomy decision: **SemEval-2023 Task 3, score the 6
+coarse categories, not the 23 fine** (α = 0.342 vs a 0.667 threshold). Chain 16
+was assembled from ps *titles* only and so missed the sibling with the decision
+in it. Pairs with **ovr#253**, also unbanded.
+
+### A number this memo previously declined to quote
+
+Under the stated rule `-positioning -outreach -community -content`, **ovr.news
+engineering is 63 of 89** (26 of them banded nowhere; the other 24 unbanded are
+the labelled go-to-market set, excluded by design).
+
+### A seventh repo takes mandated output from this chain and is on no board
+
+**`ducroq/augmented-engineering`: 34 open, 1 closed ever, last closure
+2026-04-14.** CLAUDE.md instructs this repo to file evidence there, and ~10 of
+the 34 are llm-distillery-derived and filed within the last month. It is a
+write-only queue. Not a pipeline stage, so arguably not "the chain" — but it is
+the same coverage-hole shape persuasion-scorer had before 08-07. **Owner call.**
+
+### Filed this pass
+
+- **ducroq/FluxusSource#133** — collection dedup drops on
+  `md5(title + content[:500])` **with no source comparison**, so the same wire
+  copy from two outlets is deleted before NexusMind sees it. Same source-blind
+  shape as **NM#296**, one stage upstream, which means NM#296's population is
+  already depleted and a fix there cannot recover them. Instrument shipped and
+  deployed (`4994d61`); count is a floor for ~30 days.
+- **ducroq/FluxusSource#134** — MinHash + Jaccard implemented, `datasketch`
+  pinned, **zero call sites**. Either wire it up as a corroboration feature or
+  delete it and drop the dependency.
+- Comments on **NM#296**, **NM#232**, **NM#223**, **ovr#222**.
+
+---
+
 ## Ordering 2026-08-07 — re-queried, full board
 
 <!-- verify: for r in veen-systems/llm-distillery ducroq/NexusMind ducroq/ovr.news ducroq/FluxusSource veen-systems/persuasion-scorer; do gh issue list -R $r --state open --limit 300 --json number --jq 'length'; done -->
