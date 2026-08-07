@@ -5,14 +5,39 @@
 ML classifier for commerce/promotional content detection. Cross-cutting prefilter for all filters.
 
 **Status:** v1 complete but needs redo - concerns about multilingual embeddings and context size.
+**v1 is the version running in production** — force-pinned by LD#80 because **v2 underperformed v1** on production traffic. There is no v3.
 
 - [x] **v1 Training data collection** - 2,847 examples (commerce + journalism)
 - [x] **v1 Model training** - DistilBERT, MiniLM, XLM-RoBERTa compared
 - [x] **v1 Backtesting** - 56,336 articles, threshold optimization
+- [ ] **Re-measure the miss rate before retraining** ← **DO THIS FIRST (added 2026-08-07)**
 - [ ] **Redo with proper multilingual embeddings** - Current approach may not handle Dutch/multilingual well
 - [ ] **Redo with proper context size** - May need longer context
 
+### The v3 case is tracked in ducroq/NexusMind#185, and its evidence has decayed
+
+Found 2026-08-07 while re-querying the cross-repo chains. NM#185 bundles the
+obituary blocker (shipped, enforcing at 0.85 since 07-30) with a **commerce v3
+retrain that was never started** — which is why Chain 1 read as complete when it
+was half done.
+
+**Before any v3 training run, re-measure.** NM#185's commerce evidence is the
+2026-06-25 reader-flag audit, whose headline was that the recoverable miss set
+was **100% scored by `sustainability_technology`** — a filter **deleted
+2026-08-03** (#64, superseded by `solutions`). The product-launch-in-
+sustainability-framing pattern presumably still arrives, but it is now scored by
+`solutions v6`, which has a different prompt, a different op-point and an e5
+probe in front of it.
+
+**Open hypothesis:** the commerce miss rate under the current five-lens set is
+materially lower than the 2026-06-25 audit implies, and v3 may not be warranted
+at all. Unmeasured. Deciding it costs one count, not a training run.
+
 See `filters/common/commerce_prefilter/docs/` for full documentation.
+<!-- verify: ls filters/common/commerce_prefilter/ | grep -E '^v[0-9]+$' -->
+<!-- verify: gh issue view 185 -R ducroq/NexusMind --json state --jq .state -->
+
+---
 
 ---
 
