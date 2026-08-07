@@ -1821,3 +1821,47 @@ front of you.
 **Fix**: both corrected in `config.yaml`, `STATUS.md` and on #98, each with an explicit note of what the wrong comparison was, so the next reader sees the trap rather than just the right number.
 
 **Lesson**: **a screening/pass/block rate is meaningless without its population.** Before comparing two of them, state the denominator of each out loud. And when correcting a comparison error, the replacement is the *most* likely place to repeat it — the corrected sentence deserves the same check as the original, not the benefit of the doubt for being newer.
+
+### A control was undone by a later step in the same run — and the second attempt to fix it changed nothing at all (2026-08-07)
+
+**Problem**: Two guards shipped hours apart, both intended to stop tracker/page-furniture images reaching readers (ovr.news#284), and neither did anything.
+
+(a) `looksLikeThirdPartyChrome()` was wired into `extractOgImage` and `validateImageUrl` — correct code, reached on the right paths. But `scripts/summarize.ts` **Step 5 runs after Step 4's image validation** and re-sent `rawArticle.image_url`; `upsertArticle` merges with `image_url = COALESCE(@image_url, image_url)`, and Step 4's rejection had mutated only its own copy of the article. So every rejection was reverted within the same run. **123 stored rows already carried the signature** (`image_url` set, `image_source` NULL), 120 with a summary.
+
+(b) The caller-side fix — re-admit an article to extraction when its cached image is denied — was a **complete no-op, proven by execution**. A re-admitted article still had its `cachedImages` entry, so `extractImagesForArticles` short-circuited on a *second* commit point (`if (cachedImages.has(id)) images.set(...)`) that the "final" guard never sees. Net observable effect: one counter moved to another counter that is summed with it, so even the log line was byte-identical.
+
+**Root cause**: both times, the reachability question was asked about the *function* and not about the *run*. "Is the guard called?" was yes in both cases. The right question is "does the guard's decision still hold at the end of the pipeline?" — and for (b), "is this the only place that writes the field?" The comment on the final guard actually asserted *"this is the only point every source has in common"*, which was false; there were two.
+
+**Fix**: Step 5 no longer writes the image column (Step 2.5 makes the first write, Step 4 owns it thereafter); the cache branch carries its own deny check and invalidates rather than serving; the caller clears the DB row and both cache maps. Three regression tests, including a deliberate **converse** test asserting that re-sending a rejected URL *does* resurrect it, so nobody restores the old write believing it was harmless.
+
+**Lesson**: **6th and 7th instances of this repo's signature defect, both mine, on the same day I was cataloguing the other five.** The escalation that finally worked was not reading harder — it was the adversarial lens *executing* the guard and printing the resulting state. **If a guard's whole value is that it changes an outcome, prove the outcome changed; a passing unit test on the predicate proves only the predicate.** And when a comment explains *why* code is safe, that explanation is a claim like any other: two of mine here ("safe only because `isSafeFetchUrl` runs first at every call site", "the only point every source has in common") were both false and would both have been trusted.
+
+### Reasoned about a group's date range instead of computing per row, and left a live defect behind (2026-08-07)
+
+**Problem**: A cleanup was scoped as "blank the 5 rows still in the build window, leave the 31 already outside it". The 31 were dismissed because the group's newest row was ~10 days old. **One of them was still inside the window** — published 07-28, has a summary, normalized **9.10 on `solutions`**, i.e. high in the feed — so a decision whose entire purpose was to remove a wrong-story hero would have left one visible. The script encoded the scope as a hardcoded `aged: true` per pattern, so it structurally could not notice.
+
+**Root cause**: reasoning about the *range* of a group ("newest is 07-28, today is 08-07, so all are out") instead of evaluating the predicate per row. A boundary that moves daily was frozen into a boolean at authoring time.
+
+**Fix**: buildability is now computed in SQL per row, mirroring `getArticlesForBuild` (inside `maxAgeDays` **and** has a summary). The dry run went from 5 rows to 6.
+
+**Lesson**: **if a criterion depends on "now", never encode its answer — encode the criterion.** A hardcoded flag derived from a date computation is stale the moment it is written, and unlike a wrong constant it cannot be spotted by reading the value. Same family as the `expected_pass_rate` constants that drifted for months.
+
+### A fix in a sibling repo was recorded as closing our problem, without checking the consumer reads it (2026-08-07)
+
+**Problem**: Told the owner the ranking half of ducroq/NexusMind#301 was "already fixed" by NexusMind commit `1bbadb5`, which bounded `display_ranking.py`'s corroboration boost to a flat 1.10x. **ovr.news never reads NexusMind's `display_rank`.** It recomputes `_displayRank` locally as `score x decay x language_boost x recency_boost` — no corroboration term — and the boost that actually orders the feed is ovr.news's *own* editor rule at **1.3x / 1.5x / 1.7x**, untouched. Understated the live problem by ~6x. Separately, the same wrong mental model produced ovr#303, filed on the premise that the site publishes boost values NexusMind never computed; the published 1.3/1.5/1.7 are exactly ovr's own live rule and are correct. (The real defect on that page is a published decay of 0.95 against a configured 0.85.)
+
+**Root cause**: two upstream sources both say the wrong thing — `src/lib/ranking.ts`'s own docstring ("NexusMind pre-computes display_rank... we use it as the base score") and `1bbadb5`'s commit message ("display_rank is ovr.news's sort key"). Neither had been checked against the consumer. In a pipeline of four repos, "upstream fixed it" is a claim about a *boundary*, and boundaries are exactly where each side's documentation describes the other side from memory.
+
+**Fix**: corrected on ducroq/NexusMind#301, ovr#303 and the board; recorded as a new open owner decision rather than a closed one.
+
+**Lesson**: **a fix lands where the value is consumed, not where it is computed.** Before recording a cross-repo fix as closing anything, grep the consumer for the field name and confirm it is read. The topology rule already says an issue belongs in the repo that will contain the fix; the corollary is that *verification* belongs in the repo that will contain the symptom.
+
+### Repaired the sections I had edited, not the sections that contradicted them (2026-08-07)
+
+**Problem**: Review found the prioritization board's older sections contradicting six decisions taken that day. Swept the chains and batches and reported it done. The second review round found the **largest concentration of stale state was in the sections the sweep did not touch** — the P0–P2 priority tables, a cluster block, and one Chain's prose. Worst single line: the P0 table still recommended *"pinning the production batch size is cheap and buys reproducibility today"*, an action three other sections of the same file had just been corrected to call impossible. The P0 table is the part an operator reads first.
+
+**Root cause**: the sweep was driven by the *list of findings* rather than by the *structure of the document*. Round 1 happened to sample chains and batches, so those got fixed; the priority tables were never enumerated, so their staleness was invisible to a fix loop keyed on "what was reported".
+
+**Fix**: enumerated every section type in the file and repaired the tables, cluster block and prose. Also four contradictions **inside the new 08-07 section itself** — including a row still titling an issue by the 0.283 figure that the same section explains 42 lines above is the wrong number to quote.
+
+**Lesson**: **a findings list is a sample, not an inventory.** When a review reports N instances of a class of error, fix the class by sweeping the document's own structure — otherwise "all findings addressed" reads as "the document is correct" when it means "the sampled parts are". Corollary already learned and re-learned here: my own line-number citation (`[id].astro:521`) went stale **within the same review round**, because my own comment insertion pushed it to `:526`.
