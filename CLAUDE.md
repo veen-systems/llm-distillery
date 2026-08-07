@@ -2,7 +2,7 @@
 stack: Python 3.12, PyTorch, Transformers, PEFT/LoRA
 status: Production
 repo: github.com/ducroq/llm-distillery
-framework: agent-ready-projects v1.15.0
+framework: agent-ready-projects v1.15.1
 framework_reconciliation: |
   v1.15.0 (2026-08-06) adopted. Skill scope: `curate` and `audit-context` are
   user-global — the project-local copies here were DELETED, not reconciled,
@@ -12,6 +12,10 @@ framework_reconciliation: |
   the template's risk tiers key on paths this repo does not have.
   Verify with: agent-ready-projects/scripts/install-global-skills.sh --check ~/repos
   Declined: nothing.
+  v1.15.1 (2026-08-06) adopted 2026-08-07: a PATCH to the `audit-context`
+  skill only — no template or memory-layout change. The global skill already
+  carries the new Step 4 rules (three-section output, extension whitelist,
+  rung ordering), so only this stamp was behind.
 ---
 
 # CLAUDE.md - LLM Distillery
@@ -159,6 +163,7 @@ rules above prove insufficient.
 | Understanding system design | `docs/ARCHITECTURE.md` |
 | Reviewing work quality | `docs/checklists/` — architect, test, implement, QA gates |
 | Stuck on tooling or infra | `memory/gotcha-log.md` — problem/fix archive |
+| **Wanting the whole chain in one place, or the live pipeline state** | **`veen-systems/pipeline-atlas`** — the four repos as one signal path, plus an ops snapshot regenerated every 20 min. Served from sadalsuud on Tailscale (`http://100.78.93.76:8099/`), not GitHub Pages. It states mechanisms only; every number is in the snapshot or carries a verify command. **It replaced ovr.news `/ops/architecture`, deleted 2026-08-07.** |
 | Ending a session | Run `/curate` |
 | Monthly or after major restructuring | Run `/audit-context` |
 
