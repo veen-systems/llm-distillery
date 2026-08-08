@@ -6,23 +6,31 @@ Full record: `memory/project_session_2026_08_07_night.md`.
 
 ### 🔴 LD#101 — evaluation arms are scored AND PUBLISHED (filed tonight, needs an owner decision)
 
-- [ ] **Decide: may an experimental collection arm publish at all?** FluxusSource
-      stamps `type_classification: eval_aggregator` and **nothing reads it** —
-      zero hits across NexusMind `src/`, this repo's `filters/`, and ovr.news
-      `src/`. **No filter's `excluded_source_types` includes it** (they list only
-      `code_repo`, `developer_aggregator`, `firehose_aggregator`, plus
-      `academic`/`social` for investment_risk). Present, configured, unreachable —
-      the NM#284 / NM#300 / LD#94 shape, in the code I was measuring.
-      **28 eval articles are in `ovr.news/data/ovr.db`** (a floor; that copy stops
-      at 08-05), including *"Zimbabwe funeral held for family believed to have
-      been murdered in the UK"* at tier **high**, Borneo credited to Madagascar,
-      and Tanzanian articles credited to Burundi. ~840 rows per lens were scored.
-      This is a direct hit on `ovr.news/docs/SUSTAINABILITY.md:85`, the
-      **editorial-cleanliness gate on the donation track** — the same gate Chain 17
-      records as NM#232's blocker.
-      **The easy fix is the wrong default:** adding `eval_aggregator` to every
-      filter's exclusions silently deletes FS#120's "share reaching the site"
-      metric, which that gate is due to report on 2026-08-14.
+- [x] **DECIDED 2026-08-08: exclude via `excluded_source_types`** — because that
+      mechanism **already is** "score, don't publish".
+      `NexusMind/src/scoring/source_filter.py::apply_source_filter` marks
+      **already-scored** articles as `passed_prefilter = False`, so scores are
+      kept and the rows never reach `filtered/` or ovr.news. *I first recommended
+      building the same gate in ovr.news, on the wrong premise that
+      `excluded_source_types` prevents scoring — it does not, and
+      `memory/nexusmind-data-sources.md` had said so since 2026-08-02.*
+      No new code, no third-repo change, no LD#95 batch perturbation (the corpus
+      is unchanged), and it keys on `type_classification`, which is verified to
+      survive into `ovr.db`.
+      **Count corrected: 30 published rows, not 28** — `source LIKE '%_eval_%'`
+      misses `gdelt_constructive_*` entirely. The two extra are Traditional
+      Chinese Taiwanese local news at tier `high` under a Madagascar query.
+      **Never key on the source string.**
+- [ ] **Ship it**: add `eval_aggregator` to `excluded_source_types` in all filter
+      configs, sync to NexusMind, and **verify by outcome** — a cycle's
+      `N scored, M prefiltered` line, never the config key. This issue exists
+      *because* a configured mechanism had no consumer.
+- [x] **`memory/nexusmind-data-sources.md` updated** with the two traps this
+      creates: corpus statistics over `data/filtered/*` will silently omit the
+      eval arms, and FS#120's funnel must be read from the **GPU scorer log**,
+      not from `filtered/`.
+- [ ] **Remediate the 30 already-published rows** — reader-facing, ovr.news side,
+      independent of the decision.
 - [ ] **Check the Zimbabwe funeral row against the obituary gate** (enforcement is
       ON at v5@0.85). If it scored under threshold it is a live false negative and
       belongs in `memory/project-obituary-detector.md`.

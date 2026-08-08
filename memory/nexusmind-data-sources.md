@@ -26,6 +26,33 @@ passers by construction. Already in CLAUDE.md.
 GPU scorer's log counts them — but they never reach the file and never reach
 ovr.news.
 
+**A sixth excluded type is being added (LD#101, decided 2026-08-08):
+`eval_aggregator`.** FluxusSource's three FS#120 evaluation arms
+(`gnews_eval`, `newsdata_eval`, `gdelt_constructive`) are an A/B measurement rig,
+not a content source — but the stamp had **zero consumers**, so they were scored
+by every filter and **published**: 30 rows in `ovr.news/data/ovr.db`, including a
+funeral/murder story at tier `high` and Taiwanese local news under a Madagascar
+query. Once the exclusion lands, those rows join the population below: **scored,
+then dropped, absent from `filtered/`.**
+
+Two traps this creates, both live from the day it ships:
+
+- **Any corpus statistic over `data/filtered/*` silently omits the eval arms**,
+  exactly as it already omits the five types below. If you are measuring
+  FS#120's funnel, take the numbers from the **GPU scorer's log**, not from
+  `filtered/` — the file cannot answer "would this have been published".
+- **Do not identify eval rows by source name.** `source LIKE '%_eval_%'`
+  undercounts: it misses `gdelt_constructive_*` entirely (no `_eval_` in the
+  name). That error cost 2 of 30 rows when first measured. Key on
+  `metadata.quality.type_classification == 'eval_aggregator'`, which is verified
+  to survive end-to-end into `ovr.db`.
+
+*Why post-scoring exclusion rather than a publish-time gate in ovr.news: because
+`apply_source_filter` **already is** a publish-time gate — it runs on
+already-scored articles. A first version of this decision proposed building the
+same behaviour in a third repo, on the mistaken premise that
+`excluded_source_types` prevents scoring. It does not.*
+
 Measured 2026-08-02 over 4 cycles:
 
 | filter | scored | written to `filtered/` | excluded |
