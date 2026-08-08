@@ -77,6 +77,31 @@ if [ -z "$PYTHON_BIN" ]; then
     exit 1
 fi
 
+# --check-hub needs credentials to see PRIVATE repos. The Hub deliberately
+# returns 404 (not 403) for a repo the caller cannot see, so with no token the
+# verifier reports "repo not found" for a repo that exists — a FALSE failure.
+# That is dangerous specifically here: this hook's own advice on failure is
+# `--no-verify`, and a prior override is what caused #44. A guard that cries
+# wolf trains the override it exists to prevent. Observed 2026-08-08 on
+# cultural_discovery v6 (private repo, freshly uploaded, verified 9/9 by hand).
+# Falls back to the repo's own credentials file; never echoes the value.
+if [ -z "${HF_TOKEN:-}" ] && [ -f "$REPO_ROOT/config/credentials/secrets.ini" ]; then
+    HF_TOKEN=$("$PYTHON_BIN" - "$REPO_ROOT/config/credentials/secrets.ini" <<'PY' 2>/dev/null
+import configparser, sys
+c = configparser.ConfigParser()
+try:
+    c.read(sys.argv[1])
+    print(c.get("api_keys", "huggingface_token", fallback="").strip())
+except Exception:
+    print("")
+PY
+    )
+    export HF_TOKEN
+    if [ -n "$HF_TOKEN" ]; then
+        echo "commit-msg: HF_TOKEN taken from config/credentials/secrets.ini for --check-hub"
+    fi
+fi
+
 FAILED=0
 # Per-invocation temp file so parallel commits don't clobber each other.
 LOG_FILE=$(mktemp -t commit-msg-verify.XXXXXX 2>/dev/null || echo "/tmp/commit-msg-verify-$$.log")
