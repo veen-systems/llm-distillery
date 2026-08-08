@@ -219,19 +219,49 @@ went **565 → 528 → 202** across 08-08, so the corpus was already moving *dur
 the 8-cycle measurement window and its last cycle sits on the boundary. (I first
 wrote "decided, not implemented" from the 506 GN stubs still in the 12:49 cycle
 — the count was right, the inference wrong; the FluxusSource session caught it.)
-Residual once it lands: **21 surfacing rows over 8 cycles = 2.6/cycle**, an
-**upper bound** — H4 measured **0 of 14,198** GN-proxy rows ever enriched,
-because pre-enrichment fetches from `url` and a GN `url` is a
-`news.google.com/rss/articles/…` redirect. Native URLs are fetchable, so
-migration converts part of that population into >300-char articles rather than
-merely deleting it. Of what remains, cap 3.50 would bind ~1.1/cycle — and
+**ADR-007 retires the 59 `gn_*` country proxies, NOT the 243 publisher-named GN
+feeds** (the #90 frozen-outlet pattern: a dead native feed repointed at a GN
+proxy under the publisher's own key). Those stay, with no migration plan — many
+have no native to return to. So the post-retirement population is:
+
+| population | short | surfacing | /cycle |
+|---|---|---|---|
+| A `gn_*` country proxies — retired | 3,736 | 109 | 13.6 |
+| B publisher-named GN — **stays** | 1,852 | 43 | 5.4 |
+| C genuinely non-GN — stays | 2,023 | 21 | 2.6 |
+
+**Post-ADR-007 = B + C = 8.0/cycle; retirement removes 63%, not ~88%.** My
+first pass counted only C and posted 2.6/cycle — understated 3×, because it
+assumed retirement clears GN broadly. The FluxusSource session caught it.
+Offsetting it: H4 measured **0 of 14,198** GN-proxy rows ever enriched, because
+pre-enrichment fetches from `url` and a GN `url` is a redirect; native URLs are
+fetchable, so migration converts part of the population into >300-char articles
+rather than merely deleting it.
+
+**Half of what survives is ONE feed**: 21 of B's 43 surfacing rows come from
+`energy_utilities_google_news_energy_storage`, itself a GN *topic query* feed,
+not a repointed publisher. That wants a source-level fix, not a scoring cap.
+Of what remains, cap 3.50 would bind ~2.5/cycle — and
 they are named outlets with short RSS (`automotive_electrive` 6, `china_cgtn`,
 `nyt_world`, `trt_world`, `observador`), not broken-proxy stubs, so not what
 #92 measured.
 
-**Sequence: implement ADR-007 → let the corpus settle → re-measure → then decide
-whether a cap is warranted at all.** #95 is no longer a blocker (noise band
-shipped 08-06); the blocker is now ADR-007 *implementation*.
+**The verdict rests on 1–2 above plus the one-feed finding — NOT on "too thin to
+fit", which the 3× correction weakened and which I withdraw as the primary
+ground.**
+
+**Do not gate the re-measure on "migration complete" — there is no near-term
+done.** FluxusSource expects GN-URL volume to step down as country-proxy batches
+land, then plateau well above zero; the next ~29 are blocked on a real defect in
+`gn_to_native_upgrade.py` (it ranks candidate publishers by frequency in GN
+output, which the bare-country-name collision corrupts — it proposed a football
+site for Algeria over `aps.dz`). Gate on **measured GN-URL share per cycle**
+instead. #95 stopped being a blocker on 08-06 (noise band shipped).
+
+**Match GN on `news.google.com` in `url`, never on the `gn_` source prefix** —
+the prefix identifies only the country-proxy subset and under-counts GN feeds
+~5:1 in config (302 GN-URL feeds enabled, 59 of them `gn_*`). This supersedes
+the "use the union" note below.
 
 The trap for next time: the issue's own comment already said "a cap fitted
 before the GN decision would be tuned against a population that is about to
@@ -240,12 +270,14 @@ names a sequencing precondition, verify it is satisfied before doing the work,
 not after.** A decision being *taken* is not the precondition — the corpus
 changing is, and here it was changing *while I measured*.
 
-**GN detection is ambiguous while migration runs — the two obvious signals
-disagree.** In `collection_20260808_120948`, **202** items carry a `gn_*` source
-but **441** carry a `news.google.com` URL. Match on either alone and you get a
-different population. Use the union
-(`source.startswith("gn_") or "news.google.com" in url`) and state which you
-used; do not treat one as a proxy for the other until migration completes.
+**The `gn_*` prefix is NOT a GN detector.** In `collection_20260808_120948`,
+**202** items carry a `gn_*` source but **441** carry a `news.google.com` URL.
+The gap is not a migration artifact and never resolves: it is two naming
+conventions — 59 country proxies named `gn_*`, and 243 publisher-named feeds
+repointed at GN. **`news.google.com` in `url` is the reliable signal**; the
+prefix identifies only the retirement target. I used the union and reported it
+as "GN", which conflated a population being retired with one that is not — the
+direct cause of the 3× residual error above.
 
 ## What shipped (2026-08-03, #93 — llm-distillery side)
 
