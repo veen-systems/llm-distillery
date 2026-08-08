@@ -1,5 +1,91 @@
 # LLM Distillery - TODO
 
+## 2026-08-08 (afternoon) — proven by outcome, and a self-inflicted outage
+
+Full record: `memory/project_session_2026_08_08.md` (same file, second half).
+
+### ✅ NM#300 + LD#88 — VERIFIED on production rows, both CLOSED
+
+- [x] **`content_length` 100% populated in all six filters** (17:10 cycle), from
+      **0 of 50,605**. `stage_used` / `stage1_estimate` likewise 100%.
+- [x] **It was FIVE allowlists in series, not two.** The morning's fix corrected
+      hops 1 and 5; the 12:03 cycle still read **0 of 2,170** with both fixes
+      provably loaded. The three unexamined hops were all on the
+      response → result-object boundary (`gpu_client.py` dataclass, its
+      construction, `main.py`'s dict conversion). The earlier "verified there is
+      no third" checked the *article → disk* seam, which is true and is not where
+      the loss was. **Patching the sender proves nothing unless the receiver's
+      parser is checked too.**
+- [x] **Bonus, unasked**: with `stage_used` on disk for the first time —
+      **no surfacing article is ever probe-scored.** `stage1_low` rows peak at raw
+      0.75–1.50 against op-points of 2.25/4.0, so `surfacing AND stage1_low` is
+      **0** in every filter. The hybrid design's core safety claim, assumed since
+      2026-02, measured at last.
+- [x] Contract B `content_length` → `required`: **still NO.** Now populated, but
+      promote only after it holds across several cycles; rows before
+      `filtered_20260808_17*` are absent-or-null forever.
+
+### 🔴 I took the pipeline down, and it was a decision, not a slip
+
+`nexusmind.service` FAILED at 16:07 and would have failed every 4h. Not a crash —
+the fail-closed deploy gate refused to ship because
+`src/scoring/gpu_client.py.bak_nm300third_20260808` was untracked under a guarded
+path. **I had decided ~20 minutes earlier to keep those `.bak` files as a
+rollback for an unverified fix**, when the commits were already pushed and git
+*was* the rollback. Recovered 16:23; the 16:07 collection was reprocessed, no
+data lost, one cycle delayed. Gotcha logged (`0c14de4`) — patch in place and rely
+on git, or write backups **outside** the repo.
+
+### ✅ cd v6 — both cutover blockers cleared, NOT deployed
+
+- [x] Hub repo `cultural-discovery-filter-v6` created (private, v5 adapter
+      verbatim, md5-identical, OLD PEFT keys, no `resave_adapter.py`).
+- [x] `normalization.json` fitted n=3,680, `raw_min` 4.0, from `filter_version=5.0`
+      rows **deliberately** — the "needs a historical rescore" framing was
+      circular (a rescore needs the Hub repo) and its stated reason applies to the
+      firehose, not to the `raw >= 4.0` fit set where the probe blocks 1 of 2,653.
+- [x] `--check-hub` **9/9**; loaded end-to-end from its own Hub repo and scored.
+- [ ] **The cutover itself** — deferred by owner decision so it doesn't share a
+      cycle with NM#300. Then refit normalization from real 6.0 rows, then #87.
+
+### ✅ LD#93 step 4 — sized, then the sizing was withdrawn
+
+- [x] **Verdict: do not set the cap.** A cap ≥ the op-point removes **zero** false
+      positives (visibility keys on raw), and nothing short reaches `medium_high`
+      (max 4.93), so its stated purpose is already met and any cap ≥ 5.0 is a
+      no-op.
+- [x] Two corrections, both caught by the FluxusSource session: the residual was
+      understated 3× (post-ADR-007 is **8.0/cycle**, not 2.6 — ADR-007 retires 59
+      `gn_*` proxies, not the 243 publisher-named GN feeds), and the "topic feeds
+      emit solution vocabulary" mechanism was **refuted** — `google_news_uplifting`
+      is 80 short rows and **0** surfacing. It is one feed × one lens:
+      `energy_storage` on solutions, 56.8%, and 0% on the other five.
+- [ ] Re-measure gated on **measured GN-URL share per cycle**, not on "migration
+      complete" — FluxusSource says there is no near-term done.
+
+### ✅ Shipped alongside
+
+- [x] **NM#303** production contract validation (`11d5860`) — Contract B CLEAN
+      over 27,831 rows; **Contract A had never met production either** → **NM#304**
+      filed with 4 defects (priority max 8 vs a 1–10 scale, `word_count` required
+      on body-less sources, `source_type` enum missing `social`, undeclared
+      `eval_query`).
+- [x] **Census check A hardened** (`3f1bf07`) — it false-positived on
+      `enriched`/`enriched_at`, which are rare-but-working (0–3 per filter per
+      cycle). My first patch referenced a variable that does not exist and
+      `py_compile` was green; only executing it caught that.
+- [x] **`commit-msg` hook fixed** (`8741fa1`) — it false-failed on private Hub
+      repos with no `HF_TOKEN`, and its own advice on failure is `--no-verify`.
+- [x] **Framework v1.15.1 → v1.17.0** (`c286bb3`), reconciled by content.
+      **agent-ready-projects#33** filed: `install-global-skills.sh` installs from
+      the working tree, so an adopter can receive unreleased, later-reverted
+      content — which happened for ~42 minutes today.
+
+### Board
+
+**197** — LD 34 · NM 44 · ovr 89 · FS 14 · ps 12 · atlas 3.
+Closed today: NM#300, LD#88. Filed: NM#304, agent-ready-projects#33.
+
 ## 2026-08-08 — the checks failed, the analysis didn't
 
 Full record: `memory/project_session_2026_08_08.md`. New topic file:
@@ -23,10 +109,11 @@ Full record: `memory/project_session_2026_08_08.md`. New topic file:
       population Chain 14 protects. `ovr.news@75bde57`, via the
       `manual_suppression` config kill switch — **not** a DB edit, because the
       live site builds from the R2 copy.
-- [ ] **Re-check after the next ovr.news build**: `gdelt_constructive_madagascar_7ff89d70aaf8`
-      and `newsdata_eval_td_456de0a16300` must go **404**; control
-      `newsdata_eval_bi_1c78d8e397b7` must stay **200**. *All three were 200
-      before.* **If all three 404, the suppression list is over-matching.**
+- [x] **Re-checked after the build 2026-08-08 — PASS exactly as pre-registered.**
+      `gdelt_constructive_madagascar_7ff89d70aaf8` **404**,
+      `newsdata_eval_td_456de0a16300` **404**, control
+      `newsdata_eval_bi_1c78d8e397b7` **200**. The control holding is the part
+      that matters: the suppression list is not over-matching.
 - [ ] **Loose thread:** eval-arm articles cluster at **9.4–9.99** on uplifting and
       solutions. Unusually good stream, or scorers over-rewarding it? Check
       against LD#91 and NM#289 upper-tail inflation.
@@ -41,7 +128,7 @@ reasons unrelated to your change cannot confirm your change.** Two more of my
 instruments broke the same day (a `len>3` language heuristic; a watcher whose
 hour-glob matched the *date*), against zero broken conclusions.
 
-### 🟢 NM#300 — fixed, deployed, NOT yet proven
+### 🟢 NM#300 — fixed, deployed, NOT yet proven *(SUPERSEDED — see the afternoon section: it was FIVE drops, and it is now verified and closed)*
 
 - [x] **Two drops in series**, so fixing either alone changes nothing:
       `FilterScoreResult` in `deploy/gpu-server/main.py` is a Pydantic allowlist
@@ -52,12 +139,13 @@ hour-glob matched the *date*), against zero broken conclusions.
       holding the GPU, so no restart and ollama untouched. gpu-server half
       **proven on the box** by `ast`-extracting the model classes verbatim from
       the deployed file and executing them in the scorer venv.
-- [ ] **OUTCOME CHECK OWED** — `content_length` must be non-null on rows from the
-      12:00 cycle onward (was **0 of 50,605**). *If still 0, suspect a third drop,
-      not the two fixed.*
+- [x] **OUTCOME CHECK RAN AND FAILED** — the 12:03 cycle read **0 of 2,170** with
+      both fixes provably loaded. *"Suspect a third drop"* was the right
+      instruction and there were **three** more. Closed out in the afternoon
+      section above.
 - [ ] Promote `content_length` to `required` in Contract B **only after** the
-      census shows it populated. It was assigned unconditionally and reached zero
-      rows for months.
+      census shows it populated **across several cycles**. One green cycle is not
+      enough for a field that reached zero rows for months.
 
 ### 🟢 Stamp census + contracts — new, and they found things nobody asked about
 
@@ -73,8 +161,11 @@ hour-glob matched the *date*), against zero broken conclusions.
       have caught it. **908 → 1**, that one real and left failing.
 - [x] Filed **NM#303** (contract tests validate fixtures, never production) and
       **FS#138** (a `null` inside `tags`).
-- [ ] **LD#88 item 1 gained evidence**: the census found `stage_used` and
-      `stage1_estimate` assigned by a writer and present on **no** row.
+- [x] **LD#88 item 1 gained evidence**: the census found `stage_used` and
+      `stage1_estimate` assigned by a writer and present on **no** row. Fixed and
+      verified the same day; **LD#88 closed** (all four items).
+      ⚠️ Check A also **false-positived** on `enriched`/`enriched_at` in the same
+      run — rare-but-working, 0–3 per filter per cycle. Hardened in `3f1bf07`.
 
 ### Board
 

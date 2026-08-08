@@ -93,8 +93,10 @@ positives**.
 
 ## Unprompted findings from the first census run (15,118 rows)
 
-- `stage_used`, `stage1_estimate` — assigned by a writer, on **no** row. This is
-  **LD#88 item 1**, open.
+- `stage_used`, `stage1_estimate` — assigned by a writer, on **no** row. This was
+  **LD#88 item 1**; ~~open~~ **fixed and verified the same day** (100% populated
+  from the 17:10 cycle), LD#88 closed. Kept as the worked example of check A
+  finding a real defect unprompted.
 - `short_content_cap_applied` — never observed; LD#93's cap is off on every
   filter by config (expected, but now visible).
 - `normalization_method` constant `percentile`; `passed_prefilter` constant
@@ -110,6 +112,21 @@ positives**.
 
 `content_length` **100% populated in all six filters** (2,189–2,647 rows each),
 up from 0 of 50,605. `stage_used` / `stage1_estimate` likewise 100% (LD#88).
+<!-- verify: ssh sadalsuud 'cd ~/local_dev/NexusMind/data/filtered/solutions && python3 -c "
+import json,glob,os
+f=max(glob.glob(\"filtered_*.jsonl\"))
+tot=pop=0
+for line in open(f):
+    line=line.strip()
+    if not line: continue
+    a=(json.loads(line).get(\"nexus_mind_attributes\") or {}).get(\"solutions\") or {}
+    if not a: continue
+    tot+=1
+    if a.get(\"content_length\") is not None: pop+=1
+print(\"PASS\" if tot and pop==tot else \"FAIL\", pop, tot)"' -->
+<!-- verify: manual — the probe-never-surfaces result below is a property of the
+     CURRENT thresholds, not a law. Re-run the stage_used vs op-point cross-check
+     after any filter version bump or probe-threshold change. -->
 
 **Unprompted result from the first cycle that carried `stage_used`: no surfacing
 article is ever probe-scored.** `stage1_low` rows peak at raw **0.75–1.50**
