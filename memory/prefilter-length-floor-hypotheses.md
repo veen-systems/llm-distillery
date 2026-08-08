@@ -211,36 +211,56 @@ the value:
 
 Mechanically fittable — cap 3.50 binds 71 of 173 short surfacing rows at mean
 displacement 0.37, i.e. 2.3× the #95 noise band. **But 87.9% of that population
-is Google News** (152 of 173), and ADR-007 (FluxusSource, Accepted 2026-08-08)
-retires all 55 GN country proxies. **Migration is UNDERWAY, not pending** —
+carries a Google News URL** (152 of 173) — and only the **A** slice below is
+retired, which is the trap that produced my 3× error. ADR-007 (FluxusSource,
+Accepted 2026-08-08) retires the **59** `gn_*` country proxies.
+**Migration is UNDERWAY, not pending** —
 `b869881` moved the first 6 African feeds to native RSS, first visible in
 `collection_20260808_120948`; ~29 proxies follow. `gn_*` items per collection
 went **565 → 528 → 202** across 08-08, so the corpus was already moving *during*
 the 8-cycle measurement window and its last cycle sits on the boundary. (I first
 wrote "decided, not implemented" from the 506 GN stubs still in the 12:49 cycle
 — the count was right, the inference wrong; the FluxusSource session caught it.)
-**ADR-007 retires the 59 `gn_*` country proxies, NOT the 243 publisher-named GN
-feeds** (the #90 frozen-outlet pattern: a dead native feed repointed at a GN
-proxy under the publisher's own key). Those stay, with no migration plan — many
-have no native to return to. So the post-retirement population is:
+**There are THREE GN populations and ADR-007 retires only the first** (settled
+with the FluxusSource session, 2026-08-08; their `memory/gn-proxy-protocol.md`):
 
-| population | short | surfacing | /cycle |
-|---|---|---|---|
-| A `gn_*` country proxies — retired | 3,736 | 109 | 13.6 |
-| B publisher-named GN — **stays** | 1,852 | 43 | 5.4 |
-| C genuinely non-GN — stays | 2,023 | 21 | 2.6 |
+| pop | what | enabled | query shape | fate |
+|---|---|---|---|---|
+| **A** | `gn_*` country proxies | 59 | `q=<Country>` | ADR-007 retires |
+| **B** | publisher-named repoints | 230 | `q=…site:<domain>` | slow #90 migration |
+| **C** | `google_news_*` topic feeds | 13 | `q="battery storage" OR …` | **editorial keep/drop** |
 
-**Post-ADR-007 = B + C = 8.0/cycle; retirement removes 63%, not ~88%.** My
-first pass counted only C and posted 2.6/cycle — understated 3×, because it
-assumed retirement clears GN broadly. The FluxusSource session caught it.
-Offsetting it: H4 measured **0 of 14,198** GN-proxy rows ever enriched, because
-pre-enrichment fetches from `url` and a GN `url` is a redirect; native URLs are
-fetchable, so migration converts part of the population into >300-char articles
-rather than merely deleting it.
+C proxies **no publisher at all** — there is nothing to migrate to, so the only
+move is one line of config.
 
-**Half of what survives is ONE feed**: 21 of B's 43 surfacing rows come from
-`energy_utilities_google_news_energy_storage`, itself a GN *topic query* feed,
-not a repointed publisher. That wants a source-level fix, not a scoring cap.
+Measured on `solutions v6`, 8 cycles, sub-300-char rows:
+
+| pop | short | surfacing | **surfacing rate** | /cycle |
+|---|---|---|---|---|
+| A | 3,736 | 109 | 2.9% | 13.6 |
+| B | 1,715 | 21 | 1.2% | 2.6 |
+| **C** | **137** | **22** | **16.1%** | 2.8 |
+| non-GN | 2,023 | 21 | 1.0% | 2.6 |
+
+```
+today                       21.6 surfacing rows/cycle
+after ADR-007 (A gone)       8.0
+after ADR-007 + dropping C   5.2
+```
+
+**C is 13× the non-GN surfacing rate off the smallest population, and supplies
+34% of everything surviving ADR-007** — so dropping 13 feeds is worth roughly
+what the entire 230-feed repoint migration is. Probably mechanistic rather than
+luck: LD#92's defect is the student reading a title dense in solution vocabulary
+with no subject to ground it, and a topic-query feed emits exactly that by
+construction. Predicts the rate persists after any migration.
+
+**Two errors of mine here, both caught by the FluxusSource session.** First I
+posted 2.6/cycle by counting only non-GN, assuming retirement clears GN broadly
+— understated 3×. Then I merged C into B, because I split on "not `gn_*`".
+Offsetting the first: H4 measured **0 of 14,198** GN-proxy rows ever enriched
+(pre-enrichment fetches from `url`; a GN `url` is a redirect), so migration
+converts part of the population into >300-char articles rather than deleting it.
 Of what remains, cap 3.50 would bind ~2.5/cycle — and
 they are named outlets with short RSS (`automotive_electrive` 6, `china_cgtn`,
 `nyt_world`, `trt_world`, `observador`), not broken-proxy stubs, so not what
