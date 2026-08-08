@@ -19,6 +19,72 @@ section is kept as history.
 
 ---
 
+## 2026-08-08 morning — the deadline item is GONE, and a parallel session took it
+
+<!-- verify: tot=0; for r in veen-systems/llm-distillery ducroq/NexusMind ducroq/ovr.news ducroq/FluxusSource veen-systems/persuasion-scorer veen-systems/pipeline-atlas; do n=$(gh issue list -R $r --state open --limit 400 --json number --jq 'length'); echo "$r: $n"; tot=$((tot+n)); done; echo "TOTAL: $tot" -->
+
+**Board: 195** — LD **36** · NM **42** · ovr **89** · FS **13** · ps **12** ·
+atlas **3**. Sediment (untouched 30d+, cutoff 2026-07-09): **74** — LD 10 · NM 19
+· ovr 45 · FS 0 · ps 0 · atlas 0. *Quote the cutoff date with that number; it
+moves on its own and the 81/82 recorded on 08-07 was against a different window.*
+
+**The count went 198 → 199 → 195 inside two hours, and both moves were ours.**
+199 because the 08-07 night pass filed LD#101 after taking its own count (third
+consecutive pass to do that). Then **five FluxusSource issues closed between
+08:15 and 08:55 CEST** — and LD#101 closed here — taking it to 195.
+
+**Chain 8 (Google News) is CLOSED. `ADR-007` accepted 2026-08-08 (`ff6932b`),
+FS#120 + FS#119 closed, gate decided six days early.** Also closed the same hour:
+FS#132, FS#130, FS#124, FS#105. Decision: **retire the 55 GN country proxies and
+all three eval arms; native-first.** H1 confirmed by *topical precision* rather
+than usable-article rate — `gn_chad` carries **2 on-topic items in 462 (0.4%)**,
+the rest being US sports outlets, obituaries for men named Chad and a UK paper
+called *the Chad*. H2 failed (quota; no article body, median 58–60 chars; 93% of
+GDELT's Madagascar rows are `storm.mg`, Taiwanese, via the `.mg` ccTLD). H3
+reformulated: NewsData filters publisher *location*, GNews only *topic*. H4 moot.
+
+**So the only calendar-bound item on this board is gone**, and the ordering table
+below now starts at NM#301.
+
+### The session-collision lesson, because it cost a wrong public comment
+
+`veen-systems/pipeline-atlas`-style parallelism is now normal here:
+`ListAgents` showed **three** peer sessions live, one (`fluxussource-9c`) 12 hours
+into FluxusSource. It wrote ADR-007 at 08:54:31 and closed FS#120 at 08:54:57. I
+posted a comment on that issue at **09:24** saying the baseline contamination
+"needs an owner call before the ~08-14 gate" — from a board state read at 08:05.
+The *finding* was identical to theirs; the *disposition* was wrong, and theirs was
+better (the collision is evidence about the thing being retired, not noise in a
+comparison). Corrected in-thread rather than deleted.
+
+**Rule: re-query issue state immediately before commenting or closing, not at the
+top of the session.** The existing "a pass that files issues must re-count after
+filing them" is the same rule one step earlier; this is the version that bites
+when someone else is working.
+
+**Also true of working trees:** FluxusSource had four files modified mid-session
+by that peer (`requirements.txt`, `scheduled_collection.sh`, `content_hasher.py`,
+`requirements-lock.txt`). Nothing there may be committed, stashed or checked out
+from here — see the whole-tree git verbs rule in CLAUDE.md.
+
+### LD#101 confirmed live and closed
+
+Verified by **outcome** on the 08:49–08:55 cycle: `eval_aggregator` rows in each
+filter's `filtered_*.jsonl` went **21 → 0** across all six, with the control that
+the same cycle's input carried **22** such articles. The change is now committed
+(`ducroq/NexusMind@9fb441a`) — it had been running as **uncommitted working-tree
+edits on sadalsuud**, invisible to the repo.
+
+**The check originally pre-registered for it would have reported failure**: the
+`source_filter excluded N` log line read **86** against a "must exceed 121"
+baseline, because that count swings with corpus composition (69 → 121 → 86 in one
+day). Recorded in the assistant's memory as `feedback-check-must-be-specific`.
+
+Residual, ovr.news side, owned by nobody yet: the **~30 already-published** eval
+rows, including a funeral/murder story at tier `high`.
+
+---
+
 ## Coverage pass 2026-08-07 (late) — what the board does NOT cover
 
 <!-- verify: for r in veen-systems/llm-distillery ducroq/NexusMind ducroq/ovr.news ducroq/FluxusSource veen-systems/persuasion-scorer veen-systems/pipeline-atlas; do gh issue list -R $r --state open --limit 400 --json number --jq 'length'; done -->
