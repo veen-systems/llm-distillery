@@ -194,6 +194,35 @@ the length floor blocks*.
     student *under*-scores short content there. That is NM#231's direction, not
     LD#92's — possibly the same underlying mechanism seen from the other side.
 
+## Short vs long surfacing rate, all six lenses (2026-08-08)
+
+The baseline table that was missing from every prior discussion. 8 cycles,
+`filtered_*.jsonl` (survivors), split at 300 chars of persisted `content`,
+each lens against **its own** op-point:
+
+| filter | short n | short surf% | long n | long surf% | ratio |
+|---|---|---|---|---|---|
+| solutions | 7,611 | 2.3% | 15,805 | 4.6% | 0.49× |
+| uplifting | 7,615 | 2.3% | 15,805 | 13.4% | 0.17× |
+| investment_risk | 3,798 | 20.2% | 13,567 | 27.6% | 0.73× |
+| cultural_discovery | 7,615 | 0.2% | 15,805 | 2.3% | 0.09× |
+| belonging | 7,615 | 0.4% | 15,805 | 3.2% | 0.11× |
+| nature_recovery | 7,615 | 0.0% | 15,805 | 0.2% | 0.25× |
+
+**Every lens surfaces short content LESS often than long (0.09–0.73×).** So
+"the student over-scores stubs" is not true as a platform-wide *rate* claim.
+LD#92's defect is a **within-band** bias — short articles that clear the bar are
+likelier to be wrong — not an inflated rate of clearing it. Those are different
+claims and earlier framing (mine included) blurred them.
+
+`investment_risk` looked anomalous when only the short column was shown (20.2%
+vs ≤3% elsewhere). It is not: its ratio is 0.73×, same direction as the rest,
+and its absolute rates are high because that lens surfaces a lot of everything.
+**Never compare one length-group's rate across lenses with different base
+rates** — the within-lens ratio is the only comparable quantity. Its smaller
+short n (3,798) is the NM#189 source-type allowlist dropping rows from
+`filtered_*.jsonl` entirely, which also explains why it has zero GN rows.
+
 ## Step 4 measured 2026-08-08 — VERDICT: do not set the cap
 
 Sized it, then found the sizing invalid. Both structural findings hold whatever
