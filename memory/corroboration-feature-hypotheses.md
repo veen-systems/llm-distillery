@@ -127,6 +127,36 @@ hard requirement, not a preference.
   **not** demonstrably unbiased across publishers, so a future `source_pair_prior`
   **cannot** yet be assumed safe from it.
 
+- **STEP 4 RUN 2026-08-08 — the extractor was the problem, not the feature.**
+  `xlm-roberta-large-finetuned-conll03-english` on **300 production articles**
+  (60 each de/el/en/es/fr, from `filtered_20260808_170521`, 5,000-char budget to
+  match V1):
+
+  | | spaCy `en_core_web_sm` | XLM-R large |
+  |---|---|---|
+  | entities/article, median | **2** | **12** (mean 13.3, p10 6, p90 22) |
+  | unrelated pairs at `ej = 1.000` | *the failure mode* | **0 of 4,000** |
+  | unrelated pairs at `ej >= 0.3` | — | **0 of 4,000** (p99 0.056, max 0.200) |
+
+  Per language: de 13.0, es 13.0, en 11.5, fr 11.5, **el 11.0**. **Greek —
+  non-Latin script — matches the Latin-script languages**, so on entity *yield*
+  there is no non-English disadvantage. Cross-language pairs (n=3,239): median
+  0.0000, max 0.200, i.e. no spurious cross-script matching either.
+
+  **This kills the token-collision mechanism outright.** V1's `entity_jaccard`
+  learned negative in 7 of 8 folds because two entities collide; twelve do not.
+  <!-- verify: manual — rerun /tmp/ner_measure.py pattern on a fresh sample; the
+       claim is about the extractor, so it should reproduce on any production day -->
+
+  **What it does NOT establish, and do not let it be quoted as if it does:** this
+  measures only the **negative** side — that unrelated articles stop colliding. It
+  says nothing about whether **true positives score high**, which needs the
+  labelled pairs (step 3). The feature is now *plausibly usable*; it is not shown
+  to work. **The n=23 / case_1-supplies-21 constraint is untouched by this.**
+
+  Cost, since it bears on whether this can ship: **6 seconds for 300 articles** on
+  one GPU after a 23s model load — ~50 articles/sec. Not a barrier.
+
 ## REFUTED
 
 - **"NER is a bad corroboration feature."** Not established. It was measured
@@ -148,11 +178,9 @@ hard requirement, not a preference.
 
 ## UNTESTED — and this is where the value is
 
-- **Cross-lingual NER (`xlm-roberta-large-finetuned-conll03-english`).** The
-  memo's own pre-committed next step, described as *"the cheapest intervention
-  to verify — re-run `measure_matching_geometry.py` with the new NER model; no
-  architecture change."* Step 4 of 8 in the next-phase plan; **needs no new
-  labels**, and its outcome decides whether a labelling campaign is needed at all.
+- ~~**Cross-lingual NER (`xlm-roberta-large-finetuned-conll03-english`).**~~
+  **RUN 2026-08-08 — the extractor was the problem, not the feature.** See the
+  CONFIRMED entry below.
 - **Wikidata QIDs instead of surface-token NER.** The measured failure was
   Latin-script token collision — ids fix that by construction, and fix the
   cross-language half at the same time ("Verenigde Naties" ↔ "United Nations").
@@ -264,8 +292,17 @@ support") is already discharged** — the hedge is live in both languages
 a flat 1.3× capped at 9 (`corroboration-boost.ts:61/69`). So the live front is:
 
 2. settle representation (title vs title+body) — no new labels
-3. mine the labels already held — hours of compute ← **the unblocker**
-4. cross-lingual NER swap ← **the owner's question, answered cheaply**
+3. mine the labels already held — hours of compute ← **NOW THE ONLY BLOCKER**
+4. ~~cross-lingual NER swap~~ ← **DONE 2026-08-08, and it passed.** The
+   extractor was the problem: median 2 → 12 entities/article, and unrelated-pair
+   collisions went from `ej = 1.000` to **0 of 4,000 above 0.3**.
+
+**So the ordering has collapsed to one item.** Step 4 was the cheap diagnostic and
+it came back clean, which means the remaining question is entirely **sample
+size** — n=23 with case_1 supplying 21. Step 3 is no longer one of several
+parallel unknowns; it is the whole remaining path. Expect its yield to be a
+**floor**, because FluxusSource deletes the easiest positives at collection
+(see "the corpus is pre-depleted" above).
 
 Related: [[cd-v6-probe-hypotheses]] (the other place a probe/extractor choice was
 decided by measurement), [[score-batch-shape-noise]] (any margin under 0.16 near
