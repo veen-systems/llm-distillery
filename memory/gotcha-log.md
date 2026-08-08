@@ -23,6 +23,14 @@ Problems encountered and resolved. Format: Problem → Root cause → Fix.
 
 ---
 
+## A `.bak` file left beside a patched source blocked the whole pipeline (2026-08-08)
+
+**Problem**: `nexusmind.service` FAILED at 16:07 and would have failed every 4h. Not a crash — the fail-closed deploy gate refused to ship, because `src/scoring/gpu_client.py.bak_nm300third_20260808` was untracked under a guarded path.
+**Root cause**: I made `.bak` copies while patching, then *deliberately kept them* as a rollback for an unverified fix. The commits were already pushed, so git was the rollback and the `.bak`s were redundant — the reasoning was wrong at the moment it felt most prudent.
+**Fix**: Delete them; the gate is right. Patch in place and rely on git, or write backups **outside the repo** (`/tmp/…/scratchpad`). Verify with `git status --porcelain` before leaving a repo that a service deploys from — clean means clean, not "only my scratch files".
+
+---
+
 ## Copied a gate to a new concern without copying the mechanism that feeds it — the gate could never fire (2026-08-01)
 
 **Problem**: NM#281 added a violence-promotion drop point next to the existing
