@@ -297,12 +297,58 @@ a flat 1.3× capped at 9 (`corroboration-boost.ts:61/69`). So the live front is:
    extractor was the problem: median 2 → 12 entities/article, and unrelated-pair
    collisions went from `ej = 1.000` to **0 of 4,000 above 0.3**.
 
-**So the ordering has collapsed to one item.** Step 4 was the cheap diagnostic and
-it came back clean, which means the remaining question is entirely **sample
-size** — n=23 with case_1 supplying 21. Step 3 is no longer one of several
-parallel unknowns; it is the whole remaining path. Expect its yield to be a
-**floor**, because FluxusSource deletes the easiest positives at collection
-(see "the corpus is pre-depleted" above).
+**Corrections after reading the plan properly (2026-08-08, same evening):**
+
+- **Step 2 comes before step 3 and is a hard prerequisite** (via MECH-1). I had
+  written that step 3 was "the whole remaining path" — wrong.
+- **Step 2 is already half answered.** OBS-17 measured **title+body as the better
+  representation, AUROC 0.791 vs 0.771**. What is open is only its **threshold**;
+  production runs **title-only at `cross_source_threshold=0.88`**.
+- **Step 3's labels are not a cluster store.** It names *SemEval per-pair sims,
+  `per_probe.jsonl`, and cosines on the adjudicated 300* — not `SavedCluster`.
+  (The 8 hand-written cases in `measure_matching_geometry.py:111-190`, sourced
+  verbatim from NM#170/#188 issue text, are V1's *test* cases and are where n=23
+  comes from. Do not confuse the two.)
+- **Step 4 sits after step 3 in the plan and I ran it first.** Legitimate — the
+  plan itself calls it "direction-finding, valid at n=23 per §P7.1, no new
+  labels" — but note the order when citing.
+
+## WHERE THE CORROBORATION DATA ACTUALLY LIVES (inventoried 2026-08-08)
+
+**It is on `b650-gpu:/home/jeroen/nm-sweep/out/`, NOT on sadalsuud.** I first
+concluded "the precision panel does not exist" after checking sadalsuud and
+gpu-server — the owner said "it could be on one of the GPUs" and it was.
+`data/` is gitignored on sadalsuud (`.gitignore:230`), so nothing about that box
+tells you the panel was ever built. **Check b650-gpu before concluding any
+corroboration artefact is missing.** Access: `ssh b650-gpu` works from this
+workstation as `jeroen`; it does **not** work from sadalsuud (tries `jwasys`,
+publickey denied) — `memory/b650-gpu.md` says otherwise and is wrong on that
+point.
+
+| artefact | state |
+|---|---|
+| `precision_panel/` (v1) | 299 pairs, both representation stores |
+| `precision_panel_v2/` | **340 pairs**, 6 strata × 50 + 40 near-miss controls, balanced 170/170 across configs |
+| `store_title_92_88.npz` | title-only representation, both frames |
+| `store_title_body_96_92.npz` | **title+body** representation, both frames |
+| `per_probe.jsonl` | exists in `recall_probe_48/`, `probe_smoke/`, `probe_smoke2/` |
+| `recall_disputed.json`, `recall_grid.json`, `rg_A_*.npz` | present |
+
+**THE BLOCKER, and it is not compute: the panel is UNADJUDICATED.** Both
+`adjudicate.csv` files have the verdict column **100% empty** — 299 of 299 and
+340 of 340. And `answer_key.json` is **not** an answer key: it is the *sampling
+design* (`item_id`, `cluster_key`, `stratum`, `config`, `sim`, `is_control`),
+with no verdict field at all. No `judge_verdicts.jsonl` exists anywhere in
+`nm-sweep/`, though `score_precision_panel.py` defaults to reading one.
+
+**So step 3 cannot run as written.** It says "cosines on the adjudicated 300" —
+the 300 are not adjudicated. Of its three named sources, only `per_probe.jsonl`
+is materialised; SemEval per-pair sims were not found on any box checked.
+
+**Consequence for planning:** the remaining path is not "hours of compute", it is
+**a labelling pass** — human adjudication of the 340, or an LLM-judge run to
+produce the `judge_verdicts.jsonl` the scorer expects. That is plan steps 6/8
+territory, pulled forward. The n=23 constraint is unchanged until it happens.
 
 Related: [[cd-v6-probe-hypotheses]] (the other place a probe/extractor choice was
 decided by measurement), [[score-batch-shape-noise]] (any margin under 0.16 near
