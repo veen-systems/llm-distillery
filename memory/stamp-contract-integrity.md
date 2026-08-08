@@ -26,6 +26,7 @@ them is a shape error**, so none is catchable by a schema:
 | Shape | Instance |
 |---|---|
 | **Absent** — key never reaches the row | NM#300, `content_length` on 0 of 50,605 |
+| **Null** — key written, value emptied upstream | NM#300 after a partial fix (see below) |
 | **Constant** — present, never discriminates | LD#94, `gatekeeper_applied` in 191,616 |
 | **Unread** — populated, zero consumers | LD#101, `type_classification` → an A/B rig published |
 | (and the sibling) **Unreachable** | NM#284, per-filter prefilters, six months |
@@ -88,6 +89,33 @@ question, not a verdict.
   the one that matters** — ADR-022 says visibility keys on it while
   `weighted_average` is rank-in-batch, and it being undeclared while
   `weighted_average` was declared is plausibly how the two got conflated.
+
+## NM#300 is FIVE allowlists in series (2026-08-08, proven by outcome)
+
+It was diagnosed as "two drops in series", both fixed and deployed — and the
+next cycle still read **0 of 2,170**, with both fixes provably loaded. There are
+five explicit allowlists between the scorer and the persisted row:
+
+| # | location | |
+|---|---|---|
+| 1 | `deploy/gpu-server/main.py` — `FilterScoreResult` (Pydantic) | server |
+| 2 | `src/scoring/gpu_client.py:141` — `FilterScoreResult` **dataclass** | client |
+| 3 | `src/scoring/gpu_client.py:815` — its construction from `response.json()` | client |
+| 4 | `scripts/main.py:481` — dataclass → dict conversion | consumer |
+| 5 | `scripts/main.py:1099` — the `analysis` dict | consumer |
+
+The first diagnosis fixed 1 and 5 and checked the wrong seam for a third: it
+verified that `analysis` is attached whole and written with
+`json.dumps(article)` — true, and not where the loss is. **When a value crosses
+a process boundary, patching the sender does nothing unless the receiver's
+parser is also an allowlist — and here it was, twice.**
+
+**`absent` vs `null` localises the fault for free.** After hops 1+5 were fixed,
+`content_length` went from *absent* to *present-and-null*. Absent = nobody wrote
+the key. Null = the last hop wrote it and something upstream had already emptied
+it. That distinction pins the fault to the middle hops without reading code —
+and a census that only counts `is not None` throws it away. Check `"k" not in d`
+separately from `d[k] is None`.
 
 ## Rules
 

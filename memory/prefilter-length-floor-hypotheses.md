@@ -194,6 +194,42 @@ the length floor blocks*.
     student *under*-scores short content there. That is NM#231's direction, not
     LD#92's — possibly the same underlying mechanism seen from the other side.
 
+## Step 4 measured 2026-08-08 — VERDICT: do not set the cap
+
+Sized it, then found the sizing invalid. Both structural findings hold whatever
+the value:
+
+- **A cap ≥ the op-point cannot remove a single false positive.** Visibility
+  keys on the raw score (ADR-022/NM#280) and a cap leaves the row above the
+  op-point by construction. #92's ~47% oracle-negative short rows sit just
+  above solutions' 2.25 — a cap re-ranks them, only a gate suppresses them,
+  and #93 exists to avoid the gate. **The cap and the defect are not the same
+  shape.**
+- **No short article reaches `medium_high` (5.0); max is 4.93** over 8 cycles.
+  "Off the top of the feed" is already true with no cap, and any cap ≥ 5.0 is a
+  guaranteed no-op (the LD#94 shape).
+
+Mechanically fittable — cap 3.50 binds 71 of 173 short surfacing rows at mean
+displacement 0.37, i.e. 2.3× the #95 noise band. **But 87.9% of that population
+is Google News** (152 of 173), and ADR-007 (FluxusSource, Accepted 2026-08-08)
+retires all 55 GN country proxies. **Decided, not implemented** — the 12:49
+cycle still carried 506 GN short stubs. Residual once it lands: **21 surfacing
+rows over 8 cycles = 2.6/cycle**, of which cap 3.50 would bind ~1.1/cycle — and
+they are named outlets with short RSS (`automotive_electrive` 6, `china_cgtn`,
+`nyt_world`, `trt_world`, `observador`), not broken-proxy stubs, so not what
+#92 measured.
+
+**Sequence: implement ADR-007 → let the corpus settle → re-measure → then decide
+whether a cap is warranted at all.** #95 is no longer a blocker (noise band
+shipped 08-06); the blocker is now ADR-007 *implementation*.
+
+The trap for next time: the issue's own comment already said "a cap fitted
+before the GN decision would be tuned against a population that is about to
+change size." I sized it first and checked that second. **When a prior comment
+names a sequencing precondition, verify it is satisfied before doing the work,
+not after.** A decision being *taken* is not the precondition — the corpus
+changing is.
+
 ## What shipped (2026-08-03, #93 — llm-distillery side)
 
 The floor is split three ways, per ADR-022 "stamp always, decide once":
