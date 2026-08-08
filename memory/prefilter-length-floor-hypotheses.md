@@ -212,9 +212,19 @@ the value:
 Mechanically fittable — cap 3.50 binds 71 of 173 short surfacing rows at mean
 displacement 0.37, i.e. 2.3× the #95 noise band. **But 87.9% of that population
 is Google News** (152 of 173), and ADR-007 (FluxusSource, Accepted 2026-08-08)
-retires all 55 GN country proxies. **Decided, not implemented** — the 12:49
-cycle still carried 506 GN short stubs. Residual once it lands: **21 surfacing
-rows over 8 cycles = 2.6/cycle**, of which cap 3.50 would bind ~1.1/cycle — and
+retires all 55 GN country proxies. **Migration is UNDERWAY, not pending** —
+`b869881` moved the first 6 African feeds to native RSS, first visible in
+`collection_20260808_120948`; ~29 proxies follow. `gn_*` items per collection
+went **565 → 528 → 202** across 08-08, so the corpus was already moving *during*
+the 8-cycle measurement window and its last cycle sits on the boundary. (I first
+wrote "decided, not implemented" from the 506 GN stubs still in the 12:49 cycle
+— the count was right, the inference wrong; the FluxusSource session caught it.)
+Residual once it lands: **21 surfacing rows over 8 cycles = 2.6/cycle**, an
+**upper bound** — H4 measured **0 of 14,198** GN-proxy rows ever enriched,
+because pre-enrichment fetches from `url` and a GN `url` is a
+`news.google.com/rss/articles/…` redirect. Native URLs are fetchable, so
+migration converts part of that population into >300-char articles rather than
+merely deleting it. Of what remains, cap 3.50 would bind ~1.1/cycle — and
 they are named outlets with short RSS (`automotive_electrive` 6, `china_cgtn`,
 `nyt_world`, `trt_world`, `observador`), not broken-proxy stubs, so not what
 #92 measured.
@@ -228,7 +238,14 @@ before the GN decision would be tuned against a population that is about to
 change size." I sized it first and checked that second. **When a prior comment
 names a sequencing precondition, verify it is satisfied before doing the work,
 not after.** A decision being *taken* is not the precondition — the corpus
-changing is.
+changing is, and here it was changing *while I measured*.
+
+**GN detection is ambiguous while migration runs — the two obvious signals
+disagree.** In `collection_20260808_120948`, **202** items carry a `gn_*` source
+but **441** carry a `news.google.com` URL. Match on either alone and you get a
+different population. Use the union
+(`source.startswith("gn_") or "news.google.com" in url`) and state which you
+used; do not treat one as a proxy for the other until migration completes.
 
 ## What shipped (2026-08-03, #93 — llm-distillery side)
 
