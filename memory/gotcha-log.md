@@ -2,6 +2,25 @@
 
 Problems encountered and resolved. Format: Problem → Root cause → Fix.
 
+<!-- Template for new entries:
+
+## [Short description] (YYYY-MM-DD)
+**Problem**: What went wrong or was confusing.
+**Root cause**: Why it happened.
+**Fix**: What solved it.
+
+     Keep it to 2-3 lines. Write the lesson, not the narrative of the
+     session that found it. If it needs a page, it belongs in a topic
+     file or an ADR, not here.
+
+     (agent-ready-projects v1.17.0. Note the heading level differs from the
+     framework template: entries here are `##`, not `###`.)
+
+     NEW ENTRIES ONLY. Do not retrofit the existing log — a bulk rewrite of
+     history is a separate, engineer-approved decision, and this file is
+     1,995 lines precisely because it predates the rule.
+-->
+
 ---
 
 ## Copied a gate to a new concern without copying the mechanism that feeds it — the gate could never fire (2026-08-01)

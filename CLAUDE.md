@@ -2,7 +2,7 @@
 stack: Python 3.12, PyTorch, Transformers, PEFT/LoRA
 status: Production
 repo: github.com/ducroq/llm-distillery
-framework: agent-ready-projects v1.15.1
+framework: agent-ready-projects v1.17.0
 framework_reconciliation: |
   v1.15.0 (2026-08-06) adopted. Skill scope: `curate` and `audit-context` are
   user-global — the project-local copies here were DELETED, not reconciled,
@@ -16,6 +16,21 @@ framework_reconciliation: |
   skill only — no template or memory-layout change. The global skill already
   carries the new Step 4 rules (three-section output, extension whitelist,
   rung ordering), so only this stamp was behind.
+  v1.16.1 / v1.16.2 / v1.17.0 adopted 2026-08-08, verified by CONTENT:
+  both global skills are byte-identical to the upstream tracked copies
+  (`diff`, plus `install-global-skills.sh --check` clean). Per-release:
+  v1.16.1 — the `review-changes` adversarial-lens contradiction does NOT
+  affect this repo's copy, which is re-mapped and already carries only the
+  consistent half plus a concrete-failure requirement; nothing to port. Its
+  `curate` Step 0.6 dual-path fix is a NO-OP here — we keep no
+  `hypothesis-log.md` at either path, hypotheses live in per-topic memory
+  files instead. v1.16.2 — example rename only, no action. v1.17.0 — the
+  gotcha-entry length rule; the entry template it added is now in
+  `memory/gotcha-log.md`, adapted to this file's `##` heading level and
+  marked NEW-ENTRIES-ONLY (that log is ~2,000 lines and predates the rule).
+  Declined: nothing.
+  NOT verified by this stamp: that any behaviour changed. The stamp records
+  which surfaces were reconciled, not that a skill has since been run.
 ---
 
 # CLAUDE.md - LLM Distillery
