@@ -21,10 +21,23 @@ Full record: `memory/project_session_2026_08_07_night.md`.
       misses `gdelt_constructive_*` entirely. The two extra are Traditional
       Chinese Taiwanese local news at tier `high` under a Madagascar query.
       **Never key on the source string.**
-- [ ] **Ship it**: add `eval_aggregator` to `excluded_source_types` in all filter
-      configs, sync to NexusMind, and **verify by outcome** — a cycle's
-      `N scored, M prefiltered` line, never the config key. This issue exists
-      *because* a configured mechanism had no consumer.
+- [x] **SHIPPED 2026-08-08.** `eval_aggregator` added to `excluded_source_types`
+      in all 6 live filters + `cultural_discovery/v6` (the cutover candidate), and
+      `eval_aggregator` added to `KNOWN_SOURCE_TYPES` in
+      `tests/unit/test_filter_config_schema.py` — the schema gate rejected it
+      otherwise, exactly as designed. Suite green (269 passed, 4 skipped).
+      Copied surgically to `NexusMind/filters/*/config.yaml` (**not** via
+      `deploy_to_nexusmind.sh`), backups at `config.yaml.bak_20260808_074336`.
+      No restart needed: `nexusmind.service` is a per-cycle process, dead between
+      runs, so configs load fresh; `scripts/main.py:1016-1018` is the caller.
+      **Verified by EXECUTING the guard on the deployed config**, not by reading
+      the key — positive and negative control:
+      `eval_aggregator → passed_prefilter False`, `news_regional → True`,
+      `excluded_count 1`. All 6 confirmed `eval_aggregator=True, shadow_mode=False`.
+- [ ] **Confirm on the next cycle's log** (00:02 / 04:00 grid) — the `N scored,
+      M prefiltered` line should show the eval arms among the prefiltered. That is
+      the end-of-run outcome check; the guard test above proves the predicate and
+      the load, not the production run.
 - [x] **`memory/nexusmind-data-sources.md` updated** with the two traps this
       creates: corpus statistics over `data/filtered/*` will silently omit the
       eval arms, and FS#120's funnel must be read from the **GPU scorer log**,

@@ -25,6 +25,7 @@ source_filter:
   - code_repo
   - developer_aggregator
   - firehose_aggregator
+  - eval_aggregator
   shadow_mode: false
 prefilter:
   enabled: true

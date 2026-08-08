@@ -32,7 +32,7 @@ filter:
 # in the GPU path (scorer uses skip_prefilter=True and only receives
 # {title, content}); this config block is the production gate.
 source_filter:
-  excluded_source_types: [code_repo, developer_aggregator, academic, social]
+  excluded_source_types: [code_repo, developer_aggregator, academic, social, eval_aggregator]
   shadow_mode: false
 
 # Scoring dimensions and weights (6 orthogonal dimensions, unchanged from v5)

@@ -30,7 +30,7 @@ filter:
 # all firehose noise: pop-psychology, scattered protest blurbs, supply-
 # chain wire stories that are covered by primary sources elsewhere).
 source_filter:
-  excluded_source_types: [code_repo, developer_aggregator, firehose_aggregator]
+  excluded_source_types: [code_repo, developer_aggregator, firehose_aggregator, eval_aggregator]
   shadow_mode: false
 
 prefilter:

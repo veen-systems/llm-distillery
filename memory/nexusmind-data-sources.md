@@ -26,16 +26,20 @@ passers by construction. Already in CLAUDE.md.
 GPU scorer's log counts them — but they never reach the file and never reach
 ovr.news.
 
-**A sixth excluded type is being added (LD#101, decided 2026-08-08):
-`eval_aggregator`.** FluxusSource's three FS#120 evaluation arms
+**A sixth excluded type SHIPPED 2026-08-08 (LD#101): `eval_aggregator`.**
+*(Live in all 6 filters on sadalsuud, `shadow_mode: false`. Verified by executing
+`apply_source_filter` against the deployed config: `eval_aggregator` →
+`passed_prefilter False`, `news_regional` → `True`, `excluded_count 1`. Cycle-log
+confirmation still pending.)* FluxusSource's three FS#120 evaluation arms
 (`gnews_eval`, `newsdata_eval`, `gdelt_constructive`) are an A/B measurement rig,
 not a content source — but the stamp had **zero consumers**, so they were scored
 by every filter and **published**: 30 rows in `ovr.news/data/ovr.db`, including a
 funeral/murder story at tier `high` and Taiwanese local news under a Madagascar
-query. Once the exclusion lands, those rows join the population below: **scored,
-then dropped, absent from `filtered/`.**
+query. They now join the population below: **scored, then dropped, absent from
+`filtered/`.** The exclusion stops new ones; it does not retract the 30 already
+published.
 
-Two traps this creates, both live from the day it ships:
+Two traps this creates, live now:
 
 - **Any corpus statistic over `data/filtered/*` silently omits the eval arms**,
   exactly as it already omits the five types below. If you are measuring

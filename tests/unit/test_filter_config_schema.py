@@ -93,6 +93,18 @@ KNOWN_SOURCE_TYPES = {
     # social emitted via platform_types (bsky.app, mastodon.social);
     # unknown is the catch-all default.
     "blog_independent", "social", "unknown",
+    # Evaluation arms — declared in FluxusSource config/app.yaml as
+    # `type_classification: eval_aggregator` on gnews_eval, newsdata_eval and
+    # gdelt_constructive. These are an A/B measurement rig for the FS#120
+    # GN-replacement gate, not a content source. Added 2026-08-08 for LD#101:
+    # the stamp had ZERO consumers, so the arms were scored by every filter and
+    # published — 30 rows reached ovr.news, including a funeral/murder story at
+    # tier `high` and Taiwanese local news under a Madagascar query.
+    # NOTE the exclusion runs POST-scoring (`apply_source_filter` marks
+    # already-scored rows `passed_prefilter = False`), so scores are retained and
+    # only publication is blocked. FS#120's funnel must therefore be read from
+    # the GPU scorer log, never from `data/filtered/`.
+    "eval_aggregator",
 }
 
 # --- Known-drift exemptions ---------------------------------------------

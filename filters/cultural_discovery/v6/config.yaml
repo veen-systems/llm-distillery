@@ -56,7 +56,7 @@ filter:
     - ovr.news (Discovery tab)
 
 source_filter:
-  excluded_source_types: [code_repo, developer_aggregator, firehose_aggregator]
+  excluded_source_types: [code_repo, developer_aggregator, firehose_aggregator, eval_aggregator]
   shadow_mode: false
 
 prefilter:
