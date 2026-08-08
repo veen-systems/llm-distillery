@@ -222,6 +222,34 @@ reaching the site" metric, an explicit checklist item on a gate due 2026-08-14.
 The decision (may an experimental arm publish at all?) has to come before the
 code.
 
+## LD#101 closed out 2026-08-08: excluded, verified by execution
+
+The owner chose between "exclude at the filter" and "gate at ovr.news publish".
+**My recommendation was wrong and I reversed it before shipping**: I claimed
+filter-level exclusion stops the arms being *scored*, destroying FS#120's funnel
+metric. It does not — `apply_source_filter` marks **already-scored** rows
+`passed_prefilter = False`, so `excluded_source_types` **already is**
+score-don't-publish. `nexusmind-data-sources.md` had said so since 2026-08-02;
+I found it only because I opened that file to write an entry into it.
+
+`eval_aggregator` added to all 6 live filters + `cultural_discovery/v6`, and to
+`KNOWN_SOURCE_TYPES` — **the schema gate rejected it otherwise, exactly as
+designed**. Suite green (269 passed, 4 skipped). Config synced to sadalsuud
+surgically, not via the sweep script; all six full configs diffed first, and the
+two that looked like they carried production-only lines were **false positives**
+where local is the better version.
+
+**Verified by executing the guard on the synced config**, with positive and
+negative controls, because this issue exists precisely because a configured
+mechanism had no consumer: `eval_aggregator → passed_prefilter False`,
+`news_regional → True`, `excluded_count 1`, all six `shadow_mode: False`.
+Cycle-log confirmation still pending on the next 00:02/04:00 run.
+
+Two counts corrected along the way: **30 published rows, not 28** (my
+`source LIKE '%_eval_%'` missed `gdelt_constructive_*` entirely — key on
+`type_classification`), and the exclusion **stops new rows but does not retract
+the 30**, which remains an ovr.news task.
+
 ## Board maintenance done
 
 NM#225 → **Chain 15, re-dated 2026-05-28**: the chain is **71 days old, not 2**,
