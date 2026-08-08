@@ -75,6 +75,22 @@ only**, so a 0% can mean "stamped only on rows this file never sees"; and the
 reader count is textual, so it cannot see dynamic access and 0 readers is a
 question, not a verdict.
 
+**A THIRD limit, found 2026-08-08 — check A false-positives on rare fields.**
+`--cycles 2` reported `enriched` / `enriched_at` as "assigned in a writer, but
+present on 0 of 32,040 rows", and I read that as a dead branch. It is not: the
+branch fires and works. Post-scoring enrichment succeeds **0–3 times per filter
+per cycle**, so two cycles can legitimately contain zero. Verified by pairing
+the log line with the row — `Enrichment complete: 3 fetched, 3 replaced` at
+12:51 → `enriched=True` on exactly **3** of 1,843 investment_risk rows.
+
+**A rare-but-working field is indistinguishable from a never-written one at
+small `--cycles`.** Before calling anything from check A dead, either raise
+`--cycles` or find the writer's log line and match its count against the rows.
+Of the six fields check A flagged that day: three were real
+(`content_length`, `stage_used`, `stage1_estimate` — all NM#300's allowlists),
+one was config-off by design (`short_content_cap_applied`), and **two were false
+positives**.
+
 ## Unprompted findings from the first census run (15,118 rows)
 
 - `stage_used`, `stage1_estimate` — assigned by a writer, on **no** row. This is
