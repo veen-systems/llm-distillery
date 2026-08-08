@@ -23,10 +23,17 @@ section is kept as history.
 
 <!-- verify: tot=0; for r in veen-systems/llm-distillery ducroq/NexusMind ducroq/ovr.news ducroq/FluxusSource veen-systems/persuasion-scorer veen-systems/pipeline-atlas; do n=$(gh issue list -R $r --state open --limit 400 --json number --jq 'length'); echo "$r: $n"; tot=$((tot+n)); done; echo "TOTAL: $tot" -->
 
-**Board: 195** — LD **36** · NM **42** · ovr **89** · FS **13** · ps **12** ·
-atlas **3**. Sediment (untouched 30d+, cutoff 2026-07-09): **74** — LD 10 · NM 19
-· ovr 45 · FS 0 · ps 0 · atlas 0. *Quote the cutoff date with that number; it
-moves on its own and the 81/82 recorded on 08-07 was against a different window.*
+**Board: 196 at session close** — LD **36** · NM **43** · ovr **89** · FS **13** ·
+ps **12** · atlas **3**. Sediment (untouched 30d+, cutoff 2026-07-09): **74** —
+LD 10 · NM 19 · ovr 45 · FS 0 · ps 0 · atlas 0. *Quote the cutoff date with that
+number; it moves on its own and the 81/82 recorded on 08-07 was against a
+different window.*
+
+> It read **195** mid-session. The delta is **NM#303** and **FS#138**, filed by
+> this session, minus **FS#134**, closed by the parallel session at 07:38Z. So
+> the count moved **198 → 199 → 195 → 196** in one day and every move was ours —
+> which is the fourth consecutive pass where the total and its own narrative
+> disagreed at some point. **Re-count after filing, and re-query before quoting.**
 
 **The count went 198 → 199 → 195 inside two hours, and both moves were ours.**
 199 because the 08-07 night pass filed LD#101 after taking its own count (third

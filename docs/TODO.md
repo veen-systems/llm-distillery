@@ -1,5 +1,91 @@
 # LLM Distillery - TODO
 
+## 2026-08-08 — the checks failed, the analysis didn't
+
+Full record: `memory/project_session_2026_08_08.md`. New topic file:
+`memory/stamp-contract-integrity.md`.
+
+### ✅ LD#101 — CLOSED, confirmed by outcome
+
+- [x] **Confirmed live on the 08:49–08:55 cycle.** `eval_aggregator` rows in each
+      filter's output went **21 → 0**, all six. Control: that cycle's *input*
+      carried **22** such articles, so they were collected, scored, and stopped.
+- [x] **Committed out of drift** — it had been running as *uncommitted
+      working-tree edits on sadalsuud*, with nothing in `ducroq/NexusMind`
+      referencing `eval_aggregator` at all. Now `9fb441a`; box fast-forwarded,
+      tree clean, the six `.bak` files verified byte-identical to `e63202b`
+      before deletion.
+- [x] **The 30 published rows: 4 suppressed, 26 left to expire.** Not a cleanup
+      job — all sat inside the 10-day window and age out 08-09..08-14 on their
+      own, and most are good global-south coverage (Iringa/Njombe pine
+      smallholders, Tanzania science policy, tree-kangaroo conservation deed,
+      Els Xiquets de Tarragona). Bulk deletion would have hit exactly the
+      population Chain 14 protects. `ovr.news@75bde57`, via the
+      `manual_suppression` config kill switch — **not** a DB edit, because the
+      live site builds from the R2 copy.
+- [ ] **Re-check after the next ovr.news build**: `gdelt_constructive_madagascar_7ff89d70aaf8`
+      and `newsdata_eval_td_456de0a16300` must go **404**; control
+      `newsdata_eval_bi_1c78d8e397b7` must stay **200**. *All three were 200
+      before.* **If all three 404, the suppression list is over-matching.**
+- [ ] **Loose thread:** eval-arm articles cluster at **9.4–9.99** on uplifting and
+      solutions. Unusually good stream, or scorers over-rewarding it? Check
+      against LD#91 and NM#289 upper-tail inflation.
+
+### 🔴 The pre-registered check would have called this fix broken
+
+The check was *"`source_filter excluded N` must exceed the 121 baseline"*. It came
+in at **86** — lower. That line aggregates all excluded types and swings with
+corpus composition (**69 → 121 → 86** in one day; investment_risk 519 → 545 →
+946). It was never sensitive to the one type added. **A metric that moves for
+reasons unrelated to your change cannot confirm your change.** Two more of my
+instruments broke the same day (a `len>3` language heuristic; a watcher whose
+hour-glob matched the *date*), against zero broken conclusions.
+
+### 🟢 NM#300 — fixed, deployed, NOT yet proven
+
+- [x] **Two drops in series**, so fixing either alone changes nothing:
+      `FilterScoreResult` in `deploy/gpu-server/main.py` is a Pydantic allowlist
+      (**kills it first**), then `scripts/main.py`'s `analysis` allowlist.
+      Verified there is no third — `analysis` is attached whole and written with
+      `json.dumps(article)`.
+- [x] **Both halves deployed.** Free: the scorer was already down with ollama
+      holding the GPU, so no restart and ollama untouched. gpu-server half
+      **proven on the box** by `ast`-extracting the model classes verbatim from
+      the deployed file and executing them in the scorer venv.
+- [ ] **OUTCOME CHECK OWED** — `content_length` must be non-null on rows from the
+      12:00 cycle onward (was **0 of 50,605**). *If still 0, suspect a third drop,
+      not the two fixed.*
+- [ ] Promote `content_length` to `required` in Contract B **only after** the
+      census shows it populated. It was assigned unconditionally and reached zero
+      rows for months.
+
+### 🟢 Stamp census + contracts — new, and they found things nobody asked about
+
+- [x] `scripts/stamp_census.py` (`e64a45f`) — checks **population** and
+      **consumers**, which no schema can express. It **failed its own acceptance
+      test on first run** (missed NM#300, because absent ≠ null; missed LD#94,
+      because six filters averaged hide a single-filter constant). Both gaps are
+      why checks A and per-filter constancy exist.
+- [x] **Contract B 1.15.0** (`3030e35`) — first-ever validation against
+      production: **908 violations**. `image_analysis.image_confidence` declared
+      `0..1` is a **raw logit** (−12.330..6.365, median −2.696, 68.4% outside).
+      Producer right, contract wrong since it was written; fixtures could never
+      have caught it. **908 → 1**, that one real and left failing.
+- [x] Filed **NM#303** (contract tests validate fixtures, never production) and
+      **FS#138** (a `null` inside `tags`).
+- [ ] **LD#88 item 1 gained evidence**: the census found `stage_used` and
+      `stage1_estimate` assigned by a writer and present on **no** row.
+
+### Board
+
+**196** — LD 36 · NM 43 · ovr 89 · FS 13 · ps 12 · atlas 3. Sediment **74**
+(cutoff 2026-07-09 — quote the cutoff, it moves on its own).
+
+**Chain 8 (Google News) is CLOSED** — `ADR-007` accepted, FS#120 + FS#119 closed,
+native-first, GN proxies and all three eval arms retired. **Done by a parallel
+session 30 minutes before I commented on the issue asking for a decision already
+taken.** So the board now has **no calendar-bound item at all**.
+
 ## 2026-08-07 (night) — the dedup question answered by mechanism, and a deadline in trouble
 
 Full record: `memory/project_session_2026_08_07_night.md`.
