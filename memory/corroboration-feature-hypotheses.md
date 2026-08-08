@@ -313,6 +313,43 @@ a flat 1.3× capped at 9 (`corroboration-boost.ts:61/69`). So the live front is:
   plan itself calls it "direction-finding, valid at n=23 per §P7.1, no new
   labels" — but note the order when citing.
 
+## STEP 2 IS ANSWERED — title+body @ 0.92 beats title-only @ 0.88 (2026-08-08)
+
+**There is no n=23 problem for representation.** The labels are **SemEval-2022
+Task 8**, on b650 at `~/nm-sweep/semeval/final_eval_data.csv` — **4,902 pairs**
+(4,597 scored, **2,422 positives**, 1,355 cross-language), human-rated, with
+per-dimension GEO/ENT/TIME/NAR/STYLE/TONE columns. Already scored by
+`~/nm-sweep/semeval/score_semeval.py` → `semeval_scores.json`.
+
+| variant | AUROC | AUROC xlang | AUROC samelang | pearson r |
+|---|---|---|---|---|
+| `title_raw` | 0.7689 | 0.8622 | 0.7411 | 0.491 |
+| `title_stripped` | 0.7707 | 0.8657 | 0.7421 | 0.496 |
+| **`title_body`** | **0.7912** | **0.8874** | **0.7967** | **0.536** |
+
+**The operating point production should move to:**
+
+| representation | threshold | precision | recall | tp / fp / fn |
+|---|---|---|---|---|
+| title-only (**live today**) | 0.88 | 0.8116 | **0.4909** | 1189 / 276 / 1233 |
+| **title+body** | **0.92** | 0.8105 | **0.6552** | 1587 / 371 / 835 |
+
+**Precision is unchanged (Δ 0.001); recall goes 0.491 → 0.655, +33% relative.**
+That is ~400 more true corroborations per 2,422 at no precision cost, and it
+needs no new labels and no model — only a representation and threshold change in
+`story_dedup.py` (live at `cross_source_threshold=0.88`, title-only).
+
+Cross-language gains more than same-language (0.8657 → 0.8874 vs 0.7421 →
+0.7967), which matters for a multilingual corpus.
+
+**Caveats before shipping.** This is SemEval external gold, **not** the
+production distribution — production is pre-depleted (see below) and its pair
+mix differs, so treat the *ordering* of the two representations as the robust
+result and the exact threshold as needing a production check. Confirm also which
+variant production actually embeds (`title_raw` vs `title_stripped` differ by
+0.002 AUROC — immaterial here, but name it before quoting). #95's 0.16 noise
+floor does **not** apply: these are embedding cosines, not student scores.
+
 ## WHERE THE CORROBORATION DATA ACTUALLY LIVES (inventoried 2026-08-08)
 
 **It is on `b650-gpu:/home/jeroen/nm-sweep/out/`, NOT on sadalsuud.** I first
