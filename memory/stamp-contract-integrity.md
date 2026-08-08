@@ -106,6 +106,29 @@ positives**.
   `weighted_average` is rank-in-batch, and it being undeclared while
   `weighted_average` was declared is plausibly how the two got conflated.
 
+## VERIFIED FIXED — 17:10 cycle, 2026-08-08
+
+`content_length` **100% populated in all six filters** (2,189–2,647 rows each),
+up from 0 of 50,605. `stage_used` / `stage1_estimate` likewise 100% (LD#88).
+
+**Unprompted result from the first cycle that carried `stage_used`: no surfacing
+article is ever probe-scored.** `stage1_low` rows peak at raw **0.75–1.50**
+against op-points of 2.25 (solutions) and 4.0 (the rest), so
+`surfacing AND stage1_low` is **0** in every filter. Probe-derived scores cannot
+reach the visible band, which is the hybrid design's core safety claim and had
+never been checked on production rows. It also means any analysis of surfacing
+scores is measuring **student output only**, not a mixture.
+
+**My pass criterion was the wrong shape and I published it anyway.** I
+pre-registered "`stage1_low` should be a nonzero *minority*, the 08:00 journal
+showed 17–32%". Observed: solutions **64.6%**, cultural_discovery **51.5%** —
+both "fail" that wording. The 17–32% came from journal lines whose filter I never
+identified, so the baseline was not the same quantity; and a screening rate has
+no reason to be a minority. The right criterion is *populated, discriminating
+(≥2 values), and no `stage1_low` row above the op-point*. **A per-filter quantity
+compared against an unattributed aggregate is not a check** — third instance
+today, after `source_filter excluded N` and the GN population split.
+
 ## NM#300 is FIVE allowlists in series (2026-08-08, proven by outcome)
 
 It was diagnosed as "two drops in series", both fixed and deployed — and the
