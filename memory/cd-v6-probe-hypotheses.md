@@ -100,16 +100,32 @@ policy), not on the FN count.
 
 ## Traps
 
-- **v6 still cannot score in production, for two remaining reasons** (it *can*
-  now be constructed and run locally). `jeergrvgreg/cultural-discovery-filter-v6`
-  **does not exist** — verified with `--check-hub`, the one failing check — and
-  `normalization.json` has not been fitted. Do not read "acceptance passed" or
-  "parity reached" as "ready to cut over".
-- **`normalization.json` must NOT be copied from v5**, even though the student is
-  identical. The probe screens ~50-65% of the firehose *before* the student, so
-  the surviving population and its CDF are not v5's. Fit it from a
-  production-representative historical rescore at cutover; waiting for live
-  accumulation costs weeks of cd being under-ranked against every other lens.
+- **Both blockers CLEARED 2026-08-08; the package is ready, the cutover is not
+  done.** `jeergrvgreg/cultural-discovery-filter-v6` now exists (private, v5's
+  adapter verbatim — `adapter_model.safetensors` md5
+  `bd4e79f2716ca1a4cb47209e6d0e0199` on both repos, 364 OLD-format
+  `.lora_A/.lora_B.weight` keys, 0 `.default.`), `normalization.json` is fitted
+  (n=3,680, raw_min 4.0), `--check-hub` is **9/9**, and the package was loaded
+  END-TO-END from its own Hub repo and scored (on-lens 6.47/medium vs off-lens
+  0.59/low, `calibration loaded: True`). **v6 is still NOT deployed** — nothing
+  has been changed in production.
+- **`normalization.json` must NOT be *copied* from v5 — but fitting it from
+  v5-scoped production rows IS valid, and the "historical rescore" framing was
+  both overstated and circular.** The fitter refuses only because it scopes to
+  `filter_version=6.0` while all 222,360 production rows are `5.0`; and a v6
+  rescore needs the Hub repo first (cd loads its student from the Hub), so this
+  blocker sat *behind* the other one. The population argument is about the
+  **firehose**; the fitter uses only rows at `raw >= 4.0`, where the probe
+  removes **1 of 2,653** and **0** high-tier (#98 STATUS.md). The one thing that
+  could have invalidated reuse — `score_scale_factor` 1.2829 → 1.0 — does not:
+  `production_scorer.py` computes `raw_weighted_average` at post-processing
+  step 1, *before* the scale factor, which appears only in the fallback branch.
+  Justification is recorded in the artifact's own `provenance_note`.
+  **Refit from real 6.0 rows once ≥200 surfacing rows accumulate after cutover.**
+- **`--check-hub` returns `repo not found` for a private repo when `HF_TOKEN` is
+  unset** — Hub 404s rather than leak existence, and the script says so in a
+  comment. Its first run here was a false FAIL on a repo that existed. Export
+  `HF_TOKEN` from `config/credentials/secrets.ini` before believing that check.
 - **`_load_calibration` fails silently** when the file is missing (`self.calibration
   = None`, no warning). It is present now — but that is why its absence was
   invisible for as long as it was.

@@ -72,7 +72,7 @@ Full details in `memory/filter-status.md`. Summary:
 | **sustainability_technology** | v3 | 0.72 | **REMOVED 2026-08-03** — replaced by solutions; package deleted, recover from git history |
 | **investment-risk** | v6 | 0.47 | Deployed (HF Hub) |
 | **cultural-discovery** | v5 | 0.70 | Deployed (HF Hub, DeepSeek oracle) — **still the live version** |
-| **cultural-discovery** | v6 | (v5's) | **NOT LIVE.** Package parity 2026-08-06 (#98): v5's student + e5 probe + commerce-only prefilter, no retrain. Cutover blocked on two things — the Hub repo `cultural-discovery-filter-v6` does not exist, and `normalization.json` must be fitted from a historical rescore (v5's is invalid: the probe changes which articles survive to the student) |
+| **cultural-discovery** | v6 | (v5's) | **NOT LIVE — but no longer blocked (2026-08-08).** Package parity 2026-08-06 (#98): v5's student + e5 probe + commerce-only prefilter, no retrain. Hub repo created (private, v5 adapter verbatim, md5-identical); `normalization.json` fitted n=3,680 from `filter_version=5.0` rows — valid because the student is unchanged and the probe removes 1 of 2,653 rows above the 4.0 op-point; `--check-hub` 9/9; loaded end-to-end and scored. **Remaining: the cutover deploy itself, then refit normalization from real 6.0 rows.** |
 | **belonging** | v1 | 0.49 | Deployed (HF Hub) |
 | **nature_recovery** | v4 | recall 0.65 / prec 0.85 | Deployed (recall-first probe, v5 planned #71) |
 | **solutions** | v6 | 0.48 | **LIVE** — gate passed 2026-07-27, normalization fitted 2026-07-28 |
