@@ -40,13 +40,28 @@ oversight on the next pass.
 In `candidates/2026-08-09-reader-flags.jsonl`, with draft verdicts. **None are
 adverse rows yet.**
 
-| article | lens | raw | bar | draft |
+| article | lens | raw | bar | draft (revised after reading full text) |
 |---|---|---|---|---|
 | 'Rattled' Charleville community vows to unite after 'violent' crime | belonging | **7.04** | 1.6446 | ADVERSE — clear |
 | NEW: Five men arrested… for raping a minor | uplifting | **6.85** | 3.85 | ADVERSE — clear |
-| The silent crisis on our plates | uplifting | 6.49 | 3.85 | probable, owner call |
-| Rethink Business Centre Management | uplifting | 6.09 | 3.85 | probable, owner call |
+| Rethink Business Centre Management | uplifting | 6.09 | 3.85 | ADVERSE — clear *(upgraded)* |
+| The silent crisis on our plates | uplifting | 6.49 | 3.85 | **RECOMMEND REJECT** *(downgraded)* |
 | The anatomy of erasure: Indigenous Assyrian women… | belonging | **7.67** | 1.6446 | **needs adjudication** |
+
+**Two drafts moved once the full articles were read, in opposite directions —
+which is the argument for reading them.** The Rappler piece has a recovery arc
+("It meant learning how to simply enjoy eating again") and belongs in the lens;
+the reader's objection is to its RANK, not its membership, and that is the
+DOI-Codi situation — filing it adverse would fix the wrong layer. The Namibian
+piece turned out to be a signed consultant's opinion column about facilities
+*failing* their mandate, with nothing delivered, so it strengthened.
+
+**The test that separates them, and it is the owner's own from 2026-08-05:**
+does the article contain a process that is going well *now*? DOI-Codi did (a
+living university doing forensic work). The Rappler piece does (a recovery). The
+Namibian column does not (a complaint plus a proposal). The Assyrian essay does
+not either — it closes on "justice that remains unresolved" — which is why the
+DOI-Codi precedent does **not** shield it and why it needs a real decision.
 
 Every one is **above its lens's p99**, so these are not marginal admits — they
 are confident, top-of-feed placements. The Charleville row scores 7.04 on
