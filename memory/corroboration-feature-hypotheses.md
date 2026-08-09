@@ -443,8 +443,38 @@ corroboration rate is near zero by construction.
   body with `arXiv:NNNN.NNNNNvN Announce Type:`, which shifts `content[:500]`, so
   FluxusSource's `md5(title+content[:500])` never collides. **600 duplicate papers
   per 48 cycles** (all same paper id AND same version — checked against arXiv's
-  `replace` semantics). **Dropping the plain `arxiv` feed removes 100% of the
-  class for 77 papers/8 days**; 0 titles appear in ≥2 category feeds.
+  `replace` semantics).
+
+  **~~Dropping the plain `arxiv` feed removes 100% of the class for 77 papers/8
+  days; 0 titles appear in ≥2 category feeds.~~ BOTH HALVES REFUTED 2026-08-09**,
+  by the FluxusSource session, while executing the drop the owner had authorised.
+  The feed **was** dropped (`754a4fe`, deployed, gated by config rather than
+  deleted) and the drop **is** justified — but not for either reason stated here,
+  and this entry was the source the owner decided on. Recorded because the failure
+  is the point: *I relayed a prior session's measurement as fact without
+  re-deriving it, inside a question that drove an owner decision.*
+
+  | claim | status |
+  |---|---|
+  | "0 titles appear in ≥2 category feeds" | **FALSE.** The category feeds duplicate *each other* **738 times in 7 days** — `cs_lg`×`cs` 452, `cs`×`math` 64, `cs`×`physics` 41, `cs_ai`×`cs` 43 — by the identical mechanism (`Announce Type: new` vs `cross` shifts the same 500-char window) |
+  | "removes 100% of the class" | **FALSE.** It removed **one contributor**, not the cause. The 738 remain |
+  | "nothing survives the drop" | **FALSE.** **123 titles were unique to the dropped feed**, and non-randomly so — the archives no other feed subscribes to (`cond-mat` 34, `astro-ph` 15, `quant-ph` 8, `stat` 8, `econ` 3, `q-bio` 3, `q-fin` 1). 7 substitute archive feeds added (`50b9150`) |
+  | the drop is justified | **TRUE, on other evidence** — 592 of the plain feed's 715 distinct titles (82.8%) were already in a category feed |
+
+  **Consequence for this file, and it is not cosmetic:** if arXiv duplicate pairs
+  are being counted as corroboration noise, **738 pairs/7 days is still there and
+  is larger than what the drop removed.** Do not treat FS#143 as having closed the
+  arXiv contribution to the primary-literature merge problem — it did not.
+
+  Separate mechanism found in the same pass, worth knowing before reading any
+  arXiv volume figure: arXiv RSS is a **daily REPLACED batch**, so at
+  `update_frequency` 24h with ±25% jitter two polls can land 30h apart and skip a
+  whole batch entirely. That is why 40 of the 123 "unique" titles were `cs`, an
+  archive already subscribed. All 14 arXiv feeds moved to 12h.
+
+  *Attribution: measured by the FluxusSource session, not re-derived here. Their
+  own caveat carries: measured on the post-FS#142 hot window, which inherits the
+  dedup-store-reset contamination.*
 - **Do NOT implement the exclusion on `type_classification`** —
   ducroq/FluxusSource#144. 308 Google News feeds collide on domain `google.com`;
   86% of `academic` rows are Global South news. And the root defect needs no
@@ -456,10 +486,39 @@ corroboration rate is near zero by construction.
   title prefix, and DOI presence: **1.000 recall on arXiv/PubMed/trials, 0.000 on
   Guardian/Ars/Smithsonian/STAT/ScienceAlert.** Its apparent 1.8% FP is mostly
   CrossRef/OpenAlex/Semantic Scholar/Nature — primary literature the source list
-  missed. Gap: MDPI/Frontiers RSS at 0.241. **Contract A is
-  `additionalProperties: false` → stamping at collection REQUIRES a schema
-  change**; Contract B is permissive but the field must still be declared or the
-  census cannot see it. Never `required` initially (NM#300).
+  missed. Gap: MDPI/Frontiers RSS at 0.241. Never `required` initially (NM#300).
+
+  **~~Contract A is `additionalProperties: false` → stamping at collection
+  REQUIRES a schema change.~~ REFUTED 2026-08-09.** `metadata` is **open**
+  (`additionalProperties: true`) in *both* contracts, so the stamp needed no
+  amendment at all; #305 assumed a **top-level** field and I repeated that to the
+  owner as the reason to prefer post-enrichment. It was declared in both schemas
+  anyway so `stamp_census.py` can see it. **SHIPPED AT COLLECTION** — FluxusSource
+  `33c7f41`, `metadata.primary_literature`, stamp-only with no consumer; replayed
+  over 167,234 rows at **8.94% detected, 0 faults**. Evidence classes:
+  `arxiv_announce` 10,049 / `doi_url` 2,516 / `academic_api` 1,799 / `doi_field`
+  857 / `clinical_trial_prefix` 584 / `doi_text` 454 (weak, never decisive).
+
+  **Two of #305's own features were wrong as written**, both corrected there:
+  `metadata.source_api` is **generic provenance, not academic** (newsapi / github /
+  hackernews / owid set it on 4,906 hot-window rows, so the feature as defined
+  false-positives on all of them) — narrowed to an allowlist of our own academic
+  aggregators; and **MDPI is not undetectable** — its feed declares `prism:doi` and
+  we were discarding the field, 1,069 rows/week recovered by capturing what the
+  publisher already sends. ScienceDaily, the false-positive shape #305 worried
+  about, publishes no DOI anywhere and is a clean negative.
+
+  **Why collection beat post-enrichment, since this repo's session argued the
+  opposite:** a post-enrichment measurement on 2,178 scored rows gave 65/65 recall
+  and looked decisive — but that sample contained **zero arXiv rows**, and
+  `arxiv_announce` is the single largest evidence class by a factor of four *and*
+  reads **0.000 after enrichment*. The gap was flagged when the decision was put to
+  the owner and was still recommended past. **A named gap is not a discharged one.**
+
+  Known limitation, accepted deliberately: publishers mint DOIs for journalism too
+  (Nature News carries `prism_doi 10.1038/d41586-…`), so `doi_field` fires on it.
+  The DOI is kept in `metadata['doi']`, so that slice stays measurable by registrant
+  without a re-run.
 - **STAGE TRAP, recorded because it nearly cost a dead detector:** the arXiv
   prefix is 91.6% reliable at collection and reads **0.000** in NexusMind
   production — enrichment re-fetches the body. Measure a feature at the stage it
