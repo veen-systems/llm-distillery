@@ -2084,6 +2084,13 @@ That is a two-second check and would have saved both rejections.
 **Fix**: normalised instead of comparing absolutes — corroborated **share** 47.4% → **49.7%**, mean sources 7.2 → 7.4. Right direction, too small and too confounded to call an effect.
 **Lesson**: this repo's own rule, hit from the other side. "Prove the outcome at the end of the run" is not satisfied by *a counter*, which is still the mechanism. And a one-cycle before/after is not a control when the corpus, the window and a second repo's deploy all move together.
 
+### The nesting level, not the field, was missing — three times in one session (2026-08-09)
+
+**Problem**: three separate "the field is absent" conclusions, all wrong, all within an hour. (1) `corroborating_sources` read **0% on both sides** of a before/after — it lives at `nexus_mind_attributes.<lens>.source_quality`, not `metadata.quality`. (2) `content_length` read **absent at top level** across 10,955 rows, which would have been an NM#300 regression in a fix verified two days earlier — it is **100.0% populated** inside the lens block. (3) A peer reported `_original_content_length` at **0 of 498** files; the persisted field is un-prefixed and lens-level, and is on **6,014 of 6,014** rows where pre-enrichment ran.
+**Root cause**: a top-level `in row` test returns a clean, confident **negative** for a field that is present one level down. Nothing about the output distinguishes "not stamped" from "stamped somewhere I did not look".
+**Fix**: enumerate the container's keys before concluding absence — `for k in row`, then `for k in row["nexus_mind_attributes"][lens]` — rather than testing membership of a guessed path.
+**Lesson**: **an absence result is only as good as the level you looked at**, and this repo nests deeply enough that the wrong level is the default outcome. CLAUDE.md already warns "`metadata.quality` is not `nexus_mind_attributes.<lens>.source_quality`" — it is the same rule, and the tell is that a *zero* is exactly what a correct query on the wrong path returns. Sibling shape found the same day by the FluxusSource session: their detector **skipped** non-Latin rows where mine **over-flagged** them, and the skip is worse, because it reports as "0 flagged" and is indistinguishable from clean.
+
 ## The unreachable-mechanism catalogue
 
 Moved out of `CLAUDE.md` on 2026-08-09 (context audit): the **rule** belongs in the
