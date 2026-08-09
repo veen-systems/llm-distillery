@@ -2091,6 +2091,17 @@ That is a two-second check and would have saved both rejections.
 **Fix**: enumerate the container's keys before concluding absence — `for k in row`, then `for k in row["nexus_mind_attributes"][lens]` — rather than testing membership of a guessed path.
 **Lesson**: **an absence result is only as good as the level you looked at**, and this repo nests deeply enough that the wrong level is the default outcome. CLAUDE.md already warns "`metadata.quality` is not `nexus_mind_attributes.<lens>.source_quality`" — it is the same rule, and the tell is that a *zero* is exactly what a correct query on the wrong path returns. Sibling shape found the same day by the FluxusSource session: their detector **skipped** non-Latin rows where mine **over-flagged** them, and the skip is worse, because it reports as "0 flagged" and is indistinguishable from clean.
 
+### An instrument that has never returned a positive has not been shown to be able to (2026-08-09)
+
+**Problem**: a title/body disjointness detector was guarded with "skip rows whose title yields <3 tokens", which correctly stopped it over-flagging non-Latin scripts. The guard then made it report **0 flagged** for `israeli_israel_hayom`, `greek_protothema` and `korean_yonhap_kr` — every row skipped, none inspected. **Zero-flagged is exactly what a clean source reports.** The fix for a loud false positive created a silent false negative and removed the evidence that it had.
+**Root cause**: coverage and result are different quantities, and a detector reports only the second. Nothing in "0 flagged" says whether 0 or 200 rows were examined.
+**Fix**: report **examined / skipped / flagged**, not flagged alone; and before trusting a null, feed the instrument a case it must catch.
+**Lesson**: **an instrument that has never returned a positive has not been shown to be able to.** Phrasing owed to the FluxusSource session, generalising from both our errors the same day.
+
+**This is the third form of one idea already in the registry, which is why it belongs in the working rules rather than here.** INST-8 is a degenerate-baseline guard — is the metric beaten by all-singletons or all-in-one? INST-9 exists because the control it replaced *"drew pairs the clusterer NEVER COMPARED and therefore could not fail"*. Today's is the same shape at the row level: a guard that skips what it cannot parse. All three are **a check that cannot fail, reporting as a check that passed**, and it is the sibling of this project's defining unreachable-mechanism failure — there the code never runs, here the *test* never runs, and both look green.
+
+**A correction of my own inside the same exchange**: I told the peer a same-length body substitution was "undetectable from a stored row". Too absolute — the retained `original_content_length` carries weak signal. Measured on il Fatto rows, new/original length ratio: title-matching (enrichment OK) median **8.41**, title-disjoint (wire swapped) median **17.31**. The distributions overlap across most of their range, so a threshold catching the bulk of the swaps also flags many legitimate enrichments — **weak signal, not no signal**. "Undetectable" was the wrong word and would have closed off a usable prior.
+
 ## The unreachable-mechanism catalogue
 
 Moved out of `CLAUDE.md` on 2026-08-09 (context audit): the **rule** belongs in the
