@@ -95,15 +95,25 @@ Two of them drove owner decisions. All now corrected in
 **The shape, twice in one session:** a prior session's measurement relayed as fact
 without re-derivation, inside a question that drove an owner decision.
 
-### ⚠️ READ FIRST — the owner re-set the direction at the end of 2026-08-09
+### ⚠️ READ FIRST — direction, and a correction the agent had to make to itself
 
-Asked whether a proposed working-rule promotion would help **release ovr.news to
-the general public**. It would not, and neither does most of what this session
-produced. **Declined deliberately** — do not re-propose the "an instrument that
-has never returned a positive has not been shown to be able to" rule for
-`CLAUDE.md`; it stays in the gotcha log. The goal is a public release.
+The goal is **releasing ovr.news to the general public**. A proposed working-rule
+promotion was **declined** — do not re-propose the "an instrument that has never
+returned a positive has not been shown to be able to" rule for `CLAUDE.md`; it
+stays in the gotcha log.
 
-**Honest ranking of the corroboration track against that goal:**
+**Then the agent over-corrected and was told so.** It concluded the next session
+should be an ovr.news *issue triage* rather than pipeline work. The owner's
+answer, verbatim in substance: **"getting the pipeline right is the most
+important thing, otherwise I will not launch."** Pipeline correctness is not a
+competing priority to the launch — **it is the gate**. Do not read the ranking
+below as "stop working on the pipeline"; read it as "research on a switched-off
+feature is not pipeline correctness".
+
+**→ THE NEXT SESSION IS NexusMind#306, ON ITS OWN.** See the block after the
+table.
+
+**Ranking of the corroboration track against the goal:**
 
 | | bearing on a public launch |
 |---|---|
@@ -112,18 +122,66 @@ has never returned a positive has not been shown to be able to" rule for
 | **NM#306** | **Reader-visible.** Corrupted bodies miss the panel but reach the FILTERS, so articles get scored on text that is not theirs and the wrong things surface. ~18% for one outlet, unmeasured elsewhere |
 | **INST-10 / PROP-1** | **None.** Research on a feature that is off and stays off. It was most of the session |
 
-**So the next session probably should NOT be more corroboration research.** The
-useful one is a pass over ovr.news's ~89 open issues against *"would this
-embarrass us in front of a stranger?"*, returning a short ranked list. Noticed
-but not investigated: **ovr#304 — `displayScoreThreshold` gates publication on
-the normalized score, not raw, contradicting ADR-022.** That is a *publication
-gate*, so it decides what reaches readers at all. Also open: ovr#138 (private
-beta with university students), ovr#150 (launch newsletter). **ovr#299 —
-headline-only summaries mostly invented — is CLOSED** (2026-08-05), which was the
-one genuine blocker in that area.
+### 🔴 NEXT SESSION: ducroq/NexusMind#306, on its own — enrichment corrupts scoring input
 
-The items below remain correct and are not withdrawn; they are simply not the
-priority unless the owner says otherwise.
+**Found by the FluxusSource session, not this one.** Enrichment replaces a
+correct article body with unrelated wire/widget content. One detector applied at
+three stages: **0/725** at FluxusSource output, **0/300** at NexusMind
+pre-enrichment, **282/1550 (18.2%)** post-enrichment. Two flagged rows carry the
+*identical* wire body under different headlines — the signature of a page-level
+widget being extracted instead of per-article content.
+
+**Why it is launch-blocking and not merely a bug:**
+
+- **The filters score whatever `content` holds.** A corrupted body means the lens
+  score is computed on a different article than the title says, so the wrong
+  things surface and the right things don't. Reader-visible by definition.
+- **It is invisible to every check that exists.** Faithfulness scoring compares
+  summary-against-input and the summary *is* faithful to the wrong text. The
+  contracts check shape. `stamp_census.py` checks population. **Nothing checks
+  whether the body belongs to the title.**
+- **Nobody knows the corpus rate.** 18.2% is *one outlet*. If it is one Italian
+  paper it is a bug; if it is 5% of the corpus it stops the launch. **Measuring
+  this is the first task, not the fix.**
+
+**Session shape, in order:**
+
+1. **Build a detector that can be trusted, before believing any null.** The
+   existing one fails in two opposite directions, both proven 2026-08-09: it
+   over-flags outlets writing proper standfirsts (Repubblica reads 73–86%,
+   legitimately), and a Latin-only tokenizer flags every non-Latin title as
+   disjoint by construction (`korean_yonhap_kr` 99.0%, `israeli_israel_hayom`
+   99.7%). Guarding it with a minimum-token skip then makes it report **0 flagged
+   for sources it cannot inspect** — identical to a clean source. Report
+   **examined / skipped / flagged**, and validate against known positives (the il
+   Fatto rows) *and* known negatives before trusting it.
+2. **Measure the corpus rate** — all sources, all six filters, not one outlet.
+3. **Locate the mechanism**: `should_replace_content` / `article_fetcher`.
+   **NM#276 is the same family** (RSS summaries swapped for Google consent
+   pages), so the code path is known. #276's guard is *content-shaped* — it knows
+   what a consent page looks like. This one needs a **relationship** check:
+   refuse a replacement whose body shares no distinctive token with the title.
+4. **Acceptance test is a persisted row, not the code** — NM#300 and NM#303
+   precedent. A green predicate test proves only the predicate.
+
+**Related and already corrected: NM#307's central claim is retracted.**
+`pre_enriched` and `original_content_length` *are* persisted — 6,014 of 6,014
+rows where pre-enrichment ran, inside `nexus_mind_attributes.<lens>`, not at top
+level. What survives is narrow but real: the **length** is kept, the **text** is
+not, so a same-length substitution leaves no evidence in the row. Length is a
+weak signal — il Fatto new/original ratio median **8.41** when enrichment is
+correct vs **17.31** when a wire body was swapped in, overlapping distributions.
+
+---
+
+**After #306**, and only then: a launch-readiness pass over ovr.news's ~89 open
+issues. Noticed but not investigated: **ovr#304 — `displayScoreThreshold` gates
+publication on the normalized score, not raw, contradicting ADR-022**, which
+decides what reaches readers at all. Also open: ovr#138 (private beta with
+students), ovr#150 (launch newsletter). **ovr#299 — headline-only summaries
+mostly invented — is CLOSED** (2026-08-05).
+
+The corroboration items below are not withdrawn, just behind #306.
 
 ### Then — three owner decisions are TAKEN, these are their implementations
 
