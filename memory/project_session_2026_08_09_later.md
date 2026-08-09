@@ -342,6 +342,95 @@ expected to help most. So the only recall-certified instrument is blind to the
 strongest part of the hypothesis — a null is weaker evidence against PROP-1 than
 it looks.
 
+## NM#306 HARM — this repo's half of the launch decision, and the replication reversed the first answer
+
+NM#306 (NexusMind session) gives the **rate** at which enrichment stores a wrong
+body. It cannot give the **harm**; this repo owns the scorers, so it can.
+Rate × harm is the launch number and neither session had it alone.
+
+Scripts: `scripts/research/score_306_impact.py` (run 1),
+`scripts/research/score_306_replication.py` (run 2). Filter: `solutions v6`.
+
+**Two independent runs, ZERO id overlap** — checked and printed *before* using
+them, because the original plan was to re-slice run 1's scores under run 2's
+labels and the intersection turned out to be exactly 0. That would have produced
+a confident table over an empty join.
+
+| | run 1 | run 2 |
+|---|---|---|
+| window | 2026-07-26 → 08-08 | 2026-07-12 → 07-26 |
+| labeller | crude title/body disjointness (mine) | collapse rule, corroborated 47/47 by the Adnkronos byline |
+| broken / control | 46 / 208 | 47 / 57 |
+| median \|Δ\| broken | 0.054 | 0.070 |
+| **% above the 0.16 floor, broken** | **34.8%** | **46.8%** |
+| % above the floor, control | 1.4% | 14.0% |
+
+**The median Δ is below the #95 noise floor in both runs**, so for a *typical*
+corrupted article the harm is not distinguishable from batch composition. The
+effect is real but concentrated: broken bodies cross the floor 3–25× more often
+than correct enrichment does.
+
+### The outcome measure, and the correction that matters
+
+Tier boundary for `solutions v6` is **2.25** (`config.yaml:245`). *I first
+computed crossings at 4.0 — that is `uplifting`'s op-point, the exact mix-up
+CLAUDE.md warns about, walked into anyway.*
+
+| | wrongly suppressed | wrongly promoted |
+|---|---|---|
+| run 1, broken (46) | 1 | 0 |
+| run 2, broken (47) | 0 | **4** |
+| controls (265 total) | 0 | 1 |
+
+**Combined: 93 broken → 5 decision flips (5.4%); 265 controls → 1 (0.4%).**
+
+**Run 1's conclusion was REFUTED by run 2.** On run 1's single suppression I
+wrote *"direction is one-way — it can only ever hide things, never surface
+junk."* That was n=1. The dominant direction is the opposite, and it is worse:
+
+| headline the reader sees | scored on | score |
+|---|---|---|
+| *Cars ablaze, riots in Paris after World Cup exit* | Davines haircare sustainability release | 0.064 → **3.108** |
+| *Electoral law: Meloni's day-after bow to Vannacci* | same Davines body | 0.053 → **2.582** |
+| *US bombing in Iran: raid near Bushehr, 7 soldiers and 30 civilians* | same Davines body | 0.064 → **2.780** |
+| *Bari Sardo, young man stabbed to death* | youth self-employment initiative | 0.062 → **3.675** |
+
+Three share the **identical** body — the page-level widget signature. **A stabbing
+and an airstrike clearing the bar for a constructive-news lens** is the failure
+that lands exactly on the product's core claim, and it is the one run 1 said
+could not happen.
+
+### NOT established — do not let these be quoted as findings
+
+- **That those four reached the live site.** The rows have aged out of
+  `data/filtered`, so production's tier and junk-gate stamps for them are
+  unrecoverable. What is measured is that *scoring the stored body instead of the
+  true body flips the tier decision* — a faithful replay of the scoring step, not
+  proof of what the feed showed.
+- **That the obituary/violence gates were also defeated.** Plausible — those gates
+  inspect `content`, and `content` was a cosmetics release, so a violence gate
+  would see no violence in a stabbing story. **Untested on these rows.**
+- **Generality.** One lens, one outlet. Most of these articles score ~0.06 on
+  `solutions`, i.e. off-lens for it, so the measurement is under-powered by
+  construction and a different lens could differ either way.
+
+### Corrected figures from the NexusMind session — use these, not the earlier ones
+
+| | superseded | correct |
+|---|---|---|
+| instrument recall, il Fatto | 97.0% | **90.2%** (46/51) |
+| guard recall, replaced pairs | 19/32 = 59% | **47/47** |
+| known positives, that window | 33 | **51** |
+| non-English consent share of the #306 class | 45.3% | **25.9%** |
+
+**All three of their revisions moved against the flattering direction**, and all
+three were labelling/plumbing rather than detector logic: a `(Adnkronos)` literal
+that missed the `Salute`/`Labitalia` sub-brands, a regex conflating English and
+non-English consent vocabulary, and a spool cache truncating bodies at 2,000
+chars. That last one would have compressed exactly the difference being measured
+here — wire widgets are short, real articles long — and produced a clean-looking
+wrong answer. **Their export v1 must not be used; v2 is untruncated.**
+
 ## Next session
 
 1. **Deploy PR #299, then prove the outcome** — read `cross_outlet_title_kept` off
