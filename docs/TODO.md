@@ -1,5 +1,134 @@
 # LLM Distillery - TODO
 
+## 2026-08-09 (later) — the deletion happens three layers up, and one fix had been sitting merged-ready for six days
+
+Full record: `memory/project_session_2026_08_09_later.md`. The session was sent to
+certify one instrument; the owner's own question — *"FluxusSource is supposed to do
+dedup only, then NexusMind does corroboration — are we on the right level?"* — turned
+out to be the more valuable thread.
+
+### ✅ Done
+
+- [x] **INST-10 CERTIFIED by a non-author** (NexusMind `b90ba9e`), registered in
+      V&V registry §2 together with INST-11, closing an open BACKLOG item where
+      "nothing ships on `CERTIFIED: no`" was unenforceable for want of a row.
+      Reproduced exactly: unweighted AUC **0.798 / 0.767**, 6/6 strata monotone,
+      Kish ESS 36.1, robust to the date-only confound (0.798 → 0.794).
+- [x] **REFUSED the flip it was meant to unblock, with evidence.** Certification
+      does not authorise `temporal.enabled: true` — PROP-1's pre-registered
+      falsification is a **recall** test at fixed cluster size, and INST-10 is
+      precision-side-only by construction. That test has never been run.
+      **And `sigma_hours: 72.0` in `config/app.yaml` is the refuted value**: at
+      σ=72 the term nudges 99.1% of true pairs *and 79.4% of false merges*
+      upward — a merge-more lever on a population already 83% wrong. Two-sided
+      window is **σ ∈ [6, 36]**.
+- [x] **Two INST-10 defects fixed.** Its docstring's weighted figures never
+      reproduced (0.902/0.748 claimed vs 0.915/0.756 actual). Stratum weights
+      were computed before exclusions, flattering the `--exclude-date-only`
+      robustness check specifically (candidate 0.756 → **0.719**, ESS 83 → 31).
+- [x] **NexusMind PR #299 MERGED** (`8ed8139`, closes NM#296) — the load-time
+      `duplicate_title` drop is now source-aware. Rebased from `CONFLICTING`;
+      the conflict was **one documentation row**. Tests 1021 → **1038**, +17,
+      zero failures, CI green.
+- [x] **Three deletion points identified, in series** — the answer to the
+      owner's layering question. See below.
+
+### The finding: three source-blind deletion points, not one
+
+| # | Where | Deletes | Volume | State |
+|---|---|---|---|---|
+| 1 | FluxusSource content hash | same title+opening, **any outlet** | ~20 cross-source/run flagged (**provisional** — post-FS#142 reset) | FS#133 open; reframed as a **policy** bug, which unparks it |
+| 2 | NexusMind `_is_duplicate` title check, **at load** | same normalised title, **any outlet** | **5,405 dup-title/cycle**, ~46.7% cross-outlet when measured | **FIXED — PR #299 merged, NOT DEPLOYED** |
+| 3 | NexusMind `story_dedup` | whole clusters, keeps one | ~1,500/cycle | The counting/deleting conflation — unaddressed |
+
+**Point 2 mattered most and was invisible from here**: it runs *before a single
+embedding is computed*, so no threshold or representation change can ever reach
+it — and it has been censoring the corroboration programme's own measurement
+population. Every number in the V&V registry, the 0.173 precision included, is
+computed on a corpus whose easiest positives were deleted first.
+
+**Point 3 is the design flaw the owner's question actually names.** One clustering
+pass with one threshold does two jobs with opposite risk profiles: it deletes
+~1,500 articles/cycle *and* emits the `corroborating_sources` count that drives
+ovr.news ranking. A wrong merge silently bins a distinct article **and** inflates
+a trust signal. Nobody has measured how many of those deletions are wrong —
+INST-12's row says so explicitly.
+
+### Measurements made this session
+
+- **Cross-source drops are ~half junk.** Classified FluxusSource's logged
+      cross-source drops: **46% Google News feeds colliding with each other,
+      42% real distinct outlets, 11% mixed** (corrected by the FluxusSource
+      session from my `gn_`-prefix classification, which named only one of three
+      GN populations). So "just stop deleting cross-source copies" would preserve
+      more junk than signal — it needs a **publisher-identity** rule. PR #299's
+      full-host comparison is exactly that, and independently replicates its own
+      53.3/46.7 split on a different mechanism.
+- **Generic-headline false-corroboration risk is not in the data.** 21,570
+      titles, **282 cross-host collisions**, median title length 69 chars,
+      **1 of 282 under 30 chars**. All specific events, no boilerplate.
+- **PR #299's O(n²) safety net is fine** — 60 ms at 8,000 articles at a 40%
+      duplicate rate, vs production's 2–4k/cycle.
+
+### ⚠️ Corrections owed — three claims this repo gave the owner were false
+
+Two of them drove owner decisions. All now corrected in
+`memory/corroboration-feature-hypotheses.md` (`43815bb`).
+
+1. **FS#143** — *"removes 100% of the duplicate class; 0 titles appear in ≥2
+      category feeds"*. Both false. Category feeds duplicate **each other 738×
+      in 7 days** (`cs_lg`×`cs` 452, `cs`×`math` 64, `cs`×`physics` 41), and
+      **123 titles were unique to the dropped feed** (cond-mat 34, astro-ph 15,
+      quant-ph 8…). The drop was still right — 82.8% of its titles were already
+      carried elsewhere. **Consequence: 738 pairs/7 days remain, larger than what
+      was removed. FS#143 did not close arXiv's contribution.**
+2. **Contract A** — *"`additionalProperties: false`, so collection-stamping needs
+      a schema change"*. False. `metadata` is open in **both** contracts; #305
+      assumed a top-level field. This was the main reason post-enrichment was
+      recommended.
+3. **The post-enrichment recommendation itself** — measured 65/65 recall on 2,178
+      scored rows, but that sample held **zero arXiv rows**, and `arxiv_announce`
+      is the largest evidence class by 4× *and* reads 0.000 after enrichment. The
+      gap was named when the decision was put to the owner and recommended past
+      anyway. **A named gap is not a discharged one.**
+
+**The shape, twice in one session:** a prior session's measurement relayed as fact
+without re-derivation, inside a question that drove an owner decision.
+
+### Next session, in order
+
+1. **DEPLOY PR #299, then prove the outcome.** Merged ≠ deployed. Read
+      **`cross_outlet_title_kept`** off the first cycle's load log: expect
+      non-zero, ~46% of the `dup-title` figure (~2,000–2,500 of ~5,400).
+      **If it reads 0 while `dup-title` is unchanged, the deferral is not
+      reached** — the NM#284/NM#300 shape.
+2. **Run PROP-1's actual falsification** — INST-4 (the only recall-certified
+      instrument) with temporal off vs on at σ ∈ [6, 36], at fixed
+      largest-cluster size, on the b650 harness. Free GPU, no labels, no API
+      spend. This is what genuinely unblocks the temporal term.
+3. **Correct `CLAUDE.md` line 237** — it still carries the two refuted claims
+      ("100% of the class", "Contract A is `additionalProperties: false`").
+      Left for the owner deliberately: the correction reached this session from
+      a peer session, and CLAUDE.md is not edited on a peer's say-so.
+4. **Separate counting from deleting in `story_dedup`** (point 3 above) — the
+      design fix the owner's question names. Would let deletion stay
+      conservative while corroboration counting stays generous, and would make
+      the temporal term testable without risking the feed.
+5. **PROP-2 ratio-margin scoring** — still the top untouched per-pair lever.
+6. Deepen panel-v3's giant stratum, then revisit 0.94/0.90.
+
+### Not ours, in flight on the FluxusSource session
+
+- `metadata.primary_literature` stamped at collection (`33c7f41`, deployed):
+      replayed over 167,234 rows, **8.94% detected, 0 faults**. Verification was
+      the 12:01 CEST run. Once live this is the primary-document exclusion
+      predicate — worth **0.344 → 0.459** — with no source list.
+- FS#143 executed (`754a4fe`, config-gated) plus 7 substitute archive feeds
+      (`50b9150`); all 14 arXiv feeds moved to 12h because a daily *replaced*
+      batch at 24h ±25% jitter can skip an entire day.
+- FS#144 classifier fix, which must land before `investment_risk`/v6 moves off
+      `academic` or arXiv preprints re-enter Aegis.
+
 ## 2026-08-09 — corroboration: the shippable change was refuted, the gate is the lever
 
 Full record: `memory/project_session_2026_08_09.md`. Feature detail:
@@ -34,22 +163,27 @@ Full record: `memory/project_session_2026_08_09.md`. Feature detail:
       **Deepen the giant stratum first** — cheap re-run, not new machinery.
 - [ ] **Production untouched.** No config changed, nothing deployed, in any repo.
 
-### Next session, in order
+### ~~Next session, in order~~ — SUPERSEDED, see the 2026-08-09 (later) section above
 
-1. **Certify INST-10 and turn the temporal term on.** AUC **0.809** on 505
-      adjudicated news pairs, independently replicating INST-10's 0.798 on a
-      different panel/seed. Built, `temporal.enabled: false`, blocked *only* on
-      review by a non-author. Highest value per effort in this area.
-2. **NM#305 primary-literature stamp.** Worth precision 0.344 → 0.459, more than
-      any threshold move. Decide the stage first — **Contract A is
-      `additionalProperties: false`, so stamping at collection needs a schema
-      change**; and the arXiv prefix feature is 91.6% at collection but **0.000
-      after enrichment**.
-3. **FS#143 — drop the plain `arxiv` feed.** Removes 100% of the duplicate class
-      for 77 papers/8 days. Owner's call; measured, not assumed.
-4. **PROP-2 ratio-margin scoring** — top untouched per-pair lever (ART-11: F1
-      77.0 → 94.8 on the *same* embeddings). Needs no new labels.
-5. Deepen panel-v3's giant stratum, then revisit 0.94/0.90.
+*Items 1–3 were all resolved or refuted the same day. Kept verbatim because three
+of the five carried claims that turned out to be false, and the corrections are
+the useful part.*
+
+1. ~~**Certify INST-10 and turn the temporal term on.** Blocked *only* on review
+      by a non-author.~~ **HALF DONE, AND "ONLY" WAS WRONG.** Certified — but
+      certification cannot authorise the flip: PROP-1's falsification is a
+      **recall** test and INST-10 is precision-side-only by construction. Plus
+      the shipped `sigma_hours: 72.0` is the refuted value.
+2. ~~**NM#305** — decide the stage; **Contract A is `additionalProperties:
+      false`**~~ **SHIPPED AT COLLECTION by the FluxusSource session, and the
+      Contract A premise was FALSE** — `metadata` is open in both contracts.
+3. ~~**FS#143** — removes 100% of the duplicate class; 0 titles in ≥2 category
+      feeds.~~ **DONE, but both measurements were FALSE.** The category feeds
+      duplicate *each other* **738 times/7 days**, and 123 titles were unique to
+      the dropped feed. The drop was right on other evidence (82.8% overlap).
+4. **PROP-2 ratio-margin scoring** — still untouched, still the top per-pair
+      lever (ART-11: F1 77.0 → 94.8 on the *same* embeddings). No new labels.
+5. Deepen panel-v3's giant stratum, then revisit 0.94/0.90. Still untouched.
 
 ### Refuted this session (do not re-propose without new evidence)
 

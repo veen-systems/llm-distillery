@@ -7,6 +7,37 @@ metadata:
 
 # Cross-Repo Prioritization
 
+## Board count 2026-08-09 (later) — **195 open**
+
+| repo | open | Δ vs 08-07 |
+|---|---|---|
+| ducroq/ovr.news | 89 | — |
+| ducroq/NexusMind | 43 | +1 |
+| veen-systems/llm-distillery | 35 | −1 |
+| ducroq/FluxusSource | 13 | **−3** |
+| veen-systems/persuasion-scorer | 12 | — |
+| veen-systems/pipeline-atlas | 3 | — |
+| **TOTAL** | **195** | **−3** |
+
+FluxusSource fell because its own parallel session closed FS#143 and others the
+same day. NexusMind is net +1 despite **NM#296 closing via PR #299** — new issues
+were filed against it in the same window.
+
+**One chain item moved and it is the biggest one:** NM#296 (load-time source-blind
+title drop) is **CLOSED** — `8ed8139`. That was the largest of three source-blind
+deletion points, and it had been merge-ready and unmerged for six days past its own
+expired hold. **Merged is not deployed** — the deploy-and-verify step is the open
+half. See [[project_session_2026_08_09_later]].
+
+*Standing trap, unchanged and demonstrated again this session: the decision list
+drifts faster than the issue list. Two "measured" facts in the inherited handoff
+brief were false, and both had already driven an owner decision before anyone
+re-derived them.*
+
+<!-- verify: tot=0; for r in veen-systems/llm-distillery ducroq/NexusMind ducroq/ovr.news ducroq/FluxusSource veen-systems/persuasion-scorer veen-systems/pipeline-atlas; do n=$(gh issue list -R $r --state open --limit 400 --json number --jq 'length'); tot=$((tot+n)); done; echo "TOTAL: $tot" -->
+
+---
+
 **Last updated: 2026-08-07 (night)** — chain placements, seven stale entries corrected and the total fixed to **198**. Previously: full re-query against GitHub, then a
 **second pass that re-queried every link in every chain**. Read the
 [2026-08-07 ordering](#ordering-2026-08-07--re-queried-full-board) first, then

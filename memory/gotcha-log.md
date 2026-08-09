@@ -2042,6 +2042,34 @@ That is a two-second check and would have saved both rejections.
 **Fix**: verified with `ps -eo pid,etime,args | grep [j]udge` and printed the matching line before concluding anything — the process was there.
 **Lesson**: the existing CLAUDE.md rule ("if a process check decides whether you act, print the matching line before believing it") saved this. A missing log file is not evidence of a failed launch; it is evidence about a path.
 
+### Sized a bug by comparing two runs of the buggy code (2026-08-09)
+
+**Problem**: found that INST-10 computed stratum weights *before* row exclusions, ran it with and without `--exclude-date-only`, saw 0.7555 → 0.756, and recorded the defect as "real but immaterial" — in a registry note and a code comment.
+**Root cause**: both of those runs used the buggy weighting. Comparing them measures **how much the exclusion changes the result under the bug**, not **how much the bug changes the result**. The only comparison that sizes a bug is fixed-vs-buggy on the same input.
+**Fix**: fixed it (two-pass), re-ran. The `--exclude-date-only` path actually moves 0.756 → **0.719**, Kish ESS 83.0 → 30.8 — and it was the *robustness check* the bug flattered, i.e. the run whose only job was to test a confound. Corrected both places.
+**Lesson**: **to size a defect, vary the defect — not the input.** A before/after that holds the bug constant on both sides will report almost any bug as immaterial, and it looks like diligence.
+
+### A handoff brief's measurements are claims, not facts — and I put two into an owner decision (2026-08-09)
+
+**Problem**: the inherited brief stated FS#143 as *"measured: removes 100% of the duplicate class for 77 papers/8 days, and 0 titles appear in ≥2 category feeds."* I put both to the owner verbatim as the evidence for their decision. Both are false — the category feeds duplicate *each other* **738 times in 7 days**, and **123 titles were unique** to the dropped feed. Separately I repeated "Contract A is `additionalProperties: false`" as a blocker; `metadata` is open in both contracts.
+**Root cause**: a brief written by the previous session reads as settled context rather than as that session's claims. It carries no verify probes and no exclusion list, so nothing prompts re-derivation — and the numbers were specific enough to feel measured.
+**Fix**: corrections written into `corroboration-feature-hypotheses.md` with the refuted claims struck rather than deleted, since they will be re-cited. The FS#143 decision happened to be right on other evidence (82.8% title overlap).
+**Lesson**: **the handoff brief is a source, and "establish what a source excludes" applies to it too.** Anything from it that will drive a decision gets re-derived first, or gets quoted to the owner *as a prior session's claim* — never as a measurement. See [[feedback-claim-requires-verify]], [[feedback-enumeration-is-not-inventory]].
+
+### Re-running a research instrument silently overwrote its only artifact (2026-08-09)
+
+**Problem**: ran `temporal_discrimination.py` to reproduce INST-10 and it wrote `temporal_discrimination.json` over the 2026-08-06 original. Then found the docstring's weighted figures didn't match the new run — and had just destroyed the artifact that would have said which was there before.
+**Root cause**: `data/` is gitignored in NexusMind, so research artifacts have exactly one copy and no history. The script writes its output unconditionally on every run; a plain reproduction is indistinguishable from a fresh measurement.
+**Fix**: recoverable only because the AUC path is deterministic and the inputs predate the last code commit, so re-running reproduces what must have been there. The discrepancy was traced to the docstring instead.
+**Lesson**: **before re-running any instrument that persists an artifact, copy the artifact.** Reproduction is a write operation when the output path is fixed, and under a gitignored `data/` there is no undo.
+
+### `cd X && cmd1; cmd2` — the second command ran in the wrong repo (2026-08-09)
+
+**Problem**: `cd NexusMind && git push …; echo "=== llm-distillery ==="; git push …` — the label said llm-distillery, but both pushes ran in NexusMind. The second "rejected, fetch first" was read as llm-distillery being behind; it was never pushed at all.
+**Root cause**: `cd` persists for the whole compound command. An echoed label is a comment, not a directory change.
+**Fix**: diagnosed each repo separately with explicit `cd` per invocation, then pushed each on its own.
+**Lesson**: **one repo per shell invocation when pushing.** A label between two commands proves nothing about where the second one runs — and in a multi-repo checkout the failure mode is pushing to, or misreading, the wrong project.
+
 ## The unreachable-mechanism catalogue
 
 Moved out of `CLAUDE.md` on 2026-08-09 (context audit): the **rule** belongs in the
