@@ -41,18 +41,34 @@ The economics are not symmetric and never were:
 
 ## Rationale — why MAE is the wrong instrument here, specifically
 
-MAE is averaged over **every** article, and in needle-in-haystack filtering the
-corpus is ~97% negatives sitting near zero. Two independent problems follow:
+MAE weights **every** article equally, while the product only cares about the
+thin band around the op-point. Two independent problems follow:
 
 1. **It is dominated by the wrong population.** A filter can post an excellent
-   MAE by predicting ~0 everywhere and be useless. The decision quality lives
-   entirely in the thin band around the op-point, which MAE barely weights.
+   MAE by predicting ~0 everywhere and be useless, because most of any corpus
+   sits far from the decision boundary and is trivially easy. Decision quality
+   lives at the boundary, which MAE barely weights.
 2. **It is not comparable across filters.** Each filter's test split has its
    own positive rate — measured 2026-08-09: `uplifting v7` **32.7%**,
-   `solutions v6` **16.2%**, `nature_recovery v4` **15.3%**. Positives use more
-   of the 0–10 range, so a more enriched split carries mechanically larger
-   per-article error *for identical model quality*. Ranking filters on MAE
-   compares six populations through one number.
+   `solutions v6` **16.2%**, `nature_recovery v4` **15.3%** — and positives are
+   genuinely harder, so a more enriched split carries larger per-article error
+   *for identical model quality*. Ranking filters on MAE compares six
+   populations through one number.
+
+   **Measured, not assumed** — on `uplifting v7` only, 660 held-out rows, from
+   the cached predictions. The ratio below is this filter's, **not a constant to
+   reuse**; re-derive it per filter: per-article MAE is **1.1954 on oracle-positives vs 0.6668 on
+   negatives — 1.79×**. Holding those two error rates fixed and varying only
+   the split's positive rate: uplifting's split implies 0.8398, solutions'
+   0.7524, nature_recovery's 0.7480.
+
+   **So composition explains +0.0919 MAE of the 0.3435 gap between
+   `uplifting v7` (0.8398) and `nature_recovery v4` (0.4963) — about 27%, not
+   all of it.** Do not read this ADR as "the MAE ranking was purely an
+   artifact". The comparison was invalid *as made*, and MAE is the wrong
+   objective regardless; but roughly three quarters of that particular gap is
+   not explained by split composition and may well be real. It simply is not
+   the quantity this project optimises.
 
 The same trap one level down: **precision is base-rate dependent too.** A
 filter tested on a 33%-positive split will out-score one tested on a
