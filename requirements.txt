@@ -1,9 +1,23 @@
 # Core dependencies
 torch>=2.1.0,<3.0.0
-transformers>=4.35.0,<5.0.0
+# Upper bound was <5.0.0, which EXCLUDED what production serves: the
+# nexusmind-scorer venv on gpu-server runs transformers 5.0.0 (verified
+# 2026-08-09 off the live service's own interpreter,
+# /home/hcl/gpu-server/nexusmind-scorer/venv). A declared range that the
+# deployed environment violates cannot be used to reproduce production.
+transformers>=4.35.0,<6.0.0
 datasets>=2.14.0,<3.0.0
 anthropic>=0.8.0,<1.0.0
+# BOTH Gemini SDKs are in use and both must be declared.
+#   google-generativeai (old): filters/common/commerce_prefilter/v1/oracle.py,
+#       ground_truth/llm_evaluators.py, scripts/test_gemini_models.py
+#   google-genai (new):        ground_truth/batch_scorer.py:569,579
+#       -- `from google import genai`, the path --llm gemini-flash takes.
+# Only the old one was declared, so a clean install could not run the Gemini
+# oracle at all (found 2026-08-09 when the investment_risk oracle check failed
+# with ModuleNotFoundError: No module named 'google').
 google-generativeai>=0.3.0,<1.0.0
+google-genai>=1.0.0,<2.0.0
 openai>=1.6.0,<2.0.0
 pydantic>=2.5.0,<3.0.0
 tqdm>=4.66.0,<5.0.0
