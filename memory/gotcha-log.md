@@ -2111,6 +2111,13 @@ That is a two-second check and would have saved both rejections.
 
 **Binds this repo's own work, not just theirs.** Any single-cycle rate here inherits day-of-week composition — including the `cross_outlet_title_kept / dup-title` ratio pre-registered for #299's deploy check. That comparison happens to be safe (both cycles were the same Sunday), but **a Sunday-vs-Tuesday comparison of the same ratio is not**, and nothing in the check says so. Multi-day measurements are unaffected: the #299 replay spans 14 days and 292,007 rows, so it averages across weekdays by construction.
 
+### Wrote the lesson in the morning, made the mistake with it in the afternoon (2026-08-09)
+
+**Problem**: cleared a cross-repo ordering constraint — *"`investment_risk/v6` must move onto the `primary_literature` stamp before FS#144 deletes the `academic` label, or arXiv preprints re-enter Aegis"* — by measuring `academic AND detected 69 / academic NOT detected 386 / **detected NOT academic 0**` and concluding the stamp was strictly narrower, so the constraint dissolved. Routed that to two peer sessions and the owner. **All four `data/raw` files were from a Sunday, and arXiv does not announce at weekends: 0 arXiv rows in 6,222.** The population the exclusion protects could not appear in the sample. On a weekday arXiv is ~10.8k rows/week and **100% detected**.
+**Root cause**: not ignorance — I had committed the gotcha *"there was no 'the detection rate' — the field is bimodal and the corpus average measures the weekday"* **hours earlier the same day**, naming the identical Sunday sample. I applied it to the rate question and not to the adjacent gate question. A lesson filed against one number does not transfer itself to the next one.
+**Fix**: retracted in the TODO, on both peer sessions and to the owner. Correct order: filter moves onto `.detected` FIRST (arXiv stays excluded via the stamp), *then* the label is deleted.
+**Lesson**: **a clean "0" is the signature of a population that could not be present.** `detected NOT academic = 0` should have prompted "what is missing from this corpus?" rather than "the stamp is narrower". Sibling of the same day's `pgrep` repeat and the Latin-only detector: *the sample was clean because it could not contain the thing being looked for.* **Knowing a failure mode does not prevent it; the check has to be run against the specific number.**
+
 ## The unreachable-mechanism catalogue
 
 Moved out of `CLAUDE.md` on 2026-08-09 (context audit): the **rule** belongs in the

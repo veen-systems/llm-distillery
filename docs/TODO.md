@@ -144,11 +144,43 @@ widget being extracted instead of per-article content.
   paper it is a bug; if it is 5% of the corpus it stops the launch. **Measuring
   this is the first task, not the fix.**
 
-**⚠️ Cross-repo dependency — MEASURED 2026-08-09, and it inverts the framing.**
-It was raised as *"`investment_risk/v6` must move onto the `primary_literature`
-stamp before FluxusSource#144 deletes the `academic` label, or arXiv preprints
-re-enter Aegis"*, and assumed to be a filter-package config change (ours).
-**Both halves are wrong.**
+**⚠️ Cross-repo dependency — THE ORDERING CONSTRAINT IS REAL. My "it dissolves"
+conclusion is RETRACTED, and it was the worst error of the session.**
+
+I measured on `data/raw` files that were **all from Sunday 2026-08-09**, and
+**arXiv does not announce at weekends** — verified after the fact: **0 arXiv rows
+in 6,222 comparable rows**, `science_arxiv_*` and `ai_arxiv_*` feeds logged
+"parsed successfully but contains no entries". *The population the exclusion
+protects was not in the sample.* On a weekday arXiv is ~10.8k rows/week and
+**100% `detected`**.
+
+**I had written this exact lesson into the gotcha log hours earlier** — "the field
+is bimodal and the corpus average measures the weekday" — and then drew an
+adjacent conclusion from the same Sunday sample. Knowing the failure mode did not
+prevent it; only applying it to *this* number would have.
+
+**THE SEQUENCE, which is the part that would have hurt:**
+
+    WRONG  delete the label first -> arxiv.org becomes `unknown`, investment_risk
+           still excludes the STRING `academic`, arXiv stops being excluded,
+           Aegis fills with preprints.
+    RIGHT  investment_risk moves onto `metadata.primary_literature.detected`
+           FIRST — arXiv stays excluded via the stamp, being 100% detected —
+           and only THEN does FS#144 delete the topic-category branch.
+
+Checked against config, not inferred: `arxiv.org` reaches
+`type_classification: academic` **only** through the topic-category branch FS#144
+deletes, across 14 feeds; same for biorxiv, mdpi, frontiersin, plos.
+
+**What survives unchanged:** the 386 "would re-enter" rows are Global South news
+mislabelled through the `google.com` collision, and releasing them is the fix —
+that remains the best evidence for doing #144 at all. And it is **still not a
+config change we can make**: `excluded_source_types` compares only against
+`metadata.quality.type_classification`, so gating on the stamp needs NexusMind
+code. Ordering is ours to schedule; implementation is theirs.
+
+*Original measurement, retained because the numbers are right for the window they
+were taken in and wrong to generalise from:*
 
 Measured on `data/raw`, restricted to the 3,026 rows that carry the new stamp:
 
