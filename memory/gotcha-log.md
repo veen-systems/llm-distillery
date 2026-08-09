@@ -2020,3 +2020,24 @@ The second attempt was blocked by the paragraph I had added to explain the first
 That is a two-second check and would have saved both rejections.
 
 **Lesson**: **when a hook rejects you, read what it actually verified before deciding it is wrong.** Here 7/8 checks passed and the failing one was environmental *and* irrelevant to the change — which is exactly the shape that tempts a `--no-verify`, and exactly the shape #44 came from. The distinction that matters is not "is the hook wrong" but "did I do the thing it is checking for": I had not uploaded anything, so softening the message was honest rather than evasive. Also: `deploy_to_nexusmind.sh` does **not** trigger it (the underscore is a word character, so there is no `\b` after `deploy`), while `deploy-class` does — a hyphen is a boundary. Pre-flight the regex rather than reasoning about it.
+
+### A feature that is 91.6% reliable at one pipeline stage and 0.000 at the next (2026-08-09)
+
+**Problem**: measured the `arXiv:… Announce Type:` body prefix on the b650 replay corpus — 91.6% of arXiv items carry it, a near-perfect detector for primary literature. It reads **0.000** on NexusMind production rows.
+**Root cause**: enrichment re-fetches the article body downstream of collection, so the prefix exists only *before* enrichment. Both corpora are "production data"; they are not the same stage.
+**Fix**: measured every candidate feature at both stages before proposing NM#305, and recorded the stage in the issue. The DOI and academic-API features survive enrichment; the prefix does not.
+**Lesson**: **measure a feature at the stage it will run.** This is the #284/#300 shape wearing new clothes — the detector would have been correct, reached, and useless. "I validated it on production data" does not answer "which production data".
+
+### Pre-registered a decision rule weaker than the project's own standard (2026-08-09)
+
+**Problem**: wrote gate D2 as "candidate's CI lower bound ≥ live's point estimate" before the run. It passed `title_body@0.94/0.90`. This project's established standard (#95) is that two estimates whose **intervals overlap** are not distinguishable — and under that, the same config *ties* live.
+**Root cause**: pre-registration protects against moving the goalposts after seeing data. It does not protect against setting them in the wrong place. I invented a comparison instead of reusing the one the repo already had.
+**Fix**: reported both, stated that the stricter test governs, and did not recommend the flip. Added the overlap test to `score_turnover_panel.py` so the next run prints both.
+**Lesson**: **when pre-registering, reuse the project's existing standard rather than authoring a new one.** A rule written by the person who wants the result is the weakest link in an otherwise sound design.
+
+### `nohup … &` over ssh hung the channel, and the status check ran in the wrong directory (2026-08-09)
+
+**Problem**: launched the judge with `ssh host 'cd ~/dir && nohup python … &  sleep 20; head log'`. The ssh call timed out at 2 minutes and `head` reported the log missing — reading as a failed launch. The job was in fact running fine and already writing verdicts.
+**Root cause**: two bugs stacked. `cd X && CMD &` backgrounds *the whole `cd && CMD` chain*, so the following `head` ran in the login directory, not `~/dir`. And the backgrounded process kept the ssh stdout/stderr channel open, so ssh waited regardless of `nohup`.
+**Fix**: verified with `ps -eo pid,etime,args | grep [j]udge` and printed the matching line before concluding anything — the process was there.
+**Lesson**: the existing CLAUDE.md rule ("if a process check decides whether you act, print the matching line before believing it") saved this. A missing log file is not evidence of a failed launch; it is evidence about a path.
