@@ -2118,6 +2118,15 @@ That is a two-second check and would have saved both rejections.
 **Fix**: retracted in the TODO, on both peer sessions and to the owner. Correct order: filter moves onto `.detected` FIRST (arXiv stays excluded via the stamp), *then* the label is deleted.
 **Lesson**: **a clean "0" is the signature of a population that could not be present.** `detected NOT academic = 0` should have prompted "what is missing from this corpus?" rather than "the stamp is narrower". Sibling of the same day's `pgrep` repeat and the Latin-only detector: *the sample was clean because it could not contain the thing being looked for.* **Knowing a failure mode does not prevent it; the check has to be run against the specific number.**
 
+### A measurement handed to another session carries its window and its exclusions, not just its numbers (2026-08-09)
+
+**Problem**: I sent a peer session `academic AND detected 69 / academic NOT detected 386 / detected NOT academic 0` and a conclusion that their ordering constraint had dissolved. The numbers were correct. What was missing was one clause: *four `data/raw` files, all Sunday*. The receiving session had spent that morning on arXiv's weekend announce behaviour and **would have caught it on sight** had the window been stated.
+**Root cause**: a number crossing a session boundary loses everything the sender knew about how it was drawn. The sender does not notice, because to them the window is context; to the receiver it is missing evidence they cannot know is missing.
+**Fix**: state window and exclusions with every handed-over figure. This is the same discipline as `examined / skipped / flagged` on a detector — one level up, applied to the measurement rather than the instrument.
+**Lesson**: **the fix here is not "hand over measurements, not conclusions"** — that was my first formulation and the receiving session improved on it. A conclusion with its window attached is checkable; a bare number is not, whoever draws the conclusion from it.
+
+**Recorded because the correction was symmetrical, which changes what to learn.** That session had the same ordering backwards in its own handoff *before* I measured anything — so my number did not mislead it; we reached the same wrong place independently. **Neither of us caught it by reviewing more carefully. It was caught by re-deriving from config**, i.e. by going back to the source rather than re-reading the claim. Related: [[feedback-claim-requires-verify]].
+
 ## The unreachable-mechanism catalogue
 
 Moved out of `CLAUDE.md` on 2026-08-09 (context audit): the **rule** belongs in the
