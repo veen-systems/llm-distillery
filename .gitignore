@@ -214,6 +214,12 @@ filters/common/violence_promotion/training/*.jsonl
 # Without these negations a new case is silently ignored by the datasets/ rule above.
 !datasets/adverse/
 !datasets/adverse/*.jsonl
+# Candidates are UNADJUDICATED and must stay OUT of the datasets/adverse/*.jsonl
+# glob that a future adverse-gate will read (docs/TODO.md, #91). Own subdir, own
+# negation, so a glob cannot mistake a candidate for curated evidence.
+!datasets/adverse/candidates/
+!datasets/adverse/candidates/*.jsonl
+!datasets/adverse/candidates/*.md
 
 # Claude Code user-local settings — machine-specific permission list, never shared.
 # Untracked 2026-08-06 (context audit): it had been committed and carried a
