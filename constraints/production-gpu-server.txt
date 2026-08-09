@@ -1,0 +1,129 @@
+# Production reproduction target — gpu-server nexusmind-scorer serving venv
+#
+# THIS IS AN OBSERVATION OF THE LIVE SERVING ENVIRONMENT, NOT A WISH LIST.
+# It is what `systemctl cat nexusmind-scorer` actually starts:
+#
+#   Environment="PATH=/home/hcl/gpu-server/nexusmind-scorer/venv/bin:..."
+#   ExecStart=/home/hcl/gpu-server/nexusmind-scorer/venv/bin/uvicorn main:app ...
+#
+# Why this file exists: requirements.txt declares RANGES, and on 2026-08-09 five
+# interpreters across four boxes all satisfied it with five different
+# resolutions (torch 2.5.1 / 2.11.0 / 2.12.1 / 2.13.0; transformers 4.57.6 /
+# 5.0.0 / 5.12.1 / 5.14.1). A range file cannot reproduce production. Numbers
+# were published off the wrong interpreter that day and had to be redone.
+#
+# HOW TO USE
+#   Build a box that must agree with production:
+#     pip install -r requirements.txt -c constraints/production-gpu-server.txt
+#   Diff a suspect box against production:
+#     <that box's python> -m pip freeze | sort | diff - <(grep -v '^#' this file)
+#
+# DO NOT "upgrade" production to match a dev box. Changing torch/transformers
+# under the student changes scores, and a change cannot be distinguished from
+# the #95 |0.16| batch-composition noise floor without a full ADR-021
+# ground-truth gate run per filter. Dev boxes move to production, never the
+# reverse.
+#
+# CAVEAT: pip freeze strips the CUDA local-version tag. `torch==2.11.0` below is
+# really `2.11.0+cu130`, installed from the cu130 index. Reinstalling from PyPI
+# defaults gives a different build with the same version number.
+#
+# Regenerate:
+#   ssh gpu-server '/home/hcl/gpu-server/nexusmind-scorer/venv/bin/python \
+#       -m pip freeze' | grep -v '^#' | sort
+#
+# torch full version string: 2.11.0+cu130
+# python: 3.11.2
+# captured: 2026-08-09
+#
+accelerate==1.12.0
+aiohappyeyeballs==2.6.1
+aiohttp==3.13.5
+aiosignal==1.4.0
+annotated-doc==0.0.4
+annotated-types==0.7.0
+anyio==4.12.1
+attrs==26.1.0
+certifi==2026.1.4
+charset-normalizer==3.4.7
+click==8.3.1
+cuda-bindings==13.2.0
+cuda-pathfinder==1.3.3
+cuda-toolkit==13.0.2
+fastapi==0.128.1
+filelock==3.20.3
+flatbuffers==25.12.19
+frozenlist==1.8.0
+fsspec==2026.1.0
+h11==0.16.0
+hf-xet==1.2.0
+httpcore==1.0.9
+httptools==0.7.1
+httpx==0.28.1
+huggingface_hub==1.4.0
+idna==3.11
+Jinja2==3.1.6
+joblib==1.5.3
+MarkupSafe==3.0.3
+ml_dtypes==0.5.4
+mpmath==1.3.0
+multidict==6.7.1
+networkx==3.6.1
+numpy==2.4.2
+nvidia-cublas==13.1.0.3
+nvidia-cuda-cupti==13.0.85
+nvidia-cuda-nvrtc==13.0.88
+nvidia-cuda-runtime==13.0.96
+nvidia-cudnn-cu13==9.19.0.56
+nvidia-cufft==12.0.0.61
+nvidia-cufile==1.15.1.6
+nvidia-curand==10.4.0.35
+nvidia-cusolver==12.0.4.66
+nvidia-cusparse==12.6.3.3
+nvidia-cusparselt-cu13==0.8.0
+nvidia-ml-py==13.590.48
+nvidia-nccl-cu13==2.28.9
+nvidia-nvjitlink==13.0.88
+nvidia-nvshmem-cu13==3.4.5
+nvidia-nvtx==13.0.85
+onnx==1.21.0
+onnx-ir==0.2.0
+onnxruntime-gpu==1.24.4
+onnxscript==0.6.2
+packaging==26.0
+peft==0.18.1
+pillow==12.2.0
+propcache==0.4.1
+protobuf==7.34.0
+psutil==7.2.2
+pydantic==2.12.5
+pydantic_core==2.41.5
+pynvml==13.0.1
+python-dotenv==1.2.1
+PyYAML==6.0.3
+regex==2026.1.15
+requests==2.34.2
+safetensors==0.7.0
+scikit-learn==1.8.0
+scipy==1.17.0
+sentencepiece==0.2.1
+sentence-transformers==5.2.2
+shellingham==1.5.4
+starlette==0.50.0
+sympy==1.14.0
+threadpoolctl==3.6.0
+tokenizers==0.22.2
+torch==2.11.0
+torchvision==0.26.0
+tqdm==4.67.3
+transformers==5.0.0
+triton==3.6.0
+typer-slim==0.21.1
+typing_extensions==4.15.0
+typing-inspection==0.4.2
+urllib3==2.7.0
+uvicorn==0.40.0
+uvloop==0.22.1
+watchfiles==1.1.1
+websockets==16.0
+yarl==1.23.0

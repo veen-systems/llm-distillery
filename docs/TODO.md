@@ -1,6 +1,77 @@
 # LLM Distillery - TODO
 
-## 🟢 2026-08-09 (evening) — SESSION CLOSE. Read this block first.
+## 🟢 2026-08-09 (night) — SESSION CLOSE. Read this block first.
+
+Sent to start #102. **Did not start it** — a prerequisite turned out to be
+unverified, so this session removed the confound instead. Nothing was deployed;
+nothing needs to be.
+
+### What was actually established
+
+1. **#102's premise survives.** `uplifting v7` spec **0.9189** was measured
+   yesterday on b650, not the serving box. Re-scored the same 660 rows on
+   gpu-server's own serving venv with model weights, all filter + `common/` code
+   and the split md5-identical: **0 verdict flips at the 4.0 op-point, identical
+   confusion matrix** (tp=159 fn=57 fp=36 tn=408). The number is production's.
+2. **But the student is not box-clean, and 4.5 is inside the skew.** Only
+   **2.3%** of rows are bit-identical; calibrated |Δ| max **0.2008**, *above* the
+   #95 0.16 floor; at **4.5** three rows flip and specificity splits **0.9730
+   (production) vs 0.9662 (b650)**. **A box is cleared at a threshold, never in
+   general** — the e5 probe's 4.2e-6 does not transfer to the student.
+   `docs/evidence/2026-08-09-cross-box-parity-uplifting-v7.md`.
+3. **#102's sweep, on production predictions** (on-lens fixed at oracle ≥4.0):
+   4.0 → FPR **8.11%**; 4.25 → 5.41%; **4.5 → 2.70%**; 4.75 → 1.58%; 5.0 → 1.13%.
+   4.5 lands between `solutions v6` (2.8%) and `nature_recovery v4` (2.1%),
+   trading 24 fewer FPs for 27 more FNs — right direction under ADR-023.
+   **Not a decision**: no #95 band applied, `ground_truth_gate.py` not used,
+   split is 32.7% enriched.
+
+### Two corrections to yesterday's block
+
+- **b650's GPU failure was misdiagnosed.** It is **not** a CUDA/libcuda link
+  error. Triton's helper compile dies on `Python.h: No such file or directory` —
+  **`python3.12-dev` is not installed**. `libcuda.so.1` *and* the dev symlink are
+  both present and `gcc` links them fine (exit 0). The old reading came from the
+  tail of a `CalledProcessError`, which prints the command line ending in
+  `-l:libcuda.so.1`. **Fix (untried, needs sudo): `sudo apt install
+  python3.12-dev`**, then `ssh b650-gpu '~/llm-distillery/venv/bin/python /tmp/tk.py'`.
+- **`requirements.txt` ranges are the root cause of the wrong-interpreter class
+  of error**, not any one box. Five interpreters across four machines all satisfy
+  it with five different resolutions (torch 2.5.1 / 2.11.0 / 2.12.1 / 2.13.0;
+  transformers 4.57.6 / 5.0.0 / 5.12.1 / 5.14.1). Production is now frozen in
+  **`constraints/production-gpu-server.txt`** (91 packages, diffed against a
+  fresh freeze). Note `torch==2.11.0` there is really `2.11.0+cu130` — pip freeze
+  strips the CUDA tag.
+
+### New, from two emails the owner forwarded
+
+- **DeepSeek is raising API prices** — "significant increase", no numbers, no
+  date (2026-08-06 announcement; continued use = acceptance). **The threshold
+  that decides it is +64%**: DeepSeek off-peak $0.0011/article vs Gemini Batch
+  ~$0.0018. Above that, Gemini Batch is cheapest and the cd v5
+  DeepSeek-as-default precedent is void. DeepSeek *peak* ($0.0022) is already
+  dearer than Gemini Batch today. Whole decision ≈ $5–6 per 8K-article retrain.
+  Not affected: #102 (Gemini Flash oracle). Banner on
+  `memory/oracle-pricing-scheduling.md`.
+- **Odido maintenance 11 Aug, 01:00–07:00** takes the home uplink down. situla,
+  sadalsuud and sadaltager all route via 192.168.1.1 — one uplink, all three go,
+  plus Tailscale reach to gpu-server/b650. **The 04:00 cycle will be lost**
+  (`Persistent=true` will NOT catch it: the host stays up and the timer fires, it
+  just fails). 08:00 recovers. Expect a failed cycle in Tuesday's logs; do not
+  diagnose it as a regression.
+
+### Fourth box found: `sadaltager`
+
+RTX 5060 Ti 16 GB (Blackwell sm_120), driver 610.43.02, 12 cores / 14 GB RAM,
+425 GB free, on the home LAN. Only venv is `~/torch-test`: **torch 2.11.0+cu128
+and nothing else** — no numpy/transformers/peft. Because it is empty it is the
+cheapest box to build *from the lockfile*, and its torch already matches
+production's version. **Prediction, unverified: it has no `python3-dev` either,
+so it will hit b650's exact triton failure the moment it JITs on GPU.**
+
+---
+
+## 2026-08-09 (evening) — previous session close.
 
 Sent to fix a calibration defect. **There wasn't one.** What the day actually
 produced: one irreversible risk closed, a new ADR, two of my own headline claims
@@ -53,9 +124,12 @@ framework repo** (`294d83c`) — owner's to push.
   `/home/hcl/gpu-server/nexusmind-scorer/venv` with
   `PYTHONPATH=/home/hcl/NexusMind`. Read it off `systemctl cat`. I published
   numbers from the wrong interpreter and had to redo them.
-- **b650 cannot run the Gemma student on GPU** — triton fails to compile its
-  CUDA helper (`gcc` linking `libcuda.so.1`). Use `CUDA_VISIBLE_DEVICES=""`;
-  ~7 min per 660 articles. The e5 probe path is unaffected.
+- **b650 cannot run the Gemma student on GPU** — ~~triton fails to compile its
+  CUDA helper (`gcc` linking `libcuda.so.1`)~~ **CORRECTED 2026-08-09 night: the
+  cause is a missing `python3.12-dev`, not CUDA. See the night block at the top
+  of this file.** Workaround unchanged: `CUDA_VISIBLE_DEVICES=""`. Timing
+  correction too — the 660-row split takes **~16 min** on b650 and **~30 min** on
+  gpu-server's CPU, not ~7 min. The e5 probe path is unaffected.
 - **Matching articles by source prefix silently grabs the wrong one** — there
   are two `australian_abc_au` and two `south_african_namibian` rows in play.
   Use exact ids with an assert.

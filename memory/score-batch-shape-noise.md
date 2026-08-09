@@ -127,6 +127,22 @@ not measured. The production-relevant number is therefore an estimate.
 - **Cross-box score skew** (gotcha 2026-07-30): |0.16| between gpu-server and
   b650 from a sentence-transformers version difference. Same magnitude,
   different cause — and note this one is *within* a single box.
+  **NOW MEASURED FOR THE GEMMA STUDENT TOO (2026-08-09 night)**, and it is the
+  same order as this floor rather than smaller: uplifting v7's 660 held-out rows,
+  b650 vs gpu-server's serving venv, model weights + all filter/`common/` code +
+  split md5-identical, CPU both sides — **max calibrated |Δ| 0.2008, i.e. ABOVE
+  the 0.16 floor**, p99 0.1198, p90 0.0345, p50 0.0000, only 2.3% of rows
+  bit-identical, signed mean +0.00018 (noise, not a shift). **Decision impact is
+  threshold-dependent: 0 verdict flips at the 4.0 op-point (identical confusion
+  matrix, so the gate report is production's number) and 3 flips at 4.5,
+  splitting specificity 0.9730 vs 0.9662.** So the two noise sources *stack*, and
+  **a box is cleared at a threshold, never in general**. The e5 probe's clean
+  4.2e-6 result does NOT transfer to the student. Beware the p50 of exactly
+  0.0000 — raw logits are bf16-quantised (~0.03 steps), so most disagreements are
+  hidden, not absent. Harness: `scripts/verification/box_parity.py` +
+  `diff_box_parity.py`; record:
+  `docs/evidence/2026-08-09-cross-box-parity-uplifting-v7.md`.
+  Still unmeasured for the student: **CPU vs CUDA**.
 
 ## Related
 

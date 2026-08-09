@@ -2157,6 +2157,21 @@ That is a two-second check and would have saved both rejections.
 **Root cause**: the excerpt is the opening, and the opening is where a harm-framed lede sits; the disposition is often in the last paragraph.
 **Fix**: read the article before proposing a label. Recorded with the data in `datasets/adverse/2026-08-09-reader-flags.md`, not only here.
 
+### A subprocess exception's command line is not its error message (2026-08-09 night)
+**Problem**: recorded that b650 can't run the Gemma student on GPU because "`gcc` cannot link `libcuda.so.1`". False. The real error is `Python.h: No such file or directory` — **`python3.12-dev` is not installed**; libcuda and its dev symlink are present and link fine at exit 0.
+**Root cause**: read the tail of a `CalledProcessError`, which renders the failing *command line* — ending in `-l:libcuda.so.1`. gcc's own stderr is further up the traceback.
+**Fix**: grep the subprocess output for `error|fatal|No such` before believing the exception's last line. A wrong diagnosis that names a plausible component survives, because the workaround works either way.
+
+### `git check-ignore -v` output looks like "ignored" when it is not (2026-08-09 night)
+**Problem**: added a `.gitignore` negation for `datasets/parity/`, ran `git check-ignore -v`, saw it print the negation line and concluded the negation had failed.
+**Root cause**: `-v` prints the **last matching pattern, including negations**; presence of output is not the answer, and my exit-code test was inverted.
+**Fix**: `git add --dry-run <path>` — it either lists the files or it doesn't. Same class as the standing rule: prove the outcome, don't read the predicate.
+
+### A stale progress line is not a stalled job (2026-08-09 night)
+**Problem**: gpu-server's parity run sat at "Inference progress: 160/660" for ~10 min while b650 went 160 → 480. Published a "~5 minutes left" ETA off that line, twice, and had to correct it.
+**Root cause**: the script's stderr block-buffers when redirected to a file, so the log's mtime freezes while work continues.
+**Fix**: read CPU time, not the log — `awk '{print $14+$15}' /proc/<pid>/stat` twice, 15 s apart (9,275 ticks/15 s ≈ 618% CPU proved it alive). Sibling of the standing `pgrep` rule: the output *looks* like an answer.
+
 ## The unreachable-mechanism catalogue
 
 Moved out of `CLAUDE.md` on 2026-08-09 (context audit): the **rule** belongs in the

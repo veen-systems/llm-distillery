@@ -98,11 +98,19 @@ none was checked before being written down.*
 ## Environment
 
 - **venv**: `~/gpu-server/nexusmind-scorer/venv/bin/python` — torch 2.10, sentence-transformers, scikit-learn
-- **System `python3` also carries the GPU stack** (confirmed 2026-07-19): torch+CUDA
-  + `sentence-transformers` 5.2.3 + numpy. Enough to run a *self-contained*
-  embedding/screening script with no venv and no PYTHONPATH. The venv above stays
-  canonical for training/scorer imports (`filters.*`, `src.*`); use system
-  `python3` only for standalone scripts.
+- ⚠️ **System `python3` is NOT production, and it is not a near-copy either.**
+  It carries *a* GPU stack (confirmed 2026-07-19, re-verified 2026-08-09):
+  torch **2.5.1+cu124**, sentence-transformers **5.2.3**, numpy, **no peft**.
+  What systemd actually starts is a different stack — read it off the unit, don't
+  guess: `systemctl cat nexusmind-scorer` → `ExecStart=` and `Environment=PATH`
+  both point at `/home/hcl/gpu-server/nexusmind-scorer/venv/bin`, which holds
+  torch **2.11.0+cu130**, ST **5.2.2**, peft **0.18.1**, sklearn **1.8.0**,
+  transformers **5.0.0**. `which python3` answers a question nobody asked.
+  Numbers were published off the system interpreter on 2026-08-09 and had to be
+  redone. Use it only for a *self-contained* embedding script whose result you
+  are not going to compare against production; anything touching `filters.*` /
+  `src.*` / PEFT adapters must use the venv above. Same shape on sadalsuud: the
+  pipeline runs `~/local_dev/NexusMind/venv`; system python has nothing installed.
 - **Working dir**: `~/llm-distillery/` — scripts, training data, embeddings (SCP'd, not git cloned)
 - **NexusMind filters**: `~/NexusMind/filters/` — deployed filter packages
 - **PYTHONPATH**: Must set `PYTHONPATH=.` or `PYTHONPATH=/home/hcl/NexusMind` for imports

@@ -221,6 +221,16 @@ filters/common/violence_promotion/training/*.jsonl
 !datasets/adverse/candidates/*.jsonl
 !datasets/adverse/candidates/*.md
 
+# Cross-box parity dumps ARE committed: they are the evidence behind a claim
+# that a given box may or may not be used to measure at a given op-point
+# (scripts/verification/box_parity.py). Small (~190 KB per 660-row split) and
+# expensive to regenerate — ~30 min of CPU on the serving box, which can only be
+# done between pipeline cycles. Without a negation the datasets/* rule above
+# silently swallows them.
+!datasets/parity/
+!datasets/parity/*.jsonl
+!datasets/parity/*.md
+
 # Claude Code user-local settings — machine-specific permission list, never shared.
 # Untracked 2026-08-06 (context audit): it had been committed and carried a
 # different machine and user (C:/local_dev/..., C:/Users/scbry/...). The tracked

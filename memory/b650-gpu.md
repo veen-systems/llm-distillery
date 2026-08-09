@@ -25,14 +25,48 @@ ssh b650-gpu        # account is `jeroen` (NOT jwasys); works from situla and sa
   b650 vs gpu-server's *serving venv* gave **max |Δ| 4.2e-6, zero screening
   flips at 0.75/1.0/1.25/1.5/2.85/3.25, bit-identical embedding checksums** —
   smaller than the serving venv's own CPU-vs-CUDA difference (5.4e-6). **b650 is
-  therefore cleared to train e5 probes for gpu-server.** Still unmeasured for
-  the Gemma-3-1B student. Re-run the parity harness before trusting any new
-  box/version pair rather than assuming either way.
-- 🚫 **b650 CANNOT run the Gemma-3-1B student on GPU** (2026-08-09). torch 2.13
-  JITs a `bmm_outer_product` triton kernel and triton fails to build its CUDA
-  helper — `gcc` cannot link `libcuda.so.1`. Workaround: `CUDA_VISIBLE_DEVICES=""`,
-  ~7 min per 660 articles at ~740% CPU. The e5 probe path never touches that
-  kernel, which is why probe work runs clean on GPU here.
+  therefore cleared to train e5 probes for gpu-server.** The harness is
+  `scripts/verification/box_parity.py` + `diff_box_parity.py` (written 2026-08-09
+  night; before that "the parity harness" was referenced here but did not exist).
+- ⚠️ **The Gemma-3-1B student is NOT probe-clean — a box is cleared AT A
+  THRESHOLD, never in general** (measured 2026-08-09 night, uplifting v7's 660
+  held-out rows, b650 vs gpu-server's serving venv, everything but the
+  interpreter md5-identical). At the **4.0** op-point the boxes agree completely:
+  **0 verdict flips**, identical confusion matrix, so
+  `filters/uplifting/v7/ground_truth_gate.json` is production's number. But only
+  **2.3% of rows are bit-identical**, calibrated weighted |Δ| runs p50 0.0000 /
+  p90 0.0345 / p99 0.1198 / **max 0.2008 — above the #95 0.16 floor**, and at
+  **4.5** three rows flip, splitting specificity 0.9730 (gpu-server) vs 0.9662
+  (b650). **Do not measure a threshold on b650 without re-running the harness at
+  that threshold.** The p50 of exactly 0.0000 is a trap: raw logits are
+  bf16-quantised (~0.03 steps), so most disagreements are hidden, not absent.
+  Still unmeasured for the student: **CPU vs CUDA** (the 5.4e-6 above is the
+  probe's). Full record: `docs/evidence/2026-08-09-cross-box-parity-uplifting-v7.md`.
+- 🚫 **b650 cannot run the Gemma-3-1B student on GPU — but the cause is NOT CUDA,
+  and it is fixable with one apt package.** *(Diagnosis corrected 2026-08-09
+  evening; the original note below was wrong.)* torch 2.13 JITs a triton kernel,
+  triton compiles its `cuda_utils` helper at first use, and that gcc call dies on:
+  `cuda_utils.c:9:10: fatal error: Python.h: No such file or directory`.
+  **`python3.12-dev` is not installed** (`/usr/include/python3.12` does not
+  exist) — same missing-dev-package family as the broken `python3 -m venv`
+  noted above. CUDA is fine: `libcuda.so.1` and the dev symlink `libcuda.so` are
+  both in `/lib/x86_64-linux-gnu` and in `ldconfig -p`, and
+  `gcc -shared -fPIC -l:libcuda.so.1 -L…/triton/backends/nvidia/lib` links a
+  trivial object with exit 0. The earlier "gcc cannot link libcuda.so.1" reading
+  came from the tail of the `CalledProcessError` (which prints the command line,
+  ending in the `-l:libcuda.so.1` flag) rather than from gcc's own stderr — the
+  fatal-error line is further up the traceback.
+  **Fix (untried, needs sudo — password in owner's Bitwarden):**
+  `sudo apt install python3.12-dev`, then re-run the repro. Repro in ~10 s:
+  ```bash
+  ssh b650-gpu '~/llm-distillery/venv/bin/python /tmp/tk.py'   # trivial triton kernel
+  ```
+  (write `/tmp/tk.py` as a *file* — a `python -c` heredoc fails differently,
+  `ValueError: @jit functions should be defined in a Python file`, which is an
+  artefact of the test and not this bug.)
+  Until then the workaround stands: `CUDA_VISIBLE_DEVICES=""`, ~7 min per 660
+  articles at ~740% CPU. The e5 probe path never JITs a triton kernel, which is
+  why probe work runs clean on GPU here regardless.
 - ⚠️ **Read the venv, not `which python3`.** gpu-server's *system* python is a
   different stack (torch 2.5.1+cu124, ST 5.2.3, **no peft**) from the one systemd
   starts (`/home/hcl/gpu-server/nexusmind-scorer/venv`: torch 2.11.0+cu130, ST

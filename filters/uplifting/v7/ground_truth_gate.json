@@ -28,11 +28,23 @@
     "spearman": "not computed in this run",
     "indeterminate_within_noise_floor": 37,
     "caveats": [
-      "RUN ON A DIFFERENT BOX FROM THE SERVING ONE. Cross-box parity was verified today for the e5 probe path (max |delta| 4.2e-6, zero screening flips) but NOT for the Gemma-3-1B student. MAE is robust to a shift of that size; the threshold metrics (recall/precision/f1) carry unquantified cross-box uncertainty on top of the noise floor below.",
+      "RUN ON A DIFFERENT BOX FROM THE SERVING ONE -- cross-box uncertainty is now QUANTIFIED (2026-08-09 night, docs/evidence/2026-08-09-cross-box-parity-uplifting-v7.md). The same 660 rows were re-scored on gpu-server's serving venv (py 3.11.2 / torch 2.11.0+cu130 / transformers 5.0.0 / peft 0.18.1) with model weights, all filter+common code and the split md5-identical to b650's. At the 4.0 op-point the two boxes agree COMPLETELY: 0 verdict flips of 660 and an identical confusion matrix (tp=159 fn=57 fp=36 tn=408), so every threshold metric in this file is production's number, not b650's. The underlying skew is nevertheless real: only 15/660 rows (2.3%) are bit-identical, calibrated weighted |delta| runs p50 0.0000 / p90 0.0345 / p99 0.1198 / max 0.2008, and one row EXCEEDS the #95 0.16 floor. Signed mean +0.00018 -- noise, not a shift. At a 4.5 op-point 3 rows flip and specificity splits 0.9730 (gpu-server) vs 0.9662 (b650), so b650 is cleared AT 4.0 and NOT at 4.5. A box is cleared at a threshold, never in general. Still unmeasured for the student: CPU vs CUDA (the 5.4e-6 figure in memory/b650-gpu.md is the e5 probe's).",
       "37 of 660 rows (5.6%) sit within +/-0.16 of the 4.0 op-point and are INDETERMINATE under #95 -- their verdict is an artifact of batch composition. Every threshold metric above carries that band. Do not compare a competing model to these numbers unless the bands are disjoint.",
       "DO NOT RANK FILTERS ON `mae`. This is needle-in-haystack filtering and MAE is averaged over every article, most of which are near-zero negatives. Each filter's test split has a DIFFERENT positive rate -- uplifting v7 32.7%, solutions v6 16.2%, nature_recovery v4 15.3% -- and a more enriched split carries mechanically larger per-article error for the same model quality, because positives use more of the 0-10 range. An earlier version of this file ranked six filters on MAE; that comparison was invalid (six populations, one number) and is retracted. But do NOT overstate the retraction: measured on these 660 rows, per-article MAE is 1.1954 on oracle-positives vs 0.6668 on negatives (1.79x), and holding those fixed, split composition explains +0.0919 of the 0.3435 MAE gap to nature_recovery v4 -- about 27%, not all of it. The residual may be real; it is simply not the objective (ADR-023). The 1.79x is uplifting v7's own ratio, not a constant to reuse. Compare on `recall` and `specificity`, which are conditional on the true class and therefore base-rate independent. `precision` is NOT base-rate independent and must not be compared across splits either.",
       "CALIBRATION IS NOT A NET NEGATIVE -- retracted. It does raise MAE (0.8110 -> 0.8398) but MAE is the wrong lens (see above). On the DECISION it is indistinguishable: uncalibrated recall 0.7593 / spec 0.9122 / f1 0.7828 / spearman 0.8299 vs calibrated 0.7361 / 0.9189 / 0.7737 / 0.8325. That is 5 articles of 660 changing side, well inside the 37-row indeterminate band. Ranking is a hair better calibrated. No action warranted; do not refit or drop it on the MAE reading.",
       "Test-set positive rate is 216/660 = 32.7%, an ENRICHED split. It is not the production base rate (uplifting surfaces ~9% of production) and these precision/recall figures do not transfer to production without reweighting."
-    ]
+    ],
+    "cross_box_parity": {
+      "measured": "2026-08-09",
+      "vs": "gpu-server nexusmind-scorer serving venv, CPU",
+      "flips_at_4.0": 0,
+      "flips_at_4.5": 3,
+      "bit_identical_rows": "15/660",
+      "calibrated_wavg_max_abs_delta": 0.2008,
+      "rows_over_noise_floor_0.16": 1,
+      "signed_mean_b650_minus_gpuserver": 0.00018,
+      "evidence": "docs/evidence/2026-08-09-cross-box-parity-uplifting-v7.md",
+      "dumps": "datasets/parity/uplifting_v7_test660_*_2026-08-09.jsonl"
+    }
   }
 }
