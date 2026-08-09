@@ -95,7 +95,37 @@ Two of them drove owner decisions. All now corrected in
 **The shape, twice in one session:** a prior session's measurement relayed as fact
 without re-derivation, inside a question that drove an owner decision.
 
-### Next session — three owner decisions are TAKEN, these are their implementations
+### ⚠️ READ FIRST — the owner re-set the direction at the end of 2026-08-09
+
+Asked whether a proposed working-rule promotion would help **release ovr.news to
+the general public**. It would not, and neither does most of what this session
+produced. **Declined deliberately** — do not re-propose the "an instrument that
+has never returned a positive has not been shown to be able to" rule for
+`CLAUDE.md`; it stays in the gotcha log. The goal is a public release.
+
+**Honest ranking of the corroboration track against that goal:**
+
+| | bearing on a public launch |
+|---|---|
+| **PR #299 (deployed)** | **Real.** ~392 more articles/day, and survivor selection fixed — 216 measured cases where a `news.google.com` redirect survived and the actual publisher was deleted. The publisher URL is the better one for article text *and* hero images, so this is page quality |
+| **NM#301, the "N related sources" line** | **Judgement call.** It is a truth claim on the page, and 87.7% of what it counts is one wire story republished. "Related" is defensible; it is also exactly what a reviewer pokes at |
+| **NM#306** | **Reader-visible.** Corrupted bodies miss the panel but reach the FILTERS, so articles get scored on text that is not theirs and the wrong things surface. ~18% for one outlet, unmeasured elsewhere |
+| **INST-10 / PROP-1** | **None.** Research on a feature that is off and stays off. It was most of the session |
+
+**So the next session probably should NOT be more corroboration research.** The
+useful one is a pass over ovr.news's ~89 open issues against *"would this
+embarrass us in front of a stranger?"*, returning a short ranked list. Noticed
+but not investigated: **ovr#304 — `displayScoreThreshold` gates publication on
+the normalized score, not raw, contradicting ADR-022.** That is a *publication
+gate*, so it decides what reaches readers at all. Also open: ovr#138 (private
+beta with university students), ovr#150 (launch newsletter). **ovr#299 —
+headline-only summaries mostly invented — is CLOSED** (2026-08-05), which was the
+one genuine blocker in that area.
+
+The items below remain correct and are not withdrawn; they are simply not the
+priority unless the owner says otherwise.
+
+### Then — three owner decisions are TAKEN, these are their implementations
 
 *Items 1 (deploy #299) and 3 (CLAUDE.md) from the earlier version of this list are
 DONE. Decisions recorded on ducroq/NexusMind#301 and in
