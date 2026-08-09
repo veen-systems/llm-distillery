@@ -198,14 +198,23 @@ Also flagged: `detected` fires on **2.3%** of these rows (69/3,026) against the 
 
 **Trap that nearly cost the whole thing:** `metadata.primary_literature` is a **dict** (`{"detected": false, "evidence": [], "detector_version": "v2"}`), so a truthiness test reads **8,864 of 10,955 = 81%**. Gating on truthiness would have blocked ~80% of the corpus. Read `.detected`.
 
-**Session shape, in order.** *Corrected 2026-08-09 after the FluxusSource session
-pushed back: an earlier version of this list put "corpus rate" first. That
-ordering is incoherent — the rate cannot precede the instrument — and the bias
-runs the wrong way. A guarded detector silently skips every CJK, Korean, Greek,
-Hebrew and Ukrainian source, so the rate understates **specifically on the
-non-Latin half**, which NM#292 already says is disadvantaged at four independent
-stages. The number the owner would use to decide bug-versus-launch-blocker would
-be biased toward "just a bug".*
+**✅ STEPS 1–3 ARE DONE (NexusMind session, 2026-08-09). Read this before redoing any of it.**
+
+- **Detector rebuilt and validated both ends**, with a per-source **null control** — each title also scored against a different row's body from the same source, so the threshold is read off a known-mismatched distribution. Sources that don't separate report **UNMEASURED**, not 0%. `israeli_israel_hayom` is UNMEASURED by design: its bodies are editorial standfirsts that paraphrase the headline with zero shared vocabulary.
+- **Corpus rate: ~1%.** 25,707 of 115,843 judged replacements broke the title link (22.19%), **but 95% of those are the NM#276 consent/paywall class, fixed 2026-07-26**, and that window predates the fix. The #306 residual is **1,284 rows ≈ 1.1%**, an upper bound. **510 of 660 sources at exactly 0.00%**; worst are `southeast_asian_nst` 81.9%, `german_golem` 73.0%, `french_mediapart` 58.2%, `italian_il_fatto` 25.0%.
+- **Guard shipped**: `should_replace_content` refuses a replacement whose title-affinity **collapses** (≥0.75 → ≤0.25). Beats strict-zero on **both** axes — 98.0% vs 85.0% of known-bad, firing on 0.66% vs 1.47% of the rest — so it is not a trade-off point someone picked. Recall on il Fatto **47/47**. `resolved_url` persisted, contract 1.16.0, additive, never `required`.
+- **#276 was never fixed for non-English sources.** Its keyword list is English-only: **25.9%** of the residual is foreign-language consent walls (German, French, Dutch, Swedish, Malay). That is the **NM#292 axis** and the reason a *relationship* check is right — it catches them without knowing any of those languages.
+
+**Numbers that were revised, all against the flattering direction, all labelling/plumbing rather than detector logic:** instrument recall 97.0% → **90.2%**, guard recall 59% → **47/47**, known positives 33 → **51**, non-English share 45.3% → **25.9%**. Their export v1 was truncated at 2,000 chars by a spool cache — **do not use it; v2 is clean**.
+
+**Still open on #306:** the guard is **uncommitted** in the NexusMind working tree, so it is neither merged nor deployed — the defect is live until it ships. Then verify by outcome on a cycle, not by the predicate.
+
+*Original session shape, retained. Corrected 2026-08-09 after the FluxusSource
+session pushed back: an earlier version put "corpus rate" first. That ordering is
+incoherent — the rate cannot precede the instrument — and the bias runs the wrong
+way. A guarded detector silently skips every CJK, Korean, Greek, Hebrew and
+Ukrainian source, so the rate understates **specifically on the non-Latin half**,
+which NM#292 already says is disadvantaged at four independent stages.*
 
 1. **Build a detector that can be trusted, before believing any null.** The
    existing one fails in two opposite directions, both proven 2026-08-09: it
