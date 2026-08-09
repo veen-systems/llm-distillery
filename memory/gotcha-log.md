@@ -2041,3 +2041,24 @@ That is a two-second check and would have saved both rejections.
 **Root cause**: two bugs stacked. `cd X && CMD &` backgrounds *the whole `cd && CMD` chain*, so the following `head` ran in the login directory, not `~/dir`. And the backgrounded process kept the ssh stdout/stderr channel open, so ssh waited regardless of `nohup`.
 **Fix**: verified with `ps -eo pid,etime,args | grep [j]udge` and printed the matching line before concluding anything — the process was there.
 **Lesson**: the existing CLAUDE.md rule ("if a process check decides whether you act, print the matching line before believing it") saved this. A missing log file is not evidence of a failed launch; it is evidence about a path.
+
+## The unreachable-mechanism catalogue
+
+Moved out of `CLAUDE.md` on 2026-08-09 (context audit): the **rule** belongs in the
+project file, the **evidence** belongs here. The rule is unchanged — name the caller,
+then prove the outcome changed at the end of the run.
+
+A mechanism that is present, configured and unreachable is this repo's defining failure:
+
+| occurrence | shape |
+|---|---|
+| ducroq/NexusMind#284 | per-filter prefilters never ran in production — **six months** |
+| llm-distillery#94 | a gatekeeper binding **0 times in 191,616 articles** |
+| ducroq/NexusMind#281 | a gate that could never fire |
+| ducroq/NexusMind#300 | the #93 `content_length` stamp computed then dropped — **0 of 50,605 rows**, and it was **five allowlists in series**, not the two first diagnosed |
+| `filters/cultural_discovery/v6` | a `hybrid_inference` block and probe shipped into a package with **no inference module** — written the same day the other four were documented |
+| 2026-08-07, two guards | **correct callers on the right paths**, both inert: one reverted by a later step re-sending the old value through a `COALESCE` merge (123 stored rows already carried the signature), one a complete no-op because a different commit point short-circuited before it — while its own comment asserted it was "the only point every source has in common" |
+| 2026-08-09, the stage trap | the arXiv `Announce Type:` prefix is a **91.6%** detector on the collection corpus and **0.000** on NexusMind rows, because enrichment re-fetches the body between the two. Both are "production data" |
+
+The cultural_discovery v6 entry is the point of the whole list: **knowing this failure
+mode does not prevent it.** Only running the check against your own work does.
