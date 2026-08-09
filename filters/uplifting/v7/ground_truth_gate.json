@@ -1,0 +1,37 @@
+{
+  "threshold": 4.0,
+  "gatekeeper_cap": 3.0,
+  "n_labeled": 660,
+  "models": {
+    "v7": {
+      "n": 660,
+      "positives": 216,
+      "recall": 0.7361111111111112,
+      "precision": 0.8153846153846154,
+      "specificity": 0.918918918918919,
+      "f1": 0.7737226277372263,
+      "mae": 0.8398377744424256,
+      "mae_uncalibrated": 0.8110307173295456,
+      "tp": 159,
+      "fn": 57,
+      "fp": 36,
+      "tn": 408
+    }
+  },
+  "provenance": {
+    "measured": "2026-08-09",
+    "why": "uplifting v7 was deployed with NO accuracy number of any kind. This is the first one. It closes the ADR-021 gap for this filter.",
+    "data": "datasets/training/uplifting_v7/test.jsonl (held-out oracle test split, never seen by training or by the calibration fit)",
+    "calibration": "the DEPLOYED filters/uplifting/v7/calibration.json (isotonic, n=659, fitted_on=val) -- NOT a fresh fit, so mae describes what production computes",
+    "inference": "the repo's own path -- scripts/calibration/fit_calibration.py load_scorer + run_inference_raw, head+tail 256+256",
+    "box": "b650 (RTX 3090 Ti), CPU-only. NOT the serving box.",
+    "spearman": "not computed in this run",
+    "indeterminate_within_noise_floor": 37,
+    "caveats": [
+      "RUN ON A DIFFERENT BOX FROM THE SERVING ONE. Cross-box parity was verified today for the e5 probe path (max |delta| 4.2e-6, zero screening flips) but NOT for the Gemma-3-1B student. MAE is robust to a shift of that size; the threshold metrics (recall/precision/f1) carry unquantified cross-box uncertainty on top of the noise floor below.",
+      "37 of 660 rows (5.6%) sit within +/-0.16 of the 4.0 op-point and are INDETERMINATE under #95 -- their verdict is an artifact of batch composition. Every threshold metric above carries that band. Do not compare a competing model to these numbers unless the bands are disjoint.",
+      "CALIBRATION IS A NET NEGATIVE HERE: calibrated MAE 0.8398 vs uncalibrated 0.8110, worse on 5 of 6 dimensions. The isotonic fit (n=659, val) does not generalise to test. Contrast nature_recovery v4, where calibration improves 0.7729 -> 0.5383. This filter's calibration.json should be refit or dropped -- see docs/TODO.md 2026-08-09.",
+      "Test-set positive rate is 216/660 = 32.7%, an ENRICHED split. It is not the production base rate (uplifting surfaces ~9% of production) and these precision/recall figures do not transfer to production without reweighting."
+    ]
+  }
+}
