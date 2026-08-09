@@ -176,6 +176,74 @@ the log emits `cross-outlet kept for dedup`, so a literal grep returned **0** �
 the exact failure signal it was written to detect; and a counter firing is the
 mechanism, not the outcome.
 
+## Phase 1 of the #299 A/B — run same day, and it qualifies the win
+
+*Owner's correction: waiting several cycles was observation; the instrument
+wanted was a same-input experiment, and 292k rows plus an idle 3090 Ti were
+already sitting there. Replay imports `_normalize_title`, `_normalize_url` and
+`_outlet_identity` from `scripts.main` rather than re-implementing them —
+a prior measurement in this programme drifted exactly that way.*
+Script: `NexusMind/scripts/research/replay_296_ab.py`; output
+`data/research/replay_296_ab/`.
+
+**Over 292,007 raw rows / 14 days (2026-07-26 → 08-09):**
+
+| | |
+|---|---|
+| dup-url skipped | 33,627 |
+| title collisions | **11,084** |
+| old rule deleted | 11,084 (all of them) |
+| new rule deletes (same outlet — correct) | 5,594 |
+| **preserved by #299** | **5,490** — ~392/day |
+
+**Calibration control PASSES.** Replay kept-share **49.5%** vs production's
+measured **47.4%** → Δ 2.1 pp. So the replay tracks production despite not
+replicating `already_processed` / commerce / obituary / dup-id.
+
+**The qualification, which nobody had flagged: 77% of what #299 preserves has a
+Google News redirect on one side.**
+
+| | pairs | share |
+|---|---|---|
+| Google News on ONE side | 4,230 | **77.0%** |
+| Google News on BOTH | 0 | 0.0% |
+| **neither side GN — unambiguous cross-outlet** | **1,260** | **23.0%** |
+
+`_outlet_identity` reads the URL host, so a GN redirect is `news.google.com`
+whatever publisher it actually resolves to. **For 77% of preserved pairs the true
+publisher of one side is unknown from the data.** They may be genuine
+corroboration or the same publisher reached twice — and under the
+counting/deleting conflation a wrong one both deletes an article *and* credits a
+source. `both = 0` is the documented known limitation showing up exactly as
+predicted: two publishers *both* via GN collapse to one outlet and are still
+dropped.
+
+**The unambiguous 23% is excellent**, and is textbook corroboration — different
+newspapers, same country, same story:
+
+| n | pair |
+|---|---|
+| 85 | `en.yna.co.kr` ↔ `koreatimes.co.kr` |
+| 78 | `en.yna.co.kr` ↔ `koreaherald.com` |
+| 62 | `aftonbladet.se` ↔ `sydsvenskan.se` |
+| 24 | `businessday.co.za` ↔ `timeslive.co.za` |
+| 23 | `gva.be` ↔ `nieuwsblad.be` |
+| 15 | `stern.de` ↔ `zeit.de` |
+| 12 | `dhnet.be` ↔ `lalibre.be` |
+| 10 | `derstandard.at` ↔ `diepresse.com` |
+
+**Do not read the 77% as junk.** Spot-checked examples are cross-outlet on their
+face — `us_news_ap_news` ↔ `science_phys_org`, `south_african_timeslive` ↔
+`us_news_ap_news` — where the GN-ness is a redirect wrapper, not the publisher.
+The point is it is **unverifiable from the URL**, not that it is wrong.
+Resolving it needs the true publisher URL, which is what enrichment already
+fetches and what FS#144 touches.
+
+**Phase 2/3 are unchanged and now better targeted**: cluster both article sets on
+b650, then adjudicate the merges that exist only because of #299 —
+**stratified on GN-on-one-side vs neither**, because those two strata have
+completely different verifiability.
+
 ## Next session
 
 1. **Deploy PR #299, then prove the outcome** — read `cross_outlet_title_kept` off
