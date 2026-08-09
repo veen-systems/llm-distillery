@@ -144,7 +144,21 @@ widget being extracted instead of per-article content.
   paper it is a bug; if it is 5% of the corpus it stops the launch. **Measuring
   this is the first task, not the fix.**
 
-**Session shape, in order:**
+**⚠️ Cross-repo dependency that is OURS, not FluxusSource's.**
+`investment_risk/v6` must move onto the `primary_literature` stamp **before**
+FluxusSource#144 deletes the `academic` source-type label — otherwise arXiv
+preprints re-enter Aegis. That is a filter-package change, so it is llm-distillery
+work and ours to schedule. Raised by the FluxusSource session 2026-08-09; it
+blocks *their* queue, so it should not be discovered as a surprise.
+
+**Session shape, in order.** *Corrected 2026-08-09 after the FluxusSource session
+pushed back: an earlier version of this list put "corpus rate" first. That
+ordering is incoherent — the rate cannot precede the instrument — and the bias
+runs the wrong way. A guarded detector silently skips every CJK, Korean, Greek,
+Hebrew and Ukrainian source, so the rate understates **specifically on the
+non-Latin half**, which NM#292 already says is disadvantaged at four independent
+stages. The number the owner would use to decide bug-versus-launch-blocker would
+be biased toward "just a bug".*
 
 1. **Build a detector that can be trusted, before believing any null.** The
    existing one fails in two opposite directions, both proven 2026-08-09: it
@@ -155,7 +169,23 @@ widget being extracted instead of per-article content.
    for sources it cannot inspect** — identical to a clean source. Report
    **examined / skipped / flagged**, and validate against known positives (the il
    Fatto rows) *and* known negatives before trusting it.
+   Requirements before any rate is quoted: report **`examined / skipped /
+   flagged` per source, never flagged alone** (200 examined / 200 skipped must
+   not appear as 0%); script-appropriate tokenization or an explicit per-script
+   strategy — **character-bigram overlap for CJK**, where whitespace tokenization
+   does not work; and validate at **both ends** — it must flag the known il Fatto
+   positives *and* stay silent on a hand-checked sample of clean rows from at
+   least one non-Latin source.
 2. **Measure the corpus rate** — all sources, all six filters, not one outlet.
+   **Per-source framing beats a corpus average**, because outlets writing proper
+   standfirsts over-flag on top of everything else.
+
+   **The repair path exists and is written down nowhere else:** the only
+   surviving copy of a displaced body is in **`FluxusSource/data/archived/`,
+   keyed by the same `id`, inside a 730-day window**. That turns #306 from
+   "detect and prevent" into "detect, prevent, **and repair what is already
+   stored**". Asked the FluxusSource session to put the exact path, file-naming
+   pattern and id field on NM#306 before they wrapped.
 3. **Locate the mechanism**: `should_replace_content` / `article_fetcher`.
    **NM#276 is the same family** (RSS summaries swapped for Google consent
    pages), so the code path is known. #276's guard is *content-shaped* — it knows
