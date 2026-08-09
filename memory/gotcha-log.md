@@ -2070,6 +2070,20 @@ That is a two-second check and would have saved both rejections.
 **Fix**: diagnosed each repo separately with explicit `cd` per invocation, then pushed each on its own.
 **Lesson**: **one repo per shell invocation when pushing.** A label between two commands proves nothing about where the second one runs — and in a multi-repo checkout the failure mode is pushing to, or misreading, the wrong project.
 
+### The pre-registered check named the code symbol; the log prints a different string (2026-08-09)
+
+**Problem**: pre-registered "read **`cross_outlet_title_kept`** off the load log — 0 while `dup-title` is unchanged means the deferral is not reached." Ran it post-deploy: `grep -c cross_outlet logs/nexusmind.log` → **0**. That is exactly the failure signal I had written down. The guard was in fact working perfectly — the log renders the counter as `[+2634 cross-outlet kept for dedup]`, hyphens, different wording.
+**Root cause**: the counter's *variable name* and its *rendered log string* are different artifacts, and I pre-registered against the one I had read in the diff rather than the one the pipeline emits.
+**Fix**: read the whole load line instead of grepping for the symbol. 2,634 kept, 47.4% of collisions, against a predicted 46.7%.
+**Lesson**: **a pre-registered check must name the string the system actually emits, not the identifier in the source.** Mine would have reported a working deploy as inert — the same false negative it was written to catch, arriving through the check itself. Verify the probe against one real line of output before committing to it as a gate.
+
+### A counter firing is the mechanism, not the outcome — and they disagreed here (2026-08-09)
+
+**Problem**: post-deploy the guard fired exactly as predicted (2,634 cross-outlet articles kept instead of deleted). Easy to stop there and call it verified. But `Loaded` **fell** 3,374 → 3,054, story-dedup clusters **fell** 2,258 → 1,944, and absolute corroborated rows **fell** 1,056 → 956.
+**Root cause**: the two cycles have different corpora — `old` alone rose by 3,851 as the 3-day window moved, and FluxusSource shipped its own changes into the same cycle. A single before/after across two corpora cannot attribute anything.
+**Fix**: normalised instead of comparing absolutes — corroborated **share** 47.4% → **49.7%**, mean sources 7.2 → 7.4. Right direction, too small and too confounded to call an effect.
+**Lesson**: this repo's own rule, hit from the other side. "Prove the outcome at the end of the run" is not satisfied by *a counter*, which is still the mechanism. And a one-cycle before/after is not a control when the corpus, the window and a second repo's deploy all move together.
+
 ## The unreachable-mechanism catalogue
 
 Moved out of `CLAUDE.md` on 2026-08-09 (context audit): the **rule** belongs in the

@@ -137,6 +137,45 @@ of three Google News populations), and corrected three of my claims. They
 authority for a live-source config change has to reach them from the owner
 directly. Lesson taken.
 
+## Deploy verification — 12:01 CEST cycle, read the same day
+
+Deployed to sadalsuud 11:12 CEST (`bb0f93b`), idle window, `git pull --ff-only`;
+no requirements or systemd change. Cycle ran 12:01:55, completed, **0 errors**.
+
+**Mechanism: CONFIRMED.**
+
+| | 08:11 (pre) | 12:11 (post) |
+|---|---|---|
+| `dup-title` | **5,543** | **2,921** `[+2,634 cross-outlet kept for dedup]` |
+| total title collisions | 5,543 | 5,555 |
+| **kept instead of deleted** | 0 | **2,634 = 47.4%** |
+
+Predicted 46.7%. The safety net fired **once** ("1 title-collisions collapsed by
+fallback") — a near-no-op on the healthy path, exactly as the PR claimed.
+
+**Outcome: NOT ESTABLISHED, and the absolutes point the wrong way.** `Loaded`
+**fell** 3,374 → 3,054, clusters **fell** 2,258 → 1,944, corroborated rows
+**fell** 1,056 → 956. All of that is corpus movement — `old` alone rose by 3,851
+as the 3-day window advanced, and FluxusSource shipped FS#143 plus 7 new archive
+feeds and a 12h cadence change into the same cycle. Normalised:
+
+| | pre | post |
+|---|---|---|
+| corroborated share | 47.4% | **49.7%** |
+| mean sources | 7.2 | **7.4** |
+
+Right direction, **too small and too confounded to call an effect** — one
+uncontrolled before/after across two different corpora, with a second repo's
+deploy inside it. Under this project's own #95 standard that is not
+distinguishable. **Next controlled read: accumulate several cycles and compare
+like-for-like.**
+
+Two gotchas came out of this verification and are in [[gotcha-log]]: the
+pre-registered probe named the *code symbol* (`cross_outlet_title_kept`) while
+the log emits `cross-outlet kept for dedup`, so a literal grep returned **0** —
+the exact failure signal it was written to detect; and a counter firing is the
+mechanism, not the outcome.
+
 ## Next session
 
 1. **Deploy PR #299, then prove the outcome** — read `cross_outlet_title_kept` off
