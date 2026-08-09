@@ -35,7 +35,7 @@ The standing hazard it names, and the reason bulk import is refused here:
 | file | n | source | status |
 |---|---|---|---|
 | `2026-08-09-uplifting-oracle-batch.jsonl` | 34 | gemini-flash oracle, sampled above the op-point (ADR-023) | none adjudicated |
-| `2026-08-09-reader-flags.jsonl` | 5 | ovr.news reader flags, free text | draft verdicts only |
+| `2026-08-09-reader-flags.jsonl` | 1 | ovr.news reader flags, free text | 3 accepted + 1 rejected 2026-08-09; **1 still open** |
 
 See [`../2026-08-09-uplifting-oracle-batch.md`](../2026-08-09-uplifting-oracle-batch.md)
 and [`../2026-08-09-reader-flags.md`](../2026-08-09-reader-flags.md).

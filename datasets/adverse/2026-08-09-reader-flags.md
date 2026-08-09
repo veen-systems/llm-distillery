@@ -1,11 +1,11 @@
-# Reader flags, 2026-08-09 — 12 pulled, 6 already filed, 5 staged, 1 must stay rejected
+# Reader flags, 2026-08-09 — 12 pulled, 6 already filed, 3 accepted, 2 rejected, 1 open
 
 Pulled all 89 ovr.news reader flags via `GET /api/flag` (read-only). 35 carry
 free-text notes; **15 are off-lens complaints** ("not constructive", "Why isnt
 this a solution?"). 12 of those matched a production row.
 
-**Only 5 are new.** Checking against the existing files first is the whole
-reason this note is short.
+**Only 5 were new** — checking the existing files first is what turned 12 rows
+into 5. Of those, 3 were accepted as adverse, 1 rejected, and 1 is still open.
 
 ## Already filed — do not restage (6 of 12)
 
@@ -35,57 +35,90 @@ again; the decision stands. Its absence from `cultural_discovery.jsonl` is
 deliberate, and it is recorded here so that absence does not read as an
 oversight on the next pass.
 
-## Staged as candidates (5 of 12)
+## ADJUDICATED 2026-08-09 (owner)
 
-In `candidates/2026-08-09-reader-flags.jsonl`, with draft verdicts. **None are
-adverse rows yet.**
+**Accepted as adverse — 3.** Promoted into the lens files with
+`label: adverse`, `labelled_by` naming the decision.
 
-| article | lens | raw | bar | draft (revised after reading full text) |
+| article | lens | raw | bar | file |
 |---|---|---|---|---|
-| 'Rattled' Charleville community vows to unite after 'violent' crime | belonging | **7.04** | 1.6446 | ADVERSE — clear |
-| NEW: Five men arrested… for raping a minor | uplifting | **6.85** | 3.85 | ADVERSE — clear |
-| Rethink Business Centre Management | uplifting | 6.09 | 3.85 | ADVERSE — clear *(upgraded)* |
-| The silent crisis on our plates | uplifting | 6.49 | 3.85 | **RECOMMEND REJECT** *(downgraded)* |
-| The anatomy of erasure: Indigenous Assyrian women… | belonging | **7.67** | 1.6446 | **needs adjudication** |
+| 'Rattled' Charleville community vows to unite after 'violent' crime | belonging | **7.04** | 1.6446 | `belonging.jsonl` |
+| NEW: Five men arrested… for raping a minor | uplifting | **6.85** | 3.85 | `uplifting.jsonl` |
+| Rethink Business Centre Management | uplifting | **6.09** | 3.85 | `uplifting.jsonl` |
 
-**Two drafts moved once the full articles were read, in opposite directions —
-which is the argument for reading them.** The Rappler piece has a recovery arc
-("It meant learning how to simply enjoy eating again") and belongs in the lens;
-the reader's objection is to its RANK, not its membership, and that is the
-DOI-Codi situation — filing it adverse would fix the wrong layer. The Namibian
-piece turned out to be a signed consultant's opinion column about facilities
-*failing* their mandate, with nothing delivered, so it strengthened.
+Counts after promotion: belonging 1 → **2**, uplifting 2 → **4**.
 
-**The test that separates them, and it is the owner's own from 2026-08-05:**
-does the article contain a process that is going well *now*? DOI-Codi did (a
-living university doing forensic work). The Rappler piece does (a recovery). The
-Namibian column does not (a complaint plus a proposal). The Assyrian essay does
-not either — it closes on "justice that remains unresolved" — which is why the
-DOI-Codi precedent does **not** shield it and why it needs a real decision.
+**Rejected — 1: "The silent crisis on our plates"** (Rappler, `uplifting` raw
+6.49, normalized 9.57). Recorded here because a row that is simply absent looks
+like an oversight.
 
-Every one is **above its lens's p99**, so these are not marginal admits — they
-are confident, top-of-feed placements. The Charleville row scores 7.04 on
-belonging because "community vows to unite" — a phrase that exists *because* two
-people were murdered. The Zimbabwe row normalizes to **9.86**, i.e. it would
-lead the feed.
+Read in full (13,107 chars) it is a **recovery**: Haley *used to* struggle with
+binge eating disorder, and it closes on "It meant learning how to simply enjoy
+eating again" plus a help-seeking note. It belongs in the lens. The reader's
+objection is to its **rank**, not its membership — a harm-heavy opening carried
+it to the top of the feed. Same disposition as DOI-Codi: when the fault is
+framing rather than lens-fit, an adverse label fixes the wrong layer and makes
+the scorer worse.
 
-The Assyrian-genocide row is deliberately **not** proposed as adverse, but note
-the reason changed once the full text was read: it is **not** shielded by the
-DOI-Codi rejection, because that turned on a process going well now and this
-essay has none. What holds it back is the consequence, not the precedent —
-accepting it risks teaching the scorer to suppress memorialisation and
-Indigenous-rights coverage as a category. It is staged so the decision is made,
-not so it is assumed.
+*This one also stands as a caution about method: it was drafted "probable
+adverse" off a 190-character excerpt and reversed on reading the article. Three
+of the five drafts moved after full-text review. Excerpts are not sufficient for
+adjudication.*
+
+**Still open — 1.** See below.
+
+## Still awaiting adjudication — 1
+
+In `candidates/2026-08-09-reader-flags.jsonl`. **Not an adverse row.**
+
+**"The anatomy of erasure: Indigenous Assyrian women and forgotten genocide"**
+(Global Voices) — `belonging` raw **7.67** against a p99 of 5.41, normalizing to
+**9.93**: the highest score in this batch and effectively top of the feed.
+
+A first-person essay on the 1933 Simele massacre and Seyfo, and on memory
+eroding as elders die. It closes on remembrance that is *"incomplete,
+constrained by the stories that were never told ... and the justice that remains
+unresolved."* So the model is asserting exemplary community thriving about an
+essay whose subject is a community's erasure.
+
+**It is not shielded by the DOI-Codi rejection**, and the reason matters: that
+one turned on the article containing a process going well *now* — a living
+university doing forensic work. This essay has none.
+
+**What holds it back is the consequence, not the precedent.** Publishing the
+essay is itself an act of community continuity; Global Voices is exactly the
+Global South source ovr.news wants to carry; and an adverse label here teaches
+the scorer to suppress memorialisation and Indigenous-rights coverage as a
+category. That is the 2026-08-05 hazard in its sharpest form, which is why it is
+staged for a decision rather than proposed.
+
+## The test that decided the rest
+
+The owner's own from 2026-08-05, and it settled four of five here — recorded so
+the next pass does not re-derive it:
+
+> **Does the article contain a process that is going well *now*?**
+
+- DOI-Codi forensics — **yes** (a living university at work) → rejected as adverse
+- Rappler eating-disorder recovery — **yes** (a recovery) → rejected as adverse
+- Namibian workspace column — **no** (a complaint plus a proposal) → adverse
+- Assyrian erasure essay — **no** ("justice that remains unresolved") → still open
+
+Charleville and the Zimbabwe arrests needed no test: both are stories *about*
+harm that merely contain a good-sounding phrase. The Charleville row scores 7.04
+on belonging because "community vows to unite" — a phrase that exists *because*
+two people were murdered. The Zimbabwe row normalizes to **9.86**.
 
 ## Why these matter more per row than the oracle batch
 
 The same day's oracle batch graded uplifting's ≥5.5 band **29/29 perfect**.
-Three of the rows above sit in that band and readers called them not
-constructive. An oracle that defines the editorial line the student was trained
+Three of the flagged rows sit in that band and readers called them not
+constructive — two are now accepted adverse rows (6.85 and 6.09), and one is the
+still-open Assyrian essay at 7.67. An oracle that defines the editorial line the student was trained
 on cannot see a blind spot it shares — **so oracle-driven active learning
 cannot surface this class at all.** Reader flags are currently the only
-independent label source, which is why 5 hand-checked rows are worth more here
-than 34 oracle-selected ones.
+independent label source, which is why 5 hand-checked rows yielded 3 accepted
+adverse examples while 34 oracle-selected candidates yielded none.
 
 ## Two limits of the source
 
