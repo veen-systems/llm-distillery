@@ -300,6 +300,48 @@ following those redirects — an outward-facing fetch against Google, so it need
 the owner's say-so rather than being run unilaterally. Enrichment already follows
 them in production, and FS#144 touches the same ground.
 
+## Three owner decisions, walked one at a time
+
+Recorded on ducroq/NexusMind#301 (1 and 2) and
+`NexusMind/docs/investigation/2026-08-09-prop1-recall-prereg.md` (3).
+
+**1 — the corroboration boost keys on DISTINCT HEADLINES, not source count.**
+The reader label is already hedged (`article.sources` = "{n} related sources"),
+so the display claim does not change and keeps counting all carriage. What
+changes is the ranking claim: the flat 1.3× on `display_rank` applies only where
+a related source carries a genuinely distinct headline. Today a wire story on 8
+outlets under one headline outranks an original report, and #299 adds ~392/day
+more of the syndicated kind. `corroboration-boost.ts:13` also calls them
+"independent sources" and is measurably wrong.
+
+**2 — persist the resolved URL at enrichment.** Not a crawl. Enrichment already
+fetches these pages and discards the final URL; storing it costs one field, adds
+no requests, and permanently fixes `_outlet_identity`, the GN question and part
+of FS#144. Sized before deciding: of 4,230 GN pairs, 1,512 (35.7%) have a slug
+that names the publisher and **33 of those — 2.2% — are one publisher credited
+twice**; the other 2,718 are opaque `gn_*` country queries. So the measurable
+false-corroboration rate is small *and* decision 1 already defuses it. Declare
+the field in the contract, **never `required` initially** (NM#300 precedent).
+*The 2.2% is a biased subsample — informative slugs are a different population
+from country queries — so it is evidence the problem is small, not proof.*
+
+**3 — PROP-1 ships only against a measured noise floor.** Baseline **3×** with
+different traversal seeds first, because INST-3's own row says *"one traversal —
+no order-noise estimate"* and nobody knows this harness's variance. Then temporal
+ON at **σ=18h** (NOT the shipped 72, which is refuted) against the same seeds.
+Ship only if recall gain **exceeds the floor**, largest cluster **does not grow**,
+and the intervals **do not overlap** — the #95 standard, reused rather than
+re-invented. **The criterion is the owner's, deliberately**: last session's
+recorded failure was an agent pre-registering its own weaker rule.
+Side benefit: the floor is reusable, and right now **no result from `~/nm-sweep/`
+has an error bar** — which is part of why INST-3 is uncertified.
+
+Stated in the pre-registration rather than discovered later: **INST-4 contains no
+non-English↔non-English pair at all**, and cross-language is where temporal was
+expected to help most. So the only recall-certified instrument is blind to the
+strongest part of the hypothesis — a null is weaker evidence against PROP-1 than
+it looks.
+
 ## Next session
 
 1. **Deploy PR #299, then prove the outcome** — read `cross_outlet_title_kept` off

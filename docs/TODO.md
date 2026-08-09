@@ -95,27 +95,35 @@ Two of them drove owner decisions. All now corrected in
 **The shape, twice in one session:** a prior session's measurement relayed as fact
 without re-derivation, inside a question that drove an owner decision.
 
-### Next session, in order
+### Next session — three owner decisions are TAKEN, these are their implementations
 
-1. **DEPLOY PR #299, then prove the outcome.** Merged ≠ deployed. Read
-      **`cross_outlet_title_kept`** off the first cycle's load log: expect
-      non-zero, ~46% of the `dup-title` figure (~2,000–2,500 of ~5,400).
-      **If it reads 0 while `dup-title` is unchanged, the deferral is not
-      reached** — the NM#284/NM#300 shape.
-2. **Run PROP-1's actual falsification** — INST-4 (the only recall-certified
-      instrument) with temporal off vs on at σ ∈ [6, 36], at fixed
-      largest-cluster size, on the b650 harness. Free GPU, no labels, no API
-      spend. This is what genuinely unblocks the temporal term.
-3. **Correct `CLAUDE.md` line 237** — it still carries the two refuted claims
-      ("100% of the class", "Contract A is `additionalProperties: false`").
-      Left for the owner deliberately: the correction reached this session from
-      a peer session, and CLAUDE.md is not edited on a peer's say-so.
-4. **Separate counting from deleting in `story_dedup`** (point 3 above) — the
-      design fix the owner's question names. Would let deletion stay
-      conservative while corroboration counting stays generous, and would make
-      the temporal term testable without risking the feed.
+*Items 1 (deploy #299) and 3 (CLAUDE.md) from the earlier version of this list are
+DONE. Decisions recorded on ducroq/NexusMind#301 and in
+`NexusMind/docs/investigation/2026-08-09-prop1-recall-prereg.md`.*
+
+1. **Boost on distinct headlines only** (owner decision 1, ovr.news).
+      `corroboration-boost.ts` — the flat 1.3× on `display_rank` applies only
+      where a related source carries a genuinely distinct headline. Display
+      keeps counting all carriage; the label is already hedged. Also fix line
+      13's "independent sources", which is measurably wrong.
+2. **Persist the resolved URL at enrichment** (owner decision 2, NexusMind).
+      Enrichment already fetches these pages and throws the final URL away. One
+      field, no extra requests. Fixes `_outlet_identity`, the Google News
+      ambiguity, and part of FS#144. Declare it in the contract so
+      `stamp_census.py` sees it; **never `required` initially** (NM#300).
+3. **PROP-1 recall test** (owner decision 3) — follow the pre-registration
+      exactly. Baseline **3×** on different traversal seeds to measure the
+      harness's noise floor FIRST, then temporal at **σ=18h** (not the shipped
+      72, which is refuted). Ship only on all three: gain > floor, largest
+      cluster does not grow, intervals do not overlap. b650 is idle and staged.
+4. **Separate counting from deleting in `story_dedup`** — the design flaw the
+      owner's layering question named. One pass, one threshold, two jobs with
+      opposite risk profiles.
 5. **PROP-2 ratio-margin scoring** — still the top untouched per-pair lever.
 6. Deepen panel-v3's giant stratum, then revisit 0.94/0.90.
+7. **~2026-08-18: re-measure on the CAPPED system.** Every precision figure in
+      this area was measured with the 25-member cap disabled; the oversized
+      clusters drain via the 14-day TTL around then.
 
 ### Not ours, in flight on the FluxusSource session
 
