@@ -244,6 +244,62 @@ b650, then adjudicate the merges that exist only because of #299 —
 **stratified on GN-on-one-side vs neither**, because those two strata have
 completely different verifiability.
 
+## Phase 2 — every preserved pair merges, and that is what makes the product question urgent
+
+`NexusMind/scripts/research/phase2_296_cosine.py`, run on b650's 3090 Ti
+(`~/llm-distillery/venv`, torch 2.13+cu130). Embedded the **raw** titles of all
+5,490 preserved pairs with `intfloat/multilingual-e5-large` under
+`query: {title}` — the deployed representation, title-only, verified against the
+running file. Pairs share a *normalized* title; the raw title is what gets
+embedded, so the gap had to be measured, not assumed.
+
+| population | n | median cos | ≥0.88 | ≥0.92 | identical |
+|---|---|---|---|---|---|
+| **ALL preserved** | 5,490 | **1.0000** | **100.0%** | **100.0%** | 87.7% |
+| GN on one side | 4,230 | 1.0000 | 100.0% | 100.0% | 90.8% |
+| neither GN | 1,260 | 1.0000 | 100.0% | 100.0% | 77.2% |
+| **random-pair control** | 2,733 | **0.7626** | **0.2%** | 0.0% | 0.0% |
+
+Separation 0.2374, so the instrument discriminates — the 100% is not an artefact
+of e5 putting all headlines close together.
+
+**Answer to the phase-2 question: YES, mechanically certain.** Every preserved
+pair clears the 0.88 cross-source bar *and* the stricter 0.92. #299 does not add
+near-duplicates to the feed; it converts ~392 deletions/day into ~392 merges,
+each emitting a corroboration credit. For a two-member merge the centroid **is**
+the survivor's embedding, so pair cosine is exactly the decision variable here —
+it stops being exact at three-plus members.
+
+**And that is precisely why NM#301 is now the binding question, not a side issue.**
+The rescued population is same-headline by construction, and 87.7% are
+byte-identical. The 676 non-identical ones are punctuation and casing variants of
+one headline, not independent write-ups:
+
+| cos | pair |
+|---|---|
+| 0.990 | `japan_times` / `japan_today` — curly vs straight apostrophe |
+| 0.997 | `bbc_news` / `myjoyonline` — quote marks |
+| 0.995 | `japan_times` / `al_monitor` — "U.S." vs "US" |
+| 0.962 | `france24` / `le_parisien` — emoji prefix |
+| 0.987 | `bioengineer` / `nature_machine_intelligence` — same paper, two feeds |
+
+**So what #299 recovers is carriage and syndication, not independent reporting.**
+That is the same signature this file already records for the academic merges —
+*"byte-identical titles… duplication, not corroboration."* Crediting BBC **and**
+MyJoyOnline as two sources when the second is republishing the first is exactly
+the attribution question NM#301 raises. **Whether that should count is a product
+decision and belongs to the owner** — "two outlets carried this" is true and
+arguably useful; "two outlets independently corroborate this" is not what the
+data supports.
+
+**Phase 3 accordingly changes shape.** Adjudicating "same story?" is pointless at
+cosine 1.0 — the answer is obviously yes. The open question is **independence**,
+and its biggest single unknown is the 77% with a Google News redirect on one
+side, where the real publisher is unknown from the URL. Resolving that means
+following those redirects — an outward-facing fetch against Google, so it needs
+the owner's say-so rather than being run unilaterally. Enrichment already follows
+them in production, and FS#144 touches the same ground.
+
 ## Next session
 
 1. **Deploy PR #299, then prove the outcome** — read `cross_outlet_title_kept` off
