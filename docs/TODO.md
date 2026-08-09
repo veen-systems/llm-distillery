@@ -1,5 +1,123 @@
 # LLM Distillery - TODO
 
+## 🔴 2026-08-09 (evening) — scorer architecture/state audit: one real risk, and the calibration lead was a dead end
+
+### The calibration thread ends here — nature_recovery is NOT miscalibrated
+
+Oracle-scored 160 production articles with DeepSeek (nature_recovery's own
+oracle, $0.21, 160/160 parsed), stratified by the student's own score over
+6 cycles / 13,142 unique articles:
+
+| band (student) | population | n | oracle ≥3.75 | implied/cycle |
+|---|---|---|---|---|
+| A ≥3.75 (surfacing) | 30 | 30 | **26/30 = 87%** | 4.3 |
+| B 2.00–3.75 | 50 | 40 | 12/40 = 30% | 2.5 |
+| C 1.00–2.00 | 353 | 40 | 1/40 = 2% | 1.5 |
+| D 0.50–1.00 | 2,300 | 25 | **0/25** | 0 |
+| E <0.50 | 10,409 | 25 | **0/25** | 0 |
+
+Bands D+E are 96.7% of the corpus and the oracle's **maximum** there is 1.05 —
+nothing is crushed down there. Precision at the gate **0.87** (recorded: 0.848);
+implied ~8 oracle-positives/cycle vs ~5 surfaced → recall **~0.6** (recorded:
+0.65). **"3 of 2,152" is not a defect — there are only about 8 of 2,190.** The
+corpus genuinely holds ~0.36% nature-recovery content.
+
+**RETRACTED, mine, same day:** I found an isotonic plateau in
+`calibration.json` (`recovery_evidence` jumps **+2.47 over a 0.06 student
+step**; >52% of the student's range maps to calibrated ≤1.33) and called it the
+cause of the 173× spread. The plateau is real and measured — its *cost* is
+about **3 articles/cycle**. Refitting it is not worth doing. **Do not re-open
+the "isotonic crushes the scale" lead without re-reading this band table.**
+
+Consequence for the 173× spread: the outlier is **investment_risk at 24.2%**,
+not nature_recovery at 0.14%. Owner has deprioritised investment_risk for now.
+Blocked anyway: `google-genai` is not installed and `requirements.txt:6` pins
+the old `google-generativeai`, while `ground_truth/batch_scorer.py:569` imports
+`from google import genai` — the declared env cannot run the Gemini oracle.
+
+Suggestive, NOT significant: among oracle-positives, English recall 11/14=0.79
+vs non-English 15/25=0.60, **Fisher exact p=0.304**. NM#292 axis; needs ~4× the
+sample. One false positive worth knowing: a Bosnian article on *prirodni
+priraštaj* (natural population **increase** = birth rates) scored 3.77 by the
+student, 0.00 by the oracle.
+
+### ✅ Done — the one real risk is closed (`b790b1b`)
+
+**All six lenses run an e5 probe in production; only three pickles were in this
+repo.** `cultural_discovery v5`, `investment_risk v6` and `uplifting v7`
+existed on gpu-server and nowhere else. `.nexusmind-owns` is empty and
+`deploy_to_nexusmind.sh` overwrites — the next sync would have deleted them.
+Recovered, md5-verified against the running copies, committed.
+
+Also pulled (gitignored by `filters/**/model/`, same as nature_recovery v4 and
+solutions v6): **`uplifting v7`'s adapter weights, which existed in ONE place.**
+NO_HUB because `training_metadata.json`/`training_history.json` were never
+produced, so git ignores it and the Hub never had it. Verified md5
+`eb0bf8416206b841`; PEFT keys OLD format (183 `.lora_A.weight`, 0 `.default.`).
+**A durable second copy still needs an owner decision** — Hub upload would need
+an honest model card that declares the metrics unknown.
+
+**Why the repo was behind, and it is not the release path.** 35 of 36 shared
+code/config files are byte-identical repo ↔ gpu-server. The gap is confined to
+binary artifacts git was told to ignore. Root `.gitignore` ignores `*.pkl`; the
+negation re-admitting probes (`!filters/*/v*/probe/*.pkl`) carried a trailing
+same-line comment, which gitignore treats as part of the pattern, so it was
+inert. Fixed 2026-07-10 (`f910032`). The split falls exactly on that date —
+everything deployed before it is missing, everything after it is present.
+
+### Two items from the audit that dissolved on measurement — do not redo them
+
+- **cd v5's deployed `prefilter.py` is 87 lines behind this repo** (the
+  2026-08-06 multilingual extension). **Deploying it changes nothing**: the
+  per-filter rule prefilter still does not run in production —
+  `scripts/main.py:1207` passes `skip_prefilter=True` and every scorer is built
+  `use_prefilter=False` (NM#284, unchanged). The repo holds the good copy.
+- **The #94 GATEKEEPER_CAP violations (cd v5 = 4.0, solutions v6 = 3.0) are
+  already known, exempted and dated** in `tests/unit/test_gatekeeper_invariant.py`,
+  with stated closure paths (cd when NexusMind moves to v6; solutions at its
+  next version bump). Measured over 13,142 articles: **0 caps applied in
+  either**; only 1 cd article with `evidence_quality<3.0` exceeds raw 3.50, and
+  0 solutions articles with `concreteness<3.0` exceed raw 2.50. **Changing
+  either cap now would fail `test_every_exemption_matches_a_real_violation`.**
+
+### 🟡 Remaining, and it is the real work: Stage 1 is uncalibrated on 5 of 6 lenses
+
+Only `solutions v6`'s runtime threshold equals its probe's own computed value.
+
+| lens | runtime `DEFAULT_THRESHOLD` | probe's `selected_threshold` | corpus decided by probe alone |
+|---|---|---|---|
+| investment_risk v6 | 1.50 | *none* | 8.8% |
+| nature_recovery v4 | 0.75 | **3.225** (ignored, documented) | 11.5% |
+| uplifting v7 | 1.00 | *none* | 12.4% |
+| belonging v1 | 1.00 | *none* | 14.9% |
+| cultural_discovery v5 | 1.25 | *none* | **53.7%** |
+| solutions v6 | **1.225** | **1.225** ✓ | **67.2%** |
+
+Two training regimes: nr + solutions carry `selected_threshold` / `target_fn
+0.02` / `val_fn_rate` / `val_recall_medium ≈0.98` (`train_probe.py --objective
+recall`). The other four carry **only `val_mae`** — no threshold, no recall
+guarantee. Probe val_mae: belonging 0.54, investment_risk 0.56,
+cultural_discovery 0.87, **uplifting 1.10**.
+
+**Unblocked** — training data for all four is on gpu-server at
+`~/llm-distillery/datasets/training/{belonging_v1,cultural-discovery_v5,investment_risk_v6,uplifting_v7}`.
+**Not started.** Changing a Stage-1 threshold changes what reaches the student,
+so it needs a measured recall check before deploy (ADR-021), and `#95`'s noise
+floor applies.
+
+Two smaller state notes: `belonging v1` and `uplifting v7` probes were pickled
+with **sklearn 1.7.1** against gpu-server's **1.8.0** and emit
+`InconsistentVersionWarning` on every load (the other four are clean).
+Fitting-set sizes vary widely — calibration val n 389 (nr) … 1,045 (ir);
+normalization 272 … 26,375 articles, a 97× spread. Only nr v4 and solutions v6
+have a `ground_truth_gate.json` at all.
+
+**Clean, verified:** all six probes load; all six normalization anchors correct
+(`x[0]` == medium threshold); all six weight sets sum to 1.0;
+`surfacing AND stage1_low` = **0 across all six lenses / 13,142 articles**, so
+the hybrid design's core safety claim still holds. `pytest tests/unit` 270
+passed, 4 skipped.
+
 ## 🔴 2026-08-09 — the lenses are not mutually calibrated, and #75/#76's closure does not hold
 
 Owner: *"the mutual calibration of the lenses seems not to work"* — articles not
