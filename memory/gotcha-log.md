@@ -2102,6 +2102,15 @@ That is a two-second check and would have saved both rejections.
 
 **A correction of my own inside the same exchange**: I told the peer a same-length body substitution was "undetectable from a stored row". Too absolute — the retained `original_content_length` carries weak signal. Measured on il Fatto rows, new/original length ratio: title-matching (enrichment OK) median **8.41**, title-disjoint (wire swapped) median **17.31**. The distributions overlap across most of their range, so a threshold catching the bulk of the swaps also flags many legitimate enrichments — **weak signal, not no signal**. "Undetectable" was the wrong word and would have closed off a usable prior.
 
+### There was no "the detection rate" — the field is bimodal and the corpus average measures the weekday (2026-08-09)
+
+**Problem**: I measured `metadata.primary_literature.detected` at **2.28%** (69/3,026); the FluxusSource session had measured **8.94%** over 167,234 rows. A 4× gap on the number a production gate would be sized from. I flagged it as a discrepancy to reconcile rather than assuming one of us was wrong.
+**Root cause**: neither was wrong. Split by source over the whole window — **arXiv 10,839/10,839 = 100.00%**, **non-arXiv 4,178/159,421 = 2.62%**, whole window 8.82%. My sample was a **Sunday** run with **zero arXiv rows**, so it sat on the non-arXiv line. The residual was other academic feeds (bioRxiv, Frontiers, MDPI) that also do not publish at weekends.
+**Fix**: quote the two modes, never the blend. Any gate sized on the average is sized on a window composition.
+**Lesson**: **a corpus rate over a heterogeneous population measures the composition, not the property** — and when the composition has a *weekly* cycle, the same query answers differently on a Sunday than on a Tuesday. This is [[feedback-rate-needs-population]] with a **time axis**: it is not enough to name the denominator, you have to name *when* it was drawn. The gap only surfaced because it was treated as a discrepancy worth reconciling instead of a small-sample shrug.
+
+**Binds this repo's own work, not just theirs.** Any single-cycle rate here inherits day-of-week composition — including the `cross_outlet_title_kept / dup-title` ratio pre-registered for #299's deploy check. That comparison happens to be safe (both cycles were the same Sunday), but **a Sunday-vs-Tuesday comparison of the same ratio is not**, and nothing in the check says so. Multi-day measurements are unaffected: the #299 replay spans 14 days and 292,007 rows, so it averages across weekdays by construction.
+
 ## The unreachable-mechanism catalogue
 
 Moved out of `CLAUDE.md` on 2026-08-09 (context audit): the **rule** belongs in the
