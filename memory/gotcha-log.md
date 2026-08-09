@@ -2127,6 +2127,36 @@ That is a two-second check and would have saved both rejections.
 
 **Recorded because the correction was symmetrical, which changes what to learn.** That session had the same ordering backwards in its own handoff *before* I measured anything — so my number did not mislead it; we reached the same wrong place independently. **Neither of us caught it by reviewing more carefully. It was caught by re-deriving from config**, i.e. by going back to the source rather than re-reading the claim. Related: [[feedback-claim-requires-verify]].
 
+### The production interpreter is the venv systemd starts, not `which python3` (2026-08-09)
+**Problem**: Reported gpu-server's stack as torch 2.5.1 / ST 5.2.3 / no peft. The scorer actually runs torch 2.11.0 / ST 5.2.2 / peft 0.18.1. Published cross-box parity numbers off the wrong one and had to redo the work.
+**Root cause**: `python3` on that box is a different environment from `/home/hcl/gpu-server/nexusmind-scorer/venv`, which is what `ExecStart` names. Same on sadalsuud (`~/local_dev/NexusMind/venv`) — its system python has nothing installed at all.
+**Fix**: read the interpreter off `systemctl cat <unit>` before quoting any version. A new shape of "verify the call path": the *code* path was right, the *environment* path was not.
+
+### Reached for MAE on needle-in-haystack filters, with the constraint in front of me (2026-08-09)
+**Problem**: Ranked six filters on mean absolute error, called `uplifting v7` "the weakest", and recommended a calibration change on it. Both retracted within the hour.
+**Root cause**: MAE weights every article equally while the product only cares about the op-point band, **and** each test split has its own positive rate (32.7% / 16.2% / 15.3%), so an enriched split scores worse for identical quality. Measured: 1.1954 on positives vs 0.6668 on negatives, 1.79×.
+**Fix**: now **ADR-023** and a Hard Constraint — compare only on recall and specificity, both conditional on the true class. **The word "needle-in-haystack" was already in CLAUDE.md; knowing the domain did not stop me reaching for the default metric.**
+
+### `git check-ignore -v` exits 0 on a *negation* match, so it reads as "ignored" (2026-08-09)
+**Problem**: Twice concluded a file was gitignored when the matching rule was `!datasets/adverse/*.jsonl` — a re-include. `-v` prints the pattern and exits 0 whether it ignores or un-ignores.
+**Root cause**: exit status answers "did any pattern match", not "is this file ignored".
+**Fix**: write the file and read `git status --porcelain`. An untracked-marker `??` is the only answer that cannot be misread.
+
+### Dropped unadjudicated rows into the glob a future gate reads (2026-08-09)
+**Problem**: Committed 34 `CANDIDATE_UNADJUDICATED` rows as `datasets/adverse/candidates-*.jsonl`. `docs/TODO.md` (#91) describes a gate over `datasets/adverse/*.jsonl` asserting *every adverse record scores below `max_acceptable_wa`*. My file would have been read as curated evidence.
+**Root cause**: named the file for what it is, but placed it where the glob lives. Another occurrence of the mechanism/population mismatch below — this time I built it rather than found it.
+**Fix**: own subdirectory, own `.gitignore` negation, and an invariant that is actually checked: 0 rows under `datasets/adverse/*.jsonl` carry a label other than `adverse`.
+
+### The dependency fix shipped a bound excluding the only working version (2026-08-09)
+**Problem**: Commit `996c0c7` declared `google-genai>=1.0.0,<2.0.0`. The version that runs the oracle, installed and verified the same day, is **2.17.0**.
+**Root cause**: wrote the bound from habit while the whole point of the commit was that *a declared range the environment violates cannot reproduce production*.
+**Fix**: caught by running the review battery afterwards. **Pin from the version you verified, not from the shape a version usually has.**
+
+### Adjudicated editorial calls from excerpts (2026-08-09)
+**Problem**: Drafted five adverse verdicts from 190-character excerpts. Reading the full articles moved **three of five, in both directions** — one "probable adverse" was a recovery story that belongs in the lens.
+**Root cause**: the excerpt is the opening, and the opening is where a harm-framed lede sits; the disposition is often in the last paragraph.
+**Fix**: read the article before proposing a label. Recorded with the data in `datasets/adverse/2026-08-09-reader-flags.md`, not only here.
+
 ## The unreachable-mechanism catalogue
 
 Moved out of `CLAUDE.md` on 2026-08-09 (context audit): the **rule** belongs in the
@@ -2144,6 +2174,7 @@ A mechanism that is present, configured and unreachable is this repo's defining 
 | `filters/cultural_discovery/v6` | a `hybrid_inference` block and probe shipped into a package with **no inference module** — written the same day the other four were documented |
 | 2026-08-07, two guards | **correct callers on the right paths**, both inert: one reverted by a later step re-sending the old value through a `COALESCE` merge (123 stored rows already carried the signature), one a complete no-op because a different commit point short-circuited before it — while its own comment asserted it was "the only point every source has in common" |
 | 2026-08-09, the stage trap | the arXiv `Announce Type:` prefix is a **91.6%** detector on the collection corpus and **0.000** on NexusMind rows, because enrichment re-fetches the body between the two. Both are "production data" |
+| 2026-08-09 evening, self-inflicted | 34 rows labelled `CANDIDATE_UNADJUDICATED` committed **inside** `datasets/adverse/`, the glob a planned #91 gate reads as curated evidence. Not a mechanism that couldn't fire — **a population that would have been read by one that does.** Found by re-reading my own commit, not by a test |
 
 The cultural_discovery v6 entry is the point of the whole list: **knowing this failure
 mode does not prevent it.** Only running the check against your own work does.

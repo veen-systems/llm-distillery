@@ -31,7 +31,7 @@
 
 | Filter | Ver | MAE | Cal. MAE | Data | Hub Repo | Deployed |
 |--------|-----|-----|----------|------|----------|----------|
-| uplifting | v7 | — | — | 5.3K | (none — file-copy to NexusMind only) | 2026-07-31 normalization REFIT (Apr-06 fit was unit-mismatched ×1.1976, LD#76/NM#279; raw 5.0 → norm 5.17, was ~3.0) |
+| uplifting | v7 | **0.84** (see note) | — | 5.3K | (none — file-copy to NexusMind only) | 2026-07-31 normalization REFIT (Apr-06 fit was unit-mismatched ×1.1976, LD#76/NM#279; raw 5.0 → norm 5.17, was ~3.0) |
 | sustainability_technology | v3 | 0.72 | — | 10.6K | `jeergrvgreg/sustainability-technology-v3` | 2026-02-21 (retired from ovr.news — superseded by solutions v6) |
 | solutions | v6 | 0.476 | — | 8.2K | `jeergrvgreg/solutions-filter-v6` | 2026-07-27 gate passed; normalization fitted 2026-07-28; LIVE. v6 weights on Hub 2026-07-30 (was: v4 repo shared — that mismatch + FILTER_VERSION 5.0 fixed in 403429d). |
 | investment-risk | v6 | 0.497 | 0.465 | 10.4K | `jeergrvgreg/investment-risk-v6` | 2026-02-21 |
@@ -152,3 +152,49 @@ All 6 superseded by newer versions in production. Cleaned up 2026-07-27.
 
 - Commerce prefilter v2 — v1 needs rework for multilingual embeddings and context size
 - train.py nested model/model/ fix (#29)
+
+---
+
+## uplifting v7 — first accuracy record, 2026-08-09 (and how to read it)
+
+`uplifting v7` was deployed ~April with **no MAE recorded at all**. Measured
+against its held-out oracle test split (660 rows, never seen by training or by
+the calibration fit), using the **deployed** `calibration.json` rather than a
+fresh fit, so the number describes what production computes.
+Artifact: `filters/uplifting/v7/ground_truth_gate.json`.
+
+    MAE raw 0.8110 -> calibrated 0.8398
+    at the 4.0 op-point: recall 0.7361  precision 0.8154  specificity 0.9189
+                         f1 0.7737   216 positives of 660
+
+⚠️ **Do NOT rank filters on that 0.84 (ADR-023).** Each test split has its own
+positive rate — uplifting **32.7%**, solutions **16.2%**, nature_recovery
+**15.3%** — and positives are genuinely harder (per-article MAE 1.1954 on
+positives vs 0.6668 on negatives, 1.79×), so a more enriched split scores worse
+for identical quality. Composition explains **+0.0919 of the 0.3435** gap to
+nature_recovery — ~27%, not all of it, so the residual may be real; it simply is
+not the objective.
+
+**The comparable numbers**, both conditional on the true class:
+
+| filter | positive rate | recall | specificity | FPR on true negatives |
+|---|---|---|---|---|
+| uplifting v7 | 32.7% | 0.7361 | 0.9189 | **8.1%** |
+| solutions v6 | 16.2% | 0.6707 | 0.9723 | 2.8% |
+| nature_recovery v4 | 15.3% | 0.6500 | 0.9789 | 2.1% |
+
+**uplifting has the best recall and the loosest gate.** Under ADR-023 that is
+the wrong side of the trade → **#102**.
+
+**Calibration is NOT a net negative** (an earlier claim, retracted): it raises
+MAE but is indistinguishable on the decision — 5 articles of 660 change side,
+inside the 37-row (5.6%) indeterminate band. Do not refit or drop it on the MAE
+reading.
+
+**Caveats in the artifact, not just here:** run on b650 CPU, not the serving box
+(cross-box parity verified for the e5 probe path, **not** for the Gemma student);
+the 32.7% test positive rate is enriched and does not transfer to production's
+~9% surfacing rate without reweighting.
+
+**Ground-truth gates still missing:** `belonging v1`, `cultural_discovery v5`,
+`investment_risk v6`.

@@ -1,5 +1,69 @@
 # LLM Distillery - TODO
 
+## 🟢 2026-08-09 (evening) — SESSION CLOSE. Read this block first.
+
+Sent to fix a calibration defect. **There wasn't one.** What the day actually
+produced: one irreversible risk closed, a new ADR, two of my own headline claims
+retracted, and the first accuracy number `uplifting v7` has ever had.
+
+**NOTHING WAS DEPLOYED, and nothing needs to be.** Every artifact committed
+today is either md5-identical to what production already runs (the three
+recovered probe pickles), or training/dev evidence that production never reads
+(adverse data, ADR, `requirements.txt`, gate JSON). The one live divergence —
+`cultural_discovery/v5/prefilter.py`, repo 87 lines ahead — is **inert in
+production** (`skip_prefilter=True`, `scripts/main.py:1207`), so shipping it
+changes nothing and is not urgent.
+
+**Framework: no drift.** agent-ready-projects is at **v1.18.0**, adopted. The
+only commit past the tag is a README badge fix, and it is **unpushed in the
+framework repo** (`294d83c`) — owner's to push.
+
+### The three things a next session should not re-derive
+
+1. **`nature_recovery` is not miscalibrated and neither is anything else.** The
+   173× surfacing spread is mostly genuine base-rate difference. Oracle-checked
+   at 87% precision with ~8 true positives per 2,190 articles. Details below.
+2. **ADR-023 now governs every quality claim**: optimise specificity, recall is
+   a floor, **never rank filters on MAE**. Promoted to CLAUDE.md Hard
+   Constraints. Two of my own claims died to it the same day.
+3. **The oracle cannot see errors it shares with the student.** It graded
+   `uplifting`'s ≥5.5 band 29/29 perfect; readers flagged articles at 6.85,
+   6.49 and 6.09 in that band. **Oracle-only active learning cannot fix that
+   class** — reader flags are the only independent label source.
+
+### Open, in priority order
+
+- **#102** (new) — `uplifting v7` specificity: 8.1% FPR vs 2–3% elsewhere; run
+  the ADR-021 gate on a 4.5 op-point. First concrete target of #90.
+- **Adjudicate the 21 `solutions_story` candidates** in
+  `datasets/adverse/candidates/` — under ADR-015 they may legitimately belong in
+  both lenses, so this decides most of the batch. Owner call.
+- **One reader flag still open** — the Global Voices Assyrian-erasure essay,
+  `belonging` 7.67. `datasets/adverse/2026-08-09-reader-flags.md`.
+- **#81 repointed** — the sklearn mismatch is resolved (both boxes 1.8.0). The
+  live one is **sentence-transformers 5.6.0 (sadalsuud) vs 5.2.2 (gpu-server)**
+  on the mpnet + sklearn-MLP detectors, where the |0.16| skew was measured.
+  **Obituary enforces at 0.85 with a 0.0012 margin.** Unmeasured.
+- Three filters still have no ground-truth gate: `belonging v1`,
+  `cultural_discovery v5`, `investment_risk v6`.
+
+### Traps this session walked into, so the next one doesn't
+
+- **gpu-server's system `python3` is NOT production.** The scorer runs
+  `/home/hcl/gpu-server/nexusmind-scorer/venv` with
+  `PYTHONPATH=/home/hcl/NexusMind`. Read it off `systemctl cat`. I published
+  numbers from the wrong interpreter and had to redo them.
+- **b650 cannot run the Gemma student on GPU** — triton fails to compile its
+  CUDA helper (`gcc` linking `libcuda.so.1`). Use `CUDA_VISIBLE_DEVICES=""`;
+  ~7 min per 660 articles. The e5 probe path is unaffected.
+- **Matching articles by source prefix silently grabs the wrong one** — there
+  are two `australian_abc_au` and two `south_african_namibian` rows in play.
+  Use exact ids with an assert.
+- **Excerpts are not sufficient for adjudication** — three of five adverse
+  drafts moved after reading the full articles, in both directions.
+
+---
+
 ## 🔴 2026-08-09 (evening) — scorer architecture/state audit: one real risk, and the calibration lead was a dead end
 
 ### The calibration thread ends here — nature_recovery is NOT miscalibrated
