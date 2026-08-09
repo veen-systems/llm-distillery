@@ -1,5 +1,73 @@
 # LLM Distillery - TODO
 
+## 🔴 2026-08-09 — the lenses are not mutually calibrated, and #75/#76's closure does not hold
+
+Owner: *"the mutual calibration of the lenses seems not to work"* — articles not
+landing in the right outlets. Measured, one cycle, the same 2,152 articles
+scored by all six lenses.
+
+| lens | medium gate | raw p90 (all) | **surfaced** |
+|---|---|---|---|
+| investment_risk | 4.0 | 5.35 | **24.2%** |
+| uplifting | 4.0 | 3.81 | 9.4% |
+| belonging | 4.0 | 1.79 | 3.1% |
+| solutions | 2.25 | 1.04 | 2.7% |
+| cultural_discovery | ~4.0 | 1.94 | 2.4% |
+| **nature_recovery** | **3.75** | **0.68** | **0.14% — 3 of 2,152** |
+
+**A 173× spread in surfacing rate on identical input.** Five lenses gate at ~4.0
+against raw distributions differing **8× at p90**. The gate is a fixed constant;
+the scale it is applied to is not.
+
+**NORMALIZATION IS NOT THE DEFECT — I said it was and was wrong.** Among
+*surfacing* articles the normalized medians are **4.84 / 5.01 / 5.42 / 5.12 /
+4.81** across five lenses (p90 8.8–9.6). That is exactly the cross-lens
+comparability ADR-014 promises. The all-article `norm p90 = 0.00` that I first
+read as "flooring 90% of articles" is expected: only ~3% surface, and
+normalization is fitted on surfacing rows by design. **The defect is which
+articles get to be surfacing, not how they rank once they are.** So this is
+ADR-008 (calibration) territory, not ADR-014.
+
+**#74, #75, #76 are all CLOSED — and #75's stated reason does not survive
+re-measurement.** It was closed as *"nature_recovery v4 healthy; #75 was a
+measurement artifact (probe-capped rows + files predating normalization)"*.
+Checked that specific explanation against current data, splitting by
+`stage_used` (now 100% populated since NM#300):
+
+    stage2      (full model, NOT probe-capped)  n=3,532  p50 0.24  p90 0.67  max 5.44  surfaced 5
+    stage1_low  (probe-capped)                  n=  493  p50 0.46  p90 0.71  surfaced 0
+
+**The artifact explanation runs the wrong way** — probe-capped rows score
+*higher* (p50 0.46 vs 0.24), so excluding them makes the picture worse. 3,532
+fully-scored articles, p90 at **18% of their own gate**, five surfaced. The
+condition is present in the non-artifact population.
+
+**Do not re-open blind.** #76's other three threads were genuinely resolved
+(uplifting unit-mismatch refit, belonging drift refit, the `_assign_tier`
+double-cut under NM#280). Only the nature_recovery disposition is contradicted.
+
+**Next step is diagnosis, not a refit** — a refit that does not know why the raw
+scale sits at 0.2–0.7 will re-fit the same scale. Two candidates named in
+`memory/calibration-history.md`: boundary-crush (raw ordering sound, gate too
+high) vs scale-collapse (model barely fires). nature_recovery looks like the
+second; belonging/cd like the first. **They need different fixes**, and
+`memory/calibration-history.md` Dead Ends must be read first — `% norm<0.5` is a
+known metric artifact there.
+
+### Also measured the same day, unrelated to calibration
+
+- **Junk detectors**: all three stamp 100% of rows, `obituary v5` / `violence v1`
+  / `commerce v1`. Obituary and commerce **enforcing** (0 flagged survivors).
+  **Violence flags 386 of 12,531 rows (3.1%) and ships them anyway** — shadow
+  since 2026-07-28, never enforced, recall 0.550 @0.95 precision. That is a
+  standing decision nobody has come back to.
+- **Scorer staleness**: `investment_risk v6` deployed **2026-02-21** (5½ months,
+  and it is the 24.2% outlier); **`uplifting v7` has NO MAE recorded at all**,
+  raw or calibrated — a deployed filter whose accuracy has never been measured;
+  `belonging v1` MAE 0.534, the weakest recorded; `nature_recovery v4` trained on
+  3.9K, half of everyone else.
+
+
 ## 2026-08-09 (later) — the deletion happens three layers up, and one fix had been sitting merged-ready for six days
 
 Full record: `memory/project_session_2026_08_09_later.md`. The session was sent to
