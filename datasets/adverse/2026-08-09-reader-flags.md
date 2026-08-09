@@ -69,10 +69,13 @@ belonging because "community vows to unite" — a phrase that exists *because* t
 people were murdered. The Zimbabwe row normalizes to **9.86**, i.e. it would
 lead the feed.
 
-The Assyrian-genocide row is deliberately **not** proposed as adverse: it is
-structurally the same call as the DOI-Codi rejection above, and accepting it
-would teach the scorer to suppress memorialisation and Indigenous-rights
-coverage. It is staged so the decision is made, not so it is assumed.
+The Assyrian-genocide row is deliberately **not** proposed as adverse, but note
+the reason changed once the full text was read: it is **not** shielded by the
+DOI-Codi rejection, because that turned on a process going well now and this
+essay has none. What holds it back is the consequence, not the precedent —
+accepting it risks teaching the scorer to suppress memorialisation and
+Indigenous-rights coverage as a category. It is staged so the decision is made,
+not so it is assumed.
 
 ## Why these matter more per row than the oracle batch
 
