@@ -1,5 +1,64 @@
 # LLM Distillery - TODO
 
+## 2026-08-09 — corroboration: the shippable change was refuted, the gate is the lever
+
+Full record: `memory/project_session_2026_08_09.md`. Feature detail:
+`memory/corroboration-feature-hypotheses.md`.
+
+### ✅ Done
+
+- [x] **Step 2 (a): production embeds `title_raw`** — `_prepare_text` returns
+      `f"query: {title}"`, no stripping. The hypotheses file had quoted the
+      `title_stripped` row for the live config; corrected.
+- [x] **Step 2 (b): the 0.92 threshold does NOT transfer, and that was already
+      known.** The v2 panel was adjudicated 2026-08-06 (registry OBS-13/27/28/29,
+      PROP-6 "DOES NOT SHIP AS SPECIFIED"). My starting brief said the panel was
+      unadjudicated — it was, in a gitignored NexusMind dir never copied to b650.
+- [x] **Turn-over point measured** — fresh 680-pair panel v3, pre-registered rule
+      (`NexusMind/docs/investigation/2026-08-08-turnover-prereg.md`).
+      **`title_body@0.94/0.90`** passes all three gates. `title_body@0.92/0.88`
+      decisively dead (17.7M merged pairs, giant stratum 0/25).
+- [x] **Filed**: ducroq/FluxusSource#143 (arXiv duplicates defeat collection
+      dedup — 600/8 days), ducroq/FluxusSource#144 (+scope-correction comment),
+      ducroq/NexusMind#305 (article-derived primary-literature detection).
+- [x] **Regression check**: `content_length` / `stage_used` / `stage1_estimate`
+      **100% on the latest cycle**, all six filters (15,422 rows). The 54.8% over
+      4 cycles is pre-fix rows in the window, not a regression.
+
+### ⛔ NOT done, deliberately — do not read the pass as a green light
+
+- [ ] **Do NOT flip `cross_source_threshold` yet.** 0.94/0.90 passes *my*
+      pre-registered rule but **ties live under the #95 standard** (overlapping
+      CIs). The live baseline moved **0.283 → 0.173** between two draws at
+      n_eff 36, because 83% of pair mass sits in giant clusters sampled 25 deep.
+      **Deepen the giant stratum first** — cheap re-run, not new machinery.
+- [ ] **Production untouched.** No config changed, nothing deployed, in any repo.
+
+### Next session, in order
+
+1. **Certify INST-10 and turn the temporal term on.** AUC **0.809** on 505
+      adjudicated news pairs, independently replicating INST-10's 0.798 on a
+      different panel/seed. Built, `temporal.enabled: false`, blocked *only* on
+      review by a non-author. Highest value per effort in this area.
+2. **NM#305 primary-literature stamp.** Worth precision 0.344 → 0.459, more than
+      any threshold move. Decide the stage first — **Contract A is
+      `additionalProperties: false`, so stamping at collection needs a schema
+      change**; and the arXiv prefix feature is 91.6% at collection but **0.000
+      after enrichment**.
+3. **FS#143 — drop the plain `arxiv` feed.** Removes 100% of the duplicate class
+      for 77 papers/8 days. Owner's call; measured, not assumed.
+4. **PROP-2 ratio-margin scoring** — top untouched per-pair lever (ART-11: F1
+      77.0 → 94.8 on the *same* embeddings). Needs no new labels.
+5. Deepen panel-v3's giant stratum, then revisit 0.94/0.90.
+
+### Refuted this session (do not re-propose without new evidence)
+
+- **Shared numbers as a corroboration feature** — AUC 0.581, rare-number variant
+      **0.503**. Good argument, no signal on this data.
+- **`type_classification` as the exclusion mechanism** — 86% of `academic` is
+      Global South news, and the root defect (topic read as source type) survives
+      the Google News retirement.
+
 ## 2026-08-08 (afternoon) — proven by outcome, and a self-inflicted outage
 
 Full record: `memory/project_session_2026_08_08.md` (same file, second half).

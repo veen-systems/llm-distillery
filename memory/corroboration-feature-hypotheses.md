@@ -313,6 +313,46 @@ a flat 1.3× capped at 9 (`corroboration-boost.ts:61/69`). So the live front is:
   plan itself calls it "direction-finding, valid at n=23 per §P7.1, no new
   labels" — but note the order when citing.
 
+## STEP 2 — representation ANSWERED, threshold was WRONG, turn-over measured 2026-08-09
+
+**READ THIS BEFORE THE SECTION BELOW.** The SemEval table below is correct and
+still stands as an *external-gold* result. Its operating point does **not**
+transfer to production, and the section as originally written would have shipped
+the wrong change.
+
+- **Which variant production embeds: `title_raw`.** `story_dedup._prepare_text`
+  returns `f"query: {title}"` — the raw title, no suffix stripping. The
+  `_normalize_title()` in `scripts/main.py:152` is for exact duplicate-title
+  rejection and never touches the embedding. **The table below quotes
+  `title_stripped` for the live row** (P 0.8116 / R 0.4909); the real live row is
+  `title_raw` (P 0.8124 / R 0.4864). Immaterial to the ordering, but do not quote
+  the stripped row as production.
+- **0.96/0.92 is REFUTED on production** (registry OBS-13/28, PROP-6 status
+  2026-08-06). It rejects 70% genuinely-same-story pairs at its own margin and
+  merges 86% fewer pairs.
+- **Turn-over point measured 2026-08-09** on a fresh 680-pair panel (v3, seed
+  20260808, `data/research/precision_panel_v3/` in NexusMind, gitignored):
+
+  | config | merged pairs | precision (95% CI) | near-miss discarded | est. true pairs | largest | ≥20 |
+  |---|---|---|---|---|---|---|
+  | title@0.92/0.88 (LIVE) | 948,399 | 0.173 [0.083,0.326] | 10% | 164,123 | 592 | 95 |
+  | title_body@0.92/0.88 | **17,692,176** | 0.004 [0.000,0.138] | 10% | 74,666 | 1051 | 128 |
+  | **title_body@0.94/0.90** | 496,299 | 0.344 [0.226,0.485] | 20% | **170,681** | 422 | 52 |
+  | title_body@0.96/0.92 | 134,012 | 0.451 [0.349,0.558] | 30% | 60,459 | 129 | 12 |
+
+  **0.94/0.90 is the turn-over point** — the only config passing all three
+  pre-registered gates (`docs/investigation/2026-08-08-turnover-prereg.md` in
+  NexusMind). **But it is NOT proven more precise than live**: by the #95
+  standard (overlapping intervals → not distinguishable) it ties. The live
+  baseline itself moved **0.283 (v2) → 0.173 (v3)** at n_eff 36, because 83% of
+  pair mass sits in giant clusters sampled only 25 deep. **Deepen the giant
+  stratum before this gates a deploy.** `title_body@0.92/0.88` is decisively dead
+  (17.7M pairs, giant stratum 0/25).
+- **`title_body@0.96/0.92` IS significantly more precise than live** on v3
+  (disjoint CIs) — it buys that by going quiet, finding 60k true pairs vs 164k.
+
+### Original SemEval section, retained — external gold, not a production op-point
+
 ## STEP 2 IS ANSWERED — title+body @ 0.92 beats title-only @ 0.88 (2026-08-08)
 
 **There is no n=23 problem for representation.** The labels are **SemEval-2022
@@ -371,21 +411,91 @@ point.
 | `per_probe.jsonl` | exists in `recall_probe_48/`, `probe_smoke/`, `probe_smoke2/` |
 | `recall_disputed.json`, `recall_grid.json`, `rg_A_*.npz` | present |
 
-**THE BLOCKER, and it is not compute: the panel is UNADJUDICATED.** Both
-`adjudicate.csv` files have the verdict column **100% empty** — 299 of 299 and
-340 of 340. And `answer_key.json` is **not** an answer key: it is the *sampling
-design* (`item_id`, `cluster_key`, `stratum`, `config`, `sim`, `is_control`),
-with no verdict field at all. No `judge_verdicts.jsonl` exists anywhere in
-`nm-sweep/`, though `score_precision_panel.py` defaults to reading one.
+**~~THE BLOCKER: the panel is UNADJUDICATED.~~ WRONG — CORRECTED 2026-08-09.**
+The panels **were** adjudicated on 2026-08-06 by the DeepSeek judge
+(`scripts/research/judge_pairs.py`) and scored. The verdicts live in the
+**NexusMind checkout** at `data/research/precision_panel{,_v2,_v3}/judge_verdicts.jsonl`
+— which is gitignored (`.gitignore:230 data/`) **and was never copied to b650**.
+The b650 `adjudicate.csv` is the *human* sheet, which is legitimately empty
+because the standing instruction is no hand-labelling.
 
-**So step 3 cannot run as written.** It says "cosines on the adjudicated 300" —
-the 300 are not adjudicated. Of its three named sources, only `per_probe.jsonl`
-is materialised; SemEval per-pair sims were not found on any box checked.
+**This is the `feedback-enumeration-is-not-inventory` failure again**: I
+inventoried b650, found no verdicts, and concluded none existed. b650 excludes
+them by construction. Establish what a source excludes *before* using its silence
+as evidence.
 
-**Consequence for planning:** the remaining path is not "hours of compute", it is
-**a labelling pass** — human adjudication of the 340, or an LLM-judge run to
-produce the `judge_verdicts.jsonl` the scorer expects. That is plan steps 6/8
-territory, pulled forward. The n=23 constraint is unchanged until it happens.
+`answer_key.json` genuinely is the sampling design, not an answer key — that part
+was right.
+
+## 2026-08-09 — the biggest lever is a GATE, not a similarity feature
+
+**Primary scientific documents are 20.6–30.4% of everything the system merges and
+are 0–14% correct at every threshold.** Excluding them beats any threshold move:
+weighted precision 0.344 → **0.459** at `title_body@0.94/0.90`, 0.173 → 0.216 at
+live. Reason is structural, not tuning: a paper is a *primary document*, not a
+report of an event, so two outlets never independently "corroborate" it. True
+corroboration rate is near zero by construction.
+
+- **All 6 academic pairs judged genuinely same-story were byte-identical titles**
+  — the same arXiv paper via two of our own overlapping feeds. Duplication, not
+  corroboration. **0 of the 85 false academic merges had identical titles.**
+- **Root cause is upstream: ducroq/FluxusSource#143.** Category feeds prefix the
+  body with `arXiv:NNNN.NNNNNvN Announce Type:`, which shifts `content[:500]`, so
+  FluxusSource's `md5(title+content[:500])` never collides. **600 duplicate papers
+  per 48 cycles** (all same paper id AND same version — checked against arXiv's
+  `replace` semantics). **Dropping the plain `arxiv` feed removes 100% of the
+  class for 77 papers/8 days**; 0 titles appear in ≥2 category feeds.
+- **Do NOT implement the exclusion on `type_classification`** —
+  ducroq/FluxusSource#144. 308 Google News feeds collide on domain `google.com`;
+  86% of `academic` rows are Global South news. And the root defect needs no
+  collision: `smithsonianmag.com`/`sciencealert.com`/`statnews.com` have ONE
+  category each and are `academic` because they *write about* science. MDPI and
+  Frontiers are right **for the same wrong reason**.
+- **Use article-derived features instead — ducroq/NexusMind#305.** Union of
+  academic-API metadata (`source_api`/`authors`/`paper_type`), `[Clinical Trial]`
+  title prefix, and DOI presence: **1.000 recall on arXiv/PubMed/trials, 0.000 on
+  Guardian/Ars/Smithsonian/STAT/ScienceAlert.** Its apparent 1.8% FP is mostly
+  CrossRef/OpenAlex/Semantic Scholar/Nature — primary literature the source list
+  missed. Gap: MDPI/Frontiers RSS at 0.241. **Contract A is
+  `additionalProperties: false` → stamping at collection REQUIRES a schema
+  change**; Contract B is permissive but the field must still be declared or the
+  census cannot see it. Never `required` initially (NM#300).
+- **STAGE TRAP, recorded because it nearly cost a dead detector:** the arXiv
+  prefix is 91.6% reliable at collection and reads **0.000** in NexusMind
+  production — enrichment re-fetches the body. Measure a feature at the stage it
+  will run.
+
+## 2026-08-09 — candidate features probed on 599 adjudicated production pairs
+
+News-only cut (n=505, academic excluded). Negative class is **false merges**, not
+random pairs, so these say "separates good merges from bad", not "finds merges".
+
+| feature | AUC |
+|---|---|
+| **time proximity** (−\|Δh\|) | **0.809** |
+| numeric overlap title+body | 0.581 |
+| is_cross_language | 0.570 |
+| not_same_source | 0.554 |
+| rare numbers (≥4 digits, non-year) | 0.503 |
+| length agreement | 0.453 (inverted) |
+
+- **REFUTED — shared numbers.** The argument was good (digits survive
+  translation; unrelated papers don't share a casualty count) and the data says
+  0.581, with the sharpest variant at **0.503 = nothing**. No confirmed
+  explanation; plausibly the negative class already shares dates/quantities.
+- **CONFIRMED — time is the feature, independently replicated.** 0.809 here vs
+  INST-10's 0.798 unweighted, different panel/seed/sample, and it *improves* when
+  academic pairs are removed. Built, `temporal.enabled: false`, blocked only on
+  certification by a non-author. **Highest-value unused thing in this area.**
+- Cross-language is a mild genuine positive (0.570), consistent with merged
+  cross-language precision 0.857 vs same-language 0.426 at 0.94/0.90.
+- Academic subset had **6 positives** — nothing reported from it; the 0.878 that
+  appeared there is noise.
+- Reproduction: `b650:~/nm-sweep/feature_probe.py`.
+
+**Still untouched and now the top per-pair lever: PROP-2 ratio-margin scoring**
+(ART-11: BUCC EN-DE F1 77.0 → 94.8, *same embeddings*). Attacks hubness, which is
+what a 592-member attractor is. Needs no new labels.
 
 Related: [[cd-v6-probe-hypotheses]] (the other place a probe/extractor choice was
 decided by measurement), [[score-batch-shape-noise]] (any margin under 0.16 near
