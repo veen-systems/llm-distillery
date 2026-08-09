@@ -99,11 +99,60 @@ recall`). The other four carry **only `val_mae`** — no threshold, no recall
 guarantee. Probe val_mae: belonging 0.54, investment_risk 0.56,
 cultural_discovery 0.87, **uplifting 1.10**.
 
-**Unblocked** — training data for all four is on gpu-server at
-`~/llm-distillery/datasets/training/{belonging_v1,cultural-discovery_v5,investment_risk_v6,uplifting_v7}`.
-**Not started.** Changing a Stage-1 threshold changes what reaches the student,
-so it needs a measured recall check before deploy (ADR-021), and `#95`'s noise
-floor applies.
+**MEASURED 2026-08-09 — and the finding downgrades from correctness to
+efficiency. At every deployed threshold the val FN-rate is 0.000.** All four
+eyeballed thresholds landed on the conservative side. There is no live recall
+bug in Stage 1.
+
+Refitted all four on b650 (`--objective recall --target-fn 0.02`), probes kept
+out of the repo in the session scratchpad, **nothing deployed**:
+
+| lens | deployed | **val FN @ deployed** | recall-calibrated | val stage2-rate: deployed → calibrated |
+|---|---|---|---|---|
+| belonging v1 | 1.00 | **0.000** | 2.95 | 0.827 → 0.373 |
+| cultural_discovery v5 | 1.25 | **0.000** | 3.25 | 0.826 → 0.316 |
+| investment_risk v6 | 1.50 | **0.000** | 3.15 | 0.767 → 0.322 |
+| uplifting v7 | 1.00 | **0.000** | 2.85 | 1.000 → 0.747 |
+
+**Do NOT deploy the calibrated thresholds as a default action.** They buy a
+2–3× cut in Stage-2 calls at 1.3–1.9% val FN — i.e. they trade recall for
+speed, which is the wrong direction while the open complaint is that too little
+surfaces. Take them only if throughput becomes the binding constraint.
+
+⚠️ **val stage2-rate is NOT the production screening rate** — the val sets are
+enriched (belonging 78 positives/738 = 10.6% vs 3.8% production surfacing).
+Different quantities, not noisy versions of one (`rate-needs-population`).
+Notable: `uplifting v7` at its deployed 1.00 passes **100% of val** — its probe
+does nothing there — yet screens 12.4% of production.
+
+**Cross-box parity: b650 is CLEARED to train probes for gpu-server.** Measured,
+not argued — same 160 articles, same probe, the real `embedding_stage.py`
+class: b650 (ST 5.6.1 / torch 2.13.0+cu130) vs the serving venv (ST 5.2.2 /
+torch 2.11.0+cu130) gives **max |Δ| 4.2e-6, zero screening flips** at
+0.75/1.0/1.25/1.5/2.85/3.25, bit-identical embedding checksums. That is
+*smaller* than the serving venv's own CPU-vs-CUDA difference (5.4e-6).
+**Scope correction:** `memory/b650-gpu.md`'s |0.16| cross-box skew was measured
+on the **obituary detector** (mpnet + sklearn MLP). It does **not** generalise
+to the multilingual-e5-small + torch MLP probe path.
+
+⚠️ **THREE distinct stacks are in play; the SYSTEM python on gpu-server is NOT
+production.** The service pins its own venv plus `PYTHONPATH=/home/hcl/NexusMind`:
+
+    serving venv (gpu-server)  py3.11.2  torch 2.11.0+cu130  ST 5.2.2  tf 5.0.0   peft 0.18.1
+    gpu-server system python   py3.11.2  torch 2.5.1+cu124   ST 5.2.3  tf 5.2.0   peft MISSING
+    b650 venv                  py3.12.3  torch 2.13.0+cu130  ST 5.6.1  tf 5.14.1  peft 0.19.1
+
+An earlier pass of this audit quoted the system python as production and had to
+be redone. Read the venv off `systemctl cat nexusmind-scorer`, not `which python3`.
+
+**Dependencies (`996c0c7`): two declared defects fixed, blanket upgrade
+declined.** `google-genai` was never declared though `batch_scorer.py:569,579`
+imports it — a clean install could not run the Gemini oracle at all.
+`transformers<5.0.0` *excluded the 5.0.0 production serves*. No blanket upgrade:
+the cross-box identity above currently holds and no open defect traces to a
+stale dependency, so a bump would forfeit a measured property for nothing. The
+parity harness is the acceptance gate for any future bump — require zero
+screening flips.
 
 Two smaller state notes: `belonging v1` and `uplifting v7` probes were pickled
 with **sklearn 1.7.1** against gpu-server's **1.8.0** and emit
