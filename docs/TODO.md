@@ -144,12 +144,27 @@ widget being extracted instead of per-article content.
   paper it is a bug; if it is 5% of the corpus it stops the launch. **Measuring
   this is the first task, not the fix.**
 
-**⚠️ Cross-repo dependency that is OURS, not FluxusSource's.**
-`investment_risk/v6` must move onto the `primary_literature` stamp **before**
-FluxusSource#144 deletes the `academic` source-type label — otherwise arXiv
-preprints re-enter Aegis. That is a filter-package change, so it is llm-distillery
-work and ours to schedule. Raised by the FluxusSource session 2026-08-09; it
-blocks *their* queue, so it should not be discovered as a surprise.
+**⚠️ Cross-repo dependency — MEASURED 2026-08-09, and it inverts the framing.**
+It was raised as *"`investment_risk/v6` must move onto the `primary_literature`
+stamp before FluxusSource#144 deletes the `academic` label, or arXiv preprints
+re-enter Aegis"*, and assumed to be a filter-package config change (ours).
+**Both halves are wrong.**
+
+Measured on `data/raw`, restricted to the 3,026 rows that carry the new stamp:
+
+| | rows | meaning |
+|---|---|---|
+| `academic` AND `detected` | **69** | covered by the new stamp |
+| `academic` NOT `detected` | **386** | "would re-enter" |
+| `detected` NOT `academic` | **0** | no gain — the stamp is strictly narrower here |
+
+**The 386 are overwhelmingly NOT preprints.** Top sources: `gn_asia_gn_united_arab_emirates` 75, `gn_africa_gn_algeria` 73, `gn_europe_gn_serbia` 62, `gn_central_america_gn_guatemala` 28, `gn_africa_gn_benin` 25, `gn_oceania_gn_papua_new_guinea` 25. That is **FS#144 exactly** — Global South news mislabelled `academic` because 308 Google News feeds collide on domain `google.com`. **Letting them re-enter is the fix, not the regression.** The genuine remainder is small and is science-*journalism* (`bioengineer` 13, `neuroscience_news` 12), `academic` because it writes *about* science.
+
+**And it is NOT a config change we can make.** `excluded_source_types` is compared against **`metadata.quality.type_classification`** only — `src/scoring/source_filter.py::_get_type_classification`, three levels deep. **There is no mechanism to gate on `metadata.primary_literature.detected`.** Supporting that is NexusMind code, not a filter package, so **this belongs with the NexusMind session, not here.**
+
+Also flagged: `detected` fires on **2.3%** of these rows (69/3,026) against the **8.94%** the FluxusSource replay reported over 167,234 rows. Different window and a small sample — but reconcile before anyone sizes a gate on it.
+
+**Trap that nearly cost the whole thing:** `metadata.primary_literature` is a **dict** (`{"detected": false, "evidence": [], "detector_version": "v2"}`), so a truthiness test reads **8,864 of 10,955 = 81%**. Gating on truthiness would have blocked ~80% of the corpus. Read `.detected`.
 
 **Session shape, in order.** *Corrected 2026-08-09 after the FluxusSource session
 pushed back: an earlier version of this list put "corpus rate" first. That
