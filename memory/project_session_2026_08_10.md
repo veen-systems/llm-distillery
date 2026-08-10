@@ -81,6 +81,33 @@ deploy `--dry-run` would leave it untracked and `scorer_untracked_blocking()`
 would **stop the production scorer from starting**. Moved to `docs/evidence/`.
 **`ground_truth_gate.json` still carries that hazard, in every filter package.**
 
+## Late session — the fleet, and a prepared op-point move
+
+**All six deployed filters are now measured.** `belonging v1`,
+`cultural_discovery v5` and `investment_risk v6` were live with **no accuracy
+number of any kind**; these are their first. FPR at each filter's own 4.0
+op-point: uplifting **8.1%**, investment_risk **4.5%**, solutions 2.8%,
+nature_recovery 2.1%, cultural_discovery 2.0%, belonging 1.5%.
+
+- **#102's premise survives the completed set** — uplifting is 1.79× the next
+  worst. My "the comparison set is half-missing" objection is resolved *in favour
+  of* #102.
+- **`investment_risk v6` is the new second concern** and nobody knew, because it
+  had never been measured. It also has the fleet's best recall (0.761).
+- **My other objection died too.** A register/source-type rule, tested
+  out-of-sample, removes **2** false positives and costs **21** true ones. The
+  adverse batch pointed the wrong way because it sampled a different population.
+
+**The 4.5 move is PREPARED ON A BRANCH (`uplifting-v7-op-point-4.5`), not
+deployed** — a filter deploy restarts the scorer and it could not be verified
+until 08:00 on 11 Aug (the 04:00 cycle dies with the Odido uplink).
+
+**The trap, if anyone picks this up: the op-point lives in FOUR places and
+`config.yaml` is not the runtime one.** `base_scorer.py TIER_THRESHOLDS` is.
+Changing the config alone is a no-op in production. `fit_normalization.py` caught
+it by refusing to agree with itself and fitting at the old anchor. All four now
+agree; tier assignment was *executed* to prove it (raw 4.49 → low, 4.50 → medium).
+
 ## Open, for the owner
 
 1. **The op-point call** — is a ~145-article/cycle uplifting feed acceptable for
