@@ -212,8 +212,8 @@ Three things it established that outlive the batch:
   signal.** It is the tag on the prompt's own 7.3/10 and 5.8/10 *good* examples;
   it means "none of the five penalty caps applied". The claim that "uplifting is
   absorbing solutions-lens material" was an artifact of reading it as routing.
-  The real dominant class in the 4.0–4.5 band is **academic-abstract register**
-  (9 of 21) — abstract prose supplying benefit vocabulary and a high
+  The real dominant class among the 21 is **academic-abstract register** (9 of
+  21; 6 of the 13 that sit in the 4.0–4.5 band) — abstract prose supplying benefit vocabulary and a high
   `evidence_level` with no beneficiary in the text.
 - **`raw ≥ 4.01` is the admission bar for this file.** Promotion asserts
   `predicted_wa ≤ max_acceptable_wa` (3.85 for uplifting); if the observed score

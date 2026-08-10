@@ -40,6 +40,15 @@ Namibian child-welfare item), and to nothing else.
 
 **What the 21 actually are**, by reading them:
 
+**These labels OVERLAP — this is a description, not a partition, and the column
+does not sum to 21.** Sylvia Earle is listed under both "general news" and
+"body-extraction defect" (short body, judged genuine); the Namibian minister
+under both "general news" and "genuine solutions story". Two rows are described
+elsewhere rather than here: the coffee frog (Q2, adjacent-lens) and the celebrity
+protein diet (Rejected). Distinct rows covered below: **19 of 21**. The outcome
+counts that matter — 7 accepted + 3 rejected + 11 held = 21 — are a partition and
+are verified against the file.
+
 | shape | n | rows |
 |---|---|---|
 | academic abstract / preprint (OpenAlex, MDPI, PLOS, bioengineer) | **9** | papaya oil, rodent LCA, GIS flooding, nomadic tents, nanovesicles, Moringa yogurt, AI-in-fashion, JESIP report, PLOS trust-IRT |
@@ -47,7 +56,7 @@ Namibian child-welfare item), and to nothing else.
 | body-extraction defect (not the article) | 3 | Post-Courier paywall stub, Japan Today photo caption, *(Sylvia Earle blurb — judged genuine, see below)* |
 | genuine solutions story | 2 | Rwanda–EU agri financing, Namibian child welfare |
 
-**The dominant failure class in the 4.0–4.5 band is academic-abstract register**
+**The dominant failure class among the 21 is academic-abstract register**
 — 9 of 21, 43% — not lens overlap. Abstract prose supplies benefit vocabulary
 ("promising", "sustainable", "improvement", "enrichment") and a high
 `evidence_level` from study-design words, with no beneficiary anywhere in the
@@ -63,7 +72,15 @@ Promotion to `uplifting.jsonl` asserts, permanently, that **`predicted_wa ≤
 
 **1. Decidability (#95).** The observed prediction must sit more than the 0.16
 batch-composition noise floor above the bar, or the probe flaps between runs and
-tests nothing. Required: `raw ≥ 4.01`.
+tests nothing. **The general rule is `raw ≥ max_acceptable_wa + 0.16`**; for
+*this file* that is `raw ≥ 4.01`, because uplifting's bar is 3.85. **The 4.01 does
+not travel** — other filters' bars are far lower (`nature_recovery` 0.6414,
+`solutions` 1.0918–1.13, `belonging` 1.6446, `cultural_discovery` 1.6154–2.1867),
+so applying 4.01 to them would reject maximally-decidable candidates. Nothing
+enforces either form in code: `grep -r 'assertion_margin\|max_acceptable_wa'`
+over `*.py` returns **zero hits**, so `assertion_margin` is a stored derived
+number with no checker, and it goes stale silently if `max_acceptable_wa` ever
+changes. Treat it as documentation of the check that was made, not as the check.
 
 **2. Oracle confidence.** The batch selected rows the oracle put below 4.0, but
 an `oracle_wa` of 3.95 is not a negative — it is a coin flip against a 4.0 cut on
@@ -190,7 +207,7 @@ fact** — and it is exactly the line the Kixikila adjudication warned about
 crossing carelessly. One ruling covers all three and probably a recurring class.
 Held rather than guessed.
 
-### Not held — recorded, same class as accepted rows (2)
+### Q3. Held for curation, not for evidence (2) — the third slice of the 11
 
 `science_plos_one_acf925e84260` (measuring trust in public health authorities,
 IRT — raw 4.356, oracle 3.00) and `science_mdpi_sustainability_b578b7a29fa9`
@@ -204,7 +221,9 @@ rediscovered.
 
 ## Two side observations, filed here so they are not lost
 
-**Every accepted row has `gatekeeper_applied: false` and `tier: medium`.** The
+**Every accepted row has `tier: medium`** (the `gatekeeper_applied: false` seen in
+the source batches is NOT carried into `uplifting.jsonl` — do not look for it
+there). The
 raw score put all seven above the 4.0 op-point — they surfaced — while
 percentile normalization mapped them as low as **0.287** (papaya oil). That is
 ADR-014/ADR-022 working as designed (visibility is raw, tier is rank), and it is

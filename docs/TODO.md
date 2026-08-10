@@ -1,14 +1,14 @@
 # LLM Distillery - TODO
 
-## 🟢 2026-08-10 — #102 step 2 DONE + the 21 `solutions_story` candidates adjudicated. Read this block first.
+## 🟢 2026-08-10 — #102 (uplifting v7 specificity) step 2 DONE + the 21 `solutions_story` candidates adjudicated. Read this block first.
 
 **NOTHING WAS DEPLOYED.** No config edit, no refit, no filter sync. Everything
 below is evidence and curated data.
 
-### 1. #102 step 2 — the op-point sweep, through the ADR-021 gate
+### 1. #102 step 2 — the op-point sweep, through the ADR-021 ground-truth gate
 
 **`docs/evidence/2026-08-10-uplifting-v7-threshold-sweep-102.md`**,
-machine-readable at `filters/uplifting/v7/threshold_sweep.json`.
+machine-readable at `docs/evidence/2026-08-10-uplifting-v7-threshold-sweep.json`.
 
 **Moving 4.0 → 4.5 is a real specificity gain, not noise.** FPR **8.11% →
 2.70%**; specificity bands **[0.901, 0.941] vs [0.957, 0.982] — DISJOINT**. The
@@ -68,36 +68,51 @@ sweep, 216 → 193, and recall stopped being comparable across thresholds); the
 overlap check now prints **DISJOINT** explicitly instead of only warning.
 New: `scripts/verification/parity_dump_to_gate_input.py`.
 
-### 1b. b650's GPU WORKS — and pinning production's stack made parity WORSE
+### 1b. b650's GPU WORKS — and pinning production's stack CLEARS THE BOX COMPLETELY
 
-**`docs/evidence/2026-08-10-b650-gpu-production-stack-parity.md`.** New dump:
-`datasets/parity/uplifting_v7_test660_b650-GPU-prodstack_2026-08-10.jsonl`.
+**`docs/evidence/2026-08-10-b650-gpu-production-stack-parity.md`.** Two new dumps:
+`…_b650-GPU-prodstack_…` and `…_b650-CPU-prodstack_…` in `datasets/parity/`.
 
-**Use `~/llm-distillery/venv-prodparity` on b650. ~2 min per 660 rows** (vs ~16
-on b650 CPU, ~30 on gpu-server CPU). **No sudo was needed** — the old venv is
-built on the system python (`home = /usr/bin`, no headers); `uv python install
-3.11` downloads a standalone CPython that ships them. Built to production's
-frozen versions. The old `venv/` is untouched (the 08-09 dumps cite it).
+**Use `~/llm-distillery/venv-prodparity` on b650.** **No sudo was needed** — the
+old venv is built on the system python (`home = /usr/bin`, no headers); `uv
+python install 3.11` downloads a standalone CPython that ships them. The old
+`venv/` is untouched (the 08-09 dumps cite it as provenance).
 
-**The finding, and it is the opposite of what the build was meant to show:
-matching production's library versions made agreement WORSE.** Bit-identical
-2.3% → **0.6%**; rows over the #95 floor 1 → 3; **a verdict flip appears at 4.0
-where there had been none**. The residual is hardware/kernel level. **You cannot
-clear a box by pinning its library versions.**
+**THE HEADLINE, and it reverses what I wrote three hours earlier: on CPU with
+production's pins, b650 is 660/660 rows BIT-IDENTICAL to production, with ZERO
+verdict flips at every threshold 4.0–5.0.** Different machine, different site,
+different python patch level — not one score differs. **b650-CPU-prodparity is a
+production-exact measuring instrument**; quote its numbers without qualification.
+That removes the "only free between pipeline cycles" constraint from every future
+threshold question.
 
-**And it settles the retraction above.** On production's exact stack, on CUDA,
-**the same three articles flip at 4.5**, same direction, same specificity
-0.9662. A proximity control kills the "it's just whatever is nearest the cut"
-reading: of **18** production rows in [4.30, 4.50) only those **3** flip, while
-one at **4.4870 — closer to the threshold — does not**. Systematic and
-article-specific. All three are non-English; n=3, so that is not a claim.
-**None of this touches #102**: box effect 0.0068 vs a 4.0→4.5 gain of 0.054.
+**Decomposed one variable at a time** (this is what the fourth run bought):
+
+| change | bit-identical | flips @4.0 | flips @4.5 |
+|---|---|---|---|
+| **host** (gpu-server CPU → b650 CPU, pins held) | **660/660** | **0** | **0** |
+| **library stack** (b650 CPU, old pins → prod pins) | 15/660 | 0 | 3 |
+| **device** (b650, CPU → CUDA, pins held) | 4/660 | **1** | 3 |
+
+**⚠️ I published the opposite of this at midday and it was confounded.** I wrote
+*"matching the library stack made agreement WORSE"* and hardened it into a rule —
+*"you cannot clear a box by pinning its library versions"* — across five surfaces.
+The comparison changed the stack **and** the device at once. The review battery
+caught it; a ~16-min run on the free box settled it. **Pinning works, completely.**
+
+**New open question, and it is not small:** CPU-vs-CUDA on the student is worth
+**1 verdict flip at the deployed 4.0 op-point** and 3 at 4.5 (max |Δ| 0.1956).
+**Production SERVES on GPU, while `ground_truth_gate.json` and the entire #102
+sweep were measured on CPU.** The deployed numbers carry that term and nobody has
+quantified it end-to-end.
 
 **`constraints/production-gpu-server.txt`'s documented install command is
 UNSATISFIABLE** — found by running it. `requirements.txt` needs
-`datasets>=2.14.0,<3.0.0` → `fsspec<=2024.6.1`, while `torch==2.11.0` needs
-`fsspec==2026.1.0`; **production's serving venv has no `datasets` at all**. The
-header now carries a command that works.
+`datasets>=2.14.0,<3.0.0`, every version of which caps `fsspec<=2024.6.1`, while
+**the constraints file itself** pins `fsspec==2026.1.0` and a `-c` file is a pin.
+Production's serving venv has **no `datasets` at all**. *(A first fix blamed
+torch for the fsspec pin; torch declares `fsspec>=0.8.5` — wrong mechanism, right
+conclusion.)* The header now carries a command that works.
 
 **`sadaltager` is predicted to need the same `uv python install` fix. Untested.**
 
@@ -120,7 +135,7 @@ header now carries a command that works.
 puts on its **own 7.3/10 and 5.8/10 good examples**. So "uplifting is absorbing
 solutions-lens material" was an artifact of reading it as routing, and the
 ADR-015 overlap defence covers **2 rows, not 21**. The real dominant class in the
-4.0–4.5 band is **academic-abstract register (9 of 21)** — abstract prose
+21 is **academic-abstract register (9 of 21; 6 of the 13 in the 4.0–4.5 band)** — abstract prose
 supplying benefit vocabulary and a high `evidence_level` with no beneficiary in
 the text.
 
@@ -136,9 +151,34 @@ did not fire on an aspiration with no programme behind it (Namibian minister).
 **Owner call still open — one question, not eleven:** three held rows are good
 articles in an adjacent lens (new frog species, Buenos Aires estancia, Antalya
 nomadic tents). *"Delight/discovery is not uplifting"* is an editorial line, not
-a fact, and one ruling covers the class. The other 8 holds are mechanical (a
-second oracle pass). **The other 13 candidates (`doom_framed` 7,
+a fact, and one ruling covers the class. The other 8 split **6 + 2**: six are
+mechanical (a second oracle pass — `oracle_wa` in 3.5–4.0), two are valid accepts
+left out so one register would not take 5 of 11 rows — a curation choice, not a
+measurement gap. **The other 13 candidates (`doom_framed` 7,
 `community_building` 3, `speculation` 2, `politics` 1) are untouched.**
+
+### 2b. The review battery found 3 blockers in my own same-day work
+
+`/review-changes` at HIGH tier, 6 lenses. Worth recording because every finding
+was in work committed hours earlier and none was caught by 273 green tests:
+
+1. **A guard that did not guard.** `parity_dump_to_gate_input.py` refused
+   "uncalibrated" output by checking `load_calibration` returned something truthy
+   — but a calibration file with a partial `dimensions` block is truthy, and
+   `apply_calibration` passes those dims through raw. Measured cost: recall 0.759
+   / spec 0.914 against the true 0.736 / 0.919, printed under a success line.
+   This repo's signature defect, in a guard whose own message cites #98. Fixed.
+2. **An evidence file inside a deployed filter package.** `threshold_sweep.json`
+   sat in `filters/uplifting/v7/`; `deploy_to_nexusmind.sh:137` is an unfiltered
+   `cp -r`, and a `--dry-run` would leave it **untracked** under `filters/`,
+   where `deploy_filters.sh`'s `scorer_untracked_blocking()` runs in the every-4h
+   `ExecStartPre` — **the scorer would refuse to start.** Moved to
+   `docs/evidence/`. **`ground_truth_gate.json` still carries the same hazard.**
+3. **A confounded causal claim** (see 1b) and **a vacuous statistical argument**
+   (see 1). Plus: a DISJOINT verdict I added that fires 23.7% of the time when a
+   model is compared against a subsample of *itself* — reworded to state only
+   what it excludes; a silent all-zeros gate report when `--recompute-model-wa`
+   is omitted — now a hard error; and ~12 doc-level errors, all fixed.
 
 ### 3. Housekeeping
 
@@ -282,12 +322,16 @@ framework repo** (`294d83c`) — owner's to push.
   `/home/hcl/gpu-server/nexusmind-scorer/venv` with
   `PYTHONPATH=/home/hcl/NexusMind`. Read it off `systemctl cat`. I published
   numbers from the wrong interpreter and had to redo them.
-- **b650 cannot run the Gemma student on GPU** — ~~triton fails to compile its
-  CUDA helper (`gcc` linking `libcuda.so.1`)~~ **CORRECTED 2026-08-09 night: the
-  cause is a missing `python3.12-dev`, not CUDA. See the night block at the top
-  of this file.** Workaround unchanged: `CUDA_VISIBLE_DEVICES=""`. Timing
-  correction too — the 660-row split takes **~16 min** on b650 and **~30 min** on
-  gpu-server's CPU, not ~7 min. The e5 probe path is unaffected.
+- ~~**b650 cannot run the Gemma student on GPU**~~ — **SOLVED 2026-08-10, and it
+  needed no sudo. Use `~/llm-distillery/venv-prodparity` (~2 min per 660 rows).**
+  `uv python install 3.11` downloads a standalone CPython that ships the headers
+  triton wants; the old venv was built on the system python, which does not. The
+  diagnosis history, kept because both readings were wrong once: ~~triton fails
+  to compile its CUDA helper (`gcc` linking `libcuda.so.1`)~~ → **corrected
+  2026-08-09 night to a missing `python3.12-dev`** (right cause, wrong remedy —
+  the apt install was never run). Timing correction stands: on CPU the 660-row
+  split takes **~16 min** on b650 and **~30 min** on gpu-server, not ~7. The e5
+  probe path was never affected.
 - **Matching articles by source prefix silently grabs the wrong one** — there
   are two `australian_abc_au` and two `south_african_namibian` rows in play.
   Use exact ids with an assert.

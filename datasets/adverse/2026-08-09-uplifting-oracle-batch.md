@@ -1,8 +1,23 @@
 # Candidates — uplifting v7 oracle batch, 2026-08-09
 
+> ### ⚠ Superseded in part, 2026-08-10 — read the adjudication first
+>
+> **This note's central reading is wrong.** It says the batch shows *"uplifting
+> is absorbing solutions-lens material"* and that ADR-015 lens overlap *"decides
+> most of the batch"*. It does not. `content_type: solutions_story` is the
+> oracle's **residual bucket** — the value left when none of the prompt's five
+> penalty checks applies — and it is the tag the prompt puts on its **own 7.3/10
+> and 5.8/10 good examples**. The overlap defence covers **2 rows, not 21**; the
+> dominant class is academic-abstract register (9 of 21).
+> [`2026-08-10-uplifting-oracle-batch-adjudication.md`](2026-08-10-uplifting-oracle-batch-adjudication.md).
+>
+> **What still stands:** how the batch was built, the band/precision table, and
+> all three caveats in "Three things to establish" — including caveat 3, which
+> this session's work bore out.
+
 **These are NOT adverse rows. They are unadjudicated candidates**, in
-`candidates-2026-08-09-uplifting-oracle-batch.jsonl`, and they must not be fed
-to a training run in this state.
+[`candidates/2026-08-09-uplifting-oracle-batch.jsonl`](candidates/2026-08-09-uplifting-oracle-batch.jsonl),
+and they must not be fed to a training run in this state.
 
 The precedent is `2026-08-05-ovr-flag-adjudication.md` in this directory, which
 excluded one of five staged rows and recorded why: *"Labelling this adverse
