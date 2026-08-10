@@ -1,0 +1,62 @@
+{
+  "threshold": 4.0,
+  "truth_threshold": 4.0,
+  "gatekeeper_cap": 3.42,
+  "noise_floor": 0.16,
+  "n_labeled": 738,
+  "models": {
+    "belonging": {
+      "n": 738,
+      "positives": 85,
+      "truth_threshold": 4.0,
+      "recall": 0.6,
+      "precision": 0.8360655737704918,
+      "specificity": 0.9846860643185299,
+      "f1": 0.6986301369863014,
+      "spearman": 0.7226231532719659,
+      "mae": 0.48603923875325,
+      "tp": 51,
+      "fn": 34,
+      "fp": 10,
+      "tn": 643,
+      "noise_floor": 0.16,
+      "n_indeterminate": 7,
+      "indeterminate_by_cell": {
+        "tp": 5,
+        "fn": 2,
+        "fp": 0,
+        "tn": 0
+      },
+      "recall_band": [
+        0.5411764705882353,
+        0.6235294117647059
+      ],
+      "precision_band": [
+        0.8214285714285714,
+        0.8412698412698413
+      ],
+      "specificity_band": [
+        0.9846860643185299,
+        0.9846860643185299
+      ],
+      "f1_band": [
+        0.652482269503546,
+        0.7162162162162162
+      ]
+    }
+  },
+  "provenance": {
+    "measured": "2026-08-10",
+    "why": "belonging v1 was DEPLOYED WITH NO ACCURACY NUMBER OF ANY KIND. This is the first one. It closes the ADR-021 gap for this filter, and completes the fleet: before today only 3 of 6 deployed filters had ever been measured, so llm-distillery#102's 'uplifting is the specificity outlier' was a claim over half the population.",
+    "data": "datasets/training/belonging_v1/test.jsonl (held-out oracle test split; gitignored, lives on b650 and gpu-server)",
+    "calibration": "the DEPLOYED filters/belonging/v1/calibration.json -- NOT a fresh fit, so these describe what production computes",
+    "predictions": "datasets/parity/belonging-v1_test_b650cpu-prodstack_2026-08-10.jsonl",
+    "box": "b650, CPU, ~/llm-distillery/venv-prodparity (py 3.11.15, torch 2.11.0+cu130, transformers 5.0.0, peft 0.18.1). NOT the serving box -- but that configuration was measured BIT-IDENTICAL to gpu-server's serving venv on 2026-08-10 (660/660 rows, 0 verdict flips at every threshold 4.0-5.0, docs/evidence/2026-08-10-b650-gpu-production-stack-parity.md), so these are production's numbers for the CPU path.",
+    "device": "cpu",
+    "caveats": [
+      "MEASURED ON CPU; PRODUCTION SERVES ON GPU. CPU-vs-CUDA on the student is worth 1 verdict flip at a 4.0 op-point and 3 at 4.5 on uplifting v7 (max |delta| 0.1956). That term is UNQUANTIFIED for this filter. See llm-distillery#104.",
+      "Adapter weights were md5-verified against production's own copy before scoring (gpu-server llm-distillery for belonging/cultural_discovery; NexusMind's filters/ tree for investment_risk, whose llm-distillery copy on gpu-server lives under the HYPHENATED name 'investment-risk').",
+      "DO NOT RANK FILTERS ON `mae` (ADR-023). Each split has its own positive rate -- uplifting v7 32.7%, investment_risk v6 15.6%, solutions v6 16.2%, nature_recovery v4 15.3%, cultural_discovery v5 8.8%, belonging v1 11.5% -- and a more enriched split carries mechanically larger per-article error for identical quality. Only recall and specificity are conditional on the true class and comparable across filters."
+    ]
+  }
+}
