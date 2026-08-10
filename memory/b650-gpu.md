@@ -42,9 +42,30 @@ ssh b650-gpu        # account is `jeroen` (NOT jwasys); works from situla and sa
   bf16-quantised (~0.03 steps), so most disagreements are hidden, not absent.
   Still unmeasured for the student: **CPU vs CUDA** (the 5.4e-6 above is the
   probe's). Full record: `docs/evidence/2026-08-09-cross-box-parity-uplifting-v7.md`.
-- 🚫 **b650 cannot run the Gemma-3-1B student on GPU — but the cause is NOT CUDA,
-  and it is fixable with one apt package.** *(Diagnosis corrected 2026-08-09
-  evening; the original note below was wrong.)* torch 2.13 JITs a triton kernel,
+- ✅ **SOLVED 2026-08-10 — b650 runs the student on GPU. Use
+  `~/llm-distillery/venv-prodparity`.** ~2 min per 660 rows, vs ~16 min on CPU
+  here and ~30 on gpu-server's CPU. **No sudo was needed.** The old venv is built
+  on the *system* python (`pyvenv.cfg` → `home = /usr/bin`), which ships no
+  headers; `uv` can download a standalone CPython that does:
+  ```bash
+  uv python install 3.11                                    # ships include/python3.11/Python.h
+  uv venv ~/llm-distillery/venv-prodparity --python 3.11
+  # then torch from the cu130 index, then the inference subset -- exact commands
+  # in the header of constraints/production-gpu-server.txt
+  ```
+  Built to **production's frozen versions** (torch 2.11.0+cu130, transformers
+  5.0.0, peft 0.18.1, numpy 2.4.2, sklearn 1.8.0). The old `venv/` is untouched,
+  because the 2026-08-09 parity dumps cite it as provenance.
+  **But pinning the stack did NOT make b650 agree with production** —
+  bit-identical rows fell 2.3% → 0.6% and a verdict flip appeared at 4.0 where
+  there had been none. The residual is hardware/kernel level. b650 is still
+  cleared at 4.0 and **not** at 4.5 (same 3 articles flip, on both a stack change
+  and a device change). Use it freely for within-box differences — sweeps,
+  ablations, ranking — and check flips before quoting an absolute number at a
+  production op-point. `docs/evidence/2026-08-10-b650-gpu-production-stack-parity.md`.
+  **`sadaltager` is predicted to need the same fix; untested.**
+- 🗄️ **Historical — why the GPU was blocked (superseded by the entry above).**
+  *(Diagnosis corrected 2026-08-09 evening; the original note below was wrong.)* torch 2.13 JITs a triton kernel,
   triton compiles its `cuda_utils` helper at first use, and that gcc call dies on:
   `cuda_utils.c:9:10: fatal error: Python.h: No such file or directory`.
   **`python3.12-dev` is not installed** (`/usr/include/python3.12` does not
@@ -56,16 +77,16 @@ ssh b650-gpu        # account is `jeroen` (NOT jwasys); works from situla and sa
   came from the tail of the `CalledProcessError` (which prints the command line,
   ending in the `-l:libcuda.so.1` flag) rather than from gcc's own stderr — the
   fatal-error line is further up the traceback.
-  **Fix (untried, needs sudo — password in owner's Bitwarden):**
-  `sudo apt install python3.12-dev`, then re-run the repro. Repro in ~10 s:
+  **Fix as originally proposed (needs sudo, NEVER RUN — the uv route above
+  solved it without root):** `sudo apt install python3.12-dev`. Repro in ~10 s:
   ```bash
   ssh b650-gpu '~/llm-distillery/venv/bin/python /tmp/tk.py'   # trivial triton kernel
   ```
   (write `/tmp/tk.py` as a *file* — a `python -c` heredoc fails differently,
   `ValueError: @jit functions should be defined in a Python file`, which is an
   artefact of the test and not this bug.)
-  Until then the workaround stands: `CUDA_VISIBLE_DEVICES=""`, ~7 min per 660
-  articles at ~740% CPU. The e5 probe path never JITs a triton kernel, which is
+  The old CPU workaround (`CUDA_VISIBLE_DEVICES=""`) took ~16 min per 660
+  articles, not the ~7 first recorded here. The e5 probe path never JITs a triton kernel, which is
   why probe work runs clean on GPU here regardless.
 - ⚠️ **Read the venv, not `which python3`.** gpu-server's *system* python is a
   different stack (torch 2.5.1+cu124, ST 5.2.3, **no peft**) from the one systemd

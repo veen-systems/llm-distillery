@@ -12,9 +12,16 @@ Produced by `scripts/verification/box_parity.py`, compared with
 | file | box | stack |
 |---|---|---|
 | `uplifting_v7_test660_gpuserver-serving-venv_2026-08-09.jsonl` | **gpu-server serving venv (production)** | py 3.11.2, torch 2.11.0+cu130, transformers 5.0.0, peft 0.18.1 |
-| `uplifting_v7_test660_b650_2026-08-09.jsonl` | b650 | py 3.12.3, torch 2.13.0+cu130, transformers 5.14.1, peft 0.19.1 |
+| `uplifting_v7_test660_b650_2026-08-09.jsonl` | b650, **CPU** | py 3.12.3, torch 2.13.0+cu130, transformers 5.14.1, peft 0.19.1 |
+| `uplifting_v7_test660_b650-GPU-prodstack_2026-08-10.jsonl` | b650, **CUDA** | py 3.11.15, torch 2.11.0+cu130, transformers 5.0.0, peft 0.18.1 — **production's frozen stack** |
 
-Both CPU-only, batch size 16, same 660-row `uplifting_v7` held-out oracle test
+The first two are CPU-only; the third is the same box on CUDA with production's
+library versions pinned from `constraints/production-gpu-server.txt`, which is
+how CPU-vs-CUDA on the student was finally separated from the library stack
+(`docs/evidence/2026-08-10-b650-gpu-production-stack-parity.md`). **Matching the
+stack made agreement WORSE** — bit-identical 2.3% → 0.6%, and a verdict flip
+appears at 4.0 where there had been none — so the residual is hardware/kernel
+level, not library level. All three: batch size 16, same 660-row `uplifting_v7` held-out oracle test
 split, md5-identical adapter weights / tokenizer / `inference.py` /
 `base_scorer.py` / `config.yaml` / `calibration.json` / `filters/common/*`.
 

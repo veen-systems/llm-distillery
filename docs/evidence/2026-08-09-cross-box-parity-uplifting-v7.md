@@ -2,33 +2,39 @@
 
 **Measured 2026-08-09 (night session). uplifting v7, 660-row held-out oracle test split.**
 
-> ### ⚠ Partly retracted 2026-08-10 — read this first
+> ### ✅ This document stands. A retraction posted against it earlier on 2026-08-10 was itself wrong and has been withdrawn.
 >
-> **"b650 is cleared at 4.0 and NOT cleared at 4.5" does not survive the #95
-> band**, and the band was available when this was written. Run through
-> `ground_truth_gate.py`, the two boxes' **specificity bands OVERLAP at every
-> threshold 4.0–5.0**; at 4.5 the between-box gap is **0.0068** against a
-> within-box batch-noise band of **0.0248** — 3.7× narrower than the
-> instrument's own resolution — and at 4.75/5.0 the sign **reverses** (b650
-> higher), which is what noise looks like and a systematic box bias does not.
-> Under the owner's 2026-08-06 rule the two boxes are **NOT DISTINGUISHABLE**
-> here.
+> **History, because the mistake is more instructive than the result.** On the
+> morning of 2026-08-10 I banner-retracted the "not cleared at 4.5" conclusion
+> below, on the grounds that the two boxes' **#95 specificity bands overlap**.
+> That was **the wrong instrument**. The #95 band answers *"how much could this
+> metric move if batch composition changed?"* — and these parity runs hold batch
+> composition **fixed** (same rows, same order, same batch size 16). Batch noise
+> is not the source of variation between them, so a band built from it cannot
+> license "indistinguishable". I reached for the repo's most-used caveat without
+> checking that its premise applied.
 >
-> **What still stands:** every row-level measurement below — 3 verdict flips at
-> 4.5, max calibrated |Δ| **0.2008**, 2.3% bit-identical, signed mean +0.00018 —
-> and the principle **a box is cleared at a threshold, never in general**.
-> Absence of a measurable difference is not proof of none, so threshold work
-> should still prefer the serving box.
+> **A third run the same afternoon settled it.** b650 rebuilt on production's
+> *exact* frozen stack (torch 2.11.0+cu130, transformers 5.0.0, peft 0.18.1) and
+> run on **CUDA** flips **the same three articles** at 4.5, in the same
+> direction, to the same specificity 0.9662. A proximity control rules out "it's
+> just whatever is nearest the cut": of 18 production rows in [4.30, 4.50) only
+> those 3 flip, while a row at 4.4870 — *closer* to the threshold — does not.
+> **The difference is systematic and article-specific, and this document's
+> conclusion is correct as written.**
 >
-> **What does not:** the inference from those 3 flips to "b650 *measures a
-> different specificity* at 4.5", and the "Result" and "The consequence"
-> sections' framing below. Details and the full table:
-> [`2026-08-10-uplifting-v7-threshold-sweep-102.md`](2026-08-10-uplifting-v7-threshold-sweep-102.md).
+> Two things it did NOT establish, added by the later run: matching production's
+> library versions makes agreement **worse**, not better (bit-identical 2.3% →
+> 0.6%, and a new flip appears at 4.0), so the residual is hardware/kernel-level;
+> and the box effect (0.0068 specificity) is an order of magnitude smaller than
+> #102's 4.0→4.5 gain (0.054), so it governs *which machine may produce a
+> number*, never *what that number implies*.
+>
+> Full record: [`2026-08-10-b650-gpu-production-stack-parity.md`](2026-08-10-b650-gpu-production-stack-parity.md).
 
 ## One-line answer
 
-**b650 is cleared at the 4.0 op-point** — and the 4.5 half of this sentence is
-retracted above. Yesterday's
+**b650 is cleared at the 4.0 op-point and NOT cleared at 4.5.** Yesterday's
 `ground_truth_gate.json` numbers reproduce exactly on production's own
 interpreter, so #102's premise stands — but the candidate threshold it wants to
 move to sits inside the skew.
