@@ -1,13 +1,23 @@
 # #102 step 2 — `uplifting v7` operating point, through the ADR-021 gate
 
-**Measured 2026-08-10. Machine-readable: `filters/uplifting/v7/threshold_sweep.json`.**
+**Measured 2026-08-10. Machine-readable: `docs/evidence/2026-08-10-uplifting-v7-threshold-sweep.json`.**
+
+*(It lives here, not in the filter package. `deploy_to_nexusmind.sh:137` is an unfiltered `cp -r`, so a research artifact inside `filters/uplifting/v7/` ships to NexusMind and on to the GPU box — changing the scorer's `CODE_REVISION` hash for an evidence file. Worse, a `--dry-run` copies without committing, leaving it UNTRACKED under `filters/`, and `deploy_filters.sh`'s `scorer_untracked_blocking()` runs in the every-4h `ExecStartPre` — the scorer would refuse to start. Found by the review battery. **`ground_truth_gate.json` still sits in the package and carries the same hazard** — pre-existing, not changed here.)*
 
 ## One-line answer
 
-**Moving `uplifting v7` from 4.0 to 4.5 is a real specificity gain, not noise** —
-FPR 8.11% → 2.70%, and the two specificity bands are **disjoint**. It costs a
-real amount of recall (0.736 → 0.611, also disjoint). Under ADR-023 that trade is
-the right direction. **Nothing was changed; this is the evidence, not the flip.**
+**Moving `uplifting v7` from 4.0 to 4.5 cuts FPR from 8.11% to 2.70% and recall
+from 0.736 to 0.611 — 24 fewer false positives for 27 more false negatives.**
+Under ADR-023 that trade is the right direction. **Nothing was changed; this is
+the evidence, not the flip.**
+
+> **Correction, 2026-08-10 (review battery).** The first version of this document
+> argued the specificity gain was "real, not noise" because the #95 bands at 4.0
+> and 4.5 are **disjoint**. That argument was **vacuous** and has been removed —
+> see [4.0 vs 4.5](#40-vs-45-what-the-numbers-do-and-do-not-establish) below. It
+> was the **third** misuse of the #95 band in one day, in the section directly
+> above the one apologising for the second. The *numbers* are unchanged and were
+> reproduced independently; only the argument for them was wrong.
 
 ## What was run, and why it is cheap now
 
@@ -36,10 +46,24 @@ The gate could not answer #102's question as it stood.
    what "on-lens" *means*, so the positive set changed underneath the sweep (216
    → 193 positives between 4.0 and 4.5) and recall at one threshold was not
    comparable to recall at another. New `--truth-threshold` pins the oracle cut.
-   Default is unchanged, so every prior run and all 270 unit tests reproduce.
-3. **The overlap check only ever said "OVERLAP".** It now also prints DISJOINT
-   with the two bands, so "we checked and the difference is real" is a visible
-   result rather than the absence of a warning.
+   Default is unchanged: every prior run reproduces **numerically** (proven by
+   running both versions of the script over the same inputs — all pre-existing
+   report keys bit-identical), and the suite is at 273 passing. The *stdout* is
+   not identical: two-model runs now emit the extra lines described below.
+3. **The overlap check only ever said "OVERLAP".** It now also prints the
+   non-overlapping case with both bands — worded to say exactly what it excludes
+   (batch composition) and nothing more. It does **not** say the difference is
+   real: a review measurement on 2026-08-10 compared one model against an 80-row
+   subsample of *its own* predictions — a guaranteed zero effect — and got
+   disjoint specificity bands in **71 of 300 seeds (23.7%)**. The check also now
+   covers **recall** (ADR-023 makes it the floor) and warns when two models were
+   evaluated on different populations.
+
+   **Note this check played no part in #102's own conclusion**: the reproduce
+   block below passes a single `--model` per threshold, so the pair loop is
+   empty and neither line prints. The 4.0-vs-4.5 comparison was read off the
+   sweep table by hand — and, as the next section explains, should not have been
+   framed as a band test at all.
 
 ## The sweep
 
@@ -51,35 +75,55 @@ the student's bar moves.
 | **4.00** (deployed) | 159 | 57 | 36 | 408 | 0.7361 | **0.9189** | **8.11%** | [0.901, 0.941] | [0.685, 0.773] | 37 |
 | 4.25 | 144 | 72 | 24 | 420 | 0.6667 | 0.9459 | 5.41% | [0.932, 0.962] | [0.630, 0.713] | 31 |
 | **4.50** | 132 | 84 | 12 | 432 | 0.6111 | **0.9730** | **2.70%** | [0.957, 0.982] | [0.583, 0.644] | 24 |
-| 4.75 | 121 | 95 | 7 | 437 | 0.5602 | 0.9842 | 1.58% | [0.977, 0.989] | [0.519, 0.593] | 21 |
-| 5.00 | 103 | 113 | 5 | 439 | 0.4769 | 0.9887 | 1.13% | [0.986, 0.993] | [0.417, 0.542] | 30 |
+| 4.75 | 121 | 95 | 7 | 437 | 0.5602 | 0.9842 | 1.58% | [0.978, 0.989] | [0.519, 0.593] | 21 |
+| 5.00 | 103 | 113 | 5 | 439 | 0.4769 | 0.9887 | 1.13% | [0.987, 0.993] | [0.417, 0.542] | 30 |
 
 The point estimates match yesterday's hand-rolled sweep exactly. What is new is
 that they now come out of the ADR-021 gate with bands attached, which is what
 step 2 asked for.
 
-## 4.0 vs 4.5 under the #95 band rule
+## 4.0 vs 4.5: what the numbers do and do not establish
 
-| metric | band at 4.0 | band at 4.5 | verdict |
-|---|---|---|---|
-| **specificity** | [0.9009, 0.9414] | [0.9572, 0.9820] | **DISJOINT — real** |
-| **recall** | [0.6852, 0.7731] | [0.5833, 0.6435] | **DISJOINT — real** |
-| F1 | [0.7255, 0.8166] | [0.6981, 0.7658] | OVERLAP — not distinguishable |
+**The #95 band cannot adjudicate this comparison, and the first version of this
+document wrongly used it to.** Here is why, because the reasoning generalises.
 
-**The F1 overlap is the expected result, not a contradiction.** F1 is symmetric
-and this is an asymmetric problem: it nets a real specificity gain against a real
-recall loss and reports nothing. That is precisely what ADR-023 says not to
-optimise. Read specificity and recall; do not read F1 here.
+With the truth cut **pinned** and the predictions **fixed**, raising the student's
+bar can only move articles from predicted-positive to predicted-negative. So
+specificity is **monotone non-decreasing** in the threshold and recall
+**monotone non-increasing** — by construction, for every possible batch
+realisation. "The specificity went up when I raised the bar" is arithmetic, not a
+finding, and a disjointness test on it answers a question nobody asked.
 
-**The trade: 24 fewer false positives for 27 more false negatives.** Under
-ADR-023 — *"letting junk through is way worse than not catching positives"* —
-those are not equal-weight units, and 4.5 puts uplifting's FPR (2.70%) between
-`solutions v6` (2.8%) and `nature_recovery v4` (2.1%) instead of 3–4× above both.
+The instrument even contradicts itself on this data: **4.0 vs 4.25 bands
+overlap** ([0.901, 0.941] vs [0.932, 0.962]), so by the rule the first draft
+applied, a provably-signed improvement would read as "not distinguishable".
 
-**Both numbers transfer to production, and this is the reason to trust them at
-all**: recall and specificity are conditional on the true class, so the split's
-32.7% enrichment does not distort them. Precision, MAE and F1 on this split do
-not transfer, which is why they are excluded from the argument.
+**What is actually established is the magnitude and the trade**, which need no
+band at all:
+
+| | 4.0 (deployed) | 4.5 |
+|---|---|---|
+| false positives | 36 | **12** |
+| false negatives | 57 | **84** |
+| FPR | 8.11% | **2.70%** |
+| recall | 0.7361 | 0.6111 |
+
+**24 fewer false positives for 27 more false negatives.** Under ADR-023 —
+*"letting junk through is way worse than not catching positives"* — those are not
+equal-weight units, and 4.5 puts uplifting's FPR between `solutions v6` (2.8%)
+and `nature_recovery v4` (2.1%) instead of 3–4× above both.
+
+**Both rates transfer to production, and that is the reason to trust them**:
+recall and specificity are conditional on the true class, so the split's 32.7%
+enrichment does not distort them. Precision, MAE and F1 on this split do not
+transfer, which is why they are excluded from the argument. F1 in particular is
+symmetric and this problem is not — it nets a real specificity gain against a
+real recall loss and reports nothing.
+
+**What the bands ARE good for here** is the honest uncertainty on each single
+point estimate: at 4.0 specificity could sit anywhere in [0.901, 0.941] depending
+on batch composition, and at 4.5 in [0.957, 0.982]. Quote those ranges, not the
+third decimal.
 
 ## The cross-box question, and a correction I made and then had to withdraw
 
@@ -179,9 +223,15 @@ The 27 articles moving TP → FN between 4.0 and 4.5, by oracle score: median
 weakest quarter of the positive set, not from the lens's best material.
 
 **They are enriched in academic/preprint sources — 22.2% (6 of 27), against
-12.2% of the 189 surviving positives and 7.9% of the whole split.** The six are
-arXiv (×2), PubMed, Frontiers Pharmacology, a probiotics trial, and a
-genetic-engineering-news piece on mRNA in *mice*. That is the same class the
+12.2% of the other 189 oracle-positives and 7.9% of the whole split.** The six
+are **arXiv ×3**, PubMed (the perioperative-probiotics trial), Frontiers
+Pharmacology, and a genetic-engineering-news piece on mRNA in *mice*. *(An
+earlier draft listed "arXiv ×2 … and a probiotics trial", double-counting the
+PubMed row and undercounting arXiv; the total 6 was right, the breakdown was
+not. "189 surviving positives" was also loose — 189 = 216 − 27 includes the 57
+already missed at 4.0; only **132** survive as true positives at 4.5, where the
+academic share is 10.6%, a smaller contrast than stated.)* Fisher two-sided
+**p = 0.22**. That is the same class the
 2026-08-10 adverse adjudication found to be the dominant off-lens failure — so
 part of the measured "recall cost" is the oracle and the student sharing a blind
 spot, exactly the effect CLAUDE.md warns about. **n=6: directionally consistent,

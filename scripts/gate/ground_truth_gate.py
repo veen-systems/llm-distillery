@@ -260,8 +260,9 @@ def evaluate(truth, pred, medium=MEDIUM, noise_floor=NOISE_FLOOR, truth_threshol
     """truth_threshold pins what "on-lens" MEANS while `medium` sweeps the student's bar.
 
     Default (None) keeps both cuts tied, which is the right question when judging
-    two models at the deployed op-point and reproduces every run before
-    2026-08-10. Pin it when sweeping `medium` (#102): otherwise the positive set
+    two models at the deployed op-point and reproduces every NUMBER computed
+    before 2026-08-10 (verified by running both versions over the same inputs).
+    The printed OUTPUT is not identical -- two-model runs gained extra lines. Pin it when sweeping `medium` (#102): otherwise the positive set
     changes with the threshold -- uplifting v7 goes 216 -> 193 positives between
     4.0 and 4.5 -- and recall at one threshold is not comparable to recall at
     another, because it is measured against a different population.
@@ -371,7 +372,22 @@ def main():
     Path(args.report).parent.mkdir(parents=True, exist_ok=True)
     Path(args.report).write_text(json.dumps(report, indent=2))
 
-    hdr = f"{'model':6} {'recall':>7} {'prec':>7} {'spec':>7} {'f1':>7} {'spearman':>9} {'mae':>6}"
+    # A model whose records all fail to load scores an all-zero row -- and the
+    # header prints len(truth), not the matched count, so the table looks
+    # populated. The commonest cause is feeding per-dimension `scores` (what
+    # scripts/verification/parity_dump_to_gate_input.py emits) WITHOUT
+    # --recompute-model-wa: load_scores then finds no `weighted_average` and
+    # drops every row. Silent zeros are worse than a crash here, because 0.000
+    # specificity reads as a catastrophically bad model rather than as no data.
+    empty = [n for n, m in report["models"].items() if m["n"] == 0]
+    if empty:
+        raise SystemExit(
+            f"model(s) {', '.join(empty)} matched 0 of {len(truth)} labelled ids.\n"
+            "Either the id sets are disjoint, or the file carries per-dimension `scores` with "
+            "no `weighted_average` and you did not pass --recompute-model-wa.\n"
+            "Refusing to print a table of zeros.")
+
+    hdr = f"{'model':6} {'n':>5} {'recall':>7} {'prec':>7} {'spec':>7} {'f1':>7} {'spearman':>9} {'mae':>6}"
     tcut = report["truth_threshold"]
     print(f"\nGround-truth gate vs held-out oracle labels "
           f"(student threshold {medium}, on-lens := oracle >= {tcut}, "
@@ -379,7 +395,7 @@ def main():
     print(hdr)
     print("-" * len(hdr))
     for name, m in report["models"].items():
-        print(f"{name:6} {m['recall']:7.3f} {m['precision']:7.3f} {m['specificity']:7.3f} "
+        print(f"{name:6} {m['n']:5d} {m['recall']:7.3f} {m['precision']:7.3f} {m['specificity']:7.3f} "
               f"{m['f1']:7.3f} {m['spearman']:9.3f} {m['mae']:6.3f}")
 
     if args.noise_floor > 0:
@@ -400,15 +416,34 @@ def main():
             # it is the objective, and two models can be indistinguishable on F1
             # while being distinguishable on the metric that decides the deploy
             # (or the reverse). Reporting only F1 overlap hides both cases.
-            for metric, key in (("specificity", "specificity_band"), ("F1", "f1_band")):
+            # Recall is checked too — ADR-023 makes it the floor, so a comparison
+            # that reports specificity without it is half an answer.
+            if ma["n"] != mb["n"]:
+                print(f"  ? {a} vs {b}: evaluated on DIFFERENT populations (n={ma['n']} vs "
+                      f"{mb['n']}). These bands model batch composition only, not a difference "
+                      f"in which articles were scored — the comparison below is not meaningful "
+                      f"until the id sets match.")
+            for metric, key in (("specificity", "specificity_band"),
+                                ("recall", "recall_band"), ("F1", "f1_band")):
                 ba, bb = ma[key], mb[key]
                 if ba[0] <= bb[1] and bb[0] <= ba[1]:
                     print(f"  ! {a} vs {b}: {metric} bands OVERLAP — NOT DISTINGUISHABLE at this "
                           f"threshold. Do not report the point difference as an effect (#95).")
                 else:
-                    print(f"  + {a} vs {b}: {metric} bands are DISJOINT "
-                          f"([{ba[0]:.3f}, {ba[1]:.3f}] vs [{bb[0]:.3f}, {bb[1]:.3f}]) — the "
-                          f"difference survives batch noise.")
+                    # Deliberately NOT phrased as "the difference is real". The band
+                    # models ONE source of variation (batch composition) and nothing
+                    # else -- not sampling error, not a population difference, not
+                    # cross-box skew (measured at |0.2008| on this very student,
+                    # LARGER than the 0.16 floor these bands are built from).
+                    # Measured 2026-08-10: comparing one model against an 80-row
+                    # subsample of ITS OWN predictions -- a guaranteed zero effect --
+                    # produced disjoint specificity bands in 71 of 300 seeds (23.7%).
+                    # Disjoint here excludes exactly one explanation. It endorses none.
+                    print(f"  + {a} vs {b}: {metric} bands do not overlap "
+                          f"([{ba[0]:.3f}, {ba[1]:.3f}] vs [{bb[0]:.3f}, {bb[1]:.3f}]). This rules "
+                          f"out batch composition as the WHOLE explanation — it is not evidence "
+                          f"the difference is real. Sampling error, differing populations and "
+                          f"cross-box skew are all unmodelled here.")
 
     print(f"\nReport: {args.report}")
 

@@ -57,10 +57,38 @@ def main():
         raise SystemExit("dump has no _meta line -- cannot know the dimension order")
     dims = meta["dims"]
 
+    # The truthy check above is NOT sufficient, and this is the exact #98 shape.
+    # `load_calibration` returns whatever well-formed JSON it finds, and
+    # `apply_calibration` does `if dim_name not in dims: continue` -- so a
+    # calibration file with a missing or partial `dimensions` block is TRUTHY,
+    # passes the guard, and lets the RAW LOGIT through untouched while this
+    # script prints its normal success line. Measured 2026-08-10 on uplifting v7:
+    # that path yields recall 0.759 / spec 0.914 against the true 0.736 / 0.919 --
+    # plausible, wrong, and silent. Found by the review battery, in a guard whose
+    # own error message cites #98.
+    cal_dims = set((cal or {}).get("dimensions") or {})
+    missing = [d for d in dims if d not in cal_dims]
+    if missing:
+        raise SystemExit(
+            f"{args.calibration} has no calibration curve for: {', '.join(missing)}.\n"
+            f"It covers {sorted(cal_dims) or '(nothing)'} but the dump needs {dims}.\n"
+            "apply_calibration() would pass those dimensions through UNCALIBRATED and "
+            "this script would report success. Refusing to emit.")
+
     n = 0
+    seen = set()
     with open(args.out, "w", encoding="utf-8") as out:
         for o in rows:
+            if o["id"] in seen:
+                raise SystemExit(f"duplicate id in dump: {o['id']}. The gate keys on id and would "
+                                 "silently keep only the last -- refusing to emit a file whose row "
+                                 "count overstates its content.")
+            seen.add(o["id"])
             raw = np.asarray([o["raw"][d] for d in dims], dtype=float)
+            if not np.all(np.isfinite(raw)):
+                bad = [d for d, v in zip(dims, raw) if not np.isfinite(float(v))]
+                raise SystemExit(f"non-finite raw score for {o['id']} on {bad}. Clamping would turn "
+                                 "NaN into 10.0 -- a maximum on-lens score. Refusing to emit.")
             cs = apply_calibration(raw, cal, dims)
             scores = {d: max(0.0, min(10.0, float(v))) for v, d in zip(cs, dims)}
             out.write(json.dumps({"id": o["id"], "scores": scores}) + "\n")

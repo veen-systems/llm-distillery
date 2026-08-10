@@ -82,9 +82,45 @@ def test_band_brackets_the_point_estimate():
     truth = {"a": 6.0, "b": 5.0, "c": 1.0, "d": 0.5}
     pred = {"a": 6.0, "b": 4.05, "c": 3.95, "d": 0.5}
     m = gt.evaluate(truth, pred)
-    for key in ("recall", "precision", "f1"):
+    # specificity included deliberately: ADR-023 makes it THE objective, it is
+    # what the DISJOINT/OVERLAP verdict is computed from, and it was the one band
+    # shipped without a test (found by review battery, 2026-08-10).
+    for key in ("recall", "precision", "specificity", "f1"):
         lo, hi = m[f"{key}_band"]
         assert lo <= m[key] <= hi
+
+
+def test_specificity_band_stays_in_unit_interval_and_denominator_is_invariant():
+    """tn+fp cannot move under the flips the band models -- both cells are truth-negatives."""
+    truth = {"a": 6.0, "b": 5.0, "c": 1.0, "d": 0.5, "e": 1.0}
+    pred = {"a": 6.0, "b": 4.05, "c": 3.95, "d": 0.5, "e": 4.02}
+    m = gt.evaluate(truth, pred)
+    lo, hi = m["specificity_band"]
+    assert 0.0 <= lo <= m["specificity"] <= hi <= 1.0
+    cells = m["indeterminate_by_cell"]
+    assert sum(cells.values()) == m["n_indeterminate"]
+    assert cells["fp"] + cells["tn"] <= m["fp"] + m["tn"]
+
+
+def test_truth_threshold_pins_the_positive_set_while_the_bar_sweeps():
+    """Without pinning, sweeping `medium` changes WHICH articles count as on-lens,
+    so recall at one threshold is not comparable to recall at another (#102)."""
+    truth = {"a": 6.0, "b": 4.2, "c": 4.6, "d": 1.0}
+    pred = {"a": 6.0, "b": 4.2, "c": 4.6, "d": 1.0}
+    pinned = [gt.evaluate(truth, pred, medium=t, truth_threshold=4.0) for t in (4.0, 4.5, 5.0)]
+    assert {m["positives"] for m in pinned} == {3}, "pinned truth must hold the positive set fixed"
+    assert [m["tp"] for m in pinned] == [3, 2, 1], "only the prediction side may move"
+
+    unpinned = [gt.evaluate(truth, pred, medium=t) for t in (4.0, 4.5, 5.0)]
+    assert [m["positives"] for m in unpinned] == [3, 2, 1], "unpinned, the positive set moves too"
+
+
+def test_default_truth_threshold_is_tied_to_medium():
+    """Back-compat: omitting truth_threshold must reproduce every pre-2026-08-10 run."""
+    truth = {"a": 6.0, "b": 4.2, "c": 1.0}
+    pred = {"a": 5.9, "b": 3.0, "c": 4.4}
+    assert gt.evaluate(truth, pred, medium=4.5) == gt.evaluate(truth, pred, medium=4.5,
+                                                               truth_threshold=4.5)
 
 
 def test_band_collapses_to_the_point_estimate_when_nothing_is_borderline():
