@@ -2172,6 +2172,26 @@ That is a two-second check and would have saved both rejections.
 **Root cause**: the script's stderr block-buffers when redirected to a file, so the log's mtime freezes while work continues.
 **Fix**: read CPU time, not the log — `awk '{print $14+$15}' /proc/<pid>/stat` twice, 15 s apart (9,275 ticks/15 s ≈ 618% CPU proved it alive). Sibling of the standing `pgrep` rule: the output *looks* like an answer.
 
+### Reaching for a familiar caveat without checking its premise (2026-08-10)
+**Problem**: retracted a correct cross-box finding because the two boxes' #95 specificity bands overlap — then withdrew the retraction the same afternoon. Third misuse of the same band in one day; the third was in the section directly above the one apologising for the second.
+**Root cause**: the #95 band quantifies **batch-composition** variance, and parity runs hold batch composition fixed. Wrong instrument. Fluency with a caveat felt like rigour.
+**Fix**: before invoking a band/floor/"not distinguishable", say what varies in *this* comparison and what the caveat's number was measured over. If the caveat's quantity is held constant, it is silent — not permissive, not prohibitive. Then reach for reproducibility across an independent configuration.
+
+### A two-arm comparison that moved two variables (2026-08-10)
+**Problem**: published "matching production's library stack made agreement WORSE" and hardened it into a rule across five surfaces, including a constraints file that steers future box builds. It was backwards.
+**Root cause**: arm A was b650-CPU-with-old-stack, arm B was b650-**CUDA**-with-new-stack. Stack and device moved together and the whole delta was attributed to the stack. The doc even disclosed the missing run in its own "Still unmeasured" section and drew the causal conclusion anyway.
+**Fix**: the fourth cell cost ~16 min on a free box and reversed the result — pinning gives **660/660 bit-identical**. If a claim names a cause, count the variables that moved; a disclosed gap is not a licence to conclude past it.
+
+### A guard whose predicate was true and whose purpose was defeated (2026-08-10)
+**Problem**: shipped a converter that "refuses to emit uncalibrated scores", verified by `if not cal: raise`. A calibration file with a partial `dimensions` block is truthy, passes, and `apply_calibration` returns the raw logits — under a printed success line. Measured: spec 0.914 vs the true 0.919.
+**Root cause**: guarded the *file*, not the *coverage*. The error message cited #98 — the exact fail-silent shape it did not catch.
+**Fix**: check the thing the downstream code indexes on (`set(dims) - set(cal["dimensions"])`), not the object's truthiness. Belongs to the unreachable-mechanism catalogue below: **9th occurrence, 4th self-inflicted.**
+
+### A research artifact inside a deployed filter package can stop the scorer (2026-08-10)
+**Problem**: wrote `threshold_sweep.json` into `filters/uplifting/v7/`. `deploy_to_nexusmind.sh:137` is an unfiltered `cp -r`, and `--dry-run` copies **without** committing — leaving it untracked under `filters/`, where `deploy_filters.sh`'s `scorer_untracked_blocking()` runs in the every-4h `ExecStartPre`. The scorer would refuse to start, and the script's own printed cleanup (`git checkout -- .`) does not remove untracked files.
+**Root cause**: treated a filter directory as a folder rather than as a deploy surface.
+**Fix**: evidence goes in `docs/evidence/`. **`ground_truth_gate.json` still sits in every filter package and carries the same hazard** — unfixed, pre-existing.
+
 ## The unreachable-mechanism catalogue
 
 Moved out of `CLAUDE.md` on 2026-08-09 (context audit): the **rule** belongs in the
@@ -2190,6 +2210,7 @@ A mechanism that is present, configured and unreachable is this repo's defining 
 | 2026-08-07, two guards | **correct callers on the right paths**, both inert: one reverted by a later step re-sending the old value through a `COALESCE` merge (123 stored rows already carried the signature), one a complete no-op because a different commit point short-circuited before it — while its own comment asserted it was "the only point every source has in common" |
 | 2026-08-09, the stage trap | the arXiv `Announce Type:` prefix is a **91.6%** detector on the collection corpus and **0.000** on NexusMind rows, because enrichment re-fetches the body between the two. Both are "production data" |
 | 2026-08-09 evening, self-inflicted | 34 rows labelled `CANDIDATE_UNADJUDICATED` committed **inside** `datasets/adverse/`, the glob a planned #91 gate reads as curated evidence. Not a mechanism that couldn't fire — **a population that would have been read by one that does.** Found by re-reading my own commit, not by a test |
+| 2026-08-10, self-inflicted | a guard that "refuses to emit uncalibrated scores" and checks only that the calibration file is truthy — a partial `dimensions` block passes it and the raw logits go through under a success line. Its own error message cited #98, the shape it missed. Found by a review lens, not by 270 green tests |
 
 The cultural_discovery v6 entry is the point of the whole list: **knowing this failure
 mode does not prevent it.** Only running the check against your own work does.
