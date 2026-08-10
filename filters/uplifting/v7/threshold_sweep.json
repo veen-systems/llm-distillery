@@ -244,11 +244,46 @@
       "band_is_N_times_the_gap": 3.0,
       "bands_overlap": true
     },
-    "conclusion": "At EVERY threshold 4.0-5.0 the two boxes' specificity bands OVERLAP, so under the owner's 2026-08-06 #95 decision rule they are NOT DISTINGUISHABLE. This CORRECTS the 2026-08-09 claim that 'b650 is cleared at 4.0 and NOT cleared at 4.5': at 4.5 the between-box gap is 0.0068 against a within-box band of 0.0248 -- 3.7x narrower than the instrument's own resolution -- and at 4.75/5.0 the sign REVERSES (b650 higher), which is what noise looks like and what a systematic box bias does not. The 3 row-level verdict flips at 4.5 remain true as facts about those 3 rows; the specificity DIFFERENCE they were used to argue is below measurement. Operationally still prefer the serving box -- absence of a measurable difference is not proof of none, and max calibrated |delta| 0.2008 is real."
+    "conclusion": "SUPERSEDED 2026-08-10 (afternoon). The band-overlap reading recorded here was the WRONG INSTRUMENT and the retraction built on it has been withdrawn. The #95 band answers 'how much could this metric move if BATCH COMPOSITION changed'; these parity runs hold batch composition fixed (same rows, same order, same batch size 16), so batch noise is not the source of variation between boxes and a band built from it cannot license 'indistinguishable'. A third run settled it: b650 rebuilt on production's exact frozen stack and run on CUDA flips the SAME THREE ARTICLES at 4.5, same direction, same specificity 0.9662 -- and a proximity control rules out 'whatever is nearest the cut' (of 18 production rows in [4.30, 4.50) only those 3 flip, while one at 4.4870, CLOSER to the threshold, does not). The between-box difference is SYSTEMATIC and article-specific, and the 2026-08-09 conclusion 'b650 is cleared at 4.0 and NOT at 4.5' stands as written. It does not touch #102: the box effect is 0.0068 specificity against a 4.0->4.5 gain of 0.054, so it governs which machine may produce a number, never what the number implies. See docs/evidence/2026-08-10-b650-gpu-production-stack-parity.md."
   },
   "constraint_found": {
     "what": "MAX_NORMALIZATION_RAW_MIN = 4.5 bounds the op-point from above.",
     "detail": "tests/unit/test_normalization_invariant.py requires normalization.json stats.raw_min == the filter's tier threshold, and NexusMind/src/scoring/production_scorer.py rejects a fit with raw_min > 4.5 (strict >, so exactly 4.5 is accepted) -- falling back to score_scale_factor with only a log warning. uplifting v7's committed fit has raw_min 4.0, n=18130. So 4.5 is reachable but sits ON the bound with ZERO margin; 4.75 and 5.0 are NOT reachable without raising the constant in BOTH repos.",
     "consequence": "any op-point move requires refitting normalization.json at the new anchor in the same change."
+  },
+  "production_feed_impact": {
+    "source": "band table in datasets/adverse/2026-08-09-uplifting-oracle-batch.md; the 4.5 cut lands on a band boundary so nothing is interpolated",
+    "at_4.0": {
+      "surfacing_per_6_cycles": 1193,
+      "per_cycle": 198.8,
+      "off_lens": 302.4,
+      "off_lens_pct": 25.3,
+      "on_lens": 890.6
+    },
+    "at_4.5": {
+      "surfacing_per_6_cycles": 870,
+      "per_cycle": 145.0,
+      "off_lens": 164.0,
+      "off_lens_pct": 18.8,
+      "on_lens": 706.0
+    },
+    "off_lens_reduction_pct": 45.8,
+    "volume_reduction_pct": 27.1,
+    "on_lens_retained_pct": 79.3,
+    "caveat": "band precision figures are computed on the LONG articles only -- 26 of 170 sampled rows were never graded (300-char oracle prefilter floor), 11 of them in the marginal band. 25.3% is more likely an underestimate.",
+    "correction": "an earlier draft said 4.5 removes 'roughly two-thirds of surfacing volume'. WRONG: two-thirds is the FALSE-POSITIVE reduction (36->12). Volume falls ~26% on the split, ~27% on the estimated feed."
+  },
+  "lost_true_positives": {
+    "n": 27,
+    "oracle_median": 5.0,
+    "oracle_range": [
+      4.2,
+      6.25
+    ],
+    "none_above": 6.5,
+    "academic_share_pct": 22.2,
+    "academic_share_of_surviving_positives_pct": 12.2,
+    "academic_share_of_split_pct": 7.9,
+    "note": "enriched in exactly the class the 2026-08-10 adverse adjudication called the dominant off-lens failure, i.e. part of the measured recall cost is the oracle and student sharing a blind spot. n=6 -- directionally consistent, NOT established."
   }
 }

@@ -32,12 +32,33 @@ re-scoring, so it cost seconds instead of ~30 min on the serving box.
 4.75 and 5.0 are not reachable** without raising the constant in both repos, and
 **any op-point move must refit normalization in the same change.**
 
-**Correction to yesterday's block:** *"b650 is cleared at 4.0 and NOT at 4.5"*
-**does not survive the #95 band.** The boxes' specificity bands overlap at every
-threshold; at 4.5 the gap (0.0068) is 3.7× narrower than the within-box band
-(0.0248), and at 4.75/5.0 the sign reverses. The 3 verdict flips and max |Δ|
-0.2008 stand as row-level facts; the specificity *difference* does not. Banner
-added to `2026-08-09-cross-box-parity-uplifting-v7.md`.
+**PRODUCTION FEED IMPACT (step 3, done).** Estimated from the 2026-08-09 oracle
+batch band table; the 4.5 cut lands on a band boundary so nothing is
+interpolated. Surfacing **1,193 → 870 per 6 cycles** (≈199 → ≈145 per cycle,
+**−27%**); **off-lens reaching readers 302 → 164, i.e. 25.3% → 18.8%, 46%
+fewer**; on-lens retained **79%**.
+
+⚠️ **Correction to this block's first version: 4.5 does NOT "remove roughly
+two-thirds of surfacing volume."** Two-thirds is the **false-positive**
+reduction (36 → 12). Volume falls ~26% on the split, ~27% on the feed. I
+conflated the two.
+
+**WHICH TPs ARE LOST (step 3, done).** The 27 have oracle median **5.00**, range
+4.20–6.25, **none above 6.5** — the loss is entirely the weakest quarter of the
+positive set. They are **enriched in academic/preprint sources: 22.2% (6/27) vs
+12.2% of the 189 survivors and 7.9% of the split** — the same class the adverse
+adjudication called the dominant off-lens failure, i.e. part of the "recall cost"
+is the oracle and student sharing a blind spot. **n=6: directional, not
+established.** Genuinely on-lens losses to weigh: Dutch housing for young single
+women, Paralympic curling gender integration, a high-court VAT ruling, a
+physician on women's health literacy.
+
+**⚠️ I RETRACTED YESTERDAY'S b650 CLAIM AND THE RETRACTION WAS WRONG. It is
+withdrawn; the 2026-08-09 conclusion stands.** I argued "b650 not cleared at 4.5"
+failed because the #95 specificity bands overlap. **Wrong instrument.** The #95
+band answers *"what if batch composition changed"*; parity runs hold batch
+composition **fixed**, so batch noise is not the source of between-box variation
+and a band built from it proves nothing. Settled by a third run — see below.
 
 **Three gaps closed in `ground_truth_gate.py`** (all backward-compatible; 270
 unit tests green): specificity now carries a #95 band and is overlap-checked
@@ -47,11 +68,46 @@ sweep, 216 → 193, and recall stopped being comparable across thresholds); the
 overlap check now prints **DISJOINT** explicitly instead of only warning.
 New: `scripts/verification/parity_dump_to_gate_input.py`.
 
-**NEXT (step 3) — the sweep does NOT decide the flip:**
-- production-population impact is unmeasured (4.5 removes roughly two-thirds of
-  uplifting's surfacing volume if the split's ratios hold — a product call);
-- **which** 27 articles move TP → FN has not been looked at;
-- re-run the ~25% off-lens reader-facing estimate at 4.5.
+### 1b. b650's GPU WORKS — and pinning production's stack made parity WORSE
+
+**`docs/evidence/2026-08-10-b650-gpu-production-stack-parity.md`.** New dump:
+`datasets/parity/uplifting_v7_test660_b650-GPU-prodstack_2026-08-10.jsonl`.
+
+**Use `~/llm-distillery/venv-prodparity` on b650. ~2 min per 660 rows** (vs ~16
+on b650 CPU, ~30 on gpu-server CPU). **No sudo was needed** — the old venv is
+built on the system python (`home = /usr/bin`, no headers); `uv python install
+3.11` downloads a standalone CPython that ships them. Built to production's
+frozen versions. The old `venv/` is untouched (the 08-09 dumps cite it).
+
+**The finding, and it is the opposite of what the build was meant to show:
+matching production's library versions made agreement WORSE.** Bit-identical
+2.3% → **0.6%**; rows over the #95 floor 1 → 3; **a verdict flip appears at 4.0
+where there had been none**. The residual is hardware/kernel level. **You cannot
+clear a box by pinning its library versions.**
+
+**And it settles the retraction above.** On production's exact stack, on CUDA,
+**the same three articles flip at 4.5**, same direction, same specificity
+0.9662. A proximity control kills the "it's just whatever is nearest the cut"
+reading: of **18** production rows in [4.30, 4.50) only those **3** flip, while
+one at **4.4870 — closer to the threshold — does not**. Systematic and
+article-specific. All three are non-English; n=3, so that is not a claim.
+**None of this touches #102**: box effect 0.0068 vs a 4.0→4.5 gain of 0.054.
+
+**`constraints/production-gpu-server.txt`'s documented install command is
+UNSATISFIABLE** — found by running it. `requirements.txt` needs
+`datasets>=2.14.0,<3.0.0` → `fsspec<=2024.6.1`, while `torch==2.11.0` needs
+`fsspec==2026.1.0`; **production's serving venv has no `datasets` at all**. The
+header now carries a command that works.
+
+**`sadaltager` is predicted to need the same `uv python install` fix. Untested.**
+
+**NEXT — the sweep still does NOT decide the flip:**
+- **owner call**: is a ~145-article/cycle uplifting feed acceptable for 46% less
+  junk? That is a product judgement, not a metrics one;
+- re-examine the oracle labels on the 6 academic "lost positives" — if they are
+  mislabelled, 4.5's real recall cost is lower than 0.611 implies;
+- if it goes ahead: **refit `normalization.json` at 4.5 in the same change**, and
+  note it lands exactly on `MAX_NORMALIZATION_RAW_MIN` with zero margin.
 
 ### 2. The 21 `solutions_story` candidates — adjudicated: 7 accepted, 3 rejected, 11 held
 

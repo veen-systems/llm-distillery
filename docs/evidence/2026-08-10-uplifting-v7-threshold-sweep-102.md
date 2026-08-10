@@ -81,38 +81,43 @@ all**: recall and specificity are conditional on the true class, so the split's
 32.7% enrichment does not distort them. Precision, MAE and F1 on this split do
 not transfer, which is why they are excluded from the argument.
 
-## Correction: "b650 is not cleared at 4.5" does not survive the band
+## The cross-box question, and a correction I made and then had to withdraw
 
-Yesterday's `2026-08-09-cross-box-parity-uplifting-v7.md` concluded that b650 was
-cleared at the 4.0 op-point and **not** at 4.5, on 3 verdict flips and
-specificity 0.9730 (production) vs 0.9662 (b650). Running both boxes through the
-gate:
+Running both boxes through the gate:
 
-| student thr | prod spec | b650 spec | gap | prod band width | bands |
+| student thr | prod spec | b650 spec | gap | prod #95 band width | bands |
 |---|---|---|---|---|---|
-| 4.00 | 0.9189 | 0.9189 | 0.0000 | 0.0405 | OVERLAP |
-| 4.25 | 0.9459 | 0.9459 | 0.0000 | 0.0293 | OVERLAP |
-| **4.50** | 0.9730 | 0.9662 | **0.0068** | **0.0248** | **OVERLAP** |
-| 4.75 | 0.9842 | 0.9865 | 0.0023 | 0.0113 | OVERLAP |
-| 5.00 | 0.9887 | 0.9910 | 0.0023 | 0.0068 | OVERLAP |
+| 4.00 | 0.9189 | 0.9189 | 0.0000 | 0.0405 | overlap |
+| 4.25 | 0.9459 | 0.9459 | 0.0000 | 0.0293 | overlap |
+| **4.50** | 0.9730 | 0.9662 | **0.0068** | **0.0248** | overlap |
+| 4.75 | 0.9842 | 0.9865 | 0.0023 | 0.0113 | overlap |
+| 5.00 | 0.9887 | 0.9910 | 0.0023 | 0.0068 | overlap |
 
-At 4.5 the between-box gap is **3.7× narrower than the within-box batch-noise
-band**. Under the owner's 2026-08-06 rule — *two models whose bands overlap are
-NOT DISTINGUISHABLE, whatever their point estimates say* — the specificity
-difference is below this instrument's resolution. And at 4.75 and 5.0 the **sign
-reverses** (b650 scores higher), which is what noise looks like and what a
-systematic box bias does not.
+**On the strength of that overlap I retracted the 2026-08-09 conclusion that
+"b650 is not cleared at 4.5". The retraction was wrong and has been withdrawn.**
 
-**What stands and what does not.** The 3 row-level verdict flips at 4.5 are real
-facts about 3 rows, as is max calibrated |Δ| 0.2008 and the 2.3% bit-identical
-rate. What does not stand is the inference from those to *"b650 measures a
-different specificity at 4.5"*. The general principle survives intact and was
-the more important half anyway: **a box is cleared at a threshold, never in
-general** — and absence of a measurable difference is not proof of none, so
-threshold work should still be done on the serving box when it is free.
+The #95 band answers *"how much could this metric move if batch composition
+changed?"*. The parity runs hold batch composition **fixed** — same rows, same
+order, same batch size — so batch noise is not the source of variation between
+them and a band built from it cannot license "indistinguishable". Wrong
+instrument, applied because it is the caveat this repo reaches for most.
 
-*(I made the original claim yesterday. The band was available then and I did not
-apply it — the gate had no specificity band, which is the gap closed above.)*
+A third run the same afternoon settled it: b650 rebuilt on production's exact
+frozen stack and run on **CUDA** flips **the same three articles** at 4.5, same
+direction, same 0.9662. A proximity control rules out "whatever is nearest the
+cut" — of 18 production rows in [4.30, 4.50) only those 3 flip, while one at
+4.4870, *closer* to the threshold, does not.
+[`2026-08-10-b650-gpu-production-stack-parity.md`](2026-08-10-b650-gpu-production-stack-parity.md).
+
+**Where that leaves #102: nowhere, and that is the point.** The box effect is
+0.0068 specificity. The 4.0 → 4.5 gain is **0.054** — an order of magnitude
+larger, and larger than the band. The box question governs *which machine may
+produce a number*, never *what the number implies*. The sweep above is on
+production's own predictions regardless.
+
+*(Two revisions in one day on the same claim. Both are recorded rather than
+quietly fixed, because the failure mode — grabbing a familiar caveat without
+checking its premise holds — is the reusable part.)*
 
 ## The constraint that decides the option set
 
@@ -139,20 +144,64 @@ Therefore:
 That was not visible before this run and it removes two of the five sweep rows
 from consideration.
 
-## Not done / what step 3 needs
+## What 4.5 does to the production feed
+
+**Correction to this document's first version, which said 4.5 "would remove
+roughly two-thirds of uplifting's current surfacing volume". That was wrong** —
+two-thirds is the **false-positive** reduction (36 → 12). Surfacing volume falls
+about a quarter. The two were conflated.
+
+Measured on the test split: predicted-positives **195 → 144, −26.2%**.
+
+Estimated on the production feed from the 2026-08-09 oracle batch's band table
+(the 4.5 cut lands exactly on a band boundary, so nothing is interpolated):
+
+| | at 4.0 | at 4.5 |
+|---|---|---|
+| surfacing / 6 cycles | 1,193 (≈199 per cycle) | 870 (≈145 per cycle) |
+| **off-lens reaching readers** | 302 (**25.3%**) | 164 (**18.8%**) |
+| on-lens surfaced | 891 | 706 |
+
+4.5 buys **46% fewer off-lens articles reaching readers** and costs **21% of the
+on-lens articles that currently surface** — a 27% smaller feed. Under ADR-023's
+asymmetry that is a good trade; whether a ~145-article feed is enough is a
+product judgement, not a metrics one.
+
+**Caveat inherited from the source:** the band table's precision figures are
+computed on the *long* articles in each band — 26 of 170 sampled rows were never
+graded because the oracle prefilter's 300-char floor rejected them, 11 of those
+in the marginal band. 25.3% is more likely an underestimate than an over.
+
+## Which true positives are lost
+
+The 27 articles moving TP → FN between 4.0 and 4.5, by oracle score: median
+**5.00**, range 4.20–6.25, **none above 6.5**. The loss comes entirely from the
+weakest quarter of the positive set, not from the lens's best material.
+
+**They are enriched in academic/preprint sources — 22.2% (6 of 27), against
+12.2% of the 189 surviving positives and 7.9% of the whole split.** The six are
+arXiv (×2), PubMed, Frontiers Pharmacology, a probiotics trial, and a
+genetic-engineering-news piece on mRNA in *mice*. That is the same class the
+2026-08-10 adverse adjudication found to be the dominant off-lens failure — so
+part of the measured "recall cost" is the oracle and the student sharing a blind
+spot, exactly the effect CLAUDE.md warns about. **n=6: directionally consistent,
+not established.**
+
+Reading the other 21 titles — judgement, not measurement — many are also not the
+community-scale stories the lens exists for: corporate/industrial (Olam Agri
+plant, Bybit's fraud system, Azerbaijani gas, a bank's
+protect-yourself-from-fraud notice), a headline roundup (*"Czech news in brief
+for March 6"*), a Shakira concert. The genuinely on-lens losses are the ones to
+weigh: young single women gaining ground in the Dutch housing market, gender
+integration in Paralympic curling, a high-court ruling on VAT powers, a physician
+on women's health literacy.
+
+## Not done
 
 - **Nothing was deployed or changed.** No config edit, no refit.
-- **Production-population confirmation is missing.** These are held-out
-  *training-split* rates. The corresponding production number — how many articles
-  per cycle stop surfacing at 4.5 — has not been measured, and 4.5 would remove
-  roughly two-thirds of uplifting's current surfacing volume if the split's
-  ratios hold, which is a product decision, not a metrics one.
-- **The recall loss is concentrated somewhere.** 27 articles move from TP to FN;
-  which *kind* they are has not been looked at. If they are the genuine
-  community-scale stories the lens exists for, that changes the answer.
-- The 2026-08-09 adverse batch measured ~25% off-lens articles reaching readers
-  at 4.0. Re-running that estimate at 4.5 would give the reader-facing number
-  this whole line of work is actually about.
+- **The oracle labels for those 27 were not re-examined.** If the academic ones
+  are mislabelled positives, 4.5's true recall cost is smaller than 0.611 implies.
+- **No production A/B.** Everything here is retrospective scoring.
 
 ## Reproduce
 
