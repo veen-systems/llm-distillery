@@ -1,0 +1,254 @@
+{
+  "issue": "https://github.com/veen-systems/llm-distillery/issues/102",
+  "what": "uplifting v7 operating-point sweep through the ADR-021 ground-truth gate, with the #95 batch-noise band on every metric including specificity.",
+  "measured": "2026-08-10",
+  "adr": [
+    "ADR-021 (judge against held-out oracle ground truth)",
+    "ADR-023 (optimise specificity; never rank on MAE)"
+  ],
+  "labels": "datasets/training/uplifting_v7/test.jsonl (660 rows, held-out oracle test split, md5 904ad059fe27157a297ac74c960adad3)",
+  "predictions": "datasets/parity/uplifting_v7_test660_gpuserver-serving-venv_2026-08-09.jsonl -- PRODUCTION's own serving venv (gpu-server, py 3.11.2 / torch 2.11.0+cu130 / transformers 5.0.0 / peft 0.18.1), calibrated with the deployed filters/uplifting/v7/calibration.json via scripts/verification/parity_dump_to_gate_input.py",
+  "on_lens_definition": "oracle gatekeepered weighted average >= 4.0, PINNED while the student's bar sweeps. positives = 216/660 (32.7%) at every threshold.",
+  "control": "at threshold 4.0 this pipeline reproduces the committed filters/uplifting/v7/ground_truth_gate.json confusion matrix EXACTLY (tp=159 fn=57 fp=36 tn=408, indeterminate 37/660). The sweep is trustworthy because its 4.0 row is a known-answer test.",
+  "noise_floor": 0.16,
+  "sweep": [
+    {
+      "student_threshold": 4.0,
+      "positives": 216,
+      "tp": 159,
+      "fn": 57,
+      "fp": 36,
+      "tn": 408,
+      "recall": 0.7361,
+      "specificity": 0.9189,
+      "fpr": 0.0811,
+      "precision": 0.8154,
+      "f1": 0.7737,
+      "n_indeterminate": 37,
+      "recall_band": [
+        0.6852,
+        0.7731
+      ],
+      "specificity_band": [
+        0.9009,
+        0.9414
+      ],
+      "f1_band": [
+        0.7255,
+        0.8166
+      ],
+      "b650_specificity": 0.9189
+    },
+    {
+      "student_threshold": 4.25,
+      "positives": 216,
+      "tp": 144,
+      "fn": 72,
+      "fp": 24,
+      "tn": 420,
+      "recall": 0.6667,
+      "specificity": 0.9459,
+      "fpr": 0.0541,
+      "precision": 0.8571,
+      "f1": 0.75,
+      "n_indeterminate": 31,
+      "recall_band": [
+        0.6296,
+        0.713
+      ],
+      "specificity_band": [
+        0.9324,
+        0.9617
+      ],
+      "f1_band": [
+        0.712,
+        0.7959
+      ],
+      "b650_specificity": 0.9459
+    },
+    {
+      "student_threshold": 4.5,
+      "positives": 216,
+      "tp": 132,
+      "fn": 84,
+      "fp": 12,
+      "tn": 432,
+      "recall": 0.6111,
+      "specificity": 0.973,
+      "fpr": 0.027,
+      "precision": 0.9167,
+      "f1": 0.7333,
+      "n_indeterminate": 24,
+      "recall_band": [
+        0.5833,
+        0.6435
+      ],
+      "specificity_band": [
+        0.9572,
+        0.982
+      ],
+      "f1_band": [
+        0.6981,
+        0.7658
+      ],
+      "b650_specificity": 0.9662
+    },
+    {
+      "student_threshold": 4.75,
+      "positives": 216,
+      "tp": 121,
+      "fn": 95,
+      "fp": 7,
+      "tn": 437,
+      "recall": 0.5602,
+      "specificity": 0.9842,
+      "fpr": 0.0158,
+      "precision": 0.9453,
+      "f1": 0.7035,
+      "n_indeterminate": 21,
+      "recall_band": [
+        0.5185,
+        0.5926
+      ],
+      "specificity_band": [
+        0.9775,
+        0.9887
+      ],
+      "f1_band": [
+        0.6627,
+        0.7335
+      ],
+      "b650_specificity": 0.9865
+    },
+    {
+      "student_threshold": 5.0,
+      "positives": 216,
+      "tp": 103,
+      "fn": 113,
+      "fp": 5,
+      "tn": 439,
+      "recall": 0.4769,
+      "specificity": 0.9887,
+      "fpr": 0.0113,
+      "precision": 0.9537,
+      "f1": 0.6358,
+      "n_indeterminate": 30,
+      "recall_band": [
+        0.4167,
+        0.5417
+      ],
+      "specificity_band": [
+        0.9865,
+        0.9932
+      ],
+      "f1_band": [
+        0.5769,
+        0.6964
+      ],
+      "b650_specificity": 0.991
+    }
+  ],
+  "cross_threshold_4_0_vs_4_5": {
+    "specificity": {
+      "bands": [
+        [
+          0.9009,
+          0.9414
+        ],
+        [
+          0.9572,
+          0.982
+        ]
+      ],
+      "disjoint": true,
+      "verdict": "REAL -- survives batch noise"
+    },
+    "recall": {
+      "bands": [
+        [
+          0.6852,
+          0.7731
+        ],
+        [
+          0.5833,
+          0.6435
+        ]
+      ],
+      "disjoint": true,
+      "verdict": "REAL -- the recall cost is not noise either"
+    },
+    "f1": {
+      "bands": [
+        [
+          0.7255,
+          0.8166
+        ],
+        [
+          0.6981,
+          0.7658
+        ]
+      ],
+      "disjoint": false,
+      "verdict": "OVERLAP -- NOT DISTINGUISHABLE on F1. Expected: F1 is symmetric and this is an asymmetric problem (ADR-023). It nets a real specificity gain against a real recall loss and reports nothing. Do not use it here."
+    },
+    "trade": {
+      "fp": [
+        36,
+        12
+      ],
+      "fn": [
+        57,
+        84
+      ],
+      "summary": "24 fewer false positives for 27 more false negatives"
+    }
+  },
+  "cross_box": {
+    "4.0": {
+      "prod_specificity": 0.9189,
+      "b650_specificity": 0.9189,
+      "gap": 0.0,
+      "prod_band_width": 0.0405,
+      "band_is_N_times_the_gap": null,
+      "bands_overlap": true
+    },
+    "4.25": {
+      "prod_specificity": 0.9459,
+      "b650_specificity": 0.9459,
+      "gap": 0.0,
+      "prod_band_width": 0.0293,
+      "band_is_N_times_the_gap": null,
+      "bands_overlap": true
+    },
+    "4.5": {
+      "prod_specificity": 0.973,
+      "b650_specificity": 0.9662,
+      "gap": 0.0068,
+      "prod_band_width": 0.0248,
+      "band_is_N_times_the_gap": 3.7,
+      "bands_overlap": true
+    },
+    "4.75": {
+      "prod_specificity": 0.9842,
+      "b650_specificity": 0.9865,
+      "gap": 0.0023,
+      "prod_band_width": 0.0113,
+      "band_is_N_times_the_gap": 5.0,
+      "bands_overlap": true
+    },
+    "5.0": {
+      "prod_specificity": 0.9887,
+      "b650_specificity": 0.991,
+      "gap": 0.0023,
+      "prod_band_width": 0.0068,
+      "band_is_N_times_the_gap": 3.0,
+      "bands_overlap": true
+    },
+    "conclusion": "At EVERY threshold 4.0-5.0 the two boxes' specificity bands OVERLAP, so under the owner's 2026-08-06 #95 decision rule they are NOT DISTINGUISHABLE. This CORRECTS the 2026-08-09 claim that 'b650 is cleared at 4.0 and NOT cleared at 4.5': at 4.5 the between-box gap is 0.0068 against a within-box band of 0.0248 -- 3.7x narrower than the instrument's own resolution -- and at 4.75/5.0 the sign REVERSES (b650 higher), which is what noise looks like and what a systematic box bias does not. The 3 row-level verdict flips at 4.5 remain true as facts about those 3 rows; the specificity DIFFERENCE they were used to argue is below measurement. Operationally still prefer the serving box -- absence of a measurable difference is not proof of none, and max calibrated |delta| 0.2008 is real."
+  },
+  "constraint_found": {
+    "what": "MAX_NORMALIZATION_RAW_MIN = 4.5 bounds the op-point from above.",
+    "detail": "tests/unit/test_normalization_invariant.py requires normalization.json stats.raw_min == the filter's tier threshold, and NexusMind/src/scoring/production_scorer.py rejects a fit with raw_min > 4.5 (strict >, so exactly 4.5 is accepted) -- falling back to score_scale_factor with only a log warning. uplifting v7's committed fit has raw_min 4.0, n=18130. So 4.5 is reachable but sits ON the bound with ZERO margin; 4.75 and 5.0 are NOT reachable without raising the constant in BOTH repos.",
+    "consequence": "any op-point move requires refitting normalization.json at the new anchor in the same change."
+  }
+}

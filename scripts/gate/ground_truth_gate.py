@@ -256,12 +256,22 @@ def _prf(tp, fn, fp):
     return recall, precision, f1
 
 
-def evaluate(truth, pred, medium=MEDIUM, noise_floor=NOISE_FLOOR):
+def evaluate(truth, pred, medium=MEDIUM, noise_floor=NOISE_FLOOR, truth_threshold=None):
+    """truth_threshold pins what "on-lens" MEANS while `medium` sweeps the student's bar.
+
+    Default (None) keeps both cuts tied, which is the right question when judging
+    two models at the deployed op-point and reproduces every run before
+    2026-08-10. Pin it when sweeping `medium` (#102): otherwise the positive set
+    changes with the threshold -- uplifting v7 goes 216 -> 193 positives between
+    4.0 and 4.5 -- and recall at one threshold is not comparable to recall at
+    another, because it is measured against a different population.
+    """
+    truth_cut = medium if truth_threshold is None else truth_threshold
     ids = [i for i in pred if i in truth]
-    tp = sum(1 for i in ids if truth[i] >= medium and pred[i] >= medium)
-    fn = sum(1 for i in ids if truth[i] >= medium and pred[i] < medium)
-    fp = sum(1 for i in ids if truth[i] < medium and pred[i] >= medium)
-    tn = sum(1 for i in ids if truth[i] < medium and pred[i] < medium)
+    tp = sum(1 for i in ids if truth[i] >= truth_cut and pred[i] >= medium)
+    fn = sum(1 for i in ids if truth[i] >= truth_cut and pred[i] < medium)
+    fp = sum(1 for i in ids if truth[i] < truth_cut and pred[i] >= medium)
+    tn = sum(1 for i in ids if truth[i] < truth_cut and pred[i] < medium)
     pos = tp + fn
     recall, precision, f1 = _prf(tp, fn, fp)
     specificity = tn / (tn + fp) if (tn + fp) else 0.0
@@ -276,23 +286,35 @@ def evaluate(truth, pred, medium=MEDIUM, noise_floor=NOISE_FLOOR):
     def _ind(cond):
         return sum(1 for i in ids if cond(i) and abs(pred[i] - medium) < noise_floor)
 
-    ind_tp = _ind(lambda i: truth[i] >= medium and pred[i] >= medium)   # TP -> FN
-    ind_fn = _ind(lambda i: truth[i] >= medium and pred[i] < medium)    # FN -> TP
-    ind_fp = _ind(lambda i: truth[i] < medium and pred[i] >= medium)    # FP -> TN
-    ind_tn = _ind(lambda i: truth[i] < medium and pred[i] < medium)     # TN -> FP
+    ind_tp = _ind(lambda i: truth[i] >= truth_cut and pred[i] >= medium)   # TP -> FN
+    ind_fn = _ind(lambda i: truth[i] >= truth_cut and pred[i] < medium)    # FN -> TP
+    ind_fp = _ind(lambda i: truth[i] < truth_cut and pred[i] >= medium)    # FP -> TN
+    ind_tn = _ind(lambda i: truth[i] < truth_cut and pred[i] < medium)     # TN -> FP
 
     # Worst case: every borderline positive falls out, every borderline negative
     # falls in. Best case: the mirror image.
     r_lo, p_lo, f_lo = _prf(tp - ind_tp, fn + ind_tp, fp + ind_tn)
     r_hi, p_hi, f_hi = _prf(tp + ind_fn, fn - ind_fn, fp - ind_fp)
 
-    return {"n": len(ids), "positives": pos, "recall": recall, "precision": precision,
+    # Specificity band. ADR-023 makes specificity THE objective -- a false
+    # positive reaches a reader, a false negative does not -- so it needs the
+    # same #95 treatment as the rest. It was banded last (2026-08-10, #102):
+    # every other metric here carried an uncertainty range while the one the
+    # deploy decision turns on was reported as a bare point estimate.
+    # tn + fp is invariant under these flips, so only the numerator moves.
+    neg = tn + fp
+    s_lo = (tn - ind_tn) / neg if neg else 0.0   # borderline TNs fall in  -> FP
+    s_hi = (tn + ind_fp) / neg if neg else 0.0   # borderline FPs fall out -> TN
+
+    return {"n": len(ids), "positives": pos, "truth_threshold": truth_cut, "recall": recall, "precision": precision,
             "specificity": specificity, "f1": f1, "spearman": rho, "mae": mae,
             "tp": tp, "fn": fn, "fp": fp, "tn": tn,
             "noise_floor": noise_floor,
             "n_indeterminate": ind_tp + ind_fn + ind_fp + ind_tn,
+            "indeterminate_by_cell": {"tp": ind_tp, "fn": ind_fn, "fp": ind_fp, "tn": ind_tn},
             "recall_band": [r_lo, r_hi],
             "precision_band": [p_lo, p_hi],
+            "specificity_band": [s_lo, s_hi],
             "f1_band": [f_lo, f_hi]}
 
 
@@ -311,6 +333,12 @@ def main():
     ap.add_argument("--gatekeeper-cap", type=float, default=None,
                     help="override the gatekeeper cap (sweep the demote-vs-exclude boundary); "
                          "auto-enables --recompute-model-wa so model+oracle use the same cap")
+    ap.add_argument("--truth-threshold", type=float, default=None,
+                    help="pin the ORACLE cut that defines on-lens while --threshold sweeps the "
+                         "student's bar (#102/ADR-023). Default: tied to --threshold, which is "
+                         "correct for judging two models at one op-point and reproduces every "
+                         "run before 2026-08-10. Pin it whenever you sweep --threshold, or the "
+                         "positive set moves under you and recall stops being comparable.")
     ap.add_argument("--noise-floor", type=float, default=NOISE_FLOOR,
                     help=f"batch-composition noise floor (#95, default {NOISE_FLOOR}); articles "
                          "predicted within this of the threshold are reported as indeterminate. "
@@ -329,6 +357,7 @@ def main():
     medium = args.threshold if args.threshold is not None else load_medium_threshold(args.config)
     truth = load_labels(args.labels, spec=spec)
     report = {"threshold": medium,
+              "truth_threshold": args.truth_threshold if args.truth_threshold is not None else medium,
               "gatekeeper_cap": (spec or _spec())["gk_cap"],
               "noise_floor": args.noise_floor,
               "n_labeled": len(truth), "models": {}}
@@ -336,14 +365,17 @@ def main():
         name, path = model_arg.split("=", 1)
         model_spec = spec if recompute else None
         report["models"][name] = evaluate(truth, load_scores(path, spec=model_spec), medium,
-                                          noise_floor=args.noise_floor)
+                                          noise_floor=args.noise_floor,
+                                          truth_threshold=args.truth_threshold)
 
     Path(args.report).parent.mkdir(parents=True, exist_ok=True)
     Path(args.report).write_text(json.dumps(report, indent=2))
 
     hdr = f"{'model':6} {'recall':>7} {'prec':>7} {'spec':>7} {'f1':>7} {'spearman':>9} {'mae':>6}"
+    tcut = report["truth_threshold"]
     print(f"\nGround-truth gate vs held-out oracle labels "
-          f"(threshold {medium}, gatekeeper_cap {report['gatekeeper_cap']}, n={len(truth)})")
+          f"(student threshold {medium}, on-lens := oracle >= {tcut}, "
+          f"gatekeeper_cap {report['gatekeeper_cap']}, n={len(truth)})")
     print(hdr)
     print("-" * len(hdr))
     for name, m in report["models"].items():
@@ -357,15 +389,26 @@ def main():
         for name, m in report["models"].items():
             print(f"  {name:6} indeterminate {m['n_indeterminate']:>4}/{m['n']:<5} "
                   f"recall [{m['recall_band'][0]:.3f}, {m['recall_band'][1]:.3f}]  "
+                  f"spec [{m['specificity_band'][0]:.3f}, {m['specificity_band'][1]:.3f}]  "
                   f"prec [{m['precision_band'][0]:.3f}, {m['precision_band'][1]:.3f}]  "
                   f"f1 [{m['f1_band'][0]:.3f}, {m['f1_band'][1]:.3f}]")
 
         names = list(report["models"])
         for a, b in [(names[i], names[j]) for i in range(len(names)) for j in range(i + 1, len(names))]:
-            ba, bb = report["models"][a]["f1_band"], report["models"][b]["f1_band"]
-            if ba[0] <= bb[1] and bb[0] <= ba[1]:
-                print(f"  ! {a} vs {b}: F1 bands OVERLAP — NOT DISTINGUISHABLE at this threshold. "
-                      f"Do not report the point difference as an effect (#95).")
+            ma, mb = report["models"][a], report["models"][b]
+            # Specificity is checked FIRST and reported separately: under ADR-023
+            # it is the objective, and two models can be indistinguishable on F1
+            # while being distinguishable on the metric that decides the deploy
+            # (or the reverse). Reporting only F1 overlap hides both cases.
+            for metric, key in (("specificity", "specificity_band"), ("F1", "f1_band")):
+                ba, bb = ma[key], mb[key]
+                if ba[0] <= bb[1] and bb[0] <= ba[1]:
+                    print(f"  ! {a} vs {b}: {metric} bands OVERLAP — NOT DISTINGUISHABLE at this "
+                          f"threshold. Do not report the point difference as an effect (#95).")
+                else:
+                    print(f"  + {a} vs {b}: {metric} bands are DISJOINT "
+                          f"([{ba[0]:.3f}, {ba[1]:.3f}] vs [{bb[0]:.3f}, {bb[1]:.3f}]) — the "
+                          f"difference survives batch noise.")
 
     print(f"\nReport: {args.report}")
 

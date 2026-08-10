@@ -2,9 +2,33 @@
 
 **Measured 2026-08-09 (night session). uplifting v7, 660-row held-out oracle test split.**
 
+> ### ⚠ Partly retracted 2026-08-10 — read this first
+>
+> **"b650 is cleared at 4.0 and NOT cleared at 4.5" does not survive the #95
+> band**, and the band was available when this was written. Run through
+> `ground_truth_gate.py`, the two boxes' **specificity bands OVERLAP at every
+> threshold 4.0–5.0**; at 4.5 the between-box gap is **0.0068** against a
+> within-box batch-noise band of **0.0248** — 3.7× narrower than the
+> instrument's own resolution — and at 4.75/5.0 the sign **reverses** (b650
+> higher), which is what noise looks like and a systematic box bias does not.
+> Under the owner's 2026-08-06 rule the two boxes are **NOT DISTINGUISHABLE**
+> here.
+>
+> **What still stands:** every row-level measurement below — 3 verdict flips at
+> 4.5, max calibrated |Δ| **0.2008**, 2.3% bit-identical, signed mean +0.00018 —
+> and the principle **a box is cleared at a threshold, never in general**.
+> Absence of a measurable difference is not proof of none, so threshold work
+> should still prefer the serving box.
+>
+> **What does not:** the inference from those 3 flips to "b650 *measures a
+> different specificity* at 4.5", and the "Result" and "The consequence"
+> sections' framing below. Details and the full table:
+> [`2026-08-10-uplifting-v7-threshold-sweep-102.md`](2026-08-10-uplifting-v7-threshold-sweep-102.md).
+
 ## One-line answer
 
-**b650 is cleared at the 4.0 op-point and NOT cleared at 4.5.** Yesterday's
+**b650 is cleared at the 4.0 op-point** — and the 4.5 half of this sentence is
+retracted above. Yesterday's
 `ground_truth_gate.json` numbers reproduce exactly on production's own
 interpreter, so #102's premise stands — but the candidate threshold it wants to
 move to sits inside the skew.
