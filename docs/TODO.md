@@ -180,6 +180,53 @@ was in work committed hours earlier and none was caught by 273 green tests:
    what it excludes; a silent all-zeros gate report when `--recompute-model-wa`
    is omitted — now a hard error; and ~12 doc-level errors, all fixed.
 
+### 2c. The three unmeasured filters now have numbers, and the fleet is complete
+
+`docs/evidence/2026-08-10-fleet-deploy-gate-completion.md`. `belonging v1`,
+`cultural_discovery v5` and `investment_risk v6` were **live with no accuracy
+number of any kind**. First measurements, at each filter's own 4.0 op-point:
+
+| filter | recall | spec | **FPR** | n |
+|---|---|---|---|---|
+| uplifting v7 | 0.736 | 0.919 | **8.1%** | 660 |
+| **investment_risk v6** | **0.761** | 0.955 | **4.5%** | 1045 |
+| solutions v6 | 0.671 | 0.972 | 2.8% | 1032 |
+| nature_recovery v4 | 0.650 | 0.979 | 2.1% | 391 |
+| **cultural_discovery v5** | 0.587 | 0.980 | 2.0% | 857 |
+| **belonging v1** | 0.600 | 0.985 | 1.5% | 738 |
+
+**#102's premise survives the completed set** — uplifting is 1.79× the next worst
+and 5.4× the best. **New: `investment_risk v6` at 4.5% FPR is the second
+concern**, invisible until today, and it carries the fleet's *best* recall.
+`belonging` and `cultural_discovery` are conservative, not broken (lowest FPR and
+lowest recall together). Only recall/specificity are quoted — split positive
+rates run 8.8–32.7% (ADR-023).
+
+`cultural_discovery v5`'s gatekeeper **binds 0 times in 857 rows** — the #94
+shape, second instance found. Worth its own look.
+
+### 2d. The op-point move is PREPARED ON A BRANCH, not deployed
+
+**Branch `uplifting-v7-op-point-4.5`** (pushed).
+`docs/evidence/2026-08-10-uplifting-v7-op-point-4.5-PREPARED.md`.
+
+Staged rather than shipped: a filter deploy restarts the scorer and this could
+not be verified until **08:00 on 11 Aug**, because the 04:00 cycle dies with the
+Odido uplink. **Nothing scheduled invokes `deploy_to_nexusmind.sh`**, so it
+cannot reach production on its own — verified, not assumed.
+
+**Read this before deploying it:** the op-point lives in **four** places, and
+`config.yaml` is **not** the runtime one — `base_scorer.py TIER_THRESHOLDS` is.
+Changing the config alone is a no-op in production. I nearly did exactly that;
+`fit_normalization.py` caught it by refusing to agree with itself and fitting at
+the old anchor. All four now agree at 4.5, 273 tests pass, and the tier
+assignment was **executed** (raw 4.49 → `low`, 4.50 → `medium`) rather than
+inferred.
+
+Before the cheaper alternative is proposed again: **a register/source-type rule
+was tested out-of-sample and REFUTED** — it removes 2 false positives and costs
+21 true ones. Details in the #102 evidence doc.
+
 ### 3. Housekeeping
 
 - **Spam comment on #95 handled** (owner request): `michaelmanly`'s comment
