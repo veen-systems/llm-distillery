@@ -246,6 +246,62 @@ weigh: young single women gaining ground in the Dutch housing market, gender
 integration in Paralympic curling, a high-court ruling on VAT powers, a physician
 on women's health literacy.
 
+## Is there a cheaper, better-targeted fix than moving the threshold? No.
+
+**Tested and refuted, 2026-08-10.** The 2026-08-09 adverse batch found that the
+dominant off-lens class at the margin was **academic-abstract register** (9 of 21
+candidates). The obvious cheaper fix is therefore a source/register rule rather
+than a 27% cut to the feed. It does not work, and the direction is the opposite
+of what was hypothesised.
+
+On the held-out split at 4.0 — an **out-of-sample** test, since the hypothesis was
+formed on production rows, not on this split:
+
+| policy | tp | fn | fp | tn | recall | spec | FPR |
+|---|---|---|---|---|---|---|---|
+| **A. current, 4.0** | 159 | 57 | 36 | 408 | 0.736 | 0.919 | 8.1% |
+| **B. move to 4.5** | 132 | 84 | **12** | 432 | 0.611 | 0.973 | **2.7%** |
+| C. 4.0, drop academic/preprint sources | 138 | 78 | 34 | 410 | 0.639 | 0.923 | 7.7% |
+| D. 4.0, academic sources need ≥ 4.5 | 153 | 63 | 34 | 410 | 0.708 | 0.923 | 7.7% |
+
+**Only 2 of the 36 false positives are academic-register, while 21 of the 159
+true positives are.** The rule destroys genuine positives to remove almost
+nothing. Even the softest form (D) buys 2 false positives for 6 true ones — a
+worse exchange rate than the threshold move.
+
+**Why the adverse batch pointed the wrong way**: it sampled *production* rows
+above the op-point; this is the *training-corpus* test split, where the oracle
+scores academic content across the whole range (the 21 academic true positives
+carry oracle scores 4.2–6.0). Source register does not separate on-lens from
+off-lens — it separates one *population* from another. A population difference
+read as a class difference.
+
+## What the 36 false positives actually are
+
+Heterogeneous, with no usable rule: an AI-for-governance aspiration piece
+(predicted **6.63**, oracle 1.80), a drug-addiction statistic (5.50 / 1.00), a
+prison-abuse testimony (4.85 / 1.80), disease-awareness features, a Google–Epic
+settlement, a stranded sperm whale. Several are the **#91 "about vs contains"**
+shape — harm stories carrying a positive fragment.
+
+Two things worth carrying forward:
+
+- **10 of the 36 have an oracle score ≥ 3.5**, i.e. the oracle nearly called them
+  on-lens too. About a quarter of this filter's "false positives" are borderline
+  oracle calls rather than clear model errors.
+- **4.5 removes 8 of the 13 clearly-junk articles (oracle ≤ 2.0), 62%** — close
+  to its 67% removal rate over all false positives. So the threshold move is
+  **roughly neutral with respect to how bad a false positive is**: it does not
+  preferentially catch the worst, and it does not preferentially spare them. Five
+  clearly-junk articles survive at 4.5, including the 6.63/1.80 one.
+
+**Consequence for #102**: the threshold move is the best available option, and it
+is *partial*. The highest-scoring junk — predicted 5–6.6 against an oracle of
+1.0–1.8 — is untouched by any op-point in this range, and is the same shape as
+llm-distillery#91 (a child-trafficking investigation ranked 6th of 3,530). That
+needs training-time work — the adverse probe suite grown today from 4 rows to 11 —
+not an operating point.
+
 ## Not done
 
 - **Nothing was deployed or changed.** No config edit, no refit.
