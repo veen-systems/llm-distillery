@@ -1,6 +1,108 @@
 # LLM Distillery - TODO
 
-## 🟢 2026-08-09 (night) — SESSION CLOSE. Read this block first.
+## 🟢 2026-08-10 — #102 step 2 DONE + the 21 `solutions_story` candidates adjudicated. Read this block first.
+
+**NOTHING WAS DEPLOYED.** No config edit, no refit, no filter sync. Everything
+below is evidence and curated data.
+
+### 1. #102 step 2 — the op-point sweep, through the ADR-021 gate
+
+**`docs/evidence/2026-08-10-uplifting-v7-threshold-sweep-102.md`**,
+machine-readable at `filters/uplifting/v7/threshold_sweep.json`.
+
+**Moving 4.0 → 4.5 is a real specificity gain, not noise.** FPR **8.11% →
+2.70%**; specificity bands **[0.901, 0.941] vs [0.957, 0.982] — DISJOINT**. The
+recall cost is real too ([0.685, 0.773] vs [0.583, 0.644], also disjoint): **24
+fewer FPs for 27 more FNs**. **F1 bands OVERLAP** — expected, and the reason not
+to use F1 here: it is symmetric, this problem is not (ADR-023). Recall and
+specificity are conditional on the true class, so both transfer to production
+despite the split's 32.7% enrichment; precision/MAE/F1 do not.
+
+Ran on **production's own predictions** (the committed parity dump) — no
+re-scoring, so it cost seconds instead of ~30 min on the serving box.
+**Control passed:** at 4.0 the pipeline reproduces the committed
+`ground_truth_gate.json` exactly (tp=159 fn=57 fp=36 tn=408, indeterminate 37).
+
+**A hard constraint found, and it removes 2 of 5 candidate thresholds:**
+**`MAX_NORMALIZATION_RAW_MIN = 4.5`.** `test_normalization_invariant.py` requires
+`normalization.json` `raw_min` == the tier threshold, and
+`production_scorer.py:513` rejects `raw_min > 4.5` and falls back to
+`score_scale_factor` **with only a log warning**. uplifting v7's fit is
+`raw_min: 4.0`. So **4.5 is reachable but sits ON the bound with zero margin;
+4.75 and 5.0 are not reachable** without raising the constant in both repos, and
+**any op-point move must refit normalization in the same change.**
+
+**Correction to yesterday's block:** *"b650 is cleared at 4.0 and NOT at 4.5"*
+**does not survive the #95 band.** The boxes' specificity bands overlap at every
+threshold; at 4.5 the gap (0.0068) is 3.7× narrower than the within-box band
+(0.0248), and at 4.75/5.0 the sign reverses. The 3 verdict flips and max |Δ|
+0.2008 stand as row-level facts; the specificity *difference* does not. Banner
+added to `2026-08-09-cross-box-parity-uplifting-v7.md`.
+
+**Three gaps closed in `ground_truth_gate.py`** (all backward-compatible; 270
+unit tests green): specificity now carries a #95 band and is overlap-checked
+**first and separately from F1**; new `--truth-threshold` pins what "on-lens"
+means while the student's bar sweeps (without it the positive set moved under the
+sweep, 216 → 193, and recall stopped being comparable across thresholds); the
+overlap check now prints **DISJOINT** explicitly instead of only warning.
+New: `scripts/verification/parity_dump_to_gate_input.py`.
+
+**NEXT (step 3) — the sweep does NOT decide the flip:**
+- production-population impact is unmeasured (4.5 removes roughly two-thirds of
+  uplifting's surfacing volume if the split's ratios hold — a product call);
+- **which** 27 articles move TP → FN has not been looked at;
+- re-run the ~25% off-lens reader-facing estimate at 4.5.
+
+### 2. The 21 `solutions_story` candidates — adjudicated: 7 accepted, 3 rejected, 11 held
+
+**`datasets/adverse/2026-08-10-uplifting-oracle-batch-adjudication.md`.**
+`uplifting.jsonl` goes 4 → 11 rows.
+
+**The framing was wrong and this is the part that outlives the batch.**
+`content_type: solutions_story` is **not a lens signal** — it is the oracle's
+*residual bucket* (none of the five penalty caps applied) and the tag the prompt
+puts on its **own 7.3/10 and 5.8/10 good examples**. So "uplifting is absorbing
+solutions-lens material" was an artifact of reading it as routing, and the
+ADR-015 overlap defence covers **2 rows, not 21**. The real dominant class in the
+4.0–4.5 band is **academic-abstract register (9 of 21)** — abstract prose
+supplying benefit vocabulary and a high `evidence_level` with no beneficiary in
+the text.
+
+Two rules now written down: **`raw ≥ 4.01` is the admission bar** (an assertion
+closer to the bar than the #95 floor is a coin flip, not a gate — one candidate
+rejected on exactly that, raw 4.004), and **`oracle_wa` in 3.5–4.0 is held, not
+labelled**. New fields `assertion_margin` and `oracle` on promoted rows.
+
+Two accepted rows document **oracle-prompt gaps**: the `corporate_finance` cap
+does not cover prudential regulation (EBA dashboard), and check C (speculation)
+did not fire on an aspiration with no programme behind it (Namibian minister).
+
+**Owner call still open — one question, not eleven:** three held rows are good
+articles in an adjacent lens (new frog species, Buenos Aires estancia, Antalya
+nomadic tents). *"Delight/discovery is not uplifting"* is an editorial line, not
+a fact, and one ruling covers the class. The other 8 holds are mechanical (a
+second oracle pass). **The other 13 candidates (`doom_framed` 7,
+`community_building` 3, `speculation` 2, `politics` 1) are untouched.**
+
+### 3. Housekeeping
+
+- **Spam comment on #95 handled** (owner request): `michaelmanly`'s comment
+  minimized as spam, account **blocked org-wide from `veen-systems`**. Personal
+  block needs `gh auth refresh -h github.com -s user` (token lacks the scope);
+  reporting to GitHub Trust & Safety has no API and needs a browser click. The
+  account's public events are 71 issue comments across ~25 unrelated repos in
+  bursts (12 repos in 37 minutes on 08-07), 0 followers, and GitHub's search API
+  refuses to return it while the profile still resolves — likely a hidden/flagged
+  account.
+- `datasets/adverse/README.md` contents table had drifted a **second** time
+  (uplifting n=2 vs 4 on disk, belonging n=1 vs 2). Fixed, and the table now
+  carries the one-liner that regenerates the counts.
+- `OpenAlex` rows carry `publication_year: 2050` / `original_published_date:
+  2050-01-01`. Not chased.
+
+---
+
+## 2026-08-09 (night) — previous session close.
 
 Sent to start #102. **Did not start it** — a prerequisite turned out to be
 unverified, so this session removed the confound instead. Nothing was deployed;
