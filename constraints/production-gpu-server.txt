@@ -17,9 +17,14 @@
 #   file's own pins. Do NOT use `-r requirements.txt -c <this file>`: that
 #   command was documented here on 2026-08-09 and IS UNSATISFIABLE (found by
 #   running it, 2026-08-10). requirements.txt needs datasets>=2.14.0,<3.0.0,
-#   every version of which pins fsspec<=2024.6.1, while torch==2.11.0 needs
-#   fsspec==2026.1.0. Production's serving venv has NO `datasets` at all --
-#   it is a serving environment and datasets is a training dependency.
+#   every version of which caps fsspec at <=2024.6.1, while THIS FILE pins
+#   fsspec==2026.1.0 (line 80 -- production's frozen version). A -c file is a
+#   pin, so the two cannot both be satisfied. Production's serving venv has NO
+#   `datasets` at all -- it is a serving environment and datasets is a training
+#   dependency, which is why the conflict never surfaced there.
+#   (An earlier draft blamed torch for the fsspec pin. It does not: torch-2.11.0
+#   declares `fsspec>=0.8.5`, verified from the installed wheel metadata. uv's
+#   error text folds the constraint into the torch line, which is what misled me.)
 #
 #     uv python install 3.11        # ships headers; system python often does not
 #     uv venv <path> --python 3.11
@@ -30,12 +35,22 @@
 #         sentence-transformers==5.2.2 sentencepiece==0.2.1 safetensors==0.7.0 \
 #         tokenizers==0.22.2 huggingface_hub==1.4.0 PyYAML==6.0.3
 #
-#   WHAT THIS BUYS, MEASURED: less than you would think. b650 built exactly this
-#   way agrees with production WORSE than it did on mismatched versions --
-#   bit-identical rows 2.3% -> 0.6%, and a verdict flip appears at the 4.0
-#   op-point where there had been none. The residual is hardware/kernel level.
-#   You cannot clear a box by pinning its library versions; check verdict flips
-#   at the threshold you care about.
+#   WHAT THIS BUYS, MEASURED 2026-08-10: everything. A b650 venv built this way,
+#   run on CPU, is **660/660 rows bit-identical to production on the uplifting v7
+#   test split, with zero verdict flips at every threshold 4.0-5.0**. Different
+#   machine, different site, different python patch level -- not one score
+#   differs. Host contributes nothing once these pins are in place.
+#   Two caveats that are NOT footnotes:
+#     - This holds on CPU. CPU-vs-CUDA on the student is worth 3 verdict flips at
+#       4.5 and 1 at the deployed 4.0 op-point. Use GPU for speed, confirm on CPU.
+#     - Only the twelve NAMED ML packages above match production exactly; a full
+#       freeze still differs in 13 of 58 shared packages (fsspec, cuda-bindings,
+#       cuda-pathfinder, filelock, regex, tqdm, certifi, hf-xet, idna, packaging,
+#       anyio, annotated-doc, typer-slim). Since the result is bit-identical
+#       anyway, none of those 13 affects the student -- do not spend effort there.
+#   (An earlier version of this header said pinning made agreement WORSE. That was
+#   confounded: it compared a mismatched-stack CPU run against a matched-stack
+#   CUDA run. docs/evidence/2026-08-10-b650-gpu-production-stack-parity.md.)
 #   docs/evidence/2026-08-10-b650-gpu-production-stack-parity.md
 #
 #   Diff a suspect box against production:

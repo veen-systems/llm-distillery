@@ -8,7 +8,12 @@ ssh b650-gpu        # account is `jeroen` (NOT jwasys); works from situla and sa
 ```
 
 - **sudo password**: in owner's Bitwarden (initial photo'd one is dead).
-- **venv**: `~/llm-distillery/venv` — created with **uv** (`~/.local/bin/uv`);
+- **venv**: **two now.** `~/llm-distillery/venv-prodparity` (py 3.11.15, torch
+  2.11.0+cu130, transformers 5.0.0 — production's pins, **GPU works**) is the one
+  to use for anything touching the student; `~/llm-distillery/venv` (py 3.12.3,
+  torch 2.13.0, **CPU only** — triton cannot build) is kept because the
+  2026-08-09 parity dumps cite it as provenance. Both created with **uv**
+  (`~/.local/bin/uv`);
   system `python3 -m venv` is BROKEN (no ensurepip; python3.12-venv needs sudo).
   Stack: torch 2.13.0+cu130, sentence-transformers 5.6.1, **scikit-learn pinned
   1.8.0** (matches obituary pickle version).
@@ -53,16 +58,22 @@ ssh b650-gpu        # account is `jeroen` (NOT jwasys); works from situla and sa
   # then torch from the cu130 index, then the inference subset -- exact commands
   # in the header of constraints/production-gpu-server.txt
   ```
-  Built to **production's frozen versions** (torch 2.11.0+cu130, transformers
+  Built to production's frozen versions **for the named ML packages** — a full
+  freeze still differs in 13 of 58 transitive deps (`fsspec`, `cuda-bindings`,
+  `cuda-pathfinder`, …), so do not call it identical. (torch 2.11.0+cu130, transformers
   5.0.0, peft 0.18.1, numpy 2.4.2, sklearn 1.8.0). The old `venv/` is untouched,
   because the 2026-08-09 parity dumps cite it as provenance.
-  **But pinning the stack did NOT make b650 agree with production** —
-  bit-identical rows fell 2.3% → 0.6% and a verdict flip appeared at 4.0 where
-  there had been none. The residual is hardware/kernel level. b650 is still
-  cleared at 4.0 and **not** at 4.5 (same 3 articles flip, on both a stack change
-  and a device change). Use it freely for within-box differences — sweeps,
-  ablations, ranking — and check flips before quoting an absolute number at a
-  production op-point. `docs/evidence/2026-08-10-b650-gpu-production-stack-parity.md`.
+  **On CPU with these pins, b650 is bit-identical to production: 660/660 rows,
+  0 verdict flips at every threshold.** It is a production-exact measuring
+  instrument — quote its numbers without qualification. **On GPU it is not**: 1
+  flip at 4.0 and 3 at 4.5, so use CUDA for speed (~2 min vs ~16) and confirm on
+  CPU before quoting an op-point number. Decomposed one variable at a time: host
+  contributes **nothing**, the library stack is worth 3 flips at 4.5, CPU→CUDA is
+  worth 3 at 4.5 and 1 at 4.0.
+  *(An intermediate note here said pinning made agreement WORSE and that the
+  residual was hardware-level. That was confounded — it compared a mismatched-stack
+  CPU run against a matched-stack CUDA run. The opposite is true.)*
+  `docs/evidence/2026-08-10-b650-gpu-production-stack-parity.md`.
   **`sadaltager` is predicted to need the same fix; untested.**
 - 🗄️ **Historical — why the GPU was blocked (superseded by the entry above).**
   *(Diagnosis corrected 2026-08-09 evening; the original note below was wrong.)* torch 2.13 JITs a triton kernel,

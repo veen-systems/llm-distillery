@@ -1,74 +1,134 @@
-# b650 on production's exact stack, on GPU — and a correction to my own correction
+# Decomposing cross-box disagreement: host vs library stack vs device
 
-**Measured 2026-08-10. uplifting v7, the same 660-row held-out split, third run.**
+**Measured 2026-08-10. uplifting v7, the same 660-row held-out split, four runs.**
 
 ## One-line answer
 
-**Pinning production's library versions did not make b650 agree with production —
-it made it agree slightly *worse*.** The residual disagreement is
-hardware/kernel-level, not library-level, and it is **systematic and
-article-specific**, not batch noise. `b650` remains usable at 4.0 and not at 4.5,
-which is what the 2026-08-09 run said before I incorrectly walked it back this
-morning.
+**Pinning production's library versions clears the box completely — 660/660 rows
+bit-identical, zero verdict flips at every threshold.** Two different physical
+machines, and not one score differs. The disagreement everyone has been chasing
+is **the library stack plus the device**, and **hardware contributes nothing**.
 
-## What was built
+> ### ⚠ This document's first version claimed the opposite, and was wrong
+>
+> It said *"matching the library stack made agreement WORSE"* and hardened that
+> into a rule — *"you cannot clear a box by pinning its library versions"* —
+> propagated to five surfaces including `memory/b650-gpu.md` and
+> `constraints/production-gpu-server.txt`.
+>
+> **It was confounded.** The comparison ran b650-CPU-with-mismatched-stack against
+> b650-**CUDA**-with-matched-stack, changing the stack *and* the device at once,
+> then attributed the whole difference to the stack. A review lens caught it; the
+> missing fourth run (b650 **CPU** + production pins, ~16 min on a free box)
+> settles it and shows the reverse. **Pinning works. It works perfectly.**
 
-b650's GPU had been unusable since the box was commissioned: triton's helper
-compile dies on `Python.h: No such file or directory`, and `sudo` needs a
-password. **The fix needed no sudo.** The venv was built on the *system* python
-(`pyvenv.cfg` → `home = /usr/bin`), which ships no headers, but `uv 0.12.0` was
-already installed and can download a standalone CPython that does:
+## The four runs
+
+| id | host | device | stack |
+|---|---|---|---|
+| **P** | gpu-server (production serving venv) | CPU | py 3.11.2, torch 2.11.0+cu130, transformers 5.0.0, peft 0.18.1 |
+| **B** | b650 | CPU | py 3.12.3, torch 2.13.0+cu130, transformers 5.14.1, peft 0.19.1 |
+| **C** | b650 | CPU | **production's pins** (py 3.11.15) |
+| **G** | b650 | **CUDA** | **production's pins** (py 3.11.15) |
+
+Adapter weights, tokenizer, `config.yaml`, `calibration.json`, `inference.py`,
+`filters/common/*` and the split are md5-identical everywhere; batch size 16;
+same input order.
+
+## The decomposition — one variable at a time
+
+| comparison | isolates | bit-identical | max \|Δ\| | rows > 0.16 | flips @4.0 | flips @4.5 |
+|---|---|---|---|---|---|---|
+| **P → C** | **host** (device + stack held) | **660/660 = 100%** | **0.0000** | **0** | **0** | **0** |
+| B → C | **library stack** (host + device held) | 15/660 = 2.3% | 0.2008 | 1 | 0 | **3** |
+| C → G | **device, CPU→CUDA** (host + stack held) | 4/660 = 0.6% | 0.1956 | 3 | **1** | **3** |
+
+**Host contributes exactly nothing.** Two different machines — an LXC container
+on one site, a desktop on another, different CPUs — produce **byte-identical
+scores on all 660 articles** once the library versions match. Even the python
+patch level differs (3.11.2 vs 3.11.15) and it does not matter.
+
+**The library stack is worth 3 verdict flips at 4.5** and 0 at 4.0.
+**CUDA is worth 3 flips at 4.5 and 1 at 4.0** — so the device is if anything the
+slightly larger term, and it is the one that reaches the *deployed* op-point.
+
+**It is the same three articles every time** — `east_african_fana_bc_…`,
+`german_deutschlandfunk_…`, `global_south_global_voices_…` — moving in whichever
+direction the perturbation pushes them. They are not merely "the rows nearest the
+cut": of 18 production rows in [4.30, 4.50) only these 3 move, while one at
+4.4870 — *closer* to the threshold — never does. They are three specifically
+fragile articles, and a perturbation of any kind moves them across 4.5.
+
+## What this overturns
+
+1. **"You cannot clear a box by pinning its library versions" — REFUTED, and it
+   was my own rule.** You can, completely. It is the single most effective lever
+   available: it took a box from 2.3% bit-identical to 100%.
+2. **"b650 is cleared at 4.0 and NOT at 4.5" (2026-08-09) — true of the
+   configuration measured, and now fixable.** That b650 ran a mismatched stack.
+   On production's pins, on CPU, b650 is cleared at **every** threshold, exactly.
+3. **The residual is NOT hardware/kernel-level.** It is library versions plus
+   CPU-vs-CUDA, and both are under our control.
+
+**What survives unchanged:** *a box is cleared at a threshold, never in general*
+— the C→G row is the proof, since CUDA is clean at 4.0 and not at 4.5. The rule
+is now sharper: **a box is cleared for a (stack, device, threshold) triple.**
+
+## What it means operationally
+
+- **b650 on `venv-prodparity`, CPU, is a production-exact measuring instrument.**
+  Numbers produced there can be quoted for production without qualification. That
+  is new, and it removes the "only free between pipeline cycles" constraint from
+  every future threshold question.
+- **b650 on GPU is for speed, not for op-point numbers.** ~2 min vs ~16 min per
+  660 rows, and 1 flip at 4.0. Explore there; confirm on CPU.
+- **CPU vs CUDA on the student is now measured**, and it is the axis that matters:
+  max |Δ| **0.1956**, 3 rows above the #95 floor, 1 verdict flip at the deployed
+  op-point. **Production serves on GPU, while `ground_truth_gate.json` and the
+  whole #102 sweep were measured on CPU** — so the deployed numbers carry this
+  term. That is a new open question, not answered here.
+- **`sadaltager` should need the same `uv python install` fix.** Untested.
+
+## How the venv was built (no sudo needed)
+
+b650's GPU was unusable since commissioning: triton's helper compile dies on
+`Python.h: No such file or directory`, and `sudo` needs a password. The venv was
+built on the *system* python (`pyvenv.cfg` → `home = /usr/bin`), which ships no
+headers — but `uv 0.12.0` was already installed and can fetch a standalone
+CPython that does:
 
 ```bash
 uv python install 3.11          # ships include/python3.11/Python.h
 uv venv ~/llm-distillery/venv-prodparity --python 3.11
+# torch from the cu130 index, then the inference subset — exact commands in the
+# header of constraints/production-gpu-server.txt
 ```
 
-Built to **production's frozen versions**, not to `requirements.txt`'s ranges:
-python 3.11.15 (production 3.11.2), torch **2.11.0+cu130**, transformers
-**5.0.0**, peft **0.18.1**, numpy **2.4.2**, scikit-learn **1.8.0**,
-sentence-transformers **5.2.2** — every one matching
-`constraints/production-gpu-server.txt`. triton 3.6.0 now compiles and runs a
-kernel. The existing `venv/` was left untouched, because the 2026-08-09 parity
-dumps cite it as provenance.
+The old `venv/` is untouched, because the 2026-08-09 dumps cite it as provenance.
 
-**A defect in the constraints file, found by using it:**
-its header documents `pip install -r requirements.txt -c constraints/production-gpu-server.txt`,
-and **that command cannot succeed**. `requirements.txt` requires
-`datasets>=2.14.0,<3.0.0`, every version of which pins `fsspec<=2024.6.1`, while
-production's `torch==2.11.0` requires `fsspec==2026.1.0`. Production's serving
-venv **has no `datasets` at all** — it is a serving environment, and `datasets`
-is a training dependency. The documented command was written and never run.
+**"Production's stack" means the twelve named ML packages**, which match exactly.
+A full freeze still differs in **13 of 58** shared packages (`fsspec` 2026.4.0 vs
+2026.1.0, `cuda-bindings`, `cuda-pathfinder`, `filelock`, `regex`, `tqdm`,
+`certifi`, `hf-xet`, `idna`, `packaging`, `anyio`, `annotated-doc`,
+`typer-slim`). Since P→C is bit-identical, **none of those 13 affects the
+student** — worth knowing before anyone spends effort closing that gap.
 
-## The result
+**A defect in the constraints file, found by using it:** its header documented
+`pip install -r requirements.txt -c constraints/production-gpu-server.txt`, and
+that command **cannot succeed**. `requirements.txt` needs
+`datasets>=2.14.0,<3.0.0`, every version of which caps `fsspec<=2024.6.1`, while
+the constraints file itself pins `fsspec==2026.1.0` — and a `-c` file is a pin.
+Production's serving venv has **no `datasets` at all** (it is a serving
+environment; `datasets` is a training dependency), which is why the conflict never
+surfaced there. *(An earlier draft blamed torch for the fsspec pin. It does not —
+`torch-2.11.0` declares `fsspec>=0.8.5`, verified from the installed wheel
+metadata. uv's error text folds the constraint into the torch line, which is what
+misled me.)*
 
-Production (gpu-server serving venv, **CPU**) vs b650 (**production stack,
-CUDA**). Adapter weights, tokenizer, `config.yaml`, `calibration.json` and the
-split all md5-identical; batch size 16; same input order.
+## The proximity control (unchanged, and still load-bearing)
 
-| | vs b650 CPU / *different* stack (2026-08-09) | vs b650 **GPU / production stack** (today) |
-|---|---|---|
-| bit-identical rows | 15/660 (**2.3%**) | 4/660 (**0.6%**) |
-| max per-dim raw \|Δ\| | 0.0625–0.1250 | 0.0938 |
-| calibrated \|Δ\| p90 / p99 / max | 0.0345 / 0.1198 / **0.2008** | 0.0442 / 0.1388 / **0.1956** |
-| rows over the #95 0.16 floor | 1 (0.15%) | 3 (0.45%) |
-| signed mean | +0.00018 | +0.00073 |
-| **verdict flips at 4.0** | **0** | **1** |
-| **verdict flips at 4.5** | **3** | **3 — the same three articles** |
-| specificity at 4.5 | 0.9662 | 0.9662 |
-
-**Matching the library stack made agreement worse on every count that moved.**
-Bit-identical fell from 2.3% to 0.6%, rows over the noise floor went 1 → 3, and a
-verdict flip appeared at 4.0 where there had been none
-(`mexican_la_jornada_0627316503ad`, 4.0371 → 3.9532). The one thing that did not
-change is the thing that matters: **the same three articles flip at 4.5, in the
-same direction, producing the same specificity 0.9662.**
-
-## The proximity control — this is not "whatever is nearest the threshold"
-
-The obvious deflation is that any perturbation flips whichever rows sit closest
-to the cut. It does not hold. Of the **18** production rows in `[4.30, 4.50)`,
-exactly **3** flip up, and they are the **same 3** on both b650 configurations:
+Of the **18** production rows in `[4.30, 4.50)`, exactly **3** flip, and the same
+3 in every configuration:
 
 | production | b650 CPU / new stack | b650 GPU / prod stack | article |
 |---|---|---|---|
@@ -77,86 +137,39 @@ exactly **3** flip up, and they are the **same 3** on both b650 configurations:
 | 4.4840 | 4.4779 | 4.4779 | `biotech_pharma_genetic_engineering_news_…` |
 | 4.4667 | 4.4667 | 4.4667 | `south_african_daily_maverick_…` |
 | 4.4140 | **4.5427 ↑** | **4.5311 ↑** | `german_deutschlandfunk_…` |
-| 4.3919 | **4.5340 ↑** | **4.5394 ↑** | `global_south_global_voices_…` — **further from the cut than five non-flippers** |
+| 4.3919 | **4.5340 ↑** | **4.5394 ↑** | `global_south_global_voices_…` |
 
-Three specific articles move **+0.13 to +0.15** on b650 in both configurations
-while their immediate neighbours are bit-stable, and one of them (`east_african_fana_bc`)
-lands on **exactly the same value, 4.5386, in both b650 runs** despite a
-different torch, a different transformers and a different device.
+**Two overstatements from the first draft, corrected.** (a) The flippers move
+**+0.047 to +0.148**, not "+0.13 to +0.15" — `east_african_fana_bc` moves only
++0.047 and flips because it starts at 4.4919, not because it moves far. (b)
+*"their immediate neighbours are bit-stable"* is **false**: six of the 15
+non-flippers move ≥0.04, and `balkan_index_hr` moves **+0.168 on the GPU run,
+more than any flipper**. And `global_south_global_voices` sits below **nine**
+non-flippers, not the five first claimed.
 
 At 4.0 the same window is clean: of **17** production rows in `[3.80, 4.00)`,
-**0** flip on either configuration.
-
-So the disagreement is **article-specific and reproducible**, not a random draw.
-
-## The correction — and it is a correction of a correction
-
-Earlier today I put a banner on
-`2026-08-09-cross-box-parity-uplifting-v7.md` retracting *"b650 is cleared at 4.0
-and NOT cleared at 4.5"*, on the grounds that the two boxes' #95 specificity
-bands overlap. **That was the wrong instrument, and the retraction is
-withdrawn.**
-
-The #95 band answers *"how much could this metric move if the batch composition
-changed?"* These parity runs deliberately hold batch composition **fixed** —
-same order, same batch size, same 660 rows. Batch noise is therefore not the
-source of variation between them, and a band built from it cannot license
-"indistinguishable". I reached for the repo's most-used caveat without checking
-that its premise applied.
-
-Stated separately, all three things are true:
-
-- **b650 differs from production systematically at 4.5.** Same 3 articles, same
-  direction, across a library-stack change *and* a device change. Yesterday's
-  conclusion stands as written.
-- **The size of that difference (0.0068 specificity) is smaller than the
-  batch-noise band at the same threshold (0.0248).** So it does not change what
-  specificity can be *claimed* for production — production's own number moves
-  more than that between cycles.
-- **Therefore it does not affect #102's conclusion at all.** The 4.0 → 4.5
-  specificity gain is 0.054, an order of magnitude larger than the box effect
-  and larger than the band. What the box effect governs is *which machine may
-  produce the number*, not *what the number implies*.
-
-The general rule survives all three revisions and is the part worth keeping:
-**a box is cleared at a threshold, never in general** — and now, additionally,
-**you cannot clear a box by pinning its library versions.**
-
-## What this changes operationally
-
-- **b650's GPU works.** `~/llm-distillery/venv-prodparity`, ~2 minutes for 660
-  rows versus ~16 (b650 CPU) or ~30 (gpu-server CPU). Experiments no longer need
-  to wait for a gap between production cycles.
-- **Do not use it to produce a number at an op-point production will deploy**
-  without checking flips at that threshold first. Use it freely for everything
-  else — sweeps, ablations, ranking, anything measured as a *difference within
-  one box*, where the effect cancels.
-- **`sadaltager` is predicted to have the same triton failure** and the same
-  no-sudo fix (`uv python install`). Untested.
-
-## Still unmeasured
-
-- **Why those three articles.** All three are non-English (Amharic-source
-  English, German, and a Global Voices translation). Whether that is the
-  mechanism or a coincidence at n=3 has not been checked, and n=3 is too small
-  to claim it.
-- **b650 GPU vs b650 CPU on the same box**, which would separate device from
-  host. Both dumps now exist; only the cross-box diff has been run.
+**0** flip in any configuration.
 
 ## Reproduce
 
 ```bash
-ssh b650-gpu 'cd ~/llm-distillery && HF_HUB_OFFLINE=1 PYTHONPATH=$HOME/llm-distillery \
-  ~/llm-distillery/venv-prodparity/bin/python /tmp/parity/box_parity.py \
-    --fit-calibration /tmp/parity/fit_calibration.py \
-    --filter ~/llm-distillery/filters/uplifting/v7 \
-    --data ~/llm-distillery/datasets/training/uplifting_v7/test.jsonl \
-    --out /tmp/parity/preds-b650-GPU-prodstack.jsonl'
+# C (the run that settles it) — CPU, production pins
+ssh b650-gpu 'cd ~/llm-distillery && CUDA_VISIBLE_DEVICES="" HF_HUB_OFFLINE=1 \
+  PYTHONPATH=$HOME/llm-distillery ~/llm-distillery/venv-prodparity/bin/python \
+  /tmp/parity/box_parity.py --fit-calibration /tmp/parity/fit_calibration.py \
+  --filter ~/llm-distillery/filters/uplifting/v7 \
+  --data ~/llm-distillery/datasets/training/uplifting_v7/test.jsonl \
+  --out /tmp/parity/preds-b650-CPU-prodstack.jsonl'
 
-PYTHONPATH=. python scripts/verification/diff_box_parity.py \
-    --a datasets/parity/uplifting_v7_test660_gpuserver-serving-venv_2026-08-09.jsonl \
-    --b datasets/parity/uplifting_v7_test660_b650-GPU-prodstack_2026-08-10.jsonl \
+# the decomposition — change ONE thing per comparison
+D=datasets/parity/uplifting_v7_test660
+for pair in "${D}_gpuserver-serving-venv_2026-08-09.jsonl:${D}_b650-CPU-prodstack_2026-08-10.jsonl" \
+            "${D}_b650_2026-08-09.jsonl:${D}_b650-CPU-prodstack_2026-08-10.jsonl" \
+            "${D}_b650-CPU-prodstack_2026-08-10.jsonl:${D}_b650-GPU-prodstack_2026-08-10.jsonl"; do
+  PYTHONPATH=. python scripts/verification/diff_box_parity.py \
+    --a "${pair%%:*}" --b "${pair#*:}" \
     --labels datasets/training/uplifting_v7/test.jsonl \
     --calibration filters/uplifting/v7/calibration.json \
     --repo-root . --threshold 4.0 --alt-threshold 4.5
+done
 ```

@@ -15,7 +15,8 @@
 > checking that its premise applied.
 >
 > **A third run the same afternoon settled it.** b650 rebuilt on production's
-> *exact* frozen stack (torch 2.11.0+cu130, transformers 5.0.0, peft 0.18.1) and
+> frozen ML stack (torch 2.11.0+cu130, transformers 5.0.0, peft 0.18.1 — the
+> named packages; 13 of 58 transitive deps still differ) and
 > run on **CUDA** flips **the same three articles** at 4.5, in the same
 > direction, to the same specificity 0.9662. A proximity control rules out "it's
 > just whatever is nearest the cut": of 18 production rows in [4.30, 4.50) only
@@ -23,12 +24,16 @@
 > **The difference is systematic and article-specific, and this document's
 > conclusion is correct as written.**
 >
-> Two things it did NOT establish, added by the later run: matching production's
-> library versions makes agreement **worse**, not better (bit-identical 2.3% →
-> 0.6%, and a new flip appears at 4.0), so the residual is hardware/kernel-level;
-> and the box effect (0.0068 specificity) is an order of magnitude smaller than
-> #102's 4.0→4.5 gain (0.054), so it governs *which machine may produce a
-> number*, never *what that number implies*.
+> **And a fourth run reversed the reason.** This document's conclusion is right
+> *for the configuration it measured* — b650 on a **mismatched** stack. Pin
+> production's library versions and run on CPU and b650 becomes **660/660
+> bit-identical to production, 0 flips at every threshold**. The 3 flips at 4.5
+> were the **library stack**, not the hardware, and they are removable. Host
+> contributes nothing. (An intermediate write-up here claimed pinning made things
+> *worse*; that was confounded — it changed the stack and the device at once.)
+> The box effect is also an order of magnitude smaller than #102's 4.0→4.5 gain
+> (0.0068 vs 0.054), so it governs *which machine may produce a number*, never
+> *what that number implies*.
 >
 > Full record: [`2026-08-10-b650-gpu-production-stack-parity.md`](2026-08-10-b650-gpu-production-stack-parity.md).
 
