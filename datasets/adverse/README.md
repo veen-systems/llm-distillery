@@ -110,16 +110,23 @@ the part worth generalising from: it says what a fix has to learn to discount.
 
 ## Current contents
 
-Kept current as of **2026-08-05**. This table drifted once already (it read n=1 for
-`cultural_discovery` while four rows were on disk, and omitted `nature_recovery`
-entirely) — if you add a row, edit this table in the same commit.
+Kept current as of **2026-08-10**, and the counts below were read off disk on that
+date rather than incremented by hand. This table has drifted **twice** now — it read
+n=1 for `cultural_discovery` while four rows were on disk and omitted
+`nature_recovery` entirely (fixed 2026-08-05), then read n=2 for `uplifting` and n=1
+for `belonging` against 4 and 2 on disk (fixed 2026-08-10). **If you add a row, edit
+this table in the same commit** — and verify with:
+
+```bash
+for f in datasets/adverse/*.jsonl; do echo "$(wc -l < "$f") $f"; done
+```
 
 | File                       | n   | Cases                                                                                                                                                                                                       |
 | -------------------------- | --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `cultural_discovery.jsonl` | 5   | Homo antecessor cannibalism (raw 6.14); smallpox genomes, DE + ES same study (6.56 / 6.67); Inca child sacrifice (6.44); **Kixikila, a living Angolan savings practice with no finding in it (6.78)**       |
-| `uplifting.jsonl`          | 2   | child sex trafficking investigation (raw 6.77, 6th of 3,530); greyhound export (5.86)                                                                                                                       |
+| `uplifting.jsonl`          | 11  | child sex trafficking investigation (raw 6.77, 6th of 3,530); greyhound export (5.86); minor-rape arrests (Herald ZW); business-centre op-ed (Namibian) — **plus the 7 accepted 2026-08-10** (5.12 → 4.06)   |
 | `solutions.jsonl`          | 2   | greyhound export as "delivered solution" (raw 4.51, above its batch p99 of 4.07); **Hong Kong AI facial-recognition enforcement drones, scored 9-12 months before they exist (4.68, batch p99 3.87)**        |
-| `belonging.jsonl`          | 1   | expropriated Venezuelan estate in ruins (raw 6.36, batch p99 5.10)                                                                                                                                          |
+| `belonging.jsonl`          | 2   | expropriated Venezuelan estate in ruins (raw 6.36, batch p99 5.10); second row added 2026-08-05                                                                                                              |
 | `nature_recovery.jsonl`    | 1   | Madagascar invasive rats blocking small-mammal recovery (raw 5.21 — **scale caveat**, see the 2026-08-05 adjudication note)                                                                                  |
 
 The greyhound article appears in two files: it scored high in **more than one lens
@@ -191,6 +198,51 @@ appending anything this script produces.
 The other two flags in the batch were image failures (a Times of India default share
 image served as the hero on four articles) and are not lens adverse examples. They are
 an ovr.news `domain_og_images` warm-up problem, tracked there.
+
+### 2026-08-10 additions (first oracle-sourced batch — uplifting, 7 of 21)
+
+The first rows here that did not come from a reader flag. Source: the ADR-023
+active-learning batch of 2026-08-09, sampled **above** the op-point. Full
+reasoning, including the 3 rejections and 11 holds, is in
+[`2026-08-10-uplifting-oracle-batch-adjudication.md`](2026-08-10-uplifting-oracle-batch-adjudication.md).
+
+Three things it established that outlive the batch:
+
+- **`content_type: solutions_story` is the oracle's residual bucket, not a lens
+  signal.** It is the tag on the prompt's own 7.3/10 and 5.8/10 *good* examples;
+  it means "none of the five penalty caps applied". The claim that "uplifting is
+  absorbing solutions-lens material" was an artifact of reading it as routing.
+  The real dominant class in the 4.0–4.5 band is **academic-abstract register**
+  (9 of 21) — abstract prose supplying benefit vocabulary and a high
+  `evidence_level` with no beneficiary in the text.
+- **`raw ≥ 4.01` is the admission bar for this file.** Promotion asserts
+  `predicted_wa ≤ max_acceptable_wa` (3.85 for uplifting); if the observed score
+  is nearer the bar than the #95 |0.16| batch-noise floor, the assertion is a
+  coin flip, not a gate. One candidate was rejected on exactly this (raw 4.004,
+  margin 0.154). New rows carry **`assertion_margin`** so the property is
+  checkable instead of remembered.
+- **A row whose `oracle_wa` lands in 3.5–4.0 is held, not labelled.** The batch
+  selected on "oracle below 4.0", but 3.95 against a 4.0 cut is not a negative —
+  one half-point increment on `human_wellbeing_impact` (weight 0.30) moves the
+  average 0.15. Six rows are held on this, including the batch's one genuine
+  ADR-015 case (Rwanda–EU agricultural financing).
+
+Two accepted rows also document **oracle-prompt gaps** rather than student
+errors, which is why they are worth more than their scores: the EBA ESG
+dashboard (prudential regulation is not in the `corporate_finance` cap's list of
+stock prices / earnings / funding rounds / valuations / M&A / IPO, so no cap
+fired) and the Namibian minister's speech (check C, PURE SPECULATION, did not
+fire on an aspiration with no programme behind it).
+
+New optional fields on these rows: **`oracle`** (the gemini-flash label block —
+explicitly *not* the source of `max_acceptable_wa`, which stays an editorial
+assertion per the section above) and **`assertion_margin`**.
+
+Four of the seven carry explicit **scope warnings** in `why_adverse`, following
+the Kixikila / Hong-Kong-drones precedent. The boundaries asserted are
+*preclinical vs delivered*, *announcement vs outcome*, *prototype vs delivered
+benefit*, and *biography vs outcome* — none of them "medicine / gender-equality
+policy / animal welfare / women in science is adverse".
 
 ## Adding a case
 
