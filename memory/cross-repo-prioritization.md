@@ -59,20 +59,43 @@ session.
 **Measured directly on `ovr.db`, not inferred.** ovr.news generates summaries that
 **exceed their own source** on short articles, inventing the difference.
 
-| body length | published | avg summary | expansion |
-|---|---|---|---|
-| under 200 chars | **40** | 1,165 | **8.9×** |
-| 200–500 | 72 | 906 | 2.9× |
-| 500–1000 | 156 | 987 | 1.5× |
-| 1000+ | 3,278 | 1,332 | **0.4×** *(real summarising = compression)* |
+Reproduced independently by the ovr.news session; **filed as ducroq/ovr.news#311, P1.**
 
-**112 published articles have a summary longer than their source; 40 are expanded
-~9×.** Two verified instances: a 106-char Cambodia trafficking headline became a
-1,095-char summary asserting victims *"included both Cambodian citizens and foreign
-nationals"* (invented); a 131-char Kačanik headline became 902 chars asserting *"The
-church had been without a cross since 1999"* — the source says there have been **no
-Serbs** since 1999, so the date was transferred onto a different and politically
-loaded fact.
+| body length | published | avg summary | expansion | longer than source |
+|---|---|---|---|---|
+| under 200 chars | **40** | 1,165 | **8.87×** | **40 / 40** |
+| 200–500 | 72 | 905 | 2.94× | 72 / 72 |
+| 500–1000 | 156 | 987 | 1.47× | 143 / 156 |
+| 1000+ | 3,278 | 1,331 | **0.37×** *(real summarising = compression)* | 69 / 3,278 |
+
+**324 published summaries are longer than their source — not the 112 first recorded
+here.** 112 was only the two short bands; the 500–1k band adds 143 and even 1k+ adds
+69. The 9× figure belongs to the under-200 group, but *"summary longer than the thing
+summarised"* is a far wider population than the Google News stubs.
+
+**It is CURRENT behaviour, not historical residue** — the question left open on first
+finding. **24 published in 2026-08 at 9.2× expansion; 16 in 2026-07 at 8.4×.** So a
+write-time guard is required; a backfill alone would refill.
+
+Two verified instances: a 106-char Cambodia trafficking headline became a 1,095-char
+summary asserting victims *"included both Cambodian citizens and foreign nationals"*
+(invented); a 131-char Kačanik headline became 902 chars asserting *"The church had
+been without a cross since 1999"* — the source says there have been **no Serbs** since
+1999, so the date was transferred onto a different and politically loaded fact.
+
+**This is the MECHANISM behind ovr.news#286**, a reader-reported backfill of 397
+summaries that "say what the source didn't tell us" (2.26% of 17,597). #286 is the
+symptom; this is one of its causes — a stronger argument together than either alone.
+
+**Why no existing check caught it**: `ovr.news scripts/summary-overlap-audit.ts` tests
+for *copying* from the source — the opposite failure — so a 9× expansion passes it
+cleanly. And `OWN_WORDS_RULE` promises summaries are "original … in new words", which
+**fluent invention satisfies**. The promise needs stating as a ratio, not only as a
+copying constraint.
+
+**Model attribution is simple**: summarisation has been Ollama `gemma3:27b` only since
+2026-07-26 (Gemini fallback removed), so August's 24 are one model. The
+`summaries_flash` / `summaries_flash_lite` columns are pre-removal history.
 
 **`MIN_CONTENT_AFTER_ENRICHMENT = 100` (`ovr.news scripts/summarize.ts:154`, filter
 at :475) is the wrong SHAPE, not the wrong value** — both items cleared it, by 6 and
