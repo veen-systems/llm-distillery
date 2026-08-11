@@ -54,6 +54,39 @@ session.
 
 <!-- verify: tot=0; for r in veen-systems/llm-distillery ducroq/NexusMind ducroq/ovr.news ducroq/FluxusSource veen-systems/persuasion-scorer veen-systems/pipeline-atlas ducroq/augmented-engineering; do n=$(gh issue list -R $r --state open --limit 400 --json number --jq 'length'); echo "$r: $n"; tot=$((tot+n)); done; echo "TOTAL: $tot" -->
 
+### 🔴 Published summaries are FABRICATED on short bodies (2026-08-11, found by an owner question)
+
+**Measured directly on `ovr.db`, not inferred.** ovr.news generates summaries that
+**exceed their own source** on short articles, inventing the difference.
+
+| body length | published | avg summary | expansion |
+|---|---|---|---|
+| under 200 chars | **40** | 1,165 | **8.9×** |
+| 200–500 | 72 | 906 | 2.9× |
+| 500–1000 | 156 | 987 | 1.5× |
+| 1000+ | 3,278 | 1,332 | **0.4×** *(real summarising = compression)* |
+
+**112 published articles have a summary longer than their source; 40 are expanded
+~9×.** Two verified instances: a 106-char Cambodia trafficking headline became a
+1,095-char summary asserting victims *"included both Cambodian citizens and foreign
+nationals"* (invented); a 131-char Kačanik headline became 902 chars asserting *"The
+church had been without a cross since 1999"* — the source says there have been **no
+Serbs** since 1999, so the date was transferred onto a different and politically
+loaded fact.
+
+**`MIN_CONTENT_AFTER_ENRICHMENT = 100` (`ovr.news scripts/summarize.ts:154`, filter
+at :475) is the wrong SHAPE, not the wrong value** — both items cleared it, by 6 and
+31 chars. A floor cannot express "the summary must not exceed its source"; only a
+ratio can. This is a **separate fix from the withholding rule** and protects the back
+catalogue, which a publication gate does not.
+
+**Not established**: whether this is current behaviour or historical residue. The
+model per run may be recoverable — `pipeline_runs` tracks `summaries_flash` /
+`summaries_flash_lite`. Establish that before deciding whether a backfill is needed.
+
+Reported to the ovr.news session (which owns ovr.news#310, the withholding rule);
+**not yet filed as its own issue** — see whether they file it before duplicating.
+
 ### The four chains in the live work (2026-08-11 afternoon)
 
 Grouped from titles, then **corrected by the FluxusSource and NexusMind peer
