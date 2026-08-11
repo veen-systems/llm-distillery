@@ -1,25 +1,52 @@
 {
-  "threshold": 4.0,
+  "threshold": 4.5,
+  "truth_threshold": 4.0,
   "gatekeeper_cap": 3.0,
+  "noise_floor": 0.16,
   "n_labeled": 660,
   "models": {
     "v7": {
       "n": 660,
       "positives": 216,
-      "recall": 0.7361111111111112,
-      "precision": 0.8153846153846154,
-      "specificity": 0.918918918918919,
-      "f1": 0.7737226277372263,
-      "mae": 0.8398377744424256,
-      "mae_uncalibrated": 0.8110307173295456,
-      "tp": 159,
-      "fn": 57,
-      "fp": 36,
-      "tn": 408
+      "truth_threshold": 4.0,
+      "recall": 0.6111111111111112,
+      "precision": 0.9166666666666666,
+      "specificity": 0.972972972972973,
+      "f1": 0.7333333333333334,
+      "spearman": 0.8321296608481992,
+      "mae": 0.7323522799097204,
+      "tp": 132,
+      "fn": 84,
+      "fp": 12,
+      "tn": 432,
+      "noise_floor": 0.16,
+      "n_indeterminate": 24,
+      "indeterminate_by_cell": {
+        "tp": 6,
+        "fn": 7,
+        "fp": 4,
+        "tn": 7
+      },
+      "recall_band": [
+        0.5833333333333334,
+        0.6435185185185185
+      ],
+      "precision_band": [
+        0.8689655172413793,
+        0.9455782312925171
+      ],
+      "specificity_band": [
+        0.9572072072072072,
+        0.9819819819819819
+      ],
+      "f1_band": [
+        0.6980609418282548,
+        0.7658402203856749
+      ]
     }
   },
   "provenance": {
-    "measured": "2026-08-09",
+    "measured": "2026-08-10 (op-point move)",
     "why": "uplifting v7 was deployed with NO accuracy number of any kind. This is the first one. It closes the ADR-021 gap for this filter.",
     "data": "datasets/training/uplifting_v7/test.jsonl (held-out oracle test split, never seen by training or by the calibration fit)",
     "calibration": "the DEPLOYED filters/uplifting/v7/calibration.json (isotonic, n=659, fitted_on=val) -- NOT a fresh fit, so mae describes what production computes",
@@ -45,6 +72,11 @@
       "signed_mean_b650_minus_gpuserver": 0.00018,
       "evidence": "docs/evidence/2026-08-09-cross-box-parity-uplifting-v7.md",
       "dumps": "datasets/parity/uplifting_v7_test660_*_2026-08-09.jsonl"
-    }
+    },
+    "op_point_change": "This file now records the filter at its NEW 4.5 operating point (llm-distillery#102). The 4.0 numbers it held before are preserved in git history and in docs/evidence/2026-08-10-uplifting-v7-threshold-sweep-102.md: recall 0.7361, specificity 0.9189, FPR 8.11%, tp=159 fn=57 fp=36 tn=408.",
+    "on_lens_definition": "oracle gatekeepered weighted average >= 4.0, PINNED. The oracle's definition of on-lens did NOT move with the student's bar -- otherwise recall here would not be comparable to the 4.0 row.",
+    "predictions": "datasets/parity/uplifting_v7_test660_gpuserver-serving-venv_2026-08-09.jsonl (production's own serving venv), calibrated with the deployed calibration.json",
+    "device": "cpu",
+    "not_deployed": "PREPARED, NOT DEPLOYED as of 2026-08-10. Lives on branch uplifting-v7-op-point-4.5. Reaching production needs: (1) merge, (2) scripts/deploy_to_nexusmind.sh uplifting v7, (3) a NexusMind commit -- after which NexusMind's own deploy_filters.sh ships it on the next 4-hourly cycle. Nothing scheduled invokes step 2, so this commit cannot reach production on its own."
   }
 }

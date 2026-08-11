@@ -138,7 +138,26 @@ scoring:
       description: "Verified, broadly beneficial, lasting positive change"
 
     medium:
-      threshold: 4.0
+      # 4.0 -> 4.5 on 2026-08-10 (llm-distillery#102, ADR-023).
+      # Measured on the 660-row held-out oracle split, production's own
+      # predictions, through scripts/gate/ground_truth_gate.py:
+      #   4.0  recall 0.7361  specificity 0.9189  FPR 8.11%  (36 FP, 57 FN)
+      #   4.5  recall 0.6111  specificity 0.9730  FPR 2.70%  (12 FP, 84 FN)
+      # 24 fewer false positives for 27 more false negatives. Under ADR-023 a
+      # false positive reaches a reader and a false negative does not, so this
+      # is the right direction. It put uplifting's FPR 1.79x above the next
+      # worst filter in a fully-measured fleet of six (2026-08-10).
+      # PARTIAL, on purpose: it removes 8 of the 13 clearly-junk articles
+      # (oracle <= 2.0), not all of them. The highest-scoring junk (predicted
+      # 5-6.6 against oracle 1.0-1.8) is #91's shape and no op-point reaches it.
+      # A register/source-type rule was tested as a cheaper alternative and
+      # REFUTED - it removes 2 false positives and costs 21 true ones.
+      # normalization.json MUST be refitted at this anchor in the same change
+      # (tests/unit/test_normalization_invariant.py enforces it), and 4.5 is
+      # exactly MAX_NORMALIZATION_RAW_MIN, so 4.75+ is not reachable without
+      # raising that constant in BOTH repos.
+      # docs/evidence/2026-08-10-uplifting-v7-threshold-sweep-102.md
+      threshold: 4.5
       description: "Documented benefits with moderate reach or durability"
 
     low:
@@ -216,7 +235,13 @@ hybrid_inference:
   stage1:
     embedding_model: "intfloat/multilingual-e5-small"
     probe_path: "probe/embedding_probe_e5small.pkl"
-    threshold: 1.00  # Calibrated on v7 val (659 articles): 0.9% FN on MEDIUM+
+    # Calibrated on v7 val (659 articles): 0.9% FN on MEDIUM+ when MEDIUM was
+    # 4.0. MEDIUM moved to 4.5 on 2026-08-10 (#102), so that 0.9% now describes
+    # a WIDER set than the one being screened for. Still recall-safe -- articles
+    # >= 4.5 are a subset of >= 4.0, so a screen tuned not to miss the wider set
+    # cannot miss more of the narrower one -- but it is now conservative rather
+    # than tuned, and the figure should be re-derived if the probe is retrained.
+    threshold: 1.00
   stage2:
     model: "current"
 

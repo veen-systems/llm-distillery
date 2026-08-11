@@ -37,9 +37,15 @@ class BaseUpliftingScorer(FilterBaseScorer):
         "change_durability": 0.15,
     }
 
+    # TIER_THRESHOLDS is the SOLE RUNTIME SOURCE of the operating point.
+    # config.yaml scoring.tiers is documentation and does NOT drive scoring --
+    # changing it alone is a no-op in production. Keep the two in sync.
+    # medium 4.0 -> 4.5 on 2026-08-10 (llm-distillery#102, ADR-023); see the
+    # decision record in config.yaml and
+    # docs/evidence/2026-08-10-uplifting-v7-threshold-sweep-102.md.
     TIER_THRESHOLDS = [
         ("high", 7.0, "Verified, broadly beneficial, lasting positive change"),
-        ("medium", 4.0, "Documented benefits with moderate reach or durability"),
+        ("medium", 4.5, "Documented benefits with moderate reach or durability"),
         ("low", 0.0, "Speculation, elite-only benefits, or no documented wellbeing impact"),
     ]
 

@@ -196,7 +196,12 @@ class TestResolveOpPoint:
         ("filters/nature_recovery/v2", 4.0),
         ("filters/cultural_discovery/v5", 4.0),
         ("filters/belonging/v1", 4.0),
-        ("filters/uplifting/v7", 4.0),
+        # 4.0 -> 4.5 on 2026-08-10 (llm-distillery#102). This assertion is the THIRD
+        # place uplifting v7's op-point is written down (config.yaml scoring.tiers,
+        # base_scorer.py TIER_THRESHOLDS, here) and the fourth is normalization.json
+        # stats.raw_min. It failing on the op-point change is the guard working:
+        # config.yaml alone is documentation, TIER_THRESHOLDS is what runs.
+        ("filters/uplifting/v7", 4.5),
     ],
 )
 def test_production_filters_resolve_their_op_point(filter_dir, expected):
