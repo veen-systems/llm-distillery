@@ -122,6 +122,19 @@ fi
 
 # Step 0: Verify package is internally consistent (issue #44)
 # Catches v_new config x v_old weights mismatches before copying.
+#
+# Resolve HF_TOKEN from secrets.ini the way .githooks/commit-msg already does.
+# Without it, --check-hub runs ANONYMOUSLY, and the Hub returns 404 (not 401) for
+# a private repo by design — so every private-Hub filter fails with "repo not
+# found" and the deploy aborts on a repo that exists and is perfectly fine.
+# Found 2026-08-11 deploying investment_risk v6: 1/8 checks failed anonymously,
+# 9/9 with the token. The hook and this script disagreed on token resolution;
+# now they do not.
+if [ -z "${HF_TOKEN:-}" ] && [ -f "$DISTILLERY_ROOT/config/credentials/secrets.ini" ]; then
+    HF_TOKEN=$(python -c 'import configparser,sys; c=configparser.ConfigParser(); c.read(sys.argv[1]); print(c.get("api_keys","huggingface_token",fallback="").strip())' "$DISTILLERY_ROOT/config/credentials/secrets.ini" 2>/dev/null)
+    export HF_TOKEN
+    [ -n "$HF_TOKEN" ] && echo "   HF_TOKEN taken from config/credentials/secrets.ini for --check-hub"
+fi
 echo "0. Verifying filter package..."
 (cd "$DISTILLERY_ROOT" && PYTHONPATH=. python scripts/deployment/verify_filter_package.py \
     --filter "$FILTER_PATH" --check-hub) || {
