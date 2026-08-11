@@ -52,7 +52,7 @@ Devos mourning piece (v3 .682/v4 .438/**v5 .122** — v5 REGRESSED on the
 community-mourning class, likely v4 hard-negative legacy-tribute pull).
 Rescore reproduced the production stamp exactly (0.4376). FN-class evidence
 for LD#85 if the owner calls the sighting a reactivation trigger.
-<!-- verify: ssh gpu-server "~/gpu-server/nexusmind-scorer/venv/bin/python /tmp/rescore_obit.py" (inputs /tmp/obit_recheck.jsonl) -->
+<!-- verify: manual — rerun the rescore on gpu-server with `~/gpu-server/nexusmind-scorer/venv/bin/python /tmp/rescore_obit.py`, inputs `/tmp/obit_recheck.jsonl`. Both live in /tmp and will not have survived; regenerate them first. Was silently ERRORing as an inline command because of the trailing parenthetical. -->
 
 **Owner verdict on carryover (2026-07-31): "it is what it is" — no purge, no
 LD#85 reactivation; let it wash out.** ovr-side session independently verified

@@ -4,7 +4,7 @@
 > counts that don't fit in CLAUDE.md; if you just want current production state, read
 > CLAUDE.md's Production Filters table. The tables below must be reconciled against it.
 >
-> <!-- verify: grep -qxF '<!-- prod-filters-table:start -->' memory/filter-status.md && grep -qxF '<!-- prod-filters-table:end -->
+> <!-- verify: bash scripts/verification/check_prod_filters_table.sh -->
 
 ## ADR-021 deploy-gate results — the whole fleet, first complete 2026-08-10
 
@@ -34,7 +34,7 @@ op-point on uplifting v7 (#104, open).
 `docs/evidence/2026-08-10-fleet-deploy-gate-completion.md`.
 
 **`cultural_discovery v5`'s gatekeeper binds 0 times in 857 rows** — the #94
-shape, second instance found in this project. Unexamined.' memory/filter-status.md && grep -q '^## Key Decisions' CLAUDE.md || { echo "FAIL: verify anchors missing"; exit 0; }; comm -23 <(awk '/^## Production Filters/,/^## Key Decisions/' CLAUDE.md | grep -E "^\| \*\*" | sed -E 's/^\| \*\*([a-z_-]+)\*\* \| (v[0-9]+).*/\1 \2/' | tr '-' '_' | grep -Ev "^(thriving|ai_engineering_practice) " | sort -u) <(awk '/prod-filters-table:start/,/prod-filters-table:end/' memory/filter-status.md | grep -E "^\| [a-z]" | awk -F'|' '{gsub(/ /,"",$2);gsub(/ /,"",$3); print $2, $3}' | tr '-' '_' | sort -u) | grep . && echo FAIL || echo PASS -->
+shape, second instance found in this project. Unexamined.
 >
 > The check asserts every filter in CLAUDE.md's Production Filters table has a
 > same-version row here (name separators normalized; `thriving` and
@@ -162,7 +162,7 @@ Ran `scripts/deployment/verify_filter_package.py --check-hub` across every `filt
 
 All 6 superseded by newer versions in production. Cleaned up 2026-07-27.
 
-<!-- verify: python -c "import huggingface_hub" 2>/dev/null || { echo ERROR: huggingface_hub not installed locally; exit 0; }; PYTHONPATH=. python scripts/deployment/verify_filter_package.py --filter filters/nature_recovery/v2 --check-hub > /dev/null && echo PASS || echo FAIL -->
+<!-- verify: for p in ai-engineering-practice/v2 sustainability_technology/v2 cultural-discovery/v3 investment-risk/v5 uplifting/v5 signs_of_wisdom/v1; do test -e "filters/$p" && { echo "FAIL: filters/$p still present"; exit 0; }; done; echo PASS -->
 
 ## Other Filters (not ovr.news)
 

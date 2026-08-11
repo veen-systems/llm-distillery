@@ -21,7 +21,7 @@ of surfacing articles (en 12.4% / non-en 13.2%); probe @ 2.50 blocks **1 article
 in 2,653** — 20 of 27 languages at exactly 0.0%, only Portuguese non-zero. The
 gap does not narrow, it disappears, which is what "cannot have a per-language
 keyword gap by construction" predicts.
-<!-- verify: filters/cultural_discovery/v6/STATUS.md "Criteria 1 and 2" table -->
+<!-- verify: test -f filters/cultural_discovery/v6/STATUS.md && grep -q "Criteria 1 and 2" filters/cultural_discovery/v6/STATUS.md && echo PASS || echo FAIL -->
 
 **H2 — the probe beats the gate on ORACLE ground truth, not just on agreement
 with the student.** Test split, 75 MEDIUM+ positives: probe @ 2.50 FN **0/75**,
@@ -35,7 +35,7 @@ mean 5×10⁻⁷, **zero threshold flips**, zero articles within max|Δ| of the
 threshold. Student scores move up to |0.162| (#95); probe scores do not. So a
 per-article probe decision IS reproducible, and #95's caveat attaches to the raw
 score side of any probe-vs-gate comparison, never to the probe side.
-<!-- verify: PYTHONPATH=. python scripts/gate/probe_batch_invariance.py on gpu-server -->
+<!-- verify: manual — run `PYTHONPATH=. python scripts/gate/probe_batch_invariance.py` on gpu-server. Heavyweight measurement, not a cheap check; was silently ERRORing as an inline command because of the trailing "on gpu-server". -->
 
 **H4 — `train_probe.py`'s reported val FN is optimistic by construction.** It
 selects the threshold off the val recall curve and then reports FN on that same
