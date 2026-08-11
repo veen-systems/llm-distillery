@@ -8,9 +8,43 @@ nothing deployed and nothing pending deployment. Full record:
 
 | # | What | Who decides |
 |---|---|---|
+| **Withholding gate** | Owner approved the **principle** (don't publish items that are only a headline). **NexusMind will not act on approval relayed through a peer session — correctly.** Needs the owner to confirm directly. Small change. | **Owner**, to NexusMind |
+| **Should ovr.news enrich at all?** | Owner's position: enrichment is NexusMind's job. ovr's `CLAUDE.md` documents the consolidation as deliberate. **Two documented positions in genuine conflict** — not drift. See § *three enrichment passes* below. | **Owner** — architecture |
 | **#109** | Design for the label-correctness instrument. **Approve, reject or re-scope.** Two independent arms; **arm A is cheap, uses an established design on full-length content, and closes #105's remaining half on its own**. Arm B carries all the methodological risk and must pass a planted-error gate before any real spend. | **Owner** — it is an oracle-budget call |
-| **#107** | A *ruling*: does `uplifting` require a pleasant subject, or only a positive outcome? One answer also settles the three adjacent-lens rows. | **Owner** — editorial, not technical |
-| **#106** | `belonging` published ethno-national framing at tier `high` from a 131-char Google News headline. | Owner sets severity; the mechanism is #108/GN |
+| **#107** | A *ruling*: does `uplifting` require a pleasant subject, or only a positive outcome? One answer also settles the three adjacent-lens rows. **Lower urgency now** — the item that prompted it is a 105-char GN stub that the withholding gate removes anyway. | **Owner** — editorial |
+| **#106** | `belonging` published ethno-national framing at tier `high` from a 131-char Google News headline. Same — the withholding gate removes it. | Owner sets severity |
+
+### Three enrichment passes, and why that is not as mad as it looks
+
+Answering the owner's *"I cannot imagine we need multiple enrichments?"* — **measured,
+not inferred**:
+
+1. **NexusMind `pre_enrich`** — before scoring, short articles, no score gate
+2. **NexusMind `enrich_articles`** — after scoring, `min_score` 4.0
+3. **ovr.news** (`summarize.ts:453`) — before summarising, `content < 500` **AND NOT**
+   `wasEnrichedUpstream`
+
+**(3) exists for exactly one reason: it is the only one that can resolve Google News
+links** — NexusMind has no GN resolution at all (verified). ovr places it late
+deliberately: resolving at collection would be ~13,000 requests/day against a private
+Google endpoint; late it costs ~15/day.
+
+**But that unique capability fails every time** (ovr.news#312). And the direction is to
+retire Google News anyway — FluxusSource's ADR-007 migration is working: 6 feeds moved
+2026-08-08, median length **89 → 326**, sub-300 share **100% → 47%**.
+
+**So: don't fix the resolver.** It is a workaround for a source being retired. The
+enrichment architecture collapses on its own once migration lands; **the withholding
+gate is the piece with reader impact and is independent of all of it.**
+
+### Peer-owned, do not duplicate
+
+ovr.news **#310** (withholding rule), **#311** (summaries longer than source — 324
+published, 40 at ~8.9× expansion, **current** at 24 in August; the mechanism behind
+their reader-reported #286), **#312** (silent enrichment refusal).
+NexusMind **#314** (built, PR #317), **#322** (sizes the unmeasured wrong-body region;
+**n=300 is the threshold, n=150 settles nothing**), **#323** (post-scoring enrichment
+does not fan out across lenses — 0.1%, structural). FluxusSource **#145** / **#157**.
 
 **Peer-owned, do not duplicate:** ducroq/NexusMind#314 (built, PR #317) and #322
 (sizes the unmeasured wrong-body region; **n=300 is the threshold, n=150 settles

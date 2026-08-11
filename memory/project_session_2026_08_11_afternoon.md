@@ -129,9 +129,70 @@ Constraints.
 **All three were plausible-and-unchecked, not wrong-and-obvious.** That is the
 shape to watch for, and it is why the new gotcha about confident recall matters.
 
+---
+
+## 5. The late half — two owner questions that found more than the day's analysis did
+
+**"ovr.news cannot make a summary of 300 words if the input is less than that?"**
+It can't, and it does anyway. Measured on `ovr.db`: articles under 200 chars
+(n=40 published) get summaries averaging 1,165 chars — **8.87× expansion**, while
+normal articles compress to 0.37×. **324 published summaries are longer than their
+source.** Two verified fabrications: a 106-char Cambodia headline became 1,095 chars
+asserting victims *"included both Cambodian citizens and foreign nationals"*
+(invented); a 131-char Kačanik headline became 902 chars asserting *"The church had
+been without a cross since 1999"* — the source says no **Serbs** since 1999, so the
+date was moved onto a different, politically loaded fact. **Current, not historical**:
+24 in 2026-08 at 9.2×. Filed ovr.news#311 (P1); it is the **mechanism behind
+ovr.news#286**, a reader-reported backfill of 397 such summaries.
+
+**Why nothing caught it**: `summary-overlap-audit.ts` tests for *copying* — the
+opposite failure — so a 9× expansion passes cleanly; `OWN_WORDS_RULE` promises
+"original … in new words", which fluent invention satisfies; and
+`MIN_CONTENT_AFTER_ENRICHMENT = 100` is the **wrong shape, not the wrong value** —
+both items cleared it by 6 and 31 chars. A floor cannot express "output must not
+exceed input"; only a ratio can.
+
+**"Is enrichment before or after scoring?"** Both, and there are **three passes**:
+NexusMind `pre_enrich` (before scoring, short articles, no score gate),
+NexusMind `enrich_articles` (after scoring, `min_score` 4.0), and **ovr.news**
+(before summarising, `content < 500` **AND NOT** `wasEnrichedUpstream`). The third
+exists because it is the only one that can resolve Google News links — **NexusMind
+has no GN resolution at all** — and that resolver **fails every time**, which is
+ovr.news#312: the unresolved branch returns before the fetch, before `SKIP_DOMAINS`
+and before the `try/catch` that logs, emitting only an unpersisted debug line. Three
+other early returns in that function share the shape.
+
+**And the direction makes it moot**: FluxusSource's ADR-007 migration is *working*.
+Six feeds migrated 2026-08-08 — median length **89 → 326**, sub-300 share **100% →
+47%**, landing above the non-GN baseline. Two levers though: retiring the country
+proxies closes **14.9 of 25.7 points (58%)**; population B (10.8% of corpus, same
+defect) needs bulk repointing. So the enrichment workarounds are patches on a source
+already being retired. **Note: "ADR-007" here is FluxusSource's, not this repo's
+(ours is adapter-format-and-deployment) — same number, different subject.**
+
+## My errors in the late half
+
+**A third and fourth refuted conclusion**, both the same shape as the first two —
+inferring a mechanism from a measurement instead of reading code:
+
+3. **"ovr.news doesn't enrich, so gate upstream in NexusMind."** The 99.4%
+   payload-identity measurement was right; the inference was wrong. ovr *does*
+   enrich, narrowly gated, so most articles never enter the path — which makes
+   "matches what NM sent" and "doesn't enrich" produce **the same number**. Only
+   reading the code separated them. Retracted in `601e39d`.
+4. **"NM#314 is a prerequisite for a precise short-content gate."** The owner's
+   simplification killed it: *short is short, enriched or not* — enrichment can
+   succeed and return a 60–100 char Google stub.
+
+**All four were plausible-and-unchecked.** Two were caught by peers reading code I
+had only measured; two by re-running. Re-running is the cheaper instrument.
+
 ## Next session
 
-`docs/TODO.md` top block is current. In short: **#109 needs an approve/reject
-decision** (arm A is cheap and would close #105's remaining half alone); **#106
-and #107 are rulings only the owner can give**; NM#322 and NM#314 are peer-owned
-and neither has run a cycle.
+`docs/TODO.md` top block is current. **Nothing is blocked on a machine and nothing is
+mid-flight.** Owner decisions: **#109** (approve/reject; arm A is cheap and closes
+#105's remaining half alone), **#107** and **#106** (rulings), plus two that emerged
+late — **confirm the withholding gate to NexusMind directly** (they correctly refuse
+approval relayed through a peer) and **decide whether ovr.news should enrich at all**
+(owner says it is NexusMind's job; ovr's CLAUDE.md documents the consolidation as
+deliberate — two documented positions, genuinely in conflict).

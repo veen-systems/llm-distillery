@@ -2,8 +2,16 @@
 stack: Python 3.12, PyTorch, Transformers, PEFT/LoRA
 status: Production
 repo: github.com/ducroq/llm-distillery
-framework: agent-ready-projects v1.20.0
+framework: agent-ready-projects v1.21.0
 framework_reconciliation: |
+  v1.21.0 (2026-08-11) triaged same day: NOTHING adopter-facing here.
+  Its content is the `install-global-skills.sh` release guard (a framework
+  maintainer tool), `templates/release.md` Step 1 (we publish no package),
+  `templates/coordination.md` (we have none) and a `docs/GUIDE.md` sentence.
+  The only two template edits are stamp bumps. All three user-global skills
+  verified byte-identical to the v1.21.0 TAG. Adopter action from its notes
+  ('refresh globals only after the release tag is pushed and verified')
+  is satisfied by that check, not by a reinstall.
   Stamp = which framework surfaces were reconciled. It does NOT assert that any
   behaviour changed, nor that a skill has since been run.
   Per-release history: `docs/decisions/framework-adoption-history.md`.
