@@ -9,11 +9,36 @@ metadata:
 
 ## WHICH length field to check, and at which stage (measured 2026-08-11)
 
-**The content NexusMind hands to ovr.news is what ovr.news holds.** Matched every
-filtered batch (84 files, back to 2026-07-28) against `ovr.db`: **4,319 matched,
-4,295 identical (99.4%), 24 different (0.6%)** — and the differences trace *upstream*,
-not to ovr.news. So a short-content gate belongs in **NexusMind**, and ovr.news needs
-no length rule at all.
+**Measured**: matched every filtered batch (84 files, back to 2026-07-28) against
+`ovr.db` — **4,319 matched, 4,295 identical (99.4%), 24 different (0.6%)**.
+
+**⚠️ Do NOT read that as "ovr.news does not enrich". IT DOES, and I concluded
+otherwise from this number — wrongly.** The ovr.news session read the code:
+`summarize.ts:453` calls `enrichArticles`, which mutates `.content` in place;
+:459–464 keeps the longer of the two; `upsertArticle` (:845) persists it. Google News
+redirect resolution lives *inside* that path (`enrichment.ts:154–155`).
+
+**It is narrowly gated** (`summarize.ts:441–448`): `content.length < 500`
+**AND NOT** `wasEnrichedUpstream(article)`. So ovr yields whenever NexusMind claims
+it enriched, and never touches anything over 500 chars. **Most articles never enter
+the path — which is why "content matches what NM sent" and "ovr does not enrich" look
+identical from the outside.** A high identity rate is consistent with both stories and
+distinguishes neither; only reading the code did.
+
+**Consequence for gate placement**: content can still grow *after* NexusMind writes
+the payload, so a gate at NexusMind's `enrich_articles` judges a length ovr may yet
+change. **For the Google News class it does not matter** — per NM#310 the redirect can
+never resolve, so no enrichment anywhere produces a body, and the withholding rule is
+needed wherever it sits. **Whether ovr should enrich at all is an open architectural
+question** — the owner's position is that enrichment is NexusMind's job; ovr's
+CLAUDE.md documents the consolidation as deliberate. Unresolved, owner's call.
+
+**Open, and nobody has an answer**: both published stubs (106 and 131 chars) are far
+under 500 and carry **no upstream-enriched flag of any kind** — verified across every
+lens batch, top-level and per-lens. So both *should* have entered ovr's enrichment
+path, and neither left a row in `enrichment_errors` or `enrichment_history`. An
+enrichment attempt that leaves no trace is indistinguishable from one that never
+happened, on exactly the articles it exists for.
 
 **Read `len(content)` AFTER `enrich_articles`, NOT the `content_length` stamp.** The
 stamp is captured at scoring (`main.py:1240`), before post-scoring enrichment
