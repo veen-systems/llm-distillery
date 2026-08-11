@@ -91,16 +91,51 @@ misses — **one body under several genuinely plausible headlines, affinity 0.8�
 accepted by every per-article check**. Recurrence across the corpus is the only
 evidence that can see it, which is why no per-article rule can substitute.
 
-**And that is exactly what BOUNDS it — do not read 90.3% precision as coverage of the
-defect class.** Recurrence being the only evidence means the guard is **blind to a
-wrong-but-plausible pairing that occurs once**, and per the NM session the singleton
-is **most of the population by count**, not a tail case. NM#315 catches the
-syndicated/boilerplate shape *because it repeats*; nothing in PR #321 addresses the
-singleton. **The residual lands on us and nothing on our side can see it either**: a
-coherent body about the wrong story is a real article attached to the wrong headline,
-so it scores like one — no threshold, calibration or op-point reaches it, and the
-#95 band is irrelevant because the score is not wrong, the pairing is. Treat this as
-an open, unowned class rather than something #315 closes.
+**The residual is UNQUANTIFIED, not large — and "not large" is not "small".** An
+earlier version of this block said the singleton case is "most of the population by
+count". **That was wrong**, asserted by the NM session and retracted by it within the
+hour; recorded because the wrong version is the intuitive one. Verified against
+`NexusMind/docs/investigation/2026-08-10-nm306-hand-labelled-ground-truth.md`
+directly rather than taken on report — accepting a plausible correction is the same
+error as accepting a plausible claim.
+
+- **Point estimate: singletons are ~7.5% of the defect class — a tail.** The ≥5
+  duplicate-body rule measures recall **92.5% [80.9–100]**, precision **90.3%
+  [80.1–98.2]**, population-weighted by inverse inclusion probability (not raw
+  sample counts).
+- **But that number is conditional on the strata being where defects live.** The
+  sample was A uniform over 234,841 stored rows (50), B "body under ≥2 titles" (50),
+  C "affinity in (0.15, 0.35]" (50). **All 37 bad rows fell in B, C or both; the 46
+  rows in A alone were clean.** Zero defects in 46 rows gives a rule-of-three upper
+  bound of **~6.5% over a region holding ~95% of the population by weight**, against
+  a measured overall defect rate of **1.76%** — so the unseen class could be several
+  times the measured one, or zero. **The bootstrap CIs do not cover this**, because
+  resampling observed rows cannot invent a defect type never drawn. Quoting
+  `[80.9–100]` as the bound understates it.
+- **Two further exclusions in the same doc, per "establish what your source
+  excludes".** (1) *Only stored rows* — replacements the guards refused leave no
+  trace, so **nothing there estimates how often a block was CORRECT**; that is a
+  survivorship problem fixed by NM#314's decision logging, not by sampling harder.
+  (2) *One source dominates* — 14 of 37 bad rows are `australian_the_west_australian`,
+  6 `german_golem`, 4 `southeast_asian_nst`, so **24 of 37 (65%) come from three
+  sources** and the estimate is composition-sensitive. (Same shape as #108's finding
+  at our end: an effect that is really a source effect.)
+
+**So NM#306 is still not "handled" when #321 deploys — but the reason is not that the
+guard misses most of the class.** It is that the class *outside* the duplicate and
+low-affinity strata was never sampled, so its size is unknown.
+
+**The filter-side point survives and is stronger under the corrected framing**:
+whatever that unmeasured region contains, a coherent body under the wrong headline is
+a real article attached to the wrong story, so it **scores like one**. No threshold,
+calibration or op-point reaches it, and the #95 band is beside the point because the
+score is not wrong — the pairing is. Open and unowned on both sides.
+
+**Sizing it is a sampling job, not an instrumentation one.** A cycle through #317 /
+#321 will *not* improve the estimate: the decision log observes candidates and
+verdicts, never whether a replacement was correct. It needs a fresh stratum drawn
+from A, large enough to move a rule-of-three bound, hand-labelled. NM will file it
+separately rather than fold it into #321.
 
 **C. The measurements are not trusted.** NM#303 / NM#304 (contract tests validate
 fixtures, never production output), NM#312 (two integration tests have never run),
