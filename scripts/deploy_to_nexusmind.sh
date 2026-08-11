@@ -11,10 +11,20 @@
 #   ./scripts/deploy_to_nexusmind.sh nature_recovery v2 --dry-run
 #
 # What it does:
-#   1. Copies filter folder to NexusMind
+#   1. Copies filter folder to NexusMind — UNCONDITIONAL `cp -r`, NO manifest
+#      lookup. .nexusmind-owns does NOT protect anything under
+#      filters/{name}/v{N}/, so a NexusMind-side edit to a per-filter
+#      config.yaml, prefilter.py or base_scorer.py is overwritten silently
+#      here, with no conflict and no warning. Adding the path to the manifest
+#      would NOT help — Step 1 never reads it. Edit the llm-distillery copy and
+#      deploy; never the NexusMind copy. (Found 2026-08-11: `proxy_aggregator`
+#      was added to investment_risk v6 NexusMind-side and would have been lost
+#      on the next deploy. Precedent: normalization plumbing deleted from
+#      NexusMind 2026-04-16, unnoticed for 18 days.)
 #   2. Copies filters/common/ (shared utilities) — honors .nexusmind-owns
 #      manifest at repo root: listed files are skipped, and the deploy fails
 #      if a listed file has drifted from NexusMind's copy (issue #50).
+#      THIS IS THE ONLY STEP THAT CONSULTS THE MANIFEST.
 #   3. Commits changes to NexusMind repo
 #   4. Optionally pushes and shows pull commands for servers
 

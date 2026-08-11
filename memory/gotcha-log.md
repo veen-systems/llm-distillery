@@ -23,6 +23,34 @@ Problems encountered and resolved. Format: Problem → Root cause → Fix.
 
 ---
 
+## `deploy_to_nexusmind.sh` Step 1 ignores `.nexusmind-owns` entirely (2026-08-11)
+**Problem**: `proxy_aggregator` was added to `investment_risk v6`'s config
+NexusMind-side. The next filter deploy would have deleted it silently — no
+conflict, no warning.
+**Root cause**: Step 1 is a bare `cp -r "${SOURCE_DIR}/"* "$DEST_DIR/"` with **no
+manifest lookup**. Only Step 2 (`filters/common/`) consults `.nexusmind-owns`, so
+nothing under `filters/{name}/v{N}/` is protected and *adding a path to the
+manifest would not help*. The usage block said "honors .nexusmind-owns" and was
+silent about Step 1 not doing so.
+**Fix**: Ported the change into llm-distillery (source of truth) and documented
+Step 1's behaviour in the usage block. Precedent: normalization plumbing deleted
+from NexusMind 2026-04-16, unnoticed 18 days. Edit the llm-distillery copy and
+deploy; never the NexusMind copy.
+
+## A peer session's commit convention saved a production cycle by accident (2026-08-11)
+**Problem**: `deploy_filters.sh` runs as `nexusmind.service` `ExecStartPre` and is
+fail-closed: it `exit 1`s when committed state differs from origin **and** the
+scorer tree has uncommitted changes. A working-tree edit to `filters/` on sadalsuud
+can therefore stop the cycle running at all.
+**Root cause**: The gate treats uncommitted scorer changes as unsafe-to-deploy,
+which is right, but the failure mode is a silently skipped pipeline run rather than
+a visible error.
+**Fix**: None needed — the edit was committed and pushed, so HEAD matched origin and
+the gate block was skipped. Recorded because LD#101 was the same shape and did *not*
+get lucky: it ran for days as uncommitted edits on sadalsuud, invisible to the repo.
+**Check before trusting a filter change on the box**: `git status --porcelain -- filters/`
+and `git rev-list --count origin/main..HEAD` on sadalsuud.
+
 ## A `.bak` file left beside a patched source blocked the whole pipeline (2026-08-08)
 
 **Problem**: `nexusmind.service` FAILED at 16:07 and would have failed every 4h. Not a crash — the fail-closed deploy gate refused to ship, because `src/scoring/gpu_client.py.bak_nm300third_20260808` was untracked under a guarded path.
