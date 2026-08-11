@@ -20,6 +20,11 @@ metadata:
 | veen-systems/pipeline-atlas | 8 | **8** | 7 | 2026-08-07 | — |
 | **TOTAL** | **251** | 87 | 41 | | **−1** |
 
+**Already stale, in this same session: llm-distillery is 41 and the total 252**,
+after #108 was split out of #105 an hour later. Left visible rather than silently
+patched — this is the sixth consecutive pass where the number moved between being
+written and being read, which is the point the paragraph below makes.
+
 **Only 41 of 251 issues (16%) have been touched in two days, and they sit in four
 repos.** That is the number worth acting on, not the total.
 

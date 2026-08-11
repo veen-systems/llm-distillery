@@ -39,21 +39,36 @@ regeneration applied ~15 unrelated pre-existing drift changes (`nytimes.com`
 unknown→news_major, `brookings.edu` think_tank→academic, several art/disability
 feeds). FluxusSource flagged it unprompted.
 
-### 3. Then: #105's open question — the one that gates `human_thriving` v8
+### 3. ✅ DONE 2026-08-11 afternoon — #105's open question is ANSWERED, and it split in two
 
 **Two deployed filters were trained on corpora >50% refused by TODAY'S labelling
 gate**: `investment_risk v6` **51.6%** (length floor) and `cultural_discovery v5`
 **52.2%** (its own `no_cultural_topic_signal` gate). `nature_recovery v4` is the
 clean reference at **0.0%**.
 
-**A retrain of either today would silently drop half the corpus** — which is the
-direct answer to the owner's stopping condition ("is the corpus a retrain would be
-labelled on trustworthy?").
+**Answered without any oracle spend** — refused rows already carry the label they
+were trained on, so comparing refused-vs-passed label distributions settles it for
+free and never runs the oracle outside its validated range.
+`scripts/research/gate_refused_label_audit.py`.
 
-What is **not** established: that the labels are wrong. #93 moved the floor to the
-oracle path on 2026-08-03 and all six filters predate that, so the rule may have
-tightened rather than the corpus being contaminated. **Separating those is the
-work**: sample refused rows from each, compare against the stored label.
+- **`cultural_discovery v5` — the RULE tightened, the labels are fine.** Lens-refused
+  rows: mean label **1.102**, **2.4%** at/above the 4.0 op-point. Passed rows:
+  **2.214**, **16.1%**. The gate refuses what the oracle also scored low, stripping
+  tech/commerce domains hardest — off-lens for a culture filter, working as designed.
+  **But**: dropping 4,458 rows that are 97.6% negative roughly **doubles the positive
+  rate, 9.0% → 16.2%**, so any across-retrain comparison is non-comparable per ADR-023.
+- **`investment_risk v6` — neither. Split out as #108.** The corpus-level numbers look
+  like #92 short-stub inflation (refused mean 2.633 / 19.6% at-or-above vs passed
+  2.245 / 8.3%) and **that reading is REFUTED**: length is near-perfectly collinear
+  with source (elpais 97.8% short, spiegel 99.5%, aljazeera 100.0%), the one domain
+  with both sides runs the *opposite* way (`ad.nl` short 2.086/9.7% vs long
+  2.502/19.4%), and the 300–600 bucket **passes** the gate while looking identical to
+  100–300. The floor is a **de-facto source and language filter** — a retrain removes
+  six mostly non-English outlets at 93–100% each. Lands on NM#292.
+
+**Still not established** (both halves): whether the labels are *correct*. This
+compared distributions, not truth. Correctness needs the judge-panel substitute
+below, never a re-score.
 
 ⚠️ **INSTRUMENT TRAP** — do **not** oracle-re-score Google News rows. Median
 content is **89 characters**, and the 300-char floor exists precisely because short
