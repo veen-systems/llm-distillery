@@ -136,7 +136,16 @@ def main():
         weights = load_weights(pkg_dir)
         op = op_point(pkg_dir)
 
-        groups = {'passed': [], 'refused_length': [], 'refused_lens': []}
+        # `refused_unattributed` exists so this partition cannot misreport itself.
+        # The gate has exactly two refusal reasons today (length floor, then
+        # apply_filter), so attribution by `else` would be correct -- and would
+        # silently fold a THIRD reason into `refused_lens` the day one is added,
+        # reporting a wrong attribution rather than failing. Every reason is
+        # therefore tested positively and the remainder is counted, not assumed.
+        # A non-zero value here means the gate grew a refusal path this script
+        # does not know about, and every attribution below is suspect.
+        groups = {'passed': [], 'refused_length': [], 'refused_lens': [],
+                  'refused_unattributed': []}
         unscorable = 0
         for split in ('train', 'val', 'test'):
             p = os.path.join(d, split + '.jsonl')
@@ -158,8 +167,10 @@ def main():
                     groups['passed'].append(rec)
                 elif not pf.check_content_length(art)[0]:
                     groups['refused_length'].append(rec)
-                else:
+                elif not pf.apply_filter(art)[0]:
                     groups['refused_lens'].append(rec)
+                else:
+                    groups['refused_unattributed'].append(rec)
 
         report.append({
             'filter': name,

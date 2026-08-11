@@ -76,8 +76,20 @@ merged-pending, reviewed. The gate is **merge + deploy**: sadalsuud was on
 `main @ 6f45633` with no `src/enrichment/decision_log.py` as of 2026-08-11, so
 every measurement sequenced behind it is blocked on a pull, not on code. NM#315
 (duplicate-body guard, ≥5 headlines/body-hash: 90.3% precision / 92.5% recall
-blind-labelled, vs 25.9% for the current affinity signal) is picked up by the NM
-peer and stacks on #314's branch. Then NM#306, NM#319, downstream ovr#287/#305.
+blind-labelled, vs 25.9% for the current affinity signal) **shipped as PR #321**,
+stacked on #317. Then NM#306, NM#319, downstream ovr#287/#305.
+
+**Neither #317 nor #321 has run a cycle, and sadalsuud has neither.** The number to
+demand once both land is `quality_rejected_duplicate_body` over
+`duplicate_body_groups_seen` **from a real run** — a green suite proves the
+predicate, which is exactly what NM#300 says not to accept.
+
+**What NM#315 is actually for, which its issue text does not say**: the NM#306 guard
+already refuses obvious boilerplate first (`refused_title_link`, affinity 0.0), so
+those never reach the duplicate guard. Its real population is the ~18% affinity
+misses — **one body under several genuinely plausible headlines, affinity 0.8–1.0,
+accepted by every per-article check**. Recurrence across the corpus is the only
+evidence that can see it, which is why no per-article rule can substitute.
 
 **C. The measurements are not trusted.** NM#303 / NM#304 (contract tests validate
 fixtures, never production output), NM#312 (two integration tests have never run),

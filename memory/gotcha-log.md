@@ -23,6 +23,26 @@ Problems encountered and resolved. Format: Problem → Root cause → Fix.
 
 ---
 
+## A check that reconciles a partition breaks when someone adds a member — and the failure lands on the honest path (2026-08-11)
+
+**Problem**: Reported by the NexusMind session. `verify_decision_log.py` asserts the
+`refused_*` verdicts sum to `quality_rejected`. Adding a new verdict to the writer
+alone leaves that sum short by exactly the new guard's firing count — so **every
+batch in which the guard worked would have failed reconciliation**, while batches
+where it never fired passed.
+**Root cause**: A partition-reconciliation check names its members implicitly. Adding
+a member is a silent contract change; the check keeps enforcing the old partition.
+**Fix**: Test every member positively and count the remainder in an explicit
+`unattributed` bucket, rather than attributing by `else`. Our variant is worse than
+theirs and was live for an hour: `gate_refused_label_audit.py` attributed anything
+not blocked by the length floor to "lens rules" via `else`, so a third refusal reason
+would have been **silently misattributed** rather than loudly failing — under numbers
+already published to #105 and #108. Now tests `apply_filter` positively and reports
+`refused_unattributed`; re-run confirms 0 and every figure unchanged. Same shape lives
+in `tests/unit/test_ground_truth_gate.py:101` and `test_prepare_data.py:179`.
+**Durable lesson**: when a control asserts parts-sum-to-whole, ask what happens the day
+a part is added — and prefer a loud remainder over a silent `else`.
+
 ## `deploy_to_nexusmind.sh` Step 1 ignores `.nexusmind-owns` entirely (2026-08-11)
 **Problem**: `proxy_aggregator` was added to `investment_risk v6`'s config
 NexusMind-side. The next filter deploy would have deleted it silently — no
