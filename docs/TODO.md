@@ -1,18 +1,23 @@
 # LLM Distillery - TODO
 
-## 🔵 NEXT SESSION — start here. Nothing is blocked on a machine; three things need a decision.
+## 🔵 NEXT SESSION — start here. Nothing is blocked on a machine; four things need a decision.
 
-**Session of 2026-08-11 afternoon closed clean.** Working tree clean, all pushed,
-nothing deployed and nothing pending deployment. Full record:
+**Session of 2026-08-11 evening closed clean.** Working tree clean, nothing
+deployed and nothing pending deployment. Afternoon record:
 `memory/project_session_2026_08_11_afternoon.md`.
+
+**Closed this session:** `solutions v6`'s `community_practice_strength` is **not
+dead — it is rare**, and no change is worth making. Three measurements in
+`docs/evidence/2026-08-11-solutions-v6-community-practice-dimension.md` (commit
+`3ea78a5`); reproduce with `scripts/research/solutions_v6_*.py`.
 
 | # | What | Who decides |
 |---|---|---|
-| **Withholding gate** | Owner approved the **principle** (don't publish items that are only a headline). **NexusMind will not act on approval relayed through a peer session — correctly.** Needs the owner to confirm directly. Small change. | **Owner**, to NexusMind |
-| **Should ovr.news enrich at all?** | Owner's position: enrichment is NexusMind's job. ovr's `CLAUDE.md` documents the consolidation as deliberate. **Two documented positions in genuine conflict** — not drift. See § *three enrichment passes* below. | **Owner** — architecture |
-| **#109** | Design for the label-correctness instrument. **Approve, reject or re-scope.** Two independent arms; **arm A is cheap, uses an established design on full-length content, and closes #105's remaining half on its own**. Arm B carries all the methodological risk and must pass a planted-error gate before any real spend. | **Owner** — it is an oracle-budget call |
-| **#107** | A *ruling*: does `uplifting` require a pleasant subject, or only a positive outcome? One answer also settles the three adjacent-lens rows. **Lower urgency now** — the item that prompted it is a 105-char GN stub that the withholding gate removes anyway. | **Owner** — editorial |
-| **#106** | `belonging` published ethno-national framing at tier `high` from a 131-char Google News headline. Same — the withholding gate removes it. | Owner sets severity |
+| **Should ovr.news enrich at all?** | Owner's position: enrichment is NexusMind's job. ovr's `CLAUDE.md` documents the consolidation as deliberate. **Two documented positions in genuine conflict** — not drift. See § *three enrichment passes* below. **DEFERRED BEHIND ovr#312, deliberately — do not re-litigate from scratch.** The strongest argument for moving it upstream is not duplication but ORDERING: ovr enriches *after* scoring, so the score that decided publication was computed on text that is not the text published. That argument only bites on articles that are **under 500 chars AND NexusMind did not enrich AND ovr successfully did** — a bound this session proposed as a **hypothesis, unverified**. ovr#312 has been re-scoped to measure exactly that (outcomes per article: attempted / body-actually-changed / already-upstream-enriched, wiring up `enrichment_history` — 0 rows ever, writer with no callers). **If that set is empty, the argument evaporates and the ruling is easy.** Wait for the number. | **Owner** — architecture, after ovr#312 |
+| **#109** | Design for the label-correctness instrument. **Approve, reject or re-scope.** Cost estimate now posted on the issue: **under $7 for both arms, arm A ~$1, and arm B's oracle spend can be $0** on b650 with a local judge. Cost was never the constraint. **Four gaps must close before arm B**, the serious one being that the issue never names arm B's judge model and the obvious default (Gemini Flash) is the model that *made* `investment_risk v6`'s labels — which would silently turn arm B into a self-consistency check. Panel size, the gate's pass mark (proposed ≥56/80 with "cannot tell" counted as incorrect) and a ≥26/40 per-class floor are drafted on the issue. | **Owner** — oracle-budget call |
+| **#107** | A *ruling*: does `uplifting` require a pleasant subject, or only a positive outcome? One answer also settles the three adjacent-lens rows. **The urgency driver is gone but the ruling is not** — ovr#311 now blocks the 105-char GN stub that prompted it, so this is a definition question that outlives its example. Cheapest open item. | **Owner** — editorial |
+| **#106** | **RE-SCOPED 2026-08-11 evening.** The publishing half is resolved downstream by ovr#311 (39 of 39 overlap with the withholding rule, structural: `getArticlesForBuild` inner-joins `summaries`). What remains is scoring behaviour that fix does not touch — `belonging` gave normalized 7.26, tier `high`, to a 131-char GN headline, and that score still feeds cross-lens ranking and the normalization CDF. **Not a prefilter length check** (#93 removed exactly that). **"Close as no longer load-bearing" is explicitly on the table** under ADR-023, since the reader cost is gone. | **Owner** — two-option ruling |
+| ~~**Withholding gate**~~ | **NO LONGER A READER-SAFETY ITEM.** ovr#311 (a guard rejecting any summary longer than its source) blocks the whole class structurally, one stage earlier than a Chief Editor rule would; ovr#310 closed as superseded and the rule was never built. Reopen trigger over there is **non-GN only** — for Google News, NM#310 means the redirect never resolves, so the body cannot grow and the ratio cannot invert. Any remaining NexusMind-side ask is **data hygiene** (stop scoring/storing stubs), not reader safety, and is weaker. | Owner, if still wanted |
 
 ### Three enrichment passes, and why that is not as mad as it looks
 
