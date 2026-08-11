@@ -4,75 +4,27 @@ status: Production
 repo: github.com/ducroq/llm-distillery
 framework: agent-ready-projects v1.20.0
 framework_reconciliation: |
-  v1.19.0 + v1.20.0 (both 2026-08-10) triaged 2026-08-11 via `/update-drift`:
-  4 adopted, 1 declined, 3 not applicable, 6 already in force.
-  ADOPTED — `review-changes` gained v1.19.0's Step 1.5 structural pre-check,
-  the `Unclassified` naming rule + never-omit report slot, and the
-  guarantee-lens invariant (every file the guarantee lens names must tier
-  HIGH; `tests/unit/test_normalization_invariant.py` was MEDIUM under
-  `tests/**`, so a change weakening the very pin that caught NM#161/#205
-  would have skipped the lens that exists to catch it — now listed in HIGH).
-  `test-verify-memory` gained the `CANNOT VERIFY` disposition, its ordering
-  rule, and the 11th fixture; load-bearing here because 7 of ~39 verify
-  commands in `memory/*.md` are host-dependent and b650-gpu is routinely off,
-  so they read FAIL on every run today. Step 1.5 was VERIFIED BY EXECUTION
-  over 382 tracked .md files: 2 violations, 0 false positives, both genuine
-  data loss (a `|r|` header in cultural_discovery v5's calibration report;
-  a 4-cell row in `memory/cross-repo-prioritization.md` whose dropped cell
-  was a staleness caveat that rendered nowhere). Both fixed in the same pass.
-  DECLINED — v1.20.0's gotcha-log Promoted table + `Occurrences` column.
-  This repo has no Promoted table: promotion targets CLAUDE.md § "Working
-  rules", and the rate is already carried in prose ("8th occurrence
-  2026-08-11, four self-inflicted") plus the per-shape catalogue table in
-  `memory/gotcha-log.md`. A fourth-column table would be a second counter
-  over the same events — which is exactly what the framework itself declined
-  for #38's Step 1 tally. CONSEQUENCE TO KNOW: the globally-installed
-  `curate` Step 2 now tells every session to increment a column with no home
-  here; that is expected, not a bug to fix.
-  NOT APPLICABLE — `physics-tests/` disclosure (no such surface); `.gitignore`
-  `/memory/` anchoring (`memory/` is tracked here, no ignore pattern);
-  `tests/lint/skill-sync.sh` (maintainer infra).
-  ALREADY IN FORCE — the v1.20.0 session-start row (CLAUDE.md:164/168); the
-  memory-index "not auto-loaded" correction (this index never claimed it);
-  `audit-context` Step 1, `curate` Step 2 and both `install-global-skills.sh`
-  fixes, all verified byte-identical to the v1.20.0 TAG (not merely to the
-  clone's HEAD, which sits 4 commits ahead on an unreleased #33 installer
-  guard — deliberately NOT triaged).
-  STILL OPEN, pre-dating this gap: CLAUDE.md has no framework-drift session
-  row (`templates/project-file.md:25` ships one). Its absence is the likely
-  reason this drift sat two releases unreviewed. Not added — engineer's call.
-  v1.18.0 (2026-08-09) — ALREADY IN FORCE; stamp bumped to match reality. Its
-  only change is the new `update-drift` skill, which is user-global and was
-  already installed here (it appears in the session skill list). Nothing in the
-  repo needed to change — the stamp was understating what was installed.
-  v1.16.x and v1.17.0 reviewed in the same pass, no adopter action outstanding.
-  v1.15.0 (2026-08-06) adopted. Skill scope: `curate` and `audit-context` are
-  user-global — the project-local copies here were DELETED, not reconciled,
-  because a global shadows a local silently and the local one was never
-  loading. Do not re-create them. `review-changes` and `test-verify-memory`
-  stay project-local; `review-changes` is re-mapped rather than copied, since
-  the template's risk tiers key on paths this repo does not have.
-  Verify with: agent-ready-projects/scripts/install-global-skills.sh --check ~/repos
-  Declined: nothing.
-  v1.15.1 (2026-08-06) adopted 2026-08-07: a PATCH to the `audit-context`
-  skill only — no template or memory-layout change. The global skill already
-  carries the new Step 4 rules (three-section output, extension whitelist,
-  rung ordering), so only this stamp was behind.
-  v1.16.1 / v1.16.2 / v1.17.0 adopted 2026-08-08, verified by CONTENT:
-  both global skills are byte-identical to the upstream tracked copies
-  (`diff`, plus `install-global-skills.sh --check` clean). Per-release:
-  v1.16.1 — the `review-changes` adversarial-lens contradiction does NOT
-  affect this repo's copy, which is re-mapped and already carries only the
-  consistent half plus a concrete-failure requirement; nothing to port. Its
-  `curate` Step 0.6 dual-path fix is a NO-OP here — we keep no
-  `hypothesis-log.md` at either path, hypotheses live in per-topic memory
-  files instead. v1.16.2 — example rename only, no action. v1.17.0 — the
-  gotcha-entry length rule; the entry template it added is now in
-  `memory/gotcha-log.md`, adapted to this file's `##` heading level and
-  marked NEW-ENTRIES-ONLY (that log is ~2,000 lines and predates the rule).
-  Declined: nothing.
-  NOT verified by this stamp: that any behaviour changed. The stamp records
-  which surfaces were reconciled, not that a skill has since been run.
+  Stamp = which framework surfaces were reconciled. It does NOT assert that any
+  behaviour changed, nor that a skill has since been run.
+  Per-release history: `docs/decisions/framework-adoption-history.md`.
+  OPERATIVE RULES (these govern; the history file is provenance only):
+  - `curate` and `audit-context` are USER-GLOBAL. The project-local copies were
+    DELETED, not reconciled — a global shadows a local silently and the local was
+    never loading. Do not re-create them.
+  - `review-changes` and `test-verify-memory` stay PROJECT-LOCAL.
+    `review-changes` is re-mapped, not copied: the template's risk tiers key on
+    paths this repo does not have, so a verbatim install would tier every change
+    here as LOW and quietly do nothing.
+  - No `hypothesis-log.md` at either path, by choice — hypotheses live in
+    per-topic memory files. `curate` Step 0.6 is a deliberate no-op here.
+  - DECLINED v1.20.0's gotcha-log `Occurrences` column: no Promoted table exists
+    here, promotion targets § "Working rules", and the rate is already in prose.
+    So `curate` Step 2 asks every session to increment a column with no home —
+    expected, not a bug to fix.
+  - OPEN, pre-dating the v1.19/v1.20 gap: this file has no framework-drift
+    session row (`templates/project-file.md:25` ships one). Its absence is the
+    likely reason that drift sat two releases unreviewed. Engineer's call.
+  Verify installs: agent-ready-projects/scripts/install-global-skills.sh --check ~/repos
 ---
 
 # CLAUDE.md - LLM Distillery
@@ -117,8 +69,8 @@ Moved here from `memory/MEMORY.md` on 2026-08-06: they are always-needed
 constraints, and the memory index is navigational. Each was promoted only after
 repeating.
 
-- **Before shipping any gate, cap, threshold, config key or stamp, name the caller that loads it — and then prove the outcome changed at the END of the run.** *(8th occurrence 2026-08-11, four self-inflicted.)* **Naming the caller is not sufficient.** Guards have shipped with *correct callers on the right paths* and still done nothing — one reverted downstream by a `COALESCE` merge, one short-circuited by an earlier commit point. Both passed unit tests on the predicate; a green test on the predicate proves only the predicate. If a guard's whole value is that it changes an outcome, **run it and print the resulting state**, and ask "is this the only writer of this field?" — not just "is my code reached?". **Never infer runtime behaviour from the presence of a config key.** Three smells that must trigger the check: a package that passes self-tests but has never been loaded end-to-end; a field initialised to `None` and populated somewhere you have not read; and **a feature validated on "production data" without naming WHICH STAGE** (the arXiv announce prefix is a 91.6% detector at collection and **0.000** after enrichment — both are production data). Two related traps: **a comment explaining why code is safe is a claim like any other**, and **if a criterion depends on "now", encode the criterion, never its answer**. → The catalogue of occurrences (NM#284, #94, NM#281, NM#300, cd v6) is in `memory/gotcha-log.md` § *The unreachable-mechanism catalogue*.
-- **Before using any source as evidence, establish what it excludes.** *(5th occurrence 2026-08-11 — see below; 4th 2026-08-09 — and this one was a **machine**, not a file.* I inventoried b650-gpu, found no judge verdicts, and reported the precision panel as UNADJUDICATED, blocking a whole track. The verdicts existed and had for three days: they live in the NexusMind checkout under `data/research/precision_panel*/`, which `.gitignore:230` excludes, so they were never copied to the GPU box. **A host is a source with an exclusion list too** — "I looked on the machine where the work was done" is the same error as "I read the file that only holds passers".*)* Applies to data (`filtered_*.jsonl` is 100% passers by construction **and** drops source-type-excluded rows — worth 0.129 on investment_risk), to nested structures (`metadata.quality` is not `nexus_mind_attributes.<lens>.source_quality`), to prior work (`gh repo list` misses repos with no remote), to literature (a search snippet reported a model's *worst* two techniques as its best), and to **time** (`data/raw/` is pre-enrichment and cannot stand in for what the scorer saw: 0.008 vs a true 0.647). A clean-looking result from an unexamined source is the hardest kind to falsify, because being right supplies no pressure to check how you got there. If it is a denominator, a baseline, or a claim of absence — enumerate the source first, and if the owner knows the set, ask rather than infer.
+- **Before shipping any gate, cap, threshold, config key or stamp, name the caller that loads it — and then prove the outcome changed at the END of the run.** *(9th occurrence 2026-08-11 afternoon; 8th 2026-08-11 midday — five self-inflicted.)* **Naming the caller is not sufficient.** Guards have shipped with *correct callers on the right paths* and still done nothing — one reverted downstream by a `COALESCE` merge, one short-circuited by an earlier commit point. Both passed unit tests on the predicate; a green test on the predicate proves only the predicate. If a guard's whole value is that it changes an outcome, **run it and print the resulting state**, and ask "is this the only writer of this field?" — not just "is my code reached?". **Never infer runtime behaviour from the presence of a config key.** Three smells that must trigger the check: a package that passes self-tests but has never been loaded end-to-end; a field initialised to `None` and populated somewhere you have not read; and **a feature validated on "production data" without naming WHICH STAGE** (the arXiv announce prefix is a 91.6% detector at collection and **0.000** after enrichment — both are production data). Two related traps: **a comment explaining why code is safe is a claim like any other**, and **if a criterion depends on "now", encode the criterion, never its answer**. → The catalogue of occurrences (NM#284, #94, NM#281, NM#300, cd v6) is in `memory/gotcha-log.md` § *The unreachable-mechanism catalogue*.
+- **Before using any source as evidence, establish what it excludes.** *(6th occurrence 2026-08-11 afternoon — a PEER asserted a population claim from a doc whose caveat section they had read that same session and not re-read; verifying against their source rather than their report surfaced two further exclusions. 5th 2026-08-11 midday — see below; 4th 2026-08-09 — and this one was a **machine**, not a file.* I inventoried b650-gpu, found no judge verdicts, and reported the precision panel as UNADJUDICATED, blocking a whole track. The verdicts existed and had for three days: they live in the NexusMind checkout under `data/research/precision_panel*/`, which `.gitignore:230` excludes, so they were never copied to the GPU box. **A host is a source with an exclusion list too** — "I looked on the machine where the work was done" is the same error as "I read the file that only holds passers".*)* Applies to data (`filtered_*.jsonl` is 100% passers by construction **and** drops source-type-excluded rows — worth 0.129 on investment_risk), to nested structures (`metadata.quality` is not `nexus_mind_attributes.<lens>.source_quality`), to prior work (`gh repo list` misses repos with no remote), to literature (a search snippet reported a model's *worst* two techniques as its best), and to **time** (`data/raw/` is pre-enrichment and cannot stand in for what the scorer saw: 0.008 vs a true 0.647). A clean-looking result from an unexamined source is the hardest kind to falsify, because being right supplies no pressure to check how you got there. If it is a denominator, a baseline, or a claim of absence — enumerate the source first, and if the owner knows the set, ask rather than infer.
 - **A parallel agent session may be working in the same checkout, so no git verb may take the whole tree as its argument.** *(2nd occurrence.)* `git add -A`, bare `git stash`, `git checkout .`, `git clean` — each one's blast radius is every modified file, including work you did not make and cannot see. One sweep put a seven-file filter sync into a docs commit; another stashed a second session's `NexusMind/image_analysis.py` while baselining a test suite, producing a "before" measurement of a tree that never existed and 8 phantom failures. **Always pass explicit paths**; run `git status --porcelain` before committing and stage only what you recognise. If a sweep is found after push, record it — do not rebase history another session may hold.
 - **`pgrep -f "<pattern>"` cannot answer "is it running?"** *(3rd occurrence, twice in one session.)* It matches the shell carrying the pattern, and over ssh the bracket trick does not survive quoting. It has blocked a production deploy, reported a false "still running", and hidden a restart that silently did not launch. The output *looks* like an answer, which is what makes it dangerous. Use `ps -eo pid,etime,args | grep -v grep`, ask the service manager (`systemctl is-active`), or read the log's last timestamp. **If a process check decides whether you act, print the matching line before believing it.**
 
@@ -274,4 +226,4 @@ This project is a source project for [augmented-engineering](https://github.com/
 
 ---
 
-*Last updated: 2026-08-11 (afternoon) — **the two op-point moves are VERIFIED: both bands read 0 on the 12:02 cycle** (`uplifting v7` 4.5, `investment_risk v6` 4.25; record in `docs/evidence/2026-08-10-uplifting-v7-op-point-4.5-VERIFIED.md`, #102 can close). The secondary `medium`-count expectation was NOT met and that is correct — the batches were far smaller than the baseline's, so the absolute counts are not comparable; compare shares. **Framework drift closed: stamped `agent-ready-projects v1.20.0`**, 4 adopted / 1 declined / 3 n-a / 6 already in force — see the `framework_reconciliation` block above. **#105: `investment_risk v6` (51.6%) and `cultural_discovery v5` (52.2%) were trained on corpora more than half of which TODAY'S labelling gate refuses** — a retrain would silently drop half the corpus; `nature_recovery v4` is the clean reference at 0.0%. **#106** (ethno-national framing published under `belonging`) and **#107** (a *ruling*: does `uplifting` need a pleasant subject or only a positive outcome? — one answer also settles the three adjacent-lens rows). **#93 step 4 re-run: gate still CLOSED, do not set the cap.** Google News picture: `memory/google-news-corpus-hypotheses.md`. Full record: `docs/TODO.md` top block, `memory/project_session_2026_08_11_midday.md`.*
+*Last updated: 2026-08-11 (afternoon). **Both op-point moves VERIFIED live** (`uplifting v7` 4.5, `investment_risk v6` 4.25; #102 closed). **Framework stamped v1.20.0.** **#105 answered and split**: `cultural_discovery v5` = rule tightened, labels fine; `investment_risk v6` = neither, the 300-char floor is a de-facto source/language filter (**#108**). **#109** designs the label-correctness instrument — unapproved, no spend. Open rulings: **#106**, **#107**. Current state and next actions: `docs/TODO.md` top block. Session record: `memory/project_session_2026_08_11_afternoon.md`.*

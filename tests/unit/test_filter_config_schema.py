@@ -77,8 +77,12 @@ KNOWN_SOURCE_TYPES = {
     # News — all emitted by classify_type() via tags/categories/tld
     "news_major", "news_regional", "news_global",
     "wire_service", "public_broadcaster",
-    # Aggregators — three new types from NexusMind#189
+    # Aggregators — three new types from NexusMind#189, plus proxy_aggregator
+    # from FluxusSource#144 (2026-08-11): the class that carries Google News and
+    # similar republishers, which investment_risk v6 excludes explicitly rather
+    # than by the `academic` accident it relied on before.
     "aggregator", "developer_aggregator", "firehose_aggregator",
+    "proxy_aggregator",
     # Specialized — academic/government emitted by classify_type();
     # think_tank emitted by classify_type() via tag; ngo is reserved
     # forward-planning vocabulary (no emitter today, but accepted in

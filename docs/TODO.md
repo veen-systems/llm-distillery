@@ -1,6 +1,30 @@
 # LLM Distillery - TODO
 
-## 🟢 2026-08-11 (afternoon) — OP-POINT CYCLE VERIFIED. Both read zero. #102 can close.
+## 🔵 NEXT SESSION — start here. Nothing is blocked on a machine; three things need a decision.
+
+**Session of 2026-08-11 afternoon closed clean.** Working tree clean, all pushed,
+nothing deployed and nothing pending deployment. Full record:
+`memory/project_session_2026_08_11_afternoon.md`.
+
+| # | What | Who decides |
+|---|---|---|
+| **#109** | Design for the label-correctness instrument. **Approve, reject or re-scope.** Two independent arms; **arm A is cheap, uses an established design on full-length content, and closes #105's remaining half on its own**. Arm B carries all the methodological risk and must pass a planted-error gate before any real spend. | **Owner** — it is an oracle-budget call |
+| **#107** | A *ruling*: does `uplifting` require a pleasant subject, or only a positive outcome? One answer also settles the three adjacent-lens rows. | **Owner** — editorial, not technical |
+| **#106** | `belonging` published ethno-national framing at tier `high` from a 131-char Google News headline. | Owner sets severity; the mechanism is #108/GN |
+
+**Peer-owned, do not duplicate:** ducroq/NexusMind#314 (built, PR #317) and #322
+(sizes the unmeasured wrong-body region; **n=300 is the threshold, n=150 settles
+nothing**). Neither has run a cycle. ducroq/FluxusSource#145 / #157.
+
+**Two standing traps re-confirmed today.** Never oracle-score sub-300 content —
+and note the corollary found this session: **difference-of-differences does NOT
+rescue it**, because the short-content effect is length-dependent and therefore
+confounded with the treatment variable itself (#109 § arm B). And when sampling
+anything by length, **stratify by source** — #108 is the precedent.
+
+---
+
+## 🟢 2026-08-11 (afternoon) — OP-POINT CYCLE VERIFIED. Both read zero. #102 CLOSED.
 
 **Done. The 12:02 cycle of 2026-08-11 confirmed both moves.** Full record:
 `docs/evidence/2026-08-10-uplifting-v7-op-point-4.5-VERIFIED.md` (renamed off
@@ -23,7 +47,14 @@ Both batches were confirmed **fully written before reading** (size stable across
 3s; per-row counts sum to line counts). Pre-cycle, `TIER_THRESHOLDS` was read from
 **NexusMind's checkout on sadalsuud** — the runtime source — not from `config.yaml`.
 
-**Remaining on this thread:** close #102; and if a cycle-wide rather than
+**#102 is closed** (2026-08-11), with its step 1 recorded as NOT RUN rather than
+silently dropped: no second oracle batch was collected, and that step's second
+half ("reach the sub-300 rows the first batch could not grade") is now refused by
+the do-not-oracle-score-short-content rule. The known non-random hole in its
+precision figures — 26 of 170 ungraded, 11 in the marginal band — therefore
+survives the closure.
+
+**Only remaining on this thread:** if a cycle-wide rather than
 first-batch-per-lens count is wanted, re-run the command in the evidence doc.
 
 ### 2. Then: measure the `proxy_aggregator` after-side

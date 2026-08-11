@@ -23,6 +23,21 @@ Problems encountered and resolved. Format: Problem → Root cause → Fix.
 
 ---
 
+## A ported vocabulary value left `main` red, and the file that needed updating says so in a comment (2026-08-11)
+
+**Problem**: `main` failed `tests/unit/test_filter_config_schema.py` from the midday
+session until the afternoon's `/curate` ran the suite. `proxy_aggregator` was ported
+into `investment_risk v6`'s `source_filter` but never added to `KNOWN_SOURCE_TYPES`.
+**Root cause**: The port and its validating gate live in two files, and only one was
+edited — even though `KNOWN_SOURCE_TYPES` carries the instruction *"When FluxusSource
+adds a new value, add it here in the same PR to keep the gate in lockstep."*
+**Fix**: Added `proxy_aggregator` with its provenance. **Run the suite at session
+close, not only before a commit that touches code** — this was found by `/curate`
+running tests on a docs-only working tree, and nothing else that day would have.
+**Durable lesson**: a comment prescribing a cross-file lockstep is not a mechanism;
+it is a hope. The same session that logged *"a comment explaining why code is safe is
+a claim like any other"* was two commits from this.
+
 ## Confident recall of a document you actually opened is worse than not having looked (2026-08-11)
 
 **Problem**: The NexusMind session asserted that the singleton wrong-body case was
