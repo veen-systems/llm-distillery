@@ -7,32 +7,81 @@ metadata:
 
 # Cross-Repo Prioritization
 
-## Board count 2026-08-11 (midday) — **252 open**, and the ordering changed
+## Board count 2026-08-11 **12:56** — **251 open**. The count is not the finding; the distribution is.
 
-| repo | open | Δ vs 08-09 |
-|---|---|---|
-| ducroq/ovr.news | 89 | — |
-| ducroq/NexusMind | 51 | **+8** |
-| veen-systems/llm-distillery | 41 | **+6** |
-| ducroq/augmented-engineering | 34 | *(first count — mandated output, on no board)* |
-| ducroq/FluxusSource | 17 | **+4** |
-| veen-systems/persuasion-scorer | 12 | — |
-| veen-systems/pipeline-atlas | 8 | +5 |
-| **TOTAL** | **252** | |
+| repo | open | touched ≤7d | touched ≤2d | oldest untouched since | Δ vs midday |
+|---|---|---|---|---|---|
+| ducroq/ovr.news | **89** | 17 | **0** | 2026-02-09 | — |
+| ducroq/NexusMind | 51 | 21 | 11 | 2026-04-13 | — |
+| veen-systems/llm-distillery | 40 | 25 | 13 | 2026-03-07 | **−1** (#102 closed) |
+| ducroq/augmented-engineering | 34 | **0** | **0** | 2026-03-16 | — |
+| ducroq/FluxusSource | 17 | **16** | 10 | 2026-08-02 | — |
+| veen-systems/persuasion-scorer | 12 | **0** | **0** | 2026-08-02 | — |
+| veen-systems/pipeline-atlas | 8 | **8** | 7 | 2026-08-07 | — |
+| **TOTAL** | **251** | 87 | 41 | | **−1** |
 
-Growth is almost entirely the two peer sessions filing against their own repos
-(NM#303–#316, FS#142–#156) plus this session's **#105, #106, #107**.
+**Only 41 of 251 issues (16%) have been touched in two days, and they sit in four
+repos.** That is the number worth acting on, not the total.
 
-**The count moved 246 → 249 → 252 inside this one session**, and only 3 of the 6
-moves were mine. I wrote 249 (my own count plus my own filings), re-queried before
-committing, and got 252 — NexusMind +1, FluxusSource −1, pipeline-atlas +3, all
-from peer sessions working live. **This is the fifth consecutive pass where the
-total and its own narrative disagreed at some point.** With three sessions filing
+- **`ovr.news` is the largest board (89 — 35% of everything open) and has had
+  nothing touched in two days.** Its live-ish items (#304, #305, #287, #296) are
+  mostly downstream consequences of NexusMind defects, which reads as work having
+  moved upstream rather than the board being abandoned. Its oldest untouched issue
+  dates to 2026-02-09 — six months.
+- **`persuasion-scorer` (12) and `augmented-engineering` (34) are frozen** —
+  46 issues, 18% of the total, nothing touched in over a week. Neither is a
+  pipeline blocker; the first is the split-out research project (its DR-003), the
+  second is mandated output on no board.
+- **`FluxusSource` is where the energy is**: 16 of 17 issues touched this week.
+
+`updatedAt` counts any edit including a label change, so it measures touch, not
+progress. **Six local repos have no GitHub remote at all** (`art`, `brainstorm`,
+`busara`, `infra`, `research`, `sandbox`) and `admin` is on a sadalsuud git
+remote — none has an issue tracker, so work there is structurally invisible to
+every count in this file. PRs are not counted.
+
+**The count moved 246 → 249 → 252 inside the midday session**, and only 3 of the 6
+moves were that session's. **This is the fifth consecutive pass where the total and
+its own narrative disagreed at some point.** With three sessions filing
 concurrently the number is only true at the instant it is read: quote it with a
 timestamp, and re-query immediately before acting on it, never at the top of a
 session.
 
 <!-- verify: tot=0; for r in veen-systems/llm-distillery ducroq/NexusMind ducroq/ovr.news ducroq/FluxusSource veen-systems/persuasion-scorer veen-systems/pipeline-atlas ducroq/augmented-engineering; do n=$(gh issue list -R $r --state open --limit 400 --json number --jq 'length'); echo "$r: $n"; tot=$((tot+n)); done; echo "TOTAL: $tot" -->
+
+### The four chains in the live work (2026-08-11 afternoon)
+
+Grouped from titles, then **corrected by the FluxusSource and NexusMind peer
+sessions**, who refuted a status claim each. Both corrections are recorded here
+because the uncorrected versions are the intuitive readings and will be
+re-derived otherwise.
+
+**A. Google News / short content.** FS#145 → NM#310 → NM#309 → LD#106 / LD#105 / LD#92.
+**FS#145 is an ENABLER, not a root cause — my first framing was wrong.** It
+harvests the publisher *host* from `<source url>`, not the article URL, so it does
+**not** make GN items enrichable (NM#310 stands) and the **GN share does not fall
+when it lands**. It takes publisher identification from 45.6% to ~100%; the share
+only moves later via ADR-007 native-feed migration, one editorial call per outlet.
+Do not schedule anything on "GN share falls when FS#145 closes". The corpus
+argument is untouched and is the reason to do it: 0–4.9% GN in training against
+25.7% of production.
+
+**B. Enrichment corrupts bodies.** **NM#314 is BUILT, not unstarted** — PR #317,
+merged-pending, reviewed. The gate is **merge + deploy**: sadalsuud was on
+`main @ 6f45633` with no `src/enrichment/decision_log.py` as of 2026-08-11, so
+every measurement sequenced behind it is blocked on a pull, not on code. NM#315
+(duplicate-body guard, ≥5 headlines/body-hash: 90.3% precision / 92.5% recall
+blind-labelled, vs 25.9% for the current affinity signal) is picked up by the NM
+peer and stacks on #314's branch. Then NM#306, NM#319, downstream ovr#287/#305.
+
+**C. The measurements are not trusted.** NM#303 / NM#304 (contract tests validate
+fixtures, never production output), NM#312 (two integration tests have never run),
+LD#104 (every accuracy number is CPU-measured while production serves on GPU).
+
+**D. Collection efficiency.** FS#142 (cross-run dedup leaking 12.9%), FS#133,
+FS#156, FS#157 — the last has a measured downstream cost: the #144 regeneration
+changed `investment_risk v6`'s input composition mid-cycle and confounded the
+secondary expectation of the 2026-08-11 op-point verification.
 
 ### The ordering, against the owner's stated stopping condition
 

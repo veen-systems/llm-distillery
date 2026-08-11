@@ -19,8 +19,18 @@ errors that were made deriving it.
 
 Measured on NexusMind `data/raw`, 17 cycles from `20260808_1710`, 55,848 items.
 
-**Match GN on `'news.google.com' in url`, never on a `gn_` key prefix** — the prefix
-identifies only population A and under-counts total GN roughly 5:1 in config.
+**Match GN on `'news.google.com' in url`, never on a source-key prefix** — a key
+prefix identifies only population A and under-counts total GN roughly 5:1 in config.
+
+**Sharpened 2026-08-11 by the FluxusSource session, which hit the same defect from
+the other side.** The rule above was stated too narrowly. Emitted `source` keys are
+**category-prefixed** — `ai_google_news_ai_engineering`, not
+`google_news_ai_engineering` — so `startswith("google_news_")` silently misfiles the
+entire topic-query population into the publisher-named bucket, and `startswith("gn_")`
+works only by accident of prefix. FS reported a population-C count of **zero** from
+exactly this before catching it. **Classify against the configured feed URL —
+`site:` present or absent — not the key.** Two independent occurrences of one
+defect, in two repos, within days.
 
 **A is 5.6× more productive per feed than B** (141 vs 25 items). This kills the
 inference "59 feeds is a fifth of 302, so A can't be the mass" — feed count says
