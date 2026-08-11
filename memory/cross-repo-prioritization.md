@@ -131,11 +131,39 @@ a real article attached to the wrong story, so it **scores like one**. No thresh
 calibration or op-point reaches it, and the #95 band is beside the point because the
 score is not wrong — the pairing is. Open and unowned on both sides.
 
-**Sizing it is a sampling job, not an instrumentation one.** A cycle through #317 /
-#321 will *not* improve the estimate: the decision log observes candidates and
-verdicts, never whether a replacement was correct. It needs a fresh stratum drawn
-from A, large enough to move a rule-of-three bound, hand-labelled. NM will file it
-separately rather than fold it into #321.
+**Sizing it is a sampling job, not an instrumentation one — now NM#322** (*"Size the
+unmeasured defect region: draw an A-stratum sample the current one cannot bound"*,
+filed 2026-08-11). A cycle through #317 / #321 will *not* improve the estimate: the
+decision log observes candidates and verdicts, never whether a replacement was
+correct.
+
+**n=300 is the number, and n=150 settles nothing.** Rule of three on the
+baseline-only region — bound on the region, and the absolute ceiling after the ~95%
+weight:
+
+| n | bound on region | absolute ceiling |
+|---|---|---|
+| 46 (today) | 6.52% | 6.2% |
+| 150 | 2.00% | 1.90% |
+| **300** | **1.00%** | **0.95%** |
+| 600 | 0.50% | 0.47% |
+
+**n=300 is the first size whose ceiling falls below the measured 1.76% overall defect
+rate** — the point where "defects live in B/C" stops being an inherited assumption
+and becomes a bounded claim. At n=150 the ceiling is 1.90%, straddling the base rate,
+so it answers nothing; worth knowing before anyone proposes it as the cheap version.
+If defects *are* found in A-alone it converts to a direct estimate and the sizing
+changes.
+
+**NM#314 and NM#322 are COMPLEMENTARY, not sequential** — a framing correction that
+went the other way in this exchange. #322 bounds the *miss* direction. #314 is the
+only instrument that can bound the *false-block* direction at all, because refused
+replacements are absent from any sample of stored rows **by construction** — that
+direction is not undersampled, it is unobservable, and no amount of sampling reaches
+it. The known cost is not hypothetical: **3 of 33 blocked rows were legitimate,
+weighting to 25.9% precision**, concentrated in morphologically rich languages
+(NM#309's surface). NM#322 additionally requires per-source counts and a
+hold-source-fixed check, citing llm-distillery#108 as the precedent.
 
 **C. The measurements are not trusted.** NM#303 / NM#304 (contract tests validate
 fixtures, never production output), NM#312 (two integration tests have never run),

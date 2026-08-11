@@ -23,6 +23,31 @@ Problems encountered and resolved. Format: Problem → Root cause → Fix.
 
 ---
 
+## Confident recall of a document you actually opened is worse than not having looked (2026-08-11)
+
+**Problem**: The NexusMind session asserted that the singleton wrong-body case was
+"most of the population by count", and I committed it into
+`memory/cross-repo-prioritization.md` on their word. The measurement said the
+opposite — ~7.5%, a tail. **They had read the refuting caveat section in that same
+session, while checking something else**, and did not re-read it before making a
+population claim.
+**Root cause**: Having opened a document produces the *feeling* of knowing its
+contents, which suppresses the impulse to re-check that not having read it would
+have triggered. This is a strictly worse position than ignorance: ignorance is
+loud, recall is quiet and confident.
+**Fix**: Re-open the source before any claim about **population, composition or
+rate** — the classes where memory reconstructs a plausible number rather than
+failing. When such a claim is passed between sessions, verify against the cited
+source, not the report; I did that for their retraction and it surfaced two further
+exclusions their message had not carried. Their remedy on the other side: NM#322
+states the bound arithmetic explicitly rather than pointing at the doc, because a
+caveat living only in a section nobody reaches is not a caveat.
+**Durable lesson**: this is the sibling of the promoted rule *"before using any
+source as evidence, establish what it excludes"* — here the source was correct and
+available, and the failure was between the file and the sentence. **Both of my own
+retractions this session (the `investment_risk` inflation reading, and this one)
+were plausible-and-unchecked rather than wrong-and-obvious.**
+
 ## A check that reconciles a partition breaks when someone adds a member — and the failure lands on the honest path (2026-08-11)
 
 **Problem**: Reported by the NexusMind session. `verify_decision_log.py` asserts the
