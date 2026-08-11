@@ -38,6 +38,26 @@ running tests on a docs-only working tree, and nothing else that day would have.
 it is a hope. The same session that logged *"a comment explaining why code is safe is
 a claim like any other"* was two commits from this.
 
+## An early return before the logging boundary makes a refusal indistinguishable from no-attempt (2026-08-11)
+
+**Problem**: Two articles that ovr.news should have enriched had no row in
+`enrichment_errors` and no upstream-enriched flag, so nothing could say whether
+enrichment ran and refused, or never ran. Chased across both repos before the answer
+came from reading the branch (ovr.news#312).
+**Root cause**: `enrichment.ts:154-167` returns on an unresolvable Google News URL
+*before* the fetch, the skip-domain check, and the `try/catch` that calls `logError`.
+The only output is an unpersisted debug line. Three other early returns in the same
+function share the shape.
+**Fix**: ours is to look for it — an early return that precedes the error-logging
+boundary is a silent path by construction, and the refusal is invisible **at exactly
+the inputs that trigger it**, which are the ones any investigation selects.
+**Durable lesson**: when a guard *declines* to act, ask where the decline is recorded,
+not whether the decline is correct. Sibling of NM#314's argument that unrecorded
+refusals make a whole failure direction unobservable rather than merely unmeasured.
+Check the table is live before reading absence as signal — `enrichment_errors` had 453
+rows written that morning, while `enrichment_history` has **0 rows ever** and a pruner
+but no writer.
+
 ## Confident recall of a document you actually opened is worse than not having looked (2026-08-11)
 
 **Problem**: The NexusMind session asserted that the singleton wrong-body case was

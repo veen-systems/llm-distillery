@@ -33,12 +33,29 @@ needed wherever it sits. **Whether ovr should enrich at all is an open architect
 question** — the owner's position is that enrichment is NexusMind's job; ovr's
 CLAUDE.md documents the consolidation as deliberate. Unresolved, owner's call.
 
-**Open, and nobody has an answer**: both published stubs (106 and 131 chars) are far
+**RESOLVED (ducroq/ovr.news#312).** Both published stubs (106 and 131 chars) are far
 under 500 and carry **no upstream-enriched flag of any kind** — verified across every
-lens batch, top-level and per-lens. So both *should* have entered ovr's enrichment
-path, and neither left a row in `enrichment_errors` or `enrichment_history`. An
-enrichment attempt that leaves no trace is indistinguishable from one that never
-happened, on exactly the articles it exists for.
+lens batch, top-level and per-lens, which eliminated `wasEnrichedUpstream`. The answer:
+**enrichment ran, refused, and the refusal is silent by construction.**
+`ovr.news src/lib/enrichment.ts:154–167` — when `resolveGoogleNewsUrl` returns nothing
+(always, per NM#310), it emits a debug line and returns **before** the fetch, **before**
+the `SKIP_DOMAINS` check, and **before** the `try/catch` at `:271` that calls
+`logError`. Nothing is persisted. **Three other early returns in the same function have
+the identical shape** (skip-domain, invalid URL, SSRF guard).
+
+The refusal is *correct* — fetching an unresolvable GN link retrieves a 60–100 char JS
+stub. **The silence is the defect**, and it falls at exactly the articles that trigger
+it: every refused article is one where refusal cannot be told from no-attempt, and
+those are precisely the ones an investigation picks.
+
+Verified not a dead-table artefact: `enrichment_errors` holds **453 rows, last written
+2026-08-11 10:56** — live. Separately, **`enrichment_history` has 0 rows ever**: its
+writer (`db-enrichments.ts:273`) has no callers while `db-maintenance.ts:30` prunes it
+at 90 days — maintenance for a table nothing writes.
+
+**Whichever way the "should ovr enrich at all" question goes, #312 stands** — a silent
+refusal is a defect at whichever layer performs it, and if enrichment moves upstream
+the observability requirement must move with it rather than being re-lost.
 
 **Read `len(content)` AFTER `enrich_articles`, NOT the `content_length` stamp.** The
 stamp is captured at scoring (`main.py:1240`), before post-scoring enrichment
