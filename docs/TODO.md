@@ -102,6 +102,20 @@ Full detail: `memory/google-news-corpus-hypotheses.md`.
 deleted silently on the next filter deploy. Ported into llm-distillery; usage block
 corrected; both entries in `memory/gotcha-log.md`.
 
+### Framework drift — 2 releases behind, unreviewed
+
+**Stamped `v1.18.0`; agent-ready-projects released `v1.19.0` and `v1.20.0` on
+2026-08-10.** The earlier "Framework: no drift" note further down this file was
+true when written and is now marked superseded.
+
+**Run `/update-drift` to triage properly — do not bulk-adopt.** One thing already
+checked: **v1.20.0's load-bearing change does not apply here.** It adds a
+session-start row to the project-file template so something points at the memory
+index at the moment it matters; `CLAUDE.md:168` already has that row. The rest of
+v1.19/v1.20 is documentation correcting the claim that the in-repo memory index is
+auto-loaded (it is not — it is pointer-reached), which this repo's own
+`/audit-context` run has now measured directly.
+
 ---
 
 ## 🟢 2026-08-10 — #102 (uplifting v7 specificity) step 2 DONE + the 21 `solutions_story` candidates adjudicated. Read this block first.
@@ -437,6 +451,11 @@ changes nothing and is not urgent.
 **Framework: no drift.** agent-ready-projects is at **v1.18.0**, adopted. The
 only commit past the tag is a README badge fix, and it is **unpushed in the
 framework repo** (`294d83c`) — owner's to push.
+
+> **SUPERSEDED 2026-08-11** (`/audit-context`): true when written, false now.
+> The framework released **v1.19.0 and v1.20.0** on 2026-08-10; this repo is
+> still stamped v1.18.0. See the top block. Left in place because this is a
+> dated session record, not current state.
 
 ### The three things a next session should not re-derive
 

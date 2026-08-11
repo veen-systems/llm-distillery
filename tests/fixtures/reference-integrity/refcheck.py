@@ -27,9 +27,32 @@ STATE_SHAPE = re.compile(r"(_state\.json|_health\.json|\.pid|\.sock)$")
 
 PATH_RE = re.compile(r"`([A-Za-z0-9_][A-Za-z0-9_./+-]*\.(?:" + "|".join(EXT) + r"))`")
 # spans whose paths are ASSERTED ABSENT — scoped to the span, never the line
+#
+# 2026-08-11: added the "we keep no X" family. The audit reported CLAUDE.md's
+# `hypothesis-log.md` as UNRESOLVED when the prose around it says "we keep no
+# `hypothesis-log.md` at either path" — an absence assertion, and correct as
+# written. The tell was the report itself: SKIPPED AS ASSERTED-ABSENT read 0
+# across three documents, which is implausible for docs that record removals.
+# Kept tight and span-scoped: the pattern must reach the backticked path, so a
+# sentence that retires one file and names its replacement still yields the
+# replacement.
 ABSENT_SPANS = [re.compile(r"~~(.+?)~~"),
                 re.compile(r"!\s*test\s+-f\s+(\S+)"),
-                re.compile(r"\*\*Deleted\*\*:\s*(`[^`]+`)")]
+                re.compile(r"\*\*Deleted\*\*:\s*(`[^`]+`)"),
+                # "we keep no `x.md`" / "keeps no `x.md`" / "no `x.md` at either path"
+                re.compile(r"\bkeeps?\s+no\s+(`[^`]+`)", re.I),
+                re.compile(r"\bno\s+(`[^`]+`)\s+at\s+either\s+path", re.I)]
+# REJECTED, and left here so it is not re-attempted: patterns of the shape
+#   r"(`[^`]+`)\s+(?:was|were|has been)\s+(?:removed|deleted)"
+#   r"(`[^`]+`)\s+no\s+longer\s+exists"
+# Tried 2026-08-11 and reverted the same minute. Prose past-tense cannot
+# distinguish "this file is gone" from "this file was once deleted, and that is
+# the story being told". It matched gotcha-log's account of the 2026-04-16
+# normalization incident — "`filter_base_scorer.py` was deleted on 2026-04-16" —
+# and silently skipped a file that exists right now, taking 8 occurrences out of
+# the report. A skip is the one outcome with no rung to name, so a false skip is
+# invisible. Absence markers must be STRUCTURAL (`~~`, `**Deleted**:`,
+# `! test -f`) or an explicit present-tense statement about what the repo keeps.
 
 def walk(base):
     out=[]

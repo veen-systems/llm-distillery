@@ -191,6 +191,7 @@ complaint), and pushes toward short confident output, against rules 4 and 5.
 | Running anything long, or told "the GPU is free" | `memory/b650-gpu.md` — the non-production 3090 Ti. `ssh b650-gpu` works from the workstation, NOT from sadalsuud |
 | Checking which lens/tab a filter feeds | `memory/ovr-lens-set-current.md` — current lens→filter→tab mapping |
 | Writing docs for a deployed filter | `memory/filter-doc-standard.md` — the required documentation set |
+| Building a filter on a DeepSeek oracle, or citing cultural_discovery v5 as a reference | `memory/cd-v5-reference-status.md` — why v5 is the DeepSeek-oracle reference example, and the ADR-020 methodology it demonstrates |
 | Retraining uplifting, or touching the obituary/violence gates | `memory/uplifting-v7-training.md`, `memory/obituary-v4-hypotheses.md`, `memory/violence-promotion-v1-hypotheses.md` |
 | **Wanting the whole chain in one place, or the live pipeline state** | **`veen-systems/pipeline-atlas`** — the four repos as one signal path, plus an ops snapshot regenerated every 20 min. Served from sadalsuud on Tailscale (`http://100.78.93.76:8099/`), not GitHub Pages. It states mechanisms only; every number is in the snapshot or carries a verify command. **It replaced ovr.news `/ops/architecture`, deleted 2026-08-07.** |
 | Ending a session | Run `/curate` |
