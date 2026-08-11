@@ -1,5 +1,5 @@
 {
-  "threshold": 4.0,
+  "threshold": 4.25,
   "truth_threshold": 4.0,
   "gatekeeper_cap": 2.9,
   "noise_floor": 0.16,
@@ -9,44 +9,44 @@
       "n": 1045,
       "positives": 163,
       "truth_threshold": 4.0,
-      "recall": 0.7607361963190185,
-      "precision": 0.7560975609756098,
-      "specificity": 0.9546485260770975,
-      "f1": 0.7584097859327218,
+      "recall": 0.7239263803680982,
+      "precision": 0.8368794326241135,
+      "specificity": 0.9739229024943311,
+      "f1": 0.7763157894736842,
       "spearman": 0.8227444592840006,
       "mae": 0.41608222149032953,
-      "tp": 124,
-      "fn": 39,
-      "fp": 40,
-      "tn": 842,
+      "tp": 118,
+      "fn": 45,
+      "fp": 23,
+      "tn": 859,
       "noise_floor": 0.16,
-      "n_indeterminate": 31,
+      "n_indeterminate": 17,
       "indeterminate_by_cell": {
-        "tp": 6,
-        "fn": 5,
-        "fp": 14,
-        "tn": 6
+        "tp": 7,
+        "fn": 1,
+        "fp": 2,
+        "tn": 7
       },
       "recall_band": [
-        0.7239263803680982,
-        0.7914110429447853
+        0.6809815950920245,
+        0.7300613496932515
       ],
       "precision_band": [
-        0.7195121951219512,
-        0.832258064516129
+        0.7872340425531915,
+        0.85
       ],
       "specificity_band": [
-        0.9478458049886621,
-        0.9705215419501134
+        0.9659863945578231,
+        0.9761904761904762
       ],
       "f1_band": [
-        0.7217125382262997,
-        0.8113207547169811
+        0.7302631578947367,
+        0.7854785478547855
       ]
     }
   },
   "provenance": {
-    "measured": "2026-08-10",
+    "measured": "2026-08-11 (op-point move)",
     "why": "investment_risk v6 was DEPLOYED WITH NO ACCURACY NUMBER OF ANY KIND. This is the first one. It closes the ADR-021 gap for this filter, and completes the fleet: before today only 3 of 6 deployed filters had ever been measured, so llm-distillery#102's 'uplifting is the specificity outlier' was a claim over half the population.",
     "data": "datasets/training/investment_risk_v6/test.jsonl (held-out oracle test split; gitignored, lives on b650 and gpu-server)",
     "calibration": "the DEPLOYED filters/investment_risk/v6/calibration.json -- NOT a fresh fit, so these describe what production computes",
@@ -57,6 +57,9 @@
       "MEASURED ON CPU; PRODUCTION SERVES ON GPU. CPU-vs-CUDA on the student is worth 1 verdict flip at a 4.0 op-point and 3 at 4.5 on uplifting v7 (max |delta| 0.1956). That term is UNQUANTIFIED for this filter. See llm-distillery#104.",
       "Adapter weights were md5-verified against production's own copy before scoring (gpu-server llm-distillery for belonging/cultural_discovery; NexusMind's filters/ tree for investment_risk, whose llm-distillery copy on gpu-server lives under the HYPHENATED name 'investment-risk').",
       "DO NOT RANK FILTERS ON `mae` (ADR-023). Each split has its own positive rate -- uplifting v7 32.7%, investment_risk v6 15.6%, solutions v6 16.2%, nature_recovery v4 15.3%, cultural_discovery v5 8.8%, belonging v1 11.5% -- and a more enriched split carries mechanically larger per-article error for identical quality. Only recall and specificity are conditional on the true class and comparable across filters."
-    ]
+    ],
+    "op_point_change": "4.0 -> 4.25 (llm-distillery#102 method, ADR-023). The 4.0 numbers, measured 2026-08-10, were recall 0.7609, specificity 0.9550, FPR 4.50% (40 FP, 39 FN).",
+    "on_lens_definition": "oracle gatekeepered weighted average >= 4.0, PINNED while the student's bar moved.",
+    "caveat_recorded_at_the_time": "The ADR-023 case is WEAKER here than for uplifting v7 and this was known before shipping. This filter's false positives are NEAR-MISSES -- oracle median 3.05, max 3.90 -- and are mostly geopolitical/macro risk stories (Dutch budget analysis, Russian drone strikes on ports, FERC pipeline tariffs, supply-chain attacks) that the model rates above the oracle. A reader on an investment-risk feed would plausibly find them relevant; they are not the reader-harming junk that motivated ADR-023 (uplifting's false positives included a stranded sperm whale). Three of the six true positives lost at 4.25 are strong: oracle 5.85 (CoreWeave $56bn contracted revenue), 5.80 (climate vulnerability of Massachusetts substations), 5.55 (wildfires). The trade is 17 false positives for 6 true ones, which is why it shipped -- but if the lens owner disagrees, revert is one line in base_scorer.py plus a normalization refit."
   }
 }

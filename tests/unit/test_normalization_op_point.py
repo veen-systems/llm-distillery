@@ -202,6 +202,11 @@ class TestResolveOpPoint:
         # stats.raw_min. It failing on the op-point change is the guard working:
         # config.yaml alone is documentation, TIER_THRESHOLDS is what runs.
         ("filters/uplifting/v7", 4.5),
+        # Added 2026-08-11: this test's docstring says "every production filter",
+        # and these two deployed filters were missing from it. solutions v6's 2.25
+        # is deliberately low (screen+merge, ADR-003), not a defect.
+        ("filters/investment_risk/v6", 4.25),
+        ("filters/solutions/v6", 2.25),
     ],
 )
 def test_production_filters_resolve_their_op_point(filter_dir, expected):
