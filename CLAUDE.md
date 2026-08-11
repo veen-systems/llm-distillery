@@ -72,6 +72,8 @@ framework_reconciliation: |
 - **Fit `calibration.json` after every training run.** Isotonic regression on the val set. Commit with the filter package. The base scorer auto-loads it.
 - **`.nexusmind-owns` is empty by default.** The manifest mechanism stays in place as a controlled-divergence escape hatch — entries get added only with a tracked issue and a resolution deadline. Long-term silent divergence between repos is the failure shape that the 2026-05-04 "manifest as anti-pattern" gotcha-log entry warns against (concrete: normalization plumbing was deleted from NexusMind on 2026-04-16 and went unnoticed for 18 days because the manifest masked it). Production-runtime concerns now live in `NexusMind/src/scoring/production_scorer.py`, which composes the shared base scorer rather than mutating it. `filters/common/filter_base_scorer.py` and `filters/common/hybrid_scorer.py` are pure shared math; sync freely.
 
+- **An operating point lives in FOUR places, and `config.yaml` is NOT the runtime one.** `base_scorer.py`'s `TIER_THRESHOLDS` is what scores; `config.yaml scoring.tiers` is documentation. Changing the config alone is a **no-op in production**. The other two are `normalization.json` `stats.raw_min` (which `tests/unit/test_normalization_invariant.py` requires to equal the tier threshold — both NM#161 and NM#205 were that drifting) and the expectation in `tests/unit/test_normalization_op_point.py`. **Any op-point move changes all four in one commit and refits normalization**, and `MAX_NORMALIZATION_RAW_MIN = 4.5` caps how high it can go (strict `>`, so 4.5 is accepted with zero margin; above that the production loader silently falls back to `score_scale_factor`). Caught 2026-08-11 by `fit_normalization.py` refusing to agree with itself — not by review. Verify by **executing** the tier assignment, not by re-reading the config.
+
 ### Working rules (promoted from the gotcha log — these are non-negotiable, not tips)
 
 Moved here from `memory/MEMORY.md` on 2026-08-06: they are always-needed
@@ -89,14 +91,14 @@ Full details in `memory/filter-status.md`. Summary:
 
 | Filter | Version | MAE | Status |
 |--------|---------|-----|--------|
-| **uplifting** | v7 | — | Deployed (NO_HUB, hybrid inference) |
+| **uplifting** | v7 | recall 0.61 / spec 0.97 | Deployed (NO_HUB, hybrid inference). **Op-point 4.5 since 2026-08-11 (#102)** |
 | **sustainability_technology** | v3 | 0.72 | **REMOVED 2026-08-03** — replaced by solutions; package deleted, recover from git history |
-| **investment-risk** | v6 | 0.47 | Deployed (HF Hub) |
-| **cultural-discovery** | v5 | 0.70 | Deployed (HF Hub, DeepSeek oracle) — **still the live version** |
+| **investment-risk** | v6 | recall 0.72 / spec 0.97 | Deployed (HF Hub, private). **Op-point 4.25 since 2026-08-11** |
+| **cultural-discovery** | v5 | recall 0.59 / spec 0.98 | Deployed (HF Hub, DeepSeek oracle) — **still the live version** |
 | **cultural-discovery** | v6 | (v5's) | **NOT LIVE — but no longer blocked (2026-08-08).** Package parity 2026-08-06 (#98): v5's student + e5 probe + commerce-only prefilter, no retrain. Hub repo created (private, v5 adapter verbatim, md5-identical); `normalization.json` fitted n=3,680 from `filter_version=5.0` rows — valid because the student is unchanged and the probe removes 1 of 2,653 rows above the 4.0 op-point; `--check-hub` 9/9; loaded end-to-end and scored. **Remaining: the cutover deploy itself, then refit normalization from real 6.0 rows.** |
-| **belonging** | v1 | 0.49 | Deployed (HF Hub) |
+| **belonging** | v1 | recall 0.60 / spec 0.985 | Deployed (HF Hub) |
 | **nature_recovery** | v4 | recall 0.65 / prec 0.85 | Deployed (recall-first probe, v5 planned #71) |
-| **solutions** | v6 | 0.48 | **LIVE** — gate passed 2026-07-27, normalization fitted 2026-07-28 |
+| **solutions** | v6 | recall 0.67 / spec 0.97 | **LIVE** — gate passed 2026-07-27, normalization fitted 2026-07-28 |
 | **foresight** | v1 | 0.75 | **REMOVED 2026-08-03** — merged into solutions (#43); package deleted, recover from git history. Closes out #64. |
 | **thriving** | v1 | — | PARKED indefinitely (ADR-015) |
 | **ai-engineering-practice** | v1 | — | Separate product, not ovr.news (table read v2; only v1 is on disk) |
@@ -153,12 +155,9 @@ to write replies that only make sense to whoever just did the work.
    Cut preamble, restatement of the question, and lists of things not pursued.
 6. **Say what you did to the owner's machine and how to undo it.**
 
-Rejected alternative: the `i-have-adhd` output-formatting plugin
-(github.com/ayghri/i-have-adhd) — installed and removed the same day. It fixes
-length and burying the answer, but not undefined jargon, which was the actual
-complaint; and its push toward short confident output works against rules 4
-and 5. Re-add with `claude plugin marketplace add ayghri/i-have-adhd` if the
-rules above prove insufficient.
+Rejected alternative: the `i-have-adhd` output-formatting plugin — installed and
+removed the same day. It fixes length, not undefined jargon (the actual
+complaint), and pushes toward short confident output, against rules 4 and 5.
 
 ## Before You Start
 
@@ -236,4 +235,4 @@ This project is a source project for [augmented-engineering](https://github.com/
 
 ---
 
-*Last updated: 2026-08-10 — **#102 steps 2+3 measured; 7 of 21 adverse candidates promoted; b650 commissioned. NOTHING DEPLOYED.** **Cross-box disagreement is DECOMPOSED and the earlier reading was backwards: pinning production's library versions CLEARS a box completely** — gpu-server CPU vs b650 CPU on production's pins is **660/660 bit-identical, 0 verdict flips at any threshold**. Host contributes nothing; the library stack is worth 3 flips at 4.5; **CPU→CUDA is worth 3 at 4.5 and 1 at the deployed 4.0**. So `b650:~/llm-distillery/venv-prodparity` on **CPU** is a production-exact instrument and threshold work no longer waits for a pipeline gap — but **production SERVES on GPU while every accuracy number this project has was measured on CPU, and that term has never been quantified.** #102: 4.5 → FPR 8.11%→2.70%, feed −27%, off-lens reaching readers 25.3%→18.8%; `MAX_NORMALIZATION_RAW_MIN = 4.5` makes 4.75/5.0 unreachable and any move must refit normalization in the same change. **`content_type: solutions_story` is the oracle's residual bucket, not a lens signal.** A 6-lens review found 3 blockers in the same day's work — full record: `docs/TODO.md` top block, `memory/project_session_2026_08_10.md`. **NEXT: the owner's op-point call, then the adjacent-lens ruling.***
+*Last updated: 2026-08-11 — **two op-points moved and DEPLOYED (not yet verified): `uplifting v7` 4.0 → 4.5 (#102), `investment_risk v6` 4.0 → 4.25.** Both activate at the first NexusMind cycle after 12:02; **verification is the next session's first task** — the criterion is that no row whose raw sits in the old band is still tiered `medium` (pre-change baseline: uplifting 81 rows, investment_risk 82). `filtered_*.jsonl` holds every scored row, so the rows do not disappear, only their tier changes — an earlier stated criterion said otherwise and was wrong. **The whole fleet now has ADR-021 numbers for the first time**; three filters had been live with none, and completing the set confirmed uplifting as the specificity outlier rather than refuting it. **A register/source-type rule was tested and REFUTED** as a cheaper alternative (removes 2 false positives, costs 21 true ones). Also: `deploy_to_nexusmind.sh` ran the Hub check with no token and 404'd on every private repo — fixed; og:image's "85% failure" is ~48% correct behaviour plus ~26% arxiv logos (NexusMind#316, do NOT 'fix' the relative-URL discard). Full record: `docs/TODO.md` top block, `memory/project_session_2026_08_11.md`. **NEXT: verify the cycle, then the adjacent-lens ruling (owner).***

@@ -73,10 +73,46 @@ bash scripts/deploy_to_nexusmind.sh uplifting v7
 # then commit in NexusMind; deploy_filters.sh ships it on the next 4-hourly cycle
 ```
 
-**Verify at the END of the run, not from the config:** the next cycle's
-`filtered_*.jsonl` for uplifting must contain **no rows with
-`raw_weighted_average` in [4.0, 4.5)**, and the surfaced count should fall by
-roughly a quarter (measured estimate: ≈199 → ≈145 per cycle).
+## Verifying it — and a correction to the criterion I first wrote
+
+**The criterion below replaces "the next batch must contain no rows with
+`raw_weighted_average` in [4.0, 4.5)". That was wrong.** `filtered_*.jsonl`
+carries every scored row, not only surfacing ones — the 2026-08-11 09:03 batch
+has a minimum raw of **0.8412**. Rows in the band do not disappear when the
+op-point moves; their **tier** changes. The commit messages for this change
+carry the wrong version; this file is the corrected one.
+
+**Pre-change baseline, captured 2026-08-11 09:03/09:05 while the old op-points
+were still live** (the last batches of the 08:00 cycle — the deploy activates at
+the *next* cycle's `ExecStartPre`):
+
+| filter | batch | rows | tier `medium` in the band | overall low / medium / high |
+|---|---|---|---|---|
+| `uplifting v7` | `filtered_20260811_090307` | 4,676 | **81** in [4.0, 4.5) | 4363 / 233 / 80 |
+| `investment_risk v6` | `filtered_20260811_090540` | 1,928 | **82** in [4.0, 4.25) | 1360 / 400 / 168 |
+
+**After the 12:02 cycle, both must read zero** — no row whose raw sits in its
+filter's band may still be tiered `medium`, and the `medium` count should fall by
+roughly that many (uplifting 233 → ~152, investment_risk 400 → ~318).
+
+```bash
+ssh sadalsuud 'python3 - <<PY
+import json, os, glob
+from collections import Counter
+base = os.path.expanduser("~/local_dev/NexusMind/data/filtered")
+for lens, lo, hi, ver in (("uplifting", 4.0, 4.5, "7.0"), ("investment_risk", 4.0, 4.25, "6.0")):
+    f = sorted(glob.glob(os.path.join(base, lens, "filtered_*.jsonl")))[-1]
+    band, tiers = Counter(), Counter()
+    for line in open(f):
+        o = json.loads(line)
+        a = (o.get("nexus_mind_attributes") or {}).get(lens) or {}
+        r = a.get("raw_weighted_average")
+        if r is None or a.get("version") != ver: continue
+        tiers[a.get("tier")] += 1
+        if lo <= r < hi: band[a.get("tier")] += 1
+    print(lens, os.path.basename(f), "band:", dict(band), "all:", dict(tiers))
+PY'
+```
 
 **Expect the 04:00 cycle on 11 Aug to fail regardless** — that is the Odido
 uplink, not this change.

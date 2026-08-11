@@ -4,7 +4,37 @@
 > counts that don't fit in CLAUDE.md; if you just want current production state, read
 > CLAUDE.md's Production Filters table. The tables below must be reconciled against it.
 >
-> <!-- verify: grep -qxF '<!-- prod-filters-table:start -->' memory/filter-status.md && grep -qxF '<!-- prod-filters-table:end -->' memory/filter-status.md && grep -q '^## Key Decisions' CLAUDE.md || { echo "FAIL: verify anchors missing"; exit 0; }; comm -23 <(awk '/^## Production Filters/,/^## Key Decisions/' CLAUDE.md | grep -E "^\| \*\*" | sed -E 's/^\| \*\*([a-z_-]+)\*\* \| (v[0-9]+).*/\1 \2/' | tr '-' '_' | grep -Ev "^(thriving|ai_engineering_practice) " | sort -u) <(awk '/prod-filters-table:start/,/prod-filters-table:end/' memory/filter-status.md | grep -E "^\| [a-z]" | awk -F'|' '{gsub(/ /,"",$2);gsub(/ /,"",$3); print $2, $3}' | tr '-' '_' | sort -u) | grep . && echo FAIL || echo PASS -->
+> <!-- verify: grep -qxF '<!-- prod-filters-table:start -->' memory/filter-status.md && grep -qxF '<!-- prod-filters-table:end -->
+
+## ADR-021 deploy-gate results — the whole fleet, first complete 2026-08-10
+
+Before 2026-08-10 only **3 of 6** deployed filters had ever been measured.
+`belonging v1`, `cultural_discovery v5` and `investment_risk v6` were live with no
+recall, no specificity, no number of any kind — so #102's "uplifting is the
+specificity outlier" was a claim over half the population. It survived completion.
+
+At each filter's op-point **as of 2026-08-10** (i.e. before the two moves above):
+
+| filter | recall | specificity | FPR | n | split positive rate |
+|---|---|---|---|---|---|
+| uplifting v7 | 0.736 | 0.919 | **8.1%** | 660 | 32.7% |
+| investment_risk v6 | **0.761** | 0.955 | 4.5% | 1045 | 15.6% |
+| solutions v6 | 0.671 | 0.972 | 2.8% | 1032 | 16.2% |
+| nature_recovery v4 | 0.650 | 0.979 | 2.1% | 391 | 15.3% |
+| cultural_discovery v5 | 0.587 | 0.980 | 2.0% | 857 | 8.8% |
+| belonging v1 | 0.600 | 0.985 | 1.5% | 738 | 11.5% |
+
+**Read recall and specificity only.** They are conditional on the true class, so
+the split's positive rate does not distort them. Precision, MAE and F1 are
+base-rate dependent and are NOT comparable across these rows (ADR-023) — which is
+why the `MAE` column in the table above must not be used to rank anything.
+
+**All measured on CPU; production serves on GPU** — worth 1 verdict flip at a 4.0
+op-point on uplifting v7 (#104, open).
+`docs/evidence/2026-08-10-fleet-deploy-gate-completion.md`.
+
+**`cultural_discovery v5`'s gatekeeper binds 0 times in 857 rows** — the #94
+shape, second instance found in this project. Unexamined.' memory/filter-status.md && grep -q '^## Key Decisions' CLAUDE.md || { echo "FAIL: verify anchors missing"; exit 0; }; comm -23 <(awk '/^## Production Filters/,/^## Key Decisions/' CLAUDE.md | grep -E "^\| \*\*" | sed -E 's/^\| \*\*([a-z_-]+)\*\* \| (v[0-9]+).*/\1 \2/' | tr '-' '_' | grep -Ev "^(thriving|ai_engineering_practice) " | sort -u) <(awk '/prod-filters-table:start/,/prod-filters-table:end/' memory/filter-status.md | grep -E "^\| [a-z]" | awk -F'|' '{gsub(/ /,"",$2);gsub(/ /,"",$3); print $2, $3}' | tr '-' '_' | sort -u) | grep . && echo FAIL || echo PASS -->
 >
 > The check asserts every filter in CLAUDE.md's Production Filters table has a
 > same-version row here (name separators normalized; `thriving` and
@@ -31,10 +61,10 @@
 
 | Filter | Ver | MAE | Cal. MAE | Data | Hub Repo | Deployed |
 |--------|-----|-----|----------|------|----------|----------|
-| uplifting | v7 | **0.84** (see note) | — | 5.3K | (none — file-copy to NexusMind only) | 2026-07-31 normalization REFIT (Apr-06 fit was unit-mismatched ×1.1976, LD#76/NM#279; raw 5.0 → norm 5.17, was ~3.0) |
+| uplifting | v7 | **0.84** (see note; do NOT rank on this — ADR-023) | — | 5.3K | (none — file-copy to NexusMind only) | **2026-08-11 OP-POINT 4.0 → 4.5** (#102; recall 0.6111 / spec 0.9730, was 0.7361 / 0.9189; normalization refit n=15,698 raw_min 4.5 — exactly on MAX_NORMALIZATION_RAW_MIN). Deployed to NexusMind `e84c8fc`, activates at the first cycle after 12:02. 2026-07-31 normalization REFIT (Apr-06 fit was unit-mismatched ×1.1976, LD#76/NM#279; raw 5.0 → norm 5.17, was ~3.0) |
 | sustainability_technology | v3 | 0.72 | — | 10.6K | `jeergrvgreg/sustainability-technology-v3` | 2026-02-21 (retired from ovr.news — superseded by solutions v6) |
 | solutions | v6 | 0.476 | — | 8.2K | `jeergrvgreg/solutions-filter-v6` | 2026-07-27 gate passed; normalization fitted 2026-07-28; LIVE. v6 weights on Hub 2026-07-30 (was: v4 repo shared — that mismatch + FILTER_VERSION 5.0 fixed in 403429d). |
-| investment-risk | v6 | 0.497 | 0.465 | 10.4K | `jeergrvgreg/investment-risk-v6` | 2026-02-21 |
+| investment-risk | v6 | 0.497 | 0.465 | 10.4K | `jeergrvgreg/investment-risk-filter-v6` (private) | **2026-08-11 OP-POINT 4.0 → 4.25** (recall 0.7239 / spec 0.9740, was 0.7609 / 0.9550; normalization refit n=38,637 raw_min 4.25). Deployed `3d358d3`. **First accuracy number ever measured 2026-08-10.** 2026-02-21 |
 | cultural_discovery | v5 | — | 0.697 (val) | 8.5K | `jeergrvgreg/cultural-discovery-filter-v5` | 2026-07-31 multilingual topic gate added to prefilter (LD#86); **gate VALIDATED in production 2026-08-01 via NM#284 shadow: observed pass 0.255 vs declared 0.25 (n=2099, full cycle)** — but still NOT ENFORCED (NM#284); 2026-05-31 v5 (#62 flags; DeepSeek oracle) |
 | cultural_discovery | v6 | — | (v5's, reused) | 8.5K | `jeergrvgreg/cultural-discovery-filter-v6` **(DOES NOT EXIST YET)** | **NOT LIVE — package parity reached 2026-08-06, cutover blocked on two things.** v6 = v5's student weights + an e5 probe + a commerce-only prefilter; **no retrain** (#98). Keyword gate, 4 exclusion categories, 3 domain blocklists and the `evidence_quality` gatekeeper (#94) all removed. `score_scale_factor` 1.0, **no normalization.json** (must be fitted from a historical rescore — v5's is invalid because the probe changes which articles survive). Blockers: create the Hub repo (copy the v5 adapter verbatim), fit normalization. Ships stamping-only per ADR-022. |
 | cultural-discovery | v4 | 0.74 | — | 8K | `jeergrvgreg/cultural-discovery-v4` | 2026-02-20 (superseded by v5) |

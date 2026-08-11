@@ -1,5 +1,73 @@
 # LLM Distillery - TODO
 
+## 🔴 2026-08-11 — TWO OP-POINTS DEPLOYED, NOT YET VERIFIED. Start here.
+
+**FIRST TASK NEXT SESSION: verify the cycle.** Both changes activate at the first
+NexusMind cycle after **12:02 on 2026-08-11** (`deploy_filters.sh` runs as
+`ExecStartPre`, so a running cycle keeps the old code).
+
+| filter | op-point | deployed as | gate at the new point |
+|---|---|---|---|
+| `uplifting v7` | 4.0 → **4.5** | NexusMind `e84c8fc` | recall 0.6111 / spec 0.9730 |
+| `investment_risk v6` | 4.0 → **4.25** | NexusMind `3d358d3` | recall 0.7239 / spec 0.9740 |
+
+**⚠️ THE VERIFICATION CRITERION I FIRST WROTE IS WRONG, and it is in both commit
+messages.** "The next batch must contain no rows with raw in [4.0, 4.5)" — no.
+`filtered_*.jsonl` holds **every scored row** (the 09:03 batch has a minimum raw
+of 0.8412), so band rows do not disappear; their **tier** changes.
+
+**Pre-change baseline, captured 09:03/09:05 while the old op-points were still
+live** (cannot be recreated):
+
+| filter | batch | tier `medium` in band | overall low / medium / high |
+|---|---|---|---|
+| uplifting | `filtered_20260811_090307` | **81** in [4.0, 4.5) | 4363 / 233 / 80 |
+| investment_risk | `filtered_20260811_090540` | **82** in [4.0, 4.25) | 1360 / 400 / 168 |
+
+**Both must read 0 after the cycle**, with `medium` falling to ~152 and ~318.
+The exact command is in
+`docs/evidence/2026-08-10-uplifting-v7-op-point-4.5-PREPARED.md`.
+
+**If it did not take**: check `base_scorer.py` on sadalsuud, not `config.yaml` —
+see the new hard constraint in CLAUDE.md about op-points living in four places.
+
+### What else happened
+
+- **The whole fleet has ADR-021 numbers for the first time.** `belonging v1`,
+  `cultural_discovery v5`, `investment_risk v6` were live with **no accuracy
+  number of any kind**. Completing the set **confirmed** #102 rather than
+  refuting it — uplifting was 1.79× the next worst.
+  `docs/evidence/2026-08-10-fleet-deploy-gate-completion.md`.
+- **A cheaper alternative to the threshold move was tested and REFUTED**: a
+  register/source-type rule removes **2** false positives and costs **21** true
+  ones. Do not propose it again without reading that section.
+- **`deploy_to_nexusmind.sh` ran the Hub check with no token**, and the Hub
+  returns 404 (not 401) for a private repo accessed anonymously — so it aborted
+  on a healthy repo and would have blocked **any** private-Hub filter deploy.
+  Fixed to resolve the token the way `.githooks/commit-msg` already did.
+- **NexusMind#316 filed** — og:image's "85% failure" is ~48% correct behaviour
+  (no og:image tag) plus ~26% arxiv, whose og:image is its own logo. **Do not
+  "fix" the relative-URL discard**: it would push ~1,200 logos per cycle into a
+  pipeline that already struggles with them. The fix is the counter, not the
+  fetcher. Concurrency was tested and refuted as a cause (18.3% at 1 and 10
+  workers alike).
+- Research artifacts no longer ship to the GPU box: `ground_truth_gate.json` and
+  `threshold_sweep.json` are gitignored in NexusMind, and the two already-tracked
+  copies were untracked (an ignore rule does not reach a tracked file).
+
+### Still open for the owner
+
+1. **The adjacent-lens ruling** — three held adverse rows are good articles in
+   another lens (coffee frog, Buenos Aires estancia, Antalya nomadic tents).
+   Does "delightful/interesting" count as uplifting, or does uplifting require a
+   benefit that reached people? One ruling covers a recurring class.
+2. **#104** — every accuracy number this project has is CPU-measured; production
+   serves on GPU, worth 1 verdict flip at a 4.0 op-point.
+3. **gpu-server's disk ceiling** is host-side (LXC on a 207 G rootfs).
+
+---
+
+
 ## 🟢 2026-08-10 — #102 (uplifting v7 specificity) step 2 DONE + the 21 `solutions_story` candidates adjudicated. Read this block first.
 
 **NOTHING WAS DEPLOYED.** No config edit, no refit, no filter sync. Everything

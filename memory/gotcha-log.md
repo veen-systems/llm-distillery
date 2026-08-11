@@ -2192,6 +2192,26 @@ That is a two-second check and would have saved both rejections.
 **Root cause**: treated a filter directory as a folder rather than as a deploy surface.
 **Fix**: evidence goes in `docs/evidence/`. **`ground_truth_gate.json` still sits in every filter package and carries the same hazard** — unfixed, pre-existing.
 
+### The op-point lives in four places and the config is not the runtime one (2026-08-11)
+**Problem**: changed `config.yaml scoring.tiers.medium` to move an op-point, refitted normalization — and the fitter anchored at the OLD value.
+**Root cause**: `base_scorer.py TIER_THRESHOLDS` is the sole runtime source; `config.yaml` is documentation. Changing it alone is a no-op in production. The other two copies are `normalization.json stats.raw_min` and a hardcoded expectation in `tests/unit/test_normalization_op_point.py`.
+**Fix**: change all four in one commit, refit, and **execute** the tier assignment to prove it (raw 4.49 → low, 4.50 → medium). Caught by `fit_normalization.py` warning that the two sources disagreed — a tool that argues with you is worth more than one that obeys. Promoted to CLAUDE.md Hard Constraints.
+
+### A verification criterion that could never have failed (2026-08-11)
+**Problem**: wrote "the next batch must contain no rows with raw in [4.0, 4.5)" into two deploy commit messages and an evidence doc. Rows in that band will still be there.
+**Root cause**: assumed `filtered_*.jsonl` holds only surfacing rows. It holds every scored row — the batch I checked has a minimum raw of 0.8412. The op-point changes the **tier**, not the presence.
+**Fix**: criterion is now "no row whose raw sits in the band is still tiered `medium`", with a pre-change baseline captured before the switch (81 and 82 rows). **Capture the baseline before the change, or the check has nothing to compare against.**
+
+### A guard that 404s on the thing it is guarding (2026-08-11)
+**Problem**: `deploy_to_nexusmind.sh` aborted with `hub: repo 'jeergrvgreg/investment-risk-filter-v6' not found`. The repo exists and is healthy — 9/9 checks pass with a token.
+**Root cause**: the script ran `verify_filter_package.py --check-hub` with **no token**, and the Hub returns **404, not 401**, for a private repo accessed anonymously. `.githooks/commit-msg` already resolved the token from `secrets.ini`; the deploy script did not.
+**Fix**: same resolution in both. Would have blocked deploying any private-Hub filter — which is all of them except uplifting v7 (NO_HUB).
+
+### "85% failed" was 48% correct behaviour and 26% arxiv logos (2026-08-11)
+**Problem**: og:image backfill reported 4,096/4,799 failed, chronic for 5+ days. The obvious fix — `urljoin` the relative og:image values — promised 22% → 48% success.
+**Root cause**: one counter conflates "no og:image tag" with real failures. And **all 51 relative-URL cases in a 200-sample were arxiv.org**, whose og:image is its own logo — "fixing" it would push ~1,200 logos per cycle downstream.
+**Fix**: NexusMind#316 — split the counter, skip arxiv from backfill. Checking *which hosts* before proposing the fix is what stopped it. Concurrency was tested and refuted as a cause (18.3% at 1 and 10 workers alike).
+
 ## The unreachable-mechanism catalogue
 
 Moved out of `CLAUDE.md` on 2026-08-09 (context audit): the **rule** belongs in the
