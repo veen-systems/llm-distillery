@@ -31,6 +31,61 @@ The exact command is in
 **If it did not take**: check `base_scorer.py` on sadalsuud, not `config.yaml` —
 see the new hard constraint in CLAUDE.md about op-points living in four places.
 
+### NEXT SESSION — start here, and check the clock first
+
+**The verification data does not exist until ~13:05.** The 12:02 cycle needs
+about an hour to reach the lens batches — the 08:00 cycle started at 08:00:25 and
+wrote uplifting's batch at **09:03**. So:
+
+**A. If it is before ~13:00** — there is nothing to verify yet. Confirm the change
+is still armed and do work from C:
+
+```bash
+ssh sadalsuud 'cd ~/local_dev/NexusMind && git log --oneline -1 && grep -h "(\"medium\"" filters/uplifting/v7/base_scorer.py filters/investment_risk/v6/base_scorer.py'
+# expect 4.5 and 4.25. If not, the deploy was reverted or overwritten — investigate before anything else.
+ssh sadalsuud 'systemctl list-timers fluxus-collection --no-pager | sed -n 2p'
+```
+
+**B. If it is after ~13:05 — VERIFY, this is the first task.** The command and
+the pre-change baseline are in
+`docs/evidence/2026-08-10-uplifting-v7-op-point-4.5-PREPARED.md`. Both bands must
+read **0** (they were 81 and 82).
+
+- **If it worked**: record it in that evidence doc and on #102, and close #102.
+- **If it did not**: check `base_scorer.py` **on sadalsuud**, not `config.yaml` —
+  the config is documentation and a change there alone is a no-op. Then check
+  whether `deploy_filters.sh` actually ran in that cycle's `ExecStartPre`.
+- **If the batch is missing entirely**: the cycle failed. Check the uplink before
+  assuming it is this change.
+
+**C. Work that does not depend on the cycle** (owner-agreed direction 2026-08-11:
+get the pipeline right *up to the lenses* before redefining `uplifting` →
+`human_thriving` at v8):
+
+The stopping condition is **not** "the pipeline is in good shape" — there are 209
+open issues and that is never true. It is **"the corpus a retrain would be
+labelled on is trustworthy."** Only these reach training labels:
+
+| fix first — reaches labels | can wait — does not |
+|---|---|
+| body correctness (NM#306 class, NM#309, NM#316) | og:image / heroes / logo classification |
+| language ID + corpus composition (FS#146, #149, #153) | corroboration, clustering, story dedup for display |
+| dedup — duplicates skew the training distribution (FS#142/143, NM#291) | normalization, tiers, display rank |
+| the 300-char labelling floor (#93) | |
+
+**And in parallel, the thing only the owner can do:** start writing down what
+`human_thriving` means. Today's evidence says uplifting's problem is
+**definitional, not technical** — its false positives have no rule (a register
+rule removes 2 and costs 21), and the oracle shares the student's blind spot
+(29/29 "perfect" in a band where readers flagged three articles). The
+adjacent-lens ruling below is the first brick of that definition, not a separate
+chore. **Do not deprecate `uplifting` before the definition exists** — that
+replaces a lens whose problem is measured with one whose problem is unspecified.
+
+Name is already settled: **`human_thriving`**, not bare `thriving` — ADR-012 as
+amended 2026-08-06. `filters/thriving/v1` exists as a separate parked filter
+(ADR-015), so a bare rename lands on an occupied directory.
+
 ### What else happened
 
 - **The whole fleet has ADR-021 numbers for the first time.** `belonging v1`,
