@@ -103,3 +103,36 @@ and pass it after enrichment.
 - `memory/prefilter-length-floor-hypotheses.md` — the measurement these came out of
 - `memory/gotcha-log.md` — session entries
 - CLAUDE.md Hard Constraints — the `filtered_*.jsonl` passers-only rule
+
+---
+
+## ovr.news `ovr.db` — the published set (added 2026-08-11)
+
+`~/local_dev/ovr.news/data/ovr.db` on sadalsuud, ~231 MB. **This is the only source
+that answers "did a reader see it?"** — everything in NexusMind answers "was it
+scored?" or "did it clear the op-point?", which are different and much larger
+populations.
+
+```bash
+ssh sadalsuud 'sqlite3 -readonly ~/local_dev/ovr.news/data/ovr.db "SELECT COUNT(*) FROM live_articles;"'
+```
+
+Tables that matter: `live_articles` (the live window — 3,529 rows spanning 14 days
+as of 2026-08-11), `archive_articles`, `article_filter_scores`, `editorial_decisions`.
+
+**What it excludes:** `live_articles` holds only the live window, so items that
+rotated out are absent — it cannot answer historical questions. `archive_articles`
+is the other half and was **not** used in the 2026-08-11 panel.
+
+**Trap:** `weighted_average` in `live_articles` is the **NORMALIZED** score, not
+raw. A row reading 8.95 can have per-dimension raws of 4.4–7.2. Normalization is
+rank-in-batch by design (ADR-014). Do not compare it to an op-point.
+
+**Trap:** ovr#275's resolver can rewrite article URLs, so matching a source by URL
+pattern may undercount. Cross-check by `source` as well — on 2026-08-11 both routes
+independently gave 39 Google News articles, which is what made the number usable.
+
+**Scale to expect:** a population that is 25.7% of the collected corpus and 16.1%
+of what a filter surfaces can still be 1.1% of what is published. Surfacing share
+and reader exposure are different quantities — conflating them produced a retracted
+"96% removed downstream" claim.

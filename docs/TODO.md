@@ -1,127 +1,108 @@
 # LLM Distillery - TODO
 
-## 🔴 2026-08-11 — TWO OP-POINTS DEPLOYED, NOT YET VERIFIED. Start here.
+## 🔴 2026-08-11 (midday) — VERIFY THE OP-POINT CYCLE. Still the first task. Start here.
 
-**FIRST TASK NEXT SESSION: verify the cycle.** Both changes activate at the first
-NexusMind cycle after **12:02 on 2026-08-11** (`deploy_filters.sh` runs as
-`ExecStartPre`, so a running cycle keeps the old code).
+The 12:02 cycle fires after the midday session closed; lens batches land ~13:05.
+**Command and pre-change baseline: `docs/evidence/2026-08-10-uplifting-v7-op-point-4.5-PREPARED.md`.**
 
-| filter | op-point | deployed as | gate at the new point |
-|---|---|---|---|
-| `uplifting v7` | 4.0 → **4.5** | NexusMind `e84c8fc` | recall 0.6111 / spec 0.9730 |
-| `investment_risk v6` | 4.0 → **4.25** | NexusMind `3d358d3` | recall 0.7239 / spec 0.9740 |
+| filter | op-point | must read |
+|---|---|---|
+| `uplifting v7` | 4.0 → **4.5** | **0** rows tiered `medium` in [4.0, 4.5) — baseline **81** |
+| `investment_risk v6` | 4.0 → **4.25** | **0** rows tiered `medium` in [4.0, 4.25) — baseline **82** |
 
-**⚠️ THE VERIFICATION CRITERION I FIRST WROTE IS WRONG, and it is in both commit
-messages.** "The next batch must contain no rows with raw in [4.0, 4.5)" — no.
-`filtered_*.jsonl` holds **every scored row** (the 09:03 batch has a minimum raw
-of 0.8412), so band rows do not disappear; their **tier** changes.
+**NEW CAVEAT (this session).** `investment_risk v6`'s *input composition* also
+changes in that same cycle — see `proxy_aggregator` below. The **primary criterion
+is unaffected** (it is about tier assignment, not counts), but the baseline's
+secondary expectation that `medium` falls to ~318 may not hold. **If the count is
+off, that is the config change, not a failed op-point move.**
 
-**Pre-change baseline, captured 09:03/09:05 while the old op-points were still
-live** (cannot be recreated):
+Verified before session close: **the cycle will not be blocked.** sadalsuud is
+ahead 0 / behind 0 on `main`, so `deploy_filters.sh`'s fail-closed `ExecStartPre`
+gate is skipped.
 
-| filter | batch | tier `medium` in band | overall low / medium / high |
-|---|---|---|---|
-| uplifting | `filtered_20260811_090307` | **81** in [4.0, 4.5) | 4363 / 233 / 80 |
-| investment_risk | `filtered_20260811_090540` | **82** in [4.0, 4.25) | 1360 / 400 / 168 |
+- **If it worked**: record in the evidence doc, close #102.
+- **If not**: check `base_scorer.py` **on sadalsuud**, not `config.yaml`.
+- **If the batch is missing**: the cycle failed — check the uplink first.
 
-**Both must read 0 after the cycle**, with `medium` falling to ~152 and ~318.
-The exact command is in
-`docs/evidence/2026-08-10-uplifting-v7-op-point-4.5-PREPARED.md`.
+### 2. Then: measure the `proxy_aggregator` after-side
 
-**If it did not take**: check `base_scorer.py` on sadalsuud, not `config.yaml` —
-see the new hard constraint in CLAUDE.md about op-points living in four places.
+Baseline saved at
+`docs/evidence/2026-08-11-investment-risk-v6-proxy-aggregator-baseline.json` —
+**it is unrecreatable.** Expected: `investment_risk v6` keeps excluding Google
+News (now via `proxy_aggregator` instead of accidentally via `academic`) and gains
+~310 rows: Guardian 290, Ars Technica 19, Quanta 1, IEEE 2.
 
-### NEXT SESSION — start here, and check the clock first
+**Attribute only the `google.com` row to this work.** The same FluxusSource
+regeneration applied ~15 unrelated pre-existing drift changes (`nytimes.com`
+unknown→news_major, `brookings.edu` think_tank→academic, several art/disability
+feeds). FluxusSource flagged it unprompted.
 
-**The verification data does not exist until ~13:05.** The 12:02 cycle needs
-about an hour to reach the lens batches — the 08:00 cycle started at 08:00:25 and
-wrote uplifting's batch at **09:03**. So:
+### 3. Then: #105's open question — the one that gates `human_thriving` v8
 
-**A. If it is before ~13:00** — there is nothing to verify yet. Confirm the change
-is still armed and do work from C:
+**Two deployed filters were trained on corpora >50% refused by TODAY'S labelling
+gate**: `investment_risk v6` **51.6%** (length floor) and `cultural_discovery v5`
+**52.2%** (its own `no_cultural_topic_signal` gate). `nature_recovery v4` is the
+clean reference at **0.0%**.
 
-```bash
-ssh sadalsuud 'cd ~/local_dev/NexusMind && git log --oneline -1 && grep -h "(\"medium\"" filters/uplifting/v7/base_scorer.py filters/investment_risk/v6/base_scorer.py'
-# expect 4.5 and 4.25. If not, the deploy was reverted or overwritten — investigate before anything else.
-ssh sadalsuud 'systemctl list-timers fluxus-collection --no-pager | sed -n 2p'
-```
+**A retrain of either today would silently drop half the corpus** — which is the
+direct answer to the owner's stopping condition ("is the corpus a retrain would be
+labelled on trustworthy?").
 
-**B. If it is after ~13:05 — VERIFY, this is the first task.** The command and
-the pre-change baseline are in
-`docs/evidence/2026-08-10-uplifting-v7-op-point-4.5-PREPARED.md`. Both bands must
-read **0** (they were 81 and 82).
+What is **not** established: that the labels are wrong. #93 moved the floor to the
+oracle path on 2026-08-03 and all six filters predate that, so the rule may have
+tightened rather than the corpus being contaminated. **Separating those is the
+work**: sample refused rows from each, compare against the stored label.
 
-- **If it worked**: record it in that evidence doc and on #102, and close #102.
-- **If it did not**: check `base_scorer.py` **on sadalsuud**, not `config.yaml` —
-  the config is documentation and a change there alone is a no-op. Then check
-  whether `deploy_filters.sh` actually ran in that cycle's `ExecStartPre`.
-- **If the batch is missing entirely**: the cycle failed. Check the uplink before
-  assuming it is this change.
+⚠️ **INSTRUMENT TRAP** — do **not** oracle-re-score Google News rows. Median
+content is **89 characters**, and the 300-char floor exists precisely because short
+content makes the LLM analyse the evaluation framework instead of the article. The
+valid substitute is a judge panel asking *does the headline support the score?*
+Full detail: `memory/google-news-corpus-hypotheses.md`.
 
-**C. Work that does not depend on the cycle** (owner-agreed direction 2026-08-11:
-get the pipeline right *up to the lenses* before redefining `uplifting` →
-`human_thriving` at v8):
+### Owner rulings waiting
 
-The stopping condition is **not** "the pipeline is in good shape" — there are 209
-open issues and that is never true. It is **"the corpus a retrain would be
-labelled on is trustworthy."** Only these reach training labels:
+1. **#107 — does `uplifting` require a pleasant subject, or only a positive
+   outcome?** Filed as the general question rather than a verdict on one article,
+   because **one ruling also settles the three adjacent-lens rows** already waiting
+   (coffee frog, Buenos Aires estancia, Antalya nomadic tents).
+2. **#106 — Kačanik.** Three unranked options in the issue; option 1 (do not
+   publish headline-only items) needs no new model and is the same lever
+   FluxusSource#145 pulls from the other end.
+3. **#104** — every accuracy number is CPU-measured; production serves on GPU.
 
-| fix first — reaches labels | can wait — does not |
-|---|---|
-| body correctness (NM#306 class, NM#309, NM#316) | og:image / heroes / logo classification |
-| language ID + corpus composition (FS#146, #149, #153) | corroboration, clustering, story dedup for display |
-| dedup — duplicates skew the training distribution (FS#142/143, NM#291) | normalization, tiers, display rank |
-| the 300-char labelling floor (#93) | |
+### What the midday session established (do not re-derive)
 
-**And in parallel, the thing only the owner can do:** start writing down what
-`human_thriving` means. Today's evidence says uplifting's problem is
-**definitional, not technical** — its false positives have no rule (a register
-rule removes 2 and costs 21), and the oracle shares the student's blind spot
-(29/29 "perfect" in a band where readers flagged three articles). The
-adjacent-lens ruling below is the first brick of that definition, not a separate
-chore. **Do not deprecate `uplifting` before the definition exists** — that
-replaces a lens whose problem is measured with one whose problem is unspecified.
+**`memory/google-news-corpus-hypotheses.md`** is the file. Summary:
 
-Name is already settled: **`human_thriving`**, not bare `thriving` — ADR-012 as
-amended 2026-08-06. `filters/thriving/v1` exists as a separate parked filter
-(ADR-015), so a bare rename lands on an occupied directory.
+- **100.0%** of all 14,357 Google News items are sub-300-char headline echoes —
+  both populations, max 277/283. With NexusMind#310 they are content-free at
+  collection *and* unfixable downstream.
+- Training corpora are **0–4.9% GN** against **25.3–25.5%** in production; three
+  filters have never seen a GN row in training.
+- GN is **1.1% of what is PUBLISHED** but **8.2% of `nature_recovery`**.
+  A surfacing share is not a reader-exposure number.
+- Panel of **all 39** published GN articles: ~33 of 39 defensible. But **19
+  `nature_recovery` articles are 9 stories — Nepal's tiger census published six
+  times** (→ NexusMind#188, with a cheap discriminator proposed).
+- **#93 step-4 re-measure: gate still CLOSED, do not set `short_content.cap`.**
+  The decisive ground survived a doubled window — short `solutions` rows max raw
+  **4.878**, zero ≥ 5.0 over 13,406 rows.
+- **REFUTED this session** (all mine unless noted): "96% removed downstream"
+  (denominator error), "GN scores like its training labels" (measured **20.2%**,
+  not ~50%), "ADR-007 closes the 25%/5% gap" (**58%** — population B needs a
+  second lever), "a Nepal story arrived via a Zambia proxy" (grouping artifact),
+  and the feed-count→item-mass inference (FluxusSource's).
 
-### What else happened
+### Landmine closed
 
-- **The whole fleet has ADR-021 numbers for the first time.** `belonging v1`,
-  `cultural_discovery v5`, `investment_risk v6` were live with **no accuracy
-  number of any kind**. Completing the set **confirmed** #102 rather than
-  refuting it — uplifting was 1.79× the next worst.
-  `docs/evidence/2026-08-10-fleet-deploy-gate-completion.md`.
-- **A cheaper alternative to the threshold move was tested and REFUTED**: a
-  register/source-type rule removes **2** false positives and costs **21** true
-  ones. Do not propose it again without reading that section.
-- **`deploy_to_nexusmind.sh` ran the Hub check with no token**, and the Hub
-  returns 404 (not 401) for a private repo accessed anonymously — so it aborted
-  on a healthy repo and would have blocked **any** private-Hub filter deploy.
-  Fixed to resolve the token the way `.githooks/commit-msg` already did.
-- **NexusMind#316 filed** — og:image's "85% failure" is ~48% correct behaviour
-  (no og:image tag) plus ~26% arxiv, whose og:image is its own logo. **Do not
-  "fix" the relative-URL discard**: it would push ~1,200 logos per cycle into a
-  pipeline that already struggles with them. The fix is the counter, not the
-  fetcher. Concurrency was tested and refuted as a cause (18.3% at 1 and 10
-  workers alike).
-- Research artifacts no longer ship to the GPU box: `ground_truth_gate.json` and
-  `threshold_sweep.json` are gitignored in NexusMind, and the two already-tracked
-  copies were untracked (an ignore rule does not reach a tracked file).
-
-### Still open for the owner
-
-1. **The adjacent-lens ruling** — three held adverse rows are good articles in
-   another lens (coffee frog, Buenos Aires estancia, Antalya nomadic tents).
-   Does "delightful/interesting" count as uplifting, or does uplifting require a
-   benefit that reached people? One ruling covers a recurring class.
-2. **#104** — every accuracy number this project has is CPU-measured; production
-   serves on GPU, worth 1 verdict flip at a 4.0 op-point.
-3. **gpu-server's disk ceiling** is host-side (LXC on a 207 G rootfs).
+`deploy_to_nexusmind.sh` **Step 1 is a bare `cp -r` with no manifest lookup.**
+`.nexusmind-owns` covers only Step 2 (`filters/common/`), so **nothing** under
+`filters/{name}/v{N}/` is protected and adding a manifest entry would not help.
+`proxy_aggregator` had been committed NexusMind-side only and would have been
+deleted silently on the next filter deploy. Ported into llm-distillery; usage block
+corrected; both entries in `memory/gotcha-log.md`.
 
 ---
-
 
 ## 🟢 2026-08-10 — #102 (uplifting v7 specificity) step 2 DONE + the 21 `solutions_story` candidates adjudicated. Read this block first.
 

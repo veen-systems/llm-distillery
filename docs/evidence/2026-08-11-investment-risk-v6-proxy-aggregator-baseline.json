@@ -1,0 +1,40 @@
+{
+ "_meta": {
+  "what": "Pre-change baseline for investment_risk v6's input distribution, captured BEFORE FluxusSource regenerated domain_quality.json (FS#144 plurality fix + proxy_aggregator label).",
+  "why": "The before-side is unrecreatable once the regeneration lands. Next session measures the after-side against this.",
+  "captured": "2026-08-11 ~11:05 CEST, before the 12:00 collection cycle",
+  "window": "17 NexusMind cycles, filtered_* from 20260808_1710 onward",
+  "method": "Corpus/academic counts measured via solutions v6's filtered output, which does NOT exclude `academic` and therefore retains the rows investment_risk drops. investment_risk figures from its own filtered output (post source-filter).",
+  "op_point": 4.25,
+  "expected_change": "v6 keeps excluding GN (now as proxy_aggregator instead of accidentally as academic) and gains ~310 rows: theguardian.com 290, arstechnica.com 19, quantamagazine.org 1, ieee.org 2.",
+  "confound_warning": "The same regeneration applied ~15 unrelated pre-existing drift changes (nytimes.com unknown->news_major, brookings.edu think_tank->academic, several art/disability feeds). Attribute ONLY the google.com row to this work.",
+  "measured_not_projected": "GN rows v6 already scores (n=2835, the site:-carrying population) clear 4.25 at 20.2% vs 23.1% for non-GN. An earlier projection from training labels implied ~50% and was WITHDRAWN.",
+  "related": [
+   "llm-distillery#105",
+   "llm-distillery#92",
+   "FluxusSource#144",
+   "FluxusSource#145",
+   "NexusMind#310"
+  ],
+  "reproduce": "scripts/research/gn_label_audit.py for the training-side; the production side is data/filtered/*/filtered_*.jsonl on sadalsuud."
+ },
+ "cycles_solutions": 17,
+ "cycles_investment_risk": 17,
+ "window_start": "20260808_1710",
+ "corpus_rows_reaching_filters": 40660,
+ "academic_stamped": 12878,
+ "academic_by_domain": {
+  "google.com (GN)": 7500,
+  "other academic (unchanged)": 5066,
+  "theguardian.com": 290,
+  "arstechnica.com": 19,
+  "ieee.org": 2,
+  "quantamagazine.org": 1
+ },
+ "rows_investment_risk_would_gain": 7812,
+ "investment_risk_rows_now": 28672,
+ "investment_risk_surfacing_now": 6544,
+ "investment_risk_raw_median": 2.1057,
+ "investment_risk_raw_p90": 5.3994,
+ "investment_risk_raw_mean": 2.8631
+}

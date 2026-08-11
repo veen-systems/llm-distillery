@@ -23,7 +23,7 @@ the length floor blocks*.
    *mechanism* claim was right — url/source rules genuinely cannot fire in-path —
    but it is worth tens of articles, not the hundreds needed to move a rate by
    0.05. The cluster survives the full contract unchanged.
-   <!-- verify: rerun the same-row A/B; nature_recovery and solutions must still return 0.0000 -->
+   <!-- verify: manual — rerun the same-row A/B; nature_recovery and solutions must still return 0.0000 -->
 
 2. **"uplifting v7 over-scores sub-300-char stubs" (LD#92 at n=15) — REFUTED at
    n=60/group.** DiD **+0.44**, but **not significant**: exact permutation
@@ -411,3 +411,41 @@ production scoring path (NM#284).
 - [[project_session_2026_08_02]] — the session
 - [[reference-nexusmind-data-sources]] — the two denominator traps
 - [[cross-repo-prioritization]] — Chain 4, re-rooted on the length-floor split
+
+---
+
+## 2026-08-11 — the #93 step-4 re-measure gate was run. It is still CLOSED.
+
+The 2026-08-08 comment left an encoded criterion rather than a date: *gate on
+measured GN-URL share per cycle, matching `news.google.com` in `url`*. Ran it.
+
+**GN-URL share has not moved: 24.1% (67 cycles before the first ADR-007 migration
+batch) → 25.1% (18 cycles after)**, pooled over 301k items in NexusMind
+`data/raw`. Per-cycle it ranges 15.7–39.0% with no trend.
+
+That is **not** evidence ADR-007 stalled — 6 migrated feeds against 311 remaining
+GN URLs predicts a flat population. See [[google-news-corpus-hypotheses]].
+
+**The decisive ground survives a window twice the original size.** "Nothing short
+reaches `medium_high`, so any cap ≥ 5.0 is a no-op": over the 16 cycles since
+`content_length` reached 100% population, `solutions v6` short rows are n=13,406,
+**max raw 4.878, zero at or above 5.0**. Previously 4.93 over 8 cycles.
+
+**Verdict unchanged: do not set `short_content.cap`.** The mechanism stays wired
+and off.
+
+Two things that did move:
+
+- Short surfacing rows for `solutions v6` fell 25.4 → 18.2 per cycle, and **the
+  only population that changed is B** (6.0 → 2.4/cycle), driven by one feed —
+  `energy_utilities_google_news_energy_storage`, 20 → 4. Population A (16.8 → 13.2)
+  and C (2.7 → 2.6) are flat. That is the "addressable at source" prediction from
+  08-08 coming true without a cap being set.
+- **`content_length` is now populated on 100% of rows in all six filters** — 0 nulls
+  in 230,070 scored rows since the 2026-08-08 17:10 cycle. NM#300's fix holds, so
+  `_apply_short_content_cap`'s silent-no-op hazard is no longer latent. A future
+  flip still needs a binding check at the end of a real run.
+
+**Same-instrument warning:** the before/after comparison used `len(content)` on the
+persisted row, because `content_length` was 0% populated before 2026-08-08 17:10
+and the stamped field would have compared two different quantities.

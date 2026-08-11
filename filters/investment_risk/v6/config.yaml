@@ -31,8 +31,38 @@ filter:
 # prefilter.py also lists arxiv/mastodon_/bluesky but is unreachable
 # in the GPU path (scorer uses skip_prefilter=True and only receives
 # {title, content}); this config block is the production gate.
+#
+# 2026-08-11 added proxy_aggregator, to REPLACE an accidental exclusion that
+# FluxusSource#144 removes. Google News feeds carrying no `site:` operator have
+# no publisher to resolve to, so FluxusSource landed them on google.com — whose
+# domain_quality entry was wrongly type_classification:academic. They have
+# therefore been excluded here since 2026-05-18 by accident, via a label meant
+# for arxiv. FS#144 corrects that label to `proxy_aggregator` (no publisher, a
+# headline echo, no recoverable article per NexusMind#310), which without this
+# line would admit ~7,500 rows per 17 cycles, +27.2% input. Measured, not
+# projected: the 2,835 GN rows this filter ALREADY scores (the `site:`-carrying
+# population) clear the 4.25 op-point at 20.2% against 23.1% for non-GN, so
+# admission would surface ~1,500 rows against a 6,544 baseline, +23%.
+#
+# NOT the plain `aggregator` label, which was tried on 2026-08-11 and reverted
+# within five minutes: 2,696 rows in one FluxusSource hot window carry it and
+# only 401 are Google News — Scoop NZ, AllAfrica, v2ex, ECO.pt and
+# HackerNews-newest are real publishers with real bodies, and those 401 are
+# `site:`-carrying feeds resolving to genuinely aggregating publishers. All of
+# them must keep passing this filter.
+#
+# arxiv is unaffected: it stays type_classification:academic under the FS#144
+# plurality rule, so the 2026-05-18 intent above is preserved exactly.
+#
+# PROVENANCE: authored and deployed FluxusSource-side on 2026-08-11 and
+# committed to NexusMind (6f45633) BEFORE reaching this file. Ported here
+# because llm-distillery is the source of truth for filter packages:
+# deploy_to_nexusmind.sh Step 1 is a bare `cp -r` with NO manifest lookup, so
+# this line would have been deleted silently on the next filter deploy. Note
+# `.nexusmind-owns` is NOT the mechanism — it covers only Step 2
+# (filters/common/), and adding an entry for this path would not have helped.
 source_filter:
-  excluded_source_types: [code_repo, developer_aggregator, academic, social, eval_aggregator]
+  excluded_source_types: [code_repo, developer_aggregator, academic, social, eval_aggregator, proxy_aggregator]
   shadow_mode: false
 
 # Scoring dimensions and weights (6 orthogonal dimensions, unchanged from v5)

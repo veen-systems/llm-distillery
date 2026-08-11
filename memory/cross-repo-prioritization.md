@@ -7,6 +7,65 @@ metadata:
 
 # Cross-Repo Prioritization
 
+## Board count 2026-08-11 (midday) — **252 open**, and the ordering changed
+
+| repo | open | Δ vs 08-09 |
+|---|---|---|
+| ducroq/ovr.news | 89 | — |
+| ducroq/NexusMind | 51 | **+8** |
+| veen-systems/llm-distillery | 41 | **+6** |
+| ducroq/augmented-engineering | 34 | *(first count — mandated output, on no board)* |
+| ducroq/FluxusSource | 17 | **+4** |
+| veen-systems/persuasion-scorer | 12 | — |
+| veen-systems/pipeline-atlas | 8 | +5 |
+| **TOTAL** | **252** | |
+
+Growth is almost entirely the two peer sessions filing against their own repos
+(NM#303–#316, FS#142–#156) plus this session's **#105, #106, #107**.
+
+**The count moved 246 → 249 → 252 inside this one session**, and only 3 of the 6
+moves were mine. I wrote 249 (my own count plus my own filings), re-queried before
+committing, and got 252 — NexusMind +1, FluxusSource −1, pipeline-atlas +3, all
+from peer sessions working live. **This is the fifth consecutive pass where the
+total and its own narrative disagreed at some point.** With three sessions filing
+concurrently the number is only true at the instant it is read: quote it with a
+timestamp, and re-query immediately before acting on it, never at the top of a
+session.
+
+<!-- verify: tot=0; for r in veen-systems/llm-distillery ducroq/NexusMind ducroq/ovr.news ducroq/FluxusSource veen-systems/persuasion-scorer veen-systems/pipeline-atlas ducroq/augmented-engineering; do n=$(gh issue list -R $r --state open --limit 400 --json number --jq 'length'); echo "$r: $n"; tot=$((tot+n)); done; echo "TOTAL: $tot" -->
+
+### The ordering, against the owner's stated stopping condition
+
+The condition is **not** "the pipeline is in good shape" — against 249 issues that
+is never true. It is **"the corpus a retrain would be labelled on is
+trustworthy"**, which is about a dozen issues. Ranked 2026-08-11:
+
+| # | item | repo | why here |
+|---|---|---|---|
+| 1 | **FS#145** harvest the real publisher from GN's `<source url>` | FS | 100% coverage, free, feedparser already parses it, **never read**. Name-guessing is **45.6%** on the `gn_*` country proxies ADR-007 targets. Closes **58%** of the 25%/5% corpus-vs-training gap — population A. |
+| 2 | **Bulk native repointing for population B** | FS | The other 10.8% of the corpus, identical defect, **ADR-007 does not cover it**. `scripts/gn_to_native_upgrade.py` exists — a run, not a build. |
+| 3 | **#105** two filters trained on corpora >50% refused by today's gate | LD | Directly answers the stopping condition. Gates `human_thriving` v8. |
+| 4 | **NM#315** duplicate-body guard at ≥5 headlines | NM | 90.3% precision / 92.5% recall on a **blind** hand-labelled n=150 with a sealed key — best-evidenced fix on the board. Needs NM#314 first. |
+| 5 | **FS#142** cross-run dedup leaking 12.9%, seen-hash store collapsed | FS | Duplicates over-weight labels; an **active regression**, not a standing defect. |
+| 6 | **NM#188** story dedup | NM | Reader-visible now: Nepal's tiger census published **six times** in `nature_recovery`. |
+| 7 | **FS#146/#149** language ID | FS | Corpus composition; real but smaller than the GN cluster. |
+| — | ~~#93 step 4~~ | LD | **Re-measured 2026-08-11: gate still closed, do not set the cap.** No action. |
+
+**Two levers for GN, not one** — this corrects the 2026-08-11 morning framing that
+FS#145 alone closes the gap. Population A (14.9% of corpus) needs `<source url>`
+harvesting; population B (10.8%) already knows its publisher and needs repointing.
+
+### Method note that cost real work this session
+
+**Seven errors were caught between this session and `fluxussource-85`, roughly
+evenly split, and none would have been caught solo.** The recurring shape on both
+sides was *asserting a population without measuring it* — a feed count read as item
+mass, a label asserted unused, a surfacing share read as reader exposure. The
+working pattern: **evidence posted to issues, not instructions to sessions**; each
+side measuring only what it could reach; every rate carrying its denominator.
+
+---
+
 ## Board count 2026-08-09 (later) — **195 open**
 
 | repo | open | Δ vs 08-07 |
