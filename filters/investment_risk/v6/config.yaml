@@ -125,7 +125,7 @@ scoring:
       description: "Critical risk signal - act now to reduce exposure"
 
     medium:
-      threshold: 4.0
+      threshold: 4.25
       description: "Moderate signal - worth tracking, limited immediate action"
 
     low:

@@ -37,9 +37,20 @@ class BaseInvestmentRiskScorer(FilterBaseScorer):
         "retail_actionability": 0.10,
     }
 
+    # TIER_THRESHOLDS is the SOLE RUNTIME SOURCE of the operating point;
+    # config.yaml scoring.tiers is documentation and does not drive scoring.
+    # medium 4.0 -> 4.25 on 2026-08-11 (llm-distillery#102 method, ADR-023):
+    #   4.00  recall 0.761  specificity 0.955  FPR 4.5%  (40 FP, 39 FN)
+    #   4.25  recall 0.724  specificity 0.974  FPR 2.6%  (23 FP, 45 FN)
+    # 17 fewer false positives for 6 more false negatives.
+    # CAVEAT recorded at the time: this filter's false positives are NEAR-MISSES
+    # (oracle median 3.05, max 3.90) -- geopolitical/macro risk the model rates
+    # above the oracle -- not reader-harming junk. So the ADR-023 argument is
+    # weaker here than for uplifting v7, and 3 of the 6 lost true positives are
+    # strong (oracle 5.55-5.85). Revert is a one-line change plus a refit.
     TIER_THRESHOLDS = [
         ("high", 7.0, "Critical risk signal - act now to reduce exposure"),
-        ("medium", 4.0, "Moderate signal - worth tracking, limited immediate action"),
+        ("medium", 4.25, "Moderate signal - worth tracking, limited immediate action"),
         ("low", 0.0, "Low signal - noise, not investment-relevant, or already priced in"),
     ]
 
