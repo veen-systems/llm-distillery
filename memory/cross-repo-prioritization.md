@@ -1394,7 +1394,7 @@ Stated explicitly so the priority tables are not mistaken for full coverage.
 | repo | unbanded | numbers |
 |---|---|---|
 | llm-distillery | 9 | 25, 28, 30, 33, 42, 55, 56, 60, 64 |
-| NexusMind | 4 | 104, 228, 229, 251 | *(225 → Chain 15 and 226 → Chain 13, 2026-08-07 night. This row is independently stale: it omits 232, 223 and 254, while the same-day coverage pass says **11** NexusMind issues are uncovered — two different definitions, never reconciled.)* |
+| NexusMind | 4 | 104, 228, 229, 251 — *225 → Chain 15 and 226 → Chain 13, 2026-08-07 night. **This row is independently stale**: it omits 232, 223 and 254, while the same-day coverage pass says **11** NexusMind issues are uncovered — two different definitions, never reconciled.* |
 | ovr.news | 42 (20 of them non-engineering) | engineering: 41, 59, 68, 115, 177, 180, 207, 210, 224, 228, 229, 230, 233, 234, 239, 243, 245, 247, 248, 263, 265, 271 |
 | FluxusSource | 0 | — |
 | **persuasion-scorer** | **12 → 0** | **This row did not exist until 2026-08-07 and the omission was the point: all 12 were counted in every total and banded nowhere. Now [Chain 16](#chain-16-persuasion-scorer-verification-track--new-2026-08-07-was-never-banded).** |

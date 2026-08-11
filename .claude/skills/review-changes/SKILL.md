@@ -38,18 +38,114 @@ Classify each changed file:
 
 | Tier | File patterns | Depth |
 |------|-------------|-------|
-| **HIGH** | `filters/common/*.py` · `filters/*/v*/config.yaml` · `filters/*/v*/{calibration,normalization,ground_truth_gate}.json` · `filters/*/v*/prefilter.py` · `filters/*/v*/base_scorer.py` · `ground_truth/batch_scorer.py` · `scripts/{gate,normalization,calibration,deployment}/*` · `.githooks/*` | Full battery (4–5 lenses) |
+| **HIGH** | `filters/common/*.py` · `filters/*/v*/config.yaml` · `filters/*/v*/{calibration,normalization,ground_truth_gate}.json` · `filters/*/v*/prefilter.py` · `filters/*/v*/base_scorer.py` · `ground_truth/batch_scorer.py` · `scripts/{gate,normalization,calibration,deployment}/*` · `tests/unit/test_normalization_invariant.py` · `.githooks/*` | Full battery (4–5 lenses) |
 | **MEDIUM** | `CLAUDE.md` · `ground_truth/*` · `training/*` · `scripts/**` (other) · `tests/**` · `docs/adr/**` · `docs/FILTER_PLAYBOOK.md` · `docs/NORMALIZATION_METHOD.md` · `docs/RUNBOOK.md` · `docs/ARCHITECTURE.md` · **anything matching no tier** | Adversarial + doc-accuracy (+ claim-verification if numbers changed) |
 | **LOW** | `memory/*` · `docs/TODO.md` · `docs/ROADMAP.md` · session files | Adversarial (+ claim-verification if numbers changed) |
 
 Pick the **highest** tier that applies. **Unmatched files are MEDIUM, not LOW** —
-silence must never read as safe.
+silence must never read as safe. **Name every unmatched file in the report under
+"Unclassified", even when a HIGH file in the same diff makes the tier moot.** The
+naming is the point: an unrecognized path is usually new shipped content whose
+tier nobody has decided yet, and it keeps arriving un-triaged until someone adds a
+row. Do not silently drop it, and do not default it to LOW. **If it is executable
+or is copied into NexusMind, escalate it to HIGH rather than leaving it at
+MEDIUM** — MEDIUM omits the guarantee-preservation and sync-safety lenses, which
+are exactly the two that shipped filter content needs.
 
 `filters/common/*.py` is HIGH regardless of how small the diff looks: it is pure
 shared math synced verbatim into NexusMind, and `.nexusmind-owns` is empty, so a
 mistake here reaches production scoring on the next deploy.
 
+**Every file named in the guarantee-preservation lens must sit in the HIGH row.**
+That lens is HIGH-gated, so a guarantee defined for a file that tiers lower can
+*never* be checked, and the report renders it as a clean pass. This is why
+`tests/unit/test_normalization_invariant.py` is listed in HIGH rather than falling
+under `tests/**`: it is the pin the normalization guarantee names, both NM#161 and
+NM#205 were that pin's subject, and a change weakening the pin itself would
+otherwise tier MEDIUM and skip the lens that exists to catch it. Re-check this
+invariant whenever either the tier table or the lens changes.
+
 If no files changed, report "nothing to review" and stop.
+
+## Step 1.5 — Structural pre-check
+
+Runs at **every tier and every magnitude**, before any lens, on every changed
+markdown file. It is deterministic, costs nothing, and needs no model to
+evaluate — which is why it is a step and not a lens.
+
+Every lens below reads *content*. None asks whether the file is still **valid
+markdown** after the edit. That gap matters disproportionately here, because this
+repo's memory and docs layer is predominantly wide tables — the filter table, the
+lens→tab mapping, the occurrence catalogue — where a row is one very long line. A
+`|` added inside a cell (a regex like `'recordfail|initrdfail'`, an `||` in a
+shell fragment, an alternation in a note) pushes cells past the end of the table
+and **GFM drops the excess silently**. It reads fine as prose in the diff and is
+wrong only when rendered, so a human reviewer and the adversarial lens both pass
+it.
+
+```bash
+{ git -c core.quotePath=false diff --name-only
+  git -c core.quotePath=false diff --cached --name-only
+  git -c core.quotePath=false diff --name-only @{u} 2>/dev/null
+  git -c core.quotePath=false ls-files --others --exclude-standard; } |
+  sort -u | grep '\.md$' | while IFS= read -r f; do
+  [ -f "$f" ] || continue
+  awk -v F="$f" '
+    function cells(s,   t, n) {
+      t = s; gsub(/\\\|/, "", t)
+      sub(/^[ \t]+/, "", t); sub(/[ \t]+$/, "", t)
+      sub(/^\|/, "", t); sub(/\|$/, "", t)
+      n = gsub(/\|/, "|", t); return n + 1
+    }
+    function isdelim(s,   t) {
+      t = s; gsub(/\\\|/, "", t); gsub(/[ \t]/, "", t)
+      return (t ~ /-/ && t ~ /^[|:-]+$/)
+    }
+    {
+      bare = $0; sub(/^ ? ? ?/, "", bare)
+      if (bare ~ /^```/ || bare ~ /^~~~/) {
+        c = substr(bare, 1, 1); n = 0
+        while (substr(bare, n + 1, 1) == c) n++
+        if (fch == "") { if (n >= 3) { fch = c; flen = n } }
+        else if (c == fch && n >= flen) fch = ""
+        intbl = 0; prev = ""; next
+      }
+      if (fch != "") next
+      if (isdelim($0) && prev != "" && (index($0, "|") || index(prev, "|"))) {
+        base = cells($0); intbl = 1
+        if (cells(prev) != base)
+          printf "%s:%d: header has %d cells, delimiter row defines %d — not a valid table\n", F, NR-1, cells(prev), base
+        prev = $0; next
+      }
+      if (intbl) {
+        if ($0 ~ /^[ \t]*$/) intbl = 0
+        else if (index($0, "|") && cells($0) > base)
+          printf "%s:%d: row has %d cells, table defines %d — the excess is dropped when rendered\n", F, NR, cells($0), base
+      }
+      prev = $0
+    }
+    END { if (fch != "") printf "%s: unclosed %s code fence\n", F, fch }
+  ' "$f"
+done
+```
+
+The file list is the union of unstaged, staged, unpushed, and **untracked** —
+`git diff` in any form never lists a file git has not seen, and a brand-new
+document is where fresh corruption is likeliest. `core.quotePath=false` is
+load-bearing: git otherwise renders a non-ASCII path as `"caf\303\251.md"`, which
+does not end in `.md`, so the file drops out of both the check and the count with
+no error.
+
+Only the **lossy** direction is reported. A row with *fewer* cells than the header
+is spec-legal in GFM — empty cells are inserted, and a `| **PART ONE** |` divider
+row inside a wide table is idiomatic — so flagging it produces noise, not
+findings. Report the count of files in scope (not files edited) in Step 4, so a
+check that scanned nothing is distinguishable from one that found nothing.
+
+Fix hits before committing: escape the offending pipe as `\|`, or restructure the
+row. **A hit is data loss, not a style nit** — when this was first run over this
+repo it found a caveat in `memory/cross-repo-prioritization.md` that renders
+nowhere.
 
 ## Step 2 — Execute review lenses
 
@@ -240,12 +336,22 @@ an inert enforcement point is how NM#284 and LD#94 happened.
 |---|----------|------|------|---------|
 | 1 | BLOCKER | reachability | ... | ... |
 
+### Unclassified
+
+[Files matching no tier row, or "none". NEVER omit this section.]
+
 ### Summary
 
+- **Structural pre-check**: [N] markdown files in scope, [M] violations
 - **Lenses run**: [list]
 - **Blockers**: [N] · **Warnings**: [N] · **Notes**: [N]
 - **Verdict**: [READY TO COMMIT | FIX BLOCKERS FIRST | REVIEW WARNINGS]
 ```
+
+**Never omit the Unclassified section.** An empty one is evidence the check ran; a
+missing one is indistinguishable from a check that was skipped — which is the
+failure class the rule exists to prevent. Same reasoning for the structural
+pre-check count line.
 
 Report findings faithfully: if a lens found nothing, say so; do not pad. If a
 lens could not run (missing data, unreachable host), say that rather than

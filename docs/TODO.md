@@ -1,28 +1,30 @@
 # LLM Distillery - TODO
 
-## 🔴 2026-08-11 (midday) — VERIFY THE OP-POINT CYCLE. Still the first task. Start here.
+## 🟢 2026-08-11 (afternoon) — OP-POINT CYCLE VERIFIED. Both read zero. #102 can close.
 
-The 12:02 cycle fires after the midday session closed; lens batches land ~13:05.
-**Command and pre-change baseline: `docs/evidence/2026-08-10-uplifting-v7-op-point-4.5-PREPARED.md`.**
+**Done. The 12:02 cycle of 2026-08-11 confirmed both moves.** Full record:
+`docs/evidence/2026-08-10-uplifting-v7-op-point-4.5-VERIFIED.md` (renamed off
+`-PREPARED`).
 
-| filter | op-point | must read |
-|---|---|---|
-| `uplifting v7` | 4.0 → **4.5** | **0** rows tiered `medium` in [4.0, 4.5) — baseline **81** |
-| `investment_risk v6` | 4.0 → **4.25** | **0** rows tiered `medium` in [4.0, 4.25) — baseline **82** |
+| filter | op-point | rows tiered `medium` in the old band | baseline | verdict |
+|---|---|---|---|---|
+| `uplifting v7` | 4.0 → **4.5** | **0** (50 band rows, all `low`) | 81 | **PASS** |
+| `investment_risk v6` | 4.0 → **4.25** | **0** (49 band rows, all `low`) | 82 | **PASS** |
 
-**NEW CAVEAT (this session).** `investment_risk v6`'s *input composition* also
-changes in that same cycle — see `proxy_aggregator` below. The **primary criterion
-is unaffected** (it is about tier assignment, not counts), but the baseline's
-secondary expectation that `medium` falls to ~318 may not hold. **If the count is
-off, that is the config change, not a failed op-point move.**
+**The secondary expectation was not met and that is correct, not a miss.**
+`medium` read 58 and 224 against a predicted ≈152 and ≈318 — but this cycle's
+batches are far smaller than the baseline's (1,720 vs 4,676; 1,210 vs 1,928), so
+the absolute counts are **not comparable quantities**. As shares: `uplifting`
+3.37% observed vs 3.25% predicted (matches); `investment_risk` 18.51% vs 16.49%
+(runs high, which is the pre-registered `proxy_aggregator` caveat). **Do not
+re-derive this as a failure next session.**
 
-Verified before session close: **the cycle will not be blocked.** sadalsuud is
-ahead 0 / behind 0 on `main`, so `deploy_filters.sh`'s fail-closed `ExecStartPre`
-gate is skipped.
+Both batches were confirmed **fully written before reading** (size stable across
+3s; per-row counts sum to line counts). Pre-cycle, `TIER_THRESHOLDS` was read from
+**NexusMind's checkout on sadalsuud** — the runtime source — not from `config.yaml`.
 
-- **If it worked**: record in the evidence doc, close #102.
-- **If not**: check `base_scorer.py` **on sadalsuud**, not `config.yaml`.
-- **If the batch is missing**: the cycle failed — check the uplink first.
+**Remaining on this thread:** close #102; and if a cycle-wide rather than
+first-batch-per-lens count is wanted, re-run the command in the evidence doc.
 
 ### 2. Then: measure the `proxy_aggregator` after-side
 
@@ -326,7 +328,7 @@ shape, second instance found. Worth its own look.
 ### 2d. The op-point move is PREPARED ON A BRANCH, not deployed
 
 **Branch `uplifting-v7-op-point-4.5`** (pushed).
-`docs/evidence/2026-08-10-uplifting-v7-op-point-4.5-PREPARED.md`.
+`docs/evidence/2026-08-10-uplifting-v7-op-point-4.5-VERIFIED.md`.
 
 Staged rather than shipped: a filter deploy restarts the scorer and this could
 not be verified until **08:00 on 11 Aug**, because the 04:00 cycle dies with the

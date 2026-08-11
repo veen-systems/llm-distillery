@@ -1,6 +1,16 @@
-# `uplifting v7` operating point 4.0 → 4.5 — PREPARED, NOT DEPLOYED
+# `uplifting v7` operating point 4.0 → 4.5 — VERIFIED IN PRODUCTION
 
-**2026-08-10. Branch `uplifting-v7-op-point-4.5`. Nothing has reached production.**
+**Prepared 2026-08-10 on branch `uplifting-v7-op-point-4.5`. Merged and synced to
+NexusMind 2026-08-11. VERIFIED on the 12:02 cycle of 2026-08-11 — see
+§ *Verification result* at the end. Both criteria read zero.**
+
+This file also carries `investment_risk v6` 4.0 → **4.25**, moved by the same
+method in the same cycle; the name is historical.
+
+**Everything from here to § *Verification result* is the pre-change record, kept
+verbatim.** It was written while the change was still staged, and the tense is
+deliberately not updated — the value of a pre-registered criterion is that it was
+written down before the answer was known.
 
 ## Why it is not deployed
 
@@ -116,6 +126,61 @@ PY'
 
 **Expect the 04:00 cycle on 11 Aug to fail regardless** — that is the Odido
 uplink, not this change.
+
+## Verification result — 2026-08-11, the 12:02 cycle
+
+**Both filters read ZERO. The criterion passes.**
+
+Batches `uplifting/filtered_20260811_123954.jsonl` (1,720 rows, written 12:39:55)
+and `investment_risk/filtered_20260811_124058.jsonl` (1,210 rows, written
+12:40:58). Both confirmed **fully written before reading** — file size stable
+across a 3-second gap, and the per-row counts sum exactly to the line counts. A
+partially-written jsonl would have produced a wrong count that looked like a
+result.
+
+| filter | band | rows tiered `medium` in the band | baseline | verdict |
+|---|---|---|---|---|
+| `uplifting v7` | [4.0, 4.5) | **0** — all 50 band rows now `low` | 81 | **PASS** |
+| `investment_risk v6` | [4.0, 4.25) | **0** — all 49 band rows now `low` | 82 | **PASS** |
+
+Full tier distributions: `uplifting` low 1,640 / medium 58 / high 22;
+`investment_risk` low 877 / medium 224 / high 109.
+
+Confirmed before the cycle, by reading NexusMind's checkout on sadalsuud rather
+than this repo: `TIER_THRESHOLDS` medium **4.5** and **4.25** respectively, with
+`normalization.json` `stats.raw_min` matching each. That is the runtime source —
+per this repo's own Hard Constraint, `config.yaml` would have been a no-op.
+
+### The secondary expectation was NOT met, and that is not a miss
+
+This file predicted `medium` would fall to ≈152 and ≈318. Observed: **58** and
+**224**. **Those are not comparable quantities** — this cycle's batches are far
+smaller than the baseline's (1,720 vs 4,676 rows; 1,210 vs 1,928). Comparing the
+absolute counts is a denominator error. As shares of their own batch:
+
+| filter | baseline `medium` share | predicted | observed |
+|---|---|---|---|
+| `uplifting v7` | 4.98% (233/4,676) | 3.25% (152/4,676) | **3.37%** (58/1,720) |
+| `investment_risk v6` | 20.75% (400/1,928) | 16.49% (318/1,928) | **18.51%** (224/1,210) |
+
+`uplifting` matches. `investment_risk` runs high — which is exactly the caveat
+pre-registered above: its input composition changed in the same cycle
+(`proxy_aggregator`, FluxusSource#144), so its share expectation was flagged as
+not binding while the band criterion still was.
+
+**The band count is the correct instrument** precisely because it is conditional
+on the score, not on what the corpus happened to contain that cycle. That is the
+same reasoning ADR-023 applies to recall and specificity.
+
+### What this verification does NOT establish
+
+- It reads the **first batch per lens** of a cycle that was still running. Later
+  batches inherit the same loaded thresholds, so they behave identically — but
+  this is not a cycle-wide count. Re-run the command in § *Verifying it* for that.
+- The 50 and 49 demoted rows are articles that **would have surfaced under the old
+  op-point and no longer do**. That is the intended trade (24 fewer FPs for 27
+  more FNs on uplifting's held-out split), not a side effect — and it is a real
+  recall cost, not a free win.
 
 ## What this does not fix
 

@@ -14,7 +14,7 @@ Two working-tree changes and three new files, committed at session close.
 
 The 12:02 cycle fires after this session ends; lens batches land ~13:05. Command
 and pre-change baseline are in
-`docs/evidence/2026-08-10-uplifting-v7-op-point-4.5-PREPARED.md`. **Both bands must
+`docs/evidence/2026-08-10-uplifting-v7-op-point-4.5-VERIFIED.md`. **Both bands must
 read 0** (uplifting 81 rows tiered `medium` in [4.0,4.5); investment_risk 82 in
 [4.0,4.25)).
 

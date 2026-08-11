@@ -107,7 +107,7 @@ The F-K tightening reduced Gemini from 62.6% → 49.8% (closing ~25% of gap with
 
 ### Dimension redundancy (per-oracle)
 
-| Oracle | Pairs above |r|=0.7 | Redundancy ratio | Max pairwise |r| |
+| Oracle | Pairs above \|r\|=0.7 | Redundancy ratio | Max pairwise \|r\| |
 |---|---|---|---|
 | Gemini-v3 | 6/10 | **60%** | 0.844 (dn ↔ eq) |
 | DeepSeek-v3 | 2/10 | **20%** | 0.841 (dn ↔ eq) |

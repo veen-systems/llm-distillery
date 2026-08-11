@@ -27,7 +27,7 @@ Pre-change baseline, captured while the old op-points were still live and
 | investment_risk v6 | `filtered_20260811_090540` | **82** in [4.0, 4.25) | 1360 / 400 / 168 |
 
 Both must read **0** after the cycle; `medium` should fall to ~152 and ~318.
-Command in `docs/evidence/2026-08-10-uplifting-v7-op-point-4.5-PREPARED.md`.
+Command in `docs/evidence/2026-08-10-uplifting-v7-op-point-4.5-VERIFIED.md`.
 
 ## The near-miss worth carrying forward
 

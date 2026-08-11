@@ -2,8 +2,45 @@
 stack: Python 3.12, PyTorch, Transformers, PEFT/LoRA
 status: Production
 repo: github.com/ducroq/llm-distillery
-framework: agent-ready-projects v1.18.0
+framework: agent-ready-projects v1.20.0
 framework_reconciliation: |
+  v1.19.0 + v1.20.0 (both 2026-08-10) triaged 2026-08-11 via `/update-drift`:
+  4 adopted, 1 declined, 3 not applicable, 6 already in force.
+  ADOPTED — `review-changes` gained v1.19.0's Step 1.5 structural pre-check,
+  the `Unclassified` naming rule + never-omit report slot, and the
+  guarantee-lens invariant (every file the guarantee lens names must tier
+  HIGH; `tests/unit/test_normalization_invariant.py` was MEDIUM under
+  `tests/**`, so a change weakening the very pin that caught NM#161/#205
+  would have skipped the lens that exists to catch it — now listed in HIGH).
+  `test-verify-memory` gained the `CANNOT VERIFY` disposition, its ordering
+  rule, and the 11th fixture; load-bearing here because 7 of ~39 verify
+  commands in `memory/*.md` are host-dependent and b650-gpu is routinely off,
+  so they read FAIL on every run today. Step 1.5 was VERIFIED BY EXECUTION
+  over 382 tracked .md files: 2 violations, 0 false positives, both genuine
+  data loss (a `|r|` header in cultural_discovery v5's calibration report;
+  a 4-cell row in `memory/cross-repo-prioritization.md` whose dropped cell
+  was a staleness caveat that rendered nowhere). Both fixed in the same pass.
+  DECLINED — v1.20.0's gotcha-log Promoted table + `Occurrences` column.
+  This repo has no Promoted table: promotion targets CLAUDE.md § "Working
+  rules", and the rate is already carried in prose ("8th occurrence
+  2026-08-11, four self-inflicted") plus the per-shape catalogue table in
+  `memory/gotcha-log.md`. A fourth-column table would be a second counter
+  over the same events — which is exactly what the framework itself declined
+  for #38's Step 1 tally. CONSEQUENCE TO KNOW: the globally-installed
+  `curate` Step 2 now tells every session to increment a column with no home
+  here; that is expected, not a bug to fix.
+  NOT APPLICABLE — `physics-tests/` disclosure (no such surface); `.gitignore`
+  `/memory/` anchoring (`memory/` is tracked here, no ignore pattern);
+  `tests/lint/skill-sync.sh` (maintainer infra).
+  ALREADY IN FORCE — the v1.20.0 session-start row (CLAUDE.md:164/168); the
+  memory-index "not auto-loaded" correction (this index never claimed it);
+  `audit-context` Step 1, `curate` Step 2 and both `install-global-skills.sh`
+  fixes, all verified byte-identical to the v1.20.0 TAG (not merely to the
+  clone's HEAD, which sits 4 commits ahead on an unreleased #33 installer
+  guard — deliberately NOT triaged).
+  STILL OPEN, pre-dating this gap: CLAUDE.md has no framework-drift session
+  row (`templates/project-file.md:25` ships one). Its absence is the likely
+  reason this drift sat two releases unreviewed. Not added — engineer's call.
   v1.18.0 (2026-08-09) — ALREADY IN FORCE; stamp bumped to match reality. Its
   only change is the new `update-drift` skill, which is user-global and was
   already installed here (it appears in the session skill list). Nothing in the
@@ -237,4 +274,4 @@ This project is a source project for [augmented-engineering](https://github.com/
 
 ---
 
-*Last updated: 2026-08-11 (midday) — **the two op-point moves are STILL UNVERIFIED; that is the first task next session** (criterion + baseline in `docs/evidence/2026-08-10-uplifting-v7-op-point-4.5-PREPARED.md`; note `investment_risk v6`'s input composition changed in the same cycle, so the band criterion holds but the "medium ≈318" expectation may not). **#105: `investment_risk v6` (51.6%) and `cultural_discovery v5` (52.2%) were trained on corpora more than half of which TODAY'S labelling gate refuses** — a retrain would silently drop half the corpus; `nature_recovery v4` is the clean reference at 0.0%. **#106** (ethno-national framing published under `belonging`) and **#107** (a *ruling*: does `uplifting` need a pleasant subject or only a positive outcome? — one answer also settles the three adjacent-lens rows). **#93 step 4 re-run: gate still CLOSED, do not set the cap.** Google News picture: `memory/google-news-corpus-hypotheses.md`. Full record: `docs/TODO.md` top block, `memory/project_session_2026_08_11_midday.md`.*
+*Last updated: 2026-08-11 (afternoon) — **the two op-point moves are VERIFIED: both bands read 0 on the 12:02 cycle** (`uplifting v7` 4.5, `investment_risk v6` 4.25; record in `docs/evidence/2026-08-10-uplifting-v7-op-point-4.5-VERIFIED.md`, #102 can close). The secondary `medium`-count expectation was NOT met and that is correct — the batches were far smaller than the baseline's, so the absolute counts are not comparable; compare shares. **Framework drift closed: stamped `agent-ready-projects v1.20.0`**, 4 adopted / 1 declined / 3 n-a / 6 already in force — see the `framework_reconciliation` block above. **#105: `investment_risk v6` (51.6%) and `cultural_discovery v5` (52.2%) were trained on corpora more than half of which TODAY'S labelling gate refuses** — a retrain would silently drop half the corpus; `nature_recovery v4` is the clean reference at 0.0%. **#106** (ethno-national framing published under `belonging`) and **#107** (a *ruling*: does `uplifting` need a pleasant subject or only a positive outcome? — one answer also settles the three adjacent-lens rows). **#93 step 4 re-run: gate still CLOSED, do not set the cap.** Google News picture: `memory/google-news-corpus-hypotheses.md`. Full record: `docs/TODO.md` top block, `memory/project_session_2026_08_11_midday.md`.*
