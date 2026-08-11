@@ -5,7 +5,54 @@ metadata:
   type: reference
 ---
 
-# NexusMind Data Sources — what each one excludes
+# NexusMind Data Sources
+
+## WHICH length field to check, and at which stage (measured 2026-08-11)
+
+**The content NexusMind hands to ovr.news is what ovr.news holds.** Matched every
+filtered batch (84 files, back to 2026-07-28) against `ovr.db`: **4,319 matched,
+4,295 identical (99.4%), 24 different (0.6%)** — and the differences trace *upstream*,
+not to ovr.news. So a short-content gate belongs in **NexusMind**, and ovr.news needs
+no length rule at all.
+
+**Read `len(content)` AFTER `enrich_articles`, NOT the `content_length` stamp.** The
+stamp is captured at scoring (`main.py:1240`), before post-scoring enrichment
+(`:1245`) can grow the body — so a gate on the stamp withholds articles that were
+already fixed. The stamp is *correct for what it measures* (verified equal to
+`len(content)` on a current row); it measures the wrong moment for this purpose.
+Three fields, three stages:
+
+| stage | field | note |
+|---|---|---|
+| scoring | `nexus_mind_attributes.<lens>.content_length` | pre-`enrich_articles`; **not** at the row's top level |
+| after enrichment / handoff | `len(content)` on the row | **the one a gate should use** |
+| publication (ovr.db) | `LENGTH(content)` | no `content_length` column exists there |
+| before 2026-08-08 | `len(content)` only | stamp absent or null |
+
+**A retracted conclusion, recorded because the wrong version is the intuitive one**:
+I first concluded the gate belonged at *publication*, reasoning that ovr.news
+re-enriches so a scoring-time gate would withhold articles about to become
+full-length. That was generalised from **one** article and the mechanism was never
+checked. See below — it was an intra-NexusMind artefact.
+
+## Post-scoring enrichment does not propagate across lenses (0.1%, real)
+
+`global_news_euronews_0111e7cdda7d`, one cycle, six lens batches inside 8 minutes:
+`uplifting` scored it **6.20** — above `pipeline.enrichment.min_score: 4.0` — so
+`enrich_articles` fetched the body, **294 → 14,963 chars**. The four lenses scored
+*after* it in the same cycle still saw **294**. Others: `investment_risk` 7,991 vs 200
+for the other five; 10,238 vs 199; 2,526 vs 300.
+
+**Scale: 11 of 21,437 articles seen by 2+ lenses over the last 8 cycles — 0.1%.**
+Small, but a genuine correctness issue: *which* lens gets the real article is decided
+by which one first scores it above 4.0, and lens order is fixed, so the same lenses
+systematically lose. Interacts with NM#319 — a filter whose distribution sits below
+4.0 (`solutions v6` scored 0 of 56 above it) never triggers enrichment for any
+article, so it is permanently on the stub side.
+
+Reproduce: `/tmp/trace_one.py` and `/tmp/cross_lens_len.py` on sadalsuud; sources in
+this session's scratchpad.
+ — what each one excludes
 
 Established 2026-08-02 during the NM#285 measurement. Both traps below produced
 a clean-looking wrong number before being caught. Concrete instances of the
