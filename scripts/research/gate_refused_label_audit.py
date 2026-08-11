@@ -123,6 +123,7 @@ def describe(rows):
 def main():
     splits_dir = os.path.expanduser(sys.argv[1])
     report = []
+    unattributed_seen = []
     for d in sorted(glob.glob(os.path.join(splits_dir, '*'))):
         name = os.path.basename(d)
         if name not in PKG:
@@ -172,6 +173,16 @@ def main():
                 else:
                     groups['refused_unattributed'].append(rec)
 
+        # The bucket earns its keep on the day someone adds a third refusal
+        # reason, not today -- so what must hold is that it is REPORTED, never
+        # that it is zero. A zero nobody prints is the same as no bucket. It is
+        # therefore always in the JSON below (describe() emits n=0), and a
+        # non-zero value additionally shouts on stderr and sets the exit code,
+        # because a wrong attribution buried in a passing run is precisely the
+        # failure this bucket exists to prevent.
+        if groups['refused_unattributed']:
+            unattributed_seen.append((name, len(groups['refused_unattributed'])))
+
         report.append({
             'filter': name,
             'op_point_runtime': op,
@@ -181,6 +192,15 @@ def main():
         })
     print(json.dumps(report, indent=2))
 
+    if unattributed_seen:
+        for name, n in unattributed_seen:
+            print(f'ATTRIBUTION INCOMPLETE: {name} has {n} rows blocked by the gate '
+                  f'but passing both the length floor and apply_filter. The gate has '
+                  f'grown a refusal path this script does not know about; every '
+                  f'by-reason number above is suspect until it is named.', file=sys.stderr)
+        return 1
+    return 0
+
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())

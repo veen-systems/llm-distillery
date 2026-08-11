@@ -91,6 +91,17 @@ misses — **one body under several genuinely plausible headlines, affinity 0.8�
 accepted by every per-article check**. Recurrence across the corpus is the only
 evidence that can see it, which is why no per-article rule can substitute.
 
+**And that is exactly what BOUNDS it — do not read 90.3% precision as coverage of the
+defect class.** Recurrence being the only evidence means the guard is **blind to a
+wrong-but-plausible pairing that occurs once**, and per the NM session the singleton
+is **most of the population by count**, not a tail case. NM#315 catches the
+syndicated/boilerplate shape *because it repeats*; nothing in PR #321 addresses the
+singleton. **The residual lands on us and nothing on our side can see it either**: a
+coherent body about the wrong story is a real article attached to the wrong headline,
+so it scores like one — no threshold, calibration or op-point reaches it, and the
+#95 band is irrelevant because the score is not wrong, the pairing is. Treat this as
+an open, unowned class rather than something #315 closes.
+
 **C. The measurements are not trusted.** NM#303 / NM#304 (contract tests validate
 fixtures, never production output), NM#312 (two integration tests have never run),
 LD#104 (every accuracy number is CPU-measured while production serves on GPU).
