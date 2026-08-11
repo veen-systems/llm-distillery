@@ -116,8 +116,23 @@ for doc in DOCS:
         for m in rx.finditer(text):
             for p in PATH_RE.finditer(m.group(0)): absent.add(p.group(1))
     lines=text.split("\n")
+    # YAML frontmatter is ONE marker scope. A `framework: <repo> vN` stamp on its
+    # own line declares the whole frontmatter's cross-repo context, but the
+    # references that rely on it sit several lines lower inside a block scalar --
+    # outside the 1-line window, so they were reported UNRESOLVED while existing
+    # in the sibling all along (4 false findings, /audit-context 2026-08-11).
+    # Deliberately NOT widened to the enclosing block: a dense markdown table is
+    # contiguous non-blank lines, so block scope would put unrelated rows in
+    # range, which is the over-absorption the skill warns about. Frontmatter is
+    # bounded, hand-maintained, and semantically one declaration.
+    fm_end=0
+    if lines and lines[0].strip()=="---":
+        for k in range(1,len(lines)):
+            if lines[k].strip()=="---": fm_end=k; break
+    fm_ctx=" ".join(lines[:fm_end]) if fm_end else ""
     for ln,line in enumerate(lines):
         ctx=" ".join(lines[max(0,ln-1):ln+2])
+        if fm_end and ln<fm_end: ctx=fm_ctx
         for m in PATH_RE.finditer(line):
             frag=m.group(1); seen_ext.add(frag.rsplit(".",1)[-1])
             if frag in absent: skipped.append((doc,frag)); continue
