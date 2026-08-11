@@ -2320,6 +2320,21 @@ That is a two-second check and would have saved both rejections.
 **Root cause**: one counter conflates "no og:image tag" with real failures. And **all 51 relative-URL cases in a 200-sample were arxiv.org**, whose og:image is its own logo — "fixing" it would push ~1,200 logos per cycle downstream.
 **Fix**: NexusMind#316 — split the counter, skip arxiv from backfill. Checking *which hosts* before proposing the fix is what stopped it. Concurrency was tested and refuted as a cause (18.3% at 1 and 10 workers alike).
 
+### A +19.5pp effect that a downstream percentile CDF erases (2026-08-11 evening)
+**Problem**: re-weighting `solutions v6`'s dimensions moved articles at/above an absolute 4.0 from 31.1% to 50.6% (tech-shaped 15.6% → 56.8%), which read as a fix for NM#319's enrichment starvation. Clean, reproducible, pointed at a real open issue.
+**Root cause**: NexusMind's enrichment gate reads `result["weighted_average"]`, and `production_scorer.py:16-17` overwrites that field with the **normalized** score. Normalization is a percentile CDF, so a monotone rescale maps back to the same percentiles and the gain vanishes at the next refit.
+**Fix**: caught before recommending, by reading the gate's caller instead of trusting the measurement. Same shape as the 2026-08-07 `COALESCE` entry below — correct at its own layer, undone downstream — so it is a **recurrence of the catalogue, and the first one the check caught pre-ship.** `solutions_v6_reweight_ablation.py` now prints the interception in section 3 so it cannot be re-derived as a win.
+
+### A decomposition that was true by definition (2026-08-11 evening)
+**Problem**: explained an 83.1% zero rate as "40.0% tech-shaped + 43.1% governance-shaped" — the two summed to 83.1% exactly, which read as a complete account.
+**Root cause**: both categories were defined *using* `comm == 0`, so they partition the zero rate by construction. The exactness that made it convincing was the tell that it was circular. `content_type` is not stored in the splits, so the real question was unanswerable from that data.
+**Fix**: retracted the same session, and flagged in the evidence doc with a warning marker rather than deleted. **If a decomposition lands exactly on the number it explains, check whether the categories were derived from it.**
+
+### A smoke test's sample is not a sample of the question (2026-08-11 evening)
+**Problem**: a 5-row smoke run showed `community_practice_strength` at exactly 0.000 on every row; reported it as "a striking signal" the dimension was pinned.
+**Root cause**: all five rows had oracle `comm = 0`, so 0.000 was the *correct* output. The smoke test was sized to check the interface, not the distribution.
+**Fix**: the calibration stats (max 6.625) contradicted it within minutes. Smoke tests answer "does it run" — reading a substantive signal off one costs a retraction.
+
 ## The unreachable-mechanism catalogue
 
 Moved out of `CLAUDE.md` on 2026-08-09 (context audit): the **rule** belongs in the
@@ -2340,5 +2355,11 @@ A mechanism that is present, configured and unreachable is this repo's defining 
 | 2026-08-09 evening, self-inflicted | 34 rows labelled `CANDIDATE_UNADJUDICATED` committed **inside** `datasets/adverse/`, the glob a planned #91 gate reads as curated evidence. Not a mechanism that couldn't fire — **a population that would have been read by one that does.** Found by re-reading my own commit, not by a test |
 | 2026-08-10, self-inflicted | a guard that "refuses to emit uncalibrated scores" and checks only that the calibration file is truthy — a partial `dimensions` block passes it and the raw logits go through under a success line. Its own error message cited #98, the shape it missed. Found by a review lens, not by 270 green tests |
 
+| 2026-08-11 evening, **caught pre-ship** | a `solutions v6` re-weighting that moved +19.5pp across an absolute 4.0 — correct at its own layer, erased downstream by a percentile CDF, because the gate reads the *normalized* score. **Not counted in the occurrence total: it never shipped.** Listed because it is the first time reading the caller stopped the recommendation instead of explaining it afterwards |
+
 The cultural_discovery v6 entry is the point of the whole list: **knowing this failure
 mode does not prevent it.** Only running the check against your own work does.
+
+The 2026-08-11 evening row is the first counter-example: the same check, run on my own
+work *before* proposing it, converted a would-be occurrence into a negative result. One
+data point, not a trend — but it is the only known way the list stops growing.

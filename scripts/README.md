@@ -16,8 +16,25 @@ scripts/
 ├── training/            # Phase 6-7: Training utilities
 ├── oracle/              # Phase 3: Oracle calibration
 ├── deployment/          # Phase 9: Model deployment
-└── dataset/             # General dataset utilities
+├── dataset/             # General dataset utilities
+├── calibration/         # Isotonic calibration fitting (ADR-008)
+├── normalization/       # Cross-filter percentile normalization (ADR-014)
+├── gate/                # ADR-021 ground-truth deploy gate + agreement gate
+├── verification/        # Package verification, cross-box parity harness
+├── research/            # One-off investigations. Each script's docstring states
+│                        #   the question, the answer, and the date — read it
+│                        #   before re-running; several record NEGATIVE results
+│                        #   that exist to stop an idea being re-proposed
+├── analysis/            # Prediction-error and cross-filter analyses
+├── screening/           # Embedding-based corpus screening (ADR-011)
+├── experiments/         # Sampling and benchmark experiments
+├── diagnostics/         # Ad-hoc debugging aids
+└── report/              # Filter report builders
 ```
+
+**Only the first five directories are documented section-by-section below.** The
+rest are self-describing via module docstrings; the sections below were written
+at Phase 3-9 and have not been extended since.
 
 ---
 
