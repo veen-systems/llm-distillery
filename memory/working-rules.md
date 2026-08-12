@@ -36,8 +36,17 @@ and a character class hand-written for latin-1 that was blind to cp1252 — 83% 
 population.
 
 **Prefer a population the pipeline already computes to one you construct**, and
-**derive classes rather than writing them** (`bytes(range(0x80,0xC0)).decode(codec)`
-*is* the continuation set, by construction). Hand-built populations and hand-built
+**Derive classes rather than writing them** (`bytes(range(0x80,0xC0)).decode(codec)`
+*is* the continuation set, by construction) — ⚠️ **but derivation is a COVERAGE fix,
+not a discriminator, and it does not transfer between codecs.** Measured 2026-08-12:
+for **cp1252** the derived classes exclude the `’`+accented-vowel pair entirely, so
+deriving genuinely fixes that arm (the large one — 1,210 rows vs 256). For
+**mac_roman** the derived leads CONTAIN `’` (0xD5) and the derived continuations
+CONTAIN `é` (0x8E), so a derived-class candidate stage **flags `l’éclipse`, the
+round-trip confirms it, and you get `lՎclipse`** — FS#167 reproduced in full.
+Deriving is how the 2,030 false-positive pairs were *enumerated*; it builds that set
+rather than excluding it. **Two arms, two different answers.** Safety still needs the
+conjunction: an unambiguous signature AND a clean inversion, then hand-review. Hand-built populations and hand-built
 character classes are the same failure with different nouns. Make the missing case
 raise, never return `None`.
 

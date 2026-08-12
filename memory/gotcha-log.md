@@ -185,7 +185,12 @@ defects that surfaced that way, with the other two found by pulling the thread.
 Concretely: pin a window before measuring (never a sliding `[-N:]`), state the sort key
 when a glob is a sample, and **derive character classes instead of writing them** —
 `bytes(range(0x80,0xC0)).decode(codec)` *is* the continuation set by construction and
-cannot drift from what it models. The peer's generalisation is the keeper: **hand-built
+cannot drift from what it models. ⚠️ **Scope that correctly: derivation fixes COVERAGE,
+not discrimination, and it is codec-specific.** Verified 2026-08-12 — for `cp1252` the
+derived classes exclude the `’`+accented-vowel pair (so deriving fixes that arm, which
+was the blind and larger one); for `mac_roman` they CONTAIN it (`’`=0xD5 is a derived
+lead, `é`=0x8E a derived continuation), so a derived candidate stage plus a round-trip
+**reproduces FS#167 exactly**. Deriving is how those 2,030 pairs were enumerated. The peer's generalisation is the keeper: **hand-built
 populations and hand-built character classes are the same failure with different
 nouns.** Related: [[feedback-hand-built-population]], and the entry below on reasoning
 about an encoding instead of running it.
