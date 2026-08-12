@@ -79,11 +79,20 @@ MIN_CHARS = 300
 BANDS = [(0.0, 0.5), (0.5, 1.5), (1.5, 2.5), (2.5, 4.0), (4.0, 10.01)]
 
 
-def band_of(score):
-    for i, (lo, hi) in enumerate(BANDS):
+def band_of(score, bands=None):
+    for i, (lo, hi) in enumerate(bands or BANDS):
         if lo <= score < hi:
             return i
-    return len(BANDS) - 1
+    return len(bands or BANDS) - 1
+
+
+def parse_bands(spec):
+    """"4.0:5.0,5.0:6.0" -> [(4.0, 5.0), (5.0, 6.0)]."""
+    out = []
+    for part in spec.split(','):
+        lo, hi = part.split(':')
+        out.append((float(lo), float(hi)))
+    return out
 
 
 def load_weights():
@@ -152,7 +161,23 @@ def main():
                     help='pairs re-emitted for the within-oracle duplicate control '
                          '(2*this rows re-scored)')
     ap.add_argument('--seed', type=int, default=20260812)
+    ap.add_argument('--restrict-min', type=float,
+                    help='keep only rows whose STORED score is >= this. Set to the '
+                         'runtime op-point to sample the only band ADR-023 says '
+                         'decides anything.')
+    ap.add_argument('--bands', help='override the label bands, e.g. '
+                                    '"4.0:5.0,5.0:6.0,6.0:7.0,7.0:10.01". Finer bands '
+                                    'buy tighter label matching and cost pair capacity.')
+    ap.add_argument('--exclude-design',
+                    help='a previous design.json; every id it sampled is excluded, so '
+                         'the new sample is independent of already-observed data and can '
+                         'carry its own pre-registration.')
     args = ap.parse_args()
+
+    bands = parse_bands(args.bands) if args.bands else BANDS
+    excluded_ids = set()
+    if args.exclude_design:
+        excluded_ids = set(json.load(open(args.exclude_design, encoding='utf-8'))['rows'])
 
     weights = load_weights()
     op = op_point()
@@ -208,6 +233,12 @@ def main():
                 # Excluded from BOTH arms, and counted so the exclusion is visible.
                 tally['dropped_short_' + arm] += 1
                 continue
+            if args.restrict_min is not None and score < args.restrict_min:
+                tally['dropped_below_restrict_min_' + arm] += 1
+                continue
+            if r['id'] in excluded_ids:
+                tally['dropped_already_sampled_' + arm] += 1
+                continue
             m = meta.get(r['id'])
             if m is None:
                 sys.exit(f'FATAL: id {r["id"]} is in the splits but not in --meta. '
@@ -221,7 +252,7 @@ def main():
                 'dimension_names': r['dimension_names'], 'stored_score': score,
                 'content_len': len(r.get('content') or ''),
                 'domain': urlparse(r.get('url', '')).netloc.lower(),
-                'band': band_of(score),
+                'band': band_of(score, bands),
             })
 
     if unattributed:
@@ -278,7 +309,9 @@ def main():
 
     os.makedirs(args.out_dir, exist_ok=True)
     design = {'filter': 'cultural_discovery v5', 'op_point_runtime': op,
-              'weights': weights, 'bands': BANDS, 'seed': args.seed,
+              'weights': weights, 'bands': bands, 'seed': args.seed,
+              'restrict_min': args.restrict_min,
+              'excluded_already_sampled': len(excluded_ids),
               'min_chars': MIN_CHARS, 'n_pairs': args.n,
               'population': {
                   'rows_scored_by_partition': dict(tally),
