@@ -191,6 +191,24 @@ twice at temperature 0.3. Two consequences worth carrying:
   mostly off-lens, where both runs return zeros and agree trivially; passed rows
   carry live dimensional judgement.
 
+### The registered primary is an MAE-shaped metric, and ADR-023 warns against exactly that
+
+Recorded because it is a defect in this design, found by self-review after the
+result was in, not a caveat invented to soften it.
+
+ADR-023 says never rank on MAE, for two reasons. The **second** — that each
+population's positive rate makes per-article error incomparable — is neutralised
+here by band matching, which is why a matched MAD is defensible at all. The
+**first** is not neutralised: MAE weights every article equally while the product
+only cares about the thin band at the operating point. `MAD_refused` and
+`MAD_passed` are averages over 150 pairs of which **9** sit at or above raw 4.0.
+
+So the pre-registered primary answers "are these labels equally defensible
+*overall*", and the question ADR-023 says matters is "are they equally defensible
+*where a decision gets made*". The band table below is that warning firing. The
+null stands for what it measures; it is not evidence about the op-point, and the
+follow-up is not optional politeness.
+
 ### Two observations the registered test does not cover
 
 Both are flagged as hypotheses. Neither was pre-registered, so neither is a
