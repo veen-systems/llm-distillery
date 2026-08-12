@@ -189,6 +189,36 @@ because three stages measure length on different text and nobody had named the s
 
 ---
 
+## Then `/audit-context` — and its own instrument was the thing that broke
+
+Monthly structural pass, run after the curate commit. Six findings, all fixed
+(`fad38af`). Two outcomes worth carrying:
+
+**The reference checker's loosening had to be tested on what it PERMITS.** Porting
+v1.23.0's `<!-- placeholder -->` skip passed the existing harness **12/12
+immediately**, which read as a safety proof and was not one — a harness written
+before a change can only test what the change preserves. Seeding the newly-permitted
+failures found **two defects in the port**: `PATH_RE` did not admit `<`/`>`, so
+angle-bracket placeholders were **never extracted** ("not reported" silently meaning
+"never checked"); and the stale-marker check tested the bracketed string, so a real
+path wrapped in `<>` skipped instead of being flagged as a mislabel. Harness
+12/12 → **18/18**. Logged as its own gotcha entry.
+
+**A straight swap of a shared instrument was a regression.** Upstream's `refcheck.py`
+is 365 lines to our adapted 172 — but ours carries a *generic-artifact-name* class
+upstream lacks, and the swap re-reported 33 `config.yaml` matches as collisions.
+Reverted; the feature was **ported into our copy** instead. Newer is not the same as
+better when the local copy encodes local knowledge.
+
+Also: references 18 → **7** (the remainder are correct — 2 genuine collisions and 1
+ambiguous cross-repo `main.py`; **zero is not the target**), `CLAUDE.md` 38,743 →
+**34,658** chars with the working rules' *evidence* moved to
+`memory/working-rules.md` while the imperatives stayed (they were deliberately
+promoted into the project file and moving them wholesale would reverse that),
+duplicated numbers 7 → 3, and one orphaned topic file
+(`memory/enrichment-delta-hypotheses.md` — today's own H-E1 result, which no session
+would have loaded).
+
 ## Verify
 
 <!-- verify: test -f scripts/deployment/preflight_deploy_guards.py && PYTHONPATH=. python3 -m pytest tests/unit/test_preflight_deploy_guards.py -q 2>&1 | tail -1 -->

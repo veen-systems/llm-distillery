@@ -146,6 +146,38 @@ mode, and "0 found" and "7 found" need that statement equally. Related:
 [[feedback-claim-requires-verify]] and the standing rule that a negative needs a positive
 control — this is its mirror, a *positive* needing a negative control.
 
+## A loosened check must be tested on what it newly PERMITS, not on what it preserves (2026-08-12)
+
+**Problem**: `/audit-context` step 4's reference checker gained v1.23.0's
+`<!-- placeholder -->` skip — a deliberate loosening, so that paths never meant to
+resolve stop being re-triaged every audit. The existing sensitivity harness passed
+**12/12 immediately after the port**, which read as "the change is safe". It was not.
+Seeding the failures the loosening *newly permits* found **two defects in the port**
+within one run: `PATH_RE` did not admit `<` or `>`, so angle-bracket placeholders
+(`filters/<name>/<version>/config.yaml`) were **never extracted at all**; and the
+stale-marker check tested the *bracketed* string, so a real path merely wrapped in
+`<>` resolved as an intentional placeholder instead of being caught as a mislabel.
+
+**Root cause**: A harness written before a change tests the behaviour that change was
+designed to **preserve**. It is structurally incapable of testing what the change
+**permits** — that surface did not exist when the cases were written. So a green run
+measures *specificity* and says nothing about *sensitivity*, while looking exactly
+like a safety proof. The first defect is the more dangerous shape: a path the
+extractor never captures is **not reported**, and "not reported" is indistinguishable
+from "checked and fine". A skip that silently does nothing is the precise failure the
+whole step exists to prevent, reintroduced by the mechanism meant to prevent it.
+
+**Fix**: When loosening any check, **write the new cases before trusting the old ones**
+— one per way the loosening can now hide a real defect. Here: a marker on a path that
+*does* resolve (both marker forms), a marker covering no path at all, and an unmarked
+break sharing a line with a marked one. Harness went 12/12 → **18/18**. Two related
+rules earned the same day: **a straight swap of a shared instrument can be a
+regression** — replacing our adapted `refcheck.py` with upstream's lost a local
+class and re-reported 33 `config.yaml` matches as collisions, so the feature was
+*ported* rather than swapped; and **zero findings is not the target** — a change that
+drives a check to zero has probably disabled it. Related:
+[[feedback-hand-built-population]].
+
 ## Endorsing a peer's number suppresses the re-check that would have caught it (2026-08-12)
 
 **Problem**: A peer session sent a cross-repo measurement — "41.5% of English rows
