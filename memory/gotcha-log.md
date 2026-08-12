@@ -146,6 +146,53 @@ mode, and "0 found" and "7 found" need that statement equally. Related:
 [[feedback-claim-requires-verify]] and the standing rule that a negative needs a positive
 control — this is its mirror, a *positive* needing a negative control.
 
+## Conceding a correct conclusion because a neighbouring sentence was refuted (2026-08-12)
+
+**Problem**: I recommended *"don't fix the Google News resolver — it is a workaround
+for a source under retirement"*, and attached a mechanism claim to it: *"a property of
+the URL scheme, so no fetcher change moves it."* A peer refuted the mechanism claim
+with a measurement (ovr.news resolves those URLs and enriched 74 of 103). I then
+**withdrew the whole recommendation**, called it "the dangerous kind of wrong", and
+corrected it in six files. Hours later the owner decided exactly what I had originally
+recommended — Google News is being retired, so the resolver is explicitly **not**
+being ported upstream (NM#339).
+
+**Root cause**: The two sentences arrived together and were refuted as a unit, but the
+conclusion never *rested* on the refuted premise — it rested on the retirement, which
+was untouched. Two things made the over-retraction feel correct at the time: the
+refutation was well-evidenced, so deferring to it felt like good practice; and I had
+just been caught over-generalising, which primed me to concede rather than separate.
+**Being wrong about X raises the felt probability of being wrong about adjacent Y**,
+and that feeling is not evidence.
+
+**Fix**: When a supporting claim is refuted, **name what the conclusion actually rests
+on before withdrawing it.** One line: "does this conclusion survive if the refuted
+claim is simply deleted?" Here it plainly did. Retract the false sentence, keep the
+true one, and say explicitly which is which — a peer correcting your mechanism has not
+thereby corrected your recommendation, and treating it as though they have hands them
+a decision they did not make and cannot see the grounds for.
+
+**The symmetric failure, named by the peer who committed it in the same exchange:**
+*when you REFUTE a supporting claim, check whether you have actually touched the
+conclusion.* They took down the mechanism sentence and then argued as though the
+recommendation had fallen with it — and spent hours measuring a capability into
+significance on the strength of a point that was never load-bearing. **Same joint,
+opposite directions: one side over-retracted, the other over-claimed**, and the actual
+load-bearing premise (the source is being retired) went untouched and unexamined by
+both until the owner stated it plainly.
+
+**A third shape fell out of the same thread and generalises further: a count that is
+invariant under a relabelling of what it counts.** ovr's 38 enriched-and-published
+articles were read as "rescues NexusMind missed"; the same rows are equally "boilerplate
+NexusMind deliberately refused" — consent walls and paywalls that ovr accepted because
+its only test is *longer than what I had*. **No aggregate distinguishes the two, because
+the relabelling does not change the number** — only inspecting individual rows does. When
+a count is doing argumentative work, ask what else those same rows could be called.
+
+Related: [[feedback-claim-requires-verify]], [[feedback-hand-built-population]]; the
+mirror of the endorsement entry below — there I under-checked agreement, here I
+over-accepted refutation.
+
 ## A loosened check must be tested on what it newly PERMITS, not on what it preserves (2026-08-12)
 
 **Problem**: `/audit-context` step 4's reference checker gained v1.23.0's

@@ -54,7 +54,7 @@ instrument:
 | stage | verdict |
 |---|---|
 | **gating** (our #86) | **COUNTERFACTUAL** — the per-filter prefilters have never run in production (NM#284, dead since 2026-02-10). The gate has never fired. Also stale: `80dd399` (2026-08-06) took the ratio 1.56× → 1.19×, z 5.02 → 1.75, and closing #99's English-only `DISCOVERY_PATTERNS` back door **reverses the sign** (English blocks at ~22%, above non-English) |
-| **collection** (FS#124) | **HISTORICAL** — real and 55× concentrated on non-English while live (730 hits over 302,592 rows, en 0.012% vs non-en 0.67%), **fixed `ea25ae8` 2026-08-03 17:53**. Two instruments in two repos found the same boundary independently |
+| **collection** (FS#124) | ⚠️ **"HISTORICAL" RETRACTED SAME DAY — see below.** FluxusSource's fix holds (0 / 23,638 in their text), but the defect **relocated into NexusMind's enricher** and kept its non-English skew (NM#338) |
 | **scoring** (NM#231) | observed but **filter-dependent and both-signed** |
 | **dedup** (NM#291) | live — but see the split below |
 
@@ -218,6 +218,51 @@ promoted into the project file and moving them wholesale would reverse that),
 duplicated numbers 7 → 3, and one orphaned topic file
 (`memory/enrichment-delta-hypotheses.md` — today's own H-E1 result, which no session
 would have loaded).
+
+## Two same-day retractions arriving after this record was written
+
+**1. NM#338 — the collection limb of #292 was NOT fixed; it RELOCATED into
+NexusMind's enricher, and kept its non-English skew.** FluxusSource's `ea25ae8`
+holds (**0 / 23,638** in their text). But `NexusMind/src/enrichment/article_fetcher.py:291`
+does `.decode(resp.encoding or "utf-8", errors="replace")`, and in `requests` a
+`text/*` response with **no declared charset** gets `resp.encoding = "ISO-8859-1"`,
+not `None` — so the `or "utf-8"` guard is **dead code** and UTF-8 pages decode as
+Latin-1. Paired against `original_content`: **1,123 / 23,638 = 4.751%** introduced,
+0 repaired; **English 1.261% vs non-English 7.448% — 5.9×**. Concentrated in
+`baltic_lrt` 432, `romanian_adevarul` 100, `balkan_nova_rs` 96, `polish_polsat` 85.
+
+**So "collection is historical, reattribute to FS#166" is retracted.** FS#166 (the
+source-acquisition gap) stands on its own; the mojibake limb is **live again at a
+different stage**. The generalisable rule, which neither repo's fix covers:
+**never trust `requests`' charset default — hand raw bytes to the parser and let it
+read `<meta charset>`.**
+
+**2. The *"should ovr.news enrich at all?"* decision is CLOSED (owner, 2026-08-12):
+enrichment moves upstream.** ovr deletes its pass; NexusMind's `pre_enrich` becomes
+the single enrichment point (NM#339). The GN resolver is **explicitly not ported** —
+Google News is being retired, so that half dies with the source.
+
+⚠️ **And this is the part to learn from, because I got the withdrawal wrong.** I
+recommended *"don't fix the GN resolver — it is a workaround for a source under
+retirement"*, then **withdrew the whole recommendation** when the peer refuted the
+mechanism claim I had attached to it (*"no fetcher change moves it"* — false, ovr
+resolves 74 of 103). The mechanism claim deserved withdrawing. **The recommendation
+did not: it never rested on that claim**, it rested on the retirement, and the owner
+has now decided exactly that. **When a supporting claim is refuted, check whether the
+conclusion actually stood on it before retracting the conclusion too** — I conceded a
+correct call because a neighbouring sentence of mine was wrong.
+
+The structural argument that decided it was one neither side had stated: **ovr's pass
+is the only enrichment in the chain that cannot RESCORE**, because ovr has no scorer.
+NexusMind's `enrich_articles` enriches *and* re-scores. So the ordering problem was
+never "enrichment happens downstream of scoring" — it was "one specific pass changes
+the text without redoing the decision".
+
+Also worth carrying: the four "correctly refused" cases I reported from the 68-id
+lookup (Mediapart cookie wall, West Australian paywall, France24 video block, Globe &
+Mail under the floor) **did more work in that decision than the 38-article headline
+did** — ovr "succeeded" on all four only because it accepts any text longer than what
+it had, with no consent-wall detector and no minimum-gain check.
 
 ## Verify
 
