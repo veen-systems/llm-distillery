@@ -193,7 +193,13 @@ def main():
     # 0 — nothing separates "the treatment is gone" from "the treatment measured
     # nothing". Diagnosed 2026-08-12 with the FluxusSource session; the two known
     # causes are ordered below by which one is confirmed.
-    present_fams = {f for f, _ in st}
+    # `rows > 0`, NOT key presence: `st` is a defaultdict and the eval_query cut
+    # above touches st[key]["eq_present"] BEFORE its `continue`, so an arm whose
+    # every row in the window was dropped as --drop-eval-query exists as a key
+    # with rows=0. Keying on presence would leave the guard silent in exactly the
+    # case it exists for, and the pooled table would print a 0-row arm as if it
+    # were a measurement. Caught by this repo's own review battery, 2026-08-12.
+    present_fams = {f for (f, _), d in st.items() if d["rows"] > 0}
     missing = [f for f in FAMILIES if f not in present_fams]
     if missing:
         print("=" * 74)
@@ -208,11 +214,17 @@ def main():
         print("     is these arms' type_classification. They are collected, they reach")
         print("     data/raw (verified 08-09..08-11), they are SCORED — and then the")
         print("     NM#189 source filter drops them, so they never enter any lens")
-        print("     store. Changing --lens does not help. For a window after")
-        print("     2026-08-08, read data/raw or run with source_filter shadow_mode.")
+        print("     store. Changing --lens does not help.")
         print("  2. ADR-007 Decisions 2/3 retire all three at the source (`eda28eb`,")
-        print("     in production 2026-08-11 16:56 CEST). After that they are gone")
-        print("     upstream too, and no NexusMind-side change recovers them.")
+        print("     reported by FluxusSource as reaching production 2026-08-11 16:56")
+        print("     CEST — their verification, not re-checked here). After that they")
+        print("     are gone upstream too, and no NexusMind change recovers them.")
+        print("\nTHERE IS NO REMEDY FOR A WINDOW AFTER 2026-08-08 — do not go looking.")
+        print("  data/raw is PRE-enrichment, so it cannot answer a question whose")
+        print("  subject is what enrichment did. `source_filter shadow_mode` stamps")
+        print("  forward-only and cannot recover already-dropped rows, and there is")
+        print("  no future arm data to stamp. Both were considered and rejected with")
+        print("  FluxusSource on 2026-08-12; see the module docstring.")
         print("\nFluxusSource confirmed collection ran continuously to the last arm")
         print("yield at 2026-08-11T14:06Z, so a window in 08-09..08-11 distinguishes")
         print("the two: rows present in data/raw and absent here means cause 1.")
