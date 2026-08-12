@@ -40,6 +40,18 @@ nothing about item mass. That inference was made and retracted 2026-08-11.
 
 ## CONFIRMED
 
+**Enrichment attempted 35,229 GN proxy rows and replaced ZERO of them — 100.0%,
+not 99.9% (2026-07-31..08-08, nine days).** The H4 measurement, now ours alone
+since FluxusSource closed FS#120 on 2026-08-08 as moot under ADR-007. `C` = still
+under 500 chars among rows `pre_enrich` actually attempted, so the denominator is
+attempts, not arrivals: `gn_proxy` **35,229/35,229 = 100.0%** (CI 100.0–100.0)
+against `gdelt_constructive` 0.7% and `gnews_eval` 7.1%. *(`newsdata_eval` 20.3% —
+**pooling falsified by the script's own diagnostic, do not quote.**)* This is the
+hard number behind NM#310: it is not that GN enriches badly, it is that GN has
+**never once enriched**. The window cannot be extended — from 08-09 the eval arms
+are source-type-excluded and from 2026-08-11T14:06Z they stop upstream.
+<!-- verify: manual — ssh sadalsuud 'cd /home/jeroen/local_dev/NexusMind && python3 - --start 2026-07-31 --end 2026-08-08' < scripts/gate/measure_enrichable_rate.py -->
+
 **Every GN item is a sub-300-char headline echo. 100.0%, both populations.**
 A: n=8,302, median **89**, max **277**. B: n=6,055, median **83**, max **283**.
 Neither population contains a single item reaching 300 characters. Content is the
