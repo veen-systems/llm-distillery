@@ -144,7 +144,51 @@ not measured. The production-relevant number is therefore an estimate.
   `docs/evidence/2026-08-09-cross-box-parity-uplifting-v7.md`.
   Still unmeasured for the student: **CPU vs CUDA**.
 
+## A THIRD cousin, and it is 4× larger: ORACLE run-to-run noise (measured 2026-08-12)
+
+**This file's 0.16 is a STUDENT number. It says nothing about the oracle, and it
+had been reached for as if it did.** Measured for the first time on 2026-08-12 in
+#109 arm A, by scoring the same articles twice with Gemini Flash 2.5 at
+temperature 0.3 — same prompt, same code path, same machine, nothing varying but
+the sampling:
+
+| population | n | mean \|Δ\| | max |
+|---|---|---|---|
+| `cultural_discovery v5`, all bands | 40 | **0.4356** | 2.10 |
+| — off-lens (gate-refused) rows | 20 | 0.2375 | — |
+| — on-lens (gate-passed) rows | 20 | 0.6338 | — |
+| **at and above the op-point (stored ≥ 4.0)** | 40 | **0.6869** | **3.40** |
+
+Four things follow, and the last one is the expensive one:
+
+1. **Never quote 0.16 for an oracle comparison.** The oracle floor is 2.7×–4.3×
+   larger depending on where you measure it. They are different mechanisms: 0.16
+   is batch composition at fixed weights; this is decoder sampling.
+2. **It is population-dependent, so it must be re-measured per band.** Off-lens
+   rows return zeros from both runs and agree almost trivially (0.238); on-lens
+   rows carry live dimensional judgement (0.634). Inheriting a corpus-wide ν for
+   an op-point question understates the floor by ~1.6×.
+3. **At the op-point the floor EXCEEDED the effect it was meant to adjudicate**
+   (0.687 vs a between-arm difference of 0.396). A single-shot cross-oracle
+   comparison there is unfalsifiable *at any sample size* — the floor is
+   per-article and does not shrink with `n`. More articles buy nothing.
+4. **The fix is repeated draws, not more rows.** Averaging `k` scores per article
+   scales σ by `1/√k`: at `k = 4` the comparable floor falls to ≈0.34, under the
+   0.396 observed. Arithmetic, not measurement — it assumes per-article normality
+   that 40 pairs cannot establish.
+
+Consequence for the same-day trap this file exists to prevent: **the wrong
+instrument now has three sizes, and picking by magnitude is not a method.** Ask
+what varied — batch composition (0.16), machine (0.16), or the oracle's decoder
+(0.44–0.69) — and measure the one that varied in *your* comparison.
+
+Records: `docs/evidence/2026-08-12-cd-v5-cross-oracle-arm-a.md` (ν = 0.436) and
+`docs/evidence/2026-08-12-cd-v5-op-point-band-followup.md` (ν₄ = 0.687).
+Harness: `scripts/research/cd_v5_arm_a_sample.py --noise-pairs` emits the
+duplicate control; `cd_v5_arm_a_analyze.py --noise-scored` measures it.
+
 ## Related
 
 - [[project_session_2026_08_03]]
 - #95 — the issue, with the fix options (pin batch_size first)
+- #109 — arm A, where the oracle floor was first measured
