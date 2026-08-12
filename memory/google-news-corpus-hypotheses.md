@@ -82,6 +82,67 @@ Population A was **100.0%** stamped `academic` (4,034/4,034); B is heterogeneous
 The discriminator is the **`site:` operator**, not the population — a GN feed with
 no `site:` cannot resolve to a publisher and falls through to `google.com`.
 
+**The GN-removal experiment is an UPPER BOUND on the phase-out, and the phase-out
+lands without incident downstream (2026-08-12).** The CDF residue measurement fits
+each filter's normalization twice on the same population, once with all GN rows
+*deleted*. Forecast: max normalized Δ **0.367** (`nature_recovery v4`; `belonging`
+0.128), **0.0%** of articles move ≥0.5, and every crossing of NexusMind's
+normalized-4.0 enrichment gate is **downward** (0.28–1.13% per filter, zero the
+other way). No refit emergency, no surfacing change — a normalized score cannot
+move visibility (ADR-022) — and slightly *less* enrichment volume. This is what
+closed #106. Evidence: `docs/evidence/2026-08-12-gn-share-of-normalization-cdf.md`.
+<!-- verify: manual — PYTHONPATH=. python scripts/research/gn_normalization_cdf_share.py --ssh sadalsuud -->
+
+⚠️ **The arm deletes ALL GN; ADR-007 retires population A ONLY — say which
+population, always** (corrected by the FluxusSource session the same evening, my
+error). A = 55–59 enabled country proxies. **B (230 enabled) is not in scope and is
+hard by construction** — those keys were repointed to GN *because* the native feed
+died. **C (13 topic queries) can never be migrated at all**, having no `site:`
+operator and so no publisher to return to, so even a perfect A+B programme leaves a
+**permanent GN floor**. The decided deletion is strictly smaller than the one
+measured, so the *safety* claim is conservative in the right direction and holds;
+nothing else transfers. **There is no target date and no rate, by design** —
+ADR-007 Decision 1 retires a proxy only behind a native replacement verified
+collecting in production, so it arrives as many small unscheduled per-country
+batches. **Do not infer a curve from the 6-feed Africa batch. FS#145 is an
+attribution instrument, not a migration lever** — do not cite it as the phase-out;
+ADR-007 is.
+
+⚠️ **0.367 is a FLOOR, not a ceiling — and this is arithmetic, not measurement.**
+The experiment measured *deletion*; migration is *replacement*. The 6 feeds
+migrated 2026-08-08 went median 89 → 326 chars, sub-300 100% → 47%, landing
+*above* the non-GN baseline — those rows re-enter the CDF at higher scores rather
+than vanishing, which pushes percentiles down further than deletion does. **Second
+term, pointing the other way: some retirements behave as DELETIONS** — ADR-007's
+own example is a native feed yielding 0 items against a GN twin yielding 169, so a
+"migrated" country can arrive with a replacement that delivers no mass. Both terms
+unmeasured. Carried on #71 §3. **Consequence: trigger any refit on a measured GN
+share crossing a threshold in our own fit population, never on an upstream
+retirement event** — their events are many, small and unscheduled, and our
+instrument already reads the quantity that matters.
+
+**"GN gone" is NOT "stubs gone", and "GN gone" is not even a decided outcome.**
+Measured on `belonging`'s 17:04 filtered file 2026-08-12, n=3,242: sub-300-char
+content is **932 rows (28.7%)**, of which **65.2% is GN** (608 rows). Deleting
+**all** GN leaves **324 rows = 10.0%** still sub-300. ⚠️ **That two-thirds
+shrinkage is the ALL-GN figure and does not describe the decided scope** — 65.2%
+is A+B+C and only A is decided. The nearest split anyone holds (NexusMind, 8
+cycles, 2026-08-08, short rows surviving to surfacing on `solutions`: A 13.6/cycle,
+B 5.4, C+other non-GN 2.6) puts A at ~63% of GN-attributable short rows, so the
+decided scope removes nearer **~40%** of stubs. **Do not quote the 40%** — different
+lens, metric and date, composing two separately-measured populations; it is an
+order-of-magnitude caution. The durable point needs none of the arithmetic:
+**do not budget for a GN phase-out, and never let one be sold as a fix for
+short-content scoring.** The ADR-023 specificity question survives at reduced size.
+<!-- verify: manual — recount sub-300 and GN share on the latest data/filtered/belonging/filtered_*.jsonl on sadalsuud; content_length lives at nexus_mind_attributes.<lens>.content_length, NOT analysis.* -->
+
+⚠️ **That 18.8% GN share of one lens's scored rows is NOT comparable to the
+corpus-wide 25.7%** — different denominators (post-dedup, post-prefilter, one lens
+vs `data/raw` over 17 cycles). Do not read the difference as a decline. As of
+2026-08-12 there is still **no detectable decline**: pooled 24.83% → 23.69% across
+the two halves of a 15-day window, daily range 19.8–29.5%, 6 of ~59 proxy feeds
+moved.
+
 ---
 
 ## REFUTED
