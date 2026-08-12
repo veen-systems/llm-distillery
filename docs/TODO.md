@@ -1,11 +1,30 @@
 # LLM Distillery - TODO
 
-## 🔵 NEXT SESSION — start here. Arm A is DONE and closed #105's cd half. What remains is one $0.40 follow-up and two owner calls.
+## 🔵 NEXT SESSION — start here. **Three things: adopt framework v1.24/v1.25, then #109 Arm B and #104. Every owner decision from 2026-08-12 is now closed.**
 
-**Session of 2026-08-12 morning: the owner ruled on three of the four open
-items. Afternoon: #109 arm A built and run — WITHIN NOISE.** Nothing is deployed
-and nothing is pending deployment; arm A spent $1.37 of oracle budget and touched
-no filter package.
+**Evening 2026-08-12 (fourth context): #106 CLOSED, and the GN thread reached a
+mechanism.** Nothing deployed, no filter package touched, no oracle spend. Seven
+commits, all docs/memory/one analysis script.
+
+**The single most useful number to come out of it, and it will not drift:**
+enrichment attempted **35,229 Google News proxy rows over nine days and replaced
+zero of them** — 100.0%, CI 100.0–100.0, against control arms failing 0.7–7.1%.
+FluxusSource had independently predicted it pre-gate from the URL scheme alone (a
+GN `url` is an opaque redirect, so `pre_enrich` fetches a Google interstitial, never
+a body). **State it as mechanism + measurement — "GN cannot enrich, here is the
+confirmation" — never as a bare number.** It is a property of the URL scheme, so no
+fetcher change moves it. ⚠️ It does **not** support FS#145 (which recovers a
+publisher *domain*, not a fetchable URL) and cannot rescue one of those rows.
+
+⚠️ **The window 2026-07-31..08-08 cannot be extended and there is no remedy** —
+from 08-09 all six filters exclude `eval_aggregator`, and the arms stopped upstream
+2026-08-11T14:06Z. `data/raw` is pre-enrichment; `shadow_mode` stamps forward-only.
+Both were considered and rejected with FluxusSource. **Do not re-propose either.**
+
+**⚠️ FRAMEWORK: still pinned v1.23.0, upstream still v1.25.0 (`889b038`,
+re-checked at close).** No new releases since the morning triage, so the decision
+table below is current and this is now **the first task of the next session** by the
+owner's instruction.
 
 **Carry forward from arm A, independent of cd v5:** ν, the **within-oracle**
 run-to-run floor on a cd-lens population, is **0.436 mean / 2.10 max** at
