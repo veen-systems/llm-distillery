@@ -13,7 +13,7 @@ score still feeds cross-lens ranking and the **normalization CDF**. Closing the
 issue assumed the CDF residue was negligible. Nobody had measured it.
 
 Google News is 25.7% of the production corpus and **100.0% sub-300-char headline
-echoes** that can never be enriched (NM#310). Normalization is fitted at
+echoes** that **NexusMind's `pre_enrich`** cannot enrich (NM#310 — 35,229 attempts, 0 replacements, because NexusMind has no GN resolver). ⚠️ Scoped 2026-08-12: the unqualified form "can never be enriched" is REFUTED — ovr.news resolves these URLs via Google's `batchexecute` and enriched 74 of 103. Always name the fetcher. Normalization is fitted at
 `raw_weighted_average >= the filter's operating point`, so GN rows that clear
 the op-point enter the CDF that maps every real article's rank.
 

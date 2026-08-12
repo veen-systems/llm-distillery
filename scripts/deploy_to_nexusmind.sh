@@ -154,6 +154,30 @@ echo "0. Verifying filter package..."
 }
 echo ""
 
+# Step 0.5: Cross-repo pre-flight guards (2026-08-12).
+# Step 0 checks the package against itself and the Hub. These check it against
+# the thing it is about to become: production. Three defects in one session got
+# past documentation — one of them past a warning in THIS FILE's own header —
+# so they are guards that fail rather than comments that explain.
+#   A. `.nexusmind-owns` naming a per-filter path: accepted today, protects
+#      nothing, overwritten silently by Step 1's `cp -r`. Now an error.
+#   B. `scoring.tiers` missing from or disagreeing with base_scorer.py's
+#      TIER_THRESHOLDS. Scoring does not read it; ANALYSIS does, and an absent
+#      block returns None rather than redirecting.
+#   C. This deploy may BE the production cutover — NexusMind's
+#      filter_loader._find_latest_version() serves the highest vN on disk, so a
+#      new highest version goes live on the next load with nothing in between.
+echo "0.5 Cross-repo pre-flight guards..."
+(cd "$DISTILLERY_ROOT" && PYTHONPATH=. python3 scripts/deployment/preflight_deploy_guards.py \
+    --filter-name "$FILTER_NAME" --version "$VERSION" \
+    --distillery-root "$DISTILLERY_ROOT" --nexusmind-root "$NEXUSMIND_ROOT") || {
+    echo "ERROR: pre-flight guards failed. Aborting deploy."
+    echo "  These guard the llm-distillery -> NexusMind boundary, which is the only"
+    echo "  chokepoint this repo controls. Fix the package, do not bypass."
+    exit 1
+}
+echo ""
+
 # Step 1: Copy filter folder
 echo "1. Copying filter: ${FILTER_PATH}"
 mkdir -p "$DEST_DIR"

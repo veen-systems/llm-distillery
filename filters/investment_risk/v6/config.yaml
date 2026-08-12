@@ -143,9 +143,17 @@ scoring:
   # base_scorer.py's TIER_THRESHOLDS is the sole runtime source (see
   # docs/FILTER_PLAYBOOK.md §8). Two drifts were found and both are corrected
   # here, in the direction of what actually runs:
-  #   - medium said 3.0; the deployed op-point is 4.0.
+  #   - medium said 3.0; the deployed op-point was 4.0 AT THAT DATE.
   #   - a `medium_high: 5.0` tier was declared that the runtime does not have at
   #     all — investment_risk v6 runs three tiers (high / medium / low).
+  #
+  # ⚠️ SUPERSEDED 2026-08-11: the op-point moved 4.0 -> 4.25 (llm-distillery#102,
+  # ADR-023), which is why `medium.threshold` below reads 4.25 and the 2026-08-06
+  # note above says 4.0. The note is history, not current state; the value is
+  # current. Verified live 2026-08-11 12:02 cycle. Flagged by a peer session on
+  # 2026-08-12 as a comment contradicting its own block two lines down — which is
+  # the failure this repo's own rule names: a comment explaining why code is
+  # correct is a claim like any other, and it expires. Date every such note.
   # If you want to CHANGE either, edit base_scorer.py and mirror it here; editing
   # this block alone changes nothing (that is how nature_recovery v4 ran a whole
   # deploy at 4.0 while every doc said 3.75).

@@ -40,10 +40,14 @@ nothing about item mass. That inference was made and retracted 2026-08-11.
 
 ## CONFIRMED
 
-**GN CANNOT enrich, and here is the nine-day confirmation: 35,229 attempts, 0
-replacements, 100.0% not 99.9% (2026-07-31..08-08).** State it as mechanism +
-measurement, never as a bare number — the two were derived independently, from
-opposite ends, and agree exactly.
+**NexusMind's `pre_enrich` CANNOT enrich GN, and here is the nine-day
+confirmation: 35,229 attempts, 0 replacements, 100.0% not 99.9%
+(2026-07-31..08-08).** State it as mechanism + measurement, never as a bare
+number — the two were derived independently, from opposite ends, and agree
+exactly. ⚠️ **NAME THE FETCHER.** The unqualified form ("GN cannot enrich") is
+**REFUTED** — see the block below: ovr.news resolves these URLs via Google's
+`batchexecute` and enriched **74 of 103**. The mechanism is that *NexusMind has no
+GN resolver*, not that the URL scheme forbids resolution.
 
 - **Mechanism, pre-registered by FluxusSource before the gate** (their
   `docs/GN-REPLACEMENT-PLAN.md` § H4): a GN `ContentItem.url` is an opaque
@@ -57,12 +61,43 @@ opposite ends, and agree exactly.
   and `gnews_eval` 7.1%. *(`newsdata_eval` 20.3% — **pooling falsified by the
   script's own diagnostic, do not quote.**)*
 
-**Consequence: the number will not drift, because it is a property of the URL
-scheme, not of enrichment tuning.** Nothing we change moves it off 100%. It is
-also ruled out as an artefact from our side: `SKIP_DOMAINS` is empty, `pre_enrich`
-receives the same list about to be scored, and replacement needs ≥300 fetched
-chars while the longest GN row in the window is 277 — the flag and the length
-agree. This is the hard number behind NM#310.
+**Consequence: the number will not drift *for this fetcher*.** Nothing NexusMind
+changes about enrichment tuning moves it off 100%, because NexusMind has no GN
+resolution at all — verified 2026-08-12:
+`grep -rniE "batchexecute|data-n-a-sg|resolve.*google.?news" src/ scripts/`
+returns **nothing**, so `pre_enrich` fetches the `news.google.com` URL directly and
+receives the interstitial. It is also ruled out as an artefact from our side:
+`SKIP_DOMAINS` is empty, `pre_enrich` receives the same list about to be scored,
+and replacement needs ≥300 fetched chars while the longest GN row in the window is
+277 — the flag and the length agree. This is the hard number behind NM#310.
+
+⚠️ **REFUTED 2026-08-12 by the ovr.news session: "a property of the URL scheme, so
+no fetcher change moves it" was an over-generalization from one fetcher to the
+scheme, and it is false.** A resolver change is exactly what moves it. ovr.news
+resolves these URLs and has since before June: `src/lib/google-news.ts:106-107`
+scrapes the per-article `data-n-a-sg`/`data-n-a-ts` signature off the stub, posts
+it to Google's private `batchexecute` endpoint (`:43`), and then fetches the
+**publisher** URL. Measured on ovr's live DB: **74 of 103 GN rows enriched
+successfully**, median 95 chars in → 3,074 out, most recent success 2026-08-12
+06:58 — live, not historical. (Scope that number when quoting it: `article_enrichments`
+is written only on success and ovr's `articles` table holds post-scoring survivors,
+so 74/103 is a success rate on GN rows that *reached* ovr, not a resolver success
+rate on the GN population.)
+
+**Two measurements, both correct, one bad inference on top of mine.** The rule that
+survives: state the fetcher. NexusMind's `pre_enrich` cannot resolve GN; ovr's
+enrichment can. **The damage this did before it was caught:** it licensed a "do not
+fix the GN resolver" recommendation which, acted on, would have retired a working
+capability carrying 22 of ovr's 38 GN-derived published articles — and it had
+already propagated into ovr.news#312 line 20 (*"Per NexusMind#310 these URLs can
+never resolve"*) as a premise about a resolver it does not describe. This is the
+[[feedback-rate-needs-population]] shape applied to a mechanism instead of a rate:
+the measurement had a population and the generalization dropped it.
+
+**Consequence for the consolidation question:** moving enrichment upstream to
+NexusMind would *lose* GN resolution entirely, since there is no resolver there to
+move it to. That is a live argument in the deferred *should ovr.news enrich* call,
+not a tidiness preference.
 
 ⚠️ **Do NOT recruit this into an argument for FS#145.** #145 recovers the native
 publisher *domain* from `entry.source.href` for attribution and filtering; it does

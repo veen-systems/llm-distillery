@@ -98,3 +98,53 @@ scoring:
       gatekeeper_threshold: 3
       gatekeeper_max_score: 4.0
       description: "Quality of sources, research depth, and documentation — from clickbait/speculation to peer-reviewed primary sources"
+
+  # Tier classification — MIRRORS base_scorer.py. NOT read by any PRODUCTION
+  # SCORING code, but it has EIGHT readers in this repo, so it is not inert:
+  #   fit_normalization.py        (op-point cross-check; drift warning)
+  #   gate/ground_truth_gate.py   (the ADR-021 gate threshold)
+  #   training/prepare_data.py    (train/val/test STRATIFICATION)
+  #   calibration/fit_calibration.py · train_scope_probe.py
+  #   evaluation/calibrate_hybrid_threshold.py · experiments/evaluate_models.py
+  #   filters/uplifting/v1/postfilter.py
+  #
+  # Measured before/after adding this block (2026-08-12), because "documentation
+  # only" is a claim about a caller and this repo requires the outcome, not the
+  # reasoning: `resolve_op_point` returns **4.0 both ways** — the fit floor is
+  # unchanged, since it has always come from base_scorer.py. What DID change is
+  # that the cross-check went from **inert to live**: `_op_point_from_config`
+  # previously returned None here, and the drift warning requires BOTH sources to
+  # be non-None, so cultural_discovery was the one deployed filter whose
+  # config-vs-code drift could never be detected. Adding the block turns that
+  # check on. It does not move any threshold.
+  #
+  # ADDED 2026-08-12. This block was ABSENT, and cultural_discovery v5/v6 were the
+  # only deployed filters missing it. Nothing was broken in production — NexusMind's
+  # `production_scorer.py:142` reads `base.TIER_THRESHOLDS` from the scorer class,
+  # not this file, so the runtime op-point has always been 4.0 (the lowest non-zero
+  # threshold in `base_scorer.py:39-43`).
+  #
+  # It still cost a real measurement: a NexusMind session resolving op-points from
+  # config.yaml got None for this filter, silently excluded it from a cross-language
+  # visibility comparison, and reported `visible% = 0.0` for every cohort — a wrong
+  # answer that looked like a finding rather than a crash. cultural_discovery is
+  # precisely the filter most likely to have run the other way in that comparison.
+  #
+  # So: no scoring code reads this block, but ANALYSIS code does, and an absent
+  # block reads as "no op-point" rather than "look somewhere else".
+  # ⚠️ base_scorer.py's TIER_THRESHOLDS remains the SOLE runtime source. To CHANGE
+  # the op-point, edit base_scorer.py and mirror it here — plus normalization.json's
+  # `stats.raw_min` and the two normalization tests, in ONE commit (see
+  # docs/FILTER_PLAYBOOK.md §8). Editing this block alone changes nothing.
+  tiers:
+    high:
+      threshold: 7.0
+      description: "Significant discovery or deep cross-cultural insight, well-documented"
+
+    medium:
+      threshold: 4.0
+      description: "Meaningful cultural content with some discovery or connection value"
+
+    low:
+      threshold: 0.0
+      description: "Superficial, speculative, or single-culture content without insight"

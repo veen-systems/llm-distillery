@@ -103,6 +103,32 @@ finally {
 }
 Write-Host ""
 
+# Step 0.5: Cross-repo pre-flight guards (2026-08-12).
+# MUST MIRROR deploy_to_nexusmind.sh Step 0.5. This file is a documented
+# alternative deploy path (docs/RUNBOOK.md), so a guard present only in the .sh
+# is one keystroke from being bypassed — which is exactly the unreachable-
+# mechanism defect these guards exist to catch. A 2026-08-12 review found this
+# script had no Step 0.5 while the guard module's own docstring called the .sh
+# "the ONE chokepoint".
+Write-Host "0.5 Cross-repo pre-flight guards..." -ForegroundColor Yellow
+$savedPythonPath = $env:PYTHONPATH
+Push-Location $DistilleryRoot
+try {
+    $env:PYTHONPATH = "."
+    python scripts\deployment\preflight_deploy_guards.py `
+        --filter-name "$FilterName" --version "$Version" `
+        --distillery-root "$DistilleryRoot" --nexusmind-root "$NexusMindRoot"
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "pre-flight guards failed. Aborting deploy. These guard the llm-distillery -> NexusMind boundary; fix the package, do not bypass."
+        exit 1
+    }
+}
+finally {
+    $env:PYTHONPATH = $savedPythonPath
+    Pop-Location
+}
+Write-Host ""
+
 # Step 1: Copy filter folder
 Write-Host "1. Copying filter: $FilterPath" -ForegroundColor Yellow
 if (-not (Test-Path $DestDir)) {

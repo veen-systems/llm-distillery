@@ -1,6 +1,96 @@
 # LLM Distillery - TODO
 
-## 🔵 NEXT SESSION — start here. **Three things: adopt framework v1.24/v1.25, then #109 Arm B and #104. Every owner decision from 2026-08-12 is now closed.**
+## 🔵 NEXT SESSION — start here. **Two owner decisions, then #104. Framework is CURRENT (v1.25.0, adopted 2026-08-12 late). H-E1 and the #109 Arm B design gap are both closed.**
+
+**Owner decisions waiting (nothing is blocked on a machine):**
+
+1. **#109 Arm B — go / no-go.** The design blocker is gone: judges are now named
+   (**Qwen3:14b + Phi4:14b**, local, non-Gemini, **$0** on b650), with a
+   both-must-agree rule and a per-judge planted-error gate that runs before any
+   real sample. Scoping comment is on the issue. ⚠️ Read it with #108's retitle:
+   the *motivation* Arm B drew from #108 is weaker than it was, because whether
+   the 300-char floor is a language filter turns on a pipeline stage nobody has
+   established. Arm B still answers "are the labels correct", which is worth
+   having either way — but the priority argument changed.
+2. **`cultural_discovery v6` cutover** (#98). The `tiers:` gap is closed and now
+   guarded. Remaining: fit `normalization.json` on real 6.0 rows, and **update
+   `ACTIVE_FILTERS` to v6 in the same commit that promotes it**.
+
+**Then #104** (every accuracy number is CPU-measured; production serves on GPU —
+worth 1 verdict flip at the deployed op-point). Unchanged, unstarted.
+
+**New and cheap, from H-E1:** `nature_recovery`'s `protection_durability` is the
+only dimension in the enrichment pilot with a materially negative delta (−0.173,
+24 of 48 rows down). Untested hypothesis on **#71**: enrichment is *correcting* an
+over-score, not damaging a good one. **Do not "fix" it before establishing the
+direction is wrong.**
+
+### ✅ 2026-08-12: the `tiers:` gap is CLOSED, and it is now guarded rather than remembered
+
+**Done, not pending.** `filters/cultural_discovery/v5/config.yaml` **and
+`v6/config.yaml`** both carry a `tiers:` block mirroring `base_scorer.py`
+(7.0 / 4.0 / 0.0). They were the only two deployed/staged filters without one.
+
+**It is not documentation-only, and the earlier claim here that it was is
+withdrawn.** No PRODUCTION SCORING code reads the block — `production_scorer.py:142`
+takes the op-point from `base.TIER_THRESHOLDS` — but **eight llm-distillery tools do**:
+`fit_normalization`, `ground_truth_gate` (the ADR-021 threshold), `prepare_data`,
+`fit_calibration`, `train_scope_probe`, `calibrate_hybrid_threshold`,
+`evaluate_models`, and `uplifting v1`'s postfilter. Measured consequence for
+`cultural_discovery`: `prepare_data.extract_filter_info` goes `tier_boundaries={}` →
+`{'high':7.0,'medium':4.0,'low':0.0}`, flipping `use_score_bins` True→False, so **a
+future retrain's train/val/test splits stratify by TIER instead of score bins.** The
+normalization fit floor is unchanged (`resolve_op_point` returns 4.0 both ways).
+Other consumers were unaffected only because cd's op-point is 4.0 and their fallbacks
+are hardcoded 4.0 — a coincidence of value. **On `nature_recovery` (3.75),
+`investment_risk` (4.25), `uplifting` (4.5) or `solutions` (2.25) the same edit would
+move the ADR-021 gate threshold.**
+
+**Now enforced, not remembered:** `scripts/deployment/preflight_deploy_guards.py`
+runs as Step 0.5 of **both** `deploy_to_nexusmind.sh` and `.ps1`, and refuses a
+package whose `scoring.tiers` is missing from, disagrees with, or declares a
+different tier *set* than `base_scorer.py`. 34 tests, each proven to fire on the real
+defect and stay quiet on the healthy case.
+
+**Still open, and it is the hand-maintained list:** `ACTIVE_FILTERS` in
+`tests/unit/test_filter_config_schema.py` names `cultural_discovery v5`. **Update it
+to v6 in the same commit that promotes v6** — that list lagging is exactly how drift
+in a deployed version went unseen for six weeks.
+
+**On version selection — scoped, because the earlier wording here overclaimed.**
+NexusMind's `filter_loader._find_latest_version()` (`src/filters/filter_loader.py:178-193`;
+the selection is at `:192-193`) serves the **highest `vN` on disk**. So **there is no
+version-selection step anywhere** — nothing names v6, no config flip activates it, and
+there is nothing to forget. ⚠️ But *"the deploy and the cutover are the same
+keystroke"* was **FALSE and is withdrawn**: the canonical chain
+(`docs/FILTER_PLAYBOOK.md` § Deploy safety checklist) is **llm-distillery git →
+NexusMind git → sadalsuud `deploy_filters.sh` → gpu-server**, and that last script
+ships `git archive HEAD` (never the working tree), hard-exits on uncommitted or
+untracked scorer-tree files, then rsyncs and restarts. Landing a directory in the
+NexusMind checkout does **not** reach readers; that run is the last checkpoint.
+
+**The two trees currently disagree** — the v5 fix landed here; NexusMind's own copy of
+`cultural_discovery/v5/config.yaml` has no `tiers:` block. **This self-heals:** the
+next `deploy_to_nexusmind.sh cultural_discovery v5` propagates it. Do **not**
+hand-patch the NexusMind copy. ⚠️ Note that deploy also lands the **LD#86 multilingual
+topic-gate extension** — our `prefilter.py` is 87 lines ahead of NexusMind's and has
+been since 2026-08-06. Runtime impact there is nil (the per-lens rule prefilter runs
+with `use_prefilter=False`), but NM#284's **shadow pass rates will move**. Direction is
+safe: llm-distillery is newer, this is not NexusMind divergence.
+
+⚠️ **Do NOT reach for `.nexusmind-owns` — it CANNOT protect per-filter files, and it
+fails silently.** Verified 2026-08-12: Step 1 of `deploy_to_nexusmind.sh` is an
+unconditional `cp -r "${SOURCE_DIR}/"* "$DEST_DIR/"` with **no manifest lookup**; the
+manifest is consulted only in Step 2, for `filters/common/`. The script's own header
+says so. **Adding a `filters/{name}/v{N}/` path to the manifest is accepted and does
+nothing.** Same silent-success shape as the op-point reader above. Per-filter content
+is **one-way**: upstream overwrites NexusMind unconditionally. This is now guard A and
+will abort the deploy rather than accept the entry.
+
+Also worth knowing if controlled divergence is ever genuinely needed there: `cp -r`
+runs **without `--delete`**, so it overwrites and merges rather than pruning — a file
+NexusMind *adds* under a version dir survives, a file it *edits* does not. Adding is
+durable, editing is not.
 
 **Evening 2026-08-12 (fourth context): #106 CLOSED, and the GN thread reached a
 mechanism.** Nothing deployed, no filter package touched, no oracle spend. Seven
@@ -11,10 +101,14 @@ enrichment attempted **35,229 Google News proxy rows over nine days and replaced
 zero of them** — 100.0%, CI 100.0–100.0, against control arms failing 0.7–7.1%.
 FluxusSource had independently predicted it pre-gate from the URL scheme alone (a
 GN `url` is an opaque redirect, so `pre_enrich` fetches a Google interstitial, never
-a body). **State it as mechanism + measurement — "GN cannot enrich, here is the
-confirmation" — never as a bare number.** It is a property of the URL scheme, so no
-fetcher change moves it. ⚠️ It does **not** support FS#145 (which recovers a
-publisher *domain*, not a fetchable URL) and cannot rescue one of those rows.
+a body). **State it as mechanism + measurement, and ALWAYS NAME THE FETCHER —
+"NexusMind's `pre_enrich` cannot resolve GN, here is the confirmation" — never as a
+bare number.** ⚠️ **The stronger form of this claim is REFUTED (2026-08-12):** "a
+property of the URL scheme, so no fetcher change moves it" generalized from one
+fetcher to the scheme and is false — **ovr.news resolves these URLs and enriched 74
+of 103**, via `batchexecute`. See `memory/google-news-corpus-hypotheses.md` for the
+scoped version and what the over-generalization nearly cost. ⚠️ It also does **not**
+support FS#145 (which recovers a publisher *domain*, not a fetchable URL).
 
 ⚠️ **The window 2026-07-31..08-08 cannot be extended and there is no remedy** —
 from 08-09 all six filters exclude `eval_aggregator`, and the arms stopped upstream
@@ -97,13 +191,26 @@ links** — NexusMind has no GN resolution at all (verified). ovr places it late
 deliberately: resolving at collection would be ~13,000 requests/day against a private
 Google endpoint; late it costs ~15/day.
 
-**But that unique capability fails every time** (ovr.news#312). And the direction is to
-retire Google News anyway — FluxusSource's ADR-007 migration is working: 6 feeds moved
-2026-08-08, median length **89 → 326**, sub-300 share **100% → 47%**.
+⚠️ **"But that unique capability fails every time" — REFUTED 2026-08-12 by the
+ovr.news session, and the "don't fix the resolver" conclusion that stood here is
+WITHDRAWN.** It was my error: ovr#312's line 20 cites NM#310 for *"these URLs can
+never resolve"*, and NM#310 measures **NexusMind's** fetcher, which has no resolver
+(verified: `grep -rniE "batchexecute|data-n-a-sg|resolve.*google.?news"` over
+NexusMind `src/`+`scripts/` returns nothing). **ovr's resolver works and is live** —
+`src/lib/google-news.ts:106-107` scrapes the `data-n-a-sg`/`data-n-a-ts` signature,
+posts to Google's private `batchexecute` (`:43`), then fetches the *publisher* URL.
+Measured on ovr's live DB: **74 of 103 GN rows enriched**, median 95 → 3,074 chars,
+most recent success 2026-08-12 06:58. Acting on "don't fix the resolver" would have
+retired a capability carrying **22 of ovr's 38** GN-derived published articles.
 
-**So: don't fix the resolver.** It is a workaround for a source being retired. The
-enrichment architecture collapses on its own once migration lands; **the withholding
-gate is the piece with reader impact and is independent of all of it.**
+**And the consolidation argument inverts:** moving enrichment upstream to NexusMind
+would *lose* GN resolution entirely, because there is no resolver there to move it
+to. That belongs in the deferred *should ovr.news enrich* decision.
+
+The ADR-007 direction is unchanged and still real (6 feeds moved 2026-08-08, median
+length **89 → 326**, sub-300 share **100% → 47%**) — but it retires **population A
+only**, so it does not make the resolver redundant on any stated date. The
+withholding gate remains independent of all of it.
 
 ### Peer-owned, do not duplicate
 

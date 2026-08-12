@@ -148,6 +148,69 @@ scoring:
       # base_scorer.py, which no longer declares GATEKEEPER_DIMENSION.
       description: "Quality of sources, research depth, and documentation — from clickbait/speculation to peer-reviewed primary sources"
 
+  # Tier classification — MIRRORS base_scorer.py:59-63. NOT read by any
+  # PRODUCTION SCORING code, but it has EIGHT readers in this repo:
+  #   fit_normalization.py        (op-point cross-check; drift warning)
+  #   gate/ground_truth_gate.py   (the ADR-021 gate threshold)
+  #   training/prepare_data.py    (train/val/test STRATIFICATION)
+  #   calibration/fit_calibration.py · train_scope_probe.py
+  #   evaluation/calibrate_hybrid_threshold.py · experiments/evaluate_models.py
+  #   filters/uplifting/v1/postfilter.py
+  # So this is NOT a no-op: adding it flips prepare_data's `use_score_bins`
+  # False, i.e. a v6 retrain's splits stratify by TIER, not score bins.
+  #
+  # Measured before/after (2026-08-12): `resolve_op_point` returns **4.0 both
+  # ways** — the fit floor is unchanged, because it has always come from
+  # base_scorer.py. What changed is that the cross-check went from **inert to
+  # live**; `_op_point_from_config` returned None here before, and the drift
+  # warning requires both sources non-None. This moves no threshold.
+  # ⚠️ Especially relevant for v6, whose `normalization.json` is deliberately
+  # ABSENT and must be fitted on v6 data at cutover — the fit will now be
+  # cross-checked rather than silently uncheckable.
+  #
+  # ADDED 2026-08-12, BEFORE CUTOVER AND DELIBERATELY. cultural_discovery v5 and v6
+  # were the only deployed/staged filters without this block; v5 was fixed the same
+  # day. Values are unchanged from v5 and from v6's own base_scorer.py — this adds
+  # NO op-point decision. The 4.0 op-point's provenance gap and re-derivation remain
+  # #87's, untouched here.
+  #
+  # WHY IT COULD NOT WAIT. Nothing in the scoring path reads it — NexusMind's
+  # `production_scorer.py:142` takes the op-point from `base.TIER_THRESHOLDS`. But
+  # ANALYSIS code reads config.yaml, and an absent block returns `None` rather than
+  # redirecting: a NexusMind session resolving op-points this way silently dropped
+  # cultural_discovery from a cross-language visibility comparison and reported
+  # `visible% = 0.0` for every cohort — a wrong answer shaped like a finding.
+  #
+  # ⚠️ There is NO VERSION-SELECTION STEP anywhere: NexusMind's
+  # `filter_loader._find_latest_version()` (src/filters/filter_loader.py:178-193,
+  # selection at :192-193) serves the highest `vN` on disk, so nothing ever names
+  # v6 and no config flip activates it — it serves as soon as it ships.
+  # (An earlier version of this comment said the deploy and the cutover were "the
+  # same keystroke". That was FALSE and is withdrawn: the canonical chain is
+  # llm-distillery git -> NexusMind git -> sadalsuud `deploy_filters.sh` ->
+  # gpu-server, and that last script ships `git archive HEAD` and refuses on
+  # uncommitted/untracked scorer files. Landing v6 in the NexusMind checkout does
+  # not reach readers; that run is the last checkpoint.)
+  #
+  # ⚠️ Nor would a test have caught it: `tests/unit/test_filter_config_schema.py`
+  # validates ACTIVE_FILTERS, which still names `cultural_discovery v5`. That list is
+  # updated by hand at promotion, and the last time it lagged, drift in the deployed
+  # version went unseen for six weeks (recorded in that file's EXEMPTIONS block).
+  # ⚠️ AT CUTOVER, UPDATE ACTIVE_FILTERS TO v6 IN THE SAME COMMIT — otherwise the
+  # schema test goes on validating a version production no longer runs.
+  tiers:
+    high:
+      threshold: 7.0
+      description: "Significant discovery or deep cross-cultural insight, well-documented"
+
+    medium:
+      threshold: 4.0
+      description: "Meaningful cultural content with some discovery or connection value"
+
+    low:
+      threshold: 0.0
+      description: "Superficial, speculative, or single-culture content without insight"
+
 # ---------------------------------------------------------------------------
 # WHO READS THIS BLOCK (resolved 2026-08-06 — it previously read nothing).
 #

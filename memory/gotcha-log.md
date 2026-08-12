@@ -9,12 +9,35 @@ Problems encountered and resolved. Format: Problem → Root cause → Fix.
 **Root cause**: Why it happened.
 **Fix**: What solved it.
 
-     Keep it to 2-3 lines. Write the lesson, not the narrative of the
-     session that found it. If it needs a page, it belongs in a topic
-     file or an ADR, not here.
+     Write the lesson, not the narrative of the session that found it.
 
-     (agent-ready-projects v1.17.0. Note the heading level differs from the
-     framework template: entries here are `##`, not `###`.)
+     ⚠️ The old "keep it to 2-3 lines" rule is WITHDRAWN (agent-ready-projects
+     v1.25.0), and this log is the evidence that retired it upstream: 203
+     entries, median ~1,200 chars, 35% over 1,500. The rule was unenforceable
+     (a markdown source line has no length limit, so it could be met and
+     violated at once) and enforcing it in characters would have flagged
+     88-92% of entries across three independent logs. Upstream's verbatim
+     adopter note: "If you have been ignoring it, you were right to."
+     The real signal is ABOVE ~3,000 characters — 2-7% of entries across the
+     logs measured (this one is the high end, 5.8%) — and at that size it belongs in a topic file or an ADR.
+
+     STATUS AND RECURRENCE GO IN THE HEADING, NOT THE BODY (v1.24.0). Curation
+     reads headings and opens a body only for an entry it is acting on, so a
+     status buried in prose is invisible to it. Forms in use here:
+         ## [RESOLVED] Title (date)
+         ## [RESOLVED <date>] Title (date)
+         ## [RESOLVED <date> by <ref>] Title (date)
+         ## [<N>x <pattern-name>] Title (date)   <- recurrence
+         ## [<N>x] Title (date)
+     `[CORRECTED <date>]` is a second accepted status form (one entry uses it).
+     Grep `^#{2,3} \[` to catch every status marker, not `[RESOLVED` alone.
+
+     (agent-ready-projects v1.25.0. Note the heading level differs from the
+     framework template: entries here are `##`, not `###` — and BOTH levels
+     are in use, so any reader must match `^#{2,3} `. A `^### `-only grep
+     misses 106 of the 203 entries here (re-derived 2026-08-12: 106 under `##`,
+     97 under `###`); that exact bug shipped upstream in a
+     v1.24.0 draft and was caught on this file.)
 
      NEW ENTRIES ONLY. Do not retrofit the existing log — a bulk rewrite of
      history is a separate, engineer-approved decision, and this file is
@@ -22,6 +45,136 @@ Problems encountered and resolved. Format: Problem → Root cause → Fix.
 -->
 
 ---
+
+## The failures were never where the author was looking — and every one was a hand-built population (2026-08-12)
+
+**Problem**: A four-repo investigation into NexusMind#292 ran across ~10 exchanges
+between four sessions. **Every quantitative claim any side made failed under
+checking** — and not one failed where its author was looking. Catalogue, mine and
+the peer's alike: a stage-mix figure retracted because `stage_used` is per-filter
+not per-article (found by auditing an own assumption, not by the adversarial lens
+aimed at it); a Google News mechanism claim over-generalized from one fetcher to a
+URL scheme (refuted by a repo nobody thought to ask, after it had already
+propagated into that repo's issue as a premise); an op-point resolver that returned
+`None` and printed `visible% = 0.0` for every cohort, caught only because all-zero
+was implausible; an "ADR-022 does not exist" correction produced by running
+`ls docs/adr/` in the wrong repo, where a populated directory made the wrong answer
+look right; a survival rate whose numerator and denominator had different exclusion
+lists; and a counterfactual replay over stored rows presented as an observed
+attrition rate.
+
+**Root cause**: In every case **the object checked and the object that was wrong
+were different objects**, so no amount of care applied to the first could reach the
+second. The common structure underneath: **each error was a hand-built population.**
+Someone chose a file, a window, a join key or a directory, and the choice — not the
+arithmetic — carried the defect. Care concentrates on the arithmetic because that is
+what looks like the work.
+
+**Fix**: Prefer a population the pipeline already computes to one you construct.
+The worked example: NexusMind's scorer logs
+`Loaded 4577 articles (skipped: 114464 processed, 17845 commerce, 3232 obituary,
+22472 dup-url, 3442 dup-title, 140870 old, …)` **every cycle** — it already
+decomposes the aggregate by mechanism and throws it away. Stamping those skip
+reasons with the article's language answers #292 continuously and retires the whole
+probe genre. **The one thing nobody got wrong was the log line, because nobody built
+it.** Corollary when you must build one: a documentation surface that is right 83% of
+the time (config.yaml matched runtime on 5 of 6 filters until 2026-08-12; 6 of 6
+since) is the same hazard as a
+field that is article-level 99.9% of the time — **make the missing case raise, never
+return `None`**. The original defect was not reading the wrong file; it was that the
+wrong file failed silently. Related: [[feedback-rate-needs-population]],
+[[feedback-enumeration-is-not-inventory]].
+
+**Verified op-points, extracted from every deployed filter's `base_scorer.py` —
+the SOLE runtime source, per `production_scorer.py:142` reading
+`base.TIER_THRESHOLDS`** (2026-08-12, cross-checked by two sessions):
+`solutions 2.25 · uplifting 4.5 · cultural_discovery 4.0 · investment_risk 4.25 ·
+belonging 4.0 · nature_recovery 3.75`. `config.yaml` agreed on 5 of 6 at the time of measurement, 6 of 6 after the same day's fix;
+`cultural_discovery` v5 had no `tiers:` block at all (added 2026-08-12; **v6 still
+lacks one — add before cutover**).
+
+## An instrument chosen to avoid a known bias is not thereby unbiased (2026-08-12)
+
+**Problem**: FluxusSource's mojibake detector reported 7 live positives, which looked
+like exactly the residual collection-stage corruption their own docs predict. **All 7
+were false.** The firing rule is: any character whose MacRoman byte lands in
+`0xC2–0xF4` (a UTF-8 *lead* byte) immediately followed by one in `0x80–0xBF` (a
+*continuation* byte) forms a structurally valid 2-byte sequence, and the detector's
+"repair" rewrites it into a foreign script. Their `upstream_mojibake` health list
+consequently **cannot be quoted in either direction**, and had been naming seven
+innocent publishers.
+
+⚠️ **The first characterisation of this class — including mine here, and the issue
+author's — was TOO NARROW, and that is the second lesson.** It was recorded as
+"apostrophe-elision before an accented vowel in French and Italian", from the worked
+example `l’éclipse` → `lՎclipse`. The real class is **48 lead characters × 64
+continuations = 2,030 firing pairs**: `«` `»` `—` `“` `…` `€` `√` and NBSP are all
+leads; every accented lowercase vowel plus `°` `µ` `©` `™` `≤` are continuations. The
+second worked example is a non-breaking space before a degree sign — `121\xa0°C` →
+`121ʡC`, found on a `pubmed` row — which is scientific units, not orthography, and no
+amount of thinking about French would have reached it.
+
+**Why the narrow reading looked complete:** it came from a 51,640-row window that
+happened to contain *only* apostrophe cases. The wider class surfaced only when a
+second repo ran the same detector over 21,174 **stored** rows, and a third scan
+covered 208,153 rows of history. Same instrument, same defect, three sample shapes —
+the first could not have shown the second trigger. **A characterisation of a defect
+inherits the shape of the sample it was found in, and reads as complete regardless.**
+That is the same failure as [[feedback-rate-needs-population]], applied to a *defect
+class* rather than to a rate.
+
+⚠️ **There is NO validated fix.** The obvious guard — reject any repair that
+introduces a foreign script — scores 6 of 8 and fails in *both* directions: it
+rejects genuine emoji repairs on the variation selector, and it accepts `121ʡC`
+because U+02A1 is a Latin lowercase letter by name and category. FS#167 is open, not
+pending.
+
+**Root cause**: The instrument was chosen *specifically* to avoid a bias its authors
+had correctly reasoned about — the module docstring rejects a marker list because `Ã`
+is ordinary Portuguese and `√` ordinary maths, noting that "a marker heuristic fires
+hardest exactly where the false positives are." The round-trip replacement adopted
+instead has its **own** version of that failure, relocated from Portuguese to French
+and Italian. **Having reasoned carefully about bias A is what makes bias B invisible**:
+the design conversation is over, the instrument feels earned, and nobody re-opens it.
+
+**Fix**: When an instrument is justified by *what it avoids*, that justification is not
+evidence about what it does. Ask separately "where does THIS one fire hardest?" and run
+it against the population where its own mechanism is most likely to misfire — here, any
+language whose orthography puts a high byte next to an accented vowel. Corollary for
+consumers: a detector's output is not evidence until someone has stated its false-positive
+mode, and "0 found" and "7 found" need that statement equally. Related:
+[[feedback-claim-requires-verify]] and the standing rule that a negative needs a positive
+control — this is its mirror, a *positive* needing a negative control.
+
+## Endorsing a peer's number suppresses the re-check that would have caught it (2026-08-12)
+
+**Problem**: A peer session sent a cross-repo measurement — "41.5% of English rows
+reached `stage2` vs 31.2% of non-English" — and I replied that it was *"a better
+catch than the warning I sent you"* and built a recommendation on it. They retracted
+it themselves an hour later: `stage_used` is **per-filter, not per-article**, and
+differs across the six filters on 2,679 of 3,271 rows (82%). The figure was a
+`solutions`-only number wearing an article-level label; corrected per filter the gap
+holds for `solutions` alone and **reverses** in `cultural_discovery`, `belonging` and
+`nature_recovery`.
+
+**Root cause**: Two mechanisms, and the social one is the one without a guard. The
+technical error is the familiar shape — a field that exists, is populated, and means
+something different per row, exactly like `content_length` and
+`raw_weighted_average` before it. The new part is that **praise is a suppressor**:
+the peer named it themselves — *"'better catch than the warning I sent you' is exactly
+the kind of endorsement that stops a number being re-checked."* A number I have
+publicly agreed with is one I am now motivated not to re-examine, and my agreement
+travels to everyone downstream as independent corroboration when it is nothing of the
+kind. Nothing in the review battery covers a claim arriving from outside the diff.
+
+**Fix**: **An endorsement carries the check that would falsify it, or it is not an
+endorsement.** When agreeing with a peer's measurement, state in the same message what
+would have to be true for it to be wrong and whether that was tested — "this is right
+*if* `stage_used` is article-level; was that checked?" costs one clause and is the
+entire fix here. Corollary for the receiving side: treat an incoming agreement as
+zero new evidence, because a peer agreeing with your number has usually not
+re-derived it. Related: [[feedback-claim-requires-verify]], and the standing rule
+that a field's existence says nothing about what it means per row.
 
 ## A comparison harness whose treatment arms went to zero still prints a table (2026-08-12)
 
@@ -252,7 +405,7 @@ and `git rev-list --count origin/main..HEAD` on sadalsuud.
 
 ---
 
-## Copied a gate to a new concern without copying the mechanism that feeds it — the gate could never fire (2026-08-01)
+## [5x verify-the-call-path] Copied a gate to a new concern without copying the mechanism that feeds it — the gate could never fire (2026-08-01)
 
 **Problem**: NM#281 added a violence-promotion drop point next to the existing
 commerce and obituary checks in `_is_duplicate`. It was a no-op: `enforce: true`
@@ -360,7 +513,7 @@ beats test-then-trust; the first real output is the cheapest and highest-yield
 review it will get. Corollary: a false alarm on every deploy (6 of the first 6
 lines) is worse than no alarm — it trains everyone to ignore the signal.
 
-## Every filter's prefilter was dead in production for ~6 months — config said enabled, runtime hard-coded it off (2026-08-01)
+## [4x verify-the-call-path] Every filter's prefilter was dead in production for ~6 months — config said enabled, runtime hard-coded it off (2026-08-01)
 
 **Problem**: Verifying the LD#86 cultural_discovery topic gate showed the deployed
 gate having no effect. Scope precisely: the dead layer is the **per-lens rule
@@ -408,7 +561,7 @@ key named `enabled` is not evidence that anything is enabled. When a component
 declares an expected rate, assert the observed rate against it in production —
 otherwise a component can declare 0.15, stamp 1.00, and stay green for months.
 
-## Pre-push battery ran tests/unit only — CI runs tests/ incl. root-level files (2026-07-30)
+## [3x restated-set drift] Pre-push battery ran tests/unit only — CI runs tests/ incl. root-level files (2026-07-30)
 
 **Problem**: NexusMind 6728a77 passed the local battery (890 tests) but broke CI:
 `NexusMind/tests/test_gpu_client.py` (root-level, not under tests/unit/) mocked 5 subprocess
@@ -961,7 +1114,7 @@ The first command failed during this session: actual sadalsuud user is implicit 
 
 ---
 
-## v2 Filter Without normalization.json Looks Like a raw_weighted_average Bug (2026-04-29) — RESOLVED 2026-05-04
+## [RESOLVED 2026-05-04] v2 Filter Without normalization.json Looks Like a raw_weighted_average Bug (2026-04-29)
 
 > **2026-05-04 RESOLVED**: This entry's "Not a bug — by design" framing was right about the *intended* architecture (NexusMind's runtime applies normalization downstream) but failed to verify the runtime actually existed. It didn't. The application code in `NexusMind/filters/common/filter_base_scorer.py` had been deleted on 2026-04-16 and was not restored — the byte-identical copies between repos masked the absence. All 7 filters were silently de-normalized for 18 days. See the "Manifest as Anti-Pattern" entry below for the full diagnosis and fix (NexusMind merge `0e80d92`: extracted normalization into `NexusMind/src/scoring/production_scorer.py` wrapper). The 2026-04-29 "fit on `weighted_average` directly" guidance below is still correct for first-fit on a fresh filter version, but the implication ("null `raw_weighted_average` is expected") is no longer load-bearing — production now populates both fields whenever `normalization.json` is present and `n_articles >= 200`. Methodological lesson: "by design" is a claim about the implementation, not the design doc; verify by reading the runtime.
 
@@ -1270,7 +1423,7 @@ Captured outputs (this is the deploy-claim verification trail the rule requires)
 
 ---
 
-## Stale `curl localhost:8000/health` Verify Snippets Manufacture a Phantom "Scorer Down" Alarm (2026-07-04)
+## [2x] Stale `curl localhost:8000/health` Verify Snippets Manufacture a Phantom "Scorer Down" Alarm (2026-07-04)
 
 **Problem**: While triaging open issues, a routine gpu-server check reported `nexusmind-scorer.service` inactive, nothing on :8000, health returning 000 — read as a production outage. It was not.
 
@@ -1723,7 +1876,7 @@ heredoc (`python3 - <<'EOF'`) so quotes aren't doubly escaped, and single-quote 
 
 **Fix**: `nexusmind.service` has no timer of its own; it is chained off `fluxus-collection.timer` (`systemctl list-timers fluxus-collection.timer`). Read cycle boundaries from `journalctl -u nexusmind.service | grep -E "Starting|Finished"`, never from output filenames. And state the n behind any "verified" — a marker that appears on a 1-article batch has not been tested at 2,000.
 
-### Two agent sessions in one working tree — `git add -A` swept a filter sync into a docs commit (2026-08-03)
+### [2x] Two agent sessions in one working tree — `git add -A` swept a filter sync into a docs commit (2026-08-03)
 
 **Problem**: While one session staged a seven-file llm-distillery→NexusMind filter sync, a second session working in the same NexusMind checkout committed `git add -A` under the message "docs: correct NM#287 status — merged and deployed, not pending" (`c932065`) and pushed it. The commit's content is correct and tested; its message describes about a fifth of what it contains. Anyone reading `git log` for when the LD#93 sync landed will not find it.
 

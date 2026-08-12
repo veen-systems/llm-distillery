@@ -139,11 +139,41 @@ EXEMPTIONS: set[tuple[str, str, str]] = {
     # from REQUIRED_TOP_LEVEL / REQUIRED_SCORING_KEYS, or backfill v5's config.
     # Do not let these sit here indefinitely — an exemption is a tracked debt,
     # not a resolution.
+    #
+    # ── 2026-08-12: `scoring_missing:tiers` RESOLVED BY BACKFILL, exemption removed
+    # below in the same commit as the config fix, per the instruction above.
+    #
+    # The reasoning recorded here ("config's tiers section is read by no code, so
+    # v5 may well be right and this schema stale") was correct about the RUNTIME
+    # and wrong about the cost. No *scoring* code reads it — `production_scorer.py:142`
+    # takes the op-point from `base.TIER_THRESHOLDS`, so cultural_discovery has always
+    # gated correctly at 4.0. But ANALYSIS code reads config.yaml, and an absent block
+    # returns `None` rather than pointing anywhere: a NexusMind session resolving
+    # op-points this way silently dropped cultural_discovery from a cross-language
+    # visibility comparison and reported `visible% = 0.0` for every cohort — a wrong
+    # answer that looked like a finding, not a crash. cultural_discovery was the single
+    # filter most likely to change that result's direction.
+    #
+    # So the lesson generalises the 2026-07-10 "inert config value" one rather than
+    # contradicting it: a config key inert at runtime is NOT thereby harmless, because
+    # the readers that matter may not be the runtime. `config.yaml` agreed with
+    # base_scorer.py on 5 of 6 deployed filters UNTIL THIS COMMIT (6 of 6 since) — a
+    # documentation surface right 83% of
+    # the time earns the trust that makes the 17% expensive.
+    #
+    # The other four stay exempt and stay open: deployment / hybrid_inference /
+    # training are documentation-only with no known reader, and `gatekeepers` has not
+    # been shown to cost anything. Backfill those only with a reason this specific.
+    # cultural_discovery **v6** was backfilled the same day, but it is NOT in
+    # ACTIVE_FILTERS, so THIS SUITE DOES NOT VALIDATE IT. Add it here at cutover,
+    # in the same commit that promotes it — that hand-maintained list lagging is
+    # precisely how the drift above went unseen for six weeks.
+    # (v6 IS covered by tests/unit/test_preflight_deploy_guards.py and by the
+    # deploy-time guard, which is what closes the gap in the meantime.)
     ("cultural_discovery", "v5", "missing_top_level:deployment"),
     ("cultural_discovery", "v5", "missing_top_level:hybrid_inference"),
     ("cultural_discovery", "v5", "missing_top_level:training"),
     ("cultural_discovery", "v5", "scoring_missing:gatekeepers"),
-    ("cultural_discovery", "v5", "scoring_missing:tiers"),
 }
 # Migration B complete (2026-05-04): all 7 active filters conform to the
 # canonical schema. Add an exemption here only with a written justification

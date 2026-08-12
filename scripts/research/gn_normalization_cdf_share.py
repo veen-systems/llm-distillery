@@ -3,7 +3,7 @@
 Normalization is fitted from NexusMind filtered output at
 `raw_weighted_average >= the filter's operating point` (ADR-014,
 scripts/normalization/fit_normalization.py). Google News rows are 100%
-sub-300-char headline echoes that can never be enriched (NM#310). Any that
+sub-300-char headline echoes that **NexusMind's `pre_enrich`** cannot enrich (NM#310 — 35,229 attempts, 0 replacements, because NexusMind has no GN resolver). ⚠️ Scoped 2026-08-12: the unqualified form "can never be enriched" is REFUTED — ovr.news resolves these URLs via Google's `batchexecute` and enriched 74 of 103. Always name the fetcher. Any that
 clear the op-point enter the CDF that maps every real article's rank.
 
 This script measures the effect rather than the share: it fits the repo's own

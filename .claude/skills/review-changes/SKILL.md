@@ -271,21 +271,47 @@ For each changed file:
 
 Default stance: refuted=true. Mark NOT REFUTED only after a thorough attempt.
 
-**State the check before the claim, on any negative.** "0 rows", "never called",
-"nothing reads it", "no other callers", "all clean" — a negative cannot tell a
-real absence from a broken instrument, an empty sample or the wrong population.
-Report each as three things: the claim, the command that produced it, and **what
-a non-empty result would have looked like**. If you cannot state the shape of a
-positive, the claim is not ready to make.
+**A claim that needs a measurement gets one, gets hedged, or is not ready.**
+Two shapes need one. They are the same failure from two sides:
+
+- **Negatives.** "0 rows", "never called", "nothing reads it", "no other
+  callers", "all clean" — a negative cannot tell a real absence from a broken
+  instrument, an empty sample or the wrong population. Report the claim, the
+  command that produced it, and **what a non-empty result would have looked
+  like**. If you cannot state the shape of a positive, the claim is not ready.
+  Where a negative *licenses a loosening* — "no false positives", "nothing was
+  affected" — seed a positive first: a run that finds nothing cannot tell a
+  fixed check from a disabled one.
+- **Absolutes in descriptions.** *every, all, always, never, none, zero, cannot,
+  impossible, no … can, guaranteed* — in a claim about how something
+  **behaves**. An absolute in an *instruction* is a decision and is fine
+  ("never edit the NexusMind copy" prescribes). An absolute in a *description*
+  is a measurement, and it ships unmeasured by default. Each needs a measurement
+  with its scope, a citation, or a hedge — or it is not ready.
+
+**Name the population, not just the number.** The absolute that cost most here
+was scoped to one fetcher and stated of a URL scheme; it propagated into another
+repo as a premise and nearly retired working code. "35,229 of 35,229" was right;
+"so no fetcher change moves it" was the unmeasured half.
 
 This is the sentence to write, not a step to perform — a separate "verify your
-negatives" step is skippable in exactly the cases where it matters. In this repo
-the failure has a name and a catalogue: `filtered_*.jsonl` is 100% passers by
-construction, `data/raw/` is pre-enrichment, and a host is a source with an
-exclusion list too. Every one of those produced a clean-looking negative.
+claims" step is skippable in exactly the cases where it matters. In this repo the
+failure has a name and a catalogue: `filtered_*.jsonl` is 100% passers by
+construction, `data/raw/` is pre-enrichment, a host is a source with an exclusion
+list too, and `docs/adr/` exists in more than one repo. Every one produced a
+clean-looking negative. **Every one was a hand-built population** — prefer one
+the pipeline already computes.
+
+**A claim whose measurement cannot be taken yet is a finding in its own right.**
+Report it as one, at the moment you make it — not in the write-up afterwards,
+which is where it gets reconstructed from memory. Do not register it here: this
+lens reports, it does not write, and a hypothesis needs a Method and a Revisit
+trigger a diff reviewer is not placed to supply. The home is the relevant
+`memory/*-hypotheses.md` topic file, written during `/curate`.
 
 Report: REFUTED (with failure scenario) or NOT REFUTED. Every negative carries
-its command and the shape of a positive.
+its command and the shape of a positive; every absolute about behaviour carries
+its measurement, its citation, or its hedge.
 ```
 
 ### Lens: doc-accuracy (MEDIUM and HIGH)

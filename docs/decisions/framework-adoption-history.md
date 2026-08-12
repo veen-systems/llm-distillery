@@ -14,6 +14,51 @@ Upstream changelog: https://github.com/ducroq/agent-ready-projects/blob/master/C
 
 ---
 
+## v1.24.0 + v1.25.0 (both released 2026-08-12) — triaged and adopted 2026-08-12 via `/update-drift`
+
+**3 adopted, 0 declined, 1 not applicable, 3 already in force.**
+
+Clone checked at `889b038`, in sync with its origin. Two releases behind, both
+shipped the same day we adopted v1.23.0 — upstream velocity, not neglect.
+
+| From | What | Outcome |
+|---|---|---|
+| v1.24.0 | `curate` Step 0 reads metadata, not documents | **Already in force** — global `curate` verified byte-identical to the framework's tracked copy by `diff`, not by reading its description |
+| v1.24.0 | `[RESOLVED]` + recurrence count belong in an entry's **heading** | **Adopted** → `memory/gotcha-log.md`. Measured before acting: 5 resolution markers were already in headings but in **3 incompatible formats**, and recurrence was **7 in bodies, 0 in headings**. Normalised all five to a `[RESOLVED…` prefix findable by one grep, tagged 5 headings (`[5x verify-the-call-path]`, `[4x verify-the-call-path]`, `[3x restated-set drift]`, two `[2x]`), and documented the forms in the file's template comment |
+| v1.24.0 | lint rule 8 — ratchet adopter-facing template sizes | **Not applicable** — no `templates/` dir; we ship no templates upstream |
+| v1.25.0 | adversarial lens: one rule — a claim needing a measurement gets one, gets hedged, or is not ready | **Adopted** → `.claude/skills/review-changes/SKILL.md`. We already had the negatives half (v1.22.0); the **absolutes-in-descriptions** half is new. Grounded in the same day's own failure rather than upstream's example — see below |
+| v1.25.0 | `hypothesis-log` gains a trigger in the working path | **Adopted, adapted** — we have no `templates/hypothesis-log.md`; we have per-topic `memory/*-hypotheses.md`. Landed as a lens clause: report an unmeasurable claim as a finding **at the moment it is made**, register during `/curate`, home is the topic file. This was the exact gap hit hours earlier — a hypothesis noticed while writing results up, not when the claim was made |
+| v1.25.0 | shape rule: never end a bolded phrase with a `**`-suffixed glob | **Already in force — nothing to fix.** 0 hits across 451 markdown files. **Verified by execution with a seeded control**: my first two sweep patterns were wrong (one covered only the single-glob shape; the second had the backticks in the wrong order and matched **0 of 2** known positives). Only the third — 2/2 positives, 0/2 safe lines — makes "0 hits" mean anything |
+| v1.25.0 | gotcha-log "2–3 lines" rule **withdrawn** | **No action, and it vindicates this log.** llm-distillery IS the cited evidence upstream: 203 entries, median ~1,200 chars, 35% >1,500. Recorded the withdrawal and the real signal (>3,000 chars) in the file's template comment |
+
+### Why the absolutes rule was adopted on our own evidence, not upstream's
+
+Upstream's gate for shipping it was that it catch something in a repo other than
+its own. It did — and independently, on the same day, this repo produced a
+textbook instance without knowing the rule existed. A measured claim
+("NexusMind's `pre_enrich` attempted 35,229 Google News rows and replaced zero")
+was written up with an unmeasured absolute attached: *"a property of the URL
+scheme, so no fetcher change moves it."* The measurement was scoped to one
+fetcher; the absolute was stated of the scheme. It propagated into
+`ovr.news#312` as a premise about a **different** resolver — one that
+demonstrably works, 74 of 103 — and licensed a "do not fix the GN resolver"
+recommendation that would have retired a capability carrying 22 of 38 published
+articles. Refuted by a peer re-measuring against their own source.
+
+That is the rule's whole thesis: the number was right, the absolute rode along
+unmeasured, and nothing in the previous lens asked for it. Hence the extra clause
+we added beyond upstream's text — **name the population, not just the number.**
+
+### Finding sent upstream
+
+v1.24.0's Step 0.3 reconciles its heading count against
+`grep -c '^\*\*Problem\*\*'` as ground truth. On this log that reads **203**
+against **206** both-level headings. Three orphans: one real section
+(`## The unreachable-mechanism catalogue`) and **two real entries that do not use
+the `**Problem**` shape**. So the reconcile under-counts this log by 2 and will
+report a mismatch every run — the same class as the level-blind grep v1.24.0
+itself shipped to fix.
+
 ## v1.22.0 + v1.23.0 (both released 2026-08-11) — triaged 2026-08-12 via `/update-drift`
 
 **2 adopted, 0 declined, 1 not applicable, 2 already in force, 1 deferred.**
