@@ -115,6 +115,45 @@ passers by construction. Already in CLAUDE.md.
 GPU scorer's log counts them — but they never reach the file and never reach
 ovr.news.
 
+### The exclusion list is NOT the same across filters, and one label matters to exactly one filter (measured 2026-08-12)
+
+Read off the deployed configs on sadalsuud. **Only `investment_risk v6` excludes
+`academic`, and only it excludes `proxy_aggregator`**; the other five exclude
+`code_repo`, `developer_aggregator`, `firehose_aggregator`, `eval_aggregator` and
+nothing else. `uplifting v7` has no `source_filter` block at all.
+
+So "a `type_classification` change affects what reaches the filters" is **false
+for five of six by construction** — the label is not in their lists. This came up
+answering FluxusSource#144 (a plurality rule replacing any-intersection, so one
+science section stops academicising a whole publisher, plus GN feeds without a
+`site:` operator now labelled `proxy_aggregator`). Measured over 1,226,118 rows,
+`collected_date` ≤ 2026-08-10 vs ≥ 2026-08-12 (08-11 excluded — the scorer is
+batch-only, so the code date and the data date are different quantities and the
+regeneration window cannot be pinned tighter than 11:13–18:45 CEST):
+
+| `type_classification` | pre | post |
+|---|---|---|
+| `academic` | **25.4%** | **8.7%** |
+| `proxy_aggregator` | **0%** | **15.7%** |
+| `news_major` | 25.4% | 17.9% |
+| `unknown` | 29.3% | 37.9% |
+
+**`investment_risk v6` excludes both labels, so its excluded share went ~25.4% →
+~24.4% — the volume barely moved and the composition changed.** Wrongly-
+academicised publishers now reach it; GN proxy rows are now correctly kept out.
+That is a correctness win, not a volume win, and it is confined to one filter.
+
+⚠️ **NexusMind's `scripts/stamp_census.py:20` says `type_classification` is
+"stamped, ZERO consumers → an A/B".** That is contradicted by the enforcing
+caller at `scripts/main.py:1313` with `shadow_mode: False`. This file is right and
+that note is stale — do not reason from it.
+
+⚠️ **And this file is the wrong instrument for measuring a
+`type_classification` change's effect on scores**, because the rows whose
+treatment changed are exactly the rows that appear or disappear from it. Use the
+pipeline's own excluded counts per cycle, or
+`NexusMind/scripts/validate_shadow_exclusions.py`.
+
 **A sixth excluded type SHIPPED 2026-08-08 (LD#101): `eval_aggregator`.**
 *(Live in all 6 filters on sadalsuud, `shadow_mode: false`. Verified by executing
 `apply_source_filter` against the deployed config: `eval_aggregator` →
