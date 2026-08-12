@@ -264,7 +264,7 @@ everything past 90 days — and the `.suffix` half looks exactly like a one-char
 typo fix.
 **Fix**: Owner chose deletion of the purge loop over repairing the config (my
 suggestion, withdrawn — "documented as broken" is the state that invites the next
-person to repair it and fire it). `tests/test_no_archive_purge_164.py` at
+person to repair it and fire it). `tests/test_no_archive_purge_164.py` <!-- placeholder --> at
 91/365/731/5000 days; ADR-003 amended naming both consumers.
 **Durable lesson**: my register said *verify a mechanism actually runs*. It did not
 say **verify that a mechanism NOT running is what is protecting you.** Two bugs can
@@ -384,7 +384,7 @@ from NexusMind 2026-04-16, unnoticed 18 days. Edit the llm-distillery copy and
 deploy; never the NexusMind copy.
 
 ## A peer session's commit convention saved a production cycle by accident (2026-08-11)
-**Problem**: `deploy_filters.sh` runs as `nexusmind.service` `ExecStartPre` and is
+**Problem**: NexusMind's `deploy_filters.sh` <!-- placeholder --> runs as its `nexusmind.service` `ExecStartPre` and is
 fail-closed: it `exit 1`s when committed state differs from origin **and** the
 scorer tree has uncommitted changes. A working-tree edit to `filters/` on sadalsuud
 can therefore stop the cycle running at all.
@@ -399,7 +399,7 @@ and `git rev-list --count origin/main..HEAD` on sadalsuud.
 
 ## A `.bak` file left beside a patched source blocked the whole pipeline (2026-08-08)
 
-**Problem**: `nexusmind.service` FAILED at 16:07 and would have failed every 4h. Not a crash — the fail-closed deploy gate refused to ship, because `src/scoring/gpu_client.py.bak_nm300third_20260808` was untracked under a guarded path.
+**Problem**: `nexusmind.service` <!-- placeholder --> FAILED at 16:07 and would have failed every 4h. Not a crash — the fail-closed deploy gate refused to ship, because `src/scoring/gpu_client.py.bak_nm300third_20260808` was untracked under a guarded path.
 **Root cause**: I made `.bak` copies while patching, then *deliberately kept them* as a rollback for an unverified fix. The commits were already pushed, so git was the rollback and the `.bak`s were redundant — the reasoning was wrong at the moment it felt most prudent.
 **Fix**: Delete them; the gate is right. Patch in place and rely on git, or write backups **outside the repo** (`/tmp/…/scratchpad`). Verify with `git status --porcelain` before leaving a repo that a service deploys from — clean means clean, not "only my scratch files".
 
@@ -1059,7 +1059,7 @@ Plus: the invariant itself was **too strict** (`raw_min` is the smallest score *
 
 **Root cause**: Windows Git Bash / MSYS runtime doesn't cleanly hand rsync's fd management to the Tailscale SSH subprocess. Specific to the workstation runtime, not gpu-server. This is an old gotcha (Feb 2026, originally fixed by switching to scp) that recurred when NexusMind switched the deploy script back to rsync (Apr 2026, to preserve model/ directories via `--exclude`).
 
-**Fix**: Run `NexusMind/deploy_filters.sh` from a Linux host (sadalsuud) instead of Windows. `llm-distillery/scripts/remote_deploy.sh` wraps the SSH hop — single command from the workstation, Linux→Linux rsync inside. Structurally unreachable on Windows now.
+**Fix**: Run `NexusMind/deploy_filters.sh` from a Linux host (sadalsuud) instead of Windows. `llm-distillery/scripts/remote_deploy.sh` <!-- placeholder --> wraps the SSH hop — single command from the workstation, Linux→Linux rsync inside. Structurally unreachable on Windows now.
 
 ---
 
@@ -1321,7 +1321,7 @@ Captured outputs (this is the deploy-claim verification trail the rule requires)
 
 **Lessons captured by NexusMind during the implementation** (cross-applicable here):
 
-1. **Hash-gated deploy scripts hide regressions outside the hashed paths.** `NexusMind/deploy_filters.sh` short-circuits if its inputs hash matches the previous run. The hash didn't include `src/scoring/`, so a wrapper-only change never busted it — and a fluxus-tick-triggered `nexusmind.service` ExecStartPre would silently re-deploy the *previous* (broken) state from sadalsuud's main branch, rolling back gpu-server every tick until the new code reached main. Compounding factor: `systemd`-driven self-correction in the wrong direction. Mitigation upstream of any future similar work: the hash MUST cover every directory whose contents the deploy script copies. Fix landed in NexusMind commit `66423ec`.
+1. **Hash-gated deploy scripts hide regressions outside the hashed paths.** `NexusMind/deploy_filters.sh` short-circuits if its inputs hash matches the previous run. The hash didn't include `src/scoring/`, so a wrapper-only change never busted it — and a fluxus-tick-triggered `nexusmind.service` <!-- placeholder --> ExecStartPre would silently re-deploy the *previous* (broken) state from sadalsuud's main branch, rolling back gpu-server every tick until the new code reached main. Compounding factor: `systemd`-driven self-correction in the wrong direction. Mitigation upstream of any future similar work: the hash MUST cover every directory whose contents the deploy script copies. Fix landed in NexusMind commit `66423ec`.
 2. **`HybridScorer` and `FilterBaseScorer` have asymmetric public surfaces.** NexusMind's wrapper threw three layered `AttributeError`s in production because `HybridScorer` doesn't expose `_get_filter_dir`, `FILTER_NAME`, or `_assign_tier` — those live on the `FilterBaseScorer` it composes via `stage2_scorer`. The wrapper now derives all three independently (filter_dir from `inspect.getfile(type(base))`, name from path, tier_thresholds from `base.TIER_THRESHOLDS` with `base.stage2_scorer.TIER_THRESHOLDS` fallback). Mitigation here: this gotcha follows up with a llm-distillery commit promoting `filter_dir` to a public property on both abstract bases so wrappers can rely on a stable API.
 
 **Meta-pattern (the load-bearing lesson)**: a manifest that says "this file is expected to diverge silently between repos" is, in steady state, indistinguishable from "this file's relationship is unmaintained." If divergence isn't actively maintained — or if the divergence reason resolves (BFloat16 casts back-ported, normalization wrapper extracted) — the entry stops protecting anything and starts hiding regressions. Default to extraction (composition over inheritance, wrapper classes over special-case manifests). Reserve the manifest for short-lived divergence with a tracked issue and a deadline; empty is the steady state. Cross-references: `.nexusmind-owns` updated header (2026-05-04), CLAUDE.md Hard Constraints amended, ADR-014 amended, NexusMind merge `0e80d92`, original llm-distillery#50.
@@ -1425,9 +1425,9 @@ Captured outputs (this is the deploy-claim verification trail the rule requires)
 
 ## [2x] Stale `curl localhost:8000/health` Verify Snippets Manufacture a Phantom "Scorer Down" Alarm (2026-07-04)
 
-**Problem**: While triaging open issues, a routine gpu-server check reported `nexusmind-scorer.service` inactive, nothing on :8000, health returning 000 — read as a production outage. It was not.
+**Problem**: While triaging open issues, a routine gpu-server check reported `nexusmind-scorer.service` <!-- placeholder --> inactive, nothing on :8000, health returning 000 — read as a production outage. It was not.
 
-**Root cause**: MEMORY.md described gpu-server as running a *persistent* scorer daemon and embedded two `<!-- verify: -->` snippets that `curl http://localhost:8000/health`. The architecture had since moved to an on-demand chain (FluxusSource harvest → NexusMind pipeline on sadalsuud → gpu-server scorer spun up per run → exits). `nexusmind-scorer.service` is a `static` unit; **inactive between runs is the healthy resting state**. The verify snippets only answer mid-run, so they FALSE-FAIL the rest of the time — and read as an outage.
+**Root cause**: MEMORY.md described gpu-server as running a *persistent* scorer daemon and embedded two `<!-- verify: -->` snippets that `curl http://localhost:8000/health`. The architecture had since moved to an on-demand chain (FluxusSource harvest → NexusMind pipeline on sadalsuud → gpu-server scorer spun up per run → exits). `nexusmind-scorer.service` <!-- placeholder --> is a `static` unit; **inactive between runs is the healthy resting state**. The verify snippets only answer mid-run, so they FALSE-FAIL the rest of the time — and read as an outage.
 
 **Fix**: Confirmed via `FluxusSource/memory/nexusmind.md` (authoritative) + gpu-server `systemctl show` (`Result=success`, ran ~11min earlier that day). Corrected MEMORY.md architecture prose to the on-demand chain model, and replaced both curl-based verify snippets with disk-based checks (`test -d ~/NexusMind/filters/<f>/v<N>/model`) that hold regardless of run state. Commit `ca23efa`.
 
@@ -1602,14 +1602,14 @@ guard), unsourced-precision stat (feedback-claim-requires-verify).
 `Connection refused` on fixtures 4-7 (first 3 passed) and the OOM classifier found nothing, so
 the script exited 1 claiming "weights may be returning wrong values". The scorer had not
 crashed: journalctl showed no death signature at all.
-**Root cause**: The 16:08 `nexusmind.service` cycle started during the manual run; its
+**Root cause**: The 16:08 `nexusmind.service` <!-- placeholder --> cycle started during the manual run; its
 ExecStartPre (the same deploy script) ran `systemctl stop nexusmind-scorer` mid-smoke. Two
 deploy chains share the scorer with no mutual exclusion — a manual deploy always races the
 timer, and the failure it produces (clean stop, no journal evidence) points AWAY from the
 actual cause.
 **Fix**: Benign this time — the canonical cycle's own deploy completed green minutes later
 (status=0/SUCCESS), which is the stronger validation anyway. Practice: before a manual deploy,
-check proximity to the next cycle (last `nexusmind.service` start + 4h); if close, just pull
+check proximity to the next cycle (last `nexusmind.service` <!-- placeholder --> start + 4h); if close, just pull
 and let ExecStartPre do it. A connection-refused smoke failure with no crash evidence =
 check for a concurrent deploy first.
 
@@ -1656,7 +1656,7 @@ rules, anchor with a leading slash unless every-depth matching is genuinely inte
 **Fix**: Gate emptiness on `len(content.strip()) < 25` (characters). Also split the junk signatures into STRONG (single-hit) vs WEAK (needs ≥2, or one in a ≤8-word stub) so genuine short in-lens briefs mentioning one topical phrase ("cookie consent") survive. Caught by the round-1 code-review battery; regression tests added. Rule: any length/emptiness heuristic on multilingual text must be character-based, and English signature regexes must never be the *only* thing standing between content and the model — they let non-English junk through (acceptable; the oracle catches it) but must never DROP non-English real content.
 
 ## A scored-gate defined over the WRONG sentinel reports a false PASS — RECURRENCE (2026-07-20)
-**Problem**: The staged `partB_gate.py` (pre-spend gate on solutions v4; a session scratch script staged on the remote host, never committed to this repo) computed positives as `solution_type != "not_a_solution"`, but the v4 prompt emits `solution_type == "none"` for negatives (`content_type == "not_a_solution"` is the *other* field). So the sentinel never matched → the gate counted **all 160 rows as positive → reported 100% positive → PASS** on its first run. A second bug in the same script: `solution_concreteness` is a scored dimension, nested `{score, evidence}`, but the gate did `(sa(r).get("solution_concreteness") or 0) >= 7` on the dict → `TypeError`. Correct numbers were 39% positive / 61% not_a_solution (a literal `<50%` gate FAIL).
+**Problem**: The staged `partB_gate.py` <!-- placeholder --> (pre-spend gate on solutions v4; a session scratch script staged on the remote host, never committed to this repo) computed positives as `solution_type != "not_a_solution"`, but the v4 prompt emits `solution_type == "none"` for negatives (`content_type == "not_a_solution"` is the *other* field). So the sentinel never matched → the gate counted **all 160 rows as positive → reported 100% positive → PASS** on its first run. A second bug in the same script: `solution_concreteness` is a scored dimension, nested `{score, evidence}`, but the gate did `(sa(r).get("solution_concreteness") or 0) >= 7` on the dict → `TypeError`. Correct numbers were 39% positive / 61% not_a_solution (a literal `<50%` gate FAIL).
 **Root cause**: **Second occurrence of the 2026-07-17 "gate defined over a string the oracle never emits" gotcha** (that one: config `not_a_solution_article` reason; this one: gate `!= "not_a_solution"` vs actual `"none"`). Same shape: the gate script was authored against an *assumed* output schema, never diffed against a real scored row. The nested-dim crash is the same "read the field the scorer actually writes" failure in structural form.
 **Fix**: Ran the gate against a real DeepSeek-scored sample, saw the nonsensical 100%, traced both bugs. Fixed `is_pos` to `not in ("none", None)` and `conc()` to unwrap `.score`. **Rule (now 2×): before trusting ANY scored-gate PASS, run it on one real oracle-scored row and eyeball the numbers — a gate whose positive-rate reads 0% or 100% is almost always keyed on the wrong sentinel, not a real result. Diff the gate's literal enum strings + field nesting against an actual scored record, not the prompt's prose.** Promoted to MEMORY.md.
 
@@ -1716,7 +1716,7 @@ the outer double-quoted `-c` string (and pre-3.12 f-strings can't reuse the deli
 **Root cause**: nested-quote hell in one-liners shipped over ssh; the f-string's `{...}` contains
 double-quoted dict keys / format specs that clash with the command's own quoting.
 **Fix**: don't ship non-trivial python as an ssh `-c` one-liner. Write it to a `.py` file, `scp` it,
-and run `python3 file.py` (used for `gen_ab.py`, `gate_diag.py` — both session scratch scripts living in gpu-server's `~/llm-distillery/`, not in this repo). If a one-liner is unavoidable, use a
+and run `python3 file.py` (used for `gen_ab.py`, `gate_diag.py` — both session scratch scripts living in gpu-server's `~/llm-distillery/`, not in this repo). <!-- placeholder --> If a one-liner is unavoidable, use a
 heredoc (`python3 - <<'EOF'`) so quotes aren't doubly escaped, and single-quote f-string keys.
 
 ### Ollama hogs GPU during training (2026-07-26)
@@ -1736,7 +1736,7 @@ heredoc (`python3 - <<'EOF'`) so quotes aren't doubly escaped, and single-quote 
 
 ### gpu-server Scorer Restart Canceled by systemd (Mid-Run Cycle) (2026-07-28)
 **Problem**: `systemctl restart nexusmind-scorer` failed with "Job canceled" — the service was in the middle of a pipeline run.
-**Root cause**: The `nexusmind-scorer.service` is a `static` unit controlled by `nexusmind.service`'s ExecStartPre. The timer cycle was running; `restart` on a oneshot-dependent unit that's mid-run gets blocked.
+**Root cause**: The `nexusmind-scorer.service` <!-- placeholder --> is a `static` unit controlled by `nexusmind.service`'s ExecStartPre. The timer cycle was running; `restart` on a oneshot-dependent unit that's mid-run gets blocked.
 **Fix**: Use `systemctl start` (not `restart`) if the service is inactive, or wait for the cycle to complete. Check with `systemctl is-active` first.
 
 ### sentence_transformers Not Available Locally — Smoke Tests Need gpu-server (2026-07-28)
@@ -1874,7 +1874,7 @@ heredoc (`python3 - <<'EOF'`) so quotes aren't doubly escaped, and single-quote 
 
 **Root cause**: Assumed the cycle schedule from the *filtered-file timestamps* (`:48–:57`), which are when a cycle **finishes**. Cycles start at `:07–:11` and run ~48 minutes. The last real cycle ended 08:59 CEST, 70 minutes before the 10:08 deploy — so the smoke test was the only post-deploy evidence that could exist, and the smoke test scores exactly one article per filter.
 
-**Fix**: `nexusmind.service` has no timer of its own; it is chained off `fluxus-collection.timer` (`systemctl list-timers fluxus-collection.timer`). Read cycle boundaries from `journalctl -u nexusmind.service | grep -E "Starting|Finished"`, never from output filenames. And state the n behind any "verified" — a marker that appears on a 1-article batch has not been tested at 2,000.
+**Fix**: `nexusmind.service` <!-- placeholder --> has no timer of its own; it is chained off `fluxus-collection.timer` (`systemctl list-timers fluxus-collection.timer`). Read cycle boundaries from `journalctl -u nexusmind.service | grep -E "Starting|Finished"`, never from output filenames. And state the n behind any "verified" — a marker that appears on a 1-article batch has not been tested at 2,000.
 
 ### [2x] Two agent sessions in one working tree — `git add -A` swept a filter sync into a docs commit (2026-08-03)
 
@@ -2132,7 +2132,7 @@ than one reviewer's confidence.
 **Problem**: `ovr.news/tests/ai-disclosure.test.ts` exists to enforce ADR-003's surface table and
 says so in its own header: *"Keep this file in sync with the surface table in ADR-003."*
 Three rows were added to that table and the test file was not touched. Measured: delete
-the entire disclosure block from `Layout.astro` and the suite still passes 1,103/1,103.
+the entire disclosure block from ovr.news's `Layout.astro` and the suite still passes 1,103/1,103.
 
 **Root cause**: the instruction to keep them in sync lived in the *test*, and the work
 happened in the *ADR*. Nothing in the ADR pointed back. A one-directional pointer is
@@ -2148,7 +2148,7 @@ it guards.** A guard nobody has watched fail is a guard nobody has tested.
 
 **Problem**: `/review-changes` in llm-distillery ran a checklist written for the
 *personal notes* repo — tiering on `Nieuw huis/`, `career/jobspy/`, `modellen/*.py`,
-`ovr.news/principes.md` (paths in the *personal notes* repo — `principes.md` is at `personal/Nieuw huis/principes.md`; none of them resolve in this estate, which is the point), and asserting *"the container itself has no git"*, which is false here.
+`ovr.news/principes.md` (paths in the *personal notes* repo — `principes.md` is at `personal/Nieuw huis/principes.md`; none of them resolve in this estate, which is the point <!-- placeholder -->), and asserting *"the container itself has no git"*, which is false here.
 The tier table had to be rewritten mid-run to mean anything. Meanwhile this repo's own
 `.claude/skills/review-changes/` — 219 lines, re-mapped to `filters/common/*.py`,
 `ground_truth/batch_scorer.py` and the gate/normalization scripts — sat unused.
@@ -2227,7 +2227,7 @@ front of you.
 
 **Problem**: Two guards shipped hours apart, both intended to stop tracker/page-furniture images reaching readers (ovr.news#284), and neither did anything.
 
-(a) `looksLikeThirdPartyChrome()` was wired into `extractOgImage` and `validateImageUrl` — correct code, reached on the right paths. But `scripts/summarize.ts` **Step 5 runs after Step 4's image validation** and re-sent `rawArticle.image_url`; `upsertArticle` merges with `image_url = COALESCE(@image_url, image_url)`, and Step 4's rejection had mutated only its own copy of the article. So every rejection was reverted within the same run. **123 stored rows already carried the signature** (`image_url` set, `image_source` NULL), 120 with a summary.
+(a) `looksLikeThirdPartyChrome()` was wired into `extractOgImage` and `validateImageUrl` — correct code, reached on the right paths. But ovr.news's `scripts/summarize.ts` **Step 5 runs after Step 4's image validation** and re-sent `rawArticle.image_url`; `upsertArticle` merges with `image_url = COALESCE(@image_url, image_url)`, and Step 4's rejection had mutated only its own copy of the article. So every rejection was reverted within the same run. **123 stored rows already carried the signature** (`image_url` set, `image_source` NULL), 120 with a summary.
 
 (b) The caller-side fix — re-admit an article to extraction when its cached image is denied — was a **complete no-op, proven by execution**. A re-admitted article still had its `cachedImages` entry, so `extractImagesForArticles` short-circuited on a *second* commit point (`if (cachedImages.has(id)) images.set(...)`) that the "final" guard never sees. Net observable effect: one counter moved to another counter that is summed with it, so even the log line was byte-identical.
 
@@ -2353,7 +2353,7 @@ front of you.
 
 **Root cause**: a subagent supplied a well-sourced, correctly-cited fact (the outage is real, the traceback is real, the line number is right) and an inference attached to it that did not follow. Citation quality is not inference quality, and the correct citation is what made the inference feel checked. Same session: a "only datasketch requires scipy" claim was *true in effect* but reached by an incomplete check — `pandas` and `yfinance` also name scipy, under optional extras that are not requested.
 
-**Fix**: correction posted to FS#134 withdrawing the ground. Noted that the guard which actually addresses the 2026-06-30 failure mode is the venv preflight in `scripts/scheduled_collection.sh` — which uses `import datasketch` as its canary and must be repointed at `feedparser` if the delete proceeds.
+**Fix**: correction posted to FS#134 withdrawing the ground. Noted that the guard which actually addresses the 2026-06-30 failure mode is the venv preflight in `scripts/scheduled_collection.sh` <!-- placeholder --> — which uses `import datasketch` as its canary and must be repointed at `feedparser` if the delete proceeds.
 
 **Lesson**: **this is the "green check answered a different question" pattern inverted — a red failure attributed to the line that reported it.** A crash names where execution stopped, not what was wrong. Before citing a past incident as evidence for a change, check that the change would have prevented it. And when relaying a subagent's finding, the fact and the inference need separate verification — the strength of the citation is what disguises the weakness of the step after it.
 
@@ -2406,7 +2406,7 @@ That is a two-second check and would have saved both rejections.
 
 **Problem**: wrote gate D2 as "candidate's CI lower bound ≥ live's point estimate" before the run. It passed `title_body@0.94/0.90`. This project's established standard (#95) is that two estimates whose **intervals overlap** are not distinguishable — and under that, the same config *ties* live.
 **Root cause**: pre-registration protects against moving the goalposts after seeing data. It does not protect against setting them in the wrong place. I invented a comparison instead of reusing the one the repo already had.
-**Fix**: reported both, stated that the stricter test governs, and did not recommend the flip. Added the overlap test to `score_turnover_panel.py` so the next run prints both.
+**Fix**: reported both, stated that the stricter test governs, and did not recommend the flip. Added the overlap test to `score_turnover_panel.py` <!-- placeholder --> so the next run prints both.
 **Lesson**: **when pre-registering, reuse the project's existing standard rather than authoring a new one.** A rule written by the person who wants the result is the weakest link in an otherwise sound design.
 
 ### `nohup … &` over ssh hung the channel, and the status check ran in the wrong directory (2026-08-09)
@@ -2562,7 +2562,7 @@ That is a two-second check and would have saved both rejections.
 **Fix**: check the thing the downstream code indexes on (`set(dims) - set(cal["dimensions"])`), not the object's truthiness. Belongs to the unreachable-mechanism catalogue below: **9th occurrence, 4th self-inflicted.**
 
 ### A research artifact inside a deployed filter package can stop the scorer (2026-08-10)
-**Problem**: wrote `threshold_sweep.json` into `filters/uplifting/v7/`. `deploy_to_nexusmind.sh:137` is an unfiltered `cp -r`, and `--dry-run` copies **without** committing — leaving it untracked under `filters/`, where `deploy_filters.sh`'s `scorer_untracked_blocking()` runs in the every-4h `ExecStartPre`. The scorer would refuse to start, and the script's own printed cleanup (`git checkout -- .`) does not remove untracked files.
+**Problem**: wrote `threshold_sweep.json` <!-- placeholder --> into `filters/uplifting/v7/`. `deploy_to_nexusmind.sh:137` is an unfiltered `cp -r`, and `--dry-run` copies **without** committing — leaving it untracked under `filters/`, where `deploy_filters.sh`'s `scorer_untracked_blocking()` runs in the every-4h `ExecStartPre`. The scorer would refuse to start, and the script's own printed cleanup (`git checkout -- .`) does not remove untracked files.
 **Root cause**: treated a filter directory as a folder rather than as a deploy surface.
 **Fix**: evidence goes in `docs/evidence/`. **`ground_truth_gate.json` still sits in every filter package and carries the same hazard** — unfixed, pre-existing.
 

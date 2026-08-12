@@ -32,3 +32,23 @@ framework_reconciliation: |
     reference in that frontmatter, not just its immediate neighbours. Bounded
     because frontmatter is short and hand-maintained; it can never absorb a
     reference in the document body.
+
+## PLACEHOLDER SKIP — the failures this loosening NEWLY PERMITS (v1.23.0 / #45)
+
+A marker is an assertion of *intent*, and a wrong one is not detectable. So these
+seed the ways it can go wrong, not the ways it works.
+
+13. **stale marker, explicit form** — marker on a path that DOES resolve. Must be a
+    FINDING, not a skip: mislabelling is how a real break gets hidden.
+    `scripts/deployment/verify_filter_package.py` <!-- placeholder -->
+14. **stale marker, angle-bracket form** — an angle segment on a path that resolves
+    is caught the same way: `tests/unit/<test_normalization_invariant.py>`
+15. **marker covering no path** — a marker that silently does nothing is the exact
+    failure this step is built against. Must be a FINDING. <!-- placeholder -->
+16. **unmarked break sharing a marked line** — span-scoping must cover only the
+    nearest preceding path. `never_existed_alongside.py` and
+    `docs/<slug>.md` <!-- placeholder --> on one line: the first must still be caught.
+
+## PLACEHOLDER SKIP — must land in the COUNTED skip section, not vanish
+17. genuine instructional placeholder: `filters/<name>/<version>/config.yaml`
+18. genuine host-side unit, marked: `nexusmind-scorer.service` <!-- placeholder -->

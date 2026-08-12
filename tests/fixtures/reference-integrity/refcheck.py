@@ -19,13 +19,30 @@ SIBLING_ROOTS = [os.path.dirname(ROOT), os.path.dirname(os.path.dirname(ROOT))]
 import os as _o
 DOCS = ["CLAUDE.md", "memory/MEMORY.md", "memory/gotcha-log.md"] if not _o.environ.get("SEED") else [_o.environ["SEED"]]
 
-EXT = {"md","py","json","jsonl","yaml","yml","sh","ps1","ini","txt","toml",
+EXT = {"md","py","json","jsonl","yaml","yml","sh","ps1","ini","txt","toml","js","jinja","astro","ts",
        "cfg","sql","ts","tsx","astro","pkl","safetensors","csv","lock","service"}
 PRUNE = {".git","node_modules","venv",".venv","target","__pycache__",".mypy_cache"}
 STATE_DIRS = ("data/","state/","cache/","logs/","run/","var/","artifacts/")
 STATE_SHAPE = re.compile(r"(_state\.json|_health\.json|\.pid|\.sock)$")
 
-PATH_RE = re.compile(r"`([A-Za-z0-9_][A-Za-z0-9_./+-]*\.(?:" + "|".join(EXT) + r"))`")
+# NOTE the char class ADMITS < and >, and allows a trailing >. Without that,
+# angle-bracket placeholders (`filters/<name>/<version>/config.yaml`) are never
+# EXTRACTED, so "not reported" silently means "never checked" -- indistinguishable
+# from a working skip. Caught by seed cases 14 and 17 on 2026-08-12.
+PATH_RE = re.compile(r"`([A-Za-z0-9_<][A-Za-z0-9_./+<>-]*\.(?:" + "|".join(EXT) + r")>?)`")
+# v1.23.0 (#45) — paths that were never meant to resolve: instructional
+# placeholders, files a runbook tells the reader to create, units owned by
+# another repo. Ported from the framework's copy rather than swapped for it:
+# ours adds the generic-artifact-name class, which upstream lacks, and a plain
+# swap re-reported 33 `config.yaml` matches as collisions.
+PLACEHOLDER_RE = re.compile(r"<!--\s*placeholder\s*-->")
+ANGLE_SEG_RE   = re.compile(r"<[^>]+>")
+SPAN_RE        = re.compile(r"`[^`]*`")
+def _mask_spans(line):
+    """Blank code spans, preserving offsets, so a marker MENTIONED inside
+    backticks (this file, or any doc explaining the convention) is not read as
+    a marker in use."""
+    return SPAN_RE.sub(lambda m: " " * len(m.group(0)), line)
 # spans whose paths are ASSERTED ABSENT — scoped to the span, never the line
 #
 # 2026-08-11: added the "we keep no X" family. The audit reported CLAUDE.md's
@@ -107,7 +124,7 @@ def rung4(frag, ctx):
 
 AUTOMEM=os.path.expanduser("~/.claude/projects/"
     + ROOT.replace("/", "-") + "/memory")
-findings, resolved, skipped, generic = [], [], [], []
+findings, resolved, skipped, generic, placeheld = [], [], [], [], []
 seen_ext=set()
 for doc in DOCS:
     text=open(doc if os.path.isabs(doc) else os.path.join(ROOT,doc)).read()
@@ -133,9 +150,37 @@ for doc in DOCS:
     for ln,line in enumerate(lines):
         ctx=" ".join(lines[max(0,ln-1):ln+2])
         if fm_end and ln<fm_end: ctx=fm_ctx
+        # SPAN-scoped, not line-scoped: a marker covers the nearest eligible
+        # path BEFORE it. Line-scoping relabels a co-located genuine break as
+        # intentional -- the defect already measured once for strikethrough.
+        placeheld_frags=set()
+        eligible=[m for m in PATH_RE.finditer(line)]
+        for pm in PLACEHOLDER_RE.finditer(_mask_spans(line)):
+            before=[m for m in eligible if m.end()<=pm.start()]
+            if before: placeheld_frags.add(before[-1].group(1))
+            else:
+                findings.append((doc,f"(line {ln+1})",
+                    "PLACEHOLDER MARKER COVERS NO PATH -- it is span-scoped and takes the "
+                    "nearest backticked path before it. Either none is there, or the token "
+                    "is not extractable (directory, glob, URL, or an extension outside the "
+                    "whitelist -- that last one is a whitelist gap, not a marker problem)"))
         for m in PATH_RE.finditer(line):
             frag=m.group(1); seen_ext.add(frag.rsplit(".",1)[-1])
             if frag in absent: skipped.append((doc,frag)); continue
+            if frag in placeheld_frags or ANGLE_SEG_RE.search(frag):
+                # A marker on a path that DOES resolve is the failure this skip
+                # newly permits: mislabelling is how a real break gets hidden.
+                # Strip the angle markers before testing resolution: the whole
+                # point of the angle form is that <name> stands for a variable
+                # segment, so `tests/unit/<real_file.py>` -- a real path merely
+                # wrapped in brackets -- must be caught as a mislabel, and it
+                # can only be caught by resolving the DE-ANGLED form.
+                bare=frag.replace("<","").replace(">","")
+                if os.path.exists(os.path.join(ROOT,bare)) or rung2(bare):
+                    findings.append((doc,frag,"STALE PLACEHOLDER MARKER (the path resolves)"))
+                else:
+                    placeheld.append((doc,frag))
+                continue
             if os.path.exists(os.path.join(ROOT,frag)): continue          # rung 1
             h=rung2(frag)
             if len(h)==1: resolved.append((doc,frag,"rung2",h[0])); continue
@@ -164,6 +209,9 @@ for d,f,r,t in sorted(set(resolved)): print(f"  {d:22s} {f:44s} [{r}] -> {t}")
 if not resolved: print("  (none)")
 print(f"\n### GENERIC ARTIFACT NAMES ({len(set(generic))} unique) — bare basenames naming a CLASS of file, not a locator")
 for d,f,n in sorted(set(generic)): print(f"  {d:22s} {f:44s} {n} instances in tree")
+print(f"\n### SKIPPED AS DECLARED-PLACEHOLDER ({len(set(placeheld))} unique) — never meant to resolve; counted, not dropped")
+for d,f in sorted(set(placeheld)): print(f"  {d:22s} {f}")
+if not placeheld: print("  (none)")
 print(f"\n### SKIPPED AS ASSERTED-ABSENT ({len(set(skipped))} unique)")
 for d,f in sorted(set(skipped)): print(f"  {d:22s} {f}")
 if not skipped: print("  (none)")
