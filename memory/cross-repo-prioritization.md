@@ -289,6 +289,37 @@ drifts faster than the issue list. Two "measured" facts in the inherited handoff
 brief were false, and both had already driven an owner decision before anyone
 re-derived them.*
 
+## The refresh mechanism is the defect (2026-08-12, two occurrences in one session)
+
+**Ranking peer-repo work from this file, or from `docs/TODO.md`, is reading a
+snapshot and calling it state.** On 2026-08-12 a NexusMind session corrected me
+twice inside one exchange:
+
+- I recorded NM#314 / PR #317 as "built, neither has run a cycle". It had merged,
+  deployed to sadalsuud ~14:12 CEST 2026-08-11, and run 9 batches.
+- I ranked NM#302 first *and told them it needed review, merge and a cycle*. The
+  commit `24238b7` landed **2026-08-06** and is an ancestor of what production has
+  been running since 2026-08-11.
+
+Both were peer-reported facts, written down accurately, and then decayed. Neither
+this file nor `docs/TODO.md` re-verifies anything; they preserve what was true
+when typed. Their peer named the pattern before I did — *"twice in two days from
+the same cause suggests the staleness is systematic rather than incidental"* — and
+they were right.
+
+**The rule, therefore: before ranking, recommending, or describing work in a repo
+that is not this one, query that repo.** `gh issue view`, `gh pr list --state
+merged`, `git log`, `git merge-base --is-ancestor` — one command each, and they
+answer what no local document can. And when a peer-reported fact is written here,
+**stamp it as peer-reported with its date**, so the next reader knows it is a
+snapshot rather than a check.
+
+Note what saved neither occurrence: the argument was right both times. The reason
+to rank #302 first — a log that misreports disposition is a data source with an
+undocumented exclusion, and everything drawn from it inherits the error silently —
+held regardless of branch state. **A sound argument on stale logistics still wastes
+the recipient's time**, and it is the half that looks most like competence.
+
 <!-- verify: tot=0; for r in veen-systems/llm-distillery ducroq/NexusMind ducroq/ovr.news ducroq/FluxusSource veen-systems/persuasion-scorer veen-systems/pipeline-atlas; do n=$(gh issue list -R $r --state open --limit 400 --json number --jq 'length'); tot=$((tot+n)); done; echo "TOTAL: $tot" -->
 
 ---
