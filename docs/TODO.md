@@ -1,13 +1,24 @@
 # LLM Distillery - TODO
 
-## 🔵 NEXT SESSION — start here. Three of the four rulings are made; Arm A is the only runnable work.
+## 🔵 NEXT SESSION — start here. Arm A is DONE and closed #105's cd half. What remains is one $0.40 follow-up and two owner calls.
 
 **Session of 2026-08-12 morning: the owner ruled on three of the four open
-items.** Nothing is deployed and nothing is pending deployment.
+items. Afternoon: #109 arm A built and run — WITHIN NOISE.** Nothing is deployed
+and nothing is pending deployment; arm A spent $1.37 of oracle budget and touched
+no filter package.
+
+**Carry forward from arm A, independent of cd v5:** ν, the **within-oracle**
+run-to-run floor on a cd-lens population, is **0.436 mean / 2.10 max** at
+temperature 0.3, measured by scoring 40 articles twice. It is **not** #95's 0.16
+— that is a *student* batch-composition band and a different quantity. Any future
+cross-oracle claim needs a gap above ~0.44 to mean anything, and the floor is
+**arm-asymmetric** (0.238 on off-lens rows vs 0.634 on on-lens rows, n=20 each),
+because off-lens rows return zeros from both runs and agree trivially.
 
 | # | What | State |
 |---|---|---|
-| **#109 Arm A** | **APPROVED 2026-08-12 — this is the one thing that can be built.** `cultural_discovery v5` cross-oracle re-score: Gemini Flash against DeepSeek-stored labels, matched control on stored-label band (DiD per #92), source-stratified with inverse-probability weighting (#108 is the precedent, not optional), n=150/group, ~$1.20. Roughly half a session of build. **The cd v5 splits are NOT on the workstation — they live on b650-gpu at `/home/jeroen/llm-distillery/datasets/training/`.** Nothing is blocked on it: cd v6 is a repackage, not a retrain. Its value is establishing the corpus stopping-condition method `human_thriving` v8 will need. | **Runnable** |
+| ~~**#109 Arm A**~~ | **DONE 2026-08-12 — verdict WITHIN NOISE, and it is a BOUNDED null.** 150/150 matched pairs, 300/300 rows scored, 0 errors. `MAD_refused` 0.8325 vs `MAD_passed` 0.8370, `D` = −0.0045, CI **[−0.216, +0.195]**, against a **measured** within-oracle floor **ν = 0.436** — the CI's widest excursion sits *below* the noise floor, so no interpretable effect can hide in the residual. **Per #109's pre-registered table this closes #105's `cultural_discovery` half: a retrain there is a base-rate change, not a label-quality repair.** $1.37 actual vs ~$1.20 estimated. Evidence: `docs/evidence/2026-08-12-cd-v5-cross-oracle-arm-a.md` (pre-registration committed in `6741da2` *before* any score existed; result in `e01f1f1`). **Scope, which is the easiest thing to lose:** the estimand is the **pair-matchable** refused population, 2,024 of 4,458 (45.4%); the other 54.6% comes from outlets the lens gate refuses wholesale (`eco.sapo.pt` 0.93, `www.theverge.com` 0.90, `www.ad.nl` 0.87) and has no passed rows to match against. | **Closed** |
+| **#109 Arm A follow-up — the op-point band** | **The one thing arm A justifies, ~$0.40, not yet run.** `D` by stored-label band: −0.102 / −0.164 / −0.072 / +0.294 / **+1.044**. The top band `[4.0,10]` moves the *other way* at 2.4× ν, in the direction that would implicate refused labels — and ADR-023 says that thin band at the op-point is the only place a decision lives, while the registered primary is a corpus-wide mean that drowns it. **It is 9 pairs and was NOT pre-registered, so it is a hypothesis, not a result** — do not cite +1.044 as a finding. Band-4 pair capacity is **88**, so a dedicated pre-registered op-point sample settles it for roughly $0.40 using the same two scripts. | **Runnable** |
 | **#109 Arm B** | **HELD on gaps 1–4, and cost is explicitly not the reason** (≤$7 total; $0 on b650 with local judges). Blocking gap is #1: the judge model is never named, and the obvious default (Gemini Flash) is the model that *made* `investment_risk v6`'s labels — that turns Arm B into a self-consistency check. Needs non-Gemini judges; precedent is cd v5's Qwen3:14b / Phi4:14b via `scripts/score_ollama_oracle.py`. Gaps 2–4 have proposed answers on the issue needing confirmation, not invention. | Held |
 | **#106** | **MEASURED 2026-08-12, awaiting the one-line close.** The residue is real, small, and one-way: max normalized Δ from removing all GN mass is **0.128 on `belonging`**, 0.0% of articles move ≥0.5, and every article that crosses the normalized-4.0 enrichment gate crosses it **downward** — i.e. GN presence causes *more* enrichment, the cheap direction under ADR-023. Evidence: `docs/evidence/2026-08-12-gn-share-of-normalization-cdf.md`. **Carry two things out on close:** the largest residue in the set is `nature_recovery v4` at **0.367** and is a small-fit problem (397 rows, 12.1% GN) belonging in **#71**; and ovr#311's guard is prospective, leaving 324 already-published expanded summaries untouched. | **Owner** — close |
 | ~~**#107**~~ | **RULED + CLOSED 2026-08-12: a positive outcome suffices, a pleasant subject is not required.** Also settles the three held adjacent-lens rows (coffee frog, Buenos Aires estancia, Antalya nomadic tents). **#91 is untouched** — there the dominant subject and the scored text *disagree*, which this ruling does not license. Owner intends a retrain anyway; the home for any subject-weighting work is **`human_thriving` v8** (ADR-012 amended, #90), scoped against #91's mechanism. Unmeasured and stated: how often positive-outcome/unpleasant-subject items reach the lens. | Closed |
@@ -60,13 +71,21 @@ gate is the piece with reader impact and is independent of all of it.**
 ovr.news **#310** (withholding rule), **#311** (summaries longer than source — 324
 published, 40 at ~8.9× expansion, **current** at 24 in August; the mechanism behind
 their reader-reported #286), **#312** (silent enrichment refusal).
-NexusMind **#314** (built, PR #317), **#322** (sizes the unmeasured wrong-body region;
-**n=300 is the threshold, n=150 settles nothing**), **#323** (post-scoring enrichment
-does not fan out across lenses — 0.1%, structural). FluxusSource **#145** / **#157**.
+NexusMind **#322** (sizes the unmeasured wrong-body region; **n=300 is the threshold,
+n=150 settles nothing** — unstarted; the LD-side source distribution they asked for
+was sent 2026-08-12 and is **stratum-design input, not a frame**: it is a
+cd-lens corpus published 2025-10-08 → 2026-05-27 and identifies no wrong-body
+candidates), **#323** (post-scoring enrichment does not fan out across lenses —
+0.1%, structural). FluxusSource **#145** / **#157**.
 
-**Peer-owned, do not duplicate:** ducroq/NexusMind#314 (built, PR #317) and #322
-(sizes the unmeasured wrong-body region; **n=300 is the threshold, n=150 settles
-nothing**). Neither has run a cycle. ducroq/FluxusSource#145 / #157.
+⚠️ **The earlier "NM#314 / PR #317 has not run a cycle" line here was STALE and is
+deleted.** Peer-reported 2026-08-12 (their measurement, not verified by me):
+merged and deployed to sadalsuud ~14:12 CEST 2026-08-11, 2 cycles on deploy day,
+9 batches, `lines == candidates` in every one, and running every cycle since —
+outcome-proven, not merely code-proven. Also from that session: NM#326 fixed a
+verifier that printed `PASS` while never running the completeness check, so
+**read its exit code, not its last line** (0 pass / 1 problem found / 2 gate did
+not run).
 
 **Two standing traps re-confirmed today.** Never oracle-score sub-300 content —
 and note the corollary found this session: **difference-of-differences does NOT
