@@ -38,10 +38,37 @@ measured nothing".
 (85 files, 2026-07-29..08-12) has all three families producing rows every day from
 07-31 to **08-08** — then **zero from 08-09 onward, all three at once**. The
 silent emptying had already happened four days before anyone looked, with the gate
-two days out. Cause is upstream and unclassified here: ADR-007 Decisions 2/3 retire
-exactly these three, but a free-tier expiry or a collection fault produce the same
-signature (cf. FluxusSource#163 — a skipped source is recorded as a completed
-collection and exits 0). **Do not attribute it without asking FluxusSource.**
+two days out.
+
+**Cause, resolved the same evening across two sessions — and it was OURS, not
+upstream.** My three candidates (ADR-007 retirement, free-tier expiry, a
+FluxusSource#163-shaped silent skip) were **all excluded by FluxusSource from their
+own health snapshot and logs**: collection ran continuously, `total_failures: 0`,
+`consecutive_skips: 0`, and the two API arms had `total_zero_yields: 0 across 38
+runs`, last yield **2026-08-11T14:06Z** — two days *after* my boundary. They
+emitted 92 rows on 08-09 and 122 on 08-10 while my table read zero. So the break
+was downstream of them, and this side found it in one query: the arms **do** reach
+`data/raw` on 08-09..08-11 (`source_type: api`), and since **2026-08-08 07:43** all
+six live filters exclude `eval_aggregator` (NexusMind `9fb441a`) — exactly these
+arms' `type_classification`. They are collected, ingested and **scored**, then
+dropped by the NM#189 source filter, so they never enter *any* lens store.
+Changing `--lens` recovers nothing.
+
+**The exclusion is correct and deliberate** — the arms are an A/B measurement rig,
+not a content source, and before it they were published: 30 rows in ovr.db
+including a funeral/murder story at tier `high` (llm-distillery#101). Nothing is
+broken. **What broke is the instrument, by a deliberate fix to the thing it
+measures.** ADR-007's retirement (`eda28eb`, in production 2026-08-11 16:56 CEST)
+is real but arrives *after* the boundary, so it is the second cause, not the first.
+
+**The stale comment that would have sent the next reader the wrong way**: this
+script's `--lens` help said solutions is the default *because* "its
+`excluded_source_types` match nothing that exists, so its store drops no rows
+(measured 2026-08-06)". True when written, falsified by our own change 48 hours
+later, and it is precisely the "a comment explaining why code is safe is a claim
+like any other" trap. Both that rationale and a second stale claim in the same
+docstring (`content_length` is never persisted — fixed 2026-08-08 17:10) are now
+corrected in place with their expiry dated.
 
 **Fix**: the harness now names every empty arm before printing anything, and
 **refuses with exit 2** when all arms are empty rather than presenting a

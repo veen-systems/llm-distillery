@@ -42,8 +42,13 @@ Note replacement only requires the fetched text to beat 300 chars and be longer
 than the original (`article_fetcher.py:503`), so an ENRICHED row can still sit
 under 500 and correctly counts as a failure for C.
 
-Do NOT use `content_length` — the llm-distillery#93 scoring-time stamp is
-computed and then lost before persistence (0 of 50,605 rows; ducroq/NexusMind#300).
+Do NOT use `content_length` for any window ending on or before 2026-08-08 — the
+llm-distillery#93 scoring-time stamp was computed and then lost before persistence
+(0 of 50,605 rows; ducroq/NexusMind#300). **That is FIXED as of the 2026-08-08
+17:10 cycle** and the stamp now populates 100% of rows in all six filters
+(re-verified 2026-08-12: 3,242/3,242 on `belonging`). Rows written before that
+cycle still have it absent, so the derivation above remains the portable one.
+It lives at `nexus_mind_attributes.<lens>.content_length`, never `analysis.*`.
 
 Unit of analysis
 ----------------
@@ -97,10 +102,16 @@ def arm_of(source: str, url: str):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--lens", default="solutions",
-                    help="which filtered/<lens>/ store to walk. Any lens sees every "
-                         "scored article; solutions is the default because its "
-                         "excluded_source_types match nothing that exists, so its "
-                         "store drops no rows (measured 2026-08-06).")
+                    help="which filtered/<lens>/ store to walk. ⚠️ THE ORIGINAL "
+                         "RATIONALE FOR THIS DEFAULT EXPIRED ON 2026-08-08. It was "
+                         "'solutions' excluded_source_types match nothing that "
+                         "exists, so its store drops no rows (measured 2026-08-06)'. "
+                         "Since 2026-08-08 07:43 all six live filters exclude "
+                         "eval_aggregator (NexusMind 9fb441a), which is exactly the "
+                         "type_classification carried by this script's three "
+                         "treatment arms — so from 2026-08-09 they are scored and "
+                         "then dropped, and NO lens store contains them. Changing "
+                         "--lens does not recover them; see the empty-arm banner.")
     ap.add_argument("--start", required=True, help="YYYY-MM-DD inclusive")
     ap.add_argument("--end", required=True, help="YYYY-MM-DD inclusive")
     ap.add_argument("--drop-eval-query", default="Chad",
@@ -152,14 +163,12 @@ def main():
                     d["fail_c"] += n_now < ENRICH_THRESHOLD
 
     # ---- fail loud when an eval arm has silently emptied ----
-    # arm_of() prefix-matches FAMILIES against `source`. ADR-007 Decisions 2 and 3
-    # retire all three eval aggregators (gdelt_constructive failed H2; gnews_eval
-    # and newsdata_eval were unadopted free-tier trials). When they leave
-    # aggregator.enabled_sources, arm_of() returns None for their rows and `fams`
-    # below simply stops listing them — the comparison empties with no error and
-    # the remaining output still looks like a result. That is a config edit, so it
-    # lands as a step, not a trickle. Flagged by the FluxusSource session
-    # 2026-08-12; the prefix match itself is correct usage, not the ADR-007 defect.
+    # arm_of() prefix-matches FAMILIES against `source`; anything unmatched returns
+    # None and is skipped, and `fams` below is built from what was FOUND. So when an
+    # arm stops appearing, the harness drops it, prints the baseline alone and exits
+    # 0 — nothing separates "the treatment is gone" from "the treatment measured
+    # nothing". Diagnosed 2026-08-12 with the FluxusSource session; the two known
+    # causes are ordered below by which one is confirmed.
     present_fams = {f for f, _ in st}
     missing = [f for f in FAMILIES if f not in present_fams]
     if missing:
@@ -168,9 +177,21 @@ def main():
         print("=" * 74)
         for f in missing:
             print(f"  {f}: 0 rows in {args.start}..{args.end}")
-        print("\nAn empty arm and a retired arm are indistinguishable here. Check")
-        print("whether the source was retired (ADR-007 Decisions 2/3 remove all three)")
-        print("or simply produced nothing in this window, THEN re-read the output.")
+        print("\nAn empty arm and a dropped arm are indistinguishable in this store.")
+        print("Two known causes, most likely first:")
+        print("  1. CONFIRMED, and it is not upstream. Since 2026-08-08 07:43 all six")
+        print("     live filters exclude `eval_aggregator` (NexusMind 9fb441a), which")
+        print("     is these arms' type_classification. They are collected, they reach")
+        print("     data/raw (verified 08-09..08-11), they are SCORED — and then the")
+        print("     NM#189 source filter drops them, so they never enter any lens")
+        print("     store. Changing --lens does not help. For a window after")
+        print("     2026-08-08, read data/raw or run with source_filter shadow_mode.")
+        print("  2. ADR-007 Decisions 2/3 retire all three at the source (`eda28eb`,")
+        print("     in production 2026-08-11 16:56 CEST). After that they are gone")
+        print("     upstream too, and no NexusMind-side change recovers them.")
+        print("\nFluxusSource confirmed collection ran continuously to the last arm")
+        print("yield at 2026-08-11T14:06Z, so a window in 08-09..08-11 distinguishes")
+        print("the two: rows present in data/raw and absent here means cause 1.")
         if len(missing) == len(FAMILIES):
             print("\nAll eval arms are empty: there is nothing to compare the gn_proxy")
             print("baseline against. Refusing to print a comparison. (exit 2)")
