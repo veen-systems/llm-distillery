@@ -146,6 +146,41 @@ mode, and "0 found" and "7 found" need that statement equally. Related:
 [[feedback-claim-requires-verify]] and the standing rule that a negative needs a positive
 control — this is its mirror, a *positive* needing a negative control.
 
+## Asserted a mechanism made a DESTRUCTIVE operation safe, without running the one line that tests it (2026-08-12)
+
+**Problem**: FS#167 records that a mojibake detector's positives are false — a "repair"
+turns correct French into Armenian (`l’éclipse` → `lՎclipse`) — which is why ovr#291,
+a repair pass over ~474 stored rows, is blocked. On hearing that NexusMind's detector
+"confirms each candidate by reversing the mis-decode", I wrote to FluxusSource that
+**"a round-trip confirmation would not have the French/Italian false positives at all,
+because `l’é` does not survive `encode('mac_roman').decode('utf-8')` as a different
+valid string"**, and concluded *"if it holds, ovr#291 becomes safe to run."*
+
+**It survives. 5 of 5, measured in one line after the peer pushed back:**
+`'l’éclipse solaire'.encode('mac_roman').decode('utf-8')` → `'lՎclipse solaire'` —
+different, valid, wrong. Also `cos’è`→`cosՏ`, `l’âme`→`lՉme`, `121\xa0°C`→`121ʡC`.
+**The round-trip IS the operation that produces the false positives**, so it cannot
+possibly detect them.
+
+**Root cause**: I reasoned about an encoding mechanism from a plausible story instead
+of executing it, on a claim whose consequence was authorising an **irreversible write
+to production data**. The story was appealing because it explained a real distinction
+(round-trip beats marker lists) — it was just the wrong half. **NexusMind's detector is
+safe because of its CANDIDATE-GENERATION stage** (`’` is not in the marker set
+`Ã â √ ‚ ¬`, so it never becomes a candidate), **not because of its round-trip stage**,
+which is what I credited. I inverted which half does the work.
+
+**Fix**: **A claim that unblocks a destructive operation is the last place to reason
+from a story.** Run it — this one cost four lines and thirty seconds, and I sent it to
+another repo instead. Two durable rules: **safety here is a CONJUNCTION** — an
+unambiguous signature *and* a clean inversion, then hand-review the residue; a single
+test in either position is not a detector. And when relaying a mechanism between repos,
+**state which stage carries the safety**, because "their detector is round-trip based"
+is true and, taken alone, licenses exactly the destructive run it appears to authorise.
+The routing chain caught this — FluxusSource re-measured rather than acting — which is
+the argument for sending mechanisms with their evidence rather than as conclusions.
+Related: [[feedback-claim-requires-verify]], [[feedback-hand-built-population]].
+
 ## Conceding a correct conclusion because a neighbouring sentence was refuted (2026-08-12)
 
 **Problem**: I recommended *"don't fix the Google News resolver — it is a workaround
