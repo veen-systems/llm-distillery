@@ -40,16 +40,41 @@ nothing about item mass. That inference was made and retracted 2026-08-11.
 
 ## CONFIRMED
 
-**Enrichment attempted 35,229 GN proxy rows and replaced ZERO of them — 100.0%,
-not 99.9% (2026-07-31..08-08, nine days).** The H4 measurement, now ours alone
-since FluxusSource closed FS#120 on 2026-08-08 as moot under ADR-007. `C` = still
-under 500 chars among rows `pre_enrich` actually attempted, so the denominator is
-attempts, not arrivals: `gn_proxy` **35,229/35,229 = 100.0%** (CI 100.0–100.0)
-against `gdelt_constructive` 0.7% and `gnews_eval` 7.1%. *(`newsdata_eval` 20.3% —
-**pooling falsified by the script's own diagnostic, do not quote.**)* This is the
-hard number behind NM#310: it is not that GN enriches badly, it is that GN has
-**never once enriched**. The window cannot be extended — from 08-09 the eval arms
-are source-type-excluded and from 2026-08-11T14:06Z they stop upstream.
+**GN CANNOT enrich, and here is the nine-day confirmation: 35,229 attempts, 0
+replacements, 100.0% not 99.9% (2026-07-31..08-08).** State it as mechanism +
+measurement, never as a bare number — the two were derived independently, from
+opposite ends, and agree exactly.
+
+- **Mechanism, pre-registered by FluxusSource before the gate** (their
+  `docs/GN-REPLACEMENT-PLAN.md` § H4): a GN `ContentItem.url` is an opaque
+  `news.google.com/rss/articles/…` **redirect**, not the publisher canonical, so
+  `pre_enrich` fetching it receives a Google interstitial and never an article
+  body. Predicted from the URL scheme alone.
+- **Measurement**, the H4 run, now ours alone since FS#120 closed 2026-08-08 as
+  moot under ADR-007. `C` = still under 500 chars among rows `pre_enrich`
+  **actually attempted** — denominator is attempts, not arrivals: `gn_proxy`
+  **35,229/35,229 = 100.0%** (CI 100.0–100.0) against `gdelt_constructive` 0.7%
+  and `gnews_eval` 7.1%. *(`newsdata_eval` 20.3% — **pooling falsified by the
+  script's own diagnostic, do not quote.**)*
+
+**Consequence: the number will not drift, because it is a property of the URL
+scheme, not of enrichment tuning.** Nothing we change moves it off 100%. It is
+also ruled out as an artefact from our side: `SKIP_DOMAINS` is empty, `pre_enrich`
+receives the same list about to be scored, and replacement needs ≥300 fetched
+chars while the longest GN row in the window is 277 — the flag and the length
+agree. This is the hard number behind NM#310.
+
+⚠️ **Do NOT recruit this into an argument for FS#145.** #145 recovers the native
+publisher *domain* from `entry.source.href` for attribution and filtering; it does
+**not** yield a fetchable canonical article URL, so it cannot rescue a single one
+of the 35,229. Unrelated levers. What it does sharpen is ADR-007 D1's migration
+case **on stub grounds specifically**: every GN row is a *permanent* stub, not a
+badly-enriched one. That coexists with the CDF finding rather than contradicting
+it — a permanent stub floor that barely moves normalized scores is precisely a
+slow structural win rather than a fire.
+
+The window cannot be extended — from 08-09 the eval arms are source-type-excluded
+and from 2026-08-11T14:06Z they stop upstream.
 <!-- verify: manual — ssh sadalsuud 'cd /home/jeroen/local_dev/NexusMind && python3 - --start 2026-07-31 --end 2026-08-08' < scripts/gate/measure_enrichable_rate.py -->
 
 **Every GN item is a sub-300-char headline echo. 100.0%, both populations.**
