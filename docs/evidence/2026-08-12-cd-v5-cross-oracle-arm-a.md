@@ -2,9 +2,9 @@
 
 **Date:** 2026-08-12
 **Issue:** #109 arm A (owner: **approved** 2026-08-12; arm B held)
-**Status:** **PRE-REGISTERED — sample drawn, decision rule fixed, oracle not yet run.**
-The results section below is empty on purpose. Everything above it was committed
-before a single real score existed.
+**Status:** **COMPLETE — verdict WITHIN NOISE.** Everything above the Results
+section was committed in `6741da2` *before* a single real score existed; the
+decision rule was not fitted to the answer.
 **Reproduce (sampling):**
 `PYTHONPATH=. python3 scripts/research/cd_v5_arm_a_sample.py --splits-dir <splits> --meta <merged-scored> --out-dir <scratch>`
 **Reproduce (analysis):**
@@ -148,5 +148,124 @@ broken pairs and oracle errors are counted and printed, never silently dropped.
 
 ## Results
 
-*Not yet run.* Populated by the analysis script above once the oracle pass and
-the duplicate control complete.
+**Ran 2026-08-12. 300/300 sample rows and 40/40 duplicate-control rows scored,
+0 errors, 0 missing, 0 broken pairs, 150/150 pairs analysed.** Actual spend
+$1.21 for the sample (3,093,922 input + 112,359 output tokens) and $0.16 for the
+control — **$1.37 total**, against #109's ~$1.20 estimate.
+
+### Primary — WITHIN NOISE
+
+| quantity | value |
+|---|---|
+| `MAD_refused` | **0.8325** |
+| `MAD_passed` | **0.8370** |
+| `D = MAD_refused − MAD_passed` | **−0.0045** |
+| paired bootstrap 95% CI | **[−0.216, +0.195]** |
+| `ν` (within-oracle mean \|Δ\|, n=40) | **0.4356** |
+| CI excludes 0 | no |
+| \|D\| ≥ ν | no |
+| **verdict** | **WITHIN NOISE** |
+
+**This is a bounded null, not merely an underpowered one.** The CI's widest
+excursion is 0.216, and the oracle's own run-to-run spread on this population is
+0.436 — so the entire range of effects this sample could not rule out lies
+*below* the floor at which any difference becomes interpretable. Refused and
+passed rows' stored labels survive a second oracle equally well, and no gap
+large enough to matter can be hiding in the residual.
+
+**Per #109's pre-registered table, this closes #105's `cultural_discovery` half:
+the corpus is trustworthy on the matchable population, and a retrain there is a
+base-rate change, not a label-quality repair.**
+
+### ν is large, and that is a finding about the instrument
+
+`ν = 0.436` mean, **max 2.10**, measured by scoring 40 of these same articles
+twice at temperature 0.3. Two consequences worth carrying:
+
+- **Any future cross-oracle claim on this filter needs a gap above ~0.44 to mean
+  anything.** This is a *different* quantity from #95's 0.16 student band and
+  much larger. It is a per-article oracle-sampling floor, and nothing in this
+  repo had measured it before today.
+- **It is arm-asymmetric: 0.238 on refused rows vs 0.634 on passed rows** (n=20
+  each — thin). The mechanism is visible in the transcripts: refused rows are
+  mostly off-lens, where both runs return zeros and agree trivially; passed rows
+  carry live dimensional judgement.
+
+### Two observations the registered test does not cover
+
+Both are flagged as hypotheses. Neither was pre-registered, so neither is a
+result, and reporting them as findings would be fitting the analysis to the data
+after the fact.
+
+**1. The op-point band moves the other way, on 9 pairs.** `D` by stored-label
+band:
+
+| band | pairs | `D` |
+|---|---|---|
+| `[0,0.5)` | 28 | −0.102 |
+| `[0.5,1.5)` | 62 | −0.164 |
+| `[1.5,2.5)` | 33 | −0.072 |
+| `[2.5,4.0)` | 18 | +0.294 |
+| **`[4.0,10]`** | **9** | **+1.044** |
+
+ADR-023 says only the thin band at the operating point decides anything, and the
+registered primary is a corpus-wide mean that drowns it: 9 of 150 pairs sit at or
+above raw 4.0. The point estimate there is 2.4× ν and in the direction that would
+implicate refused labels. **It is 9 pairs and could be noise.** It is also cheap
+to settle — band-4 pair capacity is **88**, so a dedicated op-point sample costs
+roughly **$0.40**. Carried as the one follow-up arm A justifies.
+
+**2. Normalised by each arm's own noise, the arms are not equal.** `MAD/ν` is
+3.51 refused vs 1.32 passed. If that survived a larger control it would say the
+refused arm carries more cross-oracle disagreement *relative to how easy its rows
+are* — which the registered absolute-MAD comparison cannot see. On 20 rows per
+arm it is not worth acting on; a 100-row control would settle it.
+
+### Secondary outputs (all required by #109)
+
+**Signed bias.** Gemini − stored: **+0.030 on refused**, **+0.353 on passed**;
+difference **−0.323**, CI [−0.551, −0.104]. The CI excludes 0 — but 0.323 is
+**below ν = 0.436**, so by the same rule applied to the primary it is **not
+interpretable**, and it is reported here rather than promoted. Its direction, if
+it were real, points *away* from the #92 inflation signature: it would say
+Gemini scores the **passed** rows higher than DeepSeek did, i.e. mild
+under-labelling of on-lens content, with refused rows agreeing almost exactly.
+
+**Op-point crossings at raw 4.0** (of 150 per arm):
+
+| | stored ≥ op, Gemini < op | stored < op, Gemini ≥ op |
+|---|---|---|
+| refused | 5 | 4 |
+| passed | 3 | 13 |
+
+Consistent with the signed bias: Gemini would surface 13 passed rows DeepSeek
+kept below the line, against 4 refused rows.
+
+**Per dimension** (MAD refused vs passed): `discovery_novelty` 1.290/1.287,
+`heritage_significance` 0.773/0.927, `cross_cultural_connection` 0.497/0.613,
+`human_resonance` 1.003/1.070, `evidence_quality` 1.493/1.497. No dimension
+shows refused rows disagreeing more; the two largest disagreements
+(`evidence_quality`, `discovery_novelty`) are equal across arms.
+
+**Per source — the required re-check.** `D` by domain, ≥5 pairs:
+`pubmed.ncbi.nlm.nih.gov` +0.331 (17), `www.engadget.com` +0.071 (13),
+`www.reddit.com` +0.163 (13), `nos.nl` −0.177 (11), `www.fastcompany.com`
+−0.116 (11), `canaltech.com.br` +0.571 (7), `www.scmp.com` +0.500 (5).
+**Sign agreement with the headline: 2/7.** For a null that scatter is what should
+happen — but it also means no per-source reading may be lifted out of this table
+as a finding. `canaltech.com.br` +0.571 and `www.scmp.com` +0.500 exceed ν on 7
+and 5 pairs respectively; that is the #108 shape and would need its own sample.
+
+**Per language:** en +0.116 (108), nl −0.479 (17), pt +0.342 (9), es −0.461 (7),
+fr −0.244 (4), it −0.217 (3), de −1.625 (2). Scattered around zero, and every
+non-English cell is too small to read. Relevant to #108 only as an absence: this
+sample shows no non-English penalty on cd v5's *full-length* rows.
+
+### Scope, restated
+
+The estimand is the **pair-matchable refused population, 2,024 of 4,458 rows
+(45.4%)**. The other 54.6% comes from outlets the lens gate refuses wholesale
+(`eco.sapo.pt`, `www.ad.nl`, `nos.nl`, `www.scmp.com`, `www.reddit.com`,
+`canaltech.com.br`) and is **not covered by this result**. Those domains have no
+passed rows to match against, so the question "are their labels defensible?" is
+unanswerable by a matched design and needs a different instrument.
