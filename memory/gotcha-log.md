@@ -23,6 +23,47 @@ Problems encountered and resolved. Format: Problem → Root cause → Fix.
 
 ---
 
+## Two defects cancelling presented as correct behaviour, and this repo's data depended on it (2026-08-12)
+
+**Problem**: FluxusSource#164 — archive retention is configured 730 days, the code
+reads a different path so 90 is what runs, and the purge that would enforce 90 is
+itself broken, so **nothing has ever been deleted**. 1,469 archives intact, 253 days
+/ 1.2 GB against 395 GB free. Two llm-distillery dependencies were living on that:
+the obituary detector *must* train on raw ingest (its README — obituaries are what
+the filters remove), and `docs/RUNBOOK.md:187` names the historical harvest as the
+route a needle filter reaches the 200-row normalization floor. `nature_recovery v4`
+sits at 397 rows today.
+**Root cause**: The archives *are* the raw harvest (`content_items_*.jsonl` inside
+each tarball). Fixing **either** defect alone would have silently destroyed
+everything past 90 days — and the `.suffix` half looks exactly like a one-character
+typo fix.
+**Fix**: Owner chose deletion of the purge loop over repairing the config (my
+suggestion, withdrawn — "documented as broken" is the state that invites the next
+person to repair it and fire it). `tests/test_no_archive_purge_164.py` at
+91/365/731/5000 days; ADR-003 amended naming both consumers.
+**Durable lesson**: my register said *verify a mechanism actually runs*. It did not
+say **verify that a mechanism NOT running is what is protecting you.** Two bugs can
+cancel into apparently-correct behaviour, and the more innocuous the repair looks,
+the more dangerous it is. Nobody would have caught this from here: the failure mode
+was a retrain coming up short months later with no visible cause. Found by a peer
+session reading its own config, not by anyone auditing my dependencies.
+
+## A nested-path mistake and a dead stamp have the identical symptom (2026-08-12)
+
+**Problem**: Told the enrichment strata were flagged at `analysis.pre_enriched`, I
+read that over 1,070,665 production rows, got **0**, and nearly reported a second
+NM#300 — a stamp claimed to label strata reaching zero rows.
+**Root cause**: The flags live at `nexus_mind_attributes/<lens>/pre_enriched`;
+`filtered_*.jsonl` rows have no top-level `analysis` key at all. `analysis` is a
+*local variable* in NexusMind's `main.py`, persisted under a different key — the peer
+had quoted the variable name as if it were the schema.
+**Fix**: Verified the path before reporting. The flags are populated and fine.
+**Durable lesson**: **a wrong path and a dead field both read as zero, and the wrong
+one is the more exciting finding** — which is exactly the pressure that gets it
+published. Before reporting an absence, dump the keys that *are* there. This repo
+already carried `metadata.quality` is not
+`nexus_mind_attributes.<lens>.source_quality`; same trap, other direction.
+
 ## A ported vocabulary value left `main` red, and the file that needed updating says so in a comment (2026-08-11)
 
 **Problem**: `main` failed `tests/unit/test_filter_config_schema.py` from the midday
