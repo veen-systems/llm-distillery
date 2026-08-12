@@ -146,6 +146,41 @@ mode, and "0 found" and "7 found" need that statement equally. Related:
 [[feedback-claim-requires-verify]] and the standing rule that a negative needs a positive
 control — this is its mirror, a *positive* needing a negative control.
 
+## A verified quantity carries an unverified PASSENGER — and the sixth kind is a SCOPE (2026-08-12)
+
+**Problem**: Six times in one session, across four repos, a correctly-measured number
+shipped with an unmeasured claim attached, and the measurement's credibility carried
+the passenger. The passenger is what turned out to be wrong every time.
+
+| the verified quantity | the passenger it carried | passenger type |
+|---|---|---|
+| `pre_enrich` attempted 35,229 GN rows, replaced 0 | "a property of the URL scheme, so no fetcher change moves it" | **mechanism** |
+| cd's `tiers:` block is absent | "so adding it is documentation only" | **consequence** |
+| `_find_latest_version()` serves the highest `vN` | "so the deploy and the cutover are the same keystroke" | **step count** |
+| ovr enriched 38 published articles | "so ovr rescues what NexusMind missed" | **valence** |
+| the round-trip inverts a mis-decode | "so it would not have the French false positives" | **discrimination** |
+| deriving the class fixes the cp1252 blind spot | "so deriving is the structural fix" | **SCOPE** |
+
+**Root cause**: The measurement is the part that got attention, so it is the part that
+is right — and its correctness is then read as covering the sentence next to it, which
+nobody measured at all. **The sixth is the one worth naming separately: a result true
+of one ARM, one CODEC, one FILTER, one FETCHER, stated for all of them.** Deriving the
+character class fixed coverage on the arm the author was blind to (`cp1252`) *and
+simultaneously manufactured false positives on the arm they thought they had already
+fixed* (`mac_roman`, where the derived leads contain `’` at 0xD5 and the derived
+continuations contain `é` at 0x8E). Their narrow hand-written v1 was roughly right **by
+accident** — a narrow class costs coverage *and* buys precision, and nobody had noticed
+it was doing both.
+
+**Fix**: When a number and a claim ship in the same sentence, **say which one was
+measured** — and for a scope passenger, name the population the measurement covered:
+*"verified on the cp1252 arm; untested on mac_roman"* is one clause and it is the whole
+fix. Note that "name the population" is **already a rule here and did not fire on any
+of the six**, because it reads as being about denominators; it needs to be understood
+as covering arms, codecs, fetchers and filters too. Two of us took two hops to notice
+the sixth. Related: [[feedback-hand-built-population]],
+[[feedback-claim-requires-verify]], and the four adjacent entries below.
+
 ## A 6-row denominator gap was the visible end of three defects, none visible in the number (2026-08-12)
 
 **Problem**: A peer's cross-repo measurement (NM#338) reported English 130/10,312 and

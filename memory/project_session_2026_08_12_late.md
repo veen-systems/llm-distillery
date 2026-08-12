@@ -54,7 +54,7 @@ instrument:
 | stage | verdict |
 |---|---|
 | **gating** (our #86) | **COUNTERFACTUAL** — the per-filter prefilters have never run in production (NM#284, dead since 2026-02-10). The gate has never fired. Also stale: `80dd399` (2026-08-06) took the ratio 1.56× → 1.19×, z 5.02 → 1.75, and closing #99's English-only `DISCOVERY_PATTERNS` back door **reverses the sign** (English blocks at ~22%, above non-English) |
-| **collection** (FS#124) | ⚠️ **"HISTORICAL" RETRACTED SAME DAY — see below.** FluxusSource's fix holds (0 / 23,638 in their text), but the defect **relocated into NexusMind's enricher** and kept its non-English skew (NM#338) |
+| **collection** (FS#124) | ⚠️ **"HISTORICAL" RETRACTED SAME DAY — see below.** FluxusSource's `ea25ae8` holds **unqualified** (0.000%, and their zero survived a three-round challenge), but the defect **RELOCATED into NexusMind's enricher** and kept its non-English skew — **NM#338 v3: 4.655% introduced, 7.429% non-English, 5.68× skew.** The limb is LIVE, at a different stage, in a different repo |
 | **scoring** (NM#231) | observed but **filter-dependent and both-signed** |
 | **dedup** (NM#291) | live — but see the split below |
 
@@ -229,20 +229,42 @@ does `.decode(resp.encoding or "utf-8", errors="replace")`, and in `requests` a
 not `None` — so the `or "utf-8"` guard is **dead code** and UTF-8 pages decode as
 Latin-1.
 
-⚠️ **The first figures were superseded within the hour. Use these — corrected
-2026-08-12, 120 files, 20 per lens across all six, 2026-08-10→08-12:**
+⚠️ **The figures went through THREE revisions in one evening. Use v3 — the first two
+are superseded:**
 
 ```
-BEFORE (FluxusSource text)      21 / 25,996 = 0.081%
-AFTER  (NexusMind enriched)  1,484 / 25,996 = 5.709%
-INTRODUCED by enrichment     1,466 / 25,996 = 5.639%   (was 4.751%)
-  English                      158 / 11,781 = 1.341%
-  non-English                1,308 / 14,215 = 9.202%   ratio 6.86x (was 5.91x)
-by codec arm: cp1252 1,210 | mac_roman 256
+                        v1        v2 (derived)   v3 (cp1252+latin-1)  <- USE THIS
+introduced by NexusMind 4.751%    5.639%         4.655%
+non-English rate        7.448%    9.202%         7.429%
+skew                    5.91x     6.86x          5.68x
+BEFORE (FluxusSource)   0.000%    0.081%         0.000%   <- their zero SURVIVED
 ```
 
-Denominators reconcile (11,781 + 14,215 = 25,996). **Every direction held and got
-worse.**
+**The relocation finding is unaffected** — it was never a threshold question — and
+FluxusSource's `ea25ae8` stands **unqualified**. The v2 "FluxusSource is at 0.081%"
+figure, which I relayed to them, is **withdrawn**: all 21 rows were false positives of
+the peer's mac_roman arm (`el` 19, `fr` 1, `vi` 1), and all 21 were **also dirty in
+`data/raw` as received**, which independently rules out "introduced by NexusMind's
+ingestion". Windows, verified here: `«π`→`ǹ` ×19, `«à`→`ǈ`, `‘ô`→`ԙ` — **punctuation
+followed by a letter, i.e. ordinary prose.** The peer dropped the mac_roman arm
+entirely rather than patch it, on the grounds that it cannot separate prose
+punctuation from corruption without a signature stage.
+
+**The finding that outranks the numbers: deriving the character class fixed coverage
+on the arm they were blind to (cp1252) and SIMULTANEOUSLY manufactured false positives
+on the arm they thought they had fixed (mac_roman).** Their hand-written v1 was roughly
+right *by accident* — a narrow class costs coverage *and* buys precision, and nobody
+had noticed it was doing both. So "derive, don't hand-write" is a **coverage** fix and
+never a discriminator.
+
+**My prediction was right in family, wrong in specifics.** I said punctuation
+immediately before an *accented vowel*, and guessed French/Italian/Belgian/Swiss. It is
+punctuation before a *letter*; the characters are `«` `“` `‘` and NBSP, not `’`; the
+languages are Greek, Portuguese, Spanish. `’` was **one member of a family neither of
+us had enumerated**, and naming the wrong member made a correct hypothesis look weaker
+than it was — my own top-5-sources check cut *against* the reading that turned out to
+be right.
+
 
 ⚠️ **RETRACT the "FluxusSource is clean at 0.000%" figure — I routed it onward as
 "the cleanest evidence anyone produced for `ea25ae8`".** With the corrected detector
