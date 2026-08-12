@@ -151,6 +151,33 @@ def main():
                     d["entered"] += 1
                     d["fail_c"] += n_now < ENRICH_THRESHOLD
 
+    # ---- fail loud when an eval arm has silently emptied ----
+    # arm_of() prefix-matches FAMILIES against `source`. ADR-007 Decisions 2 and 3
+    # retire all three eval aggregators (gdelt_constructive failed H2; gnews_eval
+    # and newsdata_eval were unadopted free-tier trials). When they leave
+    # aggregator.enabled_sources, arm_of() returns None for their rows and `fams`
+    # below simply stops listing them — the comparison empties with no error and
+    # the remaining output still looks like a result. That is a config edit, so it
+    # lands as a step, not a trickle. Flagged by the FluxusSource session
+    # 2026-08-12; the prefix match itself is correct usage, not the ADR-007 defect.
+    present_fams = {f for f, _ in st}
+    missing = [f for f in FAMILIES if f not in present_fams]
+    if missing:
+        print("=" * 74)
+        print("EVAL ARM(S) EMPTY — read this before any number below")
+        print("=" * 74)
+        for f in missing:
+            print(f"  {f}: 0 rows in {args.start}..{args.end}")
+        print("\nAn empty arm and a retired arm are indistinguishable here. Check")
+        print("whether the source was retired (ADR-007 Decisions 2/3 remove all three)")
+        print("or simply produced nothing in this window, THEN re-read the output.")
+        if len(missing) == len(FAMILIES):
+            print("\nAll eval arms are empty: there is nothing to compare the gn_proxy")
+            print("baseline against. Refusing to print a comparison. (exit 2)")
+            raise SystemExit(2)
+        print("\nContinuing with a PARTIAL comparison — the pooled figures below")
+        print("cover only the arms that are present.\n")
+
     print(f"window {args.start}..{args.end}   {len(files)} cycles   lens={args.lens}")
     print(f"excluded eval_query == {args.drop_eval_query!r} (Tchad kept)\n")
 

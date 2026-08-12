@@ -23,6 +23,51 @@ Problems encountered and resolved. Format: Problem → Root cause → Fix.
 
 ---
 
+## A comparison harness whose treatment arms went to zero still prints a table (2026-08-12)
+
+**Problem**: `scripts/gate/measure_enrichable_rate.py` (the FS#120 enrichable-rate
+harness, gate due ~2026-08-14) compares three eval aggregator arms against a
+`gn_proxy` baseline. `arm_of()` prefix-matches `FAMILIES = ("gnews_eval",
+"newsdata_eval", "gdelt_constructive")` against `source`; anything unmatched
+returns `None` and is skipped, and `fams` is built from *what was found*. So if the
+arms stop producing rows, the harness drops them, prints the baseline alone, and
+**exits 0**. Nothing distinguishes "the treatment is gone" from "the treatment
+measured nothing".
+
+**Measured, and it is not hypothetical**: on sadalsuud, `data/filtered/solutions/`
+(85 files, 2026-07-29..08-12) has all three families producing rows every day from
+07-31 to **08-08** — then **zero from 08-09 onward, all three at once**. The
+silent emptying had already happened four days before anyone looked, with the gate
+two days out. Cause is upstream and unclassified here: ADR-007 Decisions 2/3 retire
+exactly these three, but a free-tier expiry or a collection fault produce the same
+signature (cf. FluxusSource#163 — a skipped source is recorded as a completed
+collection and exits 0). **Do not attribute it without asking FluxusSource.**
+
+**Fix**: the harness now names every empty arm before printing anything, and
+**refuses with exit 2** when all arms are empty rather than presenting a
+baseline-only table. A partial emptying warns and continues, because a partial
+comparison is still meaningful.
+
+**Proven, not asserted** — three fixtures, run end to end, outcome printed each
+time: all arms present → silent, exit 0 (**presence control**: the pooled table
+still prints, so the guard is not just always-quiet); one arm missing → names
+`gdelt_constructive`, warns PARTIAL, exit 0; all arms missing → refuses, exit 2.
+
+**How it was found**: a peer session checked my clean grep result instead of
+recording it, ran a **positive control** on the same tree, and noticed my pattern
+only matched string literals inside `startswith(` — a tuple-driven prefix match was
+structurally invisible to it. Their own first attempt had pointed at a path that
+did not exist and returned a clean-looking negative. Two lessons in one exchange:
+**a grep for a pattern is not a grep for a behaviour**, and **verify a negative
+with a positive control on the same instrument**, because a mis-aimed search and a
+true absence are the same output.
+
+**Belongs to the unreachable-mechanism catalogue below** as its inverse: not a
+mechanism that never runs, but a mechanism that keeps running after its *input
+population* disappears. Same tell — the output still looks like a result.
+
+---
+
 ## Two defects cancelling presented as correct behaviour, and this repo's data depended on it (2026-08-12)
 
 **Problem**: FluxusSource#164 — archive retention is configured 730 days, the code
