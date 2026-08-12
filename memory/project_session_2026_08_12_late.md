@@ -227,8 +227,52 @@ holds (**0 / 23,638** in their text). But `NexusMind/src/enrichment/article_fetc
 does `.decode(resp.encoding or "utf-8", errors="replace")`, and in `requests` a
 `text/*` response with **no declared charset** gets `resp.encoding = "ISO-8859-1"`,
 not `None` — so the `or "utf-8"` guard is **dead code** and UTF-8 pages decode as
-Latin-1. Paired against `original_content`: **1,123 / 23,638 = 4.751%** introduced,
-0 repaired; **English 1.261% vs non-English 7.448% — 5.9×**. Concentrated in
+Latin-1.
+
+⚠️ **The first figures were superseded within the hour. Use these — corrected
+2026-08-12, 120 files, 20 per lens across all six, 2026-08-10→08-12:**
+
+```
+BEFORE (FluxusSource text)      21 / 25,996 = 0.081%
+AFTER  (NexusMind enriched)  1,484 / 25,996 = 5.709%
+INTRODUCED by enrichment     1,466 / 25,996 = 5.639%   (was 4.751%)
+  English                      158 / 11,781 = 1.341%
+  non-English                1,308 / 14,215 = 9.202%   ratio 6.86x (was 5.91x)
+by codec arm: cp1252 1,210 | mac_roman 256
+```
+
+Denominators reconcile (11,781 + 14,215 = 25,996). **Every direction held and got
+worse.**
+
+⚠️ **RETRACT the "FluxusSource is clean at 0.000%" figure — I routed it onward as
+"the cleanest evidence anyone produced for `ea25ae8`".** With the corrected detector
+it is **21 rows / 0.081%**, not zero. It does not change who introduced the other
+1,466 and it does not weaken the relocation finding, but it was stated more strongly
+than the evidence now supports.
+
+**How it was found, and this is the part worth keeping.** I queried a **6-row
+denominator gap** (10,312 + 13,332 = 23,644 against a stated 23,638) during
+`/review-changes`. Pulling that thread found **three** defects, none visible in the
+number itself:
+
+1. **A sliding `[-N:]` glob is not a fixed population.** The total and the split were
+   separate invocations minutes apart; new cycle files landed in between, so the two
+   commands measured two different file sets. *That* was the 6 rows.
+2. **`sorted(glob("data/filtered/*/filtered_*.jsonl"))[-40:]` sorts by PATH**, which
+   groups by filter directory — so it selected **40 `uplifting` files and nothing
+   else**, not "the last 40 cycles". Sort by basename for a cross-lens window.
+3. **The detector was blind to 83% of the population.** Its continuation class was
+   hand-written as `U+0080-U+00BF` — correct for latin-1, which renders bytes
+   `80-9F` as C1 controls, but **cp1252 renders those same bytes as printable
+   punctuation** (`U+2019`, `U+20AC`, `U+201C`), so every smart-quote corruption
+   (`donâ€™t`) was invisible. ovr.news hit the identical hole from the other side the
+   same day.
+
+**The generalisation, which is the peer's and is better than my own entry:
+hand-built populations and hand-built character classes are the same failure with
+different nouns.** The fix is not a *wider* class but a **derived** one —
+`bytes(range(0x80,0xC0)).decode(codec)` **is** the continuation set, by construction,
+so it cannot drift from the codec it models. Concentrated in
 `baltic_lrt` 432, `romanian_adevarul` 100, `balkan_nova_rs` 96, `polish_polsat` 85.
 
 **So "collection is historical, reattribute to FS#166" is retracted.** FS#166 (the

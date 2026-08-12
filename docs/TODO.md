@@ -8,14 +8,22 @@
    recommends deleting and asks us to own it, because `filters/*/v*/prefilter.py`
    and `config.yaml` are ours. **Verified here: 5 of 6 deployed filters still declare
    `prefilter.enabled: true`** (`solutions v6`, `uplifting v7`, `cultural_discovery v5`,
-   `belonging v1`, `nature_recovery v4`; only `investment_risk v6` has no block) —
+   `belonging v1`, `nature_recovery v4`; only `investment_risk v6` declares no `enabled:` key — it still carries a `prefilter:` block) —
    config has promised something the runtime never delivered since 2026-02-10.
    **My recommendation: DELETE.** Three reasons, and the second is the strongest:
-   the e5 probe already absorbed the cheap-triage role (`stage1_low` is 66.1% of
-   `solutions` and 59.8% of `cultural_discovery`); **enabling them would INTRODUCE a
+   the e5 probe already absorbed the cheap-triage role — **`stage1_low` is 65.83% of
+   `solutions` and 56.00% of `cultural_discovery`**, re-derived 2026-08-12 over
+   `nexus_mind_attributes.<lens>.stage_used` on sadalsuud, **denominator = STAMPED rows**
+   (235,873 / 235,904 all-rows; the of-all-rows figure is 19.61% / 16.69% because
+   pre-2026-08-08 rows carry no stamp — a **3.4× swing from denominator choice alone**,
+   so always state which). ⚠️ The peer session's figures were 66.1% / **59.8%**; the
+   `cultural_discovery` half **does not reproduce** — its daily range is 52.35–58.32%,
+   so 59.8% is above every single day. Use the re-derived numbers.
+   Verify: `ssh sadalsuud` + count `stage1_low` over `nexus_mind_attributes.<lens>.stage_used`
+   (**not** `analysis.stage_used`, which is `None` on all 105,304 rows — the wrong-path trap); **enabling them would INTRODUCE a
    language gap that does not currently exist** — our own #99 found `DISCOVERY_PATTERNS`
    is an English-only back door (66/516 English passers vs **0/265** everything else),
-   so switching the gate on ships a defect we found and closed; and the dead code is
+   and **#99 was closed by removal in v6 ONLY — v5 is the LIVE version and `filters/cultural_discovery/v5/prefilter.py:269` still declares `DISCOVERY_PATTERNS`**, so switching the gate on ships that defect into production for the first time (the argument is stronger than first written); and the dead code is
    what let a stale number steer NM#292's gating row for two weeks, because
    `enabled: true` made it look live.
    ⚠️ **Sequencing is in our favour and must not be reversed:** NexusMind's NM#284
@@ -2137,7 +2145,7 @@ Full synthesis: LD#76 issuecomment-5140079896. Headline: **no shared root cause,
 - [x] **NM#284 stage 1 — shadow measurement** — **IMPLEMENTED + DEPLOYED + VERIFIED LIVE 2026-08-01** (`cd4fc6d` + `5d53774`, deployed ~11:59 CEST). `ProductionScorer` loads each filter's prefilter via the `_load_prefilter` hook (without flipping `use_prefilter`, keeping evaluation and enforcement separate levers) and logs observed vs declared pass rate. Enforces nothing; no schema change. Rollback `NM_FILTER_PREFILTER_SHADOW=0`. First cycle (12:46): **cd 0.255 vs declared 0.25 — LD#86 gate validated in production**; uplifting 0.525 vs 0.20; solutions 0.591 vs 0.20; ir 0.589 (no declared rate). Two defects the first live run exposed and fixed: drift judged at n=1 (smoke test scores one article/filter → six false "gate appears inert" alarms; now `MIN_SHADOW_SAMPLE=50`), and `expected_pass_rate: ~0.25` parsed as a YAML *string* and silently dropped.
 - [ ] **NM#284 stage 1b — per-row shadow stamps into the JSONL**: needs `prefilter_shadow_pass` / `prefilter_shadow_reason` plumbed through gpu-server `main.py` (Pydantic `FilterScoreResult` drops unknown keys at the service boundary) → `src/scoring/gpu_client.py` → the `analysis` dict in `scripts/main.py`. Blocked on unrelated uncommitted WIP in `scripts/main.py` (image-classifier thresholds, NM#282) — staging it would sweep that in. Log-based measurement is sufficient for the enforcement decision, so this is a convenience, not a blocker.
 - [x] **NM#284 stage 2 — global short-content gate before fan-out — REFUTED, DO NOT BUILD** (2026-08-02, superseded by #93 2026-08-03). The ~25%-of-inferences saving was real but it is bought by dropping content the oracle validates at the same rate as long content (uplifting: 67% short vs 65% long above the op-point), and the loss skews to the `gn_*` / `spanish_*` / `french_*` population NM#231 already flags as under-served. The floor is now a labelling-time precondition plus an off-by-default per-filter cap (#93), not a gate at any level. See `memory/calibration-history.md` Dead Ends before proposing this again.
-- [ ] **NM#284 stage 3 — per-filter enforcement flip**, once a few cycles of shadow data exist. cd is the only filter whose observed rate currently matches its declared one, and it is also the one LD#86 needs. Op-point / normalization re-derivation for affected filters is downstream of the flip (gates #87).
+- [ ] ⚠️ **SUPERSEDED PENDING DECISION 0 (2026-08-12) — do not act on this.** The top-block recommendation is to **DELETE** the per-lens prefilters rather than flip enforcement on, because enabling them would ship #99's English-only `DISCOVERY_PATTERNS` back door (still live in v5) into production for the first time. Resolve decision 0 before touching this line. ~~**NM#284 stage 3 — per-filter enforcement flip**, once a few cycles of shadow data exist.~~ cd is the only filter whose observed rate currently matches its declared one, and it is also the one LD#86 needs. Op-point / normalization re-derivation for affected filters is downstream of the flip (gates #87).
 - [ ] **cd v6 lens fidelity scope (#87)** — ccc 0.25 weight ceiling (mean 0.64), 27% off-lens hard science in visible band, "4.5 display threshold" vs shipped 4.0 unreconciled. Design ticket; not urgent. The 3.5 op-point proposal was REFUTED (sampling artifact) — any re-derivation needs a randomized [3.0,4.5) sample **after NM#284 lands**: the v5 op-point and normalization CDF were both fitted on a distribution still containing the ~71% the prefilter should have removed.
 - [x] **#75 CLOSED as measurement artifact 2026-07-31** (owner confirmed) — nature_recovery v4 is healthy.
 - [ ] **Lens harmonization program (#90)** — owner directive 2026-07-31: bring all lens filters to the successful template (op-point at the distribution, fresh anchored fit, working positive gate, hybrid + stamps, ADR-021 gate) **The rename half is CLOSED as of 2026-08-06 — do not re-open it here.** ADR-012 amended: `cultural_discovery` and `nature_recovery` KEEP their names (their Hub repos are public standalone artefacts; `discovery-filter-vN` / `recovery-filter-vN` drop the qualifier that says what the model is about), `solutions` confirmed as-is, and `uplifting` → **`human_thriving`** at v8 — not bare `thriving`, which is an existing parked directory. What remains under #90 is the template half only.

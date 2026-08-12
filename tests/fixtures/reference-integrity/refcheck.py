@@ -19,7 +19,7 @@ SIBLING_ROOTS = [os.path.dirname(ROOT), os.path.dirname(os.path.dirname(ROOT))]
 import os as _o
 DOCS = ["CLAUDE.md", "memory/MEMORY.md", "memory/gotcha-log.md"] if not _o.environ.get("SEED") else [_o.environ["SEED"]]
 
-EXT = {"md","py","json","jsonl","yaml","yml","sh","ps1","ini","txt","toml","js","jinja","astro","ts",
+EXT = {"md","py","json","jsonl","yaml","yml","sh","ps1","ini","txt","toml","js","jinja",
        "cfg","sql","ts","tsx","astro","pkl","safetensors","csv","lock","service"}
 PRUNE = {".git","node_modules","venv",".venv","target","__pycache__",".mypy_cache"}
 STATE_DIRS = ("data/","state/","cache/","logs/","run/","var/","artifacts/")
@@ -157,7 +157,12 @@ for doc in DOCS:
         eligible=[m for m in PATH_RE.finditer(line)]
         for pm in PLACEHOLDER_RE.finditer(_mask_spans(line)):
             before=[m for m in eligible if m.end()<=pm.start()]
-            if before: placeheld_frags.add(before[-1].group(1))
+            # ADJACENCY: only whitespace may sit between the path and its marker.
+            # Without this, a trailing marker absorbs whatever broken path happened
+            # to come last on the line -- silently, and in the one direction that
+            # hides a defect (a marker placed too early fails LOUD as COVERS NO PATH).
+            if before and line[before[-1].end():pm.start()].strip()=="":
+                placeheld_frags.add(before[-1].group(1))
             else:
                 findings.append((doc,f"(line {ln+1})",
                     "PLACEHOLDER MARKER COVERS NO PATH -- it is span-scoped and takes the "
@@ -175,8 +180,21 @@ for doc in DOCS:
                 # segment, so `tests/unit/<real_file.py>` -- a real path merely
                 # wrapped in brackets -- must be caught as a mislabel, and it
                 # can only be caught by resolving the DE-ANGLED form.
-                bare=frag.replace("<","").replace(">","")
-                if os.path.exists(os.path.join(ROOT,bare)) or rung2(bare):
+                # De-angle ONLY whole path components (`/<x>/`, `<x>` as the
+                # basename stem) -- de-angling a partial word made
+                # `docs/<FILTER>_PLAYBOOK.md` resolve to a real file and report a
+                # false STALE, which costs the re-triage this skip exists to remove.
+                bare=re.sub(r"<([^<>/]*)>", r"\1", frag) if re.fullmatch(r"[^<>]*(<[^<>/]+>[^<>]*)+", frag) else frag
+                # ⚠️ FULL LADDER. Checking only rungs 1-2 made this guard unable to
+                # fire for CROSS-REPO paths -- which is where every placeholder in
+                # this repo actually lives. 7 of 12 markers were mislabelling real
+                # files when that was found (2026-08-12 review). A guard that cannot
+                # fire for its own population is this repo's signature defect.
+                resolves = (os.path.exists(os.path.join(ROOT,bare)) or rung2(bare)
+                            or rung3(bare) or rung4(bare, ctx)
+                            or (re.match(r"(feedback|reference|project)-[a-z0-9-]+\.md$", bare)
+                                and os.path.exists(os.path.join(AUTOMEM, bare))))
+                if resolves:
                     findings.append((doc,frag,"STALE PLACEHOLDER MARKER (the path resolves)"))
                 else:
                     placeheld.append((doc,frag))

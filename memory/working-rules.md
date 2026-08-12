@@ -7,13 +7,39 @@ file carries the **evidence, the occurrence catalogue and the war stories**, whi
 are reference material and are not.
 
 Moved here 2026-08-12 by `/audit-context`: the block was 6,136 chars of an
-auto-loaded 38.8k file, against a 40k tool warning. Nothing was cut — the rules
+auto-loaded 38.7k file (38,743 bytes), against a 40k tool warning. Nothing was cut — the rules
 stay in `CLAUDE.md`, their justification lives here.
 
 ⚠️ **If you are about to weaken or delete one of these rules, read its evidence
 here first.** Every one of them exists because something shipped broken.
 
 ## The rules, in full
+
+### Every measurement error this project has made was a HAND-BUILT POPULATION
+
+*(Added to CLAUDE.md 2026-08-12; its evidence was in `gotcha-log.md` only, which made
+this file's own "full text of each rule" contract false for one rule — caught by
+`/review-changes` the same day.)*
+
+Across a four-session cross-repo investigation, **every quantitative claim any session
+made failed under checking, and not one failed where its author was looking.** The
+shared structure: someone chose a file, a window, a join key or a directory, and the
+*choice* carried the defect while attention went to the arithmetic.
+
+Instances, all independent: a rate whose numerator and denominator had different
+exclusion lists; a six-filter union masking a 33-point single-filter exclusion; a
+counterfactual replay over stored rows reported as observed attrition; `ls docs/adr/`
+run in the wrong repo; a per-filter field (`stage_used`, 82% disagreement) read as
+article-level; a sliding `[-N:]` glob evaluated twice, measuring two different file
+sets; a `sorted(glob(...))[-40:]` that sorted by path and so sampled one filter only;
+and a character class hand-written for latin-1 that was blind to cp1252 — 83% of its
+population.
+
+**Prefer a population the pipeline already computes to one you construct**, and
+**derive classes rather than writing them** (`bytes(range(0x80,0xC0)).decode(codec)`
+*is* the continuation set, by construction). Hand-built populations and hand-built
+character classes are the same failure with different nouns. Make the missing case
+raise, never return `None`.
 
 Moved here from `memory/MEMORY.md` on 2026-08-06: they are always-needed
 constraints, and the memory index is navigational. Each was promoted only after

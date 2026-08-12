@@ -35,6 +35,10 @@ framework_reconciliation: |
 
 ## PLACEHOLDER SKIP — the failures this loosening NEWLY PERMITS (v1.23.0 / #45)
 
+⚠️ **This file's semantics depend on physical line layout.** Cases 13, 16, 19 and 20
+place a marker relative to a path ON THE SAME LINE. A markdown reflow or prettier pass
+silently changes what they test, with no assertion guarding it. Do not rewrap.
+
 A marker is an assertion of *intent*, and a wrong one is not detectable. So these
 seed the ways it can go wrong, not the ways it works.
 
@@ -46,8 +50,16 @@ seed the ways it can go wrong, not the ways it works.
 15. **marker covering no path** — a marker that silently does nothing is the exact
     failure this step is built against. Must be a FINDING. <!-- placeholder -->
 16. **unmarked break sharing a marked line** — span-scoping must cover only the
-    nearest preceding path. `never_existed_alongside.py` and
-    `docs/<slug>.md` <!-- placeholder --> on one line: the first must still be caught.
+    nearest preceding path. ⚠️ THE NEXT LINE MUST STAY ONE PHYSICAL LINE: refcheck
+    is line-based, so wrapping it makes this case vacuous — verified 2026-08-12 by
+    breaking span-scoping and still getting 18/18.
+    `never_existed_alongside.py` and `docs/<slug>.md` <!-- placeholder --> — first must be caught.
+19. **marker NOT adjacent to its path** — a trailing marker must not absorb a path
+    it does not touch. `absorbed_by_distance.py` is broken, then prose, then a marker:
+    `absorbed_by_distance.py` and some intervening prose here <!-- placeholder -->
+20. **stale marker on a CROSS-REPO path** — the guard must run the full ladder, not
+    rungs 1-2. NexusMind's `deploy_filters.sh` <!-- placeholder --> resolves at rung 4
+    and must be reported STALE, not skipped.
 
 ## PLACEHOLDER SKIP — must land in the COUNTED skip section, not vanish
 17. genuine instructional placeholder: `filters/<name>/<version>/config.yaml`

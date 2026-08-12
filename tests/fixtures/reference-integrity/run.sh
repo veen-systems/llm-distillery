@@ -17,7 +17,9 @@ must_be_silent=(config.yaml NexusMind/scripts/main.py
                 filters/foresight/v1/config.yaml
                 templates/release.md)     # 12: the absorption the change permits
 # v1.23.0 #45 — the failures the placeholder skip NEWLY permits.
-must_catch+=(verify_filter_package.py                 # 13 stale marker, explicit
+must_catch+=(absorbed_by_distance.py                  # 19 non-adjacent marker
+             deploy_filters.sh                        # 20 stale marker, cross-repo (rung 4)
+             verify_filter_package.py                 # 13 stale marker, explicit
              test_normalization_invariant.py          # 14 stale marker, angle-bracket
              never_existed_alongside.py)              # 16 unmarked break on a marked line
 must_be_placeheld=("filters/<name>/<version>/config.yaml"   # 17 counted, not dropped
@@ -26,9 +28,17 @@ for p in "${must_catch[@]}"; do
   grep -q -- "$p" <<<"$findings" && echo "  ok    caught  $p" \
     || { echo "  FAIL  missed  $p"; fail=1; }
 done
+# Assert POSITIVELY. Absence from FINDINGS cannot distinguish "resolved correctly"
+# from "silently dropped" -- with the skip made unconditional, 4 of 6 still printed
+# "ok silent" (2026-08-12 review). Each must appear in a resolution section.
+# Everything after FINDINGS: RESOLVED, GENERIC, DECLARED-PLACEHOLDER and
+# ASSERTED-ABSENT are all legitimate non-finding dispositions. What must never
+# happen is a path appearing in NONE of them.
+resolved_secs="$(sed -n '/### RESOLVED/,$p' <<<"$out")"
 for p in "${must_be_silent[@]}"; do
-  grep -q -- "$p" <<<"$findings" && { echo "  FAIL  reported $p"; fail=1; } \
-    || echo "  ok    silent  $p"
+  if grep -q -- "$p" <<<"$findings"; then echo "  FAIL  reported $p"; fail=1
+  elif grep -q -- "$p" <<<"$resolved_secs"; then echo "  ok    resolved $p"
+  else echo "  FAIL  neither reported NOR resolved (silently dropped?): $p"; fail=1; fi
 done
 placeheld="$(sed -n '/### SKIPPED AS DECLARED-PLACEHOLDER/,/### SKIPPED AS ASSERTED/p' <<<"$out")"
 for p in "${must_be_placeheld[@]}"; do
