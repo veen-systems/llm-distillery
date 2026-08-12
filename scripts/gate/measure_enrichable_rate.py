@@ -1,10 +1,31 @@
 #!/usr/bin/env python3
-"""FluxusSource#120 / ADR-007: enrichment-failure rate per source family.
+"""Enrichment-failure rate per source family (was: FluxusSource#120 / ADR-007 H4).
 
 Answers H4 — do eval-source articles convert better than Google News proxies
 because enrichment never has to go through `batchexecute`?
 
-Run on sadalsuud from the NexusMind repo root.
+⚠️ **FS#120 IS CLOSED (2026-08-08T06:54Z), six days early, on ADR-007.** Its
+`docs/GN-REPLACEMENT-PLAN.md` records the 08-14 funnel readout as cancelled and
+H4 as *"Not read, and moot"* — H4 asked whether a canonical URL is worth *paying*
+for, and native-first pays for nothing. **No arm data is owed to any FluxusSource
+decision, and nothing upstream is waiting on this script.**
+
+It is kept because H4 retains value for **this repo's** short-content problem
+(#92/#93): it is the hard measurement behind "a Google News row can never be
+enriched" (NexusMind#310). Read it as our own instrument, not as a gate.
+
+**The only complete window is 2026-07-31..2026-08-08** and it cannot be extended.
+From 2026-08-09 all six live filters exclude `eval_aggregator` so the arms enter
+no lens store (see --lens help), and the arms stopped upstream at
+2026-08-11T14:06Z under ADR-007 D2/D3. `shadow_mode: true` would NOT recover this:
+it stamps forward-only, and there is no future arm data to stamp. Confirmed with
+FluxusSource 2026-08-12 — **do not propose that change.**
+
+Run on sadalsuud from the NexusMind repo root. It writes nothing, so it can be
+piped in over ssh rather than copied:
+
+    ssh sadalsuud 'cd /home/jeroen/local_dev/NexusMind && python3 - \
+        --start 2026-07-31 --end 2026-08-08' < scripts/gate/measure_enrichable_rate.py
 
 The instrument
 --------------
@@ -60,8 +81,11 @@ a family diverge beyond noise, pooling is falsified and that is a finding to
 report BEFORE the pooled number, not a footnote after it.
 
 Usage:
-    python3 measure_enrichable_rate.py --start 2026-08-06 --end 2026-08-14
+    python3 measure_enrichable_rate.py --start 2026-07-31 --end 2026-08-08  # THE window
     python3 measure_enrichable_rate.py --start 2026-08-03 --end 2026-08-06   # dry run
+
+    (the pre-2026-08-12 example read `--end 2026-08-14`, aimed at a gate that
+     closed on 08-08 and at rows that stop existing on 08-09)
 """
 from __future__ import annotations
 
@@ -291,7 +315,10 @@ def main():
     print("    are per-row within an arm, which is fine; do not read counts as volume.")
     print("  - denominator is 'reached scoring AND not source-type-excluded'. Measured")
     print("    2026-08-06: no GN proxy and no eval arm carries an excluded type, so")
-    print("    nothing is dropped on that account for this comparison.")
+    print("    nothing is dropped on that account for this comparison. ⚠️ THAT HOLDS")
+    print("    ONLY FOR WINDOWS ENDING ON OR BEFORE 2026-08-08. From 08-09 the eval")
+    print("    arms ARE source-type-excluded in all six filters (NexusMind 9fb441a),")
+    print("    which is why they read zero here rather than reading a worse rate.")
     print("  - a 100% C for gn_proxy is NOT an artifact of enrichment skipping GN.")
     print("    Verified 2026-08-06: SKIP_DOMAINS is empty ('we try fetching everything")
     print("    now', article_fetcher.py:293), pre_enrich() receives the same article")
