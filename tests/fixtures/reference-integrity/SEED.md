@@ -1,5 +1,5 @@
 ---
-framework: agent-ready-projects v1.21.0
+framework: agent-ready-projects v1.23.0
 framework_reconciliation: |
   Cases 11 and 12 test the FRONTMATTER MARKER SCOPE added 2026-08-11. The
   `framework:` stamp above is several lines away from both, so under the old

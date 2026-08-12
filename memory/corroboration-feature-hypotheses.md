@@ -145,8 +145,7 @@ hard requirement, not a preference.
 
   **This kills the token-collision mechanism outright.** V1's `entity_jaccard`
   learned negative in 7 of 8 folds because two entities collide; twelve do not.
-  <!-- verify: manual — rerun /tmp/ner_measure.py pattern on a fresh sample; the
-       claim is about the extractor, so it should reproduce on any production day -->
+  <!-- verify: manual — rerun /tmp/ner_measure.py pattern on a fresh sample; the claim is about the extractor, so it should reproduce on any production day -->
 
   **What it does NOT establish, and do not let it be quoted as if it does:** this
   measures only the **negative** side — that unrelated articles stop colliding. It

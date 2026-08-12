@@ -13,6 +13,19 @@ items.** Nothing is deployed and nothing is pending deployment.
 | ~~**#107**~~ | **RULED + CLOSED 2026-08-12: a positive outcome suffices, a pleasant subject is not required.** Also settles the three held adjacent-lens rows (coffee frog, Buenos Aires estancia, Antalya nomadic tents). **#91 is untouched** — there the dominant subject and the scored text *disagree*, which this ruling does not license. Owner intends a retrain anyway; the home for any subject-weighting work is **`human_thriving` v8** (ADR-012 amended, #90), scoped against #91's mechanism. Unmeasured and stated: how often positive-outcome/unpleasant-subject items reach the lens. | Closed |
 | **Should ovr.news enrich at all?** | Owner's position: enrichment is NexusMind's job. ovr's `CLAUDE.md` documents the consolidation as deliberate. **Two documented positions in genuine conflict** — not drift. See § *three enrichment passes* below. **STILL DEFERRED BEHIND ovr#312 — do not re-litigate from scratch.** The strongest argument for moving it upstream is not duplication but ORDERING: ovr enriches *after* scoring, so the score that decided publication was computed on text that is not the text published. That argument only bites on articles that are **under 500 chars AND NexusMind did not enrich AND ovr successfully did** — a **hypothesis, unverified**. ovr#312 measures exactly that (outcomes per article, wiring up `enrichment_history` — 0 rows ever, writer with no callers). **If that set is empty, the argument evaporates.** Wait for the number. | **Owner** — after ovr#312 |
 
+**Framework: adopted to v1.23.0 on 2026-08-12** (was v1.21.0, 2 releases behind —
+v1.22.0 and v1.23.0 both shipped 2026-08-11 evening, so last session's "unreleased
+candidate, do not pin it" is superseded). Triage table:
+`docs/decisions/framework-adoption-history.md`. **The memory verify runner now
+reads 25 pass / 0 fail / 0 error / 0 malformed, exit 0**, all 38 annotations
+accounted for — up from the framework's own measurement of this repo at
+12 pass / 9 fail / 5 error / 3 malformed. **One annotation needs
+`VERIFY_TIMEOUT=120`** (the LD#92 DiD bootstrap, ~50s vs a 30s default); it is
+annotated in place, so do not read its timeout as a broken claim. One item
+deferred: v1.23.0's `<!-- placeholder -->` markers, to the next `audit-context`
+run — 0 paths are marked today and a marker is only meaningful against a live
+findings list.
+
 **Earlier, still current:** `solutions v6`'s `community_practice_strength` is
 **not dead — it is rare**, and no change is worth making. Three measurements in
 `docs/evidence/2026-08-11-solutions-v6-community-practice-dimension.md` (commit

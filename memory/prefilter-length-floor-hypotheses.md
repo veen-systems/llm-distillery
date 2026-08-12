@@ -92,6 +92,11 @@ the length floor blocks*.
    ⚠️ **Still do not fit the cap VALUE**: that is a threshold fit and inherits
    #95's |Δ| ≤ 0.16 noise floor (Batch F.1 first). Identification is cleared;
    calibration is not.
+   ⏱️ **The next annotation needs `VERIFY_TIMEOUT=120`.** It is a source-clustered
+   bootstrap with no iteration flag and takes ~50s, against the curate runner's
+   30s default — so a default run reports it ERROR *(timed out)*, which is
+   indistinguishable from a broken check. It is not broken: verified 2026-08-12,
+   exit 0, `D3_pct2.3  80  80  -1.119 [-1.61, -0.61]`.
    <!-- verify: PYTHONPATH=. python3 scripts/diagnostics/ld92_analyze_did.py --design tests/fixtures/ld92/design.json --scored tests/fixtures/ld92/deepseek_scored.jsonl | grep D3_pct2.3 -->
 
    **Harness AND data committed.** Scripts in `scripts/diagnostics/ld92_*.py`

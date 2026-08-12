@@ -271,7 +271,21 @@ For each changed file:
 
 Default stance: refuted=true. Mark NOT REFUTED only after a thorough attempt.
 
-Report: REFUTED (with failure scenario) or NOT REFUTED.
+**State the check before the claim, on any negative.** "0 rows", "never called",
+"nothing reads it", "no other callers", "all clean" — a negative cannot tell a
+real absence from a broken instrument, an empty sample or the wrong population.
+Report each as three things: the claim, the command that produced it, and **what
+a non-empty result would have looked like**. If you cannot state the shape of a
+positive, the claim is not ready to make.
+
+This is the sentence to write, not a step to perform — a separate "verify your
+negatives" step is skippable in exactly the cases where it matters. In this repo
+the failure has a name and a catalogue: `filtered_*.jsonl` is 100% passers by
+construction, `data/raw/` is pre-enrichment, and a host is a source with an
+exclusion list too. Every one of those produced a clean-looking negative.
+
+Report: REFUTED (with failure scenario) or NOT REFUTED. Every negative carries
+its command and the shape of a positive.
 ```
 
 ### Lens: doc-accuracy (MEDIUM and HIGH)

@@ -2335,6 +2335,21 @@ That is a two-second check and would have saved both rejections.
 **Root cause**: all five rows had oracle `comm = 0`, so 0.000 was the *correct* output. The smoke test was sized to check the interface, not the distribution.
 **Fix**: the calibration stats (max 6.625) contradicted it within minutes. Smoke tests answer "does it run" — reading a substantive signal off one costs a retraction.
 
+### Two `<!-- verify: -->` annotations that could never be extracted (2026-08-12)
+**Problem**: `memory/stamp-contract-integrity.md`'s claim that NexusMind#300 is fixed carried a verify command twelve lines long — embedded Python inside an HTML comment. It had **never run**, and neither had a second multi-line annotation in the same file.
+**Root cause**: an HTML comment's `-->` must sit on the annotation's own line, or the extractor reports MALFORMED and skips it. Nothing read the skip: the file looked annotated, and a claim that had already regressed once after being called fixed was unchecked for four days.
+**Fix**: replaced by `scripts/verification/check_content_length_populated.sh` (one line to call, evidence not a verdict word, non-zero exit, explicit `CANNOT VERIFY`). Found by adopting the framework's v1.22.0 runner, not by review — **10th occurrence of the catalogue below**. An annotation is a mechanism like any other, and "the file has a verify comment" is a config key, not an outcome.
+
+### A mean of daily shares is not the share (2026-08-12)
+**Problem**: reported GN's trend as "first half 25.0%, second half 24.3%" and posted it to a peer repo. Those are unweighted means of *daily* shares, not the pooled share, and I did not say which.
+**Root cause**: daily row counts vary 8,403–21,618, so the two aggregations weight the days differently. Pooled reads 24.83% → 23.69% — a −1.14pp gap against the −0.69pp I published. The conclusion survived; the quantity was still mislabelled.
+**Fix**: corrected in the peer comment the same session, caught by this repo's own review battery rather than before posting. **Sibling of `feedback-rate-needs-population`: a rate needs its denominator AND its aggregation named.** When halves differ in size, quote the pooled figure.
+
+### A JSON argument does not survive `ssh` (2026-08-12)
+**Problem**: `gn_normalization_cdf_share.py` failed on its first end-to-end run — the remote script got `Expecting value: line 1 column 3` parsing a JSON argv element that had worked locally.
+**Root cause**: `ssh host cmd arg1 arg2` does not pass an argv array; it joins the arguments and hands the string to a **remote shell**, which re-splits it. Quoting that Python's `json.dumps` produced is consumed by that shell, not by the remote program.
+**Fix**: interpolate the payload into the piped script source instead (`REMOTE_DUMP.replace("__TARGETS__", repr(...))`). General rule: over ssh, pass data **in the script**, never in argv, unless it is `shlex.quote`d for the far side.
+
 ## The unreachable-mechanism catalogue
 
 Moved out of `CLAUDE.md` on 2026-08-09 (context audit): the **rule** belongs in the
@@ -2354,6 +2369,8 @@ A mechanism that is present, configured and unreachable is this repo's defining 
 | 2026-08-09, the stage trap | the arXiv `Announce Type:` prefix is a **91.6%** detector on the collection corpus and **0.000** on NexusMind rows, because enrichment re-fetches the body between the two. Both are "production data" |
 | 2026-08-09 evening, self-inflicted | 34 rows labelled `CANDIDATE_UNADJUDICATED` committed **inside** `datasets/adverse/`, the glob a planned #91 gate reads as curated evidence. Not a mechanism that couldn't fire — **a population that would have been read by one that does.** Found by re-reading my own commit, not by a test |
 | 2026-08-10, self-inflicted | a guard that "refuses to emit uncalibrated scores" and checks only that the calibration file is truthy — a partial `dimensions` block passes it and the raw logits go through under a success line. Its own error message cited #98, the shape it missed. Found by a review lens, not by 270 green tests |
+
+| 2026-08-12, **10th occurrence** | a `<!-- verify: -->` annotation twelve lines long, backing the NexusMind#300 "100% populated" claim. An HTML comment ends at its first `-->` on its own line, so the extractor never saw it and the claim went unchecked. **The file looked annotated** — which is the config-key smell one layer up: presence of the mechanism read as operation of it. Found by adopting the framework's own runner, not by review |
 
 | 2026-08-11 evening, **caught pre-ship** | a `solutions v6` re-weighting that moved +19.5pp across an absolute 4.0 — correct at its own layer, erased downstream by a percentile CDF, because the gate reads the *normalized* score. **Not counted in the occurrence total: it never shipped.** Listed because it is the first time reading the caller stopped the recommendation instead of explaining it afterwards |
 
