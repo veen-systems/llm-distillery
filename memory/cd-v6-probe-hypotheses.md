@@ -44,6 +44,48 @@ higher. Not a bug in the trainer — a selection effect that any future filter
 using `--objective recall` will inherit. **Always re-measure FN on a split the
 threshold was not selected on.**
 
+## ⚠️ CORRECTIONS FROM THE FAILED CUTOVER (2026-08-13) — read these before quoting anything above
+
+**C1 — `cultural_discovery v5` is NOT single-stage. It already screens, and the whole
+"v6 adds Stage-1" framing was wrong.** Measured on the deployed v5 during a recovery
+cycle: `filtered_20260813_171905.jsonl`, n=3,039, `stage_used = {stage2: 1371,
+stage1_low: 1668}` — **54.9% already screened**.
+
+The error was mine and it is this repo's own hard constraint: I read
+`filters/cultural_discovery/v5/config.yaml`, saw **no `hybrid_inference` block**, and
+inferred no screening. **The config does not select the path.**
+`filter_loader.py:148` sets `hybrid_class` from the **existence of `inference_hybrid.py`**,
+and `main.py:264` uses it if present. v5 ships that file and a
+`probe/embedding_probe_e5small.pkl` (recovered in `b790b1b` — *"3 production probe pkls
+that existed ONLY on gpu-server"*) and screens while declaring nothing.
+
+**Consequence for H5 and for the cutover case:** v6 is a **probe/threshold change worth
+roughly +9pp of screening** (54.9% → ~63.7%), **not** the introduction of screening.
+H5's "screens 6.5 points *less* than the gate" is unaffected — it compared against the
+keyword gate — but every statement of the form *"63.7% of rows switch from a model score
+to a probe estimate"* should read **"~8.8pp more of them do"**.
+
+**C2 — v6 could not load on the box it was deployed to, and the package check could not
+have caught it.** `_create_stage2_scorer` branches on `self._model_path`; the scorer
+constructs the hybrid without one, so it took the **Hub** branch. gpu-server sets
+`HF_HUB_OFFLINE` via the scorer's EnvironmentFile, so any Hub fetch raises
+`OfflineModeIsEnabled` regardless of token, repo existence or privacy. **cd v6 was the
+only hybrid filter with a Hub branch at all.** Fixed in `dcf2860` (local default, Hub as
+fallback) and **verified on gpu-server itself, in the scorer venv, with
+`HF_HUB_OFFLINE=1` and no token** — the condition the original check did not reproduce,
+because it ran on a machine with a token and a network.
+
+**C3 — the cutover ordering has a hazard of its own.** `_find_latest_version()` selects on
+the directory NAME and never inspects contents, so a `vN/` holding only `model/` becomes
+"latest", has no `config.yaml`, drops out of discovery, and the `EXPECTED_FILTERS` guard
+takes **all six filters** down at startup. Pre-placing weights (playbook item 5) opens that
+window; landing code first opens the mirror-image one. There is no ordering that avoids a
+window — only one you choose and close between cycles.
+
+**Status: v6 is fixed, verified offline, and NOT deployed.** The recommendation on file is
+to leave it shelved until the 2026-08-13 Thriving predicate ruling works through cd's
+prompt — retrying now means cutting over twice, for ~+9pp of screening.
+
 ## REFUTED
 
 **H5 (refuted) — "the probe screens at least as much as the gate."** It does
