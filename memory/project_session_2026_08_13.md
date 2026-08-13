@@ -26,6 +26,29 @@ has no reader in that repo at all, and the per-lens `prefilter.py` is not import
 convention. The owner authorised the content and the peer's owner authorised it
 independently; the process miss is ours and revert-and-redo remains available.
 
+## Outcome verified on the 12:04 cycle — not inferred from the code path
+
+The sync and the merges were **code-proven, not outcome-proven**, until this. Deploy step
+ran 12:10:53:
+
+```
+Local main is 8 commit(s) behind origin/main on filters/ src/filters/ ... (clean
+fast-forward) — auto-pulling before deploy:
+Wrote filters/CODE_REVISION: 9e576d80...
+Filters deployed (model/ directories preserved via rsync exclude).
+```
+
+- sadalsuud auto-pulled to `6adda86`, **0 behind origin** — the `deploy_filters.sh:130-138`
+  branch fired exactly as read, carrying all 8 commits (2 docs + my 2 sync + the 2 merged
+  PRs and their parents).
+- All **3 synced files md5-MATCH** between NexusMind and gpu-server.
+- `filters/uplifting/v7/inference_hub.py` on gpu-server: **REMOVED** — the `--delete` rsync
+  cleared it without anyone deploying, as predicted.
+
+**Both predictions held, which is the point of checking them anyway**: this repo has
+shipped a fix that was provably loaded and still read 0 of 2,170 rows the next cycle
+(NM#300). One confirmed cycle is what separates the two cases.
+
 ## Shipped: `docs/FILTER_PLAYBOOK.md` checklist item 5 became a guard (`d969a23`)
 
 `deploy_filters.sh` excludes `model/` from **both** rsync passes, deliberately — the
