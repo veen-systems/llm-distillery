@@ -122,10 +122,17 @@ policy), not on the FN count.
   step 1, *before* the scale factor, which appears only in the fallback branch.
   Justification is recorded in the artifact's own `provenance_note`.
   **Refit from real 6.0 rows once ≥200 surfacing rows accumulate after cutover.**
-- **`--check-hub` returns `repo not found` for a private repo when `HF_TOKEN` is
-  unset** — Hub 404s rather than leak existence, and the script says so in a
-  comment. Its first run here was a false FAIL on a repo that existed. Export
-  `HF_TOKEN` from `config/credentials/secrets.ini` before believing that check.
+- **No unauthenticated Hub query can tell "private" from "absent" — this is about
+  the Hub, not about one script.** Generalised 2026-08-13 after a second occurrence
+  in a different tool and a different status code. Every repo in this project is
+  private, so: `--check-hub` returns `repo not found` with `HF_TOKEN` unset (its
+  first run here was a false FAIL on a repo that existed), and a bare REST call to
+  `/api/models/{repo}` returns **401** for repos that exist *and* for repos that do
+  not. Either way the probe carries **zero information** while looking like a
+  measurement. Export `HF_TOKEN` from `config/credentials/secrets.ini`, and settle
+  it with **controls**: a repo you know exists (`cultural-discovery-filter-v5`) and
+  a name you know does not. With a token, absence reads as a true 404 — that is how
+  `uplifting-filter-v7` was confirmed absent for #47.
 - **`_load_calibration` fails silently** when the file is missing (`self.calibration
   = None`, no warning). It is present now — but that is why its absence was
   invisible for as long as it was.

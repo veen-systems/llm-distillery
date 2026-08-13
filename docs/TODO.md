@@ -1,6 +1,42 @@
 # LLM Distillery - TODO
 
-## 🔵 NEXT SESSION — start here. **Two owner decisions, then #104.**
+## 🔵 NEXT SESSION — start here. **Three owner decisions, then #104.**
+
+**Cross-repo sync is CLOSED as of 2026-08-13 midday, and it was the only real gap.**
+Verified three ways rather than assumed: gpu-server ↔ sadalsuud was already exact
+(42/42 files md5-identical across the six live filters; `filters/CODE_REVISION`
+re-stamped every cycle, so that hop self-verifies every 4h), sadalsuud was 2 commits
+behind origin on **docs only** and auto-pulls `--ff-only` (`deploy_filters.sh:130-138`),
+and the actual drift was llm-distillery → NexusMind: 3 files, all inert at runtime,
+now pushed as `7ae74ba` + `bb204be`. ⚠️ Those two went **straight to NexusMind `main`
+with no PR**, against that repo's `chore/*` branch convention — owner authorised the
+content, the process miss is ours; revert-and-redo-as-PR is still on the table.
+
+**⚠️ NEW owner decision — #47 REOPENED (`NO_HUB` does not cross the repo boundary).**
+NexusMind still carries `filters/uplifting/v7/inference_hub.py`, which we deleted here;
+`cp -r` never deletes. It points at `jeergrvgreg/uplifting-filter-v7`, which **404s under
+an authenticated token** (measured with positive *and* negative controls — an
+unauthenticated probe returns 401 for repos that exist and is worthless here). Deleting
+it turns **3 NM#312 tests red**, because they assert `get_scorer_class(use_hub=True)`
+resolves for every discovered filter — i.e. they were green *because of* the stale file,
+and assert importability rather than repo existence. **Recommendation: delete the file
+AND teach `filter_loader` to honour `NO_HUB`**, re-scoping those tests to the true
+invariant (every filter resolves a scorer by its *declared* path, hub or local). The easy
+way out is closed: `training_metadata.json` / `training_history.json` are still absent for
+v7 and `upload_to_huggingface.py` reads both, so uploading would fabricate the metrics
+#47 closed against. Weigh against ADR-012 (uplifting → `human_thriving` at v8, where the
+sentinel goes away anyway; the `filter_loader` half is version-independent).
+
+**Shipped 2026-08-13: checklist item 5 is now a guard (`d969a23`).**
+`preflight_deploy_guards.py` guard D probes gpu-server for
+`{filter}/{version}/model/adapter_model.safetensors` and aborts if absent — fails **closed**
+when it cannot ask, with `--weights-preplaced` as the documented offline override. Proven
+against production, not a fixture: **cd v5 passes, cd v6 fails**, so the pending cutover
+cannot be started by accident from either deploy path. ⚠️ **Consequence to weigh:** every
+`deploy_to_nexusmind.sh` run now needs ssh reachability to `gpu-server`. Fine from this
+workstation; from the Windows box (still the script's default paths) the host alias may
+not resolve and deploys will abort. Owner asked to decide whether an *unknown host* should
+degrade to a warning, distinct from *unreachable*.
 
 **Framework verified CURRENT at session close 2026-08-13:** pinned v1.25.0, upstream v1.25.0
 (`889b038`), clone **0 commits behind origin**. No drift, nothing to triage.

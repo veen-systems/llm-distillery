@@ -63,7 +63,25 @@ DISTILLERY_ROOT=$PWD NEXUSMIND_ROOT=/home/jeroen/repos/veen-systems/NexusMind \
 > (`arxiv`/`mastodon_`/`bluesky`) that had been production-only since
 > 2026-05-18 — see llm-distillery#93.
 
-Then `cd $NEXUSMIND_ROOT && git push origin main`.
+> ⚠️ **`--dry-run` still writes.** It copies the files and skips only the
+> `git add`/`commit`/`push`, so it dirties the NexusMind working tree. That matters
+> when a parallel session shares that checkout: revert with **explicit paths**
+> (`git -C $NEXUSMIND_ROOT checkout -- <path> <path>`), never a bare
+> `git checkout .` (2026-08-13).
+
+> ⚠️ **Since 2026-08-13 the deploy needs ssh reachability to `gpu-server`.**
+> Pre-flight guard D probes it for
+> `filters/{name}/v{N}/model/adapter_model.safetensors` and **fails closed** if it
+> cannot ask — because `deploy_filters.sh` excludes `model/` from both rsync passes,
+> so the code never carries weights and a weightless *highest* version stops the
+> scorer **starting**, which costs the whole cycle for all six filters. Pre-place the
+> adapter first (checklist item 5 / #67), or pass `--weights-preplaced` once you have
+> confirmed it by hand:
+> `ssh gpu-server 'ls -l ~/NexusMind/filters/{name}/v{N}/model/adapter_model.safetensors'`.
+
+Then `cd $NEXUSMIND_ROOT && git push origin main` — **on a `chore/` branch and a PR
+if the target repo uses them**; NexusMind does, and two commits went straight to its
+`main` on 2026-08-13 for want of checking.
 
 ### 4. Deploy to gpu-server (via sadalsuud)
 
