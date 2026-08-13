@@ -370,10 +370,16 @@ class AIEngineeringPracticePreFilterV1(BasePreFilter):
         if not is_valid:
             return (False, reason)
 
-        # Check content length
-        is_long_enough, reason = self.check_content_length(article)
-        if not is_long_enough:
-            return (False, reason)
+        # NO length check here (#93, removed 2026-08-13). The 300-char floor is a
+        # LABELLING-time precondition — its rationale is framework leakage in the
+        # oracle *prompt*, and the student sees no prompt — so it lives in
+        # `ground_truth.batch_scorer.make_oracle_prefilter` and nowhere in a
+        # scoring path. This was the last surviving `check_content_length` call
+        # inside an `apply_filter` in the repo; #93 removed the others on
+        # 2026-08-03 and this package was missed because it is a separate
+        # product and not in ACTIVE_FILTERS. Behaviour on the oracle path is
+        # UNCHANGED: the wrapper applies the same floor via BasePreFilter.
+        # `validate_article` above stays — empty is not short.
 
         # Get combined text for analysis
         text = self._get_combined_clean_text(article)

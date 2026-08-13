@@ -186,6 +186,14 @@ def make_oracle_prefilter(prefilter_obj):
         if not check_length(article)[0]:
             return False
         if prefilter_obj is None:
+            # ⚠️ AS OF 2026-08-13 THIS BRANCH DOES NOT FIRE IN PRACTICE: every
+            # live filter package still ships a prefilter.py, so prefilter_obj
+            # is never None. It is a PREREQUISITE for the NM#284 deletion, not
+            # a live path — and an inert mechanism with green tests is this
+            # repo's signature defect, so it is dated rather than left to look
+            # exercised. If that deletion is abandoned, DELETE THIS BRANCH; do
+            # not leave it standing as decoration.
+            #
             # `apply_filter` opens with validate_article, so with no prefilter
             # object that check would vanish along with the lens rules — the
             # same "deletion removes an unrelated thing" shape this function's

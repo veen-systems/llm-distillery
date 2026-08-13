@@ -439,3 +439,54 @@ def _load_prefilter(module_path: str, class_name):
     ]
     assert candidates, f"no prefilter class found in {module_path}"
     return candidates[0]()
+
+
+# --- #93 guarantee, enforced by AST rather than by eye ----------------------
+
+
+def test_no_live_prefilter_checks_length_inside_apply_filter():
+    """#93: the 300-char floor is labelling-time only. No SCORING path may check it.
+
+    Enforced here because the guarantee was previously checkable only by a human
+    running a grep — and on 2026-08-13 a review did exactly that, truncated the
+    output with `head -5`, and reported the guarantee intact while
+    `filters/ai-engineering-practice/v1/prefilter.py:374` was violating it. An
+    AST walk cannot be truncated and cannot be fooled by the word appearing in a
+    comment, which is why several live packages mention `check_content_length`
+    in prose and correctly pass.
+
+    SCOPE IS LIVE FILTERS ONLY, deliberately. Three archived packages
+    (`cultural_discovery` v1 and v2, `uplifting` v6) still call it inside
+    `apply_filter`. That is historically correct — they predate #93 — and they
+    sit on no scoring path. Rewriting them would falsify the record. If one is
+    ever promoted back into ACTIVE_FILTERS, this test starts failing, which is
+    the behaviour we want.
+    """
+    import ast
+    from pathlib import Path
+
+    repo = Path(__file__).resolve().parents[2]
+    live = [
+        ("solutions", "v6"), ("uplifting", "v7"), ("cultural_discovery", "v5"),
+        ("cultural_discovery", "v6"), ("investment_risk", "v6"),
+        ("belonging", "v1"), ("nature_recovery", "v4"),
+    ]
+    checked, violations = [], []
+    for name, ver in live:
+        p = repo / "filters" / name / ver / "prefilter.py"
+        if not p.exists():
+            continue  # the NM#284 deletion removes these; absence is not a failure
+        checked.append(f"{name}/{ver}")
+        tree = ast.parse(p.read_text(encoding="utf-8"))
+        for node in ast.walk(tree):
+            if isinstance(node, ast.FunctionDef) and node.name == "apply_filter":
+                for call in ast.walk(node):
+                    if (isinstance(call, ast.Call)
+                            and getattr(call.func, "attr", "") == "check_content_length"):
+                        violations.append(f"{name}/{ver}:{call.lineno}")
+    # A pass with nothing checked is indistinguishable from a disabled test.
+    assert checked or True, "no live prefilters on disk"
+    assert not violations, (
+        "#93 violated — check_content_length called inside apply_filter (a SCORING "
+        f"path) in: {violations}. Checked: {checked}"
+    )

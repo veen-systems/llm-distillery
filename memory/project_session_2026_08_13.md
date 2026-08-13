@@ -194,6 +194,53 @@ without its ordering.** When reporting state across sessions, stamp it and name 
 change it. Their underlying rule stands and is why this took one hop instead of three: a
 reported state is not a state.
 
+## Corrections to my own commits, made by `/review-changes` on the same day's work
+
+Five findings, four of mine, and the review's own instrument was wrong twice.
+
+1. **`0edc05b`'s commit message states "326 passed / 4 skipped overall". The run
+   printed 325.** Written before running and never reconciled. The commit is pushed so
+   the message stands uncorrected in history; this is the correction. Trivial as a
+   number, and exactly the shape `feedback-claim-requires-verify` exists for — a figure
+   typed from expectation while the tool that would have settled it was one command away.
+2. **`scripts/research/shadow_recompute.py` hardcoded `/home/jeroen/repos/...`** and its
+   `--population` input had **no committed producer** — the extraction was an ad-hoc
+   `ssh` one-liner. I had already cited the script in NexusMind#284 as *"reproduce
+   with"*, which was untrue for anyone but me. Now derives the repo root from
+   `__file__`, takes `--filtered <cycle file>` and extracts the population itself, and
+   **refuses loudly** with neither argument instead of silently defaulting to a path
+   that exists only on this machine. Verified by reproducing the exact table.
+3. **The `prefilter_obj is None` branch cannot currently fire** — every live package
+   still ships a `prefilter.py`. It is a prerequisite for the NM#284 deletion, not a
+   live path, and an inert mechanism with green tests is this repo's signature defect.
+   Dated in the code with an explicit removal condition: **if the deletion is abandoned,
+   delete the branch** rather than leaving it as decoration.
+4. **`filters/ai-engineering-practice/v1/prefilter.py:374` called `check_content_length`
+   inside `apply_filter`** — a #93 violation, i.e. a length check on a SCORING path.
+   Missed by #93's 2026-08-03 sweep because the package is a separate product and not in
+   `ACTIVE_FILTERS`. Removed; oracle-path behaviour is unchanged because the wrapper
+   applies the same floor.
+
+⚠️ **Both times the review's own instrument was the thing that failed.**
+
+- I reported "#93 intact" from a `grep … | head -5`. **The truncation hid three more
+  violations.** An AST walk found `cultural_discovery` v1/v2 and `uplifting` v6 also
+  calling it inside `apply_filter` — all archived, all legitimately pre-#93, none on a
+  scoring path, so they stay. But the verdict had been reached with an instrument that
+  could not have seen them.
+- My **sensitivity check for the new guarantee test passed, having tested nothing.** I
+  seeded a violation into `nature_recovery/v4/prefilter.py` — which does not define
+  `apply_filter` at all (it inherits the base). `str.replace` found no anchor and
+  returned the string unchanged, silently, so the "seeded" file was identical to the
+  original and the test correctly saw no violation. Caught only because a *passing*
+  sensitivity check is itself the alarm. Re-seeded into `uplifting/v7` after asserting
+  the anchor matched and the file actually changed; the test then failed as designed.
+
+The durable output is that #93 is now **enforced by an AST test over live filters**
+rather than by whoever remembers to grep — and the test carries its own scope note
+saying archived packages are excluded on purpose, so a future reader does not "fix"
+history.
+
 ## Verify
 
 <!-- verify: PYTHONPATH=. python3 -m pytest tests/unit/test_preflight_deploy_guards.py -q 2>&1 | tail -1 -->

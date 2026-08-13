@@ -9,7 +9,12 @@ source-type-excluded rows, so the population is "scored AND not source-excluded"
 import json, glob, importlib.util, sys, yaml
 from pathlib import Path
 
-REPO = Path("/home/jeroen/repos/veen-systems/llm-distillery")
+# Repo root by walking up from this file, NOT a hardcoded path. The first
+# version hardcoded one machine's checkout, so the script could only ever run
+# where it was written — and it was cited in NexusMind#284 as reproducible.
+REPO = Path(__file__).resolve().parents[2]
+if not (REPO / "filters").is_dir():
+    sys.exit(f"repo root not found from {__file__} (looked at {REPO})")
 sys.path.insert(0, str(REPO))
 LIVE = [("solutions","v6"),("uplifting","v7"),("cultural_discovery","v5"),
         ("cultural_discovery","v6"),("investment_risk","v6"),("belonging","v1"),
@@ -33,10 +38,29 @@ def declared(name, ver):
 
 import argparse
 _ap = argparse.ArgumentParser(description=__doc__)
-_ap.add_argument("--population", default="/tmp/shadow_articles.json",
-                 help="JSON list of {id,title,content}, extracted from a cycle's filtered file")
+_ap.add_argument("--filtered",
+                 help="a cycle's filtered_*.jsonl; articles are extracted from it here")
+_ap.add_argument("--population",
+                 help="alternative: a pre-extracted JSON list of {id,title,content}")
 _args = _ap.parse_args()
-ART = json.load(open(_args.population))
+if _args.population:
+    ART = json.load(open(_args.population))
+else:
+    if not _args.filtered:
+        sys.exit(
+            "give --filtered <path to a cycle's filtered_*.jsonl> (typically on\n"
+            "sadalsuud under NexusMind/data/filtered/<lens>/), or --population <json>.\n"
+            "The first version had NO committed producer for --population: the\n"
+            "extraction was an ad-hoc ssh one-liner, so 'reproduce with this script'\n"
+            "was untrue for anyone but its author."
+        )
+    ART = []
+    for _line in open(_args.filtered, encoding="utf-8"):
+        try: _r = json.loads(_line)
+        except Exception: continue
+        ART.append({"id": _r.get("id"), "title": _r.get("title") or "",
+                    "content": _r.get("content") or ""})
+    print(f"extracted {len(ART)} articles from {_args.filtered}")
 print(f"population: {len(ART)} articles from the most recent cycle's filtered files\n")
 print(f"{'filter':24} {'declared':>9} {'observed':>9} {'delta':>8}  {'blocked':>7}  top reason")
 print("-"*88)
