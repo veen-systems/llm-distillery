@@ -192,6 +192,32 @@ class TestOraclePrefilterKeepsTheFloor:
         assert gate(_article(SHORT_CONTENT)) is False
         assert gate(_article(LONG_CONTENT)) is True
 
+    def test_no_prefilter_object_still_rejects_an_EMPTY_TITLE(self):
+        """`validate_article` must survive the deletion too — and the case that
+        proves it is narrower than it first looks.
+
+        `apply_filter` opens with validate_article, so a gate built from "floor
+        only" drops it along with the lens rules. But most of what
+        validate_article rejects, the floor rejects anyway: an empty or missing
+        body has `len("") < 300`, so both gates block it and the assertion
+        proves nothing about the fix.
+
+        **The discriminating case is an empty TITLE with a long body** — the
+        floor passes it (the body is long) and only validate_article rejects it
+        (`empty_title`). Checked rather than assumed: of the three cases below,
+        the first two return False under BOTH implementations, and only the
+        third changes. Keeping all three, labelled, because the two that do not
+        discriminate document the overlap — and a future reader who drops the
+        third would be left with a test that cannot fail.
+        """
+        gate = make_oracle_prefilter(None)
+        # These two are blocked by the length floor regardless — NOT evidence
+        # for validate_article, retained only to document that overlap.
+        assert gate({"title": "A title", "content": ""}) is False
+        assert gate({"title": "A title"}) is False
+        # This is the assertion that fails without validate_article in the gate.
+        assert gate({"title": "", "content": LONG_CONTENT}) is False
+
     def test_an_explicit_override_still_wins(self):
         """The escape hatch is deliberate and must stay reachable.
 

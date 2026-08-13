@@ -186,7 +186,13 @@ def make_oracle_prefilter(prefilter_obj):
         if not check_length(article)[0]:
             return False
         if prefilter_obj is None:
-            return True
+            # `apply_filter` opens with validate_article, so with no prefilter
+            # object that check would vanish along with the lens rules — the
+            # same "deletion removes an unrelated thing" shape this function's
+            # length-floor fix exists for, one step along. Empty is NOT short:
+            # a missing body is rejected at any length, and it is the case the
+            # floor cannot catch because `len("") < 300` is true for both.
+            return BasePreFilter.validate_article(article)[0]
         return prefilter_obj.apply_filter(article)[0]
 
     oracle_prefilter.prefilter_obj = prefilter_obj
