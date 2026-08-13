@@ -91,8 +91,11 @@ class CulturalDiscoveryHybridScorer(HybridScorer):
     ):
         """
         Args:
-            model_path: local Stage-2 model dir. If given, the local loader is
-                used; otherwise Stage 2 loads from the Hub.
+            model_path: local Stage-2 model dir. Defaults to this package's own
+                `model/` when an adapter is present there; the Hub loader is used
+                only when no local adapter exists. Passing an explicit path still
+                wins. (Before 2026-08-13 this defaulted to the Hub, which cannot
+                work under HF_HUB_OFFLINE — see the note in __init__.)
             probe_path: Stage-1 probe (default: ./probe/embedding_probe_e5small.pkl)
             threshold: Stage-1 threshold; articles below it skip Stage 2
             device: 'cuda', 'cpu', or None for auto
@@ -101,6 +104,25 @@ class CulturalDiscoveryHybridScorer(HybridScorer):
             repo_id: override the Hub repo for Stage 2
             token: HuggingFace token, for private repos
         """
+        # Default to the package's OWN weights when they are on disk, so the Hub
+        # is a FALLBACK rather than the default. Fixed 2026-08-13 after this
+        # exact branch took the production pipeline down.
+        #
+        # The Hub branch cannot work where this filter actually runs: the
+        # gpu-server scorer sets HF_HUB_OFFLINE via its EnvironmentFile, so any
+        # Hub fetch raises OfflineModeIsEnabled regardless of token, repo
+        # existence or privacy. `jeergrvgreg/cultural-discovery-filter-v6` does
+        # exist and is private — verified authenticated, with controls — and that
+        # is irrelevant on that box.
+        #
+        # cd v6 was the ONLY hybrid filter with a Hub branch at all: uplifting v7,
+        # solutions v6 and nature_recovery v4 all return their local scorer
+        # unconditionally, and this package's own inference.py already defaults to
+        # Path(__file__).parent / "model". The hybrid path was the outlier.
+        if model_path is None:
+            _default = Path(__file__).parent / "model"
+            if (_default / "adapter_model.safetensors").is_file():
+                model_path = _default
         self._model_path = model_path
         self._probe_path = probe_path or (
             Path(__file__).parent / "probe" / "embedding_probe_e5small.pkl"

@@ -243,7 +243,10 @@ def check_hub(filter_dir: Path, repo_id: str | None, token: str | None) -> list[
 
     api = HfApi(token=token)
     try:
-        info = api.repo_info(repo_id=repo_id, repo_type="model")
+        # files_metadata=True is load-bearing: without it `siblings` carry no lfs
+        # block, so the content-hash fallback below can never compare anything and
+        # every mtime-inverted case fails closed. Added 2026-08-13 with that fallback.
+        info = api.repo_info(repo_id=repo_id, repo_type="model", files_metadata=True)
     except RepositoryNotFoundError:
         # True 404. Also returned by Hub when the token can't see a private repo (by design,
         # to avoid leaking repo existence). Mention both possibilities.
@@ -290,12 +293,79 @@ def check_hub(filter_dir: Path, repo_id: str | None, token: str | None) -> list[
             f"{local_mtime.isoformat()}",
         ))
     else:
-        results.append((
-            False,
-            f"hub: last_modified {hub_mtime.isoformat()} is OLDER than local adapter "
-            f"{local_mtime.isoformat()} — weights likely not uploaded since last training",
-        ))
+        # mtime says the local adapter is newer than the Hub. That USED to imply
+        # "trained but not uploaded", because the comment above assumed the file
+        # is "written by training, never by git checkout or data-prep scripts".
+        #
+        # That premise broke on 2026-08-13: adapters are now also written by
+        # MIRRORING them DOWN from the Hub for off-site backup (#110), which
+        # stamps a fresh mtime on bytes that are already published. Four filters
+        # were mirrored that day, so this branch would false-FAIL every one of
+        # them on every deploy-worded commit — and a guard that cries wolf on
+        # four of six live filters is a guard people learn to bypass, which is
+        # exactly how #44 happened.
+        #
+        # So: before failing, ask whether the CONTENT actually differs. Compare
+        # the local file's sha256 against the Hub's recorded LFS sha256. Identical
+        # bytes mean the upload did happen and only the timestamp is misleading.
+        # Different bytes (or no hash to compare) keep the original FAIL — this
+        # narrows the false positive without weakening the real check.
+        local_sha = _sha256_file(adapter_path)
+        hub_sha = _hub_lfs_sha256(info, adapter_path.name)
+        if local_sha and hub_sha and local_sha == hub_sha:
+            results.append((
+                True,
+                f"hub: local adapter is newer by mtime but BYTE-IDENTICAL to the Hub "
+                f"(sha256 {local_sha[:12]}…) — mtime reflects a backup mirror, not an "
+                f"unuploaded retrain",
+            ))
+        elif local_sha and hub_sha:
+            results.append((
+                False,
+                f"hub: local adapter differs from the Hub copy (local sha256 "
+                f"{local_sha[:12]}… vs hub {hub_sha[:12]}…) and is newer "
+                f"({local_mtime.isoformat()} > {hub_mtime.isoformat()}) — weights "
+                f"were not uploaded since last training",
+            ))
+        else:
+            results.append((
+                False,
+                f"hub: last_modified {hub_mtime.isoformat()} is OLDER than local adapter "
+                f"{local_mtime.isoformat()} and the content hashes could not be compared "
+                f"(local={'ok' if local_sha else 'unreadable'}, "
+                f"hub={'ok' if hub_sha else 'absent'}) — failing closed",
+            ))
     return results
+
+
+def _sha256_file(path: Path) -> Optional[str]:
+    """sha256 of a file, or None if it cannot be read."""
+    import hashlib
+    try:
+        h = hashlib.sha256()
+        with open(path, "rb") as fh:
+            for chunk in iter(lambda: fh.read(1024 * 1024), b""):
+                h.update(chunk)
+        return h.hexdigest()
+    except OSError:
+        return None
+
+
+def _hub_lfs_sha256(info, filename: str) -> Optional[str]:
+    """The Hub's recorded LFS sha256 for one file, or None if unavailable.
+
+    Requires repo_info(files_metadata=True); a repo whose siblings carry no lfs
+    block (a small non-LFS file, or an API shape change) yields None, and the
+    caller then fails closed rather than guessing.
+    """
+    for sib in getattr(info, "siblings", None) or []:
+        if getattr(sib, "rfilename", None) != filename:
+            continue
+        lfs = getattr(sib, "lfs", None)
+        if lfs is None:
+            return None
+        return getattr(lfs, "sha256", None) or (lfs.get("sha256") if isinstance(lfs, dict) else None)
+    return None
 
 
 def main() -> int:
