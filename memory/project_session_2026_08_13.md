@@ -243,8 +243,16 @@ history.
 
 ## Verify
 
+⚠️ The original guard-D annotation here asserted *"guard D refuses cd v6"*. It was true
+when written and **deliberately false two hours later**, because the cutover pre-placed
+v6's weights — so the guard correctly passes now. `/curate`'s runner caught it as a FAIL,
+which is the mechanism working: a state claim decayed and said so. Replaced with the
+durable property (guard E fires on a genuinely weightless version) rather than one that
+expires the moment the thing it describes is done.
+
+
 <!-- verify: PYTHONPATH=. python3 -m pytest tests/unit/test_preflight_deploy_guards.py -q 2>&1 | tail -1 -->
-<!-- verify: PYTHONPATH=. python3 scripts/deployment/preflight_deploy_guards.py --filter-name cultural_discovery --version v6 --distillery-root . --nexusmind-root /home/jeroen/repos/veen-systems/NexusMind >/dev/null 2>&1 && { echo "FAIL: guard D did not refuse the weightless cutover"; exit 1; } || echo "PASS: guard D refuses cd v6" -->
+<!-- verify: bash /home/jeroen/repos/veen-systems/llm-distillery/scripts/verification/check_guard_e_fires.sh -->
 <!-- verify: grep -q "ENFORCED since 2026-08-13" docs/FILTER_PLAYBOOK.md && echo PASS || { echo FAIL; exit 1; } -->
 <!-- verify: grep -c "weights-preplaced\|WeightsPreplaced" scripts/deploy_to_nexusmind.sh scripts/deploy_to_nexusmind.ps1 -->
 
