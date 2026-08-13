@@ -1972,7 +1972,7 @@ the outer double-quoted `-c` string (and pre-3.12 f-strings can't reuse the deli
 **Root cause**: nested-quote hell in one-liners shipped over ssh; the f-string's `{...}` contains
 double-quoted dict keys / format specs that clash with the command's own quoting.
 **Fix**: don't ship non-trivial python as an ssh `-c` one-liner. Write it to a `.py` file, `scp` it,
-and run `python3 file.py` (used for `gen_ab.py`, `gate_diag.py` — both session scratch scripts living in gpu-server's `~/llm-distillery/`, not in this repo). <!-- placeholder --> If a one-liner is unavoidable, use a
+and run `python3 file.py` (used for `gen_ab.py` <!-- placeholder -->, `gate_diag.py` <!-- placeholder --> — both session scratch scripts living in gpu-server's `~/llm-distillery/`, not in this repo). If a one-liner is unavoidable, use a
 heredoc (`python3 - <<'EOF'`) so quotes aren't doubly escaped, and single-quote f-string keys.
 
 ### Ollama hogs GPU during training (2026-07-26)
@@ -2404,7 +2404,7 @@ it guards.** A guard nobody has watched fail is a guard nobody has tested.
 
 **Problem**: `/review-changes` in llm-distillery ran a checklist written for the
 *personal notes* repo — tiering on `Nieuw huis/`, `career/jobspy/`, `modellen/*.py`,
-`ovr.news/principes.md` (paths in the *personal notes* repo — `principes.md` is at `personal/Nieuw huis/principes.md`; none of them resolve in this estate, which is the point <!-- placeholder -->), and asserting *"the container itself has no git"*, which is false here.
+`ovr.news/principes.md` (paths in the *personal notes* repo — `principes.md` <!-- placeholder --> is at `personal/Nieuw huis/principes.md`; none of them resolve in this estate, which is the point), and asserting *"the container itself has no git"*, which is false here.
 The tier table had to be rewritten mid-run to mean anything. Meanwhile this repo's own
 `.claude/skills/review-changes/` — 219 lines, re-mapped to `filters/common/*.py`,
 `ground_truth/batch_scorer.py` and the gate/normalization scripts — sat unused.
