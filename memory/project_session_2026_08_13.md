@@ -111,10 +111,27 @@ The residue clears itself: gpu-server still holds the deleted file until
 it is cleared by the next cycle rather than by a deploy anyone has to remember.
 
 **Two open questions deliberately not closed**: CPU-fallback for a `NO_HUB` filter still
-*raises* rather than auto-selecting local (my read: leave it raising — a CPU fallback is
-already degraded, and a filter that silently switches loading strategy there is the quiet
-substitution this repo keeps getting caught by); and the `7ae74ba`/`bb204be`
-direct-to-`main` history question.
+*raises* rather than auto-selecting local, and the `7ae74ba`/`bb204be` direct-to-`main`
+history question.
+
+⚠️ **My argument for the first was right and its premise was wrong, corrected within the
+hour by the NexusMind session.** I wrote "a CPU fallback is already a degraded run".
+It is not degraded — **it cannot happen, three independently sufficient ways**:
+`config/app.yaml:81` `require_gpu: true` aborts the pipeline before scoring;
+`config/app.yaml:93` `cpu_fallback.enabled: false` since NM#203 removes the automatic
+fallback after a mid-run GPU failure; and CPU scoring was measured at **~2–3 hours against
+~2 minutes** on GPU (`docs/reports/2026-02-10-pipeline-fixes.md:33`) against a
+`TimeoutStartSec=3600`, so the run is SIGKILLed roughly halfway and each filter blows the
+900s per-filter watchdog long before that. **The conclusion survives and strengthens**:
+raising into `failed_filters` is not merely the better signal, it is the only outcome that
+terminates. The honest scope of `--no-gpu` is local testing on small `--max-items`, never
+production resilience — which means `CLAUDE.md`'s "GPU unavailable → CPU" constraint and
+`docs/ARCHITECTURE.md:77`'s "slower but functional" now contradict the config, flagged to
+the owner as a normative-surface call.
+
+**The shape worth keeping**: I reached for a plausible reason ("degraded run") instead of
+checking whether the branch I was reasoning about is reachable at all — the repo's own
+signature defect, arrived at from the argument side rather than the code side.
 
 ## My own errors this session — four, all caught before they cost anything
 
