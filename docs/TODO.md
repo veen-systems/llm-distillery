@@ -1,6 +1,25 @@
 # LLM Distillery - TODO
 
-## 🔵 NEXT SESSION — start here. **Three owner decisions, then #104.**
+## 🔵 NEXT SESSION — start here. **The Thriving predicate is RULED; two decisions left.**
+
+**✅ RULED 2026-08-13 — the lens predicate, in ovr.news `docs/BRAND.md` `a70609b`** (commit
+verified here, not taken from the relay): *Thriving qualifies when the article shows **a
+process going well for people** — health, safety, capability or circumstances improving, or
+a protection established that will improve them. Not when the event only establishes that a
+harm occurred, or that one has been answered; nor when the beneficiary is an institution.*
+**#107 is SCOPED, not reversed** — its three adjacent-lens rows stand, and the ruling says
+plainly *"the scorer is not miscalibrated; it is faithfully serving a definition we do not
+publish."* **This makes ADR-012's `uplifting` → `human_thriving` rename LOAD-BEARING**: the
+oracle prompt is written against the scorer's name, and the name carries the wrong
+predicate. ⚠️ Build any predicate against two rows, not the prose — **Vox/Vision Zero**
+(strongest qualifier, entirely about traffic deaths: a harm-vocabulary exclusion fails here
+first) and **Banco Azteca's banking awards** (admitting it means you kept `uplifting`'s
+meaning). Boundary pair that must BOTH qualify: Nepal's ILO ratification and Israel's
+cigarette warnings — they answer a harm *and leave a protection behind*. ⚠️ **A retrain
+trap**: the Commonwealth Games medallist story qualifies but its headline leads with the
+beating — **if labels come from headlines this class is mislabelled systematically.**
+
+## 🔵 Then: two owner decisions, then #104.
 
 **Cross-repo sync is CLOSED as of 2026-08-13 midday, and it was the only real gap.**
 Verified three ways rather than assumed: gpu-server ↔ sadalsuud was already exact

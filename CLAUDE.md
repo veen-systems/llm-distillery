@@ -118,7 +118,7 @@ Full details in `memory/filter-status.md`. Summary:
 
 | Filter | Version | MAE | Status |
 |--------|---------|-----|--------|
-| **uplifting** | v7 | recall 0.61 / spec 0.97 | Deployed (NO_HUB, hybrid inference). **Op-point 4.5 since 2026-08-11 (#102)** |
+| **uplifting** | v7 | recall 0.61 / spec 0.97 | Deployed (NO_HUB, hybrid inference). **Op-point 4.5 since 2026-08-11 (#102)**. ⚠️ **Its consumer lens (Thriving) now carries a NARROWER predicate than this scorer's name implies** — ovr.news `BRAND.md` `a70609b`, 2026-08-13: *a process going well **for people***, excluding harm-answered-only and institution-beneficiary. #107 is scoped, not reversed: the scorer is faithfully serving a definition ovr did not publish. Binds the **v8 `human_thriving`** prompt (ADR-012's rename is now load-bearing, not hygiene) |
 | **sustainability_technology** | v3 | 0.72 | **REMOVED 2026-08-03** — replaced by solutions; package deleted, recover from git history |
 | **investment-risk** | v6 | recall 0.72 / spec 0.97 | Deployed (HF Hub, private). **Op-point 4.25 since 2026-08-11** |
 | **cultural-discovery** | v5 | recall 0.59 / spec 0.98 | **SUPERSEDED by v6 at the first cycle after 2026-08-13 16:04** (NM#348 merged `d5943d3`). Keep the package: rollback is deleting v6's dir on gpu-server, which makes v5 latest again |
