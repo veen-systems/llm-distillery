@@ -330,6 +330,48 @@ Mail under the floor) **did more work in that decision than the 38-article headl
 did** — ovr "succeeded" on all four only because it accepts any text longer than what
 it had, with no consent-wall detector and no minimum-gain check.
 
+## The owner's ruling that retired most of the evening's work (2026-08-13)
+
+*"The fix isn't 'move enrichment upstream'. Repairment should not be necessary. If it
+is, there are bugs upstream."*
+
+**Correct, and it dissolves the FS#167 thread rather than mitigating it.** Four
+sessions spent hours making a *repairer* safe — candidate classes, arm independence,
+a pair requirement, a signature conjunction, a hand-review residue. All of that exists
+because a repairer must **guess** which strings were corrupted, and the guess is where
+the 2,030 false-positive pairs live.
+
+**Nobody asked whether the guess was necessary.** A clean copy of every corrupted row
+sits one hop upstream: NexusMind stores `original_content` per article
+(`article_fetcher.py:840`), FluxusSource's text, 0.000% corrupt through a three-round
+challenge. **Re-derivation has no false-positive class**, because nothing is inferred.
+
+Two conditions checked before accepting it:
+
+- **NM#338 is already fixed** — raw bytes to trafilatura — so the corrupted set is
+  **bounded and no longer growing**, which is what makes re-derivation terminate rather
+  than become a treadmill.
+- **U+FFFD is the one damage class re-derivation is the ONLY cure for** (mojibake is a
+  reversible mis-decode; U+FFFD threw the bytes away). My mechanism claim that ovr's
+  `response.text()` decodes UTF-8 regardless of declared charset was **right and I
+  flagged it as unmeasured** — measured by ovr: **4 of 21,316 rows, 0 of 160 cache
+  rows.** Near-empty, but it was the single finding that could have made re-derivation
+  insufficient.
+
+ovr#291 is now *"re-derive from upstream"*, with the repairer spec retained as the
+**verification** spec. Same instrument; a false positive now costs a second look
+instead of a destroyed row.
+
+**And a risk in a decision I had already agreed to.** NM#339 routes **all** enrichment
+through NexusMind's decoder — the one that had the charset bug when the decision was
+made. Nobody checked it first; it held **by luck of timing**. Now posted to NM#339 as
+an explicit precondition. ovr's addition is the durable half and is better than my
+framing: **the redundancy being removed was also, incidentally, error-detection.**
+NM#338 was found by pairing against a second copy. Remove the second path and the same
+fault reaches everything with nothing positioned to notice — so it wants a *standing*
+probe, not a one-time check. The U+FFFD count is the cheap one: it is 4, and 4 is
+exactly what moves if the surviving decoder regresses.
+
 ## Verify
 
 <!-- verify: test -f scripts/deployment/preflight_deploy_guards.py && PYTHONPATH=. python3 -m pytest tests/unit/test_preflight_deploy_guards.py -q 2>&1 | tail -1 -->

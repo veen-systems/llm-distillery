@@ -146,6 +146,64 @@ mode, and "0 found" and "7 found" need that statement equally. Related:
 [[feedback-claim-requires-verify]] and the standing rule that a negative needs a positive
 control — this is its mirror, a *positive* needing a negative control.
 
+## Repair needs a detector; re-derivation needs nothing — prefer the clean upstream copy (2026-08-13)
+
+**Problem**: Four sessions spent most of an evening making a *repairer* safe. ovr.news
+had ~474 stored rows with mojibake and planned to fix them in place. That requires a
+**detector**, because a repairer must decide which strings were corrupted — and the
+detector is where the entire false-positive class lives (2,030 `mac_roman` pairs, of
+which `l'éclipse → lՎclipse` destroys correct French, Greek and Portuguese prose
+irreversibly). We built candidate classes, arm independence, a pair requirement, a
+signature conjunction and a hand-review residue, all to make a **guess** safe enough
+to run.
+
+**Root cause**: nobody asked whether the guess was necessary. **A clean copy of every
+corrupted row existed one hop upstream** — NexusMind stores `original_content` per
+article (`src/enrichment/article_fetcher.py:840`), FluxusSource's text, measured
+0.000% corrupt and confirmed through a three-round challenge. The owner's framing:
+*repairment should not be necessary; if it is, there are bugs upstream.*
+
+**Fix**: **When a clean upstream copy exists, RE-DERIVE — never repair.** Re-derivation
+has **no false-positive class at all**, because nothing is inferred: there is no path
+from copying a clean string to `lՎclipse`. Two conditions make it the practical answer
+as well as the correct one, and both must be checked:
+
+- **The upstream fault must be fixed first, or re-derivation is a treadmill.** NM#338
+  landed (raw bytes to trafilatura instead of `.decode(resp.encoding or "utf-8")`),
+  which is what bounds the set and makes the job terminate.
+- **Check for irreversibly lossy damage, which re-derivation is the ONLY cure for.**
+  Mojibake is a reversible byte-level mis-decode; **U+FFFD has thrown the bytes away**
+  and no repairer could ever recover it. Measured here: 4 of 21,316 rows, and 0 of 160
+  cache rows — near-empty, but it was the one finding that could have made
+  re-derivation insufficient rather than merely better.
+
+The detector work is not wasted: it becomes the **verification** step ("did the
+re-derived text come back clean?"), where a false positive costs a second look instead
+of a destroyed row. Same instrument, consequence of being wrong drops by a category.
+
+## Consolidating onto one path deletes redundancy that was silently ERROR-DETECTION (2026-08-13)
+
+**Problem**: NM#339 decided to consolidate enrichment into NexusMind's `pre_enrich` and
+delete ovr.news's independent pass. **That routes every article through the decoder
+that had the NM#338 charset bug** — and nobody in the four-session thread, including
+me, checked that path's correctness before agreeing to consolidate onto it. It had been
+fixed hours earlier, so the decision held **by luck of timing**.
+
+**Root cause**: the duplication was being argued about as *waste*. It was also, without
+anyone designing it that way, a **cross-check**: while two independent fetchers decoded
+the same articles, a fault in one was partly masked *and partly revealed* by
+disagreement with the other. NM#338 was found precisely by pairing NexusMind's enriched
+text against a second copy. Remove the second path and the same fault reaches every
+article with nothing downstream positioned to notice.
+
+**Fix**: **"Consolidate onto path X" is a bet on X's correctness — state it as a
+precondition, not an assumption.** And when removing a redundant path, ask what it was
+incidentally detecting, then replace that with a *standing* probe rather than a
+one-time verification. Here the cheap one already exists: the U+FFFD count is **4**,
+and 4 is exactly the number that moves if the surviving decoder regresses. Generalises
+past encodings — any "we do this twice, let's stop" should name what the second copy
+was catching before it goes.
+
 ## A verified quantity carries an unverified PASSENGER — and the sixth kind is a SCOPE (2026-08-12)
 
 **Problem**: Six times in one session, across four repos, a correctly-measured number
