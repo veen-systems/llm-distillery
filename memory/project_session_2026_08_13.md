@@ -144,8 +144,12 @@ It is not degraded — **it cannot happen, three independently sufficient ways**
 `config/app.yaml:93` `cpu_fallback.enabled: false` since NM#203 removes the automatic
 fallback after a mid-run GPU failure; and CPU scoring was measured at **~2–3 hours against
 ~2 minutes** on GPU (`docs/reports/2026-02-10-pipeline-fixes.md:33`) against a
-`TimeoutStartSec=3600`, so the run is SIGKILLed roughly halfway and each filter blows the
-900s per-filter watchdog long before that. **The conclusion survives and strengthens**:
+the **900s per-filter watchdog**, which each filter blows long before completion. ⚠️ The
+service-timeout half of that argument was **wrong on both sides** — I repeated a peer's
+`TimeoutStartSec=3600` without checking, and `systemctl show` reports **`TimeoutStartUSec=4h`**
+(`nexusmind.service.d/override.conf`). Same shape as the 401-vs-404: the answer held, the
+instrument did not — and this time I inherited the bad instrument from a peer, having just
+written the rule about exactly that. **The conclusion survives and strengthens**:
 raising into `failed_filters` is not merely the better signal, it is the only outcome that
 terminates. The honest scope of `--no-gpu` is local testing on small `--max-items`, never
 production resilience — which means `CLAUDE.md`'s "GPU unavailable → CPU" constraint and
