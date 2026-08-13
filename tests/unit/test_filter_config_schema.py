@@ -37,7 +37,7 @@ REPO_ROOT = Path(__file__).parent.parent.parent
 ACTIVE_FILTERS = [
     ("solutions", "v6"),
     ("uplifting", "v7"),
-    ("cultural_discovery", "v5"),
+    ("cultural_discovery", "v6"),
     ("investment_risk", "v6"),
     ("belonging", "v1"),
     ("nature_recovery", "v4"),
@@ -164,16 +164,28 @@ EXEMPTIONS: set[tuple[str, str, str]] = {
     # The other four stay exempt and stay open: deployment / hybrid_inference /
     # training are documentation-only with no known reader, and `gatekeepers` has not
     # been shown to cost anything. Backfill those only with a reason this specific.
-    # cultural_discovery **v6** was backfilled the same day, but it is NOT in
-    # ACTIVE_FILTERS, so THIS SUITE DOES NOT VALIDATE IT. Add it here at cutover,
-    # in the same commit that promotes it — that hand-maintained list lagging is
-    # precisely how the drift above went unseen for six weeks.
-    # (v6 IS covered by tests/unit/test_preflight_deploy_guards.py and by the
-    # deploy-time guard, which is what closes the gap in the meantime.)
-    ("cultural_discovery", "v5", "missing_top_level:deployment"),
-    ("cultural_discovery", "v5", "missing_top_level:hybrid_inference"),
-    ("cultural_discovery", "v5", "missing_top_level:training"),
-    ("cultural_discovery", "v5", "scoring_missing:gatekeepers"),
+    # CUTOVER 2026-08-13 (#98): ACTIVE_FILTERS now names v6, in the same commit that
+    # promotes it — which is what the note here previously asked for, and it paid
+    # immediately. Flipping the version turned this suite red at once with three real
+    # violations, exactly the class that was invisible for six weeks in 2026-07 while
+    # the list still named a superseded version. The list is the instrument; a lagging
+    # instrument reads as a clean bill of health.
+    #
+    # ⚠️ hybrid_inference is DELIBERATELY NOT carried over. v5 was exempt because it
+    # had no such block — it is single-stage, scoring every article it receives with
+    # the full student. v6 ADDS Stage-1 e5 probe screening, so the block exists and
+    # must be validated rather than excused. That is the one exemption this cutover
+    # CLOSES, and re-adding it would silently re-permit shipping a hybrid filter with
+    # no hybrid config — the shape of the 2026-08-06 defect where a probe and a
+    # hybrid_inference block shipped into a package with no inference module.
+    #
+    # The other three carry over unchanged and stay open on the same terms as v5:
+    # deployment / training are documentation-only with no known reader, and
+    # `gatekeepers` has not been shown to cost anything. Backfill only with a reason
+    # as specific as the `tiers` one recorded above.
+    ("cultural_discovery", "v6", "missing_top_level:deployment"),
+    ("cultural_discovery", "v6", "missing_top_level:training"),
+    ("cultural_discovery", "v6", "scoring_missing:gatekeepers"),
 }
 # Migration B complete (2026-05-04): all 7 active filters conform to the
 # canonical schema. Add an exemption here only with a written justification
