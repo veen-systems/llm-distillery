@@ -390,6 +390,67 @@ def _ssh_weights_probe(gpu_host: str, filter_name: str, version: str, timeout: i
     return answer == "PRESENT"
 
 
+# --- Guard E ----------------------------------------------------------------
+
+
+def check_weights_backed_up(filter_dir: Path) -> list[str]:
+    """Refuse to ship a version whose weights exist nowhere Veen-owned and backed up.
+
+    Found 2026-08-13, by an infra session inventorying a machine for disaster
+    recovery rather than by anyone here. THREE of six live filters —
+    `cultural_discovery`, `investment_risk v6`, `belonging v1` — had no local
+    copy of their adapter at all. Their only homes were gpu-server (employer
+    hardware, outside our control) and a private Hub repo behind a single
+    account. Losing that account would not have stopped scoring; it would have
+    removed the way back.
+
+    The reason nobody noticed is the reason this has to be a guard rather than a
+    note: `filters/**/model/` is gitignored, so the weights are invisible to
+    `git status`, to a repo grep, and to any inventory built from the index.
+    Two separate sessions searched for them and concluded they were absent. The
+    backup walks the filesystem, which is why the *other* four filters were
+    protected — **by accident, not by decision.**
+
+    That accident is what this guard replaces. Without it, a version trained
+    tomorrow is off-site only if someone remembers, and the evidence says nobody
+    does: the three gaps above were created by exactly that.
+
+    Scope, stated because it is narrow: this checks that a copy exists on THIS
+    machine, in the tree the backup covers. It cannot verify the backup ran —
+    that is `restic ls latest` and it lives on the infra side. A local file is a
+    precondition for off-site, not a proof of it.
+    """
+    adapter = filter_dir / "model" / _ADAPTER_NAME
+    if adapter.is_file() and adapter.stat().st_size > 0:
+        mb = adapter.stat().st_size / (1024 * 1024)
+        return [f"weights present locally for backup ({mb:.0f} MB) — {adapter}"]
+
+    if adapter.is_file():
+        _fail(
+            f"{adapter} exists but is EMPTY.\n"
+            "  A zero-length adapter is worse than an absent one: it satisfies every\n"
+            "  presence check and restores as a corrupt model. Re-download it."
+        )
+
+    _fail(
+        f"no local copy of this version's weights: {adapter}\n"
+        "  The deploy would ship a version whose adapter exists only on gpu-server\n"
+        "  (employer hardware) and in a private Hub repo behind one account —\n"
+        "  no Veen-owned copy, and nothing in the off-site backup, which covers this\n"
+        "  tree but is blind to anything not on this disk.\n"
+        "  ⚠️ `git status` will NOT show this, and neither will a repo grep:\n"
+        "  filters/**/model/ is gitignored by design. `ls -l` on the path above is\n"
+        "  the check that discriminates.\n"
+        "  Fix — pull from the Hub, which keeps the recovery chain Veen-owned:\n"
+        "    python -c \"from huggingface_hub import hf_hub_download as d; \\\n"
+        "      [d(repo_id='jeergrvgreg/<repo>', filename=f, local_dir='<filter_dir>/model') \\\n"
+        "       for f in ['adapter_model.safetensors','adapter_config.json',\n"
+        "                 'tokenizer.json','tokenizer_config.json']]\"\n"
+        "  Then delete the .cache/ directory it leaves behind — mirror the artifact,\n"
+        "  not the HF cache layout."
+    )
+
+
 def check_weights_channel(
     filter_name: str,
     version: str,
@@ -514,6 +575,7 @@ def main(argv: list[str] | None = None) -> int:
         ("manifest scope", lambda: check_manifest_scope(args.distillery_root / ".nexusmind-owns")),
         ("tier documentation", lambda: check_tiers_documented(filter_dir)),
         ("cutover", lambda: check_cutover(args.filter_name, args.version, args.nexusmind_root)),
+        ("weights backed up", lambda: check_weights_backed_up(filter_dir)),
         (
             "weights channel",
             lambda: check_weights_channel(

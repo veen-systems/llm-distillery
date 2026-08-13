@@ -21,6 +21,7 @@ from scripts.deployment.preflight_deploy_guards import (
     check_cutover,
     check_manifest_scope,
     check_tiers_documented,
+    check_weights_backed_up,
     check_weights_channel,
 )
 
@@ -539,3 +540,87 @@ def test_callers_expose_the_same_guard_flags():
         f"deploy caller drift — only in .sh: {sorted(in_sh - in_ps1)}, "
         f"only in .ps1: {sorted(in_ps1 - in_sh)}"
     )
+
+
+# --- Guard E: weights exist in the backed-up tree ---------------------------
+#
+# The defect: three of six LIVE filters had no local copy of their adapter at
+# all, so their only homes were employer hardware and a single-account private
+# Hub repo — nothing Veen-owned, nothing off-site. Found by an infra session
+# doing DR inventory, not by anyone here, because `filters/**/model/` is
+# gitignored: two sessions searched and concluded the weights were absent. The
+# four filters that WERE protected were protected by accident (restic walks the
+# filesystem), not by decision. This guard replaces the accident.
+
+
+def test_absent_weights_abort_the_deploy(tmp_path):
+    """The defect state: a version whose weights live nowhere we control."""
+    d = tmp_path / "filters" / "demo" / "v3"
+    (d / "model").mkdir(parents=True)
+    with pytest.raises(GuardFailure) as exc:
+        check_weights_backed_up(d)
+    msg = str(exc.value)
+    assert "no local copy" in msg
+    # The failure must name why the usual checks won't show it, or the reader
+    # re-runs `git status`, sees nothing, and concludes the guard is wrong.
+    assert "gitignored" in msg
+    assert "hf_hub_download" in msg or "huggingface_hub" in msg  # remedy included
+
+
+def test_present_weights_stay_quiet(tmp_path):
+    d = tmp_path / "filters" / "demo" / "v3"
+    (d / "model").mkdir(parents=True)
+    (d / "model" / "adapter_model.safetensors").write_bytes(b"x" * 2048)
+    notes = check_weights_backed_up(d)
+    assert any("weights present locally" in n for n in notes)
+
+
+def test_empty_adapter_is_worse_than_absent(tmp_path):
+    """A zero-length file satisfies every presence check and restores as a
+    corrupt model. It must not read as protected.
+
+    Not hypothetical: the same session that created this guard left sixteen
+    zero-length .lock files behind while mirroring the weights, and its own
+    size-based check passed because the real files were fine alongside them.
+    """
+    d = tmp_path / "filters" / "demo" / "v3"
+    (d / "model").mkdir(parents=True)
+    (d / "model" / "adapter_model.safetensors").write_bytes(b"")
+    with pytest.raises(GuardFailure) as exc:
+        check_weights_backed_up(d)
+    assert "EMPTY" in str(exc.value)
+
+
+def test_missing_model_dir_is_the_same_failure(tmp_path):
+    """No model/ dir at all was the actual shape of all three real gaps."""
+    d = tmp_path / "filters" / "demo" / "v3"
+    d.mkdir(parents=True)
+    with pytest.raises(GuardFailure):
+        check_weights_backed_up(d)
+
+
+@pytest.mark.parametrize(
+    "name,version",
+    [
+        ("solutions", "v6"),
+        ("uplifting", "v7"),
+        ("cultural_discovery", "v6"),
+        ("investment_risk", "v6"),
+        ("belonging", "v1"),
+        ("nature_recovery", "v4"),
+    ],
+)
+def test_every_live_filter_has_a_backed_up_copy(name, version):
+    """Regression lock on the real tree, not a fixture.
+
+    Three of these six failed this on 2026-08-13 and were fixed the same day.
+    Pinned because the failure mode is silent by construction — nothing in git,
+    nothing in a grep, and the backup keeps succeeding while covering less.
+    """
+    from pathlib import Path
+
+    repo = Path(__file__).resolve().parents[2]
+    d = repo / "filters" / name / version
+    if not d.is_dir():
+        pytest.skip(f"{name} {version} not on disk")
+    check_weights_backed_up(d)  # raises GuardFailure if it regresses
