@@ -241,6 +241,72 @@ rather than by whoever remembers to grep — and the test carries its own scope 
 saying archived packages are excluded on purpose, so a future reader does not "fix"
 history.
 
+## AFTERNOON — a production outage I caused, and four claims wrong the same way
+
+### The outage (16:10–17:22)
+
+`cultural_discovery v6` was cut over (NM#348). Its scoring endpoint returned **HTTP 500**,
+the post-deploy smoke test caught it, and `nexusmind.service` **failed closed**. One cycle
+lost. **No bad data** — confirmed from both ends by the ovr.news session: no cd row anywhere
+was scored by v6.
+
+**Root cause**: v6's `_create_stage2_scorer` branches on `self._model_path`; the scorer
+constructs the hybrid without one, so it took the **Hub** branch. gpu-server sets
+`HF_HUB_OFFLINE` via the scorer's EnvironmentFile, so any Hub fetch raises
+`OfflineModeIsEnabled` — regardless of token, repo existence or privacy. The repo *does*
+exist and *is* private; irrelevant there. cd v6 was the **only** hybrid filter with a Hub
+branch at all.
+
+**Recovery**: reverted (NexusMind `843d152`), gpu-server's v6 dir removed **including
+`model/`** (a bare `vN/` with no `config.yaml` becomes "latest" and drops the filter from
+discovery, taking all six down), `deploy_filters.sh` re-run by hand → **6/6 smoke tests
+pass**. Then the lost batch was re-run manually: **17,383 articles, 6 filters,
+`run_status: complete`**, 56 min.
+
+Fixed and **verified in production's own environment** (`dcf2860`) — gpu-server, scorer
+venv, `HF_HUB_OFFLINE=1`, no token: stage 2 loads locally and scores 4.9896. **Not
+redeployed.**
+
+⚠️ **Two traps in the recovery worth carrying**: `systemctl start`/`reset-failed` need
+interactive auth, so the unit read `failed` for four hours after the incident was resolved
+and looked like a live fault (the owner cleared it). And a manual run skips `ExecStartPost`,
+so **the scorer must be stopped by hand** or it holds the GPU and keeps ollama evicted.
+
+### ✅ The Thriving predicate was RULED (ovr.news `a70609b`) — verified, not relayed
+
+*A process going well **for people**…; not when the event only establishes that a harm
+occurred, or that one has been answered; nor when the beneficiary is an institution.*
+**#107 is SCOPED, not reversed** — *"the scorer is not miscalibrated; it is faithfully
+serving a definition we do not publish."* Makes ADR-012's `human_thriving` rename
+**load-bearing**. Build against **Vox/Vision Zero** (must qualify, entirely about deaths)
+and **Banco Azteca** (must not; admitting it means you kept `uplifting`'s meaning), with
+Nepal/ILO + Israel's cigarette warnings as the boundary pair that must both qualify.
+
+### #96's test ran twice and does not discriminate
+
+Run 1 **void**: the adverse arm's "full text" was 300 chars — `datasets/adverse/` was
+truncated by the #97 legal remediation, so the DiD was a pure content-length comparison.
+Run 2 valid (positive control vs production: max |Δ| **0.083**) and **underpowered**:
+`D = +0.3032`, 95% CI **[−0.517, +1.182]** spanning all three verdict bands, 49.9% of
+resamples below the boundary. **I wrote a four-band decision rule with no power
+calculation**; separating the bands needs ~170 adverse rows against the 21 that exist.
+
+## THE PATTERN — four claims, one shape
+
+Every one was *"I inferred runtime/state from an artefact that cannot carry it"*, and three
+were caught by peers measuring rather than reasoning:
+
+| claim | what I read | what was true |
+|---|---|---|
+| cd v5 is single-stage | `config.yaml` had no `hybrid_inference` | `filter_loader.py:148` sets `hybrid_class` from the **existence of `inference_hybrid.py`** — v5 screens **54.9%** |
+| `stage_used` dropped at the NM handoff | a grep over `src/output/`, `src/publish*` | **all three paths absent**; NM emits it 3377/3377, ovr's `summarize.ts` projects it away |
+| gpu-server has no HF token | a 401 in *my* env | the operative cause is `HF_HUB_OFFLINE`, documented in `memory/gpu-server.md` |
+| v6 "loaded and scored end-to-end" | a run **with** a token and a network | the target has neither |
+
+**Consequence for #98**: v6 is a probe/threshold change worth **~+9pp** of screening
+(54.9% → ~63.7%), not the introduction of screening. The case for that cutover is weaker
+than I presented it, and my framing should not decide whether it is retried.
+
 ## Verify
 
 ⚠️ The original guard-D annotation here asserted *"guard D refuses cd v6"*. It was true
