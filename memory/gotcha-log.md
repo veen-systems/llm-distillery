@@ -146,6 +146,35 @@ mode, and "0 found" and "7 found" need that statement equally. Related:
 [[feedback-claim-requires-verify]] and the standing rule that a negative needs a positive
 control — this is its mirror, a *positive* needing a negative control.
 
+## The audit never scanned the file that is auto-loaded every session (2026-08-13)
+
+**Problem**: `/audit-context` step 4 checks `CLAUDE.md`, `memory/MEMORY.md` and
+`memory/gotcha-log.md`. It does **not** check the **user-level auto-memory index**
+(`~/.claude/projects/<slug>/memory/MEMORY.md`) — which is **auto-loaded into every
+session**, is larger than the in-repo index it shares a name with, and whose pointers
+all name repo files. A curate pass found **three dead pointers in it**:
+`project_session_2026_08_01.md`, `_02.md` and `_03.md` were never committed, and two of
+them had obvious renamed targets sitting beside them (`_01_afternoon.md`,
+`_03_evening.md`). One (`_02`) has no repo file at all, so its summary in the index is
+the **only surviving record** of that session.
+
+Two audits the same day reported the reference check clean.
+
+**Root cause**: the two files share the name `MEMORY.md`, and the skill's own Step 1
+warns they are different artifacts — but Step 4's document list was written against the
+*repo* one and nobody re-read Step 1 while editing Step 4. The check was not wrong
+about what it examined; **it was examining the wrong set**, and a clean result over the
+wrong set is indistinguishable from a clean result. Same shape as `filtered_*.jsonl`
+being 100% passers: the instrument worked, the population was wrong.
+
+**Fix**: `refcheck.py`'s `DOCS` now includes the auto-memory index by absolute path,
+guarded by `exists()` so it degrades on a machine without one. It immediately paid for
+itself — the widened scope caught two further dead names in the *correction text I had
+just written*. **Generalisation: when a check names its own inputs, the input list is a
+hand-built population too** — audit it on the same schedule as the thing it checks, and
+ask "what is loaded that this does not read?" rather than "does this pass?".
+Related: [[feedback-hand-built-population]].
+
 ## Repair needs a detector; re-derivation needs nothing — prefer the clean upstream copy (2026-08-13)
 
 **Problem**: Four sessions spent most of an evening making a *repairer* safe. ovr.news

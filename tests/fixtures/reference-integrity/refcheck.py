@@ -17,7 +17,16 @@ ROOT = os.environ.get("REFCHECK_ROOT") or os.path.abspath(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", ".."))
 SIBLING_ROOTS = [os.path.dirname(ROOT), os.path.dirname(os.path.dirname(ROOT))]
 import os as _o
-DOCS = ["CLAUDE.md", "memory/MEMORY.md", "memory/gotcha-log.md"] if not _o.environ.get("SEED") else [_o.environ["SEED"]]
+# The USER-LEVEL auto-memory index is auto-loaded every session and its pointers
+# name repo files — but it lived outside DOCS until 2026-08-13, when a curate pass
+# found THREE dead session pointers in it (files never committed). The audit could
+# not have caught them: it was not looking at the file. Absolute path, because it
+# is outside ROOT.
+AUTOMEM_INDEX = _o.path.expanduser(
+    "~/.claude/projects/-home-jeroen-repos-veen-systems-llm-distillery/memory/MEMORY.md")
+DOCS = ["CLAUDE.md", "memory/MEMORY.md", "memory/gotcha-log.md"] \
+       + ([AUTOMEM_INDEX] if _o.path.exists(AUTOMEM_INDEX) else []) \
+       if not _o.environ.get("SEED") else [_o.environ["SEED"]]
 
 EXT = {"md","py","json","jsonl","yaml","yml","sh","ps1","ini","txt","toml","js","jinja",
        "cfg","sql","ts","tsx","astro","pkl","safetensors","csv","lock","service"}
