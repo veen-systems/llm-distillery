@@ -42,12 +42,14 @@ PUSH_FLAG=""
 DRY_RUN=0
 FORCE_SKIP_OWNED_DRIFT=0
 FORCE_DIRTY=0
+WEIGHTS_PREPLACED=0
 for arg in "$@"; do
     case "$arg" in
         --push)                       PUSH_FLAG="--push" ;;
         --dry-run)                    DRY_RUN=1 ;;
         --force-skip-owned-drift)     FORCE_SKIP_OWNED_DRIFT=1 ;;
         --force-dirty)                FORCE_DIRTY=1 ;;
+        --weights-preplaced)          WEIGHTS_PREPLACED=1 ;;
         --*)                          echo "ERROR: unknown flag: $arg"; exit 1 ;;
         *)
             if [ -z "$FILTER_NAME" ]; then FILTER_NAME="$arg"
@@ -59,11 +61,15 @@ for arg in "$@"; do
 done
 
 if [ -z "$FILTER_NAME" ] || [ -z "$VERSION" ]; then
-    echo "Usage: $0 <filter_name> <version> [--push] [--dry-run] [--force-skip-owned-drift] [--force-dirty]"
+    echo "Usage: $0 <filter_name> <version> [--push] [--dry-run] [--force-skip-owned-drift] [--force-dirty] [--weights-preplaced]"
     echo ""
     echo "Flags:"
     echo "  --push                      git push origin main on NexusMind after the commit"
     echo "  --dry-run                   copy files but skip the git add/commit/push in NexusMind"
+    echo "  --weights-preplaced         skip the gpu-server LoRA-weight probe, asserting by"
+    echo "                              hand that model/adapter_model.safetensors is already"
+    echo "                              there. Offline use only: a wrong assertion stops the"
+    echo "                              scorer STARTING and the cycle scores nothing at all."
     echo "  --force-skip-owned-drift    proceed even if a NexusMind-owned file has drifted"
     echo "                              (use only after inspecting the drift and deciding"
     echo "                              the NexusMind copy is the one to keep)"
@@ -167,10 +173,24 @@ echo ""
 #   C. This deploy may BE the production cutover — NexusMind's
 #      filter_loader._find_latest_version() serves the highest vN on disk, so a
 #      new highest version goes live on the next load with nothing in between.
+#   D. gpu-server has no LoRA weights for the version being deployed. Neither
+#      rsync pass in deploy_filters.sh ships model/, so the code arrives without
+#      them and the scorer — which validates weights for EVERY discovered filter
+#      at startup — refuses to start: the cycle then scores nothing for all six
+#      filters, unattended. Documented as FILTER_PLAYBOOK item 5 since #67 closed
+#      in 2026-05-31 after exactly this took cd v5 down; never enforced until now.
 echo "0.5 Cross-repo pre-flight guards..."
+# Written as an if-block, not `[ ... ] && GUARD_FLAGS+=(...)`: the AND-list form
+# is tested-safe under `set -e` today only because it is not the last statement,
+# and that is a property of its POSITION in the file rather than of the code.
+GUARD_FLAGS=()
+if [ "$WEIGHTS_PREPLACED" -eq 1 ]; then
+    GUARD_FLAGS+=(--weights-preplaced)
+fi
 (cd "$DISTILLERY_ROOT" && PYTHONPATH=. python3 scripts/deployment/preflight_deploy_guards.py \
     --filter-name "$FILTER_NAME" --version "$VERSION" \
-    --distillery-root "$DISTILLERY_ROOT" --nexusmind-root "$NEXUSMIND_ROOT") || {
+    --distillery-root "$DISTILLERY_ROOT" --nexusmind-root "$NEXUSMIND_ROOT" \
+    "${GUARD_FLAGS[@]}") || {
     echo "ERROR: pre-flight guards failed. Aborting deploy."
     echo "  These guard the llm-distillery -> NexusMind boundary, which is the only"
     echo "  chokepoint this repo controls. Fix the package, do not bypass."

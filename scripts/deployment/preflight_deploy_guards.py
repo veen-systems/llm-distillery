@@ -339,13 +339,170 @@ def check_cutover(filter_name: str, version: str, nexusmind_root: Path) -> list[
     ]
 
 
-def main(argv: list[str] | None = None) -> int:
+# --- Guard D ----------------------------------------------------------------
+
+
+class ProbeUnavailable(Exception):
+    """The weights probe could not reach gpu-server. Not the same as 'absent'."""
+
+
+DEFAULT_GPU_HOST = "gpu-server"
+GPU_FILTERS_ROOT = "~/NexusMind/filters"
+_ADAPTER_NAME = "adapter_model.safetensors"
+
+
+def _ssh_weights_probe(gpu_host: str, filter_name: str, version: str, timeout: int = 20) -> bool:
+    """Ask gpu-server whether the LoRA adapter for this version is on disk.
+
+    Returns True/False. Raises ProbeUnavailable when the question could not be
+    ASKED — a transport failure must never read as "weights are present", and
+    must not read as "absent" either: those are different facts with different
+    remedies, and collapsing them is how a guard ends up firing on a VPN blip.
+    """
+    import subprocess
+
+    remote = (
+        f'test -f {GPU_FILTERS_ROOT}/{filter_name}/{version}/model/{_ADAPTER_NAME} '
+        f'&& echo PRESENT || echo ABSENT'
+    )
+    try:
+        proc = subprocess.run(
+            [
+                "ssh",
+                "-o", "BatchMode=yes",
+                "-o", f"ConnectTimeout={timeout}",
+                gpu_host,
+                remote,
+            ],
+            capture_output=True,
+            text=True,
+            timeout=timeout + 10,
+        )
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        raise ProbeUnavailable(f"{type(exc).__name__}: {exc}") from exc
+
+    answer = proc.stdout.strip().splitlines()[-1] if proc.stdout.strip() else ""
+    if proc.returncode != 0 or answer not in ("PRESENT", "ABSENT"):
+        raise ProbeUnavailable(
+            f"ssh {gpu_host} exit={proc.returncode} stdout={proc.stdout.strip()!r} "
+            f"stderr={proc.stderr.strip()[:200]!r}"
+        )
+    return answer == "PRESENT"
+
+
+def check_weights_channel(
+    filter_name: str,
+    version: str,
+    *,
+    probe=None,
+    preplaced_ack: bool = False,
+    gpu_host: str = DEFAULT_GPU_HOST,
+) -> list[str]:
+    """Refuse a deploy whose served version has no LoRA weights on gpu-server.
+
+    This turns `docs/FILTER_PLAYBOOK.md` checklist item 5 — *"Pre-place `model/`
+    on gpu-server before `deploy_filters.sh`"* — from an instruction into a
+    check. The instruction has existed since llm-distillery#67 was closed, and
+    #67 was itself filed AFTER the omission took cultural_discovery v5 down on
+    2026-05-31. A documented step that has already been missed once is the
+    definition of what belongs in this module.
+
+    Why weights cannot ride along with the code: `NexusMind/scripts/deploy_filters.sh`
+    rsyncs `filters/` to gpu-server with `--exclude='model/'`, deliberately — the
+    adapters are multi-GB and out-of-git, and `--delete` without that exclude
+    would WIPE gpu-server's only copy. Both rsync passes exclude it. So a code
+    deploy NEVER carries weights, for any version, ever.
+
+    Why the consequence is worse than in 2026-05-31: the check moved from first
+    scoring request to scorer STARTUP, and it iterates every discovered filter
+    (`nexusmind-scorer/main.py`, `#incident-2026-04-13`):
+
+        for name, cfg in state._filter_configs.items():
+            adapter = cfg["path"] / "model" / "adapter_model.safetensors"
+            ... raise RuntimeError("Cannot start scorer: ... missing model weights")
+
+    `cfg["path"]` is the version `_find_latest_version()` selected. So a weightless
+    highest version does not degrade one filter — the scorer never comes up and
+    the cycle scores NOTHING for all six. And nobody is watching when it happens:
+    `deploy_filters.sh` runs as `ExecStartPre` on `nexusmind.service`, unattended,
+    every four hours.
+
+    The check applies to Hub-backed filters too. The startup validation is a
+    plain disk check and does not care that the scorer would have loaded from the
+    Hub, so "it's on the Hub" does not make the local adapter optional.
+
+    `probe` is injected so this is testable without a network; `preplaced_ack`
+    is the documented override for the offline case. Being unable to ask fails
+    CLOSED — see ProbeUnavailable.
+    """
+    if preplaced_ack:
+        return [
+            "weights probe SKIPPED — operator asserted --weights-preplaced.",
+            f"    Nothing verified {filter_name}/{version}/model/{_ADAPTER_NAME} on {gpu_host}.",
+            "    If that assertion is wrong the scorer will not start and the cycle",
+            "    scores nothing for every filter, not just this one.",
+        ]
+
+    probe = probe or _ssh_weights_probe
+    try:
+        present = probe(gpu_host, filter_name, version)
+    except ProbeUnavailable as exc:
+        _fail(
+            f"could not ask {gpu_host} whether {filter_name}/{version} has weights: {exc}\n"
+            "  Failing CLOSED: 'unreachable' is not 'present'. The deploy path never\n"
+            "  ships model/ (deploy_filters.sh excludes it in both rsync passes), so a\n"
+            "  weightless highest version stops the scorer from STARTING — all six\n"
+            "  filters score nothing, unattended, on the next 4-hourly cycle.\n"
+            "  Either fix connectivity and re-run, or pass --weights-preplaced once you\n"
+            "  have confirmed by hand:\n"
+            f"    ssh {gpu_host} 'ls -l {GPU_FILTERS_ROOT}/{filter_name}/{version}/model/{_ADAPTER_NAME}'"
+        )
+
+    if not present:
+        _fail(
+            f"{gpu_host} has NO weights for {filter_name}/{version}:\n"
+            f"    {GPU_FILTERS_ROOT}/{filter_name}/{version}/model/{_ADAPTER_NAME} is absent.\n"
+            "  This deploy would ship the code without them — deploy_filters.sh excludes\n"
+            "  model/ from BOTH rsync passes, so nothing downstream will fill the gap.\n"
+            "  The scorer validates weights for every discovered filter at STARTUP, so it\n"
+            "  would refuse to start and the whole cycle would score nothing.\n"
+            "  Fix (FILTER_PLAYBOOK checklist item 5, llm-distillery#67): pre-place the\n"
+            "  adapter FIRST, then deploy:\n"
+            f"    ssh {gpu_host} 'mkdir -p {GPU_FILTERS_ROOT}/{filter_name}/{version}/model'\n"
+            f"    scp <adapter dir>/* {gpu_host}:{GPU_FILTERS_ROOT}/{filter_name}/{version}/model/"
+        )
+
+    return [f"weights present on {gpu_host} for {filter_name}/{version}"]
+
+
+def build_parser() -> argparse.ArgumentParser:
+    """Exposed so the caller-parity test can DERIVE the flag set rather than
+    restate it. A hardcoded copy in the test would be a second place to update,
+    and the defect it guards against is exactly two places disagreeing."""
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--filter-name", required=True)
     ap.add_argument("--version", required=True)
     ap.add_argument("--distillery-root", required=True, type=Path)
     ap.add_argument("--nexusmind-root", required=True, type=Path)
-    args = ap.parse_args(argv)
+    ap.add_argument(
+        "--gpu-host",
+        default=DEFAULT_GPU_HOST,
+        help="ssh host that serves the scorer (default: %(default)s)",
+    )
+    ap.add_argument(
+        "--weights-preplaced",
+        action="store_true",
+        help=(
+            "Assert by hand that the LoRA adapter is already on the GPU host, "
+            "skipping the probe. For the offline case only — a wrong assertion "
+            "stops the scorer from starting and the cycle scores nothing."
+        ),
+    )
+    return ap
+
+
+def main(argv: list[str] | None = None) -> int:
+    args = build_parser().parse_args(argv)
 
     filter_dir = args.distillery_root / "filters" / args.filter_name / args.version
     if not filter_dir.is_dir():
@@ -357,6 +514,15 @@ def main(argv: list[str] | None = None) -> int:
         ("manifest scope", lambda: check_manifest_scope(args.distillery_root / ".nexusmind-owns")),
         ("tier documentation", lambda: check_tiers_documented(filter_dir)),
         ("cutover", lambda: check_cutover(args.filter_name, args.version, args.nexusmind_root)),
+        (
+            "weights channel",
+            lambda: check_weights_channel(
+                args.filter_name,
+                args.version,
+                preplaced_ack=args.weights_preplaced,
+                gpu_host=args.gpu_host,
+            ),
+        ),
     ):
         try:
             for note in fn():

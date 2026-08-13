@@ -27,7 +27,13 @@ param(
     [switch]$Push,
     [switch]$DryRun,
     [switch]$ForceSkipOwnedDrift,
-    [switch]$ForceDirty
+    [switch]$ForceDirty,
+
+    # Skip the gpu-server LoRA-weight probe, asserting by hand that
+    # model/adapter_model.safetensors is already there. Offline use only: a
+    # wrong assertion stops the scorer STARTING, and the cycle then scores
+    # nothing for every filter (see guard D in preflight_deploy_guards.py).
+    [switch]$WeightsPreplaced
 )
 
 $ErrorActionPreference = "Stop"
@@ -115,9 +121,12 @@ $savedPythonPath = $env:PYTHONPATH
 Push-Location $DistilleryRoot
 try {
     $env:PYTHONPATH = "."
+    $guardFlags = @()
+    if ($WeightsPreplaced) { $guardFlags += "--weights-preplaced" }
     python scripts\deployment\preflight_deploy_guards.py `
         --filter-name "$FilterName" --version "$Version" `
-        --distillery-root "$DistilleryRoot" --nexusmind-root "$NexusMindRoot"
+        --distillery-root "$DistilleryRoot" --nexusmind-root "$NexusMindRoot" `
+        @guardFlags
     if ($LASTEXITCODE -ne 0) {
         Write-Error "pre-flight guards failed. Aborting deploy. These guard the llm-distillery -> NexusMind boundary; fix the package, do not bypass."
         exit 1

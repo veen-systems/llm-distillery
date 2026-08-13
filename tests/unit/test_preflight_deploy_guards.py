@@ -16,9 +16,12 @@ import pytest
 
 from scripts.deployment.preflight_deploy_guards import (
     GuardFailure,
+    ProbeUnavailable,
+    _ssh_weights_probe,
     check_cutover,
     check_manifest_scope,
     check_tiers_documented,
+    check_weights_channel,
 )
 
 BASE_SCORER = textwrap.dedent(
@@ -325,3 +328,214 @@ def test_repo_manifest_scope_is_valid():
 
     repo = Path(__file__).resolve().parents[2]
     check_manifest_scope(repo / ".nexusmind-owns")
+
+
+# --- Guard D: the weights channel -------------------------------------------
+#
+# The defect: `deploy_filters.sh` excludes `model/` from BOTH rsync passes, so a
+# code deploy never carries LoRA weights. Landing a version whose weights are not
+# already on gpu-server makes the scorer refuse to START (it validates every
+# discovered filter), so the cycle scores nothing for all six filters — unattended,
+# because that deploy runs as ExecStartPre every four hours. Documented as
+# FILTER_PLAYBOOK checklist item 5 since #67 closed; never enforced until now.
+
+
+def _probe(answer):
+    """Build a probe stub. `answer` is True/False, or an exception to raise."""
+
+    def probe(gpu_host, filter_name, version):
+        if isinstance(answer, Exception):
+            raise answer
+        return answer
+
+    return probe
+
+
+def test_absent_weights_abort_the_deploy():
+    """The defect: code ships, weights don't, scorer never starts."""
+    with pytest.raises(GuardFailure) as exc:
+        check_weights_channel("cultural_discovery", "v6", probe=_probe(False))
+    msg = str(exc.value)
+    assert "NO weights" in msg
+    # The remedy must be in the failure, not in a doc the reader has to find.
+    assert "scp" in msg and "mkdir -p" in msg
+
+
+def test_present_weights_stay_quiet():
+    """The healthy case. A guard only tested on the defect can still be a guard
+    that fires on everything."""
+    notes = check_weights_channel("cultural_discovery", "v5", probe=_probe(True))
+    assert any("weights present" in n for n in notes)
+
+
+def test_unreachable_probe_fails_CLOSED():
+    """'Could not ask' must not read as 'present'. This is the case that decides
+    whether the guard is a safety device or a formality."""
+    with pytest.raises(GuardFailure) as exc:
+        check_weights_channel(
+            "cultural_discovery", "v6", probe=_probe(ProbeUnavailable("no route to host"))
+        )
+    msg = str(exc.value)
+    assert "Failing CLOSED" in msg
+    assert "--weights-preplaced" in msg  # the documented way out is named
+
+
+def test_unreachable_is_distinguishable_from_absent():
+    """Two different facts with two different remedies. Collapsing them would
+    make a VPN blip look like a missing adapter, and vice versa."""
+    with pytest.raises(GuardFailure) as absent:
+        check_weights_channel("f", "v2", probe=_probe(False))
+    with pytest.raises(GuardFailure) as unreachable:
+        check_weights_channel("f", "v2", probe=_probe(ProbeUnavailable("timeout")))
+    assert str(absent.value) != str(unreachable.value)
+    assert "Failing CLOSED" not in str(absent.value)
+
+
+def test_ack_skips_the_probe_but_says_so_loudly():
+    """The override exists for the offline case. It must not be able to pass
+    silently — an override that reads like a pass is how a checkbox replaces a
+    check."""
+    called = []
+
+    def probe(*a):
+        called.append(a)
+        return False
+
+    notes = check_weights_channel("f", "v9", probe=probe, preplaced_ack=True)
+    assert called == []  # the probe genuinely did not run
+    assert any("SKIPPED" in n for n in notes)
+    assert any("scores nothing" in n for n in notes)
+
+
+# --- Guard D: the real ssh probe's answer parsing ---------------------------
+
+
+def _fake_run(stdout="", returncode=0, exc=None):
+    def run(*args, **kwargs):
+        if exc is not None:
+            raise exc
+        class R:
+            pass
+        r = R()
+        r.stdout = stdout
+        r.stderr = ""
+        r.returncode = returncode
+        return r
+
+    return run
+
+
+@pytest.mark.parametrize(
+    "stdout,expected",
+    [("PRESENT\n", True), ("ABSENT\n", False)],
+)
+def test_ssh_probe_reads_both_answers(monkeypatch, stdout, expected):
+    import subprocess
+
+    monkeypatch.setattr(subprocess, "run", _fake_run(stdout=stdout))
+    assert _ssh_weights_probe("gpu-host", "f", "v1") is expected
+
+
+@pytest.mark.parametrize(
+    "stdout,returncode",
+    [
+        ("", 255),            # ssh could not connect
+        ("PRESENT\n", 255),   # exit code disagrees with the payload — trust neither
+        ("bash: line 1: x\n", 0),  # a shell that answered something else entirely
+        ("", 0),              # answered nothing at all
+    ],
+)
+def test_ssh_probe_refuses_to_guess(monkeypatch, stdout, returncode):
+    """Anything that is not exactly PRESENT/ABSENT with exit 0 is 'could not ask'.
+    A probe that guesses on ambiguous output is worse than no probe, because it
+    reports a verification that did not happen."""
+    import subprocess
+
+    monkeypatch.setattr(subprocess, "run", _fake_run(stdout=stdout, returncode=returncode))
+    with pytest.raises(ProbeUnavailable):
+        _ssh_weights_probe("gpu-host", "f", "v1")
+
+
+def test_ssh_probe_maps_transport_errors(monkeypatch):
+    """OSError (no ssh binary) and TimeoutExpired must not escape as themselves —
+    the caller distinguishes ProbeUnavailable from every other exception."""
+    import subprocess
+
+    monkeypatch.setattr(subprocess, "run", _fake_run(exc=OSError("no ssh binary")))
+    with pytest.raises(ProbeUnavailable):
+        _ssh_weights_probe("gpu-host", "f", "v1")
+
+    monkeypatch.setattr(
+        subprocess, "run", _fake_run(exc=subprocess.TimeoutExpired("ssh", 30))
+    )
+    with pytest.raises(ProbeUnavailable):
+        _ssh_weights_probe("gpu-host", "f", "v1")
+
+
+def test_probe_asks_about_the_adapter_specifically(monkeypatch):
+    """The remote command must name adapter_model.safetensors. An earlier draft
+    tested the model/ DIRECTORY, which exists on gpu-server for a version whose
+    weights were never pushed — the exact state this guard exists to catch."""
+    import subprocess
+
+    seen = {}
+
+    def run(argv, **kwargs):
+        seen["argv"] = argv
+        class R:
+            stdout, stderr, returncode = "PRESENT\n", "", 0
+        return R()
+
+    monkeypatch.setattr(subprocess, "run", run)
+    _ssh_weights_probe("gpu-host", "cultural_discovery", "v6")
+    remote = seen["argv"][-1]
+    assert "adapter_model.safetensors" in remote
+    assert "cultural_discovery/v6/model/" in remote
+    assert "BatchMode=yes" in seen["argv"]  # never hang on a password prompt
+
+
+# --- Caller parity ----------------------------------------------------------
+#
+# The 2026-08-12 review found `deploy_to_nexusmind.ps1` had NO Step 0.5 at all
+# while the guard module's docstring called the `.sh` "the ONE chokepoint" — a
+# documented alternative deploy path, one keystroke from bypassing every guard.
+# That was fixed by hand, and nothing has since stopped the two from drifting
+# apart again. These tests are that stop.
+
+
+def _callers():
+    from pathlib import Path
+
+    repo = Path(__file__).resolve().parents[2]
+    return (
+        (repo / "scripts" / "deploy_to_nexusmind.sh").read_text(encoding="utf-8"),
+        (repo / "scripts" / "deploy_to_nexusmind.ps1").read_text(encoding="utf-8"),
+    )
+
+
+def test_both_callers_invoke_the_guards():
+    """The original defect: a second deploy path that skipped Step 0.5 entirely."""
+    sh, ps1 = _callers()
+    assert "preflight_deploy_guards.py" in sh
+    assert "preflight_deploy_guards.py" in ps1
+
+
+def test_callers_expose_the_same_guard_flags():
+    """Derived from the parser, not restated. Any guard-weakening flag reachable
+    from one deploy path must be reachable from the other — otherwise the two
+    paths enforce different things and the weaker one wins by being available."""
+    from scripts.deployment.preflight_deploy_guards import build_parser
+
+    known = {
+        opt
+        for action in build_parser()._actions
+        for opt in action.option_strings
+        if opt.startswith("--")
+    }
+    sh, ps1 = _callers()
+    in_sh = {f for f in known if f in sh}
+    in_ps1 = {f for f in known if f in ps1}
+    assert in_sh == in_ps1, (
+        f"deploy caller drift — only in .sh: {sorted(in_sh - in_ps1)}, "
+        f"only in .ps1: {sorted(in_ps1 - in_sh)}"
+    )
