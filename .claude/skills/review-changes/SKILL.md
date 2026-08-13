@@ -28,8 +28,34 @@ section rule.
 
 ## Step 1 — Diff and classify
 
-Run `git diff --stat` and `git diff --cached --stat`, **and `git status -s` for
-untracked files**. Untracked files show in no diff, and they are usually brand-new
+**First resolve a baseline.** A branch that is committed AND pushed has an empty
+`git diff`, an empty `--cached`, and an empty `@{u}` — the last one *precisely
+because* the upstream exists and is current. Taken literally that reports
+"nothing to review" on a whole open PR, which is the commonest state in which
+anyone wants a pre-merge review. (Ported from agent-ready-projects v1.26.1, which
+an adopter hit on a real PR where a widened review then found **4 blockers**.
+This session hit the same defect on 2026-08-13 and worked around it by hand
+without recognising it — the workaround is what the fix now prescribes.)
+
+```bash
+BASE=""
+for c in origin/HEAD origin/main origin/master main master; do
+  if git rev-parse --verify -q "$c" >/dev/null; then BASE=$(git rev-parse --abbrev-ref "$c" 2>/dev/null || echo "$c"); break; fi
+done
+# On the default branch itself, HEAD...HEAD is empty — fall back to the upstream.
+if [ -n "$BASE" ] && [ "$(git rev-parse --verify -q HEAD)" = "$(git rev-parse --verify -q "$BASE")" ]; then
+  BASE=$(git rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null || echo "")
+fi
+[ -n "$BASE" ] || echo "SCOPE NOT ESTABLISHED — no baseline resolved; do NOT report a clean diff"
+echo "baseline: ${BASE:-<none>}"
+```
+
+`origin/HEAD` is unset in many clones, so the loop is load-bearing rather than
+defensive. If none resolves, say the scope could not be established — never
+report a clean diff.
+
+Then run `git diff --stat`, `git diff --cached --stat`, `git diff --stat "${BASE:?}"...HEAD`,
+**and `git status -s` for untracked files**. Untracked files show in no diff, and they are usually brand-new
 code rather than an edit to already-reviewed code — so they are the *highest*-risk
 part of a change, not the lowest. A new `scripts/diagnostics/*.py` or a new
 `filters/*/v*/` package is exactly what a diff-only scan walks past.
@@ -86,7 +112,7 @@ it.
 ```bash
 { git -c core.quotePath=false diff --name-only
   git -c core.quotePath=false diff --cached --name-only
-  git -c core.quotePath=false diff --name-only @{u} 2>/dev/null
+  git -c core.quotePath=false diff --name-only "${BASE:?baseline unresolved - see Step 1}"...HEAD 2>/dev/null
   git -c core.quotePath=false ls-files --others --exclude-standard; } |
   sort -u | grep '\.md$' | while IFS= read -r f; do
   [ -f "$f" ] || continue

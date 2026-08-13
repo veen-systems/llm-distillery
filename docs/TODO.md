@@ -19,6 +19,32 @@ cigarette warnings — they answer a harm *and leave a protection behind*. ⚠�
 trap**: the Commonwealth Games medallist story qualifies but its headline leads with the
 beating — **if labels come from headlines this class is mislabelled systematically.**
 
+### Framework drift closed 2026-08-13 evening: v1.25.0 → v1.26.0 (+ one candidate fix ported)
+
+Checked `/home/jeroen/repos/agent-ready-projects` (clone 0 behind origin). **Two of the
+three intervening releases describe defects this session actually hit**, which is the
+argument for checking drift rather than assuming currency.
+
+| release | verdict | why |
+|---|---|---|
+| **v1.25.1** — `review-changes` Step 1.5 CRLF | **already in force** | our copy already carries `core.quotePath=false` (5 occurrences) |
+| **v1.26.0** — `curate` verify runner must take the PROJECT FILE | **ADOPTED, and it found a real gap** | `CLAUDE.md` has **0** annotations so that half is latent here — but `docs/TODO.md` has **2 that had never been run**, because this session's curate invoked the runner over `memory/*.md` only. Both now run and **both PASS** (`commerce_prefilter/v1` present; NM#185 OPEN) |
+| **v1.26.1** (candidate, unreleased) — `review-changes` reports "nothing to review" on a **pushed** branch | **PORTED AHEAD OF RELEASE** | ⚠️ **I hit this today.** `/review-changes` returned an empty change set on a clean pushed `main`, and I substituted scope by hand (`277e6c6~1..dc691ce`) *without recognising it as a defect* — exactly what the upstream entry says happened there twice. Now resolves a default-branch baseline (`origin/HEAD` → `origin/main` → … ) and says **"SCOPE NOT ESTABLISHED"** rather than reporting a clean diff |
+
+**Ported, not swapped** — `review-changes` here is project-local and deliberately re-mapped
+to this repo's paths (a verbatim install would tier every change LOW and quietly do
+nothing). The 2026-08-12 lesson stands: a straight swap of a shared instrument can be a
+regression.
+
+⚠️ **Needs an owner call — `~/.claude/skills/curate/SKILL.md` DIFFERS from
+`agent-ready-projects/templates/curate.md`.** It is a **global** skill shared by every
+project, so v1.26.0's project-file change was **not** applied to it from here. Until it is,
+`/curate` in any repo will keep scanning `memory/*.md` alone. Two options: re-install the
+global skill from the framework, or accept the divergence deliberately and record why.
+
+**Interim rule for this repo**: invoke the verify runner as
+`bash verify-runner.sh <repo>/memory/*.md <repo>/CLAUDE.md <repo>/docs/TODO.md`.
+
 ## 🔵 Then: two owner decisions, then #104.
 
 **Cross-repo sync is CLOSED as of 2026-08-13 midday, and it was the only real gap.**
