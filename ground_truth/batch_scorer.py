@@ -47,6 +47,10 @@ from . import analysis_field_name
 from .secrets_manager import get_secrets_manager
 from .text_cleaning import clean_article as clean_article_comprehensive, sanitize_text_comprehensive
 
+# The #93 labelling floor lives on the shared base as a @staticmethod, so the
+# oracle gate can apply it with no per-lens prefilter in existence (NM#284).
+from filters.common.base_prefilter import BasePreFilter
+
 
 def load_filter_package(filter_path: Path) -> Tuple[Optional[object], Path, Dict]:
     """
@@ -148,20 +152,41 @@ def make_oracle_prefilter(prefilter_obj):
     Dropping the length check here changes what gets *labelled*, not what gets
     *scored*; since #93 those are no longer the same decision.
 
+    ⚠️ The floor does NOT depend on a per-lens prefilter existing (changed
+    2026-08-13, NM#284). It used to: this returned `None` when there was no
+    prefilter object, and the consumer reads `if pre_filter and not
+    pre_filter(article)` — so a package without a `prefilter.py` was labelled
+    with **no length floor at all**, silently. That was harmless only because
+    every deployed package happened to ship one. With the per-lens rule
+    prefilters being deleted (they have never run in production since
+    2026-02-10), that assumption is about to stop holding for every filter at
+    once, which would have removed the #93 floor as a side effect of deleting
+    something unrelated to it.
+
+    `check_content_length` is a `@staticmethod` on `BasePreFilter`, so the floor
+    needs no instance and nothing had to move to keep it.
+
     Args:
         prefilter_obj: An instantiated filter-package prefilter, or None.
 
     Returns:
-        A callable article -> bool with a `.prefilter_obj` attribute (used
-        downstream for Unicode cleaning), or None if there is no prefilter.
+        Always a callable article -> bool, carrying a `.prefilter_obj`
+        attribute (used downstream for Unicode cleaning; `None` is fine there —
+        `clean_article` then falls back to `clean_article_comprehensive`, which
+        is exactly what `BasePreFilter.clean_article` delegates to anyway).
+        With no prefilter object the gate is the length floor alone.
     """
-    if not prefilter_obj:
-        return None
 
     def oracle_prefilter(article):
-        check_length = getattr(prefilter_obj, "check_content_length", None)
-        if check_length is not None and not check_length(article)[0]:
+        # Prefer the object's own override if a lens ever needs a different
+        # floor; fall back to the base staticmethod, which is the floor itself.
+        check_length = getattr(
+            prefilter_obj, "check_content_length", BasePreFilter.check_content_length
+        )
+        if not check_length(article)[0]:
             return False
+        if prefilter_obj is None:
+            return True
         return prefilter_obj.apply_filter(article)[0]
 
     oracle_prefilter.prefilter_obj = prefilter_obj

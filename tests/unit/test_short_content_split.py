@@ -113,8 +113,26 @@ class TestOraclePrefilterKeepsTheFloor:
         gate = make_oracle_prefilter(BasePreFilter())
         assert gate(_article(LONG_CONTENT)) is True
 
-    def test_no_prefilter_object_yields_none(self):
-        assert make_oracle_prefilter(None) is None
+    def test_no_prefilter_object_still_applies_the_floor(self):
+        """CONTRACT CHANGED 2026-08-13 (NM#284). Was: `is None`.
+
+        This previously returned None for a package with no prefilter, and the
+        consumer reads `if pre_filter and not pre_filter(article)` — so such a
+        package was labelled with NO length floor at all, silently. It never
+        bit because every deployed package shipped a prefilter.py.
+
+        The per-lens rule prefilters are being deleted (dead in production
+        since 2026-02-10), which makes that the case for EVERY filter at once.
+        Under the old contract, deleting the lens rules would have deleted the
+        #93 floor as a side effect — two unrelated decisions, one of them
+        unmade. So the gate is now always a callable, and with no prefilter
+        object it IS the floor.
+        """
+        gate = make_oracle_prefilter(None)
+        assert callable(gate)
+        assert gate(_article(SHORT_CONTENT)) is False
+        assert gate(_article(LONG_CONTENT)) is True
+        assert gate.prefilter_obj is None  # clean_article falls back, see docstring
 
     def test_prefilter_obj_attribute_preserved(self):
         """batch_scorer reaches through this attribute for Unicode cleaning."""
@@ -150,14 +168,47 @@ class TestOraclePrefilterKeepsTheFloor:
         assert prefilter.apply_filter(short_but_on_lens)[0] is True
         assert make_oracle_prefilter(prefilter)(short_but_on_lens) is False
 
-    def test_object_without_length_check_is_tolerated(self):
-        """Filter packages need not inherit BasePreFilter."""
+    def test_object_without_length_check_gets_the_floor_anyway(self):
+        """CONTRACT CHANGED 2026-08-13. Was: short content passed here.
+
+        Filter packages still need not inherit BasePreFilter — but not
+        inheriting is no longer a way to escape the floor. The old behaviour
+        was the same non-uniformity `test_floor_is_uniform_across_filters`
+        exists to prevent, one level along: there it was cd v5's custom
+        `apply_filter` skipping the check, here it is any object that simply
+        lacks the method. #93's floor is a property of the ORACLE PATH, not of
+        which base class a package happens to subclass.
+
+        An explicit override is still honoured — see the test below — so a lens
+        that genuinely needs a different floor exempts itself deliberately,
+        which is the pinned-decision-not-accident rule.
+        """
 
         class Bare:
             def apply_filter(self, article):
                 return (True, "passed")
 
         gate = make_oracle_prefilter(Bare())
+        assert gate(_article(SHORT_CONTENT)) is False
+        assert gate(_article(LONG_CONTENT)) is True
+
+    def test_an_explicit_override_still_wins(self):
+        """The escape hatch is deliberate and must stay reachable.
+
+        Without this, the change above would read as "the floor is now
+        unconditional", and the next person needing a lens-specific floor would
+        have no way to see that overriding is supported.
+        """
+
+        class NoFloor:
+            @staticmethod
+            def check_content_length(article, min_length=None):
+                return (True, "exempt")
+
+            def apply_filter(self, article):
+                return (True, "passed")
+
+        gate = make_oracle_prefilter(NoFloor())
         assert gate(_article(SHORT_CONTENT)) is True
 
 
