@@ -2005,6 +2005,20 @@ Exhaustively, naive-vs-`+00:00` has **0 inversions**.
 the aware spelling carries no fraction (`…T04:00:00` vs `…T04:00:00+00:00`). It
 remains the only thing that bites **without** an offset.
 
+⛔ **AND THE 9 IS ALSO WRONG — it is 31.** ovr's own follow-up: the unit fix above was
+right, **the population was not.** `data/ovr.db` locally is the **hot copy** —
+`create-hot-db` trims to 6,000 rows and keeps the filename. Production is **21,743**.
+Re-measured there: **31 cross-spelling row pairs across 14 colliding instants,
+involving 45 rows.** *"All whole-hour"* was also false — 7 of 14. ⭐ **So the
+correction that fixed a unit error repeated the population error it was fixing, inside
+the paragraph fixing it.** Quote **31**.
+
+⚠️ **Same class again, same session:** the NexusMind census quoted here as *"34,744
+naive + 184 aware of 34,928"* was a **two-files-per-lens sample presented as a
+population.** The real figure over all 548 files is **1,133,205 rows, 99.42% naive,
+0.58% `+00:00`** — which is the number NexusMind independently produced. The
+pass-through conclusion survives and is *stronger*; the denominator was invented.
+
 ⭐ **So the two corrections move in OPPOSITE directions: the offset half is bigger
 than recorded and the tie half is smaller.** Neither side should claim the net
 position — this record had the mechanism backwards (NexusMind normalizes ⇒ ovr

@@ -619,13 +619,29 @@ to today's `published_date`.** FluxusSource has accepted this.
 
 ⚠️ **Two corrections to the proposal, both from ovr and both load-bearing:**
 
-**1. The backfill is the wrong gate predicate.** Naive and canonical values are
-lexicographically *compatible* — `'…T19:00:00'` vs `'…T18:30:00.000Z'` resolves at
-the differing digit, and shape only breaks ties between identical instants. Today's
-mixed corpus sorts correctly. What protects the sort is **canonicalisation at the
-write boundary** (`canonicalizePublishedDate`, `src/lib/db-articles.ts:141`, the sole
-writer of that column). Do not record "backfill applied" as the condition; it buys
-shape uniformity for the raw `>=` sites, not sort safety.
+**1. ⛔ RETRACTED — TWICE, and the second retraction restores the original.** ovr told
+me emphatically that *"the backfill is the wrong gate predicate; canonicalisation at
+the write boundary is what protects the sort."* I rewrote this record for it. **Their
+own adversarial review then refuted it, and ADR-046's original wording was right: the
+backfill IS the gate condition.**
+
+⭐ **Why, and it is a clean structural argument:** `summarize.ts:429` applies
+`filterByAge(articles, maxAgeDays = 10)`, so **only rows ≤10 days old ever reach
+`upsertArticle`.** But `create-hot-db`'s DELETE boundary is row #6,000 by
+`published_date DESC`, which on production (21,743 rows) sits at
+`2026-07-25T08:20:00` — **~20.2 days old.** A row at the delete boundary was last
+written at least ten days ago and **can never be re-canonicalised.**
+**Canonicalisation-at-write structurally cannot reach the one site the entire tie
+argument is about. Only the backfill can.**
+
+⭐⭐ **And the shape nobody had: the exposure is FROZEN AND DRIFTING TOWARD THE CUT.**
+New aware rows canonicalise on arrival, so the collision set cannot grow — it is the
+79 legacy `+00:00` rows and their naive twins. All 14 colliding instants sit at DESC
+ranks **87–3,956** today, comfortably above the 6,000 cut. They drift down as
+articles arrive, and **they cross the boundary AFTER passing the 10-day window that
+would let a write fix them.** So *"nothing is near the boundary today"* has a shelf
+life, and **the backfill's value increases with delay** — the opposite of how the
+priority was framed to me.
 
 **2. ⭐ The contract must pin the offset GRAMMAR, because the invariant has a hole.**
 The write is `canonicalizePublishedDate(x) ?? x` — an unparseable value is stored
