@@ -55,7 +55,7 @@ emits anything.** Every block optional, every property inside every block option
 The blocks, from proposal §§A–F and §H:
 
 ```
-published    { instant, raw, element, had_timezone, precision, fabricated }
+published    { raw, element, had_timezone, precision, fabricated }   ⚠️ instant contested
 collected    { clock_source }
 origin       { country, region, timezone, method }
 fetch        { url_requested, url_final, strategy, attempts, http_status,
@@ -200,7 +200,7 @@ Consequences, derived rather than listed in the option:
 | `feed.declared_language` | `metadata.feed_declared_language` | ⛔ **drop** |
 | `content_meta.raw_length` | `metadata.raw_content_length` | ⛔ **drop** |
 | `collected.at` | `collected_date` | ⛔ **drop** |
-| ⚠️ `published.instant` | `published_date` (declared `format: date-time`) | ✅ **KEEP — owner decision, on migration mechanics** |
+| ⚠️ `published.instant` | `published_date` (declared `format: date-time`) | ⚠️ **DROPPED on `main`, contested — see below** |
 | `feed.ttl_declared`, `feed.cadence_hours` | none on the row | ✅ keep* |
 | `published.{raw,element,had_timezone,precision,fabricated}` | none | ✅ keep |
 | `collected.clock_source` | none | ✅ keep |
@@ -208,11 +208,38 @@ Consequences, derived rather than listed in the option:
 | `content_meta.{kind,truncated,echoes_title}` | none | ✅ keep |
 | `origin.*` | none | ✅ keep |
 
-#### ✅ `published.instant`: RESTORED by owner decision, 2026-08-14
+#### ⚠️ `published.instant`: TWO OWNER ANSWERS, POINTING OPPOSITE WAYS — unsettled
 
-**Status: KEEP.** The owner, having originally named it among the five drops, took the
-restoration on the migration argument. History below, kept because my first case for
-it was wrong and the record should show which argument actually carried.
+**Status: DROPPED on `main` (`0652414`, #364 merged 16:25:11Z), and contested.**
+
+- **In the NexusMind session:** the owner asked that session for a recommendation, it
+  recommended **leaving it dropped** *having made the foreclosure argument itself
+  first*, the owner agreed and told them to merge. In-session, by-name, same day.
+- **In this session:** the owner chose **keep it**, from two written options.
+
+**Neither session can tell which is stale.** NexusMind is holding rather than
+implementing a reversal of an in-session instruction on a relay, and that is right —
+this is exactly the case the rule exists for.
+
+⛔ **AND MY ARGUMENT NO LONGER HOLDS. NexusMind's rebuttal defeats it, and I concede
+it.** The foreclosure case was built when the `published` block **did not exist**.
+It exists on `main` now. So adding `instant` later is **one optional property inside
+an already-declared block** — additive, reds nothing, no cross-repo coordination, no
+flag day. ⭐ **That is precisely what the envelope decision was built to make cheap,
+so "waits for a second declaration commit" now costs one line rather than a
+coordinated release.** My own decision dissolved my own argument for the field, and I
+did not notice.
+
+Secondary, and also theirs: the offset work needs ovr to parse-before-compare
+**regardless**, because the producer already emits both spellings today — which is
+what causes ovr's existing ties.
+
+**So my recommendation is now LEAVE IT DROPPED**, reversing what I recommended above.
+Keeping it remains a perfectly reasonable risk-appetite call; it is just no longer the
+one the arguments favour. **The owner settles it in the NexusMind session either way.**
+
+History below kept rather than tidied, because *both* of my cases for this field were
+defeated — the first on a false premise, the second by a change I had made myself.
 
 **Status when written: HELD, not restored.** NexusMind is correctly refusing to reverse it on my
 say-so — the owner named `published.instant` explicitly when giving the five drops,
