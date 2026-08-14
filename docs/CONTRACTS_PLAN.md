@@ -1814,7 +1814,7 @@ that belong here rather than there:
 |---|---|
 | Envelope | ✅ **settled** — declare-before-emit, closed at every level, `language`/`source`/`item` excluded |
 | Producer-side (b) work | ✅ **accepted by FluxusSource**, sequenced kind → clock → fetch → time |
-| Consumer-side declaration commit | ✅ **LANDED** — owner lifted the stand-down directly; `012da1a` on `feat/contract-a-envelope-declaration`, unpushed. Outcome test on 7,478 live rows: **4 violation classes → 1**, no new class, hold unspent, 5 falsification controls, 1,303 tests green. Based on **#360, which is a prerequisite** — the criterion cannot pass on `main` |
+| Consumer-side declaration commit | ✅ **LANDED** — owner lifted the stand-down directly; `012da1a` on `feat/contract-a-envelope-declaration`, unpushed. Outcome test on 7,478 live rows: **introduced no new class** (⚠️ NOT "4 → 1" — the branch base 1.18.0 already read 1; the 4 → 1 belongs to NM#304/#356/#357). Hold unspent, falsification controls green. Based on **#360, which is a prerequisite** — the criterion cannot pass on `main` |
 | `published.instant` offset | ⛔ **gate closed** by ovr.news; reopens when their write-boundary integration test exists and is green |
 | Acceptance control | ✅ **resolved by splitting** — repeatable canary for "detection fires", declared gap for "catches the unanticipated" |
 | `origin.*` | ⏸ **sequenced separately**, `docs/proposals/contract-a-origin-sequencing.md`; T0 (GDELT passthrough + `origin.method`) is the only engineering tranche |

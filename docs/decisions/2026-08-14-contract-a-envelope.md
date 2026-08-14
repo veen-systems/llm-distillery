@@ -661,12 +661,32 @@ same case.
 
 **`012da1a`, local branch `feat/contract-a-envelope-declaration`, not pushed, no PR.**
 
-Definition-of-done item 5 — the outcome test, over **7,478 live sadalsuud rows**:
+Definition-of-done item 5 — the outcome test, over **7,478 live sadalsuud rows**.
 
-| | violation classes |
+⚠️ **CORRECTED. An earlier version of this section read "4 violation classes → 1" and
+credited the envelope with a fix that was not its own.** Re-measured across all four
+schemas on the same rows:
+
+| schema | classes |
 |---|---|
-| before | **4** |
-| after | **1** — `<root> additionalProperties source_group`, 7,478 errors on 7,478 rows |
+| 1.0.0 (`main`) | **4** |
+| **1.18.0 (branch base, pre-envelope)** | **1** |
+| 1.19.0 (envelope) | **1** |
+| 1.20.0 (post-narrowing) | **1** |
+
+**1.18.0 already reads 1.** The 4 → 1 belongs to the NM#304 / #356 / #357 work sitting
+on the base, which fixed `source_type`, `metadata.required` and `priority`. **The
+envelope never removed a violation class and never could — it only adds optional
+properties.** Its real claim is the weaker and correct one: **it introduced no new
+class.**
+
+⭐ **The sub-pattern is the valuable part, and it is invisible from the after-state
+alone.** *1 class* is the right answer and looks like a pass however you arrived at
+it. Only re-measuring the **baseline** distinguishes *"we fixed three classes"* from
+*"three classes were already fixed"* — and a before/after only measures your change
+if "before" is the commit your change sits on. The original figure compared against a
+run of `main` and labelled it "pre-envelope". *(Caught by NexusMind, self-reported,
+after the instruction to re-run rather than assume.)*
 
 **No new class.** Exit 1, which is correct while the hold stands. `source_group`
 undeclared and the hold unspent, **verified after the fact rather than intended** —
