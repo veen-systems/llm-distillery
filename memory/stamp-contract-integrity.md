@@ -174,3 +174,91 @@ separately from `d[k] is None`.
 
 Related: `nexusmind-data-sources.md` (what each artefact excludes),
 `prefilter-length-floor-hypotheses.md`, `docs/adr/` ADR-022.
+
+---
+
+# The contracts layer (2026-08-13, five sessions in parallel)
+
+**Plan and full round-1 review: `docs/CONTRACTS_PLAN.md`. This section holds the
+measurements and the traps.** Nothing was executed or committed in any repo.
+
+## The finding
+
+**The estate has FOUR contract validators and none watches the failure.** Draft 1
+of the plan claimed nothing ran a validator at all; **that was false**, refuted by
+ovr.news. The claim came from grepping for one script *name* rather than for the
+*behaviour* — `a grep for a pattern is not a grep for a behaviour`, broken while
+auditing contracts.
+
+| validator | on real bytes | blind to |
+|---|---|---|
+| `FluxusSource/scripts/validate_output.py` | yes, with a track record | consumers' beliefs — its own schema only |
+| `ovr.news/src/lib/data/validate.ts` (`summarize.ts:404`, since 2026-03-03) | yes — and **drops rows** into an unread log | `published_date` **and** `metadata`: `grep -c` → **0** |
+| `NexusMind/scripts/validate_production_contract.py` | when invoked | — **unscheduled** |
+| `NexusMind/validate/validate_contract_a.py` | has `--latest` | — **no caller** |
+
+Say **unscheduled**, never *never executed*: no file naming a script is not proof
+nobody ran it interactively.
+
+## Measured, run `content_items_20260813_161006` (3,514 rows) unless stated
+
+- Top level **12 fields on 100%**; `metadata` **52 distinct keys**.
+- FluxusSource's schema declares **7** metadata keys, Contract A declares **12**,
+  **overlap ZERO**. Provenance half vs operational half. 34 declared by neither —
+  **legal**, Contract A's `metadata` is `additionalProperties: true`; only its top
+  level is closed.
+- Contract A defects over 6 cycles / 21,636 rows: `social` missing from the enum
+  (78 rows); `priority` ∈ {9,10} over `maximum: 8` (**2,774**); `word_count`
+  absent (**267**) and `priority` absent (**928**) though both `required`.
+- **ovr reads exactly 2 of 52 metadata keys** — `og_image_url`, `quality`. A 96%
+  undeclared projection. `og_image_url` is read at `summarize.ts:334` **upstream**
+  of the `:887` projection that discards it, so a field can be load-bearing at ovr
+  and **leave no trace in the stored row**.
+- Byte budget: 1,700 B/row · `metadata` **37.5%** (larger than `content` at 23.8%)
+  · repeated JSON keys **30.3%** · gzip 4.5×.
+- Standards: `language` 3,509/3,514 two-letter, `zh-cn` ×5; `published_date` /
+  `collected_date` **99.4–99.7% carry no UTC offset**; `url` 100% absolute.
+
+## ⚠️ Instrument traps — read before quoting any number above
+
+1. **`validate_production_contract.py` counts ERRORS, not rows, and merges
+   distinct `required` failures.** Groups key on `(path, validator)` (`:131`) and a
+   missing-required error reports the **parent** path, so `word_count` and
+   `priority` collapse into one group whose message is whichever arrived first
+   (`:137`). 267×2 + 661×1 = **1,195**, which is what it prints. **Affects
+   `required` only** — `enum` and `maximum` key on leaf paths, so 78 and 2,774 are
+   row counts.
+2. **`format` is declared and never asserted — and the obvious fix silently
+   no-ops.** Contract A declares `format: "date-time"` on all three timestamp
+   fields; RFC 3339 requires an offset, so 99.4% of rows violate a declaration it
+   has always carried. `Draft7Validator(schema)` has no `format_checker` — and
+   passing `FormatChecker()` changes nothing without `rfc3339-validator`
+   installed: verified, `'not-a-date'` **passes either way**. Enabling it is a
+   **two-part** change or you get a false green.
+3. **`data/raw/*.jsonl` is mutated in place by NexusMind.** Not FluxusSource's
+   output as emitted; the validator strips its own stamps first, and without that
+   subtraction you get a false root `additionalProperties` violation on ~98%.
+4. **Don't grep bare field names.** `domain`, `category`, `score`, `instance` are
+   common words in code — a bare-name grep returned 98–417 false hits. Search the
+   access pattern (`metadata["x"]`, `.get("x")`, `.x`). And beware **name
+   collisions**: ovr has 49 `word_count` occurrences and **none** read the upstream
+   field.
+5. **`grep -rIl` returning nothing is a broken verify command** — pipeline-atlas's
+   `run_verifies.sh` treats empty output as failure. Invert every "returns zero"
+   figure to print its count.
+
+## Rules this added
+
+6. **Declare from the REACHABLE set, never wider than emitted.** Contract A's
+   `email`/`web`/`patent` have never existed. A proposal here to declare
+   `language` as **BCP 47** was withdrawn for the *same defect from the opposite
+   direction* — it would admit `pt-BR`, the exact value the producer folds away
+   because ovr dispatches translation on the bare code.
+7. **Declaring is nearly free; a wrong declaration and a missing one are what
+   cost.** *(Owner ruling.)* Do not cut a field for having no reader —
+   `source_category` measured zero readers for months **because** it was
+   undeclared, and two repos reverse-engineered it independently.
+8. **Greenness is not evidence that a schema tracks reality.** Four
+   demonstrations, which is a pattern: a producer schema green because it asks
+   less; Contract B green *and* declaring `metadata` with zero properties; CI green
+   on fixtures; and `format` declared but unasserted.

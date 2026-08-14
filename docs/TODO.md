@@ -1,6 +1,57 @@
 # LLM Distillery - TODO
 
-## 🔵 NEXT SESSION — start here. **The Thriving predicate is RULED; two decisions left.**
+## 🔵 NEXT SESSION — start here. **Contracts: round 2, and one blocking spec.**
+
+**2026-08-13 evening: five sessions worked the pipeline contracts in parallel.
+Nothing executed, merged or deployed in any repo.** Plan +
+round-1 review: **`docs/CONTRACTS_PLAN.md`**. Measurements, instrument traps and
+the rules it added: **`memory/stamp-contract-integrity.md` § The contracts
+layer**. Session record: `memory/project_session_2026_08_13_evening.md`.
+
+**The finding: the estate has FOUR contract validators and none watches the
+failure.** Two are unscheduled, one is CI-on-fixtures, and the one that runs on
+real bytes (`ovr.news/src/lib/data/validate.ts`, since 2026-03-03) **drops rows**
+into an unread log and is blind to both `published_date` and `metadata` — the two
+things this work is about. ⚠️ **Draft 1 claimed nothing ran a validator at all;
+that was FALSE**, refuted by ovr.news, and it came from grepping for a script
+*name* instead of a *behaviour*.
+
+**Do first, in this order:**
+
+1. **Spec the check's result artefact** — path, timestamp, per-defect-class
+   counts, version stamp. **This blocks pipeline-atlas**, who will write the
+   snapshot reader against it before the check exists. They refused to *run* the
+   check, correctly: *"a map that is the only instrument is not a map."*
+2. **Re-run the hand-rolled-validator sweep across all 20 `veen-systems/` repos.**
+   Two validators were missed by searching for a name; assume more. This is the
+   plan's headline claim and must not reach the atlas unverified.
+3. **Round 2** — peers reviewed draft 1; none has re-reviewed the corrected
+   premise.
+4. **Owner decisions 1, 2 and 4** in `docs/CONTRACTS_PLAN.md` (the shared
+   envelope; its additive path; `eval_query`). Decisions 3 and 5 are closed —
+   3 resolved to a separate systemd timer on sadalsuud by both consumers
+   independently, 5 deleted because its premise was false.
+
+⚠️ **Time-limited test, may already be spent:** `source_group` is the only
+*non-circular* control available for phase 0 — an independent commit arriving
+against a closed top level that the check was never shown. **Once W2.2 declares
+it, that test is gone.** Hold W2.2 behind it.
+
+⚠️ **`grep -rIl` returning nothing is a broken verify command** — pipeline-atlas's
+`run_verifies.sh` treats empty output as failure, so the strongest evidence here
+becomes a check that fails while being right. Invert every "returns zero" figure
+to print its count before porting any of them.
+
+**Cross-repo item that is ours to close: FluxusSource#164's stated justification
+is wrong.** It keeps ~8 months of archives because *"llm-distillery trains on this
+depth"*; we do not read `data/archived/` at all. The retention is right for the
+reason recorded further down this file — it is the only surviving copy of a
+displaced body, hence NM#306's only repair path. **Correct the reason, keep the
+retention. Do not propose a retention change.**
+
+---
+
+## 🔵 Then: **the Thriving predicate is RULED; two decisions left.**
 
 **✅ RULED 2026-08-13 — the lens predicate, in ovr.news `docs/BRAND.md` `a70609b`** (commit
 verified here, not taken from the relay): *Thriving qualifies when the article shows **a
