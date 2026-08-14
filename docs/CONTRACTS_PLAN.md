@@ -318,7 +318,7 @@ it.**
 |---|---|---|
 | W5.1 | **Specify the CI job** (phase 0 above) | The load-bearing item. Specify here, implement where it runs — probably NexusMind CI plus a scheduled run against real bytes |
 | W5.2 | **Correct FluxusSource#164's stated justification** | See below — this is ours to answer and the reason on record is wrong |
-| W5.3 | Keep `CONTRACTS-BRIEF.md` current | Four sessions are working from it |
+| W5.3 | Keep `memory/stamp-contract-integrity.md` § *The contracts layer* current | It is the only surviving copy of the measurements and traps. ⚠️ The round-1 working brief lived in a **session scratchpad and is gone**; its content was folded into that section before the session closed. If a peer cites a `scratchpad/CONTRACTS-BRIEF.md` path, it no longer exists — send them here |
 
 #### W5.2 — the FS#164 answer, resolved
 
