@@ -148,15 +148,37 @@ The two new fields join the family that already exists, as
 `metadata.language_script` / `metadata.language_scripts_present` — no collision, no
 rename, no `oneOf` transition shape, no consumer audit.
 
-⭐ **The rule this is an instance of: re-nesting an existing flat field is never
-additive.** An added key is invisible to a consumer that ignores it; a *moved* key
-changes the type at a name that is already being read. The redesign's "logical
-grouping" diagram contains a second instance nobody had flagged — `source` is
-likewise a live top-level string, and `item: { title, content, tags }` would move
-three more. **That whole regrouping is out of scope for the same reason**, and this
-decision does not attempt it. Blocks earn their place by carrying facts that do not
-exist yet. `published`, `collected`, `origin`, `fetch`, `content_meta`, `feed` and
-`payload` all clear that bar; `language`, `source` and `item` do not.
+⭐ **The rule this is an instance of — restated, because my first version was too
+broad and NexusMind was right to push back.** I wrote *"re-nesting an existing flat
+field is never additive."* That conflates two separable acts, and only one is
+forbidden:
+
+| act | verdict | why |
+|---|---|---|
+| Declaring a **new name** whose content duplicates a live field (`feed.title` beside `metadata.feed_title`) | ✅ **safe** | nothing reads the new path; the flat key stays authoritative and untouched |
+| **Relocating** — populating the new name and retiring the flat one | ⛔ **the forbidden act** | breaks every existing reader at once |
+| Declaring a name that **already exists** with a different type (`language`) | ⛔ **the fatal case** | the property is *present*, not absent, so optionality gives no protection and `additionalProperties: false` no warning |
+
+**`language` is the third row, which is why it is dangerous — not the first.**
+`feed`, `content_meta` and the rest are new root names, so declaring them costs
+nothing today; the risk materialises only if a producer later *removes* the flat key.
+
+⚠️ **But a declared duplicate must not be POPULATED in both places.** That is the
+proposal's own test 1 — *a stored copy of a derivable value is a second source of
+truth that will eventually disagree* — and it is the reason `word_count` is being
+removed. Declaring `feed.title` is inert surface; populating it while
+`metadata.feed_title` is authoritative reintroduces exactly what the redesign
+deletes. **Declare freely, populate once.**
+
+`source` and `item: { title, content, tags }` stay out of scope, but under the third
+row, not the first: `source` is a live top-level string, and moving `title`/`content`/
+`tags` is relocation by definition.
+
+⚠️ **And one inference of mine that the owner has not made:** the rename ban is
+stated for `language_source` / `language_confidence` / `language_input_len` (FS#149's
+floor is fitted on them). Extending it to `feed_title` / `update_frequency` is *my*
+reading, not the owner's. If it holds, `feed` collapses to `ttl_declared` alone — a
+one-line edit. **Flagged as an open scope call, not decided here.**
 
 **3. Ordering: the consumer's declaration lands before or with the producer's, never
 after.** Reversed, the validator reports `additionalProperties` violations against
@@ -172,6 +194,53 @@ now means *populating a declared-but-empty slot*, which no closed envelope objec
 after it is observed populated across several cycles (NexusMind#300). The precedent
 is already in the producer's own schema: `primary_literature` is stamped on every row
 and is deliberately not required, with the reasoning written into its description.
+
+⛔ **Exception, and it covers most of the new surface: a field whose absence is
+STRUCTURAL can never earn `required`, at any observed rate, ever.** Cycles measure
+*incidental* absence. They cannot see a field that is 0% on a source type by
+construction, and a high rate is exactly what makes the trap spring — the promotion
+looks earned.
+
+**Which of the new fields this binds** *(FluxusSource, clean window, 101,917 rows)*:
+
+| block | spans all source types? | why |
+|---|---|---|
+| `published.*` (the five) | ✅ **yes** | — |
+| `collected.clock_source` | ✅ **yes** | — |
+| `fetch.*` — all seven, incl. `strategy`/`attempts` | ⛔ **RSS only** | `RobustFeedParser` has exactly one aggregator caller, `rss_aggregator.py`; the two other users emit no rows |
+| `content_meta.kind` (as scoped below) | ⛔ **RSS only** | derived from the feed entry at `rss_aggregator.py:548` |
+| `metadata.feed_declared_language` | ⛔ **RSS only** | `rss_aggregator.py:671` |
+
+RSS is **95.7% of rows** (97,526 of 101,917) — high enough to look promotable across
+any number of cycles and never be, and the `fetch.*` fields are *new*, so they will
+arrive looking like ordinary candidates. **Only `published.*` and
+`collected.clock_source` can ever earn `required` honestly.**
+
+⭐ **The general form, since it will recur:** `required` is a claim about *every* row,
+so it must be checked against the population that structurally *can* carry the field,
+not against an observed rate. Ask "which source types can produce this at all?"
+before "how often is it present?" — the second question cannot answer the first.
+
+#### Scope call: `content_meta.kind` ships RSS-only
+
+FluxusSource asked before building, because spanning api/social means a **different
+derivation per aggregator** (arXiv abstracts, GDELT title-and-URL, github, pubmed) —
+a much larger job. **Ship RSS-only.**
+
+1. It **narrows** the 300-char floor rather than retiring it — from a blanket rule to
+   a fallback on a named minority. That is strictly better than today and does not
+   block on the larger job.
+2. **Absence is self-describing**: absent ⟺ non-RSS, derivable from `source_type`, so
+   no consumer is misled and no extra flag is needed. ⚠️ **Write that into the field
+   description**, or absence reads as "unknown" instead of "not applicable" — the
+   `primary_literature` precedent, where the description carries the semantics.
+3. ⚠️ **The number that should rank any later per-aggregator extension is NOT
+   measured, and it is not 4.3%.** The floor bites at *labelling* time
+   (`ground_truth.batch_scorer.make_oracle_prefilter`), so what matters is the
+   non-RSS share of **training corpora**, not of production rows — and those
+   populations are known to diverge sharply here (Google News is ~25% of production
+   and 0–4.9% of training corpora). Rank the extension by that share once someone
+   measures it; do not infer it from the production mix.
 
 ## Why this is cheap: the declaration commit is runtime-inert, and that is verified
 
@@ -209,9 +278,13 @@ producer bytes (`collection_20260814_121004`, 2026-08-14):
 additionalProperties.<root>.source_group   asserted=True  rows=3835  sev=error
 ```
 
-**3,835 of 3,835 rows.** Independently re-measured by the NexusMind session on a
-later pull (`_121003` + `_160810`, **7,478 rows, 100.00%**) and spot-confirmed
-against a live row by the FluxusSource session: exactly one undeclared key.
+**3,835 of 3,835 rows.** ⚠️ **Corroborated by a second run, but they are NOT the same
+run and must not be cited as one:** NexusMind measured **7,478 rows over mutated
+`data/raw`** (`_121003` + `_160810`) at **100.00%**, against this one's unmutated
+producer bytes. Different corpora, different instruments — theirs reports classes
+this one does not. **They agree on `source_group` at 100% and nowhere else is a
+comparison licensed.** FluxusSource separately spot-confirmed a live row: exactly one
+undeclared key.
 
 ⚠️ **But it does NOT carry the argument I first put on it, and the NexusMind session
 was right to push back.** I wrote that this was "the failure mode already realised."
@@ -393,7 +466,7 @@ nothing was edited outside this one.**
 | repo | answer |
 |---|---|
 | **FluxusSource** | ✅ **Takes all four (b) blocks.** Will write its own producer-side declaration commit; explicitly not touching NexusMind's. Sequence: `content_meta.kind` → `collected.clock_source` → `fetch.*` → `published.*` (time last, `precision` needs a double parse). Accepts both owner constraints. |
-| **NexusMind** | ✅ Ran the validator, supplied the `language` blocker. ⛔ **Declines the consumer-side declaration commit pending the owner** — the owner stood the contracts thread down in that repo on 2026-08-14 (*"stand down, we were led astray"*), with a handoff that says in terms not to resume it on a peer's say-so. **That refusal is correct and I am not pressing it.** They have put it to the owner. |
+| **NexusMind** | ✅ Ran the validator, supplied the `language` blocker, initially **declined** the declaration commit pending their owner (correctly — the thread had been stood down there). ✅ **The owner then lifted the stand-down directly, in their own words, and the commit is DONE** — `012da1a` on local branch `feat/contract-a-envelope-declaration`, not pushed, no PR. |
 | **ovr.news** | ⛔ **Gate closed** — see above. Confirms ovr's ingest does **not** close the top level (`validateRawArticle` inspects named fields only), so new top-level blocks survive ingest untouched and stop at the projection in `transform.ts`, which is the right place. ⚠️ But `nexus_mind_attributes` **is** closed with teeth: an unknown sub-key is a validation error and an errored article is **dropped**. Keep new blocks at the top level. |
 | **pipeline-atlas** | ✅ Category G confirmed theirs *as model facts*; not taking implementation (the repo owns no pipeline code). Six corrections to the sidecar spec, the sharpest being that **the grain is wrong for the RSS tier** — `concurrent_rss` is one source name holding the whole feed tier, while `health_state` and `poll_interval_actual_h` are per-*feed* quantities. Resolved the control gate (above). |
 
@@ -406,15 +479,33 @@ different arguments for arming, and the second is the stronger one** — *"nobod
 looked"* and *"someone looked, it is 100% red, and nothing watches it"* are not the
 same case.
 
-## The blocking item is now an owner decision, not an engineering one
+## ✅ The consumer declaration landed, and the outcome test passed on production bytes
 
-The producer half can start. The consumer half cannot, and the reason is not
-technical: **the owner stood this thread down in NexusMind, and the envelope commit
-is the first thing that would resume it there.** The owner has since instructed this
-session to settle the envelope and implement the redesign — but that instruction was
-given here, and the NexusMind session is right that it does not reach their repo
-through me.
+**`012da1a`, local branch `feat/contract-a-envelope-declaration`, not pushed, no PR.**
 
-**What is needed: the owner confirming, in NexusMind, that the consumer-side
-declaration commit is in scope.** Until then the sequencing rule inverts into a stop —
-the consumer must land first-or-with, and the consumer is held.
+Definition-of-done item 5 — the outcome test, over **7,478 live sadalsuud rows**:
+
+| | violation classes |
+|---|---|
+| before | **4** |
+| after | **1** — `<root> additionalProperties source_group`, 7,478 errors on 7,478 rows |
+
+**No new class.** Exit 1, which is correct while the hold stands. `source_group`
+undeclared and the hold unspent, **verified after the fact rather than intended** —
+the commit touches exactly that file. Plus **five falsification controls**, each
+failing the suite it should: declare a `required` inside a block; open a block; widen
+`language` to `oneOf`; declare `source_group`; make a block root-required. 1,303 unit
+tests green.
+
+⭐ **My branch question was not moot, and the answer inverts it.** I suggested the
+envelope work should not land underneath NM#360's unmerged stack. The opposite is
+true: **the acceptance criterion cannot pass on `main`.** #360 already fixes three of
+the four measured classes (`source_type` enum gains `social`; `metadata.required`
+drops to `source_category` alone; `priority` max 8→10) and already contains the
+frozenset-vs-`required` test (`830f0e5`) plus a
+`test_source_group_is_deliberately_still_undeclared` guard protecting the hold. On
+`main`, a post-commit re-run yields 4 classes and *"same single class, no others"*
+fails for reasons having nothing to do with the envelope. **#360 is a prerequisite
+for the test, not an unrelated stack** — and the reason I had it backwards is that I
+was reasoning about merge hygiene while the criterion was about what the instrument
+can resolve.

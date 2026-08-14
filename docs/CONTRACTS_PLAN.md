@@ -1814,11 +1814,14 @@ that belong here rather than there:
 |---|---|
 | Envelope | ✅ **settled** — declare-before-emit, closed at every level, `language`/`source`/`item` excluded |
 | Producer-side (b) work | ✅ **accepted by FluxusSource**, sequenced kind → clock → fetch → time |
-| Consumer-side declaration commit | ⛔ **held** — NexusMind declines pending its owner; the thread was stood down in that repo on 2026-08-14 |
+| Consumer-side declaration commit | ✅ **LANDED** — owner lifted the stand-down directly; `012da1a` on `feat/contract-a-envelope-declaration`, unpushed. Outcome test on 7,478 live rows: **4 violation classes → 1**, no new class, hold unspent, 5 falsification controls, 1,303 tests green. Based on **#360, which is a prerequisite** — the criterion cannot pass on `main` |
 | `published.instant` offset | ⛔ **gate closed** by ovr.news; reopens when their write-boundary integration test exists and is green |
 | Acceptance control | ✅ **resolved by splitting** — repeatable canary for "detection fires", declared gap for "catches the unanticipated" |
 | `origin.*` | ⏸ **sequenced separately**, `docs/proposals/contract-a-origin-sequencing.md`; T0 (GDELT passthrough + `origin.method`) is the only engineering tranche |
 | Category G sidecar | ⏸ spec needs the per-tier grain decision before anything else |
 
-⭐ **The blocking item is an owner decision, not an engineering one.** The producer
-half can start; the consumer half must land first-or-with, and it is held.
+⭐ **Both halves are now unblocked.** The producer's declaration commit is written and
+parked behind the consumer's, which has landed. What remains open is scope, not
+permission: whether the rename ban extends past the three language keys (if it does,
+`feed` collapses to `ttl_declared` alone), and whether `content_meta.kind` stays
+RSS-only.
