@@ -2032,3 +2032,61 @@ statement rather than a copy of it. **Cite this rather than the argument.**
 persisted, printed when non-zero, on the ops dashboard, and left **optional** so
 absent ≠ zero for runs predating it. And `compareByPublishedInstant` with an
 `article_id` tie-break so idempotent re-merges don't churn the month file.)*
+
+
+### ⭐⭐ The spelling defect has FOUR classes, and the biggest one has no offset at all
+
+**FluxusSource measured their own bytes** — hot window, 152,422 rows, 2026-08-07→14:
+
+| spelling | rows | share |
+|---|---|---|
+| `…T09:12:03` — naive, no micro (canonical) | 148,147 | 97.195% |
+| `…T01:41:14.720000` — **naive, MICROSECONDS** | **2,797** | **1.835%** |
+| `…T06:51:12+00:00` — offset, no micro | 940 | 0.617% |
+| `…T23:20:42.720000+00:00` — offset + micro | 538 | 0.353% |
+| **non-canonical total** | **4,275** | **2.805%** |
+
+Zero `Z`, zero non-zero offsets — those halves hold.
+
+⛔ **The microsecond-only class is the LARGEST non-canonical population and is
+invisible to any offset-based query.** 2,797 rows carry sub-second precision with **no
+offset at all** — nearly **double** the entire offset-bearing population (1,478). This
+record said microseconds matter *"as much as"* the offset; on the producer's data they
+matter **roughly twice as much**, and ⭐ **a fix framed as choosing between `Z` and
+`+00:00` would leave the biggest class untouched.**
+
+**The collision is live at the producer too, and mostly not about offsets.** Grouping
+every `published_date` to the same UTC instant at second precision: **459 seconds in
+the 7-day window carry more than one spelling of that same instant**, and four of the
+first five differ by microseconds only.
+
+⚠️ **Do not read 459 against ovr's 9 as a discrepancy** — different populations (a
+7-day producer window vs ovr's hot DB) and different units (*seconds carrying multiple
+spellings* vs *unordered pairs*). Only the direction transfers.
+
+⭐ **And this decides the fix SITE: it is not a rogue producer.** **207 distinct
+sources** are affected across all three source types — `french_le_parisien` (700),
+`newsdata_eval_td` (178), `mastodon_engineering` (172), `kathmandu_post`,
+`nikkei_asia`, `sydsvenskan`, the `gdelt_*` arms. It is **publisher-supplied precision
+flowing through untouched**, so a per-producer fix is 207 fixes and is wrong again for
+producer 208. **It has to be canonicalized where the value is STORED** — one site in
+`ContentItem`, the same rule that put `redact_secrets`, tag normalization and language
+folding in one place each — and that fixes every consumer at once, including any that
+never read NexusMind.
+
+**Separable and ungated**, confirmed by the producer: `…T13:32:48+00:00` → `…T13:32:48`
+changes no instant under naive-means-UTC, and dropping `.480000` discards precision no
+publisher meaningfully asserted. Neither touches ordering *semantics* — it makes
+existing values self-consistent, which is what the text sorts already assume. **Own
+issue, not riding the three-part gate.**
+
+⏸ **NOT STARTED.** New scope beyond the four items, rewriting bytes on a live field
+with ~20 downstream sort sites. With the producer's owner, correctly not taken on a
+peer's report.
+
+✅ **`content_meta.kind` moved to top-level** (`f3e8954`, branch
+`feat/contract-a-content-meta-kind`, **undeployed**) — it also needed the producer
+schema to declare it, since that root is `additionalProperties: false` and
+`validate_output.py` exits 1. Replayed over 5,995 prod rows: emitted on exactly the
+5,739 RSS rows, **0 schema violations**, kind split unchanged. 22 tests, suite 1,224
+green.
