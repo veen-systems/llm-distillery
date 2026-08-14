@@ -55,7 +55,7 @@ emits anything.** Every block optional, every property inside every block option
 The blocks, from proposal §§A–F and §H:
 
 ```
-published    { instant, raw, element, had_timezone, precision, fabricated }
+published    { raw, element, had_timezone, precision, fabricated }   ⏸ +instant?
 collected    { clock_source }
 origin       { country, region, timezone, method }
 fetch        { url_requested, url_final, strategy, attempts, http_status,
@@ -69,8 +69,8 @@ payload      { ... }                                  ← the one open region
 ⚠️ **This list is POST-narrowing.** The owner's scope call (below) removed
 `collected.at`, `content_meta.raw_length`, `feed.title` and `feed.declared_language`
 — every one a declared duplicate of a live flat key. What survives carries only facts
-the row does not hold today. **`published.instant` was dropped and then RESTORED**;
-see the correction under the scope call.
+the row does not hold today. ⏸ **`published.instant` is dropped pending an owner
+re-decision** — see the correction under the scope call.
 
 `origin.*` is declared **even though nothing will populate it this pass.** Its cost
 is editorial (~1,872 per-source YAML entries, ~932 bulk-seedable from geographic
@@ -200,7 +200,7 @@ Consequences, derived rather than listed in the option:
 | `feed.declared_language` | `metadata.feed_declared_language` | ⛔ **drop** |
 | `content_meta.raw_length` | `metadata.raw_content_length` | ⛔ **drop** |
 | `collected.at` | `collected_date` | ⛔ **drop** |
-| ⚠️ `published.instant` | `published_date` — **but not the offset** | ✅ **KEEP** (dropped, then restored — see below) |
+| ⚠️ `published.instant` | `published_date` (declared `format: date-time`) | ⏸ **HELD — owner's call, see below** |
 | `feed.ttl_declared`, `feed.cadence_hours` | none on the row | ✅ keep* |
 | `published.{raw,element,had_timezone,precision,fabricated}` | none | ✅ keep |
 | `collected.clock_source` | none | ✅ keep |
@@ -208,16 +208,36 @@ Consequences, derived rather than listed in the option:
 | `content_meta.{kind,truncated,echoes_title}` | none | ✅ keep |
 | `origin.*` | none | ✅ keep |
 
-#### ⚠️ CORRECTION: `published.instant` was dropped by me and is RESTORED
+#### ⚠️ `published.instant`: dropped, argued for restoration on a WRONG reason, back with the owner
 
-I applied the rule mechanically and matched on *"the instant"*. That was wrong, and
-it is my error, not the owner's — they took the recommendation to restore.
+**Status: HELD, not restored.** NexusMind is correctly refusing to reverse it on my
+say-so — the owner named `published.instant` explicitly when giving the five drops,
+and reversing a by-name owner instruction on a peer relay is the strongest form of
+the case the standing rule covers. Both readings are with the owner.
 
-**The fact `instant` carries is the instant WITH ITS OFFSET, and `published_date`
-structurally cannot carry that.** Stripping the offset is the entire defect §A exists
-to fix, and emitting one on `published_date` is precisely what breaks ovr's twenty
-raw `ORDER BY` sites. So under the ban's own test — *no new name where a live flat
-key already carries the fact* — **`published_date` does not carry this fact.**
+⛔ **My stated justification was wrong, and NexusMind checked it rather than taking
+it.** I argued `published_date` **structurally cannot** carry the instant-with-offset.
+It can: **Contract A already declares `format: "date-time"` on `published_date`,
+which requires an offset.** NM#356 (`f55f708`, on that very branch) says so in terms —
+*"Contract A declares `format: date-time` on the field, which requires an offset, so
+the aware branch is the intended steady state rather than an edge case"* — and
+normalizes offset-bearing input to UTC on ingest deliberately.
+
+**So the producer emitting naive values is a producer DEFECT (NM#358), not a property
+of the field.** Under the ban as literally stated, `published_date` *is* declared to
+carry that fact and `instant` *is* a duplicate. ⭐ *(NM#358 is itself the `format`
+trap this repo already documents: declared on three fields, asserted on none.)*
+
+✅ **What survives is the foreclosure argument, and it never needed the wrong premise.**
+Putting the offset on `published_date` is what breaks ovr's twenty raw `ORDER BY`
+sites. Putting it on a **new** name does not touch them. So `instant` is not really a
+duplicate of the fact — it is **the only non-breaking migration route to it**, and
+dropping it forecloses that route without a second declaration commit, which is what
+this envelope decision exists to prevent.
+
+**That is an argument about migration mechanics, not about same-fact**, and it stands
+whether or not `published_date` is capable. The owner has both readings: the ban as
+written drops `instant`; the foreclosure risk argues for keeping it.
 
 ⭐ **And the consequence of getting it wrong was not a deferral, it was a
 foreclosure.** #112 ranks the two-hour disagreement between NexusMind and ovr as the
