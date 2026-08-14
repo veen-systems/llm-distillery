@@ -1908,14 +1908,51 @@ gh pr view 360 --json mergeable,mergeStateStatus
   9 ahead / 6 behind main · 14 files · CI green (test + GitGuardian, 14:18-14:23Z)
 ```
 
-NexusMind had verified the merge locally *because* GitHub reported `UNKNOWN`, which
-was the right instinct. GitHub has since computed it, against a `main` the branch is
-**6 commits behind**. ⭐ **A merge state is not a property of a branch — it is a
-relationship with a moving one.** The error was mine more than theirs: I carried a
-timestamped observation forward as a standing fact, into a recommendation that the
-owner merge on it. **This is now the top blocker in the whole redesign** — nothing
-merges in either repo until it is rebased or merged forward, and the
-consumer-before-producer rule means FluxusSource's declaration cannot land first.
+⚠️ **CORRECTED AGAIN, by NexusMind, against their own favour — it was not stale, it
+was WRONG.** `origin/main` is at `4758226`, **the identical commit it was at when they
+checked**. Nothing moved. Their command used the **old 3-arg `git merge-tree`, whose
+output format does not emit the markers they grepped for**, so it returned 0 matches
+and was read as 0 conflicts.
+
+⭐ **A check whose pattern cannot match the thing it looks for reports clean whatever
+the truth is** — a control that cannot fail, which is the exact class this thread has
+been naming in everyone else's work all day. *(So my "a merge state is a relationship
+with a moving branch" was a tidy generalisation of something that had not happened.
+Correct in general; not what occurred here.)*
+
+Verified properly, `git merge-tree --write-tree` exits 1:
+
+```
+CONFLICT (content): memory/MEMORY.md
+Auto-merging  memory/project_session_2026_08_14.md   (clean)
+```
+
+✅ **Exactly one conflicted file and one conflicted ROW inside it — a docs index row.
+No code conflicts at all.** `main` says *"MORNING ONLY — not current state"*; #360 says
+*"Current state — no code changed"*. Both were true when written and both are
+combinable. **So #360 is a small unblock, not a large one.**
+
+**NexusMind's recommendation, which I endorse: merge `main` in, do not rebase.** #360
+is a pushed PR with a green CI run from 14:23Z; rebasing 9 commits over 6 force-pushes
+the branch, discards that CI result, and can replay the conflict several times. A
+merge resolves it once, in a table row.
+
+### ✅ And that conflicted row CLOSES the 928/267 vs 203/19 discrepancy
+
+Both of us had recorded it as unreconciled. **#360's own side of the conflict already
+contained the answer and neither of us had read it:**
+
+> `priority`-absent vs `word_count`-absent was recorded as **928 / 267** — **that pair
+> is host- and window-dependent** (sadalsuud's last 6 at midday 2026-08-14: 901/252;
+> this checkout's last 6: 636/115) and must never be quoted without its corpus; the
+> stable finding is that `word_count`-absent is a strict SUBSET.
+
+Confirmed independently on the 7,478-row sample: all **19** `word_count`-absent rows
+are among the **203** `priority`-absent ones. ⭐ **So the reconciliation is: the RATIO
+is corpus-dependent and unquotable; the SUBSET RELATION is the stable finding.** Both
+measurements were right and neither was comparable — the fourth
+denominator-must-travel instance in this thread, and the answer was sitting in a
+branch nobody had merged.
 
 ### ⛔ 2. RETRACTED: nothing downstream protects ovr from FS#171
 
