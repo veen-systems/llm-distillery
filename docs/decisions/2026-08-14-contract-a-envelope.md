@@ -211,10 +211,21 @@ looks earned.
 | `content_meta.kind` (as scoped below) | ⛔ **RSS only** | derived from the feed entry at `rss_aggregator.py:548` |
 | `metadata.feed_declared_language` | ⛔ **RSS only** | `rss_aggregator.py:671` |
 
-RSS is **95.7% of rows** (97,526 of 101,917) — high enough to look promotable across
-any number of cycles and never be, and the `fetch.*` fields are *new*, so they will
-arrive looking like ordinary candidates. **Only `published.*` and
-`collected.clock_source` can ever earn `required` honestly.**
+RSS is **95.7% of rows in the producer's clean window** (97,526 of 101,917) — high
+enough to look promotable across any number of cycles and never be, and the `fetch.*`
+fields are *new*, so they will arrive looking like ordinary candidates. **Only
+`published.*` and `collected.clock_source` can ever earn `required` honestly.**
+
+⚠️ **Always state which corpus that share came from — three exist and they are not
+interchangeable.** RSS share measures **95.7%** on the producer's clean window,
+**97.29%** on NexusMind's 7,478-row live sample, and **~92.8%** across all 87 local
+raw files (181,127 rss / 13,214 api / 892 social). All three support the argument;
+none may be substituted for another. ⭐ **And phrase it as the RSS share, never as
+"0% on 95.7% of rows"** — I wrote the latter to NexusMind and it inverts the
+population, turning "present on nearly everything, so promotion looks earned" into
+"absent from nearly everything", which implies the opposite conclusion from the same
+sentence. The structural claim itself was independently **verified** there:
+`rss_aggregator.py` is the only one of 30 aggregators importing `RobustFeedParser`.
 
 ⭐ **The general form, since it will recur:** `required` is a claim about *every* row,
 so it must be checked against the population that structurally *can* carry the field,
@@ -241,6 +252,46 @@ a much larger job. **Ship RSS-only.**
    populations are known to diverge sharply here (Google News is ~25% of production
    and 0–4.9% of training corpora). Rank the extension by that share once someone
    measures it; do not infer it from the production mix.
+
+#### The GN split — the vivid number, and why it must not decide anything
+
+FluxusSource split `kind` by Google News vs native RSS (clean window, 101,917 rows):
+
+| | rows | `headline_only` | body p10 / p50 / p90 | under 300 |
+|---|---|---|---|---|
+| **GN proxy** | 25,607 | **0.0%** | 68 / 87 / 116 | **100.0%** |
+| **native RSS** | 71,919 | 6.9% | 79 / 195 / 1410 | 66.7% |
+
+⭐ **The 300-char floor discards 100% of Google News rows — all 25,607 — and not one
+is headline-only.** They are complete GN snippets at a machine-bounded width (p10 68,
+p90 116 is a fixed-width snippet, not article text). A quarter of production thrown
+away in full, on rows that all carry real content.
+
+⚠️ **And it must not decide the scope call — the producer applied point 3 back to
+their own finding, correctly.** 100% and 77.2% are **production** shares; the floor
+bites at labelling time; GN is 0–4.9% of training corpora against ~25% of production.
+**So the floor's effect on the corpora that actually matter is *smaller* than these
+figures make it look, not larger.** The split makes the production case vivid and
+says nothing new about the training case. **The unmeasured training-corpus share is
+still the number that ranks the decision.**
+
+**Design consequence, and it does not need a new field.** A two-value `kind` labels
+all 25,607 GN rows identically to a native 900-char summary — both are honestly
+`feed_summary`. That is fine: GN is separable from `url` (below), so a consumer can
+split them without a third value. `kind` alone will not say *why* a body is short,
+and GN is the population where short is **structural rather than incidental**.
+
+⚠️ **Match GN on the URL, never on the source-key prefix.** Clean window:
+`'news.google.com' in url` → **25,607 = 25.13%**; `source.startswith('gn_')` →
+15,655 = 15.36%, a **1.64× undercount** — the prefix names only the country-proxy
+population, missing publisher-named feeds repointed to GN and topic queries that
+proxy no publisher at all. *(Non-RSS agrees exactly across repos: 4,391 = 4.31%.)*
+
+⚠️ **`CLAUDE.md` states this undercount as "~5:1" and this measurement says 1.64×.**
+Both cannot describe the same quantity. Unreconciled — possibly distinct populations
+(rows vs distinct sources) or different windows. **Do not quote either ratio until
+someone reconciles them**; the *rule* — match on URL, not prefix — is unaffected and
+holds under both.
 
 ## Why this is cheap: the declaration commit is runtime-inert, and that is verified
 
