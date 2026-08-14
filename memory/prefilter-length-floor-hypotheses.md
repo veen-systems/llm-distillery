@@ -368,10 +368,28 @@ the risk. **Insufficiency is**, and `kind` does not measure it.
 
 **Their position, stated fairly:** `kind` retires the floor *for the purpose the floor
 was actually serving* — separating "published nothing but a headline" from "published a
-complete short summary." ⚠️ **That is a claim about what the floor was for, and this
-repo's own code says otherwise** (`batch_scorer.py:146`: framework leakage in the oracle
-prompt). **Both cannot be the rationale, and only one of them is written down. H-L1 is
-that disagreement.**
+complete short summary."
+
+⚠️ **CONCEDED IN BOTH DIRECTIONS 2026-08-14, and the honest state is a draw.**
+FluxusSource conceded the substance — if the rationale is leakage-by-insufficiency then
+**length is precisely the property** and `kind` does not retire the floor, and they
+agreed my truncation answer cut *against* `kind` rather than for it. **But they were
+right that I overstated my side.** I wrote *"this repo's own code says otherwise"*;
+`batch_scorer.py:146` **asserts** the rationale, it does not establish it. By my own
+account it is asserted in three places and measured in none.
+
+⭐ **So: TWO CANDIDATE RATIONALES, NEITHER ESTABLISHED** — not "mine is proven and
+theirs is wrong." A third party had a view all along and nobody noticed: Contract A's
+`kind` description reads *"NexusMind currently infers this from length, **which is a
+guess the producer does not have to make**"* — the consumer's schema takes a position
+on our rationale too, and it is not the one in our code.
+
+⚠️ **And it already shipped as a flat assertion.** `7bc20a0`'s schema `description`
+carries the sentence **"Length was never the property being measured"** to every
+consumer of FluxusSource's `output_schema.json` — an unproven claim about *this repo's*
+rationale, stated at higher confidence than its evidence. FluxusSource identified it as
+their defect regardless of who is right. **That is the day's failure mode in its purest
+form, and it is now in a machine-readable contract rather than a document.**
 
 ### The free natural experiment — run, and it is INCONCLUSIVE
 

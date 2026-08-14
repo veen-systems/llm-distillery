@@ -155,13 +155,38 @@ of them (`source_group`) is on anyone's list. **Neither is visible to a validato
 undeclared-and-emitted needs the canary to be caught, declared-and-unemitted is
 invisible to any check that validates rows that exist.
 
-**Relevant fact, since it may dissolve the field rather than assign it:** FluxusSource
-**does not truncate RSS bodies at all** — they grepped the emit path
-(`rss_aggregator.py`, `content_item.py`, `robust_feed_parser.py`) and found no content
-slicing; the only `[:500]` in the estate is hash *input* in `content_hasher` and never
-touches the emitted body. **So a short RSS body is the publisher's own
-`<description>`.** If `truncated` has no producer *and* no phenomenon, delete it from
-the schema rather than find it an owner.
+⚠️ **My "delete it" suggestion is WITHDRAWN — I had not read the field's description.**
+It says: *"Whether the **source itself** truncated the body (e.g. a partial-feed
+publisher), as opposed to the body simply being short."* That is a **real and useful
+distinction**, and FluxusSource not truncating is exactly why they cannot answer it —
+detecting it means comparing the feed body against the full article, and full-text
+fetch lives on **our/NexusMind's** side since `full_text_fetcher.py` was deleted from
+theirs. **So `truncated` is declared against the WRONG PRODUCER, not declared
+uselessly.** Structurally unownable at FluxusSource. Assign it here or drop it
+deliberately — but not as dead weight.
+
+### ⛔ THREE SHAPE MISMATCHES IN `content_meta` — and only ONE fails closed
+
+**Verified 2026-08-14 by reading `origin/main` (`25dc482`), not on report.** Found by
+FluxusSource off the back of the `truncated` note. `content_meta` is
+`additionalProperties: false` and declares exactly `echoes_title`, `kind`, `truncated`.
+
+⚠️ **`7bc20a0`'s deploy gate was *"not until NexusMind's envelope declaration merges."*
+It has merged — so the gate is satisfied IN LETTER, and the next person to read that
+commit message sees a green light.** These three are why that would be wrong.
+
+| # | mismatch | fails how |
+|---|---|---|
+| **1** | **`content_meta.error` is UNDECLARED** on a closed sub-object. The producer emits it (an exception type name) on derivation fault. | ⛔ **HARD VALIDATION FAILURE.** The one path added so a fault stays *visible* is the path that turns a fault into a contract violation. **This is the only one that fails closed** — and it is FluxusSource's to fix, not NexusMind's. |
+| **2** | **`kind` has NO `enum`** — just a description naming **four** notions (*"full article, RSS summary, title-only, empty"*). The producer emits **two**: `feed_summary` \| `headline_only`. | 🔇 **SILENT.** `type: string` accepts both, so it validates clean today and diverges whenever either side ships. An unpinned enum on a closed object. |
+| **3** | **`echoes_title` is a SPLIT the producer collapsed.** Their derivation is `headline_only if not body or body == title` — **empty OR echoes-title fused into one value.** The schema separates precisely those two. | 🔇 **SILENT, and lossy both ways.** A consumer reading `echoes_title` cannot obtain it from `kind`; a consumer reading `kind == 'headline_only'` cannot tell an empty body from a title echo. ⭐ **The schema's split is the better model** and both halves already exist in the producer's one line — cheap to adopt. |
+
+⭐ **The shape of this is the session's thesis again**: a gate written as *"wait for X to
+merge"* tracks **whether X happened**, never **whether the two shapes agree**. Merging
+satisfied the gate and changed nothing about the mismatch. `kind`'s own description
+even says *"NexusMind currently infers this from length, which is a guess the producer
+does not have to make"* — the consumer had a view about the rationale all along, and
+it is not the one in `batch_scorer.py:146`. See H-L1.
 
 ### ⚠️ Unassigned — the list is now ONE item, not three
 
