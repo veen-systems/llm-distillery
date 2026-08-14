@@ -333,6 +333,88 @@ prefix identifies only the retirement target. I used the union and reported it
 as "GN", which conflated a population being retired with one that is not — the
 direct cause of the 3× residual error above.
 
+## ⏳ H-L1 — OPEN: the framework-leakage rationale is ASSERTED EVERYWHERE AND MEASURED NOWHERE
+
+**Opened 2026-08-14 (late).** The 300-char floor's stated reason is that short articles
+make the oracle analyse the *evaluation framework* instead of the article. That
+sentence is in `batch_scorer.py:146`, in #93, and in this file — and **no measurement
+of it exists anywhere in the repo.** It has been load-bearing for a year.
+
+⚠️ **This gates retiring the floor on `content_meta.kind`.** The Round 3 argument is
+that the floor discards 77.2% of RSS rows and *"what it discards is overwhelmingly
+complete feed summaries, not truncated articles — length was never the quality
+signal."* **That does not follow if the rationale is real**: framework leakage is a
+function of **how much text the oracle sees**, not of whether the text is *complete*.
+A complete 143-char feed summary still gives the oracle 143 chars. **`kind` tells you
+the text is finished, not that it is sufficient.** Those are different claims and the
+plan currently treats them as one.
+
+⭐ **Confirmed by the producer 2026-08-14, and it makes the gap explicit rather than
+closing it.** The entire derivation is one line and **never looks at length**:
+
+```python
+kind = 'headline_only' if not body or body == title else 'feed_summary'
+```
+
+Vocabulary is **two values** (`feed_summary`, `headline_only`) — no `summary`, and
+`full_text` is deliberately absent. Measured over 97,526 RSS rows: **5.3%
+`headline_only`, 6.9% of native RSS, 0.0% of 25,607 GN rows.**
+
+⚠️ **My "does `kind` separate complete-short from truncated?" question DISSOLVED, but
+not in `kind`'s favour** — there is no `truncated` sibling being emitted, and
+FluxusSource **does not truncate RSS bodies at all** (no content slicing on the emit
+path), so a short RSS body is the publisher's own `<description>`. Truncation is not
+the risk. **Insufficiency is**, and `kind` does not measure it.
+
+**Their position, stated fairly:** `kind` retires the floor *for the purpose the floor
+was actually serving* — separating "published nothing but a headline" from "published a
+complete short summary." ⚠️ **That is a claim about what the floor was for, and this
+repo's own code says otherwise** (`batch_scorer.py:146`: framework leakage in the oracle
+prompt). **Both cannot be the rationale, and only one of them is written down. H-L1 is
+that disagreement.**
+
+### The free natural experiment — run, and it is INCONCLUSIVE
+
+`solutions v4` was labelled with sub-300 rows present (**911/10,297 trainval, 413/1,500
+holdout**), so articles below today's floor already carry oracle labels.
+
+| split | n | mean score | within-row spread | flat (<0.25) |
+|---|---|---|---|---|
+| trainval **sub-300** | 911 | 0.70 | 0.485 | 74.0% |
+| trainval **300+** | 9,386 | 0.94 | 0.573 | 67.9% |
+| holdout **sub-300** | 413 | 0.21 | 0.144 | 92.7% |
+| holdout **300+** | 1,087 | 0.40 | 0.248 | 86.9% |
+
+Short rows score **lower and flatter** in both splits. ⚠️ **This is NOT evidence of
+leakage, and must not be cited as such.** It is exactly what *correct* scoring of
+thin, off-topic content looks like. Leakage would predict scores drifting toward the
+**middle** or becoming uninformative — not collapsing toward zero. **The effect is
+fully confounded with topicality**, and nothing here separates them.
+
+### ⚠️ My groundedness instrument was INVALID — recorded so nobody rebuilds it
+
+I tried to probe leakage directly by asking whether each dimension's `evidence` string
+appears in the article text. **It read 76.0% / 75.3% "ungrounded" on trainval and
+93.3% / 89.6% on holdout — i.e. essentially identical in both arms.** That is not a
+finding about short articles; it means the test measured **paraphrase**. The oracle
+summarises rather than quoting verbatim, so a substring check fails on nearly every
+row at every length. **A number that is the same in the treatment and control arm is
+measuring the instrument.**
+
+### What would actually settle it (needs owner approval — oracle spend)
+
+A **paired** design, which is the only shape that breaks the topicality confound: take
+articles that exist at **both** stub and full length, score **the same article twice**,
+and compare. `docs/evidence/2026-08-12-pre-post-enrichment-pilot-scores.jsonl` is that
+shape already but carries **student** scores, not oracle ones. ⚠️ **Do not re-score
+Google News rows for this** (median 89 chars — below the floor that exists for exactly
+this reason).
+
+⭐ **Until this is measured, do not retire the floor on `kind` alone.** `kind` is still
+worth having — it distinguishes *complete-but-short* from *truncated*, which the floor
+cannot — but "length was never the quality signal" is currently an unmeasured claim
+resting on an unmeasured rationale.
+
 ## What shipped (2026-08-03, #93 — llm-distillery side)
 
 The floor is split three ways, per ADR-022 "stamp always, decide once":

@@ -2098,8 +2098,10 @@ issue, not riding the three-part gate.**
 with ~20 downstream sort sites. With the producer's owner, correctly not taken on a
 peer's report.
 
-✅ **`content_meta.kind` moved to top-level** (`f3e8954`, branch
-`feat/contract-a-content-meta-kind`, **undeployed**) — it also needed the producer
+✅ **`content_meta.kind` moved to top-level** (⚠️ **`7bc20a0`**, branch
+`feat/contract-a-content-meta-kind`, **unmerged** — the hash first recorded here,
+`f3e8954`, was **amended away**: it is an ancestor of no branch, lives only in
+FluxusSource's reflog and is GC-eligible. Corrected 2026-08-14) — it also needed the producer
 schema to declare it, since that root is `additionalProperties: false` and
 `validate_output.py` exits 1. Replayed over 5,995 prod rows: emitted on exactly the
 5,739 RSS rows, **0 schema violations**, kind split unchanged. 22 tests, suite 1,224

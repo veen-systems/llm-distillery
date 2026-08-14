@@ -77,7 +77,37 @@ Recorded in FS#173 (comment + body correction). Full record:
    All three are declared on `main` and nothing populates them.
 2. **`content_meta.kind` deploy** — built, reviewed, moved to top-level, verified over
    5,995 prod rows (emitted on exactly the 5,739 RSS rows, 0 schema violations).
-   `f3e8954`, **undeployed**. This is what retires the 300-char floor (#93).
+   ⚠️ **The commit is `7bc20a0` on `feat/contract-a-content-meta-kind`, NOT `f3e8954`**
+   — that hash was amended away, is an ancestor of no branch, survives only in
+   FluxusSource's reflog and is GC-eligible. Corrected 2026-08-14; **build against
+   `7bc20a0`.** Branch **not merged** (their `master` is `cb4f6ac`, sadalsuud
+   `6455c06`, `grep -rn content_meta src/` on master returns nothing), and it is
+   **correctly parked, not racing** — its own gate is *"not for deploy until
+   NexusMind's envelope declaration merges"*, consumer-declares-first. ⭐ **That gate
+   now appears SATISFIED** (Contract A 1.20.0 is on NexusMind `main`, `25dc482`) —
+   FluxusSource's call to make, not ours.
+
+   **The emitted vocabulary is TWO values, not three** — `feed_summary` and
+   `headline_only`. There is no `summary`. `error` is a **sibling key** (an exception
+   type name, present only if derivation faults) so a fault stays distinguishable from
+   a non-RSS row; the sub-object is `additionalProperties: false`. `full_text` is
+   deliberately absent for **two independent reasons** — enrichment moved to our side,
+   *and* `rss_aggregator` never reads `entry.content`/`content:encoded` at all —
+   so removing either one alone does not reopen it. Measured 2026-08-10→14 over 97,526
+   RSS rows: **5.3% `headline_only` overall, 6.9% of native RSS, 0.0% of 25,607 GN rows.**
+
+   ⚠️ **The consumer's fallback keys on `source_type`, NOT on the field's absence.**
+   Absence means **not applicable, not unknown** — there is no feed document behind an
+   api/social/data row, which is also why `kind` can never become `required`. So: RSS
+   row with no `kind` ⇒ pre-deploy data, fall back to length. Non-RSS row ⇒ the length
+   question is meaningless, don't apply a document-shaped prefilter at all.
+
+   ⚠️ **This does NOT retire the floor on its own — see `H-L1` in
+   `memory/prefilter-length-floor-hypotheses.md`.** `kind` never looks at length (the
+   whole derivation is `'headline_only' if not body or body == title else
+   'feed_summary'`), and the floor's stated rationale is *framework leakage*, which is
+   a function of **how much text the oracle sees**. A `feed_summary` of 143 chars still
+   hands the oracle 143 chars. **That rationale has never been measured.**
 3. **`collected.clock_source`**, then `fetch.*`, then `element`, then `precision` last
    (the only one that is new code rather than threading-out).
    ⚠️ **My "move `clock_source` up" suggestion is WITHDRAWN AS ARGUED** — the reasoning
@@ -104,6 +134,34 @@ Recorded in FS#173 (comment + body correction). Full record:
    APOD, and two Dev.to author-named sources. The other ~760 are UTC; `published_date`
    is unaffected. **Any llm-distillery analysis treating `collected_date` as uniformly
    UTC is wrong by 2h on that slice**, in `data/current/` and in the archive.
+
+### ⭐ A DECLARED FIELD WITH NO PRODUCER — `content_meta.truncated` (found 2026-08-14)
+
+Contract A **1.20.0 declares `content_meta.truncated`** (verified by reading the schema
+on NexusMind `main`, `25dc482`: `content_meta -> ['echoes_title', 'kind', 'truncated']`).
+**FluxusSource does not emit it, has no plan to, and nothing named `truncated` exists
+anywhere in their tree** — the only `truncat*` hits are `collection_truncated` in
+`content_aggregator.py`, which is source/category collection caps and unrelated.
+
+⚠️ **Both sides were right and neither was wrong** — which is the whole session's theme
+one more time. **Declaring a field and emitting one are separate acts**, and the
+envelope decision made declaration cheap *on purpose*. The cost is that the schema now
+documents a capability that has no owner, and a consumer reading the schema would plan
+for truncation detection that is never coming.
+
+⭐ **This is the exact inverse of `source_group`**, which is *emitted on every row and
+declared nowhere*. Contract A currently has a gap in **both** directions, and only one
+of them (`source_group`) is on anyone's list. **Neither is visible to a validator**:
+undeclared-and-emitted needs the canary to be caught, declared-and-unemitted is
+invisible to any check that validates rows that exist.
+
+**Relevant fact, since it may dissolve the field rather than assign it:** FluxusSource
+**does not truncate RSS bodies at all** — they grepped the emit path
+(`rss_aggregator.py`, `content_item.py`, `robust_feed_parser.py`) and found no content
+slicing; the only `[:500]` in the estate is hash *input* in `content_hasher` and never
+touches the emitted body. **So a short RSS body is the publisher's own
+`<description>`.** If `truncated` has no producer *and* no phenomenon, delete it from
+the schema rather than find it an owner.
 
 ### ⚠️ Unassigned — the list is now ONE item, not three
 
