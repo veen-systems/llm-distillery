@@ -80,6 +80,40 @@ not a discriminator. **Stamp the fact at the point where it becomes true** — n
 downstream rule can separate a fabricated date from a real one that is genuinely 2h
 old. Same argument that retires every accidental fingerprint.
 
+## I COUNTED ERRORS, NOT ROWS — inside a confirmation, hours after quoting the rule that forbids it (2026-08-14)
+
+**Problem**: I reported *"the 20:04 cycle reads **0 non-canonical across all three
+timestamp fields**"* as outcome proof that a producer fix had landed. **Two of the
+three fields were vacuous**, and a fourth timestamp I never looked at was 100% dirty.
+
+| field | 20:04 run | |
+|---|---|---|
+| `published_date` | 200/200 present, 0 bad | real |
+| `collected_date` | 200/200 present, 0 bad | real |
+| `original_published_date` | **0/200 present** | **vacuous** |
+| `metadata.collection_timestamp` | 0/200 present, never checked | **88/88 non-canonical** in the neighbouring run |
+
+**Root cause**: the check incremented a violation counter only when the key was present
+**and a string**, and never incremented a presence counter. An absent field and a clean
+field are then the same output. `metadata.collection_timestamp` was missed for a second
+reason — it is **nested**, and the field list was top-level only. Both halves of
+`CLAUDE.md`'s own contracts warning, verbatim: *"the validator counts **errors, not
+rows**"* and *"don't grep bare field names"*. I had quoted the first of those in this
+same session.
+
+**Fix**: **a violation count is unreadable without a presence count beside it.** Print
+`present N/total` per field, always, and treat any field at 0 presence as **not
+measured** rather than clean. Aggregating across fields ("all three") hides this —
+the vacuous field is invisible inside the sum.
+
+⚠️ **The compounding trap: presence itself is population-dependent.** The field wasn't
+missing because of a defect — NewsAPI simply wasn't due in that cycle, and it is the
+only producer that writes it. **A confirmation run must state which producers entered
+it.** Caught by a peer who **re-derived instead of adopting my number**; that is the
+control that worked, and it is the second time in one day the same control paid.
+Belongs to the unreachable-mechanism catalogue below in its *measurement* form: a check
+that examines nothing reports success.
+
 ## A GLOB THAT CANNOT MATCH IS INDISTINGUISHABLE FROM ONE STILL WAITING (2026-08-14)
 
 **Problem**: a background `until` loop polling for a collection run had been alive

@@ -196,6 +196,42 @@ because **no downstream rule can separate a fabricated date from a real one that
 genuinely 2h old.** The microsecond fingerprint was never a margin either — it was a
 different kind of evidence, and it is gone (see above).
 
+### ⭐ THE 2h BIN HAS AT LEAST THREE CONTRIBUTORS, AND ONLY ONE IS FABRICATION
+
+*(Found 2026-08-14 ~20:45, prompted by the FluxusSource session; measured here on
+`collection_20260814_193603`, 2,891 rows, by per-source median offset — a different
+construction from theirs, so the two are independent.)*
+
+| mechanism | how it manufactures ~2h | status |
+|---|---|---|
+| **fabrication** | `extract_date_from_rss_entry:106` writes `now − 2h` | the real defect (FS#173) |
+| **fixed-announcement source** | arXiv publishes 04:00 UTC, the timer ticks 06:00 UTC | benign; H-D2 above |
+| **local-clock `collected_date`** | `newsapi_general` stamps the **local** clock, **+1.98h** ahead of UTC | benign *today*, latent |
+
+The third is the new one. Exactly **88 / 2,891 = 3.04%** of that run — one source,
+`newsapi_general`, at **+1.98h** against the run median (`2026-08-14T17:31:55`), every
+other source within ±0.03h. **Consistent with `CLAUDE.md`'s standing clock finding**
+(3.87% of rows at +1.98h across 14 families, `newsapi_general` the largest).
+
+⚠️ **It does NOT contaminate FS#173 today, and I checked rather than assumed:**
+**0 of the 88** skewed rows fall in `2h ± 5s`. They sit at **28.5–30.5h**, because
+NewsAPI returns day-old articles. The clean population had **1**.
+
+⚠️⚠️ **But the collision is latent, not absent.** `+1.98h` and the fabrication
+signature's `2h` are **the same number to within 72 seconds**. The only thing
+separating them is that NewsAPI happens to return ~28h-old articles — *a property of
+the upstream API's result set, not of our code*. Any NewsAPI query returning fresh
+items puts a whole slice at ~1.98h, indistinguishable from fabrication. **Same shape
+as the arXiv trap, different mechanism, and it would arrive without any change on our
+side.**
+
+⭐ **And canonicalization made it invisible.** Before `94e7337` that `collected_date`
+carried microseconds and looked visibly odd; now it has the **identical shape** to a
+correct UTC value, so only cross-source comparison *inside a single run* exposes it.
+That is the third time in one day that removing an incidental signal cost the only
+available discriminator — which is the argument for `collected.clock_source` as an
+explicit field, on the same grounds as `published.fabricated`.
+
 ### Also: "6.00h" was never a whole-hour spike
 
 Quarter-hour binning did that. Actual gaps in the bin: **min 5.8752, p50 6.1220, max

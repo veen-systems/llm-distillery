@@ -80,6 +80,16 @@ Recorded in FS#173 (comment + body correction). Full record:
    `f3e8954`, **undeployed**. This is what retires the 300-char floor (#93).
 3. **`collected.clock_source`**, then `fetch.*`, then `element`, then `precision` last
    (the only one that is new code rather than threading-out).
+   ⭐ **`clock_source` gained a second, independent argument on 2026-08-14 and may
+   deserve to move up.** `newsapi_general` stamps `collected_date` on the **local**
+   clock, **+1.98h** — and `94e7337`'s canonicalization gave that value the *identical
+   shape* to a correct UTC one, so the skew is now invisible in the field itself and
+   only cross-source comparison inside a single run exposes it. **+1.98h and
+   fabrication's 2h are the same number to within 72 seconds.** They don't collide
+   today only because NewsAPI returns ~28h-old articles — a property of the upstream
+   API's result set, not of our code. Detail and the measurement:
+   `memory/date-error-recency-boost-hypotheses.md` § *The 2h bin has at least three
+   contributors*.
 
 ### ⚠️ Unassigned — the list is now ONE item, not three
 
