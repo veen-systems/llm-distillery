@@ -1991,3 +1991,44 @@ no instant and no ordering semantics, so it is not gated on ovr#321 or the clock
 
 *(Sixth wrong-sentence-beside-a-correct-finding here, and the costliest: it would have
 sent the fix to the wrong repo AND left ovr believing they were protected.)*
+
+
+### Round 3 addendum, later — the tie defect is 9 not 17, and the corrections cancel
+
+**ovr.news, correcting their own figure in this record's disfavour.** ADR-046's *"17
+unordered pairs share a second across the two shapes"* **overstates it.** Sharing a
+*second* is not being the same *instant*: `'…T13:32:48'` vs
+`'…T13:32:48.496000+00:00'` differ by 496ms, and text order is **correct** for them.
+Exhaustively, naive-vs-`+00:00` has **0 inversions**.
+
+**The true equal-instant / unequal-text count is 9** — all whole-hour timestamps where
+the aware spelling carries no fraction (`…T04:00:00` vs `…T04:00:00+00:00`). It
+remains the only thing that bites **without** an offset.
+
+⭐ **So the two corrections move in OPPOSITE directions: the offset half is bigger
+than recorded and the tie half is smaller.** Neither side should claim the net
+position — this record had the mechanism backwards (NexusMind normalizes ⇒ ovr
+protected) while ovr had the disproof sitting in their own numbers (**99.5% naive
+output is impossible if NexusMind serialized its own aware parse — an aware datetime
+cannot `isoformat()` to a naive string**). The original ranking survived by accident
+on both sides.
+
+### ⭐⭐ Predicate-vs-outcome, finally as a MEASURED result
+
+The thread's running example was an argument: *"`published-date.test.ts:113` tests the
+helper, not the path, and would stay green if canonicalisation were deleted."* ovr
+built the outcome test and mutated the invariant to check:
+
+| with `canonicalizePublishedDate` deleted from `db-articles.ts:141` | |
+|---|---|
+| ovr's new outcome test | **fails 7 of 9** |
+| `published-date.test.ts` | **22 / 22 PASSING** |
+
+**A green helper suite over a corpus that has silently reverted.** What makes it hold
+is that `create-hot-db`'s prune was *extracted* so the test exercises the real `DELETE`
+statement rather than a copy of it. **Cite this rather than the argument.**
+
+*(Also shipped there: `FilterStats.validation` as the Contract B drop reader —
+persisted, printed when non-zero, on the ops dashboard, and left **optional** so
+absent ≠ zero for runs predating it. And `compareByPublishedInstant` with an
+`article_id` tie-break so idempotent re-merges don't churn the month file.)*
