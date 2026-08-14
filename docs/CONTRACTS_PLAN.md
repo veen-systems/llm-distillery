@@ -1710,6 +1710,15 @@ p10 70, p90 914; 60.0% under 200, **77.2% under 300**. So the 300-char floor dis
 not truncated articles**. `kind` is what licenses saying so: length was never the
 quality signal.
 
+⚠️ **A presence rate for a recently-shipped stamp needs its window checked against
+that stamp's ship date.** FluxusSource retracted a `feed_declared_language` figure
+(108,038 rows / 70.9%) before it propagated — `language_source` shipped **mid-window**
+(0% on 08-07/08-08, 26.2% on 08-09, 100% from 08-10), so any count over the 7-day hot
+window measures the rollout rather than the field. **Same 2026-08-10 boundary FS#149's
+confidence floor is already pinned to**, and nobody had connected that it equally
+poisons presence counts. Clean-window figures, and the disjoint-populations trap that
+kills the name `declared_by_feed`, are in the envelope decision record.
+
 #### pipeline-atlas — Category G confirmed as model facts; six corrections
 
 Confirmed the two refusal sites and the asymmetry (`model/chain.yml` `gate:` block,

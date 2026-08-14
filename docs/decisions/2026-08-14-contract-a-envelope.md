@@ -93,12 +93,57 @@ forbidden to move — and the separation §B asks for is *already in the data*:
 | `language.method` | `metadata.language_source` | 7,478 |
 | `language.sample_chars` | `metadata.language_input_len` | 7,478 |
 | `language.confidence` | `metadata.language_confidence` | 7,444 |
-| `language.declared_by_feed` | `metadata.feed_declared_language` | 6,736 |
+| `language.declared_by_feed` | `metadata.feed_declared_language` | 6,736 (see below) |
 | `language.script`, `.scripts_present` | ⭐ **genuinely new** | — |
 
 *(The `feed_declared_language` row is the NexusMind session's addition; the proposal
 and my first draft both missed that it was already live.)* So the block carried **one
 new fact and five relocations**, all five of them relocations the owner has forbidden.
+
+#### ⚠️ `declared_by_feed` is a name that must NOT be created — two disjoint fields already sit under it
+
+**FluxusSource, measured on the clean window** (runs from 2026-08-10 onward, 101,917
+rows — see the retraction note below for why the window matters):
+
+| | rows | population |
+|---|---|---|
+| `metadata.feed_declared_language` | 87,061 (85.4%) | the RSS feed's `<language>` element — **RSS only** |
+| `metadata.language_source == 'declared'` | 707 (0.7%) | producer-supplied code (mastodon, gnews_eval) — **non-RSS only** |
+
+⭐ **They never overlap.** `declared` fires on the one path that never reaches the
+detector, which is precisely the non-RSS path; `feed_declared_language` exists only
+where there is a feed document to read it from. **Anyone reading `declared_by_feed`
+as "the rows where `language_source` is `declared`" merges 707 rows with 87,061 and
+gets a field that is neither.** So `metadata.feed_declared_language` keeps its name;
+introducing `declared_by_feed` would stand a third near-synonym beside two live ones.
+
+**The 6,736 vs 87,061 is a population difference, not a discrepancy** — NexusMind's
+sample is essentially RSS-only and ~7% the size. Their 6,736/7,478 = **90.1%** against
+the producer's **89.3% of RSS rows**; those agree. Size the relocation on 87k/week.
+
+⚠️ **And this field can never earn `required`**, however many cycles show it
+populated — its absence is **structural** (0% of api, social and data rows, by
+construction at `rss_aggregator.py:671`), not incidental. That is a limit on decision
+point 5 below, and the first field found to have it.
+
+**It is also not a redundant copy of `language`:** the declaration disagrees with the
+final answer on **2,190 rows, 2.5%** of those carrying it. An independent signal that
+survives being overridden — which is what makes it worth carrying at all.
+
+Full clean-window `language_source` split, for sizing anything else: `detected`
+100,025 (98.1%) · `script` 1,174 (1.2%) · `declared` 707 (0.7%) · `hint` 7 · `none` 4.
+
+⚠️ **Why "clean window" — a retraction FluxusSource caught before it propagated, and
+the lesson is reusable.** Their first measurement put `feed_declared_language` at
+108,038 rows / 70.9%, which would have read as a 16× discrepancy against NexusMind's
+6,736 and sent someone hunting a phantom. It was wrong: **`language_source` shipped
+mid-window** — 0% of rows on 08-07 and 08-08, 26.2% on 08-09, 100% from 08-10 — so
+any count over the 7-day hot window straddles the boundary and averages a field into
+existence. ⭐ **Same 2026-08-10 boundary that FS#149's confidence floor is already
+pinned to; nobody had connected that it equally poisons any metadata-*presence*
+count.** Rule: **a presence rate for a recently-shipped stamp needs its window
+checked against the stamp's own ship date**, or it measures the rollout rather than
+the field.
 The two new fields join the family that already exists, as
 `metadata.language_script` / `metadata.language_scripts_present` — no collision, no
 rename, no `oneOf` transition shape, no consumer audit.
@@ -285,10 +330,18 @@ shipped parser:
 | bare `+02` | **REJECTED → stored raw** ⛔ |
 | lowercase `z` (legal RFC 3339) | **REJECTED → stored raw** ⛔ |
 
-So when the gate opens, **`published.instant` must emit `±HH:MM` or `±HHMM` with an
-upper-case `Z`, and the schema pattern must enforce it.** Emitting bare `±HH` or
+So when the gate opens, **`published.instant` must emit an offset in ovr's
+canonicalising set, and the schema pattern must enforce it.** Emitting bare `±HH` or
 lowercase `z` breaks ovr *quietly*, and would do so even after a backfill. This is a
 producer-side constraint that only the consumer could have discovered.
+
+✅ **Satisfiable for free, and the pattern should be tighter than ovr's accepted set.**
+FluxusSource: Python's `datetime.isoformat()` emits `±HH:MM` — `+02:00` / `+00:00` —
+and **never** bare `±HH`, **never** lowercase `z`, and **never `Z` at all**, writing
+`+00:00` for UTC. So the producer lands inside ovr's grammar with no special-casing,
+and the schema `pattern` should encode **`±HH:MM` only** rather than also permitting
+`Z`, since nothing on the producer side would ever emit it. Declare what is emitted,
+not what the consumer happens to tolerate.
 
 *(Also: `display_date` is not a column in ovr — only `published_date` and
 `collected_date`. Correct the proposal's ovr line.)*
