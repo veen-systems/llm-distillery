@@ -1,56 +1,79 @@
 # LLM Distillery - TODO
 
-## 🔵 NEXT SESSION — start here. **Contracts: round 2, and one blocking spec.**
+## 🔵 NEXT SESSION — start here. **Contract A: implement the REDESIGN, not the patches.**
 
-**2026-08-13 evening: five sessions worked the pipeline contracts in parallel.
-Nothing executed, merged or deployed in any repo.** Plan +
-round-1 review: **`docs/CONTRACTS_PLAN.md`**. Measurements, instrument traps and
-the rules it added: **`memory/stamp-contract-integrity.md` § The contracts
-layer**. Session record: `memory/project_session_2026_08_13_evening.md`.
+**2026-08-14: the owner stopped the incremental contracts work and redirected it.**
+A day across five sessions produced **four corrected values in one schema file**
+plus a large amount of verification process. The findings were real; they were not
+the work asked for. **Do not resume phases 1–3, the shared envelope, or the
+checker.**
 
-**The finding: the estate has FOUR contract validators and none watches the
-failure.** Two are unscheduled, one is CI-on-fixtures, and the one that runs on
-real bytes (`ovr.news/src/lib/data/validate.ts`, since 2026-03-03) **drops rows**
-into an unread log and is blind to both `published_date` and `metadata` — the two
-things this work is about. ⚠️ **Draft 1 claimed nothing ran a validator at all;
-that was FALSE**, refuted by ovr.news, and it came from grepping for a script
-*name* instead of a *behaviour*.
+**THE DELIVERABLE: `docs/proposals/contract-a-redesign.md`** (rendered:
+`contract-a-redesign.html`). Contract A designed from first principles rather than
+patched.
+
+**Its one rule — apply it to every field before adding anything:**
+
+> A field belongs in Contract A **iff** (1) *only the collector can know it* and
+> (2) *it is destroyed if not recorded now*. FluxusSource is the only component
+> that ever sees the network, the feed document and the raw bytes.
+
+Today's contract fails that in **both** directions: it stores derivable values
+(`word_count`, `reading_time_minutes`) and discards irrecoverable ones.
+
+**What goes in, all source/network facts rather than text extraction:**
+`published.{instant,raw,element,had_timezone,precision,fabricated}` ·
+`language.{code,script,scripts_present,method,confidence,sample_chars}` ·
+`origin.{country,region,timezone}` ·
+`fetch.{url_requested,url_final,http_status,charset_declared/detected/used,content_encoding}` ·
+`content_meta.{kind,truncated,raw_length,echoes_title}` ·
+`feed.{declared_language,cadence_hours,ttl_declared}`. Grouped by **provenance
+layer**, with a walled-off open `payload` for the per-aggregator tail.
 
 **Do first, in this order:**
 
-1. **Spec the check's result artefact** — path, timestamp, per-defect-class
-   counts, version stamp. **This blocks pipeline-atlas**, who will write the
-   snapshot reader against it before the check exists. They refused to *run* the
-   check, correctly: *"a map that is the only instrument is not a map."*
-2. **Re-run the hand-rolled-validator sweep across all 20 `veen-systems/` repos.**
-   Two validators were missed by searching for a name; assume more. This is the
-   plan's headline claim and must not reach the atlas unverified.
-3. **Round 2** — peers reviewed draft 1; none has re-reviewed the corrected
-   premise.
-4. **Owner decisions 1, 2 and 4** in `docs/CONTRACTS_PLAN.md` (the shared
-   envelope; its additive path; `eval_query`). Decisions 3 and 5 are closed —
-   3 resolved to a separate systemd timer on sadalsuud by both consumers
-   independently, 5 deleted because its premise was false.
+1. **Get FluxusSource's feasibility triage** — which proposed fields are (a) already
+   in hand at collection, (b) one line, (c) new plumbing. **Asked but not answered
+   before close.** Two questions carry the sequencing: does `origin.country` /
+   `origin.timezone` exist in source config in *any* form today, and is
+   `content_meta.kind` knowable at collection? If the second is yes it **retires the
+   300-char floor outright**.
+2. **Get pipeline-atlas's observation map** — what FluxusSource *observes* that no
+   downstream stage can reconstruct. **Asked but not answered.** The six categories
+   in the proposal came from defects tripped over, not from a model of the chain;
+   their model may show a seventh.
+3. **Then implement, additively.** New blocks alongside the old flat fields; nothing
+   breaks; deprecate later; remove only when grep proves no consumer reads them.
 
-⚠️ **Time-limited test, may already be spent:** `source_group` is the only
-*non-circular* control available for phase 0 — an independent commit arriving
-against a closed top level that the check was never shown. **Once W2.2 declares
-it, that test is gone.** Hold W2.2 behind it.
+⚠️ **The one step that cannot be phased:** `published.instant` gaining a UTC offset
+is a **lexicographic** change — `'…T20:00:00+02:00' > '…T19:00:00'` as a string while
+being *earlier* in real time. Every `ORDER BY published_date` breaks. ovr.news has
+~20 such sites and has shipped its parser fix (`60ada82`); **that must land
+everywhere before offsets are emitted.**
 
-⚠️ **`grep -rIl` returning nothing is a broken verify command** — pipeline-atlas's
-`run_verifies.sh` treats empty output as failure, so the strongest evidence here
-becomes a check that fails while being right. Invert every "returns zero" figure
-to print its count before porting any of them.
+### Parked, complete, and NOT to be resumed without a decision
 
-**Cross-repo item that is ours to close: FluxusSource#164's stated justification
-is wrong.** It keeps ~8 months of archives because *"llm-distillery trains on this
-depth"*; we do not read `data/archived/` at all. The retention is right for the
-reason recorded further down this file — it is the only surviving copy of a
-displaced body, hence NM#306's only repair path. **Correct the reason, keep the
-retention. Do not propose a retention change.**
+| repo | state |
+|---|---|
+| **NexusMind** | PRs **#360** (Contract A's 4 corrected values + validator row-counting) and **#361** (the checker) **open, unmerged**. `main` `010338d`. **Nothing installed**; sadalsuud `b115fda`. Owner ruling: *build and commit, do not install.* |
+| **pipeline-atlas** | `ff9dcc6` merged — arming panel live, both units correctly read **NOT ARMED**. Reader never started (deferred by their owner). |
+| **ovr.news** | `60ada82` parser + write boundary **live on sadalsuud**. ⚠️ **Corpus backfill authorised and NOT RUN** — 21,700 rows. **FS#171 stays blocked** until ovr confirms it has run. |
+| **FluxusSource** | `source_schema.yaml` priority-polarity fix — **the committed file is currently wrong** (says 1=highest; production and code are the opposite). |
 
----
+### The finding worth carrying, in its final form
 
+**The estate has exactly TWO shape checks that are both automatically invoked AND
+looking at real production bytes. Between them they assert eight top-level key
+names and two strings' max length.** Everything with real coverage has no caller;
+everything with a caller has no production data. *(Counting validators was the wrong
+instrument: round 1 said four, the behaviour sweep found 21+.)*
+
+⚠️ **And the meta-lesson, from pipeline-atlas:** *a specification revised five times
+in one day is not a target that needs pinning — it is a question that has not been
+asked yet.* Every revision was a correction, never a new requirement. **Both this
+session and the atlas spent the day making the instrument better while the thing
+being measured was undecided.** No amount of rigour about *how* a claim is checked
+substitutes for asking whether it is the claim worth making.
 ## 🔵 Then: **the Thriving predicate is RULED; two decisions left.**
 
 **✅ RULED 2026-08-13 — the lens predicate, in ovr.news `docs/BRAND.md` `a70609b`** (commit

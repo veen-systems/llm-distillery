@@ -177,6 +177,48 @@ Related: `nexusmind-data-sources.md` (what each artefact excludes),
 
 ---
 
+# ⭐ REDIRECTED 2026-08-14 — the contract is being REDESIGNED, not patched
+
+**Read `docs/proposals/contract-a-redesign.md` before anything below.** The owner
+stopped the incremental work: a day across five sessions produced **four corrected
+values in one schema file** plus a large amount of verification process. Everything
+below remains true as *measurement* and is superseded as *plan*.
+
+**The design rule:** a field belongs in Contract A **iff** only the collector can know
+it **and** it is destroyed if not recorded now. Today's contract fails both ways — it
+stores derivable values (`word_count`, `reading_time_minutes`) and discards
+irrecoverable ones (the publisher's stated timezone, the charset actually used, whether
+a date was fabricated, whether a source was even asked).
+
+**Seven categories of exclusive+perishable fact**, A–F from defects tripped over and
+**G supplied by pipeline-atlas from the chain model**: time · language (incl. `script`)
+· origin (country/region/IANA tz) · fetch (charset triple, redirects) · content fidelity
+· feed · **the non-event**.
+
+⭐ **G is the one nobody would find from symptoms.** A–F all presuppose a fetch
+happened. Two sites refuse work *before the network* — one leaves **no trace at all**,
+the other records `items: 0` with no error key, so it reads as a successful empty visit.
+**"This publisher went quiet" and "we stopped asking" are indistinguishable downstream,
+and they have opposite editorial meanings.**
+
+**Open questions, both asked and neither answered before session close:**
+
+1. **FluxusSource feasibility triage** — which proposed fields are already in hand at
+   collection, which are one line, which need new plumbing. Two decide the sequencing:
+   does `origin.country`/`timezone` exist in source config in *any* form, and is
+   `content_meta.kind` (full body vs feed summary vs headline) knowable at collection?
+   **If the second is yes it retires the 300-char floor outright.**
+2. **`_get_tzinfos` third population** — still UNMEASURED, and it fails in the direction
+   of looking correct (an unrecognised tz abbreviation is silently relabelled UTC and
+   arrives *aware but wrong*). Do not let "unmeasured" decay into "small".
+
+⚠️ **Blocker the redesign inherits:** both schemas set `additionalProperties: false`, so
+**a redesign cannot ship incrementally under the current shape** — the shared-envelope
+question arrives as a hard blocker rather than a design choice. Full invalidation list
+(6 items, ranked by how quietly each breaks) is in the proposal.
+
+---
+
 # The contracts layer (2026-08-13, five sessions in parallel)
 
 **Plan and full round-1 review: `docs/CONTRACTS_PLAN.md`. This section holds the

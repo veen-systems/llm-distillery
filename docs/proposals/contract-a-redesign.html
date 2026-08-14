@@ -1,0 +1,370 @@
+<title>Contract A Redesign</title>
+<style>
+  :root{
+    --paper:#F4F6F8; --surface:#FFFFFF; --sunk:#EAEEF2;
+    --ink:#111A22; --muted:#5B6B7A; --hair:#D6DEE5;
+    --accent:#12566E; --accent-soft:#E3EDF2;
+    --warn:#B45309; --warn-soft:#F7EADA;
+    --good:#1B6B4C; --good-soft:#E2EFE8;
+    --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+    --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    --serif:Charter,"Bitstream Charter","Iowan Old Style",Georgia,serif;
+  }
+  @media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){
+      --paper:#0D1418; --surface:#141F26; --sunk:#101A20;
+      --ink:#E6EDF2; --muted:#93A3B0; --hair:#25333D;
+      --accent:#61B0C9; --accent-soft:#152A33;
+      --warn:#E0A45C; --warn-soft:#2A2118;
+      --good:#6CC79B; --good-soft:#14251E;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#0D1418; --surface:#141F26; --sunk:#101A20;
+    --ink:#E6EDF2; --muted:#93A3B0; --hair:#25333D;
+    --accent:#61B0C9; --accent-soft:#152A33;
+    --warn:#E0A45C; --warn-soft:#2A2118;
+    --good:#6CC79B; --good-soft:#14251E;
+  }
+  *{box-sizing:border-box}
+  body{
+    background:var(--paper); color:var(--ink);
+    font-family:var(--serif); font-size:17.5px; line-height:1.62;
+    margin:0; padding:0 1.25rem 6rem;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:47rem;margin:0 auto}
+  h1,h2,h3,.label{font-family:var(--sans)}
+  h1{font-size:2.35rem;line-height:1.1;letter-spacing:-.025em;font-weight:680;margin:0 0 .5rem;text-wrap:balance}
+  h2{font-size:1.32rem;letter-spacing:-.012em;font-weight:660;margin:3.4rem 0 .35rem;text-wrap:balance;padding-top:1.5rem;border-top:1px solid var(--hair)}
+  h3{font-size:1.02rem;letter-spacing:.005em;font-weight:660;margin:2.2rem 0 .3rem;text-wrap:balance}
+  p{margin:.85rem 0}
+  a{color:var(--accent)}
+  code{font-family:var(--mono);font-size:.86em;background:var(--sunk);padding:.1em .34em;border-radius:3px}
+  pre{font-family:var(--mono);font-size:.8rem;line-height:1.55;background:var(--sunk);color:var(--ink);
+      border:1px solid var(--hair);border-radius:6px;padding:1rem 1.1rem;overflow-x:auto;margin:1.1rem 0}
+  pre code{background:none;padding:0;font-size:inherit}
+  strong{font-weight:640}
+  header.head{padding:3.2rem 0 0}
+  .label{font-size:.68rem;letter-spacing:.13em;text-transform:uppercase;font-weight:640;color:var(--muted)}
+  .chips{display:flex;flex-wrap:wrap;gap:.4rem;margin:1.1rem 0 0}
+  .chip{font-family:var(--sans);font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;font-weight:640;
+        padding:.28rem .55rem;border-radius:3px;border:1px solid var(--hair);color:var(--muted);background:var(--surface)}
+  .chip.warn{color:var(--warn);border-color:var(--warn);background:var(--warn-soft)}
+  .standfirst{font-size:1.13rem;color:var(--muted);margin:.4rem 0 0;text-wrap:pretty}
+  .rule{background:var(--surface);border:1px solid var(--hair);border-radius:8px;padding:1.35rem 1.5rem;margin:1.6rem 0}
+  .rule p:first-child{margin-top:0}.rule p:last-child{margin-bottom:0}
+  .scroll{overflow-x:auto;margin:1.2rem 0;border:1px solid var(--hair);border-radius:6px;background:var(--surface)}
+  table{border-collapse:collapse;width:100%;font-family:var(--sans);font-size:.85rem;line-height:1.45}
+  th,td{text-align:left;padding:.6rem .8rem;border-bottom:1px solid var(--hair);vertical-align:top}
+  th{font-weight:640;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:var(--sunk)}
+  tr:last-child td{border-bottom:none}
+  td code{font-size:.82em}
+  .num{font-variant-numeric:tabular-nums}
+  .field{border-left:3px solid var(--warn);background:var(--warn-soft);padding:.1rem 1.15rem;margin:1.3rem 0;border-radius:0 5px 5px 0}
+  .field.drop{border-left-color:var(--hair);background:var(--sunk)}
+  .field .label{color:var(--warn)}
+  .field.drop .label{color:var(--muted)}
+  .note{border-left:3px solid var(--accent);background:var(--accent-soft);padding:.1rem 1.15rem;margin:1.3rem 0;border-radius:0 5px 5px 0}
+  .keep{color:var(--good);font-weight:640}
+  ul{padding-left:1.15rem;margin:.85rem 0}
+  li{margin:.45rem 0}
+  footer{margin-top:4rem;padding-top:1.4rem;border-top:1px solid var(--hair);color:var(--muted);font-size:.85rem}
+  @media (max-width:560px){body{font-size:16.5px;padding:0 1rem 4rem}h1{font-size:1.85rem}}
+</style>
+
+<div class="wrap">
+<header class="head">
+  <div class="label">Proposal &middot; 14 August 2026</div>
+  <h1>Contract A, designed rather than patched</h1>
+  <p class="standfirst">What the collector should record, given it is the only component that ever sees the network, the feed, and the raw bytes.</p>
+  <div class="chips">
+    <span class="chip warn">Not approved</span>
+    <span class="chip">Not implemented</span>
+    <span class="chip">Supersedes the incremental fixes</span>
+  </div>
+</header>
+
+<h2>The one rule this is built on</h2>
+
+<p>FluxusSource is <strong>the only component that ever sees the network, the feed document, and the raw bytes.</strong> Everything it does not record at collection time is <strong>lost forever</strong> — no consumer can recover it, at any cost, ever.</p>
+
+<div class="rule">
+<p>That gives two tests, and every field must pass both:</p>
+<div class="scroll">
+<table>
+  <tr><th>Test</th><th>Question</th><th>If it fails</th></tr>
+  <tr><td><strong>1. Exclusive</strong></td><td>Can <em>only</em> the collector know this?</td><td>A consumer can recompute it. <strong>Leave it out</strong> — a stored copy of a derivable value is a second source of truth that will eventually disagree.</td></tr>
+  <tr><td><strong>2. Perishable</strong></td><td>Is it destroyed if not recorded now?</td><td>It can be recovered later. <strong>Leave it out.</strong></td></tr>
+</table>
+</div>
+<p>A field belongs in Contract A <strong>if and only if it is exclusive AND perishable.</strong> Today's contract gets this backwards in both directions: it carries derivable values, and it discards irrecoverable ones.</p>
+</div>
+
+<h2>What comes out</h2>
+<p class="label">Derivable — fails test 1</p>
+
+<div class="scroll">
+<table>
+  <tr><th>Field</th><th>Why</th><th>Recompute by</th></tr>
+  <tr><td><code>word_count</code></td><td>The consumer has the text. Also the field that broke <code>required</code> — absent on <span class="num">13,214</span> api and <span class="num">892</span> social rows.</td><td>counting</td></tr>
+  <tr><td><code>reading_time_minutes</code></td><td>A derivation <em>of a derivation</em> — word_count ÷ 200.</td><td>arithmetic</td></tr>
+  <tr><td><code>title_length</code></td><td>trivially derivable</td><td><code>len(title)</code></td></tr>
+  <tr><td><code>needs_sentiment_analysis</code></td><td>a consumer's routing decision, not a fact about the article</td><td>consumer policy</td></tr>
+</table>
+</div>
+
+<p><code>raw_content_length</code> <span class="keep">stays</span> — it is the length <em>before cleaning</em>, which the consumer never sees. That is perishable, and it passes.</p>
+
+<div class="note">
+<p><strong>This is the important half, and it is counter-intuitive.</strong> Removing <code>word_count</code> makes the contract <em>stronger</em>: it removes the field that forced <code>required</code> to be wrong, and it removes a number that can silently disagree with the text beside it.</p>
+</div>
+
+<h2>What goes in</h2>
+<p class="label">Exclusive and perishable</p>
+
+<h3>A. Time — the publisher's stated instant, not our interpretation of it</h3>
+
+<p><strong>The defect this fixes is live and measured.</strong> <code>published_date</code> is parsed, converted to UTC, and the offset is <em>stripped</em>. NexusMind then reads naive as UTC; ovr.news's JavaScript reads the identical string as <strong>local time</strong>. Both apply the same “boost under 24h” rule, so <strong>one boosts an article the other does not</strong> — and this has been true for as long as both have existed.</p>
+
+<div class="note">
+<p><strong>No schema could have caught it.</strong> Both hops are internally consistent, and a declaration that <code>published_date</code> is a date-time string is satisfied by <em>both</em> readings. Type was declared; meaning never was. This is the one defect class a shape-only validator provably cannot see.</p>
+</div>
+
+<div class="field">
+<p class="label">published</p>
+<pre><code>instant       RFC 3339 WITH OFFSET, required      the answer
+raw           "Wed, 13 Aug 2026 16:10:06 +0200"   exactly what the feed said
+element       pubDate | dc:date | atom:updated | prism:publicationDate
+had_timezone  true | false                        ← the load-bearing one
+precision     second | minute | day
+fabricated    true | false                        we invented it</code></pre>
+</div>
+
+<ul>
+<li><strong><code>had_timezone</code> is the single most valuable new field here.</strong> It separates <em>“the publisher stated UTC”</em> from <em>“the publisher stated nothing and we assumed”</em>. Today those are byte-identical downstream and the distinction is <strong>unrecoverable by construction</strong> — every row is naive by the time anyone sees it.</li>
+<li><strong><code>precision</code></strong> — many feeds publish a <em>date</em>, no time. Storing that as midnight is a lie of ~12 hours, and every recency calculation inherits it.</li>
+<li><strong><code>fabricated</code></strong> — the parser has a <code>now − 2h</code> fallback for date-less entries. A fabricated date currently looks exactly like a real one, and reads as <em>fresh</em>.</li>
+<li><strong><code>raw</code></strong> — costs ~30 bytes and makes every other field in this block auditable.</li>
+</ul>
+
+<h3>B. Language — separate the answer from the inputs from the evidence</h3>
+
+<p>Today there are five language-ish fields and <strong>two of them are inputs to the decision, not answers</strong> — so nesting them together would invert the dataflow. The fix is to say which is which.</p>
+
+<div class="field">
+<p class="label">language</p>
+<pre><code>code             "en" | "nl" | "zh" | "sr" | "unknown"   THE ANSWER
+script           "Latn" | "Cyrl" | "Arab" | "Hans"       ← ISO 15924
+scripts_present  ["Hans","Latn"]                         mixed-script reality
+declared_by_feed "en-GB" | null                          INPUT: what the feed claimed
+method           detected | feed_declared | config_hint | fallback
+confidence       0.0 – 1.0
+sample_chars     int                                     how much text the detector saw</code></pre>
+</div>
+
+<div class="note">
+<p><strong>Script belongs here, and it fixes a conflation already in the data.</strong> The producer emits <code>zh-cn</code> and <code>zh-tw</code> — but Simplified vs Traditional is a <strong>script</strong> distinction (<code>Hans</code>/<code>Hant</code>), not a region one. A Taiwanese publisher can emit Simplified and a mainland one Traditional, so the region subtag is carrying a fact it does not describe. This is the same shape as <code>source_group</code> mixing geography with topic: <em>two axes sharing one field, and neither recoverable.</em> Splitting <code>code</code> from <code>script</code> makes both answerable — and it is the only way to represent Serbian, Kazakh, Uzbek or Punjabi, each written in more than one script.</p>
+</div>
+
+<ul>
+<li><strong><code>sample_chars</code></strong> is exclusive and perishable: a detection made on 40 characters and one made on 4,000 are not the same claim, and the consumer cannot tell them apart afterwards. With <span class="num">25.7%</span> of the corpus being sub-300-character headline echoes, this is not hypothetical.</li>
+<li><strong><code>code</code> uses the reachable set, not BCP 47.</strong> The producer deliberately folds <code>pt-BR</code> → <code>pt</code> because ovr dispatches translation on the bare code. Declaring BCP 47 would promise consumers a value the producer removes. <code>zh-cn</code>/<code>zh-tw</code> are kept because they are legal and intended.</li>
+<li><strong>Never populate <code>code</code> from <code>declared_by_feed</code> without saying so</strong> — that is what <code>method</code> is for. Feeds hardcode <code>en</code> incorrectly at scale.</li>
+<li><strong><code>script</code> is the one field here that is <em>arguably</em> derivable</strong> — a consumer can read Unicode script properties off the stored text. It earns its place anyway, for three reasons below. Where a derivable field is admitted, the reason should be written down; otherwise the next reader deletes it correctly.</li>
+<li><strong><code>scripts_present</code></strong> because real articles are mixed — Arabic body with Latin brand names and URLs. A single dominant script is a summary; the set is the fact. Keep both, and never let the summary be the only record.</li>
+</ul>
+
+<div class="rule">
+<p class="label">Why script survives the derivable test</p>
+<ul>
+<li><strong>1. Removing <code>word_count</code> creates the obligation.</strong> We are telling consumers to count words themselves — and <strong>whitespace tokenisation is invalid for Han, Kana and Thai.</strong> That exact bug has already shipped here once: <code>len(text.split())</code> scored a CJK feed at <span class="num">2</span> words where the true count was <span class="num">89</span>, and every such article was silently dropped by a minimum-length rule. If we remove the count, we owe consumers the one field that tells them how to compute it.</li>
+<li><strong>2. It is not recoverable from <code>code</code>.</strong> Serbian, Kazakh, Uzbek and Punjabi are each written in two scripts. Language does not imply script, and script does not imply language.</li>
+<li><strong>3. It is a corruption tripwire.</strong> Mojibake has a script signature: UTF-8 misread as Latin-1 turns any non-Latin text into Latin-supplement noise. A <code>script</code> recorded <em>at fetch</em> that disagrees with the stored text is a mangling that nothing else in the pipeline would report — and this estate has <span class="num">5.6%</span> of rows already affected.</li>
+</ul>
+</div>
+
+<h3>C. Origin — geography, and split from topic</h3>
+
+<p><strong>Exactly the right kind of field: a property of the source, not of the text.</strong> A consumer cannot infer a publisher's country from an article, and guessing it from language is wrong in both directions.</p>
+
+<div class="field">
+<p class="label">origin</p>
+<pre><code>country   "NG"              ISO 3166-1 alpha-2, the PUBLISHER
+region    "west_africa"
+timezone  "Africa/Lagos"    ← IANA</code></pre>
+</div>
+
+<ul>
+<li><strong><code>origin.timezone</code> is what makes an offset-less date recoverable.</strong> With it, a naive publisher date can be interpreted correctly <em>after the fact</em>; without it the ambiguity is permanent. It converts §A's worst case from unrecoverable into merely awkward.</li>
+<li><strong>It also fixes a real conflation.</strong> <code>source_group</code> currently mixes three axes — of <span class="num">107</span> groups, <strong><span class="num">64</span> are geography, <span class="num">37</span> subject, <span class="num">6</span> collection method</strong>. That is why nobody can answer “how much of our corpus is African publishers” without parsing config-file stems. Split it: <code>origin.*</code> for where, <code>topic_group</code> for what.</li>
+<li>It is <strong>config data</strong>, not detection — one line per source in the YAML the collector already reads.</li>
+</ul>
+
+<h3>D. Fetch — the network transaction, which nothing downstream ever sees</h3>
+
+<div class="field">
+<p class="label">fetch</p>
+<pre><code>url_requested    "https://news.google.com/rss/articles/CBM..."
+url_final        "https://guardian.com/..."      after redirects
+http_status      200
+charset_declared "iso-8859-1" | null             ← what the header SAID
+charset_detected "utf-8"
+charset_used     "utf-8"                         ← what we decoded with
+content_encoding "br" | "gzip" | null
+at               RFC 3339 with offset</code></pre>
+</div>
+
+<ul>
+<li><strong>The charset triple fixes a measured, live corruption.</strong> <code>requests</code> returns <code>ISO-8859-1</code> for a charset-less <code>text/*</code> response — <strong>not <code>None</code></strong> — so <code>.decode(resp.encoding or "utf-8")</code> is dead code. Result: <strong><span class="num">5.6%</span> of rows carry introduced mojibake, and non-English is hit <span class="num">6.9×</span> harder than English.</strong> Recording all three values makes the bug <em>visible in the data</em> instead of requiring someone to notice mangled text months later.</li>
+<li><strong><code>url_requested</code> vs <code>url_final</code></strong> matters because Google News is ~<span class="num">25%</span> of the corpus and is <em>entirely</em> a redirect problem. Today <code>url</code> is one string and “what did this actually resolve to” has no answer.</li>
+<li><strong><code>content_encoding</code></strong> — brotli silently broke <span class="num">32%</span> of feeds once, and was misdiagnosed as Cloudflare interstitials for weeks.</li>
+</ul>
+
+<h3>E. Content fidelity — what we actually got, stated rather than guessed</h3>
+
+<div class="field">
+<p class="label">content_meta</p>
+<pre><code>kind          full_text | feed_summary | headline_only
+truncated     true | false
+raw_length    int                    before cleaning
+echoes_title  true | false</code></pre>
+</div>
+
+<p><strong>This retires the 300-character floor.</strong> That threshold exists <em>only</em> because nobody downstream can tell a full article from a headline stub, so length is used as a proxy. The collector knows which it is and simply never said. A stated <code>kind</code> is strictly better than a guessed length — and unlike the floor, it does not silently double as a language and source filter.</p>
+
+<h3>F. Feed — properties of the feed document itself</h3>
+
+<div class="field">
+<p class="label">feed</p>
+<pre><code>title              "The Guardian — World news"
+declared_language  "en-gb"
+cadence_hours      4.2       measured, not declared
+ttl_declared       60        the feed's own &lt;ttl&gt;</code></pre>
+</div>
+
+<p>Only the collector ever opens the feed document. All four are perishable.</p>
+
+<h3>G. The non-event — what was <em>not</em> collected, and why</h3>
+
+<div class="note">
+<p><strong>Categories A–F all presuppose that a fetch happened.</strong> The observation the collector uniquely makes and never records is the one where there was <em>no transaction at all</em>. This category was missed here entirely and supplied by pipeline-atlas from the chain model — the six above came from defects tripped over, this one came from asking the map.</p>
+</div>
+
+<p>Two decision sites refuse work <strong>before the network</strong>, and neither leaves a usable trace:</p>
+
+<div class="scroll">
+<table>
+  <tr><th>Site</th><th>Where</th><th>Exits</th><th>What it records</th></tr>
+  <tr><td><strong>A</strong></td><td><code>content_collection.py · select_sources_to_collect</code></td><td>disabled in config · not due yet</td><td><strong>Nothing at all.</strong> No stats entry, scheduler untouched.</td></tr>
+  <tr><td><strong>B</strong></td><td><code>content_aggregator.py</code></td><td>disabled · circuit open · plugin not found · no <code>run()</code> · no feeds due</td><td><code>{items: 0, skipped: reason}</code> — <strong>no error key</strong>, so it reads as a successful visit that found nothing.</td></tr>
+</table>
+</div>
+
+<p>So for any source that contributed nothing to a cycle, <strong>four states are indistinguishable downstream</strong>: refused at A (no trace), refused at B (mislabelled as empty), fetched and the publisher genuinely had nothing, or fetched and everything was dropped by dedup. <strong>Only the third is describable by anything above.</strong></p>
+
+<div class="note">
+<p><strong>This is the highest-value non-reconstructible fact in the stage.</strong> A consumer counting rows per source per cycle cannot separate <em>“this publisher went quiet”</em> from <em>“we stopped asking”</em> — and those have <strong>opposite editorial meanings</strong>. One is news about the world; the other is a bug in us. The absence looks identical either way, forever.</p>
+</div>
+
+<div class="field">
+<p class="label">collection (per source, per cycle — a sidecar, not a row field)</p>
+<pre><code>outcome        fetched | refused_pre_dispatch | refused_in_aggregator | empty
+refusal_site   "A" | "B" | null
+refusal_reason "disabled" | "not_due" | "circuit_open" | "no_feeds_due" | ...
+health_state   HEALTHY | STALE | DEAD | THROTTLED | OVER_POLLED   ← measured, at fetch time
+poll_interval_actual_h   4.0        ← OUR rhythm, not the feed's
+raw_item_count           37         ← BEFORE dedup
+items_emitted            12
+first_seen_run           "collection_20260801_120500"  ← for a re-offered item</code></pre>
+</div>
+
+<ul>
+<li><strong>Site A is the silent half.</strong> A and B refusals are different facts with different fates — invisible versus mislabelled-as-empty. A redesign recording only one has recorded the wrong one.</li>
+<li><strong><code>poll_interval_actual_h</code> is not §F's <code>cadence_hours</code>.</strong> That is the <em>feed's</em> rhythm, a property of the publisher. This is <em>ours</em>, a property of our config — and conflating them is exactly what hides the overpoll fault, where a source with no scheduling metadata falls through and is collected <strong>every tick</strong>.</li>
+<li><strong><code>health_state</code> is measured, not config.</strong> The collection path <em>writes to</em> the health tracker and never queries it, so the condition of a source at collection time reaches a human by digest email and never rides with the row.</li>
+<li><strong>Dedup provenance.</strong> Dedup drops on <code>content_hash</code> <em>before reading any field</em>, cross-run, and <code>raw_item_count</code> never leaves the stats file. So <em>“this item was offered again, and was first seen on run X”</em> is observed and destroyed. That is a fact about <strong>publisher behaviour</strong> — recirculation, silent edits, sticky front-page items — visible only to the collector.</li>
+</ul>
+
+<h2>What a redesign would invalidate</h2>
+
+<p class="label">Supplied by pipeline-atlas, ranked by how quietly each breaks</p>
+
+<div class="scroll">
+<table>
+  <tr><th>#</th><th>What breaks</th><th>How</th></tr>
+  <tr><td>1</td><td><code>validate_production_contract.py</code>'s strip list</td><td><strong>Breaks silently and blames the wrong repo.</strong> It validates a <em>reconstruction</em> of Contract A after subtracting NexusMind's own stamps. Reshape without extending the strip list and it reports <code>additionalProperties</code> violations <strong>against the producer for keys the producer never emitted</strong>. Put this in the definition of done.</td></tr>
+  <tr><td>2</td><td><code>_CONTRACT_A_REQUIRED</code> (<code>main.py:118</code>)</td><td>A hand-copied <code>frozenset</code> of the required set, synced <strong>by a comment</strong>, dropping rows on the production path. A redesigned required set diverges the moment it lands and nothing compares them.</td></tr>
+  <tr><td>3</td><td>“Both schemas close the top level”</td><td><code>additionalProperties: false</code> on producer <em>and</em> consumer. Any added field fails at the consumer unless both move together — so <strong>a redesign cannot ship incrementally under the current shape.</strong> The envelope question arrives as a hard blocker rather than a design choice.</td></tr>
+  <tr><td>4</td><td>“<code>items_collected</code> is what survived, not what arrived”</td><td>An invariant that exists <em>only because</em> <code>raw_item_count</code> never escapes. Publishing it <strong>dissolves</strong> the trap rather than violating it — and makes <code>items_collected + duplicates_removed = raw_item_count</code> checkable for the first time.</td></tr>
+  <tr><td>5</td><td>“A stored row is not relabelled by re-collection”</td><td>Write-once, because <code>content_hash</code> is the dedup key. <strong>Load-bearing for repair planning</strong> — it is why a producer-side fix recovers nothing already written. If the redesign changes <em>what is hashed</em>, the dedup store's keys stop matching and the archive's dedup semantics change underneath it. Decide deliberately rather than discover.</td></tr>
+  <tr><td>6</td><td><code>reference/record.qmd</code>, entire</td><td>Field-level provenance of what FluxusSource emits — obsoleted wholesale. Fair cost, but the largest single documentation casualty and it should be counted.</td></tr>
+</table>
+</div>
+
+<h2>Logical grouping — by who knows it, not by type</h2>
+
+<p>The current shape is 12 flat fields plus a <code>metadata</code> bag holding <strong><span class="num">143</span> distinct keys</strong>. The bag is where everything undeclared accumulates.</p>
+
+<p><strong>Group by provenance layer</strong>, because that is what actually predicts a field's reliability, lifetime, and owner:</p>
+
+<pre><code>{
+  "id", "content_hash",
+  "item":         { title, content, tags },       what was published
+  "source":       { name, type, topic_group, tier, credibility },
+  "origin":       { country, region, timezone },
+  "published":    { instant, raw, element, had_timezone, precision, fabricated },
+  "collected":    { at },
+  "language":     { code, declared_by_feed, method, confidence, sample_chars },
+  "fetch":        { url_requested, url_final, http_status, charset_*, content_encoding },
+  "content_meta": { kind, truncated, raw_length, echoes_title },
+  "feed":         { title, declared_language, cadence_hours, ttl_declared },
+  "payload":      { ... }                         per-aggregator, open by design
+}</code></pre>
+
+<div class="field drop">
+<p class="label">payload — open by design, and walled off</p>
+<p>Of the <span class="num">143</span> metadata keys, <strong><span class="num">131</span> appear on under 10% of rows, and <span class="num">114</span> of those never occur outside <code>source_type: api</code></strong> — github rows carry <code>stars</code>/<code>forks</code>, pubmed carries <code>pmid</code>/<code>mesh_terms</code>, arxiv carries <code>arxiv_id</code>/<code>pdf_url</code>. They are <strong>one block per aggregator</strong>, not chaos. Enumerating them freezes a list that changes whenever an aggregator is added; a stale enumeration is worse than an honestly open region. But they must not sit in the same bag as <code>quality</code> and <code>source_category</code>, which every consumer depends on.</p>
+</div>
+
+<h2>Migration — additive, never a flag day</h2>
+
+<p>Four repos read this stream and two of them are live. So:</p>
+
+<ul>
+<li><strong>Add the new blocks alongside the old flat fields.</strong> Nothing breaks; nothing has to move at once.</li>
+<li><strong>Consumers migrate at their own pace.</strong> The old fields keep working.</li>
+<li><strong>Mark the old ones deprecated in the schema</strong>, with a date.</li>
+<li><strong>Remove them only when no consumer reads them</strong> — checked by grep, not assumed.</li>
+</ul>
+
+<div class="note">
+<p><strong>The one thing that cannot be phased:</strong> <code>published.instant</code> gaining a UTC offset is a <strong>lexicographic</strong> change — <code>'…T20:00:00+02:00' &gt; '…T19:00:00'</code> as a string while being <em>earlier</em> in real time. Any consumer doing string comparison or <code>ORDER BY</code> on that column breaks. ovr.news has ~20 such sites and has already shipped the parser fix (<code>60ada82</code>); that work must land everywhere before offsets are emitted.</p>
+</div>
+
+<h2>What this is worth</h2>
+
+<div class="scroll">
+<table>
+  <tr><th>Defect today</th><th>Fixed by</th><th>Currently</th></tr>
+  <tr><td>two hops disagree by 2h on article age</td><td><code>published.instant</code> + <code>had_timezone</code></td><td>live, affects which articles readers see</td></tr>
+  <tr><td><span class="num">5.6%</span> of rows carry introduced mojibake</td><td><code>fetch.charset_*</code></td><td>live, <span class="num">6.9×</span> worse for non-English</td></tr>
+  <tr><td>a fabricated date is indistinguishable from a real one</td><td><code>published.fabricated</code></td><td>live, reads as maximally fresh</td></tr>
+  <tr><td>“is this an article or a headline?”</td><td><code>content_meta.kind</code></td><td>guessed from a 300-char threshold</td></tr>
+  <tr><td>“how much of our corpus is African publishers?”</td><td><code>origin.country</code></td><td>unanswerable without parsing config stems</td></tr>
+  <tr><td>a detection on 40 chars looks like one on 4,000</td><td><code>language.sample_chars</code></td><td>invisible</td></tr>
+  <tr><td>a naive date is permanently ambiguous</td><td><code>origin.timezone</code></td><td>unrecoverable</td></tr>
+  <tr><td>CJK word counts computed by whitespace</td><td><code>language.script</code></td><td>shipped once — <span class="num">2</span> words counted where there were <span class="num">89</span></td></tr>
+  <tr><td>Simplified vs Traditional carried by a region tag</td><td><code>language.script</code></td><td><code>zh-cn</code>/<code>zh-tw</code> describe the wrong axis</td></tr>
+  <tr><td>“this publisher went quiet” vs “we stopped asking”</td><td><code>collection.outcome</code> + <code>refusal_site</code></td><td><strong>indistinguishable</strong> — opposite editorial meanings</td></tr>
+  <tr><td>a source polled every tick by accident</td><td><code>poll_interval_actual_h</code></td><td>conflated with the feed's own cadence</td></tr>
+  <tr><td>an item re-offered by the publisher</td><td><code>raw_item_count</code> + <code>first_seen_run</code></td><td>dropped before any field is read; no trace survives</td></tr>
+</table>
+</div>
+
+<p><strong>Every one of these is a fact FluxusSource had at collection time and threw away.</strong> None is fixable downstream at any price, and none would have been surfaced by correcting the four values in the existing schema.</p>
+
+<footer>
+  Proposal only — not approved, not implemented. Population figures measured over <span class="num">195,233</span> rows across <span class="num">87</span> raw collection files.
+</footer>
+</div>
