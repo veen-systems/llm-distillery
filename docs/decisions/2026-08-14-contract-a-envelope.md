@@ -567,7 +567,44 @@ row count. Do not accept "the tests pass" in its place — the tests read fixtur
 
 ## What this decision does not settle
 
-### The offset on `published.instant` — ⛔ GATE CLOSED, answered by ovr.news 2026-08-14
+### ⚠️ THE OFFSET GATE HAS THREE PARTS, NOT ONE — corrected 2026-08-14
+
+**An earlier version of this section treated ovr#321 as *the* gate. That
+under-counts in two directions at once**, and the issue's own thread warns against
+exactly this reading: *"Do not read the first half as the gate."*
+
+**1. FS#171 is ALIVE and aimed at `published_date` itself** — not at any nested key.
+Confirmed by FluxusSource (`gh issue view 171`: OPEN, 3 comments, *"RFC 3339 offsets:
+99.4% of rows carry no UTC offset, and ovr.news is silently reading them as local
+time"*). Nothing in the redesign folded it, and **it did not die with
+`published.instant`.** So dropping `instant` removed a *second* path an offset could
+take and left the original one untouched — my "the gate is moot" was wrong
+independently of anything about `instant`. ovr's ADR-046 is accurate.
+
+**2. ⭐ The CLOCK FIX is an independent prerequisite, and it bites first.** From
+FS#171 comment 3:
+
+> Adding an RFC 3339 offset **serialises whatever the value already is.** For every
+> local-clock row that converts a silent 2-hour error into a durable, explicit,
+> **wrong** one. **The clock fix is a prerequisite for W1.1, not a follow-up** — and
+> it is independent of ovr.news#321, which gates only the serialisation change.
+
+**3. ovr#321** gates the serialisation change only.
+
+```
+clock_source stamped  →  clock fixed  ─┐
+                                       ├─→  offset on published_date
+ovr#321 lands  ────────────────────────┘
+        two INDEPENDENT gates, not a chain
+```
+
+⭐ **This is why stamp-before-fix was the right sequence, and the reason is sharper
+than "provability".** 3.87% of rows are stamped on a +2h local clock. Serialising an
+offset onto those converts a silent error into an **explicit, durable, authoritative-
+looking wrong instant** — corruption that reads as precision. The stamp is what lets
+anyone separate the two populations *before* that becomes irreversible.
+
+### What ovr.news answered, 2026-08-14
 
 **Not yet.** `60ada82` is the **parser only** — zero of the comparison sites were
 touched, and the lint rule that shipped with it greps for
