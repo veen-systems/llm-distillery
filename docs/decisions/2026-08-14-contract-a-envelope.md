@@ -55,7 +55,7 @@ emits anything.** Every block optional, every property inside every block option
 The blocks, from proposal §§A–F and §H:
 
 ```
-published    { raw, element, had_timezone, precision, fabricated }   ⚠️ instant contested
+published    { fabricated, had_timezone, precision, raw, element }   ← no `instant`
 collected    { clock_source }
 origin       { country, region, timezone, method }
 fetch        { url_requested, url_final, strategy, attempts, http_status,
@@ -200,7 +200,7 @@ Consequences, derived rather than listed in the option:
 | `feed.declared_language` | `metadata.feed_declared_language` | ⛔ **drop** |
 | `content_meta.raw_length` | `metadata.raw_content_length` | ⛔ **drop** |
 | `collected.at` | `collected_date` | ⛔ **drop** |
-| ⚠️ `published.instant` | `published_date` (declared `format: date-time`) | ⚠️ **DROPPED on `main`, contested — see below** |
+| `published.instant` | `published_date` — same instant, no new information | ✅ **REMOVED, settled on the merits** |
 | `feed.ttl_declared`, `feed.cadence_hours` | none on the row | ✅ keep* |
 | `published.{raw,element,had_timezone,precision,fabricated}` | none | ✅ keep |
 | `collected.clock_source` | none | ✅ keep |
@@ -208,9 +208,54 @@ Consequences, derived rather than listed in the option:
 | `content_meta.{kind,truncated,echoes_title}` | none | ✅ keep |
 | `origin.*` | none | ✅ keep |
 
-#### ⚠️ `published.instant`: TWO OWNER ANSWERS, POINTING OPPOSITE WAYS — unsettled
+#### ✅ `published.instant`: REMOVED — settled by the owner on the MERITS, 2026-08-14
 
-**Status: DROPPED on `main` (`0652414`, #364 merged 16:25:11Z), and contested.**
+**Status: DROPPED, permanently. `main` already reflects it (`0652414`, #364 merged
+16:25:11Z), so no change is required anywhere.** The two conflicting answers below are
+resolved in favour of dropping, and — importantly — **not on procedure but on the
+field being weak.**
+
+⭐ **The argument that closed it, from the owner: `instant` and `published_date` denote
+the SAME MOMENT.** `…T10:00:00+02:00` and the naive-UTC `…T08:00:00` are the same
+instant, so the field adds no temporal information — only the publisher's local
+offset, which `origin.timezone` and `had_timezone` already carry, and carry better.
+
+⭐⭐ **And the defect it was justified by is a CONSUMER bug with a much cheaper fix.**
+The live NexusMind-vs-ovr two-hour disagreement is ovr's JavaScript reading a naive
+string as *local* time when the convention is UTC. That is one change on one side.
+`instant` fixes nothing until **both** consumers migrate to read a new field — a
+strictly larger project solving the same bug. **The proposal justified the field on a
+defect a one-line consumer fix already closes.**
+
+⚠️ **The uncomfortable observation, recorded deliberately: this thread spent hours on
+the one field in the block that did not need it.** The other five went through without
+a word, and one of them is plausibly the highest-value field in the entire redesign —
+see below.
+
+### ⭐ What the `published` block is actually for — and `fabricated` is the one that matters
+
+All five surviving fields are genuinely exclusive **and** perishable: they exist inside
+`DateParser` at parse time and are destroyed at the return statement. `instant` was
+neither — it is a re-spelling of a field that already exists.
+
+- ⭐⭐ **`fabricated`** — the parser invents `now − 2h` for date-less entries
+  (`extract_date_from_rss_entry:106`). **That fabricated date is indistinguishable from
+  a real one and reads as MAXIMALLY FRESH**, so it wins the under-24h recency boost.
+  Under ADR-023 that is the *expensive* error — junk reaching a reader. **This is the
+  field to build first.**
+- **`had_timezone`** — separates *"the publisher stated UTC"* from *"the publisher
+  stated nothing and we assumed"*. Byte-identical downstream today, unrecoverable by
+  construction.
+- **`precision`** — a date-only feed stored as midnight is a ~12-hour lie that every
+  recency calculation inherits.
+- **`raw`** — the publisher's literal string; ~30 bytes, makes the other four auditable.
+- **`element`** — which feed element answered.
+
+**Superseded history, kept rather than tidied** — both of my cases for the field were
+defeated, the first on a false premise (`published_date` "structurally cannot" carry an
+offset; it declares `format: date-time`, so it can) and the second by the envelope
+decision I had made myself (once the block exists, adding a property later costs one
+line, so there was never a foreclosure):
 
 - **In the NexusMind session:** the owner asked that session for a recommendation, it
   recommended **leaving it dropped** *having made the foreclosure argument itself
