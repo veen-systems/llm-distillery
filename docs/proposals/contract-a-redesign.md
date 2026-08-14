@@ -300,6 +300,53 @@ and it must be something equally unseen.
 
 ---
 
+## Feasibility — answered by FluxusSource, 2026-08-14
+
+**(a)** already emitted · **(b)** one line to capture · **(c)** real plumbing
+
+| field | | where it already lives |
+|---|---|---|
+| `published.raw` `.element` `.had_timezone` `.precision` `.fabricated` | **(b)** | All five are **live inside `DateParser` at parse time and discarded**. `normalize_timezone` already branches on `had_timezone`; `ensure_valid_date` already knows when it returned `now−2h`. Threading out, not computing. |
+| `language.method` `.confidence` `.sample_chars` | **(a)** | ⚠️ **Already exist** as `language_source`, `language_confidence`, `language_input_len`. **Do NOT rename** — two are inputs the aggregator hands the decision, and #149's floor is fitted on the other two. |
+| `language.script` `.scripts_present` | **(b)** | `content_item.py` already runs per-script detection (`_KANA_PRESENCE`) and **reports only the verdict**. |
+| `fetch.charset_*` `http_status` `content_encoding` | **(b)** | `RobustFeedParser` holds the response object. Brotli mis-decoding **silently zeroed 461 feeds in July**. |
+| `fetch.url_requested` / `url_final` | **(b)/(c)** | A **4-strategy fallback ladder**, so "the URL" is per-attempt. ⭐ **Add the strategy that succeeded as its own field.** |
+| `content_meta.kind` | **(b)** | Below. |
+| `feed.declared_language` | **(a)** | Already emitted as `feed_declared_language`. |
+| `feed.cadence_hours` | **(a)-ish** | `FeedHealthTracker` measures it — into the health report, **not** onto the row. |
+| `origin.*` | **(c)** | Below. |
+
+⭐ **`content_meta.kind` — yes, and it COLLAPSES.** FluxusSource **never fetches article
+bodies**: `full_text_fetcher.py` was deleted and enrichment moved to NexusMind. So
+`full_text` is **not a value this producer can legitimately emit**. `kind` reduces to
+`feed_summary` vs `headline_only`, **both decidable at parse time**. **This retires the
+300-char floor** — the distinction the threshold proxies for is directly observable.
+*Caveat:* `content` is non-empty on **98.0%** of rows, so `headline_only` is small, and
+API aggregators differ per source (arXiv abstracts; GDELT a title and a URL).
+
+⚠️ **`origin.*` — the sequencing worry was the wrong SHAPE but the right SIZE.** No
+country or timezone exists on a source anywhere. `source_group` is geographic for **64
+of 107 shelves covering 932 of 1,872 feeds** — but it is a *shelf*, not a claim about
+the publisher. **The unit is not ~30 aggregators — aggregators do not know this. It is
+~1,872 per-source YAML entries**, ~932 bulk-seedable from their shelf, the rest needing
+judgement. **The cost is editorial, not engineering.** Partial exception:
+`metadata.source_country` already rides on GDELT rows.
+
+### H. The one field this proposal MISSED — and it is the rule's clearest instance
+
+```
+collected.at            RFC 3339 with offset
+collected.clock_source  "host_local" | "utc" | "source"    ← the missing field
+```
+
+⭐ **19 of 26 aggregators build `collected_date` from local `datetime.now()`.**
+Downstream that is **byte-identical to a UTC value and wrong by the host offset**, and
+no consumer can ever recover which it was. The same defect as `published_date`'s, but
+on **our own** clock rather than the publisher's — and nobody had noticed.
+*(Found by FluxusSource, not by this proposal.)*
+
+---
+
 ## Logical grouping — by who knows it, not by type
 
 The current shape is 12 flat fields plus a `metadata` bag holding **143 distinct

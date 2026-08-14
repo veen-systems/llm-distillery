@@ -302,6 +302,43 @@ first_seen_run           "collection_20260801_120500"  ← for a re-offered item
 </table>
 </div>
 
+<h2>Feasibility — answered by FluxusSource, 2026-08-14</h2>
+
+<p class="label">(a) already emitted &middot; (b) one line to capture &middot; (c) real plumbing</p>
+
+<div class="scroll">
+<table>
+  <tr><th>Field</th><th></th><th>Where it already lives</th></tr>
+  <tr><td><code>published.raw</code> · <code>.element</code> · <code>.had_timezone</code> · <code>.precision</code> · <code>.fabricated</code></td><td><strong>(b)</strong></td><td>All five are <strong>live inside <code>DateParser</code> at the moment of parsing and discarded</strong>. <code>normalize_timezone</code> already branches on <code>had_timezone</code>; <code>ensure_valid_date</code> already knows when it returned <code>now−2h</code>. Threading out, not computing.</td></tr>
+  <tr><td><code>language.method</code> · <code>.confidence</code> · <code>.sample_chars</code></td><td><strong>(a)</strong></td><td>⚠️ <strong>These already exist</strong> as <code>language_source</code>, <code>language_confidence</code>, <code>language_input_len</code>. <strong>Do NOT rename them</strong> — two are inputs the aggregator hands the decision, and #149's floor is fitted on the other two.</td></tr>
+  <tr><td><code>language.script</code> · <code>.scripts_present</code></td><td><strong>(b)</strong></td><td><code>content_item.py</code> already runs per-script detection (<code>_KANA_PRESENCE</code> and friends) and <strong>reports only the verdict</strong>.</td></tr>
+  <tr><td><code>fetch.charset_*</code> · <code>http_status</code> · <code>content_encoding</code></td><td><strong>(b)</strong></td><td><code>RobustFeedParser</code> holds the response object. Brotli mis-decoding <strong>silently zeroed 461 feeds in July</strong>.</td></tr>
+  <tr><td><code>fetch.url_requested</code> / <code>url_final</code></td><td><strong>(b)/(c)</strong></td><td>The parser has a <strong>4-strategy fallback ladder</strong>, so “the URL” is per-attempt. ⭐ <strong>Add the strategy that succeeded as a field in its own right.</strong></td></tr>
+  <tr><td><code>content_meta.kind</code></td><td><strong>(b)</strong></td><td>See below — and the answer is stronger than expected.</td></tr>
+  <tr><td><code>feed.declared_language</code></td><td><strong>(a)</strong></td><td>Already emitted as <code>feed_declared_language</code>.</td></tr>
+  <tr><td><code>feed.cadence_hours</code></td><td><strong>(a)-ish</strong></td><td><code>FeedHealthTracker</code> measures it per feed — but into the health report, <em>not</em> onto the row.</td></tr>
+  <tr><td><code>origin.country</code> · <code>.region</code> · <code>.timezone</code></td><td><strong>(c)</strong></td><td>See below — the cost is a different <em>kind</em> of expensive.</td></tr>
+</table>
+</div>
+
+<div class="note">
+<p><strong><code>content_meta.kind</code> — yes, and it collapses.</strong> FluxusSource <strong>never fetches article bodies</strong>: <code>full_text_fetcher.py</code> was deleted and enrichment moved to NexusMind. So <code>full_text</code> is <em>not a value this producer can legitimately emit</em>. The RSS path carries whatever the feed's own <code>description</code>/<code>summary</code>/<code>content</code> element held, and <code>kind</code> reduces to <code>feed_summary</code> vs <code>headline_only</code> — <strong>both decidable at parse time</strong>. ⭐ <strong>This retires the 300-char floor: the distinction the threshold was proxying for is directly observable.</strong> Caveat: <code>content</code> is non-empty on <span class="num">98.0%</span> of rows, so <code>headline_only</code> is a small class, and API aggregators differ per source (arXiv gives abstracts; GDELT gives a title and a URL).</p>
+</div>
+
+<div class="note">
+<p><strong><code>origin.*</code> — my sequencing worry was the wrong shape but the right size.</strong> No country or timezone exists on a source anywhere in config. <code>source_group</code> is <strong>geographic for 64 of 107 shelves covering 932 of 1,872 feeds</strong> — but it is a <em>shelf</em>, not a claim about the publisher, and it gets you a coarse region for half the estate and nothing for the rest. ⚠️ <strong>The unit is not ~30 aggregators — aggregators do not know this. It is ~1,872 per-source YAML entries</strong>, of which ~932 could be bulk-seeded from their shelf and the remainder need judgement. <strong>So the cost is editorial, not engineering</strong> — a different kind of expensive from the one being priced. Partial exception: <code>metadata.source_country</code> already rides on GDELT rows.</p>
+</div>
+
+<h3>H. The one field this proposal missed — and it is the rule's clearest instance</h3>
+
+<div class="field">
+<p class="label">collected — whose clock?</p>
+<pre><code>collected.at              RFC 3339 with offset
+collected.clock_source    "host_local" | "utc" | "source"   ← the missing field</code></pre>
+</div>
+
+<p>⭐ <strong><span class="num">19</span> of <span class="num">26</span> aggregators build <code>collected_date</code> from local <code>datetime.now()</code>.</strong> Downstream that is <strong>byte-identical to a UTC value and wrong by the host offset</strong> — and no consumer can ever recover which it was. Same defect as <code>published_date</code>'s, but on <em>our own</em> clock rather than the publisher's, and nobody had noticed. *(Found by FluxusSource, not by this proposal.)*</p>
+
 <h2>Logical grouping — by who knows it, not by type</h2>
 
 <p>The current shape is 12 flat fields plus a <code>metadata</code> bag holding <strong><span class="num">143</span> distinct keys</strong>. The bag is where everything undeclared accumulates.</p>

@@ -201,9 +201,25 @@ the other records `items: 0` with no error key, so it reads as a successful empt
 **"This publisher went quiet" and "we stopped asking" are indistinguishable downstream,
 and they have opposite editorial meanings.**
 
-**Open questions, both asked and neither answered before session close:**
+✅ **BOTH ANSWERED by FluxusSource at close.** `content_meta.kind` is **(b), one line —
+and it COLLAPSES**: FluxusSource never fetches bodies (`full_text_fetcher.py` deleted,
+enrichment moved to NexusMind), so `full_text` is not emittable and `kind` reduces to
+`feed_summary` vs `headline_only`, both decidable at parse time. **This retires the
+300-char floor.** `origin.*` is **(c)** and no country/timezone exists anywhere — but
+**the unit is ~1,872 per-source YAML entries, not ~30 aggregators**, ~932 bulk-seedable
+from geographic shelves: **an editorial cost, not an engineering one.** Most of TIME is
+(b) and threading-out rather than computing; **most of LANGUAGE already exists** as
+`language_source`/`language_confidence`/`language_input_len` — ⚠️ **do not rename them**,
+two are inputs and #149's floor is fitted on the others.
 
-1. **FluxusSource feasibility triage** — which proposed fields are already in hand at
+⭐ **And the field this proposal MISSED: `collected.clock_source`. 19 of 26 aggregators
+build `collected_date` from local `datetime.now()`** — byte-identical downstream to a
+UTC value and wrong by the host offset, unrecoverable. The same defect as
+`published_date`'s, on *our own* clock, and nobody had noticed.
+
+**Superseded, kept to date the correction:**
+
+1. ~~**FluxusSource feasibility triage**~~ — which proposed fields are already in hand at
    collection, which are one line, which need new plumbing. Two decide the sequencing:
    does `origin.country`/`timezone` exist in source config in *any* form, and is
    `content_meta.kind` (full body vs feed summary vs headline) knowable at collection?
