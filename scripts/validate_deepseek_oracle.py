@@ -18,7 +18,11 @@ Requires:
     deepseek_api_key in [api_keys] of config/credentials/secrets.ini
     OR DEEPSEEK_API_KEY environment variable
 
-Cost: ~$0.01-0.05 for 50 articles via DeepSeek V3 direct API (auto-cached prompt).
+Cost: ~$0.01-0.05 for 50 articles via the DeepSeek direct API (auto-cached prompt).
+      Stale-cost warning: that figure predates the 2026-08-16 peak/off-peak repricing,
+      under which every tier bills above the old flat rate — see
+      memory/oracle-pricing-scheduling.md before quoting it.
+
 """
 
 import argparse
@@ -268,7 +272,11 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--n-sample", type=int, default=50)
     parser.add_argument("--model", default="deepseek-chat",
-                        help="DeepSeek model name (default: deepseek-chat for V3.x)")
+                        help="DeepSeek model ALIAS. Default 'deepseek-chat' resolves "
+                             "server-side to deepseek-v4-flash in non-reasoning mode. "
+                             "Do NOT 'pin' it to the literal 'deepseek-v4-flash' — that "
+                             "enables reasoning mode and returns empty content "
+                             "(see memory/gotcha-log.md, 2026-08-14)")
     parser.add_argument(
         "--output",
         default="datasets/scored/cd_v5_deepseek_validation/results.jsonl",

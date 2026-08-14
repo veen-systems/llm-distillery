@@ -46,6 +46,47 @@ Problems encountered and resolved. Format: Problem → Root cause → Fix.
 
 ---
 
+## PINNING AN ALIAS TO ITS "REAL" NAME IS NOT A RENAME — `deepseek-chat` and `deepseek-v4-flash` are different runtimes (2026-08-14)
+
+**Problem**: Every DeepSeek call site in this repo hardcodes the **alias** `deepseek-chat`
+(`scripts/score_deepseek_production.py:197`, `filters/common/violence_promotion/v1/oracle.py:66`,
+`scripts/validate_deepseek_oracle.py:270`, `filters/common/obituary_detector/validation/relabel_deepseek.py:44`),
+never a model ID. Ahead of the 2026-08-16 repricing the obvious hygiene move is to pin the
+literal model so the cost line is unambiguous. **That change would have broken the oracle**,
+and it would have looked like a no-op rename in review.
+
+**Root cause**: The alias does not merely *name* a model — it selects a **mode**. Measured
+against the live API, same prompt, `max_tokens=60`:
+
+| model sent | resolved | prompt tok | completion tok | content |
+|---|---|---|---|---|
+| `deepseek-chat` | `deepseek-v4-flash` | 22 | **1** | `'10'` |
+| `deepseek-v4-flash` | `deepseek-v4-flash` | 101 | **60**, all `reasoning_tokens` | `''` |
+
+The explicit ID injects a fixed ~79-token preamble (reproduced exactly on a second, unrelated
+probe: 5→84) and runs in **reasoning mode**: output lands in `reasoning_content`, `content` is
+empty, and the whole token budget is spent thinking. Our score parser reads `content`, so it
+would receive an empty string on every article. Reasoning tokens bill at the **output** rate —
+the rate rising most in the 2026-08-16 change.
+
+**Fix**: Leave the `deepseek-chat` strings exactly as they are. The alias is load-bearing, not
+sloppiness. `--model` help text in `validate_deepseek_oracle.py` now says so; the stale
+"default: deepseek-chat for V3.x" it replaced was actively misleading, since the alias has
+resolved to V4-flash since the V4 GA.
+
+**Generalisation**: *A name that the vendor resolves server-side is an API surface, not a
+label.* Replacing it with "what it really is" is a behaviour change disguised as a cleanup —
+the same family as this repo's rename traps, but sourced outside the codebase, so no amount of
+local grepping reveals it. **The only instrument that answers it is a live call whose response
+you inspect** (`d['model']`, `usage.completion_tokens_details`, and whether `content` is empty)
+— reading vendor docs would have confirmed the alias mapping and said nothing about the mode.
+
+**Related, same session**: only two model IDs exist for our key (`GET /models` →
+`deepseek-v4-flash`, `deepseek-v4-pro`), so there is **no lighter tier** to retreat to under the
+price rise. See `memory/oracle-pricing-scheduling.md`.
+
+---
+
 ## NEVER MASK A UNIT THAT SITS IN AN `OnSuccess=` CHAIN — the loss has no failure surface (2026-08-14)
 
 **Problem**: The obvious way to open a maintenance window on sadalsuud is to mask the

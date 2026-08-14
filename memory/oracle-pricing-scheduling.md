@@ -1,10 +1,62 @@
 ---
 name: oracle-pricing-scheduling
-description: DeepSeek V4 peak/valley pricing — schedule oracle batch jobs off-peak (avoid 08:00–12:00 CEST)
+description: Oracle cost — DeepSeek hiked 2026-08-16 (off-peak no longer cheapest; Gemini Batch wins); Gemini AI Studio forces Prepay by 2026-10-12; still avoid 08:00–12:00 CEST
 metadata:
   type: reference
 ---
 
+> 🔴 **THE NOTICE LANDED — effective 16:00 UTC, 2026-08-16 (email dated
+> 2026-08-14 16:58 +0800, to jveen1@proton.me).** Both the announcement email and
+> the docs page confirm: **peak/off-peak billing, off-peak = half of peak, and
+> every tier — off-peak included — bills ABOVE today's flat rate.** The peak
+> windows are **unchanged** (01:00–04:00 and 06:00–10:00 UTC), so the scheduling
+> rule below still holds; what changed is that off-peak is no longer cheap.
+>
+> ⚠️ **The exact new per-1M rates are NOT established.** The email carries no
+> numbers, and two web sources disagree on magnitude — one docs summary gives
+> flash off-peak 0.007 / 0.22 / 0.66 (hit/miss/output, ×2.5 / ×1.57 / ×2.36 vs
+> today), a pricing round-up gives blended off-peak ratios of ×7.84 / ×1.96 /
+> ×2.94. **Neither is owner-verified; read the rates off the Open Platform
+> console before committing spend.**
+>
+> **The conclusion is robust to which is right.** Anchoring on cd v5's *actual*
+> $10.36 / 8K articles ($0.001295/article, implying ~8K input at 14% cache hit
+> and ~1.2K output), the new off-peak per-article cost is **$0.0023–0.0029
+> (×1.8–2.2)**, i.e. above the **+64%** threshold recorded below under either
+> source. **→ Gemini Batch (~$0.0018/article) is now the cheapest oracle, and
+> the DeepSeek-as-default precedent from cd v5 is VOID.** New DeepSeek peak is
+> ~$0.0046–0.0058/article — dearer than Gemini Flash *real-time*, so it is now
+> unambiguously wrong. Per 8K-article retrain: DeepSeek off-peak $18–23, Gemini
+> Batch ~$14.40, DeepSeek peak $37–46. Still single/double-digit dollars — this
+> picks the default oracle, it does not threaten affordability.
+>
+> ⛔ **Coupling the owner must not miss: the Gemini fallback has its own
+> deadline.** Google AI Studio forces **Postpay → Prepay by 2026-10-12** or the
+> Gemini API is interrupted (email 2026-08-12, to jVeen1@gmail.com). Our oracle
+> authenticates with an AI Studio **API key** (`ground_truth/secrets_manager.py`
+> → `API_GEMINI_API_KEY`), so it is in scope. **Production is NOT in scope** —
+> verified 2026-08-14: NexusMind's `get_gemini_key()` has **zero callers**
+> outside its own module, the scoring path is the local Gemma student, and
+> summarization is ollama. So the risk is a *silent oracle outage at the next
+> retrain*, not a pipeline failure.
+>
+> **Action for the owner:** switch AI Studio to Prepay + enable auto-reload
+> before 2026-10-12 — it is now on the critical path for oracle work, not
+> housekeeping.
+>
+> 🚫 **There is NO lighter DeepSeek tier to retreat to.** Verified 2026-08-14
+> against the live API with our key: `GET https://api.deepseek.com/models`
+> returns exactly two IDs — `deepseek-v4-flash` and `deepseek-v4-pro` (~3.1×
+> flash on input-cache-miss). No lite/mini tier, and the V3-era models are gone
+> as distinct IDs. Flash is the floor, and the floor is what is rising.
+> ⚠️ **And do NOT "pin" the model name to save ambiguity** — our call sites use
+> the alias `deepseek-chat`, which resolves to v4-flash in *non-reasoning* mode;
+> the literal `deepseek-v4-flash` enables reasoning mode and returns **empty
+> `content`**, breaking the score parser. See `memory/gotcha-log.md` 2026-08-14.
+> The real levers are Gemini Batch (~$0.0018/article), local judges on b650 at
+> $0 (`scripts/score_ollama_oracle.py`; #109 Arm B names Qwen3:14b + Phi4:14b),
+> and the off-peak scheduling rule below, which survives the hike unchanged.
+>
 > ⚠️ **SUPERSEDED IN PART — a price hike IS coming (2026-08-06).** DeepSeek
 > emailed all API users: *"We plan to raise the overall pricing for DeepSeek API
 > services in the near future, with a significant increase expected."* **No
