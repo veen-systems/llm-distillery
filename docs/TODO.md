@@ -98,12 +98,40 @@ Recorded in FS#173 (comment + body correction). Full record:
 - ~~**The canary**~~ — not unowned: it is item 1 in the **nexusmind** session's own
   brief. Leave it there; two sessions building one canary is worse than none.
 - **Category G** (`collection.*`, the non-event sidecar) — **the only genuinely
-  unassigned item.** Spec-ready, touches neither schema, no implementer.
-  pipeline-atlas supplied the model facts and correctly declined the code, since that
-  repo owns no pipeline code. ⚠️ Its blocking correction is unresolved: **the grain is
-  wrong for the RSS tier** — `concurrent_rss` is one source name holding the entire
-  feed tier, while `health_state` runs per *feed*. Decide the grain per tier first, or
-  the tier carrying most of the feeds is the one the sidecar cannot describe.
+  unassigned item, and it was NOT "spec-ready" as the savepoint claimed.** This plan's
+  own status table said so (`⏸ spec needs the per-tier grain decision before anything
+  else`); the savepoint line was stale. pipeline-atlas supplied the model facts and
+  correctly declined the code, since that repo owns no pipeline code.
+
+  ⭐ **GRAIN DECISION MADE 2026-08-14 (llm-distillery), and it was already written in
+  § *Round 3* — nobody had taken it.** The grain problem is not intrinsic to G; it
+  **arrived with four fields that don't belong to G at all.**
+
+  | field | disposition |
+  |---|---|
+  | `health_state`, `raw_item_count`, `items_emitted` | **MOVE OUT to categories A–F.** All three describe *how a fetch went*, which is A–F by this plan's own framing. They drifted in from the neighbours and **brought the grain problem with them** — `concurrent_rss` is one source name holding the whole feed tier, while `health_state` runs per *feed*. |
+  | `poll_interval_actual_h` | **KEEP in G, with per-tier semantics declared.** It is per-*source* for exactly the population that needs it: FS#121's collect-every-tick sources fall through `select_sources_to_collect` **precisely for having no per-feed scheduling metadata**, so for them there are no feeds to disagree about. It is per-feed only for `concurrent_rss`, which is not the overpoll case. Losing it loses the only field that can expose #121. |
+  | `refusal_reason` | **KEEP, but NAME IT AN AGGREGATE** at Site B's `no_feeds_due` exit — it summarises per-feed decisions under a source-name grain. Unnamed, *"the tier was refused"* and *"no feed was due"* become indistinguishable. |
+  | `outcome` | **Written at the refusal site, never derived.** Derived from `collection_stats` it inherits the defect it exists to expose: Site B's `_record_skip` output is already classified downstream as `empty_sources`, so `refused_in_aggregator` and `empty` are indistinguishable **by construction** — a field that can never emit two of its four values. |
+
+  **With those four moved out, G is clean, per source name, and the least-blocked item
+  in the redesign.** ⚠️ Two things it still needs before code: *"measured at fetch"*
+  requires **adding a read that does not exist** (the collection path only ever writes
+  to the health tracker — a new coupling, fine if intended, but an explicit spec line
+  and not a free field); and the enum is refusal-shaped, so it has **no value for
+  FS#121's "fetched, but on the wrong cadence"**.
+
+  **Owner candidate: FluxusSource**, positioned *after* the (b) sequence
+  (`fabricated`/`had_timezone`/`raw` → `content_meta.kind` → `clock_source` → `fetch.*`
+  → `element` → `precision`). Not started, not promised — G is a sidecar and every item
+  ahead of it is on a live contract.
+
+  ⭐ **Why it is worth doing at all, in pipeline-atlas's strongest form:** a block of
+  European feeds sat `enabled: true` **collecting nothing for most of a year** — no
+  error, no warning, no zero-yield alert. The source loader walks one level, so a key
+  that never became a source cannot report zero. **A contract check validates rows that
+  exist; a source emitting no rows is invisible to it at any strictness.** That is
+  Category G's argument one level up, and no row schema will ever reach it.
 
 ### The offset gate has THREE parts, not one
 

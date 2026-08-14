@@ -1887,7 +1887,7 @@ that belong here rather than there:
 | `published.instant` offset | ⛔ **gate closed** by ovr.news; reopens when their write-boundary integration test exists and is green |
 | Acceptance control | ✅ **resolved by splitting** — repeatable canary for "detection fires", declared gap for "catches the unanticipated" |
 | `origin.*` | ⏸ **sequenced separately**, `docs/proposals/contract-a-origin-sequencing.md`; T0 (GDELT passthrough + `origin.method`) is the only engineering tranche |
-| Category G sidecar | ⏸ spec needs the per-tier grain decision before anything else |
+| Category G sidecar | ✅ **grain decision TAKEN 2026-08-14** — move `health_state`/`raw_item_count`/`items_emitted` out to A–F (they carried the grain problem in), keep `poll_interval_actual_h` with per-tier semantics declared, name `refusal_reason` an aggregate, write `outcome` at the refusal site. G is then clean and per source name. ⏸ **now awaiting an implementer, not a decision** — candidate FluxusSource, after the (b) sequence. Two spec lines still owed: the "measured at fetch" read does not exist, and the enum has no value for FS#121. Detail in `docs/TODO.md` |
 
 ⭐ **Both halves are now unblocked.** The producer's declaration commit is written and
 parked behind the consumer's, which has landed. What remains open is scope, not
