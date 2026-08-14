@@ -1813,9 +1813,18 @@ Recommendation, not decision.
 ✅ **And their blind-spot section shipped** — `reference/contracts.qmd`, standing, so
 silence there cannot be read as a pass. ⭐ **The never-walked detector's null result
 travels with the claim as a verify command rather than prose, and it is
-mutation-tested**: one injected url-less group key moves it 0 → 1 and names the
-offender. That is this thread's own rule applied to the page that started it — an
-instrument that has never fired, now shown capable of firing.
+mutation-tested in BOTH directions**: a url-less key in an examined file moves it
+0 → 1 and names it, **and a new else-branch file — the case the old check could not
+see at all — now appears in a named not-examined list instead of vanishing silently.**
+
+⚠️ **Quote that null as "0 among the files it examines, with 5 excluded and named",
+never as "0, clean"**, and "shown capable of firing" carries "on the shape it
+examines". ⭐ **The general form, volunteered by pipeline-atlas against their own
+artefact one turn after correcting me for the same thing: an instrument's null result
+is only as broad as its denominator, so THE DENOMINATOR HAS TO TRAVEL TOO.** The
+scope error was committed hours after the rule it violates was written down — their
+own logged finding that knowing a class does not reduce the first-attempt error rate,
+it only ensures the error is caught.
 
 **On readership, in their words:** if the sidecar's only consumer is the ops snapshot,
 it has failed READER BEFORE STRICTER and `raw_item_count` has repeated itself one
@@ -1833,7 +1842,14 @@ level up. The atlas can *report* it; that is display, not readership.
 
   ⚠️ **The incident is evidence; the detector is not.** pipeline-atlas re-ran the
   config-shape check that would catch the class against the live config —
-  **2,080 source keys, 0 with no `url` of their own.** It has never returned a
+  **2,080 source keys, 0 with no `url` of their own, across the 107 of 112 files
+  declaring a top-level `sources:` key.** ⚠️ **The other 5 were not examined and the
+  output said so nowhere** — `bluesky_accounts`, `mastodon_accounts`,
+  `vimeo_channels`, `youtube_channels` reach the same one-level walk via the loader's
+  else-branch. *(Not a live defect: those tiers are collected by aggregators reading
+  their own files directly rather than through `get_sources()`, so excluding them is
+  correct and widening the check would cry wolf. The defect was that the exclusion was
+  invisible. Fixed at `4b71a7b`.)* It has never returned a
   positive, *"and an instrument that has never fired has not been shown to be able
   to. It is written against the shape of the incident rather than validated by it."*
   ⭐ **That strengthens the case for G rather than weakening it** — the only existing
