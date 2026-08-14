@@ -1764,6 +1764,59 @@ pipeline code. Corrections, sharpest first:
    `data/source_states.json`, and rows exist only for aggregators carrying scheduling
    metadata.
 
+#### ✅ The grain blocker RESOLVED — and it makes G smaller
+
+*(pipeline-atlas, same day, unprompted: they had sent the problem without the
+resolution and noticed the plan now blocked on it.)*
+
+⭐ **The test is: which fields presuppose a fetch? The collision is entirely inside
+those, and none of them is what G is for.**
+
+Both refusal sites decide at **source-name** granularity. Site A selects source names;
+Site B's breaker registry is keyed on source name — which is *why* an open breaker on
+`concurrent_rss` refuses the whole tier **before per-feed dueness is consulted at
+all**. So the non-event itself, the thing G exists to record, is **natively per source
+name and has no grain problem**:
+
+```
+collection (per source name, per cycle)
+  outcome         fetched | refused_pre_dispatch | refused_in_aggregator | empty
+  refusal_site    "A" | "B" | null
+  refusal_reason  disabled | not_due | circuit_open | no_feeds_due | ...
+  first_seen_run  "collection_20260801_120500"
+```
+
+**The four colliding fields — `health_state`, `poll_interval_actual_h`,
+`raw_item_count`, `items_emitted` — all describe *how a fetch went*.** By this plan's
+own framing that puts them in categories A–F. They drifted in from the neighbours and
+**brought the grain problem with them.** Move them out and G is clean, per source
+name, and still the least-blocked item in the redesign.
+
+Two refinements not to flatten:
+
+- **`poll_interval_actual_h` may be worth keeping in G**, because it is per-*source*
+  for exactly the population that needs it: the FS#121 collect-every-tick sources fall
+  through `select_sources_to_collect` **precisely for having no per-feed scheduling
+  metadata**, so for them there are no feeds to disagree about. It is per-feed only for
+  `concurrent_rss`, which is not the overpoll case. Keeping it with per-tier semantics
+  declared costs less than losing the only field that can expose #121.
+- ⚠️ **`refusal_reason` at Site B's `no_feeds_due` exit is an AGGREGATE** over per-feed
+  decisions — the one place a source-name-grained field summarises feed-level facts.
+  **Name it as an aggregate in the spec**, or *"the tier was refused"* and *"no
+  individual feed happened to be due"* arrive as the same value. That is the
+  four-states-collapse-to-one shape G was written to stop, **reappearing inside G.**
+
+**Ownership as they framed it:** they own the chain model, so the grain *fact* is
+theirs to supply; the schema is FluxusSource's data model and the spec is this repo's.
+Recommendation, not decision.
+
+✅ **And their blind-spot section shipped** — `reference/contracts.qmd`, standing, so
+silence there cannot be read as a pass. ⭐ **The never-walked detector's null result
+travels with the claim as a verify command rather than prose, and it is
+mutation-tested**: one injected url-less group key moves it 0 → 1 and names the
+offender. That is this thread's own rule applied to the page that started it — an
+instrument that has never fired, now shown capable of firing.
+
 **On readership, in their words:** if the sidecar's only consumer is the ops snapshot,
 it has failed READER BEFORE STRICTER and `raw_item_count` has repeated itself one
 level up. The atlas can *report* it; that is display, not readership.
