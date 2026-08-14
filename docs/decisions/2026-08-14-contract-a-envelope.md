@@ -55,7 +55,7 @@ emits anything.** Every block optional, every property inside every block option
 The blocks, from proposal §§A–F and §H:
 
 ```
-published    { raw, element, had_timezone, precision, fabricated }   ⏸ +instant?
+published    { instant, raw, element, had_timezone, precision, fabricated }
 collected    { clock_source }
 origin       { country, region, timezone, method }
 fetch        { url_requested, url_final, strategy, attempts, http_status,
@@ -69,8 +69,8 @@ payload      { ... }                                  ← the one open region
 ⚠️ **This list is POST-narrowing.** The owner's scope call (below) removed
 `collected.at`, `content_meta.raw_length`, `feed.title` and `feed.declared_language`
 — every one a declared duplicate of a live flat key. What survives carries only facts
-the row does not hold today. ⏸ **`published.instant` is dropped pending an owner
-re-decision** — see the correction under the scope call.
+the row does not hold today. ✅ **`published.instant` was dropped and then RESTORED by
+owner decision** — on the migration argument, not the same-fact one. See below.
 
 `origin.*` is declared **even though nothing will populate it this pass.** Its cost
 is editorial (~1,872 per-source YAML entries, ~932 bulk-seedable from geographic
@@ -200,7 +200,7 @@ Consequences, derived rather than listed in the option:
 | `feed.declared_language` | `metadata.feed_declared_language` | ⛔ **drop** |
 | `content_meta.raw_length` | `metadata.raw_content_length` | ⛔ **drop** |
 | `collected.at` | `collected_date` | ⛔ **drop** |
-| ⚠️ `published.instant` | `published_date` (declared `format: date-time`) | ⏸ **HELD — owner's call, see below** |
+| ⚠️ `published.instant` | `published_date` (declared `format: date-time`) | ✅ **KEEP — owner decision, on migration mechanics** |
 | `feed.ttl_declared`, `feed.cadence_hours` | none on the row | ✅ keep* |
 | `published.{raw,element,had_timezone,precision,fabricated}` | none | ✅ keep |
 | `collected.clock_source` | none | ✅ keep |
@@ -208,9 +208,13 @@ Consequences, derived rather than listed in the option:
 | `content_meta.{kind,truncated,echoes_title}` | none | ✅ keep |
 | `origin.*` | none | ✅ keep |
 
-#### ⚠️ `published.instant`: dropped, argued for restoration on a WRONG reason, back with the owner
+#### ✅ `published.instant`: RESTORED by owner decision, 2026-08-14
 
-**Status: HELD, not restored.** NexusMind is correctly refusing to reverse it on my
+**Status: KEEP.** The owner, having originally named it among the five drops, took the
+restoration on the migration argument. History below, kept because my first case for
+it was wrong and the record should show which argument actually carried.
+
+**Status when written: HELD, not restored.** NexusMind is correctly refusing to reverse it on my
 say-so — the owner named `published.instant` explicitly when giving the five drops,
 and reversing a by-name owner instruction on a peer relay is the strongest form of
 the case the standing rule covers. Both readings are with the owner.
