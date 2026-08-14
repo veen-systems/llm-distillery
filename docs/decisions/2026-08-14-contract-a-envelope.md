@@ -55,16 +55,21 @@ emits anything.** Every block optional, every property inside every block option
 The blocks, from proposal §§A–F and §H:
 
 ```
-published    { instant, raw, element, had_timezone, precision, fabricated }
-collected    { at, clock_source }
+published    { raw, element, had_timezone, precision, fabricated }
+collected    { clock_source }
 origin       { country, region, timezone, method }
-fetch        { url_requested, url_final, http_status,
+fetch        { url_requested, url_final, strategy, attempts, http_status,
                charset_declared, charset_detected, charset_used,
                content_encoding, at }
-content_meta { kind, truncated, raw_length, echoes_title }
-feed         { title, declared_language, cadence_hours, ttl_declared }
+content_meta { kind, truncated, echoes_title }
+feed         { cadence_hours, ttl_declared }
 payload      { ... }                                  ← the one open region
 ```
+
+⚠️ **This list is POST-narrowing.** The owner's scope call (below) removed
+`published.instant`, `collected.at`, `content_meta.raw_length`, `feed.title` and
+`feed.declared_language` — every one a declared duplicate of a live flat key. What
+survives carries only facts the row does not hold today.
 
 `origin.*` is declared **even though nothing will populate it this pass.** Its cost
 is editorial (~1,872 per-source YAML entries, ~932 bulk-seedable from geographic
@@ -174,11 +179,48 @@ deletes. **Declare freely, populate once.**
 row, not the first: `source` is a live top-level string, and moving `title`/`content`/
 `tags` is relocation by definition.
 
-⚠️ **And one inference of mine that the owner has not made:** the rename ban is
-stated for `language_source` / `language_confidence` / `language_input_len` (FS#149's
-floor is fitted on them). Extending it to `feed_title` / `update_frequency` is *my*
-reading, not the owner's. If it holds, `feed` collapses to `ttl_declared` alone — a
-one-line edit. **Flagged as an open scope call, not decided here.**
+### ✅ Scope call ANSWERED by the owner, 2026-08-14: the ban extends
+
+**Chosen: "extend to all live metadata keys" — no new name may be declared where a
+live flat key already carries the fact.** *(Against my recommendation, which was to
+keep the ban specific to the three language keys and rely on populate-once. The
+owner's call is the stricter one and it is coherent — see below.)*
+
+⭐ **This reaches further than `feed`, and the reach is an improvement.** The rule
+reduces to: **a new block carries only facts that do not exist on the row today.**
+That is the proposal's own test 1 applied to *declarations* rather than to values,
+and it removes the possibility of a populate-once violation instead of policing it.
+
+Consequences, derived rather than listed in the option:
+
+| declared | live key carrying the same fact | verdict |
+|---|---|---|
+| `feed.title` | `metadata.feed_title` | ⛔ **drop** |
+| `feed.declared_language` | `metadata.feed_declared_language` | ⛔ **drop** |
+| `content_meta.raw_length` | `metadata.raw_content_length` | ⛔ **drop** |
+| `collected.at` | `collected_date` | ⛔ **drop** |
+| ⚠️ `published.instant` | `published_date` | ⛔ **drop — see below** |
+| `feed.ttl_declared`, `feed.cadence_hours` | none on the row | ✅ keep* |
+| `published.{raw,element,had_timezone,precision,fabricated}` | none | ✅ keep |
+| `collected.clock_source` | none | ✅ keep |
+| `fetch.*` (all seven) | `url` conflates requested/final; rest none | ✅ keep |
+| `content_meta.{kind,truncated,echoes_title}` | none | ✅ keep |
+| `origin.*` | none | ✅ keep |
+
+⚠️ **`published.instant` is the big one and the owner may not have intended it.**
+`published_date` is live and carries that fact, so under the rule `instant` is a
+declared duplicate. Dropping it is *coherent* — `instant` only becomes meaningful
+when `published_date` is retired, and that is a **relocation**, which stays forbidden
+until consumers migrate. It also moots the offset question for now, since the offset
+would have ridden on `instant` and that gate is closed anyway. **Applied, and
+reversible: nothing is populated.** Say so if the intent was to keep it.
+
+\* ⚠️ **The option's preview said `feed { ttl_declared }` and the rule says
+`feed { cadence_hours, ttl_declared }`** — `cadence_hours` is measured by
+`FeedHealthTracker` into the health report and **never reaches the row**, so no live
+key carries it and the rule does not drop it. Outcome and rule differ on exactly this
+one field. **Followed the rule; flagging the discrepancy** rather than silently
+picking either.
 
 **3. Ordering: the consumer's declaration lands before or with the producer's, never
 after.** Reversed, the validator reports `additionalProperties` violations against
