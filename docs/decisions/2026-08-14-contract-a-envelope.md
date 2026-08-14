@@ -901,3 +901,48 @@ rather than asserting the instruction.
 *(The corollary, worth keeping: "peers are unreliable" is the wrong lesson. **A relay
 cannot carry recency**, and recency is the whole question when one owner is talking to
 several sessions at once.)*
+
+
+### ⚠️ `fabricated` is right to build first — but NOT alone, and NOT for the reason I gave
+
+**NexusMind confirmed the mechanism in their code rather than filing the claim:**
+`src/scoring/display_ranking.py` — `recency_threshold_hours: 24`,
+`recency_boost: 1.3`, a flat multiplier when `age_hours < 24`, with `age_hours`
+derived from `published_date`. **So a fabricated `now − 2h` sits deep inside the
+window and takes the full 1.3×.** ADR-023 reasoning holds: the expensive direction,
+junk reaching a reader.
+
+⛔ **But the population is wider than fabrication, and the data does not permit
+attribution.** Gaps between `collected_date` and `published_date`, 7,478 live rows,
+quarter-hour bins:
+
+| gap | rows | share |
+|---|---|---|
+| **6.00h** | 1,046 | **13.99%** |
+| 10.00h | 237 | 3.17% |
+| 2.00h | 236 | 3.16% |
+
+⭐ **The dominant whole-hour spike is at 6h, not 2h.** That is equally consistent with
+a **timezone misparse** — naive local time read as UTC — as with fabrication, and
+NM#354 records *"each naive instant IS UTC"* as explicitly **unmeasured**. Neither
+session called it, and **nobody should until it is conditioned on `source`**: if it is
+fabrication the spike concentrates in date-less feeds; if it is timezone it
+concentrates by publisher offset. Cleanly separable, not yet separated.
+
+⭐⭐ **The claim that survives without attribution, and it is the better one to build
+on:**
+
+> **ANY date error that lands a row inside 24h wins the 1.3× boost, invisibly and
+> permanently.** Fabrication is one member of that class; timezone misparse is another
+> and is currently the **larger** spike.
+
+⚠️ **So a fix aimed only at fabrication would leave the bigger population untouched
+while looking like it had addressed the problem** — which is this thread's own failure
+class, arriving in the remedy.
+
+**Consequence for sequencing, correcting what I told the producer:** build
+**`fabricated`, `had_timezone` and `raw` together**, not `fabricated` first and the
+rest after. Those three are exactly what separates the two causes, and on this evidence
+**`fabricated` cannot be interpreted without them.** All three are declared on `main`
+today and nothing populates them — the instrumentation exists and is empty, which is
+the cheapest possible starting position.
