@@ -2090,3 +2090,43 @@ schema to declare it, since that root is `additionalProperties: false` and
 `validate_output.py` exits 1. Replayed over 5,995 prod rows: emitted on exactly the
 5,739 RSS rows, **0 schema violations**, kind split unchanged. 22 tests, suite 1,224
 green.
+
+
+### ✅ #360 green, #364 open — and a green tick that is not a test result
+
+**NM#360** merge-forward done (`origin/main` merged in, **not** rebased — it was a
+pushed PR with a CI result, and rebasing 9 over 6 would have force-pushed and replayed
+the conflict). `5b86c5f..5fb92d9`. **Verified independently from this repo:**
+
+```
+gh pr view 360 --json state,mergeable,mergeStateStatus
+  {"state":"OPEN","mergeable":"MERGEABLE","mergeStateStatus":"CLEAN"}
+```
+
+Ready to merge, **waiting only on the owner** — NexusMind correctly did not merge it.
+
+The conflicted row **was** the 928/267 reconciliation, and resolving it meant combining
+both sides rather than picking one, plus the third corpus (203/19) and the invariant
+promoted to the headline: **`word_count`-absent is a strict subset of
+`priority`-absent** — the part that survives every corpus.
+
+**NM#364** open behind it — `feat/contract-a-envelope-declaration` →
+`fix/357-contract-validator-grouping`, 1,305 tests green *locally*, acceptance still 1
+class on 7,478 production rows.
+
+⚠️⚠️ **#364 SHOWS "ALL CHECKS PASSED" AND HAS NOT RUN THE TESTS.** `.github/workflows/ci.yml`
+triggers on `pull_request: branches: [main]` only, so a **stacked** PR gets GitGuardian
+and nothing else. Confirmed from here:
+
+```
+gh pr view 364 --json statusCheckRollup
+  checks: [ {"name":"GitGuardian Security Checks","conclusion":"SUCCESS"} ]
+                        ← no `test` job, at all
+```
+
+⭐ **A green tick whose meaning is "the tests were not run" is the purest instance of
+this whole thread's failure class** — the signal exists, is truthful about what it
+measured, and is read as something it never claimed. It gets real CI the moment it
+retargets `main`, i.e. after #360 merges. **The only test evidence for #364 today is
+that someone ran them locally and said so.** *(Flagged by NexusMind unprompted, which
+is the right instinct: the danger is exactly that nobody looks at which checks ran.)*
