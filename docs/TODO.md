@@ -80,16 +80,30 @@ Recorded in FS#173 (comment + body correction). Full record:
    `f3e8954`, **undeployed**. This is what retires the 300-char floor (#93).
 3. **`collected.clock_source`**, then `fetch.*`, then `element`, then `precision` last
    (the only one that is new code rather than threading-out).
-   ⭐ **`clock_source` gained a second, independent argument on 2026-08-14 and may
-   deserve to move up.** `newsapi_general` stamps `collected_date` on the **local**
-   clock, **+1.98h** — and `94e7337`'s canonicalization gave that value the *identical
-   shape* to a correct UTC one, so the skew is now invisible in the field itself and
-   only cross-source comparison inside a single run exposes it. **+1.98h and
-   fabrication's 2h are the same number to within 72 seconds.** They don't collide
-   today only because NewsAPI returns ~28h-old articles — a property of the upstream
-   API's result set, not of our code. Detail and the measurement:
-   `memory/date-error-recency-boost-hypotheses.md` § *The 2h bin has at least three
-   contributors*.
+   ⚠️ **My "move `clock_source` up" suggestion is WITHDRAWN AS ARGUED** — the reasoning
+   (a latent *false-positive* collision at ~1.98h) was wrong twice over: the 1.98h was
+   an artifact of comparing to the run median when NewsAPI **runs first**, and for a
+   skewed producer `gap = true_age + 2h`, so a real article hits `2h ± 5s` only if it is
+   under **5 seconds** old. Sequencing is FluxusSource's call.
+
+   ⭐ **The real interaction is a FALSE NEGATIVE, and it is active — now `FS#176`.**
+   `DateParser.ensure_valid_date:217` is a **second** fabrication site, called from the
+   `news_api`/`github`/`academic`/`patent` aggregators, several of which are the
+   clock-skewed ones. Fabricated-in-UTC + collected-on-local-clock ⇒ **`gap = 4h`, two
+   hours outside FS#173's detection window.** Verified here on 155,513 rows: **46 rows
+   at `4h ± 5s`, 32 `semantic_scholar`, 32/32 carrying microseconds** on `published_date`
+   with published/collected agreeing to ~35µs — one instant, two clocks. **So FS#173
+   undercounts fabrication.** A detector keyed on a fixed gap is keyed on the
+   *producer's clock* and needs a new constant per aggregator **and after every DST
+   transition** (4h in CEST, 3h in CET). Detail:
+   `memory/date-error-recency-boost-hypotheses.md`.
+
+   ⚠️⚠️ **STANDING DATA RULE until FS#176 lands — archives are NOT being backfilled.**
+   `collected_date` is on the **host local clock (+2h CEST)** for **8 of 768 sources**:
+   `newsapi_general`, `github`, `hackernews`, `stackoverflow`, `ourworldindata`, NASA
+   APOD, and two Dev.to author-named sources. The other ~760 are UTC; `published_date`
+   is unaffected. **Any llm-distillery analysis treating `collected_date` as uniformly
+   UTC is wrong by 2h on that slice**, in `data/current/` and in the archive.
 
 ### ⚠️ Unassigned — the list is now ONE item, not three
 

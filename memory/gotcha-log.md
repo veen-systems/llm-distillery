@@ -114,6 +114,34 @@ control that worked, and it is the second time in one day the same control paid.
 Belongs to the unreachable-mechanism catalogue below in its *measurement* form: a check
 that examines nothing reports success.
 
+## A DISJOINTNESS ARGUMENT DIES TO A SECOND CALL SITE — grep for the VALUE, not the function (2026-08-14)
+
+**Problem**: a defect interaction was cleared on the argument that the two populations
+were disjoint — the fabrication path was RSS, the clock skew was API, so they could
+never combine. **They combine.** The clearance had already been acted on.
+
+**Root cause**: `DateParser.ensure_valid_date` is a **second** fabrication site besides
+the RSS one, called from the `news_api`, `github`, `academic` and `patent` aggregators —
+several of which are precisely the clock-skewed ones. The disjointness held for the
+*function everyone was looking at* and failed for the *value* it produces.
+
+**Fix**: **grep for the value, not the function.** "Where else does this field get
+written?" is the question; "who calls this function?" answers a narrower one and the
+narrow answer was true. Same family as *enumeration is not inventory* and the
+unreachable-mechanism catalogue below.
+
+⭐ **What the combination does, and why it matters more than the false positive everyone
+feared**: fabricated-in-UTC (`now − 2h`) plus collected-on-local-clock (`now + 2h`)
+lands at a **4h** gap — **outside** the 2h detection window. So the detector does not
+mis-fire; it **silently under-reports**. ⚠️ **A false negative in a detector reads
+exactly like a clean result**, which is the third instance of that shape in one day.
+
+⭐ **The generalisation for any gap-based detector**: keying on a fixed offset keys on
+**the producer's clock**. It needs a different constant per aggregator **and a new one
+after every DST transition** (4h in CEST, 3h in CET). That is not a tuning problem, it
+is an argument that the fact must be **stamped where it becomes true** rather than
+inferred downstream.
+
 ## A GLOB THAT CANNOT MATCH IS INDISTINGUISHABLE FROM ONE STILL WAITING (2026-08-14)
 
 **Problem**: a background `until` loop polling for a collection run had been alive

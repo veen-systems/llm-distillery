@@ -217,20 +217,72 @@ other source within ±0.03h. **Consistent with `CLAUDE.md`'s standing clock find
 **0 of the 88** skewed rows fall in `2h ± 5s`. They sit at **28.5–30.5h**, because
 NewsAPI returns day-old articles. The clean population had **1**.
 
-⚠️⚠️ **But the collision is latent, not absent.** `+1.98h` and the fabrication
-signature's `2h` are **the same number to within 72 seconds**. The only thing
-separating them is that NewsAPI happens to return ~28h-old articles — *a property of
-the upstream API's result set, not of our code*. Any NewsAPI query returning fresh
-items puts a whole slice at ~1.98h, indistinguishable from fabrication. **Same shape
-as the arXiv trap, different mechanism, and it would arrive without any change on our
-side.**
+### ❌ RETRACTED: my "latent false-positive collision" — and the truth is a FALSE NEGATIVE that is ACTIVE
 
-⭐ **And canonicalization made it invisible.** Before `94e7337` that `collected_date`
-carried microseconds and looked visibly odd; now it has the **identical shape** to a
-correct UTC value, so only cross-source comparison *inside a single run* exposes it.
-That is the third time in one day that removing an incidental signal cost the only
-available discriminator — which is the argument for `collected.clock_source` as an
-explicit field, on the same grounds as `published.fabricated`.
+*(Corrected 2026-08-14 ~21:00 by the FluxusSource session; **both halves re-verified
+here on their evidence, not adopted.** Recorded in FS#173.)*
+
+**What I claimed and why it was wrong, in two parts:**
+
+1. ⚠️ **The `+1.98h` was an artifact of my own construction.** I compared each source's
+   median `collected_date` to the **run** median. NewsAPI **runs first in the cycle**,
+   so I measured *the clock offset minus its head start*. Verified: NewsAPI's earliest
+   `collected_date` is `19:30:54` local = **17:30:54 UTC**, while the earliest of every
+   other source is `17:30:56`. The true offset is **exactly 2h** (CEST = UTC+2). My run
+   median was `17:31:55`, 61s later → `2h − 61s = 1.983h`. **The 72-second "gap to
+   fabrication" was my denominator, not the data.**
+2. ⚠️ **False positives were never the risk.** For a skewed producer the emitted gap is
+   `true_age + 2h`, so a *real* article reaches `2h ± 5s` **only if it is under 5
+   seconds old**. Fresh items land just *above* 2h by exactly their age — a 10-minute-old
+   article sits at 2.17h, already 600s clear. My "any NewsAPI query returning fresh
+   items drops a slice at ~1.98h" is false as arithmetic.
+
+### ⭐ The real interaction: fabrication + skew = a 4h gap, OUTSIDE the detection window
+
+`DateParser.ensure_valid_date` (`date_parser.py:217`) is a **second fabrication site**,
+called from the `news_api`, `github`, `academic` and `patent` aggregators — **several
+of which are exactly the clock-skewed ones**. For those producers:
+
+```
+published = UTC_now − 2h    (fabricated, UTC)
+collected = UTC_now + 2h    (local clock)
+gap       = 4h              ← two hours OUTSIDE FS#173's 2h ± 5s window
+```
+
+**Verified independently here, hot window, 155,513 rows: 46 rows at `4h ± 5s`, 32 of
+them `semantic_scholar`** (skewed `+2.00h`, `academic_api_aggregator.py:684,830,1023`,
+and an `ensure_valid_date` caller). Those runs predate `94e7337`, so the microsecond
+fingerprint still adjudicates — and it is unambiguous: **32/32 carry microseconds on
+`published_date`**, with published and collected sharing them to ~35µs:
+
+```
+published=2026-08-09T12:04:32.536201
+collected=2026-08-09T16:04:32.536236
+```
+
+**One instant, stamped from two clocks.** ⭐ The fingerprint also *discriminates within*
+the 46: exactly the 32 `semantic_scholar` rows carry microseconds; the other 14
+(`el_comercio_pe`, `gn_bangladesh`, `sueddeutsche`, …) do not and are genuine 4h-old
+articles.
+
+⇒ **FS#173's table UNDERCOUNTS fabrication.** 8 of 768 sources carry the skew
+(`newsapi_general`, `github`, `hackernews`, `stackoverflow`, `ourworldindata`, NASA
+APOD, two Dev.to author-named sources).
+
+### ⭐ What this does to the conclusion — it strengthens it on different grounds
+
+**A detector keyed on a fixed gap is keyed on the PRODUCER'S CLOCK.** It needs a
+different constant per aggregator, **and another after every DST transition** — these
+rows sit at 4h in CEST and would sit at 3h in CET. That is a stronger argument for
+stamping at the point of fabrication than either side had.
+
+⚠️ **So the clock defect is a correctness bug in its own right, not
+discriminator-hygiene** — which is *not* the reasoning I used when I suggested moving
+`collected.clock_source` up the (b) sequence. **That suggestion is withdrawn as
+argued**; the field is still justified, on this ground instead, and the sequencing is
+FluxusSource's call. Canonicalization did remove the incidental oddness of the skewed
+value (it now has the identical *shape* to a correct UTC one), but that is a reason to
+stamp the clock explicitly, not evidence of a 2h collision.
 
 ### Also: "6.00h" was never a whole-hour spike
 

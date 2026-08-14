@@ -7,6 +7,37 @@ metadata:
 
 # NexusMind Data Sources
 
+## ⚠️ `collected_date` IS NOT UNIFORMLY UTC — 8 of 768 sources carry a +2h skew (FS#176, 2026-08-14)
+
+**Standing rule until FS#176 lands. Archives are NOT being backfilled**, so this
+applies to `data/current/` *and* to every archived run, indefinitely.
+
+`collected_date` is stamped from the **host local clock (CEST = UTC+2)** for:
+
+```
+newsapi_general · github · hackernews · stackoverflow · ourworldindata
+NASA APOD · two Dev.to author-named sources
+```
+
+The other ~760 sources are UTC. **`published_date` is unaffected.** So **any analysis
+treating `collected_date` as uniformly UTC is wrong by 2h on that slice** — and after a
+DST change it is wrong by 1h instead, because the skew tracks the host's offset.
+
+⚠️ **`94e7337` (canonical timestamps) made this HARDER to see, not easier.** The skewed
+value used to carry microseconds and look visibly odd; it now has the **identical shape**
+to a correct UTC value. Only cross-source comparison *within a single run* exposes it.
+
+⚠️ **Do not detect the skew by comparing a source to the run median** — that is what I
+did, and it under-measured the offset as `+1.98h` because `newsapi_general` **runs first
+in the cycle**, so the measurement was *offset minus head start*. Compare against the
+earliest `collected_date` of a known-UTC source in the same run, or just apply the
+2h correction from the source list above.
+
+⭐ **Downstream consequence worth knowing**: fabricated-in-UTC + collected-on-local-clock
+produces a **4h** `collected − published` gap, not 2h — which is why FS#173's 2h
+detection window undercounts fabrication. See
+`memory/date-error-recency-boost-hypotheses.md`.
+
 ## WHICH length field to check, and at which stage (measured 2026-08-11)
 
 **Measured**: matched every filtered batch (84 files, back to 2026-07-28) against
