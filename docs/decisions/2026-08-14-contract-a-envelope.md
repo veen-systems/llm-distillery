@@ -856,3 +856,48 @@ fails for reasons having nothing to do with the envelope. **#360 is a prerequisi
 for the test, not an unrelated stack** — and the reason I had it backwards is that I
 was reasoning about merge hygiene while the criterion was about what the instrument
 can resolve.
+
+
+---
+
+## ✅ LANDED — verified against `origin/main`, not taken on report
+
+`NexusMind/contracts/fluxussource-output.schema.json` on `main` (`0652414`), read
+directly from this repo:
+
+```
+version                    1.20.0
+root additionalProperties  false            ← decision point 1 intact
+blocks                     published · collected · fetch · content_meta
+                           · feed · origin · payload
+published                  element · fabricated · had_timezone · precision · raw
+                                                            ← no `instant`
+language                   type: string     ← collision avoided, never an object
+source_group declared      False            ← the hold is UNSPENT
+required                   id · title · content · source · source_type · url
+                           · collected_date · content_hash    ← unchanged, 8 keys
+```
+
+**Every element of the decision is present and every hold is intact.** Nothing earned
+`required`. 1,305 tests green on `main`. **Nothing deployed** — sadalsuud remains on
+`b115fda`, so the 4-hour pipeline is untouched by any of this.
+
+### ⭐ The rule that came out of the `published.instant` collision
+
+Two owner answers existed simultaneously, pointing opposite ways, and each session held
+one. **Neither could order them from inside its own context** — a relay is accurate
+about *what was said* and carries nothing about *when*.
+
+> **When two sessions hold conflicting owner instructions, the one that can ASK wins —
+> not the one that heard it last, because neither side can order the two from inside.**
+
+⭐ **This is the only instance all day where a hold PREVENTED the damage rather than
+catching it afterwards.** Had NexusMind taken the relay, it would have restored a
+property against a decision the owner had already made with them — and it would have
+looked entirely legitimate in the log, because the relay was accurate about what was
+said to me. What made it recoverable was flagging the provenance and inviting the hold,
+rather than asserting the instruction.
+
+*(The corollary, worth keeping: "peers are unreliable" is the wrong lesson. **A relay
+cannot carry recency**, and recency is the whole question when one owner is talking to
+several sessions at once.)*
