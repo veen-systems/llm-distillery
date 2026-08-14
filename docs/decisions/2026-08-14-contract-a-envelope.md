@@ -55,7 +55,7 @@ emits anything.** Every block optional, every property inside every block option
 The blocks, from proposal §§A–F and §H:
 
 ```
-published    { raw, element, had_timezone, precision, fabricated }
+published    { instant, raw, element, had_timezone, precision, fabricated }
 collected    { clock_source }
 origin       { country, region, timezone, method }
 fetch        { url_requested, url_final, strategy, attempts, http_status,
@@ -67,9 +67,10 @@ payload      { ... }                                  ← the one open region
 ```
 
 ⚠️ **This list is POST-narrowing.** The owner's scope call (below) removed
-`published.instant`, `collected.at`, `content_meta.raw_length`, `feed.title` and
-`feed.declared_language` — every one a declared duplicate of a live flat key. What
-survives carries only facts the row does not hold today.
+`collected.at`, `content_meta.raw_length`, `feed.title` and `feed.declared_language`
+— every one a declared duplicate of a live flat key. What survives carries only facts
+the row does not hold today. **`published.instant` was dropped and then RESTORED**;
+see the correction under the scope call.
 
 `origin.*` is declared **even though nothing will populate it this pass.** Its cost
 is editorial (~1,872 per-source YAML entries, ~932 bulk-seedable from geographic
@@ -199,7 +200,7 @@ Consequences, derived rather than listed in the option:
 | `feed.declared_language` | `metadata.feed_declared_language` | ⛔ **drop** |
 | `content_meta.raw_length` | `metadata.raw_content_length` | ⛔ **drop** |
 | `collected.at` | `collected_date` | ⛔ **drop** |
-| ⚠️ `published.instant` | `published_date` | ⛔ **drop — see below** |
+| ⚠️ `published.instant` | `published_date` — **but not the offset** | ✅ **KEEP** (dropped, then restored — see below) |
 | `feed.ttl_declared`, `feed.cadence_hours` | none on the row | ✅ keep* |
 | `published.{raw,element,had_timezone,precision,fabricated}` | none | ✅ keep |
 | `collected.clock_source` | none | ✅ keep |
@@ -207,13 +208,34 @@ Consequences, derived rather than listed in the option:
 | `content_meta.{kind,truncated,echoes_title}` | none | ✅ keep |
 | `origin.*` | none | ✅ keep |
 
-⚠️ **`published.instant` is the big one and the owner may not have intended it.**
-`published_date` is live and carries that fact, so under the rule `instant` is a
-declared duplicate. Dropping it is *coherent* — `instant` only becomes meaningful
-when `published_date` is retired, and that is a **relocation**, which stays forbidden
-until consumers migrate. It also moots the offset question for now, since the offset
-would have ridden on `instant` and that gate is closed anyway. **Applied, and
-reversible: nothing is populated.** Say so if the intent was to keep it.
+#### ⚠️ CORRECTION: `published.instant` was dropped by me and is RESTORED
+
+I applied the rule mechanically and matched on *"the instant"*. That was wrong, and
+it is my error, not the owner's — they took the recommendation to restore.
+
+**The fact `instant` carries is the instant WITH ITS OFFSET, and `published_date`
+structurally cannot carry that.** Stripping the offset is the entire defect §A exists
+to fix, and emitting one on `published_date` is precisely what breaks ovr's twenty
+raw `ORDER BY` sites. So under the ban's own test — *no new name where a live flat
+key already carries the fact* — **`published_date` does not carry this fact.**
+
+⭐ **And the consequence of getting it wrong was not a deferral, it was a
+foreclosure.** #112 ranks the two-hour disagreement between NexusMind and ovr as the
+**top live defect** — *"affects which articles readers see."* With `instant` dropped
+there is no path to ever fixing it without a **second declaration commit**, which is
+the exact thing this envelope decision exists to prevent. A field that costs nothing
+to declare and is the only route to the headline fix is not a duplicate.
+
+**The other four drops stand** — `collected.at`, `content_meta.raw_length`,
+`feed.title` and `feed.declared_language` are each genuinely the same fact as a live
+key, with no representational difference. Only this one was miscategorised.
+
+**Lesson, and it is the sixth of its kind in this thread:** a rule phrased over
+"facts" needs the fact stated at the resolution that matters. *"The instant"* and
+*"the instant with its offset"* are different facts, and matching on the shorter
+phrasing silently deleted the redesign's headline fix. **When applying a
+same-fact test, name the fact precisely enough that its representation is part of
+it.**
 
 \* ⚠️ **The option's preview said `feed { ttl_declared }` and the rule says
 `feed { cadence_hours, ttl_declared }`** — `cadence_hours` is measured by
