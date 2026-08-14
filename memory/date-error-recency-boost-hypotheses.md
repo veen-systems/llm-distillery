@@ -34,8 +34,8 @@ confirmed one** (H-D1 below). Timezone misparse was the competing candidate and 
 ⚠️ **This framing was written when the causes were unseparated, and it was too
 cautious rather than wrong.** Keep the class-level claim — a remedy aimed at one
 member still leaves the others — but do not cite "timezone misparse is the larger
-spike" from it. That was the 6h reading, and 6h is now H-D2: **unreproducible on
-producer bytes.**
+spike" from it. That was the 6h reading, and **6h is now RESOLVED as arXiv's daily
+04:00 announcement seen one collection period late (H-D2) — not an error at all.**
 
 ---
 
@@ -70,11 +70,31 @@ six date-less feeds — `french_le_parisien` (700), `south_asian_kathmandu_post`
 **Useful contrast:** the 11h spike is 84% `science_arxiv_cs` — a genuine
 publication-lag pattern, not an error. That is what a *real* gap looks like.
 
-### ⚠️⚠️ THE FINGERPRINT IS GONE FROM ROWS COLLECTED AFTER 2026-08-14 ~17:00
+### ⚠️⚠️ THE FINGERPRINT IS GONE FROM THE `collection_20260814_193603` RUN ONWARD
 
 FluxusSource deployed **timestamp canonicalization** to production, which strips
 sub-second precision from every emitted timestamp. **Microseconds no longer
 distinguish a fabricated date from a parsed one.**
+
+⚠️ **The boundary is a RUN, not a wall-clock hour — and the hour first written here
+was wrong by ~2.5h.** Measured on sadalsuud 2026-08-14 20:03 (llm-distillery
+session), not taken on report:
+
+| | `collected_date` spelling |
+|---|---|
+| `collection_20260814_161408` (pre) | **143 / 143 microseconds** |
+| `collection_20260814_193603` (post) | **2,891 / 2,891 canonical**, both date fields |
+
+`src/models/content_item.py` on sadalsuud has mtime **19:20:42**, and sadalsuud is on
+`6455c06` (contains `94e7337`). So the **16:02 and 16:14 runs still carry the
+fingerprint** — this file previously told you they did not. Anything collected up to
+and including `collection_20260814_161408` is quotable evidence.
+
+⭐ **The fix itself is not an orphan and never was.** One site, `ContentItem._canonical_timestamp`
+→ `utils/time_utils.canonical_timestamp`, exactly the single fix site predicted;
+follow-up **FS#174** (tighten `output_schema.json`'s pattern) deliberately held until
+~2026-08-21 so the 7-day hot window can roll before the validator would start failing
+every run.
 
 1. **The ~2h gap signature survives** — both fields truncate to whole seconds, so a
    fabricated row still sits at 2h ± 1s. Microseconds were the *confirmation*, not the
@@ -93,7 +113,85 @@ distinguish a fabricated date from a parsed one.**
 fingerprint is now gone from new rows and `published.fabricated` is what replaces it,
 permanently and on purpose.**
 
-## ⏳ H-D2 — OPEN: the 6h spike is not in the producer's data at all
+## H-D2 — ✅ RESOLVED: the 6h spike is arXiv, and it WALKS WITH THE COLLECTION TIMER
+
+**Measured 2026-08-14 ~20:10 by the llm-distillery session, on sadalsuud
+`NexusMind/data/raw/`.** Both candidates below were right, and the mechanism is
+neither fabrication nor timezone misparse.
+
+### The population, recovered exactly — and the original numbers reproduce digit for digit
+
+**7,478 = 3,835 + 3,643** — the two most recent NexusMind raw deliveries
+(`content_items_20260814_121003.jsonl` + `…_160810.jsonl`). Not a 7-day window, not a
+sample: **two files**. That alone is why FluxusSource's 152,422-row / 47-run window did
+not contain it.
+
+Re-run on exactly those two files: **6.0 → 1,046 / 13.99%, 10.0 → 237 / 3.17%, 2.0 →
+236 / 3.16%** — identical to the table in *Superseded* below. **Same instrument, same
+bytes**, so nothing here rests on a re-derivation that might differ from theirs.
+
+### The attribution
+
+**974 of the 1,046 rows in the 6.0 bin (93.1%) are arXiv feeds** —
+`science_arxiv_cs` 526/526, `ai_arxiv_cs_ai` 261/261, `science_arxiv_eess` 67/67,
+`ai_arxiv_stat_ml` 47/47, plus four smaller arXiv categories, **every one of them 100%
+of that source's rows in the file**. And **983 carry the same `published_date`:
+`2026-08-14T04:00`** — arXiv's daily announcement moment. They were collected
+10:04–10:07.
+
+### ⭐ The mechanism, and why the two windows disagreed
+
+arXiv publishes **once a day at a fixed instant**. The gap is therefore just *"how long
+ago was 04:00 when this run collected"* — so it **increments by one timer period per
+delivery**:
+
+| delivery | arXiv rows | gap p50 | published hour |
+|---|---|---|---|
+| 08-13 20:07 | 14 | 14.08h | 08-13T04 |
+| 08-14 00:06 | 0 | — | — |
+| 08-14 04:10 | 0 | — | — |
+| 08-14 08:07 | 17 | **2.06h** | 08-14T04 |
+| 08-14 12:10 | **989** | **6.12h** | 08-14T04 |
+| 08-14 16:08 | 136 | 10.10h | 08-14T04 |
+
+**+4h per delivery, exactly the `fluxus-collection` period.** FluxusSource's own
+"11h spike is 84% `science_arxiv_cs`" is this same batch read at their run cadence —
+the two sides were describing one phenomenon at two phases, not two phenomena.
+
+### ⚠️⚠️ THE TRAP — this artifact passes through 2h once a day
+
+Read the 08:07 delivery instead of the 12:10 one and arXiv sits at **2.06h**: the
+fabrication signature's own bin. **`collected_date − published_date` is NOT a usable
+instrument for detecting fabrication without conditioning on `source`** — a
+fixed-publication-moment source will impersonate the `now − 2h` fallback for one
+delivery in every daily cycle.
+
+⭐ **H-D1 survives this, and by a margin you should check rather than assume.** Its
+window was **2h ± 5s**; arXiv sat at 2.06h = **216s out**, so it was correctly
+excluded. But the margin is *run-start-time dependent* — a run beginning near 06:00
+UTC would land arXiv inside ±5s. The microsecond fingerprint is what made H-D1 safe,
+and it is now gone (see above), which is a second, independent argument for shipping
+`published.fabricated` explicitly.
+
+### Also: "6.00h" was never a whole-hour spike
+
+Quarter-hour binning did that. Actual gaps in the bin: **min 5.8752, p50 6.1220, max
+6.1243**, and only **5 of 1,006** rows sit within ±72s of 6.00h. A round number in a
+binned histogram is a property of the bins.
+
+### Consequences
+
+- **Benign.** These dates are correct, the lag is real, and the 1.3× boost they take
+  under 24h is earned. Nothing to fix.
+- The conjecture *"6h = the producer's 2h + one timer period"* is **REFUTED**. It has
+  the right arithmetic and the wrong referent: the +4h is real, but it is added to
+  arXiv's 04:00, not to a fabricated `now − 2h`.
+- **Do not cite a whole-hour gap spike as evidence of a date defect** without the
+  source breakdown beside it.
+
+---
+
+## Superseded framing of H-D2 — the 6h spike is not in the producer's data at all
 
 ⚠️ **FluxusSource cannot reproduce NexusMind's 6h spike.** Whole-hour gaps on their
 152,422-row window: **2h → 1,805 (1.18%)**, 0h → 341, 11h → 214, 4h → 107. **There is
@@ -137,14 +235,18 @@ Two candidates, equally consistent with the aggregate:
 ⚠️ **NM#354 records *"each naive instant IS UTC"* as explicitly UNMEASURED**, so H-D1b
 has never been excluded.
 
-### The discriminating measurement, not yet run
+### The discriminating measurement — ✅ RUN 2026-08-14 ~20:10, see H-D2 above
 
-**Condition the gap distribution on `source`.** The two hypotheses are cleanly
-separable and nobody has separated them. Neither the NexusMind nor the llm-distillery
-session would call it, deliberately — after a day in which every confident sentence
-beside a sound number needed correcting.
+**Condition the gap distribution on `source`.** It was the right instrument and it
+answered in one query: the 6h bin is **93.1% arXiv**, and neither H-D1a nor H-D1b is
+the cause. Cost: four `ssh` reads. ⭐ **It had been deferred as delicate, and the
+delicacy was in the write-up, not the measurement** — the caution that made both
+sessions hold was about *attributing* a number, and the fix for that is to condition
+it, not to leave it unmeasured.
 
-⚠️ **Do not attribute the 6h spike to fabrication in any document until this is run.**
+⚠️ **Do not attribute a whole-hour gap spike to fabrication in any document.** The
+source breakdown must travel with it, because a fixed-publication-moment source
+imitates the fabrication signature once per daily cycle.
 
 ### What would settle it, once the producer emits
 
@@ -169,8 +271,9 @@ exactly what separates the two causes:
   `published_date` (2.805% non-canonical, largest class *microseconds with no offset*,
   207 sources). A **text-shape** problem affecting sorts and `DELETE`s, not a
   wrong-instant problem, so it is a different defect with a different fix site.
-  ⚠️ **But it is NOT independent of H-D1**: it was **deployed 2026-08-14 ~17:00 and it
-  erased H-D1's microsecond fingerprint.** Two correct, unrelated changes, one of which
+  ⚠️ **But it is NOT independent of H-D1**: it was **deployed 2026-08-14 19:20 (first
+  clean run `collection_20260814_193603`) and it erased H-D1's microsecond
+  fingerprint.** Two correct, unrelated changes, one of which
   silently destroyed the other's evidence — which is the argument for explicit fields
   over accidental signals. See `docs/CONTRACTS_PLAN.md` § *Round 3*.
 - **The two-hop 2h disagreement** (NexusMind reads naive as UTC, ovr's JavaScript reads

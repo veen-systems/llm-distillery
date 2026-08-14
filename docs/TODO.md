@@ -37,6 +37,26 @@ path opens either schema file.
 | `published.instant` | **same moment as `published_date`** — adds no temporal information, only an offset that `origin.timezone`/`had_timezone` carry better. And the defect it was justified by is a **consumer bug** (ovr's JS reads naive as local) with a one-line fix. |
 | `collected.at`, `content_meta.raw_length`, `feed.title`, `feed.declared_language` | declared duplicates of live flat keys |
 
+### ✅ H-D2 CLOSED 2026-08-14 ~20:10 — the 6h spike was arXiv, not a date defect
+
+Ran the discriminating measurement (condition the gap on `source`) that both sessions
+had deliberately deferred. The **7,478-row population is exactly two NexusMind raw
+deliveries** (3,835 + 3,643), and the recorded bins reproduce digit for digit. **974 of
+the 1,046 rows in the 6.0 bin (93.1%) are arXiv**, 983 sharing one `published_date`
+(`2026-08-14T04:00`, arXiv's daily announcement).
+
+⭐ **The gap walks with the collection timer** — arXiv sits at 2.06h / 6.12h / 10.10h /
+14.08h across four consecutive deliveries, +4h each, because `published` is fixed and
+`collected` moves. FluxusSource's *"11h spike is 84% `science_arxiv_cs`"* is the same
+batch at their cadence: **one phenomenon at two phases, not two phenomena.**
+
+⚠️ **The trap, and it is the reusable part:** this artifact passes through **2.06h**
+once per daily cycle — the fabrication signature's own bin. `collected − published` is
+**not** a fabrication instrument without a `source` breakdown. H-D1 survives only
+because its window was 2h **± 5s** and arXiv sat 216s out; a run starting near 06:00
+UTC would contaminate it. Second independent argument for shipping `published.fabricated`
+explicitly. Full record: `memory/date-error-recency-boost-hypotheses.md`.
+
 ### Do first, in this order
 
 1. **`fabricated` + `had_timezone` + `raw`, TOGETHER** — not `fabricated` alone.
@@ -52,20 +72,29 @@ path opens either schema file.
 3. **`collected.clock_source`**, then `fetch.*`, then `element`, then `precision` last
    (the only one that is new code rather than threading-out).
 
-### ⚠️ Unassigned, and will evaporate if nobody takes them
+### ⚠️ Unassigned — the list is now ONE item, not three
 
-- **The canonical-serialization defect** — the best finding of the day and **not part
-  of the redesign**. FluxusSource emits **four spellings** of `published_date`;
-  **2.805% of rows non-canonical**, and the largest class is *microseconds with no
-  offset at all* (2,797 rows), invisible to any offset-based query. **207 distinct
-  sources**, so it must be fixed where the value is stored — one site in
-  `ContentItem`. Ungated and separable from FS#171. **Not filed.**
-- **Category G** (`collection.*`, the non-event sidecar) — spec-ready, touches neither
-  schema, **no implementer**. pipeline-atlas supplied the model facts and correctly
-  declined the code.
-- **The canary** — the repeatable undeclared-key row that proves the check detects.
-  **Blocks W2.2** (declaring `source_group`), which is what finally makes Contract A
-  read clean. Nobody's.
+- ~~**The canonical-serialization defect**~~ — ✅ **CLOSED the same evening, before this
+  list was read.** Fixed in `94e7337` at the single predicted site
+  (`ContentItem._canonical_timestamp` → `utils/time_utils.canonical_timestamp`),
+  deployed to sadalsuud **19:20:42**, and **verified live by this session**:
+  `collection_20260814_161408` carried 143/143 microsecond `collected_date`,
+  `collection_20260814_193603` carries **2,891/2,891 canonical on both date fields**.
+  Follow-up **FS#174** tightens `output_schema.json`'s pattern and is deliberately
+  held to ~2026-08-21 so the 7-day hot window rolls first — otherwise the validator
+  exits 1 every run for a week and gets switched off.
+  ⚠️ **This moved H-D1's expiry boundary**: the fingerprint dies at a *run*
+  (`…_193603`), not at "~17:00" — the 16:02 and 16:14 runs are still quotable.
+  `memory/date-error-recency-boost-hypotheses.md` corrected.
+- ~~**The canary**~~ — not unowned: it is item 1 in the **nexusmind** session's own
+  brief. Leave it there; two sessions building one canary is worse than none.
+- **Category G** (`collection.*`, the non-event sidecar) — **the only genuinely
+  unassigned item.** Spec-ready, touches neither schema, no implementer.
+  pipeline-atlas supplied the model facts and correctly declined the code, since that
+  repo owns no pipeline code. ⚠️ Its blocking correction is unresolved: **the grain is
+  wrong for the RSS tier** — `concurrent_rss` is one source name holding the entire
+  feed tier, while `health_state` runs per *feed*. Decide the grain per tier first, or
+  the tier carrying most of the feeds is the one the sidecar cannot describe.
 
 ### The offset gate has THREE parts, not one
 
