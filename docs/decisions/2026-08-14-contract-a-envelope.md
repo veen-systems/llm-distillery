@@ -287,11 +287,48 @@ and GN is the population where short is **structural rather than incidental**.
 population, missing publisher-named feeds repointed to GN and topic queries that
 proxy no publisher at all. *(Non-RSS agrees exactly across repos: 4,391 = 4.31%.)*
 
-⚠️ **`CLAUDE.md` states this undercount as "~5:1" and this measurement says 1.64×.**
-Both cannot describe the same quantity. Unreconciled — possibly distinct populations
-(rows vs distinct sources) or different windows. **Do not quote either ratio until
-someone reconciles them**; the *rule* — match on URL, not prefix — is unaffected and
-holds under both.
+#### ✅ The 5:1 / 1.64× conflict — RESOLVED, and neither figure is wrong
+
+I flagged `CLAUDE.md`'s "~5:1" as conflicting with 1.64×. Both peers reconciled it
+independently and agree: **they count different things.** Measured (FluxusSource,
+clean window; feed counts from the repo YAML):
+
+| quantity | URL test | `gn_` prefix | ratio |
+|---|---|---|---|
+| **configured feeds** (enabled) | 302 | 59 | **5.12×** ← this is the `~5:1` |
+| distinct sources emitting | 251 | 59 | 4.25× |
+| **emitted rows** | 25,607 | 15,655 | **1.64×** |
+
+The prefix catches the same 59 feeds under all three counts and **zero prefix hits
+fall outside the URL test** — it is a strict subset, exactly as the rule assumes. So
+all three ratios are quotable *once the denominator is attached*, which is the same
+fix the 95.7% needed. "Unreconciled, don't quote either" was too pessimistic.
+
+⭐ **Why they diverge is the part worth keeping, and it inverts the intuition.** The
+59 `gn_*` country proxies are broad country-wide queries and individually
+high-volume; the 243 publisher-named feeds repointed to GN are narrow and individually
+small. **So the prefix misses 5× the feeds but only 1.64× the rows — it happens to
+catch the biggest ones. That makes it MORE dangerous, not less:** a row-share sanity
+check shows it undercounting by ~1.6 and reads as roughly-right, while the
+feed-level population it describes is off five-fold. The rule holds unchanged under
+every reading — match on `'news.google.com' in url`, never on the prefix.
+
+⚠️ **Two live defects this surfaced, neither mine to fix:**
+1. **`CLAUDE.md`:196 carries the bare ratio with no denominator**, in a sentence about
+   *matching* — a feed ratio in a matching claim. Proposed to the owner; not edited
+   here, since it is a normative surface and the measurement is not mine.
+2. **FluxusSource `memory/gn-proxy-protocol.md:55` contradicts itself**: it states
+   "roughly 5:1" and illustrates it with **202 `gn_*` vs 441 GN-URL items in one run**
+   — which is 2.18×, an *item* count under a *feed* ratio. Theirs to fix; NexusMind
+   found it and correctly declined to edit another repo's memory.
+3. **NexusMind `scripts/research/phase2_296_cosine.py:111`** labels a stratum "GN on
+   one side (77%)". If that stratum was built on the prefix, the 77% is on the
+   undercounting population. **Flagged, deliberately not rewritten** — restating a
+   past analysis silently is worse than leaving it labelled.
+
+*(Also noted for later: 302 configured vs 251 emitting means **51 enabled GN feeds
+produced nothing** in the clean window, so the feed-level and emitting-source ratios
+will drift apart by construction. Producer's issue, not this contract's.)*
 
 ## Why this is cheap: the declaration commit is runtime-inert, and that is verified
 
