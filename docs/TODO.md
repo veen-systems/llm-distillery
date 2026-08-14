@@ -52,10 +52,19 @@ batch at their cadence: **one phenomenon at two phases, not two phenomena.**
 
 ⚠️ **The trap, and it is the reusable part:** this artifact passes through **2.06h**
 once per daily cycle — the fabrication signature's own bin. `collected − published` is
-**not** a fabrication instrument without a `source` breakdown. H-D1 survives only
-because its window was 2h **± 5s** and arXiv sat 216s out; a run starting near 06:00
-UTC would contaminate it. Second independent argument for shipping `published.fabricated`
-explicitly. Full record: `memory/date-error-recency-boost-hypotheses.md`.
+**not** a fabrication instrument without a `source` breakdown.
+
+⭐ **Sharpened by the FluxusSource session the same evening, and it inverts my
+framing.** I said H-D1 survives "by a margin" (arXiv 216s outside its 2h ± 5s window).
+Their run put the same batch **452s** out — and *two different margins is the finding*.
+arXiv announces **04:00 UTC**; the timer fires **06:00 UTC** (08:00 Amsterdam, FS#132),
+exactly 2h later. **The coincidence is a scheduled tick, not a hypothetical**, and the
+only thing holding a whole announcement batch out of the fabrication window is how long
+a run takes to reach that aggregator — which no invariant fixes. **Correct conclusion:
+`published.fabricated` must be stamped at the point of fabrication, because no
+downstream rule can separate a fabricated date from a real one genuinely 2h old.**
+Recorded in FS#173 (comment + body correction). Full record:
+`memory/date-error-recency-boost-hypotheses.md`.
 
 ### Do first, in this order
 

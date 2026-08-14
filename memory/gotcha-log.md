@@ -46,6 +46,56 @@ Problems encountered and resolved. Format: Problem → Root cause → Fix.
 
 ---
 
+## A GAP SPIKE THAT LOOKS LIKE A CLOCK BUG IS A PUBLISHING SCHEDULE — and it walks with your timer (2026-08-14)
+
+**Problem**: `collected_date − published_date` showed a **6.00h spike on 13.99% of
+7,478 rows**, and two repos spent a day treating it as a date defect (fabrication vs
+timezone misparse). It is **arXiv**: 974 of 1,046 rows in that bin, 983 sharing one
+`published_date` — the daily 04:00 UTC announcement.
+
+**Root cause**: a source with a **fixed publication instant** makes the gap a pure
+function of *when your collector ran*. So the spike **walks with the timer**: the same
+batch reads 14.08h → 2.06h → 6.12h → 10.10h across four consecutive 4-hourly
+deliveries. Two windows sampling different phases look like they contradict each other
+while describing one phenomenon. Compounding it, the "6.00h" was a **binning artifact** —
+real gaps ran 5.875–6.124, and only 5 of 1,046 sat within ±72s of 6.00. A round number
+in a binned histogram is a property of the bins.
+
+**Fix**: **condition the gap on `source` before attributing it to anything.** Four
+`ssh` reads answered what had been deferred for a day as delicate — and the delicacy
+was in the *write-up*, not the measurement. The remedy for "this number is hard to
+attribute" is to condition it, not to leave it unmeasured.
+
+⚠️ **The dangerous half, and it is a scheduling coincidence, not bad luck**: this
+artifact passes through **~2h once per daily cycle**, which is the `now − 2h`
+fabrication fallback's own signature. arXiv announces 04:00 UTC; the collection timer
+fires 06:00 UTC — **exactly 2h later, a real tick, six times a day**. The only thing
+holding a whole announcement batch outside a `2h ± 5s` discriminator is **how long the
+run takes to reach that one aggregator** (measured 216s in one delivery, 452s in
+another — *the two margins disagreeing is the finding*). No invariant fixes it;
+concurrency or source-ordering changes move it freely.
+
+⭐ **The general lesson**: an inferred discriminator whose separation is *latency* is
+not a discriminator. **Stamp the fact at the point where it becomes true** — no
+downstream rule can separate a fabricated date from a real one that is genuinely 2h
+old. Same argument that retires every accidental fingerprint.
+
+## A GLOB THAT CANNOT MATCH IS INDISTINGUISHABLE FROM ONE STILL WAITING (2026-08-14)
+
+**Problem**: a background `until` loop polling for a collection run had been alive
+**five days**. It was not waiting for a slow job; its predicate could never become true.
+
+**Root cause**: the glob was `collection_202608092*`, and the directories are named
+`collection_20260809_...` — **the character after the date is `_`, so `2*` can never
+match it.** The loop's observable behaviour ("still running") is identical whether the
+predicate is false-for-now or false-forever.
+
+**Fix**: a waiter must **print what it matched, or fail loudly after a bound**. Same
+family as the unreachable-mechanism catalogue below, in its monitor form: a check that
+can never fire reads exactly like a check that is correctly quiet. Sibling of the
+standing `pgrep -f` rule in `CLAUDE.md` — *if a process check decides whether you act,
+print the matching line before believing it.*
+
 ## PINNING AN ALIAS TO ITS "REAL" NAME IS NOT A RENAME — `deepseek-chat` and `deepseek-v4-flash` are different runtimes (2026-08-14)
 
 **Problem**: Every DeepSeek call site in this repo hardcodes the **alias** `deepseek-chat`

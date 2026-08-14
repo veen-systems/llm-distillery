@@ -166,12 +166,35 @@ instrument for detecting fabrication without conditioning on `source`** — a
 fixed-publication-moment source will impersonate the `now − 2h` fallback for one
 delivery in every daily cycle.
 
-⭐ **H-D1 survives this, and by a margin you should check rather than assume.** Its
-window was **2h ± 5s**; arXiv sat at 2.06h = **216s out**, so it was correctly
-excluded. But the margin is *run-start-time dependent* — a run beginning near 06:00
-UTC would land arXiv inside ±5s. The microsecond fingerprint is what made H-D1 safe,
-and it is now gone (see above), which is a second, independent argument for shipping
-`published.fabricated` explicitly.
+⭐⭐ **H-D1 survives — but NOT by a margin, and "margin" was the wrong frame.**
+*(Corrected 2026-08-14 ~20:30 by the FluxusSource session, who reproduced the
+mechanism on their own corpus rather than adopting these numbers. Their sharpening is
+the load-bearing half.)*
+
+H-D1's window was **2h ± 5s** and arXiv fell outside it — by **216s** in the NexusMind
+delivery measured here, by **452s** in FluxusSource's own run. ⚠️ **Those two numbers
+disagreeing is itself the finding**: the separation is not a property of arXiv or of
+the fabrication, so it cannot be relied on.
+
+**It is intra-run latency, and the coincidence is scheduled, not hypothetical:**
+
+- arXiv announces at **04:00 UTC**
+- the collection timer fires at **06:00 UTC** (08:00 Europe/Amsterdam, FS#132) — a
+  real tick on the schedule, one of six a day
+- **06:00 − 04:00 is exactly 2h.** The 755 rows in their run sat at 2h + 452s *only
+  because the run reached the arXiv aggregator at 06:07:32*
+
+So the sole thing holding an entire announcement batch out of the fabrication window
+is **how long a run takes to reach that one aggregator** — no invariant guarantees it,
+and any concurrency or source-ordering change moves it freely. I first wrote this as
+"a run beginning near 06:00 UTC *would* contaminate it"; the conditional was wrong.
+**That run is on the timer.**
+
+⭐ **Hence the conclusion in its correct form, which is stronger than the margin
+version:** `published.fabricated` must be stamped **at the point of fabrication**,
+because **no downstream rule can separate a fabricated date from a real one that is
+genuinely 2h old.** The microsecond fingerprint was never a margin either — it was a
+different kind of evidence, and it is gone (see above).
 
 ### Also: "6.00h" was never a whole-hour spike
 
