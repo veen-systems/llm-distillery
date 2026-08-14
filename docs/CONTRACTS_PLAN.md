@@ -1878,3 +1878,63 @@ parked behind the consumer's, which has landed. What remains open is scope, not
 permission: whether the rename ban extends past the three language keys (if it does,
 `feed` collapses to `ttl_declared` alone), and whether `content_meta.kind` stays
 RSS-only.
+
+
+---
+
+## Round 3 addendum — two blockers found by checking, 2026-08-14 late
+
+### ⛔ 1. `NM#360` does NOT merge cleanly, and "merges clean" was a stale observation
+
+```
+gh pr view 360 --json mergeable,mergeStateStatus
+  {"mergeable":"CONFLICTING","mergeStateStatus":"DIRTY"}
+  9 ahead / 6 behind main · 14 files · CI green (test + GitGuardian, 14:18-14:23Z)
+```
+
+NexusMind had verified the merge locally *because* GitHub reported `UNKNOWN`, which
+was the right instinct. GitHub has since computed it, against a `main` the branch is
+**6 commits behind**. ⭐ **A merge state is not a property of a branch — it is a
+relationship with a moving one.** The error was mine more than theirs: I carried a
+timestamped observation forward as a standing fact, into a recommendation that the
+owner merge on it. **This is now the top blocker in the whole redesign** — nothing
+merges in either repo until it is rebased or merged forward, and the
+consumer-before-producer rule means FluxusSource's declaration cannot land first.
+
+### ⛔ 2. RETRACTED: nothing downstream protects ovr from FS#171
+
+I told ovr.news that NexusMind's `astimezone(timezone.utc)` stood between
+FluxusSource's FS#171 and ovr's 20 lexicographic sort sites. **False, and backwards.**
+
+**NexusMind RELAYS `published_date` byte-for-byte; it does not produce it.**
+`scripts/main.py:1505` emits `article.get("published_date")` verbatim;
+`parse_published_date` serves only *their* freshness cutoffs, archive buckets and
+dedup, and **its return value is never serialized to output.** Proven by joining raw
+to filtered on `id`: **6,024 matched rows, byte-identical strings, zero reformatted.**
+
+**Consequences, both inverted from what I recorded:**
+
+1. **The two-spelling defect is FluxusSource's, not NexusMind's.** The
+   `+00:00`-with-microseconds form is in the producer's own bytes
+   (`2026-07-13T15:23:03.480000+00:00`): **0.21%** of 7,478 live raw rows, **1.03%** of
+   195,233 local raw, **0.58%** of 1,133,205 filtered — one phenomenon measured at
+   three points on a pass-through, and it matches ovr's independent 68/6,000.
+2. ⛔ **FS#171 is an ovr-facing hazard TODAY**, gated only on FluxusSource not yet
+   emitting offsets. When it does, `+02:00` lands in ovr's filtered JSONL **unchanged**.
+   ovr's offset test is not a guard on a hypothetical path; it is the real thing.
+
+⭐ **And the fix moves repo.** Making it `Z` in NexusMind would mean **rewriting
+producer data on a relay path** — a materially larger decision than a serialization
+tweak, and the wrong site: **fixing it in FluxusSource fixes it for every consumer at
+once**, including any that never read NexusMind. NexusMind declined and put
+relay-verbatim to the owner as a property to keep or lose deliberately, which is
+right.
+
+⚠️ **The fix is a single canonical serialization, not an offset choice.** The prefix
+collision (`'…T13:32:48'` is a prefix of `'…T13:32:48.480000+00:00'`) comes from the
+**microseconds** as much as the offset — two rows at the same second with different
+sub-second precision collide identically. And it is separable from W1.1: it changes
+no instant and no ordering semantics, so it is not gated on ovr#321 or the clock fix.
+
+*(Sixth wrong-sentence-beside-a-correct-finding here, and the costliest: it would have
+sent the fix to the wrong repo AND left ovr believing they were protected.)*
