@@ -12,9 +12,15 @@ instrument defects that constrain how these numbers may be quoted are in
 timer on sadalsuud, and ship pipeline-atlas's reader. **Owner explicitly approved the
 systemd unit install**, which NexusMind had correctly refused to do without it.
 
-**NOT approved and NOT to be started:** phases 1–3, the shared envelope (W1.4), and
-the three open owner decisions (envelope, its additive path, `eval_query`). **None of
-them blocks phase 0** — they can stay open throughout it.
+**NOT approved and NOT to be started:** phases 1–3 and `eval_query`. **None of them
+blocks phase 0** — they can stay open throughout it.
+
+⚠️ **The envelope (W1.4) and its additive path came OFF this list later the same
+day.** The owner reopened and delegated both — *"then settle the shared envelope,
+because `additionalProperties: false` on both schemas makes it a hard blocker for
+shipping anything incrementally"* — in the context of implementing the Contract A
+redesign (#112). **Settled: `docs/decisions/2026-08-14-contract-a-envelope.md`.**
+See § *Round 3* for the four peer answers and what they changed.
 
 **Two standing holds:**
 
@@ -1619,3 +1625,181 @@ copying that description would invert its own semantics.
   file** — that convention is `run_verifies.sh`'s and does not travel; the curate
   runner hands the em-dash to the shell as a filename.
 - Owner decisions 1, 2, 4 remain open.
+
+---
+
+## Round 3 — implementing the redesign, 2026-08-14
+
+**Trigger:** the owner put the llm-distillery session on implementing the Contract A
+redesign (#112), starting with the (b) fields and then the envelope. Four peer
+sessions were briefed and all four answered. **Nothing was committed in any repo;
+no session edited another's checkout.** The envelope decision is
+`docs/decisions/2026-08-14-contract-a-envelope.md`; only what that record does *not*
+carry is below.
+
+### What the peers changed in my brief — every one of the four found something
+
+⭐ **Three of the four corrections landed on claims I had inferred from code shape
+rather than measured, and each peer measured its own repo.** That is the division of
+labour working; it is also the fourth occurrence of *don't infer runtime behaviour
+from structure* in this thread.
+
+#### FluxusSource — takes all four (b) blocks; four specifics wrong in my brief
+
+Measured on sadalsuud `data/current/`, 7-day hot window, **152,422 rows / 47 runs**.
+
+1. ⭐ **`had_timezone` cannot be captured where I pointed.** `normalize_timezone:175`
+   does branch on `tzinfo` — but it is called from *inside* `parse_date_string`
+   (:127, :145). By the time `extract_date_from_rss_entry:110` calls it again the
+   value is **already naive**, so that second call can never see an offset. Capture
+   belongs inside `parse_date_string`.
+2. ⭐ **`precision` is new code, not a capture.** The dateutil path (:126) is tried
+   *first* and succeeds for nearly everything; `common_formats` (:132) is only the
+   fallback. So "which format matched" answers precision for the rare tail, not the
+   common case — the date-only-stored-as-midnight problem is **the default path, not
+   an edge case**. Producer will parse twice with different `default=` sentinels and
+   diff which fields dateutil actually filled. Most expensive of the five.
+3. **`fabricated` has two sites with two populations, and they don't compose.**
+   `rss_aggregator:592-593` calls both back to back, and since
+   `extract_date_from_rss_entry` defaults to `fabricate_fallback=True` it never
+   returns None there — so `ensure_valid_date:214` is **dead on the RSS path** and
+   live only for `fabricate_fallback=False` callers (feed-health staleness, FS#98).
+   One stamp reading as one mechanism would be wrong.
+4. **`element` needs a wider vocabulary than the 7 `date_fields`** — `entry.time.datetime`
+   (:74) and the `tags` term fallback (:91) also answer.
+
+**`collected.clock_source`: three clocks, not two.** Of 36 `collected_date=` stamp
+sites: **28 naive `datetime.now()`** (local, wrong), 6 `utc_now()`, and **2
+`DateParser.get_timezone_naive_now()` which are correct** — the third clock I missed.
+My "~27 vs 6" also described the wrong population: across `src/aggregators/*.py` there
+are 138 `datetime.now()` in 21 files, mostly **cutoff arithmetic, not stamps**. The
+stamp population is 36 and it is the one that matters.
+
+⭐ **Measured effect, and it reprices the field.** Local is UTC+2 on sadalsuud, so a
+wrong-clock row is stamped ~2h ahead of an RSS row in the same run. Against the
+per-run RSS median: **5,901 of 152,422 rows = 3.87%** sit at +1.98h, across 14
+families (newsapi_general 2,804 · pubmed 943 · github 723 · ClinicalTrials 424 ·
+hackernews 279 · CrossRef 253 · arxiv 167 · …). All 144,844 RSS rows and all social
+sit at ±0.03h. **So `clock_source` is ~96% constant from birth** and the fix is
+bounded and fully enumerated (28 sites, 19 files). Stamp-before-fix still holds — the
+stamp is what makes the fix provable — but plan for a 4% field, not a coin flip.
+
+**`fetch.*`: the trap is one layer below `resp.encoding`.** Every strategy in
+`RobustFeedParser` returns `response.content` (bytes), and `_fix_encoding_issues()` —
+where `charset_used` is decided — **never sees the headers**. Same shape as the date
+five, one function lower. The vehicle already exists: `fetch_ctx`, a dict created at
+`parse_feed:333` and threaded through all four strategies, already carrying
+`saw_5xx`/`hard_http`. Open question they raised and I agree with: the ladder makes
+several requests, so the triple must describe **the request that produced the returned
+bytes** — last-success-wins, stamped only on the winning branch.
+
+**`content_meta.kind`: `full_text` is unemittable for a second reason.**
+`rss_aggregator` never reads `entry.content` at all (feedparser's `content:encoded`
+mapping), only `summary`/`description` at :548 — so even a publisher serving full text
+in-feed arrives as a summary. ⚠️ **And the discriminator cannot be attribute presence**:
+`:548` is `getattr(entry, 'summary', getattr(entry, 'description', ''))` and feedparser
+routinely supplies an **empty string** rather than omitting the attribute — the exact
+shape that made `hasattr(tag, 'term')` wrong in FS#138. Test the cleaned body's
+truthiness.
+
+⭐⭐ **And the measurement that strengthens LD#93 beyond what the proposal claimed.**
+Of 144,844 RSS rows: 7,529 empty body (5.2%) + 204 body == title (0.1%) = **5.3%
+`headline_only`**. The other 94.7% are feed summaries — median body **143 chars**,
+p10 70, p90 914; 60.0% under 200, **77.2% under 300**. So the 300-char floor discards
+77.2% of RSS rows, and what it discards is overwhelmingly **complete feed summaries,
+not truncated articles**. `kind` is what licenses saying so: length was never the
+quality signal.
+
+#### pipeline-atlas — Category G confirmed as model facts; six corrections
+
+Confirmed the two refusal sites and the asymmetry (`model/chain.yml` `gate:` block,
+`gate.qmd` Level 4; the model's own comment: *"Same word, 'skip'; opposite
+consequences."*). **They are not taking the implementation** — that repo owns no
+pipeline code. Corrections, sharpest first:
+
+1. ⭐ **The grain is wrong for the RSS tier, and this is the one that makes the
+   sidecar useless.** `concurrent_rss` is **one source name holding the entire feed
+   tier** (the breaker registry keys on source name, so an open breaker refuses every
+   feed at once). But `health_state` runs per *feed*, and `poll_interval_actual_h`
+   comes from per-feed `update_frequency` for RSS vs `aggregator_frequencies` for
+   everything else — **two registries**. A per-source row for that name either
+   aggregates N feeds into one meaningless value or silently reports the first.
+   **Decide the grain per tier, or the tier carrying most of the feeds is the one the
+   sidecar cannot describe.**
+2. ⭐ **`outcome` must be written at the refusal site, not derived.** Derived from
+   `collection_stats` it inherits the defect it exists to expose: Site B's
+   `_record_skip` output is *already* classified downstream as `empty_sources`
+   (`'error' not in stats and items == 0`), so `refused_in_aggregator` and `empty`
+   are indistinguishable there **by construction** — a field that can never emit two
+   of its four values. The `uncomputed_at_callsite` variant arriving in the block's
+   first field.
+3. **`health_state` must name *which* health.** Three "healthy" counts across two
+   files, no two meaning the same: `summary.healthy_feeds` (fetch reliability),
+   `summary.states.HEALTHY` (freshness/cadence ladder), and
+   `logs_summary.json → health.feed_summary.healthy` (an unmarked **copy** of the
+   first, up to a day stale). Worse, `HEALTHY` on the ladder is the **fall-through** —
+   it means *unclassified*, not *fine*.
+4. **"Measured at fetch" requires adding a read that does not exist.** The collection
+   path constructs the health tracker and only ever writes to it; there is no
+   "should I fetch this?" query anywhere. A new coupling from collector into the
+   health subsystem — fine if intended, but an explicit spec line, not a free field.
+5. **The enum is refusal-shaped and misses a live non-refusal defect.** Site A has a
+   third branch: a plugin in `enabled_sources` with no `aggregator_frequencies` entry
+   and no self-scheduled declaration falls through to `else`, warns, and **collects it
+   every tick** (FS#121) — a weekly source on the collection cadence. `outcome` has no
+   value for *"fetched, but on the wrong cadence"*, and `poll_interval_actual_h` only
+   exposes it if **measured from consecutive fetches**; read from config it confidently
+   reports the interval the source is failing to be polled at.
+6. **`poll_interval_actual_h` has two semantics with no flag distinguishing them** —
+   the due-time advance is guarded on the name already holding a row in
+   `data/source_states.json`, and rows exist only for aggregators carrying scheduling
+   metadata.
+
+**On readership, in their words:** if the sidecar's only consumer is the ops snapshot,
+it has failed READER BEFORE STRICTER and `raw_item_count` has repeated itself one
+level up. The atlas can *report* it; that is display, not readership.
+
+⭐ **Two declared blind spots they named — classes no row-schema check can ever see:**
+
+- **The non-event one level up.** The source loader walks one level: a key holding a
+  `url` becomes a source, a key that does not is skipped *without descending*. **A
+  block of European feeds sat `enabled: true` collecting nothing for most of a year** —
+  no error, no warning, no zero-yield alert, because a source that was never walked
+  cannot report zero. A contract check validates rows that exist; a source emitting no
+  rows is invisible to it **at any strictness**. This is Category G's own argument one
+  level up, and it is the strongest case for doing G.
+- **Attribution through the reconstruction.** The strip list is a hardcoded
+  enumeration, so a key added on the NexusMind side and not added to it is reported as
+  a *producer* violation for a key the producer never emitted. The check detects
+  correctly and **attributes wrongly**.
+
+#### NexusMind and ovr.news
+
+Both are carried in the envelope decision record: the `language` name collision and
+the four measured violation classes (NexusMind), and the closed offset gate, the
+offset-grammar hole, and the ingest confirmation (ovr.news). Two items from NexusMind
+that belong here rather than there:
+
+- ⚠️ **`validate_production_contract.py` printed `metadata [required] x222` for what
+  is 203 rows** — errors merged across two fields, and the example it printed was
+  `word_count` (the 19-row minority), so `priority` (203 rows) **never appeared in the
+  output at all**. NM#357 reproduced live on today's bytes; cite it.
+- ⚠️ **Unreconciled numbers.** This document records `priority`-absent at **928** and
+  `word_count` at **267**; NexusMind measures **203** and **19**. Different corpora
+  (mutated `data/raw` vs FluxusSource `data/current`) and possibly errors-vs-rows
+  again. **Nobody has chased it. Do not quote either pair until someone does.**
+
+### Status at end of round 3
+
+| | |
+|---|---|
+| Envelope | ✅ **settled** — declare-before-emit, closed at every level, `language`/`source`/`item` excluded |
+| Producer-side (b) work | ✅ **accepted by FluxusSource**, sequenced kind → clock → fetch → time |
+| Consumer-side declaration commit | ⛔ **held** — NexusMind declines pending its owner; the thread was stood down in that repo on 2026-08-14 |
+| `published.instant` offset | ⛔ **gate closed** by ovr.news; reopens when their write-boundary integration test exists and is green |
+| Acceptance control | ✅ **resolved by splitting** — repeatable canary for "detection fires", declared gap for "catches the unanticipated" |
+| `origin.*` | ⏸ **sequenced separately**, `docs/proposals/contract-a-origin-sequencing.md`; T0 (GDELT passthrough + `origin.method`) is the only engineering tranche |
+| Category G sidecar | ⏸ spec needs the per-tier grain decision before anything else |
+
+⭐ **The blocking item is an owner decision, not an engineering one.** The producer
+half can start; the consumer half must land first-or-with, and it is held.
