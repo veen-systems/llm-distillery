@@ -46,6 +46,34 @@ Problems encountered and resolved. Format: Problem → Root cause → Fix.
 
 ---
 
+## NEVER MASK A UNIT THAT SITS IN AN `OnSuccess=` CHAIN — the loss has no failure surface (2026-08-14)
+
+**Problem**: The obvious way to open a maintenance window on sadalsuud is to mask the
+unit you need to hold still — e.g. `ovrnews-summarize.service` while rewriting
+`ovr.db`. **Do not.**
+
+`OnSuccess=` is **fire-and-forget**. By the time the downstream unit would start,
+`nexusmind.service` has **already exited 0**. So masking the downstream unit means
+that cycle's work simply never happens, **the upstream run is still recorded as a
+success, and nothing anywhere reports a failure.** The cycle is lost silently.
+
+**Fix**: don't mask — **use the quiet window instead.** The chain is
+`fluxus-collection.timer` → `nexusmind.service` → `ovrnews-summarize.service`, and it
+occupies roughly **90 of every 240 minutes**, leaving a **~2.5h quiet window from
+about :35 past the hour after a tick** until the next.
+
+⚠️ **And the grid is FluxusSource's, not NexusMind's** — verified:
+`systemctl show nexusmind.service -p TriggeredBy` is **EMPTY**. ovr's writer is
+**three hops from the clock**. Anyone reasoning about "NexusMind's schedule" is
+reasoning about a timer NexusMind does not have. See
+`reference-sadalsuud-pipeline-chain` in the auto-memory, which already says NexusMind
+is `inactive` between cycles **by design**.
+
+*(Found by the ovr.news session while planning a corpus backfill; the masking
+instinct is the natural move and it is the wrong one.)*
+
+---
+
 ## ⭐ THE UNIFYING FORM: a check that answers a NARROWER question than the one asked of it — where the narrow answer is TRUE (2026-08-14)
 
 *(NexusMind's formulation, after four instances landed in one day. This is the
@@ -108,8 +136,24 @@ of every other edit must be zero — and a **much weaker** one than it feels:
 to**: the unit-name bug was a **value** change, not an addition. It happened to cost
 23 bytes only because `nexusmind-` has length. **Had the wrong name been the same
 length as the right one, the reconciliation would have been perfect and the defect
-still there.** Byte accounting is reassuring about *additions* and near-silent about
-*values* — and values are what implementers depend on.
+still there.** So the accounting was not merely *"still trust"* — it was
+**structurally incapable of detecting the specific defect it was offered as assurance
+about.**
+
+> ⭐ **Byte counts answer *"how much changed"*, never *"what changed"* — and the two
+> look identical when the answer is reassuring.**
+
+✅ **THE POSITIVE CASE, so this does not overcorrect into "hashes are useless".** The
+same reviewer later used a hash correctly: *"is the committed blob the text I already
+read?"* — and a hash answers **exactly** that, no narrower, because they had read the
+text first. At rev 3 they asked *"have I verified the spec?"* and answered it with a
+hash, which is a strictly narrower question wearing the same clothes. **Same
+instrument, different question, different verdict.** The defect is never the tool; it
+is the gap between the question asked and the question answered.
+
+*(Related, same day: pin the **full** object name, not a short SHA or a branch —
+branches move, short SHAs collide, and only the full name means one specific text
+forever.)*
 
 ⚠️ **And test it against the wider question, not the narrow one.** NexusMind's unit
 test for this had been `assert (d / "nexusmind-contract-check.timer").exists()` —
