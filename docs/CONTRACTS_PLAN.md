@@ -1174,16 +1174,48 @@ Beyond `validate.ts` (drops rows at `:166`/`:191`; blind to everything outside
   Other named casualties: `stage_used`, `filter_version`.
 - **`getArticlesForBuild`'s INNER JOIN on `summaries`** (`db-articles.ts:288`) — not
   a schema check, but structurally drops any article that failed summarization.
-- **CODE LANDED, CORPUS PENDING — ovr#321 / ADR-046, committed `2583951` on master
-  2026-08-14.** `parsePublishedDate` returns `null` rather than an Invalid Date,
+- **CODE LANDED AND LIVE ON THE HOST, CORPUS PENDING — ovr#321 / ADR-046,
+  `60ada82` on master 2026-08-14.** ⚠️ **NOT `2583951`** — this document recorded
+  that hash and it **no longer exists on any branch**: `origin` had moved under them
+  (the pipeline's own auto-commit of `chain_metrics` / `qa-report` /
+  `source-funnel`), so they rebased. Zero file overlap, tests and lint re-run green
+  on the rebased state. *A commit hash recorded before a push is a claim about a
+  history that has not happened yet.*
+  ✅ **Verified ON THE HOST rather than inferred**: `git rev-parse HEAD` on sadalsuud
+  returns `60ada829`, `src/lib/published-date.ts` is present, `db-articles.ts`
+  carries the canonicalisation. **The write-boundary half is live**, which is the
+  pull-before-backfill step. They checked on the box rather than trusting their own
+  `git log` because of NexusMind's path-scoped-deploy warning. `parsePublishedDate` returns `null` rather than an Invalid Date,
   canonicalisation moved to the DB write boundary, and lint rule **[7/7] fails the
   build** on a bare `new Date(published_date)`. **The first declared-shape check on a
   field this plan is about.** Green on the committed state: 1,266 tests, lint clean,
   verify sweep 84/0, `tsc` byte-identical.
-  ⚠️ **The BACKFILL HAS NOT BEEN APPLIED** — a separate owner authorisation. So
-  anything depending on ovr's stored corpus being uniform is still blocked, and
-  **FS#171 stays blocked**: the gate is not clear until ovr confirms the backfill has
-  run. Caveat from their own review: still host-dependent for non-ISO input (RFC 822
+  ⚠️ **The BACKFILL IS AUTHORISED (owner, directly) AND NOT YET APPLIED.**
+  **FS#171 stays blocked until ovr confirms it has RUN and been verified** — not when
+  it was authorised, and the confirmation goes from ovr to FluxusSource directly.
+
+  **Report-only against the real production DB, and the population was wrong all
+  day:**
+
+  | | quoted all day | actual |
+  |---|---|---|
+  | rows to rewrite | 6,000 | **21,700** |
+  | sub-ms precision lost | 131 | **340** |
+  | naive / offset | 98.87% / 1.13% | **99.64% / 0.36%** |
+
+  **A trimmed 6,000-row hot copy stood in for the corpus, and survived a full day
+  because the file is named `ovr.db` and looked like it.** Third instance of the same
+  class. ⚠️ **The tell fired only because they went looking** — nothing caught it, and
+  they had flagged the population caveat before running, so nothing downstream took
+  the wrong figure.
+
+  ⚠️⚠️ **IN FLIGHT, so it is not misread as the backfill's effect:** the pull is live,
+  so the **~17:00 summarize run uses the new parser BEFORE the corpus is backfilled.**
+  Every naive-dated row reads **2h younger** from that run onward, which moves the
+  `recencyBoost` step and **changes which articles are selected.** That is the
+  intended order — code first, corpus second — but **the selection change lands
+  before the backfill does.** Anyone watching ovr's output in that gap is seeing the
+  parser, not the backfill. Caveat from their own review: still host-dependent for non-ISO input (RFC 822
   etc.); exposure measured at **0 rows — latent, not live.**
 - **`tests/contract-validation.test.ts`** — 22 cases, **on FIXTURES**. Worth naming
   separately: it is the only thing at ovr that *looks* like a contract check by
