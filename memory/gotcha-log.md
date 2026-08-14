@@ -3263,6 +3263,36 @@ That is a two-second check and would have saved both rejections.
 **Root cause**: I read `filters/cultural_discovery/v5/config.yaml`, saw **no `hybrid_inference` block**, and concluded no screening. The config does not select the path — `filter_loader.py:148` sets `hybrid_class` from the **existence of `inference_hybrid.py`**, and `main.py:264` uses it if present. v5 ships that file and a probe pkl (recovered in `b790b1b`, *"3 production probe pkls that existed ONLY on gpu-server"*), so it screens while declaring nothing.
 **Fix**: corrected in `CLAUDE.md`, #98 and to the ovr.news session. v6 is a **probe/threshold change worth ~+9pp of screening** (54.9% → ~63.7%), not the introduction of screening — which materially weakens the case for the cutover I had already tried to ship. ⚠️ **This is `CLAUDE.md`'s own hard constraint — *"Don't infer runtime behavior from config keys"* — and I violated it on the same day I filed two other findings whose root cause was that exact shape.** The rule does not fire on its own; the check is to ask what the LOADER reads, then measure the running system. `stage_used` on real rows answered in one query what four documents had wrong.
 
+### A grep whose pattern cannot match the thing it looks for (2026-08-14)
+**Problem**: A peer reported NM#360 "merges clean, verified locally rather than trusting GitHub's `UNKNOWN`". GitHub then computed `CONFLICTING`. I first generalised this as "a merge state is a relationship with a moving branch" — tidy, and not what happened: `origin/main` was at the identical commit throughout.
+**Root cause**: The check used the **old 3-arg `git merge-tree`**, whose output format does not emit the conflict markers the command grepped for. Zero matches was read as zero conflicts.
+**Fix**: `git merge-tree --write-tree`, which exits non-zero. General form: **a check whose pattern cannot match its target reports clean whatever the truth is** — a control that cannot fail. Distrusting a stale signal and verifying locally was the right instinct; the local verification was the thing that lied.
+
+### A stacked PR showed "all checks passed" without running the tests (2026-08-14)
+**Problem**: NM#364 displayed a green tick with no `test` job. Its only test evidence was someone saying they had run 1,305 tests locally.
+**Root cause**: `ci.yml` triggers on `pull_request: branches: [main]`, so a PR **stacked on another branch** gets GitGuardian and nothing else. Two follow-ons, each of which hides the first: `gh pr merge` **without `--delete-branch`** leaves the stack pointing at a merged branch (auto-retarget fires only on branch *deletion*), and **retargeting does not re-run checks**, because a base change fires `edited`, which is not in the default `pull_request` type set.
+**Fix**: close/reopen to fire `reopened`. ⭐ The nastiest step is the middle one: **the correction increases the PR's apparent legitimacy while changing the evidence not at all.** Before merging any stacked PR, read *which* checks ran, not whether they are green.
+
+### Two sessions given the same owner "go" both acted (2026-08-14)
+**Problem**: The owner said "go" to two sessions working the same cross-repo task. Both merged NM#360 (the second got "already merged") and both close/reopened NM#364, leaving two `test` runs as the visible fingerprint.
+**Root cause**: No convention for who takes an action when one instruction reaches several sessions. The collision is only detectable *afterwards*.
+**Fix**: **Under one owner instruction spanning repos, say which side is taking the action before taking it.** Cheap here only because every action was idempotent (merge, retarget, reopen) — the other session nearly pushed an empty commit first, which would not have been.
+
+### A relay cannot carry recency (2026-08-14) [PREVENTED]
+**Problem**: Two owner answers on `published.instant` existed simultaneously, pointing opposite ways — one in each session. Neither session could order them from inside its own context.
+**Root cause**: A relay is accurate about *what was said* and carries nothing about *when*. The relay was faithful and would still have produced a change against a decision the owner had already made elsewhere — and it would have looked entirely legitimate in the log.
+**Fix**: **When two sessions hold conflicting owner instructions, the one that can ASK wins — not the one that heard it last.** ⭐ The only instance all day where a hold *prevented* the damage rather than catching it afterwards; what made it recoverable was flagging the provenance and inviting the hold rather than asserting the instruction. The lesson is not "peers are unreliable".
+
+### An instrument's null result is only as broad as its denominator (2026-08-14) [x2]
+**Problem**: A peer's never-walked-source detector reported "2,080 keys, 0 defects" and was cited here as an instrument demonstrated capable of firing. It read **107 of 112** source files; the other four reach the same one-level walk via a different loader branch and were never examined. The output said so nowhere.
+**Root cause**: The exclusion was invisible. Not a live defect — those tiers are collected by aggregators reading their own files — but "0" and "0 among the files it examines" are different claims.
+**Fix**: The command now prints its denominator **and** the files it did not examine, by name, mutation-tested in both directions. Same session, same class: a tie count quoted from a *hot copy* (6,000 rows) instead of production (21,743) — 9 vs 31 — inside the paragraph correcting a different unit error. **The denominator travels with the number, or the number does not travel.**
+
+### A correct change silently destroyed another finding's evidence (2026-08-14)
+**Problem**: Fabricated dates were attributable because `now - 2h` **retains microseconds** while publisher-supplied dates almost never do — 98.7% of ~2h-gap rows carried them. A timestamp-canonicalization deploy twenty minutes later stripped sub-second precision from every emitted timestamp and **erased the fingerprint from all future rows**.
+**Root cause**: The signal was **accidental** — undocumented, unowned, and depended on a serialization detail nobody had written down as load-bearing. Both changes were correct and unrelated.
+**Fix**: The archive (`data/archived/`, retained indefinitely) keeps every pre-deploy row, so the attribution stays reproducible. ⭐ **The lesson is an argument FOR the explicit field, not against the change**: an accidental signal vanishes the moment someone touches its substrate for an unrelated reason. If a diagnosis depends on an undeclared property, write it down as a field or expect to lose it.
+
 ## The unreachable-mechanism catalogue
 
 Moved out of `CLAUDE.md` on 2026-08-09 (context audit): the **rule** belongs in the

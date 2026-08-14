@@ -1,79 +1,91 @@
 # LLM Distillery - TODO
 
-## 🔵 NEXT SESSION — start here. **Contract A: implement the REDESIGN, not the patches.**
+## 🔵 NEXT SESSION — start here. **Contract A's envelope is LANDED. The producer emits nothing yet.**
 
-**2026-08-14: the owner stopped the incremental contracts work and redirected it.**
-A day across five sessions produced **four corrected values in one schema file**
-plus a large amount of verification process. The findings were real; they were not
-the work asked for. **Do not resume phases 1–3, the shared envelope, or the
-checker.**
+**2026-08-14, late: the redesign was implemented as far as it can go without producer
+code.** The decision record is
+**`docs/decisions/2026-08-14-contract-a-envelope.md`**; the five-repo detail is
+`docs/CONTRACTS_PLAN.md` § *Round 3*.
 
-**THE DELIVERABLE: `docs/proposals/contract-a-redesign.md`** (rendered:
-`contract-a-redesign.html`). Contract A designed from first principles rather than
-patched.
+### What landed — verified against `origin/main`, not taken on report
 
-**Its one rule — apply it to every field before adding anything:**
+```
+NexusMind/contracts/fluxussource-output.schema.json   version 1.20.0
+root additionalProperties  false            ← the decision, intact
+blocks   published · collected · fetch · content_meta · feed · origin · payload
+published                  element · fabricated · had_timezone · precision · raw
+language                   type: string     ← the collision, avoided
+source_group declared      False            ← the hold, UNSPENT
+required                   the original 8 keys, unchanged
+```
 
-> A field belongs in Contract A **iff** (1) *only the collector can know it* and
-> (2) *it is destroyed if not recorded now*. FluxusSource is the only component
-> that ever sees the network, the feed document and the raw bytes.
+NM#360 merged (`7d1086f`), NM#364 merged (`0652414`), 1,305 tests green.
+**Nothing deployed — sadalsuud remains on `b115fda`.**
 
-Today's contract fails that in **both** directions: it stores derivable values
-(`word_count`, `reading_time_minutes`) and discards irrecoverable ones.
+⭐ **The envelope answer, in one line:** the blocker was never
+`additionalProperties: false` — it was assuming that *declaring* a field and
+*emitting* one are the same step. **Declare the whole shape first, all optional;
+after that every field ships independently.** Verified runtime-inert: no production
+path opens either schema file.
 
-**What goes in, all source/network facts rather than text extraction:**
-`published.{instant,raw,element,had_timezone,precision,fabricated}` ·
-`language.{code,script,scripts_present,method,confidence,sample_chars}` ·
-`origin.{country,region,timezone}` ·
-`fetch.{url_requested,url_final,http_status,charset_declared/detected/used,content_encoding}` ·
-`content_meta.{kind,truncated,raw_length,echoes_title}` ·
-`feed.{declared_language,cadence_hours,ttl_declared}`. Grouped by **provenance
-layer**, with a walled-off open `payload` for the per-aggregator tail.
+### ⭐ The redesign got SMALLER, and that is the result
 
-**Do first, in this order:**
+| removed | why |
+|---|---|
+| the whole `language` block | `language` is already a live top-level **string** on 100% of rows and read as one at 8 production sites. Declaring it an object fails `type` on every row — optionality cannot help, the property is *present*, not absent. Once the rename ban applied it was one new fact and five relocations. |
+| `source`, `item` | same class: re-nesting a live flat field is a *relocation*, which is the forbidden act |
+| `published.instant` | **same moment as `published_date`** — adds no temporal information, only an offset that `origin.timezone`/`had_timezone` carry better. And the defect it was justified by is a **consumer bug** (ovr's JS reads naive as local) with a one-line fix. |
+| `collected.at`, `content_meta.raw_length`, `feed.title`, `feed.declared_language` | declared duplicates of live flat keys |
 
-1. **Get FluxusSource's feasibility triage** — which proposed fields are (a) already
-   in hand at collection, (b) one line, (c) new plumbing. **Asked but not answered
-   before close.** Two questions carry the sequencing: does `origin.country` /
-   `origin.timezone` exist in source config in *any* form today, and is
-   `content_meta.kind` knowable at collection? If the second is yes it **retires the
-   300-char floor outright**.
-2. **Get pipeline-atlas's observation map** — what FluxusSource *observes* that no
-   downstream stage can reconstruct. **Asked but not answered.** The six categories
-   in the proposal came from defects tripped over, not from a model of the chain;
-   their model may show a seventh.
-3. **Then implement, additively.** New blocks alongside the old flat fields; nothing
-   breaks; deprecate later; remove only when grep proves no consumer reads them.
+### Do first, in this order
 
-⚠️ **The one step that cannot be phased:** `published.instant` gaining a UTC offset
-is a **lexicographic** change — `'…T20:00:00+02:00' > '…T19:00:00'` as a string while
-being *earlier* in real time. Every `ORDER BY published_date` breaks. ovr.news has
-~20 such sites and has shipped its parser fix (`60ada82`); **that must land
-everywhere before offsets are emitted.**
+1. **`fabricated` + `had_timezone` + `raw`, TOGETHER** — not `fabricated` alone.
+   `display_ranking.py` applies a flat **1.3× boost under 24h** on `published_date`,
+   and the producer invents `now − 2h` for date-less entries, so a fabricated date
+   reads as maximally fresh and wins it. **But the population is wider than
+   fabrication** — see the hypothesis file — and those three fields are exactly what
+   separates the causes. **`fabricated` cannot be interpreted without the other two.**
+   All three are declared on `main` and nothing populates them.
+2. **`content_meta.kind` deploy** — built, reviewed, moved to top-level, verified over
+   5,995 prod rows (emitted on exactly the 5,739 RSS rows, 0 schema violations).
+   `f3e8954`, **undeployed**. This is what retires the 300-char floor (#93).
+3. **`collected.clock_source`**, then `fetch.*`, then `element`, then `precision` last
+   (the only one that is new code rather than threading-out).
 
-### Parked, complete, and NOT to be resumed without a decision
+### ⚠️ Unassigned, and will evaporate if nobody takes them
+
+- **The canonical-serialization defect** — the best finding of the day and **not part
+  of the redesign**. FluxusSource emits **four spellings** of `published_date`;
+  **2.805% of rows non-canonical**, and the largest class is *microseconds with no
+  offset at all* (2,797 rows), invisible to any offset-based query. **207 distinct
+  sources**, so it must be fixed where the value is stored — one site in
+  `ContentItem`. Ungated and separable from FS#171. **Not filed.**
+- **Category G** (`collection.*`, the non-event sidecar) — spec-ready, touches neither
+  schema, **no implementer**. pipeline-atlas supplied the model facts and correctly
+  declined the code.
+- **The canary** — the repeatable undeclared-key row that proves the check detects.
+  **Blocks W2.2** (declaring `source_group`), which is what finally makes Contract A
+  read clean. Nobody's.
+
+### The offset gate has THREE parts, not one
+
+FS#171 is **OPEN** and aimed at `published_date` itself.
+`clock fixed` **and** `ovr#321` are **independent** gates, not a chain — adding an
+offset *serialises whatever the value already is*, so on the 3.87% of rows carrying a
++2h local clock it converts a silent error into a durable explicit one.
+⚠️ **Nothing downstream protects ovr**: NexusMind **relays `published_date`
+byte-for-byte** (proven by a 6,024-row byte-identical join), so FS#171's offsets reach
+ovr's 20 lexicographic sort sites unchanged.
+
+### Parked
 
 | repo | state |
 |---|---|
-| **NexusMind** | PRs **#360** (Contract A's 4 corrected values + validator row-counting) and **#361** (the checker) **open, unmerged**. `main` `010338d`. **Nothing installed**; sadalsuud `b115fda`. Owner ruling: *build and commit, do not install.* |
-| **pipeline-atlas** | `ff9dcc6` merged — arming panel live, both units correctly read **NOT ARMED**. Reader never started (deferred by their owner). |
-| **ovr.news** | `60ada82` parser + write boundary **live on sadalsuud**. ⚠️ **Corpus backfill authorised and NOT RUN** — 21,700 rows. **FS#171 stays blocked** until ovr confirms it has run. |
-| **FluxusSource** | `source_schema.yaml` priority-polarity fix — **the committed file is currently wrong** (says 1=highest; production and code are the opposite). |
+| **NexusMind** | #360 + #364 **merged**. NM#361 (the checker) still stood down. Nothing installed; sadalsuud `b115fda`. |
+| **ovr.news** | Three items committed: the Contract B drop reader (`FilterStats.validation`, on `/ops/`), the write-boundary test, the archive comparator. ⚠️ **Corpus backfill still authorised and NOT RUN** — and it is the **only** fix that reaches the delete boundary, because rows there are ~20 days old and only ≤10-day rows are rewritten. |
+| **FluxusSource** | `source_schema.yaml` priority-polarity fix — **the committed file is still wrong**. |
+| **pipeline-atlas** | Blind-spot section shipped with a mutation-tested verify command. Units still correctly **NOT ARMED** — and arming should wait until the check reads clean, or it trains the override it exists to prevent. |
 
-### The finding worth carrying, in its final form
-
-**The estate has exactly TWO shape checks that are both automatically invoked AND
-looking at real production bytes. Between them they assert eight top-level key
-names and two strings' max length.** Everything with real coverage has no caller;
-everything with a caller has no production data. *(Counting validators was the wrong
-instrument: round 1 said four, the behaviour sweep found 21+.)*
-
-⚠️ **And the meta-lesson, from pipeline-atlas:** *a specification revised five times
-in one day is not a target that needs pinning — it is a question that has not been
-asked yet.* Every revision was a correction, never a new requirement. **Both this
-session and the atlas spent the day making the instrument better while the thing
-being measured was undecided.** No amount of rigour about *how* a claim is checked
-substitutes for asking whether it is the claim worth making.
 ## 🔵 Then: **the Thriving predicate is RULED; two decisions left.**
 
 **✅ RULED 2026-08-13 — the lens predicate, in ovr.news `docs/BRAND.md` `a70609b`** (commit
