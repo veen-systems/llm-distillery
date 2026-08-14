@@ -2130,3 +2130,48 @@ measured, and is read as something it never claimed. It gets real CI the moment 
 retargets `main`, i.e. after #360 merges. **The only test evidence for #364 today is
 that someone ran them locally and said so.** *(Flagged by NexusMind unprompted, which
 is the right instinct: the danger is exactly that nobody looks at which checks ran.)*
+
+
+### ✅ #360 MERGED, #364 green on real CI — and a two-session collision
+
+**NM#360 merged** `7d1086f`, 15:55:32Z. **NM#364 retargeted to `main` and its `test`
+job ran for the first time.** Verified from this repo after the fact:
+
+```
+#364  base=main  mergeable=MERGEABLE  mergeState=CLEAN
+      test=SUCCESS   test=SUCCESS   GitGuardian=SUCCESS
+```
+
+So the 1,305 local passes are now corroborated by real CI on the merged tree. **Not
+red** — but it was worth forcing, because until then the only evidence was someone
+saying they had run them.
+
+⭐⭐ **Three mechanism findings, none of which is about this PR:**
+
+1. **`--merge` without `--delete-branch` leaves a stack pointing at a merged branch,
+   silently.** GitHub's auto-retarget fires only when the base branch is *deleted*.
+2. ⭐ **Retargeting does not re-run checks under default `pull_request` types**
+   (`opened`, `synchronize`, `reopened` — a base change fires `edited`). So a
+   *corrected* PR can carry a stale empty green, **and this is the nastier one,
+   because the correction increases the PR's apparent legitimacy while changing the
+   evidence not at all.**
+3. ⭐ **Two sessions given the same owner "go" will both act, and the duplicate-work
+   fingerprint only appears afterwards.** Here: `gh pr merge 360` returned *"already
+   merged"* to the NexusMind session — this repo's merge had landed seconds earlier —
+   and both sessions then close/reopened #364, leaving **two `test` check runs** as
+   the visible trace. **Cheap only because every action taken was idempotent** (merge,
+   retarget, reopen). It would not have been if either side had pushed a commit, and
+   the other session nearly pushed an empty one to fire CI before choosing reopen.
+   **Convention worth adopting: under one owner instruction spanning repos, say which
+   side is taking the action before taking it.**
+
+⚠️ **And one more state-vs-mechanism instance, self-reported.** The NexusMind session
+told the owner #364 *"auto-retargeted to main"*. It did not — this session retargeted
+it with `gh pr edit`. They read the *state* (`base: main`) and inferred the
+*mechanism*, without checking that the branch had been deleted. It had not.
+**Reading a state and inferring what produced it** is the same move as their
+`merge-tree` grep and as every wrong-sentence-beside-a-right-finding in this thread.
+
+⏸ **`published.instant` remains DROPPED and CONTESTED** — the one thing in #364 that
+is not settled, recorded there as a live decision with the foreclosure argument
+attached.
