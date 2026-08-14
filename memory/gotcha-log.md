@@ -46,6 +46,248 @@ Problems encountered and resolved. Format: Problem → Root cause → Fix.
 
 ---
 
+## ⭐ THE UNIFYING FORM: a check that answers a NARROWER question than the one asked of it — where the narrow answer is TRUE (2026-08-14)
+
+*(NexusMind's formulation, after four instances landed in one day. This is the
+general case of most entries below it.)*
+
+> **A check answers a narrower question than the one being asked of it, and the
+> narrower answer is true.** Nothing is broken, nothing is lying, and the result is
+> read as covering the wider question.
+
+Four instances, same day, four different sessions:
+
+| the check | what it actually answers | what it was read as |
+|---|---|---|
+| sha256 of a spec | *are these the announced bytes?* | *have these bytes been reviewed?* |
+| a key-diff against a spec's JSON block | *are the keys present?* | *does this artefact conform?* |
+| `grep -rIl <script-name>` | *is this name mentioned?* | *does anything CALL it?* |
+| `systemctl show` (`ActiveState`) | *is it running right now?* | *does the unit exist?* |
+
+**Why it is worse than a wrong check:** a wrong check eventually produces a visibly
+wrong answer. **This one is correct forever**, so nothing ever contradicts it, and
+the gap lives entirely in the reader's head. *That is why four sessions hit it in one
+day and none noticed from the output.*
+
+⭐ **USE THIS ONE PROSPECTIVELY — it supersedes the symptom-level form.**
+*(pipeline-atlas, comparing it to their own register's wording and preferring this
+one.)* An earlier statement of the same defect was *"a check whose verdict does not
+change when the claim becomes false"*. **That names the symptom; this names the
+cause** — and the symptom form is **only applicable in hindsight**, because to use it
+you must first imagine the event that would falsify the claim, and anyone who could
+reliably do that would not have written the bad check.
+
+> **The cause form reduces to one question you can ask of any check BEFORE trusting
+> it: *what question does this actually answer, and is it the one I am asking?***
+
+`ls` answers *"do these paths exist"*, not *"does validation happen"*. A hash answers
+*"do I hold the announced bytes"*, not *"have I read them"*. Both fall out
+immediately, with no hindsight required.
+
+**Fix**: state the property the check establishes, in the sentence that reports it.
+*"Hash-verified"*, not *"verified"*. *"Keys present"*, not *"conforms"*.
+*"N mentions"*, not *"no callers"*. **If the report names the narrow property, the
+gap cannot open.**
+
+⭐ **THE TELL — how to catch it in yourself.** *(NexusMind, having nearly committed
+the fifth instance inside the message about the pattern.)* **The narrow answer is
+not merely true, it is SATISFYING. It arrives feeling like closure** — which is
+exactly why nobody asks the wider question afterwards. If a check's result lands as
+relief, that is the moment to ask what it did *not* establish.
+
+**The fifth instance, and it is a good one because the arithmetic is airtight.**
+A file's growth was accounted for exactly: three additions summing to 1,226 bytes
+against a delta of 1,226. That is a **stronger** constraint than it looks — the net
+of every other edit must be zero — and a **much weaker** one than it feels:
+
+> ⚠️ **Byte accounting is blind to any SAME-LENGTH SUBSTITUTION.** A changed digit, a
+> flipped `true`/`false`, a swapped identifier of equal length — all invisible, all
+> net-zero, all perfectly consistent with the arithmetic.
+
+**And that is precisely the class the defect it was meant to reassure about belonged
+to**: the unit-name bug was a **value** change, not an addition. It happened to cost
+23 bytes only because `nexusmind-` has length. **Had the wrong name been the same
+length as the right one, the reconciliation would have been perfect and the defect
+still there.** Byte accounting is reassuring about *additions* and near-silent about
+*values* — and values are what implementers depend on.
+
+⚠️ **And test it against the wider question, not the narrow one.** NexusMind's unit
+test for this had been `assert (d / "nexusmind-contract-check.timer").exists()` —
+**two spellings of one literal compared to each other**, never reading the artefact
+at all, in the test written specifically to protect the reader contract. It passed
+however wrong the published names were. Now derived from the artefact's own `units`
+block, with a control: publishing the unprefixed name fails three tests, and would
+have failed none of the old ones.
+
+---
+
+## A HASH IS NOT A REVIEW — identity and content are different guarantees (2026-08-14)
+
+**Problem**: A spec file was declared "frozen" and pinned by sha256 so a downstream
+implementer could detect a silent edit. They computed the hash, matched it, and
+recorded the spec as **"verified"**. Both sides then believed the content had been
+checked. **It had not been read at all.**
+
+It surfaced when they spot-checked a later revision's claim that no fields had
+changed: they grepped for `artefact_version`, `expected_cadence_seconds`,
+`checker_version`, `schema_sha256`, `hops_not_covered`, `rows_invalid` — **all six
+returned zero**, which briefly looked like the announcement was a lie. It was not.
+Those were names from **two revisions earlier**; the intervening revision had
+restructured the whole shape. **They had been carrying a two-revision-stale model
+while believing it was verified.**
+
+**Fix**: say **"hash-verified"**, never "verified". A hash proves **identity** — that
+you hold the bytes the author announced. It proves **nothing about their content**.
+The word "verified" is read later as "reviewed the fields", which is the thing nobody
+did.
+
+⚠️ **The sharper half — hash-pinning has a second boundary that only version control
+closes.** The pinned file was untracked and each revision **overwrote the last in
+place**, so the earlier revision no longer existed anywhere and *nobody could diff
+them*. "No field added, removed or retyped" was therefore taken **on trust**.
+**Announcement + hash proves identity; only version control proves what CHANGED.**
+Had the file been committed, the check would have been a two-line diff instead of six
+greps and a false alarm.
+
+**General form**: when a check substitutes for a review, name the property it
+actually establishes. *Verifying the wrong property and reading the result as
+coverage* is this estate's most repeated failure, and this is the version of it that
+hides inside a correct-looking cryptographic guarantee.
+
+---
+
+## "This path doesn't have failure mode X" is a claim about the PATH — it silently becomes a claim about the TOOL (2026-08-14)
+
+**Problem**: The contracts check was deliberately built on `validate_contract_a.py`
+because it reads FluxusSource's directory **directly**, which structurally eliminates
+`drift.strip_list_vs_observed_keys` — a dependency on a hand-maintained strip list
+that the *other* validator has, because it reads NexusMind's mutated copy. The
+reasoning was correct and was recorded in the design.
+
+**It was true of the path and not of the script.** Nothing stopped
+`--input data/raw/…`. Pointed at a mutated file, the check reported a single class,
+`additionalProperties.<root>`, over 3,697 rows — **and that class could not
+distinguish the deliberately-held control (`source_group`) from seven NexusMind
+stamps**, i.e. from the check having been aimed at the wrong directory entirely.
+
+⭐ **A held control and a misconfiguration rendering identically — inside the
+artefact whose entire job is to stop a reader over-reading a result.**
+
+**Fix** (NexusMind, on implementing it): `additionalProperties` now fans out **one
+class per unexpected key** (`additionalProperties.<root>.source_group`), and the
+check **detects its own stamps in the input and refuses with `could_not_run`** rather
+than blaming the producer.
+
+**The generalisable form**: ⚠️ **eliminating a failure mode STRUCTURALLY and
+eliminating it BY CONVENTION look identical in a design note.** The dependency
+removed by choosing the right input directory came straight back as an *unenforced
+precondition on the input argument*. If a design claims a failure mode is impossible,
+ask what enforces it — and if the answer is "we pass the right argument", it is
+convention wearing structure's clothes.
+
+*(Found only by running it against the wrong directory on purpose. Reading the design
+would not have surfaced it.)*
+
+---
+
+## A HANDOFF IS INVISIBLE FROM THE SENDING SIDE, BY CONSTRUCTION (2026-08-14)
+
+**Problem**: Across one day of five parallel sessions, the same defect appeared in
+this session's work **three times**, and a peer caught all three: the unit names a
+reader needed, the post-install flag flip only the installer could trigger, and a
+"frozen" declaration on a file with no version control. Each was one line of
+information whose absence broke a distinction nothing else could make. Each was
+dropped for being **too small to look like work**.
+
+**The framing that explains it** *(pipeline-atlas, and it is better than "a blind
+spot in my attention")*: **all three were HANDOFFS, and a handoff is invisible from
+the sending side by construction.** The sender knows the fact, so *the system
+containing the sender and the fact looks complete*. It is only visibly incomplete
+from the receiving end — the half that does not have it.
+
+**The mirror held, which is what makes it a property rather than a personal failing.**
+The same peer reported a peer's branch commit as "shipped" from a relay they had not
+verified — the identical error from the other side, caught within the hour.
+
+**Fix**: ⭐ **Take the mechanism out of a person's memory.** Prefer the durable form
+every time it is available: commit the file rather than quote its hash; write the
+handoff into a definition of done as its own numbered item rather than mention it;
+tell the party who will act, not only the party who will read. **A fact recorded in
+version control is a handoff that survives both parties closing their session.**
+
+**Corollary for review**: this is *why* parallel independent sessions find things at
+all. Neither side is more careful; they are differently positioned. A defect that is
+structurally invisible from where you sit is not found by looking harder.
+
+---
+
+## Detection is path-scoped, the action is repo-wide — so deploy time is unrelated to merge time (2026-08-14)
+
+**Problem**: NexusMind's standing note said a merge to `main` becomes a production
+change on the next 4h tick, because `nexusmind.service` runs `deploy_filters.sh` as
+`ExecStartPre` every cycle. The mechanism is real — verified running, exit 0. **But
+the auto-pull is gated on `git diff --quiet HEAD origin/main -- "${SCORER_PATHS[@]}"`**,
+and `SCORER_PATHS` is only `filters/`, `src/filters/`, `src/scoring/` and three
+deploy files. A branch touching `contracts/`, `scripts/`, `src/utils/` or `tests/`
+matches none of them, **so merging it deploys nothing.**
+
+**Live confirmation, not inference**: sadalsuud's checkout sat at `b115fda` while
+`main` was `010338d` — already one merge behind, because that merge was docs-only.
+
+**The hazard is the asymmetry, not the gap.** The gate asks *"does the scorer tree
+differ?"*; the remedy is `git pull --ff-only origin main`, which fast-forwards **the
+entire repository**. So every non-scorer change accumulated since the last pull —
+pipeline code, enrichment, contracts — **ships silently, bundled, at whatever moment
+an unrelated filter change happens to land.** Its deploy time is unrelated to its
+merge time and nobody is watching.
+
+**Corollary, and the part to carry**: ⚠️ **"sadalsuud is on commit X" tells you when
+a SCORER change last landed, not what pipeline code is running.** Never reason from
+*"it is merged, therefore it is running."*
+
+**General form**: a mechanism that appears to cover a class of change, is trusted to,
+and is **structurally scoped to a subset** — while its remedy is not. Sibling of the
+`origin/main` entry below: both answer confidently about a different question from
+the one asked. *(Found by the NexusMind session while checking whether its own branch
+would deploy; recorded here because five sessions were reading each other's repos.)*
+
+---
+
+## `origin/main` is a CACHED answer with no staleness indicator (2026-08-14)
+
+**Problem**: Checking whether a sibling repo (`energydatahub`) was still publishing
+its daily result artefact, two sessions independently read
+`git show origin/main:data/data_quality_report.json` and found a timestamp **five
+days old**. The obvious reading — the upstream has stopped publishing, and `augur`'s
+consumer has been silently proceeding on stale data every day since — was about to be
+written up as a live cross-repo incident.
+
+**It was false.** `.git/FETCH_HEAD` was *also* five days old: the clone had not been
+fetched. `git ls-remote origin refs/heads/main` returned `b5188df` against a local
+`origin/main` of `7a27eae`. **The remote had moved the whole time.** A stale clone,
+not stale data.
+
+**Fix**: `git ls-remote` is the thing that actually asks the remote. `origin/main`
+answers from cache.
+
+**Why it fools you**: it is *named after the remote* and reads exactly like a remote
+query, but it silently reports the last fetch — so it answers **confidently about a
+window that ended days ago**. Same class as two rules already here: `pgrep -f` (3rd
+occurrence) matching the shell carrying the pattern, and `systemctl show` on a
+**nonexistent** unit exiting 0 with `ActiveState=inactive, Result=success`,
+byte-identical to a real stopped unit.
+
+**The general form**: ⚠️ **a source that cannot say "I don't know" will say something
+else.** When a read decides whether you raise an alarm — especially about another
+team's repo — establish the source's own freshness before believing its content. A
+cached answer and a current one are byte-identical by construction.
+
+*(Found while sweeping for contract validators; the artefact being checked was a
+precedent this repo was about to copy. Peer-confirmed by the pipeline-atlas session,
+who had hedged the claim and was right to.)*
+
+---
+
 ## The failures were never where the author was looking — and every one was a hand-built population (2026-08-12)
 
 **Problem**: A four-repo investigation into NexusMind#292 ran across ~10 exchanges

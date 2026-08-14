@@ -6,14 +6,120 @@ sessions.** Every number is measured; provenance, the verify commands and the
 instrument defects that constrain how these numbers may be quoted are in
 `memory/stamp-contract-integrity.md` § *The contracts layer*.
 
-**Status: NOT APPROVED, NOT EXECUTED. No repo has an owner greenlight. Nothing
-was committed in any repo. Round 2 has not been run.**
+## ✅ STATUS 2026-08-14: PHASE 0 APPROVED BY THE OWNER. Phases 1–3 are NOT.
+
+**Approved:** build the check in **reporting mode**, write the artefact, install its
+timer on sadalsuud, and ship pipeline-atlas's reader. **Owner explicitly approved the
+systemd unit install**, which NexusMind had correctly refused to do without it.
+
+**NOT approved and NOT to be started:** phases 1–3, the shared envelope (W1.4), and
+the three open owner decisions (envelope, its additive path, `eval_query`). **None of
+them blocks phase 0** — they can stay open throughout it.
+
+**Two standing holds:**
+
+- 🔒 **Do NOT declare `source_group` (W2.2)** until the check has reported it. It is
+  the only test that proves the check *detects* rather than merely *runs*, and
+  declaring it spends that permanently.
+- 🔒 **Do NOT make any check stricter** until its drops reach a reader — see
+  *reader before stricter*.
+
+### Phase 0 progress, 2026-08-14
+
+| item | state |
+|---|---|
+| arming panel (pipeline-atlas) | ✅ **SHIPPED**, `ff9dcc6` — both units render **NOT ARMED · unit not installed** |
+| phase 0b check + artefact (NexusMind) | 🔨 **BUILT + PR'd, NOT INSTALLED** — PR **#361**, depends on **#360** (`#357`+`#356`+`#304`, 8 commits) |
+| artefact reader (pipeline-atlas) | ⏸ **DEFERRED by their owner** until the spec stopped moving. It has now stopped |
+| install on sadalsuud | ⛔ **NOT DONE, and owner-held** — *"build and commit, do NOT install."* It needs interactive sudo, so it may stay with the owner permanently |
+
+⭐ **MEASURED ON GENUINE, UNMUTATED PRODUCER BYTES** —
+`collection_20260814_121004`, **3,835 rows**:
+
+```
+status: found_violations | overall: error | not_asserted: 2 | rows: 3835
+  drift.contract_a_frozenset_vs_required     asserted=True  sev=clean
+  published_date.format.date_time            asserted=False
+  unreported.schema_invalid                  asserted=False
+  additionalProperties.<root>.source_group   asserted=True  rows=3835  sev=error
+```
+
+**One violation class, and it is the held control.** Nothing else — which is **#304
+confirmed against producer output rather than our reconstruction of it**, a stronger
+statement than every Contract A figure measured earlier in this document.
+
+⚠️ **`overall_status` CANNOT read `clean` today, by construction, and that is the
+rung working — not a panel bug.** Two classes are permanently unassertable:
+`published_date.format.date_time` (no `rfc3339-validator`) and
+`unreported.schema_invalid` (counters exist, no surface to publish on). Since
+`overall_status` may not read `clean` while `classes_not_asserted > 0`, the best
+attainable today is `info`.
+
+**Assignments:** phase 0b → **NexusMind** (their validator, their data, their box).
+Reader → **pipeline-atlas**, shipping *now* in its UNKNOWN state. **Units:
+`nexusmind-contract-check.timer` / `nexusmind-contract-check.service`** — matching
+sadalsuud's existing `<project>-<function>` convention (`fluxus-collection`,
+`pipeline-atlas-refresh`, `ovrnews-backup`).
+
+**Round 2 HAS been run** — see § *Round 2 — the sweep*.
+
+⚠️ **"Nothing was committed in any repo" is NO LONGER TRUE and the correction
+matters.** NexusMind has **four commits on branch
+`fix/357-contract-validator-grouping`** (`b8a191c` NM#357, `f55f708` NM#356,
+`99c74a4` NM#304, `830f0e5`), scoped from issues that **predate this plan**.
+**`main` is `010338d` and contains none of them; no PR has been opened.**
+FluxusSource and ovr.news both have verified work uncommitted in their trees.
+
+⭐ **"Built" is not "merged" and "merged" is not "running"** — all three states are
+live in this estate right now, and two sessions (including this one) reported a
+branch as shipped today. `deploy_filters.sh` only auto-pulls when the **scorer
+paths** differ, so a merged non-scorer commit waits for an unrelated filter change
+to drag it in. See `memory/gotcha-log.md`, *"Detection is path-scoped, the action is
+repo-wide"*.
 
 ⚠️ **Draft 1's headline premise was FALSE and is corrected below.** It asserted
 that nothing anywhere runs a consumer schema against real producer bytes. There
 are **four** validators; see § *The problem*. The claim came from grepping for one
 script *name* rather than for the *behaviour* — the error this plan exists to fix,
 committed while writing the plan. Left visible rather than silently patched.
+
+⚠️⚠️ **AND "four" IS ALSO WRONG — corrected in round 2, 2026-08-14, by the sweep
+that round 1 asked for.** Sweeping for the *behaviour* across all 20
+`veen-systems/` repos finds **at least 21** mechanisms that check structured data
+against a declared shape, of which round 1 counted four. **This is the same method
+error a third time**: round 1 searched one script *name*, then searched for
+*validators* — but not for validation done by code that is not called a validator,
+by a database, or in a browser. **Do not quote "four".**
+
+---
+
+### ⭐⭐ THE FINDING, in its final form (NexusMind, round 2)
+
+**Counting validators is the wrong instrument, and "unscheduled" is not the
+finding.** State it this way instead:
+
+> **The estate has exactly TWO shape checks that are both automatically invoked AND
+> looking at real production bytes. Between them they assert eight top-level key
+> names and two strings' maximum length.**
+>
+> **Everything with real coverage has no caller. Everything with a caller has no
+> production data.**
+
+That survives someone adding a caller to one script, it does not decay when a count
+changes, and it names the gap instead of counting the furniture. **Every "N
+validators" figure in this document is subordinate to it.**
+
+The two are `scripts/main.py:1008` (8 key names, drops the row) and the GPU scoring
+API's pydantic models (two optional strings) — both detailed in § *Round 2*.
+
+**Scope of the "exactly two", stated so the absolute is bounded** *(tested here
+against the producer, not inherited)*: it counts mechanisms that **check a row's
+shape and reject or drop on it**. `FluxusSource/scripts/validate_output.py` does run
+on real bytes but has **no automatic caller** (3 executable mentions: itself, one
+reference, one test), so it does not qualify. `ContentItem.__post_init__` **is**
+automatic on real bytes but **normalises rather than rejects** — a different category,
+not a counter-example. If a third mechanism is found that both fires automatically
+and drops on shape, this number moves and the sentence must move with it.
 
 ---
 
@@ -150,12 +256,116 @@ switched off.
 **So it goes first in REPORTING mode, and becomes a gate last.**
 
 ```
-Phase 0a FIX THE INSTRUMENT first                            -> per-ROW counts, verified vs a hand count
-Phase 0b build the check, reporting-only, exit 0 always      -> proves it sees the known defects
+Phase 0a FIX THE INSTRUMENT first                            -> per-ROW counts; group count == distinct missing properties
+Phase 0b build the check, reporting-only, exit 0 always      -> AND give every existing drop point a reader
 Phase 1  fix the wrong declarations                          -> check goes green on those
 Phase 2  declare the undeclared, with status                 -> check stays green
 Phase 3  flip the check to fail the build                    -> now it guards
 ```
+
+### ⭐⭐ READER BEFORE STRICTER — a phase-0 rule, adopted 2026-08-14
+
+*(Raised by ovr.news from their ADR-041; generalised and ruled here after a second
+instance was measured independently.)*
+
+> **No hop may add a required field to a mechanism that DROPS rows until that
+> mechanism's removals reach a reader.**
+
+**Two measured instances, at two different hops:**
+
+| hop | drops | records | class |
+|---|---|---|---|
+| `NexusMind/scripts/main.py:1008` | `continue` | `stats["schema_invalid"]` exists, first 5 logged — dies at the `last_run.json` boundary (verified: carries neither it nor `json_errors`) | **log-with-no-reader** |
+| `ovr.news/summarize.ts:404` | returns only valid rows | ⭐ **destroyed at the callsite** | **uncomputed** |
+
+⭐ **The two are not the same defect, and ovr's is worse.** `validateArticles`
+returns `{ valid, summary }` — `summary` carries total / valid / invalid and the full
+error list. The callsite is:
+
+```ts
+const { valid } = validateArticles(articles, `summarize:${filter}`);
+```
+
+**`summary` is computed, returned, and discarded in the same expression.** So *even
+giving the log a reader would not recover the structured count* — you would get a
+warn line's text and nothing enumerable. NexusMind's shape is better by one step: the
+value **exists** somewhere before it is dropped.
+
+> **Name them separately in the artefact.** `unreported.*` (the value exists, nothing
+> reads it) and **`uncomputed_at_callsite.*` (no amount of downstream plumbing
+> helps)**. The second is likely commoner, *because it leaves no trace at all to
+> notice* — there is not even a warn line to grep for.
+
+**Consequence for phase 0b: "the artefact IS the reader" is necessary and not
+sufficient.** The artefact can only read what a producer hands it. **ovr's phase-0b
+task is two steps — stop discarding `summary`, then land it** — and any hop of the
+`uncomputed` class is the same.
+
+**Instance 1 CONFIRMED by measurement (ovr.news, 2026-08-14):** nothing anywhere
+consumes ovr's `Contract B validation` lines. Four hits estate-wide, all emitters,
+docstrings or test headers; no log transport in `logger.ts`;
+`scheduled_summarize.sh:88` runs with no redirect so stdout goes to the journal; no
+journal grep in any script, unit or crontab on sadalsuud. ⚠️ **And their own verify
+probe greps for the string's presence IN SOURCE, not for log output — it would pass
+unchanged if every line were emitted into a black hole**, which is what happens.
+
+⚠️ **COUNT CORRECTED: n = 2, not 3 — and the inflation was committed HERE, in the
+section cataloguing it.** This paragraph previously called the measurement above a
+*"third instance"* and concluded *"three instances is a pattern"*. **It is not a
+third instance. It is instance 1 (ovr's `validate.ts`) measured properly** — a
+confirmation counted as a new case.
+
+**And the third hop has no such mechanism at all** *(ovr.news, checking
+FluxusSource on request)*: **FluxusSource does not self-validate.** There is no
+FS-side contract validator that checks its own output and drops rows; what exists is
+field-level normalisation held where the value is stored (`__post_init__`,
+deliberately, so ~30 aggregators cannot each get it wrong). **FluxusSource's contract
+is checked DOWNSTREAM, by NexusMind's validator running against FS's bytes** — so the
+question *"does anything consume FluxusSource's validator output"* has **no
+subject**, and the three Contract A defects are NexusMind's validator's output, whose
+unread status is already instance 2.
+
+> **The honest statement: every validate-and-drop mechanism found so far has unread
+> output — n = 2 — with a third hop that has no such mechanism to check.** Still a
+> pattern, on a smaller denominator than it looked. *The denominator is the thing
+> this thread keeps getting wrong, and this is the fourth time today.*
+
+**The healthy case, for contrast, and it is instructive.** FluxusSource records a
+drop **in the DATA rather than a log**: `content_item.py:643` stamps
+`metadata['tags_dropped']` when tag normalisation discards a blank or non-string tag
+(#138). That is **structurally better than both other hops** — the count travels with
+the row and survives to any consumer. Measured on sadalsuud over 3 days: **0 of
+311,879 rows carry it**, with a positive control proving the instrument sees
+`metadata` at all (114,836 of 114,836 rows carry a non-empty dict;
+`source_category` 114,836, `quality` 114,836, `word_count` 113,667). **The zero is
+real: the producer bug it was built to expose was fixed at source.** Instrumentation
+correctly placed, with nothing to report.
+
+*Low-value sub-finding worth one line for the catalogue:* `tags_dropped` is **absent
+when zero**, like every optional metadata key, so a reader **cannot distinguish "no
+drops occurred" from "the mechanism was removed" from "this producer never had it"**
+— the same defect the artefact spec's `asserted: false` exists to prevent, occurring
+in a data field rather than a probe.
+
+**Why it is a rule and not an observation.** Tightening a silently-dropping
+validator **trades a silent wrong value for a silent disappearance.** The direction
+is right and the loss becomes unobservable — so "make the check stricter" is not a
+phase-1 item *anywhere* until "give the check a reader" is a phase-0 item.
+
+This does **not** rest on ADR-041, which is ovr's and cannot bind other repos. The
+same conclusion follows from **ADR-022 in this repo — *stamp always, decide once* —
+applied to drops rather than to scores.**
+
+⭐ **It resolves rather than adds work: the artefact IS the reader.**
+`unreported.schema_invalid` is already a named defect class in
+`docs/CONTRACTS_CHECK_ARTEFACT.md`. So phase 0b — build the check, give the drops
+somewhere to land — is the unblocking step for strictness at *every* hop. **The
+existing sequencing gets more right, with one rule added rather than a reordering.**
+
+**Immediate consequence, already taken:** ovr will **not** make `validate.ts` require
+`published_date`, even though it is measured free today (0 null, 0 empty in
+1,335,210 upstream rows over 14 days). The prerequisite is not more measurement —
+it is a reader.
 
 Phase 0b is also the acceptance test for phases 1–2: each fix must move a number
 the check already prints. **No fix lands without the check having reported it
@@ -209,6 +419,23 @@ term and voiding any `sigma_hours` tuning across it. **The producer settles it:*
 requiring a timezone. **So stored naive values already are UTC; naive→UTC is
 correct, not an approximation.** No per-source bias, no corrupted Δt, no σ figures
 affected, and **W1.1 does not gate the temporal work.**
+
+⚠️⚠️ **DO NOT READ "W1.1 does not gate the temporal work" AS "W1.1 CAN SHIP."**
+*(Flagged by FluxusSource, relayed and confirmed by ovr.news, 2026-08-14 — the two
+sentences look interchangeable and are opposite in consequence.)*
+
+- **The refuted claim** was that naive timestamps carry a per-source bias, making
+  W1.1 a *prerequisite* for NexusMind's temporal work. That is dead: **the
+  producer's hop needs no wait.**
+- **The live claim is the other direction.** **ovr.news BREAKS when offsets are
+  ADDED** — W3.4's lexicographic hazard (`'…T20:00:00+02:00' > '…T19:00:00'` as a
+  string while being earlier in time) across `idx_articles_published` and ~20
+  `ORDER BY published_date` sites. That is real regardless of the refutation.
+
+**FS#171 is open, unstarted, and recorded in FluxusSource's repo as blocked on
+ovr#321 as a HARD GATE.** Nothing about the temporal refutation releases it.
+**Shipping W1.1 before ovr#321 lands publishes duplicate story pairs** — both
+members fall outside the dedup window and both go live, a visible editorial failure.
 
 What survives is much smaller: `normalize_timezone`'s `else` branch keeps a
 *naive input* as-is, so a feed publishing an offset-less date yields something
@@ -272,7 +499,7 @@ than leaving it naive. *"Add an offset" reads like a one-liner and is not.*
 | W2.1 | Fix Contract A's three wrong declarations | enum → producer's vocabulary; `maximum: 8` → **10**; drop `word_count` + `priority` from `required` (267 and 928 rows legitimately omit them) |
 | W2.2 | Declare `source_group` (+ decide `eval_query`) | Arrives tonight; NM#304 argues `eval_query` should stay failing since ADR-007 retires the eval arms — **that is a decision to record, not an omission** |
 | W2.3 | Declare the 34 undeclared metadata keys, with status | Principle 1. Include "declared, no known consumer" as an explicit status |
-| W2.4 | Fix `validate_production_contract.py`'s grouping + labelling | It counts **errors, not rows**, and merges distinct `required` failures into one line — which hid the `priority` defect for five days. No baseline file exists, so zero migration cost. **Must land with a test**: one row missing two required properties → two distinct groups |
+| 🔨 **W2.4 BUILT, NOT MERGED** (`b8a191c`, NM#357, branch `fix/357-…`) — see round 2 | Fix `validate_production_contract.py`'s grouping + labelling | It counts **errors, not rows**, and merges distinct `required` failures into one line — which hid the `priority` defect for five days. No baseline file exists, so zero migration cost. **Must land with a test**: one row missing two required properties → two distinct groups |
 | W2.5 | Record Contract B's top-level-openness tradeoff | Deliberate-by-policy, defended nowhere in `contracts/CHANGELOG.md`, and it means **B structurally cannot detect a `source_group`-class event**. May well be the right call for B — but it should be a written decision |
 | W2.6 | Land the four NM#304 additions | priority ceiling is 10 not 9; `priority`-absent at 928; `source_group`; the `_get_priority` collision |
 
@@ -316,7 +543,115 @@ it.**
 
 | # | item | why here |
 |---|---|---|
-| W5.1 | **Specify the CI job** (phase 0 above) | The load-bearing item. Specify here, implement where it runs — probably NexusMind CI plus a scheduled run against real bytes |
+| W5.1 | **Specify the CI job** (phase 0 above) | The load-bearing item. Specify here, implement where it runs. **Artefact spec: `docs/CONTRACTS_CHECK_ARTEFACT.md`**, rev 3, 🔒 frozen at `schema: 1` |
+
+#### 🔒 The frozen spec is pinned by hash, because the file is UNTRACKED
+
+⚠️ **Caught by pipeline-atlas, and it is this plan's own thesis one level up.** The
+freeze banner was declared on a file `git status` reports as `??` — no history, no
+diff, no blame. **"Frozen" and "unversioned" are two halves of a claim that cannot be
+checked**, and the protocol depended entirely on the author remembering to follow it.
+Same failure as W5.3's round-1 brief, which lived in a session scratchpad and is gone.
+
+Until the file is committed, **this tracked line vouches for the untracked one**:
+
+```
+docs/CONTRACTS_CHECK_ARTEFACT.md   rev 5, frozen 2026-08-14
+sha256  3504204f07ec3ed83600aab0c6f39b3ba21465b6031b21fef8c8484bd68de737
+bytes   25896        lines  457
+```
+
+*(rev 3 `46fea1a2…` / rev 4 `fc66c9a5…`, both **hash-verified** by pipeline-atlas.
+rev 4 clarified the phase-3 proof; rev 5 corrected the unit names in the JSON
+skeleton. Both keep `schema: 1` and require no reader change.)*
+
+⚠️ **"Hash-verified" is NOT "reviewed", and the distinction cost something.** This
+line previously said pipeline-atlas had *"verified rev 3 independently"*. **They
+computed a sha256 and confirmed it matched the one announced — they never read rev
+3.** A hash verifies **identity**, that the reader holds the bytes the author
+announced, and says **nothing about what is in them**. They discovered this by
+spot-checking rev 4's "no field added" claim against `artefact_version`,
+`expected_cadence_seconds`, `checker_version`, `schema_sha256`, `hops_not_covered`,
+`rows_invalid` — **all six returned zero, which momentarily looked like the
+announcement was false.** It was not: those are **rev 2** names, and rev 3 had
+restructured onto the `to_json()` shape they themselves proposed. **They had carried
+a two-revision-stale model of the shape while believing it was checked.**
+
+✅ **How to read three revisions in one evening — and it is NOT as an error rate.**
+*(pipeline-atlas, correcting this document's author.)* **Revisions found by review
+BEFORE anyone builds against the spec are the cheap ones — that is the process
+working.** The expensive version is rev 3 shipping unchallenged, a reader built
+against the unprefixed skeleton, and the panel reporting NOT ARMED forever against a
+check that is running fine — discovered weeks later, if at all, by someone wondering
+why the contracts row never changes.
+
+> **A freeze that produces three ANNOUNCED revisions is doing its job. A freeze that
+> produces none because nobody looked is the failure mode.**
+
+**The genuine signal is narrower: the revisions were cheap to FIND and expensive to
+VERIFY.** Each one cost the reviewer greps and a false alarm where a diff would have
+cost two lines. **That is an argument about version control, not about anyone's rate
+of error.**
+
+⚠️⚠️ **And the freeze protocol's own boundary, demonstrated by use:** rev 3 no longer
+exists anywhere — the file is untracked and was overwritten in place — so **nobody
+can diff rev 3 → rev 4**, and *"no field added, removed or retyped"* is taken **on
+trust**. **Announcement + hash proves identity; only version control proves what
+changed.** Those are different guarantees. Had the file been committed, that check
+would have been a two-line diff instead of four greps and a false alarm.
+
+```bash
+echo "spec sha256: $(sha256sum docs/CONTRACTS_CHECK_ARTEFACT.md | awk '{print $1}')"
+```
+
+An implementer records that hash beside their reader; **a changed spec then fails
+loudly on their side instead of silently.** *(Verified independently by
+pipeline-atlas: computed hash, byte count and line count all match.)*
+
+⚠️⚠️ **NOT YET IN FORCE — and this is the last layer of the same defect.** The
+sentence above says a tracked file vouches for an untracked one. **The vouching line
+is itself uncommitted.** `docs/CONTRACTS_PLAN.md` is tracked but ` M`, and
+`git show HEAD:docs/CONTRACTS_PLAN.md | grep <hash>` finds nothing — HEAD is
+`fd80018`. **So there are currently TWO unversioned facts, not one versioned and one
+not**, and a silent edit to the spec could be matched by a silent edit to this hash
+line with no diff anyone could find.
+
+The construction is sound and **takes effect only when the commit lands.** A hash is
+the weaker of the two fixes regardless — it pins the current text and gives no
+history, and *a revision without a commit is just a paragraph*. **Committing both
+files is the real close, and is pending an owner decision.**
+
+**W5.1 definition of done — three items that are each one line and each get
+dropped for being too small to look like work:**
+
+1. **Install the systemd unit.** Units on sadalsuud are root-owned copies; `git pull`
+   does not update a changed unit, and a committed-but-uninstalled timer is
+   indistinguishable from a passing check.
+2. **Mode 0644, traversable parent.** The reader runs `User=jeroen`; a root-owned
+   0600 artefact is EACCES forever, and that failure **has no visible cause from
+   either side**.
+3. ✅ **DONE — tell pipeline-atlas the two unit names.** `nexusmind-contract-check.timer`
+   and `nexusmind-contract-check.service`, delivered; they shipped the arming half as
+   `ff9dcc6` and both render **NOT ARMED · unit not installed**.
+4. ⭐ **STILL OWED: tell pipeline-atlas the moment `deploy/install.sh` has run**, so
+   they flip `must_exist` to `True`. **This is not optional bookkeeping.**
+   `LoadState=not-found` means **two opposite things**, and the flag is the only thing
+   that separates them:
+
+   | `must_exist` | meaning of `not-found` | renders |
+   |---|---|---|
+   | `False` (today) | named but **not installed yet** | **NOT ARMED**, bold upright |
+   | `True` (after install) | should be installed and is **GONE** | **alarm / unknown**, amber italic |
+
+   **Correct today, wrong the day after install** — an installed-then-deleted unit
+   would read as merely not-armed. Same handoff shape as the names themselves, and
+   equally easy to drop for being too small to look like work.
+
+⚠️ **The trap confirmed live by pipeline-atlas while building it:** `systemctl show`
+on **both** of these unit names exits **0** and reports
+`ActiveState=inactive, Result=success` — byte-identical to a healthy stopped unit. A
+snapshot querying the obvious properties would have drawn **two clean idle rows for
+units that do not exist.** `LoadState` is the only discriminator.
 | W5.2 | **Correct FluxusSource#164's stated justification** | See below — this is ours to answer and the reason on record is wrong |
 | W5.3 | Keep `memory/stamp-contract-integrity.md` § *The contracts layer* current | It is the only surviving copy of the measurements and traps. ⚠️ The round-1 working brief lived in a **session scratchpad and is gone**; its content was folded into that section before the session closed. If a peer cites a `scratchpad/CONTRACTS-BRIEF.md` path, it no longer exists — send them here |
 
@@ -421,10 +756,13 @@ already folded in above:
   ranks the same articles correctly.**
 - **Drop `collected_date` from W1.1's ovr-facing case** — ovr never passes the
   producer's value (`db-articles.ts:136` stamps its own; 100% of stored rows `Z`).
-- **ovr reads exactly 2 of 52 metadata keys** — `og_image_url` (`summarize.ts:334`)
-  and `quality` (`transform.ts:324`). A **96% undeclared projection**, and a far
-  better figure than draft 1's `word_count` example, which was a **name
-  collision**: 49 occurrences at ovr, **zero** reading the upstream field.
+- **ovr reads exactly 2 metadata keys** — `og_image_url` (`summarize.ts:334`) and
+  `quality` (`transform.ts:324`). Far better than draft 1's `word_count` example,
+  which was a **name collision**: 49 occurrences at ovr, **zero** reading the
+  upstream field. ⚠️ **The "2 of 52 / 96% undeclared" form is RETIRED — see round 2.**
+  A single-run key count measures which aggregators were due in that tick: **27 to
+  107 across 50 runs, median 63.5.** The 2 stands; the percentage never had a
+  denominator.
 - **`og_image_url` is read at `:334`, UPSTREAM of the `:887` projection, then
   discarded by it.** So a field can be load-bearing at ovr and leave **no trace in
   the stored row** — reading the projection literally understates ovr's dependency.
@@ -441,7 +779,7 @@ already folded in above:
   the first test of the wiring. pipeline-atlas has a register entry for exactly
   this: a CI guard that could never fail because `--self-test` always returned 0.
 - **Phase 0/3 cannot see ovr's hop** — the `:887` gate is code, not a schema. A
-  fully green check is compatible with ovr dropping 50 of 52 keys, which is what
+  fully green check is compatible with ovr dropping all but 2 metadata keys, which is what
   it does. **Write that boundary in now**, because at phase 3 "the pipeline is
   contract-checked" is the natural misreading.
 
@@ -505,15 +843,747 @@ recent**. Nobody has measured how often that fires.
 
 ---
 
-## Round 2 — not run
+## Baseline — every figure, its command, and when it was measured
 
-Open when it resumes:
+**The rule, from pipeline-atlas and adopted here: a figure is safe in prose only if
+the mechanism that produced it would have to change for the figure to change.**
+Zero-overlap passes. "Parses as local time" passes. **Every count of rows, files,
+occurrences or percentage-of-a-live-corpus fails** and belongs here instead, with
+the body saying *"the check reports N (see baseline)"*.
 
-- Rewrite the premise around *four validators, none watching the failure* (done
-  above; peers have not re-reviewed it).
-- **Spec the result artefact** — blocking pipeline-atlas.
-- Re-run the hand-rolled-validator sweep across all 20 `veen-systems/` repos
-  before any of this reaches the atlas. Two were missed by searching for a script
-  name instead of a behaviour; assume more.
-- Invert every "returns zero" verify command so the true state prints.
+Three conventions, each with a receipt:
+
+1. ⚠️ **The obvious inversion of a "returns zero" command still fails.**
+   `grep -rIl X . | wc -l` prints `0` **and still exits 1** under `-uo pipefail`.
+   Use `echo "n=$(grep -rIl X . | wc -l)"` — command substitution isolates the exit
+   status and the label states the claim.
+2. ⚠️ **No ` — expect …` suffix in this file.** That convention belongs to
+   pipeline-atlas's `run_verifies.sh`, which splits on it. The framework's curate
+   runner does **not** split, and hands the em-dash to the shell as a filename. Put
+   expectations in prose.
+0. ⚠️⚠️ **Every git command MUST name its ref, and every sweep MUST record which
+   tree it read.** These checkouts are shared with parallel peer sessions, so
+   "the working tree" is not a state this document can refer to. **B1 was measured
+   as 1, and reads 2 in a checkout sitting on `fix/357-…` — and it CHANGED value
+   mid-session, because a peer committed `99c74a4` to that branch while the table
+   was being written.** A bare `git log --` answers about whichever branch someone
+   else last checked out. *(pipeline-atlas found the same defect in their
+   `run_verifies.sh`, which resolves siblings from the parent directory and greps
+   whatever is checked out — an unknown number of their 100 checks are currently
+   answering about unmerged work, and nothing in the output says which tree it
+   read.)* **Same class as the `origin/main` gotcha: a source that cannot say "I
+   don't know which state you meant" answers confidently about whichever one it
+   has.**
+3. ⚠️⚠️ **Every "zero references" command MUST exclude prose, or it measures the
+   documentation of its own claim.** Found twice on 2026-08-14, hours apart: `grep
+   -rIl "validate_production_contract"` went **0 → 14** (13 of them prose the five
+   sessions wrote), and `grep -rIl "data/archived" llm-distillery/` reads **5**, all
+   prose, **0** in executable code. Both claims survive; both original commands are
+   now unusable.
+
+**What this checkout excludes:** no FluxusSource or NexusMind *data* is present on
+the workstation — it lives on sadalsuud. Every row-level figure below is therefore
+remote or peer-supplied, and is marked as such rather than silently inherited.
+
+### Measured here, 2026-08-14, all commands executed
+
+⚠️ **The commands are in the code block below, NOT in the table.** A shell pipe
+inside a markdown table cell must be written `\|`, and a reader who copies that gets
+a literal backslash-pipe that breaks the command. *A table of verify commands whose
+commands do not run is this document's own thesis, and draft 3 shipped it for about
+four minutes.*
+
+| id | figure | value |
+|---|---|---|
+| B1 | Contract A commits, ever **on `main`** | **1** (⚠️ **2** in a working tree sitting on `fix/357-…` — see the ref convention below) |
+| B2 | Contract A declared metadata keys | **12** |
+| B3 | Producer declared metadata keys | **7** |
+| B4 | **Overlap between B2 and B3** | **0** — Category 3, mechanism-bound |
+| B5 | Contract B declared metadata properties | **0** |
+| B6 | `validate_contract_a` mentions / callers | **3 / 0** (definition + this plan + its memory file) |
+| B7 | `validate_production_contract` mentions / executable callers | **15 / 1** — ⚠️ **the 15 is unstable by construction, see below.** The **1** is the claim: a unit test, i.e. a caller and **not** a scheduler |
+| B8 | llm-distillery `data/archived/` refs **in code** | **0** (unrestricted: 5, all prose — **W5.2 stands**) |
+| B9 | TS/JS schema libraries, all 20 repos | **0** — the sweep's headline, while ovr's hand-written validator runs every cycle |
+
+⚠️ **B7 demonstrated the whole rule while being written.** It read **14** when the
+sweep ran and **15** an hour later, executed verbatim — because *writing the figure
+into this table added a mention of the script's name.* The figure incremented itself
+by being recorded. **A name-grep count over a repo that documents the name is not a
+measurement of anything**; only `B7 executable` is a claim. Left in rather than
+patched, because it is the cheapest available proof of the rule at the top of this
+section.
+
+```bash
+# Run from ~/repos/veen-systems. All executed 2026-08-14, exit 0 under `set -uo pipefail`.
+cd ~/repos/veen-systems
+
+# B1 -- NAME THE REF. Without `main` this reads whatever branch the checkout is on.
+echo "B1 n=$(git -C NexusMind log --oneline main -- contracts/fluxussource-output.schema.json | wc -l)"
+
+# B2 B3 B4 B5
+python3 - <<'PY'
+import json
+def keys(p):
+    s = json.load(open(p))
+    return set(s.get('properties', {}).get('metadata', {}).get('properties', {}))
+a = keys('NexusMind/contracts/fluxussource-output.schema.json')
+b = keys('FluxusSource/config/schemas/output_schema.json')
+c = keys('NexusMind/contracts/nexusmind-output.schema.json')
+print(f"B2 n={len(a)}  B3 n={len(b)}  B4 overlap={len(a & b)}  B5 n={len(c)}")
+PY
+
+# B6 B7 -- mentions, then executable-only. The second number is the claim.
+echo "B6 mentions=$(grep -rIl --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=venv 'validate_contract_a' . | wc -l)"
+echo "B7 mentions=$(grep -rIl --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=venv 'validate_production_contract' . | wc -l)"
+echo "B7 executable=$(grep -rIl --exclude-dir=.git --exclude-dir=node_modules --exclude-dir=venv --include=*.py --include=*.sh --include=*.yml --include=*.service --include=*.timer 'validate_production_contract' . | wc -l)"
+
+# B8 -- prose excluded, or it measures its own documentation
+echo "B8 code=$(grep -rIl --exclude-dir=.git --include=*.py --include=*.sh --include=*.yaml 'data/archived' llm-distillery/ | wc -l)"
+
+# B9
+echo "B9 n=$(grep -rIl --exclude-dir=node_modules --exclude-dir=.git -E 'from .(zod|ajv|yup|joi|superstruct|valibot|io-ts).' --include=*.ts --include=*.js . | wc -l)"
+```
+
+### Peer-supplied or remote — command given, NOT run from this checkout
+
+| figure | value | source and command |
+|---|---|---|
+| Contract A `required` defects, per class | **priority 636 rows / word_count 115 rows** on 10,677 rows | NexusMind `b8a191c`. `python3 scripts/validate_production_contract.py` on sadalsuud. ⚠️ **Do not reconcile against the 928/267/1,195 figures** — different corpora |
+| Metadata keys per run | **min 27, median 63.5, max 107** across 50 runs | FluxusSource, hot window 2026-08-06→08-14. ⚠️ **A single-run count measures which aggregators were due in that tick.** This is why "2 of 52 / 96%" is retired |
+| Metadata keys, hot-window union | **168, of which 154 confined to one `source_type`** | FluxusSource inventory over `data/current/`, 50 runs, 171,336 rows. **Not "the full namespace"** — `data/archived/` sits outside it |
+| Keys read by name in consumer pipeline code | **3** (`quality`, `og_image_url`, `priority`) | FluxusSource. ⚠️ **Carry the caveat**: read *by name*, not *the only keys that can break a consumer* — NexusMind passes the whole blob through untouched |
+| ovr metadata keys consumed | **2** (`og_image_url` at `summarize.ts:336-337`, `quality` at `transform.ts:292` and `:324`) | ovr.news, re-derived 2026-08-14 |
+| ⭐ **ovr blobs surviving the projection** | **3,000 of 3,000 most recent blobs carry exactly ONE top-level key** | ovr.news `current-state`. **The denominator-independent half of the claim**: it counts what ovr *stores*, so it is unaffected by how many keys arrived in any given tick. This is the figure to quote for the phase-3 boundary |
+| `published_date` null or empty, upstream | **0 and 0** in **1,335,210** rows over 14 days | ovr.news. Neither the fallback nor the `NOT NULL` fires today — **the ordering below still matters for when one does** |
+| `validate.ts` blindness | `published_date` **0**, `metadata` **0**, control `title` **1** | ovr.news. **The control is required** — an empty grep and a broken grep are indistinguishable without it |
+| `published_date` / `collected_date` with no UTC offset | **99.4–99.7%** | round 1, sadalsuud. Drifts continuously as rows land |
+| Cloudflare Pages build-host TZ | **8/8 zero shift** | ⚠️ **Category 2, the worst kind: nothing pins that TZ and staleness leaves no trace** — no commit, no release, no diff. The two-URL RSS-vs-JSON-LD diff must be the *only* form this figure appears in |
+| sadalsuud offset | **CEST +0200** | ⚠️ **False every March and October. Print the offset, never literal it**: `ssh sadalsuud date +%z` |
+
+### ⭐ The remedy for Category 1: a probe that GOES RED WHEN THE FIX LANDS
+
+*(Built by ovr.news, 2026-08-14, while fixing a fake validator in their own docs —
+and it is the mechanism this section was missing.)*
+
+Category 1 figures are the ones **this plan's own success falsifies**. Prose cannot
+protect them: the sentence survives, the claim evaporates, and nobody re-derives a
+paragraph. A verify command that merely confirms the defect still exists has the same
+problem inverted — it goes quiet exactly when the work succeeds.
+
+**The shape that works: assert the finding's PREMISES by count, so fixing the defect
+FAILS the probe and forces the document to be rewritten.** ovr's now asserts three
+things and fails on each, positive-controlled all three ways:
+
+| assertion | count | a positive would be |
+|---|---|---|
+| the callsite still discards `summary` | `w=1` | someone fixes the callsite |
+| `validateArticles` still returns `summary` | `d=1` | someone removes it |
+| `validate.ts` still omits `published_date` | `p=0` | someone requires the field |
+
+> **The probe guards the FINDING'S CURRENCY, not the defect's existence.** If someone
+> repairs the callsite, the probe goes red — which is correct, because the write-up
+> is then wrong. That is the opposite of a check that quietly passes forever.
+
+**Apply this to every Category 1 figure below** rather than restating them in prose.
+
+### Category 1 — figures this plan's own success will falsify
+
+Listed so nobody quotes them after the fix lands. Each **reads as an indictment and
+becomes a lie on the first commit**: `priority` over `maximum: 8` (**2,774**, zeroed
+by W2.1 by construction); `word_count`/`priority` absent (**267**/**928**, which stop
+being defect counts and become bare populations); **"Contract A has had exactly one
+commit ever"**; **34 undeclared metadata keys** (W2.3 drives it to 0); *"metadata
+declared with zero properties"*; **"no scheduled caller" / "no caller at all"** —
+**W5.1 is a caller**, so after phase 0b the validator table's right-hand column is
+wrong, and that table is the plan's headline.
+
+### Category 3 — safe in prose, mechanism-bound
+
+The two schemas overlap on **zero** metadata keys · naive-means-UTC is an invariant
+by construction (`DateParser` converts *then* strips) · `priority*10 + credibility`
+is non-strict by construction · **ECMAScript parses an offset-less ISO string as
+local time** — a language specification, not a measurement, and safe forever.
+
+---
+
+## Round 2 — the sweep, 2026-08-14
+
+**Method.** Swept all 20 directories under `veen-systems/` (16 git repos, 4 not)
+for the *behaviour* — "reads structured data and checks it against a declared
+shape" — across eight query classes rather than for any name: schema libraries
+(`jsonschema`, pydantic), TS/JS schema libraries, other Python validation
+libraries, required-field constants, missing-field accumulators, `validate_*`
+definitions, validation error types, **DB-level DDL constraints**, and
+**shell/`jq` field assertions inside CI and ops scripts**. Peer sessions
+re-derived their own repos in parallel.
+
+### The headline count is wrong again
+
+Round 1 said **four**. The sweep finds **at least 21** under a consistent
+definition. The four were not wrong, they were a subset selected by an instrument
+that could only see one shape of thing.
+
+**⭐ The single most telling result: a grep for TS/JS schema libraries
+(`zod|ajv|yup|joi|superstruct|valibot|io-ts|typebox`) returns ZERO hits across all
+20 repos — while `ovr.news/src/lib/data/validate.ts` demonstrably runs on every
+cycle and drops rows.** Hand-rolled validators are structurally invisible to a
+library grep. That is the miss shape, reproduced deliberately and confirmed.
+
+### New on the news chain
+
+| # | mechanism | runs? | why it was missed |
+|---|---|---|---|
+| **⭐ 6** | **`ovr.news/src/lib/db-schema.ts:179-199` — the `articles` table DDL** | **on every insert, unavoidably** | it is not a schema file and not code anyone calls a validator. **A SIXTH declaration of the row shape**, and the only *enforcing* one at ovr |
+| 7 | `pipeline-atlas/ops/make_snapshot.py` | **every 20 min, 72×/day** | its name says "snapshot". **The estate's most-executed consumer-side shape check** — hand-rolled `isinstance` + key presence over two artefacts it does not own, plus a **cross-field consistency check** (re-derives newest run by `max(started_at)`, compares to the producer's declared `runs_order`) that no JSON Schema can express |
+| 8 | `pipeline-atlas/_includes/ops-figures.qmd` | in every reader's **browser**, every page view | a validator written in JavaScript inside a Quarto include. Not a script, not a `.py`, no "validate" in its name or path |
+| 9–14 | `gen_views.py --check`, `check_render.py`, `run_verifies.sh`, `check_framework_drift.py`, `smoke_architecture.py`, `publish.yml` | CI | six more; `gen_views.py --check` is *stronger* than schema validation — byte-identity against the projection of a declared source |
+| 15 | `NexusMind/scripts/deploy_filters.sh`, `llm-distillery/scripts/deploy_to_nexusmind.sh` preflight guards | on deploy | shape checks on filter packages |
+
+### ⭐⭐ The FIFTH Contract A mechanism — the only one that ENFORCES, and it validates against a hand-copied schema
+
+*(Found by pipeline-atlas; **verified here against `main`**, not the feature branch.)*
+
+`NexusMind/scripts/main.py:118`:
+
+```python
+# Contract A required fields (must match contracts/fluxussource-output.schema.json)
+_CONTRACT_A_REQUIRED = frozenset({"id","title","content","source",
+                                  "source_type","url","collected_date","content_hash"})
+```
+
+used inside the per-line load loop at `:1008`, which **drops the row**:
+
+```python
+if not self._CONTRACT_A_REQUIRED.issubset(article):
+    stats.setdefault("schema_invalid", 0); stats["schema_invalid"] += 1
+    if stats["schema_invalid"] <= 5: self.logger.warning(...)
+    continue
+```
+
+**Verified 2026-08-14:** the frozenset and the schema's `required` currently match
+exactly — both are the same 8 fields.
+
+**Why this outranks the other four.** Of the mechanisms the plan names, this is
+**the only Contract A check that runs on the production path and enforces.** The
+others are the producer's own schema, ovr's TypeScript (Contract B), and two
+unscheduled NexusMind validators. It is invisible to a validator sweep **twice
+over**: it names no script, and **its only reference to the schema is a comment.**
+
+⚠️ **The production gate and the schema are two artefacts with one name, and nothing
+makes them agree.** The comment *is* the mechanism. **If W2.1 or W2.3 edit
+`contracts/fluxussource-output.schema.json` and not `main.py`, the check validates
+against the schema while production enforces against a copy that no longer matches
+it — and both are green.** That is principle 3 with the roles reversed: the caller
+exists, and the file it claims to follow is decorative.
+
+⚠️ **And its output already goes nowhere.** `stats["schema_invalid"]` is counted per
+cycle and logged five at a time. **Verified: `data/last_run.json` carries neither
+`schema_invalid` nor `json_errors`.** So rows are dropped for Contract A violations,
+counted, and **the count reaches no reader.**
+
+⚠️ **Correction:** this document said the file's `stats` dict was *empty*. **It has
+no `stats` key at all** — `'stats' in d` is `False`; the top level is seven flat
+scalars. *Absent and empty are not the same, and reporting one as the other is this
+repo's own dead-field trap.* Those seven **do** already flow to the atlas, because
+`read_last_run` does `data.get("stats", data)` and surfaces every scalar it finds.
+(`filter_stage_timings` is nested, so a scalar-scraping reader gets **seven, not
+eight**.)
+
+🚫 **ROUTED ASK 1 IS WITHDRAWN — it was cheap as an edit and WRONG AS A DESIGN.**
+*(NexusMind, same day.)* This plan briefly recommended publishing `schema_invalid`
+through `last_run.json` on the grounds that it was a one-key change costing the
+reader nothing. **Verified: `_write_last_run_json` is defined at `scripts/main.py:3283`
+and called at `:3577` — at the END of a pipeline run.** So for the key to be there,
+something must compute it **inside the pipeline process**, which puts contract
+checking back in the **cycle tail**, under the 4h `TimeoutStartSec`, in the same
+systemd job as production scoring — **the one thing both consumers independently
+ruled out**, and a constraint already recorded in this document.
+
+> ⭐ **It was cheap precisely BECAUSE it rides a surface populated by the thing we
+> agreed must not do the work.** "Zero work for the reader" is not a design
+> argument; it is a description of who pays.
+
+**The settled artefact has none of this**: a separate timer writes
+`NexusMind/data/contract_check.json`, the snapshot reads that, `last_run.json` is
+untouched. It costs the reader a second file read, not a publication path — **and it
+buys the check its own liveness signal, which `last_run.json` cannot give it. A
+stale `schema_invalid` inside `last_run.json` is indistinguishable from a fresh one,
+because that file's timestamp belongs to the PIPELINE RUN, not to the check.**
+
+**That is the second instance of this exact shape** — ovr's `validate.ts` drops rows
+into a `warn` nobody reads. Two makes it a pattern, and it is the strongest argument
+for W5.1's artefact: **the numbers already exist, they have nowhere to land.**
+
+**Two routed asks (NexusMind's to accept or reject, not ours to make):**
+
+1. Publish `schema_invalid` and `json_errors` in `last_run.json`. pipeline-atlas's
+   snapshot surfaces every scalar in that file automatically, so they would appear
+   on the atlas the same day with no work on the reader's side.
+2. **Make "the frozenset equals the schema's `required`" a defect class in the
+   artefact.** One line, and it is currently held together by a comment.
+
+**⭐ Finding 6 in detail.** `articles` declares `title`, `url`, `source` and
+`published_date` as `NOT NULL`, enforced by SQLite on every write. The
+`published_date NOT NULL` constraint **can never fire**: `scripts/summarize.ts:866`
+and `:1433` substitute `rawArticle.published_date ?? new Date().toISOString()`
+*upstream of the insert*, and `validate.ts` does not mention `published_date` at
+all — `grep -c` → **0**, with `grep -c 'title'` → **1** in the same file as a
+control proving the instrument reads it (ovr.news session). So an article arriving
+without a publication date is **silently dated "now" and ranks as maximally
+recent**.
+
+⚠️ **Causality corrected by ovr.news, and it reverses what draft 2 implied.** The
+fallback is **not an oversight that happens to satisfy the constraint — it exists
+BECAUSE of the constraint.** Without it, a dateless row throws on insert. So this
+is a `NOT NULL` workaround, and the pair is the real finding: **a shape gate that
+cannot fail, and a silent default written to keep it that way.** Neither half is
+sloppy on its own; together they convert "we guarantee a publication date" into
+"we guarantee a non-null string".
+
+**Measured since: `published_date` is null or empty on 0 of 1,335,210 upstream rows
+over 14 days**, so neither path fires today. **But the repair has an ORDER, and it
+is not the obvious one** (ovr.news, 2026-08-14):
+
+- **Require the field upstream FIRST.** The fallback then becomes dead code and can
+  be deleted safely.
+- **Delete the fallback first and a dateless row goes from a silent wrong date to a
+  crashed pipeline run.**
+
+So *"should `validate.ts` require `published_date`"* is a **sequenced decision, not a
+tidy-up** — the fallback is not merely permitted by the `NOT NULL`, it is
+**load-bearing for it**.
+
+### ovr.news's own inventory — eight mechanisms, one of them a "validator" by name
+
+*(Re-derived by the ovr.news session, 2026-08-14. Their library grep confirms the
+miss shape from their side: zod/ajv/yup/joi/superstruct/valibot/io-ts return **0
+files** under `src/`, `scripts/`, `functions/` and **0** in `package.json`.)*
+
+Beyond `validate.ts` (drops rows at `:166`/`:191`; blind to everything outside
+`['id','title','url','source']`) and the DDL above:
+
+- **Two undeclared gates in series, not one.** The metadata projection
+  (`summarize.ts:887`/`:1342`, since 2026-04-09) narrows to a single key, **and**
+  an explicit field-by-field top-level mapping (`:825`/`:1028`/`:1335`) drops any
+  top-level field nobody wrote a line for. **Neither announces itself, and a field
+  must clear both.**
+  ⭐ **Measured from the PRODUCER's side, which is stronger than inferring it from
+  ovr's** (2026-08-14, NexusMind's filtered output on sadalsuud): `source_category`
+  is present on **114,836 of 114,836 rows — 100% — and reaches ovr on none of them**,
+  because the projection keeps only `quality`. Same for `word_count` at 113,667.
+  Other named casualties: `stage_used`, `filter_version`.
+- **`getArticlesForBuild`'s INNER JOIN on `summaries`** (`db-articles.ts:288`) — not
+  a schema check, but structurally drops any article that failed summarization.
+- **CODE LANDED, CORPUS PENDING — ovr#321 / ADR-046, committed `2583951` on master
+  2026-08-14.** `parsePublishedDate` returns `null` rather than an Invalid Date,
+  canonicalisation moved to the DB write boundary, and lint rule **[7/7] fails the
+  build** on a bare `new Date(published_date)`. **The first declared-shape check on a
+  field this plan is about.** Green on the committed state: 1,266 tests, lint clean,
+  verify sweep 84/0, `tsc` byte-identical.
+  ⚠️ **The BACKFILL HAS NOT BEEN APPLIED** — a separate owner authorisation. So
+  anything depending on ovr's stored corpus being uniform is still blocked, and
+  **FS#171 stays blocked**: the gate is not clear until ovr confirms the backfill has
+  run. Caveat from their own review: still host-dependent for non-ISO input (RFC 822
+  etc.); exposure measured at **0 rows — latent, not live.**
+- **`tests/contract-validation.test.ts`** — 22 cases, **on FIXTURES**. Worth naming
+  separately: it is the only thing at ovr that *looks* like a contract check by
+  name, and the only one that never sees production bytes.
+
+**Line-number corrections to round 1**, from the same pass: `og_image_url` is read
+at **`summarize.ts:336-337`**, not `:334`; `quality` is read back at **two** sites,
+`transform.ts:292` (`sanitizeSourceQuality`) and `:324`.
+
+### Off-chain, and this is where the plan should have looked first
+
+**W5.1's problem is already solved twice inside the estate, on the energy chain.**
+
+| mechanism | what it already does |
+|---|---|
+| `energydatahub/utils/data_quality.py` → `data/data_quality_report.json`, gated at `.github/workflows/collect-data.yml:83-95` | a result artefact + a scheduled caller + a gate that **fails when the file is MISSING**, and a severity ladder `critical > error > warning > info` (`data_quality.py:122`) with exactly one enforcing level — ADR-022's *stamp always, decide once*, already shipped |
+| `energydatahub/scripts/detect_schema_drift.py` (`collect-data.yml:156`) | **a shape-drift tripwire with a scheduled caller**, comparing a shape signature against the previous commit's, with a deliberate exit-code taxonomy and a self-maintaining volatile/stable split. This is the contracts check, built, running, and unknown to the plan |
+| `augur/scripts/wait_for_edh.sh` + `augur-daily.timer` | **a cross-repo reader of a result artefact on a systemd timer**, keyed on the artefact's own `timestamp`, with a written timeout policy |
+| `art/sanderveen.art/scripts/validate_content.py` | real content vs a CMS schema, **two callers**: CI (`hugo.yml:55`) and a git hook |
+| `RenkumSpot/.../content-validation.test.ts` | CI, over **real** JSON content, required-field + enum constants |
+
+The artefact spec (`docs/CONTRACTS_CHECK_ARTEFACT.md`) is built on these rather
+than invented.
+
+### A category round 1 had no name for: FAKE validators
+
+*(Raised by pipeline-atlas against their own repo; confirmed independently here.)*
+Mechanisms whose **claim** is about behaviour and whose **evidence** is existence.
+They inflate the estate's apparent coverage.
+
+**Confirmed instance, and it is on the page W4.1 wants edited:**
+`pipeline-atlas/_generated/contracts-table.qmd:10` (from `ops/gen_views.py:224`)
+emits *"Declared in X, **validated against** Y"* for every contract edge — and the
+only check behind the word *validated* is `<!-- verify: ls -1 X Y -->`. **Two
+inodes exist, therefore validation happens.** The atlas asserts the signature
+failure on the page where it commits it.
+
+⚠️ **The category is NOT "existence-only", and getting this wrong sends someone off
+to convert 42 healthy commands.** Estate-wide there are **44** existence-only verify
+commands; pipeline-atlas audited their own — **102 verify commands, 4
+existence-only, of which only 2 are the defect.** `ls -1 FluxusSource/config/sources/`
+backing *"the registry is internal"* is **fine**: the claim is about location, so a
+listing is direct evidence.
+
+**The tell is: a check whose output does not change when the claim becomes false.**
+Their second, worse instance: `reference/contracts.qmd` runs
+`ls -1 FluxusSource/config/schemas/` under the claim *"still no schema for
+logs_summary.json — the object's SHAPE remains undeclared."* **A negative claim
+backed by a directory listing a human must read.** Add `logs_summary.schema.json`
+and it prints five lines instead of four and still passes. Reading the *command*
+cannot reveal this; you have to read the **claim** and ask what would falsify it.
+
+That formulation also covers the `--self-test`-always-returns-0 register entry and
+the `format: date-time` no-op. **Existence-only is a symptom; unfalsifiability is
+the disease** — and it is mechanically testable by the mutation rule this repo
+already has: simulate the defect, confirm the check goes red or empty.
+
+### A live collision, and it is in THIS repo
+
+*(Found by FluxusSource while inventorying their metadata namespace; verified here.)*
+The plan's abstract point — *the blob crosses two contracts and is described by
+neither* — has a concrete instance with a crash in it:
+
+- FluxusSource emits **`metadata.sentiment` as a plain STRING** (32 rows in the
+  current 7-day window, yfinance only: `"neutral"` / `"bearish"`).
+- `llm-distillery/ground_truth/samplers.py:105` does
+  `a.get('metadata', {}).get('sentiment', {}).get('compound', 0)` — i.e. it expects
+  a **VADER dict**.
+
+**On a string, `.get('compound', 0)` raises `AttributeError`; the `0` default never
+applies.** The path presumably only ever sees NexusMind-enriched rows, so this is
+**latent, not firing** — but it is the same key name meaning two things across a
+contract boundary, which is precisely what an undeclared blob buys. FluxusSource has
+marked their key RENAME. **Ours is a one-line fix and is not yet made.**
+
+### 🔨 W2.4 is BUILT but NOT MERGED — and phase 0a's exit criterion was WRONG
+
+⚠️ **Correction to an earlier reading in this session: `b8a191c` is NOT shipped.**
+It sits on branch `fix/357-contract-validator-grouping` with two siblings —
+`f55f708` (NM#356, W2.7's UTC normalization) and `99c74a4` (NM#304, "Contract A
+meets production — 4 defects, source_group held"). **Main is at `010338d` and has
+none of them; no PR has been opened.** The error came from reading `git log` in a
+checkout that happened to be on that branch — *a branch is not a release, and `git
+log` does not say which one you are on unless you ask.*
+
+The fix itself reports **both units** — `"N error(s) on M row(s)"` — which is the
+artefact spec's requirement E. It ships with 10 new tests that **do not share a code
+path with the fix**, and reverting only the group key fails 5 of them. The test file
+is covered by CI: `ci.yml:33` runs `pytest tests/` wholesale. *(Read `:29` alone and
+you conclude it is not — the narrow line is listed first.)*
+
+Their measurement, on 6 raw files / **10,677 rows**:
+
+```
+before: metadata [required] x751, message names only 'priority'
+after:  metadata.priority   636 error(s) on 636 row(s)
+        metadata.word_count 115 error(s) on 115 row(s)     (636+115 = 751)
+```
+
+⚠️⚠️ **PHASE 0a's EXIT CRITERION WAS WRONG AND IS REPLACED.** The plan said *"the
+check reports per-row counts, verified against a hand count on one known class."*
+**Insufficient — and it fails silently in the flattering direction.** Which field
+disappears depends on **jsonschema's error order, not on the data**: the sadalsuud
+run hid `priority`, this corpus hid `word_count`. So **a hand count on whichever
+class happens to be printed reconciles perfectly while the other class is still
+invisible**, and phase 0a signs off on a still-broken instrument.
+
+> **New criterion, from NexusMind:** *the number of `required` groups equals the
+> number of distinct missing properties.* That is what the merge actually destroys,
+> and unlike a hand count it cannot be satisfied by the surviving half.
+
+**Two further corrections to the plan's text.**
+
+1. **"It hid the `priority` defect for five days" is a special case, not the
+   defect.** The defect is that **an arbitrary one of the two is invisible**, chosen
+   by error order.
+2. **Do not reconcile 636/115 against the plan's 928/267/1,195.** Different corpora
+   — 10,677 rows here, 21,636 over 6 cycles there. Adding them is the estate's most
+   repeated error.
+
+⚠️ **And instrument trap 1 was too narrow.** `memory/stamp-contract-integrity.md`
+said the merge *"affects `required` only — `enum` and `maximum` key on leaf paths, so
+78 and 2,774 are row counts."* **The counts survive; the breakdown does not.**
+`(source_type, enum)` keys on the leaf, so every violating **value** merges into one
+group carrying one example. On a corpus with both `social` and `data` violations the
+report names **one of them**. Wherever you read violation counts *by value*, this
+applies.
+
+**Consequence for sequencing:** phase 0a is no longer a prerequisite to build — but
+it is a harder prerequisite to *verify* than the plan claimed.
+
+### ⚠️ "Zero callers" cannot be measured by grepping the script's name any more
+
+Round 1's evidence was *`grep -rIl "validate_production_contract"` across five repos
+returns zero files*. **It now returns 14 — and 13 of them are prose the five
+sessions wrote while documenting the claim.** The grep measured its own
+documentation.
+
+The claim is about **callers**; a name-grep counts **mentions**. Restricted to
+executable contexts the count is **1**, and it is the new unit test — a caller, not
+a scheduler. So the durable statement is the one round 1 already insisted on:
+**unscheduled**, never *never executed*.
+
+`validate_contract_a` still holds at **3** mentions: its own definition plus this
+plan and its memory file. **No caller.**
+
+### Also established
+
+- **llm-distillery has no `.github/workflows/` at all.** Our own
+  `training/validate_training_data.py` is documented in seven places and invoked by
+  hand. This confirms round 1's split — W5.1 is **specified** here and must be
+  **implemented where it runs**, because there is no CI here to run it in.
+### ⭐⭐ The thesis arriving as EVIDENCE: two hops, both internally consistent, disagreeing by two hours
+
+*(Found by ovr.news 2026-08-14; **verified here on `main`**, independently.)*
+
+The same naive timestamp is read as **two different instants** on either side of the
+NexusMind → ovr.news boundary:
+
+| hop | how a naive `published_date` is read | verified at |
+|---|---|---|
+| NexusMind | `pub_date.replace(tzinfo=timezone.utc)` — **UTC** | `src/scoring/display_ranking.py:180-181` |
+| ovr.news | ECMAScript parses an offset-less ISO string as **LOCAL** | language spec; sadalsuud is CEST |
+
+**Both then apply the same recency rule** — `recency_threshold_hours: 24`,
+`recency_boost: 1.3` (`display_ranking.py:36-37`, applied at `:200`). So an article
+NexusMind scores at 23h old is **25h old to ovr**: NexusMind grants the 30% boost,
+ovr does not. And `getDisplayRank`'s fallback into NexusMind's `display_rank`
+**silently mixes the two timebases**.
+
+⭐ **Why this is the plan's central claim rather than another bug.** Neither hop's
+contract could have surfaced it: **each is internally consistent, and neither
+declares the field's SEMANTICS** — only its type. A schema saying
+`"published_date": {"type": "string", "format": "date-time"}` is satisfied by both
+readings. *A contract that describes shape and not meaning cannot catch a
+disagreement about meaning*, and this one has existed for as long as both hops have.
+
+**It also refutes "the timestamp work is cosmetic" for good.** W1.1's payoff is not
+standards hygiene — it is that two systems currently disagree about which articles
+are new.
+
+### ⭐ The SECOND automatic production-bytes check — and it looks like validation without being it
+
+*(NexusMind's inventory of 11 mechanisms; **verified here against `main`**.)*
+`deploy/gpu-server/main.py:338` — pydantic v2 models on the scoring API, running on
+**every scoring request**:
+
+```python
+class Article(BaseModel):
+    title:   str = Field(default="", max_length=MAX_TITLE_LENGTH)
+    content: str = Field(default="", max_length=MAX_CONTENT_LENGTH)
+```
+
+Three properties, all confirmed:
+
+- **Both fields default to `""`.** A row arriving with no content is **accepted and
+  scored as an empty string**. The boundary **cannot distinguish "the body failed to
+  arrive" from "the body is empty"** — precisely the distinction NM#304 refused to
+  destroy on `word_count`, destroyed here at a different boundary.
+- **No `id` field.** Request and response are correlated **positionally**. A
+  reordering or a dropped item is **undetectable at the schema layer.**
+- **No `model_config`**, so pydantic v2's default `extra='ignore'` applies: **every
+  other field of the row is silently discarded here.** Contract A and Contract B
+  both stop at this boundary.
+
+**Net: the estate's two automatic production-bytes checks assert, between them,
+eight key names and two strings' maximum length.** That is the headline at the top
+of this document.
+
+### ⚠️ `jsonschema` is in NO dependency manifest — every schema mechanism runs on a coincidence
+
+**Verified on `main`:** `requirements.txt` contains no `jsonschema` and no
+`rfc3339-validator`, while `scripts/validate_production_contract.py` is the one
+thing that imports `jsonschema`. CI works because `ci.yml:25` does
+`pip install jsonschema pytest` **inline**; sadalsuud works because its venv happens
+to have it. **A venv rebuilt from `requirements.txt` cannot run it.** The missing
+`rfc3339-validator` is NM#358's whole point (instrument trap 2), so **NM#358 is a
+two-part dependency change: `format_checker`, plus BOTH packages into the root
+manifest.**
+
+⚠️ **RETRACTED, same day: this section first said "three manifests, three absences"
+and called NM#358 a three-part fix by counting `pydantic` too.** Verified since:
+**zero files under `src/` or `scripts/` import pydantic** — it is used only by
+`deploy/gpu-server/main.py`, a separate service whose **own manifest carries it**.
+The two manifests are **properly separated, not jointly incomplete**, and the root
+manifest is *correct* to omit it.
+
+> **The shape matters more than the fact, because it is this review's own pattern:
+> a defect claim was read off three correct greps without checking whether the
+> absent thing was NEEDED.** Absence is only a defect relative to a consumer.
+> ⚠️ **And note the direction: it escalated.** A three-part change sounds harder
+> than a two-part one, **and nobody downstream re-derives a warning.** Errors that
+> inflate an ask survive longer than errors that shrink one.
+
+⭐ **Consequence for the artefact, and it is a hard requirement:**
+`validate_production_contract.py` already exits **2** for "could not run" versus
+**1** for "found violations" — a good distinction that is **worth nothing unless the
+caller treats 2 as an alert.** Today *"no new violations"* and *"could not import
+jsonschema"* both produce a non-1 exit. **The artefact must carry that distinction
+explicitly** — see `status: "could_not_run"` in the spec. NexusMind's parallel:
+`verify_decision_log.py` prints PARTIAL and exits 2 rather than passing, since
+NM#326. ***Exit 2 = "I did not look" is a distinction worth stealing estate-wide.***
+
+### ⭐ The un-reconstructed check already exists and has never been run
+
+**`validate/validate_contract_a.py` reads FluxusSource's `data/current/`
+DIRECTLY** — pre-mutation, no stamps to strip, no reconstruction.
+
+That matters because `scripts/validate_production_contract.py` reads NexusMind's
+**mutated** `data/raw/`, so it must strip `_commerce_*`, `_obituary_*`,
+`_violence_*`, `nexus_mind_attributes` and `display_rank` to recover the producer's
+shape. **It validates a RECONSTRUCTION of producer output, not producer output.**
+(It prints the subtraction, which is right.) Its `--cycles` also **defaults to 2**,
+so the default invocation sees a *window*, not the corpus.
+
+> **If W5.1 wants producer bytes rather than our copy of them, revive
+> `validate_contract_a.py` — do not write a new script.** The estate already
+> contains the better observation point and has never run it.
+
+⭐ **And the argument is stronger than "it reads the right directory"**
+*(pipeline-atlas, verified on `main` for both scripts, so not branch-contaminated).*
+`validate_production_contract.py`'s per-class counts are **conditional on its strip
+list being complete.** If NexusMind adds a stamp and does not extend the strip, the
+check begins reporting `additionalProperties` violations **against the producer, for
+keys the producer never emitted** — a false red pointing at the **wrong repo**.
+
+**That is the exact mirror of the frozenset drift class: two places that must agree,
+held together by nothing.** It is therefore a defect class the artefact must carry
+in its own right — `drift.strip_list_vs_observed_keys`.
+
+**`validate_contract_a.py` has no such dependency**, because it reads the producer's
+own directory. **It is the only Contract A check in the estate whose result does not
+depend on a second list being maintained** — a much better reason to schedule it
+than its `--latest` mode.
+
+*(The script agrees with this framing in its own source: it carries the comment
+"NexusMind MUTATES data/raw/*.jsonl in place … So data/raw is NOT FluxusSource's
+output as emitted", plus a strip function documented as "Remove keys NexusMind adds
+to data/raw after FluxusSource wrote it." The file named `raw` is **neither** the
+producer's bytes **nor** the scorer's text — it is pre-enrichment too. pipeline-atlas
+is proposing it for `reference/invariants.qmd` as an artefact **wrong in both
+directions from its own name**, not for the contracts page, since the arrow's payload
+has not changed.)*
+
+**A second local pattern worth copying:** `tests/unit/test_aegis_export.py`
+validates **the output of `export()`** rather than a stored fixture — *"the only
+place in the estate where a schema automatically meets something a code path
+produced."*
+
+### ⭐ The `source_group` control is LIVE, DEMONSTRATED, and deliberately HELD
+
+Independently re-derived by NexusMind, who **did not read this plan before
+measuring**:
+
+- Contract A: `additionalProperties: false` at the top level, 14 declared
+  properties, **`source_group` not among them.**
+- Producer emits it unconditionally — `content_item.py:838` in the to-dict path,
+  field at `:408`, ADR-010.
+- **Real bytes:** `data/raw/content_items_20260814_080752.jsonl`, **3,697/3,697 rows
+  carry it.**
+- **The one thing that could have made the control silently dead was checked:** the
+  validator strips NexusMind's own stamps before validating, and `source_group`
+  matches neither `NEXUSMIND_STAMP_KEYS` nor the `_commerce_`/`_obituary_`/
+  `_violence_` prefixes. **It survives the subtraction.**
+- **Run end-to-end it fires:** `<root> [additionalProperties] 3697 error(s) on 3697
+  row(s)`, *"'source_group' was unexpected"*, **exit 1.** Not available in
+  principle — demonstrated on production bytes.
+
+**They fixed Contract A today and deliberately did NOT declare it**, having put the
+tradeoff to their owner as *"declaring this spends llm-distillery's only
+non-circular control"*. After their fix the same file goes from **5 defect classes
+to exactly 1, and the 1 is `source_group`.**
+
+⭐ **The decision is pinned in CODE, not a note:**
+`tests/unit/test_contracts.py::test_source_group_is_deliberately_still_undeclared`
+asserts a row carrying it is **rejected**, with a docstring saying to delete the test
+in the same commit that declares the field. **Declare it and the test goes red and
+names the consequence.** Also under *"Not changed, deliberately"* in
+`contracts/CHANGELOG.md` 1.18.0. **W2.2 stays held.**
+
+⚠️ **Caveat that cuts against the control's strength, and it is theirs:**
+`source_group` is **INERT downstream, not merely harmless.** The ingestion gate is a
+subset test (`_CONTRACT_A_REQUIRED.issubset(article)`, `scripts/main.py:1008`) and
+`commerce.py` round-trips the whole dict through `json.loads`/`json.dumps`, so an
+undeclared top-level key is **neither rejected nor dropped**. That is what makes
+holding it free. **It also means the control measures the CHECK's sensitivity and
+says nothing about the pipeline's** — never report it as evidence that anything
+downstream would have caught the field.
+
+### The `source_type` enum fix must not be scoped from the corpus
+
+**Today's data: `{rss: 3535, api: 64, data: 98}` — `social` does not appear at
+all**, and the 98 `data` rows are all ourworldindata. **So W2.1 scoped from the
+older corpus ("add `social`") goes red on the next cycle.**
+
+NexusMind instead declared the producer's **controlled vocabulary** —
+`SOURCE_TYPES = {rss, api, social, data, video}` (`content_item.py`, ADR-008 item 5).
+**Declaring only observed values writes a vocabulary the producer can already
+violate.**
+
+⚠️ **This plan's first relay of that got `video` BACKWARDS — corrected by
+FluxusSource, and the correction is the point.** It was written up here as
+"including `video`, which has never been observed", filed alongside Contract A's
+declared-and-unemittable `email`/`web`/`patent`. **It is not that defect. It is the
+opposite one.**
+
+| | `email` / `web` / `patent` | `video` |
+|---|---|---|
+| in the controlled vocabulary | **no** | **yes** |
+| has an emitter | **none** | **two** — `vimeo_aggregator.py:287`, `youtube_api_aggregator.py:391` |
+| enabled today | — | **yes**, `vimeo` in `aggregator.enabled_sources` |
+| rows in window | 0 | 0, because `vimeo` is in `aggregator-health-report.json` → `summary.enabled_without_record` |
+
+**`video` is reachable, configured and silent — an estate health problem, not a
+contract problem.** Narrowing the enum to the observed corpus would start rejecting
+rows the moment `vimeo` recovers.
+
+⭐ **And the stronger half: `social` is emitted — 466 rows in a 7-day window** carry
+social-only keys (`all_domains`, `primary_domain`, from bluesky/mastodon/vimeo/
+youtube). **So declaring from that single run's corpus would have rejected every
+social row in the estate.** That is the *same single-run denominator error* the 96%
+figure was retired over, arriving from the other end — one run measures which
+aggregators were due in that tick, and here the consequence is a closed enum that
+silently drops an entire `source_type`.
+
+> **Write this down, because the principle does not say it on its own:**
+> **"Declare from the REACHABLE set" reads as "declare from what you OBSERVED"
+> unless someone states that they differ. Reachable means the code can produce it,
+> not that it appeared in your window.**
+
+⚠️ **Trap they hit and avoided:** grepping `source_type=` literals in FluxusSource
+surfaces **`atom`** — which is `SourceConfig.source_type`, a feed's **wire format**,
+a different vocabulary entirely (`content_item.py:340` says so). It was nearly
+declared.
+
+### Relayed to FluxusSource, not a plan item
+
+`config/schemas/source_schema.yaml` describes `priority` as *"1=highest,
+10=lowest"*. **Production is the opposite** — 10 is `disaster_alerts_gdacs_alerts`,
+9 the major-outlet tier, 5–6 the long tail — and their own
+`docs/CONFIGURATION.md` agrees with production. **The 1..10 range is sound and is
+what the ceiling fix used; only the polarity string is inverted.** A consumer
+copying that description would invert its own semantics.
+
+### Still open after round 2
+
+- **The artefact spec is written** (`docs/CONTRACTS_CHECK_ARTEFACT.md`) and revised
+  once against pipeline-atlas's review, which rejected `"armed"` as a field, forced
+  the path inside their systemd mount namespace, and added the "a defect class may
+  be `null`-with-a-reason, never absent" requirement. **Not yet accepted.**
+- **The document needs restructuring before it reaches a cold reader** — see
+  pipeline-atlas's review: undefined terms on first use, four genres in one file,
+  a third of the body superseded, and roughly a dozen figures that **this plan's
+  own success will falsify** (`2,774`, `928`, "one commit ever", "34 undeclared",
+  "no caller at all"). Their rule: *a figure is safe in prose only if the mechanism
+  that produced it would have to change for the figure to change.* Not yet done.
+- Invert every "returns zero" verify command — **and the obvious inversion does not
+  work**: `grep -rIl X . | wc -l` prints `0` but still **exits 1** under
+  `-uo pipefail`. Use `echo "n=$(grep -rIl X . | wc -l)"`, which isolates the exit
+  status and labels the number. Also: **do not use the ` — expect …` suffix in this
+  file** — that convention is `run_verifies.sh`'s and does not travel; the curate
+  runner hands the em-dash to the shell as a filename.
 - Owner decisions 1, 2, 4 remain open.

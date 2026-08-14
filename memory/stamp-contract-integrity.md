@@ -202,7 +202,11 @@ nobody ran it interactively.
 
 ## Measured, run `content_items_20260813_161006` (3,514 rows) unless stated
 
-- Top level **12 fields on 100%**; `metadata` **52 distinct keys**.
+- Top level **12 fields on 100%**; `metadata` **52 distinct keys** — ⚠️ **a
+  SINGLE-RUN count, and NOT a namespace measurement.** Reproduces exactly, and is
+  still the wrong quantity for almost every question: per-run counts range **27 to
+  107, median 63.5** across 50 runs. **Never derive a share or a percentage from it**
+  — see the retirement note below before quoting this line.
 - FluxusSource's schema declares **7** metadata keys, Contract A declares **12**,
   **overlap ZERO**. Provenance half vs operational half. 34 declared by neither —
   **legal**, Contract A's `metadata` is `additionalProperties: true`; only its top
@@ -210,10 +214,34 @@ nobody ran it interactively.
 - Contract A defects over 6 cycles / 21,636 rows: `social` missing from the enum
   (78 rows); `priority` ∈ {9,10} over `maximum: 8` (**2,774**); `word_count`
   absent (**267**) and `priority` absent (**928**) though both `required`.
-- **ovr reads exactly 2 of 52 metadata keys** — `og_image_url`, `quality`. A 96%
-  undeclared projection. `og_image_url` is read at `summarize.ts:334` **upstream**
-  of the `:887` projection that discards it, so a field can be load-bearing at ovr
-  and **leave no trace in the stored row**.
+- **ovr reads exactly 2 metadata keys** — `og_image_url`, `quality`. `og_image_url`
+  is read at `summarize.ts:334` **upstream** of the `:887` projection that discards
+  it, so a field can be load-bearing at ovr and **leave no trace in the stored row**.
+  ⚠️ **The "2 of 52 / 96% undeclared" form is RETIRED (2026-08-14), and the reason
+  is stronger than "wrong denominator".** The **2 is solid.** But **a single-run key
+  count is not a namespace measurement at all** — it measures which aggregators
+  happened to be due in that tick. FluxusSource counted distinct metadata keys per
+  run across all 50 runs in the hot window: **min 27** (`…_20260808_160714`, 494
+  rows), **median 63.5**, **max 107** (`…_20260813_001014`, 3,814 rows) — a **4×
+  spread**. The run this file used gives 52; the next morning's gives 55. Sampling
+  six hours either side would have produced a visibly different percentage over the
+  same estate. **52 reproduces exactly** (`collection_20260813_161007`, 3,514 rows,
+  independently confirmed by the producer), so it is a correct number answering a
+  question nobody wanted asked.
+  - The producer's inventory counts **168** keys, **154 of the 168 confined to a
+    single `source_type`**. That is the **hot-window union** — `data/current/`, 50
+    runs, 2026-08-06→08-14. **Do not call it "the full namespace":** `data/archived/`
+    is kept indefinitely since FS#164, so keys retired before 08-06 sit outside it.
+  - **3** keys are read by name in consumer pipeline code: `quality`,
+    `og_image_url`, `priority`. ⚠️ **Carry this caveat with the 3 every time** — it
+    means *read by name*, **not** *the only keys that can break a consumer*.
+    NexusMind passes the whole `metadata` blob through untouched into
+    `data/filtered/*.jsonl`, so a key nobody names still travels and can still be
+    depended on downstream. Without that sentence the 3 reads as a safety margin it
+    is not.
+  - **Quote the 2, the 3 and the 154/168 with its window; do not reconstruct the
+    percentage.** It also moves the wrong way: declaring more keys (principle 1)
+    makes it look worse.
 - Byte budget: 1,700 B/row · `metadata` **37.5%** (larger than `content` at 23.8%)
   · repeated JSON keys **30.3%** · gzip 4.5×.
 - Standards: `language` 3,509/3,514 two-letter, `zh-cn` ×5; `published_date` /
@@ -225,9 +253,17 @@ nobody ran it interactively.
    distinct `required` failures.** Groups key on `(path, validator)` (`:131`) and a
    missing-required error reports the **parent** path, so `word_count` and
    `priority` collapse into one group whose message is whichever arrived first
-   (`:137`). 267×2 + 661×1 = **1,195**, which is what it prints. **Affects
-   `required` only** — `enum` and `maximum` key on leaf paths, so 78 and 2,774 are
-   row counts.
+   (`:137`). 267×2 + 661×1 = **1,195**, which is what it prints.
+   ⚠️ **CORRECTED 2026-08-14 — "affects `required` only" was too narrow.** The
+   *counts* for `enum`/`maximum` are row counts (they key on leaf paths), **but the
+   breakdown BY VALUE is destroyed the same way**: `(source_type, enum)` merges every
+   violating value into one group carrying one example, so on a corpus with both
+   `social` and `data` violations the report names **one of them**. Trust the totals;
+   never trust the named example, for any validator. *(NexusMind, measured.)*
+   **Fix built** on branch `fix/357-contract-validator-grouping` (`b8a191c`,
+   NM#357) — keyed on the missing property via an anchored regex with an explicit
+   fallback to the parent key, and reporting `"N error(s) on M row(s)"`. **Not
+   merged; main has none of it.**
 2. **`format` is declared and never asserted — and the obvious fix silently
    no-ops.** Contract A declares `format: "date-time"` on all three timestamp
    fields; RFC 3339 requires an offset, so 99.4% of rows violate a declaration it
