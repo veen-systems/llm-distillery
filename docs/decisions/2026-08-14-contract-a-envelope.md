@@ -314,13 +314,39 @@ feed-level population it describes is off five-fold. The rule holds unchanged un
 every reading — match on `'news.google.com' in url`, never on the prefix.
 
 ⚠️ **Two live defects this surfaced, neither mine to fix:**
-1. **`CLAUDE.md`:196 carries the bare ratio with no denominator**, in a sentence about
-   *matching* — a feed ratio in a matching claim. Proposed to the owner; not edited
-   here, since it is a normative surface and the measurement is not mine.
-2. **FluxusSource `memory/gn-proxy-protocol.md:55` contradicts itself**: it states
-   "roughly 5:1" and illustrates it with **202 `gn_*` vs 441 GN-URL items in one run**
-   — which is 2.18×, an *item* count under a *feed* ratio. Theirs to fix; NexusMind
-   found it and correctly declined to edit another repo's memory.
+1. **`CLAUDE.md:197` (this repo) carries the bare ratio with no denominator**, in a
+   sentence about *matching* — a feed ratio in a matching claim. Proposed to the
+   owner; not edited here, since it is a normative surface and the measurement is not
+   mine. *(FluxusSource's own `CLAUDE.md` is correct: it says "several-fold" and
+   delegates the number to `memory/gn-proxy-protocol.md`, which is the right shape and
+   the reason defect 2 below matters.)*
+
+   ⭐ **A verification that lands on the wrong target returns confidently negative,
+   not "unverified" — the fifth wrong-sentence instance in this thread, and the one
+   worth generalising.** NexusMind checked a repo I had not named, found a *different*
+   file saying something correct, and read that as disconfirming the claim. My message
+   was the cause (I named no repo), but the failure mode is general and has no
+   built-in signal: a search that misses its target does not report a miss. **Name the
+   file, not just the claim**, whenever asking anyone to check one.
+2. **FluxusSource `memory/gn-proxy-protocol.md:54-58` — "ratio sound, illustration
+   mismatched", NOT "the file contradicts itself".** Their narrowing, and it matters:
+   the file's own class table eight lines above gives A=59, B=230, C=13 → the 302 it
+   then states outright, so **302/59 = 5.12× is self-corroborating within the file**.
+   What is wrong is that the 2026-08-08 incident (202 `gn_*` vs 441 GN-URL **items**
+   in one run, 2.18×) is attached as if it demonstrated the 5:1. Calling it a
+   self-contradiction puts the ratio in doubt when the table settles it.
+
+   ⭐ **And the illustration is worse than mismatched — that quantity is not stable.**
+   The same item ratio was 2.18× on 2026-08-08 and 1.64× over 08-10→08-14. It moves
+   with which feeds were due and how much each returned; the feed ratio is a property
+   of the *configuration*. **So an item count cannot illustrate a fixed ratio in
+   principle, not merely on that day.** This is "the denominator travels with the
+   number" in its sharper form: **some denominators do not yield a stable ratio at
+   all**, and picking one of those is a defect no amount of re-measurement fixes.
+
+   Theirs to fix; NexusMind found it and correctly declined to edit another repo's
+   memory. The 2026-08-08 incident text itself stands unchanged — that session's
+   error was reaching for the prefix at all, and the lesson is untouched.
 3. **NexusMind `scripts/research/phase2_296_cosine.py:111`** labels a stratum "GN on
    one side (77%)". If that stratum was built on the prefix, the 77% is on the
    undercounting population. **Flagged, deliberately not rewritten** — restating a
