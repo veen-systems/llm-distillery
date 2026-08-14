@@ -346,9 +346,12 @@ nothing was edited outside this one.**
 
 **Two framing corrections I accepted from peers**, recorded because both were mine:
 the `source_group` red is the control working, not the failure escaping; and the
-state of the check is **"not armed, and unmeasured-red"**, not "armed but red" —
+state of the check is **"not armed, and measured red"**, not "armed but red" —
 `nexusmind-contract-check.timer` reads NOT ARMED, and arming reads systemd, not the
-verdict. The check has run by hand; nothing runs it on a schedule.
+verdict. The check has run by hand; nothing runs it on a schedule. ⭐ **Those are two
+different arguments for arming, and the second is the stronger one** — *"nobody has
+looked"* and *"someone looked, it is 100% red, and nothing watches it"* are not the
+same case.
 
 ## The blocking item is now an owner decision, not an engineering one
 

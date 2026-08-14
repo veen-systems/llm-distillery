@@ -1768,6 +1768,16 @@ level up. The atlas can *report* it; that is display, not readership.
   cannot report zero. A contract check validates rows that exist; a source emitting no
   rows is invisible to it **at any strictness**. This is Category G's own argument one
   level up, and it is the strongest case for doing G.
+
+  ⚠️ **The incident is evidence; the detector is not.** pipeline-atlas re-ran the
+  config-shape check that would catch the class against the live config —
+  **2,080 source keys, 0 with no `url` of their own.** It has never returned a
+  positive, *"and an instrument that has never fired has not been shown to be able
+  to. It is written against the shape of the incident rather than validated by it."*
+  ⭐ **That strengthens the case for G rather than weakening it** — the only existing
+  instrument for this class is an unvalidated config-shape grep, not a check on the
+  data. But the caveat has to travel with the claim, or this thread's own failure
+  class arrives inside the argument for the fix.
 - **Attribution through the reconstruction.** The strip list is a hardcoded
   enumeration, so a key added on the NexusMind side and not added to it is reported as
   a *producer* violation for a key the producer never emitted. The check detects
