@@ -1,6 +1,32 @@
 # LLM Distillery - TODO
 
-## 🔵 NEXT SESSION — start here (updated 2026-08-15)
+## 🔵 NEXT SESSION — **realize Contract A. The briefs are written: `docs/CONTRACT_A_REALIZATION.md`.**
+
+**Owner instruction 2026-08-15: continue to realization, FluxusSource builds.** The
+per-repo briefs are ready to paste — llm-distillery cannot authorize another repo's
+session to write code, so **the owner hands out the lines**; everything else is done.
+
+⭐ **The old sequence is BACKWARDS and this is the headline.** `content_meta.kind`
+("built, just needs deploying") is the **most** blocked item — three shapes disagree and
+one **fails validation closed**. The three `published.*` fields ("the hard part") are the
+**least** blocked: all declared, all optional, all correctly typed, **nothing cross-repo
+gates them.**
+
+⚠️ **`7bc20a0`'s gate reads green and is not one** — *"not for deploy until NexusMind's
+envelope declaration merges"* was satisfied by the merge while every mismatch stands.
+
+**Do W0 first** (the pre-build shape pass): the `content_meta` defect class is **already
+latent in the fields nobody has built yet**, and fixing it while **nothing emits** costs
+one schema commit. Sharpest item after `error`: **`published.had_timezone` is
+non-nullable, so on a fabricated date `false` conflates "publisher stated no timezone"
+with "there was no publisher value" — the field cannot distinguish the case it exists
+for.** ✅ **Owner ruling: NexusMind declares `content_meta.error`.**
+
+⚠️ A mechanical "unpinned string" scan flags **16 of 23** fields and is useless —
+`published.raw` is a publisher's literal string. The curated list is in the doc; do not
+re-run the naive scan and treat its output as the backlog.
+
+## 🔵 Also open (updated 2026-08-15)
 
 **Nothing was deployed and no filter package was touched; `deploy` is not applicable.**
 Seven commits, all documentation and findings, `041cc10` → `24d5ff2`, pushed.
