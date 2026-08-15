@@ -18,12 +18,67 @@ NexusMind (W0) and FluxusSource (Track A) through this session; ovr.news and pip
 took information-only briefs. **This repo wrote no code and deployed nothing.** Record:
 `docs/CONTRACT_A_REALIZATION.md`, commit `1c02bf8`.
 
-| | state | waiting on |
+### ⭐ THE ONLY NUMBER THAT MATTERS: fields EMITTED on delivered rows — **3 of 23**
+
+Measured 2026-08-15 evening on `collection_20260815_160753` (2,437 rows), not on report.
+**The consumer schema reached 1.26.0 while the producer emitted none of it** — that gap,
+not the schema's correctness, is what "implement Contract A" means.
+
+| block | fields | emitted |
 |---|---|---|
-| **NexusMind** | Contract A **1.24.0 MERGED** (`8e9c489`); check merged **and installed** (#361, `1c2f20f`) | 02:22 timer fire, then W2.2 |
-| **FluxusSource** | Track A **committed AND deployed** (`08c4f56`, deploy recorded `0fb7a57`) | nothing |
-| Track B (`content_meta.kind`) | `echoes_title` split **landed** on `feat/contract-a-content-meta-kind`, tip **`690c2dd`** (rebased; pre-rebase tagged `pre-rebase/content-meta-7bc20a0`) | **owner: merge + deploy call** |
-| Canary + W2.2 | canary **live and has reported the control**; W2.2 held to the first automatic fire | 02:22, then NexusMind |
+| `published` | raw · had_timezone · fabricated | ✅ **2,425 / 2,437 = 99.5%** |
+| `published` | element · precision | ⛔ **omitted** (not null — and null means *fabricated* in this block, so the two states differ) |
+| `content_meta` | kind · echoes_title · error | ⏳ built, `690c2dd`, **owner: merge + deploy in FluxusSource's session** |
+| `collected` · `fetch` · `feed` · `origin` | 14 | ⛔ 0 rows |
+
+⚠️ **`fabricated: False` on 2,425 rows is a REAL NEGATIVE, not a vacuous one** — corrected
+by NexusMind, verified here in the producer: `extract_date_from_rss_entry` fabricates
+`now − 2h` **by default** (`date_parser.py:125`, `fabricate_fallback=True`), so all **2,345**
+RSS rows could have fabricated and none did. *(My "only 80 rows were fabricating-capable"
+filtered by a remembered list of aggregator names instead of reading the path every row
+takes — a hand-built population, again.)* **What IS untested is the true-branch**: no live
+row has yet carried `fabricated: true`, so the `null`-means-fabricated rule is unexercised.
+
+**NexusMind's side is DONE for this round** — `source_group` declared and deployed, W2.2
+closed; `content_meta.truncated` removed (PR #373, `cfd1f18`); check ran **through the
+systemd unit** on deployed code: `status ok · overall info · exit 0`, provenance block
+populated, violation class gone. First *automatic* fire 02:23 (`LastTriggerUSec` still empty).
+
+### ⏳ OWNER DECISION — delete 5 declarations rather than implement them
+
+Measured in the producer's code; **the fastest route to a contract that describes reality is
+deleting the fields that cannot carry information on the rows that exist.**
+
+| off the row | why |
+|---|---|
+| `fetch.http_status` | **200 by construction** — all three body-returning sites in `robust_feed_parser.py` (`:484`, `:594`, `:763`) are guarded on 200; no 304/ETag path; non-200 branches return `None` |
+| `fetch.url_requested` · `url_final` · `content_encoding` | real facts, but **per-FEED**, not per-row — they belong in the per-run feed-health report, which is rewritten each run and costs nothing in the archive |
+| `feed.cadence_hours` | per-**source** constant repeated on every row → Category G's sidecar |
+
+**Worth writing instead:** `fetch.at` (⚠️ through `time_utils.utc_now()` — stamped from
+`datetime.now()` it inherits #176 and puts a host-local fetch time beside a UTC
+`collected_date`, giving the skew a second witness that makes it look like a real interval),
+`charset_used`, `charset_detected` (emit only when the strict-UTF-8 fast path fails, so
+absence means "clean" and the field is near-free), `charset_declared`, `collected.clock_source`,
+`feed.ttl_declared`, `published.precision`.
+
+⚠️⚠️ **Two of my three charset calls were WRONG and the reason is reusable.** I argued they
+duplicate a decision feedparser makes — but the producer **decodes before parsing**
+(`_fix_encoding_issues` → `_parse_with_fallbacks(content: str)`), so feedparser never sees
+wire bytes and `feed.encoding` is a tautology. **I inferred a mechanism from a general
+pattern true of the library rather than following the call path.** On the corrected reading
+`charset_declared` is the **most** interesting of the three — nothing reads the publisher's
+declared charset today, so it is the only field that could compare a claim against reality.
+⭐ **And the finding beside it is worth more than the field**: the ladder's docstring says
+*"strict UTF-8 → declared/detected encoding → …"* and **the declared step does not exist in
+the code** (filed by FluxusSource, `cee0044`).
+
+⚠️ `origin.country`/`region` must NOT be derived from `domain_mappings.yaml` — measured
+coverage on the live collection is **51.8%** (exact 214, by-suffix 478, TLD-fallback 571 of
+2,437), and the **48.2% unmapped are systematically non-Western** (hindustantimes, lrt.lt,
+vnexpress, nst.com.my, tovima.gr, seneweb). A geography field absent exactly where geography
+is the question invites a consumer to read its coverage as a distribution. GDELT passthrough
++ `origin.method` only.
 
 ⚠️ **The four rows above read differently on 2026-08-15 evening than they did that afternoon,
 and the correction is the point: this table said "awaiting owner commit" for work that was
