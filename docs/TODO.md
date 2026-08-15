@@ -1,30 +1,68 @@
 # LLM Distillery - TODO
 
-## 🔵 NEXT SESSION — **realize Contract A. The briefs are written: `docs/CONTRACT_A_REALIZATION.md`.**
+## 🔵 NEXT SESSION — **two peer repos hold finished, uncommitted work awaiting the owner**
 
-**Owner instruction 2026-08-15: continue to realization, FluxusSource builds.** The
-per-repo briefs are ready to paste — llm-distillery cannot authorize another repo's
-session to write code, so **the owner hands out the lines**; everything else is done.
+✅ **Contract A realization was HANDED OUT and BUILT on 2026-08-15.** The owner authorized
+NexusMind (W0) and FluxusSource (Track A) through this session; ovr.news and pipeline-atlas
+took information-only briefs. **This repo wrote no code and deployed nothing.** Record:
+`docs/CONTRACT_A_REALIZATION.md`, commit `1c02bf8`.
 
-⭐ **The old sequence is BACKWARDS and this is the headline.** `content_meta.kind`
-("built, just needs deploying") is the **most** blocked item — three shapes disagree and
-one **fails validation closed**. The three `published.*` fields ("the hard part") are the
-**least** blocked: all declared, all optional, all correctly typed, **nothing cross-repo
-gates them.**
+| | state | waiting on |
+|---|---|---|
+| **NexusMind** | Contract A **1.21.0 → 1.23.0**, 43 contract tests, suite 1319, 16 mutations all biting | **owner: commit** |
+| **FluxusSource** | Track A built, 1283 tests, 788 live rows validating clean | **owner: commit + deploy** |
+| Track B (`content_meta.kind`) | unmerged on `feat/contract-a-content-meta-kind`, deliberately | W0 1–3 (done) then an owner call |
+| Canary + W2.2 | open, unstarted, **original order — NOT resequenced** | NexusMind |
 
-⚠️ **`7bc20a0`'s gate reads green and is not one** — *"not for deploy until NexusMind's
-envelope declaration merges"* was satisfied by the merge while every mismatch stands.
+⭐ **THE FINDING OF THE ROUND, and it is about how the round was run: three of this
+session's own calls were wrong, and every one was caught because the receiving session
+RE-DERIVED instead of adopting.** (1) `content_meta.error`'s type — the owner ruling
+settled *whether to declare*; `(string, nullable)` was this repo's parenthetical
+**inheriting authority by adjacency**. (2) *"measured at fetch needs a new read"* — it
+needs a new **write**. (3) ⛔ **I recommended spending the only non-circular acceptance
+control**, to drive a violation count to zero — *the very number whose trustworthiness it
+establishes.* Promoted to `memory/working-rules.md`: **a failing check may be the control
+working.**
 
-**Do W0 first** (the pre-build shape pass): the `content_meta` defect class is **already
-latent in the fields nobody has built yet**, and fixing it while **nothing emits** costs
-one schema commit. Sharpest item after `error`: **`published.had_timezone` is
-non-nullable, so on a fabricated date `false` conflates "publisher stated no timezone"
-with "there was no publisher value" — the field cannot distinguish the case it exists
-for.** ✅ **Owner ruling: NexusMind declares `content_meta.error`.**
+⚠️ **Do NOT re-derive these, they are settled:** `published.had_timezone` is nullable as
+of 1.22.0 (a **recommendation**, not a ruling — FluxusSource may still push back);
+`content_meta.error` is **non-nullable** (`type(exc).__name__` has no null branch);
+`published.element` is pinned as a **root conditional**, not a flat enum, because its
+vocabulary is closed for RSS and **open overall**; `collected.clock_source` is **two
+values, not three** — three call sites, two clocks.
 
 ⚠️ A mechanical "unpinned string" scan flags **16 of 23** fields and is useless —
 `published.raw` is a publisher's literal string. The curated list is in the doc; do not
 re-run the naive scan and treat its output as the backlog.
+
+### New, unowned, and none of it blocks the above
+
+- **`eval_query` is a SECOND undeclared root field** (511 rows). All three sessions had
+  been saying *the* undeclared field.
+- **A fifth fabrication class at ~0h** — `devto`/`fda`/`clinicaltrials` do
+  `if not published_date: published_date = datetime.now()`. **Not a wrong constant: the
+  signal is at zero**, outside the 2h/4h taxonomy entirely. `fabricated` is **UNDEFINED**
+  there, not false.
+- **`CEST` maps to an LMT offset** in FluxusSource — `09:15:00 CEST` parses to **09:06**,
+  so a wrong `published_date` can ride a correct `had_timezone: true`. Unfiled, theirs.
+- **Track A costs +95 bytes/row (~1.5 MB/day) against archives kept indefinitely** — a
+  storage commitment nobody has agreed to.
+- **Ours: `merge_fluxus_data.py` / `merge_historical_data.py` sort undated articles
+  FIRST** while commenting *"will be at the end"*. Measured **dead — 0 of 165,107** rows,
+  because undated entries arrive fabricated rather than null. Comment wrong either way.
+  Same two files still default to Windows Google Drive paths abandoned 2026-06-29.
+
+### ✅ CLOSED: the ovr.news corpus backfill — answer is NO
+
+Carried for weeks as *"authorised and not run"*. **Three successive refutations, two of
+them ovr's of its own reasoning.** The population was never 79 rows (**21,520 = 98.2%**);
+*"value increases with delay"* is **false** (the naive population is **closed**); there is
+**no time trigger and no event trigger** (the write boundary canonicalises before storage,
+so an offset never reaches `ORDER BY` as one — **0 inversions in 21,948 production rows**,
+0 in a seeded post-FS#174 simulation); and the last benefit fails on **scope** — it
+rewrites the DB only, while the append-only archive is the **durable** copy since
+ADR-022/#262. ✅ **llm-distillery is a structural non-stakeholder**: reads no ovr archives,
+and both `sort_articles_by_date` impls truncate at `'T'`, so the sort key is `YYYY-MM-DD`.
 
 ## 🔵 Also open (updated 2026-08-15)
 

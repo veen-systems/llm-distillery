@@ -46,6 +46,52 @@ Problems encountered and resolved. Format: Problem → Root cause → Fix.
 
 ---
 
+## A FAILING CHECK MAY BE THE CONTROL WORKING — I proposed spending one to zero a counter (2026-08-15)
+
+**Problem**: Validating 788 live producer rows against Contract A gave **788/788
+violations**, all one field (`source_group`) unexpected at a closed root. Verified, and the
+facts were right. I inferred that declaring the field was a **prerequisite** for the
+canary, and recorded the resequencing in the plan doc.
+
+**Root cause**: `source_group` is the production contract check's **only non-circular
+acceptance control** — an independent field, on real rows, **that the check was never
+shown**, and therefore the only evidence the check *can fail at all*. Already a recorded
+decision (NM#304, `contracts/CHANGELOG.md` 1.18.0), guarded by a test whose name says so
+(`tests/unit/test_contracts.py:178`), which failed by design the moment NexusMind tried it.
+I had not read it. ⭐ **Declaring it spends the control PRECISELY IN ORDER TO DRIVE A
+VIOLATION COUNT TO ZERO — the very number whose trustworthiness the control exists to
+establish.** A synthetic replacement cannot restore it: an injected key proves the check
+catches **what you already knew to look for**; the organic control proves it catches
+**something nobody designed it to catch**.
+
+**Fix**: Retraction recorded in place (not deleted) in `docs/CONTRACT_A_REALIZATION.md`;
+NexusMind parked it as a test carrying the request, the number and the reason, so it
+retires by explicit deletion rather than drift. **A 100%-failure reading argues for
+building the observer sooner, not for removing the thing that is failing.** Promoted to
+`memory/working-rules.md`. Ask in order: *what does this failure prove that nothing else
+proves?* then *does my fix delete that proof?* Sibling, opposite sign (2026-08-12): *the
+archive survived only because the purge was broken.*
+
+## A PARENTHETICAL IN A TABLE CELL SILENTLY WIDENED AN OWNER RULING (2026-08-15)
+
+**Problem**: The owner ruled that NexusMind should **declare** `content_meta.error`. The
+plan's change column read **"DECLARE it (string, nullable)"** with the ✅ ruling in the
+adjacent cell. NexusMind implemented it **non-nullable**, then asked whether the ruling had
+covered the type — because their evidence said it should not be nullable.
+
+**Root cause**: The ruling settled *whether to declare*. `(string, nullable)` was the
+authoring session's own parenthetical, and **it inherited authority by adjacency** from the
+⛔ marker beside it. Nothing adjudicated it. The producer's fault path is
+`return {'error': type(exc).__name__}` — every branch yields a non-empty string, **no
+branch can produce null** — so a nullable declaration obliges a consumer to write a
+null-branch that can never be exercised or tested.
+
+**Fix**: Accepted non-nullable; recorded as **my document's error, not the owner's ruling**.
+⭐ **Durable lesson: when relaying a decision, mark what was decided and what is the
+relayer's gloss.** A ruling and an unadjudicated detail rendered in the same cell are
+indistinguishable to the reader, and the reader is the one who implements. The only reason
+this was caught is that the receiving session asked instead of assuming.
+
 ## A GAP SPIKE THAT LOOKS LIKE A CLOCK BUG IS A PUBLISHING SCHEDULE — and it walks with your timer (2026-08-14)
 
 **Problem**: `collected_date − published_date` showed a **6.00h spike on 13.99% of
