@@ -213,8 +213,18 @@ the instrument.**
 
 1. **#114** needs a spend decision (paired oracle measurement).
 2. **`CLAUDE.md` 37.4k vs 35k** — **0 recoverable padding bytes**, so content must go.
-   `## Before You Start` is 28% of the file. ⚠️ **`memory/MEMORY.md` is 47.7k in 89
-   lines** and is the bigger problem. Recommend `/audit-context`.
+   `## Before You Start` is 28% of the file. ⚠️ **`memory/MEMORY.md` is the bigger
+   problem: 89 lines, ~536 chars per line, and `CLAUDE.md` tells every session to read
+   it first.** Recommend `/audit-context`; do **not** hand-trim.
+
+   ⚠️ **A FIFTH ERROR OF MINE, in the curate commit message itself (`d45315f`).** I
+   wrote that I had trimmed my index entry "by ~60%, leaving it at ~48k". **Measured:
+   47,766 → 52,221 → 51,343.** The entry costs **3,577 chars**, the trim removed
+   **878 — 19.7%, not 60%** — and the file stands at **51.3k, not 48k**. ⭐ **I
+   estimated a delta instead of measuring one, in the same commit where I flagged the
+   file for being over budget, on the day whose theme was numbers attached to claims
+   without checking.** History is not rewritten; the correction lives here and in
+   `2f0…`'s message.
 3. **Category G** needs an implementer, not a decision.
 4. Not ours: the three `published.*` fields, the `kind` deploy, `clock_source`
    (FluxusSource); the canary (NexusMind).
