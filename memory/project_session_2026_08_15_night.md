@@ -134,6 +134,83 @@ across all three sites, which the probe now holds.
 
 ---
 
+## 3. #116 and #117, after the audit
+
+### #117 — the diagnosis was wrong, the prescription right anyway
+
+`LICENSE` was **not** "a short header that names EUPL-1.2": it already held the full
+EUPL text, 195 lines with the Appendix, measuring **98.99%** against canonical. The
+text was never the problem. What blocked `licensee` was the wrapper — a 14-line
+**Apache-2.0** boilerplate preamble ("You may obtain a copy of the Licence at", "AS IS
+basis" — wrong licence family entirely) plus **17 markdown headings** injected into the
+body. Neither is stripped; both are charged against similarity.
+
+Now canonical verbatim after a copyright line, `SPDX-License-Identifier: EUPL-1.2`
+(preserving the old header's deliberate "v1.2 **only**" intent machine-readably) and the
+EUPL's own required notice. **99.91%** against licensee's reference (`482fe6b`).
+
+⚠️ **The first similarity measurement used the SPDX text, but `licensee` matches the
+choosealicense corpus.** Different files. Measuring against a plausible substitute for
+the real reference is a hand-built population — caught only because I went looking for
+which corpus actually runs.
+
+⛔ **#117 is NOT closed.** `spdx_id` still reads `NOASSERTION`; detection is
+asynchronous and server-side. **The acceptance criterion is the API's answer, not the
+diff.** A watcher is polling.
+
+### #116 — the owner corrected my framing, and it changed the decision
+
+Two clarifications: the axis is *reader-response* prediction, not article sentiment; and
+then — **"inflicting reader response is some sort of technique in some sense"**.
+
+I had drawn the boundary as *technique = content-intrinsic* vs *reader response =
+population property*, and proposed a new layer for it. **That premise is false against
+`persuasion-scorer`'s own accepted taxonomy**: of its six coarse categories,
+**Distraction**, **Manipulative wording** and **Call** are each named by what they do to
+a reader, as is the whole SemEval lineage (*appeal to fear*, *loaded language*,
+*flag-waving*). **A taxonomy of persuasion technique already is a taxonomy of intended
+effects**, so my boundary cut through the middle of layer 1.
+
+The line that holds is **inscribed vs realised effect** — "constructed to activate" is in
+the artifact and adjudicable by reading it (technique, in scope); "readers actually felt
+X / it spread" is a population property (not in the text). #116 spans both and only the
+first half is tractable.
+
+⭐ **The consequence that matters: the hazard was never the axis, it is the OUTPUT
+DIRECTION.** *"Engineered to provoke"* is a ragebait **detector**; *"will land hard"* is
+a ragebait **optimiser** — same signal, opposite deployment. So in ovr ranking this is a
+**down-ranking signal on manipulation**, not #116's up-ranking signal on reach. Naming is
+therefore a safety control, not a preference.
+
+Recorded in `persuasion-scorer` `DR-007` (Proposed, `c86b5ed`) plus two falsifiable
+hypotheses. The expected outcome is logged rather than hoped: inscribed activation
+**loads onto `Manipulative wording` at r > 0.75 and is not a seventh dimension at all**,
+resolved on the same ≥300-article run as their existing factor bet.
+
+### What killed #116's own safety argument
+
+It rests on *"the evidence gatekeeper caps speculation at 3.0"*. Measured over 233,089
+rows conditioned on `stage_used`: `uplifting v7`'s gate binds on **222 of 103,271**
+stage2 rows (**0.215%**), `solutions v6`'s on **0 of 40,584**. The contrast tracks the
+gatekeeper dimension's **weight** (0.10 vs 0.20), not the gate. One article in 465 is too
+thin — and it thins further in the relevant direction, since a high-weight activation
+axis raises the average without touching `evidence_level`, pushing rows *into* the region
+the gate exists to catch. **Restraint that scales with harm does not bound it.**
+
+⭐ **And the instrument that produced "0 would bind" was circular** — see the gotcha
+entry. `filter_base_scorer.py:333` caps `weighted_avg` **in place**, so `raw > CAP` is
+false by construction for exactly the rows where it fired. All 444 flagged rows read
+exactly 3.0. Only a second, disagreeing signal exposed it.
+
+### The blocker that is not the ethics
+
+**No outcome variable exists in the estate.** Checked across `ovr.news/src/` and
+`ovr.news/functions/`: no analytics (the one `google-analytics.com` hit is an
+image-extraction blocklist entry; "plausible" is the English word in a comment), no
+engagement columns in `migrations/`. Berger & Milkman had NYT most-emailed *and*
+human-coder validation. Without an equivalent the inscribed → realised step cannot be
+validated at all.
+
 ## Verify
 
 <!-- verify: bash tests/fixtures/reference-integrity/run.sh 2>&1 | tail -1 -->

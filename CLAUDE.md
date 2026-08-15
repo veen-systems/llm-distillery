@@ -53,7 +53,7 @@ framework_reconciliation: |
 
 **System context:** llm-distillery creates filters. NexusMind deploys them for production scoring. The interface is the filter package: `filters/{name}/v{N}/` directories copied between repos, plus HuggingFace Hub uploads.
 
-**Downstream consumer (2026-08-01):** `veen-systems/persuasion-scorer` — the #78/#79 persuasion-technique scorer, split out because a verified taxonomy is a research project, not a deploy package (its DR-003). It **depends on** this repo's distillation machinery; it must never vendor a copy. #78/#79 stay open here as definition/origin.
+**Downstream consumer (2026-08-01):** `veen-systems/persuasion-scorer` — the #78/#79 persuasion-technique scorer, split out because a verified taxonomy is a research project, not a deploy package (its DR-003). It **depends on** this repo's distillation machinery; it must never vendor a copy. #78/#79 stay open here as definition/origin. **#116 (activation/arousal) is scoped THERE, not here** — `persuasion-scorer` DR-007 (proposed 2026-08-15): *technique is inscribed effect*, so activation is a layer-1 candidate rather than a new layer, and the hazard is the **output direction** (detector vs optimiser), not the axis. #116 stays open here as the ethics decision.
 
 ## Tech Stack
 
