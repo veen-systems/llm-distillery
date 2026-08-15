@@ -46,6 +46,73 @@ Problems encountered and resolved. Format: Problem → Root cause → Fix.
 
 ---
 
+## A PARTIAL RUN'S ZERO IS THE SAME BYTE AS A REAL ZERO — I dated a stop four days early (2026-08-15)
+**Problem**: `eval_query` (an undeclared Contract A root field) appeared in every
+FluxusSource collection through `collection_20260811_080541`, then read **0** in the next
+run and every run after. Recorded as *"the field stopped on 2026-08-11 09:50"*, in a
+document, in a message to two peer sessions, and nearly in a GitHub issue.
+**Root cause**: `collection_20260811_095038` is an **off-grid run — 4 sources / 933 items
+against a full cycle's ~1,950 / ~5,700 — that ran no eval aggregator at all.** Its zero
+means *did not run*, not *ran and yielded nothing*. The field was still emitted at 12:08
+(16 rows) and 16:06 (9 rows) the same day. The true edge is **16:06 → 17:02**, six minutes
+after `eda28eb` (retire the #119 eval arms) was pulled onto sadalsuud at 16:56:08 — cause
+and effect with no gap.
+**Fix**: ⭐ **Bound a stop by LAST NON-ZERO → FIRST ZERO, and verify the run between is a
+FULL one.** Compare the candidate run's own volume against a full cycle before believing
+its zero. Here the arms yielded **2–51 rows per run**, so a single zero was never evidence
+of anything — the emitting stretch contained zeros too.
+**Durable lesson**: this is *establish what your source excludes* landing on **a run**,
+where the excluded thing is most of the corpus. A partial run is not a noisy sample of a
+full one; it is a different population wearing the same filename convention. **A boundary
+inferred from one observation is an observation, not a boundary.** Caught by the producer's
+own session, whose data it was — which is also why the second figure in the same paragraph
+(*"511 rows is cumulative history"*) fell: 511 is exactly the **7-day hot window**, so it
+decays to 0 around 2026-08-18. **I called a count cumulative inside a section about counts
+that carry no time axis.**
+
+## A ONE-SIDED TEST PASSES AGAINST AN INHERITED VALUE — and my acceptance criterion was the defect it was written to catch (2026-08-15)
+**Problem**: Two instruments for *"did the automatic caller actually run?"*, both mine,
+both wrong in the direction that hides a failure. (1) I set the release criterion for a
+held control as *"a new artefact whose run you did not invoke by hand"* — a
+`systemctl start` satisfies that sentence **while being a hand invocation one level up**.
+(2) To make the artefact self-describing I proposed stamping systemd's `INVOCATION_ID`.
+**Root cause**: **systemd sets `INVOCATION_ID` for a service and every child inherits it
+through the environment.** A person running the script by hand from a terminal that itself
+sits inside a scope unit gets stamped `trigger: "systemd"` — a **false positive rendering a
+hand run as automatic**, which is the only direction that matters. A test that checks only
+"systemd runs stamp systemd" passes against it.
+**Fix**: the peer replaced it with the leaf of `/proc/self/cgroup` compared to the unit
+name — **not inheritable across units**, because the kernel moves a process into the cgroup
+of whatever unit actually started it — and verified it in **both** directions (a real
+transient service, an ssh shell, and the terminal that was the ex-false-positive). And
+`trigger: "systemd"` still does not mean the *timer* fired; `LastTriggerUSec` plus a fresh
+generation timestamp is the pair that answers that.
+**Durable lesson**: ⭐ **Assert both directions or you have tested nothing** — for any
+provenance stamp, the expensive error is the *lower*-provenance case being rendered as the
+higher one, and that is exactly the case a happy-path test omits. And the meta-lesson:
+`LoadState=loaded` proves installation, a hand `systemctl start` proves the unit
+*definition*, **neither proves a caller** — I wrote a criterion to catch the
+unreachable-mechanism shape and made it an instance of the same shape. The peer refused to
+bank it, which is the third refusal to spend that control early.
+
+## [2x handoff-invisible] A RECORD WHOSE SUBJECT LIVES IN ANOTHER REPO HAS NO LOCAL TRIGGER FOR BEING WRONG (2026-08-15)
+**Problem**: Four rows of this repo's Contract A handoff table described work as *awaiting
+the owner* that was already committed, merged, installed, or in one case **deployed** —
+including *"the only owner decision left in this round"* for a decision closed a day
+earlier. Re-derived from the peer repos' own state (schema on `main`, git logs,
+`systemctl`), not from either session's report.
+**Root cause**: a handoff table describes **other repos' states**, and **nothing in this
+repo changes when they move.** Every other stale record here eventually contradicts
+something local — a test, a path, a number recomputed. This one cannot. Staleness produces
+no symptom, so nothing prompts a re-read.
+**Fix**: re-derive peer state at the top of any session that acts on it, and prefer a
+verify command in the row over a state word. Cost avoided here: three briefs asking for
+completed work, and an owner decision put on a storage commitment that had already shipped.
+**Durable lesson**: sibling of *a handoff is invisible from the sending side* — same
+structure, applied to the **record** rather than the message. **The freshness of a
+cross-repo claim is bounded by when you last re-derived it, never by when you last read
+it.**
+
 ## A CHECK THAT READS A VALUE THE CODE HAS ALREADY OVERWRITTEN is circular, and agrees with any conclusion (2026-08-15)
 **Problem**: llm-distillery#94 established that `solutions v6`'s `concreteness_gatekeeper`
 never binds, with two rows of evidence. Reusing its arithmetic against `uplifting v7`
