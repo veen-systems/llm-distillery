@@ -46,6 +46,50 @@ Problems encountered and resolved. Format: Problem → Root cause → Fix.
 
 ---
 
+## A CHECK THAT READS A VALUE THE CODE HAS ALREADY OVERWRITTEN is circular, and agrees with any conclusion (2026-08-15)
+**Problem**: llm-distillery#94 established that `solutions v6`'s `concreteness_gatekeeper`
+never binds, with two rows of evidence. Reusing its arithmetic against `uplifting v7`
+returned "**0 rows where the cap would bind**" — while 444 rows carried
+`gatekeeper_applied: True`. Both could not be right.
+**Root cause**: the test was `raw_weighted_average > GATEKEEPER_CAP`. But
+`filters/common/filter_base_scorer.py:330-336` caps `weighted_avg` **in place** and the
+capped value is what gets stored, so for exactly the rows where the gate fired the stored
+value is `CAP` and the predicate is **false by construction**. All 444 flagged rows read
+`raw_weighted_average` == 3.0000. The check cannot return anything but 0 whether the gate
+is inert or firing constantly — it agrees with any conclusion, and it happened to agree
+with a true one.
+**Fix**: read the flag the code sets (`gatekeeper_applied`), never a value the code has
+already mutated. Re-measured on that instrument: `solutions v6` **0 of 40,584** stage2
+rows (#94's conclusion CONFIRMED), `uplifting v7` **222 of 103,271** (0.215%) — same
+shared code, opposite outcomes. The difference is the gatekeeper dimension's weight, 0.20
+vs 0.10: a heavy gatekeeper dimension drags the average below the cap by itself, making
+the two conditions mutually exclusive. **"The gatekeeper never fires" is a property of the
+weight, not of the gate.**
+**Durable lesson**: this is the sibling of *a check that examines nothing reports success*,
+one step meaner — the check examines real rows and computes a real predicate, and is still
+incapable of a negative answer. **When a check tests a field the code under test writes,
+establish whether it reads the value before or after the mutation.** The tell was a second
+signal disagreeing; without the flag column nothing here would have surfaced.
+
+## Detection failed on the WRAPPER, not the licence text — and the fix was measured against the wrong corpus first (2026-08-15)
+**Problem**: GitHub reported `spdx_id: NOASSERTION` for this repo. llm-distillery#117
+diagnosed it as "a short header that names EUPL-1.2 and links to it". It was not: `LICENSE`
+already carried the **full** EUPL-1.2 text, 195 lines, Appendix included.
+**Root cause**: a 14-line **Apache-2.0** boilerplate preamble ("You may obtain a copy of the
+Licence at", "AS IS basis" — wrong licence family entirely) plus **17 markdown headings**
+injected into the licence body. `licensee` strips a leading copyright notice and normalises
+whitespace; it does not strip either of those, and both are charged against the similarity
+score. The body alone measured **98.99%** against canonical — already over the 98% threshold.
+**Fix**: `LICENSE` is the canonical text verbatim after a copyright line, an
+`SPDX-License-Identifier` (preserving the old header's deliberate "v1.2 **only**" intent
+machine-readably) and the EUPL's own required "Licensed under the EUPL" notice.
+**Two method notes worth more than the fix**: (1) the first similarity measurement used the
+**SPDX** text, but `licensee` matches against the **choosealicense** corpus — different
+files. Re-measured against the right comparand: **99.91%**. Measuring against a plausible
+substitute for the real reference is a hand-built population. (2) The issue was NOT closed
+on the commit: `spdx_id` was still `NOASSERTION` minutes later because detection is
+asynchronous and server-side. **The acceptance criterion is the API's answer, not the diff.**
+
 ## [13x verify-the-call-path] A framework stamp that ran ahead of its content silenced the drift check (2026-08-15)
 **Problem**: `/update-drift` found `CLAUDE.md` carrying **two** framework stamps that
 disagreed — frontmatter `v1.25.0`, footer `v1.26.0`. The footer had read v1.26.0 since
