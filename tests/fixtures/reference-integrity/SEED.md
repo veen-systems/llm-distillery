@@ -64,3 +64,30 @@ seed the ways it can go wrong, not the ways it works.
 ## PLACEHOLDER SKIP — must land in the COUNTED skip section, not vanish
 17. genuine instructional placeholder: `filters/<name>/<version>/config.yaml`
 18. genuine host-side unit, marked: `nexusmind-scorer.service` <!-- placeholder -->
+
+## SELF-PREFIX STRIP — the failures THAT loosening newly permits (2026-08-15)
+
+Docs in this repo sometimes write a local path with the repo's own name in front
+(`llm-distillery/scripts/remote_deploy.sh`) — usually in a cross-repo sentence where
+every other path is qualified. Rung 4 strips a leading component repeating a
+*sibling's* name but never the *local* repo's, so these were reported UNRESOLVED
+while the file sat in the tree. "Not reported" would then have meant "never checked".
+
+The strip is a loosening, so what it newly permits is a *false* resolution. These
+three seed exactly that:
+
+21. **real path behind the self-prefix** — must now RESOLVE, not be reported:
+    `llm-distillery/scripts/remote_deploy.sh`
+22. **fabricated path behind the self-prefix** — the strip must not launder a genuine
+    break into a resolution: `llm-distillery/scripts/no_such_self_thing.sh`
+23. **ambiguous path behind the self-prefix** — the collision rule must survive the
+    strip, exactly as rung 2 and rung 4 already carry it:
+    `llm-distillery/model/adapter_model.safetensors`
+
+## SYSTEMD UNIT CLASS — the failure THAT rule newly permits (2026-08-15)
+
+A bare `foo.service` is a unit NAME. The rule resolves one only if its definition
+exists somewhere in the estate, so the laundering case is a unit that exists nowhere:
+
+24. **fabricated systemd unit** — must stay a FINDING, not be absorbed by the class:
+    `totally-made-up-unit.service`

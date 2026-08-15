@@ -2,6 +2,17 @@
 
 ## 🔵 NEXT SESSION — **two peer repos hold finished, uncommitted work awaiting the owner**
 
+> **Housekeeping done 2026-08-15 night** (`memory/project_session_2026_08_15_night.md`) — nothing
+> below changed. Framework adopted to **v1.26.0** (v1.25.1 + v1.26.0; 3 adopt, 1 decline, 4 N/A,
+> 2 in force — `docs/decisions/framework-adoption-history.md`), then `/audit-context`:
+> references **16 → 0**, `memory/MEMORY.md` **54.8k → 26.5k chars**, refcheck harness **20/20 →
+> 24/24**. Two probes added — the framework stamps must agree, and the index must stay under 30k.
+> ⚠️ **The reason the drift sat two releases unreviewed: the stamp had been bumped ahead of the
+> adoption, and the stamp is the drift check's only input.** 13th occurrence of the
+> unreachable-mechanism rule. Declined upstream's `isdelim()` guard tightening (agent-ready-projects#52,
+> commented there with the adopter evidence).
+
+
 ✅ **Contract A realization was HANDED OUT and BUILT on 2026-08-15.** The owner authorized
 NexusMind (W0) and FluxusSource (Track A) through this session; ovr.news and pipeline-atlas
 took information-only briefs. **This repo wrote no code and deployed nothing.** Record:

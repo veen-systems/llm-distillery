@@ -32,8 +32,11 @@ section rule.
 `git diff`, an empty `--cached`, and an empty `@{u}` — the last one *precisely
 because* the upstream exists and is current. Taken literally that reports
 "nothing to review" on a whole open PR, which is the commonest state in which
-anyone wants a pre-merge review. (Ported from agent-ready-projects v1.26.1, which
-an adopter hit on a real PR where a widened review then found **4 blockers**.
+anyone wants a pre-merge review. (Ported ahead of release from
+agent-ready-projects `e824212`, on the unmerged branch `fix/review-changes-scope`
+— **there is no v1.26.1**; latest upstream release is v1.26.0, confirmed
+2026-08-15. An adopter hit this on a real PR where a widened review found
+**4 blockers**.
 This session hit the same defect on 2026-08-13 and worked around it by hand
 without recognising it — the workaround is what the fix now prescribes.)
 
@@ -127,6 +130,9 @@ it.
       t = s; gsub(/\\\|/, "", t); gsub(/[ \t]/, "", t)
       return (t ~ /-/ && t ~ /^[|:-]+$/)
     }
+    { sub(/\r$/, "") }               # CRLF: strip before anything reads the line,
+                                     # or isdelim() never matches and no table in
+                                     # the file is examined. See #52 (framework).
     {
       bare = $0; sub(/^ ? ? ?/, "", bare)
       if (bare ~ /^```/ || bare ~ /^~~~/) {
@@ -168,10 +174,33 @@ row inside a wide table is idiomatic — so flagging it produces noise, not
 findings. Report the count of files in scope (not files edited) in Step 4, so a
 check that scanned nothing is distinguishable from one that found nothing.
 
-Fix hits before committing: escape the offending pipe as `\|`, or restructure the
-row. **A hit is data loss, not a style nit** — when this was first run over this
-repo it found a caveat in `memory/cross-repo-prioritization.md` that renders
-nowhere.
+Fix real hits before committing: escape the offending pipe as `\|`, or restructure
+the row. **A hit is worth opening — it is not yet proof of loss.** When this was
+first run over this repo it found a caveat in
+`memory/cross-repo-prioritization.md` that renders nowhere, which is the case it
+exists for. But two classes report without losing anything, both reproduced
+against *this* copy of the check on 2026-08-15: excess cells that are **empty**
+(`| 1 | 2 | |` against a two-column delimiter reports and discards nothing), and
+lines that are **not a table at all** — `isdelim()` accepts a bare `---`, and its
+guard is satisfied by a pipe in the *previous* line, so YAML frontmatter closing
+after a piped `description:` and a spaced `- - -` break each report. (Upstream
+also lists setext headings; that one did **not** reproduce here — the guard needs
+a pipe the fixture lacked.) Look before you edit.
+
+**Known blind spots, so a clean result is not read as more than it is**: tables
+inside blockquotes are not examined, nor is a table whose delimiter row is itself
+missing. This finds lossy rows in well-formed tables; it is not a markdown
+validator. **CRLF was one of these until the `sub(/\r$/, "")` rule above** —
+`isdelim()` strips spaces and tabs but not `\r`, so on a CRLF checkout no table
+was entered and a file whose defect was in a table printed exactly what a clean
+file prints. Only the fence check survived, anchored at line start where a
+trailing `\r` cannot reach. `core.autocrlf=true` — the Git-for-Windows installer
+default, and this repo is driven from Git Bash (`docs/RUNBOOK.md`, and the
+`MSYS_NO_PATHCONV=1` in CLAUDE.md's normalization command) — is what puts CRLF in
+the working tree. **Lone CR is still a blind spot** and a worse-behaved one: awk
+sees the whole file as one record, so no table is examined and the fence check
+misreports — a lone-CR file whose fence is correctly *closed* is reported as
+unclosed.
 
 ## Step 2 — Execute review lenses
 

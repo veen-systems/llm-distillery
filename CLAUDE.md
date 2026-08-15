@@ -2,8 +2,10 @@
 stack: Python 3.12, PyTorch, Transformers, PEFT/LoRA
 status: Production
 repo: github.com/ducroq/llm-distillery
-framework: agent-ready-projects v1.25.0
+framework: agent-ready-projects v1.26.0
 framework_reconciliation: |
+  v1.25.1 + v1.26.0 triaged 2026-08-15: 3 adopt, 1 decline, 4 N/A, 2 in force.
+  Per-release detail and the evidence: `docs/decisions/framework-adoption-history.md`.
   v1.22.0 + v1.23.0 (both released 2026-08-11 evening) triaged 2026-08-12.
   v1.22.0 ships the `curate` Step-0 verify RUNNER and names this repo's measured
   state in its own changelog (26 ran: 12 pass, 9 fail, 5 error, 3 malformed).
@@ -85,8 +87,9 @@ out on 2026-08-12 for the size budget. **Read the evidence before weakening any 
 them** — each exists because something shipped broken.
 
 - **Before shipping any gate, cap, threshold, config key or stamp, name the caller
-  that loads it — then PROVE THE OUTCOME CHANGED at the end of the run.** *(10th
-  occurrence 2026-08-12.)* An annotation, a test and a check are mechanisms too.
+  that loads it — then PROVE THE OUTCOME CHANGED at the end of the run.** *(13th
+  occurrence 2026-08-15.)* An annotation, a test and a check are mechanisms too.
+<!-- verify: WR=$(sed -n '/Before shipping any gate/,+2p' memory/working-rules.md | tr '\n' ' ' | tr -s ' ' | grep -oE '[0-9]+(st|nd|rd|th) occurrence' | grep -oE '^[0-9]+' | sort -n | tail -1); CM=$(sed -n '/Before shipping any gate/,+3p' CLAUDE.md | tr '\n' ' ' | tr -s ' ' | grep -oE '[0-9]+(st|nd|rd|th) occurrence' | grep -oE '^[0-9]+' | sort -n | tail -1); if [ -z "$WR" ]; then echo "CANNOT VERIFY: no ordinal in memory/working-rules.md"; elif [ -z "$CM" ]; then echo "CANNOT VERIFY: no ordinal in CLAUDE.md"; elif [ "$WR" = "$CM" ]; then echo "PASS ($CM)"; else echo "FAIL: CLAUDE.md says $CM, working-rules.md says $WR"; fi -->
   Naming the caller is **not sufficient**: guards have shipped with correct callers
   on the right paths and still done nothing. A green test on the predicate proves
   only the predicate. Never infer runtime behaviour from a config key's presence.
@@ -263,4 +266,6 @@ This project is a source project for [augmented-engineering](https://github.com/
 
 ---
 
-*Last updated: 2026-08-12 (late). **Framework: agent-ready-projects v1.26.0** (upstream tag, adopted 2026-08-13; v1.26.1's baseline fix ported ahead of its release — see `docs/TODO.md`). Structural state, open decisions and every number that moves live in `docs/TODO.md` (top block) and the memory index — deliberately NOT restated here, because two hand-maintained copies of a number disagree the moment one is updated, which is exactly what `/audit-context` found on 2026-08-12 (seven duplicated constants, and an index asserting a claim this file had already corrected). Session records: `memory/project_session_2026_08_14_late.md` and the files it links.*
+*Last updated: 2026-08-15. **Framework: agent-ready-projects v1.26.0** (upstream tag; v1.25.1 + v1.26.0 triaged and adopted 2026-08-15 — see the frontmatter block and `docs/decisions/framework-adoption-history.md`. An unreleased `review-changes` baseline fix is also ported ahead of its release, from `e824212`; **there is no v1.26.1**, which this line claimed until today). Structural state, open decisions and every number that moves live in `docs/TODO.md` (top block) and the memory index — deliberately NOT restated here, because two hand-maintained copies of a number disagree the moment one is updated, which is exactly what `/audit-context` found on 2026-08-12 (seven duplicated constants, and an index asserting a claim this file had already corrected). Session records: `memory/project_session_2026_08_15_late.md` and the files it links.*
+
+<!-- verify: FM=$(grep -m1 -oE '^framework: agent-ready-projects v[0-9.]+' CLAUDE.md | grep -oE 'v[0-9.]+'); FT=$(grep -m1 -oE 'Framework: agent-ready-projects v[0-9.]+' CLAUDE.md | grep -oE 'v[0-9.]+'); if [ -z "$FM" ]; then echo "CANNOT VERIFY: no frontmatter framework stamp"; elif [ -z "$FT" ]; then echo "CANNOT VERIFY: no footer framework stamp"; elif [ "$FM" = "$FT" ]; then echo "PASS ($FM)"; else echo "FAIL: frontmatter $FM, footer $FT"; fi -->

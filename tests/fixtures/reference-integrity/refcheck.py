@@ -29,10 +29,11 @@ DOCS = ["CLAUDE.md", "memory/MEMORY.md", "memory/gotcha-log.md"] \
        if not _o.environ.get("SEED") else [_o.environ["SEED"]]
 
 EXT = {"md","py","json","jsonl","yaml","yml","sh","ps1","ini","txt","toml","js","jinja",
-       "cfg","sql","ts","tsx","astro","pkl","safetensors","csv","lock","service"}
+       "cfg","sql","ts","tsx","astro","pkl","safetensors","csv","lock","service",
+       "html","log","png","pdf","tsv","env","service","socket","timer"}
 PRUNE = {".git","node_modules","venv",".venv","target","__pycache__",".mypy_cache"}
 STATE_DIRS = ("data/","state/","cache/","logs/","run/","var/","artifacts/")
-STATE_SHAPE = re.compile(r"(_state\.json|_health\.json|\.pid|\.sock)$")
+STATE_SHAPE = re.compile(r"(_state\.json|_health\.json|\.pid|\.sock|\.log)$")
 
 # NOTE the char class ADMITS < and >, and allows a trailing >. Without that,
 # angle-bracket placeholders (`filters/<name>/<version>/config.yaml`) are never
@@ -96,6 +97,27 @@ def rung2(frag):
     hits=[p for p in TREE if p==frag or p.endswith("/"+frag)]
     return hits
 
+SELF = os.path.basename(ROOT)
+
+def selfstrip(frag):
+    """Drop a leading component that repeats THIS repo's name.
+
+    2026-08-15 (/audit-context): rung 4 has stripped a leading *sibling* repo name
+    since it was written, but nothing stripped the LOCAL one -- so
+    `llm-distillery/scripts/remote_deploy.sh` was reported UNRESOLVED while
+    `scripts/remote_deploy.sh` sat in the tree. The shape is common in this repo's
+    docs: a cross-repo sentence qualifies every path, including its own.
+
+    This is a LOOSENING, and a loosening can only ever turn a report into a
+    resolution -- so the risk is laundering a genuine break. It is bounded the same
+    way rungs 2 and 4 are: the stripped form still has to resolve on its own, and a
+    multi-match still reports as a COLLISION rather than picking a winner. Seeded as
+    cases 21-23; 22 (fabricated behind the prefix) and 23 (ambiguous behind the
+    prefix) are the newly-permitted failures, not the case it was built for.
+    """
+    parts=frag.split("/")
+    return "/".join(parts[1:]) if len(parts)>1 and parts[0]==SELF else None
+
 def rung3(frag):
     if frag.startswith(STATE_DIRS) or STATE_SHAPE.search(frag):
         # data, not source: a source file merely named *_state.py is still source
@@ -110,6 +132,30 @@ for r in SIBLING_ROOTS:
 SIB_TREES={}
 
 GENERIC = {"docs","src","scripts","tests","config","memory","filters","data","lib"}
+
+# A bare `foo.service` / `foo.timer` / `foo.socket` is a systemd UNIT NAME, not a file locator. Prose says
+# "`nexusmind.service` runs `deploy_filters.sh` as ExecStartPre" -- the subject is the
+# running unit; which repo's deploy/ dir holds its definition is incidental, and is
+# exactly the token rung 4 needs in the window and rarely gets. Four unit names
+# accounted for 6 of 15 findings across three audits without one of them ever being a
+# real break (/audit-context 2026-08-15).
+#
+# This is DELIBERATELY NOT a blanket skip: the unit file must exist SOMEWHERE in the
+# estate. A fabricated unit resolves nowhere and stays a finding -- so the newly
+# permitted failure (laundering a made-up unit) cannot occur. Seeded as case 24.
+UNIT_INDEX=None
+def unit_lookup(frag):
+    global UNIT_INDEX
+    if "/" in frag or not frag.endswith((".service",".timer",".socket")): return None
+    if UNIT_INDEX is None:
+        UNIT_INDEX=defaultdict(list)
+        for p in TREE:
+            if p.endswith((".service",".timer",".socket")): UNIT_INDEX[os.path.basename(p)].append(SELF+"/"+p)
+        for name,path in SIBS.items():
+            for p in walk(path):
+                if p.endswith((".service",".timer",".socket")): UNIT_INDEX[os.path.basename(p)].append(name+"/"+p)
+    hits=UNIT_INDEX.get(frag)
+    return hits[0] if hits else None
 
 def rung4(frag, ctx):
     ctx_clean = re.sub(r"`[^`]*`", " ", ctx)          # a ref may not mark itself
@@ -199,7 +245,9 @@ for doc in DOCS:
                 # this repo actually lives. 7 of 12 markers were mislabelling real
                 # files when that was found (2026-08-12 review). A guard that cannot
                 # fire for its own population is this repo's signature defect.
+                _ss = selfstrip(bare)
                 resolves = (os.path.exists(os.path.join(ROOT,bare)) or rung2(bare)
+                            or (_ss and (os.path.exists(os.path.join(ROOT,_ss)) or rung2(_ss)))
                             or rung3(bare) or rung4(bare, ctx)
                             or (re.match(r"(feedback|reference|project)-[a-z0-9-]+\.md$", bare)
                                 and os.path.exists(os.path.join(AUTOMEM, bare))))
@@ -217,6 +265,18 @@ for doc in DOCS:
                 else:
                     findings.append((doc,frag,f"COLLISION: {len(h)} local matches"))
                 continue
+            # self-prefix strip: BEFORE rung 3/4, for the same reason rung 3 precedes
+            # rung 4 -- a path this repo owns must be explained here, not by a
+            # neighbour that happens to carry the same filename.
+            ss=selfstrip(frag)
+            if ss:
+                if os.path.exists(os.path.join(ROOT,ss)):
+                    resolved.append((doc,frag,"rung1-self",ss)); continue
+                hs=rung2(ss)
+                if len(hs)==1: resolved.append((doc,frag,"rung2-self",hs[0])); continue
+                if len(hs)>1:
+                    findings.append((doc,frag,
+                        f"COLLISION: {len(hs)} local matches after self-prefix strip")); continue
             if rung3(frag): resolved.append((doc,frag,"rung3","runtime state")); continue
             if re.match(r"(feedback|reference|project)-[a-z0-9-]+\.md$", frag) and \
                os.path.exists(os.path.join(AUTOMEM, frag)):
@@ -224,6 +284,8 @@ for doc in DOCS:
             r4=rung4(frag,ctx)
             if r4 and r4[0]=="rung4": resolved.append((doc,frag,"rung4",r4[1])); continue
             if r4: findings.append((doc,frag,r4[1])); continue
+            u=unit_lookup(frag)
+            if u: resolved.append((doc,frag,"unit",u)); continue
             findings.append((doc,frag,"UNRESOLVED (rungs 1-4 all run)"))
 
 print("="*96); print("STEP 4 — REFERENCE INTEGRITY"); print("="*96)

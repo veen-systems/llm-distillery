@@ -46,6 +46,56 @@ Problems encountered and resolved. Format: Problem → Root cause → Fix.
 
 ---
 
+## [13x verify-the-call-path] A framework stamp that ran ahead of its content silenced the drift check (2026-08-15)
+**Problem**: `/update-drift` found `CLAUDE.md` carrying **two** framework stamps that
+disagreed — frontmatter `v1.25.0`, footer `v1.26.0`. The footer had read v1.26.0 since
+2026-08-13, but `docs/decisions/framework-adoption-history.md`'s last entry was v1.25.0
+and **nothing from v1.25.1 or v1.26.0 had been triaged**. Two releases sat unreviewed,
+one of them carrying an explicit adopter action.
+**Root cause**: the stamp is the drift check's only input. Bumping it *before* the
+adoption lands does not merely mislead a reader — it makes every future run report
+"current" and examine nothing. The mechanism runs, is green, and is inert. Same shape
+as the config-key trap one layer up: the presence of the stamp read as the doing of
+the work.
+**Fix**: both stamps bumped only after the three adoptions landed, and a **stamp-
+agreement probe** added to `CLAUDE.md`, seeded against this real disagreement before
+being believed. `/update-drift` Step 6 already warns about this in prose; the prose had
+been read and the stamp bumped anyway, which is why it is now a probe. **A stale stamp
+is safe; a premature one is not — it is the only value that can turn its own checker
+off.**
+
+## A reference checker stripped a *sibling* repo's name but never its own (2026-08-15)
+**Problem**: `/audit-context` reported `llm-distillery/scripts/remote_deploy.sh` as an
+unresolved reference. The file exists — `scripts/remote_deploy.sh` — and the same
+checker resolved it fine when written without the prefix.
+**Root cause**: `refcheck.py`'s rung 4 strips a leading component repeating a *sibling*
+repo's name (`NexusMind/scripts/main.py` → `scripts/main.py` <!-- placeholder -->) and has since it was
+written. Nothing stripped the **local** repo's own name, because the case never occurred
+to the author — yet this repo's docs write it constantly, in cross-repo sentences that
+qualify every path including their own. So a whole class of self-reference was never
+checked, and "not reported" meant "never examined": the silence that this step exists
+to prevent.
+**Fix**: `selfstrip()`, ordered before rungs 3–4 so a path this repo owns is explained
+here rather than by a neighbour with the same filename. The strip is a **loosening**, so
+the seeds are the failures it newly permits — a fabricated path behind the prefix and an
+ambiguous one — not the case it was built for (SEED cases 21–23). Harness 20/20 → 24/24.
+**Lesson**: when a rule handles "the other repo", ask whether **this** repo is a case of
+it. A checker's blind spot is shaped like its author's sense of what is foreign.
+
+## Compressing a document broke a reference by editing its NEIGHBOUR (2026-08-15)
+**Problem**: trimming `memory/MEMORY.md`'s session log turned NexusMind's `display_ranking.py` — a
+reference that had resolved for weeks — into an unresolved finding. The line containing
+it was not touched.
+**Root cause**: it resolved at **rung 4**, which requires a whole-token repo name in the
+surrounding prose, and the window is ±1 line. The `NexusMind` token lived in the
+*adjacent* session entry. Compressing that entry removed the token, and the reference
+went dark. **A rung-4 resolution is a property of a neighbourhood, not of a line**, so
+any edit near it can silently invalidate it.
+**Fix**: qualified the path in its own hook (`NexusMind/src/scoring/display_ranking.py`)
+rather than restoring the adjacency. Same treatment applied to the ovr.news assets and
+the NexusMind units surfaced in the same pass. **Rule: after any bulk edit to a document
+the reference checker reads, re-run it — the diff will not show what you broke.**
+
 ## A FAILING CHECK MAY BE THE CONTROL WORKING — I proposed spending one to zero a counter (2026-08-15)
 
 **Problem**: Validating 788 live producer rows against Contract A gave **788/788
@@ -401,7 +451,7 @@ hides inside a correct-looking cryptographic guarantee.
 
 ## "This path doesn't have failure mode X" is a claim about the PATH — it silently becomes a claim about the TOOL (2026-08-14)
 
-**Problem**: The contracts check was deliberately built on `validate_contract_a.py`
+**Problem**: The contracts check was deliberately built on NexusMind's `validate_contract_a.py`
 because it reads FluxusSource's directory **directly**, which structurally eliminates
 `drift.strip_list_vs_observed_keys` — a dependency on a hand-maintained strip list
 that the *other* validator has, because it reads NexusMind's mutated copy. The
@@ -467,7 +517,7 @@ structurally invisible from where you sit is not found by looking harder.
 ## Detection is path-scoped, the action is repo-wide — so deploy time is unrelated to merge time (2026-08-14)
 
 **Problem**: NexusMind's standing note said a merge to `main` becomes a production
-change on the next 4h tick, because `nexusmind.service` runs `deploy_filters.sh` as
+change on the next 4h tick, because `nexusmind.service` runs NexusMind's `deploy_filters.sh` as
 `ExecStartPre` every cycle. The mechanism is real — verified running, exit 0. **But
 the auto-pull is gated on `git diff --quiet HEAD origin/main -- "${SCORER_PATHS[@]}"`**,
 and `SCORER_PATHS` is only `filters/`, `src/filters/`, `src/scoring/` and three
@@ -638,10 +688,12 @@ control — this is its mirror, a *positive* needing a negative control.
 (`~/.claude/projects/<slug>/memory/MEMORY.md`) — which is **auto-loaded into every
 session**, is larger than the in-repo index it shares a name with, and whose pointers
 all name repo files. A curate pass found **three dead pointers in it**:
-`project_session_2026_08_01.md`, `_02.md` and `_03.md` were never committed, and two of
-them had obvious renamed targets sitting beside them (`_01_afternoon.md`,
-`_03_evening.md`). One (`_02`) has no repo file at all, so its summary in the index is
-the **only surviving record** of that session.
+`project_session_2026_08_01.md` <!-- placeholder -->, `_02.md` <!-- placeholder --> and `_03.md` <!-- placeholder --> were never committed, and two of
+them had obvious renamed targets sitting beside them (`_01_afternoon.md` <!-- placeholder -->,
+`_03_evening.md` <!-- placeholder -->). One (`_02`) has no repo file at all, so its summary in the index is
+the **only surviving record** of that session. *(The five names above are marked
+placeholder because this entry's whole subject is that they do not resolve — the
+audit re-derived them as broken references on 2026-08-15.)*
 
 Two audits the same day reported the reference check clean.
 
@@ -1050,7 +1102,8 @@ read that over 1,070,665 production rows, got **0**, and nearly reported a secon
 NM#300 — a stamp claimed to label strata reaching zero rows.
 **Root cause**: The flags live at `nexus_mind_attributes/<lens>/pre_enriched`;
 `filtered_*.jsonl` rows have no top-level `analysis` key at all. `analysis` is a
-*local variable* in NexusMind's `main.py`, persisted under a different key — the peer
+*local variable* in `NexusMind/scripts/main.py` (not `NexusMind/deploy/gpu-server/main.py` — the
+repo has two), persisted under a different key — the peer
 had quoted the variable name as if it were the schema.
 **Fix**: Verified the path before reporting. The flags are populated and fine.
 **Durable lesson**: **a wrong path and a dead field both read as zero, and the wrong
@@ -1503,7 +1556,7 @@ so capped articles still surface in medium+ tiers.
 
 **Promoted to**: FILTER_PLAYBOOK.md §4 (probe requirement gate check). Candidate
 for a deploy-gate automation: `test_filter_integrity` should verify
-`probe/embedding_probe_e5small.pkl` exists for needle filters.
+`filters/<name>/<version>/probe/embedding_probe_e5small.pkl` exists for needle filters.
 
 ---
 
@@ -2166,7 +2219,7 @@ Captured outputs (this is the deploy-claim verification trail the rule requires)
 
 ## deploy_filters.sh rsync Excludes model/ Subdir (cd v5 deploy, 2026-05-31)
 
-**Problem**: After running `NexusMind/deploy_filters.sh` from sadalsuud to gpu-server for cd v5, the scorer service started but threw `Missing model weights: cultural_discovery/v5/model` on first scoring request. Filter package, config, calibration, probe — all present. Only `model/adapter_model.safetensors` + `tokenizer.json` were missing.
+**Problem**: After running `NexusMind/deploy_filters.sh` from sadalsuud to gpu-server for cd v5, the scorer service started but threw `Missing model weights: cultural_discovery/v5/model` on first scoring request. Filter package, config, calibration, probe — all present. Only `filters/cultural_discovery/v5/model/adapter_model.safetensors` + `tokenizer.json` were missing.
 
 **Root cause**: `NexusMind/deploy_filters.sh` uses `rsync --exclude='model/'` for delivery from sadalsuud → gpu-server. The reasoning is sound on sadalsuud's side (sadalsuud uses Hub inference, no local model/ needed), but applies the same exclude when pushing onward to gpu-server, which DOES need the model/ on disk for local LoRA loading. The model arrived on sadalsuud via the llm-distillery deploy commit but never made the second hop.
 
@@ -2828,7 +2881,7 @@ and if a fetch tool returns preamble, it has not read the law.**
 ### Guarded one field against over-labelling, then proposed exactly that on another (2026-08-05)
 
 **Problem**: ADR-044 recommended stamping the EU "AI GENERATED" icon onto
-`public/og-image.png`. That file is the shared branded card for the homepage, lens
+ovr.news's `public/og-image.png`. That file is the shared branded card for the homepage, lens
 pages and every static page as well as image-less articles (ADR-023) — so the change
 would have labelled `/about` and `/accountability`, both hand-written, as
 AI-generated content.
@@ -2839,7 +2892,7 @@ was written in the same session and reasoned about the asset by the role it play
 the case at hand ("the article fallback card") without checking what else pointed at
 it. One asset, five page types, one `grep` away.
 
-**Fix**: caught before implementing; a second asset (`og-image-article.png`) is
+**Fix**: caught before implementing; a second ovr.news asset (`public/og-image-article.png`) is
 referenced only by the article route, verified in the build as 42 of 2,894 article
 pages and **zero** non-article pages. Recorded as a correction inside ADR-044 rather
 than deleted. **Rule: before adding a marker to a shared asset, enumerate every route
@@ -2873,7 +2926,7 @@ guards.
 
 1. **Stale text left inside a document the same commit edited.** ADR-003 gained a table
    row saying the marker shipped, while prose twelve lines below still said "not yet
-   shipped — awaits go-ahead". ADR-044's near-miss record closed with "`og-image.png` is
+   shipped — awaits go-ahead". ADR-044's near-miss record closed with "ovr.news `public/og-image.png` is
    untouched" in the commit that regenerated it. The compliance register's review
    trigger told future readers to watch "micro-enterprise status" two sections after
    proving that concept does not exist. In each case the *new* text was right and an
@@ -2918,7 +2971,7 @@ it guards.** A guard nobody has watched fail is a guard nobody has tested.
 
 **Problem**: `/review-changes` in llm-distillery ran a checklist written for the
 *personal notes* repo — tiering on `Nieuw huis/`, `career/jobspy/`, `modellen/*.py`,
-`ovr.news/principes.md` (paths in the *personal notes* repo — `principes.md` <!-- placeholder --> is at `personal/Nieuw huis/principes.md`; none of them resolve in this estate, which is the point), and asserting *"the container itself has no git"*, which is false here.
+`ovr.news/principes.md` <!-- placeholder --> (paths in the *personal notes* repo — `principes.md` <!-- placeholder --> is at `personal/Nieuw huis/principes.md`; none of them resolve in this estate, which is the point), and asserting *"the container itself has no git"*, which is false here.
 The tier table had to be rewritten mid-run to mean anything. Meanwhile this repo's own
 `.claude/skills/review-changes/` — 219 lines, re-mapped to `filters/common/*.py`,
 `ground_truth/batch_scorer.py` and the gate/normalization scripts — sat unused.
@@ -3332,7 +3385,7 @@ That is a two-second check and would have saved both rejections.
 **Fix**: check the thing the downstream code indexes on (`set(dims) - set(cal["dimensions"])`), not the object's truthiness. Belongs to the unreachable-mechanism catalogue below: **9th occurrence, 4th self-inflicted.**
 
 ### A research artifact inside a deployed filter package can stop the scorer (2026-08-10)
-**Problem**: wrote `threshold_sweep.json` <!-- placeholder --> into `filters/uplifting/v7/`. `deploy_to_nexusmind.sh:137` is an unfiltered `cp -r`, and `--dry-run` copies **without** committing — leaving it untracked under `filters/`, where `deploy_filters.sh`'s `scorer_untracked_blocking()` runs in the every-4h `ExecStartPre`. The scorer would refuse to start, and the script's own printed cleanup (`git checkout -- .`) does not remove untracked files.
+**Problem**: wrote `threshold_sweep.json` <!-- placeholder --> into `filters/uplifting/v7/`. `deploy_to_nexusmind.sh:137` is an unfiltered `cp -r`, and `--dry-run` copies **without** committing — leaving it untracked under `filters/`, where NexusMind's `deploy_filters.sh`'s `scorer_untracked_blocking()` runs in the every-4h `ExecStartPre`. The scorer would refuse to start, and the script's own printed cleanup (`git checkout -- .`) does not remove untracked files.
 **Root cause**: treated a filter directory as a folder rather than as a deploy surface.
 **Fix**: evidence goes in `docs/evidence/`. **`ground_truth_gate.json` still sits in every filter package and carries the same hazard** — unfixed, pre-existing.
 
@@ -3398,7 +3451,7 @@ That is a two-second check and would have saved both rejections.
 **Fix**: #47 reopened; recommendation is to delete the file *and* teach `filter_loader` to honour the sentinel. The sharp part, found by the NexusMind session: three NM#312 tests were green **because of the stale file** — they assert *importability*, not repo existence, so they would stay green pointing at a repo that 404s. **Deleting it does not break the guard; it reveals the guard was already hollow.** General rule: a convention enforced by a checker that runs on only one side of a boundary is a convention on that side only.
 
 ### A checklist item is not a check, even after the outage that produced it (2026-08-13)
-**Problem**: `deploy_filters.sh` excludes `model/` from both rsync passes, so a code deploy never carries LoRA weights. Landing a new highest version without pre-placing them makes the scorer refuse to **start** — the cycle then scores nothing for all six filters, unattended, because that deploy is `ExecStartPre` on the 4-hourly `nexusmind.service`.
+**Problem**: NexusMind's `deploy_filters.sh` excludes `model/` from both rsync passes, so a code deploy never carries LoRA weights. Landing a new highest version without pre-placing them makes the scorer refuse to **start** — the cycle then scores nothing for all six filters, unattended, because that deploy is `ExecStartPre` on the 4-hourly `nexusmind.service`.
 **Root cause**: this was already known and already written down — `docs/FILTER_PLAYBOOK.md` checklist item 5, pointing at **#67, closed**, which was itself filed *after* the omission took `cultural_discovery v5` down on 2026-05-31. Between then and now the consequence quietly grew: the weights check moved from first scoring request to **startup**, iterating every discovered filter. So the documented remedy stayed the same size while the failure got six times larger.
 **Fix**: guard D in `preflight_deploy_guards.py`, proven against production state rather than a fixture — cd v5 passes, **cd v6 (the real pending cutover) fails**. ⚠️ I first reported this as undocumented and had to correct it publicly. **The finding was never "nobody knew"; it was "knowing did not help."** A documented step that has already been missed once is the definition of what belongs in a guard.
 
@@ -3433,9 +3486,9 @@ That is a two-second check and would have saved both rejections.
 **Fix**: recorded in NM#284 alongside the captured table. The generalisable form: **a detector built to catch a config that lies about the runtime can be defeated by the config lying in a TYPE the detector cannot consume.** Validate the type of any declared value a guard compares against, or the guard is conditional on the config being well-formed — which is the thing it exists to doubt.
 
 ### Pre-placing model weights can itself take the scorer down (2026-08-13)
-**Problem**: `FILTER_PLAYBOOK` checklist item 5 says pre-place `model/` on gpu-server *before* `deploy_filters.sh`, because the rsync excludes it. Doing exactly that opens a window in which the scorer will refuse to start.
+**Problem**: `FILTER_PLAYBOOK` checklist item 5 says pre-place `model/` on gpu-server *before* NexusMind's `deploy_filters.sh`, because the rsync excludes it. Doing exactly that opens a window in which the scorer will refuse to start.
 **Root cause**: `filter_loader._find_latest_version()` selects on the directory **name** and never inspects contents. A `v6/` holding only `model/` therefore becomes "latest", `_build_filter_config` finds no `config.yaml` and returns `None`, the filter drops out of the discovered set, and the `EXPECTED_FILTERS` guard raises `RuntimeError: Cannot start scorer` — **for all six filters, not just the one being deployed.** The mirror image (code without weights) fails the same way, so no ordering avoids a window.
-**Fix**: there is only a window you *choose and close*. Do both steps between cycles — `deploy_filters.sh` is `ExecStartPre` on the 4-hourly `nexusmind.service`, so the deadline is the next cycle, not a human's attention. Rollback is `rm -rf ~/NexusMind/filters/<name>/<vN>` on gpu-server, which restores the previous version as latest.
+**Fix**: there is only a window you *choose and close*. Do both steps between cycles — NexusMind's `deploy_filters.sh` is `ExecStartPre` on the 4-hourly `nexusmind.service`, so the deadline is the next cycle, not a human's attention. Rollback is `rm -rf ~/NexusMind/filters/<name>/<vN>` on gpu-server, which restores the previous version as latest.
 
 ### The pre-deploy check ran in an environment the target does not have (2026-08-13) [PRODUCTION OUTAGE]
 **Problem**: `cultural_discovery v6` was promoted to production, its scoring endpoint returned HTTP 500, the post-deploy smoke test caught it and `nexusmind.service` failed closed. One scoring cycle lost. #98's pre-cutover verification had said *"loaded and scored end-to-end"*.
@@ -3469,7 +3522,7 @@ That is a two-second check and would have saved both rejections.
 
 ### A stacked PR showed "all checks passed" without running the tests (2026-08-14)
 **Problem**: NM#364 displayed a green tick with no `test` job. Its only test evidence was someone saying they had run 1,305 tests locally.
-**Root cause**: `ci.yml` triggers on `pull_request: branches: [main]`, so a PR **stacked on another branch** gets GitGuardian and nothing else. Two follow-ons, each of which hides the first: `gh pr merge` **without `--delete-branch`** leaves the stack pointing at a merged branch (auto-retarget fires only on branch *deletion*), and **retargeting does not re-run checks**, because a base change fires `edited`, which is not in the default `pull_request` type set.
+**Root cause**: NexusMind's `.github/workflows/ci.yml` triggers on `pull_request: branches: [main]`, so a PR **stacked on another branch** gets GitGuardian and nothing else. Two follow-ons, each of which hides the first: `gh pr merge` **without `--delete-branch`** leaves the stack pointing at a merged branch (auto-retarget fires only on branch *deletion*), and **retargeting does not re-run checks**, because a base change fires `edited`, which is not in the default `pull_request` type set.
 **Fix**: close/reopen to fire `reopened`. ⭐ The nastiest step is the middle one: **the correction increases the PR's apparent legitimacy while changing the evidence not at all.** Before merging any stacked PR, read *which* checks ran, not whether they are green.
 
 ### Two sessions given the same owner "go" both acted (2026-08-14)
@@ -3514,6 +3567,8 @@ A mechanism that is present, configured and unreachable is this repo's defining 
 
 | 2026-08-12, **10th occurrence** | a `<!-- verify: -->` annotation twelve lines long, backing the NexusMind#300 "100% populated" claim. An HTML comment ends at its first `-->` on its own line, so the extractor never saw it and the claim went unchecked. **The file looked annotated** — which is the config-key smell one layer up: presence of the mechanism read as operation of it. Found by adopting the framework's own runner, not by review |
 
+| 2026-08-15, **13th occurrence** | a framework **stamp bumped ahead of its content**. `CLAUDE.md`'s footer read v1.26.0 from 2026-08-13 while neither v1.25.1 nor v1.26.0 had been triaged — and the stamp is the drift check's only input, so every run reported "current" and examined nothing. **The only value in this repo that can turn its own checker off.** Two releases unreviewed, one carrying an explicit adopter action (a CRLF fix that made the table check examine no tables). Now probed |
+| 2026-08-15, the audit's own instrument | `refcheck.py` stripped a **sibling** repo's name from a path and never the **local** one, so every self-prefixed reference went unexamined. Not a wrong answer — a silence. Found by reading a finding instead of dismissing it as residue |
 | 2026-08-11 evening, **caught pre-ship** | a `solutions v6` re-weighting that moved +19.5pp across an absolute 4.0 — correct at its own layer, erased downstream by a percentile CDF, because the gate reads the *normalized* score. **Not counted in the occurrence total: it never shipped.** Listed because it is the first time reading the caller stopped the recommendation instead of explaining it afterwards |
 
 The cultural_discovery v6 entry is the point of the whole list: **knowing this failure

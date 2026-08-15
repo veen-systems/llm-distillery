@@ -24,6 +24,14 @@ must_catch+=(absorbed_by_distance.py                  # 19 non-adjacent marker
              never_existed_alongside.py)              # 16 unmarked break on a marked line
 must_be_placeheld=("filters/<name>/<version>/config.yaml"   # 17 counted, not dropped
                    nexusmind-scorer.service)                # 18
+# 2026-08-15 — the failures the SELF-PREFIX STRIP newly permits. The strip can only
+# ever turn a report into a resolution, so both new catches are the laundering cases.
+must_catch+=(no_such_self_thing.sh                           # 22 fabricated behind self-prefix
+             "llm-distillery/model/adapter_model.safetensors") # 23 collision must survive the strip
+must_be_silent+=(llm-distillery/scripts/remote_deploy.sh)    # 21 must now resolve
+# 2026-08-15 — the failure the SYSTEMD UNIT class newly permits: a unit that exists
+# nowhere in the estate must not be absorbed by the class.
+must_catch+=(totally-made-up-unit.service)                   # 24
 for p in "${must_catch[@]}"; do
   grep -q -- "$p" <<<"$findings" && echo "  ok    caught  $p" \
     || { echo "  FAIL  missed  $p"; fail=1; }

@@ -14,6 +14,56 @@ Upstream changelog: https://github.com/ducroq/agent-ready-projects/blob/master/C
 
 ---
 
+## v1.25.1 + v1.26.0 — triaged 2026-08-15 via `/update-drift`
+
+**3 adopted, 1 declined, 4 not applicable, 2 already in force.**
+
+Clone checked at `713a307` (tag `v1.26.0`), in sync with `origin/master`. Note the
+default branch is **`master`, not `main`** — a `git log main` fails outright, which
+is a fast way to conclude "no releases" from a tooling error.
+
+**The gap existed because a stamp ran ahead of its content.** `CLAUDE.md`'s footer
+had read `v1.26.0` since 2026-08-13 while this file's last entry was v1.25.0, and
+nothing from either release had been triaged. The frontmatter stamp (`v1.25.0`) was
+the honest one. That is the exact failure mode `/update-drift` Step 6 warns about:
+a premature stamp silences the check that would have caught the gap. A stamp-
+agreement probe now lives in `CLAUDE.md`, seeded against this real disagreement
+before it was believed.
+
+| From | What | Outcome |
+|---|---|---|
+| v1.25.1 | Step 1.5 CRLF strip `{ sub(/\r$/, "") }` | **Adopted** → `.claude/skills/review-changes/SKILL.md`. Reproduced against *our* re-mapped awk first, not adopted on the changelog's word: a seeded lossy row in a CRLF file printed **nothing**, byte-identical to a clean run; the one-line rule restored the hit; the LF result was unchanged on both sides. Live exposure today is nil (`core.autocrlf` unset, 0 of the tracked `.md` files carry CR) — but `docs/RUNBOOK.md` and CLAUDE.md's `MSYS_NO_PATHCONV=1` document driving this repo from Git Bash, where `core.autocrlf=true` is the installer default |
+| v1.25.1 | Withdraw the "every reported hit is a real loss" absolute | **Adopted** → same file. It lived here in our own wording — *"A hit is data loss, not a style nit"* — so a phrase-grep for upstream's text would have missed it. Refuted locally in 3 of the 4 classes upstream names: empty excess cells (`\| 1 \| 2 \| \|` reports, loses nothing), YAML frontmatter closing after a piped `description:`, and a spaced `- - -` break. The setext-heading class **did not reproduce** — our guard needs a pipe the fixture lacked, and that is recorded as not-reproduced rather than repeated |
+| v1.25.1 | Tighten `isdelim()`'s guard to require a pipe in the delimiter row | **Declined** — upstream deliberately left it loose and says so: the cost to pipe-less delimiter rows is unestablished on both sides, GFM ships no example of one, and framework #52 stays open for the decision. Taking it here would fork our copy from upstream on an undecided question |
+| v1.25.1 | framework #58 — the same CRLF defect in `curate`'s copied runner | **Not applicable** — still unfixed **upstream** at v1.26.0, and `curate` is user-global here. Nothing to adopt until upstream ships it; re-check on the next drift run |
+| v1.26.0 | `curate` Step 0 sub-step 5 takes the project file | **Already in force** — global `curate` verified byte-identical to the v1.26.0 tag by `diff`, and its runner invocation names `CLAUDE.md` explicitly |
+| v1.26.0 | `audit-context` repo-specific count attributed, not probed | **Already in force** — global `audit-context` byte-identical to the tag |
+| v1.26.0 | Probe a project-file count against its source of truth | **Adopted** → `CLAUDE.md`. **It caught a live drift on contact**, which is why it earns its place: the file read *"10th occurrence"* while `memory/working-rules.md` read **12th** — in a rule whose own subject is mechanisms that never ran. Corrected to 12th and probed. (Upstream's "third time that line has lagged" is about the **framework's** own project file; this is the first such lag measured here, and no earlier one was looked for) |
+| v1.26.0 | `templates/test-verify-memory.md` claim fix | **Not applicable** — the over-broad phrase is absent, and our copy already states the correct thing (the disposition comes from the `CANNOT VERIFY:` prefix, not the exit status) |
+| v1.26.0 | `templates/gotcha-log.md` claim fix | **Not applicable** — the claim is about a Promoted table, and we have none. Already declined for the same reason at v1.20.0 |
+| v1.26.0 | `docs/claim-audit-sample-2026-08-13.md` | **Not applicable** — framework-internal evidence, no counterpart surface |
+
+### Two stamp defects found independently of the gap
+
+Neither came from the changelog; both came from reading every stamp before
+comparing anything, which is Step 0's whole point.
+
+1. **The two `CLAUDE.md` stamps disagreed** — frontmatter `v1.25.0`, footer
+   `v1.26.0`. Now probed, so the next disagreement reports both numbers.
+2. **`.claude/skills/review-changes/SKILL.md` cited "v1.26.1", which upstream has
+   never released.** The fix it describes is real but sits on the unmerged branch
+   `fix/review-changes-scope` at `e824212`. A citation to a version that does not
+   exist cannot be checked against anything, and would have become permanently
+   wrong the moment upstream released that fix under a different number. Restated
+   as a commit reference.
+
+A third stamp was found and deliberately **not** touched:
+`tests/fixtures/reference-integrity/SEED.md:2` reads `v1.23.0` as **fixture data**,
+frozen on purpose to test frontmatter marker scope. Bumping it would break the test
+it exists for.
+
+---
+
 ## v1.24.0 + v1.25.0 (both released 2026-08-12) — triaged and adopted 2026-08-12 via `/update-drift`
 
 **3 adopted, 0 declined, 1 not applicable, 3 already in force.**

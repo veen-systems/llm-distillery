@@ -377,7 +377,12 @@ exactly what moves if the surviving decoder regresses.
 <!-- verify: test -f scripts/deployment/preflight_deploy_guards.py && PYTHONPATH=. python3 -m pytest tests/unit/test_preflight_deploy_guards.py -q 2>&1 | tail -1 -->
 <!-- verify: grep -c preflight_deploy_guards scripts/deploy_to_nexusmind.sh scripts/deploy_to_nexusmind.ps1 -->
 <!-- verify: PYTHONPATH=. python3 -c "import yaml;print(yaml.safe_load(open('filters/cultural_discovery/v6/config.yaml'))['scoring']['tiers']['medium']['threshold'])" -->
-<!-- verify: grep -q "framework: agent-ready-projects v1.25.0" CLAUDE.md && echo PASS || { echo FAIL; exit 1; } -->
+Session observation, not a live probe: the framework stamp read **v1.25.0** when this
+session closed. It is **v1.26.0** as of 2026-08-15 (v1.25.1 + v1.26.0 triaged via
+`/update-drift`), so pinning the old value here would fail forever on a correct tree.
+The durable invariant — the frontmatter and footer stamps must agree — is probed in
+`CLAUDE.md` itself, which is the file that owns the claim. It was seeded against a real
+disagreement (frontmatter v1.25.0 vs footer v1.26.0) before being believed.
 
 ## Carries
 
