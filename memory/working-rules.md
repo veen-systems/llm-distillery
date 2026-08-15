@@ -15,6 +15,57 @@ here first.** Every one of them exists because something shipped broken.
 
 ## The rules, in full
 
+### A FAILING CHECK MAY BE THE CONTROL WORKING — never "fix" it before asking what it proves
+
+**Added 2026-08-15, from my own error, caught by NexusMind declining it.**
+
+I found that validating 788 live producer rows against Contract A gave **788/788
+violations, all one field (`source_group`) unexpected at a closed root** — verified, and
+the facts were right. I inferred that declaring the field was therefore a **prerequisite**
+for the canary, and recorded the resequencing. **The inference was the error.**
+
+`source_group` is the production contract check's **only non-circular acceptance control**:
+an independent field, on 100% of rows, **that the check was never shown** — and therefore
+the only evidence the check *can fail at all*. It was already a recorded decision (NM#304,
+`contracts/CHANGELOG.md` 1.18.0) guarded by a test whose name says so, which failed by
+design the moment someone tried it.
+
+⭐ **The trap, in its general form: I proposed spending an acceptance control PRECISELY IN
+ORDER TO DRIVE A VIOLATION COUNT TO ZERO — the very number whose trustworthiness the
+control exists to establish.** And a synthetic replacement cannot restore it: injecting a
+key you chose proves the check catches **what you already knew to look for**; the organic
+control proves it catches **something nobody designed it to catch.** Not replaceable once
+spent.
+
+**So a 100%-failure reading is an argument for building the observer SOONER, not for
+removing the thing that is failing.** Ask, in order: *what does this failure prove that
+nothing else proves?* — then *does my fix delete that proof?*
+
+⚠️ **Sibling, same shape, opposite sign** (2026-08-12): *the archive survived only because
+the purge was broken* — verify that a mechanism **not** running is not what is protecting
+you. Together: **before changing a thing that is failing or dead, establish what its
+failure or deadness is currently buying you.**
+
+*(Also from the same exchange, and the reason this was caught at all: NexusMind hit three
+pre-existing tests, reverted twice, and modified none of them. **A failing test is a
+finding, not an obstacle.**)*
+
+⚠️ **Corollary found the same day — REFUTING IN PLACE BEATS DELETING, BUT ONLY INSIDE ONE
+REPO.** A wrong figure was refuted in place rather than deleted, on the argument that *a
+refuted figure carries its refutation wherever it travels*. **It does not: the same wrong
+reading was still asserted in three live places in the producer's tree** (verified: the
+literal survives at `FluxusSource/src/utils/date_parser.py:242`). The argument holds
+**within** a repo and **fails at the boundary** — so refuting in place is still strictly
+better than deleting, and it is **not** a substitute for chasing the copies.
+
+⚠️ **And the sampling half, from the producer's own review the same day: A SAMPLE WITH NO
+NEGATIVES CANNOT LICENSE AN ABSOLUTE.** *"Expect ~100%"* was generalised from 662/662 and
+737/737; an independent sample read **97.2%**. ⭐ **The check that catches a broken
+instrument is NOT the check that bounds the rate** — a differently-derived cross-check
+validates *agreement on the rows you have*, never *the representativeness of the rows you
+chose*. Same family as the hand-built-population rule below, arriving through the back
+door of a **verification** rather than a measurement.
+
 ### Every measurement error this project has made was a HAND-BUILT POPULATION
 
 ⚠️ **Recurred TWICE on 2026-08-15, and one of them was inside `/curate` itself.**

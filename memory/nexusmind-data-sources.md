@@ -257,6 +257,28 @@ and pass it after enrichment.
   not touch those.
 - **Wrong** for anything keyed on `content` or its length.
 
+### ⚠️ And it is not producer bytes either — NexusMind WRITES BACK into it (2026-08-15)
+
+Found by the NexusMind session while validating Contract A, and it is a second,
+independent reason not to treat `data/raw/` as "what FluxusSource delivered":
+
+**NexusMind's own preprocessing stamps into the raw files.** `src/preprocessing/commerce.py`
+writes `_commerce_score` / `_is_commerce` / `_commerce_model`; the obituary path writes
+`_is_obituary` / `_obituary_score` / `_obituary_model`. So a "raw" row is
+**post-our-own-stamping**, and every one of the 4 schema-violation classes measured against
+`data/raw` over 10,677 rows was **ours, not the producer's**.
+
+⭐ **The shape worth carrying, because it is how the error survived:** the local corpus
+also **predates `source_group`**, which is emitted on every delivered row and present on
+**0** of these. So **the one violation class that should appear is absent, while four that
+should not are present — and they partly cancel into a plausible total.** A total that
+looks reasonable is not evidence that its parts are.
+
+- **Cheap detector:** a violation whose key starts with `_` is ours, not theirs.
+- **Consequence for the Contract A canary:** pointed at local `data/raw` it would validate
+  a corpus we wrote to ourselves and report clean — **precisely the failure it exists to
+  prevent.** It must read sadalsuud's delivered bytes, before any downstream stamping.
+
 ## Related
 
 - `memory/prefilter-length-floor-hypotheses.md` — the measurement these came out of

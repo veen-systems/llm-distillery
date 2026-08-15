@@ -376,6 +376,132 @@ exactly what separates the two causes:
 
 ---
 
+## ⭐ The replacement signal EXISTS AND IS BUILT — `published.fabricated`, 2026-08-15
+
+H-D1's whole difficulty was that fabrication had to be *inferred* from a ~2h gap that at
+least three other mechanisms also produce, and the microsecond fingerprint that once
+attributed it **was erased in production** by the canonicalization deploy. **That is now
+over: the producer states it on the row.** FluxusSource built Track A on 2026-08-15
+(working tree, uncommitted, **not deployed** — the deploy is an owner decision).
+
+**Presence counts on real rows** (live 45-feed sample + live academic APIs):
+
+| population | `published` block | `raw` | `had_timezone` | `fabricated` | `fabricated=true` |
+|---|---|---|---|---|---|
+| RSS, 687 rows (`extract_date_from_rss_entry`) | 687/687 | 687/687 | 687/687 | 687/687 | **25/687 = 3.64%** |
+| API, 101 rows (`ensure_valid_date`) | 101/101 | 76/101 | 76/101 | 101/101 | **1/101 = 0.99%** |
+
+⚠️ **`raw`/`had_timezone` at 75.25% on the API side is DELIBERATE, not a gap.** PubMed's
+date is **real but assembled** from separate `<Year>/<Month>/<Day>` elements, so no
+publisher string exists to quote. Producer rule: **`null` ⟺ `fabricated`; an unrecorded
+observation is OMITTED.** Nulling `raw` there would have put the fabricated spelling on a
+non-fabricated row.
+
+### A named live fabricator: `baltic_baltic_times`, 25/25
+
+**Every `fabricated=true` row in the RSS sample came from one feed.** It is enabled, live,
+and serves **nothing parseable in any of the 9 date elements**, so every row it emits is
+`now − 2h` — previously indistinguishable from the three other ~2h mechanisms above, now
+stated on the row. ⚠️ **The estate-wide fabricating population is NOT counted** — that
+needs a production run, which is the deploy decision.
+
+### ⚠️ The capture trap, and it is the MIRROR of the one that was warned about
+
+The brief warned that capturing `had_timezone` too far out reads **FALSE on 100%** (by
+`extract_date_from_rss_entry:110` the value is already naive). **The failure actually hit
+reads TRUE on 100%**, and the first implementation did exactly that: **dateutil calls a
+*callable* `tzinfos` even for a timezone-less string, with `(None, None)`**, and
+`DateParser._get_tzinfos`'s inner `tzinfos()` ends with `return pytz.UTC` — verified here
+at `src/utils/date_parser.py:296-312` — so **`parsed.tzinfo is not None` is True for every
+dateutil-parsed string.**
+
+⭐ **What makes this one nasty, and it is the transferable lesson: the true rate is very
+high** (RFC 822 and RFC 3339 strings essentially always carry a zone), **so the broken
+implementation and the correct one produce nearly the same headline number.** Only a
+differently-derived check separates them — here, re-deriving the answer by regex over the
+raw text: **0 disagreements over 737 non-fabricated raws, plus 12 hand-labelled cases of
+which the broken reading gets 6 wrong.** Correct capture is **inside the tzinfos
+callback**: `had_timezone = (abbrev is not None or offset is not None)`.
+
+⚠️ **CORRECTED the same day, by the producer, and the correction is the sharper half.**
+The rate was first written as **"expect ~100%"** off 662/662 and 737/737 — **those samples
+simply contained no negatives, and the absolute was generalised from their absence.** An
+independent second sample (25 random enabled non-GN feeds, 288 dated entries) reads
+**280 true / 8 false = 97.2%**, and the API half is lower still: `semantic_scholar`'s
+`publicationDate` and PatentsView's `patent_date` are bare `YYYY-MM-DD` ⇒ false.
+
+⭐ **So the lesson is TWO-SIDED, and only the first side was filed initially:**
+1. A broken instrument and a correct one can produce the same headline number — **only a
+   differently-derived check separates them.**
+2. **A sample with no negatives cannot license an absolute** — and **the check that
+   catches the instrument is NOT the check that bounds the rate.** The regex cross-check
+   was correctly differently-derived and *could not* have caught this: it validated
+   agreement on the rows that were there, not the **representativeness of the rows
+   chosen.** Same failure family as this project's hand-built-population rule, arriving
+   through the back door of a *verification* rather than a measurement.
+
+### ⛔ A FIFTH FABRICATION CLASS, AT ~0h — OUTSIDE THE 2h/4h TAXONOMY ENTIRELY
+
+**Found 2026-08-15 by FluxusSource's own review battery. This is the most important
+addition on this page**, because every detector discussed above is tuned to a *gap*.
+
+    devto_api_aggregator.py:140
+    fda_api_aggregator.py:133, :310
+    clinicaltrials_gov_aggregator.py:147
+
+All shaped `published_date = parse_date_string(...)` then
+`if not published_date: published_date = datetime.now()`. **Not `now − 2h` — a ~0h gap**,
+and on the **host local clock** (FS#176), so it is not even measured against the same
+clock as everything else.
+
+- ⭐ **A gap detector tuned to 2h/4h cannot see this class at all.** This is not a wrong
+  constant — **the signal is at zero.** It strengthens rather than weakens the
+  "inference cannot substitute" argument.
+- ⚠️ **These sources emit no `published` block, so `fabricated` is UNDEFINED for them, not
+  false.** 555 rows in the 7-day hot window (devto 69, clinicaltrials 486).
+- **Latent, not observed:** 0 rows currently at `|collected − published| < 120s`, so the
+  fallback exists and has not fired in this window.
+- **Instrumenting them is NOT done** — beyond Track A, a different mechanism, wants its
+  own decision.
+
+### ⛔ A THIRD SUBSTITUTION SITE, which the `published` block itself does not account for
+
+**`date_normalized`.** When a publisher date is **>1 day in the future**, `to_dict` emits
+**`collected_date` AS `published_date`** and moves the parsed value to
+`original_published_date`. `published.raw` describes **that** field.
+
+⭐ **So on those rows `fabricated: false` means "the publisher gave us a date", NOT
+"`published_date` is what the publisher said"** — which is exactly the reading the block's
+headline invites. **329 such rows in the 7-day window**, 6 RSS and instrumented today; the
+other 323 are the advance-publication-date class (crossref / openalex / clinicaltrials /
+owid), **not instrumented yet — so the intersection GROWS with coverage.** Documented and
+pinned by a test on the producer side.
+
+### Smaller, but real — carry these caveats
+
+- ⚠️ **Pre-existing FluxusSource bug, found in passing, NOT filed and not theirs:** `CEST`
+  maps through `DateParser.TIMEZONE_MAP` to an **LMT** offset, so
+  `'... 09:15:00 CEST'` parses to **09:06**. ⭐ **A wrongly-converted `published_date` can
+  therefore ride a perfectly correct `had_timezone: true`.** Worth an issue.
+- ⚠️ **The patent arm has NO production data behind it.** `patentsview` and `epo_ops`
+  produced **0 rows** in the 7-day window, so *"every EPO row is fabricated"* is proven by
+  test only. Carry this caveat if the EPO line is ever filed.
+- **`fabricated` is stamped at THREE producer sites, not two** — the EPO paths call
+  `fabricated_provenance()` directly and unconditionally.
+- **Storage, measured not estimated:** ~20 ms per run (0.006% of a 324.7 s run), but rows
+  grow **~95 bytes (+6%)** because `raw` echoes the publisher's date string —
+  **~1.5 MB/day against archives kept indefinitely since #164.** ⚠️ **A storage commitment
+  nobody has agreed to yet**, and it is in the producer's deploy note rather than assumed.
+
+### ⚠️ Do not cite "99.22% of production rows carry no offset" for this field
+
+It is in NexusMind's `had_timezone` description in Contract A 1.22.0 and **it is about the
+wrong field.** That figure describes **our emitted `published_date`, which we strip**;
+**publisher INPUT is ~100% timezone-bearing.** Anyone reading the declaration will expect
+~1%, see ~100%, and conclude the producer is broken. A reword is with NexusMind.
+
+---
+
 ## Related, and deliberately separate
 
 - **The canonical-serialization defect** — FluxusSource emits four spellings of

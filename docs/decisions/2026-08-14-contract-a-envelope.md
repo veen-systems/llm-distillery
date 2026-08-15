@@ -719,6 +719,107 @@ would let a write fix them.** So *"nothing is near the boundary today"* has a sh
 life, and **the backfill's value increases with delay** — the opposite of how the
 priority was framed to me.
 
+> ⛔ **REFUTED 2026-08-15 by ovr.news, measured against the production corpus. Three
+> errors in the paragraph above, and the last one is mine — I relayed it twice.**
+>
+> **(a) The population is not "79 rows plus naive twins" — it is 21,520 of 21,925 rows,
+> 98.2% of the corpus.** The canonical form is `toISOString()`, fixed-width with three
+> fractional digits, so **every one of the 21,441 naive rows also differs from its
+> canonical form.** Shapes: 21,441 naive / 405 canonical `Z` / 79 offset. Anything
+> reasoning from "79 rows" is off by two orders of magnitude. Population taken from the
+> shipped dry run (`scripts/backfill-published-date-tz.ts`, rows where
+> `canonicalizePublishedDate(x) !== x`), **not hand-built.**
+>
+> **(b) ⛔ "The backfill's value increases with delay" DOES NOT HOLD. The naive
+> population is CLOSED, not growing** — newest naive row `2026-08-14T08:30:00`, and all
+> 153 rows published since `2026-08-14T12:00` are canonical `Z`. It can only shrink.
+>
+> **(c) The harm is currently ZERO, not latent-and-approaching.** All 79 offset rows are
+> `+00:00` (complete enumeration, no non-zero offsets) and all 405 `Z` rows are
+> fixed-width `.000Z`. Under those two facts **a shorter string is always a prefix of a
+> longer one, so text order can only TIE with instant order, never invert** — measured
+> directly, top-6,000 by text vs by instant, **0 rows differ in either direction.** So
+> *"puts the WRONG ARTICLES in the hot DB"* is true as a mechanism and **false of the
+> corpus as it stands.** The deepest colliding pair reaches the cut in 6.2 days, and when
+> it does **both rows are the same instant, so the choice is arbitrary, not wrong.**
+>
+> ⭐ **The real trigger is EVENT-driven, not time-driven: the first non-zero offset
+> entering the corpus — which is exactly what FS#174 would create.** Refreshed boundary
+> figures: 21,937 rows, row #6,000 at `2026-07-26T00:24:30` (20.3d), collisions 15
+> instants / 50 rows at ranks 218–4,150. *(Sub-ms loss is 332, not 131 — the old figure
+> was measured on the hot copy.)*
+>
+> ~~So the decision is a SEQUENCING constraint: run the backfill ahead of FS#174
+> (~2026-08-21), where two independent clocks land on the same date.~~
+>
+> ⛔ **WITHDRAWN the same hour, by ovr's own second measurement. There is no event-driven
+> trigger either, so there is no ordering constraint against FS#174 at all.** The
+> withdrawn reasoning assumed FS#174's offsets would meet ovr's legacy naive rows in a
+> sort. **They cannot: the write boundary canonicalises an offset to `.000Z` BEFORE it is
+> stored, so an offset never reaches `ORDER BY` as an offset.** The only two shapes that
+> ever meet in a sort are legacy naive and canonical `Z` — and one is always a prefix of
+> the other, so they can only tie.
+>
+> Measured twice: **production full corpus** (21,948 rows, not just the hot window) —
+> **0 adjacent inversions**, 2,813 harmless same-instant ties, so stored text order is
+> already chronologically correct everywhere. And a **local post-FS#174 simulation** —
+> 4,000 rows mixing raw-inserted legacy naive / `+00:00` / six-digit-micro shapes with
+> rows written through the real `upsertArticle` from `+02:00`/`-05:00`/`+05:30`/`+01:00`/
+> `-03:00`, all clustered in a 4-second window so near-collisions are dense, deterministic
+> seed — **0 inversions, 3,341 ties.**
+>
+> **Revised ledger: 0 live defects fixed, 0 defects prevented after FS#174, 332 rows
+> irreversibly losing sub-millisecond digits.** ~~The only surviving benefit is
+> uniformity.~~ ⭐ **So: TIDINESS, NOT REPAIR.** Run it opportunistically if the corpus is
+> being rewritten anyway; letting it sit is defensible. **The load-bearing fix already
+> shipped in `60ada82`.**
+>
+> ⛔ **AND THE LAST SURVIVING BENEFIT FAILS TOO — a SCOPE answer, not a cost/benefit one.**
+> **The backfill cannot deliver "makes the corpus uniform" at all.** It rewrites
+> `articles.published_date` **only**, while the archive files are **append-only and — since
+> ADR-022 / #262 — ovr's DURABLE copy.** So running it leaves **21,520 DB rows canonical
+> and 27,538 archived rows mixed forever**, replacing one inconsistency with **a split
+> between the working copy and the durable one.** ⚠️ **This is not inferable from "the
+> backfill is authorised and not run"**, which is how this plan carried it for weeks.
+>
+> *(Independent corroboration that the fractional population is genuinely frozen rather
+> than merely quiet: ovr's archive census reads **503/27,538 = 1.83%** naive-fractional,
+> against the producer-side **1.835% of 152,422** — two different pipes, two different
+> populations, three-digit agreement.)*
+>
+> ✅ **llm-distillery is a NON-STAKEHOLDER in the offset question, structurally** —
+> verified here 2026-08-15, worth knowing before anyone hardens anything. This repo
+> **does not read ovr's archives at all** (grep for `gzip` / `.gz` / `ovr_YYYY-MM` /
+> `data/archived` across `*.py`/`*.ts` is empty, against a positive control that prints);
+> its two corpus readers glob `content_items_*.jsonl` — FluxusSource output — only. And
+> **both `sort_articles_by_date` implementations truncate at `'T'` before comparing**
+> (`merge_fluxus_data.py:89`, `merge_historical_data.py:89`), so the sort key is
+> `YYYY-MM-DD` and **fraction, offset and `Z`-vs-naive are all discarded before any
+> comparison.** The inversion class behind FS#174, ovr#65 and three repos' sequencing
+> **cannot reach these sites even hypothetically.**
+>
+> ⚠️ **The one real task that came out of this, and it is NOT an argument for the
+> backfill:** `tests/published-date-write-boundary.test.ts:52-53` asserts in its header
+> that *"every naive value has none"* (no fractional part) and that a naive
+> `…T13:32:48.5` is a shape *"no producer emits today."* **That is false — 313 naive rows
+> in the corpus carry a fraction**, and it is the one shape that genuinely **can** invert
+> against a `+00:00` row inside the same second. None currently do, and both populations
+> are closed so no new pair can form — but **the reasoning written into that test file is
+> wrong and load-bearing for whoever reads it next.** Fixing that comment is the real
+> follow-up.
+>
+> Also resolved: **the write-boundary integration test EXISTS AND IS GREEN**
+> (`tests/published-date-write-boundary.test.ts`, `5ab2dda`) — real `upsertArticle`, read
+> back through both the production `ORDER BY` and the imported `pruneToMostRecentArticles`,
+> covering naive/`Z`/`+00:00`/`+02:00`/`-05:00`/`+0200`, with a positive control asserting
+> the raw shapes really do sort wrongly. It **was** the prerequisite and it is satisfied;
+> it is not what is holding this up. The job was never blocked — it is **unscheduled**, and
+> needs a human on sadalsuud.
+>
+> *Not verified from this repo: the production numbers above are ovr's, measured on
+> sadalsuud read-only. Their owner has seen them directly. Unexamined by anyone: whether
+> the archive stream carries pre-backfill spellings needing the same treatment.*
+
 **2. ⭐ The contract must pin the offset GRAMMAR, because the invariant has a hole.**
 The write is `canonicalizePublishedDate(x) ?? x` — an unparseable value is stored
 **verbatim** and lands straight in the lexicographic sorts. Measured against the
