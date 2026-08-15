@@ -18,38 +18,82 @@ NexusMind (W0) and FluxusSource (Track A) through this session; ovr.news and pip
 took information-only briefs. **This repo wrote no code and deployed nothing.** Record:
 `docs/CONTRACT_A_REALIZATION.md`, commit `1c02bf8`.
 
-### ⭐ THE ONLY NUMBER THAT MATTERS: fields EMITTED on delivered rows — **3 of 23**
+### ✅ CONTRACT A IS IMPLEMENTED — 17 of 18 declared fields ride on delivered rows
 
-Measured 2026-08-15 evening on `collection_20260815_160753` (2,437 rows), not on report.
-**The consumer schema reached 1.26.0 while the producer emitted none of it** — that gap,
-not the schema's correctness, is what "implement Contract A" means.
+**Built and deployed 2026-08-15 evening, ~4 hours end to end.** Measured on delivered
+bytes twice, by this session and by FluxusSource independently, with identical results:
 
-| block | fields | emitted |
-|---|---|---|
-| `published` | raw · had_timezone · fabricated | ✅ **2,425 / 2,437 = 99.5%** |
-| `published` | element · precision | ⛔ **omitted** (not null — and null means *fabricated* in this block, so the two states differ) |
-| `content_meta` | kind · echoes_title · error | ⏳ built, `690c2dd`, **owner: merge + deploy in FluxusSource's session** |
-| `collected` · `fetch` · `feed` · `origin` | 14 | ⛔ 0 rows |
+| delivery | rows | blocks | validation |
+|---|---|---|---|
+| `collection_20260815_200845` | 3,040 | all six | producer schema **0 errors** · Contract A 1.30.0 **0 errors** |
+| `collection_20260816_000647` | 2,318 | all six | **0 errors** · **0 errors** |
 
-⚠️ **`fabricated: False` on 2,425 rows is a REAL NEGATIVE, not a vacuous one** — corrected
-by NexusMind, verified here in the producer: `extract_date_from_rss_entry` fabricates
-`now − 2h` **by default** (`date_parser.py:125`, `fabricate_fallback=True`), so all **2,345**
-RSS rows could have fabricated and none did. *(My "only 80 rows were fabricating-capable"
-filtered by a remembered list of aggregator names instead of reading the path every row
-takes — a hand-built population, again.)* **What IS untested is narrower than "the
-true-branch"** — corrected by FluxusSource against my phrasing: the positive **has** been
-observed on **prod bytes** (Track A's post-pull verification on sadalsuud, 224 rows,
-`had_timezone {True: 204, None: 20}`, all 20 `french_le_parisien`), including the
-`null`-means-fabricated shape. It is unobserved **in a delivered run** only.
-⭐ **And the live positive needs no discriminator feed built — it is already scheduled.**
-`french_le_parisien` is 24h cadence, `next_due_time 2026-08-16T11:54:56Z`, so it lands in
-the **16:00 local run tomorrow**. ⚠️ Check the run, not the prediction: one feed on one day,
-and if it has started serving dates the population is empty and the negative says nothing.
+```
+published    3,031/3,040   raw · element · had_timezone · precision · fabricated
+collected    3,040/3,040   clock_source
+content_meta 2,937/3,040   kind · echoes_title      (= 100% of RSS)
+fetch        2,937/3,040   at · charset_declared · charset_detected · charset_used
+                           · charset_detected_confidence
+feed           405/3,040   ttl_declared
+origin         573/3,040   country · region · timezone
+```
 
-**NexusMind's side is DONE for this round** — `source_group` declared and deployed, W2.2
-closed; `content_meta.truncated` removed (PR #373, `cfd1f18`); check ran **through the
-systemd unit** on deployed code: `status ok · overall info · exit 0`, provenance block
-populated, violation class gone. First *automatic* fire 02:23 (`LastTriggerUSec` still empty).
+The 18th field, `content_meta.error`, is **correctly absent**: it exists only on a
+derivation fault and none occurred. ⛔ **Do not report that as a gap.**
+
+**Deleted rather than implemented (Contract A 1.27.0):** `fetch.{http_status,
+url_requested, url_final, content_encoding}` and `feed.cadence_hours` — one constant by
+construction, four per-feed facts that belong in the per-run feed-health report. Measured
+first: **0 of 170,266 delivered rows across 54 collections** carried a `fetch` or `feed`
+block, so no reader could break.
+
+#### ⭐ Four results the fields produced in their first two deliveries
+
+1. **`fabricated: true` observed in a DELIVERED run for the first time** — 44 rows at
+   20:02 across four sources (`austrian_vienna_at` 24, `china_nikkei_asia` 10,
+   `indonesian_mongabay_id` 7, `norwegian_dagbladet` 3), each carrying `raw`/`element`/
+   `had_timezone`/`precision` as **null**. That confirms Contract A 1.24.0's
+   null-⟺-fabricated clause **on live bytes**; it had only ever been tested against a
+   hand-written row.
+2. **`clock_source` partitions #176 EXACTLY**: `host_local` 95 / `utc` 2,945 at 20:02 and
+   82 / 2,236 at 00:02 — the `host_local` count equals the api row count and `utc` equals
+   rss + social, **with no mixed cases in either run**. ⭐ A clean partition is falsifiable
+   in a way a percentage is not.
+3. **The single-byte decode rung became countable** — 41 rows at 00:02, all
+   `southeast_asian_antara_en`, no declared charset, chardet `iso-8859-1` @ **0.73**,
+   decoded `cp1252`, and **zero carrying the mojibake signature**. It logs at DEBUG and had
+   been invisible for the life of that repo. First producer-side datum for NM#167, and its
+   shape matters: one non-Western publisher, no declared charset — consistent with NM#338's
+   6.86× non-English skew.
+4. ⚠️ **`charset_detected != charset_used` is EXPECTED, not a signal.**
+   `ENCODING_CONFIDENCE_MIN = 0.85` and the guess enters the attempt list only above it, so
+   below the bar the two disagree **by construction** for the entire population. The
+   mojibake pair is **`charset_declared` vs `charset_used`**. Landed in Contract A 1.31.0
+   with a test, before anyone could write the obvious check that would have flagged all 41
+   healthy rows.
+
+#### ⚠️ Five errors this session made, all caught by measuring rather than reasoning
+
+- **`clock_source` derived from `tzinfo` would have been WRONG on 96% of rows.**
+  `get_timezone_naive_now()` is naive **and genuinely UTC**. A wrong value, not a missing
+  one, on the field that exists to tell the clocks apart — and **my own tests passed against
+  the broken version**, because I wrote them from the same wrong model.
+- **`origin`'s `legal_policy` shelf**: I voted on a **hand-parsed YAML population** instead
+  of the loader's, so a 4-source vote stamped `NL` onto a 22-source subject shelf. The rule
+  that replaced it is structural, not statistical: **a geography shelf's origin is stable
+  under new members, a subject shelf's is not.** ⚠️ And the tighter *statistical* fix I first
+  tried (dominant ccTLD ≥50% of ALL sources) **re-imported the regional bias** — it drops
+  `mexican` while keeping `australian`/`canadian`, penalising outlets that prefer `.com`.
+- **A `str.replace` without an assert is a no-op that reports success** — my `to_dict`
+  emission edit silently did nothing because a peer's blocks had moved the tail I anchored
+  on. `_origin_block()` returned the right dict while nothing was emitted; only the
+  round-trip test caught it.
+- **My smoke test hand-listed the field names** and so reported 16/17 on a delivery carrying
+  17/18 — it could not see a field that shipped after the list was written. It now derives
+  the list from the schema. *A hand-built population inside the instrument measuring whether
+  the contract is implemented.*
+- **`country: NO` is a YAML 1.1 BOOLEAN.** Caught by the test asserting country codes are
+  two-character strings, which stays as the guard.
 
 ### ⏳ OWNER DECISION — delete 5 declarations rather than implement them
 
