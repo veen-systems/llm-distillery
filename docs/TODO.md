@@ -36,8 +36,15 @@ by NexusMind, verified here in the producer: `extract_date_from_rss_entry` fabri
 `now − 2h` **by default** (`date_parser.py:125`, `fabricate_fallback=True`), so all **2,345**
 RSS rows could have fabricated and none did. *(My "only 80 rows were fabricating-capable"
 filtered by a remembered list of aggregator names instead of reading the path every row
-takes — a hand-built population, again.)* **What IS untested is the true-branch**: no live
-row has yet carried `fabricated: true`, so the `null`-means-fabricated rule is unexercised.
+takes — a hand-built population, again.)* **What IS untested is narrower than "the
+true-branch"** — corrected by FluxusSource against my phrasing: the positive **has** been
+observed on **prod bytes** (Track A's post-pull verification on sadalsuud, 224 rows,
+`had_timezone {True: 204, None: 20}`, all 20 `french_le_parisien`), including the
+`null`-means-fabricated shape. It is unobserved **in a delivered run** only.
+⭐ **And the live positive needs no discriminator feed built — it is already scheduled.**
+`french_le_parisien` is 24h cadence, `next_due_time 2026-08-16T11:54:56Z`, so it lands in
+the **16:00 local run tomorrow**. ⚠️ Check the run, not the prediction: one feed on one day,
+and if it has started serving dates the population is empty and the negative says nothing.
 
 **NexusMind's side is DONE for this round** — `source_group` declared and deployed, W2.2
 closed; `content_meta.truncated` removed (PR #373, `cfd1f18`); check ran **through the
