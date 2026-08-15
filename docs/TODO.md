@@ -35,6 +35,54 @@ values, not three** — three call sites, two clocks.
 `published.raw` is a publisher's literal string. The curated list is in the doc; do not
 re-run the naive scan and treat its output as the backlog.
 
+### ⭐ Contract A closeout — what is actually left, verified against the live schema 2026-08-15
+
+**Two owner decisions, then four items. Nothing here is blocked on a machine.**
+
+1. ✅ **DONE — NexusMind W0 is MERGED. Contract A 1.24.0 on `main`** (PR #368, `8e9c489`),
+   46 contract tests, suite 1322, conformance on 165,107 producer-delivered rows:
+   **3 → 3 violation classes, none new.** `null` ⟺ `fabricated` is now **enforced** rather
+   than asserted. Verified here by reading the schema off `main`, not on report.
+2. ⏳ **OWNER: commit + deploy FluxusSource Track A** — now the **only** owner decision
+   left in this round. ⚠️ Carries an **unagreed storage
+   commitment**: +95 bytes/row (+6%), ~1.5 MB/day, against archives kept indefinitely
+   since #164. Decide that explicitly rather than by deploying.
+3. ⛔ **W0 item 9 — `content_meta.truncated` is STILL DECLARED and was never decided.**
+   The one W0 item nobody closed. It is declared **against the wrong producer**: detecting
+   whether the *source* truncated a body needs the feed body compared against the full
+   article, and full-text fetch lives downstream since `full_text_fetcher.py` was deleted
+   from FluxusSource. **Reassign or drop — deliberately, not by drift.**
+4. ⏳ **Track B (`content_meta.kind`) is STILL BLOCKED, but only on one cheap thing.**
+   W0 1–3 are done, so the remaining blocker is **FluxusSource splitting `echoes_title`**
+   out of `'headline_only' if not body or body == title else 'feed_summary'` — they agreed
+   the schema's model is better and called it a separate commit, which has not landed.
+   Both halves are already in that one line.
+5. ⏳ **The canary's CALLER, then W2.2 — IN THAT ORDER. Do not resequence** (see the
+   retraction above). ⚠️⚠️ **THE CANARY ITSELF ALREADY EXISTS** —
+   `NexusMind/scripts/validate_production_contract.py`, merged 2026-08-14, with grouped
+   reporting, a dated baseline, `--strict` and exit codes 0/1/2. **Only the automatic
+   caller is missing** (NM#303 / #361). ⭐ **"X does not exist" and "X is not yet invoked"
+   have completely different costs, and only the second was ever true** — this document
+   said the first for a day. It also **already strips our `_commerce_*`/`_obituary_*`
+   stamps**, so do not cite `data/raw` contamination as a gap in it.
+   ⚠️ **W2.2 is TWO fields, parked for DIFFERENT reasons:** `source_group` (the acceptance
+   control — spending it is the retraction above) and **`eval_query`** (511 rows, NM#367 —
+   parked because the producer calls it **removable once ADR-007 retires the eval arms**).
+   Do not merge those two rationales.
+   ⚠️ **`source_group`'s 20.5% is a DATE, not a rate** — it landed 2026-08-13 16:57, 0%
+   before and 100% after, so a presence-based check must key on **run date**. And point it
+   at delivered bytes (`~/mirrors/sadalsuud/local_dev/FluxusSource/data/current/collection_*/`,
+   52 collections / 165,107 rows), **not `data/raw`**, whose real problem is **vintage**:
+   it predates `source_group` entirely.
+6. ⏳ **`published.precision` is UNWRITTEN, not merely unpinned** — zero occurrences in
+   `date_parser.py`. It is declared and nullable, so nothing is broken; it is simply the
+   one field that is genuinely new producer code rather than threading-out. Sequence last.
+
+**Already settled — do not reopen:** `content_meta.error` non-nullable · `had_timezone` /
+`precision` nullable · `element` pinned as a **root conditional**, not a flat enum ·
+`clock_source` = `["host_local","utc"]` · `fetch.at` carries the canonical pattern ·
+the **`null` ⟺ `fabricated`** `if`/`then` clause **landed on both sides**.
+
 ### New, unowned, and none of it blocks the above
 
 - **`eval_query` is a SECOND undeclared root field** (511 rows). All three sessions had

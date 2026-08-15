@@ -275,9 +275,24 @@ should not are present — and they partly cancel into a plausible total.** A to
 looks reasonable is not evidence that its parts are.
 
 - **Cheap detector:** a violation whose key starts with `_` is ours, not theirs.
-- **Consequence for the Contract A canary:** pointed at local `data/raw` it would validate
-  a corpus we wrote to ourselves and report clean — **precisely the failure it exists to
-  prevent.** It must read sadalsuud's delivered bytes, before any downstream stamping.
+
+⚠️ **CORRECTED the same day — the trap is real, the discovery was a REDISCOVERY.**
+NexusMind's contract validator **already strips these stamps** and reports clean:
+`scripts/validate_production_contract.py:130`, `NEXUSMIND_STAMP_PREFIXES = ("_commerce_",
+"_obituary_", "_violence_")`, merged 2026-08-14 — *before* this was "found". It was hit by
+writing an ad-hoc validator instead of running the existing one. **So do not cite this as a
+defect in their tooling.** It remains a live trap for **anyone hand-rolling a check over
+`data/raw`**, which is the case this file exists for.
+
+**The canary's real constraint is corpus VINTAGE, not contamination:** local `data/raw`
+predates `source_group`, so a check run there misses the emitted-undeclared class entirely
+regardless of stamp handling. Point it at sadalsuud's delivered bytes — a mirror exists at
+`~/mirrors/sadalsuud/local_dev/FluxusSource/data/current/collection_*/` (52 collections,
+165,107 rows).
+
+⭐ **And `source_group`'s 20.5% presence is a DATE, not a rate.** It landed mid-window on
+**2026-08-13 16:57 — 0% before, 100% after.** A presence-based check must key on **run
+date**; reading 20.5% as a sampling rate would make every threshold derived from it wrong.
 
 ## Related
 

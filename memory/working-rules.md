@@ -50,13 +50,27 @@ failure or deadness is currently buying you.**
 pre-existing tests, reverted twice, and modified none of them. **A failing test is a
 finding, not an obstacle.**)*
 
-⚠️ **Corollary found the same day — REFUTING IN PLACE BEATS DELETING, BUT ONLY INSIDE ONE
-REPO.** A wrong figure was refuted in place rather than deleted, on the argument that *a
-refuted figure carries its refutation wherever it travels*. **It does not: the same wrong
-reading was still asserted in three live places in the producer's tree** (verified: the
-literal survives at `FluxusSource/src/utils/date_parser.py:242`). The argument holds
-**within** a repo and **fails at the boundary** — so refuting in place is still strictly
-better than deleting, and it is **not** a substitute for chasing the copies.
+⚠️ **Corollary found the same day — REFUTING IN PLACE IS NECESSARY AND NOT SUFFICIENT.**
+A wrong figure was refuted in place rather than deleted, on the argument that *a refuted
+figure carries its refutation wherever it travels*. **It does not: the same wrong reading
+was still asserted in three live places in the producer's tree** (verified: the literal
+survives at `FluxusSource/src/utils/date_parser.py:242`). First reading: the argument holds
+**within** a repo and fails at the boundary. ⛔ **Sharpened when a peer found a FOURTH stale
+site — the docstring of the test whose job was pinning that very behaviour. It did not
+travel within one repo either.** So: refute in place *and* **grep the number, and its
+complement.** The value alone is not enough; the claim it supports gets restated in words
+that do not contain it.
+
+⭐ **SIBLING RULE, and it is cheaper than any of the above: BEFORE BUILDING WHAT A NOTE
+SAYS IS MISSING, `ls` FOR IT.** 2026-08-15: a relay's compressed *"the canary does not
+exist"* was believed and an ad-hoc validator written, while the canary had existed since
+2026-08-14 — **and the correct statement was in that repo's own always-loaded index the
+whole time** (*"`validate_production_contract.py` has no automatic caller"*). **So this was
+never a cross-repo information gap; a compressed relay outranked a precise local
+statement that loads every session.** ⭐ **"X does not exist" and "X is not yet invoked"
+have completely different costs, and only the second was true — the first licenses
+rebuilding.** When a note reports an absence, check the absence before acting on it,
+especially when the note is a *summary* of someone else's summary.
 
 ⚠️ **And the sampling half, from the producer's own review the same day: A SAMPLE WITH NO
 NEGATIVES CANNOT LICENSE AN ABSOLUTE.** *"Expect ~100%"* was generalised from 662/662 and
