@@ -1,6 +1,45 @@
 # LLM Distillery - TODO
 
-## 🔵 NEXT SESSION — start here. **Contract A's envelope is LANDED. The producer emits nothing yet.**
+## 🔵 NEXT SESSION — start here (updated 2026-08-15)
+
+**Nothing was deployed and no filter package was touched; `deploy` is not applicable.**
+Seven commits, all documentation and findings, `041cc10` → `24d5ff2`, pushed.
+
+### The three decisions waiting on the owner
+
+1. **#114 — the 300-char floor's rationale has never been measured, and it now gates
+   more than the floor.** Settling it needs a **paired** oracle measurement (same
+   article at stub and full length) ⇒ **spend approval.** Three repos hold three
+   different views of why the floor exists and none has evidence; FluxusSource has
+   already shipped *"Length was never the property being measured"* into a
+   machine-readable contract as a flat assertion about **our** rationale.
+2. **`CLAUDE.md` is 37.4k against a 35k soft target**, and the savepoint's advice
+   (check formatter table padding first) does not apply — **0 recoverable padding
+   bytes** across all 51 table lines, 0 trailing whitespace. Cutting content is the
+   only lever. `## Before You Start` is **10,415 chars = 28% of the file** and is a
+   router that has drifted into summarizing its own targets. **Recommend
+   `/audit-context` over a hand-trim**, for exactly the duplication reason the file's
+   own footer gives.
+3. **Category G** now needs an **implementer, not a decision** (grain decision taken
+   below). Candidate FluxusSource, after their (b) sequence.
+
+### What is NOT ours and should not be started here
+
+`published.fabricated`/`had_timezone`/`raw`, the `content_meta.kind` deploy, and
+`clock_source` are **FluxusSource's**, confirmed with that session. The canary is
+**NexusMind's** — it is item 1 in their own brief. ⛔ **`content_meta.kind`'s consumer
+was deliberately NOT written**: the field is emitted on **0 of 14,409** production rows,
+so it would be dead code with green tests, and its premise is #114.
+
+### One local branch left deliberately
+
+`docs/event-identity-encoder-plan` — **unmerged, 1 commit ahead** of `main` (#100 work).
+Five merged branches were pruned locally this session; all five still exist on `origin`,
+so `git checkout <name>` restores any of them.
+
+---
+
+## 🔵 Contract A — the envelope is LANDED. The producer emits nothing yet.
 
 **2026-08-14, late: the redesign was implemented as far as it can go without producer
 code.** The decision record is
