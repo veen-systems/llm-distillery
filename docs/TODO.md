@@ -20,10 +20,17 @@ took information-only briefs. **This repo wrote no code and deployed nothing.** 
 
 | | state | waiting on |
 |---|---|---|
-| **NexusMind** | Contract A **1.21.0 → 1.23.0**, 43 contract tests, suite 1319, 16 mutations all biting | **owner: commit** |
-| **FluxusSource** | Track A built, 1283 tests, 788 live rows validating clean | **owner: commit + deploy** |
-| Track B (`content_meta.kind`) | unmerged on `feat/contract-a-content-meta-kind`, deliberately | W0 1–3 (done) then an owner call |
-| Canary + W2.2 | open, unstarted, **original order — NOT resequenced** | NexusMind |
+| **NexusMind** | Contract A **1.24.0 MERGED** (`8e9c489`); check merged **and installed** (#361, `1c2f20f`) | 02:22 timer fire, then W2.2 |
+| **FluxusSource** | Track A **committed AND deployed** (`08c4f56`, deploy recorded `0fb7a57`) | nothing |
+| Track B (`content_meta.kind`) | `echoes_title` split **landed** on `feat/contract-a-content-meta-kind`, tip **`690c2dd`** (rebased; pre-rebase tagged `pre-rebase/content-meta-7bc20a0`) | **owner: merge + deploy call** |
+| Canary + W2.2 | canary **live and has reported the control**; W2.2 held to the first automatic fire | 02:22, then NexusMind |
+
+⚠️ **The four rows above read differently on 2026-08-15 evening than they did that afternoon,
+and the correction is the point: this table said "awaiting owner commit" for work that was
+already committed, merged, installed and in one case deployed.** Re-derived by reading the
+schema off NexusMind `main`, both peers' git logs, and `systemctl` on sadalsuud — not from
+either session's report. **A handoff table decays faster than anything else in this file**,
+because it describes other repos' states and nothing here changes when they move.
 
 ⭐ **THE FINDING OF THE ROUND, and it is about how the round was run: three of this
 session's own calls were wrong, and every one was caught because the receiving session
@@ -54,32 +61,111 @@ re-run the naive scan and treat its output as the backlog.
    46 contract tests, suite 1322, conformance on 165,107 producer-delivered rows:
    **3 → 3 violation classes, none new.** `null` ⟺ `fabricated` is now **enforced** rather
    than asserted. Verified here by reading the schema off `main`, not on report.
-2. ⏳ **OWNER: commit + deploy FluxusSource Track A** — now the **only** owner decision
-   left in this round. ⚠️ Carries an **unagreed storage
-   commitment**: +95 bytes/row (+6%), ~1.5 MB/day, against archives kept indefinitely
-   since #164. Decide that explicitly rather than by deploying.
-3. ⛔ **W0 item 9 — `content_meta.truncated` is STILL DECLARED and was never decided.**
-   The one W0 item nobody closed. It is declared **against the wrong producer**: detecting
-   whether the *source* truncated a body needs the feed body compared against the full
-   article, and full-text fetch lives downstream since `full_text_fetcher.py` was deleted
-   from FluxusSource. **Reassign or drop — deliberately, not by drift.**
-4. ⏳ **Track B (`content_meta.kind`) is STILL BLOCKED, but only on one cheap thing.**
-   W0 1–3 are done, so the remaining blocker is **FluxusSource splitting `echoes_title`**
-   out of `'headline_only' if not body or body == title else 'feed_summary'` — they agreed
-   the schema's model is better and called it a separate commit, which has not landed.
-   Both halves are already in that one line.
-5. ⏳ **The canary's CALLER, then W2.2 — IN THAT ORDER. Do not resequence** (see the
-   retraction above). ⚠️⚠️ **THE CANARY ITSELF ALREADY EXISTS** —
-   `NexusMind/scripts/validate_production_contract.py`, merged 2026-08-14, with grouped
-   reporting, a dated baseline, `--strict` and exit codes 0/1/2. **Only the automatic
-   caller is missing** (NM#303 / #361). ⭐ **"X does not exist" and "X is not yet invoked"
-   have completely different costs, and only the second was ever true** — this document
-   said the first for a day. It also **already strips our `_commerce_*`/`_obituary_*`
-   stamps**, so do not cite `data/raw` contamination as a gap in it.
-   ⚠️ **W2.2 is TWO fields, parked for DIFFERENT reasons:** `source_group` (the acceptance
-   control — spending it is the retraction above) and **`eval_query`** (511 rows, NM#367 —
-   parked because the producer calls it **removable once ADR-007 retires the eval arms**).
-   Do not merge those two rationales.
+2. ✅ **DONE — FluxusSource Track A is committed AND deployed.** `08c4f56` emits the
+   top-level `published` block; the deploy is recorded in their curate commit `0fb7a57`.
+   The storage commitment (+95 bytes/row, ~1.5 MB/day, against archives kept indefinitely
+   since #164) therefore **shipped without being decided separately** — it is now a fact to
+   note, not a decision to take. ⚠️ *This item read "the only owner decision left in this
+   round" for a day after it was closed.*
+3. ✅ **RULED 2026-08-15 — `content_meta.truncated` comes OUT of Contract A**, and the
+   distinction is **re-filed as a NexusMind enrichment stamp**, not dropped. It was declared
+   against the wrong producer: detecting whether the *source* truncated a body needs the feed
+   body compared against the full article, and full-text fetch left FluxusSource when
+   `full_text_fetcher.py` was deleted. `pre_enrich` already computes both sides. **The
+   distinction is real and bears on #114** — the description is the only place it is written
+   down, so it must survive into the new issue verbatim rather than paraphrased. Relayed to
+   NexusMind; theirs to execute (a property removal on a field 0 of 14,409 live rows carry,
+   so no reader breaks). **W0 item 9 is closed.**
+4. ⏳ **Track B — the blocker is gone; only the deploy call is left.** FluxusSource landed the
+   `echoes_title` split on `feat/contract-a-content-meta-kind`, tip **`690c2dd`**, rebased onto
+   `master`, **not merged, not deployed** — correctly still the owner's call.
+   ⭐ **The naive split would have been a bug**: `body == title` is also true when **both are
+   empty**, so it stamps `echoes_title: true` on a row that echoes nothing. Guarded with
+   `bool(body)` first. Not visible in the one-line derivation.
+   ⭐ **Measured, and the number to quote is 0.12% — not 6.3%.** Replayed through the real
+   `from_dict`/`to_dict` over 12,516 prod rows (6 runs, 2026-08-14 20:08 → 08-15 12:05):
+   11,892 RSS stamped, 624 non-RSS absent, **0 derivation errors**; `feed_summary` 93.68%,
+   `headline_only ∧ ¬echoes` 6.21%, **`headline_only ∧ echoes_title` 14 rows = 0.12%**
+   (china_cgtn 6, gestion_pe 3, tagesschau 2, seneweb / el_comercio_pe / irish_telegraph 1
+   each — 6 sources, against 50 in the empty half). `kind` moved for **no row** — same
+   predicate read twice, which is a test rather than a claim, so the 08-10→14 percentages
+   survive. **Anything sized against this field is sized against 0.12%.**
+   ⚠️ **A live SEMANTIC mismatch inside 1.24.0, silent class:** the schema says `echoes_title`
+   is *"substantially a repeat of the title"*; the producer's predicate is **exact equality of
+   the stripped strings** (title-plus-a-full-stop reads `false`). `type: boolean` accepts both,
+   so it validates clean forever — the same shape `kind` had before its enum was pinned.
+   **The producer's predicate is the authority** (principle 2), so the fix is a NexusMind
+   description change; widening is refused because the same predicate decides `kind` and would
+   move rows between kinds. Relayed.
+5. 🔨 **The canary is MERGED, INSTALLED, ARMED — and HAS REPORTED THE CONTROL. W2.2 is held
+   to the first AUTOMATIC fire, 02:22 tonight.** NM#361 merged (`1c2f20f`), units installed.
+   Verified from this workstation over ssh, 2026-08-15:
+
+   ```
+   nexusmind-contract-check.timer    LoadState=loaded  ActiveState=active  LastTriggerUSec=  (EMPTY)
+   next elapse                       Sun 2026-08-16 02:22:48 CEST
+   artefact /home/jeroen/local_dev/NexusMind/data/contract_check.json  0644 jeroen:jeroen
+   additionalProperties.<root>.source_group   asserted=true  rows=2722  errors=2722  error
+   ```
+
+   ⭐⭐ **The control fired against genuine producer bytes — the check DETECTS, it does not
+   merely run.** That is the precondition the plan set for W2.2, and it is met.
+   ⛔ **W2.2 still waits, and the reason is the whole thesis:** the artefact was produced by a
+   **hand invocation**, and the timer has never fired. `LoadState=loaded` proves installation,
+   not execution. NexusMind then proved the *unit definition* works (`systemctl start` →
+   `ExecMainStatus=1` by design, `ProtectSystem=strict` + `ReadWritePaths` do not block the
+   write — a real unretired risk, now retired) and **correctly refused to bank it**: a
+   `systemctl start` satisfies "a run I did not invoke by hand" while being a hand invocation
+   one level up. ⭐ **My acceptance criterion was itself the unreachable-mechanism shape it
+   was written to catch.** Their in-repo test names two release conditions (automatic caller
+   **and** a named replacement control); only the second is discharged. **Third session pushed
+   to spend this control early and refused.**
+   ⭐ **Replacement control named: `eval_query` on a pinned historical collection** — a
+   producer-chosen field on producer-delivered bytes the check was never shown, and **frozen**,
+   so unlike `source_group` the producer can never fix it away. Its limit, which must travel
+   with it: it fires on **pinned bytes, not current input**. Spending `source_group` trades a
+   **live-path control for a fixture-path one** — say that in the commit that spends it.
+   ⚠️ **The artefact's own `scope.edges_not_covered` hardcodes the `source_group` hold**
+   (`build_artefact`, `scripts/contract_check.py`). Declaring without moving it leaves the
+   artefact asserting a held control that no longer exists.
+   ⭐ **Artefact gains `invocation: {trigger, invocation_id, unit}`** (additive, schema stays 1)
+   so "who ran this" is answerable at the surface where it is asked. ⚠️ **My proposed mechanism
+   was defective**: systemd sets `INVOCATION_ID` for a service and **every child inherits it
+   through the environment**, so a hand run from a terminal inside a scope unit stamps
+   `systemd` — a false positive in the one direction that matters, and **a one-sided test
+   passes against it**. NexusMind replaced it with the leaf of `/proc/self/cgroup` compared to
+   the unit name (not inheritable across units), verified in both directions.
+   ⚠️ `trigger: "systemd"` still does **not** mean the timer fired — a hand `systemctl start`
+   is genuinely systemd. `LastTriggerUSec` + a fresh `generated_at_iso` is the pair that
+   answers it. **Absent `invocation` means UNKNOWN, never "manual"** — it dates the artefact,
+   it does not describe the run.
+5b. ✅ **RULED 2026-08-15 — `eval_query` stays UNDECLARED, and NM#367 closes as a written
+   decision**, not an omission. The field is **dead by decision**: FluxusSource retired the
+   three #119 eval arms in `eda28eb` (#158, ADR-007 decisions 2 and 3), pulled onto sadalsuud
+   **16:56:08 on 2026-08-11**, and the five identities that stopped are `newsdata_eval_{td,mg,bi}`,
+   `gnews_eval_td`, `gdelt_constructive_madagascar`. Both switches were thrown (`enabled: false`
+   **and** removal from `aggregator.enabled_sources`). So declaring it would declare something
+   the producer stopped emitting, and it would spend the fixture-path control above.
+   ⚠️⚠️ **TWO CORRECTIONS to figures this document held for a few hours, both FluxusSource's:**
+   **(a) the stop boundary was four days too early.** The claimed edge was
+   `…080541` → `…095038`. But `collection_20260811_095038` is an **off-grid partial run — 4
+   sources / 933 items against a full cycle's ~1,950 / ~5,700 — that ran no eval aggregator at
+   all.** Its zero means *did not run*, not *ran and yielded nothing*, and the field was still
+   emitted at 12:08 (16 rows) and 16:06 (9 rows). ⭐ **The real edge is 16:06 → 17:02, six
+   minutes after the deploy** — cause and effect, no gap. **Rule: bound a stop by last non-zero
+   → first zero, and verify the run between is a FULL one.** Single-run zeros were normal
+   throughout the emitting stretch (2–51 rows/run), so any single zero was never evidence.
+   **(b) "511 is cumulative history" is wrong** — it is exactly the **7-day hot window** (26
+   runs, `…0807_160813` → `…0811_160635`), so it **decays to 0 around 2026-08-18** as those runs
+   age out. Recording it as a lifetime count would later read as the corpus losing rows. The
+   lifetime figure lives in `data/archived/` (retained indefinitely since #164) and is uncounted.
+   ⚠️ **Not a divergence, and the tidy-up it invites is destructive:** FluxusSource's own
+   `config/schemas/output_schema.json` **must keep declaring `eval_query`** — their root is
+   `additionalProperties: false` and `validate_output.py --archives` samples the indefinitely
+   retained archive, whose rows carry the field. **Contract A undeclared + producer schema
+   declared is correct: different windows, different jobs.**
+   *(An earlier owner answer of "declare as expiring" was taken on my wrong premise and changed
+   the moment the measurement reached them.)*
    ⚠️ **`source_group`'s 20.5% is a DATE, not a rate** — it landed 2026-08-13 16:57, 0%
    before and 100% after, so a presence-based check must key on **run date**. And point it
    at delivered bytes (`~/mirrors/sadalsuud/local_dev/FluxusSource/data/current/collection_*/`,
@@ -88,6 +174,9 @@ re-run the naive scan and treat its output as the backlog.
 6. ⏳ **`published.precision` is UNWRITTEN, not merely unpinned** — zero occurrences in
    `date_parser.py`. It is declared and nullable, so nothing is broken; it is simply the
    one field that is genuinely new producer code rather than threading-out. Sequence last.
+   ✅ **Confirmed by FluxusSource 2026-08-15** against their own tree (`grep -c precision
+   src/utils/date_parser.py` → 0; the 3 hits across `src/` are unrelated). **Not started, by
+   agreement** — it is theirs and it stays last.
 
 **Already settled — do not reopen:** `content_meta.error` non-nullable · `had_timezone` /
 `precision` nullable · `element` pinned as a **root conditional**, not a flat enum ·
@@ -96,8 +185,12 @@ the **`null` ⟺ `fabricated`** `if`/`then` clause **landed on both sides**.
 
 ### New, unowned, and none of it blocks the above
 
-- **`eval_query` is a SECOND undeclared root field** (511 rows). All three sessions had
-  been saying *the* undeclared field.
+- ~~**`eval_query` is a SECOND undeclared root field** (511 rows)~~ — **superseded, see 5b.**
+  True as far as it went, and **the 511 was cumulative history, not a live population**: the
+  field stopped on 2026-08-11 and is 0 in all 26 collections since. ⭐ **A row count with no
+  time axis read as a standing condition** — the same denominator-must-travel shape as
+  `source_group`'s "20.5%", and pointing the opposite way: one is a field that **started**,
+  the other a field that **stopped**, and a bare count cannot tell them apart.
 - **A fifth fabrication class at ~0h** — `devto`/`fda`/`clinicaltrials` do
   `if not published_date: published_date = datetime.now()`. **Not a wrong constant: the
   signal is at zero**, outside the 2h/4h taxonomy entirely. `fabricated` is **UNDEFINED**
