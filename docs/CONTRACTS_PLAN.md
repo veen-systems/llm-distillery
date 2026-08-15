@@ -2278,6 +2278,17 @@ synthetic injected key is not — and **frozen**, so the producer can never fix 
 CURRENT INPUT.** `source_group` fires on every live run. **Spending `source_group` trades a
 live-path control for a fixture-path one**, and that belongs in the commit that spends it.
 
+⚠️ **And the fixture itself moves on 2026-08-18** *(FluxusSource, verified in
+`file_rolling_window.py:163`, not inferred)*. It is **not** deleted — #164 holds — but the
+7-day window **relocates and gzips** the collection: `data/archived/collection_20260811_080541.tar.gz`,
+member `collection_20260811_080541/content_items_20260811_080540.jsonl`. ⚠️ **The directory
+is `…080541` and the JSONL inside is `…080540`** — one second apart, so a member path built
+from the directory's timestamp does not exist; and it is a tarball, so opening the path
+directly breaks even once the path is fixed. ⭐ **The right answer is neither path: copy the
+file into NexusMind as a test fixture.** A control living in the producer's data directory
+is a control the producer's retention policy can move — the same class of assumption that
+started this thread. (51 rows across 5 sources, so it exercises more than one producer.)
+
 ### ⚠️ `eval_query` is DEAD BY DECISION — and both figures I first recorded were wrong
 
 **Retired deliberately**: `eda28eb`, *"retire the three #119 eval arms (#158, ADR-007
