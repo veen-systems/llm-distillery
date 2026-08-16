@@ -135,6 +135,24 @@
 > attribution in **both** directions. Range predicted in advance, 15–40%. High → ask them to
 > stop discarding the GN suffix. Low → close it, nobody spends the time.
 >
+> ✅ **CLOSED by FluxusSource the same evening** — FS#133 closed with the values-not-reach
+> reframing as its lead, the awk instrument published beside the corrected figure, and the
+> comment defect filed separately as **FS#186** (false-comment class, citing this repo's
+> dead-prefilter-config precedent). `publisher_host` recorded as *not commissioned* and
+> parked in their `memory/open-threads.md` so it cannot be re-proposed blind. Their edits
+> sit on `fix/fs133-syndication-closeout`, unmerged — owner's call.
+>
+> ⚠️ **The per-run/per-day correction INVERTS a ratio that was being quoted cross-repo.**
+> Their `memory/open-threads.md` said *"roughly 3× more syndicated copy passes through than
+> we remove"*, comparing ~84/day surviving against the **mislabelled** 25–30/day. Against
+> the real ~160/day it goes the other way; both sides are floors on different proxies, so
+> the honest statement is now **"same order of magnitude, neither dominates"**. ✅ **Checked
+> here: the 3× never reached this repo** (`docs/`, `memory/`, `CLAUDE.md` — the 3× hits are
+> unrelated: GN over-representation in sub-300-char stubs, and cross-language pairs retained
+> under complete-linkage). ⚠️ **ovr not yet checked.** ⭐ Worth noting how it surfaced: a
+> *labelling* error with the arithmetic intact propagated into a DERIVED comparison and
+> flipped its direction — the wrong-unit twin of the closed-accounting trap above.
+>
 > **Confirmed by them, and now recorded in `scripts/contracts/contract_a_smoke.py`'s own
 > docstring:** `FIELDS EMITTED: n/18` is **not** a completeness score. `charset_detected`,
 > `charset_detected_confidence` and `content_meta.error` are **conditional by design** —
@@ -256,10 +274,34 @@
 > ⚠️ **821 landing inside the predicted 800–1,000 is NOT independent confirmation.** That
 > range traces back to the earlier 157,870-id comparison — same instrument, different
 > window. What makes the result strong is `|old \ new| = 0` with the side channel live.
-> ⚠️ Open arithmetic residual, 8 rows: 1,049 − 220 = 829 should newly survive, 821 measured.
-> Most likely counters are per-row EVENTS across 87 files while the kept set is DISTINCT ids
-> — confirmation asked for, **not adopted**, because a gap with a satisfying story is the
-> shape that gets waved through.
+> ✅ **The 8-row residual is CLOSED, and my explanation was REFUTED, not confirmed.** I
+> guessed counters-are-events vs kept-set-is-distinct-ids. Tested directly: `duplicate_url`
+> events = 1,049, distinct ids = 1,049, **repeats = 0** — an id can be url-dropped at most
+> once by construction, because `_check_batch_id` returns before the url check, so a second
+> row with that id dies as `duplicate_in_batch` and never reaches the url gate.
+>
+> **Real cause: two gates run AFTER the url check** inside `_is_duplicate` — commerce
+> (~:1092) and obituary (~:1099) sit below it (~:1079), so rows the old arm killed at the
+> url gate never reached them. Full fate of all 1,049: **821 newly kept · 220 title gate ·
+> 7 commerce_blocked · 1 obituary_blocked = 1,049 exactly**, every counter delta
+> reconciling independently, and newly-kept ids not in the url-dropped set = 0 (no
+> second-order additions).
+>
+> ⭐⭐ **THE KEEPER, and it is theirs: their FIRST pass also summed to 1,049.** It reported
+> 212 title-drops + 8 `duplicate_in_batch` — an equally satisfying story that closed just as
+> neatly, and was wrong: dispositions were keyed with `dict(events)`, which keeps the LAST
+> event per id, and **94 ids carry more than one drop event** (row A dies at the title gate,
+> row A′ then dies as `duplicate_in_batch`). Those 8 were title-drops wearing the wrong
+> label. Re-keying on the FIRST drop event gives 220, matching its counter delta exactly.
+>
+> ⛔ **So: A CLOSED ACCOUNTING IS NOT A CORRECT ATTRIBUTION.** *Two different attributions
+> both summing to the same total is the thing to distrust, not the sum.* The sum closing is
+> a weak check whenever the parts are derived from one partition — it is guaranteed by
+> construction and cannot discriminate between partitions. What actually caught it was a
+> **cross-instrument disagreement**: 212 did not match the +220 counter delta. Had the two
+> been read off the same object, nothing would have found it. ⚠️ Note the shape I warned
+> about in my own message *did* occur — one level in from where I predicted it, and my
+> prediction of the shape did not protect against it; an independent counter did.
 >
 > **Mutations, four directions:** A (delete url block) RED · B (restore always-on) RED ·
 > C (wrong reason string) RED, assertion reached · **D (url check moved before id check)
