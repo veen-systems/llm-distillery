@@ -123,7 +123,7 @@ none was checked before being written down.*
 
 ## File Transfers
 
-Use **scp**, not rsync. rsync fails with dup() errors on this server when invoked from Windows Git Bash. (Linux→Linux rsync from sadalsuud works — that's why `deploy_filters.sh` runs on sadalsuud, not on the workstation.)
+Use **scp**, not rsync. rsync fails with dup() errors on this server when invoked from Windows Git Bash. (Linux→Linux rsync from sadalsuud works — that's why NexusMind's `scripts/deploy_filters.sh` runs on sadalsuud, not on the workstation.)
 
 ```bash
 # Copy training data for training runs (workstation → gpu-server)

@@ -10,7 +10,7 @@ Per the governance schema in ducroq/llm-distillery#69:
 |---|---|
 | Scorer training, label-set, hard-negatives, oracle prompts | **this file** |
 | Pipeline prompt behaviour (brand-voice, gate, summarization) | `ovr.news/docs/hypothesis-log.md` Dead Ends |
-| Infrastructure, deployment, GPU contention, model loading | `ovr.news/memory/infra.md` and `vmodel/memory/gotcha-log.md` |
+| Infrastructure, deployment, GPU contention, model loading | `ovr.news/memory/infra.md` and `vmodel.eu/memory/gotcha-log.md` |
 | Architecture / ADR-superseding decisions | `docs/adr/` (Superseded ADRs) |
 
 Cross-link, don't duplicate: when a scorer retrain was triggered by a pipeline-prompt issue, each side has a one-line pointer to the other; the substance lives in whichever repo owns it.

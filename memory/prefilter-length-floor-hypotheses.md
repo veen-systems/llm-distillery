@@ -185,7 +185,7 @@ the length floor blocks*.
    *below* English (13.0%) while Italian (28.6%) and Korean (37.5%) sit well
    above — consistent with keyword coverage, not with language per se.
    Falsification: extend the keyword set for the poorly-covered languages, re-run
-   `scripts/measure_prefilter_recall_cost.py`, and check whether the per-language
+   NexusMind's `scripts/measure_prefilter_recall_cost.py`, and check whether the per-language
    rates converge. If they do, the residual 15.5% is genuine editorial blocking
    and enforcement can be re-argued on its merits.
 
@@ -306,7 +306,7 @@ ground.**
 
 **Do not gate the re-measure on "migration complete" — there is no near-term
 done.** FluxusSource expects GN-URL volume to step down as country-proxy batches
-land, then plateau well above zero; the next ~29 are blocked on a real defect in
+land, then plateau well above zero; the next ~29 are blocked on a real defect in FluxusSource's
 `gn_to_native_upgrade.py` (it ranks candidate publishers by frequency in GN
 output, which the bare-country-name collision corrupts — it proposed a football
 site for Algeria over `aps.dz`). Gate on **measured GN-URL share per cycle**

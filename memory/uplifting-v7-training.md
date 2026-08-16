@@ -60,7 +60,7 @@ Rather than patching v7, created thriving v1:
 ## Data locations
 
 - Oracle scored: `datasets/scored/uplifting/` + `datasets/scored/uplifting_enrichment/uplifting/`
-- Combined: `datasets/scored/uplifting_v7_combined/all_scored.jsonl`
+- Combined: `datasets/scored/uplifting_v7_combined/all_scored.jsonl` <!-- placeholder -->
 - Splits: `datasets/training/uplifting_v7/` (5,271 train / 659 val / 660 test)
 - Training data: `train.jsonl` / `val.jsonl` / `test.jsonl` (clamp-to-1.0), `*_original.jsonl` (unclamped backups)
 - GPU server log: `~/llm-distillery/training_uplifting_v7_final.log`

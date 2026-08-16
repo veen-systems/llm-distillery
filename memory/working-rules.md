@@ -27,7 +27,7 @@ for the canary, and recorded the resequencing. **The inference was the error.**
 `source_group` is the production contract check's **only non-circular acceptance control**:
 an independent field, on 100% of rows, **that the check was never shown** — and therefore
 the only evidence the check *can fail at all*. It was already a recorded decision (NM#304,
-`contracts/CHANGELOG.md` 1.18.0) guarded by a test whose name says so, which failed by
+NexusMind `contracts/CHANGELOG.md` 1.18.0) guarded by a test whose name says so, which failed by
 design the moment someone tried it.
 
 ⭐ **The trap, in its general form: I proposed spending an acceptance control PRECISELY IN
@@ -64,7 +64,7 @@ that do not contain it.
 ⭐ **SIBLING RULE, and it is cheaper than any of the above: BEFORE BUILDING WHAT A NOTE
 SAYS IS MISSING, `ls` FOR IT.** 2026-08-15: a relay's compressed *"the canary does not
 exist"* was believed and an ad-hoc validator written, while the canary had existed since
-2026-08-14 — **and the correct statement was in that repo's own always-loaded index the
+2026-08-14 — **and the correct statement was in NexusMind's own always-loaded index the
 whole time** (*"`validate_production_contract.py` has no automatic caller"*). **So this was
 never a cross-repo information gap; a compressed relay outranked a precise local
 statement that loads every session.** ⭐ **"X does not exist" and "X is not yet invoked"

@@ -16,7 +16,7 @@ NexusMind investigation docs that no chain on the board points at.
 Canonical sources, both in NexusMind:
 - `docs/investigation/story-dedup-feature-augmentation.md` — the design memo and
   the first-run readout (§P5.5). This is the one with the numbers.
-- `docs/investigation/corroboration-next-phase-plan.md` — **DRAFT, its ordering
+- NexusMind `docs/investigation/corroboration-next-phase-plan.md` — **DRAFT, its ordering
   refuted by a review 2026-08-06**; read the `RECOMMENDED ORDER` block, not §2.
 - Parent issue: **ducroq/NexusMind#188** (open) and **NM#301** (open). *NM#213 is
   the origin issue and has been **CLOSED/COMPLETED since 2026-05-23** — corrected
@@ -284,7 +284,7 @@ is why it did not need the wait.
 
 ## Sequencing as it stands
 
-From `corroboration-next-phase-plan.md`'s RECOMMENDED ORDER (8 steps). Verified
+From NexusMind's `corroboration-next-phase-plan.md`'s RECOMMENDED ORDER (8 steps). Verified
 2026-08-07: **step 1 (Phase 4a, "stop asserting a count precision cannot
 support") is already discharged** — the hedge is live in both languages
 (`ovr.news/src/i18n/translations.ts:84/369`) and the boost ladder was replaced by
@@ -304,7 +304,7 @@ a flat 1.3× capped at 9 (`corroboration-boost.ts:61/69`). So the live front is:
   representation, AUROC 0.791 vs 0.771**. What is open is only its **threshold**;
   production runs **title-only at `cross_source_threshold=0.88`**.
 - **Step 3's labels are not a cluster store.** It names *SemEval per-pair sims,
-  `per_probe.jsonl`, and cosines on the adjudicated 300* — not `SavedCluster`.
+  `per_probe.jsonl` <!-- placeholder -->, and cosines on the adjudicated 300* — not `SavedCluster`.
   (The 8 hand-written cases in `measure_matching_geometry.py:111-190`, sourced
   verbatim from NM#170/#188 issue text, are V1's *test* cases and are where n=23
   comes from. Do not confuse the two.)
@@ -358,7 +358,7 @@ the wrong change.
 Task 8**, on b650 at `~/nm-sweep/semeval/final_eval_data.csv` — **4,902 pairs**
 (4,597 scored, **2,422 positives**, 1,355 cross-language), human-rated, with
 per-dimension GEO/ENT/TIME/NAR/STYLE/TONE columns. Already scored by
-`~/nm-sweep/semeval/score_semeval.py` → `semeval_scores.json`.
+`~/nm-sweep/semeval/score_semeval.py` → `semeval_scores.json` <!-- placeholder -->.
 
 | variant | AUROC | AUROC xlang | AUROC samelang | pearson r |
 |---|---|---|---|---|
@@ -376,7 +376,7 @@ per-dimension GEO/ENT/TIME/NAR/STYLE/TONE columns. Already scored by
 **Precision is unchanged (Δ 0.001); recall goes 0.491 → 0.655, +33% relative.**
 That is ~400 more true corroborations per 2,422 at no precision cost, and it
 needs no new labels and no model — only a representation and threshold change in
-`story_dedup.py` (live at `cross_source_threshold=0.88`, title-only).
+NexusMind's `story_dedup.py` (live at `cross_source_threshold=0.88`, title-only).
 
 Cross-language gains more than same-language (0.8657 → 0.8874 vs 0.7421 →
 0.7967), which matters for a multilingual corpus.
@@ -407,15 +407,15 @@ point.
 | `precision_panel_v2/` | **340 pairs**, 6 strata × 50 + 40 near-miss controls, balanced 170/170 across configs |
 | `store_title_92_88.npz` | title-only representation, both frames |
 | `store_title_body_96_92.npz` | **title+body** representation, both frames |
-| `per_probe.jsonl` | exists in `recall_probe_48/`, `probe_smoke/`, `probe_smoke2/` |
-| `recall_disputed.json`, `recall_grid.json`, `rg_A_*.npz` | present |
+| `per_probe.jsonl` <!-- placeholder --> | exists in `recall_probe_48/`, `probe_smoke/`, `probe_smoke2/` |
+| `recall_disputed.json` <!-- placeholder -->, `recall_grid.json` <!-- placeholder -->, `rg_A_*.npz` | present |
 
 **~~THE BLOCKER: the panel is UNADJUDICATED.~~ WRONG — CORRECTED 2026-08-09.**
 The panels **were** adjudicated on 2026-08-06 by the DeepSeek judge
 (`scripts/research/judge_pairs.py`) and scored. The verdicts live in the
 **NexusMind checkout** at `data/research/precision_panel{,_v2,_v3}/judge_verdicts.jsonl`
 — which is gitignored (`.gitignore:230 data/`) **and was never copied to b650**.
-The b650 `adjudicate.csv` is the *human* sheet, which is legitimately empty
+The b650 `adjudicate.csv` <!-- placeholder --> is the *human* sheet, which is legitimately empty
 because the standing instruction is no hand-labelling.
 
 **This is the `feedback-enumeration-is-not-inventory` failure again**: I
@@ -423,7 +423,7 @@ inventoried b650, found no verdicts, and concluded none existed. b650 excludes
 them by construction. Establish what a source excludes *before* using its silence
 as evidence.
 
-`answer_key.json` genuinely is the sampling design, not an answer key — that part
+`answer_key.json` <!-- placeholder --> genuinely is the sampling design, not an answer key — that part
 was right.
 
 ## 2026-08-09 — the biggest lever is a GATE, not a similarity feature
@@ -492,7 +492,7 @@ corroboration rate is near zero by construction.
   (`additionalProperties: true`) in *both* contracts, so the stamp needed no
   amendment at all; #305 assumed a **top-level** field and I repeated that to the
   owner as the reason to prefer post-enrichment. It was declared in both schemas
-  anyway so `stamp_census.py` can see it. **SHIPPED AT COLLECTION** — FluxusSource
+  anyway so NexusMind's `stamp_census.py` can see it. **SHIPPED AT COLLECTION** — FluxusSource
   `33c7f41`, `metadata.primary_literature`, stamp-only with no consumer; replayed
   over 167,234 rows at **8.94% detected, 0 faults**. Evidence classes:
   `arxiv_announce` 10,049 / `doi_url` 2,516 / `academic_api` 1,799 / `doi_field`

@@ -245,7 +245,7 @@ story-level clustering (NM#188), **not** content-hash dedup (FS#133).
 **"ADR-007's native migration closes the 25%/5% gap."** Overstated. Retiring
 population A closes **14.9 of 25.7 points — 58%**. Population B is 10.8% of the
 corpus with the identical defect and ADR-007 does not cover it; it needs bulk
-repointing with `scripts/gn_to_native_upgrade.py`. **Two levers, not one.**
+repointing with FluxusSource's `scripts/gn_to_native_upgrade.py`. **Two levers, not one.**
 
 **"ADR-007 has stalled."** No. GN share is 24.1% before the first migration batch
 vs 25.1% after (67 vs 18 cycles, 301k items), but that is what a 6-feed batch

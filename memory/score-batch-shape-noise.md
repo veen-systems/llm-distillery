@@ -47,7 +47,7 @@ cause.
 - **Seeded per-run shuffle** (NexusMind `f7fef85`, deployed). The variable was
   never batch *size* — `DEFAULT_BATCH_SIZE = 16` is fixed and never varies in
   production. It was batch *composition*, from an unseeded
-  `random.shuffle(articles)` in `scripts/main.py`. Now seeded per (run, filter),
+  `random.shuffle(articles)` in NexusMind's `scripts/main.py`. Now seeded per (run, filter),
   logged in the start banner, replayable via `NEXUSMIND_RUN_SEED`.
   **This is replay, not stability** — the next cycle reshuffles and the article
   moves again. Do not cite it as a fix for #95.

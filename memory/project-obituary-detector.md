@@ -23,7 +23,7 @@ blocked (vs 5415 commerce); gpu-server health lists `obituary_detector_v5`
 (hash gate passed). <!-- verify: ssh sadalsuud "journalctl -u nexusmind.service --since today --no-pager | grep -m1 ' obituary,'" -->
 **Overnight sanity check PASSED 2026-07-31**: blocked count 1158 (20:12) →
 1208 (00:17) → 1249 (04:14), ~40-50 new/cycle ≈1% of loaded; v5 hash-verified
-each cycle; 26 new flags in `content_items_20260731_041042.jsonl` all stamped
+each cycle; 26 new flags in `content_items_20260731_041042.jsonl` <!-- placeholder --> all stamped
 `_obituary_model: "v5"`. Spot-read: high band = clear obits; 0.85–0.95 band =
 death-as-news collateral (accepted per recall-first) + 2 alive-person
 survival-story over-blocks (0.893, 0.937 — known v5 failure class, no owner

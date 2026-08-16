@@ -131,14 +131,14 @@ session), not taken on report:
 | `collection_20260814_161408` (pre) | **143 / 143 microseconds** |
 | `collection_20260814_193603` (post) | **2,891 / 2,891 canonical**, both date fields |
 
-`src/models/content_item.py` on sadalsuud has mtime **19:20:42**, and sadalsuud is on
+FluxusSource's `src/models/content_item.py` on sadalsuud has mtime **19:20:42**, and sadalsuud is on
 `6455c06` (contains `94e7337`). So the **16:02 and 16:14 runs still carry the
 fingerprint** — this file previously told you they did not. Anything collected up to
 and including `collection_20260814_161408` is quotable evidence.
 
 ⭐ **The fix itself is not an orphan and never was.** One site, `ContentItem._canonical_timestamp`
 → `utils/time_utils.canonical_timestamp`, exactly the single fix site predicted;
-follow-up **FS#174** (tighten `output_schema.json`'s pattern) deliberately held until
+follow-up **FS#174** (tighten FluxusSource's `output_schema.json` pattern) deliberately held until
 ~2026-08-21 so the 7-day hot window can roll before the validator would start failing
 every run.
 
@@ -168,7 +168,7 @@ neither fabrication nor timezone misparse.
 ### The population, recovered exactly — and the original numbers reproduce digit for digit
 
 **7,478 = 3,835 + 3,643** — the two most recent NexusMind raw deliveries
-(`content_items_20260814_121003.jsonl` + `…_160810.jsonl`). Not a 7-day window, not a
+(`content_items_20260814_121003.jsonl` <!-- placeholder --> + `…_160810.jsonl`). Not a 7-day window, not a
 sample: **two files**. That alone is why FluxusSource's 152,422-row / 47-run window did
 not contain it.
 

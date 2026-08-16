@@ -23,7 +23,7 @@ metadata:
 
 9. **The enforcement path now exists, default-off, and is a config flip.**
    `pipeline.violence_promotion.enforce: false` → `_enforce_violence_promotion()`
-   in `scripts/main.py`. Flipping it after LD#82 needs no new mechanism and no
+   in NexusMind's `scripts/main.py`. Flipping it after LD#82 needs no new mechanism and no
    deploy. **Caveat carried in the config comment:** at recall 0.55, enforcing
    gates roughly half of true positives — precision-first by construction, so
    question 5 below becomes an owner decision, not a modelling one.

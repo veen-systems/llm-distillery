@@ -48,7 +48,7 @@ threshold was not selected on.**
 
 **C1 — `cultural_discovery v5` is NOT single-stage. It already screens, and the whole
 "v6 adds Stage-1" framing was wrong.** Measured on the deployed v5 during a recovery
-cycle: `filtered_20260813_171905.jsonl`, n=3,039, `stage_used = {stage2: 1371,
+cycle: `filtered_20260813_171905.jsonl` <!-- placeholder -->, n=3,039, `stage_used = {stage2: 1371,
 stage1_low: 1668}` — **54.9% already screened**.
 
 The error was mine and it is this repo's own hard constraint: I read
@@ -56,7 +56,7 @@ The error was mine and it is this repo's own hard constraint: I read
 inferred no screening. **The config does not select the path.**
 `filter_loader.py:148` sets `hybrid_class` from the **existence of `inference_hybrid.py`**,
 and `main.py:264` uses it if present. v5 ships that file and a
-`probe/embedding_probe_e5small.pkl` (recovered in `b790b1b` — *"3 production probe pkls
+`filters/cultural_discovery/v5/probe/embedding_probe_e5small.pkl` (recovered in `b790b1b` — *"3 production probe pkls
 that existed ONLY on gpu-server"*) and screens while declaring nothing.
 
 **Consequence for H5 and for the cutover case:** v6 is a **probe/threshold change worth
@@ -160,7 +160,7 @@ policy), not on the FN count.
   **firehose**; the fitter uses only rows at `raw >= 4.0`, where the probe
   removes **1 of 2,653** and **0** high-tier (#98 STATUS.md). The one thing that
   could have invalidated reuse — `score_scale_factor` 1.2829 → 1.0 — does not:
-  `production_scorer.py` computes `raw_weighted_average` at post-processing
+  NexusMind's `production_scorer.py` computes `raw_weighted_average` at post-processing
   step 1, *before* the scale factor, which appears only in the fallback branch.
   Justification is recorded in the artifact's own `provenance_note`.
   **Refit from real 6.0 rows once ≥200 surfacing rows accumulate after cutover.**

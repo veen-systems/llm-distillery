@@ -135,10 +135,10 @@ establish what it excludes*.
 ## `data/filtered/<filter>/filtered_*.jsonl` excludes TWO populations
 
 The documented one: rows are written only under
-`if result["passed_prefilter"]` (`scripts/main.py`), so the file is 100%
+`if result["passed_prefilter"]` (NexusMind `scripts/main.py`), so the file is 100%
 passers by construction. Already in CLAUDE.md.
 
-**The one that is easy to miss:** `src/scoring/source_filter.py` sets
+**The one that is easy to miss:** NexusMind's `src/scoring/source_filter.py` sets
 `passed_prefilter = False` *after* scoring, for articles whose
 `metadata.quality.type_classification` is in the filter's
 `excluded_source_types`. All six production filters run this in enforce mode

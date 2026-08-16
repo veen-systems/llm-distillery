@@ -50,7 +50,7 @@ ssh b650-gpu        # account is `jeroen` (NOT jwasys); works from situla and sa
 - ✅ **SOLVED 2026-08-10 — b650 runs the student on GPU. Use
   `~/llm-distillery/venv-prodparity`.** ~2 min per 660 rows, vs ~16 min on CPU
   here and ~30 on gpu-server's CPU. **No sudo was needed.** The old venv is built
-  on the *system* python (`pyvenv.cfg` → `home = /usr/bin`), which ships no
+  on the *system* python (`pyvenv.cfg` <!-- placeholder --> → `home = /usr/bin`), which ships no
   headers; `uv` can download a standalone CPython that does:
   ```bash
   uv python install 3.11                                    # ships include/python3.11/Python.h

@@ -129,7 +129,7 @@ argument is untouched and is the reason to do it: 0–4.9% GN in training agains
 
 **B. Enrichment corrupts bodies.** **NM#314 is BUILT, not unstarted** — PR #317,
 merged-pending, reviewed. The gate is **merge + deploy**: sadalsuud was on
-`main @ 6f45633` with no `src/enrichment/decision_log.py` as of 2026-08-11, so
+`main @ 6f45633` with no NexusMind `src/enrichment/decision_log.py` as of 2026-08-11, so
 every measurement sequenced behind it is blocked on a pull, not on code. NM#315
 (duplicate-body guard, ≥5 headlines/body-hash: 90.3% precision / 92.5% recall
 blind-labelled, vs 25.9% for the current affinity signal) **shipped as PR #321**,
@@ -239,7 +239,7 @@ trustworthy"**, which is about a dozen issues. Ranked 2026-08-11:
 | # | item | repo | why here |
 |---|---|---|---|
 | 1 | **FS#145** harvest the real publisher from GN's `<source url>` | FS | 100% coverage, free, feedparser already parses it, **never read**. Name-guessing is **45.6%** on the `gn_*` country proxies ADR-007 targets. Closes **58%** of the 25%/5% corpus-vs-training gap — population A. |
-| 2 | **Bulk native repointing for population B** | FS | The other 10.8% of the corpus, identical defect, **ADR-007 does not cover it**. `scripts/gn_to_native_upgrade.py` exists — a run, not a build. |
+| 2 | **Bulk native repointing for population B** | FS | The other 10.8% of the corpus, identical defect, **ADR-007 does not cover it**. FluxusSource's `scripts/gn_to_native_upgrade.py` exists — a run, not a build. |
 | 3 | **#105** two filters trained on corpora >50% refused by today's gate | LD | Directly answers the stopping condition. Gates `human_thriving` v8. |
 | 4 | **NM#315** duplicate-body guard at ≥5 headlines | NM | 90.3% precision / 92.5% recall on a **blind** hand-labelled n=150 with a sealed key — best-evidenced fix on the board. Needs NM#314 first. |
 | 5 | **FS#142** cross-run dedup leaking 12.9%, seen-hash store collapsed | FS | Duplicates over-weight labels; an **active regression**, not a standing defect. |
@@ -388,7 +388,7 @@ when someone else is working.
 
 **Also true of working trees:** FluxusSource had four files modified mid-session
 by that peer (`requirements.txt`, `scheduled_collection.sh`, `content_hasher.py`,
-`requirements-lock.txt`). Nothing there may be committed, stashed or checked out
+FluxusSource `requirements-lock.txt`). Nothing there may be committed, stashed or checked out
 from here — see the whole-tree git verbs rule in CLAUDE.md.
 
 ### LD#101 confirmed live and closed
@@ -526,7 +526,7 @@ already booked there — do not count them twice.
 **1. A new cluster head appeared, and it is the strongest live item on the
 board: NM#301.** Merged-pair corroboration precision on 2-article clusters —
 the durable, cap-immune stratum and the one production actually runs — is
-**0.560**, against `INTEGRITY.md`'s "attribution is non-negotiable". So when we
+**0.560**, against NexusMind `INTEGRITY.md`'s "attribution is non-negotiable". So when we
 name a second outlet, we are right a little over half the time.
 
 **Use 0.560, not the 0.283 headline.** 0.283 was measured with the production
@@ -542,7 +542,7 @@ at 0.560 a majority *did*, so the sentence inverted its own evidence.
 matters.** `1bbadb5` bounded *NexusMind's* `display_ranking.py` boost to a flat
 1.10× for [2,10]. But **ovr.news never reads NexusMind's `display_rank`.** It
 recomputes `_displayRank` locally as `score × decay × language_boost ×
-recency_boost` (`src/lib/ranking.ts`, `src/lib/data/pipeline.ts:91`) with **no
+recency_boost` (ovr.news `src/lib/ranking.ts`, `src/lib/data/pipeline.ts:91`) with **no
 corroboration term**, and the corroboration reordering readers actually get is
 ovr.news's own editor rule — **1.3× at ≥1, 1.5× at ≥2, 1.7× at ≥3**
 (`src/lib/data/editor/rules/corroboration-boost.ts:33-37`), untouched, keyed on
@@ -570,7 +570,7 @@ this repo's. Fifth instance of the repo's defining failure shape.
 
 | # | Item | Repo | Why here |
 |---|---|---|---|
-| 1 | **FS#120** GN eval readout + ADR-007 gate | FS | Only hard date (~2026-08-14). ~~Harness exists; one run + one decision.~~ **Understated — corrected 08-07 from the issue's 13 comments.** Two of four hypotheses are already answered *without* eval data: **H2 FAILED 08-03** (gdelt_constructive 0 items on 12 of 19 ticks, 63% against a >50% failing threshold; free tier measured ~1 req/~2 min per IP) and **H4 answered 08-06** (**0 of 14,198** GN-proxy rows ever enriched, vs 0.0–19.9% column-C failure for the three eval arms). H1 on track (GN proxies 27.6% published share vs 90.8% for the other 366 sources). **The live remainder is bigger than one run:** the last comment argues **240 of the 312 GN sources are `q=… site:<domain>` single named outlets, not proxies for anything**, and that this reframing must land *before* the gate. `scripts/gn_to_native_upgrade.py` already exists, so that half is a **run, not a build**. **Critical path re-checked 2026-08-07 night — three things sit on it that no chain named.** (a) **FS#132 is a gate blocker, not housekeeping**: `gdelt_constructive` is phase-locked so each country is only ever sampled at two fixed hours, and that arm is unchanged while `gdelt`'s FS#125 fix moved **nothing measurable** (see below — the "76%→66%" was refuted; full record is 66.4% pre → 76.9% post, p=0.546). Its arm cannot be window-comparable to the others; it is currently filed under "mentioned but in no chain". (b) **The usable common window is ~6 days, not 14**: it starts at the *last* config change across all arms — GNews `country_queries` 08-05, FS#125 08-06, FS#128 08-06 — at a censored 30 items/run. (c) **LD#101**: the eval arms are scored and published, so the checklist's "share reaching the site" metric depends on a decision that has not been taken. |
+| 1 | **FS#120** GN eval readout + ADR-007 gate | FS | Only hard date (~2026-08-14). ~~Harness exists; one run + one decision.~~ **Understated — corrected 08-07 from the issue's 13 comments.** Two of four hypotheses are already answered *without* eval data: **H2 FAILED 08-03** (gdelt_constructive 0 items on 12 of 19 ticks, 63% against a >50% failing threshold; free tier measured ~1 req/~2 min per IP) and **H4 answered 08-06** (**0 of 14,198** GN-proxy rows ever enriched, vs 0.0–19.9% column-C failure for the three eval arms). H1 on track (GN proxies 27.6% published share vs 90.8% for the other 366 sources). **The live remainder is bigger than one run:** the last comment argues **240 of the 312 GN sources are `q=… site:<domain>` single named outlets, not proxies for anything**, and that this reframing must land *before* the gate. FluxusSource's `scripts/gn_to_native_upgrade.py` already exists, so that half is a **run, not a build**. **Critical path re-checked 2026-08-07 night — three things sit on it that no chain named.** (a) **FS#132 is a gate blocker, not housekeeping**: `gdelt_constructive` is phase-locked so each country is only ever sampled at two fixed hours, and that arm is unchanged while `gdelt`'s FS#125 fix moved **nothing measurable** (see below — the "76%→66%" was refuted; full record is 66.4% pre → 76.9% post, p=0.546). Its arm cannot be window-comparable to the others; it is currently filed under "mentioned but in no chain". (b) **The usable common window is ~6 days, not 14**: it starts at the *last* config change across all arms — GNews `country_queries` 08-05, FS#125 08-06, FS#128 08-06 — at a censored 30 items/run. (c) **LD#101**: the eval arms are scored and published, so the checklist's "share reaching the site" metric depends on a decision that has not been taken. |
 | 2 | **NM#301** corroboration precision **0.560** at 2 sources (+ **ovr#303**) | NM/ovr | Live, reader-visible, violates a published principle. **Wording half SHIPPED 08-07**; the ranking half is open as decision 7 — and it is ovr's OWN 1.3/1.5/1.7x rule, not the NexusMind boost `1bbadb5` bounded. |
 | 3 | **LD#91** uplifting ranks a trafficking investigation 6th of 3,530 | LD | Reputational, live, untouched since 08-01. Fold into **`human_thriving` v8** as an acceptance criterion rather than patching v7. |
 | 4 | **cd v6 cutover** (#98 → #87) | LD | Closest to done: 7/7 verify. Blocked only on creating `cultural-discovery-filter-v6` on the Hub and fitting normalization from a historical rescore. |
@@ -598,7 +598,7 @@ does not read.
 |---|---|---|
 | 1 | **NM#301** — stop crediting, stop boosting, or both | **Hedge the wording.** "{n} sources" → "{n} related sources" / "{n} gerelateerde bronnen", every link kept, and the ✓-in-circle glyph swapped for a link glyph. **The boosting half is NOT closed** — see above: `1bbadb5` fixed NexusMind's boost, which ovr.news does not read. ovr's own 1.3/1.5/1.7× editor rule still stands. **A seventh decision is now open.** |
 | 2 | **ovr#283** publication floor | **Close won't-do.** Keep storing `raw_weighted_average`. |
-| 3 | **ovr#284** — who writes the Art. 5(2) record | *Stale — the record was written 2026-08-05* (`docs/security/incident-2026-08-01-comscore-beacon.md`). Real decision: **ad-tech deny-list in ovr's image path, off-domain host as a STAMP not a block, no allowlist, recover the exposure window.** |
+| 3 | **ovr#284** — who writes the Art. 5(2) record | *Stale — the record was written 2026-08-05* (ovr.news `docs/security/incident-2026-08-01-comscore-beacon.md`). Real decision: **ad-tech deny-list in ovr's image path, off-domain host as a STAMP not a block, no allowlist, recover the exposure window.** |
 | 4 | **ovr#287** — wrong-story heroes | **Blank what is still buildable, leave the rest.** Scope is computed per row, not per pattern: that is **6** today, not the 5 first stated — review caught one vanguard row at normalized 9.10 still reader-visible. **Stays OPEN** until the R2 round-trip clears them. |
 | 5 | **ovr#292 → LD#28** — do the 333 domains bind us | *Stale — decided 2026-08-05, ADR-043, they do not.* Real decision: **say nothing on `/accountability`.** |
 | 6 | **NM#292** — measure or close Chain 14's root | **Keep open, retarget.** Drop the aggregate measurement as its next step; transfer the scoring stage into `human_thriving` v8's acceptance criteria. |
@@ -880,7 +880,7 @@ Filed since the 08-03 pass, placed nowhere:
 - **ovr#288**, **ovr#289**, **ovr#290** — orphan re-enrichment decision; `COALESCE` guards `undefined` but not `'{}'`; obituary-summary funeral exclusion is comma-dependent. The last is **Chain 1**'s only new link.
 - **FS#128** — `rferl_kazakh` has never collected Kazakh; both RFE/RL feeds point at a generic endpoint. **Chain 14** — a non-English source that produces no non-English content is the collection stage failing silently.
 - ~~**FS#125**~~ / ~~**FS#126**~~ / **FS#127** — gdelt firehose collects nothing in ~75% of runs; a zero-yielding aggregator raises no alarm; feed-cadence metric unreliable for 2/3 of OVER_POLLED feeds. FS#126 is the general case of FS#121 *and* FS#128: **nothing notices a source that stops producing.** **FS#125 and FS#126 CLOSED/COMPLETED 2026-08-06 06:15; only FS#127 is open** (verified 2026-08-07 — this line contradicted the same file's own lines 378 and 921).
-  **Re-measured 2026-08-07 (night), twice, and BOTH of my readings were wrong.** I first reported 72.6% zero-yield over a window straddling the FS#125 fix; then a per-source "76% → 66%" improvement. An adversarial re-derivation over the **full 135-run record** refutes the second and reverses its sign: pre-fix **81/122 = 66.4%**, post-`0fa9ffa` **10/13 = 76.9%**, post-`61be1b1` **8/10 = 80.0%**, Aug-7-only 4/6 = 66.7% (my "66%"). **Fisher p = 0.546**; items/run 19.1 → 10.0. My "76% pre" was the issue's last-8-runs snapshot; my "66% post" dropped four post-fix Aug-6 runs that all yielded zero. I also split on the GitHub **close time** rather than the deploy time (`git reflog`: `0fa9ffa` 08-05 18:09, `61be1b1` 08-06 07:49 — two commits, the first still phase-locked). And `3c08a6d` (08-03) raised `gdelt_constructive`'s `budget_sec` 120→300 on the shared quota, moving firehose zero-yield 64.7%→91.7% inside my "pre-fix" window. **What holds:** FS#125's *coverage* half is real (`protests`/`geopolitical` now reachable); the *yield* half cannot move — an external per-IP quota shared by two identities, and `docs/GN-REPLACEMENT-PLAN.md` already sets ~50% zero as designed behaviour. **H2's real question is whether the free tier is viable at all** (FS#125 Option 3, undecided). `gdelt_constructive` still gated on **FS#132**.
+  **Re-measured 2026-08-07 (night), twice, and BOTH of my readings were wrong.** I first reported 72.6% zero-yield over a window straddling the FS#125 fix; then a per-source "76% → 66%" improvement. An adversarial re-derivation over the **full 135-run record** refutes the second and reverses its sign: pre-fix **81/122 = 66.4%**, post-`0fa9ffa` **10/13 = 76.9%**, post-`61be1b1` **8/10 = 80.0%**, Aug-7-only 4/6 = 66.7% (my "66%"). **Fisher p = 0.546**; items/run 19.1 → 10.0. My "76% pre" was the issue's last-8-runs snapshot; my "66% post" dropped four post-fix Aug-6 runs that all yielded zero. I also split on the GitHub **close time** rather than the deploy time (`git reflog`: `0fa9ffa` 08-05 18:09, `61be1b1` 08-06 07:49 — two commits, the first still phase-locked). And `3c08a6d` (08-03) raised `gdelt_constructive`'s `budget_sec` 120→300 on the shared quota, moving firehose zero-yield 64.7%→91.7% inside my "pre-fix" window. **What holds:** FS#125's *coverage* half is real (`protests`/`geopolitical` now reachable); the *yield* half cannot move — an external per-IP quota shared by two identities, and FluxusSource's `docs/GN-REPLACEMENT-PLAN.md` already sets ~50% zero as designed behaviour. **H2's real question is whether the free tier is viable at all** (FS#125 Option 3, undecided). `gdelt_constructive` still gated on **FS#132**.
 
 **Not re-run on this refresh:** the Coverage table's unbanded set (it was computed
 against the 177 total and is now stale by at least these 14), and the ovr
@@ -934,7 +934,7 @@ look like noise to every similarity-based screen, including token-overlap ones.
 | **Chain 8 (Google News)** | **FS#118 + FS#119 both CLOSED 07-31.** ovr#275's resolver shipped (`623cc82`) and its per-source attribution surface shipped (`8ab610a`), unblocking **FS#120 — the only calendar deadline on the board, ~2026-08-14.** |
 | **NM#284 (prefilters never ran)** | Stage 1 shadow deployed + verified. **Now blocked by NM#285.** |
 | **NM#285 (NEW — P0)** | Shadow measures a **truncated `Article`** (title+content only) — url/source/description rules can never fire, so every observed pass rate is biased high by an unknown per-filter amount. **Gates every NM#284 enforcement decision, therefore gates LD#86, LD#87, LD#90.** Recommendation on file: **Option C — run prefilters pipeline-side.** |
-| **NM#286 (NEW — P1)** | ADR-022 gaps: commerce has no `enforce` key, a consumer-side commerce drop in `enrich_survivors.py`, violence stamping skipped in 3 run modes. Items 1+2 **must move together**; item 3 must land **before any violence enforce flip**. |
+| **NM#286 (NEW — P1)** | ADR-022 gaps: commerce has no `enforce` key, a consumer-side commerce drop in NexusMind `enrich_survivors.py`, violence stamping skipped in 3 run modes. Items 1+2 **must move together**; item 3 must land **before any violence enforce flip**. |
 | **NM#281** | Deployed + same-day corrected (`b85a467`). **4 first-time-in-production checks still unverified** — see Batch A.1. |
 | **LD#91 (NEW — P0)** | uplifting scored a child-trafficking investigation raw 6.77 = **99.9th pct of 3,530**; it led the homepage with a trafficking price list as pull quote. Not a threshold problem — the scorer rewards narrative fragments over dominant subject. Sibling of LD#61, NM#231. |
 | **ovr#284 (NEW — P0, legal)** | Comscore beacon served as hero on 13 articles → visitor IP/UA sent to a third-party analytics vendor with no basis. Needs an **Art. 5(2) record**, not just a code fix. |
@@ -1734,7 +1734,7 @@ on it.
   1.0× above**, matching NexusMind's shape in `1bbadb5`. The ladder was removed
   rather than retuned because precision is **not monotone** in cluster size and
   no band beats the 2-source case (0.560). Subtractive by construction.
-  `under-the-hood/ranking.astro` updated in the same commit — and while there,
+  ovr.news `under-the-hood/ranking.astro` updated in the same commit — and while there,
   **a separate published defect**: decay published as **0.95** against a
   configured **0.85** (0.70 vs 0.32 at 7 days), so the worked table understated
   decay roughly twofold. ovr#303 closed. **Still open in the hypothesis log:

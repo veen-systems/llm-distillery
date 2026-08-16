@@ -39,7 +39,7 @@ at `source_quality`; only **five** lens fields are `required`. It can catch
 *present-but-wrong*. It is structurally blind to absent, constant and unread.
 
 **Worse, until 2026-08-08 it had never been run against a production row.**
-`tests/unit/test_contracts.py` validates `tests/fixtures/`. First run against
+NexusMind's `tests/unit/test_contracts.py` validates `tests/fixtures/`. First run against
 2,400 live rows: **908 violations**, one field —
 `image_analysis.image_confidence`, declared `0..1`, actually a **raw logit**
 (range −12.330..6.365, median −2.696, **68.4%** outside the bound). The producer
@@ -141,7 +141,7 @@ five explicit allowlists between the scorer and the persisted row:
 
 | # | location | |
 |---|---|---|
-| 1 | `deploy/gpu-server/main.py` — `FilterScoreResult` (Pydantic) | server |
+| 1 | NexusMind `deploy/gpu-server/main.py` — `FilterScoreResult` (Pydantic) | server |
 | 2 | `src/scoring/gpu_client.py:141` — `FilterScoreResult` **dataclass** | client |
 | 3 | `src/scoring/gpu_client.py:815` — its construction from `response.json()` | client |
 | 4 | `scripts/main.py:481` — dataclass → dict conversion | consumer |
@@ -202,7 +202,7 @@ the other records `items: 0` with no error key, so it reads as a successful empt
 and they have opposite editorial meanings.**
 
 ✅ **BOTH ANSWERED by FluxusSource at close.** `content_meta.kind` is **(b), one line —
-and it COLLAPSES**: FluxusSource never fetches bodies (`full_text_fetcher.py` deleted,
+and it COLLAPSES**: FluxusSource never fetches bodies (~~`full_text_fetcher.py`~~ deleted,
 enrichment moved to NexusMind), so `full_text` is not emittable and `kind` reduces to
 `feed_summary` vs `headline_only`, both decidable at parse time. **This retires the
 300-char floor.** `origin.*` is **(c)** and no country/timezone exists anywhere — but
@@ -307,7 +307,7 @@ nobody ran it interactively.
 
 ## ⚠️ Instrument traps — read before quoting any number above
 
-1. **`validate_production_contract.py` counts ERRORS, not rows, and merges
+1. **NexusMind's `validate_production_contract.py` counts ERRORS, not rows, and merges
    distinct `required` failures.** Groups key on `(path, validator)` (`:131`) and a
    missing-required error reports the **parent** path, so `word_count` and
    `priority` collapse into one group whose message is whichever arrived first
