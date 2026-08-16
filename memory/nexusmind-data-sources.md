@@ -368,17 +368,35 @@ Same sources both times: `science_plos_one`, `disaster_alerts_gdacs_alerts`,
 `china_solidot`, the `hackernews` feeds. `journals.plos.org/plosone/article` alone
 carries **244 distinct ids with 244 distinct titles**; one survives.
 
-⚠️ **Quantity, stated because it is easy to misread as cumulative:** it is ~**12.5 newly
-lost articles per collection**, ~75/day, so on the order of **1,000 distinct articles
-never scored across a 14-day reader window** — not 857 × cycles. Like the `too_old`
-population these rows are never marked processed, so the same ones are re-dropped on
-every load rather than the loss being one-time.
+⚠️ **Quantity — quote the BRACKET, not a point estimate.** ~**10–12 newly lost articles
+per collection**, **800–1,000 distinct articles never scored per fortnight**. Not 857 ×
+cycles: like the `too_old` population these rows are never marked processed, so the same
+ones are re-dropped every load rather than the loss accumulating.
+
+The two corpora give 9.85 and 12.5 per collection respectively — they differ only in rows
+per day (13,016 vs 15,101), and the **rates agree to within 0.06pp**, which is the part
+that carries. A single number from either side is false precision across two corpora at
+different points in the pipeline. ⚠️ NexusMind's first per-day figure was **2× too high**
+because the corpus span was read off a **file mtime** (`find_input_files` sorts by mtime)
+rather than the `content_items_*` stamps — 07-12 → 07-26, 15 days, not 30. *Two orderings
+in one head, one quoted as the other.*
+
+**Prefer the reader-window form when this travels**: *"roughly eight hundred to a thousand
+distinct articles never scored, and therefore never available to ovr.news, in any given
+fortnight."* It is the only phrasing with one interpretation; "857" reads as a per-cycle
+catastrophe or a one-off depending on the reader.
 
 ⛔ **It is self-concealing: the drop lands in `duplicate_url`, which reads to an operator
 as "correctly removed a re-read".** Never treat that counter as a clean measure of
 re-reads, and never use "rows that reached scoring" as a denominator without subtracting
-this. Two sessions stared at that counter for an afternoon and neither asked what was
-inside it.
+this.
+
+⭐ **The indictment is of the method, not the counter.** Two sessions spent an afternoon
+building instruments *around* `duplicate_url` — one built a collision check on it, the
+other reordered the check that feeds it, and both compared its values across two code
+versions to four significant figures — **and neither asked what was inside it.** We were
+treating an aggregate over an unopened category as an observation. Before comparing a
+counter across versions, open it once.
 
 **Not caused by, and not worsened by, the 2026-08-16 id-before-url reorder** — these rows
 carry distinct ids, so the in-batch check never fires and the URL check drops them under
