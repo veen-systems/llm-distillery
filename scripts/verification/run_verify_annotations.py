@@ -43,11 +43,27 @@ command's OUTPUT by re-running it with the asserted token swapped, so the real t
 does the matching.
 
 Until that exists, the obligation is manual and non-negotiable: **when you add or
-change a `<!-- verify: -->` block, seed a break and confirm it FAILS before trusting
-that it passes.** Both probes added to `CLAUDE.md` on 2026-08-16 were seed-tested
-that way, and the first draft of one of them passed for the wrong reason — it
-extracted the second ordinal in the whole file rather than the one on its own rule,
-reading 13 where the answer was 8.
+change a `<!-- verify: -->` block, MUTATION-TEST IT IN THREE DIRECTIONS before
+trusting a PASS.**
+
+    1. present        -> must PASS
+    2. absent         -> must FAIL
+    3. MENTIONED BUT NOT PRESENT -> must FAIL
+
+⛔ **Direction 3 is the one that gets skipped and the one that catches real defects.**
+A `grep` cannot separate an invocation from a mention, and restricting the file type
+does not help. On 2026-08-16 two sessions in this estate each shipped a green probe
+measuring the wrong object within the same hour: here, a probe that read the second
+ordinal in the whole file (13) where the answer on its own rule was 8; in NexusMind,
+`grep -q "superseded_reprocessed" scripts/main.py` on a word appearing **9 times in
+that file including a docstring**, which stayed green with the feature forced off.
+
+⚠️ Both were written *immediately after* the two sessions had told each other that a
+mechanism must be the thing that fails. That is not carelessness twice; it is a
+property of the activity — **articulating a principle produces the feeling of having
+applied it**, so the check is least likely to happen exactly when you have just been
+most articulate about needing it. Direction 3 is cheap. Run it anyway. Especially
+then.
 """
 import argparse
 import glob
