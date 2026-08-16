@@ -561,7 +561,7 @@ random pairs, so these say "separates good merges from bad", not "finds merges".
      INST-4 (certified, recall-only) plus INST-2/**INST-3**, and INST-3 is
      **uncertified** (certifier `author`, control not run) and lives only on b650,
      off the deploy host.
-  3. ⛔ **The shipped σ is the REFUTED value.** `config/app.yaml` has
+  3. ⛔ **The shipped σ is the REFUTED value.** `NexusMind/config/app.yaml` has
      `sigma_hours: 72.0`. Sweep: σ=6 → 52.1/98.2 · σ=18 → **83.6/85.9** · σ=36 →
      97.8/56.8 · **σ=72 → 99.1/20.6 (FAILS)** · σ=120 → 100.0/9.2. Flipping
      `enabled: true` today ships a width where the term degenerates into a
