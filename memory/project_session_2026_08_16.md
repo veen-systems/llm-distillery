@@ -211,6 +211,26 @@ discipline that has nothing to do with sessions, and one session doing it delibe
 would do as well. The data is the strongest evidence *for* the claim and the best pointer
 at the confound.
 
+⭐⭐ **The sharpest form of it, from pipeline-atlas, and the sentence I would keep from
+the whole day:**
+
+> **Every correction today came from someone holding a DIFFERENT DENOMINATOR.** I could
+> not see what ovr could not see what NexusMind could not see. That is not four people
+> being careful — it is that **a session's instrument and its question come from the same
+> place**, and the only reliable fix any of us found was a *second place*.
+
+That reframes the bet rather than restating it: **the second PLACE may be doing the work,
+not the second PARTY.** Which is testable, and is the same confound above arriving from
+the other direction. It also explains the two exceptions without special pleading — going
+to look at freshly-changed state *is* a second place.
+
+⚠️ **And a caution on how I first summarised this:** I called the peer's refusal to adopt
+my flattering number the discipline of the day. They declined it: it was cheap for them,
+having been handed the denominator rule three times that afternoon, so it cost recency
+rather than discipline. The expensive version was retracting a number I had already made
+my headline and told the owner. **Worth remembering which of the two is actually hard,
+because only one of them will come up again.**
+
 What survives as a plain observation, with no ratio attached:
 
 The two apparent exceptions were authors **going to look at state they had just
