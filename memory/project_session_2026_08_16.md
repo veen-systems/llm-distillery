@@ -1,4 +1,38 @@
-# Session 2026-08-16 — #119 ruled, and a context audit that cut CLAUDE.md under budget
+# Session 2026-08-16 — #119 ruled, a context audit, and the deploy verified live
+
+## ✅ FIRST POST-DEPLOY CYCLE: CLEAN (12:03 → 12:50:13)
+
+`PIPELINE COMPLETE`, `Deactivated successfully`, 47m31s CPU, 4.7 GB peak. Six filtered
+files written. **None of the three act-on triggers fired** — no `Supersede volume trip`,
+no traceback, no missing load line.
+
+| check | result |
+|---|---|
+| presence control (`re-admitted as edited` renders) | **PASS**, all six loads |
+| supersede counters | `+0 / 0` — **the predicted non-trigger** (ramp) |
+| `dup-url` | 33,147 → **5,134** (−28,013) |
+| `dup-id` | 8 → **28,113** (+28,105) |
+| sum | 33,155 → 33,247 (**conserved to +92**) |
+| duplicate ids in output | **0** in all six |
+| `content_length` stamp | **2265/2265** in all six |
+
+⭐ **The prediction I pre-registered held and the correction to it did not.** NexusMind
+argued the warm store would absorb the pairs at `already_processed` so `dup-id` might
+stay near 8. The mechanism both of us missed is **`too_old`**: 153,548 rows pass through
+`_is_duplicate` *before* the freshness check, claim ids and urls, and are **never marked
+processed** — so they return as unprocessed duplicates on every run, forever. That is the
+28,105. ⚠️ **My control would therefore have worked — by luck.** It still could not have
+separated a null from inertness, so rejecting it was right and I am not claiming it back.
+
+⚠️ **`content_length` lives at `nexus_mind_attributes.<lens>.content_length`, NOT top
+level.** My ad-hoc reader looked top-level, got `0/2265`, and would have reported a
+regression in a stamp fixed on 2026-08-08. Caught only because the number was surprising
+enough to distrust. **Sixth wrong-object read of the day and the first caught before it
+produced a claim.** Use `scripts/verification/check_content_length_populated.sh`.
+
+---
+
+
 
 **This repo shipped no filter, no model and no deploy.** Two decisions, one audit,
 three retractions of my own, and an unusual amount of cross-repo coordination.
