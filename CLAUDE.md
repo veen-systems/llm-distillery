@@ -103,6 +103,10 @@ them** — each exists because something shipped broken.
   NEGATIVE CARRIED NO INFORMATION.** Found in three repos in three media on 2026-08-16
   — a corpus shorter than the mechanism's period, a validator over 0 rows, a grep over
   0 files. **Before believing a negative, prove the instrument could have said yes.**
+  ⚠️ **Second clause, because that covers only the broken-instrument half:** an
+  instrument can be sound, its number *correct*, and still not be a function of the thing
+  under test — a before/after whose baseline rests on an invariant the change does not
+  touch. Nothing reads as wrong. **Also ask what would have made the "before" different.**
 <!-- verify: WR=$(grep -i 'establish what it excludes' memory/working-rules.md | grep -oE '[0-9]+(st|nd|rd|th) occurrence' | head -1 | grep -oE '^[0-9]+'); CM=$(grep -A1 'establish what it EXCLUDES' CLAUDE.md | grep -oE '[0-9]+(st|nd|rd|th)' | head -1 | grep -oE '^[0-9]+'); if [ -z "$WR" ] || [ -z "$CM" ]; then echo "CANNOT VERIFY: ordinal not extracted (WR='$WR' CM='$CM')"; elif [ "$WR" = "$CM" ]; then echo "PASS ($CM)"; else echo "FAIL: CLAUDE.md says $CM, working-rules.md says $WR"; exit 1; fi -->
 - **Every measurement error this project has made was a HAND-BUILT POPULATION.**
   *(2026-08-12, across four repos.)* Prefer a population the pipeline already

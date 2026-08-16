@@ -184,10 +184,34 @@ caught by someone re-deriving from the other side, neither by reading.
 
 ---
 
-## ⭐ The finding of the day is the ratio, and its sharper form
+## ⚠️ The "finding of the day" is a BET, not a result — it has no denominator
 
-**Eleven-odd defects across four sessions. Every one was caught by a different session
-re-deriving. SELF-REVIEW FOUND NOTHING, ALL DAY.**
+**Claim: ~11 defects across four sessions, every one caught by a different session
+re-deriving. Self-review found nothing.**
+
+⛔ **Downgraded from finding to hypothesis 2026-08-16, by pipeline-atlas, at the last
+step of the session — and it is this thread's own lesson nearly going unapplied.**
+**Nobody counted the defects each session caught alone and never mentioned**, because
+there was no reason to report those. A ratio computed over the findings that *travelled*
+will say travel matters **however weak the real effect is**. That is the population error
+the four of us spent the afternoon naming in each other's numbers, and I had made it the
+headline of this record.
+
+It is also **single-source**: the tally is mine, and no other repo has independently
+counted its own defects by who found them.
+
+**Revisit with the denominator fixed:** on the next multi-session day, count the *other*
+way round — defects found **without** cross-session traffic — so the denominator exists
+before the ratio is quoted.
+
+⭐ **The alternative worth taking most seriously is my own two exceptions**: authors
+re-checking state they had just changed. If what works is **re-deriving a claim from
+primary sources with a fresh instrument**, then "cross-session" is a proxy for a
+discipline that has nothing to do with sessions, and one session doing it deliberately
+would do as well. The data is the strongest evidence *for* the claim and the best pointer
+at the confound.
+
+What survives as a plain observation, with no ratio attached:
 
 The two apparent exceptions were authors **going to look at state they had just
 changed** — NexusMind's deploy ramp and its own dead watch — which is re-derivation with
