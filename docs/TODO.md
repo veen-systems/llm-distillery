@@ -219,6 +219,41 @@
 >   proves **host and `source` id disagree in BOTH directions**, so neither key alone is
 >   sound.
 >
+> ### ⏳ BLOCKED ON ONE MEASUREMENT — "we're phasing out GN anyway" checked and REFUSED
+>
+> **Owner 2026-08-16: *"we are planning to phase out GN, so any trouble on their behalf can
+> be ignored, right?"* — NO, and `memory/google-news-corpus-hypotheses.md:211` already
+> forbids exactly this move**: *"do not budget for a GN phase-out, and never let one be sold
+> as a fix for short-content scoring."* Written 2026-08-12 about a different downstream
+> problem; fires identically here. ⭐ **The reasoning was sound and the premise was false** —
+> "don't fix what's leaving" is correct; Google News is not leaving.
+>
+> **ADR-007 (FluxusSource's) retires population A ONLY**, and A is ~59 of ~302 GN feeds:
+> **A** 55–59 country proxies, retiring on **no target date and no rate, by design** (gated
+> on a native replacement verified collecting in production, so it lands as many small
+> unscheduled per-country batches) · **B** ~230 enabled, **not in scope, hard by
+> construction** — repointed to GN *because the native feed died* · ⛔ **C** 13 topic
+> queries, **can never be migrated at all** (no `site:` operator ⇒ no publisher to return
+> to) = a **permanent GN floor**. GN share was still 24.1% before the first migration batch;
+> ⛔ *"do not infer a curve from the 6-feed Africa batch."*
+>
+> ⭐ **The twist that makes B stronger under a partial phase-out, not weaker:** the record
+> says the `site:` operator is what lets a GN feed resolve to a publisher, and a feed without
+> one *"cannot resolve to a publisher and falls through to `google.com`"* — that is C by
+> definition. **So the population that can never migrate is also the one that can never be
+> attributed by the normal route.** The headline suffix is a *different mechanism* from
+> `site:`, so it may be the only publisher handle on the permanent floor.
+>
+> ⛔ **BLOCKING GAP, and it is mine: FluxusSource's 1,142/1,142 was measured on 30 of 59
+> `gn_*` COUNTRY feeds — population A only.** I relayed it to the owner as "the suffix is
+> always there", generalising past their own stated sample. **Whether B and C carry it is
+> UNMEASURED and asked for**, per-population, unpooled.
+> **If the suffix rides on B and C** → B is right and gets *better* under the phase-out.
+> **If it is A-only** → B fixes the departing population and misses the permanent one, and
+> the recommendation inverts to dropping the badge. Prior stated in advance: near-100% on
+> all three, because the suffix looks like a GN rendering convention rather than a property
+> of the query.
+>
 > ### 🟠 OWNER RULED **B** 2026-08-16 — then I TOOK IT BACK: the price I gave him was wrong
 >
 > ⛔ **NOTHING IS AUTHORIZED. Nobody is building.** FluxusSource holds (not started), ovr
