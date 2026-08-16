@@ -460,17 +460,42 @@ scale. **The three-line rule and the exclusion are the SAME INTERVENTION** — e
 it as the exclusion; it keeps its 160 good links by coincidence of rarity, not by
 discriminating.
 
-⚠️⚠️ **THE 20.6–30.4% AND THE 0.344 → 0.459 ARE BOTH SUSPECT — a 3× population
-disagreement, and probably DEFINITIONAL.** NexusMind measures PL at **8.05% of
-everything merged** (4.82% by links) against the panel's 20.6–30.4%. **Hypothesis
-(mine, ~75% confidence, under test): the panel's "academic" label predates
-`primary_literature` and is `type_classification`-derived — and FS#144 measured that
-key as 86% Global South news**, with `smithsonianmag.com` / `sciencealert.com` /
-`statnews.com` classed academic for *writing about* science, all of which the
-`primary_literature` detector reads at **0.000**. If so the sizing discrepancy
-resolves with neither measurement wrong — **and the gate's value estimate is
-contaminated, because 0.344 → 0.459 would describe a majority-not-PL population and
-would NOT be reproduced by gating on the field the gate would actually read.**
+⚠️⚠️ **THE 20.6–30.4% AND THE 0.344 → 0.459 ARE BOTH UNUSABLE AS THE GATE'S VALUE.**
+NexusMind measures PL at **8.05% of everything merged** (4.82% by links) against the
+panel's 20.6–30.4%.
+
+⛔ **My "the label is `type_classification`-derived and contaminated by news"
+hypothesis is REFUTED** (stated at ~75%, and the label is **narrower and purer** than
+`primary_literature`, not broader). The label is `~/nm-sweep/feature_probe2.py:90` —
+`any(t in _s for t in ("arxiv","pubmed","biorxiv","medrxiv","clinicaltrials","ssrn"))`
+over `source_1 + " " + source_2`, a **6-term slug substring match OR'd across both
+sides of the pair**. Smithsonian/ScienceAlert/STAT cannot enter it. Measured leak the
+other way: **5 of 508 panel-"news" pairs (1.0%)**. ⚠️ **The panel itself carries NO
+academic label** — `judge_pairs.py` / `build_precision_panel.py` have zero "academic"
+references and `answer_key.json` strata are cluster-**size** only; the cut is applied
+downstream in the probe. ⚠️ **And `feature_probe.py`, which this file cited as the
+reproduction, does not contain the cut at all** — it is `feature_probe2.py`.
+
+⭐⭐ **THE 3× IS STRATIFICATION, AND IT IS THE KEEPER OF THE ARC.** The panel draws
+~100 pairs from *every* cluster-size stratum regardless of production frequency;
+**54% of academic pairs sit in `giant`**; production is overwhelmingly small
+clusters. **Three numbers, all correct for their own population: 15.2% panel
+unweighted · 20.6–30.4% stratum-weighted · 8.05% production.** ⭐ The probe's own
+header says *"the panel is stratified toward giant clusters"* — **the warning was
+present, correct, adjacent, and never applied to this number.** General form, now in
+the auto-memory as `feedback-sample-carries-its-design-weighting`: **a sample built
+CORRECTLY for one question carries its design weighting into every number derived for
+another, and because nothing is wrong with the sample there is nothing for review to
+find.**
+
+⛔ **Reweighting does NOT rescue it, because the two populations CROSS rather than
+nest** (NexusMind's route, better than mine): the slug label **misses** PLOS / MDPI /
+Frontiers / Nature / OpenAlex — `science_plos_one` is a **top-8 detected source in
+production** and "plos" is not in the term list — and **adds** pairs where only *one*
+side is academic, which is plausibly where false merges concentrate and which a
+per-article gate treats differently. **So `0.344 → 0.459` and "0–14% correct"
+describe a 6-slug population while the gate would read a DOI/API-derived one. Neither
+number may travel as the gate's value.**
 
 ⛔ **DO NOT BUILD THE GATE.** Blast radius is measured; **value is not measured
 against the field it would use.** No labelled academic pair exists in the stamped
