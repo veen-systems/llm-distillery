@@ -16,13 +16,25 @@ import sys
 COLL = sys.argv[1] if len(sys.argv) > 1 else None
 PROD_SCHEMA = '/home/jeroen/local_dev/FluxusSource/config/schemas/output_schema.json'
 CONTRACT_A = '/home/jeroen/local_dev/NexusMind/contracts/fluxussource-output.schema.json'
+CURRENT = '/home/jeroen/local_dev/FluxusSource/data/current'
 
 if not COLL:
-    COLL = sorted(glob.glob('/home/jeroen/local_dev/FluxusSource/data/current/collection_*'))[-1]
+    COLL = sorted(glob.glob(f'{CURRENT}/collection_*'))[-1]
+elif '/' not in COLL:
+    COLL = f'{CURRENT}/{COLL}'          # accept a bare collection name
 
-rows = [json.loads(line)
-        for fn in sorted(glob.glob(f'{COLL}/content_items_*.jsonl'))
-        for line in open(fn)]
+files = sorted(glob.glob(f'{COLL}/content_items_*.jsonl'))
+rows = [json.loads(line) for fn in files for line in open(fn)]
+
+# ⚠️ An empty read must RAISE, never report. Passing a bare collection name used
+# to glob nothing, and the script then printed `0/18` plus `CLEAN (0 errors over
+# 0 rows)` — a wrong path and a fully-conformant delivery are the same output,
+# and the wrong one is the reassuring one. 2026-08-16.
+if not rows:
+    raise SystemExit(
+        f"ABORT: 0 rows read from {COLL}\n"
+        f"  content_items_*.jsonl matched: {len(files)} file(s)\n"
+        f"  this is a bad path or an empty delivery, NOT a clean result")
 
 print(f"collection : {COLL.rsplit('/', 1)[-1]}")
 print(f"rows       : {len(rows)}")
