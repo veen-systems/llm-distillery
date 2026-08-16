@@ -62,12 +62,12 @@ Additionally, the model's predicted range is compressed (max ~8.2 vs oracle max 
 | Oracle data (run 1) | `datasets/scored/thriving_v1_run1/thriving/` (5,568 articles) |
 | Oracle data (run 2) | `datasets/scored/thriving_v1_run2/thriving/` (5,568 articles) |
 | Oracle data (run 3, partial) | `datasets/scored/thriving_v1_run3/thriving/` (1,051 articles) |
-| 2-run averaged scores | `datasets/scored/thriving_v1_averaged_full/thriving_v1_averaged.jsonl` <!-- placeholder --> |
+| 2-run averaged scores | `datasets/scored/thriving_v1_averaged_full/thriving_v1_averaged.jsonl` |
 | Training splits | `datasets/training/thriving_v1/` (4,453/556/559) |
 | Trained model (attempt 2) | `filters/thriving/v1/model/` |
 | Calibration | `filters/thriving/v1/calibration.json` |
 | Filter package | `filters/thriving/v1/` (config, prompt, prefilter, scorers) |
-| Source corpus | `datasets/raw/thriving_v1/oracle_input.jsonl` <!-- placeholder --> (6,590 articles) |
+| Source corpus | `datasets/raw/thriving_v1/oracle_input.jsonl` (6,590 articles) |
 
 ## Cost
 

@@ -56,7 +56,21 @@ EXT = {"md","py","json","jsonl","yaml","yml","sh","ps1","ini","txt","toml","js",
        "cfg","sql","ts","tsx","astro","pkl","safetensors","csv","lock","service",
        "html","log","png","pdf","tsv","env","service","socket","timer"}
 PRUNE = {".git","node_modules","venv",".venv","target","__pycache__",".mypy_cache"}
-STATE_DIRS = ("data/","state/","cache/","logs/","run/","var/","artifacts/")
+STATE_DIRS = ("data/","state/","cache/","logs/","run/","var/","artifacts/",
+              # 2026-08-16: the datasets/ CORPUS subdirs only -- each has 0
+              # git-tracked files and is re-materialised routinely. NOT bare
+              # `datasets/`: adverse/ (14 tracked) and parity/ (8 tracked) are
+              # committed adjudication and cross-box sets, exactly the files a
+              # broken reference most needs reported, and a bare prefix would
+              # mark all 22 expected-absent.
+              #
+              # ⚠️ rung3 sits INSIDE the STALE-PLACEHOLDER `resolves` disjunction
+              # (see below), so adding a dir here makes any `<!-- placeholder -->`
+              # on that dir fire STALE IMMEDIATELY -- measured, findings went
+              # 1 -> 4. The two mechanisms are alternatives, never both: the three
+              # markers these dirs cover were removed in the same commit.
+              "datasets/raw/","datasets/scored/","datasets/training/",
+              "datasets/screening/","datasets/calibration/","datasets/gate/")
 STATE_SHAPE = re.compile(r"(_state\.json|_health\.json|\.pid|\.sock|\.log)$")
 
 # NOTE the char class ADMITS < and >, and allows a trailing >. Without that,

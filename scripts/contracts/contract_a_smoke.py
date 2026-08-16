@@ -7,6 +7,27 @@ own schema and NexusMind's Contract A.
 Deliberately reports ABSENT and NULL separately: in `published`, null means
 FABRICATED and absent means not-observed, and a counter that merges them
 destroys the distinction the block exists to make.
+
+⛔ `FIELDS EMITTED: n/18` IS NOT A COMPLETENESS SCORE, and a shortfall is not a
+gap to chase. THREE fields are CONDITIONAL BY DESIGN and their absence is the
+HEALTHY reading — the run that produced it is fine, not partial:
+
+  - `fetch.charset_detected` and `fetch.charset_detected_confidence` — chardet is
+    consulted ONLY when the strict UTF-8 rung fails
+    (`FluxusSource/src/.../robust_feed_parser.py:938`). They are the #124
+    diagnostic pair. Zero means no feed served non-UTF-8 bytes that run. Expect
+    them near-zero permanently; they appear only on genuinely broken feeds.
+  - `content_meta.error` — the extraction-failure key. Absent because nothing
+    failed.
+
+So 15/18 with exactly those three absent is a CLEAN result. Established by the
+FluxusSource session 2026-08-16, on `collection_20260816_160729` (2,101 rows:
+charset_used utf-8 1,990 / utf-8-sig 65, strict rung failed on zero rows).
+
+This note lives here rather than in a memory file because the misreading happens
+at the moment the output is read, not at the moment someone goes looking. Before
+reporting any n/18 as a shortfall, name which field is missing and check whether
+it is one of these three.
 """
 import collections
 import glob

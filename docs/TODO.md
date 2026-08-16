@@ -28,10 +28,13 @@
 >    at every consumer.** ovr is measuring hash *oscillation* over ~42 cycles to decide.
 >    Until something lands, a reader gets a corrected link under a pre-edit headline.
 >    #119 stays OPEN.
-> 2. **NM#390** — the largest thing the day turned up and deliberately untouched:
->    `_normalize_url` strips the query string, costing **800–1,000 distinct articles per
->    fortnight**, concealed inside `duplicate_url`. Denominator caveat recorded in
->    `memory/nexusmind-data-sources.md`. **Not** caused by the reorder.
+> 2. ✅ **NM#390 — FIXED, MERGED AND DEPLOYED 2026-08-16 16:49 CEST** (`7726f5e` in
+>    `c78c031`, sadalsuud on `ca2816b`). `_normalize_url` stripped the query string,
+>    concealing the loss inside `duplicate_url`. Kept-set replay over a true fortnight:
+>    **+821 recovered, 0 newly dropped.** ⚠️ Still OPEN to its **2026-08-23** review-by —
+>    the replay is stored bytes, not a production observation. ⛔ **A production deploy
+>    happened here without a sign-off step; owner should know.** Full record, the four
+>    mutations and the 8-row open residual: § *NM#390 — SUPERSEDED* below.
 > 3. **NM#388's 08-23 watch** — the first `superseded_reprocessed > 0`. ⛔ **A zero
 >    before ~08-22 is the ramp, not a result.**
 >
@@ -61,25 +64,97 @@
 > a correct repo name, placeholder on a resolving path, mentioned-but-not-present), all
 > caught.
 >
-> ### ⚠️ THREE THINGS WAITING ON AN OWNER DECISION
+> ### ⚠️ THREE THINGS WAITING ON AN OWNER DECISION — 1 and 2 CLOSED 2026-08-16 (orchestrator)
 >
-> 1. **`datasets/` is not in `refcheck.py`'s `STATE_DIRS`**, so the 15 placeholders added
->    by #120 flip to *STALE PLACEHOLDER (the path resolves)* the moment a training corpus
->    is re-materialised locally — routine here. Either add `datasets/` to `STATE_DIRS`
->    (cleaner; changes what the checker treats as expected-absent globally, so re-run the
->    seeded harness) or leave it. Not touched: normative surface, wider blast radius than
->    the 15 markers.
-> 2. **A #119 addendum, offered and not written.** For RSS rows
->    `id = md5(source + "_" + raw_url)[:12]` (`FluxusSource/src/aggregators/rss_aggregator.py`
->    + `FluxusSource/src/models/content_item.py`), so a publisher editing an article's URL
->    presents as a **new item, not an edit**, and #119's supersede path (same-id /
->    different-hash) structurally cannot fire for it. **Measured not to occur** — 1 of
->    157,870 rows has an empty url, reproduced independently. Structural bound on what the
->    ruling can promise, not a live defect. It bounds an owner ruling, so it is the owner's
->    to accept.
+> 1. ✅ **CLOSED — `datasets/` into `STATE_DIRS` was REFUSED as proposed, and a narrowed
+>    version shipped.** Two defects in the proposal, both measured, neither visible from
+>    reading it:
+>    - **It would have fired the finding it was written to prevent, immediately.** `rung3`
+>      sits *inside* the STALE-PLACEHOLDER `resolves` disjunction (`refcheck.py:274`), so a
+>      `STATE_DIRS` entry makes a `<!-- placeholder -->` on that dir resolve → STALE. Run
+>      with bare `datasets/`: findings **1 → 4**, the 3 new ones being exactly the markers
+>      at issue. The two mechanisms are alternatives, never both.
+>    - **The blast radius was understated and the benefit overstated.** `datasets/` holds
+>      **22 git-tracked files** (`adverse/` 14, `parity/` 8) — committed adjudication and
+>      cross-box parity sets, the files a broken reference most needs reported on. And of
+>      the "15 placeholders", only **3** carry a `datasets/` path (30 markers exist repo-wide).
+>
+>    **Shipped instead:** the six 0-tracked corpus subdirs only (`raw/ scored/ training/
+>    screening/ calibration/ gate/`) **plus removal of the 3 now-redundant markers.**
+>    Verified in all four states — old code/corpus absent **1**, old code/corpus
+>    materialised **4** (the predicted breakage, reproduced, not assumed), new code both
+>    states **1**. Seeded harness 24/24, annotations 18/0.
+> 2. ✅ **CLOSED — the #119 addendum is WRITTEN, with its central claim withdrawn.** "Measured
+>    not to occur — 1 of 157,870 rows has an empty url" measures identity *collision*, not a
+>    repoint, and could not have returned a positive. The rate is **17 of 161** shared
+>    content-hash values across two archive samples, same-source — repoints occur. Full text,
+>    limits and the do-not-restate caveat: § *Addendum 2026-08-16* under the #119 ruling.
+>    ⛔ Still owner's to ACCEPT: it narrows a published ruling to "edits are superseded,
+>    except where the URL moved."
 > 3. **CLAUDE.md is 35,464 — 464 over the soft target.** The file went over *after* the
 >    last curate reported 35.1k (`57ff0e2` added 354 with no size pass). Cutting the rest
 >    means touching text this session did not write: an `/audit-context` job.
+>
+> ### ✅ FS#133 (`metadata.syndication`) — RULED **NO** 2026-08-16
+>
+> FluxusSource measured all four questions I put and **argued against its own offer**;
+> I adopted their reasoning. ⛔ **The decisive number is not the 0.07% reach.** It is that
+> the field's VALUES are feed slugs: **38.4% of byte-identical drops are one publisher
+> colliding with itself** (BBC business vs BBC health, NYT politics vs NYT us, FAZ vs FAZ
+> Wirtschaft), so a `carried_by` array would have **named BBC twice and read as two
+> sources** — manufacturing the illusion the field existed to prevent, one layer down in
+> the data. A field can be correctly populated, schema-valid, and still wrong because its
+> values are not the thing its name promises. Zero distinct publishers in the entire
+> observed stampable population (n=6).
+>
+> Reach, for the record: 0.92–1.32% of rows are cross-source drops, and only **7.7%** of
+> those have the survivor still in hand (`seen_hashes` persists across runs, so most
+> collisions are against an already-delivered row) → **~0.07%, about 1 row in 1,400.**
+> ⚠️ **Their own correction runs the other way and they published it anyway:** FS#133's
+> "30 drops/day" was per-RUN mislabelled as per-day; the real figure is ~163/day, ~5×,
+> which made their offer look *better*. Instrument (an awk one-liner over `aggregator.log`)
+> is on the issue with the number.
+>
+> **Carrier vs source: they cannot separate them, and for 53.2% they cannot name the
+> carrier either** — GN's `url` is the opaque redirect and its `source` is our country-query
+> slug. ⛔ The one place the publisher IS named — GN's `" - <Publisher>"` title suffix — is
+> **parsed and discarded** at `rss_aggregator.py:609`, behind a comment asserting it "is
+> preserved separately in the ContentItem `source` field". **It is not.** Filed by them as a
+> false-comment defect, which is the more valuable finding: same class as this repo's dead
+> prefilter config, which survived six months because a comment vouched for it.
+>
+> **Counter-offer `metadata.publisher_host` on 100% of rows: NOT commissioned, and
+> deliberately narrowed.** It is derivable from `url` today for non-GN rows, so for those it
+> is convenience, not information, and convenience does not earn a producer change or a
+> contract slot. The only informative half is the GN case. ⛔ **Price the upstream fix before
+> the downstream one:** the entire benefit is reader-visible corroboration inflation and
+> nobody has measured it. Commissioned from ovr instead, on data that exists today
+> (host-from-url, zero FluxusSource work): *of clusters with a reader-visible corroboration
+> count ≥2, what share have 2+ members on the same publisher host* — GN-excluded,
+> GN-included, and the GN share reported separately, because the redirect breaks host
+> attribution in **both** directions. Range predicted in advance, 15–40%. High → ask them to
+> stop discarding the GN suffix. Low → close it, nobody spends the time.
+>
+> **Confirmed by them, and now recorded in `scripts/contracts/contract_a_smoke.py`'s own
+> docstring:** `FIELDS EMITTED: n/18` is **not** a completeness score. `charset_detected`,
+> `charset_detected_confidence` and `content_meta.error` are **conditional by design** —
+> chardet runs only when the strict UTF-8 rung fails, and it failed on 0 of 2,101 rows. So
+> **15/18 is a CLEAN result, not a partial one.** The note is in the script rather than a
+> memory file because the misreading happens when the output is read.
+>
+> ### ⏳ #121 — ONE QUESTION LEFT, AND IT IS THE OWNER'S
+>
+> **Are `investment_risk`'s geopolitical op-eds false positives at all?** The 25 flagged
+> rows above op-point are geopolitical op-eds, and Hormuz genuinely *is* investment risk.
+> Everything measurable in #121 is answered; this is a lens-definition question, **the same
+> shape as #107** (where the scorer was faithfully serving a definition ovr had not
+> published). Not a detector question — a topic confound survives inside each source and MH
+> cannot remove it. Consequence either way, so it is a one-line answer:
+> **YES, they are false positives** → llm-distillery ADR-023 applies (a false positive
+> reaches a reader), and `investment_risk` needs an oracle-prompt change at the next version
+> — not a threshold move, since the confound is topical.
+> **NO, commentary about real risk is in-lens** → #121 closes with the detector recorded and
+> unbuilt, and the 2.05 MH OR becomes a documented property rather than a defect.
 >
 > ### 🆕 FROM FluxusSource 2026-08-16 — **dedup the training corpus on `id`**
 >
@@ -150,24 +225,58 @@
 > any downstream CDCR discount a syndicated cluster to one independent source instead of N.
 > Scoped against FS#133. **Owner decision.**
 
-> ### ⛔ NM#390 IS WRITTEN, NOT FIXED — production is still losing articles
+> ### ⛔ NM#390 — SUPERSEDED 2026-08-16 evening. **It is committed, merged AND DEPLOYED.**
 >
-> Checked against the artefact, not the report, 2026-08-16 evening.
-> **Implemented and uncommitted** in NexusMind's working tree (`config/app.yaml`,
-> `scripts/main.py`) on branch `docs/audit-corrections-and-contract-a-1.34.0`; no commit
-> mentions NM#390. **Blocked on two tests** that encode the old behaviour
-> (`tests/unit/test_load_articles.py::test_duplicate_url`, `::test_deduplicates_urls`) —
-> correctly stopped rather than edited, rewrite proposal with their owner.
-> **Not deployed**: sadalsuud is on `14b0f49`, tree clean, `url_dedup` absent from its
-> `config/app.yaml` and `scripts/main.py`. The box is also 3 commits behind, including
-> `5adbf5e` (Contract A 1.34.0). **So ~800–1,000 distinct articles per fortnight are
-> still being dropped right now.**
-> ⚠️ **When it does deploy, the tempting check is invalid.** `duplicate_url` falling is
-> the *intended* effect and cannot distinguish a good fix from one that merely stops
-> deduplicating. Their own rule — compare old-vs-new **kept sets** on identical input —
-> needs to be in the deploy note, not only in a docstring. And the rollback claim
-> (*"`seen_urls` is still populated while off, so the flip takes effect immediately"*)
-> wants one execution before it is believed.
+> ⛔ **Every premise in the block below this was STALE within hours, and I relayed all four
+> to NexusMind as fact.** Corrected by that session re-deriving from its own tree rather
+> than adopting my message — which is the third round running where a relay was wrong and
+> only the receiver's re-derivation caught it. **Do not relay a cross-repo tree state; ask
+> the session that owns the tree.**
+>
+> What is actually true: fix is `7726f5e`, merged in `c78c031`, tree clean on `main`. The
+> two tests were **already converted, in that same commit, along the lines I later "ruled"**
+> — `test_duplicate_url` became a PAIR (`test_url_gate_off_by_default_keeps_the_row` +
+> `test_url_gate_drops_the_row_when_enabled`), old coverage reclassified from default to
+> rollback rather than deleted. sadalsuud is on `ca2816b` with
+> `pipeline.url_dedup.enabled: false` present, **deployed 2026-08-16 16:49 CEST** — before
+> either session wrote, so this is a past action to learn about, not a pending one to
+> approve. ⚠️ **Owner: a production deploy happened without a sign-off step.** Flagged as
+> the item; not the deploying session's to justify.
+>
+> **The kept-set replay, run because my `|old \ new| = 0` prediction was not on record** —
+> and it was not trivially true, because the TITLE gate is a live side channel: rows the url
+> gate used to drop now reach `seen_titles` and could newly collide. 87 collections,
+> 195,233 rows, window **2026-07-12 → 2026-07-26 = 14.08 days, a true fortnight, no
+> pro-rating**. `|new|` 183,313 · `|old|` 182,492 · **`|new \ old|` 821** · **`|old \ new|`
+> 0** (stop condition clear). Side channel reclassifies rather than creates:
+> `duplicate_title` 3,031 → 3,251 (+220), `duplicate_url` 1,049 → 0, none of the 220
+> previously kept. All 821 distinct on id, content_hash AND title; 10 read by hand (distinct
+> PLOS DOIs, gdacs eventids, HN item ids).
+>
+> ⚠️ **821 landing inside the predicted 800–1,000 is NOT independent confirmation.** That
+> range traces back to the earlier 157,870-id comparison — same instrument, different
+> window. What makes the result strong is `|old \ new| = 0` with the side channel live.
+> ⚠️ Open arithmetic residual, 8 rows: 1,049 − 220 = 829 should newly survive, 821 measured.
+> Most likely counters are per-row EVENTS across 87 files while the kept set is DISTINCT ids
+> — confirmation asked for, **not adopted**, because a gap with a satisfying story is the
+> shape that gets waved through.
+>
+> **Mutations, four directions:** A (delete url block) RED · B (restore always-on) RED ·
+> C (wrong reason string) RED, assertion reached · **D (url check moved before id check)
+> STAYED GREEN — reported, not hidden.** Two tests added for the same-url/same-id contract
+> do **not** discriminate D (with the gate off the url check cannot return early, so the
+> swap is a no-op); kept for contract + counter attribution, **docstrings rewritten to say
+> they are documentation, not protection.** ⭐ Generalise that: *a passing test whose
+> discriminating power was never established is the same object as a config key nobody
+> proved is loaded.* Rollback verified by EXECUTION — gate off, `len(seen_urls)` = 3,979,
+> members printed, flip-on drops immediately. Suite 1,396 passed (+2).
+>
+> ⚠️ **This is a counterfactual replay over stored bytes, NOT an observation of production.**
+> NM#390 stays open to its **2026-08-23** review-by; first cycle under the change was 20:01
+> CEST 08-16. ⛔ At that observation the obvious check is invalid again — `duplicate_url` → 0
+> is the intended effect and cannot separate a working gate from one that stopped running.
+> Compare kept volume against the replay's +821/fortnight, print window span and file count,
+> and **make zero files ABORT rather than report**.
 
 > **Contract A is DONE and running.** 17 of 18 fields on delivered rows, four consecutive
 > deliveries clean against both schemas, all code pushed and deployed across three repos,
@@ -255,6 +364,38 @@ where the source says `weighted_average >= 4.5`. See `memory/nexusmind-data-sour
 suppressed at the producer before its content is ever compared (`content_aggregator.py:565-570`,
 the `continue` at `:570`). Same mechanism as #119 on the other side of the eviction boundary,
 not the inverse case. 2,888 of 4,950 candidates suppressed in one run, 2,773 on the URL key.
+
+#### 📌 Addendum 2026-08-16 — the repoint case has a RATE, and it is not zero
+
+The retraction above already names the case: *only a repoint mints a new id.* What was missing
+is how often. ⛔ **The figure offered with this addendum — "measured not to occur, 1 of 157,870
+rows has an empty url" — does not measure it, and is withdrawn rather than filed.**
+
+An empty `url` collapses every row of a source onto `md5(f"{source}_")[:12]`: that is an
+IDENTITY-COLLISION probe. A repoint is two rows with two *different, non-empty* urls and two
+different ids — precisely what an empty-url count cannot register. The instrument was pointed
+somewhere that cannot produce a positive, so the negative carried no information. Sixth
+structurally-guaranteed zero in two rounds, and the second in this file where the instrument
+was the defect.
+
+**The rate, from evidence already in this document (§ dedup the training corpus on `id`):** two
+archive samples ~35 days apart share **161 `content_hash` values, of which 17 have the same
+content, a different `id`, and the SAME `source`** — a URL that changed under a stable article.
+Repoints occur, and are not rare where re-emission happens.
+
+⚠️ **Do not restate 17/161 as "10.6% of articles are repointed."** The denominator is
+content-hash values present in *both* samples — heavily conditioned, not the corpus. Three
+further limits: `content_hash` is title + first-500-chars, so "same content" is an
+approximation; two samples, not the population; and identical content at a new URL is not
+necessarily a publisher *editing* a link — republication at a new path has the same signature
+and the same consequence for identity.
+
+**Effect on the ruling: bounds it, does not overturn it.** `id` stays identity, `content_hash`
+stays the change-detector, LWW stays correct. The bound is that for the repoint fraction the
+supersede path *structurally cannot fire* — the edit arrives as a new item and the old row is
+left standing. So #119 promises "edits are superseded, EXCEPT where the URL moved." ⛔ Still the
+owner's to accept, because it narrows a published ruling. ⛔ And it is **not** fixed by re-keying
+`id` on the normalized URL — see the corpus-dedup section for why that orphans the estate.
 
 **Producer-side gap this created:** `FluxusSource/docs/OUTPUT_CONTRACT.md:33` documents `id`
 as `<source>_<hash12>` and says nothing about what it survives — the one property the ruling
