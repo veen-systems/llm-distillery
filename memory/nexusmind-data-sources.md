@@ -304,25 +304,57 @@ date**; reading 20.5% as a sampling rate would make every threshold derived from
 
 ## ovr.news `ovr.db` — the published set (added 2026-08-11)
 
-`~/local_dev/ovr.news/data/ovr.db` on sadalsuud, ~231 MB. **This is the only source
+`~/local_dev/ovr.news/data/ovr.db` on sadalsuud, ~231 MB. **This is the only DB
 that answers "did a reader see it?"** — everything in NexusMind answers "was it
 scored?" or "did it clear the op-point?", which are different and much larger
 populations.
 
+### ⛔ `live_articles` is NOT the reader population — corrected 2026-08-16
+
+**This file said it was, from 2026-08-11 to 2026-08-16, and CLAUDE.md carried the
+same line.** The view is **legacy and off the build path**. The site reads
+`getArticlesForBuild` (`src/lib/db-articles.ts:270`, called at
+`src/lib/data/pipeline.ts:83`) — a join over `article_filter_scores` + `articles` +
+`summaries`, windowed on `ranking.maxAgeDays`, **returning only articles that have
+been summarised**. Two comments inside ovr warn about this, one written after a
+script made exactly this error. Verified here by grepping every `live_articles`
+reference in `src/` and `scripts/`: outside the schema DDL there is one, a function
+the build never calls.
+
+⛔ **The deployed view has also drifted from its own source and CANNOT reconverge.**
+Live DDL on sadalsuud filters `tier IN ('high','medium')`; `db-schema.ts:793` says
+`weighted_average >= 4.5`. Mechanism, and it is permanent by construction: every
+statement in `createViews()` is `CREATE VIEW **IF NOT EXISTS**`, so on a DB where the
+view exists the source definition is a **no-op**; `recreateViews()` would fix it and
+is **exported and never called from anywhere**. So two people reading "the view" are
+reading **two different objects**, and no code path will ever make them one.
+
+**Use the build query, or the `articles` table as a superset.** A superset claim is
+the robust move: if a population is 0 in `articles`, it is 0 in any window over it.
+
 ```bash
-ssh sadalsuud 'sqlite3 -readonly ~/local_dev/ovr.news/data/ovr.db "SELECT COUNT(*) FROM live_articles;"'
+# superset — every article ovr ever stored (22,191 rows, 2026-04-04 → 08-16)
+ssh sadalsuud 'sqlite3 -readonly ~/local_dev/ovr.news/data/ovr.db "SELECT COUNT(*) FROM articles;"'
+# what the deployed view ACTUALLY is, before quoting any count off it
+ssh sadalsuud 'sqlite3 -readonly ~/local_dev/ovr.news/data/ovr.db "SELECT sql FROM sqlite_master WHERE name=\"live_articles\";"'
 ```
 
-Tables that matter: `live_articles` (the live window — 3,529 rows spanning 14 days
-as of 2026-08-11), `archive_articles`, `article_filter_scores`, `editorial_decisions`.
+Tables that matter: `articles` (the superset), `article_filter_scores`, `summaries`,
+`archive_articles`, `editorial_decisions`.
 
-**What it excludes:** `live_articles` holds only the live window, so items that
-rotated out are absent — it cannot answer historical questions. `archive_articles`
+**What it excludes:** any `live_articles` window holds only the live window, so items
+that rotated out are absent — it cannot answer historical questions. `archive_articles`
 is the other half and was **not** used in the 2026-08-11 panel.
+
+**Trap:** `articles.content_hash` exists, is written by the upsert, and is **0 of
+22,191 rows non-null** — read by nothing. The producer's `content_hash` does not reach
+this DB (#119).
 
 **Trap:** `weighted_average` in `live_articles` is the **NORMALIZED** score, not
 raw. A row reading 8.95 can have per-dimension raws of 4.4–7.2. Normalization is
-rank-in-batch by design (ADR-014). Do not compare it to an op-point.
+rank-in-batch by design (ADR-014). Do not compare it to an op-point. Note the build
+query reads `afs.weighted_average` from `article_filter_scores`, a *different column
+in a different table* from `articles.weighted_average`.
 
 **Trap:** ovr#275's resolver can rewrite article URLs, so matching a source by URL
 pattern may undercount. Cross-check by `source` as well — on 2026-08-11 both routes

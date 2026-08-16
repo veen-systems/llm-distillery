@@ -1,26 +1,97 @@
 # LLM Distillery - TODO
 
-## 🔵 NEXT SESSION — **one owner decision: the dedup key (#119)**
+## 🔵 NEXT SESSION — **#119 is RULED; the work is in two other repos**
 
 > **Contract A is DONE and running.** 17 of 18 fields on delivered rows, four consecutive
 > deliveries clean against both schemas, all code pushed and deployed across three repos,
 > nothing dirty or unpushed anywhere. #111 and #112 closed with the measurements. The
-> daily check fired unattended for the first time at 02:22:45 on 2026-08-16 and now reads
-> **`overall: clean`** with all five classes asserting — it had been `info` on every prior
-> run because something was always unasserted.
+> daily check fired unattended for the first time at **02:22:45 on 2026-08-16** — confirmed
+> in the journal, and the only unattended fire so far; the three later runs that day were
+> hand-started.
+>
+> ⚠️ **That 02:22 fire read `ok / info`, not `clean`, and this block said otherwise until
+> 2026-08-16** *(corrected against the journal and NexusMind's own reflog)*. Three errors in
+> one sentence, all in the flattering direction: (1) the first `clean` run was **08:38:42**,
+> not 02:22; (2) at 02:22 the check had **three** classes, not five — `emission.structural_
+> block_absent` and `freshness.input_stale` landed in NM#382 seven seconds before the 08:38
+> run; (3) **`info` never meant a finding.** It is manufactured at `contract_check.py:984-986`
+> from `classes_not_asserted > 0` on an otherwise-`clean` roll-up, so it means *"I could not
+> look at one thing"*, with `status: ok` and exit 0. What made it assert was neither code nor
+> the collection: NexusMind's own pipeline wrote `data/ingest_contract_stats.json` at
+> 08:14:41, and `unreported.schema_invalid` had been waiting for that file to exist.
+>
+> ⛔ **`clean` is a PER-RUN VERDICT, not an achieved state — do not record it as one.** It
+> means every class was evaluable on that run's bytes and none went red.
+> `emission.structural_block_absent` is scoped to `source_type == "rss"` and goes
+> *not-asserted* (never `clean`) on a delivery with no RSS rows, which reverts the headline
+> to `info`; `freshness.input_stale` needs three retained collections. A future `info` is
+> designed output, not a regression.
 
-**#119 — Contract A does not say which key deduplicates a row.** Found by measuring the
-estate against the documented failure taxonomy: across 9,769 rows in four deliveries there
-are **0 duplicate ids and 0 duplicate hashes within any delivery**, and **one id appearing
-twice across them** — `hackernews_7939b7c92398`, the same HN story after moderators
-swapped its URL (nature.com → science.org) and normalised a dash. Not a collision: HN ids
-key on the HN item id, so identity is stable **by design** and the *story* mutated.
+### ✅ #119 RULED 2026-08-16 — `id` is identity, `content_hash` detects the edit, last-write-wins
 
-⚠️ **Which copy a reader sees depends on the consumer's dedup key, and the contract
-specifies neither.** `id` → the correction is dropped and the reader keeps a stale link.
-`content_hash` → the same story surfaces twice. Both defensible, neither written down, and
-invisible at 1 row in 9,769. **No check can resolve it** — both behaviours are correct
-against the schema. It needs an editorial call about what a reader should see.
+**Ruled twice the same day, because the cost I quoted the first time was wrong.**
+
+> **Identity is `id`. `content_hash` is a CHANGE-DETECTOR, not an identity** — a differing
+> hash on a known `id` means EDITED upstream, a case distinct from *duplicate*. Both fields
+> are already `required` and already delivered, so this names the pair rather than adding to
+> it. **On a repeat id with a new hash: replace, last-write-wins.**
+
+**Scope — three changes across two repos, none of them here.** ⛔ *The contract sentence
+alone is not the decision; shipping only it declares a norm no consumer implements.*
+
+1. **NexusMind** lets an edited row through as if new. ⚠️ **Not** a branch in `_is_duplicate`
+   — wrong altitude: it returns into a loop that can only `continue`/`append`, and across
+   runs the earlier copy was already scored into a prior `filtered_*.jsonl` this run never
+   opens. Sufficient for the row itself: ovr's `ON CONFLICT(id) DO UPDATE SET title, url,
+   content` (`db-articles.ts:65-127`) is unconditional.
+2. **`content_hash` is propagated** to ovr — today `articles.content_hash` is **0 of 22,191
+   rows non-null**, so the change-detector the rule names never reaches the display layer.
+3. **ovr invalidates the summary cache** on a hash change. Its summary — what the reader
+   actually reads — is cached on **article id only** (`summarize.ts:826`), so a corrected row
+   hits `if (cached) continue`. **Steps 1+2 alone yield a pre-edit headline pointed at a
+   post-edit URL** — neither the correction nor the original. That is what forced the re-ask.
+
+⚠️ **Two false-positive modes for "a differing hash means an upstream edit":** a producer-side
+extraction/cleaning change flips the hash on stable ids with nothing changed upstream (FS#143
+precedent — changing hash inputs re-emits the whole back catalogue as new; guard with a
+volume trip); and `content_hash` is MD5 of `title | content[:500]`, so an edit past 500 chars
+changes neither key. **The second belongs in the contract sentence, not a footnote.** If LWW
+is tie-broken on `collected_date`, read `collected.clock_source` first — 19 aggregators stamp
+host-local (CEST) in a shape byte-identical to UTC; per-`id` ordering is safe, cross-family is
+off by 2h (FS#176).
+
+#### ⛔ Retracted the same day: "RSS cannot produce this signal"
+
+**RSS `id = md5(f"{source}_{url}")[:12]`, keyed on the RAW URL** (`rss_aggregator.py:702-703`),
+so a content edit at a stable URL **keeps the id**; only a repoint mints a new one. The split
+is not family-vs-RSS, it is *what changed*. What hides the case is the producer's seen-URL
+cache — **and only while the item is in it.** Effective window **~7.7 days** against
+`feed_cutoff_days` of **10 and 19**, so past eviction an edited RSS article arrives as
+same-id/new-hash: #119's exact shape on ~99% of the corpus. **Open right now**; it closes as
+the store refills past the widest cutoff.
+
+⛔ **And the measurement could not have seen it.** The on-disk collection span (~8 days) is
+the same length as the eviction window (~7.7 days), so a repeat requiring eviction has no
+room to appear. **`0 observed` is what that population must return whatever the truth is** —
+the fifth structurally-guaranteed zero in two rounds. The surviving half is family mix,
+re-measured on a sound superset (`ovr.db articles`, **22,191 rows, 2026-04-04 → 08-16**):
+hackernews **0**, github **0**, stackoverflow **0**, reddit **0**, pubmed 98, arxiv 14.
+
+⚠️ **Also retracted: `live_articles` is NOT the reader population.** It is legacy and off the
+build path — the site reads `getArticlesForBuild` (`db-articles.ts:270`, called at
+`data/pipeline.ts:83`), a join over `article_filter_scores` + `summaries`. Two comments in
+ovr warn about this; one was written after a script made the same error. **The deployed view
+has itself drifted from `db-schema.ts:793`** — the live DDL filters `tier IN ('high','medium')`
+where the source says `weighted_average >= 4.5`. See `memory/nexusmind-data-sources.md`.
+
+**Filed, owner ruled record-only: FS#183** — an RSS article edited at a stable URL is
+suppressed at the producer before its content is ever compared (`content_aggregator.py:565-570`,
+the `continue` at `:570`). Same mechanism as #119 on the other side of the eviction boundary,
+not the inverse case. 2,888 of 4,950 candidates suppressed in one run, 2,773 on the URL key.
+
+**Producer-side gap this created:** `FluxusSource/docs/OUTPUT_CONTRACT.md:33` documents `id`
+as `<source>_<hash12>` and says nothing about what it survives — the one property the ruling
+depends on. With the FluxusSource session's own owner.
 
 **Deliberately NOT next:** distribution drift, the last uncovered observability pillar. It
 is the heaviest to build and, unlike the two closed this morning, **nothing suggests it is

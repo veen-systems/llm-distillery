@@ -45,7 +45,12 @@ failure.** Of 133 post-enforcement articles: zero obits (enforcement works).
 But **47 obit-flagged shadow-era carryovers (all ≥0.85) are live on the site**
 — shadow stamped, never dropped; the ovr `live_articles` view is **14 days by
 published_date**, so washout runs to ~**Aug 13** (not Aug 6 / max_age 7d —
-that governs only the NexusMind pipeline). Purge list posted on ovr#204
+that governs only the NexusMind pipeline). ⚠️ **The washout date was derived
+from the wrong object** (noted 2026-08-16): `live_articles` is legacy and off
+the build path; the site's window is `ranking.maxAgeDays` via
+`getArticlesForBuild`. Both were 14 days at the time, so the Aug 13 conclusion
+is believed unaffected — **but it was never re-derived against the build query,
+and the two windows are independent settings that can diverge.** Purge list posted on ovr#204
 (issuecomment-5139853211). Plus **2 true v5 FNs live**: Teresa Alonso obit
 (v3 .284/v4 .195/**v5 .277** — biography-rich obit reads as history) and Yves
 Devos mourning piece (v3 .682/v4 .438/**v5 .122** — v5 REGRESSED on the

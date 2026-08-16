@@ -131,7 +131,11 @@ corpus: `investment_risk` 1.79× → 0.90, `solutions` 1.13× → 0.65, `uplifti
 
 **GN reaches readers at 1.1% overall but 8.2% of `nature_recovery`.**
 39 of 3,529 published (ovr.news `live_articles`), cross-checked by `source` and by
-url. Attenuation from surfacing to published is **1.5×–20.8×**, not uniform:
+url. ⚠️ **Population caveat added 2026-08-16: `live_articles` is a legacy view, off
+ovr's build path** (the site reads `getArticlesForBuild`), so "published" here means
+*in that view*, not *served to a reader*. The ratios are between two quantities
+measured the same way and are unaffected; the word "published" is what is loose.
+See `memory/nexusmind-data-sources.md` for the corrected source. Attenuation from surfacing to published is **1.5×–20.8×**, not uniform:
 nature_recovery 1.5×, solutions 3.0×, cultural_discovery 3.5×, uplifting 5.1×,
 belonging 20.8×. **Nobody has explained the 14× spread**; dedup + the publication
 window is a guess.
@@ -301,7 +305,8 @@ headline-only items publish at all), not a scorer defect.
 the FluxusSource session's, each caught by the other. Every rate here carries its
 denominator for that reason. `filtered_*.jsonl` is 100% prefilter passers and drops
 source-type-excluded rows; `data/raw/` is pre-enrichment; ovr.db `live_articles`
-excludes rotated-out items.
+excludes rotated-out items **and is a legacy view off the build path — it is not the
+reader population** (corrected 2026-08-16, see `memory/nexusmind-data-sources.md`).
 
 ## Related
 
