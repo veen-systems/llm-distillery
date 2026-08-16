@@ -184,6 +184,25 @@ caught by someone re-deriving from the other side, neither by reading.
 
 ---
 
+## ⭐ The finding of the day is the ratio, and its sharper form
+
+**Eleven-odd defects across four sessions. Every one was caught by a different session
+re-deriving. SELF-REVIEW FOUND NOTHING, ALL DAY.**
+
+The two apparent exceptions were authors **going to look at state they had just
+changed** — NexusMind's deploy ramp and its own dead watch — which is re-derivation with
+a shorter loop, not review. *Reading your own work again is not a control.*
+
+Two carriers of the same dated watch were dead at once, which is the day in miniature:
+`Closes #388` in the PR body closed the issue designated to receive evidence that could
+not exist until 08-23, and the hypothesis-log entry carried the date only in prose with
+no `Review by:` field for `/curate` to sweep. **Correct, fully written, cross-referenced
+in three places, reachable by nothing.**
+
+⚠️ And my own near-miss is not a repeatable defence: `content_length 0/2265` was caught
+**only because zero was surprising**. A wrong-object read returning a *plausible* number
+goes straight through.
+
 ## Open after this session
 
 - **NM#389 MERGED AND DEPLOYED** (`fdffc4b`, pulled to sadalsuud; first cycle 12:0x CEST).

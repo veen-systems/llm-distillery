@@ -1,6 +1,34 @@
 # LLM Distillery - TODO
 
-## 🔵 NEXT SESSION — **#119 is RULED; the work is in two other repos**
+## 🔵 NEXT SESSION — **the #119 arc is CLOSED; what is left is ovr's half and NM#390**
+
+> ### ✅ ARC CLOSED 2026-08-16 — ruled, built, deployed, verified on a live cycle
+>
+> NexusMind `fdffc4b` (Contract A **1.33.0**) deployed to sadalsuud; FluxusSource
+> `ae52470` pushed. **First post-deploy cycle 12:03 → 12:50:13 clean**: `PIPELINE
+> COMPLETE`, six filtered files, presence control PASS on all six loads, supersede
+> `+0 / 0` (the predicted ramp), `dup-url` 33,147 → 5,134 and `dup-id` 8 → 28,113 with
+> the **sum conserved to +92**, 0 duplicate ids, `content_length` 2265/2265. No trip, no
+> traceback.
+>
+> **Three things stay open, none of them this repo's to close:**
+> 1. **ovr's half of #119** — project `content_hash` **and** `collected_date` on ingest
+>    (both die at `RawArticle`, `types.ts:64-95`), then invalidate the summary cache on
+>    the *pair*. ⛔ **ovr cannot use its own `collected_date`**: it is ovr's clock
+>    (`db-articles.ts:142`) and frozen at first insert by `COALESCE` (`:81`), so every
+>    later row looks strictly newer and the guard **degenerates into the bare hash test
+>    it exists to prevent**. Until this lands a reader gets a corrected link under a
+>    pre-edit headline. #119 stays OPEN for it.
+> 2. **NM#390** — the largest thing the day turned up and deliberately untouched:
+>    `_normalize_url` strips the query string, costing **800–1,000 distinct articles per
+>    fortnight**, concealed inside `duplicate_url`. Denominator caveat recorded in
+>    `memory/nexusmind-data-sources.md`. **Not** caused by the reorder.
+> 3. **NM#388's 08-23 watch** — the first `superseded_reprocessed > 0`. ⛔ **A zero
+>    before ~08-22 is the ramp, not a result.**
+>
+> **In this repo:** ~50 unresolved references in the live topic files, newly visible
+> because `refcheck.py` now scans 29 documents instead of 3. Triage, mostly wanting a
+> repo marker rather than a path fix.
 
 > **Contract A is DONE and running.** 17 of 18 fields on delivered rows, four consecutive
 > deliveries clean against both schemas, all code pushed and deployed across three repos,
