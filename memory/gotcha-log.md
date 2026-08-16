@@ -46,6 +46,28 @@ Problems encountered and resolved. Format: Problem → Root cause → Fix.
 
 ---
 
+## A PEER'S ENUM TESTED ONLY AGAINST THE VALUES THEY CURRENTLY EMIT (2026-08-16)
+**Problem**: *(pipeline-atlas, consuming this estate's contract-check artefact — reported
+against their own code after a review found it.)* Their reader tested
+`severity == "error"`. The producing ladder has **five rungs**, so a class graded
+`critical` — one rung *above* the case handled — rendered **green with no problem line**.
+The exact inversion the panel exists to prevent.
+**Root cause**: nine mutation tests, and **every fixture drew `severity` from the
+producer's CURRENT output**. Since nothing had ever emitted `critical`, no fixture
+contained it, and the tests confirmed the reader against precisely the subset that could
+not fail.
+**Fix**: mirror the producer's `SEVERITY_ORDER` with a named alarm rung, and render an
+**unrecognised** rung as UNKNOWN rather than clean.
+**Durable lesson**: ⭐ **Enumerate a peer's enum from their SOURCE and seed every member,
+including the ones they do not emit yet.** A fixture derived from observed output can only
+ever test the values that already occur — it is a sample of the producer's behaviour
+masquerading as a specification of it. Same family as the hand-built-population rule, one
+repo over: the population here is *the set of values a field can take*, and taking it from
+today's data rather than from the declaration is the same error. ⚠️ **The direction of
+failure is what makes it expensive**: an unhandled rung defaults to the *pass* branch, so
+the worst severity the producer can emit is the one the reader is least likely to have
+seen.
+
 ## I SAID THE WATCHER WAS ARMED AND I HAD NEVER STARTED IT (2026-08-16)
 **Problem**: Reported "watcher armed for 08:02" in a session summary. No watcher was
 running. Caught only because the owner mentioned the time and I checked `ps` — three
