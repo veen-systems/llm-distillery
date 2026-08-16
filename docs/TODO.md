@@ -169,6 +169,90 @@
 > from another figure, re-derive the UNIT at the boundary, because the arithmetic agrees
 > either way.*
 >
+> ### 📊 ovr MEASURED IT — and my pre-registered decision rule returned the WRONG ANSWER
+>
+> ⛔ **I pre-registered "high → commission, low → close" and it came back low. I am NOT
+> closing, and the reason must be read before the numbers, because setting aside a
+> pre-registered rule after seeing the data is exactly the move this project distrusts.**
+> The rule is void, not overridden: **its instrument was structurally blind to the
+> population in question.** ovr dedupes on `URL.hostname` (www-stripped, our PR#299 rule)
+> **upstream of the count** (`corroboration.ts` `getIndependentSources`), so a badge of N is
+> N distinct hostnames BY DEFINITION — reader-visible collisions are **0 of 554 by
+> construction**, and ovr ran that as a control expecting zero. Meanwhile every GN member is
+> unidentifiable by construction, so it can never enter the numerator my rule was reading.
+> **A rate that cannot be non-zero cannot license a "low".** My own working rule; my own
+> rule-writing missed it.
+>
+> **Raw upstream membership** (full host, not registrable-domain collapsed): GN-excluded
+> **24.1%** (102/423) · GN-included **22.6%** (125/554) · GN share of members **16.2%**
+> (268/1,653), clusters touching GN **32.7%**. ⛔ **Quote 5.4%, NOT 22.6%, as the
+> cross-publisher rate** — of the 125, **85 (15.3%) are the primary's own host echoed back
+> into its own sibling list**, an artifact of ovr's cluster-folding; only **30 (5.4%)** are
+> two SIBLINGS sharing a host, 10 both. ovr caught this before shipping me the headline.
+> Predictions on record beforehand: mine 15–40%, theirs 25–40%; both in range on a number
+> that turned out to answer the wrong question.
+>
+> **Population:** `fetchArticles()` → `allLensArticles` → drop `manual_suppression` → drop
+> summaries under `minDisplayWords` 50, mirroring `[lang]/artikel/[id].astro`. **Not**
+> `live_articles`. 2,714 pages, **554 (20.4%) carry a badge**, window 2026-08-06 → 08-16,
+> **span 10.43 days pinned by `ranking.maxAgeDays = 10`** — bounded by the population, not
+> the world. Upstream `corroborating_sources` exceeds the reader-visible count on **42.2%**.
+>
+> **What actually decides it, and none of it is the headline rate:**
+> - ✅ **GN members already collapse to one per cluster** (max 1 across all 554) — they share
+>   the hostname key, so my worry (i) was already handled, and not by accident.
+> - ✅ **The suffix is effectively 0% recoverable at ovr's boundary**: 12 of 181 GN members
+>   carry anything suffix-shaped, and hand-checking kills all 12 (`"Focus - In Nepal…"`,
+>   `"…' - news"`). **Independent downstream confirmation of FS#186** from the consumer end.
+> - ⛔ **THE EXPOSURE: 132 of 554 badges — 23.8% of ALL badges, 74.2% of GN-touching ones —
+>   are exactly primary + ONE GN member and nothing else.** If that member is the primary's
+>   own publisher re-routed through a GN country query, the corroboration claim is spurious.
+>   Not hypothetical: GN country queries aggregate outlets from the primary's own country,
+>   and one sampled cluster is an `east_african_the_citizen_tz` primary with a
+>   `gn_africa_gn_tanzania` sibling. **ovr can neither verify nor bound this.**
+> - ⚠️ **Pointing the other way:** of 67 GN members carrying a real-publisher `source` id,
+>   **zero** collide with a non-GN sibling. Small, non-random slice — weak, but it is the
+>   only direct evidence and it is exculpatory.
+> - 🆕 **Ours, not GN's: 2 of 554 badges (0.4%) count two members sharing an NM `source` id
+>   on DIFFERENT hosts** (`climate_solutions_daily_climate`, `global_news_el_pais_america`)
+>   — reader-visible same-outlet double-counting the hostname rule misses. Tiny, but it
+>   proves **host and `source` id disagree in BOTH directions**, so neither key alone is
+>   sound.
+>
+> ⏳ **OWNER DECISION — I did NOT commission the FluxusSource work, and ovr's "commission it"
+> is not the only option on the table.** The honest framing is **exposure, not measured error
+> rate**: 23.8% of badges rest on a claim ovr cannot check. Two ways to stop asserting an
+> unverifiable thing, and the cheap one was never considered:
+> **A. Downstream, free, conservative** — ovr suppresses the badge when the ONLY corroborating
+> member is a GN row of unknown publisher. No producer change, no FluxusSource work, strictly
+> reduces unverifiable reader-facing claims. **Costs up to 23.8% of badges.**
+> ⛔ **I first wrote "shaped like llm-distillery ADR-023" and that citation is WITHDRAWN.**
+> ovr caught the seam on their own side (their ADR-042 governs article *removal*, not claim
+> strength on a published article) and asked whether ours had it. **It does, identically.**
+> llm-distillery ADR-023 is about **whether an article SURFACES at an op-point** — "the slot
+> refills" is explicitly about selection. A corroboration badge is a *different object*: the
+> article is already published and the question is whether an additional claim about it is
+> warranted. The intuition transfers; **the warrant does not.** Option A must be argued on
+> its own merits, not on a borrowed ADR. ⚠️ This is a second failure mode for bare ADR
+> numbers, distinct from the known one: not *resolving in the wrong repo*, but **resolving
+> in the RIGHT repo to a real ADR whose SCOPE does not cover the case** — and it is worse,
+> because qualifying the repo name (which I did) does not catch it.
+> **B. Upstream, real work, preserves badges** — FluxusSource stops discarding the GN title
+> suffix (FS#186's site) so GN members become attributable. They have **not** scoped it.
+> ⛔ B is the expensive fix and A has not been priced against it. **Product/editorial call,
+> not mine:** A trades badge volume for honesty; B buys the volume back at a producer cost.
+>
+> ⭐⭐ **WHY OPTION A WAS INVISIBLE FOR THIS WHOLE THREAD — ovr's, and the best thing in it.**
+> The question was framed as *"can we attribute GN?"* rather than *"must we claim it?"*, and
+> **the first framing only has producer-side answers.** Every measurement, every dispatch and
+> both of my rulings inherited that, so the free downstream option was excluded before any
+> evidence arrived. **The framing did the excluding, not the evidence.** ⚠️ Note the shape:
+> nothing was wrong at any step. The measurements were sound, the reasoning was sound, the
+> pre-registration was honest, and the answer set was still short one option — because a
+> question of the form "can we obtain X" silently presupposes X is required. **Before pricing
+> options, ask what the question presupposes.** This is not caught by any check we run; all
+> of ours verify answers.
+>
 > **Confirmed by them, and now recorded in `scripts/contracts/contract_a_smoke.py`'s own
 > docstring:** `FIELDS EMITTED: n/18` is **not** a completeness score. `charset_detected`,
 > `charset_detected_confidence` and `content_meta.error` are **conditional by design** —
