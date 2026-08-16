@@ -541,10 +541,42 @@ random pairs, so these say "separates good merges from bad", not "finds merges".
   translation; unrelated papers don't share a casualty count) and the data says
   0.581, with the sharpest variant at **0.503 = nothing**. No confirmed
   explanation; plausibly the negative class already shares dates/quantities.
-- **CONFIRMED — time is the feature, independently replicated.** 0.809 here vs
-  INST-10's 0.798 unweighted, different panel/seed/sample, and it *improves* when
-  academic pairs are removed. Built, `temporal.enabled: false`, blocked only on
-  certification by a non-author. **Highest-value unused thing in this area.**
+- **CONFIRMED — time is the feature.** 0.809 here vs INST-10's 0.798 unweighted,
+  different panel/seed/sample, and it *improves* when academic pairs are removed.
+  ⛔ **"Blocked only on certification by a non-author" was STALE and is RETRACTED
+  2026-08-16.** INST-10 was **certified 2026-08-09 by a non-author — a session of
+  *this* repo** (NexusMind `b90ba9e`, registry row 131, note at
+  `docs/vv/corroboration-dedup-registry.md:189`): AUC 0.798/0.767, `med_D > med_S`
+  in 6/6 strata, Kish ESS 36.1, 5,000-draw permutation collapses to ~0.5, robust to
+  the date-only confound. Two instrument defects found and fixed during it.
+  ⚠️ **And the independence runs the OPPOSITE way to how this entry read: 0.798 IS
+  INST-10**, authored by the author of the implementation it evaluates. **The 0.809
+  measured here is the genuinely separate instrument.**
+
+  **THE REAL BLOCKERS ARE THREE, and none is certification** (NexusMind, 2026-08-16):
+  1. **The certification is PRECISION-SIDE ONLY and explicitly does not authorise
+     enabling** — INST-10's blind spot is recall *entirely*, because every pair it
+     scores is one the system already merged.
+  2. **The recall test has never been run**, and its instrument is not ready: needs
+     INST-4 (certified, recall-only) plus INST-2/**INST-3**, and INST-3 is
+     **uncertified** (certifier `author`, control not run) and lives only on b650,
+     off the deploy host.
+  3. ⛔ **The shipped σ is the REFUTED value.** `config/app.yaml` has
+     `sigma_hours: 72.0`. Sweep: σ=6 → 52.1/98.2 · σ=18 → **83.6/85.9** · σ=36 →
+     97.8/56.8 · **σ=72 → 99.1/20.6 (FAILS)** · σ=120 → 100.0/9.2. Flipping
+     `enabled: true` today ships a width where the term degenerates into a
+     near-uniform `+max_adjustment` — **arithmetically a threshold decrease, the
+     axis already measured dead.** "Flip temporal.enabled" was never one decision.
+
+  ⭐⭐ **AND THE AUC CANNOT ARBITRATE σ AT ALL — it is σ-INVARIANT BY CONSTRUCTION**
+  (registry blind spot (d)): it ranks on Δt and the adjustment is monotone in Δt.
+  So the headline number is *silent on the only parameter that would ship*, while
+  being cited as support for shipping. **New variant of the can-only-return-zero
+  trap: a number that cannot vary with the decision variable.** ⚠️ Also blind spot
+  (c): `_temporal_adjustment` compares a candidate to the **cluster reference
+  (newest)**, not to a partner, so a *pairwise* AUC does not transfer to the
+  variable production actually uses. Any before/after merge-set delta must run at
+  **σ∈[12,24]**, never the shipped 72.
 - Cross-language is a mild genuine positive (0.570), consistent with merged
   cross-language precision 0.857 vs same-language 0.426 at 0.94/0.90.
 - Academic subset had **6 positives** — nothing reported from it; the 0.878 that
