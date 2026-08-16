@@ -350,6 +350,44 @@ is the other half and was **not** used in the 2026-08-11 panel.
 22,191 rows non-null** — read by nothing. The producer's `content_hash` does not reach
 this DB (#119).
 
+### ⛔ `duplicate_url` is NOT all re-reads — ~0.44–0.50% of rows are distinct articles (NM#390)
+
+**Added 2026-08-16.** `_normalize_url` **strips the query string**, so for any publisher
+whose article URLs differ *only* by query parameter, every article collapses to one
+normalised URL and all but the first are dropped as `duplicate_url`. Different titles,
+different ids, same stripped URL.
+
+**Measured twice, independently, and the rates agree:**
+
+| side | lost | of | rate |
+|---|---:|---:|---|
+| NexusMind `data/raw`, 87 deliveries | 857 | 195,233 | **0.439%** |
+| FluxusSource delivered rows, last 6 collections | 75 | 15,101 | **0.497%** |
+
+Same sources both times: `science_plos_one`, `disaster_alerts_gdacs_alerts`,
+`china_solidot`, the `hackernews` feeds. `journals.plos.org/plosone/article` alone
+carries **244 distinct ids with 244 distinct titles**; one survives.
+
+⚠️ **Quantity, stated because it is easy to misread as cumulative:** it is ~**12.5 newly
+lost articles per collection**, ~75/day, so on the order of **1,000 distinct articles
+never scored across a 14-day reader window** — not 857 × cycles. Like the `too_old`
+population these rows are never marked processed, so the same ones are re-dropped on
+every load rather than the loss being one-time.
+
+⛔ **It is self-concealing: the drop lands in `duplicate_url`, which reads to an operator
+as "correctly removed a re-read".** Never treat that counter as a clean measure of
+re-reads, and never use "rows that reached scoring" as a denominator without subtracting
+this. Two sessions stared at that counter for an afternoon and neither asked what was
+inside it.
+
+**Not caused by, and not worsened by, the 2026-08-16 id-before-url reorder** — these rows
+carry distinct ids, so the in-batch check never fires and the URL check drops them under
+both orderings. Confirmed by replay.
+
+⚠️ **If anyone fixes it: measure old-vs-new KEPT SETS on identical input, never counter
+deltas.** `duplicate_url` falling is the *intended* effect and cannot distinguish a good
+fix from one that simply stops deduplicating.
+
 **Trap:** `weighted_average` in `live_articles` is the **NORMALIZED** score, not
 raw. A row reading 8.95 can have per-dimension raws of 4.4–7.2. Normalization is
 rank-in-batch by design (ADR-014). Do not compare it to an op-point. Note the build

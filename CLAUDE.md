@@ -98,7 +98,11 @@ them** — each exists because something shipped broken.
   structures, to prior work, to literature, to hosts, and to **time**. A wrong path
   and a dead field both read as zero, and the wrong one is the more exciting finding.
   ⚠️ **A window is part of a source.** If it is a denominator, a baseline, or a claim
-  of absence — enumerate the source first.
+  of absence — enumerate the source first. ⭐ **One root, and it covers the instrument
+  too: THE INSTRUMENT WAS POINTED SOMEWHERE THAT CANNOT PRODUCE A POSITIVE, SO THE
+  NEGATIVE CARRIED NO INFORMATION.** Found in three repos in three media on 2026-08-16
+  — a corpus shorter than the mechanism's period, a validator over 0 rows, a grep over
+  0 files. **Before believing a negative, prove the instrument could have said yes.**
 <!-- verify: WR=$(grep -i 'establish what it excludes' memory/working-rules.md | grep -oE '[0-9]+(st|nd|rd|th) occurrence' | head -1 | grep -oE '^[0-9]+'); CM=$(grep -A1 'establish what it EXCLUDES' CLAUDE.md | grep -oE '[0-9]+(st|nd|rd|th)' | head -1 | grep -oE '^[0-9]+'); if [ -z "$WR" ] || [ -z "$CM" ]; then echo "CANNOT VERIFY: ordinal not extracted (WR='$WR' CM='$CM')"; elif [ "$WR" = "$CM" ]; then echo "PASS ($CM)"; else echo "FAIL: CLAUDE.md says $CM, working-rules.md says $WR"; exit 1; fi -->
 - **Every measurement error this project has made was a HAND-BUILT POPULATION.**
   *(2026-08-12, across four repos.)* Prefer a population the pipeline already

@@ -50,6 +50,13 @@ trusting a PASS.**
     2. absent         -> must FAIL
     3. MENTIONED BUT NOT PRESENT -> must FAIL
 
+⛔ **Direction 3 matters MOST for a PRESENCE check, and the costs are asymmetric.** An
+absence check fooled by prose over-claims — it reports a problem that is not there, and
+someone investigates and finds nothing. A presence check fooled by prose says the
+mechanism is live **when it has been deleted**, and *nobody investigates a green*. Same
+requirement, opposite consequence. (pipeline-atlas, who then found the shape in their
+own convention page's worked EXAMPLE — the one line most likely to be copied.)
+
 ⛔ **Direction 3 is the one that gets skipped and the one that catches real defects.**
 A `grep` cannot separate an invocation from a mention, and restricting the file type
 does not help. On 2026-08-16 two sessions in this estate each shipped a green probe
