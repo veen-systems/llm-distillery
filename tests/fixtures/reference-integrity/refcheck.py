@@ -24,7 +24,31 @@ import os as _o
 # is outside ROOT.
 AUTOMEM_INDEX = _o.path.expanduser(
     "~/.claude/projects/-home-jeroen-repos-veen-systems-llm-distillery/memory/MEMORY.md")
+# ⛔ Until 2026-08-16 DOCS was three files. The audit then reported 0 findings and
+# the 0 was real — over 3 of 84 in-repo context documents. The 26 LIVE topic files
+# an agent is actually pointed at were never scanned, and the same instrument found
+# 51 unresolved references in them on first run, dominated by unmarked cross-repo
+# paths (`scripts/main.py` means NexusMind's; a reader here looks locally and finds
+# nothing). Session records are excluded by default: they are frozen accounts of a
+# moment, so a path that has since moved is not decay there. `--sessions` includes
+# them (85 more).
+import glob as _g
+
+
+def _topic_files():
+    out = []
+    for f in sorted(_g.glob(_o.path.join(ROOT, "memory", "*.md"))):
+        rel = _o.path.relpath(f, ROOT)
+        if rel in ("memory/MEMORY.md", "memory/gotcha-log.md"):
+            continue
+        if "project_session_" in rel and "--sessions" not in _o.sys.argv:
+            continue
+        out.append(rel)
+    return out
+
+
 DOCS = ["CLAUDE.md", "memory/MEMORY.md", "memory/gotcha-log.md"] \
+       + _topic_files() \
        + ([AUTOMEM_INDEX] if _o.path.exists(AUTOMEM_INDEX) else []) \
        if not _o.environ.get("SEED") else [_o.environ["SEED"]]
 

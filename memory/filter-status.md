@@ -66,7 +66,7 @@ shape, second instance found in this project. Unexamined.
 | solutions | v6 | 0.476 | — | 8.2K | `jeergrvgreg/solutions-filter-v6` | 2026-07-27 gate passed; normalization fitted 2026-07-28; LIVE. v6 weights on Hub 2026-07-30 (was: v4 repo shared — that mismatch + FILTER_VERSION 5.0 fixed in 403429d). |
 | investment-risk | v6 | 0.497 | 0.465 | 10.4K | `jeergrvgreg/investment-risk-filter-v6` (private) | **2026-08-11 OP-POINT 4.0 → 4.25** (recall 0.7239 / spec 0.9740, was 0.7609 / 0.9550; normalization refit n=38,637 raw_min 4.25). Deployed `3d358d3`. **First accuracy number ever measured 2026-08-10.** 2026-02-21 |
 | cultural_discovery | v5 | — | 0.697 (val) | 8.5K | `jeergrvgreg/cultural-discovery-filter-v5` | 2026-07-31 multilingual topic gate added to prefilter (LD#86); **gate VALIDATED in production 2026-08-01 via NM#284 shadow: observed pass 0.255 vs declared 0.25 (n=2099, full cycle)** — but still NOT ENFORCED (NM#284); 2026-05-31 v5 (#62 flags; DeepSeek oracle) |
-| cultural_discovery | v6 | — | (v5's, reused) | 8.5K | `jeergrvgreg/cultural-discovery-filter-v6` **(DOES NOT EXIST YET)** | **NOT LIVE — package parity reached 2026-08-06, cutover blocked on two things.** v6 = v5's student weights + an e5 probe + a commerce-only prefilter; **no retrain** (#98). Keyword gate, 4 exclusion categories, 3 domain blocklists and the `evidence_quality` gatekeeper (#94) all removed. `score_scale_factor` 1.0, **no normalization.json** (must be fitted from a historical rescore — v5's is invalid because the probe changes which articles survive). Blockers: create the Hub repo (copy the v5 adapter verbatim), fit normalization. Ships stamping-only per ADR-022. |
+| cultural_discovery | v6 | — | (v5's, reused) | 8.5K | `jeergrvgreg/cultural-discovery-filter-v6` | ⛔ **CUTOVER ATTEMPTED, FAILED AND REVERTED 2026-08-13** *(this row said "DOES NOT EXIST YET / blocked on two things" until 2026-08-16 — it was two days behind an event only `CLAUDE.md` recorded)*: NM#348 merged `d5943d3`, stage 2 loaded from the Hub, which cannot work on gpu-server under `HF_HUB_OFFLINE`. Scorer returned 500, the smoke test caught it, **one cycle lost and no bad data**. Fixed and verified offline (`dcf2860`), **not redeployed**. Rollback of a future cutover = delete v6's dir on gpu-server, which makes v5 latest again. ⚠️ **v5 ALREADY runs two-stage** — `filter_loader.py:148` sets `hybrid_class` from the PRESENCE of `inference_hybrid.py`, not from `config.yaml`, so v6 does not introduce probe screening; it changes the probe and threshold (~63.7% vs a measured 54.9% `stage1_low`). Earlier state, still true of the package: **package parity reached 2026-08-06.** v6 = v5's student weights + an e5 probe + a commerce-only prefilter; **no retrain** (#98). Keyword gate, 4 exclusion categories, 3 domain blocklists and the `evidence_quality` gatekeeper (#94) all removed. `score_scale_factor` 1.0, **no normalization.json** (must be fitted from a historical rescore — v5's is invalid because the probe changes which articles survive). Blockers: create the Hub repo (copy the v5 adapter verbatim), fit normalization. Ships stamping-only per ADR-022. |
 | cultural-discovery | v4 | 0.74 | — | 8K | `jeergrvgreg/cultural-discovery-v4` | 2026-02-20 (superseded by v5) |
 | belonging | v1 | 0.534 | 0.489 | 7.4K | `jeergrvgreg/belonging-filter-v1` | 2026-07-31 normalization REFIT (Mar-30 fit drifted, survivors under-ranked +1.0–2.1; NM#279) |
 | nature_recovery | v4 | recall 0.65 / prec 0.85 @3.75 | 0.48 | 3.9K | `jeergrvgreg/nature-recovery-filter-v4` | 2026-07-10 (DeepSeek oracle; #70 protection scope; op-point 3.75 wired into TIER_THRESHOLDS + validated in prod output, F1) |
@@ -204,6 +204,17 @@ positives vs 0.6668 on negatives, 1.79×), so a more enriched split scores worse
 for identical quality. Composition explains **+0.0919 of the 0.3435** gap to
 nature_recovery — ~27%, not all of it, so the residual may be real; it simply is
 not the objective.
+
+**What this rule was written against** *(moved here from `CLAUDE.md` 2026-08-16;
+the imperative stays there)*: on **2026-08-09** an agent produced a six-filter
+quality ranking on mean absolute error and recommended a calibration change on
+it. **Both were retracted.** MAE is the wrong instrument twice over — it weights
+every article equally while the product only cares about the thin band at the
+op-point, *and* each split's own positive rate makes a more enriched split carry
+larger per-article error for identical model quality. ⚠️ **Do not overstate the
+retraction either.** Composition explains only the ~27% above, so the ranking was
+invalid **as made** while the residual it rested on may still be real. Two
+separate claims; retracting the first does not establish the second is false.
 
 **The comparable numbers**, both conditional on the true class:
 
