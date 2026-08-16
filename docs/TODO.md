@@ -237,8 +237,32 @@
 > numbers, distinct from the known one: not *resolving in the wrong repo*, but **resolving
 > in the RIGHT repo to a real ADR whose SCOPE does not cover the case** — and it is worse,
 > because qualifying the repo name (which I did) does not catch it.
-> **B. Upstream, real work, preserves badges** — FluxusSource stops discarding the GN title
-> suffix (FS#186's site) so GN members become attributable. They have **not** scoped it.
+> **B. Upstream, preserves badges — and it is CHEAPER than it looked when I wrote this.**
+> FluxusSource stops discarding the GN title suffix (FS#186's site) so GN members become
+> attributable. ⭐ **Re-priced 2026-08-16 by them re-fetching the feeds live rather than
+> reasoning about them: 30 of 59 `gn_*` country feeds, 1,142 entries, and the
+> `" - <Publisher>"` suffix is present on 1,142 of 1,142 — 100%, no exceptions.** The data
+> is on the wire and re-fetchable; B is a parse plus a name→host table, not a research
+> project. **At least 14.1% (161/1,142) name a publisher we ALSO collect natively**
+> (aljazeera.com, thecitizen.co.tz, timesofisrael.com, France 24, Middle East Eye…).
+>
+> ⛔ **That 14.1% is a FLOOR and must NOT be set against ovr's 23.8% — different
+> denominators.** FluxusSource measured *"the GN entry names a publisher we collect at
+> all"*; ovr's 23.8% is the narrower *"the GN member is THIS cluster's primary's
+> publisher"*. It **bounds the mechanism, and is not a measurement of the exposure's size**.
+> Floor because matching is exact-equality only, so `The Jerusalem Post` → `jpost.com`
+> (which is in the config) is invisible. ⭐ **Their first pass said 31.6% and they threw it
+> away and told me**: substring matching gave `Reuters`→`reutersinstitute` (a different
+> organisation), `Daily Monitor`→`daily`, and `سانا`→`herald` because the Arabic name
+> normalized to the **empty string** and `"" in anything` is True. *A normalizer that can
+> return empty makes substring matching universally true* — worth carrying anywhere we match
+> names. They quoted the number they can defend, not the one they believe.
+>
+> **Net effect on the decision: the exposure is no longer plausibility.** At least 1 in 7 GN
+> country-query entries is a publisher already in the corpus, so a native copy and a GN copy
+> of one story arriving at ovr as two hostnames is a routine event. ⭐ **FS#186 now has 100%
+> present at the producer and 0% attributable at the consumer, measured independently at
+> both ends with neither side reading the other's code.**
 > ⛔ B is the expensive fix and A has not been priced against it. **Product/editorial call,
 > not mine:** A trades badge volume for honesty; B buys the volume back at a producer cost.
 >
