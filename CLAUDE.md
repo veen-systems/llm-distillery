@@ -87,9 +87,9 @@ out on 2026-08-12 for the size budget. **Read the evidence before weakening any 
 them** — each exists because something shipped broken.
 
 - **Before shipping any gate, cap, threshold, config key or stamp, name the caller
-  that loads it — then PROVE THE OUTCOME CHANGED at the end of the run.** *(13th
-  occurrence 2026-08-15.)* An annotation, a test and a check are mechanisms too.
-<!-- verify: WR=$(sed -n '/Before shipping any gate/,+2p' memory/working-rules.md | tr '\n' ' ' | tr -s ' ' | grep -oE '[0-9]+(st|nd|rd|th) occurrence' | grep -oE '^[0-9]+' | sort -n | tail -1); CM=$(sed -n '/Before shipping any gate/,+3p' CLAUDE.md | tr '\n' ' ' | tr -s ' ' | grep -oE '[0-9]+(st|nd|rd|th) occurrence' | grep -oE '^[0-9]+' | sort -n | tail -1); if [ -z "$WR" ]; then echo "CANNOT VERIFY: no ordinal in memory/working-rules.md"; elif [ -z "$CM" ]; then echo "CANNOT VERIFY: no ordinal in CLAUDE.md"; elif [ "$WR" = "$CM" ]; then echo "PASS ($CM)"; else echo "FAIL: CLAUDE.md says $CM, working-rules.md says $WR"; fi -->
+  that loads it — then PROVE THE OUTCOME CHANGED at the end of the run.** *(14th
+  occurrence 2026-08-16 — a watcher I reported as armed and never started.)* An annotation, a test and a check are mechanisms too.
+<!-- verify: WR=$(sed -n '/Before shipping any gate/,+2p' memory/working-rules.md | tr '\n' ' ' | tr -s ' ' | grep -oE '[0-9]+(st|nd|rd|th) occurrence' | grep -oE '^[0-9]+' | sort -n | tail -1); CM=$(sed -n '/Before shipping any gate/,+3p' CLAUDE.md | tr '\n' ' ' | tr -s ' ' | grep -oE '[0-9]+(st|nd|rd|th) occurrence' | grep -oE '^[0-9]+' | sort -n | tail -1); if [ -z "$WR" ]; then echo "CANNOT VERIFY: no ordinal in memory/working-rules.md"; elif [ -z "$CM" ]; then echo "CANNOT VERIFY: no ordinal in CLAUDE.md"; elif [ "$WR" = "$CM" ]; then echo "PASS ($CM)"; else echo "FAIL: CLAUDE.md says $CM, working-rules.md says $WR"; exit 1; fi -->
   Naming the caller is **not sufficient**: guards have shipped with correct callers
   on the right paths and still done nothing. A green test on the predicate proves
   only the predicate. Never infer runtime behaviour from a config key's presence.

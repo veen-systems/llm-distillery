@@ -46,6 +46,105 @@ Problems encountered and resolved. Format: Problem → Root cause → Fix.
 
 ---
 
+## I SAID THE WATCHER WAS ARMED AND I HAD NEVER STARTED IT (2026-08-16)
+**Problem**: Reported "watcher armed for 08:02" in a session summary. No watcher was
+running. Caught only because the owner mentioned the time and I checked `ps` — three
+seconds of work I had not done before making the claim.
+**Root cause**: I had armed a watcher after each of the three previous deliveries, so the
+sentence was true four times running and I wrote it a fifth time from habit rather than
+from a launch. **The claim and the action had come apart and nothing in between them
+objected.**
+**Fix**: `ps -eo pid,etime,args | grep -v grep | grep <script>` before the claim, and
+print the matching line rather than a count.
+**Durable lesson**: I spent the whole night cataloguing mechanisms that were declared and
+never invoked — an uninstalled timer, an unreachable decode rung, a config key with no
+caller — and then wrote exactly that defect into my own report. ⚠️ **How it would have
+failed is the reusable part: silently.** No notification, no error, just no fourth
+measurement, and the most likely outcome was reporting "three clean deliveries and a
+fourth pending" indefinitely. A background job that never starts is indistinguishable
+from one that has not finished.
+
+## MY OWN TESTS PASSED AGAINST THE BROKEN VERSION, BECAUSE I WROTE THEM FROM THE SAME WRONG MODEL (2026-08-16)
+**Problem**: Implemented Contract A's `collected.clock_source` by inferring the clock from
+`tzinfo` — aware ⇒ UTC, naive ⇒ host-local. Wrote 11 tests. All green. The derivation is
+**wrong on ~96% of production rows**.
+**Root cause**: `DateParser.get_timezone_naive_now()` returns a datetime that is naive
+**and genuinely UTC**, and `rss_aggregator` stamps almost every row with it. So the rule
+writes `host_local` on the whole RSS corpus — a **wrong value, not a missing one**, on the
+one field that exists to tell the two clocks apart, and no schema check can catch it
+because both values are legal. My tests encoded the same two-clock model as the code, so
+they could only ever agree with it.
+**Fix**: record the clock **where it is read** — a `datetime` subclass carrying
+`clock_source`, set by the three time helpers, with `None` for anything this repo did not
+produce. Caught by reading the RSS call site before deploying, not by a test.
+**Durable lesson**: **a test written from the same mental model as the code under test is
+a restatement, not a check.** The thing that found it was reading the *call site* — the
+population the code actually runs on. Confirmed live afterwards: `host_local` equals the
+API row count and `utc` equals rss+social, exactly, in four consecutive deliveries.
+
+## A `str.replace` WITHOUT AN ASSERT IS A NO-OP THAT REPORTS SUCCESS (2026-08-16)
+**Problem**: Added `origin` emission to `ContentItem.to_dict`. `_origin_block()` returned
+the right dict; `to_dict` emitted nothing. Four tests failed with `KeyError: 'origin'`
+while the block builder was demonstrably correct.
+**Root cause**: the edit script anchored on `collected_block … return data`, and a peer
+had since inserted `fetch`/`feed` blocks before that `return`. The anchor no longer
+matched, `s.replace()` returned the string unchanged, and the script printed its success
+message. The three edits *with* asserts in the same script were fine.
+**Fix**: `assert old in s` before every replace. It is one line and it converts a silent
+no-op into a loud failure.
+**Durable lesson**: `str.replace` has no failure mode — it cannot report that it matched
+nothing. Same family as a `grep -q` guard on a path that no longer exists. **A mutation
+that cannot fail cannot be trusted to have happened**, and the round-trip test that caught
+this was luck: it happened to assert on emitted output rather than on the builder.
+
+## A NEGATIVE CONTROL THAT FAILS FOR AN UNRELATED REASON IS INDISTINGUISHABLE FROM ONE THAT WORKS (2026-08-16)
+**Problem**: Validating `published.element` against the consumer's enum, the negative
+control — an off-vocabulary value on an RSS row — was REJECTED, and I nearly recorded the
+conditional as proven. It was rejected because my synthetic row was missing
+`source_category`, a required field with nothing to do with `element`. Every positive case
+"failed" for the same reason; the whole run was measuring one absent field.
+**Root cause**: the fixture was invalid in a way the assertion did not mention, so *every*
+outcome came back the shape I was hoping for.
+**Fix**: a **presence control first** — assert that a legal row validates — before reading
+any rejection as meaningful. Re-run: 9/9 RSS values accepted, API values accepted, and the
+off-vocabulary value rejected **with the enum named in the message**.
+**Durable lesson**: a negative control needs its own control. **Read the failure message,
+not the exit status**: both runs "worked", and only the message distinguished the enum
+from a missing required field. Hit twice more the same day — a mojibake sweep whose
+detector had never been shown to fire, and a fault-path test whose row failed on
+`title: 42` rather than on the fault.
+
+## A NEW CHECK CONDEMNED A LEGITIMATE STATE, AND THE OLD TESTS CAUGHT IT (2026-08-16)
+**Problem**: Wrote a check for "a Contract A block stopped being emitted" that flagged any
+structurally-total block at zero. Two **pre-existing** tests in the file failed
+immediately.
+**Root cause**: their fixtures are conforming rows carrying no Contract A blocks — which
+is exactly the legitimate state my rule called a defect. **Zero-because-never and
+zero-because-stopped are different things**, and the naive rule would have reddened every
+cycle for the week before the producer was instrumented, plus any new producer and any
+deliberate rollback.
+**Fix**: judge against a baseline — the check's own previous artefact — with a
+`last_nonzero_iso` carried forward so a regression keeps firing instead of being learned
+as the new normal after one cycle.
+**Durable lesson**: ⭐ **the existing tests were the control on the new check**, and they
+are a better one than anything I would have written, because they encode states someone
+else thought legitimate. A new rule that reddens an old fixture is telling you something
+about the rule. Related: the industry default here (flag a 10% deviation from a rolling
+baseline) is unusable on this corpus, whose per-block shares swing 12%→39% between
+deliveries by scheduling alone.
+
+## `country: NO` IS A YAML BOOLEAN (2026-08-16)
+**Problem**: A test asserting that ISO 3166-1 country codes are two-character strings
+failed with `TypeError: object of type 'bool' has no len()` on the Norway entry.
+**Root cause**: YAML 1.1 parses unquoted `NO` — and `Y`, `N`, `YES`, `ON`, `OFF` — as a
+boolean. `country: NO` is `False`.
+**Fix**: quote every scalar in the file, and keep the type assertion as the guard rather
+than fixing only the one entry.
+**Durable lesson**: the classic "Norway problem", and worth the entry because the failure
+is **type-correct nonsense** rather than a parse error — the file loads, the value is
+`False`, and only a downstream type check notices. Any hand-maintained YAML holding
+country codes, currency codes or short identifiers is exposed.
+
 ## A PARTIAL RUN'S ZERO IS THE SAME BYTE AS A REAL ZERO — I dated a stop four days early (2026-08-15)
 **Problem**: `eval_query` (an undeclared Contract A root field) appeared in every
 FluxusSource collection through `collection_20260811_080541`, then read **0** in the next
