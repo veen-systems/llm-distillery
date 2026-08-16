@@ -470,7 +470,22 @@
 >
 > </details>
 >
-> ### 🟡 #121 — ASKED, AND THE ANSWER WAS ABOUT THE FILTER, NOT THE LENS
+> ### ⏸️ `investment_risk` — **PARKED 2026-08-16 by owner instruction.** #121 closes as moot
+>
+> **Owner: *"park investment"*.** ⛔ **PARKED means PARKED — nothing removed, nothing
+> deprecated, no package deleted, no lens retired.** `investment_risk v6` stays deployed
+> (HF Hub private, op-point 4.25) and keeps scoring. This is a *stop working on it* order,
+> not a teardown order; the 2026-08-03 `sustainability_technology` / `foresight` removal is
+> **not** the precedent to follow unless he says so.
+>
+> **Consequence: #121 closes as MOOT, not on its merits.** The lens-definition question below
+> was never answered and does not need to be. ⚠️ Note what dies with it: `investment_risk`
+> was the **only** lens where the opinion effect survived the within-source control
+> (MH OR 2.05, reproducing on three independent detector arms at 2.23 / 2.15 / 1.83). That
+> finding is real and is now parked with the filter — **do not re-derive it from scratch if
+> the filter is ever un-parked**; the record is `memory/opinion-genre-hypotheses.md`.
+>
+> ### 🟡 #121 — the question that is now moot
 >
 > **Owner 2026-08-16, verbatim: *"i think i am going to drop that filter, i am not really
 > interested anymore."*** So the lens-definition question below is **moot if
