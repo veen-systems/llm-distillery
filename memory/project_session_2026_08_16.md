@@ -152,10 +152,24 @@ caught by someone re-deriving from the other side, neither by reading.
 
 ## Open after this session
 
-- **NM#389** merge + deploy — authorized by NexusMind's owner, sequencing agreed. First
-  real evidence is a `superseded_reprocessed > 0` in a live cycle log; ⛔ **it fires 0
-  times on any stored corpus by construction**, so a 0 must never be read as "shipped and
-  working". Watch must carry a **date**, not be left "open".
+- **NM#389 MERGED AND DEPLOYED** (`fdffc4b`, pulled to sadalsuud; first cycle 12:0x CEST).
+  Contract A **1.33.0** live with it — ⚠️ the next contract-check fire reports a new
+  contract `sha256`/`commit`; **expected, not an anomaly.** Watch is dated **2026-08-23**,
+  recorded in three places with falsification criteria fixed in advance.
+  ⛔ **An early zero will be the RAMP, not the mechanism**: all six stores went in with
+  ~111k ids and **zero version records**, and those ids never gain one — they are dropped
+  as `already_processed` and age out on the 6-day expiry. **Coverage is partial until
+  ~08-22.** ⭐ That is the **third** guaranteed zero of the day, after my eviction-window
+  corpus and the rule's 0-fires-on-stored-data. Same shape every time: *the observation
+  window is shorter than the mechanism's period.*
+  ⚠️ **And the verify probe shipped in that PR was itself unreachable** — `grep -q
+  "superseded_reprocessed" scripts/main.py`, a word appearing 9 times in that file
+  including in a docstring, so it stayed **green with the feature forced off**. Written
+  two hours after we had agreed in the same thread that a mechanism must be the thing
+  that fails. **Knowing the rule, and having just stated it, is not protection.**
+  Generalisation via pipeline-atlas: **restricting file type does not separate a mention
+  from an invocation** — an absence check needs a third mutation direction in which prose
+  must not turn it green.
 - **ovr** — project `content_hash` + `collected_date` on ingest, then summary-cache
   invalidation. Needs a version-of-the-summary timestamp, not the article's.
 - **FS#183** — record-only by owner ruling.
