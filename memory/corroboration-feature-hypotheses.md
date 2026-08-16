@@ -466,15 +466,15 @@ panel's 20.6–30.4%.
 
 ⛔ **My "the label is `type_classification`-derived and contaminated by news"
 hypothesis is REFUTED** (stated at ~75%, and the label is **narrower and purer** than
-`primary_literature`, not broader). The label is `~/nm-sweep/feature_probe2.py:90` —
+`primary_literature`, not broader). The label is `b650:~/nm-sweep/feature_probe2.py` line 90 —
 `any(t in _s for t in ("arxiv","pubmed","biorxiv","medrxiv","clinicaltrials","ssrn"))`
 over `source_1 + " " + source_2`, a **6-term slug substring match OR'd across both
 sides of the pair**. Smithsonian/ScienceAlert/STAT cannot enter it. Measured leak the
 other way: **5 of 508 panel-"news" pairs (1.0%)**. ⚠️ **The panel itself carries NO
-academic label** — `judge_pairs.py` / `build_precision_panel.py` have zero "academic"
-references and `answer_key.json` strata are cluster-**size** only; the cut is applied
-downstream in the probe. ⚠️ **And `feature_probe.py`, which this file cited as the
-reproduction, does not contain the cut at all** — it is `feature_probe2.py`.
+academic label** — `NexusMind/scripts/research/judge_pairs.py` / `NexusMind/scripts/research/build_precision_panel.py` have zero "academic"
+references and `NexusMind/data/research/precision_panel_v3/answer_key.json` strata are cluster-**size** only; the cut is applied
+downstream in the probe. ⚠️ **And the `feature_probe` script this file cited as its
+reproduction does not contain the cut at all** — it is the `feature_probe2` variant with the `all|news|acad` argv switch.
 
 ⭐⭐ **THE 3× IS STRATIFICATION, AND IT IS THE KEEPER OF THE ARC.** The panel draws
 ~100 pairs from *every* cluster-size stratum regardless of production frequency;

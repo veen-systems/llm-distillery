@@ -251,6 +251,46 @@
 > 69.7/28.0/2.3, **almost exactly proportional**. Against all-rows share it reads as a uniform
 > ~3.5× over-representation, which is an artifact. They checked before writing up a skew.
 >
+> ### ⛔ POSTSCRIPT — the whole name-matching problem NEVER EXISTED. Struck, not restated
+>
+> **GN RSS carries a structured `<source url="https://www.itv.com">ITVX</source>` on every
+> item.** Measured live by FluxusSource, per population, unpooled: **A 892/892 · B 528/528 ·
+> C 1,156/1,156 = 2,576 of 2,576 (100%), every one with an http host.** ⛔ **So strike the
+> 14.1%** — do not restate it. The underlying claim (a large share of GN entries name a
+> publisher already in the corpus) is still true and probably much higher, but it came from
+> the wrong instrument. Everything downstream of it was an artefact of parsing a *display
+> string* while a structured host sat in the same item: the 31.6%→14.1% saga,
+> `Reuters`→`reutersinstitute`, the empty-string `سانا` bug, and the "floor because it cannot
+> see `The Jerusalem Post`→`jpost.com`" caveat. **There is nothing to normalize and no floor.**
+>
+> ⭐⭐ **AND THEIR OWN ISSUE #145 HAD IT FILED THE WHOLE TIME, WITH THE ANSWER IN THE TITLE** —
+> *"Harvest native publishers from GN's `<source url>` — 100% coverage, free, and 2.5× more
+> accurate than name-guessing."* Open all evening. It surfaced only because their owner asked
+> an unrelated question and sent them to `gh issue list`. **The generalisable form, theirs:
+> the ISSUE TRACKER IS A MEMORY LAYER, and it is the one nothing in the session-start path
+> loads** — CLAUDE.md, the handoff hook and the memory index all load; `gh issue list` does
+> not. **Before measuring a mechanism, grep the open issues for it.**
+> ⭐ Second, and it is the rule we already had applied everywhere except to itself:
+> **"there is only one way to get X" is a NEGATIVE EXISTENCE CLAIM**, and it was asserted from
+> reading the code in front of them rather than probing for alternatives.
+>
+> ⚠️ **Nothing re-opens.** RECOVER stayed closed on *value* — 92 A / 37 B with 0 spurious /
+> 3 C, three residual badges — and **a cheaper mechanism does not revive a benefit that is not
+> there.** FS#186 is *stronger*: the false comment claimed the publisher was preserved in
+> `source`, and it was in fact available **twice over**, in the suffix and in a structured
+> element — the comment stopped anyone looking for either.
+>
+> ### ⭐⭐ The three platform feeds were CAUGHT AND FIXED ON 2026-07-26 — and re-enabled
+>
+> Fixed and deployed. But the history is the cleaner instance of the promotion-did-not-take
+> shape than anything in the badge work: **they were caught on 2026-07-26 and disabled, with
+> the diagnosis written into each feed's own `notes` field** — *"captures ALL Substack, not
+> just one blog"*. **A bulk recovery sweep re-enabled both on 2026-08-04** because they
+> *"still yield (100 entries, newest 0.0d)"*. ⛔ **Yielding is exactly what that defect does,
+> so the acceptance test was measuring the SYMPTOM AS HEALTH.** And the sharpest part:
+> **the intent was not missing from the tool's inputs — it was in the very field the tool
+> rewrote.**
+>
 > ⭐⭐ **ovr's closing catch, and it is about HOW this was stopped, not what was decided:**
 > I stopped this thread for the owner's sake — he said he was lost — and the evidence closed
 > it independently in the same hour. **Those two aligning was LUCK, not design.** Had population
