@@ -54,6 +54,7 @@ two quantities this file spent weeks estimating are read directly.
 | `…0816_040540` | 231 | 2,280 | **0** |
 | `…0816_081046` | 231 | 1,831 | **0** |
 
+<!-- verify: bash scripts/verification/check_clock_source_partition.sh -->
 ⭐ **`host_local` equals the API row count exactly, and `utc` equals rss + social exactly,
 in every delivery.** Every API producer is on the host clock (CEST, +2h), every RSS one on
 UTC, and there is **not one mixed case in ~9,800 rows**. ⭐ **A clean partition is

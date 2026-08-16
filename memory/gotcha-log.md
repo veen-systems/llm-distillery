@@ -46,6 +46,28 @@ Problems encountered and resolved. Format: Problem → Root cause → Fix.
 
 ---
 
+## A PROBE A RENAME CAN SATISFY — my refactor told two sibling probes the bug was fixed (2026-08-16)
+**Problem**: *(Found by FluxusSource's curate sweep, caused by my change.)* Two of their
+verify probes asserted FS#176 was still live by counting
+`collected_date=datetime.now()` in `src/aggregators/`. My migration routed those 28 sites
+through a new `host_local_now()` helper, so the count went to **0** and both probes
+reported **"#176 SHIPPED / MIGRATED — rewrite this block"**. Nothing was fixed: 19
+aggregator files still stamp the host clock, and `collected.clock_source` proves it on
+delivered rows.
+**Root cause**: the probes measured **the spelling the defect happened to be written in**,
+not the defect. A rename is indistinguishable from a repair to a grep.
+**Fix**: theirs now count `host_local_now()` call sites and read the newest delivered
+run's `clock_source` distribution; neither can be satisfied by a rename. On this side the
+same claim had **no probe at all**, so it was exposed one step earlier — now
+`scripts/verification/check_clock_source_partition.sh`, which reads **emitted rows**.
+**Durable lesson**: ⭐ **If a refactor could make your probe pass, the probe is measuring
+the wrong thing.** And note the direction: it failed toward **telling the next reader to
+delete a live warning**, which is worse than a false red. Prefer a probe that reads the
+*outcome* (what rows carry) over one that reads the *source* (how the code is spelled) —
+the outcome cannot be renamed. ⚠️ Second-order: my first replacement probe was **rejected
+as MALFORMED** because I inlined a multi-line remote script into the annotation; the rule
+is one line, and anything longer belongs in a script the annotation calls.
+
 ## A PEER'S ENUM TESTED ONLY AGAINST THE VALUES THEY CURRENTLY EMIT (2026-08-16)
 **Problem**: *(pipeline-atlas, consuming this estate's contract-check artefact — reported
 against their own code after a review found it.)* Their reader tested
