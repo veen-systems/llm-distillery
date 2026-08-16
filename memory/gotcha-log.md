@@ -46,6 +46,83 @@ Problems encountered and resolved. Format: Problem → Root cause → Fix.
 
 ---
 
+## A BARE `ADR-023` RESOLVED IN THE READER'S REPO AND CAME BACK AS A CONFIDENT REBUTTAL (2026-08-16)
+**Problem**: I cited "ADR-023" in cross-session advice to NexusMind on NM#390. They read
+*their* ADR-023 (*Bound the corroboration ranking boost*), found it said nothing like what
+I claimed, and sent a well-evidenced correction stating my citation did not hold and the
+repo's real asymmetry pointed the other way. **There are three ADR-023s**:
+llm-distillery's *Asymmetric Loss — Precision over Recall*, NexusMind's corroboration
+boost, ovr.news's *OG Image Strategy* (and ovr keeps them in `docs/decisions/`, not
+`docs/adr/`, so a two-clone grep misses it).
+**Root cause**: the known bare-issue-number trap, one identifier class over. Every repo
+here numbers ADRs from 1.
+**Fix**: write `llm-distillery ADR-023` or quote the title. Recorded in the auto-memory
+entry `feedback-bare-issue-number-resolves-locally`, widened from issues to ADRs.
+**Durable lesson**: ⭐⭐ **An issue number that resolves wrongly reads as confusion and gets
+questioned; an ADR that resolves wrongly reads as a SETTLED PRINCIPLE, so it arrives with
+authority and gets acted on.** Mine was about to be used to dismiss a correct argument.
+⭐ **The tell, and it is checkable in the moment: the rebuttal quoted a constraint from a
+file I had never cited.** If counter-evidence comes from a document the other party did
+not reference, you are probably answering a different document. ⚠️ And check for a real
+disagreement hiding behind the collision — here there was one, and it was better than
+either citation: the two repos' asymmetries are reconciled by **stage**, not by one being
+wrong (NexusMind's own heading is *"Permissive prefilters, precise models"*), so quoting a
+late-stage op-point rule at an *ingest* gate was the actual error.
+
+## I RE-IMPLEMENTED A CHECKER INSTEAD OF RUNNING IT, TWICE, WHILE VERIFYING SOMEONE ELSE (2026-08-16)
+**Problem**: Asked whether `refcheck.py` had a gitignored-but-present blind spot, I wrote a
+fresh probe copying its path regex and doc list. It reported **"0 STATE_DIRS references
+exist at all"**, which would have made the question moot. Wrong: `rung3` fires 6 times —
+all via the `STATE_SHAPE` suffix rule (`.log`, `_health.json`), which my copy omitted.
+Earlier the same session, counting empty-url rows, my glob over `collection_*` matched
+`collection_metadata.json` <!-- placeholder --> and `collection_stats_*.json` — they are **directories**
+containing `content_items_*.jsonl` — and returned `distinct ids: 0`.
+**Root cause**: both times I rebuilt the instrument from memory of what it does instead of
+executing the instrument. A re-implementation silently diverges; a wrong path and a
+genuinely clean result produce identical output.
+**Fix**: read the real checker's output. For the corpus, take the path from
+`scripts/contracts/contract_a_smoke.py`, which already aborts on an empty read *because it
+once printed `CLEAN (0 errors over 0 rows)` on a path that globbed nothing*.
+**Durable lesson**: ⭐ **Reading the path off a tool that already aborts on empty is cheaper
+than re-deriving it.** Both failures were caught only because the OUTPUT was implausible,
+never by inspecting the probe — see the next entry.
+
+## AN IMPLAUSIBLY HIGH NUMBER IS THE SAME SIGNAL AS ZERO, AND EASIER TO ACT ON WRONGLY (2026-08-16) [x2]
+**Problem**: Two instrument failures in one hour. Mine returned **0** (above). A peer's
+cross-repo reference sweep returned **49 of 71 broken**, because they built the sibling
+list by listing a directory rather than testing for `.git`, so non-repo folders (`.claude`,
+`research`) turned same-repo paths into phantom cross-repo breaks. Real figure: 2 of 22.
+**Root cause**: "zero findings is the result to distrust" is well recorded here; its mirror
+was not. Neither of us caught the instrument by inspecting it — both of us caught it
+because the output was absurd.
+**Fix**: recorded in the auto-memory entry `feedback-check-must-be-specific`.
+**Durable lesson**: ⭐⭐ **Before reporting a number, state what range would have been
+believable; if the result falls outside it in EITHER direction, suspect the instrument
+first.** ⭐ The asymmetry that makes the high tail bite: **a zero invites "did it run?",
+a large number invites "what do I do about it?"** — the first question is about the
+instrument, the second is already about the world, so the more interesting question
+recruits effort away from the check. The defence is ordering, not vigilance: a range
+predicted in advance costs nothing and survives being excited about the answer.
+⚠️ The peer's three fixes were already sitting in this repo's `refcheck.py` unread
+(`.git` test, whole-token repo name, locally-resolving paths are not cross-repo).
+**The guard usually exists somewhere in the estate, and finding it is harder than
+rebuilding it.**
+
+## I NAMED A POPULATION AND NEVER SIZED IT, SO A TRUE REMARK READ AS A QUALIFIER (2026-08-16)
+**Problem**: Correcting a peer's claim that `id` is url-derived, I pointed out the producer
+actually does `url if url else f"{title}_{published_date}"` and concluded this "narrows"
+their tautology caveat, because empty-url rows are a population where `id` genuinely is not
+a function of the url. **Measured: 1 row in 157,870.** It widens the caveat, not narrows it.
+**Root cause**: I identified a set and never asked how big it was. Sound, inert, and
+phrased as though it bore on the conclusion.
+**Fix**: reproduced the count independently (51 collections, 2026-08-08 → 08-16, source
+`art_contemporary_art_daily`) and corrected it back.
+**Durable lesson**: ⭐ **A structural observation stated without its population size reads
+as a qualifier on the conclusion.** Same family as *a rate needs its denominator*, applied
+to a set rather than a ratio. ⚠️ Also: the gotcha log is **newest-first**, and I read its
+tail expecting the newest entries — establish an artefact's ordering before quoting from
+one end of it.
+
 ## A PROBE A RENAME CAN SATISFY — my refactor told two sibling probes the bug was fixed (2026-08-16)
 **Problem**: *(Found by FluxusSource's curate sweep, caused by my change.)* Two of their
 verify probes asserted FS#176 was still live by counting

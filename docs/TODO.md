@@ -1,6 +1,6 @@
 # LLM Distillery - TODO
 
-## 🔵 NEXT SESSION — **the #119 arc is CLOSED; what is left is ovr's half and NM#390**
+## 🔵 NEXT SESSION — **#120 and #121 closed here; what is left is in other repos**
 
 > ### ✅ ARC CLOSED 2026-08-16 — ruled, built, deployed, verified on a live cycle
 >
@@ -35,9 +35,105 @@
 > 3. **NM#388's 08-23 watch** — the first `superseded_reprocessed > 0`. ⛔ **A zero
 >    before ~08-22 is the ramp, not a result.**
 >
-> **In this repo:** ~50 unresolved references in the live topic files, newly visible
-> because `refcheck.py` now scans 29 documents instead of 3. Triage, mostly wanting a
-> repo marker rather than a path fix.
+> ### ✅ DONE 2026-08-16 (evening) — #121 measured, #120 triaged. No filter, model,
+> package or deploy from this repo.
+>
+> **#121 (opinion/editorial) — MEASURED, and the motivating hypothesis is REFUTED where
+> it is measurable.** 233,338 rows, 85 cycles, 14 days, deduped by `id`; the issue's
+> first look was n=33. The within-source control **dissolves the effect in 5 of 6
+> lenses** — `belonging` 5.9× → **MH OR 0.98**. Only `investment_risk` survives (**2.05**,
+> 66 of 89 sources same direction, zero ties, reproducing on three independent detector
+> arms at 2.23 / 2.15 / 1.83). `solutions` **reverses** (0.50). Full record, traps and
+> reproduce commands: **`memory/opinion-genre-hypotheses.md`**.
+> ⛔ **#121's issue body measures `solutions` at op-point 4.0. It is 2.25** (runtime
+> `base_scorer.py`), which manufactured one of the two zeros its own "this contradicts my
+> motivation" paragraph rested on. Corrected in a comment, not in the body.
+> ⚠️ **What is NOT established: that the surfaced opinion is wrong.** The 25 flagged
+> `investment_risk` rows above op-point are geopolitical op-eds, and Hormuz *is*
+> investment risk. **A topic confound survives inside each source and MH cannot remove
+> it.** The remaining question is a lens-definition one for the owner, not a detector one.
+>
+> **#120 (references) — 50 → 1**, `48f48a5`. 33 repo markers, 15 placeholders (each
+> verified absent from every repo first), 1 strikethrough, 1 collision, 1 `vmodel` →
+> `vmodel.eu`. The survivor is `logo300.png`, deliberately left: it exists in no repo and
+> may be illustrative. **Zero was not reached by disabling anything** — `run.sh` 24/24
+> before and after, plus four seeded mutations (wrong-repo marker, fabricated file behind
+> a correct repo name, placeholder on a resolving path, mentioned-but-not-present), all
+> caught.
+>
+> ### ⚠️ THREE THINGS WAITING ON AN OWNER DECISION
+>
+> 1. **`datasets/` is not in `refcheck.py`'s `STATE_DIRS`**, so the 15 placeholders added
+>    by #120 flip to *STALE PLACEHOLDER (the path resolves)* the moment a training corpus
+>    is re-materialised locally — routine here. Either add `datasets/` to `STATE_DIRS`
+>    (cleaner; changes what the checker treats as expected-absent globally, so re-run the
+>    seeded harness) or leave it. Not touched: normative surface, wider blast radius than
+>    the 15 markers.
+> 2. **A #119 addendum, offered and not written.** For RSS rows
+>    `id = md5(source + "_" + raw_url)[:12]` (`FluxusSource/src/aggregators/rss_aggregator.py`
+>    + `FluxusSource/src/models/content_item.py`), so a publisher editing an article's URL
+>    presents as a **new item, not an edit**, and #119's supersede path (same-id /
+>    different-hash) structurally cannot fire for it. **Measured not to occur** — 1 of
+>    157,870 rows has an empty url, reproduced independently. Structural bound on what the
+>    ruling can promise, not a live defect. It bounds an owner ruling, so it is the owner's
+>    to accept.
+> 3. **CLAUDE.md is 35,464 — 464 over the soft target.** The file went over *after* the
+>    last curate reported 35.1k (`57ff0e2` added 354 with no size pass). Cutting the rest
+>    means touching text this session did not write: an `/audit-context` job.
+>
+> ### 🆕 FROM FluxusSource 2026-08-16 — **dedup the training corpus on `id`**
+>
+> Owner direction for the next arc, relayed by FluxusSource: *do dedup right, and do CDCR
+> right.* One half lands here. **The word was doing three jobs** and peer sessions were
+> arguing terminology: (1) exact/near-duplicate dedup — same text, cause is **syndication**,
+> mechanical, and FluxusSource does this and deliberately nothing else (MinHash removed in
+> FS#134, a Hard Constraint forbids ML in the collector); (2) **cross-document event
+> coreference** — same event, different wording, NexusMind's; (3) **corroboration** —
+> independent sources for a *claim*, a journalistic standard, **not an outlet count**, and
+> nobody measures it.
+>
+> **Actionable here:** archive re-emission means the same article can appear in the corpus
+> more than once, and llm-distillery#119 already ruled that `id` is identity
+> (`content_hash` is the change-detector). RSS ids key on the raw URL, so a re-emitted
+> article carries the **same `id`** — archive dedup is a one-key operation on this side,
+> and this is the right side for it: the collector cannot dedup across an eviction boundary
+> it has already passed, and we read 253 days of archive. Given the literature on
+> duplicated training data degrading models, worth doing before the next training run.
+>
+> ⛔ **Do NOT quote FluxusSource's "4 ids of 159,971 appear in more than one run".** The
+> on-disk span (~8d) and the dedup retention window (~8d) coincide, so a repeat has almost
+> no room to be *observable* — structurally blind, and **the same trap that produced my own
+> retracted "0 reader exposure" on #119.** Measured where it *can* be seen, two archive
+> samples ~35 days apart share **183 of 44,095 ids ≈ 0.4%**, roughly 46× what the hot-window
+> figure suggests — and that is **a floor, not a rate** (samples, not the population).
+> ⚠️ Also live until ~2026-08-27: their dedup window is 8.0d against a widest per-feed
+> cutoff of 19d (aftermath of FS#142's store wipe, refilling ~1d/day, WARNING on every run),
+> so items aged 8–19 days can re-emit. Self-healing, no code change planned.
+>
+> **Offer on the table, not taken:** they count cross-source drops (30 on 08-15, 25 on
+> 08-16 — identical wire copy from two outlets) but stamp nothing on the survivor. They
+> could add `metadata.syndication = {count, sources[]}` — additive, mechanical, and it lets
+> any downstream CDCR discount a syndicated cluster to one independent source instead of N.
+> Scoped against FS#133. **Owner decision.**
+
+> ### ⛔ NM#390 IS WRITTEN, NOT FIXED — production is still losing articles
+>
+> Checked against the artefact, not the report, 2026-08-16 evening.
+> **Implemented and uncommitted** in NexusMind's working tree (`config/app.yaml`,
+> `scripts/main.py`) on branch `docs/audit-corrections-and-contract-a-1.34.0`; no commit
+> mentions NM#390. **Blocked on two tests** that encode the old behaviour
+> (`tests/unit/test_load_articles.py::test_duplicate_url`, `::test_deduplicates_urls`) —
+> correctly stopped rather than edited, rewrite proposal with their owner.
+> **Not deployed**: sadalsuud is on `14b0f49`, tree clean, `url_dedup` absent from its
+> `config/app.yaml` and `scripts/main.py`. The box is also 3 commits behind, including
+> `5adbf5e` (Contract A 1.34.0). **So ~800–1,000 distinct articles per fortnight are
+> still being dropped right now.**
+> ⚠️ **When it does deploy, the tempting check is invalid.** `duplicate_url` falling is
+> the *intended* effect and cannot distinguish a good fix from one that merely stops
+> deduplicating. Their own rule — compare old-vs-new **kept sets** on identical input —
+> needs to be in the deploy note, not only in a docstring. And the rollback claim
+> (*"`seen_urls` is still populated while off, so the flip takes effect immediately"*)
+> wants one execution before it is believed.
 
 > **Contract A is DONE and running.** 17 of 18 fields on delivered rows, four consecutive
 > deliveries clean against both schemas, all code pushed and deployed across three repos,

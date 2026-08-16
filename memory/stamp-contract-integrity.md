@@ -117,7 +117,12 @@ up from 0 of 50,605. `stage_used` / `stage1_estimate` likewise 100% (LD#88).
 
 **Unprompted result from the first cycle that carried `stage_used`: no surfacing
 article is ever probe-scored.** `stage1_low` rows peak at raw **0.75–1.50**
-against op-points of 2.25 (solutions) and 4.0 (the rest), so
+against op-points of 2.25 (`solutions`) and 3.75-4.5 (the rest — 4.0 for
+`belonging` / `cultural_discovery`, 3.75 `nature_recovery`, 4.25
+`investment_risk`, 4.5 `uplifting`; this line read "4.0 (the rest)" until
+2026-08-16, correct when written and stale from the 08-11 moves. The finding
+is unaffected: every move but one was UPWARD, and 3.75 is still far above the
+stage1_low peak), so
 `surfacing AND stage1_low` is **0** in every filter. Probe-derived scores cannot
 reach the visible band, which is the hybrid design's core safety claim and had
 never been checked on production rows. It also means any analysis of surfacing
