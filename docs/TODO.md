@@ -36,6 +36,18 @@ bytes twice, by this session and by FluxusSource independently, with identical r
 | `collection_20260815_200845` | 3,040 | all six | producer schema **0 errors** · Contract A 1.30.0 **0 errors** |
 | `collection_20260816_000647` | 2,318 | all six | **0 errors** · **0 errors** |
 
+⚠️ **`published.element` is VALID but nearly vacuous as evidence** *(NexusMind, over 9,451
+delivered rows)*: the distribution is rss `updated` **9,076** / `null` 89 and **nothing
+else**, api `publishedAt` 245 / `created_at` 41 — **one of nine enum members**. Verified
+against feedparser 6.0.12 with a hand-built document: an RSS **`<pubDate>` is exposed as
+BOTH `.updated` AND `.published`**, `entry.pubDate` never exists, and the probe walks
+`RSS_DATE_ELEMENTS` in order. **So `element` records which probe key matched first, not
+which element the publisher wrote** — an RSS `<pubDate>` and an Atom `<updated>` are
+indistinguishable. ⭐ And the hypothesis predicted `tags.term` would be 0 and read
+observing 0 as confirmation: it **could not have been anything else**. NM#384. The enum
+stays (0 rows rejected, and `date_fields` derives from the tuple so the two cannot
+drift); the entry is downgraded, not confirmed.
+
 ```
 published    3,031/3,040   raw · element · had_timezone · precision · fabricated
 collected    3,040/3,040   clock_source
@@ -70,7 +82,11 @@ block, so no reader could break.
 3. **The single-byte decode rung became countable** — 41 rows at 00:02, all
    `southeast_asian_antara_en`, no declared charset, chardet `iso-8859-1` @ **0.73**,
    decoded `cp1252`, and **zero carrying the mojibake signature**. It logs at DEBUG and had
-   been invisible for the life of that repo. First producer-side datum for NM#167, and its
+   been invisible for the life of that repo. First producer-side datum for the mojibake
+   thread — ⚠️ **`FS#170`** (open; `FS#167` closed on its analysis, `FS#168`, `FS#124`),
+   **never a bare `#167`**: both repos number from 1, and a bare relay of this one was
+   recorded as `NM#167` — an unrelated closed normalization issue — in Contract A's own
+   schema and CHANGELOG before being caught. Always qualify a cross-repo id. Its
    shape matters: one non-Western publisher, no declared charset — consistent with NM#338's
    6.86× non-English skew.
 4. ⚠️ **`charset_detected != charset_used` is EXPECTED, not a signal.**
