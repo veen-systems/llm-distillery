@@ -100,6 +100,40 @@
 > it has already passed, and we read 253 days of archive. Given the literature on
 > duplicated training data degrading models, worth doing before the next training run.
 >
+> **MEASURED 2026-08-16 by FluxusSource, after I flagged the bound — dedup-on-`id` lands
+> at ~89.4%, and the residual is a known shape rather than an unknown.** Same two archive
+> samples ~35 days apart: **161 `content_hash` values present in both**, of which 144 also
+> match on `id` (caught) and **17 have the same content and a DIFFERENT `id` (missed) =
+> ~10.6%**. Split by `source` to separate the two possible causes: **17 same-source (URL
+> changed), 0 different-source (syndication)** — so the residual is entirely this repo's
+> case and is *not* inflated by wire copy, which would carry the same `content_hash` and a
+> different `id` by construction.
+>
+> **Why it is that small, and why it is believable:** verified here —
+> `FluxusSource/src/utils/content_hasher.py:94 normalize_url_hash` canonicalises protocol,
+> trailing slash, parameter *ordering* and tracking parameters, while `id` keys on the
+> **raw** url (`FluxusSource/src/aggregators/rss_aggregator.py:702`). The canonicalisation
+> exists and simply is not in the id. Independently: on one 2,101-row collection 35.0% of
+> URLs carry a query string, but the tracking-ish params are **constant per feed**
+> (`?ref=rss` 58, `?utm_source=rss_feed` 52, `?UTM_Source=cgtn` 24) rather than per-visit
+> tokens — constant params do not change between emissions, so most re-emissions keep
+> their URL and their id. ~10% is what that predicts.
+>
+> ⛔ **Do NOT "fix" this by re-keying `id` on the normalized URL.** It would re-mint every
+> RSS id estate-wide and orphan every downstream row — the failure llm-distillery#119's
+> identity ruling makes catastrophic. Stated by FluxusSource as an observation, not a
+> proposal.
+>
+> **If the last ~10% is wanted the second key is `content_hash`, and that is a
+> training-data judgement, not an identity one.** It is a change-detector, so it also
+> collapses *genuine edits* into one row — precisely why #119 ruled it is not identity.
+> Defensible for a training corpus, wrong for the pipeline. ⚠️ It is title +
+> first-500-chars, so an article edited past char 500 is invisible to it.
+>
+> **Limits, as stated by the measurer:** two samples, not the population; >30-day
+> separation means TTL/cap evictions (expected behaviour), not the shorter 8–19 day gap
+> that closes ~2026-08-27.
+>
 > ⛔ **Do NOT quote FluxusSource's "4 ids of 159,971 appear in more than one run".** The
 > on-disk span (~8d) and the dedup retention window (~8d) coincide, so a repeat has almost
 > no room to be *observable* — structurally blind, and **the same trap that produced my own
