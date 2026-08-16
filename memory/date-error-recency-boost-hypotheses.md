@@ -39,6 +39,51 @@ spike" from it. That was the 6h reading, and **6h is now RESOLVED as arXiv's dai
 
 ---
 
+## ⭐⭐ THE INSTRUMENT ARRIVED — `collected.clock_source` and `published.fabricated` are LIVE (2026-08-16)
+
+**Everything below this heading was inference from gap arithmetic. It no longer has to
+be.** Contract A shipped 2026-08-15/16 and both fields now ride on delivered rows, so the
+two quantities this file spent weeks estimating are read directly.
+
+**FS#176 is now MEASURED, and the partition is exact — four consecutive deliveries:**
+
+| delivery | `host_local` | `utc` | mixed |
+|---|---|---|---|
+| `…0815_200845` | 95 | 2,945 | **0** |
+| `…0816_000647` | 82 | 2,236 | **0** |
+| `…0816_040540` | 231 | 2,280 | **0** |
+| `…0816_081046` | 231 | 1,831 | **0** |
+
+⭐ **`host_local` equals the API row count exactly, and `utc` equals rss + social exactly,
+in every delivery.** Every API producer is on the host clock (CEST, +2h), every RSS one on
+UTC, and there is **not one mixed case in ~9,800 rows**. ⭐ **A clean partition is
+falsifiable in a way a percentage is not** — one mixed row refutes it, whereas "about 3.87%
+of rows are skewed" survives almost any observation.
+
+⚠️ **This retires the gap heuristic as an ATTRIBUTION instrument, not as history.** Every
+`collected − published` figure in this file was measuring a *sum* of a real age, a
+possible fabrication and a possible 2h clock skew. `clock_source` now separates the third
+term on the row itself, so a future analysis conditions on it instead of inferring it —
+and the `2h ± 5s` fingerprint work below is superseded as a method while remaining the
+record of how the mechanism was found.
+
+**`published.fabricated` is live too, and its true branch was observed in a delivered run
+for the first time on 2026-08-15 20:02: 44 rows across `austrian_vienna_at` (24),
+`china_nikkei_asia` (10), `indonesian_mongabay_id` (7), `norwegian_dagbladet` (3)** — each
+carrying `raw`/`element`/`had_timezone`/`precision` as **null**, which confirms Contract A
+1.24.0's null⟺fabricated clause on live bytes. It had only ever been tested against a
+hand-written row.
+
+⚠️ **Per-run, not a rate.** The next delivery carried **0** fabricated rows and the one
+after **37**. Which sources are due decides it, exactly as with `echoes_title` — do not
+quote any single delivery's count as a corpus property.
+
+⚠️ **A prediction failed here and the failure is the lesson.** FluxusSource predicted the
+cheapest live positive would be `french_le_parisien`, due ~16:00. The true branch fired
+four hours earlier from **four different sources, none of them le_parisien** — a
+population assumed to be one of its members. Same hand-built-population shape this file
+already carries twice.
+
 ## H-D1 — ✅ RESOLVED: it is FABRICATION, attributed by a fingerprint that no longer exists
 
 **FluxusSource, 2026-08-14 late, 152,422 rows.** Resolved on the producer's own bytes

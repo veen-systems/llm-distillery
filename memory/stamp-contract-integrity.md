@@ -356,3 +356,83 @@ nobody ran it interactively.
    demonstrations, which is a pattern: a producer schema green because it asks
    less; Contract B green *and* declaring `metadata` with zero properties; CI green
    on fixtures; and `format` declared but unasserted.
+
+---
+
+## ✅ CONTRACT A IS IMPLEMENTED (2026-08-15 evening → 08-16 morning)
+
+**17 of 18 declared fields ride on delivered rows**, four consecutive deliveries, **0
+validation errors against both schemas**, measured by this session and by FluxusSource
+independently with identical results. Detail and the per-block counts:
+`docs/TODO.md` and `docs/CONTRACTS_PLAN.md` § *Round 4*. The 18th,
+`content_meta.error`, is correctly absent — it exists only on a derivation fault.
+
+**Verify (the script is in-repo now, not a loose file on the box):**
+
+```bash
+ssh sadalsuud 'cd /home/jeroen/local_dev/FluxusSource && venv/bin/python -' \
+  < scripts/contracts/contract_a_smoke.py
+```
+
+### ⭐⭐ THE GAP THE WHOLE CONTRACT COULD NOT SEE — and it is a documented class
+
+**A row carrying ZERO Contract A blocks validates CLEAN.** Nothing in any block is
+`required`, correctly, because absence is legitimate three different ways. Demonstrated in
+the direction that can fail, which is the only direction worth demonstrating:
+
+```
+a row with no Contract A blocks at all        VALIDATES CLEAN
+the same row + one undeclared key             REJECTED (additionalProperties)
+```
+
+**So a block that STOPPED being emitted was invisible — which is exactly what production
+looked like for the week the contract was fully declared and the producer emitted none of
+it.** This is a named failure mode in the data-quality literature (*"when all fields are
+optional, validation cannot detect missing fields that should have been present"*), not a
+local quirk.
+
+Closed by two classes in NexusMind's check (their #382, merged `9cf2861`, deployed):
+`emission.structural_block_absent` and `freshness.input_stale`.
+
+### Rules this added
+
+9. **A schema validates rows that EXIST. Coverage of what stopped existing is a
+   different instrument.** The five-pillar framing names them: schema (Contract A),
+   volume/completeness (`emission.*`), freshness (`freshness.*`), distribution
+   (**we have nothing**), lineage (pipeline-atlas).
+10. ⚠️ **ZERO-BECAUSE-NEVER ≠ ZERO-BECAUSE-STOPPED, and fusing them makes the check
+    unusable.** The first emission implementation flagged any structural block at zero —
+    which would have condemned FluxusSource on every cycle before 2026-08-15 and would
+    condemn any new producer or a rollback. Judge against a baseline (the check's own
+    previous artefact), carried forward so a regression keeps firing instead of being
+    learned as the new normal after one cycle.
+11. ⚠️ **FLAG ZERO, NEVER A LOW SHARE — and the industry default would have failed here.**
+    GX Cloud's completeness detection flags *"10% deviation from the baseline average of
+    the last five runs"*. On this corpus `origin` swung **12.2% → 38.8%** between two
+    consecutive deliveries purely by which shelves were due. **A share moves with
+    composition; zero on a structurally-total block cannot be produced by composition.**
+    The live counter-example: the 08:10 delivery emitted **no** `charset_detected` at all
+    because every body decoded as strict UTF-8 — a *healthy* cycle any floor would have
+    reddened, and a check that cries wolf on healthy data is ignored on the run that
+    matters.
+12. **An unmeasurable population is NOT ASSERTED, never clean** — a delivery with no RSS
+    rows says nothing about whether `content_meta` works. With a deliberate precedence: a
+    **proven** absence outranks an unmeasurable one, so a delivery that both proves one
+    block gone and cannot judge another still goes red.
+13. **Measure the cadence, do not declare it.** `freshness` derives the delivery interval
+    from the median gap over the last 8 collections (**14,452s live, against a real 4h
+    cadence**) because both available constants are wrong: `period_seconds` is the
+    *check's* schedule, and a hardcoded 4h is a number nobody maintains the day the
+    collection timer changes. Judged at **3×** the median — a late run is not a defect.
+14. ⚠️ **ABSENCE NOW MEANS THREE DIFFERENT THINGS and they must not be merged:**
+    *not instrumented* (`published`, `collected`, `fetch`, `feed`), *not applicable*
+    (`content_meta` — `source_type` sits beside it and determines it), *not yet filled*
+    (`origin` — editorial data). **A consumer that merges them reads `origin`'s emitting
+    subset as a sample of the corpus.**
+15. **A per-row health field can only report what the row's own construction knew.**
+    `content_meta.error` works because the producer *knows* it faulted. A generic
+    `health: ok` field would be an anti-pattern: an always-ok field is indistinguishable
+    from one nobody sets any more, and it dies by the same code path as the thing it
+    reports on. ⚠️ Only `content_meta` records its fault today — a fault in the other four
+    block builders **raises out of `to_dict`, so the ROW IS DROPPED, not degraded**
+    (verified 2026-08-16), and a vanished row is attributable to nothing.

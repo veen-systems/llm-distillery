@@ -1,22 +1,30 @@
 # LLM Distillery - TODO
 
-## 🔵 NEXT SESSION — **two peer repos hold finished, uncommitted work awaiting the owner**
+## 🔵 NEXT SESSION — **one owner decision: the dedup key (#119)**
 
-> **Housekeeping done 2026-08-15 night** (`memory/project_session_2026_08_15_night.md`) — nothing
-> below changed. Framework adopted to **v1.26.0** (v1.25.1 + v1.26.0; 3 adopt, 1 decline, 4 N/A,
-> 2 in force — `docs/decisions/framework-adoption-history.md`), then `/audit-context`:
-> references **16 → 0**, `memory/MEMORY.md` **54.8k → 26.5k chars**, refcheck harness **20/20 →
-> 24/24**. Two probes added — the framework stamps must agree, and the index must stay under 30k.
-> ⚠️ **The reason the drift sat two releases unreviewed: the stamp had been bumped ahead of the
-> adoption, and the stamp is the drift check's only input.** 13th occurrence of the
-> unreachable-mechanism rule. Declined upstream's `isdelim()` guard tightening (agent-ready-projects#52,
-> commented there with the adopter evidence).
+> **Contract A is DONE and running.** 17 of 18 fields on delivered rows, four consecutive
+> deliveries clean against both schemas, all code pushed and deployed across three repos,
+> nothing dirty or unpushed anywhere. #111 and #112 closed with the measurements. The
+> daily check fired unattended for the first time at 02:22:45 on 2026-08-16 and now reads
+> **`overall: clean`** with all five classes asserting — it had been `info` on every prior
+> run because something was always unasserted.
 
+**#119 — Contract A does not say which key deduplicates a row.** Found by measuring the
+estate against the documented failure taxonomy: across 9,769 rows in four deliveries there
+are **0 duplicate ids and 0 duplicate hashes within any delivery**, and **one id appearing
+twice across them** — `hackernews_7939b7c92398`, the same HN story after moderators
+swapped its URL (nature.com → science.org) and normalised a dash. Not a collision: HN ids
+key on the HN item id, so identity is stable **by design** and the *story* mutated.
 
-✅ **Contract A realization was HANDED OUT and BUILT on 2026-08-15.** The owner authorized
-NexusMind (W0) and FluxusSource (Track A) through this session; ovr.news and pipeline-atlas
-took information-only briefs. **This repo wrote no code and deployed nothing.** Record:
-`docs/CONTRACT_A_REALIZATION.md`, commit `1c02bf8`.
+⚠️ **Which copy a reader sees depends on the consumer's dedup key, and the contract
+specifies neither.** `id` → the correction is dropped and the reader keeps a stale link.
+`content_hash` → the same story surfaces twice. Both defensible, neither written down, and
+invisible at 1 row in 9,769. **No check can resolve it** — both behaviours are correct
+against the schema. It needs an editorial call about what a reader should see.
+
+**Deliberately NOT next:** distribution drift, the last uncovered observability pillar. It
+is the heaviest to build and, unlike the two closed this morning, **nothing suggests it is
+biting us.** Wait for evidence.
 
 ### ✅ CONTRACT A IS IMPLEMENTED — 17 of 18 declared fields ride on delivered rows
 
