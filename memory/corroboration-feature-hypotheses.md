@@ -426,6 +426,57 @@ as evidence.
 `answer_key.json` <!-- placeholder --> genuinely is the sampling design, not an answer key — that part
 was right.
 
+## 2026-08-16 — the academic stamp ARRIVES and is UNREAD; the gate's value is UNMEASURED
+
+**Census run by the NexusMind session on sadalsuud** (⚠️ *not* locally — their
+`data/raw` ends 07-26 and the stamp shipped **08-09**, so a local run reads 0% and
+**the zero is the window, not transport**). Distinct ids, `collected_date >= 08-10`:
+
+| boundary | distinct ids | stamp ABSENT | `detected: true` |
+|---|---|---|---|
+| `data/raw` | 132,474 | **0 (0.000%)** | 13,379 = **10.10%** |
+| `data/filtered` | 114,080 | **0 (0.000%)** | 12,992 = **11.39%** |
+
+Ramp is the right shape: 0.00% daily 07-31→08-08, **55.94%** on 08-09 (ship day,
+partial), **100.00%** from 08-10. ⚠️ **Report per-day, never blended** — a window
+straddling the ship date understates by construction (blended reads 43.95% and
+means nothing). 10.10% vs FluxusSource's 8.94% is *higher*, so nothing is lost;
+raw→filtered 10.10→11.39 is survivorship. **Stage trap survived as predicted:**
+`arxiv_announce` 9,584 raw → 9,545 filtered, passing through as a *stamp* even
+though the prefix re-derives to 0.000 post-enrichment. Verify the field, never
+re-derive the evidence.
+
+⛔ **CONSUMERS: ZERO, at three hops.** `grep primary_literature` over NexusMind
+`.py`/`.yaml`/`.json` = 0; over ovr.news `.ts`/`.astro`/`.sql` = 0.
+
+⛔ **"Within PL, merge only on byte-identical title" is REFUTED — it is not a
+discriminator, it is an OFF-SWITCH.** It would refuse **4,470 of 4,630 PL
+merge-links (96.5%)**, keeping 160. ⭐ **The control is the finding: news sits at
+3.22% identical-title against PL's 3.46%** — statistically the same, so identical
+title is neither an academic marker nor a property of genuine merges (96.8% of news
+merges, largely legitimate corroboration, have non-identical titles). The 6/6 came
+from a panel of *genuine academic same-story pairs*, a 3.46% slice at production
+scale. **The three-line rule and the exclusion are the SAME INTERVENTION** — evaluate
+it as the exclusion; it keeps its 160 good links by coincidence of rarity, not by
+discriminating.
+
+⚠️⚠️ **THE 20.6–30.4% AND THE 0.344 → 0.459 ARE BOTH SUSPECT — a 3× population
+disagreement, and probably DEFINITIONAL.** NexusMind measures PL at **8.05% of
+everything merged** (4.82% by links) against the panel's 20.6–30.4%. **Hypothesis
+(mine, ~75% confidence, under test): the panel's "academic" label predates
+`primary_literature` and is `type_classification`-derived — and FS#144 measured that
+key as 86% Global South news**, with `smithsonianmag.com` / `sciencealert.com` /
+`statnews.com` classed academic for *writing about* science, all of which the
+`primary_literature` detector reads at **0.000**. If so the sizing discrepancy
+resolves with neither measurement wrong — **and the gate's value estimate is
+contaminated, because 0.344 → 0.459 would describe a majority-not-PL population and
+would NOT be reproduced by gating on the field the gate would actually read.**
+
+⛔ **DO NOT BUILD THE GATE.** Blast radius is measured; **value is not measured
+against the field it would use.** No labelled academic pair exists in the stamped
+window (panels are 08-05/06/08, stamp shipped 08-09), so closing this needs a
+re-adjudication on stamped rows.
+
 ## 2026-08-09 — the biggest lever is a GATE, not a similarity feature
 
 **Primary scientific documents are 20.6–30.4% of everything the system merges and
