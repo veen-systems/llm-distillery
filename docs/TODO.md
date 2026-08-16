@@ -219,6 +219,81 @@
 >   proves **host and `source` id disagree in BOTH directions**, so neither key alone is
 >   sound.
 >
+> ### ✅ CLOSED 2026-08-16 — **DO NOTHING.** All three sessions stood down, nothing built
+>
+> **Owner-facing one-pager (pick this up cold, don't re-read the thread below):**
+> https://claude.ai/code/artifact/d031e39f-e814-4647-a6a5-dc0c137ea2ee
+>
+> **The decision:** the exposure is real, **mostly self-liquidating, and no error has ever been
+> demonstrated.** ovr classified the 132 lone-corroborator badges by population, derived from
+> the feed config rather than guessed (positive control: the classifier reproduces ADR-007's
+> own A=59 / B=230 / C=13 exactly, and sadalsuud's live config diffs to zero against the
+> clone): **A 92 (69.7%) · B 37 (28.0%) · C 3 (2.3%) · unclassifiable 0.**
+>
+> - **B cannot produce a false badge — 0 of 37, structurally.** Those feeds exist *because* the
+>   native feed died, so only **4 of 34** distinct B hosts ever appear as a primary in a
+>   461-host corpus. Nothing to collide with. ⭐ ovr established this by **testing what their
+>   own free win would buy** — 37/37 resolve today with no producer change — and finding it
+>   buys **labelling, not correctness**. They talked themselves out of a cheap change.
+> - **C is 3 badges.** Permanent, negligible by count.
+> - **92 sit in population A, which ADR-007 retires** — unbounded in *time*, not in size.
+> - **Residual after A retires and B resolves: 3 badges.** No cross-repo change is worth that.
+>
+> ⚠️ **THE REVISIT TRIGGER, and it is the honest limit: population A was NEVER TESTED
+> DIRECTLY, and A is where the mechanism lives** (a country query can genuinely return the
+> primary's own publisher). Both zeros come from populations that either cannot collide (B) or
+> are a small non-random slice (the 67 GN rows with a real publisher id). **If A has not
+> meaningfully retired in a few months, test those 92.** That settles it; everything else is
+> settled.
+>
+> ⭐ **ovr's denominator catch, nearly a fifth wrong-thing number:** all 132 are GN by
+> construction, so the comparison is **within-GN** (A 67.6 / B 30.7 / C 1.7) — observed
+> 69.7/28.0/2.3, **almost exactly proportional**. Against all-rows share it reads as a uniform
+> ~3.5× over-representation, which is an artifact. They checked before writing up a skew.
+>
+> ⭐⭐ **ovr's closing catch, and it is about HOW this was stopped, not what was decided:**
+> I stopped this thread for the owner's sake — he said he was lost — and the evidence closed
+> it independently in the same hour. **Those two aligning was LUCK, not design.** Had population
+> A come back untested *and* the evidence still been live, *"he's lost, let's stop"* would have
+> been the wrong call wearing the kind one's clothes. **Fatigue and resolution arriving together
+> is a coincidence to notice, not a confirmation.** Parked at ovr with a refutation criterion
+> (resolve the 92, compare against the primary's host; a non-trivial rate means the badge is
+> *wrong* rather than unverifiable, and SUPPRESS stops being conservative and becomes a
+> correction), a three-month review, and triggers on A's retirement or an owner re-decision.
+>
+> ⭐ **The estimate lesson, which outlives this question entirely:** **three cost estimates were
+> wrong in one evening, and every correction came from measuring something nobody had checked
+> was still there — never from an argument.** Every check any of the four repos runs verifies
+> *answers*. **Nothing anywhere verifies an ESTIMATE, and estimates are what the decisions
+> turned on.**
+>
+> ⛔ **A label collision I created and must not recur:** I named my OPTIONS A/B/C while ADR-007
+> names the POPULATIONS A/B/C, so *"B is free"* was true of population B and the exact opposite
+> for option B. Options renamed **SUPPRESS / RECOVER / DROP**. A/B/C = populations only.
+>
+> ### 🆕 SEPARATE, ACTIONABLE, NOT MINE — three feeds point at HOSTING PLATFORMS
+>
+> `ai_jellyfish_engineering` → `site:substack.com` (49 rows) · `economics_grumpy_economist` →
+> `site:blogspot.com` (30) · `ai_news_acm` → `site:go-vip.net` (5). All `enabled: true`, all on
+> curated **ai**/**economics** shelves, so arbitrary platform content (a Vikings QB competition,
+> a Maryland police shooting, Lagarde *becoming* ECB president) inherits editorial tags and
+> arrives looking curated. **84 rows of ~160,000 — trivial by volume, not by kind**; junk on a
+> curated shelf is the ADR-023 failure. `economics_grumpy_economist` presumably lost the
+> `johnhcochrane.` subdomain. ⭐ **The defect is not three feeds — it is that `site:` accepts a
+> hosting domain SILENTLY.** Syntactically perfect, semantically "the entire platform", live,
+> fetching, returning entries, passing every health check. **It surfaced only because I asked
+> for an enumeration for an unrelated reason — the discovery was luck, and the guard is a
+> deny-list of platform domains, not vigilance.** With FluxusSource's owner.
+>
+> ⭐⭐ **And the discipline keeper of the whole arc: FluxusSource produced a 62-item key/host
+> mismatch list and BINNED IT.** A ≥4-char stem test flagged `ai_ibm_quantum`→`ibm.com` and
+> `balkan_b92`→`b92.net` — a long, plausible, wrong list, same family as `سانا`→`herald`. They
+> shipped the 3 they had hand-verified off an explicit deny-list instead. **A big number in
+> hand at the end of an evening that had been about big numbers, and they threw it away.**
+>
+> <details><summary>The full thread — premise checks, four price revisions, and the A-vs-B
+> framing. Superseded by the closure above; kept for the reasoning.</summary>
+>
 > ### ⏳ BLOCKED ON ONE MEASUREMENT — "we're phasing out GN anyway" checked and REFUSED
 >
 > **Owner 2026-08-16: *"we are planning to phase out GN, so any trouble on their behalf can
@@ -392,6 +467,8 @@
 > chardet runs only when the strict UTF-8 rung fails, and it failed on 0 of 2,101 rows. So
 > **15/18 is a CLEAN result, not a partial one.** The note is in the script rather than a
 > memory file because the misreading happens when the output is read.
+>
+> </details>
 >
 > ### 🟡 #121 — ASKED, AND THE ANSWER WAS ABOUT THE FILTER, NOT THE LENS
 >
