@@ -12,13 +12,22 @@
 > traceback.
 >
 > **Three things stay open, none of them this repo's to close:**
-> 1. **ovr's half of #119** — project `content_hash` **and** `collected_date` on ingest
->    (both die at `RawArticle`, `types.ts:64-95`), then invalidate the summary cache on
->    the *pair*. ⛔ **ovr cannot use its own `collected_date`**: it is ovr's clock
->    (`db-articles.ts:142`) and frozen at first insert by `COALESCE` (`:81`), so every
->    later row looks strictly newer and the guard **degenerates into the bare hash test
->    it exists to prevent**. Until this lands a reader gets a corrected link under a
->    pre-edit headline. #119 stays OPEN for it.
+> 1. **ovr's half of #119** — a **hash column on `summaries`**, entirely local and
+>    measurable today. ⚠️ *Corrected 2026-08-16 after I posted the wrong scope on #119:*
+>    ovr has **two** summary caches and only the **DB** one is id-keyed
+>    (`summarize.ts:826`); the JSON file cache is content-hash validated at all four
+>    lookup sites and **already re-summarises on an edit**. So ovr computes its own hash
+>    and **projecting `content_hash` does NOT gate this** — worth doing (both it and
+>    `collected_date` die at `RawArticle`, `types.ts:64-96`) but not a blocker.
+>    ⛔ **ovr still cannot use its own `collected_date`** for an ordering term: ovr's
+>    clock (`db-articles.ts:142`), frozen at first insert by `COALESCE` (`:81`).
+>    ⚠️ **And the ordering clause is UNESTABLISHED at ovr** — the ping-pong was simulated
+>    at NexusMind, which re-reads all of `data/raw` every run; ovr reads filtered output
+>    written once per cycle, and its file cache has run a bare hash-differs test at four
+>    production sites with no thrashing. **A contract term is not evidence that it binds
+>    at every consumer.** ovr is measuring hash *oscillation* over ~42 cycles to decide.
+>    Until something lands, a reader gets a corrected link under a pre-edit headline.
+>    #119 stays OPEN.
 > 2. **NM#390** — the largest thing the day turned up and deliberately untouched:
 >    `_normalize_url` strips the query string, costing **800–1,000 distinct articles per
 >    fortnight**, concealed inside `duplicate_url`. Denominator caveat recorded in
