@@ -219,6 +219,78 @@
 >   proves **host and `source` id disagree in BOTH directions**, so neither key alone is
 >   sound.
 >
+> ### 🟠 OWNER RULED **B** 2026-08-16 — then I TOOK IT BACK: the price I gave him was wrong
+>
+> ⛔ **NOTHING IS AUTHORIZED. Nobody is building.** FluxusSource holds (not started), ovr
+> holds (not standing down — their ingest widening is likely on the critical path).
+>
+> **B is a THREE-repo change, not a producer parse, and the comparison the owner ruled on
+> was wrong in B's favour.** A is one repo ovr owns. B is FluxusSource's parse **plus** an
+> ovr ingest change **plus** probably a NexusMind pass-through, and it **delivers nothing
+> until the last one lands**.
+>
+> ⭐⭐ **The killer is MY OWN acceptance criterion, applied to the delivery and not to the
+> decision I made in the same message:** *a field that ships and never reaches them is the
+> same as no field.* "Producer work" is not "the change". Same shape as everything else this
+> evening — the number was right, the thing it was a number **of** was wrong.
+>
+> **Two sessions found the gate independently, neither reading the other's tree:**
+> `ovr.news/scripts/summarize.ts:963` and `:1424` explicitly reconstruct
+> `metadata: { quality }` only, and `RawArticle` (`types.ts:75-78`) declares just
+> `og_image_url` + `quality` — so **`metadata.*` is dead on arrival at ovr**, measured, with
+> the two lines that do it. ovr adds a **second gate in series**: field-by-field mapping at
+> the two `upsertArticle({` call sites. Neither gate announces itself. The standing proof is
+> `articles.content_hash` at **0 non-null across ~22k rows while being sent on every one**.
+> ⏳ **Open hop, asked of NexusMind:** does a *new top-level* Contract A field reach ovr, or
+> must NexusMind forward it too? Not assertable from outside their tree.
+>
+> ⭐ **FluxusSource corrected this AGAINST THEIR OWN INTEREST, twice** — they re-priced B
+> down (which got it chosen) and then back up (when the work would have been theirs).
+> ⭐⭐ **And the reusable finding is ovr's:** *the cost estimate that decided this was wrong
+> until someone re-fetched the live wire.* B looked expensive while everyone reasoned about
+> stored rows, then cheap while everyone priced only the producer. **Neither was an
+> argument; both were fixed by measuring something nobody had checked was still there. The
+> ESTIMATE was the weakest link twice in one evening — and estimates are the one part of
+> this process nobody runs a check on.**
+>
+> ⚠️ **Acceptance metric corrected (FluxusSource's catch on my own constraint): the 14.1%
+> CANNOT be it** — that number was produced by resolving names to hosts, which is exactly
+> what I forbade. Acceptance is *rows carrying a non-empty publisher name / delivered rows*,
+> expected near 100% of GN rows. The 14.1% retires to being an argument that the exposure is
+> real. **Whole-chain acceptance is ovr's:** re-run the 2026-08-16 probe against the 178
+> GN-counting badges and watch that number move.
+>
+> **Design constraints below stand unchanged — they are unaffected by the re-pricing.**
+>
+> <details><summary>The ruling and its design constraints, as issued before the re-pricing</summary>
+>
+> Commissioned to FluxusSource; ovr told explicitly **not** to build option A. **The
+> re-fetch is what decided it** — B was written up as unscoped research and turned out to be
+> a parse over data arriving on every fetch, which made preserving the badges the *cheaper
+> honest* option rather than the expensive one. ovr's framing (*exposure, not measured error
+> rate*; "under 5% would have closed it, this does not") is what made the question answerable.
+>
+> ⚠️ **Design constraints are MINE, not the owner's ruling** — he ruled *recover rather than
+> suppress*, nothing below:
+> - ⛔ **Deliver the publisher NAME verbatim; do NOT resolve to a host at the producer.** A
+>   wrong resolution is strictly worse than an unresolved name — it manufactures a false
+>   identity that reads as authoritative downstream, which is exactly what killed
+>   `metadata.syndication`. Any resolved host ships as a **separate nullable field**, exact
+>   token-boundary matches only, **null when unsure, never guess**.
+> - Assert non-empty **after** normalization at the point of comparison; no substring
+>   matching; count and expose the unmatched (that list is evidence the rule is too tight,
+>   not that the data is bad).
+> - Contract A declaration first, all-optional. ⛔ Does **not** re-open `metadata.syndication`
+>   or `publisher_host`; ⛔ **nothing is re-keyed on it** — it is an attribute, not identity.
+> - **Acceptance: observed on delivered rows with a population count, AND attributable at
+>   ovr's boundary.** A field that ships and never reaches the consumer is the same as no
+>   field.
+>
+> </details>
+>
+> <details><summary>The A-vs-B framing as it stood before the ruling (kept: the reasoning is
+> the reusable part)</summary>
+>
 > ⏳ **OWNER DECISION — I did NOT commission the FluxusSource work, and ovr's "commission it"
 > is not the only option on the table.** The honest framing is **exposure, not measured error
 > rate**: 23.8% of badges rest on a claim ovr cannot check. Two ways to stop asserting an
@@ -266,6 +338,8 @@
 > ⛔ B is the expensive fix and A has not been priced against it. **Product/editorial call,
 > not mine:** A trades badge volume for honesty; B buys the volume back at a producer cost.
 >
+> </details>
+>
 > ⭐⭐ **WHY OPTION A WAS INVISIBLE FOR THIS WHOLE THREAD — ovr's, and the best thing in it.**
 > The question was framed as *"can we attribute GN?"* rather than *"must we claim it?"*, and
 > **the first framing only has producer-side answers.** Every measurement, every dispatch and
@@ -284,7 +358,33 @@
 > **15/18 is a CLEAN result, not a partial one.** The note is in the script rather than a
 > memory file because the misreading happens when the output is read.
 >
-> ### ⏳ #121 — ONE QUESTION LEFT, AND IT IS THE OWNER'S
+> ### 🟡 #121 — ASKED, AND THE ANSWER WAS ABOUT THE FILTER, NOT THE LENS
+>
+> **Owner 2026-08-16, verbatim: *"i think i am going to drop that filter, i am not really
+> interested anymore."*** So the lens-definition question below is **moot if
+> `investment_risk` goes**, and #121 does not need answering on its merits either way.
+>
+> ⚠️ **Marking the gloss: this is an INTENT, not a ruling.** "I think I am going to" is not
+> "remove it", and **nothing has been removed, deprecated or touched.** `investment_risk v6`
+> is still deployed (HF Hub private, op-point 4.25) and still scoring every cycle.
+> **Do not act on this line as authorization.**
+>
+> **What a drop would actually involve, so the decision can be made with the cost visible**
+> — precedent is the 2026-08-03 removal of `sustainability_technology` and `foresight`
+> (packages deleted, recoverable from git history):
+> 1. NexusMind stops loading it — it is the filter with the **narrowest** source-type
+>    admission (169,922 rows vs 233,338 for the others), so removing it changes no other
+>    filter's population.
+> 2. Its ovr lens/tab retires — `memory/ovr-lens-set-current.md` is the mapping, and this is
+>    the reader-visible half.
+> 3. Package deleted here; HF Hub repo is private and can stay.
+> 4. **#121 closes as moot**, and it is the *only* lens where the opinion effect survived the
+>    within-source control (MH OR 2.05, reproducing on three detector arms) — so the finding
+>    that motivated #121 dies with the filter it was about.
+> ⛔ Nothing above is scheduled. It is a cost sheet, not a plan.
+>
+> <details><summary>The lens-definition question as framed before the answer (unanswered,
+> and now moot)</summary>
 >
 > **Are `investment_risk`'s geopolitical op-eds false positives at all?** The 25 flagged
 > rows above op-point are geopolitical op-eds, and Hormuz genuinely *is* investment risk.
@@ -297,6 +397,8 @@
 > — not a threshold move, since the confound is topical.
 > **NO, commentary about real risk is in-lens** → #121 closes with the detector recorded and
 > unbuilt, and the 2.05 MH OR becomes a documented property rather than a defect.
+>
+> </details>
 >
 > ### 🆕 FROM FluxusSource 2026-08-16 — **dedup the training corpus on `id`**
 >
