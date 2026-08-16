@@ -147,11 +147,27 @@
 > we remove"*, comparing ~84/day surviving against the **mislabelled** 25–30/day. Against
 > the real ~160/day it goes the other way; both sides are floors on different proxies, so
 > the honest statement is now **"same order of magnitude, neither dominates"**. ✅ **Checked
-> here: the 3× never reached this repo** (`docs/`, `memory/`, `CLAUDE.md` — the 3× hits are
-> unrelated: GN over-representation in sub-300-char stubs, and cross-language pairs retained
-> under complete-linkage). ⚠️ **ovr not yet checked.** ⭐ Worth noting how it surfaced: a
-> *labelling* error with the arithmetic intact propagated into a DERIVED comparison and
-> flipped its direction — the wrong-unit twin of the closed-accounting trap above.
+> here: the 3× never reached this repo** (the 3× hits are unrelated: GN over-representation
+> in sub-300-char stubs, and cross-language pairs retained under complete-linkage).
+> ⛔ **It HAD reached ovr** — `ovr.news/memory/current-state.md:233`, found by FluxusSource
+> running the sweep across all four repos: **ovr.news 1 · pipeline-atlas 0 · NexusMind 0 ·
+> llm-distillery 0** (our 2 hits are the correction itself). Being replaced with *"same order
+> of magnitude, neither dominates"* rather than restated inverted — both sides are floors on
+> different proxies, so a ratio in **either** direction overstates what either measurement
+> supports. ovr's directly-measured 7-titles/14-rows figure is unaffected; only the scaled
+> comparison moves. ⭐ **I declined to assert absence from a tree I had not enumerated, and
+> that caution was load-bearing** — the soft form ("if it reached ovr") would have closed it.
+>
+> ⭐⭐ **THE SHARP PART, and it is FluxusSource's: ovr's bullet did EVERYTHING RIGHT and
+> still carried it.** It was labelled a pointer rather than ovr's own measurement, marked a
+> floor, carried all three caveats, and said re-derive before acting. **Every one of those
+> held, and not one could catch it** — because the defect was a *label on a number ovr had
+> correctly attributed*. **Provenance hygiene protects against misattribution, not against
+> the source being wrong in a way that passes arithmetic.** A unit or label rides untouched
+> through every reconciliation-shaped check we have. Third demonstration in one evening,
+> alongside the closed-accounting trap above; the general form is *when a figure is derived
+> from another figure, re-derive the UNIT at the boundary, because the arithmetic agrees
+> either way.*
 >
 > **Confirmed by them, and now recorded in `scripts/contracts/contract_a_smoke.py`'s own
 > docstring:** `FIELDS EMITTED: n/18` is **not** a completeness score. `charset_detected`,
