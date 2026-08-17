@@ -35,7 +35,23 @@
 >
 > ---
 >
-> ### ✅ WHAT SHIPPED 2026-08-16/17 — the academic gate, in NexusMind
+> ### ✅ LIVE 2026-08-17 09:50 CEST — the academic gate, in NexusMind
+> `006f8b9`, merged `cae561e` (PR NM#393), **deployed to sadalsuud while both units were
+> idle**. Tracking issue is **NM#392** (⚠️ *not* NM#391 — that number was cited in 8 places
+> before the issue existed and #391 was already a closed Contract A issue; caught before
+> commit. **A wrong issue number is invisible to every check we have, including `/curate`'s
+> dead-reference pass, because `#391` is not a path.** Verified 2026-08-17: no `#391`/`#392`
+> reference ever entered this repo). Review-by **2026-08-23**, deliberately shared with
+> NM#390 and NM#388 so one session settles all three.
+>
+> ⭐ **Config resolution was verified through the runtime config manager on the box, not by
+> reading the YAML** — **a MISSING key falls through to the code default `False` and is
+> indistinguishable from a working deploy at file level.** Same family as this repo's
+> four-places op-point rule: the file is documentation, the resolver is the truth.
+> ⭐ The `candidates == 0` **ABORT is recorded in NexusMind's hypothesis log as a hard rule
+> of the method, not a note**, so the 08-23 session cannot repeat the clean-looking pass.
+>
+> ### ✅ WHAT WAS BUILT — the academic gate, in NexusMind
 > Both-sides semantics, reads `metadata.primary_literature.detected` (a stamp that had **zero
 > consumers at three hops**), `pipeline.story_dedup.academic_gate.enabled`, ADR-022
 > stamp-always. **Suite 1403 green; five mutations each caught by a named test.** Value
