@@ -957,15 +957,38 @@ random pairs, so these say "separates good merges from bad", not "finds merges".
 - Reproduction: `b650:~/nm-sweep/feature_probe.py`.
 
 **Still untouched and now the top per-pair lever: PROP-2 ratio-margin scoring**
-(ART-11: BUCC EN-DE F1 **82.8 → 94.8** on the train set, *same embeddings*; test set
-vs prior published best 85.5 → 95.6). Attacks hubness, which is what a 592-member
-attractor is. Needs no new labels.
-⛔ **This line read "77.0 → 94.8" until 2026-08-17.** The 94.8 is right; **77.0 is not
-the EN-DE cosine baseline** and appears to have been transposed from EN-ZH's prior-best
-of 77.5. ⚠️ The corrected figures come from an automated extraction of Artetxe &
-Schwenk (ACL 2019) Tables 2/3, agreed across two independent fetches but **not
-eyeballed against the rendered tables** — confirm visually before either number goes
-into a document.
+(ART-11: BUCC EN-DE F1 **77.0 → 94.8** on the train set, *same embeddings*). Attacks
+hubness, which is what a 592-member attractor is. Needs no new labels.
+
+⛔⛔ **THE ORIGINAL 77.0 WAS CORRECT. I "corrected" it to 82.8 on 2026-08-17 and that
+was the error — retracted the same day.** Table 2 carries **four** cosine-baseline rows,
+one per retrieval strategy, and four ratio rows:
+
+| Func. | Retrieval | EN-DE F1 | EN-FR F1 |
+|---|---|---|---|
+| Abs. (cos) | **Forward** | **77.0** | 77.9 |
+| Abs. (cos) | Backward | 75.9 | 74.7 |
+| Abs. (cos) | Intersection | 82.8 | 80.9 |
+| Abs. (cos) | Max. score | 80.1 | 79.2 |
+| Ratio | all four | **94.8** | 91.8–91.9 |
+
+`77.0 → 94.8` is forward-to-forward, a like-for-like comparison and the closest analogue
+to what production does (a single directional scan). `82.8 → 94.8` is
+intersection-to-intersection, equally valid and a different question. **Neither is wrong;
+quoting one while naming the other's retrieval strategy is.** Always name the retrieval
+variant.
+
+⚠️ Table 3 is the **test** set and a **different comparison** — proposed vs *prior
+published best*, not vs its own baseline: EN-DE 85.5 (Azpeitia et al. 2018) → 95.6;
+EN-FR 81.5 → 92.9; EN-RU 81.3 → 92.0; EN-ZH 77.5 → 92.6. Schwenk (2018)'s EN-DE is 76.9,
+adjacent to 77.0 and a plausible source of future confusion.
+
+⭐ **The lesson, and it is the fourth occurrence of one root in a single day.** The
+"transposed from EN-ZH's 77.5" story was a *guess dressed as a diagnosis*, and the
+replacement number came from an automated PDF extraction — a derived surface — which I
+had flagged as a failure class three times that same day before committing it a fourth
+time, in the act of correcting someone else. **A correction is a claim and needs the same
+verification as the claim it replaces.** Resolved by reading the rendered ar5iv tables.
 
 Related: [[cd-v6-probe-hypotheses]] (the other place a probe/extractor choice was
 decided by measurement), [[score-batch-shape-noise]] (any margin under 0.16 near
