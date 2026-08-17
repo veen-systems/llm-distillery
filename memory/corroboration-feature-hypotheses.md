@@ -509,7 +509,8 @@ check before it drives anything.**
 (:3377), and `_prepare_text` is TITLE-ONLY (NM#275). So enrichment quality cannot
 affect matching at all, by construction.** Over 96 files / 324,941 rows / 17 days
 (2026-07-31→08-17): titles missing **0**; `published_date` missing or unparseable
-**0**; title mojibake **0.094%**; title markup **0.498%**; non-NFC titles 0.095%
+**0**; title mojibake **0.159%** *(⛔ was 0.094% — superseded, see below)*; title
+markup **0.498%**; non-NFC titles 0.095%
 (ko 1.94%, fr 1.39%, ar 1.22%). Contamination is source-concentrated —
 `mexican_excelsior` **648/648** and `portuguese_cmjornal` **253/253** carry a raw
 `<![CDATA[` wrapper *inside the title*, which goes into the embedding verbatim.
@@ -533,9 +534,34 @@ state**: post-enrichment body mojibake 1.686% → 0.593%, step on 2026-08-14
   across three machines.
 - ⛔ **Panel `item_id`s COLLIDE across panels** — all three start at `P0001`. A flat key
   silently overwrites v1 with v3.
-- ⛔ **A mojibake detector must cover BOTH families.** FS#124 is UTF-8-as-MacRoman
-  (`años`→`a√±os`); NM#338 is UTF-8-as-cp1252 (`aÃ±os`). My first pass wrote only the
-  cp1252 patterns and read 0.019% — the instrument could barely say yes.
+- ⛔⛔ **NEVER HAND-WRITE A MOJIBAKE CHARACTER CLASS. GENERATE IT.** FS#124 is
+  UTF-8-as-MacRoman (`años`→`a√±os`); NM#338 is UTF-8-as-cp1252 (`aÃ±os`). My first pass
+  wrote only cp1252 and read 0.019%; my second added hand-written MacRoman classes and
+  read 0.094%. **Both were undercounts, and the second one by 65.1% of its own count.**
+  A hand-maintained class cannot enumerate what a codec does — mine was missing `ã`, so
+  rows whose only artefact was a mis-decoded zero-width space were invisible.
+  **The fix is derivation, not a longer class:** for every character in a realistic
+  inventory and every legacy codec, compute `ch.encode("utf-8").decode(codec)` and match
+  on the resulting strings. 2,914 signatures from 5 codecs, nothing guessed.
+  → `NexusMind/scripts/research/nm188_mojibake_derived.py`.
+  ⭐ **It also carries the control the hand-written versions never had, and the control
+  is free:** every mojibake signature is non-ASCII by construction, so the detector must
+  return **exactly 0 on the pure-ASCII subset** — 0 of 193,983 titles, 59.7% of the
+  corpus. A structural control you get for nothing beats a sampled one you have to build.
+  ⚠️ It also avoids the round-trip detector's known false-positive bias (FluxusSource
+  measured it firing on clean apostrophe-bearing Romance titles); both of their examples
+  are asserted as absence controls and both pass.
+
+- ⛔ **CORRECTED 2026-08-17: mojibake is NOT a Spanish/Portuguese problem.** That claim
+  was an artifact of a detector that could only see Latin-script corruption. Re-measured
+  with the derived signatures, the 209 rows the old detector missed break down as
+  **ru 62 · el 42 · en 33 · mk 22 · es 21 · uk 13** — worst sources
+  `moldovan_newsmaker_md`, `balkan_mia_mk`, `russian_the_bell`, `belarusian_belsat`,
+  `greek_in_gr`. **Cyrillic and Greek sources dominate, and English is third.** Examples
+  the old pass could not see: `MƒÅori` (Māori, NZ English), `â€”` and `‚Äî` (em-dashes in
+  English headlines), and one Arabic title mangled end-to-end *and* mislabelled
+  `language: no`. **An instrument that can only see one script will report that the
+  problem is in that script.**
 - ⚠️ The panel's `lang_1`/`lang_2` column **mixes ISO codes with English names**
   (`en` and `English` both appear), so a naive `lang_1 != lang_2` inflates
   cross-language. Cost: 0.672 → **0.685** after normalising.
