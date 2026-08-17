@@ -472,6 +472,65 @@ worth keeping.
      story_dedup over a fresh raw batch with cluster_path=None and comparing
      within-cluster pairs against connected components of the thresholded graph -->
 
+### ⛔ MY FRAMING WAS WRONG: under-merge was NOT "measured nowhere"
+
+*(Corrected 2026-08-17 evening by ovr's pre-commit review, after I asserted it repeatedly
+all day — in this file, to three peer sessions, and to the owner.)*
+
+**`INST-4` (`recall_probe.py`, 2026-08-05) is a recall instrument** and has been in the
+registry since before this session started: pairwise recall over **2,471 labelled pairs**,
+decomposed by failure cause, certified, and explicitly scoped as *recall-only*. I read
+that row this morning and then spent the day saying the direction had never been measured.
+
+**What was actually missing was a POPULATION, not a direction** — nobody had measured
+under-merge on the *standing reader-facing feed*. The pitch's §6a says *"every measurement
+**in this pitch** scores precision"*, which is true and scoped; I generalised it from the
+pitch to the whole registry without checking the registry I had open.
+
+⭐ **Same shape as the ART-11 error, hours apart: the source was in front of me and I
+asserted from the summary.**
+
+### ⚠️ ovr's under-merge figure moved FOUR times in one day — never quote it bare
+
+| revision | stories | redundant cards | rate | why it moved |
+|---|---|---|---|---|
+| first pass | 51 | 99 | 3.77% | — |
+| iranintl retraction | 50 | 96 | 3.66% | 4 cards were an ovr summarizer defect, not under-merge |
+| original-title re-audit | 48 | 93 | 3.54% | components had been built on English rewrites |
+| **reachability correction** | **40** | **82** | **3.94%** | **denominator was wrong** |
+
+⛔ **The denominator was the real error.** The feed was reconstructed through the summary
+gate only; both `[lang]/index.astro` and `[lang]/[tab].astro` additionally apply
+`MAX_PER_SOURCE = 5` and `.slice(0, 1000)`. **Only 2,082 of the 2,624 cards are reachable
+— 542 render on no page a reader can navigate to.** The caps de-fragment 8 small stories
+and cost 11 cards; **every large story survives whole** (Venezuela 11, Sicily 9, Lebanon 8,
+EU packaging 7), so the correction *strengthens* the finding. **3.54% and 3.94% are the
+same 93 cards over different denominators.** Use **3.94%** for anything reader-facing, and
+never state either without its denominator. Also English surface only — the `nl` branch
+needs a Dutch summary with no English fallback, so it has ~2 displayable ids.
+
+⚠️ **And "clears NexusMind's own bar" overclaims.** ovr's arm models a *pairwise* cosine
+threshold; production compares an article to a **pinned seed centroid**, greedily, with a
+**source-aware per-cluster** threshold (strict when the article's source is already in the
+candidate *cluster*, and when either source id is empty — **not** when the two articles
+share a source), plus the 25-member cap, the `max_articles_cpu: 1000` CPU bypass, and the
+academic gate. So "131 pairs NM's rule says should have merged" is really **"131 pairs the
+embedding space could see"**. The 32.3%-clear figure stands as a statement about the
+*space*, which is what the text-shape conclusion actually rests on.
+
+⭐ **Their reviewer turned the Lebanon case against them, correctly, and it favours
+H-MERGE:** under a pairwise thresholder, 8 cards in 8 clusters with all 28 pairs above the
+bar is **impossible**; under greedy centroid assignment it is an **ordinary** outcome. So
+that case is not independent evidence alongside NexusMind's trace — it is evidence *for*
+it.
+
+⛔ **The ~5% ceiling is withdrawn.** Two of its three probes were hand samples never
+implemented in either script, so they are not reproducible; the third is underpowered by
+its own arithmetic — at the ~2.3% density credited to that band, 40 draws expect 0.9 hits
+and **P(0) ≈ 0.40**, so finding none is routine rather than informative, and the sampling
+was systematic by card position rather than random. **A hand census of one day's feed
+(~250 cards) is the only thing that would bound it.**
+
 ### ⭐ COMBINING features beats the production threshold — n=1,196, replicated 3 panels
 
 V1 combined four features and got precision 0.000 / recall 0.000, but at **n=23** with
