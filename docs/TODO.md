@@ -1,6 +1,74 @@
 # LLM Distillery - TODO
 
-## 🔵 NEXT SESSION — **#120 and #121 closed here; what is left is in other repos**
+## 🔵 NEXT SESSION — **start at the 79.3%. It is the reliable-CDCR problem and it has a number**
+
+> **Owner direction 2026-08-16, superseding everything else: *"priority has to really have
+> reliable CDCR."* And: ⏸️ ***"park investment"*** (park, NOT remove — see below).**
+>
+> ### ⭐⭐ 1. The clustering is 79.3% artefact. Start here.
+> Four fifths of what production calls a merge sits **below** the 0.88 bar — articles match a
+> cluster **centroid** and inherit co-membership with items they are nowhere near. All 30
+> sampled pairs 0.772–0.873; one WWII-motorcycle article appears in **6 of 30**, an mpox
+> preprint in 4. **That is NM#188 / NM#228 / NM#278 and it dwarfs everything else in this
+> area.** Evidence table, the attractor examples and the caveats:
+> `memory/corroboration-feature-hypotheses.md` § *2026-08-16/17*.
+> ⛔ **Sequence is already settled and is NOT threshold-first:** complete-linkage via
+> **NM#228**'s shadow protocol, *then* NM#278. Tightening 0.88 → 0.92 destroys **94%** of
+> cross-language corroboration. **Still blocked on the one measurement nobody has made:**
+> complete-linkage declines ~39% of what production merges and nothing separates *false
+> merges correctly refused* from *real corroboration destroyed*. **That adjudication is the
+> single highest-value unstarted thing on this board.**
+>
+> ### 2. The temporal feature — built, certified, and shipping the REFUTED width
+> ⛔ It is **not** blocked on certification (that was my stale claim; INST-10 was certified
+> 2026-08-09 by a non-author — a session of *this* repo). Three real blockers: the
+> certification is **precision-side only**; the **recall test has never run** and INST-3 is
+> uncertified and lives off the deploy host; and **`sigma_hours: 72.0` is the refuted value**
+> (σ=18 → 83.6/85.9; σ=72 → 99.1/20.6 **fails**), where the term flattens into a near-uniform
+> bonus — arithmetically a threshold decrease, an axis already measured dead.
+> ⭐ **And the AUC cannot arbitrate σ — it is σ-invariant BY CONSTRUCTION.** Any before/after
+> merge-set delta must run at **σ∈[12,24]**, never 72.
+>
+> ### 3. Nothing else in this repo is urgent
+> `investment_risk` parked. #120/#121 closed. Contract A done. The corpus dedup on `id` is
+> specified and unrun — worth doing **before the next training run**, not before that.
+>
+> ---
+>
+> ### ✅ WHAT SHIPPED 2026-08-16/17 — the academic gate, in NexusMind
+> Both-sides semantics, reads `metadata.primary_literature.detected` (a stamp that had **zero
+> consumers at three hops**), `pipeline.story_dedup.academic_gate.enabled`, ADR-022
+> stamp-always. **Suite 1403 green; five mutations each caught by a named test.** Value
+> `pl_pl` **0 correct of 28** (⚠️ rule-of-three bound ~10.7%, never quote 0.0% bare); cost
+> **322:1**. Enabled on the owner's instruction once my acceptance hold was withdrawn.
+> ⚠️ One batch, deliberately the densest (29.4% PL vs ~10% typical).
+> ⛔ **`largest_cluster` 456 → 43 is NOT banked in the gate's justification** — now
+> corroborated from a second direction and filed as NM#188 evidence instead.
+>
+> **Zero spend this session.** The paid re-adjudication I nearly commissioned was made
+> unnecessary by a free path: the 599 verdicts already existed; only the *label* on their
+> articles was missing, and two of six evidence classes were recomputable from stored rows.
+>
+> ### 🔁 Three method findings that outlive the gate
+> 1. ⛔ **Before DEMANDING a zero, prove a zero is ACHIEVABLE.** I set `newly kept == 0` as
+>    non-negotiable; it is unreachable for *any* gate in a greedy centroid clusterer, and I
+>    would have blocked a good gate indefinitely. The mirror of a rule we already enforce.
+>    ⭐ Killed by a **three-arm control**: off-vs-off **0** · off-vs-gate **302** ·
+>    off-vs-**random at matched prevalence 37,692 from FEWER refusals**. **A null arm that
+>    shares the mechanism but not the hypothesis.**
+> 2. ⚠️ **ADR-022's shadow pattern has a testable limit:** sound **provided the mechanism
+>    terminates its own scan.** The shadow counter read 885 off / **22,335** on until the
+>    cascade was barred (→ 904) — endogenous to the decision it was meant to forecast.
+> 3. ⛔ **A gate that refuses a merge must not CAUSE a different merge.** The refusal count
+>    alone looked excellent and would have shipped 247 invented news↔news merges.
+>
+> ⚠️ **Both predictions about the 302 were refuted** (mine: a real fraction genuinely good —
+> 0 of 30; theirs: garbage a minority — 28 of 30), and **the mechanism neither of us named
+> was the sub-threshold one.** ⭐ NexusMind corrected their own "7.4% of surviving merges are
+> invented" by measuring the denominator rather than assuming the 302 were a new defect
+> class. **A ratio only exists once someone measures the baseline.**
+
+## 🗄️ EARLIER 2026-08-16 — **#120 and #121 closed here; what is left is in other repos**
 
 > ### ✅ ARC CLOSED 2026-08-16 — ruled, built, deployed, verified on a live cycle
 >

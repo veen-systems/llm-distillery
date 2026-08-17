@@ -426,6 +426,87 @@ as evidence.
 `answer_key.json` <!-- placeholder --> genuinely is the sampling design, not an answer key — that part
 was right.
 
+## 2026-08-16/17 — ⭐⭐ THE HEADLINE IS NOT THE GATE: **production is 79.3% sub-threshold artefact**
+
+**The academic gate was BUILT, accepted and enabled — and the finding that matters is the
+baseline it exposed.** Measured by the NexusMind session on a real 3,835-article batch,
+merge-pairs by pairwise cosine against the 0.88 bar:
+
+| population | n | below 0.88 | mean cos |
+|---|---|---|---|
+| OLD merge-pairs (gate off) | 122,901 | **97,492 = 79.3%** | 0.8672 |
+| NEW merge-pairs (gate on) | 4,075 | 1,429 = **35.1%** | 0.8898 |
+| newly KEPT (the 302) | 302 | 299 = 99.0% | 0.8186 |
+| newly REFUSED | 119,128 | 96,362 = 80.9% | 0.8664 |
+
+⛔ **FOUR FIFTHS OF WHAT PRODUCTION CALLS A MERGE IS NOT A MERGE DECISION.** All 30 sampled
+newly-kept pairs sit **below** the bar (0.772–0.873): an article matches a cluster's
+**centroid** ≥0.88 and inherits co-membership with items it is nowhere near. Attractors are
+visible at n=30 — one WWII-motorcycle article in **6 of 30** pairs, an mpox preprint in 4.
+That is how a German heatwave story merges with a motorcycle pulled from a Hungarian river.
+**This is NM#188/#228/#278 and it dwarfs the academic question.** The gate improves it
+79.3% → 35.1% *as a side effect*; it is not the fix.
+
+⭐ **`largest_cluster` 456 → 43 is now CORROBORATED from a second independent direction**
+(the sub-threshold rate), so my earlier "observed and deliberately not banked" is upgraded:
+still not part of the gate's justification — the gate does not need it and mixing them
+muddies both — but it is evidence in its own right and belongs on NM#188.
+
+**The gate as shipped:** both-sides semantics (refuse only when *both* articles carry
+`metadata.primary_literature.detected`), reads the stamp and never re-derives,
+`pipeline.story_dedup.academic_gate.enabled`, ADR-022 stamp-always, in `_cluster_articles`'s
+join scan. Suite **1403 green**, **five** mutations each caught by a named test (delete ·
+**OR instead of BOTH** · re-derive from slug · enforce-while-disabled · re-introduce the
+cascade). Value: **`pl_pl` 0 correct of 28** (⚠️ rule-of-three upper bound ~**10.7%** — never
+quote 0.0% bare); `pl_news` 23.1% of 26; `news_news` 49.5% of 545. Cost **322:1** — 299
+sub-threshold pairs added against 96,362 removed.
+⚠️ **One batch, deliberately the DENSEST available (29.4% PL vs ~10% typical).** Benefit and
+cost both scale down; a typical batch is unmeasured.
+
+### The three method findings, all worth more than the gate
+
+⛔ **1. My acceptance criterion was UNACHIEVABLE and I nearly blocked a good gate on it
+forever.** I demanded `pairs newly kept == 0` as non-negotiable. **Refusing any join in a
+greedy centroid clusterer reshuffles everything downstream, so zero is unreachable for any
+gate.** ⭐ **The three-arm control is the reusable pattern — and the third arm is the one most
+would skip:** off-vs-off = **0** (the instrument *can* return zero, so this is not
+determinism) · off-vs-gate = **302** · off-vs-**RANDOM refusals at matched prevalence** =
+**37,692 from FEWER refusals (392 vs 904)**. That converts "fails, cause unknown" into "the
+criterion is unreachable and this gate is **125× better than a generic intervention of the
+same size**". **A null arm that shares the MECHANISM but not the HYPOTHESIS.**
+⭐⭐ **The rule, and it is the mirror of one this project already enforces:** we say *before
+believing a negative, prove the instrument could have said yes.* **The inverse was never
+written: before DEMANDING a zero, prove a zero is ACHIEVABLE.**
+
+⚠️ **2. ADR-022's stamp-always shadow pattern has a limit, and here is its testable form.**
+`academic_gate_candidates` read **885 disabled / 22,335 enabled — 25×** — because a refused
+article kept scanning and met more academic clusters, so the shadow counter was *endogenous
+to the decision it was meant to forecast*. Barring the cascade took it to **885 / 904**.
+⭐ **Sharpened by NexusMind, and their form supersedes mine:** the pattern is sound
+**provided the mechanism terminates its own scan**. Mine ("does not perturb its own inputs")
+was a vibe; theirs is mechanistic and testable.
+
+⛔ **3. A gate that refuses a merge must not CAUSE a different merge.** The first build used
+`continue`, so a refused article cascaded into a different cluster and invented merges — 247
+news↔news, plus refusals spilling into cells both-sides semantics cannot touch (5,997
+`pl_news`, 486 `news_news`). Fixed with `break`: a refused article founds its own cluster.
+**The refusal count alone looked excellent and would have shipped.** ⚠️ A locked-founder
+variant was tested and **reverted** (302 → 288, nothing) — recorded so nobody re-proposes it.
+
+⚠️ **Predictions, both refuted, both on record beforehand.** Mine: *the 302 contain a real
+fraction of genuinely GOOD merges* (bridge/attractor removal letting related news find each
+other) — **0 of 30**. NexusMind's: *garbage is the minority, ~1/3* — **28 of 30**. The
+mechanism neither of us named is the sub-threshold one above. ⭐ And NexusMind **corrected
+their own framing against their own number**: "7.4% of surviving merges are invented" was
+true, badly framed, and handed to me as the number to argue about — then they measured the
+denominator instead of assuming the 302 were a new class of defect. **A ratio only exists
+once someone measures the baseline, and nobody had.**
+
+⚠️ **Fifth structural zero of the week, caught not accepted:** the first acceptance run
+returned `newly refused 0 / newly kept 0` on a 2,101-article batch that was **0.43% primary
+literature** with `academic_gate_candidates == 0` — a *clean-looking pass*, which is worse
+than a suspicious blank. An **ABORT on `candidates == 0`** now exists.
+
 ## 2026-08-16 — the academic stamp ARRIVES and is UNREAD; the gate's value is UNMEASURED
 
 **Census run by the NexusMind session on sadalsuud** (⚠️ *not* locally — their
