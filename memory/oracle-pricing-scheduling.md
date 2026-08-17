@@ -1,6 +1,6 @@
 ---
 name: oracle-pricing-scheduling
-description: Oracle cost — DeepSeek hiked 2026-08-16 (off-peak no longer cheapest; Gemini Batch wins); Gemini AI Studio forces Prepay by 2026-10-12; still avoid 08:00–12:00 CEST
+description: Oracle cost — DeepSeek hiked 2026-08-16 (off-peak no longer cheapest; Gemini Batch wins); Gemini AI Studio forces Prepay by 2026-10-12; still avoid 08:00–12:00 CEST; #124 self-hosted oracle is a residency play, not a cost play
 metadata:
   type: reference
 ---
@@ -54,8 +54,13 @@ metadata:
 > the literal `deepseek-v4-flash` enables reasoning mode and returns **empty
 > `content`**, breaking the score parser. See `memory/gotcha-log.md` 2026-08-14.
 > The real levers are Gemini Batch (~$0.0018/article), local judges on b650 at
-> $0 (`scripts/score_ollama_oracle.py`; #109 Arm B names Qwen3:14b + Phi4:14b),
+> $0 (`scripts/score_ollama_oracle.py`),
 > and the off-peak scheduling rule below, which survives the hike unchanged.
+> ⛔ **Correction 2026-08-17: this line used to read "#109 Arm B names Qwen3:14b +
+> Phi4:14b". It does not.** #109's body names **no** judge model — that omission is
+> precisely its blocking gap #1. The two names come from the **cd v5 multi-oracle
+> precedent**, where they were actually run. Cite the precedent, not the issue.
+> The self-hosted-oracle question now has its own issue: **#124**.
 >
 > ⚠️ **SUPERSEDED IN PART — a price hike IS coming (2026-08-06).** DeepSeek
 > emailed all API users: *"We plan to raise the overall pricing for DeepSeek API
@@ -103,3 +108,44 @@ DeepSeek V4 officialised mid-July 2026, introducing **peak/valley API pricing**.
 **Alternatives for context:** Gemini Flash 2.5 real-time ~$0.003–0.004/article with v5-class 8K-token prompts (the $0.001 figure from the 1.5 Flash era is stale — moved here from CLAUDE.md, 2026-07-31 audit). Gemini Batch API ~$0.0018/article (50% off, 24h async) now sits at roughly DeepSeek *peak* pricing — so DeepSeek off-peak remains cheapest, but the gap closes if forced into peak. DeepSeek cd v5 actual: $10.36 for 8K articles, 14% cache hit.
 
 Effective mid-July 2026 with 24h advance email notice. See [[cd-v5-reference-status]] (DeepSeek-as-default-oracle precedent). Next batch job on deck: solutions v4 (ADR-020 validation case).
+
+## The third option: a self-hosted oracle (#124, 2026-08-17)
+
+Both levers above pick a **commercial** oracle. There is a third axis — host the oracle
+ourselves — and it is **not a cost play**. Prompted by the owner asking whether
+[lyceum.technology](https://lyceum.technology/) (Berlin, EU-sovereign GPU cloud, H100 SXM
+$2.79/hr, A100 SXM $1.59/hr, per-second billing) is useful to us. **Ruling: important
+experiments, not now.** Filed as **#124**, P3-low.
+
+**Two code facts, verified by reading source 2026-08-17 — not inferred from config:**
+
+- `scripts/score_ollama_oracle.py` **already works**: byte-for-byte prompt parity with
+  `batch_scorer.py` and `validate_deepseek_oracle.py`, scores the frozen 522-article cd v5
+  set, and `qwen3:14b` / `phi4:14b` have been through it. Host is one hardcoded constant,
+  `OLLAMA_HOST = "http://gpu-server:11434"`.
+- ⛔ **The canonical oracle cannot be retargeted.** `ground_truth/batch_scorer.py` accepts
+  only `claude/gemini/gemini-pro/gemini-flash/gpt4`, and `_init_client` builds
+  `openai.OpenAI(api_key=...)` with **no `base_url` anywhere in `ground_truth/*.py`**. So a
+  *real retrain* cannot use an OpenAI-compatible vLLM endpoint today. Small change,
+  but it is a precondition, not a detail. **Note also that DeepSeek has no backend in
+  `batch_scorer.py` at all** — every DeepSeek call site lives in
+  `filters/common/obituary_detector/validation/`, not in the filter oracle path.
+
+**The cost arithmetic does not decide it (ESTIMATED, wide bars).** A v5-class 8K-article
+retrain is ~64M input + ~9.6M output tokens and is **prefill-dominated** (~6.7:1), so
+break-even vs Gemini Batch's $14.40 is ~5.2 H100-hours. Estimated: 70B fp8 ≈ 4.5–7 hrs
+($12–20, a wash), 32B ≈ 2.5–3.5 hrs ($7–10), 14B on b650 **$0**. **Renting saves nothing at
+the size that would justify renting, and only wins at sizes we nearly run for free.**
+Per [[feedback-nothing-verifies-an-estimate]] treat these as estimates until measured.
+
+**What it does buy, and this is the actual case:** EU residency for full article text
+(closing the open carve-out in `docs/decisions/2026-08-05-tdm-opt-out-training-data.md`),
+independence from the two dated vendor forcing functions above, and model sizes past
+b650's 24 GB ceiling.
+
+⚠️ **Do not import the cross-box parity objection from the student path.** It was raised
+and withdrawn in the originating conversation. Bit-level box determinism
+([[b650-gpu]], `scripts/verification/box_parity.py`) governs **student scoring**, where a
+verdict flip at an op-point is a production defect. Oracle *labelling* has a far larger
+intrinsic decoder noise floor (ν = 0.436 / 0.687, see [[filter-status]] and the #109 Arm A
+follow-up), so an ephemeral rented box is an acceptable labelling instrument.
