@@ -15,6 +15,27 @@ one-home rule applies — a copy here would diverge from its source within a wee
 the failure this project has already had with a duplicated article draft. If a row and
 its source disagree, **the source wins and this row is the bug.**
 
+## ⛔ What this file does NOT prove
+
+*(Added 2026-08-17 after an index built the same day nearly caused four correct records to
+be deleted. An index that invites a wrong inference is worse than no index, because it
+arrives looking like evidence.)*
+
+- **A verdict column is a REPORT of what the source file says, not a verification of it.**
+  Rows reading `not stated in heading` mean the verdict was not retrievable by scanning —
+  they do not mean "unresolved."
+- **Two entries sharing a topic, a paper or an author are NOT duplicates.** Check the
+  *claim*, never the citation. A shared-source sweep is a **candidate screen**; its output
+  is "worth checking", never "confirmed". Getting this wrong on 2026-08-17 produced a list
+  of seven apparent duplications of which **one** was real, and acting on it as given would
+  have collapsed four correct registry rows.
+- **Absence from this file is not absence from the project.** It indexes ten files in two
+  repos; anything outside them is invisible here.
+- ⚠️ **A claim that proposes DELETING something needs a higher bar than one that proposes
+  believing something.** A reviewer's default of "plausible, proceed" is recoverable for a
+  belief and irreversible for a deletion. Nothing in this project stated that rule before
+  2026-08-17.
+
 ---
 
 ## ⚠️ Read first: the identifier namespace is not global
