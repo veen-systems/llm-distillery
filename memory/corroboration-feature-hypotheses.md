@@ -509,7 +509,7 @@ check before it drives anything.**
 (:3377), and `_prepare_text` is TITLE-ONLY (NM#275). So enrichment quality cannot
 affect matching at all, by construction.** Over 96 files / 324,941 rows / 17 days
 (2026-07-31→08-17): titles missing **0**; `published_date` missing or unparseable
-**0**; title mojibake **0.159%** *(⛔ was 0.094% — superseded, see below)*; title
+**0**; title mojibake **~0.11–0.13%** *(⛔ 0.094% too low, 0.159% too high — both retracted, see below)*; title
 markup **0.498%**; non-NFC titles 0.095%
 (ko 1.94%, fr 1.39%, ar 1.22%). Contamination is source-concentrated —
 `mexican_excelsior` **648/648** and `portuguese_cmjornal` **253/253** carry a raw
@@ -552,16 +552,53 @@ state**: post-enrichment body mojibake 1.686% → 0.593%, step on 2026-08-14
   measured it firing on clean apostrophe-bearing Romance titles); both of their examples
   are asserted as absence controls and both pass.
 
-- ⛔ **CORRECTED 2026-08-17: mojibake is NOT a Spanish/Portuguese problem.** That claim
-  was an artifact of a detector that could only see Latin-script corruption. Re-measured
-  with the derived signatures, the 209 rows the old detector missed break down as
-  **ru 62 · el 42 · en 33 · mk 22 · es 21 · uk 13** — worst sources
-  `moldovan_newsmaker_md`, `balkan_mia_mk`, `russian_the_bell`, `belarusian_belsat`,
-  `greek_in_gr`. **Cyrillic and Greek sources dominate, and English is third.** Examples
-  the old pass could not see: `MƒÅori` (Māori, NZ English), `â€”` and `‚Äî` (em-dashes in
-  English headlines), and one Arabic title mangled end-to-end *and* mislabelled
-  `language: no`. **An instrument that can only see one script will report that the
-  problem is in that script.**
+- ⛔⛔ **RETRACTED WITHIN THE HOUR — the "Cyrillic and Greek dominate" reversal was 140
+  FALSE POSITIVES.** *(Claimed and pushed in `c5ad67b`; refuted by the NexusMind session
+  the same evening, verified here independently before accepting.)*
+
+  ~~Mojibake is not a Spanish/Portuguese problem; the missed rows are ru 62 · el 42 ·
+  en 33 · mk 22 · es 21 · uk 13, so Cyrillic and Greek dominate.~~
+
+  **The mechanism, traced to the generation step.** The inventory includes Latin
+  Extended-B (U+0180–U+024F) and the punctuation `«»`. Those characters' UTF-8 bytes,
+  read through `cp1251` / `mac_cyrillic` / `mac_roman`, produce **two-character
+  signatures that are ordinary text in Cyrillic and Greek** — `«Б` from U+01C1 via
+  mac_cyrillic, `«π` from U+01F9 via mac_roman, `ИЈ` from U+0223 via cp1251. **Guillemets
+  are the standard quotation mark in Russian and Greek**, so every quoted headline in
+  those languages matched. Verified by codec inversion: all of them invert under **no**
+  codec, i.e. they are clean text. Cross-tabulated by NexusMind: es 201/201 and en 145/146
+  confirm as real; ru, el, mk, uk, de confirm at **0 of 140**.
+
+  ⭐⭐ **WHY THE CONTROLS COULD NOT CATCH IT, and this is the keeper.** The structural
+  control — *"every signature is non-ASCII, so the detector must return 0 on the
+  pure-ASCII subset"* — is true, free, and **one-sided in exactly the direction that
+  matters. It proves the detector does not fire on the 59.6% of the corpus where it
+  structurally CANNOT. All 140 false positives live in the non-ASCII 40.4%, which the
+  control never examines. It is a control that can only pass.** The absence arm had the
+  same shape: 8 clean strings, every one Latin. **An absence control drawn from the
+  scripts the instrument was DESIGNED for cannot test the scripts it is RUN against.**
+
+  ⭐ **And the fix inverted the error rather than escaping it.** I wrote *"an instrument
+  that can only see one script will report that the problem is in that script"* — then
+  shipped an instrument that fires on scripts it was not designed for and reports the
+  problem is in *those*. Same error class, opposite sign, one commit apart.
+
+  **THE SOUND FORM IS SCREEN-THEN-VERIFY** — the generated signature set as a complete
+  but unsound screen, then codec inversion as the exact check on survivors. That is the
+  block-then-verify pattern from the record-linkage literature surfaced this same day
+  (Papadakis et al., ACM CSUR 53(2) 2020; canopy clustering, McCallum et al. KDD 2000),
+  and neither half is correct alone: signatures are complete and unsound, inversion is
+  sound but has no cheap candidate set.
+
+  **The defensible number: ~0.11–0.13% of titles, and both figures are FLOORS** — screen
+  +verify gives **0.110%** (362 of 328,460), NexusMind's inversion-only gives **0.129%**
+  (418 rows). Neither sees double-encoded or lossy corruption. **0.094% was too low,
+  0.159% was too high.** Population is Latin-script, **Spanish and English dominant** —
+  roughly where the morning started, though the old detector *was* genuinely undercounting
+  by ~18%. The recall fix was right; only the population claim was wrong.
+
+  Genuine finds the hand-written classes missed and that survive verification: `MƒÅori`
+  (Māori macron in NZ English) and `â€”` / `‚Äî` em-dashes in English headlines.
 - ⚠️ The panel's `lang_1`/`lang_2` column **mixes ISO codes with English names**
   (`en` and `English` both appear), so a naive `lang_1 != lang_2` inflates
   cross-language. Cost: 0.672 → **0.685** after normalising.
