@@ -3755,7 +3755,7 @@ That is a two-second check and would have saved both rejections.
 **Root cause**: all five rows had oracle `comm = 0`, so 0.000 was the *correct* output. The smoke test was sized to check the interface, not the distribution.
 **Fix**: the calibration stats (max 6.625) contradicted it within minutes. Smoke tests answer "does it run" — reading a substantive signal off one costs a retraction.
 
-### Two `<!-- verify: -->` annotations that could never be extracted (2026-08-12)
+### Two `<!-- verify: -->` annotations that could never be extracted (2026-08-12) [x2 — recurred 2026-08-17]
 **Problem**: `memory/stamp-contract-integrity.md`'s claim that NexusMind#300 is fixed carried a verify command twelve lines long — embedded Python inside an HTML comment. It had **never run**, and neither had a second multi-line annotation in the same file.
 **Root cause**: an HTML comment's `-->` must sit on the annotation's own line, or the extractor reports MALFORMED and skips it. Nothing read the skip: the file looked annotated, and a claim that had already regressed once after being called fixed was unchecked for four days.
 **Fix**: replaced by `scripts/verification/check_content_length_populated.sh` (one line to call, evidence not a verdict word, non-zero exit, explicit `CANNOT VERIFY`). Found by adopting the framework's v1.22.0 runner, not by review — **10th occurrence of the catalogue below**. An annotation is a mechanism like any other, and "the file has a verify comment" is a config key, not an outcome.
@@ -3876,7 +3876,28 @@ That is a two-second check and would have saved both rejections.
 **Root cause**: The signal was **accidental** — undocumented, unowned, and depended on a serialization detail nobody had written down as load-bearing. Both changes were correct and unrelated.
 **Fix**: The archive (`data/archived/`, retained indefinitely) keeps every pre-deploy row, so the attribution stays reproducible. ⭐ **The lesson is an argument FOR the explicit field, not against the change**: an accidental signal vanishes the moment someone touches its substrate for an unrelated reason. If a diagnosis depends on an undeclared property, write it down as a field or expect to lose it.
 
+### A self-referential size claim falsifies itself on the next edit (2026-08-17)
+**Problem**: `CLAUDE.md`'s footer read *"`/audit-context` 2026-08-16 cut this file from 39,177 to the size you see."* The first edit any later session makes to the file makes that sentence false, silently — and nothing checks a phrase.
+**Root cause**: the claim's referent is *the file it lives in*, so it is invalidated by its own container changing. It reads as provenance, which is why nobody treats it as a decaying state claim.
+**Fix**: replaced with a dated statement of what the run did, plus an explicit warning not to re-add the shape. **A number describing the document it sits in is a state claim about a thing you are about to edit — write the date and the delta, never "the size you see".**
+
+### Two catalogues of one thing, and the always-loaded pointer named the shorter one (2026-08-17)
+**Problem**: the unreachable-mechanism occurrence count is **14** per `memory/working-rules.md`, which numbers each one. `memory/gotcha-log.md`'s § *The unreachable-mechanism catalogue* table has **12 rows** and is missing occurrences 11, 12 and 14. `CLAUDE.md`'s rule-level pointer sends the reader to the **gotcha-log** table.
+**Root cause**: the evidence was moved out of `CLAUDE.md` twice, to two different files, and neither move retired the other. The `<!-- verify: -->` on the rule checks that `CLAUDE.md` and `working-rules.md` agree on *14* — **a narrower question than "is the catalogue the reader is pointed at complete?"**, and the narrow answer is TRUE, so it passes forever.
+**Fix**: `working-rules.md` declared canonical for the count; the gotcha-log table now says so and stops being a second running total. Pointer in `CLAUDE.md` corrected. **When one fact has two homes, the check that compares two of them cannot see the third.**
+
+### An open issue is not evidence of unfixed work (2026-08-17)
+**Problem**: `memory/MEMORY.md` asserted in two entries that NM#390 was *"written, not fixed — uncommitted, undeployed; ~800–1,000 articles/fortnight still lost."* It had been fixed, merged and **deployed 2026-08-16 16:49 CEST** (`7726f5e`) — before the entry that says otherwise was written.
+**Root cause**: the tracker was read as the state. NM#390 is deliberately held OPEN to a 2026-08-23 review-by, which is the *opposite* of unfinished, and `docs/TODO.md` said so in three places the index never reconciled against.
+**Fix**: both index entries corrected in place, each naming the claim it supersedes and its date. **Probe the deploy, not the tracker state** — and an always-loaded file asserting an active production loss is the most expensive kind of stale, because every session starts from it.
+
 ## The unreachable-mechanism catalogue
+
+⚠️ **`memory/working-rules.md` is CANONICAL for the occurrence COUNT and numbering** (14 as
+of 2026-08-16). The table below is the shape-by-shape evidence and is **not** a second
+running total — it was missing occurrences 11, 12 and 14 for two days while the rule's own
+`<!-- verify: -->` passed, because that check compares `CLAUDE.md` against `working-rules.md`
+and cannot see this file. Add new occurrences to `working-rules.md` first.
 
 Moved out of `CLAUDE.md` on 2026-08-09 (context audit): the **rule** belongs in the
 project file, the **evidence** belongs here. The rule is unchanged — name the caller,

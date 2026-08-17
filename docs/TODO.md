@@ -84,6 +84,55 @@
 > invented" by measuring the denominator rather than assuming the 302 were a new defect
 > class. **A ratio only exists once someone measures the baseline.**
 
+## 🧹 2026-08-17 — `/audit-context`: housekeeping only. **Does not change the priority above.**
+
+> No filter, no model, no package, no deploy, **zero spend.** The reliable-CDCR / 79.3%
+> work above is untouched and is still first.
+>
+> ### ✅ FIXED this run
+> - **The index had no entry for the 08-16 night → 08-17 session** — the one that took the
+>   academic gate live. Ten commits and a production deploy were unindexed while
+>   `CLAUDE.md`'s *"Starting a new session"* row pointed at the file that did not know.
+>   Entry added, and it now carries the **deploy record durably**: `f28d3ca` wrote the LIVE
+>   line only into this file's top block, which is rewritten every session.
+> - **`memory/MEMORY.md` was 23 chars from its own hard-FAIL** (29,977 / 30,000). Six
+>   oversized entries trimmed — each verified to have its full repo session file **first**.
+>   Three values that existed **nowhere else** (`21+` validators, the `27–107` range, "the
+>   two schemas overlap on ZERO metadata keys") were **moved** into
+>   `memory/stamp-contract-integrity.md`, not cut. → **#123**
+> - **Last orphaned topic file closed**: `memory/opinion-genre-hypotheses.md` had an index
+>   entry but no `CLAUDE.md` pointer row. Added, with the op-point trap (#121's issue body
+>   scores `solutions` at 4.0; it is **2.25**).
+>
+> ### 🆕 OPEN — filed this run
+> - **#122** — `CLAUDE.md`'s frontmatter says *"OPERATIVE RULES (these govern)"* and the
+>   block **did not reach session context**. ⚠️ **One instrument (my own context window).**
+>   Confirm from a fresh session before fixing. Scope is wider than this repo: the framework
+>   template ships that frontmatter and **19 repos here carry it**.
+> - **#123** — the budget guard hard-FAILs with no soft stage, so a session's entry goes
+>   somewhere else **silently**. Headroom after this run is ~1.5k chars ≈ **one entry**, so
+>   the next close hits the same wall. Symptom fixed, mechanism not.
+>
+> ### 📋 NOT DONE — audit findings left on the table
+> - `project_session_2026_07_28.md` is a **name collision**, not a duplicate: the repo copy
+>   and the Claude-Code auto-memory copy are *different sessions* under one filename.
+> - Two auto-memory session copies (`_07_30`, `_07_31`) are stale, shorter duplicates of repo
+>   files. ⛔ Do **not** touch `_08_01/_08_02/_08_03` — marked *no repo file*, only record.
+> - `## Before You Start` is 9.4k — 26% of the loaded body — and **25 of 27 topic files are
+>   hooked in both layers**, with hooks grown from pointers into summaries. That is the
+>   duplication feeding #123's growth.
+>
+> ### 🔁 Method findings
+> - ⭐ **A self-referential size claim falsifies itself on the next edit.** The 08-16 footer
+>   said this file was *"cut to the size you see"*; my first edit made that false. Replaced,
+>   with a warning not to re-add the shape.
+> - ⭐ **Compressing an adjacent entry can silently drop a rung-4 reference** — the 08-15
+>   night lesson, and it fired again: `stamp_census.py` left the index. Caught by **diffing
+>   the resolved-reference sets before and after**, not by re-reading. Verified it survives
+>   in `CLAUDE.md` (the always-loaded layer, where the imperative belongs).
+> - ⚠️ **The reference checker was run on the seeded fixture FIRST** (24/24) so that the
+>   1-finding result read as a live check rather than a disabled one.
+
 ## 🗄️ EARLIER 2026-08-16 — **#120 and #121 closed here; what is left is in other repos**
 
 > ### ✅ ARC CLOSED 2026-08-16 — ruled, built, deployed, verified on a live cycle

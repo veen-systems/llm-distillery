@@ -129,11 +129,7 @@ already discriminates against advocacy. `nature_recovery` cannot be measured.
 
 Population is on sadalsuud; nothing is committed here (full article text — #97).
 
-<!-- verify: python3 -c "
-import re,sys
-p='memory/opinion-genre-hypotheses.md'; t=open(p).read()
-ok = '2.25' in t and '233,338' in t and '2.05' in t
-print('PASS op-point 2.25 + n + MH OR present' if ok else 'FAIL numbers dropped from the record'); sys.exit(0 if ok else 1)" -->
+<!-- verify: P=memory/opinion-genre-hypotheses.md; M=""; for v in 2.25 233,338 2.05; do grep -qF "$v" "$P" || M="$M $v"; done; if [ -z "$M" ]; then echo "PASS op-point 2.25 + n=233,338 + MH OR 2.05 all present"; else echo "FAIL dropped from the record:$M"; exit 1; fi -->
 
 ```bash
 # op-points, from the RUNTIME source — never from config.yaml, never from #121's body

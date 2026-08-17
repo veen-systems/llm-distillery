@@ -310,6 +310,21 @@ nobody ran it interactively.
 - Standards: `language` 3,509/3,514 two-letter, `zh-cn` ×5; `published_date` /
   `collected_date` **99.4–99.7% carry no UTC offset**; `url` 100% absolute.
 
+## ⛔ Two counts that are SUPERSEDED — kept only to date the correction
+
+*Moved here from `memory/MEMORY.md` on 2026-08-17 (`/audit-context`); the index was
+their only home, and an index entry is a hook, not a record.*
+
+- **"FOUR validators" was an undercount**, by an instrument that could only see one
+  shape. A behaviour sweep over all 20 repos found **21+** — and counting them was the
+  wrong question anyway. The finding in its final form: **exactly TWO shape checks are
+  both automatically invoked AND looking at real production bytes, and between them they
+  assert eight key names and two strings' max length.**
+- **"ovr reads 2 of 52" is retired.** The **2 stands**; the 52 was a single-run count
+  ranging **27–107** across runs, so the derived 96% never had a denominator.
+- **The two schemas over one stream overlap on ZERO metadata keys.** (2026-08-13,
+  § *The contracts layer*.)
+
 ## ⚠️ Instrument traps — read before quoting any number above
 
 1. **NexusMind's `validate_production_contract.py` counts ERRORS, not rows, and merges

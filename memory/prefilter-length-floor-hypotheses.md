@@ -97,7 +97,8 @@ the length floor blocks*.
    30s default — so a default run reports it ERROR *(timed out)*, which is
    indistinguishable from a broken check. It is not broken: verified 2026-08-12,
    exit 0, `D3_pct2.3  80  80  -1.119 [-1.61, -0.61]`.
-   <!-- verify: PYTHONPATH=. python3 scripts/diagnostics/ld92_analyze_did.py --design tests/fixtures/ld92/design.json --scored tests/fixtures/ld92/deepseek_scored.jsonl | grep D3_pct2.3 -->
+   <!-- verify: M=""; for p in scripts/diagnostics/ld92_analyze_did.py tests/fixtures/ld92/design.json tests/fixtures/ld92/deepseek_scored.jsonl; do [ -f "$p" ] || M="$M $p"; done; if [ -z "$M" ]; then echo "PASS harness+fixtures present (the RUN is manual, ~50s — see below)"; else echo "FAIL missing:$M"; exit 1; fi -->
+   <!-- verify: manual — the full DiD run, ~50s, exceeds the curate runner's 30s default and so cannot be an inline check: `PYTHONPATH=. python3 scripts/diagnostics/ld92_analyze_did.py --design tests/fixtures/ld92/design.json --scored tests/fixtures/ld92/deepseek_scored.jsonl | grep D3_pct2.3`. Expect exit 0 and `D3_pct2.3  80  80  -1.119 [-1.61, -0.61]` (verified 2026-08-12). The inline check above covers the realistic decay — harness or fixtures deleted. -->
 
    **Harness AND data committed.** Scripts in `scripts/diagnostics/ld92_*.py`
    (`a10e084`; `ld92_crosscheck.py` came later in `c587b78`), fixtures in
