@@ -7,7 +7,52 @@ metadata:
 
 # Cross-Repo Prioritization
 
-## Board count 2026-08-11 **12:56** — **251 open**. The count is not the finding; the distribution is.
+## ⛔ THE BOARD COUNT IS NOT IN THIS FILE. RUN THE QUERY.
+
+**Removed on purpose, 2026-08-17. Do not restore a current-state count table
+here, in `memory/MEMORY.md`, or in `docs/TODO.md` — regenerating one out of habit
+is the failure this removal exists to prevent.** There is nothing to update; there
+is a command to run, and its output is quoted with the timestamp you ran it at.
+
+```
+tot=0; for r in veen-systems/llm-distillery ducroq/NexusMind ducroq/ovr.news \
+  ducroq/FluxusSource veen-systems/persuasion-scorer veen-systems/pipeline-atlas \
+  ducroq/augmented-engineering; do
+  n=$(gh issue list -R $r --state open --limit 400 --json number --jq 'length')
+  echo "$r: $n"; tot=$((tot+n)); done; echo "TOTAL: $tot"
+```
+
+**Every dated section below is a SNAPSHOT, not state.** They are kept because
+their columns are *not* re-derivable — `gh` returns *now*, and nothing recovers
+"open on 2026-08-09, touched ≤2d" or a sediment count against a stated cutoff.
+**Read them as history and never refresh one in place**: a snapshot edited to
+today's numbers stops being provenance and becomes a mirror again.
+
+⚠️ **The count was never the main drift.** Over this file's own text on
+2026-08-17: **17 self-corrections, of which 4 concern counts and 13 concern the
+narrative** — a chain reframed, a link marked ✅ while open, a peer-reported fact
+that decayed. ⛔ **The SPLIT is the finding; the TOTAL is an artifact of the word
+list** — this is a hand-built population, a keyword grep chosen by a participant
+over one file, and a broader list run by a peer returned 72 hits. What is hard is
+the classification: two classifiers, the second blind, agreed on all 17 including
+the one borderline (a retracted claim about a *ground-truth* count, not a board
+count — narrative). ⚠️ **Reproduce with the command below and no other** — the
+pattern names its own markers, so running it over the whole file counts this block
+too and reads 20. Anchoring past the heading is what makes it measure the history rather
+than itself. Deleting the table addresses the smaller class. The rule that
+addresses the larger one is already below and is the one that matters: **before
+ranking, recommending or describing work in a repo that is not this one, query
+that repo** (2026-08-12), and **stamp a peer-reported fact as peer-reported, with
+its date**.
+
+```
+awk '/^## Board snapshot/,0' memory/cross-repo-prioritization.md | grep -cE \
+  "was wrong|were wrong|CORRECTED|corrected me|retract|was false|already stale|consecutive pass|which was true when written|decayed"
+```
+
+---
+
+## Board snapshot 2026-08-11 **12:56** — historical. The count is not the finding; the distribution is.
 
 | repo | open | touched ≤7d | touched ≤2d | oldest untouched since | Δ vs midday |
 |---|---|---|---|---|---|
