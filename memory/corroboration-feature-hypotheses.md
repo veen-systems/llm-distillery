@@ -490,6 +490,32 @@ pitch to the whole registry without checking the registry I had open.
 ⭐ **Same shape as the ART-11 error, hours apart: the source was in front of me and I
 asserted from the summary.**
 
+⭐⭐⭐ **AND THE NARROWING ANSWERS A QUESTION NOBODY HAD ASKED — the single best finding
+of the day, NexusMind's.** *How did H-MERGE survive a certified recall instrument sitting
+in the registry since 2026-08-05?* **Because every instrument we own is pointed one level
+BELOW the defect.**
+
+| instrument | level |
+|---|---|
+| INST-4 `recall_probe.py` | pairwise |
+| INST-14 combined features | pairwise (its own blind spot (d)) |
+| INST-13 chaining/drift | pairwise reconstruction |
+| ovr's under-merge probe | pairwise |
+
+**A story fragmented across eight confident clusters is INVISIBLE to all of them, because
+every pair can be correctly judged while the partition is wrong.** Precision and recall
+over pairs are simply not defined on the quantity that is broken.
+
+⚠️ **The operational consequence, and it is the real brake on shipping a fix: we currently
+have no instrument at the level of the defect, so we cannot yet measure whether a
+consolidation pass worked.** Building a partition-level instrument (B³, CEAF-e, or the
+`largest cluster` / fragmentation pair) is not a nicety after the fix — it is a
+prerequisite for knowing the fix did anything. INST-6 (B³ on an exhaustively annotated
+window) has been `[ ]` **not built** in the registry the whole time.
+
+⚠️ Also inherited: INST-4 contains **no non-English↔non-English pair at all**, so it is
+structurally blind to the half of the corpus OBS-35 is about.
+
 ### ⚠️ ovr's under-merge figure moved FOUR times in one day — never quote it bare
 
 | revision | stories | redundant cards | rate | why it moved |
@@ -504,9 +530,11 @@ gate only; both `[lang]/index.astro` and `[lang]/[tab].astro` additionally apply
 `MAX_PER_SOURCE = 5` and `.slice(0, 1000)`. **Only 2,082 of the 2,624 cards are reachable
 — 542 render on no page a reader can navigate to.** The caps de-fragment 8 small stories
 and cost 11 cards; **every large story survives whole** (Venezuela 11, Sicily 9, Lebanon 8,
-EU packaging 7), so the correction *strengthens* the finding. **3.54% and 3.94% are the
-same 93 cards over different denominators.** Use **3.94%** for anything reader-facing, and
-never state either without its denominator. Also English surface only — the `nl` branch
+EU packaging 7), so the correction *strengthens* the finding.
+⛔ **"The same 93 cards over different denominators" is WRONG and I propagated it from
+ovr's own phrasing** *(caught by NexusMind)* — the caps remove **8 stories and 11 cards**
+too, so it is **82 / 2,082 against 93 / 2,624**. Both terms moved. Use **3.94%** for
+anything reader-facing, and never state either without its denominator. Also English surface only — the `nl` branch
 needs a Dutch summary with no English fallback, so it has ~2 displayable ids.
 
 ⚠️ **And "clears NexusMind's own bar" overclaims.** ovr's arm models a *pairwise* cosine
