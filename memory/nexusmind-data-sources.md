@@ -321,13 +321,24 @@ script made exactly this error. Verified here by grepping every `live_articles`
 reference in `src/` and `scripts/`: outside the schema DDL there is one, a function
 the build never calls.
 
-⛔ **The deployed view has also drifted from its own source and CANNOT reconverge.**
-Live DDL on sadalsuud filters `tier IN ('high','medium')`; `db-schema.ts:793` says
-`weighted_average >= 4.5`. Mechanism, and it is permanent by construction: every
-statement in `createViews()` is `CREATE VIEW **IF NOT EXISTS**`, so on a DB where the
-view exists the source definition is a **no-op**; `recreateViews()` would fix it and
-is **exported and never called from anywhere**. So two people reading "the view" are
-reading **two different objects**, and no code path will ever make them one.
+⚠️ **The deployed view HAD drifted from its own source and could not reconverge —
+FIXED 2026-08-16 by ovr#325.** *(Corrected 2026-08-17, reported by the ovr.news
+session. The paragraph below described the world before that fix and was still
+asserting permanence a day after it landed — a stale "permanent by construction"
+claim is worse than no claim, because it discourages the check.)*
+
+The drift was real: live DDL on sadalsuud filtered `tier IN ('high','medium')` while
+`db-schema.ts:793` said `weighted_average >= 4.5`, and it had been that way since
+**2026-04-10**. Mechanism: every statement in `createViews()` was
+`CREATE VIEW **IF NOT EXISTS**`, a no-op where the view already exists, and
+`recreateViews()` was exported and never called. **ovr#325 moved the view bodies into
+`VIEW_DEFINITIONS` and `reconcileViews()` now runs unconditionally from
+`initializeSchema`, writing only on mismatch — so the view self-heals.**
+
+⛔ **What has NOT changed: `live_articles` is still not the reader population.** It
+remains off the build path, and its only reader `getLiveArticles()`
+(`db-articles.ts:183-186`) is itself uncalled. Keep it out of your denominators for
+that reason, not for the drift reason.
 
 **Use the build query, or the `articles` table as a superset.** A superset claim is
 the robust move: if a population is 0 in `articles`, it is 0 in any window over it.

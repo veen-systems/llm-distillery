@@ -1,0 +1,163 @@
+---
+name: hypothesis-ledger
+description: Index of every hypothesis this project has stated, its verdict, and where the experiment and result live. Read to RECALL prior work before proposing a new measurement — it is a pointer index, never a copy.
+metadata:
+  type: project
+---
+
+# Hypothesis ledger
+
+**Created 2026-08-17**, because the question *"what have we already hypothesised, tested
+and settled?"* had no answer short of reading **203 KB across 10 files in two repos**.
+
+**This is an INDEX, not a store.** Every row points; no row restates a finding. The
+one-home rule applies — a copy here would diverge from its source within a week, which is
+the failure this project has already had with a duplicated article draft. If a row and
+its source disagree, **the source wins and this row is the bug.**
+
+---
+
+## ⚠️ Read first: the identifier namespace is not global
+
+- ⛔ **`H4` is defined in FOUR different files** — `cd-v6-probe`, `google-news-corpus`,
+  `prefilter-length-floor`, `solutions-v6-dimension`. A bare "H4" silently resolves to
+  whichever file the reader has open and reads as correct. Same shape as
+  `feedback-bare-issue-number-resolves-locally`. **Always qualify: `cd-v6 H4`.**
+- ⛔ **`H1`, `H2`, `H3` collide between `cd-v6-probe` and `solutions-v6-dimension`.**
+- Three schemes are in use with no convention: bare `H1..H7`, prefixed `H-D1` / `H-E1` /
+  `H-L1`, and refutation-numbered `R1..R4`.
+- ⛔ **Three hypothesis files carry NO identifiers at all** — `obituary-v4`,
+  `opinion-genre`, `violence-promotion-v1`. Their claims cannot be cited except by
+  quoting them, so they are effectively unreferenceable from anywhere else.
+
+**Rule going forward: new hypotheses get a file-prefixed id** (`H-CD8`, `H-SOL5`), never
+a bare number. Existing ids are NOT renamed — renaming would break every citation.
+
+---
+
+## Ledger
+
+Status vocabulary is the source file's own. `not stated in heading` means the verdict may
+be in the body but is not retrievable by scanning — a defect in the source, recorded here
+rather than guessed at.
+
+### Corroboration / story matching — the active programme
+
+⭐ **This topic's hypotheses do NOT live in the `H-n` scheme.** They live as
+`INST-n` / `OBS-n` / `ART-n` / `MECH-n` / `PROP-n` / `ARG-n` in the **NexusMind V&V
+registry**, `NexusMind/docs/vv/corroboration-dedup-registry.md` — **the only place in
+either repo that records instrument certification**, i.e. whether the thing that produced
+a number could have seen the failure it rules out.
+
+| register | count (2026-08-17) | what it holds |
+|---|---|---|
+| `INST-1..15` | 15 | instruments, each with its **blind spot**, designer, certifier, degenerate baseline |
+| `OBS-1..38` | 38 | claims from own data |
+| `ART-1..30` | 30 | prior art |
+| `MECH-1..7` | 7 | causal-mechanism claims |
+| `PROP-1..7` | 7 | recommendations |
+| `ARG-1..2` | 2 | reasoning chains |
+
+- **Binding registry rule:** no own-data claim may rate above `EMERGING` while its
+  instrument is `CERTIFIED: no`. Everything filed 2026-08-17 is therefore EMERGING.
+- **Open competing hypotheses for this topic are pre-registered**, with predictions and
+  decision rules stated *before* measurement:
+  `NexusMind/docs/investigation/2026-08-17-cdcr-hypothesis-set-prereg.md` —
+  **H-LINK** (transitive closure) · **H-GEOM** (embedding geometry / hubness) ·
+  **H-REL** (topic ≠ event identity, llm-distillery#100) · **H-DEC** (a scalar threshold
+  is the wrong decision rule) · **H-POP** (the corpus is pre-depleted upstream).
+- Narrative + literature for the same topic: `corroboration-feature-hypotheses.md`.
+- Publication track (pitch stage, **not a draft**):
+  `NexusMind/docs/articles/percolation-in-similarity-clustering-pitch.md`.
+
+### `cd-v6-probe-hypotheses.md` — cultural_discovery v6 probe (#98)
+
+| id | claim | verdict |
+|---|---|---|
+| cd-v6 H1 | a multilingual embedding probe removes the per-language coverage gap | CONFIRMED |
+| cd-v6 H2 | the probe beats the gate on **oracle** ground truth, not just agreement | REFUTED — screening is a regression vs the gate |
+| cd-v6 H3 | the probe is batch-invariant; #95 has no probe analogue | CONFIRMED |
+| cd-v6 H4 | `train_probe.py`'s reported val FN is optimistic by construction | stated in file, verdict in body |
+| cd-v6 H5 | "the probe screens at least as much as the gate" | REFUTED (labelled in file) |
+| cd-v6 H6 | "63.7% is fine because it matches nature_recovery v4's ~64%" | REFUTED (labelled) |
+| cd-v6 H7 | "the 5 positives the lower threshold recovers are recall wins" | REFUTED — 4 of 5 are off-lens |
+
+### `date-error-recency-boost-hypotheses.md` — `published_date` and the 1.3× under-24h boost
+
+| id | claim | verdict |
+|---|---|---|
+| H-D1 | the anomaly is **fabrication**, attributed by a fingerprint that no longer exists | ✅ RESOLVED |
+| H-D1a | fabrication via `extract_date_from_rss_entry:106` inventing `now − 2h` | sub-hypothesis of H-D1 |
+| H-D1b | timezone misparse (naive local read as UTC) | sub-hypothesis; ⚠️ conflated with H-D1a for most of 2026-08-14 |
+| H-D2 | the 6h spike is arXiv **walking with the collection timer**; "6.00h" is a binning artifact | ✅ RESOLVED |
+
+### `enrichment-delta-hypotheses.md` — what enrichment actually moves
+
+| id | claim | verdict |
+|---|---|---|
+| H-E1 | `nature_recovery v4`'s zero delta is genuine, not a thin-fit artefact | ✅ RESOLVED — it is a *cancellation*; enrichment pays on evidence-quality dimensions |
+| H-E2 | Google News stubs would gain **less** than corpus average, not more | not stated in heading |
+| H-E3 | DeepSeek and Gemini differ in **slope**, not offset | not stated in heading |
+| H-E4 | `discovery_novelty` is where oracle-prompt work pays for cd successors | not stated in heading |
+
+### `solutions-v6-dimension-hypotheses.md` — `community_practice_strength` and re-weighting
+
+| id | claim | verdict |
+|---|---|---|
+| sol-v6 H1 | the dimension is real, just **rare** | CONFIRMED |
+| sol-v6 H2 | the student learns it *better* than the other six | CONFIRMED |
+| sol-v6 H3 | the score ceiling really does differ by solution type | CONFIRMED |
+| sol-v6 H4 | the concreteness gatekeeper is inert on the training corpus too (#94) | CONFIRMED |
+| sol-v6 R1 | "the dimension is dead" | REFUTED three ways |
+| sol-v6 R2 | "re-weighting would recover the ceiling" | REFUTED — inert at matched volume |
+| sol-v6 R3 | "re-weighting fixes NM#319 enrichment starvation" | REFUTED — the gate reads the **normalized** score; a percentile CDF undoes any monotone rescale |
+| sol-v6 R4 | a decomposition of the 83.1% into "40.0% tech-shaped + 43.1% …" | REFUTED |
+
+### `prefilter-length-floor-hypotheses.md` — the 300-char floor (#93)
+
+Uses `## Refuted` / `## Confirmed` / `## Open questions` sections rather than ids.
+One identified open hypothesis:
+
+| id | claim | verdict |
+|---|---|---|
+| H-L1 | the framework-leakage rationale for the floor | ⏳ **OPEN — asserted everywhere, measured nowhere.** The free natural experiment was run and is INCONCLUSIVE; the groundedness instrument was **invalid** and is recorded so nobody rebuilds it. Settling it needs oracle spend + owner approval |
+
+### `google-news-corpus-hypotheses.md` — the GN population
+
+Sectioned `CONFIRMED` / `REFUTED` / `CONFIRMED BY MIGRATION` / `UNTESTED` / **`THE
+INSTRUMENT TRAP`**. ⛔ Five claims already refuted there, **four of them denominator
+errors**. Its `H4` is a cross-reference, not a local hypothesis — do not cite it bare.
+
+### Files with sections but no identifiers — ⛔ unreferenceable
+
+| file | structure | consequence |
+|---|---|---|
+| `obituary-v4-hypotheses.md` | Confirmed · Learned · two v5 production-FN addenda · Open questions | claims can only be cited by quoting |
+| `opinion-genre-hypotheses.md` | Traps · Population · Result · Open · Reproducing | ditto. ⛔ #121's issue body scores `solutions` at op-point 4.0; it is **2.25** |
+| `violence-promotion-v1-hypotheses.md` | Confirmed · Settled 2026-08-01 (NM#281) · Open questions · Design decisions | ditto |
+
+---
+
+## Where the *experiments* live, as opposed to the hypotheses
+
+| kind | home |
+|---|---|
+| instruments + blind spots + **certification** | `NexusMind/docs/vv/corroboration-dedup-registry.md` §2 (dedup/corroboration only) |
+| pre-registered predictions & decision rules | `NexusMind/docs/investigation/*-prereg.md` |
+| runnable scripts | `NexusMind/scripts/research/` — `nm188_*` are 2026-08-17's, each with a provenance header carrying run date, batch, md5 discipline, results and scope limits |
+| dead ends, so they are not retried | `calibration-history.md` § Dead Ends |
+| the failure catalogue behind the working rules | `working-rules.md`, `gotcha-log.md` |
+
+⛔ **No equivalent of the V&V registry exists for the FILTER work.** Nine of the ten
+hypothesis files above have no instrument register, so for those topics "what could this
+measurement not have seen" is nowhere recorded. That is the largest structural gap in the
+project's evidence base, and it is why `feedback-hand-built-population` keeps recurring.
+
+## Maintenance
+
+Add a row **when a hypothesis is created**, not when it resolves — an unresolved
+hypothesis nobody can find is the case this file exists for. Keep every row to one line;
+if a row needs a paragraph, the paragraph belongs in the source file.
+
+Related: [[corroboration-feature-hypotheses]], [[calibration-history]], [[working-rules]],
+[[cross-repo-prioritization]].

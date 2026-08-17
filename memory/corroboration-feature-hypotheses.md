@@ -426,6 +426,222 @@ as evidence.
 `answer_key.json` <!-- placeholder --> genuinely is the sampling design, not an answer key — that part
 was right.
 
+## 2026-08-17 — ⭐⭐ the sub-threshold pairs are BOTH mechanisms, and COMBINING features beats the threshold
+
+**No filter, no model, no deploy, zero spend.** Everything below is measured on this
+workstation, sadalsuud (read-only) and b650. Nothing was committed to NexusMind.
+
+### ⭐⭐ The 79.3% splits into two mechanisms that need DIFFERENT fixes
+
+Ran the **deployed** `story_dedup.py` (md5 `d6f1a3cb5ddfe888bad787a35299967f`, fetched
+from sadalsuud — ⚠️ **b650's own NexusMind checkout predates the academic gate and is
+the WRONG code for this**) over one real batch: 3,399 articles,
+`content_items_20260817_120713`, window 10:02→12:02 UTC. For every within-cluster pair
+below its applicable bar, asked whether the endpoints are connected by a path of
+≥bar edges.
+
+| config | below-bar pairs | CHAINED (same component) | DRIFT (not connected at all) |
+|---|---|---|---|
+| production (cap 25, gate on) | 854 of 2,151 = 39.7% | **63.8%** | **36.2%** |
+| cap off, gate off | 1,090 of 2,494 = 43.7% | 58.0% | 42.0% |
+
+- **Chaining is SHALLOW: 94.75% of chained pairs are exactly 2 hops** (3 hops 5.0%,
+  4 hops 0.25%, sample 400 of 545). One bridge article. A fix need not reason about
+  long chains.
+- **Drift is ~36–42% and the chaining literature does not describe it.** Those pairs
+  are unreachable at the bar by any path; membership came from matching a *mean*.
+- Controls: above-bar pairs same-component 100% (an edge is its own path); **random
+  cross-cluster pairs same-component 0 of 5,000**. The instrument can say both.
+- ⛔ **39.7% is NOT a correction to the 79.3% — it is a different population.** Run with
+  `cluster_path=None`, so **no cross-run seeds**; production loads 134,858 saved
+  clusters and inherits membership across runs. The cross-run seeding path is
+  **untested** and is plausibly where the rest of the sub-threshold mass lives.
+  Also one batch, one 2-hour window.
+
+⭐ **The bar is where cross-language corroboration dies, and the below-bar pairs are
+what currently recover it.** Baseline cross-language share of all article pairs in the
+batch: **63.0%**. Above-bar pairs: **38.9% — depleted**. Chained 72.1%, drift 67.3%.
+Third independent arrival at the same place as "0.88→0.92 destroys 94% of
+cross-language corroboration" and cross-language merge precision 0.685 vs 0.391.
+**Consequence: complete-linkage removes BOTH mechanisms, so the known ~39% merge
+decline is likely concentrated in cross-language corroboration.** That argues for
+**correlation clustering** (minimise disagreement) over a hard clique constraint that
+requires every pair to clear a bar systematically unreachable for exactly the pairs
+worth keeping.
+<!-- verify: manual — /tmp scripts are ephemeral; re-derive by running the deployed
+     story_dedup over a fresh raw batch with cluster_path=None and comparing
+     within-cluster pairs against connected components of the thresholded graph -->
+
+### ⭐ COMBINING features beats the production threshold — n=1,196, replicated 3 panels
+
+V1 combined four features and got precision 0.000 / recall 0.000, but at **n=23** with
+an extractor giving 2 entities/article. Both constraints are gone. Re-asked with
+7 cheap pairwise features (cosine, `−log1p Δt`, cross-language, not-same-source,
+numeric Jaccard, token Jaccard, length ratio) in an L2 logistic regression, grouped
+5-fold CV with folds split on connected components over article ids:
+
+| panel | n | `sim` only (production) | combined |
+|---|---|---|---|
+| precision_panel | 297 | 0.7277 | 0.8681 |
+| precision_panel_v2 | 300 | 0.7205 | 0.8521 |
+| precision_panel_v3 | 599 | 0.8037 | 0.9162 |
+| **pooled** | **1,196** | **0.7701** | **0.8827** |
+
+Null arm: 50 label permutations through the same folds and fit → mean 0.4846,
+max 0.5271. Clears decisively. Precision at matched recall (pooled, base rate 0.465):
+keep 75% of true merges → 0.685 (`sim`) vs **0.848** (combined).
+
+⭐ **The sign flip only visible in combination:** token overlap has single-feature AUC
+0.642 but coefficient **−0.675** in the joint fit. Given the cosine, extra literal
+token overlap is evidence *against* a true merge — the templated-title collisions
+(`"Green forest fire notification in Angola"` ×214). **A per-feature AUC table cannot
+show this**, and the 2026-08-09 probe was exactly such a table.
+
+⚠️ Binding caveats: negative class is **false merges**, so this filters bad merges and
+is NOT shown to find new ones; panels are **stratified toward giant clusters**, so the
+precision-at-recall rows are design-weighted and AUC is the portable half; labels are
+LLM judge verdicts. ⛔ **Built and reported by the same session — needs a non-author
+check before it drives anything.**
+
+### Records are NOT the CDCR blocker — the input FMEA nobody had run
+
+⭐ **`_run_shared_dedup` (scripts/main.py:3315) runs BEFORE `_run_shared_pre_enrich`
+(:3377), and `_prepare_text` is TITLE-ONLY (NM#275). So enrichment quality cannot
+affect matching at all, by construction.** Over 96 files / 324,941 rows / 17 days
+(2026-07-31→08-17): titles missing **0**; `published_date` missing or unparseable
+**0**; title mojibake **0.094%**; title markup **0.498%**; non-NFC titles 0.095%
+(ko 1.94%, fr 1.39%, ar 1.22%). Contamination is source-concentrated —
+`mexican_excelsior` **648/648** and `portuguese_cmjornal` **253/253** carry a raw
+`<![CDATA[` wrapper *inside the title*, which goes into the embedding verbatim.
+**The one real record hazard is duplicate-title mass: 22.97% of rows carry a title
+seen more than once; 22,382 rows across 9,144 titles are cross-source duplicates.**
+
+NM#338 (enricher mojibake) is **fixed and verified on production rows, not on issue
+state**: post-enrichment body mojibake 1.686% → 0.593%, step on 2026-08-14
+(1.137% → 0.081%), 0.023% on 08-17. 516 files, 1,356,767 rows.
+
+### Traps found — each would have produced a confident wrong number
+
+- ⛔ **`sim` in `precision_panel_v3/answer_key.json` exists on only 80 of 680 rows, and
+  those 80 are exactly the `near_miss_control` rows the analysis discards.** v1/v2 keys
+  have no `sim` at all. A cosine baseline read off the key is computed on thrown-away
+  rows. Recomputed for all 1,319 with the production model and `_prepare_text`.
+- ⛔ **The adjudicated verdicts are on NEITHER GPU box.** Not sadalsuud, not b650 —
+  they are in the **workstation** NexusMind checkout at
+  `data/research/precision_panel{,_v2,_v3}/judge_verdicts.jsonl` (1,409 rows, 1,316
+  with S/D). This file previously said "the NexusMind checkout", which is ambiguous
+  across three machines.
+- ⛔ **Panel `item_id`s COLLIDE across panels** — all three start at `P0001`. A flat key
+  silently overwrites v1 with v3.
+- ⛔ **A mojibake detector must cover BOTH families.** FS#124 is UTF-8-as-MacRoman
+  (`años`→`a√±os`); NM#338 is UTF-8-as-cp1252 (`aÃ±os`). My first pass wrote only the
+  cp1252 patterns and read 0.019% — the instrument could barely say yes.
+- ⚠️ The panel's `lang_1`/`lang_2` column **mixes ISO codes with English names**
+  (`en` and `English` both appear), so a naive `lang_1 != lang_2` inflates
+  cross-language. Cost: 0.672 → **0.685** after normalising.
+- ⚠️ **The panel cannot answer the non-Latin question**: 57 of 1,316 pairs (4.3%) are
+  anything other than both-Latin (Hangul 16, mixed-script 17, Greek 14, Han 4,
+  Cyrillic 3, Hebrew 3).
+- ⛔ **`SavedCluster` persists no member ids**, so production data cannot answer "which
+  languages ended up in one cluster" at all. Every multilingual number we hold is from
+  SemEval external gold or a b650 replay; **none from production.** Persisting member
+  ids is one field and unblocks the multilingual cut, the complete-linkage shadow, and
+  merge-evidence retention at once.
+
+### Literature — six lenses, 2026-08-17
+
+⭐⭐ **Our clusterer IS single-linkage at the bar, mathematically.** Zadeh,
+*Similarity Relations and Fuzzy Orderings*, Information Sciences 3(2):177–200, 1971
+(reflexive+symmetric without max-min transitivity is a *proximity* relation);
+Tamura, Higuchi & Tanaka, IEEE Trans. SMC-1:61–66, 1971; IEEE Trans. SMC 2010 (Xplore
+5409141) proves **α-cut of the max-min transitive closure = connected components of the
+α-thresholded graph**. Plainly: Jain & Dubes 1988, Everitt et al. 2011 ch.4.
+**Hartigan (1981, JASA)** proved single-linkage is inconsistent in d≥2 *via continuum
+percolation* — the formal mechanism, not an analogy. Our threshold graph is a random
+geometric (Gilbert) graph; Penrose, *Random Geometric Graphs*, Oxford 2003.
+⚠️ **But the 36–42% drift share means our clusterer is LOOSER than single-linkage**, so
+these citations cover only part of it.
+
+⭐ **Everyone replaces the threshold with a learned pairwise decision.** Held, Iter &
+Jurafsky, EMNLP 2021 — our exact architecture (bi-encoder + FAISS prune + classifier);
+**oracle bound: 5 neighbours retrieved + perfect classifier → F1 98.1. Retrieval is not
+the bottleneck, the classifier is.** Miranda et al., EMNLP 2018 — grid-searched τ →
+learned merge classifier, **F1 82.8 → 94.1**. Saravanakumar et al., EACL 2021 — weighted
+linear combination of per-representation similarities, SVM-learned, plus a separate
+join-or-found network. CD²CR (Ravenscroft et al., EACL 2021) — a raw BERT-cosine
+threshold scores **B³ F1 = 0.00** at MUC recall 0.94.
+
+⛔ **`sigma_hours: 72.0` has a published provenance and it does not transfer.**
+Miranda et al. tune their temporal Gaussian to **σ=72h** — but inside a 12-feature
+SVM-Rank, not as a ±0.04 additive nudge on a single cosine. Our own sweep refutes 72
+(99.1/20.6) and prefers σ=18 (83.6/85.9). **A constant tuned inside one similarity
+function does not transfer to another.** Who put 72.0 in `config/app.yaml` is unchecked.
+
+- **Hubness is the attractor's real name.** Radovanović, Nanopoulos & Ivanović, JMLR 11
+  (2010) — k-occurrence skew; points near the corpus centroid become everyone's
+  neighbour. Fix with **ratio margin**: Artetxe & Schwenk, ACL 2019 (arXiv:1811.01136),
+  `margin(cos(x,y), Σ_{NN_k(x)}cos/2k + Σ_{NN_k(y)}cos/2k)`, k=4 bidirectional, ratio
+  variant best. BUCC train EN-DE **82.8 → 94.8**, EN-FR 80.9 → 91.9. Also CSLS
+  (Conneau et al., ICLR 2018), Mutual Proximity (Schnitzer et al., JMLR 2012),
+  All-but-the-Top (Mu & Viswanath, ICLR 2018), Nielsen & Hansen NLDL 2024
+  (arXiv:2311.18364, hubness −75% on an SBERT model).
+  ⚠️ **Steck, Ekanadham & Kallus, WWW 2024 (arXiv:2403.05440)** — cosine of embeddings
+  can be arbitrary and non-unique under regularisation. The citation for why 0.88 was
+  never a portable constant.
+- **Correlation clustering is the right formulation** (Bansal, Blum & Chawla, Machine
+  Learning 56, 2004); **PIVOT** (Ailon, Charikar & Newman, JACM 55(5) 2008) is
+  near-linear, one-pass, expected 3-approximation. Complete-linkage is its
+  hard-constraint special case. **Leiden** beats Louvain on speed and a real
+  correctness bug. Record linkage has the vocabulary: Fellegi & Sunter (1969) m/u
+  decomposition, Splink, blocking survey Papadakis et al. ACM CSUR 53(2) 2020,
+  canopy clustering McCallum/Nigam/Ungar KDD 2000.
+- ⛔ **The ECB+ lemma baseline invalidates most CDCR headline numbers.** Bugert, Reimers
+  & Gurevych, Computational Linguistics 47(3) 2021: lemma-δ scores **74.4** CoNLL F1
+  against their full system's **74.8** — "performs on par". Their masking ablations:
+  action/trigger dominates (ECB+ −13.57, GVC −19.12); **location is ~0 everywhere**;
+  publication date is worth −6.64 on GVC and **exactly +0.00 on FCC-T**.
+- **Entity grounding buys less than hoped.** GateNLP-UShef at SemEval-2022 measured
+  entity enrichment on a trained LaBSE model at **+0.00075 Pearson**. Entity-only
+  Pearson: ORG 0.455, DATE 0.435, QTY 0.358, GEO 0.267. **Our numeric-overlap
+  0.503–0.581 is consistent with the literature — we did not measure it wrong.**
+  ⚠️ But there are **three** numeral-normalisation failure modes (digit script,
+  decimal separator, CJK numeral words) and our feature normalises none; `uroman`
+  handles the first for free.
+- **Tooling gap for our 35+ languages:** ReFinED, BLINK, SpEL are English-only;
+  DBpedia Spotlight ships no zh/ja/ko/ar/el/he model; mGENRE (105 languages,
+  Mewsli-9 macro 92.3%) is the only realistic candidate and has no published
+  throughput.
+- ⛔ **Applied category theory for data works one level ABOVE this problem.** Spivak's
+  functorial data migration (Information and Computation 217, 2012), CQL, Patterson's
+  Algebraic Property Graphs (Uber's Dragon) are all **schema**-level; a direct search
+  for categorical entity resolution / functorial record linkage found **nothing**.
+  Documented absence, not a search failure. What tolerance theory *does* give:
+  correct structure recovery is **maximal cliques ("blocks"), which OVERLAP and do not
+  partition** (Zeeman 1962; Information Sciences 195, 2012) — the same shape as
+  ADR-015. And one implementable alternative from rough sets: **Słowiński &
+  Vanderpooten, IEEE TKDE 12(2):331–336, 2000** generalises to a reflexive-only
+  relation, giving a **core/penumbra** pair instead of one hard class.
+- ⚠️ **Provenance semirings** (Green, Karvounarakis & Tannen, PODS 2007) are the right
+  algebraic shape for "merges compose only when their justifications compose", and are
+  implemented (Orchestra) — but **no paper connects them to record linkage.** Extending
+  them would be synthesis, not adoption. ⛔ Correspondingly: an exhaustive search found
+  **no system outside proof assistants that stores an identity witness and uses it
+  downstream**, so "keep the witness" is our design decision, with no precedent.
+
+### Untested, in priority order
+
+1. **Cross-run seeded clustering** — the population the 79.3% actually came from, and
+   the one my chain test excludes.
+2. **Ratio-margin `sim`** recomputed over a production neighbour pool, dropped into the
+   same 1,196-pair harness. Tests the strongest published fix on our own labels.
+3. **XLM-R entity Jaccard on the 1,316 adjudicated pairs**, scored against the judge
+   verdicts — entities from an independent extractor, labels from the judge, so not
+   circular. The 2026-08-08 rerun measured only the negative side and **no entity
+   feature appears in either `b650:~/nm-sweep/feature_probe.py` or `feature_probe2.py`**
+   (grepped: only `numeric_jaccard`). ⚠️ **No NER script persists anywhere** — the
+   XLM-R run was executed from a `/tmp` file that is gone.
+4. **Numeral normalisation** before re-measuring numeric overlap.
+
 ## 2026-08-16/17 — ⭐⭐ THE HEADLINE IS NOT THE GATE: **production is 79.3% sub-threshold artefact**
 
 **The academic gate was BUILT, accepted and enabled — and the finding that matters is the
@@ -741,8 +957,15 @@ random pairs, so these say "separates good merges from bad", not "finds merges".
 - Reproduction: `b650:~/nm-sweep/feature_probe.py`.
 
 **Still untouched and now the top per-pair lever: PROP-2 ratio-margin scoring**
-(ART-11: BUCC EN-DE F1 77.0 → 94.8, *same embeddings*). Attacks hubness, which is
-what a 592-member attractor is. Needs no new labels.
+(ART-11: BUCC EN-DE F1 **82.8 → 94.8** on the train set, *same embeddings*; test set
+vs prior published best 85.5 → 95.6). Attacks hubness, which is what a 592-member
+attractor is. Needs no new labels.
+⛔ **This line read "77.0 → 94.8" until 2026-08-17.** The 94.8 is right; **77.0 is not
+the EN-DE cosine baseline** and appears to have been transposed from EN-ZH's prior-best
+of 77.5. ⚠️ The corrected figures come from an automated extraction of Artetxe &
+Schwenk (ACL 2019) Tables 2/3, agreed across two independent fetches but **not
+eyeballed against the rendered tables** — confirm visually before either number goes
+into a document.
 
 Related: [[cd-v6-probe-hypotheses]] (the other place a probe/extractor choice was
 decided by measurement), [[score-batch-shape-noise]] (any margin under 0.16 near
