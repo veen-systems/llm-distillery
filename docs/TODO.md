@@ -1,6 +1,55 @@
 # LLM Distillery - TODO
 
-## 🔵 NEXT SESSION — **start at the 79.3%. It is the reliable-CDCR problem and it has a number**
+## 🔵 NEXT SESSION — **the Thriving lens has a diagnosed label defect (#125); the shadow is built and UNDEPLOYED**
+
+> **Added 2026-08-20.** Owner raised two reader-visible complaints. One is real and
+> diagnosed; the other is mostly not where it looks.
+>
+> ### 1. ⛔ DEPLOY THE SHADOW — built, reviewed, committed, NOT deployed
+> `NexusMind/src/scoring/primary_literature_cap.py` + `scripts/main.py` +
+> `config/app.yaml`. **Stamp-only, no enforcement branch, deliberately.** It was not
+> deployed because `nexusmind.service` was mid-cycle (`activating`, 20:03 CEST).
+> **Deploy = commit is already pushed → `git pull` on sadalsuud while BOTH units are
+> idle.** It touches nothing in `filters/`, so `deploy_filters.sh` has nothing to push
+> and the gpu-server scorer never restarts — no Ollama eviction, unlike the 2026-08-03
+> held deploy. Read one cycle, then answer **H-UP6**.
+> ⚠️ Pulling also brings **3 unreviewed NM#188 research commits** from another session
+> (`32e6c89`, `9b2a34b`, `34ac30e`) — they are `scripts/research/` only and do not
+> execute, but they are not this session's work.
+>
+> ### 2. The real fix is v8 `human_thriving` — a PROMPT change plus a re-score
+> The student is faithful; **the labels are wrong** (academic-source rows on-lens at
+> 55.2% vs 30.6%, p = 0.0001, measured with no model in the loop). Four named sites in
+> `filters/uplifting/v7/prompt-compressed.md`, worst being Contrastive Example 5 and
+> `evidence_level` — which is the **gatekeeper**, so the only dimension that could cap
+> the score is the one the genre maximises. Write it against ovr's narrowed predicate,
+> *a process going well **for people*** (ovr `BRAND.md` `a70609b`).
+> ⛔ **Order is prompt FIRST, then active learning** — the AL grader *is* the v7 oracle
+> prompt, so it shares the defect it would audit (H-UP5). Spend is not the constraint:
+> a full 6,590-row re-score ≈ **$12**; the cost is adjudication time.
+> ⛔ **Do not reach for the op-point.** Swept to 5.00 already and blocked above 4.5 by
+> `MAX_NORMALIZATION_RAW_MIN`.
+>
+> ### 3. Violence on ovr.news — measured, and it is NOT where it looks
+> `pipeline.violence_promotion.enforce: false` (shadow since 2026-07-28, 60–92 flagged
+> per cycle, dropping nothing). But of **550** flagged rows above an op-point over 12
+> cycles, **548 are `investment_risk`, which is not an ovr lens and is parked** — only
+> **2** reached an ovr lens. Flipping enforcement changes ovr.news by ~2 articles per two
+> days. What the owner is likely seeing is war/conflict news in Thriving, which is #91,
+> not the violence gate. #82's audit is still the gate on any flip.
+>
+> ### 4. Method findings from this session
+> ⭐⭐ **An instrument built from the thing under test cannot audit it** (H-UP5).
+> ⭐ **A serialization boundary is part of the call path** — gpu-server's `/score`
+> rebuilds the payload as `{title, content}`, so `metadata.*` never crosses. It killed
+> two designs that would have read `None` on 100% of rows while passing every test.
+> ⛔ **`datasets/adverse/` is a hypothesis home no index pointed at** — #125's finding was
+> already recorded there on 2026-08-10, including the mechanism and an explicit "should be
+> tracked as its own thing". Checking `memory/` and the tracker is not checking prior work.
+>
+> ---
+
+## 🔵 PREVIOUS NEXT-SESSION BLOCK — **start at the 79.3%. It is the reliable-CDCR problem and it has a number**
 
 > **Owner direction 2026-08-16, superseding everything else: *"priority has to really have
 > reliable CDCR."* And: ⏸️ ***"park investment"*** (park, NOT remove — see below).**

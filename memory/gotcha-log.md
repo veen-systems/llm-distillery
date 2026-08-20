@@ -1,5 +1,42 @@
 # Gotcha Log
 
+## 2026-08-20 — a REST boundary is part of the call path, and the fix I designed twice could not have fired
+
+**Symptom.** Asked to add a `primary_literature` cap to the Thriving lens. The obvious
+home was `filters/common/filter_base_scorer.py`, beside the existing `short_content` cap
+— it already reads the article and stamps `cap_applied`. Second choice was NexusMind's
+`ProductionScorer._post_process(result, article)`, which takes the full article.
+
+**Both are dead ends, for the same reason.** Production scoring is an HTTP call to
+gpu-server, and `deploy/gpu-server/main.py:1326` rebuilds the payload:
+
+    article_dicts = [{"title": a.title, "content": a.content} for a in request.articles]
+
+`metadata.primary_literature` never crosses. A cap in either place reads `None` on 100%
+of rows, caps nothing, and **passes every unit test**, because the tests construct the
+article themselves. `ProductionScorer` runs on the far side of that boundary — which is
+also why its `cap_applied` / `raw_weighted_average` fields come back in the response.
+
+**The rule.** The existing working rule says *verify WHEN a gate's input exists in the
+flow* (5 prior occurrences, NM#284 the worst). This is the 6th and the first where the
+input is destroyed by a **serialization boundary** rather than being absent from the
+schema. A field can exist on the object, be populated, be read correctly by the code you
+wrote — and still not be there, because something in between rebuilt the object.
+**When a call path crosses a process, ask what the wire carries, not what the object has.**
+
+**Where it went instead.** `scripts/main.py` inside `run_filter`, three lines above an
+existing `article.get("metadata", {})` — the first point where the full article and the
+score are both in hand. Proven by replay: 1,562 rows would cap, 347 of them surfacing,
+and 0 on the two out-of-scope lenses as a negative control.
+
+**Second gotcha from the same change, smaller but sharper.** The stamp key was
+`"primary_literature"` — but `metadata.primary_literature` is a **dict** and the stamp is
+a **bool**. Same name, two paths, different types. That is the Contract A failure of
+2026-08-14 (*"declaring a name that already exists with a different type is fatal"*)
+arriving in a different repo. Caught by `/review-changes`, renamed to
+`primary_literature_detected`, and pinned by a test.
+
+
 Problems encountered and resolved. Format: Problem → Root cause → Fix.
 
 <!-- Template for new entries:

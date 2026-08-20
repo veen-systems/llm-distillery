@@ -121,6 +121,21 @@ a number could have seen the failure it rules out.
 | H-E3 | DeepSeek and Gemini differ in **slope**, not offset | not stated in heading |
 | H-E4 | `discovery_novelty` is where oracle-prompt work pays for cd successors | not stated in heading |
 
+### uplifting / Thriving oracle genre bias — `memory/uplifting-oracle-genre-hypotheses.md`
+
+⛔ **This topic was already recorded on 2026-08-10 in
+`datasets/adverse/2026-08-10-uplifting-oracle-batch-adjudication.md` and never opened as
+its own item.** `datasets/adverse/` is a hypothesis home no index pointed at until now.
+
+| id | claim | verdict |
+|---|---|---|
+| H-UP1 | the Thriving FPs are the STUDENT drifting from its labels | REFUTED |
+| H-UP2 | the ORACLE PROMPT rates research artefacts on-lens | CONFIRMED — 55.2% vs 30.6%, p = 0.0001 |
+| H-UP3 | raising the op-point fixes it | REFUTED, and blocked by `MAX_NORMALIZATION_RAW_MIN` |
+| H-UP4 | research abstracts are the dominant FP class | PARTIAL — bounded at 13.6% of surfaced volume |
+| H-UP5 | active learning on the current prompt REINFORCES the bias | ⏳ OPEN — the AL grader is the v7 oracle prompt, so it shares the defect it would audit |
+| H-UP6 | a `primary_literature` cap removes the class without collateral | ⏳ OPEN — shadow shipped, undeployed, no data |
+
 ### `solutions-v6-dimension-hypotheses.md` — `community_practice_strength` and re-weighting
 
 | id | claim | verdict |
