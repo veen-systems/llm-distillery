@@ -98,6 +98,26 @@ shape. Full write-up in `memory/gotcha-log.md`.
   mutation-tested), `docs/evidence/2026-08-20-...md`,
   `memory/uplifting-oracle-genre-hypotheses.md`.
 
+## 5b. ⛔ A parallel session swept my files into its commit
+
+While this session worked, another agent session in the **same NexusMind checkout**
+committed `97dee0a` — *"research(NM#188): panel adjudicated — rate is 1.56%; E1.6 void"* —
+which took the whole tree and **captured all four of the shadow-cap files** alongside its
+own unrelated research changes.
+
+This is CLAUDE.md's working rule firing from the other side: *"a parallel agent session
+may be in the same checkout, so no git verb may take the whole tree as its argument."*
+The rule is usually stated as a thing you must not do. It is also a thing that can be
+**done to you**, and the damage is different: nothing was lost, but the shadow cap is now
+in a commit whose message is about something else, so `git log --grep` will never find it.
+
+**Not rewritten** — rewriting another session's commit is worse than the mislabelling.
+The index entry is a comment on NM#398 naming the sha and the four files. Verified the
+swept blob is the **post-review** version (the `primary_literature_detected` rename, the
+SCORED-AND-PERSISTED denominator fix, and the "QUOTED from…" attribution are all present).
+
+**Consequence for anyone auditing:** a commit message is not an inventory of a commit.
+
 ## 6. Next session
 
 **Deploy the shadow while both units are idle**, then read one cycle. It touches nothing

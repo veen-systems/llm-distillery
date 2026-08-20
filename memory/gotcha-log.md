@@ -29,6 +29,15 @@ existing `article.get("metadata", {})` — the first point where the full articl
 score are both in hand. Proven by replay: 1,562 rows would cap, 347 of them surfacing,
 and 0 on the two out-of-scope lenses as a negative control.
 
+**Third gotcha, and it happened TO this session rather than because of it.** A parallel
+agent session in the same NexusMind checkout committed `97dee0a` with a whole-tree `add`
+and swallowed all four shadow-cap files into a commit about NM#188 panel adjudication.
+The working rule against whole-tree git verbs is written as something you must not do;
+it is also something that can be **done to you**, and then the failure is not lost work
+but an **unfindable** change — `git log --grep` for the feature returns nothing. History
+was left alone; the index is a comment on NM#398 naming the sha. **A commit message is
+not an inventory of a commit.**
+
 **Second gotcha from the same change, smaller but sharper.** The stamp key was
 `"primary_literature"` — but `metadata.primary_literature` is a **dict** and the stamp is
 a **bool**. Same name, two paths, different types. That is the Contract A failure of
