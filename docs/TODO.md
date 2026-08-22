@@ -1,51 +1,62 @@
 # LLM Distillery - TODO
 
-## 🔵 NEXT SESSION — **the Thriving lens has a diagnosed label defect (#125); the shadow is built and UNDEPLOYED**
+## 🔵 NEXT SESSION — **`human_thriving` v8: the plan is written and reviewed. Nothing is built.**
 
-> **Added 2026-08-20.** Owner raised two reader-visible complaints. One is real and
-> diagnosed; the other is mostly not where it looks.
+> **Updated 2026-08-22.** The 2026-08-20 block below is superseded; its "academic register
+> is the defect" framing was wrong. **Read `docs/HUMAN_THRIVING_V8_PLAN.md` first** — this
+> block is a pointer, not a substitute.
 >
-> ### 1. ⛔ DEPLOY THE SHADOW — built, reviewed, committed, NOT deployed
-> `NexusMind/src/scoring/primary_literature_cap.py` + `scripts/main.py` +
-> `config/app.yaml`. **Stamp-only, no enforcement branch, deliberately.** It was not
-> deployed because `nexusmind.service` was mid-cycle (`activating`, 20:03 CEST).
-> **Deploy = commit is already pushed → `git pull` on sadalsuud while BOTH units are
-> idle.** It touches nothing in `filters/`, so `deploy_filters.sh` has nothing to push
-> and the gpu-server scorer never restarts — no Ollama eviction, unlike the 2026-08-03
-> held deploy. Read one cycle, then answer **H-UP6**.
-> ⚠️ Pulling also brings **3 unreviewed NM#188 research commits** from another session
-> (`32e6c89`, `9b2a34b`, `34ac30e`) — they are `scripts/research/` only and do not
-> execute, but they are not this session's work.
+> ### The plan in one line
+> v8 = **rewritten prompt + rebuilt corpus + retrained probe + hard negatives**, plus the
+> `uplifting` → `human_thriving` rename and a package brought to `nature_recovery v4` parity.
+> ⛔ An earlier draft called it "a relabelling, not a modelling change". Wrong on three counts.
 >
-> ### 2. The real fix is v8 `human_thriving` — a PROMPT change plus a re-score
-> The student is faithful; **the labels are wrong** (academic-source rows on-lens at
-> 55.2% vs 30.6%, p = 0.0001, measured with no model in the loop). Four named sites in
-> `filters/uplifting/v7/prompt-compressed.md`, worst being Contrastive Example 5 and
-> `evidence_level` — which is the **gatekeeper**, so the only dimension that could cap
-> the score is the one the genre maximises. Write it against ovr's narrowed predicate,
-> *a process going well **for people*** (ovr `BRAND.md` `a70609b`).
-> ⛔ **Order is prompt FIRST, then active learning** — the AL grader *is* the v7 oracle
-> prompt, so it shares the defect it would audit (H-UP5). Spend is not the constraint:
-> a full 6,590-row re-score ≈ **$12**; the cost is adjudication time.
-> ⛔ **Do not reach for the op-point.** Swept to 5.00 already and blocked above 4.5 by
-> `MAX_NORMALIZATION_RAW_MIN`.
+> ### Three owner rulings now govern it
+> 1. **Class A (harm-adjacent / dominant subject, #91) is the priority** — *"the ones flagged
+>    by reader are actually far far worse."* Class B (#125, academic register) is secondary.
+> 2. **On harm/violence, optimise against the false positive** — *"way worse than missed
+>    detections."* Settles ADR-020 §3 vs ADR-023 in **ADR-023's favour**, scoped to this class.
+> 3. **Drop the per-lens keyword prefilter; retrain the probe** — it is Latin-script only
+>    (74 patterns, EN/NL/DE/FR, zero non-Latin script in 662 lines). This is **ADR-011
+>    finally applied**; same move as #98 for cultural_discovery.
 >
-> ### 3. Violence on ovr.news — measured, and it is NOT where it looks
-> `pipeline.violence_promotion.enforce: false` (shadow since 2026-07-28, 60–92 flagged
-> per cycle, dropping nothing). But of **550** flagged rows above an op-point over 12
-> cycles, **548 are `investment_risk`, which is not an ovr lens and is parked** — only
-> **2** reached an ovr lens. Flipping enforcement changes ovr.news by ~2 articles per two
-> days. What the owner is likely seeing is war/conflict news in Thriving, which is #91,
-> not the violence gate. #82's audit is still the gate on any flip.
+> ### ⭐⭐ The finding that shapes the work
+> **A prompt-only v8 fixes about a THIRD of class A.** Three-oracle bake-off (Gemini /
+> DeepSeek / qwen3:14b on b650): 1 of 3 rows fails on all three oracles (label defect),
+> **2 of 3 are the student alone** — no prompt reaches those. Hence **Phase B2**, playbook
+> §4b hard negatives, $0 oracle.
 >
-> ### 4. Method findings from this session
-> ⭐⭐ **An instrument built from the thing under test cannot audit it** (H-UP5).
-> ⭐ **A serialization boundary is part of the call path** — gpu-server's `/score`
-> rebuilds the payload as `{title, content}`, so `metadata.*` never crosses. It killed
-> two designs that would have read `None` on 100% of rows while passing every test.
-> ⛔ **`datasets/adverse/` is a hypothesis home no index pointed at** — #125's finding was
-> already recorded there on 2026-08-10, including the mechanism and an explicit "should be
-> tracked as its own thing". Checking `memory/` and the tracker is not checking prior work.
+> ### ⛔ The honest state — read before trusting any phase
+> **Class A's mechanism is NOT established.** Confirmed: harm-adjacent articles reach the top
+> of the feed (torture story raw 5.976 → normalized **8.284**). Confirmed: the student fails
+> where the oracle succeeds. **Untested: H-CV1** — whether the corpus was depleted of harm
+> content; the one measurement taken inspected *override survivors of the filter under test*,
+> so it cannot see depletion. **The rebuild is justified by ruling 3, not by a demonstrated
+> corpus defect. It may change nothing.**
+>
+> ### Where to start
+> 1. **Phase 0 — assemble the corpus.** ✅ B1 cleared: it is on **gpu-server**,
+>    `~/llm-distillery/datasets/training/uplifting_v7/` (train 5,271 / val 659 / test 660 =
+>    **6,590**, full text on every row). Decide re-score-in-place + harm supplement vs rebuild.
+> 2. **Test H-CV1 properly** before relying on either answer — apply the prefilter to a
+>    production sample and measure what it *removes*.
+> 3. **Phase A — the prompt**, leading with the dominant-subject rule, not `evidence_level`.
+>
+> ### ⚠️ Traps that will bite, all measured
+> - **b650's GPU diverges from production at 4.5 — this filter's op-point** (3 verdict flips;
+>   specificity 0.9730 vs 0.9662). Train on GPU, **run the gate on CPU with `venv-prodparity`
+>   or on gpu-server**.
+> - **Oracle run-to-run noise is 0.82 mean / 2.25 max** (n=7) — 5× the #95 band. **A
+>   single-run oracle score is not a measurement.** Every oracle-side gate is a k-run mean.
+> - **`_load_prefilter` is an `@abstractmethod`** — dropping the file is safe, omitting the
+>   method means `TypeError` at startup and **no filter scores at all**.
+> - **A rename creates a SEVENTH filter**, scored in parallel, automatically.
+>
+> ### Still undeployed from 2026-08-20 (NexusMind, not this repo)
+> `NexusMind/src/scoring/primary_literature_cap.py` + hook + config — stamp-only shadow for
+> **H-UP6**. Deploy = `git pull` on sadalsuud while both units are idle; touches nothing in
+> `filters/`, so the gpu-server scorer never restarts. ⚠️ Pulling also brings 3 unreviewed
+> NM#188 research commits (`32e6c89`, `9b2a34b`, `34ac30e`) — `scripts/research/` only.
 >
 > ---
 

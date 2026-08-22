@@ -112,3 +112,31 @@ Class-name version drift (3 of 7) is fixed in a separate batch pass once all mig
 - llm-distillery#45, #46 — per-filter prefilter patches that motivated the refactor.
 - llm-distillery#51 — universal obituary detector (downstream consumer of the harmonized shape).
 - `memory/feedback-regex-ignorecase-trap.md` — the case-insensitive override trap, an example of a class of bug that one canonical compile-site prevents.
+
+## Amendment 2026-08-21 — new filters ship no per-lens prefilter (owner ruling)
+
+**This ADR still governs the SHAPE of a prefilter where one exists. It no longer implies
+that a filter should have one.**
+
+Owner ruling 2026-08-21: `human_thriving` v8 ships **no `prefilter.py`**, and the Stage-1 e5
+probe is retrained to carry the screening. Reason, measured on `uplifting v7`s prefilter:
+662 lines, 74 patterns in three categories, and exactly two families of non-ASCII characters
+— **Latin (78) and em-dashes (30)**. No Cyrillic, Arabic, CJK, Devanagari, Greek or Hebrew.
+Keyword screening is **Latin-script only**, which ADR-011 already said embedding screening
+should replace.
+
+Consistent with what was already measured: the per-lens prefilter has **never run in the
+production scoring path** (NM#284), and `nature_recovery v4` + `solutions v6` emit **zero
+lens blocks across 8,283 production articles**.
+
+**Consequences**
+- `memory/filter-doc-standard.md` core is now **6 files**; a per-lens prefilter is optional,
+  with omission the default for new filters.
+- `scripts/analysis/filter_completeness.py` no longer lists `prefilter.py` in `core`.
+- ⛔ **`_load_prefilter` remains an `@abstractmethod` on `FilterBaseScorer`.** Dropping the
+  *file* is safe; omitting the *method* raises `TypeError` at scorer startup and **no filter
+  scores at all**. A prefilter-less package must define
+  `def _load_prefilter(self): self.prefilter = None`.
+- Existing filters keep their prefilters; this is not a retro-removal.
+
+Detail: `docs/HUMAN_THRIVING_V8_PLAN.md` §F2, llm-distillery#98.

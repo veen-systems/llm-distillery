@@ -1,6 +1,6 @@
 ---
 name: uplifting-oracle-genre-hypotheses
-description: Why the Thriving lens over-surfaces research abstracts — the defect is in the ORACLE LABELS, not the student. Hypotheses H-UP1..H-UP6, the measurements, and the shadow instrument now stamping in NexusMind.
+description: Why the Thriving lens over-surfaces junk. TWO classes — harm-adjacent (class A, the priority) and academic register (class B). H-UP1..H-UP8 + H-CV1; class A is partly a STUDENT defect, which no prompt reaches.
 metadata:
   type: project
 ---
@@ -30,6 +30,74 @@ checking prior work.
 | H-UP4 | research abstracts are the dominant false-positive class | **PARTIAL** — bounded at 13.6% of surfaced volume |
 | H-UP5 | active learning on the CURRENT prompt would reinforce the bias, not remove it | ⏳ **OPEN — prediction, untested** |
 | H-UP6 | a `primary_literature` cap removes the class without collateral damage | ⏳ **OPEN — shadow instrument shipped, no data yet** |
+| **H-UP7** | **the harm-adjacent class (class A) is the same label defect as class B** | ⛔ **REFUTED 2026-08-20** — 3-oracle bake-off: **1 of 3 rows fails on all three oracles (label defect), 2 of 3 are the STUDENT alone**. No prompt change reaches those two |
+| **H-UP8** | **class A is worse than class B for readers** | ✅ **CONFIRMED + owner-ruled 2026-08-20** — class A raw **5.86–6.85** (normalized to **8.28**, top of feed); class B **4.06–5.12**, barely over the 4.5 op-point. Owner: *"the ones flagged by reader are actually far far worse"* |
+| **H-CV1** | **the keyword prefilter depleted the v7 corpus of harm content, which is why the student fails on class A** | ⏳ **UNTESTED — and an earlier draft wrongly called it REFUTED.** See below |
+
+## H-UP7 — class A is BOTH a label defect and a student defect ⭐⭐
+
+**Measured 2026-08-20.** `docs/evidence/2026-08-20-uplifting-v7-class-a-valence-bakeoff.md`.
+Reproduce: `scripts/analysis/valence_bakeoff.py` (three arms; reproduce steps in its header).
+
+Three oracles, same v7 prompt, same text, bar `max_acceptable_wa` = 3.85:
+
+| article | student | Gemini | DeepSeek | qwen3:14b | reading |
+|---|---|---|---|---|---|
+| Five men arrested … raping a minor | 6.85 | **7.62** | **6.25** | **7.30** | all three fail — **label defect** |
+| Greyhounds / NZ racing ban | 5.86 | 2.30 | 3.95 ⚠️ | 2.00 | oracles right, **student is the outlier** |
+| Rethink Business Centre Management | 6.09 | 1.55 | 1.80 | 4.35 | oracles right, **student is the outlier** |
+
+⚠️ 3.95 is 0.10 over the bar — inside ±0.16, indeterminate. ⚠️ n=3.
+
+⛔ **Consequence: a prompt-only v8 fixes about a third of class A.** The residue needs
+playbook §4b hard negatives, at $0 oracle cost. This is why `docs/HUMAN_THRIVING_V8_PLAN.md`
+carries a Phase B2 at all.
+
+⚠️ **A FOURTH noise floor, and it invalidates single-run gates.** Same oracle, same prompt,
+same article, 10 days apart: **mean |Δ| 0.82, max 2.25** (n=7) — 5× the #95 batch floor.
+**A single-run oracle score is not a measurement.** Every oracle-side acceptance gate must
+be a k-run mean with a stated band. (`feedback-noise-floor-per-population`: a floor belongs
+to a population and a mechanism, not to a project.)
+
+⭐ **Vendor choice is second-order.** Gemini fires caps 3/10 vs DeepSeek 1/10 vs qwen3 0/10
+over all ten rows — replicating the `cultural_discovery v5` result (Gemini 60% / DeepSeek
+26%) on a different filter and prompt. But the worst row fails on **all three**, and the
+smallest pairwise gap (0.18) sits inside the 0.82 noise. **Build strictness into the
+mechanism, not the purchase order.**
+
+## H-CV1 — did the keyword prefilter deplete the corpus? UNTESTED
+
+**The tempting story:** `uplifting v7`'s prefilter carries **36 `crime_violence` patterns**,
+class A is harm-adjacent, so perhaps the student never learned the shape.
+
+**Measured 2026-08-21** (same regexes both sides):
+
+| population | `crime_violence` match |
+|---|---|
+| v7 `train` / `val` / `test` | 4.67% / 5.01% / 4.70% — **all splits 310/6,590 = 4.70%** |
+| production, all `stage2` (n=186,172) | **3.26%** |
+| production, ≥ op-point (n=14,454) | 3.58% |
+
+Labels on those rows are *conservative*: n=310, mean **2.33**, median **1.15**, **18.7%**
+≥4.5 — against non-matching mean 2.84, median 1.90, 28.7%.
+
+⛔ **This does NOT refute depletion, and a first draft said it did.** `crime_violence` is an
+`EXCLUSION_PATTERNS` category **with per-category override patterns**, so corpus rows that
+*match* are **override survivors** — a selected subpopulation. Comparing their rate to
+unfiltered production measures the **override leak**, not depletion. The counterfactual that
+would settle it — the *enriched-but-unfiltered* rate — was never measured. **The instrument
+is the selector: checker and checked are the same object.**
+
+**Method to actually test it:** apply the prefilter to a production sample and measure what
+it **removes**, rather than inspecting what survived.
+
+**What survives independently of H-CV1:** the student saw ≥310 examples of this shape,
+labelled conservatively, and still scores a torture story at **5.976** (normalized 8.284).
+A simple "it never saw harm content" story does not survive.
+
+⚠️ **Ruling 3 (drop the prefilter) does not depend on this.** It rests on the prefilter
+being Latin-script only — 74 patterns, EN/NL/DE/FR, **zero non-Latin script in 662 lines**.
+H-CV1 was a *supporting* argument of mine, and it is not available.
 
 ## H-UP1 / H-UP2 — the defect is in the labels
 

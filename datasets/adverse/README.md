@@ -37,6 +37,8 @@ precisely because the current models rank them highest.
   "id": "...", "title": "...", "url": "...",
   "content": "...",                          // 300-char excerpt, see below
   "content_excerpt": true,                   // present only when truncated
+  "class": "A -- harm-adjacent ...",         // added 2026-08-21; A or B, on every row
+  "training_use": "HARD NEGATIVE ...",       // added 2026-08-21; only on §4b rows
   "content_original_length": 3975,
   "filter": "uplifting",
   "label": "adverse",
@@ -61,9 +63,10 @@ precisely because the current models rank them highest.
 
 Two fields in that example are not present on every row. `observed.scorer_version`
 records which model version produced the observed scores — without it the row is
-not reproducible once the scorer moves on — but only the two 2026-08-02 rows
-carry it; the three older rows predate the field. `issue` is the reverse: the
-three older rows have it, the 2026-08-02 rows omit it because no issue was filed
+not reproducible once the scorer moves on. **Re-counted 2026-08-21 (this prose had
+drifted): `observed.scorer_version` is on 12 of 16 rows, `issue` on 14 of 16,
+`class` on 16 of 16, `training_use` on 5 of 16.** The earlier "two … / three older"
+description dated from when this file held 5 rows and was never updated
 for them. The block above is the uplifting row with `scorer_version` spliced in,
 so it matches no single row on disk; treat it as the target shape, not a sample.
 `scripts/flag-evidence.ts` in the ovr.news repo emits this shape directly from a
@@ -101,16 +104,20 @@ Consequences:
 
 - **Usable as gate probes now.** The assertion `predicted_wa <= max_acceptable_wa`
   is meaningful and directional.
-- **Not usable as training labels as-is.** Oracle-score them first if they are to
-  become supervision, and put the resulting point labels somewhere else — do not
-  overwrite the assertion with an inferred value.
+- **Not usable as REGRESSION targets as-is.** `max_acceptable_wa` is an asserted
+  upper bound, not a point label: oracle-score first if a numeric target is wanted,
+  and put that value somewhere else — never overwrite the assertion with it.
+  ⚠️ **Amended 2026-08-21:** the 6 rows carrying `training_use: HARD NEGATIVE` *are*
+  intended as supervision, but as **binary negatives** (playbook §4b), which needs no
+  oracle score. The two uses are different and the distinction is the whole point —
+  a bound is not a label.
 
 `misleading_features` records *which surface signals* fooled the scorer. That is
 the part worth generalising from: it says what a fix has to learn to discount.
 
 ## Current contents
 
-Kept current as of **2026-08-10**, and the counts below were read off disk on that
+Kept current as of **2026-08-21**, and the counts below were read off disk on that
 date rather than incremented by hand. This table has drifted **twice** now — it read
 n=1 for `cultural_discovery` while four rows were on disk and omitted
 `nature_recovery` entirely (fixed 2026-08-05), then read n=2 for `uplifting` and n=1
@@ -124,10 +131,37 @@ for f in datasets/adverse/*.jsonl; do echo "$(wc -l < "$f") $f"; done
 | File                       | n   | Cases                                                                                                                                                                                                       |
 | -------------------------- | --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `cultural_discovery.jsonl` | 5   | Homo antecessor cannibalism (raw 6.14); smallpox genomes, DE + ES same study (6.56 / 6.67); Inca child sacrifice (6.44); **Kixikila, a living Angolan savings practice with no finding in it (6.78)**       |
-| `uplifting.jsonl`          | 11  | child sex trafficking investigation (raw 6.77, 6th of 3,530); greyhound export (5.86); minor-rape arrests (Herald ZW); business-centre op-ed (Namibian) — **plus the 7 accepted 2026-08-10** (5.12 → 4.06)   |
+| `uplifting.jsonl`          | 16  | child sex trafficking investigation (raw 6.77, 6th of 3,530); greyhound export (5.86); minor-rape arrests (Herald ZW); business-centre op-ed (Namibian); the 7 accepted 2026-08-10 (5.12 → 4.06) — **plus 5 promoted 2026-08-21 from the harm screen** (5.98 → 5.26; a 6th, UNODC meth, was demoted to `candidates/` during review — its own rationale conceded a true-positive reading), all `class: A`, all carrying `training_use: HARD NEGATIVE` |
 | `solutions.jsonl`          | 2   | greyhound export as "delivered solution" (raw 4.51, above its batch p99 of 4.07); **Hong Kong AI facial-recognition enforcement drones, scored 9-12 months before they exist (4.68, batch p99 3.87)**        |
 | `belonging.jsonl`          | 2   | expropriated Venezuelan estate in ruins (raw 6.36, batch p99 5.10); second row added 2026-08-05                                                                                                              |
 | `nature_recovery.jsonl`    | 1   | Madagascar invasive rats blocking small-mammal recovery (raw 5.21 — **scale caveat**, see the 2026-08-05 adjudication note)                                                                                  |
+
+### 2026-08-21 additions — the harm screen (uplifting, 5 rows)
+
+Selected from **~14,000** distinct stage-2 rows at or above the 4.5 op-point ⚠️ (the screen logged 13,927; a re-run over the same window returns **14,031** distinct ids — the original scan read a cycle file mid-write, so 13,927 is not reproducible. No rate is derived from it, so nothing downstream moves.)
+(sadalsuud `NexusMind/data/filtered/uplifting/`, 2026-08-07 → 08-21), harm-lexicon
+screened over titles (158 hits), adjudicated on title + 340-char excerpt against the
+owner's 2026-08-05 test — *does the article contain a process going well NOW?*
+⚠️ The lexicon is a **candidate generator, not a population**; no rate is derived from it.
+⚠️ Adjudicated on excerpts, not full text — the 2026-08-09 rule (*three of five drafts
+reversed on full read*) means these should be re-read in full before they gate anything.
+
+Three of the five normalize **above 7**, i.e. near the top of the Thriving feed; the
+Sahiwal torture row normalizes to **8.284** with `human_wellbeing_impact` 6.05.
+
+⭐ **Most harm-lexicon hits were TRUE positives** — rescues, survivor recovery, falling
+murder rates, convictions delivered. The lens is largely right on harm-adjacent content.
+That is why **6 rows were parked, rejected or demoted rather than kept**
+(`candidates/2026-08-20-harm-screen-parked.jsonl`), each with its TP reading recorded.
+
+⛔ **Standing rule (owner, 2026-08-20): a row with a serious true-positive reading is a
+bad gate probe by construction** — it tests the boundary, and the boundary is where noise
+makes the test meaningless. Pick the ones that are truly FP; do not escalate line calls.
+
+⛔ **Do not read `cap_applied: null` as "no cap was warranted"** — it is null on
+236,879 of 236,879 rows because `cap_triggers._TRIGGER_REGISTRY` is **empty by design**
+(since 2026-07-14), so `detect_caps` returns `[]` for every filter. Disarmed, not broken. See
+`docs/evidence/2026-08-20-uplifting-v7-class-a-valence-bakeoff.md` addendum.
 
 The greyhound article appears in two files: it scored high in **more than one lens
 simultaneously**, so that failure is not lens-specific. The smallpox pair is the same

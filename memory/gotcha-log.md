@@ -3985,3 +3985,50 @@ mode does not prevent it.** Only running the check against your own work does.
 The 2026-08-11 evening row is the first counter-example: the same check, run on my own
 work *before* proposing it, converted a would-be occurrence into a negative result. One
 data point, not a trend — but it is the only known way the list stops growing.
+
+### A backwards index-slice silently duplicated a document — twice in one session (2026-08-21) [x2]
+**Problem**: `s[:i] + new + s[j:]` where `i` and `j` come from `s.index(...)` on two anchors.
+When the second anchor precedes the first, the slice is backwards: the first form duplicated
+§1e–§1g of a plan (923 → 1,007 lines), the second produced an **empty** `old`, and
+`s.replace("", new)` inserts `new` between **every character** — 38 KB → **16.5 MB**.
+**Root cause**: no assertion that `i < j`, and none that `old` is non-empty. The second
+occurrence happened ~20 minutes after fixing the first, on a section whose order I had myself
+changed earlier in the session — the anchors were correct when written and stale when used.
+**Fix**: before any two-anchor slice, `assert i < j`; before any `.replace(old, new)`,
+`assert s.count(old) == 1` and `assert old`. Both corruptions were recoverable exactly
+(uniform insertion → `"".join(s.split(new))`; duplication → drop the truncated copy), but only
+because the damage was deterministic. **Prefer anchored `.replace()` with a count assertion
+over index arithmetic.**
+
+### A hand-keyed dict transposed two article IDs, so two training rows carried each other's rationale (2026-08-21)
+**Problem**: six adverse examples were promoted into `datasets/adverse/uplifting.jsonl` with
+per-row `why_adverse` text supplied from a hand-written `{id: (why, features)}` dict. Two IDs
+from the same publisher were swapped, so the helpline article shipped the Travelodge rationale
+and vice versa — including each other's normalized scores. Both rows carry
+`training_use: HARD NEGATIVE`, so the text a future adjudicator reads was **confidently wrong,
+not absent**. Found by the adversarial review lens, not by me.
+**Root cause**: a mapping built by eye between two similar-looking opaque IDs
+(`british_irish_independent_uk_5985bde5bb3a` / `..._a4fdcb129620`), with nothing coupling the
+prose to the record it described.
+**Fix**: assert an invariant that ties the text to its own row — each `why_adverse` now must
+contain its record's `observed.normalized_weighted_average`, checked at write time. A
+hand-built mapping needs a machine-checkable link back, not proofreading.
+
+### `pkill -f "<pattern>"` killed the shell that carried the pattern (2026-08-21) [x4]
+**Problem**: `pkill -f -- "-L 11435:localhost:11434"` closed the SSH tunnel *and* the bash
+process running the command, which exited 144 mid-script and skipped the rest.
+**Root cause**: the documented `pgrep -f` trap — the pattern appears in the invoking shell's
+own argv — applies identically to `pkill`, which then kills it.
+**Fix**: kill by PID from `ps -eo pid,args | grep -v grep`, or `ssh` the target and kill there.
+The existing working rule says `pgrep -f` cannot answer "is it running?"; **extend it: `pkill -f`
+cannot answer "stop it" either.**
+
+### A pipe inside a code span silently deleted a table cell that carried a BLOCKING flag (2026-08-21)
+**Problem**: an acceptance criterion written as `` `|student_raw − oracle_k_run_mean|` `` inside
+a markdown table row parsed as 7 cells against a 5-cell table. GFM drops the excess, so the
+row rendered without its last three cells — including `Blocking? = YES`. The criterion would
+have rendered as non-blocking.
+**Root cause**: GFM splits a row into cells **before** parsing inline content, so backticks do
+not protect a `|`. It reads correctly in the diff and is wrong only when rendered.
+**Fix**: escape as `\|` inside tables. Caught by `/review-changes`' structural pre-check, which
+exists for exactly this; it is the one check that reads *structure* rather than content.

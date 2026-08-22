@@ -1,0 +1,464 @@
+{
+ "note": "Scores only. Article TEXT is deliberately absent (#97).",
+ "prompt": "filters/uplifting/v7/prompt-compressed.md",
+ "temperature": 0.3,
+ "bar_max_acceptable_wa": 3.85,
+ "noise_band": 0.16,
+ "arms": {
+  "gemini": "gemini-2.5-flash (thinking_budget=0)",
+  "deepseek": "deepseek-chat -> deepseek-v4-flash",
+  "qwen3": "qwen3:14b via ollama on b650 (RTX 3090 Ti)"
+ },
+ "rows": [
+  {
+   "id": "south_african_herald_zw_5e7a6674c6d4",
+   "klass": "A",
+   "title": "NEW: Five men arrested in Mashonaland Central for raping a minor",
+   "text_provenance": "filtered_20260808_205018.jsonl",
+   "recovery": 1.0,
+   "student_raw": 6.8457,
+   "student_hwb": 7.4858,
+   "gemini": {
+    "weighted_average": 7.625,
+    "content_type": "solutions_story",
+    "dims": {
+     "human_wellbeing_impact": 7.5,
+     "social_cohesion_impact": 8.0,
+     "justice_rights_impact": 8.0,
+     "evidence_level": 7.5,
+     "benefit_distribution": 7.0,
+     "change_durability": 7.5
+    }
+   },
+   "deepseek": {
+    "weighted_average": 6.25,
+    "content_type": "solutions_story",
+    "dims": {
+     "human_wellbeing_impact": 6.0,
+     "social_cohesion_impact": 7.0,
+     "justice_rights_impact": 6.0,
+     "evidence_level": 5.0,
+     "benefit_distribution": 6.0,
+     "change_durability": 7.0
+    }
+   },
+   "qwen3": {
+    "weighted_average": 7.3,
+    "content_type": "solutions_story",
+    "dims": {
+     "human_wellbeing_impact": 7.0,
+     "social_cohesion_impact": 8.0,
+     "justice_rights_impact": 7.0,
+     "evidence_level": 8.0,
+     "benefit_distribution": 7.0,
+     "change_durability": 7.0
+    }
+   }
+  },
+  {
+   "id": "south_african_namibian_68535c7ec62d",
+   "klass": "A",
+   "title": "Rethink Business Centre Management",
+   "text_provenance": "REFETCHED",
+   "recovery": 1.0,
+   "student_raw": 6.0873,
+   "student_hwb": 6.6591,
+   "gemini": {
+    "weighted_average": 1.55,
+    "content_type": "doom_framed",
+    "dims": {
+     "human_wellbeing_impact": 1.0,
+     "social_cohesion_impact": 1.0,
+     "justice_rights_impact": 4.0,
+     "evidence_level": 2.0,
+     "benefit_distribution": 1.0,
+     "change_durability": 1.0
+    }
+   },
+   "deepseek": {
+    "weighted_average": 1.8,
+    "content_type": "doom_framed",
+    "dims": {
+     "human_wellbeing_impact": 2.0,
+     "social_cohesion_impact": 2.0,
+     "justice_rights_impact": 3.0,
+     "evidence_level": 1.0,
+     "benefit_distribution": 1.0,
+     "change_durability": 1.0
+    }
+   },
+   "qwen3": {
+    "weighted_average": 4.35,
+    "content_type": "solutions_story",
+    "dims": {
+     "human_wellbeing_impact": 5.0,
+     "social_cohesion_impact": 4.0,
+     "justice_rights_impact": 3.0,
+     "evidence_level": 5.0,
+     "benefit_distribution": 5.0,
+     "change_durability": 4.0
+    }
+   }
+  },
+  {
+   "id": "australian_abc_au_93c4aa32c23d",
+   "klass": "A",
+   "title": "Dozens of greyhounds to land in Australia as NZ racing ban begins",
+   "text_provenance": "REFETCHED",
+   "recovery": 0.991,
+   "student_raw": 5.8601,
+   "student_hwb": 6.66,
+   "gemini": {
+    "weighted_average": 2.3,
+    "content_type": "doom_framed",
+    "dims": {
+     "human_wellbeing_impact": 1.0,
+     "social_cohesion_impact": 1.0,
+     "justice_rights_impact": 4.0,
+     "evidence_level": 4.0,
+     "benefit_distribution": 2.0,
+     "change_durability": 4.0
+    }
+   },
+   "deepseek": {
+    "weighted_average": 3.95,
+    "content_type": "solutions_story",
+    "dims": {
+     "human_wellbeing_impact": 4.0,
+     "social_cohesion_impact": 2.0,
+     "justice_rights_impact": 5.0,
+     "evidence_level": 4.0,
+     "benefit_distribution": 3.0,
+     "change_durability": 6.0
+    }
+   },
+   "qwen3": {
+    "weighted_average": 2.0,
+    "content_type": "solutions_story",
+    "dims": {
+     "human_wellbeing_impact": 2.0,
+     "social_cohesion_impact": 2.0,
+     "justice_rights_impact": 2.0,
+     "evidence_level": 2.0,
+     "benefit_distribution": 2.0,
+     "change_durability": 2.0
+    }
+   }
+  },
+  {
+   "id": "south_african_namibian_6ec2eb173e48",
+   "klass": "B",
+   "title": "Boys must not be left behind, says child welfare minister Emma Kantema",
+   "text_provenance": "filtered_20260809_044544.jsonl",
+   "recovery": 1.0,
+   "student_raw": 5.1166,
+   "student_hwb": 4.7,
+   "gemini": {
+    "weighted_average": 4.65,
+    "content_type": "solutions_story",
+    "dims": {
+     "human_wellbeing_impact": 5.0,
+     "social_cohesion_impact": 5.0,
+     "justice_rights_impact": 5.0,
+     "evidence_level": 3.0,
+     "benefit_distribution": 5.0,
+     "change_durability": 4.0
+    }
+   },
+   "deepseek": {
+    "weighted_average": 2.95,
+    "content_type": "solutions_story",
+    "dims": {
+     "human_wellbeing_impact": 3.0,
+     "social_cohesion_impact": 4.0,
+     "justice_rights_impact": 2.0,
+     "evidence_level": 2.0,
+     "benefit_distribution": 3.0,
+     "change_durability": 3.0
+    }
+   },
+   "qwen3": {
+    "weighted_average": 4.7,
+    "content_type": "solutions_story",
+    "dims": {
+     "human_wellbeing_impact": 5.0,
+     "social_cohesion_impact": 6.0,
+     "justice_rights_impact": 3.0,
+     "evidence_level": 3.0,
+     "benefit_distribution": 5.0,
+     "change_durability": 5.0
+    }
+   }
+  },
+  {
+   "id": "us_media_the_world_prx_c43c35015048",
+   "klass": "B",
+   "title": "Pioneering marine scientist Sylvia Earle reflects on decades under the sea",
+   "text_provenance": "filtered_20260809_084437.jsonl",
+   "recovery": 1.0,
+   "student_raw": 4.9392,
+   "student_hwb": 4.4125,
+   "gemini": {
+    "weighted_average": 2.55,
+    "content_type": "solutions_story",
+    "dims": {
+     "human_wellbeing_impact": 3.0,
+     "social_cohesion_impact": 2.0,
+     "justice_rights_impact": 2.0,
+     "evidence_level": 3.0,
+     "benefit_distribution": 2.0,
+     "change_durability": 3.0
+    }
+   },
+   "deepseek": {
+    "weighted_average": 2.0,
+    "content_type": "solutions_story",
+    "dims": {
+     "human_wellbeing_impact": 2.0,
+     "social_cohesion_impact": 2.0,
+     "justice_rights_impact": 2.0,
+     "evidence_level": 2.0,
+     "benefit_distribution": 2.0,
+     "change_durability": 2.0
+    }
+   },
+   "qwen3": {
+    "weighted_average": 2.0,
+    "content_type": "solutions_story",
+    "dims": {
+     "human_wellbeing_impact": 2.0,
+     "social_cohesion_impact": 2.0,
+     "justice_rights_impact": 2.0,
+     "evidence_level": 2.0,
+     "benefit_distribution": 2.0,
+     "change_durability": 2.0
+    }
+   }
+  },
+  {
+   "id": "biotech_pharma_bioengineer_8d04dabcd22b",
+   "klass": "B",
+   "title": "Engineered nanovesicles targeting m6A writer METTL3 curb neuroinflammation in cells and animals",
+   "text_provenance": "filtered_20260808_205018.jsonl",
+   "recovery": 1.0,
+   "student_raw": 4.7162,
+   "student_hwb": 7.75,
+   "gemini": {
+    "weighted_average": 3.8,
+    "content_type": "solutions_story",
+    "dims": {
+     "human_wellbeing_impact": 6.5,
+     "social_cohesion_impact": 1.0,
+     "justice_rights_impact": 1.0,
+     "evidence_level": 6.0,
+     "benefit_distribution": 3.0,
+     "change_durability": 4.0
+    }
+   },
+   "deepseek": {
+    "weighted_average": 3.7,
+    "content_type": "solutions_story",
+    "dims": {
+     "human_wellbeing_impact": 5.0,
+     "social_cohesion_impact": 2.0,
+     "justice_rights_impact": 2.0,
+     "evidence_level": 6.0,
+     "benefit_distribution": 3.0,
+     "change_durability": 4.0
+    }
+   },
+   "qwen3": {
+    "weighted_average": 3.75,
+    "content_type": "solutions_story",
+    "dims": {
+     "human_wellbeing_impact": 6.0,
+     "social_cohesion_impact": 2.0,
+     "justice_rights_impact": 2.0,
+     "evidence_level": 6.0,
+     "benefit_distribution": 2.0,
+     "change_durability": 3.0
+    }
+   }
+  },
+  {
+   "id": "science_mdpi_sustainability_5bc21cf0ae81",
+   "klass": "B",
+   "title": "Sustainability, Vol. 18, Pages 8098: Prospective Life Cycle Assessment and Costing of a Laboratory-Scale Banana Pseudostem Enrichment Prototype for Rodents: Hotspot Identification and Improvement Scenarios Under Infectious Waste Management",
+   "text_provenance": "filtered_20260809_004729.jsonl",
+   "recovery": 1.0,
+   "student_raw": 4.3703,
+   "student_hwb": 5.6667,
+   "gemini": {
+    "weighted_average": 3.35,
+    "content_type": "solutions_story",
+    "dims": {
+     "human_wellbeing_impact": 5.0,
+     "social_cohesion_impact": 1.0,
+     "justice_rights_impact": 1.0,
+     "evidence_level": 6.0,
+     "benefit_distribution": 3.0,
+     "change_durability": 4.0
+    }
+   },
+   "deepseek": {
+    "weighted_average": 2.95,
+    "content_type": "solutions_story",
+    "dims": {
+     "human_wellbeing_impact": 4.0,
+     "social_cohesion_impact": 1.0,
+     "justice_rights_impact": 1.0,
+     "evidence_level": 5.0,
+     "benefit_distribution": 3.0,
+     "change_durability": 4.0
+    }
+   },
+   "qwen3": {
+    "weighted_average": 2.55,
+    "content_type": "solutions_story",
+    "dims": {
+     "human_wellbeing_impact": 3.0,
+     "social_cohesion_impact": 2.0,
+     "justice_rights_impact": 2.0,
+     "evidence_level": 3.0,
+     "benefit_distribution": 2.0,
+     "change_durability": 3.0
+    }
+   }
+  },
+  {
+   "id": "legal_policy_eba_news_6a8fc7f89ed7",
+   "klass": "B",
+   "title": "EBA ESG risk dashboard shows stable climate risk exposures and continued improvements in data quality",
+   "text_provenance": "filtered_20260809_124119.jsonl",
+   "recovery": 1.0,
+   "student_raw": 4.2899,
+   "student_hwb": 4.0,
+   "gemini": {
+    "weighted_average": 0.45,
+    "content_type": "corporate_finance",
+    "dims": {
+     "human_wellbeing_impact": 1.0,
+     "social_cohesion_impact": 0.0,
+     "justice_rights_impact": 0.0,
+     "evidence_level": 0.0,
+     "benefit_distribution": 0.0,
+     "change_durability": 1.0
+    }
+   },
+   "deepseek": {
+    "weighted_average": 2.45,
+    "content_type": "solutions_story",
+    "dims": {
+     "human_wellbeing_impact": 3.0,
+     "social_cohesion_impact": 1.0,
+     "justice_rights_impact": 1.0,
+     "evidence_level": 4.0,
+     "benefit_distribution": 2.0,
+     "change_durability": 4.0
+    }
+   },
+   "qwen3": {
+    "weighted_average": 3.7,
+    "content_type": "solutions_story",
+    "dims": {
+     "human_wellbeing_impact": 3.0,
+     "social_cohesion_impact": 3.0,
+     "justice_rights_impact": 3.0,
+     "evidence_level": 5.0,
+     "benefit_distribution": 5.0,
+     "change_durability": 5.0
+    }
+   }
+  },
+  {
+   "id": "german_faz_29bfaef599f8",
+   "klass": "B",
+   "title": "Fehlende Zeichensetzung: Ich war ein Rechtschreibschn\u00f6sel",
+   "text_provenance": "filtered_20260809_004729.jsonl",
+   "recovery": 1.0,
+   "student_raw": 4.13,
+   "student_hwb": 4.0,
+   "gemini": {
+    "weighted_average": 2.9,
+    "content_type": "solutions_story",
+    "dims": {
+     "human_wellbeing_impact": 3.0,
+     "social_cohesion_impact": 2.0,
+     "justice_rights_impact": 2.0,
+     "evidence_level": 3.0,
+     "benefit_distribution": 4.0,
+     "change_durability": 4.0
+    }
+   },
+   "deepseek": {
+    "weighted_average": 1.6,
+    "content_type": "solutions_story",
+    "dims": {
+     "human_wellbeing_impact": 2.0,
+     "social_cohesion_impact": 2.0,
+     "justice_rights_impact": 2.0,
+     "evidence_level": 0.0,
+     "benefit_distribution": 0.0,
+     "change_durability": 2.0
+    }
+   },
+   "qwen3": {
+    "weighted_average": 2.0,
+    "content_type": "solutions_story",
+    "dims": {
+     "human_wellbeing_impact": 2.0,
+     "social_cohesion_impact": 2.0,
+     "justice_rights_impact": 2.0,
+     "evidence_level": 2.0,
+     "benefit_distribution": 2.0,
+     "change_durability": 2.0
+    }
+   }
+  },
+  {
+   "id": "OpenAlex_b82dfc4d842e",
+   "klass": "B",
+   "title": "[Research] Systematic solvent screening and selection for papaya seeds oil (PSO) extraction",
+   "text_provenance": "filtered_20260809_084437.jsonl",
+   "recovery": 1.0,
+   "student_raw": 4.057,
+   "student_hwb": 4.7,
+   "gemini": {
+    "weighted_average": 1.95,
+    "content_type": "solutions_story",
+    "dims": {
+     "human_wellbeing_impact": 3.0,
+     "social_cohesion_impact": 0.0,
+     "justice_rights_impact": 0.0,
+     "evidence_level": 4.0,
+     "benefit_distribution": 2.0,
+     "change_durability": 3.0
+    }
+   },
+   "deepseek": {
+    "weighted_average": 3.2,
+    "content_type": "solutions_story",
+    "dims": {
+     "human_wellbeing_impact": 4.0,
+     "social_cohesion_impact": 1.0,
+     "justice_rights_impact": 1.0,
+     "evidence_level": 6.0,
+     "benefit_distribution": 3.0,
+     "change_durability": 5.0
+    }
+   },
+   "qwen3": {
+    "weighted_average": 2.4,
+    "content_type": "solutions_story",
+    "dims": {
+     "human_wellbeing_impact": 3.0,
+     "social_cohesion_impact": 2.0,
+     "justice_rights_impact": 2.0,
+     "evidence_level": 3.0,
+     "benefit_distribution": 2.0,
+     "change_durability": 2.0
+    }
+   }
+  }
+ ]
+}

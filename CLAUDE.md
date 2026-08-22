@@ -113,7 +113,8 @@ them** — each exists because something shipped broken.
   the whole tree as its argument.** Never `git add -A`, bare `git stash`,
   `git checkout .`, `git clean`. Always pass explicit paths; `git status --porcelain`
   before committing and stage only what you recognise.
-- **`pgrep -f "<pattern>"` cannot answer "is it running?"** *(3rd occurrence.)* It
+- **`pgrep -f "<pattern>"` cannot answer "is it running?" — and `pkill -f` cannot stop it.**
+  *(4th occurrence 2026-08-21: `pkill -f` killed the shell carrying the pattern.)* It
   matches the shell carrying the pattern. Use `ps -eo pid,etime,args | grep -v grep`,
   `systemctl is-active`, or the log's last timestamp. If a process check decides
   whether you act, print the matching line before believing it.
@@ -153,7 +154,7 @@ Full details in `memory/filter-status.md`. Summary:
 - **Cross-filter percentile normalization** — non-linear mapping from production CDF; supersedes score_scale_factor (ADR-014)
 - **Lenses as perspectives, not partitions** — overlap between lenses is correct; never exclude adjacent lens content in oracle prompts (ADR-015)
 - **Drop tier assignments** — filters output pass/block + continuous score only; tiers add no value over the score itself (ADR-016)
-- **Declarative prefilter shape** — extend `BasePreFilter` with `EXCLUSION_PATTERNS` / `OVERRIDE_KEYWORDS` / `POSITIVE_PATTERNS` / `POSITIVE_THRESHOLD` class attrs; standard `apply_filter()` pipeline lives on the base (ADR-018, #52)
+- **Declarative prefilter shape** — extend `BasePreFilter` with `EXCLUSION_PATTERNS` / `OVERRIDE_KEYWORDS` / `POSITIVE_PATTERNS` / `POSITIVE_THRESHOLD` class attrs; standard `apply_filter()` pipeline lives on the base (ADR-018, #52). ⚠️ **Amended 2026-08-21: new filters ship NO per-lens prefilter** — keyword screening is Latin-script only; the multilingual e5 probe replaces it (ADR-011). Governs shape where one exists, not whether to have one
 - **Per-category exclusion overrides** — `CATEGORY_OVERRIDES` dict (TypedDict-typed) + `_compound_override_applies()` Template Method hook on `BasePreFilter`. Subclasses inject only special-case rules; base owns the fallback chain (compound hook → dict → global `_has_override`). Unblocks belonging/foresight/sustech/cultural-discovery from custom `apply_filter()` (ADR-019, #52)
 - **Ground-truth deploy gate** — judge each model against held-out ORACLE ground truth, never against the prior deployed model (ADR-021)
 - **Stamp always, decide once** — gate modules stamp score+flag+model version always; exactly one config-gated drop point per concern; every enforcement decision is a config flip. Tier semantics follow the same principle: visibility = raw ≥ op-point, normalized score is rank/badge only (ADR-022, NM#280)

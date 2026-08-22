@@ -24,7 +24,13 @@ for name, path in filters.items():
 
 core = [
     'base_scorer.py', 'inference.py', 'inference_hub.py', 'inference_hybrid.py',
-    'config.yaml', 'calibration.json', 'prefilter.py',
+    'config.yaml', 'calibration.json',
+    # 'prefilter.py' REMOVED 2026-08-21 (owner ruling; memory/filter-doc-standard.md).
+    # A per-lens keyword prefilter is optional and omission is the default for new
+    # filters. Leaving it in `core` made this script -- the very tool the v8 package
+    # parity gate invokes -- report a correctly-built v8 as INCOMPLETE.
+    # NB: nature_recovery v4 and cultural_discovery v5 still ship one; that is
+    # legacy, not a requirement, and copying from them re-introduces it.
     'training_history.json', 'training_metadata.json',
     'model/adapter_config.json', 'model/adapter_model.safetensors',
     'model/tokenizer.json', 'model/tokenizer_config.json',
