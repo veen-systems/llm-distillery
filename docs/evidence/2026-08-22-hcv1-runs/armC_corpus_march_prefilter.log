@@ -1,0 +1,16 @@
+== POSITIVE CONTROL ==
+  control murder    passed=False reason=crime_violence
+  control military  passed=False reason=military_security
+  control finance   passed=False reason=corporate_finance
+  control clean     passed=True  reason=passed
+
+== MARCH PREFILTER over /home/hcl/llm-distillery/datasets/training/uplifting_v7 ==
+files: 3  rows: 6590
+BLOCKED: 1021  (15.493%)
+   crime_violence                        350   5.311%
+   military_security                     313   4.750%
+   corporate_finance                     188   2.853%
+   content_too_short                     114   1.730%
+   excluded_domain_code                   38   0.577%
+   excluded_domain_vc_startup              9   0.137%
+   pure_speculation                        9   0.137%

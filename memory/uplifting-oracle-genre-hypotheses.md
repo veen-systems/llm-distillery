@@ -1,6 +1,6 @@
 ---
 name: uplifting-oracle-genre-hypotheses
-description: Why the Thriving lens over-surfaces junk. TWO classes — harm-adjacent (class A, the priority) and academic register (class B). H-UP1..H-UP8 + H-CV1; class A is partly a STUDENT defect, which no prompt reaches.
+description: Why the Thriving lens over-surfaces junk. TWO classes — harm-adjacent (class A, the priority) and academic register (class B). H-UP1..H-UP9 + H-CV1; class A is partly a STUDENT defect, which no prompt reaches.
 metadata:
   type: project
 ---
@@ -31,8 +31,40 @@ checking prior work.
 | H-UP5 | active learning on the CURRENT prompt would reinforce the bias, not remove it | ⏳ **OPEN — prediction, untested** |
 | H-UP6 | a `primary_literature` cap removes the class without collateral damage | ⏳ **OPEN — shadow instrument shipped, no data yet** |
 | **H-UP7** | **the harm-adjacent class (class A) is the same label defect as class B** | ⛔ **REFUTED 2026-08-20** — 3-oracle bake-off: **1 of 3 rows fails on all three oracles (label defect), 2 of 3 are the STUDENT alone**. No prompt change reaches those two |
-| **H-UP8** | **class A is worse than class B for readers** | ✅ **CONFIRMED + owner-ruled 2026-08-20** — class A raw **5.86–6.85** (normalized to **8.28**, top of feed); class B **4.06–5.12**, barely over the 4.5 op-point. Owner: *"the ones flagged by reader are actually far far worse"* |
-| **H-CV1** | **the keyword prefilter depleted the v7 corpus of harm content, which is why the student fails on class A** | ⏳ **UNTESTED — and an earlier draft wrongly called it REFUTED.** See below |
+| **H-UP8** | **class A is worse than class B for readers** | ✅ **CONFIRMED + owner-ruled 2026-08-20**, but ⛔ **its BAND ARGUMENT is falsified (2026-08-22)**. The ruling stands on reader harm. The numbers cited with it do not: class A tops at raw 6.846 / normalized **9.862** (*not* 8.28 — that was the max of the newly-promoted subset), and class B is **not** confined to 4.06–5.12 — two owner-flagged non-outcome rows score raw **7.359** and **6.901**, above every class-A row. **The classes differ by SHAPE, not by band.** Owner: *"the ones flagged by reader are actually far far worse"* |
+| **H-UP9** | **Thriving's top-scoring rows are disproportionately ENRICHED STUBS rather than publisher-delivered full text** | ⏳ **OPEN — noted, not measured (owner ruling 5, 2026-08-22).** All 3 owner-flagged rows are stubs: `feed_summary`, `feed_summary` (76 words → 2,638 ch), `headline_only` (`word_count: 0` → 4,894 ch). ⛔ **Proves nothing — hand-built population**: they were selected *because* they looked wrong ([[feedback-hand-built-population]]). See below |
+| **H-CV1** | **the keyword prefilter depleted the v7 corpus of harm content, which is why the student fails on class A** | ⛔ **REFUTED 2026-08-22, premise and all — the prefilter NEVER RAN on this corpus.** The March-2026 version blocks **15.493%** (1,021/6,590) of the corpus it supposedly built. See below |
+| **H-UP10** | **the corpus is unrepresentative of production, and that is why the student fails** | ⏳ **OPEN, and now the leading candidate.** Four gaps measured 2026-08-22: positive base rate **28.22% vs 7.74%** (3.6×), class-A shape **0.46% vs 0.87%** (1.9× under, only **25** rows teach the fix), non-Latin **4.57% vs 7.26%**, median length **2,658 vs 1,349 ch**. Untested as a *cause* |
+
+## H-UP9 — are the top Thriving rows enriched stubs? OPEN, and deliberately unmeasured
+
+**Registered 2026-08-22, owner ruling 5: *note it, measure later*.** Not part of Phase A.
+
+Observation, n=3, all owner-flagged from the live lens:
+
+| article | `content_meta.kind` | publisher delivered | scored on | raw |
+|---|---|---|---|---|
+| Dawn, "Curing the cause" | `feed_summary` | 7,194 ch | 6,737 ch | 7.359 |
+| TSA, Algerian doctor | `feed_summary` | 485 ch (76 words) | 2,638 ch (`pre_enriched`) | 6.901 |
+| ToI, Helsinki heat caverns | `headline_only` | **0 ch, `word_count: 0`** | 4,894 ch (`pre_enriched`) | 6.648 |
+
+⛔ **This is not evidence and must not be quoted as a rate.** The owner picked these three
+because they looked wrong on the page, so the population is selected on the outcome —
+exactly [[feedback-hand-built-population]], the shape behind every measurement error this
+project has made. Three for three is what a hand-picked set of three looks like.
+
+**How to test it properly, when it is time:** take *all* Thriving rows at or above the 4.5
+op-point over a stated window, and compare the `content_meta.kind` / `pre_enriched`
+distribution against **all scored rows in the same window** — a pipeline-computed
+denominator, both sides from the same instrument. Report the window and the file count
+(the archive grows every 4h cycle). ⚠️ Condition on `stage_used` first: a `stage1_low` row's
+score is an e5 probe estimate, not a Gemma score.
+
+⚠️ **Predict the range before looking.** Enrichment is documented as *beneficial* on
+evidence-quality dimensions (H-E1, `memory/enrichment-delta-hypotheses.md`: `cultural_discovery`'s
+`evidence_quality` **+1.433**, 46/47 rows positive), so a plausible prior is that enriched
+rows score *higher everywhere* and Thriving is not special. **A finding that enrichment
+inflates Thriving specifically needs a non-Thriving control lens**, or it is just H-E1 again.
 
 ## H-UP7 — class A is BOTH a label defect and a student defect ⭐⭐
 
@@ -65,39 +97,94 @@ over all ten rows — replicating the `cultural_discovery v5` result (Gemini 60%
 smallest pairwise gap (0.18) sits inside the 0.82 noise. **Build strictness into the
 mechanism, not the purchase order.**
 
-## H-CV1 — did the keyword prefilter deplete the corpus? UNTESTED
+## H-CV1 — did the keyword prefilter deplete the corpus? ⛔ REFUTED — it never ran
 
-**The tempting story:** `uplifting v7`'s prefilter carries **36 `crime_violence` patterns**,
-class A is harm-adjacent, so perhaps the student never learned the shape.
+**Full write-up: `docs/evidence/2026-08-22-uplifting-v7-corpus-provenance.md`.** Raw logs:
+`docs/evidence/2026-08-22-hcv1-runs/`. Reproduce:
+`scripts/analysis/prefilter_removal_probe.py` (today's rules),
+`scripts/analysis/prefilter_march_probe.py` (the rules that existed at corpus build time).
 
-**Measured 2026-08-21** (same regexes both sides):
+**The tempting story:** `uplifting v7`'s prefilter carries **37 `crime_violence` patterns**
+(*not* 36 — the file has **77** patterns total, not 74), class A is harm-adjacent, so perhaps
+the student never learned the shape.
 
-| population | `crime_violence` match |
-|---|---|
-| v7 `train` / `val` / `test` | 4.67% / 5.01% / 4.70% — **all splits 310/6,590 = 4.70%** |
-| production, all `stage2` (n=186,172) | **3.26%** |
-| production, ≥ op-point (n=14,454) | 3.58% |
+### The answer, and it is upstream of the question
 
-Labels on those rows are *conservative*: n=310, mean **2.33**, median **1.15**, **18.7%**
-≥4.5 — against non-matching mean 2.84, median 1.90, 28.7%.
+The corpus files are dated **2026-03-11**. `prefilter.py` was created **2026-03-09** and has
+changed **four times since**. Running today's rules over a March corpus settles nothing, so
+the March version (`991ffec`) was checked out of git and run:
 
-⛔ **This does NOT refute depletion, and a first draft said it did.** `crime_violence` is an
-`EXCLUSION_PATTERNS` category **with per-category override patterns**, so corpus rows that
-*match* are **override survivors** — a selected subpopulation. Comparing their rate to
-unfiltered production measures the **override leak**, not depletion. The counterfactual that
-would settle it — the *enriched-but-unfiltered* rate — was never measured. **The instrument
-is the selector: checker and checked are the same object.**
+| arm | population | instrument | blocked |
+|---|---|---|---|
+| A | 235,905 production rows | today's prefilter | 6.917% |
+| B | 6,590 corpus rows | today's prefilter | 9.074% |
+| **C** | the same 6,590 | **March-2026 prefilter** | **15.493% (1,021 rows)** |
 
-**Method to actually test it:** apply the prefilter to a production sample and measure what
-it **removes**, rather than inspecting what survived.
+**Those 1,021 rows — 350 of them `crime_violence` — are in the training splits.** A filter
+that had run would have removed them. Corroborated twice over: `batch_scorer.py:1615` carries
+a legacy `--prompt` mode marked **"NO PREFILTER SUPPORT"**, and the March prefilter enforced a
+300-char floor while the corpus contains rows of **35 characters**.
 
-**What survives independently of H-CV1:** the student saw ≥310 examples of this shape,
-labelled conservatively, and still scores a torture story at **5.976** (normalized 8.284).
-A simple "it never saw harm content" story does not survive.
+Same instrument both sides, the corpus is **not depleted**: crime-violence matches **2.72%**
+of the corpus vs **2.38%** of production.
 
-⚠️ **Ruling 3 (drop the prefilter) does not depend on this.** It rests on the prefilter
-being Latin-script only — 74 patterns, EN/NL/DE/FR, **zero non-Latin script in 662 lines**.
-H-CV1 was a *supporting* argument of mine, and it is not available.
+⛔ **`HUMAN_THRIVING_V8_PLAN.md` Phase 0's "the 6,590 rows were selected with 74 Latin-script
+patterns applied" is FALSE.** Corrected there 2026-08-22.
+
+### Why the 2026-08-21 measurement could not have answered it
+
+It inspected corpus rows that *matched* `crime_violence` — but those are **override survivors**
+of the filter under test, so it measured the override leak, not removal. Checker and checked
+were the same object. *(That objection also dissolves once the filter is shown never to have
+run: 112 rows it blocks are present.)*
+
+⚠️ **Ruling 3 (drop the prefilter) never depended on this** and is unaffected. It rests on
+coverage, now quantified: the prefilter is a **four-language** instrument (EN/NL/DE/FR =
+**74.9%** of production). Spanish — the 2nd-largest language, 16,390 rows — is filtered at
+**0.89% against English's 8.89%**; Korean and Croatian match `crime_violence` at **0.00%**.
+
+### ⚠️ What refuting H-CV1 does NOT buy
+
+It closes **removal**. It says nothing about **composition** — see **H-UP10**, which is where
+the corpus argument actually lives, and which survived measurement.
+
+## H-UP10 — is the corpus unrepresentative? ⏳ OPEN, leading candidate
+
+**Measured 2026-08-22**, same evidence file. Owner: *"I want a proper data corpus to train on.
+It is my belief that the corpus partly determines the quality of the result."*
+
+⚠️ **Method note:** H-CV1 matched harm keywords **anywhere in the body**. Class A needs harm
+to be the **dominant subject**, so this matches on the **title** — a different quantity, and
+the body figure (2.72%) must not be quoted for this question.
+
+| | corpus (6,590) | production (205,939 stage2) | gap |
+|---|---|---|---|
+| harm as dominant subject | **0.46%** (30) | 0.87% (1,798) | 1.9× under |
+| …of those, teaching the FIX (< 3.85) | **25 rows** | 1,663 | — |
+| **positive base rate (≥ 4.5)** | **28.22%** | **7.74%** | **3.6× enriched** |
+| non-Latin script | 4.57% | 7.26% | 1.6× under |
+| median content length | 2,658 ch | 1,349 ch | 2× longer |
+
+⭐⭐ **25 rows are the entire training signal for class A.** Nothing removed them; they were
+never assembled in.
+
+⚠️ **The 4 harm-title rows labelled ≥4.5 are NOT defect-teaching** — restorative-justice
+stories (Brussels survivor meets perpetrator 6.55, $30M abuse settlement 5.85, Myanmar amnesty
+5.38). **A supplement of false positives only would destroy the §5b no-regression set.**
+
+⚠️ **Base rate is the biggest gap and "match production" is the WRONG fix.** ADR-003
+screen+merge enrichment exists because positives are rare; drawing at 7.74% spends the oracle
+budget on obvious negatives. The defect is that 3.6× is **accidental and unstated**.
+
+⭐ **Cuts the other way for class B:** the corpus *under*-represents primary literature
+(arxiv **4.23%** / pubmed 2.05% vs production's arxiv **7.92%** / pubmed 0.83%). **Class B is
+a prompt defect, not a corpus defect** — consistent with #125. Do not spend corpus budget on it.
+
+⛔ **Still untested as a CAUSE.** These are composition gaps, not a demonstrated mechanism for
+the class-A failure. The student saw 350 harm rows (March reckoning), conservatively labelled,
+and still scores a torture story at **5.976** (normalized 8.284). **Every explanation offered
+so far has died under measurement, two of them mine.** A rebuild is justified by the gaps; it
+is **not** established that it fixes class A, which is why Phase B2 stays load-bearing.
 
 ## H-UP1 / H-UP2 — the defect is in the labels
 

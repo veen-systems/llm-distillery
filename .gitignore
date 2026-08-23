@@ -236,3 +236,8 @@ filters/common/violence_promotion/training/*.jsonl
 # different machine and user (C:/local_dev/..., C:/Users/scbry/...). The tracked
 # .claude/skills/ reference installs stay tracked; only this file is local.
 .claude/settings.local.json
+
+# Evidence logs are the record behind a measured claim -- `*.log` above would drop
+# them silently, and a docs/evidence/ page that references logs nobody else has is
+# worse than no page. Negate for evidence only (2026-08-22).
+!docs/evidence/**/*.log

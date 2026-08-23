@@ -1143,3 +1143,23 @@ verification as the claim it replaces.** Resolved by reading the rendered ar5iv 
 Related: [[cd-v6-probe-hypotheses]] (the other place a probe/extractor choice was
 decided by measurement), [[score-batch-shape-noise]] (any margin under 0.16 near
 an op-point is noise, which binds every threshold in this file).
+
+## Deploy record — the academic gate (moved here 2026-08-23 from `MEMORY.md`)
+
+⚠️ **This was the only durable copy of the deploy record.** It lived in the memory index
+because it had been written only into `docs/TODO.md`'s top block, which is rewritten every
+session. Moved here when the index hit its character budget (#123).
+
+- ✅ **Academic gate LIVE 2026-08-17 09:50 CEST**, tracked by **NM#392**.
+  ⚠️ *Not* **NM#391** — that number was cited in 8 places before the issue existed.
+  ⭐ **A wrong issue number is invisible to every check we have**, `/curate`'s dead-reference
+  pass included, because `#391` is not a path.
+- **Review-by: 2026-08-23.** ⚠️ Live as of this writing — check whether it was done.
+- 1,403 tests, 5 mutations. `pl_pl` **0 correct of 28** (rule-of-three ≈10.7% —
+  **never quote 0.0% bare**). Cost ratio **322:1**.
+- ⭐ **Config resolution was verified through the runtime config manager on the box, not by
+  reading the YAML** — a MISSING key falls through to code default `False` and is
+  indistinguishable from a working deploy at file level.
+- ⚠️ The temporal feature ships `sigma_hours: 72.0`, the **refuted** value, and **AUC cannot
+  arbitrate σ — it is σ-invariant BY CONSTRUCTION**; any before/after delta must run at
+  σ ∈ [12, 24].

@@ -1,0 +1,40 @@
+diagnose() fingerprint: 938302d84050047a
+== POSITIVE CONTROL (instrument must be able to say 'blocked') ==
+  control murder    blocked=True  by=crime_violence
+  control military  blocked=True  by=military_security
+  control finance   blocked=True  by=corporate_finance
+  control clean     blocked=False by=None
+
+window: test.jsonl .. val.jsonl
+
+== /home/hcl/llm-distillery/datasets/training/uplifting_v7 ==
+files: 3   rows: 6590
+BLOCKED: 598  (9.074%)
+
+block reason:
+   military_security          254   3.854%
+   corporate_finance          168   2.549%
+   crime_violence             112   1.700%
+   excluded_domain_code        42   0.637%
+   pure_speculation            10   0.152%
+   excluded_domain_vc_startup       9   0.137%
+   branded_content              3   0.046%
+
+category MATCHED vs RESCUED by its own exception list:
+   crime_violence       matched    179 ( 2.72%)  rescued    39  -> blocked    112  rescue rate  21.8%
+   military_security    matched    299 ( 4.54%)  rescued    39  -> blocked    254  rescue rate  13.0%
+   corporate_finance    matched    179 ( 2.72%)  rescued    11  -> blocked    168  rescue rate   6.1%
+
+removal by language (top 12 by volume):
+   lang       rows  blocked    rate%
+   script:latin     6289      594     9.45
+   script:non_latin      301        4     1.33
+
+removal by SCRIPT:
+   latin          6289      594     9.45%
+   non_latin       301        4     1.33%
+
+crime_violence MATCH RATE by language (the depletion-relevant number):
+   lang       rows   cv_match     match%
+   script:latin     6289        179       2.85
+   script:non_latin      301          0       0.00

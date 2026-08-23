@@ -2,7 +2,7 @@
 
 ## 🔵 NEXT SESSION — **`human_thriving` v8: the plan is written and reviewed. Nothing is built.**
 
-> **Updated 2026-08-22.** The 2026-08-20 block below is superseded; its "academic register
+> **Updated 2026-08-23.** The 2026-08-20 block below is superseded; its "academic register
 > is the defect" framing was wrong. **Read `docs/HUMAN_THRIVING_V8_PLAN.md` first** — this
 > block is a pointer, not a substitute.
 >
@@ -16,9 +16,10 @@
 >    by reader are actually far far worse."* Class B (#125, academic register) is secondary.
 > 2. **On harm/violence, optimise against the false positive** — *"way worse than missed
 >    detections."* Settles ADR-020 §3 vs ADR-023 in **ADR-023's favour**, scoped to this class.
-> 3. **Drop the per-lens keyword prefilter; retrain the probe** — it is Latin-script only
->    (74 patterns, EN/NL/DE/FR, zero non-Latin script in 662 lines). This is **ADR-011
->    finally applied**; same move as #98 for cultural_discovery.
+> 3. **Drop the per-lens keyword prefilter; retrain the probe** — it is a **four-language**
+>    instrument (**77** patterns, EN/NL/DE/FR = 74.9% of production; Spanish filtered at
+>    **0.89%** vs English's **8.89%**; Korean/Croatian match crime_violence at **0.00%**).
+>    Measured 2026-08-22. This is **ADR-011 finally applied**; same move as #98 for cultural_discovery.
 >
 > ### ⭐⭐ The finding that shapes the work
 > **A prompt-only v8 fixes about a THIRD of class A.** Three-oracle bake-off (Gemini /
@@ -27,20 +28,49 @@
 > §4b hard negatives, $0 oracle.
 >
 > ### ⛔ The honest state — read before trusting any phase
-> **Class A's mechanism is NOT established.** Confirmed: harm-adjacent articles reach the top
-> of the feed (torture story raw 5.976 → normalized **8.284**). Confirmed: the student fails
-> where the oracle succeeds. **Untested: H-CV1** — whether the corpus was depleted of harm
-> content; the one measurement taken inspected *override survivors of the filter under test*,
-> so it cannot see depletion. **The rebuild is justified by ruling 3, not by a demonstrated
-> corpus defect. It may change nothing.**
+> **Class A's mechanism is STILL NOT established, and one candidate is now dead.** Confirmed:
+> harm-adjacent articles reach the top of the feed. Confirmed: the student fails where the
+> oracle succeeds (2 of 3 rows, §1f).
+>
+> ⛔ **H-CV1 is REFUTED (2026-08-22) — premise and all: the keyword prefilter NEVER RAN on
+> the v7 corpus.** The March-2026 version blocks **15.493%** (1,021/6,590) of the corpus it
+> supposedly built; those rows are in the splits, so it cannot have run. Corroborated by
+> `batch_scorer.py:1615`'s legacy `--prompt` mode marked *"NO PREFILTER SUPPORT"*. **There is
+> no depletion to undo.** Evidence: `docs/evidence/2026-08-22-uplifting-v7-corpus-provenance.md`.
+>
+> ⭐⭐ **But the corpus IS wrong, differently — H-UP10, and it is now the leading candidate.**
+> Owner: *"I want a proper data corpus to train on … the corpus partly determines the quality
+> of the result."* Four gaps, same instrument both sides:
+>
+> | | corpus (6,590) | production (205,939 stage2) | gap |
+> |---|---|---|---|
+> | harm as **dominant subject** (title) | **0.46%** (30) | 0.87% (1,798) | 1.9× under |
+> | …teaching the FIX (< 3.85) | **25 rows** | 1,663 | — |
+> | **positive base rate (≥ 4.5)** | **28.22%** | **7.74%** | **3.6× enriched** |
+> | non-Latin script | 4.57% | 7.26% | 1.6× under |
+> | median length | 2,658 ch | 1,349 ch | 2× longer |
+>
+> ⚠️ **A composition gap is not a mechanism.** The student saw 350 harm rows, conservatively
+> labelled, and still scores a torture story at 5.976. **Do not assume the rebuild fixes class
+> A — Phase B2 hard negatives stays load-bearing.**
+>
+> ⭐ **Class B is NOT a corpus problem** — the corpus *under*-represents primary literature
+> (arxiv 4.23% vs production 7.92%). #125 is a **prompt** defect. Spend no corpus budget on it.
 >
 > ### Where to start
-> 1. **Phase 0 — assemble the corpus.** ✅ B1 cleared: it is on **gpu-server**,
->    `~/llm-distillery/datasets/training/uplifting_v7/` (train 5,271 / val 659 / test 660 =
->    **6,590**, full text on every row). Decide re-score-in-place + harm supplement vs rebuild.
-> 2. **Test H-CV1 properly** before relying on either answer — apply the prefilter to a
->    production sample and measure what it *removes*.
-> 3. **Phase A — the prompt**, leading with the dominant-subject rule, not `evidence_level`.
+> 1. **Phase A — the prompt.** Lead with the dominant-subject rule (class A), then **step 2b,
+>    the live-process rule** — added 2026-08-22 and the cheapest large win in the plan:
+>    `evidence_level`'s own 0–2 band already reads *"No uplifting outcome to verify"*, which
+>    would cap the two worst owner-flagged rows at **3.0**, under both the op-point and the
+>    3.85 adverse bar. It scored them 6.21 and 6.44, so the one gatekeeper never fired.
+> 2. **Phase 0 — rebuild the corpus** against the four Gate 0 targets now written into the
+>    plan. ⚠️ "Match production's 7.74%" is the **wrong** base-rate fix — make the enrichment
+>    factor chosen and recorded, not accidental.
+> 3. **Land `corpus_manifest.json` (#127)** as part of Phase 0 — v8 would be the first filter
+>    whose corpus records how it was drawn. Gate 0 already demands most of the fields.
+> 4. **Scope the independent panel** (~200–300 rows, pipeline-sampled above the op-point,
+>    never shown to the oracle). Today **22 editorial rows** are the entire evidence base
+>    independent of the oracle; everything else grades the student against its own teacher.
 >
 > ### ⚠️ Traps that will bite, all measured
 > - **b650's GPU diverges from production at 4.5 — this filter's op-point** (3 verdict flips;

@@ -1,0 +1,36 @@
+
+== PRODUCTION CENSUS (stage2 only) ==
+rows: 205939   (skipped, not stage2: 27166)
+
+--- (a) CLASS-A SHAPE ---
+harm in TITLE     :   1798  (0.87%)
+harm in BODY only :   3307  (1.61%)
+harm-title rows by SCORE band:
+   hi>=4.5       91  (  5.1% of harm-title)
+   mid           44  (  2.4% of harm-title)
+   lo<3.85     1663  ( 92.5% of harm-title)
+
+--- (b) REPRESENTATIVENESS ---
+POSITIVE BASE RATE (raw >= 4.5): 15935 / 205939 = 7.74%
+bands: hi>=4.5=15935 (7.7%), mid=8242 (4.0%), lo<3.85=181762 (88.3%)
+
+raw score percentiles: p10=1.10 p50=1.46 p90=4.12 p99=6.09
+content length: p10=84 p50=1349 p90=5534 p99=15536
+
+script: latin=190985 (92.74%), non_latin=14954 (7.26%)
+language top-8: en=61.5%, es=7.3%, de=5.8%, fr=4.0%, nl=2.9%, el=1.9%, pt=1.5%, ar=1.5%
+
+source concentration: 1389 distinct domains
+   top-10 share: 37.2%
+     news.google.com                         46205  22.44%
+     arxiv.org                               16301   7.92%
+     indianexpress.com                        2260   1.10%
+     aawsat.com                               2036   0.99%
+     thewest.com.au                           1871   0.91%
+     lrt.lt                                   1738   0.84%
+     pubmed.ncbi.nlm.nih.gov                  1711   0.83%
+     yna.co.kr                                1529   0.74%
+     20minutos.es                             1478   0.72%
+     elpais.com                               1380   0.67%
+   arxiv.org                       16301   7.92%
+   pubmed.ncbi.nlm.nih.gov          1711   0.83%

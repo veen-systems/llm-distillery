@@ -222,6 +222,12 @@ that a filter should have one.**
 Owner ruling 2026-08-21: `human_thriving` v8 ships **no `prefilter.py`**, and the Stage-1 e5
 probe is retrained to carry the screening. Reason, measured on `uplifting v7`s prefilter:
 662 lines, 74 patterns in three categories, and exactly two families of non-ASCII characters
+<!-- CORRECTION 2026-08-22: the pattern count is **77** (crime_violence 37, corporate_finance 21,
+     military_security 19), measured by loading the class rather than counting by eye. And
+     "Latin script only" understates it: measured over 235,905 production rows it is a
+     FOUR-LANGUAGE instrument (EN/NL/DE/FR = 74.9% of production; Spanish 0.89% removal vs
+     English 8.89%). Evidence: docs/evidence/2026-08-22-uplifting-v7-corpus-provenance.md.
+     The DECISION this ADR records is unaffected. -->
 — **Latin (78) and em-dashes (30)**. No Cyrillic, Arabic, CJK, Devanagari, Greek or Hebrew.
 Keyword screening is **Latin-script only**, which ADR-011 already said embedding screening
 should replace.

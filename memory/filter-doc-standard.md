@@ -13,7 +13,7 @@ metadata:
 3. ~~`prefilter.py` — declarative prefilter (ADR-018/019 shape)~~ ⛔ **REMOVED from the
    core 2026-08-21 (owner ruling).** A per-lens keyword prefilter is **optional, and for
    new filters the default is to omit it.** Reasons, all measured: it is **Latin-script
-   only** wherever it exists (`uplifting v7`: 74 patterns, EN/NL/DE/FR, zero non-Latin
+   only** wherever it exists (`uplifting v7`: **77** patterns, EN/NL/DE/FR — measured 2026-08-22 as a FOUR-LANGUAGE instrument covering 74.9% of production, Spanish filtered 0.89% vs English 8.89%; zero non-Latin
    script in 662 lines); it has **never run in NexusMind's production scoring path**
    (`use_prefilter=False`, `skip_prefilter=True` — NM#284, dead since 2026-02-10); and
    `nature_recovery v4` + `solutions v6` emit **zero lens blocks across 8,283 production

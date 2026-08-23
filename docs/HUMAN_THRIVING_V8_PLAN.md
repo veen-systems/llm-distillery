@@ -35,13 +35,15 @@ commerce / obituary / violence gates.
   — a torture story at raw 5.976, normalized **8.284** (§1g).
 - **Confirmed:** on 3 class-A rows, the *oracle* is right on 2 and the *student* is wrong on
   all 3 (§1f). So this is not purely a label defect.
-- ⚠️ **Not established either way:** whether the corpus was depleted of harm content
-  (**H-CV1**). Corpus rows matching `crime_violence` run **4.70% (310/6,590, all splits)**
-  against production's 3.26% — 1.44× — ⚠️ *not* the 4.67% train-split figure against a
-  6,590 denominator that an earlier draft quoted
-  and are labelled conservatively (median **1.15** vs 1.90), **but those rows are override
-  survivors of the very filter under test**, so the comparison cannot see depletion. An
-  earlier draft called this refuted; it is untested. See Phase 0.
+- ⛔ **SETTLED 2026-08-22 — H-CV1 is REFUTED and its premise with it: the prefilter never
+  ran on this corpus.** The March-2026 version blocks **15.493%** (1,021/6,590) of the corpus
+  it supposedly built, so those rows could not be there had it run. Same instrument both
+  sides, the corpus is **not depleted** (crime-violence 2.72% corpus vs 2.38% production).
+  Evidence: `docs/evidence/2026-08-22-uplifting-v7-corpus-provenance.md`.
+- ⚠️ **But the corpus is still wrong, differently (H-UP10, OPEN).** Four measured composition
+  gaps: positive base rate **28.22% vs 7.74%**, class-A shape **0.46% vs 0.87%** with only
+  **25 rows** teaching the fix, non-Latin **4.57% vs 7.26%**, median length **2× production**.
+  **Untested as a CAUSE** — a composition gap is not a mechanism.
 - **Therefore unexplained:** why. Untested candidates in Phase 0.
 
 ⚠️ **Consequence for planning: the rebuild is justified by ruling 3 (multilingual coverage),
@@ -59,7 +61,9 @@ precisely because it might not.
 | 08-21 | class-A slice 4 → **9**; 5 promoted as hard negatives (a 6th demoted during review) | owner: *bring them to the dataset* |
 | 08-21 | **Phase 0 / 0b added** — corpus located, training host settled | owner: *we still need to assemble the corpus* |
 | 08-21 | **prefilter dropped, probe retrained** | owner ruling 3 (multi-script) |
-| 08-21 | **H-CV1 refuted** — corpus is enriched, not depleted | my hypothesis, measured and killed |
+| 08-21 | **H-CV1 measured, then the measurement withdrawn** — the instrument was the selector, so it is **UNTESTED**, not refuted (§0a) | adversarial review |
+| 08-22 | two owner-flagged rows promoted (class B → **9**); the **class-B score-band premise breaks**; ruling 4 (placement ≠ prompt), ruling 5 (enrichment noted, not measured) | owner |
+| 08-22 | ⛔ **H-CV1 REFUTED — the prefilter NEVER RAN on the corpus**; Phase 0's premise was false and is rewritten. The rebuild now rests on **four measured composition gaps** (H-UP10), not depletion | measured, 3 arms |
 | 08-21 | **F1 parity gate, F2 no prefilter**; doc standard 7→6 files; #126 | owner |
 
 ---
@@ -157,8 +161,13 @@ the ovr.news homepage with a trafficking price list as its pull quote.
 > **Measured, so this is not a preference:** `filters/uplifting/v7/prefilter.py` is 662
 > lines and contains exactly two families of non-ASCII characters — **Latin (78) and
 > em-dashes (30)**. No Cyrillic, Arabic, CJK, Devanagari, Greek or Hebrew. Coverage is
-> EN + NL/DE/FR, **Latin script only**, across 74 patterns in three categories
-> (`crime_violence` 36, `corporate_finance` 21, `military_security` 17). For reference,
+> EN + NL/DE/FR across **77** patterns in three categories (`crime_violence` **37**,
+> `corporate_finance` 21, `military_security` **19**) — *counts corrected 2026-08-22 by
+> loading the class; the 74/36/17 figures were wrong.* ⭐ **And "Latin script only"
+> understates it: it is a FOUR-LANGUAGE instrument.** Measured over 235,905 production rows:
+> EN/NL/DE/FR is **74.9%** of production, and the rest is barely touched — **Spanish (2nd
+> largest, 16,390 rows) 0.89% removal against English's 8.89%**, Italian 0.74%, Arabic 0.06%,
+> Korean and Croatian matching `crime_violence` at **0.00%**. For reference,
 > enforcing `cultural_discovery`'s prefilter was measured to block **19.9% of non-English
 > against 13.0% of English** articles.
 >
@@ -343,6 +352,89 @@ registry line from live.
 was the "populate it or delete it" recommendation that followed from it.
 **Caps stay a mechanism detail; the defect is that the scorer reads harm as wellbeing.**
 
+### 1h. ⭐⭐ Two owner-flagged rows, 2026-08-22 — and the class-B band premise breaks
+
+Two rows pulled from the live Thriving lens by the owner. Both read **in full** from the
+exact text the scorer saw (production rows on sadalsuud), not from excerpts.
+
+| raw | norm | article | shape |
+|---|---|---|---|
+| **7.359** | **9.988** | Dawn, "Curing the cause" — op-ed on liberation psychology | **no live process at all** |
+| **6.901** | **9.856** | TSA Algérie, Algerian doctor named GM of a new Ottawa clinic | **no outcome has occurred** |
+
+⭐⭐ **These break the premise the A-over-B priority ruling rested on.** That ruling cited
+class A at raw 5.86–6.85 against class B "barely over a 4.5 op-point" at 4.06–5.12. Both
+rows above are **class-B-shaped — non-outcome, no harm content whatsoever** — and the Dawn
+row is now the **highest-scoring row in `datasets/adverse/uplifting.jsonl` on both raw and
+normalized**, above every class-A row. ⚠️ **The classes are distinguished by SHAPE, not by
+band.** The priority ruling itself is untouched — class A remains the harm-adjacent class
+and the reader-facing hazard — but "class B is the low-scoring one" is no longer true and
+must not be repeated.
+
+⛔ **Correction to a claim I made on 2026-08-22:** I stated the worst catalogued class-A row
+normalizes to 8.284. It is **9.862** (Mashonaland Central). 8.284 is the maximum of §1g's
+*newly promoted* rows only — a subset table read as the whole slice. The two rows above are
+therefore *comparable to* the top of class A, not far above everything.
+
+**What they share, and it is the rule Phase A must write.** Neither contains a harm subject,
+so no class-A rule reaches them. Both score high because **the dimensions reward sustained
+topical discussion of wellbeing rather than an occurring outcome**:
+
+- Dawn: liberation psychology developed in 1970s–80s El Salvador; concrete examples from
+  Colombia, Chile and Brazil, all decades old and elsewhere; every Pakistan sentence
+  prescriptive (*"should become part of schools"*, *"urgently needs"*). Not one current,
+  named, operating programme. `change_durability` **7.375** for a set of recommendations.
+- TSA: an appointment. Degrees, an 18-year CV, two teaching awards, and a stated wish
+  (*"son souhait … de bâtir une clinique accessible"*). No patient has been seen.
+  `human_wellbeing_impact` **8.312** — the *"significant wellbeing improvement with
+  measurable outcomes"* band — on health vocabulary alone.
+
+⭐ **Both would have been capped by the gatekeeper that already exists.** `evidence_level`'s
+own 0–2 band reads *"No uplifting outcome to verify, OR pure speculation"* — a literal
+description of both articles. It scored **6.21** and **6.44**, so `GATEKEEPER_MIN = 3.0`
+never tripped and `GATEKEEPER_CAP = 3.0` never applied
+(`filters/uplifting/v7/base_scorer.py:52-54`; logic at
+`filters/common/filter_base_scorer.py:331-335`). Had it fired, both land at **3.0** — under
+the 4.5 op-point *and* under the 3.85 adverse bar. **Both fixed by a rule already written
+and not followed.**
+
+⚠️ **The cap is the lever, not the dimension value.** Scoring Dawn's `evidence_level` down to
+2 *without* the gatekeeper firing moves raw only **7.359 → 6.938**. A 0.10-weight dimension
+cannot move a 7.36 average. Phase A's job on this shape is to make the gatekeeper **fire**,
+not to add dimensions. This is the same `evidence_level` defect as §1c seen from the other
+side: §1c found research abstracts *saturate* it; these two show essays and announcements do
+too. It is reading *"is this well-sourced?"* instead of *"did an outcome for people happen,
+and is it verified?"*
+
+**Both also over-score in `belonging`** (5.27 and 5.17), so this is not a Thriving-only
+mechanism. Out of scope for v8; recorded for #61.
+
+#### Owner rulings, 2026-08-22
+
+4. **Lens misattribution is NOT a v8 prompt concern.** Probe article: Times of India /
+   Helsinki heat caverns (raw **6.648** uplifting vs **4.095** solutions; the other four
+   lenses ≤ 2.95). It passes §1e cleanly — a facility operating now, heating 25,000 homes —
+   and is the twin of §5b's Rwanda–EU no-regression row, so under ADR-015 the score is
+   **correct**. Owner: *"i think this belongs somewhere else indeed, there are more
+   misattributions, and that is not our biggest concern right now."* **No prompt change.**
+   ⚠️ *My gloss, not the ruling:* the capacity-vs-delivered refinement I proposed for that
+   row is therefore dropped as a general rule. It does **not** weaken the "no outcome has
+   occurred" rule for Dawn/TSA, which fail for the absence of *any* outcome, not for the
+   difference between projected and delivered.
+   **Verified while adjudicating it:** placement is a fixed map — `FILTER_TO_TAB` in
+   ovr.news `src/lib/data/filters.ts:34` sends `uplifting → thriving` unconditionally — and
+   the layer built to reassign, `lens_fit` (ADR-037 Phase 3), is **absent from the deployed
+   `data/chief_editor_config.json`**, so it falls through to the code default
+   `{enabled: false, audit_only: true}` and **has never run**. Nothing ever compared 9.617
+   against 8.074. That is llm-distillery#96, and it is an **ovr.news** fix.
+5. **The enrichment-stub hypothesis is NOTED, not measured.** All three articles the owner
+   sent are enriched stubs — `feed_summary` (6,737 ch), `feed_summary` (76 words → 2,638 ch),
+   `headline_only` (`word_count: 0` → 4,894 ch). ⛔ **Three for three, and it proves nothing:
+   the owner selected them because they looked wrong, so this is a hand-built population**
+   (`feedback-hand-built-population`). Registered as **H-UP9** in
+   `memory/uplifting-oracle-genre-hypotheses.md`; test against all Thriving rows above the
+   op-point with a pipeline-computed denominator, after Phase A.
+
 ## 2. Closed doors — do not reopen these
 
 | Door | Why it is shut |
@@ -351,7 +443,7 @@ was the "populate it or delete it" recommendation that followed from it.
 | **Retrain on the v7 label set** | The defect is *in* those labels. A perfect student reproduces it. |
 | **Re-weight the dimensions** | Same trap as `solutions v6`: re-weighting measured inert, and an apparent gain at an absolute threshold is an **artifact** — a percentile CDF removes any monotone rescale (`memory/solutions-v6-dimension-hypotheses.md` R3). Weights cannot fix a label defect. |
 | **Active learning first** | ⭐⭐ **An instrument built from the thing under test cannot audit it.** The AL grader *is* the v7 oracle prompt, so it surfaces only student-vs-oracle disagreement and silently re-labels as positives the ~55% of class B the oracle **accepts** (H-UP5). **For class A it is worse than useless**: measured 2026-08-09, the oracle graded the ≥5.5 band **29/29 perfect** while readers flagged three rows inside it — 34 oracle candidates produced **0** class-A rows against 5 reader flags producing **3**. **Prompt first, then AL — and AL can never be the class-A source at all.** |
-| **Assume the rebuild fixes class A** | ⚠️ **H-CV1 is untested** (§0a) — the one measurement taken cannot see depletion, because it inspected override survivors of the filter under test. So the rebuild is justified by ruling 3's multilingual argument, **not** by a demonstrated corpus defect, and it may change nothing. Phase B2 exists for that reason. **Test H-CV1 properly before relying on either answer.** |
+| **Assume the rebuild fixes class A** | ⚠️ **Still shut, for a NEW reason (2026-08-22).** H-CV1 is now REFUTED — the prefilter never ran, so there is no depletion to undo. The rebuild is justified by **four measured composition gaps** (H-UP10, Phase 0), but a composition gap is **not a demonstrated cause**: the student saw 350 harm rows, conservatively labelled, and still scores a torture story at 5.976. And §1f measured that **2 of 3 class-A rows are the STUDENT alone**, which no corpus change reaches. **Phase B2 stays load-bearing.** |
 | **Ship an empty `prefilter.py`** | ⛔ Ruling 3 / §F2. Not an empty file, not commented-out rules — **no file**. A required artefact that does nothing is this repo's recurring failure mode (`expected_pass_rate`, `stage1.threshold`, `cap_applied` null on 236,879 rows). |
 | **Playbook §4a as written** | ⛔ §4a step 4 says *"keep probe-high + model-high articles as-is — the model already gets them right."* That band is **exactly where #125 lives**. §4a re-scores only the ambiguous mid-range, so it would relabel the middle and preserve the biased top. §4a is correct for a *model* defect and wrong for a *label* defect — see §8. |
 
@@ -434,60 +526,86 @@ finding inside it, not its subject). Stage it on the training host, keep the rep
 
 **What Phase 0 does, now that the prefilter is dropped (ruling 3):**
 
-⛔ **The v7 corpus is keyword-shaped and cannot be the backbone unchanged.** The prefilter
-never ran in production but **does** run in the llm-distillery oracle/training path
-(`ground_truth/batch_scorer.py` loads and instantiates it), so the 6,590 rows were selected
-with 74 Latin-script patterns applied — including **36 `crime_violence` patterns**, which
-is the exact shape class A lives in.
+⛔⛔ **CORRECTED 2026-08-22 — the sentence that stood here was FALSE.** It read: *"The v7
+corpus is keyword-shaped and cannot be the backbone unchanged … the 6,590 rows were selected
+with 74 Latin-script patterns applied."* **The prefilter never ran on this corpus.**
 
-⚠️ **H-CV1 — UNTESTED, not refuted (corrected during review 2026-08-21).**
-I proposed that the v7 corpus was *depleted* of crime/violence content by the keyword
-prefilter, which would have explained §1f (the student failing where all three oracles are
-right). Measured, it is the opposite:
+**H-CV1: REFUTED, premise and all.** Full write-up:
+`docs/evidence/2026-08-22-uplifting-v7-corpus-provenance.md`; logs in
+`docs/evidence/2026-08-22-hcv1-runs/`; reproduce with
+`scripts/analysis/prefilter_march_probe.py`.
 
-| population | `crime_violence` match |
-|---|---|
-| v7 `train` / `val` / `test` | 4.67% / 5.01% / 4.70% — **all splits: 310/6,590 = 4.70%** |
-| production, all `stage2` (n=186,172) | **3.26%** |
-| production, ≥ op-point (n=14,454) | 3.58% |
+The corpus is dated **2026-03-11**; `prefilter.py` was created **2026-03-09** and changed
+**four times since**, so today's rules cannot testify about March. Running the March version
+(`991ffec`) over the corpus it supposedly built:
 
-<!-- verify: ssh sadalsuud python3 /tmp/cv_scan.py   (patterns: extract 'crime_violence' from
-     filters/uplifting/v7/prefilter.py EXCLUSION_PATTERNS; population: stage_used=='stage2'
-     over ~/local_dev/NexusMind/data/filtered/uplifting/*.jsonl). Re-derived independently
-     during the 2026-08-21 review: all four counts reproduced exactly over 87 files. ⚠️ The
-     window GROWS every 4h cycle — re-state the file count and end date with any re-run. -->
-⚠️ **`≥ op-point` here is stage2-only.** Across all stages the ≥4.5 count is **16,279**, and
-**26,216** rows carry no `stage_used` at all. Condition on `stage_used` before comparing.
+| arm | population | instrument | blocked |
+|---|---|---|---|
+| A | 235,905 production rows | today's prefilter | 6.917% |
+| B | 6,590 corpus rows | today's prefilter | 9.074% |
+| **C** | the same 6,590 | **March-2026 prefilter** | **15.493% — 1,021 rows** |
 
-⛔ **This does NOT refute depletion, and an earlier draft of this section said it did.**
-`crime_violence` is an `EXCLUSION_PATTERNS` category with per-category override patterns, so
-the corpus rows that *match* those regexes are **override survivors** — a selected
-subpopulation. Comparing their rate to unfiltered production measures the **override leak**,
-not depletion. The counterfactual that would settle it — the *enriched-but-unfiltered* rate —
-was never measured, and ADR-003 enrichment could easily have produced 15% pre-prefilter,
-leaving 4.67% after. **The instrument is the selector: checker and checked are the same
-object.** To test H-CV1 properly, apply the prefilter to a production sample and measure what
-it *removes*, rather than inspecting what survived.
+**Those 1,021 rows (350 `crime_violence`) are in the training splits.** A filter that ran
+would have removed them. Corroborated twice: `ground_truth/batch_scorer.py:1615` has a legacy
+`--prompt` mode marked **"NO PREFILTER SUPPORT"**, and the March prefilter enforced a 300-char
+floor while the corpus holds rows of **35 characters**. Same instrument both sides, the corpus
+is **not depleted**: crime-violence matches **2.72%** of it vs **2.38%** of production.
 
-What the numbers **do** support, independently of H-CV1: the labels on those rows are
-*conservative*, not inflated — `crime_violence` rows: n=310, mean **2.33**,
-median **1.15**, **18.7%** at or above 4.5; everything else: mean 2.84, median 1.90,
-**28.7%**.
+⚠️ Two numbers in this plan were wrong and are corrected: the prefilter has **77** patterns
+(corporate_finance 21, military_security 19, **crime_violence 37**), not 74/36.
 
-**So the student saw at least 310 examples of this shape, labelled conservatively, and
-still scores a torture story at 5.98.** A simple "it never saw harm content" story does not
-survive; whether the corpus was *depleted relative to an unfiltered draw* is still open.
+⚠️ **Ruling 3 is untouched and now has a figure.** The prefilter is a **four-language**
+instrument (EN/NL/DE/FR = **74.9%** of production); Spanish, the 2nd-largest language at
+16,390 rows, is filtered at **0.89%** against English's **8.89%**; Korean and Croatian match
+`crime_violence` at **0.00%**.
 
-⚠️ **Ruling 3 is unaffected** — it rests on the prefilter being Latin-script-only across 74
-patterns (measured), which is the owner's stated reason. This refutation removes one of
-*my* supporting arguments for a full rebuild; it removes nothing from the ruling.
+### ⭐⭐ The rebuild is still right — for four MEASURED reasons, none of them depletion
 
-⭐ **This is now the central unexplained result in the whole v8 investigation** and Phase 0
-should register it rather than route around it. Untested candidates: the corpus's harm rows
-are unrepresentative of production's (length, language, source); the student generalises
-badly from 310 examples against 6,280; or the failure concentrates in the long-article
-regime — every §1g row is 2,107–5,786 chars. **Test before assuming the rebuild fixes it:
-a rebuild motivated by a refuted mechanism may change nothing.**
+Refuting H-CV1 closes **removal**. It says nothing about **composition**, which is where the
+corpus argument actually lives (**H-UP10**). Owner, 2026-08-22: *"I do not want a keyword
+prefilter anymore, and I want a proper data corpus to train on. It is my belief that the
+corpus partly determines the quality of the result."* Measured, that holds:
+
+| | corpus (6,590) | production (205,939 stage2) | gap |
+|---|---|---|---|
+| harm as **dominant subject** (title) | **0.46%** (30 rows) | 0.87% (1,798) | 1.9× under |
+| …of those, teaching the FIX (< 3.85) | **25 rows** | 1,663 | — |
+| **positive base rate (≥ 4.5)** | **28.22%** | **7.74%** | **3.6× enriched** |
+| non-Latin script | 4.57% | 7.26% | 1.6× under |
+| median content length | 2,658 ch | 1,349 ch | 2× longer |
+
+⭐⭐ **25 rows are the entire training signal for class A.** Nothing removed them — they were
+never assembled in. ⚠️ **This is a composition gap, NOT a demonstrated cause.** The student
+saw 350 harm rows, conservatively labelled, and still scores a torture story at 5.976. **Do
+not assume the rebuild fixes class A; Phase B2 stays load-bearing.**
+
+⭐ **Class B is NOT a corpus problem.** The corpus *under*-represents primary literature
+(arxiv 4.23% / pubmed 2.05% vs production's 7.92% / 0.83%), so #125's academic-register
+defect is a **prompt** defect. Spend no corpus budget on it.
+
+**Gate 0 targets — state each as a chosen number before drawing:**
+
+- **Positive base rate: decide it, don't inherit it.** ⚠️ "Match production's 7.74%" is the
+  WRONG fix — ADR-003 screen+merge enrichment exists *because* positives are rare, and a
+  7.74% draw spends the oracle budget on obvious negatives. The defect is that 3.6× is
+  **accidental and unstated**. Record the factor and correct for it (class weighting or
+  calibration).
+- **Class-A shape at ≥ production's 0.87%**, with **TPs as well as FPs** — the 4 corpus rows
+  labelled ≥4.5 are restorative-justice stories (Brussels survivor meets perpetrator 6.55,
+  $30M abuse settlement 5.85, Myanmar amnesty 5.38), i.e. §5b shapes. **An FP-only supplement
+  destroys the no-regression set.**
+- **Non-Latin share at ≥ production's 7.26%.** Nothing else in this plan would notice if the
+  rebuild stayed Latin-shaped.
+- **Cover the short-form regime** (production `p10 = 84 ch`, median 1,349) or state that the
+  filter is trained for long-form only.
+- ⛔ **Exclude `news.google.com`** — 22.44% of production and sub-300-char headline echoes, so
+  production percentages are not directly the targets a draw should hit.
+- ⭐ **Write a `corpus_manifest.json` (llm-distillery#127).** Establishing that this corpus was
+  *not* prefiltered took git archaeology plus a three-arm experiment; it should have been a
+  file. v8 is the first corpus with a chance to record its own provenance, and Gate 0 already
+  demands most of the numbers, so the marginal cost is near zero. ⚠️ The acceptance test is a
+  manifest **on a freshly prepared split whose counts reconcile with the split**, not a
+  `json.dump` in the code.
 
 1. **Re-score the 6,590 under the v8 prompt anyway** — they are labelled articles with full
    text and they keep `test.jsonl` comparable to the #125 baseline every gate refers to.
@@ -562,6 +680,37 @@ question; nothing is appended to v7's five penalty checks as a sixth.
 2. **Class B — break the gatekeeper trap** (§1c). `evidence_level` must measure *evidence
    for a human outcome*, not evidence quality in general, and must be able to score **low
    on a rigorous paper that reports no outcome for people**.
+2b. ⭐⭐ **The live-process rule — the single highest-value change, and it is a GATEKEEPER
+   change, not a new dimension** (§1h). `evidence_level` must be **forced to its 0–2 band
+   whenever no outcome for people has occurred**, which is what its own scale already says
+   and what the oracle is not doing. Three shapes must land there, each with a contrastive
+   example:
+
+   - **No live process.** An essay, op-ed, explainer or history whose concrete instances are
+     past or elsewhere, and whose present-tense content is prescriptive. *(Dawn, raw 7.359.)*
+   - **No outcome yet.** An appointment, a launch, a funding round, a pledge, a plan, a
+     ribbon-cutting. Something has been *announced* or *staffed*, not *delivered*.
+     *(TSA, raw 6.901; the Namibian minister, raw 5.117.)*
+   - **No beneficiary.** An award, an honour, a career profile or a biography, where the
+     subject is a person's standing rather than anyone's changed circumstances.
+     *(Sylvia Earle, raw 4.939.)*
+
+   ⚠️ **Write it as "is the process live", NEVER as "is the subject recent".** The owner's
+   framing on 2026-08-22 was *"thriving should be about today, not the past"* and the
+   defect is real, but a recency rule keyed on when the events happened would suppress
+   **transitional justice** — §5b's Unifesp/DOI-Codi row is a 1970s crime and a **living**
+   process, and §5b calls it *"the purest correction for presentism"*. The discriminator is
+   **a named actor doing something now, with someone it reaches**, not the age of the
+   subject matter.
+
+   ⚠️ **Do not write a "large groups, not individuals" rule.** The owner raised it on
+   2026-08-22 and the measurement kills that implementation: `benefit_distribution` already
+   carries beneficiary breadth, and **zeroing it entirely moves the TSA row only
+   6.901 → 6.280**, still tier high. It is weight 0.10 against `human_wellbeing_impact` at
+   0.30, and re-weighting is closed (§2). What the example actually wants is
+   **beneficiary count, not protagonist count** — an individual is frequently the *vehicle*
+   for a collective process ("one nurse's clinic now serves 4,000 people"), and a rule keyed
+   on whether a person is named would destroy that. Handle it under "no beneficiary" above.
 3. **Close the two documented cap gaps**, both found in the 2026-08-10 adjudication:
    `corporate_finance` (max 2.0) enumerates stock prices, earnings, funding rounds,
    valuations, M&A, IPO — **prudential regulation is none of them**, so no cap fired on
@@ -572,7 +721,7 @@ question; nothing is appended to v7's five penalty checks as a sixth.
    **subtractions** — an advisory `max_score` is read as advice and ignored (playbook §1).
    Enumerate carve-outs exhaustively, one contrastive example each.
 5. **Verify on a ~30-article calibration sample before any batch run** (playbook §1). The
-   sample must contain: all **16** adverse records (9 class A, 7 class B), the **§5b no-regression set**, and a
+   sample must contain: all **18** adverse records (9 class A, 9 class B), the **§5b no-regression set**, and a
    hand-picked set of research abstracts.
 6. Revisit the dimension set. ⚠️ **ADR-012's boundary map is stale**: it lists Thriving as
    `human_wellbeing 0.40 / justice_rights 0.25 / evidence_level 0.10 / benefit_distribution
@@ -656,11 +805,18 @@ not an instance. Every §5b no-regression row must be scored before and after th
 ### Phase C — train, probe, calibrate
 - `load_base_model_for_seq_cls()`; PEFT adapters in **old key format**; never
   `resave_adapter.py`.
-**The probe is RETRAINED, not inherited (ruling 3).** *This reverses the 2026-08-21
-recommendation to freeze it — that advice assumed the corpus was fixed. Once the keyword
-prefilter goes, the probe's own training data was selected by the same 74 Latin-script
-patterns, so inheriting it would carry the shaped population forward into the one layer
-whose job is population selection.*
+**The probe is RETRAINED, not inherited (ruling 3).**
+⛔ **The reason given here on 2026-08-21 was WRONG and is replaced.** It said the probe's
+training data "was selected by the same 74 Latin-script patterns". It was not — the prefilter
+never ran on this corpus at all (H-CV1 refuted 2026-08-22, Phase 0). *There is no
+keyword-shaped population being carried forward.*
+
+**The retrain still stands, on the surviving reasons:** (1) the corpus is being rebuilt
+against four measured composition gaps (H-UP10, Phase 0), so a probe trained on the old
+population would screen for the wrong distribution — in particular a **28.22%** positive base
+rate against production's **7.74%**; (2) with the keyword rules gone the probe becomes the
+**only** layer carrying multilingual selection, and the corpus it inherits is **4.57%**
+non-Latin against production's **7.26%**.
 
 - **Recall-first**, `scripts/train_probe.py --objective recall`: binary MEDIUM+ target,
   class-weighted BCE, threshold from the val recall curve at a target FN. ⛔ **Not** by
@@ -810,7 +966,7 @@ counted as a pass. Ordered by the 2026-08-20 priority ruling.
 | **2** | **No regression.** Every no-regression row still scores **above** the op-point | §5b, **4 rows today** | editorial judgement, owner-confirmed | **YES** |
 | **2b** | **The student agrees with its own oracle on class A.** For every class-A record, `\|student_raw − oracle_k_run_mean\|` is inside the oracle band. *New 2026-08-20: two of three class-A rows are the STUDENT disagreeing with all three oracles (§1f) — a criterion judged only on labels would pass a v8 that still ships them* | class-A slice | k-run oracle mean | **YES** |
 | **3** | **Class B shrinks.** Academic/non-academic on-lens gap inside noise on the new labels | 660-row held-out oracle split | ADR-021 oracle ground truth | reported; miss → owner call |
-| **4** | **Class B, adverse rows.** The 7 class-B records score below 3.85 | `uplifting.jsonl`, class-B rows | editorial upper bound | reported |
+| **4** | **Class B, adverse rows.** The **9** class-B records score below 3.85 | `uplifting.jsonl`, class-B rows | editorial upper bound | reported — ⚠️ **status needs an owner call**, see §1h: two of the nine are owner-flagged and outscore every class-A row |
 | **5** | **NM#231 — non-English.** The 19 panel-confirmed articles clear the op-point, **and** the English/non-English mean gap is reported on one denominator — *reported*, not "improved", so v9 has a baseline | 19 articles | panel | ⛔ **blocked, see B2** |
 
 ⚠️ **Criteria 1 and 5 pull against each other.** Class A wants the scorer to attend to the

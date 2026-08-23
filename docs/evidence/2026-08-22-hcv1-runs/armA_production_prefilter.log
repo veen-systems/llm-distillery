@@ -1,0 +1,56 @@
+== POSITIVE CONTROL (instrument must be able to say 'blocked') ==
+  control murder    blocked=True  by=crime_violence
+  control military  blocked=True  by=military_security
+  control finance   blocked=True  by=corporate_finance
+  control clean     blocked=False by=None
+
+window: filtered_20260808_170651.jsonl .. filtered_20260822_164733.jsonl
+
+== /home/jeroen/local_dev/NexusMind/data/filtered/uplifting ==
+files: 87   rows: 235905
+BLOCKED: 16317  (6.917%)
+
+block reason:
+   corporate_finance         5502   2.332%
+   military_security         5141   2.179%
+   crime_violence            4564   1.935%
+   excluded_domain_code       342   0.145%
+   pure_speculation           336   0.142%
+   excluded_domain_vc_startup     303   0.128%
+   excluded_domain_defense      81   0.034%
+   branded_content             48   0.020%
+
+category MATCHED vs RESCUED by its own exception list:
+   crime_violence       matched   5615 ( 2.38%)  rescued   699  -> blocked   4564  rescue rate  12.4%
+   military_security    matched   6013 ( 2.55%)  rescued   748  -> blocked   5141  rescue rate  12.4%
+   corporate_finance    matched   5780 ( 2.45%)  rescued   278  -> blocked   5502  rescue rate   4.8%
+
+removal by language (top 12 by volume):
+   lang       rows  blocked    rate%
+   en       145993    12976     8.89
+   es        16390      146     0.89
+   de        14454     1220     8.44
+   fr         9366     1111    11.86
+   nl         6805      462     6.79
+   el         4915       81     1.65
+   pt         3564       44     1.23
+   ar         3471        2     0.06
+   it         3103       23     0.74
+   sv         2815       71     2.52
+   hr         2457        4     0.16
+   ko         2213       30     1.36
+
+crime_violence MATCH RATE by language (the depletion-relevant number):
+   lang       rows   cv_match     match%
+   en       145993       4181       2.86
+   es        16390          8       0.05
+   de        14454        332       2.30
+   fr         9366        712       7.60
+   nl         6805        276       4.06
+   el         4915          9       0.18
+   pt         3564          8       0.22
+   ar         3471          2       0.06
+   it         3103          1       0.03
+   sv         2815         50       1.78
+   hr         2457          0       0.00
+   ko         2213          0       0.00
