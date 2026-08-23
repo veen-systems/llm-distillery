@@ -320,3 +320,60 @@ from the academic dedup gate's population. **0 divergent rows of 37,022** (32,30
   `sustainability_technology` — removed 2026-08-03. Legacy.
 
 Related: [[uplifting-v7-training]], [[filter-status]], [[hypothesis-ledger]], #91, #125.
+
+---
+
+## 2026-08-23 — Gate A measured on TWO oracles ($0.4711)
+
+Evidence: `docs/evidence/2026-08-23-gate-a-two-oracle-run.md`. 15 rows × k=3 × 2 prompts ×
+2 oracles, 0 errors. Prompt arms: `filters/uplifting/v7/prompt-compressed.md` vs
+`filters/human_thriving/v8/prompt-candidate.md` (Phase A steps 1 + 2b spliced).
+
+### ✅ H-UP11 CONFIRMED — the gatekeeper rewrite (step 2b) fixes class B
+
+Class B **1/3 → 3/3 on both oracles**. The two owner-flagged rows of 08-22 collapse:
+Dawn 5.98 → **3.00** (DeepSeek) / 7.36 → **1.60** (Gemini); TSA appointment 4.63 → **2.53** /
+5.53 → **0.00**. The `3.00` is `GATEKEEPER_CAP` firing, exactly as §1h predicted.
+⚠️ **Directional only: 3 of 9 class-B rows** — the other 6 could not be hydrated (aged out).
+
+### ⚠️ H-UP12 REFUTED AS WRITTEN — a prompt rule is not a rule both oracles follow
+
+Class A improves (4/9 → **7/9** DeepSeek, 4/9 → **6/9** Gemini) and does not clear. The
+finding is the **disagreement**: *"Five men arrested for raping a minor"* goes
+**7.05 → 3.00 on DeepSeek** (capped) and **7.23 → 7.43 on Gemini** (*rises*) — a **4.4-point**
+gap on the most reader-offensive row in the set. Step 1's text names "individual
+arrest/sentencing" explicitly; DeepSeek applies it, Gemini ignores it.
+⭐ **Consequence: this decides Phase B's open oracle question.** A prompt-only fix is only as
+good as the oracle's willingness to follow it.
+
+### ⛔ H-UP13 — acceptance criterion 2's bars are broken, and **v7 proves it**
+
+v7 *also* fails the no-regression set (1/3 DeepSeek, 2/3 Gemini). **A criterion the incumbent
+fails is a broken criterion, not a failing candidate.** Against bars with evidence behind them:
+Rappler passes both (⚠️ DeepSeek's 4.65 sits 0.15 over the op-point inside a 0.543 spread —
+**indeterminate**); Unifesp passes its **delta** on both (+0.77, +0.13) ⇒ **transitional
+justice is NOT suppressed**.
+
+### ⛔ H-UP14 OPEN — v8 caps the Rwanda row on both oracles, exactly as written
+
+Rwanda–EU $46M → **3.00 on both**. v8 is behaving *correctly*: mobilised funding is
+**announced, not delivered**, which step 2b Shape 2 catches by design. Either §5b
+mis-adjudicated the row, or the rule over-reaches on development finance. **Owner call**, and
+it is the same boundary as the open delivered-accountability question: *what counts as
+delivery.*
+
+### ⛔ Traps found the hard way
+
+- **All 18 adverse rows on disk are 300-char excerpts** (originals 620–28,905). Scoring them
+  tests **ledes, not articles** — fatal where class A turns on the *dominant subject*.
+  Hydrate from `ovr.db`'s `articles` table; class A is complete 9/9 there.
+- **`gemini_api_key` is FREE-TIER.** First run: 429 RESOURCE_EXHAUSTED, 14/45 and 8/45
+  succeeded, and **k=3 silently became k=1 on 8 articles** — a partially-populated result set
+  that still looks like a run. Use `gemini_billing_api_key`.
+- ⛔ **`grep -rl <article_id>` returned three files not containing the article** — the id
+  appeared inside a *different* row's `nexus_mind_attributes` as a cluster co-member. A grep
+  for a string is not a grep for a row.
+- ⛔ **A local judge must clear the no-regression set before its verdict means anything.**
+  `qwen3:14b` zeroed class A *and* all three true positives (spread 1.700 mean / 2.950 max);
+  `qwen2.5:14b` is 4.4× tighter (0.383 / 0.650) and clears one assertion. Model-specific,
+  not "local judges".

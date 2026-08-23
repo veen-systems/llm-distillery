@@ -1,6 +1,79 @@
 # LLM Distillery - TODO
 
-## 🔵 NEXT SESSION — **`human_thriving` v8: the plan is written and reviewed. Nothing is built.**
+## 🔵 NEXT SESSION — **v8 Phase A is MEASURED: step 2b works, step 1 does not survive Gemini**
+
+> **Updated 2026-08-23.** Gate A ran on two oracles for **$0.4711**. Read
+> `docs/evidence/2026-08-23-gate-a-two-oracle-run.md` first, then the block below it.
+>
+> ### What is settled
+> - ✅ **Step 2b (the `evidence_level` gatekeeper rewrite) is VALIDATED on both oracles.**
+>   Class B 1/3 → 3/3. Dawn 5.98 → **3.00** / 7.36 → **1.60**; TSA 4.63 → **2.53** / 5.53 →
+>   **0.00**. The 3.00 is `GATEKEEPER_CAP` firing. ⚠️ Directional: 3 of 9 class-B rows, the
+>   rest could not be hydrated.
+> - ⚠️ **Step 1 (dominant subject) is NOT ready.** Class A 4/9 → 7/9 (DeepSeek) but 4/9 → 6/9
+>   (Gemini), and the two disagree by **4.4 points** on the worst row: *"Five men arrested for
+>   raping a minor"* is **capped to 3.00 by DeepSeek and RISES to 7.43 on Gemini**. Step 1
+>   names "individual arrest/sentencing" explicitly; Gemini ignores it.
+> - ⭐ **That decides Phase B's open oracle question** — a prompt fix is only as good as the
+>   oracle that follows it.
+>
+> ### ⛔ Two owner calls block progress
+> 1. **Delivered accountability** — ovr `BRAND.md` excludes "harm-answered-only", but §1g kept
+>    *convictions delivered* as true positives and 08-22 kept three restorative-justice rows.
+>    The draft draws the line at **delivery** (arrest out, settlement/conviction in) as the only
+>    reading consistent with both. **That is a reconciliation, not a ruling.**
+> 2. **Development finance** — v8 caps the Rwanda–EU $46M row to **3.00 on both oracles**,
+>    behaving exactly as written (mobilised funding is *announced, not delivered*). Either §5b
+>    mis-adjudicated it, or step 2b Shape 2 over-reaches. Same boundary as (1) from the other side.
+>
+> ### Start here
+> 1. **Rewrite step 1 against Gemini's behaviour**, or adopt DeepSeek as the labelling oracle.
+>    Re-run Gate A ($0.47/run, so iterate freely).
+> 2. **Phase B2 hard negatives — the larger half of class A, and $0 of oracle.** §1f measured
+>    **2 of 3 class-A rows as the STUDENT** disagreeing with all three oracles. Nothing done so
+>    far touches it. Inputs are assembled: 9 class-A rows + 3 no-regression rows, full text.
+> 3. **Hydrate the 6 missing class-B rows** (aged out of `ovr.db` and `filtered/`) or accept
+>    class B's verdict as directional.
+>
+> ### ⛔ Traps, all paid for today
+> - **Every adverse row on disk is a 300-char excerpt.** Hydrate from `ovr.db`'s `articles`
+>   table before scoring anything — class A turns on the *dominant subject*, which a lede cannot carry.
+> - **`gemini_api_key` is free-tier**: 429s, and **k=3 silently becomes k=1**. Use
+>   `gemini_billing_api_key` (now the script default).
+> - **A local judge must clear the no-regression set first.** `qwen3:14b` zeroed class A *and*
+>   all three true positives. `qwen2.5:14b` is 4.4× tighter and is the better free instrument.
+> - **`grep -rl <id>` matched three files not containing the article** — cluster co-member ids
+>   live in other rows' `nexus_mind_attributes`.
+>
+> ---
+>
+> ## 🟣 The length-floor question — MEASURED, and it argues against the obvious answer
+>
+> Owner question 2026-08-23: should NexusMind refuse to score anything under N characters?
+> Measured over **1,332,648 rows**: `docs/evidence/2026-08-23-length-floor-by-script.md`.
+>
+> - ⭐⭐ **A flat character floor is 2.85× stricter on Japanese than English** (chars/token:
+>   Latin 4.36, Japanese 1.53). ⇒ **any floor must be defined in TOKENS**, naming its
+>   tokenizer, with per-script character equivalents **derived**.
+> - ⭐⭐ **But the case for a QUALITY floor is weak.** The scorer already suppresses short text
+>   (2.1% of 0–32-token rows reach 4.5 vs 8.8% of 384+), variance is *lower* not higher at
+>   short lengths, and **31% of the corpus is already screened out by the probe** (`stage1_low`
+>   scores 0.0% ≥ 4.5 in every band). A 128-token floor drops **36.64% of the corpus** to
+>   remove **16.23% of surfacing rows of unknown quality**.
+> - ⭐ **The real target is the Google News population, not a global floor** — 12.0% of Latin
+>   surfacing rows are <64 tokens vs **0.0%** for Japanese/CJK/Devanagari.
+> - ⛔ **Hebrew is a defect, not a threshold**: 9,282 rows, median **202 chars**, 77% dropped
+>   at 128 tokens. Any floor silently deletes almost all Hebrew content. **Investigate first.**
+> - ⛔ **Do not put the constant in three repos** — the op-point already lives in four places
+>   and drifted off in NM#161 and NM#205. Propagate as data, or add a disagreement test.
+> - ⚠️ **Limitation:** one 4.5 op-point was used across six filters whose op-points differ
+>   (`solutions` 2.25). Re-run per filter before acting.
+>
+> ---
+
+## 🟡 PREVIOUS — human_thriving v8 plan (superseded in part by the Gate A run above)
+
+### The 08-22 planning block — **`human_thriving` v8: the plan is written and reviewed. Nothing is built.**
 
 > **Updated 2026-08-23.** The 2026-08-20 block below is superseded; its "academic register
 > is the defect" framing was wrong. **Read `docs/HUMAN_THRIVING_V8_PLAN.md` first** — this

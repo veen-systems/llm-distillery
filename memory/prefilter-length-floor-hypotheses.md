@@ -555,3 +555,60 @@ Two things that did move:
 **Same-instrument warning:** the before/after comparison used `len(content)` on the
 persisted row, because `content_length` was 0% populated before 2026-08-08 17:10
 and the stamped field would have compared two different quantities.
+
+---
+
+## 2026-08-23 — the floor measured by SCRIPT, both curves, 1,332,648 rows
+
+Evidence: `docs/evidence/2026-08-23-length-floor-by-script.md`. Read-only, no spend.
+Population: every `(id, filter)` pair in NexusMind `data/filtered/` (516 files, 8.8 GB).
+Script classified **from the article text** (Unicode ranges) — *not* the `language` field,
+which under-reports non-Latin because Asian/African/MENA publishers are acquired in their
+English editions (FS#166).
+
+### ⭐⭐ H-LF1 CONFIRMED — a flat CHARACTER floor is a different rule for every script
+
+Chars/token, measured with the real Gemma-3-1B tokenizer on 220 production articles per
+script: Latin **4.36**, Devanagari 3.27, Arabic 2.91, Cyrillic 2.88, Greek 2.61, Hebrew 2.15,
+CJK 1.70, Korean 1.60, Japanese **1.53**. So a flat **300-char** floor demands **69 tokens of
+Latin and 197 of Japanese — 2.85×**. ⇒ **Define any floor in TOKENS, naming its tokenizer,
+and DERIVE the per-script character equivalents.**
+
+### ⛔ H-LF2 REFUTED — "a character floor hits non-Latin hardest" (my own claim, same day)
+
+At a flat 300 chars, **Latin loses 32.6%** against Japanese 4.0%, Arabic 8.7%, Devanagari
+0.7%. Latin is bimodal (p1 62, p25 130, median 1,310). ⚠️ **Most likely the Google News
+headline-echo population — NOT VERIFIED, `source` was not captured.**
+**Both are true of different quantities:** *information demanded* is harshest on CJK;
+*rows lost today* is harshest on Latin.
+
+### ⭐⭐ H-LF3 CONFIRMED — the case for a QUALITY floor is weak; it is a COMPUTE lever
+
+- **The scorer already suppresses short text.** On `stage2` rows, share reaching 4.5 runs
+  **2.1% at 0–32 tokens vs 8.8% at 384+** — a 4× gradient nobody configured. And **variance is
+  LOWER at short lengths** (sd 1.06 vs 1.55): short text is not scored *unreliably*, it is
+  scored *low*, which is mostly correct.
+- **31% of the corpus is already excluded.** `stage1_low` = 414,276 rows scoring **0.0% ≥ 4.5
+  in every token band**. A large share of any floor's "cost" is rows the probe already removed
+  — pure compute saving, zero reader effect.
+- **The exchange rate:** a 128-token floor drops **36.64% of the corpus** to remove **16.23%
+  of surfacing rows** (9,463 of 58,291) **of unknown quality**.
+- **The short-surfacing problem is Latin-only:** 12.0% of Latin surfacing rows are <64 tokens
+  vs **0.0%** for Japanese/CJK/Devanagari/Other. ⇒ **the targeted fix is the GN population
+  (ADR-007), not a global floor.**
+
+### ⛔ H-LF4 OPEN — Hebrew is a DEFECT, not a threshold question
+
+9,282 rows, **median 202 chars**, **77.0% dropped at a 128-token floor** against 0.8–38.4%
+for every other script. A stub-publishing source or an extraction failure. **Any floor
+silently deletes almost all Hebrew content.** Investigate before setting a number.
+
+### ⚠️ Limitations
+
+A **single 4.5 op-point** was used across six filters whose op-points differ (`solutions`
+2.25, `investment_risk` 4.25) ⇒ the surfacing population is **understated**; re-run per
+filter before acting. `source` not captured. Thai (12 samples) and other Indic (2) excluded.
+
+**Bearing on #93/#114:** this measures the *cost and benefit* of a scoring-path floor. It does
+**not** measure #114's question — whether the *oracle-prompt* framework-leakage rationale is
+real. Those remain separate thresholds on separate tokenizers.
