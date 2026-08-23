@@ -72,7 +72,43 @@ what that costs.
 
 ## 4. Proposal
 
-### P1 — every gate writes what it blocks *(do this first; it is the cheapest and worth the most)*
+### P0 — ⭐ stamp `_blocked_by` on the article at the drop point *(owner idea, 2026-08-23)*
+
+**The reason already exists and is thrown away.** `_is_duplicate()` returns one of seven strings
+— `superseded_in_batch`, `duplicate_in_batch`, `already_processed`, `duplicate_url`,
+`commerce_blocked`, `obituary_blocked`, `duplicate_title` — and the caller does
+`stats[dup_reason] += 1; continue`. A **counter** survives; the article and its reason do not.
+Violence adds an eighth reason from its own drop point.
+
+Stamp `_blocked_by` (+ `_blocked_at`) on the article before dropping it, and every question of the
+form *"why is this article not on the site?"* becomes answerable from a record instead of a
+guess. It also gives a **complete accounting of where the corpus goes** — today `duplicate_title`
+(2,966/cycle) is a bigger drain than `obituary_blocked` (3,386/cycle) and nobody looks at it.
+
+⛔ **It MUST be write-once, and this is the constraint that decides the design.** Measured over
+consecutive cycles: `commerce` skips are **flat at ~19,020** while `processed` climbs
+(106,638 → 107,764). Blocked articles are **never marked processed**, so the same ~22,000 are
+re-evaluated and re-dropped every 4 hours until they age out. Writing on every drop would emit
+~22k rows/cycle, ~130k/day.
+
+**Design:**
+1. At each drop point, set `article["_blocked_by"] = reason` and `article["_blocked_at"] = <iso>`.
+2. Append to `data/blocked/blocked_<ts>.jsonl` **only if the id is not already in a blocked-id
+   ledger** — same shape as `processed_ids`, loaded once per run.
+3. **Seed the ledger from the current block set without writing content**, so the first run does
+   not dump the ~22k backlog. Capture content from then on.
+4. ⛔ **Write the CONTENT.** Violence's flagged files carry title/url/score only, which forced the
+   2026-08-23 audit to re-hydrate from `data/filtered/`. A sink you cannot adjudicate from is
+   half a sink.
+5. One sink, partitioned by the stamp — not one directory per reason. The stamp does the
+   partitioning and there is one retention policy to reason about.
+
+⚠️ **Open, and NOT part of this proposal:** blocked articles could also be *marked processed*,
+which would save ~22,000 re-evaluations per cycle. That is a behaviour change — it would stop a
+threshold change from ever re-examining them — and it is an owner call, not a side effect of
+adding a stamp.
+
+### P1 — every gate writes what it blocks *(the P0 sink covers this)*
 Give commerce and obituary the same `data/prefiltered_out/{gate}/flagged_<ts>_<n>.jsonl` output
 violence already has. Then make `save_blocked` real or delete it — an inert key is worse than no
 key. **⚠️ Include `content`**: violence's flagged files carry title/url/score only, which forced
