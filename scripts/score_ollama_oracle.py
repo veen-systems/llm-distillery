@@ -346,6 +346,14 @@ def parse_response(resp: dict, dimensions: list, provider: str = "ollama"):
                 "parsed_keys": list(parsed.keys()),
             }
         out["content_type"] = parsed.get("content_type", "unknown")
+        # STEP 1's verdict, recorded so it can be MEASURED rather than assumed.
+        # ⚠️ These are diagnostics: nothing here caps a score, and nothing should.
+        # The scope rule must act through the dimension scores, which are the only
+        # values weighted_average() reads. `content_type` is the cautionary case --
+        # filters/uplifting/v7/config.yaml declares content_type_caps and v7 ships
+        # no postfilter.py, so those five max_score branches have never applied.
+        out["scope_verdict"] = parsed.get("scope_verdict", "absent")
+        out["dominant_subject"] = parsed.get("dominant_subject", "")
         out["_prompt_eval_count"] = n_in
         out["_eval_count"] = n_out
         out["_cached_tokens"] = n_cached
@@ -533,6 +541,8 @@ def main():
                             "title": article.get("title", "")[:120],
                             "model": args.model,
                             "content_type": parsed["content_type"],
+                            "scope_verdict": parsed["scope_verdict"],
+                            "dominant_subject": parsed["dominant_subject"][:200],
                             "dims": {d: parsed[d] for d in dimensions},
                             "_prompt_eval_count": parsed["_prompt_eval_count"],
                             "_eval_count": parsed["_eval_count"],

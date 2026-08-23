@@ -17,6 +17,22 @@ that is going well for people, now?***
 
 Everything in this step serves that question.
 
+⛔ **You must WRITE DOWN this answer before you score anything.** The first two keys of your
+JSON output are `dominant_subject` and `scope_verdict`, in that order, ahead of all six
+dimensions. Decide them first, emit them first, and then score every dimension consistently
+with what you wrote. Do not revise a dimension upward to disagree with your own verdict.
+
+| `scope_verdict` | use when | consequence |
+| :--- | :--- | :--- |
+| `in_scope` | a process is going well for people, now | score the dimensions normally |
+| `harm_is_subject` | the dominant subject **or the occasion** is a harm, crime, bereavement, abuse, worsening statistic or institutional failure (§1) | **ALL six dimensions 0-2** |
+| `response_to_harm` | the only good news is a response to a harm, not repair delivered to people (§2) | **ALL six dimensions 0-2** |
+| `no_person_benefits` | the benefit reaches no person (§3) | **ALL six dimensions 0-2** |
+| `out_of_scope` | any category in §5 | **ALL six dimensions 0-2** |
+
+⚠️ **`in_scope` is not the default.** If you cannot name a process going well for people in
+`dominant_subject`, the verdict is not `in_scope`.
+
 ---
 
 #### 1. What is the article ABOUT?
@@ -24,12 +40,40 @@ Everything in this step serves that question.
 Name the article's **dominant subject** in one phrase — the thing the article would still be
 about if you deleted its best sentence.
 
-⛔ **The score follows the dominant subject, never the best fragment.** A story whose subject
+**Then name the article's OCCASION** — the event that caused it to be published *today*,
+which is what the headline and the first two paragraphs report.
+
+⛔ **Background does not displace the occasion.** If the occasion is a crime, an arrest, a
+death, an abuse or a worsening number, the verdict is `harm_is_subject` **even when most of
+the article is about a programme, a campaign, a charity or a long-running response** — even
+when those later paragraphs report real successes and improving statistics. That material is
+context an editor added around the news; it is not why the article exists today. **Length
+does not vote.** A reader meets this article as its headline.
+
+> **0-2:** *"Five men arrested after a 14-year-old was abused. [Then twelve paragraphs on a
+> community campaign that has cut child marriage and set up children's courts.]"* The occasion
+> is the abuse and the arrest. The campaign is background. → `harm_is_subject`, all 0-2.
+> ⛔ Do **not** answer "a community-led campaign" here. The campaign did not happen today; the
+> arrest did.
+
+⭐ **The guard, and it matters as much as the rule:** an occasion can be good news set in a
+terrible place. *"Researchers identified remains at a former torture centre"*, *"a truth
+commission published its findings"*, *"a conviction was handed down"*, *"compensation was
+paid"* — the occasion is something **completed and delivered to people**, and the atrocity is
+the setting. Those are `in_scope`. Ask what the occasion **is**, not what it is *about*.
+
+⛔ **The score follows the dominant subject and the occasion, never the best fragment.** A story whose subject
 is a crime, an abuse, a bereavement, a worsening statistic or an institutional failure **does
 not become uplifting** because it contains an arrest, a vow, a proposal, a ban, a helpline, a
 policy change or a hopeful closing line.
 
-**If the dominant subject is a harm → score ALL dimensions 0-2. Stop.** Apply this before any
+**If the dominant subject is a harm → score ALL dimensions 0-2. Stop.**
+
+⛔ **Money committed is not a protection established** *(owner ruling, 2026-08-23)*. Funding
+secured, mobilised, pledged or allocated for a programme improves nobody's circumstances yet
+and establishes no protection — score it as an announcement, whatever the sum and whatever it
+is earmarked for. A **facility operating**, a **law enacted**, a **service running** is a
+different thing and scores normally. Apply this before any
 other test, and apply it even when the article is well-written, well-sourced, and important.
 Important is not the same as uplifting.
 
@@ -58,9 +102,12 @@ response to that harm**, and the response is read as a delivered good outcome.
 > beginning of a process, not an outcome anyone has received. → all dimensions 0-2.
 >
 > **CONTRAST, scores normally:** *"A survivor met the man who attacked her, through a
-> restorative-justice programme that has now run 200 such meetings."* Repair has been
-> **delivered** to identifiable people. The harm is the setting; the process going well is
-> the subject.
+> restorative-justice programme that has now run 200 such meetings."* An identifiable person
+> **received** something. The harm is the setting; the process going well is the subject.
+>
+> **AND THE NEAR MISS, 0-2:** *"Five men were sentenced to twelve years each."* The process
+> finished, and still nobody in the article is better off. Sentencing is the harm being
+> answered. → all dimensions 0-2.
 
 #### 3. Who receives the benefit?
 
@@ -85,10 +132,12 @@ the lens. **These score normally.**
 - **Recovery narratives** — a harm-heavy opening does not make the recovery absent. If the
   article closes on a recovery that has occurred, it is in scope. **Rank is not membership**;
   an article being too high in a feed is not a reason to score it 0-2.
-- **Delivered repair after harm** — convictions and sentences handed down, compensation and
-  settlements paid, restitution and amnesty delivered, restorative-justice meetings held.
-  ⭐ **The line is delivery, not subject matter**: an arrest is the process starting, a
-  settlement paid is an outcome received.
+- **Repair that someone received** — compensation and settlements paid to survivors,
+  restitution and amnesty delivered, restorative-justice meetings held, remains identified and
+  returned to families, a protection established that will improve people's lives.
+  ⭐ **The test is who is better off, not subject matter and not how far the process got**: an
+  arrest is the process starting; a sentence with no beneficiary named is the harm answered; a
+  settlement paid is something a person received.
 - **Measured improvement in a harm** — murder rates falling, rescues completed, a disease
   receding. The subject here is the improvement, not the harm.
 - **Legitimate lens overlap** — a genuine solutions story may also be a thriving story.
@@ -122,7 +171,15 @@ article, or "No evidence in article." Do not paraphrase, infer, or fabricate evi
 
 ## STEP 2: SCORE DIMENSIONS (0.0-10.0 Scale)
 
-**CRITICAL INSTRUCTION:** Rate the six dimensions **COMPLETELY INDEPENDENTLY** using the 0.0-10.0 scale. Each dimension measures something DIFFERENT. An article may score high on one and low on another.
+**CRITICAL INSTRUCTION:** Rate the six dimensions **INDEPENDENTLY OF EACH OTHER** using the 0.0-10.0 scale. Each dimension measures something DIFFERENT. An article may score high on one and low on another.
+
+⛔ **Independence is between the dimensions. It does NOT release you from STEP 1.** If your
+`scope_verdict` is anything other than `in_scope`, **every one of the six dimensions is 0-2**,
+including any dimension whose own ladder below would otherwise reward the article. STEP 1
+decides *whether* to score; STEP 2 decides *how much*, and only for `in_scope` articles.
+
+⚠️ A ladder rung below is reachable only by an `in_scope` article. Read every rung as if it
+began "for an article that is in scope, ...".
 
 ### IMPACT DOMAINS (What Kind of Uplift) — 65% of weight
 
@@ -134,6 +191,10 @@ article, or "No evidence in article." Do not paraphrase, infer, or fabricate evi
 - Corporate/professional benefit only (productivity tools, business efficiency)
 - Individual wealth or luxury (billionaire philanthropy announcements)
 - Health improvements for paying customers only, not underserved populations
+- ⛔ **A harm stopped, punished or exposed, with no improvement documented for anyone.**
+  Removing a danger is not the same as a person's health, safety, livelihood or basic needs
+  measurably improving, and *implied future safety* is speculation. Score what the article
+  says happened **to people**, not what it implies was prevented.
 
 | Scale | Criteria | Evidence Focus |
 | :--- | :--- | :--- |
@@ -153,6 +214,10 @@ article, or "No evidence in article." Do not paraphrase, infer, or fabricate evi
 - Professional/business networking (not solidarity)
 - Corporate partnerships for profit
 - Exclusive communities or gatekeeping
+- ⛔ **Agencies or institutions coordinating in response to a harm** — a joint police
+  operation, a multi-agency investigation, a task force, services referring to each other.
+  Institutions doing their job together is **not solidarity between people**, and this
+  dimension measures bonds among people. Cooperation is not the same as cohesion.
 
 | Scale | Criteria | Evidence Focus |
 | :--- | :--- | :--- |
@@ -172,12 +237,30 @@ article, or "No evidence in article." Do not paraphrase, infer, or fabricate evi
 - Corporate accountability theater (PR without consequences)
 - Speculation about future justice ("could lead to reform")
 - Individual criminal sentencing without systemic impact (single convictions, arrests)
+- ⛔ **An arrest, charge, suspect named, raid, investigation opened, or joint police
+  operation.** These are the justice process *beginning*. Nobody has received anything yet.
+  This holds however serious the underlying crime, and **the seriousness of the crime is not
+  a reason to score this dimension higher** — it is a reason the article is `harm_is_subject`.
+
+⭐ **The test is: IS ANYONE BETTER OFF? — and it is the same test as STEP 1 §4.** Score
+normally when the article names people whose health, safety, capability or circumstances have
+improved, or a protection established that will improve them: compensation or a settlement
+**paid to survivors**, an amnesty that **releases people**, a restorative-justice meeting
+**held**, remains **identified and returned to families**, a law **enacted** that protects
+someone. Do not read this filter as suppressing accountability journalism — it suppresses
+accountability reported as an *event with no beneficiary*.
+
+⚠️ **A conviction is not automatically enough.** "Three men were sentenced to eight years" is
+the harm being answered; nobody in the article is better off. If the article also reports what
+survivors received — compensation, safety, a programme, remains returned — that is what puts
+it in scope, and *that* is what you score. Ask **who is better off, and does the article say
+so**, not "did the process finish".
 
 | Scale | Criteria | Evidence Focus |
 | :--- | :--- | :--- |
 | **0.0-2.0** | No justice/rights dimension. Or injustice documented without action. | Pure problem description, no accountability or action. |
 | **3.0-4.0** | Problem documented with journalistic courage. Initial advocacy. | Investigative journalism exposing harm, advocacy launched. |
-| **5.0-6.0** | Initial accountability or rights advocacy showing progress. | Lawsuit filed, investigation opened, policy debate started. |
+| **5.0-6.0** | Initial accountability or rights advocacy showing progress, **in an `in_scope` article**. | Lawsuit filed, policy debate started. ⛔ NOT an arrest or a criminal investigation opened — those are 0-2 above. |
 | **7.0-8.0** | Significant justice achieved: ruling, reparation, policy change enacted. | Court victory, compensation awarded, law passed, official held accountable. |
 | **9.0-10.0** | Landmark justice: systemic accountability, constitutional rights, historic ruling. | Supreme court ruling, international tribunal, systemic reform achieved. |
 
@@ -375,29 +458,42 @@ for a worse one — defining a category of constructive journalism out of the le
 
 ---
 
-## 4. Pre-Classification Step
+## 4. Content-Type Label (DIAGNOSTIC ONLY)
 
-Before scoring, classify the content type:
+⛔ **`content_type` caps nothing. Do not use it to set a score.** It is recorded for analysis
+and no code reads it: `filters/uplifting/v7/config.yaml` declares `content_type_caps`, and v7
+ships no `postfilter.py` to apply them. A score can only be lowered by the dimension values
+themselves, so **every rule that matters must reach the dimensions.** Label the article, then
+score it on STEP 1 and STEP 2 — never "it's capped anyway".
+
+Pick the single best-fitting label:
 
 **A) CORPORATE FINANCE?** Stock prices, earnings, funding rounds, valuations, M&A, IPO?
    - If YES and NOT (worker cooperative | public benefit corp | open source | community ownership):
-   - → FLAG "corporate_finance" → **max_score = 2.0**
+   - → `corporate_finance`, and §5 makes this `out_of_scope` → **all dimensions 0-2**
 
 **B) MILITARY/SECURITY?** Military buildup, defense spending, weapons, armed forces deployment?
    - If YES and NOT (demilitarization | peace process | conflict resolution | disarmament):
-   - → FLAG "military_security" → **max_score = 4.0**
+   - → `military_security`, and §5 makes this `out_of_scope` → **all dimensions 0-2**
 
 **C) PURE SPECULATION?** Primary language is "could", "might", "may", "promises to", "aims to"?
    - If YES and no documented outcomes shown:
-   - → FLAG "speculation" → **Outcome Verification = 0-2**, overall capped at 3.0
+   - → `speculation`, and Question 1 fails → **Outcome Verification 0-2** (the gatekeeper is
+     real code and *does* fire)
 
-**D) DOOM-FRAMED?** More than 50% of content describes harm/crisis/problem?
-   - If YES: → FLAG "doom_framed" → Score the main content, not silver linings → **max_score = 4.0**
-   - Exception: Investigative journalism documenting harm for accountability → score Justice dimension normally
+**D) HARM AS THE DOMINANT SUBJECT?** → `doom_framed`.
+   ⛔ **Do NOT estimate a percentage.** The former test here asked whether harm was "more than
+   50%" of the text and set `max_score = 4.0`; both are **deleted**. That rule contradicted
+   STEP 1 §1, which replaced it, and it advertised a ceiling of 4.0 for articles STEP 1 scores
+   0-2. **STEP 1 §1 is the only harm rule.** Its verdict is `harm_is_subject` → all dimensions 0-2.
+   - The former "investigative journalism → score Justice normally" exception is **deleted**
+     too: it licensed the exact upward move STEP 1 exists to stop. Accountability journalism is
+     protected by **delivery** (STEP 1 §4 and the Justice filters), not by genre.
 
 **E) INDIVIDUAL CRIME?** Single arrest, trial, conviction, sentencing of individual(s)?
-   - If YES and NOT (systemic reform | class action | landmark ruling | policy change):
-   - → FLAG "individual_crime" → **max_score = 3.0**
+   - → `individual_crime`. ⛔ The former `max_score = 3.0` is **deleted** — it was never
+     applied by any code, and it was laxer than STEP 1, which scores an **arrest** 0-2 and a
+     **conviction delivered** normally. See STEP 1 §2 and §4.
 
 ---
 
@@ -407,6 +503,8 @@ Before scoring, classify the content type:
 
 ```json
 {
+  "dominant_subject": "one phrase: what the article is about if you delete its best sentence",
+  "scope_verdict": "in_scope|harm_is_subject|response_to_harm|no_person_benefits|out_of_scope",
   "content_type": "solutions_story|corporate_finance|military_security|speculation|doom_framed|individual_crime|peace_process|rights_expansion|community_building",
   "human_wellbeing_impact": {
     "score": 0.0,
@@ -436,12 +534,18 @@ Before scoring, classify the content type:
 ```
 
 **SCORING RULES:**
-1. Use **half-point increments only** (e.g., 6.0, 6.5, 7.0)
-2. Score each dimension **INDEPENDENTLY** based on its specific criteria
-3. If no evidence for a dimension, score 0.0-2.0
-4. Evidence MUST be an **EXACT QUOTE** from the article, or "No evidence in article" / "No uplifting outcome to verify" / "No benefit distributed"
-5. Apply content-type caps AFTER individual dimension scoring
-6. Apply gatekeeper cap AFTER individual dimension scoring
+1. Emit `dominant_subject` and `scope_verdict` **FIRST**, before any dimension.
+2. ⛔ **If `scope_verdict` is not `in_scope`, every one of the six dimensions is 0.0-2.0.**
+   No exceptions, no dimension-specific override, however strong that dimension's evidence.
+3. Use **half-point increments only** (e.g., 6.0, 6.5, 7.0)
+4. Score each dimension independently **of the other dimensions** — not independently of
+   STEP 1 (see rule 2)
+5. If no evidence for a dimension, score 0.0-2.0
+6. Evidence MUST be an **EXACT QUOTE** from the article, or "No evidence in article" / "No uplifting outcome to verify" / "No benefit distributed"
+7. ⛔ Do **not** apply a content-type cap. `content_type` is a diagnostic label (§4); no code
+   reads it, so a cap you "apply" mentally is a score nobody lowers.
+8. The gatekeeper on `evidence_level` **is** applied downstream — score that dimension on its
+   own criteria and do not pre-compensate for the cap.
 
 ---
 
@@ -452,6 +556,8 @@ Before scoring, classify the content type:
 
 ```json
 {
+  "dominant_subject": "farmers restoring degraded land and sharing the method",
+  "scope_verdict": "in_scope",
   "content_type": "solutions_story",
   "human_wellbeing_impact": {"score": 8.0, "evidence": "Yields increased 250% while water retention improved"},
   "social_cohesion_impact": {"score": 7.0, "evidence": "shared freely with neighboring communities through farmer-to-farmer training"},
@@ -467,6 +573,8 @@ Before scoring, classify the content type:
 
 ```json
 {
+  "dominant_subject": "a startup announcing a funding round",
+  "scope_verdict": "out_of_scope",
   "content_type": "corporate_finance",
   "human_wellbeing_impact": {"score": 1.0, "evidence": "No evidence in article"},
   "social_cohesion_impact": {"score": 0.0, "evidence": "No evidence in article"},
@@ -483,6 +591,8 @@ Before scoring, classify the content type:
 
 ```json
 {
+  "dominant_subject": "a food bank distributing meals with volunteer help",
+  "scope_verdict": "in_scope",
   "content_type": "solutions_story",
   "human_wellbeing_impact": {"score": 6.0, "evidence": "distributed 50,000 meals during the holiday season"},
   "social_cohesion_impact": {"score": 6.0, "evidence": "volunteers from three churches coordinating efforts"},
@@ -498,6 +608,8 @@ Before scoring, classify the content type:
 
 ```json
 {
+  "dominant_subject": "a central bank raising interest rates",
+  "scope_verdict": "out_of_scope",
   "content_type": "corporate_finance",
   "human_wellbeing_impact": {"score": 1.0, "evidence": "No evidence in article"},
   "social_cohesion_impact": {"score": 0.0, "evidence": "No evidence in article"},
@@ -511,22 +623,50 @@ Before scoring, classify the content type:
 
 *v8 extends this in the other direction. Under v7 an op-ed recommending a therapeutic practice scored `evidence_level` **6.21**, and an article announcing a clinician's appointment scored **6.44** — both on vocabulary alone, with no outcome for anyone. Both are Question-1 failures and score 0-2 under v8, capping the article at 3.0. **v7 asked "is this well-sourced?"; v8 asks "did an outcome for people happen, and is it verified?"***
 
+### RESPONSE TO HARM — Score 0-2 *(the shape v8 exists to catch)*
+**Article:** "Four men have been arrested over the repeated abuse of a 13-year-old girl, police said. Officers from two districts ran a joint operation over six weeks. A senior officer said the community had been protected and urged other victims to come forward."
+
+```json
+{
+  "dominant_subject": "the abuse of a child, and the arrest of the suspects",
+  "scope_verdict": "harm_is_subject",
+  "content_type": "individual_crime",
+  "human_wellbeing_impact": {"score": 1.0, "evidence": "No evidence in article"},
+  "social_cohesion_impact": {"score": 1.0, "evidence": "No evidence in article"},
+  "justice_rights_impact": {"score": 2.0, "evidence": "Four men have been arrested"},
+  "evidence_level": {"score": 1.0, "evidence": "No uplifting outcome to verify"},
+  "benefit_distribution": {"score": 0.0, "evidence": "No benefit distributed"},
+  "change_durability": {"score": 1.0, "evidence": "No evidence in article"}
+}
+```
+*Note: every upward pull in this article is a trap this prompt closes explicitly.*
+*⛔ **"Joint operation over six weeks" is NOT social cohesion** — institutions coordinating is
+not solidarity between people (§2 filter). ⛔ **The arrest is NOT justice delivered** — it is
+the process starting; a conviction handed down would score normally (§3 filter). ⛔ **"The
+community had been protected" is NOT a wellbeing outcome** — no person's circumstances are
+documented as improved, and implied future safety is speculation (§1 filter). ⛔ **The
+seriousness of the crime is not a reason to score anything higher.** The article is important
+and well-sourced. Important is not uplifting.*
+
+*⭐ **CONTRAST — this one scores normally:** "A survivor met the man who attacked her through a
+restorative-justice programme that has now held 200 such meetings." `scope_verdict` is
+`in_scope`, `dominant_subject` is "a repair process delivered to identifiable people". The
+harm is the setting; the process going well is the subject. **The test is: is anyone better off?**
 ---
 
 ## 7. Critical Reminders
 
 **WARNING:** The validation examples above are for calibration ONLY. NEVER copy evidence text from the examples. Your evidence MUST come from the INPUT article, not from this prompt.
 
-1. **SCOPE CHECK FIRST** — if the article doesn't document uplifting outcomes, score all 0-2 and stop
+1. **SCOPE CHECK FIRST** — emit `dominant_subject` and `scope_verdict` before any dimension. If `scope_verdict` is not `in_scope`, **all six dimensions are 0-2**, and no ladder rung below overrides that
 2. **Outcome Verification measures UPLIFT evidence** — NOT journalism quality. A well-sourced article about stock prices = Outcome Verification 0
 3. **Inclusive Reach measures BENEFIT distribution** — NOT audience size. A viral article = Inclusive Reach 0 if no benefit is distributed
 4. **Speculation = low Outcome Verification** — "could/might/may/promises" without outcomes = 0-2
 5. **Elite benefit = low Inclusive Reach** — shareholders, executives, professionals only = 0-2
 6. **One-time events = low Durability** — galas, donations, temporary aid = 0-3
 7. **EXACT QUOTES ONLY** — evidence must be a direct quote from the article, never paraphrased or inferred
-8. **Apply caps AFTER scoring** — score dimensions honestly, then apply content-type caps
-9. **Doom-framing test** — if >50% is about harm/crisis, cap at 4.0 regardless of silver linings
+8. ⛔ **There are no content-type caps** — `content_type` is a diagnostic label that no code reads (§4). A score is lowered only by the dimension values you write, so write them low
+9. ⛔ **There is no >50% doom test and no 4.0 ceiling** — both deleted (§4-D). Ask what the article is **about**, not how much of it is grim. Harm as the dominant subject is `harm_is_subject` → **all dimensions 0-2**, which is stricter than the 4.0 this line used to allow
+10. **Seriousness is not uplift** — a grave, well-reported crime is important. Important is not uplifting, and it is never a reason to raise a dimension
 
 **DO NOT include any text outside the JSON object.**
-</content>
-</invoke>
