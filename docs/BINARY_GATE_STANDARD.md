@@ -27,8 +27,8 @@ All three are the same machine and the same contract:
 
 | | `commerce_prefilter` | `obituary_detector` | `violence_promotion` |
 |---|---|---|---|
-| deployed version | v2 | v5 | v1 |
-| class name | `CommercePrefilterV2` | `ObituaryDetectorV5` | `ViolencePromotionFilterV1` |
+| deployed version | **v1** (not v2 — see below) | v5 | v1 |
+| class name | `CommercePrefilterSLM` (v1) | `ObituaryDetectorV5` | `ViolencePromotionFilterV1` |
 | predicate method | `is_commerce` | `is_obituary` | `is_violence_promotion` |
 | code default threshold | 0.95 | 0.90 | 0.95 |
 | **live** threshold (config) | 0.95 | **0.85** | 0.95 |
@@ -40,6 +40,14 @@ All three are the same machine and the same contract:
 | pipeline stage | `src/preprocessing/commerce.py` | `src/preprocessing/obituary.py` | **`scripts/main.py`, two inline methods** |
 | drop point | `_is_duplicate` load gate | `_is_duplicate` load gate | **`_enforce_violence_promotion()`** |
 | **saves what it blocks** | ✗ (`save_blocked: true` is **inert**) | ✗ | **✓ `data/prefiltered_out/violence_promotion/`** |
+
+⚠️ **`commerce_prefilter` runs v1 in production DELIBERATELY.** `src/preprocessing/commerce.py`
+imports `commerce_prefilter.v1.inference.CommercePrefilterSLM` and stamps `_commerce_model: v1`.
+v2 exists in both repos and was cut over once **on 190-sample test-set parity alone**; the
+Phase-5 shadow comparison that `V2_DESIGN.md` required was never run until later, and when it
+was it found v2 **not at parity on production traffic**. Its recommendation: *"Do not treat v2 as
+validated. Either roll back to v1 or retrain v2 on representative production traffic."*
+**This is a rollback that held, not a stalled cutover** — do not "upgrade" it.
 
 ### Which differences are load-bearing and which are accident
 
@@ -78,7 +86,11 @@ what that costs.
 — `superseded_in_batch`, `duplicate_in_batch`, `already_processed`, `duplicate_url`,
 `commerce_blocked`, `obituary_blocked`, `duplicate_title` — and the caller does
 `stats[dup_reason] += 1; continue`. A **counter** survives; the article and its reason do not.
-Violence adds an eighth reason from its own drop point.
+⛔ **Violence produces NO reason string at all** — a claim in an earlier draft of this doc was
+wrong. `_enforce_violence_promotion()` does `if flag is True: removed += 1` / `else:
+kept.append(a)`: the article is simply not appended to the kept list, and only a `load_stats`
+counter moves. The two drop mechanisms are different shapes, and **neither writes anything
+per-article.**
 
 Stamp `_blocked_by` (+ `_blocked_at`) on the article before dropping it, and every question of the
 form *"why is this article not on the site?"* becomes answerable from a record instead of a
@@ -103,10 +115,22 @@ re-evaluated and re-dropped every 4 hours until they age out. Writing on every d
 5. One sink, partitioned by the stamp — not one directory per reason. The stamp does the
    partitioning and there is one retention policy to reason about.
 
-⚠️ **Open, and NOT part of this proposal:** blocked articles could also be *marked processed*,
-which would save ~22,000 re-evaluations per cycle. That is a behaviour change — it would stop a
-threshold change from ever re-examining them — and it is an owner call, not a side effect of
-adding a stamp.
+### ⭐ Owner ruling 2026-08-23: a blocked article is never reprocessed
+
+> *"Blocked articles should never be reprocessed, also not if there is a threshold change or
+> something, that makes no sense. What is done is done."*
+
+**So mark blocked articles processed.** This is not a side effect of the stamp — it is a
+deliberate decision, and it simplifies everything: the processed ledger *becomes* the write-once
+mechanism, so steps 2–3 above need no separate blocked-id ledger, and the pipeline stops
+re-evaluating ~22,000 articles every 4 hours.
+
+⚠️ **The one consequence, stated so it is chosen rather than discovered:** if a gate is wrong
+today, that article is permanently gone — a v2 that fixes the model will not free it. The
+2026-08-23 audit measured ~50% false positives among *surfacing* violence flags, so this is not
+hypothetical. **The blocked sink is what makes the rule safe**: the article and its reason are on
+disk, so a human can find it and re-admit deliberately. That is an argument for carrying the
+CONTENT, not just the id.
 
 ### P1 — every gate writes what it blocks *(the P0 sink covers this)*
 Give commerce and obituary the same `data/prefiltered_out/{gate}/flagged_<ts>_<n>.jsonl` output
