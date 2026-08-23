@@ -468,9 +468,7 @@ decline is likely concentrated in cross-language corroboration.** That argues fo
 **correlation clustering** (minimise disagreement) over a hard clique constraint that
 requires every pair to clear a bar systematically unreachable for exactly the pairs
 worth keeping.
-<!-- verify: manual — /tmp scripts are ephemeral; re-derive by running the deployed
-     story_dedup over a fresh raw batch with cluster_path=None and comparing
-     within-cluster pairs against connected components of the thresholded graph -->
+<!-- verify: manual — re-derive by running the deployed story_dedup over a fresh raw batch with cluster_path=None, comparing within-cluster pairs against connected components of the thresholded graph; /tmp scripts are ephemeral -->
 
 ### ⛔ MY FRAMING WAS WRONG: under-merge was NOT "measured nowhere"
 

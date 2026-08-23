@@ -3726,7 +3726,7 @@ That is a two-second check and would have saved both rejections.
 **Root cause**: wrote the bound from habit while the whole point of the commit was that *a declared range the environment violates cannot reproduce production*.
 **Fix**: caught by running the review battery afterwards. **Pin from the version you verified, not from the shape a version usually has.**
 
-### Adjudicated editorial calls from excerpts (2026-08-09)
+### Adjudicated editorial calls from excerpts (2026-08-09) [x2]
 **Problem**: Drafted five adverse verdicts from 190-character excerpts. Reading the full articles moved **three of five, in both directions** — one "probable adverse" was a recovery story that belongs in the lens.
 **Root cause**: the excerpt is the opening, and the opening is where a harm-framed lede sits; the disposition is often in the last paragraph.
 **Fix**: read the article before proposing a label. Recorded with the data in `datasets/adverse/2026-08-09-reader-flags.md`, not only here.
@@ -4032,3 +4032,51 @@ have rendered as non-blocking.
 not protect a `|`. It reads correctly in the diff and is wrong only when rendered.
 **Fix**: escape as `\|` inside tables. Caught by `/review-changes`' structural pre-check, which
 exists for exactly this; it is the one check that reads *structure* rather than content.
+
+### A free-tier API key turned k=3 into k=1 and the run still looked successful (2026-08-23)
+**Problem**: A Gate A run scored 15 rows × k=3 on Gemini and reported results. It had actually
+completed 14 of 45 and 8 of 45 calls; **8 articles carried a single sample while the run was
+labelled k=3**, so every per-article mean and spread was computed over a sample size nobody
+had chosen.
+**Root cause**: `gemini_api_key` in `secrets.ini` is **free-tier** and returns
+`429 RESOURCE_EXHAUSTED` partway through any real batch. Errors were counted but the surviving
+rows were written and summarised normally — a *partially populated* result set is
+indistinguishable from a complete one unless something checks per-article completeness.
+**Fix**: Use `gemini_billing_api_key`, now the script's default with the free-tier fallback
+labelled aloud. The catch came from the `⚠️ N articles have fewer than k successful runs`
+warning added to `score_ollama_oracle.py` hours earlier for an unrelated reason — **without
+it the numbers would have been read as a k=3 measurement.** ⭐ *Generalises: an error count is
+not a completeness check. Assert the shape of the result, not just the absence of errors.*
+
+### `grep -rl <article_id>` matched three files that do not contain the article (2026-08-23)
+**Problem**: Looking for an article's full text in production, `grep -rl` returned three
+`filtered_*.jsonl` files. None of them held the article. Parsing and comparing the `id` field
+found it in none of the three.
+**Root cause**: The id appeared inside a **different row's** `nexus_mind_attributes` — the
+Express Tribune "Poison on our plates" row carries it as a **cluster co-member** of "The
+silent crisis on our plates". Near-identical titles, co-clustered: the centroid-inheritance
+shape behind NM#188/#228/#278.
+**Fix**: Parse and compare the `id` field; never accept a substring hit as a row hit. ⭐ *A
+grep for a string is not a grep for a row — and in a corpus with cross-references, an id is
+exactly the string most likely to appear somewhere that is not its own record.*
+
+### `b650-gpu` resolves for ssh and not for anything else (2026-08-23)
+**Problem**: `ssh b650-gpu` works; `http://b650-gpu:11434` fails DNS resolution, so a scoring
+run against the box errored on every call.
+**Root cause**: `b650-gpu` is an **SSH-config `Host` alias**, not a hostname. Its real address
+is the Tailscale name in the `HostName` line.
+**Fix**: `B650_HOST` in `scripts/score_ollama_oracle.py` now carries the Tailscale name, with
+the reason in a comment. ⚠️ *If a name only ever appears after the word `ssh`, do not assume
+anything else can resolve it.*
+
+### A judge that scores everything zero looks perfect on the adverse set (2026-08-23)
+**Problem**: `qwen3:14b` scored two known-bad class-A rows at 0.0 and 1.0 against production's
+6.846 and 5.976. Reported as evidence the prompt already handled them.
+**Root cause**: **No positive control had been run.** The same judge scores all three
+no-regression *true positives* at 3.733 / 0.767 / 1.333 — it puts nearly everything in the
+0–2 band, so getting the adverse set "right" costs it nothing and carries no information.
+**Fix**: Run the positive control **before** reading the negative arm. `qwen2.5:14b` is the
+usable instrument here — run-to-run spread 0.383 mean / 0.650 max against qwen3's 1.700 /
+2.950. ⭐ *The standing rule is "prove the instrument could say yes"; this is the same rule
+one step over — prove it can still say **no** to something good.* Model-specific, not a
+property of local judges.
