@@ -85,14 +85,60 @@ own spread*: its verdict is indeterminate at this k, whatever the mean says.
 - ✅ **The no-regression set has already paid for itself** — it killed a wrong conclusion of
   mine within an hour of existing, which is what a blocking control is for.
 
-### Next
+---
 
-1. The `qwen2.5:14b` arm is running as a **model control**: is this `qwen3:14b` at
-   temperature 0.3, or local 14B judges generally? A judge that clears the three is a usable
-   instrument; one that does not is not, whatever it does on class A.
-2. If no local judge clears it, Phase A's calibration needs the **real oracle** — Gemini Batch
-   at ~$0.0018/article, so the ~30-article sample is **cents**, not a budget question
+## 3. The model control: it is `qwen3:14b`, not local 14B judges
+
+Same prompt, same rows, same k=3, `qwen2.5:14b`:
+
+| article | qwen3:14b mean (spread) | **qwen2.5:14b mean (spread)** | assertion |
+|---|---|---|---|
+| Rappler (recovery) | 3.733 (2.950), 1/3 above 4.5 | **5.533 (0.450), 3/3 above 4.5** | ✅ **passes** |
+| Rwanda (lens overlap) | 1.333 (1.000), 0/3 | **4.467 (0.650), 2/3 above 4.5** | ⚠️ straddles the op-point |
+| Unifesp (transitional justice) | 0.767 (1.150) | **1.883 (0.050)** | see §4 — assertion was wrong |
+
+⭐ **The instrument problem is model-specific, and the run-to-run spread is the tell.**
+`qwen2.5:14b` averages **0.383** spread (max 0.650) against `qwen3:14b`'s **1.700** (max
+2.950) — **4.4× tighter**, and *below* the recorded oracle floor of 0.82/2.25 rather than
+double it. It is also **2.8× faster** (9.2s vs 26.2s per article). ⚠️ Likely the
+reasoning-mode interaction already recorded for the `deepseek-v4-flash` alias in
+`memory/gotcha-log.md` (2026-08-14) — **not established here**, and worth one experiment
+before any judge selection is settled.
+
+**So a $0 local instrument does exist** — it is just not the one §1f's bake-off reached for.
+⛔ But `qwen2.5:14b` clears only **one** assertion outright; Rwanda straddles. Do not promote
+it to "the Phase A instrument" on n=3.
+
+---
+
+## 4. ⛔ Correcting one of my own assertions, one hour after writing it
+
+I gave the Unifesp row the assertion *"`evidence_level` not forced to the 0–2 band"*. **That
+is mis-specified.** The article was scored by `cultural_discovery` (raw 6.11) and **never by
+`uplifting`**, so its absolute standing under the uplifting prompt was never established or
+endorsed by anyone. Measured under v7's *unchanged* uplifting prompt it already sits in the
+0–2 band on **both** judges — so the bar fails **v7**, and a v8 measured against it would be
+scored against a baseline nobody ever accepted.
+
+**Corrected to a DELTA:** v8 must not score it *lower than v7* under the same prompt family
+and the same judge. What §5b guards is that the v8 **rule** does not suppress transitional
+justice — a before/after question, not an absolute band. The v7 baselines are now stored on
+the row (`baseline_v7_uplifting_prompt`).
+
+⚠️ **General form, worth carrying:** *an absolute bar on a row whose baseline was never
+established cannot confirm anything* — it measures the prompt family, not your change. Check
+which of the remaining assertions in this repo have that shape.
+
+---
+
+## Next
+
+1. If `qwen2.5:14b` is to be the Gate A instrument, **widen the control set first** — n=3 with
+   one straddler is not a qualified instrument. And test the reasoning-mode hypothesis in §3.
+2. Otherwise Phase A's calibration needs the **real oracle** — Gemini Batch at
+   ~$0.0018/article, so the ~30-article sample is **cents**, not a budget question
    (`memory/oracle-pricing-scheduling.md`).
-3. **Establish the Rwanda row's baseline** under v7 before its assertion can be asserted.
-4. ⚠️ **Whatever instrument is chosen, k=1 is not usable here.** Report the per-article spread
-   beside every verdict; the harness prints it.
+3. **Establish the Rwanda row's op-point baseline** properly; today it has only these two
+   local-judge readings and no production `observed` block.
+4. ⚠️ **k=1 is not usable here whatever the instrument.** Report the per-article spread beside
+   every verdict; the harness prints it.
