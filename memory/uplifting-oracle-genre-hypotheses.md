@@ -377,3 +377,93 @@ delivery.*
   `qwen3:14b` zeroed class A *and* all three true positives (spread 1.700 mean / 2.950 max);
   `qwen2.5:14b` is 4.4× tighter (0.383 / 0.650) and clears one assertion. Model-specific,
   not "local judges".
+
+---
+
+## 2026-08-23 evening — H-UP12 RESOLVED, H-UP14 RULED, and the diagnosis was wrong
+
+Evidence: `docs/evidence/2026-08-23-step1-rewrite-r2-r3.md`. Two Gate A re-runs of the **v8 arm
+only** (the v7 control file is untouched; its numbers are the earlier run). 45/45 both oracles,
+0 errors, ≈**$0.47 estimated**.
+
+### ✅ H-UP12 RESOLVED — and "Gemini ignores step 1" was the WRONG DIAGNOSIS
+
+⭐⭐ **Step 1 was not ignored. It was OUTVOTED by five later instructions**, found by reading
+**dimension-level** output instead of the weighted average: Gemini's v8 scores on the arrest row
+were *identical to v7* (`evidence_level` **7.0 every run**, so the gatekeeper never got a
+chance), and DeepSeek's "pass" came from step 2b alone — its non-evidence dims sat at 5–6.
+**Step 1 fired on neither oracle.**
+
+The six contradictions, five of them *after* step 1 in the prompt:
+
+| where | what it said |
+|---|---|
+| `STEP 2` opening | *"Rate the six dimensions **COMPLETELY INDEPENDENTLY**"* — cancels "score ALL dimensions 0-2" |
+| §4-D | the old `>50%` doom test → `max_score = 4.0` (step 1 §1 had deleted it) |
+| §4-D exception | *"investigative journalism → score Justice normally"* |
+| §4-E | individual crime → `max_score = 3.0`, laxer than 0-2 |
+| §7 reminders 8–9 | restate both, in the **recency position** |
+| output schema | recorded **no scope decision at all** |
+
+⛔ **And every cap was inert.** `content_type` is emitted and consumed by nothing:
+`filters/uplifting/v7/config.yaml:174` declares `content_type_caps`, **v7 ships no
+`postfilter.py`**, and the only implementations (v1, v4) are imported by nothing. DeepSeek's
+`3.00` looked like §4-E working; it was the **gatekeeper**. Two mechanisms sharing the constant 3.0.
+
+**Fix:** all six, plus `dominant_subject` + `scope_verdict` as the **first two JSON keys** binding
+every dimension, plus the **occasion test** (*the event that caused publication today; background
+does not displace it; **length does not vote***).
+
+**Result — class A 4/9 → 9/9 (DeepSeek), 4/9 → 8/9 (Gemini); class B 3/3 both.** The 4.4-point
+disagreement is **closed**: arrest row **1.00 / 1.05**, both via `harm_is_subject` with
+`gatekeeper_applied: False` — carried by the dimensions, the only channel any code reads.
+
+⭐ **Unprompted side effect: run-to-run spread collapsed.** Gemini max **5.25 → 0.80**, DeepSeek
+mean 0.543 → 0.237. Committing the verdict to an output field appears to *stabilise* the
+judgement, not merely record it. One run each side — suggestive, not established.
+
+### ✅ H-UP14 RULED (owner, 2026-08-23) — money is not a protection
+
+> *"Money committed is not a protection established."* Funding secured, mobilised, pledged or
+> allocated scores as an **announcement**, whatever the sum. A facility **operating**, a law
+> **enacted**, a service **running** is a different thing. **Rwanda leaves the no-regression set
+> as out-of-lens** — it was rejected as adverse and never had an observed production score.
+
+### ✅ The accountability boundary RULED — and BRAND.md is more precise than the paraphrase
+
+ovr `docs/BRAND.md` verbatim: *"…or a protection established that will improve them. It does not
+qualify when the event **only** establishes that a harm occurred, or that one has been answered."*
+
+⭐ **The word "only" means the test was never "was it delivered" — it is IS ANYONE BETTER OFF.**
+A conviction reported as an event with no named beneficiary is still harm answered → 0-2. A
+settlement **paid to survivors**, an amnesty that **releases people**, a restorative-justice
+meeting **held**, remains **returned to families** are in — *because someone is better off*, not
+because the process finished. My "arrest out, conviction in" reconciliation was slightly too
+generous and is superseded.
+
+### ⛔ Open — and the honest caveats
+
+- **The accountability ruling has NO TEST.** The 15-row gate set contains no accountability row;
+  re-running Gate A would not exercise it. Candidates for a control set are in `ovr.db`
+  (*"Peruvian cardinal hails $150m lead poisoning settlement for 1,300 people"*, uplifting 6.80).
+  ⚠️ Keyword-matched, contains at least one false match. **This is the oldest open debt.**
+- **One class-A row still fails on Gemini** — *"Celebrated at birth, pushed into sex work"*
+  (6.53). Gemini returns `in_scope` / *"the intergenerational practice of sex work in the
+  Banchhada community"*; DeepSeek returns `harm_is_subject` / *"the exploitation of Banchhada
+  women and girls"*. **Gemini adopts the article's own euphemism**, and neither the harm-event nor
+  the occasion rule bites because there is no *event* — it is an ongoing condition. A rule for
+  **harm as an ongoing practice or custom** is the r4 candidate; not written.
+- ⚠️ **Unifesp fails its delta on Gemini (4.88 → 4.25, −0.63).** Not the occasion rule misfiring:
+  all six r3 runs return `in_scope` with the right `dominant_subject`, so the **guard held**. The
+  drop comes from the tightened IMPACT rubrics. Still 4.25 — above the bar and above ovr's 4.0
+  enrichment gate.
+- ⛔ **Three iterations against the same 15 rows is how a prompt overfits.** Read 9/9 and 8/9 as
+  measured-on-the-training-set.
+- ⛔ **A hypothesis of mine, refuted before publication:** that the arrest row was *mislabelled*
+  from its 300-char excerpt (two thirds of the full article is a community campaign — exactly what
+  Gemini named). The record says `labelled_by: editorial judgement (ovr.news owner) … **after
+  full-text review**`. **The label stands; Gemini's reading was the error.**
+- ⛔ **Leaked tool-call scaffolding** (`</content></invoke>`) removed from the v8 candidate. It is
+  still in the **deployed** `filters/uplifting/v7/prompt-compressed.md`, so it has been appended to
+  every uplifting v7 oracle label ever collected. Present in **both** arms, so it did not confound
+  the comparison. Left in v7 deliberately — it is the baseline that produced those labels.

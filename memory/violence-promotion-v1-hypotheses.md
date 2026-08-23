@@ -75,3 +75,67 @@ expect roughly as many true positives again to be sitting unflagged.
 9. **ADR-004 stamp-only approach pushes the enforcement decision to consumers.** ovr.news excludes stamped articles at selection; investment_risk and resilience keep them. This is correct in theory, but means the "did we get it right?" feedback loop requires cross-repo coordination. A violence-promoting article flagged by the prefilter that investment_risk would have scored highly is invisible unless someone explicitly checks.
 
 10. **The 0.95 threshold was chosen for precision, not recall.** At 0.90: precision 0.896, recall 0.611 (OOF). At 0.80: precision 0.890, recall 0.687. If shadow data shows the model is too conservative, lowering the threshold is cheaper than retraining — but precision degrades quickly below 0.95.
+
+---
+
+## Settled 2026-08-23 — the audit ran, enforcement is ON and verified
+
+**#82 closed as measured.** Full detail in `docs/BINARY_GATE_STANDARD.md` and #82's comments.
+NexusMind `25d0ae2`: `enforce: true`, `threshold: 0.95`.
+
+### ⭐⭐ Q5 and Q10 are both answered, and the frame was wrong
+
+**Precision at 0.95 is 71–86%** (deepseek / qwen2.5, population-weighted over 3,200 flags;
+judges agree on only 60/75 so treat it as a band). That is **below #82's own 0.90 bar** — and
+enforcing anyway was correct, because **the bar was measured on the wrong population.**
+
+⛔ **99.6% of flagged articles never reach a lens operating point** — 21 of 5,882, against 7.8%
+for articles generally. A precision figure over all flags describes articles no reader could see.
+
+⛔ **Q10's premise is refuted for this gate: raising the threshold does NOT buy usable
+precision.** Across all flags it does (86% → 93% at 0.99), but among the 21 that *surface* the
+scores interleave completely — the top scorer (**0.9988**) is a POW-exchange false positive and a
+true positive sits at **0.9546**. Raising to 0.99 blocks 3 of the 21: 1 wrong, 2 right.
+**Do not "optimise" the threshold later; the config comment says so.**
+
+**What enforcement actually trades** (my adjudication of all 21, not a panel): ~10 correctly
+removed (India's *"Big milestone: 1st 100% indigenous AK-203"* — in **`solutions`**; Ethiopia's
+Air Force *"technological muscle"* at `uplifting` **5.31**; Air Assault Forces listing 26
+liberated villages at **4.66**) against ~10 wrongly removed (UN clearing unexploded ordnance
+*to protect civilians* at **5.39**; Syria–Russia ending military use of two bases at **5.21**;
+Iraq's 6M-weapon registry at **5.34**; repatriation of bodies and 103 POWs). **Net-positive under
+ADR-023**, and ~1 article/day either way.
+
+### Q6 answered: it is a CLASS, not an outlier — and there are four
+
+The Su-57-crash shape generalised. The FP classes, all inside v1's **own declared negative
+class**: **de-mining / UXO clearance**, **disarmament and base-closure deals**, **weapons
+registration / arms control**, **repatriation of remains and POWs**. Criterion 2 of #82 ("no new
+FP classes") therefore **passes** — it fails at edges it already knew about.
+
+`datasets/adverse/violence_promotion_hard_negatives.jsonl` — **8 confirmed** (both judges).
+⛔ **Keyword harvesting was 92% wrong**: 244 candidates → 100 judged → 8 kept. Most POW/remains
+matches are war roundups that genuinely *are* violence. ⭐ **Mine the SURFACING set instead** —
+FPs run ~50% there vs ~8% among keyword matches. That is the v2 corpus strategy.
+
+### ⭐ Q9 answered by accident, and it is the finding with the longest reach
+
+Enforcing **removed the gate from the record**. `_is_violence_promotion` had 2 distinct values
+only because it ran in shadow; from the next cycle it is **constant-`False`**, exactly like
+`_is_commerce` and `_is_obituary` — which are constant across 25,122 rows not because they are
+broken but because each gate's positives are dropped before persistence.
+⛔ **Turning a gate on makes it unobservable.** The block ledger (`docs/BLOCK_LEDGER_SPEC.md`) is
+the fix, and this is what makes it time-sensitive.
+
+### Still open
+
+- **Q7/Q8 untouched** — training-set coverage and cross-language weapons-industry framing.
+- **~29% of article placements reach the enforcement step UNSTAMPED and fail open**
+  (6,570 of 22,353). Documented behaviour, not a regression, but the gate covers ~71% of what
+  reaches the lenses. With recall 0.55 the honest description is **judges ~71%, catches ~half
+  within that.**
+- ⚠️ **My judge prompt likely UNDER-calls the weapons-as-progress branch** — both judges justified
+  `not_violence` with *"not active violence"*, and my decisive test leads with *mass* violence.
+  Real precision is probably at or above the top of the 71–86% band. **Reword before quoting a
+  tighter number.**
+- ⛔ **`qwen3:14b` is not a usable panel lab** — unparseable on 74 of 75 (2nd failure in two days).

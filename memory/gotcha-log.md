@@ -3665,7 +3665,7 @@ That is a two-second check and would have saved both rejections.
 **Fix**: enumerate the container's keys before concluding absence — `for k in row`, then `for k in row["nexus_mind_attributes"][lens]` — rather than testing membership of a guessed path.
 **Lesson**: **an absence result is only as good as the level you looked at**, and this repo nests deeply enough that the wrong level is the default outcome. CLAUDE.md already warns "`metadata.quality` is not `nexus_mind_attributes.<lens>.source_quality`" — it is the same rule, and the tell is that a *zero* is exactly what a correct query on the wrong path returns. Sibling shape found the same day by the FluxusSource session: their detector **skipped** non-Latin rows where mine **over-flagged** them, and the skip is worse, because it reports as "0 flagged" and is indistinguishable from clean.
 
-### An instrument that has never returned a positive has not been shown to be able to (2026-08-09)
+### An instrument that has never returned a positive has not been shown to be able to (2026-08-09) [x2]
 
 **Problem**: a title/body disjointness detector was guarded with "skip rows whose title yields <3 tokens", which correctly stopped it over-flagging non-Latin scripts. The guard then made it report **0 flagged** for `israeli_israel_hayom`, `greek_protothema` and `korean_yonhap_kr` — every row skipped, none inspected. **Zero-flagged is exactly what a clean source reports.** The fix for a loud false positive created a silent false negative and removed the evidence that it had.
 **Root cause**: coverage and result are different quantities, and a detector reports only the second. Nothing in "0 flagged" says whether 0 or 200 rows were examined.
@@ -4069,7 +4069,7 @@ is the Tailscale name in the `HostName` line.
 the reason in a comment. ⚠️ *If a name only ever appears after the word `ssh`, do not assume
 anything else can resolve it.*
 
-### A judge that scores everything zero looks perfect on the adverse set (2026-08-23)
+### A judge that scores everything zero looks perfect on the adverse set (2026-08-23) [x2]
 **Problem**: `qwen3:14b` scored two known-bad class-A rows at 0.0 and 1.0 against production's
 6.846 and 5.976. Reported as evidence the prompt already handled them.
 **Root cause**: **No positive control had been run.** The same judge scores all three
@@ -4080,3 +4080,59 @@ usable instrument here — run-to-run spread 0.383 mean / 0.650 max against qwen
 2.950. ⭐ *The standing rule is "prove the instrument could say yes"; this is the same rule
 one step over — prove it can still say **no** to something good.* Model-specific, not a
 property of local judges.
+
+### A verification that scanned zero files reported CLEAN (2026-08-23)
+**Problem**: To prove violence enforcement worked I searched the cycle's output for the 74
+flagged article ids and got "0 present — CLEAN". It scanned **0 files**. The zero was guaranteed.
+**Root cause**: The flagged files are named in **UTC** (`flagged_20260823_144622`) and the
+filtered files in **local time** (`filtered_20260823_164812`). I globbed `filtered_20260823_14*`
+against a 16:xx file. Two naming conventions in one directory tree, neither documented.
+**Fix**: Re-ran with an explicit `rows scanned > 0` control printed beside the verdict. Every
+negative needs a control proving the instrument could have said yes — and a *count of what was
+examined*, not just the finding. 2nd occurrence of the 2026-08-09 entry above.
+
+### A precision bar measured on the wrong population blocked a good gate for 26 days (2026-08-23)
+**Problem**: `violence_promotion` sat in shadow from 2026-07-28 to 2026-08-23 waiting for
+"precision ≥ 0.90". Measured: **71–86%** — a fail. Enforcing anyway was correct.
+**Root cause**: The bar was computed over **all 5,882 flagged articles**, of which **99.6% never
+reach a lens operating point**. It described articles no reader could ever see. The
+decision-relevant population was **21 articles**, where the trade is ~10 junk removed against
+~10 good lost — which ADR-023 answers in one line.
+**Fix**: Judge a gate on the population where its errors reach someone. ⛔ And the threshold is
+not the lever: among the 21 the scores interleave (top scorer 0.9988 is a false positive, a true
+positive sits at 0.9546), so raising it shrinks cost and benefit together.
+
+### "Aged out of retention" — but the 730-day archive had every one (2026-08-23)
+**Problem**: Reported that 4 of 9 class-A articles had aged out and were unrecoverable.
+**Root cause**: I checked `data/filtered/` (14-day window) and stopped. `data/archived/` holds
+**19 GB, 17 monthly tarballs back to 2025-10**, and contained all four —
+`tar xzOf data/archived/nexusmind_2026-08.tar.gz | grep <id>` returns 6 hits, one per lens.
+**Fix**: **Absent from hot storage is not absent.** Search the archive before calling data lost.
+Same shape as *establish what your source excludes*, one directory over.
+
+### A stamp that is CONSTANT because its positives are deleted upstream (2026-08-23)
+**Problem**: `_is_commerce` and `_is_obituary` are `False` on 100% of 25,122 rows — 1 distinct
+value each. Reads like two broken stamps.
+**Root cause**: Neither is broken. Each gate's positives are **dropped before persistence**, so
+the saved population is the gate's negatives and nothing else. Constant *by construction*.
+**Fix**: New status in `NexusMind/docs/ARTICLE_RECORD.md`: `CONSTANT-BY-CONSTRUCTION` — the field
+is fine, the place it was measured is not. ⭐ **Corollary that cost us today: turning a gate ON
+removes it from the record.** `_is_violence_promotion` had 2 distinct values only while in
+shadow; enforcing it makes it constant-`False` too.
+
+### Assumed today's date was one later than it was, and it reached a production config (2026-08-23)
+**Problem**: Dated an evidence file, a GitHub issue body, two issue comments and a **production
+config comment** `2026-08-24`. It was the 23rd.
+**Root cause**: The previous session record was dated 2026-08-23, so I inferred today must be the
+24th rather than reading the date I was given.
+**Fix**: Corrected all five surfaces; sadalsuud's `date -u` is what caught it. In a project whose
+memory is date-indexed, a wrong date makes evidence unfindable. Read the date, never derive it.
+
+### Keyword mining for hard negatives was 92% wrong (2026-08-23)
+**Problem**: Harvested 244 candidate false positives with multilingual regexes for four classes;
+judged 100; **8 survived**.
+**Root cause**: Most POW/remains/prisoner matches are war roundups that genuinely *are* violence
+(*"103 POWs returned home — Russian drone strike kills 2"*). A keyword is a candidate generator,
+never a labelled set.
+**Fix**: Mine where the error is dense instead: FPs run **~50%** among articles that are flagged
+*and* clear a lens op-point, vs ~8% among keyword matches.
