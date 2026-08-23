@@ -48,8 +48,39 @@ metadata:
 > single/double-digit dollars — this picks the default oracle, it does not
 > threaten affordability.
 >
-> ⚠️ **PROVISIONAL — the one number that could overturn this is a BACK-SOLVE, not
-> a measurement.** ~1,174 output tokens is derived from an invoice total under an
+> ✅ **MEASURED 2026-08-23 — and the anchor below was wrong, though the conclusion
+> survives for a different reason.** A real DeepSeek run (`deepseek-chat`, the
+> `uplifting v7` prompt, n=45 articles, k=3) reports **349 output tokens/article**,
+> not the ~1,174 back-solved from the cd v5 invoice — and **cache-hit 0%**, not the
+> assumed 14%. Per article, that measured shape (6,955 in / 349 out / 0% cache)
+> costs **$0.001761**. Isolating each variable at the canonical 8K input:
+>
+> | cache | output tokens | $/article | vs Gemini Batch $0.0018 |
+> |---|---|---|---|
+> | 14% (assumed) | **349 (measured, this prompt)** | 0.001752 | DeepSeek wins |
+> | 14% (assumed) | 1,174 (cd v5 invoice back-solve) | 0.002296 | Gemini Batch |
+> | **0% (measured)** | **349 (measured)** | **0.001990** | **Gemini Batch** |
+>
+> ⭐⭐ **There are TWO unmeasured parameters, not one, and they pull opposite ways.**
+> I argued this morning that output length was the single decider; it is not.
+> At the measured output length DeepSeek *wins* on the assumed cache rate and
+> *loses* on the measured one. **The conclusion (Gemini Batch) holds, but my
+> reasoning for it was wrong** — and the outside commenter on #103 was closer than
+> I allowed: their "dead heat" is the right shape.
+>
+> ⛔ **Do NOT generalise 349 tokens across filters.** Output length is
+> **prompt-specific**: cd v5's *actual invoice* ($10.36 / 8K articles) is arithmetically
+> inconsistent with ~349 tokens — it implies ~1,174 for that prompt. Two prompts, two
+> answers, and **the flip point falls between them**, so the oracle choice is a
+> per-filter measurement, not a project-wide default.
+> ⚠️ **The 0% cache hit is unexplained and is the load-bearing unknown.** cd v5 measured
+> 14% on the same API; this run repeated an identical ~23K-char prompt prefix 45 times and
+> reported zero. Small volume, concurrency 4, or a changed usage field — **not established.
+> Re-measure before quoting either cache rate.**
+>
+> ⚠️ **Superseded reasoning kept below to date the correction — the ~1,174 anchor
+> is a back-solve, not a measurement:**
+> ~1,174 output tokens is derived from an invoice total under an
 > assumed input shape; it has never been counted. It is decisive: the break-even
 > against Gemini Batch sits at **~420 output tokens**, so *if* the oracle really
 > emits under ~400/article, DeepSeek off-peak still wins and the paragraph above

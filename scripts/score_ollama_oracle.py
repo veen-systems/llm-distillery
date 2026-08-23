@@ -1,4 +1,4 @@
-"""Score an article set with an Ollama-hosted oracle. $0 — a local judge, no API spend.
+"""Score an article set with an oracle: a local ollama judge ($0), DeepSeek, or Gemini.
 
 Uses the same prompt template + content compression + sanitization as Gemini
 batch_scorer.py and validate_deepseek_oracle.py (byte-for-byte parity at the prompt level).
@@ -202,6 +202,103 @@ def call_ollama(model: str, prompt: str, host: str, max_retries: int = 2):
     return {"error": f"Max retries exceeded: {last_err}"}
 
 
+# --- paid providers -------------------------------------------------------
+# Same prompt, same compression, same temperature 0.3 as call_ollama above, so a
+# cross-provider comparison differs only in the model.
+
+DEEPSEEK_URL = "https://api.deepseek.com/chat/completions"
+SECRETS_INI = PROJECT_ROOT / "config" / "credentials" / "secrets.ini"
+
+
+def get_api_key(key_name: str, env_name: str = None) -> str:
+    if env_name and os.environ.get(env_name):
+        return os.environ[env_name].strip()
+    import configparser
+    cp = configparser.ConfigParser()
+    cp.read(SECRETS_INI)
+    if "api_keys" in cp and key_name in cp["api_keys"]:
+        return cp["api_keys"][key_name].strip()
+    raise SystemExit(f"No API key: {key_name} not in {SECRETS_INI} [api_keys], and "
+                     f"{env_name or 'no env var'} unset")
+
+
+def call_deepseek(model: str, prompt: str, api_key: str, max_retries: int = 3):
+    """⚠️ model MUST be the `deepseek-chat` alias, not `deepseek-v4-flash`.
+
+    The literal id enables reasoning mode and returns EMPTY `content`, which breaks the
+    score parser silently (memory/gotcha-log.md 2026-08-14).
+    """
+    headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
+    body = {
+        "model": model,
+        "messages": [{"role": "user", "content": prompt}],
+        "temperature": 0.3,
+        "max_tokens": 4096,
+        "response_format": {"type": "json_object"},
+    }
+    last_err = None
+    for attempt in range(max_retries):
+        try:
+            resp = requests.post(DEEPSEEK_URL, headers=headers, json=body, timeout=180)
+            if resp.status_code == 200:
+                return resp.json()
+            if resp.status_code in (401, 403):
+                raise SystemExit(f"DeepSeek auth failed: HTTP {resp.status_code}")
+            last_err = f"HTTP {resp.status_code}: {resp.text[:200]}"
+            time.sleep(2 ** attempt)
+        except requests.exceptions.RequestException as e:
+            last_err = str(e)
+            time.sleep(2 ** attempt)
+    return {"error": f"Max retries exceeded: {last_err}"}
+
+
+def call_gemini(model: str, prompt: str, api_key: str, max_retries: int = 3):
+    """Mirrors batch_scorer.py: gemini-2.5-flash, temperature 0.3, thinking_budget 0.
+
+    thinking_budget=0 is not a detail -- thinking tokens added ~80% to output cost.
+    """
+    from google import genai as genai_new
+    from google.genai import types as genai_types
+    client = genai_new.Client(api_key=api_key)
+    last_err = None
+    for attempt in range(max_retries):
+        try:
+            r = client.models.generate_content(
+                model=model,
+                contents=prompt,
+                config=genai_types.GenerateContentConfig(
+                    temperature=0.3,
+                    max_output_tokens=4096,
+                    response_mime_type="application/json",
+                    thinking_config=genai_types.ThinkingConfig(thinking_budget=0),
+                ),
+            )
+            um = getattr(r, "usage_metadata", None)
+            return {"_text": (r.text or "").strip(),
+                    "_in": getattr(um, "prompt_token_count", 0) or 0,
+                    "_out": getattr(um, "candidates_token_count", 0) or 0}
+        except Exception as e:
+            last_err = str(e)
+            time.sleep(2 ** attempt)
+    return {"error": f"Max retries exceeded: {last_err}"}
+
+
+def response_text_and_usage(provider: str, resp: dict):
+    """Normalize each provider's envelope to (text, in_tokens, out_tokens, cached, seconds)."""
+    if provider == "ollama":
+        return (resp["message"]["content"],
+                resp.get("prompt_eval_count", 0), resp.get("eval_count", 0), 0,
+                resp.get("total_duration", 0) / 1e9)
+    if provider == "deepseek":
+        u = resp.get("usage", {}) or {}
+        return (resp["choices"][0]["message"]["content"],
+                u.get("prompt_tokens", 0), u.get("completion_tokens", 0),
+                u.get("prompt_cache_hit_tokens", 0), 0.0)
+    if provider == "gemini":
+        return (resp["_text"], resp.get("_in", 0), resp.get("_out", 0), 0, 0.0)
+    raise ValueError(f"unknown provider {provider!r}")
+
+
 def extract_dim_score(value):
     """Normalize dim value to flat float regardless of input shape.
 
@@ -231,11 +328,14 @@ def extract_dim_score(value):
     return None
 
 
-def parse_response(resp: dict, dimensions: list):
+def parse_response(resp: dict, dimensions: list, provider: str = "ollama"):
     if "error" in resp:
         return {"error": resp["error"]}
     try:
-        text = resp["message"]["content"]
+        text, n_in, n_out, n_cached, secs = response_text_and_usage(provider, resp)
+        if not text:
+            return {"error": "Empty content from provider (deepseek reasoning-mode trap?)",
+                    "raw_text": ""}
         parsed = json.loads(text)
         out = {dim: extract_dim_score(parsed.get(dim)) for dim in dimensions}
         if any(v is None for v in out.values()):
@@ -246,14 +346,15 @@ def parse_response(resp: dict, dimensions: list):
                 "parsed_keys": list(parsed.keys()),
             }
         out["content_type"] = parsed.get("content_type", "unknown")
-        out["_eval_count"] = resp.get("eval_count", 0)
-        out["_prompt_eval_count"] = resp.get("prompt_eval_count", 0)
-        out["_total_duration_s"] = resp.get("total_duration", 0) / 1e9
+        out["_prompt_eval_count"] = n_in
+        out["_eval_count"] = n_out
+        out["_cached_tokens"] = n_cached
+        out["_total_duration_s"] = secs
         return out
-    except (json.JSONDecodeError, KeyError) as e:
+    except (json.JSONDecodeError, KeyError, IndexError, TypeError) as e:
         raw = ""
         try:
-            raw = resp.get("message", {}).get("content", "")[:500]
+            raw = str(response_text_and_usage(provider, resp)[0])[:500]
         except Exception:
             pass
         return {"error": f"Parse failed: {e}", "raw_text": raw}
@@ -278,6 +379,8 @@ def main():
                         help="Filter config.yaml supplying dimensions, weights and gatekeeper. "
                              "Without it, cd v5's dimensions are used and NO weighted average "
                              "is computed")
+    parser.add_argument("--provider", default="ollama", choices=["ollama", "deepseek", "gemini"],
+                        help="ollama (free, local) | deepseek | gemini. ⚠️ the last two SPEND MONEY")
     parser.add_argument("--runs", type=int, default=1,
                         help="Score the set k times (default 1). ⚠️ oracle run-to-run noise is "
                              "0.82 mean / 2.25 max — a single run is NOT a measurement")
@@ -286,6 +389,26 @@ def main():
     if args.runs < 1:
         print("ERROR: --runs must be >= 1")
         sys.exit(1)
+
+    api_key = None
+    if args.provider == "deepseek":
+        if args.model.startswith("deepseek-v4"):
+            print(f"ERROR: --model {args.model} is the literal id, which enables reasoning mode")
+            print("       and returns EMPTY content, breaking the parser silently.")
+            print("       Use the alias: --model deepseek-chat  (memory/gotcha-log.md 2026-08-14)")
+            sys.exit(1)
+        api_key = get_api_key("deepseek_api_key", "DEEPSEEK_API_KEY")
+    elif args.provider == "gemini":
+        # ⚠️ Prefer the BILLING key. The plain `gemini_api_key` is free-tier and returns
+        # 429 RESOURCE_EXHAUSTED partway through any real batch -- which yields a
+        # PARTIALLY populated result set that still looks like a run (measured
+        # 2026-08-23: 14/45 and 8/45 succeeded, k=3 silently became k=1 on 8 articles).
+        try:
+            api_key = get_api_key("gemini_billing_api_key", "API_GEMINI_BILLING_API_KEY")
+            print("Gemini key: gemini_billing_api_key (paid quota)")
+        except SystemExit:
+            api_key = get_api_key("gemini_api_key", "API_GEMINI_API_KEY")
+            print("⚠️ Gemini key: gemini_api_key (FREE tier — expect 429s on a real batch)")
 
     prompt_path = Path(args.prompt) if args.prompt else V5_PROMPT_PATH
     input_path = Path(args.input) if args.input else CANONICAL_INPUT
@@ -307,7 +430,7 @@ def main():
         output_dir = Path(args.output_dir)
     else:
         stem = "cd_v5" if input_path == CANONICAL_INPUT else input_path.stem
-        output_dir = PROJECT_ROOT / f"datasets/scored/{stem}_ollama_{model_slug}"
+        output_dir = PROJECT_ROOT / f"datasets/scored/{stem}_{args.provider}_{model_slug}"
     output_dir.mkdir(parents=True, exist_ok=True)
     output_path = output_dir / "results.jsonl"
 
@@ -329,28 +452,38 @@ def main():
     print(f"Dims:    {len(dimensions)} — {', '.join(dimensions)}")
     if gatekeeper:
         print(f"Gate:    {gatekeeper['dimension']} < {gatekeeper['min']} → cap {gatekeeper['cap']}")
-    print(f"Host:    {args.host}" + ("   ⚠️ PRODUCTION BOX" if "gpu-server" in args.host else ""))
+    print(f"Provider:{args.provider}" + ("   ⚠️ THIS SPENDS MONEY" if args.provider != "ollama" else "   ($0)"))
+    if args.provider == "ollama":
+        print(f"Host:    {args.host}" + ("   ⚠️ PRODUCTION BOX" if "gpu-server" in args.host else ""))
     print(f"Model:   {args.model}")
     print(f"Runs:    {args.runs}" + ("   ⚠️ single run is not a measurement" if args.runs == 1 else ""))
     print(f"Output:  {output_path}")
     print(f"Concurrency: {args.concurrency}")
     print()
 
-    # Verify model exists on remote
-    try:
+    # Verify model exists on remote (ollama only; the paid providers 404 at call time)
+    if args.provider != "ollama":
+        pass
+    else:
+      try:
         tags = requests.get(f"{args.host}/api/tags", timeout=10).json()
         if not any(m["name"] == args.model for m in tags.get("models", [])):
             print(f"ERROR: Model {args.model} not found on {args.host}")
             print(f"Available: {[m['name'] for m in tags.get('models', [])]}")
             sys.exit(1)
-    except requests.exceptions.RequestException as e:
+      except requests.exceptions.RequestException as e:
         print(f"ERROR: Cannot reach Ollama at {args.host}: {e}")
         sys.exit(1)
 
     def _process(article):
         prompt = build_prompt(prompt_template, article)
-        resp = call_ollama(args.model, prompt, args.host)
-        parsed = parse_response(resp, dimensions)
+        if args.provider == "ollama":
+            resp = call_ollama(args.model, prompt, args.host)
+        elif args.provider == "deepseek":
+            resp = call_deepseek(args.model, prompt, api_key)
+        else:
+            resp = call_gemini(args.model, prompt, api_key)
+        parsed = parse_response(resp, dimensions, args.provider)
         return article, parsed
 
     successes = 0
