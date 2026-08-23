@@ -115,3 +115,84 @@ product attached yet.
 3. **Display usefulness** — ovr.news needs enough text to summarise. A *consumer* requirement;
    enforcing it in NexusMind couples the producer to one consumer, and the standalone
    oracle-only outlets would not share it.
+
+---
+
+# Part 2 — the benefit curve. **The case for a quality floor is weak.**
+
+Same population, adding `stage_used` and `raw_weighted_average`. This is the half §5 said
+was missing.
+
+## 8. The scorer already suppresses short content, on its own
+
+`stage_used = stage2` rows only — real Gemma scores, not probe estimates:
+
+| tokens | n | mean | sd | **% ≥ 4.5** |
+|---|---|---|---|---|
+| 0–32 | 207,493 | 1.13 | 1.06 | **2.1%** |
+| 32–64 | 52,188 | 1.35 | 1.24 | 4.1% |
+| 96–128 | 26,939 | 1.47 | 1.38 | 6.3% |
+| 256–384 | 71,887 | 1.50 | 1.38 | 5.9% |
+| 384+ | 460,340 | 1.73 | 1.55 | **8.8%** |
+
+**A short article is already ~4× less likely to reach the op-point than a long one**, and the
+model produces that without being told. ⚠️ Note what this is *not*: it is not evidence that
+short scores are **unreliable**. Variance is *lower* at short lengths (sd 1.06 vs 1.55), not
+higher. The scorer is not confused by short text — it scores it low, which is mostly correct.
+
+## 9. ⭐⭐ A third of the corpus is already excluded, and it can never reach a reader
+
+`stage_used = stage1_low` — **414,276 rows, 31% of the corpus** — scores **0.0% ≥ 4.5 in
+every single token band**, capped around 1.4 by construction. The e5 probe already screened
+them out.
+
+So a large share of any floor's "cost" is rows that were **already removed**. Dropping them
+saves compute and changes nothing a reader sees.
+
+## 10. The exchange rate, which is the actual decision
+
+Reader-visible population = `stage2` **and** ≥ 4.5: **58,291 rows, 4.37% of the corpus.**
+
+| token floor | surfacing rows removed | % of surfacing | corpus rows dropped | % corpus |
+|---|---|---|---|---|
+| 32 | 4,355 | 7.47% | 321,933 | 24.16% |
+| 64 | 6,479 | 11.11% | 404,003 | 30.32% |
+| **128** | **9,463** | **16.23%** | **488,295** | **36.64%** |
+| 256 | 13,419 | 23.02% | 602,402 | 45.20% |
+
+⛔ **And the short-surfacing problem is essentially Latin-only:**
+
+| script | % of its surfacing rows under 64 tokens |
+|---|---|
+| **Latin** | **12.0%** (6,303 rows) |
+| Greek | 5.0% | 
+| Arabic | 4.3% |
+| Hebrew | 2.7% |
+| Cyrillic | 0.9% |
+| Korean | 0.1% |
+| **Japanese / CJK / Devanagari / Other** | **0.0%** |
+
+## 11. Conclusion — this argues *against* a global quality floor
+
+1. **A length floor is mostly a COMPUTE optimisation, not a quality gate.** 31% of what it
+   would drop is already screened by the probe and could never surface.
+2. **Its reader-facing effect is to remove 16.23% of surfacing rows at 128 tokens — of
+   UNKNOWN quality.** Nothing here says those 9,463 rows are junk. Some short articles are
+   good. **ADR-023 cuts against a blunt cut**: the false negative is invisible and the slot
+   refills, but 16% is not a rounding error.
+3. **The targeted intervention is the Google News population, not a global floor.** The
+   short-surfacing rows are 12.0% of Latin and ~0% of every dense script — the signature of
+   one source's headline echoes, already retired in principle by ADR-007.
+4. **If a floor is wanted for cost/compute reasons, that is a legitimate and different
+   argument** — and then it should be justified on inference spend, not on quality, and set
+   low (32–64 tokens) where the surfacing cost is 7–11%.
+
+## 12. ⚠️ Limitations
+
+- **A single 4.5 op-point was used for all six filters.** They differ (`solutions` is 2.25,
+  `investment_risk` 4.25). So 58,291 **understates** the true reader-visible population, and
+  the per-filter short-row share may differ. Re-run per filter before acting.
+- **`source` was not captured**, so the Google News attribution in §2 and §11.3 is inference
+  from the length signature, not measurement.
+- Chars-per-token rests on 220 sampled articles per script; Thai (12) and other Indic (2)
+  had too few and are excluded entirely.
