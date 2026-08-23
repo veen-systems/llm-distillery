@@ -963,7 +963,7 @@ counted as a pass. Ordered by the 2026-08-20 priority ruling.
 | # | Criterion | Slice | Judged against | Blocking? |
 |---|---|---|---|---|
 | **1** | **Class A dies.** Every harm-adjacent record scores below **3.85**, clear of the noise floor | `datasets/adverse/uplifting.jsonl`, class-A rows — **9** (`class` starts with 'A' — present on every row since 2026-08-21, so the slice is machine-selectable) | editorial upper bound (⚠️ **not** ADR-021 oracle truth — the oracle is blind here) | **YES** |
-| **2** | **No regression.** Every no-regression row still scores **above** the op-point | §5b, **4 rows today** | editorial judgement, owner-confirmed | **YES** |
+| **2** | **No regression.** Every no-regression row still satisfies its own `assertion` — ⚠️ **not a uniform "above the op-point"**, see §5b: only 2 of the 3 are op-point assertions | `datasets/adverse/uplifting_no_regression.jsonl`, **3 rows** (⛔ *this cell said 4 until 2026-08-23; the fourth is a scope warning on an adverse row, not an article*) | editorial judgement, owner-confirmed | **YES** |
 | **2b** | **The student agrees with its own oracle on class A.** For every class-A record, `\|student_raw − oracle_k_run_mean\|` is inside the oracle band. *New 2026-08-20: two of three class-A rows are the STUDENT disagreeing with all three oracles (§1f) — a criterion judged only on labels would pass a v8 that still ships them* | class-A slice | k-run oracle mean | **YES** |
 | **3** | **Class B shrinks.** Academic/non-academic on-lens gap inside noise on the new labels | 660-row held-out oracle split | ADR-021 oracle ground truth | reported; miss → owner call |
 | **4** | **Class B, adverse rows.** The **9** class-B records score below 3.85 | `uplifting.jsonl`, class-B rows | editorial upper bound | reported — ⚠️ **status needs an owner call**, see §1h: two of the nine are owner-flagged and outscore every class-A row |
@@ -981,6 +981,28 @@ returns **zero hits**, so the stored margins are documentation of a check that w
 a check. **v8 should close that**: make the adverse suite an executable test.
 
 ### 5b. The no-regression set — things that LOOK like false positives and are not
+
+⭐ **ASSEMBLED 2026-08-23 as `datasets/adverse/uplifting_no_regression.jsonl`.** Until then
+this set existed only as the table below — prose, referenced by three separate gates (step A5,
+Gate B-C, and acceptance criterion 2, which is marked **BLOCKING**) and executable by none of
+them. Same shape as §5's own note that the stored `assertion_margin` values are *"documentation
+of a check that was made, not a check"*.
+
+⛔ **Correction: it is THREE articles, not four.** The fourth row below — *Namibian
+child-welfare / gender-equality policy items* — has **no article behind it**. Its only
+concrete instance, `south_african_namibian_6ec2eb173e48` ("Boys must not be left behind, says
+child welfare minister"), is one of the **18 accepted adverse rows** (class B, raw 5.1166),
+where it carries a *scope warning* — "the boundary is announcement vs outcome, not 'policy is
+adverse'". That is a **labelling caveat on an adverse row**, not a row that must score above
+the op-point, which is why its "reader's real objection" cell is `—`. **Criterion 2 cannot be
+evaluated against it.** ⚠️ Do not re-count this set as four.
+
+⚠️ **The three carry DIFFERENT assertions, and only two are op-point assertions.** The
+Unifesp row was scored by `cultural_discovery` and never by `uplifting`, so "above the
+uplifting op-point" is not a claim its history supports; what it tests is that the v8 rule
+does not suppress transitional justice. The Rwanda row was *rejected* as adverse, so no
+`observed` block was ever written — **its baseline must be established before its assertion
+can be asserted.** Per-row `assertion` / `assertion_basis` fields carry this.
 
 Each of these was flagged (twice, for the first) and **adjudicated not-adverse**. A v8 that
 suppresses them has traded a reader-facing defect for a worse one: defining a whole category
