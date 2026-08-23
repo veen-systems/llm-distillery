@@ -7,6 +7,74 @@ Everything below was verified against the running box, not inferred.
 
 ---
 
+## 0. The article record: 132 fields, and no definition of it anywhere
+
+`scripts/stamp_census.py --cycles 2` over 25,122 production rows: **132 distinct stamp fields.**
+They *are* saved — on kept rows, in `data/filtered/`, and into the 730-day archive. What does not
+exist is a **definition**. Contract A describes the producer's *input* fields; Contract B declares
+`metadata` with zero properties. **Nothing declares the layer NexusMind adds.** The census
+discovers it empirically, and finds **59 problems**.
+
+The layer, by family:
+
+| family | examples |
+|---|---|
+| gate verdicts | `_commerce_score` / `_is_commerce` / `_commerce_model`, same triple ×obituary ×violence |
+| lens scoring | `nexus_mind_attributes.<lens>.{scores.*, raw_weighted_average, weighted_average, tier, version, normalization_method, gatekeeper_applied, passed_prefilter, cap_applied, prefilter_reason}` |
+| provenance of time | `published.{raw, element, precision, had_timezone, fabricated}`, `collected.clock_source`, `fetch.at` |
+| fetch/encoding | `fetch.{charset_declared, charset_detected, charset_detected_confidence, charset_used}`, `metadata.robust_parsing_used` |
+| content shape | `content_meta.{kind, echoes_title}`, `content_quality.{pass, score, flags, reason}`, `original_content`, `content_hash` |
+| enrichment | `enriched`, `enriched_at`, `original_content_length`, `pre_enriched`, `short_content_cap_applied` |
+| source/identity | `source_group`, `origin.{country, region, timezone}`, `resolved_url`, `display_rank`, `pipeline_run_id` |
+| features | `metadata.primary_literature.{detected, detector_version, evidence}`, `metadata.quality.*`, `image_analysis.*` |
+
+### ⭐⭐ The finding that matters most, and today's flip caused half of it
+
+```
+_is_commerce   100.0%   1 distinct   CONSTANT 'False' across 25,122 rows
+_is_obituary   100.0%   1 distinct   CONSTANT 'False' across 25,122 rows
+_is_violence_promotion  100.0%  2 distinct
+```
+
+⛔ **`_is_commerce` and `_is_obituary` are not broken stamps — they are constant by
+CONSTRUCTION.** The positives were dropped before persistence, so the saved population is the
+gate's negatives and nothing else. **You cannot learn anything about either gate from the record,
+ever, because the record contains only what it let through.**
+
+⛔⭐ **`_is_violence_promotion` had 2 distinct values ONLY because it was in shadow. As of
+2026-08-23 it is enforcing, so from the next cycle it becomes constant-`False` like the other
+two.** Turning enforcement on **destroyed the only gate signal visible in the persisted record**,
+and nobody planned that. **The block ledger (§3) is what restores it.** This is the strongest
+argument for building it, and it is now time-sensitive rather than theoretical.
+
+### Other census findings worth a decision, not just a note
+
+- **Declared and never observed (3):** `enriched`, `enriched_at`, `short_content_cap_applied`.
+  ⚠️ The script's own warning applies — rare fields are indistinguishable from dead ones at
+  `--cycles 2`; re-run at `--cycles 12+` before calling any of them dead.
+- **Never populated (4):** `content_quality.reason`, `nexus_mind_attributes.*.cap_applied`,
+  `nexus_mind_attributes.*.prefilter_reason`, `image_analysis.extracted_image_dimensions`.
+  ⭐ `prefilter_reason` being empty on 100% of rows is the NM#284 shape restated — the field
+  exists for a prefilter that has not run in production since 2026-02-10.
+- **Populated 100%, no consumer:** `_violence_promotion_score`, `pipeline_run_id`,
+  `collected.clock_source`, `content_meta.echoes_title`, `feed.ttl_declared`, `fetch.charset_*`,
+  `nexus_mind_attributes.*.{obit_pattern_count, original_content_length, should_translate,
+  scores.<dims>}`.
+- **`nexus_mind_attributes.*.scores.<dims>` — the per-dimension oracle scores — has NO consumer
+  outside the writers.** That is the most detailed thing the pipeline computes.
+
+### What to do about it
+
+Write the definition. Not a contract (no counterparty) — a **declared field register** for the
+NexusMind-added layer, one row per field, carrying: name, type, writer, populated-%, **and an
+explicit status** from a closed vocabulary: `LOAD-BEARING` / `DIAGNOSTIC` / `DECLARED, NO KNOWN
+CONSUMER` / `DEAD — SCHEDULED FOR REMOVAL`. `CONTRACTS_PLAN.md` W2.3 already calls for exactly
+this shape for the 34 undeclared *metadata* keys; this is the same job for the other ~100.
+
+⛔ **The register must record `pop%` and `distinct` beside each field**, because those two
+columns are what turned "we stamp `_is_commerce`" into "that stamp can never be informative".
+A field register without a population column is a list of intentions.
+
 ## 1. What is ALREADY right — do not rebuild this
 
 | | measured |
