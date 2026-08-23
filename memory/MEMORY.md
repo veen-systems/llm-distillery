@@ -34,7 +34,7 @@
 - [Gotcha log](gotcha-log.md) — problem/fix archive
 - [Calibration history](calibration-history.md) — Dead Ends section: approaches known to fail (#69); read before calibration/scorer/oracle-prompt work
 - [Gemma-3 model](gemma3-model.md) — Auto mapping fix, key format details; read before debugging model loading or PEFT issues
-- [Oracle pricing & scheduling](oracle-pricing-scheduling.md) — DeepSeek V4 peak/valley pricing; schedule batch jobs off-peak
+- [Oracle pricing & scheduling](oracle-pricing-scheduling.md) — Gemini Batch is now the cheapest oracle; weekends bill off-peak
 - [ovr lens set](ovr-lens-set-current.md) — current lens→filter→tab mapping
 - [Filter doc standard](filter-doc-standard.md) — deployed filter documentation set
 - [CD v5 reference status](cd-v5-reference-status.md) — cultural_discovery v5 as DeepSeek-oracle reference example, ADR-020 methodology

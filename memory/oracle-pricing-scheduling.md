@@ -1,6 +1,6 @@
 ---
 name: oracle-pricing-scheduling
-description: Oracle cost — DeepSeek hiked 2026-08-16 (off-peak no longer cheapest; Gemini Batch wins); Gemini AI Studio forces Prepay by 2026-10-12; still avoid 08:00–12:00 CEST; #124 self-hosted oracle is a residency play, not a cost play
+description: Oracle cost — DeepSeek hiked 2026-08-16, rates VERIFIED 2026-08-23 (off-peak $0.0023/article, Gemini Batch ~$0.0018 wins) but the decisive output-token anchor is a back-solve, not a count; weekends now bill off-peak; Gemini AI Studio forces Prepay by 2026-10-12; #124 self-hosted oracle is a residency play, not a cost play
 metadata:
   type: reference
 ---
@@ -8,27 +8,74 @@ metadata:
 > 🔴 **THE NOTICE LANDED — effective 16:00 UTC, 2026-08-16 (email dated
 > 2026-08-14 16:58 +0800, to jveen1@proton.me).** Both the announcement email and
 > the docs page confirm: **peak/off-peak billing, off-peak = half of peak, and
-> every tier — off-peak included — bills ABOVE today's flat rate.** The peak
-> windows are **unchanged** (01:00–04:00 and 06:00–10:00 UTC), so the scheduling
-> rule below still holds; what changed is that off-peak is no longer cheap.
+> every tier — off-peak included — bills ABOVE the old flat rate.** The peak
+> *hours* are **unchanged** (01:00–04:00 and 06:00–10:00 UTC); what changed is
+> that off-peak is no longer cheap, and — see below — that those hours now apply
+> **Mon–Fri only**, which does change the scheduling rule.
 >
-> ⚠️ **The exact new per-1M rates are NOT established.** The email carries no
-> numbers, and two web sources disagree on magnitude — one docs summary gives
-> flash off-peak 0.007 / 0.22 / 0.66 (hit/miss/output, ×2.5 / ×1.57 / ×2.36 vs
-> today), a pricing round-up gives blended off-peak ratios of ×7.84 / ×1.96 /
-> ×2.94. **Neither is owner-verified; read the rates off the Open Platform
-> console before committing spend.**
+> ✅ **THE RATES ARE NOW ESTABLISHED — read off the vendor pricing page
+> (`https://api-docs.deepseek.com/quick_start/pricing/`) on 2026-08-23.**
+> `deepseek-v4-flash`, $/1M, off-peak / peak:
 >
-> **The conclusion is robust to which is right.** Anchoring on cd v5's *actual*
-> $10.36 / 8K articles ($0.001295/article, implying ~8K input at 14% cache hit
-> and ~1.2K output), the new off-peak per-article cost is **$0.0023–0.0029
-> (×1.8–2.2)**, i.e. above the **+64%** threshold recorded below under either
-> source. **→ Gemini Batch (~$0.0018/article) is now the cheapest oracle, and
-> the DeepSeek-as-default precedent from cd v5 is VOID.** New DeepSeek peak is
-> ~$0.0046–0.0058/article — dearer than Gemini Flash *real-time*, so it is now
-> unambiguously wrong. Per 8K-article retrain: DeepSeek off-peak $18–23, Gemini
-> Batch ~$14.40, DeepSeek peak $37–46. Still single/double-digit dollars — this
-> picks the default oracle, it does not threaten affordability.
+> | | cache-hit in | cache-miss in | out |
+> |---|---|---|---|
+> | **off-peak** | 0.007 | 0.22 | 0.66 |
+> | **peak** | 0.014 | 0.44 | 1.32 |
+>
+> This **settles the two-disagreeing-sources caveat that stood here until
+> 2026-08-23**: the docs summary (0.007 / 0.22 / 0.66) was right and the pricing
+> round-up's blended ×7.84 / ×1.96 / ×2.94 ratios are **REFUTED**. Do not
+> re-quote the round-up.
+>
+> ✅ **Weekends bill off-peak.** The same page states the peak windows apply
+> **"Monday through Friday"** — 01:00–04:00 and 06:00–10:00 UTC — and that every
+> other hour is off-peak. So off-peak is now free to *obtain*: run any big batch
+> Sat/Sun and time-of-day stops mattering. The weekday rule below is unchanged
+> for Mon–Fri.
+>
+> **The conclusion is UNCHANGED and now rests on verified rates.** At our stated
+> shape (8K-token prompt, ~14% cache hit) the input side is a fixed
+> **$0.001521/article** and output adds **$0.00000066/token**. Anchoring output
+> on cd v5's *actual* $10.36 / 8K articles ($0.001295/article ⇒ **~1,174 output
+> tokens**), new off-peak is **$0.0023/article** — **above Gemini Batch's
+> ~$0.0018**, and above the **+64%** flip point on either baseline (+109% vs the
+> $0.0011 planning figure, +77% vs the $0.001295 actual).
+> **→ Gemini Batch (~$0.0018/article) is the cheapest oracle, and the
+> DeepSeek-as-default precedent from cd v5 is VOID.** New DeepSeek peak is
+> **$0.0046/article** — dearer than Gemini Flash *real-time*, so peak is
+> unambiguously wrong, not merely wasteful. Per 8K-article retrain: DeepSeek
+> off-peak **$18.37**, Gemini Batch ~$14.40, DeepSeek peak ~$36.74. Still
+> single/double-digit dollars — this picks the default oracle, it does not
+> threaten affordability.
+>
+> ⚠️ **PROVISIONAL — the one number that could overturn this is a BACK-SOLVE, not
+> a measurement.** ~1,174 output tokens is derived from an invoice total under an
+> assumed input shape; it has never been counted. It is decisive: the break-even
+> against Gemini Batch sits at **~420 output tokens**, so *if* the oracle really
+> emits under ~400/article, DeepSeek off-peak still wins and the paragraph above
+> is wrong. Our own $0.0011 planning figure back-solves to ~430–480 tokens —
+> i.e. **almost exactly on the line** — which is why the anchor choice, not the
+> rates, decides this. **Count `completion_tokens` on the next DeepSeek run
+> before spending on either oracle**; `scripts/score_deepseek_production.py` now
+> prints output-tokens/article at the end for exactly this reason. ⛔ **Do not
+> promote either figure to settled without that count.**
+>
+> **Provenance of the challenge (2026-08-23):** an outside GitHub account
+> (`xyzs996`, `author_association: NONE`, **not** DeepSeek) posted the
+> back-solve-to-a-dead-heat argument on
+> [#103](https://github.com/veen-systems/llm-distillery/issues/103#issuecomment-5382743370).
+> Its rate table and its input arithmetic check out against the vendor page; its
+> conclusion differs from ours *only* because it anchored on our rounded $0.0011
+> rather than the cd v5 invoice. ⚠️ **Two of its claims remain UNVERIFIED and are
+> not adopted here:** (a) that the weekend rule took effect
+> 2026-08-22T16:00Z / 00:00 Beijing 2026-08-23 — the vendor page carries **no
+> effective date**; and (b) that the Mon–Fri boundary is read in Beijing
+> `+08:00`, making the weekend 16:00 Fri → 16:00 Sun UTC — the page fixes the
+> *windows* in UTC and says nothing about the weekday. Its argument that the two
+> readings cannot disagree *today* is arithmetically sound (both peak windows lie
+> outside 16:00–24:00 UTC, the only band where a UTC and a +08:00 weekday reading
+> differ), so this is a latent trap, not a live error: **it bites the day DeepSeek
+> moves a window.**
 >
 > ⛔ **Coupling the owner must not miss: the Gemini fallback has its own
 > deadline.** Google AI Studio forces **Postpay → Prepay by 2026-10-12** or the
@@ -94,11 +141,13 @@ metadata:
 
 DeepSeek V4 officialised mid-July 2026, introducing **peak/valley API pricing**. Same batch job costs **2x** at peak vs regular. This was a scheduling lever, not a price hike — off-peak stayed cost-neutral vs what we paid for cd v5. (See the banner above: that framing has an expiry date now.)
 
-**Peak windows (UTC):** 01:00–04:00 and 06:00–10:00. In CEST (summer, UTC+2): 03:00–06:00 and **08:00–12:00**. The morning peak is the trap — it overlaps normal working hours, exactly when you'd kick off a job at your desk.
+**Peak windows (UTC):** 01:00–04:00 and 06:00–10:00, **Monday through Friday** (vendor page, 2026-08-23). In CEST (summer, UTC+2): 03:00–06:00 and **08:00–12:00**. The morning peak is the trap — it overlaps normal working hours, exactly when you'd kick off a job at your desk. ⚠️ **There are TWO windows, and a rule naming only "08:00–12:00 CEST" misses the 03:00–06:00 one** — a batch started at 04:00 CEST pays peak.
 
-**Rule: start big oracle batch runs after ~noon CEST (or overnight, not 03:00–06:00).** Our scoring is async batch work, so this is free — pure scheduling discipline.
+**Rule: run big oracle batches at the WEEKEND — time-of-day then stops mattering entirely.** Failing that, Mon–Fri: start after ~noon CEST (or overnight, avoiding 03:00–06:00). Our scoring is async batch work, so this is free — pure scheduling discipline.
 
-**deepseek-v4-flash pricing** ($/1M tokens, regular / peak):
+⚠️ **The windows are fixed in UTC; the CEST mapping is not.** When CEST → CET on **2026-10-25** every local time above shifts an hour (peak becomes 02:00–05:00 and 07:00–11:00 local). Prefer reasoning in UTC. See also the banner's unverified-timezone note on where the *weekday* boundary falls.
+
+**deepseek-v4-flash pricing — ⛔ HISTORICAL, pre-2026-08-16 only, kept to date the change. For current rates use the banner's table.** ($/1M tokens, regular / peak):
 - input cache hit: 0.0028 / 0.0056
 - input cache miss: 0.14 / 0.28  ← dominant cost
 - output: 0.28 / 0.56

@@ -348,10 +348,19 @@ def main():
     print(f"Wall clock: {wall:.1f} min")
     print(f"Tokens: input {total_input_tokens:,}  output {total_output_tokens:,}  cached {total_cached_tokens:,}")
     print(f"Cache hit rate: {100*total_cached_tokens/max(total_input_tokens,1):.1f}%")
-    # Cost estimate: DS V4 Flash = $0.14/M input miss, $0.0028/M cache hit, $0.28/M output
+    # DS V4 Flash $/1M, read off the vendor pricing page 2026-08-23 (post the
+    # 2026-08-16 repricing): off-peak 0.007 cache-hit / 0.22 miss / 0.66 output;
+    # peak is exactly 2x. The old flat 0.0028/0.14/0.28 figures this line used
+    # until 2026-08-23 understate by ~2x -- do not restore them.
+    # This script has no clock awareness, so both bounds are printed. Peak is
+    # 01:00-04:00 and 06:00-10:00 UTC, Monday through Friday; every other hour,
+    # weekends included, bills off-peak.
     uncached_input = total_input_tokens - total_cached_tokens
-    cost = (uncached_input * 0.14 / 1e6) + (total_cached_tokens * 0.0028 / 1e6) + (total_output_tokens * 0.28 / 1e6)
-    print(f"Estimated cost: ${cost:.2f}")
+    offpeak = (uncached_input * 0.22 / 1e6) + (total_cached_tokens * 0.007 / 1e6) + (total_output_tokens * 0.66 / 1e6)
+    print(f"Estimated cost: ${offpeak:.2f} off-peak / ${offpeak * 2:.2f} peak")
+    print(f"Output tokens/article: {total_output_tokens / max(successes, 1):.0f} "
+          f"(the number that decides DeepSeek vs Gemini Batch -- "
+          f"see memory/oracle-pricing-scheduling.md)")
     print(f"Output: {output_path}")
 
 
