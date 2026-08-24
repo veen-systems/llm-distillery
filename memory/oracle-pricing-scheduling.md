@@ -1,6 +1,6 @@
 ---
 name: oracle-pricing-scheduling
-description: Oracle cost — DeepSeek hiked 2026-08-16, rates VERIFIED 2026-08-23 (off-peak $0.0023/article, Gemini Batch ~$0.0018 wins) but the decisive output-token anchor is a back-solve, not a count; weekends now bill off-peak; Gemini AI Studio forces Prepay by 2026-10-12; #124 self-hosted oracle is a residency play, not a cost play
+description: Oracle cost — both rate cards verified 2026-08-24; Gemini Batch wins at every MEASURED prompt shape and the answer is a ratio (DeepSeek needs input/output < 8.5, ours are 20-43), not an anchor; the real lever is the per-prompt CACHE CEILING set by where build_prompt inserts the article (1.5%-35.7%), which flips the ranking at 19-27%; Gemini AI Studio forces Prepay by 2026-10-12; #124 self-hosted oracle is a residency play, not a cost play
 metadata:
   type: reference
 ---
@@ -48,35 +48,105 @@ metadata:
 > single/double-digit dollars — this picks the default oracle, it does not
 > threaten affordability.
 >
-> ✅ **MEASURED 2026-08-23 — and the anchor below was wrong, though the conclusion
-> survives for a different reason.** A real DeepSeek run (`deepseek-chat`, the
-> `uplifting v7` prompt, n=45 articles, k=3) reports **349 output tokens/article**,
-> not the ~1,174 back-solved from the cd v5 invoice — and **cache-hit 0%**, not the
-> assumed 14%. Per article, that measured shape (6,955 in / 349 out / 0% cache)
-> costs **$0.001761**. Isolating each variable at the canonical 8K input:
+> ⛔⛔ **RE-DERIVED 2026-08-24 FROM COUNTED TOKENS — AND THE CONCLUSION INVERTS.
+> `Gemini Batch` IS A PRICE WE CANNOT PAY: there is no Batch API call site in this
+> repo.** `ground_truth/batch_scorer.py` (line 819) and `scripts/score_ollama_oracle.py`
+> (line 266) both call `models.generate_content` — the **real-time** endpoint — and
+> `.batches` appears in no `.py` file in the tree. Every comparison in this file since
+> 2026-08-16 has been measuring DeepSeek against a **rate card we have never been
+> billed at**. Against the Gemini path that actually exists, **DeepSeek off-peak is
+> cheaper at every measured shape — $0.001756 vs $0.003052 on `uplifting v7`, a factor
+> of 1.74** — and the cd v5 DeepSeek-as-default precedent is **NOT void**. Implementing
+> Gemini Batch is a prerequisite for the switch, not a detail; until it exists the
+> honest comparison is the `GemRealtm` column.
+> ⚠️ This is the [[feedback-verify-call-path]] shape again: the price was verified, the
+> *ability to obtain it* never was.
 >
-> | cache | output tokens | $/article | vs Gemini Batch $0.0018 |
-> |---|---|---|---|
-> | 14% (assumed) | **349 (measured, this prompt)** | 0.001752 | DeepSeek wins |
-> | 14% (assumed) | 1,174 (cd v5 invoice back-solve) | 0.002296 | Gemini Batch |
-> | **0% (measured)** | **349 (measured)** | **0.001990** | **Gemini Batch** |
+> ✅ **The rest of the re-derivation stands, and it no longer depends on the cache unknown.**
+> Both rate cards re-read first-hand 2026-08-24. DeepSeek off-peak `0.007 / 0.22 / 0.66`,
+> peak exactly 2×, *"Peak hours are 01:00 - 04:00 and 06:00 - 10:00 UTC, Monday through
+> Friday (all other hours are off-peak)"*. **Gemini 2.5 Flash Batch `$0.15/M in,
+> $1.25/M out`** (50% off standard `$0.30 / $2.50`) — the first Gemini rate table this
+> file has ever carried. ⛔ The `~$0.0018/article` Gemini figure that every comparison
+> above was measured against **was itself an unanchored planning number**; only the
+> DeepSeek side was ever scrutinised.
 >
-> ⭐⭐ **There are TWO unmeasured parameters, not one, and they pull opposite ways.**
-> I argued this morning that output length was the single decider; it is not.
-> At the measured output length DeepSeek *wins* on the assumed cache rate and
-> *loses* on the measured one. **The conclusion (Gemini Batch) holds, but my
-> reasoning for it was wrong** — and the outside commenter on #103 was closer than
-> I allowed: their "dead heat" is the right shape.
+> **The decisive numbers are counted, not back-solved.** `datasets/scored/nr_v4_batch.log`
+> — a `score_deepseek_production.py` run, **n=3,641 articles**, nature_recovery v3 prompt,
+> 2026-07-07, the largest DeepSeek batch on disk — reports **5,986 input / 195.9 output
+> tokens per article at a 0.34% cache-hit rate**. Its own `$3.24` line reconciles to the
+> cent against the old rate card, so those counters are sound.
 >
-> ⛔ **Do NOT generalise 349 tokens across filters.** Output length is
-> **prompt-specific**: cd v5's *actual invoice* ($10.36 / 8K articles) is arithmetically
-> inconsistent with ~349 tokens — it implies ~1,174 for that prompt. Two prompts, two
-> answers, and **the flip point falls between them**, so the oracle choice is a
-> per-filter measurement, not a project-wide default.
-> ⚠️ **The 0% cache hit is unexplained and is the load-bearing unknown.** cd v5 measured
-> 14% on the same API; this run repeated an identical ~23K-char prompt prefix 45 times and
-> reported zero. Small volume, concurrency 4, or a changed usage field — **not established.
-> Re-measure before quoting either cache rate.**
+> | prompt (measured) | I/O | DS @0.34% | Gemini Batch *(no call site)* | Gemini realtime *(implemented)* | cheapest **implemented** |
+> |---|---|---|---|---|---|
+> | nature_recovery v3, n=3,641 | 30.6 | 0.001442 | 0.001175 | 0.002350 | **DeepSeek** |
+> | uplifting v7 | 19.9 | 0.001756 | 0.001526 | 0.003052 | **DeepSeek** |
+> | human_thriving v8 | 28.3 | 0.002168 | 0.001741 | 0.003482 | **DeepSeek** |
+> | human_thriving v8r2 | 43.3 | 0.002585 | 0.002100 | 0.004201 | **DeepSeek** |
+> | human_thriving v8r3 | 42.8 | 0.002675 | 0.002127 | 0.004255 | **DeepSeek** |
+>
+> ⭐⭐ **Stop arguing about the anchor — the answer is SHAPE-INDEPENDENT.** *If* Gemini
+> Batch is ever implemented, it beats DeepSeek off-peak unless **input/output < 8.4** at
+> the measured cache rate (< 14.7 even at the assumed 14%). Every oracle prompt we run
+> sits at **I/O ≈ 20–43**, so no plausible output length reaches the crossover — the
+> anchor everyone was arguing about could not have decided it either way. That is why
+> both the "+64% flip point" and the outside "dead heat" framings mislead: each compares
+> at one assumed shape instead of asking which side of the ratio we are on. Reproduce:
+> `scripts/analysis/oracle_cost.py` (rates in the header, measured shapes inline).
+>
+> ⭐⭐ **The 0.3%-vs-14% cache puzzle is SOLVED, and it is structural.** `build_prompt`
+> substitutes the article **into the middle** of the template
+> (`prompt_template.replace(PROMPT_PLACEHOLDER, summary)`), so everything after
+> `[Paste the summary of the article here]` is unique per request and a prefix cache can
+> only ever hit what precedes it. That fraction is a per-prompt constant — its **cache
+> ceiling**:
+>
+> | prompt | placeholder at | ceiling |
+> |---|---|---|
+> | `human_thriving/v8` | 617 / 42,406 | **1.5%** |
+> | `nature_recovery/v4` | 682 / 31,190 | 2.2% |
+> | `uplifting/v7` | 617 / 23,662 | 2.6% |
+> | `belonging/v1` | 600 / 19,080 | 3.1% |
+> | `investment_risk/v6` | 1,806 / 17,772 | 10.2% |
+> | `cultural_discovery/v5` | 6,393 / 37,894 | **16.9%** |
+> | `solutions/v6` | 14,968 / 41,871 | **35.7%** |
+>
+> cd v5's 14% is its own ceiling (16.9%), **not a project constant**; nature_recovery's
+> 0.34% sits under the v1/v2 template's 3.2% (no v3 prompt is on disk — nearest proxy).
+> ⚠️ The ceiling is a **char-share proxy for a token quantity**: `nr_v4_positives.log`
+> came in at 4.9% against that 3.2%, so treat it as an order-of-magnitude bound, not a
+> hard cap. ⚠️ Note also how that log **decays 14% → 7% → 5% across progress lines** to a
+> 4.9% total — a mid-run cache reading is not a run cache rate.
+>
+> ⭐⭐ **THE UNPULLED LEVER, worth more than the vendor choice.** Cache hit is the only
+> term that can reverse the ranking, and it needs less than people assume: each measured
+> shape flips at **19.0%–26.5%** (uplifting v7 19.0%, nature_recovery v3 23.8%,
+> human_thriving v8r2 26.5%), and **32.9%** flips it at *any* shape because DeepSeek's
+> blended input rate then falls below Gemini Batch's `$0.15/M`. Moving the placeholder to
+> the END of the template raises the ceiling toward ~97%: `uplifting v7` would cost
+> **$0.000324/article — $2.59 per 8K retrain, 79% below Gemini Batch**, against $14.04
+> today. ⚠️ `solutions/v6` is **already past every flip point on paper at 35.7%** — and
+> `cultural_discovery/v5`'s 16.9% sits just under, which is the likeliest reason cd v5
+> looked cheap enough to set the DeepSeek-as-default precedent in the first place.
+> ⛔ **NOT a free change, and not to be taken as decided.** Instructions-then-article is a
+> *different prompt* from article-then-instructions, and this project ranks oracle
+> consistency above cost (ADR-010). It needs a parity run — same articles, both orders,
+> compare label distributions against the ν decoder noise floor — **before** any retrain
+> uses it. Untested. Follow-up on #103.
+>
+> ⛔ **Two corrections to what this file asserted on 2026-08-23:**
+> 1. **"cache-hit 0% (measured)" HAD NO INSTRUMENT.** It came from a
+>    `score_ollama_oracle.py` run. That script reads `prompt_cache_hit_tokens` into
+>    `_cached_tokens` (line 359) and then never sums it, never persists it into the result
+>    row, and never prints it — the run logs carry no cache line at all. A **dead-field
+>    zero**, the exact trap CLAUDE.md names as *"a wrong path and a dead field both read as
+>    zero"*. It lands near the right answer only by luck; what makes 0.34% believable is
+>    `nr_v4_batch.log`, whose instrument **can** report non-zero and did (1% mid-run).
+> 2. **"n=45 articles, k=3" is wrong — it is n=15 articles, k=3 = 45 calls.** Those 15 are
+>    a hand-picked adversarial class-A sample (median content 3,482 chars against the
+>    1,349-char production median in [[uplifting-oracle-genre-hypotheses]]), so their
+>    absolute $/article are upper bounds. The provider *ratio* stands: both oracles scored
+>    the identical 15 articles.
 >
 > ⚠️ **Superseded reasoning kept below to date the correction — the ~1,174 anchor
 > is a back-solve, not a measurement:**
@@ -185,7 +255,7 @@ DeepSeek V4 officialised mid-July 2026, introducing **peak/valley API pricing**.
 
 **Cost per article** (v5-class ~8K-token prompts, ~14% cache hit): ~$0.0011 off-peak / ~$0.0022 peak. An 8K-article retrain ≈ $8.90 off-peak vs ~$17.80 peak (cd v5 actual under old pricing was $10.36). Cache-hit input is negligible; our low cache-hit rate barely matters.
 
-**Alternatives for context:** Gemini Flash 2.5 real-time ~$0.003–0.004/article with v5-class 8K-token prompts (the $0.001 figure from the 1.5 Flash era is stale — moved here from CLAUDE.md, 2026-07-31 audit). Gemini Batch API ~$0.0018/article (50% off, 24h async) now sits at roughly DeepSeek *peak* pricing — so DeepSeek off-peak remains cheapest, but the gap closes if forced into peak. DeepSeek cd v5 actual: $10.36 for 8K articles, 14% cache hit.
+**Alternatives for context:** Gemini Flash 2.5 real-time ~$0.003–0.004/article with v5-class 8K-token prompts (the $0.001 figure from the 1.5 Flash era is stale — moved here from CLAUDE.md, 2026-07-31 audit). Gemini Batch API ~$0.0018/article (50% off, 24h async) now sits at roughly DeepSeek *peak* pricing (⛔ **that $0.0018 was never anchored** — measured 2026-08-24 it is $0.001175–$0.002127 depending on the prompt; see the banner) — so DeepSeek off-peak remains cheapest, but the gap closes if forced into peak. DeepSeek cd v5 actual: $10.36 for 8K articles, 14% cache hit (⛔ **that 14% is cd v5's structural ceiling, 16.9% — not a project constant**; nature_recovery measures 0.34% against a 3.2% ceiling).
 
 Effective mid-July 2026 with 24h advance email notice. See [[cd-v5-reference-status]] (DeepSeek-as-default-oracle precedent). Next batch job on deck: solutions v4 (ADR-020 validation case).
 
