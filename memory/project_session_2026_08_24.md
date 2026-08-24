@@ -1,7 +1,8 @@
 # 2026-08-23 night → 08-24 — the article record got a definition, and the block ledger got built
 
-**No spend. No model. Nothing deployed** — a production cycle was mid-run at wrap-up, so the
-deploy is the first item of the next session. All code lands in **NexusMind**; this repo carries
+**No spend. No model. DEPLOYED at 08:54, NOT outcome-verified** — the pull landed after the
+08:49 cycle and its cleanup both finished, so no cycle has yet exercised it. The first is the
+12:00 collection, and verifying it is the first job of the next session. All code lands in **NexusMind**; this repo carries
 the spec and the evidence.
 
 Started at *"we are going to work backwards. First we need to define the article record properly."*
@@ -101,6 +102,6 @@ mark-processed had landed); and `already_processed` writes no row.
 
 ## Next session
 
-`docs/TODO.md` top block. **🅐 deploy the ledger and verify after one cycle** (the only item with
-a clock), then **🅑 fix `stamp_census.py`'s columns before generating any register**, then
+`docs/TODO.md` top block. **🅐 VERIFY the deployed ledger against the 12:00+ cycle** — deployed
+but not yet proven to have written anything, which by this project's own rule is not done, then **🅑 fix `stamp_census.py`'s columns before generating any register**, then
 **🅒 migration step 3** (free) and step 4 (paid, own issue).

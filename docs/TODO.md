@@ -22,11 +22,25 @@
 > - **46 new tests, 1,482 pass.** 9 mutations run, 8 killed; the survivor was **my own test
 >   asserting something that could not fail** — see the traps below.
 >
-> ### 🅐 DEPLOY the block ledger — first, and it is the only thing with a clock on it
-> Deploy = `cd /home/jeroen/local_dev/NexusMind && git pull --ff-only origin main` on sadalsuud.
-> The box sits at `25d0ae2`; the pull brings **three commits and nine files**, no runtime code
-> beyond this work. ⚠️ **Do NOT rely on `deploy_filters.sh` to carry it** — its auto-pull is
-> path-scoped to filter changes (NM#362) and there are none here.
+> ### 🅐 DEPLOYED 2026-08-24 08:54 — **NOT YET OUTCOME-VERIFIED. Verify first thing.**
+> sadalsuud pulled to `169d7ea` while the box was fully idle (main cycle finished 08:49 clean —
+> 48 min CPU, 5.1 GB peak; cleanup finished after it). Statically confirmed on the box: config
+> resolves `pipeline.block_ledger.enabled = True`, 10 reasons / 7 content_reasons, `blocked_subdir`
+> = `blocked`; `block_ledger` imports, `FilteredArchiver.archive_blocked_data` exists,
+> `run()` contains `self._stage_block_ledger()`; and the verifier **really exits 2** on an empty
+> ledger (checked without a pipe — `cmd | tail` returns tail's status, which read 0 the first time).
+>
+> ⛔ **None of that is the outcome.** No cycle has run since the pull. The first is the **12:00
+> collection**. First job next session:
+> ```
+> ssh sadalsuud 'cd /home/jeroen/local_dev/NexusMind && venv/bin/python scripts/verify_block_ledger.py'
+> ```
+> Expect roughly **22,237 gate-blocked rows (~42 MB)** on that first flush and only a few hundred
+> per cycle after. If it exits 2, the stage did not run — that is the finding, not a clean result.
+> Then reconcile its article count against the cycle's own placement counters (N × 6 filters).
+>
+> ⚠️ `deploy_filters.sh` did **not** carry this — its auto-pull is path-scoped to filter changes
+> (NM#362) and there are none here. It was an explicit `git pull --ff-only origin main`.
 >
 > ⭐ **Sizing the first flush, measured 2026-08-24 so it is not a surprise:** `find_input_files`
 > reads the WHOLE 14-day raw window every cycle — **90 files, 273,779 rows** — so the first
