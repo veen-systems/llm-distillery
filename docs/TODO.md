@@ -23,7 +23,20 @@
 >   asserting something that could not fail** — see the traps below.
 >
 > ### 🅐 DEPLOY the block ledger — first, and it is the only thing with a clock on it
-> Not deployed because a cycle was mid-run. Copy to sadalsuud, then **after the next cycle**
+> Deploy = `cd /home/jeroen/local_dev/NexusMind && git pull --ff-only origin main` on sadalsuud.
+> The box sits at `25d0ae2`; the pull brings **three commits and nine files**, no runtime code
+> beyond this work. ⚠️ **Do NOT rely on `deploy_filters.sh` to carry it** — its auto-pull is
+> path-scoped to filter changes (NM#362) and there are none here.
+>
+> ⭐ **Sizing the first flush, measured 2026-08-24 so it is not a surprise:** `find_input_files`
+> reads the WHOLE 14-day raw window every cycle — **90 files, 273,779 rows** — so the first
+> ledger write contains the entire standing backlog: **22,237 distinct gate-blocked articles
+> (18,938 commerce, 3,299 obituary), ≈42 MB** with full content, plus freshness and dedup rows.
+> Call it 50–60 MB once. Every later cycle writes only genuinely new blocks (order 300–500)
+> because of the written-id index. **The spec's "seed without content on first run" mitigation
+> is therefore NOT needed** — that call was made on an unmeasured estimate.
+>
+> Not deployed because a cycle was mid-run. Then **after the next cycle**
 > run `python3 scripts/verify_block_ledger.py` — it exits **2**, not 0, when it finds no files
 > to scan, because a check that scans nothing reports clean. Reconcile its article count
 > against the cycle's own placement counters (`N articles × 6 filters`).
