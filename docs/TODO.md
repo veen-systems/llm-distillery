@@ -1,15 +1,16 @@
 # LLM Distillery - TODO
 
-## 🔵 NEXT SESSION — **VERIFY the block ledger, then the register**
+## 🔵 NEXT SESSION — **re-check the ledger's SECOND flush, then the register**
 
-> **Updated 2026-08-24 (midday).** Two sessions have now run on 08-24. **Thread 🅒 (The
+> **Updated 2026-08-24 (afternoon).** Two sessions have run on 08-24. **Thread 🅒 (The
 > Article Record) was taken and became threads 🅒 + 🅑 at once.** No spend, no model.
-> The block ledger and the census fix are BOTH deployed; **only the census fix is
-> outcome-verified.** ⛔ **🅐 below is the one open item and it is blocked on a cycle, not
-> on work** — the ledger has never written a row in production. All work is in
-> **NexusMind**; this repo carries the spec and the evidence.
+> ✅ **The block ledger and the census fix are both deployed AND outcome-verified** — the
+> ledger's first flush landed 13:05 and reconciles exactly against the cycle's own counters.
+> ⏳ **The one open question is the SECOND flush** (16:00 cycle): first flush was 320 MB
+> against a 42 MB estimate, and whether that recurs decides one-time-backfill from
+> 1.9 GB/day. All work is in **NexusMind**; this repo carries the spec and the evidence.
 >
-> ### ✅ Built and verified offline, NOT deployed
+> ### ✅ Built, deployed, and now verified LIVE (see 🅐 below)
 > - **The record has a DEFINITION**: `NexusMind/contracts/article-record.schema.json`.
 >   Owner ruled it **PRESCRIPTIVE** and composed — Contract A by `$ref`, plus one `nexusmind`
 >   namespace. Producer fields have exactly one definition and cannot drift.
@@ -25,22 +26,51 @@
 > - **46 new tests, 1,482 pass.** 9 mutations run, 8 killed; the survivor was **my own test
 >   asserting something that could not fail** — see the traps below.
 >
-> ### 🅐 DEPLOYED 2026-08-24 08:54 — **NOT YET OUTCOME-VERIFIED. Verify first thing.**
-> sadalsuud pulled to `169d7ea` while the box was fully idle (main cycle finished 08:49 clean —
-> 48 min CPU, 5.1 GB peak; cleanup finished after it). Statically confirmed on the box: config
-> resolves `pipeline.block_ledger.enabled = True`, 10 reasons / 7 content_reasons, `blocked_subdir`
-> = `blocked`; `block_ledger` imports, `FilteredArchiver.archive_blocked_data` exists,
-> `run()` contains `self._stage_block_ledger()`; and the verifier **really exits 2** on an empty
-> ledger (checked without a pipe — `cmd | tail` returns tail's status, which read 0 the first time).
+> ### ✅ 🅐 VERIFIED LIVE 2026-08-24 13:05 — the ledger works
+> Deployed 08:54 at `169d7ea`; the **12:00 cycle wrote its first flush at 13:05** and
+> `scripts/verify_block_ledger.py` exits **0**: 1 file, index present, **168,486 rows**, all
+> conformant to `article-record.schema.json v0.4.0`, one row per article.
 >
-> ⛔ **None of that is the outcome.** No cycle has run since the pull. The first is the **12:00
-> collection**. First job next session:
-> ```
-> ssh sadalsuud 'cd /home/jeroen/local_dev/NexusMind && venv/bin/python scripts/verify_block_ledger.py'
-> ```
-> Expect roughly **22,237 gate-blocked rows (~42 MB)** on that first flush and only a few hundred
-> per cycle after. If it exits 2, the stage did not run — that is the finding, not a clean result.
-> Then reconcile its article count against the cycle's own placement counters (N × 6 filters).
+> **Every mechanism reconciles EXACTLY against the pipeline's own independent counters**
+> (`Loaded 4809 articles (skipped: ...)`, journal, same cycle) — not a closed-accounting
+> check, a per-bucket one against a different instrument:
+>
+> | mechanism | ledger | cycle log |
+> |---|---|---|
+> | `gate.commerce` | 18,930 | 18,930 |
+> | `gate.obituary` | 3,325 | 3,325 |
+> | `dedup.title` | 3,024 | 3,024 |
+> | `freshness.too_old` | 142,899 | 142,899 |
+> | `freshness.future_date` | 69 | 69 |
+> | `gate.violence_promotion` | 239 | (stamped at a later stage; not in that line) |
+>
+> Sum 168,486 = the ledger's row count. 157,299 rows carry full content. 320 MB on disk
+> (`blocked_20260824_130550.jsonl` 322 MB, `.ledger_index.json` 12.3 MB); filesystem at 13%,
+> 389 GB free.
+>
+> ⛔ **THE SIZING ESTIMATE WAS WRONG BY 7.6×, and the shape of the error is the lesson.**
+> Predicted ~22,237 rows / ~42 MB. The portion I actually sized — gate-blocked — came in at
+> **22,494 against 22,237, 1.2% off**. All the rest is `freshness.too_old` at **142,899 rows,
+> 85% of the ledger**, which the estimate carried as an unquantified prose clause ("plus
+> freshness and dedup rows"). **The bucket nobody counted held six sevenths of the volume.**
+> Closed accounting would not have caught it; only sizing each bucket against its own counter
+> does.
+>
+> ### ⏳ OPEN — the one measurement that changes a decision
+> **Re-run the verifier after the 16:00 cycle.** The written-id index now holds 168,486 ids, so
+> a second flush *should* be a few hundred rows. If instead it writes another ~320 MB, the index
+> is not suppressing `too_old` re-reads and that is **1.9 GB/day**, needing
+> `pipeline.block_ledger.enabled: false` or a reasons-list change. **One cycle is not a growth
+> rate** — do not act on the 320 MB before this number exists.
+>
+> Two items deliberately held until that second data point:
+> - **`.ledger_index.json` is 12.3 MB and lives where cleanup sweeps**, surviving only because
+>   the glob is `*.jsonl` and it is `.json`. Rebuildable from the rows, so not urgent — but it
+>   should not depend on an extension mismatch. ⛔ Do not change ledger code before the second
+>   verification: there is exactly one verified baseline and it is hours old.
+> - **`placements per row: {6: 168485, 3: 1}`** — one article blocked in 3 filter loops, not 6.
+>   Plausibly the documented benign case (`already_processed` is per-filter state). At n=1 it is
+>   not diagnosable; check whether the 16:00 flush produces more.
 >
 > ⚠️ `deploy_filters.sh` did **not** carry this — its auto-pull is path-scoped to filter changes
 > (NM#362) and there are none here. It was an explicit `git pull --ff-only origin main`.

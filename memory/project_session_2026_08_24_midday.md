@@ -1,8 +1,8 @@
 # 2026-08-24 midday — the census's own columns, and a gate-ordering rule
 
-**No spend. No model. Session still OPEN at the time of writing: the block ledger
-deployed at 08:54 has NOT been outcome-verified.** The first cycle since the pull is
-12:00:14; `scripts/verify_block_ledger.py` is item 🅐 and nothing below replaces it.
+**No spend. No model.** The block ledger deployed at 08:54 was outcome-verified at
+**14:08**, after the 12:00 cycle wrote its first flush at 13:05 — see §6, added at the end
+of the session. Everything in §1–§5 was written while that was still pending.
 
 Started at *"where were we?"*, so the first act was reading state rather than acting on it.
 
@@ -109,10 +109,41 @@ legitimately on-lens.
   pipeline path was untouched, so the pending 12:00 ledger verification still tests what
   was deployed at 08:54.
 
+## 6. 🅐 RESOLVED — the ledger works, and my sizing did not
+
+`verify_block_ledger.py` exits **0**: 168,486 rows, index present, all conformant to
+`article-record.schema.json v0.4.0`, one row per article. **Every mechanism reconciles
+exactly against the pipeline's own counters** from the same cycle's journal line
+(`Loaded 4809 articles (skipped: ...)`) — a per-bucket check against a *different*
+instrument, not closed accounting:
+
+```
+gate.commerce           18,930  =  18,930      dedup.title            3,024  =  3,024
+gate.obituary            3,325  =   3,325      freshness.too_old    142,899  = 142,899
+gate.violence_promotion    239  (later stage)  freshness.future_date     69  =      69
+```
+
+⛔ **The sizing estimate was wrong by 7.6× and the SHAPE of the error is the keeper.**
+Predicted ~22,237 rows / ~42 MB; actual 168,486 rows / 320 MB. The portion I actually
+sized — gate-blocked — came in at **22,494 against 22,237, 1.2% off**. The rest is
+`freshness.too_old` at **142,899 rows, 85% of the ledger**, which my estimate carried as an
+unquantified prose clause: *"plus freshness and dedup rows"*. **The bucket nobody counted
+held six sevenths of the volume.** A pre-registered prediction is what made this legible:
+one aggregate number would have said "wrong by 7.6×" and hidden that the model of the gates
+was nearly perfect and the model of freshness did not exist.
+
+⏳ **Still open, and deliberately not acted on today:** whether the SECOND flush (16:00) is
+a few hundred rows or another 320 MB. The written-id index holds 168,486 ids and should
+suppress the `too_old` re-reads, but **one cycle is not a growth rate**. If it recurs that
+is 1.9 GB/day. Held behind that number: moving `.ledger_index.json` (12.3 MB, sitting where
+cleanup sweeps, surviving only because the glob is `*.jsonl` and it is `.json`), and the
+`placements: {6: 168485, 3: 1}` outlier, undiagnosable at n=1.
+
+⛔ **No ledger code changed today.** There is exactly one verified baseline and it is hours
+old — the same reason the census fix was kept off the pipeline path this morning.
+
 ## Next session
 
-**🅐 VERIFY THE BLOCK LEDGER** — `ssh sadalsuud 'cd /home/jeroen/local_dev/NexusMind &&
-venv/bin/python scripts/verify_block_ledger.py'`. Expect ~22,237 rows (~42 MB) on the
-first flush; **exit 2 means the stage never ran, which is the finding, not a pass.** Then
-reconcile against the cycle's own `N × 6` placement counters. Then 🅑 the register, now
-that its instrument is fixed, and 🅒 migration step 3.
+**Re-run `verify_block_ledger.py` after the 16:00 cycle** — that one number decides
+one-time-backfill from 1.9 GB/day, and settles both held items above. Then 🅑b the register
+(its instrument is fixed) and 🅒 migration step 3.
