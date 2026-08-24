@@ -62,6 +62,31 @@ Status vocabulary is the source file's own. `not stated in heading` means the ve
 be in the body but is not retrievable by scanning — a defect in the source, recorded here
 rather than guessed at.
 
+### The article record / block ledger — measurements, with a `H-AR` prefix
+
+Added 2026-08-24. These are **stated-then-measured claims about the pipeline's own record**,
+not about article content, so they sit apart from the lens hypotheses above. Source:
+`docs/evidence/2026-08-23-article-record-instrument-audit.md` (F1–F10) and
+`NexusMind/docs/ARTICLE_RECORD.md`. Population for every row: **165,196 rows / 72 files /
+6 filters**, `filtered_20260821_205726` → `filtered_20260823_165255`.
+
+| id | claim | verdict |
+|---|---|---|
+| `H-AR1` | The record is 132 fields | **REFUTED** — 132 is a 2-cycle window; 212 at `--cycles 12`. The set grows with the window because `metadata.*` is per-source |
+| `H-AR2` | `pop%` is the share of rows a field is present on | **REFUTED** — it is `populated/seen`; `_post_enriched` prints 100.0% on 23 rows. NM#401 |
+| `H-AR3` | `distinct` is a distinct-value count | **REFUTED** — censored at 13; `metadata.doi` is 403. NM#401 |
+| `H-AR4` | The reader column measures consumers | **REFUTED** for ~40% of fields — bare leaf-name grep; 14 fields share a leaf and carry identical counts by construction. NM#401 |
+| `H-AR5` | The NexusMind-added layer is declared nowhere | **REFUTED** — Contract A declares 39, Contract B 51; the undeclared set is **20 fields** |
+| `H-AR6` | `image_analysis.extracted_image_dimensions` is dead (0% populated) | **REFUTED** — nullable dict; its parent path is recorded only on rows where it is null. `.height`/`.width` are 100% |
+| `H-AR7` | The 59 census findings are 59 problems | **REFUTED** — ≥16 are not independent (11 by-design per-filter constants, 5 one fact per filter) |
+| `H-AR8` | `source_quality` and other lens fields are per-lens | **REFUTED for 13 of 31** — identical across every lens on all 2,495 multi-lens articles, 0 differing. ⚠️ **3 more are invariant only because the VALUE is constant** and must not be hoisted. NM#402 |
+| `H-AR9` | Blocked articles can be recovered from the archive | **REFUTED** — `FilteredArchiver` reads `filtered_dir`, which a dropped article never enters. This is what the block ledger fixes |
+| `H-AR10` | Enforcing a gate preserves its signal in the record | **REFUTED** — enforcement removes the positives before persistence, so the stamp goes constant-by-construction. Demonstrated by `violence_promotion` on 2026-08-23 |
+
+⚠️ **`H-AR8`'s three exceptions are the row to read before acting on it.** Measured
+invariance and article-level-ness are different properties, and `passed_prefilter` is
+invariant for the same reason `_is_commerce` is: the rows that would vary it are gone.
+
 ### Corroboration / story matching — the active programme
 
 ⭐ **This topic's hypotheses do NOT live in the `H-n` scheme.** They live as
