@@ -56,29 +56,29 @@
 > Closed accounting would not have caught it; only sizing each bucket against its own counter
 > does.
 >
-> ### ⏳ OPEN — the one measurement that changes a decision
-> ⚠️ **Timing: the ledger writes ~66 MINUTES INTO a cycle, not at its start.** The 12:00:15
-> cycle wrote at 13:05:57. The next timer is **16:02:29**, so the second flush exists around
-> **17:08** — opening a session "after 16:00" is too early and will read the FIRST flush again.
-> Check the file's timestamp, not the clock: `ls -la data/blocked/`.
+> ### ✅ 🅐b RESOLVED 2026-08-24 17:04 — the second flush settles it, H-AR12 REFUTED
+> **3,257 rows / 6.72 MB**, not another 320 MB. The written-id index works. The pipeline's
+> own line — *"Block ledger: 3257 new blocked articles written (3169 with content), 165308
+> already recorded"* — matches the verifier exactly: 168,486 + 3,257 = **171,743 rows**,
+> exit **0**, 2 files, all conformant to `article-record.schema.json v0.4.0`.
 >
-> **Re-run the verifier once a second `blocked_*.jsonl` exists.** The written-id index now holds 168,486 ids, so
-> a second flush *should* be a few hundred rows. If instead it writes another ~320 MB, the index
-> is not suppressing `too_old` re-reads and that is **1.9 GB/day**, needing
-> `pipeline.block_ledger.enabled: false` or a reasons-list change. **One cycle is not a growth
-> rate** — do not act on the 320 MB before this number exists.
+> **The 320 MB first flush was the standing backlog, one-time. Steady state is ~3.3K rows /
+> ~6.7 MB per cycle ⇒ ~20K rows / ~40 MB per day at 6 cycles/day** — not 1.9 GB/day. So:
+> off-site backup (NM#403) is affordable as-is, `pipeline.block_ledger.enabled` stays
+> **true**, and no reasons-list change is needed.
 >
-> Tracked as **H-AR11** (the 7.6× sizing miss, REFUTED with its decomposition) and
-> **H-AR12** (does it recur — OPEN) in `memory/hypothesis-ledger.md`.
+> ⚠️ **`too_old` is still 87.6% of the increment** (2,852 of 3,257) — H-AR11's shape holds
+> at the margin, so any sizing that ignores freshness is wrong at steady state too.
+> ⚠️ **The real unbounded growth is the INDEX, not the ledger:** `.ledger_index.json` went
+> 12.36 → 12.59 MB for 3,257 new ids ≈ **73.5 bytes/id ⇒ ~1.4 MB/day**, and nothing prunes
+> it. That is now the thing to watch.
 >
-> Two items deliberately held until that second data point:
-> - **`.ledger_index.json` is 12.3 MB and lives where cleanup sweeps**, surviving only because
->   the glob is `*.jsonl` and it is `.json`. Rebuildable from the rows, so not urgent — but it
->   should not depend on an extension mismatch. ⛔ Do not change ledger code before the second
->   verification: there is exactly one verified baseline and it is hours old.
-> - **`placements per row: {6: 168485, 3: 1}`** — one article blocked in 3 filter loops, not 6.
->   Plausibly the documented benign case (`already_processed` is per-filter state). At n=1 it is
->   not diagnosable; check whether the 16:00 flush produces more.
+> **Both held items are unblocked:**
+> - **Move `.ledger_index.json` off the cleanup path** — it survives only because the sweep
+>   glob is `*.jsonl` and it is `.json`. Rebuildable from the rows, so still not urgent.
+> - **`placements per row` is now `{6: 171741, 3: 1, 1: 1}`** — a *second* singleton
+>   appeared at the second flush. Two distinct anomalies, each n=1; still not diagnosable,
+>   but no longer a single stray.
 >
 > ⚠️ `deploy_filters.sh` did **not** carry this — its auto-pull is path-scoped to filter changes
 > (NM#362) and there are none here. It was an explicit `git pull --ff-only origin main`.
