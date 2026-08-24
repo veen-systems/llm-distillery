@@ -1,6 +1,86 @@
 # LLM Distillery - TODO
 
-## 🔵 NEXT SESSION — **three independent threads; pick one, they do not block each other**
+## 🔵 NEXT SESSION — **deploy the block ledger, then the register**
+
+> **Updated 2026-08-24 (early).** Session ran 08-23 night → 08-24. **Thread 🅒 (The Article
+> Record) was taken and became threads 🅒 + 🅑 at once.** No spend, no model, nothing deployed
+> yet. All work is in **NexusMind**; this repo carries the spec and the evidence.
+>
+> ### ✅ Built and verified offline, NOT deployed
+> - **The record has a DEFINITION**: `NexusMind/contracts/article-record.schema.json`.
+>   Owner ruled it **PRESCRIPTIVE** and composed — Contract A by `$ref`, plus one `nexusmind`
+>   namespace. Producer fields have exactly one definition and cannot drift.
+> - **`nexusmind.disposition` + `nexusmind.gates` SHIPPED into the code** (migration steps 1+2):
+>   the block ledger writes every dropped article to `data/blocked/`, archived on the same path
+>   as `filtered/`, and kept rows carry the same namespace as a dual-write. **Write-only — no
+>   admission decision changes.** Rollback = `pipeline.block_ledger.enabled: false`.
+> - **Offline proof on real production input** (`content_items_20260823_161050.jsonl`, 3,074
+>   rows, 6 filter loops): **430 blocked articles**, 406 with full content, every row
+>   `placements: 6`, tallies reconciling exactly (`commerce 1,698 = 283 × 6`, and 283 is the
+>   input's own `_is_commerce: true` count). All 430 validate against the schema, with a
+>   negative control proving the schema is not merely permissive.
+> - **46 new tests, 1,482 pass.** 9 mutations run, 8 killed; the survivor was **my own test
+>   asserting something that could not fail** — see the traps below.
+>
+> ### 🅐 DEPLOY the block ledger — first, and it is the only thing with a clock on it
+> Not deployed because a cycle was mid-run. Copy to sadalsuud, then **after the next cycle**
+> run `python3 scripts/verify_block_ledger.py` — it exits **2**, not 0, when it finds no files
+> to scan, because a check that scans nothing reports clean. Reconcile its article count
+> against the cycle's own placement counters (`N articles × 6 filters`).
+> ⚠️ Deploy when `systemctl is-active nexusmind.service` is **inactive**, not `activating`.
+>
+> ### 🅑 Populate the register — **fix the instrument FIRST**
+> `stamp_census.py` cannot produce the columns `ARTICLE_RECORD.md` promises. Three of its four
+> are mis-defined, measured 2026-08-23 over 165,196 rows:
+> `pop%` is `populated/seen`, **not** share of rows (`_post_enriched` prints **100.0%** and is
+> present on **23** rows); `distinct` is **censored at 13** (`metadata.doi` prints 13, is 403);
+> the reader column is a bare **leaf-name grep**, so 14 fields sharing a leaf carry identical
+> counts by construction. Full audit:
+> `docs/evidence/2026-08-23-article-record-instrument-audit.md`. Then classify — and the set to
+> classify is **20 undeclared NexusMind fields**, not 132: Contract A declares 39 and Contract B
+> 51 of the 212 observed.
+>
+> ### 🅒 Migration steps 3 and 4
+> **Step 3 is free** — no external reader: hoist the **13 lens fields measured identical across
+> every lens** on all 2,495 multi-lens articles (`content_length`, `original_content_length`,
+> `pre_enriched`, `should_translate`, `obit_pattern_count`, `primary_literature_detected`, and
+> all 7 `source_quality`), stored six times today for one fact. ⚠️ Three more measured invariant
+> and must **not** be hoisted — `passed_prefilter`, `normalization_method`,
+> `primary_literature_cap_would_apply` — their invariance is the value being constant, not the
+> fact being article-level. **Step 4 is paid**: `nexus_mind_attributes` → `nexusmind.lenses`
+> plus `display_rank`/`image_analysis`/`content_quality` touches four ovr.news files and needs a
+> Contract B bump. Its own issue.
+>
+> ---
+>
+> ### ⛔ Open, not forgotten
+> - **"132 fields" is a 2-cycle window, not the record.** At `--cycles 12` it is **212**, because
+>   `metadata.*` is per-source vocabulary. Any register must print its window.
+> - **The dual-write costs +593 bytes/row, 10.1%** of a 5,844-byte median filtered row. Drops
+>   back when steps 3–4 remove the duplicated flat stamps.
+> - **Block-ledger archives are NOT backed up off-site.** `sync_backup.sh` uploads only
+>   `nexusmind_*.tar.gz`; `raw_*` and the new `blocked_*` are local-only.
+> - **`data/prefiltered_out/` is still in neither the cleanup nor the archive path** — it
+>   survives on luck, and it is the corpus that made LD#82 auditable.
+> - **Mark blocked articles processed** — the owner ruling that also ends ~22,000 re-evaluations
+>   per cycle. Deliberately NOT bundled: it changes admission behaviour, the ledger does not.
+> - **Stage ordering caps what a blocked row can say.** An article dropped in `load_articles` was
+>   never judged by violence_promotion or the academic merge gate — both carry
+>   `stamped`/`evaluated: false`, which is *not judged*, not *cleared*.
+>
+> ### ⚠️ Traps paid for this session
+> - ⛔ **A mutation survived because MY OWN TEST asserted something that could not fail.** I
+>   claimed the cleanup glob protected the ledger index; the index is `.json` and the glob is
+>   `*.jsonl`, so they never collide. Fixed the fragility (the index is now rebuildable), not
+>   the test. **Mutation testing found it; review did not.**
+> - ⛔ **I declared `gates.academic_merge` in the schema and never emitted it** — the exact
+>   defect class this record exists to catch, one hour old, and the OWNER caught it, not me.
+> - ⛔ **"Declared nowhere" was wrong.** Two contracts already declare most of the layer. Check
+>   what a premise excludes before building on it.
+> - ⚠️ **The service runs `--skip-cleanup`**; cleanup is a separate `OnSuccess` unit. A stage
+>   wired into `cleanup_old_data` still runs — but verify the unit, do not read the ExecStart.
+
+## 🟢 PREVIOUS — **three independent threads; pick one, they do not block each other**
 
 > **Updated 2026-08-23 evening.** Long session, large divergence, and the divergence produced
 > the most valuable thing: **`violence_promotion` went from 26 days of shadow to ENFORCING and

@@ -7,6 +7,45 @@ Everything below was verified against the running box, not inferred.
 
 ---
 
+## ✅ IMPLEMENTED 2026-08-23 (NexusMind, offline-verified, NOT yet deployed)
+
+`src/archiving/block_ledger.py` + wiring in `scripts/main.py`. **Write-only: no admission
+decision changes.** Rollback = `pipeline.block_ledger.enabled: false`.
+Verify with `python3 scripts/verify_block_ledger.py`.
+
+Offline proof over a real production input (`content_items_20260823_161050.jsonl`, 3,074 rows,
+six filter loops): **428 unique blocked articles**, 404 carrying full content, every row
+`placements: 6`, and the placement tallies reconcile exactly —
+`commerce 1,698 = 283 × 6`, `obituary 330 = 55 × 6`, `too_old 396 = 66 × 6`,
+`duplicate_title 144 = 24 × 6`. All 428 rows validate against
+`contracts/article-record.schema.json` v0.3.0, with a negative control proving the schema is
+not merely permissive.
+
+**Three deliberate deviations from §3 below, each with its reason:**
+
+1. ⭐ **The row is written in the prescriptive `nexusmind.disposition` shape, not the flat
+   `_blocked_by`.** Owner ruled the record prescriptive the same day. Blocked rows are new data
+   with no reader, so the new shape is free — and `nexusmind.{disposition,gates}` is
+   **dual-written onto kept rows too** (also free: no reader outside NexusMind touches the gate
+   stamps), so the kept and blocked populations can be compared with one reader.
+2. ⛔ **"Mark blocked articles processed" is NOT part of this change.** It alters admission
+   behaviour; the ledger does not. Instead the ledger keeps its own written-id index, so only
+   genuinely new blocks are written. Without one it would rewrite ~19,000 rows every four hours,
+   because a blocked article is re-read from `data/raw` on every cycle until its raw file expires.
+   ⚠️ The index is **rebuildable from the ledger rows themselves** — it sits in a directory a
+   cleanup pass sweeps and is protected there only by its `.json` extension, and *unlikely* is not
+   the same as *recoverable*.
+3. **`already_processed` produces no row.** Those articles are not lost — they are in `filtered/`
+   and the archive — and at ~22,000 per cycle they would drown every real event.
+
+⚠️ **What a blocked row structurally cannot tell you.** §3 wants every gate's verdict so that
+gate overlap is answerable. Stage ordering caps that: an article dropped in `load_articles` was
+never seen by `violence_promotion`, which stamps later. Those rows carry
+`gates.violence_promotion.stamped: false` — *not judged*, distinct from *cleared*, and the schema
+enforces the distinction. Measured on the smoke run: **all 428 rows**.
+
+---
+
 ## 0. The article record: 132 fields, and no definition of it anywhere
 
 `scripts/stamp_census.py --cycles 2` over 25,122 production rows: **132 distinct stamp fields.**
