@@ -142,8 +142,25 @@ cleanup sweeps, surviving only because the glob is `*.jsonl` and it is `.json`),
 ⛔ **No ledger code changed today.** There is exactly one verified baseline and it is hours
 old — the same reason the census fix was kept off the pipeline path this morning.
 
+## 7. Wrap-up actions
+
+- **NM#401 CLOSED** — the census columns, with the before/after table and the verify command.
+- **NM#403 commented** (block-ledger off-site backup): it now has measured volumes instead of
+  projections, plus the warning that a backup policy must be sized against `too_old`
+  dominating, and that **one cycle is not a growth rate**.
+- **llm-distillery#123 commented** — the index-budget guard went from deferred to acute: the
+  nine-step trim table from this session, and four options for the owner. Six older entries
+  were compressed to buy room for one session's writing; the lever is nearly spent.
+- **H-AR11 / H-AR12 added** to `memory/hypothesis-ledger.md`.
+- **sadalsuud synced** `8eed8d9` → `7f57708`; it had been one commit behind since 10:40 and I
+  had reported it as current without checking.
+
 ## Next session
 
-**Re-run `verify_block_ledger.py` after the 16:00 cycle** — that one number decides
+⚠️ **The ledger writes ~66 minutes INTO a cycle** (12:00:15 → 13:05:57), so the next timer at
+**16:02:29** puts the second flush near **17:08**. Check `ls -la data/blocked/` for a SECOND
+`blocked_*.jsonl` before trusting the verifier — opening at 16:00 re-reads the first flush.
+
+**Then re-run `verify_block_ledger.py`** — that one number decides
 one-time-backfill from 1.9 GB/day, and settles both held items above. Then 🅑b the register
 (its instrument is fixed) and 🅒 migration step 3.

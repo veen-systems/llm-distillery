@@ -4128,6 +4128,29 @@ config comment** `2026-08-24`. It was the 23rd.
 **Fix**: Corrected all five surfaces; sadalsuud's `date -u` is what caught it. In a project whose
 memory is date-indexed, a wrong date makes evidence unfindable. Read the date, never derive it.
 
+### An unsized bucket in a prose clause carried 85% of the volume (2026-08-24)
+**Problem**: Predicted the block ledger's first flush at "~22,237 rows, ~42 MB". Actual:
+**168,486 rows, 320 MB** — 7.6× low.
+**Root cause**: The estimate enumerated and counted the gate-blocked classes, and disposed of
+everything else in a prose clause — *"plus freshness and dedup rows"*. `freshness.too_old`
+turned out to be **142,899 rows, 85% of the ledger**. The part I counted was nearly exact
+(22,494 vs 22,237, **1.2% off**); the part I described in words was never a number at all.
+**Fix**: Size every bucket against its own counter, or state explicitly that a bucket is
+unsized and therefore unbounded. ⭐ **A prose clause inside a quantitative estimate reads as
+though it has been accounted for and has not.** The decomposition only existed because the
+prediction was pre-registered in `docs/TODO.md` before the deploy — without it, 320 MB would
+have been a number with nothing to compare against, and the real defect invisible.
+
+### Asserted a deployed SHA I had inferred rather than checked (2026-08-24)
+**Problem**: Reported "sadalsuud is at `7f57708`". It was at `8eed8d9`, one commit behind, so
+the box's copy of a research script cited the wrong issue number.
+**Root cause**: I pulled to the box in the same command chain as one commit, then made a
+second commit and pushed it — and carried the *intent* forward as if it were the state. The
+pull had run before the second commit existed.
+**Fix**: `git rev-parse --short HEAD` on the box before naming a SHA. **A push is not a
+deploy, and a deploy earlier in the same session is not a deploy now** — this is
+`feedback-verify-call-path` applied to my own reporting rather than to a gate.
+
 ### A fix for one defect introduced another, caught by asking why a test PASSED on the old code (2026-08-24)
 **Problem**: Fixing the census's un-attributable reader count, I marked every shared leaf
 name `RDRS-AMBIGUOUS` and suppressed its consumer finding. That silently dropped TRUE

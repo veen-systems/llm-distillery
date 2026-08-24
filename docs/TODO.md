@@ -57,11 +57,19 @@
 > does.
 >
 > ### ⏳ OPEN — the one measurement that changes a decision
-> **Re-run the verifier after the 16:00 cycle.** The written-id index now holds 168,486 ids, so
+> ⚠️ **Timing: the ledger writes ~66 MINUTES INTO a cycle, not at its start.** The 12:00:15
+> cycle wrote at 13:05:57. The next timer is **16:02:29**, so the second flush exists around
+> **17:08** — opening a session "after 16:00" is too early and will read the FIRST flush again.
+> Check the file's timestamp, not the clock: `ls -la data/blocked/`.
+>
+> **Re-run the verifier once a second `blocked_*.jsonl` exists.** The written-id index now holds 168,486 ids, so
 > a second flush *should* be a few hundred rows. If instead it writes another ~320 MB, the index
 > is not suppressing `too_old` re-reads and that is **1.9 GB/day**, needing
 > `pipeline.block_ledger.enabled: false` or a reasons-list change. **One cycle is not a growth
 > rate** — do not act on the 320 MB before this number exists.
+>
+> Tracked as **H-AR11** (the 7.6× sizing miss, REFUTED with its decomposition) and
+> **H-AR12** (does it recur — OPEN) in `memory/hypothesis-ledger.md`.
 >
 > Two items deliberately held until that second data point:
 > - **`.ledger_index.json` is 12.3 MB and lives where cleanup sweeps**, surviving only because

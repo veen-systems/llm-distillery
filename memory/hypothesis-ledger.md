@@ -83,6 +83,16 @@ not about article content, so they sit apart from the lens hypotheses above. Sou
 | `H-AR9` | Blocked articles can be recovered from the archive | **REFUTED** — `FilteredArchiver` reads `filtered_dir`, which a dropped article never enters. This is what the block ledger fixes |
 | `H-AR10` | Enforcing a gate preserves its signal in the record | **REFUTED** — enforcement removes the positives before persistence, so the stamp goes constant-by-construction. Demonstrated by `violence_promotion` on 2026-08-23 |
 
+| `H-AR11` | The block ledger's first flush is ~22,237 rows / ~42 MB | **REFUTED, 7.6× low** — 168,486 rows / 320 MB, measured 2026-08-24 13:05. ⭐ **The SHAPE is the finding: the gate-blocked portion, the only part actually sized, was 22,494 against 22,237 — 1.2% off. All the excess is `freshness.too_old` at 142,899 rows, 85% of the ledger, which the estimate carried as an unquantified prose clause ("plus freshness and dedup rows"). THE BUCKET NOBODY COUNTED HELD SIX SEVENTHS OF THE VOLUME.** A single aggregate would have said "wrong by 7.6×" and hidden that the model of the gates was nearly exact while the model of freshness did not exist |
+| `H-AR12` | Enabling the ledger writes a comparable volume EVERY cycle | ⏳ **OPEN** — the written-id index holds 168,486 ids and should suppress `too_old` re-reads, making later cycles order-hundreds. Decides one-time backfill (320 MB, ignorable) from **1.9 GB/day**. ⛔ **One cycle is not a growth rate.** Measure at the second flush: cycle fires 16:02, the ledger writes ~66 min in, so ~17:08 |
+
+⭐⭐ **`H-AR11` is why a pre-registered prediction earns its cost even when it is badly
+wrong.** The prediction was made in `docs/TODO.md` before the deploy, so the error could be
+*decomposed*; without it the 320 MB would have been a number with nothing to compare
+against, and the real defect — an unsized bucket riding along in prose — would not have
+been visible at all. See `feedback-predict-the-range-first` and
+`feedback-closed-accounting-is-not-attribution` in the Claude Code auto-memory.
+
 ✅ **H-AR2, H-AR3 and H-AR4 were repaired on 2026-08-24** in NexusMind `e73c5ef`: `pop%` split into
 `pres%` + `fill%`, `distinct` made exact to a visible cap, and the reader search qualified with
 `RDRS-AMBIGUOUS` where it cannot attribute. 15 tests, 12 of which fail against the previous script.
