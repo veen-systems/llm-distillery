@@ -4128,6 +4128,57 @@ config comment** `2026-08-24`. It was the 23rd.
 **Fix**: Corrected all five surfaces; sadalsuud's `date -u` is what caught it. In a project whose
 memory is date-indexed, a wrong date makes evidence unfindable. Read the date, never derive it.
 
+### A fix for one defect introduced another, caught by asking why a test PASSED on the old code (2026-08-24)
+**Problem**: Fixing the census's un-attributable reader count, I marked every shared leaf
+name `RDRS-AMBIGUOUS` and suppressed its consumer finding. That silently dropped TRUE
+findings: a shared count of **zero** is an upper bound on every field sharing the name, so
+it proves absence for all of them.
+**Root cause**: I treated "shared" as "unknowable" without asking what the shared number
+actually bounds. The tell was there: one of my 15 tests passed against the OLD script too,
+and I nearly logged that as "it's a control" instead of chasing it.
+**Fix**: Only a NON-ZERO shared count is ambiguous. `test_shared_leaf_with_zero_readers_
+still_raises_for_both` kills the over-suppressing mutation. **A test that passes against
+the code you are replacing is either a control you can name, or a defect you have not
+found yet — decide which, out loud.**
+
+### A number derived from a rounded percentage, published as if measured (2026-08-24)
+**Problem**: Wrote "`_post_enriched` sits on **44** of 145,301 rows" into
+`ARTICLE_RECORD.md`. An independent `grep -c` over the same 72 files says **46**.
+**Root cause**: The census printed `0.03`, I multiplied by the row count, and a *derived*
+number entered a document in the same sentence shape as a *measured* one. Nothing in the
+text distinguished them.
+**Fix**: Counted it with a second instrument and corrected the doc, which now says the 46
+was counted rather than read off the percentage. **If a number came out of arithmetic on a
+displayed value, either measure it or print the raw count in the tool.**
+
+### The tidied script and the tested script were not the same program (2026-08-24)
+**Problem**: A probe worked in the scratchpad, was cleaned up for commit, and died on its
+first real run with `ModuleNotFoundError: No module named 'filters'`.
+**Root cause**: The scratchpad version carried `sys.path.insert(0, REPO)`; tidying it into
+a well-structured module dropped that line. The committed artifact had never been run.
+**Fix**: Ran the committed version on the box before citing anything from it. **Verifying
+version A and shipping version B is the same defect as not verifying at all — and the
+tidy-up step is exactly where it hides, because the change feels cosmetic.**
+
+### An issue number guessed before the issue was filed (2026-08-24)
+**Problem**: Wrote `llm-distillery#125` into a script docstring and a commit message. The
+issue was created as **#130**.
+**Root cause**: Filed the artifact before filing the issue, and guessed the next number
+from the ones I had seen.
+**Fix**: Corrected the docstring; the pushed commit message cannot be edited in place and
+carries the wrong number permanently, so the follow-up commit is the correction of record.
+**File the issue first, or leave the reference blank until it exists.**
+
+### A one-line class selector picked the empty base class (2026-08-24)
+**Problem**: `next(v for v in vars(mod).values() if hasattr(v, "EXCLUSION_PATTERNS"))`
+selected `BasePreFilter` — imported into the module and carrying an EMPTY dict — instead
+of the subclass that defines the patterns.
+**Root cause**: `hasattr` tests for the attribute's existence, not for it containing
+anything. The module namespace holds its imports as well as its definitions.
+**Fix**: Select on the CONTENT (`"crime_violence" in ...`) and require exactly one match,
+exiting otherwise. It happened to raise `KeyError` here; had the category been present but
+empty, the probe would have screened on nothing and returned a clean-looking zero.
+
 ### Keyword mining for hard negatives was 92% wrong (2026-08-23)
 **Problem**: Harvested 244 candidate false positives with multilingual regexes for four classes;
 judged 100; **8 survived**.

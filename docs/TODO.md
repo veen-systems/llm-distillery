@@ -1,10 +1,13 @@
 # LLM Distillery - TODO
 
-## 🔵 NEXT SESSION — **deploy the block ledger, then the register**
+## 🔵 NEXT SESSION — **VERIFY the block ledger, then the register**
 
-> **Updated 2026-08-24 (early).** Session ran 08-23 night → 08-24. **Thread 🅒 (The Article
-> Record) was taken and became threads 🅒 + 🅑 at once.** No spend, no model, nothing deployed
-> yet. All work is in **NexusMind**; this repo carries the spec and the evidence.
+> **Updated 2026-08-24 (midday).** Two sessions have now run on 08-24. **Thread 🅒 (The
+> Article Record) was taken and became threads 🅒 + 🅑 at once.** No spend, no model.
+> The block ledger and the census fix are BOTH deployed; **only the census fix is
+> outcome-verified.** ⛔ **🅐 below is the one open item and it is blocked on a cycle, not
+> on work** — the ledger has never written a row in production. All work is in
+> **NexusMind**; this repo carries the spec and the evidence.
 >
 > ### ✅ Built and verified offline, NOT deployed
 > - **The record has a DEFINITION**: `NexusMind/contracts/article-record.schema.json`.
@@ -56,16 +59,26 @@
 > against the cycle's own placement counters (`N articles × 6 filters`).
 > ⚠️ Deploy when `systemctl is-active nexusmind.service` is **inactive**, not `activating`.
 >
-> ### 🅑 Populate the register — **fix the instrument FIRST**
-> `stamp_census.py` cannot produce the columns `ARTICLE_RECORD.md` promises. Three of its four
-> are mis-defined, measured 2026-08-23 over 165,196 rows:
-> `pop%` is `populated/seen`, **not** share of rows (`_post_enriched` prints **100.0%** and is
-> present on **23** rows); `distinct` is **censored at 13** (`metadata.doi` prints 13, is 403);
-> the reader column is a bare **leaf-name grep**, so 14 fields sharing a leaf carry identical
-> counts by construction. Full audit:
-> `docs/evidence/2026-08-23-article-record-instrument-audit.md`. Then classify — and the set to
-> classify is **20 undeclared NexusMind fields**, not 132: Contract A declares 39 and Contract B
-> 51 of the 212 observed.
+> ### ✅ 🅑a The instrument is FIXED — 2026-08-24, NexusMind `e73c5ef`, deployed
+> All three mis-defined columns repaired and verified by running the deployed script on
+> sadalsuud. `pop%` split into **`pres%`** (present / all rows) + **`fill%`** (populated /
+> rows present) with a `RARE-FIELD` flag; `distinct` exact to `DISTINCT_CAP=5000` then
+> `>=5000`, hashing the FULL value rather than a 28-char truncation; the reader search
+> qualified with the parent segment, else marked `RDRS-AMBIGUOUS` and raising no consumer
+> finding. The run now prints its **window** beside the field count.
+>
+> Outcome on 145,301 production rows (`filtered_20260822_124557` .. `filtered_20260824_084855`):
+> `_post_enriched` 100.0% → **0.03 / 100.00 on 46 rows**; `metadata.doi` distinct **13 → 288**;
+> `content_hash` **13 → >=5000**; `content_quality.score` unmoved at 100.00/100.00 (the control).
+> Shared leaves: **7, covering 14 of 212 fields**. 15 tests, **12 fail against the previous
+> script**; full NexusMind unit suite 1,431 passed.
+>
+> ### 🅑b Populate the register — now unblocked
+> `docs/article_record_status.yaml` classifying the fields, then a join + render behind
+> `stamp_census.py --emit-register`. The set to classify is **20 undeclared NexusMind
+> fields**, not 132: Contract A declares 39 and Contract B 51 of the 212 observed.
+> ⛔ **Quote no field count without its window** — 163 at 2 cycles, 212 at 12, same box,
+> same day. The script prints the window; carry it.
 >
 > ### 🅒 Migration steps 3 and 4
 > **Step 3 is free** — no external reader: hoist the **13 lens fields measured identical across
