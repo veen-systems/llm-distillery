@@ -4312,3 +4312,27 @@ the environment", and I only looked for confirmation of the first.
 **Fix**: `ls -d venv` before believing any suite-wide failure, and run the project's own
 interpreter. ⭐ The general form: **an explanation that dismisses a signal has to be
 tested at least as hard as the signal was.** A dismissal is a claim.
+
+### I CALLED A DECLARATION DEAD IN THREE DOCUMENTS BEFORE READING WHAT IT SAID (2026-08-25)
+**Problem**: The census's new top-level check reported `_corroboration` as declared in
+Contract B and present on **0 of 164,572 rows**. I wrote it up as a live
+declared-but-dead field — "either the declaration goes or the pop moves; the pop is
+deliberate, so the declaration is the wrong half" — in a commit message, a TODO block
+and a session record. Then I opened the declaration to delete it. Its description reads:
+*"Intermediate field — consumed by scripts/main.py and re-emitted under
+nexus_mind_attributes.{filter}.source_quality before JSONL write."* It was right, and
+had been since it was written.
+**Root cause**: two failures stacked. (1) I read the *measurement* (0 rows) and inferred
+the *intent*, when the intent was written down one file away. A zero has at least two
+explanations — dead, or never meant to appear — and I only priced one. (2) The
+instrument genuinely could not tell them apart, because **the fact lived in prose**. A
+`description` is documentation; a checker cannot act on it.
+**Fix**: Contract B `1.18.0 → 1.18.1` marks the field `x-intermediate: true` (annotation
+only — `x-` keywords are ignored by validators, so nothing validates differently), and
+check A excludes marked fields from the ghost list while still printing them once;
+hiding them would be the other failure. The right disambiguation was already available
+and free: an intermediate has an **in-process reader** (`display_ranking._corroboration_boost`)
+and zero persisted rows, where a corpse has neither. ⭐ **When a schema's prose states a
+fact a checker needs, move the fact into the schema.** ⭐⭐ And: *0 rows* is a
+measurement; *dead* is a conclusion — the gap between them is where the declaration's own
+words were sitting.
