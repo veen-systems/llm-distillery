@@ -38,6 +38,44 @@ not merely permissive.
 3. **`already_processed` produces no row.** Those articles are not lost — they are in `filtered/`
    and the archive — and at ~22,000 per cycle they would drown every real event.
 
+### ⚠️ `placements` is NOT "how many lenses saw this article" — DIAGNOSED 2026-08-25
+
+The smoke run made every row `placements: 6` and that read as an invariant. Production
+found three exceptions in 194,405 rows — `{6: 194403, 3: 1, 1: 1, 5: 1}` — and both
+mechanisms behind them are benign, but they change what the field means.
+
+`placements` is `len(per_filter)`, and `per_filter` gets an entry only when a filter
+loop drops the article **for a reason the ledger records**, in the cycle where the
+article was **first** recorded (the written-id index means it is never revisited). So
+it is *how many lenses filed a ledger-reason block for it that one cycle* — a number
+that can legitimately be lower than the lens count, in two ways:
+
+1. **An earlier loop dropped it for a NON-ledger reason.** `already_processed` is
+   per-filter state and is deliberately not a ledger reason (item 3 above).
+   `central_asian_kun_uz_275be95d0823` is marked processed in exactly `solutions`,
+   `uplifting` and `investment_risk` — the first three in `enabled_filters` order,
+   all on 2026-08-23 — and in none of the last three, which recorded it as `too_old`
+   the next day. **`placements: 3`.** Verified against the per-filter stores
+   (`data/raw/.processed_ids_*.json`), an instrument independent of the ledger.
+2. ⭐ **The freshness cutoff MOVES BETWEEN LOOPS.** `load_articles` computes
+   `cutoff_date = datetime.now(timezone.utc) - timedelta(days=max_article_age_days)`
+   **once per filter**, so the six loops of one cycle run against six cutoffs, seconds
+   apart. An article whose `published_date` sits inside that spread is fresh for the
+   earlier loops and `too_old` for the later ones. Both remaining exceptions have
+   exactly that signature: published **12 s** and **6 s** before the cutoff in force
+   when the ledger first recorded them, and their `per_filter` maps are the **last 1**
+   and the **last 5** entries of `enabled_filters` order. All three anomalies are
+   suffixes of that order; for random subsets that is a ~1-in-720 coincidence.
+
+Consequences: **never divide a ledger row count by the lens count**, and never read
+`placements < N` as a defect. Being fresh in an early loop does not mean the article
+was scored there either — `shuffle_input` plus `max_items_per_filter` decides that
+separately, and neither of these two was ever scored by any lens.
+
+⚠️ **`placements` becomes 5, not 6, from 2026-08-25** — `investment_risk` is paused.
+`scripts/verify_block_ledger.py` prints the histogram and asserts nothing about it, so
+this changes no check; anything downstream that hard-codes 6 is now wrong.
+
 ⚠️ **What a blocked row structurally cannot tell you.** §3 wants every gate's verdict so that
 gate overlap is answerable. Stage ordering caps that: an article dropped in `load_articles` was
 never seen by `violence_promotion`, which stamps later. Those rows carry

@@ -49,7 +49,8 @@
 > script they replace**; the other 2 are presence controls and pass on both sides by design.
 >
 > ### ✅ DEPLOYED and regenerated from the checkout
-> sadalsuud is at `651aa55`, working tree clean, and
+> sadalsuud was at `651aa55` when the register was generated (it is now `17da21d`, see the
+> deploy block below), working tree clean, and
 > `NexusMind/docs/ARTICLE_RECORD_REGISTER.md` is the run from that checkout: **177,466 rows,
 > 72 files, `filtered_20260823_124537 .. filtered_20260825_131739`, exit 0.**
 >
@@ -60,7 +61,7 @@
 > unchanged. A rule whose premise you have checked is a different thing from one you skipped.
 > **1,457 unit tests pass** (1,431 + 26 new).
 >
-> ### ✅ 🅒 Migration step 3 (additive half) — COMMITTED, ⏳ NOT YET DEPLOYED
+> ### ✅ 🅒 Migration step 3 (additive half) — COMMITTED **and DEPLOYED 17:32**
 > `nexusmind.content` / `.signals` / `.corroboration` are emitted beside
 > `.run`/`.disposition`/`.gates` (NexusMind `67b70e5`, `b26c384`). Lens copies untouched —
 > a dual-write, no reader changed. **Cost measured on 26,530 production rows: median
@@ -103,16 +104,24 @@
 > enrichers run first and second. **Re-run `ordering_effect.py` after a few cycles.**
 > The config reorder I proposed is therefore NOT needed unless that prediction fails.
 >
-> ### ⏳ DEPLOY + VERIFY — first thing next session (TWO changes, one pull)
-> This one **does** touch the pipeline's import graph (`scripts/main.py`,
-> `src/archiving/block_ledger.py`), so the "deploy when inactive" rule applies with its
-> premise intact. sadalsuud ran `activating` for the rest of the session (cycles at 16:05
-> and 20:03).
+> ### ✅ DEPLOYED 2026-08-25 17:26 + 17:32 — ⏳ OUTCOME NOT YET PROVEN
+> *(This block said "first thing next session" and was already stale when written — the two
+> pulls happened at the end of the same session. Corrected 2026-08-25 17:40 by reading the
+> box, not the note.)*
+>
+> Both changes are on sadalsuud: `git reflog` shows `pull --ff-only origin main` at
+> **17:26:06** (→ `c7af891`, the `investment_risk` pause) and **17:32:32** (→ `17da21d`,
+> which contains step 3's `67b70e5` + `b26c384`). Service read `inactive` at both moments,
+> so the "deploy when inactive" rule held with its premise intact — this one **does** touch
+> the pipeline's import graph (`scripts/main.py`, `src/archiving/block_ledger.py`).
+>
+> ⛔ **NO CYCLE HAS RUN ON THE NEW CODE.** The newest output is
+> `filtered_20260825_171209.jsonl` (17:12, pre-deploy) and its first row's `nexusmind` keys
+> are still `['disposition', 'gates', 'run']` — **expected, not a failure.** Next
+> `fluxus-collection` timer: **20:03**. Deployed ≠ verified; nothing below is claimable yet.
 >
 > ```
-> ssh sadalsuud 'systemctl is-active nexusmind.service'      # must read inactive
-> ssh sadalsuud 'cd /home/jeroen/local_dev/NexusMind && git pull --ff-only origin main'
-> # then AFTER the next cycle:
+> # AFTER the 20:03 cycle:
 > ssh sadalsuud 'cd /home/jeroen/local_dev/NexusMind && python3 scripts/verify_block_ledger.py'
 > ssh sadalsuud 'cd /home/jeroen/local_dev/NexusMind && venv/bin/python -c "
 > import json,glob;f=sorted(glob.glob(\"data/filtered/uplifting/filtered_*.jsonl\"))[-1]
@@ -121,6 +130,7 @@
 > **Outcome proof is `content`, `signals`, `corroboration` in that key list** — not that the
 > code is right, which the tests already say. Then re-run the register: the 18 new paths are
 > already classified, so it must still exit **0**; if it exits 1, something else appeared.
+> And the pause has its own outcome proof: block-ledger `placements` must drop **6 → 5**.
 > Rollback is `git revert 67b70e5` + redeploy — the namespace is not config-gated.
 >
 > ### ⛔ Open, not forgotten
@@ -133,14 +143,70 @@
 >   tell the two apart because the fact was in PROSE.** Contract B **1.18.0 → 1.18.1** marks
 >   it `x-intermediate: true` (annotation only) and check A excludes marked fields while
 >   still printing them once.
->   ⚠️ `nexus_mind_attributes.*.source_quality.source_unreliable` is the OTHER check-A ghost
->   from that run and is **not** an intermediate — it is written only when
->   `source_tier == "override"` and credibility < 3.0, so it may be a rare field rather than
->   a dead one. Still open. **A ghost is a question, not a verdict — and today one of the two
->   answered "by design".**
-> - **`#123` the index-budget guard** is still acute.
-> - The rest of the 08-24 list below is unchanged: `.ledger_index.json` off the cleanup
->   path, the two `placements` singletons, off-site backup of `blocked_*`.
+>   ⚠️ `source_unreliable` was the OTHER check-A ghost from that run — **ANSWERED the same
+>   evening, see below.** **A ghost is a question, not a verdict — and both of the two
+>   turned out to have answers.**
+> - **`#123` the index-budget guard** is still acute — and it now needs an OWNER CALL
+>   between the four options in the issue, not another trim. The lever is measured spent:
+>   the 08-25 trim removed 23 lines and one entry plus one revision consumed it.
+> - The rest of the 08-24 list: `.ledger_index.json` off the cleanup path and off-site
+>   backup of `blocked_*` are unchanged; **the `placements` singletons are DIAGNOSED
+>   (below)**.
+
+### ✅ RESOLVED 2026-08-25 evening — `source_unreliable` is RARE, not dead
+NexusMind `80d665d`. It needs `source_tier == "override"` **and** `credibility_score < 3.0`,
+and those cannot currently co-occur. `override` means a curator entry in FluxusSource
+`config/domains/credibility.yaml` — **733 entries, exactly 5 below 3.0** (infowars.com 1.0,
+rt.com 2.0, sputniknews.com 2.0, sputnikglobe.com 2.0, tass.com 2.0) — and **3 of those 5
+are `enabled: false` feeds** (HELD-DISABLED on editorial grounds, `rss_russian.yaml`,
+unblock = NM#253) while the other 2 are in no source config at all. Measured over
+**237,132 distinct articles** (510 files, `filtered_20260811_175032 ..
+filtered_20260825_171209`): `override`'s minimum credibility is **3.8**, and all **204**
+sub-3.0 articles sit at `verified` tier, which the predicate excludes.
+
+⭐ **The answer is a fact about the CORPUS, and one config line changes it** — so it ships
+as `x-rare: true` (Contract B **1.18.1 → 1.18.2**) with the **falsifier** in the
+description, and `stamp_census.py` now reports such a field as ANSWERED instead of
+re-asking it as a ghost every run. Unlike `x-intermediate`, a rare field stays in the
+declared set and is only re-labelled at report time: the day it fires, nothing has to be
+un-suppressed. An `x-rare` mark with no description is a silenced finding, and the census
+prints `NO DESCRIPTION` when it meets one.
+
+⛔ **The latent defect this surfaced is the keeper.** `article-record.schema.json`'s
+`corroboration` is `additionalProperties: false`, and the flag was in neither that schema
+nor `_CORROBORATION_FIELDS`. **The first row ever to carry it would have been the first row
+to FAIL VALIDATION** — a flag that only appears in an emergency is the worst one to
+discover missing. Now declared (**0.5.0 → 0.6.0**) and copied; the copy skips absent keys,
+so it costs 0 bytes until it fires. 8 tests (4 fail against the code they replace, 4 are
+presence controls), 1 mutation killed, 1,480 pass.
+
+⚠️ **Second finding, same trace: `other_sources` carries TWO SHAPES.** A within-run entry
+holds the other article's real quality; a **cross-run** entry holds `source_tier: "unknown"`
+/ `credibility_score: null` **HARDCODED**, because `story_dedup._annotate_cross_run` builds
+it from a saved cluster record that never persisted quality. **104,201 of 202,893 entries
+(51.4%)** over 110,645 articles are cross-run and **100% of those read `unknown`** — so
+97.7% of this field's `unknown` is bookkeeping. Same shape as the `stage_used` /
+`raw_weighted_average` trap. **Never average credibility over these entries.**
+
+### ✅ DIAGNOSED 2026-08-25 evening — the `placements` anomalies (now three)
+`{6: 194403, 3: 1, 1: 1, 5: 1}`. NexusMind `8969d73`, spec half in
+`docs/BLOCK_LEDGER_SPEC.md`. **`placements` is NOT "how many lenses saw this article"** —
+it is how many filed a LEDGER-REASON block in the cycle where the article was *first*
+recorded. Two benign mechanisms:
+1. **An earlier loop dropped it for a non-ledger reason.** `already_processed` is
+   per-filter state; one article is marked processed in exactly the first three filters
+   (2026-08-23) and in none of the last three, which recorded it `too_old` the next day.
+   Verified against `data/raw/.processed_ids_*.json` — an instrument independent of the
+   ledger.
+2. ⭐ **The freshness cutoff MOVES BETWEEN LOOPS.** `load_articles` recomputes
+   `now − max_article_age_days` **once per filter**, so one cycle runs against six cutoffs
+   seconds apart. The other two published **12 s** and **6 s** before the cutoff in force
+   when they were recorded. All three `per_filter` maps are **suffixes** of
+   `enabled_filters` order — ~1-in-720 by chance.
+
+**Never divide a ledger row count by the lens count**, and `placements < N` is not a
+defect. ⚠️ Normal is **5 from 2026-08-25** (`investment_risk` paused); the verifier only
+prints the histogram, so no check breaks.
 
 ## 🟡 PREVIOUS — **the ledger's second flush, and the census's own columns**
 
