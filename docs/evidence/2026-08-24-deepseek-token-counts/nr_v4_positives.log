@@ -1,0 +1,16 @@
+Scoring with: dims=['recovery_evidence', 'measurable_outcomes', 'ecological_significance', 'restoration_scale', 'human_agency', 'protection_durability'] | field=nature_recovery_analysis | prompt=prompt-compressed.md
+Loaded 831 articles from datasets/scored/nr_v3_positive_input.jsonl
+Resuming: 542 already scored, 289 remaining
+  [ 100/289] 100 OK | 0 err | 4.4 art/s | ETA 1 min | cache hit 14%
+  [ 200/289] 200 OK | 0 err | 4.5 art/s | ETA 0 min | cache hit 7%
+  [ 289/289] 289 OK | 0 err | 4.4 art/s | ETA 0 min | cache hit 5%
+
+============================================================
+COMPLETE
+============================================================
+Successful: 289  Errors: 0
+Wall clock: 1.1 min
+Tokens: input 1,879,153  output 84,871  cached 92,416
+Cache hit rate: 4.9%
+Estimated cost: $0.27
+Output: datasets/scored/nr_v3_positives_deepseek.jsonl

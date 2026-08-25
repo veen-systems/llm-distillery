@@ -1,0 +1,31 @@
+Scoring with: dims=['recovery_evidence', 'measurable_outcomes', 'ecological_significance', 'restoration_scale', 'human_agency', 'protection_durability'] | field=nature_recovery_analysis | prompt=prompt-compressed.md
+Loaded 3641 articles from datasets/scored/nr_v3_batch_input.jsonl
+  [ 200/3641] 200 OK | 0 err | 5.5 art/s | ETA 11 min | cache hit 0%
+  [ 400/3641] 400 OK | 0 err | 5.5 art/s | ETA 10 min | cache hit 1%
+  [ 600/3641] 600 OK | 0 err | 5.5 art/s | ETA 9 min | cache hit 1%
+  [ 800/3641] 800 OK | 0 err | 5.4 art/s | ETA 9 min | cache hit 1%
+  [1000/3641] 1000 OK | 0 err | 5.3 art/s | ETA 8 min | cache hit 1%
+  [1200/3641] 1200 OK | 0 err | 5.3 art/s | ETA 8 min | cache hit 1%
+  [1400/3641] 1400 OK | 0 err | 5.4 art/s | ETA 7 min | cache hit 1%
+  [1600/3641] 1600 OK | 0 err | 5.4 art/s | ETA 6 min | cache hit 1%
+  [1800/3641] 1800 OK | 0 err | 5.4 art/s | ETA 6 min | cache hit 1%
+  [2000/3641] 2000 OK | 0 err | 5.4 art/s | ETA 5 min | cache hit 1%
+  [2200/3641] 2200 OK | 0 err | 5.4 art/s | ETA 4 min | cache hit 1%
+  [2400/3641] 2400 OK | 0 err | 5.2 art/s | ETA 4 min | cache hit 1%
+  [2600/3641] 2600 OK | 0 err | 5.1 art/s | ETA 3 min | cache hit 0%
+  [2800/3641] 2800 OK | 0 err | 5.1 art/s | ETA 3 min | cache hit 0%
+  [3000/3641] 3000 OK | 0 err | 5.1 art/s | ETA 2 min | cache hit 0%
+  [3200/3641] 3200 OK | 0 err | 5.1 art/s | ETA 1 min | cache hit 0%
+  [3400/3641] 3400 OK | 0 err | 5.1 art/s | ETA 1 min | cache hit 0%
+  [3600/3641] 3600 OK | 0 err | 5.1 art/s | ETA 0 min | cache hit 0%
+  [3641/3641] 3641 OK | 0 err | 3.3 art/s | ETA 0 min | cache hit 0%
+
+============================================================
+COMPLETE
+============================================================
+Successful: 3641  Errors: 0
+Wall clock: 18.5 min
+Tokens: input 21,795,689  output 713,428  cached 74,880
+Cache hit rate: 0.3%
+Estimated cost: $3.24
+Output: datasets/scored/nature_recovery_v3_deepseek.jsonl

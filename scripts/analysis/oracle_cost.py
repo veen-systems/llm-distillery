@@ -32,8 +32,13 @@ GEM_STD = {"in": 0.30, "out": 2.50}                  # gemini-2.5-flash realtime
 
 PLACEHOLDER = "[Paste the summary of the article here]"
 
-# The DeepSeek batch log this analysis rests on. In-repo, so it stays reproducible.
-BATCH_LOG = PROJECT_ROOT / "datasets" / "scored" / "nr_v4_batch.log"
+# The DeepSeek batch log this analysis rests on. `datasets/` is gitignored, so the
+# committed copy under docs/evidence/ is the one that survives a clean clone; the
+# working copy is preferred only because it is the original.
+BATCH_LOG_CANDIDATES = (
+    PROJECT_ROOT / "datasets" / "scored" / "nr_v4_batch.log",
+    PROJECT_ROOT / "docs" / "evidence" / "2026-08-24-deepseek-token-counts" / "nr_v4_batch.log",
+)
 
 # Gate A, 2026-08-23: 15 articles x 3 runs, BOTH oracles on the identical articles,
 # each billed on its own tokenizer's count. Means over the 45 successful calls.
@@ -76,15 +81,21 @@ def unconditional_cache_point() -> float:
     return (DS["miss"] - GEM_BATCH["in"]) / (DS["miss"] - DS["hit"])
 
 
-def parse_batch_log(path: Path) -> dict:
+def parse_batch_log(path: Path | None = None) -> dict:
     """Pull the counted totals out of a score_deepseek_production.py run log.
 
     Raises if the log is missing or its shape changed. A cost analysis that
     silently falls back to an estimate is the failure this script exists to stop.
     """
-    if not path.exists():
-        raise SystemExit(f"FATAL: batch log not found: {path}")
-    text = path.read_text(encoding="utf-8")
+    text = None
+    for candidate in ([path] if path else BATCH_LOG_CANDIDATES):
+        if candidate.exists():
+            path = candidate
+            text = candidate.read_text(encoding="utf-8")
+            break
+    if text is None:
+        raise SystemExit("FATAL: no DeepSeek batch log found in "
+                         + " or ".join(str(c) for c in BATCH_LOG_CANDIDATES))
     tok = re.search(r"Tokens: input ([\d,]+)\s+output ([\d,]+)\s+cached ([\d,]+)", text)
     n = re.search(r"Successful: (\d+)", text)
     cost = re.search(r"Estimated cost: \$([\d.]+)", text)
@@ -96,6 +107,7 @@ def parse_batch_log(path: Path) -> dict:
         "cached": int(tok.group(3).replace(",", "")),
         "n": int(n.group(1)),
         "logged_cost": float(cost.group(1)),
+        "source": path.name,
     }
 
 
@@ -121,13 +133,13 @@ def cache_ceilings() -> list[tuple[str, int, int, float]]:
 
 
 def main() -> int:
-    batch = parse_batch_log(BATCH_LOG)
+    batch = parse_batch_log()
     per_in = batch["in"] / batch["n"]
     per_out = batch["out"] / batch["n"]
     cache = batch["cached"] / batch["in"]
 
     print("=" * 78)
-    print(f"COUNTED BASELINE — {BATCH_LOG.name}, n={batch['n']:,} articles")
+    print(f"COUNTED BASELINE — {batch['source']}, n={batch['n']:,} articles")
     print("=" * 78)
     print(f"  {per_in:,.0f} input / {per_out:.1f} output tokens per article   "
           f"cache hit {100 * cache:.2f}%   I/O = {per_in / per_out:.1f}")
