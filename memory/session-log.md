@@ -1,0 +1,75 @@
+# Session log — the entries the index no longer carries
+
+**Split out 2026-08-25 (llm-distillery#123).** `memory/MEMORY.md` is loaded on every
+session and was 69% session entries by character, growing ~600–900 chars per session with
+no ceiling. Trimming lost the race roughly 6:1, and each trim CONVERTED a finding into a
+pointer — the finding left the always-loaded layer and was gone unless someone opened the
+session file.
+
+So entries are **MOVED here verbatim, never compressed**. The index keeps the newest four;
+everything older lives here, in full, newest first. Nothing in this file was shortened when
+it arrived, and nothing in it should be shortened later — this file has no budget, which is
+the whole point of it existing. Every entry still links to its own
+`project_session_*.md`, which is where the detail is.
+
+⚠️ **Read this file when you are looking for something the index no longer mentions** — a
+finding, a retraction, a number, a session whose date you half-remember. The index is a
+navigational layer; this is the record.
+
+---
+
+- **2026-08-23 evening — v8 step 1 fixed, and violence_promotion went SHADOW → ENFORCING** ([session](project_session_2026_08_23_evening.md)) — ≈**$0.49**, one production change, verified. ⭐⭐ **"Gemini ignores step 1" was the wrong diagnosis — step 1 was OUTVOTED by five later instructions**, and every cap they cited was inert. Class A **4/9 → 9/9** DeepSeek / **8/9** Gemini. ⭐⭐ **#82's 26-day stall was nobody reading 11,826 flagged rows already on disk.** Precision 71–86% *fails* its own 0.90 bar and flipping was still right: **99.6% of flags never reach a lens op-point**, so the bar described articles no reader could see. ⛔ **The threshold is not the lever** — among the 21 that surface, scores interleave. ⭐ **Enforcing a gate REMOVES it from the record** — which is what makes the block ledger time-sensitive. ⛔ **Five self-corrections, four in the last hour** — incl. a check that scanned **zero files** and reported clean (UTC vs local filenames).
+
+- **2026-08-23 — Gate A measured on TWO oracles ($0.47); the length floor measured both ways** ([session](project_session_2026_08_23.md), [gate A](../docs/evidence/2026-08-23-gate-a-two-oracle-run.md), [floor](../docs/evidence/2026-08-23-length-floor-by-script.md)) — nothing trained, nothing sent anywhere. ⭐⭐ **v8 step 2b (the gatekeeper rewrite) is VALIDATED on both oracles**, class B 1/3 → 3/3. ⛔ **Step 1 is NOT ready — the oracles disagree by 4.4 points** on the worst row ⇒ decides Phase B's oracle choice. ⛔ **Criterion 2's bars are broken and v7 proves it.** ⭐⭐ **A flat char floor is 2.85× stricter on Japanese** ⇒ define in TOKENS — but **the quality case is weak**: 128 tokens costs 36.6% of corpus for 16.2% of surfacing rows. Real target is GN. ⛔ **#128 Hebrew median 202 chars.** ⛔ **Three retractions, all mine**, incl. the pricing anchor (measured **349** output tokens, not ~1,174).
+
+- **2026-08-22/23 — H-CV1 refuted at its PREMISE; the corpus argument survives, differently** ([session](project_session_2026_08_22.md), [evidence](../docs/evidence/2026-08-22-uplifting-v7-corpus-provenance.md), [hypotheses](uplifting-oracle-genre-hypotheses.md)) — no spend, nothing deployed. ⭐⭐ **The keyword prefilter NEVER RAN on the v7 corpus**: the March-2026 version blocks **15.493%** (1,021/6,590) of the corpus it supposedly built, so those rows could not be there — Phase 0's premise was **FALSE**. ⭐ **Arm B was worthless and I nearly stopped there**; the corpus differs from production on four axes, all accidental (#127). ⛔ **A refuted premise does not refute the conclusion** — re-derive it, do not discard it.
+
+- **2026-08-20/21 — Thriving diagnosed, then `human_thriving` v8 planned end-to-end** ([08-21](project_session_2026_08_21.md), [08-20](project_session_2026_08_20.md), [hypotheses](uplifting-oracle-genre-hypotheses.md), plan `docs/HUMAN_THRIVING_V8_PLAN.md`) — **no deploy, no spend, no model.** ⭐⭐ **TWO defect classes, and the reader-visible one is NOT #125**: class **A** harm-adjacent (raw 5.86–6.85, top normalized **9.862** — ⛔ *this line said 8.284 until 08-22; that was the max of a newly-promoted SUBSET*) outranks class **B** academic register. ⭐⭐ **A prompt-only v8 fixes ~⅓ of class A** — **2 of 3 rows are the STUDENT alone**, which no prompt reaches ⇒ Phase B2 hard negatives. ⚠️ **A FOURTH noise floor: oracle run-to-run 0.82 mean / 2.25 max**, 5× the #95 band — **a single-run oracle score is not a measurement.** Rulings: FP-over-FN on harm (**ADR-023 beats ADR-020 §3**); **drop the keyword prefilter, retrain the probe** (= ADR-011 applied, cf. #98). ⭐ **A row with a serious TP reading is a bad gate probe by construction.** ⛔ **Three of my claims died in review** — H-CV1 **UNTESTED both ways** (matching rows are override survivors) — ⛔ **now REFUTED at the premise 08-22, see below**; `cap_applied` null because `_TRIGGER_REGISTRY` is **empty by design**; two adverse rows shipped **each other's rationale**.
+
+- **2026-08-17 — one question, one issue, no code, no spend** ([session](project_session_2026_08_17.md)) — `lyceum.technology` (EU GPU cloud): **no for training; for an oracle it is a residency play, not a cost play** (est. 70B ≈ $12–20 per 8K retrain vs Gemini Batch $14.40 — renting only wins at sizes b650 nearly runs free). Filed **#124** P3-low; owner: *"important experiments, not right now."* ⭐ **#124 step 1 is FREE and is exactly what #109 Arm B is blocked on** — qwen3/phi4 scores on the frozen 522-article set already exist.
+
+- **2026-08-16 night → 08-17 — reliable CDCR is the priority; the academic gate went LIVE** (*no session file* — record in [corroboration-feature-hypotheses.md](corroboration-feature-hypotheses.md)) — zero spend. **Owner, superseding everything else: *"priority has to really have reliable CDCR"*; `investment_risk` PARKED (park ≠ remove).** ⭐⭐ **Production clustering is 79.3% sub-threshold artefact** — articles match a *centroid* and inherit co-membership (NM#188/#228/#278). ⛔ Blocked on the one measurement nobody has made: complete-linkage declines ~39% of production merges and nothing separates *false merges refused* from *real corroboration destroyed*. ⛔ Sequence is settled and is **not** threshold-first (0.88 → 0.92 destroys **94%** of cross-language corroboration).
+
+- [2026-08-16 evening](project_session_2026_08_16_evening.md) — #121 measured, #120 closed, nothing shipped. ⭐⭐ **the within-source control dissolved the effect in 5 of 6 lenses**; only `investment_risk` survives, and a topic confound survives inside each source.
+
+- **2026-08-16 — #119 ruled, deployed, VERIFIED LIVE; plus an audit** ([session](project_session_2026_08_16.md)) — no filter, no model. ✅ First post-deploy cycle **clean** (`dup-id` 8→28,113, `dup-url` 33,147→5,134, sum +92). ⚠️ **"Self-review found nothing all day" is a BET, not a finding** — ~11 defects, every one caught by a *different* session re-deriving, but nobody counted what each session caught alone, so a ratio over findings that travelled says travel matters however weak the effect. Denominator fix pending.
+
+- [2026-08-15 night + late](project_session_2026_08_15_night.md) ([late](project_session_2026_08_15_late.md)) — ⭐ **a stamp bumped ahead of its content is the only value that can turn its own checker off**; ⭐ the audit's own instrument was again the defect ("not reported" meant "never checked"); ⭐⭐ **PROMOTED: a failing check may be the control working** — 788/788 violations was the control firing. Index 54.8k → 24.7k, the zero proven by seeding seven breaks.
+
+- [2026-08-15](project_session_2026_08_15.md) — H-D2 closed (the 6h spike is arXiv walking with the collection timer); #114 opened: the 300-char floor's rationale is asserted in three places and measured in none. Four retractions, all caught by a peer.
+
+- [2026-08-14](project_session_2026_08_14_late.md) — Contract A envelope. ⭐⭐ **a check answering a NARROWER question than the one asked, where the narrow answer is TRUE, is worse than a wrong check — it is correct forever, and the tell is that it is *satisfying*.**
+
+- **2026-08-13 — three sessions, nothing deployed** ([evening](project_session_2026_08_13_evening.md), [afternoon](project_session_2026_08_13.md)) — ⚠️ **I caused a production outage** (cd v6 stage 2 loaded from the Hub under `HF_HUB_OFFLINE`; failed closed, one cycle lost, no bad data; fixed `dcf2860`, **not redeployed**). ⭐ **Greenness is not evidence a schema tracks reality** (`format: "date-time"`, 99.4% violating, unseen because Draft7 does not assert `format`). ⭐ **THE PATTERN: four claims, all "I inferred runtime state from an artefact that cannot carry it"** — I grepped a script *name*, not a *behaviour*.
+
+- **2026-08-12 evening + afternoon** ([evening](project_session_2026_08_12_evening.md), [afternoon](project_session_2026_08_12_afternoon.md)) — **#106 CLOSED**, $1.63. Enrichment replaced **zero** of 35,229 GN proxy rows — a property of the URL scheme, not tuning. ⚠️ My close was over-scoped, corrected same-evening (**ADR-007 retires population A only**). ⭐ ν₄ = 0.687 **exceeded the effect it was meant to adjudicate** ⇒ unfalsifiable at ANY n. Carries: **a grep for a pattern is not a grep for a behaviour**; ⭐ **the archive survived only because the purge was broken.**
+
+- **2026-08-12 morning** — *no session file in this repo; the record is in the Claude Code auto-memory index only.* Three of four owner rulings closed: **#107 CLOSED** (a positive outcome suffices; a pleasant subject is not required — and **#91 is explicitly NOT covered**), **#109 Arm A approved / Arm B held**, **#106 measured** (GN mass in the normalization CDF moves normalized scores **≤0.367**, 0.0% of articles ≥0.5, every gate crossing **downward**) and still awaiting its one-line close. Framework adopted v1.21.0 → v1.23.0.
+
+- **2026-08-11 — the op-point cycle, four sessions** ([evening](project_session_2026_08_11_evening.md), [afternoon](project_session_2026_08_11_afternoon.md), [midday](project_session_2026_08_11_midday.md), [early](project_session_2026_08_11.md)) — `uplifting v7` 4.0→4.5 and `investment_risk v6` 4.0→4.25, **verified against the runtime source**; #102 closed, #105 split, #108 opened. ⚠️ **The criterion in both commit messages was WRONG** — band rows do not vanish, their **tier** changes. ⚠️ **Absolute counts are not comparable across differently-sized batches.**
+
+- **2026-08-09/10 — five sessions, collapsed 2026-08-25 for the character budget (#123); the files are untouched**: `ls memory/project_session_2026_08_09*.md memory/project_session_2026_08_10.md`. ⭐ Two keepers worth the open: **I was sent to fix a calibration defect and there wasn't one** (the 173× spread is mostly genuine base rate), and **a 6-lens review of that day's own work found 3 blockers**. ⛔ A pointer is not a summary — open the file.
+
+- [2026-08-08](project_session_2026_08_08.md) — **two halves; read both.** NM#300 was FIVE allowlists, not two — the fix was deployed, provably loaded, and the next cycle still read 0 of 2,170. **Code-proven is not outcome-proven.** Contracts had never met a production row: first run, 908 violations.
+
+- [2026-08-07 night](project_session_2026_08_07_night.md) — **the dedup question answered by reading the call path, not by waiting a month** — then RETRACTED the same night by the adversarial lens: my premise was an instrument artefact (only 10.1% of hashes carry a source). LD#101 filed and closed out.
+
+- [2026-08-07 late](project_session_2026_08_07_late.md) — **a coverage pass, a plan that lost, and a drop nobody had counted.** FS#85 is closed and re-homed to NM#232, which blocks four dependents banded nowhere. A six-lens battery refuted the plan's central recommendation and three of my stated facts.
+
+- [2026-08-07 evening](project_session_2026_08_07_evening.md) — **chain re-verification, a new repo, and a review battery that gutted it.** Two chain links marked ✅ were open. Built `veen-systems/pipeline-atlas` — then six reviewers found **15 false claims in a site whose only job is being true**.
+
+- [2026-08-07](project_session_2026_08_07.md) — **six owner decisions walked one at a time; two were STALE AS LISTED.** The signature defect hit occurrences 6 and 7 and **both had CORRECT CALLERS** — hence the escalated rule: name the caller *and* prove the outcome changed at the end of the run.
+
+- [2026-08-06 evening](project_session_2026_08_06_evening.md) — **decision-bound: four owner calls closed three backlogs.** "Pin a batch size" was never available — batch size is already fixed at 16, the variable is *composition* — so #95's 0.16 floor became a **band the deploy gate prints**. #97: 812 rows of full article text in a PUBLIC repo.
+
+- [2026-08-06 afternoon](project_session_2026_08_06_afternoon.md) — **#98 cd v6 probe shipped** (held-out oracle FN 0/75 vs the keyword gate's 10/75). The review battery found 2 blockers in the same day's work, both mine — v6 ships a probe into a package with no inference module and no calibration.
+
+- [2026-08-06](project_session_2026_08_06.md) — **four-lens review of the previous evening's commits: 4 blockers, 13 warnings, all fixed.** Every measurement held; the prose around them did not. Also: a **global skill silently shadowed this repo's project-local one of the same name**.
+
+- [2026-08-05 evening](project_session_2026_08_05_evening.md) — **board refreshed and the legal arc executed, almost all of it in ovr.news.** Five owner decisions recorded. Two findings changed the work: the EMFA micro-enterprise exemption **does not exist**, and the site published a data controller that does not exist.
+
+- [2026-08-05](project_session_2026_08_05.md) — **LD#92 IDENTIFIED**: D3 (matched percentile depth) −1.119 is the largest effect, not the predicted collapse. `review-changes` skill adopted and **re-mapped not copied** — its first run caught four of my own same-day errors.
+
+- [2026-08-03 evening](project_session_2026_08_03_evening.md) — **all three junk gates verified against the running box** — obituary enforcing (max surviving 0.8488, zero ≥0.85), commerce enforcing, violence inert by design. Commerce provenance fix + seeded cycle replay DEPLOYED. sustech v3 + foresight v1 removed.
+
+- [2026-08-01 afternoon](project_session_2026_08_01_afternoon.md) — four-repo re-inventory (156 open, **12 chains**, new P0 set incl. LD#91/ovr#284/ovr#285); **persuasion-scorer split out** as a verified system under three agent-ready frameworks (LD#78/#79 externalized); post-deploy checks 1+3 PASS (`_commerce_model: v1`, `violence_blocked` gone from Loaded line), 2+4 pending mid-cycle. **NEXT: finish checks 2/4, then NM#285 measurement**

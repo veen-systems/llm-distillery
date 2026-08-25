@@ -49,6 +49,7 @@ or empty — an unreadable index must never read as a pass.
 of exit code, so no PASS or WARN line may contain that word. Say "hard limit".
 """
 import os
+import re
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -56,6 +57,35 @@ INDEX = os.path.join(ROOT, "memory", "MEMORY.md")
 
 HARD = 30_000  # ceiling: above this the index is no longer a navigational layer
 SOFT = 27_000  # runway: ~3,000 chars ≈ three sessions of notice
+
+# The index carries the newest MAX_SESSION_ENTRIES session entries; the next one
+# is MOVED to `memory/session-log.md`, verbatim (#123, owner call 2026-08-25).
+#
+# ⚠️ THIS IS THE CHECK THAT MATTERS, AND IT IS NOT THE CHARACTER ONE. The size
+# guard measures the symptom. What actually grew was the session log — 69% of the
+# file by character on 2026-08-25, ~600-900 chars per session, against a fixed
+# ceiling — and the response it invited (trim an older entry) recovered ~100 chars
+# per line removed and turned a finding into a pointer each time. Counting entries
+# names the thing that grows, so the fix is a MOVE rather than a deletion.
+#
+# It is a WARN, not a FAIL. A hard failure here would land on whoever is writing
+# the session entry, at the moment they are writing it, which is exactly the
+# pressure that made entries go somewhere else instead.
+MAX_SESSION_ENTRIES = 4
+SESSION_LOG = os.path.join(ROOT, "memory", "session-log.md")
+
+# A session entry starts with a bullet and a date, in either of the two shapes the
+# index uses: `- **2026-08-25 — ...` and `- [2026-08-25](...)`.
+SESSION_ENTRY = re.compile(rb"^- (?:\*\*)?\[?20\d\d-\d\d-\d\d")
+
+
+def _session_entries(raw: bytes) -> int:
+    """Count session entries in the index itself.
+
+    Counted on the INDEX only. The log file is deliberately unbounded — it is the
+    record, and a budget on it would re-create the problem one file over.
+    """
+    return sum(1 for line in raw.splitlines() if SESSION_ENTRY.match(line))
 
 
 def main():
@@ -71,18 +101,34 @@ def main():
         print(f"FAIL memory/MEMORY.md is {size:,} chars ({lines} lines), over the "
               f"{HARD:,} hard limit. Do NOT drop your session entry to fit — move "
               f"detail into memory/project_session_*.md and leave a hook here. "
-              f"Check each trimmed entry has its full session file FIRST.")
+              f"Check each trimmed entry has its full session file FIRST."
+              f"{_entry_note(raw)}")
         return 1
 
     if size >= SOFT:
         print(f"PASS {size:,} chars / {lines} lines — WARN: {HARD - size:,} left "
               f"under the {HARD:,} hard limit, roughly {(HARD - size) // 800} more "
-              f"entries. Trim now, while there is still room to choose what goes.")
+              f"entries. Trim now, while there is still room to choose what goes."
+              f"{_entry_note(raw)}")
         return 0
 
     print(f"PASS {size:,} chars / {lines} lines ({HARD - size:,} under the "
-          f"{HARD:,} hard limit)")
+          f"{HARD:,} hard limit){_entry_note(raw)}")
     return 0
+
+
+def _entry_note(raw: bytes) -> str:
+    """The session-entry half of the verdict, appended to whatever PASS line ran."""
+    n = _session_entries(raw)
+    if n <= MAX_SESSION_ENTRIES:
+        return f" — {n}/{MAX_SESSION_ENTRIES} session entries"
+    if not os.path.isfile(SESSION_LOG):
+        return (f" — WARN: {n} session entries, over the {MAX_SESSION_ENTRIES} the index "
+                f"carries, and memory/session-log.md DOES NOT EXIST. Create it before "
+                f"moving anything; a move with nowhere to land becomes a deletion.")
+    return (f" — WARN: {n} session entries, {n - MAX_SESSION_ENTRIES} over. MOVE the "
+            f"oldest to memory/session-log.md VERBATIM — do not compress it, and do not "
+            f"drop it. Compression is what stopped the index being a record (#123).")
 
 
 if __name__ == "__main__":
