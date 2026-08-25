@@ -61,6 +61,7 @@ metadata:
 > honest comparison is the `GemRealtm` column.
 > ⚠️ This is the [[feedback-verify-call-path]] shape again: the price was verified, the
 > *ability to obtain it* never was.
+> <!-- verify: R=/home/jeroen/repos/veen-systems/llm-distillery; if [ ! -d "$R" ]; then echo "CANNOT VERIFY: repo not at that path"; elif grep -rlE '\.batches\.|batches\.create' --include=*.py "$R"/ground_truth "$R"/scripts "$R"/filters 2>/dev/null | grep -qv 'scripts/analysis/oracle_cost.py'; then echo "CLAIM REFUTED: a Batch API call site now exists — re-derive the oracle choice"; exit 1; else echo "still absent: no .batches call site in ground_truth/, scripts/ or filters/"; fi -->
 >
 > ✅ **The rest of the re-derivation stands, and it no longer depends on the cache unknown.**
 > Both rate cards re-read first-hand 2026-08-24. DeepSeek off-peak `0.007 / 0.22 / 0.66`,
@@ -93,6 +94,7 @@ metadata:
 > both the "+64% flip point" and the outside "dead heat" framings mislead: each compares
 > at one assumed shape instead of asking which side of the ratio we are on. Reproduce:
 > `scripts/analysis/oracle_cost.py` (rates in the header, measured shapes inline).
+> <!-- verify: python3 scripts/analysis/oracle_cost.py | grep -m1 'rate-card check' -->
 >
 > ⭐⭐ **The 0.3%-vs-14% cache puzzle is SOLVED, and it is structural.** `build_prompt`
 > substitutes the article **into the middle** of the template

@@ -4202,6 +4202,21 @@ anything. The module namespace holds its imports as well as its definitions.
 exiting otherwise. It happened to raise `KeyError` here; had the category been present but
 empty, the probe would have screened on nothing and returned a clean-looking zero.
 
+### A NEGATIVE-EXISTENCE PROBE MATCHED THE DOCUMENT ASSERTING THE NEGATIVE (2026-08-25)
+**Problem**: Wrote a probe for "there is still no Gemini Batch call site" —
+`grep -rqE '\.batches\b' --include=*.py …` — and it fired **CLAIM REFUTED** on its first run.
+**Root cause**: The only match was `scripts/analysis/oracle_cost.py:178`, the banner line I
+had written that same hour saying *"`.batches` appears nowhere"*. The probe found the
+sentence claiming absence and read it as presence. A negative-existence check searches the
+same tree that holds the prose about the absence, and prose is not excluded by `--include=*.py`
+when the prose lives inside a `print()`.
+**Fix**: Match a call *shape* rather than a name — `\.batches\.` needs the trailing dot a
+real invocation has and the prose does not — plus an explicit exclusion of the analysis
+script, then **seed-tested it**: planted `client.batches.create(...)` in a throwaway file,
+confirmed CLAIM REFUTED, removed it. **A negative-existence probe must be seed-tested in
+both directions; the false-positive direction is the one that discredits the probe, because
+the next reader will "fix" the claim rather than the check.**
+
 ### A PRICE THAT WAS VERIFIED THREE TIMES AND COULD NEVER HAVE BEEN PAID (2026-08-25)
 **Problem**: llm-distillery#103 spent three days deciding between oracles by comparing
 DeepSeek's per-article cost against "Gemini Batch, ~$0.0018". Both rate cards were read
