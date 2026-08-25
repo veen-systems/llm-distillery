@@ -277,16 +277,34 @@ prints the histogram, so no check breaks.
 >
 > ⚠️ **`too_old` is still 87.6% of the increment** (2,852 of 3,257) — H-AR11's shape holds
 > at the margin, so any sizing that ignores freshness is wrong at steady state too.
-> ⚠️ **The real unbounded growth is the INDEX, not the ledger:** `.ledger_index.json` went
-> 12.36 → 12.59 MB for 3,257 new ids ≈ **73.5 bytes/id ⇒ ~1.4 MB/day**, and nothing prunes
-> it. That is now the thing to watch.
+> ⚠️ **The INDEX grows faster than the ledger:** `.ledger_index.json` went 12.36 → 12.59 MB
+> for 3,257 new ids ≈ **73.5 bytes/id ⇒ ~1.4 MB/day**.
+> ⛔ **"and nothing prunes it" was WRONG — corrected 2026-08-25.** `BlockLedger._prune_index`
+> runs on **every flush** and drops entries older than `index_retention_days` (default 30,
+> not overridden in config). Nothing has aged out yet because the ledger is one day old:
+> measured 17:17 today, **194,406 entries / 14.25 MB spanning 2026-08-24 11:05 →
+> 2026-08-25 15:17**. So the growth curve seen so far is the *fill* phase, not unbounded
+> growth. Arithmetic, not measurement: ~20K new ids/day ⇒ a **plateau near 45 MB** once the
+> 30-day window is full, with the 168K-entry backlog ageing out from ~2026-09-23.
+> ⚠️ Pruning is by FIRST-SEEN stamp (a hit does not refresh it), which is correct here:
+> 30 days > the 14-day raw retention, so no entry is dropped while its article can still
+> be re-read.
 >
-> **Both held items are unblocked:**
-> - **Move `.ledger_index.json` off the cleanup path** — it survives only because the sweep
->   glob is `*.jsonl` and it is `.json`. Rebuildable from the rows, so still not urgent.
-> - **`placements per row` is now `{6: 171741, 3: 1, 1: 1}`** — a *second* singleton
->   appeared at the second flush. Two distinct anomalies, each n=1; still not diagnosable,
->   but no longer a single stray.
+> **Both held items are RESOLVED (2026-08-25 evening):**
+> - **`.ledger_index.json` on the cleanup path** — ⛔ **the stated reason was already
+>   stale**: the blocked sweep globs `blocked_*.jsonl`, not `*.jsonl`, so the index is
+>   protected by the PREFIX as well as the extension, and a test already pins it.
+>   ⭐ **But the same question asked of `data/raw/` found a live bug**: that sweep globs
+>   `("*.jsonl", "*.jsonl.bak", "*.json")`, **`pathlib.Path.glob` matches dotfiles**
+>   (`glob.glob` does not), and `data/raw/` holds the per-filter state stores
+>   `.processed_ids_<filter>.json` (~29 MB each). A running filter rewrites its store every
+>   cycle so it never ages — **a PAUSED one does**, and `investment_risk` was paused today,
+>   so its store would have been deleted ~2026-09-08 and "un-pause = two config lines"
+>   would have become "re-score the whole 14-day window". Fixed in NexusMind `96b29f3`
+>   (skip leading-dot names; 1 test that fails against the old code, plus a control that
+>   the sweep still deletes real stale data). **A data sweep must not reach state.**
+> - **`placements per row`** — **DIAGNOSED**, see the resolved block in the NEXT SESSION
+>   section above. Three anomalies now, two mechanisms, both benign.
 >
 > ⚠️ `deploy_filters.sh` did **not** carry this — its auto-pull is path-scoped to filter changes
 > (NM#362) and there are none here. It was an explicit `git pull --ff-only origin main`.

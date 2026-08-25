@@ -73,6 +73,23 @@ Gathered before the decision, not after:
 Restore the `enabled_filters` line **and** `aegis_export.enabled: true`. Both are
 config; no code, no deploy of a package. The model is still on the Hub.
 
+⛔ **Found the same evening, and it nearly made that paragraph false.** The
+filter's memory of what it has already scored is
+`data/raw/.processed_ids_investment_risk.json` (29.4 MB). The raw cleanup sweep
+globs `("*.jsonl", "*.jsonl.bak", "*.json")`, and **`pathlib.Path.glob` matches
+dotfiles** — `glob.glob` does not, which is what makes the pattern read as safe.
+A *running* filter rewrites its store every cycle, so the mtime is never stale
+and the sweep never touched it; **a paused filter's store ages**, and at
+`temporal.cleanup_older_than_days: 14` it would have been deleted around
+**2026-09-08**. Un-pausing after that date would silently mean re-scoring the
+whole 14-day raw window — not two config lines. The store is not archived either
+(the archiver globs `content_items_*.jsonl`), so it would simply be gone.
+
+Fixed in NexusMind `96b29f3`: the sweep skips names starting with `.`, with a
+test that fails against the previous code and a control proving the sweep still
+deletes real stale data. **A data sweep must not reach state.** With the guard
+deployed, un-pause is what this section says it is, on any date.
+
 ## The reference-example question, answered separately
 
 `investment_risk` is the only filter with its own downstream contract and its own
