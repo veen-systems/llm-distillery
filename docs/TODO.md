@@ -366,6 +366,19 @@ prints the histogram, so no check breaks.
 >   `nexusmind_*.tar.gz`; `raw_*` and the new `blocked_*` are local-only.
 > - **`data/prefiltered_out/` is still in neither the cleanup nor the archive path** — it
 >   survives on luck, and it is the corpus that made LD#82 auditable.
+>   **Measured 2026-08-25:** one subdirectory (`violence_promotion`), **178 files, 7.7 MB**,
+>   `flagged_20260727_063455` .. `flagged_20260825_150946` — one file per cycle at ~200 KB,
+>   so **~1.2 MB/day, ~440 MB/year**. Growth is not the problem; **loss** is.
+>   ⛔ **It is NOT redundant with the block ledger, and the ratio is the reason to keep it:**
+>   the newest file holds **414 flagged rows** and only **39** of them appear in that cycle's
+>   ledger as `gate.violence_promotion` (39 of 39 matched, so the join is exact). The other
+>   **375 (90.6%) are flagged-but-KEPT** — the shadow population, which is precisely the
+>   evidence any argument about where the threshold sits has to be made on, and the ledger
+>   by construction never contains it. Rows carry id/title/url/source/`_violence_promotion_score`
+>   only — no content, which is why it is this cheap.
+>   **Decision needed (small):** archive it on the `filtered/`+`blocked/` path, or leave it
+>   growing and say so out loud. Doing nothing is currently indistinguishable from the second,
+>   which is the part worth fixing either way.
 > - **Mark blocked articles processed** — the owner ruling that also ends ~22,000 re-evaluations
 >   per cycle. Deliberately NOT bundled: it changes admission behaviour, the ledger does not.
 > - **Stage ordering caps what a blocked row can say.** An article dropped in `load_articles` was
