@@ -99,12 +99,102 @@ imports `stamp_census` or `article_record_register` (one docstring mention in
 `title_affinity.py`), and `scripts/main.py` is unchanged. **A rule whose premise you have
 checked is a different thing from one you skipped.**
 
+## Afternoon — step 3 shipped, and an owner ruling paused a filter
+
+### Migration step 3, the additive half (NexusMind `67b70e5`, `b26c384`) — DEPLOYED
+
+`nexusmind.content` / `.signals` / `.corroboration` emitted beside `.run`/`.disposition`/
+`.gates`. Lens copies untouched — dual-write, no reader changed. **Cost on 26,530
+production rows: median +338 B, 6.09% of the median row, max +1,147 B.**
+
+⛔ **The plan's premise was wrong by two fields: "13 lens-invariant" is 11.** Re-measured
+over **4,838** multi-lens articles: `content_length` and `original_content_length` differ
+on **4**, every one an article post-enriched mid-cycle. The 4 differing and the 4 enriched
+are the **same 4**, 0 unexplained either way.
+
+⛔ **`corroboration.other_sources` was declared as an array of STRING and never was one** —
+every entry on disk is an object. Nothing emitted it, so nothing contradicted a declaration
+written from the field's *name*. Schema 0.4.0 → 0.5.0.
+
+⭐ **The rule the step established: THE DUAL-WRITE DUPLICATES SCALARS, NEVER PAYLOADS.**
+Excluding `content.original` and `other_sources` took worst-case row growth 12,237 B →
+1,147 B.
+
+### ⛔ A RETRACTION, same session: `_corroboration` is not a dead declaration
+
+The new top-level check reported it declared in Contract B and on 0 of 164,572 rows. I
+wrote "the declaration is the wrong half" in **three documents** before opening the
+declaration, which says *"Intermediate field — consumed by main.py and re-emitted under
+source_quality before JSONL write."* It was right all along: 0 persisted rows **plus an
+in-process reader** is an intermediate, not a corpse.
+
+⭐⭐ **The keeper: a description is not a machine-readable fact.** Contract B 1.18.0 →
+1.18.1 marks it `x-intermediate: true`; check A excludes marked fields and prints them
+once. ⭐ **0 rows is a measurement; "dead" is a conclusion** — the gap between them held
+the declaration's own words.
+
+### The ordering effect — measured, then made moot by the pause
+
+Pooled over 12 cycles / **31,596** multi-lens articles: **18 (0.057%)** carry a different
+`content_length` per lens. Rare, but **perfectly systematic** — `solutions` got the short
+text **18 of 18**, `uplifting` 17 of 18, the other four the full text 18 of 18. Median gap
+**26×** (196 vs 4,559 chars). Cause: `enabled_filters` is an ORDERED list, and the lenses
+at the front can never benefit from a later lens's fetch. Filed as evidence on NM#339/#331.
+
+### ⭐ OWNER RULING — `investment_risk` PAUSED
+
+Verbatim: *"aegis is dormant, nobody reads it - pause it"*. Evidence gathered **before**
+the ruling: it was never an ovr.news lens (3 allow-list references, `validate.ts` calls it
+*"an Aegis-only filter"*); its consumer chain was real but one-sided (export every cycle,
+**251 daily archives since 2025-12-07**, published to a gist); **78.5% of its output landed
+in `unclassified`** on the last run.
+
+Applied: out of `pipeline.enabled_filters`, and `pipeline.aegis_export.enabled: false`
+because that export aggregates only this filter. **PAUSED ≠ REMOVED** — package, HF Hub
+repo, Contract C, archives all stay; un-pause is two config lines. Record:
+`docs/decisions/2026-08-25-pause-investment-risk.md`.
+
+⚠️ The gist FREEZES at today's file rather than disappearing. ⚠️ ovr.news's allow-list must
+STAY (draining rows validate against it). ⚠️ `placements` drops 6 → 5. ⚠️ Every census over
+`data/filtered/` keeps reporting six lenses for ~14 days — **history, not state**.
+
+⭐ Predicted, not measured: the pause should take the ordering effect to ~zero, since
+`investment_risk` was 51 of 70 post-scoring enrichments and ran third.
+
+### ⛔ A third of my own: the watcher matched itself (5th occurrence)
+
+A wait-loop `until ! ps -eo args | grep -q "[m]ain.py"` never exited. The bracket trick
+protected the grep from itself — but the loop's own `echo "no main.py process running"`
+put the literal pattern on its command line, so **the watcher matched itself and waited
+forever**. It held the deploy ~20 minutes after the box had gone idle, and three polls
+reported "a process" that was my own waiter. **The tell was in the output all along: the
+matching line began `bash -c until`.** ⭐ **Print the matching line — a count cannot show
+you that the match is you.**
+
+### Deployed 2026-08-25 17:2x — sadalsuud at `c7af891`
+
+Both changes landed in one pull, with the box verified `inactive` and the cleanup unit
+`dead`. Config on the box reads 5 filters and `aegis_export: false`.
+
+⏳ **Outcome proof is NOT in yet** — it needs the 20:03 cycle. Run
+`python3 /tmp/verify_deploy_20260825.py` on the box (also in this repo's scratchpad
+history). ⭐ **That verifier was proven in the FAILING direction first**: against the
+pre-deploy state it exits 1 on all seven checks. Writing it that way caught a defect in
+itself — it had defined "this cycle" as an exact timestamp match, but a cycle is a
+**WINDOW** (today's spanned 17:10:29 → 17:17:46, one file per lens), so the first version
+selected exactly one lens and would have reported the pause as having removed five filters.
+
 ## Next session
 
-1. **🅒 migration step 3** — free, no external reader: hoist the 13 lens fields measured
-   identical on all 2,495 multi-lens articles. The register's `→ record` column is the map.
-   ⚠️ Three more are invariant only because their VALUE is constant and must **not** move:
-   `passed_prefilter`, `normalization_method`, `primary_literature_cap_would_apply`.
-2. **`_corroboration`'s declaration** — Contract B declares a field nothing emits. The pop
-   is deliberate, so the declaration is what should go; that is a Contract B bump.
-3. **#123** the index-budget guard is still open; today's trim bought ~2.5k chars, not a fix.
+1. ⏳ **VERIFY THE DEPLOY** — first thing, after the 20:03 cycle:
+   `python3 /tmp/verify_deploy_20260825.py` on sadalsuud. Expect 5 filters, no
+   `investment_risk` in the newest cycle, `nexusmind.content/signals/corroboration` present
+   AND populated, no Aegis export written. Then re-run the register (the 18 new paths are
+   pre-classified, so it must still exit **0**).
+2. **Re-run the ordering measurement** after a few paused cycles — the prediction that the
+   pause takes it to zero is a prediction, not a result.
+3. **Migration step 4** — the paid one: `nexus_mind_attributes` → `nexusmind.lenses` plus
+   deleting the copies steps 1–3 created. Four ovr.news files and a Contract B bump. Its own
+   session.
+4. **#123** the index-budget guard is still open; today's trim bought ~1 entry, not a fix —
+   and the live numbers are now in the issue.

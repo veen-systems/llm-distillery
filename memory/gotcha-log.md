@@ -4336,3 +4336,34 @@ and zero persisted rows, where a corpse has neither. ⭐ **When a schema's prose
 fact a checker needs, move the fact into the schema.** ⭐⭐ And: *0 rows* is a
 measurement; *dead* is a conclusion — the gap between them is where the declaration's own
 words were sitting.
+
+### THE WATCHER MATCHED ITSELF AND WAITED FOREVER (2026-08-25) [5th occurrence of the pgrep rule]
+**Problem**: A background wait-loop, `until ! ps -eo args | grep -q "[m]ain.py"; do sleep
+10; done`, never exited. It held a deploy for ~20 minutes after the box had already gone
+idle, and three separate "is it still running?" polls reported a process that was my own
+waiter.
+**Root cause**: the `[m]ain.py` bracket trick stops the grep matching *itself* — and does
+nothing about the rest of the command line. The loop's own `echo "no main.py process
+running"` put the literal pattern on its argv, so the watcher matched itself on every
+iteration and could never terminate. The two other pollers matched it too.
+**Fix**: `ps -eo pid,etime,comm,args | awk '$3 ~ /python/'` plus `systemctl is-active`,
+which showed `nexusmind-cleanup.service` had been `dead` the whole time. ⭐ **The tell was
+in the output from the first poll: the matching line began `bash -c until`.** A count of
+matches cannot show you that the match is you — **print the line**. ⭐⭐ And note where the
+rule was: it is in `CLAUDE.md`, in this log, and in `working-rules.md`, and I wrote a fresh
+instance of it anyway. Knowing a rule and applying it at the moment you write the command
+are different acts (`feedback-articulating-is-not-applying`).
+
+### A CYCLE IS A WINDOW, AND MY VERIFIER TREATED IT AS AN INSTANT (2026-08-25)
+**Problem**: The deploy verifier decided which lenses had written "this cycle" by comparing
+each file's timestamp to the newest timestamp with `==`. Run against production it reported
+**one** lens as current and five as stale — and had the deploy already landed, that is
+precisely the output a successful pause of five filters would produce.
+**Root cause**: a cycle writes one file per lens as each finishes, minutes apart —
+2026-08-25's ran 17:10:29 → 17:17:46. There is no single cycle timestamp to compare
+against. I built the population by an equality the data can never satisfy for more than one
+member. This is `feedback-hand-built-population` in its purest form.
+**Fix**: membership by window (2h; cycles are 4h apart and run ~1h20m, so they cannot
+overlap). ⭐ **The reason I caught it is that I ran the verifier BEFORE the deploy, expecting
+failure.** A checker you have only ever seen pass is indistinguishable from one that cannot
+fail — and here the wrong answer was the *encouraging* one, which is the shape that ships.

@@ -123,7 +123,8 @@ them** — each exists because something shipped broken.
   `git checkout .`, `git clean`. Always pass explicit paths; `git status --porcelain`
   before committing and stage only what you recognise.
 - **`pgrep -f "<pattern>"` cannot answer "is it running?" — and `pkill -f` cannot stop it.**
-  *(4th occurrence 2026-08-21: `pkill -f` killed the shell carrying the pattern.)* It
+  *(5th occurrence 2026-08-25: a wait-loop matched ITSELF — its own `echo "no main.py
+  running"` carried the pattern — and waited forever. **Print the matching line.**)* It
   matches the shell carrying the pattern. Use `ps -eo pid,etime,args | grep -v grep`,
   `systemctl is-active`, or the log's last timestamp. If a process check decides
   whether you act, print the matching line before believing it.
