@@ -60,11 +60,51 @@
 > unchanged. A rule whose premise you have checked is a different thing from one you skipped.
 > **1,457 unit tests pass** (1,431 + 26 new).
 >
-> ### 🅒 Migration step 3 — free, and now mapped
-> Hoist the 13 lens fields measured identical across every lens on all 2,495 multi-lens
-> articles. The register's `→ record` column is the map. ⚠️ Three more are invariant only
-> because their VALUE is constant and must **not** be hoisted: `passed_prefilter`,
-> `normalization_method`, `primary_literature_cap_would_apply`.
+> ### ✅ 🅒 Migration step 3 (additive half) — COMMITTED, ⏳ NOT YET DEPLOYED
+> `nexusmind.content` / `.signals` / `.corroboration` are emitted beside
+> `.run`/`.disposition`/`.gates` (NexusMind `67b70e5`, `b26c384`). Lens copies untouched —
+> a dual-write, no reader changed. **Cost measured on 26,530 production rows: median
+> +338 B, 6.09% of the median row, max +1,147 B.** 13 tests, all 13 fail against the
+> previous module; 1,470 pass.
+>
+> ⛔ **The plan's premise was wrong by two fields — "13 lens-invariant" is 11.** Re-measured
+> over **4,838** multi-lens articles (2026-08-25): `content_length` and
+> `original_content_length` differ across lenses on **4** of them, every one an article
+> `investment_risk` post-enriched mid-cycle. The lenses written EARLIER in that cycle
+> (`solutions`, `uplifting`) carry the pre-enrichment length; those written later carry the
+> enriched body plus `_post_enriched` / `_post_enriched_from`. **4 of 4 match, 0 unexplained
+> either way.** Nothing is lying — each row is correct as of its own write — but the field
+> is a property of the **ROW**, and `nexusmind.content.length` is documented that way.
+>
+> ⛔ **`corroboration.other_sources` was declared as an array of STRING and never was one.**
+> Every entry on disk is an object. Nothing emitted the field, so nothing contradicted a
+> declaration written from the field's *name* — the same shape as `gates.academic_merge`,
+> found the same way: by trying to emit it. Schema **0.4.0 → 0.5.0**.
+>
+> ⭐ **The rule the step established: THE DUAL-WRITE DUPLICATES SCALARS, NEVER PAYLOADS.**
+> `content.original` (a body) and `corroboration.other_sources` (mean 228 B of 592, **11,737 B
+> on one row**) are deliberately absent and arrive when step 4 removes their old home.
+> Excluding them took worst-case row growth from 12,237 B to 1,147 B.
+>
+> ### ⏳ DEPLOY + VERIFY — first thing next session
+> This one **does** touch the pipeline's import graph (`scripts/main.py`,
+> `src/archiving/block_ledger.py`), so the "deploy when inactive" rule applies with its
+> premise intact. sadalsuud ran `activating` for the rest of the session (cycles at 16:05
+> and 20:03).
+>
+> ```
+> ssh sadalsuud 'systemctl is-active nexusmind.service'      # must read inactive
+> ssh sadalsuud 'cd /home/jeroen/local_dev/NexusMind && git pull --ff-only origin main'
+> # then AFTER the next cycle:
+> ssh sadalsuud 'cd /home/jeroen/local_dev/NexusMind && python3 scripts/verify_block_ledger.py'
+> ssh sadalsuud 'cd /home/jeroen/local_dev/NexusMind && venv/bin/python -c "
+> import json,glob;f=sorted(glob.glob(\"data/filtered/uplifting/filtered_*.jsonl\"))[-1]
+> r=json.loads(open(f).readline());print(sorted((r.get(\"nexusmind\") or {}).keys()))"'
+> ```
+> **Outcome proof is `content`, `signals`, `corroboration` in that key list** — not that the
+> code is right, which the tests already say. Then re-run the register: the 18 new paths are
+> already classified, so it must still exit **0**; if it exits 1, something else appeared.
+> Rollback is `git revert 67b70e5` + redeploy — the namespace is not config-gated.
 >
 > ### ⛔ Open, not forgotten
 > - **`_corroboration` is declared in Contract B and never emitted** — a live
