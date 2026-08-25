@@ -1,6 +1,80 @@
 # LLM Distillery - TODO
 
-## 🔵 NEXT SESSION — **re-check the ledger's SECOND flush, then the register**
+## 🔵 NEXT SESSION — **the register is populated; step 3 is the free one left**
+
+> **Updated 2026-08-25.** No spend, no model, no deploy to the scoring path. The work is
+> in **NexusMind** (`97677b3`); this repo carries the spec, the audit and the evidence.
+>
+> ### ✅ 🅑b DONE — the register is generated, and it exits 1 on drift
+> `NexusMind/docs/ARTICLE_RECORD_REGISTER.md`, from
+> `python3 scripts/stamp_census.py --cycles 12 --emit-register docs/ARTICLE_RECORD_REGISTER.md`.
+> It joins the measured half (a census of production rows) to the human half
+> (`docs/article_record_status.yaml`, **109 fields classified by hand**). Every row carries
+> population, consumers, semantics, writer and migration target.
+>
+> - **`scope` is DERIVED from the contracts and derived by EXACT path.** Contract B declares
+>   `nexus_mind_attributes` as an open object, so a prefix test would report all 31 lens
+>   fields as declared — including the seven that are the reason the register exists.
+> - **Semantics are referenced, not restated.** 70 of 109 render from a contract
+>   `description`; the 39 with none carry a `meaning:` in the YAML. Zero fields render
+>   `-NO DEFINITION-`.
+> - **The drift check is asymmetric on purpose.** Observed-and-unclassified exits 1;
+>   classified-and-not-observed is only reported, because the census reads a WINDOW.
+> - **Verified against production, not fixtures:** three seeded mutations (a deleted entry,
+>   a bogus `status`, a `record_path` the record schema does not declare) all caught, exit 1.
+>   The clean run's zero is therefore not vacuous.
+>
+> ⚠️ **The undeclared count is 19 by exact-path counting, not the 20 this repo has been
+> quoting.** The difference is `nexus_mind_attributes.*.scores.<dims>`: Contract B declares
+> the `scores` container; the per-dimension NAMES, which are what is really undeclared, are
+> per-filter vocabulary the census collapses into one synthetic leaf. Both readings are
+> defensible — the register states which one it used. ⛔ And **109 owned fields, 260 total,
+> is a 12-cycle window** (`filtered_20260823_124156 .. filtered_20260825_130949`). At 2
+> cycles the same script says 229. Quote the window or quote nothing.
+>
+> ### ✅ Two instrument defects fixed first, because each produced a wrong register row
+> - **F8 — a nullable object's population was the count of its own ABSENCE.** `flatten`
+>   recorded a parent path only when the value was not a dict, so
+>   `image_analysis.extracted_image_dimensions` read `NEVER-POPULATED (0 of 1,410)` while
+>   its own `.height`/`.width` read 100%. **Nullable dicts were mis-reported by
+>   construction, in every census run before 2026-08-25.**
+> - **F7 — check A could not see a top-level declaration.** It read only
+>   `properties.nexus_mind_attributes.additionalProperties.properties`. Reading every level
+>   found what the audit predicted on the first run: **`_corroboration` and its three
+>   children, declared in Contract B, present on 0 of 164,572 rows** — the dict is popped at
+>   `scripts/main.py:2028` before persistence. ⭐ A ghost the instrument is *structurally
+>   unable to report* is worse than one it misses by luck.
+>
+> 23 tests (18 new register + 5 new census). **3 of the 5 census tests fail against the
+> script they replace**; the other 2 are presence controls and pass on both sides by design.
+>
+> ### ⏳ Not deployed yet — the box was mid-cycle
+> `nexusmind.service` read `activating` for the whole session (one cycle, 1h+). The register
+> was generated in a sandbox against the real production rows and the real reader roots.
+> **Next session: `git pull --ff-only origin main` on sadalsuud when the service is
+> `inactive`, re-run the register command from the checkout, and commit the generated
+> `docs/ARTICLE_RECORD_REGISTER.md`.** Nothing on the scoring path changed — `stamp_census.py`
+> is a script, not a pipeline import.
+>
+> ### 🅒 Migration step 3 — free, and now mapped
+> Hoist the 13 lens fields measured identical across every lens on all 2,495 multi-lens
+> articles. The register's `→ record` column is the map. ⚠️ Three more are invariant only
+> because their VALUE is constant and must **not** be hoisted: `passed_prefilter`,
+> `normalization_method`, `primary_literature_cap_would_apply`.
+>
+> ### ⛔ Open, not forgotten
+> - **`_corroboration` is declared in Contract B and never emitted** — a live
+>   declared-but-dead field, found by the F7 fix. Either the declaration goes or the pop
+>   moves; the pop is deliberate (owner, 2026-08-22) so the declaration is the wrong half.
+>   ⚠️ `nexus_mind_attributes.*.source_quality.source_unreliable` is a second check-A ghost
+>   from the same run — but it is written only when `source_tier == "override"` and
+>   credibility < 3.0, so it may be a rare field rather than a dead one. **A ghost is a
+>   question, not a verdict.**
+> - **`#123` the index-budget guard** is still acute.
+> - The rest of the 08-24 list below is unchanged: `.ledger_index.json` off the cleanup
+>   path, the two `placements` singletons, off-site backup of `blocked_*`.
+
+## 🟡 PREVIOUS — **the ledger's second flush, and the census's own columns**
 
 > **Updated 2026-08-24 (afternoon).** Two sessions have run on 08-24. **Thread 🅒 (The
 > Article Record) was taken and became threads 🅒 + 🅑 at once.** No spend, no model.

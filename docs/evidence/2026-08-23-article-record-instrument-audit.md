@@ -208,3 +208,41 @@ ssh sadalsuud 'cd /home/jeroen/local_dev/NexusMind && python3 scripts/stamp_cens
 # F2/F3: count presence and distinct against ALL rows, not against `seen`
 # F6/F7: cross-check the census field list against both contracts' properties
 ```
+
+---
+
+# Resolution — 2026-08-25 (NexusMind `97677b3`)
+
+The register is generated: `NexusMind/docs/ARTICLE_RECORD_REGISTER.md`, from
+`scripts/stamp_census.py --cycles 12 --emit-register …` joined to
+`docs/article_record_status.yaml` (**109 fields classified by hand**).
+
+| finding | state |
+|---|---|
+| **F1** window is a property of the count | **FIXED** — the census prints its window; the register prints it in its header and says the count belongs to it. Live proof this session: 260 fields at 12 cycles, **229 at 2**, same box, same hour. |
+| **F2** `pop%` answered a narrower question | **FIXED 2026-08-24** (`e73c5ef`) — `pres%` + `fill%`. |
+| **F3** `distinct` censored at 13 | **FIXED 2026-08-24** — exact to a visible cap, hashing the full value. |
+| **F4** readers is a bare leaf grep | **FIXED 2026-08-24** — qualified, `RDRS-AMBIGUOUS` where it cannot attribute. |
+| **F5** `WRITER_PATHS` is incomplete; the regex misses how gates stamp | **NOT fixed — accepted.** The `writer` column is machine-**proposed** and human-**confirmed** in the status file, which is what F5 itself recommended. `primary_literature_cap_value` is the proof the mechanical scan cannot be trusted alone: it is assigned through a constant and no name-based scan finds it. |
+| **F6** "declared nowhere" is wrong | **FIXED** — `scope` is derived from the contracts at render time (A / B / R / neither) and never hand-copied. ⚠️ **The undeclared set is 19, not 20, by exact-path counting**: Contract B declares the `scores` container, so `nexus_mind_attributes.*.scores.<dims>` reads as declared while the per-dimension NAMES — the genuinely undeclared part — are the per-filter vocabulary the census collapses into that leaf. |
+| **F7** `_corroboration` invisible to check A | **FIXED, and it fired on the first run.** Check A now reads Contract B at every level. New ghosts: `_corroboration` + `.cluster_id` + `.other_sources` + `.total_sources`, **declared in Contract B, present on 0 of 164,572 rows** (the dict is popped at `scripts/main.py:2028`), and `nexus_mind_attributes.*.source_quality.source_unreliable`, which may be a rare field rather than a dead one — it is written only when `source_tier == "override"` and credibility < 3.0. |
+| **F8** nullable dicts mis-reported by construction | **FIXED** — `flatten` records `<obj:N>` for a populated parent. `image_analysis.extracted_image_dimensions` goes from `NEVER-POPULATED (0 of 1,410)` to `pres 7.43 / fill 89.99`. Constancy findings are suppressed on those rows: two objects of equal size are not equal objects. |
+| **F9** the finding count is not a count of problems | **NOT fixed.** No de-duplication or by-design suppression list yet. The register carries the by-design cases as `note:` lines (`version` and `scores.<dims>` CONSTANT-IN-6 is one filter having one version), so a reader is warned even though the count is still inflated. |
+| **F10** semantics are load-bearing | **FIXED by construction** — `_academic_gate` and its three children each carry a `note:` saying a refused MERGE is not a blocked article, and that no such row ever reaches the block ledger. |
+
+## What the register is, as a control
+
+It **exits 1** when a field is observed on production rows and classified
+nowhere. The reverse is only reported: the census reads a WINDOW, and a field
+written a few times per cycle is legitimately absent from a short one.
+
+⭐ **The zero was checked, not assumed.** Three mutations seeded into the status
+file and run against the real 12-cycle census — a deleted entry, an invalid
+`status`, and a `record_path` the record schema does not declare — were all
+three caught, exit 1. A clean run that has never been shown to fail is not
+evidence of a clean record.
+
+⚠️ **Not deployed at the time of writing.** `nexusmind.service` was `activating`
+for the whole session, so the register was generated in a sandbox pointed at the
+real production rows and the real reader roots. Nothing on the scoring path
+changed — `stamp_census.py` is a script, not a pipeline import.
