@@ -61,6 +61,13 @@ Gathered before the decision, not after:
    count is per enabled filter. A verifier reconciling `N articles × 6` must be
    read as `× 5` from the first paused cycle.
 
+3. **Every measurement over `data/filtered/` keeps seeing `investment_risk` for
+   up to 14 days.** Its directory stops being written but the existing files stay
+   until cleanup ages them out, so the stamp census, the register and any
+   multi-lens analysis will still report six lenses — with the sixth's newest file
+   getting steadily older. ⛔ **A window is part of a source**: quote the window,
+   and treat a "6 lenses" reading after 2026-08-25 as history, not state.
+
 ## What "un-pause" costs
 
 Restore the `enabled_filters` line **and** `aegis_export.enabled: true`. Both are

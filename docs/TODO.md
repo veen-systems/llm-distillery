@@ -86,7 +86,24 @@
 > on one row**) are deliberately absent and arrive when step 4 removes their old home.
 > Excluding them took worst-case row growth from 12,237 B to 1,147 B.
 >
-> ### ⏳ DEPLOY + VERIFY — first thing next session
+> ### ✅ OWNER RULING 2026-08-25 — `investment_risk` PAUSED
+> Verbatim: *"aegis is dormant, nobody reads it - pause it"*. `investment_risk` out of
+> `pipeline.enabled_filters`, `pipeline.aegis_export.enabled: false` (its only input was
+> that filter). **PAUSED ≠ REMOVED** — package, HF Hub repo, Contract C and 251 days of
+> archives stay; un-pause is two config lines. Record:
+> `docs/decisions/2026-08-25-pause-investment-risk.md`. ⚠️ The gist FREEZES at today's
+> file; ⚠️ ovr.news's allow-list must STAY (draining rows still validate against it);
+> ⚠️ block-ledger `placements` drops 6 → 5; ⚠️ every census over `data/filtered/` keeps
+> seeing 6 lenses for up to 14 days.
+>
+> ⭐ **Predicted, not measured:** this should also remove most of the ordering handicap —
+> `investment_risk` was 51 of 70 post-scoring enrichments and ran third, so `solutions`
+> and `uplifting` were persisted with pre-enrichment text on **18 of 31,596** multi-lens
+> articles (0.057%, `solutions` losing 18 of 18, median gap **26×**). The remaining
+> enrichers run first and second. **Re-run `ordering_effect.py` after a few cycles.**
+> The config reorder I proposed is therefore NOT needed unless that prediction fails.
+>
+> ### ⏳ DEPLOY + VERIFY — first thing next session (TWO changes, one pull)
 > This one **does** touch the pipeline's import graph (`scripts/main.py`,
 > `src/archiving/block_ledger.py`), so the "deploy when inactive" rule applies with its
 > premise intact. sadalsuud ran `activating` for the rest of the session (cycles at 16:05
