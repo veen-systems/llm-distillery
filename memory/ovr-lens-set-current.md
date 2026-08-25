@@ -31,6 +31,6 @@ The reason in one line: ADR-012's three stated audiences were all *internal*, an
 | **Belonging** | belonging **v1** | |
 | **Nature / Recovery** | nature_recovery **v4** | deployed 2026-07-10; v2 kept as fallback. DeepSeek oracle. v5 planned (#71). |
 
-**Not ovr.news lenses:** investment-risk (separate use), ai-engineering-practice → augmented-engineering (separate product, not ovr.news). foresight v1 PARKED (folded into Solutions).
+**Not ovr.news lenses:** investment-risk (**PAUSED 2026-08-25** — its only consumer was the Aegis narrative-risk export, which the owner confirmed dormant; ovr allow-lists the name only so old rows in the 10-day window still validate, so **do not remove that allow-list**), ai-engineering-practice → augmented-engineering (separate product, not ovr.news). foresight v1 PARKED (folded into Solutions).
 
 **Authority note:** the *definitive* tab set + ordering lives in the ovr.news repo, not here — this is the distillery-side mapping. Confirm against ovr.news before treating as canonical. Related: [[cd-v5-reference-status]], [[filter-doc-standard]].
