@@ -45,7 +45,13 @@ framework_reconciliation: |
 
 ## Tech Stack
 
-- **Oracle**: Gemini Flash 2.5; DeepSeek V4 Flash proven cheaper alternative (cd v5). Per-article pricing + scheduling levers: `memory/oracle-pricing-scheduling.md`.
+- **Oracle**: Gemini Flash 2.5 (real-time — **there is no Batch API call site**, so Batch
+  pricing is not an option we can pick); DeepSeek V4 Flash is **1.74× cheaper than the
+  Gemini path that exists** even after the 2026-08-16 hike, so the cd v5 default stands.
+  ⛔ **Never quote a $/article figure without naming the prompt** — cost is set by the
+  input/output ratio (measured 20–43) and by the prompt's own **cache ceiling**
+  (1.5%–35.7%, #131). Rates, measured shapes and the arithmetic:
+  `memory/oracle-pricing-scheduling.md`; recompute with `scripts/analysis/oracle_cost.py`.
 - **Student**: Gemma-3-1B (`google/gemma-3-1b-pt`) with PEFT/LoRA adapters
 - **Calibration**: Per-dimension isotonic regression (ADR-008)
 - **Hybrid inference**: e5-small embedding probe (Stage 1) + fine-tuned model (Stage 2, ADR-006)
@@ -74,9 +80,10 @@ imperatives stay here because they are needed every session; the war stories mov
 out on 2026-08-12 for the size budget. **Read the evidence before weakening any of
 them** — each exists because something shipped broken.
 
-- **Before shipping any gate, cap, threshold, config key or stamp, name the caller
-  that loads it — then PROVE THE OUTCOME CHANGED at the end of the run.** *(14th
-  occurrence 2026-08-16 — a watcher I reported as armed and never started.)* An annotation, a test and a check are mechanisms too.
+- **Before shipping any gate, cap, threshold, config key or stamp — or comparing
+  against an option, price or quota — name the caller that would load it, then
+  PROVE THE OUTCOME CHANGED at the end of the run.** *(15th
+  occurrence 2026-08-25 — #103 chose an oracle against a Gemini Batch rate card with no call site.)* An annotation, a test and a check are mechanisms too.
 <!-- verify: WR=$(sed -n '/Before shipping any gate/,+2p' memory/working-rules.md | tr '\n' ' ' | tr -s ' ' | grep -oE '[0-9]+(st|nd|rd|th) occurrence' | grep -oE '^[0-9]+' | sort -n | tail -1); CM=$(sed -n '/Before shipping any gate/,+3p' CLAUDE.md | tr '\n' ' ' | tr -s ' ' | grep -oE '[0-9]+(st|nd|rd|th) occurrence' | grep -oE '^[0-9]+' | sort -n | tail -1); if [ -z "$WR" ]; then echo "CANNOT VERIFY: no ordinal in memory/working-rules.md"; elif [ -z "$CM" ]; then echo "CANNOT VERIFY: no ordinal in CLAUDE.md"; elif [ "$WR" = "$CM" ]; then echo "PASS ($CM)"; else echo "FAIL: CLAUDE.md says $CM, working-rules.md says $WR"; exit 1; fi -->
   Naming the caller is **not sufficient**: guards have shipped with correct callers
   on the right paths and still done nothing. A green test on the predicate proves

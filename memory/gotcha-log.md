@@ -4174,7 +4174,7 @@ text distinguished them.
 was counted rather than read off the percentage. **If a number came out of arithmetic on a
 displayed value, either measure it or print the raw count in the tool.**
 
-### The tidied script and the tested script were not the same program (2026-08-24)
+### The tidied script and the tested script were not the same program (2026-08-24) [x2]
 **Problem**: A probe worked in the scratchpad, was cleaned up for commit, and died on its
 first real run with `ModuleNotFoundError: No module named 'filters'`.
 **Root cause**: The scratchpad version carried `sys.path.insert(0, REPO)`; tidying it into
@@ -4183,7 +4183,7 @@ a well-structured module dropped that line. The committed artifact had never bee
 version A and shipping version B is the same defect as not verifying at all — and the
 tidy-up step is exactly where it hides, because the change feels cosmetic.**
 
-### An issue number guessed before the issue was filed (2026-08-24)
+### An issue number guessed before the issue was filed (2026-08-24) [x2]
 **Problem**: Wrote `llm-distillery#125` into a script docstring and a commit message. The
 issue was created as **#130**.
 **Root cause**: Filed the artifact before filing the issue, and guessed the next number
@@ -4201,6 +4201,62 @@ anything. The module namespace holds its imports as well as its definitions.
 **Fix**: Select on the CONTENT (`"crime_violence" in ...`) and require exactly one match,
 exiting otherwise. It happened to raise `KeyError` here; had the category been present but
 empty, the probe would have screened on nothing and returned a clean-looking zero.
+
+### A PRICE THAT WAS VERIFIED THREE TIMES AND COULD NEVER HAVE BEEN PAID (2026-08-25)
+**Problem**: llm-distillery#103 spent three days deciding between oracles by comparing
+DeepSeek's per-article cost against "Gemini Batch, ~$0.0018". Both rate cards were read
+first-hand at the vendors, an outside contributor independently checked the arithmetic,
+and the flip point was computed to four decimals. **There is no Gemini Batch API call site
+in the repo** — `ground_truth/batch_scorer.py:819` and `scripts/score_ollama_oracle.py:266`
+both call `models.generate_content`, the real-time endpoint, and `.batches` appears in no
+`.py` file. Against the path that exists, DeepSeek off-peak is 1.74× *cheaper*, so the
+conclusion was backwards for nine days.
+**Root cause**: A price is a property of a vendor; **being able to pay it is a property of
+your code**, and only the first one looks like a fact to be checked. Nobody grepped for the
+call site because the number was not in dispute.
+**Fix**: `scripts/analysis/oracle_cost.py` now prints the implemented-path column with a
+banner saying the other one is unreachable. **Durable lesson**: `feedback-verify-call-path`
+applies to *prices, rates and quotas*, not only to gates and stamps. Before comparing
+against an option, name the function that would invoke it. A number can be correct,
+independently confirmed, and still not be an option.
+
+### A DEAD FIELD REPORTED AS A MEASUREMENT, AND IT HAPPENED TO BE RIGHT (2026-08-25)
+**Problem**: Published "cache-hit 0% (measured)" and built a decision table on it.
+**Root cause**: The run it came from used `scripts/score_ollama_oracle.py`, which reads
+`prompt_cache_hit_tokens` into `_cached_tokens` at line 359 and then **never sums it, never
+persists it into the result row, and never prints it**. The run logs contain no cache line
+at all. There was no instrument; the 0 was the absence of one.
+**Fix**: Requalified as unmeasured, then measured properly from a different log whose
+instrument *can* report non-zero and did (1% mid-run, 0.34% total, n=3,641). **The trap is
+that the dead field's answer was nearly right.** A wrong-but-close number produces no
+symptom, so the only defence is the standing rule: before believing a zero, prove the
+instrument could have said yes. Being lucky is not being right.
+
+### A MID-RUN PROGRESS READING CARRIED FOR MONTHS AS A RUN TOTAL (2026-08-25)
+**Problem**: "14% cache hit" was quoted as a project constant in `CLAUDE.md`'s pointer
+table and in `memory/oracle-pricing-scheduling.md`, and used in every per-article cost
+estimate since.
+**Root cause**: `nr_v4_positives.log` shows the shape — its progress lines read
+**14% → 7% → 5%** and its final total is **4.9%**. An early reading is computed over a
+small denominator and drifts as the run proceeds. Someone quoted the first line.
+**Fix**: The real number is structural and per-prompt: `build_prompt` inserts the article
+into the MIDDLE of the template, so the prefix cache can only hit what precedes the
+placeholder — a ceiling of 1.5% (`human_thriving/v8`) to 35.7% (`solutions/v6`). 14% is cd
+v5's own ceiling, not a project property. Filed as #131. **Quote a run's summary line, never
+a progress line — and when a "constant" varies 7× across subsystems, it is a per-subsystem
+property that nobody has decomposed yet.**
+
+### THE SHIPPED ARTIFACT EXITED 1 ON A CLEAN CLONE (2026-08-25)
+**Problem**: Committed `scripts/analysis/oracle_cost.py`, ran it, cited its output in a
+memory file, a commit message and a public issue comment. On a fresh clone it exits **1**.
+**Root cause**: The DeepSeek batch log the whole analysis rests on lives under `datasets/`,
+which is gitignored (`.gitignore:76` — and #97, article text in a public repo, is why it
+stays that way). My working tree had the file; the repo never did.
+**Fix**: Copied the two logs — **counters only, no article text** — to
+`docs/evidence/2026-08-24-deepseek-token-counts/`, made the parser try both locations, and
+**proved the clean clone now exits 0**. Third occurrence of this family in two sessions.
+**A script is not shipped until it has run somewhere that only has what you committed.**
+`git clone --depth 1 file://$PWD /tmp/x && cd /tmp/x && <run it>` is the whole test.
 
 ### Keyword mining for hard negatives was 92% wrong (2026-08-23)
 **Problem**: Harvested 244 candidate false positives with multilingual regexes for four classes;
