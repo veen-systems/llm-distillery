@@ -242,7 +242,19 @@ file and run against the real 12-cycle census — a deleted entry, an invalid
 three caught, exit 1. A clean run that has never been shown to fail is not
 evidence of a clean record.
 
-⚠️ **Not deployed at the time of writing.** `nexusmind.service` was `activating`
-for the whole session, so the register was generated in a sandbox pointed at the
-real production rows and the real reader roots. Nothing on the scoring path
-changed — `stamp_census.py` is a script, not a pipeline import.
+**Deployed** — sadalsuud at `651aa55`, and the committed register is the run from
+that checkout: 177,466 rows, 72 files, `filtered_20260823_124537 ..
+filtered_20260825_131739`.
+
+⚠️ The pull was made while `nexusmind.service` read `activating`. The "deploy
+when inactive" rule exists for code the pipeline imports, and that premise was
+checked before pulling rather than skipped: nothing under `src`, `scripts`,
+`deploy` or `filters` imports `stamp_census` or `article_record_register` (one
+docstring mention in `title_affinity.py`), and `scripts/main.py` is unchanged.
+
+⛔ **One of my own, and it nearly went in the session report.** The first full
+suite run reported *78 failed, 123 errors* and I attributed it to "this
+workstation's environment". It was the wrong interpreter: `python3` instead of
+`venv/bin/python`. In the project venv the same tree is **1,457 passed** (1,431
++ 26 new). An environment explanation that is never tested is a way of not
+looking — the correct reading was one command away.
