@@ -107,13 +107,20 @@
 > Rollback is `git revert 67b70e5` + redeploy — the namespace is not config-gated.
 >
 > ### ⛔ Open, not forgotten
-> - **`_corroboration` is declared in Contract B and never emitted** — a live
->   declared-but-dead field, found by the F7 fix. Either the declaration goes or the pop
->   moves; the pop is deliberate (owner, 2026-08-22) so the declaration is the wrong half.
->   ⚠️ `nexus_mind_attributes.*.source_quality.source_unreliable` is a second check-A ghost
->   from the same run — but it is written only when `source_tier == "override"` and
->   credibility < 3.0, so it may be a rare field rather than a dead one. **A ghost is a
->   question, not a verdict.**
+> - ⛔ **RETRACTED same day: `_corroboration` is NOT a dead declaration.** Its own
+>   description has always said *Intermediate field — consumed by `scripts/main.py` and
+>   re-emitted under `source_quality` before JSONL write*, and that is what happens:
+>   `display_ranking._corroboration_boost` reads it in-process, `scripts/main.py:2028` pops
+>   it. 0 of 164,572 filtered rows AND 0 of 3,000 block-ledger rows, **with an in-process
+>   reader** — the shape of an intermediate, not of a corpse. ⭐ **The instrument could not
+>   tell the two apart because the fact was in PROSE.** Contract B **1.18.0 → 1.18.1** marks
+>   it `x-intermediate: true` (annotation only) and check A excludes marked fields while
+>   still printing them once.
+>   ⚠️ `nexus_mind_attributes.*.source_quality.source_unreliable` is the OTHER check-A ghost
+>   from that run and is **not** an intermediate — it is written only when
+>   `source_tier == "override"` and credibility < 3.0, so it may be a rare field rather than
+>   a dead one. Still open. **A ghost is a question, not a verdict — and today one of the two
+>   answered "by design".**
 > - **`#123` the index-budget guard** is still acute.
 > - The rest of the 08-24 list below is unchanged: `.ledger_index.json` off the cleanup
 >   path, the two `placements` singletons, off-site backup of `blocked_*`.

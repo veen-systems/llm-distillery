@@ -35,9 +35,18 @@ presence controls and pass on both sides by design.
 invisible.** It read only `properties.nexus_mind_attributes.additionalProperties.properties`.
 Reading every level found what the 08-23 audit predicted, on the first run:
 **`_corroboration` + `.cluster_id` + `.other_sources` + `.total_sources`, declared in
-Contract B, present on 0 of 164,572 rows** — the dict is popped at `scripts/main.py:2028`
-before persistence, deliberately (owner, 2026-08-22), so the *declaration* is the wrong
-half. A second ghost, `source_quality.source_unreliable`, may be a rare field rather than
+Contract B, present on 0 of 164,572 rows.**
+
+⛔ **RETRACTED, same session: that ghost is not one.** The declaration's own description
+has always said *Intermediate field — consumed by `scripts/main.py` and re-emitted under
+`source_quality` before JSONL write*, and that is exactly what happens
+(`display_ranking._corroboration_boost` reads it in-process; `main.py:2028` pops it).
+0 of 164,572 filtered rows **and** 0 of 3,000 block-ledger rows, **with an in-process
+reader** — the shape of an intermediate, not of a corpse. ⭐ **The instrument could not
+tell the two apart because the fact was in PROSE.** Contract B 1.18.0 → 1.18.1 marks it
+`x-intermediate: true`; check A now excludes marked fields and prints them once. I wrote
+"the declaration is the wrong half" in three documents before checking what the
+declaration said. A second ghost, `source_quality.source_unreliable`, may be a rare field rather than
 a dead one: it is written only when `source_tier == "override"` and credibility < 3.0.
 **A ghost is a question, not a verdict.**
 
