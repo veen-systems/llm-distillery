@@ -1,6 +1,6 @@
 ---
 name: oracle-pricing-scheduling
-description: Oracle cost — both rate cards verified 2026-08-24; Gemini Batch wins at every MEASURED prompt shape and the answer is a ratio (DeepSeek needs input/output < 8.5, ours are 20-43), not an anchor; the real lever is the per-prompt CACHE CEILING set by where build_prompt inserts the article (1.5%-35.7%), which flips the ranking at 19-27%; Gemini AI Studio forces Prepay by 2026-10-12; #124 self-hosted oracle is a residency play, not a cost play
+description: Oracle cost — both rate cards verified 2026-08-24, but Gemini Batch is a price we CANNOT PAY (no .batches call site, 2026-08-25), so among IMPLEMENTED paths DeepSeek off-peak wins by 1.74x; the answer is a RATIO (DeepSeek needs input/output < 8.4, ours are 20-43), not an anchor; the real lever is the per-prompt CACHE CEILING set by where build_prompt inserts the article (1.5%-35.7%), which flips the ranking at 19-27%; Gemini AI Studio forces Prepay by 2026-10-12
 metadata:
   type: reference
 ---

@@ -456,3 +456,29 @@ Closed by two classes in NexusMind's check (their #382, merged `9cf2861`, deploy
     reports on. ⚠️ Only `content_meta` records its fault today — a fault in the other four
     block builders **raises out of `to_dict`, so the ROW IS DROPPED, not degraded**
     (verified 2026-08-16), and a vanished row is attributable to nothing.
+
+## The Article Record register (2026-08-25)
+
+`NexusMind/docs/ARTICLE_RECORD_REGISTER.md` is **generated**, never hand-edited:
+
+```
+python3 scripts/stamp_census.py --cycles 12 --emit-register docs/ARTICLE_RECORD_REGISTER.md
+```
+
+It joins the census (population + consumers) to `docs/article_record_status.yaml`
+(**109 fields classified**), deriving `scope` from the contracts by EXACT path and
+referencing each field's semantics from a contract `description` where one exists
+(70 of 109) rather than restating it.
+
+⭐ **It is a control, not a document: a field observed on production rows and
+classified nowhere exits 1.** The reverse — classified and not observed — is reported
+only, because the census reads a WINDOW. Proven by three seeded mutations against the
+real 12-cycle census (a deleted entry, an invalid `status`, a `record_path` the record
+schema does not declare): all three caught.
+
+⛔ **Two ghosts the old instrument could not report**, both found the day the register
+was built: `_corroboration` and its three children are **declared in Contract B and on
+0 of 164,572 rows** (the dict is popped at `scripts/main.py:2028`, deliberately), and a
+nullable object's population used to be *the count of its own absence*.
+
+<!-- verify: R=/home/jeroen/repos/veen-systems/NexusMind; if [ ! -d "$R" ]; then echo "CANNOT VERIFY: NexusMind repo not at that path"; elif [ ! -x "$R/venv/bin/python" ]; then echo "CANNOT VERIFY: no project venv at $R/venv"; elif "$R/venv/bin/python" -m pytest "$R/tests/unit/test_article_record_register.py" -q > /tmp/reg_probe.txt 2>&1; then tail -1 /tmp/reg_probe.txt; else tail -3 /tmp/reg_probe.txt; exit 1; fi -->

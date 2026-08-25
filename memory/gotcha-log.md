@@ -4281,3 +4281,34 @@ judged 100; **8 survived**.
 never a labelled set.
 **Fix**: Mine where the error is dense instead: FPs run **~50%** among articles that are flagged
 *and* clear a lens op-point, vs ~8% among keyword matches.
+
+### A COVERAGE TEST WRITTEN FOR ONE QUESTION, REUSED FOR ANOTHER — prefix vs exact (2026-08-25) [2nd occurrence of *a check that answers a NARROWER question*]
+**Problem**: Building the register's `scope` column, I reused the coverage predicate
+I had just written for the ghost check — "is this declared path observed, itself or
+through a child?" — to answer "is this observed field declared?". The first run
+reported **every one of the 31 `nexus_mind_attributes.*` lens fields as declared in
+Contract B**, including the seven undeclared fields that are the reason the register
+exists. It looked plausible: Contract B *does* declare `nexus_mind_attributes`.
+**Root cause**: prefix matching is correct for the ghost direction (a populated object
+never appears as its own census row, so a child proves the parent) and wrong for the
+attribution direction (a parent declared as an open object says nothing about its
+children). One predicate, two questions, and the wrong answer was **true for the other
+question** — the 2026-08-14 shape exactly: a check that is correct forever about
+something you did not ask.
+**Fix**: `scope_of()` matches EXACT paths only and says so in its docstring;
+`_observed()` keeps the prefix rule for ghosts. `test_declared_parent_does_not_declare_its_children`
+pins both directions. ⭐ The tell was the same as last time: the wrong answer was the
+*comfortable* one — "the contracts declare almost everything" is the answer you want.
+
+### I EXPLAINED 78 TEST FAILURES AS "THE ENVIRONMENT" AND IT WAS THE WRONG INTERPRETER (2026-08-25)
+**Problem**: `python3 -m pytest tests/unit` in NexusMind reported **78 failed, 123
+errors**. I checked that none of the failures named my files, attributed the rest to
+"this workstation's environment (missing deps)", and moved on. It was nearly a session
+finding. In `venv/bin/python` the same tree is **1,457 passed**.
+**Root cause**: I reached for an explanation that made the signal go away instead of a
+test that would have made it fail. The evidence I *did* collect — `ModuleNotFoundError:
+trafilatura` — was consistent with both "the environment is broken" and "I am not in
+the environment", and I only looked for confirmation of the first.
+**Fix**: `ls -d venv` before believing any suite-wide failure, and run the project's own
+interpreter. ⭐ The general form: **an explanation that dismisses a signal has to be
+tested at least as hard as the signal was.** A dismissal is a claim.
