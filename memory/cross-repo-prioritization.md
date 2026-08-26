@@ -921,7 +921,7 @@ promise needs someone to look.
 Filed since the 08-03 pass, placed nowhere:
 
 - **NM#294** — hero validation cap (200) leaves ~79% of extracted heroes unvalidated. **Chain 9.**
-- **ovr#295** / **ovr#297** — domain og-reuse cache blind to upstream images (publisher logo on 68 articles); `looksLikePublisherLogo` misses `logo300.png` and `/images/`. **Chain 9**, and they are the concrete residue NM#290's closure did not cover.
+- **ovr#295** / **ovr#297** — domain og-reuse cache blind to upstream images (publisher logo on 68 articles); `looksLikePublisherLogo` misses `logo300.png` <!-- placeholder --> and `/images/`. **Chain 9**, and they are the concrete residue NM#290's closure did not cover.
 - **ovr#288**, **ovr#289**, **ovr#290** — orphan re-enrichment decision; `COALESCE` guards `undefined` but not `'{}'`; obituary-summary funeral exclusion is comma-dependent. The last is **Chain 1**'s only new link.
 - **FS#128** — `rferl_kazakh` has never collected Kazakh; both RFE/RL feeds point at a generic endpoint. **Chain 14** — a non-English source that produces no non-English content is the collection stage failing silently.
 - ~~**FS#125**~~ / ~~**FS#126**~~ / **FS#127** — gdelt firehose collects nothing in ~75% of runs; a zero-yielding aggregator raises no alarm; feed-cadence metric unreliable for 2/3 of OVER_POLLED feeds. FS#126 is the general case of FS#121 *and* FS#128: **nothing notices a source that stops producing.** **FS#125 and FS#126 CLOSED/COMPLETED 2026-08-06 06:15; only FS#127 is open** (verified 2026-08-07 — this line contradicted the same file's own lines 378 and 921).

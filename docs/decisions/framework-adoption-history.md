@@ -14,6 +14,118 @@ Upstream changelog: https://github.com/ducroq/agent-ready-projects/blob/master/C
 
 ---
 
+## v1.26.1 + v1.27.0 + v1.28.0 — triaged 2026-08-26 evening via `/update-drift`
+
+**3 adopted, 0 declined, 4 not applicable, 5 already in force.** Pinned `v1.26.0`,
+upstream `v1.28.0`.
+
+⛔ **THE STAMP IS DELIBERATELY HELD AT v1.26.0, and that is the operative fact.**
+Recorded verbatim in `memory/project_session_2026_08_26_evening.md`: *"stamp stays
+v1.26.0 until adopt items land. A stamp ahead of its content silences the check that
+would catch the gap."* This is the v1.25.1 lesson applied (see the section below —
+a footer stamp ran ahead of its content for two days and silenced exactly this check).
+**A reader who sees `v1.26.0` and no note here concludes the drift is unreviewed.**
+It is reviewed and held. Bump the stamp when — and only when — the two unlanded
+adopt items below are in the tree.
+
+**Step 0 reconciliation**: 9 mentioned `(file, framework)` pairs, 4 stamped, 5 in the
+difference, all dispositioned. One is a **second framework** — `agent-ready-papers`,
+cloned locally, already declined at `docs/TODO.md:4052` (*"not adopted here by
+design"*). One is a matcher false positive (`agent-ready-fixture`, inside a test
+fixture). All three user-global skills (`audit-context`, `update-drift`, `curate`)
+are **byte-identical** to the framework's shipped `.claude/skills/` copies; the
+23-line diff is the installer converting the SAVE-AS comment into real frontmatter.
+
+### ⛔ The triage produced a COUNT WITHOUT AN ITEMISATION — recorded 2026-08-27
+
+The 08-26 session logged *"3 adopt"* and enumerated **one** of them. Neither the
+session file, `docs/TODO.md`, nor this file named the other two, so **nothing could
+answer "have the adopt items landed?" — which is the exact question the held stamp
+defers to.** A count is not a checklist. Future `/update-drift` runs name each
+adopted item and where it lands, or the hold has no release condition.
+
+| Adopt item | State | Evidence |
+|---|---|---|
+| **v1.27.0 #77** — skill arguments are substituted into the skill body, so a bare `$0` in an embedded awk program arrives as an argument word. Fix is `$(0)` | ✅ **LANDED** | `.claude/skills/review-changes/SKILL.md` in `4b5b28a`. Verified by execution both directions: old form with args examined **nothing**, new form finds the lossy row in both. 6 lines / **10** occurrences — the locating grep (`isdelim(`, 1 line) was not the enumerating grep |
+| *(unnamed)* | ❓ **UNKNOWN** | Not recorded |
+| *(unnamed)* | ❓ **UNKNOWN** | Not recorded |
+
+**Candidates re-derived from the changelog on 2026-08-27** — these are what the two
+unnamed items most plausibly were, **not** a record of what that session chose:
+
+- **v1.28.0 (#54, #55, #56)** — `audit-context` Step 4 reported three classes of
+  correct reference as defects: no doc-relative rung (**42 of 102 findings on one
+  adopter**), the markdown-link *label* extracted as a reference, and the suffix rung
+  adjudicating placeholder intent.
+- **v1.26.1** — a whitelist entry that is filename-shaped rather than extension-shaped
+  (`env` captures `process.env`).
+
+### ✅ Both candidates LANDED 2026-08-27 — back-ported, not re-copied
+
+`tests/fixtures/reference-integrity/refcheck.py` is a genuine FORK, not a stale copy
+(it carries rungs upstream lacks: auto-memory, systemd-unit class, self-prefix strip,
+generic-artifact class), so this was a surgical back-port. Four changes:
+
+| Change | Direction | Effect on the real corpus |
+|---|---|---|
+| rung 1b, doc-relative (#54) | loosening | fires; markdown link semantics ARE doc-relative |
+| link labels masked, URLs extracted + declined URLs named (#55) | both | **+108 unique / +110 occurrences newly CHECKED**, measured by ABLATION (disable only this arm: 396 → 288 unique). All resolve; the arm contributes 0 findings |
+| locally "does resolve" = rung 1, not the suffix rung (#56) | tightening | rung 4 KEPT: the 2026-08-12 evidence for the full ladder was cross-repo |
+| identifier-shaped whitelist guard (v1.26.1) | tightening | latent — 0 occurrences measured here |
+
+Plus one local rung extension: rung 5 now covers `project_session_*.md` in the
+auto-memory directory. The gotcha log cited two such files as broken while both sat in
+that directory at exactly the byte sizes it quotes (14,194 / 9,502).
+
+**Sensitivity: 24/24 → 33/33.** Nine seeds added for the failures these changes newly
+PERMIT (not the ones they were built for): rung-1b laundering, a broken link URL, the
+accepted label loss, a declined URL that must be NAMED, a struck link, a rung-2-only
+marker that must now be counted rather than reported stale, an identifier-shaped token,
+and a fabricated auto-memory session file.
+
+⭐ **A seeded assertion caught a defect in the back-port itself.** `docdir` was gated on
+`isabs(doc)` rather than on *outside ROOT* — and `run.sh` names its seed document
+absolutely, so **rung 1b silently never fired under its own harness** while working in
+the real run. Only an assertion written against the RUNG LABEL, rather than against the
+absence of a finding, could see it.
+
+**Outcome on the real corpus: 24 findings → 1.** Dispositions, counted individually
+rather than inferred from the total: **17** unmarked cross-repo references (real files in
+NexusMind / ovr.news; the prose simply did not name the repo), now qualified in prose —
+rung 4 strips backticked paths before looking for a repo name, so a reference may not
+mark itself; **4** marked as genuinely unresolvable; **2** resolved by the rung-5
+extension; **1** left standing. The one remaining is a genuine break —
+`NexusMind/scripts/research/nm188_mojibake_derived.py`, never committed there and absent
+from disk, while its `nm188_*` siblings exist. **Zero is not the target**; a change that
+drove this to zero would have disabled the check rather than fixed it. Proven alive
+after the change by a live mutation on the real corpus: two fabricated references
+(one backticked, one a link URL) both caught, then reverted.
+
+**The accepted loss was MEASURED, not just accepted.** #55 makes a broken path that
+appears *only* as a link label unreportable. Cost on this corpus: **0** — 87 links, 2
+labels that are paths, both resolve. ⚠️ That is a WINDOW, not a property: a future
+document can introduce one, which is why `run.sh` asserts the masking stays scoped to
+the label span rather than trusting it.
+
+⚠️ **THE STAMP DECISION IS STILL OPEN, and it is the owner's.** The two items above are
+what the 08-26 triage *most plausibly* meant; that session never named them. If they
+were, the hold is discharged and the stamp goes to **v1.28.0**. If they were something
+else, the hold stands and that something else is still unlanded. **Nothing in the record
+can settle this** — which is the whole cost of logging a count instead of a checklist.
+
+⚠️ **`review-changes` here is RE-MAPPED, not copied** (453 lines local vs 358
+upstream, 577 diff lines): the template's risk tiers key on paths this repo does not
+have, so a verbatim install tiers every change LOW and quietly does nothing.
+**Patch it surgically; never re-copy.** Filed upstream as **agent-ready-projects#94**:
+a fix to a project-local skill cannot reach a re-mapped adopter, and the prescribed
+remedy ("re-copy by hand") destroys the re-map. `install-global-skills.sh --check`
+solves this for user-global skills; there is no project-local equivalent.
+
+**Adopter-side issue filed**: **agent-ready-projects#48** — the project-file budget
+guard reported headroom in *characters* where the ceiling counts *bytes*.
+
+---
+
 ## v1.25.1 + v1.26.0 — triaged 2026-08-15 via `/update-drift`
 
 **3 adopted, 1 declined, 4 not applicable, 2 already in force.**

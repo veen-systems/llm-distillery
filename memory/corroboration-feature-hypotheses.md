@@ -418,7 +418,7 @@ field exists, is populated, and means different things per row. The discriminato
 present (`cross_run`), so the fix in any analysis is a `groupby`, not a repair — and
 whether the *stored* shape should carry real quality is a separate question nobody
 has asked yet. Contract B, the record schema, the register's status file and
-`ARTICLE_RECORD.md` all now say this in the field's own description.
+NexusMind's `ARTICLE_RECORD.md` all now say this in the field's own description.
 
 ## WHERE THE CORROBORATION DATA ACTUALLY LIVES (inventoried 2026-08-08)
 
@@ -506,7 +506,7 @@ worth keeping.
 *(Corrected 2026-08-17 evening by ovr's pre-commit review, after I asserted it repeatedly
 all day — in this file, to three peer sessions, and to the owner.)*
 
-**`INST-4` (`recall_probe.py`, 2026-08-05) is a recall instrument** and has been in the
+**`INST-4` (NexusMind's `recall_probe.py`, 2026-08-05) is a recall instrument** and has been in the
 registry since before this session started: pairwise recall over **2,471 labelled pairs**,
 decomposed by failure cause, certified, and explicitly scoped as *recall-only*. I read
 that row this morning and then spent the day saying the direction had never been measured.
@@ -526,7 +526,7 @@ BELOW the defect.**
 
 | instrument | level |
 |---|---|
-| INST-4 `recall_probe.py` | pairwise |
+| INST-4 NexusMind `recall_probe.py` | pairwise |
 | INST-14 combined features | pairwise (its own blind spot (d)) |
 | INST-13 chaining/drift | pairwise reconstruction |
 | ovr's under-merge probe | pairwise |
@@ -639,7 +639,7 @@ state**: post-enrichment body mojibake 1.686% → 0.593%, step on 2026-08-14
 
 ### Traps found — each would have produced a confident wrong number
 
-- ⛔ **`sim` in `precision_panel_v3/answer_key.json` exists on only 80 of 680 rows, and
+- ⛔ **`sim` in `precision_panel_v3/answer_key.json` <!-- placeholder --> exists on only 80 of 680 rows, and
   those 80 are exactly the `near_miss_control` rows the analysis discards.** v1/v2 keys
   have no `sim` at all. A cosine baseline read off the key is computed on thrown-away
   rows. Recomputed for all 1,319 with the production model and `_prepare_text`.
@@ -754,7 +754,7 @@ threshold scores **B³ F1 = 0.00** at MUC recall 0.94.
 Miranda et al. tune their temporal Gaussian to **σ=72h** — but inside a 12-feature
 SVM-Rank, not as a ±0.04 additive nudge on a single cosine. Our own sweep refutes 72
 (99.1/20.6) and prefers σ=18 (83.6/85.9). **A constant tuned inside one similarity
-function does not transfer to another.** Who put 72.0 in `config/app.yaml` is unchecked.
+function does not transfer to another.** Who put 72.0 in NexusMind's `config/app.yaml` is unchecked.
 
 - **Hubness is the attractor's real name.** Radovanović, Nanopoulos & Ivanović, JMLR 11
   (2010) — k-occurrence skew; points near the corpus centroid become everyone's
@@ -816,7 +816,7 @@ function does not transfer to another.** Who put 72.0 in `config/app.yaml` is un
 3. **XLM-R entity Jaccard on the 1,316 adjudicated pairs**, scored against the judge
    verdicts — entities from an independent extractor, labels from the judge, so not
    circular. The 2026-08-08 rerun measured only the negative side and **no entity
-   feature appears in either `b650:~/nm-sweep/feature_probe.py` or `feature_probe2.py`**
+   feature appears in either `b650:~/nm-sweep/feature_probe.py` or `feature_probe2.py` <!-- placeholder -->**
    (grepped: only `numeric_jaccard`). ⚠️ **No NER script persists anywhere** — the
    XLM-R run was executed from a `/tmp` file that is gone.
 4. **Numeral normalisation** before re-measuring numeric overlap.

@@ -1,6 +1,62 @@
 # LLM Distillery - TODO
 
-## 🔵 NEXT SESSION — **#132 is closed and verified live; the number it rested on was one cycle wide**
+## 🔵 NEXT SESSION — **the context layer is repaired; one number and one decision are open**
+
+> **Updated 2026-08-27.** `/audit-context` + acting on its findings. **No spend, no model,
+> no filter, no scoring-path change, nothing deployed** — all twelve changed files are
+> `CLAUDE.md`, `docs/`, `memory/` and `tests/fixtures/`. Nothing in this session touches
+> a path that reaches NexusMind, so **deploy is N/A, not skipped**.
+>
+> ### ⛔ THE ONE DECISION FOR THE OWNER — bump the stamp, or not
+> `CLAUDE.md` is pinned `agent-ready-projects v1.26.0`; upstream is **v1.28.0**. The
+> 08-26 triage logged **"3 adopt, 0 decline, 4 n/a, 5 in force"** and deliberately held
+> the stamp — *"a stamp ahead of its content silences the check that would catch the
+> gap."* That hold is correct and is now recorded where it belongs
+> (`docs/decisions/framework-adoption-history.md`).
+>
+> **But that triage logged a COUNT, not a CHECKLIST.** One adopt item was named
+> (v1.27.0 #77, `$0` → `$(0)`, landed in `4b5b28a`). The other two were never written
+> down, so *nothing in the record can say whether the hold is discharged.* Today I landed
+> the two most plausible candidates (v1.28.0 #54/#55/#56 and v1.26.1's identifier guard).
+> **If those were the two, the stamp goes to v1.28.0. If not, the hold stands.** Only the
+> owner can settle it. ⭐ **The lesson generalises: `/update-drift` must name each adopted
+> item and where it lands, or a hold has no release condition.**
+>
+> ### ✅ Reference integrity: 24 findings → 1, and the checker got its upstream fixes
+> `tests/fixtures/reference-integrity/refcheck.py` back-ported #54 (doc-relative rung 1b),
+> #55 (link labels are presentation, URLs are the reference, declined URLs named), #56
+> (locally "resolves" = rung 1, **rung 4 kept**) and v1.26.1's identifier guard, plus a
+> local rung-5 extension for `project_session_*.md` in the auto-memory directory.
+> **Sensitivity 24/24 → 33/33**, nine seeds for what these changes newly *permit*.
+>
+> ⭐ **A seeded assertion caught a defect in the back-port itself**: `docdir` was gated on
+> `isabs(doc)` instead of *outside ROOT*, and `run.sh` names its seed document absolutely
+> — so **rung 1b silently never fired under its own harness** while working in the real
+> run. An assertion written against *absence of a finding* would have passed vacuously;
+> only one written against the **rung label** could see it.
+>
+> ### ⚠️ The one reference left standing — deliberately
+> `NexusMind/scripts/research/nm188_mojibake_derived.py`, cited in
+> `memory/corroboration-feature-hypotheses.md`. Never committed to NexusMind, absent from
+> disk, while its `nm188_*` siblings exist. **Zero is not the target** — a change that
+> drove this to zero would have disabled the check. Someone who remembers that experiment
+> should say what the script was actually called.
+>
+> ### ⚠️ `CLAUDE.md` has 117 bytes of headroom. That is still not a margin.
+> Was 46 at the start of the session; the footer trim paid for the two additions. The real
+> fix is unchanged and un-started: **8 of 39 pointer rows carry 47% of the table** (median
+> 222 chars, largest 1,189). ⛔ **It is two steps, not one** — trimming those rows *deletes*
+> caveats that have no other home (`260 at 12 cycles` exists nowhere else; the undeclared-set
+> figure only in a frozen session log). **Write the caveats into their targets first**, then
+> trim. Est. recovery ~3,370 chars.
+>
+> ### #122 got its third independent confirmation, with a one-command probe
+> The `CLAUDE.md` delivered into context began at line 34 again — the 32-line frontmatter
+> did not arrive. **Probe: compare `wc -l CLAUDE.md` against what is visible in context.**
+> Today it mattered: the stamp-hold note lives in `framework_reconciliation`, inside that
+> block, so it was duplicated into the footer as a deliberate lesser-evil while #122 is open.
+
+## 🟡 PREVIOUS — **#132 is closed and verified live; the number it rested on was one cycle wide**
 
 > **Updated 2026-08-26.** No spend, no model, no filter, no scoring-path change. All code in
 > **NexusMind** (`7adb615`, `5fce395`, `2a51e9d`), deployed to sadalsuud and **outcome-verified**.

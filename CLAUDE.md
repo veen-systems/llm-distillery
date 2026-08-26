@@ -4,9 +4,9 @@ status: Production
 repo: github.com/ducroq/llm-distillery
 framework: agent-ready-projects v1.26.0
 framework_reconciliation: |
-  v1.25.1 + v1.26.0 triaged 2026-08-15: 3 adopt, 1 decline, 4 N/A, 2 in force.
-  Per-release detail and the evidence: `docs/decisions/framework-adoption-history.md`.
-  Releases before v1.25.1: `docs/decisions/framework-adoption-history.md`.
+  v1.26.1+v1.27.0+v1.28.0 triaged 2026-08-26: 3 adopt, 0 decline. STAMP HELD at
+  v1.26.0 until 2 unlanded adopt items ship — held, NOT unreviewed. Every release,
+  and which adopt items landed: `docs/decisions/framework-adoption-history.md`.
   v1.23.0's placeholder markers were DEFERRED there and are now DONE — 14 paths
   marked, counted by `refcheck.py` (2026-08-16).
   Stamp = which framework surfaces were reconciled. It does NOT assert that any
@@ -245,7 +245,7 @@ alternative: `feedback-plain-answers` in the Claude Code auto-memory.
 | Checking which lens/tab a filter feeds | `memory/ovr-lens-set-current.md` — current lens→filter→tab mapping |
 | Writing docs for a deployed filter | `memory/filter-doc-standard.md` — the required documentation set |
 | Building a filter on a DeepSeek oracle, or citing cultural_discovery v5 as a reference | `memory/cd-v5-reference-status.md` — why v5 is the DeepSeek-oracle reference example, and the ADR-020 methodology it demonstrates |
-| Retraining uplifting, or touching the obituary/violence gates | `memory/uplifting-v7-training.md`, `memory/obituary-v4-hypotheses.md`, `memory/violence-promotion-v1-hypotheses.md` |
+| Retraining uplifting, debugging Thriving false positives (#125), or touching the obituary/violence gates | `memory/uplifting-v7-training.md`, `memory/uplifting-oracle-genre-hypotheses.md`, `memory/obituary-v4-hypotheses.md`, `memory/violence-promotion-v1-hypotheses.md` |
 | **Wanting the whole chain in one place, or the live pipeline state** | **`veen-systems/pipeline-atlas`** — the four repos as one signal path, plus an ops snapshot regenerated every 20 min. Served from sadalsuud on Tailscale (`http://100.78.93.76:8099/`), not GitHub Pages. It states mechanisms only; every number is in the snapshot or carries a verify command. **It replaced ovr.news `/ops/architecture`, deleted 2026-08-07.** |
 | Ending a session | Run `/curate` |
 | Monthly or after major restructuring | Run `/audit-context` |
@@ -290,6 +290,6 @@ This project is a source project for [augmented-engineering](https://github.com/
 
 ---
 
-*Last updated: 2026-08-17. **Framework: agent-ready-projects v1.26.0** — the latest TAG, re-confirmed 2026-08-17 against the upstream checkout. The `e824212` port was **verified**, not assumed — detail in the adoption history. ⛔ **Do not name what upstream's `v1.26.1 (candidate, unreleased)` section contains** — this sentence did, and was stale within four days: the block is now `cb120e2`'s `refcheck` qmd whitelist, and the changelog's own conflict note says whichever lands second renumbers. Read the section, don't quote it. Triage detail: `docs/decisions/framework-adoption-history.md`. Structural state, open decisions and every number that moves live in `docs/TODO.md` (top block) and the memory index — deliberately NOT restated here, because two hand-maintained copies of a number disagree the moment one is updated. **`/audit-context` 2026-08-16 moved the evidence to topic files and the imperatives stayed; the 2026-08-17 run found the pointer table's own reachability was the defect** — see `memory/gotcha-log.md` and #122. ⚠️ **Do not re-add a self-referential size claim here** ("cut to the size you see"): the 08-16 wording was falsified by the next edit to this file. Session records: `memory/project_session_2026_08_16.md` and the files it links.*
+*Last updated: 2026-08-17. **Framework: agent-ready-projects v1.26.0 — HELD, not stale.** Upstream is v1.28.0; triaged 2026-08-26 (3 adopt / 0 decline), stamp held until the adopt items land. ⛔ **Do not name an upstream section's contents here** — this sentence named v1.26.1's while calling it *unreleased*; it shipped 2026-08-25. Read the changelog, don't quote it. Triage detail: `docs/decisions/framework-adoption-history.md`. Structural state, open decisions and every number that moves live in `docs/TODO.md` (top block) and the memory index — deliberately NOT restated here, because two hand-maintained copies of a number disagree the moment one is updated. **`/audit-context` 2026-08-16 moved the evidence to topic files and the imperatives stayed; the 2026-08-17 run found the pointer table's own reachability was the defect** — see `memory/gotcha-log.md` and #122. ⚠️ **Do not re-add a self-referential size claim here** ("cut to the size you see"): the 08-16 wording was falsified by the next edit to this file. Session records: `memory/project_session_2026_08_16.md` and the files it links.*
 
 <!-- verify: FM=$(grep -m1 -oE '^framework: agent-ready-projects v[0-9.]+' CLAUDE.md | grep -oE 'v[0-9.]+'); FT=$(grep -m1 -oE 'Framework: agent-ready-projects v[0-9.]+' CLAUDE.md | grep -oE 'v[0-9.]+'); if [ -z "$FM" ]; then echo "CANNOT VERIFY: no frontmatter framework stamp"; elif [ -z "$FT" ]; then echo "CANNOT VERIFY: no footer framework stamp"; elif [ "$FM" = "$FT" ]; then echo "PASS ($FM)"; else echo "FAIL: frontmatter $FM, footer $FT"; fi -->

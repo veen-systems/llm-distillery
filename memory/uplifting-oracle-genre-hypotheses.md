@@ -270,13 +270,13 @@ audit it.**
 ## H-UP6 — the shadow instrument (shipped, no data yet)
 
 `NexusMind/src/scoring/primary_literature_cap.py`, stamping from
-`scripts/main.py` inside `run_filter`. **Stamp-only — there is deliberately no
+NexusMind's `scripts/main.py` inside `run_filter`. **Stamp-only — there is deliberately no
 enforcement branch**, because visibility is decided on **raw** (ADR-022) while
 normalization already ran on gpu-server and NexusMind's existing `content_type_caps`
 caps the **normalized** score (NM#280). Which an enforcement point should use is
 unresolved, and this shadow is what resolves it.
 
-⚠️ **It had to go in `main.py`, not in the filter package or `ProductionScorer._post_process`.**
+⚠️ **It had to go in NexusMind's `scripts/main.py`, not in the filter package or `ProductionScorer._post_process`.**
 `deploy/gpu-server/main.py` rebuilds the scorer payload as `{"title", "content"}`, so
 `metadata.primary_literature` **never crosses the REST boundary**. Both earlier designs
 would have read `None` on 100% of rows while passing every test.
@@ -315,8 +315,8 @@ from the academic dedup gate's population. **0 divergent rows of 37,022** (32,30
 - **The academic/non-academic split in the analysis script is a pattern list over source
   names**, not the stamp (absent on training rows). The two disagree on production rows
   (list 36.3% for cd, stamp 12.5%). Direction is the finding; magnitude is approximate.
-- `scripts/run_filters.py` is a second path that persists `nexus_mind_attributes` without
-  the stamp. Not in systemd, not called from `main.py`, and its own examples reference
+- NexusMind's `scripts/run_filters.py` is a second path that persists `nexus_mind_attributes` without
+  the stamp. Not in systemd, not called from `scripts/main.py`, and its own examples reference
   `sustainability_technology` — removed 2026-08-03. Legacy.
 
 Related: [[uplifting-v7-training]], [[filter-status]], [[hypothesis-ledger]], #91, #125.
@@ -431,7 +431,7 @@ judgement, not merely record it. One run each side — suggestive, not establish
 
 ### ✅ The accountability boundary RULED — and BRAND.md is more precise than the paraphrase
 
-ovr `docs/BRAND.md` verbatim: *"…or a protection established that will improve them. It does not
+ovr.news `docs/BRAND.md` verbatim: *"…or a protection established that will improve them. It does not
 qualify when the event **only** establishes that a harm occurred, or that one has been answered."*
 
 ⭐ **The word "only" means the test was never "was it delivered" — it is IS ANYONE BETTER OFF.**

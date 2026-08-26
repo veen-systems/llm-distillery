@@ -32,6 +32,14 @@ must_be_silent+=(llm-distillery/scripts/remote_deploy.sh)    # 21 must now resol
 # 2026-08-15 — the failure the SYSTEMD UNIT class newly permits: a unit that exists
 # nowhere in the estate must not be absorbed by the class.
 must_catch+=(totally-made-up-unit.service)                   # 24
+# 2026-08-27 — the v1.28.0/v1.26.1 back-port. Three of the four are LOOSENINGS, so
+# these seed the FALSE RESOLUTION each newly permits, not the case it was built for.
+must_catch+=(no_such_doc_relative_file.md   # 26 rung1b must not launder a real break
+             no_such_link_target.md)        # 27 a broken link URL is now CHECKED
+must_be_placeheld+=("fixtures/reference-integrity/run.sh")  # 31 #56: rung2 no longer
+                                            #    adjudicates intent, so this is COUNTED
+must_be_silent+=(no_such_struck_target.md)  # 30 struck LINK is an absence assertion
+must_catch+=(project_session_1999_01_01.md) # 33 rung5 extension must not launder
 for p in "${must_catch[@]}"; do
   grep -q -- "$p" <<<"$findings" && echo "  ok    caught  $p" \
     || { echo "  FAIL  missed  $p"; fail=1; }
@@ -55,6 +63,25 @@ for p in "${must_be_placeheld[@]}"; do
 done
 grep -q "COVERS NO PATH" <<<"$findings" && echo "  ok    caught  marker-covering-no-path" \
   || { echo "  FAIL  missed  marker-covering-no-path"; fail=1; }
-total=$(( ${#must_catch[@]} + ${#must_be_silent[@]} + ${#must_be_placeheld[@]} + 1 ))
+# --- back-port assertions that need an exact SECTION, not mere absence ---
+# 25: rung 1b must actually FIRE. Asserted on the rung label rather than through
+# must_be_silent: the seed path shares its name with the seed DOCUMENT, so a bare
+# grep would match every output line and pass vacuously.
+grep -q '\[rung1b\] ->' <<<"$resolved_secs" && echo "  ok    fired   rung1b (doc-relative)" \
+  || { echo "  FAIL  rung1b never fired"; fail=1; }
+# 29: a declined URL must be NAMED with its reason. Masking a label is a silent loss
+# unless this holds -- absence from FINDINGS would be satisfied by never extracting it.
+grep -q 'example.invalid.*external URL' <<<"$out" && echo "  ok    declined external URL (named, not dropped)" \
+  || { echo "  FAIL  declined URL not reported with a reason"; fail=1; }
+# 32: identifier-shaped token counted, never silently dropped.
+grep -q 'DROPPED AS IDENTIFIER-SHAPED (1 unique)' <<<"$out" && echo "  ok    counted process.env as identifier" \
+  || { echo "  FAIL  process.env not counted in the identifier section"; fail=1; }
+# 28: THE ACCEPTED LOSS, asserted so it stays deliberate. A broken path appearing only
+# as a link LABEL is no longer reported -- the label is presentation. If this ever
+# starts failing, the masking has been widened past the label span.
+grep -q 'no_such_label_path.md' <<<"$findings" \
+  && { echo "  FAIL  label extracted as a reference (masking broken)"; fail=1; } \
+  || echo "  ok    label not extracted (accepted loss, deliberate)"
+total=$(( ${#must_catch[@]} + ${#must_be_silent[@]} + ${#must_be_placeheld[@]} + 5 ))
 [ $fail -eq 0 ] && echo "SENSITIVITY: $total/$total PASS" || echo "SENSITIVITY: FAILED"
 exit $fail

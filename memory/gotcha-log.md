@@ -1,5 +1,62 @@
 # Gotcha Log
 
+## A RUNG THAT COULD NOT FIRE UNDER ITS OWN HARNESS — and the assertion shape that caught it (2026-08-27)
+**Problem**: Back-porting upstream #54 (a doc-relative rung, 1b) into
+`tests/fixtures/reference-integrity/refcheck.py`. It worked in the real run. Under
+`run.sh` — the seeded harness whose whole job is to prove the checker still detects —
+**rung 1b never fired at all**, silently.
+**Root cause**: the new rung needs the referring document's directory. I gated it as
+`docdir = "" if os.path.isabs(doc) else dirname(doc)`, meaning to exclude the
+auto-memory index, which genuinely lives outside ROOT. But `run.sh` names its seed
+document **absolutely** (`SEED="$here/SEED.md"`). So every harness run disabled the rung
+under test. The correct gate is *outside ROOT*, not *absolute*.
+**Fix**: `relpath(doc, ROOT)` and disable only when it escapes with `..`.
+⭐ **THE KEEPER IS THE ASSERTION SHAPE, not the bug.** My first instinct was to assert
+the seeded path was *absent from FINDINGS*. That would have **passed vacuously** — a path
+that is never extracted is also absent from findings, which is the same silence the whole
+step exists to prevent. What caught it was asserting on the **rung label**:
+`grep -q '\[rung1b\] ->'`. **When you add a rung, a branch or a disposition, assert that
+IT fired — not that a symptom disappeared.** An absence is satisfied by too many worlds.
+⚠️ This is the unreachable-mechanism shape again, and it is **caught pre-ship, so it is
+NOT counted in the occurrence total** (same disposition as the 2026-08-11 evening entry
+in the catalogue below). The rule worked; it is logged because the *detection method*
+generalises.
+
+## I REPORTED A GAP BEFORE READING THE RECORD THAT EXPLAINED IT (2026-08-27)
+**Problem**: Reported as an audit finding that the 08-26 framework-drift triage "was
+never recorded" and proposed bumping the stamp from v1.26.0 to v1.28.0. Both halves were
+wrong. The triage **was** recorded, and the stamp was **deliberately held**.
+**Root cause**: I read the stamp, the frontmatter and `framework-adoption-history.md`,
+found no v1.26.1+ entry, and concluded absence. The explanation was one file away — the
+previous session's own `project_session_2026_08_26_evening.md`, whose "Still open"
+section says verbatim: *"`CLAUDE.md` stamp stays v1.26.0 until adopt items land. A stamp
+ahead of its content silences the check that would catch the gap."* I had not opened it.
+**Fix**: read the previous session's record before reporting anything as unrecorded.
+⭐ **A stamp that is HELD and a stamp that is STALE are byte-identical.** The difference
+lives only in prose, and if that prose is in a session file, an audit that reads the
+always-loaded layers cannot see it. That is why the hold now sits in
+`framework-adoption-history.md` (the file the frontmatter names as provenance) **and** in
+the footer — and why the real defect was upstream of both: the triage logged a **count**
+("3 adopt") and not a **checklist**, so nothing could say whether the hold was
+dischargeable. **A hold with no release condition is indistinguishable from neglect.**
+
+## TWO NUMBERS CARRIED INSTEAD OF DERIVED, IN THE SAME WRITE-UP (2026-08-27)
+**Problem**: Wrote "**+107** references newly checked" and "**Nineteen** were unmarked
+cross-repo" into a decision record. Both wrong. The link-URL arm contributes **108
+unique / 110 occurrences**; the cross-repo count is **17**.
+**Root cause**: two different failures with one cause — neither number came from the
+instrument at the moment of writing. `+107` was a *difference between two whole runs*
+(273 → 380) and I attributed all of it to one of the **four** changes in that diff.
+`19` was carried across from an earlier triage note and never recounted against the
+final dispositions (17 qualified + 4 marked + 2 rung-5 + 1 left = 24).
+**Fix**: for the attribution, **ablate** — disable only that arm and re-run: 396 → 288,
+so the arm is worth 108. For the count, tally the dispositions individually.
+⭐ **A delta across a multi-part change is not evidence about any one part.** The honest
+instrument for "what did X buy" is an ablation of X, not a before/after of everything.
+And a number that appears in a *later* document than the one it was measured in has
+crossed a copy boundary — re-derive it there. Both were caught by the
+claim-verification lens, not by reading.
+
 ## A "DO NOT TRIM — ONLY SURVIVING RECORD" MARKER PROTECTED CONTENT THAT WAS ALREADY REDUNDANT, FROM INSIDE A FILE THAT WAS DROPPING IT (2026-08-26)
 
 **Problem**: The Claude Code auto-memory `MEMORY.md` opened with *"Two entries below
@@ -91,7 +148,7 @@ report. When two units are available, state which one the ceiling uses.
 
 ## [6x pgrep-family] `systemctl is-active` ANSWERED FOR THE WRONG UNIT — the box was idle and the cleanup was still running (2026-08-26)
 
-**Problem**: Deploying #132 (the `prefiltered_out` retention change) meant touching
+**Problem**: Deploying #132 (the `prefiltered_out` retention change) meant touching NexusMind's
 `scripts/main.py`, which the pipeline imports, so the rule is "pull when the service is
 inactive". I armed a waiter on `systemctl is-active nexusmind.service`, it reported
 `inactive` at 09:18:55, and I was one command from `git pull`.
@@ -101,7 +158,7 @@ unit** — `nexusmind-cleanup.service`, chained by `OnSuccess=` from the main on
 running `scripts/main.py --cleanup-only` in its own cgroup (deliberately, so an archive
 OOM cannot fail the parent, NM#210). It read `activating` for another **8 minutes**, and
 it is the unit that executes the very code path the deploy was changing. Pulling on that
-`inactive` would have swapped `main.py` and `filtered_archiver.py` under a running
+`inactive` would have swapped NexusMind's `scripts/main.py` and `filtered_archiver.py` under a running
 archive merge.
 
 ⭐ **The keeper is that this is the pgrep rule's own recommended remedy failing.**
@@ -137,7 +194,7 @@ cycle never ran:
 
     ERROR: smoke fixture references filters not in app.yaml enabled_filters: ['investment_risk']
 
-**Root cause**: `deploy/smoke_test_articles.jsonl` still carried an `investment_risk`
+**Root cause**: NexusMind's `deploy/smoke_test_articles.jsonl` still carried an `investment_risk`
 row, and `deploy_filters.sh` is fail-closed on that mismatch — the post-deploy smoke
 test addresses `/filter/{name}/score` and would 404 against a filter the pipeline no
 longer loads. Nothing in the config names that fixture, nothing in the fixture names
@@ -147,7 +204,7 @@ three hours later instead of as a red test at commit time.
 
 **Fix**: Remove the fixture row, not the gate (NexusMind `5c94a0e`) — the reversible
 direction: with the row gone, an un-pause that forgets to restore it produces a WARN,
-never a failure. Then move the failure earlier: a unit test in
+never a failure. Then move the failure earlier: a unit test in NexusMind's
 `tests/unit/test_filter_integrity.py` asserting no fixture names a disabled filter
 (`adcf3c9`). **Verified by checking out `c7af891` — the commit that broke production —
 and running the new test against it: it fails with the gate's own message.** It is
@@ -238,7 +295,7 @@ schema. A field can exist on the object, be populated, be read correctly by the 
 wrote — and still not be there, because something in between rebuilt the object.
 **When a call path crosses a process, ask what the wire carries, not what the object has.**
 
-**Where it went instead.** `scripts/main.py` inside `run_filter`, three lines above an
+**Where it went instead.** NexusMind's `scripts/main.py` inside `run_filter`, three lines above an
 existing `article.get("metadata", {})` — the first point where the full article and the
 score are both in hand. Proven by replay: 1,562 rows would cap, 347 of them surfacing,
 and 0 on the two out-of-scope lenses as a negative control.
@@ -1279,7 +1336,7 @@ control — this is its mirror, a *positive* needing a negative control.
 (`~/.claude/projects/<slug>/memory/MEMORY.md`) — which is **auto-loaded into every
 session**, is larger than the in-repo index it shares a name with, and whose pointers
 all name repo files. A curate pass found **three dead pointers in it**:
-`project_session_2026_08_01.md` <!-- placeholder -->, `_02.md` <!-- placeholder --> and `_03.md` <!-- placeholder --> were never committed, and two of
+`project_session_2026_08_01.md`, `_02.md` <!-- placeholder --> and `_03.md` <!-- placeholder --> were never committed, and two of
 them had obvious renamed targets sitting beside them (`_01_afternoon.md` <!-- placeholder -->,
 `_03_evening.md` <!-- placeholder -->). One (`_02`) has no repo file at all, so its summary in the index is
 the **only surviving record** of that session. *(The five names above are marked
@@ -4191,6 +4248,7 @@ A mechanism that is present, configured and unreachable is this repo's defining 
 
 | 2026-08-15, **13th occurrence** | a framework **stamp bumped ahead of its content**. `CLAUDE.md`'s footer read v1.26.0 from 2026-08-13 while neither v1.25.1 nor v1.26.0 had been triaged — and the stamp is the drift check's only input, so every run reported "current" and examined nothing. **The only value in this repo that can turn its own checker off.** Two releases unreviewed, one carrying an explicit adopter action (a CRLF fix that made the table check examine no tables). Now probed |
 | 2026-08-15, the audit's own instrument | `refcheck.py` stripped a **sibling** repo's name from a path and never the **local** one, so every self-prefixed reference went unexamined. Not a wrong answer — a silence. Found by reading a finding instead of dismissing it as residue |
+| 2026-08-27, **caught pre-ship** | a **doc-relative rung** back-ported into `refcheck.py` and gated on `isabs(doc)` instead of *outside ROOT* — so it was disabled for every run of `run.sh`, the seeded harness whose only job is to prove the checker detects. The rung under test never fired while its own sensitivity suite reported PASS. **Not counted in the occurrence total: it never shipped.** Listed for the detection method — the assertion was written against the **rung label** (`[rung1b] ->`), not against the absence of a finding, which a never-extracted path also satisfies |
 | 2026-08-11 evening, **caught pre-ship** | a `solutions v6` re-weighting that moved +19.5pp across an absolute 4.0 — correct at its own layer, erased downstream by a percentile CDF, because the gate reads the *normalized* score. **Not counted in the occurrence total: it never shipped.** Listed because it is the first time reading the caller stopped the recommendation instead of explaining it afterwards |
 
 The cultural_discovery v6 entry is the point of the whole list: **knowing this failure
@@ -4379,7 +4437,7 @@ the code you are replacing is either a control you can name, or a defect you hav
 found yet — decide which, out loud.**
 
 ### A number derived from a rounded percentage, published as if measured (2026-08-24)
-**Problem**: Wrote "`_post_enriched` sits on **44** of 145,301 rows" into
+**Problem**: Wrote "`_post_enriched` sits on **44** of 145,301 rows" into NexusMind's
 `ARTICLE_RECORD.md`. An independent `grep -c` over the same 72 files says **46**.
 **Root cause**: The census printed `0.03`, I multiplied by the row count, and a *derived*
 number entered a document in the same sentence shape as a *measured* one. Nothing in the

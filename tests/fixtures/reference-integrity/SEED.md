@@ -91,3 +91,50 @@ exists somewhere in the estate, so the laundering case is a unit that exists now
 
 24. **fabricated systemd unit** — must stay a FINDING, not be absorbed by the class:
     `totally-made-up-unit.service`
+
+## v1.28.0 / v1.26.1 BACK-PORT — the failures these four changes newly permit (2026-08-27)
+
+Ported from upstream `#54` (doc-relative rung), `#55` (link labels are presentation),
+`#56` (locally, "does resolve" means rung 1) and v1.26.1's identifier-shaped whitelist
+guard. Three of the four are LOOSENINGS, so what is seeded below is the *false
+resolution* each one newly permits — not the case it was built for. This doc sits in
+`tests/fixtures/reference-integrity/`, so doc-relative here means that directory.
+
+### #54 — rung 1b, doc-relative
+
+25. **real path beside this document** — must now RESOLVE (rung1b), not collide:
+    `SEED.md`
+26. **fabricated path beside this document** — the new rung must not launder a genuine
+    break: `no_such_doc_relative_file.md`
+
+### #55 — a link's LABEL is presentation, its URL is the reference
+
+27. **broken URL** — newly checked, must be a FINDING:
+    [the label is fine](no_such_link_target.md)
+28. **broken path in the LABEL, good URL** — the label is deliberately NOT checked, and
+    this is the loss the masking accepts: [`no_such_label_path.md`](SEED.md)
+29. **declined URL must be NAMED, never dropped** — masking a label is a silent loss
+    unless the URL we decline to check is reported with its reason:
+    [external](https://example.invalid/nope.md)
+30. **struck markdown link** — an absence assertion in link form:
+    ~~[gone](no_such_struck_target.md)~~
+
+### #56 — the suffix rung must not ADJUDICATE INTENT
+
+31. **marker on a path that resolves only at rung 2** — must now be COUNTED as a
+    declared placeholder, not reported STALE: `fixtures/reference-integrity/run.sh` <!-- placeholder -->
+
+### v1.26.1 — filename-shaped whitelist entry
+
+32. **identifier-shaped token** — must never be extracted as a path, and must be
+    counted rather than silently dropped: `process.env`
+
+### rung 5 extension — auto-memory session files (2026-08-27)
+
+The rung resolves files in the Claude Code auto-memory directory, outside ROOT. Its
+pattern was written for the kebab-case `feedback-*` family and missed the underscore
+`project_session_*` one. Extending it is a LOOSENING, so the seed is the laundering
+case, not the fix:
+
+33. **fabricated auto-memory session file** — must stay a FINDING, not be absorbed by
+    the new pattern: `project_session_1999_01_01.md`

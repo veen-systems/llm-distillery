@@ -34,8 +34,11 @@ because* the upstream exists and is current. Taken literally that reports
 "nothing to review" on a whole open PR, which is the commonest state in which
 anyone wants a pre-merge review. (Ported ahead of release from
 agent-ready-projects `e824212`, on the unmerged branch `fix/review-changes-scope`
-— **there is no v1.26.1**; latest upstream release is v1.26.0, confirmed
-2026-08-15. An adopter hit this on a real PR where a widened review found
+— it shipped as part of **v1.26.1** on 2026-08-25.
+⚠️ This paragraph asserted *"there is no v1.26.1; latest upstream release is v1.26.0"*
+until 2026-08-27 — true when written on 2026-08-15, false eleven days later. Latest
+upstream is **v1.28.0**; read `agent-ready-projects/CHANGELOG.md`, do not quote a
+release count from here. An adopter hit this on a real PR where a widened review found
 **4 blockers**.
 This session hit the same defect on 2026-08-13 and worked around it by hand
 without recognising it — the workaround is what the fix now prescribes.)

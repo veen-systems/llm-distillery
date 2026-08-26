@@ -465,7 +465,7 @@ Closed by two classes in NexusMind's check (their #382, merged `9cf2861`, deploy
 python3 scripts/stamp_census.py --cycles 12 --emit-register docs/ARTICLE_RECORD_REGISTER.md
 ```
 
-It joins the census (population + consumers) to `docs/article_record_status.yaml`
+It joins the census (population + consumers) to NexusMind's `docs/article_record_status.yaml`
 (**109 fields classified**), deriving `scope` from the contracts by EXACT path and
 referencing each field's semantics from a contract `description` where one exists
 (70 of 109) rather than restating it.
