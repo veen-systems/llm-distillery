@@ -106,3 +106,116 @@ def test_the_shipped_index_obeys_its_own_rule(capsys):
     raw = open(mod.INDEX, "rb").read()
     assert mod._session_entries(raw) <= mod.MAX_SESSION_ENTRIES
     assert os.path.isfile(mod.SESSION_LOG), "the log the rule moves entries into must exist"
+
+
+# ---------------------------------------------------------------------------
+# The project-file target (`--target project`), added 2026-08-26 by
+# /audit-context. The guard covered memory/MEMORY.md only, while CLAUDE.md sat 45
+# BYTES under its 40,000 ceiling with nothing watching it.
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture
+def project_guard(tmp_path, monkeypatch):
+    """The real script, pointed at a temp CLAUDE.md."""
+    spec = importlib.util.spec_from_file_location("check_index_budget_proj", GUARD)
+    mod = importlib.util.module_from_spec(spec)
+    sys.modules["check_index_budget_proj"] = mod
+    spec.loader.exec_module(mod)
+    monkeypatch.setattr(mod, "PROJECT", str(tmp_path / "CLAUDE.md"))
+    mod._tmp = tmp_path
+    return mod
+
+
+def _project(guard, size):
+    open(guard.PROJECT, "w", encoding="utf-8").write("# P\n" + "x" * size)
+
+
+def test_a_small_project_file_passes_quietly(project_guard, capsys):
+    _project(project_guard, 1_000)
+    assert project_guard.main(["--target", "project"]) == 0
+    out = capsys.readouterr().out
+    assert "PASS CLAUDE.md" in out and "WARN" not in out
+
+
+def test_the_project_file_warns_between_soft_and_hard(project_guard, capsys):
+    """The soft stage is the whole point: a warning at the wall is the FAIL with
+    extra steps (the #123 argument, applied to the other file)."""
+    _project(project_guard, 36_000)
+    assert project_guard.main(["--target", "project"]) == 0  # WARN must not block
+    out = capsys.readouterr().out
+    assert "WARN" in out and "40,000 hard limit" in out
+
+
+def test_the_project_file_fails_over_hard(project_guard, capsys):
+    _project(project_guard, 41_000)
+    assert project_guard.main(["--target", "project"]) == 1
+    out = capsys.readouterr().out
+    assert "FAIL" in out
+    # The remedy must be the project file's, not the index's. Telling someone to
+    # move a session entry out of CLAUDE.md names a thing that is not there.
+    assert "Before You Start" in out
+    assert "session entries" not in out
+
+
+def test_the_project_target_has_no_session_entry_check(project_guard, capsys):
+    """A dated bullet in CLAUDE.md must not be counted as a session entry: the
+    project file legitimately carries dates, and borrowing the index's rule would
+    invent a finding on every one."""
+    open(project_guard.PROJECT, "w", encoding="utf-8").write(
+        "# P\n" + "\n".join(f"- **2026-08-{25 - i:02d} — a dated row**" for i in range(9))
+    )
+    assert project_guard.main(["--target", "project"]) == 0
+    assert "session entries" not in capsys.readouterr().out
+
+
+def test_an_unknown_target_cannot_verify(project_guard, capsys):
+    """Fail closed. A typo'd target must never read as a pass."""
+    assert project_guard.main(["--target", "nope"]) == 1
+    assert "CANNOT VERIFY" in capsys.readouterr().out
+
+
+def test_main_ignores_the_host_processes_argv(project_guard, capsys):
+    """THE DEFECT THIS FILE CAUGHT ON 2026-08-26. main() read sys.argv directly,
+    so an imported caller got pytest's arguments and the guard answered 'unknown
+    argument' to five tests that had never passed one."""
+    monkey = list(sys.argv)
+    sys.argv[:] = ["pytest", "tests/unit/test_index_budget_guard.py", "-q"]
+    try:
+        _project(project_guard, 1_000)
+        assert project_guard.main(["--target", "project"]) == 0
+        assert "CANNOT VERIFY" not in capsys.readouterr().out
+    finally:
+        sys.argv[:] = monkey
+
+
+def test_the_target_table_resolves_paths_lazily(project_guard):
+    """THE SECOND DEFECT. Freezing PROJECT's value into TARGETS at import time made
+    monkeypatching it a no-op, so the guard measured the REAL repo file while the
+    test believed it had redirected it."""
+    attr = project_guard.TARGETS["project"][0]
+    assert isinstance(attr, str), "TARGETS must hold an attribute NAME, not a path"
+    assert getattr(project_guard, attr) == str(project_guard._tmp / "CLAUDE.md")
+
+
+def test_the_shipped_project_file_obeys_its_own_rule():
+    """The real CLAUDE.md, not a fixture."""
+    spec = importlib.util.spec_from_file_location("check_index_budget_real2", GUARD)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    assert os.path.isfile(mod.PROJECT)
+    assert len(open(mod.PROJECT, "rb").read()) < mod.PROJECT_HARD
+
+
+def test_main_works_when_the_module_is_not_in_sys_modules(tmp_path, monkeypatch):
+    """Found by the adversarial lens, 2026-08-26. `sys.modules[__name__]` raises
+    KeyError for a caller that execs the module without registering it — which is
+    what the two 'shipped file' tests above already do. globals() has no such
+    dependency."""
+    spec = importlib.util.spec_from_file_location("cib_unregistered", GUARD)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)          # deliberately NOT put in sys.modules
+    assert "cib_unregistered" not in sys.modules
+    monkeypatch.setattr(mod, "PROJECT", str(tmp_path / "CLAUDE.md"))
+    open(mod.PROJECT, "w", encoding="utf-8").write("# P\n" + "x" * 500)
+    assert mod.main(["--target", "project"]) == 0

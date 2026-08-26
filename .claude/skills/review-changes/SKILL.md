@@ -120,6 +120,11 @@ it.
   sort -u | grep '\.md$' | while IFS= read -r f; do
   [ -f "$f" ] || continue
   awk -v F="$f" '
+    # `$(0)`, never a bare dollar-zero: skill ARGUMENTS are substituted into the
+    # skill BODY, so a bare one arrives as the FIRST ARGUMENT WORD and this program
+    # then examines a constant instead of the record — silently, printing exactly
+    # what a clean run prints. Upstream #77 (agent-ready-projects v1.27.0).
+    # This copy is RE-MAPPED: patch it surgically, never re-copy — upstream #94.
     function cells(s,   t, n) {
       t = s; gsub(/\\\|/, "", t)
       sub(/^[ \t]+/, "", t); sub(/[ \t]+$/, "", t)
@@ -134,7 +139,7 @@ it.
                                      # or isdelim() never matches and no table in
                                      # the file is examined. See #52 (framework).
     {
-      bare = $0; sub(/^ ? ? ?/, "", bare)
+      bare = $(0); sub(/^ ? ? ?/, "", bare)
       if (bare ~ /^```/ || bare ~ /^~~~/) {
         c = substr(bare, 1, 1); n = 0
         while (substr(bare, n + 1, 1) == c) n++
@@ -143,18 +148,18 @@ it.
         intbl = 0; prev = ""; next
       }
       if (fch != "") next
-      if (isdelim($0) && prev != "" && (index($0, "|") || index(prev, "|"))) {
-        base = cells($0); intbl = 1
+      if (isdelim($(0)) && prev != "" && (index($(0), "|") || index(prev, "|"))) {
+        base = cells($(0)); intbl = 1
         if (cells(prev) != base)
           printf "%s:%d: header has %d cells, delimiter row defines %d — not a valid table\n", F, NR-1, cells(prev), base
-        prev = $0; next
+        prev = $(0); next
       }
       if (intbl) {
-        if ($0 ~ /^[ \t]*$/) intbl = 0
-        else if (index($0, "|") && cells($0) > base)
-          printf "%s:%d: row has %d cells, table defines %d — the excess is dropped when rendered\n", F, NR, cells($0), base
+        if ($(0) ~ /^[ \t]*$/) intbl = 0
+        else if (index($(0), "|") && cells($(0)) > base)
+          printf "%s:%d: row has %d cells, table defines %d — the excess is dropped when rendered\n", F, NR, cells($(0)), base
       }
-      prev = $0
+      prev = $(0)
     }
     END { if (fch != "") printf "%s: unclosed %s code fence\n", F, fch }
   ' "$f"

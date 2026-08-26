@@ -103,11 +103,11 @@ them** — each exists because something shipped broken.
   first.** A `stage1_low` row's score is an **e5 probe estimate**, not a Gemma score
   (23% of rows measured). Same shape as the length-field trap: the field exists, is
   populated, and means different things per row.
-- **Before using any source as evidence, establish what it EXCLUDES.** *(9th
-  occurrence 2026-08-23 — every adverse row on disk was a 300-char EXCERPT of a
-  620–28,905-char article, and a paid run against them was one command away; 8th
-  occurrence 2026-08-16 — a population whose window was the same length as the
-  mechanism's period, so it could only ever return zero.)* Applies to data, to nested
+- **Before using any source as evidence, establish what it EXCLUDES.** *(10th
+  occurrence 2026-08-26 — a "do not trim, only surviving record" marker whose
+  refuting files sat in its own directory, past a load truncation; 9th 2026-08-23
+  — every adverse row on disk was a 300-char EXCERPT of a 620–28,905-char
+  article, and a paid run against them was one command away.)* Applies to data, to nested
   structures, to prior work, to literature, to hosts, and to **time**. A wrong path
   and a dead field both read as zero, and the wrong one is the more exciting finding.
   ⚠️ **A window is part of a source.** If it is a denominator, a baseline, or a claim

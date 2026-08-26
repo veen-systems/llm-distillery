@@ -1,5 +1,94 @@
 # Gotcha Log
 
+## A "DO NOT TRIM — ONLY SURVIVING RECORD" MARKER PROTECTED CONTENT THAT WAS ALREADY REDUNDANT, FROM INSIDE A FILE THAT WAS DROPPING IT (2026-08-26)
+
+**Problem**: The Claude Code auto-memory `MEMORY.md` opened with *"Two entries below
+are marked ⛔ NO REPO FILE and must not be trimmed: they are the only surviving
+record."* The file was 26,645 bytes against a 24.4KB load limit. Both protected
+entries sat at byte offsets **24,905 and 25,445** — past the cutoff. The notice was at
+offset 164 and loaded every session. **The guarantee was being announced in the loaded
+region and violated in the unloaded one**, and nothing reported it.
+
+**Root cause, and it is two independent faults.** (1) The file outgrew its budget and
+the tail stopped arriving; no guard covered that file — the repo's
+`check_index_budget.py` watched `memory/MEMORY.md` in the repo, a *different file with
+the same name*. (2) The marker was a **state claim with no probe and no expiry**. It
+was true when written on 2026-08-02/03. By 2026-08-26 all seven of its claims had been
+written into topic files (`prefilter-length-floor-hypotheses.md`,
+`score-batch-shape-noise.md`, `calibration-history.md`) and its one unique atom — an
+"unpushed" `nm286-adr022-gaps` branch — had landed as NexusMind `23a9068`.
+
+⛔⛔ **And it was false in a second, worse way, found only after the trim.** The marker
+says NO REPO FILE, which is true and irrelevant: **full session files existed the whole
+time in the marker's OWN DIRECTORY** — `project_session_2026_08_02.md` (14,194 bytes)
+and `project_session_2026_08_03.md` (9,502 bytes), sixty lines below the notice, both
+carrying the NM#285 / NM#286 / LD#92 detail in full. **The refutation was a `ls` away
+and nobody ran it, because the marker read as an instruction rather than as a claim.**
+
+**Fix**: Trimmed to 18,977 bytes (19,217 after this session's own later additions;
+re-derive with `wc -c`, do not quote) after checking all seven claims individually against
+the repo. Replaced the marker with a trailer naming where each claim went. Extended
+`check_index_budget.py` with `--target project`.
+
+**The lesson is the shape, not the file.** A "do not trim" marker is an assertion about
+the *rest of the world* — that no other copy exists — and the world moves. It ages
+exactly like any other state claim, but it reads as an instruction, so nobody probes
+it. And it is self-reinforcing: it tells the next reader not to look. ⭐ **Before
+honouring OR removing a protection marker, verify what it protects still needs
+protecting.** Same root as [[feedback-window-is-part-of-a-source]] — the notice could
+not have reported its own violation, because it was on the wrong side of the cut.
+
+## ONE GREP FOUND THE BUG; I TREATED IT AS THE POPULATION — 1 line of 6, 1 occurrence of 10 (2026-08-26)
+
+**Problem**: Adopting upstream's `$0` → `$(0)` fix in the project-local
+`review-changes` skill (agent-ready-projects #77). I found the defect by grepping
+`isdelim(`, which returned **line 146**, and started to patch that line. A proper scan
+for bare `$0`–`$9` returned **six lines carrying ten occurrences**. Patching only the
+line the symptom-grep surfaced would have left eight live and produced a file that
+looks fixed.
+
+**Root cause**: The grep was written to *locate* the defect and then reused to
+*enumerate* it. Those are different questions. `isdelim(` is one call site of a general
+hazard — every bare `$0` in a skill body is an argument-substitution hazard — so the
+locator's pattern was narrower than the defect class by construction.
+
+**A second instance in the same edit.** My first patch script detected the awk block by
+scanning for a closing `}` and stopped at a **nested** one, replacing 1 of 10 and
+reporting success. The second attempt asserted `n==9` from an eyeball count and aborted
+— correctly, the real count was 10 (two lines carry two each).
+
+**Fix**: Replaced all 10 within the fence extent, verified by extracting and executing
+the program: finds a lossy table, silent on a clean one, skips fenced. Then the control
+that mattered — simulated argument substitution on both forms: **old form + args →
+silent; new form + args → finds it.**
+
+**Lesson**: ⭐ **The grep that finds a defect is not the grep that scopes it.** Write a
+second pattern for the *class*, and let an assertion carry the count — the assert that
+said "expected 9, made 10" is the only reason the miscount did not ship. Same family as
+[[feedback-enumeration-is-not-inventory]] and the hand-built-population rule.
+
+## I REPORTED HEADROOM IN THE WRONG UNIT — 449 vs 45, a 10× understatement of urgency (2026-08-26)
+
+**Problem**: Reported `CLAUDE.md` as "449 under the 40,000 hard limit". The limit is
+enforced in **bytes**. `40,000 − 39,551 chars = 449`; `40,000 − 39,955 bytes = **45**`.
+Both numbers are arithmetically correct; only one describes the constraint. I published
+the reassuring one.
+
+**Root cause**: The file is dense with multi-byte characters (⛔ ⚠️ ⭐ —), so the
+byte/char gap is ~1%, and I measured both but reported the one from the column I had
+been reading. Nothing was wrong in either number, which is why re-reading did not catch
+it.
+
+**Fix**: Corrected in-session; the guard now prints bytes, which is what
+`len(open(...,'rb').read())` returns, and the WARN line reads `45 left`.
+
+**Lesson**: ⭐ **Report a margin in the unit the limit is enforced in, not the unit you
+happened to measure.** This is the adopter-side instance of agent-ready-projects **#48**
+("two shipped steps measured the same file in different units and disagreed") — there
+`audit-context` counted lines and `curate` counted characters, and *the weaker
+instrument drove the more expensive action*. Here the friendlier unit drove the calmer
+report. When two units are available, state which one the ceiling uses.
+
 ## [6x pgrep-family] `systemctl is-active` ANSWERED FOR THE WRONG UNIT — the box was idle and the cleanup was still running (2026-08-26)
 
 **Problem**: Deploying #132 (the `prefiltered_out` retention change) meant touching
