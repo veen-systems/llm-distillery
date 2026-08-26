@@ -174,6 +174,13 @@ Plus, from the 2026-08-23 audits:
 
 - ⛔ **Ship `prefiltered_out/` writing WITH CONTENT from day one.** Auditability is not a
   follow-up; it is the thing that determines whether the gate ever gets enforced.
+  ⚠️ **And ship it with its retention in the same change** (#132, 2026-08-26): the tier is
+  now archived to `prefiltered_YYYY-MM.tar.gz` and swept at 14 days, so a new gate writing
+  into `data/prefiltered_out/<gate>/flagged_<ts>_<n>.jsonl` inherits both for free — **but
+  only if it uses that filename shape**, because the archiver's date regex, not the glob, is
+  what decides. A gate that invents its own name is written, never archived, and never
+  swept. With content the tier stops being cheap (identity-only is ~1.2 MB/day); say so in
+  the gate's own change request rather than discovering it at 730-day retention.
 - ⛔ **Judge the gate on the SURFACING population.** 99.6% of violence flags never reach a lens
   op-point; precision over all flags described articles no reader could see. Measure precision
   over articles that are flagged **and** clear a lens threshold.

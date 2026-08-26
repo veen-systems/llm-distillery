@@ -125,12 +125,17 @@ them** — each exists because something shipped broken.
   the whole tree as its argument.** Never `git add -A`, bare `git stash`,
   `git checkout .`, `git clean`. Always pass explicit paths; `git status --porcelain`
   before committing and stage only what you recognise.
-- **`pgrep -f "<pattern>"` cannot answer "is it running?" — and `pkill -f` cannot stop it.**
-  *(5th occurrence 2026-08-25: a wait-loop matched ITSELF — its own `echo "no main.py
-  running"` carried the pattern — and waited forever. **Print the matching line.**)* It
-  matches the shell carrying the pattern. Use `ps -eo pid,etime,args | grep -v grep`,
-  `systemctl is-active`, or the log's last timestamp. If a process check decides
-  whether you act, print the matching line before believing it.
+- **`pgrep -f "<pattern>"` cannot answer "is it running?" — and neither can
+  `systemctl is-active <one-unit>`.** *(6th occurrence 2026-08-26 — the service
+  manager answers for the unit you NAME: `nexusmind.service` read `inactive`
+  while the **chained** `nexusmind-cleanup.service` ran the very code the deploy
+  was replacing. 5th 2026-08-25 — a wait-loop matched ITSELF via its own echo and
+  waited forever.)* **Enumerate the units, then ask all of them**
+  (`systemctl list-units 'nexusmind*' --all`); `OnSuccess=`/`Requires=` chains are
+  part of what "is it running?" means. `pgrep`/`pkill -f` additionally match the
+  shell carrying the pattern — use `ps -eo pid,etime,args | grep -v grep` or the
+  log's last timestamp. **If a process check decides whether you act, print the
+  matching line before believing it.**
 
 ## Production Filters
 
@@ -139,7 +144,6 @@ Full details in `memory/filter-status.md`. Summary:
 | Filter | Version | MAE | Status |
 |--------|---------|-----|--------|
 | **uplifting** | v7 | recall 0.61 / spec 0.97 | Deployed (NO_HUB, hybrid inference). **Op-point 4.5 since 2026-08-11 (#102)**. ⚠️ **Its consumer lens (Thriving) now carries a NARROWER predicate than this scorer's name implies** — ovr.news `BRAND.md` `a70609b`, 2026-08-13: *a process going well **for people***, excluding harm-answered-only and institution-beneficiary. #107 is scoped, not reversed: the scorer is faithfully serving a definition ovr did not publish. Binds the **v8 `human_thriving`** prompt (ADR-012's rename is now load-bearing, not hygiene) |
-| **sustainability_technology** | v3 | 0.72 | **REMOVED 2026-08-03** — replaced by solutions; package deleted, recover from git history |
 | **investment-risk** | v6 | recall 0.72 / spec 0.97 | **PAUSED 2026-08-25** (owner: Aegis is dormant). Never an ovr.news lens — its only consumer was the Aegis export, now off too. **PAUSED ≠ REMOVED**: package, HF Hub repo, Contract C and 251 days of archives all stay; un-pause = restore `pipeline.enabled_filters`, `pipeline.aegis_export.enabled` **and the `NexusMind/deploy/smoke_test_articles.jsonl` row** — ⛔ **it is THREE files, not two**: the missing fixture row failed the deploy gate closed and cost the 2026-08-25 20:03 cycle (now a unit test, `NexusMind/tests/unit/test_filter_integrity.py`). Was op-point 4.25. Decision: `docs/decisions/2026-08-25-pause-investment-risk.md` |
 | **cultural-discovery** | v5 | recall 0.59 / spec 0.98 | **LIVE.** v6's cutover failed on 2026-08-13 and was reverted, so v5 is still what scores |
 | **cultural-discovery** | v6 | (v5's) | **NOT DEPLOYED** — fixed and verified offline (`dcf2860`), never redeployed. ⚠️ **v5 ALREADY runs two-stage**: `filter_loader.py:148` sets `hybrid_class` from the PRESENCE of `inference_hybrid.py`, not from `config.yaml`, so v6 does **not** introduce probe screening — it changes the probe and threshold. The failed cutover, the rollback move and the probe numbers: `memory/filter-status.md`, `memory/cd-v6-probe-hypotheses.md` |
@@ -147,7 +151,7 @@ Full details in `memory/filter-status.md`. Summary:
 | **belonging** | v1 | recall 0.60 / spec 0.985 | Deployed (HF Hub) |
 | **nature_recovery** | v4 | recall 0.65 / prec 0.85 | Deployed (recall-first probe, v5 planned #71) |
 | **solutions** | v6 | recall 0.67 / spec 0.97 | **LIVE** — gate passed 2026-07-27, normalization fitted 2026-07-28 |
-| **foresight** | v1 | 0.75 | **REMOVED 2026-08-03** — merged into solutions (#43); package deleted, recover from git history. Closes out #64. |
+| **sustainability_technology** v3, **foresight** v1 | — | — | **BOTH REMOVED 2026-08-03**, merged into solutions (#43, closes #64); packages deleted, recover from git history |
 | **thriving** | v1 | — | PARKED indefinitely (ADR-015) |
 | **ai-engineering-practice** | v1 | — | Separate product, not ovr.news (table read v2; only v1 is on disk) |
 

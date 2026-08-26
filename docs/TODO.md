@@ -1,6 +1,87 @@
 # LLM Distillery - TODO
 
-## 🔵 NEXT SESSION — **the register is populated; step 3 is the free one left**
+## 🔵 NEXT SESSION — **#132 is closed and verified live; the number it rested on was one cycle wide**
+
+> **Updated 2026-08-26.** No spend, no model, no filter, no scoring-path change. All code in
+> **NexusMind** (`7adb615`, `5fce395`, `2a51e9d`), deployed to sadalsuud and **outcome-verified**.
+>
+> ### ✅ #132 CLOSED — `data/prefiltered_out/` has a retention policy instead of luck
+> Archived to `data/archived/prefiltered_YYYY-MM.tar.gz` (one directory **per gate** inside the
+> tarball), swept by the same 14-day cleanup, retention-cleaned, and added to `sync_backup.sh`.
+> Decision record: `docs/decisions/2026-08-26-prefiltered-out-retention.md`.
+>
+> **Verified live, 17:36:** 183 loose files → **100 archived and removed, 83 inside the cutoff
+> untouched**, verifier exit 0. Confirmed independently of the verifying script — `tar tzf` gives
+> 29 + 71 = **100** members. 8.9 MB loose → 1.28 MB of tarballs.
+> ⚠️ **First off-site upload is Sun 2026-08-30 03:03** (`nexusmind-backup.timer`) — until then
+> the tier is local-only, exactly the state NM#403 exists to close for `blocked_*`.
+>
+> ### ⛔ The keeper: a verified, correct number that was ONE CYCLE wide
+> #132's decision rested on *"90.6% of flagged rows never reach the block ledger"*. Real
+> measurement, exact join (39 of 39), checked **before** the decision. It was **one file, one
+> cycle**, and it reached a GitHub issue, a decision record, an ADR index, a spec, four
+> docstrings and three commit messages before anyone asked what its window was.
+>
+> | | flagged | in ledger | kept | kept % |
+> |---|---|---|---|---|
+> | pooled, **12 joinable cycles** | 4,801 | 561 | 4,240 | **88.3%** |
+> | per-cycle range | | | | **72.5% – 92.9%** |
+>
+> **90.6% was the second-highest of twelve.** The decision does not change — it rests on the
+> **worst** cycle, and even at 72.5% the ledger is missing most of the flagged population — but
+> ⛔ **do not quote the share, re-run it**: `NexusMind/scripts/research/measure_shadow_kept_share.py`.
+> ⭐ **1,497 green tests, 11 of them new, 6 mutations all killed — and none of that machinery
+> can fire on this defect, because the defect was in the EVIDENCE, not the code.** Filed as
+> augmented-engineering#38.
+>
+> Two instrument rules the wider window produced, both now in the script:
+> - **A newly-deployed ledger's first run is a backlog flush, not a cycle** (239 flagged, 239
+>   blocked, 0.0% kept). Pooling it in drags the share to 84.1%. It is printed and labelled
+>   rather than dropped — a run excluded without being shown is indistinguishable from one that
+>   was never there.
+> - **A flagged run whose ledger file has aged out is NOT "0 blocked" — it is unobservable.**
+>   Counting those as zero manufactures a 100% kept share out of retention, in the flattering
+>   direction.
+>
+> ### ⛔ Second keeper: `systemctl is-active` answered for the WRONG UNIT
+> The deploy touched `scripts/main.py`, so the rule is "pull when the service is inactive".
+> `nexusmind.service` read `inactive` at 09:18:55 — **and the box was not idle.** Cleanup is a
+> **separate unit**, `nexusmind-cleanup.service`, chained by `OnSuccess=` and running
+> `scripts/main.py --cleanup-only` in its own cgroup; it stayed `activating` another 8 minutes,
+> executing the very code path the deploy was replacing. ⭐ **This is the pgrep rule's own
+> recommended remedy failing: the service manager answers for the unit you NAME, and a chained
+> unit is a different name.** Enumerate first (`systemctl list-units 'nexusmind*' --all`), then
+> ask all of them. 6th occurrence; `memory/working-rules.md` + `CLAUDE.md` updated.
+>
+> ### Two defects I shipped and caught before deploy
+> - **The writer appends the flagged COUNT after the timestamp**
+>   (`flagged_20260826_031106_485.jsonl`). A date regex copied from `blocked_*` matches
+>   **nothing**, silently — "no expiring files to archive" forever while the directory grows.
+> - **My first sweep globbed `flagged_*.jsonl` + mtime.** That glob is *wider* than the
+>   archiver's date regex, so an odd-named file would have been deleted **un-archived**. It now
+>   deletes exactly the paths the archiver reports putting in a tarball (`archived_paths`,
+>   appended only after the temp archive is moved into place). **A sweep must not reach further
+>   than the thing that preserves what it deletes.**
+>
+> ### Do next, in this order
+>
+> 1. **NM#404 — decide whether the STORED `other_sources` shape should carry real quality.**
+>    Untouched today. ⚠️ Commented there: its headline **51.4% cross-run** is, by its own
+>    argument, a *"share that reflects how long the corpus has been running"* — so it is
+>    window-dependent and must be **re-measured, not re-quoted**, before it justifies persisting
+>    quality in the saved cluster record.
+> 2. **Q11 (new, `memory/violence-promotion-v1-hypotheses.md`) — flagged VOLUME rose ~66% in
+>    three days** (280 → 495, then a plateau). ⛔ **Not a finding yet**: the raw count has never
+>    been divided by the cycle's own scored population, which is the denominator error this
+>    project keeps making. Both numbers are in the pipeline's own log lines. Cheap.
+> 3. **Confirm the Sunday 03:03 backup actually uploaded `prefiltered_*.tar.gz`** — one `rclone
+>    lsf` against `veenbox:NexusMind-backup/article-archives`. NM#403's `blocked_*` first tarball
+>    is due ~09-07 and stays open until then.
+> 4. **CLAUDE.md is 39,955 of a 40k warn** and de-padding reclaims nothing. Two rows were merged
+>    today to pay for the rule edit, which is not a strategy. The next structural session has to
+>    move content out to topic files — same shape as #123, one layer up.
+
+## 🟡 PREVIOUS — **the register is populated; step 3 is the free one left**
 
 > **Updated 2026-08-25.** No spend, no model, no deploy to the scoring path. The work is
 > in **NexusMind** (`97677b3`); this repo carries the spec, the audit and the evidence.
@@ -385,6 +466,16 @@ prints the histogram, so no check breaks.
 >   back when steps 3–4 remove the duplicated flat stamps.
 > - **Block-ledger archives are NOT backed up off-site.** `sync_backup.sh` uploads only
 >   `nexusmind_*.tar.gz`; `raw_*` and the new `blocked_*` are local-only.
+> - ✅ **RESOLVED 2026-08-26 (#132, NexusMind `7adb615`)** — archived to
+>   `data/archived/prefiltered_YYYY-MM.tar.gz` (one directory per gate), swept by the same
+>   14-day cleanup, retention-cleaned and backed up off-site; the sweep is fail-closed and
+>   deletes exactly what the archiver reported archiving.
+>   `docs/decisions/2026-08-26-prefiltered-out-retention.md`.
+>   ⛔ **The 90.6% below is ONE CYCLE and is superseded**: over the 12 cycles the ledger can
+>   be joined on, pooled **88.3%** never reach it, per-cycle **72.5%–92.9%**. The single-cycle
+>   figure sat near the top of the range and was quoted in five documents before anyone asked
+>   what its window was. The conclusion is unchanged — the floor is the argument, not the
+>   pooled value. `NexusMind/scripts/research/measure_shadow_kept_share.py`.
 > - **`data/prefiltered_out/` is still in neither the cleanup nor the archive path** — it
 >   survives on luck, and it is the corpus that made LD#82 auditable.
 >   **Measured 2026-08-25:** one subdirectory (`violence_promotion`), **178 files, 7.7 MB**,
@@ -397,9 +488,9 @@ prints the histogram, so no check breaks.
 >   evidence any argument about where the threshold sits has to be made on, and the ledger
 >   by construction never contains it. Rows carry id/title/url/source/`_violence_promotion_score`
 >   only — no content, which is why it is this cheap.
->   **Decision needed (small):** archive it on the `filtered/`+`blocked/` path, or leave it
->   growing and say so out loud. Doing nothing is currently indistinguishable from the second,
->   which is the part worth fixing either way.
+>   **Decision taken 2026-08-26:** archive it on the `filtered/`+`blocked/` path (option 1).
+>   Doing nothing had been indistinguishable from choosing option 2, which was the part worth
+>   fixing either way.
 > - **Mark blocked articles processed** — the owner ruling that also ends ~22,000 re-evaluations
 >   per cycle. Deliberately NOT bundled: it changes admission behaviour, the ledger does not.
 > - **Stage ordering caps what a blocked row can say.** An article dropped in `load_articles` was

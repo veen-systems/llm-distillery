@@ -1,5 +1,44 @@
 # Gotcha Log
 
+## [6x pgrep-family] `systemctl is-active` ANSWERED FOR THE WRONG UNIT — the box was idle and the cleanup was still running (2026-08-26)
+
+**Problem**: Deploying #132 (the `prefiltered_out` retention change) meant touching
+`scripts/main.py`, which the pipeline imports, so the rule is "pull when the service is
+inactive". I armed a waiter on `systemctl is-active nexusmind.service`, it reported
+`inactive` at 09:18:55, and I was one command from `git pull`.
+
+**`nexusmind.service` was inactive and the box was NOT idle.** Cleanup is a **separate
+unit** — `nexusmind-cleanup.service`, chained by `OnSuccess=` from the main one and
+running `scripts/main.py --cleanup-only` in its own cgroup (deliberately, so an archive
+OOM cannot fail the parent, NM#210). It read `activating` for another **8 minutes**, and
+it is the unit that executes the very code path the deploy was changing. Pulling on that
+`inactive` would have swapped `main.py` and `filtered_archiver.py` under a running
+archive merge.
+
+⭐ **The keeper is that this is the pgrep rule's own recommended remedy failing.**
+`memory/working-rules.md` says: don't use `pgrep`, "ask the service manager
+(`systemctl is-active`)". That advice is correct and was not enough — **it answers for
+the unit you name, and a chained unit is a different name.** The instrument was sound,
+its answer was true, and it was not a function of the question I was asking.
+
+**What it looked like**: the last log line under the main unit was
+`--- Step 5: Cleanup ---`, timestamped 09:18:03 — i.e. the log *said* cleanup was
+starting at the moment the service reported itself finished. I read that as the tail of a
+completed run rather than the handover it was.
+
+**Fix**: Enumerate the units before believing an idle reading:
+
+```
+systemctl list-units 'nexusmind*' --all --no-pager
+systemctl is-active nexusmind.service nexusmind-cleanup.service | tr '\n' ' '
+```
+
+The waiter now waits on **both**, and `OnSuccess=`/`Requires=`/`PartOf=` chains are part
+of what "is it running?" means. Related: `reference-sadalsuud-pipeline-chain` in the
+Claude Code auto-memory already records that these modules are chained and that
+`inactive` between cycles is by design — **the chain was documented and I still asked
+only one unit.** A documented mechanism you do not query is not a mechanism you have.
+
 ## A TWO-LINE CONFIG CHANGE HAD A THIRD FILE, AND ONLY THE PRODUCTION BOX KNEW (2026-08-25)
 
 **Problem**: `investment_risk` was paused by owner ruling: out of

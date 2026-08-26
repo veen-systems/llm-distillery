@@ -23,6 +23,33 @@ Use `docs/agents/templates/ADR-TEMPLATE.md` as the starting point for new ADRs.
 
 ## Active ADRs
 
+### 2026-08-26: `data/prefiltered_out/` Gets a Retention Policy (#132)
+**File:** `2026-08-26-prefiltered-out-retention.md`
+
+The violence-promotion gate's shadow log was in neither the cleanup path nor the
+archive path — it survived on the absence of a matching glob, so "leave it growing"
+and "nobody has looked at this" were indistinguishable. Archived monthly to
+`prefiltered_YYYY-MM.tar.gz` (one directory per gate), swept at 14 days fail-closed,
+retention-cleaned and backed up off-site. ⚠️ **Not folded into the block ledger:**
+pooled **88.3%** of flagged rows never reach it over the 12 joinable cycles
+(per-cycle 72.5%–92.9%) — the flagged-but-KEPT population is what a threshold
+argument is made on, and the ledger by construction never holds it.
+
+### 2026-08-25: Pause `investment_risk` (owner ruling)
+**File:** `2026-08-25-pause-investment-risk.md`
+
+Aegis is dormant, so the filter and its export are off. **PAUSED ≠ REMOVED** — the
+package, Hub repo, Contract C and 251 days of archives all stay. Un-pausing is
+**three** files, not two: the missing `deploy/smoke_test_articles.jsonl` row failed
+the fail-closed deploy gate and cost a production cycle.
+
+### 2026-08-14: The Contract A Envelope
+**File:** `2026-08-14-contract-a-envelope.md`
+
+What belongs in the producer→NexusMind contract, and the rule that decides it: a
+field belongs in Contract A iff only the collector can know it AND it is destroyed
+if not recorded now.
+
 ### 2026-08-05: TDM Opt-Out Does Not Bar Distillation Training (#28)
 **File:** `2026-08-05-tdm-opt-out-training-data.md`
 

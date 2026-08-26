@@ -127,6 +127,45 @@ broken but because each gate's positives are dropped before persistence.
 ⛔ **Turning a gate on makes it unobservable.** The block ledger (`docs/BLOCK_LEDGER_SPEC.md`) is
 the fix, and this is what makes it time-sensitive.
 
+## Settled 2026-08-26 — the shadow log has a WINDOW, and it changes the headline number
+
+The gate's flagged-but-KEPT share is the quantity every threshold argument rests on, and
+it had only ever been measured on **one cycle** (90.6%, 2026-08-25). Joined across every
+cycle where the shadow log and the block ledger **both** exist — the ledger starts
+2026-08-24, so that is the whole observable window, not a sample of a longer one:
+
+| | flagged | in ledger | kept | kept % |
+|---|---|---|---|---|
+| pooled, 12 cycles (08-24 .. 08-26) | 4,801 | 561 | 4,240 | **88.3%** |
+| per-cycle range | | | | **72.5% – 92.9%** |
+| ⛔ ledger seeding flush (excluded) | 239 | 239 | 0 | 0.0% |
+
+⛔ **90.6% was the second-highest of twelve** and had been copied into five documents.
+The conclusion is unchanged — the shadow log is not redundant with the ledger, and that
+argument rests on the **worst** cycle, not the pooled one — but quote the pooled figure
+with its window, or better, re-run it:
+`NexusMind/scripts/research/measure_shadow_kept_share.py`.
+
+Two instrument rules the wider window produced, both now in the script:
+
+- **A newly-deployed ledger's first run is a backlog flush, not a cycle** (239 flagged,
+  239 blocked). Pooling it in drags the share to 84.1%. It is printed and labelled rather
+  than dropped — a run excluded without being shown is indistinguishable from one that was
+  never there.
+- **A flagged run whose ledger file has aged out is NOT "0 blocked" — it is unobservable.**
+  Counting those as zero manufactures a 100% kept share out of retention alone, and in the
+  flattering direction.
+
+### New open question — Q11: flagged VOLUME is rising and nobody has attributed it
+
+Per-cycle flagged counts over the same 12 cycles: 280, 284, 315, 338, 373, 402, 414, 460,
+485, 495, 490, 465 — **roughly +66% across three days**, then a plateau. ⚠️ **Not yet a
+finding.** The obvious confound is corpus size (each cycle's scored population also grew),
+and the rate has never been expressed per-article — which is the same denominator error
+this project has made repeatedly. **Divide by the cycle's own scored count before reading
+anything into the trend**; a raw count is not a rate, and both numbers are in the pipeline's
+own log lines. Until then this is an observation, not drift.
+
 ### Still open
 
 - **Q7/Q8 untouched** — training-set coverage and cross-language weapons-industry framing.

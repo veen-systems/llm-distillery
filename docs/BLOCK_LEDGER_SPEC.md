@@ -186,6 +186,16 @@ It survives because it is 6.1 MB and nobody purged it — **luck, not policy.** 
 carries `content` (which §4 requires) it becomes GB-scale, and the first person to look for disk
 will delete the one corpus that made #82 auditable.
 
+> ✅ **CLOSED 2026-08-26** (#132, NexusMind `7adb615`). Archived monthly to
+> `data/archived/prefiltered_YYYY-MM.tar.gz` — one directory per gate inside the tarball —
+> swept by the same 14-day cleanup, retention-cleaned with the other prefixes and uploaded
+> off-site. The sweep is fail-closed and deletes **exactly** what the archiver reported
+> archiving. ⚠️ **It was not folded into `data/blocked/`, and must not be:** pooled
+> **88.3%** of flagged rows never reach the ledger over the 12 cycles the two tiers can be
+> joined on (per-cycle **72.5%–92.9%**) — the flagged-but-KEPT population is what a threshold
+> argument is made on and the ledger by construction never holds it.
+> `docs/decisions/2026-08-26-prefiltered-out-retention.md`.
+
 ## 3. The record — one shape, written once
 
 A block event is a **ledger row**, not a contract (no counterparty; see `docs/CONTRACTS_PLAN.md`
@@ -244,9 +254,10 @@ data/archived/blocked_<YYYY-MM>.tar.gz ← archived on the SAME path as filtered
 
 1. ⛔ **The blocked sink must be added to `FilteredArchiver`'s inputs.** If it is only written
    and not archived, it is G1 with extra steps — deleted at 14 days by the same cleanup.
-2. ⛔ **`data/prefiltered_out/` must be brought under the same policy** or folded into
-   `data/blocked/` outright. Violence's flagged files are the precedent for both the value and
-   the fragility.
+2. ✅ **DONE 2026-08-26 — `data/prefiltered_out/` is under the same policy** (#132). ⚠️ Under
+   it, **not folded into `data/blocked/`**: the two hold different populations — pooled 88.3%
+   of flagged rows never reach the ledger — so a merge would lose most of the tier. Violence's
+   flagged files were the precedent for both the value and the fragility, and remain so.
 3. ⛔ **Seed the ledger without content on first run.** The backlog is ~22,000 already-blocked
    articles; writing them all with content is a one-off spike for rows whose content is already
    in `data/raw` archives. Capture content from first-block onward.
