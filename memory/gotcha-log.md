@@ -2,14 +2,14 @@
 
 ## A TWO-LINE CONFIG CHANGE HAD A THIRD FILE, AND ONLY THE PRODUCTION BOX KNEW (2026-08-25)
 
-**Problem.** `investment_risk` was paused by owner ruling: out of
+**Problem**: `investment_risk` was paused by owner ruling: out of
 `pipeline.enabled_filters`, `aegis_export.enabled: false`. Deployed 17:26, tests green,
 decision record written. At 20:09:54 `nexusmind.service` FAILED and the whole 20:03
 cycle never ran:
 
     ERROR: smoke fixture references filters not in app.yaml enabled_filters: ['investment_risk']
 
-**Root cause.** `deploy/smoke_test_articles.jsonl` still carried an `investment_risk`
+**Root cause**: `deploy/smoke_test_articles.jsonl` still carried an `investment_risk`
 row, and `deploy_filters.sh` is fail-closed on that mismatch — the post-deploy smoke
 test addresses `/filter/{name}/score` and would 404 against a filter the pipeline no
 longer loads. Nothing in the config names that fixture, nothing in the fixture names
@@ -17,7 +17,7 @@ the config, and **the only thing that knew they must agree was a bash gate runni
 service start on the production box.** So a config change surfaced as a missed cycle
 three hours later instead of as a red test at commit time.
 
-**Fix.** Remove the fixture row, not the gate (NexusMind `5c94a0e`) — the reversible
+**Fix**: Remove the fixture row, not the gate (NexusMind `5c94a0e`) — the reversible
 direction: with the row gone, an un-pause that forgets to restore it produces a WARN,
 never a failure. Then move the failure earlier: a unit test in
 `tests/unit/test_filter_integrity.py` asserting no fixture names a disabled filter
@@ -36,12 +36,12 @@ two config lines"; it is three.
 
 ## `pathlib.Path.glob` MATCHES DOTFILES, SO A DATA SWEEP REACHED STATE (2026-08-25)
 
-**Problem.** NexusMind's cleanup globs `("*.jsonl", "*.jsonl.bak", "*.json")` over
+**Problem**: NexusMind's cleanup globs `("*.jsonl", "*.jsonl.bak", "*.json")` over
 `data/raw/` and deletes anything older than 14 days. `data/raw/` also holds the
 per-filter state stores `.processed_ids_<filter>.json`, ~29 MB each — the record of
 what each filter has already scored.
 
-**Root cause.** `glob.glob("*.json")` skips dotfiles; **`pathlib.Path.glob("*.json")`
+**Root cause**: `glob.glob("*.json")` skips dotfiles; **`pathlib.Path.glob("*.json")`
 does not.** The pattern reads as safe to anyone who knows the shell rule.
 
 **Why it had never fired, which is the interesting half.** A running filter rewrites
@@ -52,7 +52,7 @@ been deleted, and un-pausing (advertised as a config flip) would silently have m
 re-scoring the whole 14-day raw window. The store is not archived either, so it would
 simply be gone.
 
-**Fix.** One `continue` on a leading dot (NexusMind `96b29f3`), with a test that fails
+**Fix**: One `continue` on a leading dot (NexusMind `96b29f3`), with a test that fails
 against the previous code and a control asserting the sweep still deletes real stale
 data. **A data sweep must not reach state.**
 
@@ -63,17 +63,17 @@ reasoning about the pattern.**
 
 ## AN ANNOTATION APPLIED TO A PARENT DID NOT COVER ITS CHILDREN (2026-08-26)
 
-**Problem.** `_corroboration` was marked `x-intermediate` so the stamp census would
+**Problem**: `_corroboration` was marked `x-intermediate` so the stamp census would
 stop reporting it as a ghost (it is built, consumed and popped inside one run). The
 next production run still printed three ghosts:
 `_corroboration.{cluster_id,other_sources,total_sources}`, each "declared in Contract B,
 present on 0 of 207,270 rows".
 
-**Root cause.** The marker walk stopped descending at a marked node instead of marking
+**Root cause**: The marker walk stopped descending at a marked node instead of marking
 the subtree, so the parent left the declared set and the children stayed in it. A field
 whose parent is popped before the write cannot be observed either.
 
-**Fix.** Both marks now cover descendants (NexusMind `69b6d74`), with the difference
+**Fix**: Both marks now cover descendants (NexusMind `69b6d74`), with the difference
 that matters: an intermediate subtree leaves the declared set entirely, while a rare
 descendant is still printed as answered and inherits its ancestor's falsifier. A
 boundary control pins that `_corroboration` must not swallow `_corroboration_boost` —
