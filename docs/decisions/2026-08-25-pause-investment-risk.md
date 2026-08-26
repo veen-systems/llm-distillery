@@ -70,8 +70,36 @@ Gathered before the decision, not after:
 
 ## What "un-pause" costs
 
-Restore the `enabled_filters` line **and** `aegis_export.enabled: true`. Both are
-config; no code, no deploy of a package. The model is still on the Hub.
+Restore the `enabled_filters` line, `aegis_export.enabled: true`, **and the smoke
+fixture row** — see the incident below. No code, no deploy of a package; the model
+is still on the Hub.
+
+⛔ **THE PAUSE ITSELF NEEDED A THIRD FILE, AND FINDING OUT COST A PRODUCTION CYCLE.**
+`nexusmind.service` FAILED at 2026-08-25 20:09:54 and the 20:03 cycle never ran:
+
+```
+ERROR: smoke fixture references filters not in app.yaml enabled_filters: ['investment_risk']
+  enabled_filters = ['belonging', 'cultural_discovery', 'nature_recovery', 'solutions', 'uplifting']
+```
+
+`deploy/smoke_test_articles.jsonl` still carried an `investment_risk` row, and
+`deploy_filters.sh` refuses to deploy when a fixture names a filter the pipeline no
+longer loads — the post-deploy smoke test addresses `/filter/{name}/score` and would
+404. ⭐ **The gate is the control working**, fail-closed by design since 2026-07-17,
+and it caught a real inconsistency the same evening it was created.
+
+The row was removed rather than the gate weakened (NexusMind `5c94a0e`). That is the
+reversible direction: with the row gone, an un-pause that forgets to restore it
+produces a **WARN** ("enabled filter has no smoke fixture"), never a hard failure.
+Recover it with `git show c7af891:deploy/smoke_test_articles.jsonl`.
+
+⚠️ **Nothing in the config names that fixture, and no test covers the pair.** The
+only thing that knows they must agree is a bash gate that runs at service start —
+which is why a two-line config change surfaced as a missed production cycle almost
+three hours later instead of at commit time. No data was lost: `fluxus-collection`
+succeeded at 20:03, its output sat on disk, and the next cycle reads the whole
+14-day raw window. One cycle of latency, and the 00:00 and 04:00 cycles both ran
+clean with "All smoke tests passed".
 
 ⛔ **Found the same evening, and it nearly made that paragraph false.** The
 filter's memory of what it has already scored is

@@ -104,7 +104,7 @@
 > enrichers run first and second. **Re-run `ordering_effect.py` after a few cycles.**
 > The config reorder I proposed is therefore NOT needed unless that prediction fails.
 >
-> ### ✅ DEPLOYED 2026-08-25 17:26 + 17:32 — ⏳ OUTCOME NOT YET PROVEN
+> ### ✅ DEPLOYED 17:26 + 17:32 — and VERIFIED LIVE 2026-08-26 07:50
 > *(This block said "first thing next session" and was already stale when written — the two
 > pulls happened at the end of the same session. Corrected 2026-08-25 17:40 by reading the
 > box, not the note.)*
@@ -115,23 +115,44 @@
 > so the "deploy when inactive" rule held with its premise intact — this one **does** touch
 > the pipeline's import graph (`scripts/main.py`, `src/archiving/block_ledger.py`).
 >
-> ⛔ **NO CYCLE HAS RUN ON THE NEW CODE.** The newest output is
-> `filtered_20260825_171209.jsonl` (17:12, pre-deploy) and its first row's `nexusmind` keys
-> are still `['disposition', 'gates', 'run']` — **expected, not a failure.** Next
-> `fluxus-collection` timer: **20:03**. Deployed ≠ verified; nothing below is claimable yet.
+> ⛔ **THE 20:03 CYCLE NEVER RAN — the pause needed a THIRD file.** `nexusmind.service`
+> FAILED at 20:09:54 on a fail-closed deploy gate: `deploy/smoke_test_articles.jsonl` still
+> carried an `investment_risk` row, and `deploy_filters.sh` refuses to deploy when a fixture
+> names a filter that is not in `enabled_filters` (the smoke test would 404 against
+> `/filter/investment_risk/score`). ⭐ **The gate is the control working** — fail-closed since
+> 2026-07-17, and it caught a real inconsistency the same evening the pause created it.
+> Fixed by removing the fixture row, not by weakening the gate (NexusMind `5c94a0e`): with the
+> row gone, an un-pause that forgets it produces a WARN, never a failure. **Nothing in the
+> config names that fixture and no test covers the pair**, which is why a two-line config
+> change surfaced as a missed production cycle three hours later. No data lost — one cycle of
+> latency. Detail in `docs/decisions/2026-08-25-pause-investment-risk.md`.
 >
-> ```
-> # AFTER the 20:03 cycle:
-> ssh sadalsuud 'cd /home/jeroen/local_dev/NexusMind && python3 scripts/verify_block_ledger.py'
-> ssh sadalsuud 'cd /home/jeroen/local_dev/NexusMind && venv/bin/python -c "
-> import json,glob;f=sorted(glob.glob(\"data/filtered/uplifting/filtered_*.jsonl\"))[-1]
-> r=json.loads(open(f).readline());print(sorted((r.get(\"nexusmind\") or {}).keys()))"'
-> ```
-> **Outcome proof is `content`, `signals`, `corroboration` in that key list** — not that the
-> code is right, which the tests already say. Then re-run the register: the 18 new paths are
-> already classified, so it must still exit **0**; if it exits 1, something else appeared.
-> And the pause has its own outcome proof: block-ledger `placements` must drop **6 → 5**.
-> Rollback is `git revert 67b70e5` + redeploy — the namespace is not config-gated.
+> ### ✅ ALL FOUR CHECKS PASS (00:00 and 04:00 cycles, both "All smoke tests passed")
+> 1. **The step-3 namespace is on real rows.** `filtered_20260826_051337.jsonl`, first row:
+>    `['content', 'corroboration', 'disposition', 'gates', 'run', 'signals']` —
+>    `content {"length": 2003, "should_translate": false}`,
+>    `signals {"obit_pattern_count": 0, "primary_literature_detected": true}`,
+>    `corroboration {source_verified, source_tier, credibility_score, type_classification}`.
+> 2. **`verify_block_ledger.py` exit 0** — 10 files, **205,427 rows**, index present, all
+>    conformant to `article-record.schema.json` **v0.6.0**, one row per article.
+> 3. **Register regenerated, exit 0**, "every observed field is classified" — **125
+>    NexusMind-owned fields** in the 12-cycle window `filtered_20260823_204645 ..
+>    filtered_20260826_051752` (109 was the 08-25 window; the count is a property of the
+>    WINDOW). The 18 step-3 paths are now OBSERVED, not classified-and-absent.
+> 4. ⭐ **The pause's own outcome proof: `placements per row` is now
+>    `{6: 194403, 3: 1, 1: 1, 5: 11022}`** — 11,022 five-placement rows since the pause,
+>    exactly the predicted 6 → 5. ⚠️ Note what this costs the diagnosis below: the ONE
+>    pre-pause `placements: 5` anomaly is now indistinguishable from a normal post-pause row.
+>
+> ⛔ **The verification found a defect the tests could not: three `_corroboration.*` children
+> were still printed as ghosts** although the parent is marked `x-intermediate`. A mark is a
+> statement about a SUBTREE. Fixed and outcome-proven on production (NexusMind `69b6d74`,
+> `20b1898`): section A now prints one `??` answered line and one `!!` (the separate,
+> known `short_content_cap_applied` code-half ghost). **Found by running the shipped script on
+> production, not by review.**
+>
+> Rollback for step 3 remains `git revert 67b70e5` + redeploy — the namespace is not
+> config-gated.
 >
 > ### ⛔ Open, not forgotten
 > - ⛔ **RETRACTED same day: `_corroboration` is NOT a dead declaration.** Its own
