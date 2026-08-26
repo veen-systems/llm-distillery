@@ -389,6 +389,37 @@ variant production actually embeds (`title_raw` vs `title_stripped` differ by
 0.002 AUROC — immaterial here, but name it before quoting). #95's 0.16 noise
 floor does **not** apply: these are embedding cosines, not student scores.
 
+## ⚠️ 2026-08-26 — HALF OF `other_sources` IS BOOKKEEPING, NOT AN OBSERVATION
+
+Found while tracing a different field (`source_unreliable`), and it invalidates any
+analysis that reads source quality off `other_sources`.
+
+**`other_sources` carries TWO SHAPES**, and `source_tier` / `credibility_score` mean
+different things in each:
+
+* a **within-run** entry gets the other article's real quality, read from its own
+  `metadata.quality` (`story_dedup._annotate_corroboration`);
+* a **cross-run** entry (`cross_run: true`) gets `source_tier: "unknown"` and
+  `credibility_score: null` **HARDCODED** — `_annotate_cross_run` builds it from a
+  saved cluster record, and the saved record never persisted quality.
+
+**Measured over the 14-day filtered window (510 files, 110,645 distinct articles
+carrying the field): 104,201 of 202,893 entries (51.4%) are cross-run, and 100% of
+those read `unknown`.** So **97.7% of the `unknown` in this field is bookkeeping**
+(104,201 of 106,652), not a judgement about a source. Within-run entries: 70,121
+`verified`, 20,431 `override`, 5,689 `curated`, 2,451 genuinely `unknown`.
+
+⛔ **Never average, threshold or rank on credibility taken from `other_sources`** —
+the cross-run half drags every aggregate toward "unrated", and its share is a
+property of how long the corpus has been running, not of the sources.
+
+⭐ Same shape as the `stage_used` / `raw_weighted_average` trap in `CLAUDE.md`: the
+field exists, is populated, and means different things per row. The discriminator is
+present (`cross_run`), so the fix in any analysis is a `groupby`, not a repair — and
+whether the *stored* shape should carry real quality is a separate question nobody
+has asked yet. Contract B, the record schema, the register's status file and
+`ARTICLE_RECORD.md` all now say this in the field's own description.
+
 ## WHERE THE CORROBORATION DATA ACTUALLY LIVES (inventoried 2026-08-08)
 
 **It is on `b650-gpu:/home/jeroen/nm-sweep/out/`, NOT on sadalsuud.** I first

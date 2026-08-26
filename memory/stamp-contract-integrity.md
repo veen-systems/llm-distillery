@@ -481,4 +481,52 @@ was built: `_corroboration` and its three children are **declared in Contract B 
 0 of 164,572 rows** (the dict is popped at `scripts/main.py:2028`, deliberately), and a
 nullable object's population used to be *the count of its own absence*.
 
+### A ghost is a question — so the census now records the ANSWERS (2026-08-26)
+
+Both of that run's ghosts turned out to have answers, and neither was a corpse. The
+answers are stored as machine-readable schema annotations, because **prose was exactly
+what the instrument could not read**: `_corroboration`'s description had said
+"Intermediate field" from the start and check A reported it as a ghost anyway.
+
+| annotation | means | check A prints |
+|---|---|---|
+| `x-intermediate: true` | built, consumed and popped inside one run — it can NEVER reach a row | excluded from ghosts, named once |
+| `x-rare: true` | a live writer whose INPUT does not currently occur — it CAN appear at any time | `??` answered, with its description |
+
+⭐ **They are handled differently on purpose.** An intermediate field leaves the
+declared set. A rare one stays in it and is only re-labelled at report time, so the day
+it fires nothing has to be un-suppressed. **An `x-rare` mark is only honest with a
+FALSIFIER in the description** — the condition under which the field must start
+appearing — and the census prints `NO DESCRIPTION` when it meets a mark without one,
+because otherwise the annotation degrades into a way of silencing findings.
+
+⚠️ **A mark covers its SUBTREE.** Applied to the parent only, `_corroboration` was
+excluded while its three declared children went on printing as ghosts on 0 of 207,270
+rows. Found by running the shipped script on production during the 08-26 verification,
+not by review — the tests all passed. A rare descendant inherits its ancestor's
+falsifier rather than printing bare.
+
+⚠️ **`x-rare` speaks to the SCHEMA half of check A only.** The code half matches bare
+key names scraped from the writers; suppressing those by leaf is the trap that let a
+top-level ghost hide behind an identically-named lens field. Two instruments, two
+matching rules, and an annotation on one is not evidence about the other.
+
+**The first real answer — `source_unreliable`, and it is not about code at all.** It
+needs `source_tier == "override"` AND `credibility_score < 3.0`. `override` means a
+curator entry in FluxusSource `config/domains/credibility.yaml`: 733 entries, exactly 5
+below 3.0 (infowars 1.0, rt.com / sputniknews / sputnikglobe / tass 2.0), of which 3
+are configured feeds and **all 3 are `enabled: false` on editorial grounds** (unblock =
+NM#253) while the other 2 are in no source config. Over **237,132 distinct articles**
+(510 files, 08-11 .. 08-25) `override`'s minimum credibility is **3.8**, and all **204**
+sub-3.0 articles are `verified` tier, which the predicate excludes. **The two halves of
+the AND are anti-correlated by policy, two repos upstream.**
+
+⛔ **And the defect that answer surfaced is the transferable one.** The record schema's
+`corroboration` section is `additionalProperties: false`, and the flag was declared in
+neither that schema nor the dual-write's copied set — **the first row ever to carry it
+would have been the first row to fail validation.** A field that only appears in an
+emergency is the worst one to discover missing. Rule: **when you establish that a field
+is rare rather than dead, check that its target still exists** — rarity is why nobody
+ever exercised the path.
+
 <!-- verify: R=/home/jeroen/repos/veen-systems/NexusMind; if [ ! -d "$R" ]; then echo "CANNOT VERIFY: NexusMind repo not at that path"; elif [ ! -x "$R/venv/bin/python" ]; then echo "CANNOT VERIFY: no project venv at $R/venv"; elif "$R/venv/bin/python" -m pytest "$R/tests/unit/test_article_record_register.py" -q > /tmp/reg_probe.txt 2>&1; then tail -1 /tmp/reg_probe.txt; else tail -3 /tmp/reg_probe.txt; exit 1; fi -->

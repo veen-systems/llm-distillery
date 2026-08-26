@@ -1,5 +1,91 @@
 # Gotcha Log
 
+## A TWO-LINE CONFIG CHANGE HAD A THIRD FILE, AND ONLY THE PRODUCTION BOX KNEW (2026-08-25)
+
+**Problem.** `investment_risk` was paused by owner ruling: out of
+`pipeline.enabled_filters`, `aegis_export.enabled: false`. Deployed 17:26, tests green,
+decision record written. At 20:09:54 `nexusmind.service` FAILED and the whole 20:03
+cycle never ran:
+
+    ERROR: smoke fixture references filters not in app.yaml enabled_filters: ['investment_risk']
+
+**Root cause.** `deploy/smoke_test_articles.jsonl` still carried an `investment_risk`
+row, and `deploy_filters.sh` is fail-closed on that mismatch — the post-deploy smoke
+test addresses `/filter/{name}/score` and would 404 against a filter the pipeline no
+longer loads. Nothing in the config names that fixture, nothing in the fixture names
+the config, and **the only thing that knew they must agree was a bash gate running at
+service start on the production box.** So a config change surfaced as a missed cycle
+three hours later instead of as a red test at commit time.
+
+**Fix.** Remove the fixture row, not the gate (NexusMind `5c94a0e`) — the reversible
+direction: with the row gone, an un-pause that forgets to restore it produces a WARN,
+never a failure. Then move the failure earlier: a unit test in
+`tests/unit/test_filter_integrity.py` asserting no fixture names a disabled filter
+(`adcf3c9`). **Verified by checking out `c7af891` — the commit that broke production —
+and running the new test against it: it fails with the gate's own message.** It is
+deliberately not symmetric (an enabled filter with no fixture is a WARN in the gate, so
+it is not a failure in the test) plus a vacuity guard, since a fixture naming nothing
+would satisfy a subset test while covering nothing.
+
+**The lesson.** ⭐ **The gate was the control working** — it caught a real
+inconsistency the same evening it was created, and the temptation was to read a failed
+service as the defect. And: **when a config key is cross-checked by something that only
+runs in production, the pair has no local test by definition. Ask what else reads this
+key before calling a config change two lines.** The decision record said "un-pause =
+two config lines"; it is three.
+
+## `pathlib.Path.glob` MATCHES DOTFILES, SO A DATA SWEEP REACHED STATE (2026-08-25)
+
+**Problem.** NexusMind's cleanup globs `("*.jsonl", "*.jsonl.bak", "*.json")` over
+`data/raw/` and deletes anything older than 14 days. `data/raw/` also holds the
+per-filter state stores `.processed_ids_<filter>.json`, ~29 MB each — the record of
+what each filter has already scored.
+
+**Root cause.** `glob.glob("*.json")` skips dotfiles; **`pathlib.Path.glob("*.json")`
+does not.** The pattern reads as safe to anyone who knows the shell rule.
+
+**Why it had never fired, which is the interesting half.** A running filter rewrites
+its store every cycle, so the mtime is never stale — **the population that made the bug
+look impossible is the same population that hid it.** A PAUSED filter's store does age:
+`investment_risk` was paused that evening, so around 2026-09-08 its store would have
+been deleted, and un-pausing (advertised as a config flip) would silently have meant
+re-scoring the whole 14-day raw window. The store is not archived either, so it would
+simply be gone.
+
+**Fix.** One `continue` on a leading dot (NexusMind `96b29f3`), with a test that fails
+against the previous code and a control asserting the sweep still deletes real stale
+data. **A data sweep must not reach state.**
+
+**The lesson.** Two libraries in one language disagree about hidden files, and the
+safer-looking one is the one nobody uses. **When a destructive glob shares a directory
+with state, enumerate what it matches — run the glob and read the list — rather than
+reasoning about the pattern.**
+
+## AN ANNOTATION APPLIED TO A PARENT DID NOT COVER ITS CHILDREN (2026-08-26)
+
+**Problem.** `_corroboration` was marked `x-intermediate` so the stamp census would
+stop reporting it as a ghost (it is built, consumed and popped inside one run). The
+next production run still printed three ghosts:
+`_corroboration.{cluster_id,other_sources,total_sources}`, each "declared in Contract B,
+present on 0 of 207,270 rows".
+
+**Root cause.** The marker walk stopped descending at a marked node instead of marking
+the subtree, so the parent left the declared set and the children stayed in it. A field
+whose parent is popped before the write cannot be observed either.
+
+**Fix.** Both marks now cover descendants (NexusMind `69b6d74`), with the difference
+that matters: an intermediate subtree leaves the declared set entirely, while a rare
+descendant is still printed as answered and inherits its ancestor's falsifier. A
+boundary control pins that `_corroboration` must not swallow `_corroboration_boost` —
+a sibling whose name merely starts with a marked one.
+
+**The lesson.** ⭐ **Found by running the shipped script on production during a
+verification, not by review or by tests** — the unit tests all passed, because they were
+written from the same model as the code. **An exclusion is a statement about a subtree;
+a test that only exercises the marked node cannot tell the two apart.** Corollary for
+noise: three known-by-design lines in a report whose whole value is that every line
+deserves attention are not cosmetic — they train the reader to skim.
+
 ## 2026-08-20 — a REST boundary is part of the call path, and the fix I designed twice could not have fired
 
 **Symptom.** Asked to add a `primary_literature` cap to the Thriving lens. The obvious
