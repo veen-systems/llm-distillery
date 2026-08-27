@@ -14,6 +14,48 @@ Upstream changelog: https://github.com/ducroq/agent-ready-projects/blob/master/C
 
 ---
 
+## v1.36.1 — triaged 2026-08-27 (late); **stamp → v1.36.1.** 0 adopt, 2 in force, 3 n/a
+
+A wrap-up review upstream found **three superseded sentences left standing beside the
+corrections that refuted them** — one class, and the one this whole day produced: a
+correction ships, the superseded text stays, and the surface asserts both. Ten releases in
+a day made it near-certain.
+
+**`templates/review-changes.md` is the only one touching a surface this repo owns**, and it
+does not apply: the stale sentence ("Step 1.5 does not catch emphasis", left standing by
+the release that added the emphasis check) **was never in the re-mapped copy** — 0 hits for
+it in `.claude/skills/review-changes/SKILL.md`. The re-map is why; it carries the awk and
+its comments, not that prose passage.
+
+### ⭐ The correction that DID bear on a judgement made here — re-weighed by measurement
+
+`templates/curate.md` stated the cross-repo cost **flat**: *"a genuinely dead
+`oldpkg/foo.py` … also lands here rather than in DEAD."* v1.34.0's sibling rung, forty
+lines below in the same file, decides exactly that case when a sibling of that name is on
+disk. **The cost is conditional and was written unconditional** — and it is the sentence an
+adopter reads to judge whether the sensitivity loss is acceptable.
+
+This repo's judgement did not change, because the conditional behaviour is what it argued
+for. But that is a claim, so it was **run** rather than asserted — the extractor pulled
+from the installed v1.36.1 `curate`, against both halves:
+
+| case | disposition |
+|---|---|
+| `NexusMind/scripts/research/nm188_mojibake_derived.py` — sibling on disk, file absent | **DEAD** — *absent in the sibling NexusMind, which IS on disk* |
+| `AbsentRepo/scripts/nothing.py` — no sibling of that name | **CANNOT VERIFY** — *no sibling on disk to decide it* |
+
+**So the trade is acceptable here specifically**, and for a reason that is a property of
+this estate rather than of the checker: all 16 sibling repos are full checkouts, so the
+decidable half is the one that applies. ⛔ On a neighbourless checkout — CI, a container —
+every qualified cross-repo reference degrades to CANNOT VERIFY, which is the flat sentence
+becoming true. **The cost is conditional on WHERE THE CHECK RUNS, which is the same
+property v1.29.0's third verdict state exists for.**
+
+⚠️ The fixture guarding the flat claim upstream **passed only by accident** — its temp dir
+happened to lack an `oldpkg` sibling. Both halves are seeded there now.
+
+---
+
 ## v1.36.0 — triaged 2026-08-27 (late); **stamp → v1.36.0.** 0 adopt, 1 in force, 2 n/a
 
 `templates/curate.md` +4 lines; `coordination.md` and `project-file.md` are the version
