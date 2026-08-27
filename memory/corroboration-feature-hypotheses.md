@@ -659,7 +659,19 @@ state**: post-enrichment body mojibake 1.686% → 0.593%, step on 2026-08-14
   **The fix is derivation, not a longer class:** for every character in a realistic
   inventory and every legacy codec, compute `ch.encode("utf-8").decode(codec)` and match
   on the resulting strings. 2,914 signatures from 5 codecs, nothing guessed.
-  → `NexusMind/scripts/research/nm188_mojibake_derived.py`.
+  → ⛔ **THE CODE IS LOST — ~~`NexusMind/scripts/research/nm188_mojibake_derived.py`~~ was never committed, in either repo.** Traced 2026-08-27, because this reference was
+  the reference checker's one standing finding for weeks and nobody had asked *why*:
+  it is in no commit, under any path, in llm-distillery or NexusMind. ⚠️ **And the prefix here was wrong on top of that** — NexusMind's own
+  `scripts/research/nm188_mojibake_invert.py` docstring cites it as llm-distillery at
+  `5d5467e`, but that commit touched **only this memory file**. Two documents disagreed
+  about which repo held it and it was in neither; an uncommitted working file from the
+  2026-08-17 session. **What survives is the prose above and the numbers in it — the
+  derivation is reproducible from that description, and would have to be.**
+  ✅ The counterpart DOES exist and is worth reading first:
+  `NexusMind/scripts/research/nm188_mojibake_invert.py`, the *inversion* half of
+  screen-then-verify. It is explicitly **not sound alone** (3 of 10 clean controls and
+  52 of 410 corpus hits invert falsely, 37 of them Armenian), so it verifies what a
+  signature screen proposes; neither principle stands by itself.
   ⭐ **It also carries the control the hand-written versions never had, and the control
   is free:** every mojibake signature is non-ASCII by construction, so the detector must
   return **exactly 0 on the pure-ASCII subset** — 0 of 193,983 titles, 59.7% of the

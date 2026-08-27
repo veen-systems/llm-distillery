@@ -4769,3 +4769,27 @@ Both now pin measured behaviour and both mutants die (`checked` forced empty →
 `sanitize_text_comprehensive` made a no-op → red). ⚠️ The other two hits were left: a
 2- and a 3-way disjunction over message wording, loose but able to fail, and pinning exact
 wording would trade a weak test for a brittle one.
+
+### I CALLED A REFERENCE UNFIXABLE FOR WEEKS WITHOUT ONCE TRACING IT (2026-08-27)
+**Problem**: `NexusMind/scripts/research/nm188_mojibake_derived.py` was the reference
+checker's one standing finding, carried across sessions and repeatedly described — by me,
+today, three times — as *"needing someone who remembers the experiment."* It needed no
+memory at all. Ten minutes of tracing settled it.
+**Root cause**: I treated *the file is absent* as the end of the enquiry instead of the
+start. The sibling that DOES exist, `nm188_mojibake_invert.py`, **names the missing file in
+its own docstring** — as being in llm-distillery at commit `5d5467e`. That commit is real
+and touches **only** `memory/corroboration-feature-hypotheses.md`. The script is in no
+commit, under any path, in either repo: an uncommitted working file from 2026-08-17.
+**Fix**: struck in the memory file per the `ABSENT_SPANS` convention, so it is counted as
+asserted-absent rather than reported as a break, with the diagnosis and the surviving
+method beside it; the misdirecting NexusMind docstring corrected (`946d6f0`).
+⛔ **TWO DOCUMENTS DISAGREED ABOUT WHICH REPO HELD IT AND IT WAS IN NEITHER** — mine said
+NexusMind, NexusMind's said llm-distillery. Each looked authoritative from the other side.
+⭐ **A path plus a commit hash reads as the strongest kind of reference there is, and
+neither half was checkable until someone tried.** The hash resolving is what sells it: I
+verified `5d5467e` exists and stopped, when the question was what it *contained*.
+⛔ **The reusable half is about the STANDING finding, not the file.** A finding that
+survives many runs stops being read as a question. I defended keeping it — correctly,
+"zero is not the target" — and that defence became the reason nobody asked what it *was*.
+**A deliberately-unfixed finding still needs a diagnosis on the record, or the decision to
+keep it decays into never having looked.**
