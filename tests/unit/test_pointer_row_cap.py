@@ -124,11 +124,20 @@ def test_a_table_with_no_rows_is_cannot_verify(guard):
 
 
 def test_the_delimiter_row_is_not_counted_as_a_row(guard, monkeypatch):
+    """⛔ THIS ASSERTION WAS VACUOUS AS FIRST WRITTEN, in a file whose docstring
+    says every test seeds the failure it claims. It read
+
+        assert "1 rows" in out or "38 rows" not in out
+
+    and the second disjunct is true whenever the output does not mention 38 — so
+    it passed against a mutant that deleted the delimiter-row skip entirely.
+    Measured: mutant applied, test green. Now it counts the exact quantity, and
+    the same mutant turns it red."""
     monkeypatch.setattr(guard, "POINTER_CARVEOUTS", {})
-    _write(guard, [_row("Doing a thing", 10)])
+    _write(guard, [_row("A", 10), _row("B", 10), _row("C", 10)])
     rc, out = guard._check_pointers()
-    # one seeded row; the |---|---| line must not inflate it
-    assert "1 rows" in "\n".join(out) or "38 rows" not in "\n".join(out)
+    assert rc == 0, "\n".join(out)
+    assert "3 rows" in "\n".join(out), "\n".join(out)
 
 
 def test_the_real_project_file_passes(guard, monkeypatch):

@@ -4725,3 +4725,20 @@ moment they act on it.** Inside this repo an unverified mechanism is a hypothesi
 a ledger row; sent across a repo boundary it arrives as a finding, with none of the
 hedging the ledger would have forced. **Say "I have not run this" in the sentence that
 offers it, or run it first.** See [[feedback-nothing-verifies-an-estimate]].
+
+### A VACUOUS ASSERTION IN THE FILE WHOSE DOCSTRING FORBIDS THEM (2026-08-27)
+**Problem**: `tests/unit/test_pointer_row_cap.py` shipped with
+`assert "1 rows" in out or "38 rows" not in out`. Its own module docstring says *"each one
+seeds the failure it claims to catch"*.
+**Root cause**: the second disjunct is true whenever the output does not mention 38 — which
+is almost always — so the `or` made the assertion unfalsifiable. **Proven, not argued**:
+deleting the delimiter-row skip from the guard (the exact defect the test names) left the
+test green.
+**Fix**: seed three rows and assert `"3 rows"` exactly; the same mutant now turns it red.
+⭐ **Caught by a peer's message about a defect in someone else's fixture** — an authored
+fixture reporting 26/26 green with three assertions that could not fail. Not by writing the
+test, not by re-reading it, not by the 361-test suite. ⛔ **The compounding detail: this is
+[[feedback-articulating-is-not-applying]] firing inside the hour, in a file written to
+enforce the opposite** — and the guard it tests was itself built to close a rule this repo
+had just articulated. **An `or` in an assertion is a smell: it gives the test two ways to
+pass and you only ever exercise one.**
