@@ -7,11 +7,17 @@ Everything below was verified against the running box, not inferred.
 
 ---
 
-## ✅ IMPLEMENTED 2026-08-23 (NexusMind, offline-verified, NOT yet deployed)
+## ✅ IMPLEMENTED 2026-08-23 · DEPLOYED AND VERIFIED LIVE 2026-08-24 (NexusMind)
+
+⚠️ **This header read "NOT yet deployed" until 2026-08-27**, three days after it went
+live — while entries dated 08-25 and 08-26 further down already assumed it was. Deployed
+**08-24 08:54**, outcome-verified **14:08** once the 12:00 cycle wrote its first flush at
+**13:05**: exit 0 over 168,486 rows, every mechanism reconciling against that cycle's own
+journal counters. The offline proof below is kept as the pre-deploy evidence it was.
 
 `src/archiving/block_ledger.py` + wiring in `scripts/main.py`. **Write-only: no admission
 decision changes.** Rollback = `pipeline.block_ledger.enabled: false`.
-Verify with `python3 scripts/verify_block_ledger.py`.
+Verify **from the NexusMind checkout** with `python3 scripts/verify_block_ledger.py` — the script lives there, not in this repo.
 
 Offline proof over a real production input (`content_items_20260823_161050.jsonl`, 3,074 rows,
 six filter loops): **428 unique blocked articles**, 404 carrying full content, every row

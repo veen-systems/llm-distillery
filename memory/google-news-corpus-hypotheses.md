@@ -22,6 +22,15 @@ Measured on NexusMind `data/raw`, 17 cycles from `20260808_1710`, 55,848 items.
 **Match GN on `'news.google.com' in url`, never on a source-key prefix** — a key
 prefix identifies only population A and under-counts total GN roughly 5:1 in config.
 
+⚠️ **The undercount factor is DIFFERENT for feeds, rows and items — which is why a
+sanity check does not catch it.** Derived from the table above, on its own numbers:
+a `gn_` prefix catches 59 of 302 feeds (**5.1×** low) but 8,302 of 14,357 GN items
+(**1.73×** low). So the same wrong matcher reads *plainly broken* at feed level and
+*roughly right* at item level — an analyst who spot-checks the item share sees 57.8%,
+calls it plausible for "most of GN", and ships a feed population off five-fold.
+**Check the unit your conclusion is denominated in, not the one that is easiest to
+count.** This is the mechanism behind two of the four denominator errors below.
+
 **Sharpened 2026-08-11 by the FluxusSource session, which hit the same defect from
 the other side.** The rule above was stated too narrowly. Emitted `source` keys are
 **category-prefixed** — `ai_google_news_ai_engineering`, not
