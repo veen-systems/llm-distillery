@@ -32,7 +32,7 @@ trigger; the rule came from here and had not been applied here.
 
 ⚠️ **Why this corpus shows 1 finding and not 86.** The same checker over the framework
 repo's `CHANGELOG.md` returned **86**, essentially all illustrative — invented example
-paths (`oldpkg/foo.py`) quoted to explain what a check does. This estate barely produces
+paths — oldpkg/foo.py, deliberately written WITHOUT a code span — quoted to explain what a check does. This estate barely produces
 them because of a **writing habit, not a protection**: prose here quotes real files, which
 then resolve at rung 2 (63) or rung 4 (172). ⛔ **That is a window, not a property.** The
 first genuinely invented example path written into `memory/` will be reported as a break,

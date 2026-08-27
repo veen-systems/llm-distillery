@@ -4803,3 +4803,18 @@ check it was explaining** — 1 finding became 3. Struck and qualified; back to 
 prose about the checker, not before.** The write-up is new text and new text is where new
 broken references come from — but it arrives feeling like documentation of work already
 verified, which is precisely when nobody re-verifies.
+⛔⛔ **FOUR OCCURRENCES IN ONE EVENING, and the fourth was inside the warning about the
+third.** Writing the paragraph that explains *illustrative example paths get reported as
+breaks*, I put the illustrative example path in a code span. Same file, same session,
+one sentence after describing the mechanism. The framework maintainer hit the same class
+independently at **86 findings** over their `CHANGELOG.md` — every one an invented path
+quoted to explain a check — which reopened an issue they had closed that morning as
+needing a second adopter's instance. **Two instances arrived the same day and one of them
+was written by the person documenting it.**
+⭐ **The durable form: an extractor cannot see intent, so in any corpus that documents its
+own tooling, a code span IS a reference.** The only reliable move is to write illustrative
+paths WITHOUT a code span — which costs the formatting and buys the check back.
+⚠️ **Why this estate showed 1 finding and theirs showed 86 is a writing habit, not a
+protection**: prose here quotes real files, which resolve at rung 2 or rung 4. The first
+genuinely invented example path written into `memory/` is reported as a break, and the
+reflex is to "fix" a reference that was never meant to resolve.
