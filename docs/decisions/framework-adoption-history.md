@@ -14,6 +14,82 @@ Upstream changelog: https://github.com/ducroq/agent-ready-projects/blob/master/C
 
 ---
 
+## v1.26.1 → v1.31.0 — triaged 2026-08-27 via `/update-drift`; **stamp bumped to v1.31.0**
+
+**3 adopted, 1 declined, 4 not applicable, 9 already in force.** Pinned `v1.26.0`,
+upstream `v1.31.0` (six releases). ✅ **The 08-26 hold is DISCHARGED** — all three
+adopt items landed in this session and are named below, which is the itemisation the
+previous triage was faulted for omitting.
+
+⭐ **The finding that reshaped the triage: the three user-global skills were already at
+v1.31.0.** `audit-context`, `update-drift` and `curate` each differ from upstream's
+v1.31.0 template by **only** the installer's SAVE-AS-comment → frontmatter conversion
+(23/26/24 diff lines; a consistent ~730–780 B). Someone ran `install-global-skills.sh`
+between 08-26 and 08-27. That put most of four releases in force here with nothing for
+this repo to do — and it is invisible to `git status`, which is why Step 3 exists.
+**Method note:** the way to establish this is to diff the installed file against *every*
+tag's template and read which one goes to a minimum, not to trust the project stamp.
+
+### Adopted — all three in `.claude/skills/review-changes/SKILL.md`
+
+⚠️ That copy is **RE-MAPPED** (461 lines local vs 413 upstream). All three landed as
+surgical patches; re-copying would destroy the re-map (#94).
+
+| Adopt item | Where it landed | Verified how |
+|---|---|---|
+| **v1.31.0 #52** — YAML frontmatter reported as a malformed table: `isdelim()` accepts a bare `---` and its guard is satisfied by a pipe in the PREVIOUS line | three `infm` rules after the CRLF strip | **Reproduced before adopting**, then fixed: a `description:` containing a pipe *as the last frontmatter key* reported `header has 2 cells, delimiter row defines 1`. Silent after. ⚠️ **Latent here — 0 of the SKILL.md files on this machine have that shape** |
+| **v1.31.0 #50** — emphasis spans, the third construct with Step 1.5's property (correct in the diff, wrong when rendered) | masked-span block before the `isdelim` arm | Seeded positive fires; the 15-false-positive shape (`**HIGH**` opening and closing in one table cell, globs in the next) stays **silent**. Measured over 450 tracked `.md`: **0 findings** |
+| **v1.28.0 #89** — the entry was routed to `/curate`, reinstating the delay the log exists to remove | the hypothesis paragraph at Step 4 | Text diff against upstream; local still said *"written during `/curate`"* |
+
+**The controls matter more than the positives.** The #52 fix sits directly above the
+table check, so the adoption run asserted a genuinely lossy table **still** fires
+afterwards — a fix that silences the check it neighbours looks identical to a fix that
+works. And #50 was adopted only in upstream's third form: its first two drafts reported
+28 and 15 false positives on upstream's own repo.
+
+### Declined — one, with the reason
+
+**v1.29.0's third verdict state (`coverage incomplete`, exit 2) for the local
+`refcheck.py` fork.** The fork has **no `sys.exit` at all**; `run.sh` exits on its own
+sensitivity count, `.github/workflows/` does not exist, and nothing else calls it.
+Adopting it would ship a mechanism with no caller — the rule this repo has broken 16
+times. The user-global `audit-context` already carries the semantics for a human run.
+
+### Already in force — nine, four of them proven by reading the code, not the stamp
+
+v1.26.1 (whitelist guard), v1.27.0 #77, v1.28.0 #54/#55/#56 — all back-ported into the
+`refcheck.py` fork on 08-26/08-27. v1.28.0 #88/#72 (`update-drift` Step 0 matchers) —
+**this run used them**, and they are what surfaced 33 mentioned pairs against 14 stamped.
+v1.31.0 #51/#46/#66/#62/#65/#61 (`curate`) — global at v1.31.0. v1.31.0 #94 — this repo
+filed it. **v1.30.0's marked-arm rung order** — verified by reading the fork's `resolves`
+disjunction: it runs rung 1, self-strip, rung 1b, rung 3, rung 4, rung 5, and correctly
+**excludes rung 2**, which is #56 unchanged.
+
+### Not applicable — four
+
+v1.31.0 #47 (no `docs/GUIDE.md` here), v1.28.0 #90 and #48, v1.31.0 #95–#98 — framework
+-side test fixtures and oracle report rows with no counterpart surface in this repo.
+
+### ⛔ A live defect the newly-adopted check found on its first real run
+
+`docs/evidence/2026-08-12-cd-v5-op-point-band-followup.md:99` — `` `|Δ| < ½δ` `` carries
+unescaped pipes inside backticks, so that row renders as **4 cells in a 2-column table**
+and the excess is dropped. **Pre-existing** (the pre-patch program reports it identically),
+not introduced here, and left standing for the owner: it is an evidence record, and the
+fix is to escape the pipes as `\|`, which `cells()` already strips.
+
+### Step 0 reconciliation
+
+**33 mentioned `(file, framework)` pairs, 14 stamped**, 19 in the difference, every one
+dispositioned: `agent-ready-fixture` ×2 is a deliberately-unreachable path inside the
+verify-protocol test fixture; `agent-ready-papers` ×5 is a second framework, already
+declined; `agent-ready-assessment` ×1 is prose in a gotcha war story; the rest are prose
+mentions, permission globs and a provenance URL. ⚠️ The 08-26 triage cited the
+`agent-ready-papers` decline at `docs/TODO.md:4052`; it is now **:4108**. Line-number
+citations rot — cite the sentence.
+
+---
+
 ## v1.26.1 + v1.27.0 + v1.28.0 — triaged 2026-08-26 evening via `/update-drift`
 
 **3 adopted, 0 declined, 4 not applicable, 5 already in force.** Pinned `v1.26.0`,

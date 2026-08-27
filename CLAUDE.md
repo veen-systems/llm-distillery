@@ -2,7 +2,7 @@
 stack: Python 3.12, PyTorch, Transformers, PEFT/LoRA
 status: Production
 repo: github.com/ducroq/llm-distillery
-framework: agent-ready-projects v1.26.0
+framework: agent-ready-projects v1.31.0
 framework_reconciliation: |
   v1.26.1+v1.27.0+v1.28.0 triaged 2026-08-26: 3 adopt, 0 decline. STAMP HELD at
   v1.26.0 until 2 unlanded adopt items ship — held, NOT unreviewed. Every release,
@@ -290,6 +290,6 @@ This project is a source project for [augmented-engineering](https://github.com/
 
 ---
 
-*Last updated: 2026-08-17. **Framework: agent-ready-projects v1.26.0 — HELD, not stale.** Upstream is v1.28.0; triaged 2026-08-26 (3 adopt / 0 decline), stamp held until the adopt items land. ⛔ **Do not name an upstream section's contents here** — this sentence named v1.26.1's while calling it *unreleased*; it shipped 2026-08-25. Read the changelog, don't quote it. Triage detail: `docs/decisions/framework-adoption-history.md`. Structural state, open decisions and every number that moves live in `docs/TODO.md` (top block) and the memory index — deliberately NOT restated here, because two hand-maintained copies of a number disagree the moment one is updated. **`/audit-context` 2026-08-16 moved the evidence to topic files and the imperatives stayed; the 2026-08-17 run found the pointer table's own reachability was the defect** — see `memory/gotcha-log.md` and #122. ⚠️ **Do not re-add a self-referential size claim here** ("cut to the size you see"): the 08-16 wording was falsified by the next edit to this file. Session records: `memory/project_session_2026_08_16.md` and the files it links.*
+*Last updated: 2026-08-27. **Framework: agent-ready-projects v1.31.0 — current.** Triaged 2026-08-27 through v1.31.0 (3 adopt / 1 decline / 4 n/a / 9 already in force); the 08-26 hold is discharged, all three adopt items landed in `review-changes`. ⛔ **A stamp bump requires the adopt items in the tree first** — ahead of its content it silences the check that would catch the gap. ⛔ **Do not name an upstream section's contents here** — this sentence named v1.26.1's while calling it *unreleased*; it shipped 2026-08-25. Read the changelog, don't quote it. Triage detail: `docs/decisions/framework-adoption-history.md`. Structural state, open decisions and every number that moves live in `docs/TODO.md` (top block) and the memory index — deliberately NOT restated here, because two hand-maintained copies of a number disagree the moment one is updated. **`/audit-context` 2026-08-16 moved the evidence to topic files and the imperatives stayed; the 2026-08-17 run found the pointer table's own reachability was the defect** — see `memory/gotcha-log.md` and #122. ⚠️ **Do not re-add a self-referential size claim here** ("cut to the size you see"): the 08-16 wording was falsified by the next edit to this file. Session records: `memory/project_session_2026_08_16.md` and the files it links.*
 
 <!-- verify: FM=$(grep -m1 -oE '^framework: agent-ready-projects v[0-9.]+' CLAUDE.md | grep -oE 'v[0-9.]+'); FT=$(grep -m1 -oE 'Framework: agent-ready-projects v[0-9.]+' CLAUDE.md | grep -oE 'v[0-9.]+'); if [ -z "$FM" ]; then echo "CANNOT VERIFY: no frontmatter framework stamp"; elif [ -z "$FT" ]; then echo "CANNOT VERIFY: no footer framework stamp"; elif [ "$FM" = "$FT" ]; then echo "PASS ($FM)"; else echo "FAIL: frontmatter $FM, footer $FT"; fi -->

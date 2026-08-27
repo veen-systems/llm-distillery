@@ -141,6 +141,16 @@ it.
     { sub(/\r$/, "") }               # CRLF: strip before anything reads the line,
                                      # or isdelim() never matches and no table in
                                      # the file is examined. See #52 (framework).
+    # YAML frontmatter, skipped whole: `isdelim()` accepts a bare `---` and its
+    # guard is satisfied by a pipe in the PREVIOUS line, so a closing `---` under
+    # `description: Runs a | b` reports as a malformed table. Preferred over
+    # requiring a pipe in the delimiter row, which would reject the pipe-less
+    # rows GFM permits. Upstream #52 (v1.31.0). Reproduced here before adopting:
+    # fires only when `description:` is the LAST frontmatter key, and 0 of the
+    # SKILL.md files on this machine have that shape -- latent, not live.
+    NR == 1 && $(0) ~ /^---[ \t]*$/ { infm = 1; next }
+    infm && $(0) ~ /^(---|\.\.\.)[ \t]*$/ { infm = 0; prev = ""; next }
+    infm { next }
     {
       bare = $(0); sub(/^ ? ? ?/, "", bare)
       if (bare ~ /^```/ || bare ~ /^~~~/) {
@@ -151,6 +161,33 @@ it.
         intbl = 0; prev = ""; next
       }
       if (fch != "") next
+      # Emphasis spans -- the third construct with this step's property:
+      # correct in the diff, wrong when rendered. Upstream #50 (v1.31.0).
+      # Deliberately NARROW: reports only a backticked token whose content
+      # abuts `**` INSIDE an open bold run. Upstream measured the weaker
+      # forms -- "a risky token on a bold line" gave 28 false positives,
+      # "two of them" still gave 15 (every risk-tier row, where `**HIGH**`
+      # opens and closes in one cell). Adjacency is the discriminator.
+      { masked = ""; rest = $(0)
+        while (match(rest, /`[^`]*`/)) {
+          inner = substr(rest, RSTART + 1, RLENGTH - 2)
+          mark = "\002"
+          if (inner ~ /\*\*$/ || inner ~ /^\*\*/) mark = "\001"
+          masked = masked substr(rest, 1, RSTART - 1) mark
+          rest = substr(rest, RSTART + RLENGTH)
+        }
+        masked = masked rest
+        inb = 0; nrisk = 0
+        for (i = 1; i <= length(masked); i++) {
+          if (substr(masked, i, 2) == "**") { inb = 1 - inb; i++; continue }
+          if (inb && substr(masked, i, 1) == "\001") nrisk++
+        }
+        # The backtick test guards a literal \001/\002 byte in the source
+        # masquerading as a masked span: without it a line with no backticks
+        # at all reported "two backticked tokens", which is simply false.
+        if (nrisk > 1 && index($(0), "`"))
+          printf "%s:%d: two backticked tokens abutting ** inside one bold span — a formatter can join the runs and corrupt both\n", F, NR
+      }
       if (isdelim($(0)) && prev != "" && (index($(0), "|") || index(prev, "|"))) {
         base = cells($(0)); intbl = 1
         if (cells(prev) != base)
@@ -370,7 +407,12 @@ Report it as one, at the moment you make it — not in the write-up afterwards,
 which is where it gets reconstructed from memory. Do not register it here: this
 lens reports, it does not write, and a hypothesis needs a Method and a Revisit
 trigger a diff reviewer is not placed to supply. The home is the relevant
-`memory/*-hypotheses.md` topic file, written during `/curate`.
+`memory/*-hypotheses.md` topic file, and it is written **by the author, at the
+time of the claim** — not deferred to `/curate`, which runs at end of session
+and so reinstates exactly the delay the entry exists to remove. `/curate`
+reviews the entries that already exist for staleness and due dates; it does
+**not** detect a claim that never got one, so writing it at claim time is the
+only thing that does. Upstream #89 (v1.28.0).
 
 Report: REFUTED (with failure scenario) or NOT REFUTED. Every negative carries
 its command and the shape of a positive; every absolute about behaviour carries
