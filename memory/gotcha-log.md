@@ -4639,3 +4639,65 @@ member. This is `feedback-hand-built-population` in its purest form.
 overlap). ⭐ **The reason I caught it is that I ran the verifier BEFORE the deploy, expecting
 failure.** A checker you have only ever seen pass is indistinguishable from one that cannot
 fail — and here the wrong answer was the *encouraging* one, which is the shape that ships.
+
+### A VERIFICATION COMMAND THAT ERRORED AND PRINTED THE REASSURING BRANCH (2026-08-27) [2nd occurrence of *prove the instrument could say yes*, same day]
+**Problem**: Checking that escaping the pipes in an evidence doc cleared the table
+check, I ran `awk ... && echo 'silent (FIXED)'` inside a `$( ... )` with escaped inner
+quotes. awk received a filename with literal quotes, failed to open it, printed nothing —
+and the `[ -z ]` test read the empty output as success. **The report said `silent
+(FIXED)` on a run that never examined the file.**
+**Root cause**: An empty result and a failed run are byte-identical to `[ -z ]`. The
+check had no way to distinguish "nothing to report" from "nothing happened", which is
+the same defect as a grep over 0 files.
+**Fix**: Capture the output and the exit status separately (`out=$(...); rc=$?`), print
+both, and run a positive control in the same breath. Re-run: file clean, control fires,
+repo-wide sweep 1 → 0. ⭐ **The tell was that I wrote the success string myself, in the
+same command that was supposed to earn it.** A verdict that a command can print without
+having done the work is not a verdict.
+
+### `git archive HEAD` AS A BASELINE TREE — IT EXCLUDES EVERY GITIGNORED PATH (2026-08-27) [11th occurrence of *establish what a source excludes*]
+**Problem**: To get a before/after baseline for the reference checker I extracted
+`git archive HEAD` into a temp tree and ran the checker against it. It reported **240
+findings against the real 1** — and for about a minute that looked like a catastrophic
+regression in my own edit.
+**Root cause**: `git archive` ships tracked files only. `datasets/`, `data/` and every
+other gitignored path are absent, so the references that resolve against them cannot
+resolve. **The baseline was not a worse version of the tree; it was a different tree.**
+**Fix**: Baseline from the working tree with only the changed files reverted. ⚠️ And the
+cheap copy tricks do not work here either: `cp -al` cannot hardlink across filesystems
+(/tmp is tmpfs, the repo is on ext4) and my `|| cp -a` fallback then copied the repo
+*into* the half-made directory. Swap the two files in place, run, restore, and
+`md5sum -c` the restore. ⭐ This is the same shape as the 2026-08-24 keeper — *the
+shipped artifact exited 1 on a clean clone* — approached from the other side: there,
+gitignored evidence was missing from a clone; here I built the clone myself.
+
+### THE HEADROOM FIGURE IS MEASURED AT EXACTLY THE MOMENT THAT HIDES THE GROWTH (2026-08-27)
+**Problem**: I was one sentence from recommending we skip a second `CLAUDE.md` trim, on
+the grounds that the file had moved "one byte in a full cycle" — a figure from that
+morning's own write-up.
+**Root cause**: That figure is **headroom at audit time**, and the file is trimmed to the
+wall at each audit and then refills. Two audits both reporting ~45 bytes free describes a
+file that grew by whatever the trim removed, not a file that did not grow. Measured over
+25 commits: **35,094 → 39,955 bytes in 10 days, ~486/day.**
+**Fix**: Measure the series, not the endpoint, before quoting a rate. ⭐ **A quantity
+sampled only at the moment it is reset cannot show a trend, and it reads as stability.**
+Filed as #133 with the routing-rule options.
+
+### A VERBATIM MOVE RELOCATED A REFERENCE OUT OF ITS EVIDENCE (2026-08-27)
+**Problem**: Rotating the oldest session entry from `memory/MEMORY.md` into
+`memory/session-log.md` — byte-for-byte, as #123 requires — took the reference checker
+from **1 finding to 2**. Nothing about the entry changed; `diff` on the moved text is
+empty.
+**Root cause**: `refcheck.py`'s cross-repo rung resolves `NexusMind/data/exports/aegis/latest/narrative_risk.json` by looking
+for an unbackticked sibling-repo name in a **3-line window** around the reference. In the
+index that window held other session entries naming NexusMind in prose. In the log the
+same line sits between different neighbours, and the evidence did not travel with the
+bytes. **A positional window is part of the reference's meaning, and moving text verbatim
+does not move it.**
+**Fix**: None applied, deliberately — the finding is real, the entry stays verbatim, and
+loosening the rung to silence it would be fixing the control. Recorded in
+`memory/session-log.md`'s header so the next rotation is not surprised. ⭐ **Second time
+in one session that relocating text changed what a checker could see** — the first was
+dropping a qualified path from `CLAUDE.md`, which exposed an unqualified twin underneath
+that had been resolving to the wrong repo. **Both directions are the same lesson: a
+reference's resolvability is a property of where it sits, not only of what it says.**

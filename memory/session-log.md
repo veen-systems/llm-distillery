@@ -12,11 +12,23 @@ it arrived, and nothing in it should be shortened later — this file has no bud
 the whole point of it existing. Every entry still links to its own
 `project_session_*.md`, which is where the detail is.
 
+⚠️ **A verbatim move is not context-preserving, and the reference checker can see it.**
+`refcheck.py`'s cross-repo rung reads a **3-line window** around the reference and needs an
+unbackticked sibling-repo name inside it. An entry moved here keeps its bytes but lands
+between different neighbours, so a reference that resolved in the index can arrive here
+UNRESOLVED with nothing about the entry itself having changed —
+`NexusMind/data/exports/aegis/latest/narrative_risk.json`
+(NexusMind's paused Aegis export) did exactly that on 2026-08-27. **The entry is still
+correct; the finding is real and is left standing.** Do not fix it by editing the entry —
+that is the compression #123 forbids — and do not loosen the rung to make it go away.
+
 ⚠️ **Read this file when you are looking for something the index no longer mentions** — a
 finding, a retraction, a number, a session whose date you half-remember. The index is a
 navigational layer; this is the record.
 
 ---
+
+- **2026-08-25 evening → 08-26 — the wait found five defects; a two-line config change had a THIRD file** ([session](project_session_2026_08_25_evening.md)) — no spend, no model. ✅ **Step 3 VERIFIED LIVE**: the namespace on **200 of 200** sampled rows, ledger verifier exit 0 (205,427 rows, schema v0.6.0), register exit 0 (**125** owned fields — a WINDOW figure), `placements` `{5: 11022}`, **and the Aegis export stopped** (`narrative_risk.json` frozen at 17:18:50). ⛔ **The 20:03 cycle NEVER RAN**: the `investment_risk` pause left an orphan row in `NexusMind/deploy/smoke_test_articles.jsonl` and the deploy gate is fail-closed — **the gate was the control working**, and it is **THREE files, not two**. ⭐ **16th occurrence of *prove the outcome changed*, and the sharpest: the outcome check was named in advance and DEFERRED TO THE CYCLE THAT NEVER RAN.** Now a unit test, validated against the breaking commit itself. ⭐ **4 of 5 defects came from RUNNING things**: `source_unreliable` is RARE not dead (its two conditions are anti-correlated by editorial policy two repos upstream — and its migration target did not exist, so the first row carrying it would have FAILED VALIDATION); `other_sources` is **51.4% hardcoded `unknown`** (NM#404); `pathlib.Path.glob` matches dotfiles so a data sweep could delete a PAUSED filter's `.processed_ids_*.json`; and an `x-intermediate` mark did not cover its children (3 false ghosts on 207,270 rows). **#123 CLOSED** — index split by lifetime, 26,868 → 14,443 chars, older entries MOVED not compressed. ⛔ *"Nothing prunes the ledger index"* was wrong (30-day prune, plateau ≈45 MB). #132 + augmented-engineering#36 filed.
 
 - [2026-08-23 night → 08-24](project_session_2026_08_24.md) — the article record got a **DEFINITION**: owner ruled it **PRESCRIPTIVE** and composed (`allOf: [$ref Contract A, nexusmind_layer]`), so producer fields cannot drift. Block ledger built (migration steps 1+2); **its live verification is the line above.** ⛔⛔ **A surviving mutation exposed MY OWN VACUOUS TEST**, and the **owner** caught a declared-but-never-emitted field in the very schema built to catch that. ⛔ **"132 fields" is a 2-cycle window (212 at 12)**; **"declared nowhere" was false** — the undeclared set is **20 fields**.
 

@@ -96,7 +96,7 @@ wrong-instrument error one level down. 20 pairs are re-scored a second time
 | `D₄` within noise | The +1.044 was small-sample noise. Arm A's null then holds *including* at the op-point, and #105's cd half closes without residue. |
 | `D₄` material, refused worse | The corpus-wide null is real but **does not extend to where decisions are made**: at the op-point, refused rows' labels are less defensible. `human_thriving` v8's corpus stopping condition must then be evaluated at the op-point, not corpus-wide — and arm A's headline must never be quoted without this. |
 | `D₄` material, refused better | The lens gate is refusing the better-labelled rows in the only band that matters. Would need its own investigation before any retrain. |
-| CI excludes 0 but `|D₄| < ν₄` | Not interpretable — the same rule that demoted arm A's signed bias. Report and stop. |
+| CI excludes 0 but `\|D₄\| < ν₄` | Not interpretable — the same rule that demoted arm A's signed bias. Report and stop. |
 
 **Power, stated in advance.** Arm A's per-pair SD implies a 95% half-width near
 0.30 at n=66, and ν₄ is expected in the 0.4–0.8 range. So this design can
