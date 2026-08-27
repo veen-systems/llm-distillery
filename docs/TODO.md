@@ -59,12 +59,26 @@
 > The stamp now lives in `framework_reconciliation` (inside that block) *and* the footer —
 > a deliberate duplication while #122 is open.
 >
-> ### Awaiting a reply
-> Adopter feedback sent to the `agent-ready-projects` peer session: #50 shipped with no
-> greppable marker (so Step 3's prescribed outcome is `not verified`), Step 3 cannot tell
-> *behind* from *current-plus-installer*, and a provenance stamp from
-> `install-global-skills.sh` would make "already in force" a one-line read. Offered to
-> file them as issues; **no reply yet.**
+> ### ✅ Upstream feedback — all actioned, and it moved upstream twice more
+> Every finding shipped: #50's missing markers and the Step 3 per-tag method are in
+> **v1.32.0**; the dead-reference extractor's cross-repo blindness is fixed in **v1.33.0**
+> (both filed from here as `agent-ready-projects#101`/`#100`; #99 and #100 remain open).
+>
+> ⚠️ **So the pin is behind again — v1.32.0 and v1.33.0 are UNTRIAGED.** Adopting them is
+> a next-session decision. Two things to carry in:
+> 1. ⛔ **v1.33.0's fix has a known sensitivity loss and it bites HERE**, measured: our one
+>    deliberately-live finding (`NexusMind/scripts/research/nm188_mojibake_derived.py`) is a
+>    *true* dead reference whose neighbour is on disk, and the new disposition reclassifies
+>    it as "not checkable from here". Proposed to the maintainer that a reachable neighbour
+>    decide before the new fall-through — the v1.29.0 three-verdict shape — rather than
+>    reverting. Their call; adopt with eyes open either way.
+> 2. **Rule 10 (v1.32.0) shipped its first draft reporting `0 violations` while unable to
+>    fire at all.** Its scope is a floor, not a ceiling. Exercise the
+>    ablation-that-cannot-kill case deliberately; do not trust it on a clean run.
+>
+> ⛔ **And the lesson that cost a commit: the footer said "current" and was false within
+> hours.** Upstream tagged twice the evening the v1.31.0 stamp landed. The stamp was right;
+> the adjective was a state claim. Never write "current" in that position.
 ## 🟡 PREVIOUS — **#132 is closed and verified live; the number it rested on was one cycle wide**
 
 > **Updated 2026-08-26.** No spend, no model, no filter, no scoring-path change. All code in
