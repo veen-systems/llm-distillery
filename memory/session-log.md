@@ -22,6 +22,22 @@ UNRESOLVED with nothing about the entry itself having changed —
 correct; the finding is real and is left standing.** Do not fix it by editing the entry —
 that is the compression #123 forbids — and do not loosen the rung to make it go away.
 
+⏱️ **REVISIT TRIGGER — 2027-02-27, or the first of these, whichever comes first:** a second
+entry arrives here carrying the same shape; or `refcheck.py`'s context window stops being
+positional. **A deliberately-unfixed finding with a diagnosis but no revisit trigger is the
+same decay one step further along** — the diagnosis explains why it stands today and
+nothing ever re-asks. Added 2026-08-27 after the framework maintainer audited their own
+single expected-failure row against that rule and found it had the diagnosis and no
+trigger; the rule came from here and had not been applied here.
+
+⚠️ **Why this corpus shows 1 finding and not 86.** The same checker over the framework
+repo's `CHANGELOG.md` returned **86**, essentially all illustrative — invented example
+paths (`oldpkg/foo.py`) quoted to explain what a check does. This estate barely produces
+them because of a **writing habit, not a protection**: prose here quotes real files, which
+then resolve at rung 2 (63) or rung 4 (172). ⛔ **That is a window, not a property.** The
+first genuinely invented example path written into `memory/` will be reported as a break,
+and the reflex will be to "fix" a reference that was never meant to resolve.
+
 ⚠️ **Read this file when you are looking for something the index no longer mentions** — a
 finding, a retraction, a number, a session whose date you half-remember. The index is a
 navigational layer; this is the record.
