@@ -4796,7 +4796,7 @@ survives many runs stops being read as a question. I defended keeping it — cor
 keep it decays into never having looked.**
 ⛔⛔ **AND THIS ENTRY ADDED TWO FINDINGS OF ITS OWN, caught only by re-running the checker
 after committing it.** Writing up a reference defect, I wrote the dead path unstruck (so it
-read as live) and the surviving sibling as a bare `nm188_mojibake_invert.py` (so it did not
+read as live) and the surviving sibling as a bare filename with no repo prefix (so it did not
 resolve). **The document explaining that references need care could not itself pass the
 check it was explaining** — 1 finding became 3. Struck and qualified; back to 1.
 ⭐ **The habit that saved it is small and worth naming: re-run the checker AFTER writing the
