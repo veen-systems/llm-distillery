@@ -66,12 +66,17 @@
 >
 > ⚠️ **So the pin is behind again — v1.32.0 and v1.33.0 are UNTRIAGED.** Adopting them is
 > a next-session decision. Two things to carry in:
-> 1. ⛔ **v1.33.0's fix has a known sensitivity loss and it bites HERE**, measured: our one
->    deliberately-live finding (`NexusMind/scripts/research/nm188_mojibake_derived.py`) is a
->    *true* dead reference whose neighbour is on disk, and the new disposition reclassifies
->    it as "not checkable from here". Proposed to the maintainer that a reachable neighbour
->    decide before the new fall-through — the v1.29.0 three-verdict shape — rather than
->    reverting. Their call; adopt with eyes open either way.
+> 1. ✅ **v1.33.0's sensitivity loss is already fixed in v1.34.0** — it bit here, measured
+>    (our one deliberately-live finding, `NexusMind/scripts/research/nm188_mojibake_derived.py`,
+>    is a *true* dead reference whose neighbour is on disk, and v1.33.0 reclassified it as
+>    "not checkable from here"). A sibling on disk now decides, with v1.33.0's disposition
+>    kept as the fall-through — the v1.29.0 three-verdict shape. **Adopt v1.34.0, not
+>    v1.33.0.** ⚠️ Residual exposure is a **shallow or partial sibling checkout**, where a
+>    file absent locally exists upstream. Measured 2026-08-27: **all 16 sibling repos are
+>    full checkouts** — none shallow, promisor, partial or sparse. ⛔ That is a WINDOW, not
+>    a property: re-run the check before relying on it, `git -C <repo> rev-parse
+>    --is-shallow-repository` plus `remote.origin.partialclonefilter` and
+>    `core.sparseCheckout`.
 > 2. **Rule 10 (v1.32.0) shipped its first draft reporting `0 violations` while unable to
 >    fire at all.** Its scope is a floor, not a ceiling. Exercise the
 >    ablation-that-cannot-kill case deliberately; do not trust it on a clean run.
