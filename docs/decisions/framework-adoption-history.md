@@ -14,6 +14,27 @@ Upstream changelog: https://github.com/ducroq/agent-ready-projects/blob/master/C
 
 ---
 
+## v1.36.0 — triaged 2026-08-27 (late); **stamp → v1.36.0.** 0 adopt, 1 in force, 2 n/a
+
+`templates/curate.md` +4 lines; `coordination.md` and `project-file.md` are the version
+stamp only (verified by diff, not assumed). The local `curate` install already bottoms at
+v1.36.0 on the per-tag diff, so **already in force** with nothing to do here.
+
+The paragraph is a `curate` sub-step 5 addition, no behaviour change: ***"could this
+assertion have failed?" is answered by running, not by reading — so no amount of static
+checking substitutes for the deletion.*** It carries the scope limit that makes it
+decidable — **a disjunction in a PASS condition is a hole; the same disjunction in a FAIL
+condition is correct, and nothing lexical separates them** — which is why the upstream lint
+rule 11 does not exist and why rule 10 stops where it does.
+
+⚠️ **Two of the three specimens it cites are this repo's**, from the 2026-08-27 sweep:
+`assert checked or True` two lines under a comment stating the rule it defeats, and the
+`&amp;`/`&` tautology that passed on decoded output, raw input and the empty string alike.
+Recorded because the entry will read as external advice otherwise, and it is not — it is
+this estate's own defects generalised.
+
+---
+
 ## v1.32.0 → v1.35.0 — triaged 2026-08-27 (late); **stamp v1.31.0 → v1.35.0**
 
 **1 adopted, 0 declined, 3 not applicable, 5 already in force.** Six tags in the gap
