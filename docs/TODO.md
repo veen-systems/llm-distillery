@@ -82,7 +82,12 @@
 >    checkout, so it is not expected to reproduce, but I have not shown it.)*
 >    Measured 2026-08-27: **all 16 sibling repos are full checkouts.** ⛔ A WINDOW, not a
 >    property — re-run `git -C <repo> config --get core.sparseCheckout` before relying on
->    it (the other three flags are a harmless superset).
+>    it. ⛔ **The other three flags are not merely a superset, they can LIE**: a
+>    `--filter` clone over `file://` writes `remote.origin.promisor=true` and
+>    `partialclonefilter` even though the server ignored the filter, so the repo reads
+>    partial by every flag while having **zero missing blobs**. Against repos cloned from a
+>    real server those readings are sound; against anything cloned locally they are not.
+>    `core.sparseCheckout` is the one that means what it says.
 > 2. **Rule 10 (v1.32.0) shipped its first draft reporting `0 violations` while unable to
 >    fire at all.** Its scope is a floor, not a ceiling. Exercise the
 >    ablation-that-cannot-kill case deliberately; do not trust it on a clean run.
