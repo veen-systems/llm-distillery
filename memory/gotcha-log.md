@@ -4771,12 +4771,13 @@ Both now pin measured behaviour and both mutants die (`checked` forced empty →
 wording would trade a weak test for a brittle one.
 
 ### I CALLED A REFERENCE UNFIXABLE FOR WEEKS WITHOUT ONCE TRACING IT (2026-08-27)
-**Problem**: `NexusMind/scripts/research/nm188_mojibake_derived.py` was the reference
+**Problem**: ~~`NexusMind/scripts/research/nm188_mojibake_derived.py`~~ was the reference
 checker's one standing finding, carried across sessions and repeatedly described — by me,
 today, three times — as *"needing someone who remembers the experiment."* It needed no
 memory at all. Ten minutes of tracing settled it.
 **Root cause**: I treated *the file is absent* as the end of the enquiry instead of the
-start. The sibling that DOES exist, `nm188_mojibake_invert.py`, **names the missing file in
+start. The sibling that DOES exist, `NexusMind/scripts/research/nm188_mojibake_invert.py`,
+**names the missing file in
 its own docstring** — as being in llm-distillery at commit `5d5467e`. That commit is real
 and touches **only** `memory/corroboration-feature-hypotheses.md`. The script is in no
 commit, under any path, in either repo: an uncommitted working file from 2026-08-17.
@@ -4793,3 +4794,12 @@ survives many runs stops being read as a question. I defended keeping it — cor
 "zero is not the target" — and that defence became the reason nobody asked what it *was*.
 **A deliberately-unfixed finding still needs a diagnosis on the record, or the decision to
 keep it decays into never having looked.**
+⛔⛔ **AND THIS ENTRY ADDED TWO FINDINGS OF ITS OWN, caught only by re-running the checker
+after committing it.** Writing up a reference defect, I wrote the dead path unstruck (so it
+read as live) and the surviving sibling as a bare `nm188_mojibake_invert.py` (so it did not
+resolve). **The document explaining that references need care could not itself pass the
+check it was explaining** — 1 finding became 3. Struck and qualified; back to 1.
+⭐ **The habit that saved it is small and worth naming: re-run the checker AFTER writing the
+prose about the checker, not before.** The write-up is new text and new text is where new
+broken references come from — but it arrives feeling like documentation of work already
+verified, which is precisely when nobody re-verifies.
