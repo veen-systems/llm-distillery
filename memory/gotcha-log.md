@@ -4701,3 +4701,27 @@ in one session that relocating text changed what a checker could see** — the f
 dropping a qualified path from `CLAUDE.md`, which exposed an unqualified twin underneath
 that had been resolving to the wrong repo. **Both directions are the same lesson: a
 reference's resolvability is a property of where it sits, not only of what it says.**
+
+### I SUPPLIED A MECHANISM AND IT SHIPPED AS A MEASUREMENT (2026-08-27)
+**Problem**: Reporting that a residual exposure had no instance in this estate, I added
+that "a CI runner cloning siblings with `--depth 1` reproduces the case immediately."
+Plausible, confidently phrased, and **false**. It was accepted by the framework
+maintainer and shipped in a release note as *"a shallow or partial sibling checkout"*
+before they ran it and refuted it.
+**Root cause**: `--depth 1` truncates **history**, not the working tree — a shallow clone
+has every file. `--filter=blob:none` fetches blobs at checkout. Only **sparse checkout**
+removes tracked files from disk. I reasoned from "incomplete clone" to "missing files"
+without cloning anything, in a message whose whole subject was the difference between a
+measurement and a window.
+**Fix**: Verified all three modes afterwards, on this machine: `--depth 1` → `is-shallow:
+true`, **58 files present**; sparse → **58 tracked, 13 on disk**, a tracked file outside
+the cone genuinely absent; `--filter=blob:none` **inconclusive here** (the local `file://`
+transport ignored the filter — recorded as untested rather than confirmed). Corrected in
+`docs/TODO.md`. ⭐ **The estate sweep itself survived, and only by luck of construction**:
+I had checked `core.sparseCheckout` alongside the other three flags, so the finding rested
+on the one mode that matters. **A superset check saved a conclusion whose stated reason
+was wrong.** ⛔⛔ **The reusable half: a mechanism offered to a peer is load-bearing the
+moment they act on it.** Inside this repo an unverified mechanism is a hypothesis and gets
+a ledger row; sent across a repo boundary it arrives as a finding, with none of the
+hedging the ledger would have forced. **Say "I have not run this" in the sentence that
+offers it, or run it first.** See [[feedback-nothing-verifies-an-estimate]].
