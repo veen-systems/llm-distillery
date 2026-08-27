@@ -14,6 +14,72 @@ Upstream changelog: https://github.com/ducroq/agent-ready-projects/blob/master/C
 
 ---
 
+## v1.32.0 → v1.35.0 — triaged 2026-08-27 (late); **stamp v1.31.0 → v1.35.0**
+
+**1 adopted, 0 declined, 3 not applicable, 5 already in force.** Six tags in the gap
+(v1.32.0, v1.33.0, v1.34.0, v1.34.1, v1.34.2, v1.35.0). ⚠️ The owner asked for **v1.34.2**;
+**v1.35.0 tagged between that instruction and this run**, is already in force here, and
+contains nothing needing adoption — so v1.35.0 is the honest stamp and v1.34.2 would have
+understated it. Flagged rather than assumed.
+
+### The triage was decided by two file-level facts, not by reading six changelogs
+
+1. **`templates/review-changes.md` is UNCHANGED since v1.31.0** (`git log v1.31.0..v1.35.0
+   -- templates/review-changes.md` is empty). That is the only re-mapped project-local
+   surface here, so the expensive half of the last adoption had nothing to do.
+2. **All three user-global skills are byte-identical to v1.35.0's templates** apart from
+   the installer's SAVE-AS-comment → frontmatter rewrite. Established by the per-tag diff
+   method (which this repo contributed and which shipped in v1.32.0): diff the install
+   against **every** tag and read which one minimises — `update-drift` bottoms at v1.35.0
+   (26), `curate` at v1.34.2/v1.35.0 (24), `audit-context` is flat at 23 because upstream
+   has not touched it since v1.31.0.
+
+Everything else in the gap lands in `curate.md` and `update-drift.md`, both user-global.
+
+### Adopted — one, and it is this repo's own finding coming back
+
+| item | where it landed |
+|---|---|
+| **v1.34.0 `templates/project-file.md`** — the stamp line carries an inline `# a NUMBER, not a status — never write "current" here; the framework's release cadence falsifies the adjective, not the pin` | `CLAUDE.md:5` |
+
+⭐ That comment exists because of this repo: the footer here said *"current"* on 2026-08-27
+and was false within hours, because v1.32.0 and v1.33.0 tagged the same evening. Upstream
+generalised it — **the release cadence is what falsifies the adjective, and an adopter
+cannot see the next tag coming, so it is the framework's job to warn.**
+
+### Not applicable — three
+
+`templates/release.md` (no release skill here — only `review-changes` and
+`test-verify-memory` locally, and the three globals); `templates/coordination.md` (no
+Layer 5 doc, which upstream's own v1.31.0 survey says **0 of 58** adopters have);
+**lint rule 10** (v1.32.0) — a lint over the framework's own templates, and this repo has
+no template suite for it to run against.
+
+⚠️ **Rule 10's scope is narrower than its name suggests, and the maintainer measured it:**
+it catches a mutation equal to its target modulo whitespace with an empty declared kill
+set, and nothing else. It **shipped its first draft reporting `0 violations` while unable
+to run at all** (a stray stdin read hung it; its own fixture then scored 0 of 4 because it
+built a path from `$OLDPWD` that every intervening `cd` had reassigned). A mutation that
+changes something real which no assertion measures still needs the mutant run.
+
+### Already in force — five
+
+v1.32.0's `update-drift` Step 3 per-tag method (contributed from here; **this run used
+it**), v1.33.0's dead-reference cross-repo disposition, v1.34.0's sibling-on-disk rung,
+v1.34.1's shallow-vs-sparse correction and v1.34.2's `blob:none` UNTESTED position — all
+in `curate`/`update-drift`, both current.
+
+### One thing checked because v1.34.0's `release.md` warns about it
+
+That release tells release authors to **rescope the probe on a superseded version line** —
+a probe reading *"the highest tag equals vX.Y.Z"* is true the day it is written and false
+at the next release. **This repo has no such probe.** Its only framework-version
+annotation (`CLAUDE.md:305`) asserts *frontmatter stamp == footer stamp*, which is a
+relation between two things it controls, not a claim about upstream — it cannot decay when
+a tag ships. Verified passing at `v1.35.0` after the bump.
+
+---
+
 ## v1.26.1 → v1.31.0 — triaged 2026-08-27 via `/update-drift`; **stamp bumped to v1.31.0**
 
 **3 adopted, 1 declined, 4 not applicable, 9 already in force.** Pinned `v1.26.0`,
