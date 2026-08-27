@@ -485,7 +485,11 @@ def test_no_live_prefilter_checks_length_inside_apply_filter():
                             and getattr(call.func, "attr", "") == "check_content_length"):
                         violations.append(f"{name}/{ver}:{call.lineno}")
     # A pass with nothing checked is indistinguishable from a disabled test.
-    assert checked or True, "no live prefilters on disk"
+    # ⛔ This read `assert checked or True` until 2026-08-27 — `or True` makes the
+    # assertion unconditional, so it permitted exactly the case the line above
+    # names. The comment stated the rule and the code defeated it, two lines apart.
+    # Proven by mutation: with `checked` forced empty the old form still passed.
+    assert checked, "no live prefilters on disk — this test examined nothing"
     assert not violations, (
         "#93 violated — check_content_length called inside apply_filter (a SCORING "
         f"path) in: {violations}. Checked: {checked}"

@@ -277,7 +277,16 @@ class TestSanitizeTextComprehensive:
         """HTML entities should be converted."""
         text = "Hello &amp; goodbye &lt;tag&gt;"
         result = BasePreFilter.sanitize_text_comprehensive(text)
-        assert "&amp;" not in result or "&" in result  # Either decoded or kept
+        # ⛔ This read `assert "&amp;" not in result or "&" in result` until
+        # 2026-08-27. It is a TAUTOLOGY: "&amp;" contains "&", so whenever the
+        # first disjunct is false the second is true. It passed on the decoded
+        # output, on the raw undecoded input, and on the empty string alike —
+        # a test named test_html_entities_removed that asserted nothing.
+        # Pinned to measured behaviour instead: entities are decoded, and the
+        # angle-bracket tag is stripped entirely.
+        assert "&amp;" not in result, result
+        assert "&" in result, result
+        assert "&lt;" not in result, result
 
     def test_extra_whitespace_normalized(self):
         """Multiple spaces should be normalized."""

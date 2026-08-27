@@ -4742,3 +4742,30 @@ test, not by re-reading it, not by the 361-test suite. ⛔ **The compounding det
 enforce the opposite** — and the guard it tests was itself built to close a rule this repo
 had just articulated. **An `or` in an assertion is a smell: it gives the test two ways to
 pass and you only ever exercise one.**
+
+⭐ **THE DISCRIMINATOR, from the framework maintainer running the smell against their own
+fixtures: a disjunction in a PASS condition is the hole; in a FAIL condition it is the
+opposite and is correct.** Their sweep found 3 hits, **all safe** — shell `[ a ] || [ b ]`
+guards where the disjunction *widens* failure detection. So the lintable form is a Python
+`assert A or B`, where the disjunction unambiguously **is** the pass condition; in shell
+the two shapes are indistinguishable and a lint would be all false positives. They declined
+to build the rule for that reason, which is the right call and is why this is a rule for
+authors, not a check.
+
+⛔ **Swept this estate with the detector SEEDED FIRST (a negative from an unproven detector
+is worthless): 5 raw hits, 1 of them my own docstring quoting the old form** — a detector
+matching its own documentation — **2 loose but genuinely falsifiable, and 2 UNCONDITIONAL:**
+
+- `tests/unit/test_short_content_split.py:488` — `assert checked or True, "no live
+  prefilters on disk"`, directly beneath the comment *"A pass with nothing checked is
+  indistinguishable from a disabled test."* ⭐⭐ **The comment states the rule and the next
+  line defeats it.** `or True` permitted exactly the case the comment names.
+- `tests/unit/test_base_prefilter.py:280` — `assert "&amp;" not in result or "&" in
+  result`, in a test named `test_html_entities_removed`. A **tautology**: `&amp;` contains
+  `&`, so whenever the first disjunct is false the second is true. Measured: it passed on
+  the decoded output, on the raw undecoded input, and on the empty string alike.
+
+Both now pin measured behaviour and both mutants die (`checked` forced empty → red;
+`sanitize_text_comprehensive` made a no-op → red). ⚠️ The other two hits were left: a
+2- and a 3-way disjunction over message wording, loose but able to fail, and pinning exact
+wording would trade a weak test for a brittle one.
