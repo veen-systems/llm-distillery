@@ -88,6 +88,110 @@ TARGETS = {
     "project": ("PROJECT", "CLAUDE.md",        PROJECT_HARD, PROJECT_SOFT, False),
 }
 
+# ---------------------------------------------------------------- pointer rows
+# llm-distillery#133. The size guards above measure the SYMPTOM. What actually
+# grows is the "Before You Start" pointer table: every session appends a lesson
+# to the row nearest its topic, each audit trims the file back to the wall, and
+# the cycle repeats at ~486 bytes/day (measured over 25 commits, 2026-08-16 →
+# 08-26: 35,094 → 39,955). Trimming loses that race by construction.
+#
+# So the rule is a CAP PER ROW, not a budget for the file: a pointer row states
+# the trigger and names the target, and the lesson goes in the target. A capped
+# table cannot grow, which is the property the byte budget never had.
+#
+# ⚠️ THE CARVE-OUT IS THE HONEST PART OF THIS RULE, NOT A LOOPHOLE. A pointer
+# does NOT fire without opening the target, so a prohibition that prevents
+# SPENDING MONEY or PUBLISHING A WRONG NUMBER loses its whole value when it
+# becomes a pointer. Those keep a higher cap. The list is deliberately short and
+# deliberately checked: see the three failure modes in _check_pointers.
+POINTER_CAP = 250          # an ordinary row: trigger + target + one clause
+POINTER_CARVEOUT_CAP = 400 # a row on the list below
+MAX_CARVEOUTS = 5          # the exemption itself must not grow
+
+# Keyed on a distinctive fragment of the row's TRIGGER cell. Each entry carries
+# the cost it prevents, because "why is this exempt" is the question a reader
+# asks and the one that decides whether it still should be.
+POINTER_CARVEOUTS = {
+    "Quoting any Google News number":
+        "never oracle-re-score a GN row — a paid oracle run against headline echoes",
+    "Anything about the pipeline CONTRACTS":
+        "never quote a Contract A version from here — it moves several times a week",
+    "Reading a number off NexusMind production data":
+        "live_articles is NOT the reader population — a published wrong number",
+    "Asking what an article field IS":
+        "never quote a field count — every count is a window; this one was stale for weeks",
+}
+
+POINTER_HEADER = "| When you're... | Read... |"
+
+
+def _pointer_rows(raw):
+    """The pointer table's data rows, as (line_no, text).
+
+    Returns None when the header is not found. That is CANNOT VERIFY, never a
+    pass: renaming the header would otherwise silently retire the whole check,
+    which is this repo's signature defect (a guard that cannot fire reports
+    success).
+    """
+    lines = raw.decode("utf-8", "replace").split("\n")
+    try:
+        start = next(i for i, l in enumerate(lines) if l.strip() == POINTER_HEADER)
+    except StopIteration:
+        return None
+    rows = []
+    for i in range(start + 1, len(lines)):
+        l = lines[i]
+        if not l.startswith("|"):
+            break
+        if set(l.replace("|", "").replace(" ", "")) <= set("-:"):
+            continue                      # the delimiter row
+        rows.append((i + 1, l))
+    return rows
+
+
+def _check_pointers():
+    """Enforce the per-row cap. Returns (exit_code, list_of_lines)."""
+    path = globals()["PROJECT"]
+    if not os.path.isfile(path) or os.path.getsize(path) == 0:
+        return 1, ["CANNOT VERIFY: CLAUDE.md missing or empty"]
+    rows = _pointer_rows(open(path, "rb").read())
+    if rows is None:
+        return 1, ["CANNOT VERIFY: pointer table header not found — the check "
+                   "examined nothing. Restore the header or update POINTER_HEADER."]
+    if not rows:
+        return 1, ["CANNOT VERIFY: pointer table found but has no rows"]
+
+    out, bad = [], []
+    # Failure mode 1: the exemption list outgrows its purpose.
+    if len(POINTER_CARVEOUTS) > MAX_CARVEOUTS:
+        bad.append(f"{len(POINTER_CARVEOUTS)} carve-outs, over the {MAX_CARVEOUTS} "
+                   f"allowed — the exemption is becoming the rule")
+    # Failure mode 2: an exemption that matches no row. Dead weight, and it
+    # hides growth: the next reader counts 4 exemptions and finds 3 rows.
+    for frag in POINTER_CARVEOUTS:
+        if not any(frag in text for _, text in rows):
+            bad.append(f"carve-out {frag!r} matches no row — stale exemption, remove it")
+    # Failure mode 3: the actual cap.
+    over = 0
+    for ln, text in rows:
+        frag = next((f for f in POINTER_CARVEOUTS if f in text), None)
+        cap = POINTER_CARVEOUT_CAP if frag else POINTER_CAP
+        if len(text) > cap:
+            over += 1
+            why = "carve-out" if frag else "ordinary row"
+            bad.append(f"CLAUDE.md:{ln} is {len(text)} chars, over the {cap} cap "
+                       f"({why}) — move the lesson into the target it points at, "
+                       f"and leave the trigger plus one clause")
+    if bad:
+        out.append(f"FAIL pointer rows: {len(bad)} problem(s) over {len(rows)} rows.")
+        out.extend("  " + b for b in bad)
+        return 1, out
+    longest = max(len(t) for _, t in rows)
+    out.append(f"PASS pointer rows: {len(rows)} rows, longest {longest}, cap "
+               f"{POINTER_CAP} ({len(POINTER_CARVEOUTS)}/{MAX_CARVEOUTS} carve-outs "
+               f"at {POINTER_CARVEOUT_CAP})")
+    return 0, out
+
 # The index carries the newest MAX_SESSION_ENTRIES session entries; the next one
 # is MOVED to `memory/session-log.md`, verbatim (#123, owner call 2026-08-25).
 #
@@ -141,11 +245,16 @@ def main(argv=None):
             target = argv[0].split("=", 1)[1]
         else:
             print(f"CANNOT VERIFY: unknown argument {argv[0]!r}; "
-                  f"expected --target {'|'.join(TARGETS)}")
+                  f"expected --target {'|'.join(list(TARGETS) + ['pointers'])}")
             return 1
+    if target == "pointers":
+        rc, lines = _check_pointers()
+        for l in lines:
+            print(l)
+        return rc
     if target not in TARGETS:
         print(f"CANNOT VERIFY: unknown target {target!r}; "
-              f"expected one of {', '.join(TARGETS)}")
+              f"expected one of {', '.join(list(TARGETS) + ['pointers'])}")
         return 1
 
     attr, label, hard, soft, count_entries = TARGETS[target]

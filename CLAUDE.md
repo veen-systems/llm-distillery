@@ -211,27 +211,35 @@ alternative: `feedback-plain-answers` in the Claude Code auto-memory.
 
 **Always read `memory/MEMORY.md` first** — it's the project memory index with current work status, gotchas, and pointers to topic files.
 
+⛔ **A POINTER ROW IS CAPPED AT 250 CHARS AND A NEW LESSON GOES IN THE TARGET, NOT HERE
+(#133).** This file refilled at **~486 bytes/day** while every audit trimmed it back to
+the wall — a budget loses that race, a per-row cap cannot. State the trigger, name the
+file, stop. ⚠️ **The carve-out is the honest part, not a loophole:** a pointer does not
+fire without opening the target, so four rows whose prohibition prevents *spending money*
+or *publishing a wrong number* may reach 400. Enforced, with the exemption list itself
+bounded: `python3 scripts/verification/check_index_budget.py --target pointers`.
+
 | When you're... | Read... |
 |----------------|---------|
 | Starting a new session | `memory/MEMORY.md` — project memory index, current work status |
 | Resuming thriving v1 work | `memory/thriving-v1-scoring.md` — scoring status, resume commands, full pipeline |
 | Starting calibration / scorer-training / oracle-prompt work | `memory/calibration-history.md` — Dead Ends section: which approaches are already known dead (#69) |
-| **Touching a prefilter, or considering an enforcement flip** | **`memory/prefilter-length-floor-hypotheses.md`** — what each prefilter actually blocks (measured), why `expected_pass_rate` was deleted from two filters, and why a matching rate is not a safety argument. Then #93. |
-| **A legal/compliance question, or changing where training data comes from** | `docs/decisions/2026-08-05-tdm-opt-out-training-data.md` — why AI-crawler opt-outs don't bar training here. ⚠️ **One carve-out is still open** (the oracle ships full article text to Gemini/DeepSeek); the deployed filters WERE assessed (#97, closed) and the publication defect it found was remedied 2026-08-06. Companion: `ovr.news/docs/compliance-register.md`. |
-| **Anything about the pipeline CONTRACTS — schemas, validators, what a row carries between repos** | **`docs/decisions/2026-08-14-contract-a-envelope.md`**, then **`docs/CONTRACTS_PLAN.md` § *Round 3*** + **`memory/stamp-contract-integrity.md`**. ⛔ **Never quote a Contract A version from here** — read it off a delivered row (`scripts/contracts/contract_a_smoke.py`). Read the measurement traps there before quoting any number. |
-| **Asking what an article field IS, or where a blocked article went** | **`NexusMind/contracts/article-record.schema.json`** — prescriptive and composed, so producer fields cannot drift. Human half `NexusMind/docs/ARTICLE_RECORD.md`; per-field answer **`NexusMind/docs/ARTICLE_RECORD_REGISTER.md`** (generated, exits 1 on drift). ⛔ **Never quote a field count — this table included**; every count is a window. Blocked articles: `docs/BLOCK_LEDGER_SPEC.md`. |
-| **Adding a stamp / config key, or trusting a stamped field in an analysis** | **`memory/stamp-contract-integrity.md`** — the schemas check SHAPE only. ⛔ **Run `NexusMind/scripts/stamp_census.py` for population before quoting any stamped field** — a stamp can be computed on every row and lost before persistence. |
+| **Touching a prefilter, or considering an enforcement flip** | **`memory/prefilter-length-floor-hypotheses.md`** — what each prefilter actually blocks (measured), and why a matching pass rate is **not** a safety argument. Then #93. |
+| **A legal/compliance question, or the training-data source** | `docs/decisions/2026-08-05-tdm-opt-out-training-data.md` — ⚠️ **one carve-out is open**: the oracle ships article text to the vendor. It names the ovr.news companion register. |
+| **Anything about the pipeline CONTRACTS — schemas, validators, what a row carries between repos** | **`docs/decisions/2026-08-14-contract-a-envelope.md`**, then **`docs/CONTRACTS_PLAN.md` § *Round 3*** + **`memory/stamp-contract-integrity.md`**. ⛔ **Never quote a Contract A version from here** — read it off a delivered row (`scripts/contracts/contract_a_smoke.py`). |
+| **Asking what an article field IS, or where a blocked article went** | **`NexusMind/contracts/article-record.schema.json`** — prescriptive and composed. Human half `NexusMind/docs/ARTICLE_RECORD.md`; per-field answer **`NexusMind/docs/ARTICLE_RECORD_REGISTER.md`**. ⛔ **Never quote a field count — this table included**; every count is a WINDOW. Blocked: `docs/BLOCK_LEDGER_SPEC.md`. |
+| **Adding a stamp / config key, or trusting a stamped field in an analysis** | **`memory/stamp-contract-integrity.md`** — the schemas check SHAPE only. ⛔ **Run `NexusMind/scripts/stamp_census.py` for population before quoting any stamped field.** |
 | **Reading a number off NexusMind production data** | **`memory/nexusmind-data-sources.md`** — reconcile denominators before diffing two sources. ⛔ **`live_articles` is NOT the reader population** — legacy, off the build path, and nothing can reconverge it; use `getArticlesForBuild`. `weighted_average` there is NORMALIZED, not raw. |
 | **Quoting any Google News number, or touching the GN population** | **`memory/google-news-corpus-hypotheses.md`** — ⛔ **Never oracle-re-score a GN row** (sub-300-char headline echoes), and **never match GN on a `gn_` key prefix** (feeds and items undercount by different factors). ⚠️ **Always name the fetcher** (NM#310). |
-| **Touching normalization (fitting, debugging a score/tier that looks wrong, ovr ranking)** | **`docs/NORMALIZATION_METHOD.md`** — method, guards, reproduction; ADR-014, playbook §6. ⚠️ `raw >= threshold` together with `tier: low` is **expected, not a bug**. |
-| **Reading a date, a recency boost, or anything about `published_date`** | **`memory/date-error-recency-boost-hypotheses.md`** — a flat **1.3× boost under 24h** means any date error landing inside 24h wins it, invisibly. ⚠️ **`collected_date − published_date` is NOT a fabrication instrument without a `source` breakdown.** |
+| **Touching normalization (fitting, debugging a score/tier that looks wrong, ovr ranking)** | **`docs/NORMALIZATION_METHOD.md`** — method and guards; ADR-014, playbook §6. ⚠️ `raw >= threshold` with `tier: low` is **expected, not a bug**. |
+| **Reading a date, a recency boost, or anything about `published_date`** | **`memory/date-error-recency-boost-hypotheses.md`** — a flat **1.3× boost under 24h** means any date error landing inside 24h wins it, invisibly. |
 | **Measuring anything near an operating point, or comparing two runs' scores** | **`memory/score-batch-shape-noise.md`** — #95, and the Hard Constraint above. |
-| **Touching enrichment, or citing a pre/post-enrichment score delta** | **`memory/enrichment-delta-hypotheses.md`** — H-E1 RESOLVED: the effect is on **evidence-quality dimensions**, and a filter without one gains nothing. Condition on `stage_used` before reading `raw_weighted_average` as a model output. |
-| **Changing a dimension WEIGHT, or calling any dimension "dead"** | **`memory/solutions-v6-dimension-hypotheses.md`** — ⛔ **A dimension's zero rate is base rate, not breakage**: `solutions v6`'s sparsest dimension has the *highest* conditional correlation of the seven. Re-weighting measured inert. |
-| **Quoting any #121 number, or building an opinion/editorial genre stamp** | **`memory/opinion-genre-hypotheses.md`** — the **within-source control dissolves the effect in 5 of 6 lenses**; only `investment_risk` survives, and a topic confound survives inside each source. ⛔ **#121's own issue body uses a wrong op-point for `solutions`.** |
-| **Touching cultural_discovery v6, or citing its probe numbers** | **`memory/cd-v6-probe-hypotheses.md`** — #98: what is confirmed, what is refuted (screening is a REGRESSION vs the gate) and the traps. ⚠️ **v6 cannot score at all** — no inference module, no `calibration.json`, and `_load_calibration` fails silent. |
+| **Touching enrichment, or citing a pre/post-enrichment score delta** | **`memory/enrichment-delta-hypotheses.md`** — H-E1 RESOLVED. ⚠️ Condition on `stage_used` before reading `raw_weighted_average` as a model output. |
+| **Changing a dimension WEIGHT, or calling any dimension "dead"** | **`memory/solutions-v6-dimension-hypotheses.md`** — ⛔ **A dimension's zero rate is base rate, not breakage.** Re-weighting measured inert. |
+| **Quoting any #121 number, or building an opinion/editorial genre stamp** | **`memory/opinion-genre-hypotheses.md`** — the within-source control **dissolves it in 5 of 6 lenses**. ⛔ **#121's issue body uses a wrong op-point for `solutions`.** |
+| **Touching cultural_discovery v6, or citing its probe numbers** | **`memory/cd-v6-probe-hypotheses.md`** — #98's confirmed / refuted / traps. ⚠️ **v6 cannot score at all** — no inference module, no `calibration.json`. |
 | **Anything obituary/grief-related, or reading the junk-gate state** | `memory/project-obituary-detector.md` — enforcement is ON at v5@0.85; carryover, the two live v5 false negatives, and the four SSH verify assertions live here. |
-| **Creating OR retraining ANY filter (START HERE)** | **`docs/FILTER_PLAYBOOK.md`** — the single source of truth: every compiled lesson + the canonical reference (`nature_recovery v4`). Read before touching filter code. Then `docs/agents/filter-development-guide.md` (depth) / `docs/guides/filter-creation-workflow.md` (quick steps). |
+| **Creating OR retraining ANY filter (START HERE)** | **`docs/FILTER_PLAYBOOK.md`** — the single source of truth: every compiled lesson plus the canonical reference (`nature_recovery v4`). Read before touching filter code. |
 | Deploying to NexusMind or gpu-server | `docs/RUNBOOK.md` — deployment, training, scoring how-to |
 | Training on GPU server | `memory/gpu-server.md` — venv, PYTHONPATH, HF_HUB_OFFLINE |
 | Debugging model loading or PEFT issues | `memory/gemma3-model.md` — Auto mapping fix, key format details |
@@ -241,14 +249,14 @@ alternative: `feedback-plain-answers` in the Claude Code auto-memory.
 | Reviewing work quality | `docs/checklists/` — architect, test, implement, QA gates |
 | Stuck on tooling or infra | `memory/gotcha-log.md` — problem/fix archive |
 | **About to weaken, delete or argue with a working rule** | **`memory/working-rules.md`** — the full text of each rule plus the evidence and occurrence catalogue behind it. Every one exists because something shipped broken. |
-| **Touching corroboration, story-dedup, or any matching feature** | **`memory/corroboration-feature-hypotheses.md`** — what is confirmed, refuted and untested. ⚠️ **The threshold is NOT the lever.** Shared-number features are refuted; time is confirmed and still switched off. |
-| Planning across repos, or asking "what should I work on" | `memory/cross-repo-prioritization.md` — issue landscape, chains, and the two standing traps (the decision list drifts faster than the issue list; a findings list is a sample, not an inventory) |
+| **Touching corroboration, story-dedup, or any matching feature** | **`memory/corroboration-feature-hypotheses.md`** — confirmed, refuted and untested. ⚠️ **The threshold is NOT the lever.** |
+| Planning across repos, or asking "what should I work on" | `memory/cross-repo-prioritization.md` — issue landscape, chains, and the two standing traps it names |
 | Running anything long, or told "the GPU is free" | `memory/b650-gpu.md` — the non-production 3090 Ti. `ssh b650-gpu` works from the workstation, NOT from sadalsuud |
 | Checking which lens/tab a filter feeds | `memory/ovr-lens-set-current.md` — current lens→filter→tab mapping |
 | Writing docs for a deployed filter | `memory/filter-doc-standard.md` — the required documentation set |
 | Building a filter on a DeepSeek oracle, or citing cultural_discovery v5 as a reference | `memory/cd-v5-reference-status.md` — why v5 is the DeepSeek-oracle reference example, and the ADR-020 methodology it demonstrates |
-| Retraining uplifting, debugging Thriving false positives (#125), or touching the obituary/violence gates | `memory/uplifting-v7-training.md`, `memory/uplifting-oracle-genre-hypotheses.md`, `memory/obituary-v4-hypotheses.md`, `memory/violence-promotion-v1-hypotheses.md` |
-| **Wanting the whole chain in one place, or the live pipeline state** | **`veen-systems/pipeline-atlas`** — the four repos as one signal path plus an ops snapshot every 20 min, served from sadalsuud on Tailscale (`http://100.78.93.76:8099/`). It states mechanisms only; every number carries a verify command. Replaced ovr.news `/ops/architecture`, deleted 2026-08-07. |
+| Retraining uplifting, Thriving false positives (#125), or the junk gates | `memory/uplifting-v7-training.md`, `memory/uplifting-oracle-genre-hypotheses.md`, `memory/obituary-v4-hypotheses.md`, `memory/violence-promotion-v1-hypotheses.md` |
+| **Wanting the whole chain in one place, or the live pipeline state** | **`veen-systems/pipeline-atlas`** — the four repos as one signal path plus an ops snapshot every 20 min, on Tailscale (`http://100.78.93.76:8099/`), not GitHub Pages. |
 | Ending a session | Run `/curate` |
 | Monthly or after major restructuring | Run `/audit-context` |
 

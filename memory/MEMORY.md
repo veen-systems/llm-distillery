@@ -2,6 +2,7 @@
 
 <!-- verify: python3 scripts/verification/check_index_budget.py -->
 <!-- verify: python3 scripts/verification/check_index_budget.py --target project -->
+<!-- verify: python3 scripts/verification/check_index_budget.py --target pointers -->
 
 ⚠️ **This index is budgeted in CHARACTERS, not lines.** It reached **54,808 chars in 91 lines** on 2026-08-15 (up 69% in three days) because entries grow by lengthening, so a line-count heuristic never fires. Session detail belongs in `project_session_*.md`; an entry here is a hook that answers *should I open that file?*
 
