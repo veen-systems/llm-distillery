@@ -9,7 +9,7 @@ from collections import Counter
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from filters.uplifting.v7.prefilter import UpliftingPreFilterV7
-from hcv1_probe import script_of
+from prefilter_removal_probe import script_of  # was hcv1_probe: never committed, see 2026-08-28
 
 P = UpliftingPreFilterV7()
 CV = P._compiled_exclusions["crime_violence"]
