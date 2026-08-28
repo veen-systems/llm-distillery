@@ -80,6 +80,17 @@ ssh b650-gpu        # account is `jeroen` (NOT jwasys); works from situla and sa
   CPU before quoting an op-point number. Decomposed one variable at a time: host
   contributes **nothing**, the library stack is worth 3 flips at 4.5, CPU→CUDA is
   worth 3 at 4.5 and 1 at 4.0.
+  ⛔ **The concrete act to avoid: diffing a b650 CUDA replay against STORED
+  PRODUCTION SCORES.** Production scoring is gpu-server on **CPU** (run P of the
+  decomposition), so a b650 **CPU** + `venv-prodparity` replay is exact against it
+  and needs no qualification — but the GPU replay crosses the device term, the
+  larger of the two and the one that reaches 4.5. Speed on CUDA, compare on CPU.
+  ⚠️ **"Production parity" names a HOST here, and there is more than one candidate.**
+  `venv-prodparity` is built to **gpu-server's** pins — the box that scores the
+  student — **not sadalsuud's**, which runs the pipeline. The two are different
+  stacks, and the stack is worth 3 flips at 4.5, so parity with one is not parity
+  with the other. (Raised 2026-08-29 by the NexusMind session, which found its own
+  b650 memory recorded the sadalsuud target; this repo's is gpu-server, per run P.)
   *(An intermediate note here said pinning made agreement WORSE and that the
   residual was hardware-level. That was confounded — it compared a mismatched-stack
   CPU run against a matched-stack CUDA run. The opposite is true.)*
