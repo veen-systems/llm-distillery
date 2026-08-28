@@ -169,6 +169,11 @@ because only stage2 rows carry a Gemma score at all. The **non-Latin 9.76%** is 
 | short-form regime | "p10 = 84 ch, under-trained" | **p10 = 235 ch**; under-floor **11.93%** (21,374 articles) | ⚠️ **largely a Google News artifact** — smaller than recorded, still real |
 | exclude `news.google.com` | required | 22.1% of rows, **−22.1% of the pool** | confirmed, and it is what moves every other target |
 
+> ⏩ **Forward pointer added 2026-08-28 (this file is otherwise a frozen account of the
+> run above).** Items 1 and 2 below were ruled the same day: base rate **19.5% / 2.0×**,
+> class-A supplement **3:1 TP:FP**, and stage-1 **held near pass-through**. See
+> `docs/decisions/2026-08-28-v8-gate0-corpus-spec.md`. Item 3 is still open.
+
 **What Gate 0 still needs, and none of it is measurement:**
 
 1. The **base-rate decision** — the one number the plan explicitly reserves for the

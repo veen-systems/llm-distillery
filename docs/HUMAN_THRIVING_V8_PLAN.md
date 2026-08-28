@@ -613,14 +613,22 @@ one: stage2-only costs **11.5% of the pool and 95 domains** for no compositional
 
 **Gate 0 targets — state each as a chosen number before drawing:**
 
-- **Positive base rate: decide it, don't inherit it.** ⚠️ "Match production's **9.76%**"
-  (*corrected 08-28; 7.74% was the GN-inclusive figure*) is the WRONG fix — ADR-003
-  screen+merge enrichment exists *because* positives are rare, and a 9.76% draw spends the
-  oracle budget on obvious negatives. The defect is that **2.9×** (*was 3.6×*) is
-  **accidental and unstated**. Record the factor and correct for it (class weighting or
-  calibration).
-- **Class-A shape at ≥ production's 0.70%** (*corrected 08-28; 0.87% was GN-inclusive*),
-  with **TPs as well as FPs** — the 4 corpus rows
+- ✅ **Positive base rate — DECIDED 2026-08-28: 19.5%, an enrichment factor of 2.0×
+  recorded.** Owner ruling; record: `docs/decisions/2026-08-28-v8-gate0-corpus-spec.md` §1.
+  Drawable production is **9.76%** (*corrected 08-28; 7.74% was the GN-inclusive figure*);
+  v7 was 28.22%, i.e. **2.9× accidental and unstated** — that, not the enrichment itself,
+  was the defect. ⚠️ "Match production" was and remains the WRONG fix: ADR-003 screen+merge
+  enrichment exists *because* positives are rare, and a 9.76% draw spends the oracle budget
+  on obvious negatives. **Correct for the recorded 2.0× downstream** (class weighting or
+  calibration). *Derived, not ruled — check against the split:* with the mix held at
+  63.5/36.5 this puts 4.5–5.5 at ≈12.4% and 5.5+ at ≈7.1% (≈2.0× production's 3.562%,
+  down from today's 4.21×).
+- ✅ **Class-A shape at ≥ production's 0.70%** (*corrected 08-28; 0.87% was GN-inclusive*),
+  with **TPs as well as FPs — balance DECIDED 2026-08-28: 3:1, i.e. ~75% TP / ~25% FP**
+  (owner ruling; record §3). Deliberately FP-richer than §1g's screen found reality to be
+  (~9:1), because at 9:1 only one supplement row in ten carries the defect signal — and
+  ⛔ no rate may be inherited from that screen regardless, the lexicon is a candidate
+  generator, not a population. The 4 corpus rows
   labelled ≥4.5 are restorative-justice stories (Brussels survivor meets perpetrator 6.55,
   $30M abuse settlement 5.85, Myanmar amnesty 5.38), i.e. §5b shapes. **An FP-only supplement
   destroys the no-regression set.**
@@ -649,9 +657,12 @@ one: stage2-only costs **11.5% of the pool and 95 domains** for no compositional
   **(b)** hold the positive mix at production's 63.5/36.5 — enrich the *rate*, never
   reshape the *class*; **(c)** spend the freed budget on 1.5–3.5; **(d)** validate
   FN@MEDIUM+ on a production-mix cohort via `train_probe.py --recall-check-file`, never
-  on the enriched val split; **(e)** ⛔ **treat stage-1 aggressiveness as its own owner
-  decision** — a harder screen buys cost saving *and* FN risk, so if the saving is not
-  needed, do not buy it. Per-bin table and the arithmetic control (160,641 rows,
+  on the enriched val split; **(e)** ✅ **stage-1 aggressiveness — DECIDED
+  2026-08-28: HOLD NEAR PASS-THROUGH.** Retrain the probe on the v8 corpus but do **not**
+  screen harder; re-derive the threshold only far enough to preserve today's 88.6% routing.
+  No stage-2 cost constraint was claimed, so the FN risk is not bought (owner ruling; record
+  §2). ⚠️ A v8 decision, not a permanent one — re-open only with a measured cost problem
+  and an FN ceiling named *before* the sweep. Per-bin table and the arithmetic control (160,641 rows,
   max |Δ| 1.8e-15): `docs/evidence/2026-08-28-v8-phase0-drawable-population.md` §6.
 - ⭐ **Write a `corpus_manifest.json` (llm-distillery#127).** Establishing that this corpus was
   *not* prefiltered took git archaeology plus a three-arm experiment; it should have been a
@@ -686,7 +697,7 @@ one: stage2-only costs **11.5% of the pool and 95 domains** for no compositional
    300-char excerpts.
 
 **Gate 0:** the corpus is staged on the training host; row count and split sizes recorded;
-the class-A supplement's TP/FP balance stated; **and the language/script distribution
+the class-A supplement's TP/FP balance stated (✅ **3:1**, above); **and the language/script distribution
 reported against production's** — the whole point of ruling 3 is that the corpus stops
 being Latin-shaped, and nothing else in this plan would notice if it still were. All
 **before** any oracle spend.
