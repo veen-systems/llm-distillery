@@ -4,9 +4,12 @@
 
 ## One-line answer
 
-**Pinning production's library versions clears the box completely — 660/660 rows
-bit-identical, zero verdict flips at every threshold.** Two different physical
-machines, and not one score differs. The disagreement everyone has been chasing
+**Pinning production's library versions clears the box — 660/660 rows bit-identical,
+zero verdict flips at every threshold — WITH THE DEVICE HELD AT CPU.** Two different
+physical machines, and not one score differs. ⚠️ *"completely" was the wording here
+until 2026-08-29 and it overstates: every run below is CPU, production serves on GPU,
+and CUDA-to-CUDA across boxes has never been measured. This sentence is the one that
+propagated.* The disagreement everyone has been chasing
 is **the library stack plus the device**, and **hardware contributes nothing**.
 
 > ### ⚠ This document's first version claimed the opposite, and was wrong

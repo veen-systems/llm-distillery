@@ -18,24 +18,26 @@ propagated into `docs/TODO.md`, the v8 plan and the hypothesis ledger.
    end of the prompt CHANGES THE LABELS.** On the production-mix stratum,
    mean(reordered − as-is) = **−0.239**, 95% CI [−0.409, −0.080]. It survives a 20,000-draw
    sign-flip permutation (**p = 0.0049**, 20,000 draws), source clustering ([−0.408, −0.083]), and
-   Bonferroni across all 21 intervals this analysis prints ([−0.523, −0.010]). On the
-   boundary stratum it is **−0.443** [−0.764, −0.138] (p = 0.0063), which is
-   **directional at 95% but does not survive Bonferroni** ([−0.946, +0.015]).
+   and source clustering ([−0.410, −0.078], 120 sources). On the boundary stratum it is
+   **−0.443** [−0.764, −0.138] (p = 0.0063), source-clustered [−0.747, −0.150].
    The reordered prompt is a **stricter oracle**, not a cheaper copy.
+   ⛔ **It is NOT multiplicity-robust, and the first write-up said the opposite.** A bootstrap Bonferroni interval was printed and has been **removed**: at α=0.05/21 on 4,000 draws each bound was a *single order statistic*, its Monte-Carlo sd ~0.014 against a reported −0.010, and it sat above zero in **408 of 500** replications — the verdict was decided by the seed. The stable instrument is the permutation: **p(R)=0.0049** clears 0.05 and 0.05/2, but **not 0.05/16 = 0.00313**, and 16 is now *derived by the script* rather than hand-counted (21 matched no count of anything). **No family was pre-registered** — that is the defect, and no arithmetic repairs it afterwards.
 2. ⛔ **CORRECTED — "the effect is not just the scope gate" is NOT ESTABLISHED on the
    production mix.** The first version reported −0.235 over 41 gate-stable rows. That number
    pooled the two strata, which this run's own pre-registration forbids. Per stratum:
    **R n=21, −0.243, CI [−0.516, +0.036] — includes zero**; B n=20, −0.226, [−0.356, −0.106].
    ⛔ And it is **post-treatment conditioning**: `scope_verdict` is an outcome the treatment
    changes (16 rows are unanimously `in_scope` under as-is only, 8 under reordered only), so
-   this is a collider, not a subgroup. The direction is suggestive and the per-dimension
-   pattern is consistent, but the claim as originally written is withdrawn.
+   this is a collider, not a subgroup. The direction is suggestive, but the per-dimension pattern is **not** uniform on the
+   production stratum — `evidence_level` is **+0.048** there, against −0.089 in the
+   withdrawn pooled set — so *"on all six dimensions"* was a property of the pooled
+   figure. The claim as originally written is withdrawn.
 3. ⛔ **CORRECTED — the flip rate is NOT "smaller than the probe's 13%".** Measured here:
    **5.3%** production-mix ([2.7%, 8.4%]), **6.7%** (as-is) and **9.3%** (reordered) at the
    boundary, per identical-run pair. But the probe's 4/30 carries a Clopper-Pearson CI of
    **[3.8%, 30.7%]**, which contains every one of those; Fisher's exact against the
    like-for-like cell gives **p = 0.118**, and against the boundary stratum — which is what
-   an op-point-weighted panel actually sampled — **p = 0.722**. The design-weighting
+   an op-point-weighted panel actually sampled — **p = 0.4648** against the like-for-like boundary cell (arm B — the *as-is* prompt, which is what the probe ran — stratum B, runs 1&2 = 4/50). ⛔ The first write-up quoted **p = 0.722** without naming its cell; both readings that produce 0.722 use a non-comparable cell *and* give the larger p, i.e. the one that supports the conclusion being drawn. The conclusion survives at 0.4648; the number was chosen, not derived. The design-weighting
    explanation is plausible and is *not distinguishable from n=30 sampling noise*. What this
    run adds is a usable interval, not a refutation.
 4. **The old "all six dims ≤ 2" inference was 98.8% right** over 1,200 now-recorded labels.
@@ -47,21 +49,27 @@ one alternative number with no interval. Here the null is measured **on the same
 same pair level**: 6 within-arm pairs and 9 between-arm pairs per row, row-clustered
 bootstrap on the difference.
 
-| stratum R (n=150) | within (null) | between | diff, 95% CI | Bonferroni-21 |
-|---|---|---|---|---|
-| share of pairs moving > 0.16 | 34.9% | **52.4%** | [12.4%, 22.7%] | [9.4%, 25.7%] ✅ |
-| mean \|Δ\| | 0.312 | **0.630** | [0.196, 0.459] | [0.131, 0.550] ✅ |
-| op-point crossing rate | 2.4% | 4.2% | [0.2%, 4.0%] | [0.0%, 5.6%] ⛔ **not established** |
+| stratum R (n=150) | within (null) | between | diff, 95% CI |
+|---|---|---|---|
+| share of pairs moving > 0.16 | 34.9% | **52.4%** | [12.4%, 22.7%] |
+| mean \|Δ\| | 0.312 | **0.630** | [0.196, 0.459] |
+| op-point crossing rate | 2.4% | 4.2% | [0.2%, 4.0%] |
 
-| stratum B (n=50) | within (null) | between | diff, 95% CI | Bonferroni-21 |
-|---|---|---|---|---|
-| share of pairs moving > 0.16 | 39.3% | **52.9%** | [6.4%, 21.7%] | [2.9%, 27.0%] ✅ |
-| mean \|Δ\| | 0.421 | **0.767** | [0.141, 0.590] | [0.070, 0.743] ✅ |
-| op-point crossing rate | 12.7% | 16.2% | [−0.4%, 8.9%] | — ⛔ not established |
+| stratum B (n=50) | within (null) | between | diff, 95% CI |
+|---|---|---|---|
+| share of pairs moving > 0.16 | 39.3% | **52.9%** | [6.4%, 21.7%] |
+| mean \|Δ\| | 0.421 | **0.767** | [0.141, 0.590] |
+| op-point crossing rate | 12.7% | 16.2% | [−0.4%, 8.9%] |
+
+⛔ **The Bonferroni column that stood here has been deleted, not recomputed.** These are
+nominal 95% intervals over a family of **16** that no pre-registration named. The
+stratum-R op-point cell (lower bound 0.2%) and the stratum-B one are the two nearest
+their bound; neither should be read as established. See § *Headline* for why the
+bootstrap Bonferroni was seed noise.
 
 ⛔ **CORRECTED — the stratum-R op-point crossing cell was labelled "EFFECT: CI excludes 0"
 on a lower bound of 0.2%.** It survives no multiplicity correction. Now reported as not
-established, and `analyse.py` prints a Bonferroni interval beside every nominal one.
+established. `analyse.py` no longer prints a Bonferroni interval at all — see the family note above and §4h of `results.txt`.
 
 ⚠️ **A known bias in this test, not disclosed in the first version.** Pooling the two arms'
 within-pairs into one null inflates the "between" side whenever the arms differ in noise —
@@ -97,7 +105,8 @@ Re-derived from the per-row `usage` blocks at the script's own off-peak rates:
 |---|---|---|---|
 | arm A, article last | **89.2%** (ceiling 95.8%) | **$0.000519** | $0.00050 |
 | arm B, as-is | **0.0%** | **$0.002736** | $0.00275 |
-| repeat runs (2–3) | 99.4–99.5% | **$0.000266** | $0.00025 |
+| repeat runs (2–3), **arm A** | 99.4% | **$0.000266** | $0.00025 |
+| repeat runs (2–3), **arm B** | 99.5% | **$0.000275** | $0.00025 |
 
 Ratio **5.27×** (published as 5.5×). **Total spend $0.867** (published as $0.85).
 
@@ -188,7 +197,9 @@ run 1). Any re-run will carry `prompt_hash` and `prompt_file` instead.
 
 ⛔ **The cohort is not committed** — full article text at scale is the #97 hazard.
 `cohort_manifest.json` records the window, pool sizes and design weights, which is what a
-re-draw needs. `results.txt` is `analyse.py`'s output verbatim.
+re-draw needs. ⚠️ **It predates `draw200.py`'s `archive` key** (added on review, so the
+manifest can name the glob it read) — the committed manifest has no such key, and a re-run
+of the documented command produces a manifest with one. Regenerating it requires sadalsuud. `results.txt` is `analyse.py`'s output verbatim.
 
 **Population:** `sadalsuud:~/local_dev/NexusMind/data/filtered/uplifting/`, window
 `filtered_20260814_165416` → `filtered_20260828_131614`, **83 files, 232,564 rows**.

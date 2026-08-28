@@ -22,6 +22,12 @@ bit-identical), library STACK 0.2008, DEVICE CPU->CUDA 0.1956. Match the pins
 and the device and the box is free; the thing that is cleared "at a threshold,
 never in general" is a (stack, device, threshold) triple.
 
+⚠️ The host term was isolated with the DEVICE HELD AT CPU. Nobody has run
+gpu-server-CUDA against b650-CUDA, and production serves on GPU -- so
+"the box is free" is an extrapolation at production's own configuration, not a
+measurement. Those figures are also MAX |delta| over 660 rows (1 row and 3 rows
+respectively exceed 0.16), not a typical magnitude.
+
 ⚠️ THIS SCRIPT TAKES NO THRESHOLD. It only dumps predictions. The threshold
 lives on diff_box_parity.py (--threshold / --alt-threshold), which is what
 actually reports flips. Two docs told readers to "re-run box_parity.py at your

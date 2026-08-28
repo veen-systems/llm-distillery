@@ -6,7 +6,7 @@ The op-point, weights and gatekeeper are IMPORTED from filters/uplifting/v7/base
 never copied: TIER_THRESHOLDS is the sole runtime source of the operating point and a
 second copy in an analysis script is how NM#161 and NM#205 happened.
 """
-import json, random, statistics, sys
+import collections, json, math, random, statistics, sys
 from collections import defaultdict
 from pathlib import Path
 
@@ -20,17 +20,39 @@ GK_DIM, GK_MIN, GK_CAP = S.GATEKEEPER_DIMENSION, S.GATEKEEPER_MIN, S.GATEKEEPER_
 ARMS = ("A", "B")
 RUNS = (1, 2, 3)
 
-# Every interval this script prints. Multiplicity was not corrected or acknowledged
-# in the first version, and it changes one verdict: the stratum-R op-point crossing
-# cell printed "EFFECT: CI excludes 0" on a lower bound of 0.2%, which survives no
-# correction. Reported alongside the nominal 95% rather than replacing it -- both
-# are informative, and hiding either is a choice.
-N_INTERVALS = 21
+# ⛔ A BOOTSTRAP BONFERRONI INTERVAL WAS PRINTED HERE AND HAS BEEN REMOVED (review
+# 2026-08-29, second pass). At alpha = 0.05/21 on 4,000 draws each bound was a SINGLE
+# ORDER STATISTIC -- the 5th of 4,000. Two independent re-runs across seeds put the
+# Monte-Carlo sd of that bound at ~0.014 against a reported value of -0.010, and had
+# it above zero in 24/30 and 408/500 replications. The published verdict was decided
+# by `seed=17`, not by the data: noise printed as a decision, inside the block added
+# to fix multiplicity.
+#
+# `N_INTERVALS = 21` was also simply wrong, and unfixably so: the count is
+# DATA-DEPENDENT (section 4 emitted a Bonferroni line only in the non-holding
+# branches, so 6-12 of them), and three reviewers counting independently got 15
+# nominal / 22 total / 17 on a null fixture. A hand-counted constant governing a
+# decision is the shape this repo keeps paying for.
+#
+# Multiplicity is now handled by the PERMUTATION test in section 4f, which is stable
+# to 4 significant figures at 20,000 draws, and by stating the family explicitly
+# rather than burying it in a constant. See the FAMILY note printed there.
+N_NOMINAL_INTERVALS = 0     # counted as they are emitted, never hand-set
 
 
 def pctl(vals, lo_q, hi_q):
+    """Percentile pair with both indices clamped. The low index had no floor guard:
+    at a smaller alpha or fewer draws it degenerates to vals[0] -- the sample
+    minimum, reported as a quantile."""
     n = len(vals)
-    return vals[int(lo_q * n)], vals[min(int(hi_q * n), n - 1)]
+    return vals[max(0, min(int(lo_q * n), n - 1))], vals[max(0, min(int(hi_q * n), n - 1))]
+
+
+def count_interval(fmt_lo, fmt_hi):
+    """Every printed 95% interval increments the family. Derived, not asserted."""
+    global N_NOMINAL_INTERVALS
+    N_NOMINAL_INTERVALS += 1
+    return fmt_lo, fmt_hi
 SCRATCH = Path(sys.argv[1])
 
 
@@ -85,7 +107,7 @@ def boot_ci(rows, stat, n=4000, seed=11):
         samp = [rows[rng.randrange(len(rows))] for _ in rows]
         vals.append(stat(samp))
     vals.sort()
-    return pctl(vals, 0.025, 0.975)
+    return count_interval(*pctl(vals, 0.025, 0.975))
 
 
 print("=" * 78)
@@ -141,7 +163,12 @@ print("4. PARITY (H-V8-3) -- between-arm effect against the within-arm null, SAM
 print("=" * 78)
 print("Matched by construction: every quantity below is computed over PAIRS OF SINGLE RUNS.")
 print("within = 6 pairs/row (3 within A, 3 within B).  between = 9 pairs/row (Ai vs Bj).")
-BAND = 0.16          # the #95 batch-composition band
+# ⚠️ 0.16 is the #95 batch-composition floor for the STUDENT. These are ORACLE scores,
+# whose own decoder floor is 0.436/0.687 -- a different population and a different
+# mechanism. It is used here ONLY as a fixed yardstick applied to both sides of a rate
+# DIFFERENCE, where it cancels; it is NOT a significance threshold for these scores, and
+# inheriting it as one is what memory/score-batch-shape-noise.md forbids.
+BAND = 0.16
 
 
 def diff_ci(rows_w, rows_b, stat, n=4000, seed=13):
@@ -154,8 +181,7 @@ def diff_ci(rows_w, rows_b, stat, n=4000, seed=13):
         idx = [rng.randrange(k) for _ in range(k)]
         vals.append(stat([rows_b[j] for j in idx]) - stat([rows_w[j] for j in idx]))
     vals.sort()
-    a = 0.05 / N_INTERVALS
-    return pctl(vals, 0.025, 0.975), pctl(vals, a / 2, 1 - a / 2)
+    return count_interval(*pctl(vals, 0.025, 0.975))
 
 
 for st in ("R", "B"):
@@ -180,19 +206,14 @@ for st in ("R", "B"):
 
     print(f"  stratum {st} (n={len(rws)})")
     for label, fn, rw, rb in (
-            (f"share of pairs moving > {BAND} (#95 band)", share, w_rows, b_rows),
+            (f"share of pairs moving > {BAND} (fixed yardstick, not an oracle floor)", share, w_rows, b_rows),
             ("mean |d|", meanabs, w_rows, b_rows),
             (f"op-point ({OP}) crossing rate", xrate, xw_rows, xb_rows)):
-        (lo, hi), (blo, bhi) = diff_ci(rw, rb, fn)
+        lo, hi = diff_ci(rw, rb, fn)
         holds = lo <= 0 <= hi
-        bholds = blo <= 0 <= bhi
         fmt = (lambda v: f"{v:.1%}") if "share" in label or "crossing" in label else (lambda v: f"{v:.3f}")
-        if holds:
-            verdict = "no effect above the null"
-        elif bholds:
-            verdict = f"NOT ESTABLISHED — nominal CI excludes 0, Bonferroni-{N_INTERVALS} [{fmt(blo)}, {fmt(bhi)}] does not"
-        else:
-            verdict = f"EFFECT — survives Bonferroni-{N_INTERVALS} [{fmt(blo)}, {fmt(bhi)}]"
+        verdict = ("no effect above the null" if holds
+                   else "nominal CI excludes 0 — see the FAMILY note in 4f before quoting")
         print(f"    {label:<40} within {fmt(fn(rw)):>7}  between {fmt(fn(rb)):>7}  "
               f"diff 95% CI [{fmt(lo)}, {fmt(hi)}]  -> {verdict}")
 
@@ -221,16 +242,15 @@ for st in ("R", "B"):
     rng = random.Random(17)
     boot = sorted(statistics.mean([signed[rng.randrange(len(signed))]
                                    for _ in signed]) for _ in range(4000))
-    lo, hi = boot[100], boot[3900]
-    a = 0.05 / N_INTERVALS
-    blo, bhi = boot[int(a / 2 * 4000)], boot[min(int((1 - a / 2) * 4000), 3999)]
+    lo, hi = count_interval(*pctl(boot, 0.025, 0.975))   # was hardcoded boot[100]/boot[3900]
+                                                          # beside a literal 4000: change the
+                                                          # draw count and the quantile moved
     down = sum(1 for d in signed if d < -0.01)
     up = sum(1 for d in signed if d > 0.01)
     same = len(signed) - down - up
     print(f"  stratum {st} (n={len(rws)}): mean(A-B) on k=3 means = {statistics.mean(signed):+.3f}"
-          f"  95% CI [{lo:+.3f}, {hi:+.3f}]"
-          f"  Bonferroni-{N_INTERVALS} [{blo:+.3f}, {bhi:+.3f}]  -> "
-          f"{'DIRECTIONAL' if not (blo <= 0 <= bhi) else ('directional at 95% only' if not (lo <= 0 <= hi) else 'no net shift')}")
+          f"  95% CI [{lo:+.3f}, {hi:+.3f}]  -> "
+          f"{'directional at 95%' if not (lo <= 0 <= hi) else 'no net shift'}")
     print(f"      rows where reordered scores LOWER {down}, higher {up}, unchanged {same}")
     for a in ARMS:
         print(f"      arm {a}: rows >= op-point {OP} at k=3: "
@@ -253,8 +273,11 @@ print("⛔ READ THE CAVEATS BEFORE THE NUMBER. `scope_verdict` is an OUTCOME THE
 print("   TREATMENT CHANGES, so conditioning on 'both arms in_scope on all 3 runs'")
 print("   is post-treatment (collider) selection, not a subgroup. And the strata")
 print("   must not be pooled -- stratum B is oversampled ~4.4x by design.")
-for st in ("R", "B", "POOLED (do not quote)"):
-    rws = [i for i in ids if STRAT[i] == st] if st in ("R", "B") else list(ids)
+POOLED = "__pooled__"   # an explicit sentinel: the old code branched on the LABEL
+                        # STRING, so renaming the label silently printed "0 rows",
+                        # and adding a stratum "C" would have silently pooled all 200
+for st in ("R", "B", POOLED):
+    rws = list(ids) if st is POOLED else [i for i in ids if STRAT[i] == st]
     stable = [i for i in rws
               if all(data[i][(a, r)]["verdict"] == "in_scope" for a in ARMS for r in RUNS)]
     if not stable:
@@ -265,7 +288,18 @@ for st in ("R", "B", "POOLED (do not quote)"):
     d = [k3["A"][i] - k3["B"][i] for i in stable]
     rng = random.Random(29)
     bt = sorted(statistics.mean([d[rng.randrange(len(d))] for _ in d]) for _ in range(4000))
-    lo, hi = bt[100], bt[3900]
+    lo, hi = pctl(bt, 0.025, 0.975)
+    if st is not POOLED:                 # POOLED prints no interval, so it counts none
+        lo, hi = count_interval(lo, hi)
+    if st is POOLED:
+        # No CI, no verdict, on purpose. The pre-registration forbids pooling these
+        # strata, and a "do not quote" label is a premise that reads as an instruction
+        # and gets stripped the moment the number is copied. The point estimate is
+        # shown only so the withdrawn -0.235 is traceable to its source.
+        print(f"  POOLED n={len(stable)}  mean(A-B) {statistics.mean(d):+.3f}  "
+              f"— ⛔ WITHDRAWN FIGURE, no interval and no verdict: the strata cross "
+              f"and B is ~4.4x oversampled. Shown for traceability only.")
+        continue
     print(f"  stratum {st}: n={len(stable)}  mean(A-B) {statistics.mean(d):+.3f}  "
           f"95% CI [{lo:+.3f}, {hi:+.3f}]  -> "
           f"{'excludes 0' if not (lo <= 0 <= hi) else 'INCLUDES 0'}")
@@ -366,6 +400,147 @@ print(f"    corpus k=3, 6,590 rows, WITHOUT it:                        "
       f"A ${6590 * 3 * a1:.2f}  B ${6590 * 3 * b1:.2f}")
 print("    ⛔ Only run 1 of each arm is a quotable CACHE figure -- runs 2-3 re-send")
 print("       byte-identical prompts, so their 99.4% is an artifact of the design.")
+
+print()
+print("=" * 78)
+print("4g. THE ESTIMATORS THE WRITE-UP QUOTED AND THIS SCRIPT DID NOT COMPUTE")
+print("=" * 78)
+print("Five numbers were hand-run for the first two write-ups and cited on five")
+print("surfaces. Correct, and un-derivable from this directory -- which is the exact")
+print("defect 4f was added to close, left half-closed. They are computed here now.")
+
+
+def clopper_pearson(k, n, alpha=0.05):
+    """Exact binomial interval via the Beta quantiles, without scipy."""
+    def beta_ppf(q, a, b, lo=0.0, hi=1.0):
+        for _ in range(200):                       # bisection on the regularised
+            mid = (lo + hi) / 2                    # incomplete beta, 200 halvings
+            if betainc(a, b, mid) < q: lo = mid
+            else: hi = mid
+        return (lo + hi) / 2
+
+    def betainc(a, b, x, terms=4000):              # series expansion, adequate here
+        if x <= 0: return 0.0
+        if x >= 1: return 1.0
+        lbeta = (math.lgamma(a) + math.lgamma(b) - math.lgamma(a + b))
+        front = math.exp(a * math.log(x) + b * math.log(1 - x) - lbeta) / a
+        f, c, d = 1.0, 1.0, 0.0
+        for i in range(terms):
+            m, num = i // 2, 0.0
+            if i == 0: num = 1.0
+            elif i % 2 == 0: num = (m * (b - m) * x) / ((a + 2 * m - 1) * (a + 2 * m))
+            else: num = -((a + m) * (a + b + m) * x) / ((a + 2 * m) * (a + 2 * m + 1))
+            d = 1.0 + num * d
+            if abs(d) < 1e-30: d = 1e-30
+            d = 1.0 / d
+            c = 1.0 + num / c
+            if abs(c) < 1e-30: c = 1e-30
+            f *= c * d
+            if abs(1.0 - c * d) < 1e-12: break
+        return front * (f - 1.0)
+
+    lo = 0.0 if k == 0 else beta_ppf(alpha / 2, k, n - k + 1)
+    hi = 1.0 if k == n else beta_ppf(1 - alpha / 2, k + 1, n - k)
+    return lo, hi
+
+
+def fisher_exact_2x2(a, b, c, d):
+    """Two-sided Fisher, summing tables no more probable than the observed."""
+    def logp(x, y, z, w):
+        return (math.lgamma(x + y + 1) + math.lgamma(z + w + 1)
+                + math.lgamma(x + z + 1) + math.lgamma(y + w + 1)
+                - math.lgamma(x + y + z + w + 1)
+                - math.lgamma(x + 1) - math.lgamma(y + 1)
+                - math.lgamma(z + 1) - math.lgamma(w + 1))
+    obs = logp(a, b, c, d)
+    n1, n2, k = a + b, c + d, a + c
+    tot = 0.0
+    for i in range(max(0, k - n2), min(n1, k) + 1):
+        lp = logp(i, n1 - i, k - i, n2 - k + i)
+        if lp <= obs + 1e-9:
+            tot += math.exp(lp)
+    return min(1.0, tot)
+
+
+PROBE_K, PROBE_N = 4, 30          # 2026-08-28 probe: 4 gate flips in 30 rows
+cp = clopper_pearson(PROBE_K, PROBE_N)
+print(f"\n  Clopper-Pearson on the probe's {PROBE_K}/{PROBE_N}: "
+      f"[{cp[0]:.4%}, {cp[1]:.4%}]")
+
+# Like-for-like cells: the probe was ONE pair of runs of the AS-IS prompt, so the
+# comparable cell is arm B, runs 1&2. Naming the cell is the point -- the first
+# write-up quoted p=0.722 without naming it, and BOTH readings that produce 0.722
+# pick a cell that is not like-for-like AND give the larger p.
+for st in ("R", "B"):
+    rws = [i for i in ids if STRAT[i] == st]
+    k = sum(1 for i in rws
+            if ing(data[i][("B", 1)]["verdict"]) != ing(data[i][("B", 2)]["verdict"]))
+    pv = fisher_exact_2x2(PROBE_K, PROBE_N - PROBE_K, k, len(rws) - k)
+    print(f"  Fisher, probe {PROBE_K}/{PROBE_N} vs AS-IS arm runs 1&2, stratum {st} "
+          f"({k}/{len(rws)}): p = {pv:.4f}")
+print("  ⛔ The probe used the AS-IS prompt, so only arm B is like-for-like. A")
+print("     reordered-arm cell would compare two different prompts.")
+
+# Source-clustered CI -- cited on five surfaces, computed nowhere until now.
+print()
+for st in ("R", "B"):
+    rws = [i for i in ids if STRAT[i] == st]
+    k3 = {a: {i: statistics.mean(data[i][(a, r)]["w"] for r in RUNS) for i in rws}
+          for a in ARMS}
+    by_src = defaultdict(list)
+    for i in rws:
+        by_src[cohort[i].get("source") or "?"].append(k3["A"][i] - k3["B"][i])
+    srcs = list(by_src)
+    rng = random.Random(37)
+    boot = sorted(statistics.mean([x for _ in srcs
+                                   for x in by_src[srcs[rng.randrange(len(srcs))]]])
+                  for _ in range(4000))
+    lo, hi = count_interval(*pctl(boot, 0.025, 0.975))
+    print(f"  stratum {st}: SOURCE-clustered 95% CI [{lo:+.3f}, {hi:+.3f}]  "
+          f"({len(srcs)} sources, largest {max(len(v) for v in by_src.values())} rows)")
+
+# The medians section 6 of the README quotes.
+print()
+for st in ("R", "B"):
+    rws = [i for i in ids if STRAT[i] == st]
+    within = [abs(data[i][(a, p_)]["w"] - data[i][(a, q_)]["w"])
+              for i in rws for a in ARMS for p_, q_ in PAIRS]
+    k3 = {a: {i: statistics.mean(data[i][(a, r)]["w"] for r in RUNS) for i in rws}
+          for a in ARMS}
+    between = [abs(k3["A"][i] - k3["B"][i]) for i in rws]
+    print(f"  stratum {st}: median within-arm |d| {statistics.median(within):.3f}   "
+          f"median between-arm |d| (k=3 means) {statistics.median(between):.3f}")
+
+# Prompt identity -- the third control, also hand-run until now.
+print()
+pa = (Path(__file__).resolve().parents[3] / "filters/human_thriving/v8/prompt-candidate.md")
+pb = (Path(__file__).resolve().parents[3] / "filters/human_thriving/v8/prompt-candidate-tail.md")
+if pa.exists() and pb.exists():
+    ta, tb = pa.read_text(encoding="utf-8"), pb.read_text(encoding="utf-8")
+    MARK = "[Paste the summary of the article here]"
+    la = collections.Counter(l for l in ta.splitlines() if l.strip())
+    lb = collections.Counter(l for l in tb.splitlines() if l.strip())
+    print(f"  prompt identity: {len(ta):,} -> {len(tb):,} chars; article offset "
+          f"{ta.index(MARK):,} -> {tb.index(MARK):,}; non-blank line multiset differs by "
+          f"{list((lb - la).elements()) or 'nothing'} / {list((la - lb).elements()) or 'nothing'}")
+else:
+    print("  prompt identity: NOT CHECKED — prompt files not found from this path")
+
+print()
+print("=" * 78)
+print("4h. FAMILY / MULTIPLICITY -- stated, not buried in a constant")
+print("=" * 78)
+print(f"  This run printed {N_NOMINAL_INTERVALS} nominal 95% intervals.")
+for st, pv in (("R", None), ("B", None)):
+    pass
+print("  ⛔ NO FAMILY WAS PRE-REGISTERED. That is the defect, and no arithmetic")
+print("     repairs it after the fact. Read the two permutation p-values in 4f")
+print("     against whichever family you consider honest, and note that the answer")
+print("     CHANGES: p(R)=0.0049 clears 0.05 and 0.05/2 (the two pre-registered")
+print("     direction tests) but NOT 0.05/%d = %.5f. The headline is significant"
+      % (N_NOMINAL_INTERVALS, 0.05 / max(N_NOMINAL_INTERVALS, 1)))
+print("     nominally and is NOT multiplicity-robust across the full family.")
+print("  ⛔ Do not resolve this by picking the family that keeps the result.")
 
 print()
 print("=" * 78)

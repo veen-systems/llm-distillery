@@ -3354,7 +3354,11 @@ heredoc (`python3 - <<'EOF'`) so quotes aren't doubly escaped, and single-quote 
 **Root cause**: Assumed rollup schema (majority) where the raw grades schema (per-model) applies; silent `gp.exists()` guard meant no error either way.
 **Fix**: Compute majority from per-model rows (rollup_obit.py does this). Never join on a field without asserting it exists in row 1.
 
-### b650 Commissioning: System venv Broken, Version Skew Shifts MLP Scores Cross-Box (2026-07-30)
+### b650 Commissioning: System venv Broken, Version Skew Shifts MLP Scores (2026-07-30)
+
+⛔ *Titled "...Cross-Box" until 2026-08-29. The name was the defect: a VERSION skew is not a
+box. The 2026-08-10 four-run decomposition puts the host term at 0.0000. Kept as history;
+the rule it produced was retired.*
 **Problem**: `python3 -m venv` fails on b650 (no ensurepip, sudo needed for python3.12-venv); and after uv-venv setup, v5 MLP scores differ from gpu-server by up to 0.16 on identical rows.
 **Root cause**: Missing python3.12-venv package; sentence-transformers 5.6.1 (b650) vs 5.2.2 (gpu-server) + torch 2.13 vs 2.11 produce slightly different embeddings, which the MLP amplifies near its decision boundary. sklearn was also unpinned at first (1.9 vs 1.8 pickle warnings) — pinned to 1.8.0.
 **Fix**: Use `~/.local/bin/uv` (no sudo). Rule: frozen-embedder+MLP scores are only comparable computed on ONE box with ONE env; evaluate on the box that trained. Account on b650 is `jeroen`, not jwasys.

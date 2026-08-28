@@ -1,5 +1,14 @@
 # Phase A k=3 calibration — pre-registration
 
+> **APPENDED 2026-08-29, after the outcome. Nothing else in this file has been altered,
+> and nothing will be** — a pre-registration whose rules can be revised once the answer is
+> known is not one, and `git log` should keep showing exactly one commit that changed its
+> body (`ff88b56`).
+>
+> Outcomes, two decision rules found unusable, and one rule of this document that the first
+> write-up violated (the no-pooling ban below): see `README.md` § *Deviations from the
+> pre-registration* and § *Headline*.
+
 **Written 2026-08-29, BEFORE the draw and before any call.** Owner approved n=200, both
 arms. Everything below is fixed now so that a number cannot be chosen after seeing it.
 

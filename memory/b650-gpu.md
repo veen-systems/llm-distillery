@@ -22,9 +22,10 @@ ssh b650-gpu        # account is `jeroen` (NOT jwasys); works from situla and sa
 - **Data staged**: `~/llm-distillery/filters/common/obituary_detector/` —
   training corpora (131 MB) + v3/v4/v5 model artifacts + train_v1.py/build_v5_seed.py.
 - **Benchmark**: 1,562-row mpnet embed in 1.9 s (~830 rows/s) — ~5× gpu-server.
-- ⚠️ **Cross-box score skew — NOW SCOPED, do not apply it blanket** (2026-08-09).
-  The |0.16| was measured on the **obituary detector: mpnet + sklearn MLP**, ST
-  5.6.1 here vs 5.2.2 on gpu-server (gotcha-log 2026-07-30). It does **NOT**
+- ⚠️ **"Cross-box" skew — MIS-NAMED, and scoped; do not apply it blanket** (2026-08-09;
+  renamed 2026-08-29). The |0.16| was measured on the **obituary detector: mpnet +
+  sklearn MLP**, ST 5.6.1 here vs 5.2.2 on gpu-server (gotcha-log 2026-07-30) — i.e.
+  a **library-version** difference, which is not a machine. The host term is 0.0000. It does **NOT**
   generalise to the Stage-1 **e5-small + torch MLP** probe path: same 160
   articles, same pickle, the real `filters/common/embedding_stage.py` class,
   b650 vs gpu-server's *serving venv* gave **max |Δ| 4.2e-6, zero screening
@@ -52,8 +53,8 @@ ssh b650-gpu        # account is `jeroen` (NOT jwasys); works from situla and sa
   term: **host alone is 660/660 bit-identical, max |Δ| 0.0000**; the 0.2008 is the
   **library stack**; and **CPU→CUDA — the "still unmeasured" line below — is now
   measured at 0.1956, 1 flip at 4.0 and 3 at 4.5**, making the device the term that
-  reaches the deployed op-point. **Pin production's versions and b650 IS
-  gpu-server**; the threshold caveat now attaches to the stack and the device, not
+  reaches the deployed op-point. **Pin production's versions AND match the device and b650
+  reproduces gpu-server** — on CPU, measured; CUDA-to-CUDA is unmeasured; the threshold caveat now attaches to the stack and the device, not
   to the machine. Full records:
   `docs/evidence/2026-08-09-cross-box-parity-uplifting-v7.md` (stack, confounded as
   "cross-box") and the 08-10 decomposition (all four terms).

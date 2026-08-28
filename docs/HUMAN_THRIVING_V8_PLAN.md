@@ -91,7 +91,7 @@ and it is the one readers complain about **least**. Both must die in v8.
 > **Consequences that follow, and which the rest of this plan is written to:**
 > 1. The prompt rewrite leads with the **dominant-subject** rule (§4 Phase A step 1),
 >    not the `evidence_level` fix.
-> 2. **Growing the class-A slice is the critical path** — not the $12 re-score. Four
+> 2. **Growing the class-A slice is the critical path** — not the re-score. Four
 >    records is too thin to gate on, and the oracle cannot generate more (§1a).
 > 3. **Gate B-A blocks the release. Gate B-B is reported, and a miss is escalated to
 >    the owner rather than auto-failing** the build.
@@ -683,8 +683,9 @@ one: stage2-only costs **11.5% of the pool and 95 domains** for no compositional
    ⚠️ **Re-measured 2026-08-29 at n=200: 5.3% production-mix ([2.7%, 8.4%]), 6.7% (as-is)
    and 9.3% (reordered) at the boundary, per identical-run pair.** ⛔ **This is NOT a
    refutation of the 13%** — that came off 4/30, whose Clopper-Pearson CI is **[3.8%, 30.7%]**
-   and contains every estimate above (Fisher p=0.118 like-for-like; **p=0.722** against the
-   boundary stratum, which is what an op-point-weighted panel actually sampled). The
+   and contains every estimate above (Fisher p=0.118 like-for-like; **p=0.4648** against the
+   boundary stratum, the population an op-point-weighted panel actually sampled — the earlier
+   **0.722** named no cell and used a non-comparable one). The
    design-weighting explanation is plausible and **not distinguishable from n=30 noise**;
    what n=200 buys is a usable interval. The ~860 figure inherits the panel's weighting. ⛔ The
    conclusion is unchanged (**k ≥ 3, not k = 1**): 8.0% of production-mix rows and 10–14% of
@@ -694,8 +695,9 @@ one: stage2-only costs **11.5% of the pool and 95 domains** for no compositional
    optimisation.** At n=200, with the null measured on the same rows at the same pair level,
    moving the article to the end **changes the labels**: mean(reordered − as-is) **−0.239**
    on the production-mix stratum (95% CI [−0.409, −0.080]), which survives a sign-flip
-   permutation (p=0.0049), source clustering, and Bonferroni over all 21 intervals; and
-   **−0.443** at the boundary (p=0.0063), directional at 95% but **not** under Bonferroni.
+   permutation (p=0.0049) and source clustering ([−0.410, −0.078]); and **−0.443** at the
+   boundary (p=0.0063). ⛔ **NOT multiplicity-robust**: p(R)=0.0049 does not clear
+   0.05/16, the family this analysis actually prints. No family was pre-registered.
    Rows above the op-point at k=3, **per stratum**: **8/150 vs 11/150** (production mix) and
    **7/50 vs 12/50** (boundary). The reordered prompt is a **stricter oracle**, not a cheaper
    copy of this one. Its price advantage is real — run-1 **$0.000519 vs $0.002736/article**,
@@ -865,7 +867,7 @@ Full re-score under the new prompt. **Do not** re-score only the mid-range (§2,
   Ollama there is **localhost-only**; tunnel with
   `ssh -f -N -L 11435:localhost:11434 b650-gpu`. It fired **0/10** caps, so it is a
   consensus arm, not a candidate primary for a penalty-flag filter.
-- Volume estimate **≈$12 for ~6,590 rows**. The **row count is now confirmed** (Phase 0: 5,271 + 659 + 660). ⚠️ **The $12 itself is still unverified** — it is an estimate nobody has priced against a real batch.
+- Volume estimate **≈$12 for ~6,590 rows** ⛔ **SUPERSEDED 2026-08-29 — measured: ≈$6.9 reordered / ≈$21.7 as-is at k=3; see §6**. The **row count is now confirmed** (Phase 0: 5,271 + 659 + 660). ⚠️ **The $12 itself is still unverified** — it is an estimate nobody has priced against a real batch.
 - ⛔ **Never oracle-re-score a `gn_*` row** — they are sub-300-char headline echoes
   (`memory/google-news-corpus-hypotheses.md`).
 - The 300-char floor applies here and **only** here:

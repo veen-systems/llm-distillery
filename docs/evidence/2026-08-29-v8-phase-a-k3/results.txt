@@ -32,12 +32,12 @@ B   B           50     10/150     6.7%      [1.3%, 13.3%]      4/50 = 8.0%
 Matched by construction: every quantity below is computed over PAIRS OF SINGLE RUNS.
 within = 6 pairs/row (3 within A, 3 within B).  between = 9 pairs/row (Ai vs Bj).
   stratum R (n=150)
-    share of pairs moving > 0.16 (#95 band)  within   34.9%  between   52.4%  diff 95% CI [12.4%, 22.7%]  -> EFFECT — survives Bonferroni-21 [9.4%, 25.7%]
-    mean |d|                                 within   0.312  between   0.630  diff 95% CI [0.196, 0.459]  -> EFFECT — survives Bonferroni-21 [0.131, 0.550]
-    op-point (4.5) crossing rate             within    2.4%  between    4.2%  diff 95% CI [0.2%, 4.0%]  -> NOT ESTABLISHED — nominal CI excludes 0, Bonferroni-21 [0.0%, 5.6%] does not
+    share of pairs moving > 0.16 (fixed yardstick, not an oracle floor) within   34.9%  between   52.4%  diff 95% CI [12.4%, 22.7%]  -> nominal CI excludes 0 — see the FAMILY note in 4f before quoting
+    mean |d|                                 within   0.312  between   0.630  diff 95% CI [0.196, 0.459]  -> nominal CI excludes 0 — see the FAMILY note in 4f before quoting
+    op-point (4.5) crossing rate             within    2.4%  between    4.2%  diff 95% CI [0.2%, 4.0%]  -> nominal CI excludes 0 — see the FAMILY note in 4f before quoting
   stratum B (n=50)
-    share of pairs moving > 0.16 (#95 band)  within   39.3%  between   52.9%  diff 95% CI [6.4%, 21.7%]  -> EFFECT — survives Bonferroni-21 [2.9%, 27.0%]
-    mean |d|                                 within   0.421  between   0.767  diff 95% CI [0.141, 0.590]  -> EFFECT — survives Bonferroni-21 [0.070, 0.743]
+    share of pairs moving > 0.16 (fixed yardstick, not an oracle floor) within   39.3%  between   52.9%  diff 95% CI [6.4%, 21.7%]  -> nominal CI excludes 0 — see the FAMILY note in 4f before quoting
+    mean |d|                                 within   0.421  between   0.767  diff 95% CI [0.141, 0.590]  -> nominal CI excludes 0 — see the FAMILY note in 4f before quoting
     op-point (4.5) crossing rate             within   12.7%  between   16.2%  diff 95% CI [-0.4%, 8.9%]  -> no effect above the null
 
 DEVIATIONS from PREREGISTRATION.md, reported not substituted:
@@ -55,13 +55,13 @@ DEVIATIONS from PREREGISTRATION.md, reported not substituted:
 ==============================================================================
 4b. DIRECTION -- |d| cannot tell bias from noise, and the answer is bias
 ==============================================================================
-  stratum R (n=150): mean(A-B) on k=3 means = -0.239  95% CI [-0.409, -0.080]  Bonferroni-21 [-0.523, -0.010]  -> DIRECTIONAL
+  stratum R (n=150): mean(A-B) on k=3 means = -0.239  95% CI [-0.409, -0.080]  -> directional at 95%
       rows where reordered scores LOWER 76, higher 45, unchanged 29
       arm A: rows >= op-point 4.5 at k=3: 8/150
       arm B: rows >= op-point 4.5 at k=3: 11/150
       verdicts A (reordered): {'out_of_scope': 239, 'in_scope': 101, 'harm_is_subject': 98, 'response_to_harm': 9, 'no_person_benefits': 3}
       verdicts B (as-is)    : {'out_of_scope': 194, 'harm_is_subject': 133, 'in_scope': 111, 'response_to_harm': 8, 'no_person_benefits': 4}
-  stratum B (n=50): mean(A-B) on k=3 means = -0.443  95% CI [-0.764, -0.138]  Bonferroni-21 [-0.946, +0.015]  -> directional at 95% only
+  stratum B (n=50): mean(A-B) on k=3 means = -0.443  95% CI [-0.764, -0.138]  -> directional at 95%
       rows where reordered scores LOWER 31, higher 13, unchanged 6
       arm A: rows >= op-point 4.5 at k=3: 7/50
       arm B: rows >= op-point 4.5 at k=3: 12/50
@@ -83,7 +83,7 @@ DEVIATIONS from PREREGISTRATION.md, reported not substituted:
       benefit_distribution        4.11 vs   4.30   -0.190
       change_durability           4.97 vs   5.00   -0.032
   stratum B: n=20  mean(A-B) -0.226  95% CI [-0.356, -0.106]  -> excludes 0
-  stratum POOLED (do not quote): n=41  mean(A-B) -0.235  95% CI [-0.384, -0.078]  -> excludes 0
+  POOLED n=41  mean(A-B) -0.235  — ⛔ WITHDRAWN FIGURE, no interval and no verdict: the strata cross and B is ~4.4x oversampled. Shown for traceability only.
   selection asymmetry: 16 rows unanimous in_scope under AS-IS only, 8 under REORDERED only. The dropped rows are treatment-dependent.
 
 ==============================================================================
@@ -132,6 +132,39 @@ directory. That is the defect the review named; this block is the fix.
     corpus k=3, 6,590 rows, WITHOUT it:                        A $10.27  B $54.08
     ⛔ Only run 1 of each arm is a quotable CACHE figure -- runs 2-3 re-send
        byte-identical prompts, so their 99.4% is an artifact of the design.
+
+==============================================================================
+4g. THE ESTIMATORS THE WRITE-UP QUOTED AND THIS SCRIPT DID NOT COMPUTE
+==============================================================================
+Five numbers were hand-run for the first two write-ups and cited on five
+surfaces. Correct, and un-derivable from this directory -- which is the exact
+defect 4f was added to close, left half-closed. They are computed here now.
+
+  Clopper-Pearson on the probe's 4/30: [3.7553%, 30.7218%]
+  Fisher, probe 4/30 vs AS-IS arm runs 1&2, stratum R (8/150): p = 0.1179
+  Fisher, probe 4/30 vs AS-IS arm runs 1&2, stratum B (4/50): p = 0.4648
+  ⛔ The probe used the AS-IS prompt, so only arm B is like-for-like. A
+     reordered-arm cell would compare two different prompts.
+
+  stratum R: SOURCE-clustered 95% CI [-0.410, -0.078]  (120 sources, largest 6 rows)
+  stratum B: SOURCE-clustered 95% CI [-0.747, -0.150]  (47 sources, largest 2 rows)
+
+  stratum R: median within-arm |d| 0.000   median between-arm |d| (k=3 means) 0.217
+  stratum B: median within-arm |d| 0.100   median between-arm |d| (k=3 means) 0.192
+
+  prompt identity: 42,406 -> 42,411 chars; article offset 617 -> 40,626; non-blank line multiset differs by ['---'] / nothing
+
+==============================================================================
+4h. FAMILY / MULTIPLICITY -- stated, not buried in a constant
+==============================================================================
+  This run printed 16 nominal 95% intervals.
+  ⛔ NO FAMILY WAS PRE-REGISTERED. That is the defect, and no arithmetic
+     repairs it after the fact. Read the two permutation p-values in 4f
+     against whichever family you consider honest, and note that the answer
+     CHANGES: p(R)=0.0049 clears 0.05 and 0.05/2 (the two pre-registered
+     direction tests) but NOT 0.05/16 = 0.00313. The headline is significant
+     nominally and is NOT multiplicity-robust across the full family.
+  ⛔ Do not resolve this by picking the family that keeps the result.
 
 ==============================================================================
 5. FREE -- recorded scope_verdict vs the old 'all six dims <= 2' inference

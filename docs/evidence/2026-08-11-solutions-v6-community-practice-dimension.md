@@ -129,7 +129,9 @@ grassroots-practice stories — not a modelling one.
   0.2008 is the LIBRARY STACK. See docs/evidence/2026-08-10-b650-gpu-production-stack-parity.md)*: the Gemma-3-1B student is not probe-clean across boxes (b650 vs
   gpu-server ran to |0.2008| on uplifting v7, above the #95 floor). Fine for "does
   this dimension carry signal"; **no number here is production's** without
-  re-running `scripts/verification/box_parity.py` at the threshold in question.
+  re-running `scripts/verification/box_parity.py` (the dump) and
+  **`diff_box_parity.py --threshold`** — the threshold flag lives on the diff, not the
+  dump — at the threshold in question.
 - **`content_type` is not in the splits**, so shape is a proxy throughout §1/§3
   and cannot distinguish a mandated zero from an honest one.
 - **§3's enrichment claim is about NexusMind production data and was not tested

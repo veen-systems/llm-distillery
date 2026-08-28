@@ -261,7 +261,7 @@ The genre concentrates exactly where that batch measured the worst precision:
 **Order is therefore prompt first, then active learning.** ADR-010 says prompt precision
 beats dataset size, so a targeted 2–3K set stratified above the op-point should *replace*
 the 5,271, not add to it. Oracle spend is not the constraint: cd v5's actual was $10.36
-per 8K; Gemini Batch ≈ $14.40 per 8K; a full 6,590-row re-score ≈ **$12**. The cost is
+per 8K; Gemini Batch ≈ $14.40 per 8K; a full 6,590-row re-score ≈ **$12** ⛔ *(k=1 estimate, SUPERSEDED 2026-08-29 — measured k=3 is ≈$6.9 reordered / ≈$21.7 as-is; `docs/evidence/2026-08-29-v8-phase-a-k3/`)*. The cost is
 adjudication time.
 
 **Generalises beyond this filter: an instrument built from the thing under test cannot

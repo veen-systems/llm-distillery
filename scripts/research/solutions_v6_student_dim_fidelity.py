@@ -15,7 +15,9 @@ conditional on presence. Details in docs/evidence/2026-08-11-solutions-v6-
 community-practice-dimension.md.
 
 CROSS-BOX CAVEAT (memory/b650-gpu.md). The Gemma-3-1B student is NOT probe-clean
-across boxes: b650 vs gpu-server ran to |0.2008| on uplifting v7, above the #95
+across STACKS and DEVICES (mis-named "across boxes" until 2026-08-29 -- the HOST
+term is 0.0000, 660/660 bit-identical): b650 vs gpu-server ran to |0.2008| on
+uplifting v7, which is the LIBRARY-STACK term, above the #95
 0.16 floor. That is acceptable for "does this dimension carry signal at all",
 which is not a threshold question. It is NOT acceptable for quoting any number
 here as production's -- re-run scripts/verification/box_parity.py at the

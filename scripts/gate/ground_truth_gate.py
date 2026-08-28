@@ -25,7 +25,8 @@ composition is identical.
 
 ⛔ The line here used to read "never compare scores produced on different
 machines — cross-box skew is |0.16|". Both halves were wrong and it
-contradicted this file's own line ~436. Corrected 2026-08-29 from the four-run
+contradicted the cross-box comment further down this file (search "library-stack
+skew"). Corrected 2026-08-29 from the four-run
 decomposition (docs/evidence/2026-08-10-b650-gpu-production-stack-parity.md):
 the HOST term is 0.0000 — 660/660 bit-identical across two physical machines
 once pins and device match. The real terms are the LIBRARY STACK (0.2008) and

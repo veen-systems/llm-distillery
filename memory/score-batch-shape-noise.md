@@ -268,16 +268,22 @@ strata, drawn and reported separately, never pooled:
 still a Bernoulli on a binary verdict, `1/√k` still does not apply, and k ≥ 3 still stands.
 ⛔ **Do not write "smaller than 13%".** 4/30 carries a Clopper-Pearson CI of **[3.8%, 30.7%]**
 which contains every number in the table above; Fisher's exact gives **p = 0.118**
-like-for-like and **p = 0.722** against the boundary stratum — the population an
+like-for-like and **p = 0.4648** against the like-for-like boundary cell (the earlier
+**0.722** named no cell and used a non-comparable one) — the population an
 op-point-weighted panel actually sampled. The design-weighting story is plausible and
 **indistinguishable from n=30 sampling noise**; a dismissal is a claim and this one has not
 been measured. The ~860-of-6,590 figure inherits the panel's weighting either way, and
 neither number was measured on the v7 corpus, which is a third population again.
 
-⛔ **And a fifth thing that is not noise at all, found in the same run: PROMPT POSITION.**
+⛔ **And one more thing that is not noise at all, found in the same run: PROMPT POSITION.**
+*(Deliberately un-numbered: this file and the memory index were counting the same list from
+two different bases — "a fifth" here against "a sixth" there. A hand-maintained ordinal in
+two files disagrees the moment one is edited.)*
 Moving the article from char 617 to char 40,626 of the same prompt — content-preserving to
 one `---` — shifts the score by **−0.239** on the production mix (95% CI [−0.409, −0.080];
-sign-flip permutation p=0.0049; survives Bonferroni over all 21 intervals), against a
+sign-flip permutation p=0.0049, source-clustered [−0.410, −0.078] — but ⛔ **NOT
+multiplicity-robust**: 0.0049 does not clear 0.05/16, the family the script prints, and no
+family was pre-registered), against a
 within-arm null of 0.312 mean |Δ| measured on the same rows. That is **bias, not a floor**:
 it is directional and no amount of k removes it. **Never treat a prompt edit as
 noise-equivalent because its |Δ| looks like the noise band — check the sign.**

@@ -75,9 +75,13 @@ Classify each changed file:
 | **LOW** | `memory/*` · `docs/TODO.md` · `docs/ROADMAP.md` · session files | Adversarial (+ claim-verification if numbers changed) |
 
 `docs/evidence/**` is **MEDIUM**, and **HIGH when it ships a `.py`** — added 2026-08-29,
-when an evidence directory shipped 396 lines of analysis code that the table had no row for.
-It tiered correctly only via the executable-escalation rule, which is a fallback, not a
-plan. An evidence script produces the numbers a decision is made on; it is not a document.
+when an evidence directory shipped ~550 lines of analysis code. ⚠️ **This paragraph is
+belt-and-braces, not a gap-filler**: the MEDIUM row's own catch-all (*anything matching no
+tier*) already covered the `.md`, and the executable-escalation rule below already covered
+the `.py`, so an honest reading is that the table was not broken. What it adds is that a
+reader scanning the table alone now sees the directory named — and being prose rather than a
+table row, it only half-does that. An evidence script produces the numbers a decision is
+made on; it is not a document.
 
 Pick the **highest** tier that applies. **Unmatched files are MEDIUM, not LOW** —
 silence must never read as safe. **Name every unmatched file in the report under
@@ -337,10 +341,14 @@ For each numeric or empirical claim:
 3. If it is a difference near an operating point: is it above the #95 noise
    floor? A run-to-run delta below ~0.1 near an op-point is indistinguishable
    from batch-composition noise (measured |delta| <= 0.16) and must NOT be
-   reported as an effect. Before comparing two score sets, ask what varied: the
-   HOST contributes 0.0000 (660/660 bit-identical, 2026-08-10 decomposition), so
-   "different machines" is not the question — the library STACK (0.2008) and the
-   DEVICE, CPU->CUDA (0.1956) are, and both exceed 0.16.
+   reported as an effect. Before comparing two score sets, ask what varied. The
+   host term measured 0.0000 (660/660 bit-identical) — but **with the device held
+   at CPU**, on one filter and one 660-row split, and **CUDA-to-CUDA across boxes
+   has never been measured**, which is production's own configuration. So
+   "different machines" is the wrong question, not a settled one. The terms that
+   ARE measured are the library STACK (max |Δ| 0.2008) and the DEVICE, CPU→CUDA
+   (max |Δ| 0.1956) — both maxima over 660 rows, 1 and 3 rows respectively
+   exceeding 0.16, so do not read them as typical magnitudes either.
 4. If it is a difference-of-differences or similar comparison, does it carry:
    a permutation (or cluster-aware) test, multiplicity correction, source
    clustering, AND an explicit statement of whether selection into the sample

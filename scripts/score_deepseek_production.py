@@ -278,7 +278,10 @@ def main():
     prompt_template = prompt_path.read_text(encoding="utf-8")
     global PROMPT_HASH, PROMPT_FILE
     PROMPT_HASH = hashlib.sha256(prompt_template.encode("utf-8")).hexdigest()[:12]
-    PROMPT_FILE = prompt_path.name
+    try:                                   # repo-relative, never the bare basename:
+        PROMPT_FILE = str(prompt_path.resolve().relative_to(PROJECT_ROOT))
+    except ValueError:                     # `prompt-compressed.md` names SIX different
+        PROMPT_FILE = str(prompt_path)     # files, one per filter, and .name loses which
     print(f"Prompt: {PROMPT_FILE} sha256[:12]={PROMPT_HASH}")
     print(f"Scoring with: dims={DIMENSIONS} | field={ANALYSIS_FIELD} | prompt={prompt_path.name}")
     input_path = Path(args.input)
@@ -385,7 +388,7 @@ def main():
                     # scripts/score_ollama_oracle.py writes the same two at the RECORD
                     # ROOT. Read the writer before joining outputs from both.
                     analysis["scope_verdict"] = parsed["scope_verdict"]
-                    analysis["dominant_subject"] = parsed["dominant_subject"][:200]
+                    analysis["dominant_subject"] = parsed["dominant_subject"]  # already <=200
                     analysis["filter_version"] = FILTER_VERSION
                     analysis["analyzed_by"] = args.oracle_label or f"deepseek-{args.model}"
                     # WHICH PROMPT produced this row. Mirrors ground_truth/batch_scorer.py's

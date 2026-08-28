@@ -168,7 +168,7 @@ class TestRecordWrite:
     read back off disk. Everything above this class passed while the record-write
     lines were deleted."""
 
-    def _run(self, tmp_path, monkeypatch, payload):
+    def _run(self, tmp_path, monkeypatch, payload, prompt="prompt-candidate.md"):
         art = {
             "id": "test_row_1",
             "title": "A clinic reopens",
@@ -180,6 +180,7 @@ class TestRecordWrite:
             "url": "https://example.org/a", "source": "example.org",
             "published_date": "2026-08-29", "language": "en",
         }
+        tmp_path.mkdir(parents=True, exist_ok=True)
         inp, outp = tmp_path / "in.jsonl", tmp_path / "out.jsonl"
         inp.write_text(json.dumps(art) + "\n", encoding="utf-8")
         monkeypatch.setattr(sdp, "get_deepseek_key", lambda *a, **k: "sk-test")
@@ -188,7 +189,7 @@ class TestRecordWrite:
             "score_deepseek_production.py",
             "--input", str(inp), "--output", str(outp),
             "--config", str(ROOT / "filters" / "uplifting" / "v7" / "config.yaml"),
-            "--prompt", str(ROOT / "filters" / "human_thriving" / "v8" / "prompt-candidate.md"),
+            "--prompt", str(ROOT / "filters" / "human_thriving" / "v8" / prompt),
             "--concurrency", "1",
         ])
         sdp.main()
@@ -207,20 +208,43 @@ class TestRecordWrite:
     def test_the_persisted_row_names_the_prompt_that_produced_it(self, tmp_path, monkeypatch):
         """Both arms of the 2026-08-29 two-prompt run persisted an identical
         filter_version while running DIFFERENT prompts that produced DIFFERENT
-        labels. Arm identity rested on the operator's filenames alone."""
+        labels. Arm identity rested on the operator's filenames alone.
+
+        ⚠️ The first version of this test asserted `prompt_file == "prompt-candidate.md"`
+        while `_run` only ever passed that prompt — tautological, and a mutation
+        hardcoding PROMPT_FILE survived it. It now drives BOTH prompts."""
         rec = self._run(tmp_path, monkeypatch, _v8_payload())
         analysis = rec["uplifting_analysis"]
-        assert analysis["prompt_file"] == "prompt-candidate.md"
+        # Repo-RELATIVE, not a bare basename: `prompt-compressed.md` names six
+        # different files, one per filter, and .name cannot say which.
+        assert analysis["prompt_file"].endswith("v8/prompt-candidate.md")
+        assert "filters" in analysis["prompt_file"]
         assert len(analysis["prompt_hash"]) == 12
-        assert analysis["prompt_hash"] != "unset"
 
-    def test_a_different_prompt_gives_a_different_hash(self, tmp_path, monkeypatch):
-        """The property that actually distinguishes the two arms."""
+    def test_the_two_arms_are_distinguishable_from_the_persisted_rows_alone(
+            self, tmp_path, monkeypatch):
+        """THE property the provenance stamp exists for. Transposing the two arms'
+        output files must not be undetectable: run main() under each prompt and
+        require the persisted rows to differ on both fields.
+
+        The oracle response is held IDENTICAL across the two runs on purpose — so
+        only the prompt varies, and a stamp derived from anything but the prompt
+        (a constant, the filename, the config) fails here."""
+        a = self._run(tmp_path / "a", monkeypatch, _v8_payload(),
+                      prompt="prompt-candidate.md")["uplifting_analysis"]
+        b = self._run(tmp_path / "b", monkeypatch, _v8_payload(),
+                      prompt="prompt-candidate-tail.md")["uplifting_analysis"]
+        assert a["prompt_hash"] != b["prompt_hash"]
+        assert a["prompt_file"] != b["prompt_file"]
+        # ...and everything else about the two rows is the same, which is exactly
+        # why the stamp is the only thing that can tell the arms apart.
+        assert a["filter_version"] == b["filter_version"]
+        assert a["human_wellbeing_impact"] == b["human_wellbeing_impact"]
+
+    def test_the_hash_is_of_the_prompt_CONTENT(self, tmp_path, monkeypatch):
+        """A hash of the filename would also differ between arms and would be wrong."""
         import hashlib
-        a = (ROOT / "filters/human_thriving/v8/prompt-candidate.md").read_text(encoding="utf-8")
-        b = (ROOT / "filters/human_thriving/v8/prompt-candidate-tail.md").read_text(encoding="utf-8")
-        ha = hashlib.sha256(a.encode()).hexdigest()[:12]
-        hb = hashlib.sha256(b.encode()).hexdigest()[:12]
-        assert ha != hb
+        text = (ROOT / "filters/human_thriving/v8/prompt-candidate.md").read_text(encoding="utf-8")
+        expected = hashlib.sha256(text.encode("utf-8")).hexdigest()[:12]
         rec = self._run(tmp_path, monkeypatch, _v8_payload())
-        assert rec["uplifting_analysis"]["prompt_hash"] == ha
+        assert rec["uplifting_analysis"]["prompt_hash"] == expected

@@ -27,7 +27,7 @@ CONTROL. 57 `intact` pairs also go RSS-summary -> full-article, so their delta i
 the NORMAL enrichment effect. Only a difference between the arms is evidence.
 
 #95. Batch composition alone moves a score up to |0.162| on this stack. One
-process, one box, so no cross-box skew -- but a per-pair delta under ~0.16 is not
+process, one box, one stack and one device, so neither the stack (|0.2008|) nor the device (|0.1956|) term applies; the host term is 0.0000 regardless -- but a per-pair delta under ~0.16 is not
 interpretable on its own, which is why the comparison is broken-vs-intact rather
 than broken-vs-zero.
 """

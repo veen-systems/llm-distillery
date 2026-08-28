@@ -22,7 +22,7 @@ rate is NM#306's deliverable, not this one.
 
 #95 NOISE FLOOR, and why the control matters more than the floor here. Batch
 composition alone moves a score up to |0.162| on this stack. Everything is scored
-in ONE process on ONE box, so cross-box skew (also |0.16|) does not apply, but
+in ONE process on ONE box, so library-stack skew (|0.2008|) and device skew (|0.1956|); NOT a box term -- the host contributes 0.0000 (2026-08-10 decomposition) does not apply, but
 batch position still does. A per-pair delta smaller than ~0.16 is therefore not
 interpretable on its own -- which is exactly why the comparison is
 disjoint-vs-control rather than disjoint-vs-zero.
