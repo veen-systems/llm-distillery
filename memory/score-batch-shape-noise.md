@@ -1,6 +1,6 @@
 ---
 name: score-batch-shape-noise
-description: A student score is not a function of the article alone — batch composition moves it up to 0.16, flipping 7-9% of near-boundary surfacing decisions (#95); cycles are replayable since 2026-08-03 but scores are not stable
+description: A student score is not a function of the article alone — batch composition moves it up to 0.16, flipping 7-9% of near-boundary surfacing decisions (#95); cycles are replayable since 2026-08-03 but scores are not stable. FOUR noise populations now, and the fourth is not a floor at all: human_thriving v8's scope gate is a STEP FUNCTION (13% of identical re-runs flip a binary verdict worth a median 3.75, while gate-stable rows move 0.100) — so 1/sqrt(k) averaging does not touch it and "noise floor" language misleads
 metadata:
   type: project
 ---
@@ -186,6 +186,49 @@ Records: `docs/evidence/2026-08-12-cd-v5-cross-oracle-arm-a.md` (ν = 0.436) and
 `docs/evidence/2026-08-12-cd-v5-op-point-band-followup.md` (ν₄ = 0.687).
 Harness: `scripts/research/cd_v5_arm_a_sample.py --noise-pairs` emits the
 duplicate control; `cd_v5_arm_a_analyze.py --noise-scored` measures it.
+
+## A FOURTH, and it is NOT A FLOOR — it is a step function (`human_thriving v8`, 2026-08-28)
+
+⛔ **Do not add this to the list above and pick by magnitude. It is a different SHAPE, and
+a mean \|Δ\| describes it wrongly.** Measured on the real call site with DeepSeek at
+temperature 0.3, same prompt, same 30 articles, second run — the null arm of the prompt-order
+probe (`docs/evidence/2026-08-28-v8-prompt-order-probe/`):
+
+| | value |
+|---|---|
+| rows crossing the 4.5 op-point between identical runs | **5 / 30 (17%)** |
+| rows where the scope gate (all six dimensions ≤ 2) flips | **4 / 30 (13%)** |
+| median \|Δ\| on **gate-stable** rows | **0.100** — *inside this file's 0.16* |
+| median \|Δ\| on **gate-flipped** rows | **3.750** |
+| of the 5 rows moving \|Δ\| > 1.0, gate flips | **4** |
+| of the 25 rows moving \|Δ\| ≤ 1.0, gate flips | **0** |
+
+**Mechanism.** The v8 prompt's `scope_verdict` is a binary whose consequence is *"ALL six
+dimensions 0–2"*. So the variance is not decoder jitter smeared over a dimension vector — it
+is one latent coin flip, amplified into a ~3.75 jump. The distribution is **bimodal**: on the
+87% of rows where the verdict is stable this prompt is *better* than the batch floor
+(0.100 < 0.16), and on the other 13% nothing in the 0.44–0.69 range describes it.
+
+Four consequences:
+
+1. **A mean or an SD is the wrong summary.** The whole-cohort SD is 1.44 and no row behaves
+   like 1.44. Report the mixture: P(flip) and the conditional medians.
+2. **`k = 4` averaging does NOT fix it the way cousin 3 says.** That arithmetic assumes
+   per-article normality; this is a Bernoulli on a binary verdict. What helps is a **majority
+   vote on `scope_verdict` itself**, not a mean over dimensions — untested.
+3. **It is a property of the PROMPT, not of the oracle.** Steps 1 + 2b introduced the gate;
+   `uplifting v7` has no such construct. So it cannot be inherited across prompts, in either
+   direction. ⚠️ **Gate A did not see it — it ran k=3 and averaged over exactly this.**
+4. **A k=1 v8 re-score labels ~13% of rows by a toss** — ~860 of 6,590, concentrated at the
+   boundary, which under ADR-023 is where the expensive error lives.
+
+⭐ **The general lesson, which is why this sits in this file at all: a "noise floor" presumes
+the error is additive and roughly symmetric. When a prompt contains a hard gate, that
+presumption fails and the floor language actively misleads** — it invites `1/√k` reasoning
+against a mechanism `1/√k` does not touch. **Ask what varied AND what shape it varies in.**
+
+⚠️ n = 30, k = 2, one cohort, one prompt. The 13% is a point estimate with a wide interval;
+it is enough to change the re-score design and not enough to quote as a rate.
 
 ## Related
 

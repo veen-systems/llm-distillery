@@ -4922,3 +4922,73 @@ paths WITHOUT a code span — which costs the formatting and buys the check back
 protection**: prose here quotes real files, which resolve at rung 2 or rung 4. The first
 genuinely invented example path written into `memory/` is reported as a break, and the
 reflex is to "fix" a reference that was never meant to resolve.
+
+### THE NULL ARM WAS THE RESULT — a treatment sitting inside its own control (2026-08-28)
+**Problem**: A prompt-reorder probe showed 16/30 rows moving past the #95 band and 3
+crossing the op-point. Read alone that is a damning parity failure and the change dies.
+**Root cause**: There was nothing to compare it to. Running the *same* prompt twice on the
+same 30 articles gives 16/30 and **5** crossings — the treatment is inside its own null.
+**Fix**: Never report a delta against a single baseline run when the mechanism is sampled.
+The null arm costs one extra run and it decided the question in both directions: it cleared
+the change *and* it was the only thing that could have found the instability underneath.
+⭐ Say **"no effect detectable above noise"**, never "no effect" — the instrument's
+resolution is part of the finding.
+
+### A NUMBER THAT IS REAL, CORRECT, AND ABOUT A DIFFERENT QUESTION — 99.4% cache (2026-08-28)
+**Problem**: The null arm reported a 99.4% prompt-cache hit rate. Quoting it would have
+claimed a cost saving nothing can reproduce.
+**Root cause**: It re-sent the **same 30 articles**, so the whole prompt matched — not the
+shared prefix. A corpus run sends distinct articles, where only the template caches. The
+number is arithmetically correct and answers a question nobody asked.
+**Fix**: Recorded as **unquotable** in three places rather than dropped, because a deleted
+number gets re-derived. Same treatment for the arm's 76.0% aggregate: with concurrency N the
+first N requests race and all miss, so a short run's aggregate is warm-up, not steady state.
+⭐ The generalisation: **a cache rate is a property of a RUN, so ask what varied between the
+requests before believing it** — the sibling of *establish what a source excludes*.
+
+### MY TRIAGE COUNTED THE PARENT DIRECTORY AS A SIBLING REPO (2026-08-28)
+**Problem**: Classifying 338 reference findings, I reported **137 of 156** cross-repo refs as
+matching more than one sibling repo. The real answer is **13**.
+**Root cause**: `veen-systems` is this repo's own parent *and* is re-listed as a child of the
+grandparent, so its tree contains every other repo. Every match also matched through it.
+**Fix**: Exclude the container. ⛔ The tell was not the total — **both versions summed to
+exactly 156**. *Closed accounting is not attribution*, third occurrence, and the first where
+the miscounted bucket was one I had invented five minutes earlier.
+
+### READING A NESTED SCORER FIELD AT THE ROW ROOT EMPTIES A DRAW SILENTLY (2026-08-28)
+**Problem**: A cohort sampler read `raw_weighted_average` and `stage_used` off the archive
+row root. Both are `None` on every row — they live under
+`nexus_mind_attributes.<lens>`. Every band came back empty.
+**Fix**: It **raised** instead of returning a short draw, so it cost two minutes rather than
+a corpus. That is the *make the missing case raise, never return `None`* rule paying out —
+worth recording as the rule WORKING, not only as the near miss. ⚠️ The first failure printed
+`FATAL: band 0.0-2.5 has 0 eligible` with **no denominators**, which is unactionable; the
+guard now prints the exclusion stats before it dies.
+
+### A MORE PERMISSIVE RESOLVER LAUNDERED A WRONG PATH FOR 15 DAYS (2026-08-28)
+**Problem**: `CLAUDE.md` cited ~~`ovr.news/BRAND.md`~~ (no such file). The real path is
+`ovr.news/docs/BRAND.md`. Wrong since 2026-08-13, in an always-loaded file.
+**Root cause**: The repo's own `refcheck.py` **resolved** it — rung 4 strips the sibling repo
+name and matches by *suffix*, so the basename found the real file one directory down and the
+reference reported clean. The generic extractor in `/curate`, which requires the **exact**
+path inside the sibling, caught it on the first run.
+**Fix**: Path corrected. ⭐ The keeper: **two instruments with different strictness are not
+redundant** — the looser one was silently absorbing a class of error the stricter one exists
+to find, and neither is wrong. Do not consolidate them without checking which findings die.
+⛔ **[2nd occurrence] — the first draft of THIS entry added two more unresolved references**
+(the wrong path and its bare basename, both quoted as live paths), exactly as `75f08d4` did on
+2026-08-27. **An entry about a broken reference is written in the one register that creates
+them: quoting paths as evidence.** Strike the dead one so the absence rung claims it, and
+fully qualify the live one.
+
+### THE COMMIT GUARD CANNOT READ NEGATION, AND ITS REMEDY POINTS AT --no-verify (2026-08-28)
+**Problem**: A commit was rejected for a "deploy-class word" — the words were
+**"Nothing deployed"**, in the preamble this repo puts on every session commit.
+**Root cause**: Two gaps. The word test has no negation handling; and the verifier failed a
+directory with no `config.yaml` and no `inference_hub.py` on
+`hub: cannot check — no repo_id extracted from inference_hub.py`, i.e. it derived a hard
+failure from a file it had already logged as legitimately absent.
+**Fix**: Reworded (remedy 2), **not** `--no-verify` — that override is what cost three days in
+#44. Filed as #136. ⭐ Recorded because of the *direction* of the failure: a guard that fires
+on correct messages spends operator trust, and the cheapest-looking exit is the dangerous
+one. **A false positive in a safety check is a safety problem, not an annoyance.**

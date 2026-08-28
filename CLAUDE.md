@@ -103,9 +103,11 @@ them** — each exists because something shipped broken.
   first.** A `stage1_low` row's score is an **e5 probe estimate**, not a Gemma score
   (23% of rows measured). Same shape as the length-field trap: the field exists, is
   populated, and means different things per row.
-- **Before using any source as evidence, establish what it EXCLUDES.** *(12th
-  occurrence 2026-08-28 — a corpus target measured over a census that INCLUDED the 22.1%
-  the draw forbids, the same failure with the opposite sign; 11th
+- **Before using any source as evidence, establish what it EXCLUDES.** *(13th
+  occurrence 2026-08-28 — a 99.4% cache hit measured on a run that RE-SENT THE SAME
+  ARTICLES, so it could not have returned a low one — the mirror, and the seductive
+  half: a *positive* that carried no information; 12th 2026-08-28 — a corpus target
+  measured over a census that INCLUDED the 22.1% the draw forbids; 11th
   2026-08-27 — a `git archive HEAD` baseline tree, which ships tracked files
   only, so every gitignored path read as a broken reference: 240 findings against a real
   1; 10th 2026-08-26 — a "do not trim, only surviving record" marker whose
@@ -147,7 +149,7 @@ Full details in `memory/filter-status.md`. Summary:
 
 | Filter | Version | MAE | Status |
 |--------|---------|-----|--------|
-| **uplifting** | v7 | recall 0.61 / spec 0.97 | Deployed (NO_HUB, hybrid inference). **Op-point 4.5 since 2026-08-11 (#102)**. ⚠️ **Its consumer lens (Thriving) now carries a NARROWER predicate than this scorer's name implies** — `ovr.news/BRAND.md` `a70609b`, 2026-08-13: *a process going well **for people***, excluding harm-answered-only and institution-beneficiary. #107 is scoped, not reversed: the scorer is faithfully serving a definition ovr did not publish. Binds the **v8 `human_thriving`** prompt (ADR-012's rename is now load-bearing, not hygiene) |
+| **uplifting** | v7 | recall 0.61 / spec 0.97 | Deployed (NO_HUB, hybrid inference). **Op-point 4.5 since 2026-08-11 (#102)**. ⚠️ **Its consumer lens (Thriving) now carries a NARROWER predicate than this scorer's name implies** — `ovr.news/docs/BRAND.md` `a70609b`, 2026-08-13: *a process going well **for people***, excluding harm-answered-only and institution-beneficiary. #107 is scoped, not reversed: the scorer is faithfully serving a definition ovr did not publish. Binds the **v8 `human_thriving`** prompt (ADR-012's rename is now load-bearing, not hygiene) |
 | **investment-risk** | v6 | recall 0.72 / spec 0.97 | **PAUSED 2026-08-25** (owner: Aegis is dormant). Never an ovr.news lens — its only consumer was the Aegis export, now off too. **PAUSED ≠ REMOVED**: package, HF Hub repo, Contract C and 251 days of archives all stay; un-pause = restore `pipeline.enabled_filters`, `pipeline.aegis_export.enabled` **and the `NexusMind/deploy/smoke_test_articles.jsonl` row** — ⛔ **it is THREE files, not two**: the missing fixture row failed the deploy gate closed and cost the 2026-08-25 20:03 cycle (now a unit test, `NexusMind/tests/unit/test_filter_integrity.py`). Was op-point 4.25. Decision: `docs/decisions/2026-08-25-pause-investment-risk.md` |
 | **cultural-discovery** | v5 | recall 0.59 / spec 0.98 | **LIVE.** v6's cutover failed on 2026-08-13 and was reverted, so v5 is still what scores |
 | **cultural-discovery** | v6 | (v5's) | **NOT DEPLOYED** — fixed and verified offline (`dcf2860`), never redeployed. ⚠️ **v5 ALREADY runs two-stage**: `filter_loader.py:148` sets `hybrid_class` from the PRESENCE of `inference_hybrid.py`, not from `config.yaml`, so v6 does **not** introduce probe screening — it changes the probe and threshold. The failed cutover, the rollback move and the probe numbers: `memory/filter-status.md`, `memory/cd-v6-probe-hypotheses.md` |

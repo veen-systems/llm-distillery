@@ -65,7 +65,7 @@
 > `docs/evidence/2026-08-28-refcheck-docs/`. Controls: sensitivity **33/33** before and
 > after; default run byte-identical bar the new attribution section.
 >
-> ### ⛔⛔ NEW 2026-08-28, and it outranks the corpus questions: THE v8 PROMPT IS UNSTABLE
+> ### ⛔⛔ NEW 2026-08-28 — **#135**, and it outranks the corpus questions: THE v8 PROMPT IS UNSTABLE
 > **Spend $0.12, 90 calls, 0 errors. Nothing deployed.** Probe:
 > `docs/evidence/2026-08-28-v8-prompt-order-probe/`.
 > Two runs of the **identical** prompt on the **identical** 30 articles disagree on
@@ -92,6 +92,20 @@
 > whole prompt matched, not the prefix. Never quote it as a cache result.
 > ⚠️ Before the calibration run: persist `scope_verdict` / `dominant_subject` (§3 had to
 > *infer* the gate from "all six dims ≤ 2").
+>
+> ### ▶ NEXT SESSION — start here, in this order
+> 1. **Persist `scope_verdict` + `dominant_subject`** in `scripts/score_deepseek_production.py`
+>    (#135 prerequisite — today the gate had to be *inferred* from "all six dims ≤ 2", and
+>    every candidate response to #135 needs the verdict itself). Cheap, local, no spend.
+> 2. **Phase A calibration run at k=3**, reordered prompt, on a production-mix cohort. It
+>    settles three things at once: the #135 flip rate on a real n, ADR-010 label parity for
+>    the reorder (H-V8-3, today UNRESOLVED), and a real $/article for sizing the corpus.
+>    ⚠️ Budget it off the **measured** $0.000514/article, not the plan's stale ≈$12.
+> 3. **Corpus size**, then stage on b650 + `corpus_manifest.json` (#127).
+> 4. #134 step 2 (tiering) and #136 (the commit-msg guard) — hygiene, opportunistic.
+>
+> ⚠️ **Carry in:** the archive window rolls — it was 83 files at session start and **84**
+> three hours later. Re-enumerate at draw time; never carry a count across a session.
 >
 > ### Remaining Phase 0 work, none of it blocked
 > 1. ⛔ **Corpus SIZE is the one number still unstated** — the three ruled numbers are

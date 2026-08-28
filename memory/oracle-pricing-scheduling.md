@@ -1,6 +1,6 @@
 ---
 name: oracle-pricing-scheduling
-description: Oracle cost — both rate cards verified 2026-08-24, but Gemini Batch is a price we CANNOT PAY (no .batches call site, 2026-08-25), so among IMPLEMENTED paths DeepSeek off-peak wins by 1.74x; the answer is a RATIO (DeepSeek needs input/output < 8.4, ours are 20-43), not an anchor; the real lever is the per-prompt CACHE CEILING set by where build_prompt inserts the article (1.5%-35.7%), which flips the ranking at 19-27%; Gemini AI Studio forces Prepay by 2026-10-12
+description: Oracle cost — both rate cards verified 2026-08-24, but Gemini Batch is a price we CANNOT PAY (no .batches call site, 2026-08-25), so among IMPLEMENTED paths DeepSeek off-peak wins by 1.74x; the answer is a RATIO (DeepSeek needs input/output < 8.4, ours are 20-43), not an anchor; the real lever is the per-prompt CACHE CEILING set by where build_prompt inserts the article (1.5%-35.7%), which flips the ranking at 19-27%; MEASURED 2026-08-28 on the real call site: the ceiling is REACHABLE (0.0% -> 90.2% by moving the article to the end of the template) and a cached run costs 5.3x less; Gemini AI Studio forces Prepay by 2026-10-12
 metadata:
   type: reference
 ---
@@ -260,6 +260,44 @@ DeepSeek V4 officialised mid-July 2026, introducing **peak/valley API pricing**.
 **Alternatives for context:** Gemini Flash 2.5 real-time ~$0.003–0.004/article with v5-class 8K-token prompts (the $0.001 figure from the 1.5 Flash era is stale — moved here from CLAUDE.md, 2026-07-31 audit). Gemini Batch API ~$0.0018/article (50% off, 24h async) now sits at roughly DeepSeek *peak* pricing (⛔ **that $0.0018 was never anchored** — measured 2026-08-24 it is $0.001175–$0.002127 depending on the prompt; see the banner) — so DeepSeek off-peak remains cheapest, but the gap closes if forced into peak. DeepSeek cd v5 actual: $10.36 for 8K articles, 14% cache hit (⛔ **that 14% is cd v5's structural ceiling, 16.9% — not a project constant**; nature_recovery measures 0.34% against a 3.2% ceiling).
 
 Effective mid-July 2026 with 24h advance email notice. See [[cd-v5-reference-status]] (DeepSeek-as-default-oracle precedent). Next batch job on deck: solutions v4 (ADR-020 validation case).
+
+## ✅ The ceiling is REACHABLE — measured on the real call site, 2026-08-28
+
+**#131 established the ceiling. This establishes that we can obtain it.** Evidence:
+`docs/evidence/2026-08-28-v8-prompt-order-probe/`. Spend $0.12, 90 calls, 0 errors.
+
+⛔ **A ceiling is a property of the TEMPLATE; a hit rate is a property of the RUN.** They
+were never the same claim, and #103 is the standing reminder of what it costs to verify one
+and assume the other.
+
+| `human_thriving v8` prompt | article at | ceiling | **measured cache** | $/30 rows |
+|---|---|---|---|---|
+| `prompt-candidate.md` | char 617 of 42,406 | 1.5% | **0.0%** — 30 of 30 rows at zero | $0.08 |
+| `prompt-candidate-tail.md` | just before §7 | **95.8%** | **90.2%** median, warm rows | **$0.03** |
+
+The reorder is content-preserving to one `---`. Two consequences:
+
+1. **The ceiling is very nearly realised** — 90.2% against 95.8% — so for a prompt whose
+   article sits at the end, the char-share proxy is a good estimate of the billed share, not
+   merely an order-of-magnitude bound. ⚠️ Measured for **one** prompt on **one** cohort.
+2. **Steady-state $/article at 90% cache is $0.000514** (11,569 in / 283 out, off-peak)
+   against **$0.002732** uncached — **5.3×**. On 6,590 rows: **$3.39 vs $18.00**, and it is
+   what makes k=3 ($10.16) cheaper than k=1 uncached.
+
+⛔ **Two numbers from that run that must NOT be re-quoted:**
+- **99.4%.** A second run over the **same 30 articles** matched the whole prompt, not the
+  prefix. A corpus run sends distinct articles. It is an artifact of the experiment.
+- **76.0%**, the arm's headline aggregate. With concurrency N the first N requests race and
+  all miss, so a short run's aggregate is dominated by warm-up. 4 of 30 rows were cold. The
+  per-row figure is the one that transfers — and `score_deepseek_production.py` only began
+  persisting per-row `usage` on 2026-08-28, so **no run before that date can be decomposed
+  this way.**
+
+⚠️ **Placement is a prompt change, not a config change.** ADR-010 says oracle consistency
+predicts MAE, so a reordered template needs a label-parity run before any retrain uses it.
+The 2026-08-28 probe could **not** establish parity — the effect is smaller than the oracle's
+own run-to-run noise (see `memory/score-batch-shape-noise.md`, the v8 scope-gate floor).
+**"No effect detectable above noise" is not "no effect."**
 
 ## The third option: a self-hosted oracle (#124, 2026-08-17)
 

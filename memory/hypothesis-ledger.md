@@ -186,6 +186,29 @@ its own item.** `datasets/adverse/` is a hypothesis home no index pointed at unt
 | H-UP5 | active learning on the current prompt REINFORCES the bias | ⏳ OPEN — the AL grader is the v7 oracle prompt, so it shares the defect it would audit |
 | H-UP6 | a `primary_literature` cap removes the class without collateral | ⏳ OPEN — shadow shipped, undeployed, no data |
 
+### human_thriving v8 prompt — order, cost and stability (2026-08-28, `H-V8`)
+
+Home: `docs/evidence/2026-08-28-v8-prompt-order-probe/`. Spend $0.12, 90 calls, n=30, k=1
+per arm plus one null arm. ⛔ **No parity claim is established here** — see H-V8-3.
+
+| id | claim | verdict |
+|---|---|---|
+| H-V8-1 | the v8 prompt's cache ceiling is unreachable in practice (a ceiling is not a rate) | **REFUTED** — 0.0% → **90.2%** median on warm rows against a 95.8% ceiling, on the real call site |
+| H-V8-2 | moving the article to the end is content-preserving | **CONFIRMED** — non-blank line multiset differs by one `---` (+5 chars) |
+| H-V8-3 | the reorder changes the labels | ⏳ **UNRESOLVED, and the instrument is the reason.** The treatment sits inside its own null arm (null sd 1.44 / 5 op-point flips; treatment 1.57 / 3). *"No effect detectable above noise"* ≠ *no effect* |
+| H-V8-4 | the v8 prompt is stable run-to-run at k=1 | **REFUTED** — 5/30 (17%) op-point crossings between identical runs |
+| H-V8-5 | that instability is decoder jitter | **REFUTED** — it is the **scope gate**: gate-stable rows move a median **0.100**, gate-flipped **3.750**; 4 of 5 large movers are gate flips, 0 of 25 small movers are |
+| H-V8-6 | `k=4` averaging fixes it (cousin-3 arithmetic) | ⏳ OPEN and probably **NO** — `1/√k` assumes additive symmetric error; this is a Bernoulli on a binary verdict. A majority vote on `scope_verdict` is the candidate, untested |
+| H-V8-7 | the reorder's saving pays for the k≥3 that H-V8-4 forces | **CONFIRMED (arithmetic)** — k=3 reordered $10.16 vs k=1 as-is $18.00 per 6,590 rows |
+
+⛔ **Two numbers from this run are unquotable and are recorded as such**: the null arm's
+**99.4%** cache (it re-sent identical articles, so the whole prompt matched — not the prefix)
+and the treatment's **76.0%** aggregate (warm-up dominated; 4 of 30 rows cold).
+
+⚠️ H-V8-5's gate was **inferred** from "all six dimensions ≤ 2" — `scope_verdict` and
+`dominant_subject` are not persisted by `scripts/score_deepseek_production.py`. The inference
+is clean here (0 of 25 vs 4 of 5) but persist the two fields before the calibration run.
+
 ### `solutions-v6-dimension-hypotheses.md` — `community_practice_strength` and re-weighting
 
 | id | claim | verdict |
