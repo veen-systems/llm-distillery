@@ -1,6 +1,61 @@
 # LLM Distillery - TODO
 
-## 🔵 NEXT SESSION — **the framework pin is current again; the treadmill under it is not fixed**
+## 🔵 NEXT SESSION — **v8 Phase 0 is measured; two numbers are the owner's**
+
+> **Updated 2026-08-28.** **No spend, no model, no filter, nothing deployed, and no
+> threshold or probe touched.** Changed files are `scripts/analysis/`, `docs/`, `memory/`
+> and `CLAUDE.md`. Nothing reaches a path NexusMind runs — **deploy is N/A, not skipped.**
+> Session record: `memory/project_session_2026_08_28.md`.
+>
+> ### ⛔ THE TWO OWNER DECISIONS — nothing else in Phase 0 is blocked on measurement
+> 1. **The positive base rate.** Phase 0 reserves it deliberately. Drawable production is
+>    **9.76%**; v7 was **28.22%** — enrichment **2.9×**, accidental and unstated. ⛔ *"Match
+>    production"* is the WRONG fix (ADR-003 enrichment exists because positives are rare).
+>    Pick a factor, record it, correct for it in class weighting or calibration.
+> 2. **Stage-1 aggressiveness.** ⛔ **A harder screen buys cost saving AND false-negative
+>    risk.** Today's probe routes **88.6%** to stage 2 (threshold 1.00, calibrated when
+>    MEDIUM was 4.0, never re-derived after #102), which is the only reason its FN exposure
+>    is small. If the cost saving is not needed, do not buy the risk.
+>
+> ### ✅ SETTLED — Gate 0 needs no further measurement
+> ⛔⛔ **All five targets were computed over a census INCLUDING `news.google.com` (22.1%)
+> while the same plan says in bold to exclude it.** Corrected: base rate 7.74%→**9.76%**,
+> non-Latin 7.26%→**9.76%**, median length 1,349→**1,900**, p10 84→**235**, sub-300-char
+> 30.8%→**11.9%**, class-A 0.87%→**0.70%**, pool 206,221 rows→**179,111 articles**.
+> ⭐ *"The short-form regime is under-trained"* is largely a statement about GN headline
+> echoes — real, and about a third the size recorded (21,374 articles).
+> **12th occurrence of *establish what a source excludes*, opposite sign.**
+>
+> ⭐⭐ **The corpus SHAPE, and the FN trap the owner flagged.** The corpus is **4.21×**
+> over-weighted in 5.5–10 (15.8× at 7.0–7.5, **134×** at 7.5–8.0) and thinnest at 1.5–3.5
+> (**0.43×**) — fat where the task is easy, thin where stage-2 false positives are born.
+> ⛔ **This refuted the three-region spec drafted the same day.** And the stage-1 danger is
+> the positive **MIX**, not the rate: production positives are **63.5% marginal (4.5–5.5)**,
+> the corpus's **46.8%**, so **v7's probe recall is validated on an easier population than it
+> serves — today, not hypothetically.** Spec in Phase 0: add no mass above 5.5; hold the mix
+> at 63.5/36.5; spend the freed budget on 1.5–3.5; validate FN@MEDIUM+ on a production-mix
+> cohort via `train_probe.py --recall-check-file`, never the enriched val split.
+>
+> ### ⚠️ Carry these in
+> - **The archive window ROLLS.** Now `08-14 → 08-28`, not `08-07 → 08-21`; the 236,879-row
+>   figure names a window no longer on disk. **Re-enumerate before every draw** — a draw
+>   next week is a different population, so the manifest records the window, not just counts.
+> - **The census scripts had never been runnable** (`hcv1_probe` imported, never committed).
+>   Repaired `818721f` and proven **byte-identical** against the frozen corpus. ⛔ gpu-server's
+>   `~/llm-distillery` is **not a git repo** and its prefilter is dated 2026-03-09 — it cannot
+>   run the census and never did.
+> - **#134 (new)** — `refcheck.py` leaves **167 `docs/` files unscanned**, including this
+>   plan and every ADR. Step 1 is to run it behind a `--docs` flag; ⛔ **do not guess the
+>   magnitude** and settle the frozen-vs-live tiering first, or it manufactures findings
+>   against correct history.
+>
+> ### Remaining Phase 0 work, none of it blocked
+> 1. Class-A supplement TP/FP balance, stated as a number (an FP-only supplement destroys
+>    the §5b no-regression set).
+> 2. Stage the corpus on b650 + `corpus_manifest.json` (#127) whose counts reconcile with a
+>    freshly prepared split.
+
+## 🟡 PREVIOUS — **the framework pin caught up; the treadmill under it got measured (#133 now CLOSED)**
 
 > **Updated 2026-08-27 (evening).** Two sessions in one day. **No spend, no model, no
 > filter, no scoring-path change, nothing deployed** — every changed file is `CLAUDE.md`,

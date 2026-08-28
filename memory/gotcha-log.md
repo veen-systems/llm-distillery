@@ -1,5 +1,84 @@
 # Gotcha Log
 
+## THE REPRODUCTION SCRIPT IMPORTED A MODULE THAT WAS NEVER COMMITTED (2026-08-28)
+**Problem**: `scripts/analysis/corpus_census.py` and `production_census.py` — the two
+scripts `docs/evidence/2026-08-22-uplifting-v7-corpus-provenance.md` names as its
+reproduction path, and the source of every H-UP10 number in the v8 plan — both do
+`from hcv1_probe import script_of`. `hcv1_probe.py` <!-- placeholder --> is absent from disk and from **all**
+of git history (`git log --all` returns nothing). Both die at import. The published
+numbers were correct; the path to re-derive them had never worked.
+**Root cause**: the census ran from a scratch tree that also held a scratch copy of a
+helper whose real twin was committed one file over (`prefilter_removal_probe.py:55`).
+The tree was cleaned; the import kept pointing at the copy. Nothing re-ran the scripts
+afterwards, so nothing noticed. Same family as *THE SHIPPED ARTIFACT EXITED 1 ON A CLEAN
+CLONE* (2026-08-25) and the never-committed `partB_gate.py` <!-- placeholder -->: **the artifact that was
+verified is not the artifact that shipped.**
+**Fix**: repoint the import (one line each). ⭐ **Proving it *runs* is not enough — prove
+it is the SAME INSTRUMENT**: re-run against the frozen 6,590-row corpus and diff against
+the 2026-08-22 log. Byte-identical. A frozen input is what makes that a control; any
+drift in `script_of` would have shown as a differing count. Repaired in `818721f`.
+⚠️ A static import-resolvability sweep over `scripts/` found this and nothing else local
+(15 other hits were uninstalled third-party packages, #118 territory) — and the sweep was
+itself controlled by running it against HEAD, where it flags `hcv1_probe` and nothing in
+the working tree.
+
+## AN EXCLUSION STATED IN PROSE WAS NEVER APPLIED TO THE NUMBERS (2026-08-28)
+**Problem**: v8 Phase 0's five Gate 0 corpus targets — base rate, non-Latin share, class-A
+share, median and p10 length — were all measured over a production census that **includes
+`news.google.com`**, which is 22.1% of rows. The same plan says, in bold, that GN is
+excluded from every draw. So the yardstick was measured on a population a draw is
+forbidden to sample from. Corrected, every target moves: base rate 7.74% → 9.76%
+(enrichment 3.6× → 2.9×), non-Latin 7.26% → 9.76%, median length 1,349 → 1,900, p10
+84 → 235, sub-300-char share 30.8% → 11.9%, class-A 0.87% → 0.70%.
+**Root cause**: the exclusion and the numbers live in the **same document, three
+paragraphs apart**, and each is individually correct. A rule written as prose does not
+propagate into a measurement unless someone carries it there by hand; nothing in a review
+compares a stated filter against the population a figure was actually computed over.
+**Fix**: compute every target on the drawable population and say what it excludes in the
+same breath as the number (`docs/evidence/2026-08-28-v8-phase0-drawable-population.md`).
+⭐ **Generalise: when a document states an exclusion rule, grep the same document for the
+figures it should have changed.** The tell is a number quoted near a rule that would
+have moved it.
+
+## I PRESCRIBED A CHANGE TO A DISTRIBUTION WITHOUT MEASURING THE DISTRIBUTION (2026-08-28)
+**Problem**: asked how to compose the v8 corpus, I proposed a three-region spec that
+over-samples the decision band **and** the visible band (5.5–10), reasoning from the
+known defect (#91: a harm story ranked top-6, so ranking resolution up high must be
+thin). Measured hours later, the corpus is already over-weighted **4.21×** in that band —
+15.8× at 7.0–7.5 and 134× at 7.5–8.0. The spec prescribed buying what the corpus already
+had, and would have compounded the skew that biases the probe's recall estimate.
+**Root cause**: I reasoned from a *defect* to a *cause* without measuring the shape I was
+proposing to change. The v7 percentiles I already had (p90 = 5.85, p99 = 7.15) read as
+"the top is thin" in isolation and mean the opposite once compared against production,
+where p99 is 6.10. **A tail is only thin relative to something.**
+**Fix**: histogram both sides in 0.5-wide bins with one function, and make the arithmetic
+a control rather than an assumption — a production row carries both its six dimensions
+and the scorer's stored `raw_weighted_average`, so the script asserts its own weighted
+average against the scorer's on every row and aborts on divergence (160,641 rows, max
+|Δ| 1.78e-15). Spec rewritten in `00ec806`.
+
+## A CLASS-CONDITIONAL CAVEAT THAT DOES NOT SURVIVE A CHANGE OF MIX (2026-08-28)
+**Problem**: I told the owner that enriching the corpus is safe for the Stage-1 probe
+because "the FN-rate target transfers across prevalence; the routing rate does not",
+citing ADR-023's rule that recall and specificity are conditional on the true class and
+therefore comparable across splits. The owner pushed back — *"i do not want FN again"* —
+and the pushback was right. `P(pred < threshold | y=1)` is invariant to how **common**
+positives are, but only if the distribution **within** the positive class is unchanged.
+Measured: production's positives are **63.5% marginal (4.5–5.5)**, the corpus's are
+**46.8%** — skewed 1.36× toward high-scoring, easy positives, which are not the ones a
+screen misses. So v7's probe recall was estimated on an easier positive population than
+it serves, and that is true **today**, not only of a hypothetical v8.
+**Root cause**: I applied a correct rule without checking its premise. "Conditional on
+the true class" licenses a change in the *rate* of positives, never a reshaping of the
+*class*. 3rd occurrence of the caveat-premise family (see `feedback-caveat-premise-check`
+in the auto-memory).
+**Fix**: hold the positive mix at production's 63.5/36.5 while enriching the rate;
+validate FN@MEDIUM+ on a production-mix cohort via `train_probe.py --recall-check-file`,
+never on the enriched val split. ⚠️ **What makes v7 survivable is not calibration — the
+probe routes 88.6% to Stage 2** (threshold 1.00, calibrated when MEDIUM was 4.0, never
+re-derived after #102). **A harder screen converts that slack into unrecoverable FNs**,
+so Stage-1 aggressiveness is its own decision, not a side effect of a retrain.
+
 ## A RUNG THAT COULD NOT FIRE UNDER ITS OWN HARNESS — and the assertion shape that caught it (2026-08-27)
 **Problem**: Back-porting upstream #54 (a doc-relative rung, 1b) into
 `tests/fixtures/reference-integrity/refcheck.py`. It worked in the real run. Under
