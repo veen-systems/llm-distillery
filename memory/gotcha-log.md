@@ -1,5 +1,30 @@
 # Gotcha Log
 
+## `git log --since=<BARE-DATE>` RETURNED ZERO FOR A DAY WITH FOUR COMMITS (2026-08-28)
+**Problem**: closing the session, `git log --oneline --since=2026-08-28` printed **nothing**
+on a day with four commits, all timestamped `2026-08-28 08:37`–`09:11 +0200`. Measured
+side by side, same repo, same moment:
+
+| form | commits |
+|---|---|
+| `--since=2026-08-28` | **0** |
+| `--since='2026-08-28 00:00'` | 4 |
+| `--since=midnight` | 4 |
+| `--after=2026-08-27` | 23 |
+
+**Root cause**: git's approxidate parser does not treat a bare `YYYY-MM-DD` as local
+midnight of that day. Adding an explicit time, or using `midnight`, fixes it. The exact
+boundary it *does* pick is not established here — what is established is that the bare
+form excludes commits made that day.
+**Fix**: never pass a bare date to `--since`/`--after` — use `--since='<date> 00:00'` or
+`--since=midnight`. ⭐ **The reason this is worth an entry is the DIRECTION of the error:
+it returns 0, which is indistinguishable from "nothing happened today", so it confirms a
+quiet-day story instead of contradicting it.** Same shape as the check that scanned zero
+files and reported clean (2026-08-23) and `git archive HEAD` (2026-08-27): **an instrument
+pointed at nothing produces the reassuring answer.** Caught only because I knew the count
+should be 4 and the zero contradicted a prediction I happened to hold — which is
+[[feedback-predict-the-range-first]] doing the work, on a number I was not even measuring.
+
 ## THE REPRODUCTION SCRIPT IMPORTED A MODULE THAT WAS NEVER COMMITTED (2026-08-28)
 **Problem**: `scripts/analysis/corpus_census.py` and `production_census.py` — the two
 scripts `docs/evidence/2026-08-22-uplifting-v7-corpus-provenance.md` names as its
