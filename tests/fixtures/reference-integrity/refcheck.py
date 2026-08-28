@@ -47,8 +47,35 @@ def _topic_files():
     return out
 
 
+# llm-distillery#134 (2026-08-28) — `docs/` was NEVER scanned. The check stopped exactly
+# one hop short of where it is aimed: CLAUDE.md IS scanned, so the pointer table's targets
+# are verified to exist -- but those targets are the live context an agent is ROUTED INTO,
+# and what THEY reference was unchecked. A pointer that resolves into a document full of
+# dead references is a working door into a broken room.
+#
+# ⚠️ FLAG-GATED ON PURPOSE, and it must stay that way until the tiering in #134 step 2 is
+# settled. `docs/evidence/` and (largely) `docs/decisions/` are frozen accounts of a
+# moment -- structurally identical to `memory/project_session_*.md`, which this file
+# already excludes by default with exactly that rationale. Promoting docs/ to the default
+# scan set before tiering would MANUFACTURE findings against files that are correct as
+# history, and the pressure would then be to edit the history to silence the checker,
+# which is the compression #123 forbids.
+#
+# ⛔ Step 1 is to MEASURE, so this flag deliberately takes ALL of docs/**/*.md rather than
+# a guessed live subset: the per-directory breakdown printed at the end of the run is the
+# evidence the tiering decision needs, and a subset chosen up front would decide the
+# question it was supposed to inform.
+def _docs_files():
+    if "--docs" not in _o.sys.argv:
+        return []
+    return [_o.path.relpath(f, ROOT)
+            for f in sorted(_g.glob(_o.path.join(ROOT, "docs", "**", "*.md"),
+                                    recursive=True))]
+
+
 DOCS = ["CLAUDE.md", "memory/MEMORY.md", "memory/gotcha-log.md"] \
        + _topic_files() \
+       + _docs_files() \
        + ([AUTOMEM_INDEX] if _o.path.exists(AUTOMEM_INDEX) else []) \
        if not _o.environ.get("SEED") else [_o.environ["SEED"]]
 
@@ -432,7 +459,23 @@ for doc in DOCS:
             findings.append((doc,frag,"UNRESOLVED (rungs 1-4 all run)"))
 
 print("="*96); print("STEP 4 — REFERENCE INTEGRITY"); print("="*96)
-print(f"docs scanned: {', '.join(DOCS)}   working-tree files: {len(TREE):,}   siblings found: {len(SIBS)}")
+# ⚠️ Naming every scanned file was readable at 34 and is unreadable at 202. Collapse only
+# the LISTING, never the count, and always say which flags were in effect -- a report whose
+# scan set you cannot reconstruct is the "establish what a source EXCLUDES" failure in its
+# purest form, and this instrument's own history is two widenings whose prior clean results
+# were true-but-narrow.
+_flags = [f for f in ("--sessions", "--docs") if f in sys.argv] or ["(none)"]
+if len(DOCS) <= 34:
+    print(f"docs scanned: {', '.join(DOCS)}   working-tree files: {len(TREE):,}   siblings found: {len(SIBS)}")
+else:
+    _grp = defaultdict(int)
+    for d in DOCS:
+        _grp[(os.path.dirname(os.path.relpath(d, ROOT)) or "<repo root>")
+             if not os.path.isabs(d) or not os.path.relpath(d, ROOT).startswith("..")
+             else "<outside repo>"] += 1
+    print(f"docs scanned: {len(DOCS)} files   flags: {' '.join(_flags)}   "
+          f"working-tree files: {len(TREE):,}   siblings found: {len(SIBS)}")
+    for k in sorted(_grp): print(f"    {k+'/':44s} {_grp[k]:4d}")
 print(f"\n### FINDINGS ({len(set(findings))} unique, {len(findings)} occurrences)")
 for d,f,w in sorted(set(findings)): print(f"  {d:22s} {f:50s} {w}")
 if not findings: print("  (none)")
@@ -456,3 +499,22 @@ if not identifiers: print("  (none)")
 tree_ext={p.rsplit('.',1)[-1] for p in TREE if '.' in os.path.basename(p)}
 drop=sorted(e for e in tree_ext if e not in EXT and len(e)<=12 and e.isalnum())
 print(f"\n### EXTENSIONS IN TREE NOT IN WHITELIST (dropped by the extractor)\n  {', '.join(drop[:40])}")
+
+# llm-distillery#134 step 2 needs findings attributed to a TIER, not a total. A single
+# number cannot distinguish "the live documents an agent is routed into are rotting" from
+# "frozen records name paths the world has since moved", and those want opposite responses:
+# fix the first, never edit the second. Printed for every run, so the default scan set is
+# broken out the same way and the two are comparable.
+print("\n### FINDINGS BY DIRECTORY — attribution, because a total cannot be tiered")
+_fd, _sd = defaultdict(int), defaultdict(int)
+for d, *_ in set(findings):
+    _fd[(os.path.dirname(os.path.relpath(d, ROOT)) if not os.path.isabs(d)
+         else "<outside repo>") or "<repo root>"] += 1
+for d in DOCS:
+    _sd[(os.path.dirname(os.path.relpath(d, ROOT)) if not os.path.isabs(d)
+         else "<outside repo>") or "<repo root>"] += 1
+if not findings: print("  (no findings)")
+for k in sorted(_sd):
+    if _fd[k]: print(f"  {k+'/':44s} {_fd[k]:4d} unique in {_sd[k]:4d} file(s)")
+_silent = [k for k in sorted(_sd) if not _fd[k]]
+print(f"  -- clean: {', '.join(_silent) if _silent else '(none)'}")

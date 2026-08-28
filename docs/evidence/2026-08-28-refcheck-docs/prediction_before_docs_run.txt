@@ -1,0 +1,45 @@
+Written BEFORE adding --docs and before any docs/ run. 2026-08-28.
+
+Baseline for comparison (same instrument, same tree, this session):
+  scan set          33 in-repo files + the auto-memory index
+  FINDINGS          1 unique  (memory/session-log.md narrative_risk.json,
+                    standing and deliberately left)
+  RESOLVED <rung1   406 unique / 537 occurrences
+  sensitivity       33/33 PASS
+
+Surface being added: 168 files under docs/ (top level 38, adr 26, decisions 24,
+evidence 22, the rest spread over 15 smaller dirs).  ~5x the current in-repo
+scan set, never once looked at by this instrument, and skewing older.
+
+PREDICTION — unique findings from docs/ alone:
+
+  central estimate   ~110
+  range              60 - 250
+
+Reasoning, so a hit inside the range can be judged rather than celebrated:
+  - the 2026-08-16 widening (3 -> 33 files) found 51 on first run, dominated by
+    unmarked cross-repo paths.  docs/ is 5x that surface but its documents are
+    less path-dense per file than memory/ topic files, so I do not scale 51 by 5.
+  - docs/ has never had a marking pass (`<!-- placeholder -->`, cross-repo
+    qualification), which is what took memory/ from 51 to 1.  So the raw rate
+    should look like memory/'s 2026-08-16 rate, not today's.
+  - frozen material (evidence 22, decisions 24, _archive 6) should carry a
+    HIGHER rate than live docs and be mostly non-defects: correct-as-history.
+
+  Expected split, stated so the tiering decision is not fitted after the fact:
+    live tier   (top level + adr + checklists + guides + proposals + refs)  ~60%
+    frozen tier (evidence + decisions + _archive)                            ~40%
+
+FALSIFIERS:
+  - a result under ~20 means the extractor is not reaching the new surface
+    (extension whitelist, or docs/ files unreadable), NOT that docs/ is clean.
+  - a result over ~400 means something systematic is misfiring -- most likely
+    doc-relative resolution (rung 1b) behaving differently for nested dirs such
+    as docs/adr/ and docs/evidence/reports/, which the current scan set has no
+    instance of: every file in it is at depth 1 (memory/*.md) or the repo root.
+  - EITHER WAY the number is not to be reported before the per-directory
+    breakdown is read: 240-findings-against-a-real-1 (2026-08-27) came from a
+    substitute instrument, and this one has never been pointed at nested dirs.
+
+NOTE the prediction and the measurement share an instrument and a tree, so
+agreement is consistency, not independent confirmation.

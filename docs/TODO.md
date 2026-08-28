@@ -7,15 +7,19 @@
 > and `CLAUDE.md`. Nothing reaches a path NexusMind runs — **deploy is N/A, not skipped.**
 > Session record: `memory/project_session_2026_08_28.md`.
 >
-> ### ⛔ THE TWO OWNER DECISIONS — nothing else in Phase 0 is blocked on measurement
-> 1. **The positive base rate.** Phase 0 reserves it deliberately. Drawable production is
->    **9.76%**; v7 was **28.22%** — enrichment **2.9×**, accidental and unstated. ⛔ *"Match
->    production"* is the WRONG fix (ADR-003 enrichment exists because positives are rare).
->    Pick a factor, record it, correct for it in class weighting or calibration.
-> 2. **Stage-1 aggressiveness.** ⛔ **A harder screen buys cost saving AND false-negative
->    risk.** Today's probe routes **88.6%** to stage 2 (threshold 1.00, calibrated when
->    MEDIUM was 4.0, never re-derived after #102), which is the only reason its FN exposure
->    is small. If the cost saving is not needed, do not buy the risk.
+> ### ✅ THE THREE RESERVED NUMBERS — ALL RULED 2026-08-28
+> Record with the full reasoning: **`docs/decisions/2026-08-28-v8-gate0-corpus-spec.md`**.
+> 1. **Positive base rate: 19.5%, enrichment factor 2.0× — RECORDED, not inherited.**
+>    Drawable production is **9.76%**; v7 was **28.22%** (2.9×, accidental and unstated —
+>    *that* was the defect, not the enrichment). Correct for the 2.0× downstream in class
+>    weighting or calibration. ⛔ *"Match production"* was and stays the WRONG fix (ADR-003).
+> 2. **Stage-1 aggressiveness: HOLD NEAR PASS-THROUGH.** Retrain the probe on v8 but do not
+>    screen harder — preserve today's **88.6%** routing. No stage-2 cost constraint was
+>    claimed, so the FN risk is not bought. ⚠️ v8-only; re-open only with a measured cost
+>    problem and an FN ceiling named *before* the sweep.
+> 3. **Class-A supplement: 3:1 TP:FP** (~75% harm-answered / ~25% harm-dominant), at
+>    **≥0.70%** of the corpus, sampled **above** the op-point (ADR-023). Deliberately
+>    FP-richer than §1g's ~9:1 screen, from which ⛔ no rate may be inherited anyway.
 >
 > ### ✅ SETTLED — Gate 0 needs no further measurement
 > ⛔⛔ **All five targets were computed over a census INCLUDING `news.google.com` (22.1%)
@@ -44,16 +48,34 @@
 >   Repaired `818721f` and proven **byte-identical** against the frozen corpus. ⛔ gpu-server's
 >   `~/llm-distillery` is **not a git repo** and its prefilter is dated 2026-03-09 — it cannot
 >   run the census and never did.
-> - **#134 (new)** — `refcheck.py` leaves **167 `docs/` files unscanned**, including this
->   plan and every ADR. Step 1 is to run it behind a `--docs` flag; ⛔ **do not guess the
->   magnitude** and settle the frozen-vs-live tiering first, or it manufactures findings
->   against correct history.
+> - **The archive rolled again overnight: 84 cycle files, not 83.** Re-enumerate at draw
+>   time; do not carry a count across a session boundary.
+>
+> ### ✅ #134 STEP 1 DONE — measured, nothing fixed, `docs/` still flag-gated
+> `refcheck.py --docs` added (mirrors `--sessions`). Scan set **34 → 202 files**, findings
+> **1 → 339**, of which **338 are `docs/`**. ⭐ **Above my pre-registered 60–250 range**, so
+> it was triaged before being reported: **155 unmarked cross-repo** (NexusMind 73, ovr.news
+> 25, FluxusSource 18, agent-ready-projects 16), **170 not-found**, 13 collisions/stale.
+> ⛔ **338 findings is NOT 338 defects** — template placeholders, rolling dated artefacts and
+> forward references are in there. **Confirmed real decay: `docs/README.md`, the repo's own
+> docs index, points at three `docs/agents/*.md` files that do not exist.**
+> ⛔ **FROZEN tier behaved exactly as #134 predicted** — its 71 not-found are dominated by
+> 2025-11 Qwen-era decision records that are *correct as history*. Keep it flag-gated.
+> Step 2 (tiering) is proposed, **not applied**. Evidence + prediction + log:
+> `docs/evidence/2026-08-28-refcheck-docs/`. Controls: sensitivity **33/33** before and
+> after; default run byte-identical bar the new attribution section.
 >
 > ### Remaining Phase 0 work, none of it blocked
-> 1. Class-A supplement TP/FP balance, stated as a number (an FP-only supplement destroys
->    the §5b no-regression set).
+> 1. ⛔ **Corpus SIZE is the one number still unstated** — the three ruled numbers are
+>    fractions and cannot size a draw. v7 was 6,590 rows (re-scored as a seed, plan step 1);
+>    the supplement is on top of that. It is a **spend** decision, so name the prompt before
+>    quoting any $/article (`memory/oracle-pricing-scheduling.md`, #131).
 > 2. Stage the corpus on b650 + `corpus_manifest.json` (#127) whose counts reconcile with a
->    freshly prepared split.
+>    freshly prepared split. ⚠️ **The class-A supplement's 3:1 split cannot be computed
+>    mechanically** — TP vs FP on a harm-shaped row is an editorial judgement (§1g
+>    adjudicated 158 by hand). Plan for an adjudication pass, not a rule.
+> 3. #134 step 2: settle the live/frozen tiering, then a marking pass, then promote — ⛔ **not
+>    in one change**, or the default run's 1-finding baseline is lost.
 
 ## 🟡 PREVIOUS — **the framework pin caught up; the treadmill under it got measured (#133 now CLOSED)**
 

@@ -1,0 +1,1526 @@
+================================================================================================
+STEP 4 — REFERENCE INTEGRITY
+================================================================================================
+docs scanned: 202 files   flags: --docs   working-tree files: 1,398   siblings found: 20
+    <outside repo>/                                 1
+    <repo root>/                                    1
+    docs/                                          38
+    docs/_archive/                                  1
+    docs/_archive/guides/                           5
+    docs/adr/                                      26
+    docs/agents/                                    7
+    docs/agents/examples/                           1
+    docs/agents/templates/                          7
+    docs/articles/                                  5
+    docs/articles/nature_recovery_v4_evidence/      1
+    docs/checklists/                                4
+    docs/decisions/                                24
+    docs/evidence/                                 22
+    docs/evidence/2026-08-24-deepseek-token-counts/    1
+    docs/evidence/adr/                              6
+    docs/evidence/articles/                         1
+    docs/evidence/reports/                          2
+    docs/experiments/                               1
+    docs/guides/                                    4
+    docs/ideas/                                     4
+    docs/proposals/                                 2
+    docs/references/                                1
+    docs/reports/                                   3
+    docs/templates/                                 2
+    memory/                                        32
+
+### FINDINGS (339 unique, 431 occurrences)
+  docs/ARCHITECTURE.md   probe/embedding_probe_e5small.pkl                  COLLISION: 8 local matches
+  docs/BINARY_GATE_STANDARD.md data/blocked/blocked_<ts>.jsonl                    STALE PLACEHOLDER MARKER (the path resolves)
+  docs/BINARY_GATE_STANDARD.md data/prefiltered_out/<gate>/flagged_<ts>_<n>.jsonl STALE PLACEHOLDER MARKER (the path resolves)
+  docs/BINARY_GATE_STANDARD.md docs/CHANGE_REQUEST_NEXUSMIND.md                   COLLISION: 2 local matches
+  docs/BINARY_GATE_STANDARD.md filters/common/binary_gate.py                      UNRESOLVED (rungs 1-4 all run)
+  docs/BINARY_GATE_STANDARD.md scripts/main.py                                    UNRESOLVED (rungs 1-4 all run)
+  docs/BINARY_GATE_STANDARD.md src/preprocessing/commerce.py                      UNRESOLVED (rungs 1-4 all run)
+  docs/BINARY_GATE_STANDARD.md src/preprocessing/obituary.py                      UNRESOLVED (rungs 1-4 all run)
+  docs/BINARY_GATE_STANDARD.md src/preprocessing/violence.py                      UNRESOLVED (rungs 1-4 all run)
+  docs/BLOCK_LEDGER_SPEC.md content_items_20260823_161050.jsonl                UNRESOLVED (rungs 1-4 all run)
+  docs/BLOCK_LEDGER_SPEC.md contracts/article-record.schema.json               UNRESOLVED (rungs 1-4 all run)
+  docs/BLOCK_LEDGER_SPEC.md scripts/main.py                                    UNRESOLVED (rungs 1-4 all run)
+  docs/BLOCK_LEDGER_SPEC.md scripts/verify_block_ledger.py                     UNRESOLVED (rungs 1-4 all run)
+  docs/BLOCK_LEDGER_SPEC.md src/archiving/block_ledger.py                      UNRESOLVED (rungs 1-4 all run)
+  docs/BLOCK_LEDGER_SPEC.md summarize.ts                                       UNRESOLVED (rungs 1-4 all run)
+  docs/CALIBRATION_1K_INSTRUCTIONS.md calibration_analysis_report.md                     UNRESOLVED (rungs 1-4 all run)
+  docs/CALIBRATION_1K_INSTRUCTIONS.md calibration_log.txt                                UNRESOLVED (rungs 1-4 all run)
+  docs/CALIBRATION_1K_INSTRUCTIONS.md calibration_stats.json                             UNRESOLVED (rungs 1-4 all run)
+  docs/COMMERCE_PREFILTER_SLM_DESIGN.md ../filters/sustainability_technology/v3/prefilter.py UNRESOLVED (rungs 1-4 all run)
+  docs/COMMERCE_PREFILTER_SLM_DESIGN.md ./PREFILTER_HARMONIZATION_TASK.md                  UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACTS_CHECK_ARTEFACT.md contract-check.timer                               UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACTS_CHECK_ARTEFACT.md last_run.json                                      UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACTS_CHECK_ARTEFACT.md main.py                                            UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACTS_CHECK_ARTEFACT.md ops/pipeline-atlas-refresh.service                 UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACTS_CHECK_ARTEFACT.md validate.ts                                        UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACTS_CHECK_ARTEFACT.md validate/validate_contract_a.py                    UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACTS_CHECK_ARTEFACT.md validate_production_contract.py                    UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACTS_CHECK_ARTEFACT.md verify_decision_log.py                             UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACTS_PLAN.md NexusMind/data/contract_check.json                 UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACTS_PLAN.md OUTPUT_CONTRACT.md                                 UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACTS_PLAN.md RenkumSpot/.../content-validation.test.ts          UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACTS_PLAN.md aggregator-health-report.json                      UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACTS_PLAN.md art/sanderveen.art/scripts/validate_content.py     UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACTS_PLAN.md check_framework_drift.py                           UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACTS_PLAN.md check_render.py                                    UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACTS_PLAN.md collection_20260811_080541/content_items_20260811_080540.jsonl UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACTS_PLAN.md commerce.py                                        UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACTS_PLAN.md config/schemas/source_schema.yaml                  UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACTS_PLAN.md content_item.py                                    UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACTS_PLAN.md contracts/CHANGELOG.md                             UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACTS_PLAN.md contracts/fluxussource-output.schema.json          UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACTS_PLAN.md db-articles.ts                                     UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACTS_PLAN.md deploy/gpu-server/main.py                          UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACTS_PLAN.md deploy/install.sh                                  UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACTS_PLAN.md deploy_filters.sh                                  UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACTS_PLAN.md docs/CONFIGURATION.md                              UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACTS_PLAN.md full_text_fetcher.py                               UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACTS_PLAN.md last_run.json                                      UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACTS_PLAN.md logger.ts                                          UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACTS_PLAN.md logs_summary.schema.json                           UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACTS_PLAN.md main.py                                            UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACTS_PLAN.md model/chain.yml                                    UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACTS_PLAN.md ops/gen_views.py                                   UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACTS_PLAN.md package.json                                       UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACTS_PLAN.md publish.yml                                        UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACTS_PLAN.md published-date.test.ts                             UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACTS_PLAN.md reference/contracts.html                           UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACTS_PLAN.md run_verifies.sh                                    UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACTS_PLAN.md scratchpad/CONTRACTS-BRIEF.md                      UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACTS_PLAN.md scripts/validate_production_contract.py            UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACTS_PLAN.md smoke_architecture.py                              UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACTS_PLAN.md src/lib/published-date.ts                          UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACTS_PLAN.md tests/contract-validation.test.ts                  UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACTS_PLAN.md tests/unit/test_aegis_export.py                    UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACTS_PLAN.md validate.ts                                        UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACTS_PLAN.md validate/validate_contract_a.py                    UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACTS_PLAN.md validate_contract_a.py                             UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACTS_PLAN.md validate_output.py                                 UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACTS_PLAN.md validate_production_contract.py                    UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACT_A_REALIZATION.md config/app.yaml                                    UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACT_A_REALIZATION.md contracts/CHANGELOG.md                             UNRESOLVED (rungs 1-4 all run)
+  docs/CONTRACT_A_REALIZATION.md full_text_fetcher.py                               UNRESOLVED (rungs 1-4 all run)
+  docs/DATA_ARCHIVE_PROPOSAL.md MANIFEST.json                                      UNRESOLVED (rungs 1-4 all run)
+  docs/DECISIONS.md      filters/sustainability_tech_deployment/v3/DEPLOYMENT_STRATEGY.md UNRESOLVED (rungs 1-4 all run)
+  docs/FILTER_PLAYBOOK.md canonical-lens.ts                                  UNRESOLVED (rungs 1-4 all run)
+  docs/FILTER_PLAYBOOK.md deploy_filters.sh                                  UNRESOLVED (rungs 1-4 all run)
+  docs/FILTER_PLAYBOOK.md probe/embedding_probe_e5small.pkl                  COLLISION: 8 local matches
+  docs/FILTER_PLAYBOOK.md production_scorer.py                               UNRESOLVED (rungs 1-4 all run)
+  docs/HUMAN_THRIVING_V8_PLAN.md BRAND.md                                           UNRESOLVED (rungs 1-4 all run)
+  docs/HUMAN_THRIVING_V8_PLAN.md article-analysis.ts                                UNRESOLVED (rungs 1-4 all run)
+  docs/HUMAN_THRIVING_V8_PLAN.md corpus_manifest.json                               UNRESOLVED (rungs 1-4 all run)
+  docs/HUMAN_THRIVING_V8_PLAN.md curated-images.ts                                  UNRESOLVED (rungs 1-4 all run)
+  docs/HUMAN_THRIVING_V8_PLAN.md deploy_filters.sh                                  UNRESOLVED (rungs 1-4 all run)
+  docs/HUMAN_THRIVING_V8_PLAN.md filters/human_thriving/v8/ground_truth_gate.json   UNRESOLVED (rungs 1-4 all run)
+  docs/HUMAN_THRIVING_V8_PLAN.md image-query-generator.ts                           UNRESOLVED (rungs 1-4 all run)
+  docs/HUMAN_THRIVING_V8_PLAN.md manual-suppression.ts                              UNRESOLVED (rungs 1-4 all run)
+  docs/HUMAN_THRIVING_V8_PLAN.md model/adapter_config.json                          COLLISION: 13 local matches
+  docs/HUMAN_THRIVING_V8_PLAN.md model/adapter_model.safetensors                    COLLISION: 8 local matches
+  docs/HUMAN_THRIVING_V8_PLAN.md types.ts                                           ovr.news: 2 matches for types.ts
+  docs/IDEAS.md          filters/uplifting/v5/inference_hybrid.py           UNRESOLVED (rungs 1-4 all run)
+  docs/IDEAS.md          research/embedding_vs_finetuning/prepare_head_tail_data.py UNRESOLVED (rungs 1-4 all run)
+  docs/PLAN_head_tail_deployment.md filters/sustainability_technology/v2/base_scorer.py UNRESOLVED (rungs 1-4 all run)
+  docs/PLAN_head_tail_deployment.md filters/uplifting/v5/README.md                     UNRESOLVED (rungs 1-4 all run)
+  docs/README.md         agents/dimensional-regression-qa-agent.md          UNRESOLVED (rungs 1-4 all run)
+  docs/README.md         agents/filter-harmonizer.md                        UNRESOLVED (rungs 1-4 all run)
+  docs/README.md         agents/oracle-calibration-agent.md                 UNRESOLVED (rungs 1-4 all run)
+  docs/RUNBOOK.md        deploy/smoke_test_articles.jsonl                   UNRESOLVED (rungs 1-4 all run)
+  docs/RUNBOOK.md        deploy_filters.sh                                  UNRESOLVED (rungs 1-4 all run)
+  docs/RUNBOOK.md        model/adapter_model.safetensors                    COLLISION: 8 local matches
+  docs/RUNBOOK.md        production_scorer.py                               UNRESOLVED (rungs 1-4 all run)
+  docs/SUSTAINABILITY_TECH_V3_COMPLETE.md filters/sustainability_tech_deployment/v3/config.yaml UNRESOLVED (rungs 1-4 all run)
+  docs/SUSTAINABILITY_TECH_V3_COMPLETE.md filters/sustainability_tech_deployment/v3/prompt-compressed.md UNRESOLVED (rungs 1-4 all run)
+  docs/SYSTEM_OVERVIEW.md docs/agents/filter-harmonizer.md                   UNRESOLVED (rungs 1-4 all run)
+  docs/SYSTEM_OVERVIEW.md filters/investment-risk/v3/README.md               UNRESOLVED (rungs 1-4 all run)
+  docs/SYSTEM_OVERVIEW.md filters/sustainability_tech_innovation/v1/FINAL_PROMPT_COMPARISON.md UNRESOLVED (rungs 1-4 all run)
+  docs/SYSTEM_OVERVIEW.md filters/sustainability_tech_innovation/v1/PROMPT_STRUCTURE_COMPARISON.md UNRESOLVED (rungs 1-4 all run)
+  docs/SYSTEM_OVERVIEW.md historical_dataset_19690101_20251115.jsonl         UNRESOLVED (rungs 1-4 all run)
+  docs/SYSTEM_OVERVIEW.md master_dataset_20251010_20251114.jsonl             UNRESOLVED (rungs 1-4 all run)
+  docs/TODO.md           NexusMind/scripts/research/nm188_mojibake_derived.py UNRESOLVED (rungs 1-4 all run)
+  docs/TODO.md           article-record.schema.json                         UNRESOLVED (rungs 1-4 all run)
+  docs/TODO.md           blocked_20260824_130550.jsonl                      UNRESOLVED (rungs 1-4 all run)
+  docs/TODO.md           config/app.yaml                                    UNRESOLVED (rungs 1-4 all run)
+  docs/TODO.md           content_aggregator.py                              UNRESOLVED (rungs 1-4 all run)
+  docs/TODO.md           content_items_20260823_161050.jsonl                UNRESOLVED (rungs 1-4 all run)
+  docs/TODO.md           corpus_manifest.json                               UNRESOLVED (rungs 1-4 all run)
+  docs/TODO.md           corroboration.ts                                   UNRESOLVED (rungs 1-4 all run)
+  docs/TODO.md           date_parser.py                                     UNRESOLVED (rungs 1-4 all run)
+  docs/TODO.md           deploy/gpu-server/main.py                          UNRESOLVED (rungs 1-4 all run)
+  docs/TODO.md           deploy/smoke_test_articles.jsonl                   UNRESOLVED (rungs 1-4 all run)
+  docs/TODO.md           deploy_filters.sh                                  UNRESOLVED (rungs 1-4 all run)
+  docs/TODO.md           display_ranking.py                                 UNRESOLVED (rungs 1-4 all run)
+  docs/TODO.md           docs/article_record_status.yaml                    UNRESOLVED (rungs 1-4 all run)
+  docs/TODO.md           domain_mappings.yaml                               UNRESOLVED (rungs 1-4 all run)
+  docs/TODO.md           filtered_20260826_051337.jsonl                     UNRESOLVED (rungs 1-4 all run)
+  docs/TODO.md           filters/uplifting/v7/inference_hub.py              UNRESOLVED (rungs 1-4 all run)
+  docs/TODO.md           flagged_20260826_031106_485.jsonl                  UNRESOLVED (rungs 1-4 all run)
+  docs/TODO.md           full_text_fetcher.py                               UNRESOLVED (rungs 1-4 all run)
+  docs/TODO.md           gpu_client.py                                      UNRESOLVED (rungs 1-4 all run)
+  docs/TODO.md           logo300.png                                        UNRESOLVED (rungs 1-4 all run)
+  docs/TODO.md           main.py                                            UNRESOLVED (rungs 1-4 all run)
+  docs/TODO.md           memory/open-threads.md                             UNRESOLVED (rungs 1-4 all run)
+  docs/TODO.md           ordering_effect.py                                 UNRESOLVED (rungs 1-4 all run)
+  docs/TODO.md           output_schema.json                                 UNRESOLVED (rungs 1-4 all run)
+  docs/TODO.md           robust_feed_parser.py                              UNRESOLVED (rungs 1-4 all run)
+  docs/TODO.md           rss_russian.yaml                                   UNRESOLVED (rungs 1-4 all run)
+  docs/TODO.md           scripts/contract_check.py                          UNRESOLVED (rungs 1-4 all run)
+  docs/TODO.md           scripts/main.py                                    UNRESOLVED (rungs 1-4 all run)
+  docs/TODO.md           scripts/stamp_census.py                            UNRESOLVED (rungs 1-4 all run)
+  docs/TODO.md           scripts/verify_block_ledger.py                     UNRESOLVED (rungs 1-4 all run)
+  docs/TODO.md           src/archiving/block_ledger.py                      UNRESOLVED (rungs 1-4 all run)
+  docs/TODO.md           src/scoring/gpu_client.py                          UNRESOLVED (rungs 1-4 all run)
+  docs/TODO.md           stamp_census.py                                    UNRESOLVED (rungs 1-4 all run)
+  docs/TODO.md           sync_backup.sh                                     UNRESOLVED (rungs 1-4 all run)
+  docs/TODO.md           tdm_opt_outs.json                                  UNRESOLVED (rungs 1-4 all run)
+  docs/TODO.md           threshold_sweep.json                               UNRESOLVED (rungs 1-4 all run)
+  docs/TODO.md           v6/config.yaml                                     COLLISION: 4 local matches
+  docs/TODO.md           verify_block_ledger.py                             UNRESOLVED (rungs 1-4 all run)
+  docs/_archive/README.md deploy_filters.sh                                  UNRESOLVED (rungs 1-4 all run)
+  docs/_archive/guides/getting-started.md ../CURRENT_TASK.md                                 UNRESOLVED (rungs 1-4 all run)
+  docs/_archive/guides/getting-started.md ../OPEN_QUESTIONS.md                               UNRESOLVED (rungs 1-4 all run)
+  docs/_archive/guides/getting-started.md ../PROJECT_OVERVIEW.md                             UNRESOLVED (rungs 1-4 all run)
+  docs/_archive/guides/getting-started.md ../decisions/2025-11-08-local-model-selection.md   UNRESOLVED (rungs 1-4 all run)
+  docs/_archive/guides/getting-started.md ../decisions/2025-11-09-class-imbalance-strategy.md UNRESOLVED (rungs 1-4 all run)
+  docs/_archive/guides/getting-started.md ../decisions/2025-11-09-content-truncation-strategy.md UNRESOLVED (rungs 1-4 all run)
+  docs/_archive/guides/getting-started.md ../decisions/2025-11-09-model-output-format.md     UNRESOLVED (rungs 1-4 all run)
+  docs/_archive/guides/ground-truth-generation.md ../../ground_truth/README.md                       UNRESOLVED (rungs 1-4 all run)
+  docs/_archive/guides/ground-truth-generation.md docs/guides/qwen-finetuning-guide.md               UNRESOLVED (rungs 1-4 all run)
+  docs/_archive/guides/ground-truth-generation.md ground_truth/secrets.ini                           UNRESOLVED (rungs 1-4 all run)
+  docs/_archive/guides/ground-truth-generation.md prompts/uplifting.md                               UNRESOLVED (rungs 1-4 all run)
+  docs/_archive/guides/qwen-finetuning-guide.md ../CURRENT_TASK.md                                 UNRESOLVED (rungs 1-4 all run)
+  docs/_archive/guides/remote-sync-guide.md deploy_filters.sh                                  UNRESOLVED (rungs 1-4 all run)
+  docs/adr/001-moderate-correlation-acceptable.md sandbox/sustainability_technology_v1_calibration/analysis_summary.json UNRESOLVED (rungs 1-4 all run)
+  docs/adr/002-modern-prompt-format.md filters/sustainability_technology/v1/prompt-compressed.md UNRESOLVED (rungs 1-4 all run)
+  docs/adr/004-universal-noise-prefilter.md datasets/curation/sustainability_tech_review/prefilter_gap_analysis.md UNRESOLVED (rungs 1-4 all run)
+  docs/adr/006-hybrid-inference-pipeline.md filters/uplifting/v5/inference_hybrid.py           UNRESOLVED (rungs 1-4 all run)
+  docs/adr/006-hybrid-inference-pipeline.md probe/embedding_probe.pkl                          UNRESOLVED (rungs 1-4 all run)
+  docs/adr/007-adapter-format-and-deployment.md model/README.md                                    COLLISION: 10 local matches
+  docs/adr/012-lens-aligned-filter-naming.md types.ts                                           ovr.news: 2 matches for types.ts
+  docs/adr/017-inter-oracle-mae-as-distillation-floor.md scripts/compare_github_models.py                   UNRESOLVED (rungs 1-4 all run)
+  docs/adr/017-inter-oracle-mae-as-distillation-floor.md scripts/three_way_comparison.json                  UNRESOLVED (rungs 1-4 all run)
+  docs/adr/018-prefilter-shape-harmonization.md memory/feedback-regex-ignorecase-trap.md           UNRESOLVED (rungs 1-4 all run)
+  docs/adr/019-per-category-exclusion-overrides.md filters/foresight/v1/prefilter.py                  UNRESOLVED (rungs 1-4 all run)
+  docs/adr/021-ground-truth-gate.md memory/feedback-oracle-bias-vs-noise.md            UNRESOLVED (rungs 1-4 all run)
+  docs/adr/022-stamp-always-single-gate.md scripts/main.py                                    UNRESOLVED (rungs 1-4 all run)
+  docs/adr/TEMPLATE.md   NNN-slug.md                                        UNRESOLVED (rungs 1-4 all run)
+  docs/adr/draft-020-extended-oracle-calibration.md B_falsepos_verdict.md                              UNRESOLVED (rungs 1-4 all run)
+  docs/agents/AI_AUGMENTED_WORKFLOW.md docs/SESSION_STATE.md                              UNRESOLVED (rungs 1-4 all run)
+  docs/agents/AI_AUGMENTED_WORKFLOW.md sandbox/README.md                                  UNRESOLVED (rungs 1-4 all run)
+  docs/agents/AI_AUGMENTED_WORKFLOW.md scripts/prepare_training_data.py                   UNRESOLVED (rungs 1-4 all run)
+  docs/agents/FILTER_CHECKLIST.md filter-harmonizer.md                               UNRESOLVED (rungs 1-4 all run)
+  docs/agents/FILTER_CHECKLIST.md filters/investment-risk/v2/prompt-compressed.md    UNRESOLVED (rungs 1-4 all run)
+  docs/agents/FILTER_CHECKLIST.md filters/sustainability_tech_deployment/v3/prompt-compressed.md UNRESOLVED (rungs 1-4 all run)
+  docs/agents/FILTER_HARMONIZATION_GUIDE.md ../../ARCHITECTURE.md                              UNRESOLVED (rungs 1-4 all run)
+  docs/agents/FILTER_HARMONIZATION_GUIDE.md docs/FILTER_DEVELOPMENT.md                         UNRESOLVED (rungs 1-4 all run)
+  docs/agents/FILTER_HARMONIZATION_GUIDE.md docs/agents/filter-harmonizer.md                   UNRESOLVED (rungs 1-4 all run)
+  docs/agents/FILTER_HARMONIZATION_GUIDE.md filters/investment-risk/v2/prompt-compressed.md    UNRESOLVED (rungs 1-4 all run)
+  docs/agents/FILTER_HARMONIZATION_GUIDE.md filters/sustainability_tech_deployment/v3/prompt-compressed.md UNRESOLVED (rungs 1-4 all run)
+  docs/agents/FILTER_HARMONIZATION_GUIDE.md filters/sustainability_tech_innovation/v1/prompt-compressed.md UNRESOLVED (rungs 1-4 all run)
+  docs/agents/README.md  docs/SESSION_STATE.md                              UNRESOLVED (rungs 1-4 all run)
+  docs/agents/README_FILTER_HARMONIZER.md filter-harmonizer.md                               UNRESOLVED (rungs 1-4 all run)
+  docs/agents/agent-operations.md docs/PROJECT_OVERVIEW.md                           UNRESOLVED (rungs 1-4 all run)
+  docs/agents/agent-operations.md docs/SESSION_STATE.md                              UNRESOLVED (rungs 1-4 all run)
+  docs/agents/agent-operations.md docs/decisions/2025-11-09-dimensional-regression-training.md UNRESOLVED (rungs 1-4 all run)
+  docs/agents/agent-operations.md docs/decisions/YYYY-MM-DD-title.md                 UNRESOLVED (rungs 1-4 all run)
+  docs/agents/agent-operations.md docs/guides/dimensional-regression-qa-agent.md     UNRESOLVED (rungs 1-4 all run)
+  docs/agents/agent-operations.md reports/uplifting_oracle_calibration.md            UNRESOLVED (rungs 1-4 all run)
+  docs/agents/filter-development-guide.md DEPLOYMENT.md                                      UNRESOLVED (rungs 1-4 all run)
+  docs/agents/filter-development-guide.md filters/cultural_discovery/v3/calibration_report.md UNRESOLVED (rungs 1-4 all run)
+  docs/agents/filter-development-guide.md filters/sustainability_technology/v1/prompt-compressed.md UNRESOLVED (rungs 1-4 all run)
+  docs/agents/templates/filter-package-validation-agent.md filters/uplifting/v4/release_report.md             UNRESOLVED (rungs 1-4 all run)
+  docs/agents/templates/model-evaluation-agent.md sandbox/analysis_scripts/evaluate_model.py         UNRESOLVED (rungs 1-4 all run)
+  docs/agents/templates/oracle-calibration-agent.md calibration_labels.jsonl                           UNRESOLVED (rungs 1-4 all run)
+  docs/agents/templates/prompt-calibration-agent.md calibration_labeled.jsonl                          UNRESOLVED (rungs 1-4 all run)
+  docs/agents/templates/prompt-calibration-agent.md calibration_sample_expected.json                   UNRESOLVED (rungs 1-4 all run)
+  docs/agents/templates/repository-hygiene-agent.md reports/repository_hygiene_YYYY-MM-DD.md           UNRESOLVED (rungs 1-4 all run)
+  docs/articles/README.md percolation-in-similarity-clustering-pitch.md      UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/2025-11-08-local-model-selection.md docs/model_inference.md                            UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/2025-11-08-local-model-selection.md docs/model_training.md                             UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/2025-11-08-local-model-selection.md models/README.md                                   UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/2025-11-08-local-model-selection.md reports/oracle_model_recommendation.md             UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/2025-11-09-class-imbalance-strategy.md docs/CURRENT_TASK.md                               UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/2025-11-09-class-imbalance-strategy.md scripts/consolidate_tech_deployment_labels.py      UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/2025-11-09-class-imbalance-strategy.md scripts/prepare_training_data.py                   UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/2025-11-09-model-output-format.md filters/sustainability_tech_deployment/v1/config.yaml UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/2025-11-09-model-output-format.md prepare_training_data_tech_deployment.py           UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/2025-11-09-model-output-format.md scripts/prepare_training_data_tech_deployment.py   UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/2025-11-10-model-selection-qwen-1.5b.md docs/guides/gpu-training-guide.md                  UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/2025-11-10-model-selection-qwen-1.5b.md docs/guides/qwen-finetuning-guide.md               UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/2025-11-10-model-selection-qwen-1.5b.md filters/uplifting/v1/training_metadata.json        UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/2025-11-12-dimensional-regression-training.md scripts/prepare_training_data.py                   UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/2025-11-12-generic-training-data-preparation.md filters/sustainability_tech_deployment/v1/config.yaml UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/2025-11-12-generic-training-data-preparation.md scripts/prepare_training_data.py                   UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/2025-11-12-generic-training-data-preparation.md scripts/prepare_training_data_tech_deployment.py   UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/2025-11-12-generic-training-data-preparation.md scripts/prepare_training_data_uplifting.py         UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/2025-11-13-post-filter-architecture.md scripts/postfilter.py                              UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/2025-11-13-post-filter-architecture.md scripts/test_postfilter.py                         UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/2025-11-13-prompt-calibration-before-batch-labeling.md docs/workflows/prompt-calibration.md               UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/2025-11-13-prompt-calibration-before-batch-labeling.md filters/sustainability_tech_deployment/v1/examples.md UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/2025-11-13-prompt-calibration-before-batch-labeling.md filters/sustainability_tech_deployment/v1/prompt-compressed.md UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/2025-11-13-prompt-calibration-before-batch-labeling.md sandbox/analysis_scripts/create_calibration_sample.py UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/2025-11-13-regression-only-student-models.md filters/sustainability_tech_deployment/v1/test_evaluation.json UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/2025-11-13-regression-only-student-models.md filters/sustainability_tech_deployment/v1/training_metadata.json UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/2025-11-13-remove-tier-classification-from-oracle.md scripts/prepare_training_data.py                   UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/2025-11-13-semi-automatic-model-evaluation.md train_and_evaluate.sh                              UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/2025-11-14-calibration-validation-split.md filters/sustainability_tech_deployment/v1/calibration_report.md UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/2025-11-14-calibration-validation-split.md filters/sustainability_tech_deployment/v1/calibration_report_fresh.md UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/2025-11-14-calibration-validation-split.md filters/sustainability_tech_deployment/v1/calibration_report_v2.md UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/2025-11-15-pivot-to-sustainability-tech-innovation.md filters/sustainability_tech_deployment/v2/release_report.md UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/2026-08-05-tdm-opt-out-training-data.md robots.txt                                         UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/2026-08-05-tdm-opt-out-training-data.md tdm_opt_outs.json                                  UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/2026-08-14-contract-a-envelope.md rss_aggregator.py                                  UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/2026-08-14-contract-a-envelope.md scripts/backfill-published-date-tz.ts              UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/2026-08-14-contract-a-envelope.md tests/published-date-write-boundary.test.ts        UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/2026-08-14-contract-a-envelope.md validate_production_contract.py                    UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/2026-08-25-pause-investment-risk.md contracts/nexusmind-aegis-export.schema.json       UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/2026-08-25-pause-investment-risk.md deploy/smoke_test_articles.jsonl                   UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/2026-08-25-pause-investment-risk.md deploy/systemd/nexusmind.env                       UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/2026-08-25-pause-investment-risk.md deploy_filters.sh                                  UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/2026-08-25-pause-investment-risk.md ordering_effect.py                                 UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/2026-08-25-pause-investment-risk.md scripts/export_aegis_narrative.py                  UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/2026-08-26-prefiltered-out-retention.md flagged_20260826_031106_485.jsonl                  UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/2026-08-26-prefiltered-out-retention.md sync_backup.sh                                     UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/2026-08-28-v8-gate0-corpus-spec.md corpus_manifest.json                               UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/README.md YYYY-MM-DD-title-in-kebab-case.md                  UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/README.md deploy/smoke_test_articles.jsonl                   UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/README.md robots.txt                                         UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/framework-adoption-history.md AbsentRepo/scripts/nothing.py                      UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/framework-adoption-history.md NexusMind/scripts/research/nm188_mojibake_derived.py UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/framework-adoption-history.md coordination.md                                    UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/framework-adoption-history.md curate.md                                          UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/framework-adoption-history.md docs/GUIDE.md                                      UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/framework-adoption-history.md docs/claim-audit-sample-2026-08-13.md              UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/framework-adoption-history.md install-global-skills.sh                           UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/framework-adoption-history.md oldpkg/foo.py                                      UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/framework-adoption-history.md project-file.md                                    UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/framework-adoption-history.md release.md                                         UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/framework-adoption-history.md templates/coordination.md                          UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/framework-adoption-history.md templates/curate.md                                UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/framework-adoption-history.md templates/gotcha-log.md                            UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/framework-adoption-history.md templates/hypothesis-log.md                        UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/framework-adoption-history.md templates/project-file.md                          UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/framework-adoption-history.md templates/release.md                               UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/framework-adoption-history.md templates/review-changes.md                        UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/framework-adoption-history.md templates/test-verify-memory.md                    UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/framework-adoption-history.md tests/lint/skill-sync.sh                           UNRESOLVED (rungs 1-4 all run)
+  docs/decisions/framework-adoption-history.md update-drift.md                                    UNRESOLVED (rungs 1-4 all run)
+  docs/evidence/2026-08-09-cross-box-parity-uplifting-v7.md model/adapter_model.safetensors                    COLLISION: 8 local matches
+  docs/evidence/2026-08-10-b650-gpu-production-stack-parity.md pyvenv.cfg                                         UNRESOLVED (rungs 1-4 all run)
+  docs/evidence/2026-08-10-uplifting-v7-op-point-4.5-VERIFIED.md investment_risk/filtered_20260811_124058.jsonl     UNRESOLVED (rungs 1-4 all run)
+  docs/evidence/2026-08-10-uplifting-v7-op-point-4.5-VERIFIED.md uplifting/filtered_20260811_123954.jsonl           UNRESOLVED (rungs 1-4 all run)
+  docs/evidence/2026-08-11-solutions-v6-community-practice-dimension.md production_scorer.py                               UNRESOLVED (rungs 1-4 all run)
+  docs/evidence/2026-08-12-cd-v5-cross-oracle-arm-a.md cd_v5_deepseek_merged_for_training.jsonl           UNRESOLVED (rungs 1-4 all run)
+  docs/evidence/2026-08-23-article-record-instrument-audit.md ARTICLE_RECORD.md                                  UNRESOLVED (rungs 1-4 all run)
+  docs/evidence/2026-08-23-article-record-instrument-audit.md deploy/gpu-server/main.py                          UNRESOLVED (rungs 1-4 all run)
+  docs/evidence/2026-08-23-article-record-instrument-audit.md docs/article_record_status.yaml                    UNRESOLVED (rungs 1-4 all run)
+  docs/evidence/2026-08-23-article-record-instrument-audit.md scripts/main.py                                    UNRESOLVED (rungs 1-4 all run)
+  docs/evidence/2026-08-23-article-record-instrument-audit.md scripts/stamp_census.py                            UNRESOLVED (rungs 1-4 all run)
+  docs/evidence/2026-08-23-article-record-instrument-audit.md src/preprocessing/content_quality.py               UNRESOLVED (rungs 1-4 all run)
+  docs/evidence/2026-08-23-article-record-instrument-audit.md src/preprocessing/image_analysis.py                UNRESOLVED (rungs 1-4 all run)
+  docs/evidence/2026-08-23-article-record-instrument-audit.md src/scoring/primary_literature_cap.py              UNRESOLVED (rungs 1-4 all run)
+  docs/evidence/2026-08-23-article-record-instrument-audit.md title_affinity.py                                  UNRESOLVED (rungs 1-4 all run)
+  docs/evidence/2026-08-23-article-record-instrument-audit.md uplifting/filtered_20260823_164812.jsonl           UNRESOLVED (rungs 1-4 all run)
+  docs/evidence/2026-08-24-deepseek-token-counts/README.md nature_recovery_v3_deepseek.jsonl                  UNRESOLVED (rungs 1-4 all run)
+  docs/evidence/2026-08-24-deepseek-token-counts/README.md nr_v3_batch_input.jsonl                            UNRESOLVED (rungs 1-4 all run)
+  docs/evidence/2026-08-28-v8-phase0-drawable-population.md corpus_manifest.json                               UNRESOLVED (rungs 1-4 all run)
+  docs/evidence/2026-08-28-v8-phase0-drawable-population.md hcv1_probe.py                                      UNRESOLVED (rungs 1-4 all run)
+  docs/evidence/README.md claims.md                                          UNRESOLVED (rungs 1-4 all run)
+  docs/evidence/README.md freelance/grants/nlnet-commons-fund-2026-resubmit/application.md UNRESOLVED (rungs 1-4 all run)
+  docs/evidence/adr/nexusmind-ADR-001-cross-filter-score-normalization.md filters/cultural-discovery/v4/base_scorer.py       UNRESOLVED (rungs 1-4 all run)
+  docs/evidence/adr/nexusmind-ADR-001-cross-filter-score-normalization.md filters/sustainability_technology/v3/base_scorer.py UNRESOLVED (rungs 1-4 all run)
+  docs/evidence/adr/nexusmind-ADR-018-normalization-safety-valve.md src/scoring/production_scorer.py                   UNRESOLVED (rungs 1-4 all run)
+  docs/evidence/adr/ovr-news-ADR-029-chief-editor-layer.md ./ADR-025-brand-identity.md                        UNRESOLVED (rungs 1-4 all run)
+  docs/evidence/adr/ovr-news-ADR-029-chief-editor-layer.md ./ADR-028-title-dedup.md                           UNRESOLVED (rungs 1-4 all run)
+  docs/evidence/adr/ovr-news-ADR-029-chief-editor-layer.md dedup.ts                                           UNRESOLVED (rungs 1-4 all run)
+  docs/evidence/adr/ovr-news-ADR-029-chief-editor-layer.md editor-config.json                                 UNRESOLVED (rungs 1-4 all run)
+  docs/evidence/adr/ovr-news-ADR-029-chief-editor-layer.md pipeline.ts                                        UNRESOLVED (rungs 1-4 all run)
+  docs/evidence/adr/ovr-news-ADR-029-chief-editor-layer.md rules/story-dedup.ts                               UNRESOLVED (rungs 1-4 all run)
+  docs/evidence/adr/ovr-news-ADR-029-chief-editor-layer.md src/lib/data/editor/chief-editor.ts                UNRESOLVED (rungs 1-4 all run)
+  docs/evidence/adr/ovr-news-ADR-029-chief-editor-layer.md src/lib/data/editor/types.ts                       UNRESOLVED (rungs 1-4 all run)
+  docs/evidence/adr/ovr-news-ADR-037-llm-editorial-review.md ./ADR-029-chief-editor-layer.md                    UNRESOLVED (rungs 1-4 all run)
+  docs/evidence/adr/ovr-news-ADR-037-llm-editorial-review.md ./ADR-035-pipeline-quality-agent.md                UNRESOLVED (rungs 1-4 all run)
+  docs/evidence/adr/ovr-news-ADR-037-llm-editorial-review.md scheduled_summarize.sh                             UNRESOLVED (rungs 1-4 all run)
+  docs/evidence/adr/ovr-news-ADR-038-lens-taxonomy-refactor.md ./ADR-025-brand-identity-signs-of-life.md          UNRESOLVED (rungs 1-4 all run)
+  docs/evidence/adr/ovr-news-ADR-038-lens-taxonomy-refactor.md ./ADR-037-llm-editorial-review.md                  UNRESOLVED (rungs 1-4 all run)
+  docs/evidence/adr/ovr-news-ADR-038-lens-taxonomy-refactor.md docs/BRAND.md                                      UNRESOLVED (rungs 1-4 all run)
+  docs/evidence/adr/ovr-news-ADR-038-lens-taxonomy-refactor.md src/config.ts                                      UNRESOLVED (rungs 1-4 all run)
+  docs/evidence/adr/ovr-news-ADR-038-lens-taxonomy-refactor.md src/lib/data/editor/prompts.ts                     UNRESOLVED (rungs 1-4 all run)
+  docs/evidence/adr/ovr-news-ADR-038-lens-taxonomy-refactor.md src/lib/data/filters.ts                            UNRESOLVED (rungs 1-4 all run)
+  docs/evidence/hypothesis-log-excerpts.md ensure-ollama.sh                                   UNRESOLVED (rungs 1-4 all run)
+  docs/guides/filter-creation-workflow.md datasets/foresight/screening/seed_positives.jsonl  UNRESOLVED (rungs 1-4 all run)
+  docs/nature_recovery_v4_DEPLOY_COMPLETION.md deploy/smoke_test_articles.jsonl                   UNRESOLVED (rungs 1-4 all run)
+  docs/nature_recovery_v4_RUNBOOK.md gate_report.json                                   UNRESOLVED (rungs 1-4 all run)
+  docs/nature_recovery_v4_plan.md merge_nr_v4_final.py                               UNRESOLVED (rungs 1-4 all run)
+  docs/nature_recovery_v4_plan.md scratchpad/nr_v4_pilot_select.py                   UNRESOLVED (rungs 1-4 all run)
+  docs/normalization-deploy-hardening-plan.md deploy_filters.sh                                  UNRESOLVED (rungs 1-4 all run)
+  docs/normalization-deploy-hardening-plan.md model/generation_config.json                       UNRESOLVED (rungs 1-4 all run)
+  docs/proposals/contract-a-redesign.md content_aggregator.py                              UNRESOLVED (rungs 1-4 all run)
+  docs/proposals/contract-a-redesign.md content_item.py                                    UNRESOLVED (rungs 1-4 all run)
+  docs/proposals/contract-a-redesign.md full_text_fetcher.py                               UNRESOLVED (rungs 1-4 all run)
+  docs/proposals/contract-a-redesign.md validate_production_contract.py                    UNRESOLVED (rungs 1-4 all run)
+  docs/reports/filter_harmonization_report_2025-11-17.md filters/investment-risk/v2/prompt-compressed.md    UNRESOLVED (rungs 1-4 all run)
+  docs/reports/filter_harmonization_report_2025-11-17.md filters/sustainability_tech_innovation/v1/prompt-compressed.md UNRESOLVED (rungs 1-4 all run)
+  docs/reports/postfilter_verification_2025-11-17.md filters/investment-risk/v3/postfilter.py           UNRESOLVED (rungs 1-4 all run)
+  docs/reports/postfilter_verification_2025-11-17.md filters/sustainability_tech_innovation/v1/postfilter.py UNRESOLVED (rungs 1-4 all run)
+  docs/templates/ADR-TEMPLATE.md ../adr/001-title.md                                UNRESOLVED (rungs 1-4 all run)
+  docs/templates/ADR-TEMPLATE.md ../decisions/YYYY-MM-DD-title.md                   UNRESOLVED (rungs 1-4 all run)
+  docs/templates/ADR-TEMPLATE.md path/to/file.py                                    UNRESOLVED (rungs 1-4 all run)
+  docs/templates/screening-filter-template.md filters/cultural-discovery/v2/screening_filter.py  UNRESOLVED (rungs 1-4 all run)
+  memory/session-log.md  narrative_risk.json                                UNRESOLVED (rungs 1-4 all run)
+
+### RESOLVED BELOW RUNG 1 (811 unique, 1029 occurrences) — not defects, shown so a wrong twin is visible
+  /home/jeroen/.claude/projects/-home-jeroen-repos-veen-systems-llm-distillery/memory/MEMORY.md deploy_to_nexusmind.sh                       [rung2] -> scripts/deploy_to_nexusmind.sh
+  /home/jeroen/.claude/projects/-home-jeroen-repos-veen-systems-llm-distillery/memory/MEMORY.md docs/ARTICLE_RECORD_REGISTER.md              [rung4] -> NexusMind/docs/ARTICLE_RECORD_REGISTER.md
+  /home/jeroen/.claude/projects/-home-jeroen-repos-veen-systems-llm-distillery/memory/MEMORY.md docs/article_record_status.yaml              [rung4] -> NexusMind/docs/article_record_status.yaml
+  /home/jeroen/.claude/projects/-home-jeroen-repos-veen-systems-llm-distillery/memory/MEMORY.md feedback-a-dismissal-is-a-claim.md           [rung5] -> claude auto-memory
+  /home/jeroen/.claude/projects/-home-jeroen-repos-veen-systems-llm-distillery/memory/MEMORY.md feedback-a-marker-is-a-claim.md              [rung5] -> claude auto-memory
+  /home/jeroen/.claude/projects/-home-jeroen-repos-veen-systems-llm-distillery/memory/MEMORY.md feedback-articulating-is-not-applying.md     [rung5] -> claude auto-memory
+  /home/jeroen/.claude/projects/-home-jeroen-repos-veen-systems-llm-distillery/memory/MEMORY.md feedback-bare-issue-number-resolves-locally.md [rung5] -> claude auto-memory
+  /home/jeroen/.claude/projects/-home-jeroen-repos-veen-systems-llm-distillery/memory/MEMORY.md feedback-caveat-premise-check.md             [rung5] -> claude auto-memory
+  /home/jeroen/.claude/projects/-home-jeroen-repos-veen-systems-llm-distillery/memory/MEMORY.md feedback-check-must-be-specific.md           [rung5] -> claude auto-memory
+  /home/jeroen/.claude/projects/-home-jeroen-repos-veen-systems-llm-distillery/memory/MEMORY.md feedback-claim-requires-verify.md            [rung5] -> claude auto-memory
+  /home/jeroen/.claude/projects/-home-jeroen-repos-veen-systems-llm-distillery/memory/MEMORY.md feedback-closed-accounting-is-not-attribution.md [rung5] -> claude auto-memory
+  /home/jeroen/.claude/projects/-home-jeroen-repos-veen-systems-llm-distillery/memory/MEMORY.md feedback-conservative-oracle-better.md       [rung5] -> claude auto-memory
+  /home/jeroen/.claude/projects/-home-jeroen-repos-veen-systems-llm-distillery/memory/MEMORY.md feedback-diff-before-cross-repo-sync.md      [rung5] -> claude auto-memory
+  /home/jeroen/.claude/projects/-home-jeroen-repos-veen-systems-llm-distillery/memory/MEMORY.md feedback-enumeration-is-not-inventory.md     [rung5] -> claude auto-memory
+  /home/jeroen/.claude/projects/-home-jeroen-repos-veen-systems-llm-distillery/memory/MEMORY.md feedback-hand-built-population.md            [rung5] -> claude auto-memory
+  /home/jeroen/.claude/projects/-home-jeroen-repos-veen-systems-llm-distillery/memory/MEMORY.md feedback-investigate-names-the-method.md     [rung5] -> claude auto-memory
+  /home/jeroen/.claude/projects/-home-jeroen-repos-veen-systems-llm-distillery/memory/MEMORY.md feedback-multi-agent-review-default.md       [rung5] -> claude auto-memory
+  /home/jeroen/.claude/projects/-home-jeroen-repos-veen-systems-llm-distillery/memory/MEMORY.md feedback-noise-floor-per-population.md       [rung5] -> claude auto-memory
+  /home/jeroen/.claude/projects/-home-jeroen-repos-veen-systems-llm-distillery/memory/MEMORY.md feedback-nothing-verifies-an-estimate.md     [rung5] -> claude auto-memory
+  /home/jeroen/.claude/projects/-home-jeroen-repos-veen-systems-llm-distillery/memory/MEMORY.md feedback-oracle-bias-vs-noise.md             [rung5] -> claude auto-memory
+  /home/jeroen/.claude/projects/-home-jeroen-repos-veen-systems-llm-distillery/memory/MEMORY.md feedback-oracle-not-ground-truth.md          [rung5] -> claude auto-memory
+  /home/jeroen/.claude/projects/-home-jeroen-repos-veen-systems-llm-distillery/memory/MEMORY.md feedback-oracle-selection-criteria.md        [rung5] -> claude auto-memory
+  /home/jeroen/.claude/projects/-home-jeroen-repos-veen-systems-llm-distillery/memory/MEMORY.md feedback-plain-answers.md                    [rung5] -> claude auto-memory
+  /home/jeroen/.claude/projects/-home-jeroen-repos-veen-systems-llm-distillery/memory/MEMORY.md feedback-predict-the-range-first.md          [rung5] -> claude auto-memory
+  /home/jeroen/.claude/projects/-home-jeroen-repos-veen-systems-llm-distillery/memory/MEMORY.md feedback-probe-training-data.md              [rung5] -> claude auto-memory
+  /home/jeroen/.claude/projects/-home-jeroen-repos-veen-systems-llm-distillery/memory/MEMORY.md feedback-prove-the-bar-is-reachable.md       [rung5] -> claude auto-memory
+  /home/jeroen/.claude/projects/-home-jeroen-repos-veen-systems-llm-distillery/memory/MEMORY.md feedback-rate-needs-population.md            [rung5] -> claude auto-memory
+  /home/jeroen/.claude/projects/-home-jeroen-repos-veen-systems-llm-distillery/memory/MEMORY.md feedback-regex-ignorecase-trap.md            [rung5] -> claude auto-memory
+  /home/jeroen/.claude/projects/-home-jeroen-repos-veen-systems-llm-distillery/memory/MEMORY.md feedback-relay-marks-its-gloss.md            [rung5] -> claude auto-memory
+  /home/jeroen/.claude/projects/-home-jeroen-repos-veen-systems-llm-distillery/memory/MEMORY.md feedback-sample-carries-its-design-weighting.md [rung5] -> claude auto-memory
+  /home/jeroen/.claude/projects/-home-jeroen-repos-veen-systems-llm-distillery/memory/MEMORY.md feedback-scorer-always-rest.md               [rung5] -> claude auto-memory
+  /home/jeroen/.claude/projects/-home-jeroen-repos-veen-systems-llm-distillery/memory/MEMORY.md feedback-session-close-ritual.md             [rung5] -> claude auto-memory
+  /home/jeroen/.claude/projects/-home-jeroen-repos-veen-systems-llm-distillery/memory/MEMORY.md feedback-verified-artifact-is-the-shipped-one.md [rung5] -> claude auto-memory
+  /home/jeroen/.claude/projects/-home-jeroen-repos-veen-systems-llm-distillery/memory/MEMORY.md feedback-verify-call-path.md                 [rung5] -> claude auto-memory
+  /home/jeroen/.claude/projects/-home-jeroen-repos-veen-systems-llm-distillery/memory/MEMORY.md feedback-window-is-part-of-a-source.md       [rung5] -> claude auto-memory
+  /home/jeroen/.claude/projects/-home-jeroen-repos-veen-systems-llm-distillery/memory/MEMORY.md nexusmind-cleanup.service                    [rung4] -> NexusMind/deploy/systemd/nexusmind-cleanup.service
+  /home/jeroen/.claude/projects/-home-jeroen-repos-veen-systems-llm-distillery/memory/MEMORY.md project-standalone-outlets-direction.md      [rung5] -> claude auto-memory
+  /home/jeroen/.claude/projects/-home-jeroen-repos-veen-systems-llm-distillery/memory/MEMORY.md reference-github-push.md                     [rung5] -> claude auto-memory
+  /home/jeroen/.claude/projects/-home-jeroen-repos-veen-systems-llm-distillery/memory/MEMORY.md reference-nexusmind-data-sources.md          [rung5] -> claude auto-memory
+  /home/jeroen/.claude/projects/-home-jeroen-repos-veen-systems-llm-distillery/memory/MEMORY.md reference-sadalsuud-pipeline-chain.md        [rung5] -> claude auto-memory
+  /home/jeroen/.claude/projects/-home-jeroen-repos-veen-systems-llm-distillery/memory/MEMORY.md scripts/verify_block_ledger.py               [rung4] -> NexusMind/scripts/verify_block_ledger.py
+  /home/jeroen/.claude/projects/-home-jeroen-repos-veen-systems-llm-distillery/memory/MEMORY.md stamp_census.py                              [rung4] -> NexusMind/scripts/stamp_census.py
+  CLAUDE.md              NexusMind/config/app.yaml                    [rung4] -> NexusMind/config/app.yaml
+  CLAUDE.md              NexusMind/contracts/article-record.schema.json [rung4] -> NexusMind/contracts/article-record.schema.json
+  CLAUDE.md              NexusMind/deploy/smoke_test_articles.jsonl   [rung4] -> NexusMind/deploy/smoke_test_articles.jsonl
+  CLAUDE.md              NexusMind/docs/ARTICLE_RECORD.md             [rung4] -> NexusMind/docs/ARTICLE_RECORD.md
+  CLAUDE.md              NexusMind/docs/ARTICLE_RECORD_REGISTER.md    [rung4] -> NexusMind/docs/ARTICLE_RECORD_REGISTER.md
+  CLAUDE.md              NexusMind/scripts/stamp_census.py            [rung4] -> NexusMind/scripts/stamp_census.py
+  CLAUDE.md              NexusMind/tests/unit/test_filter_integrity.py [rung4] -> NexusMind/tests/unit/test_filter_integrity.py
+  CLAUDE.md              nexusmind-cleanup.service                    [unit] -> NexusMind/deploy/systemd/nexusmind-cleanup.service
+  CLAUDE.md              nexusmind.service                            [unit] -> NexusMind/deploy/systemd/nexusmind.service
+  CLAUDE.md              ovr.news/BRAND.md                            [rung4] -> ovr.news/docs/BRAND.md
+  CLAUDE.md              refcheck.py                                  [rung2] -> tests/fixtures/reference-integrity/refcheck.py
+  CLAUDE.md              resave_adapter.py                            [rung2] -> scripts/deployment/resave_adapter.py
+  docs/ARCHITECTURE.md   ../CLAUDE.md                                 [rung1b] -> CLAUDE.md
+  docs/ARCHITECTURE.md   ROADMAP.md                                   [rung1b] -> docs/ROADMAP.md
+  docs/ARCHITECTURE.md   TODO.md                                      [rung1b] -> docs/TODO.md
+  docs/ARCHITECTURE.md   adr/006-hybrid-inference-pipeline.md         [rung1b] -> docs/adr/006-hybrid-inference-pipeline.md
+  docs/ARCHITECTURE.md   adr/007-adapter-format-and-deployment.md     [rung1b] -> docs/adr/007-adapter-format-and-deployment.md
+  docs/ARCHITECTURE.md   adr/README.md                                [rung1b] -> docs/adr/README.md
+  docs/ARCHITECTURE.md   filter_base_scorer.py                        [rung2] -> filters/common/filter_base_scorer.py
+  docs/ARCHITECTURE.md   guides/filter-creation-workflow.md           [rung1b] -> docs/guides/filter-creation-workflow.md
+  docs/ARCHITECTURE.md   hybrid_scorer.py                             [rung2] -> filters/common/hybrid_scorer.py
+  docs/ARCHITECTURE.md   model_loading.py                             [rung2] -> filters/common/model_loading.py
+  docs/ARCHITECTURE.md   resave_adapter.py                            [rung2] -> scripts/deployment/resave_adapter.py
+  docs/BINARY_GATE_STANDARD.md V2_DESIGN.md                                 [rung2] -> filters/common/commerce_prefilter/docs/V2_DESIGN.md
+  docs/BINARY_GATE_STANDARD.md docs/compare_commerce.py                     [rung2] -> filters/common/commerce_prefilter/docs/compare_commerce.py
+  docs/BINARY_GATE_STANDARD.md validation/panel_audit.py                    [rung2] -> filters/common/obituary_detector/validation/panel_audit.py
+  docs/BLOCK_LEDGER_SPEC.md CONTRACTS_PLAN.md                            [rung1b] -> docs/CONTRACTS_PLAN.md
+  docs/CALIBRATION_1K_INSTRUCTIONS.md analyze_calibration_1k.py                    [rung2] -> scripts/analyze_calibration_1k.py
+  docs/CALIBRATION_1K_INSTRUCTIONS.md calibrate_oracle_1k.py                       [rung2] -> scripts/calibrate_oracle_1k.py
+  docs/COMMERCE_PREFILTER_SLM_DESIGN.md ./ARCHITECTURE.md                            [rung1b] -> docs/ARCHITECTURE.md
+  docs/CONTRACTS_CHECK_ARTEFACT.md augur-daily.timer                            [unit] -> augur/scripts/systemd/augur-daily.timer
+  docs/CONTRACTS_CHECK_ARTEFACT.md augur/scripts/wait_for_edh.sh                [rung4] -> augur/scripts/wait_for_edh.sh
+  docs/CONTRACTS_CHECK_ARTEFACT.md data/data_quality_report.json                [rung3] -> runtime state
+  docs/CONTRACTS_CHECK_ARTEFACT.md data/last_run.json                           [rung3] -> runtime state
+  docs/CONTRACTS_CHECK_ARTEFACT.md deploy/gpu-server/requirements.txt           [rung4] -> NexusMind/deploy/gpu-server/requirements.txt
+  docs/CONTRACTS_CHECK_ARTEFACT.md docs/OUTPUT_CONTRACT.md                      [rung4] -> FluxusSource/docs/OUTPUT_CONTRACT.md
+  docs/CONTRACTS_CHECK_ARTEFACT.md energydatahub/utils/data_quality.py          [rung4] -> energydatahub/utils/data_quality.py
+  docs/CONTRACTS_CHECK_ARTEFACT.md nexusmind-contract-check.service             [rung4] -> NexusMind/deploy/systemd/nexusmind-contract-check.service
+  docs/CONTRACTS_CHECK_ARTEFACT.md nexusmind-contract-check.timer               [unit] -> NexusMind/deploy/systemd/nexusmind-contract-check.timer
+  docs/CONTRACTS_CHECK_ARTEFACT.md pipeline-atlas/model/chain.yml               [rung4] -> pipeline-atlas/model/chain.yml
+  docs/CONTRACTS_CHECK_ARTEFACT.md scripts/validate_production_contract.py      [rung4] -> NexusMind/scripts/validate_production_contract.py
+  docs/CONTRACTS_CHECK_ARTEFACT.md validate_production_contract.py              [rung4] -> NexusMind/scripts/validate_production_contract.py
+  docs/CONTRACTS_PLAN.md FluxusSource/scripts/validate_output.py      [rung4] -> FluxusSource/scripts/validate_output.py
+  docs/CONTRACTS_PLAN.md NexusMind/scripts/deploy_filters.sh          [rung4] -> NexusMind/scripts/deploy_filters.sh
+  docs/CONTRACTS_PLAN.md NexusMind/scripts/validate_production_contract.py [rung4] -> NexusMind/scripts/validate_production_contract.py
+  docs/CONTRACTS_PLAN.md NexusMind/validate/validate_contract_a.py    [rung4] -> NexusMind/validate/validate_contract_a.py
+  docs/CONTRACTS_PLAN.md augur-daily.timer                            [unit] -> augur/scripts/systemd/augur-daily.timer
+  docs/CONTRACTS_PLAN.md augur/scripts/wait_for_edh.sh                [rung4] -> augur/scripts/wait_for_edh.sh
+  docs/CONTRACTS_PLAN.md config/schemas/output_schema.json            [rung4] -> FluxusSource/config/schemas/output_schema.json
+  docs/CONTRACTS_PLAN.md data/data_quality_report.json                [rung3] -> runtime state
+  docs/CONTRACTS_PLAN.md data/last_run.json                           [rung3] -> runtime state
+  docs/CONTRACTS_PLAN.md data/raw/content_items_20260814_080752.jsonl [rung3] -> runtime state
+  docs/CONTRACTS_PLAN.md data/source_states.json                      [rung3] -> runtime state
+  docs/CONTRACTS_PLAN.md energydatahub/scripts/detect_schema_drift.py [rung4] -> energydatahub/scripts/detect_schema_drift.py
+  docs/CONTRACTS_PLAN.md energydatahub/utils/data_quality.py          [rung4] -> energydatahub/utils/data_quality.py
+  docs/CONTRACTS_PLAN.md install.sh                                   [rung4] -> NexusMind/deploy/install.sh
+  docs/CONTRACTS_PLAN.md last_run.json                                [rung4] -> NexusMind/data/last_run.json
+  docs/CONTRACTS_PLAN.md llm-distillery/scripts/deploy_to_nexusmind.sh [rung1-self] -> scripts/deploy_to_nexusmind.sh
+  docs/CONTRACTS_PLAN.md nexusmind-contract-check.service             [unit] -> NexusMind/deploy/systemd/nexusmind-contract-check.service
+  docs/CONTRACTS_PLAN.md nexusmind-contract-check.timer               [unit] -> NexusMind/deploy/systemd/nexusmind-contract-check.timer
+  docs/CONTRACTS_PLAN.md nexusmind.service                            [rung4] -> NexusMind/deploy/systemd/nexusmind.service
+  docs/CONTRACTS_PLAN.md output_schema.json                           [rung4] -> FluxusSource/config/schemas/output_schema.json
+  docs/CONTRACTS_PLAN.md ovr.news/src/lib/data/validate.ts            [rung4] -> ovr.news/src/lib/data/validate.ts
+  docs/CONTRACTS_PLAN.md pipeline-atlas/ops/make_snapshot.py          [rung4] -> pipeline-atlas/ops/make_snapshot.py
+  docs/CONTRACTS_PLAN.md run_verifies.sh                              [rung4] -> pipeline-atlas/ops/run_verifies.sh
+  docs/CONTRACTS_PLAN.md scripts/validate_production_contract.py      [rung4] -> NexusMind/scripts/validate_production_contract.py
+  docs/CONTRACTS_PLAN.md tests/unit/test_contracts.py                 [rung4] -> NexusMind/tests/unit/test_contracts.py
+  docs/CONTRACTS_PLAN.md validate.ts                                  [rung4] -> ovr.news/src/lib/data/validate.ts
+  docs/CONTRACTS_PLAN.md validate_output.py                           [rung4] -> FluxusSource/scripts/validate_output.py
+  docs/CONTRACTS_PLAN.md validate_production_contract.py              [rung4] -> NexusMind/scripts/validate_production_contract.py
+  docs/CONTRACTS_PLAN.md verify_decision_log.py                       [rung4] -> NexusMind/scripts/verify_decision_log.py
+  docs/CONTRACT_A_REALIZATION.md llm-distillery/docs/CONTRACT_A_REALIZATION.md [rung1-self] -> docs/CONTRACT_A_REALIZATION.md
+  docs/FILTER_PLAYBOOK.md calibration-history.md                       [rung2] -> memory/calibration-history.md
+  docs/FILTER_PLAYBOOK.md deploy_filters.sh                            [rung4] -> NexusMind/scripts/deploy_filters.sh
+  docs/FILTER_PLAYBOOK.md deploy_to_nexusmind.sh                       [rung2] -> scripts/deploy_to_nexusmind.sh
+  docs/FILTER_PLAYBOOK.md fit_normalization.py                         [rung2] -> scripts/normalization/fit_normalization.py
+  docs/FILTER_PLAYBOOK.md nature_recovery/v4/ground_truth_gate.json    [rung2] -> filters/nature_recovery/v4/ground_truth_gate.json
+  docs/FILTER_PLAYBOOK.md nexusmind.service                            [rung4] -> NexusMind/deploy/systemd/nexusmind.service
+  docs/FILTER_PLAYBOOK.md preflight_deploy_guards.py                   [rung2] -> scripts/deployment/preflight_deploy_guards.py
+  docs/FILTER_PLAYBOOK.md production_scorer.py                         [rung4] -> NexusMind/src/scoring/production_scorer.py
+  docs/FILTER_PLAYBOOK.md resave_adapter.py                            [rung2] -> scripts/deployment/resave_adapter.py
+  docs/FILTER_PLAYBOOK.md scripts/main.py                              [rung4] -> NexusMind/scripts/main.py
+  docs/FILTER_PLAYBOOK.md verify_filter_package.py                     [rung2] -> scripts/deployment/verify_filter_package.py
+  docs/HUMAN_THRIVING_V8_PLAN.md NexusMind/src/filters/filter_loader.py       [rung4] -> NexusMind/src/filters/filter_loader.py
+  docs/HUMAN_THRIVING_V8_PLAN.md NexusMind/src/scoring/cap_triggers.py        [rung4] -> NexusMind/src/scoring/cap_triggers.py
+  docs/HUMAN_THRIVING_V8_PLAN.md article-analysis.ts                          [rung4] -> ovr.news/src/lib/article-analysis.ts
+  docs/HUMAN_THRIVING_V8_PLAN.md canonical-lens.ts                            [rung4] -> ovr.news/src/lib/data/canonical-lens.ts
+  docs/HUMAN_THRIVING_V8_PLAN.md data/chief_editor_config.json                [rung3] -> runtime state
+  docs/HUMAN_THRIVING_V8_PLAN.md data/filters.ts                              [rung3] -> runtime state
+  docs/HUMAN_THRIVING_V8_PLAN.md data/held-out/golden-uplifting-2026-06-12.jsonl [rung3] -> runtime state
+  docs/HUMAN_THRIVING_V8_PLAN.md data/transform.ts                            [rung3] -> runtime state
+  docs/HUMAN_THRIVING_V8_PLAN.md diff_box_parity.py                           [rung2] -> scripts/verification/diff_box_parity.py
+  docs/HUMAN_THRIVING_V8_PLAN.md prepare_data.py                              [rung2] -> training/prepare_data.py
+  docs/HUMAN_THRIVING_V8_PLAN.md resave_adapter.py                            [rung2] -> scripts/deployment/resave_adapter.py
+  docs/HUMAN_THRIVING_V8_PLAN.md transform.ts                                 [rung4] -> ovr.news/src/lib/data/transform.ts
+  docs/HUMAN_THRIVING_V8_PLAN.md uplifting.jsonl                              [rung2] -> datasets/adverse/uplifting.jsonl
+  docs/HUMAN_THRIVING_V8_PLAN.md verify_filter_package.py                     [rung2] -> scripts/deployment/verify_filter_package.py
+  docs/NORMALIZATION_METHOD.md filter_base_scorer.py                        [rung2] -> filters/common/filter_base_scorer.py
+  docs/NORMALIZATION_METHOD.md src/scoring/production_scorer.py             [rung4] -> NexusMind/src/scoring/production_scorer.py
+  docs/PLAN_head_tail_deployment.md rss_belonging.yaml                           [rung4] -> FluxusSource/config/sources/rss_belonging.yaml
+  docs/README.md         ARCHITECTURE.md                              [rung1b] -> docs/ARCHITECTURE.md
+  docs/README.md         DECISIONS.md                                 [rung1b] -> docs/DECISIONS.md
+  docs/README.md         REPOSITORY_STRUCTURE.md                      [rung1b] -> docs/REPOSITORY_STRUCTURE.md
+  docs/README.md         SYSTEM_OVERVIEW.md                           [rung1b] -> docs/SYSTEM_OVERVIEW.md
+  docs/README.md         agents/README.md                             [rung1b] -> docs/agents/README.md
+  docs/README.md         agents/filter-development-guide.md           [rung1b] -> docs/agents/filter-development-guide.md
+  docs/README.md         article-metadata-schema.md                   [rung1b] -> docs/article-metadata-schema.md
+  docs/README.md         decisions/2025-11-08-local-model-selection.md [rung1b] -> docs/decisions/2025-11-08-local-model-selection.md
+  docs/README.md         decisions/2025-11-13-post-filter-architecture.md [rung1b] -> docs/decisions/2025-11-13-post-filter-architecture.md
+  docs/README.md         decisions/2025-11-13-remove-tier-classification-from-oracle.md [rung1b] -> docs/decisions/2025-11-13-remove-tier-classification-from-oracle.md
+  docs/README.md         decisions/2025-11-14-inline-filters-for-fast-models.md [rung1b] -> docs/decisions/2025-11-14-inline-filters-for-fast-models.md
+  docs/REPOSITORY_STRUCTURE.md agents/filter-development-guide.md           [rung1b] -> docs/agents/filter-development-guide.md
+  docs/ROADMAP.md        fit_normalization.py                         [rung2] -> scripts/normalization/fit_normalization.py
+  docs/ROADMAP.md        model_loading.py                             [rung2] -> filters/common/model_loading.py
+  docs/RUNBOOK.md        NexusMind/scripts/deploy_filters.sh          [rung4] -> NexusMind/scripts/deploy_filters.sh
+  docs/RUNBOOK.md        data/alerts.log                              [rung3] -> runtime state
+  docs/RUNBOOK.md        datasets/raw/master_dataset.jsonl            [rung3] -> runtime state
+  docs/RUNBOOK.md        fit_calibration.py                           [rung2] -> scripts/calibration/fit_calibration.py
+  docs/RUNBOOK.md        remote_deploy.sh                             [rung2] -> scripts/remote_deploy.sh
+  docs/SYNC_WORKFLOW.md  FREEFILESYNC_EXCLUSIONS.txt                  [rung1b] -> docs/FREEFILESYNC_EXCLUSIONS.txt
+  docs/SYSTEM_OVERVIEW.md datasets/raw/dataset_profile_report.txt      [rung3] -> runtime state
+  docs/SYSTEM_OVERVIEW.md datasets/raw/master_dataset_20251010_20251114_profile.json [rung3] -> runtime state
+  docs/SYSTEM_OVERVIEW.md datasets/raw/master_dataset_profile.json     [rung3] -> runtime state
+  docs/SYSTEM_OVERVIEW.md reports/filter_harmonization_report_2025-11-17.md [rung1b] -> docs/reports/filter_harmonization_report_2025-11-17.md
+  docs/TODO.md           NexusMind/contracts/article-record.schema.json [rung4] -> NexusMind/contracts/article-record.schema.json
+  docs/TODO.md           NexusMind/docs/ARTICLE_RECORD.md             [rung4] -> NexusMind/docs/ARTICLE_RECORD.md
+  docs/TODO.md           NexusMind/docs/ARTICLE_RECORD_REGISTER.md    [rung4] -> NexusMind/docs/ARTICLE_RECORD_REGISTER.md
+  docs/TODO.md           NexusMind/docs/investigation/2026-08-08-turnover-prereg.md [rung4] -> NexusMind/docs/investigation/2026-08-08-turnover-prereg.md
+  docs/TODO.md           NexusMind/docs/investigation/2026-08-09-prop1-recall-prereg.md [rung4] -> NexusMind/docs/investigation/2026-08-09-prop1-recall-prereg.md
+  docs/TODO.md           NexusMind/scripts/research/measure_shadow_kept_share.py [rung4] -> NexusMind/scripts/research/measure_shadow_kept_share.py
+  docs/TODO.md           NexusMind/src/scoring/primary_literature_cap.py [rung4] -> NexusMind/src/scoring/primary_literature_cap.py
+  docs/TODO.md           NexusMind/src/scoring/production_scorer.py   [rung4] -> NexusMind/src/scoring/production_scorer.py
+  docs/TODO.md           agent-ready-projects/templates/curate.md     [rung4] -> agent-ready-projects/templates/curate.md
+  docs/TODO.md           aggregator.log                               [rung3] -> runtime state
+  docs/TODO.md           config/domains/credibility.yaml              [rung4] -> FluxusSource/config/domains/credibility.yaml
+  docs/TODO.md           config/schemas/output_schema.json            [rung4] -> FluxusSource/config/schemas/output_schema.json
+  docs/TODO.md           corroboration-boost.ts                       [rung4] -> ovr.news/src/lib/data/editor/rules/corroboration-boost.ts
+  docs/TODO.md           cultural_discovery/v5/config.yaml            [rung2] -> filters/cultural_discovery/v5/config.yaml
+  docs/TODO.md           cultural_discovery/v5/prefilter.py           [rung2] -> filters/cultural_discovery/v5/prefilter.py
+  docs/TODO.md           data/held-out/golden-uplifting-2026-06-12.jsonl [rung3] -> runtime state
+  docs/TODO.md           data/ingest_contract_stats.json              [rung3] -> runtime state
+  docs/TODO.md           deploy/gpu-server/main.py                    [rung4] -> NexusMind/deploy/gpu-server/main.py
+  docs/TODO.md           deploy_filters.sh                            [rung4] -> NexusMind/scripts/deploy_filters.sh
+  docs/TODO.md           deploy_to_nexusmind.sh                       [rung2] -> scripts/deploy_to_nexusmind.sh
+  docs/TODO.md           docs/BRAND.md                                [rung4] -> ovr.news/docs/BRAND.md
+  docs/TODO.md           docs/article_record_status.yaml              [rung4] -> NexusMind/docs/article_record_status.yaml
+  docs/TODO.md           embedding_stage.py                           [rung2] -> filters/common/embedding_stage.py
+  docs/TODO.md           enrich_survivors.py                          [rung4] -> NexusMind/scripts/enrich_survivors.py
+  docs/TODO.md           filter_base_scorer.py                        [rung2] -> filters/common/filter_base_scorer.py
+  docs/TODO.md           fit_normalization.py                         [rung2] -> scripts/normalization/fit_normalization.py
+  docs/TODO.md           ground_truth_gate.py                         [rung2] -> scripts/gate/ground_truth_gate.py
+  docs/TODO.md           hybrid_scorer.py                             [rung2] -> filters/common/hybrid_scorer.py
+  docs/TODO.md           install-global-skills.sh                     [rung4] -> agent-ready-projects/scripts/install-global-skills.sh
+  docs/TODO.md           merge_fluxus_data.py                         [rung2] -> scripts/merge_fluxus_data.py
+  docs/TODO.md           merge_historical_data.py                     [rung2] -> scripts/merge_historical_data.py
+  docs/TODO.md           nexusmind-backup.timer                       [unit] -> NexusMind/deploy/systemd/nexusmind-backup.timer
+  docs/TODO.md           nexusmind-cleanup.service                    [unit] -> NexusMind/deploy/systemd/nexusmind-cleanup.service
+  docs/TODO.md           nexusmind.service                            [unit] -> NexusMind/deploy/systemd/nexusmind.service
+  docs/TODO.md           ovr.news/docs/compliance-register.md         [rung4] -> ovr.news/docs/compliance-register.md
+  docs/TODO.md           parity_dump_to_gate_input.py                 [rung2] -> scripts/verification/parity_dump_to_gate_input.py
+  docs/TODO.md           preflight_deploy_guards.py                   [rung2] -> scripts/deployment/preflight_deploy_guards.py
+  docs/TODO.md           project_session_2026_07_28.md                [rung2] -> memory/project_session_2026_07_28.md
+  docs/TODO.md           refcheck.py                                  [rung2] -> tests/fixtures/reference-integrity/refcheck.py
+  docs/TODO.md           resave_adapter.py                            [rung2] -> scripts/deployment/resave_adapter.py
+  docs/TODO.md           run.sh                                       [rung2] -> tests/fixtures/reference-integrity/run.sh
+  docs/TODO.md           source_schema.yaml                           [rung4] -> FluxusSource/config/schemas/source_schema.yaml
+  docs/TODO.md           test_normalization_invariant.py              [rung2] -> tests/unit/test_normalization_invariant.py
+  docs/TODO.md           tests/unit/test_prefilter.py                 [rung4] -> NexusMind/tests/unit/test_prefilter.py
+  docs/TODO.md           thriving/v1/prefilter.py                     [rung2] -> filters/thriving/v1/prefilter.py
+  docs/TODO.md           train_probe.py                               [rung2] -> scripts/train_probe.py
+  docs/TODO.md           uplifting.jsonl                              [rung2] -> datasets/adverse/uplifting.jsonl
+  docs/TODO.md           upload_to_huggingface.py                     [rung2] -> scripts/deployment/upload_to_huggingface.py
+  docs/TODO.md           verify_belonging_v1.py                       [rung2] -> scripts/verification/verify_belonging_v1.py
+  docs/TODO.md           verify_filter_package.py                     [rung2] -> scripts/deployment/verify_filter_package.py
+  docs/WAY-OF-WORKING.md datasets/raw/master_dataset.jsonl            [rung3] -> runtime state
+  docs/WAY-OF-WORKING.md resave_adapter.py                            [rung2] -> scripts/deployment/resave_adapter.py
+  docs/_archive/README.md filter-development-guide.md                  [rung2] -> docs/agents/filter-development-guide.md
+  docs/_archive/README.md guides/getting-started.md                    [rung1b] -> docs/_archive/guides/getting-started.md
+  docs/_archive/README.md guides/gpu-training-guide.md                 [rung1b] -> docs/_archive/guides/gpu-training-guide.md
+  docs/_archive/README.md guides/ground-truth-generation.md            [rung1b] -> docs/_archive/guides/ground-truth-generation.md
+  docs/_archive/README.md guides/qwen-finetuning-guide.md              [rung1b] -> docs/_archive/guides/qwen-finetuning-guide.md
+  docs/_archive/README.md guides/remote-sync-guide.md                  [rung1b] -> docs/_archive/guides/remote-sync-guide.md
+  docs/_archive/guides/getting-started.md datasets/training/sustainability_tech_deployment/test.jsonl [rung3] -> runtime state
+  docs/_archive/guides/getting-started.md datasets/training/sustainability_tech_deployment/train.jsonl [rung3] -> runtime state
+  docs/_archive/guides/getting-started.md datasets/training/sustainability_tech_deployment/val.jsonl [rung3] -> runtime state
+  docs/_archive/guides/getting-started.md ground-truth-generation.md                   [rung1b] -> docs/_archive/guides/ground-truth-generation.md
+  docs/_archive/guides/getting-started.md remote-sync-guide.md                         [rung1b] -> docs/_archive/guides/remote-sync-guide.md
+  docs/_archive/guides/getting-started.md tmux-usage.md                                [rung2] -> docs/guides/tmux-usage.md
+  docs/_archive/guides/gpu-training-guide.md getting-started.md                           [rung1b] -> docs/_archive/guides/getting-started.md
+  docs/_archive/guides/gpu-training-guide.md qwen-finetuning-guide.md                     [rung1b] -> docs/_archive/guides/qwen-finetuning-guide.md
+  docs/_archive/guides/gpu-training-guide.md remote-sync-guide.md                         [rung1b] -> docs/_archive/guides/remote-sync-guide.md
+  docs/_archive/guides/gpu-training-guide.md tmux-usage.md                                [rung2] -> docs/guides/tmux-usage.md
+  docs/_archive/guides/ground-truth-generation.md batch_scorer.py                              [rung2] -> ground_truth/batch_scorer.py
+  docs/_archive/guides/ground-truth-generation.md qwen-finetuning-guide.md                     [rung1b] -> docs/_archive/guides/qwen-finetuning-guide.md
+  docs/_archive/guides/qwen-finetuning-guide.md getting-started.md                           [rung1b] -> docs/_archive/guides/getting-started.md
+  docs/_archive/guides/qwen-finetuning-guide.md tmux-usage.md                                [rung2] -> docs/guides/tmux-usage.md
+  docs/_archive/guides/remote-sync-guide.md secrets.ini                                  [rung2] -> config/credentials/secrets.ini
+  docs/adr/006-hybrid-inference-pipeline.md embedding_stage.py                           [rung2] -> filters/common/embedding_stage.py
+  docs/adr/006-hybrid-inference-pipeline.md hybrid_scorer.py                             [rung2] -> filters/common/hybrid_scorer.py
+  docs/adr/007-adapter-format-and-deployment.md resave_adapter.py                            [rung2] -> scripts/deployment/resave_adapter.py
+  docs/adr/007-adapter-format-and-deployment.md upload_to_huggingface.py                     [rung2] -> scripts/deployment/upload_to_huggingface.py
+  docs/adr/008-isotonic-score-calibration.md fit_calibration.py                           [rung2] -> scripts/calibration/fit_calibration.py
+  docs/adr/009-add-filters-first-reduce-later.md pipeline.ts                                  [rung4] -> ovr.news/src/lib/data/pipeline.ts
+  docs/adr/012-lens-aligned-filter-naming.md article-analysis.ts                          [rung4] -> ovr.news/src/lib/article-analysis.ts
+  docs/adr/012-lens-aligned-filter-naming.md transform.ts                                 [rung4] -> ovr.news/src/lib/data/transform.ts
+  docs/adr/012-lens-aligned-filter-naming.md verify_filter_package.py                     [rung2] -> scripts/deployment/verify_filter_package.py
+  docs/adr/014-cross-filter-percentile-normalization.md NexusMind/filters/common/filter_base_scorer.py [rung4] -> NexusMind/filters/common/filter_base_scorer.py
+  docs/adr/014-cross-filter-percentile-normalization.md display_ranking.py                           [rung4] -> NexusMind/src/scoring/display_ranking.py
+  docs/adr/014-cross-filter-percentile-normalization.md filter_base_scorer.py                        [rung2] -> filters/common/filter_base_scorer.py
+  docs/adr/014-cross-filter-percentile-normalization.md score_calibration.py                         [rung2] -> filters/common/score_calibration.py
+  docs/adr/014-cross-filter-percentile-normalization.md src/scoring/production_scorer.py             [rung4] -> NexusMind/src/scoring/production_scorer.py
+  docs/adr/018-prefilter-shape-harmonization.md 004-universal-noise-prefilter.md             [rung1b] -> docs/adr/004-universal-noise-prefilter.md
+  docs/adr/018-prefilter-shape-harmonization.md 016-drop-tier-assignments.md                 [rung1b] -> docs/adr/016-drop-tier-assignments.md
+  docs/adr/019-per-category-exclusion-overrides.md 004-universal-noise-prefilter.md             [rung1b] -> docs/adr/004-universal-noise-prefilter.md
+  docs/adr/019-per-category-exclusion-overrides.md 018-prefilter-shape-harmonization.md         [rung1b] -> docs/adr/018-prefilter-shape-harmonization.md
+  docs/adr/021-ground-truth-gate.md 008-isotonic-score-calibration.md            [rung1b] -> docs/adr/008-isotonic-score-calibration.md
+  docs/adr/021-ground-truth-gate.md 010-oracle-consistency-over-data-volume.md   [rung1b] -> docs/adr/010-oracle-consistency-over-data-volume.md
+  docs/adr/021-ground-truth-gate.md 014-cross-filter-percentile-normalization.md [rung1b] -> docs/adr/014-cross-filter-percentile-normalization.md
+  docs/adr/021-ground-truth-gate.md 017-inter-oracle-mae-as-distillation-floor.md [rung1b] -> docs/adr/017-inter-oracle-mae-as-distillation-floor.md
+  docs/adr/021-ground-truth-gate.md agreement_gate.py                            [rung2] -> scripts/gate/agreement_gate.py
+  docs/adr/021-ground-truth-gate.md nr_v4_sourceA_reference.jsonl                [rung2] -> datasets/gate/nr_v4_sourceA_reference.jsonl
+  docs/adr/022-stamp-always-single-gate.md 004-universal-noise-prefilter.md             [rung1b] -> docs/adr/004-universal-noise-prefilter.md
+  docs/adr/022-stamp-always-single-gate.md 006-hybrid-inference-pipeline.md             [rung1b] -> docs/adr/006-hybrid-inference-pipeline.md
+  docs/adr/022-stamp-always-single-gate.md 016-drop-tier-assignments.md                 [rung1b] -> docs/adr/016-drop-tier-assignments.md
+  docs/adr/README.md     001-moderate-correlation-acceptable.md       [rung1b] -> docs/adr/001-moderate-correlation-acceptable.md
+  docs/adr/README.md     002-modern-prompt-format.md                  [rung1b] -> docs/adr/002-modern-prompt-format.md
+  docs/adr/README.md     003-screening-filter-for-training-data.md    [rung1b] -> docs/adr/003-screening-filter-for-training-data.md
+  docs/adr/README.md     004-universal-noise-prefilter.md             [rung1b] -> docs/adr/004-universal-noise-prefilter.md
+  docs/adr/README.md     005-active-learning-for-filter-improvement.md [rung1b] -> docs/adr/005-active-learning-for-filter-improvement.md
+  docs/adr/README.md     006-hybrid-inference-pipeline.md             [rung1b] -> docs/adr/006-hybrid-inference-pipeline.md
+  docs/adr/README.md     007-adapter-format-and-deployment.md         [rung1b] -> docs/adr/007-adapter-format-and-deployment.md
+  docs/adr/README.md     008-isotonic-score-calibration.md            [rung1b] -> docs/adr/008-isotonic-score-calibration.md
+  docs/adr/README.md     009-add-filters-first-reduce-later.md        [rung1b] -> docs/adr/009-add-filters-first-reduce-later.md
+  docs/adr/README.md     010-oracle-consistency-over-data-volume.md   [rung1b] -> docs/adr/010-oracle-consistency-over-data-volume.md
+  docs/adr/README.md     011-embedding-screener-for-needle-filters.md [rung1b] -> docs/adr/011-embedding-screener-for-needle-filters.md
+  docs/adr/README.md     012-lens-aligned-filter-naming.md            [rung1b] -> docs/adr/012-lens-aligned-filter-naming.md
+  docs/adr/README.md     013-english-lens-names.md                    [rung1b] -> docs/adr/013-english-lens-names.md
+  docs/adr/README.md     014-cross-filter-percentile-normalization.md [rung1b] -> docs/adr/014-cross-filter-percentile-normalization.md
+  docs/adr/README.md     015-lenses-as-perspectives-not-partitions.md [rung1b] -> docs/adr/015-lenses-as-perspectives-not-partitions.md
+  docs/adr/README.md     016-drop-tier-assignments.md                 [rung1b] -> docs/adr/016-drop-tier-assignments.md
+  docs/adr/README.md     017-inter-oracle-mae-as-distillation-floor.md [rung1b] -> docs/adr/017-inter-oracle-mae-as-distillation-floor.md
+  docs/adr/README.md     018-prefilter-shape-harmonization.md         [rung1b] -> docs/adr/018-prefilter-shape-harmonization.md
+  docs/adr/README.md     019-per-category-exclusion-overrides.md      [rung1b] -> docs/adr/019-per-category-exclusion-overrides.md
+  docs/adr/README.md     021-ground-truth-gate.md                     [rung1b] -> docs/adr/021-ground-truth-gate.md
+  docs/adr/README.md     022-stamp-always-single-gate.md              [rung1b] -> docs/adr/022-stamp-always-single-gate.md
+  docs/adr/README.md     023-asymmetric-loss-precision-over-recall.md [rung1b] -> docs/adr/023-asymmetric-loss-precision-over-recall.md
+  docs/adr/README.md     agreement_gate.py                            [rung2] -> scripts/gate/agreement_gate.py
+  docs/adr/cultural-discovery-v1-calibration.md ../agents/filter-development-guide.md        [rung1b] -> docs/agents/filter-development-guide.md
+  docs/adr/cultural-discovery-v1-calibration.md ../templates/screening-filter-template.md    [rung1b] -> docs/templates/screening-filter-template.md
+  docs/adr/cultural-discovery-v1-calibration.md 003-screening-filter-for-training-data.md    [rung1b] -> docs/adr/003-screening-filter-for-training-data.md
+  docs/adr/draft-020-extended-oracle-calibration.md datasets/scored/cd_v5_ds_spotcheck_A_falseneg_verdict.md [rung3] -> runtime state
+  docs/adr/draft-020-extended-oracle-calibration.md datasets/scored/cd_v5_haiku_agent_verdict.md [rung3] -> runtime state
+  docs/adr/draft-020-extended-oracle-calibration.md datasets/scored/cd_v5_opus_agent_verdict.md  [rung3] -> runtime state
+  docs/adr/draft-020-extended-oracle-calibration.md feedback-conservative-oracle-better.md       [rung5] -> claude auto-memory
+  docs/adr/draft-020-extended-oracle-calibration.md feedback-oracle-not-ground-truth.md          [rung5] -> claude auto-memory
+  docs/adr/draft-020-extended-oracle-calibration.md feedback-oracle-selection-criteria.md        [rung5] -> claude auto-memory
+  docs/agents/FILTER_CHECKLIST.md FILTER_HARMONIZATION_GUIDE.md                [rung1b] -> docs/agents/FILTER_HARMONIZATION_GUIDE.md
+  docs/agents/FILTER_CHECKLIST.md agent-operations.md                          [rung1b] -> docs/agents/agent-operations.md
+  docs/agents/FILTER_CHECKLIST.md templates/oracle-calibration-agent.md        [rung1b] -> docs/agents/templates/oracle-calibration-agent.md
+  docs/agents/README.md  AI_AUGMENTED_WORKFLOW.md                     [rung1b] -> docs/agents/AI_AUGMENTED_WORKFLOW.md
+  docs/agents/README.md  agent-operations.md                          [rung1b] -> docs/agents/agent-operations.md
+  docs/agents/README_FILTER_HARMONIZER.md FILTER_HARMONIZATION_GUIDE.md                [rung1b] -> docs/agents/FILTER_HARMONIZATION_GUIDE.md
+  docs/agents/README_FILTER_HARMONIZER.md examples/sample_harmonization_report.md      [rung1b] -> docs/agents/examples/sample_harmonization_report.md
+  docs/agents/agent-operations.md datasets/scored/sustainability_tech_deployment/README.md [rung3] -> runtime state
+  docs/agents/agent-operations.md datasets/scored/uplifting/README.md          [rung3] -> runtime state
+  docs/agents/filter-development-guide.md ../adr/003-screening-filter-for-training-data.md [rung1b] -> docs/adr/003-screening-filter-for-training-data.md
+  docs/agents/filter-development-guide.md hybrid_scorer.py                             [rung2] -> filters/common/hybrid_scorer.py
+  docs/agents/filter-development-guide.md resave_adapter.py                            [rung2] -> scripts/deployment/resave_adapter.py
+  docs/agents/filter-development-guide.md vocab.json                                   [rung2] -> filters/common/commerce_prefilter/v1/models/qwen-lora/vocab.json
+  docs/articles/README.md NexusMind/docs/hypothesis-log.md             [rung4] -> NexusMind/docs/hypothesis-log.md
+  docs/articles/README.md NexusMind/docs/investigation/story-dedup-centroid-design.md [rung4] -> NexusMind/docs/investigation/story-dedup-centroid-design.md
+  docs/articles/README.md cross-filter-score-normalization.md          [rung1b] -> docs/articles/cross-filter-score-normalization.md
+  docs/articles/README.md hybrid-two-stage-needle-filter.md            [rung1b] -> docs/articles/hybrid-two-stage-needle-filter.md
+  docs/articles/README.md needle-in-haystack-draft.md                  [rung1b] -> docs/articles/needle-in-haystack-draft.md
+  docs/articles/README.md oracle-consistency-beats-data-volume.md      [rung1b] -> docs/articles/oracle-consistency-beats-data-volume.md
+  docs/articles/README.md ovr.news/docs/articles/needle-in-haystack-draft.md [rung4] -> ovr.news/docs/articles/needle-in-haystack-draft.md
+  docs/articles/nature_recovery_v4_evidence/README.md baselines.json                               [rung1b] -> docs/articles/nature_recovery_v4_evidence/baselines.json
+  docs/articles/nature_recovery_v4_evidence/README.md calibration.json                             [rung1b] -> docs/articles/nature_recovery_v4_evidence/calibration.json
+  docs/articles/nature_recovery_v4_evidence/README.md cost.json                                    [rung1b] -> docs/articles/nature_recovery_v4_evidence/cost.json
+  docs/articles/nature_recovery_v4_evidence/README.md gate.json                                    [rung1b] -> docs/articles/nature_recovery_v4_evidence/gate.json
+  docs/articles/nature_recovery_v4_evidence/README.md gate_v1_epoch3.json                          [rung1b] -> docs/articles/nature_recovery_v4_evidence/gate_v1_epoch3.json
+  docs/articles/nature_recovery_v4_evidence/README.md label_consistency.json                       [rung1b] -> docs/articles/nature_recovery_v4_evidence/label_consistency.json
+  docs/articles/nature_recovery_v4_evidence/README.md needle.json                                  [rung1b] -> docs/articles/nature_recovery_v4_evidence/needle.json
+  docs/articles/nature_recovery_v4_evidence/README.md probe.json                                   [rung1b] -> docs/articles/nature_recovery_v4_evidence/probe.json
+  docs/articles/nature_recovery_v4_evidence/README.md student.json                                 [rung1b] -> docs/articles/nature_recovery_v4_evidence/student.json
+  docs/articles/nature_recovery_v4_evidence/README.md verdict.json                                 [rung1b] -> docs/articles/nature_recovery_v4_evidence/verdict.json
+  docs/articles/needle-in-haystack-draft.md ovr.news/docs/articles/needle-in-haystack-draft.md [rung4] -> ovr.news/docs/articles/needle-in-haystack-draft.md
+  docs/decisions/2025-11-09-content-truncation-strategy.md 2025-11-08-local-model-selection.md          [rung1b] -> docs/decisions/2025-11-08-local-model-selection.md
+  docs/decisions/2025-11-12-dimensional-regression-training.md datasets/scored/sustainability_tech_deployment/README.md [rung3] -> runtime state
+  docs/decisions/2025-11-12-dimensional-regression-training.md datasets/scored/uplifting/README.md          [rung3] -> runtime state
+  docs/decisions/2025-11-13-prompt-calibration-before-batch-labeling.md 2025-11-14-inline-filters-for-fast-models.md [rung1b] -> docs/decisions/2025-11-14-inline-filters-for-fast-models.md
+  docs/decisions/2025-11-13-prompt-calibration-before-batch-labeling.md datasets/scored/sustainability_tech_deployment/labeled_articles.jsonl [rung3] -> runtime state
+  docs/decisions/2025-11-13-regression-only-student-models.md datasets/scored/sustainability_tech_deployment/labeled_articles.jsonl [rung3] -> runtime state
+  docs/decisions/2025-11-14-inline-filters-for-fast-models.md 2025-11-13-content-caps-in-oracle-not-postfilter.md [rung1b] -> docs/decisions/2025-11-13-content-caps-in-oracle-not-postfilter.md
+  docs/decisions/2025-11-14-inline-filters-for-fast-models.md 2025-11-13-prompt-calibration-before-batch-labeling.md [rung1b] -> docs/decisions/2025-11-13-prompt-calibration-before-batch-labeling.md
+  docs/decisions/2025-11-14-inline-filters-for-fast-models.md 2025-11-14-calibration-validation-split.md   [rung1b] -> docs/decisions/2025-11-14-calibration-validation-split.md
+  docs/decisions/2025-11-15-dimensional-scoring-terminology.md batch_scorer.py                              [rung2] -> ground_truth/batch_scorer.py
+  docs/decisions/2025-11-15-dimensional-scoring-terminology.md datasets/scored/uplifting_v4/scored_batch_001.jsonl [rung3] -> runtime state
+  docs/decisions/2025-11-15-pivot-to-sustainability-tech-innovation.md ./2025-11-15-dimensional-scoring-terminology.md [rung1b] -> docs/decisions/2025-11-15-dimensional-scoring-terminology.md
+  docs/decisions/2025-11-15-pivot-to-sustainability-tech-innovation.md FILTERS_ON_HOLD.md                           [rung2] -> docs/FILTERS_ON_HOLD.md
+  docs/decisions/2026-08-05-tdm-opt-out-training-data.md FluxusSource/data/tdm_opt_outs.json          [rung4] -> FluxusSource/data/tdm_opt_outs.json
+  docs/decisions/2026-08-05-tdm-opt-out-training-data.md benchmark_inference.py                       [rung2] -> filters/common/commerce_prefilter/training/benchmark_inference.py
+  docs/decisions/2026-08-05-tdm-opt-out-training-data.md benchmark_models.py                          [rung2] -> filters/common/commerce_prefilter/training/benchmark_models.py
+  docs/decisions/2026-08-05-tdm-opt-out-training-data.md docs/TRAINING_REPORT.md                      [rung2] -> filters/common/commerce_prefilter/docs/TRAINING_REPORT.md
+  docs/decisions/2026-08-05-tdm-opt-out-training-data.md ovr.news/docs/compliance-register.md         [rung4] -> ovr.news/docs/compliance-register.md
+  docs/decisions/2026-08-05-tdm-opt-out-training-data.md prepare_data.py                              [rung2] -> training/prepare_data.py
+  docs/decisions/2026-08-05-tdm-opt-out-training-data.md upload_to_huggingface.py                     [rung2] -> scripts/deployment/upload_to_huggingface.py
+  docs/decisions/2026-08-14-contract-a-envelope.md FluxusSource/config/schemas/output_schema.json [rung4] -> FluxusSource/config/schemas/output_schema.json
+  docs/decisions/2026-08-14-contract-a-envelope.md NexusMind/contracts/fluxussource-output.schema.json [rung4] -> NexusMind/contracts/fluxussource-output.schema.json
+  docs/decisions/2026-08-14-contract-a-envelope.md memory/gn-proxy-protocol.md                  [rung4] -> FluxusSource/memory/gn-proxy-protocol.md
+  docs/decisions/2026-08-14-contract-a-envelope.md nexusmind-contract-check.timer               [unit] -> NexusMind/deploy/systemd/nexusmind-contract-check.timer
+  docs/decisions/2026-08-14-contract-a-envelope.md scripts/validate_output.py                   [rung4] -> FluxusSource/scripts/validate_output.py
+  docs/decisions/2026-08-14-contract-a-envelope.md scripts/validate_production_contract.py      [rung4] -> NexusMind/scripts/validate_production_contract.py
+  docs/decisions/2026-08-14-contract-a-envelope.md src/scoring/display_ranking.py               [rung4] -> NexusMind/src/scoring/display_ranking.py
+  docs/decisions/2026-08-14-contract-a-envelope.md tests/test_output_schema_adr008.py           [rung4] -> FluxusSource/tests/test_output_schema_adr008.py
+  docs/decisions/2026-08-14-contract-a-envelope.md tests/test_source_group_field_adr010.py      [rung4] -> FluxusSource/tests/test_source_group_field_adr010.py
+  docs/decisions/2026-08-14-contract-a-envelope.md tests/unit/test_contracts.py                 [rung4] -> NexusMind/tests/unit/test_contracts.py
+  docs/decisions/2026-08-14-contract-a-envelope.md transform.ts                                 [rung4] -> ovr.news/src/lib/data/transform.ts
+  docs/decisions/2026-08-14-contract-a-envelope.md validate/validate_contract_a.py              [rung4] -> NexusMind/validate/validate_contract_a.py
+  docs/decisions/2026-08-25-pause-investment-risk.md config/app.yaml                              [rung4] -> NexusMind/config/app.yaml
+  docs/decisions/2026-08-25-pause-investment-risk.md data/raw/.processed_ids_investment_risk.json [rung3] -> runtime state
+  docs/decisions/2026-08-25-pause-investment-risk.md nexusmind.service                            [unit] -> NexusMind/deploy/systemd/nexusmind.service
+  docs/decisions/2026-08-25-pause-investment-risk.md validate.ts                                  [rung4] -> ovr.news/src/lib/data/validate.ts
+  docs/decisions/2026-08-26-prefiltered-out-retention.md NexusMind/scripts/research/measure_shadow_kept_share.py [rung4] -> NexusMind/scripts/research/measure_shadow_kept_share.py
+  docs/decisions/2026-08-26-prefiltered-out-retention.md NexusMind/scripts/research/verify_prefiltered_archiving.py [rung4] -> NexusMind/scripts/research/verify_prefiltered_archiving.py
+  docs/decisions/README.md 2025-11-12-dimensional-regression-training.md [rung1b] -> docs/decisions/2025-11-12-dimensional-regression-training.md
+  docs/decisions/README.md 2025-11-12-generic-training-data-preparation.md [rung1b] -> docs/decisions/2025-11-12-generic-training-data-preparation.md
+  docs/decisions/README.md 2025-11-13-prompt-calibration-before-batch-labeling.md [rung1b] -> docs/decisions/2025-11-13-prompt-calibration-before-batch-labeling.md
+  docs/decisions/README.md 2025-11-13-remove-tier-classification-from-oracle.md [rung1b] -> docs/decisions/2025-11-13-remove-tier-classification-from-oracle.md
+  docs/decisions/README.md 2025-11-14-calibration-validation-split.md   [rung1b] -> docs/decisions/2025-11-14-calibration-validation-split.md
+  docs/decisions/README.md 2025-11-14-inline-filters-for-fast-models.md [rung1b] -> docs/decisions/2025-11-14-inline-filters-for-fast-models.md
+  docs/decisions/README.md 2025-11-15-dimensional-scoring-terminology.md [rung1b] -> docs/decisions/2025-11-15-dimensional-scoring-terminology.md
+  docs/decisions/README.md 2026-08-05-tdm-opt-out-training-data.md      [rung1b] -> docs/decisions/2026-08-05-tdm-opt-out-training-data.md
+  docs/decisions/README.md 2026-08-14-contract-a-envelope.md            [rung1b] -> docs/decisions/2026-08-14-contract-a-envelope.md
+  docs/decisions/README.md 2026-08-25-pause-investment-risk.md          [rung1b] -> docs/decisions/2026-08-25-pause-investment-risk.md
+  docs/decisions/README.md 2026-08-26-prefiltered-out-retention.md      [rung1b] -> docs/decisions/2026-08-26-prefiltered-out-retention.md
+  docs/decisions/README.md batch_scorer.py                              [rung2] -> ground_truth/batch_scorer.py
+  docs/decisions/framework-adoption-history.md refcheck.py                                  [rung2] -> tests/fixtures/reference-integrity/refcheck.py
+  docs/decisions/framework-adoption-history.md run.sh                                       [rung2] -> tests/fixtures/reference-integrity/run.sh
+  docs/evidence/2026-08-09-cross-box-parity-uplifting-v7.md 2026-08-10-b650-gpu-production-stack-parity.md [rung1b] -> docs/evidence/2026-08-10-b650-gpu-production-stack-parity.md
+  docs/evidence/2026-08-10-uplifting-v7-op-point-4.5-VERIFIED.md deploy_filters.sh                            [rung4] -> NexusMind/scripts/deploy_filters.sh
+  docs/evidence/2026-08-10-uplifting-v7-op-point-4.5-VERIFIED.md fit_normalization.py                         [rung2] -> scripts/normalization/fit_normalization.py
+  docs/evidence/2026-08-10-uplifting-v7-op-point-4.5-VERIFIED.md nexusmind.service                            [rung4] -> NexusMind/deploy/systemd/nexusmind.service
+  docs/evidence/2026-08-10-uplifting-v7-op-point-4.5-VERIFIED.md test_normalization_invariant.py              [rung2] -> tests/unit/test_normalization_invariant.py
+  docs/evidence/2026-08-10-uplifting-v7-threshold-sweep-102.md 2026-08-10-b650-gpu-production-stack-parity.md [rung1b] -> docs/evidence/2026-08-10-b650-gpu-production-stack-parity.md
+  docs/evidence/2026-08-10-uplifting-v7-threshold-sweep-102.md deploy_filters.sh                            [rung4] -> NexusMind/scripts/deploy_filters.sh
+  docs/evidence/2026-08-12-gn-share-of-normalization-cdf.md config/app.yaml                              [rung4] -> NexusMind/config/app.yaml
+  docs/evidence/2026-08-20-uplifting-v7-class-a-valence-bakeoff.md 2026-08-20-class-a-valence-bakeoff-scores.json [rung1b] -> docs/evidence/2026-08-20-class-a-valence-bakeoff-scores.json
+  docs/evidence/2026-08-20-uplifting-v7-class-a-valence-bakeoff.md 2026-08-20-uplifting-v7-oracle-genre-bias.md [rung1b] -> docs/evidence/2026-08-20-uplifting-v7-oracle-genre-bias.md
+  docs/evidence/2026-08-20-uplifting-v7-oracle-genre-bias.md 2026-08-10-uplifting-v7-threshold-sweep-102.md [rung1b] -> docs/evidence/2026-08-10-uplifting-v7-threshold-sweep-102.md
+  docs/evidence/2026-08-20-uplifting-v7-oracle-genre-bias.md BRAND.md                                     [rung4] -> ovr.news/docs/BRAND.md
+  docs/evidence/2026-08-22-uplifting-v7-corpus-provenance.md HUMAN_THRIVING_V8_PLAN.md                    [rung2] -> docs/HUMAN_THRIVING_V8_PLAN.md
+  docs/evidence/2026-08-22-uplifting-v7-corpus-provenance.md corpus_census.py                             [rung2] -> scripts/analysis/corpus_census.py
+  docs/evidence/2026-08-22-uplifting-v7-corpus-provenance.md prefilter_march_probe.py                     [rung2] -> scripts/analysis/prefilter_march_probe.py
+  docs/evidence/2026-08-22-uplifting-v7-corpus-provenance.md production_census.py                         [rung2] -> scripts/analysis/production_census.py
+  docs/evidence/2026-08-23-article-record-instrument-audit.md NexusMind/docs/ARTICLE_RECORD.md             [rung4] -> NexusMind/docs/ARTICLE_RECORD.md
+  docs/evidence/2026-08-23-article-record-instrument-audit.md NexusMind/docs/ARTICLE_RECORD_REGISTER.md    [rung4] -> NexusMind/docs/ARTICLE_RECORD_REGISTER.md
+  docs/evidence/2026-08-23-article-record-instrument-audit.md llm-distillery/docs/BLOCK_LEDGER_SPEC.md     [rung1-self] -> docs/BLOCK_LEDGER_SPEC.md
+  docs/evidence/2026-08-23-article-record-instrument-audit.md nexusmind.service                            [unit] -> NexusMind/deploy/systemd/nexusmind.service
+  docs/evidence/2026-08-23-length-floor-by-script.md test_normalization_invariant.py              [rung2] -> tests/unit/test_normalization_invariant.py
+  docs/evidence/2026-08-24-deepseek-token-counts/README.md nr_v4_batch.log                              [rung1b] -> docs/evidence/2026-08-24-deepseek-token-counts/nr_v4_batch.log
+  docs/evidence/2026-08-24-deepseek-token-counts/README.md nr_v4_positives.log                          [rung1b] -> docs/evidence/2026-08-24-deepseek-token-counts/nr_v4_positives.log
+  docs/evidence/2026-08-28-v8-phase0-drawable-population.md corpus_census.py                             [rung2] -> scripts/analysis/corpus_census.py
+  docs/evidence/2026-08-28-v8-phase0-drawable-population.md histogram_corpus_v7.log                      [rung2] -> docs/evidence/2026-08-28-v8-phase0-runs/histogram_corpus_v7.log
+  docs/evidence/2026-08-28-v8-phase0-drawable-population.md histogram_production_drawable.log            [rung2] -> docs/evidence/2026-08-28-v8-phase0-runs/histogram_production_drawable.log
+  docs/evidence/2026-08-28-v8-phase0-drawable-population.md prediction_before_production_run.txt         [rung2] -> docs/evidence/2026-08-28-v8-phase0-runs/prediction_before_production_run.txt
+  docs/evidence/2026-08-28-v8-phase0-drawable-population.md production_census.py                         [rung2] -> scripts/analysis/production_census.py
+  docs/evidence/2026-08-28-v8-phase0-drawable-population.md v8_draw_population.py                        [rung2] -> scripts/analysis/v8_draw_population.py
+  docs/evidence/README.md adr/nexusmind-ADR-001-cross-filter-score-normalization.md [rung1b] -> docs/evidence/adr/nexusmind-ADR-001-cross-filter-score-normalization.md
+  docs/evidence/README.md adr/nexusmind-ADR-014-cross-filter-percentile-normalization.md [rung1b] -> docs/evidence/adr/nexusmind-ADR-014-cross-filter-percentile-normalization.md
+  docs/evidence/README.md adr/nexusmind-ADR-018-normalization-safety-valve.md [rung1b] -> docs/evidence/adr/nexusmind-ADR-018-normalization-safety-valve.md
+  docs/evidence/README.md adr/ovr-news-ADR-029-chief-editor-layer.md   [rung1b] -> docs/evidence/adr/ovr-news-ADR-029-chief-editor-layer.md
+  docs/evidence/README.md adr/ovr-news-ADR-037-llm-editorial-review.md [rung1b] -> docs/evidence/adr/ovr-news-ADR-037-llm-editorial-review.md
+  docs/evidence/README.md adr/ovr-news-ADR-038-lens-taxonomy-refactor.md [rung1b] -> docs/evidence/adr/ovr-news-ADR-038-lens-taxonomy-refactor.md
+  docs/evidence/README.md articles/needle-in-haystack-draft.md         [rung1b] -> docs/evidence/articles/needle-in-haystack-draft.md
+  docs/evidence/README.md hypothesis-log-excerpts.md                   [rung1b] -> docs/evidence/hypothesis-log-excerpts.md
+  docs/evidence/README.md reports/sustainability-technology-v2-ORACLE_CALIBRATION_REPORT.md [rung1b] -> docs/evidence/reports/sustainability-technology-v2-ORACLE_CALIBRATION_REPORT.md
+  docs/evidence/README.md reports/sustainability-technology-v2-TRAINING_REPORT.md [rung1b] -> docs/evidence/reports/sustainability-technology-v2-TRAINING_REPORT.md
+  docs/evidence/adr/nexusmind-ADR-014-cross-filter-percentile-normalization.md display_ranking.py                           [rung4] -> NexusMind/src/scoring/display_ranking.py
+  docs/evidence/adr/nexusmind-ADR-014-cross-filter-percentile-normalization.md filter_base_scorer.py                        [rung2] -> filters/common/filter_base_scorer.py
+  docs/evidence/adr/nexusmind-ADR-014-cross-filter-percentile-normalization.md score_calibration.py                         [rung2] -> filters/common/score_calibration.py
+  docs/evidence/hypothesis-log-excerpts.md ensure-ollama.sh                             [rung4] -> ovr.news/scripts/ensure-ollama.sh
+  docs/evidence/hypothesis-log-excerpts.md nexusmind.service                            [rung4] -> NexusMind/deploy/systemd/nexusmind.service
+  docs/evidence/hypothesis-log-excerpts.md nexusmind.service                            [unit] -> NexusMind/deploy/systemd/nexusmind.service
+  docs/evidence/hypothesis-log-excerpts.md ovr.news/docs/hypothesis-log.md              [rung4] -> ovr.news/docs/hypothesis-log.md
+  docs/evidence/hypothesis-log-excerpts.md scorer-start.sh                              [rung4] -> NexusMind/deploy/gpu-server/scorer-start.sh
+  docs/guides/distillation-logging-system.md distillation.log                             [rung3] -> runtime state
+  docs/guides/distillation-logging-system.md json-error-handling-improvements.md          [rung1b] -> docs/guides/json-error-handling-improvements.md
+  docs/guides/distillation-logging-system.md tmux-usage.md                                [rung1b] -> docs/guides/tmux-usage.md
+  docs/guides/filter-creation-workflow.md embedding_stage.py                           [rung2] -> filters/common/embedding_stage.py
+  docs/guides/filter-creation-workflow.md hybrid_scorer.py                             [rung2] -> filters/common/hybrid_scorer.py
+  docs/guides/filter-creation-workflow.md model_loading.py                             [rung2] -> filters/common/model_loading.py
+  docs/guides/filter-creation-workflow.md resave_adapter.py                            [rung2] -> scripts/deployment/resave_adapter.py
+  docs/guides/filter-creation-workflow.md score_calibration.py                         [rung2] -> filters/common/score_calibration.py
+  docs/guides/filter-creation-workflow.md text_preprocessing.py                        [rung2] -> filters/common/text_preprocessing.py
+  docs/ideas/ai-adoption-measurement.md re-enchantment-outlets.md                    [rung1b] -> docs/ideas/re-enchantment-outlets.md
+  docs/nature_recovery_v4_DEPLOY_COMPLETION.md deploy_filters.sh                            [rung4] -> NexusMind/scripts/deploy_filters.sh
+  docs/nature_recovery_v4_DEPLOY_COMPLETION.md deploy_to_nexusmind.sh                       [rung2] -> scripts/deploy_to_nexusmind.sh
+  docs/nature_recovery_v4_RUNBOOK.md agreement_gate.py                            [rung2] -> scripts/gate/agreement_gate.py
+  docs/nature_recovery_v4_RUNBOOK.md deploy_to_nexusmind.sh                       [rung2] -> scripts/deploy_to_nexusmind.sh
+  docs/nature_recovery_v4_plan.md agreement_gate.py                            [rung2] -> scripts/gate/agreement_gate.py
+  docs/nature_recovery_v4_plan.md deploy_to_nexusmind.sh                       [rung2] -> scripts/deploy_to_nexusmind.sh
+  docs/nature_recovery_v4_plan.md filter_base_scorer.py                        [rung2] -> filters/common/filter_base_scorer.py
+  docs/nature_recovery_v4_plan.md nr_v4_heldout_ids.txt                        [rung2] -> datasets/gate/nr_v4_heldout_ids.txt
+  docs/nature_recovery_v4_plan.md nr_v4_named_probes.jsonl                     [rung2] -> datasets/gate/nr_v4_named_probes.jsonl
+  docs/nature_recovery_v4_plan.md nr_v4_oos_trainpool.jsonl                    [rung2] -> datasets/gate/nr_v4_oos_trainpool.jsonl
+  docs/nature_recovery_v4_plan.md nr_v4_positive_input.jsonl                   [rung2] -> datasets/scored/nr_v4_positive_input.jsonl
+  docs/nature_recovery_v4_plan.md nr_v4_sourceA_reference.jsonl                [rung2] -> datasets/gate/nr_v4_sourceA_reference.jsonl
+  docs/nature_recovery_v4_plan.md resave_adapter.py                            [rung2] -> scripts/deployment/resave_adapter.py
+  docs/normalization-deploy-hardening-plan.md data/alerts.log                              [rung3] -> runtime state
+  docs/normalization-deploy-hardening-plan.md fit_normalization.py                         [rung2] -> scripts/normalization/fit_normalization.py
+  docs/normalization-deploy-hardening-plan.md nexusmind.service                            [rung4] -> NexusMind/deploy/systemd/nexusmind.service
+  docs/normalization-deploy-hardening-plan.md nexusmind.service                            [unit] -> NexusMind/deploy/systemd/nexusmind.service
+  docs/normalization-deploy-hardening-plan.md scripts/alert_failure.sh                     [rung4] -> NexusMind/scripts/alert_failure.sh
+  docs/normalization-deploy-hardening-plan.md test_normalization_invariant.py              [rung2] -> tests/unit/test_normalization_invariant.py
+  docs/proposals/contract-a-origin-sequencing.md config/schemas/source_schema.yaml            [rung4] -> FluxusSource/config/schemas/source_schema.yaml
+  docs/templates/screening-filter-template.md ../adr/003-screening-filter-for-training-data.md [rung1b] -> docs/adr/003-screening-filter-for-training-data.md
+  memory/MEMORY.md       NexusMind/src/scoring/display_ranking.py     [rung4] -> NexusMind/src/scoring/display_ranking.py
+  memory/MEMORY.md       b650-gpu.md                                  [rung1b] -> memory/b650-gpu.md
+  memory/MEMORY.md       calibration-history.md                       [rung1b] -> memory/calibration-history.md
+  memory/MEMORY.md       cd-v5-reference-status.md                    [rung1b] -> memory/cd-v5-reference-status.md
+  memory/MEMORY.md       cd-v6-probe-hypotheses.md                    [rung1b] -> memory/cd-v6-probe-hypotheses.md
+  memory/MEMORY.md       corroboration-feature-hypotheses.md          [rung1b] -> memory/corroboration-feature-hypotheses.md
+  memory/MEMORY.md       cross-repo-prioritization.md                 [rung1b] -> memory/cross-repo-prioritization.md
+  memory/MEMORY.md       date-error-recency-boost-hypotheses.md       [rung1b] -> memory/date-error-recency-boost-hypotheses.md
+  memory/MEMORY.md       enrichment-delta-hypotheses.md               [rung1b] -> memory/enrichment-delta-hypotheses.md
+  memory/MEMORY.md       filter-doc-standard.md                       [rung1b] -> memory/filter-doc-standard.md
+  memory/MEMORY.md       filter-status.md                             [rung1b] -> memory/filter-status.md
+  memory/MEMORY.md       gemma3-model.md                              [rung1b] -> memory/gemma3-model.md
+  memory/MEMORY.md       google-news-corpus-hypotheses.md             [rung1b] -> memory/google-news-corpus-hypotheses.md
+  memory/MEMORY.md       gotcha-log.md                                [rung1b] -> memory/gotcha-log.md
+  memory/MEMORY.md       gpu-server.md                                [rung1b] -> memory/gpu-server.md
+  memory/MEMORY.md       hypothesis-ledger.md                         [rung1b] -> memory/hypothesis-ledger.md
+  memory/MEMORY.md       nexusmind-data-sources.md                    [rung1b] -> memory/nexusmind-data-sources.md
+  memory/MEMORY.md       obituary-v4-hypotheses.md                    [rung1b] -> memory/obituary-v4-hypotheses.md
+  memory/MEMORY.md       opinion-genre-hypotheses.md                  [rung1b] -> memory/opinion-genre-hypotheses.md
+  memory/MEMORY.md       oracle-pricing-scheduling.md                 [rung1b] -> memory/oracle-pricing-scheduling.md
+  memory/MEMORY.md       ovr-lens-set-current.md                      [rung1b] -> memory/ovr-lens-set-current.md
+  memory/MEMORY.md       prefilter-length-floor-hypotheses.md         [rung1b] -> memory/prefilter-length-floor-hypotheses.md
+  memory/MEMORY.md       project-obituary-detector.md                 [rung1b] -> memory/project-obituary-detector.md
+  memory/MEMORY.md       project_session_2026_08_26_evening.md        [rung1b] -> memory/project_session_2026_08_26_evening.md
+  memory/MEMORY.md       project_session_2026_08_27.md                [rung1b] -> memory/project_session_2026_08_27.md
+  memory/MEMORY.md       project_session_2026_08_27_evening.md        [rung1b] -> memory/project_session_2026_08_27_evening.md
+  memory/MEMORY.md       refcheck.py                                  [rung2] -> tests/fixtures/reference-integrity/refcheck.py
+  memory/MEMORY.md       score-batch-shape-noise.md                   [rung1b] -> memory/score-batch-shape-noise.md
+  memory/MEMORY.md       session-log.md                               [rung1b] -> memory/session-log.md
+  memory/MEMORY.md       stamp-contract-integrity.md                  [rung1b] -> memory/stamp-contract-integrity.md
+  memory/MEMORY.md       thriving-v1-scoring.md                       [rung1b] -> memory/thriving-v1-scoring.md
+  memory/MEMORY.md       uplifting-v7-training.md                     [rung1b] -> memory/uplifting-v7-training.md
+  memory/MEMORY.md       violence-promotion-v1-hypotheses.md          [rung1b] -> memory/violence-promotion-v1-hypotheses.md
+  memory/b650-gpu.md     diff_box_parity.py                           [rung2] -> scripts/verification/diff_box_parity.py
+  memory/calibration-history.md NexusMind/src/scoring/production_scorer.py   [rung4] -> NexusMind/src/scoring/production_scorer.py
+  memory/calibration-history.md filter_base_scorer.py                        [rung2] -> filters/common/filter_base_scorer.py
+  memory/calibration-history.md hybrid_scorer.py                             [rung2] -> filters/common/hybrid_scorer.py
+  memory/calibration-history.md ovr.news/docs/hypothesis-log.md              [rung4] -> ovr.news/docs/hypothesis-log.md
+  memory/calibration-history.md ovr.news/memory/infra.md                     [rung4] -> ovr.news/memory/infra.md
+  memory/calibration-history.md scripts/main.py                              [rung4] -> NexusMind/scripts/main.py
+  memory/calibration-history.md vmodel.eu/memory/gotcha-log.md               [rung4] -> vmodel.eu/memory/gotcha-log.md
+  memory/cd-v6-probe-hypotheses.md prefilter-length-floor-hypotheses.md         [rung1b] -> memory/prefilter-length-floor-hypotheses.md
+  memory/cd-v6-probe-hypotheses.md production_scorer.py                         [rung4] -> NexusMind/src/scoring/production_scorer.py
+  memory/cd-v6-probe-hypotheses.md score-batch-shape-noise.md                   [rung1b] -> memory/score-batch-shape-noise.md
+  memory/cd-v6-probe-hypotheses.md train_probe.py                               [rung2] -> scripts/train_probe.py
+  memory/corroboration-feature-hypotheses.md ARTICLE_RECORD.md                            [rung4] -> NexusMind/docs/ARTICLE_RECORD.md
+  memory/corroboration-feature-hypotheses.md MEMORY.md                                    [rung1b] -> memory/MEMORY.md
+  memory/corroboration-feature-hypotheses.md NexusMind/config/app.yaml                    [rung4] -> NexusMind/config/app.yaml
+  memory/corroboration-feature-hypotheses.md NexusMind/data/research/precision_panel_v3/answer_key.json [rung4] -> NexusMind/data/research/precision_panel_v3/answer_key.json
+  memory/corroboration-feature-hypotheses.md NexusMind/scripts/research/build_precision_panel.py [rung4] -> NexusMind/scripts/research/build_precision_panel.py
+  memory/corroboration-feature-hypotheses.md NexusMind/scripts/research/judge_pairs.py    [rung4] -> NexusMind/scripts/research/judge_pairs.py
+  memory/corroboration-feature-hypotheses.md NexusMind/scripts/research/nm188_mojibake_invert.py [rung4] -> NexusMind/scripts/research/nm188_mojibake_invert.py
+  memory/corroboration-feature-hypotheses.md aggregator.log                               [rung3] -> runtime state
+  memory/corroboration-feature-hypotheses.md config/app.yaml                              [rung4] -> NexusMind/config/app.yaml
+  memory/corroboration-feature-hypotheses.md corroboration-next-phase-plan.md             [rung4] -> NexusMind/docs/investigation/corroboration-next-phase-plan.md
+  memory/corroboration-feature-hypotheses.md docs/investigation/2026-08-08-turnover-prereg.md [rung4] -> NexusMind/docs/investigation/2026-08-08-turnover-prereg.md
+  memory/corroboration-feature-hypotheses.md docs/investigation/corroboration-next-phase-plan.md [rung4] -> NexusMind/docs/investigation/corroboration-next-phase-plan.md
+  memory/corroboration-feature-hypotheses.md docs/investigation/story-dedup-feature-augmentation.md [rung4] -> NexusMind/docs/investigation/story-dedup-feature-augmentation.md
+  memory/corroboration-feature-hypotheses.md feed_health.json                             [rung3] -> runtime state
+  memory/corroboration-feature-hypotheses.md fluxus-collection.timer                      [unit] -> FluxusSource/systemd/fluxus-collection.timer
+  memory/corroboration-feature-hypotheses.md recall_probe.py                              [rung4] -> NexusMind/scripts/research/recall_probe.py
+  memory/corroboration-feature-hypotheses.md scheduled_20260807.log                       [rung3] -> runtime state
+  memory/corroboration-feature-hypotheses.md scripts/research/judge_pairs.py              [rung4] -> NexusMind/scripts/research/judge_pairs.py
+  memory/corroboration-feature-hypotheses.md scripts/research/nm188_mojibake_invert.py    [rung4] -> NexusMind/scripts/research/nm188_mojibake_invert.py
+  memory/corroboration-feature-hypotheses.md stamp_census.py                              [rung4] -> NexusMind/scripts/stamp_census.py
+  memory/corroboration-feature-hypotheses.md story_dedup.py                               [rung4] -> NexusMind/src/preprocessing/story_dedup.py
+  memory/cross-repo-prioritization.md ARCHITECTURE.md                              [rung2] -> docs/ARCHITECTURE.md
+  memory/cross-repo-prioritization.md INTEGRITY.md                                 [rung4] -> NexusMind/docs/INTEGRITY.md
+  memory/cross-repo-prioritization.md NexusMind/docs/articles/percolation-in-similarity-clustering-pitch.md [rung4] -> NexusMind/docs/articles/percolation-in-similarity-clustering-pitch.md
+  memory/cross-repo-prioritization.md NexusMind/docs/investigation/2026-08-10-nm306-hand-labelled-ground-truth.md [rung4] -> NexusMind/docs/investigation/2026-08-10-nm306-hand-labelled-ground-truth.md
+  memory/cross-repo-prioritization.md content_hasher.py                            [rung4] -> FluxusSource/src/utils/content_hasher.py
+  memory/cross-repo-prioritization.md display_ranking.py                           [rung4] -> NexusMind/src/scoring/display_ranking.py
+  memory/cross-repo-prioritization.md docs/GN-REPLACEMENT-PLAN.md                  [rung4] -> FluxusSource/docs/GN-REPLACEMENT-PLAN.md
+  memory/cross-repo-prioritization.md docs/security/incident-2026-08-01-comscore-beacon.md [rung4] -> ovr.news/docs/security/incident-2026-08-01-comscore-beacon.md
+  memory/cross-repo-prioritization.md enrich_survivors.py                          [rung4] -> NexusMind/scripts/enrich_survivors.py
+  memory/cross-repo-prioritization.md ground_truth_gate.py                         [rung2] -> scripts/gate/ground_truth_gate.py
+  memory/cross-repo-prioritization.md requirements-lock.txt                        [rung4] -> FluxusSource/requirements-lock.txt
+  memory/cross-repo-prioritization.md scheduled_collection.sh                      [rung4] -> FluxusSource/scripts/scheduled_collection.sh
+  memory/cross-repo-prioritization.md score_normalization.py                       [rung2] -> filters/common/score_normalization.py
+  memory/cross-repo-prioritization.md scripts/gn_to_native_upgrade.py              [rung4] -> FluxusSource/scripts/gn_to_native_upgrade.py
+  memory/cross-repo-prioritization.md src/enrichment/decision_log.py               [rung4] -> NexusMind/src/enrichment/decision_log.py
+  memory/cross-repo-prioritization.md src/lib/ranking.ts                           [rung4] -> ovr.news/src/lib/ranking.ts
+  memory/cross-repo-prioritization.md under-the-hood/ranking.astro                 [rung4] -> ovr.news/src/pages/under-the-hood/ranking.astro
+  memory/date-error-recency-boost-hypotheses.md NexusMind/src/scoring/display_ranking.py     [rung4] -> NexusMind/src/scoring/display_ranking.py
+  memory/date-error-recency-boost-hypotheses.md output_schema.json                           [rung4] -> FluxusSource/config/schemas/output_schema.json
+  memory/date-error-recency-boost-hypotheses.md src/models/content_item.py                   [rung4] -> FluxusSource/src/models/content_item.py
+  memory/filter-status.md NexusMind/deploy/smoke_test_articles.jsonl   [rung4] -> NexusMind/deploy/smoke_test_articles.jsonl
+  memory/filter-status.md NexusMind/tests/unit/test_filter_integrity.py [rung4] -> NexusMind/tests/unit/test_filter_integrity.py
+  memory/filter-status.md cap_triggers.py                              [rung4] -> NexusMind/src/scoring/cap_triggers.py
+  memory/filter-status.md data/raw/.processed_ids_investment_risk.json [rung3] -> runtime state
+  memory/filter-status.md deploy/gpu-server/main.py                    [rung4] -> NexusMind/deploy/gpu-server/main.py
+  memory/filter-status.md scripts/main.py                              [rung4] -> NexusMind/scripts/main.py
+  memory/filter-status.md src/scoring/source_filter.py                 [rung4] -> NexusMind/src/scoring/source_filter.py
+  memory/google-news-corpus-hypotheses.md docs/GN-REPLACEMENT-PLAN.md                  [rung4] -> FluxusSource/docs/GN-REPLACEMENT-PLAN.md
+  memory/google-news-corpus-hypotheses.md scripts/gn_to_native_upgrade.py              [rung4] -> FluxusSource/scripts/gn_to_native_upgrade.py
+  memory/google-news-corpus-hypotheses.md src/scoring/source_filter.py                 [rung4] -> NexusMind/src/scoring/source_filter.py
+  memory/gotcha-log.md   ARTICLE_RECORD.md                            [rung4] -> NexusMind/docs/ARTICLE_RECORD.md
+  memory/gotcha-log.md   FluxusSource/memory/nexusmind.md             [rung4] -> FluxusSource/memory/nexusmind.md
+  memory/gotcha-log.md   Layout.astro                                 [rung4] -> ovr.news/src/layouts/Layout.astro
+  memory/gotcha-log.md   MEMORY.md                                    [rung1b] -> memory/MEMORY.md
+  memory/gotcha-log.md   NexusMind/cap_triggers.py                    [rung4] -> NexusMind/src/scoring/cap_triggers.py
+  memory/gotcha-log.md   NexusMind/config/app.yaml                    [rung4] -> NexusMind/config/app.yaml
+  memory/gotcha-log.md   NexusMind/data/exports/aegis/latest/narrative_risk.json [rung4] -> NexusMind/data/exports/aegis/latest/narrative_risk.json
+  memory/gotcha-log.md   NexusMind/deploy/gpu-server/main.py          [rung4] -> NexusMind/deploy/gpu-server/main.py
+  memory/gotcha-log.md   NexusMind/deploy/smoke_test_articles.jsonl   [rung4] -> NexusMind/deploy/smoke_test_articles.jsonl
+  memory/gotcha-log.md   NexusMind/deploy_filters.sh                  [rung4] -> NexusMind/scripts/deploy_filters.sh
+  memory/gotcha-log.md   NexusMind/docs/ARTICLE_RECORD.md             [rung4] -> NexusMind/docs/ARTICLE_RECORD.md
+  memory/gotcha-log.md   NexusMind/filters/common/filter_base_scorer.py [rung4] -> NexusMind/filters/common/filter_base_scorer.py
+  memory/gotcha-log.md   NexusMind/image_analysis.py                  [rung4] -> NexusMind/src/preprocessing/image_analysis.py
+  memory/gotcha-log.md   NexusMind/production_scorer.py               [rung4] -> NexusMind/src/scoring/production_scorer.py
+  memory/gotcha-log.md   NexusMind/scripts/deploy_filters.sh          [rung4] -> NexusMind/scripts/deploy_filters.sh
+  memory/gotcha-log.md   NexusMind/scripts/main.py                    [rung4] -> NexusMind/scripts/main.py
+  memory/gotcha-log.md   NexusMind/scripts/research/nm188_mojibake_invert.py [rung4] -> NexusMind/scripts/research/nm188_mojibake_invert.py
+  memory/gotcha-log.md   NexusMind/smoke_test_articles.jsonl          [rung4] -> NexusMind/deploy/smoke_test_articles.jsonl
+  memory/gotcha-log.md   NexusMind/src/scoring/display_ranking.py     [rung4] -> NexusMind/src/scoring/display_ranking.py
+  memory/gotcha-log.md   NexusMind/src/scoring/production_scorer.py   [rung4] -> NexusMind/src/scoring/production_scorer.py
+  memory/gotcha-log.md   NexusMind/src/scoring/source_filter.py       [rung4] -> NexusMind/src/scoring/source_filter.py
+  memory/gotcha-log.md   NexusMind/test_filter_integrity.py           [rung4] -> NexusMind/tests/unit/test_filter_integrity.py
+  memory/gotcha-log.md   NexusMind/tests/test_gpu_client.py           [rung4] -> NexusMind/tests/test_gpu_client.py
+  memory/gotcha-log.md   NexusMind/tests/unit/test_filter_integrity.py [rung4] -> NexusMind/tests/unit/test_filter_integrity.py
+  memory/gotcha-log.md   _health.json                                 [rung3] -> runtime state
+  memory/gotcha-log.md   aggregator.log                               [rung3] -> runtime state
+  memory/gotcha-log.md   calibration-history.md                       [rung1b] -> memory/calibration-history.md
+  memory/gotcha-log.md   check_index_budget.py                        [rung2] -> scripts/verification/check_index_budget.py
+  memory/gotcha-log.md   contracts/CHANGELOG.md                       [rung4] -> NexusMind/contracts/CHANGELOG.md
+  memory/gotcha-log.md   corroboration-feature-hypotheses.md          [rung1b] -> memory/corroboration-feature-hypotheses.md
+  memory/gotcha-log.md   deploy/gpu-server/main.py                    [rung4] -> NexusMind/deploy/gpu-server/main.py
+  memory/gotcha-log.md   deploy/smoke_test_articles.jsonl             [rung4] -> NexusMind/deploy/smoke_test_articles.jsonl
+  memory/gotcha-log.md   deploy_filters.sh                            [rung4] -> NexusMind/scripts/deploy_filters.sh
+  memory/gotcha-log.md   deploy_to_nexusmind.ps1                      [rung2] -> scripts/deploy_to_nexusmind.ps1
+  memory/gotcha-log.md   deploy_to_nexusmind.sh                       [rung2] -> scripts/deploy_to_nexusmind.sh
+  memory/gotcha-log.md   display_ranking.py                           [rung4] -> NexusMind/src/scoring/display_ranking.py
+  memory/gotcha-log.md   docs/BACKLOG.md                              [rung4] -> NexusMind/docs/BACKLOG.md
+  memory/gotcha-log.md   docs/hypothesis-log.md                       [rung4] -> NexusMind/docs/hypothesis-log.md
+  memory/gotcha-log.md   docs/investigation/story-dedup-feature-augmentation.md [rung4] -> NexusMind/docs/investigation/story-dedup-feature-augmentation.md
+  memory/gotcha-log.md   errors.log                                   [rung3] -> runtime state
+  memory/gotcha-log.md   feedback-claim-requires-verify.md            [rung5] -> claude auto-memory
+  memory/gotcha-log.md   feedback-multi-agent-review-default.md       [rung5] -> claude auto-memory
+  memory/gotcha-log.md   feedback-regex-ignorecase-trap.md            [rung5] -> claude auto-memory
+  memory/gotcha-log.md   filter_base_scorer.py                        [rung2] -> filters/common/filter_base_scorer.py
+  memory/gotcha-log.md   filtered_archiver.py                         [rung4] -> NexusMind/src/archiving/filtered_archiver.py
+  memory/gotcha-log.md   fit_calibration.py                           [rung2] -> scripts/calibration/fit_calibration.py
+  memory/gotcha-log.md   fit_normalization.py                         [rung2] -> scripts/normalization/fit_normalization.py
+  memory/gotcha-log.md   fluxus-collection.timer                      [unit] -> FluxusSource/systemd/fluxus-collection.timer
+  memory/gotcha-log.md   framework-adoption-history.md                [rung2] -> docs/decisions/framework-adoption-history.md
+  memory/gotcha-log.md   gate_refused_label_audit.py                  [rung2] -> scripts/research/gate_refused_label_audit.py
+  memory/gotcha-log.md   gn_normalization_cdf_share.py                [rung2] -> scripts/research/gn_normalization_cdf_share.py
+  memory/gotcha-log.md   ground_truth_gate.py                         [rung2] -> scripts/gate/ground_truth_gate.py
+  memory/gotcha-log.md   hybrid_scorer.py                             [rung2] -> filters/common/hybrid_scorer.py
+  memory/gotcha-log.md   llm-distillery/scripts/remote_deploy.sh      [rung1-self] -> scripts/remote_deploy.sh
+  memory/gotcha-log.md   measure_matching_geometry.py                 [rung4] -> NexusMind/scripts/research/measure_matching_geometry.py
+  memory/gotcha-log.md   nature_recovery/v4/prefilter.py              [rung2] -> filters/nature_recovery/v4/prefilter.py
+  memory/gotcha-log.md   nexusmind-cleanup.service                    [unit] -> NexusMind/deploy/systemd/nexusmind-cleanup.service
+  memory/gotcha-log.md   nexusmind-data-sources.md                    [rung1b] -> memory/nexusmind-data-sources.md
+  memory/gotcha-log.md   nexusmind-scorer.service                     [rung4] -> NexusMind/deploy/gpu-server/nexusmind-scorer.service
+  memory/gotcha-log.md   nexusmind-scorer.service                     [unit] -> NexusMind/deploy/gpu-server/nexusmind-scorer.service
+  memory/gotcha-log.md   nexusmind.service                            [rung4] -> NexusMind/deploy/systemd/nexusmind.service
+  memory/gotcha-log.md   nexusmind.service                            [unit] -> NexusMind/deploy/systemd/nexusmind.service
+  memory/gotcha-log.md   oracle-pricing-scheduling.md                 [rung1b] -> memory/oracle-pricing-scheduling.md
+  memory/gotcha-log.md   ovr.news/canonical-lens.ts                   [rung4] -> ovr.news/src/lib/data/canonical-lens.ts
+  memory/gotcha-log.md   ovr.news/docs/BRAND.md                       [rung4] -> ovr.news/docs/BRAND.md
+  memory/gotcha-log.md   ovr.news/scripts/create-hot-db.ts            [rung4] -> ovr.news/scripts/create-hot-db.ts
+  memory/gotcha-log.md   ovr.news/src/i18n/translations.ts            [rung4] -> ovr.news/src/i18n/translations.ts
+  memory/gotcha-log.md   ovr.news/summarize.ts                        [rung4] -> ovr.news/scripts/summarize.ts
+  memory/gotcha-log.md   ovr.news/tests/ai-disclosure.test.ts         [rung4] -> ovr.news/tests/ai-disclosure.test.ts
+  memory/gotcha-log.md   ovrnews-summarize.service                    [unit] -> ovr.news/deploy/systemd/ovrnews-summarize.service
+  memory/gotcha-log.md   prefilter-length-floor-hypotheses.md         [rung1b] -> memory/prefilter-length-floor-hypotheses.md
+  memory/gotcha-log.md   preflight_deploy_guards.py                   [rung2] -> scripts/deployment/preflight_deploy_guards.py
+  memory/gotcha-log.md   production_census.py                         [rung2] -> scripts/analysis/production_census.py
+  memory/gotcha-log.md   project_session_2026_08_01.md                [rung5] -> claude auto-memory
+  memory/gotcha-log.md   project_session_2026_08_02.md                [rung5] -> claude auto-memory
+  memory/gotcha-log.md   project_session_2026_08_03.md                [rung5] -> claude auto-memory
+  memory/gotcha-log.md   project_session_2026_08_26_evening.md        [rung1b] -> memory/project_session_2026_08_26_evening.md
+  memory/gotcha-log.md   public/og-image-article.png                  [rung4] -> ovr.news/public/og-image-article.png
+  memory/gotcha-log.md   public/og-image.png                          [rung4] -> ovr.news/public/og-image.png
+  memory/gotcha-log.md   refcheck.py                                  [rung2] -> tests/fixtures/reference-integrity/refcheck.py
+  memory/gotcha-log.md   remote_deploy.sh                             [rung2] -> scripts/remote_deploy.sh
+  memory/gotcha-log.md   resave_adapter.py                            [rung2] -> scripts/deployment/resave_adapter.py
+  memory/gotcha-log.md   run.sh                                       [rung2] -> tests/fixtures/reference-integrity/run.sh
+  memory/gotcha-log.md   scheduled_YYYYMMDD.log                       [rung3] -> runtime state
+  memory/gotcha-log.md   score-batch-shape-noise.md                   [rung1b] -> memory/score-batch-shape-noise.md
+  memory/gotcha-log.md   score_deepseek_production.py                 [rung2] -> scripts/score_deepseek_production.py
+  memory/gotcha-log.md   score_normalization.py                       [rung2] -> filters/common/score_normalization.py
+  memory/gotcha-log.md   score_ollama_oracle.py                       [rung2] -> scripts/score_ollama_oracle.py
+  memory/gotcha-log.md   score_turnover_panel.py                      [rung4] -> NexusMind/scripts/research/score_turnover_panel.py
+  memory/gotcha-log.md   scripts/main.py                              [rung4] -> NexusMind/scripts/main.py
+  memory/gotcha-log.md   scripts/scheduled_collection.sh              [rung4] -> FluxusSource/scripts/scheduled_collection.sh
+  memory/gotcha-log.md   scripts/summarize.ts                         [rung4] -> ovr.news/scripts/summarize.ts
+  memory/gotcha-log.md   scripts/summary-invention-audit.ts           [rung4] -> ovr.news/scripts/summary-invention-audit.ts
+  memory/gotcha-log.md   secrets.ini                                  [rung2] -> config/credentials/secrets.ini
+  memory/gotcha-log.md   solutions_v6_reweight_ablation.py            [rung2] -> scripts/research/solutions_v6_reweight_ablation.py
+  memory/gotcha-log.md   src/lib/ranking.ts                           [rung4] -> ovr.news/src/lib/ranking.ts
+  memory/gotcha-log.md   temporal_discrimination.json                 [rung4] -> NexusMind/data/research/precision_panel_v2/temporal_discrimination.json
+  memory/gotcha-log.md   temporal_discrimination.py                   [rung4] -> NexusMind/scripts/research/temporal_discrimination.py
+  memory/gotcha-log.md   test_normalization_invariant.py              [rung2] -> tests/unit/test_normalization_invariant.py
+  memory/gotcha-log.md   tests/test_no_archive_purge_164.py           [rung4] -> FluxusSource/tests/test_no_archive_purge_164.py
+  memory/gotcha-log.md   tests/unit/test_filter_integrity.py          [rung4] -> NexusMind/tests/unit/test_filter_integrity.py
+  memory/gotcha-log.md   tests/unit/test_shared_infrastructure.py     [rung4] -> NexusMind/tests/unit/test_shared_infrastructure.py
+  memory/gotcha-log.md   train_feature_classifier.py                  [rung4] -> NexusMind/scripts/research/train_feature_classifier.py
+  memory/gotcha-log.md   validate_contract_a.py                       [rung4] -> NexusMind/validate/validate_contract_a.py
+  memory/gotcha-log.md   validate_deepseek_oracle.py                  [rung2] -> scripts/validate_deepseek_oracle.py
+  memory/gotcha-log.md   verify_decision_log.py                       [rung4] -> NexusMind/scripts/verify_decision_log.py
+  memory/gotcha-log.md   verify_filter_package.py                     [rung2] -> scripts/deployment/verify_filter_package.py
+  memory/gotcha-log.md   working-rules.md                             [rung1b] -> memory/working-rules.md
+  memory/gpu-server.md   deploy/gpu-server/main.py                    [rung4] -> NexusMind/deploy/gpu-server/main.py
+  memory/gpu-server.md   nexusmind-scorer.service                     [unit] -> NexusMind/deploy/gpu-server/nexusmind-scorer.service
+  memory/gpu-server.md   scripts/deploy_filters.sh                    [rung4] -> NexusMind/scripts/deploy_filters.sh
+  memory/gpu-server.md   verify_filter_package.py                     [rung2] -> scripts/deployment/verify_filter_package.py
+  memory/hypothesis-ledger.md NexusMind/docs/ARTICLE_RECORD.md             [rung4] -> NexusMind/docs/ARTICLE_RECORD.md
+  memory/hypothesis-ledger.md NexusMind/docs/articles/percolation-in-similarity-clustering-pitch.md [rung4] -> NexusMind/docs/articles/percolation-in-similarity-clustering-pitch.md
+  memory/hypothesis-ledger.md NexusMind/docs/investigation/2026-08-17-cdcr-hypothesis-set-prereg.md [rung4] -> NexusMind/docs/investigation/2026-08-17-cdcr-hypothesis-set-prereg.md
+  memory/hypothesis-ledger.md NexusMind/docs/vv/corroboration-dedup-registry.md [rung4] -> NexusMind/docs/vv/corroboration-dedup-registry.md
+  memory/hypothesis-ledger.md NexusMind/scripts/research/measure_shadow_kept_share.py [rung4] -> NexusMind/scripts/research/measure_shadow_kept_share.py
+  memory/hypothesis-ledger.md calibration-history.md                       [rung1b] -> memory/calibration-history.md
+  memory/hypothesis-ledger.md cd-v6-probe-hypotheses.md                    [rung1b] -> memory/cd-v6-probe-hypotheses.md
+  memory/hypothesis-ledger.md config/domains/credibility.yaml              [rung4] -> FluxusSource/config/domains/credibility.yaml
+  memory/hypothesis-ledger.md corroboration-feature-hypotheses.md          [rung1b] -> memory/corroboration-feature-hypotheses.md
+  memory/hypothesis-ledger.md date-error-recency-boost-hypotheses.md       [rung1b] -> memory/date-error-recency-boost-hypotheses.md
+  memory/hypothesis-ledger.md enrichment-delta-hypotheses.md               [rung1b] -> memory/enrichment-delta-hypotheses.md
+  memory/hypothesis-ledger.md google-news-corpus-hypotheses.md             [rung1b] -> memory/google-news-corpus-hypotheses.md
+  memory/hypothesis-ledger.md gotcha-log.md                                [rung1b] -> memory/gotcha-log.md
+  memory/hypothesis-ledger.md obituary-v4-hypotheses.md                    [rung1b] -> memory/obituary-v4-hypotheses.md
+  memory/hypothesis-ledger.md opinion-genre-hypotheses.md                  [rung1b] -> memory/opinion-genre-hypotheses.md
+  memory/hypothesis-ledger.md prefilter-length-floor-hypotheses.md         [rung1b] -> memory/prefilter-length-floor-hypotheses.md
+  memory/hypothesis-ledger.md rss_russian.yaml                             [rung4] -> FluxusSource/config/sources/rss_russian.yaml
+  memory/hypothesis-ledger.md solutions-v6-dimension-hypotheses.md         [rung1b] -> memory/solutions-v6-dimension-hypotheses.md
+  memory/hypothesis-ledger.md train_probe.py                               [rung2] -> scripts/train_probe.py
+  memory/hypothesis-ledger.md violence-promotion-v1-hypotheses.md          [rung1b] -> memory/violence-promotion-v1-hypotheses.md
+  memory/hypothesis-ledger.md working-rules.md                             [rung1b] -> memory/working-rules.md
+  memory/nexusmind-data-sources.md NexusMind/scripts/validate_shadow_exclusions.py [rung4] -> NexusMind/scripts/validate_shadow_exclusions.py
+  memory/nexusmind-data-sources.md scripts/main.py                              [rung4] -> NexusMind/scripts/main.py
+  memory/nexusmind-data-sources.md src/preprocessing/commerce.py                [rung4] -> NexusMind/src/preprocessing/commerce.py
+  memory/nexusmind-data-sources.md src/scoring/source_filter.py                 [rung4] -> NexusMind/src/scoring/source_filter.py
+  memory/obituary-v4-hypotheses.md config/app.yaml                              [rung4] -> NexusMind/config/app.yaml
+  memory/obituary-v4-hypotheses.md scripts/editor-decisions-snapshot.ts         [rung4] -> ovr.news/scripts/editor-decisions-snapshot.ts
+  memory/obituary-v4-hypotheses.md src/lib/data/editor/rules/obituary-summary.ts [rung4] -> ovr.news/src/lib/data/editor/rules/obituary-summary.ts
+  memory/opinion-genre-hypotheses.md NexusMind/filters/solutions/v6/base_scorer.py [rung4] -> NexusMind/filters/solutions/v6/base_scorer.py
+  memory/oracle-pricing-scheduling.md batch_scorer.py                              [rung2] -> ground_truth/batch_scorer.py
+  memory/oracle-pricing-scheduling.md score_deepseek_production.py                 [rung2] -> scripts/score_deepseek_production.py
+  memory/oracle-pricing-scheduling.md score_ollama_oracle.py                       [rung2] -> scripts/score_ollama_oracle.py
+  memory/oracle-pricing-scheduling.md validate_deepseek_oracle.py                  [rung2] -> scripts/validate_deepseek_oracle.py
+  memory/prefilter-length-floor-hypotheses.md gn_to_native_upgrade.py                      [rung4] -> FluxusSource/scripts/gn_to_native_upgrade.py
+  memory/prefilter-length-floor-hypotheses.md ld92_crosscheck.py                           [rung2] -> scripts/diagnostics/ld92_crosscheck.py
+  memory/prefilter-length-floor-hypotheses.md memory/gn-proxy-protocol.md                  [rung4] -> FluxusSource/memory/gn-proxy-protocol.md
+  memory/prefilter-length-floor-hypotheses.md output_schema.json                           [rung4] -> FluxusSource/config/schemas/output_schema.json
+  memory/prefilter-length-floor-hypotheses.md scripts/measure_prefilter_recall_cost.py     [rung4] -> NexusMind/scripts/measure_prefilter_recall_cost.py
+  memory/project-obituary-detector.md adjudication_worksheet_2026-07-30.md         [rung2] -> filters/common/obituary_detector/validation/artifacts/adjudication_worksheet_2026-07-30.md
+  memory/project-obituary-detector.md grades_panel_ovrnews_2026-07-21.jsonl        [rung2] -> filters/common/obituary_detector/validation/artifacts/grades_panel_ovrnews_2026-07-21.jsonl
+  memory/project-obituary-detector.md grades_panel_v4_band_2026-07-30.jsonl        [rung2] -> filters/common/obituary_detector/validation/artifacts/grades_panel_v4_band_2026-07-30.jsonl
+  memory/project-obituary-detector.md ovrnews_phase1_borderlines_2026-07-16.jsonl  [rung2] -> filters/common/obituary_detector/validation/artifacts/ovrnews_phase1_borderlines_2026-07-16.jsonl
+  memory/project-obituary-detector.md panel_audit_deepseek.py                      [rung2] -> filters/common/obituary_detector/validation/panel_audit_deepseek.py
+  memory/project-obituary-detector.md panel_obit.py                                [rung2] -> filters/common/obituary_detector/validation/panel_obit.py
+  memory/project-obituary-detector.md relabel_deepseek.py                          [rung2] -> filters/common/obituary_detector/validation/relabel_deepseek.py
+  memory/project-obituary-detector.md rollup_obit.py                               [rung2] -> filters/common/obituary_detector/validation/rollup_obit.py
+  memory/project-obituary-detector.md score_borderlines.py                         [rung2] -> filters/common/obituary_detector/validation/score_borderlines.py
+  memory/project-obituary-detector.md v3_heldout_validation.json                   [rung2] -> filters/common/obituary_detector/validation/artifacts/v3_heldout_validation.json
+  memory/project-obituary-detector.md v3_june_validation.json                      [rung2] -> filters/common/obituary_detector/validation/artifacts/v3_june_validation.json
+  memory/project-obituary-detector.md v4/calibration_report.json                   [rung2] -> filters/common/obituary_detector/v4/calibration_report.json
+  memory/project-obituary-detector.md validation/artifacts/v4_oppoint_check_2026-07-30.json [rung2] -> filters/common/obituary_detector/validation/artifacts/v4_oppoint_check_2026-07-30.json
+  memory/project-obituary-detector.md validation/artifacts/worksheet_ovrnews_flagged_2026-07-29_farouq.jsonl [rung2] -> filters/common/obituary_detector/validation/artifacts/worksheet_ovrnews_flagged_2026-07-29_farouq.jsonl
+  memory/project-obituary-detector.md validation/score_borderlines.py              [rung2] -> filters/common/obituary_detector/validation/score_borderlines.py
+  memory/project-obituary-detector.md worksheet_ovrnews_scored_2026-07-27.jsonl    [rung2] -> filters/common/obituary_detector/validation/artifacts/worksheet_ovrnews_scored_2026-07-27.jsonl
+  memory/score-batch-shape-noise.md diff_box_parity.py                           [rung2] -> scripts/verification/diff_box_parity.py
+  memory/score-batch-shape-noise.md ground_truth_gate.py                         [rung2] -> scripts/gate/ground_truth_gate.py
+  memory/score-batch-shape-noise.md scripts/main.py                              [rung4] -> NexusMind/scripts/main.py
+  memory/session-log.md  ../docs/evidence/2026-08-22-uplifting-v7-corpus-provenance.md [rung1b] -> docs/evidence/2026-08-22-uplifting-v7-corpus-provenance.md
+  memory/session-log.md  ../docs/evidence/2026-08-23-gate-a-two-oracle-run.md [rung1b] -> docs/evidence/2026-08-23-gate-a-two-oracle-run.md
+  memory/session-log.md  ../docs/evidence/2026-08-23-length-floor-by-script.md [rung1b] -> docs/evidence/2026-08-23-length-floor-by-script.md
+  memory/session-log.md  ARTICLE_RECORD_REGISTER.md                   [rung4] -> NexusMind/docs/ARTICLE_RECORD_REGISTER.md
+  memory/session-log.md  NexusMind/data/exports/aegis/latest/narrative_risk.json [rung4] -> NexusMind/data/exports/aegis/latest/narrative_risk.json
+  memory/session-log.md  NexusMind/deploy/smoke_test_articles.jsonl   [rung4] -> NexusMind/deploy/smoke_test_articles.jsonl
+  memory/session-log.md  NexusMind/scripts/research/measure_shadow_kept_share.py [rung4] -> NexusMind/scripts/research/measure_shadow_kept_share.py
+  memory/session-log.md  NexusMind/scripts/research/verify_pause_and_hoist.py [rung4] -> NexusMind/scripts/research/verify_pause_and_hoist.py
+  memory/session-log.md  corroboration-feature-hypotheses.md          [rung1b] -> memory/corroboration-feature-hypotheses.md
+  memory/session-log.md  project_session_2026_08_01_afternoon.md      [rung1b] -> memory/project_session_2026_08_01_afternoon.md
+  memory/session-log.md  project_session_2026_08_03_evening.md        [rung1b] -> memory/project_session_2026_08_03_evening.md
+  memory/session-log.md  project_session_2026_08_05.md                [rung1b] -> memory/project_session_2026_08_05.md
+  memory/session-log.md  project_session_2026_08_05_evening.md        [rung1b] -> memory/project_session_2026_08_05_evening.md
+  memory/session-log.md  project_session_2026_08_06.md                [rung1b] -> memory/project_session_2026_08_06.md
+  memory/session-log.md  project_session_2026_08_06_afternoon.md      [rung1b] -> memory/project_session_2026_08_06_afternoon.md
+  memory/session-log.md  project_session_2026_08_06_evening.md        [rung1b] -> memory/project_session_2026_08_06_evening.md
+  memory/session-log.md  project_session_2026_08_07.md                [rung1b] -> memory/project_session_2026_08_07.md
+  memory/session-log.md  project_session_2026_08_07_evening.md        [rung1b] -> memory/project_session_2026_08_07_evening.md
+  memory/session-log.md  project_session_2026_08_07_late.md           [rung1b] -> memory/project_session_2026_08_07_late.md
+  memory/session-log.md  project_session_2026_08_07_night.md          [rung1b] -> memory/project_session_2026_08_07_night.md
+  memory/session-log.md  project_session_2026_08_08.md                [rung1b] -> memory/project_session_2026_08_08.md
+  memory/session-log.md  project_session_2026_08_11.md                [rung1b] -> memory/project_session_2026_08_11.md
+  memory/session-log.md  project_session_2026_08_11_afternoon.md      [rung1b] -> memory/project_session_2026_08_11_afternoon.md
+  memory/session-log.md  project_session_2026_08_11_evening.md        [rung1b] -> memory/project_session_2026_08_11_evening.md
+  memory/session-log.md  project_session_2026_08_11_midday.md         [rung1b] -> memory/project_session_2026_08_11_midday.md
+  memory/session-log.md  project_session_2026_08_12_afternoon.md      [rung1b] -> memory/project_session_2026_08_12_afternoon.md
+  memory/session-log.md  project_session_2026_08_12_evening.md        [rung1b] -> memory/project_session_2026_08_12_evening.md
+  memory/session-log.md  project_session_2026_08_13.md                [rung1b] -> memory/project_session_2026_08_13.md
+  memory/session-log.md  project_session_2026_08_13_evening.md        [rung1b] -> memory/project_session_2026_08_13_evening.md
+  memory/session-log.md  project_session_2026_08_14_late.md           [rung1b] -> memory/project_session_2026_08_14_late.md
+  memory/session-log.md  project_session_2026_08_15.md                [rung1b] -> memory/project_session_2026_08_15.md
+  memory/session-log.md  project_session_2026_08_15_late.md           [rung1b] -> memory/project_session_2026_08_15_late.md
+  memory/session-log.md  project_session_2026_08_15_night.md          [rung1b] -> memory/project_session_2026_08_15_night.md
+  memory/session-log.md  project_session_2026_08_16.md                [rung1b] -> memory/project_session_2026_08_16.md
+  memory/session-log.md  project_session_2026_08_16_evening.md        [rung1b] -> memory/project_session_2026_08_16_evening.md
+  memory/session-log.md  project_session_2026_08_17.md                [rung1b] -> memory/project_session_2026_08_17.md
+  memory/session-log.md  project_session_2026_08_20.md                [rung1b] -> memory/project_session_2026_08_20.md
+  memory/session-log.md  project_session_2026_08_21.md                [rung1b] -> memory/project_session_2026_08_21.md
+  memory/session-log.md  project_session_2026_08_22.md                [rung1b] -> memory/project_session_2026_08_22.md
+  memory/session-log.md  project_session_2026_08_23.md                [rung1b] -> memory/project_session_2026_08_23.md
+  memory/session-log.md  project_session_2026_08_23_evening.md        [rung1b] -> memory/project_session_2026_08_23_evening.md
+  memory/session-log.md  project_session_2026_08_24.md                [rung1b] -> memory/project_session_2026_08_24.md
+  memory/session-log.md  project_session_2026_08_24_evening.md        [rung1b] -> memory/project_session_2026_08_24_evening.md
+  memory/session-log.md  project_session_2026_08_24_midday.md         [rung1b] -> memory/project_session_2026_08_24_midday.md
+  memory/session-log.md  project_session_2026_08_25.md                [rung1b] -> memory/project_session_2026_08_25.md
+  memory/session-log.md  project_session_2026_08_25_evening.md        [rung1b] -> memory/project_session_2026_08_25_evening.md
+  memory/session-log.md  project_session_2026_08_26.md                [rung1b] -> memory/project_session_2026_08_26.md
+  memory/session-log.md  refcheck.py                                  [rung2] -> tests/fixtures/reference-integrity/refcheck.py
+  memory/session-log.md  stamp_census.py                              [rung4] -> NexusMind/scripts/stamp_census.py
+  memory/session-log.md  uplifting-oracle-genre-hypotheses.md         [rung1b] -> memory/uplifting-oracle-genre-hypotheses.md
+  memory/solutions-v6-dimension-hypotheses.md google-news-corpus-hypotheses.md             [rung1b] -> memory/google-news-corpus-hypotheses.md
+  memory/solutions-v6-dimension-hypotheses.md prefilter-length-floor-hypotheses.md         [rung1b] -> memory/prefilter-length-floor-hypotheses.md
+  memory/solutions-v6-dimension-hypotheses.md score-batch-shape-noise.md                   [rung1b] -> memory/score-batch-shape-noise.md
+  memory/stamp-contract-integrity.md FluxusSource/scripts/validate_output.py      [rung4] -> FluxusSource/scripts/validate_output.py
+  memory/stamp-contract-integrity.md NexusMind/docs/ARTICLE_RECORD_REGISTER.md    [rung4] -> NexusMind/docs/ARTICLE_RECORD_REGISTER.md
+  memory/stamp-contract-integrity.md NexusMind/scripts/validate_production_contract.py [rung4] -> NexusMind/scripts/validate_production_contract.py
+  memory/stamp-contract-integrity.md NexusMind/validate/validate_contract_a.py    [rung4] -> NexusMind/validate/validate_contract_a.py
+  memory/stamp-contract-integrity.md config/domains/credibility.yaml              [rung4] -> FluxusSource/config/domains/credibility.yaml
+  memory/stamp-contract-integrity.md deploy/gpu-server/main.py                    [rung4] -> NexusMind/deploy/gpu-server/main.py
+  memory/stamp-contract-integrity.md docs/article_record_status.yaml              [rung4] -> NexusMind/docs/article_record_status.yaml
+  memory/stamp-contract-integrity.md nexusmind-data-sources.md                    [rung1b] -> memory/nexusmind-data-sources.md
+  memory/stamp-contract-integrity.md ovr.news/src/lib/data/validate.ts            [rung4] -> ovr.news/src/lib/data/validate.ts
+  memory/stamp-contract-integrity.md prefilter-length-floor-hypotheses.md         [rung1b] -> memory/prefilter-length-floor-hypotheses.md
+  memory/stamp-contract-integrity.md run_verifies.sh                              [rung4] -> pipeline-atlas/ops/run_verifies.sh
+  memory/stamp-contract-integrity.md scripts/stamp_census.py                      [rung4] -> NexusMind/scripts/stamp_census.py
+  memory/stamp-contract-integrity.md tests/unit/test_contracts.py                 [rung4] -> NexusMind/tests/unit/test_contracts.py
+  memory/stamp-contract-integrity.md validate_production_contract.py              [rung4] -> NexusMind/scripts/validate_production_contract.py
+  memory/thriving-v1-scoring.md datasets/raw/thriving_v1/oracle_input.jsonl  [rung3] -> runtime state
+  memory/thriving-v1-scoring.md datasets/scored/thriving_v1_averaged_full/thriving_v1_averaged.jsonl [rung3] -> runtime state
+  memory/uplifting-oracle-genre-hypotheses.md HUMAN_THRIVING_V8_PLAN.md                    [rung2] -> docs/HUMAN_THRIVING_V8_PLAN.md
+  memory/uplifting-oracle-genre-hypotheses.md NexusMind/src/scoring/primary_literature_cap.py [rung4] -> NexusMind/src/scoring/primary_literature_cap.py
+  memory/uplifting-oracle-genre-hypotheses.md deploy/gpu-server/main.py                    [rung4] -> NexusMind/deploy/gpu-server/main.py
+  memory/uplifting-oracle-genre-hypotheses.md docs/BRAND.md                                [rung4] -> ovr.news/docs/BRAND.md
+  memory/uplifting-oracle-genre-hypotheses.md scripts/main.py                              [rung4] -> NexusMind/scripts/main.py
+  memory/uplifting-oracle-genre-hypotheses.md scripts/run_filters.py                       [rung4] -> NexusMind/scripts/run_filters.py
+  memory/uplifting-v7-training.md datasets/scored/uplifting_v7_combined/all_scored.jsonl [rung3] -> runtime state
+  memory/violence-promotion-v1-hypotheses.md NexusMind/scripts/research/measure_shadow_kept_share.py [rung4] -> NexusMind/scripts/research/measure_shadow_kept_share.py
+  memory/violence-promotion-v1-hypotheses.md scripts/main.py                              [rung4] -> NexusMind/scripts/main.py
+  memory/working-rules.md MEMORY.md                                    [rung1b] -> memory/MEMORY.md
+  memory/working-rules.md NexusMind/image_analysis.py                  [rung4] -> NexusMind/src/preprocessing/image_analysis.py
+  memory/working-rules.md contracts/CHANGELOG.md                       [rung4] -> NexusMind/contracts/CHANGELOG.md
+  memory/working-rules.md deploy/smoke_test_articles.jsonl             [rung4] -> NexusMind/deploy/smoke_test_articles.jsonl
+  memory/working-rules.md docs/hypothesis-log.md                       [rung4] -> NexusMind/docs/hypothesis-log.md
+  memory/working-rules.md gotcha-log.md                                [rung1b] -> memory/gotcha-log.md
+  memory/working-rules.md nexusmind-cleanup.service                    [unit] -> NexusMind/deploy/systemd/nexusmind-cleanup.service
+  memory/working-rules.md nexusmind.service                            [rung4] -> NexusMind/deploy/systemd/nexusmind.service
+  memory/working-rules.md validate_production_contract.py              [rung4] -> NexusMind/scripts/validate_production_contract.py
+
+### GENERIC ARTIFACT NAMES (221 unique) — bare basenames naming a CLASS of file, not a locator
+  CLAUDE.md              base_scorer.py                               15 instances in tree
+  CLAUDE.md              calibration.json                             16 instances in tree
+  CLAUDE.md              config.yaml                                  33 instances in tree
+  CLAUDE.md              inference_hybrid.py                          13 instances in tree
+  CLAUDE.md              normalization.json                           12 instances in tree
+  docs/ARCHITECTURE.md   base_scorer.py                               15 instances in tree
+  docs/ARCHITECTURE.md   calibration.json                             16 instances in tree
+  docs/ARCHITECTURE.md   inference.py                                 21 instances in tree
+  docs/ARCHITECTURE.md   inference_hub.py                             13 instances in tree
+  docs/ARCHITECTURE.md   inference_hybrid.py                          13 instances in tree
+  docs/BINARY_GATE_STANDARD.md calibration_report.json                      4 instances in tree
+  docs/BINARY_GATE_STANDARD.md config.yaml                                  33 instances in tree
+  docs/BINARY_GATE_STANDARD.md oracle.py                                    2 instances in tree
+  docs/BINARY_GATE_STANDARD.md prompt.md                                    4 instances in tree
+  docs/FILTERS_ON_HOLD.md post_classifier.py                           2 instances in tree
+  docs/FILTER_PLAYBOOK.md calibration.json                             16 instances in tree
+  docs/FILTER_PLAYBOOK.md ground_truth_gate.json                       7 instances in tree
+  docs/FILTER_PLAYBOOK.md inference_hub.py                             13 instances in tree
+  docs/FILTER_PLAYBOOK.md normalization.json                           12 instances in tree
+  docs/FILTER_PLAYBOOK.md prefilter.py                                 29 instances in tree
+  docs/HUMAN_THRIVING_V8_PLAN.md DEEP_ROOTS.md                                5 instances in tree
+  docs/HUMAN_THRIVING_V8_PLAN.md README_MODEL.md                              4 instances in tree
+  docs/HUMAN_THRIVING_V8_PLAN.md STATUS.md                                    5 instances in tree
+  docs/HUMAN_THRIVING_V8_PLAN.md __init__.py                                  26 instances in tree
+  docs/HUMAN_THRIVING_V8_PLAN.md base_scorer.py                               15 instances in tree
+  docs/HUMAN_THRIVING_V8_PLAN.md calibration.json                             16 instances in tree
+  docs/HUMAN_THRIVING_V8_PLAN.md calibration_report.md                        6 instances in tree
+  docs/HUMAN_THRIVING_V8_PLAN.md config.yaml                                  33 instances in tree
+  docs/HUMAN_THRIVING_V8_PLAN.md ground_truth_gate.json                       7 instances in tree
+  docs/HUMAN_THRIVING_V8_PLAN.md inference.py                                 21 instances in tree
+  docs/HUMAN_THRIVING_V8_PLAN.md inference_hybrid.py                          13 instances in tree
+  docs/HUMAN_THRIVING_V8_PLAN.md normalization.json                           12 instances in tree
+  docs/HUMAN_THRIVING_V8_PLAN.md prompt-compressed.md                         31 instances in tree
+  docs/HUMAN_THRIVING_V8_PLAN.md test.jsonl                                   5 instances in tree
+  docs/HUMAN_THRIVING_V8_PLAN.md train.jsonl                                  3 instances in tree
+  docs/HUMAN_THRIVING_V8_PLAN.md training_history.json                        18 instances in tree
+  docs/HUMAN_THRIVING_V8_PLAN.md training_metadata.json                       18 instances in tree
+  docs/HUMAN_THRIVING_V8_PLAN.md val.jsonl                                    3 instances in tree
+  docs/NORMALIZATION_METHOD.md base_scorer.py                               15 instances in tree
+  docs/NORMALIZATION_METHOD.md config.yaml                                  33 instances in tree
+  docs/NORMALIZATION_METHOD.md normalization.json                           12 instances in tree
+  docs/PLAN_head_tail_deployment.md base_scorer.py                               15 instances in tree
+  docs/PLAN_head_tail_deployment.md config.yaml                                  33 instances in tree
+  docs/PLAN_head_tail_deployment.md prefilter.py                                 29 instances in tree
+  docs/PLAN_head_tail_deployment.md prompt-compressed.md                         31 instances in tree
+  docs/REPOSITORY_STRUCTURE.md __init__.py                                  26 instances in tree
+  docs/ROADMAP.md        calibration.json                             16 instances in tree
+  docs/RUNBOOK.md        base_prefilter.py                            2 instances in tree
+  docs/RUNBOOK.md        calibration.json                             16 instances in tree
+  docs/RUNBOOK.md        config.yaml                                  33 instances in tree
+  docs/RUNBOOK.md        normalization.json                           12 instances in tree
+  docs/RUNBOOK.md        prefilter.py                                 29 instances in tree
+  docs/RUNBOOK.md        prompt-compressed.md                         31 instances in tree
+  docs/TODO.md           STATUS.md                                    5 instances in tree
+  docs/TODO.md           base_scorer.py                               15 instances in tree
+  docs/TODO.md           calibration.json                             16 instances in tree
+  docs/TODO.md           config.yaml                                  33 instances in tree
+  docs/TODO.md           ground_truth_gate.json                       7 instances in tree
+  docs/TODO.md           inference_hub.py                             13 instances in tree
+  docs/TODO.md           inference_hybrid.py                          13 instances in tree
+  docs/TODO.md           normalization.json                           12 instances in tree
+  docs/TODO.md           prefilter.py                                 29 instances in tree
+  docs/TODO.md           training_history.json                        18 instances in tree
+  docs/TODO.md           training_metadata.json                       18 instances in tree
+  docs/WAY-OF-WORKING.md base_prefilter.py                            2 instances in tree
+  docs/WAY-OF-WORKING.md calibration.json                             16 instances in tree
+  docs/WAY-OF-WORKING.md inference.py                                 21 instances in tree
+  docs/WAY-OF-WORKING.md prefilter.py                                 29 instances in tree
+  docs/WAY-OF-WORKING.md prompt-compressed.md                         31 instances in tree
+  docs/adr/006-hybrid-inference-pipeline.md config.yaml                                  33 instances in tree
+  docs/adr/006-hybrid-inference-pipeline.md inference.py                                 21 instances in tree
+  docs/adr/006-hybrid-inference-pipeline.md inference_hybrid.py                          13 instances in tree
+  docs/adr/007-adapter-format-and-deployment.md inference.py                                 21 instances in tree
+  docs/adr/007-adapter-format-and-deployment.md inference_hub.py                             13 instances in tree
+  docs/adr/008-isotonic-score-calibration.md calibration.json                             16 instances in tree
+  docs/adr/014-cross-filter-percentile-normalization.md calibration.json                             16 instances in tree
+  docs/adr/014-cross-filter-percentile-normalization.md config.yaml                                  33 instances in tree
+  docs/adr/014-cross-filter-percentile-normalization.md normalization.json                           12 instances in tree
+  docs/adr/016-drop-tier-assignments.md base_scorer.py                               15 instances in tree
+  docs/adr/016-drop-tier-assignments.md config.yaml                                  33 instances in tree
+  docs/adr/018-prefilter-shape-harmonization.md prefilter.py                                 29 instances in tree
+  docs/adr/019-per-category-exclusion-overrides.md prefilter.py                                 29 instances in tree
+  docs/agents/AI_AUGMENTED_WORKFLOW.md config.yaml                                  33 instances in tree
+  docs/agents/AI_AUGMENTED_WORKFLOW.md prefilter.py                                 29 instances in tree
+  docs/agents/AI_AUGMENTED_WORKFLOW.md prompt-compressed.md                         31 instances in tree
+  docs/agents/FILTER_HARMONIZATION_GUIDE.md postfilter.py                                5 instances in tree
+  docs/agents/FILTER_HARMONIZATION_GUIDE.md prefilter.py                                 29 instances in tree
+  docs/agents/FILTER_HARMONIZATION_GUIDE.md prompt-compressed.md                         31 instances in tree
+  docs/agents/filter-development-guide.md adapter_config.json                          14 instances in tree
+  docs/agents/filter-development-guide.md adapter_model.safetensors                    8 instances in tree
+  docs/agents/filter-development-guide.md calibration.json                             16 instances in tree
+  docs/agents/filter-development-guide.md config.yaml                                  33 instances in tree
+  docs/agents/filter-development-guide.md inference.py                                 21 instances in tree
+  docs/agents/filter-development-guide.md inference_hub.py                             13 instances in tree
+  docs/agents/filter-development-guide.md test.jsonl                                   5 instances in tree
+  docs/agents/filter-development-guide.md test_inference.py                            2 instances in tree
+  docs/agents/filter-development-guide.md tokenizer.json                               12 instances in tree
+  docs/agents/filter-development-guide.md train.jsonl                                  3 instances in tree
+  docs/agents/filter-development-guide.md training_metadata.json                       18 instances in tree
+  docs/agents/filter-development-guide.md val.jsonl                                    3 instances in tree
+  docs/agents/templates/filter-package-validation-agent.md postfilter.py                                5 instances in tree
+  docs/checklists/implement-checklist.md calibration.json                             16 instances in tree
+  docs/checklists/implement-checklist.md config.yaml                                  33 instances in tree
+  docs/checklists/implement-checklist.md normalization.json                           12 instances in tree
+  docs/checklists/qa-checklist.md inference_hub.py                             13 instances in tree
+  docs/checklists/test-checklist.md calibration.json                             16 instances in tree
+  docs/checklists/test-checklist.md inference.py                                 21 instances in tree
+  docs/checklists/test-checklist.md inference_hub.py                             13 instances in tree
+  docs/decisions/2025-11-12-generic-training-data-preparation.md config.yaml                                  33 instances in tree
+  docs/decisions/2025-11-13-post-filter-architecture.md config.yaml                                  33 instances in tree
+  docs/decisions/2025-11-15-dimensional-scoring-terminology.md scored_batch_001.jsonl                       4 instances in tree
+  docs/decisions/2026-08-05-tdm-opt-out-training-data.md TRAINING_REPORT.md                           3 instances in tree
+  docs/decisions/2026-08-05-tdm-opt-out-training-data.md adapter_config.json                          14 instances in tree
+  docs/decisions/2026-08-05-tdm-opt-out-training-data.md adapter_model.safetensors                    8 instances in tree
+  docs/decisions/2026-08-05-tdm-opt-out-training-data.md evaluate_models.py                           2 instances in tree
+  docs/decisions/2026-08-05-tdm-opt-out-training-data.md tokenizer.json                               12 instances in tree
+  docs/decisions/2026-08-05-tdm-opt-out-training-data.md tokenizer_config.json                        17 instances in tree
+  docs/decisions/2026-08-28-v8-gate0-corpus-spec.md config.yaml                                  33 instances in tree
+  docs/evidence/2026-08-09-cross-box-parity-uplifting-v7.md adapter_config.json                          14 instances in tree
+  docs/evidence/2026-08-09-cross-box-parity-uplifting-v7.md base_scorer.py                               15 instances in tree
+  docs/evidence/2026-08-09-cross-box-parity-uplifting-v7.md calibration.json                             16 instances in tree
+  docs/evidence/2026-08-09-cross-box-parity-uplifting-v7.md config.yaml                                  33 instances in tree
+  docs/evidence/2026-08-09-cross-box-parity-uplifting-v7.md ground_truth_gate.json                       7 instances in tree
+  docs/evidence/2026-08-09-cross-box-parity-uplifting-v7.md inference.py                                 21 instances in tree
+  docs/evidence/2026-08-09-cross-box-parity-uplifting-v7.md test.jsonl                                   5 instances in tree
+  docs/evidence/2026-08-09-cross-box-parity-uplifting-v7.md tokenizer.json                               12 instances in tree
+  docs/evidence/2026-08-09-cross-box-parity-uplifting-v7.md tokenizer_config.json                        17 instances in tree
+  docs/evidence/2026-08-10-b650-gpu-production-stack-parity.md calibration.json                             16 instances in tree
+  docs/evidence/2026-08-10-b650-gpu-production-stack-parity.md config.yaml                                  33 instances in tree
+  docs/evidence/2026-08-10-b650-gpu-production-stack-parity.md ground_truth_gate.json                       7 instances in tree
+  docs/evidence/2026-08-10-b650-gpu-production-stack-parity.md inference.py                                 21 instances in tree
+  docs/evidence/2026-08-10-fleet-deploy-gate-completion.md normalization.json                           12 instances in tree
+  docs/evidence/2026-08-10-uplifting-v7-op-point-4.5-VERIFIED.md base_scorer.py                               15 instances in tree
+  docs/evidence/2026-08-10-uplifting-v7-op-point-4.5-VERIFIED.md config.yaml                                  33 instances in tree
+  docs/evidence/2026-08-10-uplifting-v7-op-point-4.5-VERIFIED.md ground_truth_gate.json                       7 instances in tree
+  docs/evidence/2026-08-10-uplifting-v7-op-point-4.5-VERIFIED.md normalization.json                           12 instances in tree
+  docs/evidence/2026-08-10-uplifting-v7-threshold-sweep-102.md calibration.json                             16 instances in tree
+  docs/evidence/2026-08-10-uplifting-v7-threshold-sweep-102.md ground_truth_gate.json                       7 instances in tree
+  docs/evidence/2026-08-10-uplifting-v7-threshold-sweep-102.md normalization.json                           12 instances in tree
+  docs/evidence/2026-08-12-cd-v5-cross-oracle-arm-a.md config.yaml                                  33 instances in tree
+  docs/evidence/2026-08-12-gn-share-of-normalization-cdf.md normalization.json                           12 instances in tree
+  docs/evidence/2026-08-20-uplifting-v7-class-a-valence-bakeoff.md config.yaml                                  33 instances in tree
+  docs/evidence/2026-08-22-uplifting-v7-corpus-provenance.md prefilter.py                                 29 instances in tree
+  docs/evidence/2026-08-23-step1-rewrite-r2-r3.md postfilter.py                                5 instances in tree
+  docs/evidence/2026-08-28-v8-phase0-drawable-population.md config.yaml                                  33 instances in tree
+  docs/evidence/adr/nexusmind-ADR-001-cross-filter-score-normalization.md base_scorer.py                               15 instances in tree
+  docs/evidence/adr/nexusmind-ADR-014-cross-filter-percentile-normalization.md calibration.json                             16 instances in tree
+  docs/evidence/adr/nexusmind-ADR-014-cross-filter-percentile-normalization.md normalization.json                           12 instances in tree
+  docs/evidence/adr/nexusmind-ADR-018-normalization-safety-valve.md config.yaml                                  33 instances in tree
+  docs/evidence/adr/nexusmind-ADR-018-normalization-safety-valve.md normalization.json                           12 instances in tree
+  docs/guides/distillation-logging-system.md metrics.jsonl                                6 instances in tree
+  docs/guides/distillation-logging-system.md session_summary.json                         4 instances in tree
+  docs/guides/filter-creation-workflow.md base_prefilter.py                            2 instances in tree
+  docs/guides/filter-creation-workflow.md base_scorer.py                               15 instances in tree
+  docs/guides/filter-creation-workflow.md calibration.json                             16 instances in tree
+  docs/guides/filter-creation-workflow.md config.yaml                                  33 instances in tree
+  docs/guides/filter-creation-workflow.md inference.py                                 21 instances in tree
+  docs/guides/filter-creation-workflow.md inference_hub.py                             13 instances in tree
+  docs/guides/filter-creation-workflow.md inference_hybrid.py                          13 instances in tree
+  docs/guides/filter-creation-workflow.md prefilter.py                                 29 instances in tree
+  docs/guides/filter-creation-workflow.md prompt-compressed.md                         31 instances in tree
+  docs/nature_recovery_v4_DEPLOY_COMPLETION.md normalization.json                           12 instances in tree
+  docs/nature_recovery_v4_RUNBOOK.md train.py                                     2 instances in tree
+  docs/nature_recovery_v4_plan.md STATUS.md                                    5 instances in tree
+  docs/nature_recovery_v4_plan.md __init__.py                                  26 instances in tree
+  docs/nature_recovery_v4_plan.md calibration.json                             16 instances in tree
+  docs/nature_recovery_v4_plan.md calibration_report.md                        6 instances in tree
+  docs/nature_recovery_v4_plan.md normalization.json                           12 instances in tree
+  docs/normalization-deploy-hardening-plan.md normalization.json                           12 instances in tree
+  docs/normalization-deploy-hardening-plan.md prompt-compressed.md                         31 instances in tree
+  memory/calibration-history.md config.yaml                                  33 instances in tree
+  memory/calibration-history.md normalization.json                           12 instances in tree
+  memory/cd-v6-probe-hypotheses.md STATUS.md                                    5 instances in tree
+  memory/cd-v6-probe-hypotheses.md adapter_model.safetensors                    8 instances in tree
+  memory/cd-v6-probe-hypotheses.md calibration.json                             16 instances in tree
+  memory/cd-v6-probe-hypotheses.md config.yaml                                  33 instances in tree
+  memory/cd-v6-probe-hypotheses.md inference_hybrid.py                          13 instances in tree
+  memory/cd-v6-probe-hypotheses.md normalization.json                           12 instances in tree
+  memory/cd-v6-probe-hypotheses.md prefilter.py                                 29 instances in tree
+  memory/cross-repo-prioritization.md normalization.json                           12 instances in tree
+  memory/filter-doc-standard.md DEEP_ROOTS.md                                5 instances in tree
+  memory/filter-doc-standard.md README_MODEL.md                              4 instances in tree
+  memory/filter-doc-standard.md STATUS.md                                    5 instances in tree
+  memory/filter-doc-standard.md calibration_report.md                        6 instances in tree
+  memory/filter-doc-standard.md config.yaml                                  33 instances in tree
+  memory/filter-doc-standard.md prompt-compressed.md                         31 instances in tree
+  memory/filter-status.md calibration.json                             16 instances in tree
+  memory/filter-status.md config.yaml                                  33 instances in tree
+  memory/filter-status.md inference_hub.py                             13 instances in tree
+  memory/filter-status.md inference_hybrid.py                          13 instances in tree
+  memory/filter-status.md normalization.json                           12 instances in tree
+  memory/filter-status.md training_history.json                        18 instances in tree
+  memory/gemma3-model.md adapter_config.json                          14 instances in tree
+  memory/gotcha-log.md   STATUS.md                                    5 instances in tree
+  memory/gotcha-log.md   __init__.py                                  26 instances in tree
+  memory/gotcha-log.md   adapter_model.safetensors                    8 instances in tree
+  memory/gotcha-log.md   base_scorer.py                               15 instances in tree
+  memory/gotcha-log.md   calibration.json                             16 instances in tree
+  memory/gotcha-log.md   calibration_report.json                      4 instances in tree
+  memory/gotcha-log.md   config.yaml                                  33 instances in tree
+  memory/gotcha-log.md   ground_truth_gate.json                       7 instances in tree
+  memory/gotcha-log.md   inference.py                                 21 instances in tree
+  memory/gotcha-log.md   inference_hub.py                             13 instances in tree
+  memory/gotcha-log.md   inference_hybrid.py                          13 instances in tree
+  memory/gotcha-log.md   normalization.json                           12 instances in tree
+  memory/gotcha-log.md   nr_v4_positives.log                          2 instances in tree
+  memory/gotcha-log.md   prefilter.py                                 29 instances in tree
+  memory/gotcha-log.md   tokenizer.json                               12 instances in tree
+  memory/gotcha-log.md   train.py                                     2 instances in tree
+  memory/gotcha-log.md   training_history.json                        18 instances in tree
+  memory/gotcha-log.md   training_metadata.json                       18 instances in tree
+  memory/hypothesis-ledger.md SKILL.md                                     2 instances in tree
+  memory/oracle-pricing-scheduling.md nr_v4_batch.log                              2 instances in tree
+  memory/oracle-pricing-scheduling.md nr_v4_positives.log                          2 instances in tree
+  memory/prefilter-length-floor-hypotheses.md config.yaml                                  33 instances in tree
+  memory/uplifting-oracle-genre-hypotheses.md postfilter.py                                5 instances in tree
+  memory/uplifting-oracle-genre-hypotheses.md prefilter.py                                 29 instances in tree
+  memory/uplifting-v7-training.md calibration.json                             16 instances in tree
+  memory/uplifting-v7-training.md test.jsonl                                   5 instances in tree
+  memory/uplifting-v7-training.md train.jsonl                                  3 instances in tree
+  memory/uplifting-v7-training.md val.jsonl                                    3 instances in tree
+
+### SKIPPED AS DECLARED-PLACEHOLDER (41 unique) — never meant to resolve; counted, not dropped
+  docs/CONTRACTS_CHECK_ARTEFACT.md <name>.service
+  docs/CONTRACTS_CHECK_ARTEFACT.md <name>.timer
+  docs/CONTRACTS_CHECK_ARTEFACT.md <nexusmind_root>/data/contract_check.json
+  docs/adr/008-isotonic-score-calibration.md filters/<name>/<version>/base_scorer.py
+  docs/adr/008-isotonic-score-calibration.md filters/<name>/<version>/calibration.json
+  docs/decisions/2026-08-26-prefiltered-out-retention.md NexusMind/data/prefiltered_out/<gate>/flagged_YYYYMMDD_HHMMSS_<n>.jsonl
+  docs/guides/filter-creation-workflow.md filters/<name>/v1/config.yaml
+  docs/guides/filter-creation-workflow.md filters/<name>/v1/prefilter.py
+  docs/guides/filter-creation-workflow.md filters/<name>/v1/probe/embedding_probe_e5small.pkl
+  docs/guides/filter-creation-workflow.md filters/<name>/v1/prompt-compressed.md
+  memory/b650-gpu.md     pyvenv.cfg
+  memory/cd-v6-probe-hypotheses.md filtered_20260813_171905.jsonl
+  memory/corroboration-feature-hypotheses.md adjudicate.csv
+  memory/corroboration-feature-hypotheses.md answer_key.json
+  memory/corroboration-feature-hypotheses.md feature_probe2.py
+  memory/corroboration-feature-hypotheses.md per_probe.jsonl
+  memory/corroboration-feature-hypotheses.md precision_panel_v3/answer_key.json
+  memory/corroboration-feature-hypotheses.md recall_disputed.json
+  memory/corroboration-feature-hypotheses.md recall_grid.json
+  memory/corroboration-feature-hypotheses.md semeval_scores.json
+  memory/cross-repo-prioritization.md logo300.png
+  memory/date-error-recency-boost-hypotheses.md content_items_20260814_121003.jsonl
+  memory/gotcha-log.md   _01_afternoon.md
+  memory/gotcha-log.md   _02.md
+  memory/gotcha-log.md   _03.md
+  memory/gotcha-log.md   _03_evening.md
+  memory/gotcha-log.md   collection_metadata.json
+  memory/gotcha-log.md   filters/<name>/<version>/config.yaml
+  memory/gotcha-log.md   filters/<name>/<version>/probe/embedding_probe_e5small.pkl
+  memory/gotcha-log.md   gate_diag.py
+  memory/gotcha-log.md   gen_ab.py
+  memory/gotcha-log.md   hcv1_probe.py
+  memory/gotcha-log.md   ovr.news/principes.md
+  memory/gotcha-log.md   partB_gate.py
+  memory/gotcha-log.md   principes.md
+  memory/gotcha-log.md   scripts/main.py
+  memory/gotcha-log.md   threshold_sweep.json
+  memory/obituary-v4-hypotheses.md belonging/filtered_20260801_085409.jsonl
+  memory/obituary-v4-hypotheses.md cultural_discovery/filtered_20260801_004817.jsonl
+  memory/project-obituary-detector.md content_items_20260731_041042.jsonl
+  memory/session-log.md  verify_deploy_20260825.py
+
+### SKIPPED AS ASSERTED-ABSENT (7 unique)
+  CLAUDE.md              hypothesis-log.md
+  docs/HUMAN_THRIVING_V8_PLAN.md prefilter.py
+  docs/decisions/framework-adoption-history.md hypothesis-log.md
+  memory/corroboration-feature-hypotheses.md NexusMind/scripts/research/nm188_mojibake_derived.py
+  memory/filter-doc-standard.md prefilter.py
+  memory/gotcha-log.md   NexusMind/scripts/research/nm188_mojibake_derived.py
+  memory/stamp-contract-integrity.md full_text_fetcher.py
+
+### LINK URLS DECLINED (54 unique) — masking a label is a SILENT LOSS unless the URL is named
+  CLAUDE.md              https://github.com/ducroq/augmented-engineering external URL
+  docs/ARCHITECTURE.md   #core-principles                             bare anchor
+  docs/ARCHITECTURE.md   #deployment                                  bare anchor
+  docs/ARCHITECTURE.md   #filter-package-architecture                 bare anchor
+  docs/ARCHITECTURE.md   #hybrid-inference-pipeline                   bare anchor
+  docs/ARCHITECTURE.md   #key-documents                               bare anchor
+  docs/ARCHITECTURE.md   #knowledge-distillation-pipeline             bare anchor
+  docs/ARCHITECTURE.md   #score-calibration                           bare anchor
+  docs/ARCHITECTURE.md   #shared-infrastructure                       bare anchor
+  docs/ARCHITECTURE.md   #training-pipeline                           bare anchor
+  docs/MODEL_TRAINING_EXPLAINED.md #knowledge-distillation                      bare anchor
+  docs/MODEL_TRAINING_EXPLAINED.md #our-training-process                        bare anchor
+  docs/MODEL_TRAINING_EXPLAINED.md #technical-deep-dive                         bare anchor
+  docs/MODEL_TRAINING_EXPLAINED.md #the-benchmarking-challenge                  bare anchor
+  docs/MODEL_TRAINING_EXPLAINED.md #the-big-picture                             bare anchor
+  docs/MODEL_TRAINING_EXPLAINED.md #what-is-lora-training                       bare anchor
+  docs/MODEL_TRAINING_EXPLAINED.md #what-is-qwen                                bare anchor
+  docs/_archive/guides/qwen-finetuning-guide.md #environment-setup                           bare anchor
+  docs/_archive/guides/qwen-finetuning-guide.md #hardware-requirements                       bare anchor
+  docs/_archive/guides/qwen-finetuning-guide.md #model-evaluation                            bare anchor
+  docs/_archive/guides/qwen-finetuning-guide.md #overview                                    bare anchor
+  docs/_archive/guides/qwen-finetuning-guide.md #performance-benchmarks                      bare anchor
+  docs/_archive/guides/qwen-finetuning-guide.md #training-approach                           bare anchor
+  docs/_archive/guides/qwen-finetuning-guide.md #training-process                            bare anchor
+  docs/_archive/guides/qwen-finetuning-guide.md #troubleshooting                             bare anchor
+  docs/_archive/guides/qwen-finetuning-guide.md ../decisions/                                directory
+  docs/_archive/guides/remote-sync-guide.md https://github.com/ducroq/llm-distillery/issues external URL
+  docs/agents/filter-development-guide.md https://huggingface.co/username/{filter_name}-v1 external URL
+  docs/articles/needle-in-haystack-draft.md https://github.com/ducroq/llm-distillery     external URL
+  docs/articles/needle-in-haystack-draft.md https://ovr.news                             external URL
+  docs/decisions/2025-11-10-model-selection-qwen-1.5b.md https://huggingface.co/Qwen/Qwen2.5-1.5B     external URL
+  docs/decisions/2025-11-10-model-selection-qwen-1.5b.md https://huggingface.co/pricing               external URL
+  docs/evidence/2026-08-10-uplifting-v7-threshold-sweep-102.md #40-vs-45-what-the-numbers-do-and-do-not-establish bare anchor
+  docs/evidence/README.md ../../                                       directory
+  docs/evidence/adr/nexusmind-ADR-018-normalization-safety-valve.md https://github.com/ducroq/llm-distillery/issues/64 external URL
+  docs/evidence/adr/ovr-news-ADR-029-chief-editor-layer.md https://github.com/ducroq/NexusMind/issues/108 external URL
+  docs/evidence/adr/ovr-news-ADR-029-chief-editor-layer.md https://github.com/ducroq/ovr.news/issues/161 external URL
+  docs/evidence/adr/ovr-news-ADR-037-llm-editorial-review.md https://github.com/ducroq/NexusMind/issues/171 external URL
+  docs/evidence/adr/ovr-news-ADR-037-llm-editorial-review.md https://github.com/ducroq/ovr.news/issues/200 external URL
+  docs/evidence/articles/needle-in-haystack-draft.md /contact                                     extension outside whitelist (none)
+
+### DROPPED AS IDENTIFIER-SHAPED (1 unique) — filename-shaped whitelist entry, not a path
+  docs/decisions/framework-adoption-history.md process.env
+
+### EXTENSIONS IN TREE NOT IN WHITELIST (dropped by the extractor)
+  TAG, bin, example, gitignore, gitkeep, model
+
+### FINDINGS BY DIRECTORY — attribution, because a total cannot be tiered
+  docs/                                         153 unique in   38 file(s)
+  docs/_archive/                                  1 unique in    1 file(s)
+  docs/_archive/guides/                          13 unique in    5 file(s)
+  docs/adr/                                      15 unique in   26 file(s)
+  docs/agents/                                   23 unique in    7 file(s)
+  docs/agents/templates/                          6 unique in    7 file(s)
+  docs/articles/                                  1 unique in    5 file(s)
+  docs/decisions/                                70 unique in   24 file(s)
+  docs/evidence/                                 21 unique in   22 file(s)
+  docs/evidence/2026-08-24-deepseek-token-counts/    2 unique in    1 file(s)
+  docs/evidence/adr/                             20 unique in    6 file(s)
+  docs/guides/                                    1 unique in    4 file(s)
+  docs/proposals/                                 4 unique in    2 file(s)
+  docs/reports/                                   4 unique in    3 file(s)
+  docs/templates/                                 4 unique in    2 file(s)
+  memory/                                         1 unique in   32 file(s)
+  -- clean: <outside repo>, <repo root>, docs/agents/examples, docs/articles/nature_recovery_v4_evidence, docs/checklists, docs/evidence/articles, docs/evidence/reports, docs/experiments, docs/ideas, docs/references
