@@ -135,6 +135,10 @@ b_final = rng.sample(b_pool, N_B)
 
 manifest = {
     "seed": SEED,
+    # The resolved glob, so a fixture draw and a production draw are distinguishable
+    # by more than a filename. DRAW200_ARCHIVE is read at import; without this the
+    # manifest cannot tell you which population it described.
+    "archive": ARCHIVE,
     "files": len(FILES),
     "window": [FILES[0].split("/")[-1], FILES[-1].split("/")[-1]],
     "stats": dict(stats),

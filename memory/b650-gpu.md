@@ -73,13 +73,14 @@ ssh b650-gpu        # account is `jeroen` (NOT jwasys); works from situla and sa
   `cuda-pathfinder`, …), so do not call it identical. (torch 2.11.0+cu130, transformers
   5.0.0, peft 0.18.1, numpy 2.4.2, sklearn 1.8.0). The old `venv/` is untouched,
   because the 2026-08-09 parity dumps cite it as provenance.
-  **On CPU with these pins, b650 is bit-identical to production: 660/660 rows,
-  0 verdict flips at every threshold.** It is a production-exact measuring
-  instrument — quote its numbers without qualification. **On GPU it is not**: 1
-  flip at 4.0 and 3 at 4.5, so use CUDA for speed (~2 min vs ~16) and confirm on
-  CPU before quoting an op-point number. Decomposed one variable at a time: host
+  **On CPU with these pins, b650 is bit-identical to GPU-SERVER-ON-CPU (run P):
+  660/660 rows, 0 verdict flips at every threshold.** ⛔ **That is a run label, not
+  production** — production serves on GPU, so this does NOT license quoting b650-CPU
+  numbers against stored production output; see the ⛔ block below, which this
+  sentence contradicted until 2026-08-29. Decomposed one variable at a time: host
   contributes **nothing**, the library stack is worth 3 flips at 4.5, CPU→CUDA is
-  worth 3 at 4.5 and 1 at 4.0.
+  worth 3 at 4.5 and 1 at 4.0 — so use CUDA for speed (~2 min vs ~16), and match
+  production's device before comparing against production's numbers.
   ⛔ **The concrete act to avoid: diffing ANY b650 replay against STORED PRODUCTION
   SCORES without first matching production's device.** **Production serves on GPU**
   (`memory/filter-status.md`, `memory/project_session_2026_08_09_night.md`), so the

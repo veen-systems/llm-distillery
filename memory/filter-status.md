@@ -237,8 +237,9 @@ MAE but is indistinguishable on the decision — 5 articles of 660 change side,
 inside the 37-row (5.6%) indeterminate band. Do not refit or drop it on the MAE
 reading.
 
-**Caveats in the artifact, not just here:** run on b650 CPU, not the serving box
-(cross-box parity verified for the e5 probe path, **not** for the Gemma student);
+**Caveats in the artifact, not just here:** run on b650 CPU, while **production serves on
+GPU** — so the open term is the DEVICE (CPU→CUDA, |0.1956|, 3 flips at 4.5), not the box:
+the host contributes 0.0000 once pins and device match (2026-08-10 decomposition);
 the 32.7% test positive rate is enriched and does not transfer to production's
 ~9% surfacing rate without reweighting.
 

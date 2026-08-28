@@ -19,13 +19,29 @@ OP = dict((n, t) for n, t, _ in S.TIER_THRESHOLDS)["medium"]
 GK_DIM, GK_MIN, GK_CAP = S.GATEKEEPER_DIMENSION, S.GATEKEEPER_MIN, S.GATEKEEPER_CAP
 ARMS = ("A", "B")
 RUNS = (1, 2, 3)
+
+# Every interval this script prints. Multiplicity was not corrected or acknowledged
+# in the first version, and it changes one verdict: the stratum-R op-point crossing
+# cell printed "EFFECT: CI excludes 0" on a lower bound of 0.2%, which survives no
+# correction. Reported alongside the nominal 95% rather than replacing it -- both
+# are informative, and hiding either is a choice.
+N_INTERVALS = 21
+
+
+def pctl(vals, lo_q, hi_q):
+    n = len(vals)
+    return vals[int(lo_q * n)], vals[min(int(hi_q * n), n - 1)]
 SCRATCH = Path(sys.argv[1])
 
 
 def wavg(scores):
     """Mirror of _process_raw_scores: clamp, weighted sum, then the gatekeeper cap.
-    No calibration (there is none for a v8 candidate) and no short-content cap
-    (uplifting v7 declares no short_content.cap -- verified, not assumed)."""
+    NO CALIBRATION, and the reason is stronger than "there is no v8 file":
+    filters/uplifting/v7/calibration.json DOES exist, and it is a STUDENT-output ->
+    oracle-scale isotonic map. These are ORACLE scores -- the calibration target --
+    so applying it would be wrong even if a v8 file existed. Do not add the call.
+    No short-content cap either: uplifting v7 declares no short_content.cap, so
+    _apply_short_content_cap is a pass-through (verified, not assumed)."""
     s = {d: max(0.0, min(10.0, float(scores[d]))) for d in DIMS}
     w = sum(s[d] * W[d] for d in DIMS)
     if GK_DIM is not None and s[GK_DIM] < GK_MIN and w > GK_CAP:
@@ -69,7 +85,7 @@ def boot_ci(rows, stat, n=4000, seed=11):
         samp = [rows[rng.randrange(len(rows))] for _ in rows]
         vals.append(stat(samp))
     vals.sort()
-    return (vals[int(0.025 * n)], vals[int(0.975 * n)])
+    return pctl(vals, 0.025, 0.975)
 
 
 print("=" * 78)
@@ -138,7 +154,8 @@ def diff_ci(rows_w, rows_b, stat, n=4000, seed=13):
         idx = [rng.randrange(k) for _ in range(k)]
         vals.append(stat([rows_b[j] for j in idx]) - stat([rows_w[j] for j in idx]))
     vals.sort()
-    return vals[int(0.025 * n)], vals[int(0.975 * n)]
+    a = 0.05 / N_INTERVALS
+    return pctl(vals, 0.025, 0.975), pctl(vals, a / 2, 1 - a / 2)
 
 
 for st in ("R", "B"):
@@ -166,12 +183,18 @@ for st in ("R", "B"):
             (f"share of pairs moving > {BAND} (#95 band)", share, w_rows, b_rows),
             ("mean |d|", meanabs, w_rows, b_rows),
             (f"op-point ({OP}) crossing rate", xrate, xw_rows, xb_rows)):
-        lo, hi = diff_ci(rw, rb, fn)
+        (lo, hi), (blo, bhi) = diff_ci(rw, rb, fn)
         holds = lo <= 0 <= hi
+        bholds = blo <= 0 <= bhi
         fmt = (lambda v: f"{v:.1%}") if "share" in label or "crossing" in label else (lambda v: f"{v:.3f}")
+        if holds:
+            verdict = "no effect above the null"
+        elif bholds:
+            verdict = f"NOT ESTABLISHED — nominal CI excludes 0, Bonferroni-{N_INTERVALS} [{fmt(blo)}, {fmt(bhi)}] does not"
+        else:
+            verdict = f"EFFECT — survives Bonferroni-{N_INTERVALS} [{fmt(blo)}, {fmt(bhi)}]"
         print(f"    {label:<40} within {fmt(fn(rw)):>7}  between {fmt(fn(rb)):>7}  "
-              f"diff 95% CI [{fmt(lo)}, {fmt(hi)}]  -> "
-              f"{'no effect above the null' if holds else 'EFFECT: CI excludes 0'}")
+              f"diff 95% CI [{fmt(lo)}, {fmt(hi)}]  -> {verdict}")
 
 print()
 print("DEVIATIONS from PREREGISTRATION.md, reported not substituted:")
@@ -199,12 +222,15 @@ for st in ("R", "B"):
     boot = sorted(statistics.mean([signed[rng.randrange(len(signed))]
                                    for _ in signed]) for _ in range(4000))
     lo, hi = boot[100], boot[3900]
+    a = 0.05 / N_INTERVALS
+    blo, bhi = boot[int(a / 2 * 4000)], boot[min(int((1 - a / 2) * 4000), 3999)]
     down = sum(1 for d in signed if d < -0.01)
     up = sum(1 for d in signed if d > 0.01)
     same = len(signed) - down - up
     print(f"  stratum {st} (n={len(rws)}): mean(A-B) on k=3 means = {statistics.mean(signed):+.3f}"
-          f"  95% CI [{lo:+.3f}, {hi:+.3f}]  -> "
-          f"{'DIRECTIONAL' if not (lo <= 0 <= hi) else 'no net shift'}")
+          f"  95% CI [{lo:+.3f}, {hi:+.3f}]"
+          f"  Bonferroni-{N_INTERVALS} [{blo:+.3f}, {bhi:+.3f}]  -> "
+          f"{'DIRECTIONAL' if not (blo <= 0 <= bhi) else ('directional at 95% only' if not (lo <= 0 <= hi) else 'no net shift')}")
     print(f"      rows where reordered scores LOWER {down}, higher {up}, unchanged {same}")
     for a in ARMS:
         print(f"      arm {a}: rows >= op-point {OP} at k=3: "
@@ -218,6 +244,128 @@ for st in ("R", "B"):
         va[a] = dict(sorted(c.items(), key=lambda kv: -kv[1]))
     print(f"      verdicts A (reordered): {va['A']}")
     print(f"      verdicts B (as-is)    : {va['B']}")
+
+print()
+print("=" * 78)
+print("4c. THE GATE-STABLE SUBGROUP -- reported PER STRATUM, and it is not clean")
+print("=" * 78)
+print("⛔ READ THE CAVEATS BEFORE THE NUMBER. `scope_verdict` is an OUTCOME THE")
+print("   TREATMENT CHANGES, so conditioning on 'both arms in_scope on all 3 runs'")
+print("   is post-treatment (collider) selection, not a subgroup. And the strata")
+print("   must not be pooled -- stratum B is oversampled ~4.4x by design.")
+for st in ("R", "B", "POOLED (do not quote)"):
+    rws = [i for i in ids if STRAT[i] == st] if st in ("R", "B") else list(ids)
+    stable = [i for i in rws
+              if all(data[i][(a, r)]["verdict"] == "in_scope" for a in ARMS for r in RUNS)]
+    if not stable:
+        print(f"  stratum {st}: 0 gate-stable rows")
+        continue
+    k3 = {a: {i: statistics.mean(data[i][(a, r)]["w"] for r in RUNS) for i in stable}
+          for a in ARMS}
+    d = [k3["A"][i] - k3["B"][i] for i in stable]
+    rng = random.Random(29)
+    bt = sorted(statistics.mean([d[rng.randrange(len(d))] for _ in d]) for _ in range(4000))
+    lo, hi = bt[100], bt[3900]
+    print(f"  stratum {st}: n={len(stable)}  mean(A-B) {statistics.mean(d):+.3f}  "
+          f"95% CI [{lo:+.3f}, {hi:+.3f}]  -> "
+          f"{'excludes 0' if not (lo <= 0 <= hi) else 'INCLUDES 0'}")
+    if st == "R":
+        for dim in DIMS:
+            va = statistics.mean(statistics.mean(data[i][("A", r)]["dims"][dim] for r in RUNS) for i in stable)
+            vb = statistics.mean(statistics.mean(data[i][("B", r)]["dims"][dim] for r in RUNS) for i in stable)
+            print(f"      {dim:<26}{va:>6.2f} vs {vb:>6.2f}   {va - vb:+.3f}")
+# How asymmetric is the selection? This is the collider, quantified.
+only_b = sum(1 for i in ids
+             if all(data[i][("B", r)]["verdict"] == "in_scope" for r in RUNS)
+             and not all(data[i][("A", r)]["verdict"] == "in_scope" for r in RUNS))
+only_a = sum(1 for i in ids
+             if all(data[i][("A", r)]["verdict"] == "in_scope" for r in RUNS)
+             and not all(data[i][("B", r)]["verdict"] == "in_scope" for r in RUNS))
+print(f"  selection asymmetry: {only_b} rows unanimous in_scope under AS-IS only, "
+      f"{only_a} under REORDERED only. The dropped rows are treatment-dependent.")
+
+print()
+print("=" * 78)
+print("4d. THE TWO CONTROLS, computed here instead of by hand")
+print("=" * 78)
+for arm in ARMS:
+    means = [statistics.mean(data[i][(arm, r)]["w"] for i in ids) for r in RUNS]
+    print(f"  arm {arm} per-run cohort mean: " + " / ".join(f"{m:.3f}" for m in means)
+          + f"   (spread {max(means) - min(means):.3f})")
+print("  Time drift would show as a TREND within an arm; the between-arm gap is")
+print("  present in every round and no within-arm spread approaches it.")
+# Cache state is collinear with run order, so the run-1 step cannot bound both.
+# The cache-MATCHED comparison can: runs 2 and 3 of both arms were ~99.4% cached.
+for label, runs in (("all runs (k=3)", RUNS), ("cache-matched (runs 2,3 only)", (2, 3))):
+    ma = statistics.mean(data[i][("A", r)]["w"] for i in ids for r in runs)
+    mb = statistics.mean(data[i][("B", r)]["w"] for i in ids for r in runs)
+    print(f"  {label:<30} A {ma:.4f}  B {mb:.4f}  gap {ma - mb:+.4f}")
+print("  ⚠️ Arm A ran cache-WARM throughout (89.2% on run 1); arm B's run 1 was COLD")
+print("     (0.0%). Cache state and run order are COLLINEAR in this design, so the")
+print("     run1->run2 step cannot bound both nuisances. The cache-matched row can,")
+print("     and it does not shrink the gap.")
+
+print()
+print("=" * 78)
+print("4e. DESIGN WEIGHTS -- carried in the cohort file, so they must be READ")
+print("=" * 78)
+for st in ("R", "B"):
+    w = {cohort[i].get("draw_weight") for i in ids if STRAT[i] == st}
+    print(f"  stratum {st}: draw_weight {w}  (n={sum(1 for i in ids if STRAT[i] == st)})")
+print("  ⛔ Every rate above is WITHIN-STRATUM and unweighted, which is correct for")
+print("     'what is the rate in this population'. A POOLED 200-row figure would be")
+print("     ~4.4x over-weighted toward the boundary and the pre-registration forbids")
+print("     it. If a production-wide total is ever needed, weight by these.")
+
+print()
+print("=" * 78)
+print("4f. PERMUTATION + COST -- both were computed by hand for the first write-up")
+print("=" * 78)
+print("Neither appeared in this file, so neither could be re-derived from the evidence")
+print("directory. That is the defect the review named; this block is the fix.")
+for st in ("R", "B"):
+    rws = [i for i in ids if STRAT[i] == st]
+    k3 = {a: {i: statistics.mean(data[i][(a, r)]["w"] for r in RUNS) for i in rws}
+          for a in ARMS}
+    d = [k3["A"][i] - k3["B"][i] for i in rws]
+    obs = abs(statistics.mean(d))
+    rng = random.Random(31)
+    # Sign-flip permutation: under the null the arm label is exchangeable WITHIN a
+    # row, so flipping the sign of a paired difference is an exact null draw.
+    hits = sum(1 for _ in range(20000)
+               if abs(statistics.mean([x if rng.random() < 0.5 else -x for x in d])) >= obs)
+    print(f"  stratum {st}: |mean(A-B)| = {obs:.3f}  sign-flip permutation p = "
+          f"{(hits + 1) / 20001:.4f}  (20,000 draws)")
+
+RATE_MISS, RATE_HIT, RATE_OUT = 0.22, 0.007, 0.66     # DeepSeek V4 off-peak, $/1M
+print("\n  Cost, re-derived from the per-row `usage` blocks -- NOT from the run log's")
+print("  $0.02f display, which is what the first write-up divided by 200.")
+tot = 0.0
+per_run = {}
+for arm in ARMS:
+    for r in RUNS:
+        ti = to = tc = 0
+        for line in open(SCRATCH / f"phaseA_{arm}{r}.jsonl"):
+            u = json.loads(line).get("usage") or {}
+            ti += u.get("prompt_tokens", 0)
+            to += u.get("completion_tokens", 0)
+            tc += u.get("prompt_cache_hit_tokens", 0)
+        c = ((ti - tc) * RATE_MISS + tc * RATE_HIT + to * RATE_OUT) / 1e6
+        tot += c
+        per_run[(arm, r)] = c / len(ids)
+        print(f"    {arm}{r}  ${c:.6f}   per-article ${c / len(ids):.6f}   "
+              f"cache {100 * tc / max(ti, 1):.1f}%")
+print(f"    TOTAL ${tot:.4f}")
+a1, b1 = per_run[("A", 1)], per_run[("B", 1)]
+rep_a = (per_run[("A", 2)] + per_run[("A", 3)]) / 2
+rep_b = (per_run[("B", 2)] + per_run[("B", 3)]) / 2
+print(f"    run-1 per-article: A ${a1:.6f}  B ${b1:.6f}   ratio {b1 / a1:.2f}x")
+print(f"    corpus k=3, 6,590 rows, WITH the unproven repeat discount: "
+      f"A ${6590 * (a1 + 2 * rep_a):.2f}  B ${6590 * (b1 + 2 * rep_b):.2f}")
+print(f"    corpus k=3, 6,590 rows, WITHOUT it:                        "
+      f"A ${6590 * 3 * a1:.2f}  B ${6590 * 3 * b1:.2f}")
+print("    ⛔ Only run 1 of each arm is a quotable CACHE figure -- runs 2-3 re-send")
+print("       byte-identical prompts, so their 99.4% is an artifact of the design.")
 
 print()
 print("=" * 78)

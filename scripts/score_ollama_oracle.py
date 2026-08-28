@@ -328,6 +328,12 @@ def extract_dim_score(value):
     return None
 
 
+VERDICT_ABSENT = "__absent__"
+VERDICT_NULL = "__null__"
+VERDICT_MALFORMED = "__malformed__"
+_MISSING = object()
+
+
 def parse_response(resp: dict, dimensions: list, provider: str = "ollama"):
     if "error" in resp:
         return {"error": resp["error"]}
@@ -352,8 +358,16 @@ def parse_response(resp: dict, dimensions: list, provider: str = "ollama"):
         # values weighted_average() reads. `content_type` is the cautionary case --
         # filters/uplifting/v7/config.yaml declares content_type_caps and v7 ships
         # no postfilter.py, so those five max_score branches have never applied.
-        out["scope_verdict"] = parsed.get("scope_verdict", "absent")
-        out["dominant_subject"] = parsed.get("dominant_subject", "")
+        # Same four-state handling as scripts/score_deepseek_production.py. A bare
+        # `str()`/`.get(k, "absent")` conflates silence with a model-emitted "absent",
+        # turns JSON null into a value every `== "in_scope"` test reads as a refusal,
+        # and lets a dict emission reach the `[:200]` below and raise TypeError.
+        _v = parsed.get("scope_verdict", _MISSING)
+        out["scope_verdict"] = (VERDICT_ABSENT if _v is _MISSING else
+                                VERDICT_NULL if _v is None else
+                                _v if isinstance(_v, str) else VERDICT_MALFORMED)
+        _s = parsed.get("dominant_subject")
+        out["dominant_subject"] = _s[:200] if isinstance(_s, str) else ""
         out["_prompt_eval_count"] = n_in
         out["_eval_count"] = n_out
         out["_cached_tokens"] = n_cached
@@ -542,7 +556,7 @@ def main():
                             "model": args.model,
                             "content_type": parsed["content_type"],
                             "scope_verdict": parsed["scope_verdict"],
-                            "dominant_subject": parsed["dominant_subject"][:200],
+                            "dominant_subject": parsed["dominant_subject"],  # already <=200
                             "dims": {d: parsed[d] for d in dimensions},
                             "_prompt_eval_count": parsed["_prompt_eval_count"],
                             "_eval_count": parsed["_eval_count"],

@@ -144,7 +144,8 @@ not measured. The production-relevant number is therefore an estimate.
   the 0.16 floor**, p99 0.1198, p90 0.0345, p50 0.0000, only 2.3% of rows
   bit-identical, signed mean +0.00018 (noise, not a shift). **Decision impact is
   threshold-dependent: 0 verdict flips at the 4.0 op-point (identical confusion
-  matrix, so the gate report is production's number) and 3 flips at 4.5,
+  matrix — ⚠️ **but 4.0 has not been the op-point since 2026-08-11, #102**, so that
+  reassurance no longer describes the deployed cut) and 3 flips at 4.5,
   splitting specificity 0.9730 vs 0.9662.** So the two noise sources *stack*, and
   **a box is cleared at a threshold, never in general**. The e5 probe's clean
   4.2e-6 result does NOT transfer to the student. Beware the p50 of exactly
@@ -152,7 +153,9 @@ not measured. The production-relevant number is therefore an estimate.
   hidden, not absent. Harness: `scripts/verification/box_parity.py` +
   `diff_box_parity.py`; record:
   `docs/evidence/2026-08-09-cross-box-parity-uplifting-v7.md`.
-  Still unmeasured for the student: **CPU vs CUDA**.
+  ⛔ *That last line read "still unmeasured for the student: CPU vs CUDA" until
+  2026-08-29. It was measured the NEXT DAY at **0.1956**, 1 flip at 4.0 and 3 at
+  4.5 — see the correction block above.*
 
 ## A THIRD cousin, and it is 4× larger: ORACLE run-to-run noise (measured 2026-08-12)
 
@@ -188,7 +191,7 @@ Four things follow, and the last one is the expensive one:
    that 40 pairs cannot establish.
 
 Consequence for the same-day trap this file exists to prevent: **the wrong
-instrument now has three sizes, and picking by magnitude is not a method.** Ask
+instrument now has FOUR sizes, and picking by magnitude is not a method.** Ask
 what varied — batch composition (0.16), the **library stack** (0.2008), the
 **device** CPU→CUDA (0.1956), or the oracle's decoder (0.44–0.69) — and measure the
 one that varied in *your* comparison. ⛔ **"The machine" is not on that list**: with
@@ -261,17 +264,25 @@ strata, drawn and reported separately, never pooled:
 | op-point crossing between identical runs | **2.4%** | **12.7%** |
 | k=1 and k=3 disagree on the op-point | **1.3%** | **4.0%** |
 
-⭐ **The shape claim survives the re-measurement and the magnitude does not.** It is still a
-Bernoulli on a binary verdict, `1/√k` still does not apply, and k ≥ 3 still stands. What
-changed: **a rate carried from a design-weighted panel is that panel's rate.** The
-~860-of-6,590 figure derived from 13% inherits the same weighting — and note that neither
-number was measured on the v7 corpus, which is a third population again.
+⭐ **The shape claim survives; the magnitude is NOT refuted, only given an interval.** It is
+still a Bernoulli on a binary verdict, `1/√k` still does not apply, and k ≥ 3 still stands.
+⛔ **Do not write "smaller than 13%".** 4/30 carries a Clopper-Pearson CI of **[3.8%, 30.7%]**
+which contains every number in the table above; Fisher's exact gives **p = 0.118**
+like-for-like and **p = 0.722** against the boundary stratum — the population an
+op-point-weighted panel actually sampled. The design-weighting story is plausible and
+**indistinguishable from n=30 sampling noise**; a dismissal is a claim and this one has not
+been measured. The ~860-of-6,590 figure inherits the panel's weighting either way, and
+neither number was measured on the v7 corpus, which is a third population again.
 
 ⛔ **And a fifth thing that is not noise at all, found in the same run: PROMPT POSITION.**
 Moving the article from char 617 to char 40,626 of the same prompt — content-preserving to
-one `---` — shifts the score by **−0.239** on the production mix (95% CI [−0.409, −0.080]),
-against a within-arm null of 0.312 mean |Δ| measured on the same rows. That is **bias, not
-a floor**: it is directional, it survives on rows both arms call `in_scope` on every run
-(−0.235, all six dimensions), and no amount of k removes it. **Never treat a prompt edit as
+one `---` — shifts the score by **−0.239** on the production mix (95% CI [−0.409, −0.080];
+sign-flip permutation p=0.0049; survives Bonferroni over all 21 intervals), against a
+within-arm null of 0.312 mean |Δ| measured on the same rows. That is **bias, not a floor**:
+it is directional and no amount of k removes it. **Never treat a prompt edit as
 noise-equivalent because its |Δ| looks like the noise band — check the sign.**
+⚠️ The claim that it also holds *within* the gate-stable rows (−0.235) was **withdrawn on
+review**: it pooled two strata and conditioned on `scope_verdict`, which the treatment
+changes. Per stratum the gate-stable effect includes zero on the production mix. The
+position effect is established; *where it acts* is not.
 

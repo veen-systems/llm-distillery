@@ -76,12 +76,29 @@ is now sharper: **a box is cleared for a (stack, device, threshold) triple.**
 
 ## What it means operationally
 
-- **b650 on `venv-prodparity`, CPU, is a production-exact measuring instrument.**
-  Numbers produced there can be quoted for production without qualification. That
-  is new, and it removes the "only free between pipeline cycles" constraint from
-  every future threshold question.
-- **b650 on GPU is for speed, not for op-point numbers.** ~2 min vs ~16 min per
-  660 rows, and 1 flip at 4.0. Explore there; confirm on CPU.
+> ### ⛔ CORRECTED 2026-08-29 — this section drew the wrong conclusion from its own table
+>
+> It said b650-on-CPU was *"a production-exact measuring instrument"* whose numbers
+> *"can be quoted for production without qualification"*, and told the reader to
+> *"confirm on CPU"*. **Run P is labelled `gpu-server | CPU`. Its venv is
+> production's; its device is this study's control.** Production serves on GPU
+> (`memory/filter-status.md`, `memory/project_session_2026_08_09_night.md`), so what
+> P→C establishes is b650-CPU ≡ gpu-server-**CPU**, not ≡ production.
+>
+> The measurement table above is unaffected and correct. This was an operational
+> conclusion read off an **arm label**, and it propagated: it is where
+> llm-distillery's `memory/b650-gpu.md` got the same wrong sentence, which stood
+> until 2026-08-29.
+
+- **b650 on `venv-prodparity`, CPU, reproduces gpu-server-on-CPU exactly** — 660/660,
+  0 flips at every threshold. That is a real result: it removes the "only free between
+  pipeline cycles" constraint for any question where the *device* is held fixed on both
+  sides.
+- **To compare against stored production output, match production's device (GPU).**
+  b650-CUDA + `venv-prodparity` is the configuration that matches gpu-server on both
+  axes. ⚠️ **Nobody has measured gpu-server-CUDA against b650-CUDA** — the host term is
+  0.0000 with the device held at CPU, and these four runs do not contain production's
+  own configuration. Treat CUDA-to-CUDA host equivalence as an extrapolation.
 - **CPU vs CUDA on the student is now measured**, and it is the axis that matters:
   max |Δ| **0.1956**, 3 rows above the #95 floor, 1 verdict flip at the deployed
   op-point. **Production serves on GPU, while `ground_truth_gate.json` and the

@@ -90,6 +90,10 @@
 > settled; do not adopt it into a re-score on this probe alone.**
 > ⛔ The null arm's **99.4% cache is an artifact** — it re-sent identical articles, so the
 > whole prompt matched, not the prefix. Never quote it as a cache result.
+> ⛔ **THIS BLOCK IS SUPERSEDED — read the 2026-08-29 entry below before quoting anything
+> from it.** Its `$10.16 vs $18.00`, its `~13% / ~860 of 6,590`, and its *"PARITY IS
+> UNPROVEN"* were all answered on 2026-08-29 at n=200: ≈$6.9 vs ≈$21.7, 5.3% production-mix
+> (with the 13% *not* refuted, see below), and parity SETTLED and FAILED.
 > ✅ **DONE 2026-08-29** — `scope_verdict` / `dominant_subject` are persisted (below).
 >
 > ### ▶ NEXT SESSION — start here, in this order
@@ -108,19 +112,31 @@
 >    (`docs/evidence/2026-08-29-v8-phase-a-k3/`; design pre-registered in `ff88b56`, one
 >    commit before the results, four of seven predicted ranges missed).
 >    ⛔⛔ **H-V8-3 RESOLVED AGAINST THE PLAN: the reorder CHANGES THE LABELS.**
->    mean(reordered − as-is) **−0.239** production-mix ([−0.409, −0.080]), **−0.443** at the
->    boundary; **15 vs 23** rows above the op-point; and it survives on the 41 rows both arms
->    call `in_scope` on all three runs (**−0.235**, all six dimensions) — so it is **not**
->    just the scope gate. The reordered prompt is a **stricter oracle**; adopting it is a
->    scoring decision, not a budgeting one. **Still not adopted.**
->    ✅ Flip rate re-measured smaller than the probe's 13%: **5.3%** production-mix
->    ([2.7%, 8.4%]), **6.7–9.3%** boundary, per identical-run pair. Non-unanimous at k=3:
->    **8.0% / 10–14%**. k≥3 still stands; the size changed, not the sign.
->    ✅ Real $/article, run 1 only: **$0.00050** reordered vs **$0.00275** as-is (5.5×).
+>    mean(reordered − as-is) **−0.239** production-mix ([−0.409, −0.080]) — survives a
+>    sign-flip permutation (p=0.0049), source clustering, and Bonferroni-21; **−0.443** at
+>    the boundary (directional at 95%, not under Bonferroni). Rows above the op-point at k=3,
+>    **per stratum**: 8/150 vs 11/150 and 7/50 vs 12/50. The reordered prompt is a **stricter
+>    oracle**; adopting it is a scoring decision, not a budgeting one. **Still not adopted.**
+>    ⛔ **WITHDRAWN by same-day review** — *"−0.235 on the 41 gate-stable rows, so it is not
+>    just the gate"* and *"15 vs 23 above the op-point"*. Both **pooled the strata this run's
+>    own pre-registration forbids pooling**, and the first also conditions on an outcome the
+>    treatment changes (collider). Per stratum the gate-stable effect is R n=21
+>    **[−0.516, +0.036], includes zero**.
+>    ⚠️ Flip rate at n=200: **5.3%** production-mix ([2.7%, 8.4%]), **6.7%** (as-is) /
+>    **9.3%** (reordered) at the boundary. ⛔ **Not smaller than the probe's 13% in any
+>    testable sense** — 4/30's CI is [3.8%, 30.7%] and covers all of them (Fisher p=0.118;
+>    p=0.722 vs the boundary stratum). Non-unanimous at k=3: **8.0% / 10–14%**. k≥3 stands.
+>    ✅ Real $/article, run 1 only: **$0.000519** reordered vs **$0.002736** as-is (5.27×).
 >    ⛔ The k=3 repeat discount is **unproven at corpus scale** — schedule k=3 as three
 >    back-to-back calls per article, not three passes, and the assumption disappears.
 >    ✅ The stamp paid immediately: the old "all six dims ≤ 2" inference is **98.8%** right
 >    over 1,200 recorded labels, and the 1.2% plus the verdict mix were invisible without it.
+>    ⚠️ **Total spend $0.867, not the $0.85 first published** — that figure divided a
+>    `$0.02f` rounded display by 200 instead of re-deriving from the `usage` token counts in
+>    the same committed file. Same error made every per-article and corpus figure ~2–5% low.
+>    ⚠️ **Those six run files predate the `prompt_hash` stamp** added the same day: both arms
+>    carry an identical `filter_version`, so arm identity rests on filenames. Any re-run
+>    carries `prompt_hash` + `prompt_file`.
 >
 > ### ▶ NEXT — the one open decision is the owner's
 > 1. ⛔ **OWNER: reordered prompt — adopt or not?** It is ~5.5× cheaper on the paying call

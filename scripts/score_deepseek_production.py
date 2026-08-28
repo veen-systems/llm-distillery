@@ -15,6 +15,7 @@ Usage:
 
 import argparse
 import configparser
+import hashlib
 import json
 import os
 import sys
@@ -48,6 +49,8 @@ DIMENSIONS = [
     "evidence_quality",
 ]
 ANALYSIS_FIELD = "cultural_discovery_analysis"
+PROMPT_HASH = "unset"   # set in main() from the prompt actually loaded
+PROMPT_FILE = "unset"
 FILTER_VERSION = "5.0-deepseek-production"
 
 
@@ -142,6 +145,53 @@ def extract_dim_score(val):
     return None
 
 
+# Sentinels for the non-verdict states. Double-underscored ON PURPOSE: the first
+# version used the bare string "absent", which a model can emit -- so silence and
+# a verdict of "absent" were indistinguishable, collapsing the very third state
+# the design rests on. A sentinel that the value space can produce is not a
+# sentinel. (Review 2026-08-29, adversarial lens.)
+VERDICT_ABSENT = "__absent__"       # the prompt does not ask for it (every pre-v8 prompt)
+VERDICT_NULL = "__null__"           # the key is present and JSON null
+VERDICT_MALFORMED = "__malformed__" # present, non-null, not a string
+_MISSING = object()
+
+
+def _scope_verdict(parsed: dict) -> str:
+    """Four distinguishable states, because `str()` on the raw value conflates them.
+
+    `str(parsed.get("scope_verdict", "absent"))` turned a JSON null into the
+    literal string "None", which every downstream `v == "in_scope"` test reads as
+    a REFUSAL -- a confidently wrong label, which outranks a missing one. A dict
+    emission became its own repr. Neither is a verdict and neither should look
+    like one.
+
+    Deliberately NOT validated against the five-verdict vocabulary: an allowlist
+    here would silently re-label every row the day v8 gains a sixth verdict, which
+    is the allowlists-in-series shape this repo has already paid for. Presence and
+    type are checkable without knowing the vocabulary; membership is not.
+    """
+    v = parsed.get("scope_verdict", _MISSING)
+    if v is _MISSING:
+        return VERDICT_ABSENT
+    if v is None:
+        return VERDICT_NULL
+    if isinstance(v, str):
+        return v
+    return VERDICT_MALFORMED
+
+
+def _dominant_subject(parsed: dict) -> str:
+    """Free text, truncated HERE so the 200-char rule has one home rather than
+    living inline at the record write where no test could reach it.
+
+    A non-string emission yields "" rather than its repr: this field is read as
+    *the article's subject*, and "None" or "{'phrase': ...}" sitting in that slot
+    is worse than nothing at all.
+    """
+    v = parsed.get("dominant_subject")
+    return v[:200] if isinstance(v, str) else ""
+
+
 def parse_response(resp: dict):
     if "error" in resp:
         return {"error": resp["error"]}
@@ -164,11 +214,8 @@ def parse_response(resp: dict):
             # MEASURED instead of inferred from "all six dims <= 2" (#135). The prior
             # inference cannot separate a scope refusal from a genuinely dull article
             # that scores low on every dimension, and the two have different remedies.
-            # "absent" is a THIRD state, distinct from any verdict: every prompt before
-            # v8 emits neither key, and an analysis must not read that silence as
-            # in_scope. Coerced to str so a malformed emission is still recordable.
-            "scope_verdict": str(parsed.get("scope_verdict", "absent")),
-            "dominant_subject": str(parsed.get("dominant_subject", "")),
+            "scope_verdict": _scope_verdict(parsed),
+            "dominant_subject": _dominant_subject(parsed),
             "usage": resp.get("usage", {}),
         }
     except (json.JSONDecodeError, KeyError, IndexError) as e:
@@ -229,6 +276,10 @@ def main():
 
     api_key = get_deepseek_key(args.key_name)
     prompt_template = prompt_path.read_text(encoding="utf-8")
+    global PROMPT_HASH, PROMPT_FILE
+    PROMPT_HASH = hashlib.sha256(prompt_template.encode("utf-8")).hexdigest()[:12]
+    PROMPT_FILE = prompt_path.name
+    print(f"Prompt: {PROMPT_FILE} sha256[:12]={PROMPT_HASH}")
     print(f"Scoring with: dims={DIMENSIONS} | field={ANALYSIS_FIELD} | prompt={prompt_path.name}")
     input_path = Path(args.input)
     output_path = Path(args.output)
@@ -337,6 +388,17 @@ def main():
                     analysis["dominant_subject"] = parsed["dominant_subject"][:200]
                     analysis["filter_version"] = FILTER_VERSION
                     analysis["analyzed_by"] = args.oracle_label or f"deepseek-{args.model}"
+                    # WHICH PROMPT produced this row. Mirrors ground_truth/batch_scorer.py's
+                    # `prompt_hash`; this script had no equivalent, so on 2026-08-29 both
+                    # arms of a two-prompt experiment persisted an identical
+                    # filter_version ("7.0-deepseek", derived from --config alone) while
+                    # running two DIFFERENT v8 prompts that were then measured to produce
+                    # DIFFERENT LABELS (mean -0.239). Arm identity rested entirely on the
+                    # operator's output filenames: transpose them and the headline reverses
+                    # sign with nothing to catch it. A label that is wrong outranks one that
+                    # is missing.
+                    analysis["prompt_hash"] = PROMPT_HASH
+                    analysis["prompt_file"] = PROMPT_FILE
                     analysis["analyzed_at"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
                     record = {
                         "id": article["id"],

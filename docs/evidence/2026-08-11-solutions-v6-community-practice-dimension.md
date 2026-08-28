@@ -125,7 +125,8 @@ grassroots-practice stories — not a modelling one.
 
 ## Caveats
 
-- **Cross-box**: the Gemma-3-1B student is not probe-clean across boxes (b650 vs
+- **Cross-box** ⛔ *(mis-named; corrected 2026-08-29 — the host term is 0.0000 and this
+  0.2008 is the LIBRARY STACK. See docs/evidence/2026-08-10-b650-gpu-production-stack-parity.md)*: the Gemma-3-1B student is not probe-clean across boxes (b650 vs
   gpu-server ran to |0.2008| on uplifting v7, above the #95 floor). Fine for "does
   this dimension carry signal"; **no number here is production's** without
   re-running `scripts/verification/box_parity.py` at the threshold in question.

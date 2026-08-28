@@ -1299,7 +1299,10 @@ LD#95 (batch composition moves a score up to 0.162; 7.1% / 9.1% of near-boundary
    → undermines: ADR-021 ground-truth gates · normalization CDF fitting (Chain 3)
                  · before/after deploy checks · op-point comparisons (Chain 4)
    ↔ NM#289 (medium fixture scores into high on the three percentile-normalized filters)
-   ↔ gotcha-log 2026-07-30 cross-box skew |0.16| — same magnitude, different cause
+   ↔ gotcha-log 2026-07-30 "cross-box skew |0.16|" — ⛔ BOTH HALVES RETIRED 2026-08-29:
+     the HOST term is 0.0000 (660/660), and the real terms are the library STACK
+     (0.2008) and the DEVICE CPU→CUDA (0.1956), both ABOVE 0.16. See
+     docs/evidence/2026-08-10-b650-gpu-production-stack-parity.md
    ↔ NM#226 (document raw → isotonic → percentile → tier as a chain of transformations
               with a stated invariant per step)  ← created 2026-05-28, zero comments,
               banded nowhere until 2026-08-07; documentation-only scope

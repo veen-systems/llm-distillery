@@ -74,6 +74,11 @@ Classify each changed file:
 | **MEDIUM** | `CLAUDE.md` · `ground_truth/*` · `training/*` · `scripts/**` (other) · `tests/**` · `docs/adr/**` · `docs/FILTER_PLAYBOOK.md` · `docs/NORMALIZATION_METHOD.md` · `docs/RUNBOOK.md` · `docs/ARCHITECTURE.md` · **anything matching no tier** | Adversarial + doc-accuracy (+ claim-verification if numbers changed) |
 | **LOW** | `memory/*` · `docs/TODO.md` · `docs/ROADMAP.md` · session files | Adversarial (+ claim-verification if numbers changed) |
 
+`docs/evidence/**` is **MEDIUM**, and **HIGH when it ships a `.py`** — added 2026-08-29,
+when an evidence directory shipped 396 lines of analysis code that the table had no row for.
+It tiered correctly only via the executable-escalation rule, which is a fallback, not a
+plan. An evidence script produces the numbers a decision is made on; it is not a document.
+
 Pick the **highest** tier that applies. **Unmatched files are MEDIUM, not LOW** —
 silence must never read as safe. **Name every unmatched file in the report under
 "Unclassified", even when a HIGH file in the same diff makes the tier moot.** The
@@ -332,8 +337,10 @@ For each numeric or empirical claim:
 3. If it is a difference near an operating point: is it above the #95 noise
    floor? A run-to-run delta below ~0.1 near an op-point is indistinguishable
    from batch-composition noise (measured |delta| <= 0.16) and must NOT be
-   reported as an effect. Scores from different machines must never be compared
-   (cross-box skew |0.16|).
+   reported as an effect. Before comparing two score sets, ask what varied: the
+   HOST contributes 0.0000 (660/660 bit-identical, 2026-08-10 decomposition), so
+   "different machines" is not the question — the library STACK (0.2008) and the
+   DEVICE, CPU->CUDA (0.1956) are, and both exceed 0.16.
 4. If it is a difference-of-differences or similar comparison, does it carry:
    a permutation (or cluster-aware) test, multiplicity correction, source
    clustering, AND an explicit statement of whether selection into the sample

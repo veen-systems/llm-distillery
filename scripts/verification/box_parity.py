@@ -13,8 +13,19 @@ First run, 2026-08-09, uplifting v7 over its 660-row held-out split:
 gpu-server serving venv vs b650 — **0 verdict flips at the 4.0 op-point and an
 identical confusion matrix**, but only 2.3% of rows bit-identical and a max
 calibrated |Δ| of 0.2008, which EXCEEDS the #95 |0.16| noise floor. Three rows
-flip at 4.5. So the student path is NOT batch/box-clean the way the probe is:
-a box is cleared *at a threshold*, never in general.
+flip at 4.5.
+
+⛔ CORRECTED 2026-08-29: that 0.2008 is NOT a box term, and this docstring
+presented it as one. The stacks were unmatched in that run. The 2026-08-10
+four-run decomposition isolates each variable: HOST 0.0000 (660/660
+bit-identical), library STACK 0.2008, DEVICE CPU->CUDA 0.1956. Match the pins
+and the device and the box is free; the thing that is cleared "at a threshold,
+never in general" is a (stack, device, threshold) triple.
+
+⚠️ THIS SCRIPT TAKES NO THRESHOLD. It only dumps predictions. The threshold
+lives on diff_box_parity.py (--threshold / --alt-threshold), which is what
+actually reports flips. Two docs told readers to "re-run box_parity.py at your
+threshold"; they now name diff_box_parity.py.
 
 WHAT IT CONTROLS FOR
 --------------------

@@ -21,8 +21,18 @@ v7 articles.
 
 If two runs need to be comparable, replay the same NexusMind cycle seed
 (NEXUSMIND_RUN_SEED, logged in the pipeline start banner) so batch
-composition is identical. Never compare scores produced on different
-machines — cross-box skew is |0.16| on its own (gotcha 2026-07-30).
+composition is identical.
+
+⛔ The line here used to read "never compare scores produced on different
+machines — cross-box skew is |0.16|". Both halves were wrong and it
+contradicted this file's own line ~436. Corrected 2026-08-29 from the four-run
+decomposition (docs/evidence/2026-08-10-b650-gpu-production-stack-parity.md):
+the HOST term is 0.0000 — 660/660 bit-identical across two physical machines
+once pins and device match. The real terms are the LIBRARY STACK (0.2008) and
+the DEVICE, CPU->CUDA (0.1956), both ABOVE this floor. Match the pins and the
+device; when either changes, dump with scripts/verification/box_parity.py and
+compare with diff_box_parity.py --threshold. (CUDA-to-CUDA across boxes has
+never been measured; the host term was isolated with the device held at CPU.)
 
 DECISION RULE (owner, 2026-08-06, #95 step 2)
 ---------------------------------------------
@@ -433,8 +443,10 @@ def main():
                     # Deliberately NOT phrased as "the difference is real". The band
                     # models ONE source of variation (batch composition) and nothing
                     # else -- not sampling error, not a population difference, not
-                    # cross-box skew (measured at |0.2008| on this very student,
-                    # LARGER than the 0.16 floor these bands are built from).
+                    # library-stack skew (measured at |0.2008| on this very student,
+                    # LARGER than the 0.16 floor these bands are built from) and not
+                    # device skew (CPU->CUDA, |0.1956|). Neither is a "box" term:
+                    # the host contributes 0.0000 (2026-08-10 decomposition).
                     # Measured 2026-08-10: comparing one model against an 80-row
                     # subsample of ITS OWN predictions -- a guaranteed zero effect --
                     # produced disjoint specificity bands in 71 of 300 seeds (23.7%).
@@ -442,8 +454,9 @@ def main():
                     print(f"  + {a} vs {b}: {metric} bands do not overlap "
                           f"([{ba[0]:.3f}, {ba[1]:.3f}] vs [{bb[0]:.3f}, {bb[1]:.3f}]). This rules "
                           f"out batch composition as the WHOLE explanation — it is not evidence "
-                          f"the difference is real. Sampling error, differing populations and "
-                          f"cross-box skew are all unmodelled here.")
+                          f"the difference is real. Sampling error, differing populations, "
+                          f"library-stack skew (0.2008) and device skew (0.1956) are all "
+                          f"unmodelled here.")
 
     print(f"\nReport: {args.report}")
 

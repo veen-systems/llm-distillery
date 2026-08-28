@@ -110,9 +110,12 @@ worth its own change.**
   script prints MAE last and labels it as scale.
 - **Never answer this with a prefilter length check.** #93 deliberately removed
   exactly that; adding `check_content_length` re-creates what #93 removed.
-- **Cross-box:** the Gemma-3-1B student is not probe-clean across boxes (b650 vs
-  gpu-server ran to |0.2008| on uplifting v7, above the #95 floor). Fine for "does
-  this dimension carry signal"; **no number here is production's** without
-  re-running `scripts/verification/box_parity.py` at the relevant threshold.
+- **Stack/device, NOT "cross-box" (corrected 2026-08-29):** the |0.2008| measured on
+  uplifting v7 is the **library stack**, not the machine — the host term is 0.0000,
+  660/660 bit-identical. The other live term is the **device**, CPU→CUDA |0.1956|,
+  and production serves on GPU. Fine for "does this dimension carry signal"; **no
+  number here is production's** without re-running `scripts/verification/box_parity.py`
+  and comparing with **`diff_box_parity.py --threshold`** (the threshold is on the diff,
+  not the dump) at production's device.
 - **`content_type` is not in the splits.** Shape is a proxy throughout and cannot
   distinguish a mandated zero from an honest one.

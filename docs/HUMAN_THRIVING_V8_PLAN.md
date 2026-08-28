@@ -680,24 +680,36 @@ one: stage2-only costs **11.5% of the pool and 95 domains** for no compositional
    median 0.100, gate-flipped rows 3.750**, and the gate flips on **13%** of re-runs. A k=1
    re-score labels ~860 of 6,590 rows by a coin toss, at the boundary. Gate A missed it by
    averaging k=3.
-   ⚠️ **Re-measured 2026-08-29 at n=200 and it is SMALLER: 5.3% production-mix
-   ([2.7%, 8.4%]) and 6.7–9.3% at the boundary, per identical-run pair.** The 13% came off
-   a panel *stratified across the v7 range and weighted to the op-point*, so it is that
-   panel's rate, not production's — and the ~860 figure inherits the same weighting. ⛔ The
+   ⚠️ **Re-measured 2026-08-29 at n=200: 5.3% production-mix ([2.7%, 8.4%]), 6.7% (as-is)
+   and 9.3% (reordered) at the boundary, per identical-run pair.** ⛔ **This is NOT a
+   refutation of the 13%** — that came off 4/30, whose Clopper-Pearson CI is **[3.8%, 30.7%]**
+   and contains every estimate above (Fisher p=0.118 like-for-like; **p=0.722** against the
+   boundary stratum, which is what an op-point-weighted panel actually sampled). The
+   design-weighting explanation is plausible and **not distinguishable from n=30 noise**;
+   what n=200 buys is a usable interval. The ~860 figure inherits the panel's weighting. ⛔ The
    conclusion is unchanged (**k ≥ 3, not k = 1**): 8.0% of production-mix rows and 10–14% of
    boundary rows are non-unanimous over three runs, and the k=3 majority differs from run 1
    on 3 of 7 boundary non-unanimous rows. What changed is the size, not the sign.
    ⛔⛔ **PARITY SETTLED 2026-08-29, AND IT FAILED. Do not adopt the reorder as a cost
    optimisation.** At n=200, with the null measured on the same rows at the same pair level,
    moving the article to the end **changes the labels**: mean(reordered − as-is) **−0.239**
-   production-mix (95% CI [−0.409, −0.080]), **−0.443** at the boundary, **15 vs 23** rows
-   above the op-point, and the shift survives on the 41 rows both arms call `in_scope` on
-   all three runs (**−0.235**, on all six dimensions). The reordered prompt is a **stricter
-   oracle**, not a cheaper copy of this one. Its price advantage is real — run-1
-   **$0.00050 vs $0.00275/article**, so k=3 on 6,590 rows is **≈$6.6 vs ≈$21.4** — but that
-   is a price difference between two different labelling functions, and **≈$15 is small
-   against the adjudication time this plan already calls "the real cost"**. Adopting it is a
-   scoring decision for the owner, not a budgeting one.
+   on the production-mix stratum (95% CI [−0.409, −0.080]), which survives a sign-flip
+   permutation (p=0.0049), source clustering, and Bonferroni over all 21 intervals; and
+   **−0.443** at the boundary (p=0.0063), directional at 95% but **not** under Bonferroni.
+   Rows above the op-point at k=3, **per stratum**: **8/150 vs 11/150** (production mix) and
+   **7/50 vs 12/50** (boundary). The reordered prompt is a **stricter oracle**, not a cheaper
+   copy of this one. Its price advantage is real — run-1 **$0.000519 vs $0.002736/article**,
+   so k=3 on 6,590 rows is **≈$6.9 vs ≈$21.7** — but that is a price difference between two
+   different labelling functions, and **≈$15 is small against the adjudication time this plan
+   already calls "the real cost"**. Adopting it is a scoring decision for the owner, not a
+   budgeting one.
+   ⛔ **Two claims from the first write-up are WITHDRAWN (review, same day).** *"The shift
+   survives on the 41 rows both arms call `in_scope`, so it is not just the gate"* pooled the
+   two strata — per stratum it is R n=21 **[−0.516, +0.036], includes zero** — and it
+   conditions on `scope_verdict`, **an outcome the treatment changes** (16 rows unanimous
+   `in_scope` under as-is only, 8 under reordered only), so it is a collider, not a subgroup.
+   And *"15 vs 23 rows above the op-point"* was pooled across a uniform-random stratum and one
+   oversampled **4.4×**, inflating both levels ~40%.
    ⛔ The k=3 repeat discount is **UNPROVEN at corpus scale** (runs 2–3 came ~1 min apart, a
    corpus pass is ~30 min, and DeepSeek's cache TTL was never measured). Scheduling k=3 as
    three back-to-back calls **per article**, instead of three passes over the corpus, removes
@@ -1134,13 +1146,18 @@ off a 190-character excerpt and is now a no-regression row.
 
 | Item | Estimate | Confidence |
 |---|---|---|
-| Phase A prompt + 30-article calibration | ~$0 | measured-adjacent |
-| Phase B full re-score | **≈$12** | ⚠️ row count confirmed (6,590); **the price is not** |
+| Phase A prompt + calibration | **$0.87 SPENT** (n=200, k=3, both arms, 1,200 calls) | measured 2026-08-29 |
+| Phase B full re-score, k=3 | **≈$6.9 reordered / ≈$21.7 as-is** | measured $/article; ⚠️ the k=3 repeat discount is UNPROVEN at corpus scale (without it ≈$10.3 / ≈$54.1) |
 | Phase C training (b650, 3090 Ti 24 GB — Phase 0H) | ~0 marginal | reliable |
 | Adjudication time | **the real cost** | owner's call |
 
 *"Nothing verifies an estimate"* — three cost estimates were wrong in one evening on
-2026-08-17, every correction from measuring. B1 confirmed the 6,590 rows; **it did not confirm the $12**, which remains an estimate.
+2026-08-17, every correction from measuring. B1 confirmed the 6,590 rows; the old **≈$12**
+was never confirmed and is now superseded by measured per-article prices (2026-08-29).
+⛔ **And the measurement itself was wrong once**: the first write-up divided a `$0.02f`
+ROUNDED DISPLAY by 200 instead of re-deriving from the token counts in the same file —
+$0.85 vs a true $0.867, and 5.5× vs a true 5.27×. Re-derive from `usage`, never from the
+summary line.
 
 ---
 
