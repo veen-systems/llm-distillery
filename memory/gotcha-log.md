@@ -4044,7 +4044,7 @@ That is a two-second check and would have saved both rejections.
 **Fix**: enumerate the container's keys before concluding absence — `for k in row`, then `for k in row["nexus_mind_attributes"][lens]` — rather than testing membership of a guessed path.
 **Lesson**: **an absence result is only as good as the level you looked at**, and this repo nests deeply enough that the wrong level is the default outcome. CLAUDE.md already warns "`metadata.quality` is not `nexus_mind_attributes.<lens>.source_quality`" — it is the same rule, and the tell is that a *zero* is exactly what a correct query on the wrong path returns. Sibling shape found the same day by the FluxusSource session: their detector **skipped** non-Latin rows where mine **over-flagged** them, and the skip is worse, because it reports as "0 flagged" and is indistinguishable from clean.
 
-### An instrument that has never returned a positive has not been shown to be able to (2026-08-09) [x2]
+### An instrument that has never returned a positive has not been shown to be able to (2026-08-09) [x4 — 2026-08-29 twice: `ls -d */` and `pip list`]
 
 **Problem**: a title/body disjointness detector was guarded with "skip rows whose title yields <3 tokens", which correctly stopped it over-flagging non-Latin scripts. The guard then made it report **0 flagged** for `israeli_israel_hayom`, `greek_protothema` and `korean_yonhap_kr` — every row skipped, none inspected. **Zero-flagged is exactly what a clean source reports.** The fix for a loud false positive created a silent false negative and removed the evidence that it had.
 **Root cause**: coverage and result are different quantities, and a detector reports only the second. Nothing in "0 flagged" says whether 0 or 200 rows were examined.
@@ -4996,3 +4996,68 @@ failure from a file it had already logged as legitimately absent.
 #44. Filed as #136. ⭐ Recorded because of the *direction* of the failure: a guard that fires
 on correct messages spends operator trust, and the cheapest-looking exit is the dangerous
 one. **A false positive in a safety check is a safety problem, not an annoyance.**
+
+### A BOOTSTRAP QUANTILE IN THE FAR TAIL IS ONE ORDER STATISTIC, AND I PRINTED IT AS A DECISION (2026-08-29)
+**Problem**: To "handle multiplicity" I added a Bonferroni interval to an evidence script and
+reported that a finding **survived** it. Two independent reviewers re-ran the identical
+bootstrap across seeds: the bound's Monte-Carlo sd was ~0.014 against a reported −0.010, and
+it sat above zero in **24/30 and 408/500** replications. The published verdict was decided by
+`seed=17`.
+**Root cause**: at α=0.05/21 on 4,000 draws, each bound is `vals[4]` — the 5th smallest of
+4,000. A percentile that far into the tail is a single order statistic; the estimator has no
+resolution there. Nothing in the output said so, because a printed interval looks like an
+interval whatever its variance.
+**Fix**: removed, not recomputed. The **permutation** test (20,000 draws, stable to 4
+figures) is the multiplicity-relevant statistic, and it had been *contradicting* the
+Bonferroni line in the same file all along — p=0.0049 does not clear 0.05/21.
+⭐ **A resampling estimator has a resolution, and the correction that needs the deepest tail
+is exactly where it runs out. Before quoting a bootstrap bound, re-run it under a different
+seed** — one line, and it is the whole check.
+
+### A HAND-COUNTED CONSTANT GOVERNING A DECISION, WHERE THE QUANTITY IS DATA-DEPENDENT (2026-08-29)
+**Problem**: `N_INTERVALS = 21`, commented "every interval this script prints". It printed 15
+nominal / 22 total, and 17 on a null fixture. Three reviewers counting independently got
+three different answers, none of them 21.
+**Root cause**: the count is data-dependent **by construction** — the block emitted a
+correction line only in its non-holding branches, so the number of intervals varies with the
+result. A hand-count of one run was frozen as a property of the script.
+**Fix**: derived — every printed interval increments the family — and the arithmetic replaced
+by an explicit statement: **no family was pre-registered**, p clears 0.05 and 0.05/2 but not
+0.05/16, and *picking the family that keeps the result is not the way out*.
+⭐ **If a constant describes what the code does, the code should compute it.** The tell is a
+comment that begins "every".
+
+### I RE-INTRODUCED A TAUTOLOGICAL ASSERTION IN THE COMMIT THAT REMOVED TWO (2026-08-29)
+**Problem**: a mutation hardcoding `PROMPT_FILE = "prompt-candidate.md"` survived all 15
+tests. The assertion was `prompt_file == "prompt-candidate.md"` — and the harness only ever
+passed that one prompt.
+**Root cause**: the test was written from the *writer's* side (does the field arrive?) rather
+than from the property's side (can the two arms be told apart?). The commit message two
+paragraphs above claimed to have deleted two tautologies of exactly this shape.
+**Fix**: drive **both** prompts, hold the oracle response identical so only the prompt varies,
+and require the persisted rows to differ. Five mutations re-seeded, five caught.
+⭐ **A test that supplies only one value cannot test a distinction.** Articulating the rule in
+the same commit did not prevent it — [[feedback-articulating-is-not-applying]], again.
+
+### THE RETRACTION SWEEP STOPPED AT THE REPO BOUNDARY (2026-08-29)
+**Problem**: a wrong rule was corrected across nine repo surfaces and announced as "finished
+properly". It was still live in `~/.claude/projects/.../memory/` — the **auto-memory**, which
+loads into every session for this project, i.e. a stronger re-injection than the repo files
+that were fixed.
+**Root cause**: every sweep, including the one that found four sites "by grep rather than
+recall", was rooted at the repo. The auto-memory is not under it and was in no operand list.
+**Fix**: corrected there too. ⭐ **The always-loaded layer for this project spans TWO trees.**
+A grep whose root is the repo cannot see half of it, and reports clean.
+
+### THE SOURCE DOCUMENT DREW THE WRONG CONCLUSION FROM ITS OWN CORRECT TABLE (2026-08-29)
+**Problem**: I wrote into memory that "production scoring is gpu-server on CPU", licensing
+exactly the comparison a device term forbids. A peer session caught it; this repo had said
+"production serves on GPU" in two files the whole time.
+**Root cause**: I read an **experiment's arm label** as a description of production. Run P is
+labelled `gpu-server | CPU`: its venv is production's, its device is the study's control. And
+I did not invent it — the 2026-08-10 evidence document's own "What it means operationally"
+section says the same thing, drawn from a table that does not support it.
+**Fix**: corrected in the source document as well as the copies. ⭐ **An arm label says what
+was held fixed to isolate a term. It is not a statement about production** — and when a
+propagated error is found, the copy you are looking at may not be the origin.
+

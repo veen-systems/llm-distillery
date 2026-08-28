@@ -103,7 +103,10 @@ them** — each exists because something shipped broken.
   first.** A `stage1_low` row's score is an **e5 probe estimate**, not a Gemma score
   (23% of rows measured). Same shape as the length-field trap: the field exists, is
   populated, and means different things per row.
-- **Before using any source as evidence, establish what it EXCLUDES.** *(13th
+- **Before using any source as evidence, establish what it EXCLUDES.** *(14th
+  occurrence 2026-08-29 — a nine-surface correction announced as "finished properly" was
+  still live in the AUTO-MEMORY: every sweep was rooted at the repo, and this project's
+  always-loaded layer spans TWO trees. 13th
   occurrence 2026-08-28 — a 99.4% cache hit measured on a run that RE-SENT THE SAME
   ARTICLES, so it could not have returned a low one — the mirror, and the seductive
   half: a *positive* that carried no information; 12th 2026-08-28 — a corpus target
