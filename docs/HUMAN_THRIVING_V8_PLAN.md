@@ -583,23 +583,57 @@ not assume the rebuild fixes class A; Phase B2 stays load-bearing.**
 (arxiv 4.23% / pubmed 2.05% vs production's 7.92% / 0.83%), so #125's academic-register
 defect is a **prompt** defect. Spend no corpus budget on it.
 
+⛔⛔ **CORRECTED 2026-08-28 — four of these five targets were stated against a
+population a draw cannot sample from.** They come from the production census, which
+counts rows *including* `news.google.com`. GN is 22.1% of rows and is excluded from
+every draw by rule, so excluding it moves every target: base rate **7.74% → 9.76%**
+(enrichment 3.6× → **2.9×**), non-Latin **7.26% → 9.76%**, median length
+**1,349 → 1,900** (corpus 2× → **1.37×**), class-A **0.87% → 0.70%**, and p10 length
+**84 → 235 ch** with the sub-300-char share collapsing **30.8% → 11.9%** — so
+"the short-form regime is under-trained" is largely a statement about headline echoes.
+**The drawable population is n = 179,111** (distinct articles, GN excluded, all stages,
+window 2026-08-14 → 08-28). Use the corrected column below; full table, method and the
+window-stability check: `docs/evidence/2026-08-28-v8-phase0-drawable-population.md`.
+
+⚠️ **Two further corrections from the same run.** (1) The archive window in step 5
+below has **rolled** — it now holds `08-14 → 08-28`, not `08-07 → 08-21`, and the
+236,879-row figure belongs to a window no longer on disk. (2) "91 harm rows above the
+op-point in 14 days (~6.5/day)" is **window-dependent**: the current window gives 78
+(~5.6/day). State it as **~5.6–6.5/day**. The ADR-023 argument is unaffected.
+
+⭐ **Refuted, and it was the reason the drawable census got written:** an article is
+scored **once**, not per cycle — 232,845 rows → 232,842 distinct ids. Row-vs-article
+dedup is a no-op on this archive.
+
+⭐ **Draw from the FULL pool, including `stage1_low`.** Conditioning on stage2 lets the
+v7 e5 probe decide what a v8 corpus may contain — the same shape as the keyword
+prefilter ruling 3 dropped. Measured, the probe is **composition-neutral on every axis
+Gate 0 measures** (≤0.72pp on all of them), so this is a *coverage* argument, not a bias
+one: stage2-only costs **11.5% of the pool and 95 domains** for no compositional gain.
+
 **Gate 0 targets — state each as a chosen number before drawing:**
 
-- **Positive base rate: decide it, don't inherit it.** ⚠️ "Match production's 7.74%" is the
-  WRONG fix — ADR-003 screen+merge enrichment exists *because* positives are rare, and a
-  7.74% draw spends the oracle budget on obvious negatives. The defect is that 3.6× is
+- **Positive base rate: decide it, don't inherit it.** ⚠️ "Match production's **9.76%**"
+  (*corrected 08-28; 7.74% was the GN-inclusive figure*) is the WRONG fix — ADR-003
+  screen+merge enrichment exists *because* positives are rare, and a 9.76% draw spends the
+  oracle budget on obvious negatives. The defect is that **2.9×** (*was 3.6×*) is
   **accidental and unstated**. Record the factor and correct for it (class weighting or
   calibration).
-- **Class-A shape at ≥ production's 0.87%**, with **TPs as well as FPs** — the 4 corpus rows
+- **Class-A shape at ≥ production's 0.70%** (*corrected 08-28; 0.87% was GN-inclusive*),
+  with **TPs as well as FPs** — the 4 corpus rows
   labelled ≥4.5 are restorative-justice stories (Brussels survivor meets perpetrator 6.55,
   $30M abuse settlement 5.85, Myanmar amnesty 5.38), i.e. §5b shapes. **An FP-only supplement
   destroys the no-regression set.**
-- **Non-Latin share at ≥ production's 7.26%.** Nothing else in this plan would notice if the
-  rebuild stayed Latin-shaped.
-- **Cover the short-form regime** (production `p10 = 84 ch`, median 1,349) or state that the
-  filter is trained for long-form only.
-- ⛔ **Exclude `news.google.com`** — 22.44% of production and sub-300-char headline echoes, so
-  production percentages are not directly the targets a draw should hit.
+- **Non-Latin share at ≥ production's 9.76%** (*corrected 08-28; 7.26% was GN-inclusive,
+  and the quantity is drifting up — Arabic 1.5% → 2.0% in two weeks*). Nothing else in this
+  plan would notice if the rebuild stayed Latin-shaped.
+- **Cover the short-form regime** (drawable `p10 = 235 ch`, median **1,900**; *corrected
+  08-28 — `p10 = 84` / median 1,349 were GN-inclusive, and the sub-300-char share falls
+  30.8% → 11.9% once GN is out, so this regime is **smaller than recorded, still real**:
+  21,374 articles*) or state that the filter is trained for long-form only.
+- ⛔ **Exclude `news.google.com`** — 22.1% of production and sub-300-char headline echoes, so
+  production percentages are not directly the targets a draw should hit. **Measured 08-28:
+  this single exclusion is what moves every other target on this list.**
 - ⭐ **Write a `corpus_manifest.json` (llm-distillery#127).** Establishing that this corpus was
   *not* prefiltered took git archaeology plus a three-arm experiment; it should have been a
   file. v8 is the first corpus with a chance to record its own provenance, and Gate 0 already
@@ -618,10 +652,16 @@ defect is a **prompt** defect. Spend no corpus budget on it.
    only the FPs teaches "harm words → suppress" and destroys §5b.
 4. **Sample above the op-point** for the supplement (ADR-023): that is where junk reaches
    readers, not below it.
-5. ⚠️ **The archive window bounds any production draw.**
-   `sadalsuud:~/local_dev/NexusMind/data/filtered/uplifting/` holds **~14 days**
-   (2026-08-07 → **08-21**, 236,879 rows), is **100% prefilter-passers by construction** and
-   drops source-type exclusions. Older material must come from FluxusSource raw.
+5. ⚠️ **The archive window bounds any production draw — and it ROLLS.**
+   `sadalsuud:~/local_dev/NexusMind/data/filtered/uplifting/` holds **~14 days**.
+   ⛔ *Corrected 2026-08-28: the window is now* **`08-14 → 08-28`** *(83 files, 232,845
+   scored rows, 1.7 GB) — the `08-07 → 08-21` / 236,879-row figure names a window no
+   longer on disk.* Re-enumerate before every draw; **a draw taken next week is a
+   different population**, so the manifest records the window, not just the counts.
+   Measured on a cycle file (n=2,991): **100% `passed_prefilter`, 100% `prefilter_reason`
+   null, 100% `disposition: kept`** — so the archive also excludes **every gate-blocked
+   article**. Those are now recoverable from the block ledger (2026-08-24), which they
+   were not when this step was written. Older material must come from FluxusSource raw.
 6. ⛔ **Do not copy any of it into the repo** — full article text at scale is the hazard
    surfaced under #97 (812 committed rows). Stage on the training host; the repo keeps
    300-char excerpts.

@@ -1,0 +1,63 @@
+== v8 PHASE 0 -- DRAWABLE POPULATION ==
+archive     : /home/jeroen/local_dev/NexusMind/data/filtered/uplifting
+files       : 83   (filtered_20260814_085722.jsonl .. filtered_20260828_051937.jsonl)
+skipped     : not-stage2 26624, no score 0, no id 0
+rows -> articles: 206221 rows, 206220 distinct ids, 1 repeat rows (1.00x duplication)
+distinct content_hash: 206221  (vs 206220 ids -- #119: the dedup key is not settled)
+
+== A. ALL ROWS (every cycle file; production_census's population) ==
+  n                     : 206221
+  positive base rate    : 16102 / 206221 = 7.81%  (raw >= 4.5)
+  non-Latin script      : 16100 (7.81%)
+  content length        : p10=84 p50=1360 p90=5578
+  under the 300ch oracle floor: 63589 (30.84%)
+  class-A shape (harm in title): 1828 (0.89%)
+      hi>=4.5      78  (  4.3% of harm-title)
+      mid          49  (  2.7% of harm-title)
+      lo<3.85    1701  ( 93.1% of harm-title)
+  distinct domains      : 1382   top-10 share 36.8%
+      news.google.com                     45579  22.10%
+      arxiv.org                           15864   7.69%
+      aawsat.com                           2641   1.28%
+      indianexpress.com                    2262   1.10%
+      thewest.com.au                       1898   0.92%
+      pubmed.ncbi.nlm.nih.gov              1690   0.82%
+  language top-8        : en=60.8%, es=7.2%, de=6.1%, fr=4.0%, nl=2.9%, ar=2.0%, el=1.9%, pt=1.6%
+
+== B. DISTINCT ARTICLES (dedup by id, first occurrence wins) ==
+  n                     : 206220
+  positive base rate    : 16102 / 206220 = 7.81%  (raw >= 4.5)
+  non-Latin script      : 16100 (7.81%)
+  content length        : p10=84 p50=1360 p90=5578
+  under the 300ch oracle floor: 63589 (30.84%)
+  class-A shape (harm in title): 1828 (0.89%)
+      hi>=4.5      78  (  4.3% of harm-title)
+      mid          49  (  2.7% of harm-title)
+      lo<3.85    1701  ( 93.1% of harm-title)
+  distinct domains      : 1382   top-10 share 36.8%
+      news.google.com                     45579  22.10%
+      arxiv.org                           15864   7.69%
+      aawsat.com                           2641   1.28%
+      indianexpress.com                    2262   1.10%
+      thewest.com.au                       1898   0.92%
+      pubmed.ncbi.nlm.nih.gov              1690   0.82%
+  language top-8        : en=60.8%, es=7.2%, de=6.1%, fr=4.0%, nl=2.9%, ar=2.0%, el=1.9%, pt=1.6%
+
+== C. DRAWABLE (distinct, minus news.google.com) ==
+  n                     : 160641
+  positive base rate    : 15680 / 160641 = 9.76%  (raw >= 4.5)
+  non-Latin script      : 15648 (9.74%)
+  content length        : p10=254 p50=1936 p90=6291
+  under the 300ch oracle floor: 18010 (11.21%)
+  class-A shape (harm in title): 1172 (0.73%)
+      hi>=4.5      61  (  5.2% of harm-title)
+      mid          36  (  3.1% of harm-title)
+      lo<3.85    1075  ( 91.7% of harm-title)
+  distinct domains      : 1381   top-10 share 19.7%
+      arxiv.org                           15864   9.88%
+      aawsat.com                           2641   1.64%
+      indianexpress.com                    2262   1.41%
+      thewest.com.au                       1898   1.18%
+      pubmed.ncbi.nlm.nih.gov              1690   1.05%
+      lrt.lt                               1687   1.05%
+  language top-8        : en=51.5%, es=9.2%, de=7.7%, fr=4.7%, nl=3.7%, ar=2.6%, el=2.3%, pt=2.0%
