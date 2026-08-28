@@ -327,6 +327,19 @@ def main():
                         "published_date": article.get("published_date", ""),
                         "language": article.get("language", ""),
                         ANALYSIS_FIELD: analysis,
+                        # 2026-08-28: PER-ROW usage, not just the running total printed
+                        # below. The aggregate cannot separate a cold prefix from a warm
+                        # one -- with concurrency N the first N requests race and all
+                        # miss, so a short run's cache rate is dominated by warm-up and
+                        # reads as "caching does not work here". #103 spent nine days on
+                        # a price nobody could obtain; this is the field that decides
+                        # whether a quoted cache rate is one THIS code path actually got.
+                        "usage": {
+                            "prompt_tokens": usage.get("prompt_tokens", 0),
+                            "completion_tokens": usage.get("completion_tokens", 0),
+                            "prompt_cache_hit_tokens": usage.get("prompt_cache_hit_tokens", 0),
+                            "prompt_cache_miss_tokens": usage.get("prompt_cache_miss_tokens", 0),
+                        },
                     }
 
                 f.write(json.dumps(record, ensure_ascii=False) + "\n")

@@ -65,6 +65,34 @@
 > `docs/evidence/2026-08-28-refcheck-docs/`. Controls: sensitivity **33/33** before and
 > after; default run byte-identical bar the new attribution section.
 >
+> ### ⛔⛔ NEW 2026-08-28, and it outranks the corpus questions: THE v8 PROMPT IS UNSTABLE
+> **Spend $0.12, 90 calls, 0 errors. Nothing deployed.** Probe:
+> `docs/evidence/2026-08-28-v8-prompt-order-probe/`.
+> Two runs of the **identical** prompt on the **identical** 30 articles disagree on
+> **5/30 (17%) op-point crossings**. The mechanism is the prompt's own **binary scope gate**:
+> `scope_verdict` → "ALL six dimensions 0–2", so a marginal verdict swings the weighted
+> average in one jump. **Gate-stable rows move a median 0.100** (inside the #95 band);
+> **gate-flipped rows move a median 3.750**; 4 of the 5 large movers are gate flips and
+> **0 of the 25 small movers are**. Gate A never saw this — it ran k=3 and averaged over it.
+> ⇒ **A k=1 v8 re-score labels ~13% of rows by a coin toss (~860 of 6,590), concentrated at
+> the boundary. The re-score needs k ≥ 3 with aggregation.**
+>
+> ### ✅ And the cache fix that pays for it
+> The v8 prompt's cache ceiling was **1.5%, the lowest of 17 prompts here** (article at char
+> 617 of 42,406). `prompt-candidate-tail.md` moves the article to just before §7 —
+> content-preserving, one `---` of difference — lifting the ceiling to **95.8%** and the
+> **measured** rate from **0.0% → 90.2%** (median, warm rows) on the real call site.
+> **k=3 reordered = $10.16 / 6,590 rows vs k=1 as-is = $18.00. Three labels for 56% of the
+> price of one.** ⛔ The plan's "≈$12" was a single run at the old shape.
+> ⛔ **PARITY IS UNPROVEN, NOT PROVEN** — the reorder sits *inside* its own null arm (null sd
+> 1.44 / 5 flips vs treatment 1.57 / 3), so the honest reading is *no effect detectable above
+> noise*. **Adopt the reordered prompt for the Phase A k=3 calibration run, where parity gets
+> settled; do not adopt it into a re-score on this probe alone.**
+> ⛔ The null arm's **99.4% cache is an artifact** — it re-sent identical articles, so the
+> whole prompt matched, not the prefix. Never quote it as a cache result.
+> ⚠️ Before the calibration run: persist `scope_verdict` / `dominant_subject` (§3 had to
+> *infer* the gate from "all six dims ≤ 2").
+>
 > ### Remaining Phase 0 work, none of it blocked
 > 1. ⛔ **Corpus SIZE is the one number still unstated** — the three ruled numbers are
 >    fractions and cannot size a draw. v7 was 6,590 rows (re-scored as a seed, plan step 1);

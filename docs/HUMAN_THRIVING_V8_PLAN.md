@@ -674,6 +674,16 @@ one: stage2-only costs **11.5% of the pool and 95 domains** for no compositional
 1. **Re-score the 6,590 under the v8 prompt anyway** — they are labelled articles with full
    text and they keep `test.jsonl` comparable to the #125 baseline every gate refers to.
    Treat them as a *seed*, not as the population.
+   ⛔⛔ **AT k ≥ 3, NOT k = 1 (measured 2026-08-28).** Two runs of the identical prompt on
+   identical articles disagree on **5/30 (17%) op-point crossings**, because
+   `scope_verdict` is a binary that zeroes all six dimensions: **gate-stable rows move a
+   median 0.100, gate-flipped rows 3.750**, and the gate flips on **13%** of re-runs. A k=1
+   re-score labels ~860 of 6,590 rows by a coin toss, at the boundary. Gate A missed it by
+   averaging k=3. ✅ **Affordable now**: `prompt-candidate-tail.md` lifts the cache ceiling
+   1.5% → 95.8% (measured 0.0% → 90.2%), so **k=3 reordered is $10.16 vs k=1 as-is $18.00**.
+   ⛔ **Parity for the reorder is UNPROVEN — it sits inside its own null arm.** Use it *for*
+   the Phase A k=3 calibration, which is where parity gets settled.
+   Probe: `docs/evidence/2026-08-28-v8-prompt-order-probe/`.
 2. **Rebuild the population without keyword selection.** Draw from FluxusSource raw and the
    NexusMind archive with **no lens prefilter applied**, so the oracle sees what production
    sees. The 300-char oracle floor still applies (ruling 3, exclusion 1).
