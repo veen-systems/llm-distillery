@@ -80,11 +80,26 @@ ssh b650-gpu        # account is `jeroen` (NOT jwasys); works from situla and sa
   CPU before quoting an op-point number. Decomposed one variable at a time: host
   contributes **nothing**, the library stack is worth 3 flips at 4.5, CPU→CUDA is
   worth 3 at 4.5 and 1 at 4.0.
-  ⛔ **The concrete act to avoid: diffing a b650 CUDA replay against STORED
-  PRODUCTION SCORES.** Production scoring is gpu-server on **CPU** (run P of the
-  decomposition), so a b650 **CPU** + `venv-prodparity` replay is exact against it
-  and needs no qualification — but the GPU replay crosses the device term, the
-  larger of the two and the one that reaches 4.5. Speed on CUDA, compare on CPU.
+  ⛔ **The concrete act to avoid: diffing ANY b650 replay against STORED PRODUCTION
+  SCORES without first matching production's device.** **Production serves on GPU**
+  (`memory/filter-status.md`, `memory/project_session_2026_08_09_night.md`), so the
+  comparable b650 configuration is **CUDA + `venv-prodparity`** — run **G**'s shape,
+  not run C's. A b650 **CPU** replay diffed against stored production output crosses
+  the device term, the larger of the two and the one that reaches 4.5.
+  ⚠️ **And even the CUDA comparison is an EXTRAPOLATION, not a measurement.** The
+  host term is 0.0000 — but it was measured with the device held at **CPU** (P→C).
+  Nobody has run gpu-server on CUDA against b650 on CUDA. The four runs do not
+  contain production's own configuration.
+  ⛔ **This bullet said the exact opposite for one commit (`b7b1d6d`, corrected the
+  same day) — "production scoring is gpu-server on CPU (run P), so a CPU replay is
+  exact and needs no qualification."** It would have licensed precisely the
+  comparison the device term forbids. The mechanism is worth more than the fix:
+  **run P is labelled `gpu-server | CPU`, and I read an experiment's ARM LABEL as a
+  description of production.** P's *venv* is production's; P's *device* is the
+  study's control. An arm label describes what was held fixed to isolate a term, and
+  says nothing about what production does. Caught by the NexusMind session; confirmed
+  here against this repo's own two records, which had said "production serves on GPU"
+  all along.
   ⚠️ **"Production parity" names a HOST here, and there is more than one candidate.**
   `venv-prodparity` is built to **gpu-server's** pins — the box that scores the
   student — **not sadalsuud's**, which runs the pipeline. The two are different
