@@ -45,8 +45,18 @@ ssh b650-gpu        # account is `jeroen` (NOT jwasys); works from situla and sa
   (b650). **Do not measure a threshold on b650 without re-running the harness at
   that threshold.** The p50 of exactly 0.0000 is a trap: raw logits are
   bf16-quantised (~0.03 steps), so most disagreements are hidden, not absent.
-  Still unmeasured for the student: **CPU vs CUDA** (the 5.4e-6 above is the
-  probe's). Full record: `docs/evidence/2026-08-09-cross-box-parity-uplifting-v7.md`.
+  ⛔ **CORRECTED 2026-08-10, and the correction did not reach this bullet until
+  2026-08-29: none of the 0.2008 is the BOX.** The 08-09 run had the stacks
+  unmatched. The four-run decomposition
+  (`docs/evidence/2026-08-10-b650-gpu-production-stack-parity.md`) isolates each
+  term: **host alone is 660/660 bit-identical, max |Δ| 0.0000**; the 0.2008 is the
+  **library stack**; and **CPU→CUDA — the "still unmeasured" line below — is now
+  measured at 0.1956, 1 flip at 4.0 and 3 at 4.5**, making the device the term that
+  reaches the deployed op-point. **Pin production's versions and b650 IS
+  gpu-server**; the threshold caveat now attaches to the stack and the device, not
+  to the machine. Full records:
+  `docs/evidence/2026-08-09-cross-box-parity-uplifting-v7.md` (stack, confounded as
+  "cross-box") and the 08-10 decomposition (all four terms).
 - ✅ **SOLVED 2026-08-10 — b650 runs the student on GPU. Use
   `~/llm-distillery/venv-prodparity`.** ~2 min per 660 rows, vs ~16 min on CPU
   here and ~30 on gpu-server's CPU. **No sudo was needed.** The old venv is built

@@ -124,9 +124,19 @@ not measured. The production-relevant number is therefore an estimate.
 
 - **Training-time CUDA nondeterminism** (gotcha 2026-07-09): same seed, fresh
   re-train, different *weights*. This one is fixed weights at inference.
-- **Cross-box score skew** (gotcha 2026-07-30): |0.16| between gpu-server and
-  b650 from a sentence-transformers version difference. Same magnitude,
-  different cause — and note this one is *within* a single box.
+- **Stack / device skew — NOT "cross-box"; the name was wrong for 26 days and is
+  corrected here 2026-08-29.** Originally recorded as |0.16| between gpu-server
+  and b650 (gotcha 2026-07-30) from a sentence-transformers version difference —
+  which is already the tell: *a version difference is not a machine*.
+  ⛔ **The host term is exactly 0.0000.** `docs/evidence/2026-08-10-b650-gpu-production-stack-parity.md`
+  ran four runs on the same 660-row split changing one variable at a time:
+  **P→C (host isolated, device + stack held) is 660/660 bit-identical**, across two
+  different physical machines with different CPUs and different python patch levels.
+  The two real terms are the **library stack** (max |Δ| **0.2008**, 3 flips at 4.5)
+  and the **device, CPU→CUDA** (max |Δ| **0.1956**, 1 flip at 4.0, 3 at 4.5) — so
+  *"same magnitude as 0.16"* was wrong as well: both exceed it.
+  ⚠️ Everything below was measured 2026-08-09 with the **stack unmatched**, so read
+  it as the stack term, not a box term.
   **NOW MEASURED FOR THE GEMMA STUDENT TOO (2026-08-09 night)**, and it is the
   same order as this floor rather than smaller: uplifting v7's 660 held-out rows,
   b650 vs gpu-server's serving venv, model weights + all filter/`common/` code +
@@ -179,8 +189,10 @@ Four things follow, and the last one is the expensive one:
 
 Consequence for the same-day trap this file exists to prevent: **the wrong
 instrument now has three sizes, and picking by magnitude is not a method.** Ask
-what varied — batch composition (0.16), machine (0.16), or the oracle's decoder
-(0.44–0.69) — and measure the one that varied in *your* comparison.
+what varied — batch composition (0.16), the **library stack** (0.2008), the
+**device** CPU→CUDA (0.1956), or the oracle's decoder (0.44–0.69) — and measure the
+one that varied in *your* comparison. ⛔ **"The machine" is not on that list**: with
+pins and device matched, two machines are bit-identical.
 
 Records: `docs/evidence/2026-08-12-cd-v5-cross-oracle-arm-a.md` (ν = 0.436) and
 `docs/evidence/2026-08-12-cd-v5-op-point-band-followup.md` (ν₄ = 0.687).
