@@ -160,6 +160,15 @@ def parse_response(resp: dict):
             "evidence": evidence,
             "content_type": parsed.get("content_type", "unknown"),
             "solution_type": parsed.get("solution_type"),  # v4+; None for filters without it
+            # human_thriving v8's STEP 1 verdict, recorded so the scope gate can be
+            # MEASURED instead of inferred from "all six dims <= 2" (#135). The prior
+            # inference cannot separate a scope refusal from a genuinely dull article
+            # that scores low on every dimension, and the two have different remedies.
+            # "absent" is a THIRD state, distinct from any verdict: every prompt before
+            # v8 emits neither key, and an analysis must not read that silence as
+            # in_scope. Coerced to str so a malformed emission is still recordable.
+            "scope_verdict": str(parsed.get("scope_verdict", "absent")),
+            "dominant_subject": str(parsed.get("dominant_subject", "")),
             "usage": resp.get("usage", {}),
         }
     except (json.JSONDecodeError, KeyError, IndexError) as e:
@@ -315,6 +324,17 @@ def main():
                     analysis["content_type"] = parsed["content_type"]
                     if parsed.get("solution_type") is not None:
                         analysis["solution_type"] = parsed["solution_type"]
+                    # 2026-08-29 (#135). Diagnostics: nothing here caps a score and
+                    # nothing should -- the scope rule must act through the six dimension
+                    # scores, the only values the weighted average reads. content_type is
+                    # the cautionary case (filters/uplifting/v7/config.yaml declares
+                    # content_type_caps, v7 ships no postfilter.py, so those branches have
+                    # never applied).
+                    # /!\ These sit INSIDE the analysis field here, beside content_type.
+                    # scripts/score_ollama_oracle.py writes the same two at the RECORD
+                    # ROOT. Read the writer before joining outputs from both.
+                    analysis["scope_verdict"] = parsed["scope_verdict"]
+                    analysis["dominant_subject"] = parsed["dominant_subject"][:200]
                     analysis["filter_version"] = FILTER_VERSION
                     analysis["analyzed_by"] = args.oracle_label or f"deepseek-{args.model}"
                     analysis["analyzed_at"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())

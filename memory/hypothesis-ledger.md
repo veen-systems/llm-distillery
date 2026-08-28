@@ -205,9 +205,32 @@ per arm plus one null arm. ⛔ **No parity claim is established here** — see H
 **99.4%** cache (it re-sent identical articles, so the whole prompt matched — not the prefix)
 and the treatment's **76.0%** aggregate (warm-up dominated; 4 of 30 rows cold).
 
-⚠️ H-V8-5's gate was **inferred** from "all six dimensions ≤ 2" — `scope_verdict` and
-`dominant_subject` are not persisted by `scripts/score_deepseek_production.py`. The inference
-is clean here (0 of 25 vs 4 of 5) but persist the two fields before the calibration run.
+⚠️ H-V8-5's gate was **inferred** from "all six dimensions ≤ 2". The inference is clean on
+that run (0 of 25 vs 4 of 5), but it cannot separate a scope refusal from a genuinely dull
+in-scope article, and every candidate answer to H-V8-6 needs the verdict itself.
+
+✅ **Persisted 2026-08-29.** `scripts/score_deepseek_production.py` now writes
+`scope_verdict` / `dominant_subject` **inside the analysis field**, beside `content_type`
+(`tests/unit/test_scope_verdict_stamp.py`, 7 tests; 3 seeded mutations each caught).
+Outcome-proven on the real call site, not on the parser alone: 6 articles from the probe
+cohort, **6/6 rows carry both stamps**, and the stamp is not a constant — 3 `out_of_scope`,
+3 `in_scope`, which on those 6 agrees exactly with the old inference.
+
+⛔ Three things that run is **not**:
+- **not an agreement measurement.** The 6 were *selected by the old inference*, 3 from each
+  side. 6/6 shows the two are not anti-correlated; it estimates no rate. The real
+  inferred-vs-recorded agreement is a Phase A output.
+- **not evidence about H-V8-4.** It is a third identical re-run and gave **0/6** gate flips;
+  at a 13% per-row flip rate P(0 of 6) ≈ 0.43, so it neither corroborates nor challenges it.
+- **not a cost or cache number.** It re-sent articles already sent on 08-28, so its 99.4%
+  cache hit is the *same artifact* the null arm produced, and the $0.0017 it cost cannot size
+  anything.
+
+`ground_truth/batch_scorer.py` needed no change — `_parse_json_response` returns the parsed
+JSON unfiltered and `analyze_article` only *adds* metadata keys, so a v8 key already survives
+into the same nesting (**read-proven, not run-proven** — no v8 run has gone through that path).
+⚠️ `scripts/score_ollama_oracle.py` persisted both fields already but at the **record root**,
+not inside the analysis field. Read the writer before joining outputs from the two.
 
 ### `solutions-v6-dimension-hypotheses.md` — `community_practice_strength` and re-weighting
 

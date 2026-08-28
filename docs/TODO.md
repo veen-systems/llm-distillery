@@ -90,13 +90,20 @@
 > settled; do not adopt it into a re-score on this probe alone.**
 > ⛔ The null arm's **99.4% cache is an artifact** — it re-sent identical articles, so the
 > whole prompt matched, not the prefix. Never quote it as a cache result.
-> ⚠️ Before the calibration run: persist `scope_verdict` / `dominant_subject` (§3 had to
-> *infer* the gate from "all six dims ≤ 2").
+> ✅ **DONE 2026-08-29** — `scope_verdict` / `dominant_subject` are persisted (below).
 >
 > ### ▶ NEXT SESSION — start here, in this order
-> 1. **Persist `scope_verdict` + `dominant_subject`** in `scripts/score_deepseek_production.py`
->    (#135 prerequisite — today the gate had to be *inferred* from "all six dims ≤ 2", and
->    every candidate response to #135 needs the verdict itself). Cheap, local, no spend.
+> 1. ✅ **DONE 2026-08-29 — `scope_verdict` + `dominant_subject` persisted** in
+>    `scripts/score_deepseek_production.py`, **inside** the analysis field beside
+>    `content_type` (`score_ollama_oracle.py` writes the same two at the record ROOT — read
+>    the writer before joining). Guard: `tests/unit/test_scope_verdict_stamp.py`, 7 tests,
+>    3 seeded mutations each caught. Outcome-proven on the real call site: 6 probe-cohort
+>    articles, **6/6 rows carry both stamps**, 3 `out_of_scope` / 3 `in_scope` (not a
+>    constant). Spend **$0.0017**. ⛔ That run is **not** an agreement measurement (the 6 were
+>    selected *by* the old inference, 3 a side), **not** evidence on the flip rate (0/6 flips
+>    has P≈0.43 at 13%), and **not** a cache or cost number (it re-sent 08-28's articles, so
+>    its 99.4% hit is the same artifact as the null arm's). `batch_scorer.py` needs no change
+>    — it returns the parsed JSON unfiltered (read-proven only; no v8 run uses that path).
 > 2. **Phase A calibration run at k=3**, reordered prompt, on a production-mix cohort. It
 >    settles three things at once: the #135 flip rate on a real n, ADR-010 label parity for
 >    the reorder (H-V8-3, today UNRESOLVED), and a real $/article for sizing the corpus.
