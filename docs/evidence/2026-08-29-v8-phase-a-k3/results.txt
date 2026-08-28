@@ -1,0 +1,75 @@
+rows 200  observations 1200  strata {'R': 150, 'B': 50}
+op-point 4.5 (imported)  gatekeeper evidence_level<3.0 -> cap 3.0
+
+==============================================================================
+1. PRIMARY -- P(two identical runs disagree on the scope binary)
+==============================================================================
+arm stratum   rows   disc/pairs    rate    95% CI (row-clustered)    runs1&2 only
+A   R          150     24/450     5.3%      [2.7%, 8.4%]      11/150 = 7.3%
+A   B           50     14/150     9.3%      [4.0%, 16.0%]      5/50 = 10.0%
+B   R          150     24/450     5.3%      [2.7%, 8.4%]      8/150 = 5.3%
+B   B           50     10/150     6.7%      [1.3%, 13.3%]      4/50 = 8.0%
+
+==============================================================================
+2. SECONDARY -- non-unanimity at k=3, and whether a majority vote moves the label
+==============================================================================
+  arm A stratum R: non-unanimous 12/150 = 8.0%   majority differs from run 1 on 4 of them
+  arm A stratum B: non-unanimous 7/50 = 14.0%   majority differs from run 1 on 3 of them
+  arm B stratum R: non-unanimous 12/150 = 8.0%   majority differs from run 1 on 4 of them
+  arm B stratum B: non-unanimous 5/50 = 10.0%   majority differs from run 1 on 2 of them
+
+==============================================================================
+3. TERTIARY -- op-point (4.5) crossings, k=3 mean vs k=1 (run 1 alone)
+==============================================================================
+  arm A stratum R: k=1 above   8  k=3 above   8  rows where k=1 and k=3 disagree: 2/150 = 1.3%
+  arm A stratum B: k=1 above   5  k=3 above   7  rows where k=1 and k=3 disagree: 2/50 = 4.0%
+  arm B stratum R: k=1 above  11  k=3 above  11  rows where k=1 and k=3 disagree: 2/150 = 1.3%
+  arm B stratum B: k=1 above  12  k=3 above  12  rows where k=1 and k=3 disagree: 2/50 = 4.0%
+
+==============================================================================
+4. PARITY (H-V8-3) -- between-arm effect against the within-arm null, SAME rows
+==============================================================================
+Matched by construction: every quantity below is computed over PAIRS OF SINGLE RUNS.
+within = 6 pairs/row (3 within A, 3 within B).  between = 9 pairs/row (Ai vs Bj).
+  stratum R (n=150)
+    share of pairs moving > 0.16 (#95 band)  within   34.9%  between   52.4%  diff 95% CI [12.4%, 22.7%]  -> EFFECT: CI excludes 0
+    mean |d|                                 within   0.312  between   0.630  diff 95% CI [0.196, 0.459]  -> EFFECT: CI excludes 0
+    op-point (4.5) crossing rate             within    2.4%  between    4.2%  diff 95% CI [0.2%, 4.0%]  -> EFFECT: CI excludes 0
+  stratum B (n=50)
+    share of pairs moving > 0.16 (#95 band)  within   39.3%  between   52.9%  diff 95% CI [6.4%, 21.7%]  -> EFFECT: CI excludes 0
+    mean |d|                                 within   0.421  between   0.767  diff 95% CI [0.141, 0.590]  -> EFFECT: CI excludes 0
+    op-point (4.5) crossing rate             within   12.7%  between   16.2%  diff 95% CI [-0.4%, 8.9%]  -> no effect above the null
+
+DEVIATIONS from PREREGISTRATION.md, reported not substituted:
+  1. The pre-registered rule was 'median between-arm |d| (k=3 mean) <= 1.5x median
+     within-arm |d| (run pairs)'. It is unusable and biased, two ways. Biased: a k=3
+     mean is less noisy by construction, so it favours 'parity holds'. Unusable: the
+     within-arm median |d| is 0.000 in stratum R -- most rows are identical run to
+     run -- so the ratio divides by zero. A bar that cannot be evaluated is not a
+     bar; the fix is the matched pair-level test above, whose null is measured, not
+     assumed.
+  2. The pre-registered op-point rule ('between-arm count inside the range of the two
+     within-arm counts') had no error bar: with counts of 3-8 out of 150, Poisson
+     noise alone spans that range. Replaced by the same bootstrap.
+
+==============================================================================
+4b. DIRECTION -- |d| cannot tell bias from noise, and the answer is bias
+==============================================================================
+  stratum R (n=150): mean(A-B) on k=3 means = -0.239  95% CI [-0.409, -0.080]  -> DIRECTIONAL
+      rows where reordered scores LOWER 76, higher 45, unchanged 29
+      arm A: rows >= op-point 4.5 at k=3: 8/150
+      arm B: rows >= op-point 4.5 at k=3: 11/150
+      verdicts A (reordered): {'out_of_scope': 239, 'in_scope': 101, 'harm_is_subject': 98, 'response_to_harm': 9, 'no_person_benefits': 3}
+      verdicts B (as-is)    : {'out_of_scope': 194, 'harm_is_subject': 133, 'in_scope': 111, 'response_to_harm': 8, 'no_person_benefits': 4}
+  stratum B (n=50): mean(A-B) on k=3 means = -0.443  95% CI [-0.764, -0.138]  -> DIRECTIONAL
+      rows where reordered scores LOWER 31, higher 13, unchanged 6
+      arm A: rows >= op-point 4.5 at k=3: 7/50
+      arm B: rows >= op-point 4.5 at k=3: 12/50
+      verdicts A (reordered): {'in_scope': 71, 'out_of_scope': 56, 'harm_is_subject': 12, 'response_to_harm': 11}
+      verdicts B (as-is)    : {'in_scope': 86, 'out_of_scope': 34, 'harm_is_subject': 16, 'response_to_harm': 14}
+
+==============================================================================
+5. FREE -- recorded scope_verdict vs the old 'all six dims <= 2' inference
+==============================================================================
+  1200 labels: inference agrees with the recorded verdict on 1186 = 98.8%, disagrees on 14 = 1.2%
+  recorded verdicts: {'out_of_scope': 523, 'in_scope': 369, 'harm_is_subject': 259, 'response_to_harm': 42, 'no_person_benefits': 7}

@@ -104,12 +104,33 @@
 >    has P≈0.43 at 13%), and **not** a cache or cost number (it re-sent 08-28's articles, so
 >    its 99.4% hit is the same artifact as the null arm's). `batch_scorer.py` needs no change
 >    — it returns the parsed JSON unfiltered (read-proven only; no v8 run uses that path).
-> 2. **Phase A calibration run at k=3**, reordered prompt, on a production-mix cohort. It
->    settles three things at once: the #135 flip rate on a real n, ADR-010 label parity for
->    the reorder (H-V8-3, today UNRESOLVED), and a real $/article for sizing the corpus.
->    ⚠️ Budget it off the **measured** $0.000514/article, not the plan's stale ≈$12.
-> 3. **Corpus size**, then stage on b650 + `corpus_manifest.json` (#127).
-> 4. #134 step 2 (tiering) and #136 (the commit-msg guard) — hygiene, opportunistic.
+> 2. ✅ **DONE 2026-08-29 — Phase A k=3 ran, n=200, $0.85, 1,200 calls, 0 errors**
+>    (`docs/evidence/2026-08-29-v8-phase-a-k3/`; design pre-registered in `ff88b56`, one
+>    commit before the results, four of seven predicted ranges missed).
+>    ⛔⛔ **H-V8-3 RESOLVED AGAINST THE PLAN: the reorder CHANGES THE LABELS.**
+>    mean(reordered − as-is) **−0.239** production-mix ([−0.409, −0.080]), **−0.443** at the
+>    boundary; **15 vs 23** rows above the op-point; and it survives on the 41 rows both arms
+>    call `in_scope` on all three runs (**−0.235**, all six dimensions) — so it is **not**
+>    just the scope gate. The reordered prompt is a **stricter oracle**; adopting it is a
+>    scoring decision, not a budgeting one. **Still not adopted.**
+>    ✅ Flip rate re-measured smaller than the probe's 13%: **5.3%** production-mix
+>    ([2.7%, 8.4%]), **6.7–9.3%** boundary, per identical-run pair. Non-unanimous at k=3:
+>    **8.0% / 10–14%**. k≥3 still stands; the size changed, not the sign.
+>    ✅ Real $/article, run 1 only: **$0.00050** reordered vs **$0.00275** as-is (5.5×).
+>    ⛔ The k=3 repeat discount is **unproven at corpus scale** — schedule k=3 as three
+>    back-to-back calls per article, not three passes, and the assumption disappears.
+>    ✅ The stamp paid immediately: the old "all six dims ≤ 2" inference is **98.8%** right
+>    over 1,200 recorded labels, and the 1.2% plus the verdict mix were invisible without it.
+>
+> ### ▶ NEXT — the one open decision is the owner's
+> 1. ⛔ **OWNER: reordered prompt — adopt or not?** It is ~5.5× cheaper on the paying call
+>    and a **different, stricter** labelling function. ADR-023 wants specificity, so stricter
+>    is not obviously wrong, but v8 was adjudicated in its **as-is** form and ≈$15 on the
+>    corpus is small against adjudication time. Nothing downstream should move until this is
+>    ruled, because it decides which prompt labels the corpus.
+> 2. **Corpus size**, then stage on b650 + `corpus_manifest.json` (#127) — unchanged, and
+>    now budgetable off measured per-article prices for either arm.
+> 3. #134 step 2 (tiering) and #136 (the commit-msg guard) — hygiene, opportunistic.
 >
 > ⚠️ **Carry in:** the archive window rolls — it was 83 files at session start and **84**
 > three hours later. Re-enumerate at draw time; never carry a count across a session.

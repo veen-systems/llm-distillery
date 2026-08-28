@@ -235,3 +235,31 @@ it is enough to change the re-score design and not enough to quote as a rate.
 - [[project_session_2026_08_03]]
 - #95 — the issue, with the fix options (pin batch_size first)
 - #109 — arm A, where the oracle floor was first measured
+
+### Re-measured at n=200, 2026-08-29 — smaller, same shape
+
+`docs/evidence/2026-08-29-v8-phase-a-k3/`. The 30-row panel above was **stratified across
+the v7 score range and weighted to the op-point**, so its 13% is that panel's rate. Two
+strata, drawn and reported separately, never pooled:
+
+| | production-mix (n=150) | boundary [4.0,5.0) (n=50) |
+|---|---|---|
+| scope-binary disagreement, per identical-run pair | **5.3%** [2.7%, 8.4%] | **6.7–9.3%** |
+| rows non-unanimous over 3 identical runs | **8.0%** | **10–14%** |
+| op-point crossing between identical runs | **2.4%** | **12.7%** |
+| k=1 and k=3 disagree on the op-point | **1.3%** | **4.0%** |
+
+⭐ **The shape claim survives the re-measurement and the magnitude does not.** It is still a
+Bernoulli on a binary verdict, `1/√k` still does not apply, and k ≥ 3 still stands. What
+changed: **a rate carried from a design-weighted panel is that panel's rate.** The
+~860-of-6,590 figure derived from 13% inherits the same weighting — and note that neither
+number was measured on the v7 corpus, which is a third population again.
+
+⛔ **And a fifth thing that is not noise at all, found in the same run: PROMPT POSITION.**
+Moving the article from char 617 to char 40,626 of the same prompt — content-preserving to
+one `---` — shifts the score by **−0.239** on the production mix (95% CI [−0.409, −0.080]),
+against a within-arm null of 0.312 mean |Δ| measured on the same rows. That is **bias, not
+a floor**: it is directional, it survives on rows both arms call `in_scope` on every run
+(−0.235, all six dimensions), and no amount of k removes it. **Never treat a prompt edit as
+noise-equivalent because its |Δ| looks like the noise band — check the sign.**
+

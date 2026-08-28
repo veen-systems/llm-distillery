@@ -195,15 +195,21 @@ per arm plus one null arm. ⛔ **No parity claim is established here** — see H
 |---|---|---|
 | H-V8-1 | the v8 prompt's cache ceiling is unreachable in practice (a ceiling is not a rate) | **REFUTED** — 0.0% → **90.2%** median on warm rows against a 95.8% ceiling, on the real call site |
 | H-V8-2 | moving the article to the end is content-preserving | **CONFIRMED** — non-blank line multiset differs by one `---` (+5 chars) |
-| H-V8-3 | the reorder changes the labels | ⏳ **UNRESOLVED, and the instrument is the reason.** The treatment sits inside its own null arm (null sd 1.44 / 5 op-point flips; treatment 1.57 / 3). *"No effect detectable above noise"* ≠ *no effect* |
-| H-V8-4 | the v8 prompt is stable run-to-run at k=1 | **REFUTED** — 5/30 (17%) op-point crossings between identical runs |
+| H-V8-3 | the reorder changes the labels | ✅ **CONFIRMED 2026-08-29, n=200.** It does, and it is **directional**: mean(reordered − as-is) **−0.239** production-mix (95% CI [−0.409, −0.080]), **−0.443** at the boundary ([−0.764, −0.138]); mean \|Δ\| **0.630 between arms vs a 0.312 within-arm null on the same rows**. ⭐ Not just the gate — on 41 rows both arms called `in_scope` on all 3 runs it is still **−0.235**, on **all six dimensions**. The 08-28 probe missed it because its null was *a second run*, not a matched pair-level null with an interval |
+| H-V8-4 | the v8 prompt is stable run-to-run at k=1 | **REFUTED, and re-measured smaller 2026-08-29.** Per-pair scope-binary disagreement **5.3%** production-mix ([2.7%, 8.4%]) and **6.7–9.3%** at the boundary — not the probe's 13%, which came off a panel **stratified across the v7 range and weighted to the op-point**. Op-point crossing rate between identical runs: **2.4%** production-mix, **12.7%** at the boundary |
 | H-V8-5 | that instability is decoder jitter | **REFUTED** — it is the **scope gate**: gate-stable rows move a median **0.100**, gate-flipped **3.750**; 4 of 5 large movers are gate flips, 0 of 25 small movers are |
-| H-V8-6 | `k=4` averaging fixes it (cousin-3 arithmetic) | ⏳ OPEN and probably **NO** — `1/√k` assumes additive symmetric error; this is a Bernoulli on a binary verdict. A majority vote on `scope_verdict` is the candidate, untested |
-| H-V8-7 | the reorder's saving pays for the k≥3 that H-V8-4 forces | **CONFIRMED (arithmetic)** — k=3 reordered $10.16 vs k=1 as-is $18.00 per 6,590 rows |
+| H-V8-6 | `k=4` averaging fixes it (cousin-3 arithmetic) | ⏳ **PARTLY ANSWERED 2026-08-29.** A majority vote at k=3 has something to bite on: **8.0%** of production-mix rows and **10–14%** of boundary rows are non-unanimous, and on 3 of 7 boundary non-unanimous rows the majority **differs from run 1**. k=1 vs k=3 disagree on the op-point for **1.3%** (production-mix) / **4.0%** (boundary) of rows. Whether k=3 is *enough* is still open; `1/√k` still does not apply |
+| H-V8-7 | the reorder's saving pays for the k≥3 that H-V8-4 forces | ⚠️ **ARITHMETIC HOLDS, PREMISE DOES NOT.** Measured 2026-08-29: run-1 $/article **$0.00050 reordered vs $0.00275 as-is** (5.5×), so k=3 on 6,590 rows is **≈$6.6 vs ≈$21.4** — but H-V8-3 now says the two arms **do not produce the same labels**, so this is not a saving on one thing, it is a price difference between two different oracles. ⛔ The k=3 repeat discount ($0.00025/article) is **UNPROVEN at corpus scale** — runs 2–3 came ~1 min later, a corpus pass is ~30 min, and DeepSeek's cache TTL was never measured |
 
 ⛔ **Two numbers from this run are unquotable and are recorded as such**: the null arm's
 **99.4%** cache (it re-sent identical articles, so the whole prompt matched — not the prefix)
 and the treatment's **76.0%** aggregate (warm-up dominated; 4 of 30 rows cold).
+
+✅ **Superseded by the n=200 run, 2026-08-29** (`docs/evidence/2026-08-29-v8-phase-a-k3/`):
+arm A run 1 measured **89.2%** cache on 200 *distinct* articles against a 95.8% ceiling —
+the first cache figure here that a corpus run could reproduce. ⛔ Runs 2–3 of both arms read
+**99.4–99.5%** and are the same artifact as the probe's null; only run 1 of each arm is
+quotable.
 
 ⚠️ H-V8-5's gate was **inferred** from "all six dimensions ≤ 2". The inference is clean on
 that run (0 of 25 vs 4 of 5), but it cannot separate a scope refusal from a genuinely dull

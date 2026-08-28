@@ -1,0 +1,30 @@
+=== ARM A RUN 1  (13:25:02) prompt=prompt-candidate-tail.md ===
+Successful: 200  Errors: 0  Scrape-junk skipped: 0
+Tokens: input 2,325,518  output 51,441  cached 2,073,600
+Cache hit rate: 89.2%
+Estimated cost: $0.10 off-peak / $0.21 peak
+=== ARM B RUN 1  (13:26:02) prompt=prompt-candidate.md ===
+Successful: 200  Errors: 0  Scrape-junk skipped: 0
+Tokens: input 2,325,318  output 53,867  cached 0
+Cache hit rate: 0.0%
+Estimated cost: $0.55 off-peak / $1.09 peak
+=== ARM A RUN 2  (13:27:12) prompt=prompt-candidate-tail.md ===
+Successful: 200  Errors: 0  Scrape-junk skipped: 0
+Tokens: input 2,325,518  output 52,078  cached 2,312,704
+Cache hit rate: 99.4%
+Estimated cost: $0.05 off-peak / $0.11 peak
+=== ARM B RUN 2  (13:28:10) prompt=prompt-candidate.md ===
+Successful: 200  Errors: 0  Scrape-junk skipped: 0
+Tokens: input 2,325,318  output 54,552  cached 2,312,704
+Cache hit rate: 99.5%
+Estimated cost: $0.05 off-peak / $0.11 peak
+=== ARM A RUN 3  (13:29:10) prompt=prompt-candidate-tail.md ===
+Successful: 200  Errors: 0  Scrape-junk skipped: 0
+Tokens: input 2,325,518  output 51,249  cached 2,312,704
+Cache hit rate: 99.4%
+Estimated cost: $0.05 off-peak / $0.11 peak
+=== ARM B RUN 3  (13:30:08) prompt=prompt-candidate.md ===
+Successful: 200  Errors: 0  Scrape-junk skipped: 0
+Tokens: input 2,325,318  output 54,450  cached 2,312,704
+Cache hit rate: 99.5%
+Estimated cost: $0.05 off-peak / $0.11 peak

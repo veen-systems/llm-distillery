@@ -679,11 +679,31 @@ one: stage2-only costs **11.5% of the pool and 95 domains** for no compositional
    `scope_verdict` is a binary that zeroes all six dimensions: **gate-stable rows move a
    median 0.100, gate-flipped rows 3.750**, and the gate flips on **13%** of re-runs. A k=1
    re-score labels ~860 of 6,590 rows by a coin toss, at the boundary. Gate A missed it by
-   averaging k=3. ✅ **Affordable now**: `prompt-candidate-tail.md` lifts the cache ceiling
-   1.5% → 95.8% (measured 0.0% → 90.2%), so **k=3 reordered is $10.16 vs k=1 as-is $18.00**.
-   ⛔ **Parity for the reorder is UNPROVEN — it sits inside its own null arm.** Use it *for*
-   the Phase A k=3 calibration, which is where parity gets settled.
-   Probe: `docs/evidence/2026-08-28-v8-prompt-order-probe/`.
+   averaging k=3.
+   ⚠️ **Re-measured 2026-08-29 at n=200 and it is SMALLER: 5.3% production-mix
+   ([2.7%, 8.4%]) and 6.7–9.3% at the boundary, per identical-run pair.** The 13% came off
+   a panel *stratified across the v7 range and weighted to the op-point*, so it is that
+   panel's rate, not production's — and the ~860 figure inherits the same weighting. ⛔ The
+   conclusion is unchanged (**k ≥ 3, not k = 1**): 8.0% of production-mix rows and 10–14% of
+   boundary rows are non-unanimous over three runs, and the k=3 majority differs from run 1
+   on 3 of 7 boundary non-unanimous rows. What changed is the size, not the sign.
+   ⛔⛔ **PARITY SETTLED 2026-08-29, AND IT FAILED. Do not adopt the reorder as a cost
+   optimisation.** At n=200, with the null measured on the same rows at the same pair level,
+   moving the article to the end **changes the labels**: mean(reordered − as-is) **−0.239**
+   production-mix (95% CI [−0.409, −0.080]), **−0.443** at the boundary, **15 vs 23** rows
+   above the op-point, and the shift survives on the 41 rows both arms call `in_scope` on
+   all three runs (**−0.235**, on all six dimensions). The reordered prompt is a **stricter
+   oracle**, not a cheaper copy of this one. Its price advantage is real — run-1
+   **$0.00050 vs $0.00275/article**, so k=3 on 6,590 rows is **≈$6.6 vs ≈$21.4** — but that
+   is a price difference between two different labelling functions, and **≈$15 is small
+   against the adjudication time this plan already calls "the real cost"**. Adopting it is a
+   scoring decision for the owner, not a budgeting one.
+   ⛔ The k=3 repeat discount is **UNPROVEN at corpus scale** (runs 2–3 came ~1 min apart, a
+   corpus pass is ~30 min, and DeepSeek's cache TTL was never measured). Scheduling k=3 as
+   three back-to-back calls **per article**, instead of three passes over the corpus, removes
+   the assumption.
+   Probes: `docs/evidence/2026-08-28-v8-prompt-order-probe/` (n=30, could not see it) and
+   `docs/evidence/2026-08-29-v8-phase-a-k3/` (n=200, resolves it).
 2. **Rebuild the population without keyword selection.** Draw from FluxusSource raw and the
    NexusMind archive with **no lens prefilter applied**, so the oracle sees what production
    sees. The 300-char oracle floor still applies (ruling 3, exclusion 1).
