@@ -182,3 +182,99 @@ because only stage2 rows carry a Gemma score at all. The **non-Latin 9.76%** is 
 ⚠️ **The archive is a 14-day window and it rolls.** Anything older than `08-14` must
 come from FluxusSource raw. A draw taken next week is a different population from this
 one; the manifest must record the window, not just the counts.
+
+---
+
+## 6. Score mass per region — and the stage-1 false-negative trap
+
+**Added 2026-08-28, after the owner flagged FN risk.** Logs:
+`histogram_corpus_v7.log`, `histogram_production_drawable.log`. Script:
+`scripts/analysis/v8_score_histogram.py`.
+
+A single "2.9× enriched" scalar cannot say *which regions* are thin. Both sides use the
+same weighted-average function, and on production rows that is **checkable**: the row
+carries both the six dimension scores and the scorer's own `raw_weighted_average`, so
+the script asserts its arithmetic against the scorer's on every row and aborts on
+divergence. **160,641 rows compared, max |Δ| 1.776e-15** — float noise. The two sides
+are provably on one scale, not two functions whose difference gets called composition.
+
+| bin | corpus % | drawable production % | ratio |
+|---|---|---|---|
+| 1.0–1.5 | 45.220 | 53.018 | 0.85× |
+| **1.5–2.0** | 5.812 | 13.521 | **0.43×** |
+| 2.0–2.5 | 5.220 | 5.871 | 0.89× |
+| **2.5–3.0** | 3.657 | 5.493 | **0.67×** |
+| **3.0–3.5** | 3.293 | 4.867 | **0.68×** |
+| 3.5–4.0 | 3.778 | 3.909 | 0.97× |
+| 4.0–4.5 | 4.795 | 3.559 | 1.35× |
+| 4.5–5.0 | 6.191 | 3.359 | 1.84× |
+| 5.0–5.5 | 7.026 | 2.840 | 2.47× |
+| 5.5–6.0 | 6.525 | 2.029 | 3.22× |
+| 6.0–6.5 | 4.370 | 1.022 | 4.28× |
+| 6.5–7.0 | 2.610 | 0.438 | 5.96× |
+| **7.0–7.5** | 1.123 | 0.071 | **15.8×** |
+| **7.5–8.0** | 0.334 | 0.002 | **134×** |
+| 8.0–8.5 | 0.046 | 0.000 | 3 rows vs 0 |
+
+| region | corpus | production | ratio |
+|---|---|---|---|
+| anchor 0.0–3.5 | 63.202% | 82.771% | 0.76× |
+| decision 3.5–5.5 | 21.791% | 13.667% | 1.59× |
+| **visible 5.5–10** | 15.008% | 3.562% | **4.21×** |
+
+⛔ **This refutes the three-region spec proposed earlier the same day.** That spec said
+*over-sample the decision band **and** the visible band*. The visible band is already
+over-weighted **4.21×**, and its top is over-weighted 15.8× and 134×. Adding density
+there would compound an existing distortion, not correct one. **The corpus already has
+what that spec proposed to buy.**
+
+Where it is genuinely thin is the **lower middle, 1.5–3.5 (0.43×–0.68×)** — which is
+where "plausible but not on-lens" negatives live, i.e. where stage-2 **false positives**
+are born. Under ADR-023 that is the expensive error. So the corpus is thin exactly where
+the costly mistakes come from and fat exactly where the task is easy.
+
+### ⛔⛔ The positive MIX, and a correction to what I said earlier today
+
+| | positives (≥4.5) | marginal 4.5–5.5 | high 5.5+ |
+|---|---|---|---|
+| corpus | 1,860 (28.22%) | **46.8%** of positives | 53.2% |
+| drawable production | 15,680 (9.76%) | **63.5%** of positives | 36.5% |
+
+⛔ **Earlier today I wrote that "the FN-rate target transfers across prevalence, the
+routing rate does not." That is true for prevalence and FALSE for mix, and the
+difference is the whole risk.** `P(pred < threshold | y = 1)` is invariant to how
+*common* positives are, but only if the distribution *within* the positive class is
+unchanged. It is not: production's positives are **63.5% marginal**, the corpus's are
+**46.8%** — the corpus is skewed **1.36×** toward high-scoring, easy positives, and
+marginal positives are precisely the ones a screen misses.
+
+⭐⭐ **So v7's probe recall was estimated on an easier positive population than the one
+it serves. That is a live condition today, not a v8 hypothesis** — and it is the
+mechanism by which a corpus change silently buys unrecoverable stage-1 false negatives.
+
+⚠️ **What makes it survivable right now is not the calibration — it is that the probe
+barely screens.** It routes **88.6%** of articles to stage 2 (26,624 `stage1_low` of
+232,845). `config.yaml` says why: threshold 1.00 was calibrated when MEDIUM was 4.0, and
+#102 moved the op-point to 4.5, leaving it *"conservative rather than tuned"*.
+**Any retrain that makes stage 1 screen harder converts that slack into FN exposure.**
+
+### Consequences for the corpus spec
+
+1. **Do not add mass above 5.5.** It is 4.21× over-weighted already.
+2. **Preserve the positive MIX at production's 63.5 / 36.5**, not the corpus's 46.8 /
+   53.2. Enrich the positive *rate* (ADR-003 says to); do not reshape the positive
+   *class*, because that is what biases the recall estimate.
+3. **Spend the freed budget on 1.5–3.5** — near-miss negatives, where stage-2 false
+   positives originate and where the corpus is thinnest (0.43× at 1.5–2.0).
+4. **Validate probe FN on a production-mix cohort**, never on the enriched val split.
+   `train_probe.py --recall-check-file` exists for exactly this (precedent: the 129
+   positives the old English-only prefilter blocked). Report FN@MEDIUM+ on that cohort.
+5. **Decide stage-1 aggressiveness deliberately**, as its own call. Today's screen is
+   near pass-through; a harder screen buys cost saving *and* FN risk. If the cost saving
+   is not needed, do not buy it.
+
+⚠️ **Prediction scoring, for honesty about the instrument.** Ranges were written down
+before the production run (`prediction_before_production_run.txt`): anchor 78–88% → 82.77% ✅,
+decision 8–14% → 13.67% ✅, spike 40–55% → 53.02% ✅, above 7.0 <1% → 0.073% ✅,
+**visible 4–8% → 3.562% ❌ (missed low)**. And the prediction was derived from the same
+census as the measurement, so agreement is consistency, not independent confirmation.

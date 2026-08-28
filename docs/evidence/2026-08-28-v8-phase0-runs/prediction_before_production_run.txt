@@ -1,0 +1,16 @@
+Prediction for DRAWABLE production, written before the run finished (2026-08-28).
+Basis: census percentiles p10=1.10 p50=1.46 p90=4.13 (GN-inclusive; drawable shifts up),
+base rate >=4.5 = 9.76%.
+
+  anchor   0.0-3.5 : 78-88%
+  decision 3.5-5.5 : 8-14%
+  visible  5.5-10  : 4-8%   (must be < 9.76%, since >=4.5 is 9.76% and 4.5-5.5 is inside it)
+  spike at 1.0-1.5 : 40-55%
+  above 7.0        : <1%
+
+Implied corpus/production ratios if those hold:
+  anchor ~0.75x, decision ~1.8-2.7x, visible ~1.9-3.8x
+
+A hit inside the range is NOT confirmation if it shares a source with the measurement:
+the percentiles above come from the same census, so treat agreement as consistency, not
+as an independent check.

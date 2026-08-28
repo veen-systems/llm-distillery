@@ -634,6 +634,25 @@ one: stage2-only costs **11.5% of the pool and 95 domains** for no compositional
 - ⛔ **Exclude `news.google.com`** — 22.1% of production and sub-300-char headline echoes, so
   production percentages are not directly the targets a draw should hit. **Measured 08-28:
   this single exclusion is what moves every other target on this list.**
+- ⛔⛔ **SHAPE, not just rate — and the FN trap (measured 2026-08-28, owner flagged the
+  risk).** The corpus is **4.21× over-weighted in 5.5–10** (15.8× at 7.0–7.5, 134× at
+  7.5–8.0) and **thinnest at 1.5–3.5 (0.43×–0.68×)** — i.e. fat where the task is easy
+  and thin where stage-2 false positives are born. ⛔ *This refutes the "over-sample the
+  visible band" spec drafted earlier the same day: the corpus already has it.*
+  **The stage-1 danger is the positive MIX**, not the positive rate: production's
+  positives are **63.5% marginal (4.5–5.5)**, the corpus's are **46.8%** — skewed 1.36×
+  toward easy positives, which are not the ones a screen misses. ⛔ **A recall figure
+  measured on that val split is optimistic, and this is TRUE OF v7 TODAY.** What makes
+  it survivable is only that the probe routes **88.6%** to stage 2 (threshold 1.00,
+  calibrated when MEDIUM was 4.0, never re-derived after #102) — **a harder screen
+  converts that slack into unrecoverable FNs.** Therefore: **(a)** add no mass above 5.5;
+  **(b)** hold the positive mix at production's 63.5/36.5 — enrich the *rate*, never
+  reshape the *class*; **(c)** spend the freed budget on 1.5–3.5; **(d)** validate
+  FN@MEDIUM+ on a production-mix cohort via `train_probe.py --recall-check-file`, never
+  on the enriched val split; **(e)** ⛔ **treat stage-1 aggressiveness as its own owner
+  decision** — a harder screen buys cost saving *and* FN risk, so if the saving is not
+  needed, do not buy it. Per-bin table and the arithmetic control (160,641 rows,
+  max |Δ| 1.8e-15): `docs/evidence/2026-08-28-v8-phase0-drawable-population.md` §6.
 - ⭐ **Write a `corpus_manifest.json` (llm-distillery#127).** Establishing that this corpus was
   *not* prefiltered took git archaeology plus a three-arm experiment; it should have been a
   file. v8 is the first corpus with a chance to record its own provenance, and Gate 0 already
