@@ -45,6 +45,16 @@ Format: **the pit → the rule** (source). Skim the bold before each stage.
 - **Treated oracle scores as truth.** The oracle is a *consistent labeler*; its self-MAE sets the student's floor (ADR-017). Stubborn high MAE on a dim → suspect label noise, fix the *prompt*, don't add data. `feedback-oracle-not-ground-truth`, ADR-010.
 
 ### 0b. Prefilter — know what it does and doesn't do (NM#284)
+
+⛔ **A NEW FILTER SHIPS NO PER-LENS PREFILTER AT ALL.** Owner ruling, **ADR-018 and ADR-019,
+*Amendment 2026-08-21*.** Keyword screening is Latin-script only; the multilingual e5 probe
+(§4) replaces it. ⚠️ **This was missing from every how-to-build-a-filter document until
+2026-08-29** — the playbook, `docs/RUNBOOK.md`, `docs/agents/filter-development-guide.md` and
+`docs/guides/filter-creation-workflow.md` all still walked you through writing one, and the
+last two have not been touched since 2026-07-10. The amendment governs **whether to have
+one**; ADR-018/019's declarative shape governs the ones that already exist. The rest of this
+section is about those.
+
 - **Wrote a prefilter, assumed production used it → it never ran.** A filter's `prefilter.py` (the per-lens *rule* prefilter) gates **oracle spend** in phases 3/5 and runs in llm-distillery's training path. It does **NOT** run in NexusMind's production scoring path: the gpu-server scorer builds every scorer with `use_prefilter=False` and calls `score_batch(skip_prefilter=True)`. True since 2026-02-10, found 2026-08-01. Unaffected: the e5 probe, the commerce/obituary/violence gates, the NM#189 source-type allowlist. NM#284 stage 1 now logs observed vs declared pass rate; enforcement is not yet on. **Don't size a filter's production volume on its prefilter's pass rate.** NM#285 measured the shadow's two biases (truncation +0.0000 to +0.0097; denominator −0.129 on investment_risk) and its log now states both on every line; the blocker for enforcement is #93, the length-floor split.
 - **Verified prefilter state from `filtered_*.jsonl` → circular evidence.** That file only receives rows where `passed_prefilter` is true NexusMind `scripts/main.py`’s `if result["passed_prefilter"]:` write guard, so it is 100% passers by construction and can never show a block. The first NM#284 write-up cited "0 blocks per cycle" from it and had to be retracted. Use the pipeline line `Filter X complete (N scored, M prefiltered)` or the shadow log — both see pre-drop counts. **General rule: before using a data source as a denominator, establish what it is filtered on.**
 - **Copied the prefilter from the template → inherited someone else's intent.** `solutions v6` shipped `nature_recovery v4`'s *deliberate* commerce-only pass-through while keeping a description claiming a keyword net and declaring `expected_pass_rate: 0.20` against ~0.59 actual. Byte-identical `EXCLUSION_PATTERNS` between two filters is a smell, not proof of a defect — nr v4's zero lens-blocks are documented and correct (topic gates removed in v4: English-only, cost 21.6% recall, screening moved to the e5 probe). ~~**The check is: does observed pass rate match declared, and does `description` match actual behavior?**~~ **Superseded 2026-08-02 — that check passes a filter with no gate at all.** Both filters were measured at zero lens blocks over 8,283 articles, so the answer was to delete `expected_pass_rate` and rewrite the description, not to reconcile a number. See the two rules below. LD#90, #93.
@@ -65,6 +75,14 @@ Format: **the pit → the rule** (source). Skim the bold before each stage.
 - **Val set is NOT production-representative** (enriched) — don't fit normalization or read "real" rarity off it. ADR-014.
 
 ### 3. Metrics (needle filters especially)
+
+⛔ **NEVER RANK FILTERS ON MAE, AND OPTIMISE SPECIFICITY (ADR-023, owner 2026-08-09).** A
+false positive reaches a reader; a false negative is invisible and the slot refills. **Only
+recall and specificity are conditional on the true class** and therefore comparable across
+splits — precision and MAE move with the base rate, so always report the split's positive
+rate beside them. ⚠️ **This does NOT apply to the Stage-1 e5 probe** (§4), a recall-safe
+screen by design: there the FN is the expensive error, hence `--objective recall`.
+
 - **Judged by MAE → shipped a floor-predictor that surfaces nothing.** For needle filters (MEDIUM+ < ~25%), MAE is the wrong yardstick — a "no to everything" model wins MAE and is useless. Use **Recall@k / NDCG@k / FN@MEDIUM+**. MAE is fine only for balanced filters. gotcha "MAE Is Misleading", dev-guide Issue 4.
 
 ### 4. Stage-1 probe (hybrid inference, ADR-006) — **REQUIRED for needle-in-haystack filters**

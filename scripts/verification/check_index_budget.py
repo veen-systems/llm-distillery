@@ -35,10 +35,16 @@ warning fires while several more entries still fit, because a warning that fires
 the wall is the hard FAIL with extra steps. Entries here measure 400-1,200 chars, so
 3,000 chars of runway is roughly three sessions of notice.
 
-⚠️ THE BUDGET IS IN CHARACTERS, NOT LINES, AND THAT IS LOAD-BEARING. The file
+⚠️ THE BUDGET IS IN SIZE, NOT LINES, AND THAT IS LOAD-BEARING. The file
 reached 54,808 chars in 91 lines on 2026-08-15 — up 69% in three days — because
 entries grow by LENGTHENING, not by multiplying. Every line-count heuristic passed
 throughout. Do not add one back as the primary check.
+
+⚠️ THE UNIT IS BYTES. Every file here is read `"rb"` and every ceiling is compared
+against a byte count, while the numbers were originally reasoned about as
+characters. Bytes >= characters, so the guard errs strictly toward failing early —
+but say BYTES when quoting it. Reporting a byte headroom as a character headroom is
+a mistake this project has already published once (2026-08-26; the 449 above).
 
     python3 scripts/verification/check_index_budget.py
 
@@ -47,8 +53,31 @@ throughout. Do not add one back as the primary check.
 39,955 of 40,000 bytes, 449 to spare, with nothing watching it. That is the same
 shape #123 fixed here: a budget nobody measures is discovered by crossing it.
 
-    python3 scripts/verification/check_index_budget.py            # index (default)
+⛔ AND THE SAME SHAPE AGAIN ON 2026-08-29 (#138), ONE LAYER OUT. Those two targets
+were `CLAUDE.md` — auto-loaded — and `memory/MEMORY.md` — NOT auto-loaded, reached
+by a pointer row — while 19,488 B that IS auto-loaded, the USER auto-memory index
+at `~/.claude/projects/<slug>/memory/MEMORY.md`, belonged to no target at all. The
+guard was wrong by the size of a file it had never heard of, and it had been
+measuring a shrinking share of the real quantity ever since. Hence `--target
+loaded`, whose subject is the LAYER rather than any one file.
+
+⚠️ OWNER CALL 2026-08-29: THE TOTAL GOVERNS, THE PER-FILE LINES ATTRIBUTE. Do not
+read `--target project`'s 40,000 as a competing budget — that is Claude Code's own
+wall for that file, the tool's property, not a number chosen here. `--target index`
+is likewise not part of the layer; it bounds a navigational file and carries the
+#123 session-entry rotation, which is why it survives its subject not being loaded.
+
+⚠️ A BYTE BUDGET IS AN ALARM, NOT THE MECHANISM. #133 measured `CLAUDE.md` growing
+~486 B/day against a ceiling that trimming could not outrun, and the thing that
+actually held was a CAP PER POINTER ROW (`--target pointers`) — a capped table
+cannot grow, which is the property no total ever has. H-CX1 then measured the cap
+holding its own scope at +0 B while the file grew 1,055 B one section over. Expect
+this target to tell you WHEN to act and never to prevent anything.
+
+    python3 scripts/verification/check_index_budget.py             # index (default)
     python3 scripts/verification/check_index_budget.py --target project
+    python3 scripts/verification/check_index_budget.py --target loaded
+    python3 scripts/verification/check_index_budget.py --target pointers
 
 The project file has NO session-entry check — it carries no session log, and the
 thing that grows there is the pointer table and the Hard Constraints. Its remedy is
@@ -58,8 +87,18 @@ behind a "Before You Start" pointer.
 Exit 0 on PASS (with or without a WARN line), 1 on FAIL, 1 if the file is missing
 or empty — an unreadable index must never read as a pass.
 
-⚠️ The runner treats the LAST output line containing "FAIL" as a failure regardless
-of exit code, so no PASS or WARN line may contain that word. Say "hard limit".
+⚠️ NO PASS OR WARN LINE MAY CONTAIN A VERDICT WORD — say "hard limit", never
+"below the FAIL threshold". Since llm-distillery#137 the runner reads a verdict
+where one actually appears: opening a line, followed by a colon, or closing a line,
+on ANY line of stdout or stderr, after stripping leading glyphs, markdown, a BOM
+and ANSI colour. So the old advice ("only the last line matters") is wrong in the
+unsafe direction, and the broader rule replaces it: keep the words out of healthy
+output. Healthy prose that merely mentions one — "0 FAILures" — is safe by design
+and pinned by `tests/unit/test_verify_annotation_runner.py`.
+
+⚠️ AND PUT THE VERDICT LAST. For a PASSING block the runner reports the command's
+final line, so a verdict printed first is displayed as whichever detail row came
+last. Failures are found wherever they sit; passes are not.
 """
 import os
 import re
@@ -68,6 +107,35 @@ import sys
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 INDEX = os.path.join(ROOT, "memory", "MEMORY.md")
 PROJECT = os.path.join(ROOT, "CLAUDE.md")
+
+# ------------------------------------------------- the always-loaded layer
+# llm-distillery#138. THE MEMBERS ARE WHAT CLAUDE CODE INJECTS AT SESSION START
+# WITH NOBODY OPENING A FILE. Established 2026-08-29 by reading a live session's
+# own context, not by reading documentation: `CLAUDE.md` and the USER auto-memory
+# index both arrived; the in-repo `memory/MEMORY.md` did NOT -- it is reached by a
+# pointer row. That is why it keeps its own target below and is not a member here.
+#
+# ⚠️ MEMBERSHIP IS THE PART THAT ROTS, AND IT IS THE WHOLE POINT. Before today the
+# two targets were `CLAUDE.md` and `memory/MEMORY.md`: one file that is auto-loaded
+# and one that is not, with 19,488 B that IS auto-loaded belonging to neither. The
+# guard was wrong by the size of a file it had never heard of. Re-establish
+# membership from a live session before trusting the total -- not from this comment.
+#
+# ⚠️ OWNER CALL 2026-08-29 (#138): THE TOTAL GOVERNS; THE PER-FILE LINES ATTRIBUTE.
+# The total is the quantity that actually costs context, but the remedy is per file
+# ("trim the layer" is not an instruction), so both have to print. `PROJECT_HARD`
+# below is NOT a second budget: 40,000 is Claude Code's own wall for that one file,
+# a property of the tool rather than a number invented here.
+#
+# THE NUMBERS, AND THE STATE THEY WERE SET AGAINST. The layer stood at 56,933 B
+# when #138 was written and at 48,083 B after the same day's removal of the
+# auto-memory index's session log (9,160 B, 47% of that file, two sessions stale;
+# moved verbatim to `memory/session-log.md`'s appendix, owner call). SOFT is the
+# same runway doctrine as the index budget above -- a warning at the wall is the
+# hard limit with extra steps -- sized against the ~486-864 B/day that #133 and
+# H-CX1 measured on `CLAUDE.md` alone: ~5,000 B of notice is roughly a week.
+LOADED_HARD = 60_000
+LOADED_SOFT = 55_000
 
 HARD = 30_000  # ceiling: above this the index is no longer a navigational layer
 SOFT = 27_000  # runway: ~3,000 chars ≈ three sessions of notice
@@ -87,6 +155,89 @@ TARGETS = {
     "index":   ("INDEX",   "memory/MEMORY.md", HARD,         SOFT,         True),
     "project": ("PROJECT", "CLAUDE.md",        PROJECT_HARD, PROJECT_SOFT, False),
 }
+
+# ----------------------------------------------------------- always-loaded
+def _auto_memory_index():
+    """`~/.claude/projects/<slug>/memory/MEMORY.md`, DERIVED, never hardcoded.
+
+    The slug is the project's absolute path with every non-alphanumeric character
+    replaced by `-`. Checked 2026-08-29 against all 40 directories in
+    `~/.claude/projects/`, including one carrying a dot in the path
+    (`/home/jeroen/repos/.meta/...` -> `-home-jeroen-repos--meta-...`), which is
+    why the class is `[^A-Za-z0-9]` and not just `/`.
+
+    ⚠️ THIS DERIVES FROM `ROOT`; CLAUDE CODE DERIVES ITS OWN FROM THE DIRECTORY THE
+    SESSION WAS LAUNCHED IN. Those agree when the session starts at the repo root
+    and not otherwise -- so a miss is REPORTED AS A MISS, with the path printed,
+    and never silently dropped from the sum. Being wrong by the size of a file
+    nobody mentions is the defect this whole target exists to fix.
+    """
+    slug = re.sub(r"[^A-Za-z0-9]", "-", ROOT)
+    return os.path.join(os.path.expanduser("~"), ".claude", "projects", slug,
+                        "memory", "MEMORY.md")
+
+
+AUTO_MEMORY = _auto_memory_index()
+
+# Attribute names, not paths -- same reason as TARGETS below: a frozen path makes
+# every monkeypatching caller measure the real files while believing otherwise.
+LOADED_MEMBERS = (
+    ("PROJECT",     "CLAUDE.md"),
+    ("AUTO_MEMORY", "auto-memory MEMORY.md"),
+)
+
+
+def _check_loaded():
+    """Budget the always-loaded layer as ONE number. Returns (exit_code, lines).
+
+    ⚠️ WHY A MISSING MEMBER IS NOT A FAIL. On a machine where Claude Code has never
+    run, or from a clone at another path, the auto-memory index genuinely is not
+    part of anyone's context and a hard failure would be false. What must never
+    happen is the sum quietly shrinking, so every member prints a line either way,
+    the verdict carries `N/M files`, and an incomplete sum says so in the verdict
+    itself. All members missing IS `CANNOT VERIFY` -- then the guard measured
+    nothing, and a guard that measured nothing must never read as a pass.
+    """
+    rows, total, present = [], 0, 0
+    for attr, label in LOADED_MEMBERS:
+        path = globals()[attr]
+        if not os.path.isfile(path) or os.path.getsize(path) == 0:
+            rows.append(f"  {label:<24} NOT PRESENT at {path}")
+            continue
+        raw = open(path, "rb").read()
+        total += len(raw)
+        present += 1
+        rows.append(f"  {label:<24} {len(raw):>7,} B  {raw.count(b"\n"):>4} lines")
+
+    n = len(LOADED_MEMBERS)
+    if not present:
+        return 1, rows + [f"CANNOT VERIFY: none of the {n} always-loaded files were "
+                          f"readable -- the budget measured nothing"]
+
+    short = "" if present == n else (
+        f" -- INCOMPLETE: {n - present} of {n} members not present, so this total "
+        f"UNDERSTATES the layer by an unknown amount")
+    head = f"always-loaded layer {total:,} B over {present}/{n} files"
+
+    # ⚠️ THE VERDICT GOES LAST, AND THAT IS NOT COSMETIC. For a PASSING block
+    # `run_verify_annotations.py` reports the command's LAST line (it anchors on a
+    # line-initial FAIL/CANNOT VERIFY only for failures), so a verdict printed
+    # first is displayed in the verify report as whichever attribution row happened
+    # to come last -- "auto-memory MEMORY.md 10,773 B" reported as the result of a
+    # budget check. Failures are still found wherever they sit.
+    if total >= LOADED_HARD:
+        return 1, rows + [f"FAIL {head}, over the {LOADED_HARD:,} hard limit.{short} "
+                          f"The remedy is per file -- see the attribution above. Move "
+                          f"reference material out of CLAUDE.md behind a 'Before You "
+                          f"Start' pointer; rotate the auto-memory index. Do not "
+                          f"delete a Hard Constraint to fit."]
+    if total >= LOADED_SOFT:
+        return 0, rows + [f"PASS {head} -- WARN: {LOADED_HARD - total:,} left under "
+                          f"the {LOADED_HARD:,} hard limit. Act now, while there is "
+                          f"still room to choose what goes.{short}"]
+    return 0, rows + [f"PASS {head} ({LOADED_HARD - total:,} under the "
+                      f"{LOADED_HARD:,} hard limit){short}"]
+
 
 # ---------------------------------------------------------------- pointer rows
 # llm-distillery#133. The size guards above measure the SYMPTOM. What actually
@@ -222,6 +373,24 @@ def _session_entries(raw: bytes) -> int:
     return sum(1 for line in raw.splitlines() if SESSION_ENTRY.match(line))
 
 
+# Targets that compute their own verdict rather than measuring one file against a
+# ceiling. Kept in a table so the argument error message below cannot drift out of
+# step with what is actually dispatchable -- it is built from the same two dicts.
+EXTRA_TARGETS = {
+    "pointers": _check_pointers,
+    "loaded":   _check_loaded,
+}
+
+
+def _all_targets():
+    """Every dispatchable target name, for the two argument-error messages.
+
+    Built from the dicts themselves: a hand-listed `+ ['pointers']` is how the
+    error message came to omit a target the moment one was added.
+    """
+    return list(TARGETS) + list(EXTRA_TARGETS)
+
+
 def main(argv=None):
     """Check one target's budget.
 
@@ -245,16 +414,16 @@ def main(argv=None):
             target = argv[0].split("=", 1)[1]
         else:
             print(f"CANNOT VERIFY: unknown argument {argv[0]!r}; "
-                  f"expected --target {'|'.join(list(TARGETS) + ['pointers'])}")
+                  f"expected --target {'|'.join(_all_targets())}")
             return 1
-    if target == "pointers":
-        rc, lines = _check_pointers()
+    if target in EXTRA_TARGETS:
+        rc, lines = EXTRA_TARGETS[target]()
         for l in lines:
             print(l)
         return rc
     if target not in TARGETS:
         print(f"CANNOT VERIFY: unknown target {target!r}; "
-              f"expected one of {', '.join(list(TARGETS) + ['pointers'])}")
+              f"expected one of {', '.join(_all_targets())}")
         return 1
 
     attr, label, hard, soft, count_entries = TARGETS[target]
@@ -286,17 +455,17 @@ def main(argv=None):
                       "than needed every session — into a memory/ topic file behind a "
                       "'Before You Start' pointer. Do not delete a Hard Constraint to "
                       "fit; they are why this file is loaded at all.")
-        print(f"FAIL {label} is {size:,} chars ({lines} lines), over the "
+        print(f"FAIL {label} is {size:,} B ({lines} lines), over the "
               f"{hard:,} hard limit. {remedy}{note}")
         return 1
 
     if size >= soft:
-        print(f"PASS {label} {size:,} chars / {lines} lines — WARN: {hard - size:,} "
+        print(f"PASS {label} {size:,} B / {lines} lines — WARN: {hard - size:,} "
               f"left under the {hard:,} hard limit. Act now, while there is still "
               f"room to choose what goes.{note}")
         return 0
 
-    print(f"PASS {label} {size:,} chars / {lines} lines ({hard - size:,} under the "
+    print(f"PASS {label} {size:,} B / {lines} lines ({hard - size:,} under the "
           f"{hard:,} hard limit){note}")
     return 0
 

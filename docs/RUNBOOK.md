@@ -124,22 +124,55 @@ python scripts/run_filters.py --filter {name} --hub --max-items 50
 
 ## Oracle Scoring
 
+⛔ **`--llm` DEFAULTS TO `claude`, AND THERE ARE TWO ORACLE PATHS, NOT ONE.** Corrected
+2026-08-29: this section documented neither fact for months.
+
+- `ground_truth.batch_scorer` takes `--llm`, whose choices are
+  **`claude` | `gemini` | `gemini-pro` | `gemini-flash` | `gpt4`**, defaulting to
+  **`claude`**. ⚠️ **DeepSeek is not among them** — `grep -rln -i deepseek ground_truth/`
+  hits only `text_cleaning.py`. Omitting the flag does not give you the filter's oracle;
+  it gives you Claude.
+- **DeepSeek runs through a different script entirely**, `scripts/score_deepseek_production.py`,
+  written for the `cultural_discovery` v5 retrain (ADR-020 methodology). It is not a flag on
+  the command above and it does not share its resume/sampling behaviour.
+
+⚠️ **So "the oracle" is a per-filter fact, not a default.** `memory/cd-v5-reference-status.md`
+covers the DeepSeek path; the cost arithmetic and why the comparison is not a rate-card lookup
+is `memory/oracle-pricing-scheduling.md`. ⚠️ **For `human_thriving` v8 the oracle choice is
+still OPEN** — §9 question 1 of `docs/HUMAN_THRIVING_V8_PLAN.md`: measured on n=3 Gemini is the
+**stricter** arm on class A (caps 3/10 vs DeepSeek 1/10), against DeepSeek being ~7× cheaper.
+Do not resolve it by reading a default out of this file.
+
 ```bash
-# Validation run (~100 articles, Phase 3)
+# Validation run (~100 articles, Phase 3). NAME THE PROVIDER — the default is claude.
 python -m ground_truth.batch_scorer \
-    --filter filters/{name}/v{N} \
+    --filter filters/{name}/v{N} --llm gemini-flash \
     --source datasets/raw/master_dataset.jsonl --target-count 100
+#                      ^^^^^^^^^^^^ THIS FILTER's oracle, not a house default
 
 # Score articles (full run, Phase 5)
 python -m ground_truth.batch_scorer \
-    --filter filters/{name}/v{N} \
+    --filter filters/{name}/v{N} --llm gemini-flash \
     --source datasets/raw/master_dataset.jsonl
 
-# Multi-run averaging (for prompt-sensitive filters like thriving)
+# The DeepSeek oracle — a separate script, not a --llm value
+PYTHONPATH=. python scripts/score_deepseek_production.py \
+    --input datasets/scored/{name}_v{N}_articles.jsonl \
+    --output datasets/scored/{name}_v{N}_deepseek.jsonl --concurrency 15
+
+# Multi-run averaging (for prompt-sensitive filters)
 python scripts/oracle/average_oracle_runs.py \
     --runs datasets/scored/{name}_v{N}_run1.jsonl datasets/scored/{name}_v{N}_run2.jsonl datasets/scored/{name}_v{N}_run3.jsonl \
     --output datasets/scored/{name}_v{N}.jsonl
 ```
+
+⛔ **AVERAGING DOES NOT REDUCE EVERY KIND OF ORACLE VARIANCE, AND ON A SCOPE-GATED PROMPT IT
+HIDES THE VARIANCE THAT MATTERS (#135).** A prompt whose scope verdict is a **binary that
+zeroes every dimension** is a step function, not a noisy continuum: `1/√k` cannot touch a
+Bernoulli. Measured on the `human_thriving` v8 prompt — **13% of identical re-runs flip the
+gate, median |Δ| 3.750, while gate-stable rows move 0.100**. Gate A missed it precisely
+*because* it averaged k=3. **Before averaging, check whether the prompt has a binary gate;
+if it does, report the flip RATE, not the mean.**
 
 ---
 
@@ -211,18 +244,19 @@ Writes `normalization.json` to the filter dir; commit it and deploy to both serv
 
 ## Filter Development Lifecycle
 
-9-phase process. See `docs/agents/filter-development-guide.md` for detailed checklists, or `docs/guides/filter-creation-workflow.md` for quick steps.
+The phases below, in order — `6b` is lettered rather than numbered because other documents cite these numbers (the v8 plan and `CLAUDE.md` both say "phase 5"), so renumbering costs more than it buys. See `docs/agents/filter-development-guide.md` for detailed checklists, or `docs/guides/filter-creation-workflow.md` for quick steps.
 
 | Phase | Goal | Key Action |
 |-------|------|------------|
 | 1. Planning | Define dimensions, tiers, gatekeepers | Create `filters/{name}/v1/config.yaml` |
 | 2. Architecture | Write oracle prompt with scope check + inline critical filters | Create `prompt-compressed.md` |
 | 3. Validation | Calibrate oracle on ~100 articles | Small batch scoring run |
-| 4. Prefilter | Rule-based noise filter — **saves oracle spend in phases 3/5; NOT yet enforced in production scoring (NM#284)** | Create `prefilter.py` inheriting `base_prefilter.py` |
+| 4. Prefilter | ⛔ **NEW FILTERS SHIP NO PER-LENS PREFILTER** — owner ruling, ADR-018 and ADR-019 *Amendment 2026-08-21*. Keyword screening is Latin-script only; the multilingual e5 probe (phase 6b) replaces it. For an EXISTING filter's prefilter it still saves oracle spend in phases 3/5 and is **NOT enforced in production scoring** (NM#284) | Nothing. If you believe this filter is the exception, read the amendment first |
 | 5. Training Data | Score 5K-10K articles | Full batch scoring run |
 | 6. Training | Distill to Gemma-3-1B + LoRA | Train on gpu-server |
+| 6b. Probe | Stage-1 e5 screen (ADR-006/011) — replaces keyword screening | `scripts/train_probe.py`. ⚠️ `--objective` defaults to `regression`; a needle filter wants `recall` (ADR-023 does **not** apply to the probe — there the FN is the expensive error) |
 | 7. Calibration | Fit isotonic calibration | `fit_calibration.py` on val set |
-| 8. Testing | Benchmark vs oracle | `pytest tests/`, manual review of 30 articles |
+| 8. Testing | Judge against held-out ORACLE ground truth, **never against the prior deployed model** (ADR-021) | `scripts/gate/ground_truth_gate.py --labels ... --model name=path`. ⛔ Rank on **recall + specificity, never MAE** (ADR-023), and read `--noise-floor` (#95, default 0.16) before calling any difference an effect. Plus `pytest tests/` and manual review of 30 articles |
 | 9. Deployment | Upload to Hub, copy to NexusMind; fit normalization from a production-representative historical rescore to avoid the cold-start | See deployment + "Fit normalization" sections above |
 
 ---
@@ -238,4 +272,7 @@ Writes `normalization.json` to the filter dir; commit it and deploy to both serv
 
 ---
 
-*Last updated: 2026-04-19 (deployment pipeline hardening, #44 follow-up)*
+*⛔ **No "last updated" date here.** The one that stood until 2026-08-29 read 2026-04-19
+while `git log -1 -- docs/RUNBOOK.md` said 2026-08-13 — a hand-maintained copy of something
+git already knows, wrong by four months, in the file people consult before spending money.
+Run `git log -1 --format=%ci -- docs/RUNBOOK.md` instead.*

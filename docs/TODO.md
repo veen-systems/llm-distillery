@@ -1,55 +1,98 @@
 # LLM Distillery - TODO
 
-## 🔵 NEXT SESSION — **three checkers repaired; the fourth change was a decline I re-adopted**
+## 🔵 NEXT SESSION — **the hygiene queue is CLEARED; the always-loaded layer is now measured**
 
-> **Updated 2026-08-29 (late).** **No spend, no model, no filter, no threshold, no probe,
-> nothing deployed — deploy is N/A, not skipped.** Changed files are `scripts/verification/`,
-> `.claude/skills/`, `docs/decisions/`, `memory/`. Nothing reaches a path NexusMind runs.
-> Session record: `memory/project_session_2026_08_29_late.md`.
+> **Updated 2026-08-29 (later).** **No spend, no model, no filter, no threshold, no probe,
+> nothing deployed — deploy is N/A, not skipped.** Changed files are
+> `scripts/verification/`, `tests/unit/`, `.claude/skills/`, `CLAUDE.md`, `memory/`.
+> Nothing reaches a path NexusMind runs. Session record:
+> `memory/project_session_2026_08_29_later.md`.
 >
-> ### ✅ DONE — `/update-drift`, `/audit-context`, `/review-changes` (inline + 2 agents)
-> - **Framework: 0 releases behind** (v1.36.1 pinned = latest, checked against the REMOTE).
->   Three user-global skills byte-identical to the v1.36.1 reference install, 0 differing lines.
-> - **`check_prod_filters_table.sh` had been printing `FAIL` since 2026-08-25 and being tallied
->   `pass` for four days.** Three compounding defects: no `LC_ALL=C` (the `comm` collation error
->   produced **8 spurious entries vs a correct 2**), `exit 0` on FAIL, and a classifier reading
->   only the last line. **Both reported entries were the guard's own artifacts — there was never
->   any real CLAUDE.md ↔ filter-status.md drift.**
-> - **`memory/oracle-pricing-scheduling.md:97` was a live fail-open**: `| grep` discarded
->   `oracle_cost.py`'s `return 1` and its verdict word is `MISMATCH`, not `FAIL`, so **both halves
->   of the assertion were destroyed.** Fixed; verified against stubs in both directions.
+> ### ✅ DONE — all four queued items (#138, CLAUDE.md runway, #137, the skills tier row)
+> - **#138 — the budget guard now measures the LAYER, not one file of it.** New
+>   `--target loaded` sums `CLAUDE.md` + the USER auto-memory index (the two files a
+>   session actually receives — established by reading a live session's context, not the
+>   docs). Owner call: **the total governs, per-file lines attribute**; HARD 60,000 /
+>   SOFT 55,000. ⚠️ `memory/MEMORY.md` is NOT a member — it is pointer-reached, and its
+>   own `--target index` budget survives for the #123 session rotation.
+> - **The auto-memory index's session log is gone** (owner call): 9,160 B, 47% of that
+>   file, no rotation rule, no ceiling, two sessions stale. Moved **verbatim** into
+>   `memory/session-log.md`'s frozen appendix after checking **121 evidence atoms with
+>   `git grep -F` — 119 found, the 2 misses both `00cf55c`, a real commit here** — plus a
+>   control atom that correctly did not resolve. **Always-loaded layer 56,933 → 46,167 B.**
+> - **`CLAUDE.md` 37,445 → 35,394 B**, runway 2,555 → **4,606**. The lever was NOT a trim:
+>   the four inline `<!-- verify: -->` blocks were **2,047 B, 5.5% of the file**, guard
+>   mechanism spending the budget it policed. Moved to
+>   `scripts/verification/check_doc_claims.py`, annotated from `memory/MEMORY.md`.
+>   **Zero content removed.** Same argument that moved `check_index_budget.py` out of
+>   `memory/MEMORY.md` on 2026-08-17 — it took two weeks to reach one file over.
+> - **#137 — all ten shapes fixed, each with a seeded positive.** Normalisation before
+>   matching (glyph/BOM/ANSI/markdown), stdout and stderr no longer concatenated,
+>   comment-stripped classification, widened `DELEGATES`, truncated-command refusal,
+>   `CANNOT VERIFY` tested before the returncode, FAIL beating CANNOT VERIFY.
+> - **`.claude/skills/**` is a named MEDIUM row** in `/review-changes`' tier table. It
+>   changes no tier — it makes a skill reviewed on purpose, and names doc-accuracy as the
+>   lens that earns it.
 >
-> ### ⛔⛔ THE KEEPER — I re-adopted a recorded DECLINE, in the file that records it
-> `refcheck.py`'s verdict + exit codes (v1.29.0's third state) are **declined** in
-> `docs/decisions/framework-adoption-history.md`, and I appended a new entry to the top of that
-> same document without reading three sections down. Every clause of the decline's premise still
-> holds (no `.github/workflows/`, `run.sh` uses `|| true`, and the only `$? -eq 2` in the repo was
-> **my own comment claiming such a caller could exist**). **Reverted.** ⭐ Neither the code review
-> nor the mutation tests could have found it — it took a reader who opened the *document* rather
-> than the diff. **Before adopting into a fork, grep the adoption history for the feature's name.**
+> ### ⛔⛔ THE KEEPER — the verify report's own denominator was 18% phantom
+> `BLOCK` matches any `<!-- verify: ... -->`, **including the empty one that appears when a
+> memory file QUOTES the idiom while explaining a lesson about it.** Ten of them — eight in
+> `memory/gotcha-log.md`, two in `memory/working-rules.md` — were counted in `blocks found`
+> and tallied `skipped`. **56 reported, 46 real.** ⭐ **It was found by writing an
+> eleventh**: the count moved when a *prose sentence* was added, and that was the only tell.
+> Nothing executable was ever affected (`passed`/`failed`/`errored` identical across the
+> fix), so no check was disabled — but this is a report whose entire job is to state how
+> much is checked, and it was counting mentions of checking. Empty blocks are now **named
+> and counted separately, never silently dropped** — an unfilled annotation is a real defect.
 >
-> ### ⭐ `H-CX1` — SPLIT VERDICT: the prediction hit, the mechanism did not
-> Predicted 37,462 ±500 B; measured **37,445**. But with the cap in force `CLAUDE.md` still went
-> **37,149 → 38,204 B in 29.3 h (~864 B/day, above the ~486 it was meant to stop)** and was trimmed
-> back by hand. Attribution: **pointer table +0 B, rest of file +1,055 B.** The cap is confirmed
-> *within its own scope*; the growth relocated. ⚠️ **One day earlier the same audit would have read
-> 38,204 and called the cap a failure** — the verdict was one commit wide.
+> ### ⭐ Two of mine, both caught by the method rather than by review
+> - **A mutation that "survived" had never applied.** Two of eight mutation probes reported
+>   the test suite green; both were shell-escaping artifacts in the mutation command
+>   (`\b` became a backspace, a BOM literal did not match). Re-run with
+>   `assert s.count(old) == 1` in the mutator, **both died instantly.** ⛔ **A mutation
+>   script must assert that it mutated** — a no-op mutation is indistinguishable from a
+>   test gap, and it reads as the more alarming of the two.
+> - **#137 shape 1 was live one stage EARLIER than the issue describes.** `ASSERTS` used
+>   `\bFAIL\b` against the annotation *text*, and both `\033[31mFAIL` and a BOM put a WORD
+>   character immediately before the verdict, so the block was NO-ASSERTION: never run, no
+>   output line, exit 0. The issue only described the output-reading stage. Found by the
+>   seeded fixture, which is the point of seeding them.
 >
-> ### ▶ NEXT, in order
-> 1. **#138** — the budget guard measures `memory/MEMORY.md` (not auto-loaded) and misses the user
->    auto-memory index (19,488 B, 68 lines, **is** auto-loaded). Always-loaded total ~56,933 B
->    across two trees. Decide whether the budget is stated per-file or over the total.
-> 2. **`CLAUDE.md` has ~2,556 B of runway** to the 40,000 hard wall, and #133's cap does not govern
->    where the growth now lands. Pick the next lever before the wall, not at it.
-> 3. **#137** — 10 reproduced shapes that still defeat the verify classifier (a glyph, a bullet, a
->    BOM, an ANSI code, a stderr write, or the word `b650` **in a comment**). Each fix needs a
->    seeded positive: a run that finds nothing cannot distinguish a fixed check from a disabled one.
-> 4. **Add a `.claude/skills/**` row to `/review-changes`' tier table** — a reference install
->    currently tiers MEDIUM by accident. Do it from a session whose diff does not contain it.
+> ### ⚠️ Standing
+> - `refcheck.py` reports **1 finding** (`narrative_risk.json`), recorded as real and
+>   deliberately left standing in `memory/session-log.md`. Do **not** fix it by editing.
+> - **`tests/ml/test_inference.py::test_inference_module_importable` FAILS**, and it is
+>   **pre-existing, not from this session**: `filters/cultural_discovery/v5/inference.py`
+>   uses `from .base_scorer import ...` while the test execs it standalone. The relative
+>   import entered at `6acd013` (the v5 DeepSeek retrain) and the file has not been touched
+>   since. **cd v5 is LIVE**, so this is worth a look before it is worth a fix. Not filed.
+> - Stale branch `docs/event-identity-encoder-plan` (1 commit, `0c283c6`, the #100 plan) —
+>   land it or drop it; not mine to delete.
 >
-> ### ⚠️ Standing, unchanged
-> `refcheck.py` reports **1 finding** (`narrative_risk.json`) which `memory/session-log.md` records
-> as real and deliberately left standing. Do **not** fix it by editing the entry.
+> ### ✅ ALSO DONE — RUNBOOK drift, asked for after the queue
+> `docs/RUNBOOK.md` was **not** aligned with the scorer, in five places. The keeper:
+> **its oracle command could not select the oracle the project decided on** — `--llm` is
+> `claude|gemini|gemini-pro|gemini-flash|gpt4`, **default `claude`**, DeepSeek is not a value
+> (it is `scripts/score_deepseek_production.py`), and the runbook named neither the flag nor
+> the script. Following it scored against Claude. Also fixed: phase 4 still said write a
+> `prefilter.py` (ADR-018/019 *Amendment 2026-08-21* says new filters ship none); no probe or
+> gate step (0 mentions of `train_probe.py`, `ground_truth_gate.py`, ADR-021, ADR-023 — now
+> `6b` and phase 8); averaging advice that is wrong for v8 (`1/√k` cannot touch #135's
+> Bernoulli); and a footer four months stale against `git log`.
+>
+> ⭐ **The drift ran one hop further.** `docs/FILTER_PLAYBOOK.md` (the SSoT) had 0 mentions of
+> the prefilter amendment and 0 of ADR-023; the two guides the runbook points at last changed
+> **2026-07-10** and have 0 of either plus 0 of `ground_truth_gate`. Playbook now carries both
+> rulings; both guides carry a dated staleness banner. ⚠️ **Their bodies were NOT rewritten** —
+> 73 and 11 prefilter mentions run through them, and a partial rewrite is worse than a flagged
+> one. New guard: `check_doc_claims.py --check runbook-oracle-flags` (reads `--llm` from the
+> parser with `ast`; 4 mutations, 4 killed).
+>
+> ### ▶ NEXT
+> **The v8 decision is what everything is waiting on** — see the Phase 0 block below.
+> Adopt the reordered oracle prompt or not; it gates corpus sizing, the b650 staging run and
+> `corpus_manifest.json` (#127). If you want evidence first, H-V8-9 is cheap: adjudicate only
+> the ~21 op-point-crossing rows against §5b's no-regression set.
 
 ---
 

@@ -73,7 +73,7 @@ Classify each changed file:
 | Tier | File patterns | Depth |
 |------|-------------|-------|
 | **HIGH** | `filters/common/*.py` · `filters/*/v*/config.yaml` · `filters/*/v*/{calibration,normalization,ground_truth_gate}.json` · `filters/*/v*/prefilter.py` · `filters/*/v*/base_scorer.py` · `ground_truth/batch_scorer.py` · `scripts/{gate,normalization,calibration,deployment}/*` · `tests/unit/test_normalization_invariant.py` · `.githooks/*` | Full battery (4–5 lenses) |
-| **MEDIUM** | `CLAUDE.md` · `ground_truth/*` · `training/*` · `scripts/**` (other) · `tests/**` · `docs/adr/**` · `docs/FILTER_PLAYBOOK.md` · `docs/NORMALIZATION_METHOD.md` · `docs/RUNBOOK.md` · `docs/ARCHITECTURE.md` · **anything matching no tier** | Adversarial + doc-accuracy (+ claim-verification if numbers changed) |
+| **MEDIUM** | `CLAUDE.md` · `ground_truth/*` · `training/*` · `scripts/**` (other) · `tests/**` · `docs/adr/**` · `docs/FILTER_PLAYBOOK.md` · `docs/NORMALIZATION_METHOD.md` · `docs/RUNBOOK.md` · `docs/ARCHITECTURE.md` · `.claude/skills/**` · **anything matching no tier** | Adversarial + doc-accuracy (+ claim-verification if numbers changed) |
 | **LOW** | `memory/*` · `docs/TODO.md` · `docs/ROADMAP.md` · session files | Adversarial (+ claim-verification if numbers changed) |
 
 `docs/evidence/**` is **MEDIUM**, and **HIGH when it ships a `.py`** — added 2026-08-29,
@@ -84,6 +84,27 @@ the `.py`, so an honest reading is that the table was not broken. What it adds i
 reader scanning the table alone now sees the directory named — and being prose rather than a
 table row, it only half-does that. An evidence script produces the numbers a decision is
 made on; it is not a document.
+
+`.claude/skills/**` is **MEDIUM** — named 2026-08-29, having reached that tier only
+through the catch-all. ⚠️ **The row changes no tier and is not meant to.** What it changes
+is that a skill is now reviewed *on purpose*: a skill file is a mechanism that decides
+whether defects get found at all, so a wrong one fails silently and in the direction of
+reporting success — this file's own two shadowing incidents (a personal-repo symlink
+winning over it until 2026-08-06; a verbatim framework install tiering every local change
+LOW) are that failure, not hypotheses about it. **doc-accuracy is the lens that earns the
+row**: line 40 of this file asserted a stale upstream version for eleven releases, inside
+the paragraph written to correct the previous stale version claim, and no review caught it
+— `/update-drift` did. ⛔ **Do not escalate these to HIGH.** HIGH adds
+guarantee-preservation and sync-safety, which are about shipped filter math and the
+NexusMind copy; neither has anything to say about a skill, and an escalation that adds only
+inapplicable lenses trains people to skip the tier.
+
+⚠️ **A `.claude/skills/**` diff carries one question the lenses do not ask: is this file
+still an adaptation, or has it drifted from what it was adopted from?** `/review-changes`
+here is **re-mapped, not copied** (see the head of this file), so an upstream-shaped edit
+can be locally wrong and a locally-shaped edit can be an un-adopted upstream fix. That
+question belongs to `/update-drift`; a reviewer's job is to notice it is owed, not to
+answer it in the review.
 
 Pick the **highest** tier that applies. **Unmatched files are MEDIUM, not LOW** —
 silence must never read as safe. **Name every unmatched file in the report under

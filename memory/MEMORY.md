@@ -2,9 +2,11 @@
 
 <!-- verify: python3 scripts/verification/check_index_budget.py -->
 <!-- verify: python3 scripts/verification/check_index_budget.py --target project -->
+<!-- verify: python3 scripts/verification/check_index_budget.py --target loaded -->
 <!-- verify: python3 scripts/verification/check_index_budget.py --target pointers -->
+<!-- verify: python3 scripts/verification/check_doc_claims.py -->
 
-⚠️ **This index is budgeted in CHARACTERS, not lines.** It reached **54,808 chars in 91 lines** on 2026-08-15 (up 69% in three days) because entries grow by lengthening, so a line-count heuristic never fires. Session detail belongs in `project_session_*.md`; an entry here is a hook that answers *should I open that file?*
+⚠️ **This index is budgeted in SIZE, not lines** (bytes — the guard reads `"rb"`; say bytes when quoting it). It reached **54,808 chars in 91 lines** on 2026-08-15 (up 69% in three days) because entries grow by lengthening, so a line-count heuristic never fires. Session detail belongs in `project_session_*.md`; an entry here is a hook that answers *should I open that file?* ⛔ **This file is NOT auto-loaded** — it is reached by a `CLAUDE.md` pointer row. The always-loaded layer is `CLAUDE.md` plus the USER auto-memory index, budgeted together by `--target loaded` (#138).
 
 ⛔ **THE SESSION LOG HOLDS FOUR ENTRIES. The fifth is MOVED to [`session-log.md`](session-log.md), never compressed.** (#123, 2026-08-25.) The index was 69% session entries by character and grew ~600–900 per session against a fixed ceiling; hand-trimming recovered ~100 chars per line removed, so it lost roughly 6:1 — and every trim turned a finding into a pointer, which is how the always-loaded layer quietly stopped being a record. **Moving costs nothing and loses nothing.** A revision to an existing entry is as expensive as a new one, so budget for both.
 

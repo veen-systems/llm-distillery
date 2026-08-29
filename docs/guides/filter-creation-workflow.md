@@ -1,5 +1,21 @@
 # Filter Creation Workflow
 
+> ⛔ **STALE ON THE PREFILTER QUESTION, AND ON THE DEPLOY GATE. Last substantive change
+> 2026-07-10; read `docs/FILTER_PLAYBOOK.md` first — `CLAUDE.md` names it the single source
+> of truth.** Three rulings landed after this file was written and are **not** reflected
+> anywhere below:
+>
+> 1. **ADR-018 / ADR-019, *Amendment 2026-08-21*: a new filter ships NO per-lens prefilter.**
+>    Every prefilter step in this document describes work you should not do for a new filter.
+> 2. **ADR-021: judge a model against held-out ORACLE ground truth, never against the prior
+>    deployed model** — `scripts/gate/ground_truth_gate.py`, which this file never mentions.
+> 3. **ADR-023: optimise specificity; never rank filters on MAE.**
+>
+> ⚠️ **This banner was added 2026-08-29 without rewriting the body**, because the prefilter
+> material runs through the whole document and a partial rewrite is worse than a flagged one.
+> Treat an unflagged section here as unverified against the ADRs, not as endorsed.
+
+
 > **Start from `docs/FILTER_PLAYBOOK.md`** (the SSoT: compiled lessons + the canonical reference). This is the quick-commands companion to it. The **canonical reference filter is now `nature_recovery v4`** — the uplifting v6 examples below still illustrate the file structure correctly, but for a current end-to-end example (recall-first probe, ground-truth gate, deploy) see `filters/nature_recovery/v4/` + `docs/reports/nature_recovery_v4_report.pdf`.
 
 Practical step-by-step for creating a new production filter. Uses **uplifting v6** for its file-structure illustrations (`filters/uplifting/v6/`).
