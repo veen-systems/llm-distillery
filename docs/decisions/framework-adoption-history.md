@@ -14,6 +14,88 @@ Upstream changelog: https://github.com/ducroq/agent-ready-projects/blob/master/C
 
 ---
 
+## 2026-08-29 (late) — `/update-drift` re-run: **0 releases behind, stamp unchanged at v1.36.1**
+
+No release rows: upstream's latest tag is **v1.36.1**, which is what this repo pins.
+Checked against the REMOTE — the clone's HEAD (`9084baf`) equals `git ls-remote origin
+HEAD`, so the clone is in sync and not a stale baseline. One commit sits past the tag
+(`9084baf`, `tests/fixtures/dead-reference/run.sh` only): **not applicable**, a
+framework-side fixture with no adopter surface. No `(candidate, unreleased)` changelog
+block; `git diff v1.36.1..HEAD -- templates .claude` is empty.
+
+**Step 0 reconciliation**: 39 mentioned `(file, framework)` pairs, **15 stamped**, 24 in
+the difference, all dispositioned — prose mentions, session-log entries, permission globs
+in `.claude/settings.local.json`, a provenance URL and a GitHub issue link. Four names
+appear (`agent-ready-projects` 61, `agent-ready-papers` 12, `agent-ready-fixture` 5,
+`agent-ready-assessment` 3); only the first is pinned here, `agent-ready-papers` is
+declined by design (`docs/TODO.md`, the *"not adopted here"* sentence — cite the sentence,
+the line number has rotted twice). No hidden and no unresolvable pin.
+
+**Verified by execution**, not by reading the stamp:
+
+- The three user-global skills are byte-identical to the **v1.36.1 reference install** —
+  `curate` 525/525, `audit-context` 222/222, `update-drift` 204/204, **0 differing lines**
+  each, diffed against `.claude/skills/<name>/SKILL.md` at the tag (never `templates/`).
+- **Step 1.5's emphasis check (v1.31.0 #50) is live, not inert.** The awk was extracted
+  from the re-mapped local skill and run standalone against a seeded positive (two
+  backticked `**`-abutting tokens inside one bold span → fires with the expected message)
+  and a negative control (same tokens, no bold span → silent). The instrument can say yes.
+
+### ⛔⛔ THE DECLINE WAS RE-ADOPTED THE SAME DAY, BY ME, IN THIS FILE — and reverted
+
+**v1.29.0's third verdict state (`coverage incomplete`, exit 2) was written into
+`refcheck.py` on 2026-08-29 and reverted the same session.** It is recorded as **Declined**
+in the v1.26.1→v1.31.0 section below, and I appended a new entry to the top of *this
+document* without reading three sections down.
+
+**Every clause of the decline's premise was re-checked on 2026-08-29 and still holds:**
+`.github/workflows/` is absent; `run.sh` uses `|| true`, which accepts 1 and 2 identically;
+and the only `$? -eq 2` anywhere in the repo was **the comment I had just written asserting
+that such a caller could exist**. It would have been occurrence 17 of the `CLAUDE.md`
+working rule about shipping a mechanism with no caller.
+
+Two further measurements, both taken before the revert:
+
+- **The exit-2 state was unreachable in the exact scenario its own comment named.** Clearing
+  `SIBS` on the real repo — the fresh-clone / CI case — drives findings from 1 to **181**, so
+  the verdict is `defects`/exit 1, never `coverage incomplete`.
+- **The verdict was a function of unrelated directories.** The same marked reference read
+  `clean`/exit 0 with one *unrelated* sibling repo on disk and `coverage incomplete`/exit 2
+  with none, because `_undecided` gated a per-reference question on a global `not SIBS`. And
+  an angle-bracket placeholder in a sibling-less tree returned exit 2, which is verbatim the
+  defect `/audit-context`'s own text warns about (*"this step's own defect one bucket over"*).
+
+⭐ **The transferable part is not the bug, it is where the answer already was.** A recorded
+decline is a decision, and this file is where decisions live; re-deriving one from the
+changelog cannot recover it, because the reason for declining is local and upstream does not
+know it. **Before adopting anything into a fork, grep this file for the feature's own name.**
+Neither the code review nor the mutation tests could have caught it — it took a reader who
+opened the document rather than the diff (found by an independent review agent).
+
+### ⛔ The finding: a correction for a stale version claim shipped its own stale version claim
+
+`.claude/skills/review-changes/SKILL.md:40` read **"Latest upstream is v1.28.0"** — false
+for eleven releases. It sat in a paragraph added 2026-08-27 *specifically to correct an
+earlier stale version claim*, and its own next clause said **"read the CHANGELOG, do not
+quote a release count from here"** — then quoted one. Same class as v1.36.1's whole theme
+upstream (a correction ships, the superseded assertion stays, the surface asserts both),
+and the same class as `CLAUDE.md`'s ⛔ *never write "current" here*.
+
+Fixed by removing the number rather than updating it: the sentence now names no release and
+says why, so it cannot go stale a third time. **The general form: a state claim does not
+become safe by being written inside a warning about state claims.** It was unrecorded in
+this file, `docs/TODO.md` and the memory index before today, and it is the only instance —
+`grep` over the other project-local skills found no siblings.
+
+⚠️ **A near-miss worth keeping**: the first check for the emphasis feature was a
+case-sensitive `grep -c "emphasis"`, which returned **0** and reads exactly like *"never
+adopted"*. The code says `# Emphasis spans`. Caught before it reached the report, but a
+zero from a wrong matcher is indistinguishable from a real absence — the
+`feedback-regex-ignorecase-trap` family, on a drift check whose whole job is to tell
+absence from presence.
+
+---
+
 ## v1.36.1 — triaged 2026-08-27 (late); **stamp → v1.36.1.** 0 adopt, 2 in force, 3 n/a
 
 A wrap-up review upstream found **three superseded sentences left standing beside the

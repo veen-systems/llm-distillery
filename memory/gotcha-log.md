@@ -1,5 +1,56 @@
 # Gotcha Log
 
+## I RE-ADOPTED A RECORDED DECLINE, IN THE FILE THAT RECORDS IT (2026-08-29)
+**Problem**: `/audit-context` found `refcheck.py` had no verdict line and no exit code, so I
+added the three-state verdict and shipped it. It is a recorded **Decline** in
+`docs/decisions/framework-adoption-history.md` — *"Adopting it would ship a mechanism with no
+caller — the rule this repo has broken 16 times"* — and I had **appended a new entry to the top
+of that same document** an hour earlier without reading three sections down.
+**Root cause**: I triaged the feature against the upstream changelog, which is where the
+*feature* is described, not against the adoption history, which is where **this repo's decision
+about it** lives. A decline's reason is local; upstream cannot know it, so no amount of reading
+upstream recovers it.
+**Fix**: Reverted. Every clause of the premise still held on re-check (`.github/workflows/`
+absent, `run.sh` uses `|| true`, and the only `$? -eq 2` in the repo was **my own comment
+asserting such a caller could exist**). ⭐ **Before adopting anything into a fork, grep the
+adoption history for the feature's own name.** Neither the code review nor the mutation tests
+could have caught this — it took a reader who opened the *document* rather than the diff.
+
+## `cmd | tail -4; echo $?` REPORTS TAIL'S STATUS — FOUR GUARDS READ AS EXIT 0 (2026-08-29)
+**Problem**: Auditing four verification guards, I ran `bash script 2>&1 | tail -4; echo "exit=$?"`
+and recorded all four as `exit=0`. One of them was printing `FAIL:` and genuinely failing.
+**Root cause**: `$?` after a pipeline is the **last** command's status. `tail` succeeds
+whatever it is fed. `tail -4` also hid the `FAIL:` header, which sat above the last four lines —
+so the truncation and the status error concealed the same defect from two directions.
+**Fix**: `out=$(cmd 2>&1); rc=$?` — capture, then inspect — or `${PIPESTATUS[0]}`. ⭐ The
+general form: **any pipeline whose last stage is a formatter (`tail`, `head`, `cut`, `sort`,
+`grep`) launders the exit status of the thing you are actually testing.** Sibling of the
+`| grep` defect found the same day in `memory/oracle-pricing-scheduling.md`, where a pipe
+discarded a script's `return 1` and made its assertion permanently unreachable.
+
+## MY NEGATIVE WAS VACUOUS AND A REVIEW AGENT HAD TO TELL ME (2026-08-29)
+**Problem**: I justified a change to the verify classifier with *"0 differences across 33
+executable blocks"*, presented as evidence the change was safe.
+**Root cause**: The battery reports `failed=0` — **no block emits a FAIL-bearing line at all**,
+so neither the old nor the new classifier could have produced a FAIL, and zero differences was
+guaranteed by construction on the path I was changing. I had run the instrument where it could
+not say yes. (The 33 was also flag-dependent: 23 run by default.)
+**Fix**: The comment now states the zero is vacuous and forbids citing it. ⭐ Recorded because
+of *when* it happened: in a session whose entire subject was instruments that cannot fail, while
+I was fixing three of them. **Being articulate about a rule is not applying it** — and the check
+is least likely to be applied right after you have been most articulate about needing it.
+
+## A FIXTURE FROM AN EARLIER TEST CASE MADE A LATER CASE PASS (2026-08-29)
+**Problem**: A four-way ablation reported `clean` where `coverage incomplete` was expected. I
+nearly recorded the state as unreachable.
+**Root cause**: An earlier case in the same run had created a `Sibling/.git` directory in the
+fixture's **parent**, which is exactly the directory the code under test scans. Case 4 built the
+condition that invalidated case 3, and the cases ran in that order.
+**Fix**: Re-ran in a freshly created tree; both states reproduced correctly. ⭐ **A test that
+creates state in a directory its subject scans has an ordering dependency, and the failure looks
+like a finding about the code.** Build each case in its own tree, or assert the precondition
+inside the case rather than trusting setup order.
+
 ## `git log --since=<BARE-DATE>` RETURNED ZERO FOR A DAY WITH FOUR COMMITS (2026-08-28)
 **Problem**: closing the session, `git log --oneline --since=2026-08-28` printed **nothing**
 on a day with four commits, all timestamped `2026-08-28 08:37`–`09:11 +0200`. Measured
@@ -4275,6 +4326,11 @@ That is a two-second check and would have saved both rejections.
 **Problem**: A peer reported NM#360 "merges clean, verified locally rather than trusting GitHub's `UNKNOWN`". GitHub then computed `CONFLICTING`. I first generalised this as "a merge state is a relationship with a moving branch" — tidy, and not what happened: `origin/main` was at the identical commit throughout.
 **Root cause**: The check used the **old 3-arg `git merge-tree`**, whose output format does not emit the conflict markers the command grepped for. Zero matches was read as zero conflicts.
 **Fix**: `git merge-tree --write-tree`, which exits non-zero. General form: **a check whose pattern cannot match its target reports clean whatever the truth is** — a control that cannot fail. Distrusting a stale signal and verifying locally was the right instinct; the local verification was the thing that lied.
+
+### A fix landed in code the caller could not reach, behind an upstream filter (2026-08-29)
+**Problem**: `check_prod_filters_table.sh` produced a false FAIL on a fully-bolded name cell. I patched the awk to strip bold markers, re-ran the mutation, and it **still failed**.
+**Root cause**: The awk was correct. A `grep -E "^\| [a-z]"` one stage upstream drops any row starting `| **`, so the bolded row never reached the code I had fixed. I had verified the *predicate* and not the *path to it* — the shape this catalogue exists for, in the session that was cataloguing it.
+**Fix**: Widened the grep to `"^\| \**[a-z]"`. ⭐ **The mutation test is what caught it; reading the patch would not have.** A fix to a filter's late stage is worthless if an early stage already dropped the input, and both stages look correct in isolation.
 
 ### A stacked PR showed "all checks passed" without running the tests (2026-08-14)
 **Problem**: NM#364 displayed a green tick with no `test` job. Its only test evidence was someone saying they had run 1,305 tests locally.

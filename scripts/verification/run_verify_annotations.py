@@ -90,6 +90,9 @@ ASSERTS = re.compile(r"\bPASS\b|\bFAIL\b|CANNOT VERIFY|\bexit 1\b")
 # check_prod_filters_table.sh` in NO-ASSERTION — a script whose header comment
 # reads "Prints exactly one word: PASS or FAIL". The classifier was reading the
 # wrong object, which is the same error it exists to catch.
+# A verdict word at the START of a line. See the comment at the call site: the
+# verdict is not reliably the last line of the output.
+VERDICT_LINE = re.compile(r"\s*(FAIL|CANNOT VERIFY)\b")
 DELEGATES = re.compile(r"(^|[|;&(]\s*|\bPYTHONPATH=\S+\s+)(bash|sh|python3?|\./)\s")
 
 TIMEOUT = int(os.environ.get("VERIFY_TIMEOUT", "120"))
@@ -161,19 +164,50 @@ def main():
                                    capture_output=True, text=True, timeout=TIMEOUT)
                 out = (r.stdout + r.stderr).strip().splitlines()
                 last = out[-1] if out else "(no output)"
+                # ⚠️ A VERDICT IS EMITTED ON ITS OWN LINE, NOT NECESSARILY THE LAST
+                # ONE. A guard that prints "FAIL:" and then lists the offending rows
+                # leaves a data row last, so classifying on `last` alone reads the
+                # failure as a pass. `check_prod_filters_table.sh` had been printing
+                # FAIL for four days and being tallied `pass` when /audit-context
+                # found it on 2026-08-29. Anchor on line-initial verdict words rather
+                # than searching the whole blob, or explanatory prose containing the word
+                # "FAIL" would classify a healthy check as broken.
+                # ⚠️ NOT every guard emits a line-initial verdict, and this anchor does
+                # not reach the ones that do not: check_content_length_populated.sh
+                # asserts only through its exit code, and oracle_cost.py prints
+                # "... MISMATCH" mid-line while its annotation pipes into `grep`,
+                # discarding the non-zero exit -- so that block cannot fail under
+                # either the old or the new classifier. Anchoring is a partial fix.
+                verdict = next((l for l in out if VERDICT_LINE.match(l)), None)
             except subprocess.TimeoutExpired:
                 tally["errored"] += 1
                 failures.append((doc, i, f"TIMEOUT after {TIMEOUT}s"))
                 print(f"  TIMEOUT       {doc} #{i}  (VERIFY_TIMEOUT={TIMEOUT})")
                 continue
-            if r.returncode != 0 or "FAIL" in last:
+            # Report the verdict line when there is one; `last` is only a fallback
+            # for a check that asserts through its exit code alone.
+            shown = verdict or last
+            # `or "FAIL" in last` is the PRE-2026-08-29 test, kept so this change is
+            # strictly additive on the FAIL path. Anchoring only on line-initial verdicts
+            # silently lost a block whose sole verdict is mid-line on the last line
+            # ("check X: FAIL"), so the old clause stays; it costs only the
+            # false-positive surface that already existed.
+            # ⚠️ DO NOT cite "0 of N blocks emit that shape" as evidence here. Today
+            # `failed=0`, so NO block emits a FAIL-bearing line at all and that zero is
+            # vacuous -- the instrument could not have said yes. (Block counts also
+            # depend on flags: 23 run by default, 33 with --sessions.) The argument for
+            # the fallback is that the loss is real, not that it is currently unobserved.
+            if (r.returncode != 0
+                    or (verdict and verdict.lstrip().startswith("FAIL"))
+                    or "FAIL" in last):
                 tally["failed"] += 1
-                failures.append((doc, i, last))
-                print(f"  FAIL          {doc} #{i}  {last}")
-            elif "CANNOT VERIFY" in last:
+                failures.append((doc, i, shown))
+                print(f"  FAIL          {doc} #{i}  {shown}")
+            elif ((verdict and verdict.lstrip().startswith("CANNOT VERIFY"))
+                    or "CANNOT VERIFY" in last):
                 tally["errored"] += 1
-                failures.append((doc, i, last))
-                print(f"  CANNOT VERIFY {doc} #{i}  {last}")
+                failures.append((doc, i, shown))
+                print(f"  CANNOT VERIFY {doc} #{i}  {shown}")
             else:
                 tally["passed"] += 1
                 if not args.quiet:

@@ -94,7 +94,7 @@ metadata:
 > both the "+64% flip point" and the outside "dead heat" framings mislead: each compares
 > at one assumed shape instead of asking which side of the ratio we are on. Reproduce:
 > `scripts/analysis/oracle_cost.py` (rates in the header, measured shapes inline).
-> <!-- verify: python3 scripts/analysis/oracle_cost.py | grep -m1 'rate-card check' -->
+> <!-- verify: O=$(python3 scripts/analysis/oracle_cost.py) || { echo "FAIL: oracle_cost.py rate-card check did not pass"; exit 1; }; echo "$O" | grep -m1 'rate-card check' -->
 >
 > ⭐⭐ **The 0.3%-vs-14% cache puzzle is SOLVED, and it is structural.** `build_prompt`
 > substitutes the article **into the middle** of the template

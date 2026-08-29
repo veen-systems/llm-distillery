@@ -1,6 +1,59 @@
 # LLM Distillery - TODO
 
-## 🔵 NEXT SESSION — **v8 Phase 0 is measured; two numbers are the owner's**
+## 🔵 NEXT SESSION — **three checkers repaired; the fourth change was a decline I re-adopted**
+
+> **Updated 2026-08-29 (late).** **No spend, no model, no filter, no threshold, no probe,
+> nothing deployed — deploy is N/A, not skipped.** Changed files are `scripts/verification/`,
+> `.claude/skills/`, `docs/decisions/`, `memory/`. Nothing reaches a path NexusMind runs.
+> Session record: `memory/project_session_2026_08_29_late.md`.
+>
+> ### ✅ DONE — `/update-drift`, `/audit-context`, `/review-changes` (inline + 2 agents)
+> - **Framework: 0 releases behind** (v1.36.1 pinned = latest, checked against the REMOTE).
+>   Three user-global skills byte-identical to the v1.36.1 reference install, 0 differing lines.
+> - **`check_prod_filters_table.sh` had been printing `FAIL` since 2026-08-25 and being tallied
+>   `pass` for four days.** Three compounding defects: no `LC_ALL=C` (the `comm` collation error
+>   produced **8 spurious entries vs a correct 2**), `exit 0` on FAIL, and a classifier reading
+>   only the last line. **Both reported entries were the guard's own artifacts — there was never
+>   any real CLAUDE.md ↔ filter-status.md drift.**
+> - **`memory/oracle-pricing-scheduling.md:97` was a live fail-open**: `| grep` discarded
+>   `oracle_cost.py`'s `return 1` and its verdict word is `MISMATCH`, not `FAIL`, so **both halves
+>   of the assertion were destroyed.** Fixed; verified against stubs in both directions.
+>
+> ### ⛔⛔ THE KEEPER — I re-adopted a recorded DECLINE, in the file that records it
+> `refcheck.py`'s verdict + exit codes (v1.29.0's third state) are **declined** in
+> `docs/decisions/framework-adoption-history.md`, and I appended a new entry to the top of that
+> same document without reading three sections down. Every clause of the decline's premise still
+> holds (no `.github/workflows/`, `run.sh` uses `|| true`, and the only `$? -eq 2` in the repo was
+> **my own comment claiming such a caller could exist**). **Reverted.** ⭐ Neither the code review
+> nor the mutation tests could have found it — it took a reader who opened the *document* rather
+> than the diff. **Before adopting into a fork, grep the adoption history for the feature's name.**
+>
+> ### ⭐ `H-CX1` — SPLIT VERDICT: the prediction hit, the mechanism did not
+> Predicted 37,462 ±500 B; measured **37,445**. But with the cap in force `CLAUDE.md` still went
+> **37,149 → 38,204 B in 29.3 h (~864 B/day, above the ~486 it was meant to stop)** and was trimmed
+> back by hand. Attribution: **pointer table +0 B, rest of file +1,055 B.** The cap is confirmed
+> *within its own scope*; the growth relocated. ⚠️ **One day earlier the same audit would have read
+> 38,204 and called the cap a failure** — the verdict was one commit wide.
+>
+> ### ▶ NEXT, in order
+> 1. **#138** — the budget guard measures `memory/MEMORY.md` (not auto-loaded) and misses the user
+>    auto-memory index (19,488 B, 68 lines, **is** auto-loaded). Always-loaded total ~56,933 B
+>    across two trees. Decide whether the budget is stated per-file or over the total.
+> 2. **`CLAUDE.md` has ~2,556 B of runway** to the 40,000 hard wall, and #133's cap does not govern
+>    where the growth now lands. Pick the next lever before the wall, not at it.
+> 3. **#137** — 10 reproduced shapes that still defeat the verify classifier (a glyph, a bullet, a
+>    BOM, an ANSI code, a stderr write, or the word `b650` **in a comment**). Each fix needs a
+>    seeded positive: a run that finds nothing cannot distinguish a fixed check from a disabled one.
+> 4. **Add a `.claude/skills/**` row to `/review-changes`' tier table** — a reference install
+>    currently tiers MEDIUM by accident. Do it from a session whose diff does not contain it.
+>
+> ### ⚠️ Standing, unchanged
+> `refcheck.py` reports **1 finding** (`narrative_risk.json`) which `memory/session-log.md` records
+> as real and deliberately left standing. Do **not** fix it by editing the entry.
+
+---
+
+## v8 Phase 0 — **measured; two numbers are the owner's**
 
 > **Updated 2026-08-28.** **No spend, no model, no filter, nothing deployed, and no
 > threshold or probe touched.** Changed files are `scripts/analysis/`, `docs/`, `memory/`

@@ -36,9 +36,11 @@ anyone wants a pre-merge review. (Ported ahead of release from
 agent-ready-projects `e824212`, on the unmerged branch `fix/review-changes-scope`
 — it shipped as part of **v1.26.1** on 2026-08-25.
 ⚠️ This paragraph asserted *"there is no v1.26.1; latest upstream release is v1.26.0"*
-until 2026-08-27 — true when written on 2026-08-15, false eleven days later. Latest
-upstream is **v1.28.0**; read `agent-ready-projects/CHANGELOG.md`, do not quote a
-release count from here. An adopter hit this on a real PR where a widened review found
+until 2026-08-27 — true when written on 2026-08-15, false eleven days later. That
+correction then named **v1.28.0** and was itself stale eleven releases on, found by
+`/update-drift` 2026-08-29. Read `agent-ready-projects/CHANGELOG.md` for the current
+release; never name one here — this sentence has gone stale twice, the second time
+inside the fix for the first. An adopter hit this on a real PR where a widened review found
 **4 blockers**.
 This session hit the same defect on 2026-08-13 and worked around it by hand
 without recognising it — the workaround is what the fix now prescribes.)
