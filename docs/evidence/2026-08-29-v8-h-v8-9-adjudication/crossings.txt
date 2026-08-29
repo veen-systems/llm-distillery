@@ -1,0 +1,108 @@
+op-point 4.5 (imported)  rows 200
+
+====================================================================================================
+DROPPED by the reorder (B>=OP > A): 10   [R 4 / B 6]
+====================================================================================================
+
+italian_qualenergia_9776a593411a  [R] it  456 chars
+  A(reordered) k3 0.517  runs 0.55/ou 0.45/ou 0.55/ou
+  B(as-is)     k3 4.883  runs 4.95/in 4.75/in 4.95/in
+  v7 5.77 (stage2)  italian_qualenergia
+  Towards an equitable future of global photovoltaic waste recycling
+  https://www.qualenergia.it/pro/documenti/towards-an-equitable-future-of-global-photovoltaic-waste-recycling/
+
+korean_yonhap_kr_4bdf936317d3  [R] ko  1242 chars
+  A(reordered) k3 0.750  runs 0.75/ou 0.75/ou 0.75/ou
+  B(as-is)     k3 4.683  runs 4.65/in 4.75/in 4.65/in
+  v7 4.44 (stage2)  korean_yonhap_kr
+  日, 자국-아세안 대학 AI 공동연구 지원…농업·방재 기술 개발
+  https://www.yna.co.kr/view/AKR20260817035900073
+
+gifted_davidson_gifted_8f9df075bd7b  [B] en  6243 chars  ⚠ SELF-STRADDLE B
+  A(reordered) k3 0.800  runs 0.65/ou 0.75/ou 1.00/ou
+  B(as-is)     k3 4.517  runs 4.55/in 4.35/in 4.65/in
+  v7 4.35 (stage2)  gifted_davidson_gifted
+  Mentorships: Questions & Answers
+  https://www.davidsongifted.org/gifted-blog/mentorships-questions-answers/
+
+positive_news_frontiers_sustainable_food_systems_4274585d688e  [B] en  1573 chars  ⚠ SELF-STRADDLE A,B
+  A(reordered) k3 3.067  runs 0.45/ou 4.70/in 4.05/in
+  B(as-is)     k3 4.667  runs 4.90/in 5.05/in 4.05/in
+  v7 4.60 (stage2)  positive_news_frontiers_sustainable_food_systems
+  Evaluating the impacts of energy security, adoption of digital technologies, and green finance on food and agricultural productivity: evidence from em
+  https://www.frontiersin.org/articles/10.3389/fsufs.2026.1829391
+
+southeast_asian_cna_sg_cc65ac33d31b  [R] en  4338 chars  ⚠ SELF-STRADDLE A
+  A(reordered) k3 4.050  runs 5.55/in 1.00/ou 5.60/in
+  B(as-is)     k3 5.083  runs 4.80/in 4.65/in 5.80/in
+  v7 2.91 (stage2)  southeast_asian_cna_sg
+  NDR 2026: Businesses welcome government move to cover childcare leave costs, but manpower concerns remain
+  https://www.channelnewsasia.com/singapore/national-day-rally-2026-businesses-childcare-leave-6336011
+
+arabic_ammonnews_en_ae36010efd70  [B] en  1530 chars
+  A(reordered) k3 4.217  runs 4.25/in 4.15/in 4.25/in
+  B(as-is)     k3 4.950  runs 4.95/in 4.95/in 4.95/in
+  v7 4.21 (stage2)  arabic_ammonnews_en
+  LH passes Senate's amendments on 2026 Professional Work Regulation Law
+  https://en.ammonnews.net/article/94423
+
+korean_hankyung_4512142f32e3  [R] ko  935 chars  ⚠ SELF-STRADDLE A
+  A(reordered) k3 4.450  runs 4.05/in 4.80/in 4.50/in
+  B(as-is)     k3 5.100  runs 5.10/in 5.10/in 5.10/in
+  v7 6.50 (stage2)  korean_hankyung
+  '고종 강제양위 반대' 강준선 지사 등 540명 발굴
+  https://www.hankyung.com/article/2026082154261
+
+dutch_news_nos_algemeen_da99e440d0af  [B] nl  4605 chars  ⚠ SELF-STRADDLE B
+  A(reordered) k3 4.267  runs 4.40/in 4.20/in 4.20/in
+  B(as-is)     k3 4.533  runs 4.55/in 4.35/in 4.70/in
+  v7 4.99 (stage2)  dutch_news_nos_algemeen
+  200 jaar Feijenoord: 'Begreep de kritiek niet, ik woonde er heel prettig'
+  https://nos.nl/l/2628172
+
+southeast_asian_khaosod_en_1f663b3e79f6  [B] en  419 chars  ⚠ SELF-STRADDLE A
+  A(reordered) k3 4.433  runs 4.35/in 4.75/in 4.20/in
+  B(as-is)     k3 4.650  runs 4.65/in 4.65/in 4.65/in
+  v7 4.68 (stage2)  southeast_asian_khaosod_en
+  Thai children spend Sundays learning Khon at a temple
+  https://www.khaosodenglish.com/featured/2026/08/21/thai-children-spend-sundays-learning-khon-at-a-temple/
+
+global_news_spiegel_1822ab53217e  [B] de  2397 chars  ⚠ SELF-STRADDLE A,B
+  A(reordered) k3 4.333  runs 3.90/in 4.70/in 4.40/in
+  B(as-is)     k3 4.517  runs 4.05/in 4.80/in 4.70/in
+  v7 4.51 (stage2)  global_news_spiegel
+  Tarifeinkommen: Löhne steigen 2024 voraussichtlich stärker als Preise
+  https://www.spiegel.de/wirtschaft/lohn-in-deutschland-tarifloehne-duerften-staerker-steigen-als-preise-a-f2c169e0-4505-4962-9544-b551875defe6#ref=rss
+
+====================================================================================================
+ADDED by the reorder (A>=OP > B): 2   [R 1 / B 1]
+====================================================================================================
+
+japanese_mainichi_jp_e8744b88eb34  [B] ja  329 chars  ⚠ SELF-STRADDLE A
+  A(reordered) k3 4.633  runs 4.30/in 5.30/in 4.30/in
+  B(as-is)     k3 4.400  runs 4.45/in 4.45/in 4.30/in
+  v7 4.14 (stage2)  japanese_mainichi_jp
+  森保監督が熊本の被災地で交流 「サッカーを通して活力に」
+  https://mainichi.jp/articles/20260816/k00/00m/050/174000c
+
+canadian_globe_mail_a5fec9b7be28  [R] en  4116 chars  ⚠ SELF-STRADDLE A
+  A(reordered) k3 4.733  runs 5.05/in 4.45/in 4.70/in
+  B(as-is)     k3 0.850  runs 0.85/re 0.85/re 0.85/re
+  v7 5.29 (stage2)  canadian_globe_mail
+  WestJet flight attendants’ harassment suit settled for $4.5-million
+  https://www.theglobeandmail.com/business/article-westjet-flight-attendant-harassment-suit-settlement/
+op-point 4.5
+k=3 rows above op-point: A(reordered) 15  B(as-is) 23  net -8
+id                                                  str    A k3   B k3  A verdicts                  B verdicts                
+italian_qualenergia_9776a593411a                    R     0.517  4.883  out_/out_/out_              in_s/in_s/in_s            
+korean_yonhap_kr_4bdf936317d3                       R     0.750  4.683  out_/out_/out_              in_s/in_s/in_s            
+gifted_davidson_gifted_8f9df075bd7b                 B     0.800  4.517  out_/out_/out_              in_s/in_s/in_s            
+positive_news_frontiers_sustainable_food_systems_4  B     3.067  4.667  out_/in_s/in_s              in_s/in_s/in_s            
+southeast_asian_cna_sg_cc65ac33d31b                 R     4.050  5.083  in_s/out_/in_s              in_s/in_s/in_s            
+arabic_ammonnews_en_ae36010efd70                    B     4.217  4.950  in_s/in_s/in_s              in_s/in_s/in_s            
+korean_hankyung_4512142f32e3                        R     4.450  5.100  in_s/in_s/in_s              in_s/in_s/in_s            
+dutch_news_nos_algemeen_da99e440d0af                B     4.267  4.533  in_s/in_s/in_s              in_s/in_s/in_s            
+southeast_asian_khaosod_en_1f663b3e79f6             B     4.433  4.650  in_s/in_s/in_s              in_s/in_s/in_s            
+global_news_spiegel_1822ab53217e                    B     4.333  4.517  in_s/in_s/in_s              in_s/in_s/in_s            
+japanese_mainichi_jp_e8744b88eb34                   B     4.633  4.400  in_s/in_s/in_s              in_s/in_s/in_s            
+canadian_globe_mail_a5fec9b7be28                    R     4.733  0.850  in_s/in_s/in_s              resp/resp/resp            

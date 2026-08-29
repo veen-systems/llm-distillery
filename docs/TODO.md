@@ -115,11 +115,31 @@
 > red since `6acd013`, v5 is LIVE), **#140** (two filter guides 7 weeks stale, banner-flagged
 > only) filed; **#122** replicated from this session's own context.
 >
-> ### ▶ NEXT
-> **The v8 decision is what everything is waiting on** — see the Phase 0 block below.
-> Adopt the reordered oracle prompt or not; it gates corpus sizing, the b650 staging run and
-> `corpus_manifest.json` (#127). If you want evidence first, H-V8-9 is cheap: adjudicate only
-> the ~21 op-point-crossing rows against §5b's no-regression set.
+> ### ▶ NEXT — the v8 decision, now with one side of the evidence in
+> **Adopt the reordered oracle prompt or not.** It gates corpus sizing, the b650 staging run and
+> `corpus_manifest.json` (#127), and it is still the owner's call.
+>
+> ✅ **H-V8-9 step 1 done 2026-08-29, $0** (a re-read of labels the Phase A run already bought):
+> **`docs/evidence/2026-08-29-v8-h-v8-9-adjudication/`**. All **12** rows whose op-point side
+> differs at k=3, adjudicated against the v8 prompt's own STEP 1 / §5. A(reordered) surfaces
+> **15**, B(as-is) **23** — reconciles exactly with `results.txt` §3, so the set is the
+> pipeline's, not hand-built. ⭐ **Only 4 of 12 are STABLE in both arms**; 2 more cross because
+> a single `out_of_scope` run drags the k=3 mean over (#135, not the reorder), and 6 are
+> magnitude drift with all six runs `in_scope`. On the 4 stable ones **the reorder is right 3 of
+> 4**: it drops a 2060 projection study, an ODA funding plan and a mentorship guidebook — the
+> §5 / class-B shapes v8 exists to remove, each scored `in_scope` by as-is on 3/3 runs. ⛔ **Its one stable ADD is a false positive** (the WestJet
+> settlement — the *"compensation was paid"* guard does not apply, the claims portal *is being
+> prepared*), so **the reorder is not uniformly stricter, it is differently strict.** Cost: 2–3
+> true positives, all within **0.24** of the op-point.
+>
+> ⛔⛔ **The hypothesis stays OPEN because neither §5b hazard could have fired** — the three
+> no-regression articles are not in the 200-row draw, so the cohort could not produce that
+> positive. **To close it: score those 3 rows under both arms at k=3, about $0.03**, and check
+> acceptance criterion 2 per row against its own `assertion`.
+>
+> ⛔⛔ **PROVENANCE: the 1,200 Phase A oracle labels ($0.867) live ONLY in a previous session's
+> `/tmp` scratchpad** — 6.6 MB, five hypotheses rest on them, `/tmp` does not survive a reboot.
+> Where they should live is an owner call (full article text ⇒ the TDM register applies).
 
 ---
 
