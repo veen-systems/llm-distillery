@@ -88,9 +88,39 @@ like-for-like cell gives **p = 0.4648**.
   confirmed cd v5 still live, `investment_risk` still paused, `min_score` still 4.0.
 - **`venv-prodparity` verified current** against gpu-server *live*, all eight pins.
 
+## Session close
+
+- **`CLAUDE.md` 38,204 → 37,445.** Three trims, each verified homed first. ⛔ The `uplifting`
+  row was **not** trimmable — `grep -c "107" memory/filter-status.md` returned **0**, so the
+  #107 finding lived only in the always-loaded file. Written into `filter-status.md` as its
+  own section *before* the row was shortened. #133 is CLOSED and its routing rule is the
+  adopted remedy; I had wrongly called it an open question.
+- One footer atom was **wrong, not merely stale**: "byte-identical to v1.35.0 apart from the
+  installer's header" — today's drift check measured **0 differing lines against the v1.36.1
+  reference install**, and v1.35.0 is the release that established there is no install-time
+  transform at all.
+- **Hypotheses:** H-V8-8 (k=3 repeat discount at corpus scale — an assumption carrying a ~$15
+  decision) and **H-V8-9** (are the reorder's stricter labels *better*, not merely different —
+  nothing measures either arm against ground truth) opened with Methods and Revisit triggers;
+  H-V8-6 gained one. Six ⏳ open.
+- **`memory/stamp-contract-integrity.md` gained a scope boundary**: the four stamps added
+  today are on **oracle output rows**, not article records — no Contract, no census, never
+  production. That file is what `CLAUDE.md` tells you to read before adding a stamp, and it
+  would otherwise have miscategorised them.
+- **Issues:** #135 (prerequisite done, flip rate given an interval, 13% explicitly *not*
+  refuted), #104 (the "cross-box" name retired — and its own table cites the retired 4.0
+  op-point), #95, #134, #136. **augmented-engineering#39** filed per `CLAUDE.md`'s standing
+  cross-repo instruction.
+- **Merge N/A** (no feature branch). **Deploy N/A, not skipped** — nothing in `filters/`
+  across all commits. **Pushed.**
+
 ## Next session
 
-1. ⛔ **OWNER: adopt the reordered prompt or not.** Nothing downstream should move first.
-2. Corpus size, then stage on b650 + `corpus_manifest.json` (#127).
-3. `CLAUDE.md` is at **38,204 / 40,000** with no session footers left to trim and padding at
-   0.6% — #133's routing rule is the live remedy.
+1. ⛔ **OWNER: adopt the reordered prompt or not** — it blocks everything below. If you want
+   evidence first, H-V8-9 is cheap: adjudicate only the ~21 rows that cross the op-point
+   between arms against §5b's no-regression set.
+2. Corpus size, stage on b650, `corpus_manifest.json` (#127) — budget k=3 off H-V8-8, not off
+   the unproven repeat discount.
+3. #134 step 2 and #136 — hygiene.
+4. ⚠️ Stale branch `docs/event-identity-encoder-plan` (1 commit, `0c283c6`, the #100 plan) —
+   land it or drop it; not mine to delete.

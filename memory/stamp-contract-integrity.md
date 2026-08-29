@@ -13,6 +13,20 @@ creating features per item" — which is exactly right, and reframes ADR-022's
 decision policy. That is also why the hard constraint says changing thresholds
 must never require re-labelling.
 
+⛔ **SCOPE — what this file is NOT about (2026-08-29).** Everything here concerns the
+**production article record**: stamps written by NexusMind onto a row that reaches a reader.
+The **oracle labelling path** in this repo writes its own stamps onto
+`datasets/scored/*.jsonl` — `scope_verdict`, `dominant_subject`, `content_type`,
+`filter_version`, `analyzed_by`, `prompt_hash`, `prompt_file` — and **none of them is an
+article-record field, none is in any Contract, and none reaches production.** Do not census
+them with `NexusMind/scripts/stamp_census.py` (it reads article records) and do not add an oracle stamp to a
+Contract because it looks like a stamp. Their integrity question is different and simpler:
+*can this row be attributed to the prompt and model that produced it?* — which is why
+`prompt_hash` exists (`scripts/score_deepseek_production.py`,
+`ground_truth/batch_scorer.py`). ⚠️ `scripts/score_ollama_oracle.py` writes the two verdict
+fields at the **record root** rather than inside the analysis field, and carries **no**
+`prompt_hash` — read the writer before joining outputs from two scorers.
+
 An article carries **~40+ numbers**: 6 lenses × 6–7 dimensional scores, plus
 per-lens flags, plus 12 top-level model stamps (`_commerce_*`, `_obituary_*`,
 `_violence_*`), plus `content_quality`, `image_analysis`, `source_quality`, and

@@ -141,15 +141,35 @@
 >    carry an identical `filter_version`, so arm identity rests on filenames. Any re-run
 >    carries `prompt_hash` + `prompt_file`.
 >
-> ### ▶ NEXT — the one open decision is the owner's
-> 1. ⛔ **OWNER: reordered prompt — adopt or not?** It is ~5.27× cheaper on the paying call
->    and a **different, stricter** labelling function. ADR-023 wants specificity, so stricter
->    is not obviously wrong, but v8 was adjudicated in its **as-is** form and ≈$15 on the
->    corpus is small against adjudication time. Nothing downstream should move until this is
->    ruled, because it decides which prompt labels the corpus.
-> 2. **Corpus size**, then stage on b650 + `corpus_manifest.json` (#127) — unchanged, and
->    now budgetable off measured per-article prices for either arm.
-> 3. #134 step 2 (tiering) and #136 (the commit-msg guard) — hygiene, opportunistic.
+> ### ▶ NEXT SESSION — start here, in this order
+> 1. ⛔ **OWNER DECISION, and it blocks everything below: adopt the reordered prompt or not.**
+>    ~5.27× cheaper on the paying call and a **different, stricter** labelling function
+>    (−0.239, ~30% fewer rows above the op-point). ADR-023 wants specificity, so stricter is
+>    not obviously wrong — but v8 was adjudicated in its **as-is** form, ≈$15 on the corpus is
+>    small against adjudication time, and **nothing here measures either arm against ground
+>    truth**. ⛔ Do not resolve it from the price.
+>    **If you want evidence before ruling, that is H-V8-9 and it is cheap**: adjudicate only
+>    the rows that CROSS the op-point between arms (n≈9 production-mix, 12 boundary) against
+>    §5b's no-regression set. A reorder that only drops true positives is a regression
+>    whatever it costs.
+> 2. **Then the corpus**: size it, stage on b650, write `corpus_manifest.json` (#127). Both
+>    arms now have measured per-article prices, so it is budgetable either way.
+>    ⚠️ **Budget k=3 honestly — the repeat discount is H-V8-8 and UNPROVEN at corpus scale.**
+>    Either measure the cache TTL (~$0.05, method in the ledger) or schedule k=3 as three
+>    back-to-back calls *per article*, which makes the question moot.
+> 3. #134 step 2 (tiering) and #136 (the commit-msg guard) — hygiene, opportunistic. ⚠️ #136
+>    tripped ~6 more times on 2026-08-29; every session commit here says "nothing deployed".
+>
+> ### Carry-in
+> - **`memory/hypothesis-ledger.md` has 6 open (⏳) entries**, three of them v8's. H-V8-8 and
+>   H-V8-9 were opened 2026-08-29 with Methods and Revisit triggers; H-V8-6 gained one.
+> - **A stale branch exists**: `docs/event-identity-encoder-plan`, 1 commit not in `main`
+>   (`0c283c6`, the #100 event-identity plan). Not deleted — it is unmerged work, and whether
+>   it lands or is dropped is an owner call.
+> - ⚠️ **`CLAUDE.md` is at ~37.4k/40k.** #133 is CLOSED and its routing rule is the adopted
+>   remedy, enforced by `check_index_budget.py --target pointers`. New content goes in the
+>   target file, not here; the 2026-08-29 trim homed the last known orphan (#107 → 
+>   `memory/filter-status.md`) before shortening its row.
 >
 > ⚠️ **Carry in:** the archive window rolls — it was 83 files at session start and **84**
 > three hours later. Re-enumerate at draw time; never carry a count across a session.
