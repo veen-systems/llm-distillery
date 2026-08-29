@@ -1,5 +1,10 @@
 # `human_thriving` v8 — build plan
 
+📓 **What has actually been DONE, step by step, with spend and evidence:**
+[`docs/HUMAN_THRIVING_V8_JOURNAL.md`](HUMAN_THRIVING_V8_JOURNAL.md). This plan says what
+v8 *will* be and is edited as rulings land; the journal says what happened and is
+append-only. **A step that is not in the journal did not happen.**
+
 **Drafted 2026-08-20. Revised 2026-08-21** (fourth revision — this plan has been rewritten
 each time a measurement landed; read §0b for what changed and why).
 

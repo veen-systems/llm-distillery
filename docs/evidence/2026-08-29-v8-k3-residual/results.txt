@@ -1,0 +1,113 @@
+op-point 4.5 (imported from filters/uplifting/v7/base_scorer.py)   rows 200
+scope_verdict vocabulary over 1,200 labels (the gate collapses all but the first):
+    out_of_scope           523   exclusion
+    in_scope               369   IN SCOPE
+    harm_is_subject        259   exclusion
+    response_to_harm        42   exclusion
+    no_person_benefits       7   exclusion
+
+================================================================================================
+ESTIMAND: SCOPE GATE  (scope_verdict == 'in_scope')
+================================================================================================
+arm A (reordered)  stratum R  n=150
+  observed s=0..3 [110, 7, 5, 28]   non-unanimous 12/150 = 8.0%
+  fit Beta(0.0409, 0.1402)  logL -119.66   expected [110.0, 6.3, 5.8, 27.9]   chi2(df=1) 0.18 p=0.675
+  P(k-majority != limit):  k=1 3.750%  k=3 2.452%  k=5 1.945%  k=7 1.660%
+  run exchangeability: per-run positives [33, 34, 34]  Cochran Q=0.167 p=0.920
+arm A (reordered)  stratum B  n=50
+  observed s=0..3 [22, 6, 1, 21]   non-unanimous 7/50 = 14.0%
+  fit Beta(0.1118, 0.1185)  logL -54.88   expected [22.2, 3.5, 3.5, 20.8]   chi2(df=1) 3.54 p=0.060
+  P(k-majority != limit):  k=1 6.566%  k=3 4.326%  k=5 3.440%  k=7 2.939%
+  run exchangeability: per-run positives [23, 24, 24]  Cochran Q=0.286 p=0.867
+arm B (as-is)  stratum R  n=150
+  observed s=0..3 [107, 6, 6, 31]   non-unanimous 12/150 = 8.0%
+  fit Beta(0.0413, 0.1263)  logL -123.66   expected [107.0, 6.2, 5.8, 31.0]   chi2(df=1) 0.02 p=0.892
+  P(k-majority != limit):  k=1 3.726%  k=3 2.433%  k=5 1.930%  k=7 1.647%
+  run exchangeability: per-run positives [37, 35, 39]  Cochran Q=2.000 p=0.368
+arm B (as-is)  stratum B  n=50
+  observed s=0..3 [19, 2, 3, 26]   non-unanimous 5/50 = 10.0%
+  fit Beta(0.0901, 0.0677)  logL -50.35   expected [19.0, 2.5, 2.5, 26.0]   chi2(df=1) 0.18 p=0.672
+  P(k-majority != limit):  k=1 4.671%  k=3 3.050%  k=5 2.419%  k=7 2.064%
+  run exchangeability: per-run positives [27, 31, 28]  Cochran Q=5.200 p=0.074
+
+================================================================================================
+ESTIMAND: OP-POINT LABEL  (weighted average >= 4.5)   <- the quantity the plan's ~860 figure counts
+================================================================================================
+arm A (reordered)  stratum R  n=150
+  observed s=0..3 [139, 1, 4, 6]   non-unanimous 5/150 = 3.3%
+  fit Beta(0.0138, 0.2282)  logL -50.70   expected [139.0, 2.6, 2.1, 6.3]   chi2(df=1) 2.61 p=0.106
+  P(k-majority != limit):  k=1 1.472%  k=3 0.964%  k=5 0.765%  k=7 0.653%
+  run exchangeability: per-run positives [8, 9, 10]  Cochran Q=1.200 p=0.549
+arm A (reordered)  stratum B  n=50
+  observed s=0..3 [37, 7, 2, 4]   non-unanimous 9/50 = 18.0%
+  fit Beta(0.1401, 0.7504)  logL -42.09   expected [37.1, 5.7, 3.7, 3.5]   chi2(df=1) 1.16 p=0.282
+  P(k-majority != limit):  k=1 8.873%  k=3 5.992%  k=5 4.806%  k=7 4.123%
+  run exchangeability: per-run positives [5, 11, 7]  Cochran Q=6.222 p=0.045   ⚠️ runs differ
+arm B (as-is)  stratum R  n=150
+  observed s=0..3 [134, 4, 2, 10]   non-unanimous 6/150 = 4.0%
+  fit Beta(0.0179, 0.1912)  logL -65.53   expected [134.0, 3.3, 2.8, 9.9]   chi2(df=1) 0.39 p=0.533
+  P(k-majority != limit):  k=1 1.897%  k=3 1.241%  k=5 0.985%  k=7 0.840%
+  run exchangeability: per-run positives [11, 12, 15]  Cochran Q=4.333 p=0.115
+arm B (as-is)  stratum B  n=50
+  observed s=0..3 [33, 3, 7, 7]   non-unanimous 10/50 = 20.0%
+  fit Beta(0.1303, 0.4030)  logL -51.02   expected [32.8, 5.3, 4.3, 7.6]   chi2(df=1) 2.76 p=0.096
+  P(k-majority != limit):  k=1 9.115%  k=3 6.144%  k=5 4.922%  k=7 4.220%
+  run exchangeability: per-run positives [12, 14, 12]  Cochran Q=0.800 p=0.670
+
+================================================================================================
+INTERVALS, PAIRED DIFFERENCES, AND THE HELD-OUT CHECK  (scope gate)
+================================================================================================
+arm A stratum R: k=3 residual 2.452%  95% CI [1.21%, 4.13%]   bootstrap replicates hitting a bound: 0/400
+arm A stratum B: k=3 residual 4.326%  95% CI [1.80%, 7.94%]   bootstrap replicates hitting a bound: 0/400
+arm B stratum R: k=3 residual 2.433%  95% CI [1.20%, 3.88%]   bootstrap replicates hitting a bound: 0/400
+arm B stratum B: k=3 residual 3.050%  95% CI [0.60%, 5.69%]   bootstrap replicates hitting a bound: 3/400
+paired A-B difference, stratum R: -0.010%  95% CI [-1.44%, +1.51%]  -> NOT DISTINGUISHABLE
+paired A-B difference, stratum B: +1.566%  95% CI [-1.98%, +5.99%]  -> NOT DISTINGUISHABLE
+
+HELD-OUT: fit on 2 runs, predict the 3rd (pooled over all three rotations)
+  arm A stratum R  other two runs said 0/2 in_scope  n= 337   predicted 1.9%   observed 2.1%   |err| 0.2%
+  arm A stratum R  other two runs said 1/2 in_scope  n=  24   predicted 47.5%   observed 41.7%   |err| 5.8%
+  arm A stratum R  other two runs said 2/2 in_scope  n=  89   predicted 93.6%   observed 94.4%   |err| 0.8%
+  arm A stratum B  other two runs said 0/2 in_scope  n=  72   predicted 4.9%   observed 8.3%   |err| 3.4%
+  arm A stratum B  other two runs said 1/2 in_scope  n=  14   predicted 49.7%   observed 14.3%   |err| 35.4%
+  arm A stratum B  other two runs said 2/2 in_scope  n=  64   predicted 94.6%   observed 98.4%   |err| 3.9%
+  arm B stratum R  other two runs said 0/2 in_scope  n= 327   predicted 1.9%   observed 1.8%   |err| 0.1%
+  arm B stratum R  other two runs said 1/2 in_scope  n=  24   predicted 48.0%   observed 50.0%   |err| 2.0%
+  arm B stratum R  other two runs said 2/2 in_scope  n=  99   predicted 94.2%   observed 93.9%   |err| 0.2%
+  arm B stratum B  other two runs said 0/2 in_scope  n=  59   predicted 4.2%   observed 3.4%   |err| 0.8%
+  arm B stratum B  other two runs said 1/2 in_scope  n=  10   predicted 50.6%   observed 60.0%   |err| 9.4%
+  arm B stratum B  other two runs said 2/2 in_scope  n=  81   predicted 96.9%   observed 96.3%   |err| 0.6%
+
+================================================================================================
+WHAT k COSTS, IN DOLLARS  (measured per-article prices, Phase A results.txt 4f)
+================================================================================================
+  arm A (reordered): k=1 $  3.42   k=3 $  6.92   k=5 $ 10.42   k=7 $ 13.92
+  arm B (as-is): k=1 $ 18.03   k=3 $ 21.65   k=5 $ 25.28   k=7 $ 28.90
+  On 6,590 rows, going k=3 -> k=5 costs +$3.50 (arm A) / +$3.62 (arm B).
+  arm A: rows it fixes, k=3->k=5: 33  (gate, production-mix rate)
+  arm B: rows it fixes, k=3->k=5: 33  (gate, production-mix rate)
+
+================================================================================================
+CONTROLS -- hand values computed analytically, not simulated
+================================================================================================
+  point mass p=0.5: recovered 49.57%   hand 50.00%   fit Beta(1e+04,9.98e+03)  ON BOUND
+  point mass p=0.2: recovered 10.41%   hand 10.40%   fit Beta(2.5e+03,1e+04)  ON BOUND
+  point mass p=0.05: recovered 0.72%   hand 0.73%   fit Beta(523,1e+04)  ON BOUND
+  ⛔ Revision 1 asserted 25% for the fair coin and its estimator printed 48.4%. The
+     ESTIMATOR was right (at p=0.5 the limit verdict is a tie, so the answer is 50%),
+     and its 1.6pp gap was the GRID CEILING, not resolution: it fitted Beta(717,717),
+     exactly the last grid point. This revision has no grid.
+
+wrote figures_data.json (8 cells) -- the figures read this file
+
+================================================================================================
+THE IDENTITY revision 1 mistook for a validation
+================================================================================================
+  arm A stratum R: observed non-unanimity 8.00% x 2/3 = 5.33%   <- this IS the 'independently measured' pair-disagreement rate
+      model 2E[p(1-p)] = 5.3584%   (2/3)x fitted non-unanimity = 5.3584%   -> identical by construction, not corroboration
+  arm A stratum B: observed non-unanimity 14.00% x 2/3 = 9.33%   <- this IS the 'independently measured' pair-disagreement rate
+      model 2E[p(1-p)] = 9.3496%   (2/3)x fitted non-unanimity = 9.3496%   -> identical by construction, not corroboration
+  arm B stratum R: observed non-unanimity 8.00% x 2/3 = 5.33%   <- this IS the 'independently measured' pair-disagreement rate
+      model 2E[p(1-p)] = 5.3263%   (2/3)x fitted non-unanimity = 5.3263%   -> identical by construction, not corroboration
+  arm B stratum B: observed non-unanimity 10.00% x 2/3 = 6.67%   <- this IS the 'independently measured' pair-disagreement rate
+      model 2E[p(1-p)] = 6.6780%   (2/3)x fitted non-unanimity = 6.6780%   -> identical by construction, not corroboration
