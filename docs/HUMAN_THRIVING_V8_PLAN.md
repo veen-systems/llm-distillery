@@ -1077,7 +1077,7 @@ counted as a pass. Ordered by the 2026-08-20 priority ruling.
 | # | Criterion | Slice | Judged against | Blocking? |
 |---|---|---|---|---|
 | **1** | **Class A dies.** Every harm-adjacent record scores below **3.85**, clear of the noise floor | `datasets/adverse/uplifting.jsonl`, class-A rows — **9** (`class` starts with 'A' — present on every row since 2026-08-21, so the slice is machine-selectable) | editorial upper bound (⚠️ **not** ADR-021 oracle truth — the oracle is blind here) | **YES** |
-| **2** | **No regression.** Every no-regression row still satisfies its own `assertion` — ⚠️ **not a uniform "above the op-point"**, see §5b: only 2 of the 3 are op-point assertions | `datasets/adverse/uplifting_no_regression.jsonl`, **3 rows** (⛔ *this cell said 4 until 2026-08-23; the fourth is a scope warning on an adverse row, not an article*) | editorial judgement, owner-confirmed | **YES** |
+| **2** | ⛔ **MEASURED 2026-08-29: this criterion FAILS TODAY under v7 — the Rwanda–EU row misses `raw > 4.5` under every prompt tested (v7 1.600, v8 0.817). Resolve the row before reading this gate; see §5b.** **No regression.** Every no-regression row still satisfies its own `assertion` — ⚠️ **not a uniform "above the op-point"**, see §5b: only 2 of the 3 are op-point assertions | `datasets/adverse/uplifting_no_regression.jsonl`, **3 rows** (⛔ *this cell said 4 until 2026-08-23; the fourth is a scope warning on an adverse row, not an article*) | editorial judgement, owner-confirmed | **YES** |
 | **2b** | **The student agrees with its own oracle on class A.** For every class-A record, `\|student_raw − oracle_k_run_mean\|` is inside the oracle band. *New 2026-08-20: two of three class-A rows are the STUDENT disagreeing with all three oracles (§1f) — a criterion judged only on labels would pass a v8 that still ships them* | class-A slice | k-run oracle mean | **YES** |
 | **3** | **Class B shrinks.** Academic/non-academic on-lens gap inside noise on the new labels | 660-row held-out oracle split | ADR-021 oracle ground truth | reported; miss → owner call |
 | **4** | **Class B, adverse rows.** The **9** class-B records score below 3.85 | `uplifting.jsonl`, class-B rows | editorial upper bound | reported — ⚠️ **status needs an owner call**, see §1h: two of the nine are owner-flagged and outscore every class-A row |
@@ -1110,6 +1110,26 @@ where it carries a *scope warning* — "the boundary is announcement vs outcome,
 adverse'". That is a **labelling caveat on an adverse row**, not a row that must score above
 the op-point, which is why its "reader's real objection" cell is `—`. **Criterion 2 cannot be
 evaluated against it.** ⚠️ Do not re-count this set as four.
+
+⛔⛔ **MEASURED 2026-08-29 — the Rwanda–EU row FAILS its own assertion under v7, before v8
+exists, and criterion 2 is BLOCKING.** Its `assertion_basis` said the baseline was never
+recorded and had to be established first; it now is. Scored under **one judge**
+(`deepseek-chat`), k=3, full article text: **v7 prompt 1.600**, v8 as-is **0.817**, v8 reordered
+**0.817** — against an asserted `raw > 4.5`. **The row cannot detect a regression: there is no
+baseline above the line to regress from.** The cause is a collision between two rulings both
+dated 2026-08-23 — this section keeps the row as legitimate lens overlap (ADR-015), while
+*"money committed is not a protection established"* (§1) covers its headline exactly:
+*"46 millions de dollars **mobilisés** auprès de l'UE"*. Under that ruling 0.817 is the prompt
+working as instructed. ⚠️ **Open, and it is the owner's:** drop the row, or convert its
+assertion to a DELTA — the correction the Unifesp row received the same day and this one did
+not. ⛔ **Do not resolve it by softening the money-committed rule.** Evidence, both v8 arms and
+the v7 baseline: `docs/evidence/2026-08-29-v8-h-v8-9-adjudication/` § *Step 2*.
+
+✅ **The other two rows PASS under both v8 arms** (same run): Rappler **4.900** reordered /
+**5.350** as-is, every individual run clear of the op-point; Unifesp **4.367** reordered /
+**3.983** as-is against a v7-prompt **2.950** — i.e. the reorder scores the transitional-justice
+row **+1.417 above v7**, the best of the three prompts tested. **Neither §5b hazard is
+suppressed by the reorder.**
 
 ⚠️ **The three carry DIFFERENT assertions, and only two are op-point assertions.** The
 Unifesp row was scored by `cultural_discovery` and never by `uplifting`, so "above the

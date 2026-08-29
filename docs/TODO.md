@@ -115,31 +115,54 @@
 > red since `6acd013`, v5 is LIVE), **#140** (two filter guides 7 weeks stale, banner-flagged
 > only) filed; **#122** replicated from this session's own context.
 >
-> ### ▶ NEXT — the v8 decision, now with one side of the evidence in
-> **Adopt the reordered oracle prompt or not.** It gates corpus sizing, the b650 staging run and
-> `corpus_manifest.json` (#127), and it is still the owner's call.
+> ### ▶ NEXT — **two owner decisions, both now evidenced**
+> **1. Adopt the reordered oracle prompt, or not.** It gates corpus sizing, the b650 staging run
+> and `corpus_manifest.json` (#127). ✅ **H-V8-9 is answered, and it answers YES on the evidence**
+> — the ruling is still yours. Both steps: **`docs/evidence/2026-08-29-v8-h-v8-9-adjudication/`**,
+> **$0.0208 total**.
 >
-> ✅ **H-V8-9 step 1 done 2026-08-29, $0** (a re-read of labels the Phase A run already bought):
-> **`docs/evidence/2026-08-29-v8-h-v8-9-adjudication/`**. All **12** rows whose op-point side
-> differs at k=3, adjudicated against the v8 prompt's own STEP 1 / §5. A(reordered) surfaces
-> **15**, B(as-is) **23** — reconciles exactly with `results.txt` §3, so the set is the
-> pipeline's, not hand-built. ⭐ **Only 4 of 12 are STABLE in both arms**; 2 more cross because
-> a single `out_of_scope` run drags the k=3 mean over (#135, not the reorder), and 6 are
-> magnitude drift with all six runs `in_scope`. On the 4 stable ones **the reorder is right 3 of
-> 4**: it drops a 2060 projection study, an ODA funding plan and a mentorship guidebook — the
-> §5 / class-B shapes v8 exists to remove, each scored `in_scope` by as-is on 3/3 runs. ⛔ **Its one stable ADD is a false positive** (the WestJet
-> settlement — the *"compensation was paid"* guard does not apply, the claims portal *is being
-> prepared*), so **the reorder is not uniformly stricter, it is differently strict.** Cost: 2–3
-> true positives, all within **0.24** of the op-point.
+> **Step 1 ($0** — a re-read of labels the Phase A run already bought**).** All **12** rows whose
+> op-point side differs at k=3, adjudicated against the v8 prompt's own STEP 1 / §5.
+> A(reordered) surfaces **15**, B(as-is) **23** — reconciles exactly with `results.txt` §3, so
+> the set is the pipeline's, not hand-built. ⭐ **Only 4 of 12 are STABLE in both arms**; 2 more
+> cross because a single `out_of_scope` run drags the k=3 mean over (#135, not the reorder), and
+> 6 are magnitude drift with all six runs `in_scope`. On the 4 stable ones **the reorder is right
+> 3 of 4**: it drops a 2060 projection study, an ODA funding plan and a mentorship guidebook —
+> the §5 / class-B shapes v8 exists to remove, each scored `in_scope` by as-is on 3/3 runs.
+> ⛔ **Its one stable ADD I judge a false positive** (the WestJet settlement — the *"compensation
+> was paid"* guard does not apply, the claims portal *is being prepared*; ⚠️ **arguable: a
+> court-APPROVED settlement for 3,400 women is a completed occasion, so this is an ADR-023
+> reader-risk call, not a rule violation**), so **the reorder is not
+> uniformly stricter, it is differently strict.** Cost: 2–3 true positives, all within **0.24**
+> of the op-point.
 >
-> ⛔⛔ **The hypothesis stays OPEN because neither §5b hazard could have fired** — the three
-> no-regression articles are not in the 200-row draw, so the cohort could not produce that
-> positive. **To close it: score those 3 rows under both arms at k=3, about $0.03**, and check
-> acceptance criterion 2 per row against its own `assertion`.
+> **Step 2 ($0.0208, 27 calls, 0 errors).** The three §5b no-regression articles scored under
+> **both v8 arms and the v7 prompt**, k=3, **one judge**, full article text. ⭐⭐ **Neither hazard
+> is suppressed, and on the transitional-justice row the REORDERED prompt is the best of the
+> three**: Unifesp **4.367** reordered vs **3.983** as-is vs **2.950** v7 (**+1.417**); Rappler
+> **4.900 / 5.350**, both clear of the op-point on every individual run.
+>
+> **2. ⛔⛔ Fix acceptance criterion 2 — it is BLOCKING and it fails today, against v7, before v8
+> exists.** The third no-regression row (Rwanda–EU $46M) scores **0.817 / 0.817 / 1.600** — it
+> misses `raw > 4.5` under **all three prompts including v7**. Its baseline was never established
+> (the row's own `assertion_basis` says so and says to establish it — now done). The cause is a
+> collision between two owner rulings of **2026-08-23**: §5b keeps the row as legitimate lens
+> overlap (ADR-015), while *"money committed is not a protection established"* covers its
+> headline exactly (*"46 millions de dollars **mobilisés**"*). **Drop the row, or make its
+> assertion a DELTA** — the same correction the Unifesp row got that day, and this one did not.
+> ⛔ **Do NOT soften the money-committed rule**: 3 of the 4 stable step-1 crossings depend on it.
+>
+> ⚠️ Two side-findings from step 2, both worth keeping: on the Unifesp row the **judge** spread
+> (qwen2.5 1.883 / qwen3 0.767 / deepseek 2.950) is **larger than the v8-vs-v7 delta being
+> tested**, which is why that assertion names the judge; and the v7 prompt emits
+> `scope_verdict: __absent__` on 9/9 rows — **#135's step function is v8-only, so k≥3 is a v8
+> requirement and was never a v7 one.**
 >
 > ⛔⛔ **PROVENANCE: the 1,200 Phase A oracle labels ($0.867) live ONLY in a previous session's
-> `/tmp` scratchpad** — 6.6 MB, five hypotheses rest on them, `/tmp` does not survive a reboot.
-> Where they should live is an owner call (full article text ⇒ the TDM register applies).
+> `/tmp` scratchpad** — 6.6 MB, confirmed by a whole-filesystem search to have no other copy;
+> five hypotheses rest on them and `/tmp` does not survive a reboot. Where they should live is an
+> owner call (full article text ⇒ the TDM register applies). The step-2 runs, by contrast, are
+> committed under the evidence directory.
 
 ---
 

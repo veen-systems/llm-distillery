@@ -1,17 +1,25 @@
 # H-V8-9 — the rows the reorder moves across the op-point, adjudicated one by one
 
-**2026-08-29. No spend, no oracle calls, no model, no threshold, nothing in `filters/`, nothing
-deployed.** This is a re-reading of the labels the 2026-08-29 Phase A k=3 run already bought
-(`docs/evidence/2026-08-29-v8-phase-a-k3/`, $0.867). The only new artefacts are the three
-scripts here and this document.
+**2026-08-29. Spend $0.0208** (27 DeepSeek calls in step 2, 0 errors). **No model, no
+threshold, no probe, nothing in `filters/` changed, nothing deployed.**
+**Step 1** re-reads labels the Phase A k=3 run already bought
+(`docs/evidence/2026-08-29-v8-phase-a-k3/`, $0.867) — no calls.
+**Step 2** scores the three §5b no-regression articles under both v8 arms and the v7 prompt.
 
 ## Headline
 
 ⚠️ **One line: only FOUR of the twelve crossings are stable in both arms, and on those the
 reorder is right three times — it drops a 2060 projection study, an ODA funding plan and a
-mentorship guidebook, and its one stable ADDITION is a false positive.** Two more crossings are
+mentorship guidebook, and its one stable ADDITION (the WestJet settlement) I judge a false
+positive, arguably.** Two more crossings are
 produced by a *single* within-arm gate flip inside the k=3 mean (#135, not a property of the
 arm), and the remaining six are magnitude drift between arms that agree on `in_scope`.
+
+✅ **Step 2 (below, $0.02) closes the hole step 1 could not reach: neither §5b hazard is
+suppressed by the reorder** — the recovery narrative clears the op-point under both arms, and on
+the transitional-justice row the reordered prompt scores **highest of the three prompts tested**.
+⛔ **The third no-regression row fails its assertion under v7 as well**, which is a defect in
+acceptance criterion 2, not in v8.
 
 ⛔ **This is an adjudication by the assistant against the v8 prompt's own STEP 1 and §5, not a
 ground-truth panel and not an owner ruling.** H-V8-9 is *"the owner's decision dressed as a
@@ -106,12 +114,21 @@ Read against the v8 prompt's STEP 1 (`prompt-candidate.md`), not against an intu
 The reordered arm calls this `in_scope` on all three runs (4.73); the as-is arm calls it
 `response_to_harm` on all three (0.85).
 
-⚠️ The prompt's own §1 guard names *"compensation was paid"* as in-scope, so the reordered
-reading is defensible on the text — **but the article says compensation has not been paid**:
-*"An online claims portal is being prepared and those who submit valid claims could receive
-roughly $470."* No admission of liability; the lead plaintiff calls the outcome *"a gross
-feeling"*; the assault allegation is recounted at length. Under ADR-023 this is precisely the
-row whose false positive reaches a reader. **As-is correct, reorder wrong.**
+⚠️ **This one is genuinely arguable, and the honest reading is that both arms have a case.**
+FOR the reorder: the prompt's §1 guard names *"compensation was paid"* and *"a conviction was
+handed down"* as in-scope occasions, and a **court-approved** settlement covering **3,400**
+named women is a completed legal outcome — which is what the reordered arm scored
+(`justice_rights_impact` **7.0**, `benefit_distribution` **7.0**, `change_durability` 6.0).
+AGAINST: the compensation has **not** been paid — *"An online claims portal is being prepared
+and those who submit valid claims could receive roughly $470"* — there is no admission of
+liability, the lead plaintiff calls the outcome *"a gross feeling"*, and the assault allegation
+is recounted at length in the body a reader would meet.
+
+**My call is AGAINST the reorder here, and it is a judgement under ADR-023, not a rule
+violation**: a harm-dominated text landing in a *human thriving* feed is the error that costs a
+reader. ⚠️ **A reader of this document should know it could go the other way** — which is why
+the stable record below is written as *3 of 4 on my reading*, and why this row is the first
+thing to put in front of the owner.
 
 ⭐ **So the reorder is not uniformly stricter at the gate** — it is *differently* strict: three
 stable category exclusions gained (four if the coin-toss Frontiers row is counted), one
@@ -144,19 +161,19 @@ which landed within **0.24** of the op-point under the reorder — rows that #95
 
 ⚠️ **The direction is right and the margin is thin.** Three stable removals against one stable
 admission, on n=12 crossings from a 200-row design-weighted cohort, is not a mandate; it is one
-of the two things a decision needs. The other is the no-regression check below.
+of the two things a decision needs. ✅ **The other — the no-regression check — is step 2 below,
+and it also comes out in the reorder's favour.**
 
 ⛔ **What this does NOT establish, and none of it is repairable by re-reading the same labels:**
 
 - **No ground truth was consulted.** The adjudicator is the assistant, applying the v8 prompt's
   own rules. `feedback-oracle-not-ground-truth` applies to *both* arms; this compares each arm
   against the prompt, which is a consistency check, not an accuracy measurement.
-- **Neither §5b hazard was triggered by either arm in this cohort** — no transitional-justice
-  row and no recovery narrative was suppressed. That is a **negative from an instrument that
-  contained no such row to begin with**: the three no-regression articles are not in this
-  200-row draw, so this cohort *could not* have produced that positive. It is not evidence that
-  the reorder is safe for them. Criterion 2 still needs the no-regression set scored under both
-  arms — **three rows x two arms x k=3, about $0.03, and it is the missing half of this hypothesis.**
+- **Neither §5b hazard was triggered by either arm in this cohort** — and that was a **negative
+  from an instrument that contained no such row to begin with**: the three no-regression
+  articles are not in this 200-row draw, so this cohort *could not* have produced that positive.
+  ✅ **Closed by step 2 below**, which scored them directly — but the caveat stands as written
+  for anyone reading step 1 alone.
 - **n=12, of which 4 are stable in both arms.** A 3-of-4 record has a binomial interval so wide
   it excludes nothing, and two of the twelve are #135 coin tosses that would not recur.
 - **Three rows are truncated stubs** (329 / 419 / 456 chars). The *label* question is about the
@@ -164,6 +181,64 @@ of the two things a decision needs. The other is the no-regression check below.
   method rule says excerpts are not sufficient for that one.
 - **The cohort carries the Phase A design weighting.** Boundary rows are ~4.4× oversampled;
   nothing here is a production rate.
+
+## Step 2 — the no-regression set, actually scored (2026-08-29, **$0.0208**, 27 calls, 0 errors)
+
+The hole above is now filled. All three §5b rows scored under **both v8 arms and the v7 prompt**,
+k=3 each, **one judge** (`deepseek-chat`) — the v7 arm exists because two of the three assertions
+are relative, and the Unifesp row's says *"the same prompt family and the same judge"*. Full
+article text in every case (13,107 / 4,761 / 1,896 chars), so §5b's *"excerpts are not
+sufficient"* rule is satisfied. Raw runs in [`no_regression_runs/`](no_regression_runs/),
+output in [`no_regression_results.txt`](no_regression_results.txt).
+
+| row | guard | v8 reordered | v8 as-is | v7 prompt | assertion | verdict |
+|---|---|---|---|---|---|---|
+| Rappler, *"The silent crisis on our plates"* | recovery narratives | **4.900** | **5.350** | 4.983 | `raw > 4.5` | ✅ **PASS both arms** (every individual run above 4.5 too) |
+| Unifesp, DOI-Codi forensic work | transitional justice | **4.367** | 3.983 | 2.950 | delta: v8 must not score it **lower** than v7, same judge | ✅ **PASS both arms** — reordered **+1.417**, as-is **+1.033** |
+| Rwanda–EU $46M agricultural financing | lens overlap (ADR-015) | 0.817 | 0.817 | **1.600** | `raw > 4.5` | ⛔ **FAILS under all three, v7 included** |
+
+⭐⭐ **Neither §5b hazard is suppressed by the reorder — and on the transitional-justice row the
+reordered prompt is the BEST of the three.** That is the check step 1 could not make, and it
+comes out in the reorder's favour: `in_scope` on 3/3 runs in both v8 arms, scoring **+1.42**
+above the v7 prompt under the same judge.
+
+⛔⛔ **But the third row exposes a defect in acceptance criterion 2 itself, and it is not v8's.**
+The Rwanda row's `assertion_basis` says in the file: *"Observed raw NOT recorded — it was
+REJECTED as adverse, so no observed block was written. Score it under v7 to establish the
+baseline before asserting."* **That baseline is now established: 1.600 under v7's own prompt,
+same judge — 2.9 points below the op-point it is asserted to clear.** The row cannot detect a
+regression, because there is no baseline above the line to regress from. Criterion 2 is
+**BLOCKING**, so as written it would fail v8 for a defect that predates v8.
+
+⚠️ **And the reason is a collision between two owner rulings, which is the owner's to resolve:**
+- **§5b (2026-08-23)** keeps the row as *"a genuine solutions story that may legitimately also be
+  uplifting"* — lens overlap working as designed (ADR-015).
+- **The money-committed ruling (2026-08-23, same day)** says *"funding secured, mobilised,
+  pledged or allocated improves nobody's circumstances yet"* — and the headline is literally
+  *"46 millions de dollars **mobilisés** auprès de l'UE"*.
+
+Under the second ruling, **0.817 is the v8 prompt working exactly as instructed.** One of the
+two has to give: either the row leaves the no-regression set, or its assertion becomes a delta
+(as the Unifesp row's did on 2026-08-23 — that correction was made for one row and not for this
+one). ⛔ **Do not "fix" this by softening the money-committed rule** — three of the four
+class-1 crossings in step 1 depend on it.
+
+### Two side-findings worth keeping
+
+- **The judge matters more than the prompt on the Unifesp row.** The stored v7-prompt baselines
+  are **1.883** (`qwen2.5:14b`) and **0.767** (`qwen3:14b`); the same prompt under
+  `deepseek-chat` gives **2.950**. The spread between judges (2.2) is larger than the v8-vs-v7
+  delta being tested (1.4) — which is why that assertion names the judge, and why it must keep
+  naming it.
+- **The v7 prompt has no scope binary at all** — `scope_verdict` comes back `__absent__` on all
+  nine v7 rows (the scorer's sentinel, not a missing field). #135's step function is a
+  **v8-only** property, introduced with the gate. Whatever is decided about the reorder, k≥3 is
+  a v8 requirement and was not one for v7.
+
+⚠️ **The Rappler row's stored `observed` is 6.4864** — that is the **deployed student model** in
+production, not an oracle score. The 4.90/5.35/4.98 here are oracle scores under three prompts.
+Do not read the difference as drift; they are different scorers
+(`feedback-oracle-not-ground-truth`).
 
 ## Reproducing
 

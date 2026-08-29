@@ -25,8 +25,18 @@ for i in IDS:
             a = rows[(i, arm, run)]
             print(f"[{arm}{run}] subj={a.get('dominant_subject')!r} verdict={a.get('scope_verdict')}")
             if run == 1:
-                for d in ("human_wellbeing_impact", "social_cohesion_impact", "environmental_stewardship",
-                          "solution_quality", "evidence_level", "narrative_constructiveness"):
+                # ⛔ The first version of this script hand-listed six dimension names and THREE of
+                # them do not exist in this filter (`environmental_stewardship`, `solution_quality`,
+                # `narrative_constructiveness`). The `if d in a` guard turned that into a silent
+                # under-display -- three real dimensions never printed, no error. The scores in the
+                # write-up were never affected (they come from wavg over the imported
+                # DIMENSION_NAMES), but a hand-built list of field names is the same defect class
+                # as a hand-built population. Import it.
+                import sys as _sys
+                from pathlib import Path as _P
+                _sys.path.insert(0, str(_P(__file__).resolve().parents[3]))
+                from filters.uplifting.v7.base_scorer import BaseUpliftingScorer as _S
+                for d in _S.DIMENSION_NAMES:
                     if d in a:
                         print(f"      {d}: {a[d]['score']}  | {str(a[d].get('evidence',''))[:220]}")
     print()
