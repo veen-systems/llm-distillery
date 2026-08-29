@@ -5187,3 +5187,68 @@ section says the same thing, drawn from a table that does not support it.
 was held fixed to isolate a term. It is not a statement about production** — and when a
 propagated error is found, the copy you are looking at may not be the origin.
 
+
+## 2026-08-29 — A published histogram was interpreter-dependent: CPython 3.12 changed `sum()`
+
+**Problem.** Two evidence documents computed the same weighted-average histogram over the same
+6,590 v7 corpus rows with the same weights, and disagreed: **6 of 15 bins differed, by up to 8
+rows.** I wrote the gap off in a committed document as "bin-edge convention differs" and used
+the (false) agreement as proof that both sides used the same instrument. A review lens measured
+it and refuted both the claim and my explanation.
+
+**Cause.** **CPython 3.12 changed `sum()` to use Neumaier compensated summation** (gh-100425).
+The 2026-08-28 census ran on the collection host's **Python 3.11** (naive left-to-right); the
+2026-08-29 work ran on the workstation's **3.14** (compensated). On this data **34 rows land in
+a different bin**. Example: labels `[6,7,7,6,6,7]` with the v7 weights are exactly **6.5**;
+naive summation returns **6.49999999999999911**, so `int(v/0.5)` puts it in the 6.0 bin.
+
+**Fix.** `math.fsum`, which is correctly rounded and therefore gives the same answer on every
+interpreter. Verified three ways: naive reproduces the census's table exactly, `math.fsum` and
+3.14's `sum` reproduce the new one, and the census's own code re-run on the training host
+reproduces the census's.
+
+**What travels.**
+1. ⛔ **A histogram whose bin edges can fall on exactly-representable values is not portable
+   across interpreters.** If a number is going into an evidence document, sum it with
+   `math.fsum` — the cost is nothing and the alternative is a table that silently stops
+   reproducing when someone upgrades Python.
+2. ⛔ **"It's a rounding convention" is a dismissal, and a dismissal is a claim.** It has to be
+   tested as hard as the signal was. Five binning variants were tried against this one and every
+   variant gave the same 36-row total difference — the convention explanation was refuted before
+   the real cause was found. See `feedback-a-dismissal-is-a-claim`.
+3. ⚠️ **Check which interpreter produced a committed number** before comparing against it. The
+   two hosts in this project differ by three minor versions.
+
+**Blast radius.** `docs/evidence/2026-08-28-v8-phase0-drawable-population.md` §6 is correct as
+computed and not reproducible on Python ≥3.12. Its conclusions are unchanged in direction and
+size. Tonight's op-point analyses were checked and are **unaffected**: 136 of 1,200 Phase A
+observations change value between the two summations, and **0 change the op-point side**.
+
+## 2026-08-29 — Two mutation runs raced and left the source MUTATED in the working tree
+
+**Problem.** Mutation testing works by writing a broken version of a file, running the suite,
+and restoring the original in a `finally`. I launched two such runs **in the background**, on
+the same file, minutes apart. The second read its "original" while the first had the file
+mutated, so its `finally` wrote the *mutated* text back as if it were pristine. Then I repaired
+the file by hand — and a third background run's `finally`, still pending, overwrote the repair.
+The source sat in the tree with `>= 0.9` where it should read `>= 0.15`, and with a
+non-Latin allocation rule that a review had just refuted.
+
+**How it was caught.** One test failed (`per_stratum_non_latin_shares_track_the_pool`) and the
+numbers made no sense against the code I believed was there. Reading the file, not the diff,
+showed the mutation. The suite was 23/24 — a green-ish run that would have been easy to wave at.
+
+**Fix / rules.**
+1. ⛔ **Never run a source-mutating job in the background, and never two at once.** Mutation
+   testing is not a background task: it makes the working tree temporarily wrong, and anything
+   else touching that file in the window — including your own repair — races it.
+2. ⛔ **After any mutation run, VERIFY the restore** (`git diff` the file, or compare a hash),
+   rather than trusting the `finally`. A `finally` that restores the wrong bytes still exits 0.
+3. ⭐ **`generator_sha256` in the manifest is what settled it.** The staged corpus recorded the
+   hash of the script that drew it, so "was this drawn by the clean script or the mutated one?"
+   was one command, not an argument. **An artefact that records the hash of its own generator
+   can answer a question its author cannot.**
+
+**Related:** the working rule that a parallel agent session may share the checkout, so no git
+verb may take the whole tree — same hazard, different source of concurrency. Here the second
+actor was my own background job.

@@ -19,7 +19,12 @@ SCRIPT = REPO / "scripts" / "corpus" / "draw_v8_corpus.py"
 
 LATIN_TITLE = "Community garden opens in the old rail yard"
 NONLATIN_TITLE = "地域の庭が古い操車場に開園しました"
-HARM_TITLE = "Three killed in crash as court hears abuse case"
+# ⛔ Must match the PRODUCTION class-A instrument (v7 prefilter crime_violence), not a
+# plausible-looking harm sentence. The first fixture read "Three killed in crash as court
+# hears abuse case" and matched ZERO of its 37 patterns -- "killed" and bare "abuse" are
+# not among them ("child abuse" is) -- so every class-A assertion below was inert against
+# the instrument that actually runs. This title matches three patterns.
+HARM_TITLE = "Man convicted of murder after domestic violence case"
 
 
 def make_archive(path, n=4000, seed=5, gn_share=0.22, nonlatin_share=0.20,
@@ -39,7 +44,12 @@ def make_archive(path, n=4000, seed=5, gn_share=0.22, nonlatin_share=0.20,
                  rng.uniform(3.5, 4.5) if r < 0.90 else
                  rng.uniform(4.5, 5.5) if r < 0.965 else rng.uniform(5.5, 9.0))
         stage = "stage2" if rng.random() < 0.88 else "stage1_low"
-        body = ("私たちの町の物語。" * 60) if nl else ("A local story about people. " * 40)
+        # ⛔ Each body must be UNIQUE. The first fixture gave every Latin row the same text,
+        # which was invisible until content-dedup was added -- then the whole pool collapsed to
+        # two rows and every test failed with "no negative rows". A fixture whose rows are
+        # accidentally identical tests nothing about a population.
+        body = (f"記事番号{i}。私たちの町の物語。" + "私たちの町の物語。" * 60) if nl else \
+               (f"Story {i}. A local story about people. " + "A local story about people. " * 40)
         if short:
             body = body[:120]
         rows.append({
@@ -53,9 +63,23 @@ def make_archive(path, n=4000, seed=5, gn_share=0.22, nonlatin_share=0.20,
                 "raw_weighted_average": score, "stage_used": stage}},
         })
     rng.shuffle(rows)
+    # ⛔ The fixture must exercise BOTH dedup branches or they are inert: 20 ids repeated in a
+    # later cycle file (the real archive rescores articles), and 10 rows that are the same TEXT
+    # under a DIFFERENT id (ids are source-scoped, so id-dedup is not text-dedup). A mutation
+    # inverting the dedup rule survived the suite until these existed.
+    repeats = [dict(r) for r in rows[:20]]
+    text_twins = []
+    for i, r in enumerate(rows[20:30]):
+        t = dict(r)
+        t["id"] = r["id"] + "_twin"
+        t["url"] = r["url"] + "?twin"
+        text_twins.append(t)
     for c in range(4):                       # four cycle files, like the real archive
+        chunk = rows[c::4]
+        if c == 3:
+            chunk = chunk + repeats + text_twins
         with open(Path(path) / f"filtered_2026082{c}_120000.jsonl", "w") as f:
-            for r in rows[c::4]:
+            for r in chunk:
                 f.write(json.dumps(r, ensure_ascii=False) + "\n")
     return rows
 
@@ -63,6 +87,21 @@ def make_archive(path, n=4000, seed=5, gn_share=0.22, nonlatin_share=0.20,
 def run(args, cwd):
     return subprocess.run([sys.executable, str(SCRIPT)] + args, capture_output=True,
                           text=True, cwd=cwd)
+
+
+class FixtureSanityTest(unittest.TestCase):
+    """A fixture that the production instrument does not recognise makes every class-A
+    assertion in this file vacuously true. Check the fixture itself."""
+
+    def test_harm_fixture_matches_the_production_class_a_instrument(self):
+        sys.path.insert(0, str(REPO))
+        from filters.uplifting.v7.prefilter import UpliftingPreFilterV7
+        pats = UpliftingPreFilterV7()._compiled_exclusions["crime_violence"]
+        self.assertGreater(sum(1 for p in pats if p.search(HARM_TITLE)), 0,
+                           "the harm fixture matches none of the 37 crime_violence patterns — "
+                           "every class-A test here would pass on an empty class")
+        self.assertEqual(sum(1 for p in pats if p.search(LATIN_TITLE)), 0,
+                         "the benign fixture matches the harm instrument — the control is dirty")
 
 
 class DrawTest(unittest.TestCase):
@@ -115,25 +154,142 @@ class DrawTest(unittest.TestCase):
         # ⛔ MENTION IS NOT USE. This assertion first read `assertIn("quota", ...)` and a
         # mutation that padded quotas instead of raising SURVIVED -- because the script prints
         # a per-stratum table with the header "quota" on every successful run, so the word was
-        # present whatever happened. Match a phrase that exists ONLY in the failure.
-        self.assertIn("do NOT let this pass silently", r.stdout + r.stderr,
-                      "expected the per-stratum quota check to be the thing that fails")
+        # present whatever happened. Match a phrase that exists ONLY in a failure.
+        # ⚠️ Which failure fires FIRST changed when the class-A arm moved above the op-point:
+        # the supplement's supply is now the binding constraint at absurd sizes. Both
+        # mechanisms are pinned, here and in the test below, rather than accepting any FATAL.
+        self.assertIn("class-A supplement needs", r.stdout + r.stderr,
+                      "at this size the class-A supply is the first binding constraint")
 
-    def test_class_a_supplement_carries_TPs_not_only_FPs(self):
-        """The owner ruling is 3:1 TP:FP (2026-08-28 spec §3), and it is load-bearing: an
-        FP-only supplement teaches "harm words -> suppress" and destroys the §5b no-regression
-        set. A mutation setting the TP count to zero survived until this test existed."""
+    def test_per_stratum_quota_RAISES_when_class_a_is_not_the_binding_constraint(self):
+        """The other raise path: ask for more rows than a score stratum holds, with the
+        class-A floor set low enough that it is satisfiable."""
+        r = run(["--archive", str(self.arch), "--out", str(self.out), "--size", "9999",
+                 "--class-a-min", "0.0001", "--nonlatin-min", "0.0"], REPO)
+        self.assertNotEqual(r.returncode, 0)
+        self.assertIn("do NOT let this pass silently", r.stdout + r.stderr)
+
+    def test_class_a_supplement_is_drawn_ABOVE_the_op_point(self):
+        """⛔ Spec, verbatim: "Sample the supplement ABOVE the op-point (ADR-023): that is
+        where junk reaches readers. Do not hunt the cheap error below it." The first version
+        drew its FP arm from harm-title rows scoring BELOW 3.85 -- rows the student already
+        gets right, so the supplement taught nothing. No test caught it."""
+        r = run(["--archive", str(self.arch), "--out", str(self.out), "--size", "400"], REPO)
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        man = json.load(open(self.out / "corpus_manifest.json"))
+        lo, hi = man["class_a"]["supplement"]["score_range"]
+        self.assertGreaterEqual(lo, 4.5,
+                                "a supplement row scored below the op-point — the spec forbids it")
+        corpus = [json.loads(l) for l in open(self.out / "corpus.jsonl", encoding="utf-8")]
+        # and the supplement must not be drawn from stage1_low, whose score is a probe estimate
+        supp_like = [c for c in corpus if c["harm_title"] and c["v7_score"] is not None
+                     and c["v7_score"] >= 4.5]
+        self.assertFalse([c for c in supp_like if c["v7_stage_used"] == "stage1_low"],
+                         "a stage1_low row entered the class-A pool — that score is an e5 "
+                         "probe estimate, not a Gemma score")
+
+    def test_recall_cohort_is_reserved_and_disjoint(self):
+        """Spec clause (d): the FN check needs a production-mix cohort, and the corpus IS the
+        probe's training set — so a cohort carved out later overlaps it. Reserving it at draw
+        time is the only moment it can be disjoint by construction."""
+        r = run(["--archive", str(self.arch), "--out", str(self.out), "--size", "400",
+                 "--recall-cohort", "80"], REPO)
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        corpus = {json.loads(l)["id"] for l in open(self.out / "corpus.jsonl", encoding="utf-8")}
+        cohort = [json.loads(l) for l in open(self.out / "recall_cohort.jsonl", encoding="utf-8")]
+        self.assertEqual(len(cohort), 80)
+        self.assertFalse(corpus & {c["id"] for c in cohort}, "cohort overlaps the corpus")
+        man = json.load(open(self.out / "corpus_manifest.json"))
+        self.assertEqual(man["recall_cohort"]["rows"], 80)
+        # its positive rate must be PRODUCTION's, not the corpus's enriched 19.5%
+        self.assertLess(man["recall_cohort"]["positive_rate"], man["realised"]["positive_rate"],
+                        "the cohort is enriched like the corpus — then it cannot measure "
+                        "production recall")
+
+    def test_class_a_ratio_is_declared_as_UNSET_not_silently_reported(self):
+        """The ruled 3:1 is a shape judgement ("harm answered" vs "harm dominant") within the
+        above-op population. A score cannot make it. The manifest must SAY so rather than
+        report a score-proxy ratio that reads like compliance."""
+        r = run(["--archive", str(self.arch), "--out", str(self.out), "--size", "400"], REPO)
+        self.assertEqual(r.returncode, 0)
+        man = json.load(open(self.out / "corpus_manifest.json"))["class_a"]
+        self.assertIn("adjudicat", man["supplement"]["tp_fp_status"].lower())
+        self.assertEqual(man["supplement"]["ruled_tp_fp"], 3.0)
+        self.assertIn("NOT the ruled quantity", man["corpus_level_note"])
+
+    def test_dedup_removes_repeated_ids_AND_repeated_text_under_new_ids(self):
+        """Both branches, each with a seeded positive. The fixture plants 20 repeated ids and
+        10 same-text-different-id rows."""
+        r = run(["--archive", str(self.arch), "--reduce", str(Path(self.tmp.name) / "p.jsonl")],
+                REPO)
+        self.assertEqual(r.returncode, 0, r.stderr)
+        lines = open(Path(self.tmp.name) / "p.jsonl", encoding="utf-8").read().splitlines()
+        prov = json.loads(lines[0])["__provenance__"]["counts"]
+        self.assertGreaterEqual(prov["dup_rows"], 20, "repeated ids were not deduplicated")
+        self.assertGreaterEqual(prov["dup_text_other_id"], 10,
+                                "same text under a different id survived — id-dedup is not "
+                                "text-dedup, and a duplicate straddling the train/test split "
+                                "inflates the test metric")
+        rows = [json.loads(x) for x in lines[1:]]
+        self.assertEqual(len(rows), len({x["id"] for x in rows}))
+        self.assertEqual(len(rows), len({x["content_sha256"] for x in rows}))
+
+    def test_realised_rates_match_values_the_TEST_computes(self):
+        """`all_targets_met` is the script grading its own homework. These numbers are
+        recomputed here, from the corpus file, against the ruled literals."""
         r = run(["--archive", str(self.arch), "--out", str(self.out), "--size", "400"], REPO)
         self.assertEqual(r.returncode, 0, r.stderr)
         corpus = [json.loads(l) for l in open(self.out / "corpus.jsonl", encoding="utf-8")]
-        harm = [c for c in corpus if c["harm_title"]]
-        tp = [c for c in harm if c["v7_score"] is not None and c["v7_score"] >= 4.5]
-        self.assertGreater(len(tp), 0, "class-A supplement is FP-only — the ruling is 3:1")
-        # the drawn supplement is 75% TP by construction; the natural draw adds more of both,
-        # so assert the floor the ruling implies rather than an exact ratio
-        n_supp = 3                                    # ceil(400 * 0.0070) = 3
-        self.assertGreaterEqual(len(tp), round(n_supp * 0.75),
-                                "fewer harm-answered rows than the 3:1 split requires")
+        s2 = [c for c in corpus if c["v7_stage_used"] == "stage2" and c["v7_score"] is not None]
+        pos = [c for c in s2 if c["v7_score"] >= 4.5]
+        self.assertAlmostEqual(len(pos) / len(corpus), 0.195, delta=0.02)
+        marg = [c for c in pos if c["v7_score"] < 5.5]
+        self.assertAlmostEqual(len(marg) / len(pos), 0.635, delta=0.05)
+        man = json.load(open(self.out / "corpus_manifest.json"))["realised"]
+        self.assertAlmostEqual(man["positive_rate"], len(pos) / len(corpus), places=9)
+        self.assertAlmostEqual(man["positive_rate_stage2"], len(pos) / len(s2), places=9,
+                               msg="the manifest must carry BOTH denominators — reporting only "
+                                   "the all-rows one hid a 2.20x-vs-2.0x enrichment error")
+
+    def test_stage1_low_coverage_tracks_the_pool(self):
+        """The plan: "draw from the FULL pool, including stage1_low — the probe must not shape
+        the draw". Nothing asserted it, so halving the stage1_low quota passed the suite."""
+        r = run(["--archive", str(self.arch), "--out", str(self.out), "--size", "400"], REPO)
+        self.assertEqual(r.returncode, 0)
+        man = json.load(open(self.out / "corpus_manifest.json"))
+        pool = man["pool_strata"]
+        pool_share = pool["stage1_low"] / sum(v for k, v in pool.items()
+                                              if k != "unstratifiable")
+        self.assertAlmostEqual(man["realised"]["stage1_low_share"], pool_share, delta=0.02,
+                               msg="stage1_low coverage does not track the pool — the probe is "
+                                   "shaping the draw")
+
+    def test_non_latin_is_the_census_instrument_not_a_local_one(self):
+        """A hand-written script test (50%/400 chars) shipped under a comment claiming it was
+        the census's (15%/2000). On the same rows the two differ by ~0.45pp — the same size as
+        a claim it was used to support."""
+        sys.path.insert(0, str(REPO / "scripts" / "analysis"))
+        sys.path.insert(0, str(REPO / "scripts" / "corpus"))
+        from prefilter_removal_probe import script_of
+        import draw_v8_corpus as D
+        for text in ("Ολυμπιακός Πειραιώς ποδόσφαιρο πρωτάθλημα αγώνας",
+                     "A perfectly ordinary English sentence about a garden.",
+                     "日本語のテキストがここにあります、これは長い文章です"):
+            self.assertEqual(D.script_is_non_latin(text), script_of(text) == "non_latin",
+                             f"drawer and census disagree on: {text[:30]}")
+
+    def test_per_stratum_non_latin_shares_track_the_pool(self):
+        """The script x score association production has must survive the draw. Two earlier
+        allocation rules broke it in opposite directions (flattened to 0.994x, then 0.434x
+        against a pool value of 0.917x)."""
+        r = run(["--archive", str(self.arch), "--out", str(self.out), "--size", "400"], REPO)
+        self.assertEqual(r.returncode, 0)
+        na = json.load(open(self.out / "corpus_manifest.json"))["non_latin_allocation"]
+        for k, pool_share in na["per_stratum_pool_share"].items():
+            if pool_share == 0:
+                continue
+            self.assertAlmostEqual(na["per_stratum_drawn"][k], pool_share, delta=0.05,
+                                   msg=f"{k}: drawn non-Latin share departs from the pool's")
 
     def test_manifest_fields_recompute_from_the_written_file(self):
         """The manifest must describe the FILE. `rows` alone cannot show that -- the script
@@ -209,6 +365,90 @@ class DrawTest(unittest.TestCase):
         r = run(["--archive", str(empty), "--out", str(self.out), "--size", "10"], REPO)
         self.assertNotEqual(r.returncode, 0)
         self.assertIn("FATAL", r.stdout + r.stderr)
+
+
+MATERIALISE = REPO / "scripts" / "corpus" / "materialise_corpus.py"
+
+
+class ReduceDrawMaterialiseTest(unittest.TestCase):
+    """The three-phase pipeline: reduce where the data is, draw where the repo is (so the
+    op-point is imported, not copied), materialise the winners back."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.arch = Path(self.tmp.name) / "archive"
+        self.arch.mkdir()
+        make_archive(self.arch)
+        self.pool = Path(self.tmp.name) / "pool.jsonl"
+        self.out = Path(self.tmp.name) / "out"
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def _reduce(self):
+        r = run(["--archive", str(self.arch), "--reduce", str(self.pool)], REPO)
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        return r
+
+    def test_reduced_pool_carries_no_article_text(self):
+        self._reduce()
+        rows = [json.loads(l) for l in open(self.pool, encoding="utf-8")][1:]
+        self.assertGreater(len(rows), 0)
+        self.assertFalse([r for r in rows if "content" in r],
+                         "the reduced pool must not carry article text")
+        self.assertTrue(all(r["content_sha256"] for r in rows))
+        self.assertTrue(all(r["content_length"] > 0 for r in rows))
+
+    def test_draw_from_pool_then_materialise_round_trips(self):
+        self._reduce()
+        r = run(["--pool", str(self.pool), "--out", str(self.out), "--size", "300"], REPO)
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        man = json.load(open(self.out / "corpus_manifest.json"))
+        self.assertIn("metadata only", man["provenance"]["drawn_from"])
+        full = Path(self.tmp.name) / "full.jsonl"
+        m = subprocess.run([sys.executable, str(MATERIALISE), "--corpus",
+                            str(self.out / "corpus.jsonl"), "--archive", str(self.arch),
+                            "--out", str(full)], capture_output=True, text=True)
+        self.assertEqual(m.returncode, 0, m.stdout + m.stderr)
+        rows = [json.loads(l) for l in open(full, encoding="utf-8")]
+        self.assertEqual(len(rows), 300)
+        self.assertTrue(all(len(r["content"]) == r["content_length"] for r in rows),
+                        "materialised text must match the length recorded at reduction")
+
+    def test_materialise_REFUSES_when_the_archive_text_changed(self):
+        """Seeded positive for the sha guard. An id is not proof you rejoined the same
+        article — the archive rolls and rows get rewritten."""
+        self._reduce()
+        run(["--pool", str(self.pool), "--out", str(self.out), "--size", "300"], REPO)
+        # rewrite ONE archived article's text, keeping its id
+        victim = json.loads(open(self.out / "corpus.jsonl", encoding="utf-8").readline())["id"]
+        touched = False
+        for f in sorted(self.arch.glob("filtered_*.jsonl")):
+            rows = [json.loads(l) for l in open(f, encoding="utf-8")]
+            for r in rows:
+                if r["id"] == victim:
+                    r["content"] = r["content"] + " (edited after the draw)"
+                    touched = True
+            with open(f, "w", encoding="utf-8") as fh:
+                for r in rows:
+                    fh.write(json.dumps(r, ensure_ascii=False) + "\n")
+        self.assertTrue(touched, "the victim id was not found in the archive — test is inert")
+        full = Path(self.tmp.name) / "full2.jsonl"
+        m = subprocess.run([sys.executable, str(MATERIALISE), "--corpus",
+                            str(self.out / "corpus.jsonl"), "--archive", str(self.arch),
+                            "--out", str(full)], capture_output=True, text=True)
+        self.assertNotEqual(m.returncode, 0, "changed text must be fatal, not a warning")
+        self.assertIn("text has CHANGED", m.stdout + m.stderr)
+
+    def test_materialise_REFUSES_a_corpus_that_already_has_text(self):
+        r = run(["--archive", str(self.arch), "--out", str(self.out), "--size", "100"], REPO)
+        self.assertEqual(r.returncode, 0)
+        m = subprocess.run([sys.executable, str(MATERIALISE), "--corpus",
+                            str(self.out / "corpus.jsonl"), "--archive", str(self.arch),
+                            "--out", str(Path(self.tmp.name) / "x.jsonl")],
+                           capture_output=True, text=True)
+        self.assertNotEqual(m.returncode, 0)
+        self.assertIn("already carries article text", m.stdout + m.stderr)
 
 
 if __name__ == "__main__":

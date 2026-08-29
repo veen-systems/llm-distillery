@@ -87,3 +87,41 @@ gap *between* passes, and it is already measured at ≥78 minutes.
 ⛔ **This does not close H-V8-8 yet** and the scheduled passes still run: one accidental
 observation, one prefix, one time of day. P1/P2/P3 test 30-minute gaps deliberately, with the
 per-row miss distribution recorded rather than the aggregate alone.
+
+---
+
+## ⛔⛔ REVISION 2 — the first design was CONFOUNDED, and a review caught it
+
+**Written 2026-08-29 ~20:40, before the corrected run.**
+
+The design above draws its four disjoint sets from **the 200-row Phase A cohort** — and every
+row of that cohort had already been sent through **this exact tail prompt three times on
+2026-08-28**. So a cache hit could be the whole request coming back, not the shared prefix.
+
+⭐ **The tell is in the per-row usage, and it is unambiguous.** The prompt prefix is ~10.4k
+tokens. A P0 row with 3,619 characters of article text reported `prompt_tokens 11,845 /
+hit 11,776 / miss 69` — **the hit EXCEEDS the prefix by ~1.4k tokens**, so the article text was
+served from cache too. Whole-request reuse is exactly what a corpus pass never gets: every
+article in a corpus pass is new.
+
+⛔ **Consequences, stated plainly:**
+- **P0's 99.5% does not measure prefix survival**, and the "77.9 minutes" reading above is
+  **under-determined** — the 28-hour-old Phase A runs are an equally good explanation, and the
+  three-article no-regression run at 18:15 could only have warmed the prefix, not the 11.7k of
+  article tokens observed.
+- The run was **killed after P0** rather than left to produce three more confounded points.
+
+**Revision 2 fixes the population, not the schedule.** Four disjoint sets of 50 drawn from the
+v8 corpus assembled the same evening — **6,590 articles, none of which has ever been sent to any
+oracle under any v8 prompt** (the 11 rows overlapping the Phase A cohort and the no-regression
+set were removed explicitly). Same lags: t+0 / +30 / +60 / +90.
+
+**The discriminator, pre-registered:** a **prefix-only** hit shows `hit ≈ prefix size` with
+`miss ≈ the article's own tokens` (hundreds to thousands). A **whole-request** hit shows
+`miss ≈ 0`. Revision 1 could not tell these apart; revision 2 reports the per-row miss
+distribution, not the aggregate rate.
+
+**Prediction, restated:** Q0 (cold prefix, fresh articles) **60–85%** aggregate hit — the first
+concurrent batch of rows pays for the prefix, later rows reuse it. Q1–Q3 **≥85%** if the TTL
+exceeds 30 minutes. ⚠️ I got Q0's analogue wrong last time by assuming a cold start; this time
+the articles really are new, so a low first number is expected rather than alarming.

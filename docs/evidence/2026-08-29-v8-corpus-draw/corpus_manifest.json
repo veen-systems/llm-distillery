@@ -1,0 +1,309 @@
+{
+  "filter": "human_thriving",
+  "version": "v8",
+  "generated_at": "2026-08-29T18:51:03.824582+00:00",
+  "generator": "scripts/corpus/draw_v8_corpus.py",
+  "generator_sha256": "6215e212c203a3da",
+  "seed": 8829,
+  "op_point": {
+    "value": 4.5,
+    "source": "imported from filters/uplifting/v7/base_scorer.py"
+  },
+  "provenance": {
+    "archive": "/home/jeroen/local_dev/NexusMind/data/filtered/uplifting",
+    "files": 83,
+    "window_first_file": "filtered_20260815_204839.jsonl",
+    "window_last_file": "filtered_20260829_170332.jsonl",
+    "enumerated_at": "2026-08-29T18:49:33.448503+00:00",
+    "file_list_sha256": "0bdf7adcc1403511",
+    "counts": {
+      "rows": 233160,
+      "articles": 231706,
+      "excluded_google_news": 54114,
+      "dup_text_other_id": 1450,
+      "dup_rows": 4
+    },
+    "drawn_from": "reduced pool file (metadata only; article text absent)"
+  },
+  "exclusions": {
+    "google_news": 54114,
+    "short_form_mode": "exclude",
+    "short_form_dropped": 20949,
+    "oracle_floor_chars": 300
+  },
+  "class_a": {
+    "instrument": "filters/uplifting/v7/prefilter.py crime_violence (37 patterns) -- the 2026-08-28 census's instrument",
+    "pool_share": 0.006518005911531316,
+    "supplement": {
+      "rows": 47,
+      "drawn_from": "harm-title AND stage2 AND v7_score >= 4.5",
+      "pool_available": 59,
+      "pool_consumed": 0.7966101694915254,
+      "ruled_tp_fp": 3.0,
+      "tp_fp_status": "NOT SET BY THE DRAW -- 'harm answered' vs 'harm dominant' is a shape judgement within the above-op population and must be adjudicated at labelling time (spec section 3).",
+      "score_range": [
+        4.504993999004364,
+        6.93307626247406
+      ],
+      "non_latin": 0
+    },
+    "corpus_level_tp_fp": 1.4242424242424243,
+    "corpus_level_note": "score-proxy ratio over ALL class-A rows in the corpus, supplement included. NOT the ruled quantity: the ruling is about harm-answered vs harm-dominant SHAPE within the above-op population, which only adjudication can decide."
+  },
+  "prefilter": {
+    "applied": false,
+    "note": "ADR-018/019 amendment 2026-08-21: v8 ships no per-lens prefilter; the multilingual e5 probe replaces keyword screening."
+  },
+  "spec": {
+    "pool": "/tmp/claude-1000/-home-jeroen-repos-veen-systems-llm-distillery/30cbf78e-280c-4346-b20c-da0e51f30aac/scratchpad/pool_v2.jsonl",
+    "reduce": null,
+    "size": 6590,
+    "seed": 8829,
+    "positive_rate": 0.195,
+    "positive_mix": 0.635,
+    "nonlatin_min": 0.0976,
+    "class_a_min": 0.007,
+    "class_a_tp_fp": 3.0,
+    "low_middle_target": 1.0,
+    "recall_cohort": 600,
+    "stage1_share": null,
+    "short_form": "exclude"
+  },
+  "quotas": {
+    "pos_marginal": 816,
+    "pos_clear": 469,
+    "stage1_low": 623,
+    "neg_high": 423,
+    "neg_mid": 1766,
+    "neg_low": 2493
+  },
+  "pool_strata": {
+    "pos_marginal": 9749,
+    "neg_low": 72975,
+    "neg_high": 11430,
+    "stage1_low": 14815,
+    "neg_mid": 41971,
+    "pos_clear": 5703
+  },
+  "design_cells": {
+    "neg_high|latin|-": {
+      "pool": 10321,
+      "drawn": 384,
+      "inclusion_probability": 0.037205697122371865
+    },
+    "neg_high|non_latin|-": {
+      "pool": 1057,
+      "drawn": 39,
+      "inclusion_probability": 0.036896877956480605
+    },
+    "neg_low|latin|-": {
+      "pool": 65221,
+      "drawn": 2226,
+      "inclusion_probability": 0.034130111467165485
+    },
+    "neg_low|latin|classA": {
+      "pool": 541,
+      "drawn": 21,
+      "inclusion_probability": 0.038817005545286505
+    },
+    "neg_low|non_latin|-": {
+      "pool": 7213,
+      "drawn": 246,
+      "inclusion_probability": 0.034105088035491476
+    },
+    "neg_mid|latin|-": {
+      "pool": 37562,
+      "drawn": 1582,
+      "inclusion_probability": 0.04211703317182259
+    },
+    "neg_mid|latin|classA": {
+      "pool": 317,
+      "drawn": 12,
+      "inclusion_probability": 0.03785488958990536
+    },
+    "neg_mid|non_latin|-": {
+      "pool": 4092,
+      "drawn": 172,
+      "inclusion_probability": 0.042033235581622676
+    },
+    "pos_clear|latin|-": {
+      "pool": 5186,
+      "drawn": 412,
+      "inclusion_probability": 0.07944465869649055
+    },
+    "pos_clear|latin|classA": {
+      "pool": 21,
+      "drawn": 18,
+      "inclusion_probability": 0.8571428571428571
+    },
+    "pos_clear|non_latin|-": {
+      "pool": 496,
+      "drawn": 39,
+      "inclusion_probability": 0.07862903225806452
+    },
+    "pos_marginal|latin|-": {
+      "pool": 8822,
+      "drawn": 715,
+      "inclusion_probability": 0.08104738154613467
+    },
+    "pos_marginal|latin|classA": {
+      "pool": 38,
+      "drawn": 29,
+      "inclusion_probability": 0.7631578947368421
+    },
+    "pos_marginal|non_latin|-": {
+      "pool": 889,
+      "drawn": 72,
+      "inclusion_probability": 0.08098987626546682
+    },
+    "stage1_low|latin|-": {
+      "pool": 13196,
+      "drawn": 545,
+      "inclusion_probability": 0.0413003940588057
+    },
+    "stage1_low|latin|classA": {
+      "pool": 52,
+      "drawn": 2,
+      "inclusion_probability": 0.038461538461538464
+    },
+    "stage1_low|non_latin|-": {
+      "pool": 1567,
+      "drawn": 76,
+      "inclusion_probability": 0.048500319081046586
+    }
+  },
+  "enrichment": {
+    "ruled_factor": 2.0,
+    "baseline_population": "drawable, stage2-only, all lengths (the census's population C, source of the 9.76% the ruling used)",
+    "baseline_positive_rate": 0.10894886764249655,
+    "note": "the factor a downstream class-weighting or calibration correction should use is `realised_factor_vs_baseline`, NOT the ruled 2.0 -- they differ because the draw excludes short-form rows, whose positive rate is 6.9x lower, so the population actually sampled is already enriched relative to the population the ruling was measured on.",
+    "realised_positive_rate_stage2": 0.21535109770403887,
+    "realised_factor_vs_sampled_pool": 1.976625387339401,
+    "sampled_pool_note": "vs the POST-SHORT-FORM pool this draw sampled. Against the all-lengths drawable population the ruling was measured on, the factor is higher -- the manifest cannot compute that one because --short-form exclude removed those rows before the draw; the reduce pass's own counts give it."
+  },
+  "low_middle_rows_moved": 211,
+  "non_latin_allocation": {
+    "rule": "P(non-Latin | stratum) held at the pool's value, then topped up to the corpus-level floor from spare supply",
+    "per_stratum_pool_share": {
+      "pos_clear": 0.08697,
+      "pos_marginal": 0.09119,
+      "neg_high": 0.09248,
+      "neg_mid": 0.0975,
+      "neg_low": 0.09884,
+      "stage1_low": 0.10577
+    },
+    "per_stratum_drawn": {
+      "pos_clear": 0.08315565031982942,
+      "pos_marginal": 0.08823529411764706,
+      "neg_high": 0.09219858156028368,
+      "neg_mid": 0.09739524348810873,
+      "neg_low": 0.098676293622142,
+      "stage1_low": 0.12199036918138041
+    }
+  },
+  "recall_cohort": {
+    "rows": 600,
+    "file": "recall_cohort.jsonl",
+    "positive_rate": 0.10833333333333334,
+    "disjoint_from_corpus": true
+  },
+  "staged_artifact": {
+    "host": "b650-gpu",
+    "dir": "~/v8_corpus",
+    "corpus": {
+      "file": "corpus_v8_final.jsonl",
+      "rows": 6590,
+      "sha256": "5e2cf72927bc634ef8b126fd8ddee259ff7b5b9dac578bfa12d1924877e371c2"
+    },
+    "recall_cohort": {
+      "file": "recall_cohort_final.jsonl",
+      "rows": 600,
+      "sha256": "48d740a79bd13d7eebbf6a6cbc34b0ee215a6c9f6cc5f93ea2e5c0c2ecaf14cc"
+    },
+    "note": "these are the files Phase B labels; the manifest's `realised` block was computed from the id-only draw, and materialise_corpus.py verified every row's content_sha256 against the archive before writing them."
+  },
+  "pool_reference": {
+    "population": "post-300-floor drawable pool actually sampled",
+    "rows": 156643,
+    "positive_rate_stage2": 0.10894886764249655,
+    "non_latin_share": 0.09776370472986345,
+    "class_a_share": 0.006518005911531316,
+    "band_1_5_to_3_5": 0.26794047611447686,
+    "band_5_5_plus": 0.036407627535223405
+  },
+  "denominators": {
+    "warning": "a ratio without its population is not a number. Every share under `realised` is over ALL drawn rows (including stage1_low). The pool shares under `pool_reference` are over the SAME post-300-floor pool the draw sampled -- NOT the all-lengths, stage2-only population the spec's 9.76% and 0.70% were measured on."
+  },
+  "constraint_method": "allocated by construction (class-A first, then non-Latin split within each score stratum); no post-hoc row swapping",
+  "realised": {
+    "rows": 6590,
+    "positive_rate": 0.19499241274658574,
+    "positive_rate_stage2": 0.21535109770403887,
+    "positive_mix_marginal": 0.6350194552529183,
+    "non_latin_share": 0.09772382397572078,
+    "stage1_low_share": 0.0945371775417299,
+    "class_a_share": 0.012443095599393019,
+    "class_a_tp_fp": 1.4242424242424243,
+    "content_length_p10": 640,
+    "content_length_p50": 2330,
+    "content_length_p90": 6632,
+    "under_oracle_floor": 0.0,
+    "distinct_domains": 669,
+    "distinct_languages": 41,
+    "score_histogram": {
+      "5.5": 263,
+      "4.5": 477,
+      "6.5": 70,
+      "5.0": 339,
+      "6.0": 129,
+      "7.0": 7,
+      "4.0": 219,
+      "3.5": 204,
+      "1.5": 783,
+      "2.5": 353,
+      "3.0": 299,
+      "2.0": 331,
+      "1.0": 2493,
+      "stage1_low": 623
+    }
+  },
+  "checks": {
+    "positive_rate": {
+      "rule": "~",
+      "target": 0.195,
+      "realised": 0.19499241274658574,
+      "pass": true
+    },
+    "positive_mix": {
+      "rule": "~",
+      "target": 0.635,
+      "realised": 0.6350194552529183,
+      "pass": true
+    },
+    "non_latin_share": {
+      "rule": ">=",
+      "target": 0.0976,
+      "realised": 0.09772382397572078,
+      "pass": true
+    },
+    "class_a_share": {
+      "rule": ">=",
+      "target": 0.007,
+      "realised": 0.012443095599393019,
+      "pass": true
+    },
+    "clause_a_5_5_plus": {
+      "rule": "<=",
+      "target": 0.07473375,
+      "realised": 0.07116843702579666,
+      "pass": true
+    },
+    "clause_c_low_middle": {
+      "rule": ">=",
+      "target": 0.254543452308753,
+      "realised": 0.26798179059180577,
+      "pass": true
+    }
+  },
+  "all_targets_met": true
+}
