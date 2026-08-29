@@ -246,6 +246,28 @@ def check_runbook_oracle_flags():
         out.append(f"FAIL runbook oracle flags: --llm defaults to {default!r} and "
                    f"docs/RUNBOOK.md does not say so in bold — the default is the "
                    f"value a reader gets by omitting the flag")
+    # ⛔ CLAUDE.md CARRIES THE SAME COMMAND, AND IT IS THE ALWAYS-LOADED COPY.
+    # Found by `/curate` Step 4 on 2026-08-29, minutes after the RUNBOOK was fixed:
+    # the same `batch_scorer` invocation sat in CLAUDE.md's Getting Started with no
+    # `--llm` either. Fixing one copy of a drifted command and not the other is how
+    # the drift survives the session that found it.
+    cm, cerr = _read(CLAUDE, "CLAUDE.md")
+    if cerr:
+        return 1, [cerr]
+    # ⛔ MATCH AN INVOCATION, NOT A MENTION — `python -m …`, not the bare dotted path.
+    # The first version of this loop matched `ground_truth.batch_scorer` anywhere and
+    # `break`ed on the first hit, which is a Hard Constraint reading "the floor lives in
+    # `ground_truth.batch_scorer.make_oracle_prefilter`" — prose, 200 lines above the
+    # command. It reported the fixed file as broken. That is *mention is not use* for the
+    # THIRD time in one session, inside the guard written after the second one.
+    for line in cm.split("\n"):
+        if "python -m ground_truth.batch_scorer" in line and not line.lstrip().startswith("#"):
+            if "--llm" not in line:
+                rc = 1
+                out.append("FAIL runbook oracle flags: CLAUDE.md invokes "
+                           "ground_truth.batch_scorer without --llm — the always-loaded "
+                           "copy of the command silently selects the default oracle")
+            break
     if "score_deepseek_production.py" not in rb:
         rc = 1
         out.append("FAIL runbook oracle flags: the DeepSeek oracle is a separate "

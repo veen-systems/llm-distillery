@@ -1,5 +1,69 @@
 # Gotcha Log
 
+
+## A MUTATION THAT "SURVIVED" HAD NEVER APPLIED (2026-08-29)
+**Problem**: Mutation-testing new guards, 2 of 8 probes reported the suite still green. Read
+literally that is a test gap — the alarming result, and the one I nearly wrote up.
+**Root cause**: Both mutations were issued as `python3 -c "...replace('\b...')..."` from a
+shell double-quoted string. `\b` became a **backspace character**, and a BOM literal did not
+match either, so `str.replace` found nothing and rewrote the file unchanged. The suite was
+green because **the code was unchanged**, not because the tests were weak.
+**Fix**: the mutator now asserts it mutated — `assert s.count(old) == 1` before writing — and
+both probes died instantly once they applied. ⭐ **A no-op mutation is indistinguishable from
+a test gap, and it reads as the more alarming of the two**, so it survives review: you go
+looking for a missing test instead of a broken tool. Any mutation harness must prove the
+mutation landed before interpreting the result. Same family as *prove the instrument could
+have said yes* — here the instrument could not have said **no**.
+
+## A PATH CHECKER REPORTS A DOCUMENT THAT *QUOTES* A DEAD PATH AS HAVING ONE (2026-08-29)
+**Problem**: `/curate`'s dead-reference extractor reported 2 dead paths. Both were false, and
+both were **records of the defect being described**: `memory/MEMORY.md` quoted the wrong path
+`ovr.news/BRAND.md` inside the session entry that recorded finding it wrong, and `CLAUDE.md`
+named *hypothesis-log.md* in a sentence whose whole content is *"there is no such file here,
+by choice"*. ⭐ **And this entry did it again**: written with that filename in backticks, it
+became a NEW dead reference in the next `refcheck` run — the write-up of the defect
+reproducing the defect. Rendered as italics here for the same reason.
+**Root cause**: a path extractor matches a backticked `name.ext` and cannot see the difference
+between **using** a path and **mentioning** one. A negative existence claim and a post-mortem
+both mention paths on purpose.
+**Fix**: keep the record, change the rendering — italics rather than backticks, plus a clause
+saying where the real file is. 0 dead after. ⭐ **A check that reports the same false positive
+every run is worse than no check**: it trains the reader to skim the section where a real
+finding would appear. This is the sibling of the same day's `<!-- verify: -->` finding, where
+**prose quoting an annotation was counted as an annotation** — 10 of them, an 18% inflation of
+the verify report's own denominator. Mention-versus-use bites every text-matching instrument
+this project has.
+
+## THE GUARD AGAINST *MENTION-NOT-USE* WAS ITSELF A MENTION-NOT-USE BUG (2026-08-29)
+**Problem**: `/curate` Step 4 found the RUNBOOK's oracle-command defect also live in
+`CLAUDE.md` — the always-loaded copy, no `--llm`. I fixed it and extended
+`check_doc_claims.py` to assert it. The extended guard immediately reported the file it
+had just fixed as **broken**.
+**Root cause**: the check matched `ground_truth.batch_scorer` **anywhere** in the file and
+`break`ed on the first hit. The first hit is a Hard Constraint 200 lines above the command:
+*"the floor lives in `ground_truth.batch_scorer.make_oracle_prefilter`"* — prose. The guard
+was reading a mention as an invocation.
+**Fix**: match `python -m ground_truth.batch_scorer`, i.e. the invocation rather than the
+identifier; the test fixture now keeps a prose mention **ahead of** the command so a
+first-hit matcher fails it. ⭐ **This was the THIRD mention-versus-use defect in the same
+session, and it was inside the guard written after the second** — one promoted to
+`working-rules.md` twenty minutes earlier. Writing the rule down did not prevent writing
+the bug. **The guard against a defect is where you are least suspicious of it, because you
+have just proved to yourself that you understand it.**
+
+## A REVISIT TRIGGER THAT WAS ALREADY TRUE WHEN IT WAS WRITTEN (2026-08-29)
+**Problem**: I registered hypothesis `H-CX3` with *"Revisit trigger: the next `/audit-context`,
+or `--target project` reaching WARN."* The budget guard had printed WARN twenty minutes
+earlier, in the same session — the file stood at 35,394 B against a 35,000 soft limit.
+**Root cause**: I wrote the trigger from the condition that **prompted** the hypothesis rather
+than from a future state that would distinguish its outcomes. The two feel identical while
+writing, because the prompting condition is what is in front of you.
+**Fix**: trigger is now the next `/audit-context` or `CLAUDE.md` exceeding **37,000 B**, a
+level above today's. ⭐ **A trigger satisfied by the state that prompted it measures nothing** —
+it will fire on first read and be scored as a finding rather than as a threshold. Before
+writing one, ask what is true NOW; if the trigger is already true, it is a description, not a
+trigger.
+
 ## I RE-ADOPTED A RECORDED DECLINE, IN THE FILE THAT RECORDS IT (2026-08-29)
 **Problem**: `/audit-context` found `refcheck.py` had no verdict line and no exit code, so I
 added the three-state verdict and shipped it. It is a recorded **Decline** in
@@ -16,7 +80,7 @@ asserting such a caller could exist**). ⭐ **Before adopting anything into a fo
 adoption history for the feature's own name.** Neither the code review nor the mutation tests
 could have caught this — it took a reader who opened the *document* rather than the diff.
 
-## `cmd | tail -4; echo $?` REPORTS TAIL'S STATUS — FOUR GUARDS READ AS EXIT 0 (2026-08-29)
+## `cmd | tail -4; echo $?` REPORTS TAIL'S STATUS — FOUR GUARDS READ AS EXIT 0 (2026-08-29) [x2]
 **Problem**: Auditing four verification guards, I ran `bash script 2>&1 | tail -4; echo "exit=$?"`
 and recorded all four as `exit=0`. One of them was printing `FAIL:` and genuinely failing.
 **Root cause**: `$?` after a pipeline is the **last** command's status. `tail` succeeds
@@ -27,6 +91,12 @@ general form: **any pipeline whose last stage is a formatter (`tail`, `head`, `c
 `grep`) launders the exit status of the thing you are actually testing.** Sibling of the
 `| grep` defect found the same day in `memory/oracle-pricing-scheduling.md`, where a pipe
 discarded a script's `return 1` and made its assertion permanently unreachable.
+⛔ **RECURRENCE 2026-08-29 (later), by the session that WROTE this entry.** Running `/curate`
+Step 0 I typed `run_verify_annotations.py 2>&1 | tail -2; echo "exit=$?"` and read `exit=0`
+from a run whose true status was **1**. Same day, same log, one screen below the lesson.
+⭐ **Being articulate about a rule is not applying it** — and the tell is that the pipeline
+looked like *formatting output*, not like *testing something*, which is exactly when the
+laundering is invisible. Re-run without the pipe before believing any status.
 
 ## MY NEGATIVE WAS VACUOUS AND A REVIEW AGENT HAD TO TELL ME (2026-08-29)
 **Problem**: I justified a change to the verify classifier with *"0 differences across 33

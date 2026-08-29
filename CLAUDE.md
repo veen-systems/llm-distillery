@@ -19,7 +19,7 @@ framework_reconciliation: |
     `review-changes` is re-mapped, not copied: the template's risk tiers key on
     paths this repo does not have, so a verbatim install would tier every change
     here as LOW and quietly do nothing.
-  - No `hypothesis-log.md` at either path, by choice — hypotheses live in
+  - No *hypothesis-log.md* at either path, by choice — hypotheses live in
     per-topic memory files. `curate` Step 0.6 is a deliberate no-op here.
   - DECLINED v1.20.0's gotcha-log `Occurrences` column: no Promoted table exists
     here, promotion targets § "Working rules", and the rate is already in prose.
@@ -274,8 +274,10 @@ pip install -r requirements.txt
 git config core.hooksPath .githooks
 
 # Configure: add HF token to config/credentials/secrets.ini
-# Oracle scoring
-python -m ground_truth.batch_scorer --filter filters/{name}/v{N} --source datasets/raw/master_dataset.jsonl
+# Oracle scoring. ⛔ NAME --llm: it defaults to `claude`, and DeepSeek is a separate
+# script (scripts/score_deepseek_production.py), not a --llm value. RUNBOOK § Oracle Scoring.
+python -m ground_truth.batch_scorer --filter filters/{name}/v{N} --llm gemini-flash \
+    --source datasets/raw/master_dataset.jsonl
 
 # Prepare training splits
 python training/prepare_data.py --filter filters/{name}/v{N} --data-source datasets/scored/{name}_v{N}.jsonl

@@ -88,6 +88,33 @@
 > one. New guard: `check_doc_claims.py --check runbook-oracle-flags` (reads `--llm` from the
 > parser with `ast`; 4 mutations, 4 killed).
 >
+> ### ✅ `/curate` — 4 fixes, 2 promotions, 3 new issues
+> Read surface **1,855,639 chars**, 6.2× the 300k threshold, so the corpus was NOT read —
+> metadata and runners only; the 77 session records and 30 of 32 topic files were not opened.
+> Dead refs **0 / 5 unresolvable / 3 skipped / 73 resolved** (was 2 dead — both documents
+> *quoting* a wrong path, fixed by rendering). Index self-consistency: 4 shared identifiers,
+> **0 contradicting pairs**. 7 open hypotheses, under the clutter threshold.
+>
+> ⛔⛔ **THE CURATE KEEPER — *mention is not use*, three times in one session, on three
+> different matchers, and the third was inside the guard written after the second.** The
+> verify runner counted 10 prose mentions of `<!-- verify: -->` as annotations; `/curate`'s
+> path extractor reported 2 records-of-a-wrong-path as dead; and the new CLAUDE.md oracle
+> check matched the bare dotted path `ground_truth.batch_scorer`, hit a Hard Constraint 200
+> lines above the command, and **reported the file it had just fixed as broken.** A fourth
+> landed while writing it up: the gotcha entry describing the defect created a new dead
+> reference by quoting a filename. Promoted to `memory/working-rules.md`.
+>
+> ⛔ **Step 4 found the RUNBOOK defect ALSO live in `CLAUDE.md`** — the always-loaded copy of
+> the `batch_scorer` command, no `--llm`. Fixed, and `check_doc_claims.py` now asserts both
+> copies. **Fixing one copy of a drifted command and not the other is how drift survives the
+> session that found it.**
+>
+> Also: `| tail; echo $?` status laundering **recurred [x2]**, by the session that wrote the
+> entry, one screen below it — promoted. `H-CX3` registered, then its revisit trigger
+> corrected because it was **already true when written**. **#139** (cd v5 inference import,
+> red since `6acd013`, v5 is LIVE), **#140** (two filter guides 7 weeks stale, banner-flagged
+> only) filed; **#122** replicated from this session's own context.
+>
 > ### ▶ NEXT
 > **The v8 decision is what everything is waiting on** — see the Phase 0 block below.
 > Adopt the reordered oracle prompt or not; it gates corpus sizing, the b650 staging run and

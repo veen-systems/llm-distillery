@@ -37,6 +37,12 @@ framework: agent-ready-projects v1.36.1
 
 | **cultural-discovery** | v6 | (v5's) | **NOT DEPLOYED** — offline only |
 
+The floor lives in `ground_truth.batch_scorer.make_oracle_prefilter` — prose, not a command.
+
+```bash
+python -m ground_truth.batch_scorer --filter filters/x/v1 --llm gemini-flash --source s.jsonl
+```
+
 *Framework: agent-ready-projects v1.36.1 — triaged.*
 """
 
@@ -314,3 +320,31 @@ def test_the_shipped_runbook_names_every_provider_it_could_be_run_with():
     choices, default = m._llm_flag_spec()
     assert choices and default, "the --llm spec could not be read from the real scorer"
     assert m.main(["--check", "runbook-oracle-flags"]) == 0
+
+
+def test_the_always_loaded_oracle_command_must_name_the_provider(mod, capsys):
+    """⛔ `/curate` Step 4 found the RUNBOOK's defect ALSO live in `CLAUDE.md` — the
+    always-loaded copy of the same invocation, minutes after the RUNBOOK was fixed.
+    Fixing one copy of a drifted command and not the other is how the drift survives
+    the session that found it."""
+    _edit(mod, "CLAUDE", "--llm gemini-flash ", "")
+    assert mod.main(["--check", "runbook-oracle-flags"]) == 1
+    assert "CLAUDE.md invokes ground_truth.batch_scorer without --llm" in capsys.readouterr().out
+
+
+def test_a_PROSE_mention_of_the_scorer_is_not_an_invocation(mod, capsys):
+    """⛔ MENTION IS NOT USE — third occurrence in one session, and this one was inside
+    the guard written after the second. The first version matched the bare dotted path
+    anywhere and `break`ed on the first hit: a Hard Constraint reading *"the floor lives
+    in `ground_truth.batch_scorer.make_oracle_prefilter`"*, 200 lines above the command.
+    It reported the freshly-fixed file as broken.
+
+    The fixture carries the prose mention BEFORE the command deliberately: a matcher that
+    stops at the first hit fails this test and passes without it."""
+    assert mod.main(["--check", "runbook-oracle-flags"]) == 0
+    out = capsys.readouterr().out
+    assert "CLAUDE.md invokes" not in out
+    body = open(mod.CLAUDE, encoding="utf-8").read()
+    assert body.index("make_oracle_prefilter") < body.index("python -m ground_truth"), (
+        "the fixture must keep the prose mention ahead of the command, or this test "
+        "cannot distinguish a fixed matcher from a lucky one")

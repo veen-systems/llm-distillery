@@ -155,6 +155,45 @@ correctness — it cannot say which oracle a filter should use. Four mutations, 
 including the subtle one: changing the default to `gemini` while the word `claude` still
 appears as a valid choice.
 
+## `/curate` — and the keeper came from the curation, not the work
+
+Read surface **1,855,639 chars**, 6.2× the skill's 300k threshold ⇒ corpus NOT read. The 77
+session records and 30 of 32 topic files were never opened; everything below is from metadata,
+the dead-reference extractor, and the repo's own verify runner.
+
+⛔⛔ **MENTION IS NOT USE — three occurrences in one session, on three different matchers, and
+the third was inside the guard written after the second.**
+
+1. `run_verify_annotations.py` counted **10** prose mentions of `<!-- verify: -->` as
+   annotations — an **18% inflation** of the denominator in the report whose job is to say how
+   much is checked.
+2. `/curate`'s path extractor reported **2** dead references, both being records that *quote* a
+   wrong path in order to record that it was wrong.
+3. The new `CLAUDE.md` oracle check matched the bare dotted path `ground_truth.batch_scorer`
+   anywhere and stopped at the first hit — a Hard Constraint 200 lines above the command — and
+   **reported the file it had just fixed as broken.**
+4. And while writing that up, the gotcha entry describing the defect **created a new dead
+   reference by quoting a filename in backticks.**
+
+⭐ **Writing the rule down did not stop me writing the bug forty minutes later.** The guard
+against a defect is where you are least suspicious of it, because you have just proved to
+yourself that you understand it.
+
+⛔ **Step 4 found the RUNBOOK's oracle defect ALSO live in `CLAUDE.md`** — the always-loaded
+copy of the same `batch_scorer` invocation, no `--llm`. **Fixing one copy of a drifted command
+and not the other is how drift survives the session that found it.** `check_doc_claims.py` now
+asserts both, with a seeded positive on each.
+
+**Other curate outcomes.** `| tail; echo $?` recurred **[x2]** — by this session, one screen
+below the entry that recorded it — and is promoted. `H-CX3` was registered and then its revisit
+trigger corrected: *"`--target project` reaching WARN"* was **already true when written**, so it
+would have fired on arrival and read as a finding rather than a threshold. Index rotated (#123):
+the 2026-08-28 entry moved to `session-log.md` verbatim, 4/4 entries held.
+
+**Numbers.** Dead refs 0 / 5 unresolvable / 3 skipped / 73 resolved. Index self-consistency: 4
+shared identifiers, **0 contradicting pairs**, entity pass cut short for size. 7 open
+hypotheses. Gotcha log 347 → 351 headers, 342 → 346 `**Problem**` — reconciles.
+
 ## Next session
 
 **The v8 decision.** Adopt the reordered oracle prompt or not — it gates corpus sizing, the
