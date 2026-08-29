@@ -66,6 +66,23 @@ shape, second instance found in this project. Unexamined.
 | solutions | v6 | 0.476 | — | 8.2K | `jeergrvgreg/solutions-filter-v6` | 2026-07-27 gate passed; normalization fitted 2026-07-28; LIVE. v6 weights on Hub 2026-07-30 (was: v4 repo shared — that mismatch + FILTER_VERSION 5.0 fixed in 403429d). |
 | investment-risk **PAUSED 2026-08-25** | v6 | 0.497 | 0.465 | 10.4K | `jeergrvgreg/investment-risk-filter-v6` (private) | **2026-08-11 OP-POINT 4.0 → 4.25** (recall 0.7239 / spec 0.9740, was 0.7609 / 0.9550; normalization refit n=38,637 raw_min 4.25). Deployed `3d358d3`. **First accuracy number ever measured 2026-08-10.** 2026-02-21 |
 
+### uplifting v7 — the consumer lens is NARROWER than this scorer's name (#107)
+
+⚠️ **Thriving, the ovr.news lens this filter feeds, carries a narrower predicate than
+"uplifting" implies.** `ovr.news/docs/BRAND.md` at `a70609b` (2026-08-13) defines it as
+*a process going well **for people***, which **excludes** two shapes the scorer will
+happily score: **harm-answered-only** (a wrong met with a response, where the story is the
+wrong) and **institution-beneficiary** (the gain accrues to an organisation, not to
+people).
+
+**#107 is SCOPED, not reversed.** The scorer is not defective — it is faithfully serving a
+definition ovr had not published when v7 was trained. The consequence is a live source of
+false positives *by the lens's definition* while being true positives by the scorer's.
+
+⛔ **This binds the v8 prompt.** `human_thriving` v8 must encode the narrower predicate,
+which is why ADR-012's rename `uplifting` → `human_thriving` is **load-bearing rather than
+hygiene**: the new name is the one the lens's definition matches.
+
 ⛔ **`investment_risk` is PAUSED since 2026-08-25** (owner: *"aegis is dormant, nobody reads it - pause it"*). It was never an ovr.news lens; its only consumer was the Aegis narrative-risk export, disabled in the same change. **PAUSED ≠ REMOVED** — package, private HF Hub repo, Contract C and 251 days of archives all stay. ⛔ **Un-pause is THREE files, not two** (found 2026-08-25 the hard way): `pipeline.enabled_filters`, `pipeline.aegis_export.enabled`, **and the `investment_risk` row in `NexusMind/deploy/smoke_test_articles.jsonl`** — its absence fails the deploy gate CLOSED and the service will not start. Recover the row with `git show c7af891:deploy/smoke_test_articles.jsonl`; the pair is now covered by `NexusMind/tests/unit/test_filter_integrity.py`. ⚠️ Also verify the store: the filter's memory of what it has scored is `data/raw/.processed_ids_investment_risk.json`, which was inside a deletion path until NexusMind `96b29f3` — un-pausing without it means re-scoring the whole 14-day window. ⚠️ Its `data/filtered/` directory keeps files for ~14 days, so any measurement over that directory will keep reporting six lenses; that is history, not state. Record: `docs/decisions/2026-08-25-pause-investment-risk.md`.
 
 <!-- verify: if ! ssh -o BatchMode=yes -o ConnectTimeout=5 sadalsuud true 2>/dev/null; then echo "CANNOT VERIFY: sadalsuud unreachable"; else C=/home/jeroen/local_dev/NexusMind/config/app.yaml; L=$(ssh sadalsuud "grep -c \"^    - .investment_risk.\" $C"); A=$(ssh sadalsuud "sed -n \"/^  aegis_export:/,/^  [a-z]/p\" $C | grep -c \"^    enabled: false\""); echo "enabled_filters investment_risk lines: $L | aegis_export enabled:false lines: $A"; if [ "$L" = 0 ] && [ "$A" = 1 ]; then echo PASS; else echo "REGRESSED: the pause is no longer in the deployed config"; exit 1; fi; fi -->
