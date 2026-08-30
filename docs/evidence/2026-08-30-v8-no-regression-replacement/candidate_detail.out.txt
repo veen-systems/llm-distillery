@@ -1,0 +1,44 @@
+====================================================================================================
+vietnamese_vnexpress_vn_c293336fd7bd
+  Gần 20% dân số TP HCM hoàn thành khám sức khỏe miễn phí | vi | vietnamese_vnexpress_vn
+  native 2502 enriched 2502 pre_enriched None flags {'obit': False, 'viol': False, 'comm': False, 'quality': True}
+  pub 2026-08-17T12:40:56 url https://vnexpress.net/gan-20-dan-so-tp-hcm-hoan-thanh-kham-suc-khoe-mien-phi-5110117.html
+   uplifting            v7.0  raw   5.8527 norm 7.837927917040937 tier high           stage2 filtered_20260818_005128.jsonl
+   solutions            v6.0  raw   5.4858 norm 9.976331 tier high_solution  stage2 filtered_20260818_005008.jsonl
+   nature_recovery      v4.0  raw   1.5312 norm 0.0 tier low            stage2 filtered_20260818_005618.jsonl
+   cultural_discovery   v5.0  raw   1.2075 norm 0.004431 tier low            stage2 filtered_20260818_005345.jsonl
+   belonging            v1.0  raw   1.0101 norm 0.0 tier low            stage2 filtered_20260818_005501.jsonl
+  CONTENT: Gần 20% dân số TP HCM hoàn thành khám sức khỏe miễn phí | Gần 2,6 triệu người TP HCM đã được khám sức khỏe và cập nhật hồ sơ sức khỏe điện tử, đạt 19,6% dân số thành phố. | Ngày 17/8, Giám đốc Sở Y tế TP HCM Tăng Chí Thượng cho biết riêng tuần qua hơn 400.000 lượt người được khám sức khỏe, khám sàng lọc và cập nhật dữ liệu. Tính từ khi chương trình triển khai, 2.590.623 người đã được khám, tương đương gần một phần năm dân số thành phố. | Khám sàng lọc giúp người dân biết rõ hơn tình trạng sức khỏe, phát hiện sớm các yếu tố nguy cơ và có hướng theo dõi, chăm sóc phù hợp. Kết quả được cập nhật vào hồ sơ sức khỏe điện tử để sử dụng cho những lần khám sau. | Tiến độ khám giữa các phường, xã, đặc khu còn chênh lệch. Đến nay, 36 trong 168 địa phương đã khám cho ít nhất 30% dân số. Phước Thắng dẫn đầu với gần 72%, tiếp đến là Côn Đảo, An Nhơn Tây và Thạnh An, đều đạt trên 48%. Một số địa phương khác cũng đã vượt 40%. | Trong tuần qua, Thới An là địa phương có số lượt khám nhiều nhất, hơn 9.000 lượt. Một số phường khác cũng ghi nhận 7.000-8.500 lượt. Hiện không còn địa phương nào có tỷ lệ kh
+====================================================================================================
+industry_intelligence_fast_company_5510f1117e34
+  London’s Ultra Low Emission Zone cleaned up the city’s air. Then children’s lungs got bigger | en | industry_intelligence_fast_company
+  native 5780 enriched 5780 pre_enriched None flags {'obit': False, 'viol': False, 'comm': False, 'quality': True}
+  pub 2026-08-19T13:25:00 url https://www.fastcompany.com/91591879/london-low-emissions-zone-cleaned-up-air-benefits-jaw-dropping-children-lung-health
+   uplifting            v7.0  raw   6.6831 norm 9.665153251383442 tier high           stage2 filtered_20260820_045600.jsonl
+   solutions            v6.0  raw   5.0322 norm 9.880892466088527 tier high_solution  stage2 filtered_20260820_045425.jsonl
+   nature_recovery      v4.0  raw   3.3817 norm 0.0 tier low            stage2 filtered_20260820_050146.jsonl
+   cultural_discovery   v5.0  raw   4.3914 norm 2.828453725758132 tier medium         stage2 filtered_20260820_045847.jsonl
+   belonging            v1.0  raw   1.1210 norm 0.0 tier low            stage2 filtered_20260820_050017.jsonl
+  CONTENT: In London, an Ultra Low Emission Zone requires vehicles to meet strict emissions standards or else pay a daily fee for driving through that area. It’s an initiative that has reduced toxic air pollution levels and spurred drivers to adopt cleaner vehicles. And now it’s even been linked to improved lung growth in the city’s children. Before the Ultra Low Emission Zone (ULEZ), London children had stunted lung growth, a 2018 study found. When exposed to air pollution, like the emissions from traffic, their lungs were smaller than they should have been—putting them at risk of asthma attacks, lung diseases, and even early death as they become adults. But now, after five years of the ULEZ, those children’s lungs have improved, according to a major five-year study recently published in the Lancet Public Health journal. It’s a result that Chris Griffiths, a professor at Queen Mary University of London and University of Oxford as well as lead investigator on the study, calls “astonishing.” ‘Jaw dropping’ results The study tracked the lung development of more than 3,400 children between the age
+====================================================================================================
+dutch_news_welingelichtekringen_760a0a956413
+  De schokkende voordelen van minder luchtvervuiling: een voorbeeld uit Griekenland | nl | dutch_news_welingelichtekringen
+  native 2601 enriched 2601 pre_enriched None flags {'obit': False, 'viol': False, 'comm': False, 'quality': True}
+  pub 2026-08-21T08:20:00 url https://www.welingelichtekringen.nl/gezondheid/de-schokkende-voordelen-van-minder-luchtvervuiling-een-voorbeeld-uit-griekenland
+   uplifting            v7.0  raw   6.4740 norm 9.39429285912966 tier high           stage2 filtered_20260821_205900.jsonl
+   solutions            v6.0  raw   5.2795 norm 9.963204208063473 tier high_solution  stage2 filtered_20260821_205726.jsonl
+   nature_recovery      v4.0  raw   4.4969 norm 2.992203419611269 tier medium         stage2 filtered_20260821_210444.jsonl
+   cultural_discovery   v5.0  raw   4.9067 norm 5.943852370042646 tier medium         stage2 filtered_20260821_210146.jsonl
+   belonging            v1.0  raw   0.8941 norm 0.0 tier low            stage2 filtered_20260821_210323.jsonl
+  CONTENT: Stoppen met kolen is goed voor het klimaat, maar de winst daarvan voelt vaak abstract en ver weg. Minder CO2-uitstoot vandaag moet vooral voorkomen dat de aarde over tientallen jaren nóg verder opwarmt. Nieuw onderzoek uit Griekenland laat zien dat er ook een veel directer voordeel is: zodra de lucht schoner wordt, belanden fors minder mensen met hartproblemen in het ziekenhuis. Onderzoekers keken naar West-Macedonië, jarenlang een van de belangrijkste bruinkoolregio's van Europa. Rond 2005 leverden zes kolencentrales in het gebied ongeveer 60 procent van alle Griekse elektriciteit. Daar kwam vervolgens snel verandering in. Mijnen gingen dicht, centrales werden gesloten en de luchtvervuiling nam sterk af. Voor wetenschappers ontstond zo een interessant natuurlijk experiment: wat gebeurt er met de gezondheid van ruim 200.000 inwoners wanneer een belangrijke bron van luchtvervuiling verdwijnt? Tot 42 procent minder hartpatiënten Het verschil was enorm. Tussen 2011 en 2021 daalde de hoeveelheid zwaveldioxide in de winter met meer dan 90 procent. Ook de concentratie fijnstof nam af. Tege
+====================================================================================================
+austrian_die_presse_politik_90fe990b80ef
+  18.736 Haushalten in Österreich bleibt die Delogierung erspart | de | austrian_die_presse_politik
+  native 149 enriched 2033 pre_enriched True flags {'obit': False, 'viol': False, 'comm': False, 'quality': True}
+  pub 2026-08-24T05:11:37 url https://www.diepresse.com/41196697/18736-haushalten-in-oesterreich-bleibt-die-delogierung-erspart
+   uplifting            v7.0  raw   6.3521 norm 9.20947346438584 tier high           stage2 filtered_20260825_045648.jsonl
+   solutions            v6.0  raw   5.8049 norm 10.0 tier high_solution  stage2 filtered_20260825_045536.jsonl
+   nature_recovery      v4.0  raw   0.8001 norm 0.0 tier low            stage2 filtered_20260825_050111.jsonl
+   cultural_discovery   v5.0  raw   0.8567 norm 0.004431 tier low            stage2 filtered_20260825_045902.jsonl
+   belonging            v1.0  raw   1.1712 norm 0.0 tier low            stage2 filtered_20260825_050007.jsonl
+  CONTENT: Durch den Wohnschirm sind seit 2022 18.736 armutsgefährdete Haushalte, denen wegen Zahlungsrückständen eine Delogierung drohte, unterstützt worden. Das hat das Sozialministerium am Montag bekannt gegeben. Insgesamt sei damit 42.291 Personen geholfen worden. In 44 Prozent der unterstützten Haushalte lebten minderjährige Kinder. Vom Wohnschirm Energie profitierten bisher 90.732 Personen, an 1.815 wohnungslose Personen wurden über den Wohnschirm leistbare Wohnungen vermittelt. | Der seit 2022 mehrmals verlängerte „Wohnschirm“ läuft bis Ende 2029, bereitgestellt werden aktuell 28 Mio. Euro pro Jahr. Die Zahlen der bewilligten Anträge würden zeigen, dass der Wohnschirm wirkt, erklärte Sozialministerin Korinna Schumann (SPÖ) in einer Stellungnahme. „Der Wohnschirm ist kein Luxus, sondern ein wichtiges Instrument unseres Sozialstaats“. Deshalb sei er trotz der schwierigen budgetären Situation verlängert worden. | 53 Prozent der Unterstützten waren Frauen | Der Wohnschirm setzt sich aus drei Bereichen zusammen. Im Bereich „Miete“, wo von Delogierung bedrohte Personen unterstützt werden, gab 

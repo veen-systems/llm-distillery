@@ -145,6 +145,38 @@ def load_pool(archive, harm_re, keep_content=True):
     return out, prov
 
 
+def load_no_regression_ids(path):
+    """The acceptance-test rows, which MUST NOT be drawn into the training corpus.
+
+    ⛔ Nothing enforced this before 2026-08-30. The first draw's disjointness was luck: the
+    three rows in the set at the time had aged out of the window entirely, so the pool could
+    not contain them. Two rows added on 2026-08-30 ARE in the current pool, in design cell
+    `pos_clear|latin|-`, whose inclusion probability is 0.0794 -- roughly a 1-in-13 chance per
+    row that a re-draw quietly swallows a guard and hands it back to the gate as a training
+    example it has already seen.
+
+    Raises rather than defaulting to empty: an unreadable set and a set with no overlap both
+    print "0 excluded", and only one of them is safe.
+    """
+    if not os.path.exists(path):
+        raise SystemExit(
+            f"FATAL: no-regression set not found at {path}. The draw refuses to run without "
+            f"it -- a corpus that may contain the acceptance-test rows cannot be validated by "
+            f"them. Pass --no-regression-set PATH, or run from a checkout that has it.")
+    ids = set()
+    with open(path, encoding="utf-8") as fh:
+        for line in fh:
+            if line.strip():
+                aid = json.loads(line).get("id")
+                if not aid:
+                    raise SystemExit(f"FATAL: a row in {path} has no id; cannot exclude it.")
+                ids.add(aid)
+    if not ids:
+        raise SystemExit(f"FATAL: {path} holds no rows. Refusing to draw against an empty "
+                         f"exclusion set -- see the docstring.")
+    return ids
+
+
 def class_a_instrument():
     """The class-A detector, and it MUST be the one the Gate 0 spec's number came from.
 
@@ -323,7 +355,14 @@ def realised(rows):
         "non_latin_share": sum(r["non_latin"] for r in rows) / n if n else 0,
         "stage1_low_share": sum(r["v7_stage_used"] == "stage1_low" for r in rows) / n if n else 0,
         "class_a_share": len(harm) / n if n else 0,
-        "class_a_tp_fp": (len(harm_hi) / len(harm_lo)) if harm_lo else None,
+        # ⛔ NOT a TP:FP ratio, and it was named one until 2026-08-30. This is
+        # above-op : below-op among class-A rows. A below-op class-A row is a harm-lexicon
+        # row scoring LOW, which under the ruled table is correct behaviour -- it is
+        # neither the TP (harm answered) nor the FP (harm dominant, scoring high). Putting
+        # it in the denominator measures a different quantity, and reading 47/33 as
+        # "1.42:1 against a ruled 3:1" produced a "3:1 is unreachable, needs 62 of 59
+        # available" conclusion that the owner ruling of 2026-08-30 retired.
+        "class_a_above_below_op": (len(harm_hi) / len(harm_lo)) if harm_lo else None,
         "content_length_p10": q(0.10), "content_length_p50": q(0.50), "content_length_p90": q(0.90),
         "under_oracle_floor": sum(r["content_length"] < ORACLE_FLOOR for r in rows) / n if n else 0,
         "distinct_domains": len({r["domain"] for r in rows}),
@@ -364,6 +403,13 @@ def main():
                          "make_oracle_prefilter at labelling time (#93). 'include' draws them "
                          "anyway and records how many would be lost -- do not use it without "
                          "deciding what happens to them.")
+    ap.add_argument("--no-regression-set",
+                    default=os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(
+                        os.path.abspath(__file__)))), "datasets", "adverse",
+                        "uplifting_no_regression.jsonl"),
+                    help="JSONL of the acceptance-test rows. Every id in it is REMOVED from "
+                         "the pool before stratification, so a guard row can never become a "
+                         "training example. The draw refuses to run if this file is missing.")
     ap.add_argument("--dry-run", action="store_true", help="report the plan, write nothing")
     args = ap.parse_args()
 
@@ -418,6 +464,19 @@ def main():
         before = len(pool)
         pool = [r for r in pool if r["content_length"] >= ORACLE_FLOOR]
         dropped_short = before - len(pool)
+
+    # ⛔ The acceptance-test rows are removed BEFORE stratification, so they cannot be counted
+    # into a quota and then drawn. See load_no_regression_ids() for why this is enforced rather
+    # than assumed. The two counts are reported separately on purpose: "in the set" and
+    # "actually removed" differ whenever a guard row has aged out of the window, and only the
+    # second one proves the filter did anything.
+    no_regression_ids = load_no_regression_ids(args.no_regression_set)
+    _before_nr = len(pool)
+    pool = [r for r in pool if r["id"] not in no_regression_ids]
+    dropped_no_regression = _before_nr - len(pool)
+    print(f"no-regression set: {len(no_regression_ids)} ids declared, "
+          f"{dropped_no_regression} removed from the pool "
+          f"({len(no_regression_ids) - dropped_no_regression} not in this window)")
 
     # ⛔ Recompute the class-A flag with the census's instrument. The reduce pass runs on a
     # host that cannot import the prefilter, so its flag is the fallback lexicon; leaving it
@@ -681,22 +740,27 @@ def main():
             "short_form_mode": args.short_form,
             "short_form_dropped": dropped_short,
             "oracle_floor_chars": ORACLE_FLOOR,
+            "no_regression_set": args.no_regression_set,
+            "no_regression_ids_declared": len(no_regression_ids),
+            "no_regression_rows_removed": dropped_no_regression,
         },
         "class_a": {
             "instrument": class_a_name,
             "pool_share": sum(r["harm_title"] for r in pool) / max(1, len(pool)),
-            # ⚠️ TWO ratios, because they answer different questions and only the first is ruled.
-            # The SUPPLEMENT is drawn at the ruled 3:1. The CORPUS-LEVEL slice is far lower,
-            # because the ordinary strata also contain class-A rows and those are overwhelmingly
-            # low-scored (the census put 93.1% of harm-title rows below the adverse bar). If the
-            # ruling was meant to describe the corpus rather than the supplement, this draw does
-            # not implement it -- that is an owner question, not a bug to paper over.
+            # ✅ RULED 2026-08-30 (docs/decisions/2026-08-30-v8-phase-b-rulings.md §3): the 3:1
+            # applies to the corpus's class-A rows ABOVE THE OP-POINT -- and that population is
+            # exactly the supplement, because the ordinary strata contributed 0 above-op class-A
+            # rows of their own. The corpus reading and the supplement reading select the SAME
+            # rows once the ruling's own op-point clause is kept, so there is one ruled quantity
+            # here, not two, and it is settled by ADJUDICATION at labelling time, never by a draw.
             "supplement": supplement,
-            "corpus_level_tp_fp": got["class_a_tp_fp"],
-            "corpus_level_note": "score-proxy ratio over ALL class-A rows in the corpus, "
-                                 "supplement included. NOT the ruled quantity: the ruling is "
-                                 "about harm-answered vs harm-dominant SHAPE within the "
-                                 "above-op population, which only adjudication can decide.",
+            "corpus_level_above_below_op_ratio": got["class_a_above_below_op"],
+            "corpus_level_note": "⛔ NOT the ruled ratio and not a TP:FP. This is above-op : "
+                                 "below-op over all class-A rows in the corpus. A below-op "
+                                 "class-A row is neither TP (harm answered) nor FP (harm "
+                                 "dominant, scoring HIGH) under the ruled table -- it is a "
+                                 "harm-lexicon row behaving correctly. Do not quote it as "
+                                 "compliance with, or a miss against, the 3:1.",
         },
         "prefilter": {"applied": False,
                       "note": "ADR-018/019 amendment 2026-08-21: v8 ships no per-lens "

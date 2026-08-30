@@ -1,6 +1,69 @@
 # LLM Distillery - TODO
 
-## 🔵 NEXT SESSION — **the hygiene queue is CLEARED; the always-loaded layer is now measured**
+## 🔵 NEXT SESSION — **all four v8 owner decisions are ruled; Phase B is unblocked**
+
+> **Updated 2026-08-30.** Session record: this block plus
+> `docs/decisions/2026-08-30-v8-phase-b-rulings.md`.
+
+**No spend today. No model, no filter, no threshold, no probe, nothing deployed — deploy is N/A,
+not skipped** (nothing under `filters/`). Record with the full reasoning for each:
+**`docs/decisions/2026-08-30-v8-phase-b-rulings.md`**.
+
+1. ✅ **Reordered prompt ADOPTED** — on H-V8-9's **label** argument (of 12 op-point crossings 4
+   are stable; on those the reorder is right **3 of 4**; neither §5b hazard suppressed; best of
+   three prompts on the transitional-justice row). The measured **≈$10.32 vs ≈$54.08** is a
+   by-product, not the reason — that distinction is what H-V8-3 required. ⚠️ **k=3 with
+   aggregation is not optional** (#135: the scope gate is a step function, `1/√k` does not
+   describe it).
+2. ✅ **Rwanda–EU row DROPPED and REPLACED by two.** ⛔ **The delta option does not work** —
+   v8 − v7 is **−0.783**, which fails a not-lower-than-v7 delta and exceeds the oracle decoder
+   floor (0.436 mean / 0.687 max), so the row fails in **every** form the set can express. Both
+   v8 arms landing on exactly **0.817** is the scope gate firing deterministically. The row is
+   retired *with its reason* in `datasets/adverse/uplifting_no_regression_retired.jsonl`.
+   ⛔ **The money-committed rule was NOT softened.**
+3. ✅ **The 3:1 class-A ratio is about the corpus — and that selects the 47-row supplement.**
+   Under the ruling's own definitions the two readings pick the same rows: the corpus holds 47
+   above-op class-A rows and the ordinary strata contributed **zero** of them. ⛔ **The
+   *"unreachable — needs 62 above-op rows, the window holds 59"* arithmetic is RETIRED**: it read
+   `corpus_level_tp_fp = 47/33` (above-op ÷ below-op) as a TP:FP miss, and a below-op class-A row
+   is **neither** TP nor FP under the ruled table — it is a harm-lexicon row scoring low, i.e.
+   correct behaviour. Field renamed with the trap stated inline. Adjudicate the 47 at labelling.
+4. ✅ **Phase B labels 6,590 rows** — the corpus as drawn, manifested and staged.
+
+### ⛔⛔ THE KEEPER — nothing stopped a guard row being drawn into its own training corpus
+`scripts/corpus/draw_v8_corpus.py` had **no exclusion for the acceptance-test rows**. The first
+draw came out disjoint purely because all three rows in the set at the time had **aged out of the
+window**, so the pool could not contain them — a negative that carried no information. The two
+rows added today **are** in the pool, in design cell `pos_clear|latin|-`, whose inclusion
+probability is **0.0794**: roughly a 1-in-13 chance per row that a re-draw silently swallows a
+guard and hands it to the gate as a training example it has already seen.
+
+Now removed **before stratification**, and the draw **refuses to run** if the set is missing or
+empty. Proven on the real 177,593-row pool rather than on a predicate — `4 declared / 2 removed`,
+`guard ids present: []` in the 6,590 drawn rows — with both refusals returning **exit 1** and
+creating no output directory, exit status captured directly rather than through a pipe.
+
+### ▶ NEXT — execute Phase B
+1. **Sync the patched drawer** if a re-draw is ever run — the exclusion now lives in the script
+   and the set is its input.
+2. **Phase B labelling run**: reordered prompt, k=3 with aggregation, 6,590 rows, ≈$10.32.
+   Corpus and cohort are staged at `b650-gpu:~/v8_corpus/`.
+3. **Adjudicate the 47 class-A supplement rows** (~75% harm-answered / ~25% harm-dominant) at
+   labelling time — the manifest still records `tp_fp_status: adjudication-pending`.
+4. **Re-run Gate A** against the 4-row no-regression set.
+
+### ⚠️ Standing, carried forward
+- `refcheck.py` reports **1 finding** (`narrative_risk.json`), recorded as real and deliberately
+  left standing in `memory/session-log.md`. Do **not** fix it by editing.
+- **`tests/ml/test_inference.py::test_inference_module_importable` FAILS** — pre-existing (#139),
+  `filters/cultural_discovery/v5/inference.py` uses a relative import while the test execs it
+  standalone. Entered at `6acd013`; **cd v5 is LIVE**.
+- Stale branch `docs/event-identity-encoder-plan` (1 commit, `0c283c6`) — land it or drop it.
+- **#140**: the two filter-development guides are banner-flagged, bodies not rewritten.
+
+---
+
+## Previous session — 2026-08-29 (later): the hygiene queue cleared, and the always-loaded layer measured
 
 > **Updated 2026-08-29 (later).** **No spend, no model, no filter, no threshold, no probe,
 > nothing deployed — deploy is N/A, not skipped.** Changed files are
@@ -115,51 +178,6 @@
 > red since `6acd013`, v5 is LIVE), **#140** (two filter guides 7 weeks stale, banner-flagged
 > only) filed; **#122** replicated from this session's own context.
 >
-> ### ▶ NEXT — **the v8 decision, and now the cost argument is measured too**
-> **1. Adopt the reordered oracle prompt, or not.** Three independent lines now point the same
-> way, and the ruling is still yours:
-> - **Labels** (H-V8-9, `docs/evidence/2026-08-29-v8-h-v8-9-adjudication/`): of 12 op-point
->   crossings only 4 are stable; on those the reorder is right 3 of 4, and neither §5b hazard is
->   suppressed — on the transitional-justice row it is the **best of three prompts** (+1.417 over
->   v7). Its one stable add is a judged false positive (arguable — see the doc).
-> - **Stability** (H-V8-6, `…-v8-k3-residual/`): the two arms are **not distinguishable** on the
->   production mix, so stability argues neither way. k=3 is the right stopping point; k=5 removes
->   ~33 rows of 6,590.
-> - **Cost** (H-V8-8, `…-v8-cache-ttl/`): **≈$10.32 vs ≈$54.08** for a k=3 pass over the 6,590-row
->   corpus — **5.2×, measured on never-before-scored articles**, because the as-is prompt cannot
->   cache its prefix at all.
->
-> ⛔ **A correction that propagated:** the ≈$6.9 figure this project quoted for a k=3 corpus pass
-> was built on Phase A's "repeat discount", which was an artefact of re-scoring the SAME 200
-> articles. A corpus pass never repeats an article. Both affected documents are corrected.
->
-> **2. ⛔⛔ Acceptance criterion 2 fails today, against v7.** The Rwanda–EU no-regression row
-> scores 0.817 / 0.817 / 1.600 against an asserted `raw > 4.5` — under **every** prompt tested,
-> v7 included. Drop the row or convert its assertion to a delta, as the Unifesp row's was on
-> 2026-08-23. ⛔ Do NOT soften the money-committed rule; three of the four stable step-1
-> crossings depend on it.
->
-> **3. Two corpus questions** (`…-v8-corpus-draw/`). Is the ruled 3:1 class-A ratio about the
-> **supplement** or the **whole corpus**? — the corpus reading is **unreachable in this window**
-> (75% of the target needs 62 above-op class-A rows; there are 59). And **short-form is
-> excluded**, which states v8 is trained for long-form only and is what makes the enrichment
-> 1.98× rather than 2.0×.
->
-> **4. How many rows should Phase B label?** 6,590 matches the v7 seed; nothing rules it.
->
-> ### ✅ Ready and waiting on those decisions
-> - **Corpus drawn and staged**: `b650-gpu:~/v8_corpus/` — 6,590 rows (`sha256 5e2cf729…`), a
->   **600-row held-out production-mix cohort** for the FN check (`48d740a7…`), the manifest, and
->   the reduced pool so the draw re-runs after the archive rolls. Every Gate 0 target met,
->   including the two SHAPE clauses that previously had no implementation.
-> - **The build journal** — `docs/HUMAN_THRIVING_V8_JOURNAL.md`, one row per step with spend.
->
-> ✅ **PROVENANCE RESOLVED 2026-08-30.** The 1,200 Phase A oracle labels ($0.867) and the 200
-> cache-TTL labels are staged on **`b650-gpu:~/v8_corpus/experiment_inputs/`** (`phaseA/` and
-> `cache_ttl/`), verified by **sha256 over the set, not by size**. They had lived only in `/tmp`,
-> which on this workstation is **tmpfs — RAM, cleared by a reboot** — and four answered
-> hypotheses rest on them. The evidence directories keep the committed results and figures
-> either way; what the copy preserves is **re-derivability**.
 
 ---
 

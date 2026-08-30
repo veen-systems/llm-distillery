@@ -215,7 +215,17 @@ class DrawTest(unittest.TestCase):
         man = json.load(open(self.out / "corpus_manifest.json"))["class_a"]
         self.assertIn("adjudicat", man["supplement"]["tp_fp_status"].lower())
         self.assertEqual(man["supplement"]["ruled_tp_fp"], 3.0)
-        self.assertIn("NOT the ruled quantity", man["corpus_level_note"])
+        # ⛔ The key was CALLED corpus_level_tp_fp until 2026-08-30, and being called a TP:FP
+        # is what made it get read as one: 47/33 was quoted as "1.42:1 against a ruled 3:1",
+        # producing an "unreachable, needs 62 of 59" conclusion the owner ruling retired. The
+        # old name must not come back, and the note must name the quantity it actually is.
+        self.assertNotIn("corpus_level_tp_fp", man,
+                         "the misleading key name is back; it is above-op : below-op, not TP:FP")
+        self.assertIn("corpus_level_above_below_op_ratio", man)
+        note = man["corpus_level_note"]
+        self.assertIn("NOT the ruled", note)
+        self.assertIn("above-op", note)
+        self.assertIn("below-op", note)
 
     def test_dedup_removes_repeated_ids_AND_repeated_text_under_new_ids(self):
         """Both branches, each with a seeded positive. The fixture plants 20 repeated ids and
@@ -449,6 +459,111 @@ class ReduceDrawMaterialiseTest(unittest.TestCase):
                            capture_output=True, text=True)
         self.assertNotEqual(m.returncode, 0)
         self.assertIn("already carries article text", m.stdout + m.stderr)
+
+
+class NoRegressionExclusionTest(unittest.TestCase):
+    """The acceptance-test rows must never be drawn into the corpus they are meant to judge.
+
+    ⛔ Nothing enforced this until 2026-08-30, and the first real draw came out disjoint only
+    because every row then in the set had aged out of the archive window -- so the pool could
+    not contain them. That is a negative carrying no information: the instrument could not
+    have said yes. Every test here therefore SEEDS ids that are genuinely in the pool, and the
+    first assertion is that they were reachable before checking that they were removed.
+    """
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.arch = Path(self.tmp.name) / "arch"
+        self.arch.mkdir()
+        make_archive(self.arch)
+        self.out = Path(self.tmp.name) / "out"
+        self.nr = Path(self.tmp.name) / "nr.jsonl"
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def _write_set(self, ids):
+        with open(self.nr, "w", encoding="utf-8") as fh:
+            for i in ids:
+                fh.write(json.dumps({"id": i, "label": "no_regression"}) + "\n")
+
+    def _drawable_ids(self, n):
+        """Ids that survive every other exclusion, so the test is not silently asserting
+        against rows the Google News or short-form filters removed anyway."""
+        probe_out = Path(self.tmp.name) / "probe"
+        r = run(["--archive", str(self.arch), "--out", str(probe_out), "--size", "400",
+                 "--no-regression-set", str(self.nr)], REPO)
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        ids = [json.loads(l)["id"] for l in open(probe_out / "corpus.jsonl", encoding="utf-8")]
+        return ids[:n]
+
+    def test_seeded_rows_are_reachable_and_then_removed(self):
+        self._write_set(["art_999999"])          # a placeholder so the probe draw can run
+        victims = self._drawable_ids(2)
+        self.assertEqual(len(victims), 2, "fixture produced no drawable rows to seed with")
+
+        self._write_set(victims)
+        out2 = Path(self.tmp.name) / "out2"
+        r = run(["--archive", str(self.arch), "--out", str(out2), "--size", "400",
+                 "--no-regression-set", str(self.nr)], REPO)
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+
+        drawn = {json.loads(l)["id"] for l in open(out2 / "corpus.jsonl", encoding="utf-8")}
+        for v in victims:
+            self.assertNotIn(v, drawn, f"{v} is in the no-regression set and was drawn anyway")
+
+        man = json.load(open(out2 / "corpus_manifest.json"))
+        self.assertEqual(man["exclusions"]["no_regression_ids_declared"], 2)
+        self.assertEqual(man["exclusions"]["no_regression_rows_removed"], 2,
+                         "declared and removed must agree when both seeded rows are in the pool")
+
+    def test_declared_and_removed_are_reported_separately(self):
+        """An id that is not in the window must not be counted as a removal. 'Declared' and
+        'removed' differing is the normal case once the archive rolls, and only the second
+        number is evidence the filter did anything."""
+        self._write_set(["art_999999"])
+        victims = self._drawable_ids(1)
+        self._write_set(victims + ["art_999999", "art_999998"])
+        out2 = Path(self.tmp.name) / "out3"
+        r = run(["--archive", str(self.arch), "--out", str(out2), "--size", "400",
+                 "--no-regression-set", str(self.nr)], REPO)
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        man = json.load(open(out2 / "corpus_manifest.json"))
+        self.assertEqual(man["exclusions"]["no_regression_ids_declared"], 3)
+        self.assertEqual(man["exclusions"]["no_regression_rows_removed"], 1)
+
+    def test_draw_REFUSES_when_the_set_is_missing(self):
+        r = run(["--archive", str(self.arch), "--out", str(self.out), "--size", "200",
+                 "--no-regression-set", str(Path(self.tmp.name) / "absent.jsonl")], REPO)
+        self.assertNotEqual(r.returncode, 0)
+        self.assertIn("no-regression set not found", r.stdout + r.stderr)
+        self.assertFalse(self.out.exists(), "a refusal must not leave an output directory")
+
+    def test_draw_REFUSES_when_the_set_is_empty(self):
+        self.nr.write_text("", encoding="utf-8")
+        r = run(["--archive", str(self.arch), "--out", str(self.out), "--size", "200",
+                 "--no-regression-set", str(self.nr)], REPO)
+        self.assertNotEqual(r.returncode, 0)
+        self.assertIn("holds no rows", r.stdout + r.stderr)
+        self.assertFalse(self.out.exists())
+
+    def test_draw_REFUSES_when_a_row_has_no_id(self):
+        with open(self.nr, "w", encoding="utf-8") as fh:
+            fh.write(json.dumps({"title": "a row with no id"}) + "\n")
+        r = run(["--archive", str(self.arch), "--out", str(self.out), "--size", "200",
+                 "--no-regression-set", str(self.nr)], REPO)
+        self.assertNotEqual(r.returncode, 0)
+        self.assertIn("has no id", r.stdout + r.stderr)
+
+    def test_the_shipped_set_is_loadable_and_every_row_has_an_id(self):
+        """The default path is the one the real draw uses. A set that cannot be parsed makes
+        every draw refuse, so this is a live dependency, not a fixture."""
+        real = REPO / "datasets" / "adverse" / "uplifting_no_regression.jsonl"
+        self.assertTrue(real.exists(), f"{real} is the drawer's default input")
+        rows = [json.loads(l) for l in open(real, encoding="utf-8") if l.strip()]
+        self.assertGreater(len(rows), 0)
+        self.assertTrue(all(r.get("id") for r in rows))
+        self.assertEqual(len({r["id"] for r in rows}), len(rows), "duplicate ids in the set")
 
 
 if __name__ == "__main__":

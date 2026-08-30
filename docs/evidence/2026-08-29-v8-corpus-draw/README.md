@@ -155,14 +155,28 @@ seeds). **Stated so it is a known hole rather than an unknown one.**
   a 29% corpus reported PASS against a ruled 19.5%. All ruled levels are now two-sided.
 - **Dead code removed** (`take()`, the `NON_LATIN` constant, an unused regex on the pool path).
 
-## Two questions for the owner
+## Two questions for the owner — ✅ BOTH ANSWERED 2026-08-30
 
-1. ⚠️ **Is the 3:1 class-A ratio about the supplement or the whole corpus?** The supplement is
-   47 rows drawn above the op-point; TP vs FP needs adjudication. The corpus-level slice cannot
-   reach 3:1 in this window under any draw — 75% of the class-A target needs **62** above-op
-   rows and the window holds **59**. If the ruling meant the corpus, it is unreachable here and
-   should say so.
-2. ⚠️ **Short-form is excluded** — 20,949 rows (11.8% of drawable) under the 300-char oracle
+⛔⛔ **CORRECTION, and read it before quoting anything from question 1 below.** This document's
+*"the corpus reading is unreachable — 62 of 59"* argument is **RETIRED**. It was derived from this
+draw's `realised.class_a_tp_fp = 1.4242…`, a key **misnamed in the manifest this document
+describes**: the number is **47/33 — above-op ÷ below-op**, not TP:FP. Under the ruled table a
+below-op class-A row is **neither** a TP (harm answered) nor an FP (harm dominant, scoring HIGH)
+— it is a harm-lexicon row scoring low, i.e. behaving correctly — so it does not belong in that
+denominator. Keeping the ruling's own *"sample ABOVE the op-point"* clause, the corpus's above-op
+class-A population **is** the 47-row supplement (the ordinary strata contributed **zero** of their
+own), so the two readings select the same rows and there was never a fork.
+⚠️ **The manifest committed here still carries the old key** — it is evidence, left as produced.
+Later draws emit `class_a_above_below_op` / `corpus_level_above_below_op_ratio`.
+Ruling: `docs/decisions/2026-08-30-v8-phase-b-rulings.md` §3.
+
+1. ⚠️ *(As asked on 2026-08-29, superseded by the correction above.)* **Is the 3:1 class-A ratio
+   about the supplement or the whole corpus?** The supplement is 47 rows drawn above the
+   op-point; TP vs FP needs adjudication. ~~The corpus-level slice cannot reach 3:1 in this window
+   under any draw — 75% of the class-A target needs **62** above-op rows and the window holds
+   **59**.~~ **Answered: the corpus, which selects the supplement; adjudicate the 47 at labelling
+   time.**
+2. ✅ **RULED: short-form stays excluded — v8 is trained for long-form only.** ⚠️ **Short-form is excluded** — 20,949 rows (11.8% of drawable) under the 300-char oracle
    floor, which `make_oracle_prefilter` would drop at labelling anyway (#93). **This draw states
    v8 is trained for long-form only.** It is also what makes the enrichment 1.98× rather than
    2.0×. `--short-form include` exists and records what would be lost.

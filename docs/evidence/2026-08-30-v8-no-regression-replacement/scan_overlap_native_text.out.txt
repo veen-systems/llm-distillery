@@ -1,0 +1,60 @@
+
+=== uplifting>=4.5 AND nature_recovery>=3.75, NATIVE text >=1000 ch -> 19
+  up  6.769 | natu  6.555 | es  native   3737 enriched   3737 | spanish_xataka             | En 2007 empezaron a reciclar las conchas vacías de ostra de los restau
+      spanish_xataka_0edac9d15a7d
+  up  6.982 | natu  6.213 | en  native  10805 enriched  10805 | positive_news_the_better_i | They Protect What They Once Feared: How Gandak Villagers Are Bringing 
+      positive_news_the_better_india_059cc4035af4
+  up  6.354 | natu  6.167 | es  native   6157 enriched   6157 | spanish_xataka             | En 2007, una pareja de Florida compró un pantano inmenso para evitar l
+      spanish_xataka_dbdf26e11e39
+  up  6.995 | natu  5.682 | en  native  14817 enriched  14817 | positive_news_the_better_i | An All-Women Team in Kashmir Revived a Wetland, Bringing Back Nearly 1
+      positive_news_the_better_india_fbd9629d6337
+  up  6.584 | natu  5.628 | en  native  15649 enriched  15649 | positive_news_the_better_i | For 27 Years, These Ecologists Guarded a Nilgiris Forest by Removing W
+      positive_news_the_better_india_b3ba2747b2b0
+  up  6.414 | natu  5.516 | en  native  12819 enriched  12819 | positive_news_the_better_i | Glaw Lake Became India’s 101st Ramsar Site. Ecologist Explains What Th
+      positive_news_the_better_india_e8b5f4695ca1
+  up  7.010 | natu  5.452 | en  native   1904 enriched   1904 | positive_news_the_better_i | He Restored 18 Lakes & Planted 1.5 Lakh Trees in Karnataka 🌱
+      positive_news_the_better_india_1c8ba69f7539
+  up  6.575 | natu  5.339 | pt  native   4832 enriched   4832 | portuguese_nexo_jornal     | As pontes artificiais que protegem espécies ameaçadas de macacos
+      portuguese_nexo_jornal_c47dc3d8ca0f
+  up  6.001 | natu  5.204 | en  native   5950 enriched   5950 | arabic_emirates247         | Environment Agency - Abu Dhabi records first Olive Ridley turtle nest 
+      arabic_emirates247_a04e262992ca
+  up  6.087 | natu  5.133 | es  native   5026 enriched   5026 | spanish_xataka             | En 2012, Nueva York levantó un parking para descubrir un río enterrado
+      spanish_xataka_e89bf49be87d
+  up  7.178 | natu  5.090 | en  native   5754 enriched   5754 | positive_news_the_better_i | How 2000 Chennai Residents Turned a Sewage-Choked 50-Acre Lake Into a 
+      positive_news_the_better_india_763de0257666
+  up  6.284 | natu  5.090 | es  native   4960 enriched   4960 | spanish_xataka             | Alabama lleva 40 años enterrando árboles de Navidad sobre sus playas. 
+      spanish_xataka_2c5c1dd92205
+  up  6.445 | natu  4.997 | en  native   1666 enriched   1666 | positive_news_the_better_i | When Worship Means Saving Nature | Jeevraj Shrimali
+      positive_news_the_better_india_b231e198832b
+  up  6.474 | natu  4.497 | nl  native   2601 enriched   2601 | dutch_news_welingelichtekr | De schokkende voordelen van minder luchtvervuiling: een voorbeeld uit 
+      dutch_news_welingelichtekringen_760a0a956413
+
+=== uplifting>=4.5 AND solutions>=2.25, NATIVE text >=1000 ch -> 308
+  up  7.286 | solu  5.622 | en  native   7580 enriched   7580 | positive_news_the_better_i | Inside India’s Food-Safety Crackdown: How Officers Make Kitchens, Dair
+      positive_news_the_better_india_54f14aca6fbd
+  up  6.982 | solu  5.496 | en  native  10805 enriched  10805 | positive_news_the_better_i | They Protect What They Once Feared: How Gandak Villagers Are Bringing 
+      positive_news_the_better_india_059cc4035af4
+  up  5.853 | solu  5.486 | vi  native   2502 enriched   2502 | vietnamese_vnexpress_vn    | Gần 20% dân số TP HCM hoàn thành khám sức khỏe miễn phí
+      vietnamese_vnexpress_vn_c293336fd7bd
+  up  6.769 | solu  5.326 | es  native   3737 enriched   3737 | spanish_xataka             | En 2007 empezaron a reciclar las conchas vacías de ostra de los restau
+      spanish_xataka_0edac9d15a7d
+  up  7.157 | solu  5.319 | en  native   5266 enriched   5266 | positive_news_the_better_i | Ahmedabad Is Teaching People to Sort Household Waste While They Wait a
+      positive_news_the_better_india_407e76d1543a
+  up  6.474 | solu  5.279 | nl  native   2601 enriched   2601 | dutch_news_welingelichtekr | De schokkende voordelen van minder luchtvervuiling: een voorbeeld uit 
+      dutch_news_welingelichtekringen_760a0a956413
+  up  5.390 | solu  5.155 | de  native   1421 enriched   1421 | austrian_kurier            | Gemeinsame Schulungen entlasten Betriebe im Waldviertel
+      austrian_kurier_dc7d807020f8
+  up  7.186 | solu  5.154 | en  native   4977 enriched   4977 | positive_news_the_better_i | From ‘Madam Collector’ to ‘Collector Didi’, How Gargi Jain Is Keeping 
+      positive_news_the_better_india_cb36cc874d24
+  up  6.683 | solu  5.032 | en  native   5780 enriched   5780 | industry_intelligence_fast | London’s Ultra Low Emission Zone cleaned up the city’s air. Then child
+      industry_intelligence_fast_company_5510f1117e34
+  up  6.552 | solu  5.025 | en  native  13027 enriched  13027 | positive_news_the_better_i | ‘My Mangoes Would Go to Waste’: Jharkhand Woman Farmer’s Income Triple
+      positive_news_the_better_india_7cc8a47c0d6a
+  up  6.783 | solu  4.916 | en  native   9602 enriched   9602 | east_african_daily_news_tz | The children we almost missed: Tanzania’s journey towards early identi
+      east_african_daily_news_tz_73db39d4d333
+  up  7.216 | solu  4.868 | en  native   2816 enriched   2816 | legal_policy_hrw_news      | Bolivia’s First Same-Sex Marriage Is a Historic Step Forward
+      legal_policy_hrw_news_2b6175ebfe32
+  up  6.509 | solu  4.857 | en  native   1760 enriched   1760 | positive_news_the_better_i | This IAS Officer Is Taking on Food Adulteration
+      positive_news_the_better_india_d55a8d6fb569
+  up  5.454 | solu  4.824 | en  native   7112 enriched   7112 | industry_intelligence_fast | Nuclear power is China’s key for transitioning to a fully renewable gr
+      industry_intelligence_fast_company_848f9526ecd7

@@ -1,0 +1,21 @@
+non-Latin, native>=1000, uplifting>=4.5: 27
+
+=== AND solutions>=2.25 -> 5
+  up  6.303 | solu  3.521 | zh-cn nl=1.00 native   3646 | china_sciencenet_cn        | 科学点"芝"成金，瑶山林下生"金"
+      china_sciencenet_cn_5748ff6923e1
+  up  6.087 | solu  3.341 | zh-cn nl=0.99 native   2893 | china_sciencenet_cn        | 高蛋白玉米：破解饲料蛋白短缺的中国方案
+      china_sciencenet_cn_0377492db503
+  up  5.948 | solu  3.212 | zh-cn nl=1.00 native   2610 | china_sciencenet_cn        | 15年变60年 新技术让公路少"动手术"更"高寿"
+      china_sciencenet_cn_ad1f3beb79ed
+  up  5.837 | solu  3.124 | zh-cn nl=1.00 native   3205 | china_sciencenet_cn        | 120天亩产500多斤！那个转化超3500万元的油菜团队，又双叒出手了
+      china_sciencenet_cn_56162bbda16f
+  up  5.586 | solu  2.705 | zh-cn nl=1.00 native   2078 | china_sciencenet_cn        | 他们用AI解码云冈石窟，探索文化遗产数智化保护新路径
+      china_sciencenet_cn_dd506fc0a578
+
+=== AND nature_recovery>=3.75 -> 0
+
+=== AND cultural_discovery>=4.0 -> 2
+  up  5.586 | cult  5.937 | zh-cn nl=1.00 native   2078 | china_sciencenet_cn        | 他们用AI解码云冈石窟，探索文化遗产数智化保护新路径
+      china_sciencenet_cn_dd506fc0a578
+  up  5.808 | cult  4.436 | zh-cn nl=1.00 native   3410 | china_sciencenet_cn        | 30位在数学史上大放异彩的"王虹们"
+      china_sciencenet_cn_cb918ce334e9

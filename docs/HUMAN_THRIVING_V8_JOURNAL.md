@@ -52,22 +52,29 @@ shape for that job; it has no place to put *how the filter came to be that way*.
 
 | 15 | 08-29 | Draw the Gate 0 corpus and give it a manifest (#127) | ✅ **6,590 rows + a 600-row held-out cohort, drawn and staged on b650; all six checks pass** — including the two SHAPE clauses that had no implementation. Visible band **3.74× → 1.95×**, low-middle **0.61× → 1.00×** (parity). ⛔ Three lenses found **3 blockers** in the first draw: the class-A arm was sampled BELOW the op-point against a verbatim ⛔, clause (c) never executed, and the FN cohort was silently deferred. ⛔ My 'control' was false — the census table and mine differ by **34 rows** because **CPython 3.12 changed `sum()` to compensated summation**; and my non-Latin detector was not the census's, which **retracts** one of the questions I put to the owner | $0 | [`2026-08-29-v8-corpus-draw/`](evidence/2026-08-29-v8-corpus-draw) |
 
-## Open decisions this journal is waiting on
+| 16 | 08-30 | The four open decisions — put to the owner, ruled, and executed | ✅ **All four ruled.** (1) **Reordered prompt ADOPTED**, on H-V8-9's label argument; the 5.2× is a by-product, not the reason. (2) **Rwanda–EU row DROPPED and REPLACED by two** — ⛔ the delta option does **not** work, v8−v7 is **−0.783**, past the 0.436/0.687 decoder floor, so the row fails in *every* form the set can express. (3) **3:1 is about the corpus — and that selects the 47-row supplement**, because the ordinary strata contributed **zero** above-op class-A rows; ⛔ the *"unreachable, 62 of 59"* arithmetic is **retired**, it read `corpus_level_tp_fp = 47/33` (above:below op-point) as a TP:FP miss when a below-op class-A row is **neither** under the ruled table. (4) **6,590 rows** as drawn. ⛔ Found while executing (2): **nothing excluded the acceptance-test rows from the corpus draw** — the first draw was disjoint only because all three rows had aged out; the two new ones sit in a cell with inclusion probability **0.0794**. Now enforced, refuses to run without the set, proven on the real 177,593-row pool: **4 declared / 2 removed, 0 in the drawn 6,590** | $0 | [`2026-08-30-v8-phase-b-rulings.md`](decisions/2026-08-30-v8-phase-b-rulings.md) |
 
-1. **Adopt the reordered prompt, or not** (owner). Evidence: rows 10–12. Everything downstream
-   — corpus sizing, the b650 staging run, the corpus manifest (llm-distillery#127, not yet
-   written) — is costed against it.
-2. **Acceptance criterion 2 is failing today, against v7** (owner). Row 12. Drop the Rwanda–EU
-   row from the no-regression set, or convert its assertion to a delta.
-3. **Two corpus questions** (owner). Row 15: is the ruled 3:1 class-A ratio about the
-   supplement or the whole corpus? — the corpus reading is **unreachable in this window** (75%
-   of the target needs 62 above-op class-A rows; the window holds 59). And short-form is
-   excluded, which states v8 is trained for long-form only. *(A third question, about the
-   non-Latin target, is withdrawn: it was my instrument, not the window.)*
-4. **How many rows should Phase B label?** The draw is 6,590 to match the v7 seed; nothing rules
-   that. It sets the bill, now **measured** rather than estimated: at k=3, **≈$10.32 with the
-   reordered prompt, ≈$54.08 with the as-is one** (H-V8-8). The 5.2× gap is a cost argument for
-   the reorder that is independent of H-V8-9's label argument.
+## Open decisions — ✅ ALL FOUR RULED 2026-08-30
+
+Record with the reasoning for each: **`docs/decisions/2026-08-30-v8-phase-b-rulings.md`**.
+
+1. **Reordered prompt — ADOPTED.** On the label argument (H-V8-9: 4 stable op-point crossings,
+   right on 3 of 4, neither §5b hazard suppressed), with the measured **≈$10.32 vs ≈$54.08**
+   as a by-product. k=3 with aggregation is not optional (#135's scope gate is a step function).
+2. **Rwanda–EU row — DROPPED, and two replacements added.** Retired with its reason in
+   `datasets/adverse/uplifting_no_regression_retired.jsonl`. Criterion 2 no longer fails before
+   v8 exists. The money-committed rule was **not** softened.
+3. **3:1 class-A — about the corpus, which selects the supplement.** Adjudicate the 47 rows at
+   labelling time. Short-form stays excluded: v8 is trained for long-form only.
+4. **Phase B labels 6,590 rows** — the corpus as drawn and staged.
+
+### Still open, deliberately
+- **Adjudication of the 47 class-A supplement rows** — a labelling-time task, not a draw-time one.
+- **The non-Latin class-A hole (0% by construction).** A scan on 08-30 found it is worse than a
+  class-A problem: the window holds **27** non-Latin uplifting positives with native text ≥1,000
+  chars, and **every** cross-lens overlap among them is from **one source**. Filed separately.
+  ⛔ Not to be closed by adding a thin-margin guard row.
+- **H-V8-3's multiplicity question.** The reorder is adopted on adjudication, not on p=0.0049.
 
 ## Machine-readable index
 

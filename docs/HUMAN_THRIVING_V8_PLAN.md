@@ -1082,7 +1082,7 @@ counted as a pass. Ordered by the 2026-08-20 priority ruling.
 | # | Criterion | Slice | Judged against | Blocking? |
 |---|---|---|---|---|
 | **1** | **Class A dies.** Every harm-adjacent record scores below **3.85**, clear of the noise floor | `datasets/adverse/uplifting.jsonl`, class-A rows — **9** (`class` starts with 'A' — present on every row since 2026-08-21, so the slice is machine-selectable) | editorial upper bound (⚠️ **not** ADR-021 oracle truth — the oracle is blind here) | **YES** |
-| **2** | ⛔ **MEASURED 2026-08-29: this criterion FAILS TODAY under v7 — the Rwanda–EU row misses `raw > 4.5` under every prompt tested (v7 1.600, v8 0.817). Resolve the row before reading this gate; see §5b.** **No regression.** Every no-regression row still satisfies its own `assertion` — ⚠️ **not a uniform "above the op-point"**, see §5b: only 2 of the 3 are op-point assertions | `datasets/adverse/uplifting_no_regression.jsonl`, **3 rows** (⛔ *this cell said 4 until 2026-08-23; the fourth is a scope warning on an adverse row, not an article*) | editorial judgement, owner-confirmed | **YES** |
+| **2** | ✅ **RESOLVED 2026-08-30 — the criterion no longer fails before v8 exists.** The Rwanda–EU row was DROPPED (it failed `raw > 4.5` under every prompt including v7, and a delta conversion fails too at −0.783) and REPLACED by two rows; see §5b and `docs/decisions/2026-08-30-v8-phase-b-rulings.md` §2. **No regression.** Every no-regression row still satisfies its own `assertion` — ⚠️ **not a uniform "above the op-point"**, see §5b: 3 of the 4 are op-point assertions, the Unifesp row is a delta | `datasets/adverse/uplifting_no_regression.jsonl`, **4 rows** (⛔ *this cell said 4 before 2026-08-23 for a different and wrong reason — a scope warning on an adverse row was counted as an article; it is still not in the set. Read the file, do not count from here.*) | editorial judgement, owner-confirmed | **YES** |
 | **2b** | **The student agrees with its own oracle on class A.** For every class-A record, `\|student_raw − oracle_k_run_mean\|` is inside the oracle band. *New 2026-08-20: two of three class-A rows are the STUDENT disagreeing with all three oracles (§1f) — a criterion judged only on labels would pass a v8 that still ships them* | class-A slice | k-run oracle mean | **YES** |
 | **3** | **Class B shrinks.** Academic/non-academic on-lens gap inside noise on the new labels | 660-row held-out oracle split | ADR-021 oracle ground truth | reported; miss → owner call |
 | **4** | **Class B, adverse rows.** The **9** class-B records score below 3.85 | `uplifting.jsonl`, class-B rows | editorial upper bound | reported — ⚠️ **status needs an owner call**, see §1h: two of the nine are owner-flagged and outscore every class-A row |
@@ -1116,19 +1116,48 @@ adverse'". That is a **labelling caveat on an adverse row**, not a row that must
 the op-point, which is why its "reader's real objection" cell is `—`. **Criterion 2 cannot be
 evaluated against it.** ⚠️ Do not re-count this set as four.
 
-⛔⛔ **MEASURED 2026-08-29 — the Rwanda–EU row FAILS its own assertion under v7, before v8
-exists, and criterion 2 is BLOCKING.** Its `assertion_basis` said the baseline was never
-recorded and had to be established first; it now is. Scored under **one judge**
-(`deepseek-chat`), k=3, full article text: **v7 prompt 1.600**, v8 as-is **0.817**, v8 reordered
-**0.817** — against an asserted `raw > 4.5`. **The row cannot detect a regression: there is no
-baseline above the line to regress from.** The cause is a collision between two rulings both
-dated 2026-08-23 — this section keeps the row as legitimate lens overlap (ADR-015), while
-*"money committed is not a protection established"* (§1) covers its headline exactly:
-*"46 millions de dollars **mobilisés** auprès de l'UE"*. Under that ruling 0.817 is the prompt
-working as instructed. ⚠️ **Open, and it is the owner's:** drop the row, or convert its
-assertion to a DELTA — the correction the Unifesp row received the same day and this one did
-not. ⛔ **Do not resolve it by softening the money-committed rule.** Evidence, both v8 arms and
-the v7 baseline: `docs/evidence/2026-08-29-v8-h-v8-9-adjudication/` § *Step 2*.
+✅ **RULED 2026-08-30 — the Rwanda–EU row is DROPPED and REPLACED; criterion 2 no longer
+fails.** Measured 2026-08-29 under one judge (`deepseek-chat`), k=3, full article text: **v7
+prompt 1.600**, v8 as-is **0.817**, v8 reordered **0.817**, against an asserted `raw > 4.5`. Its
+`assertion_basis` had said the baseline was never recorded and had to be established first; it
+now is, and it is **2.9 points below the op-point the row was asserted to clear**. ⛔ **The
+delta conversion — the correction the Unifesp row received on 2026-08-23 — does NOT rescue it:**
+v8 − v7 is **−0.783**, i.e. lower, and that exceeds the oracle decoder run-to-run floor (0.436
+mean / 0.687 max), so it is not noise; both v8 arms landing on **exactly** 0.817 is the scope
+gate firing deterministically. **No assertion this set can express is satisfiable for that row.**
+
+The cause is a collision between two rulings both dated 2026-08-23 — this section keeps the row
+as legitimate lens overlap (ADR-015), while *"money committed is not a protection established"*
+(§1) covers its headline exactly: *"46 millions de dollars **mobilisés** auprès de l'UE"*. Under
+that ruling **0.817 is the prompt working as instructed**. ⛔ **The money-committed rule was NOT
+softened** — three of the four stable step-1 op-point crossings depend on it. The retired row
+keeps its full reason in `datasets/adverse/uplifting_no_regression_retired.jsonl`. Evidence:
+`docs/evidence/2026-08-29-v8-h-v8-9-adjudication/` § *Step 2*; ruling:
+`docs/decisions/2026-08-30-v8-phase-b-rulings.md` §2.
+
+✅ **Two replacement rows carry the ADR-015 lens-overlap guard**, both selected with the baseline
+recorded BEFORE the assertion was written, both `stage_used == "stage2"` on every lens read, both
+with native text clearing the 300-char oracle floor without the enricher, and both verified
+absent from the drawn corpus and the held-out cohort while present in the drawable pool:
+
+| row | lang | native ch | uplifting v7 raw | also above its own op-point |
+|---|---|---|---|---|
+| Fast Company, *"London's ULEZ cleaned up the city's air. Then children's lungs got bigger"* | en | 5,780 | **6.683** (+2.183) | solutions 5.032, cultural_discovery 4.391 |
+| Welingelichte Kringen, Greek lignite closures → up to 42% fewer cardiac admissions | nl | 2,601 | **6.474** (+1.974) | solutions 5.280, nature_recovery 4.497, cultural_discovery 4.907 |
+
+⛔ **Both had to clear the #107 narrowing, not merely uplifting v7's scoring behaviour** — the
+Thriving lens is *a process going well **for people***, excluding harm-answered-only and
+institution-beneficiary. That criterion eliminated every pure-ecology candidate (a crane census,
+monkey-corridor bridges, oyster-shell reef restoration) despite all of them scoring well above
+the op-point on uplifting v7. ⚠️ It also eliminated the sharpest available test of the
+money-committed boundary — Die Presse's *"18.736 Haushalten bleibt die Delogierung erspart"*
+(uplifting 6.352, solutions 5.805, money **spent** with 42,291 counted beneficiaries) — because
+its **producer text is 149 chars** and its 2,033 are enrichment.
+
+⛔ **The corpus drawer now excludes the no-regression ids by construction** and refuses to run
+without the set. Before 2026-08-30 nothing did: the first draw was disjoint only because every
+row then in the set had aged out of the window. The two new rows ARE in the pool, in a design
+cell whose inclusion probability is **0.0794**.
 
 ✅ **The other two rows PASS under both v8 arms** (same run): Rappler **4.900** reordered /
 **5.350** as-is, every individual run clear of the op-point; Unifesp **4.367** reordered /
@@ -1151,7 +1180,7 @@ of constructive journalism out of the lens.
 |---|---|---|
 | Unifesp forensic work at the DOI-Codi/SP dictatorship torture site (`cultural_discovery`, raw 6.11) | a **living** university doing forensic work on state crime **today** — a process going well now, and the purest correction for presentism | the ovr **summary title** led with the blood residue and buried the accountability → ovr.news#298 |
 | Rappler, "The silent crisis on our plates" (`uplifting`, raw 6.49) | read in full (13,107 chars) it is a **recovery** — closes on "learning how to simply enjoy eating again" plus a help-seeking note | **rank**, not membership: a harm-heavy opening carried it to the top of the feed |
-| Rwanda–EU $46M agricultural resilience financing | a genuine solutions story that may **legitimately** also be uplifting (ADR-015) | none — this is lens overlap working as designed |
+| ~~Rwanda–EU $46M agricultural resilience financing~~ **DROPPED 2026-08-30** | was: a genuine solutions story that may **legitimately** also be uplifting (ADR-015) | none — but it scored 1.600 under v7 itself, so it could never test that. Replaced by the two rows above |
 | Namibian child-welfare / gender-equality policy items | the boundary is **announcement vs outcome**, *not* "policy is adverse" | — |
 
 ⛔ **Two hazards this set exists to prevent**, both recorded on 2026-08-05 and 2026-08-09:
