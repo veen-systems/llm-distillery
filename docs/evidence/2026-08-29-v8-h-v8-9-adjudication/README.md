@@ -252,11 +252,13 @@ Committed output: [`crossings.txt`](crossings.txt) — produced by the **committ
 verified byte-identical to the scratch run that this document was written from
 (`feedback-verified-artifact-is-the-shipped-one`).
 
-⛔⛔ **PROVENANCE HAZARD: this repo keeps no `phaseA_cohort200.jsonl` and no run files.** The
-cohort and the six `phaseA_{A,B}{1,2,3}.jsonl` (6.6 MB, 1,200 oracle labels, $0.867) exist
-**ONLY in a previous session's `/tmp` scratchpad**
-(`…/96c7f831-6b9e-443a-a955-658f6c98dec6/scratchpad/`). H-V8-3, H-V8-4, H-V8-5, H-V8-6 and this
-document all rest on them, and `/tmp` does not survive a reboot. **Deciding where they live is
-an owner call** (they are full article text, so the TDM register in
-`docs/decisions/2026-08-05-tdm-opt-out-training-data.md` is in scope) — but they should not stay
-where they are.
+✅ **PROVENANCE RESOLVED 2026-08-30.** This repo keeps no `phaseA_cohort200.jsonl` and no run
+files — deliberately, they are full article text (6.6 MB, 1,200 oracle labels, $0.867). They are
+staged at **`b650-gpu:~/v8_corpus/experiment_inputs/phaseA/`**, verified by **sha256 over the
+set, not by size**, beside the corpus they belong with.
+
+⚠️ **They had lived only in a session `/tmp` scratchpad**, which on this workstation is **tmpfs
+— RAM, cleared by a reboot** — and a whole-filesystem search on 2026-08-29 found no second copy.
+H-V8-3, H-V8-4, H-V8-5, H-V8-6 and this document all rest on them. The TDM register in
+`docs/decisions/2026-08-05-tdm-opt-out-training-data.md` governs where article text may live;
+the training host is where this project already stages it (plan §0H).

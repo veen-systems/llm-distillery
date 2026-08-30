@@ -209,11 +209,13 @@ choosing colours — not the two-colour palette actually used. Both series are d
 well as legended, so identity never rests on colour alone; the surface is deliberately opaque
 light so the PNG stays readable under GitHub's dark theme.
 
-⛔⛔ **`<phaseA-scratch-dir>` is NOT in this repo and is NOT durable.** It must hold
-`phaseA_cohort200.jsonl` and the six `phaseA_{A,B}{1,2,3}.jsonl` run files — 6.6 MB of full
-article text living only in a session scratchpad under `/tmp`, with no other copy on the
-machine (whole-filesystem search, 2026-08-29). **Once that tree is cleared, nothing here can be
-re-derived.** Where those labels should live is an open owner call.
+⚠️ **`<phaseA-scratch-dir>` is NOT in this repo** — 6.6 MB of full article text
+(`phaseA_cohort200.jsonl` plus the six run files), kept out of the repo deliberately.
+
+✅ **Durable since 2026-08-30:** `b650-gpu:~/v8_corpus/experiment_inputs/phaseA/` (staged 2026-08-30, verified by sha256, not by size). Until then it existed only under `/tmp`, which on this
+workstation is **tmpfs — RAM, cleared by a reboot** — and a whole-filesystem search on
+2026-08-29 found no other copy. The committed `results.txt` and figures never depended on it;
+what the copy preserves is the ability to **re-derive** them.
 
 ## Limits
 

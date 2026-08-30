@@ -154,8 +154,12 @@
 >   including the two SHAPE clauses that previously had no implementation.
 > - **The build journal** — `docs/HUMAN_THRIVING_V8_JOURNAL.md`, one row per step with spend.
 >
-> ⛔⛔ **PROVENANCE: the 1,200 Phase A oracle labels ($0.867) still live ONLY in a `/tmp`
-> scratchpad**, confirmed by a whole-filesystem search. Four answered hypotheses rest on them.
+> ✅ **PROVENANCE RESOLVED 2026-08-30.** The 1,200 Phase A oracle labels ($0.867) and the 200
+> cache-TTL labels are staged on **`b650-gpu:~/v8_corpus/experiment_inputs/`** (`phaseA/` and
+> `cache_ttl/`), verified by **sha256 over the set, not by size**. They had lived only in `/tmp`,
+> which on this workstation is **tmpfs — RAM, cleared by a reboot** — and four answered
+> hypotheses rest on them. The evidence directories keep the committed results and figures
+> either way; what the copy preserves is **re-derivability**.
 
 ---
 

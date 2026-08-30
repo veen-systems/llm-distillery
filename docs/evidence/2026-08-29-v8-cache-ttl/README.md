@@ -88,5 +88,7 @@ no-regression set were removed explicitly).
 python3 docs/evidence/2026-08-29-v8-cache-ttl/analyse_ttl.py <dir with Q0..Q3_out.jsonl>
 ```
 
-⚠️ The four 50-row outputs live in a session scratchpad, not in this repo. They can be
-regenerated for ~$0.10 from any 200 rows of the staged corpus that have not been scored.
+✅ The four 50-row inputs and outputs are staged at
+`b650-gpu:~/v8_corpus/experiment_inputs/cache_ttl/` (2026-08-30, verified by sha256), with the
+run log and the runner. They are not in this repo — they are full article text. Failing that,
+they regenerate for ~$0.10 from any 200 unscored rows of the staged corpus.
