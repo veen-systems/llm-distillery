@@ -69,6 +69,14 @@ shape for that job; it has no place to put *how the filter came to be that way*.
    reordered prompt, ≈$54.08 with the as-is one** (H-V8-8). The 5.2× gap is a cost argument for
    the reorder that is independent of H-V8-9's label argument.
 
+## Machine-readable index
+
+Every step above that was an experiment also has a one-line row in
+[`experiments/registry.jsonl`](../experiments/registry.jsonl) — stable `EXP-NNN` id, decision,
+spend, and pointers. That file answers *"across everything, what did we decide and what did it
+cost?"* in one `grep`; this journal answers *"what happened, in order, on v8"*. Neither restates
+a number: both point at the evidence directory that holds it.
+
 ## What is deliberately NOT here
 
 - **Numbers.** Every figure above is a pointer to a document that carries the figure *with the

@@ -5,6 +5,8 @@ metadata:
   type: project
 ---
 
+⭐ **A CONCLUDED experiment also gets a row in `experiments/registry.jsonl`** (adapted from `veen-systems/augur`): stable `EXP-NNN` id, `decision`, `spend_usd`, pointers. This ledger is where a hypothesis lives while it is OPEN and carries the Method; the registry is the cross-project index of what was decided. ⛔ Neither restates a number the evidence directory holds — `scripts/verification/check_experiment_registry.py` enforces that every registry figure is greppable in an artifact it cites.
+
 # Hypothesis ledger
 
 **Created 2026-08-17**, because the question *"what have we already hypothesised, tested

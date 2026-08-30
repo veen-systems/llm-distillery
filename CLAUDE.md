@@ -261,6 +261,7 @@ bounded: `python3 scripts/verification/check_index_budget.py --target pointers`.
 | Building a filter on a DeepSeek oracle, or citing cultural_discovery v5 as a reference | `memory/cd-v5-reference-status.md` — why v5 is the DeepSeek-oracle reference example, and the ADR-020 methodology it demonstrates |
 | Retraining uplifting, Thriving false positives (#125), or the junk gates | `memory/uplifting-v7-training.md`, `memory/uplifting-oracle-genre-hypotheses.md`, `memory/obituary-v4-hypotheses.md`, `memory/violence-promotion-v1-hypotheses.md` |
 | **Wanting the whole chain in one place, or the live pipeline state** | **`veen-systems/pipeline-atlas`** — the four repos as one signal path plus an ops snapshot every 20 min, on Tailscale (`http://100.78.93.76:8099/`), not GitHub Pages. |
+| **Concluding an experiment, or asking "did we ever test X?"** | **`experiments/README.md`** — append-only registry: id, decision, spend, pointers. ⛔ It restates no number. |
 | Ending a session | Run `/curate` |
 | Monthly or after major restructuring | Run `/audit-context` |
 
