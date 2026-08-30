@@ -102,7 +102,13 @@ them** — each exists because something shipped broken.
   first.** A `stage1_low` row's score is an **e5 probe estimate**, not a Gemma score
   (23% of rows measured). Same shape as the length-field trap: the field exists, is
   populated, and means different things per row.
-- **Before using any source as evidence, establish what it EXCLUDES.** *(14th
+- **Before using any source as evidence, establish what it EXCLUDES.** *(15th
+  occurrence 2026-08-30 — opposite sign again, and the smallest yet: a pool file's FIRST
+  LINE is a `__provenance__` record, not an article, so a line count published as a row
+  count was off by exactly one — 177,593 against 177,592 — in seven documents, a commit
+  message and an owner report. ⚠️ **The right number was already in the repo one file
+  away and disagreed.** A metadata file whose first line is not a datum is off by one, and
+  one is the error size nobody notices. 14th
   occurrence 2026-08-29 — a nine-surface correction announced as "finished properly" was
   still live in the AUTO-MEMORY: every sweep was rooted at the repo, and this project's
   always-loaded layer spans TWO trees. 13th

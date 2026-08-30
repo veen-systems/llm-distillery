@@ -132,6 +132,20 @@ that is how Rwanda–EU happened. ⚠️ Whether this is a collection property o
   lacked: the old key name must not return.
 - 493 unit tests pass; all four index-budget targets and all doc-claim checks pass.
 
+## Close-out
+
+- **Ledger**: `H-V8-3` / `H-V8-9` carry their rulings; ⛔ H-V8-9 now records that **the delta
+  option it recommended is REFUTED** (−0.783), which is where the wrong recommendation was made.
+  **`H-V8-10`** opened — scoring vs collection property for the non-Latin gap, with a
+  within-content Method and an instrument-can-say-yes precondition.
+- **Issues**: #127, #135, #141 commented. #135's own body corrected in the comment (its 13% is
+  not distinguishable from the n=200 5.3%; its "~860 rows" prize is ~83).
+- **Merge/deploy N/A, not skipped** — `main`, pushed; nothing under `filters/`.
+- ⛔ **The review found five defects after the commit** (see the second half of this session):
+  a broken consumer I had named and dismissed, a line count published as a row count in seven
+  places, two holes in the guard I had just built, and two stale counts in the plan. Recorded in
+  the auto-memory as *verification is not review*.
+
 ## ▶ NEXT
 
 Phase B labelling: reordered prompt, k=3 with aggregation, 6,590 rows, ≈$10.32. Then adjudicate

@@ -1,6 +1,91 @@
 # Gotcha Log
 
 
+## VERIFICATION IS NOT REVIEW, AND I SUBSTITUTED ONE FOR THE OTHER (2026-08-30)
+**Problem**: Committed and pushed on green — 493 unit tests, 3 killed mutations in 3
+directions, 4 budget guards, the doc-claim checker, refcheck. `/review-changes` was not run.
+It was run when the owner asked whether I was reviewing properly, and found **five** defects,
+three of them in work I had just called verified.
+**Root cause**: Every check I ran answers *"does the code do what I intended?"* — and each
+answered correctly. **None asks whether the intent was right, whether something else depended
+on it, or whether the prose still matches the file.** A test suite cannot fail for a number
+being wrong in a document, and a mutation test on a guard cannot notice the guard reads the
+wrong file. The mechanical battery is complete over one question and silent over three others,
+and its greenness is what makes it feel sufficient.
+**Fix**: treat *tests + mutations + guards pass* as a **precondition** for review, never a
+substitute; run the battery before the commit. ⭐ **The tell was availability, not doubt** — I
+skipped the review because the checks were green, and in the same session quoted the
+status-laundering rule in a commit message and then laundered an exit status through `| tail`
+while hunting the defect I was about to report. Promoted to the auto-memory entry
+`feedback-multi-agent-review-default`.
+
+## NAMING A CONSUMER IS NOT CHECKING IT (2026-08-30)
+**Problem**: Changed `datasets/adverse/uplifting_no_regression.jsonl` (dropped a row, added
+two). I grepped for consumers, found
+`docs/evidence/2026-08-29-v8-h-v8-9-adjudication/no_regression_analyse.py`, wrote *"evidence,
+don't touch"*, and moved on. It raises `KeyError` on the first new id.
+**Root cause**: The script reads the **live** dataset and replays a **fixed** run, so the two
+drift apart the instant the set changes. Recognising it as a consumer felt like handling it —
+the note substituted for the run. Naming is cheap and reads as diligence.
+**Fix**: run every consumer you name, in the same breath. The script now reconciles both
+directions (rows in the run but not the set; rows in the set but not the run) and **exits 2**
+on partial coverage — ⭐ a replay that silently skipped the new rows would otherwise read as a
+clean pass over a set it never scored, which is worse than the crash it replaced.
+
+## A LINE COUNT PUBLISHED AS A ROW COUNT, IN SEVEN DOCUMENTS (2026-08-30)
+**Problem**: Reported the v8 drawable pool as **177,593** rows. It is **177,592**; the file's
+first line is the `__provenance__` record. The figure reached seven documents, a commit
+message and a report to the owner.
+**Root cause**: A probe script counted every line (`n += 1` per line) and I described its
+output as "rows". ⛔ **The correct number was already in the repo one file away and disagreed** —
+`experiments/registry.jsonl` records `drawable: 177592` — and nothing compares a fresh figure
+against the committed one.
+**Fix**: re-derive every number from the tool that produced it, and when a file has a header
+record, count what you mean rather than what `wc` returns. ⭐ Generalisable tell: **a metadata
+file whose first line is not a datum will be off by exactly one**, and one is the error size
+nobody notices.
+
+## A FIELD NAME IS AN ASSERTION, AND IT BEAT THE NOTE BESIDE IT (2026-08-30)
+**Problem**: Derived *"the corpus reading of the 3:1 class-A ruling is unreachable — 75% of
+the target needs 62 above-op rows and the window holds 59"* from a manifest field named
+`corpus_level_tp_fp`. Put it to the owner as a decision. It is **47/33 — above-op ÷ below-op**,
+not a TP:FP ratio at all: a below-op class-A row is neither a true positive (harm answered)
+nor a false positive (harm dominant, scoring high) under the ruled table.
+**Root cause**: The field carried a `corpus_level_note` saying exactly this, in the same JSON
+object — **and I had written both**. The name is what gets re-read; the note is read once, by
+someone already suspicious.
+**Fix**: renamed to `class_a_above_below_op` / `corpus_level_above_below_op_ratio` with the
+trap inline, plus a test asserting the old name cannot return. ⭐ **When a name and its
+docstring disagree about what something is, the name is the defect** — rename it, do not add a
+second sentence. A disclaimer's existence is evidence the name is wrong.
+
+## A PRECEDENT IS A CLAIM ABOUT A MECHANISM, NOT A TEMPLATE (2026-08-30)
+**Problem**: Recommended to the owner that a failing acceptance-test row have its assertion
+converted to a delta, *"as the Unifesp row's was"*. The delta fails too: v8 − v7 is **−0.783**,
+past the oracle decoder floor (0.436 mean / 0.687 max), so not noise.
+**Root cause**: Both rows shared the **symptom** — an assertion that no longer fits its
+article — and differed on the one fact the remedy turns on: **which side of its baseline the
+row sits.** Unifesp was +1.417 above; this one is below. I carried the precedent without
+checking the sign.
+**Fix**: state a precedent as an if-then and check the *if* with a number before offering it.
+⛔ Sharpened by the setting: the owner had asked *"what do you recommend?"*, so an
+unachievable option presented as viable would have **become the ruling**. Verify every option
+is achievable before listing it.
+
+## A GUARD BUILT THIS SESSION HAD TWO HOLES THE SAME SESSION'S TESTS COULD NOT SEE (2026-08-30)
+**Problem**: Added an enforced no-regression exclusion to the v8 corpus drawer, with 6 tests
+and 3 killed mutations. Review found two defects in it anyway.
+**Root cause**: (a) The exclusion ran **after** the short-form filter, so a guard row under the
+300-char floor would be dropped as short, counted as **zero** removals, and printed under
+*"not in this window"* — **the guard's own report asserting a reason it had not established**.
+(b) The loader checked only that a row had an `id`; `datasets/adverse/uplifting.jsonl` sits in
+the same directory with the same shape and 18 rows labelled `adverse`, so pointing the flag at
+it would run clean and **silently strip 18 adverse rows from training**.
+**Fix**: exclusion moved first; loader refuses any row not labelled `no_regression`. Guard now
+9 tests / 5 mutations, all killed. ⭐ **Both holes are about the guard's relationship to things
+outside it** — filter ordering and a sibling file — which is exactly what mutation-testing the
+guard in isolation cannot reach.
+
 ## A MUTATION THAT "SURVIVED" HAD NEVER APPLIED (2026-08-29)
 **Problem**: Mutation-testing new guards, 2 of 8 probes reported the suite still green. Read
 literally that is a test gap — the alarming result, and the one I nearly wrote up.
@@ -80,7 +165,7 @@ asserting such a caller could exist**). ⭐ **Before adopting anything into a fo
 adoption history for the feature's own name.** Neither the code review nor the mutation tests
 could have caught this — it took a reader who opened the *document* rather than the diff.
 
-## `cmd | tail -4; echo $?` REPORTS TAIL'S STATUS — FOUR GUARDS READ AS EXIT 0 (2026-08-29) [x2]
+## `cmd | tail -4; echo $?` REPORTS TAIL'S STATUS — FOUR GUARDS READ AS EXIT 0 (2026-08-29) [x3]
 **Problem**: Auditing four verification guards, I ran `bash script 2>&1 | tail -4; echo "exit=$?"`
 and recorded all four as `exit=0`. One of them was printing `FAIL:` and genuinely failing.
 **Root cause**: `$?` after a pipeline is the **last** command's status. `tail` succeeds

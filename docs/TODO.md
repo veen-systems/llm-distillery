@@ -79,6 +79,24 @@ scope, 0 violations. Lenses run inline (guarantee-preservation, reachability,
 claim-verification, adversarial, doc-accuracy); **sync-safety N/A — nothing under `filters/`
 or `filters/common/` changed**, stated so its silence does not read as a pass.
 
+### ✅ Session close-out 2026-08-30
+
+- **Hypothesis ledger updated**: `H-V8-3` and `H-V8-9` carry their rulings (adopted on the
+  label argument; row dropped + replaced, and ⛔ **the delta option recorded as REFUTED** —
+  that row is where the wrong recommendation was made). New **`H-V8-10`** opened with a Method
+  and a revisit trigger: is the non-Latin gap above the op-point a **scoring** property or a
+  **collection** property? The scan cannot separate them; the discriminator is a within-content
+  control (translated pairs, or a source publishing in both scripts). ⚠️ Prove the pair set is
+  non-empty before believing any negative.
+- **Issues**: **#127** commented (manifest now records the exclusion; ⛔ still open for the five
+  filters with no manifest at all, and their windows have rolled — unrecoverable), **#135**
+  commented (k=3 ruled; ⚠️ two corrections to its own body — 13% is not distinguishable from
+  5.3% at n=200, and the "~860 rows" prize is really **~83**), **#141** commented with the
+  `H-V8-10` pointer.
+- **Merge/deploy: N/A, not skipped.** Work is on `main`, pushed. Nothing under `filters/` or
+  `filters/common/` changed, so there is nothing for `deploy_to_nexusmind.sh` to carry and no
+  Hub upload. No model, threshold, probe or op-point moved. Spend $0.
+
 ### ▶ NEXT — execute Phase B
 1. **Sync the patched drawer** if a re-draw is ever run — the exclusion now lives in the script
    and the set is its input.
