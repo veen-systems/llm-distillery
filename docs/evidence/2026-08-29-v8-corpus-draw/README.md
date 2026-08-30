@@ -196,9 +196,10 @@ unique (they were not, which was invisible until text-dedup collapsed the whole 
 
 - **Nothing here is labelled.** Every figure is stratification on the deployed **v7 student's**
   scores — a sampling variable, not a label.
-- **The size (6,590) is not a ruling.** At k=3 the labelling cost is ≈**$6.9** (reordered) /
-  ≈**$21.7** (as-is) with the repeat discount, ≈$10.3 / ≈$54.1 without — and the discount is
-  H-V8-8, still open.
+- **The size (6,590) is not a ruling.** At k=3 the labelling cost is ≈**$10.3** (reordered) /
+  ≈**$54.1** (as-is), **measured** — H-V8-8 is answered: the prefix cache survives ≥90 minutes,
+  but the "repeat discount" that produced the old ≈$6.9 estimate was an artefact of re-scoring
+  identical articles and does not apply to a corpus pass.
 - **The 623 `stage1_low` rows** carry e5 probe estimates on a different scale; they are drawn as
   their own stratum for coverage and excluded from every score-derived figure.
 - **`stage1_low` is not compositionally identical to stage-2 on this window** (non-Latin 10.6%

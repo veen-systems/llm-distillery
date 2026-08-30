@@ -1,0 +1,8 @@
+pass  lag         rows  hit rate     hit tokens (min..max)   miss tokens (min/med/max)  cold-prefix rows
+Q0    t+0           50     89.4%            10,368..10,368             661/1,216/2,390                 0
+Q1    t+30 min      50     88.7%            10,368..10,368             712/1,238/2,629                 0
+Q2    t+60 min      50     88.9%            10,368..10,368             703/1,149/2,818                 0
+Q3    t+90 min      50     89.4%            10,368..10,368             673/1,116/2,450                 0
+
+The shared prefix is 10,368 tokens. A row whose hit EQUALS that and whose miss is its own article
+length is a PREFIX-only hit -- which is all a corpus pass can ever get, since every article in one is new.

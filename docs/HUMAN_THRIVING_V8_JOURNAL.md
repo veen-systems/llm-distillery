@@ -48,7 +48,7 @@ shape for that job; it has no place to put *how the filter came to be that way*.
 | 11 | 08-29 | Are the reorder's stricter labels **better**, or just lower? | **Better, narrowly.** Of 12 op-point crossings only **4 are stable**; on those the reorder is right **3 of 4** (drops a 2060 projection, an ODA funding plan, a mentorship guidebook) and its one stable add is a judged false positive | $0 | [`2026-08-29-v8-h-v8-9-adjudication/`](evidence/2026-08-29-v8-h-v8-9-adjudication) § step 1 |
 | 12 | 08-29 | Does the reorder suppress either §5b hazard? | ✅ **No.** Recovery narrative clears the op-point in both arms; on the transitional-justice row the reorder is **best of three prompts** (+1.417 over v7). ⛔ Third row fails under **v7 too** → a defect in acceptance criterion 2 | **$0.0208** | [`2026-08-29-v8-h-v8-9-adjudication/`](evidence/2026-08-29-v8-h-v8-9-adjudication) § step 2 |
 | 13 | 08-29 | Is **k=3** enough repetition, and what would k=5 buy? | **k=3 is the stopping point.** Residual **2.39%** (reordered, production-mix); k=5 removes **32 rows of 6,590** for 1.67× the bill. ⚠️ The k=1→k=3 prize is **~83 rows**, a third the size the plan's flip-rate argument implies | $0 | [`2026-08-29-v8-k3-residual/`](evidence/2026-08-29-v8-k3-residual) |
-| 14 | 08-29 | Does the prompt-cache discount survive the gap between corpus passes? | ⏳ **running** — P0 found the prefix still hot after **77.9 min** of inactivity, which reframes the question: a corpus pass calls continuously and never lets the prefix cool | ~$0.05 | [`2026-08-29-v8-cache-ttl/`](evidence/2026-08-29-v8-cache-ttl) |
+| 14 | 08-29 | Does the prompt-cache discount survive the gap between corpus passes? | ✅ **Prefix cache: YES** — 200 calls at t+0/30/60/90 min, every row hitting exactly 10,368 tokens, zero cold-prefix rows. ⛔ **Repeat discount: NO, and it never existed for a corpus pass** — Phase A's cheap repeats were re-scores of the SAME articles. **k=3 is ≈$10.32 reordered / ≈$54.08 as-is, not $6.92.** Revision 1 was confounded and killed after one pass | **$0.1044** | [`2026-08-29-v8-cache-ttl/`](evidence/2026-08-29-v8-cache-ttl) |
 
 | 15 | 08-29 | Draw the Gate 0 corpus and give it a manifest (#127) | ✅ **6,590 rows + a 600-row held-out cohort, drawn and staged on b650; all six checks pass** — including the two SHAPE clauses that had no implementation. Visible band **3.74× → 1.95×**, low-middle **0.61× → 1.00×** (parity). ⛔ Three lenses found **3 blockers** in the first draw: the class-A arm was sampled BELOW the op-point against a verbatim ⛔, clause (c) never executed, and the FN cohort was silently deferred. ⛔ My 'control' was false — the census table and mine differ by **34 rows** because **CPython 3.12 changed `sum()` to compensated summation**; and my non-Latin detector was not the census's, which **retracts** one of the questions I put to the owner | $0 | [`2026-08-29-v8-corpus-draw/`](evidence/2026-08-29-v8-corpus-draw) |
 
@@ -65,8 +65,9 @@ shape for that job; it has no place to put *how the filter came to be that way*.
    excluded, which states v8 is trained for long-form only. *(A third question, about the
    non-Latin target, is withdrawn: it was my instrument, not the window.)*
 4. **How many rows should Phase B label?** The draw is 6,590 to match the v7 seed; nothing rules
-   that. It sets the bill: ≈$6.9–$54.1 depending on prompt and whether the repeat discount
-   survives (H-V8-8).
+   that. It sets the bill, now **measured** rather than estimated: at k=3, **≈$10.32 with the
+   reordered prompt, ≈$54.08 with the as-is one** (H-V8-8). The 5.2× gap is a cost argument for
+   the reorder that is independent of H-V8-9's label argument.
 
 ## What is deliberately NOT here
 

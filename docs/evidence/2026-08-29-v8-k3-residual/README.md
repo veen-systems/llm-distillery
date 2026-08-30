@@ -13,11 +13,13 @@ stopping point, k=5 buys 0.5pp for 1.67× the money". In dollars that 1.67× is 
 
 ## Answer
 
-**Repetition is cheap and buys little, and the "little" is the interesting part.** On the
-production mix, going k=1 → k=3 removes gate-label churn on **~86 rows** of 6,590; k=3 → k=5
-removes **~33 more** for **+$3.50**; k=5 → k=7 removes ~19 more for another +$3.50. **The money
-is not the constraint at this corpus size — so the k decision should be made on whether the
-rows are worth having, not on a cost multiplier.**
+**Repetition buys little, and what it costs depends entirely on which prompt runs.** On the
+production mix, k=1 → k=3 removes gate-label churn on **~86 rows** of 6,590; k=3 → k=5 removes
+**~33 more**; k=5 → k=7 another ~19. On the **reordered** prompt each of those steps costs
+**+$6.88**, so the k decision is still small money and should be made on whether the rows are
+worth having. On the **as-is** prompt the same step costs **+$36**, because that prompt cannot
+cache its prefix at all. ⚠️ These prices were corrected downward-to-upward once already — see
+the cost section.
 
 ⭐ **What does not go away with any k:** the residual is dominated by rows whose gate
 probability is genuinely near 0.5 — articles the oracle has no stable answer for. That is
@@ -91,21 +93,27 @@ what the probe's own Clopper-Pearson interval [3.8%, 30.7%] on 4/30 already allo
 Measured per-article prices (Phase A `results.txt` §4f — first pass vs repeat, DeepSeek
 off-peak), applied to a 6,590-row corpus:
 
+⛔⛔ **CORRECTED 2026-08-29 (later), after H-V8-8 measured it.** The table first published here
+used Phase A's "repeat" price of $0.000266/article, which is an **artefact of re-scoring the
+same 200 articles**: the whole request came back from cache. A corpus pass scores 6,590
+*different* articles every time — only the ~10,368-token prefix is cached, and each article's
+own tokens are re-paid on every pass. Measured on never-before-scored articles: **$0.000506–
+$0.000534 per article per pass**, flat over 90 minutes
+(`docs/evidence/2026-08-29-v8-cache-ttl/`).
+
 | arm | k=1 | k=3 | k=5 | k=7 |
 |---|---|---|---|---|
-| A reordered | $3.42 | **$6.92** | $10.42 | $13.92 |
-| B as-is | $18.03 | **$21.65** | $25.28 | $28.90 |
+| A reordered | $3.44 | **$10.32** | $17.20 | $24.08 |
+| B as-is | $18.03 | **$54.08** | $90.14 | $126.19 |
 
-Each extra pair of draws costs **+$3.50 (A) / +$3.62 (B)** and removes **~33 rows** of gate
+Each extra pair of draws costs **+$6.88 (A) / +$36.06 (B)** and removes **~33 rows** of gate
 churn at the production-mix rate.
 
-⚠️⚠️ **The repeat price is unproven at corpus scale — and this is the one branch where the
-"money is not the constraint" reading fails.** Phase A §4f prints both: with the repeat
-discount, k=3 costs **$6.92 (A) / $21.65 (B)**; **without it, $10.27 (A) / $54.08 (B)**. On the
-no-cache branch each extra pair of draws costs **+$3.4 (A) but +$36 (B)**, and for the as-is
-prompt k=5 stops being loose change. That branch is exactly what H-V8-8 exists to rule out —
-still open, and its own pre-registration was found confounded the same day (see that
-directory).
+✅ **H-V8-8 answered it, and the answer was the pessimistic branch.** Phase A printed both a
+"with repeat discount" and a "without" estimate; **"without" is the one that describes a corpus
+run**, because the discount only ever existed for re-scored identical articles. So the cost of
+k is roughly linear in k, and the as-is arm's k=5 (+$36) is genuinely not loose change while the
+reordered arm's (+$6.88) still is.
 
 ## Checks
 

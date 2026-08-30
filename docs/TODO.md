@@ -115,54 +115,47 @@
 > red since `6acd013`, v5 is LIVE), **#140** (two filter guides 7 weeks stale, banner-flagged
 > only) filed; **#122** replicated from this session's own context.
 >
-> ### ▶ NEXT — **two owner decisions, both now evidenced**
-> **1. Adopt the reordered oracle prompt, or not.** It gates corpus sizing, the b650 staging run
-> and `corpus_manifest.json` (#127). ✅ **H-V8-9 is answered, and it answers YES on the evidence**
-> — the ruling is still yours. Both steps: **`docs/evidence/2026-08-29-v8-h-v8-9-adjudication/`**,
-> **$0.0208 total**.
+> ### ▶ NEXT — **the v8 decision, and now the cost argument is measured too**
+> **1. Adopt the reordered oracle prompt, or not.** Three independent lines now point the same
+> way, and the ruling is still yours:
+> - **Labels** (H-V8-9, `docs/evidence/2026-08-29-v8-h-v8-9-adjudication/`): of 12 op-point
+>   crossings only 4 are stable; on those the reorder is right 3 of 4, and neither §5b hazard is
+>   suppressed — on the transitional-justice row it is the **best of three prompts** (+1.417 over
+>   v7). Its one stable add is a judged false positive (arguable — see the doc).
+> - **Stability** (H-V8-6, `…-v8-k3-residual/`): the two arms are **not distinguishable** on the
+>   production mix, so stability argues neither way. k=3 is the right stopping point; k=5 removes
+>   ~33 rows of 6,590.
+> - **Cost** (H-V8-8, `…-v8-cache-ttl/`): **≈$10.32 vs ≈$54.08** for a k=3 pass over the 6,590-row
+>   corpus — **5.2×, measured on never-before-scored articles**, because the as-is prompt cannot
+>   cache its prefix at all.
 >
-> **Step 1 ($0** — a re-read of labels the Phase A run already bought**).** All **12** rows whose
-> op-point side differs at k=3, adjudicated against the v8 prompt's own STEP 1 / §5.
-> A(reordered) surfaces **15**, B(as-is) **23** — reconciles exactly with `results.txt` §3, so
-> the set is the pipeline's, not hand-built. ⭐ **Only 4 of 12 are STABLE in both arms**; 2 more
-> cross because a single `out_of_scope` run drags the k=3 mean over (#135, not the reorder), and
-> 6 are magnitude drift with all six runs `in_scope`. On the 4 stable ones **the reorder is right
-> 3 of 4**: it drops a 2060 projection study, an ODA funding plan and a mentorship guidebook —
-> the §5 / class-B shapes v8 exists to remove, each scored `in_scope` by as-is on 3/3 runs.
-> ⛔ **Its one stable ADD I judge a false positive** (the WestJet settlement — the *"compensation
-> was paid"* guard does not apply, the claims portal *is being prepared*; ⚠️ **arguable: a
-> court-APPROVED settlement for 3,400 women is a completed occasion, so this is an ADR-023
-> reader-risk call, not a rule violation**), so **the reorder is not
-> uniformly stricter, it is differently strict.** Cost: 2–3 true positives, all within **0.24**
-> of the op-point.
+> ⛔ **A correction that propagated:** the ≈$6.9 figure this project quoted for a k=3 corpus pass
+> was built on Phase A's "repeat discount", which was an artefact of re-scoring the SAME 200
+> articles. A corpus pass never repeats an article. Both affected documents are corrected.
 >
-> **Step 2 ($0.0208, 27 calls, 0 errors).** The three §5b no-regression articles scored under
-> **both v8 arms and the v7 prompt**, k=3, **one judge**, full article text. ⭐⭐ **Neither hazard
-> is suppressed, and on the transitional-justice row the REORDERED prompt is the best of the
-> three**: Unifesp **4.367** reordered vs **3.983** as-is vs **2.950** v7 (**+1.417**); Rappler
-> **4.900 / 5.350**, both clear of the op-point on every individual run.
+> **2. ⛔⛔ Acceptance criterion 2 fails today, against v7.** The Rwanda–EU no-regression row
+> scores 0.817 / 0.817 / 1.600 against an asserted `raw > 4.5` — under **every** prompt tested,
+> v7 included. Drop the row or convert its assertion to a delta, as the Unifesp row's was on
+> 2026-08-23. ⛔ Do NOT soften the money-committed rule; three of the four stable step-1
+> crossings depend on it.
 >
-> **2. ⛔⛔ Fix acceptance criterion 2 — it is BLOCKING and it fails today, against v7, before v8
-> exists.** The third no-regression row (Rwanda–EU $46M) scores **0.817 / 0.817 / 1.600** — it
-> misses `raw > 4.5` under **all three prompts including v7**. Its baseline was never established
-> (the row's own `assertion_basis` says so and says to establish it — now done). The cause is a
-> collision between two owner rulings of **2026-08-23**: §5b keeps the row as legitimate lens
-> overlap (ADR-015), while *"money committed is not a protection established"* covers its
-> headline exactly (*"46 millions de dollars **mobilisés**"*). **Drop the row, or make its
-> assertion a DELTA** — the same correction the Unifesp row got that day, and this one did not.
-> ⛔ **Do NOT soften the money-committed rule**: 3 of the 4 stable step-1 crossings depend on it.
+> **3. Two corpus questions** (`…-v8-corpus-draw/`). Is the ruled 3:1 class-A ratio about the
+> **supplement** or the **whole corpus**? — the corpus reading is **unreachable in this window**
+> (75% of the target needs 62 above-op class-A rows; there are 59). And **short-form is
+> excluded**, which states v8 is trained for long-form only and is what makes the enrichment
+> 1.98× rather than 2.0×.
 >
-> ⚠️ Two side-findings from step 2, both worth keeping: on the Unifesp row the **judge** spread
-> (qwen2.5 1.883 / qwen3 0.767 / deepseek 2.950) is **larger than the v8-vs-v7 delta being
-> tested**, which is why that assertion names the judge; and the v7 prompt emits
-> `scope_verdict: __absent__` on 9/9 rows — **#135's step function is v8-only, so k≥3 is a v8
-> requirement and was never a v7 one.**
+> **4. How many rows should Phase B label?** 6,590 matches the v7 seed; nothing rules it.
 >
-> ⛔⛔ **PROVENANCE: the 1,200 Phase A oracle labels ($0.867) live ONLY in a previous session's
-> `/tmp` scratchpad** — 6.6 MB, confirmed by a whole-filesystem search to have no other copy;
-> five hypotheses rest on them and `/tmp` does not survive a reboot. Where they should live is an
-> owner call (full article text ⇒ the TDM register applies). The step-2 runs, by contrast, are
-> committed under the evidence directory.
+> ### ✅ Ready and waiting on those decisions
+> - **Corpus drawn and staged**: `b650-gpu:~/v8_corpus/` — 6,590 rows (`sha256 5e2cf729…`), a
+>   **600-row held-out production-mix cohort** for the FN check (`48d740a7…`), the manifest, and
+>   the reduced pool so the draw re-runs after the archive rolls. Every Gate 0 target met,
+>   including the two SHAPE clauses that previously had no implementation.
+> - **The build journal** — `docs/HUMAN_THRIVING_V8_JOURNAL.md`, one row per step with spend.
+>
+> ⛔⛔ **PROVENANCE: the 1,200 Phase A oracle labels ($0.867) still live ONLY in a `/tmp`
+> scratchpad**, confirmed by a whole-filesystem search. Four answered hypotheses rest on them.
 
 ---
 
