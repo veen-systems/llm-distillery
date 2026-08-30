@@ -5190,19 +5190,19 @@ propagated error is found, the copy you are looking at may not be the origin.
 
 ## 2026-08-29 — A published histogram was interpreter-dependent: CPython 3.12 changed `sum()`
 
-**Problem.** Two evidence documents computed the same weighted-average histogram over the same
+**Problem**: two evidence documents computed the same weighted-average histogram over the same
 6,590 v7 corpus rows with the same weights, and disagreed: **6 of 15 bins differed, by up to 8
 rows.** I wrote the gap off in a committed document as "bin-edge convention differs" and used
 the (false) agreement as proof that both sides used the same instrument. A review lens measured
 it and refuted both the claim and my explanation.
 
-**Cause.** **CPython 3.12 changed `sum()` to use Neumaier compensated summation** (gh-100425).
+**Root cause**: **CPython 3.12 changed `sum()` to use Neumaier compensated summation** (gh-100425).
 The 2026-08-28 census ran on the collection host's **Python 3.11** (naive left-to-right); the
 2026-08-29 work ran on the workstation's **3.14** (compensated). On this data **34 rows land in
 a different bin**. Example: labels `[6,7,7,6,6,7]` with the v7 weights are exactly **6.5**;
 naive summation returns **6.49999999999999911**, so `int(v/0.5)` puts it in the 6.0 bin.
 
-**Fix.** `math.fsum`, which is correctly rounded and therefore gives the same answer on every
+**Fix**: `math.fsum`, which is correctly rounded and therefore gives the same answer on every
 interpreter. Verified three ways: naive reproduces the census's table exactly, `math.fsum` and
 3.14's `sum` reproduce the new one, and the census's own code re-run on the training host
 reproduces the census's.
@@ -5226,7 +5226,7 @@ observations change value between the two summations, and **0 change the op-poin
 
 ## 2026-08-29 — Two mutation runs raced and left the source MUTATED in the working tree
 
-**Problem.** Mutation testing works by writing a broken version of a file, running the suite,
+**Problem**: mutation testing works by writing a broken version of a file, running the suite,
 and restoring the original in a `finally`. I launched two such runs **in the background**, on
 the same file, minutes apart. The second read its "original" while the first had the file
 mutated, so its `finally` wrote the *mutated* text back as if it were pristine. Then I repaired
@@ -5234,11 +5234,11 @@ the file by hand — and a third background run's `finally`, still pending, over
 The source sat in the tree with `>= 0.9` where it should read `>= 0.15`, and with a
 non-Latin allocation rule that a review had just refuted.
 
-**How it was caught.** One test failed (`per_stratum_non_latin_shares_track_the_pool`) and the
+**Root cause**: the restore raced. Caught because One test failed (`per_stratum_non_latin_shares_track_the_pool`) and the
 numbers made no sense against the code I believed was there. Reading the file, not the diff,
 showed the mutation. The suite was 23/24 — a green-ish run that would have been easy to wave at.
 
-**Fix / rules.**
+**Fix**:
 1. ⛔ **Never run a source-mutating job in the background, and never two at once.** Mutation
    testing is not a background task: it makes the working tree temporarily wrong, and anything
    else touching that file in the window — including your own repair — races it.

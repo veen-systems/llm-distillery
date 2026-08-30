@@ -76,6 +76,9 @@ llm-distillery/
 │   ├── oracle/                 # Phase 3: Oracle calibration
 │   │   ├── calibrate_oracle.py
 │   │   └── calibrate_prefilter.py
+│   ├── corpus/                 # Phase 0: corpus assembly (added 2026-08-29)
+│   │   ├── draw_v8_corpus.py       # reduce / draw / verify / manifest
+│   │   └── materialise_corpus.py   # rejoin article text, verifying content hashes
 │   ├── deployment/             # Phase 9: Model deployment
 │   │   └── upload_to_huggingface.py
 │   ├── dataset/                # General dataset utilities
@@ -103,6 +106,10 @@ llm-distillery/
 │       ├── filter_specific/    # Filter-specific validation scripts
 │       ├── one_off/            # One-time analysis scripts
 │       └── sandbox/            # Experimental scripts
+│
+├── experiments/                # Append-only experiment registry (added 2026-08-29)
+│   ├── README.md               # schema, adaptations from veen-systems/augur
+│   └── registry.jsonl          # one line per concluded experiment
 │
 ├── tests/                      # Test suite
 │   ├── conftest.py             # Shared pytest fixtures
@@ -195,7 +202,8 @@ Root contains only:
 - `README.md` - Project overview and quick start
 - `CHANGELOG.md` - Version history (standard practice)
 - Core module directories (`ground_truth/`, `training/`, `filters/`)
-- Support directories (`scripts/`, `docs/`, `datasets/`, `config/`, `archive/`)
+- Support directories (`scripts/`, `docs/`, `datasets/`, `config/`, `archive/`, `tests/`)
+- `experiments/` — the append-only experiment registry (added 2026-08-29; see its README)
 
 **No dangling files** - everything has a clear location
 
