@@ -1082,7 +1082,7 @@ counted as a pass. Ordered by the 2026-08-20 priority ruling.
 | # | Criterion | Slice | Judged against | Blocking? |
 |---|---|---|---|---|
 | **1** | **Class A dies.** Every harm-adjacent record scores below **3.85**, clear of the noise floor | `datasets/adverse/uplifting.jsonl`, class-A rows — **9** (`class` starts with 'A' — present on every row since 2026-08-21, so the slice is machine-selectable) | editorial upper bound (⚠️ **not** ADR-021 oracle truth — the oracle is blind here) | **YES** |
-| **2** | ✅ **RESOLVED 2026-08-30 — the criterion no longer fails before v8 exists.** The Rwanda–EU row was DROPPED (it failed `raw > 4.5` under every prompt including v7, and a delta conversion fails too at −0.783) and REPLACED by two rows; see §5b and `docs/decisions/2026-08-30-v8-phase-b-rulings.md` §2. **No regression.** Every no-regression row still satisfies its own `assertion` — ⚠️ **not a uniform "above the op-point"**, see §5b: 3 of the 4 are op-point assertions, the Unifesp row is a delta | `datasets/adverse/uplifting_no_regression.jsonl`, **4 rows** (⛔ *this cell said 4 before 2026-08-23 for a different and wrong reason — a scope warning on an adverse row was counted as an article; it is still not in the set. Read the file, do not count from here.*) | editorial judgement, owner-confirmed | **YES** |
+| **2** | ✅ **RESOLVED 2026-08-30 — the criterion no longer fails before v8 exists.** The Rwanda–EU row was DROPPED (it failed `raw > 4.5` under every prompt including v7, and a delta conversion fails too at −0.783) and REPLACED by two rows; see §5b and `docs/decisions/2026-08-30-v8-phase-b-rulings.md` §2. **No regression.** Every no-regression row still satisfies its own `assertion` — ⚠️ **not a uniform "above the op-point"**: the Unifesp row is a **delta**, the rest are `raw > 4.5`. See §5b | `datasets/adverse/uplifting_no_regression.jsonl` — ⛔ **this cell states no row count and no tally of assertion types, deliberately.** Both were stated here before and both went stale on 2026-08-30 when the set changed; a count in a document is a second copy of a fact that lives in a file. `wc -l` it. | editorial judgement, owner-confirmed | **YES** |
 | **2b** | **The student agrees with its own oracle on class A.** For every class-A record, `\|student_raw − oracle_k_run_mean\|` is inside the oracle band. *New 2026-08-20: two of three class-A rows are the STUDENT disagreeing with all three oracles (§1f) — a criterion judged only on labels would pass a v8 that still ships them* | class-A slice | k-run oracle mean | **YES** |
 | **3** | **Class B shrinks.** Academic/non-academic on-lens gap inside noise on the new labels | 660-row held-out oracle split | ADR-021 oracle ground truth | reported; miss → owner call |
 | **4** | **Class B, adverse rows.** The **9** class-B records score below 3.85 | `uplifting.jsonl`, class-B rows | editorial upper bound | reported — ⚠️ **status needs an owner call**, see §1h: two of the nine are owner-flagged and outscore every class-A row |
@@ -1107,14 +1107,23 @@ Gate B-C, and acceptance criterion 2, which is marked **BLOCKING**) and executab
 them. Same shape as §5's own note that the stored `assertion_margin` values are *"documentation
 of a check that was made, not a check"*.
 
-⛔ **Correction: it is THREE articles, not four.** The fourth row below — *Namibian
-child-welfare / gender-equality policy items* — has **no article behind it**. Its only
-concrete instance, `south_african_namibian_6ec2eb173e48` ("Boys must not be left behind, says
-child welfare minister"), is one of the **18 accepted adverse rows** (class B, raw 5.1166),
-where it carries a *scope warning* — "the boundary is announcement vs outcome, not 'policy is
-adverse'". That is a **labelling caveat on an adverse row**, not a row that must score above
-the op-point, which is why its "reader's real objection" cell is `—`. **Criterion 2 cannot be
-evaluated against it.** ⚠️ Do not re-count this set as four.
+⛔ **The Namibian row in the table below is NOT an article and is not in the file.** *Namibian
+child-welfare / gender-equality policy items* has **no article behind it**. Its only concrete
+instance, `south_african_namibian_6ec2eb173e48` ("Boys must not be left behind, says child
+welfare minister"), is one of the **18 accepted adverse rows** (class B, raw 5.1166), where it
+carries a *scope warning* — "the boundary is announcement vs outcome, not 'policy is adverse'".
+That is a **labelling caveat on an adverse row**, not a row that must score above the op-point,
+which is why its "reader's real objection" cell is `—`. **Criterion 2 cannot be evaluated
+against it.**
+
+⚠️ **This paragraph read *"it is THREE articles, not four — do not re-count this set as four"*
+until 2026-08-30, and that wording is retired, not reversed.** It was correct about the
+*Namibian* row and it is still correct about it. But it stated a COUNT to make a point about
+MEMBERSHIP, and the count went stale the moment the set changed: the file now holds **four**
+articles (Rwanda–EU out, two lens-overlap rows in), so a reader following the old sentence would
+have "corrected" a right number to a wrong one. ⛔ **Do not restate the count here at all** —
+`wc -l datasets/adverse/uplifting_no_regression.jsonl` is the answer, and the reason this
+document should not carry a second copy of it.
 
 ✅ **RULED 2026-08-30 — the Rwanda–EU row is DROPPED and REPLACED; criterion 2 no longer
 fails.** Measured 2026-08-29 under one judge (`deepseek-chat`), k=3, full article text: **v7
@@ -1159,18 +1168,27 @@ without the set. Before 2026-08-30 nothing did: the first draw was disjoint only
 row then in the set had aged out of the window. The two new rows ARE in the pool, in a design
 cell whose inclusion probability is **0.0794**.
 
-✅ **The other two rows PASS under both v8 arms** (same run): Rappler **4.900** reordered /
-**5.350** as-is, every individual run clear of the op-point; Unifesp **4.367** reordered /
-**3.983** as-is against a v7-prompt **2.950** — i.e. the reorder scores the transitional-justice
+✅ **The two rows that were in the set at the time of the 2026-08-29 run PASS under both v8
+arms** (same run): Rappler **4.900** reordered / **5.350** as-is, every individual run clear of
+the op-point; Unifesp **4.367** reordered / **3.983** as-is against a v7-prompt **2.950** — i.e. the reorder scores the transitional-justice
 row **+1.417 above v7**, the best of the three prompts tested. **Neither §5b hazard is
 suppressed by the reorder.**
 
-⚠️ **The three carry DIFFERENT assertions, and only two are op-point assertions.** The
-Unifesp row was scored by `cultural_discovery` and never by `uplifting`, so "above the
-uplifting op-point" is not a claim its history supports; what it tests is that the v8 rule
-does not suppress transitional justice. The Rwanda row was *rejected* as adverse, so no
-`observed` block was ever written — **its baseline must be established before its assertion
-can be asserted.** Per-row `assertion` / `assertion_basis` fields carry this.
+⚠️ **The rows carry DIFFERENT assertions — do not read the set as a uniform "above the
+op-point".** The Unifesp row is a **delta**: it was scored by `cultural_discovery` and never by
+`uplifting`, so "above the uplifting op-point" is not a claim its history supports; what it tests
+is that the v8 rule does not suppress transitional justice. The other rows carry `raw > 4.5`.
+⛔ **Read the per-row `assertion` / `assertion_basis` fields — this paragraph deliberately states
+no tally**, because the previous version's *"only two are op-point assertions"* went stale on
+2026-08-30 along with the row count above it.
+
+⛔ **The lesson the dropped Rwanda–EU row leaves behind, which is why it is worth this much
+space:** it was admitted with an assertion and **no `observed` block**, because it had been
+*rejected* as adverse and no baseline was ever recorded. Its own `assertion_basis` said to
+establish one first. Nobody did, for a week, and the gate that depended on it was marked
+BLOCKING the whole time. **A row without a recorded baseline above the line cannot detect a
+regression, and admitting one is admitting a gate that cannot fail for the right reason.** Both
+2026-08-30 replacements had their baselines recorded before their assertions were written.
 
 Each of these was flagged (twice, for the first) and **adjudicated not-adverse**. A v8 that
 suppresses them has traded a reader-facing defect for a worse one: defining a whole category

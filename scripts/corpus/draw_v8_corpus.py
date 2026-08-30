@@ -166,11 +166,23 @@ def load_no_regression_ids(path):
     ids = set()
     with open(path, encoding="utf-8") as fh:
         for line in fh:
-            if line.strip():
-                aid = json.loads(line).get("id")
-                if not aid:
-                    raise SystemExit(f"FATAL: a row in {path} has no id; cannot exclude it.")
-                ids.add(aid)
+            if not line.strip():
+                continue
+            row = json.loads(line)
+            aid = row.get("id")
+            if not aid:
+                raise SystemExit(f"FATAL: a row in {path} has no id; cannot exclude it.")
+            # ⛔ The label check is not decoration: `datasets/adverse/uplifting.jsonl` sits in
+            # the SAME directory, has the same shape, and carries 18 rows labelled "adverse".
+            # Pointed at it, an id-only loader would run clean and silently strip 18 adverse
+            # training examples out of the corpus -- a wrong-file error that fails in the
+            # direction of looking fine, which is this repo's signature defect.
+            if row.get("label") != "no_regression":
+                raise SystemExit(
+                    f"FATAL: {path} row {aid} is labelled {row.get('label')!r}, not "
+                    f"'no_regression'. This flag takes the ACCEPTANCE-TEST set; it is not a "
+                    f"general exclusion list.")
+            ids.add(aid)
     if not ids:
         raise SystemExit(f"FATAL: {path} holds no rows. Refusing to draw against an empty "
                          f"exclusion set -- see the docstring.")
@@ -459,24 +471,29 @@ def main():
     else:
         pool, prov = load_pool(args.archive, _harm_re_fallback())
         prov["drawn_from"] = "archive directly (article text present)"
-    dropped_short = 0
-    if args.short_form == "exclude":
-        before = len(pool)
-        pool = [r for r in pool if r["content_length"] >= ORACLE_FLOOR]
-        dropped_short = before - len(pool)
-
-    # ⛔ The acceptance-test rows are removed BEFORE stratification, so they cannot be counted
-    # into a quota and then drawn. See load_no_regression_ids() for why this is enforced rather
-    # than assumed. The two counts are reported separately on purpose: "in the set" and
-    # "actually removed" differ whenever a guard row has aged out of the window, and only the
-    # second one proves the filter did anything.
+    # ⛔ The acceptance-test rows are removed FIRST -- before the short-form filter and before
+    # stratification -- so they cannot be counted into a quota and then drawn. See
+    # load_no_regression_ids() for why this is enforced rather than assumed.
+    #
+    # ⚠️ Order is load-bearing for the REPORT, not just the outcome. This ran AFTER the
+    # short-form filter until it was reviewed: a guard row under the 300-char floor would then
+    # have been dropped as short, counted as zero removals, and printed under "not in the
+    # drawable pool" -- a message asserting a reason it had not established. Removing first
+    # makes "declared minus removed" mean exactly one thing.
     no_regression_ids = load_no_regression_ids(args.no_regression_set)
     _before_nr = len(pool)
     pool = [r for r in pool if r["id"] not in no_regression_ids]
     dropped_no_regression = _before_nr - len(pool)
     print(f"no-regression set: {len(no_regression_ids)} ids declared, "
           f"{dropped_no_regression} removed from the pool "
-          f"({len(no_regression_ids) - dropped_no_regression} not in this window)")
+          f"({len(no_regression_ids) - dropped_no_regression} not in the drawable pool -- "
+          f"aged out of the window, or excluded upstream as Google News)")
+
+    dropped_short = 0
+    if args.short_form == "exclude":
+        before = len(pool)
+        pool = [r for r in pool if r["content_length"] >= ORACLE_FLOOR]
+        dropped_short = before - len(pool)
 
     # ⛔ Recompute the class-A flag with the census's instrument. The reduce pass runs on a
     # host that cannot import the prefilter, so its flag is the fallback lexicon; leaving it

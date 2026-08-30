@@ -39,9 +39,45 @@ probability is **0.0794**: roughly a 1-in-13 chance per row that a re-draw silen
 guard and hands it to the gate as a training example it has already seen.
 
 Now removed **before stratification**, and the draw **refuses to run** if the set is missing or
-empty. Proven on the real 177,593-row pool rather than on a predicate — `4 declared / 2 removed`,
+empty. Proven on the real 177,592-row pool rather than on a predicate — `4 declared / 2 removed`,
 `guard ids present: []` in the 6,590 drawn rows — with both refusals returning **exit 1** and
 creating no output directory, exit status captured directly rather than through a pipe.
+
+### ⛔ WHAT THE REVIEW FOUND AFTER THE COMMIT — verification is not review
+
+`0ff35c8` was committed and pushed on green: 493 unit tests, 3 killed mutations, 4 budget
+guards, the doc-claim checker, refcheck. `/review-changes` was **not** run. It was run when the
+owner asked, and found **five** defects — three of them in work that had just been called
+verified. All are fixed; recorded because the substitution is the lesson:
+
+1. **A broken consumer.** `docs/evidence/2026-08-29-v8-h-v8-9-adjudication/no_regression_analyse.py`
+   reads the **live** no-regression set and replays a **fixed** 2026-08-29 run; changing the set
+   made it raise `KeyError`. It had been named as a consumer during the work and waved off as
+   *"evidence, don't touch"*. **Naming a consumer is not checking it.** It now reconciles both
+   directions and **exits 2** on partial coverage, so a replay cannot read as a clean pass over
+   rows it never scored.
+2. ⛔ **`177,593` was a LINE count published as a row count.** `pool_v2.jsonl`'s first line is
+   the `__provenance__` record — the article count is **177,592**, and `experiments/registry.jsonl`
+   already carried `drawable: 177592` one file away. The wrong figure reached seven documents,
+   the commit message and the owner report. Corrected everywhere; the commit message cannot be.
+3. **The exclusion ran AFTER the short-form filter**, so a short guard row would have been
+   dropped as short, counted as **zero** removals, and printed under *"not in this window"* — a
+   message asserting a reason it had not established. Moved to run first.
+4. **The loader checked only for an `id`.** `datasets/adverse/uplifting.jsonl` sits in the same
+   directory with the same shape and 18 rows labelled `adverse`; pointed at it the drawer would
+   have run clean and **silently stripped 18 adverse rows from training**. Now refuses any row
+   not labelled `no_regression`.
+5. **Two documentation contradictions in `HUMAN_THRIVING_V8_PLAN.md` §5b**, both a few
+   paragraphs from text the same edit had written: *"it is THREE articles, not four — do not
+   re-count this set as four"*, and *"the three carry different assertions, only two are
+   op-point assertions"*. ⭐ Both were **counts stated to make a point about membership**, and
+   the count is what went stale. Every live count of the set is now removed from the docs —
+   `wc -l` the file.
+
+Guard now at **9 tests / 5 mutations, all killed**. Structural pre-check: 9 markdown files in
+scope, 0 violations. Lenses run inline (guarantee-preservation, reachability,
+claim-verification, adversarial, doc-accuracy); **sync-safety N/A — nothing under `filters/`
+or `filters/common/` changed**, stated so its silence does not read as a pass.
 
 ### ▶ NEXT — execute Phase B
 1. **Sync the patched drawer** if a re-draw is ever run — the exclusion now lives in the script

@@ -1,5 +1,12 @@
-"""H-V8-9 step 2: the three §5b no-regression rows under BOTH v8 arms and the v7 prompt,
+"""H-V8-9 step 2: the §5b no-regression rows under BOTH v8 arms and the v7 prompt,
 k=3 each, one judge (deepseek-chat). Weights, op-point and gatekeeper IMPORTED, never copied.
+
+⚠️ This reads the LIVE no-regression set but replays a FIXED 2026-08-29 run, and those two
+drift apart the moment the set changes. They did on 2026-08-30: the Rwanda-EU row was dropped
+and two rows were added, and this script raised KeyError on the first new id -- found only
+because someone ran it, four commits after the change. It now reports the coverage gap in both
+directions instead of crashing, because a replay that silently skipped the new rows would be
+worse: it would look like a clean pass over a set it never scored.
 """
 import json, sys, statistics
 from pathlib import Path
@@ -27,7 +34,23 @@ for arm in ARMS:
             data[(r["id"], arm, run)] = (wavg({d: a[d]["score"] for d in DIMS}),
                                          a.get("scope_verdict", "-"), a.get("dominant_subject", "-"))
 print(f"op-point {OP} (imported)   judge deepseek-chat, one judge across all three arms")
-for i in NR:
+
+# ⛔ Reconcile the live set against what this fixed run actually scored, BEFORE reporting
+# anything. Rows in the run but not in the set are retired rows; rows in the set but not in
+# the run have never been scored under these arms and MUST NOT read as a pass.
+scored_ids = {k[0] for k in data}
+covered = [i for i in NR if i in scored_ids]
+unscored = [i for i in NR if i not in scored_ids]
+retired = sorted(scored_ids - set(NR))
+print(f"no-regression set: {len(NR)} rows   scored by this run: {len(covered)}")
+if retired:
+    print("  RETIRED since the run (scored here, no longer in the set): " + ", ".join(retired))
+if unscored:
+    print("  ⛔ NOT SCORED BY THIS RUN -- no verdict below covers them: " + ", ".join(unscored))
+    print("  ⛔ This run is a 2026-08-29 replay. Re-score these rows before reading step 2 as "
+          "covering the current set.")
+
+for i in covered:
     r = NR[i]
     print("\n" + "=" * 96)
     print(f"{i}\n  {r['title'][:88]}\n  guards: {r['guards']}   assertion: {r['assertion']}")
@@ -47,3 +70,6 @@ for i in NR:
             d = means[arm] - means["V"]
             print(f"  ASSERTION [{ARMS[arm]}]: delta vs v7 prompt = {d:+.3f}"
                   f"  -> {'PASS (not lower)' if d >= 0 else 'FAIL (scored LOWER than v7)'}")
+
+if unscored:
+    sys.exit(2)   # partial coverage is NOT a pass; 2 distinguishes it from a scoring failure

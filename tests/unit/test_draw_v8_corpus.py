@@ -555,6 +555,50 @@ class NoRegressionExclusionTest(unittest.TestCase):
         self.assertNotEqual(r.returncode, 0)
         self.assertIn("has no id", r.stdout + r.stderr)
 
+    def test_draw_REFUSES_the_ADVERSE_set_pointed_at_this_flag(self):
+        """⛔ Seeded positive for the wrong-file hazard. datasets/adverse/uplifting.jsonl sits
+        in the same directory with the same shape and 18 rows labelled "adverse". An id-only
+        loader would run clean and strip 18 adverse training examples out of the corpus."""
+        with open(self.nr, "w", encoding="utf-8") as fh:
+            fh.write(json.dumps({"id": "art_000001", "label": "adverse"}) + "\n")
+        r = run(["--archive", str(self.arch), "--out", str(self.out), "--size", "200",
+                 "--no-regression-set", str(self.nr)], REPO)
+        self.assertNotEqual(r.returncode, 0)
+        self.assertIn("not 'no_regression'", r.stdout + r.stderr)
+        self.assertFalse(self.out.exists())
+
+    def test_the_real_adverse_set_would_be_refused(self):
+        """The hazard named against the file that actually exists, not a fixture of it."""
+        adverse = REPO / "datasets" / "adverse" / "uplifting.jsonl"
+        self.assertTrue(adverse.exists())
+        r = run(["--archive", str(self.arch), "--out", str(self.out), "--size", "200",
+                 "--no-regression-set", str(adverse)], REPO)
+        self.assertNotEqual(r.returncode, 0, "the adverse set was accepted as an exclusion list")
+        self.assertIn("ACCEPTANCE-TEST set", r.stdout + r.stderr)
+
+    def test_a_SHORT_guard_row_is_still_counted_as_removed(self):
+        """⛔ Order regression test. The exclusion ran AFTER the short-form filter until
+        2026-08-30: a guard row under the 300-char floor was dropped as short, counted as ZERO
+        removals, and reported as 'not in the drawable pool' -- a message asserting a reason it
+        had not established. The fixture plants short rows, so this seeds its own positive."""
+        self._write_set(["art_999999"])
+        probe_out = Path(self.tmp.name) / "probe_short"
+        r = run(["--archive", str(self.arch), "--out", str(probe_out), "--size", "400",
+                 "--short-form", "include", "--no-regression-set", str(self.nr)], REPO)
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        shorts = [json.loads(l) for l in open(probe_out / "corpus.jsonl", encoding="utf-8")]
+        short_ids = [d["id"] for d in shorts if d["content_length"] < 300]
+        self.assertTrue(short_ids, "fixture produced no short rows to seed with")
+
+        self._write_set([short_ids[0]])
+        out2 = Path(self.tmp.name) / "out_short"
+        r = run(["--archive", str(self.arch), "--out", str(out2), "--size", "400",
+                 "--short-form", "exclude", "--no-regression-set", str(self.nr)], REPO)
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        man = json.load(open(out2 / "corpus_manifest.json"))
+        self.assertEqual(man["exclusions"]["no_regression_rows_removed"], 1,
+                         "a short guard row was dropped as short and never counted as removed")
+
     def test_the_shipped_set_is_loadable_and_every_row_has_an_id(self):
         """The default path is the one the real draw uses. A set that cannot be parsed makes
         every draw refuse, so this is a live dependency, not a fixture."""
@@ -564,6 +608,14 @@ class NoRegressionExclusionTest(unittest.TestCase):
         self.assertGreater(len(rows), 0)
         self.assertTrue(all(r.get("id") for r in rows))
         self.assertEqual(len({r["id"] for r in rows}), len(rows), "duplicate ids in the set")
+        self.assertTrue(all(r.get("label") == "no_regression" for r in rows),
+                        "the loader refuses any row not labelled no_regression")
+        # A retired row must not silently reappear in the live set.
+        retired = REPO / "datasets" / "adverse" / "uplifting_no_regression_retired.jsonl"
+        if retired.exists():
+            gone = {json.loads(l)["id"] for l in open(retired, encoding="utf-8") if l.strip()}
+            self.assertFalse(gone & {r["id"] for r in rows},
+                             "a retired row is back in the live no-regression set")
 
 
 if __name__ == "__main__":

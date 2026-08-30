@@ -108,7 +108,7 @@ same error the Unifesp row made** — asserting an absolute band from a differen
 ## Disjointness from training — checked, then enforced
 
 Against `b650-gpu:~/v8_corpus/`: both rows **absent** from `corpus_v8_final.jsonl` (**6,590**)
-and `recall_cohort_final.jsonl` (**600**), **present** in `pool_v2.jsonl` (**177,593**). Same
+and `recall_cohort_final.jsonl` (**600**), **present** in `pool_v2.jsonl` (**177,592**). Same
 population as training, disjoint from it.
 
 ⛔⛔ **That was luck, not enforcement.** `draw_v8_corpus.py` had no exclusion for the
@@ -121,7 +121,8 @@ Now removed before stratification, with the draw refusing to run on a missing or
 Proven against the real pool, not a predicate:
 
 ```
-no-regression set: 4 ids declared, 2 removed from the pool (2 not in this window)
+no-regression set: 4 ids declared, 2 removed from the pool (2 not in the drawable pool --
+                   aged out of the window, or excluded upstream as Google News)
 corpus.jsonl: 6590 rows, guard ids present: []
 "no_regression_ids_declared": 4, "no_regression_rows_removed": 2
 ```
@@ -135,10 +136,37 @@ reports `tail`'s status — shipped twice in this repo):
 | set present but empty | `FATAL: … holds no rows…`, **exit 1** |
 | either refusal | no output directory created |
 
-Six tests in `tests/unit/test_draw_v8_corpus.py::NoRegressionExclusionTest`, each seeding its own
-positive. Three mutations, all killed, mutator asserting it applied: dropping the pool filter
-(2 failures), returning empty instead of raising on a missing set (1), and reporting the
-*declared* count as the *removed* count (1).
+Nine tests in `tests/unit/test_draw_v8_corpus.py::NoRegressionExclusionTest`, each seeding its own
+positive. Five mutations, all killed, mutator asserting it applied: dropping the pool filter
+(2 failures), returning empty instead of raising on a missing set (1), reporting the *declared*
+count as the *removed* count (1), removing the label check (2), and swapping the exclusion back
+below the short-form filter (1).
+
+### ⛔ Three defects this document did not have until it was reviewed
+
+The first draft of this evidence was committed (`0ff35c8`) before `/review-changes` was run on it.
+Recording what that cost, because "I verified it" and "I reviewed it" turned out to be different
+claims:
+
+1. **A broken consumer.** `docs/evidence/2026-08-29-v8-h-v8-9-adjudication/no_regression_analyse.py`
+   reads the **live** set and replays a **fixed** 2026-08-29 run. Changing the set made it raise
+   `KeyError` on the first new id. It had been named as a consumer during the work and waved off
+   as *"evidence, don't touch"*. It now reconciles both directions and **exits 2** on partial
+   coverage — a replay that silently skipped the new rows would read as a clean pass over a set
+   it never scored.
+2. **`177,593` was a LINE count, not a row count.** `pool_v2.jsonl`'s first line is the
+   `__provenance__` record; the article count is **177,592**, and `experiments/registry.jsonl`
+   already carried `drawable: 177592` one file away. The wrong figure reached seven documents, a
+   commit message and a report to the owner. ⛔ *Re-derive every number from the tool that
+   produced it* — the count came from a probe script that counted every line and was then
+   described as "rows".
+3. **Two order/validation holes in the new guard itself.** The exclusion ran *after* the
+   short-form filter, so a short guard row would have been dropped as short, counted as zero
+   removals, and reported under *"not in this window"* — a message asserting a reason it had not
+   established. And the loader checked only for an `id`, so pointing `--no-regression-set` at
+   `datasets/adverse/uplifting.jsonl` (same directory, same shape, 18 rows labelled `adverse`)
+   would have run clean and silently stripped 18 adverse rows from training. Both fixed, both
+   with a seeded test and a killed mutation.
 
 ## What this does not establish
 

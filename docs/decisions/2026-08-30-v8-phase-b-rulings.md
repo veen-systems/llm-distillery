@@ -134,7 +134,7 @@ Every selection criterion, and why each one exists:
    is being trained to.
 6. **Disjoint from training, drawn from the same population.** Verified 2026-08-30: absent from
    `corpus_v8_final.jsonl` (6,590) and `recall_cohort_final.jsonl` (600), present in
-   `pool_v2.jsonl` (177,593).
+   `pool_v2.jsonl` (177,592).
 
 ### ⛔ And the disjointness was luck, so it is now enforced
 
@@ -146,11 +146,11 @@ chance per row that a re-draw silently swallows a guard and hands it to the gate
 example it has already seen.
 
 The drawer now removes every id in the no-regression set **before stratification**, and
-**refuses to run** if the set is missing or empty. Proven on the real 177,593-row pool, not on a
+**refuses to run** if the set is missing or empty. Proven on the real 177,592-row pool, not on a
 predicate:
 
 ```
-no-regression set: 4 ids declared, 2 removed from the pool (2 not in this window)
+no-regression set: 4 ids declared, 2 removed from the pool (2 not in the drawable pool)
 corpus.jsonl: 6590 rows, guard ids present: []
 manifest exclusions: … "no_regression_ids_declared": 4, "no_regression_rows_removed": 2
 ```

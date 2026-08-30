@@ -41,9 +41,9 @@ already seen. Nothing would have failed; Gate A would simply have started gradin
 its own homework.
 
 Now removed **before stratification**, with the draw refusing to run on a missing or empty set,
-proven against the real 177,593-row pool (`4 declared / 2 removed`, `guard ids present: []`),
+proven against the real 177,592-row pool (`4 declared / 2 removed`, `guard ids present: []`),
 both refusals at **exit 1** with no output directory, exit status captured directly rather than
-through a pipe. Six tests, three mutations, all killed, the mutator asserting it applied.
+through a pipe. Nine tests, five mutations, all killed, the mutator asserting it applied.
 
 ---
 
@@ -102,7 +102,7 @@ Selection criteria that did work (`docs/evidence/2026-08-30-v8-no-regression-rep
   predicate the new one is trained to is the Unifesp error** — asserting an absolute band from a
   different prompt's score.
 - **Disjoint from training, same population** — absent from the 6,590 corpus and the 600-row
-  cohort, present in the 177,593-row pool.
+  cohort, present in the 177,592-row pool.
 
 Adopted both: Fast Company / London ULEZ (en, native 5,780, uplifting **6.683**) and Welingelichte
 Kringen / Greek lignite closures (nl, native 2,601, uplifting **6.474**, above the op-point of
