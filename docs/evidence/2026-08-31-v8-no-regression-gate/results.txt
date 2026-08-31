@@ -1,0 +1,42 @@
+op-point 4.5 (imported)   judge deepseek-chat, one judge across all three arms
+no-regression set: 4 rows   scored by this run: 4
+
+================================================================================================
+southeast_asian_rappler_0e6a2d47163c
+  The silent crisis on our plates
+  guards: recovery narratives   assertion: raw_weighted_average > 4.5
+  v8 reordered                       k=3 5.100   runs 5.25 4.65 5.40   verdicts in_s/in_s/in_s
+  v8 as-is                           k=3 5.283   runs 5.40 5.20 5.25   verdicts in_s/in_s/in_s
+  v7 prompt (baseline, same judge)   k=3 5.467   runs 5.55 5.55 5.30   verdicts __ab/__ab/__ab
+  ASSERTION [v8 reordered]: 5.100 > 4.5  -> PASS
+  ASSERTION [v8 as-is]: 5.283 > 4.5  -> PASS
+
+================================================================================================
+south_american_brasil_de_fato_42843d936b64
+  Unifesp identifica resíduo compatível com sangue no antigo DOI-Codi/SP
+  guards: transitional justice   assertion: DELTA, not a band: v8 must not score this LOWER than v7 under the same prompt family and the same judge
+  v8 reordered                       k=3 4.750   runs 4.80 4.35 5.10   verdicts in_s/in_s/in_s
+  v8 as-is                           k=3 3.750   runs 3.40 4.00 3.85   verdicts in_s/in_s/in_s
+  v7 prompt (baseline, same judge)   k=3 2.900   runs 3.20 2.80 2.70   verdicts __ab/__ab/__ab
+  ASSERTION [v8 reordered]: delta vs v7 prompt = +1.850  -> PASS (not lower)
+  ASSERTION [v8 as-is]: delta vs v7 prompt = +0.850  -> PASS (not lower)
+
+================================================================================================
+industry_intelligence_fast_company_5510f1117e34
+  London’s Ultra Low Emission Zone cleaned up the city’s air. Then children’s lungs got bi
+  guards: legitimate lens overlap (ADR-015)   assertion: raw_weighted_average > 4.5
+  v8 reordered                       k=3 6.417   runs 6.45 6.45 6.35   verdicts in_s/in_s/in_s
+  v8 as-is                           k=3 6.517   runs 6.55 6.20 6.80   verdicts in_s/in_s/in_s
+  v7 prompt (baseline, same judge)   k=3 6.483   runs 6.40 6.30 6.75   verdicts __ab/__ab/__ab
+  ASSERTION [v8 reordered]: 6.417 > 4.5  -> PASS
+  ASSERTION [v8 as-is]: 6.517 > 4.5  -> PASS
+
+================================================================================================
+dutch_news_welingelichtekringen_760a0a956413
+  De schokkende voordelen van minder luchtvervuiling: een voorbeeld uit Griekenland
+  guards: legitimate lens overlap (ADR-015), multilingual instance   assertion: raw_weighted_average > 4.5
+  v8 reordered                       k=3 5.550   runs 5.55 5.55 5.55   verdicts in_s/in_s/in_s
+  v8 as-is                           k=3 5.667   runs 5.90 5.55 5.55   verdicts in_s/in_s/in_s
+  v7 prompt (baseline, same judge)   k=3 5.750   runs 5.75 5.75 5.75   verdicts __ab/__ab/__ab
+  ASSERTION [v8 reordered]: 5.550 > 4.5  -> PASS
+  ASSERTION [v8 as-is]: 5.667 > 4.5  -> PASS

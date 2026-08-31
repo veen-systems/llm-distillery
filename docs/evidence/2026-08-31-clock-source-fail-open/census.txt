@@ -1,0 +1,19 @@
+window: 47 collections, collection_20260824_040945 .. collection_20260831_200757
+rows: 158,656   unstamped: 0
+source_types: {'rss': 152774, 'social': 370, 'api': 5512}
+pairs: {'api->utc': 5512, 'rss->utc': 152774, 'social->utc': 370}
+
+is the stamp truthful? collected_date offset from the collection's own UTC start, minutes
+  (host-local on this host would read ~+120; UTC reads ~0)
+  collection_20260824_040945  dir-local 2026-08-24 04:09:45  -> UTC 2026-08-24 02:09:45
+    api     n=32     min -5.4  median -5.4  max -5.3
+    rss     n=1845   min -5.4  median -4.9  max -2.2
+    social  n=18     min -5.4  median -5.3  max -5.0
+  collection_20260828_001032  dir-local 2026-08-28 00:10:32  -> UTC 2026-08-27 22:10:32
+    api     n=138    min -5.7  median -5.5  max -4.8
+    rss     n=3765   min -5.7  median -3.9  max -2.5
+    social  n=20     min -5.6  median -5.4  max -5.1
+  collection_20260831_200757  dir-local 2026-08-31 20:07:57  -> UTC 2026-08-31 18:07:57
+    api     n=134    min -5.5  median -5.4  max -5.3
+    rss     n=3239   min -5.5  median -4.2  max -2.5
+    social  n=13     min -5.4  median -5.2  max -5.0

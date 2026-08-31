@@ -897,9 +897,18 @@ script, same seed, same permutation design. **The academic/non-academic on-lens 
 inside noise.** Per the owner ruling, a miss here is escalated for a call, not an automatic
 fail.
 
-**Gate B-C — no-regression (§5b).** Every row in the no-regression set still scores **above**
-the op-point. A v8 that fixes class A by suppressing transitional justice or recovery
-narratives has failed, whatever Gate B-A says.
+**Gate B-C — no-regression (§5b).** Every row in the no-regression set still satisfies **its own
+`assertion`**. ⛔ **NOT a uniform "above the op-point"** — that wording stood here until
+2026-08-31 and contradicted the data file it governs: the Unifesp row's assertion has been a
+**delta** (*"v8 must not score this LOWER than v7 under the same prompt family and the same
+judge"*) since 2026-08-23, because that row was never scored by `uplifting` and has no absolute
+standard. Read the assertion off the row; do not restate a rule for the set. A v8 that fixes
+class A by suppressing transitional justice or recovery narratives has failed, whatever Gate B-A
+says.
+
+⚠️ **And it is a k=3 verdict, never a one-pass one.** Measured 2026-08-31: two of the four
+margins sit inside the 0.436/0.687 oracle decoder floor, and single runs land 0.15 above and
+below the op-point on those two rows. `docs/evidence/2026-08-31-v8-no-regression-gate/` §2.
 
 ### Phase B2 — hard negatives for the student residue (playbook §4b, $0 oracle)
 
@@ -1082,7 +1091,7 @@ counted as a pass. Ordered by the 2026-08-20 priority ruling.
 | # | Criterion | Slice | Judged against | Blocking? |
 |---|---|---|---|---|
 | **1** | **Class A dies.** Every harm-adjacent record scores below **3.85**, clear of the noise floor | `datasets/adverse/uplifting.jsonl`, class-A rows — **9** (`class` starts with 'A' — present on every row since 2026-08-21, so the slice is machine-selectable) | editorial upper bound (⚠️ **not** ADR-021 oracle truth — the oracle is blind here) | **YES** |
-| **2** | ✅ **RESOLVED 2026-08-30 — the criterion no longer fails before v8 exists.** The Rwanda–EU row was DROPPED (it failed `raw > 4.5` under every prompt including v7, and a delta conversion fails too at −0.783) and REPLACED by two rows; see §5b and `docs/decisions/2026-08-30-v8-phase-b-rulings.md` §2. **No regression.** Every no-regression row still satisfies its own `assertion` — ⚠️ **not a uniform "above the op-point"**: the Unifesp row is a **delta**, the rest are `raw > 4.5`. See §5b | `datasets/adverse/uplifting_no_regression.jsonl` — ⛔ **this cell states no row count and no tally of assertion types, deliberately.** Both were stated here before and both went stale on 2026-08-30 when the set changed; a count in a document is a second copy of a fact that lives in a file. `wc -l` it. | editorial judgement, owner-confirmed | **YES** |
+| **2** | ✅ **RESOLVED 2026-08-30 and SCORED 2026-08-31 — 4 of 4 rows PASS under the adopted reordered prompt** (analyser exit 0; the 08-30 ruling closed it by construction, the 08-31 run closed it by measurement — until then the two replacements had only *student* scores). ⚠️ Two margins sit inside the 0.436/0.687 decoder floor, so this is a k=3 verdict and not a one-pass one. **The criterion no longer fails before v8 exists.** The Rwanda–EU row was DROPPED (it failed `raw > 4.5` under every prompt including v7, and a delta conversion fails too at −0.783) and REPLACED by two rows; see §5b and `docs/decisions/2026-08-30-v8-phase-b-rulings.md` §2. **No regression.** Every no-regression row still satisfies its own `assertion` — ⚠️ **not a uniform "above the op-point"**: the Unifesp row is a **delta**, the rest are `raw > 4.5`. See §5b | `datasets/adverse/uplifting_no_regression.jsonl` — ⛔ **this cell states no row count and no tally of assertion types, deliberately.** Both were stated here before and both went stale on 2026-08-30 when the set changed; a count in a document is a second copy of a fact that lives in a file. `wc -l` it. | editorial judgement, owner-confirmed | **YES** |
 | **2b** | **The student agrees with its own oracle on class A.** For every class-A record, `\|student_raw − oracle_k_run_mean\|` is inside the oracle band. *New 2026-08-20: two of three class-A rows are the STUDENT disagreeing with all three oracles (§1f) — a criterion judged only on labels would pass a v8 that still ships them* | class-A slice | k-run oracle mean | **YES** |
 | **3** | **Class B shrinks.** Academic/non-academic on-lens gap inside noise on the new labels | 660-row held-out oracle split | ADR-021 oracle ground truth | reported; miss → owner call |
 | **4** | **Class B, adverse rows.** The **9** class-B records score below 3.85 | `uplifting.jsonl`, class-B rows | editorial upper bound | reported — ⚠️ **status needs an owner call**, see §1h: two of the nine are owner-flagged and outscore every class-A row |
@@ -1173,6 +1182,38 @@ arms** (same run): Rappler **4.900** reordered / **5.350** as-is, every individu
 the op-point; Unifesp **4.367** reordered / **3.983** as-is against a v7-prompt **2.950** — i.e. the reorder scores the transitional-justice
 row **+1.417 above v7**, the best of the three prompts tested. **Neither §5b hazard is
 suppressed by the reorder.**
+
+✅ **SCORED 2026-08-31 — the whole set, under the adopted prompt, and all four PASS.** The
+2026-08-30 ruling closed criterion 2 *by construction*; it was not yet closed *by measurement*,
+because the two replacements were chosen from `uplifting v7` **student** scores and had never
+been through an oracle prompt at all. ⛔ **A student score is not an oracle score** — the Rappler
+row's stored `observed` is **6.4864** from the deployed model against **4.900** under the v8
+reordered prompt. Pointed at the current set, the 08-29 analyser exited **2**:
+*"NOT SCORED BY THIS RUN"* on both replacements.
+
+All four rows re-scored, 3 arms × k=3, one judge, full text — **coverage 4 of 4, exit 0**:
+
+| row | reordered (adopted) | as-is | v7 prompt | verdict |
+|---|---|---|---|---|
+| Rappler | **5.100** | 5.283 | 5.467 | ✅ PASS |
+| Unifesp | **4.750** | 3.750 | 2.900 | ✅ PASS, delta **+1.850** |
+| Fast Company | **6.417** | 6.517 | 6.483 | ✅ PASS |
+| Welingelichte Kringen | **5.550** | 5.667 | 5.750 | ✅ PASS |
+
+⚠️ **Two margins are inside the decoder floor, and that is the k=3 requirement stated as data.**
+Rappler clears the op-point by **0.600** against a 0.436 mean / 0.687 max floor, and its lowest
+single run clears it by **0.15**; the Unifesp row has one run *below* 4.5 (its assertion is the
+delta, so this does not fail it). ⛔ Criterion 2 must never be read off one pass.
+
+⭐ **And re-scoring the two carried-over rows bought a control nothing here had measured: a k=3
+mean is not stable to three digits.** Between 08-29 and 08-31, with judge, prompt hash, article
+text and weights all held fixed, the k=3 means moved by up to **+0.484** (Rappler, v7 arm) — above
+the 0.436 mean floor. The verdicts are unchanged, which is what the gate asserts; the numbers are
+not. ⛔ Do not read a ≤0.5 movement of a k=3 oracle mean on this population as an effect. The
+08-29 figures in the paragraph above are that run's, not today's, and both are correct.
+
+Evidence, with the pre-registration written before any call:
+`docs/evidence/2026-08-31-v8-no-regression-gate/`.
 
 ⚠️ **The rows carry DIFFERENT assertions — do not read the set as a uniform "above the
 op-point".** The Unifesp row is a **delta**: it was scored by `cultural_discovery` and never by

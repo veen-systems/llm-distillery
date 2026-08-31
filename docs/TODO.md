@@ -97,14 +97,51 @@ or `filters/common/` changed**, stated so its silence does not read as a pass.
   `filters/common/` changed, so there is nothing for `deploy_to_nexusmind.sh` to carry and no
   Hub upload. No model, threshold, probe or op-point moved. Spend $0.
 
+### ✅ 2026-08-31 — the no-regression gate re-run, and it was not a formality
+
+**$0.0205**, 36 calls, 0 errors, off-peak. Item 4 below is **DONE**, and it needed doing for a
+reason the 08-30 ruling did not state: the criterion was closed **by construction**, not by
+measurement. The two replacement rows were selected from `uplifting v7` **student** scores and
+had **never been scored under any oracle prompt** — the 08-29 analyser exited **2** on both
+(*"NOT SCORED BY THIS RUN"*). ⛔ A student score is not an oracle score: the Rappler row's stored
+`observed` is 6.4864 from the deployed model and **4.900** under the v8 reordered prompt.
+
+All 4 rows re-scored, 3 arms × k=3, one judge, full text — **coverage 4 of 4, analyser exit 0,
+all four PASS** under the adopted reordered prompt: **5.100** (Rappler) / delta **+1.850**
+(Unifesp) / **6.417** (Fast Company) / **5.550** (Welingelichte Kringen).
+
+⚠️ **Two margins sit inside the 0.436/0.687 oracle decoder floor.** Rappler clears the op-point
+by 0.600 and its *lowest single run* by **0.15**; one Unifesp run lands **below** 4.5 (its
+assertion is the delta, so it is not failed by that). **Criterion 2 is a k=3 verdict and must
+never be read off one pass** — that is now data, not policy.
+
+⭐ **The free control: a k=3 mean is not stable to three digits.** Re-scoring the two
+carried-over rows moved their k=3 means by up to **+0.484** between 08-29 and 08-31 with judge,
+prompt hash, text and weights all fixed. ⚠️ **That 0.484 is a MAX over 6 pairs and the 0.436 is
+a MEAN over 40, so it does not refute `1/√k`** — the surviving claim is only that a k=3 mean can
+move about half a point. ⛔ Do not read a ≤0.5 movement of one on this population as an effect.
+(n=6; a server-side `deepseek-chat` change — it is a moving pointer — is **not separable** from
+it.)
+
+⛔ **My own pre-registered risk call was wrong.** The Dutch row, flagged *"most likely to fail"*
+on short + non-Latin-adjacent + a step-function scope gate, is the most stable object in the
+run — **5.55 / 5.55 / 5.55** under arm A and 5.75 / 5.75 / 5.75 under v7, zero decoder spread,
+against a 13,107-char English row that spreads 0.75. All four predicted ranges were hit, and
+three of them were wide enough to survive being wrong about the mechanism.
+`docs/evidence/2026-08-31-v8-no-regression-gate/`, `EXP-007`.
+
 ### ▶ NEXT — execute Phase B
 1. **Sync the patched drawer** if a re-draw is ever run — the exclusion now lives in the script
    and the set is its input.
-2. **Phase B labelling run**: reordered prompt, k=3 with aggregation, 6,590 rows, ≈$10.32.
-   Corpus and cohort are staged at `b650-gpu:~/v8_corpus/`.
+2. ⛔ **AWAITING THE OWNER'S GO — the Phase B labelling run costs real money**: reordered prompt,
+   k=3 with aggregation, 6,590 rows, **≈$10.32** measured (not the retired ≈$6.92). Corpus and
+   cohort are staged at `b650-gpu:~/v8_corpus/`. Every free precondition is now discharged —
+   corpus drawn and manifested, guard rows excluded by construction, prompt adopted, criterion 2
+   **measured** green. ⚠️ Run it off-peak (peak is 01:00–04:00 and 06:00–10:00 UTC, Mon–Fri;
+   weekends bill off-peak throughout).
 3. **Adjudicate the 47 class-A supplement rows** (~75% harm-answered / ~25% harm-dominant) at
    labelling time — the manifest still records `tp_fp_status: adjudication-pending`.
-4. **Re-run Gate A** against the 4-row no-regression set.
+4. ✅ **DONE 2026-08-31 — Gate A re-run against the 4-row no-regression set.** See above.
 
 ### ⚠️ Standing, carried forward
 - `refcheck.py` reports **1 finding** (`narrative_risk.json`), recorded as real and deliberately

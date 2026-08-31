@@ -197,6 +197,35 @@ what varied — batch composition (0.16), the **library stack** (0.2008), the
 one that varied in *your* comparison. ⛔ **"The machine" is not on that list**: with
 pins and device matched, two machines are bit-identical.
 
+### ⚠️ What `k=3` actually leaves — first measured 2026-08-31, n=6 pairs
+
+Item 4 above is **arithmetic**. The first direct look at the residual came from re-scoring the
+`human_thriving v8` no-regression rows on a second day, which is a paired design nobody set out
+to run: two rows × three prompt arms were scored k=3 on **2026-08-29** and k=3 again on
+**2026-08-31**, with judge (`deepseek-chat`), prompt file **and its sha256**, article text,
+weights and op-point all held fixed.
+
+| | |
+|---|---|
+| pairs | **6** (2 rows × 3 arms) — small, and the interval is not reportable at that n |
+| movement of the **k=3 mean** | +0.200, −0.067, **+0.484**, +0.383, −0.233, −0.050 |
+| max | **0.484** — *above* the 0.436 single-draw mean floor, below the 0.687 op-point-band one |
+
+⛔ **`k=3` averages the decoder; it does not pin it.** ⚠️ **The comparison is NOT like-for-like
+and must not be quoted as one**: 0.484 is a **max over 6 pairs**, 0.436 is a **mean |Δ|** over 40
+single-draw pairs — different sets, different quantities, and a max is expected above a mean
+even with the spread unchanged — so this does **not** refute `1/√k`,
+and `ν/√3 ≈ 0.25` is quoted for scale only. The claim that survives is narrow and sufficient:
+**a k=3 mean can move about half a point between days.** Small n, a population difference
+(`uplifting`-prompt rows, not the `cultural_discovery v5` ones 0.436 was measured on) and a
+server-side model change — **`deepseek-chat` is a moving pointer, not a pinned version** — are
+**not separable from six pairs**.
+
+**Consequence, and it is the usable part:** do not read a **≤0.5 movement of a k=3 oracle mean**
+on this population as an effect. Every k=3 verdict in the v8 gate is unchanged across the two
+days; the three-digit numbers are not. Record: `docs/evidence/2026-08-31-v8-no-regression-gate/`
+§3.
+
 Records: `docs/evidence/2026-08-12-cd-v5-cross-oracle-arm-a.md` (ν = 0.436) and
 `docs/evidence/2026-08-12-cd-v5-op-point-band-followup.md` (ν₄ = 0.687).
 Harness: `scripts/research/cd_v5_arm_a_sample.py --noise-pairs` emits the

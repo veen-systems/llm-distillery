@@ -61,6 +61,34 @@ UTC, and there is **not one mixed case in ~9,800 rows**. ⭐ **A clean partition
 falsifiable in a way a percentage is not** — one mixed row refutes it, whereas "about 3.87%
 of rows are skewed" survives almost any observation.
 
+⛔⛔ **THE PARTITION ABOVE IS HISTORY, NOT STATE — superseded 2026-08-31, and it is obsolete
+BY SUCCESS.** Census over every collection retained on the host (47 collections,
+`collection_20260824_040945 .. collection_20260831_200757`, **158,656 rows**):
+`api->utc` 5,512 · `rss->utc` 152,774 · `social->utc` 370 — **zero `host_local`, zero
+unstamped.** FS#176's migration finished: the 2h host-clock skew is gone from delivered rows.
+⭐ **And the stamp is truthful, not a relabelled host clock** — `collected_date` sits within
+~6 minutes of each collection's own UTC start on the oldest, middle and newest delivery, where
+a host-local clock would read **+120**. ⚠️ **The window cannot date the change**: `data/current`
+retains ~8 days and its oldest directory is already fully `utc`, so the flip happened at or
+before 2026-08-24 and nothing in this population can say when. ⛔ Do not write a flip date.
+
+⛔ **The guard on the line above has been FAIL-OPEN since it was written** (`943379b`,
+2026-08-16), and was swallowing a real violation for **at least the last week** — the window
+cannot say longer. Its remote block's
+`sys.exit(1)` shared a `||` branch with an unreachable host, so a real violation printed
+`MIXED CASES: {...}` and then **`CANNOT VERIFY: remote check did not run`, exit 0** — a
+detection presenting as a transport failure, which is the harmless-looking half. Fixed, with
+the FAIL branch **proven on a seeded fixture** (exit 1) rather than asserted, and the assertion
+replaced by the strictly stronger post-migration invariant (*every row stamped, every stamp
+`utc`* — one `host_local` row refutes it). Third instance of this shape after the `| grep` and
+`| tail; echo $?` fail-opens of 2026-08-29. Evidence, controls and the census:
+`docs/evidence/2026-08-31-clock-source-fail-open/`.
+
+⚠️ **What this does NOT retire:** the gap-arithmetic history below, and the `published.fabricated`
+findings, are untouched. What changes is that `clock_source` no longer *separates* anything on a
+delivered row — every row says the same thing — so an analysis that planned to condition on it
+gets no discrimination from it any more, and must not read a uniform column as a clean control.
+
 ⚠️ **This retires the gap heuristic as an ATTRIBUTION instrument, not as history.** Every
 `collected − published` figure in this file was measuring a *sum* of a real age, a
 possible fabrication and a possible 2h clock skew. `clock_source` now separates the third
