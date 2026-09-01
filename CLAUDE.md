@@ -286,8 +286,11 @@ git config core.hooksPath .githooks
 python -m ground_truth.batch_scorer --filter filters/{name}/v{N} --llm gemini-flash \
     --source datasets/raw/master_dataset.jsonl
 
-# Prepare training splits
-python training/prepare_data.py --filter filters/{name}/v{N} --data-source datasets/scored/{name}_v{N}.jsonl
+# Prepare training splits. ⛔ --input/--output-dir; there is NO --data-source flag. And
+# --filter's `filter.name` picks the analysis field: point it at the wrong filter and it
+# writes 0 examples, prints COMPLETE and exits 0. RUNBOOK § Training.
+python training/prepare_data.py --filter filters/{name}/v{N} \
+    --input datasets/scored/{name}_v{N}.jsonl --output-dir datasets/training/{name}_v{N}
 
 # Fit calibration (after training)
 PYTHONPATH=. python scripts/calibration/fit_calibration.py \

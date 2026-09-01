@@ -132,6 +132,42 @@ a clean-looking wrong number before being caught. Concrete instances of the
 standing rule in `memory/MEMORY.md`: *before using any source as evidence,
 establish what it excludes*.
 
+## ⭐⭐ THE LIVE WINDOW ROLLS. THE DATA DOES NOT — there are MONTHLY archives (2026-09-01)
+
+<!-- verify: ssh sadalsuud 'n=$(ls ~/local_dev/NexusMind/data/archived/nexusmind_*.tar.gz 2>/dev/null | wc -l); [ "$n" -ge 9 ] && echo "PASS $n monthly tarballs" || echo "FAIL only $n"' -->
+⛔ **"That window has rolled, so the rows are unrecoverable" is FALSE, and this project has
+acted on it.** It appears in llm-distillery#127's comment thread and in
+`docs/decisions/2026-08-30-v8-phase-b-rulings.md` as a reason five filters' provenance can
+never be reconstructed.
+
+`~/local_dev/NexusMind/data/archived/` holds **monthly tarballs reaching back to 2025-10**
+(`nexusmind_YYYY-MM.tar.gz`, plus `raw_*` and `prefiltered_*` series). Each `nexusmind_*`
+tarball contains one scored-rows member **per lens** — the enriched, scored rows, the same
+bytes the live `data/filtered/` cycle files carry. ⚠️ Those members are *inside* the tarball
+and resolve to no path on disk; the exact member layout is in
+`scripts/dataset/rehydrate_adverse.py`, which reads them.
+
+**Demonstrated, not asserted (2026-09-01):** all 18 rows of `datasets/adverse/uplifting.jsonl`
+had been reduced to 300-char excerpts and were believed lost. **18 of 18 recovered** — 3 from
+the live window, 15 from `nexusmind_2026-08.tar.gz` — every one matching its recorded
+`content_original_length` exactly. Tool: `scripts/dataset/rehydrate_adverse.py`.
+Record: `docs/evidence/2026-09-01-v8-phase-b-preflight/` §4.
+
+### ⛔ But the FluxusSource archive is NOT a substitute — it holds PRODUCER bytes
+
+`~/local_dev/FluxusSource/data/archived/` has ~1,593 `collection_*.tar.gz` reaching back to
+2025-12, and they are the wrong source for anything long. Three rows whose **enriched**
+originals are 14,546 / 2,917 / 3,652 characters appear there at **447 / 133 / 441** — the long
+text is NexusMind's enrichment and was never in the collector's output. Same shape as the Die
+Presse row rejected on 2026-08-30 for having 149 characters of producer text behind 2,033 of
+enrichment. ⚠️ **So "is it archived?" has two answers depending on which archive, and the
+FluxusSource one silently returns a stub rather than nothing.**
+
+⚠️ **Recovery must VERIFY the rejoin, not trust the id.** Ids are reused when a source rewrites
+a URL and the archives span months, so match on the recorded original length **and** a
+whitespace-normalised prefix. Normalisation is load-bearing: excerpting collapsed newlines to
+spaces on one row, and a strict `startswith` rejected the correct article six times.
+
 ## `data/filtered/<filter>/filtered_*.jsonl` excludes TWO populations
 
 The documented one: rows are written only under

@@ -161,9 +161,17 @@ PYTHONPATH=. python scripts/score_deepseek_production.py \
     --output datasets/scored/{name}_v{N}_deepseek.jsonl --concurrency 15
 
 # Multi-run averaging (for prompt-sensitive filters)
+# ⛔ --runs takes DIRECTORIES, not files, and it joins on `url`. The file-list form
+#    documented here until 2026-09-01 exits 1 with "Run directory not found".
 python scripts/oracle/average_oracle_runs.py \
-    --runs datasets/scored/{name}_v{N}_run1.jsonl datasets/scored/{name}_v{N}_run2.jsonl datasets/scored/{name}_v{N}_run3.jsonl \
-    --output datasets/scored/{name}_v{N}.jsonl
+    --runs datasets/scored/{name}_v{N}_run1/ datasets/scored/{name}_v{N}_run2/ datasets/scored/{name}_v{N}_run3/ \
+    --output datasets/scored/{name}_v{N}/ --filter-name {name}
+
+# ⛔ For a SCOPE-GATED prompt (human_thriving v8), use this instead. It joins on `id`,
+#    KEEPS the per-run scope verdicts, and prints the flip rate the runbook demands below.
+PYTHONPATH=. python3 scripts/oracle/aggregate_k_runs.py \
+    --runs run1.jsonl run2.jsonl run3.jsonl \
+    --config filters/{name}/v{N}/config.yaml --out datasets/scored/{name}_v{N}.jsonl
 ```
 
 ⛔ **AVERAGING DOES NOT REDUCE EVERY KIND OF ORACLE VARIANCE, AND ON A SCOPE-GATED PROMPT IT
@@ -174,6 +182,17 @@ gate, median |Δ| 3.750, while gate-stable rows move 0.100**. Gate A missed it p
 *because* it averaged k=3. **Before averaging, check whether the prompt has a binary gate;
 if it does, report the flip RATE, not the mean.**
 
+⛔ **And `average_oracle_runs.py` cannot report it, because it DELETES the evidence.** It
+replaces the analysis object with six averaged numbers, so `scope_verdict`,
+`dominant_subject`, `content_type` and every evidence quote are gone — after it runs, the
+flip rate is unmeasurable. It also joins on `url` (the scorer's own resume key is `id`) and
+silently keeps only rows present in every run. `scripts/oracle/aggregate_k_runs.py` fixes all
+three and writes **both** aggregates: `weighted_mean_all` and `weighted_mean_major` (the mean
+over only the runs agreeing with the majority verdict). ⚠️ **They are not close on a flipping
+row** — measured 2026-09-01 on 8 class-A rows, they differ by a median of **1.30** weighted
+points, enough to move a row across the operating point. Choose `--aggregate` on the flip
+rate the tool prints, and keep the per-run files.
+
 ---
 
 ## Training
@@ -181,9 +200,17 @@ if it does, report the flip RATE, not the mean.**
 ### Prepare data
 
 ```bash
+# ⛔ --input / --output-dir. There is NO --data-source flag (0 occurrences in the script);
+#    the form documented here until 2026-09-01 dies on argparse.
+# ⛔ --filter's config.yaml `filter.name` decides which analysis field is read. Point it at a
+#    filter whose name does not match the labels and it writes 0 examples to every split,
+#    prints "TRAINING DATA PREPARATION COMPLETE", and exits 0 (measured 2026-09-01). Its own
+#    docstring: "Articles without analysis are silently skipped; missing dimensions default
+#    to score 0" -- so a RENAMED dimension becomes a silent column of zeros.
 python training/prepare_data.py \
     --filter filters/{name}/v{N} \
-    --data-source datasets/scored/{name}_v{N}.jsonl
+    --input datasets/scored/{name}_v{N}.jsonl \
+    --output-dir datasets/training/{name}_v{N}
 
 # Validate splits
 python training/validate_training_data.py \

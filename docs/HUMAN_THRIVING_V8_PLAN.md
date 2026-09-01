@@ -856,6 +856,38 @@ paid run. No exceptions — playbook: *run the review battery BEFORE the paid or
 
 ### Phase B — relabel
 Full re-score under the new prompt. **Do not** re-score only the mid-range (§2, last row).
+
+⛔ **THREE PRE-FLIGHT DEFECTS, FIXED 2026-09-01 — read before running.**
+`docs/evidence/2026-09-01-v8-phase-b-preflight/`, `EXP-008`.
+
+1. **Label with `filters/human_thriving/v8/config.yaml`, not v7's.** That file's `filter.name`
+   selects the analysis field. Labels written under v7's config carry `uplifting_analysis`, and
+   `prepare_data.py --filter filters/human_thriving/v8` then writes **0 examples to every split,
+   prints "TRAINING DATA PREPARATION COMPLETE", and exits 0**. Its docstring: *"Articles without
+   analysis are silently skipped; missing dimensions default to score 0."* The second clause is
+   worse — a renamed dimension becomes a silent column of zeros.
+   ⭐ **Weights are safe to change later without re-labelling** (ADR-001), so §9 Q4 does not gate
+   this run. Only *adding* a dimension would force a re-score.
+2. **Aggregate with `scripts/oracle/aggregate_k_runs.py`, never `average_oracle_runs.py`.** The
+   latter deletes `scope_verdict`, `dominant_subject`, `content_type` and every evidence quote,
+   which makes #135's flip rate unmeasurable afterwards; it also joins on `url` and silently
+   drops rows missing from any run. ⚠️ **The aggregation rule is not cosmetic** — on 8 class-A
+   rows, 2 flipped and the two aggregates differed by **median 1.304 / max 1.383**, with one row
+   at **3.667 (below) vs 5.050 (above)** the 4.5 op-point. Keep the per-run files; the choice can
+   be made afterwards.
+3. **Run it from the workstation, off-peak, staged to `datasets/`.** b650 is **not** a checkout
+   (no `scripts/`, no v8 prompts, no `secrets.ini`), the workstation's `/tmp` is **tmpfs**, and
+   peak is 01:00–04:00 / 06:00–10:00 UTC Mon–Fri.
+
+⛔ **`head -N corpus_v8_final.jsonl` is not a sample** — the file is grouped by design cell and
+its **first 47 rows are exactly the class-A supplement**. A dry run on the head measures the
+hardest stratum in the corpus.
+
+⚠️ **≈$10.32 is a CEILING.** H-V8-8 multiplied one pass by three, on reasoning that describes a
+pass over *different* articles; k=3 re-scores the *same* ones, and whole-request cache was
+observed surviving two days. Whether 6,590 distinct prompts stay cached is a **capacity**
+question, unmeasured. ⭐ Caching does not defeat k=3 — three ~100%-cached runs still returned
+5.25 / 4.65 / 5.40.
 - **Oracle: not yet decided, and n=3 is not enough to decide it.** Measured 2026-08-20
   (§1f): **Gemini fires 3/10 caps vs DeepSeek 1/10 vs qwen3:14b 0/10 — over all ten rows
   (3 class A + 7 class B), not class A alone**; one of Gemini's three is `corporate_finance`
@@ -1311,6 +1343,22 @@ summary line.
   `/ops/flags` reads 0 and is **vestigial** — do not read it as "no lens complaints"), and
   **the flag does not record which lens the reader was viewing**, so lens attribution is
   inferred from where the article scored highest above its own p99.
+
+  ✅ **The EXCERPT half of B5 is discharged 2026-09-01.** All 18 rows of
+  `datasets/adverse/uplifting.jsonl` were 300-char excerpts — all 9 class-A rows included — and
+  the belief that the originals were gone was wrong: the live `data/filtered/` window rolls at
+  ~14 days, but NexusMind archives **monthly**, 9 tarballs back to 2025-10. **18 of 18
+  recovered**, 3 live + 15 from `nexusmind_2026-08.tar.gz`, content characters
+  **5,449 → 100,460**, every length equal to the recorded `content_original_length`, no other
+  field touched. Tool: `scripts/dataset/rehydrate_adverse.py`; record:
+  `docs/evidence/2026-09-01-v8-phase-b-preflight/` §4.
+  ⛔ **What is NOT discharged is the READING.** The rule is *"three of five drafts reversed on a
+  full read"*, and nobody has re-read them. Gate B-A stays blocked on that, not on the data —
+  and since the five editorial labels were adjudicated on the excerpts, a re-read can **change**
+  a label, not merely confirm one.
+  ⚠️ Nothing on the scoring path would have stopped a paid run against the excerpts:
+  `is_scrape_junk` floors at **25** characters, and the 300-char oracle floor lives only in
+  `ground_truth.batch_scorer.make_oracle_prefilter`, which the DeepSeek path does not use.
 
 ---
 

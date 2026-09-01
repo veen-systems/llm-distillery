@@ -130,18 +130,77 @@ against a 13,107-char English row that spreads 0.75. All four predicted ranges w
 three of them were wide enough to survive being wrong about the mechanism.
 `docs/evidence/2026-08-31-v8-no-regression-gate/`, `EXP-007`.
 
+### ✅ 2026-09-01 — Phase B pre-flight: three defects fixed before any bulk spend
+
+**$0.0182**, 25 calls, 0 errors. ⚠️ **Billed at PEAK** — 07:0x UTC on a Tuesday, inside the
+06:00–10:00 UTC window; off-peak would have been $0.0091. Trivial money, but it is exactly the
+trap `memory/oracle-pricing-scheduling.md` names, so **the 6,590-row run must not start before
+10:00 UTC**. Record: `docs/evidence/2026-09-01-v8-phase-b-preflight/`, `EXP-008`.
+
+1. ⛔⛔ **The chain after labelling wrote ZERO examples and exited 0.** `filters/human_thriving/v8/`
+   had no `config.yaml`, and that file's `filter.name` is what selects the analysis field. Label
+   with `uplifting`'s config — which is what every v8 experiment did — and `prepare_data.py`
+   prints `Analysis field: uplifting_analysis`, writes **0 examples to all three splits**, prints
+   **"TRAINING DATA PREPARATION COMPLETE"** and **exits 0**. Its own docstring: *"Articles without
+   analysis are silently skipped; missing dimensions default to score 0"* — so a **renamed**
+   dimension becomes a silent column of zeros, a wrong label rather than a missing one.
+   ✅ v8 config written (labelling scope; `hybrid_inference` and normalization land at Phases C/E,
+   and `prefilter`/`content_type_caps` are omitted **with the reason where the block would be**).
+   Chain proven end to end on 8 real rows: **6 train / 2 test, labels `[6.0, 2.0, 7.0, 7.0, 3.0,
+   7.0]`, all-zero? False**, against the control's 0 examples.
+   ⭐ **A weight change needs no re-labelling** (ADR-001), so plan §9 Q4 does **not** gate the run.
+2. ⛔ **The k=3 aggregator deleted the evidence the runbook requires be reported.**
+   `average_oracle_runs.py` replaces the analysis object with six averaged numbers —
+   `scope_verdict`, `dominant_subject`, `content_type` and every evidence quote gone — so #135's
+   flip rate becomes unmeasurable *after* the money is spent. It also joins on `url` (the
+   scorer's key is `id`), silently intersects partial runs, and the shape documented in the
+   RUNBOOK and `CLAUDE.md` **exits 1** ("Run directory not found").
+   ✅ `scripts/oracle/aggregate_k_runs.py`: joins on `id`, refuses partial coverage, keeps every
+   run, prints the flip rate, writes **both** aggregates. ⭐ **They are not close**: on 8 rows,
+   2 flipped and `|mean_all − mean_major|` was **median 1.304 / max 1.383** — and on one row
+   **3.667 vs 5.050**, i.e. opposite sides of the 4.5 op-point. The old script made that choice
+   silently. The choice itself can wait: every run is kept.
+3. ⛔ **All 18 Gate B-A rows were 300-char excerpts** — and nothing on the scoring path stops a
+   paid run against them (`is_scrape_junk` floors at **25**; the 300-char oracle floor lives only
+   in `ground_truth.batch_scorer`, which the DeepSeek path does not use).
+   ✅ **18 of 18 recovered in full**, 3 from the live window and 15 from
+   `nexusmind_2026-08.tar.gz`; **5,449 → 100,460** content chars; **9 of 9 class-A rows** now full
+   text; every length equal to the recorded `content_original_length`; no other field changed.
+   ⛔ **This corrects a premise**: *"their windows have rolled — unrecoverable"* (#127 thread, and
+   the 08-30 rulings) is wrong — NexusMind archives **monthly**, 9 tarballs back to 2025-10.
+   ⚠️ The FluxusSource tarballs are **not** a substitute: producer bytes only, 447/133/441 chars
+   for rows whose enriched originals are 14,546/2,917/3,652.
+
+⛔ **`head -N corpus_v8_final.jsonl` is NOT a sample.** The file is grouped by design cell and
+the **first 47 rows are exactly the class-A supplement** (18 `pos_clear|latin|classA` + 29
+`pos_marginal|latin|classA`); row 48 is `pos_clear|non_latin|-`. So the 2-of-8 flip rate above is
+a **class-A** number, not a corpus one, and at n=8 its interval contains #135's 5.3% easily.
+
+⚠️ **`$10.32` is a ceiling, not an estimate.** H-V8-8 multiplied one pass by 3 on the reasoning
+that a corpus pass scores 6,590 *different* articles — true of one pass, but k=3 re-scores the
+*same* ones. Whole-request cache was observed surviving **two days** (`hit` 11,904 / 12,160
+against a 10,368 prefix, `miss` 56 / 20). Whether 6,590 **distinct** prompts stay cached is a
+capacity question nobody has measured. ⭐ Caching does **not** defeat k=3 — three ~100%-cached
+runs still returned 5.25 / 4.65 / 5.40. Cheap check: run pass 1, then 50 rows of pass 2.
+
 ### ▶ NEXT — execute Phase B
-1. **Sync the patched drawer** if a re-draw is ever run — the exclusion now lives in the script
-   and the set is its input.
-2. ⛔ **AWAITING THE OWNER'S GO — the Phase B labelling run costs real money**: reordered prompt,
-   k=3 with aggregation, 6,590 rows, **≈$10.32** measured (not the retired ≈$6.92). Corpus and
-   cohort are staged at `b650-gpu:~/v8_corpus/`. Every free precondition is now discharged —
-   corpus drawn and manifested, guard rows excluded by construction, prompt adopted, criterion 2
-   **measured** green. ⚠️ Run it off-peak (peak is 01:00–04:00 and 06:00–10:00 UTC, Mon–Fri;
-   weekends bill off-peak throughout).
-3. **Adjudicate the 47 class-A supplement rows** (~75% harm-answered / ~25% harm-dominant) at
-   labelling time — the manifest still records `tp_fp_status: adjudication-pending`.
-4. ✅ **DONE 2026-08-31 — Gate A re-run against the 4-row no-regression set.** See above.
+1. ⛔⛔ **BLOCKING, AND IT IS AN OWNER DECISION: the oracle vendor was never ruled.** The four
+   rulings of 2026-08-30 were prompt / row / ratio / size. The plan's Phase B still says
+   *"Oracle: not yet decided… Run the ADR-020 bake-off properly on a harm-weighted sample with
+   k-run averaging before committing the full relabel"*, and §9 Q1 is open. The measured hint
+   cuts **against** the default exactly where v8 lives: on class A **Gemini fires 3/10 caps vs
+   DeepSeek 1/10**, while DeepSeek is ~7× cheaper. Everything since Phase A used DeepSeek by
+   momentum, not by ruling. Either rule it, or run the bake-off (~$1) and rule it on evidence.
+2. **The labelling run itself**: reordered prompt, k=3, 6,590 rows, **≤ ≈$10.32**, staged at
+   `b650-gpu:~/v8_corpus/`. ⛔ Runs from the workstation — **b650 is not a checkout** (no
+   `scripts/`, no v8 prompts, no `secrets.ini`) — and stages to `datasets/` (gitignored, real
+   disk), **never `/tmp`, which is tmpfs**. Start **after 10:00 UTC**.
+3. **Adjudicate the 47 class-A supplement rows** — they are rows 1–47 of the corpus file, and
+   the manifest still records `tp_fp_status: adjudication-pending`. Re-measure the scope-flip
+   rate over all 47 while doing it.
+4. ✅ **DONE 2026-08-31 — Gate A re-run against the 4-row no-regression set.**
+5. ✅ **DONE 2026-09-01 — Gate B-A's 18 rows restored to full text.** B5's *"re-read all in full
+   before this gate blocks anything"* is now executable; the reading itself is still owed.
 
 ### ⚠️ Standing, carried forward
 - `refcheck.py` reports **1 finding** (`narrative_risk.json`), recorded as real and deliberately

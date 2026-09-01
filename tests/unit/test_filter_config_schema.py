@@ -43,6 +43,22 @@ ACTIVE_FILTERS = [
     ("nature_recovery", "v4"),
 ]
 
+# --- In development -----------------------------------------------------
+# ⛔ A package being BUILT is not covered by ACTIVE_FILTERS and must not be: it
+# legitimately lacks the deploy-time sections (`hybrid_inference` lands with the probe,
+# `deployment` with the Hub repo). But "not deployed yet" is not "unchecked" — measured
+# 2026-09-01, `filters/human_thriving/v8/config.yaml` could be given `name: 12345` and a
+# weight of 99 and this whole module still passed, because the parametrised test reads a
+# HAND-MAINTAINED list. This file already records that shape biting once: cd v5's drift was
+# invisible for six weeks because ACTIVE_FILTERS still named v4.
+#
+# `test_in_development_filter_config_is_well_formed` below covers what must be right at
+# LABELLING time — the fields that decide which analysis field is written and how the
+# weighted average is computed. Promote the entry into ACTIVE_FILTERS at deploy.
+IN_DEVELOPMENT_FILTERS = [
+    ("human_thriving", "v8"),
+]
+
 # --- Canonical schema ---------------------------------------------------
 
 REQUIRED_TOP_LEVEL = {
@@ -403,4 +419,86 @@ def test_no_stale_exemptions():
     assert not stale, (
         "Stale EXEMPTIONS found — remove these entries:\n"
         + "\n".join(f"  {f}/{v}: {c}  ({reason})" for f, v, c, reason in stale)
+    )
+
+
+# --- In-development packages --------------------------------------------
+
+
+@pytest.mark.parametrize("filter_name,version", IN_DEVELOPMENT_FILTERS,
+                         ids=lambda x: x if isinstance(x, str) else f"v{x}")
+def test_in_development_filter_config_is_well_formed(filter_name, version):
+    """The subset a package must get right BEFORE any oracle spend.
+
+    Not the full canonical schema — an in-development package legitimately lacks the
+    deploy-time sections. What it may not get wrong is anything that silently corrupts
+    labels:
+
+    * `filter.name` selects the analysis field. Mismatch it and `training/prepare_data.py`
+      writes 0 examples to every split, prints "TRAINING DATA PREPARATION COMPLETE" and
+      exits 0 (measured 2026-09-01).
+    * a dimension NAME mismatch is worse than absence: prepare_data defaults a missing
+      dimension to score 0, so a renamed one becomes a silent column of zeros.
+    * weights must sum to 1.0, or every weighted average is off by a constant nobody sees.
+    """
+    cfg_path = _config_path(filter_name, version)
+    assert cfg_path.exists(), f"{cfg_path} is missing"
+    cfg = _load_config(filter_name, version)
+
+    meta = cfg.get("filter")
+    assert isinstance(meta, dict), "config has no `filter:` block"
+    assert meta.get("name") == filter_name, (
+        f"filter.name is {meta.get('name')!r}, not {filter_name!r} — this is the field "
+        f"`analysis_field_name()` reads, so a mismatch empties the training splits silently"
+    )
+    assert str(meta.get("version")).rstrip("0").rstrip(".") == version.lstrip("v"), (
+        f"filter.version {meta.get('version')!r} does not match directory {version!r}"
+    )
+
+    scoring = cfg.get("scoring")
+    assert isinstance(scoring, dict), "config has no `scoring:` block"
+    dims = scoring.get("dimensions")
+    assert isinstance(dims, dict) and dims, "scoring.dimensions must be a non-empty mapping"
+    for name, spec in dims.items():
+        assert isinstance(name, str) and name, f"dimension key {name!r} is not a name"
+        assert isinstance(spec, dict), f"dimension {name} is not a mapping"
+        w = spec.get("weight")
+        assert isinstance(w, (int, float)) and not isinstance(w, bool), (
+            f"dimension {name} has a non-numeric weight {w!r}")
+        assert 0 <= w <= 1, f"dimension {name} weight {w} is outside [0, 1]"
+    total = sum(spec["weight"] for spec in dims.values())
+    assert abs(total - 1.0) < 1e-9, f"dimension weights sum to {total}, not 1.0"
+
+    tiers = scoring.get("tiers")
+    assert isinstance(tiers, dict) and "medium" in tiers, "scoring.tiers.medium is required"
+    med = tiers["medium"].get("threshold")
+    assert isinstance(med, (int, float)) and not isinstance(med, bool), (
+        f"tiers.medium.threshold is {med!r}, not a number")
+    # MAX_NORMALIZATION_RAW_MIN is 4.5 and the comparison is strict `>`, so a config above
+    # it cannot ever have normalization fitted at its own op-point.
+    assert med <= 4.5, (
+        f"tiers.medium.threshold {med} exceeds MAX_NORMALIZATION_RAW_MIN (4.5); the "
+        f"production loader would silently fall back to score_scale_factor"
+    )
+
+    assert "score_scale_factor" in scoring, "scoring.score_scale_factor is required"
+
+
+def test_in_development_dimensions_match_the_prompt_they_are_labelled_with():
+    """The dimension KEYS in the config must be the keys the oracle prompt emits.
+
+    ⛔ This is the pairing nothing else checks. `prepare_data.py` looks dimensions up BY
+    NAME and defaults a miss to 0, so a config key the prompt never emits becomes a column
+    of zeros in the training data — a wrong label, not a missing one, and it survives every
+    other guard in this repo.
+    """
+    cfg = _load_config("human_thriving", "v8")
+    dims = set(cfg["scoring"]["dimensions"])
+    prompt = (REPO_ROOT / "filters/human_thriving/v8/prompt-candidate-tail.md").read_text(
+        encoding="utf-8")
+    # the prompt's output schema names each dimension as a quoted JSON key
+    missing = {d for d in dims if f'"{d}"' not in prompt}
+    assert not missing, (
+        f"config declares dimension(s) the prompt never emits: {sorted(missing)} — "
+        f"prepare_data would score them 0 on every row"
     )

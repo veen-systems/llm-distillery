@@ -56,7 +56,9 @@ shape for that job; it has no place to put *how the filter came to be that way*.
 
 | 17 | 08-31 | Does the **current** 4-row no-regression set pass under the adopted prompt? | ✅ **All four PASS, and two of them had never been oracle-scored at all.** The 08-30 replacements were picked from `uplifting v7` **student** scores; the analyser exited **2** with *"NOT SCORED BY THIS RUN"* on both. Re-scored all 4 rows × 3 arms × k=3: reordered **5.100 / +1.850 delta / 6.417 / 5.550**, coverage 4 of 4, exit 0 — **acceptance criterion 2 no longer fails before v8 exists.** ⚠️ Two margins sit **inside** the 0.436/0.687 decoder floor, and one *single run* of each of those two rows lands 0.15 above and below the op-point respectively — the k=3 requirement stated as data. ⭐ Free control from re-scoring the carried-over rows: a **k=3 mean** moved up to **+0.484** between 08-29 and 08-31 with judge, prompt hash, text and weights all fixed. ⛔ My own pre-registered risk call was wrong — the row flagged *most likely to fail* is the most stable object in the run (5.55/5.55/5.55) | **$0.0205** | [`2026-08-31-v8-no-regression-gate/`](evidence/2026-08-31-v8-no-regression-gate) |
 
-## Open decisions — ✅ ALL FOUR RULED 2026-08-30
+| 18 | 09-01 | Is the chain AFTER labelling ready for 6,590 rows? | ⛔⛔ **No — three defects, all invisible until the money was spent.** (1) `filters/human_thriving/v8/` had no `config.yaml`, and that file's `filter.name` picks the analysis field: labels written under v7's config make `prepare_data.py` write **0 examples to every split, print "COMPLETE", exit 0**. Config written; chain proven end to end (**6 train / 2 test**, non-zero labels) against a control that still writes 0. (2) `average_oracle_runs.py` **deletes** `scope_verdict` and every evidence quote, so #135's flip rate is unmeasurable after it runs, and the shape the RUNBOOK documents exits 1. Replaced by `aggregate_k_runs.py` — and the aggregation rule is **not cosmetic**: 2 of 8 rows flipped, `|all − majority|` **median 1.304**, one row **3.667 vs 5.050** across the op-point. (3) All 18 Gate B-A rows were **300-char excerpts** and nothing on the scoring path stops a paid run against them. ⭐ **18 of 18 recovered in full** (5,449 → 100,460 chars, 9 of 9 class-A) — ⛔ *"the window rolled, unrecoverable"* is **wrong**: NexusMind archives **monthly**, 9 tarballs to 2025-10; the FluxusSource ones hold producer bytes only (447/133/441 vs 14,546/2,917/3,652). ⛔ `head -N` of the corpus is the **class-A supplement**, not a sample. ⚠️ **$10.32 is a ceiling** — whole-request cache survived two days; the capacity question is unmeasured. ⛔ **The ORACLE VENDOR was never ruled** and still blocks | **$0.0182** (peak — 07:0x UTC Tuesday, the window the pricing memory warns about) | [`2026-09-01-v8-phase-b-preflight/`](evidence/2026-09-01-v8-phase-b-preflight) |
+
+## Open decisions — the four of 2026-08-30 are ruled; a FIFTH was never among them
 
 Record with the reasoning for each: **`docs/decisions/2026-08-30-v8-phase-b-rulings.md`**.
 
@@ -69,6 +71,17 @@ Record with the reasoning for each: **`docs/decisions/2026-08-30-v8-phase-b-ruli
 3. **3:1 class-A — about the corpus, which selects the supplement.** Adjudicate the 47 rows at
    labelling time. Short-form stays excluded: v8 is trained for long-form only.
 4. **Phase B labels 6,590 rows** — the corpus as drawn and staged.
+
+### ⛔⛔ THE FIFTH, and it was never on the list: the ORACLE VENDOR
+
+**Blocking Phase B as of 2026-09-01.** The four rulings were prompt / row / ratio / size. The
+plan's Phase B section still reads *"Oracle: not yet decided, and n=3 is not enough to decide
+it… Run the ADR-020 bake-off properly on a harm-weighted sample with k-run averaging before
+committing the full relabel"*, and §9 Q1 is open. ⚠️ **The measured hint cuts against the
+standing preference exactly where v8 lives**: on the class-A rows Gemini fires **3/10** caps
+against DeepSeek's **1/10**, while DeepSeek is ~7× cheaper. Every v8 measurement since Phase A
+used `deepseek-chat` — that is momentum, not a ruling, and it is how a default gets adopted
+without anyone choosing it.
 
 ### Still open, deliberately
 - **Adjudication of the 47 class-A supplement rows** — a labelling-time task, not a draw-time one.

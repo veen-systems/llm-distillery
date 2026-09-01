@@ -1,0 +1,170 @@
+# Human Thriving Filter - Version 8.0
+#
+# The v8 rename of `uplifting` (ADR-012 as amended; the lens-naming backlog is CLOSED,
+# `human_thriving` not bare `thriving`, which is an existing parked directory).
+#
+# ⛔ WHY THIS FILE EXISTS BEFORE ANY MODEL DOES. Phase B labels 6,590 rows, and the
+# labelling script derives the analysis field name from `filter.name` here:
+# `human_thriving` -> `human_thriving_analysis`. Label with `uplifting`'s config and then
+# run `training/prepare_data.py --filter filters/human_thriving/v8` and it looks for
+# `human_thriving_analysis`, finds `uplifting_analysis`, and — measured 2026-09-01, not
+# argued — writes **0 examples to train/val/test, prints "TRAINING DATA PREPARATION
+# COMPLETE", and exits 0**. Its own docstring: *"Articles without analysis are silently
+# skipped; missing dimensions default to score 0."* The same mechanism turns a RENAMED
+# dimension into a silent column of zeros, which is a wrong label rather than a missing one.
+#
+# ⚠️ INCOMPLETE BY DESIGN. This is the labelling-time config. Phase C adds
+# `hybrid_inference` (after the probe is retrained and its threshold re-derived) and Phase E
+# adds the normalization anchor. Blocks that would be inherited unread are omitted below
+# with the reason, because a key that looks live and is dead is this repo's signature defect.
+
+filter:
+  name: human_thriving
+  version: "8.0"
+  created: "2026-09-01"
+  description: "Rate content for human thriving: a process going well FOR PEOPLE, now"
+  focus: "DOCUMENTED OUTCOMES delivered to people, not emotional tone, funding, or speculation"
+
+  changelog_v8: |
+    Renamed from `uplifting` v7 (ADR-012 as amended).
+    - Oracle prompt rewritten: STEP 1 emits `dominant_subject` + `scope_verdict` FIRST, and
+      any verdict other than `in_scope` forces ALL six dimensions to 0-2. The prompt in use
+      is the REORDERED one, `prompt-candidate-tail.md` (article at the end), ADOPTED
+      2026-08-30 on H-V8-9's label argument -- 4 of 12 op-point crossings are stable and on
+      those the reorder is right 3 of 4 -- with its 5.2x cost advantage a by-product.
+    - #107 narrows the consumer predicate: harm-answered-only and institution-beneficiary
+      content is OUT even when v7 scored it high. This is what eliminated every pure-ecology
+      candidate from the no-regression replacement search.
+    - Dimension KEYS and weights are unchanged from v7 (see the note on `scoring`).
+    - Ships NO per-lens prefilter (ADR-018/019 Amendment 2026-08-21).
+
+# Inherited VERBATIM from uplifting v7 (NexusMind#189), deliberately unchanged: keeping the
+# behaviour of the filter this replaces is the conservative option, and narrowing or widening
+# it is a separate decision with its own evidence. Not reviewed for v8.
+source_filter:
+  excluded_source_types: [code_repo, developer_aggregator, firehose_aggregator, eval_aggregator]
+  shadow_mode: false
+
+# ⛔ NO `prefilter:` BLOCK. ADR-018/019 *Amendment 2026-08-21*: new filters ship no per-lens
+# prefilter -- keyword screening is Latin-script only and the multilingual e5 probe replaces
+# it (ADR-011). v7's block carried `expected_pass_rate: 0.20`; that key was DELETED from
+# nature_recovery and solutions rather than corrected, because a declared rate that nothing
+# measures is worse than none (llm-distillery#93, ADR-021). Note also that the per-lens rule
+# prefilter has never executed in the production scoring path (NM#284).
+
+# ⛔ NO `content_type_caps:` BLOCK. The only consumer in the repo is
+# `filters/uplifting/v1/postfilter.py`, and v8 ships no postfilter -- the v8 prompt says so
+# in its own §4: *"Do not apply a content-type cap. `content_type` is a diagnostic label; no
+# code reads it, so a cap you 'apply' mentally is a score nobody lowers."* Carrying the block
+# forward would be dead config that reads as an enforcement point.
+
+oracle:
+  # ⛔ UNDECIDED, and deliberately not defaulted. `docs/HUMAN_THRIVING_V8_PLAN.md` §9 Q1 and
+  # its Phase B section both require an ADR-020 bake-off on a harm-weighted sample with k-run
+  # averaging BEFORE the full relabel; the four rulings of 2026-08-30 did not cover it.
+  # Measured on n=3 (plan §1f): on the class-A rows -- the entire reason v8 exists -- GEMINI
+  # is the stricter arm (3/10 caps vs DeepSeek 1/10), which cuts against the standing DeepSeek
+  # preference, while DeepSeek is ~7x cheaper. The gap is inside the 0.82 oracle noise, so it
+  # is a hint, not a decision. Every v8 measurement so far (Phase A, H-V8-8, H-V8-9, the
+  # 2026-08-31 no-regression gate) used `deepseek-chat`; that is momentum, not a ruling.
+  # ⚠️ Nothing reads this block -- it is documentation. Naming a winner here would not select
+  # one: `ground_truth.batch_scorer --llm` defaults to `claude`, and DeepSeek is a separate
+  # script entirely (`scripts/score_deepseek_production.py`). See docs/RUNBOOK.md.
+  candidates:
+    - deepseek-chat
+    - gemini-flash
+  decision: "OPEN - see plan section 9 question 1"
+
+scoring:
+  # ⚠️ 1.0, NOT v7's 1.1976. v7's factor is inert only because v7 ships a normalization.json;
+  # copying it into a version that has none would silently stretch every score and defeat the
+  # gatekeeper design (FILTER_PLAYBOOK section 8). Superseded by percentile normalization at
+  # Phase E (ADR-014).
+  score_scale_factor: 1.0
+
+  # ⚠️ WEIGHTS ARE v7's, AND ONE OF THEM IS AN OPEN QUESTION. Plan section 9 Q4 asks whether
+  # `social_cohesion_impact` at 0.20 is right for Thriving, given ADR-012's boundary map says
+  # it was removed at v1 and the Thriving<->Belonging rule depends on that -- and it is the
+  # dimension class A rides. Carrying v7's weights is the null option, not an answer.
+  # ⭐ A weight change needs NO re-labelling: the oracle emits per-dimension scores 0-10 and
+  # the weighted average is computed downstream (ADR-001). Dropping a dimension is likewise
+  # free. Only ADDING one would require re-scoring, and none is proposed.
+  # ⛔ The runtime weights live in `base_scorer.py` once Phase C writes it. This block is
+  # documentation, the same relationship TIER_THRESHOLDS has to `scoring.tiers` below.
+  dimensions:
+    # === IMPACT DOMAINS (WHAT kind of thriving) === 65% total
+    human_wellbeing_impact:
+      weight: 0.30
+      category: impact_domain
+      description: "Improvement in health, safety, livelihoods, or basic needs"
+    social_cohesion_impact:
+      weight: 0.20
+      category: impact_domain
+      description: "Bonds among people: trust, belonging, cooperation between groups"
+    justice_rights_impact:
+      weight: 0.15
+      category: impact_domain
+      description: "Rights expanded, accountability delivered, injustice actively addressed"
+
+    # === ASSESSMENT (HOW real/lasting) === 35% total
+    evidence_level:
+      weight: 0.10
+      category: assessment
+      description: "Verification OF THE THRIVING OUTCOME, not general journalism quality"
+    benefit_distribution:
+      weight: 0.10
+      category: assessment
+      description: "Distribution OF THE BENEFIT -- who actually receives it, not audience size"
+    change_durability:
+      weight: 0.15
+      category: assessment
+      description: "How lasting the change is: episodic, sustained, or structural"
+
+  # ⛔ DOCUMENTATION ONLY. `base_scorer.py`'s TIER_THRESHOLDS is what scores in production;
+  # editing this block alone is a no-op (NM#161, NM#205 were both this drift). An op-point
+  # move touches FOUR places in one commit: TIER_THRESHOLDS, this block,
+  # normalization.json `stats.raw_min`, and tests/unit/test_normalization_op_point.py.
+  tiers:
+    high:
+      threshold: 7.0
+      description: "Verified, broadly beneficial, lasting positive change"
+    medium:
+      # 4.5, carried from uplifting v7 (#102, 2026-08-10, ADR-023): at 4.0 recall 0.7361 /
+      # specificity 0.9189; at 4.5 recall 0.6111 / specificity 0.9730. A false positive
+      # reaches a reader and a false negative does not.
+      # ⚠️ 4.5 is exactly MAX_NORMALIZATION_RAW_MIN, accepted with ZERO margin, so the v8
+      # op-point cannot rise without raising that constant in BOTH repos.
+      # ⚠️ Re-derive on v8's own held-out oracle split at Phase D; inheriting the number is
+      # not the same as measuring it, and v8's score distribution is not v7's.
+      threshold: 4.5
+      description: "Documented benefits with moderate reach or durability"
+    low:
+      threshold: 0.0
+      description: "No documented thriving outcome, or the dominant subject is a harm"
+
+  # Documentation of the gatekeeper the PROMPT already states
+  # ("evidence_level [GATEKEEPER: if < 3, max overall = 3.0]"). The runtime copy lives in
+  # base_scorer.py; keep them in sync (same relationship as TIER_THRESHOLDS).
+  gatekeepers:
+    evidence_gatekeeper:
+      dimension: evidence_level
+      threshold: 3
+      max_score: 3.0
+      reason: "Unverified thriving is not thriving"
+
+training:
+  # 6,590 rows, the corpus as drawn, manifested and staged (ruling 4 of 2026-08-30).
+  # Matches v7's 5,271/659/660 exactly. Corpus sha256 prefix 5e2cf729.
+  target_samples: 6590
+  train_val_test_split: [0.8, 0.1, 0.1]
+  recommended_model: "google/gemma-3-1b-pt"
+
+# ⛔ NO `hybrid_inference:` BLOCK UNTIL PHASE C. The probe is RETRAINED, not inherited, and
+# its threshold must be RE-DERIVED: v7's "0.9% FN on MEDIUM+" was calibrated when the
+# op-point was 4.0, before #102 moved it to 4.5. Writing a threshold here now would be a
+# number nobody measured.
+# ⚠️ And it would not take effect anyway: `inference_hybrid.py` hardcodes
+# `DEFAULT_THRESHOLD = 1.00` and NOTHING passes `hybrid_inference.stage1.threshold` into the
+# constructor (verified 2026-08-21, no consumer in filters/common/ or NexusMind's loader).
+# Changing the config value alone does nothing -- this is the nature_recovery 3.225-vs-0.75
+# shape. Change both, or wire one to the other, at Phase C.
