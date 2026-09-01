@@ -1,0 +1,35 @@
+prompt: prompt-candidate-tail.md (ADOPTED)   rows: 9 class-A, FULL TEXT   k=3
+
+====================================================================================================
+DeepSeek
+  PASS  k=3 0.933 < 3.85   runs  0.90  1.00  0.90   no_person/no_person/no_person     Dozens of greyhounds to land in Australia as
+  FAIL  k=3 4.400 < 3.85   runs  6.10  0.90  6.20   in_scope/response_/in_scope       Parents of baby girl killed at nursery fear 
+  PASS  k=3 0.900 < 3.85   runs  0.90  0.90  0.90   harm_is_s/harm_is_s/harm_is_s     Children’s helpline says number of calls abo
+  PASS  k=3 0.767 < 3.85   runs  0.85  0.85  0.60   harm_is_s/harm_is_s/harm_is_s     Domestic violence victim left traumatised af
+  PASS  k=3 1.000 < 3.85   runs  1.00  1.00  1.00   response_/response_/response_     Assault, harassment and stalking top calls t
+  PASS  k=3 1.050 < 3.85   runs  1.05  1.05  1.05   harm_is_s/harm_is_s/harm_is_s     NEW: Five men arrested in Mashonaland Centra
+  PASS  k=3 1.000 < 3.85   runs  1.00  1.00  1.00   out_of_sc/out_of_sc/out_of_sc     Rethink Business Centre Management
+  PASS  k=3 1.000 < 3.85   runs  0.90  1.05  1.05   harm_is_s/harm_is_s/harm_is_s     Woman ‘tortured’ for taking possession of gr
+  PASS  k=3 0.900 < 3.85   runs  0.90  0.90  0.90   harm_is_s/harm_is_s/harm_is_s     Celebrated at birth, pushed into sex work
+  -> Gate B-A: 8/9 below bar   |   STEP 1 applied (majority non-in_scope): 8/9   |   verdicts {'no_person_benefits': 3, 'in_scope': 2, 'response_to_harm': 4, 'harm_is_subject': 15, 'out_of_scope': 3}
+====================================================================================================
+Gemini 2.5 Flash
+  PASS  k=3 0.617 < 3.85   runs  0.60  0.70  0.55   no_person/no_person/no_person     Dozens of greyhounds to land in Australia as
+  FAIL  k=3 5.133 < 3.85   runs  7.20  7.15  1.05   in_scope/in_scope/harm_is_s       Parents of baby girl killed at nursery fear 
+  PASS  k=3 0.900 < 3.85   runs  0.70  1.00  1.00   harm_is_s/harm_is_s/harm_is_s     Children’s helpline says number of calls abo
+  PASS  k=3 0.767 < 3.85   runs  0.70  0.70  0.90   harm_is_s/harm_is_s/harm_is_s     Domestic violence victim left traumatised af
+  PASS  k=3 0.800 < 3.85   runs  0.70  1.00  0.70   harm_is_s/harm_is_s/harm_is_s     Assault, harassment and stalking top calls t
+  PASS  k=3 1.025 < 3.85   runs  1.05  0.97  1.05   harm_is_s/harm_is_s/harm_is_s     NEW: Five men arrested in Mashonaland Centra
+  PASS  k=3 0.500 < 3.85   runs  0.60  0.60  0.30   harm_is_s/harm_is_s/harm_is_s     Rethink Business Centre Management
+  PASS  k=3 0.867 < 3.85   runs  0.85  1.05  0.70   harm_is_s/harm_is_s/harm_is_s     Woman ‘tortured’ for taking possession of gr
+  FAIL  k=3 7.158 < 3.85   runs  7.05  6.93  7.50   in_scope/in_scope/in_scope        Celebrated at birth, pushed into sex work
+  -> Gate B-A: 7/9 below bar   |   STEP 1 applied (majority non-in_scope): 7/9   |   verdicts {'no_person_benefits': 3, 'in_scope': 5, 'harm_is_subject': 19}
+
+====================================================================================================
+HEAD TO HEAD
+  DeepSeek             Gate B-A 8/9   STEP 1 applied 8/9
+  Gemini 2.5 Flash     Gate B-A 7/9   STEP 1 applied 7/9
+
+The row the two oracles were 4.4 points apart on (08-23), 'NEW: Five men arrested in Mashonaland Central fo':
+  DeepSeek             k=3 1.050   runs  1.05  1.05  1.05   harm_is_subject/harm_is_subject/harm_is_subject
+  Gemini 2.5 Flash     k=3 1.025   runs  1.05  0.97  1.05   harm_is_subject/harm_is_subject/harm_is_subject

@@ -58,6 +58,8 @@ shape for that job; it has no place to put *how the filter came to be that way*.
 
 | 18 | 09-01 | Is the chain AFTER labelling ready for 6,590 rows? | ⛔⛔ **No — three defects, all invisible until the money was spent.** (1) `filters/human_thriving/v8/` had no `config.yaml`, and that file's `filter.name` picks the analysis field: labels written under v7's config make `prepare_data.py` write **0 examples to every split, print "COMPLETE", exit 0**. Config written; chain proven end to end (**6 train / 2 test**, non-zero labels) against a control that still writes 0. (2) `average_oracle_runs.py` **deletes** `scope_verdict` and every evidence quote, so #135's flip rate is unmeasurable after it runs, and the shape the RUNBOOK documents exits 1. Replaced by `aggregate_k_runs.py` — and the aggregation rule is **not cosmetic**: 2 of 8 rows flipped, `|all − majority|` **median 1.304**, one row **3.667 vs 5.050** across the op-point. (3) All 18 Gate B-A rows were **300-char excerpts** and nothing on the scoring path stops a paid run against them. ⭐ **18 of 18 recovered in full** (5,449 → 100,460 chars, 9 of 9 class-A) — ⛔ *"the window rolled, unrecoverable"* is **wrong**: NexusMind archives **monthly**, 9 tarballs to 2025-10; the FluxusSource ones hold producer bytes only (447/133/441 vs 14,546/2,917/3,652). ⛔ `head -N` of the corpus is the **class-A supplement**, not a sample. ⚠️ **$10.32 is a ceiling** — whole-request cache survived two days; the capacity question is unmeasured. ⛔ **The ORACLE VENDOR was never ruled** and still blocks | **$0.0182** (peak — 07:0x UTC Tuesday, the window the pricing memory warns about) | [`2026-09-01-v8-phase-b-preflight/`](evidence/2026-09-01-v8-phase-b-preflight) |
 
+| 19 | 09-01 | Does the ADOPTED prompt change which oracle applies STEP 1? | ⭐⭐ **Yes — the disagreement that decided the oracle on 08-23 is GONE.** That run picked DeepSeek because on *"Five men arrested… for raping a minor"* it capped to 3.00 while Gemini **rose to 7.43**. Under `prompt-candidate-tail.md`: **DeepSeek 1.050 / Gemini 1.025**, `harm_is_subject` 3/3 on both. ⛔ **And the plan had never been updated with the 08-23 answer at all** — Phase B and §9 Q1 still carried the superseded n=3 *"Gemini is the stricter arm"*, in the section a reader consults while deciding how to spend $10. Standing now, 9 class-A rows at **FULL TEXT** for the first time, k=3: **DeepSeek 8/9 / 8/9, Gemini 7/9 / 7/9.** ⛔ **Gate B-A passes on NEITHER** — both fail the nursery row, and on both it is a **coin toss** (DeepSeek 6.10/0.90/6.20, Gemini 7.20/7.15/1.05), so the blocker is #135's step function, not the prompt; `--aggregate majority` makes it **worse** on both by deleting the one right run. Gemini's extra loss is **stable** and is the **#91 origin row** (7.158, `in_scope` 3/3). ⛔ The 5.2× reorder saving is DeepSeek **prefix caching** and does not transfer — Gemini's endpoint has no such field, so its "0.0% cache" is a construction artifact. ⛔ My pre-registered call on the decisive row was **WRONG** | **$0.0093** + Gemini 321,564/8,585 tok | [`2026-09-01-v8-oracle-choice/`](evidence/2026-09-01-v8-oracle-choice) |
+
 ## Open decisions — the four of 2026-08-30 are ruled; a FIFTH was never among them
 
 Record with the reasoning for each: **`docs/decisions/2026-08-30-v8-phase-b-rulings.md`**.
@@ -74,14 +76,25 @@ Record with the reasoning for each: **`docs/decisions/2026-08-30-v8-phase-b-ruli
 
 ### ⛔⛔ THE FIFTH, and it was never on the list: the ORACLE VENDOR
 
-**Blocking Phase B as of 2026-09-01.** The four rulings were prompt / row / ratio / size. The
-plan's Phase B section still reads *"Oracle: not yet decided, and n=3 is not enough to decide
-it… Run the ADR-020 bake-off properly on a harm-weighted sample with k-run averaging before
-committing the full relabel"*, and §9 Q1 is open. ⚠️ **The measured hint cuts against the
-standing preference exactly where v8 lives**: on the class-A rows Gemini fires **3/10** caps
-against DeepSeek's **1/10**, while DeepSeek is ~7× cheaper. Every v8 measurement since Phase A
-used `deepseek-chat` — that is momentum, not a ruling, and it is how a default gets adopted
-without anyone choosing it.
+**Still blocking Phase B, but the MEASUREMENT is now done — only the ruling is missing.** The
+four rulings were prompt / row / ratio / size; the oracle was never among them, and every v8
+measurement since Phase A used `deepseek-chat` by momentum.
+
+The ADR-020 bake-off the plan asks for has now been run twice — **2026-08-23** (15 rows × k=3 ×
+2 prompts × 2 oracles, $0.4711) and **2026-09-01** on the adopted prompt with the class-A rows
+at full text. Standing evidence:
+
+| | DeepSeek | Gemini 2.5 Flash |
+|---|---|---|
+| Gate B-A, 9 class-A rows, k=3, full text | **8/9** | 7/9 |
+| STEP 1 applied (majority verdict ≠ `in_scope`) | **8/9** | 7/9 |
+| the #91 origin row, *"Celebrated at birth…"* | **0.900**, `harm_is_subject` 3/3 | **7.158**, `in_scope` 3/3 |
+| relative cost | ~7× cheaper; the ≈$10.32 estimate is built on its prefix cache | no cache field on the endpoint |
+
+⚠️ **8 vs 7 on n=9 is one row** — the argument is which row, not the margin. ⛔ The n=3
+*"Gemini is the stricter arm"* line that stood in the plan until today is **superseded twice
+over** and was never corrected in place; it is now marked stale rather than deleted, so the
+correction is dateable.
 
 ### Still open, deliberately
 - **Adjudication of the 47 class-A supplement rows** — a labelling-time task, not a draw-time one.

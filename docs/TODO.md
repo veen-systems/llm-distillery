@@ -184,13 +184,30 @@ capacity question nobody has measured. ⭐ Caching does **not** defeat k=3 — t
 runs still returned 5.25 / 4.65 / 5.40. Cheap check: run pass 1, then 50 rows of pass 2.
 
 ### ▶ NEXT — execute Phase B
-1. ⛔⛔ **BLOCKING, AND IT IS AN OWNER DECISION: the oracle vendor was never ruled.** The four
-   rulings of 2026-08-30 were prompt / row / ratio / size. The plan's Phase B still says
-   *"Oracle: not yet decided… Run the ADR-020 bake-off properly on a harm-weighted sample with
-   k-run averaging before committing the full relabel"*, and §9 Q1 is open. The measured hint
-   cuts **against** the default exactly where v8 lives: on class A **Gemini fires 3/10 caps vs
-   DeepSeek 1/10**, while DeepSeek is ~7× cheaper. Everything since Phase A used DeepSeek by
-   momentum, not by ruling. Either rule it, or run the bake-off (~$1) and rule it on evidence.
+1. ⛔⛔ **THE ORACLE RULING — measurement DONE 2026-09-01, the ruling is still the owner's.**
+   ⛔ **First: the bake-off had already been run on 2026-08-23 and the plan was never updated
+   with its answer.** Phase B and §9 Q1 still carried the superseded **n=3** *"Gemini is the
+   stricter arm"* — in the section a reader consults while deciding how to spend $10. Both are
+   now marked stale in place rather than deleted, so the correction is dateable.
+   ⭐⭐ **And the 08-23 verdict does not carry to the ADOPTED prompt.** It picked DeepSeek on one
+   row — *"Five men arrested… for raping a minor"*, DeepSeek 3.00 vs Gemini **7.43**. Under
+   `prompt-candidate-tail.md` that row is **DeepSeek 1.050 / Gemini 1.025**, `harm_is_subject`
+   3/3 on both. The reorder fixed Gemini's STEP-1 adherence there, which I had pre-registered a
+   prediction *against*.
+   **Standing evidence** — 9 class-A rows at **FULL TEXT** for the first time, k=3, both arms
+   through the same call site ($0.0093 DeepSeek + 321,564/8,585 Gemini tokens, 54 calls, 0
+   errors): **DeepSeek 8/9 Gate B-A and 8/9 STEP-1 applied; Gemini 7/9 and 7/9.** ⚠️ 8 vs 7 on
+   n=9 is **one row** — the argument is which row: Gemini's extra loss is **stable** (3/3 runs)
+   and is the **#91 origin article** at **7.158**, the one that led the ovr.news homepage and
+   started v8. DeepSeek is also ~7× cheaper, and ⛔ the ≈$10.32 estimate is built on **DeepSeek
+   prefix caching** — Gemini's endpoint has no such field, so a Gemini relabel would need its
+   own price. `docs/evidence/2026-09-01-v8-oracle-choice/`, `EXP-009`.
+   ⛔ **Separately: Gate B-A passes on NEITHER oracle.** Both fail *"Parents of baby girl killed
+   at nursery"*, and on both it is a **scope-gate coin toss** (DeepSeek 6.10/0.90/6.20, Gemini
+   7.20/7.15/1.05). That is #135's step function, not a prompt defect — and `--aggregate
+   majority` makes it **worse** on both, because the majority verdict is `in_scope` and
+   restricting to it deletes the one run that got it right. Acceptance criterion 1 is a separate
+   blocker with a different fix (k, an aggregation rule, or a §5 clause).
 2. **The labelling run itself**: reordered prompt, k=3, 6,590 rows, **≤ ≈$10.32**, staged at
    `b650-gpu:~/v8_corpus/`. ⛔ Runs from the workstation — **b650 is not a checkout** (no
    `scripts/`, no v8 prompts, no `secrets.ini`) — and stages to `datasets/` (gitignored, real

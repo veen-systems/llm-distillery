@@ -888,6 +888,19 @@ pass over *different* articles; k=3 re-scores the *same* ones, and whole-request
 observed surviving two days. Whether 6,590 distinct prompts stay cached is a **capacity**
 question, unmeasured. ⭐ Caching does not defeat k=3 — three ~100%-cached runs still returned
 5.25 / 4.65 / 5.40.
+- ⛔ **ORACLE — the paragraph below is STALE (2026-08-20, n=3) and was superseded TWICE. Read
+  this first.** **2026-08-23** ($0.4711, 15 rows × k=3 × 2 prompts × 2 oracles) found the
+  opposite of it: on *"Five men arrested… for raping a minor"* DeepSeek capped to 3.00 and
+  Gemini **rose to 7.43** — *"DeepSeek applies [step 1], Gemini does not"*. **2026-09-01**
+  (`docs/evidence/2026-09-01-v8-oracle-choice/`) then found that verdict **does not carry to the
+  ADOPTED prompt**: on that same row the reordered prompt gives **DeepSeek 1.050 / Gemini
+  1.025**, `harm_is_subject` 3/3 on both. Current standing, 9 class-A rows at **full text**,
+  k=3: **DeepSeek 8/9 Gate B-A and 8/9 STEP 1 applied; Gemini 7/9 and 7/9.** The one row Gemini
+  loses stably is *"Celebrated at birth, pushed into sex work"* — **7.158, `in_scope` 3/3** —
+  which is the #91 origin row. ⚠️ 8 vs 7 on n=9 is **one row**; the argument is the identity of
+  the row, not the margin. ⛔ And the ≈$10.32 / 5.2× reorder saving is **DeepSeek prefix
+  caching** and does not transfer: Gemini's endpoint has no such field, so its "0.0% cache" is a
+  construction artifact.
 - **Oracle: not yet decided, and n=3 is not enough to decide it.** Measured 2026-08-20
   (§1f): **Gemini fires 3/10 caps vs DeepSeek 1/10 vs qwen3:14b 0/10 — over all ten rows
   (3 class A + 7 class B), not class A alone**; one of Gemini's three is `corporate_finance`
@@ -1394,10 +1407,16 @@ them — deliberately **not** made yet, because the playbook records *proven* le
 
 ## 9. Open questions for the owner
 
-1. **Oracle choice for the full relabel.** Measured on n=3, **Gemini is the stricter arm
-   on class A** (caps 3/10 vs DeepSeek 1/10), which cuts against the standing DeepSeek
-   preference — but the gap is inside the 0.82 oracle noise. **Run the ADR-020 bake-off
-   on a harm-weighted sample with k-run averaging first, or pick now and accept the risk?**
+1. **Oracle choice for the full relabel.** ⛔ **The n=3 "Gemini is the stricter arm" reading
+   below is STALE and is kept only to date its correction — do not act on it.** The bake-off
+   this question asks for has now been run twice: **2026-08-23** (15 rows × k=3 × 2 prompts ×
+   2 oracles, $0.4711) and **2026-09-01** on the **adopted** prompt with the class-A rows at
+   full text (9 × k=3 × 2 oracles, DeepSeek $0.0093 + Gemini 321,564/8,585 tokens).
+   **Standing: DeepSeek 8/9, Gemini 7/9** on both Gate B-A and STEP-1 adherence; the row Gemini
+   loses stably is the #91 origin article, at **7.158 with `in_scope` on 3/3**. DeepSeek is also
+   ~7× cheaper and is the only arm whose prefix cache the ≈$10.32 estimate depends on.
+   **The measurement is done; the ruling is not.** *(Superseded reading: measured on n=3,
+   Gemini fired 3/10 caps against DeepSeek's 1/10 — inside the 0.82 oracle noise.)*
 2. ~~The Assyrian-genocide essay.~~ **RETIRED as a blocker 2026-08-20** — the owner's
    position is that it reads as both FP and TP. A two-sided row is not probe material, so
    it needs no ruling; it stays in `candidates/` as history. *(It also stops being needed:
