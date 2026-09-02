@@ -112,3 +112,45 @@ count.
 - **Pass 1 cost $3.4513 against H-V8-8's predicted $3.44/pass** — the per-pass figure was right.
 - ⛔ **No corpus-wide scope-flip rate yet.** It needs k=3 by definition. Every flip figure this
   project has is still 8 or 9 rows (2/8 on the class-A head sample, 1/9 on each oracle arm).
+
+---
+
+## ⭐⭐ The interruption bought one thing: a k=2 disagreement rate over **4,078 rows**
+
+Every scope-flip figure this project had rested on **8 or 9 rows** (2/8 on the class-A head
+sample, 1/9 on each oracle arm) or on #135's **n=200**. Pass 1 and the completed part of pass 2
+give the same articles scored twice, at $0 extra.
+
+| measured over 4,078 rows scored twice | |
+|---|---|
+| `scope_verdict` **disagreed** between the two runs | **488 = 11.97%** |
+| rows landing on **opposite sides of the 4.5 op-point** | **203 = 4.98%** |
+| \|Δ weighted average\|: mean / median / p90 / p99 / max | 0.422 / 0.100 / 1.050 / 3.700 / 5.200 |
+| rows moving more than the 0.436 decoder mean floor | 1,223 = **30.0%** |
+| \|Δ\| on the **488 verdict-flipped** rows | median **1.550**, max 5.200 |
+| \|Δ\| on the **3,590 verdict-stable** rows | median **0.100**, p99 1.650 |
+
+⭐ **The distribution is bimodal exactly as #135 describes** — a step function, not a noisy
+continuum. A gate-stable row moves 0.1; a gate-flipped row moves 1.55. `1/√k` describes the
+former and cannot touch the latter.
+
+⚠️ **This is an UPPER BOUND on the corpus, and the reason is the interruption itself.** Pass 2
+stopped partway through a file that is **grouped by design cell**, so these 4,078 are a prefix,
+not a sample: `stage1_low|*` is **0% covered** (0 of 621) and `neg_low|latin|-` only 16%. Those
+are the lowest-scoring strata, where the gate is least contested. The corpus-wide rate is lower
+than 11.97%.
+
+⚠️ **And it is not comparable to #135's 5.3% as a like-for-like.** That was production-mix at
+n=200; this corpus was deliberately drawn to over-sample the boundary. Two populations, not a
+contradiction — but it does mean **the gate is more contested in the training corpus than the
+plan's 5.3% implied**, which raises rather than lowers the value of k=3.
+
+### What it settles about k
+
+- ⛔ **k=1 is not defensible.** Roughly 5% of rows — of the order of 250–330 corpus-wide — would
+  carry a coin-toss label on the visibility decision itself, and they are not randomly
+  distributed: they are the boundary cases the student most needs to learn correctly.
+- ⚠️ **k=2 detects but cannot resolve.** It tells you *which* 488 rows disagreed and nothing
+  about which reading is right. There is no majority to take.
+- ✅ **k=3 is the cheapest k that resolves**, which is what H-V8-6 concluded from a different
+  direction (residual 3.750% → 2.452% → 1.945% at k=1/3/5).
