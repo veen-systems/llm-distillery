@@ -1,0 +1,2 @@
+run1.jsonl: 6,586 calls  cache-hit 68,302,592  miss 8,527,859  out 1,662,158  hit-rate 88.9%  $3.4513 off-peak
+run2.jsonl: 4,078 calls  cache-hit 47,480,320  miss 264,265  out 1,087,723  hit-rate 99.4%  $1.1084 off-peak

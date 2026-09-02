@@ -97,8 +97,26 @@ def build_prompt(prompt_template: str, article: dict) -> str:
     return prompt_template.replace(PROMPT_PLACEHOLDER, summary)
 
 
+# ⛔ A RUN-FATAL STATUS IS NOT A PER-ROW ERROR. Set once, checked by every worker.
+#
+# 2026-09-01: a DeepSeek balance ran out mid-corpus. `402 Insufficient Balance` fell through
+# to the generic `return {"error": ...}` branch, so pass 2 wrote 2,500 error rows and pass 3
+# made **6,586 doomed calls in 11 minutes** and reported `Successful: 0  Errors: 6586` — then
+# **exited 0**. A caller could not tell a catastrophe from a clean run.
+#
+# ⚠️ `raise SystemExit` was NOT the fix and is why 401/403 were already unreliable: raised
+# inside a ThreadPoolExecutor worker it surfaces only when the main thread calls
+# `future.result()`, and the executor's context manager still drains every queued future
+# first. An explicit flag stops new calls immediately and is deterministic to test.
+RUN_FATAL = {"status": None, "body": ""}
+FATAL_STATUSES = (401, 402, 403)          # auth, balance, forbidden — none is retryable,
+                                          # and none is a property of the individual row
+
+
 def call_deepseek(api_key: str, model: str, prompt: str, max_retries: int = 3,
                   base_url: str = DEEPSEEK_URL, max_tokens: int = 4096):
+    if RUN_FATAL["status"] is not None:    # a sibling worker already hit it
+        return {"error": f"aborted: HTTP {RUN_FATAL['status']} on an earlier row"}
     headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
     body = {
         "model": model,
@@ -113,8 +131,11 @@ def call_deepseek(api_key: str, model: str, prompt: str, max_retries: int = 3,
             resp = requests.post(base_url, headers=headers, json=body, timeout=120)
             if resp.status_code == 200:
                 return resp.json()
-            if resp.status_code in (401, 403):
-                raise SystemExit(f"Auth failed: HTTP {resp.status_code}")
+            if resp.status_code in FATAL_STATUSES:
+                if RUN_FATAL["status"] is None:
+                    RUN_FATAL["status"] = resp.status_code
+                    RUN_FATAL["body"] = resp.text[:300]
+                return {"error": f"HTTP {resp.status_code}: {resp.text[:200]}"}
             if resp.status_code in (429, 500, 502, 503, 504):
                 last_err = f"HTTP {resp.status_code}"
                 time.sleep(2 ** attempt)
@@ -453,13 +474,38 @@ def main():
     # This script has no clock awareness, so both bounds are printed. Peak is
     # 01:00-04:00 and 06:00-10:00 UTC, Monday through Friday; every other hour,
     # weekends included, bills off-peak.
-    uncached_input = total_input_tokens - total_cached_tokens
-    offpeak = (uncached_input * 0.22 / 1e6) + (total_cached_tokens * 0.007 / 1e6) + (total_output_tokens * 0.66 / 1e6)
-    print(f"Estimated cost: ${offpeak:.2f} off-peak / ${offpeak * 2:.2f} peak")
+    # ⛔ These are DEEPSEEK rates. Printing them for `--base-url <anything else>` is a wrong
+    # number wearing a dollar sign: on a Gemini run 2026-09-01 this line read "$0.00 off-peak
+    # / $0.00 peak" because that endpoint returns no cache fields, which is not a price.
+    if args.base_url == DEEPSEEK_URL:
+        uncached_input = total_input_tokens - total_cached_tokens
+        offpeak = (uncached_input * 0.22 / 1e6) + (total_cached_tokens * 0.007 / 1e6) + (total_output_tokens * 0.66 / 1e6)
+        print(f"Estimated cost: ${offpeak:.2f} off-peak / ${offpeak * 2:.2f} peak")
+    else:
+        print(f"Estimated cost: NOT PRICED -- {args.base_url.split('/')[2]} is not DeepSeek "
+              f"and this script knows only DeepSeek's card. Price the token counts above "
+              f"against the vendor's own rates.")
     print(f"Output tokens/article: {total_output_tokens / max(successes, 1):.0f} "
           f"(the number that decides DeepSeek vs Gemini Batch -- "
           f"see memory/oracle-pricing-scheduling.md)")
     print(f"Output: {output_path}")
+
+    # ⛔ EXIT CODE. Until 2026-09-01 this returned None — exit 0 — whatever happened, so
+    # `Successful: 0  Errors: 6586` and a clean run were indistinguishable to any caller.
+    if RUN_FATAL["status"] is not None:
+        print(f"\n{'='*60}")
+        print(f"FATAL: HTTP {RUN_FATAL['status']} — the run was ABORTED, not completed.")
+        print(f"  {RUN_FATAL['body']}")
+        print("  This is an account-level condition, not a property of any row: every call")
+        print("  after the first one was refused. Nothing is lost — fix the account and")
+        print("  re-run the SAME command; already-scored ids are skipped on resume:")
+        print(f"    --input {input_path} --output {output_path}")
+        print(f"{'='*60}")
+        sys.exit(2)
+    if errors:
+        print(f"\n{errors} row(s) errored. Re-run the same command to fill them — "
+              f"already-scored ids are skipped on resume.")
+        sys.exit(1)
 
 
 if __name__ == "__main__":

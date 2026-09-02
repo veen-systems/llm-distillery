@@ -183,7 +183,41 @@ against a 10,368 prefix, `miss` 56 / 20). Whether 6,590 **distinct** prompts sta
 capacity question nobody has measured. ⭐ Caching does **not** defeat k=3 — three ~100%-cached
 runs still returned 5.25 / 4.65 / 5.40. Cheap check: run pass 1, then 50 rows of pass 2.
 
-### ▶ NEXT — execute Phase B
+### ⛔⛔ 2026-09-01/02 — PHASE B RAN AND WAS CUT OFF. The DeepSeek balance ran out mid-corpus
+
+**Ruled and launched** (`docs/decisions/2026-09-01-v8-oracle-ruling.md`): oracle **DeepSeek**,
+run authorised, corpus staged to `datasets/` and hash-verified (`5e2cf729…`).
+
+| pass | scored | errors | cost |
+|---|---|---|---|
+| run1 | **6,586** | 0 | $3.4513 |
+| run2 | **4,078** | **2,508** (`HTTP 402 Insufficient Balance`) | $1.1084 |
+| run3 | **0** | **6,586** (all 402) | $0.0000 |
+
+⛔ **The corpus is at k=1 on 2,512 rows and k=2 on 4,078. There is no aggregated label set.**
+Nothing is lost — pass 1's labels are on disk. **Total DeepSeek spend this session $4.61.**
+✅ `aggregate_k_runs.py` **refused to write anything**, which is the only thing that caught it
+downstream and is exactly what `average_oracle_runs.py` would have absorbed by intersecting.
+
+⛔ **Three scorer defects, fixed** (`tests/unit/test_scorer_run_fatal.py`, 5 mutations killed):
+a run-fatal status treated as a per-row error, so pass 3 made **6,586 doomed calls in 11
+minutes**; **exit 0** on total failure, making `Successful: 0  Errors: 6586` indistinguishable
+from a clean run; and the cost line pricing **any** endpoint with DeepSeek's card (it printed
+`$0.00` for a Gemini run). ⚠️ `raise SystemExit` was not the fix — inside a `ThreadPoolExecutor`
+worker it surfaces only at `future.result()` and the executor drains every queued future first,
+which is why 401/403 were already unreliable.
+
+▶ **TO RESUME: top up the account, re-run the same two commands** (already-scored ids are
+skipped, error rows are retried), then aggregate. Remaining 9,098 rows at pass 2's measured
+**$0.000272/row** ≈ **$2.5**, so k=3 lands near **$7.1** — under the $10.32 ceiling, and closer
+to the **$6.92** H-V8-8 retracted. ⚠️ Extrapolation from one measured rate, not a measurement.
+Commands and caveats: `docs/evidence/2026-09-01-phase-b-labels/`.
+
+⚠️ **Gemini was also billed this session**: 28 calls, 333,776 input / 9,231 output tokens on
+`gemini_billing_api_key` — the oracle bake-off. Not priced here; this project quotes no rate it
+has not verified.
+
+### ▶ NEXT — finish Phase B
 1. ⛔⛔ **THE ORACLE RULING — measurement DONE 2026-09-01, the ruling is still the owner's.**
    ⛔ **First: the bake-off had already been run on 2026-08-23 and the plan was never updated
    with its answer.** Phase B and §9 Q1 still carried the superseded **n=3** *"Gemini is the

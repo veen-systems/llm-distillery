@@ -1,0 +1,27 @@
+field human_thriving_analysis   dims ['human_wellbeing_impact', 'social_cohesion_impact', 'justice_rights_impact', 'evidence_level', 'benefit_distribution', 'change_durability']
+  datasets/scored/human_thriving_v8/run1.jsonl: 6586 scored, 0 error, 4 skipped
+  datasets/scored/human_thriving_v8/run2.jsonl: 4078 scored, 2508 error, 4 skipped
+  datasets/scored/human_thriving_v8/run3.jsonl: 0 scored, 6586 error, 4 skipped
+ids: 6586 seen, 0 in all 3 runs, 6586 partial
+  PARTIAL ClinicalTrials_039870d4faa0 missing from ['datasets/scored/human_thriving_v8/run3.jsonl']
+  PARTIAL ClinicalTrials_0e34de3fabf4 missing from ['datasets/scored/human_thriving_v8/run3.jsonl']
+  PARTIAL ClinicalTrials_22aa96cd0eed missing from ['datasets/scored/human_thriving_v8/run3.jsonl']
+  PARTIAL ClinicalTrials_273bfb63968a missing from ['datasets/scored/human_thriving_v8/run3.jsonl']
+  PARTIAL ClinicalTrials_347bddee51e1 missing from ['datasets/scored/human_thriving_v8/run3.jsonl']
+  PARTIAL ClinicalTrials_39066973c040 missing from ['datasets/scored/human_thriving_v8/run3.jsonl']
+  PARTIAL ClinicalTrials_4f5ba558d0ec missing from ['datasets/scored/human_thriving_v8/run3.jsonl']
+  PARTIAL ClinicalTrials_5761d382450c missing from ['datasets/scored/human_thriving_v8/run3.jsonl']
+  PARTIAL ClinicalTrials_5b98a6e20a33 missing from ['datasets/scored/human_thriving_v8/run3.jsonl']
+  PARTIAL ClinicalTrials_5f08a8375365 missing from ['datasets/scored/human_thriving_v8/run3.jsonl']
+  PARTIAL ClinicalTrials_695ce9126071 missing from ['datasets/scored/human_thriving_v8/run3.jsonl']
+  PARTIAL ClinicalTrials_6b9c7373e2f0 missing from ['datasets/scored/human_thriving_v8/run3.jsonl']
+  PARTIAL ClinicalTrials_6d7b658b3553 missing from ['datasets/scored/human_thriving_v8/run3.jsonl']
+  PARTIAL ClinicalTrials_6d97e21c2c8e missing from ['datasets/scored/human_thriving_v8/run3.jsonl']
+  PARTIAL ClinicalTrials_702ac15e2430 missing from ['datasets/scored/human_thriving_v8/run3.jsonl']
+  PARTIAL ClinicalTrials_88a63fb82f11 missing from ['datasets/scored/human_thriving_v8/run3.jsonl']
+  PARTIAL ClinicalTrials_8dcf21e10e68 missing from ['datasets/scored/human_thriving_v8/run3.jsonl']
+  PARTIAL ClinicalTrials_966027d21b76 missing from ['datasets/scored/human_thriving_v8/run3.jsonl']
+  PARTIAL ClinicalTrials_983a5f0bf13d missing from ['datasets/scored/human_thriving_v8/run3.jsonl']
+  PARTIAL ClinicalTrials_9bf472e5b694 missing from ['datasets/scored/human_thriving_v8/run3.jsonl']
+FATAL: 6586 id(s) are not in every run and --allow-missing is 0. No output written. Resume the short run (the scorer skips ids already in its output) rather than dropping rows.
+aggregate exit=1
