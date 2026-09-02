@@ -165,7 +165,7 @@ asserting such a caller could exist**). ⭐ **Before adopting anything into a fo
 adoption history for the feature's own name.** Neither the code review nor the mutation tests
 could have caught this — it took a reader who opened the *document* rather than the diff.
 
-## `cmd | tail -4; echo $?` REPORTS TAIL'S STATUS — FOUR GUARDS READ AS EXIT 0 (2026-08-29) [x3]
+## `cmd | tail -4; echo $?` REPORTS TAIL'S STATUS — FOUR GUARDS READ AS EXIT 0 (2026-08-29) [x4, 2026-09-02]
 **Problem**: Auditing four verification guards, I ran `bash script 2>&1 | tail -4; echo "exit=$?"`
 and recorded all four as `exit=0`. One of them was printing `FAIL:` and genuinely failing.
 **Root cause**: `$?` after a pipeline is the **last** command's status. `tail` succeeds
@@ -5337,3 +5337,113 @@ showed the mutation. The suite was 23/24 — a green-ish run that would have bee
 **Related:** the working rule that a parallel agent session may share the checkout, so no git
 verb may take the whole tree — same hazard, different source of concurrency. Here the second
 actor was my own background job.
+
+---
+
+### A 402 IS NOT A PER-ROW ERROR — 6,586 doomed calls in 11 minutes, then exit 0 (2026-09-01/02)
+
+**Problem**: A DeepSeek balance ran out during a 6,590-row k=3 corpus pass. Pass 2 wrote 2,500
+error rows and stopped scoring; pass 3 made **6,586 requests in 11 minutes against an empty
+account**, wrote 6,586 error rows, printed `Successful: 0  Errors: 6586` — and **exited 0**. A
+caller could not distinguish a catastrophe from a clean run. $1.11 of pass 2 was spent for
+labels that could not be aggregated.
+
+**Root cause**: Two independent defects.
+1. `call_deepseek` routed `402` through the generic `return {"error": ...}` branch. 401/403 had
+   a `raise SystemExit` — which does **not** work either: raised inside a `ThreadPoolExecutor`
+   worker it surfaces only when the main thread calls `future.result()`, and the executor's
+   context manager drains every queued future first. The existing "handling" was decorative.
+2. `main()` returned `None` regardless of outcome, so the exit status carried no information.
+
+**Fix**: An explicit `RUN_FATAL` flag that every worker checks **before** issuing a call, so the
+first fatal status stops all further requests deterministically. `FATAL_STATUSES = (401, 402,
+403)`. Exit **2** on abort with a block naming the status, the body and the resume command;
+exit **1** if any row errored; **0** only when clean. 7 tests, 5 mutations killed.
+
+⭐ **The generalisable half: an account-level condition is not a property of a row.** Any status
+that will be identical for every subsequent call must abort the run, not decorate each row with
+it. Retry logic is for transient failure; 402 is not transient.
+
+⭐ **What caught it downstream was a guard written the night before.** `aggregate_k_runs.py`
+refused to write anything — *"FATAL: 6586 id(s) are not in every run"*. The tool it replaced,
+`average_oracle_runs.py`, silently intersects the runs and would have produced a label file.
+
+### `training/prepare_data.py` WRITES 0 EXAMPLES, PRINTS "COMPLETE", AND EXITS 0 (2026-09-01)
+
+**Problem**: A filter package's `config.yaml` selects the analysis field via `filter.name`.
+Labels written under `uplifting`'s config carry `uplifting_analysis`; pointed at a v8 directory
+named `human_thriving`, `prepare_data.py` printed `Analysis field: human_thriving_analysis`,
+wrote **0 examples to all three splits**, printed `TRAINING DATA PREPARATION COMPLETE`, and
+exited 0.
+
+**Root cause**: `convert_to_training_format`'s own docstring states it: *"Articles without
+analysis are silently skipped; missing dimensions default to score 0."* The second clause is
+the worse one — a **renamed** dimension does not vanish, it becomes a silent column of zeros on
+every row, which is a wrong label rather than a missing one.
+
+**Fix**: Wrote `filters/human_thriving/v8/config.yaml` before labelling and proved the chain end
+to end (6 train / 2 test, non-zero labels) against a control that still writes 0. Added
+`IN_DEVELOPMENT_FILTERS` coverage to `tests/unit/test_filter_config_schema.py` plus a test that
+the config's dimension keys are keys the **prompt actually emits** — the pairing nothing checked.
+
+⚠️ The schema test had been passing **vacuously**: `ACTIVE_FILTERS` is a hand-maintained list, so
+the new package could be given `name: 12345` and a weight of 99 with the module still green.
+That file already records the same shape biting once (cd v5 invisible for six weeks).
+
+### "THE WINDOW HAS ROLLED, SO IT IS UNRECOVERABLE" IS FALSE — there are monthly archives (2026-09-01) [16th occurrence of *establish what a source excludes*]
+
+**Problem**: All 18 rows of `datasets/adverse/uplifting.jsonl` were 300-char excerpts and the
+originals were believed gone — a premise recorded in llm-distillery#127's thread and in the
+2026-08-30 rulings as a reason five filters' provenance could never be reconstructed. Gate B-A
+is BLOCKING and judged on that file.
+
+**Root cause**: The live `data/filtered/` window rolls at ~14 days. **NexusMind also archives
+monthly** — `~/local_dev/NexusMind/data/archived/nexusmind_YYYY-MM.tar.gz`, 9 tarballs back to
+2025-10, one scored-rows member per lens, inside the tarball and resolving to no path on disk.
+
+⛔ **And my first search could not have found them.** I globbed `**/*.jsonl*` over the archive
+directories, which hold `.tar.gz` files, and got `RECOVERABLE: 0 of 18` — a negative from an
+instrument pointed where it could not produce a positive. I nearly reported the rows as
+permanently lost on the strength of it.
+
+**Fix**: `scripts/dataset/rehydrate_adverse.py`. **18 of 18 recovered**, 3 from the live window
+and 15 from `nexusmind_2026-08.tar.gz`; 5,449 → 100,460 content chars; every length equal to the
+row's recorded `content_original_length`.
+
+⛔ **The FluxusSource archive is NOT a substitute and returns a stub rather than nothing.** Its
+1,593 `collection_*.tar.gz` hold **producer bytes**: three rows whose enriched originals are
+14,546 / 2,917 / 3,652 chars appear there at **447 / 133 / 441**. So "is it archived?" has two
+answers depending on which archive, and the wrong one looks like a hit.
+
+⭐ **The join must be verified, not trusted.** Ids are reused when a source rewrites a URL and
+the archives span months, so match on the recorded original length **and** a
+whitespace-normalised prefix. Normalisation is load-bearing: excerpting collapsed newlines to
+spaces on one row and a strict `startswith` rejected the correct article six times.
+
+### `head -N` OF A CELL-GROUPED CORPUS IS NOT A SAMPLE (2026-09-01)
+
+**Problem**: A dry run on the first 8 rows of the staged v8 corpus (gitignored, on b650) measured a 25% scope-gate
+flip rate. Quoting that as a corpus figure would have been wrong by construction.
+
+**Root cause**: The file is **grouped by design cell**, and its **first 47 rows are exactly the
+class-A supplement** (18 `pos_clear|latin|classA` + 29 `pos_marginal|latin|classA`); row 48 is
+`pos_clear|non_latin|-`. So the head is the harshest, most harm-adjacent stratum in the corpus
+and looks exactly like a sample.
+
+**Fix**: Reported it as a class-A number, not a corpus one. ⭐ The same shape recurred usefully
+later: when an interrupted pass left 4,078 rows scored twice, checking coverage **first** showed
+`stage1_low|*` at **0%** and `neg_low|latin` at 16% — so the 12.0% disagreement rate derived
+from them is an **upper bound**, which is what made it usable for a spend decision.
+
+### A SHARED TEMP DIRECTORY MADE A 403 TEST REPORT `FATAL: HTTP 401` (2026-09-02)
+
+**Problem**: A subtest asserting that HTTP 403 aborts a run failed, reporting that the script
+had said 401. It read as a defect in the code under test.
+
+**Root cause**: Two stale-state bugs at once in the fixture, both from reusing one temp
+directory across invocations. Python served a **cached `__pycache__` copy** of the previous
+stub `requests` module (same path, same coarse mtime), *and* the scorer **resumed** from the earlier
+run's output file.
+
+**Fix**: A fresh subdirectory per invocation. ⭐ A test fixture that reuses a path reuses more
+than the path — the interpreter's import cache and any resume-capable artefact under it.

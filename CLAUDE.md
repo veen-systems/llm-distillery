@@ -102,7 +102,12 @@ them** — each exists because something shipped broken.
   first.** A `stage1_low` row's score is an **e5 probe estimate**, not a Gemma score
   (23% of rows measured). Same shape as the length-field trap: the field exists, is
   populated, and means different things per row.
-- **Before using any source as evidence, establish what it EXCLUDES.** *(15th
+- **Before using any source as evidence, establish what it EXCLUDES.** *(16th
+  occurrence 2026-09-01 — I globbed `*.jsonl*` over archive dirs holding `.tar.gz` and got
+  "0 of 18 recoverable", agreeing with a premise already in the docs; **18 of 18 were
+  recoverable**. ⛔ Twin: the OTHER archive holds the same ids and returns a 447-char STUB of a
+  14,546-char article — *nothing found* and *found, but short* are different wrong answers, and
+  only the second looks like success. 15th
   occurrence 2026-08-30 — opposite sign again, and the smallest yet: a pool file's FIRST
   LINE is a `__provenance__` record, not an article, so a line count published as a row
   count was off by exactly one — 177,593 against 177,592 — in seven documents, a commit
