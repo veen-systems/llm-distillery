@@ -5447,3 +5447,37 @@ run's output file.
 
 **Fix**: A fresh subdirectory per invocation. ⭐ A test fixture that reuses a path reuses more
 than the path — the interpreter's import cache and any resume-capable artefact under it.
+
+### FOR A LEXICAL GUARD, MENTION *IS* USE — I tripped the commit hook by naming the word that trips it (2026-09-02)
+
+**Problem**: `.githooks/commit-msg` rejected the same commit three times. The third rejection was
+caused by a paragraph I had added **to explain the second one**, because explaining it meant
+writing the trigger word.
+
+**Root cause**: The hook matches a word list against the message with `grep -iqE '\b(...)\b'` and
+fires whenever a `filters/*/v*/` path is also staged. It has no notion of quoting, negation or
+metadiscussion, so *"this was rejected for the word X"* is indistinguishable from a claim
+containing X. My first rejection was for a legitimate **negation** (*"not deployed"* — describing
+the state a filter is **not** in); the second for a past-tense verb about political prisoners
+going free, an unavoidable false positive on a news corpus.
+
+**Fix**: Reword. ⛔ **Not `--no-verify`** — the hook's own message records that a prior override
+cost three days of production scoring with wrong weights (#44), and it fails **closed**, which is
+the right direction for a guard whose failure mode is a false deployment claim.
+
+⭐ **The generalisable half, and it inverts a pattern already promoted here.** This log records
+*mention is not use* — records that merely **quote** a dead path should not be counted as
+references to it. For a **lexical** guard the opposite holds: it cannot see the difference, so
+**mention is use**, and any prose *about* the guard is subject to the guard. Two consequences:
+a commit message may not name the vocabulary that gates it, and a false positive rate on a news
+corpus is structural rather than fixable — `released`, `shipped` and `live in production` are
+ordinary English about the world, not only about software.
+
+⚠️ **This will recur for every `human_thriving v8` commit** until the package passes
+`verify_filter_package.py`, because `STATUS.md` necessarily discusses the state the filter is not
+yet in, and the package legitimately has no `inference_hub.py` to extract a Hub repo id from.
+Expect it; do not "fix" it by weakening the guard.
+
+**Related**: the same hook has a separate hole in the other direction — `git commit --amend`
+reads `git diff --cached`, which is empty on an amend, so a filter-touching commit can be amended
+with any wording at all (found 2026-09-01, reported, not fixed).
