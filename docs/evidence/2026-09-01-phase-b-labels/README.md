@@ -1,4 +1,4 @@
-# Phase B — **INTERRUPTED at k≈1.6.** The DeepSeek balance ran out mid-corpus
+# Phase B — **COMPLETE at k=3, 6,586 labels, $6.8853.** (It was interrupted once; that half is kept below)
 
 **2026-09-01/02. Spend $4.56 on the three passes** ($4.61 including the day's smaller runs).
 ⛔ **The labelling is NOT complete and there is no aggregated label set.** Nothing is lost:
@@ -154,3 +154,100 @@ plan's 5.3% implied**, which raises rather than lowers the value of k=3.
   about which reading is right. There is no majority to take.
 - ✅ **k=3 is the cheapest k that resolves**, which is what H-V8-6 concluded from a different
   direction (residual 3.750% → 2.452% → 1.945% at k=1/3/5).
+
+
+---
+
+# ✅ COMPLETE — 2026-09-02, k=3 over 6,586 rows
+
+Finished at 12:00–12:2x UTC off-peak, plus one row that needed five attempts. All three passes
+**6,586 scored, 0 outstanding**. Labels at `datasets/scored/human_thriving_v8/labels_k3.jsonl`
+(gitignored — article text at corpus scale, #97).
+
+## 1. Cost — and H-V8-8's retraction was wrong
+
+| pass | calls | cache hit | cost (off-peak rates) |
+|---|---|---|---|
+| run1 | 6,586 | 88.9% | **$3.4513** |
+| run2 | 6,586 | **99.4%** | **$1.7218** |
+| run3 | 6,586 | **99.4%** | **$1.7122** |
+| | | | **$6.8853** |
+
+⚠️ 345 rows of pass 2 ran at peak, so the invoice is about **$0.08 above** this. Stated because
+the figure is knowably low.
+
+⛔ **H-V8-8 retracted ≈$6.92 and replaced it with ≈$10.32. The retracted figure was right, and
+the measured total is $6.8853.** Its reasoning — *"a corpus pass scores 6,590 different articles
+every time: only the prefix caches"* — is true of **one** pass and false of k=3, which re-scores
+**the same** articles. Passes 2 and 3 hit **99.4%** whole-request cache against pass 1's 88.9%
+prefix-only, and each cost **half** of pass 1 rather than the same.
+
+⭐ **The generalisable form: a cost model has to name whether the repeats are over the same rows
+or different ones.** "Per pass" and "per k" are different quantities and the retraction conflated
+them. The $10.32 ceiling was a safe budget and a wrong prediction.
+
+## 2. The scope gate at corpus scale — 15.35%, and it is not the number that matters
+
+| | |
+|---|---|
+| rows whose k=3 runs **disagreed** on `scope_verdict` | **1,011 / 6,586 = 15.35%** |
+| \|mean_all − mean_major\| on flipped rows | median **0.350**, p90 1.150, max 2.700 |
+| ⛔ rows where the **aggregation rule** decides which side of 4.5 the label lands | **35 = 0.53%** |
+
+⭐⭐ **The two numbers look contradictory and are not — reconciling them is the finding.** The
+verdict distribution over all 19,758 run-rows is `out_of_scope` 10,542 · `in_scope` 4,843 ·
+`harm_is_subject` 3,749 · `response_to_harm` 554 · `no_person_benefits` 70. **Four of those five
+force all six dimensions to 0–2.** So most disagreement is *between two out-of-scope categories*,
+where the score does not move: the gate flips often and the label rarely does.
+
+⛔ **Do not quote 15.35% as a label-instability rate.** The decision-relevant figure is **0.53%**
+— 35 rows out of 6,586 where `--aggregate all` and `--aggregate majority` disagree about
+visibility. ⚠️ It is also **not** comparable to the 4.98% measured at k=2 on 4,078 rows: that was
+*"two runs put this row on different sides"*, this is *"the two aggregation rules put it on
+different sides"*. Different quantities; the k=3 majority resolves most of what k=2 could only
+detect.
+
+⭐ **k=3 was worth buying, and for a reason narrower than the plan's.** It is not that 15% of
+labels were unstable — it is that 35 rows sat where a coin toss decided visibility, and k=2 could
+identify them but not settle them.
+
+## 3. The corpus the draw actually built
+
+```
+score distribution: min 0.00  p25 0.30  median 0.77  p75 1.52  p90 4.12  p99 5.85  max 7.35
+at or above the op-point 4.5: 456 = 6.92%
+```
+
+⚠️ **6.92% is the CORPUS's positive rate, not production's**, and the corpus was drawn to a ruled
+shape. It must not be quoted as a base rate.
+
+| design cell | n | median | ≥ op-point |
+|---|---|---|---|
+| `pos_clear|non_latin` | 39 | 4.18 | **48.7%** |
+| `pos_clear|latin` | 412 | 4.40 | **47.8%** |
+| `pos_marginal|latin` | 715 | 3.27 | 21.0% |
+| `pos_marginal|non_latin` | 72 | 2.92 | 19.4% |
+| `neg_high|latin` | 384 | 1.52 | 5.7% |
+| `neg_mid|latin` | 1,582 | 0.89 | 1.6% |
+| `neg_low|latin` | 2,224 | 0.45 | 0.2% |
+| `stage1_low|latin` | 543 | 0.30 | **0.0%** |
+
+⭐ **The design cells behave as designed, which is the first evidence that the draw worked.**
+`pos_clear` lands at ~48% above the op-point in **both** scripts — 47.8% Latin against 48.7%
+non-Latin, so the positive class is not script-dependent at the top. `stage1_low` returns
+**0 of 619** above the op-point in both scripts, which is what a recall-safe Stage-1 screen
+should look like from the far side.
+
+## 4. The 47-row class-A supplement — still owed an adjudication, and now with numbers
+
+| | n | median | ≥ op-point | gate-flipped |
+|---|---|---|---|---|
+| the `pos_*` supplement (rows 1–47) | 47 | 2.40 | 15 = **31.9%** | 14 = **29.8%** |
+| all `classA`-marked cells | 82 | 1.05 | 15 = 18.3% | 16 = 19.5% |
+
+⛔ **A class-A row below the op-point is correct behaviour, not a miss** — it is a harm-lexicon row
+the prompt caught. This block is **not** a TP:FP ratio.
+
+⭐ **The supplement is 29.8% gate-flipped against the corpus's 15.35%** — nearly double, which is
+what "drawn to over-sample the boundary" should produce and is the first confirmation it did.
+Those 47 rows are where adjudication is owed, and the flip rate says why.

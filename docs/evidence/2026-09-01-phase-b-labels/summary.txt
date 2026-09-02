@@ -1,0 +1,38 @@
+labels 6,586   corpus 6,590   op-point 4.5 (imported)
+⛔ rows in the corpus with NO label: 4 (scrape-junk skips; the labelled corpus is 6,586, not 6,590)
+
+== scope gate ==
+  rows whose k=3 runs DISAGREED on scope_verdict: 1,011/6,586 = 15.35%
+  majority verdicts : {'out_of_scope': 3522, 'in_scope': 1612, 'harm_is_subject': 1250, 'response_to_harm': 181, 'no_person_benefits': 21}
+  all run-rows      : {'out_of_scope': 10542, 'in_scope': 4843, 'harm_is_subject': 3749, 'response_to_harm': 554, 'no_person_benefits': 70}
+  |mean_all - mean_major| on flipped rows: median 0.350  p90 1.150  max 2.700
+  ⛔ rows where the AGGREGATION RULE decides which side of 4.5 the label lands: 35 (0.53% of the corpus)
+
+== score distribution (weighted_mean_all) ==
+  min 0.00  p25 0.30  median 0.77  p75 1.52  p90 4.12  p99 5.85  max 7.35
+  at or above the op-point 4.5: 456 = 6.92%
+  ⚠️ this is the CORPUS's positive rate, and the corpus was drawn to a ruled shape — it is NOT production's base rate and must not be quoted as one.
+
+== by design cell (the population the draw actually built) ==
+  neg_low|latin|-              n= 2224  median  0.45  ≥op     5 =   0.2%
+  neg_mid|latin|-              n= 1582  median  0.89  ≥op    25 =   1.6%
+  pos_marginal|latin|-         n=  715  median  3.27  ≥op   150 =  21.0%
+  stage1_low|latin|-           n=  543  median  0.30  ≥op     0 =   0.0%
+  pos_clear|latin|-            n=  412  median  4.40  ≥op   197 =  47.8%
+  neg_high|latin|-             n=  384  median  1.52  ≥op    22 =   5.7%
+  neg_low|non_latin|-          n=  246  median  0.45  ≥op     0 =   0.0%
+  neg_mid|non_latin|-          n=  172  median  0.86  ≥op     4 =   2.3%
+  stage1_low|non_latin|-       n=   76  median  0.33  ≥op     0 =   0.0%
+  pos_marginal|non_latin|-     n=   72  median  2.92  ≥op    14 =  19.4%
+  pos_clear|non_latin|-        n=   39  median  4.18  ≥op    19 =  48.7%
+  neg_high|non_latin|-         n=   39  median  1.52  ≥op     5 =  12.8%
+  pos_marginal|latin|classA    n=   29  median  1.87  ≥op     7 =  24.1%
+  neg_low|latin|classA         n=   21  median  0.85  ≥op     0 =   0.0%
+  pos_clear|latin|classA       n=   18  median  3.72  ≥op     8 =  44.4%
+  neg_mid|latin|classA         n=   12  median  0.98  ≥op     0 =   0.0%
+  stage1_low|latin|classA      n=    2  median  0.40  ≥op     0 =   0.0%
+
+== the 47-row class-A supplement (rows 1-47 of the corpus file) ==
+  all classA cells       n= 82  median  1.05  ≥op  15 (18.3%)  gate-flipped 16 (19.5%)
+  the pos_* supplement   n= 47  median  2.40  ≥op  15 (31.9%)  gate-flipped 14 (29.8%)
+  ⚠️ a class-A row scoring BELOW the op-point is correct behaviour, not a miss — it is a harm-lexicon row the prompt caught. Do not read this block as a TP:FP ratio.

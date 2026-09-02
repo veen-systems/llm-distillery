@@ -217,7 +217,49 @@ Commands and caveats: `docs/evidence/2026-09-01-phase-b-labels/`.
 `gemini_billing_api_key` — the oracle bake-off. Not priced here; this project quotes no rate it
 has not verified.
 
-### ▶ NEXT — finish Phase B
+### ✅ 2026-09-02 — PHASE B COMPLETE. 6,586 labels at k=3, **$6.8853**
+
+Finished off-peak at 12:00 UTC after the balance was topped up. All three passes 6,586 scored,
+0 outstanding. Labels at `datasets/scored/human_thriving_v8/labels_k3.jsonl` (gitignored).
+`docs/evidence/2026-09-01-phase-b-labels/`, `EXP-010`.
+
+⛔⛔ **H-V8-8's retraction was WRONG and the measurement settles it.** It retracted ≈$6.92 and
+replaced it with ≈$10.32; the measured total is **$6.8853**. Its reasoning — *"a corpus pass
+scores 6,590 different articles every time: only the prefix caches"* — is true of **one** pass
+and false of k=3, which re-scores **the same** articles. Pass 1 hit 88.9% (prefix only) and cost
+$3.4513; passes 2 and 3 hit **99.4%** whole-request cache and cost **$1.7218 / $1.7122** — half
+each. ⭐ **A cost model must name whether the repeats are over the same rows or different ones.**
+
+⭐⭐ **Scope gate at corpus scale: 15.35% of rows disagreed across k=3 — and that is NOT the
+number that matters.** Four of the five verdicts force all six dimensions to 0–2, so most
+disagreement is between two *out-of-scope* categories where the score does not move. ⛔ **The
+decision-relevant figure is 0.53% — 35 rows where the aggregation rule decides which side of 4.5
+the label lands.** ⚠️ Not comparable to the 4.98% measured at k=2: that was *"two runs disagree
+about the side"*, this is *"the two aggregation rules disagree"*. k=3 resolves what k=2 could
+only detect, and **that** is what the third pass bought — 35 coin-toss rows settled, not 15% of
+labels rescued.
+
+✅ **The draw is validated by its own labels**: `pos_clear` lands at **47.8% latin / 48.7%
+non-latin** above the op-point — the positive class is not script-dependent at the top — and
+`stage1_low` returns **0 of 619** above it in both scripts, which is what a recall-safe Stage-1
+screen looks like from the far side. Corpus positive rate **6.92%** ⚠️ (the corpus's, drawn to a
+ruled shape — **not** production's base rate).
+
+⛔ **The labelled corpus is 6,586, not 6,590** — four scrape-junk skips, all JavaScript-required
+boilerplate at 357–489 chars and all *above* the 300-char floor, so pattern matching caught what
+length could not.
+
+### ▶ NEXT — Phase B2 and Phase C
+1. ⛔ **Adjudicate the 47-row class-A supplement** (rows 1–47 of the corpus file), still
+   `tp_fp_status: adjudication-pending`. Now with numbers: **31.9% above the op-point** and
+   **29.8% gate-flipped** against the corpus's 15.35% — nearly double, which is what
+   "drawn to over-sample the boundary" should produce and the first confirmation it did.
+2. **v8.1 prompt fix**, ~6 calls, deliberately NOT done during Phase B: §2's qualifier
+   *"especially as a trailing sentence"* leaks on a policy change that occupies a third of the
+   body. The Travelodge and nursery rows bracket the boundary.
+3. **Phase B2** — hard negatives for the student residue, $0 oracle (plan §4b).
+4. **Phase C** — `prepare_data.py --filter filters/human_thriving/v8 --input <labels> --output-dir
+   datasets/training/human_thriving_v8`, then probe, train, calibrate.
 1. ⛔⛔ **THE ORACLE RULING — measurement DONE 2026-09-01, the ruling is still the owner's.**
    ⛔ **First: the bake-off had already been run on 2026-08-23 and the plan was never updated
    with its answer.** Phase B and §9 Q1 still carried the superseded **n=3** *"Gemini is the
