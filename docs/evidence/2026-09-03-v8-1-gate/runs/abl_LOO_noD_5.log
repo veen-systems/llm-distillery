@@ -1,0 +1,15 @@
+Prompt: docs/evidence/2026-09-03-v8-1-gate/ablate_LOO_noD.md sha256[:12]=c4705408c477
+Scoring with: dims=['human_wellbeing_impact', 'social_cohesion_impact', 'justice_rights_impact', 'evidence_level', 'benefit_distribution', 'change_durability'] | field=human_thriving_analysis | prompt=ablate_LOO_noD.md
+Loaded 2 articles from docs/evidence/2026-09-03-v8-1-gate/ablate_input.jsonl
+  [   2/2] 2 OK | 0 err | 0 junk | 1.1 art/s | ETA 0 min | cache hit 100%
+
+============================================================
+COMPLETE
+============================================================
+Successful: 2  Errors: 0  Scrape-junk skipped: 0
+Wall clock: 0.0 min
+Tokens: input 24,920  output 454  cached 24,832
+Cache hit rate: 99.6%
+Estimated cost: $0.00 off-peak / $0.00 peak
+Output tokens/article: 227 (the number that decides DeepSeek vs Gemini Batch -- see memory/oracle-pricing-scheduling.md)
+Output: docs/evidence/2026-09-03-v8-1-gate/runs/abl_LOO_noD_5.jsonl

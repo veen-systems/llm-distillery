@@ -1,6 +1,6 @@
 # human_thriving v8 — STATUS
 
-**NOT DEPLOYED. NOT TRAINED. Labelled, adjudicated, v8.1 clauses measured.** Last updated 2026-09-03.
+**NOT DEPLOYED. NOT TRAINED. Labelled, adjudicated; prompt settled at v8.4, re-label pending.** Last updated 2026-09-03.
 
 ⛔ **This package is 1 of the 6-file core** (`memory/filter-doc-standard.md`). It carries
 `config.yaml` and the prompt; `DEEP_ROOTS.md`, `README.md` and `README_MODEL.md` are owed, and
@@ -35,13 +35,23 @@ boilerplate at 357–489 chars, all *above* the 300-char floor.
   never cleared its own band, which Gate B-A's rule requires. ⭐ **On a bimodal row a k=3 mean
   is a sample of a coin flip, not a measurement** (#135: the scope gate is a step function and
   `1/√k` does not describe it). The gate's k must be re-derived before Phase D.
-- ✅ **The v8.1 clauses are measured, and three of four are adopted-pending-owner.** B (§2
-  commencement) takes the nursery row to **1.017 ± 0.055** — it removes the coin toss rather
-  than moving a failing row. C (§3 jurisdiction) and D (§5 judicial relief) are stable and move
-  nothing. ⛔ **A (§1 not-about-money) is REJECTED as written**: a single-clause ablation shows
-  it is the **sole cause** of a regression on the #91 origin row, which v8 pins at **0.900 sd
-  0.000** and A turns into **2.583 sd 2.381**, 2 of 6 runs `in_scope`. Gate B-A is **9/9** under
-  v8.1b with zero `in_scope` leakage; the no-regression set holds 4/4.
+- ✅ **`prompt-v8-4.md` is the settled prompt** (`sha c4705408c477`) — **B** (§2 commencement)
+  + **C** (§3 jurisdiction) + **A3** (§5 nothing-has-taken-effect). Validated at **k=12** on all
+  13 gate rows: Gate B-A **9/9**, worst class-A sd **2.250 → 0.205**, `in_scope` runs on class A
+  **3 of 108 → 0**, no-regression **4/4**. ⭐ **The gain is variance, not verdict** — both
+  prompts pass 9/9; v8.4 makes the labels stable.
+- ⛔⛔ **D (§5 judicial relief) is DROPPED, so the convict-relief ruling is NOT implemented.**
+  Three corpus rows keep their labels and decision 2 stands unexecuted until a wording is found
+  that does not license a positive. **The four clauses are not additive**: each is individually
+  safe, and their union scores the #91 origin row **5.921 with 12/12 `in_scope`** where v8 pins
+  it at **0.900 sd 0.000**. Leave-one-out isolates a **B×D interaction** — D held the only
+  sentence among the four that licenses a positive (*"the release **is** the repair and **scores
+  normally**"*), and deleting that sentence helped but was not sufficient.
+  ⭐ **Never validate a multi-clause prompt change by its parts**: ablate to attribute, validate
+  the artifact you intend to ship. ⭐ A placebo of **+996 chars** of §1 restatement left the row
+  at **0.883 ± 0.037**, refuting length and location — *a rule stated as a **test** inside a
+  reasoning step becomes a question asked of every article; the same rule as a **category** in an
+  exclusion list does not.* `docs/evidence/2026-09-03-v8-1-gate/` PART 2.
 - **A v8.1 prompt fix is owed**, ~6 calls. ✅ **Ruled 2026-09-03** — the fix is on
   **commencement** (a policy change that has not taken effect is an announcement), bounded
   **inside §2**, not on prominence and not extended into §1

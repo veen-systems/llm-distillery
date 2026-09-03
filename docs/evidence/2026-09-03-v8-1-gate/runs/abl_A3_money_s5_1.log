@@ -1,0 +1,15 @@
+Prompt: docs/evidence/2026-09-03-v8-1-gate/ablate_A3_money_s5.md sha256[:12]=6fcf2143e8ae
+Scoring with: dims=['human_wellbeing_impact', 'social_cohesion_impact', 'justice_rights_impact', 'evidence_level', 'benefit_distribution', 'change_durability'] | field=human_thriving_analysis | prompt=ablate_A3_money_s5.md
+Loaded 2 articles from docs/evidence/2026-09-03-v8-1-gate/ablate_input.jsonl
+  [   2/2] 2 OK | 0 err | 0 junk | 0.7 art/s | ETA 0 min | cache hit 19%
+
+============================================================
+COMPLETE
+============================================================
+Successful: 2  Errors: 0  Scrape-junk skipped: 0
+Wall clock: 0.0 min
+Tokens: input 24,152  output 605  cached 4,608
+Cache hit rate: 19.1%
+Estimated cost: $0.00 off-peak / $0.01 peak
+Output tokens/article: 302 (the number that decides DeepSeek vs Gemini Batch -- see memory/oracle-pricing-scheduling.md)
+Output: docs/evidence/2026-09-03-v8-1-gate/runs/abl_A3_money_s5_1.jsonl

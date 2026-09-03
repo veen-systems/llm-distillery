@@ -126,3 +126,93 @@ does not describe. This is that, demonstrated on the blocking gate itself.
 - **No label was edited**, and no training data changed.
 - **The A-clause mechanism is a hypothesis.** The ablation proves A is the cause; it does not
   prove the contrast example is the part of A responsible.
+
+---
+
+# PART 2 — the clauses are not additive, and the shipped prompt is v8.4
+
+**Same day, after "money is not an issue".** Total session spend **$0.56** (7.40 → 6.84),
+**138 runs, 0 errors**.
+
+## The result
+
+**`prompt-v8-4.md` = B (§2 commencement) + C (§3 jurisdiction) + A3 (§5 nothing-in-effect).
+D is DROPPED.** Validated at **k=12** on all 13 gate rows against v8 at k=12:
+
+| | v8 | **v8.4** |
+|---|---|---|
+| Gate B-A | 9/9 | **9/9** |
+| worst class-A sd | 2.250 | **0.205** |
+| `in_scope` runs on class A, of 108 | 3 | **0** |
+| nursery row | 2.342 ± 2.250, 3/12 `in_scope` | **1.012 ± 0.065, 0/12** |
+| #91 origin row | 0.900 ± 0.000 | **0.900 ± 0.000** |
+| no-regression | 4/4 | **4/4** (Unifesp 4.288, +1.388 over v7's 2.900) |
+
+⭐ **The gain is not the verdict, it is the variance.** Both prompts pass 9/9 at k=12. v8.4
+takes the worst class-A standard deviation from **2.250 to 0.205** and eliminates every
+`in_scope` run on the class. Under `--aggregate all` that is the whole point: a stable label is
+worth more than a lucky one.
+
+## ⛔⛔ THE SECOND KEEPER — single-clause ablations do not predict the combined prompt
+
+Four clauses, each measured individually safe, produced a prompt that failed **worse than any
+of them**. On the #91 origin row, which v8 pins at **0.900, sd 0.000**:
+
+| arm | mean | sd | `in_scope` |
+|---|---|---|---|
+| B only | 0.917 | 0.037 | 0/6 |
+| C only | 0.900 | 0.000 | 0/6 |
+| A3 only | 0.900 | 0.000 | 0/6 |
+| D only | 0.900 | 0.000 | 0/6 |
+| **B + C + A3 + D** | **5.921** | 0.250 | **12/12** |
+| B + C + A3 + D′ *(licensing sentence removed)* | 3.375 | 2.443 | 3/6 |
+| B + C + D | 1.725 | 1.890 | 1/6 |
+| B + A3 + D | 2.533 | 2.312 | 2/6 |
+| **C + A3 + D** *(no B)* | 0.883 | 0.037 | 0/6 |
+| **B + C + A3** *(no D)* ← **shipped** | **0.900** | **0.000** | **0/6** |
+
+**Leave-one-out isolates a B×D interaction**: removing either fixes it, neither causes it alone,
+and the damage grows monotonically with how many other clauses sit alongside them. The mechanism
+is a licensing path — **D contained the only sentence among the four that licenses a positive**
+(*"the release **is** the repair and **scores normally**"*) and B points at §4 for *"repair that
+someone received"*. Removing that sentence (D′) helped a lot and was **not sufficient**.
+
+⚠️ **C + A3 + D is also measured clean — and was rejected.** It fixes the nursery row only
+because D happens to, and D is about judicial relief and has nothing to do with policy
+commencement. That is a right verdict for the wrong reason. **B + C + A3 fixes it by the stated
+mechanism**, which is why it ships.
+
+## What was ruled out along the way
+
+| hypothesis | test | verdict |
+|---|---|---|
+| the *"Lebanon abolishes death penalty"* contrast example causes it | A2 = A minus the contrast | ⛔ **refuted** — 1/6 vs 2/6, indistinguishable at n=6 |
+| adding ~1,000 chars to §1 causes it (length/location) | **PLACEBO**: +996 chars of §1 restatement, no new rule | ⛔ **refuted** — 0.883 ± 0.037, 6/6 `harm_is_subject` |
+| the rule is safe as a §5 category rather than a §1 test | A3 | ✅ **confirmed** — 0.900 ± 0.000, and it is 360 chars against A's 1,107 |
+
+⭐ **The generalisable finding: a rule stated as a TEST inside a reasoning step becomes a
+question the model asks of every article; the same rule stated as a CATEGORY in an exclusion
+list does not.** Prefer adding an exclusion to adding a test — and the placebo proves this is
+about what the text *does*, not how much of it there is.
+
+## ⛔ Mine, in part 2
+
+4. **I shipped the union of individually-validated clauses without testing the union.** The
+   four-arm ablation was good practice and I drew the wrong conclusion from it: that clauses
+   safe alone are safe together. Cost: one wasted k=12 validation.
+5. **I diagnosed the contrast example from reading and said so before testing it.** It was
+   flagged as a hypothesis, and it was wrong — the placebo and A3 were what actually settled it.
+
+## Recommendation, updated
+
+- **Ship `prompt-v8-4.md`** for the corpus re-label. B, C and A3 are in; **D is dropped**, so
+  the convict-relief ruling (decision 2) is **not implemented** — three corpus rows keep their
+  labels, and the ruling stands unexecuted until a wording is found that does not license.
+- **Re-label all 6,586 rows at k=9 under v8.4** (~$21). One `prompt_hash`, no mixed provenance,
+  label noise cut ~42%, the ~15 defective above-op labels corrected, and the 12 undrawn Phase B2
+  rows folded in.
+- **Re-derive Gate B-A's k before Phase D.** At k=3 this gate read FAIL on a row that reads PASS
+  at k=6 and k=12. Set k from the observed per-row sd, and refuse a verdict when the margin does
+  not clear the band.
+- ⛔ **Never validate a multi-clause prompt change by its parts.** Ablate to attribute; validate
+  the artifact you intend to ship.
