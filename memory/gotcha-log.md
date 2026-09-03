@@ -5533,3 +5533,24 @@ of calls about child domestic abuse cases has risen"*, which the adverse suite d
 **Not fixed** — recorded. The class-A *supplement* population (title patterns) and the class-A
 *adverse* population (editorial judgement) are defined by different things, and neither the plan
 nor the manifest says so. Any figure that treats them as one population is wrong.
+
+## 2026-09-03 — `verify_filter_package.py` reports "All 4 checks passed" on a package that cannot score
+
+**Problem.** Asked to establish whether deploy was applicable, I ran the package verifier
+against `filters/human_thriving/v8` — a labelling-scope package with **no** model adapter, no
+`calibration.json`, no `normalization.json`, no probe and no scorer. It printed
+`All 4 checks passed` and exited **0**.
+
+**Root cause.** Absent files are not failures, by design: the checker returns
+`(True, "skip: {name} not present")` for each, so on v8 two of the four "passed" checks are
+skips-because-absent. It is a **shape** checker for what is present, not a readiness gate — and
+the summary line does not distinguish *4 passed* from *2 passed and 2 absent*.
+
+**Fix.** None applied — nothing is deploying, and editing a deploy guard at session end with no
+run to prove it is the 2026-08-25 pattern (green suite, nobody watched a service start). The
+real gate is `scripts/deployment/preflight_deploy_guards.py`, which does check the Hub against
+the local adapter mtime and requires `--nexusmind-root`, so it cannot run from this repo alone.
+
+⭐ **Never read `verify_filter_package.py`'s summary as deploy readiness.** Count the skips: a
+package with nothing in it passes every check it has. ⚠️ The lesson generalises past this script
+— *a check that treats absence as success is loudest exactly when there is nothing to check.*
