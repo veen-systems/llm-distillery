@@ -95,6 +95,10 @@ this is the **second** time this shape has appeared. **Fix: report, don't exclud
 `filters/human_thriving/v8` (wrong filter ⇒ 0 examples, prints COMPLETE, exits 0). Probe
 objective against the new **4.80%** base rate, not 6.92% and not production's 7.74%.
 
-Three owner items, none blocking: the **phase-3 mRNA row** (5.13 → 0.52, probably wrong), the
-**train/test overlap** on the adverse suite (six benchmark candidates wait on it), and the
-**unexecuted convict-relief ruling**.
+Three owner items, none blocking: the **phase-3 mRNA row** (5.13 → 0.52, probably wrong),
+**#142** (the train/test overlap on the adverse suite — six benchmark candidates wait on it), and
+**#143** (the convict-relief ruling, ruled but unexecuted).
+
+**Issues touched:** commented **#135** (the step function reached a blocking verdict, not just
+labels), **#91** (origin-row status under v8.4, and how nearly it regressed), **#141** (the
+oracle's `dominant_subject` is a language-independent matching surface). Filed **#142**, **#143**.

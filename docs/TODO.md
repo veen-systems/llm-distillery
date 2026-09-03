@@ -26,9 +26,15 @@ instrument now exists) · 9 Deployment ⛔.
 
 ### Three owner items, none blocking phase 6
 
-- **The phase-3 mRNA row** demoted 5.13 → 0.52 and probably should not have.
-- **The train/test overlap** on the adverse suite — six benchmark candidates wait on it.
-- **The convict-relief ruling is unexecuted**; its clause broke the origin row and was dropped.
+- **The phase-3 mRNA row** demoted 5.13 → 0.52 and probably should not have — a Moderna/Merck
+  personalised cancer vaccine result with patients and a measured reduction in recurrence, which
+  is not the preclinical class-B shape. Row and scores in
+  `datasets/scored/human_thriving_v8/v8_4/comparison.json`.
+- **#142 — the train/test overlap** on the adverse suite: 7 of 18 rows are designated hard
+  negatives *and* Gate B-A judges against them. **Six benchmark candidates wait on it**, two of
+  them Greek against a 16/18-English suite (#141).
+- **#143 — the convict-relief ruling is RULED but UNEXECUTED**; its clause is inert alone and
+  breaks the #91 origin row in combination. Suggested for v9, not a v8.1 patch.
 
 ### ⛔⛔ THE KEEPER — nothing stopped a guard row being drawn into its own training corpus
 `scripts/corpus/draw_v8_corpus.py` had **no exclusion for the acceptance-test rows**. The first

@@ -1,7 +1,13 @@
 # Which prompt is which — v8 prompt lineage
 
 ⛔ **`prompt-v8-4.md` is the current prompt** (`sha256 c4705408c477…`). Everything else in this
-directory is superseded and kept only because runs on disk are stamped with its hash.
+directory is superseded.
+
+⛔ **Do not tidy the superseded files away, and do not move them.** Every run under
+`docs/evidence/2026-09-03-v8-1-gate/runs/` stamps both a `prompt_hash` **and a `prompt_file`
+path**, so relocating a rejected draft turns a stamped provenance field into a dead reference —
+the same trap that stops `prompt-candidate-tail.md` being renamed to `prompt-compressed.md`.
+Their being clutter is the price of the evidence being reproducible.
 
 ⚠️ **None of these is named `prompt-compressed.md`**, which is what `load_filter_spec` derives
 from `config.yaml`. Every run so far passed `--prompt` explicitly. Resolve at phase 9 **by

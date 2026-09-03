@@ -241,3 +241,6 @@ filters/common/violence_promotion/training/*.jsonl
 # them silently, and a docs/evidence/ page that references logs nobody else has is
 # worse than no page. Negate for evidence only (2026-08-22).
 !docs/evidence/**/*.log
+
+# bash run sentinels written by background evidence runs — not evidence
+docs/evidence/**/runs/*.status
