@@ -102,7 +102,7 @@ them** — each exists because something shipped broken.
   first.** A `stage1_low` row's score is an **e5 probe estimate**, not a Gemma score
   (23% of rows measured). Same shape as the length-field trap: the field exists, is
   populated, and means different things per row.
-- **Before using any source as evidence, establish what it EXCLUDES.** *(16th
+- **Before using any source as evidence, establish what it EXCLUDES.** *(⚠️ **17th occurrence 2026-09-03 — THE FIELD IS THERE, IS POPULATED, AND IS A DIFFERENT INSTRUMENT.** `pool_v2.jsonl` carries `harm_title`, but the draw **recomputes** it with the census's `crime_violence` patterns and never writes it back; reading the stored field gave **660** class-A rows where the real instrument gives **59**, and ⛔ **neither is a subset of the other** (agree 32, census-only 27). An 11× overstatement in the direction that INVENTS WORK, past a docstring written to prevent exactly it.)* *(16th
   occurrence 2026-09-01 — I globbed `*.jsonl*` over archive dirs holding `.tar.gz` and got
   "0 of 18 recoverable", agreeing with a premise already in the docs; **18 of 18 were
   recoverable**. ⛔ Twin: the OTHER archive holds the same ids and returns a 447-char STUB of a

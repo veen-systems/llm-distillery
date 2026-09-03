@@ -1,6 +1,6 @@
 # human_thriving v8 — STATUS
 
-**NOT DEPLOYED. NOT TRAINED. Labelled.** Last updated 2026-09-02.
+**NOT DEPLOYED. NOT TRAINED. Labelled and adjudicated.** Last updated 2026-09-03.
 
 ⛔ **This package is 1 of the 6-file core** (`memory/filter-doc-standard.md`). It carries
 `config.yaml` and the prompt; `DEEP_ROOTS.md`, `README.md` and `README_MODEL.md` are owed, and
@@ -16,7 +16,8 @@ now because v8's state is complicated enough that "not deployed" is not a useful
 | Oracle | ✅ **DeepSeek**, ruled 2026-09-01 (`docs/decisions/2026-09-01-v8-oracle-ruling.md`) |
 | Labels (Phase B) | ✅ **6,586 at k=3, $6.8853**, `--aggregate all`. `EXP-010` |
 | Label review | ✅ 2026-09-02 — `docs/evidence/2026-09-02-phase-b-label-review/` |
-| Phase B2 hard negatives | ⛔ not started ($0 oracle; plan §4b) |
+| Class-A adjudication | ✅ 2026-09-03 — v8 demotes **32 of 47**; the 15 survivors are 11 events. `docs/evidence/2026-09-03-classA-supplement-adjudication/` |
+| Phase B2 hard negatives | ⚠️ **12 rows of headroom, not a corpus** — the draw took 47 of the 59 available and 32 already carry low labels. `docs/evidence/2026-09-03-phase-b2-headroom/` |
 | Phase C train / probe / calibrate | ⛔ not started |
 | Phase D gate | ⛔ not started. ⚠️ **Acceptance criterion 1 is FAILING today** — see below |
 | Phase E normalization | ⛔ not started |
@@ -31,12 +32,19 @@ boilerplate at 357–489 chars, all *above* the 300-char floor.
   baby girl killed at nursery"*, and on both it is a **scope-gate coin toss** — DeepSeek
   6.10/0.90/6.20, Gemini 7.20/7.15/1.05. Recorded as a knowing decision, not an oversight
   (`docs/decisions/2026-09-01-v8-oracle-ruling.md` §3).
-- **A v8.1 prompt fix is owed**, ~6 calls: §2's qualifier *"especially as a trailing sentence"*
-  leaks on a policy change that occupies a third of the body. The Travelodge and nursery rows
-  bracket the boundary. ⛔ Deliberately **not** applied during Phase B — editing the prompt
-  mid-corpus would have invalidated the labels.
-- **The 47-row class-A supplement is unadjudicated** — `tp_fp_status: adjudication-pending`.
-  31.9% above the op-point, **29.8% gate-flipped** against the corpus's 15.35%.
+- **A v8.1 prompt fix is owed**, ~6 calls. ✅ **Ruled 2026-09-03** — the fix is on
+  **commencement** (a policy change that has not taken effect is an announcement), bounded
+  **inside §2**, not on prominence and not extended into §1
+  (`docs/decisions/2026-09-03-v8-1-commencement-clause.md`). ⛔ **Unwritten and untested** —
+  criterion 1 stays FAILING until it is measured, with the Travelodge row as negative control.
+- ⭐ **A SECOND v8.1 candidate, distinct from the first**: §1's announcement rule is written in
+  terms of **money** (*"funding secured, mobilised, pledged or allocated"*), so a **legislative
+  proposal** has no rule pointing at it. Six above-op rows name a proposal, plan or
+  *preparations* in the oracle's own `dominant_subject` and score 4.55–6.33 anyway.
+- ✅ **The 47-row class-A supplement is ADJUDICATED** (2026-09-03). v8 demotes **32 of 47
+  (68.1%)**; the 15 survivors are **11 distinct events**, one of which (the US removing Syria
+  from its terrorism list) is **9 above-op rows corpus-wide**. Two owner questions remain: the
+  Syria cluster under §3, and judicial relief granted to convicted offenders.
 - ⚠️ **The prompt is not named `prompt-compressed.md`**, which is what `load_filter_spec` derives
   from `config.yaml` and what the doc standard's item 2 calls for. Every run so far passed
   `--prompt` explicitly. Left as-is on purpose: the 6,586 labels record
