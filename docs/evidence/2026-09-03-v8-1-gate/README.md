@@ -216,3 +216,45 @@ about what the text *does*, not how much of it there is.
   not clear the band.
 - ⛔ **Never validate a multi-clause prompt change by its parts.** Ablate to attribute; validate
   the artifact you intend to ship.
+
+---
+
+# PART 3 — does v8.4 do the job on CORPUS rows, not just on the gate?
+
+The gate set is 13 hand-picked adversarial rows. Before committing to a full re-label, v8.4 and
+v8 were run **paired, same session, k=6 each** over the **50 staged above-op corpus rows**
+(600 calls). ⚠️ Those 50 were **selected by the self-contradiction and future-tense generators**,
+so nothing here extrapolates to the 456 above-op rows as a rate.
+
+| | v8 | v8.4 |
+|---|---|---|
+| above the op-point | 39/50 | **25/50** |
+| mean score | 4.831 | 4.025 |
+| mean per-row sd | 0.501 | **0.564** |
+
+**By the group each clause was written for:**
+
+| group | n | v8 | v8.4 | demoted | promoted |
+|---|---|---|---|---|---|
+| §3 jurisdiction (Syria + markets) | 7 | 5.05 | **2.89** | 4 | 0 |
+| §5 A3 proposal / announcement | 15 | 4.76 | **3.53** | 8 | **1** |
+| convict rows (**D dropped**) | 9 | 4.93 | 4.81 | 1 | 0 |
+| future-tense only | 18 | 4.91 | 4.58 | 3 | 1 |
+
+✅ **Each clause moves its own group and not the others.** The convict rows barely move, which is
+the correct behaviour now that D is dropped — a useful negative control nobody designed.
+
+The largest moves are exactly the rows adjudicated as defective: Meta's proposed settlement
+**5.96 → 1.01**, three Syria rows **5.46 / 5.11 / 5.07 → ~0.9**, Spain's transfer plan
+**4.90 → 1.62**, the California bill **4.83 → 2.10**, the Tamil Nadu waiver **5.05 → 2.57**.
+
+## ⛔ Two caveats that must travel with this
+
+1. **One row crossed the op-point UPWARD**: *"Tamil Nadu CM Vijay announces ₹3 per litre…"*
+   **2.98 → 4.73**. It is an *announcement* — the exact shape A3 exists to suppress — from the
+   same source and the same politician as the waiver row that correctly went **down**. A3 is
+   net-positive in its group (8 demoted, 1 promoted) and this promotion is a real defect.
+2. ⚠️ **v8.4 is not uniformly stabilising.** On the 13 adversarial gate rows it cut worst sd
+   **2.250 → 0.205**; on these 50 corpus rows mean per-row sd **rose 0.501 → 0.564**. ⭐ *A
+   noise figure belongs to a population and a mechanism, not to a prompt* — do not carry the
+   gate's stability gain onto the corpus.
