@@ -620,3 +620,98 @@ class NoRegressionExclusionTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
+
+
+
+class HardNegativeDrawabilityReportTest(unittest.TestCase):
+    """A drawn hard negative gets an ORACLE label instead of its editorial `negative`.
+
+    ⛔ `datasets/adverse/uplifting.jsonl` is deliberately NOT a guard set: 7 of its 18 rows
+    carry `training_use: HARD NEGATIVE ... §4b`, so they are INTENDED training inputs, and
+    load_no_regression_ids() refuses that file on purpose. Widening the exclusion to cover it
+    was tried on 2026-09-03 and correctly KILLED by NoRegressionExclusionTest above — the
+    tests were the control working.
+
+    What was missing is that the two paths disagree silently. A designated hard negative is
+    ADDED with an editorial `negative`; a row DRAWN is labelled BY THE ORACLE, and these rows
+    are adverse precisely because a scorer read them as positive. Measured that day: 3 of the
+    18 were drawable at p = 0.0810 / 0.0794 / 0.0794, none drawn, P(all escaped) = 0.7787.
+    So the draw REPORTS (ADR-022) and does not exclude. These tests pin the report.
+    """
+
+    @staticmethod
+    def _hard_negative_ids():
+        ids = []
+        with open(os.path.join(REPO, "datasets/adverse/uplifting.jsonl"), encoding="utf-8") as fh:
+            for line in fh:
+                if line.strip():
+                    row = json.loads(line)
+                    if row.get("training_use"):
+                        ids.append(row["id"])
+        return ids
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.arch = Path(self.tmp.name) / "arch"
+        self.arch.mkdir()
+        make_archive(self.arch)
+        self.nr = Path(self.tmp.name) / "nr.jsonl"
+        with open(self.nr, "w", encoding="utf-8") as fh:
+            fh.write(json.dumps({"id": "art_999999", "label": "no_regression"}) + "\n")
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def _seed(self, rid):
+        """Put `rid` into the archive as a drawable, above-op, Latin, long-body row."""
+        row = {
+            "id": rid, "title": LATIN_TITLE,
+            "content": "Seeded body about people. " * 60,
+            "url": "https://seed.example/a/1", "source": "src_seed", "language": "en",
+            "published_date": "2026-08-20T10:00:00",
+            "nexus_mind_attributes": {"uplifting": {
+                "raw_weighted_average": 6.4, "stage_used": "stage2"}},
+        }
+        with open(self.arch / "filtered_20260829_999999.jsonl", "w", encoding="utf-8") as fh:
+            fh.write(json.dumps(row) + "\n")
+
+    def _run(self):
+        out = Path(self.tmp.name) / f"out{random.randint(0, 10**9)}"
+        r = run(["--archive", str(self.arch), "--out", str(out), "--size", "400",
+                 "--no-regression-set", str(self.nr)], REPO)
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        return r.stdout + r.stderr, out
+
+    def test_reports_zero_and_does_not_warn_when_none_is_drawable(self):
+        out, _ = self._run()
+        self.assertIn("designated hard negatives", out)
+        self.assertIn("0 of them DRAWABLE", out)
+        self.assertNotIn("receive an ORACLE label", out,
+                         "must not warn when the collision cannot happen")
+
+    def test_names_a_drawable_hard_negative_and_warns(self):
+        hn = self._hard_negative_ids()
+        self.assertTrue(hn, "fixture assumption: the suite declares hard negatives")
+        self._seed(hn[0])
+        out, outdir = self._run()
+        self.assertIn("1 of them DRAWABLE", out)
+        self.assertIn("receive an ORACLE label", out)
+        self.assertIn(hn[0], out)
+        man = json.load(open(outdir / "corpus_manifest.json"))
+        self.assertEqual(man["exclusions"]["hard_negatives_drawable"], [hn[0]])
+
+    def test_a_drawable_hard_negative_is_REPORTED_NOT_REMOVED(self):
+        """The deliberate design: these rows stay eligible. Reporting must not exclude them."""
+        hn = self._hard_negative_ids()
+        self._seed(hn[0])
+        out, outdir = self._run()
+        man = json.load(open(outdir / "corpus_manifest.json"))
+        self.assertEqual(man["exclusions"]["no_regression_rows_removed"], 0,
+                         "the adverse row must NOT be counted as a guard removal")
+        self.assertGreater(man["exclusions"]["hard_negatives_declared"], 0)
+
+    def test_declared_count_matches_the_suite_on_disk(self):
+        out, _ = self._run()
+        n = len(self._hard_negative_ids())
+        self.assertIn(f"{n} declared", out,
+                      "the reported count must come from the file, not a constant")

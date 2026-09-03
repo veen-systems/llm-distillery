@@ -489,6 +489,40 @@ def main():
           f"({len(no_regression_ids) - dropped_no_regression} not in the drawable pool -- "
           f"aged out of the window, or excluded upstream as Google News)")
 
+    # ⛔ REPORT, DO NOT EXCLUDE (ADR-022 "stamp always, decide once"), added 2026-09-03.
+    #
+    # `datasets/adverse/uplifting.jsonl` is deliberately NOT a guard set: 7 of its 18 rows
+    # carry `training_use: HARD NEGATIVE ... §4b`, so they are INTENDED training inputs and
+    # load_no_regression_ids() refuses that file on purpose. Widening the exclusion to cover
+    # it was tried on 2026-09-03 and correctly killed by this module's own tests.
+    #
+    # But the two paths disagree and nothing said so. A designated hard negative is ADDED with
+    # an EDITORIAL label of `negative`; a row DRAWN into the corpus is labelled BY THE ORACLE
+    # — and these rows are adverse precisely because a scorer read them as positive. Drawn,
+    # such a row can enter training as a POSITIVE, i.e. as the error it was collected to fix.
+    #
+    # Measured that day against the real pool: 3 of the 18 were drawable, at inclusion
+    # probabilities 0.0810 / 0.0794 / 0.0794, all three designated hard negatives. None was
+    # drawn — P(all three escaped) = 0.7787, so the draw ran a 22.1% chance of the collision
+    # and nothing would have printed it either way. This block prints it.
+    _adverse_path = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(
+        os.path.abspath(__file__)))), "datasets", "adverse", "uplifting.jsonl")
+    _hard_negatives = {}
+    if os.path.isfile(_adverse_path):
+        with open(_adverse_path, encoding="utf-8") as fh:
+            for line in fh:
+                if line.strip():
+                    row = json.loads(line)
+                    if row.get("training_use"):
+                        _hard_negatives[row["id"]] = row.get("class", "?")
+    _drawable_hn = sorted(r["id"] for r in pool if r["id"] in _hard_negatives)
+    print(f"designated hard negatives (§4b): {len(_hard_negatives)} declared, "
+          f"{len(_drawable_hn)} of them DRAWABLE from this pool")
+    if _drawable_hn:
+        print("   ⚠️  If drawn, these receive an ORACLE label, not their editorial `negative`.")
+        for _i in _drawable_hn:
+            print(f"       {_hard_negatives[_i]:<1} {_i}")
+
     dropped_short = 0
     if args.short_form == "exclude":
         before = len(pool)
@@ -758,6 +792,8 @@ def main():
             "short_form_dropped": dropped_short,
             "oracle_floor_chars": ORACLE_FLOOR,
             "no_regression_set": args.no_regression_set,
+            "hard_negatives_declared": len(_hard_negatives),
+            "hard_negatives_drawable": _drawable_hn,
             "no_regression_ids_declared": len(no_regression_ids),
             "no_regression_rows_removed": dropped_no_regression,
         },
