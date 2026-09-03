@@ -1,6 +1,6 @@
 # human_thriving v8 — STATUS
 
-**NOT DEPLOYED. NOT TRAINED. Labelled and adjudicated.** Last updated 2026-09-03.
+**NOT DEPLOYED. NOT TRAINED. Labelled, adjudicated, v8.1 clauses measured.** Last updated 2026-09-03.
 
 ⛔ **This package is 1 of the 6-file core** (`memory/filter-doc-standard.md`). It carries
 `config.yaml` and the prompt; `DEEP_ROOTS.md`, `README.md` and `README_MODEL.md` are owed, and
@@ -19,7 +19,7 @@ now because v8's state is complicated enough that "not deployed" is not a useful
 | Class-A adjudication | ✅ 2026-09-03 — v8 demotes **32 of 47**; the 15 survivors are 11 events. `docs/evidence/2026-09-03-classA-supplement-adjudication/` |
 | Phase B2 hard negatives | ⚠️ **12 rows of headroom, not a corpus** — the draw took 47 of the 59 available and 32 already carry low labels. `docs/evidence/2026-09-03-phase-b2-headroom/` |
 | Phase C train / probe / calibrate | ⛔ not started |
-| Phase D gate | ⛔ not started. ⚠️ **Acceptance criterion 1 is FAILING today** — see below |
+| Phase D gate | ⛔ not started. ⚠️ **Criterion 1 is NOT stably failing** — the 4.400 was a k=3 mean on a coin-toss row; at k=6 under unchanged v8 it is **3.608 ± 2.560, PASS**. `docs/evidence/2026-09-03-v8-1-gate/` |
 | Phase E normalization | ⛔ not started |
 | Phase F deploy | ⛔ not started |
 
@@ -28,10 +28,20 @@ boilerplate at 357–489 chars, all *above* the 300-char floor.
 
 ## ⛔ Known-failing and known-missing, before anyone reads the state as green
 
-- **Acceptance criterion 1 (Gate B-A) does not pass on either oracle.** Both fail *"Parents of
-  baby girl killed at nursery"*, and on both it is a **scope-gate coin toss** — DeepSeek
-  6.10/0.90/6.20, Gemini 7.20/7.15/1.05. Recorded as a knowing decision, not an oversight
-  (`docs/decisions/2026-09-01-v8-oracle-ruling.md` §3).
+- ⛔⛔ **CORRECTED 2026-09-03: acceptance criterion 1 was never stably failing.** The 4.400
+  that read as a FAIL is a **k=3 mean on a bimodal row**. At **k=6 under the unchanged v8
+  prompt** the nursery row is **3.608, sd 2.560, 3 `in_scope` / 3 `response_to_harm` — a PASS**.
+  With that sd the standard error at k=3 is **1.48** against a 0.55 margin, so the k=3 verdict
+  never cleared its own band, which Gate B-A's rule requires. ⭐ **On a bimodal row a k=3 mean
+  is a sample of a coin flip, not a measurement** (#135: the scope gate is a step function and
+  `1/√k` does not describe it). The gate's k must be re-derived before Phase D.
+- ✅ **The v8.1 clauses are measured, and three of four are adopted-pending-owner.** B (§2
+  commencement) takes the nursery row to **1.017 ± 0.055** — it removes the coin toss rather
+  than moving a failing row. C (§3 jurisdiction) and D (§5 judicial relief) are stable and move
+  nothing. ⛔ **A (§1 not-about-money) is REJECTED as written**: a single-clause ablation shows
+  it is the **sole cause** of a regression on the #91 origin row, which v8 pins at **0.900 sd
+  0.000** and A turns into **2.583 sd 2.381**, 2 of 6 runs `in_scope`. Gate B-A is **9/9** under
+  v8.1b with zero `in_scope` leakage; the no-regression set holds 4/4.
 - **A v8.1 prompt fix is owed**, ~6 calls. ✅ **Ruled 2026-09-03** — the fix is on
   **commencement** (a policy change that has not taken effect is an announcement), bounded
   **inside §2**, not on prominence and not extended into §1

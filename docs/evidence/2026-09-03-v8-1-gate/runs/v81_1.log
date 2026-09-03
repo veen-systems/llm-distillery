@@ -1,0 +1,15 @@
+Prompt: filters/human_thriving/v8/prompt-v8-1.md sha256[:12]=32bbbdb68f38
+Scoring with: dims=['human_wellbeing_impact', 'social_cohesion_impact', 'justice_rights_impact', 'evidence_level', 'benefit_distribution', 'change_durability'] | field=human_thriving_analysis | prompt=prompt-v8-1.md
+Loaded 13 articles from docs/evidence/2026-09-03-v8-1-gate/gate_input.jsonl
+  [  13/13] 13 OK | 0 err | 0 junk | 1.8 art/s | ETA 0 min | cache hit 51%
+
+============================================================
+COMPLETE
+============================================================
+Successful: 13  Errors: 0  Scrape-junk skipped: 0
+Wall clock: 0.1 min
+Tokens: input 160,684  output 3,533  cached 82,304
+Cache hit rate: 51.2%
+Estimated cost: $0.02 off-peak / $0.04 peak
+Output tokens/article: 272 (the number that decides DeepSeek vs Gemini Batch -- see memory/oracle-pricing-scheduling.md)
+Output: docs/evidence/2026-09-03-v8-1-gate/runs/v81_1.jsonl

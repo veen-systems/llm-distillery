@@ -1,0 +1,93 @@
+{
+ "south_asian_the_hindu_20067a4398fa": {
+  "role": "classA",
+  "title": "Celebrated at birth, pushed into sex work",
+  "bar": 3.85,
+  "assertion": null,
+  "chars": 14546
+ },
+ "australian_abc_au_93c4aa32c23d": {
+  "role": "classA",
+  "title": "Dozens of greyhounds to land in Australia as NZ racing ban begins",
+  "bar": 3.85,
+  "assertion": null,
+  "chars": 2917
+ },
+ "south_african_herald_zw_5e7a6674c6d4": {
+  "role": "classA",
+  "title": "NEW: Five men arrested in Mashonaland Central for raping a minor",
+  "bar": 3.85,
+  "assertion": null,
+  "chars": 3511
+ },
+ "south_african_namibian_68535c7ec62d": {
+  "role": "classA",
+  "title": "Rethink Business Centre Management",
+  "bar": 3.85,
+  "assertion": null,
+  "chars": 3652
+ },
+ "south_asian_dawn_541cc97da2da": {
+  "role": "classA",
+  "title": "Woman ‘tortured’ for taking possession of grabbed land in Sahiwal",
+  "bar": 3.85,
+  "assertion": null,
+  "chars": 2107
+ },
+ "british_irish_independent_uk_5985bde5bb3a": {
+  "role": "classA",
+  "title": "Children’s helpline says number of calls about child domestic abuse cases has risen 80% in five years",
+  "bar": 3.85,
+  "assertion": null,
+  "chars": 3482
+ },
+ "british_irish_guardian_world_94f1e7bd4be4": {
+  "role": "classA",
+  "title": "Parents of baby girl killed at nursery fear unsafe sleeping ‘rife’ in sector across England",
+  "bar": 3.85,
+  "assertion": null,
+  "chars": 5457
+ },
+ "british_irish_independent_uk_a4fdcb129620": {
+  "role": "classA",
+  "title": "Domestic violence victim left traumatised after Travelodge staff gave abuser room key",
+  "bar": 3.85,
+  "assertion": null,
+  "chars": 3442
+ },
+ "british_irish_rte_ireland_876e6996fd23": {
+  "role": "classA",
+  "title": "Assault, harassment and stalking top calls to victim line",
+  "bar": 3.85,
+  "assertion": null,
+  "chars": 2307
+ },
+ "southeast_asian_rappler_0e6a2d47163c": {
+  "role": "no_regression",
+  "title": "The silent crisis on our plates",
+  "bar": null,
+  "assertion": "raw_weighted_average > 4.5",
+  "chars": 13107
+ },
+ "south_american_brasil_de_fato_42843d936b64": {
+  "role": "no_regression",
+  "title": "Unifesp identifica resíduo compatível com sangue no antigo DOI-Codi/SP",
+  "bar": null,
+  "assertion": "DELTA, not a band: v8 must not score this LOWER than v7 under the same prompt family and the same judge",
+  "chars": 4761
+ },
+ "industry_intelligence_fast_company_5510f1117e34": {
+  "role": "no_regression",
+  "title": "London’s Ultra Low Emission Zone cleaned up the city’s air. Then children’s lungs got bigger",
+  "bar": null,
+  "assertion": "raw_weighted_average > 4.5",
+  "chars": 5780
+ },
+ "dutch_news_welingelichtekringen_760a0a956413": {
+  "role": "no_regression",
+  "title": "De schokkende voordelen van minder luchtvervuiling: een voorbeeld uit Griekenland",
+  "bar": null,
+  "assertion": "raw_weighted_average > 4.5",
+  "chars": 2601
+ }
+}
