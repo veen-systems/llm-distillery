@@ -924,7 +924,16 @@ question, unmeasured. ⭐ Caching does not defeat k=3 — three ~100%-cached run
   `ground_truth.batch_scorer.make_oracle_prefilter`. Do not put it in a prefilter (#93).
 
 **Gate B-A — BLOCKING (class A).** Every class-A record scores below `max_acceptable_wa`
-= **3.85**. ⛔ **As a k-run mean, never a single run** — oracle run-to-run noise is
+= **3.85**. ✅ **EXECUTABLE since 2026-09-03: `scripts/gate/adverse_suite_gate.py`** — it reads
+each bar off the row, computes the band from the row's **own** spread (`t·sd/√k`), and returns
+**PASS / FAIL / INDETERMINATE / SKIP** on four distinct exit codes (plumbing is 3, never 1).
+⛔⛔ **This rule was prose until then, and it cost a day.** The nursery row was reported FAILING
+at a k=3 mean of **4.400**; its own sd is **2.560**, so the margin (0.550) never cleared the band
+(2.858). At k=6 it is **3.608** and at k=12 **2.342** — both PASSES. On that exact k=3 run the
+gate now returns **INDETERMINATE, need k≈82**. ⭐ **On a bimodal row a k=3 mean is a sample of a
+coin flip, not a measurement** (#135: the scope gate is a step function; `1/√k` does not describe
+it). `docs/evidence/2026-09-03-gate-executable/`.
+⛔ **As a k-run mean, never a single run** — oracle run-to-run noise is
 **0.82 mean / 2.25 max** (§1f), so a one-shot "below 3.85" is not a measurement. Use
 k ≥ 3 and report the band; the margin must clear the band, not the #95 0.16 floor, which
 is the wrong floor for this population (`feedback-noise-floor-per-population`).
@@ -956,6 +965,16 @@ margins sit inside the 0.436/0.687 oracle decoder floor, and single runs land 0.
 below the op-point on those two rows. `docs/evidence/2026-08-31-v8-no-regression-gate/` §2.
 
 ### Phase B2 — hard negatives for the student residue (playbook §4b, $0 oracle)
+
+⚠️ **MEASURED 2026-09-03: this phase has 12 rows of headroom, not a corpus.** Its population is
+the one the 2026-08-29 draw sampled — 59 class-A rows in the window — and the draw took **47**,
+of which **32 already carry oracle labels below the op-point**, which is what a hard negative is.
+**The phase was specified before the work that discharges it.** The 12 undrawn rows are listed in
+`docs/evidence/2026-09-03-phase-b2-headroom/undrawn_class_a.jsonl`; all English, and bounded by
+the pool's 08-15…08-29 window rather than by how many class-A false positives exist.
+⛔ Do **not** read the pool's stored `harm_title` field to size this: it is a fallback lexicon
+that flags **660** where the census instrument flags **59**, and neither is a superset (agree 32,
+stored-only 628, census-only 27).
 
 **Why this phase exists:** §1f measured that two of three class-A rows are the *student*
 disagreeing with all three oracles. **No prompt change reaches them.** Playbook **§4b
@@ -1148,10 +1167,15 @@ move trades them against each other.** Do not resolve either that way.
 
 ⚠️ **Criterion 1's bar does not travel.** `raw ≥ max_acceptable_wa + 0.16` = **4.01** is
 specific to uplifting's 3.85. Other filters' bars are far lower (`nature_recovery` 0.6414,
-`solutions` 1.0918–1.13, `belonging` 1.6446, `cultural_discovery` 1.6154–2.1867). Nothing
-enforces either form in code — `grep -r 'assertion_margin\|max_acceptable_wa'` over `*.py`
-returns **zero hits**, so the stored margins are documentation of a check that was made, not
-a check. **v8 should close that**: make the adverse suite an executable test.
+`solutions` 1.0918–1.13, `belonging` 1.6446, `cultural_discovery` 1.6154–2.1867).
+✅ **CLOSED 2026-09-03 — `scripts/gate/adverse_suite_gate.py`** makes the adverse suite an
+executable test (18 unit tests, 3 killed mutations), reads every bar off the row, and returns a
+third verdict when the margin does not clear the band. ⛔ **The sentence this replaces was true
+for the whole of v8's development** — *"nothing enforces either form in code … the stored margins
+are documentation of a check that was made, not a check"* — and it is exactly what let a k=3
+mean of 4.400 be reported as criterion 1 failing. The note at §5b about `assertion_margin` being
+documentation rather than a check now refers to a closed gap; it is kept so the correction is
+dateable.
 
 ### 5b. The no-regression set — things that LOOK like false positives and are not
 

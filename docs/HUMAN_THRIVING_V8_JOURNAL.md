@@ -119,3 +119,57 @@ a number: both point at the evidence directory that holds it.
   is updated — the reason `CLAUDE.md` states no counts either.
 - **The plan.** `docs/HUMAN_THRIVING_V8_PLAN.md` says what v8 *will* be and is edited as
   rulings land. This file says what was *done* and is append-only.
+
+---
+
+## 2026-09-03 — the prompt settled at v8.4, the labels corrected above the op-point, and Gate B-A became executable
+
+**Spend $2.30** (DeepSeek balance 7.40 → ~5.1), **~3,500 calls, 0 errors**, balance probed before
+the first call and reconciled against the estimate after. Nothing trained; nothing deployed.
+
+### What happened, in order
+
+1. **The 47-row class-A supplement was adjudicated**, discharging `tp_fp_status:
+   adjudication-pending` carried since the 2026-08-29 draw. v8 demotes **32 of 47**, and the 15
+   survivors are **11 distinct events** — one of them 9 above-op rows corpus-wide.
+   → `docs/evidence/2026-09-03-classA-supplement-adjudication/`
+2. **Phase B2 was sized and found nearly discharged**: its population is the draw's, and the
+   draw took 47 of the 59 available. Headroom is **12 rows**.
+   → `docs/evidence/2026-09-03-phase-b2-headroom/`
+3. **Five owner rulings** — commencement, Syria/§3, convict relief, the proposal clause, and
+   re-label scope. → `docs/decisions/2026-09-03-v8-1-commencement-clause.md`,
+   `docs/decisions/2026-09-03-v8-scope-rulings.md`
+4. **The prompt was written, measured, broken, ablated and settled at `prompt-v8-4.md`.**
+   → `docs/evidence/2026-09-03-v8-1-gate/`, PARTS 1–3
+5. **All 456 above-op rows were re-scored** under v8.4 at k=6; 140 demoted.
+   → `docs/evidence/2026-09-03-v84-above-op-relabel/`
+6. **Gate B-A became executable** for the first time, with a third verdict.
+   → `docs/evidence/2026-09-03-gate-executable/`
+
+### The two findings that outlive v8
+
+⛔⛔ **A blocking gate was failing on a coin flip.** Criterion 1 was reported FAILING from a k=3
+mean of 4.400 against a 3.85 bar. The row's own sd is 2.560; at k=6 it is 3.608 and at k=12
+2.342 — both PASSES. **On a bimodal row a k=3 mean is a sample of a coin flip, not a
+measurement**, and Gate B-A's own rule (*"the margin must clear the band"*) had never been
+computed because the gate was prose. It is now code, and on that exact run it returns
+**INDETERMINATE, need k≈82** rather than FAIL.
+
+⛔⛔ **Prompt clauses are not additive.** Four clauses, each measured individually safe, produced
+a prompt that scored the #91 origin article **5.921 with 12/12 `in_scope`** where v8 pins it at
+0.900 sd 0.000. Leave-one-out isolated a **B×D interaction**; a placebo of +996 chars of §1
+restatement refuted length and location as the cause. **Ablate to attribute; validate the
+artifact you intend to ship.**
+
+⭐ And the mechanism that generalises: **a rule stated as a TEST inside a reasoning step becomes
+a question the model asks of every article; the same rule as a CATEGORY in an exclusion list does
+not.**
+
+### Still open, deliberately
+
+- **The convict-relief ruling is unexecuted** — its clause was measured and dropped.
+- **The phase-3 mRNA row** demoted 5.13 → 0.52 and probably should not have.
+- **The train/test overlap** on the adverse suite: 7 of 18 rows are designated hard negatives
+  *and* Gate B-A judges against them. Six new benchmark candidates identified, none promoted.
+- **The positive class is now 4.80%**, below production's 7.74%. Phase C sets the probe against
+  the new number.

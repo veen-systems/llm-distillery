@@ -5481,3 +5481,55 @@ Expect it; do not "fix" it by weakening the guard.
 **Related**: the same hook has a separate hole in the other direction — `git commit --amend`
 reads `git diff --cached`, which is empty on an amend, so a filter-touching commit can be amended
 with any wording at all (found 2026-09-01, reported, not fixed).
+
+## 2026-09-03 — `| tail` swallowed an exit code while I was testing exit codes **[x5]**
+
+**Problem.** Checking the four exit codes of a new gate, I ran
+`python3 gate.py <bad-glob> 2>&1 | tail -1; echo $?` and read **0** for two refusal paths that
+in fact exit 1 and 3. The pipeline's status is the last command's, and `tail` always succeeds.
+
+**Fix.** Redirect to a file and echo `$?` on the next line, or use `${PIPESTATUS[0]}`. **If an
+exit code decides anything, do not put a formatter after it.**
+
+⭐ This is the **fifth** recorded occurrence, and the sharpest: it happened *inside the task of
+verifying exit codes*, and it masked a real defect — the gate's plumbing errors were exiting 1,
+the same code as "a row FAILS", so a gate that never ran was indistinguishable from a gate that
+ran and failed. Both were fixed only because the second check had no pipe.
+
+## 2026-09-03 — a truncated id broke a join silently, and its fallback was a claim
+
+**Problem.** A probe printed `d["id"][:40]` for readability. One id is exactly 40 characters, so
+it came back truncated, its lookup into the adverse suite missed, and the code fell through to
+`class-A: False`. Had that row been class-A-detected, its design-cell inclusion probability is
+**0.763**, not the 0.081 I was about to publish — a tenfold error in the alarming direction.
+
+**Fix.** Re-ran with full ids and a `KeyError`-raising join (`adv[rid]`, not `adv.get(rid)`).
+The figures held, but for a different reason than my code assumed.
+
+⭐ **A truncated key does not fail, it misses — and the default it falls back to is an
+assertion.** Truncate for display only, never in the value you join on.
+
+## 2026-09-03 — prompt clauses are not additive, and a four-arm ablation misled me into shipping their union
+
+**Problem.** Four v8.1 clauses, each measured individually safe at k=6 on the #91 origin row
+(0.900–0.917, `in_scope` 0/6). Their union scored that row **5.921 with 12/12 `in_scope`** — far
+worse than any single clause. I had run the ablation, drawn the conclusion that safe-alone means
+safe-together, and validated the union at k=12 only after shipping it into a candidate prompt.
+
+**Fix.** Leave-one-out isolated a **B×D interaction** (removing either fixes it, neither causes
+it alone). D held the only sentence among the four that *licenses* a positive; deleting it
+helped 5.921 → 3.375 and was not sufficient. D was dropped.
+
+⭐ **Ablate to attribute, validate the artifact you intend to ship.** An ablation answers "which
+clause caused this"; it does not answer "is the combination safe".
+
+## 2026-09-03 — the class-A instrument does not detect a declared class-A row
+
+**Problem.** `filters/uplifting/v7/prefilter.py`'s `crime_violence` patterns — the class-A
+instrument the corpus draw uses — match **none** of the title *"Children's helpline says number
+of calls about child domestic abuse cases has risen"*, which the adverse suite declares as
+**class A**. It therefore lands in a `|-` design cell, not `|classA`.
+
+**Not fixed** — recorded. The class-A *supplement* population (title patterns) and the class-A
+*adverse* population (editorial judgement) are defined by different things, and neither the plan
+nor the manifest says so. Any figure that treats them as one population is wrong.

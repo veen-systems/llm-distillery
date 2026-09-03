@@ -1,34 +1,34 @@
 # LLM Distillery - TODO
 
-## 🔵 NEXT SESSION — **all four v8 owner decisions are ruled; Phase B is unblocked**
+## 🔵 NEXT SESSION — **phase 6: TRAIN. Phases 1–5 are complete and nothing has ever been trained.**
 
-> **Updated 2026-08-30.** Session record: this block plus
-> `docs/decisions/2026-08-30-v8-phase-b-rulings.md`.
+> **Updated 2026-09-03.** Session record: `memory/project_session_2026_09_03.md`.
+> Rulings: `docs/decisions/2026-09-03-v8-1-commencement-clause.md`,
+> `docs/decisions/2026-09-03-v8-scope-rulings.md`. Journal: `docs/HUMAN_THRIVING_V8_JOURNAL.md`.
 
-**No spend today. No model, no filter, no threshold, no probe, nothing deployed — deploy is N/A,
-not skipped** (nothing under `filters/`). Record with the full reasoning for each:
-**`docs/decisions/2026-08-30-v8-phase-b-rulings.md`**.
+**Where we are in the RUNBOOK's nine phases:** 1 Planning ✅ · 2 Architecture ✅ (`prompt-v8-4.md`)
+· 3 Validation ✅ · 4 Prefilter ✅ N/A by ruling · 5 Training data ✅ (6,586 labels, 456 corrected)
+· **6 Training ⛔ NEXT, never started** · 6b Probe ⛔ · 7 Calibration ⛔ · 8 Testing ⛔ (its
+instrument now exists) · 9 Deployment ⛔.
 
-1. ✅ **Reordered prompt ADOPTED** — on H-V8-9's **label** argument (of 12 op-point crossings 4
-   are stable; on those the reorder is right **3 of 4**; neither §5b hazard suppressed; best of
-   three prompts on the transitional-justice row). The measured **≈$10.32 vs ≈$54.08** is a
-   by-product, not the reason — that distinction is what H-V8-3 required. ⚠️ **k=3 with
-   aggregation is not optional** (#135: the scope gate is a step function, `1/√k` does not
-   describe it).
-2. ✅ **Rwanda–EU row DROPPED and REPLACED by two.** ⛔ **The delta option does not work** —
-   v8 − v7 is **−0.783**, which fails a not-lower-than-v7 delta and exceeds the oracle decoder
-   floor (0.436 mean / 0.687 max), so the row fails in **every** form the set can express. Both
-   v8 arms landing on exactly **0.817** is the scope gate firing deterministically. The row is
-   retired *with its reason* in `datasets/adverse/uplifting_no_regression_retired.jsonl`.
-   ⛔ **The money-committed rule was NOT softened.**
-3. ✅ **The 3:1 class-A ratio is about the corpus — and that selects the 47-row supplement.**
-   Under the ruling's own definitions the two readings pick the same rows: the corpus holds 47
-   above-op class-A rows and the ordinary strata contributed **zero** of them. ⛔ **The
-   *"unreachable — needs 62 above-op rows, the window holds 59"* arithmetic is RETIRED**: it read
-   `corpus_level_tp_fp = 47/33` (above-op ÷ below-op) as a TP:FP miss, and a below-op class-A row
-   is **neither** TP nor FP under the ruled table — it is a harm-lexicon row scoring low, i.e.
-   correct behaviour. Field renamed with the trap stated inline. Adjudicate the 47 at labelling.
-4. ✅ **Phase B labels 6,590 rows** — the corpus as drawn, manifested and staged.
+### Before `prepare_data.py` runs
+
+1. **Use `labels_v84_merged.jsonl`**, not `labels_k3.jsonl` — 456 above-op rows corrected under
+   v8.4, per-row `prompt_hash`. The k=3 file is untouched, so this is reversible.
+2. ⛔ **`--filter` picks the analysis field from `filter.name`.** Point it at v7 and it writes
+   **0 examples to all three splits, prints COMPLETE and exits 0.** v8's config says
+   `filter.name: human_thriving`.
+3. ⚠️ **The probe's positive base rate is 4.80%**, not 6.92% and not production's 7.74%. Phase 6b
+   sets `--objective recall` against the new number.
+4. ⚠️ **The prompt is `prompt-v8-4.md`, not `prompt-compressed.md`** — `load_filter_spec` derives
+   the latter from `config.yaml`. Resolve at phase 9 **by copying, never renaming**: 6,586 labels
+   record the old path as provenance. Lineage: `filters/human_thriving/v8/PROMPTS.md`.
+
+### Three owner items, none blocking phase 6
+
+- **The phase-3 mRNA row** demoted 5.13 → 0.52 and probably should not have.
+- **The train/test overlap** on the adverse suite — six benchmark candidates wait on it.
+- **The convict-relief ruling is unexecuted**; its clause broke the origin row and was dropped.
 
 ### ⛔⛔ THE KEEPER — nothing stopped a guard row being drawn into its own training corpus
 `scripts/corpus/draw_v8_corpus.py` had **no exclusion for the acceptance-test rows**. The first
