@@ -217,6 +217,39 @@ improvement as "not distinguishable".**
 
 `docs/evidence/2026-09-04-v8-probe-calibration/PHASE_C_REVIEW.md`, `EXP-017`.
 
+## ⛔⛔ EXP-018 — a bigger encoder, a registered prediction, and I was substantially wrong
+
+Asked whether `multilingual-e5-large` closes the probe/student gap. Registered the prediction
+as **H-V8-16 before running it**, including a falsifier.
+
+| arm | whole-split AUC | AP | AUC on the 117 disputed rows |
+|---|---|---|---|
+| v7 (baseline) | — | — | 0.7218 |
+| probe e5-small | 0.8710 | 0.3779 | 0.7517 |
+| **probe e5-large** | **0.9016** | **0.4972** | **0.8169** |
+| student raw | 0.9474 | 0.5474 | 0.8454 |
+| student calibrated | 0.9488 | 0.5648 | 0.8521 |
+
+**Scoring it honestly.** Whole-split 0.9016 landed inside my predicted 0.89–0.91 ✅. The
+disputed-rows figure **exceeded my point prediction** of *"at most ~0.80"* ❌ while not
+reaching my stated falsifier of 0.83. It landed **between the two**, so I am not claiming the
+prediction held: the substantive claim — *capacity will not help, this is the wrong kind of
+signal* — is **substantially wrong. Capacity closes 70% of the gap** (0.0652 of 0.0937).
+
+⭐⭐ **And by the resolution I pre-registered (differences under ~0.05 are not resolvable at
+this n), e5-large and the STUDENT are NOT DISTINGUISHABLE on the disputed rows** — 0.0285
+apart.
+
+✅ **The operational conclusion survives, for a different reason than the one I argued.**
+Cost, measured on the same 5,926 articles and the same CPU: **47:13 against 4:14 — 11.1×.**
+That disqualifies e5-large in both roles: as a Stage-1 screen it would cost ~14 ms against
+the student's ~19 ms while still routing ~89% onward; as a replacement it is ~27% cheaper for
+AUC 0.9016 against 0.9474. **Right answer, wrong reasoning.**
+
+⚠️ **The 11.1× is CPU-only and the GPU ratio is UNMEASURED** — production serves on
+gpu-server. The rejection rests on that one number, so it is also the one measurement that
+would reopen it.
+
 ## ▶ NEXT
 
 **Phase 8 — and it is a VALUES call, not a pass/fail.** The question is *how much agreed-good
