@@ -1,16 +1,23 @@
 # human_thriving v8 — STATUS
 
-**NOT DEPLOYED. TRAINED (uncalibrated). Labelled, adjudicated; prompt settled at v8.4.** Last updated 2026-09-04.
+**NOT DEPLOYED. TRAINED, PROBED AND CALIBRATED. Labelled, adjudicated; prompt settled at v8.4.** Last updated 2026-09-04.
 
-⛔ **Trained does NOT mean scoreable.** There is no `calibration.json`, no retrained Stage-1
-probe and no `base_scorer.py`, so this filter cannot score an article today. The weights are
-**not in this repo** (gitignored, #97) — they live on `b650-gpu` only. Provenance is
-`training_history.json` / `training_metadata.json`, committed here. **EXP-015**.
+✅ **It can score an article ON `b650-gpu`.** `base_scorer.py`, `inference.py`,
+`inference_hybrid.py`, `probe/embedding_probe_e5small.pkl` and `calibration.json` all exist
+as of 2026-09-04 (**EXP-016**, `docs/evidence/2026-09-04-v8-probe-calibration/`).
+⛔ **The weights are not in this repo** (gitignored, #97) — they live on `b650-gpu` only, so
+a fresh clone loads the package and cannot run the student. "Scoreable" is a statement about
+one host.
 
-⛔ **This package is 1 of the 6-file core** (`memory/filter-doc-standard.md`). It carries
-`config.yaml` and the prompt; `DEEP_ROOTS.md`, `README.md` and `README_MODEL.md` are owed, and
-Phase F1 of the plan gates shipping on package parity with `nature_recovery v4`. This file exists
-now because v8's state is complicated enough that "not deployed" is not a useful summary.
+⛔ **Scoreable is not gate-passed.** Phase D has not run, and TWO numbers are inherited
+rather than measured: the **4.5 op-point** (from v7 #102) and Gate B-A's **k**. Reading the
+op-point across from v7 is not neutral — see the calibration entry below.
+
+⛔ **The doc set is still incomplete** (`memory/filter-doc-standard.md`). `config.yaml`, the
+prompt and now `calibration_report.md` are here; `DEEP_ROOTS.md`, `README.md` and
+`README_MODEL.md` are still owed, and Phase F1 of the plan gates shipping on package parity
+with `nature_recovery v4`. This file exists because v8's state is complicated enough that
+"not deployed" is not a useful summary.
 
 ## Where it actually stands
 
@@ -24,7 +31,8 @@ now because v8's state is complicated enough that "not deployed" is not a useful
 | Class-A adjudication | ✅ 2026-09-03 — v8 demotes **32 of 47**; the 15 survivors are 11 events. `docs/evidence/2026-09-03-classA-supplement-adjudication/` |
 | Phase B2 hard negatives | ⚠️ **12 rows of headroom, not a corpus** — the draw took 47 of the 59 available and 32 already carry low labels. `docs/evidence/2026-09-03-phase-b2-headroom/` |
 | Phase C **train** | ✅ **2026-09-04, EXP-015.** Epoch 4 of 6, selected on `recall_medium` @4.5. Weights on `b650-gpu` only: `~/llm-distillery/filters/human_thriving/v8/model/`, MAE-selected arm preserved at `model_baseline_mae/`. `docs/evidence/2026-09-04-v8-checkpoint-selection/` |
-| Phase C probe / calibrate | ⛔ **not started** — no `calibration.json`, no retrained probe |
+| Phase C **probe** | ✅ **2026-09-04, EXP-016.** e5-small, recall objective, seed 42, CPU. Threshold **1.75**, chosen to hold the ruled ~88.6% routing (weighted **0.8876** val / **0.8935** test), FN@MEDIUM+ **0/31** and **0/35**. ⛔ The threshold is pinned to this exact probe — a seed change moves routing 14 pp |
+| Phase C **calibrate** | ✅ **2026-09-04, EXP-016.** Isotonic on val. ⛔ **Does NOT improve held-out MAE** (test 0.6029 → 0.6142) and the two arms are the SAME RANKER (Spearman 0.9977, AUC 0.9474 → 0.9488). Ships per ADR-008 + ADR-023's specificity tie-break, not because it helped. `calibration_report.md` |
 | Phase D gate | ⛔ not started. ⚠️ **Criterion 1 is NOT stably failing** — the 4.400 was a k=3 mean on a coin-toss row; at k=6 under unchanged v8 it is **3.608 ± 2.560, PASS**. `docs/evidence/2026-09-03-v8-1-gate/` |
 | Phase E normalization | ⛔ not started |
 | Phase F deploy | ⛔ not started |
@@ -34,12 +42,39 @@ boilerplate at 357–489 chars, all *above* the 300-char floor.
 
 ## ⛔ Known-failing and known-missing, before anyone reads the state as green
 
-- ⚠️ **The trained student is UNCALIBRATED, and its numbers are not comparable to the fleet.**
-  Raw test @4.5 (n=660, 35 positives, 5.30%): **recall 0.514, specificity 0.9856, precision
-  0.667**. Specificity is at/above every deployed filter; **recall is below all six** (fleet
-  0.59–0.72), which is the cheap side to be weak on under ADR-023 but is the number Phase C's
-  probe and calibration have to move. `memory/filter-status.md`'s figures are post-calibration —
-  do not put these in the same table.
+- ⚠️ **Its numbers are still not comparable to the fleet, and PHASE C DID NOT MOVE THE ONE
+  IT WAS AIMED AT.** Test @4.5 (n=660, 35 positives, 5.30%), both arms from one CPU forward
+  pass: raw **recall 0.486 / spec 0.9856**, calibrated **recall 0.343 / spec 0.9920** — and the
+  gate says the #95 bands **OVERLAP on recall, specificity and F1: NOT DISTINGUISHABLE**.
+  Specificity is at/above every deployed filter; **recall is below all six** (fleet 0.59–0.72),
+  the cheap side to be weak on under ADR-023 but the number Phase C was supposed to raise.
+  ⚠️ EXP-015 reported **0.514** raw at 4.5 on this same split: that is **one article** (18 vs
+  17 of 35) and a **device** difference — EXP-015 on b650-CUDA, this on CPU, i.e. the
+  CPU→CUDA **0.1956** term landing near the bar. Neither is wrong; they are not the same
+  measurement. `memory/filter-status.md`'s figures are post-calibration **and** post-gate — do
+  not put any of these in that table.
+- ⛔⛔ **4.5 ON THE CALIBRATED SCALE IS A STRICTER OPERATING POINT THAN 4.5 RAW.** Isotonic
+  compresses the top (`human_wellbeing_impact` student max 7.9 → calibrated 6.8), so the same
+  number flags **17** rows where raw flags **26** — a 35% cut in surfaced volume. The two arms
+  are the same ranker (Spearman **0.9977**, AUC 0.9474 → 0.9488, every matched-volume recall
+  difference ≤2 articles). **Carrying v7's 4.5 across is not "keeping the op-point"; it is
+  silently tightening it.** Phase D must re-derive on the calibrated scale.
+- ⛔ **The Stage-1 threshold (1.75) is pinned to the exact probe it was derived against.**
+  Same data, objective and code with `--seed 7` gives a probe on which 1.75 routes
+  **0.7406/0.7567** instead of **0.8876/0.8935** — ~14 pp fewer articles reaching Stage 2,
+  FN unchanged at 0. Stage 1 is silent, so there is no symptom. `config.yaml` records
+  `probe_sha256` beside the threshold and `inference_hybrid.py` refuses to construct on a
+  mismatch. **Retrain the probe → re-derive the threshold and regenerate BOTH hashes in one
+  commit**: `config.yaml`'s `probe_sha256` *and* `probe/embedding_probe_e5small.pkl.sha256`
+  (⚠️ `train_probe.py` does not write the companion file — do it by hand).
+- ⚠️ **The multilingual question is half-answered, and the answered half is adverse.** At
+  1.75 non-Latin content is routed to Stage 2 **less** often than Latin: design-weighted
+  0.8218 (n=131) vs 0.8979 (n=1,187), **gap 0.0762, z = 2.65** (unweighted 0.0693, z 2.53;
+  both SEs binomial, measured Kish deff 1.068). FN was **0 in every cell**, but on
+  8 non-Latin positives the rule-of-three upper bound is **0.375** — the instrument could
+  not have said otherwise. **Routing asymmetry confirmed; recall asymmetry not measured.**
+  This is the layer that replaced the Latin-only keyword prefilter (ADR-018/019 Amendment
+  2026-08-21). llm-distillery#141 is the blocker.
 - ⛔⛔ **The checkpoint was NOT produced by any commit now on a branch.** It was trained by the
   tree that became `1878e7b` via `git commit --amend`, so the exact sha (`0697f5a`) is dangling
   and will not survive `git gc`. `1878e7b` resolves this filter to the same 4.5 and does not
@@ -98,9 +133,20 @@ boilerplate at 357–489 chars, all *above* the 300-char floor.
   `--prompt` explicitly. Left as-is on purpose: the 6,586 labels record
   `prompt_file: filters/human_thriving/v8/prompt-candidate-tail.md` as provenance, and renaming
   now would break that pointer. Resolve at Phase F, by copying rather than renaming.
-- **`config.yaml` is labelling-scope only.** No `hybrid_inference` block (the probe is retrained
-  and its threshold re-derived at Phase C) and no normalization anchor (Phase E). `prefilter` and
-  `content_type_caps` are omitted **with the reason written where the block would be**.
+- **`config.yaml` now carries the `hybrid_inference` block** (Phase C, 2026-09-04) and it is the
+  **only filter in the repo where that key is live** — every other `inference_hybrid.py`
+  carries a module-level `DEFAULT_THRESHOLD` and reads nothing. ⚠️ **The value is not 1.00
+  across the fleet** (measured 2026-09-04: 0.75 / 1.00 / 1.225 / 1.25 / 1.50 / 2.25 / 2.50;
+  only 2 of 13 are 1.00), and on `nature_recovery v4` the config says **3.225** against a
+  runtime **0.75** — so "they agree today" is false where it matters. Still **no
+  normalization anchor** (Phase E). `prefilter` and `content_type_caps` remain omitted **with
+  the reason written where the block would be**.
+- ⚠️ **`score_scale_factor` stays 1.0, and `fit_calibration.py` tried to change that.** Its
+  default behaviour computes `10.0 / weighted_max` and edits `config.yaml`; on this run it
+  produced **1.3787**, which with no `normalization.json` would stretch every score by 1.38×
+  (`FILTER_PLAYBOOK` §8, ADR-014). Suppressed with the new `--no-config-update` and proven
+  suppressed by an unchanged `sha256(config.yaml)`. ⛔ **Any filter fitted before its
+  normalization gets the same edit** — the flag is opt-in, so the next person must pass it.
 
 ## Open questions that do not block
 

@@ -1,0 +1,58 @@
+INFO: Loading filter constants from filters.human_thriving.v8.base_scorer
+INFO: Filter constants: MEDIUM=4.5, dims=6 (human_wellbeing_impact, social_cohesion_impact, justice_rights_impact...), gatekeeper=evidence_level<3.0→3.0
+INFO: Device: cpu  seed: 42
+INFO: Train: 5268, Val: 658
+INFO: Loading embedding model: intfloat/multilingual-e5-small
+INFO: Load pretrained SentenceTransformer: intfloat/multilingual-e5-small
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+WARNING: Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+
+BertModel LOAD REPORT from: intfloat/multilingual-e5-small
+Key                     | Status     |  | 
+------------------------+------------+--+-
+embeddings.position_ids | UNEXPECTED |  | 
+
+Notes:
+- UNEXPECTED	:can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+INFO: Encoding 5926 articles...
+
+INFO: Embedding dim: 384
+INFO: Recall objective: 250 positives / 5268 (4.7%), pos_weight=20.07
+INFO: Epoch 10: Val BCE = 1.3530
+INFO: Early stopping at epoch 17
+INFO: Best Val BCE: 0.9611
+INFO: Val recall curve (threshold -> FN-rate / recall / stage2-rate):
+INFO:     t=0.00  FN=0.000  recall=1.000  stage2=1.000
+INFO:     t=0.25  FN=0.000  recall=1.000  stage2=1.000
+INFO:     t=0.50  FN=0.000  recall=1.000  stage2=1.000
+INFO:     t=0.75  FN=0.000  recall=1.000  stage2=0.997
+INFO:     t=1.00  FN=0.000  recall=1.000  stage2=0.989
+INFO:     t=1.25  FN=0.000  recall=1.000  stage2=0.977
+INFO:     t=1.50  FN=0.000  recall=1.000  stage2=0.933
+INFO:     t=1.75  FN=0.000  recall=1.000  stage2=0.901
+INFO:     t=2.00  FN=0.000  recall=1.000  stage2=0.843
+INFO:     t=2.25  FN=0.000  recall=1.000  stage2=0.786
+INFO:     t=2.50  FN=0.000  recall=1.000  stage2=0.720
+INFO:     t=2.75  FN=0.000  recall=1.000  stage2=0.617
+INFO:     t=3.00  FN=0.032  recall=0.968  stage2=0.521
+INFO:     t=3.25  FN=0.032  recall=0.968  stage2=0.436
+INFO:     t=3.50  FN=0.097  recall=0.903  stage2=0.362
+INFO: ================================================================
+INFO: SELECTED threshold = 2.825  (val FN=0.000, recall=1.000, stage2-rate=0.591)
+INFO:   -> set filters/.../config.yaml hybrid_inference.stage1.threshold: 2.825
+INFO: Probe saved to /tmp/probe_seed42.pkl
+INFO: Metrics: {
+  "seed": 42,
+  "device": "cpu",
+  "embedding_model": "intfloat/multilingual-e5-small",
+  "val_bce": 0.9611060619354248,
+  "objective": "recall",
+  "selected_threshold": 2.825,
+  "target_fn": 0.02,
+  "val_fn_rate": 0.0,
+  "val_recall_medium": 1.0,
+  "val_stage2_rate": 0.5911854103343465,
+  "val_positives": 31,
+  "wa_scale": 2.0,
+  "aux_l1_weight": 0.1
+}

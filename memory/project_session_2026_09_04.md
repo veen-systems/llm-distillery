@@ -106,9 +106,14 @@ needs gitignored weights), **#136** (the deploy-guard blocked a docs commit on t
 idiom *"the shipped one"*), and **#127** (v8 now has provenance, but hand-built provenance records
 the author's memory, not the run).
 
-## ▶ NEXT
+## ▶ NEXT — and this was done the same day, in a second session
 
-**Phase 6b PROBE + phase 7 CALIBRATION.** v8 cannot score an article — no `calibration.json`,
-no retrained probe, no `base_scorer.py`. The number to move is recall 0.514. Two training-side
-levers are registered as **H-V8-15** (clamp 0→1.0; `--use-head-tail`) but calibration and the
-probe are aimed at the same number and are cheaper — try them first, one variable at a time.
+**Phase 6b PROBE + phase 7 CALIBRATION** were completed on 2026-09-04 as **EXP-016**
+(`docs/evidence/2026-09-04-v8-probe-calibration/`). ⛔ **Neither moved recall**, which is what
+this section predicted they would: the probe is recall-safe (0 FN at the adopted 1.75 on both
+splits) so Stage 1 was never the constraint, and the calibration is close to a monotone
+rescale (Spearman 0.9977 against raw, AUC 0.9474 → 0.9488). ⚠️ **The 0.514 named above is a
+b650-CUDA figure**; the CPU pass reads 0.486, one article apart. The live levers are now the
+**phase-8 op-point re-derivation on the calibrated scale** (4.5 calibrated flags 17 test rows
+where 4.5 raw flags 26) and then **H-V8-15** (clamp 0→1.0; `--use-head-tail`), one variable at
+a time.

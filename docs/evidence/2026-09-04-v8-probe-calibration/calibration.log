@@ -1,0 +1,96 @@
+INFO: Filter: human_thriving v8.0
+INFO: Dimensions: ['human_wellbeing_impact', 'social_cohesion_impact', 'justice_rights_impact', 'evidence_level', 'benefit_distribution', 'change_durability']
+INFO: Loading scorer...
+INFO: Loading scorer: HumanThrivingScorer from filters.human_thriving.v8.inference
+INFO: Loading model from /home/jeroen/llm-distillery/filters/human_thriving/v8/model
+INFO: Device: cpu
+The following layers were not sharded: model.layers.*.post_attention_layernorm.weight, model.norm.weight, model.layers.*.post_feedforward_layernorm.weight, model.layers.*.self_attn.q_norm.weight, score.weight, model.layers.*.input_layernorm.weight, model.layers.*.self_attn.k_norm.weight, model.embed_tokens.weight, model.layers.*.pre_feedforward_layernorm.weight
+
+INFO: Model loaded successfully
+INFO: Loaded 658 validation articles
+INFO: Running inference on validation set...
+INFO:   Inference progress: 160/658
+INFO:   Inference progress: 320/658
+INFO:   Inference progress: 480/658
+INFO:   Inference progress: 640/658
+INFO: Student scores shape: (658, 6)
+INFO: Oracle scores shape: (658, 6)
+INFO: Fitting isotonic regression calibration...
+INFO: Calibration saved to /home/jeroen/llm-distillery/filters/human_thriving/v8/calibration.json
+INFO: score_scale_factor: 1.3787 (10.0 / 7.25 theoretical max from calibration)
+INFO: --no-config-update: config.yaml NOT modified. The filter keeps its existing score_scale_factor; the value above is recorded here only.
+INFO: Running inference on test set (660 articles)...
+INFO:   Inference progress: 160/660
+INFO:   Inference progress: 320/660
+INFO:   Inference progress: 480/660
+INFO:   Inference progress: 640/660
+
+============================================================
+  Calibration Report (val)
+============================================================
+  Filter: human_thriving v8.0
+  Samples: 658
+  Overall MAE: 0.5805 -> 0.5492
+  Improvement: +0.0313 (+5.4%)
+
+  Dimension                    MAE Before  MAE After     Change
+  ----------------------------------------------------------
+  human_wellbeing_impact           0.5945     0.5687    +0.0258
+  social_cohesion_impact           0.5255     0.4903    +0.0352
+  justice_rights_impact            0.4351     0.3971    +0.0380
+  evidence_level                   0.6972     0.6769    +0.0203
+  benefit_distribution             0.5955     0.5492    +0.0463
+  change_durability                0.6353     0.6128    +0.0225
+
+  Score ranges:
+  Dimension                             Student       Calibrated           Oracle
+  ----------------------------------------------------------------------------
+  human_wellbeing_impact            [-0.1, 7.2]       [0.0, 6.8]       [0.0, 8.3]
+  social_cohesion_impact            [-0.3, 8.0]       [0.0, 7.3]       [0.0, 8.0]
+  justice_rights_impact             [-0.4, 7.4]       [0.0, 8.0]       [0.0, 8.0]
+  evidence_level                    [-0.3, 7.2]       [0.0, 8.0]       [0.0, 8.0]
+  benefit_distribution              [-0.3, 6.5]       [0.0, 7.0]       [0.0, 7.0]
+  change_durability                 [-0.2, 6.7]       [0.0, 7.0]       [0.0, 7.3]
+
+  Tier distribution:
+  Tier                     Oracle    Student Calibrated
+  --------------------------------------------------
+  high                          0          0          0
+  medium                       31         28         19
+  low                         627        630        639
+============================================================
+
+============================================================
+  Calibration Report (test)
+============================================================
+  Filter: human_thriving v8.0
+  Samples: 660
+  Overall MAE: 0.6029 -> 0.6142
+  Improvement: -0.0113 (-1.9%)
+
+  Dimension                    MAE Before  MAE After     Change
+  ----------------------------------------------------------
+  human_wellbeing_impact           0.6169     0.6436    -0.0267
+  social_cohesion_impact           0.5173     0.5329    -0.0156
+  justice_rights_impact            0.4605     0.4619    -0.0014
+  evidence_level                   0.7245     0.7561    -0.0316
+  benefit_distribution             0.6110     0.5956    +0.0154
+  change_durability                0.6872     0.6949    -0.0077
+
+  Score ranges:
+  Dimension                             Student       Calibrated           Oracle
+  ----------------------------------------------------------------------------
+  human_wellbeing_impact            [-0.2, 7.9]       [0.0, 6.8]       [0.0, 8.0]
+  social_cohesion_impact            [-0.4, 6.5]       [0.0, 7.3]       [0.0, 7.7]
+  justice_rights_impact             [-0.4, 6.2]       [0.0, 8.0]       [0.0, 7.7]
+  evidence_level                    [-0.3, 8.0]       [0.0, 8.0]       [0.0, 8.0]
+  benefit_distribution              [-0.2, 6.2]       [0.0, 5.7]       [0.0, 7.7]
+  change_durability                 [-0.1, 6.5]       [0.0, 6.5]       [0.0, 9.0]
+
+  Tier distribution:
+  Tier                     Oracle    Student Calibrated
+  --------------------------------------------------
+  high                          1          0          0
+  medium                       34         26         17
+  low                         625        634        643
+============================================================

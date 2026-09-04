@@ -297,10 +297,12 @@ python -m ground_truth.batch_scorer --filter filters/{name}/v{N} --llm gemini-fl
 python training/prepare_data.py --filter filters/{name}/v{N} \
     --input datasets/scored/{name}_v{N}.jsonl --output-dir datasets/training/{name}_v{N}
 
-# Fit calibration (after training)
+# Fit calibration (after training). ⛔ PASS --no-config-update unless normalization.json
+# exists: by default this EDITS config.yaml's score_scale_factor (ADR-014 superseded it;
+# ≠1.0 with no normalization silently stretches every score). RUNBOOK § Fit calibration.
 PYTHONPATH=. python scripts/calibration/fit_calibration.py \
     --filter filters/{name}/v{N} --data-dir datasets/training/{name}_v{N} \
-    --test-data datasets/training/{name}_v{N}/test.jsonl
+    --test-data datasets/training/{name}_v{N}/test.jsonl --no-config-update
 
 # Fit normalization (after production data accumulates)
 MSYS_NO_PATHCONV=1 PYTHONPATH=. python scripts/normalization/fit_normalization.py \

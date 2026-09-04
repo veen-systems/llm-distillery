@@ -1,0 +1,22 @@
+probe_recall_report_val.json: n=658 split=val design_weighted=True
+probe_recall_report_test.json: n=660 split=test design_weighted=True
+
+threshold 1.750, pooled over 2 split(s)
+  group                   n   pos   FN  routed   stage2   wStage2
+  script:latin         1187    58    0    1079   0.9090    0.8979
+  script:non_latin      131     8    0     110   0.8397    0.8218
+
+UNWEIGHTED  gap 0.0693  pooled p 0.9021  SE 0.0274  z 2.53
+  ^ sample rates on a stratified design. Reported for comparison only.
+
+WEIGHTED    gap 0.0762  pooled p 0.8906  SE 0.0287  z 2.65   (Hájek ratio; SE not design-corrected -- see below)
+  ⚠️ Σw² is not recorded per group, so this SE is still binomial and therefore
+     OPTIMISTIC. Measured deff on this design was 1.068, which moves the
+     unweighted z from 2.53 to 2.45 -- the verdict survives either way.
+  -> non-Latin content IS screened harder
+
+FN@MEDIUM+ -- and what a zero can and cannot exclude:
+  script:latin       0/58 FN. Rule of three: 95% upper bound on the true FN rate is 0.052
+  script:non_latin   0/8 FN. Rule of three: 95% upper bound on the true FN rate is 0.375
+
+⛔ The routing asymmetry is measurable; the RECALL asymmetry is not, at this n.

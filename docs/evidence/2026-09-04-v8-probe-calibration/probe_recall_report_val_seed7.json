@@ -1,0 +1,301 @@
+{
+  "filter": "filters/human_thriving/v8",
+  "split": "val",
+  "n_rows": 658,
+  "probe_path": "/tmp/probe_seed7.pkl",
+  "probe_metrics": {
+    "seed": 7,
+    "device": "cpu",
+    "embedding_model": "intfloat/multilingual-e5-small",
+    "val_bce": 0.9209238290786743,
+    "objective": "recall",
+    "selected_threshold": 2.55,
+    "target_fn": 0.02,
+    "val_fn_rate": 0.0,
+    "val_recall_medium": 1.0,
+    "val_stage2_rate": 0.5775075987841946,
+    "val_positives": 31,
+    "wa_scale": 2.0,
+    "aux_l1_weight": 0.1
+  },
+  "medium_threshold": 4.5,
+  "device": "cpu",
+  "design_weighted": true,
+  "design_weight_note": "Weighted columns are Horvitz-Thompson estimates for the DRAWABLE population the corpus was sampled from -- not for production, which the draw excluded news.google.com from (22.1%).",
+  "curve": [
+    {
+      "threshold": 0.0,
+      "fn": 0,
+      "fn_rate": 0.0,
+      "recall": 1.0,
+      "stage2_rate": 1.0,
+      "weighted_fn_rate": 0.0,
+      "weighted_stage2_rate": 1.0
+    },
+    {
+      "threshold": 0.25,
+      "fn": 0,
+      "fn_rate": 0.0,
+      "recall": 1.0,
+      "stage2_rate": 0.993920972644377,
+      "weighted_fn_rate": 0.0,
+      "weighted_stage2_rate": 0.9926493599296576
+    },
+    {
+      "threshold": 0.5,
+      "fn": 0,
+      "fn_rate": 0.0,
+      "recall": 1.0,
+      "stage2_rate": 0.9832826747720365,
+      "weighted_fn_rate": 0.0,
+      "weighted_stage2_rate": 0.979870130244908
+    },
+    {
+      "threshold": 0.75,
+      "fn": 0,
+      "fn_rate": 0.0,
+      "recall": 1.0,
+      "stage2_rate": 0.9604863221884499,
+      "weighted_fn_rate": 0.0,
+      "weighted_stage2_rate": 0.9532568440725673
+    },
+    {
+      "threshold": 1.0,
+      "fn": 0,
+      "fn_rate": 0.0,
+      "recall": 1.0,
+      "stage2_rate": 0.9224924012158054,
+      "weighted_fn_rate": 0.0,
+      "weighted_stage2_rate": 0.9102819128579888
+    },
+    {
+      "threshold": 1.25,
+      "fn": 0,
+      "fn_rate": 0.0,
+      "recall": 1.0,
+      "stage2_rate": 0.8814589665653495,
+      "weighted_fn_rate": 0.0,
+      "weighted_stage2_rate": 0.8643530828123368
+    },
+    {
+      "threshold": 1.5,
+      "fn": 0,
+      "fn_rate": 0.0,
+      "recall": 1.0,
+      "stage2_rate": 0.8267477203647416,
+      "weighted_fn_rate": 0.0,
+      "weighted_stage2_rate": 0.8038015868937798
+    },
+    {
+      "threshold": 1.75,
+      "fn": 0,
+      "fn_rate": 0.0,
+      "recall": 1.0,
+      "stage2_rate": 0.7689969604863222,
+      "weighted_fn_rate": 0.0,
+      "weighted_stage2_rate": 0.7405906832389837
+    },
+    {
+      "threshold": 2.0,
+      "fn": 0,
+      "fn_rate": 0.0,
+      "recall": 1.0,
+      "stage2_rate": 0.7066869300911854,
+      "weighted_fn_rate": 0.0,
+      "weighted_stage2_rate": 0.6747155034288376
+    },
+    {
+      "threshold": 2.25,
+      "fn": 0,
+      "fn_rate": 0.0,
+      "recall": 1.0,
+      "stage2_rate": 0.6474164133738601,
+      "weighted_fn_rate": 0.0,
+      "weighted_stage2_rate": 0.6135989297115058
+    },
+    {
+      "threshold": 2.5,
+      "fn": 0,
+      "fn_rate": 0.0,
+      "recall": 1.0,
+      "stage2_rate": 0.5851063829787234,
+      "weighted_fn_rate": 0.0,
+      "weighted_stage2_rate": 0.5515175032122931
+    },
+    {
+      "threshold": 2.75,
+      "fn": 1,
+      "fn_rate": 0.03225806451612903,
+      "recall": 0.967741935483871,
+      "stage2_rate": 0.5015197568389058,
+      "weighted_fn_rate": 0.0298542233821998,
+      "weighted_stage2_rate": 0.4595112749383445
+    },
+    {
+      "threshold": 3.0,
+      "fn": 1,
+      "fn_rate": 0.03225806451612903,
+      "recall": 0.967741935483871,
+      "stage2_rate": 0.42249240121580545,
+      "weighted_fn_rate": 0.0298542233821998,
+      "weighted_stage2_rate": 0.37654463490393875
+    },
+    {
+      "threshold": 3.25,
+      "fn": 2,
+      "fn_rate": 0.06451612903225806,
+      "recall": 0.935483870967742,
+      "stage2_rate": 0.35714285714285715,
+      "weighted_fn_rate": 0.06028911853309026,
+      "weighted_stage2_rate": 0.30962591186530564
+    },
+    {
+      "threshold": 3.5,
+      "fn": 3,
+      "fn_rate": 0.0967741935483871,
+      "recall": 0.9032258064516129,
+      "stage2_rate": 0.303951367781155,
+      "weighted_fn_rate": 0.09072401368398074,
+      "weighted_stage2_rate": 0.2568866693354125
+    },
+    {
+      "threshold": 3.75,
+      "fn": 5,
+      "fn_rate": 0.16129032258064516,
+      "recall": 0.8387096774193549,
+      "stage2_rate": 0.2507598784194529,
+      "weighted_fn_rate": 0.15099194984865927,
+      "weighted_stage2_rate": 0.21118597054631535
+    },
+    {
+      "threshold": 4.0,
+      "fn": 7,
+      "fn_rate": 0.22580645161290322,
+      "recall": 0.7741935483870968,
+      "stage2_rate": 0.21428571428571427,
+      "weighted_fn_rate": 0.21067921424464717,
+      "weighted_stage2_rate": 0.1761666179738244
+    }
+  ],
+  "by_threshold": {
+    "1.750": [
+      {
+        "group": "ALL",
+        "n": 658,
+        "n_positives": 31,
+        "positive_rate": 0.04711246200607903,
+        "fn": 0,
+        "fn_rate": 0.0,
+        "recall": 1.0,
+        "stage2_rate": 0.7689969604863222,
+        "weighted_positive_rate": 0.026487170588309357,
+        "weighted_fn_rate": 0.0,
+        "weighted_stage2_rate": 0.7405906832389837
+      },
+      {
+        "group": "script:latin",
+        "n": 603,
+        "n_positives": 25,
+        "positive_rate": 0.04145936981757877,
+        "fn": 0,
+        "fn_rate": 0.0,
+        "recall": 1.0,
+        "stage2_rate": 0.7744610281923715,
+        "weighted_positive_rate": 0.023535935357596873,
+        "weighted_fn_rate": 0.0,
+        "weighted_stage2_rate": 0.7469415531864598
+      },
+      {
+        "group": "script:non_latin",
+        "n": 55,
+        "n_positives": 6,
+        "positive_rate": 0.10909090909090909,
+        "fn": 0,
+        "fn_rate": 0.0,
+        "recall": 1.0,
+        "stage2_rate": 0.7090909090909091,
+        "weighted_positive_rate": 0.06078962305447317,
+        "weighted_fn_rate": 0.0,
+        "weighted_stage2_rate": 0.6667739937982378
+      },
+      {
+        "group": "lang:de",
+        "n": 58,
+        "n_positives": 2,
+        "positive_rate": 0.034482758620689655,
+        "fn": 0,
+        "fn_rate": 0.0,
+        "recall": 1.0,
+        "stage2_rate": 0.7586206896551724,
+        "weighted_positive_rate": 0.016463093201523258,
+        "weighted_fn_rate": 0.0,
+        "weighted_stage2_rate": 0.7546240883905323
+      },
+      {
+        "group": "lang:el",
+        "n": 25,
+        "n_positives": 2,
+        "positive_rate": 0.08,
+        "fn": 0,
+        "fn_rate": 0.0,
+        "recall": 1.0,
+        "stage2_rate": 0.56,
+        "weighted_positive_rate": 0.04233564204055117,
+        "weighted_fn_rate": 0.0,
+        "weighted_stage2_rate": 0.5273756834598591
+      },
+      {
+        "group": "lang:en",
+        "n": 350,
+        "n_positives": 16,
+        "positive_rate": 0.045714285714285714,
+        "fn": 0,
+        "fn_rate": 0.0,
+        "recall": 1.0,
+        "stage2_rate": 0.78,
+        "weighted_positive_rate": 0.025924572226560375,
+        "weighted_fn_rate": 0.0,
+        "weighted_stage2_rate": 0.7450053651640378
+      },
+      {
+        "group": "lang:es",
+        "n": 61,
+        "n_positives": 1,
+        "positive_rate": 0.01639344262295082,
+        "fn": 0,
+        "fn_rate": 0.0,
+        "recall": 1.0,
+        "stage2_rate": 0.9672131147540983,
+        "weighted_positive_rate": 0.008555870965887254,
+        "weighted_fn_rate": 0.0,
+        "weighted_stage2_rate": 0.9632183403347978
+      },
+      {
+        "group": "lang:fr",
+        "n": 31,
+        "n_positives": 1,
+        "positive_rate": 0.03225806451612903,
+        "fn": 0,
+        "fn_rate": 0.0,
+        "recall": 1.0,
+        "stage2_rate": 0.5483870967741935,
+        "weighted_positive_rate": 0.017509274984382175,
+        "weighted_fn_rate": 0.0,
+        "weighted_stage2_rate": 0.48984443458620136
+      },
+      {
+        "group": "lang:(other, n<20 each)",
+        "n": 133,
+        "n_positives": 9,
+        "positive_rate": 0.06766917293233082,
+        "fn": 0,
+        "fn_rate": 0.0,
+        "recall": 1.0,
+        "stage2_rate": 0.7443609022556391,
+        "weighted_positive_rate": 0.0398163190041405,
+        "weighted_fn_rate": 0.0,
+        "weighted_stage2_rate": 0.7181436501364481
+      }
+    ]
+  }
+}

@@ -1,29 +1,43 @@
 # LLM Distillery - TODO
 
-## 🔵 NEXT SESSION — **phase 6b PROBE + phase 7 CALIBRATION. The student is trained; it still cannot score.**
+## 🔵 NEXT SESSION — **phase 8 GATE. v8 can score; the op-point it would score at is inherited, and calibration made it stricter.**
 
-> **Updated 2026-09-04.** Session record: `memory/project_session_2026_09_04.md`.
-> Training run: **EXP-015** (`experiments/registry.jsonl`),
-> `docs/evidence/2026-09-04-v8-checkpoint-selection/`, `filters/human_thriving/v8/STATUS.md`.
+> **Updated 2026-09-04 (second session).** Session records:
+> `memory/project_session_2026_09_04.md`. Runs: **EXP-015** (training) and **EXP-016**
+> (probe + calibration) in `experiments/registry.jsonl`, with
+> `docs/evidence/2026-09-04-v8-checkpoint-selection/` and
+> `docs/evidence/2026-09-04-v8-probe-calibration/`. State:
+> `filters/human_thriving/v8/STATUS.md`, `filters/human_thriving/v8/calibration_report.md`.
 > Rulings: `docs/decisions/2026-09-03-v8-1-commencement-clause.md`,
 > `docs/decisions/2026-09-03-v8-scope-rulings.md`. Journal: `docs/HUMAN_THRIVING_V8_JOURNAL.md`.
 
 **Where we are in the RUNBOOK's nine phases:** 1 Planning ✅ · 2 Architecture ✅ (`prompt-v8-4.md`)
 · 3 Validation ✅ · 4 Prefilter ✅ N/A by ruling · 5 Training data ✅ (6,586 labels, 456 corrected)
-· **6 Training ✅ 2026-09-04, uncalibrated** · **6b Probe ⛔ NEXT** · **7 Calibration ⛔ NEXT**
-· 8 Testing ⛔ (its instrument now exists) · 9 Deployment ⛔.
+· **6 Training ✅** · **6b Probe ✅ 2026-09-04** · **7 Calibration ✅ 2026-09-04**
+· **8 Testing ⛔ NEXT** · 9 Deployment ⛔.
 
-### ⛔ Read before touching phase 6b/7
+### ⛔ Read before touching phase 8
 
-1. ⛔ **TRAINED ≠ SCOREABLE.** No `calibration.json`, no retrained probe, **no `base_scorer.py`**.
-   v8 cannot score an article today, and nothing about it is deployable.
+1. ✅ **SCOREABLE — on `b650-gpu` only.** `base_scorer.py`, `inference.py`,
+   `inference_hybrid.py`, `probe/embedding_probe_e5small.pkl` and `calibration.json` all exist.
+   The weights do not (see 2), so a fresh clone loads the package and cannot run the student.
 2. **The weights are NOT in this repo** (gitignored, #97). Epoch 4 of 6 lives at
    `b650-gpu:~/llm-distillery/filters/human_thriving/v8/model/`, with the MAE-selected arm kept
    at `model_baseline_mae/`. Provenance is the committed `training_{history,metadata}.json`.
-3. ⚠️ **The number to move is recall.** Raw test @4.5 (n=660, 35 positives, 5.30%): **recall
-   0.514, specificity 0.9856**. Specificity already matches/beats the fleet; recall is **below
-   all six** deployed filters (0.59–0.72). ⛔ Those fleet numbers are **post-calibration** — do
-   not put these in the same table until v8 is calibrated too.
+   The 660-row raw-logit dump is at `b650-gpu:~/llm-distillery/ht_v8_test_dump/` so the 16-min
+   CPU pass need not be repeated.
+3. ⛔⛔ **THE OP-POINT IS THE PHASE-8 DECISION, and 4.5 is not a neutral carry-over.** v8 now
+   ships a calibration, and **4.5 calibrated is a stricter bar than 4.5 raw** — it flags **17**
+   test rows where raw flags **26**, a 34.6% cut in surfaced volume, while the two arms are the
+   *same ranker* (Spearman 0.9977, AUC 0.9474 → 0.9488, every matched-volume recall difference
+   ≤2 articles). Re-derive on the **calibrated** scale.
+4. ⚠️ **Phase C did not move recall, and the probe is not why.** Test @4.5, both arms from one
+   CPU pass: raw **recall 0.486 / spec 0.9856**, calibrated **0.343 / 0.9920** — and the gate's
+   #95 bands **OVERLAP on recall, specificity and F1: NOT DISTINGUISHABLE.** The probe is
+   recall-safe (0 FN at 1.75 on both splits), so Stage 1 is not the constraint. ⛔ EXP-015's
+   **0.514** was b650-**CUDA**; this is CPU, one article apart. Never quote a v8 recall without
+   the device and the calibration state. Fleet numbers are post-calibration **and** post-gate —
+   do not put any of these in that table.
 4. ⛔⛔ **The checkpoint was produced by no commit on a branch** (trained under `0697f5a`, amended
    into `1878e7b`; tag `exp-015-training-code` keeps it from gc). **Decision owed before phase
    9: retrain under a real commit, or record the exception.** Recommended: fold the retrain into
@@ -34,8 +48,10 @@
 
 ### Two training-side levers, both untested for v8 (H-V8-15)
 
-Neither is needed before 6b/7, but both are candidates if calibration and the probe do not move
-recall enough. **Do not run them together** — one variable at a time.
+⭐ **Now the live option, because 6b/7 did NOT move recall** (finding 4 above): the probe is
+recall-safe and the calibration is a monotone rescale, so neither touches the number. The
+cheaper move first is the op-point re-derivation in phase 8; these are what remains after it.
+**Do not run them together** — one variable at a time.
 
 - **Clamp 0→1.0 targets.** v7's own record: unclamped/3 epochs MAE 0.96, clamped/6 epochs 0.78 on
   a similarly zero-inflated distribution. ⚠️ **That was an MAE argument, which ADR-023 forbids
@@ -51,7 +67,7 @@ recall enough. **Do not run them together** — one variable at a time.
    **0 examples to all three splits, prints COMPLETE and exits 0.** v8's config says
    `filter.name: human_thriving`.
 3. ⚠️ **The probe's positive base rate is 4.80%**, not 6.92% and not production's 7.74%. Phase 6b
-   sets `--objective recall` against the new number.
+   set `--objective recall` against it; the realised train rate was **4.7% (250/5268)**.
 4. ⚠️ **The prompt is `prompt-v8-4.md`, not `prompt-compressed.md`** — `load_filter_spec` derives
    the latter from `config.yaml`. Resolve at phase 9 **by copying, never renaming**: 6,586 labels
    record the old path as provenance. Lineage: `filters/human_thriving/v8/PROMPTS.md`.

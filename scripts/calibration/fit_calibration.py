@@ -36,6 +36,37 @@ logger = logging.getLogger(__name__)
 logging.getLogger("transformers.modeling_utils").setLevel(logging.ERROR)
 
 
+def score_scale_factor_decision(filter_dir: Path, no_config_update: bool,
+                                force_config_update: bool):
+    """Decide whether to write `score_scale_factor` into a filter's config.yaml.
+
+    Returns (write: bool, reason: str). Pure apart from one `.exists()`, so the
+    behaviour can be proven in both directions without loading a model --
+    `tests/unit/test_fit_calibration_config_write.py`.
+
+    ⛔ WHY THE DEFAULT REFUSES WHEN normalization.json IS ABSENT. `score_scale_factor` is
+    superseded by percentile normalization (ADR-014). A factor != 1.0 on a filter with no
+    `normalization.json` stretches every NORMALIZED score -- which is what feeds
+    cross-filter ranking and NexusMind's `pipeline.enrichment.min_score: 4.0`. Visibility
+    is decided on the RAW score (NM#280), so the op-point does not move and the change has
+    no symptom. ⚠️ Worse, second-order: NexusMind's `_check_required_artifacts` treats the
+    mere PRESENCE of `score_scale_factor` in `scoring` as "uses scale factor" and then
+    stops warning about the missing `normalization.json` -- so the write also silences the
+    one guard that would flag the absent Phase E artifact.
+
+    Filters that already ship a `normalization.json` are unaffected: they still get the
+    write, because there the factor is inert by construction.
+    """
+    if no_config_update:
+        return False, "--no-config-update given"
+    if (filter_dir / "normalization.json").exists():
+        return True, "normalization.json present, factor is inert"
+    if force_config_update:
+        return True, "--force-config-update overrides the missing normalization.json"
+    return False, ("no normalization.json -- a factor != 1.0 would stretch every "
+                   "normalized score (ADR-014, FILTER_PLAYBOOK section 8)")
+
+
 def load_filter_config(filter_dir: Path) -> dict:
     """Load config.yaml from a filter directory."""
     config_path = filter_dir / "config.yaml"
@@ -355,6 +386,25 @@ def main():
         "--output", type=Path, default=None,
         help="Output path for calibration.json (default: <filter-dir>/calibration.json)",
     )
+    parser.add_argument(
+        "--force-config-update", action="store_true",
+        help="Write score_scale_factor into config.yaml even when the filter has NO "
+             "normalization.json. Added 2026-09-04 alongside the default refusal: that "
+             "combination silently stretches every normalized score and additionally "
+             "silences NexusMind's missing-normalization warning. Filters that already "
+             "have a normalization.json are unaffected and still get the write.",
+    )
+    parser.add_argument(
+        "--no-config-update", action="store_true",
+        help="Do NOT write score_scale_factor back into the filter's config.yaml. "
+             "Added 2026-09-04: this script's default is to compute 10.0/weighted_max "
+             "and edit config.yaml as a side effect, but score_scale_factor is "
+             "SUPERSEDED by percentile normalization (ADR-014) and a filter that "
+             "ships a factor != 1.0 with no normalization.json silently stretches "
+             "every score and defeats the gatekeeper design (FILTER_PLAYBOOK section 8). "
+             "The computed value is still logged, so nothing is hidden -- it is just "
+             "not applied.",
+    )
     args = parser.parse_args()
 
     filter_dir = args.filter.resolve()
@@ -464,8 +514,19 @@ def main():
                 f"(10.0 / {weighted_max:.2f} theoretical max from calibration)"
             )
 
-            config_path = filter_dir / "config.yaml"
-            _update_score_scale_factor(config_path, score_scale_factor, weighted_max)
+            write, reason = score_scale_factor_decision(
+                filter_dir, args.no_config_update, args.force_config_update
+            )
+            if write:
+                logger.info(f"writing score_scale_factor ({reason})")
+                _update_score_scale_factor(filter_dir / "config.yaml",
+                                           score_scale_factor, weighted_max)
+            else:
+                logger.warning(
+                    "config.yaml NOT modified (%s). The filter keeps its existing "
+                    "score_scale_factor; %s is recorded in this log only.",
+                    reason, score_scale_factor,
+                )
 
     # Print report
     print_report(cal_data, oracle_scores, student_scores, dimension_names, weights, tier_thresholds, label="val")

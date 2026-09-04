@@ -3,7 +3,7 @@
 # The v8 rename of `uplifting` (ADR-012 as amended; the lens-naming backlog is CLOSED,
 # `human_thriving` not bare `thriving`, which is an existing parked directory).
 #
-# ⛔ WHY THIS FILE EXISTS BEFORE ANY MODEL DOES. Phase B labels 6,590 rows, and the
+# ⛔ WHY THIS FILE EXISTED BEFORE ANY MODEL DID. Phase B labels 6,590 rows, and the
 # labelling script derives the analysis field name from `filter.name` here:
 # `human_thriving` -> `human_thriving_analysis`. Label with `uplifting`'s config and then
 # run `training/prepare_data.py --filter filters/human_thriving/v8` and it looks for
@@ -13,10 +13,11 @@
 # skipped; missing dimensions default to score 0."* The same mechanism turns a RENAMED
 # dimension into a silent column of zeros, which is a wrong label rather than a missing one.
 #
-# ⚠️ INCOMPLETE BY DESIGN. This is the labelling-time config. Phase C adds
-# `hybrid_inference` (after the probe is retrained and its threshold re-derived) and Phase E
-# adds the normalization anchor. Blocks that would be inherited unread are omitted below
-# with the reason, because a key that looks live and is dead is this repo's signature defect.
+# ⚠️ STILL INCOMPLETE, BUT LESS SO. Phase C ADDED the `hybrid_inference` block on
+# 2026-09-04 (it is at the foot of this file, and for this filter it is LIVE, not
+# documentation). Phase E still owes the normalization anchor. Blocks that would be
+# inherited unread are omitted below with the reason, because a key that looks live and is
+# dead is this repo's signature defect.
 
 filter:
   name: human_thriving
@@ -59,21 +60,23 @@ source_filter:
 # forward would be dead config that reads as an enforcement point.
 
 oracle:
-  # ⛔ UNDECIDED, and deliberately not defaulted. `docs/HUMAN_THRIVING_V8_PLAN.md` §9 Q1 and
-  # its Phase B section both require an ADR-020 bake-off on a harm-weighted sample with k-run
-  # averaging BEFORE the full relabel; the four rulings of 2026-08-30 did not cover it.
-  # Measured on n=3 (plan §1f): on the class-A rows -- the entire reason v8 exists -- GEMINI
-  # is the stricter arm (3/10 caps vs DeepSeek 1/10), which cuts against the standing DeepSeek
-  # preference, while DeepSeek is ~7x cheaper. The gap is inside the 0.82 oracle noise, so it
-  # is a hint, not a decision. Every v8 measurement so far (Phase A, H-V8-8, H-V8-9, the
-  # 2026-08-31 no-regression gate) used `deepseek-chat`; that is momentum, not a ruling.
-  # ⚠️ Nothing reads this block -- it is documentation. Naming a winner here would not select
+  # ✅ RULED 2026-09-01: **DeepSeek** (`deepseek-chat`), 8/9 vs Gemini's 7/9 on the ADR-020
+  # bake-off. Record: `docs/decisions/2026-09-01-v8-oracle-ruling.md`. Decided on WHICH ROW
+  # each arm loses, not on the margin; the row Gemini loses stably is the #91 origin article
+  # (7.158). All 6,586 Phase B labels were produced by this arm.
+  #
+  # ⛔ THE EARLIER n=3 READING IS SUPERSEDED AND MUST NOT BE RE-QUOTED. It said "GEMINI is
+  # the stricter arm (3/10 caps vs DeepSeek 1/10)"; that verdict DOES NOT SURVIVE the adopted
+  # prompt -- its decisive row went from 3.00 vs 7.43 to 1.050 vs 1.025. The bake-off had in
+  # fact been run on 2026-08-23 and was not written into the plan until 2026-09-01, which is
+  # why this block read UNDECIDED for nine days after it was decided.
+  # ⚠️ Nothing reads this block -- it is documentation. Naming a winner here does not select
   # one: `ground_truth.batch_scorer --llm` defaults to `claude`, and DeepSeek is a separate
   # script entirely (`scripts/score_deepseek_production.py`). See docs/RUNBOOK.md.
   candidates:
     - deepseek-chat
     - gemini-flash
-  decision: "OPEN - see plan section 9 question 1"
+  decision: "deepseek-chat (ruled 2026-09-01)"
 
 scoring:
   # ⚠️ 1.0, NOT v7's 1.1976. v7's factor is inert only because v7 ships a normalization.json;
@@ -89,8 +92,9 @@ scoring:
   # ⭐ A weight change needs NO re-labelling: the oracle emits per-dimension scores 0-10 and
   # the weighted average is computed downstream (ADR-001). Dropping a dimension is likewise
   # free. Only ADDING one would require re-scoring, and none is proposed.
-  # ⛔ The runtime weights live in `base_scorer.py` once Phase C writes it. This block is
-  # documentation, the same relationship TIER_THRESHOLDS has to `scoring.tiers` below.
+  # ⛔ The runtime weights live in `base_scorer.py`, which Phase C WROTE on 2026-09-04
+  # (DIMENSION_WEIGHTS). This block is documentation, the same relationship TIER_THRESHOLDS
+  # has to `scoring.tiers` below.
   dimensions:
     # === IMPACT DOMAINS (WHAT kind of thriving) === 65% total
     human_wellbeing_impact:
@@ -159,12 +163,81 @@ training:
   train_val_test_split: [0.8, 0.1, 0.1]
   recommended_model: "google/gemma-3-1b-pt"
 
-# ⛔ NO `hybrid_inference:` BLOCK UNTIL PHASE C. The probe is RETRAINED, not inherited, and
-# its threshold must be RE-DERIVED: v7's "0.9% FN on MEDIUM+" was calibrated when the
-# op-point was 4.0, before #102 moved it to 4.5. Writing a threshold here now would be a
-# number nobody measured.
-# ⚠️ And it would not take effect anyway: `inference_hybrid.py` hardcodes
-# `DEFAULT_THRESHOLD = 1.00` and NOTHING passes `hybrid_inference.stage1.threshold` into the
-# constructor (verified 2026-08-21, no consumer in filters/common/ or NexusMind's loader).
-# Changing the config value alone does nothing -- this is the nature_recovery 3.225-vs-0.75
-# shape. Change both, or wire one to the other, at Phase C.
+# ✅ PHASE C, 2026-09-04. The probe was RETRAINED on the v8 corpus (not inherited) and this
+# threshold was RE-DERIVED on v8's own splits. `EXP-016`.
+#
+# ⭐ AND THIS KEY IS LIVE, unlike every other filter's. Every other `inference_hybrid.py`
+# carries a module-level `DEFAULT_THRESHOLD` and NOTHING passes this value into the
+# constructor (verified 2026-08-21) -- a config key that reads as an enforcement point and
+# is inert. ⚠️ The VALUE differs per filter (measured 2026-09-04: 0.75 nr v1/v2/v4, 1.00
+# belonging v1 + uplifting v7, 1.225 solutions v5/v6, 1.25 cd v4/v5, 1.50 ir v6, 2.25
+# uplifting v6 + thriving v1, 2.50 cd v6) and on TWO filters it disagrees with the config:
+# `nature_recovery v4` config 3.225 vs runtime 0.75, `thriving v1` config null vs 2.25.
+# v8's `inference_hybrid.py` READS this block and RAISES if it is missing, so there is
+# exactly one place the number lives.
+# Proof it is not inert: tests/unit/test_human_thriving_v8_stage1_threshold.py mutates this
+# file and asserts the constructed scorer's EmbeddingStage config follows it.
+hybrid_inference:
+  stage1:
+    embedding_model: "intfloat/multilingual-e5-small"
+    probe_path: "probe/embedding_probe_e5small.pkl"
+    # 1.75, chosen to HOLD NEAR PASS-THROUGH -- owner ruling 2026-08-28 (plan Phase 0,
+    # decision (e)): retrain the probe but do NOT screen harder; re-derive the threshold
+    # only far enough to preserve v7's ~88.6% stage-2 routing. No stage-2 cost constraint
+    # was claimed, so FN risk is not bought.
+    #
+    # Measured 2026-09-04, e5-small + recall-objective probe (seed 42, CPU), design-weighted
+    # to the DRAWABLE population (Horvitz-Thompson over `inclusion_probability`):
+    #   stage-2 routing  val 0.8876 / test 0.8935   <- the 88.6% the ruling protects
+    #   FN@MEDIUM+ (4.5) val 0/31   / test 0/35     <- zero in every language and script cell
+    # ⚠️ "0 FN" has resolution 1/31 and 1/35. It is not evidence of a zero FN rate; it is
+    # evidence that no FN was observed at n=66 positives across both splits. Rule of three:
+    # the 95% upper bound on the NON-LATIN FN rate is 0.375 on 8 positives, so a 30%
+    # non-Latin FN rate would have produced this table more often than not.
+    #
+    # ⛔⛔ AND THE ADVERSE HALF, which the zero above must not be read as excluding:
+    # NON-LATIN CONTENT IS SCREENED HARDER, measurably. Pooled over both splits at 1.75,
+    # DESIGN-WEIGHTED, the primary figure: Latin routes 0.8979 (n=1,187) against non-Latin
+    # 0.8218 (n=131) -- **gap 0.0762, pooled p 0.8906, z = 2.65**. Unweighted for
+    # comparison: 0.9090 vs 0.8397, gap 0.0693, z = 2.53. Per split, weighted: 3.0 pp (val)
+    # and 11.0 pp (test) -- consistent in sign, not in magnitude.
+    # ⚠️ Both SEs are binomial and therefore OPTIMISTIC on a stratified design; the measured
+    # Kish deff is 1.068 (unweighted z 2.53 -> 2.45). The verdict survives every variant.
+    # Reproduce: routing_gap.txt (which prints both, so the correction stays visible).
+    # ⭐ So: routing asymmetry CONFIRMED, recall asymmetry NOT MEASURED. This is the layer
+    # that replaced the Latin-only keyword prefilter (ADR-018/019 Amendment 2026-08-21), so
+    # a future threshold edit here must re-measure BOTH halves. llm-distillery#141 is the
+    # blocker on the recall half: only 27 non-Latin positives with native >=1,000 chars
+    # exist in the window.
+    # ⚠️ The drawable population EXCLUDES news.google.com (22.1% of production), so 0.8876
+    # is not a production routing rate. v7's 88.6% was measured on production with v7's
+    # probe -- the agreement is reassuring, not a like-for-like comparison.
+    #
+    # ⛔ WHY NOT the probe's own selected threshold, 2.825: `train_probe.py --target-fn 0.02`
+    # picks the HIGHEST threshold meeting an FN budget, which is a screening-savings
+    # objective, not this ruling. At 2.825 routing collapses to 0.547/0.521 weighted and the
+    # single test-split FN appears -- and it is a NON-LATIN positive (1 of 2), the exact
+    # asymmetry ruling 3 exists to prevent. Evidence:
+    # docs/evidence/2026-09-04-v8-probe-calibration/
+    threshold: 1.75
+    #
+    # ⛔⛔ THIS THRESHOLD BELONGS TO THIS EXACT PROBE, NOT TO THE RECIPE. Measured
+    # 2026-09-04: retraining with the same data, objective and code but `--seed 7`
+    # instead of 42 gives a probe on which the SAME 1.75 routes **0.7406 val / 0.7567
+    # test** weighted instead of 0.8876 / 0.8935 -- a ~14 pp collapse in Stage-2
+    # routing, i.e. ~14% more articles screened out, from the seed alone. (FN@MEDIUM+
+    # stayed 0/31 and 0/35 on both seeds, so recall-safety is seed-robust and the
+    # ROUTING is not.) Stage 1 is silent by design -- a screened-out article produces
+    # no output to inspect -- so this failure has no symptom.
+    #
+    # `probe_sha256` therefore pins the probe that this threshold was derived against,
+    # and `inference_hybrid.py` REFUSES TO START if the probe on disk does not match.
+    # Replace the probe and you must re-derive the threshold; the guard makes that a
+    # crash rather than a silent 14-point screening change.
+    # ⚠️ Distinct from `probe/embedding_probe_e5small.pkl.sha256`, which travels WITH
+    # the probe (a retrain regenerates it) and only catches corruption. This hash
+    # travels with the THRESHOLD.
+    # Regenerate with: sha256sum filters/human_thriving/v8/probe/embedding_probe_e5small.pkl
+    probe_sha256: "ccbebe9f0c749416827a96638a270b0e8f9da9306ec29755affe2da8c8ea9379"
+  stage2:
+    model: "current"

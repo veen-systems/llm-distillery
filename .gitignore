@@ -244,3 +244,18 @@ filters/common/violence_promotion/training/*.jsonl
 
 # bash run sentinels written by background evidence runs — not evidence
 docs/evidence/**/runs/*.status
+
+# ⛔ THE SCRATCH RULES ABOVE (`*.bak`, `*.old`, `*_backup.*`, `*_test.*`) ARE PATTERNS,
+# NOT PATHS, so they apply repo-wide. `*_test.*` silently swallowed a committed evidence
+# artifact on 2026-09-04: `docs/evidence/2026-09-04-v8-probe-calibration/
+# probe_recall_report_test.json` — the SOLE source for every test-split number published
+# in that directory's README, in `filters/human_thriving/v8/calibration_report.md` and in
+# EXP-016. `git add` omitted it without a word; its `_val` and `_test_seed7` siblings were
+# staged, so the loss looked like nothing at all.
+# Measured blast radius at the time (`git status --porcelain --ignored | grep '_test\.'`):
+# two untracked files repo-wide — that JSON and
+# `filters/common/obituary_detector/validation/panel_obit_test.py`.
+# Evidence directories are the record a decision was made on; a scratch-file pattern must
+# not be able to delete one.
+!docs/evidence/**/*_test.*
+!docs/evidence/**/*_backup.*

@@ -1022,12 +1022,18 @@ non-Latin against production's **7.26%**.
   calibrated when the op-point was **4.0**, before #102 moved it to 4.5 — the config
   comment says so itself. And at 1.00 the measured speedup is only **~1.05×** on a probe
   with MAE 1.04, i.e. v7's probe was barely earning its place.
-- ⛔ **The threshold lives in CODE, not config.** `inference_hybrid.py` hardcodes
-  `DEFAULT_THRESHOLD = 1.00` and **nothing passes `config.yaml`'s
-  `hybrid_inference.stage1.threshold` into the constructor** (verified 2026-08-21 — no
-  consumer in `filters/common/` or NexusMind's loader/`production_scorer`). They agree
-  today so it is harmless *now*, but this is the `nature_recovery` 3.225-vs-0.75 shape:
-  **editing the config value alone will do nothing.** Change both, or wire one to the other.
+- ✅ **RESOLVED 2026-09-04 by WIRING, not by duplicating.** The threshold lived in CODE:
+  every `inference_hybrid.py` carries a module-level `DEFAULT_THRESHOLD` and **nothing
+  passed `config.yaml`'s `hybrid_inference.stage1.threshold` into the constructor**
+  (verified 2026-08-21 — no consumer in `filters/common/` or NexusMind's
+  loader/`production_scorer`). ⚠️ **And "they agree today" was FALSE where it matters**:
+  `nature_recovery v4` ships `threshold: 3.225` against a runtime **0.75**, and
+  `thriving v1` ships `null` against 2.25 — the 3.225-vs-0.75 shape was already live, not
+  hypothetical. v8's `inference_hybrid.py` now **reads the config and raises when the key
+  is absent**, so the number lives in exactly one place; `tests/unit/
+  test_human_thriving_v8_stage1_threshold.py` mutates the file and asserts the value that
+  reaches `EmbeddingStage`, mutation-killed. ⛔ **Only v8 is wired** — the other twelve
+  packages still have an inert key.
 - ✅ **Train the probe on b650 — it is cleared for this.** The e5 path is bit-identical
   across boxes (max |Δ| 4.2e-6, zero screening flips, identical embedding checksums). The
   Gemma student is *not* — see Phase 0H.

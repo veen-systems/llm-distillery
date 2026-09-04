@@ -1,0 +1,357 @@
+{
+  "note": "Student-bar sweep on the human_thriving v8 TEST split, both calibration arms, produced by scripts/gate/ground_truth_gate.py --recompute-model-wa --threshold <bar> --truth-threshold 4.5 against the one-forward-pass dumps from scripts/analysis/dump_student_scores.py. INDICATIVE ONLY -- this is NOT the Phase D gate: one split, one device (b650-gpu CPU, venv-prodparity), and the op-point decision needs the #95 band per candidate plus the split's positive rate. `truth_threshold` is pinned at 4.5 so the positive set does not move while the student's bar sweeps (#102/ADR-023).",
+  "split": "test",
+  "n": 660,
+  "positives_at_4.5": 35,
+  "device": "cpu",
+  "bars": {
+    "4.0": {
+      "threshold": 4.0,
+      "truth_threshold": 4.5,
+      "gatekeeper_cap": 3.0,
+      "noise_floor": 0.16,
+      "n_labeled": 660,
+      "models": {
+        "raw": {
+          "n": 660,
+          "positives": 35,
+          "truth_threshold": 4.5,
+          "recall": 0.6285714285714286,
+          "precision": 0.5116279069767442,
+          "specificity": 0.9664,
+          "f1": 0.5641025641025641,
+          "spearman": 0.8067652820092787,
+          "mae": 0.5318424761160648,
+          "tp": 22,
+          "fn": 13,
+          "fp": 21,
+          "tn": 604,
+          "noise_floor": 0.16,
+          "n_indeterminate": 12,
+          "indeterminate_by_cell": {
+            "tp": 0,
+            "fn": 2,
+            "fp": 4,
+            "tn": 6
+          },
+          "recall_band": [
+            0.6285714285714286,
+            0.6857142857142857
+          ],
+          "precision_band": [
+            0.4489795918367347,
+            0.5853658536585366
+          ],
+          "specificity_band": [
+            0.9568,
+            0.9728
+          ],
+          "f1_band": [
+            0.5238095238095237,
+            0.6315789473684211
+          ]
+        },
+        "calibrated": {
+          "n": 660,
+          "positives": 35,
+          "truth_threshold": 4.5,
+          "recall": 0.5142857142857142,
+          "precision": 0.5454545454545454,
+          "specificity": 0.976,
+          "f1": 0.5294117647058822,
+          "spearman": 0.8060249381782938,
+          "mae": 0.5416075965366492,
+          "tp": 18,
+          "fn": 17,
+          "fp": 15,
+          "tn": 610,
+          "noise_floor": 0.16,
+          "n_indeterminate": 11,
+          "indeterminate_by_cell": {
+            "tp": 0,
+            "fn": 3,
+            "fp": 5,
+            "tn": 3
+          },
+          "recall_band": [
+            0.5142857142857142,
+            0.6
+          ],
+          "precision_band": [
+            0.5,
+            0.6774193548387096
+          ],
+          "specificity_band": [
+            0.9712,
+            0.984
+          ],
+          "f1_band": [
+            0.5070422535211268,
+            0.6363636363636364
+          ]
+        }
+      }
+    },
+    "4.25": {
+      "threshold": 4.25,
+      "truth_threshold": 4.5,
+      "gatekeeper_cap": 3.0,
+      "noise_floor": 0.16,
+      "n_labeled": 660,
+      "models": {
+        "raw": {
+          "n": 660,
+          "positives": 35,
+          "truth_threshold": 4.5,
+          "recall": 0.5714285714285714,
+          "precision": 0.5405405405405406,
+          "specificity": 0.9728,
+          "f1": 0.5555555555555556,
+          "spearman": 0.8067652820092787,
+          "mae": 0.5318424761160648,
+          "tp": 20,
+          "fn": 15,
+          "fp": 17,
+          "tn": 608,
+          "noise_floor": 0.16,
+          "n_indeterminate": 12,
+          "indeterminate_by_cell": {
+            "tp": 2,
+            "fn": 2,
+            "fp": 6,
+            "tn": 2
+          },
+          "recall_band": [
+            0.5142857142857142,
+            0.6285714285714286
+          ],
+          "precision_band": [
+            0.4864864864864865,
+            0.6666666666666666
+          ],
+          "specificity_band": [
+            0.9696,
+            0.9824
+          ],
+          "f1_band": [
+            0.5,
+            0.6470588235294118
+          ]
+        },
+        "calibrated": {
+          "n": 660,
+          "positives": 35,
+          "truth_threshold": 4.5,
+          "recall": 0.45714285714285713,
+          "precision": 0.6153846153846154,
+          "specificity": 0.984,
+          "f1": 0.5245901639344263,
+          "spearman": 0.8060249381782938,
+          "mae": 0.5416075965366492,
+          "tp": 16,
+          "fn": 19,
+          "fp": 10,
+          "tn": 615,
+          "noise_floor": 0.16,
+          "n_indeterminate": 8,
+          "indeterminate_by_cell": {
+            "tp": 3,
+            "fn": 2,
+            "fp": 2,
+            "tn": 1
+          },
+          "recall_band": [
+            0.37142857142857144,
+            0.5142857142857142
+          ],
+          "precision_band": [
+            0.5416666666666666,
+            0.6923076923076923
+          ],
+          "specificity_band": [
+            0.9824,
+            0.9872
+          ],
+          "f1_band": [
+            0.44067796610169496,
+            0.5901639344262295
+          ]
+        }
+      }
+    },
+    "4.5": {
+      "threshold": 4.5,
+      "truth_threshold": 4.5,
+      "gatekeeper_cap": 3.0,
+      "noise_floor": 0.16,
+      "n_labeled": 660,
+      "models": {
+        "raw": {
+          "n": 660,
+          "positives": 35,
+          "truth_threshold": 4.5,
+          "recall": 0.4857142857142857,
+          "precision": 0.6538461538461539,
+          "specificity": 0.9856,
+          "f1": 0.5573770491803278,
+          "spearman": 0.8067652820092787,
+          "mae": 0.5318424761160648,
+          "tp": 17,
+          "fn": 18,
+          "fp": 9,
+          "tn": 616,
+          "noise_floor": 0.16,
+          "n_indeterminate": 10,
+          "indeterminate_by_cell": {
+            "tp": 3,
+            "fn": 1,
+            "fp": 2,
+            "tn": 4
+          },
+          "recall_band": [
+            0.4,
+            0.5142857142857142
+          ],
+          "precision_band": [
+            0.5185185185185185,
+            0.72
+          ],
+          "specificity_band": [
+            0.9792,
+            0.9888
+          ],
+          "f1_band": [
+            0.45161290322580644,
+            0.6
+          ]
+        },
+        "calibrated": {
+          "n": 660,
+          "positives": 35,
+          "truth_threshold": 4.5,
+          "recall": 0.34285714285714286,
+          "precision": 0.7058823529411765,
+          "specificity": 0.992,
+          "f1": 0.46153846153846156,
+          "spearman": 0.8060249381782938,
+          "mae": 0.5416075965366492,
+          "tp": 12,
+          "fn": 23,
+          "fp": 5,
+          "tn": 620,
+          "noise_floor": 0.16,
+          "n_indeterminate": 8,
+          "indeterminate_by_cell": {
+            "tp": 1,
+            "fn": 2,
+            "fp": 2,
+            "tn": 3
+          },
+          "recall_band": [
+            0.3142857142857143,
+            0.4
+          ],
+          "precision_band": [
+            0.5789473684210527,
+            0.8235294117647058
+          ],
+          "specificity_band": [
+            0.9872,
+            0.9952
+          ],
+          "f1_band": [
+            0.40740740740740744,
+            0.5384615384615384
+          ]
+        }
+      }
+    },
+    "4.75": {
+      "threshold": 4.75,
+      "truth_threshold": 4.5,
+      "gatekeeper_cap": 3.0,
+      "noise_floor": 0.16,
+      "n_labeled": 660,
+      "models": {
+        "raw": {
+          "n": 660,
+          "positives": 35,
+          "truth_threshold": 4.5,
+          "recall": 0.37142857142857144,
+          "precision": 0.65,
+          "specificity": 0.9888,
+          "f1": 0.4727272727272728,
+          "spearman": 0.8067652820092787,
+          "mae": 0.5318424761160648,
+          "tp": 13,
+          "fn": 22,
+          "fp": 7,
+          "tn": 618,
+          "noise_floor": 0.16,
+          "n_indeterminate": 12,
+          "indeterminate_by_cell": {
+            "tp": 5,
+            "fn": 3,
+            "fp": 4,
+            "tn": 0
+          },
+          "recall_band": [
+            0.22857142857142856,
+            0.45714285714285713
+          ],
+          "precision_band": [
+            0.5333333333333333,
+            0.8421052631578947
+          ],
+          "specificity_band": [
+            0.9888,
+            0.9952
+          ],
+          "f1_band": [
+            0.32,
+            0.5925925925925926
+          ]
+        },
+        "calibrated": {
+          "n": 660,
+          "positives": 35,
+          "truth_threshold": 4.5,
+          "recall": 0.2571428571428571,
+          "precision": 0.8181818181818182,
+          "specificity": 0.9968,
+          "f1": 0.39130434782608686,
+          "spearman": 0.8060249381782938,
+          "mae": 0.5416075965366492,
+          "tp": 9,
+          "fn": 26,
+          "fp": 2,
+          "tn": 623,
+          "noise_floor": 0.16,
+          "n_indeterminate": 10,
+          "indeterminate_by_cell": {
+            "tp": 4,
+            "fn": 3,
+            "fp": 1,
+            "tn": 2
+          },
+          "recall_band": [
+            0.14285714285714285,
+            0.34285714285714286
+          ],
+          "precision_band": [
+            0.5555555555555556,
+            0.9230769230769231
+          ],
+          "specificity_band": [
+            0.9936,
+            0.9984
+          ],
+          "f1_band": [
+            0.22727272727272727,
+            0.5000000000000001
+          ]
+        }
+      }
+    }
+  }
+}

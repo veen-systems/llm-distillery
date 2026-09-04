@@ -451,6 +451,13 @@ def main():
                         help="[recall] JSONL of known positives to report FN-rate on (e.g. the 129)")
     parser.add_argument("--device", type=str, default=None)
     parser.add_argument("--output", type=Path, default=None)
+    parser.add_argument("--seed", type=int, default=42,
+                        help="Seed for weight init and DataLoader shuffling. Added "
+                             "2026-09-04: probes shipped before this were trained "
+                             "UNSEEDED and are not reproducible. Recorded in the "
+                             "probe's metrics as `seed`. Bit-identical reruns are "
+                             "expected on CPU only — CUDA reductions are not "
+                             "deterministic under a seed (EXP-015).")
     args = parser.parse_args()
 
     # Load filter-specific dimensional constants from the filter's base_scorer.
@@ -462,9 +469,17 @@ def main():
     DIMENSION_NAMES = cfg['DIMENSION_NAMES']
     WEIGHTS = cfg['WEIGHTS']
 
+    import random
+
     import torch
+
+    random.seed(args.seed)
+    np.random.seed(args.seed)
+    torch.manual_seed(args.seed)
+    torch.cuda.manual_seed_all(args.seed)
+
     device = args.device or ("cuda" if torch.cuda.is_available() else "cpu")
-    logger.info(f"Device: {device}")
+    logger.info(f"Device: {device}  seed: {args.seed}")
 
     train_articles = load_data(args.data_dir / "train.jsonl")
     val_articles = load_data(args.data_dir / "val.jsonl")
@@ -487,7 +502,30 @@ def main():
             f"filter. Regression will likely collapse to a floor predictor and drop "
             f"positives at Stage 1. Use --objective recall (see this file's header).")
 
-    metrics = {}
+    # ⛔ RECORD THE LIBRARY VERSIONS. The pickle carries an sklearn `StandardScaler`, and a
+    # cross-version load emits only `InconsistentVersionWarning: ... might lead to breaking
+    # code or invalid results` -- which NEITHER hash can detect, because the file is
+    # byte-identical and only its interpretation changes. Given this project's own measured
+    # library-stack term (max |Δ| 0.2008, larger than the #95 batch floor), the stack is
+    # part of the artifact's identity, not metadata about it.
+    def _ver(dist):
+        try:
+            from importlib.metadata import version
+            return version(dist)
+        except Exception:
+            return None
+
+    metrics = {"seed": args.seed, "device": str(device),
+               "embedding_model": args.embedding_model,
+               "versions": {
+                   # NB the DIST name, not the import name: `version("sklearn")` cannot
+                   # succeed (the distribution is `scikit-learn`) and would have reported a
+                   # missing dependency that is installed.
+                   "scikit-learn": _ver("scikit-learn"),
+                   "torch": _ver("torch"),
+                   "sentence-transformers": _ver("sentence-transformers"),
+                   "numpy": _ver("numpy"),
+               }}
     if args.objective == "recall":
         model, scaler, tm = train_recall_probe(
             train_emb, train_labels, val_emb, val_labels, device=device,

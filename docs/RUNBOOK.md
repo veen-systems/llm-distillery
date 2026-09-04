@@ -304,10 +304,29 @@ gpu-server has 16 GB and also serves Ollama; prefer b650 for training.
 PYTHONPATH=. python scripts/calibration/fit_calibration.py \
     --filter filters/{name}/v{N} \
     --data-dir datasets/training/{name}_v{N} \
-    --test-data datasets/training/{name}_v{N}/test.jsonl
+    --test-data datasets/training/{name}_v{N}/test.jsonl \
+    --no-config-update
 ```
 
-Calibration writes `calibration.json` and `score_scale_factor` to config.yaml. Commit both with the filter package.
+Writes `calibration.json`. Commit it with the filter package.
+
+⛔ **PASS `--no-config-update` UNLESS `normalization.json` ALREADY EXISTS.** By default this
+script also computes `10.0 / weighted_max` and **edits `config.yaml`'s
+`score_scale_factor`** as a side effect. `score_scale_factor` is superseded by percentile
+normalization (ADR-014), and a filter shipping a factor ≠ 1.0 with **no** `normalization.json`
+silently stretches every score and defeats the gatekeeper design (FILTER_PLAYBOOK §8).
+Measured on `human_thriving v8`, 2026-09-04: it computed **1.3787** — a 1.38× stretch on a
+filter with no normalization fitted. The flag is **opt-in**, so a run that omits it gets the
+edit. ⚠️ The log line prints `(10.0 / 7.25 …)`, which is not an equation — that `7.25` is a
+2-decimal rendering of 7.2532.
+
+⛔ **Judge the result on recall + specificity, never on MAE (ADR-023), and expect the
+op-point to move.** Isotonic calibration is close to a monotone rescale: on v8 the raw and
+calibrated arms were the *same ranker* (Spearman 0.9977, AUC 0.9474 → 0.9488) yet the
+inherited 4.5 bar flagged **17** rows calibrated where it flagged **26** raw. **Re-derive the
+op-point on the calibrated scale at phase 8** — carrying a raw-scale threshold across
+silently tightens the filter. Worked example:
+`docs/evidence/2026-09-04-v8-probe-calibration/`.
 
 ### Fit normalization (cross-filter comparability, ADR-014)
 
@@ -343,8 +362,8 @@ The phases below, in order — `6b` is lettered rather than numbered because oth
 | 4. Prefilter | ⛔ **NEW FILTERS SHIP NO PER-LENS PREFILTER** — owner ruling, ADR-018 and ADR-019 *Amendment 2026-08-21*. Keyword screening is Latin-script only; the multilingual e5 probe (phase 6b) replaces it. For an EXISTING filter's prefilter it still saves oracle spend in phases 3/5 and is **NOT enforced in production scoring** (NM#284) | Nothing. If you believe this filter is the exception, read the amendment first |
 | 5. Training Data | Score 5K-10K articles | Full batch scoring run |
 | 6. Training | Distill to Gemma-3-1B + LoRA | Train on gpu-server |
-| 6b. Probe | Stage-1 e5 screen (ADR-006/011) — replaces keyword screening | `scripts/train_probe.py`. ⚠️ `--objective` defaults to `regression`; a needle filter wants `recall` (ADR-023 does **not** apply to the probe — there the FN is the expensive error) |
-| 7. Calibration | Fit isotonic calibration | `fit_calibration.py` on val set |
+| 6b. Probe | Stage-1 e5 screen (ADR-006/011) — replaces keyword screening | `scripts/train_probe.py`. ⚠️ `--objective` defaults to `regression`; a needle filter wants `recall` (ADR-023 does **not** apply to the probe — there the FN is the expensive error). ⚠️ **Pass `--seed` and record it** — probes were unseeded before 2026-09-04, and ⛔ **the selected threshold belongs to the PROBE, not the recipe**: on v8, `--seed 7` moved Stage-2 routing 14 pp at the *same* threshold with FN unchanged, and Stage 1 is silent so nothing surfaces it. Train on **CPU** (CUDA reductions are not deterministic under a seed) |
+| 7. Calibration | Fit isotonic calibration | `fit_calibration.py` on val set, **with `--no-config-update`** unless `normalization.json` already exists — see "Fit calibration" above. ⛔ It may not improve held-out MAE and is close to a monotone rescale, so **re-derive the op-point on the calibrated scale at phase 8** |
 | 8. Testing | Judge against held-out ORACLE ground truth, **never against the prior deployed model** (ADR-021) | `scripts/gate/ground_truth_gate.py --labels ... --model name=path`. ⛔ Rank on **recall + specificity, never MAE** (ADR-023), and read `--noise-floor` (#95, default 0.16) before calling any difference an effect. Plus `pytest tests/` and manual review of 30 articles |
 | 9. Deployment | Upload to Hub, copy to NexusMind; fit normalization from a production-representative historical rescore to avoid the cold-start | See deployment + "Fit normalization" sections above |
 
