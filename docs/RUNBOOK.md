@@ -217,24 +217,86 @@ python training/validate_training_data.py \
     --data-dir datasets/training/{name}_v{N}
 ```
 
-### Train on GPU server
+### Train on GPU
+
+Two hosts. **`b650-gpu` is the training node** (RTX 3090 Ti 24 GB, ~1.26 s/it at batch 8;
+`memory/b650-gpu.md`) and ends Ollama-vs-training contention on gpu-server. It is NOT a
+production box — ⛔ never diff a b650 replay against stored production scores without
+matching production's device first (CPU→CUDA is worth 3 flips at 4.5).
 
 ```bash
-# 1. Copy training data to gpu-server first
-scp -r datasets/training/{name}_v{N}/ gpu-server:~/llm-distillery/datasets/training/
+# 1. Ship code + data. b650's ~/llm-distillery is NOT a git checkout, so send tracked
+#    files only -- then what runs there is exactly what is committed. Verify by md5.
+git ls-files training filters/common filters/{name}/v{N}/config.yaml requirements.txt \
+  > /tmp/shiplist.txt
+rsync -az --files-from=/tmp/shiplist.txt ./ b650-gpu:~/llm-distillery/
+rsync -az datasets/training/{name}_v{N}/ b650-gpu:~/llm-distillery/datasets/training/{name}_v{N}/
 
-# 2. SSH and train
+# 2. Train. venv-prodparity, NOT venv -- the latter is CPU-only (triton cannot build).
+ssh b650-gpu
+cd ~/llm-distillery
+export PYTHONPATH=.
+export HF_HUB_OFFLINE=1        # google/gemma-3-1b-pt is already cached there
+
+venv-prodparity/bin/python training/train.py \
+    --filter filters/{name}/v{N} \
+    --data-dir datasets/training/{name}_v{N} \
+    --output-dir filters/{name}/v{N} \
+    --epochs 6 --batch-size 8 --seed 42 \
+    --select-metric recall_medium
+```
+
+⛔ **`--output-dir` has its trailing `/model` STRIPPED** — pass the filter dir; the script
+appends `model/` itself.
+
+**Checkpoint selection — read this before choosing flags.**
+
+- `--select-metric` is `recall_at_20` (top-k ranking) or `recall_medium` (recall on MEDIUM+,
+  i.e. `1 - FN-rate`). ⛔ **Never select on aggregate MAE**: on an 85–95% floor a
+  floor-predictor wins it (ADR-023). It was the *silent* fallback until `1878e7b`, when
+  `--select-metric` was inert because the metrics weights were gated on `--sample-weight-scale`
+  — four deployed filters were selected on MAE as a result.
+- ⚠️ **`recall_medium`'s resolution is `1 / n_positives` in val.** With a thin positive count it
+  saturates and the strict `>` tie-break silently keeps the earliest tied epoch
+  (llm-distillery#144). Check `training_history.json` per epoch rather than trusting the
+  selected one.
+- `--medium-threshold` overrides the MEDIUM+ boundary. It is resolved from `base_scorer.py`
+  `TIER_THRESHOLDS` first, then `config.yaml` (both `scoring.tiers` and
+  `scoring.tier_thresholds`, `threshold` or `min_score`). ⛔ **It RAISES rather than
+  defaulting** — a plausible-but-wrong boundary decides which checkpoint ships and is
+  indistinguishable afterwards from a correct one. If it raises, pass the flag.
+- `--sample-weight-scale` (default 0) weights the LOSS by oracle score. It no longer has any
+  effect on which metrics are computed.
+
+**Seed 42 is not bit-reproducible on CUDA** — measured 0.5601 vs 0.5605 val MAE for the same
+epoch across two identical runs. Do not read a 4th-decimal difference as an effect (#95 family).
+
+**Pull the provenance back and commit it.** The weights are gitignored (#97) and live only on
+the training host, so `training_history.json` + `training_metadata.json` ARE the traceability:
+
+```bash
+rsync -az b650-gpu:'~/llm-distillery/filters/{name}/v{N}/training_*.json' filters/{name}/v{N}/
+```
+
+Then register the run in `experiments/registry.jsonl` and run
+`python3 scripts/verification/check_experiment_registry.py` — it rejects any metric whose
+string does not appear verbatim in a cited artifact.
+
+<details><summary>Legacy: training on gpu-server</summary>
+
+```bash
+scp -r datasets/training/{name}_v{N}/ gpu-server:~/llm-distillery/datasets/training/
 ssh gpu-server
 cd ~/llm-distillery
 source ~/gpu-server/nexusmind-scorer/venv/bin/activate
 export PYTHONPATH=.
 export HF_HUB_OFFLINE=1
-
-python training/train.py \
-    --filter filters/{name}/v{N} \
-    --data-dir datasets/training/{name}_v{N} \
-    --output-dir filters/{name}/v{N}/model
+python training/train.py --filter filters/{name}/v{N} \
+    --data-dir datasets/training/{name}_v{N} --output-dir filters/{name}/v{N}
 ```
+
+gpu-server has 16 GB and also serves Ollama; prefer b650 for training.
+</details>
 
 ### Fit calibration (after training)
 

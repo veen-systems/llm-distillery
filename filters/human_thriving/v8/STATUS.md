@@ -1,6 +1,11 @@
 # human_thriving v8 — STATUS
 
-**NOT DEPLOYED. NOT TRAINED. Labelled, adjudicated; prompt settled at v8.4, re-label pending.** Last updated 2026-09-03.
+**NOT DEPLOYED. TRAINED (uncalibrated). Labelled, adjudicated; prompt settled at v8.4.** Last updated 2026-09-04.
+
+⛔ **Trained does NOT mean scoreable.** There is no `calibration.json`, no retrained Stage-1
+probe and no `base_scorer.py`, so this filter cannot score an article today. The weights are
+**not in this repo** (gitignored, #97) — they live on `b650-gpu` only. Provenance is
+`training_history.json` / `training_metadata.json`, committed here. **EXP-015**.
 
 ⛔ **This package is 1 of the 6-file core** (`memory/filter-doc-standard.md`). It carries
 `config.yaml` and the prompt; `DEEP_ROOTS.md`, `README.md` and `README_MODEL.md` are owed, and
@@ -18,7 +23,8 @@ now because v8's state is complicated enough that "not deployed" is not a useful
 | Label review | ✅ 2026-09-02 — `docs/evidence/2026-09-02-phase-b-label-review/` |
 | Class-A adjudication | ✅ 2026-09-03 — v8 demotes **32 of 47**; the 15 survivors are 11 events. `docs/evidence/2026-09-03-classA-supplement-adjudication/` |
 | Phase B2 hard negatives | ⚠️ **12 rows of headroom, not a corpus** — the draw took 47 of the 59 available and 32 already carry low labels. `docs/evidence/2026-09-03-phase-b2-headroom/` |
-| Phase C train / probe / calibrate | ⛔ not started |
+| Phase C **train** | ✅ **2026-09-04, EXP-015.** Epoch 4 of 6, selected on `recall_medium` @4.5. Weights on `b650-gpu` only: `~/llm-distillery/filters/human_thriving/v8/model/`, MAE-selected arm preserved at `model_baseline_mae/`. `docs/evidence/2026-09-04-v8-checkpoint-selection/` |
+| Phase C probe / calibrate | ⛔ **not started** — no `calibration.json`, no retrained probe |
 | Phase D gate | ⛔ not started. ⚠️ **Criterion 1 is NOT stably failing** — the 4.400 was a k=3 mean on a coin-toss row; at k=6 under unchanged v8 it is **3.608 ± 2.560, PASS**. `docs/evidence/2026-09-03-v8-1-gate/` |
 | Phase E normalization | ⛔ not started |
 | Phase F deploy | ⛔ not started |
@@ -27,6 +33,28 @@ now because v8's state is complicated enough that "not deployed" is not a useful
 boilerplate at 357–489 chars, all *above* the 300-char floor.
 
 ## ⛔ Known-failing and known-missing, before anyone reads the state as green
+
+- ⚠️ **The trained student is UNCALIBRATED, and its numbers are not comparable to the fleet.**
+  Raw test @4.5 (n=660, 35 positives, 5.30%): **recall 0.514, specificity 0.9856, precision
+  0.667**. Specificity is at/above every deployed filter; **recall is below all six** (fleet
+  0.59–0.72), which is the cheap side to be weak on under ADR-023 but is the number Phase C's
+  probe and calibration have to move. `memory/filter-status.md`'s figures are post-calibration —
+  do not put these in the same table.
+- ⛔⛔ **The checkpoint was NOT produced by any commit now on a branch.** It was trained by the
+  tree that became `1878e7b` via `git commit --amend`, so the exact sha (`0697f5a`) is dangling
+  and will not survive `git gc`. `1878e7b` resolves this filter to the same 4.5 and does not
+  change `recall_at_k` at n=658, so the numbers reproduce — but *the verified artifact is not
+  the shipped one* until it is retrained under a real commit. **Decide before Phase F: retrain
+  (~90 min on b650) or record the exception.**
+- ⚠️ **The two committed metadata files use the PRE-AMEND schema** (`select_metric`,
+  `select_metric_available`, `medium_threshold`). `1878e7b` writes `requested_*` plus
+  checkpoint-scoped fields and `checkpoint_saved`, so a future run's file will not match these
+  key-for-key. Not drift — a schema change, dated here.
+- ⚠️ **The epoch was chosen by a TIE-BREAK, not by the metric.** `recall_medium` saturates at
+  **0.5806 across epochs 4, 5 and 6**; selection's strict `>` keeps the earliest. Epoch 6 is
+  better on `recall_at_20` (0.65 vs 0.55) and NDCG. On test the two arms are **not
+  distinguishable** — every gap is two articles, and they swap rank at 4.25.
+  llm-distillery#144.
 
 - ⛔⛔ **CORRECTED 2026-09-03: acceptance criterion 1 was never stably failing.** The 4.400
   that read as a FAIL is a **k=3 mean on a bimodal row**. At **k=6 under the unchanged v8
