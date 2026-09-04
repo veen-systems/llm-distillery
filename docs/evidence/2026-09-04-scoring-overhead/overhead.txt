@@ -1,0 +1,60 @@
+window  2026-09-03 06:20:46 -> 2026-09-04 11:31:00 UTC   29.17 h
+  delimited by the dedup line, so `score` and dedup share a denominator
+  sadalsuud journal 09-03 06:06 .. 09-04 14:09   gpu-server 09-03 06:06 .. 09-04 14:09  (both cover it)
+  8 dedup-delimited cycles, 40 score calls over 5 filters = 8.00 score cycles
+
+WHERE THE SCORING WALL TIME GOES
+  sadalsuud blocks on score             3127.1s    21.36 ms/article
+  gpu-server HTTP handler               3083.8s    21.06 ms/article   (98.6% of it)
+  model compute (hybrid batch)          2647.5s    18.08 ms/article   (84.7% of it)
+  -> client + network                     43.3s     0.30 ms/article
+  -> in-server, non-compute              436.3s     2.98 ms/article
+  multiplier sadalsuud-wall / compute = 1.18x
+
+THROUGHPUT   146,433 articles, 1521 batches, 1521 200s, 0 non-200
+  prefilter_blocked  2,430 ( 1.66%)
+  stage1_low        51,488 (35.16%)   <- the DEPLOYED FLEET's screens, not any one filter's
+  stage2            92,515 (63.18%)
+
+CHURN — the model is not held resident between filters
+  embedding-model loads 43, filter unloads 73, GPU memory frees 35
+  slowest single /filter/*/score response: 5526.3ms (/filter/belonging/score)
+
+OTHER CONSUMERS OF gpu-server IN THIS WINDOW — not part of `score` above
+  /embeddings/encode             158 calls     107.8s
+  /obituary/predict              285 calls      28.1s
+  /models/unload                  35 calls      11.6s
+
+THE OTHER CONSUMER ON sadalsuud — story dedup, same window, same cycles
+  story dedup wall                      2477.5s over 8 runs  = 309.7s/cycle
+    centroid re-embedding                299.5s  (12.1%)  <- goes to gpu-server
+    everything else                     2178.0s  (87.9%)
+  ⛔ 'everything else' is NOT all sadalsuud CPU. The ARTICLE embedding pass is
+     untimed on this side; it appears above as POST /embeddings/encode. Subtract
+     that before calling any remainder clustering.
+  embedding device: GPU embeddings via gpu-server (7 device lines over 8 runs — NOT every run stated it, so this is not an every-run claim)
+  cross-run store: 146,788 saved clusters (max over 7 loads); 34,432 clusters formed in-run
+  ⚠️ 7 centroid-migration lines against 8 dedup runs — the embedding share is over an unmatched denominator
+
+DERIVED — printed here so no document has to recompute it by hand
+  pipeline blocking total      5846.5s = score 3127.1 + dedup 2477.5 + other stages 241.9
+  duty cycle over the window    5.57%
+  shares: score 53.5%  dedup 42.4%  other 4.1%
+  score 52.1 min/window; floor if ALL in-server non-compute vanished 44.8 min (saving 7.3 min)
+  per cycle: score 390.9s  dedup 309.7s  ratio 1.26x
+
+  other stages, in full (a stage reading 0.0s is rounded, not proven zero):
+    write                92.9s  n=40
+    rescore              76.7s  n=40
+    prepare              72.3s  n=40
+    pre_enrich            0.0s  n=40
+    source_filter         0.0s  n=40
+
+  per-filter share of sadalsuud's blocking score time:
+    uplifting                   813.8s   26.0%
+    belonging                   710.3s   22.7%
+    nature_recovery             695.0s   22.2%
+    cultural_discovery          518.4s   16.6%
+    solutions                   389.6s   12.5%
+
+Wrote docs/evidence/2026-09-04-scoring-overhead/overhead.json

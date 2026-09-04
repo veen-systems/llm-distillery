@@ -2,9 +2,11 @@
 
 ## 🔵 NEXT SESSION — **phase 8 GATE. Not "does v8 pass" — "how much good content is the last few points of junk removal worth?"**
 
-> **Updated 2026-09-04 (second session).** Session records:
-> `memory/project_session_2026_09_04.md`. Runs: **EXP-015** (training) and **EXP-016**
-> (probe + calibration) in `experiments/registry.jsonl`, with
+> **Updated 2026-09-04 (third session).** Session records:
+> `memory/project_session_2026_09_04.md` and `memory/project_session_2026_09_04_evening.md`.
+> Runs: **EXP-015** (training), **EXP-016** (probe + calibration), **EXP-017** (Phase C
+> review), **EXP-018** (e5-large), **EXP-019** (regression probes), **EXP-020** (gating),
+> **EXP-021** (production overhead) in `experiments/registry.jsonl`, with
 > `docs/evidence/2026-09-04-v8-checkpoint-selection/` and
 > `docs/evidence/2026-09-04-v8-probe-calibration/`. State:
 > `filters/human_thriving/v8/STATUS.md`, `filters/human_thriving/v8/calibration_report.md`.
@@ -15,6 +17,76 @@
 · 3 Validation ✅ · 4 Prefilter ✅ N/A by ruling · 5 Training data ✅ (6,586 labels, 456 corrected)
 · **6 Training ✅** · **6b Probe ✅ 2026-09-04** · **7 Calibration ✅ 2026-09-04**
 · **8 Testing ⛔ NEXT** · 9 Deployment ⛔.
+
+### What the third session of 2026-09-04 settled — four questions, none of them phase 8
+
+⭐ **Phase 8 is unchanged and still next.** These were owner questions raised alongside it; all
+four are closed, none moves the op-point, and **no deploy happened or was possible — N/A, not
+skipped.** Verified rather than asserted, 2026-09-04: `ls NexusMind/filters/` on sadalsuud
+returns `belonging cultural_discovery foresight investment_risk nature_recovery solutions
+sustainability_technology uplifting` — **no `human_thriving`** — and the v8 weights are
+gitignored (#97) and live only on `b650-gpu`. Phases 8 and 9 have not run.
+⚠️ Noticed while checking: **`foresight` and `sustainability_technology` directories are still
+on sadalsuud** although both were removed here on 2026-08-03 (#43). They do not score — the
+overhead measurement sees exactly five filters — so this is leftover directories, not a live
+filter. Not chased; worth one look before the next deploy.
+
+1. **Pre-deploy parity — `PREDEPLOY_PARITY.md`.** Compared v8's package against the five working
+   scorers: **no part is missing or misimplemented.** **Three** previously unguarded
+   invariants are now pinned by `tests/unit/test_filter_package_consistency.py` (head_tail
+   matches training; probe output dim; stage1 threshold below the gatekeeper cap) — the first
+   two from this review, the third from `93cdeac`.
+2. **"Isn't the e5 probe simply enough?" — `IS_THE_PROBE_ENOUGH.md`, EXP-018/EXP-019.** No, and
+   the fair version of the question had to be built first: every probe compared until then was
+   trained as a *screen*. Regression-objective probes at both encoder sizes still lose to the
+   student, and the decision rule was fixed **before** the run (replacement requires the paired
+   bootstrap CI on ΔAUC to include zero; it does not). ⛔ **Do not carry "e5-large is the cheap option" out of this.** It closes 70% of the gap
+   and `IS_THE_PROBE_ENOUGH.md` rules it out **on cost**: ~27% cheaper than the student for
+   AUC 0.9016 against 0.9474 (26.79 vs 43.70 ms on GPU = 1.6×), and 7.2× e5-small's cost.
+   `EXP-020` goes further — the adopted 89% routing is the only reason e5-large-alone looks
+   competitive at all, and past ~53% the two-stage design wins on cost *and* quality.
+3. **"89% pass-through does not sound needle" — `GATING_DECISION.md`, EXP-020.** The 2026-08-28
+   hold ruling **survives**, on its own stated premise. Harder gating is available at ~1 needle
+   in 35, and ⛔ **tightening has a non-compute cost nobody had written down**: the probe's own
+   numbers become the published scores for every screened-out row, and the shipped recall probe
+   is biased high. If it is ever tightened, pair it with a regression-objective probe.
+4. **"Is the probe actually multilingual?" — `MULTILINGUAL_REALITY.md`.** Encoder: yes, verified
+   over 10 scripts, zero UNK. Routing: fewer non-Latin rows reach Stage 2, but the gap is
+   **entirely in the negatives** — every positive routes in both scripts. Judgement: **not
+   measurable**, 2 non-Latin test positives (#141 is the blocker). ⭐ The finding that survives is
+   about the **student**: Gemma needs 843 tokens for a median non-Latin article against e5's 694,
+   so it sees ~61% of one against ~89% of a Latin one. **Untested what that does to its scores.**
+
+### ⚠️ The cost question was asked and answered, and the answer was somewhere else
+
+`docs/evidence/2026-09-04-scoring-overhead/`, **EXP-021**. Owner: *"my cpu/gpu is heavily
+occupied, I believe the e5 probes are running on sadalsuud."*
+
+**Not the filter probes** — filter scoring is entirely on gpu-server, costs sadalsuud 52.1 min
+per 29.17 h, and runs at a 1.18× wall/compute multiplier. ⛔ **But `score` is only 53.5% of the
+pipeline's blocking wall time**: story dedup is **42.4%**, and **at most 4.4% of it is GPU
+work**. Whole pipeline: **5,846.5 s per 29.17 h, a 5.57% duty cycle.** Handed to the NexusMind
+peer session, which has taken the dedup question; nothing owed here.
+
+⛔ **THREE corrections in that work, all mine, all logged** (`memory/gotcha-log.md`; working
+rule *a window is part of a source*, which carries the count):
+
+1. A **4× overhead** figure from pairing two different windows whose **per-call rates agreed**.
+2. A **config read presented as a runtime proof** — where the config predicted the opposite of
+   what the log shows.
+3. ⭐ **A subtraction named as a category.** *"86% of dedup is clustering on sadalsuud's CPU"*
+   subtracted a **centroid-migration** timer from dedup's wall; the article embedding pass is
+   untimed on that side, so the remainder still holds its blocking HTTP wait. Honest claim:
+   **≤4.4% of dedup is GPU work, ≥95.6% is sadalsuud-side, and clustering vs embedding client
+   overhead is NOT separable** without instrumenting dedup.
+
+⚠️ **`/review-changes` found all three, plus a live instrument defect** — the script filtered
+the gpu journal to the window without asserting it *covered* it, which reproduces correction 1
+silently (4.80× against a true 2.40× on a synthetic pair). Guarded now. **The mechanical
+battery was green throughout.**
+
+⭐ **Consequence for phase 8: there is still no Stage-2 cost constraint.** The gating ruling and
+the "is the probe enough" question both turned on one appearing. It has not.
 
 ### ⛔ Read before touching phase 8
 
@@ -58,7 +130,7 @@
 
 ### Two training-side levers, both untested for v8 (H-V8-15)
 
-⭐ **Now the live option, because 6b/7 did NOT move recall** (finding 4 above): the probe is
+⭐ **Now the live option, because 6b/7 did NOT move recall** (finding 4, *PHASE C DID WORK*, under *Read before touching phase 8*): the probe is
 recall-safe and the calibration is a monotone rescale, so neither touches the number. The
 cheaper move first is the op-point re-derivation in phase 8; these are what remains after it.
 **Do not run them together** — one variable at a time.

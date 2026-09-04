@@ -5811,3 +5811,97 @@ causal test) that existed ONLY in the index, homed them, re-checked to zero, the
 ⭐ **A budget guard that tells you the correct remedy is worth more than one that only refuses**
 — and the "check the session file FIRST" clause is the load-bearing half: trimming before
 homing would have destroyed three measurements silently.
+
+## 2026-09-04 — two windows whose per-call rates agreed (a four-instance pattern, three of them a peer's)
+**Problem**: Measured production scoring overhead and reported *"~62 ms/article of overhead
+against 18.5 ms of compute, a 4× multiplier"* — one message away from sending it to the
+NexusMind peer session as an action item. Matched to one window: **0.30 ms/article of
+client+network and a 1.18× multiplier.**
+**Root cause**: I paired sadalsuud's `score` total from a **three-cycle** window (1,209.1 s /
+15 calls) with gpu-server's totals from a **twenty-hour** window (1,656.8 s / 941 batches).
+Both numerators were correct. Both denominators were correct. They were denominators of
+different populations.
+⛔ **The tell was absent, and that is the finding.** The *per-call* rates agreed across the two
+windows — **80.6 s/call against 77.5 s/call** — so every sanity check on the pieces passed. A
+defect that lives in how two correct quantities are combined cannot be seen by a check aimed at
+either one.
+**Fix**: `docs/evidence/2026-09-04-scoring-overhead/measure_scoring_overhead.py` derives the
+window from the outer layer, reads both journals with `-o short-iso`, and refuses rather than
+reporting zero on an empty read. Rates reproduce on a nested 13.21 h window (1.18×, 18.05
+ms/article, 390.9 s/cycle) — ⚠️ **a subset re-run, not an independent replication.** Registry
+`EXP-021`.
+⛔ **That fix did NOT close the defect, and review proved it.** Filtering the gpu journal to
+`[lo, hi]` excludes over-coverage and **not under-coverage**: a gpu journal starting after
+`lo` gives sadalsuud's totals the full window and gpu's a subset — the same defect, the same
+direction, every per-call rate still agreeing. Demonstrated on a synthetic pair at **4.80×
+against a true 2.40×**. Now guarded by asserting both journals *cover* the window, and by
+asserting the layers nest (`compute ≤ http ≤ wall`). ⭐ **Three of my guards were refusals on
+an EMPTY read; the defect lives in a PARTIAL one, and nothing had a word for that.**
+⚠️ **Recomputing "a second way" is not automatically enough — it has to differ in the right
+way.** Recomputing ms/article would have *confirmed* the error; only a quantity that cannot be
+formed without a shared denominator catches it.
+⚠️ **Two hosts, two clocks**: gpu-server runs UTC, sadalsuud UTC+2. systemd's default
+`Sep 04 13:27:52` carries no offset, so comparing those bare local times shifts a window two
+hours with no error. `-o short-iso` on both sides, compare in UTC.
+⭐ **Cross-repo evidence, from the NexusMind peer the same day — this is one shape, not four.**
+Theirs: a control requiring `cosine < 0.60` that drew **zero pairs in 200,000 attempts**
+because that value does not occur in the space; a sampling design whose arms sat at different
+cosines, so a real comparison **came out sign-reversed**. A FluxusSource session: a regression
+guard matching a pattern the defect did not take, **green over the thing it was written to
+catch**. In all four the components were individually correct and the composition was not, and
+in all four the checks were aimed at the components. Filed here under *a window is part of a
+source*; NexusMind holds three of the four and is the better home if these are ever merged.
+
+## 2026-09-04 — a config read presented as a runtime proof, caught by a peer's wrong guess
+**Problem**: Wrote *"the e5 probes do not run on sadalsuud at all"*, sourced from
+`require_gpu: true` + `cpu_fallback.enabled: false` + `host: gpu-server`. True of the **filter**
+path, and wrong as stated: **story dedup runs its own `multilingual-e5-large` pass**, worth
+**2,477.5 s against scoring's 3,127.1 s** in the same window — 42.4% of the pipeline's blocking
+wall time, omitted entirely.
+**Root cause**: `require_gpu` and `cpu_fallback` are keys under `scoring:`. Story dedup is a
+**preprocessing** stage and never consults them. I read the config of one consumer and stated
+the conclusion for the host.
+⭐ **The config would have predicted the OPPOSITE, and that is what makes this worth logging.**
+sadalsuud has no GPU at all (`nvidia-smi` absent) and `NexusMind/src/preprocessing/story_dedup.py`'s own loader falls back
+to `SentenceTransformer(model_name, device="cpu")`, so a config read gives a CPU e5-large pass.
+It does not happen — the runs log `Story dedup: using GPU embeddings via gpu-server`. **Only
+the log says so, in both directions.** ⚠️ I first wrote *"every run"*: it was **7 of 8**, and
+the instrument cannot express "CPU" at all — the CPU branches log a phrase without the word
+`using`, so a CPU-fallback run reads as *no information*, not as a negative. `devices` was a
+`set`, and a set of size 1 is produced identically by 1 of 8 runs and by 8 of 8.
+**Fix**: `measure_scoring_overhead.py` now collects dedup from the same journal and window and
+reports it separately; §6 of the writeup and `EXP-021` corrected before commit.
+⛔ **And the "real answer" I reached here was the NEXT error — see the entry below.** I wrote
+*"embeddings 14.0%, clustering 86.0% and IS sadalsuud CPU"*; the 86% is a subtraction, not a
+category. What stands: **≤4.4% of dedup is GPU work, ≥95.6% is sadalsuud-side**, and the split
+between clustering and embedding client overhead is **not separable** with current
+instrumentation. The owner pointed at e5 and the box; the peer pointed at e5 and the box; the
+load is somewhere neither of us named and is still not fully named.
+⛔ **A caveat can be right about scope and wrong about mechanism — check both halves; the wrong
+half was what led to the finding.**
+
+## 2026-09-04 — I subtracted a timer from a total and named the remainder
+**Problem**: Reported *"story dedup: embeddings 14.0%, **clustering 86.0% and IS sadalsuud
+CPU**"*, and told a peer session so. The 86% is not clustering.
+**Root cause**: `Centroid migration … embed_seconds=` times **only the re-embedding of cluster
+centroids being drift-checked** (`NexusMind/src/preprocessing/story_dedup.py`
+`_migrate_drifted_seeds_with_stats`). The run's **article** embedding pass is untimed and
+unlogged on the sadalsuud side. So `dedup wall − embed_seconds` still contains that pass's
+blocking HTTP wait — which is *not* sadalsuud CPU, by the same document's own doctrine two
+sections earlier.
+⛔ **The remainder of a subtraction is not a category. It is whatever is left**, and it
+inherits every consumer nobody enumerated. Naming it *"clustering etc."* made an unenumerated
+bucket sound like a measurement.
+**Fix**: measure the article pass from the side that sees it — gpu-server's
+`POST /embeddings/encode`, **107.8 s against dedup's 2,477.5 s**. Honest claim: **at most
+4.4% of dedup is GPU work and ≥95.6% is sadalsuud-side**, clustering *plus* embedding client
+overhead, **not separable** with current instrumentation. (Sadalsuud's own centroid timer
+reads 299.5 s against gpu's 107.8 s for *all* encode traffic, so the client overhead is
+substantial and is not clustering.)
+⭐ **This is the third correction of the same shape in one document, and it landed twenty
+lines after logging the second one.** *Articulating the rule is not applying it.*
+⚠️ Two instrument defects surfaced with it: **7 device lines over 8 dedup runs**, so *"every
+run logs `Story dedup: using GPU embeddings via gpu-server`"* — which I had already sent to a
+peer — is **false as stated**; and the instrument **cannot express "CPU" at all**, since the
+CPU branches log a phrase without the word `using`. A set of size 1 is produced identically by
+1 of 8 runs and by 8 of 8; `devices` was a set and was never counted.

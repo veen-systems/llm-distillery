@@ -1,0 +1,117 @@
+{
+  "window_utc": [
+    "2026-09-03T06:20:46+00:00",
+    "2026-09-04T11:31:00+00:00"
+  ],
+  "span_hours": 29.170555555555556,
+  "since_arg": "36 hours ago",
+  "until_arg": "2026-09-04 16:10",
+  "journal_coverage": {
+    "pipeline": [
+      "2026-09-03T06:06:25+00:00",
+      "2026-09-04T14:09:52+00:00"
+    ],
+    "gpu": [
+      "2026-09-03T06:06:33+00:00",
+      "2026-09-04T14:09:47+00:00"
+    ]
+  },
+  "cycles": 8,
+  "score_calls": 40,
+  "filters": 5,
+  "pipeline": {
+    "stages": {
+      "prepare": {
+        "seconds": 72.29999999999998,
+        "n": 40
+      },
+      "pre_enrich": {
+        "seconds": 0.0,
+        "n": 40
+      },
+      "score": {
+        "seconds": 3127.1000000000004,
+        "n": 40
+      },
+      "rescore": {
+        "seconds": 76.69999999999999,
+        "n": 40
+      },
+      "source_filter": {
+        "seconds": 0.0,
+        "n": 40
+      },
+      "write": {
+        "seconds": 92.90000000000003,
+        "n": 40
+      }
+    },
+    "score_by_filter": {
+      "solutions": 389.59999999999997,
+      "uplifting": 813.8000000000001,
+      "cultural_discovery": 518.4,
+      "belonging": 710.3000000000001,
+      "nature_recovery": 695.0
+    }
+  },
+  "gpu": {
+    "batches": 1521,
+    "articles": 146433,
+    "compute": 2647.540000000008,
+    "blocked": 2430,
+    "stage1_low": 51488,
+    "stage2": 92515,
+    "score_responses": 1521,
+    "score_ms": 3083811.0000000023,
+    "non200": 0,
+    "embedding_loads": 43,
+    "filter_unloads": 73,
+    "gpu_frees": 35
+  },
+  "gpu_other_endpoints": {
+    "/models/unload": {
+      "calls": 35,
+      "seconds": 11.6238
+    },
+    "/obituary/predict": {
+      "calls": 285,
+      "seconds": 28.1049
+    },
+    "/embeddings/encode": {
+      "calls": 158,
+      "seconds": 107.77339999999997
+    }
+  },
+  "story_dedup": {
+    "runs": 8,
+    "seconds": 2477.5099999999998,
+    "removed": 18708,
+    "run_clusters": 34432,
+    "migrate_embed_seconds": 299.5,
+    "migrate_runs": 7,
+    "store_loads": 7,
+    "store_clusters_max": 146788,
+    "device_lines": 7,
+    "devices_logged": [
+      "GPU embeddings via gpu-server"
+    ]
+  },
+  "derived": {
+    "wall_s": 3127.1000000000004,
+    "http_s": 3083.8110000000024,
+    "compute_s": 2647.540000000008,
+    "other_stages_s": 241.9,
+    "pipeline_total_s": 5846.51,
+    "duty_cycle": 0.05567362446911841,
+    "share_score": 0.5348660996047215,
+    "share_dedup": 0.4237587894316438,
+    "share_other": 0.04137511096363471,
+    "ms_per_article": {
+      "wall": 21.355159014702974,
+      "http": 21.0595357603819,
+      "compute": 18.0802141593767
+    },
+    "multiplier_wall_over_compute": 1.1811341849414894,
+    "score_over_dedup": 1.2621947035531644
+  }
+}

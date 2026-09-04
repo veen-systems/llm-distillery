@@ -1,0 +1,117 @@
+{
+  "window_utc": [
+    "2026-09-03T22:18:32+00:00",
+    "2026-09-04T11:31:00+00:00"
+  ],
+  "span_hours": 13.207777777777778,
+  "since_arg": "20 hours ago",
+  "until_arg": "2026-09-04 16:10",
+  "journal_coverage": {
+    "pipeline": [
+      "2026-09-03T22:08:27+00:00",
+      "2026-09-04T14:09:52+00:00"
+    ],
+    "gpu": [
+      "2026-09-03T22:08:34+00:00",
+      "2026-09-04T14:09:47+00:00"
+    ]
+  },
+  "cycles": 4,
+  "score_calls": 20,
+  "filters": 5,
+  "pipeline": {
+    "stages": {
+      "prepare": {
+        "seconds": 35.6,
+        "n": 20
+      },
+      "pre_enrich": {
+        "seconds": 0.0,
+        "n": 20
+      },
+      "score": {
+        "seconds": 1563.6000000000001,
+        "n": 20
+      },
+      "rescore": {
+        "seconds": 43.39999999999999,
+        "n": 20
+      },
+      "source_filter": {
+        "seconds": 0.0,
+        "n": 20
+      },
+      "write": {
+        "seconds": 45.89999999999999,
+        "n": 20
+      }
+    },
+    "score_by_filter": {
+      "solutions": 193.4,
+      "uplifting": 407.1,
+      "cultural_discovery": 254.8,
+      "belonging": 357.09999999999997,
+      "nature_recovery": 351.2
+    }
+  },
+  "gpu": {
+    "batches": 760,
+    "articles": 73545,
+    "compute": 1327.6699999999998,
+    "blocked": 1325,
+    "stage1_low": 25637,
+    "stage2": 46583,
+    "score_responses": 760,
+    "score_ms": 1537909.0999999996,
+    "non200": 0,
+    "embedding_loads": 19,
+    "filter_unloads": 33,
+    "gpu_frees": 15
+  },
+  "gpu_other_endpoints": {
+    "/models/unload": {
+      "calls": 15,
+      "seconds": 4.9963
+    },
+    "/obituary/predict": {
+      "calls": 132,
+      "seconds": 13.121100000000004
+    },
+    "/embeddings/encode": {
+      "calls": 69,
+      "seconds": 47.184599999999996
+    }
+  },
+  "story_dedup": {
+    "runs": 4,
+    "seconds": 1216.25,
+    "removed": 8987,
+    "run_clusters": 17288,
+    "migrate_embed_seconds": 127.0,
+    "migrate_runs": 3,
+    "store_loads": 3,
+    "store_clusters_max": 146165,
+    "device_lines": 3,
+    "devices_logged": [
+      "GPU embeddings via gpu-server"
+    ]
+  },
+  "derived": {
+    "wall_s": 1563.6000000000001,
+    "http_s": 1537.9090999999996,
+    "compute_s": 1327.6699999999998,
+    "other_stages_s": 124.89999999999998,
+    "pipeline_total_s": 2904.7500000000005,
+    "duty_cycle": 0.06109089761924793,
+    "share_score": 0.5382907306997159,
+    "share_dedup": 0.41871073242103446,
+    "share_other": 0.04299853687924949,
+    "ms_per_article": {
+      "wall": 21.26045278400979,
+      "http": 20.91113060031273,
+      "compute": 18.05248487320688
+    },
+    "multiplier_wall_over_compute": 1.177702290478809,
+    "score_over_dedup": 1.2855909558067833
+  }
+}

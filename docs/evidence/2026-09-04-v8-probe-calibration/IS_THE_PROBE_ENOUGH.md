@@ -116,7 +116,7 @@ rows whose text is gitignored (#97); they live at `b650-gpu:~/llm-distillery/ht_
 **$0, CPU only.** One variable: same corpus, same splits, same `--objective recall`, same
 `--seed 42`, same device; only `--embedding-model` changed to
 `intfloat/multilingual-e5-large` (1024-dim, ~4.7× the parameters, 2.2 GB).
-Prediction registered as **H-V8-16 before the run**.
+Prediction registered as **H-V8-18 before the run**. ⚠️ Registered on the day as `H-V8-16`, which was **already taken** by the checkpoint-selection hypothesis (committed `d3a6f89`, the session before). Renumbered 2026-09-04; the earlier id keeps 16. Nothing about the prediction or its falsifier changed — only the label, and it was recorded before the run either way.
 
 ## Result
 

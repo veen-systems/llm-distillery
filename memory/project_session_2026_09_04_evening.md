@@ -232,7 +232,7 @@ improvement as "not distinguishable".**
 ## ⛔⛔ EXP-018 — a bigger encoder, a registered prediction, and I was substantially wrong
 
 Asked whether `multilingual-e5-large` closes the probe/student gap. Registered the prediction
-as **H-V8-16 before running it**, including a falsifier.
+as **H-V8-18 before running it**, including a falsifier. ⚠️ Written down that day as `H-V8-16`, a **collision** with the checkpoint-selection hypothesis from the previous session; renumbered to 18 on 2026-09-04, the earlier claim keeping 16.
 
 | arm | whole-split AUC | AP | AUC on the 117 disputed rows |
 |---|---|---|---|
