@@ -5627,3 +5627,138 @@ call it `connection` (uplifting v1/v4) or `monitoring` (todo/v1).
 ⭐ **A rule validated on the population where two definitions coincide has not been validated.**
 ⭐ And the test earned itself on its first run — this was found by writing the assertion, not by
 reading the code, which had already passed a four-lens review.
+
+## 2026-09-04 — `.gitignore`'s scratch rule ate a committed evidence file, and `git add` said nothing
+**Problem**: `docs/evidence/2026-09-04-v8-probe-calibration/probe_recall_report_test.json` — the
+sole source for every test-split number published in that directory's README, in
+`filters/human_thriving/v8/calibration_report.md` and in EXP-016 — was not staged by
+`git add <dir>`. No message, no warning, exit 0. Its `_val` and `_test_seed7` siblings staged fine.
+**Root cause**: `.gitignore:163` carries `*_test.*` in a scratch-file block beside `*.bak`,
+`*.old` and `*_backup.*`. It is a PATTERN, not a path, so it applies repo-wide and matched an
+evidence artifact whose name happened to end `_test.json`.
+**Fix**: `!docs/evidence/**/*_test.*` and `!docs/evidence/**/*_backup.*`, verified in both
+directions — the JSON is stageable, and `scripts/foo_test.py` is still ignored. ⛔ **Scoped to
+`docs/evidence/` only**; the pattern still swallows `*_test.*` elsewhere.
+⭐ **The question that found it was not "did the add succeed?" but "what is in the staged set?"** —
+`git add -n` listed 13 files where the directory held 14. Blast radius measured
+(`git status --porcelain --ignored | grep '_test\.'`): exactly two untracked files repo-wide, that
+JSON and `filters/common/obituary_detector/validation/panel_obit_test.py`, a junk-gate validation
+script that has never been in git while every sibling in its directory is tracked.
+→ *establish what a source excludes*, **18th occurrence**.
+
+## 2026-09-04 — the Stage-1 threshold belongs to the PROBE, not to the recipe
+**Problem**: A threshold of 1.75 was derived to hold the owner's ruled ~88.6% Stage-2 routing
+(design-weighted 0.8876 val / 0.8935 test, FN@MEDIUM+ 0/31 and 0/35). Retraining with the same
+data, objective and code but `--seed 7` gave a probe on which that *same* 1.75 routes
+**0.7406 / 0.7567** — a ~14 pp collapse in routing, with every recall number still 0 FN and a
+*better* val BCE.
+**Root cause**: the probe's score SCALE moves with the seed; its ORDERING does not. A threshold
+is a statement about one probe's scale, so it does not survive a retrain — and Stage 1 is silent
+by design (a screened-out article produces no score, no log line, no output), so a 14-point
+tightening has no symptom anywhere.
+**Fix**: `config.yaml` records `probe_sha256` **beside** the threshold and
+`filters/human_thriving/v8/inference_hybrid.py` refuses to construct the scorer on a mismatch,
+with an error naming the re-derivation procedure. Mutation-killed.
+⚠️ **Deliberately a different pin from `probe/*.pkl.sha256`**: that companion travels *with the
+probe* and a retrain regenerates it, so it can only catch corruption — it cannot notice a
+valid-but-unpaired probe. This one travels *with the threshold*.
+⭐ Generalises past probes: **any number derived against one artifact must be pinned to it, or a
+legitimate rebuild of that artifact silently invalidates the number.**
+
+## 2026-09-04 — hashing is the wrong reproducibility test for a torch pickle
+**Problem**: Two `--seed 42` probe runs, same host, same venv, same CPU, produced pickles with
+different sha256. Read naively that says the seed does not work.
+**Root cause**: the files differ in **134 of 541,144 bytes**, all of them torch storage keys
+derived from **memory addresses** (`94090181761856` vs `97139374751504`). The tensors are
+identical: all six `np.array_equal`, `max|Δ| 0.000e+00`, scaler identical.
+**Fix**: compare `state_dict` tensors, never file hashes, when asking whether a seeded run
+reproduced. The shipped `.pkl.sha256` still has a job — it pins *the shipped file* against
+corruption — but it is not a reproducibility instrument.
+⭐ **`sha256sum` would have reported "not reproducible" about a fully reproducible artifact** —
+an instrument that cannot say yes about the thing being asked. Same family as *prove the
+instrument could have said yes*, in the direction that produces a false NEGATIVE.
+
+## 2026-09-04 — a documented refusal that could not fire on the path that scores
+**Problem**: `filters/human_thriving/v8/base_scorer.py`'s `_load_prefilter` raises
+`NotImplementedError`, with a docstring citing NM#284 as the reason — a silent pass-through would
+read as "the prefilter ran and let everything through". Measured:
+`HumanThrivingHybridScorer(use_prefilter=True)` **constructed fine**, with
+`self.use_prefilter = True` and no prefilter.
+**Root cause**: `HybridScorer._create_stage2_scorer` hardcodes `use_prefilter=False`, so the
+Stage-2 scorer never reaches the raise. The guard was on the wrong object for the hybrid path,
+which is the path production uses.
+**Fix**: raise in `HumanThrivingHybridScorer.__init__` before anything is loaded; two tests,
+mutation-killed.
+⭐ **The refusal was written to prevent exactly the shape it then had.** Writing the rationale
+into the docstring made it feel discharged. → the *unreachable-mechanism* family; caught
+pre-commit by `/review-changes`, not shipped.
+
+## 2026-09-04 — a script promised to omit a column and emitted it unconditionally
+**Problem**: `scripts/analysis/probe_recall_report.py`'s `--corpus` help text and the output
+JSON's own `design_weight_note` both said the design-weighted columns were "omitted rather than
+silently computed with weight 1". `summarize()` emitted `weighted_positive_rate`,
+`weighted_fn_rate` and `weighted_stage2_rate` unconditionally. Run without `--corpus`, the JSON
+carried `design_weighted: false`, a note saying the columns were omitted, **and those three
+fields populated with unweighted values**.
+**Root cause**: the promise was written in the help text and never expressed in the code.
+**Fix**: `summarize(..., weighted=...)` nulls them; `sum_weights*` added per group so a weighted
+rate can be POOLED across splits, which is what had forced the routing-gap test to be unweighted.
+⚠️ **It did not bite this run** — all shipped reports have `design_weighted: true` with a complete
+join — which is exactly why it would have survived. The field was there, was populated, and was a
+different instrument from the one its name claimed (the 2026-09-03 `harm_title` shape).
+
+## 2026-09-04 — a presence control that fired after the files were written
+**Problem**: `scripts/analysis/dump_student_scores.py` raised
+`SystemExit("refusing to emit two files that are the same file")` when calibration changed no
+row — after writing and closing all three output files.
+**Root cause**: the check was placed after the write loop because that is where the counter
+finished, not where the decision belonged. The files it "refused to emit" were on disk at exit,
+and `ground_truth_gate.py --recompute-model-wa` pointed at that directory would have read them.
+**Fix**: build the rows in memory, check, then write. The refusal now also says "Nothing was
+written", so the message and the state agree.
+⭐ **A guard that fires after the damage is not a guard** — and a `SystemExit` reads like one in
+review, because the exception is the thing you look at.
+
+## 2026-09-04 — an absolute in a description, asserted on six surfaces, refuted by its own next clause
+**Problem**: I wrote "Every other `inference_hybrid.py` hardcodes `DEFAULT_THRESHOLD = 1.00`" in
+`config.yaml`, `inference_hybrid.py`, `STATUS.md`, an evidence README, a test docstring, and as a
+**constant name** (`DEPLOYED_DEFAULT_THRESHOLD`) whose comment called it the fleet default.
+Measured: **2 of 13** are 1.00 (the rest 0.75, 1.225, 1.25, 1.50, 2.25, 2.50).
+**Root cause**: the claim was true of v8's ancestor, `uplifting v7`, and I generalised it to the
+fleet without measuring — one `grep -h '^DEFAULT_THRESHOLD' filters/*/v*/inference_hybrid.py` away.
+Worse, the next clause said "they agree today, so it is harmless", and `nature_recovery v4` ships
+config **3.225** against runtime **0.75** — the 3.225-vs-0.75 divergence the same paragraph cites
+as the cautionary shape is **live right now**.
+**Fix**: all six surfaces carry the measured distribution; the constant renamed
+`V7_DEPLOYED_THRESHOLD` with a comment saying why it must not go back.
+⭐ **A field or constant NAME is an assertion, and it is read far more often than the note beside
+it.** ⭐ And an absolute about *behaviour* ships unmeasured by default — the cheap check was one
+grep, and the claim's own counterexample was two lines below it.
+
+## 2026-09-04 — the significance test was unweighted inside a document arguing against unweighted rates
+**Problem**: `script_routing_gap.py` computed the Latin/non-Latin routing gap from
+`stage2_rate` — the UNWEIGHTED sample rate — while the same JSONs carried
+`weighted_stage2_rate` unused, and put a binomial SE on a stratified design whose weights run
+1.31–29.32. The evidence README two sections above argues that an unweighted split rate "is a
+rate for the sample and for no population the filter will ever meet".
+**Root cause**: Σw was not recorded per group, so a weighted rate could not be pooled across
+splits — and rather than fix the report, I reached for the field that was there.
+**Fix**: `sum_weights*` recorded per group; the test now prints weighted (Hájek ratio) **and**
+unweighted side by side, plus the measured Kish deff. Reweighting made the gap **larger** —
+0.0762 (z 2.65) against 0.0693 (z 2.53) — so the finding was never at risk and the reporting was.
+⚠️ Both SEs are still binomial and therefore optimistic; deff 1.068 moves the unweighted z to 2.45.
+⭐ **Writing the caveat is not applying it.** The document that names the trap most clearly is
+where I then fell into it.
+
+## 2026-09-04 — the commit-msg hook blocked the commit, and it was right
+**Problem**: `git commit` aborted: "deploy-class word detected in message; verifying staged
+filters" → `[FAIL] hub: cannot check — no repo_id extracted from inference_hub.py`.
+**Root cause**: the message used "shipped"/"ships" in passing (about *other* filters' configs),
+which triggered the verifier; `human_thriving v8` ships neither `inference_hub.py` nor a `NO_HUB`
+sentinel, so `verify_filter_package.py --check-hub` cannot tell *deliberately not on the Hub* from
+*hub check broken*. `uplifting v7` ships the sentinel.
+**Fix**: reworded the message (the commit genuinely deploys nothing). ⛔ **NO_HUB was NOT added** —
+`docs/HUMAN_THRIVING_V8_PLAN.md` §3c calls a Hub repo for v8 "optional", so writing the sentinel
+would assert an undecided deployment choice. Recorded as owed before phase F.
+⭐ **A failing check may be the control working.** The hook was blocking on a real package gap that
+two independent review lenses had flagged the same session — not on my wording.
