@@ -1,6 +1,6 @@
 # LLM Distillery - TODO
 
-## 🔵 NEXT SESSION — **phase 8 GATE. v8 can score; the op-point it would score at is inherited, and calibration made it stricter.**
+## 🔵 NEXT SESSION — **phase 8 GATE. Not "does v8 pass" — "how much good content is the last few points of junk removal worth?"**
 
 > **Updated 2026-09-04 (second session).** Session records:
 > `memory/project_session_2026_09_04.md`. Runs: **EXP-015** (training) and **EXP-016**
@@ -26,18 +26,28 @@
    at `model_baseline_mae/`. Provenance is the committed `training_{history,metadata}.json`.
    The 660-row raw-logit dump is at `b650-gpu:~/llm-distillery/ht_v8_test_dump/` so the 16-min
    CPU pass need not be repeated.
-3. ⛔⛔ **THE OP-POINT IS THE PHASE-8 DECISION, and 4.5 is not a neutral carry-over.** v8 now
-   ships a calibration, and **4.5 calibrated is a stricter bar than 4.5 raw** — it flags **17**
-   test rows where raw flags **26**, a 34.6% cut in surfaced volume, while the two arms are the
-   *same ranker* (Spearman 0.9977, AUC 0.9474 → 0.9488, every matched-volume recall difference
-   ≤2 articles). Re-derive on the **calibrated** scale.
-4. ⚠️ **Phase C did not move recall, and the probe is not why.** Test @4.5, both arms from one
-   CPU pass: raw **recall 0.486 / spec 0.9856**, calibrated **0.343 / 0.9920** — and the gate's
-   #95 bands **OVERLAP on recall, specificity and F1: NOT DISTINGUISHABLE.** The probe is
-   recall-safe (0 FN at 1.75 on both splits), so Stage 1 is not the constraint. ⛔ EXP-015's
-   **0.514** was b650-**CUDA**; this is CPU, one article apart. Never quote a v8 recall without
-   the device and the calibration state. Fleet numbers are post-calibration **and** post-gate —
-   do not put any of these in that table.
+3. ⛔⛔ **THE OP-POINT IS THE PHASE-8 DECISION, and it is a VALUES call, not a technical one.**
+   4.5 is not a neutral carry-over: **4.5 calibrated is a stricter bar than 4.5 raw** (17 test
+   rows flagged where raw flags 26). The trade, held-out, raw arm — junk removed / good kept:
+   **3.00 → 62.1% / 90.0% · 4.00 → 82.8% / 73.3% · 4.50 → 90.8% / 56.7% · 5.00 → 96.6% /
+   23.3%**. ⭐ **Under ADR-023 the inherited 4.5 is defensible and possibly right**: moving to
+   4.0 buys 5 good articles and lets 7 junk ones back through, which is the wrong direction
+   when *"a false positive costs a reader and a false negative costs nothing visible"*. **The
+   low recall is the cheap error, deliberately chosen.** Decide on the **calibrated** scale.
+4. ✅ **PHASE C DID WORK — the number to judge it by was never aggregate recall** (reviewed
+   2026-09-04, **EXP-017**, `docs/evidence/2026-09-04-v8-probe-calibration/PHASE_C_REVIEW.md`).
+   Of the **87** test rows `uplifting v7` surfaced that the v8 oracle demotes, the student
+   removes **79 (90.8%) raw / 82 (94.3%) calibrated**, with AUC on the 117 disputed rows
+   **0.8454 / 0.8521 against v7's own 0.7218** — it learned a distinction v7 lacked, not just
+   a lower scale. Cost: of the **30** rows both definitions call positive it keeps **17
+   (56.7%) raw / 12 (40.0%) calibrated**.
+5. ⛔⛔ **NEVER SET v8's RECALL BESIDE THE FLEET'S 0.59–0.72. The comparison is VOID.** v7 and
+   v8 do not share a positive class: same 660 rows, v7 says **117**, v8 says **35**, they agree
+   on **30** — Jaccard **0.246**. Recall is conditional on the true class, so it survives a
+   change of base RATE and not a change of DEFINITION. The figures are right (raw **0.486** /
+   calibrated **0.343** at 4.5); only the comparison was wrong, and it was repeated on six
+   surfaces before being caught. ⚠️ Also always name the DEVICE: EXP-015's **0.514** was
+   b650-CUDA, this is CPU, one article apart.
 4. ⛔⛔ **The checkpoint was produced by no commit on a branch** (trained under `0697f5a`, amended
    into `1878e7b`; tag `exp-015-training-code` keeps it from gc). **Decision owed before phase
    9: retrain under a real commit, or record the exception.** Recommended: fold the retrain into

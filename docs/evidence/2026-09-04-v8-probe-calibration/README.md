@@ -242,6 +242,13 @@ batch-composition term does not sit between them):
 The gate's own output: **recall, specificity and F1 bands all OVERLAP — NOT
 DISTINGUISHABLE.** The 14-point recall gap is not reportable as an effect.
 
+⭐ **CORRECTED 2026-09-04: "not distinguishable" was measured in the wrong place.** Aggregate
+recall pools the rows v8 exists to demote with the rows it exists to keep, so it cannot see
+the difference. Split them and the arms separate: on the 87 test rows v7 surfaced that the v8
+oracle demotes, calibration removes **94.3%** against raw's **90.8%**, and AUC on the 117
+disputed rows is **0.8521 vs 0.8454**. Small margins on small n, and this does NOT overturn
+the band verdict — it relocates where the difference lives. `PHASE_C_REVIEW.md`.
+
 ⚠️ **Be precise about how thin two of those overlaps are.** On **recall** the bands
 `[0.400, 0.514]` and `[0.314, 0.400]` touch at exactly **0.400** — 14 of 35 articles in
 both — and the gate's test is inclusive, so the overlap is a **single shared endpoint**. On
@@ -414,6 +421,8 @@ because a passing integrity check also passes when the check is off:
 | `arms_as_rankers.json` | the scale-free comparison: Spearman, discordance, AUC, AP, recall at matched flag count |
 | `compare_arms_as_rankers.py` | the script that produced it — committed so the numbers above are reproducible |
 | `script_routing_gap.py`, `routing_gap.txt` | the Latin/non-Latin routing test and the rule-of-three bounds |
+| `PHASE_C_REVIEW.md` | ⭐ **the review of this whole phase** — what worked, the void fleet comparison, and the Phase 8 trade-off table |
+| `phase_c_outcome.py`, `.json`, `.txt` | the analysis behind it, committed so every number reproduces |
 | `probe_training.log` | `train_probe.py` output, seed 42 |
 | `calibration.log` | `fit_calibration.py` output, including the suppressed 1.3787 |
 | `probe_recall_report_test.json` | ⚠️ nearly lost: `.gitignore`'s `*_test.*` scratch rule matched it and `git add` omitted it silently. A `docs/evidence/**` negation was added; see `.gitignore`'s tail |

@@ -42,12 +42,26 @@ boilerplate at 357–489 chars, all *above* the 300-char floor.
 
 ## ⛔ Known-failing and known-missing, before anyone reads the state as green
 
-- ⚠️ **Its numbers are still not comparable to the fleet, and PHASE C DID NOT MOVE THE ONE
-  IT WAS AIMED AT.** Test @4.5 (n=660, 35 positives, 5.30%), both arms from one CPU forward
+- ✅ **PHASE C DID THE THING v8 EXISTS FOR — measured 2026-09-04 on held-out data.** Of the
+  **87** test rows `uplifting v7` surfaced that the v8 oracle demotes, the student removes
+  **79 (90.8%) raw / 82 (94.3%) calibrated**; AUC on those disputed rows is **0.8454 raw /
+  0.8521 calibrated against v7's own 0.7218**, so it learned a distinction v7 lacked rather
+  than merely scoring everything lower. Cost: of the **30** rows both definitions call
+  positive it keeps **17 (56.7%) raw / 12 (40.0%) calibrated**. ⛔ Still open: the student
+  under-learns class-A on the highest v7 rows — **2 of 6** score ~5 against an oracle ~1.
+  `docs/evidence/2026-09-04-v8-probe-calibration/PHASE_C_REVIEW.md`.
+- ⚠️ **Its numbers are not comparable to the fleet's.** Test @4.5 (n=660, 35 positives, 5.30%), both arms from one CPU forward
   pass: raw **recall 0.486 / spec 0.9856**, calibrated **recall 0.343 / spec 0.9920** — and the
   gate says the #95 bands **OVERLAP on recall, specificity and F1: NOT DISTINGUISHABLE**.
-  Specificity is at/above every deployed filter; **recall is below all six** (fleet 0.59–0.72),
-  the cheap side to be weak on under ADR-023 but the number Phase C was supposed to raise.
+  ⛔ **DO NOT SET THESE BESIDE THE FLEET'S 0.59–0.72. That comparison is VOID** (corrected
+  2026-09-04, `docs/evidence/2026-09-04-v8-probe-calibration/PHASE_C_REVIEW.md`): v7 and v8
+  do not have the same positive class. On the same 660 rows v7 calls **117** positive and v8
+  calls **35**, agreeing on **30** — **Jaccard 0.246**, v8 keeps **25.6%** of v7's positives.
+  Recall is conditional on the true class, which is why it survives a change of base RATE and
+  does **not** survive a change of DEFINITION. Two recalls of two different classes are two
+  quantities with one name. ⭐ **And the low recall is not a defect to fix**: under ADR-023 it
+  is the cheap error, and moving 4.5 → 4.0 buys 5 good articles while letting 7 junk ones back
+  through — the wrong direction under the project's own loss function.
   ⚠️ EXP-015 reported **0.514** raw at 4.5 on this same split: that is **one article** (18 vs
   17 of 35) and a **device** difference — EXP-015 on b650-CUDA, this on CPU, i.e. the
   CPU→CUDA **0.1956** term landing near the bar. Neither is wrong; they are not the same

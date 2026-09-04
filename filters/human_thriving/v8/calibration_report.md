@@ -107,7 +107,17 @@ prints and this table does not.
    arm has the higher specificity point estimate at every bar swept.
 3. It costs nothing in discrimination — AUC and AP are marginally *higher* calibrated.
 
-⚠️ **It is NOT shipped because it improved anything measurable.** It did not.
+⚠️ **It is NOT shipped because it improved aggregate MAE or aggregate recall.** It did not.
+
+⭐ **CORRECTED 2026-09-04: it DOES improve the thing this filter exists to do.** Aggregate
+recall pools the rows v8 exists to demote with the rows it exists to keep, so it could not see
+the difference. Split them, on held-out data: of the **87** test rows `uplifting v7` surfaced
+that the v8 oracle demotes, the calibrated arm removes **82 (94.3%)** against raw's **79
+(90.8%)**; AUC on those 117 disputed rows is **0.8521 calibrated vs 0.8454 raw** (v7's own
+score: 0.7218); and it demotes one of the two class-A rows the raw student still surfaces.
+⚠️ Small margins on small n, and the #95 bands on aggregate recall/specificity still overlap —
+this does not overturn "not distinguishable", it relocates where the difference lives.
+`docs/evidence/2026-09-04-v8-probe-calibration/PHASE_C_REVIEW.md`.
 
 ## Provenance
 

@@ -16,7 +16,13 @@ and `calibration.json`. ⛔ The weights are still gitignored (#97) and live only
 a fresh clone loads the package and cannot run the student. "Scoreable" is a statement
 about one host.
 
-## ⛔ Neither phase moved the number they were aimed at — and that is the finding
+## ⛔ Neither phase moved the AGGREGATE number they were aimed at
+
+⚠️ **Read this section together with the EXP-017 review below, which was written the same
+evening and supersedes its headline.** Everything measured here is correct; the conclusion
+drawn from it — that Phase C achieved nothing — is not. Aggregate recall pools the rows v8
+exists to demote with the rows it exists to keep, so it cannot show whether v8 worked. And
+the fleet comparison this section makes is **void**: v7 and v8 do not share a positive class.
 
 `docs/TODO.md` had named recall as the target (raw test 0.514). After both phases:
 
@@ -169,8 +175,52 @@ CPU run need not repeat), `datasets/ht_v8_corpus.jsonl`, `/tmp/probe_seed{42,7}.
 `while pgrep -f "uv pip install"` loop that matched its own command line. Harmless; not
 mine to kill.
 
+## ⭐⭐ REVIEWED THE SAME EVENING (EXP-017, $0) — and the phase's headline was wrong
+
+Asked "is this going anywhere?" and measured rather than summarised, off the forward pass
+already on disk.
+
+⛔ **The fleet comparison this session leaned on is VOID.** Every recall figure was set beside
+the deployed fleet's 0.59–0.72. But v7 and v8 do not share a positive class: on the same 660
+test rows v7 calls **117** positive, v8 calls **35**, they agree on **30** — **Jaccard 0.246**,
+v8 keeps **25.6%** of v7's positives. Recall is conditional on the true class, which is exactly
+why it survives a change of base RATE and not a change of DEFINITION. *"Recall below all six"*
+compared two different quantities that share a name, and I had propagated it to **six
+surfaces**. The figures are right; the comparison was not.
+
+✅ **Against what v8 actually exists for, it works.** Partitioning the rows v7 surfaced by what
+the v8 oracle says: **87 junk** (v7 surfaced, v8 demotes) and **30 good** (both agree). At 4.5
+the student removes **79/87 = 90.8% raw**, **82/87 = 94.3% calibrated**, keeping **17/30 =
+56.7%** and **12/30 = 40.0%** of the good.
+
+⭐ **The control rules out the boring explanation.** A student that had only learned "score
+everything lower" would move those two together. AUC on the 117 disputed rows: **0.8454 raw /
+0.8521 calibrated against v7's own 0.7218** — and at bar 3.0 it keeps **90%** of the good while
+still removing **62%** of the junk. They move apart. It learned a distinction v7 lacked.
+
+⭐ **Calibration is the better arm after all** — junk removed 90.8% → 94.3%, AUC 0.8454 →
+0.8521, and it demotes one of the two class-A rows the raw student still surfaces. ⚠️ This does
+not overturn "not distinguishable"; it says the aggregate metric was the wrong place to look,
+because it pools the rows v8 exists to demote with the rows it exists to keep.
+
+⛔ **Still open, and it is the real gap:** the student under-learns class-A on the *highest*
+v7 rows — **2 of 6** score ~5 against an oracle of ~1, at v7 6.28 and 6.57, i.e. the rows a
+reader is most likely to see. n=6; direction, not a rate.
+
+⭐ **The generalisable part: an aggregate metric that POOLS the rows a change exists to demote
+with the rows it exists to keep cannot show whether the change worked, and will report a real
+improvement as "not distinguishable".**
+
+`docs/evidence/2026-09-04-v8-probe-calibration/PHASE_C_REVIEW.md`, `EXP-017`.
+
 ## ▶ NEXT
 
-**Phase 8, the gate** — and its first job is the **op-point re-derivation on the calibrated
-scale**, not a pass/fail on the inherited 4.5. Then **H-V8-15**, whose revisit trigger
-("only if phases 6b/7 leave recall short of the fleet") has now **fired**.
+**Phase 8 — and it is a VALUES call, not a pass/fail.** The question is *how much agreed-good
+content is the last few points of junk removal worth?*, decided on the **calibrated** scale
+where 4.5 means something different. The trade, held-out, raw arm — junk removed / good kept:
+**3.00 → 62.1% / 90.0% · 4.00 → 82.8% / 73.3% · 4.50 → 90.8% / 56.7% · 5.00 → 96.6% / 23.3%**.
+⭐ **Under ADR-023 the inherited 4.5 is defensible and possibly right**: 4.5 → 4.0 buys 5 good
+articles and readmits 7 junk ones, the wrong direction when a false positive costs a reader.
+
+⛔ **H-V8-15 is NOT the next move.** Its trigger fired on a comparison EXP-017 voided, and
+under ADR-023 v8's low recall is the cheap error, deliberately chosen. Re-scoped in the ledger.

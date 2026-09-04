@@ -84,9 +84,12 @@ chose the epoch, not the metric (**#144**). On the untouched test split epoch 4 
 4.0. ⭐ *A model that changes rank under a 0.25 threshold move is not distinguishable.* Reinforced
 by **seed 42 not being bit-reproducible on CUDA** (0.5601 vs 0.5605, same code and data).
 
-Raw test @4.5: **recall 0.514, specificity 0.9856**, positive rate 5.30%. Specificity matches or
-beats the fleet; **recall is below all six** (0.59–0.72) — ⛔ but those are post-calibration and
-v8 is not, so it is indicative only.
+Raw test @4.5: **recall 0.514, specificity 0.9856**, positive rate 5.30% (⚠️ b650-**CUDA**; the
+CPU pass reads 0.486, one article apart). ⛔⛔ **CORRECTED 2026-09-04 — DO NOT SET THIS BESIDE
+THE FLEET'S 0.59–0.72. That comparison is VOID**: v7 and v8 do not share a positive class
+(same 660 rows — v7 **117**, v8 **35**, agreeing on **30**, Jaccard **0.246**). Recall survives
+a change of base rate and not a change of definition. `EXP-017`,
+`docs/evidence/2026-09-04-v8-probe-calibration/PHASE_C_REVIEW.md`.
 
 ## ⛔ A traceability hole I created, and cannot fully close
 

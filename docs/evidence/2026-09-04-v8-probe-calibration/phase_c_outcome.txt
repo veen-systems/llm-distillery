@@ -1,0 +1,28 @@
+n=660   v7 positives 117   v8 positives 35   agreed 30
+Jaccard of the two positive classes: 0.246  — v8 keeps 25.6% of v7's positives
+⛔ Two recalls of two different classes are not comparable numbers.
+
+=== raw ===   AUC on the 117 rows v7 surfaced: 0.8454
+    bar     junk removed      good kept   recall     spec
+   3.00      54/87  62.1%   27/30  90.0%    0.829   0.9168
+   3.50      64/87  73.6%   25/30  83.3%    0.714   0.9472
+   3.75      68/87  78.2%   24/30  80.0%    0.686   0.9552
+   4.00      72/87  82.8%   22/30  73.3%    0.629   0.9664
+   4.25      74/87  85.1%   20/30  66.7%    0.571   0.9728
+   4.50      79/87  90.8%   17/30  56.7%    0.486   0.9856
+   5.00      84/87  96.6%    7/30  23.3%    0.200   0.9952
+
+=== calibrated ===   AUC on the 117 rows v7 surfaced: 0.8521
+    bar     junk removed      good kept   recall     spec
+   3.00      58/87  66.7%   27/30  90.0%    0.829   0.9264
+   3.50      69/87  79.3%   24/30  80.0%    0.686   0.9568
+   3.75      72/87  82.8%   22/30  73.3%    0.629   0.9664
+   4.00      76/87  87.4%   18/30  60.0%    0.514   0.9760
+   4.25      78/87  89.7%   16/30  53.3%    0.457   0.9840
+   4.50      82/87  94.3%   12/30  40.0%    0.343   0.9920
+   5.00      86/87  98.9%    3/30  10.0%    0.086   0.9984
+
+BASELINE — v7's own score on the same rows: AUC 0.7218
+A student that merely scored everything lower would move junk-removed and good-kept together and show NO AUC gain over this.
+
+Wrote docs/evidence/2026-09-04-v8-probe-calibration/phase_c_outcome.json
