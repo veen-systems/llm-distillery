@@ -40,6 +40,33 @@ with `nature_recovery v4`. This file exists because v8's state is complicated en
 ⚠️ **The labelled corpus is 6,586, not 6,590** — four scrape-junk skips, all JavaScript-required
 boilerplate at 357–489 chars, all *above* the 300-char floor.
 
+## ✅ Pre-deploy parity against the five deployed packages (2026-09-04)
+
+Compared part-by-part against `uplifting v7`, `cultural_discovery v5`, `belonging v1`,
+`nature_recovery v4` and `solutions v6` — the packages that demonstrably work in production.
+**No part of the scorer is missing or misimplemented.** Class attributes, methods, runtime
+constants, probe dimensionality and every `config.yaml` key NexusMind reads all check out;
+the one constant v8 lacks (`DEFAULT_THRESHOLD`) is deliberately removed and guarded.
+⛔ `verify_filter_package.py`'s **7/7 is not this evidence** — it checks presence, not mutual
+consistency (`566254b`). Full comparison:
+`docs/evidence/2026-09-04-v8-probe-calibration/PREDEPLOY_PARITY.md`.
+
+⭐ **Two invariants nobody was checking are now pinned fleet-wide**
+(`tests/unit/test_filter_package_consistency.py`), both silent-failure shapes:
+1. **`config.yaml`'s `preprocessing.head_tail` must match `training_metadata.json`'s
+   `use_head_tail`** — otherwise inference truncates articles differently than training did,
+   with no error. v8 is consistent (both false) but **consistent by ABSENCE**: the five
+   deployed filters all declare `enabled: true`, v8 declares no block. ⛔ **H-V8-15 arm (b) is
+   `--use-head-tail`** — retrain with it and forget the config block and the model is silently
+   mis-fed. The test fails in exactly that case.
+2. **The probe's `output_dim` must equal the filter's dimension count** — `EmbeddingStage`
+   rebuilds from the pickle's own config, so a mismatched probe loads fine and weights the
+   wrong slots. Not 6 everywhere: cd v5 is 5, solutions v6 is 7.
+
+⚠️ **`prompt_hash` is `None`** for v8 (no `prompt-compressed.md`; `_compute_prompt_hash` looks
+for that exact name). It feeds `get_metadata()`, which nothing in NexusMind reads — provenance
+only. Resolve at Phase F **by copying, never renaming**.
+
 ## ⛔ Known-failing and known-missing, before anyone reads the state as green
 
 - ✅ **PHASE C DID THE THING v8 EXISTS FOR — measured 2026-09-04 on held-out data.** Of the
