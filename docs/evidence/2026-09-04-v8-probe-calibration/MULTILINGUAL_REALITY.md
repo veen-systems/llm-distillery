@@ -9,7 +9,7 @@ selection: the Latin-script keyword prefilter was dropped (ADR-018/019 *Amendmen
 | layer | verdict |
 |---|---|
 | the **encoder** — can it read these scripts at all? | ✅ **yes, verified** |
-| the **routing** — does it screen non-Latin harder? | ⛔ **yes, measurably** |
+| the **routing** — does it screen non-Latin harder? | ⚠️ **fewer non-Latin rows reach Stage 2 — but the gap is ENTIRELY in the negatives** |
 | the **ranking** — is it worse at non-Latin *judgement*? | ⚠️ **not measurable**, 2 positives |
 
 And a fourth thing fell out that nobody was looking for, in §4: **the student is hit harder
@@ -40,7 +40,7 @@ tokens. Tokenising an equivalent sentence in each of the nine scripts present:
 **Zero UNK tokens in any script, and every sample round-trips losslessly** (6–14 tokens per
 sentence — no script is being shredded into bytes). ✅ **The encoder can read all of it.**
 
-## 2. But the routing is measurably harsher for non-Latin
+## 2. Fewer non-Latin rows reach Stage 2 — and that is not the harm it looks like
 
 Pooled over both held-out splits at the adopted 1.75 threshold, design-weighted:
 
@@ -52,6 +52,26 @@ Pooled over both held-out splits at the adopted 1.75 threshold, design-weighted:
 **Gap 0.0762, z = 2.65** (unweighted 0.0693, z 2.53; both SEs binomial and so optimistic —
 measured Kish deff 1.068 → z 2.45). This one **has power**, because it is computed over all
 131 non-Latin rows rather than over its positives.
+
+⛔⛔ **But "screened harder" is the wrong reading, and it was mine for most of a day.** A
+routing rate pools positives and negatives, and only one of those is harm. Split by the
+oracle's own verdict, pooled over both splits:
+
+| group | oracle | n | routed | rate |
+|---|---|---|---|---|
+| Latin | **POSITIVE** | 58 | 58 | **1.0000** |
+| Latin | negative | 1,129 | 1,021 | 0.9043 |
+| non-Latin | **POSITIVE** | 8 | 8 | **1.0000** |
+| non-Latin | negative | 123 | 102 | 0.8293 |
+
+**Every positive is routed, in both scripts. The entire gap is in the negatives.** The probe
+discards more non-Latin negatives while missing no non-Latin positive — the screen being
+**more efficient** on that group, not harsher with it.
+
+⚠️ 8 positives, so "misses none" is weak evidence on its own (rule-of-three bound 0.375).
+What *is* established is that the measured gap is **not attributable to positives**.
+⚠️ And the oracle's own positive rate is lower for non-Latin — 2.63% against 5.65% on test —
+so some of the lower routing is simply correct.
 
 ## 3. ⚠️ Whether it *judges* non-Latin worse is NOT measurable here
 
@@ -97,19 +117,61 @@ Latin one — a 28-point gap, twice the probe's 14.**
   is a candidate multilingual fix, not only a general one. ⛔ Not a volume fix, and this is
   not a claim that it works — it is a reason to measure the arm *split by script*.
 
-⚠️ **What this does not establish.** That truncation *causes* the routing gap. Both are
-measured; the causal link is not. A test exists and is cheap: compare routing between
-non-Latin rows that fit under 512 tokens and those that do not. It needs no new labels.
+### ⛔⛔ …and the causal test REFUTES it. Truncation explains none of the gap.
+
+I proposed this as the mechanism, said the test was cheap, ran it, and it is dead. Two steps,
+both on the test split at the adopted 1.75:
+
+**Step 1 — does truncation depress routing where n is large?** Within Latin (n=584):
+
+| | n | routing |
+|---|---|---|
+| fits in 512 tokens | 250 | 0.8520 |
+| truncated | 334 | **0.9611** |
+
+**Truncated rows route MORE often, by 11 points — the opposite of the prediction.** Length is
+confounded with substance: longer articles carry more evidence and score higher, and losing
+their tail at 512 does not overcome that.
+
+**Step 2 — does the Latin/non-Latin gap survive matching on token count?**
+
+| token band | Latin n | Latin routing | non-Latin n | non-Latin routing | gap |
+|---|---|---|---|---|---|
+| 0–400 | 181 | 0.8398 | 20 | 0.8000 | 0.0398 |
+| 400–512 | 68 | 0.8824 | 9 | 0.6667 | 0.2157 |
+| 512–800 | 117 | 0.9573 | 16 | 0.8750 | 0.0823 |
+| 800+ | 218 | 0.9633 | 31 | 0.8387 | 0.1246 |
+
+**Size-weighted gap within token bands: +0.1009. Unconditional gap: +0.0986.** Matching on
+token count moves it by essentially nothing.
+
+⭐ **So truncation is real, is script-dependent, and is NOT what produces the routing gap.**
+Both facts stand; the causal story connecting them does not. ⚠️ The 400–512 band's 0.2157 is
+9 non-Latin rows and should not be read as a signal.
+
+⚠️ Truncation may still matter for the *student* — this test was on the probe, and the
+student's non-Latin penalty is twice as large (60.7% vs 89.2% of the article seen). That is
+untested.
 
 ---
 
 ## Summary
 
-**The probe is multilingual in the sense that matters least and is under-evidenced in the
-sense that matters most.** The encoder reads all ten scripts cleanly. The routing is
-measurably harsher for non-Latin. Whether the *judgement* degrades is unmeasurable at 2
-positives — and the newly-measured truncation asymmetry says the **student**, not the probe,
-is the component losing the most non-Latin content.
+**The encoder reads all ten scripts cleanly.** Fewer non-Latin rows reach Stage 2, but that
+gap lives **entirely in the negatives** — every positive is routed in both scripts — so it is
+the screen being more efficient, not harsher. Whether the *judgement* degrades is unmeasurable
+at 2 test positives (#141).
+
+⭐ **The finding that survives is about the student, not the probe:** Gemma's tokenizer needs
+843 tokens for a median non-Latin article against e5's 694, so the student sees ~61% of one
+against ~89% of a Latin one. ⛔ **And that is a fact about truncation, not an explanation of
+anything** — the causal test above refutes truncation as the source of the routing gap. What
+it might do to the *student's scores* is untested.
+
+⛔ **Two framings in this document were wrong before they were right, both mine, both the same
+shape:** "screened harder" pooled positives with negatives, and "truncation is the mechanism"
+survived exactly as long as it took to run the test. **An aggregate difference is not a
+finding until you have split it by the thing that makes it interpretable.**
 
 ## Reproduce
 

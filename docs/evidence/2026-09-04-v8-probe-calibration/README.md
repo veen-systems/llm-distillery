@@ -113,8 +113,7 @@ labelling defect found by review, not by me. Reweighting made the gap **larger**
 finding was never at risk; the reporting was. Σw is now recorded per group in the report
 JSONs (`sum_weights*`) specifically so a weighted rate can be pooled across splits.
 Per-split weighted gaps: **3.0 pp (val) and 11.0 pp (test)** — same sign, test larger.
-Non-Latin content *is* screened harder. Per split the gap is 3.1 pp (val, z = 0.74, ns)
-and 9.9 pp (test, z = 2.73, p ≈ 0.006) — consistent in sign, not in magnitude.
+⛔⛔ **CORRECTED 2026-09-04 (later the same evening) — "screened harder" IS THE WRONG FRAMING, and it was mine.** A routing rate POOLS positives and negatives, and only one of those is harm. Split by the oracle's own verdict, pooled over both splits: **every positive is routed in both scripts — Latin 58/58, non-Latin 8/8, rate 1.0000.** The entire gap lives in the NEGATIVES: Latin 0.9043, non-Latin 0.8293. So the probe **discards more non-Latin negatives while missing no non-Latin positive** — the screen being MORE EFFICIENT on that group, not harsher with it. ⚠️ 8 positives, so "misses none" is weak evidence (rule-of-three bound 0.375); what IS established is that the measured gap is not attributable to positives. ⚠️ And the oracle's own positive rate is lower for non-Latin (2.63% vs 5.65% on test), so some of the lower routing is simply correct. `script_routing_gap.py` now prints the split and refuses the old one-line verdict. Per split the pooled gap is 3.1 pp (val, z = 0.74, ns) and 9.9 pp (test, z = 2.73) — consistent in sign, not in magnitude.
 
 ⛔ **But the FN half of the question is unanswered, and the zeros are why.** With **0 of 8**
 non-Latin positives missed, the rule-of-three 95% upper bound on the non-Latin FN rate is

@@ -84,8 +84,12 @@ With the keyword prefilter dropped (ADR-018/019 *Amendment 2026-08-21*) the prob
 only layer carrying multilingual selection. At 1.75, pooled over both splits:
 
 - **Design-weighted routing: Latin 0.8979 (n=1,187) vs non-Latin 0.8218 (n=131), gap
-  0.0762, z = 2.65.** Unweighted 0.0693, z 2.53. Both SEs binomial and so optimistic;
-  measured Kish deff 1.068 → z 2.45. **Non-Latin content is screened harder.**
+  0.0762, z = 2.65.** Unweighted 0.0693, z 2.53; both SEs binomial, Kish deff 1.068 → z 2.45.
+  ⛔⛔ **CORRECTED later the same evening — "screened harder" is the wrong framing and it was
+  mine.** A routing rate POOLS positives and negatives, and only one is harm. Split by the
+  oracle: **every positive is routed in both scripts (Latin 58/58, non-Latin 8/8)**; the whole
+  gap is negatives (0.9043 vs 0.8293). The screen is **more efficient** on non-Latin, not
+  harsher. `script_routing_gap.py` now prints the split and no longer emits the old verdict.
 - **FN was 0 in every language and script cell — and that is nearly uninformative.** On 8
   non-Latin positives the rule-of-three upper bound is **0.375**. A 30% non-Latin FN rate
   would have produced this table more often than not.

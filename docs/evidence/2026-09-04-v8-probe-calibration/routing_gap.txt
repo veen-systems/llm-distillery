@@ -13,7 +13,16 @@ WEIGHTED    gap 0.0762  pooled p 0.8906  SE 0.0287  z 2.65   (Hájek ratio; SE n
   ⚠️ Σw² is not recorded per group, so this SE is still binomial and therefore
      OPTIMISTIC. Measured deff on this design was 1.068, which moves the
      unweighted z from 2.53 to 2.45 -- the verdict survives either way.
-  -> non-Latin content IS screened harder
+  -> non-Latin rows reach Stage 2 LESS OFTEN — see the split below before reading that as harm
+
+The same gap, split by what the oracle says — the only interpretable form:
+  group              oracle          n  routed     rate
+  script:latin       POSITIVE       58      58   1.0000
+  script:latin       negative     1129    1021   0.9043
+  script:non_latin   POSITIVE        8       8   1.0000
+  script:non_latin   negative      123     102   0.8293
+  ⚠️ Read this before quoting the pooled gap above. Only a gap among POSITIVES
+     is a recall problem; a gap among negatives is the screen doing its job.
 
 FN@MEDIUM+ -- and what a zero can and cannot exclude:
   script:latin       0/58 FN. Rule of three: 95% upper bound on the true FN rate is 0.052

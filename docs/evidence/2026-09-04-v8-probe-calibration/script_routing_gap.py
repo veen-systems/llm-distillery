@@ -133,9 +133,41 @@ def main():
     print("     OPTIMISTIC. Measured deff on this design was 1.068, which moves the")
     print("     unweighted z from 2.53 to 2.45 -- the verdict survives either way.")
 
-    verdict = "non-Latin content IS screened harder" if abs(gap_w / se_w) > 1.96 \
+    # ⛔ DO NOT PHRASE THIS AS "non-Latin is screened harder" AND STOP THERE. That was the
+    # wording until 2026-09-04 and it reached six surfaces before the split below showed
+    # the gap lives entirely in the NEGATIVES. A pooled routing rate cannot distinguish
+    # "misses positives" from "discards negatives efficiently", and only the first is harm.
+    verdict = ("non-Latin rows reach Stage 2 LESS OFTEN — see the split below before "
+               "reading that as harm") if abs(gap_w / se_w) > 1.96 \
         else "not distinguishable at this n"
     print(f"  -> {verdict}")
+
+    # --- ⛔ THE SPLIT THAT MAKES THE GAP INTERPRETABLE ---------------------------------
+    # Added 2026-09-04, after the pooled gap above had been reported on six surfaces as
+    # "non-Latin content is screened harder" — which is incomplete to the point of being
+    # misleading. A routing RATE POOLS POSITIVES AND NEGATIVES. Screening out a negative
+    # is the screen WORKING; screening out a positive is the only harm there is. A gap
+    # that lives entirely in the negatives means the screen is MORE EFFICIENT on that
+    # group, not harsher with it.
+    #
+    # Derivable from what the report already stores, so it needs no new run:
+    #   positives routed = n_positives - fn      (an FN is a positive screened out)
+    #   negatives routed = round(stage2_rate*n) - positives routed
+    print("\nThe same gap, split by what the oracle says — the only interpretable form:")
+    print(f"  {'group':<18} {'oracle':<10} {'n':>6} {'routed':>7} {'rate':>8}")
+    for g in GROUPS:
+        p_ = pooled[g]
+        pos_routed = p_["pos"] - p_["fn"]
+        neg_n = p_["n"] - p_["pos"]
+        neg_routed = p_["routed"] - pos_routed
+        for lbl, n_, k_ in (("POSITIVE", p_["pos"], pos_routed),
+                            ("negative", neg_n, neg_routed)):
+            if n_ == 0:
+                print(f"  {g:<18} {lbl:<10} {0:>6}")
+                continue
+            print(f"  {g:<18} {lbl:<10} {n_:>6} {k_:>7} {k_/n_:>8.4f}")
+    print("  ⚠️ Read this before quoting the pooled gap above. Only a gap among POSITIVES")
+    print("     is a recall problem; a gap among negatives is the screen doing its job.")
 
     print("\nFN@MEDIUM+ -- and what a zero can and cannot exclude:")
     for g in GROUPS:
