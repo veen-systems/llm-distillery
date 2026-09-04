@@ -5554,3 +5554,76 @@ the local adapter mtime and requires `--nexusmind-root`, so it cannot run from t
 ⭐ **Never read `verify_filter_package.py`'s summary as deploy readiness.** Count the skips: a
 package with nothing in it passes every check it has. ⚠️ The lesson generalises past this script
 — *a check that treats absence as success is loudest exactly when there is nothing to check.*
+
+## 2026-09-04 — `--select-metric` was accepted and inert, because the metrics weights were gated on an unrelated flag [RESOLVED]
+**Problem**: `training/train.py --select-metric recall_at_20` ran, printed nothing unusual, and
+selected every checkpoint on **aggregate MAE** — the metric ADR-023 forbids ranking on, on a
+corpus that is 94.9% floor. Four deployed filters (`solutions v6`, `cultural_discovery v5`,
+`belonging v1`, `investment_risk v6`) have no needle keys in `training_history.json` at all, so
+they were selected this way too.
+**Root cause**: `dimension_weights_list` was built only under `if args.sample_weight_scale > 0`
+(default 0.0), and the **same list** is what `compute_metrics` needs to emit `recall_at_k` /
+`recall_medium` / NDCG. With it `None` the whole needle block was skipped, `val_metrics.get(
+args.select_metric)` returned `None`, and selection fell to the MAE branch. Two unrelated flags
+coupled through one variable named for the wrong one of them.
+**Fix**: `1878e7b` — weights always built; the MEDIUM+ boundary resolved and **raising** rather
+than defaulting; `recall_at_k` skipped when `n <= k`; resume seeded from `max(history)`; metadata
+split into run-scoped and checkpoint-scoped; 26 tests in `tests/unit/test_train_metrics.py`.
+⭐ **The generalisable part: nothing in `tests/` referenced `training.train`, so "573 tests pass"
+was true and carried zero information about the module.** A green suite that cannot execute the
+changed lines is not evidence about them.
+
+## 2026-09-04 — I offered a tautology as an outcome proof, in the commit fixing an outcome-proof defect
+**Problem**: To prove the fix fired I cited: the run logs `Needle metrics at MEDIUM+ threshold:
+4.5`, and *"the pre-fix run contains that string 0 times."* Presented as an A/B control.
+**Root cause**: The string literal is **introduced by the same commit**. A pre-fix run could not
+have contained it under any circumstances, so the negative carried no information — it is a
+presence check on a new constant wearing the costume of a before/after comparison.
+**Fix**: Dropped from the message; replaced with a real control — the pre-fix expression vs the
+resolver over every config on disk, which returns **6 configs wrong or invented**.
+⭐ **A control has to be able to come out the other way.** Ask what would have made the "before"
+different *before* citing it — this is the *establish what a source excludes* rule pointed at a
+control rather than a population.
+
+## 2026-09-04 — I used MAE's shape to reason about recall, one message after naming that exact substitution as the trap
+**Problem**: Argued the selection defect "almost certainly cost nothing" because **val MAE fell
+monotonically across all six epochs, so there was no sign of a turn**. The owner pushed back. The
+re-run moved the kept checkpoint from epoch 6 to epoch 4 — it did change what ships.
+**Root cause**: MAE falling monotonically is what a model steadily improving its **floor**
+prediction looks like; its ranking of the needle can peak early and decay while MAE keeps
+dropping. That is the entire reason the needle metrics exist. I had identified the
+MAE-as-proxy-for-recall substitution as the defect *in the previous message*, then built a
+recommendation on it.
+**Fix**: Re-ran with corrected selection. Also refuted my second argument — I called the metric
+"noise-dominated" having measured no variance, and used that to argue against measuring.
+⭐ **Being articulate about a trap is not the same as being outside it, and the moment right
+after naming one is when the guard is weakest.** ⭐ *"There is no sign of X"* measured with an
+instrument that cannot show X is not evidence about X.
+
+## 2026-09-04 — `git commit --amend` orphaned the commit that produced a trained model
+**Problem**: The `human_thriving v8` checkpoint on b650 was trained under `0697f5a`. Review found
+defects, I amended into `1878e7b`, and the tree that actually produced the weights became
+**reachable from no branch** — one `git gc` from gone, while the weights themselves are gitignored
+and exist on exactly one host.
+**Root cause**: Amending is routine for an unpushed commit and normally costs nothing. It is not
+routine when an **external artifact was built from that exact tree** — the artifact's provenance
+is the sha, and amending rewrites it after the fact.
+**Fix**: `git tag -a exp-015-training-code 0697f5a` keeps it reachable; recorded in
+`filters/human_thriving/v8/STATUS.md` and EXP-015 as a decision owed before phase 9 — retrain
+under a real commit, or record the exception.
+⭐ **Before amending, ask whether anything outside the repo was built from the commit being
+replaced.** Seed 42 is not bit-reproducible on CUDA here (val MAE 0.5601 vs 0.5605, same code and
+data), so a retrain does not recreate the artifact either — it makes a different one.
+
+## 2026-09-04 — a borrowed resolver was wrong for the one filter it was borrowed to handle
+**Problem**: Fixing the hardcoded `MEDIUM = 4.0`, I reused `fit_normalization`'s
+`_lowest_nonzero` rule. A test written in the same commit failed immediately: `resilience/v1`
+resolved to **2.5**, not its configured medium of **4.5**.
+**Root cause**: `resilience/v1` ships `high 6.5 / medium 4.5 / low 2.5`. Almost every other
+filter sets `low: 0.0`, which makes *lowest non-zero* and *the medium boundary* the same number —
+so the rule looks correct across 17 configs and is wrong on the one with a non-zero bottom tier.
+**Fix**: A tier literally named `medium` wins; lowest-non-zero is the fallback for filters that
+call it `connection` (uplifting v1/v4) or `monitoring` (todo/v1).
+⭐ **A rule validated on the population where two definitions coincide has not been validated.**
+⭐ And the test earned itself on its first run — this was found by writing the assertion, not by
+reading the code, which had already passed a four-lens review.

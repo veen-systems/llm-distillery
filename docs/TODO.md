@@ -1,17 +1,49 @@
 # LLM Distillery - TODO
 
-## 🔵 NEXT SESSION — **phase 6: TRAIN. Phases 1–5 are complete and nothing has ever been trained.**
+## 🔵 NEXT SESSION — **phase 6b PROBE + phase 7 CALIBRATION. The student is trained; it still cannot score.**
 
-> **Updated 2026-09-03.** Session record: `memory/project_session_2026_09_03.md`.
+> **Updated 2026-09-04.** Session record: `memory/project_session_2026_09_04.md`.
+> Training run: **EXP-015** (`experiments/registry.jsonl`),
+> `docs/evidence/2026-09-04-v8-checkpoint-selection/`, `filters/human_thriving/v8/STATUS.md`.
 > Rulings: `docs/decisions/2026-09-03-v8-1-commencement-clause.md`,
 > `docs/decisions/2026-09-03-v8-scope-rulings.md`. Journal: `docs/HUMAN_THRIVING_V8_JOURNAL.md`.
 
 **Where we are in the RUNBOOK's nine phases:** 1 Planning ✅ · 2 Architecture ✅ (`prompt-v8-4.md`)
 · 3 Validation ✅ · 4 Prefilter ✅ N/A by ruling · 5 Training data ✅ (6,586 labels, 456 corrected)
-· **6 Training ⛔ NEXT, never started** · 6b Probe ⛔ · 7 Calibration ⛔ · 8 Testing ⛔ (its
-instrument now exists) · 9 Deployment ⛔.
+· **6 Training ✅ 2026-09-04, uncalibrated** · **6b Probe ⛔ NEXT** · **7 Calibration ⛔ NEXT**
+· 8 Testing ⛔ (its instrument now exists) · 9 Deployment ⛔.
 
-### Before `prepare_data.py` runs
+### ⛔ Read before touching phase 6b/7
+
+1. ⛔ **TRAINED ≠ SCOREABLE.** No `calibration.json`, no retrained probe, **no `base_scorer.py`**.
+   v8 cannot score an article today, and nothing about it is deployable.
+2. **The weights are NOT in this repo** (gitignored, #97). Epoch 4 of 6 lives at
+   `b650-gpu:~/llm-distillery/filters/human_thriving/v8/model/`, with the MAE-selected arm kept
+   at `model_baseline_mae/`. Provenance is the committed `training_{history,metadata}.json`.
+3. ⚠️ **The number to move is recall.** Raw test @4.5 (n=660, 35 positives, 5.30%): **recall
+   0.514, specificity 0.9856**. Specificity already matches/beats the fleet; recall is **below
+   all six** deployed filters (0.59–0.72). ⛔ Those fleet numbers are **post-calibration** — do
+   not put these in the same table until v8 is calibrated too.
+4. ⛔⛔ **The checkpoint was produced by no commit on a branch** (trained under `0697f5a`, amended
+   into `1878e7b`; tag `exp-015-training-code` keeps it from gc). **Decision owed before phase
+   9: retrain under a real commit, or record the exception.** Recommended: fold the retrain into
+   whatever phase 6b/7 concludes, so the artifacts are written once — a retrain now invalidates
+   the committed provenance for nothing, and seed 42 is not bit-reproducible on CUDA anyway.
+5. ⚠️ **The epoch was chosen by a TIE-BREAK, not a metric** — `recall_medium` saturates at 0.5806
+   across epochs 4/5/6 (#144). The two arms are **not distinguishable** on test.
+
+### Two training-side levers, both untested for v8 (H-V8-15)
+
+Neither is needed before 6b/7, but both are candidates if calibration and the probe do not move
+recall enough. **Do not run them together** — one variable at a time.
+
+- **Clamp 0→1.0 targets.** v7's own record: unclamped/3 epochs MAE 0.96, clamped/6 epochs 0.78 on
+  a similarly zero-inflated distribution. ⚠️ **That was an MAE argument, which ADR-023 forbids
+  ranking on** — re-judge on recall/specificity. There is **no clamping in `train.py` today.**
+- **`--use-head-tail`.** Content median is 2,331 chars against a ~2,000-char 512-token window, so
+  a real fraction of every article is truncated away.
+
+### Before `prepare_data.py` runs (kept — applies to any re-prepare)
 
 1. **Use `labels_v84_merged.jsonl`**, not `labels_k3.jsonl` — 456 above-op rows corrected under
    v8.4, per-row `prompt_hash`. The k=3 file is untouched, so this is reversible.

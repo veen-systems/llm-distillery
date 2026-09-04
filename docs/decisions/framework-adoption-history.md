@@ -296,7 +296,7 @@ dispositioned: `agent-ready-fixture` ×2 is a deliberately-unreachable path insi
 verify-protocol test fixture; `agent-ready-papers` ×5 is a second framework, already
 declined; `agent-ready-assessment` ×1 is prose in a gotcha war story; the rest are prose
 mentions, permission globs and a provenance URL. ⚠️ The 08-26 triage cited the
-`agent-ready-papers` decline at `docs/TODO.md:4052`; it is now **:4108**. Line-number
+`agent-ready-papers` decline at `docs/TODO.md:4052`; then **:4108**; on 2026-09-04 it was **:4763**. ⛔ Three rots — cite the sentence *"not adopted here by design"*, never the line. Line-number
 citations rot — cite the sentence.
 
 ---

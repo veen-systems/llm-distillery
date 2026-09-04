@@ -82,11 +82,11 @@ them** — each exists because something shipped broken.
 
 - **Before shipping any gate, cap, threshold, config key or stamp — or comparing
   against an option, price or quota — name the caller that would load it, then
-  PROVE THE OUTCOME CHANGED at the end of the run.** *(16th
-  occurrence 2026-08-25 — the `investment_risk` pause shipped with a green suite and
-  nobody watched a service start; a fail-closed deploy gate caught its THIRD file three
-  hours later and cost a production cycle. 15th — #103 chose an oracle against a Gemini
-  Batch rate card with no call site.)* An annotation, a test and a check are mechanisms too.
+  PROVE THE OUTCOME CHANGED at the end of the run.** *(17th
+  occurrence 2026-09-04 — `--select-metric` parsed and INERT for every filter ever trained,
+  so checkpoints were chosen on the metric ADR-023 forbids; **573 green tests said nothing,
+  because none of them reached `training.train`**. 16th 2026-08-25 — a config change whose
+  first exercise was production, costing a cycle.)* An annotation, a test and a check are mechanisms too.
   Naming the caller is **not sufficient**: guards have shipped with correct callers
   on the right paths and still done nothing. A green test on the predicate proves
   only the predicate. Never infer runtime behaviour from a config key's presence.
