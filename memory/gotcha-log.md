@@ -5762,3 +5762,52 @@ sentinel, so `verify_filter_package.py --check-hub` cannot tell *deliberately no
 would assert an undecided deployment choice. Recorded as owed before phase F.
 ⭐ **A failing check may be the control working.** The hook was blocking on a real package gap that
 two independent review lenses had flagged the same session — not on my wording.
+
+## 2026-09-04 — I judged four times on an aggregate that pooled the thing being asked about
+**Problem**: Four claims made and refuted in one evening, three of them the same shape.
+(1) *"v8's recall is below the fleet's 0.59–0.72"* — v7 and v8 do not share a positive class
+(Jaccard 0.246), so those are two recalls of two different quantities. (2) *"non-Latin content
+is screened harder"* — the routing gap is **entirely in the negatives**; every positive routes
+in both scripts. (3) *"the student is not replaceable"* from ΔAUC — AUC integrates the whole
+ranking, and the decision is a top-k cut at k≈17–26, where the difference vanishes.
+**Root cause**: each aggregate was correctly computed and answered a question nobody asked. A
+rate pools the classes; an AUC pools the ranks; a recall pools whatever the label definition
+happens to be. **The pooling is invisible in the number.**
+**Fix**: before quoting an aggregate as a finding, name the partition the decision actually
+uses and compute it there. Positives vs negatives. Ranks you surface at vs ranks you don't.
+One label definition vs another.
+⭐ **An aggregate difference is not a finding until it is split by the thing that makes it
+interpretable** — and the tell is that every one of these was *reportable*, *reproducible* and
+*wrong*, so no verification step could have caught them. Only asking a different question did.
+⚠️ The fourth was a different failure and worth separating: *"the probe/student gap is a
+kind-of-signal limit, not capacity"* was a mechanism claim, pre-registered with a falsifier,
+and refuted by measurement — which is the system working rather than failing.
+
+## 2026-09-04 — a verdict carried from one role to another, and ADR-011 was right all along
+**Problem**: I reported ADR-011's floor-collapse prediction — *"regression will likely collapse
+to a floor predictor and drop positives"* — as **not holding**, because a regression-objective
+probe beat the recall probe on AUC by 3.25 points at a 4.7% positive rate.
+**Root cause**: I measured the **scorer** role and stated the verdict for the **screen** role.
+ADR-011's claim is about screening, where collapse means unrecoverable Stage-1 false negatives.
+Measured properly (threshold selected on val, evaluated on test), regression e5-large screens
+hardest at 30.3% routing and **drops 6 of 35 positives — 17% of the needles.** Exactly as
+written.
+**Fix**: corrected in `IS_THE_PROBE_ENOUGH.md`, the ledger and EXP-020, not merely noted.
+⭐ **A probe can be the better SCORER and the worse SCREEN.** They are different objectives
+with different failure modes, and an ADR scoped to one of them is not refuted by evidence from
+the other. Check which role a claim is about before reporting it refuted.
+
+## 2026-09-04 — the memory index blew its budget because I kept growing one entry
+**Problem**: `run_verify_annotations.py` went from exit 0 to exit 1 mid-session:
+`memory/MEMORY.md is 31,916 B, over the 30,000 hard limit`.
+**Root cause**: five experiments landed in one evening and I appended each to the same index
+entry, which reached **9,787 chars** — a session record living in the always-loaded layer.
+**Fix**: the guard's own message prescribes it — *"Do NOT drop your session entry to fit — move
+detail into `memory/project_session_*.md` and leave a hook here. Check each trimmed entry has
+its full session file FIRST."* Did exactly that: diffed every distinctive number in the index
+entry against the session file, found **three** (`0.0986`, `0.1009`, `0.8520` — the truncation
+causal test) that existed ONLY in the index, homed them, re-checked to zero, then trimmed
+9,787 → 2,901 chars. Guard back to exit 0 with 5,120 B spare.
+⭐ **A budget guard that tells you the correct remedy is worth more than one that only refuses**
+— and the "check the session file FIRST" clause is the load-bearing half: trimming before
+homing would have destroyed three measurements silently.

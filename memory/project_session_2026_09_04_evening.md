@@ -94,6 +94,18 @@ only layer carrying multilingual selection. At 1.75, pooled over both splits:
   non-Latin positives the rule-of-three upper bound is **0.375**. A 30% non-Latin FN rate
   would have produced this table more often than not.
 
+### The causal test I proposed for it — and it refuted my own hypothesis
+
+I claimed truncation was the mechanism, said the test was cheap, ran it, and it died:
+
+- **Within Latin, where n is large:** rows that FIT in 512 tokens route **0.8520**; rows that
+  are TRUNCATED route **0.9611** — truncated rows route *more* often, by 11 points, the
+  opposite of the prediction. Length is confounded with substance.
+- **Matching Latin against non-Latin within token bands:** size-weighted gap **+0.1009**
+  against an unconditional **+0.0986**. Matching on token count moves it by nothing.
+
+The truncation asymmetry is real and stays measured; it is simply not what produces the gap.
+
 ⭐ **Routing asymmetry CONFIRMED; recall asymmetry NOT MEASURED and not measurable at this
 n.** llm-distillery#141 is the blocker. Directly relevant to **H-V8-10**.
 
