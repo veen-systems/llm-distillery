@@ -43,6 +43,7 @@ DRY_RUN=0
 FORCE_SKIP_OWNED_DRIFT=0
 FORCE_DIRTY=0
 WEIGHTS_PREPLACED=0
+ALLOW_UNTRACKED=0
 for arg in "$@"; do
     case "$arg" in
         --push)                       PUSH_FLAG="--push" ;;
@@ -50,6 +51,7 @@ for arg in "$@"; do
         --force-skip-owned-drift)     FORCE_SKIP_OWNED_DRIFT=1 ;;
         --force-dirty)                FORCE_DIRTY=1 ;;
         --weights-preplaced)          WEIGHTS_PREPLACED=1 ;;
+        --allow-untracked)            ALLOW_UNTRACKED=1 ;;
         --*)                          echo "ERROR: unknown flag: $arg"; exit 1 ;;
         *)
             if [ -z "$FILTER_NAME" ]; then FILTER_NAME="$arg"
@@ -61,7 +63,7 @@ for arg in "$@"; do
 done
 
 if [ -z "$FILTER_NAME" ] || [ -z "$VERSION" ]; then
-    echo "Usage: $0 <filter_name> <version> [--push] [--dry-run] [--force-skip-owned-drift] [--force-dirty] [--weights-preplaced]"
+    echo "Usage: $0 <filter_name> <version> [--push] [--dry-run] [--force-skip-owned-drift] [--force-dirty] [--weights-preplaced] [--allow-untracked]"
     echo ""
     echo "Flags:"
     echo "  --push                      git push origin main on NexusMind after the commit"
@@ -73,6 +75,9 @@ if [ -z "$FILTER_NAME" ] || [ -z "$VERSION" ]; then
     echo "  --force-skip-owned-drift    proceed even if a NexusMind-owned file has drifted"
     echo "                              (use only after inspecting the drift and deciding"
     echo "                              the NexusMind copy is the one to keep)"
+    echo "  --allow-untracked           proceed even if the filter dir has untracked files;"
+    echo "                              they ARE copied. Default is to refuse — git diff"
+    echo "                              cannot see them, so a new package slips the gate."
     echo "  --force-dirty               proceed even if NexusMind's working tree has uncommitted"
     echo "                              changes (see gotcha-log entry on the script's WIP-sweep"
     echo "                              hazard; even with --force-dirty the explicit staging"
@@ -112,6 +117,34 @@ if ! git -C "$DISTILLERY_ROOT" diff --quiet -- "$FILTER_PATH" \
     echo "ERROR: uncommitted changes in $FILTER_PATH. Commit first, then re-run."
     git -C "$DISTILLERY_ROOT" status --short "$FILTER_PATH" | sed 's/^/  /'
     exit 1
+fi
+
+# ⛔ AND UNTRACKED FILES, which the two `git diff` forms above CANNOT SEE. Added
+# 2026-09-04 after a review lens proved the hole experimentally: create an untracked
+# file under a filter dir and both commands still return 0. The case it misses is a
+# BRAND-NEW filter package — precisely what this gate exists for. Measured that day:
+# 8 of human_thriving v8's 10 package files were untracked, so a deploy would have
+# copied unreviewed, unreviewable code into NexusMind with the guard reporting clean.
+# ⚠️ `--allow-untracked` exists because this check has no other bypass and a stray
+# scratch file in a filter dir must not be able to block a deploy outright.
+# ⚠️ SCOPE, stated: `--exclude-standard` means GITIGNORED files are not flagged.
+# That is deliberate — `model/` is gitignored and is a normal part of every
+# package — but it does mean a gitignored file in a filter dir is still copied by
+# Step 1's `cp -r` without this guard saying anything. Flagging them would fire on
+# every healthy deploy, which is how a guard gets ignored.
+UNTRACKED=$(git -C "$DISTILLERY_ROOT" ls-files --others --exclude-standard -- "$FILTER_PATH")
+if [ -n "$UNTRACKED" ]; then
+    if [ "$ALLOW_UNTRACKED" -eq 1 ]; then
+        echo "WARNING: --allow-untracked — these files are NOT in git and will still be copied:"
+        printf '%s\n' "$UNTRACKED" | sed 's/^/  /'
+    else
+        echo "ERROR: untracked files in $FILTER_PATH — they would be copied to NexusMind"
+        echo "       without ever having been committed or reviewed:"
+        printf '%s\n' "$UNTRACKED" | sed 's/^/  /'
+        echo ""
+        echo "       Commit them, delete them, or re-run with --allow-untracked."
+        exit 1
+    fi
 fi
 
 # Sanity: NexusMind target tree must be clean before we begin. Prior versions
@@ -300,8 +333,13 @@ git status --short
 # Step 4: Commit
 echo ""
 if [ "$DRY_RUN" -eq 1 ]; then
-    echo "4. DRY RUN: skipping git add/commit. Inspect $NEXUSMIND_ROOT, then revert with"
+    echo "4. DRY RUN: skipping git add/commit. THE FILES WERE STILL COPIED."
+    echo "   Inspect $NEXUSMIND_ROOT, then revert with"
     echo "   'git -C $NEXUSMIND_ROOT checkout -- .' if you do not want to keep the changes."
+    echo "   ⚠️ That reverts TRACKED files only. Anything new this deploy introduced —"
+    echo "      a whole new filter version, or files admitted by --allow-untracked —"
+    echo "      arrives UNTRACKED in NexusMind and 'checkout --' will not touch it."
+    echo "      Check with: git -C $NEXUSMIND_ROOT status --porcelain"
 else
     echo "4. Committing changes..."
     # Explicit staging: only commit paths this script intended to touch. Even

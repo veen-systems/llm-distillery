@@ -1,0 +1,37 @@
+human_thriving v8 is not published to HuggingFace Hub.
+
+WHAT THIS FILE IS FOR. `scripts/deployment/verify_filter_package.py --check-hub` cannot
+otherwise tell "we deliberately did not publish this" from "the hub check is broken": with
+no `inference_hub.py` it short-circuits at "skip: inference_hub.py not present" and then
+fails with "cannot check — no repo_id extracted". That failure blocked a commit on
+2026-09-04 and was the correct behaviour — absence and declaration read identically without
+this file. NexusMind's `filter_loader` sets `hub_class = None` from the same absence.
+
+⚠️ THIS RECORDS THE CURRENT STATE, AND THE DECISION IS STILL OPEN.
+`docs/HUMAN_THRIVING_V8_PLAN.md` §3c calls a Hub repo for v8 **optional**. So this file
+says "not published today", not "never publish".
+
+⭐ AND v8's REASON IS NOT v7's — read this before copying the precedent.
+`filters/uplifting/v7/NO_HUB` gives a substantive reason: v7 was rsync'd from gpu-server
+without `training_metadata.json` / `training_history.json`, so building a Hub model card
+would have meant reconstructing metrics from a README narrative — fabricating numbers the
+card would then present as ground truth.
+
+**That reason does not apply to v8.** v8 ships both files, committed
+(`filters/human_thriving/v8/training_{metadata,history}.json`, EXP-015), plus
+`calibration_report.md` and a full evidence directory. A Hub model card for v8 could be
+built from measured artifacts. The route is genuinely open; it simply has not been taken.
+
+WHAT WOULD MAKE PUBLISHING WORTH IT: an off-machine backup of the weights. Today the LoRA
+adapter exists in exactly two places — `b650-gpu:~/llm-distillery/filters/human_thriving/v8/model/`
+and (after Phase F) NexusMind. Neither is a backup of the other in any meaningful sense.
+Against that: a Hub repo is another surface to keep in sync, and #48 requires the repo be
+named `human-thriving-filter-v8` or `verify_filter_package.py` fails on the mismatch.
+
+IF THIS IS REVISITED: delete this file, run
+`scripts/deployment/upload_to_huggingface.py --filter filters/human_thriving/v8
+--repo-name jeergrvgreg/human-thriving-filter-v8 --token $HF_TOKEN --private`, and
+⛔ do NOT run `resave_adapter.py` first — it rewrites the PEFT keys into the new format and
+breaks `PeftModel.from_pretrained()` (CLAUDE.md Hard Constraints).
+
+Recorded 2026-09-04 alongside the phase 6b/7 work (EXP-016).

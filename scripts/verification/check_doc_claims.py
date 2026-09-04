@@ -82,16 +82,37 @@ def _bullet(text, opener):
 
 
 def check_rule_ordinals():
-    """`CLAUDE.md`'s occurrence count must equal `memory/working-rules.md`'s.
+    """The occurrence COUNT lives in `memory/working-rules.md` and NOWHERE ELSE.
 
-    ⚠️ THE COUNT IS CANONICAL IN `working-rules.md` — `CLAUDE.md` says so in the
-    rule's own text. This check is what stops the always-loaded copy going stale
-    against it, which is the failure mode #133 names: the surface that restates is
-    the surface that rots.
+    ⛔ THIS CHECK WAS INVERTED ON 2026-09-04, and the reason is the point. It used to
+    require `CLAUDE.md` and `memory/working-rules.md` to state the SAME ordinal — which
+    kept the always-loaded copy honest, but made the count un-relocatable: every bump had
+    to land in the project file too. Measured over four `/curate` runs, those counters were
+    a MONOTONIC FLOOR on a file that degrades past 40,000 B, and H-CX3 recorded the trigger
+    firing four times while every other lever (eviction, trimming, padding) was spent.
 
-    Compared on the MAXIMUM ordinal on each side, matching the shell version that
-    used `sort -n | tail -1`, because both files write the current count first and
-    the older occurrences after it.
+    The stronger contract, and the one enforced here: a copy that does not exist cannot go
+    stale. So `CLAUDE.md` carries the IMPERATIVE and a pointer, `working-rules.md` carries
+    the count and the evidence, and this check now fails if the project file starts
+    restating the number again.
+
+    Three assertions per rule:
+      1. `working-rules.md` states an ordinal        — the canonical count exists
+      2. `CLAUDE.md`'s bullet states NO ordinal      — the copy that rots is absent
+      3. `CLAUDE.md`'s bullet points at the file     — the reader can still reach it
+
+    (2) is the one with teeth. (1) and (3) stop the rule being emptied out entirely, which
+    would otherwise satisfy (2) perfectly.
+
+    ⛔ DISCLOSED LIMIT, measured by mutation on the day this was written. Assertion (1)
+    checks that AN ordinal exists, not that it is the RIGHT one — and the occurrence
+    catalogue is a single line carrying every past ordinal, so deleting the newest one
+    leaves `max()` on the second-newest and the check still passes. Mutation M3 (drop
+    `18th` from `working-rules.md`) SURVIVED; M1 (restate the count in `CLAUDE.md`) and M2
+    (drop the pointer) were both killed. So: this check stops the count being DUPLICATED or
+    ORPHANED. It cannot stop it being WRONG, and nothing here can — the true count is a fact
+    about the project's history, not about either file. Do not read a pass as validating the
+    number.
     """
     out, rc = [], 0
     cm, err = _read(CLAUDE, "CLAUDE.md")
@@ -114,21 +135,33 @@ def check_rule_ordinals():
                        f"memory/working-rules.md ({label})")
             rc = 1
             continue
-        cm_ords = [int(m) for m in ORDINAL.findall(bullet)]
+
         wr_ords = [int(m) for m in ORDINAL.findall(wr_line)]
-        if not cm_ords or not wr_ords:
-            out.append(f"CANNOT VERIFY: no ordinal extracted for {label} "
-                       f"(CLAUDE.md={cm_ords}, working-rules.md={wr_ords})")
+        if not wr_ords:
+            out.append(f"FAIL {label}: memory/working-rules.md states no ordinal — it is "
+                       f"the canonical count and nothing else records it")
             rc = 1
             continue
-        c, w = max(cm_ords), max(wr_ords)
-        if c != w:
-            out.append(f"FAIL {label}: CLAUDE.md says {c}, "
-                       f"memory/working-rules.md says {w} — the canonical count is "
-                       f"working-rules.md; fix CLAUDE.md, not the other way round")
+
+        cm_ords = [int(m) for m in ORDINAL.findall(bullet)]
+        if cm_ords:
+            out.append(f"FAIL {label}: CLAUDE.md restates the count "
+                       f"{sorted(set(cm_ords), reverse=True)}. The count belongs in "
+                       f"memory/working-rules.md ONLY (currently {max(wr_ords)}) — an "
+                       f"always-loaded copy can only grow and can only rot. Replace it "
+                       f"with a pointer.")
             rc = 1
-        else:
-            out.append(f"PASS {label}: both layers say {c}")
+            continue
+
+        if "working-rules.md" not in bullet:
+            out.append(f"FAIL {label}: CLAUDE.md states no count (correct) and no pointer "
+                       f"to memory/working-rules.md either — the reader cannot reach the "
+                       f"evidence")
+            rc = 1
+            continue
+
+        out.append(f"PASS {label}: count {max(wr_ords)} in working-rules.md only, "
+                   f"CLAUDE.md points at it and restates nothing")
     return rc, out
 
 

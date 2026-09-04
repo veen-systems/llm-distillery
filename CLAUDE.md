@@ -82,16 +82,15 @@ them** — each exists because something shipped broken.
 
 - **Before shipping any gate, cap, threshold, config key or stamp — or comparing
   against an option, price or quota — name the caller that would load it, then
-  PROVE THE OUTCOME CHANGED at the end of the run.** *(17th
-  occurrence 2026-09-04 — `--select-metric` parsed and INERT for every filter ever trained,
-  so checkpoints were chosen on the metric ADR-023 forbids; **573 green tests said nothing,
-  because none of them reached `training.train`**. 16th 2026-08-25 — a config change whose
-  first exercise was production, costing a cycle.)* An annotation, a test and a check are mechanisms too.
-  Naming the caller is **not sufficient**: guards have shipped with correct callers
-  on the right paths and still done nothing. A green test on the predicate proves
-  only the predicate. Never infer runtime behaviour from a config key's presence.
-  → **count and numbering: `memory/working-rules.md` (canonical)**; shape-by-shape
-  evidence: `memory/gotcha-log.md` § *The unreachable-mechanism catalogue*.
+  PROVE THE OUTCOME CHANGED at the end of the run.** An annotation, a test and a
+  check are mechanisms too. Naming the caller is **not sufficient**: guards have
+  shipped with correct callers on the right paths and still done nothing. A green
+  test on the predicate proves only the predicate. Never infer runtime behaviour
+  from a config key's presence.
+  → **`memory/working-rules.md` holds the occurrence COUNT and the evidence; this
+  file deliberately restates neither** (#133 — the surface that restates is the
+  surface that rots, and a count here can only grow). Shape-by-shape catalogue:
+  `memory/gotcha-log.md` § *The unreachable-mechanism catalogue*.
 - **A failing check may be the CONTROL WORKING — never "fix" it before asking what
   it proves.** *(⭐⭐ promoted 2026-08-15; the imperative did not arrive in this file
   until 2026-08-16.)* Before repairing a thing that is failing, dead or disabled,
@@ -102,40 +101,20 @@ them** — each exists because something shipped broken.
   first.** A `stage1_low` row's score is an **e5 probe estimate**, not a Gemma score
   (23% of rows measured). Same shape as the length-field trap: the field exists, is
   populated, and means different things per row.
-- **Before using any source as evidence, establish what it EXCLUDES.** *(⚠️ **18th occurrence 2026-09-04 — `git add <dir>` SILENTLY OMITTED a committed evidence file**: `.gitignore`'s `*_test.*` scratch rule matched it, `git add` said nothing, and its `_val` sibling staged fine. 17th 2026-09-03 — THE FIELD IS THERE, IS POPULATED, AND IS A DIFFERENT INSTRUMENT.** `pool_v2.jsonl` carries `harm_title`, but the draw **recomputes** it with the census's `crime_violence` patterns and never writes it back; reading the stored field gave **660** class-A rows where the real instrument gives **59**, and ⛔ **neither is a subset of the other** (agree 32, census-only 27). An 11× overstatement in the direction that INVENTS WORK, past a docstring written to prevent exactly it.)* *(16th
-  occurrence 2026-09-01 — I globbed `*.jsonl*` over archive dirs holding `.tar.gz` and got
-  "0 of 18 recoverable", agreeing with a premise already in the docs; **18 of 18 were
-  recoverable**. ⛔ Twin: the OTHER archive holds the same ids and returns a 447-char STUB of a
-  14,546-char article — *nothing found* and *found, but short* are different wrong answers, and
-  only the second looks like success. 15th
-  occurrence 2026-08-30 — opposite sign again, and the smallest yet: a pool file's FIRST
-  LINE is a `__provenance__` record, not an article, so a line count published as a row
-  count was off by exactly one — 177,593 against 177,592 — in seven documents, a commit
-  message and an owner report. ⚠️ **The right number was already in the repo one file
-  away and disagreed.** A metadata file whose first line is not a datum is off by one, and
-  one is the error size nobody notices. 14th
-  occurrence 2026-08-29 — a nine-surface correction announced as "finished properly" was
-  still live in the AUTO-MEMORY: every sweep was rooted at the repo, and this project's
-  always-loaded layer spans TWO trees. 13th
-  occurrence 2026-08-28 — a 99.4% cache hit measured on a run that RE-SENT THE SAME
-  ARTICLES, so it could not have returned a low one — the mirror, and the seductive
-  half: a *positive* that carried no information; 12th 2026-08-28 — a corpus target
-  measured over a census that INCLUDED the 22.1% the draw forbids; 11th
-  2026-08-27 — a `git archive HEAD` baseline tree, which ships tracked files
-  only, so every gitignored path read as a broken reference: 240 findings against a real
-  1; 10th 2026-08-26 — a "do not trim, only surviving record" marker whose
-  refuting files sat in its own directory, past a load truncation; 9th 2026-08-23
-  — every adverse row on disk was a 300-char EXCERPT of a 620–28,905-char
-  article, and a paid run against them was one command away.)* Applies to data, to nested
-  structures, to prior work, to literature, to hosts, and to **time**. A wrong path
-  and a dead field both read as zero, and the wrong one is the more exciting finding.
-  ⚠️ **A window is part of a source.** If it is a denominator, a baseline, or a claim
-  of absence — enumerate the source first. ⭐ **One root, and it covers the
-  INSTRUMENT too: IT WAS POINTED SOMEWHERE THAT CANNOT PRODUCE A POSITIVE, SO THE
-  NEGATIVE CARRIED NO INFORMATION. Before believing a negative, prove the instrument
-  could have said yes** — and, since that is only the broken-instrument half, **also
-  ask what would have made the "before" different**: an instrument can be sound, its
-  number correct, and still not be a function of the thing under test.
+- **Before using any source as evidence, establish what it EXCLUDES.** Applies to
+  data, to nested structures, to prior work, to literature, to hosts, and to
+  **time**. A wrong path and a dead field both read as zero, and the wrong one is
+  the more exciting finding. ⚠️ **A window is part of a source.** If it is a
+  denominator, a baseline, or a claim of absence — enumerate the source first.
+  ⭐ **One root, and it covers the INSTRUMENT too: IT WAS POINTED SOMEWHERE THAT
+  CANNOT PRODUCE A POSITIVE, SO THE NEGATIVE CARRIED NO INFORMATION. Before
+  believing a negative, prove the instrument could have said yes** — and, since
+  that is only the broken-instrument half, **also ask what would have made the
+  "before" different**: an instrument can be sound, its number correct, and still
+  not be a function of the thing under test.
+  → **`memory/working-rules.md` holds the occurrence COUNT and all of the
+  evidence; this file deliberately restates neither** (#133). Read it before
+  weakening this rule.
 - **Every measurement error this project has made was a HAND-BUILT POPULATION.**
   *(2026-08-12, across four repos.)* Prefer a population the pipeline already
   computes to one you construct. Make the missing case raise, never return `None`.

@@ -16,6 +16,7 @@ verdicts the shell version produced on the day it was replaced.
 
 import importlib.util
 import os
+import re
 import sys
 
 import pytest
@@ -29,10 +30,10 @@ framework: agent-ready-projects v1.36.1
 # CLAUDE.md
 
 - **Before shipping any gate, cap, threshold, config key or stamp — name the
-  caller.** *(16th occurrence 2026-08-25 — a thing broke. 15th — another.)* More
-  prose that belongs to this bullet.
-- **Before using any source as evidence, establish what it EXCLUDES.** *(14th
-  occurrence 2026-08-29 — a thing. 13th 2026-08-28 — another.)* Trailing prose.
+  caller.** More prose that belongs to this bullet.
+  → `memory/working-rules.md` holds the occurrence COUNT and the evidence.
+- **Before using any source as evidence, establish what it EXCLUDES.** Trailing
+  prose. → `memory/working-rules.md` holds the count and all of the evidence.
 - **Something else entirely.** Not a rule with an ordinal.
 
 | **cultural-discovery** | v6 | (v5's) | **NOT DEPLOYED** — offline only |
@@ -106,23 +107,54 @@ def test_the_healthy_fixture_passes(mod, capsys):
 
 # --------------------------------------------------------------- rule ordinals
 
-def test_a_drifted_ordinal_fails_and_names_the_canonical_side(mod, capsys):
-    """THE WHOLE POINT. `CLAUDE.md` restates a count whose home is
-    `working-rules.md`; the restating surface is the one that rots."""
-    _edit(mod, "CLAUDE", "*(16th occurrence 2026-08-25", "*(17th occurrence 2026-08-25")
+def test_claude_md_restating_the_count_fails(mod, capsys):
+    """THE WHOLE POINT, INVERTED 2026-09-04. The check used to require both files to
+    state the SAME count. That kept them honest and made the count un-relocatable: every
+    bump had to land in the always-loaded file too, and over four /curate runs those
+    counters became a monotonic floor on a file that degrades past 40,000 B (H-CX3, four
+    firings). The stronger contract is that a copy which does not exist cannot rot — so
+    restating the count is now itself the failure."""
+    _edit(mod, "CLAUDE",
+          "- **Before shipping any gate, cap, threshold, config key or stamp — name the\n  caller.**",
+          "- **Before shipping any gate, cap, threshold, config key or stamp — name the\n  caller.** *(17th occurrence 2026-09-04.)*")
     assert mod.main(["--check", "rule-ordinals"]) == 1
     out = capsys.readouterr().out
     assert "FAIL gate/cap/threshold caller" in out
-    assert "CLAUDE.md says 17" in out and "working-rules.md says 16" in out
-    assert "canonical count is working-rules.md" in out
+    assert "restates the count" in out
+    assert "memory/working-rules.md ONLY" in out
 
 
-def test_the_second_rules_ordinal_is_also_compared(mod, capsys):
-    """Two rules carry ordinals. A check that silently covered only the first
-    would pass every test written about the first."""
-    _edit(mod, "RULES", "*(14th occurrence 2026-08-29", "*(99th occurrence 2026-08-29")
+def test_the_second_rule_is_also_checked(mod, capsys):
+    """Two rules carry the contract. A check that silently covered only the first would
+    pass every test written about the first."""
+    _edit(mod, "CLAUDE",
+          "- **Before using any source as evidence, establish what it EXCLUDES.** Trailing",
+          "- **Before using any source as evidence, establish what it EXCLUDES.** *(99th occurrence.)* Trailing")
     assert mod.main(["--check", "rule-ordinals"]) == 1
     assert "FAIL establish what a source excludes" in capsys.readouterr().out
+
+
+def test_a_pointerless_bullet_fails(mod, capsys):
+    """Removing the count AND the pointer satisfies "does not restate" perfectly while
+    leaving the reader unable to reach the evidence — the way to pass this check by
+    emptying the rule out."""
+    _edit(mod, "CLAUDE",
+          "  → `memory/working-rules.md` holds the occurrence COUNT and the evidence.",
+          "  The evidence is written down somewhere.")
+    assert mod.main(["--check", "rule-ordinals"]) == 1
+    out = capsys.readouterr().out
+    assert "no pointer" in out
+
+
+def test_working_rules_losing_its_count_fails(mod, capsys):
+    """The canonical side must still state one. ⚠️ DISCLOSED LIMIT: this catches the count
+    being deleted, NOT the count being wrong — the real catalogue is one line carrying
+    every past ordinal, so dropping only the newest leaves max() on the second-newest and
+    passes. Measured as surviving mutation M3 on 2026-09-04; nothing here can validate the
+    number, because the true count is a fact about the project's history."""
+    _edit(mod, "RULES", "*(16th occurrence 2026-08-25 — the full story.)*", "")
+    assert mod.main(["--check", "rule-ordinals"]) == 1
+    assert "states no ordinal" in capsys.readouterr().out
 
 
 def test_a_renamed_rule_cannot_verify_rather_than_passing(mod, capsys):
@@ -140,23 +172,16 @@ def test_a_rule_missing_from_working_rules_cannot_verify(mod, capsys):
     assert "CANNOT VERIFY" in capsys.readouterr().out
 
 
-def test_an_ordinal_removed_from_claude_md_cannot_verify(mod, capsys):
-    """Trimming the occurrence catalogue out of `CLAUDE.md` is a legitimate move
-    (#133) — but it retires this check, so it must say so rather than pass."""
-    _edit(mod, "CLAUDE", "*(16th occurrence 2026-08-25 — a thing broke. 15th — another.)*", "")
-    assert mod.main(["--check", "rule-ordinals"]) == 1
-    assert "no ordinal extracted" in capsys.readouterr().out
-
-
 def test_the_bullet_scope_ends_at_the_next_bullet(mod, capsys):
     """THE DEFECT IN THE SHELL VERSION. It read `sed -n '/…/,+3p'`, a fixed line
-    window, so rewrapping a bullet changed what the check compared. Here an ordinal
-    belonging to the NEXT rule must not be picked up by this one."""
+    window, so rewrapping a bullet changed what the check compared. Under the inverted
+    contract the stake is higher, not lower: an ordinal belonging to the NEXT bullet
+    would now read as this rule RESTATING the count, and fail a healthy file."""
     _edit(mod, "CLAUDE",
           "- **Something else entirely.** Not a rule with an ordinal.",
           "- **Something else entirely.** The 88th occurrence of something.")
     assert mod.main(["--check", "rule-ordinals"]) == 0
-    assert "both layers say 14" in capsys.readouterr().out
+    assert "restates nothing" in capsys.readouterr().out
 
 
 # ------------------------------------------------------------------- cd v6 row
@@ -230,10 +255,12 @@ def test_a_failure_is_reported_even_when_other_checks_pass(mod, capsys):
 
 
 def test_a_faithful_port_of_the_shell_one_liners(capsys):
-    """THE REAL FILES. Pins the verdicts the four inline `<!-- verify: -->` blocks
-    produced on 2026-08-29, the day they were removed: 16, 14, both-layers-agree,
-    v1.36.1. Green here does not prove the port faithful on its own — that is what
-    the seeded failures above are for — but a silent change of subject would show."""
+    """THE REAL FILES. Pins that all four checks still reach their subject and pass.
+    ⚠️ The ordinal check's CONTRACT changed on 2026-09-04 — it used to require both
+    layers to state the same count and now requires `CLAUDE.md` to state none — so this
+    test no longer pins particular numbers, only that nothing silently stopped looking.
+    Green here does not prove the port faithful on its own; that is what the seeded
+    failures above are for."""
     spec = importlib.util.spec_from_file_location("cdc_shipped", GUARD)
     m = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(m)
@@ -243,6 +270,32 @@ def test_a_faithful_port_of_the_shell_one_liners(capsys):
     assert "PASS establish what a source excludes" in out
     assert "PASS cd v6: both layers say it is not deployed" in out
     assert "PASS framework stamp" in out
+
+
+def test_claude_md_states_no_occurrence_count():
+    """⛔ THE INVERTED CONTRACT, ON THE REAL FILE. The occurrence counters were the one
+    class of always-loaded content that could not be relocated, because the old check
+    required `CLAUDE.md` to restate them — a monotonic floor on a file that degrades past
+    40,000 B. Trimming them on 2026-09-04 freed 2,619 chars and took runway from 2,062 B
+    to 4,724 B. This test is what stops them coming back one bump at a time."""
+    body = open(os.path.join(ROOT, "CLAUDE.md"), encoding="utf-8").read()
+    lines = body.split("\n")
+    for opener in ("Before shipping any gate", "Before using any source as evidence"):
+        start = next((i for i, l in enumerate(lines)
+                      if l.startswith("- **" + opener)), None)
+        assert start is not None, f"the {opener!r} rule is gone from CLAUDE.md"
+        end = next((i for i in range(start + 1, len(lines))
+                    if lines[i].startswith("- ") or lines[i].startswith("#")), len(lines))
+        bullet = "\n".join(lines[start:end])
+        assert not re.search(r"\b(\d+)(?:st|nd|rd|th)\b", bullet), (
+            f"CLAUDE.md's {opener!r} rule restates an occurrence count. The count lives "
+            f"in memory/working-rules.md ONLY — an always-loaded copy can only grow and "
+            f"can only rot (#133, H-CX3)."
+        )
+        assert "working-rules.md" in bullet, (
+            f"CLAUDE.md's {opener!r} rule states no count (correct) and no pointer to "
+            f"memory/working-rules.md either — the reader cannot reach the evidence"
+        )
 
 
 def test_no_verify_block_has_crept_back_into_claude_md():
