@@ -238,17 +238,27 @@ trade rather than a refutation.** What the student buys, at every surfacing volu
 (GPU: probe 3.74 ms/article, student 43.7 ms). Whether that trade is worth making is an
 editorial decision, not a statistical one. The statistics only say the difference is real.
 
-## ⛔ A documented prediction that did NOT hold
+## ⛔⛔ ADR-011 — I said its prediction "did not hold". IT HOLDS. Corrected.
 
 `train_probe.py` emits, and ADR-011 asserts: *"Only 4.7% MEDIUM+ positives — this looks like
 a needle filter. Regression will likely collapse to a floor predictor and drop positives."*
-**It did not collapse.** The regression probe beat the recall probe on AUC by 3.25 points.
 
-⚠️ **This does not refute ADR-011, and the distinction matters.** ADR-011's claim is about
-using regression **as a screen**, where floor-collapse means unrecoverable false negatives at
-Stage 1. This experiment used it **as a scorer** and never picked a screening threshold. Both
-can be true: good at ordering, bad at not-missing. **Testing the screen claim needs an
-FN@MEDIUM+ measurement at a selected threshold, which was not done here.**
+As a **scorer** the regression probe did not collapse — it beat the recall probe on AUC by
+3.25 points, which is what I originally reported. ⛔ **But I stated that as "the prediction
+did not hold", and then measured the screen role and found ADR-011 right as written.**
+Selecting the threshold on val at a 0%-FN budget and evaluating on test:
+
+| probe | threshold | test routing | **test FN** |
+|---|---|---|---|
+| recall e5-small (shipped) | 2.825 | 56.5% | 1/35 |
+| recall e5-large | 2.350 | 47.6% | 2/35 |
+| regression e5-small | 0.600 | 55.3% | 1/35 |
+| **regression e5-large** | 1.150 | **30.3%** | **6/35 — 17% of the needles** |
+
+**The regression e5-large probe screens hardest and drops six of thirty-five positives.** That
+is floor-collapse in the role ADR-011 is about, happening exactly as it says. A probe can be
+the better *scorer* and the worse *screen*; carrying a verdict between the two roles is the
+error, and I made it. Full analysis: `scripts/gating_tradeoff.py` → `gating_tradeoff.txt`.
 
 ## Prediction scoring
 

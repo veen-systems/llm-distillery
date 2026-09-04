@@ -1,0 +1,38 @@
+
+Threshold selected on VAL at an FN budget of 0%, evaluated on TEST
+  probe                         thr  TEST routing   TEST FN  wtd routing
+  recall  e5-small (SHIPPED)  2.825        56.5%    1/35         52.1%
+  recall  e5-large            2.350        47.6%    2/35         43.2%
+  regress e5-small            0.600        55.3%    1/35         50.8%
+  regress e5-large            1.150        30.3%    6/35         25.6%
+  ⚠️ 0 FN on val became 1-6 FN on test for every probe — threshold selection
+     does not generalise at this many positives (#141).
+
+Threshold selected on VAL at an FN budget of 2%, evaluated on TEST
+  probe                         thr  TEST routing   TEST FN  wtd routing
+  recall  e5-small (SHIPPED)  2.825        56.5%    1/35         52.1%
+  recall  e5-large            2.350        47.6%    2/35         43.2%
+  regress e5-small            0.600        55.3%    1/35         50.8%
+  regress e5-large            1.150        30.3%    6/35         25.6%
+  ⚠️ 0 FN on val became 1-6 FN on test for every probe — threshold selection
+     does not generalise at this many positives (#141).
+
+COST, GPU ms/article.  two-stage = 3.74 + r*43.7;  e5-large alone = 26.79
+   routing r   two-stage                     winner
+        100%     47.44ms            e5-large, 1.77x
+         89%     42.63ms            e5-large, 1.59x
+         75%     36.52ms            e5-large, 1.36x
+         61%     30.40ms            e5-large, 1.13x
+         52%     26.46ms           two-stage, 1.01x
+         40%     21.22ms           two-stage, 1.26x
+         25%     14.67ms           two-stage, 1.83x
+  break-even r* = (26.79 - 3.74) / 43.7 = 0.527
+  ⚠️ The ADOPTED threshold routes 89%, well above break-even — which is what makes
+     e5-large-alone competitive at all. Tighten the screen and that stops being true.
+
+⛔ THE COST OF TIGHTENING THAT IS NOT COMPUTE: a screened-out row does not just
+   skip the student — the probe's numbers become its PUBLISHED scores and tier
+   (hybrid_scorer.py, the Stage-1-LOW branch). At 89% routing that is 11% of the
+   corpus; at 52% it would be 48%. The shipped recall probe's scores are inflated
+   +1.98 on the weighted average and 3.4x worse per-dimension than the student's, so
+   tightening the screen also multiplies how much of the corpus carries them.

@@ -292,6 +292,44 @@ for a different reason: routing ~89% gives 42.6 ms against 43.7 all-student, a *
 ruling is what makes the screen nearly free of benefit — knowingly, since no Stage-2 cost
 constraint was claimed.
 
+## ⭐⭐ EXP-020 — the owner re-opened their own ruling, and it survives with two corrections
+
+**Owner: *"I wonder if my decision was right, don't we need harder gating? 89% pass-through
+does not sound needle to me."*** Measured, threshold selected on **val** and evaluated on
+**test**:
+
+| probe | thr | test routing | test FN | wtd routing |
+|---|---|---|---|---|
+| **recall e5-small (shipped)** | 2.825 | 56.5% | **1/35** | **52.1%** |
+| recall e5-large | 2.350 | 47.6% | 2/35 | 43.2% |
+| regression e5-small | 0.600 | 55.3% | 1/35 | 50.8% |
+| regression e5-large | 1.150 | 30.3% | **6/35** | 25.6% |
+
+**Harder gating is available: 89% → 52% weighted, a 38% cut in scoring cost, for ~1 needle in
+35.** No change recommended — the ruling's premise (no Stage-2 cost constraint claimed) is
+intact, and buying FN risk for a saving nobody needs is a bad trade under ADR-023.
+
+⭐ **Three findings that make this more than a restatement.**
+1. **A better ranker does not buy a safer screen** — regression e5-small ranks far better
+   (AUC 0.9035 vs 0.8710) and lands on the same screen (55.3%/1FN vs 56.5%/1FN).
+2. **89% is not slack.** Needle-ness is the 4.80% *base rate*; screen tightness is set by the
+   *ranker's quality*. Demanding near-zero FN at AUC 0.87 forces a permissive threshold.
+3. ⛔ **Tightening has a non-compute cost nobody had written down.** A screened-out row's
+   **published scores and tier are the probe's**. Going 89% → 52% takes the corpus share
+   scored by the weaker instrument from **11% to 48%** — and the shipped probe is inflated
+   **+1.98** with per-dim MAE **3.4×** the student's. Any tightening must be paired with a
+   regression probe, which removes the inflation.
+
+⭐ **Break-even routing is 52.7%.** Below it the two-stage design wins on cost; above it
+e5-large-alone does. The adopted 89% sits well above — **which is the only reason
+e5-large-alone looked competitive in EXP-018/019 at all.**
+
+⛔⛔ **AND IT CORRECTS EXP-019, WHICH I OVERSTATED.** I reported ADR-011's floor-collapse
+prediction as *"did not hold"*. **It holds.** As a *scorer* regression does not collapse; as
+a *screen*, regression e5-large drops **6 of 35 positives** at 30.3% routing — exactly as
+ADR-011 describes. A probe can be the better scorer and the worse screen, and carrying a
+verdict between the roles is the error I made.
+
 ## ▶ NEXT
 
 **Phase 8 — and it is a VALUES call, not a pass/fail.** The question is *how much agreed-good

@@ -420,6 +420,7 @@ because a passing integrity check also passes when the check is off:
 | `arms_as_rankers.json` | the scale-free comparison: Spearman, discordance, AUC, AP, recall at matched flag count |
 | `compare_arms_as_rankers.py` | the script that produced it — committed so the numbers above are reproducible |
 | `script_routing_gap.py`, `routing_gap.txt` | the Latin/non-Latin routing test and the rule-of-three bounds |
+| `GATING_DECISION.md` | ⭐ **should the screen gate harder?** The trade measured — 52% routing costs ~1 needle in 35, and the non-compute cost nobody had written down |
 | `MULTILINGUAL_REALITY.md` | ⭐ **is the probe actually multilingual?** Three layers, three answers — and the truncation asymmetry that hits the STUDENT hardest |
 | `scripts/` | the two tokenizer analyses behind it, with their measured results in the headers |
 | `IS_THE_PROBE_ENOUGH.md` | ⭐ **could the e5 probe replace the student?** No — measured; it barely beats v7 on the #107 distinction |
