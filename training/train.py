@@ -238,7 +238,7 @@ class FilterModel(torch.nn.Module):
         return outputs
 
 
-def compute_metrics(predictions: torch.Tensor, labels: torch.Tensor, dimension_names: List[str], dimension_weights: List[float] = None) -> Dict:
+def compute_metrics(predictions: torch.Tensor, labels: torch.Tensor, dimension_names: List[str], dimension_weights: List[float] = None, medium_threshold: float = 4.0) -> Dict:
     """
     Compute evaluation metrics per dimension.
 
@@ -281,7 +281,11 @@ def compute_metrics(predictions: torch.Tensor, labels: torch.Tensor, dimension_n
         pred_wa = (predictions * w).sum(dim=1)
         true_wa = (labels * w).sum(dim=1)
         n = int(pred_wa.shape[0])
-        MEDIUM = 4.0  # medium/surfacing tier boundary (base_scorer TIER_THRESHOLDS)
+        # Medium/surfacing boundary. Read from the filter's config by main() --
+        # it is NOT 4.0 for every filter (solutions 2.25, nature_recovery v4 3.75,
+        # investment_risk v6 4.25, uplifting v7 / human_thriving v8 4.5). The 4.0
+        # default preserves the old behaviour for direct callers only.
+        MEDIUM = medium_threshold
 
         # Recall@k: overlap of top-k predicted with top-k true, divided by k
         # ("finds X% of the top-k articles" — v1/STATUS.md definition).
@@ -336,6 +340,7 @@ def train_epoch(
     dimension_names: List[str],
     use_sample_weights: bool = False,
     dimension_weights: List[float] = None,
+    medium_threshold: float = 4.0,
 ):
     """Train for one epoch."""
     model.train()
@@ -396,13 +401,13 @@ def train_epoch(
     avg_loss = total_loss / len(dataloader)
     all_predictions = torch.cat(all_predictions, dim=0)
     all_labels = torch.cat(all_labels, dim=0)
-    metrics = compute_metrics(all_predictions, all_labels, dimension_names, dimension_weights)
+    metrics = compute_metrics(all_predictions, all_labels, dimension_names, dimension_weights, medium_threshold)
     metrics["loss"] = avg_loss
 
     return metrics
 
 
-def evaluate(model, dataloader, device, dimension_names: List[str], dimension_weights: List[float] = None):
+def evaluate(model, dataloader, device, dimension_names: List[str], dimension_weights: List[float] = None, medium_threshold: float = 4.0):
     """Evaluate model on validation/test set."""
     model.eval()
 
@@ -436,7 +441,7 @@ def evaluate(model, dataloader, device, dimension_names: List[str], dimension_we
     avg_loss = total_loss / len(dataloader)
     all_predictions = torch.cat(all_predictions, dim=0)
     all_labels = torch.cat(all_labels, dim=0)
-    metrics = compute_metrics(all_predictions, all_labels, dimension_names, dimension_weights)
+    metrics = compute_metrics(all_predictions, all_labels, dimension_names, dimension_weights, medium_threshold)
     metrics["loss"] = avg_loss
 
     return metrics
@@ -619,14 +624,23 @@ def main():
     if args.use_head_tail:
         print(f"Head+tail extraction enabled: {args.head_tokens} + {args.tail_tokens} tokens")
 
-    # Extract dimension weights from config for sample weighting
-    dimension_weights_list = None
+    # Dimension weights, ALWAYS built: compute_metrics needs them for the needle
+    # metrics (recall_at_k / recall_medium / NDCG), and --sample-weight-scale needs
+    # them only when > 0. Gating this on the scale left val_metrics without
+    # recall_at_20, so --select-metric fell through to aggregate MAE -- the metric
+    # ADR-023 forbids ranking on, on corpora that are ~85-95% floor.
+    dimension_weights_list = [
+        config["scoring"]["dimensions"][dim].get("weight", 1.0 / len(dimension_names))
+        for dim in dimension_names
+    ]
     if args.sample_weight_scale > 0:
         print(f"Sample weighting enabled: scale={args.sample_weight_scale}")
-        dimension_weights_list = [
-            config["scoring"]["dimensions"][dim].get("weight", 1.0 / len(dimension_names))
-            for dim in dimension_names
-        ]
+
+    # The surfacing boundary is per-filter, not a constant (see compute_metrics).
+    medium_threshold = float(
+        (config.get("scoring", {}).get("tiers", {}).get("medium", {}) or {}).get("threshold", 4.0)
+    )
+    print(f"Needle metrics at MEDIUM+ threshold: {medium_threshold} (from config scoring.tiers.medium)")
 
     train_dataset = FilterDataset(
         args.data_dir / "train.jsonl",
@@ -666,6 +680,7 @@ def main():
 
     # Load or initialize model
     start_epoch = 0
+    selection_metric_available = False  # set True once a needle metric is actually computed
     if args.resume_from:
         print(f"\nResuming from checkpoint: {args.resume_from}")
 
@@ -793,6 +808,7 @@ def main():
             dimension_names,
             use_sample_weights=args.sample_weight_scale > 0,
             dimension_weights=dimension_weights_list,
+            medium_threshold=medium_threshold,
         )
 
         print(f"\nTraining metrics:")
@@ -801,7 +817,7 @@ def main():
         print(f"  RMSE: {train_metrics['rmse']:.4f}")
 
         # Validate
-        val_metrics = evaluate(model, val_dataloader, device, dimension_names, dimension_weights_list)
+        val_metrics = evaluate(model, val_dataloader, device, dimension_names, dimension_weights_list, medium_threshold)
 
         print(f"\nValidation metrics:")
         print(f"  Loss: {val_metrics['loss']:.4f}")
@@ -828,6 +844,8 @@ def main():
         # gate penalizes over-demoting/missing positives. Falls back to MAE if the
         # chosen metric is absent (no dimension weights).
         val_recall = val_metrics.get(args.select_metric)
+        if val_recall is not None:
+            selection_metric_available = True
         if val_metrics["mae"] < best_val_mae:
             best_val_mae = val_metrics["mae"]
         if val_recall is not None:
@@ -893,6 +911,9 @@ def main():
         "head_tokens": args.head_tokens if args.use_head_tail else None,
         "tail_tokens": args.tail_tokens if args.use_head_tail else None,
         "sample_weight_scale": args.sample_weight_scale,
+        "select_metric": args.select_metric,
+        "select_metric_available": selection_metric_available,
+        "medium_threshold": medium_threshold,
     }
 
     metadata_path = args.output_dir / "training_metadata.json"
