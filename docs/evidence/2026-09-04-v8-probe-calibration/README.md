@@ -421,6 +421,7 @@ because a passing integrity check also passes when the check is off:
 | `arms_as_rankers.json` | the scale-free comparison: Spearman, discordance, AUC, AP, recall at matched flag count |
 | `compare_arms_as_rankers.py` | the script that produced it — committed so the numbers above are reproducible |
 | `script_routing_gap.py`, `routing_gap.txt` | the Latin/non-Latin routing test and the rule-of-three bounds |
+| `IS_THE_PROBE_ENOUGH.md` | ⭐ **could the e5 probe replace the student?** No — measured; it barely beats v7 on the #107 distinction |
 | `PREDEPLOY_PARITY.md` | ⭐ **v8's scorer compared part-by-part against the five deployed packages** — what is missing, what is deliberate, and the two invariants it found unguarded |
 | `PHASE_C_REVIEW.md` | ⭐ **the review of this whole phase** — what worked, the void fleet comparison, and the Phase 8 trade-off table |
 | `phase_c_outcome.py`, `.json`, `.txt` | the analysis behind it, committed so every number reproduces |
