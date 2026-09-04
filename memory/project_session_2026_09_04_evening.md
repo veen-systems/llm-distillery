@@ -250,6 +250,48 @@ AUC 0.9016 against 0.9474. **Right answer, wrong reasoning.**
 gpu-server. The rejection rests on that one number, so it is also the one measurement that
 would reopen it.
 
+## ⭐⭐ EXP-019 — the owner's question, asked properly: is the student needed at all?
+
+**Owner: *"people keep telling me I do not need this student on top of a vectorizer with just
+an MLP head. But that is not proven not to be true."* They were right, and the framing was the
+correction.** Every probe I had compared was trained as a **screen** (`--objective recall`),
+which optimises the weighted average as a binary classifier and supervises the six dimensions
+through an auxiliary L1 weighted **0.1**. Judging that on AUC and concluding the student is
+necessary is close to a strawman.
+
+| arm | AUC | AP | ΔAUC vs student (paired bootstrap) |
+|---|---|---|---|
+| probe recall, e5-small | 0.8710 | 0.3779 | +0.0778 [+0.0281, +0.1416] |
+| probe recall, e5-large | 0.9016 | 0.4972 | +0.0480 [+0.0064, +0.0962] |
+| **probe REGRESSION, e5-small** | **0.9035** | 0.4055 | **+0.0452 [+0.0113, +0.0883]** |
+| probe REGRESSION, e5-large | 0.9021 | **0.5209** | +0.0468 [+0.0091, +0.0860] |
+| student, calibrated | **0.9488** | **0.5648** | — |
+
+⭐ **The objective mattered more than the encoder.** Regression lifts e5-**small** past
+e5-large's recall-trained score at **1/7th the compute**; with regression, e5-large buys
+**nothing** on AUC. It also removes the inflation: per-dim MAE **2.073 → 0.762**, bias
+**+1.699 → −0.298** (student 0.614, ~0).
+
+**Verdict by the rule fixed before the run** (*replacement requires the CI on ΔAUC to include
+zero*): **all four fail — the student is not replaceable on this evidence.** ⚠️ But the honest
+framing is a **trade**: the student finds **~6 more of 35 positives at every surfacing
+volume** — 17% of the positive set — for **11.7×** the compute. Editorial, not statistical.
+
+⛔ **A documented prediction did not hold.** `train_probe.py` and ADR-011 warn regression
+*"will likely collapse to a floor predictor"* below 25% positives; at 4.7% it did not, and beat
+the recall probe by 3.25 AUC points. ⚠️ **This does not refute ADR-011** — its claim is about
+regression **as a screen**, where collapse means unrecoverable Stage-1 false negatives, and
+this tested it **as a scorer** without selecting a threshold. That claim remains untested.
+
+⛔ **And it corrects my own observation from an hour earlier.** I had noted the student on GPU
+(43.7 ms) beating the probe on CPU (47.2 ms) and concluded the two-stage design saves nothing.
+That was the wrong device. **On GPU: e5-small 3.74 ms, e5-large 26.79, student 43.70** — the
+probe is 11.7× cheaper. ⚠️ The screen still barely earns its keep at the **adopted** threshold,
+for a different reason: routing ~89% gives 42.6 ms against 43.7 all-student, a **2.5%** saving
+(at the probe's own 2.825, routing 52%, it would be ~26.5 ms). The hold-near-pass-through
+ruling is what makes the screen nearly free of benefit — knowingly, since no Stage-2 cost
+constraint was claimed.
+
 ## ▶ NEXT
 
 **Phase 8 — and it is a VALUES call, not a pass/fail.** The question is *how much agreed-good

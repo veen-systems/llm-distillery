@@ -1,0 +1,71 @@
+{
+  "n": 660,
+  "n_positives": 35,
+  "bootstrap_whole_split": {
+    "student cal vs probe e5-small": {
+      "delta": 0.07808197942857144,
+      "lo": 0.028524571428571413,
+      "hi": 0.14061828571428583,
+      "p_le_0": 0.0003,
+      "n_resamples": 10000
+    },
+    "student cal vs probe e5-LARGE": {
+      "delta": 0.047405238857142866,
+      "lo": 0.006809142857142758,
+      "hi": 0.09750857142857139,
+      "p_le_0": 0.0095,
+      "n_resamples": 10000
+    },
+    "student raw vs probe e5-LARGE": {
+      "delta": 0.04547147885714286,
+      "lo": 0.006124571428571433,
+      "hi": 0.09366857142857132,
+      "p_le_0": 0.0097,
+      "n_resamples": 10000
+    }
+  },
+  "per_dimension": {
+    "human_wellbeing_impact": {
+      "probe_mae": 3.4232817412139425,
+      "student_mae": 0.6436035262427727,
+      "ratio": 5.318929436571564,
+      "probe_bias": 3.351799661551389
+    },
+    "social_cohesion_impact": {
+      "probe_mae": 1.7146754137829578,
+      "student_mae": 0.5329095334247478,
+      "ratio": 3.2175731643672827,
+      "probe_bias": 1.430672063604268
+    },
+    "justice_rights_impact": {
+      "probe_mae": 1.741229707549124,
+      "student_mae": 0.46194294091285626,
+      "ratio": 3.769361003998111,
+      "probe_bias": 1.594981479107539
+    },
+    "evidence_level": {
+      "probe_mae": 1.6650826382585007,
+      "student_mae": 0.7561071520211299,
+      "ratio": 2.2021781354767147,
+      "probe_bias": 0.7707839459786271
+    },
+    "benefit_distribution": {
+      "probe_mae": 2.0462481947251523,
+      "student_mae": 0.5956315688173157,
+      "ratio": 3.435426028187486,
+      "probe_bias": 1.6707897404121625
+    },
+    "change_durability": {
+      "probe_mae": 1.846430814978426,
+      "student_mae": 0.6949132521704472,
+      "ratio": 2.6570666327220027,
+      "probe_bias": 1.3722433668464602
+    }
+  },
+  "weighted_average": {
+    "probe_mae": 2.1365717679788054,
+    "probe_signed_error": 1.9809154067184491,
+    "student_mae": 0.5416075965366492,
+    "student_signed_error": -0.007097959878641322
+  }
+}

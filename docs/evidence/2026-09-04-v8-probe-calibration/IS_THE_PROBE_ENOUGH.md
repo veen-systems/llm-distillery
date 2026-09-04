@@ -181,3 +181,103 @@ here under ~0.05 AUC is inside the noise I named before running.
 ⚠️ e5-large selected a **different threshold** (2.350, val stage-2 rate 0.480) against
 e5-small's 2.825/0.591, and reached a better val BCE (0.8953 vs 0.9611). Neither was adopted;
 the shipped probe is unchanged.
+
+---
+
+# EXP-019 — the fair test: a probe trained AS A SCORER (2026-09-04)
+
+**Raised by the owner, and the framing was the correction.** Everything above compares
+probes trained as **screens** (`--objective recall`) — an objective that optimises the
+weighted average as a binary MEDIUM+ classifier through class-weighted BCE, and supervises
+the six dimensions only through an auxiliary L1 weighted **0.1**. Judging that on AUC and
+concluding the student is necessary is close to a strawman. *"Vectorizer + MLP head"*, as
+people actually propose it, means a probe trained to **regress the dimensions**.
+
+**$0. GPU.** One variable: same corpus, splits, `--seed 42`; `--objective regression`.
+
+## Result
+
+| arm | AUC | AP | disputed rows | ΔAUC vs student, paired bootstrap |
+|---|---|---|---|---|
+| probe recall, e5-small | 0.8710 | 0.3779 | 0.7517 | +0.0778 [+0.0281, +0.1416] |
+| probe recall, e5-large | 0.9016 | 0.4972 | 0.8169 | +0.0480 [+0.0064, +0.0962] |
+| **probe REGRESSION, e5-small** | **0.9035** | 0.4055 | 0.7851 | **+0.0452 [+0.0113, +0.0883]** |
+| **probe REGRESSION, e5-large** | 0.9021 | **0.5209** | 0.7962 | +0.0468 [+0.0091, +0.0860] |
+| student, calibrated | **0.9488** | **0.5648** | **0.8521** | — |
+
+**The objective mattered more than the encoder.** Regression lifts e5-**small** from 0.8710
+to **0.9035** — past e5-large's recall-trained 0.9016, at **1/7th the compute**. And with the
+regression objective, e5-large buys **nothing** on AUC (0.9021 vs 0.9035); only AP improves.
+
+⭐ **It also fixes the inflation**, which is what the objective was always going to do:
+
+| | recall e5-small | regression e5-small | regression e5-large | student |
+|---|---|---|---|---|
+| per-dimension MAE | 2.073 | **0.762** | **0.692** | 0.614 |
+| per-dimension bias | **+1.699** | −0.298 | −0.168 | ~0 |
+
+## The verdict, against a decision rule fixed before the run
+
+**H-V8-17 stated: replacing the student requires the paired bootstrap CI on ΔAUC to INCLUDE
+ZERO — not merely a small point difference.** In all four probe configurations the CI
+**excludes** zero. By the pre-registered rule, **the student is not replaceable on this
+evidence.**
+
+⚠️ **But the owner's scepticism was substantially justified, and the honest framing is a
+trade rather than a refutation.** What the student buys, at every surfacing volume:
+
+| rows flagged | probe finds | student finds | **lost** |
+|---|---|---|---|
+| 17 | 6 | 12 | **6** |
+| 26 | 12 | 16 | 4 |
+| 35 | 13 | 19 | **6** |
+| 50 | 17 | 23 | **6** |
+| 80 | 23 | 29 | **6** |
+
+**~6 of 35 positives — a consistent 17% of the positive set — for 11.7× the compute**
+(GPU: probe 3.74 ms/article, student 43.7 ms). Whether that trade is worth making is an
+editorial decision, not a statistical one. The statistics only say the difference is real.
+
+## ⛔ A documented prediction that did NOT hold
+
+`train_probe.py` emits, and ADR-011 asserts: *"Only 4.7% MEDIUM+ positives — this looks like
+a needle filter. Regression will likely collapse to a floor predictor and drop positives."*
+**It did not collapse.** The regression probe beat the recall probe on AUC by 3.25 points.
+
+⚠️ **This does not refute ADR-011, and the distinction matters.** ADR-011's claim is about
+using regression **as a screen**, where floor-collapse means unrecoverable false negatives at
+Stage 1. This experiment used it **as a scorer** and never picked a screening threshold. Both
+can be true: good at ordering, bad at not-missing. **Testing the screen claim needs an
+FN@MEDIUM+ measurement at a selected threshold, which was not done here.**
+
+## Prediction scoring
+
+I predicted regression would beat recall on AUC and AP and still fall short of the student,
+and said in advance I would not treat a small shortfall as vindication. **Both halves held**
+— unlike EXP-018 the same evening, where my mechanism claim was substantially wrong. ⚠️ The
+shortfall is 0.045 AUC and it is resolved, so "falls short" is the correct verb; "the student
+is clearly necessary" is not.
+
+## GPU timing, same machine, same 660 articles, model load excluded
+
+| | ms/article |
+|---|---|
+| e5-small, GPU | **3.74** |
+| e5-large, GPU | 26.79 |
+| student, GPU | 43.70 |
+| e5-small, CPU | 47.2 |
+| e5-large, CPU | 511.2 |
+
+⚠️ **This corrects an earlier observation in this file.** I noted that the student on GPU
+(43.7 ms) beat the probe on CPU (47.2 ms) and concluded the two-stage design saved nothing.
+That was an artefact of running the probe on the wrong device. On GPU the probe is **11.7×**
+cheaper than the student.
+
+⚠️ **But the screen still barely earns its keep at the adopted threshold**, for a different
+reason: routing is ~89%, so two-stage costs 3.74 + 0.89 × 43.7 ≈ **42.6 ms** against 43.7 ms
+for student-on-everything — a **2.5%** saving. At the probe's own selected 2.825 (routing
+~52%) it would be ~26.5 ms, a 39% saving. **The hold-near-pass-through ruling is what makes
+the screen nearly free of benefit** — a cost the ruling knowingly accepted, since no Stage-2
+cost constraint was claimed.
+
+⚠️ b650-gpu, not gpu-server. Ratios should travel; absolute numbers may not.

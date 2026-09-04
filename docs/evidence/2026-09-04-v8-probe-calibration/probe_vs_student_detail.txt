@@ -1,0 +1,22 @@
+n=660  positives=35  disputed rows=117
+
+1. PAIRED BOOTSTRAP — is the difference resolvable at this n?
+   student cal vs probe e5-small    ΔAUC +0.0781  CI [+0.0285,+0.1406]  P(Δ<=0)=0.000  RESOLVED
+   student cal vs probe e5-LARGE    ΔAUC +0.0474  CI [+0.0068,+0.0975]  P(Δ<=0)=0.009  RESOLVED
+   student raw vs probe e5-LARGE    ΔAUC +0.0455  CI [+0.0061,+0.0937]  P(Δ<=0)=0.010  RESOLVED
+
+2/3. PER-DIMENSION vs the oracle — the probe's are PUBLISHED for stage1_low rows
+   dimension                   probe MAE  student MAE   ratio  probe bias
+   human_wellbeing_impact          3.423        0.644    5.32x      +3.352
+   social_cohesion_impact          1.715        0.533    3.22x      +1.431
+   justice_rights_impact           1.741        0.462    3.77x      +1.595
+   evidence_level                  1.665        0.756    2.20x      +0.771
+   benefit_distribution            2.046        0.596    3.44x      +1.671
+   change_durability               1.846        0.695    2.66x      +1.372
+
+   weighted average:  probe MAE 2.137 (signed +1.981)   student MAE 0.542 (signed -0.007)
+   ⛔ The probe's WA is NOT better than its per-dim scores — it is biased HIGH,
+      which the screen absorbs (the threshold was picked on this same scale)
+      and the PUBLISHED stage1_low scores do not.
+
+Wrote docs/evidence/2026-09-04-v8-probe-calibration/probe_vs_student_detail.json
