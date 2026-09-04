@@ -125,3 +125,52 @@ def test_probe_output_dim_matches_the_filters_dimension_count(pkg):
         f"{n_dims} dimensions. EmbeddingStage would weight the wrong slots and Stage 1 "
         f"would screen on a meaningless number."
     )
+
+
+@pytest.mark.parametrize("pkg", _packages(), ids=lambda p: f"{p.parent.name}/{p.name}")
+def test_stage1_threshold_stays_below_the_gatekeeper_cap(pkg):
+    """⛔ THE STAGE-1 SCREEN SKIPS THE GATEKEEPER, AND ITS SAFETY ARGUMENT IS UNGUARDED.
+
+    `hybrid_scorer.py`'s Stage-1-LOW branch does not apply the evidence gatekeeper, and says
+    why in a comment: *"This is safe because the Stage 1 threshold (e.g., 2.25) is well below
+    the gatekeeper cap (3.0), so any article that would be capped by the gatekeeper already
+    falls below the threshold."*
+
+    That is an invariant stated in prose and enforced by nothing. It matters because a
+    Stage-1-LOW row does not merely get screened — the probe's number becomes the row's
+    PUBLISHED score and tier (`result["scores"] = screen.scores`, then `_assign_tier`). So if
+    the threshold were ever raised above the cap, articles the gatekeeper exists to cap would
+    be scored and tiered by the probe with the cap never applied, silently.
+
+    Measured 2026-09-04: every filter satisfies it, with margins from 1.25 (v8: 1.75 vs 3.0)
+    to 2.75 (nature_recovery v4: 0.75 vs 3.5). Nothing was violated; this stops it starting.
+    """
+    ih = pkg / "inference_hybrid.py"
+    if not ih.exists():
+        pytest.skip(f"{pkg.parent.name}/{pkg.name} ships no inference_hybrid.py")
+
+    cls = _scorer_class(pkg)
+    if cls.GATEKEEPER_DIMENSION is None or not cls.GATEKEEPER_CAP:
+        pytest.skip(f"{pkg.parent.name}/{pkg.name} has no gatekeeper — invariant N/A")
+
+    # The threshold lives in a module constant for every filter except human_thriving v8,
+    # which reads it from config.yaml (the wiring change of 2026-09-04).
+    import re
+    m = re.search(r"^DEFAULT_THRESHOLD\s*=\s*([\d.]+)", ih.read_text(encoding="utf-8"), re.M)
+    if m:
+        threshold = float(m.group(1))
+    else:
+        cfg = yaml.safe_load((pkg / "config.yaml").read_text(encoding="utf-8")) or {}
+        threshold = ((cfg.get("hybrid_inference") or {}).get("stage1") or {}).get("threshold")
+        if threshold is None:
+            pytest.fail(f"{pkg.parent.name}/{pkg.name} has an inference_hybrid.py but no "
+                        f"Stage-1 threshold in either a module constant or config.yaml — "
+                        f"the invariant cannot be checked, which is not the same as met")
+        threshold = float(threshold)
+
+    assert threshold < cls.GATEKEEPER_CAP, (
+        f"{pkg.parent.name}/{pkg.name}: Stage-1 threshold {threshold} is NOT below the "
+        f"gatekeeper cap {cls.GATEKEEPER_CAP}. Stage 1 skips the gatekeeper on the argument "
+        f"that anything it would cap already falls below the threshold — that argument is "
+        f"now false, and Stage-1-LOW rows publish an uncapped probe score AND tier."
+    )
