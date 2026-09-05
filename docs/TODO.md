@@ -20,6 +20,106 @@
 · **6 Training ✅** · **6b Probe ✅ 2026-09-04** · **7 Calibration ✅ 2026-09-04**
 · **8 Testing ⛔ NEXT** · 9 Deployment ⛔.
 
+## ▶ START HERE — two decisions are owed, both the owner's
+
+1. ⛔⛔ **THE PHASE-8 OP-POINT, on the CALIBRATED scale.** It is a **values** call, not a
+   technical one, and the detail is under *Read before touching phase 8* immediately below.
+   The trade on held-out data, raw arm — junk removed / good kept: **3.00 → 62.1% / 90.0% ·
+   4.00 → 82.8% / 73.3% · 4.50 → 90.8% / 56.7% · 5.00 → 96.6% / 23.3%**. Under ADR-023 the
+   inherited 4.5 is defensible and possibly right.
+2. ⚠️ **Do the eleven rescued probes go into git?** They were one reboot from gone in
+   `b650-gpu:/tmp` and now sit in `~/llm-distillery/rescued_probes/`, out of version control.
+   Manifest with sha256s: `docs/evidence/2026-09-05-scorer-device-throughput/`
+   `rescued_probes_manifest.txt`. **7.0 MiB** across eleven files; they are what makes EXP-018/019
+   reproducible. **Not decided, and not something to do silently.**
+
+⭐ **Nothing measured on 2026-09-04/05 moves the op-point.** The cost work (`EXP-021`,
+`EXP-022`, `EXP-023`) confirms there is still **no Stage-2 cost constraint**, which is what
+both the gating ruling and the *is the probe enough* answer turned on. The session history
+that established that has moved BELOW the action items — it was sitting between this heading
+and the instructions, which is backwards for a file whose job is to say what to do first.
+
+### ⛔ Read before touching phase 8
+
+1. ✅ **SCOREABLE — on `b650-gpu` only.** `base_scorer.py`, `inference.py`,
+   `inference_hybrid.py`, `probe/embedding_probe_e5small.pkl` and `calibration.json` all exist.
+   The weights do not (see 2), so a fresh clone loads the package and cannot run the student.
+2. **The weights are NOT in this repo** (gitignored, #97). Epoch 4 of 6 lives at
+   `b650-gpu:~/llm-distillery/filters/human_thriving/v8/model/`, with the MAE-selected arm kept
+   at `model_baseline_mae/`. Provenance is the committed `training_{history,metadata}.json`.
+   The 660-row raw-logit dump is at `b650-gpu:~/llm-distillery/ht_v8_test_dump/` so the 16-min
+   CPU pass need not be repeated.
+3. ⛔⛔ **THE OP-POINT IS THE PHASE-8 DECISION, and it is a VALUES call, not a technical one.**
+   4.5 is not a neutral carry-over: **4.5 calibrated is a stricter bar than 4.5 raw** (17 test
+   rows flagged where raw flags 26). The trade, held-out, raw arm — junk removed / good kept:
+   **3.00 → 62.1% / 90.0% · 4.00 → 82.8% / 73.3% · 4.50 → 90.8% / 56.7% · 5.00 → 96.6% /
+   23.3%**. ⭐ **Under ADR-023 the inherited 4.5 is defensible and possibly right**: moving to
+   4.0 buys 5 good articles and lets 7 junk ones back through, which is the wrong direction
+   when *"a false positive costs a reader and a false negative costs nothing visible"*. **The
+   low recall is the cheap error, deliberately chosen.** Decide on the **calibrated** scale.
+4. ✅ **PHASE C DID WORK — the number to judge it by was never aggregate recall** (reviewed
+   2026-09-04, **EXP-017**, `docs/evidence/2026-09-04-v8-probe-calibration/PHASE_C_REVIEW.md`).
+   Of the **87** test rows `uplifting v7` surfaced that the v8 oracle demotes, the student
+   removes **79 (90.8%) raw / 82 (94.3%) calibrated**, with AUC on the 117 disputed rows
+   **0.8454 / 0.8521 against v7's own 0.7218** — it learned a distinction v7 lacked, not just
+   a lower scale. Cost: of the **30** rows both definitions call positive it keeps **17
+   (56.7%) raw / 12 (40.0%) calibrated**.
+5. ⛔⛔ **NEVER SET v8's RECALL BESIDE THE FLEET'S 0.59–0.72. The comparison is VOID.** v7 and
+   v8 do not share a positive class: same 660 rows, v7 says **117**, v8 says **35**, they agree
+   on **30** — Jaccard **0.246**. Recall is conditional on the true class, so it survives a
+   change of base RATE and not a change of DEFINITION. The figures are right (raw **0.486** /
+   calibrated **0.343** at 4.5); only the comparison was wrong, and it was repeated on six
+   surfaces before being caught. ⚠️ Also always name the DEVICE: EXP-015's **0.514** was
+   b650-CUDA, this is CPU, one article apart.
+4. ⛔⛔ **The checkpoint was produced by no commit on a branch** (trained under `0697f5a`, amended
+   into `1878e7b`; tag `exp-015-training-code` keeps it from gc). **Decision owed before phase
+   9: retrain under a real commit, or record the exception.** Recommended: fold the retrain into
+   whatever phase 6b/7 concludes, so the artifacts are written once — a retrain now invalidates
+   the committed provenance for nothing, and seed 42 is not bit-reproducible on CUDA anyway.
+5. ⚠️ **The epoch was chosen by a TIE-BREAK, not a metric** — `recall_medium` saturates at 0.5806
+   across epochs 4/5/6 (#144). The two arms are **not distinguishable** on test.
+
+### Two training-side levers, both untested for v8 (H-V8-15)
+
+⭐ **Now the live option, because 6b/7 did NOT move recall** (finding 4, *PHASE C DID WORK*, under *Read before touching phase 8*): the probe is
+recall-safe and the calibration is a monotone rescale, so neither touches the number. The
+cheaper move first is the op-point re-derivation in phase 8; these are what remains after it.
+**Do not run them together** — one variable at a time.
+
+- **Clamp 0→1.0 targets.** v7's own record: unclamped/3 epochs MAE 0.96, clamped/6 epochs 0.78 on
+  a similarly zero-inflated distribution. ⚠️ **That was an MAE argument, which ADR-023 forbids
+  ranking on** — re-judge on recall/specificity. There is **no clamping in `train.py` today.**
+- **`--use-head-tail`.** Content median is 2,331 chars against a ~2,000-char 512-token window, so
+  a real fraction of every article is truncated away.
+
+### Before `prepare_data.py` runs (kept — applies to any re-prepare)
+
+1. **Use `labels_v84_merged.jsonl`**, not `labels_k3.jsonl` — 456 above-op rows corrected under
+   v8.4, per-row `prompt_hash`. The k=3 file is untouched, so this is reversible.
+2. ⛔ **`--filter` picks the analysis field from `filter.name`.** Point it at v7 and it writes
+   **0 examples to all three splits, prints COMPLETE and exits 0.** v8's config says
+   `filter.name: human_thriving`.
+3. ⚠️ **The probe's positive base rate is 4.80%**, not 6.92% and not production's 7.74%. Phase 6b
+   set `--objective recall` against it; the realised train rate was **4.7% (250/5268)**.
+4. ⚠️ **The prompt is `prompt-v8-4.md`, not `prompt-compressed.md`** — `load_filter_spec` derives
+   the latter from `config.yaml`. Resolve at phase 9 **by copying, never renaming**: 6,586 labels
+   record the old path as provenance. Lineage: `filters/human_thriving/v8/PROMPTS.md`.
+
+### Three owner items, none blocking phase 6
+
+- **The phase-3 mRNA row** demoted 5.13 → 0.52 and probably should not have — a Moderna/Merck
+  personalised cancer vaccine result with patients and a measured reduction in recurrence, which
+  is not the preclinical class-B shape. Row and scores in
+  `datasets/scored/human_thriving_v8/v8_4/comparison.json`.
+- **#142 — the train/test overlap** on the adverse suite: 7 of 18 rows are designated hard
+  negatives *and* Gate B-A judges against them. **Six benchmark candidates wait on it**, two of
+  them Greek against a 16/18-English suite (#141).
+- **#143 — the convict-relief ruling is RULED but UNEXECUTED**; its clause is inert alone and
+  breaks the #91 origin row in combination. Suggested for v9, not a v8.1 patch.
+
+
+---
+
 ### What the third session of 2026-09-04 settled — four questions, none of them phase 8
 
 ⭐ **Phase 8 is unchanged and still next.** These were owner questions raised alongside it; all
@@ -155,83 +255,6 @@ never **asserted**, so an all-arms wrapper would have re-created #146 and exited
 ⛔ **The mechanical battery was green throughout and found none of it. Four of the six came
 from a reviewer going and looking on the machine.**
 
-### ⛔ Read before touching phase 8
-
-1. ✅ **SCOREABLE — on `b650-gpu` only.** `base_scorer.py`, `inference.py`,
-   `inference_hybrid.py`, `probe/embedding_probe_e5small.pkl` and `calibration.json` all exist.
-   The weights do not (see 2), so a fresh clone loads the package and cannot run the student.
-2. **The weights are NOT in this repo** (gitignored, #97). Epoch 4 of 6 lives at
-   `b650-gpu:~/llm-distillery/filters/human_thriving/v8/model/`, with the MAE-selected arm kept
-   at `model_baseline_mae/`. Provenance is the committed `training_{history,metadata}.json`.
-   The 660-row raw-logit dump is at `b650-gpu:~/llm-distillery/ht_v8_test_dump/` so the 16-min
-   CPU pass need not be repeated.
-3. ⛔⛔ **THE OP-POINT IS THE PHASE-8 DECISION, and it is a VALUES call, not a technical one.**
-   4.5 is not a neutral carry-over: **4.5 calibrated is a stricter bar than 4.5 raw** (17 test
-   rows flagged where raw flags 26). The trade, held-out, raw arm — junk removed / good kept:
-   **3.00 → 62.1% / 90.0% · 4.00 → 82.8% / 73.3% · 4.50 → 90.8% / 56.7% · 5.00 → 96.6% /
-   23.3%**. ⭐ **Under ADR-023 the inherited 4.5 is defensible and possibly right**: moving to
-   4.0 buys 5 good articles and lets 7 junk ones back through, which is the wrong direction
-   when *"a false positive costs a reader and a false negative costs nothing visible"*. **The
-   low recall is the cheap error, deliberately chosen.** Decide on the **calibrated** scale.
-4. ✅ **PHASE C DID WORK — the number to judge it by was never aggregate recall** (reviewed
-   2026-09-04, **EXP-017**, `docs/evidence/2026-09-04-v8-probe-calibration/PHASE_C_REVIEW.md`).
-   Of the **87** test rows `uplifting v7` surfaced that the v8 oracle demotes, the student
-   removes **79 (90.8%) raw / 82 (94.3%) calibrated**, with AUC on the 117 disputed rows
-   **0.8454 / 0.8521 against v7's own 0.7218** — it learned a distinction v7 lacked, not just
-   a lower scale. Cost: of the **30** rows both definitions call positive it keeps **17
-   (56.7%) raw / 12 (40.0%) calibrated**.
-5. ⛔⛔ **NEVER SET v8's RECALL BESIDE THE FLEET'S 0.59–0.72. The comparison is VOID.** v7 and
-   v8 do not share a positive class: same 660 rows, v7 says **117**, v8 says **35**, they agree
-   on **30** — Jaccard **0.246**. Recall is conditional on the true class, so it survives a
-   change of base RATE and not a change of DEFINITION. The figures are right (raw **0.486** /
-   calibrated **0.343** at 4.5); only the comparison was wrong, and it was repeated on six
-   surfaces before being caught. ⚠️ Also always name the DEVICE: EXP-015's **0.514** was
-   b650-CUDA, this is CPU, one article apart.
-4. ⛔⛔ **The checkpoint was produced by no commit on a branch** (trained under `0697f5a`, amended
-   into `1878e7b`; tag `exp-015-training-code` keeps it from gc). **Decision owed before phase
-   9: retrain under a real commit, or record the exception.** Recommended: fold the retrain into
-   whatever phase 6b/7 concludes, so the artifacts are written once — a retrain now invalidates
-   the committed provenance for nothing, and seed 42 is not bit-reproducible on CUDA anyway.
-5. ⚠️ **The epoch was chosen by a TIE-BREAK, not a metric** — `recall_medium` saturates at 0.5806
-   across epochs 4/5/6 (#144). The two arms are **not distinguishable** on test.
-
-### Two training-side levers, both untested for v8 (H-V8-15)
-
-⭐ **Now the live option, because 6b/7 did NOT move recall** (finding 4, *PHASE C DID WORK*, under *Read before touching phase 8*): the probe is
-recall-safe and the calibration is a monotone rescale, so neither touches the number. The
-cheaper move first is the op-point re-derivation in phase 8; these are what remains after it.
-**Do not run them together** — one variable at a time.
-
-- **Clamp 0→1.0 targets.** v7's own record: unclamped/3 epochs MAE 0.96, clamped/6 epochs 0.78 on
-  a similarly zero-inflated distribution. ⚠️ **That was an MAE argument, which ADR-023 forbids
-  ranking on** — re-judge on recall/specificity. There is **no clamping in `train.py` today.**
-- **`--use-head-tail`.** Content median is 2,331 chars against a ~2,000-char 512-token window, so
-  a real fraction of every article is truncated away.
-
-### Before `prepare_data.py` runs (kept — applies to any re-prepare)
-
-1. **Use `labels_v84_merged.jsonl`**, not `labels_k3.jsonl` — 456 above-op rows corrected under
-   v8.4, per-row `prompt_hash`. The k=3 file is untouched, so this is reversible.
-2. ⛔ **`--filter` picks the analysis field from `filter.name`.** Point it at v7 and it writes
-   **0 examples to all three splits, prints COMPLETE and exits 0.** v8's config says
-   `filter.name: human_thriving`.
-3. ⚠️ **The probe's positive base rate is 4.80%**, not 6.92% and not production's 7.74%. Phase 6b
-   set `--objective recall` against it; the realised train rate was **4.7% (250/5268)**.
-4. ⚠️ **The prompt is `prompt-v8-4.md`, not `prompt-compressed.md`** — `load_filter_spec` derives
-   the latter from `config.yaml`. Resolve at phase 9 **by copying, never renaming**: 6,586 labels
-   record the old path as provenance. Lineage: `filters/human_thriving/v8/PROMPTS.md`.
-
-### Three owner items, none blocking phase 6
-
-- **The phase-3 mRNA row** demoted 5.13 → 0.52 and probably should not have — a Moderna/Merck
-  personalised cancer vaccine result with patients and a measured reduction in recurrence, which
-  is not the preclinical class-B shape. Row and scores in
-  `datasets/scored/human_thriving_v8/v8_4/comparison.json`.
-- **#142 — the train/test overlap** on the adverse suite: 7 of 18 rows are designated hard
-  negatives *and* Gate B-A judges against them. **Six benchmark candidates wait on it**, two of
-  them Greek against a 16/18-English suite (#141).
-- **#143 — the convict-relief ruling is RULED but UNEXECUTED**; its clause is inert alone and
-  breaks the #91 origin row in combination. Suggested for v9, not a v8.1 patch.
 
 ### ⛔⛔ THE KEEPER — nothing stopped a guard row being drawn into its own training corpus
 `scripts/corpus/draw_v8_corpus.py` had **no exclusion for the acceptance-test rows**. The first
