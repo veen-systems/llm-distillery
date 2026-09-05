@@ -282,6 +282,17 @@ Then register the run in `experiments/registry.jsonl` and run
 `python3 scripts/verification/check_experiment_registry.py` — it rejects any metric whose
 string does not appear verbatim in a cited artifact.
 
+⚠️ **Verbatim-present is not the same as correct, and the registry checker cannot tell them
+apart.** It traces `metrics` only, never `population`, so a wrong count in `population` passes
+forever — that happened on 2026-09-05 (`sites_examined.quantified_orderings: 3` where the tool
+reported 2). Also run
+**`python3 scripts/verification/check_claim_shapes.py`**, which reads the evidence and decision
+records for four defect SHAPES: a no-difference-over-a-grid claim with no reachable range, a
+zero-width interval, a quantified ordering with no band, and an analysis reading a
+design-weighted population without its weights. Both run automatically from
+`memory/MEMORY.md`'s `<!-- verify: -->` annotations via
+`python3 scripts/verification/run_verify_annotations.py`.
+
 <details><summary>Legacy: training on gpu-server</summary>
 
 ```bash

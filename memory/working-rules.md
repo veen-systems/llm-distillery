@@ -208,8 +208,26 @@ repeating.
   pgrep rule below is the same imperative for a different instrument.
 
 - **MENTION IS NOT USE, AND EVERY TEXT-MATCHING INSTRUMENT HERE CONFUSES THEM.**
-  *(**3rd occurrence 2026-08-29**, all three inside ONE session, on three different
-  matchers — and the third was inside the guard written after the second.)*
+  *(⛔ **5th occurrence 2026-09-05 (third session) — TWICE IN ONE FILE, AND THE FIRST
+  VIOLATION WAS THE DECLARATION EXPLAINING THE RULE.** `check_design_weights` asks whether
+  an analysis reads `inclusion_probability`. **4th:** a substring test, and the first
+  `# design-weights:` declaration written under it explained the gap by *naming* the field —
+  so the check read the confession as compliance, and passed. **5th:** excluding docstrings
+  fixed that instance and not the question; a review then deleted the **only** real weight
+  read from `phase_c_outcome.py` and the check still PASSED, because the field's name
+  survived in an error message and a JSON label — while this file's docstring claimed
+  *mention is not use* was fixed and a unit test claimed to pin it. ⭐ **The generalisable
+  part is the SHAPE OF THE FIX, not the matcher: each version answered "does this file
+  contain the string" one shape more narrowly, rather than switching to "does it USE it".**
+  A fix applied to one shape of a problem and named after all of them reads as complete.
+  Now three AST shapes — a `Subscript` constant key, or a constant-string call argument
+  (an f-string is a `JoinedStr`, so an interpolated error message does not count) — with the
+  false-FAIL direction disclosed and safe. ⛔ **This rule was in `CLAUDE.md`'s always-loaded
+  layer and in this file throughout, and was violated twice anyway; the promotion has not
+  taken.** Records: `EXP-025`, commit `347a239`, `scripts/verification/check_claim_shapes.py`,
+  `tests/unit/test_claim_shapes.py`.)* *(**3rd occurrence 2026-08-29**, all three inside ONE
+  session, on three different matchers — and the third was inside the guard written after the
+  second.)*
   A document that *quotes* a token in order to explain it is indistinguishable, to a
   matcher, from one that *uses* it. `run_verify_annotations.py` counted **10** prose
   mentions of `<!-- verify: -->` as annotations — eight in `memory/gotcha-log.md`, which

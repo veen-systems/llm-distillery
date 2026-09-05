@@ -5997,6 +5997,90 @@ have committed the rewrite without noticing, because every number in the *new* d
 correct. **Correcting a document is a delete of its predecessor unless you carry the old
 values forward.**
 
+## 2026-09-05 (third session) — the guard against guards-that-examine-nothing had a root that examined nothing
+
+**Problem**: `check_claim_shapes.py` shipped with `experiments` in its JSON scan roots
+behind an `endswith(".json")` filter. `".jsonl".endswith((".json",))` is **False**, so the
+root contributed **0 files**, `experiments/registry.jsonl` — where every experiment's
+headline numbers live — was never scanned, and the `if rel.endswith(".jsonl"): continue`
+guard beneath it was **unreachable dead code**. The run printed PASS with a site count that
+silently excluded it. This is inside the file written *because* a guard that examines
+nothing reports success.
+
+**Root cause**: `.jsonl` is not a suffix of `.json` — it is the other way round. The scan
+root and its file-type filter were written in one line and neither was exercised: no test
+asserted the root contributed anything, and the aggregate site count was non-zero from the
+other roots, so nothing was visibly wrong.
+
+**Fix**: JSON-lines artifacts are now named explicitly in `JSONL_FILES` and read
+line-by-line; a missing one is CANNOT VERIFY. Proven by mutation on the real tree (M6: a
+`[0.0, 0.0]` interval added to a registry row is now caught). ⭐ **The reusable part is the
+per-root count**: emptiness was tested across all roots at once, so losing three of four
+evidence directories took a check from 7 sites to 1 and still printed PASS. Each root is
+checked separately now. **A site count is an outcome — print it per source, not in total.**
+
+## 2026-09-05 (third session) — the fix deleted the trigger instead of the defect
+
+**Problem**: a new check flagged an unbanded comparative ordering in
+`docs/evidence/2026-09-05-adr023-op-point-table/README.md` §7. I rewrote the sentence to add
+the band. The rewrite put the ordering verb on a different physical **line** from its two
+numbers, so the per-line trigger stopped matching. The site was not qualified — it became
+**invisible**. The check re-ran green, and a site count I had already published
+(`quantified_orderings: 3`) failed to reproduce.
+
+**Root cause**: the trigger was a text shape evaluated per line while the qualifier search
+ran over the paragraph. Any edit that rewraps a line can move a claim out of scope, and the
+green run afterwards is indistinguishable from a fix. Re-joined onto one line the paragraph
+**still FAILED** — the hedges I had added matched no band vocabulary — so the claim was never
+qualified at all; only its visibility changed.
+
+**Fix**: triggers are sentence-scoped (list items and table rows are their own units), and
+qualifier searches run on the flattened paragraph so a line break cannot decide a verdict.
+⭐ **The rule, which generalises past this checker: after any edit made to satisfy a checker,
+confirm the site is still EXAMINED — count sites before and after, not just the verdict.**
+Logged as the 22nd occurrence of *establish what it excludes* in `memory/working-rules.md`.
+
+## 2026-09-05 (third session) — a guard that passed on a MENTION, twice, inside its own fix
+
+**Problem**: `check_design_weights` decides whether an analysis reads the design weights.
+Version 1 was a substring test — and the first `# design-weights:` declaration written under
+it explained the gap by *naming* `inclusion_probability`, so the check read the confession as
+compliance. Version 2 excluded docstrings. Version 2 still passed when a review deleted the
+**only** real weight read from `phase_c_outcome.py`: the field's name survived in an error
+message and a JSON label. The docstring claimed *mention is not use* was fixed and a unit
+test claimed to pin it.
+
+**Root cause**: "does this file contain the string" and "does this file use it as a key" are
+different questions, and the first fix answered the first question one shape more narrowly
+rather than switching questions. Each version was tested against the instance that prompted
+it.
+
+**Fix**: `_reads_field` now requires one of three concrete AST shapes — a `Subscript` with a
+constant string key, or a constant string argument to a call (an f-string is a `JoinedStr`,
+so an interpolated error message no longer counts). The false-FAIL direction (a field name
+held in a variable) is disclosed and safe: it demands a one-line declaration from a correct
+script. ⭐ **A fix applied to one shape of a problem and named after all of them is the
+shape to watch for** — the giveaway was that the mutation record said KILLED for a mutation
+nobody had run against the file that mattered.
+
+## 2026-09-05 (third session) — a scan root, a symlink and a decode, all silently narrowing
+
+**Problem**: three ways the same checker could examine less than it appeared to. (a)
+`os.walk`'s default does not follow symlinks, so a symlinked evidence directory contributes
+zero files with no signal. (b) `errors="replace"` on a latin-1 markdown file silently drops
+`±` — a band token — turning a properly-qualified ordering into a FAIL. (c) `CODE_ROOTS`
+was the three directories that happened to hold an offender on the day it was written, so an
+unweighted rate published from `training/` or `ground_truth/` was unchecked.
+
+**Root cause**: all three are the hand-built-population failure at the level of the
+*instrument's own reach*. Each default was chosen for the tree as it stood that hour.
+
+**Fix**: `followlinks=True` with a realpath cycle guard; `Undecodable` raised and reported
+as CANNOT VERIFY rather than a lossy read; `CODE_ROOTS` widened to nine directories, with
+`filters/` deliberately excluded and the reason stated. ⭐ **And the widening was the one
+that paid**: registering the three v8 splits as design-weighted populations — `test.jsonl`
+IS the 660 drawn rows — surfaced **five analyses that were not sites at all**.
+
 ## 2026-09-05 (second session) — a comparison that could not have come out any other way
 
 **Problem**: EXP-024 published *"the gate buys nothing — B and C give identical TP at all
