@@ -1,9 +1,15 @@
 # LLM Distillery - TODO
 
-## 🔵 NEXT SESSION — **phase 8 GATE. Not "does v8 pass" — "how much good content is the last few points of junk removal worth?"**
+## 🔵 NEXT SESSION — **the ADR-021 deploy gate, on a CUDA re-score. The op-point question is CLOSED.**
 
-> **Updated 2026-09-05.** Session records: `memory/project_session_2026_09_04.md`,
-> `..._evening.md`, `..._late.md` and `memory/project_session_2026_09_05.md`.
+> ⚠️ **This heading asked "how much good content is the last few points of junk removal
+> worth?" until 2026-09-05.** That was the op-point question and the owner **ruled it**:
+> 4.50 on the calibrated scale (`docs/decisions/2026-09-05-v8-op-point.md`). Do not re-open
+> it; the sweep, the 1:1-trade argument and the design-weighted arm are all recorded there.
+
+> **Updated 2026-09-05 (third session).** Session records:
+> `memory/project_session_2026_09_04.md`, `..._evening.md`, `..._late.md`,
+> `memory/project_session_2026_09_05.md`, `..._second.md` and `..._third.md`.
 > Runs: **EXP-015** (training), **EXP-016** (probe + calibration), **EXP-017** (Phase C
 > review), **EXP-018** (e5-large), **EXP-019** (regression probes), **EXP-020** (gating),
 > **EXP-021** (production overhead), **EXP-022** (device throughput), **EXP-023** (its
@@ -19,11 +25,17 @@
 **Where we are in the RUNBOOK's nine phases:** 1 Planning ✅ · 2 Architecture ✅ (`prompt-v8-4.md`)
 · 3 Validation ✅ · 4 Prefilter ✅ N/A by ruling · 5 Training data ✅ (6,586 labels, 456 corrected)
 · **6 Training ✅** · **6b Probe ✅ 2026-09-04** · **7 Calibration ✅ 2026-09-04**
-· **8 Testing — op-point ✅ RULED 2026-09-05 (4.50 calibrated), gate run ⛔ NEXT** · 9 Deployment ⛔.
+· **8 Testing — op-point ✅ RULED 2026-09-05 (4.50 calibrated), smoke ✅ PASSED 2026-09-05,
+ADR-021 gate ⛔ NOT RUN ← the next action** · 9 Deployment ⛔ (v8 absent from sadalsuud's
+`NexusMind/filters/`, carries `NO_HUB`, no `ground_truth_gate.json` — verified 2026-09-05).
 ⚠️ **Phase 8 is not "done" because its decision is made.** What remains is the deploy-gate run
 itself against held-out oracle ground truth (ADR-021), which needs the weights on `b650-gpu`.
 
-## ▶ START HERE — the three owed decisions are RULED. Phase 8's op-point is settled; phase 9 is next.
+## ▶ START HERE — phase 8's op-point is RULED; the ADR-021 GATE has not run, and it is next
+
+> ⛔ **Phase 9 is NOT next, and the gate is NOT a one-liner.** Read *NEXT SESSION STARTS
+> HERE* below before running anything: the inputs the gate needs are already on disk and
+> they are the WRONG ONES (CPU, #104).
 
 > **All three ruled by the owner on 2026-09-05 (third session).** Nothing below is waiting
 > on a decision any more. Phase 8's remaining work is the deploy-gate run itself.
@@ -52,6 +64,39 @@ itself against held-out oracle ground truth (ADR-021), which needs the weights o
 > probes.
 >
 > ✅ **#139 CLOSED.** The shipped filter was never broken; the test harness was.
+
+### ▶ NEXT SESSION STARTS HERE — the ADR-021 deploy gate, and step 1 is NOT the gate
+
+⛔ **Do not run the gate on the CPU dumps, even though they are on disk and it would work.**
+`ground_truth_gate.py` needs only `--labels datasets/training/human_thriving_v8/test.jsonl`
+and a scored dump, and both exist — which is exactly the trap. The dumps in
+`/tmp/dump_readme_test2/` (and `b650-gpu:~/llm-distillery/ht_v8_test_dump/`) are the **CPU**
+pass. **A deploy gate is the one artifact that must not inherit #104's caveat**: every v8
+accuracy number is CPU-measured while production serves on GPU, and `EXP-015` measured CUDA
+giving **18 TP against CPU's 17** at 4.5. One article — and the gate's whole job is to be the
+number deployment rests on.
+
+1. **Re-score the 660-row test split on CUDA**, on b650, writing to
+   `~/llm-distillery/ht_v8_test_dump/` — ⛔ **not `/tmp`**, which is the failure this repo
+   catalogued twice on 2026-09-05. Add the sha256 to a committed manifest.
+   ⚠️ Assert the device off the object, not off the argument you passed: `EmbeddingStage`
+   caches on the model name alone and a "CPU" arm once read 2.37 ms against GPU's 2.34
+   (true CPU 42.41) because of it.
+2. **Run the gate**, letting `--config` supply the threshold so it matches what would deploy:
+   `python3 scripts/gate/ground_truth_gate.py --labels datasets/training/human_thriving_v8/test.jsonl
+   --model calibrated=<dump> --config filters/human_thriving/v8/config.yaml`
+3. ⛔ **Judge against held-out ORACLE ground truth, never against `uplifting v7`** (ADR-021).
+   And never set v8's recall beside the fleet's 0.59–0.72 — v7 and v8 do not share a positive
+   class (Jaccard **0.246** on the same 660 rows), so those are two quantities with one name.
+4. **Then Phase E**: fit `normalization.json` with `stats.raw_min` = **4.5** (the ruled
+   op-point; `test_normalization_invariant.py` enforces the equality), and check v8's
+   normalized CDF against NexusMind's enrichment gate at **4.0** — that gate reads the
+   NORMALIZED score (NM#319) and a filter whose distribution sits below it goes silently
+   un-enriched. The op-point ruling explicitly did **not** settle that.
+
+⚠️ **Only then is phase 9 reachable.** v8 is currently absent from sadalsuud's
+`NexusMind/filters/`, carries `NO_HUB`, and has no `ground_truth_gate.json` — verified
+2026-09-05.
 
 1. ✅ **THE PHASE-8 OP-POINT: 4.50 STANDS, ON THE CALIBRATED SCALE.**
    `docs/decisions/2026-09-05-v8-op-point.md`. **No code changed** — the number the runtime

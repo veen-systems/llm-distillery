@@ -143,7 +143,14 @@ both directions. It surfaced only because `git add <explicit path>` warns where
 
 ## Owed, still
 
-Nothing is waiting on an owner decision. Phase 8's remaining work is the **deploy-gate run**
-itself (ADR-021, held-out oracle ground truth), which needs the weights on `b650-gpu`.
+Nothing is waiting on an owner decision. Phase 8's remaining work is the **ADR-021 deploy
+gate** — and ⛔ **step 1 is not the gate.** Its inputs are already on disk and they are the
+wrong ones: the dumps are the **CPU** pass, which is #104's subject, and a deploy gate is the
+one artifact that must not inherit that caveat (`EXP-015`: CUDA 18 TP against CPU's 17 at
+4.5). Re-score on CUDA first, into `~/llm-distillery/ht_v8_test_dump/` rather than `/tmp`.
+Then the gate, then Phase E normalization at `raw_min` = 4.5, then the NM#319 enrichment-gate
+check the op-point ruling explicitly did not settle. Full handoff: `docs/TODO.md` § *NEXT
+SESSION STARTS HERE*.
+
 Open from this session: **#147** (Stage-1 thresholds inert on six filters, `nature_recovery
 v4` config 3.225 vs runtime 0.75) and **#104** (every op-point figure is CPU-measured).
