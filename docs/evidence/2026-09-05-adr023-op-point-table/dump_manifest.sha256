@@ -1,0 +1,30 @@
+# sha256 of the EXP-024 input dumps, as read by adr023_op_point_table.py.
+#
+# ⛔ WHAT THIS PINS AND WHAT IT DOES NOT. It pins the BYTES: a future re-fetch that
+# matches is the same data this experiment ran on. It does NOT establish which probe
+# produced each file -- that mapping rests on evidence outside this repo
+# (b650-gpu:~/llm-distillery/logs/exp019_dump.log, and each rescued pickle's own
+# metadata: probe_reg_large.pkl carries objective=regression,
+# embedding_model=intfloat/multilingual-e5-large, seed=42).
+#
+# ⚠️ The committed manifest in ../2026-09-05-scorer-device-throughput/ records
+# probe_e5large.pkl (recall) and probe_reg_large.pkl (regression) BOTH as '1024 6 mlp',
+# so it cannot tell them apart. That gap is unclosed.
+#
+# Source of record: b650-gpu:~/llm-distillery/ht_v8_test_dump/ (untracked, non-production
+# box). Verified identical on b650-gpu and in this session's fetch, 2026-09-05.
+#
+# Verify:  sha256sum -c dump_manifest.sha256   (run from the dump directory)
+#
+15e5eb10ce618ad6e8b2800dd910f01e75d15785af2688536a3fe7d6d93363d1  probe_scores_e5large.jsonl
+6ccebb40e9ce3e6d12225ac36873edb2f31a6d54b6d9b32a6d845d85630dea41  probe_scores.jsonl
+b14f94cd119aa718b932022e25deb2e122cb429589b32eb8bffebf4b89595cd9  probe_scores_reg_large.jsonl
+e605b539cbc6da69a05f5f4d89f2ecdf5e250ecc5eff4d5ef2c526ce9dc16807  probe_scores_reg_small.jsonl
+438b0d23609436a52c1b7c50cdb82d03a96e8197e4b3d7adf73bf2963eae05bb  raw_logits.jsonl
+ff3444f0295d39dc5a51f430c78e9c74201e739721d132cee3488af28f7e4496  scores_calibrated.jsonl
+eccbf8f3c392063c2cefe229f1fc8954195a01569b361608c2ec2f52e1d40eb1  scores_raw.jsonl
+95b3aad7f921a9365e50424446708b3c0905324c9e7ed372363e010e3732da0b  token_lengths.jsonl
+789775cac1a5994c06efab04cd2e38e3a9491c0d7b0d1ad776bf6c4b81e72e0c  val_rec_large.jsonl
+8b65de94dfb5f4d0f94d0803668a86d66588ab5462bdbfa44958d932187aba21  val_rec_small.jsonl
+ee43bdfe249e68acd55bf7f0f8679ffbf0541415e59a63cece50406cb31f9c87  val_reg_large.jsonl
+2043adf1debec80c7d0a35760dd48fc7ff9f364897c1738486c2faa3e666b1f0  val_reg_small.jsonl

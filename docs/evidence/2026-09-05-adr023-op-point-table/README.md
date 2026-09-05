@@ -36,6 +36,9 @@ scp b650-gpu:'~/llm-distillery/ht_v8_test_dump/*.jsonl' /tmp/dump/
     --labels datasets/training/human_thriving_v8/test.jsonl \
     --corpus datasets/scored/human_thriving_v8/corpus.jsonl \
     --out $D/adr023_op_point_table.json | tee $D/adr023_op_point_table.txt
+
+# Check you fetched the same bytes this experiment ran on:
+(cd /tmp/dump && sha256sum -c "$OLDPWD/$D/dump_manifest.sha256")
 ```
 
 ⛔ **`.venv/bin/python`, not `python3`** — the system interpreter has no `sklearn`, and this
@@ -223,12 +226,16 @@ positive mass at the widest. The unweighted "not distinguishable" is a statement
    fixed, not varied.
 5. **Matched-k is not the op-point.** It is scale-free *because* it refuses each arm's own
    threshold; it answers "at equal surfaced volume, who surfaces more junk".
-6. **The dumps' provenance is not checkable from this repo.** `probe_scores_reg_large.jsonl`
-   is untracked, has no committed hash, and the committed
+6. **The dumps are pinned; the probe→dump MAPPING still is not.** `dump_manifest.sha256`
+   now commits the sha256 of all twelve input files, verified identical on `b650-gpu` and in
+   this session's fetch, so a future re-fetch can be checked with `sha256sum -c`. ⛔ **That
+   pins the bytes, not their origin.** Which probe produced each file rests on evidence
+   outside this repo (`b650-gpu:~/llm-distillery/logs/exp019_dump.log`, and each rescued
+   pickle's own `objective` / `embedding_model` / `seed` metadata), and the committed
    `../2026-09-05-scorer-device-throughput/rescued_probes_manifest.txt` records
    `probe_e5large.pkl` (recall) and `probe_reg_large.pkl` (regression) **both** as
-   `1024 6 mlp` — so the manifest cannot tell them apart. Confirmed off-repo only, via
-   `b650-gpu:~/llm-distillery/logs/exp019_dump.log` and the rescued probe's own metadata.
+   `1024 6 mlp` — so it cannot tell them apart. **That gap is unclosed**, and the dumps
+   themselves live only in `/tmp` and an untracked home directory on a non-production box.
 7. **Duplicate ids would pass silently.** `load_scores` keeps the last row per id and the
    guard checks `len(ids) != 660` on the intersection, so a `>>`-instead-of-`>` rerun
    substitutes values with a green control.
