@@ -2,17 +2,61 @@
 # /tmp does not survive a reboot and the box had 36 days uptime, so these were one restart from gone.
 # Found only after a review pointed out that a find rooted at filters/** could not reach /tmp,
 # which is how this document came to claim the e5-large probe had never been retained.
-# Location now: b650-gpu:~/llm-distillery/rescued_probes/  -- NOT in git; committing them is an owner decision.
+# OWNER DECISION 2026-09-05: NOT git -- a PRIVATE Hugging Face repo.
+#   https://huggingface.co/jeergrvgreg/llm-distillery-probes  (private, verified private=True)
+# Rationale: llm-distillery#97 keeps model weights out of git and probes are model artifacts;
+# the Hub is the path this project already uses for them, so the git policy stays intact and
+# this manifest gets a durable address. All ELEVEN were uploaded, not just the nine absent from
+# git, so `sha256sum -c` can verify the whole set -- the two that ARE in git are marked in the
+# last column and the Hub copy is NOT the source of record for those.
+# Uploaded by scripts/deployment/upload_probes_to_huggingface.py, which sha256-verifies every
+# file against THIS manifest before sending anything and lists the repo afterwards to confirm.
+# Second copy remains at b650-gpu:~/llm-distillery/rescued_probes/.
 #
-# sha256  bytes  file  input_dim  output_dim  probe_type
-71839a8e6dcf6ab0f4eb1130606668df1284ffbfe503ee6d48d3e85006b8dad4  541033  embedding_probe_e5small.pkl 384 6 mlp
-a858655aff61d8789bca176682bbe9e176828e5a0fc97fec812faa356ffbe21f  541039  probe_belonging_v1_recall.pkl 384 6 mlp
-4f27f7442d04c8d970826cf779e6d0999562d39da3f2469626311636031c0c88  540513  probe_cultural_discovery_v5_recall.pkl 384 5 mlp
-f3f659703d30afb4e1d0f4bb0e363ba757b589e2c4cc5cd730e72e0de26923cc  1211967  probe_e5large.pkl 1024 6 mlp
-0edc174354cfd4d5befff323ab908a0f1f042018c361138541ce595a99ea50f4  541039  probe_investment_risk_v6_recall.pkl 384 6 mlp
-6a42b2c1520425848052db546b156e43f11e837b1d52e38c9f6a7f605e1dc4e9  1211809  probe_reg_large.pkl 1024 6 mlp
-f8d879fdce4e25f505503dc2b0e41f3fbe80bf054edc8b3440814315dabb1765  541089  probe_reg_small.pkl 384 6 mlp
-4a34a1dda6fd43792b217a61ffb4d1b3232f695b56ef8c059b90a703223e84dd  541144  probe_seed42.pkl 384 6 mlp
-3403fc2beda9c0e39dd7dac76ddc378e8361b76e71c5139d912280820c970e88  541144  probe_seed7.pkl 384 6 mlp
-6882021e991ccb02d31c3af357b20bc2c6ee49c90334af07623c732edd1f33d5  541039  probe_uplifting_v7_recall.pkl 384 6 mlp
-ccbebe9f0c749416827a96638a270b0e8f9da9306ec29755affe2da8c8ea9379  541259  probe_v2.pkl 384 6 mlp
+# ============================================================================
+# UPDATED 2026-09-05 (third session): THE IDENTITY GAP IS CLOSED.
+#
+# The first version of this manifest recorded only "<input_dim> <output_dim> <probe_type>",
+# which reads `1024 6 mlp` for BOTH probe_e5large.pkl and probe_reg_large.pkl -- so it could
+# not tell a recall probe from a regression probe, and EXP-024 s6 correctly listed that as an
+# unclosed gap. It is closed by reading each pickle's OWN metadata: `objective`,
+# `embedding_model`, `seed` and `device` live under the `metrics` key (NOT at the top level,
+# which is where a first look for them fails).
+#
+# TWO OF THE ELEVEN ARE ALREADY IN GIT, byte-identical, under different names -- established
+# by sha256, not by the filename:
+#   embedding_probe_e5small.pkl == filters/nature_recovery/v4/probe/embedding_probe_e5small.pkl
+#   probe_v2.pkl               == filters/human_thriving/v8/probe/embedding_probe_e5small.pkl  (the SHIPPED v8 probe)
+#
+# WARNING -- FOUR FILES ARE NAMED AFTER PRODUCTION FILTERS AND ARE NOT THE PRODUCTION
+# ARTIFACTS. probe_belonging_v1_recall.pkl, probe_cultural_discovery_v5_recall.pkl,
+# probe_investment_risk_v6_recall.pkl and probe_uplifting_v7_recall.pkl match the sha256 of
+# NO tracked file, and they carry the older metadata format (no seed, no device, no
+# embedding_model). They are precursors or re-trainings; do not substitute one for a shipped
+# probe on the strength of its name. `a name is an assertion`.
+#
+# probe_seed42.pkl and probe_v2.pkl report IDENTICAL metrics (val_bce 0.9611060619354248,
+# threshold 2.825, stage2 rate 0.5911854103343465) at DIFFERENT sha256 -- consistent with the
+# 2026-09-04 finding that two seed-42 runs differ in 134 of 541,144 pickle bytes (torch
+# storage keys) while every tensor is identical. NOT re-verified tensor-by-tensor here.
+#
+# Reproduce this table:  venv/bin/python /tmp/probe_manifest.py   (from ~/llm-distillery on b650-gpu)
+# Verify the bytes:      sha256sum -c <this file>   -- the sha/size/name columns are that format
+# ============================================================================
+#
+# sha256  bytes  file  objective  encoder  seed  device  input->output  in-git
+71839a8e6dcf6ab0f4eb1130606668df1284ffbfe503ee6d48d3e85006b8dad4  541033  embedding_probe_e5small.pkl  recall  -  -  -  384->6  filters/nature_recovery/v4/probe/embedding_probe_e5small.pkl
+a858655aff61d8789bca176682bbe9e176828e5a0fc97fec812faa356ffbe21f  541039  probe_belonging_v1_recall.pkl  recall  -  -  -  384->6  -
+4f27f7442d04c8d970826cf779e6d0999562d39da3f2469626311636031c0c88  540513  probe_cultural_discovery_v5_recall.pkl  recall  -  -  -  384->5  -
+f3f659703d30afb4e1d0f4bb0e363ba757b589e2c4cc5cd730e72e0de26923cc  1211967  probe_e5large.pkl  recall  multilingual-e5-large  42  cpu  1024->6  -
+0edc174354cfd4d5befff323ab908a0f1f042018c361138541ce595a99ea50f4  541039  probe_investment_risk_v6_recall.pkl  recall  -  -  -  384->6  -
+6a42b2c1520425848052db546b156e43f11e837b1d52e38c9f6a7f605e1dc4e9  1211809  probe_reg_large.pkl  regression  multilingual-e5-large  42  cuda  1024->6  -
+f8d879fdce4e25f505503dc2b0e41f3fbe80bf054edc8b3440814315dabb1765  541089  probe_reg_small.pkl  regression  multilingual-e5-small  42  cuda  384->6  -
+4a34a1dda6fd43792b217a61ffb4d1b3232f695b56ef8c059b90a703223e84dd  541144  probe_seed42.pkl  recall  multilingual-e5-small  42  cpu  384->6  -
+3403fc2beda9c0e39dd7dac76ddc378e8361b76e71c5139d912280820c970e88  541144  probe_seed7.pkl  recall  multilingual-e5-small  7  cpu  384->6  -
+6882021e991ccb02d31c3af357b20bc2c6ee49c90334af07623c732edd1f33d5  541039  probe_uplifting_v7_recall.pkl  recall  -  -  -  384->6  -
+ccbebe9f0c749416827a96638a270b0e8f9da9306ec29755affe2da8c8ea9379  541259  probe_v2.pkl  recall  multilingual-e5-small  42  cpu  384->6  filters/human_thriving/v8/probe/embedding_probe_e5small.pkl
+#
+# NOT IN GIT: 9 files, 6,210,783 bytes = 5.92 MiB.
+# Of those, the FIVE that EXP-016/018/019/024 rest on are probe_seed42, probe_seed7,
+# probe_reg_small, probe_reg_large and probe_e5large (4,047,153 B = 3.86 MiB).

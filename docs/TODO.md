@@ -19,16 +19,30 @@
 **Where we are in the RUNBOOK's nine phases:** 1 Planning ✅ · 2 Architecture ✅ (`prompt-v8-4.md`)
 · 3 Validation ✅ · 4 Prefilter ✅ N/A by ruling · 5 Training data ✅ (6,586 labels, 456 corrected)
 · **6 Training ✅** · **6b Probe ✅ 2026-09-04** · **7 Calibration ✅ 2026-09-04**
-· **8 Testing ⛔ NEXT** · 9 Deployment ⛔.
+· **8 Testing — op-point ✅ RULED 2026-09-05 (4.50 calibrated), gate run ⛔ NEXT** · 9 Deployment ⛔.
+⚠️ **Phase 8 is not "done" because its decision is made.** What remains is the deploy-gate run
+itself against held-out oracle ground truth (ADR-021), which needs the weights on `b650-gpu`.
 
-## ▶ START HERE — two decisions are owed, both the owner's
+## ▶ START HERE — the three owed decisions are RULED. Phase 8's op-point is settled; phase 9 is next.
 
+> **All three ruled by the owner on 2026-09-05 (third session).** Nothing below is waiting
+> on a decision any more. Phase 8's remaining work is the deploy-gate run itself.
 
-1. ⛔⛔ **THE PHASE-8 OP-POINT, on the CALIBRATED scale.** It is a **values** call, not a
-   technical one, and the detail is under *Read before touching phase 8* immediately below.
-   The trade on held-out data, raw arm — junk removed / good kept: **3.00 → 62.1% / 90.0% ·
-   4.00 → 82.8% / 73.3% · 4.50 → 90.8% / 56.7% · 5.00 → 96.6% / 23.3%**. Under ADR-023 the
-   inherited 4.5 is defensible and possibly right.
+1. ✅ **THE PHASE-8 OP-POINT: 4.50 STANDS, ON THE CALIBRATED SCALE.**
+   `docs/decisions/2026-09-05-v8-op-point.md`. **No code changed** — the number the runtime
+   already carries is the number chosen; what changed is its status, from *inherited from
+   uplifting v7* to *re-derived on v8's own held-out split and ratified*.
+   ⭐ **The argument is the SHAPE of the trade, not the level.** On the calibrated arm every
+   step from 3.75 up costs almost exactly **one agreed-good article per junk article
+   removed** (4.00→4.25 is −2/−2; 4.25→4.50 is −4/−4), and ADR-023 breaks a 1:1 trade toward
+   specificity. ⚠️ **The frontier bends at 3.50**, where −3 good buys −11 junk — that, not
+   4.0 or 4.25, is where to go if volume is ever wanted, because the intermediate bars buy
+   it at par. ⛔ **5.00 was never available**: `MAX_NORMALIZATION_RAW_MIN = 4.5`, strict `>`,
+   so 4.5 is accepted with zero margin.
+   ⚠️ **Cost, stated**: 17 of 660 held-out rows surfaced, 12 true / 5 false, recall 0.343,
+   spec 0.9920. Verified by EXECUTION (`_assign_tier(4.4999)` → `low`, `4.5` → `medium`) and
+   by the code path — `filter_base_scorer.py:315-317` calibrates *before* `:340` assigns the
+   tier, so the runtime comparison really is calibrated-vs-4.5.
    ⭐ **The design-weighted arm is now computed and it does NOT change this decision**
    (2026-09-05, `EXP-025`). Horvitz–Thompson on the same rows: **3.00 → 62.7% / 90.0% ·
    4.00 → 84.9% / 73.4% · 4.50 → 92.4% / 56.8% · 5.00 → 97.4% / 23.5%**. Maxima over all 7
@@ -40,11 +54,34 @@
    partition, which is why they are the stabler instrument here and why quoting only them
    understates the weighting elsewhere. Table:
    `docs/evidence/2026-09-04-v8-probe-calibration/PHASE_C_REVIEW.md`.
-2. ⚠️ **Do the eleven rescued probes go into git?** They were one reboot from gone in
-   `b650-gpu:/tmp` and now sit in `~/llm-distillery/rescued_probes/`, out of version control.
-   Manifest with sha256s: `docs/evidence/2026-09-05-scorer-device-throughput/`
-   `rescued_probes_manifest.txt`. **7.0 MiB** across eleven files; they are what makes EXP-018/019
-   reproducible. **Not decided, and not something to do silently.**
+2. ✅ **THE ELEVEN RESCUED PROBES: NOT git — a PRIVATE Hugging Face repo.**
+   `https://huggingface.co/jeergrvgreg/llm-distillery-probes` (verified `private=True`, all
+   11 present by listing the repo, not by the upload not erroring). #97 keeps model weights
+   out of git and probes are model artifacts, so the git policy stays intact and the manifest
+   gains a durable address. Uploaded by
+   `scripts/deployment/upload_probes_to_huggingface.py`, which sha256-verifies every file
+   against the committed manifest **before** sending anything. Second copy stays on b650-gpu.
+   ⭐ **Two findings that changed the shape of this decision, both from sha256 rather than
+   filenames.** (a) **Two of the eleven were already in git** byte-identically under other
+   names — `embedding_probe_e5small.pkl` is `nature_recovery v4`'s shipped probe and
+   `probe_v2.pkl` is **`human_thriving v8`'s**. (b) ⛔ **Four are named after production
+   filters and are NOT those filters' shipped probes** — they match no tracked sha and carry
+   the older metadata format. *A name is an assertion*; the manifest and the Hub README both
+   say so now.
+   ✅ **The identity gap EXP-024 §6 logged is half-closed**: every pickle carries its own
+   `objective`/`embedding_model`/`seed`/`device` under `metrics` (not at top level), so
+   `probe_e5large` (recall, cpu) and `probe_reg_large` (regression, cuda) are no longer
+   confusable. Which *invocation* wrote each still rests on a log outside this repo.
+
+3. ✅ **#139 — FIXED, and the shipped filter was never the problem.**
+   `tests/ml/test_inference.py::test_inference_module_importable` was red for months because
+   it loaded modules with `spec_from_file_location`, which gives them no package, so
+   `cultural_discovery v5`'s `from .base_scorer import ...` could not resolve — while
+   cd v5 has been LIVE in production throughout. Now imported by dotted path, the way
+   production loads them. ⭐ **Seeded with a true positive before being believed**: breaking
+   one filter's `inference.py` makes it FAIL, so the repaired instrument can still say no.
+   A hyphenated filter directory (`ai-engineering-practice`, absent from the fixture only
+   because it has no trained model) now SKIPS with a reason rather than failing.
 
 > ✅ **The four mechanical checks are DONE (2026-09-05, `EXP-025`)** —
 > `scripts/verification/check_claim_shapes.py`, wired into `memory/MEMORY.md`'s verify

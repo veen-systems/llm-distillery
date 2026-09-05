@@ -136,25 +136,45 @@ class TestInferencePipeline:
                 f"Missing inference.py for {filter_info['name']}"
 
     def test_inference_module_importable(self, trained_filters):
-        """Inference modules should be importable."""
-        import importlib.util
-        import sys
+        """Inference modules should be importable.
+
+        ⛔ THIS TEST WAS RED FOR MONTHS AND THE SHIPPED CODE WAS NEVER THE PROBLEM
+        (llm-distillery#139, entered at `6acd013`, diagnosed 2026-09-05). It used
+        `spec_from_file_location` with a synthetic module name, which gives the
+        loaded module **no package** — so `filters/cultural_discovery/v5/inference.py`'s
+        `from .base_scorer import ...` could not resolve and the test reported
+        *"Failed to import cultural_discovery/v5"* about a module that imports
+        perfectly well. `cultural_discovery v5` is LIVE in production the whole time.
+
+        ⭐ The instrument was broken, not the thing it measured — and a permanently
+        red test trains everyone to read the suite as "710 passed and the usual
+        one", which is how a real failure would have hidden next to it.
+
+        Imported by DOTTED PATH now, which is how production loads these modules.
+        Verified 2026-09-05 against all eight filters the fixture finds:
+        solutions v4/v6, cultural_discovery v5/v6, uplifting v7, belonging v1,
+        investment_risk v6, nature_recovery v4.
+        """
+        import importlib
 
         for filter_info in trained_filters:
-            module_path = filter_info['inference_module']
-
-            # Load module dynamically
-            spec = importlib.util.spec_from_file_location(
-                f"inference_{filter_info['name'].replace('/', '_')}",
-                module_path
-            )
-            module = importlib.util.module_from_spec(spec)
-
-            # Just check it loads without error
+            name = filter_info['name']
+            # ⚠️ A DIRECTORY NAME IS NOT ALWAYS AN IMPORTABLE ONE. `filters/
+            # ai-engineering-practice/` exists and a hyphen is not valid in a
+            # module path (`memory/gotcha-log.md`, "Hyphenated Filter Names Break
+            # Python Imports"). It is absent from this fixture today only because
+            # it has no trained model on disk — so the guard is for the day it
+            # gets one, and it SKIPS with a reason rather than failing, because
+            # the defect would be the directory name, not the inference module.
+            dotted = f"filters.{name.replace('/', '.')}.inference"
+            if not all(part.isidentifier() for part in dotted.split('.')):
+                pytest.skip(f"{name}: directory name is not a valid Python "
+                            f"identifier, so no import form can reach it")
             try:
-                spec.loader.exec_module(module)
+                importlib.import_module(dotted)
             except Exception as e:
-                pytest.fail(f"Failed to import {filter_info['name']}: {e}")
+                pytest.fail(f"Failed to import {name} ({dotted}): "
+                            f"{type(e).__name__}: {e}")
 
 
 @pytest.mark.slow

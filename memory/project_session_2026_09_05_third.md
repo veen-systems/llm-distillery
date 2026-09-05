@@ -91,7 +91,31 @@ no filter package. Left for the owner: cd v5 is LIVE and the issue is theirs.
   finds. Stated as the thing `EXP-025` does **not** claim, with the first evidence pointing
   the other way.
 
-## Owed, unchanged
+## ✅ All three owed decisions RULED, same session
 
-Both owner decisions are still open: the **phase-8 op-point** (now with the weighted arm
-beside it) and whether the **eleven rescued probes** go into git.
+1. **Phase-8 op-point: 4.50 on the CALIBRATED scale.** No code changed — the runtime already
+   carried it; its status changed from *inherited* to *re-derived and ratified*.
+   `docs/decisions/2026-09-05-v8-op-point.md`. ⭐ The argument is the **shape** of the trade:
+   from 3.75 up every step costs ~1 agreed-good article per junk article, and ADR-023 breaks
+   a 1:1 trade toward specificity. The frontier bends at **3.50** (−3 good buys −11 junk),
+   so that — not 4.0 or 4.25 — is where to go if volume is ever wanted. ⛔ 5.00 was never
+   available: `MAX_NORMALIZATION_RAW_MIN = 4.5`, strict `>`. Verified by **executing**
+   `_assign_tier` at the boundary and by reading the path that proves the comparison is
+   against the **calibrated** score (`filter_base_scorer.py:315-317` → `:340`).
+2. **The rescued probes: a PRIVATE Hub repo, not git** —
+   `https://huggingface.co/jeergrvgreg/llm-distillery-probes`, verified `private=True` and
+   all 11 present by **listing the repo**, not by the upload not erroring. ⭐ Two findings
+   from sha256 rather than filenames changed the shape of it: **two of the eleven were
+   already in git** byte-identically (`probe_v2.pkl` IS v8's shipped probe), and **four are
+   named after production filters and are not those filters' probes**. The identity gap
+   EXP-024 §6 logged is half-closed — every pickle carries its own
+   `objective`/`seed`/`device` under `metrics`, not at top level.
+3. **#139 fixed, and the shipped filter was never the problem.** Dotted-path import instead
+   of `spec_from_file_location`. ⭐ Seeded with a true positive before being believed:
+   breaking one filter's `inference.py` makes the repaired test FAIL. **The suite is now
+   711 passed / 0 failed** — the first fully green run in months.
+
+## Owed, still
+
+Nothing is waiting on an owner decision. Phase 8's remaining work is the **deploy-gate run**
+itself (ADR-021, held-out oracle ground truth), which needs the weights on `b650-gpu`.

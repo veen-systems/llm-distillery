@@ -232,10 +232,20 @@ positive mass at the widest. The unweighted "not distinguishable" is a statement
    pins the bytes, not their origin.** Which probe produced each file rests on evidence
    outside this repo (`b650-gpu:~/llm-distillery/logs/exp019_dump.log`, and each rescued
    pickle's own `objective` / `embedding_model` / `seed` metadata), and the committed
-   `../2026-09-05-scorer-device-throughput/rescued_probes_manifest.txt` records
+   `../2026-09-05-scorer-device-throughput/rescued_probes_manifest.txt` recorded
    `probe_e5large.pkl` (recall) and `probe_reg_large.pkl` (regression) **both** as
-   `1024 6 mlp` — so it cannot tell them apart. **That gap is unclosed**, and the dumps
-   themselves live only in `/tmp` and an untracked home directory on a non-production box.
+   `1024 6 mlp` — so it could not tell them apart.
+   ✅ **HALF OF THAT GAP CLOSED 2026-09-05 (third session).** Each pickle carries its own
+   `objective`, `embedding_model`, `seed` and `device` — under the `metrics` key, **not at
+   the top level**, which is where a first look for them fails. Read back and written into
+   the manifest: `probe_e5large.pkl` is `objective=recall`, e5-large, seed 42, **cpu**;
+   `probe_reg_large.pkl` is `objective=regression`, e5-large, seed 42, **cuda**. The two
+   are no longer confusable. ⛔ **The other half is still open**: which training
+   *invocation* wrote which file rests on `b650-gpu:~/llm-distillery/logs/exp019_dump.log`,
+   outside this repo. ⚠️ **And the probes are no longer single-copy** — owner decision
+   2026-09-05, they are in a private Hub repo
+   (`https://huggingface.co/jeergrvgreg/llm-distillery-probes`) as well as on b650-gpu.
+   The dumps themselves remain untracked on a non-production box.
 7. ⛔ **THE ARMS ARE NOT ON THE SAME DEVICE, and no earlier draft said so.** The student
    dumps (`scores_raw.jsonl`, `scores_calibrated.jsonl`) are the **CPU** pass — confirmed
    here: `student_raw` flags 26 rows with 17 TP, recall **0.4857**, and EXP-015 recorded
