@@ -5994,3 +5994,93 @@ what moved and why. Checker back to `entries 23  metrics checked 298  untraceabl
 have committed the rewrite without noticing, because every number in the *new* document was
 correct. **Correcting a document is a delete of its predecessor unless you carry the old
 values forward.**
+
+## 2026-09-05 (second session) — a comparison that could not have come out any other way
+
+**Problem**: EXP-024 published *"the gate buys nothing — B and C give identical TP at all
+eight k"* as a measured result. It was arithmetically forced.
+
+**Root cause**: B and C can only differ once a **screened** row outranks the k-th highest
+stage-2 score. Max `probe_reg_large` score among screened rows is **1.4921**; the k-th
+highest is **2.7787 even at k=60**. The smallest k at which they could differ is **140**,
+and the grid stopped at 60 — 1.29 score points of margin. The equality was guaranteed
+before the data were read.
+
+**Fix**: `adr023_op_point_table.py` now computes that k and prints it beside the verdict, so
+the comparison always ships with the range over which it could have failed. The conclusion
+(drop the gate) survives on two independent legs that need no data: 0 of 35 positives
+screened out, and the 85.7% break-even against ~90% routing.
+
+## 2026-09-05 (second session) — an ordering published as a finding, with no band
+
+**Problem**: *"AUC would have picked the wrong arm"* was labelled ⭐⭐ THE REUSABLE FINDING
+in four places, on a gap of **+0.0014**.
+
+**Root cause**: the two arms' AUCs were compared as point estimates. With its band the gap
+is CI **[−0.0448, +0.0476]**, **P = 0.523** — a coin flip, the band ~30× the gap. CLAUDE.md
+already states the rule (*two models whose bands overlap are NOT DISTINGUISHABLE whatever
+their point estimates say*); it was applied rigorously to the TP comparison in the same
+document and not at all to this one.
+
+**Fix**: retracted. The script now computes bands for every ranking-metric delta it reports.
+⚠️ The converse is the part worth keeping: **AUC separates the student from `probe_reg_large`
+(P = 0.995) where the op-point test cannot**, so "the op-point is the better criterion" and
+"the op-point test is underpowered" are both live, and the artifact now says so.
+
+## 2026-09-05 (second session) — a bootstrap that froze what it was resampling
+
+**Problem**: the paired bootstrap emitted a **zero-width 95% CI** (`[+0,+0]`) for
+`student_raw` at k=30 and k=43, published in the committed output.
+
+**Root cause**: the top-k masks were computed once on the full sample and only the row
+indices resampled — a McNemar discordant-pair interval on a *fixed* classifier, when top-k
+is sample-dependent. Zero discordant rows therefore gave zero width. Measured, **90.6%** of
+replicates did not even surface k rows, so the design's own `FP = k − TP` premise held in
+fewer than 1 replicate in 10.
+
+**Fix**: re-selection bootstrap — top-k recomputed inside each replicate — plus a **null
+control** (an arm against itself) that must return exactly `[0,0]` and does. ⭐ A zero-width
+interval is proof an interval is not measuring sampling variability; it is not a strong
+result.
+
+## 2026-09-05 (second session) — unweighted figures on a design-weighted sample
+
+**Problem**: every figure in EXP-024 was unweighted. The v8 test split is drawn under a
+design with `inclusion_probability` spanning **25.1×** over 16 strata.
+
+**Root cause**: the dumps carry ids and scores, not weights, so nothing in the analysis path
+surfaced the design. The *previous day's* artifact on the same rows
+(`gating_tradeoff.py:118`) used Horvitz–Thompson weights deliberately.
+
+**Fix**: `--corpus` arm added; it refuses a partially-weighted table. Weighted, the positive
+rate is **3.1638%** against the unweighted **5.3030%**, and the student leads
+`probe_reg_large` at every share tested (0.529 vs 0.478) where unweighted they tie. **The
+headline finding was a property of the sample, not the population.**
+
+## 2026-09-05 (second session) — the arms were on different devices and nothing said so
+
+**Problem**: EXP-024 compared a **CPU**-scored student against **GPU**-scored probes.
+Neither the four-lens review nor the mechanical battery noticed; it was found during session
+close while following up the open-issue list.
+
+**Root cause**: `scores_raw.jsonl` / `scores_calibrated.jsonl` are the 16-minute CPU pass;
+EXP-019's probe dumps say *"same corpus, splits, --seed 42, GPU"*. Confirmed rather than
+inferred: `student_raw` reads recall **0.4857**, matching EXP-015's CPU **0.486** against
+CUDA **0.514**. CPU→CUDA is max |Δ| **0.1956**, 3 flips at 4.5 (#104).
+
+**Fix**: recorded as README §6.7 and in H-V8-22, with the direction stated — CUDA *gains* the
+student a TP, so the CPU pass **understates** it and the "not distinguishable" result is
+weaker, not stronger. ⭐ **The confound was conservative by luck, not by design.**
+
+## 2026-09-05 (second session) — I read `tail`'s exit status while reading the rule against it [x3]
+
+**Problem**: ran `run_verify_annotations.py 2>&1 | tail -2; echo "exit=$?"` during `/curate`
+and reported `exit=0`. That is `tail`'s status.
+
+**Root cause**: the 3rd occurrence of a rule already in `working-rules.md` at 2 occurrences —
+and it happened in the same minute the rule's own text was on screen, having been printed by
+a grep I ran.
+
+**Fix**: `out=$(cmd 2>&1); rc=$?` then inspect. True status was 0, so the reported figure
+was right — **by luck**. ⭐ *Articulating the rule is not applying it*: the reading and the
+violation were seconds apart.
