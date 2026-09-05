@@ -91,6 +91,9 @@ and cannot even load the adapter.
 
 **But the underlying skew is real, and larger than the #95 floor at the tail:**
 
+- ⭐ **the instrument could say no, and did:** three rows flip at 4.5 (below), and
+  15/660 rows differ on at least one dimension — so a null on this comparison would be a
+  measurement, not a dead instrument
 - bit-identical on every dimension: **15/660 (2.3%)**
 - max |Δ| per raw dimension: 0.0625 – **0.1250**
 - calibrated weighted score |Δ|: p50 **0.0000**, p90 0.0345, p99 0.1198, **max 0.2008**

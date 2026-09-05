@@ -21,6 +21,15 @@ op-point and are neither TP nor FP under the 2026-08-30 ruling.
 
 ⚠️ Every count here is a CANDIDATE population. Adjudication is reading, not matching.
 """
+# design-weights: NOT READ. Every count here is a CANDIDATE POPULATION to be READ by a
+# human, and the adjudication verdict is per-row. ⛔ BUT THIS FILE DOES PRINT SHARES, and
+# an earlier version of this declaration said it did not -- caught by review 2026-09-05.
+# The percentages below are shares of the 47-row class-A supplement and of the above-op
+# set: unweighted sample quantities, correct as such. The one comparison that crosses
+# populations is flagged inline where it is printed. ⛔ The moment any share from this
+# file is quoted as a corpus or production rate it needs Horvitz-Thompson weights (25.1x
+# design span over the test split), and it does not have them.
+
 import json
 import re
 import sys
@@ -72,7 +81,11 @@ def main():
     print(f"supplement rows                      47   (below-op class-A rows, not adjudicable: {len(below)})")
     print(f"v8 DEMOTES below the op-point        {47 - len(kept)}  ({(47-len(kept))/47:.1%})")
     print(f"v8 KEEPS above the op-point          {len(kept)}  ({len(kept)/47:.1%})")
-    print(f"verdict-flipped                      {flipped}  ({flipped/47:.1%} against the corpus's 15.35%)")
+    # ⚠️ NOT LIKE FOR LIKE, and it reads as though it were. The left side is an unweighted
+    # share of a 47-row hand-selected class-A supplement; the right is a corpus-level rate.
+    # Two populations, one comparison. Review, 2026-09-05.
+    print(f"verdict-flipped                      {flipped}  ({flipped/47:.1%} of this 47-row"
+          f" supplement, unweighted -- NOT comparable like-for-like to the corpus's 15.35%)")
     print(f"verdicts {dict(Counter(labels[c['id']]['scope_verdict'] for c in supp).most_common())}")
     print()
 

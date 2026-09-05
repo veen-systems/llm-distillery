@@ -28,10 +28,19 @@ Threshold selected on **val**, evaluated on **test** — never both on the same 
 | regression e5-small | 0.600 | 55.3% | 1/35 | 50.8% |
 | regression e5-large | 1.150 | 30.3% | **6/35** | 25.6% |
 
-⭐ **A better ranker does not buy a safer screen.** Regression e5-small ranks far better than
+⭐ **A better ranker does not buy a safer screen.** Regression e5-small ranks above
 the shipped probe (AUC 0.9035 vs 0.8710) and lands on essentially the same screen — 55.3%/1FN
 against 56.5%/1FN. Ranking quality and screen safety are different properties, and this is
 the measurement that shows it rather than assuming it.
+⛔ **"far better" was an ordering published without a band, and the band was added on
+2026-09-05: ΔAUC = +0.0325, 95% CI [−0.0054, +0.0725], P = 0.094 — the interval INCLUDES ZERO,
+so the two are NOT DISTINGUISHABLE on this split** (paired bootstrap, positives and negatives
+resampled separately, 10,000 replicates, seed 42, both published AUCs reproduced as a control:
+`scripts/auc_ordering_band.py`, `auc_ordering_band.txt`). Found by
+`scripts/verification/check_claim_shapes.py --check ordering-needs-band`. ⭐ **The section's
+conclusion is unaffected and is in fact strengthened** — if the ranking gap is not even
+resolvable, "a better ranker does not buy a safer screen" is the weaker claim to have to
+make.
 
 ⛔ **And ADR-011 is right where it applies.** Regression e5-large screens hardest and drops
 **6 of 35 positives — 17% of the needles.** That is floor-collapse in the screen role, as

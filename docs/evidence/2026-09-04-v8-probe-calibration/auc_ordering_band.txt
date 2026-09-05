@@ -1,0 +1,7 @@
+control  regression e5-small        AUC 0.9035  == published 0.9035
+control  shipped recall e5-small    AUC 0.8710  == published 0.871
+
+n=660  positives=35  replicates=10000
+delta AUC (regression - shipped) = +0.0325
+95% CI [-0.0054, +0.0725]   P = 0.094
+CI includes zero -> NOT DISTINGUISHABLE

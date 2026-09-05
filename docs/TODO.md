@@ -6,8 +6,9 @@
 > `..._evening.md`, `..._late.md` and `memory/project_session_2026_09_05.md`.
 > Runs: **EXP-015** (training), **EXP-016** (probe + calibration), **EXP-017** (Phase C
 > review), **EXP-018** (e5-large), **EXP-019** (regression probes), **EXP-020** (gating),
-> **EXP-021** (production overhead), **EXP-022** (device throughput), **EXP-024** (op-point table) in
-> `experiments/registry.jsonl`, with `docs/evidence/2026-09-04-scoring-overhead/`,
+> **EXP-021** (production overhead), **EXP-022** (device throughput), **EXP-023** (its
+> review), **EXP-024** (op-point table), **EXP-025** (claim-shape checks + the
+> design-weighted arm) in `experiments/registry.jsonl`, with `docs/evidence/2026-09-04-scoring-overhead/`,
 > `docs/evidence/2026-09-05-scorer-device-throughput/`, and
 > `docs/evidence/2026-09-04-v8-checkpoint-selection/` and
 > `docs/evidence/2026-09-04-v8-probe-calibration/`. State:
@@ -28,24 +29,40 @@
    The trade on held-out data, raw arm — junk removed / good kept: **3.00 → 62.1% / 90.0% ·
    4.00 → 82.8% / 73.3% · 4.50 → 90.8% / 56.7% · 5.00 → 96.6% / 23.3%**. Under ADR-023 the
    inherited 4.5 is defensible and possibly right.
+   ⭐ **The design-weighted arm is now computed and it does NOT change this decision**
+   (2026-09-05, `EXP-025`). Horvitz–Thompson on the same rows: **3.00 → 62.7% / 90.0% ·
+   4.00 → 84.9% / 73.4% · 4.50 → 92.4% / 56.8% · 5.00 → 97.4% / 23.5%**. Maxima over all 7
+   bars and **both** arms: junk-removed **+2.44 pp** (calibrated @4.00), good-kept
+   **+0.20 pp** (calibrated @4.50). ⛔ **But the two quantities that move least are the two
+   quoted.** Specificity — ADR-023's own criterion — moves up to **+2.65 pp** and recall
+   **−8.51 pp**, both rates over the whole split where the design over-samples positives; the
+   base rate goes **5.3030% → 3.1638%**. The trade columns are conditional on the v7-surfaced
+   partition, which is why they are the stabler instrument here and why quoting only them
+   understates the weighting elsewhere. Table:
+   `docs/evidence/2026-09-04-v8-probe-calibration/PHASE_C_REVIEW.md`.
 2. ⚠️ **Do the eleven rescued probes go into git?** They were one reboot from gone in
    `b650-gpu:/tmp` and now sit in `~/llm-distillery/rescued_probes/`, out of version control.
    Manifest with sha256s: `docs/evidence/2026-09-05-scorer-device-throughput/`
    `rescued_probes_manifest.txt`. **7.0 MiB** across eleven files; they are what makes EXP-018/019
    reproducible. **Not decided, and not something to do silently.**
 
-> ⚙️ **Also owed, and NOT a decision — it is work: the four mechanical checks from
-> `EXP-024`'s review.** Four of that round's five defects are scriptable and none was
-> checkable before a lens articulated the shape: (a) a *no difference at all X* claim must
-> publish the range over which it COULD have differed; (b) a published CI of `[0,0]` is
-> always a defect signal; (c) a comparative ordering in a decision record needs a paired
-> band or p-value; (d) if the population file carries design weights and the analysis never
-> reads them, flag. ⛔ **Each must be seeded with a true positive and shown to FIRE** — a
-> check that never catches anything is indistinguishable from one that works. Rationale and
-> the upstream framing: `agent-ready-projects#127`; the cost measurement that motivates it:
-> `#126` (**557,442 tokens, 148 tool calls, one round**). ⚠️ **Not claimed**: that
-> mechanizing reduces future round cost. That is an expectation and is the thing to
-> instrument.
+> ✅ **The four mechanical checks are DONE (2026-09-05, `EXP-025`)** —
+> `scripts/verification/check_claim_shapes.py`, wired into `memory/MEMORY.md`'s verify
+> annotations. **They flagged 13 real sites over a tree that had just passed the whole
+> battery**: two orderings published without a band (`adr023-op-point-table` §7,
+> `scorer-device-throughput` §5), a third found after the checks were tightened
+> (`GATING_DECISION.md` — *"ranks far better", ΔAUC +0.0325, 95% CI [−0.0054, +0.0725],
+> P = 0.094, **not distinguishable***, now measured in `scripts/auc_ordering_band.py`), six
+> unqualified no-difference-over-a-grid claims in the parity and enrichment records, and four
+> analyses reading the 25.1×-design corpus unweighted. All 13 are fixed or declared.
+> ⛔ **The four-lens `/review-changes` on this work found 3 blockers and 10 warnings the
+> mechanical battery had passed — including that one of my own first fixes deleted a
+> check's trigger instead of the defect, and that the flagship file survived its own
+> mutation.** Both are recorded in the script's docstring; the mutation record is now
+> M1–M5 with M5's earlier survival stated. ⚠️ **Still not claimed**: that mechanising
+> reduces future review-round cost (`agent-ready-projects#127`; the cost measurement is
+> `agent-ready-projects#126` — **557,442 tokens, 148 tool calls, one round**). That is an
+> expectation and remains the thing to instrument.
 
 ⭐ **EXP-024 (2026-09-05) does not move the op-point — and four of its own first-draft
 claims were retracted before it was committed.** Measured at matched surfacing volume on the

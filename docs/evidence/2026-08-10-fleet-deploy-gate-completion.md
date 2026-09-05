@@ -21,7 +21,9 @@ happened to have gates.
 It became cheap the same day: `b650:~/llm-distillery/venv-prodparity` on **CPU**
 was measured **bit-identical to gpu-server's serving venv** (660/660 rows, 0
 verdict flips at every threshold), so threshold work no longer waits for a gap
-between pipeline cycles.
+between pipeline cycles. ⚠️ **That zero is a null, not a dead comparison** — the same
+660-row instrument returns 3 verdict flips at 4.5 when the library stack is *not* pinned, and
+3 more for CPU→CUDA (`2026-08-10-b650-gpu-production-stack-parity.md`).
 
 ## The fleet, at each filter's own 4.0 op-point
 

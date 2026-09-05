@@ -2,6 +2,8 @@ n=660   v7 positives 117   v8 positives 35   agreed 30
 Jaccard of the two positive classes: 0.246  — v8 keeps 25.6% of v7's positives
 ⛔ Two recalls of two different classes are not comparable numbers.
 
+DESIGN WEIGHTS: span 25.1x; v8 positive rate unweighted 5.3030% vs weighted 3.1638%
+
 === raw ===   AUC on the 117 rows v7 surfaced: 0.8454
     bar     junk removed      good kept   recall     spec
    3.00      54/87  62.1%   27/30  90.0%    0.829   0.9168
@@ -11,6 +13,15 @@ Jaccard of the two positive classes: 0.246  — v8 keeps 25.6% of v7's positives
    4.25      74/87  85.1%   20/30  66.7%    0.571   0.9728
    4.50      79/87  90.8%   17/30  56.7%    0.486   0.9856
    5.00      84/87  96.6%    7/30  23.3%    0.200   0.9952
+  -- design-weighted (HT, w = 1/inclusion_probability) --
+    bar  junk removed   good kept   recall     spec
+   3.00        62.7%       90.0%    0.781   0.9432
+   3.50        75.0%       83.4%    0.629   0.9667
+   3.75        80.0%       80.1%    0.604   0.9715
+   4.00        84.9%       73.4%    0.554   0.9797
+   4.25        87.3%       66.8%    0.504   0.9849
+   4.50        92.4%       56.8%    0.429   0.9932
+   5.00        97.4%       23.5%    0.178   0.9983
 
 === calibrated ===   AUC on the 117 rows v7 surfaced: 0.8521
     bar     junk removed      good kept   recall     spec
@@ -21,6 +32,15 @@ Jaccard of the two positive classes: 0.246  — v8 keeps 25.6% of v7's positives
    4.25      78/87  89.7%   16/30  53.3%    0.457   0.9840
    4.50      82/87  94.3%   12/30  40.0%    0.343   0.9920
    5.00      86/87  98.9%    3/30  10.0%    0.086   0.9984
+  -- design-weighted (HT, w = 1/inclusion_probability) --
+    bar  junk removed   good kept   recall     spec
+   3.00        68.8%       90.0%    0.781   0.9506
+   3.50        81.2%       80.1%    0.604   0.9724
+   3.75        84.9%       73.4%    0.554   0.9797
+   4.00        89.8%       60.1%    0.453   0.9865
+   4.25        91.2%       53.5%    0.404   0.9923
+   4.50        95.0%       40.2%    0.303   0.9967
+   5.00        98.8%       10.1%    0.076   0.9992
 
 BASELINE — v7's own score on the same rows: AUC 0.7218
 A student that merely scored everything lower would move junk-removed and good-kept together and show NO AUC gain over this.

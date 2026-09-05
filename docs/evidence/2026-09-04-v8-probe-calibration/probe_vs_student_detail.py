@@ -27,10 +27,19 @@ published scores, and it would matter more once a `normalization.json` maps raw 
 percentiles — because Stage-1-LOW and Stage-2 rows would then be two populations on two
 different scales sharing one CDF.
 
-    python docs/evidence/2026-09-04-v8-probe-calibration/probe_vs_student_detail.py \
+    .venv/bin/python docs/evidence/2026-09-04-v8-probe-calibration/probe_vs_student_detail.py \
         --dump-dir <dir> --labels datasets/training/human_thriving_v8/test.jsonl \
         --corpus datasets/scored/human_thriving_v8/corpus.jsonl
 """
+
+# design-weights: NOT READ, and everything below is therefore a SAMPLE quantity. The
+# v8 test split is drawn under a 25.1x stratified design (`inclusion_probability` on
+# every corpus row; docs/evidence/2026-08-29-v8-corpus-draw/). The three findings here
+# are DIRECTIONAL — is the student measurably better than the probe, is the probe
+# biased UP — and the bias has a stated mechanism (`pos_weight` ~20) rather than resting
+# on a rate. ⛔ But nothing here establishes that the direction survives reweighting,
+# and the AUCs and mean signed errors are not population estimates. The weighted arm on
+# the same rows lives in `phase_c_outcome.py` (added 2026-09-05).
 
 import argparse
 import json

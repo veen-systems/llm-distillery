@@ -15,6 +15,13 @@ real does not establish that one causes the other; see MULTILINGUAL_REALITY.md �
 Needs the corpus (gitignored, #97) — run on b650-gpu with venv-prodparity, from
 ~/llm-distillery, against datasets/ht_v8_corpus.jsonl.
 """
+# design-weights: NOT READ. The corpus rows are a 25.1x-design sample of the
+# production pool, so these medians and truncated-shares describe the 6,590 DRAWN rows,
+# not the pool. The finding is a comparison BETWEEN two scripts measured on the same
+# rows (non-Latin produces more tokens than Latin, and Gemma more than e5), which the
+# design does not stratify on, so reweighting moves both sides together — but that is an
+# argument, not a measurement, and no weighted arm has been run.
+
 import json, collections, statistics as st
 from sentence_transformers import SentenceTransformer
 from transformers import AutoTokenizer

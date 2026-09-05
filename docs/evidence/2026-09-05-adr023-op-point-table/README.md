@@ -262,8 +262,14 @@ a powered, multi-seed, calibrated, design-weighted evaluation.
 
 The reason to want it is not today's compute — scoring is 53.5% of a 5.57% duty cycle
 (EXP-021) — but the marginal cost of the **Nth** filter, where a shared encoder pass plus a
-head (measured free: full e5-large probe 16.417 against encoder-only 16.514) beats a
-per-filter student.
+head (**not measurably costly**: full e5-large probe 16.417 against encoder-only 16.514, a
+**−0.097 ms** difference — and the sign alone settles it, because a probe pass IS the encoder
+pass plus a head, so a negative head cost is physically impossible and proves an unmodelled
+between-process term. The band for THIS arm is `../2026-09-05-scorer-device-throughput/`
+§4's closing line: within-run **spreads of 32% and 111% on the e5-large arm** in other runs.
+⛔ **Do not reach for §4's 2.04×** — that is the e5-small arm, and that section's whole
+finding is that the variance is **arm-specific**: *"it is not the box having a slow day — it
+is the short arm"*) beats a per-filter student.
 
 ⚠️ Timings are `EXP-023`'s, on `b650-gpu`, batch 64, load excluded: e5-small **2.345**,
 e5-large full probe **16.417**, student **24.740** ms/article. **Quote the ratio, not the

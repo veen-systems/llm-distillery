@@ -28,12 +28,24 @@ score as the baseline. A student that merely scored everything lower would move 
 quantities together and show no AUC gain. A student that learned the distinction separates
 them.
 
+⛔ ADDED 2026-09-05: THE DESIGN-WEIGHTED ARM, and why the first version's numbers were
+sample quantities. The v8 test split is drawn from a stratified design spanning 25.1x in
+`inclusion_probability`, defined by the draw in `docs/evidence/2026-08-29-v8-corpus-draw/`, so an
+unweighted share describes the 660 rows drawn, not the corpus they were drawn from. EXP-024
+hit exactly this on the same rows and its weighted arm did not say the same thing as its
+unweighted one. ⚠️ The 25.1x span and its 16 cells are properties of THESE 660 TEST ROWS
+(`../2026-09-05-adr023-op-point-table/README.md` §5); the draw as a whole spans 26.0x over 17
+non-empty cells -- do not attribute the split's numbers to the corpus draw. Every sweep below is therefore printed TWICE -- unweighted (kept verbatim,
+so the numbers published on 2026-09-04 still reproduce) and Horvitz-Thompson weighted at
+w = 1 / inclusion_probability. ⚠️ Neither arm carries a confidence band; the junk/good
+partition is 87 + 30 rows.
+
 ⚠️ SCOPE. This shows whether v8 implements the definition the owner chose. It does NOT show
 v8 is "better than v7" in any absolute sense — v7 is being judged against a target it was
 never trained on, so its score here is a baseline, not a verdict on v7. Whether the new
 definition is the right one is an editorial judgement (#107), not a measurement.
 
-    python docs/evidence/2026-09-04-v8-probe-calibration/phase_c_outcome.py \
+    .venv/bin/python docs/evidence/2026-09-04-v8-probe-calibration/phase_c_outcome.py \
         --dump-dir <dir with scores_raw.jsonl / scores_calibrated.jsonl> \
         --labels datasets/training/human_thriving_v8/test.jsonl \
         --corpus datasets/scored/human_thriving_v8/corpus.jsonl
@@ -93,6 +105,33 @@ def main():
                              f"every row, or the partition below is silently incomplete")
         v7[r["id"]] = float(c["v7_score"])
 
+    # Horvitz-Thompson weights. ⛔ REFUSE A PARTIALLY-WEIGHTED TABLE: a row without an
+    # inclusion probability silently gets no vote, which is a different estimator, not a
+    # slightly noisier one. Same rule as adr023_op_point_table.py.
+    #
+    # ⛔ AND REFUSE AN INVALID ONE. The first version tested `if p_incl:`, which conflates
+    # absent / None / 0 / 0.0 and accepts a negative or an out-of-range value silently --
+    # a negative weight makes a "share" negative or greater than one and it is printed as
+    # a percentage either way. Found by review, 2026-09-05, together with the case that
+    # matters most: if EVERY row carried 0.0 the dict came out empty and the script
+    # announced "NO DESIGN WEIGHTS in the corpus", which would be false.
+    present = {i: corpus[i].get("inclusion_probability") for i in oracle}
+    have = {i: v for i, v in present.items() if v is not None}
+    bad = {i: v for i, v in have.items()
+           if not isinstance(v, (int, float)) or isinstance(v, bool)
+           or not (0.0 < float(v) <= 1.0)}
+    if bad:
+        i, v = next(iter(bad.items()))
+        raise SystemExit(f"{len(bad)} of {len(have)} rows carry an "
+                         f"`inclusion_probability` outside (0, 1] -- e.g. {i} = {v!r}. "
+                         f"Refusing to publish: 1/p is then not a design weight, and the "
+                         f"shares below would still print as percentages.")
+    if have and len(have) != len(oracle):
+        raise SystemExit(f"{len(oracle) - len(have)} of {len(oracle)} rows lack "
+                         f"`inclusion_probability`; refusing to publish a partially-"
+                         f"weighted table")
+    ht = {i: 1.0 / float(v) for i, v in have.items()}
+
     ids = sorted(oracle)
     junk = [i for i in ids if v7[i] >= MEDIUM and oracle[i] < MEDIUM]
     good = [i for i in ids if v7[i] >= MEDIUM and oracle[i] >= MEDIUM]
@@ -100,6 +139,12 @@ def main():
     if not junk or not good:
         raise SystemExit("one side of the partition is empty — the comparison would be "
                          "vacuous and any AUC below undefined")
+    # The sweep also divides by the WHOLE-SPLIT positive and negative counts, which the
+    # partition guard above does not cover. Review, 2026-09-05.
+    if not [i for i in ids if oracle[i] >= MEDIUM] or \
+            not [i for i in ids if oracle[i] < MEDIUM]:
+        raise SystemExit("the split has no positives or no negatives at the op-point — "
+                         "recall and specificity below would divide by zero")
 
     inter = len(good)
     union = len(good) + len(junk) + len(v8_only)
@@ -121,6 +166,25 @@ def main():
           f"— v8 keeps {report['share_of_v7_positives_v8_keeps']:.1%} of v7's positives")
     print("⛔ Two recalls of two different classes are not comparable numbers.\n")
 
+    if ht:
+        w_junk, w_good = sum(ht[i] for i in junk), sum(ht[i] for i in good)
+        report["design_weights"] = {
+            "field": "inclusion_probability",
+            "source": str(args.corpus),
+            "weight_span": max(ht.values()) / min(ht.values()),
+            "unweighted_v8_positive_rate": sum(
+                1 for i in ids if oracle[i] >= MEDIUM) / len(ids),
+            "design_weighted_v8_positive_rate": sum(
+                ht[i] for i in ids if oracle[i] >= MEDIUM) / sum(ht.values()),
+        }
+        print(f"DESIGN WEIGHTS: span {report['design_weights']['weight_span']:.1f}x; "
+              f"v8 positive rate unweighted "
+              f"{report['design_weights']['unweighted_v8_positive_rate']:.4%} vs weighted "
+              f"{report['design_weights']['design_weighted_v8_positive_rate']:.4%}\n")
+    else:
+        print("⚠️ NO DESIGN WEIGHTS in the corpus — every share below is a SAMPLE "
+              "quantity and the weighted arm is absent.\n")
+
     y = np.array([1 if i in set(good) else 0 for i in junk + good])
     for arm, fname in (("raw", "scores_raw.jsonl"), ("calibrated", "scores_calibrated.jsonl")):
         sc = load_scores(args.dump_dir / fname)
@@ -139,6 +203,19 @@ def main():
                 "recall_all_v8_positives": sum(1 for i in pos if sc[i] >= bar) / len(pos),
                 "specificity": sum(1 for i in neg if sc[i] < bar) / len(neg),
             })
+            if ht:
+                rows[-1].update({
+                    "junk_removed_share_weighted":
+                        sum(ht[i] for i in junk if sc[i] < bar) / w_junk,
+                    "good_kept_share_weighted":
+                        sum(ht[i] for i in good if sc[i] >= bar) / w_good,
+                    "recall_all_v8_positives_weighted":
+                        sum(ht[i] for i in pos if sc[i] >= bar)
+                        / sum(ht[i] for i in pos),
+                    "specificity_weighted":
+                        sum(ht[i] for i in neg if sc[i] < bar)
+                        / sum(ht[i] for i in neg),
+                })
         auc = float(roc_auc_score(y, np.array([sc[i] for i in junk + good])))
         report["arms"][arm] = {"auc_on_disputed_rows": auc, "sweep": rows}
         print(f"=== {arm} ===   AUC on the {len(junk)+len(good)} rows v7 surfaced: {auc:.4f}")
@@ -148,6 +225,15 @@ def main():
                   f"{r['junk_removed_share']:6.1%} {r['good_kept']:>4}/{r['good_total']} "
                   f"{r['good_kept_share']:6.1%} {r['recall_all_v8_positives']:8.3f} "
                   f"{r['specificity']:8.4f}")
+        if ht:
+            print(f"  -- design-weighted (HT, w = 1/inclusion_probability) --")
+            print(f"  {'bar':>5} {'junk removed':>13} {'good kept':>11} "
+                  f"{'recall':>8} {'spec':>8}")
+            for r in rows:
+                print(f"  {r['bar']:5.2f} {r['junk_removed_share_weighted']:12.1%} "
+                      f"{r['good_kept_share_weighted']:11.1%} "
+                      f"{r['recall_all_v8_positives_weighted']:8.3f} "
+                      f"{r['specificity_weighted']:8.4f}")
         print()
 
     base = float(roc_auc_score(y, np.array([v7[i] for i in junk + good])))

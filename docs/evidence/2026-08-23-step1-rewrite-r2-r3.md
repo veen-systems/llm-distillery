@@ -17,6 +17,9 @@ every number that matters is reproduced below).
 Yesterday's read was *"Gemini ignores step 1"*. That was wrong. Reading the **dimension-level**
 output (not the weighted average) showed Gemini's v8 scores on the arrest row were **unchanged
 from v7** — `evidence_level` 7.0 in all three runs, so the gatekeeper never got a chance.
+⚠️ **That "in all three runs" is a null on an instrument that moves**: §3 measures Gemini's
+run-to-run spread on this suite at mean 0.595, **max 5.250**, before the rewrite — so a
+dimension holding at 7.0 across three runs could have differed and did not.
 DeepSeek's "pass" on that row was **step 2b alone**: its non-evidence dims sat at 5–6, meaning
 **step 1 fired on neither oracle**.
 

@@ -111,7 +111,11 @@ today's are all batch **64**. Re-running the original 09-04 scripts unchanged to
 e5-small GPU 2.33–2.34, student 25.8 (batch 16), CPU probe 38.7 (batch 32) — so **the same
 script at the same batch reproduces today's number, not yesterday's**, which eliminates script
 shape and batch as the cause of the session difference. Batch-matched, student ÷ probe is
-**11.07× vs 11.68×, 5.2% apart** — better than the table shows.
+**11.07× vs 11.68×, 5.2% apart** — better than the table shows. ⚠️ **And 5.2% is inside this
+document's own band for that ratio's noisy leg**: §4 measured the e5-small GPU arm across
+**three runs** on one box in one day (2.332 / 4.746 / 2.345) — the extremes **2.04×** apart —
+against 0.03% and 0.31% reproducibility for the two stable arms. So the two ratios are **not distinguishable**;
+"closer than the table shows" is the honest reading, an ordering between them is not.
 
 ⭐ **`r*` is now a like-for-like comparison** (full e5-large probe on both sides), which it was
 not when this file first published it.

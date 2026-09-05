@@ -5,6 +5,7 @@
 <!-- verify: python3 scripts/verification/check_index_budget.py --target loaded -->
 <!-- verify: python3 scripts/verification/check_index_budget.py --target pointers -->
 <!-- verify: python3 scripts/verification/check_doc_claims.py -->
+<!-- verify: python3 scripts/verification/check_claim_shapes.py -->
 
 ⚠️ **This index is budgeted in SIZE, not lines** (bytes — the guard reads `"rb"`; say bytes when quoting it). It reached **54,808 chars in 91 lines** on 2026-08-15 (up 69% in three days) because entries grow by lengthening, so a line-count heuristic never fires. Session detail belongs in `project_session_*.md`; an entry here is a hook that answers *should I open that file?* ⛔ **This file is NOT auto-loaded** — it is reached by a `CLAUDE.md` pointer row. The always-loaded layer is `CLAUDE.md` plus the USER auto-memory index, budgeted together by `--target loaded` (#138).
 

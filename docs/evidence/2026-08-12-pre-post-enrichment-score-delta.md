@@ -58,7 +58,10 @@ before the adapter supplies the head. Benign, and now checked rather than assume
 
 Measured, not inherited: `score_batch` run twice under different orderings gave
 **identical** scores on all 300 units (max \|Δ\| 0.000000), and `score_batch` and
-`score_article` agree to 0.000000 as well.
+`score_article` agree to 0.000000 as well. ⭐ **The same harness DOES report differences
+elsewhere** — max \|Δ\| **0.16** on `uplifting v7` held-out rows, which is #95 itself — so
+0.000000 here is a null result on a live instrument, not a comparison that could not have
+come out any other way.
 
 So **#95's \|0.16\| band does not apply to this measurement.** That band is real on
 `uplifting v7` held-out rows and it is the wrong instrument here — a different

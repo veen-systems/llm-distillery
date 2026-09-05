@@ -119,7 +119,7 @@ reason better than "the ADR says so".
 
 ---
 
-## The Phase 8 decision, in one table
+## The Phase 8 decision, in two tables — the sample, and the population
 
 The op-point is the only untried lever and it costs nothing to move. Raw arm:
 
@@ -130,6 +130,46 @@ The op-point is the only untried lever and it costs nothing to move. Raw arm:
 | 4.00 | 82.8% | 73.3% | 0.9664 |
 | **4.50 (inherited)** | **90.8%** | **56.7%** | **0.9856** |
 | 5.00 | 96.6% | 23.3% | 0.9952 |
+
+⭐ **ADDED 2026-09-05 — THE DESIGN-WEIGHTED ARM, and it does not change the decision.** The
+660-row split is drawn under a stratified design spanning **25.1×** in `inclusion_probability`
+(`docs/evidence/2026-08-29-v8-corpus-draw/`), so every share above describes the rows drawn,
+not the corpus. `phase_c_outcome.py` now prints both arms; Horvitz–Thompson weighted, raw:
+
+| bar | junk removed | good kept | specificity | (unweighted, for comparison) |
+|---|---|---|---|---|
+| 3.00 | 62.7% | 90.0% | 0.9432 | 62.1% / 90.0% |
+| 3.75 | 80.0% | 80.1% | 0.9715 | 78.2% / 80.0% |
+| 4.00 | 84.9% | 73.4% | 0.9797 | 82.8% / 73.3% |
+| **4.50 (inherited)** | **92.4%** | **56.8%** | **0.9932** | **90.8% / 56.7%** |
+| 5.00 | 97.4% | 23.5% | 0.9983 | 96.6% / 23.3% |
+
+⛔ **What the weighting moves most is the base rate, and the trade least.** v8's positive rate
+goes **5.3030% → 3.1638%**. ⚠️ *That ratio is 1.6762; EXP-024 prints the same two rates off the
+same 660 rows and the same field, so the agreement is guaranteed by construction and is not a
+cross-check — and the ratio itself appears in no EXP-024 artifact.*
+
+Maxima of |weighted − unweighted|, **over all 7 bars and BOTH arms** (`phase_c_outcome.json`):
+
+| quantity | max shift | where |
+|---|---|---|
+| junk removed | **+2.44 pp** | calibrated, bar 4.00 (raw's own max is +2.27 at 4.25) |
+| good kept | **+0.20 pp** | calibrated, bar 4.50 |
+| **specificity** | **+2.65 pp** | raw, bar 3.00 |
+| recall | **−8.51 pp** | raw, bar 3.50 |
+
+⭐ **So the trade the owner is choosing between has the same shape on either arm, and 4.5 does
+not become a different decision when weighted.** ⚠️ **But note which two quantities move
+least.** Specificity — ADR-023's own criterion — moves up to 2.65 pp, always upward, and recall
+up to 8.51 pp downward; both are rates over the whole split, where the design over-samples
+positives. Junk-removed and good-kept are conditional on the v7-surfaced partition, which is
+why they are the stabler instrument for this decision and also why quoting only them
+understates how much the weighting matters elsewhere.
+
+⚠️ **Neither arm carries a band**; the junk/good columns rest on 87 + 30 rows. ⚠️ **The
+specificity column has a different denominator from its neighbours** — 625 negatives over the
+whole 660-row split, not the 117 v7 surfaced (`phase_c_outcome.py`, `neg = [...]`); three
+columns, two populations, one table.
 
 ⭐ **Under ADR-023 the inherited 4.5 is defensible and possibly right.** *"A false positive
 costs a reader; a false negative costs nothing visible."* Moving 4.5 → 4.0 buys 5 good
@@ -148,9 +188,11 @@ that choice on the **calibrated** scale, since 4.5 means something different the
 **What v8 has bought, measured:** 90.8% (raw) / 94.3% (calibrated) of the content v7 wrongly
 surfaced is gone, on held-out data, with +0.12 AUC over v7 on the disputed rows. The prompt
 work that took most of the spend (v8.4, the class-A adjudication) reached the student.
+⚠️ **Unweighted sample shares**, like every figure in this ledger — design-weighted they are
+92.4% / 95.0%, per the table above. The rule stated there applies to the shares *below* it too.
 
 **What it costs:** 43–60% of the content both definitions agree is good, at the inherited
-op-point. Real, and the reason to hold Phase 8 open rather than deploy on these numbers.
+op-point (**design-weighted 43.2–59.8%** — the weighting moves this by at most 0.2 pp). Real, and the reason to hold Phase 8 open rather than deploy on these numbers.
 
 **What is still unproven:** the student under-learns class-A on the highest-scoring rows
 (2 of 6, both scored ~5 against an oracle ~1); the multilingual recall question is
@@ -165,7 +207,7 @@ unmeasurable at 8 non-Latin positives (#141); and the op-point is inherited, not
 | file | what it is |
 |---|---|
 | `phase_c_outcome.py` | the analysis, committed so every number above is reproducible |
-| `phase_c_outcome.json` | its full output including both sweeps |
+| `phase_c_outcome.json` | its full output: 2 arms × unweighted and design-weighted = 4 sweeps |
 | `phase_c_outcome.txt` | the console run, verbatim |
 
 ⚠️ The per-row score dumps it reads are **not committed** — they carry ids for corpus rows

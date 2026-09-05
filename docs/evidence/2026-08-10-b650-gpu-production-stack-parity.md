@@ -5,7 +5,10 @@
 ## One-line answer
 
 **Pinning production's library versions clears the box — 660/660 rows bit-identical,
-zero verdict flips at every threshold — WITH THE DEVICE HELD AT CPU.** Two different
+zero verdict flips at every threshold — WITH THE DEVICE HELD AT CPU.** ⭐ **This null is a
+measurement, not a dead comparison:** the same 660-row instrument reports 15/660 differing
+rows and 3 verdict flips at 4.5 for the library-stack term and 4/660 with 3 flips for the
+device term (§ the three-term table below), so it demonstrably could have said no here. Two different
 physical machines, and not one score differs. ⚠️ *"completely" was the wording here
 until 2026-08-29 and it overstates: every run below is CPU, production serves on GPU,
 and CUDA-to-CUDA across boxes has never been measured. This sentence is the one that
@@ -48,7 +51,11 @@ same input order.
 
 **Host contributes exactly nothing.** Two different machines — an LXC container
 on one site, a desktop on another, different CPUs — produce **byte-identical
-scores on all 660 articles** once the library versions match. Even the python
+scores on all 660 articles** once the library versions match. ⭐ **The two rows directly
+above are the proof this instrument can report a difference** — the same comparison over the
+same 660 rows returns 15 rows differing for the stack term and 4 for the device term, with 3
+verdict flips each — so the host row's zero **could have differed and did not**, which is a
+null result rather than an instrument pointed where it cannot produce a positive. Even the python
 patch level differs (3.11.2 vs 3.11.15) and it does not matter.
 
 **The library stack is worth 3 verdict flips at 4.5** and 0 at 4.0.
