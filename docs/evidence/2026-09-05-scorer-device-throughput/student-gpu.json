@@ -14,18 +14,18 @@
   "arms": {
     "student, GPU": {
       "repeats": 3,
-      "ms_per_article_median": 24.733,
-      "ms_per_article_min": 24.732,
-      "ms_per_article_max": 24.74,
+      "ms_per_article_median": 24.74,
+      "ms_per_article_min": 24.739,
+      "ms_per_article_max": 24.741,
       "ms_per_article_all": [
-        24.732,
+        24.741,
         24.74,
-        24.733
+        24.739
       ],
-      "spread_pct_of_median": 0.03,
+      "spread_pct_of_median": 0.01,
       "rows": 660,
       "device_verified": [
-        "no embedding model in this arm"
+        "cuda:0"
       ]
     }
   }

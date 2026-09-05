@@ -1,0 +1,18 @@
+# Probes rescued from b650-gpu:/tmp on 2026-09-05.
+# /tmp does not survive a reboot and the box had 36 days uptime, so these were one restart from gone.
+# Found only after a review pointed out that a find rooted at filters/** could not reach /tmp,
+# which is how this document came to claim the e5-large probe had never been retained.
+# Location now: b650-gpu:~/llm-distillery/rescued_probes/  -- NOT in git; committing them is an owner decision.
+#
+# sha256  bytes  file  input_dim  output_dim  probe_type
+71839a8e6dcf6ab0f4eb1130606668df1284ffbfe503ee6d48d3e85006b8dad4  541033  embedding_probe_e5small.pkl 384 6 mlp
+a858655aff61d8789bca176682bbe9e176828e5a0fc97fec812faa356ffbe21f  541039  probe_belonging_v1_recall.pkl 384 6 mlp
+4f27f7442d04c8d970826cf779e6d0999562d39da3f2469626311636031c0c88  540513  probe_cultural_discovery_v5_recall.pkl 384 5 mlp
+f3f659703d30afb4e1d0f4bb0e363ba757b589e2c4cc5cd730e72e0de26923cc  1211967  probe_e5large.pkl 1024 6 mlp
+0edc174354cfd4d5befff323ab908a0f1f042018c361138541ce595a99ea50f4  541039  probe_investment_risk_v6_recall.pkl 384 6 mlp
+6a42b2c1520425848052db546b156e43f11e837b1d52e38c9f6a7f605e1dc4e9  1211809  probe_reg_large.pkl 1024 6 mlp
+f8d879fdce4e25f505503dc2b0e41f3fbe80bf054edc8b3440814315dabb1765  541089  probe_reg_small.pkl 384 6 mlp
+4a34a1dda6fd43792b217a61ffb4d1b3232f695b56ef8c059b90a703223e84dd  541144  probe_seed42.pkl 384 6 mlp
+3403fc2beda9c0e39dd7dac76ddc378e8361b76e71c5139d912280820c970e88  541144  probe_seed7.pkl 384 6 mlp
+6882021e991ccb02d31c3af357b20bc2c6ee49c90334af07623c732edd1f33d5  541039  probe_uplifting_v7_recall.pkl 384 6 mlp
+ccbebe9f0c749416827a96638a270b0e8f9da9306ec29755affe2da8c8ea9379  541259  probe_v2.pkl 384 6 mlp

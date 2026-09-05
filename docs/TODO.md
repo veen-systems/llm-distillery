@@ -2,11 +2,13 @@
 
 ## 🔵 NEXT SESSION — **phase 8 GATE. Not "does v8 pass" — "how much good content is the last few points of junk removal worth?"**
 
-> **Updated 2026-09-04 (third session).** Session records:
-> `memory/project_session_2026_09_04.md` and `memory/project_session_2026_09_04_evening.md`.
+> **Updated 2026-09-05.** Session records: `memory/project_session_2026_09_04.md`,
+> `..._evening.md`, `..._late.md` and `memory/project_session_2026_09_05.md`.
 > Runs: **EXP-015** (training), **EXP-016** (probe + calibration), **EXP-017** (Phase C
 > review), **EXP-018** (e5-large), **EXP-019** (regression probes), **EXP-020** (gating),
-> **EXP-021** (production overhead) in `experiments/registry.jsonl`, with
+> **EXP-021** (production overhead), **EXP-022** (device throughput) in
+> `experiments/registry.jsonl`, with `docs/evidence/2026-09-04-scoring-overhead/`,
+> `docs/evidence/2026-09-05-scorer-device-throughput/`, and
 > `docs/evidence/2026-09-04-v8-checkpoint-selection/` and
 > `docs/evidence/2026-09-04-v8-probe-calibration/`. State:
 > `filters/human_thriving/v8/STATUS.md`, `filters/human_thriving/v8/calibration_report.md`.
@@ -41,10 +43,17 @@ filter. Not chased; worth one look before the next deploy.
    trained as a *screen*. Regression-objective probes at both encoder sizes still lose to the
    student, and the decision rule was fixed **before** the run (replacement requires the paired
    bootstrap CI on ΔAUC to include zero; it does not). ⛔ **Do not carry "e5-large is the cheap option" out of this.** It closes 70% of the gap
-   and `IS_THE_PROBE_ENOUGH.md` rules it out **on cost**: ~27% cheaper than the student for
-   AUC 0.9016 against 0.9474 (26.79 vs 43.70 ms on GPU = 1.6×), and 7.2× e5-small's cost.
-   `EXP-020` goes further — the adopted 89% routing is the only reason e5-large-alone looks
-   competitive at all, and past ~53% the two-stage design wins on cost *and* quality.
+   and `IS_THE_PROBE_ENOUGH.md` rules it out **on cost** for AUC 0.9016 against the student's
+   0.9474. ⚠️ **Two different cost comparisons were spliced into one sentence here on
+   2026-09-04 and the splice survived a review**: the *"~27% cheaper"* is
+   `IS_THE_PROBE_ENOUGH.md`'s CPU-scaled estimate, while the GPU pair 26.79 vs 43.70 ms is
+   **38.7% cheaper (1.63×)**. Quote one or the other, and per **EXP-022** quote neither
+   absolute without a band — the b650 figures moved 1.60× between sessions. `EXP-020` goes
+   further: the adopted 89% routing is the only reason e5-large-alone looks competitive at
+   all, and past the break-even the two-stage design wins on cost *and* quality.
+   ⛔ **That break-even is ~53% on EXP-020's numbers and 56.6% on EXP-022's, and the two are
+   not a reproduction** — the e5-large term changed from a full probe to encoder-only. Use
+   EXP-020's for the ruling it supports; do not present the pair as agreement.
 3. **"89% pass-through does not sound needle" — `GATING_DECISION.md`, EXP-020.** The 2026-08-28
    hold ruling **survives**, on its own stated premise. Harder gating is available at ~1 needle
    in 35, and ⛔ **tightening has a non-compute cost nobody had written down**: the probe's own
@@ -97,22 +106,54 @@ with repeats, retained JSON and captured environment.
 
 ⛔ **The first re-run reported CUDA as CPU** — 2.37 ms against GPU's 2.34, because
 `EmbeddingStage` caches models on the **model name alone** and ignores `device` on a cache hit
-(`embedding_stage.py:112/213`). True CPU figure **42.41 ms, 18× slower**. **The only tell was
-that the two agreed.** Filed **#146**; the same dict is read/written by NexusMind's
-`story_dedup.py:861`, so it spans two repos. ⚠️ Latent — no two current consumers share a
-model name.
+(`embedding_stage.py:112`, read back at `:214`). True CPU figure **42.41 ms, 18× slower**.
+**The only tell was that the two agreed.** Filed **#146** (the cache defect); the same dict is
+read (`:861`) and written (`:881`) by NexusMind's `story_dedup.py`, so it spans two repos.
+⚠️ **Latent, and the first wording of why was false**: fourteen filter configs *do* share
+`multilingual-e5-small`. What makes it latent is the **device** axis — none of them passes
+`device`, so all resolve identically at `embedding_stage.py:141-142`. The claim is about
+`(name, device)` pairs.
 
 ⭐⭐ **The repeats were in the wrong place.** Within-run spread **0.03–0.61%**; between sessions
 on the same box, e5-small GPU moved **1.60×** (3.74 → 2.332). ⛔ **So do not quote a b650
-absolute without a band.** What *does* travel is the ratio the conclusions rest on:
-student ÷ probe **11.68× → 10.61×**, break-even routing **0.5275 → 0.5657**. ⛔ The CPU/GPU
-ratio does **not** (12.62× → 18.19×) — never quote "CPU is N× slower".
+absolute without a band.** What *does* travel is the one ratio the conclusions rest on:
+student ÷ probe **11.68× → 10.61×** (9.2% apart, base = the 2026-09-04 value). ⛔ The CPU/GPU
+ratio does **not** (12.62× → 18.19×, 44% apart) — never quote "CPU is N× slower". ⛔ And the
+break-even is **not** a third travelling ratio: its e5-large term changed definition between
+the two runs, so 0.5275 → 0.5657 is confounded, not a reproduction.
 
 ✅ **EXP-018/019/020's conclusions are unchanged.** Two-stage at the adopted 89% routing saves
-**1.57%** against student-on-everything (2.5% before); break-even is **56.6%** routing.
+**1.57%** against student-on-everything (**2.44%** on the same arithmetic before — EXP-019's
+prose says 2.5%, computed off a rounded 42.6 ms).
 
-⚠️ **e5-large is encoder-only here** — its EXP-018/019 probe head was never retained, so those
-two timings are not reproducible without retraining. Not the same quantity; do not compare.
+⛔⛔ **AND THEN THE REVIEW FOUND FIVE DEFECTS IN THAT WORK — `EXP-023` supersedes `EXP-022`.**
+The worst: *"the e5-large probe was never retained"* was **false**. It was at
+`b650-gpu:/tmp/probe_e5large.pkl` the whole time, together with **ten others** including both
+EXP-019 regression heads and the seed-42/seed-7 pair — on a box with 36 days of uptime, one
+reboot from gone. My `find` was rooted at `/home/jeroen`, which cannot reach `/tmp`: **the
+instrument could not have said yes.** All rescued to `~/llm-distillery/rescued_probes/`;
+manifest committed. ⚠️ **They are not in git — an owner decision, not something to do
+silently.**
+
+⭐ **Full e5-large probe: 16.417 ms/article**, against encoder-only 16.514 — **the MLP head is
+free**, so the substitution was numerically harmless, which is precisely why nobody re-checked
+the premise. Corrected figures: student ÷ probe **10.55×**, break-even **56.9%** (now
+like-for-like), two-stage saving **1.52%**. **EXP-018/019/020's conclusions still stand.**
+
+⭐⭐ **The variance is arm-specific, not a session effect.** Three runs of the e5-small GPU arm
+the same day: **2.332 / 4.746 / 2.345** — 2.04× apart — while the student and CPU arms
+reproduced to 0.03% and 0.31%. The unstable one is the **short** arm (~1.5 s of work), and run 2
+coincided with another process benchmarking the same GPU. ⛔ **Cause not established** —
+registered as **H-V8-21** with a method and a falsifier. The "0.03–0.61% spread" `EXP-022`
+published was a property of four quiet processes, not of the arms; 32% and 111% appeared later.
+
+⚠️ Four further corrections in `EXP-023`: the encoder arm truncated 27.7% of the corpus; the
+student's "unknown provenance" was two commands away on the box; *"the only tell was that the
+two numbers agreed"* was false (**EXP-019 already recorded 47.2 ms** for that arm — a 20×
+disagreement in the registry this work was repairing); and `device_verified` was recorded but
+never **asserted**, so an all-arms wrapper would have re-created #146 and exited 0.
+⛔ **The mechanical battery was green throughout and found none of it. Four of the six came
+from a reviewer going and looking on the machine.**
 
 ### ⛔ Read before touching phase 8
 

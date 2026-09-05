@@ -123,11 +123,14 @@ them** — each exists because something shipped broken.
   `git checkout .`, `git clean`. Always pass explicit paths; `git status --porcelain`
   before committing and stage only what you recognise.
 - **`pgrep -f "<pattern>"` cannot answer "is it running?" — and neither can
-  `systemctl is-active <one-unit>`.** *(6th occurrence 2026-08-26 — the service
-  manager answers for the unit you NAME: `nexusmind.service` read `inactive`
-  while the **chained** `nexusmind-cleanup.service` ran the very code the deploy
-  was replacing. 5th 2026-08-25 — a wait-loop matched ITSELF via its own echo and
-  waited forever.)* **Enumerate the units, then ask all of them**
+  `systemctl is-active <one-unit>`.** *(The service manager answers for the unit
+  you NAME: `nexusmind.service` read `inactive` while the **chained**
+  `nexusmind-cleanup.service` ran the very code the deploy was replacing. And a
+  wait-loop matching ITSELF, twice — most recently a `pgrep` inside the very ssh
+  command carrying the pattern.)* → **`memory/working-rules.md` holds the
+  occurrence COUNT and the evidence; this file deliberately restates neither**
+  (#133 — a count here can only go stale, and this bullet's did). **Enumerate the
+  units, then ask all of them**
   (`systemctl list-units 'nexusmind*' --all`); `OnSuccess=`/`Requires=` chains are
   part of what "is it running?" means. `pgrep`/`pkill -f` additionally match the
   shell carrying the pattern — use `ps -eo pid,etime,args | grep -v grep` or the

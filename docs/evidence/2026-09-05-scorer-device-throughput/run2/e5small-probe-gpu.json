@@ -14,17 +14,17 @@
   "arms": {
     "e5-small probe, GPU": {
       "repeats": 5,
-      "ms_per_article_median": 2.332,
-      "ms_per_article_min": 2.327,
-      "ms_per_article_max": 2.34,
+      "ms_per_article_median": 4.746,
+      "ms_per_article_min": 4.716,
+      "ms_per_article_max": 4.779,
       "ms_per_article_all": [
-        2.327,
-        2.331,
-        2.332,
-        2.34,
-        2.34
+        4.73,
+        4.766,
+        4.746,
+        4.779,
+        4.716
       ],
-      "spread_pct_of_median": 0.57,
+      "spread_pct_of_median": 1.33,
       "rows": 660,
       "device_verified": [
         "cuda:0"

@@ -5906,7 +5906,7 @@ peer — is **false as stated**; and the instrument **cannot express "CPU" at al
 CPU branches log a phrase without the word `using`. A set of size 1 is produced identically by
 1 of 8 runs and by 8 of 8; `devices` was a set and was never counted.
 
-## 2026-09-05 — `pgrep -f` matched its own wait-loop again, 7th occurrence
+## 2026-09-05 — `pgrep -f` matched its own wait-loop TWICE in one session (7th and 8th)
 **Problem**: Waited for a remote benchmark with
 `ssh b650-gpu 'while pgrep -f "bench_devices.py --arm student-gpu"; do sleep 5; done; ...'`.
 It never returned and was killed at the timeout (**exit 143**) — while the benchmark itself
@@ -5923,22 +5923,32 @@ whose positive was guaranteed.
 ⚠️ **The tell was available and I did not use it**: an earlier command in the same session had
 already listed the process with `ps -eo pid,etime,args`, which shows the loop and the job as
 separate lines. `pgrep` collapses exactly the distinction that matters.
+⛔⛔ **AND I DID IT AGAIN ~40 MINUTES AFTER WRITING THIS ENTRY.** Same session, same box, same
+shape: `ssh b650-gpu 'while pgrep -f "venv/bin/python benchmark_devices.py"; do sleep 5; done'`
+— exit **143** again. **8th occurrence.** I had just written the paragraph above, in this file,
+naming the mechanism and the remedy. ⭐ *Articulating the rule is not applying it, and the gap
+here was under an hour.* The remedy that would have worked both times is the one already
+written down and still not used: **wait on the ARTIFACT the job produces, never on the job.**
 
 ## 2026-09-05 — a benchmark reported CUDA twice and called one of them CPU
 **Problem**: Measuring v8 throughput by device, the CPU arm read **2.37 ms/article** against
 the GPU arm's **2.34** — a 1% difference between two devices. Measured properly, CPU is
 **42.41 ms/article**, **18× slower**.
 **Root cause**: `filters/common/embedding_stage.py:112` caches loaded models in a class-level
-dict keyed on the **model name alone**. On a cache hit (`:213`) the `device` argument is never
+dict keyed on the **model name alone**. On a cache hit (`:214`) the `device` argument is never
 consulted, so the second `EmbeddingStage(..., device="cpu")` in the process got the
 CUDA-resident model — while `self.device` still read `"cpu"`, and `self.device` *is* honoured
 at `:195` and `:284` for the probe head and the input tensors. **Half the object obeys the
 flag and half ignores it, so nothing crashes.**
 **Fix**: one arm per process, and the script now **reads the device back off the loaded
 model** instead of trusting the flag it passed. Filed **llm-distillery#146** — the same dict
-is read and written by `NexusMind/src/preprocessing/story_dedup.py:861`, so the cache spans
-two repos and each side believes it chooses the device. ⚠️ Latent, not live: checked, and no
-two current consumers share a model name.
+is read (`:861`) and written (`:881`) by `NexusMind/src/preprocessing/story_dedup.py`, so the
+cache spans two repos and each side believes it chooses the device.
+⚠️ **Latent, not live — and my first statement of WHY was false.** I wrote *"no two current
+consumers share a model name"*; **fourteen** filter configs name `multilingual-e5-small`. The
+latency is on the **device** axis: none of them passes `device`, so all resolve identically at
+`embedding_stage.py:141-142`. ⭐ *The claim was true of `(name, device)` pairs and false of
+names, and I asserted the wrong one of the two in four files.*
 ⭐⭐ **THE ONLY TELL WAS THAT THE TWO NUMBERS AGREED.** A 20× error was visible; a 20% one
 would have shipped. *When two arms of an experiment are supposed to differ and don't, that is
 a result about the instrument before it is a result about the world.*
@@ -5948,3 +5958,39 @@ e5-small GPU moved **1.60×** (3.74 → 2.332). **Repeats inside one process mea
 process, not the quantity** — a figure quoted to three significant figures from five such
 repeats is precise about one run. What changed between sessions was not identified, and no
 cause is claimed.
+
+## 2026-09-05 — I searched for an artifact where it could not be, then published the negative
+**Problem**: Wrote *"the e5-large probes from EXP-018/019 were never retained"* in four places
+and substituted an **encoder-only** measurement for the missing arm. The probe was at
+`b650-gpu:/tmp/probe_e5large.pkl` (1,211,967 B, `input_dim 1024`, `output_dim 6`) the whole
+time — and it was not alone: **eleven probes were in that `/tmp`**, including both EXP-019
+regression heads and the seed-42/seed-7 pair from the reproducibility work.
+**Root cause**: my search was `find /home/jeroen -maxdepth 8 -name "*.pkl"`. `/tmp` is not
+under `/home/jeroen`. ⛔ **The instrument could not have said yes**, which is this repo's first
+working rule, and I broke it inside a document written about instruments that cannot say what
+they claim.
+⚠️ **A 36-day uptime meant they were one reboot from gone.** Copied to
+`~/llm-distillery/rescued_probes/`; manifest with sha256s committed at
+`docs/evidence/2026-09-05-scorer-device-throughput/rescued_probes_manifest.txt`. They are
+**not** in git — an owner decision, not something to do silently.
+⭐⭐ **The uncomfortable part is that the substitution was numerically harmless**: the full
+probe reads **16.417 ms** against the encoder-only **16.514** — the MLP head is free. **A
+harmless-looking substitution is exactly what stops anyone re-checking the premise**, and the
+premise was false.
+⭐ **What found it was going and looking on the machine.** Four of the six defects in this
+work were found that way, by a reviewer, not by reading code and not by 667 green tests.
+
+## 2026-09-05 — rewriting an artifact made nine registry metrics untraceable
+**Problem**: Corrected `EXP-022`'s write-up in place. `check_experiment_registry.py` then
+failed with **9 FAILURES**: metrics recorded in the append-only registry no longer appeared in
+any cited artifact.
+**Root cause**: the registry's append-only rule protects the **entry**, and I had assumed that
+was enough. It is not — an entry is a pointer, and rewriting what it points at destroys the
+evidence while leaving the claim. **The record that a number was once believed survived; the
+number did not.**
+**Fix**: §7 of the write-up now keeps `EXP-022`'s figures verbatim in a superseded table, with
+what moved and why. Checker back to `entries 23  metrics checked 298  untraceable 0`.
+⭐ **The guard did the thing a guard is for: it refused work I was confident about.** I would
+have committed the rewrite without noticing, because every number in the *new* document was
+correct. **Correcting a document is a delete of its predecessor unless you carry the old
+values forward.**

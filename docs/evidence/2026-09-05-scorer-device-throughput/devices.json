@@ -11,56 +11,90 @@
     "split": "datasets/training/human_thriving_v8/test.jsonl",
     "note": "model load EXCLUDED via a warm-up pass; b650-gpu is NOT gpu-server",
     "one_arm_per_process": true,
-    "measured": "2026-09-05"
+    "merged_from": [
+      "e5large-encoder-gpu.json",
+      "e5large-probe-gpu.json",
+      "e5small-probe-cpu.json",
+      "e5small-probe-gpu.json",
+      "student-gpu.json"
+    ]
   },
   "arms": {
     "e5-large encoder-only, GPU": {
       "repeats": 5,
-      "ms_per_article_median": 16.324,
-      "ms_per_article_min": 16.275,
-      "ms_per_article_max": 16.375,
+      "ms_per_article_median": 16.514,
+      "ms_per_article_min": 16.471,
+      "ms_per_article_max": 16.546,
       "ms_per_article_all": [
-        16.275,
-        16.311,
-        16.324,
-        16.339,
-        16.375
+        16.471,
+        16.51,
+        16.514,
+        16.539,
+        16.546
       ],
-      "spread_pct_of_median": 0.61,
+      "spread_pct_of_median": 0.45,
       "rows": 660,
       "device_verified": [
-        "no embedding model in this arm"
+        "cuda:0"
+      ]
+    },
+    "e5-large probe, GPU": {
+      "repeats": 5,
+      "ms_per_article_median": 16.417,
+      "ms_per_article_min": 16.327,
+      "ms_per_article_max": 16.446,
+      "ms_per_article_all": [
+        16.327,
+        16.392,
+        16.417,
+        16.434,
+        16.446
+      ],
+      "spread_pct_of_median": 0.72,
+      "rows": 660,
+      "device_verified": [
+        "cuda:0"
       ]
     },
     "e5-small probe, CPU": {
       "repeats": 3,
-      "ms_per_article_median": 42.409,
-      "ms_per_article_min": 42.398,
-      "ms_per_article_max": 42.472,
+      "ms_per_article_median": 42.541,
+      "ms_per_article_min": 42.508,
+      "ms_per_article_max": 42.559,
       "ms_per_article_all": [
-        42.398,
-        42.472,
-        42.409
+        42.559,
+        42.541,
+        42.508
       ],
-      "spread_pct_of_median": 0.17,
+      "spread_pct_of_median": 0.12,
       "rows": 660,
       "device_verified": [
         "cpu"
       ]
     },
     "e5-small probe, GPU": {
-      "repeats": 5,
-      "ms_per_article_median": 2.332,
-      "ms_per_article_min": 2.327,
-      "ms_per_article_max": 2.34,
+      "repeats": 15,
+      "ms_per_article_median": 2.345,
+      "ms_per_article_min": 2.328,
+      "ms_per_article_max": 2.354,
       "ms_per_article_all": [
-        2.327,
+        2.328,
         2.331,
+        2.328,
         2.332,
+        2.337,
         2.34,
-        2.34
+        2.343,
+        2.346,
+        2.345,
+        2.345,
+        2.346,
+        2.346,
+        2.349,
+        2.352,
+        2.354
       ],
-      "spread_pct_of_median": 0.57,
+      "spread_pct_of_median": 1.13,
       "rows": 660,
       "device_verified": [
         "cuda:0"
@@ -68,18 +102,18 @@
     },
     "student, GPU": {
       "repeats": 3,
-      "ms_per_article_median": 24.733,
-      "ms_per_article_min": 24.732,
-      "ms_per_article_max": 24.74,
+      "ms_per_article_median": 24.74,
+      "ms_per_article_min": 24.739,
+      "ms_per_article_max": 24.741,
       "ms_per_article_all": [
-        24.732,
+        24.741,
         24.74,
-        24.733
+        24.739
       ],
-      "spread_pct_of_median": 0.03,
+      "spread_pct_of_median": 0.01,
       "rows": 660,
       "device_verified": [
-        "no embedding model in this arm"
+        "cuda:0"
       ]
     }
   }

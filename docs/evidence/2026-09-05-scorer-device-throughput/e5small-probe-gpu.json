@@ -12,20 +12,32 @@
     "note": "model load EXCLUDED via a warm-up pass; b650-gpu is NOT gpu-server"
   },
   "arms": {
-    "e5-small probe, CPU": {
-      "repeats": 3,
-      "ms_per_article_median": 42.541,
-      "ms_per_article_min": 42.508,
-      "ms_per_article_max": 42.559,
+    "e5-small probe, GPU": {
+      "repeats": 15,
+      "ms_per_article_median": 2.345,
+      "ms_per_article_min": 2.328,
+      "ms_per_article_max": 2.354,
       "ms_per_article_all": [
-        42.559,
-        42.541,
-        42.508
+        2.328,
+        2.331,
+        2.328,
+        2.332,
+        2.337,
+        2.34,
+        2.343,
+        2.346,
+        2.345,
+        2.345,
+        2.346,
+        2.346,
+        2.349,
+        2.352,
+        2.354
       ],
-      "spread_pct_of_median": 0.12,
+      "spread_pct_of_median": 1.13,
       "rows": 660,
       "device_verified": [
-        "cpu"
+        "cuda:0"
       ]
     }
   }

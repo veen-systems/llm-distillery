@@ -14,20 +14,20 @@
   "arms": {
     "e5-large encoder-only, GPU": {
       "repeats": 5,
-      "ms_per_article_median": 16.324,
-      "ms_per_article_min": 16.275,
-      "ms_per_article_max": 16.375,
+      "ms_per_article_median": 16.514,
+      "ms_per_article_min": 16.471,
+      "ms_per_article_max": 16.546,
       "ms_per_article_all": [
-        16.275,
-        16.311,
-        16.324,
-        16.339,
-        16.375
+        16.471,
+        16.51,
+        16.514,
+        16.539,
+        16.546
       ],
-      "spread_pct_of_median": 0.61,
+      "spread_pct_of_median": 0.45,
       "rows": 660,
       "device_verified": [
-        "no embedding model in this arm"
+        "cuda:0"
       ]
     }
   }
