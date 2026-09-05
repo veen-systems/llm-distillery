@@ -16,6 +16,12 @@ Computed by that class, not reimplemented.
         --out probe_scores_test.jsonl
 """
 
+# design-weights: NOT APPLICABLE -- this script publishes no rate. It emits one row per
+# article ({"id", "probe_wa"}) and aggregates nothing, so there is no denominator for a
+# weight to correct. ⛔ The rows it emits ARE a design-weighted sample (25.1x span,
+# weights in datasets/scored/human_thriving_v8/corpus.jsonl): anything downstream that
+# turns this dump into a rate needs them.
+
 import argparse
 import json
 import logging

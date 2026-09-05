@@ -40,9 +40,14 @@ was demonstrated, not argued, and none is fixed by the current design:
      for a different bullet. Trigger is sentence-scoped, qualifier is
      paragraph-scoped, and the gap between them is real.
   2. **(d)'s trigger is a MENTION test while its exculpation is a USE test.** A
-     script that reads the population under a different path string, or through
-     an argparse default built elsewhere, is invisible; a script that only names
-     the path in a usage example is a site.
+     script that reads the population through an argparse default built in
+     another module is still invisible; a script that only names the path in a
+     usage example is still a site. ⭐ **Narrowed 2026-09-05 after review**: the
+     registry was two literal corpus paths, so five analyses reading
+     `test.jsonl` — the 660 design-weighted rows every v8 number is computed on —
+     were not sites at all. The three splits are registered now, and `CODE_ROOTS`
+     covers `training/`, `ground_truth/` and the rest of `scripts/` rather than
+     the three directories that happened to hold an offender that day.
   3. **A rewrap can move a claim out of a trigger.** Sentence-scoping (2026-09-05,
      after a review found exactly this: a fix rewrapped a line so the ordering
      verb and its two numbers no longer shared a physical line, and the site
@@ -64,6 +69,7 @@ a claim-shape check is easiest to fool. Re-run after each revision:
      a non-existent key, leaving the field's name in
      an error string and a JSON label                  -> design-weights-read  KILLED
   M6 add a [0.0, 0.0] interval to a registry row       -> zero-width-interval  KILLED
+  M7 delete the weight join from a split-reading arm   -> design-weights-read  KILLED
 
 ⛔ **M5 SURVIVED in the first version of this file, and it is the most important
 line here.** `_reads_field` then accepted any non-docstring string constant, so
@@ -103,7 +109,18 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 # claim outside them is unchecked, and moving a directory silently narrows the
 # instrument. Each is required to be non-empty (see `_walk`).
 DOC_ROOTS = ("docs/evidence", "docs/decisions")
-CODE_ROOTS = ("docs/evidence", "scripts/analysis", "scripts/diagnostics")
+# ⛔ WIDENED 2026-09-05 AFTER REVIEW. The first three roots were the ones that
+# happened to contain an offender on the day this was written, which is a
+# hand-built population — this project's most reliable source of measurement
+# error. An unweighted rate published from `training/`, `ground_truth/` or any
+# other `scripts/` directory was unchecked. The added roots contribute 0 sites
+# today; that is the point of adding them before one appears.
+# ⚠️ `filters/` is deliberately NOT here (167 files): it is production scoring
+# code, which consumes an article and emits a score, and publishes no rate over a
+# drawn population. If an analysis ever lands there, this list is wrong.
+CODE_ROOTS = ("docs/evidence", "scripts/analysis", "scripts/diagnostics",
+              "scripts/corpus", "scripts/gate", "scripts/calibration",
+              "scripts/normalization", "training", "ground_truth")
 # ⛔ `experiments/registry.jsonl` IS JSON-LINES AND WAS SILENTLY UNSCANNED. The
 # first version put "experiments" in the JSON scan roots with an `endswith(".json")`
 # filter — and `".jsonl".endswith((".json",))` is False, so the root contributed
@@ -198,17 +215,27 @@ MD_NULL_CONTROL_RE = re.compile(r"null control|null arm|against itself", re.I)
 # reads the DRAW MANIFEST and fails as CANNOT VERIFY if the manifest no longer
 # describes a weighted design. The registry says WHICH file; the manifest says
 # THAT it is weighted.
+_HT_MANIFEST = "docs/evidence/2026-08-29-v8-corpus-draw/corpus_manifest.json"
 DESIGN_WEIGHTED = {
     "datasets/scored/human_thriving_v8/corpus.jsonl": {
-        "field": "inclusion_probability",
-        "manifest": "docs/evidence/2026-08-29-v8-corpus-draw/corpus_manifest.json",
-    },
+        "field": "inclusion_probability", "manifest": _HT_MANIFEST},
     # The same file, under the name it has on b650-gpu where the GPU-side
     # scripts run. A path alias is still the same population.
     "datasets/ht_v8_corpus.jsonl": {
-        "field": "inclusion_probability",
-        "manifest": "docs/evidence/2026-08-29-v8-corpus-draw/corpus_manifest.json",
-    },
+        "field": "inclusion_probability", "manifest": _HT_MANIFEST},
+    # ⛔ THE SPLITS ARE THE SAME DRAWN SAMPLE, AND THEY WERE INVISIBLE. Review
+    # finding: the trigger matched two literal corpus paths, so five analyses
+    # reading `test.jsonl` — the 660 design-weighted rows every v8 number is
+    # computed on — were not sites at all. ⚠️ The weight does NOT live in the
+    # split file; it lives in `corpus.jsonl`, so "reads the weights" here means
+    # the script performs the join. That is exactly what `adr023_op_point_table.py`
+    # and `phase_c_outcome.py` do, and what the others do not.
+    "datasets/training/human_thriving_v8/test.jsonl": {
+        "field": "inclusion_probability", "manifest": _HT_MANIFEST},
+    "datasets/training/human_thriving_v8/val.jsonl": {
+        "field": "inclusion_probability", "manifest": _HT_MANIFEST},
+    "datasets/training/human_thriving_v8/train.jsonl": {
+        "field": "inclusion_probability", "manifest": _HT_MANIFEST},
 }
 # The opt-out. ⛔ IT MUST BE A REAL COMMENT, found by `tokenize` — an unanchored
 # regex over the file text exempted a declaration sitting inside a string literal
@@ -304,8 +331,17 @@ def _walk(roots, exts):
     found, per_root = [], {}
     for rel in roots:
         base = os.path.join(ROOT, rel)
-        here = []
-        for dirpath, dirnames, filenames in os.walk(base):
+        here, seen = [], set()
+        # ⚠️ `followlinks=True` because `os.walk`'s default silently contributes
+        # ZERO files for a symlinked evidence directory — a narrowed instrument
+        # with no signal, which is this file's whole subject. The realpath guard
+        # is what keeps that from looping.
+        for dirpath, dirnames, filenames in os.walk(base, followlinks=True):
+            real = os.path.realpath(dirpath)
+            if real in seen:
+                dirnames[:] = []
+                continue
+            seen.add(real)
             dirnames[:] = [d for d in dirnames
                            if d not in ("__pycache__", ".ipynb_checkpoints")]
             for fn in filenames:
@@ -316,9 +352,23 @@ def _walk(roots, exts):
     return sorted(set(found)), per_root
 
 
+class Undecodable(Exception):
+    """A file this check cannot read as UTF-8.
+
+    ⛔ IT USED TO BE `errors="replace"`, WHICH IS A SILENT WRONG ANSWER. `±` is a
+    `BAND_RE` token; a latin-1 markdown file loses it to a replacement character
+    and a properly-qualified ordering is reported as unqualified. A file the
+    instrument cannot read is CANNOT VERIFY, never a FAIL and never a PASS.
+    """
+
+
 def _lines(rel):
-    with open(os.path.join(ROOT, rel), encoding="utf-8", errors="replace") as fh:
-        return fh.read().split("\n")
+    try:
+        with open(os.path.join(ROOT, rel), encoding="utf-8") as fh:
+            return fh.read().split("\n")
+    except UnicodeDecodeError as exc:
+        raise Undecodable(f"{rel} is not valid UTF-8 ({exc}) — a lossy read here "
+                          f"would drop band and reachability tokens silently") from exc
 
 
 def _paragraphs(lines):
@@ -431,7 +481,13 @@ def check_no_difference_range():
     files, per_root = _walk(DOC_ROOTS, (".md",))
     out, rc, sites = [], 0, 0
     for rel in files:
-        for start, para in _paragraphs(_lines(rel)):
+        try:
+            lines = _lines(rel)
+        except Undecodable as exc:
+            rc = 1
+            out.append(f"CANNOT VERIFY no-difference-range: {exc}")
+            continue
+        for start, para in _paragraphs(lines):
             hits = [s for s in _sentences(para) if NO_DIFF_RE.search(s)]
             if not hits:
                 continue
@@ -551,7 +607,13 @@ def check_zero_width_interval():
 
     for rel in mds:
         n_files += 1
-        for i, line in enumerate(_lines(rel)):
+        try:
+            md_lines = _lines(rel)
+        except Undecodable as exc:
+            rc = 1
+            out.append(f"CANNOT VERIFY zero-width-interval: {exc}")
+            continue
+        for i, line in enumerate(md_lines):
             for lo, hi in MD_CI_RE.findall(line):
                 sites += 1
                 try:
@@ -589,7 +651,13 @@ def check_ordering_needs_band():
     files, per_root = _walk(DOC_ROOTS, (".md",))
     out, rc, sites = [], 0, 0
     for rel in files:
-        for start, para in _paragraphs(_lines(rel)):
+        try:
+            lines = _lines(rel)
+        except Undecodable as exc:
+            rc = 1
+            out.append(f"CANNOT VERIFY ordering-needs-band: {exc}")
+            continue
+        for start, para in _paragraphs(lines):
             hits = [s for s in _sentences(para)
                     if ORDERING_RE.search(s) and TWO_METRICS_RE.search(s)]
             if not hits:
@@ -654,7 +722,12 @@ def check_design_weights():
                    f"{', '.join(empty)} contain no python files — the instrument is "
                    f"narrower than it looks, or the roots moved"]
     for rel in files:
-        text = "\n".join(_lines(rel))
+        try:
+            text = "\n".join(_lines(rel))
+        except Undecodable as exc:
+            rc = 1
+            out.append(f"CANNOT VERIFY design-weights-read: {exc}")
+            continue
         for pop, spec in DESIGN_WEIGHTED.items():
             if pop not in text:
                 continue

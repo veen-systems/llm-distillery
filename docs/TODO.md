@@ -58,8 +58,16 @@
 > ⛔ **The four-lens `/review-changes` on this work found 3 blockers and 10 warnings the
 > mechanical battery had passed — including that one of my own first fixes deleted a
 > check's trigger instead of the defect, and that the flagship file survived its own
-> mutation.** Both are recorded in the script's docstring; the mutation record is now
-> M1–M5 with M5's earlier survival stated. ⚠️ **Still not claimed**: that mechanising
+> mutation.** Both are recorded in the script's docstring; the mutation record is M1–M7,
+> all killed on the real tree. Fixing the disclosed-but-unfixed findings then widened the
+> instrument twice: `CODE_ROOTS` now covers `training/`, `ground_truth/` and the rest of
+> `scripts/` rather than the three directories that happened to hold an offender that day,
+> and **the three v8 splits are registered populations** — `test.jsonl` is the 660
+> design-weighted rows every v8 number is computed on, and five analyses reading it were
+> not sites at all. **19 sites flagged in total across the three rounds**; the checks now
+> examine 9 no-difference claims, 115 intervals, 5 orderings and 19 weighted-population
+> reads over 83 files. Two working-rule occurrences logged
+> (`memory/working-rules.md` 18th and 22nd, with `memory/gotcha-log.md` rows). ⚠️ **Still not claimed**: that mechanising
 > reduces future review-round cost (`agent-ready-projects#127`; the cost measurement is
 > `agent-ready-projects#126` — **557,442 tokens, 148 tool calls, one round**). That is an
 > expectation and remains the thing to instrument.
@@ -574,6 +582,14 @@ length could not.
 - **`tests/ml/test_inference.py::test_inference_module_importable` FAILS** — pre-existing (#139),
   `filters/cultural_discovery/v5/inference.py` uses a relative import while the test execs it
   standalone. Entered at `6acd013`; **cd v5 is LIVE**.
+  ✅ **The "worth a look before it is worth a fix" look was taken, 2026-09-05, and the module
+  is FINE**: `.venv/bin/python -c "import filters.cultural_discovery.v5.inference"` from the
+  repo root imports it without error (namespace packages; only `v5/` has an `__init__.py`).
+  ⭐ **So the broken thing is the TEST HARNESS, not the shipped filter** — the test builds a
+  synthetic module name with `spec_from_file_location`, which gives the module no package, so
+  `from .base_scorer import ...` cannot resolve. The fix is test-side (`importlib.import_module`
+  on the dotted path) and touches no filter package. **Left for the owner: it is a HIGH-tier
+  directory by the review tiering and the issue is theirs.**
 - Stale branch `docs/event-identity-encoder-plan` (1 commit, `0c283c6`) — land it or drop it.
 - **#140**: the two filter-development guides are banner-flagged, bodies not rewritten.
 

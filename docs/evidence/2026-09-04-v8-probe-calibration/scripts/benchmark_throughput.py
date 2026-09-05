@@ -18,6 +18,12 @@ selected 2.825 (routing ~52%) it would be ~26.5 ms.
 
     PYTHONPATH=. python benchmark_throughput.py <hf-model> <cpu|cuda> <probe.pkl>
 """
+
+# design-weights: NOT APPLICABLE. The split is used here as a fixed WORKLOAD for timing,
+# not as a population to estimate from -- ms/article is a property of the model and the
+# device, and no quantity published here is a rate over articles. ⚠️ It would matter if a
+# timing were ever broken down by a row property the draw stratifies on (score band,
+# script, class A); it is not.
 import json, time, sys
 sys.path.insert(0, ".")
 arts = [json.loads(l) for l in open("datasets/training/human_thriving_v8/test.jsonl", encoding="utf-8")]

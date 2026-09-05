@@ -134,7 +134,9 @@ The op-point is the only untried lever and it costs nothing to move. Raw arm:
 ⭐ **ADDED 2026-09-05 — THE DESIGN-WEIGHTED ARM, and it does not change the decision.** The
 660-row split is drawn under a stratified design spanning **25.1×** in `inclusion_probability`
 (`docs/evidence/2026-08-29-v8-corpus-draw/`), so every share above describes the rows drawn,
-not the corpus. `phase_c_outcome.py` now prints both arms; Horvitz–Thompson weighted, raw:
+not the corpus. ⚠️ **"arm" means raw vs calibrated everywhere else in this file**; here and
+in `phase_c_outcome.py`'s output it also names unweighted vs design-weighted, so the script
+prints four sweeps — two model arms × two weightings. Horvitz–Thompson weighted, raw arm:
 
 | bar | junk removed | good kept | specificity | (unweighted, for comparison) |
 |---|---|---|---|---|

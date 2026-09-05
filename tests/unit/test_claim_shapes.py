@@ -18,10 +18,12 @@ twice, because it was fixed twice and was still wrong the first time: the openin
 excluding docstrings then left the field's name in an error message and a JSON
 label, so the flagship analysis survived deletion of its only real weight read.
 
-⭐ **40 tests**, and the ones that matter are the ones a green suite would not
+⭐ **43 tests**, and the ones that matter are the ones a green suite would not
 have produced on its own: every CANNOT VERIFY path, the rewrap that hides a
 claim, the two adjacent bullets that are two claims, the declaration inside a
-string literal, and the null-control exemption confined to a leaf key.
+string literal, the null-control exemption confined to a leaf key, the symlinked
+directory that contributed zero files, and the latin-1 file whose lost `±` would
+have turned a qualified ordering into a FAIL.
 """
 
 import importlib.util
@@ -72,8 +74,8 @@ def mod(tmp_path, monkeypatch):
     m = importlib.util.module_from_spec(spec)
     sys.modules["check_claim_shapes"] = m
     spec.loader.exec_module(m)
-    for rel in ("docs/evidence/2026-08-29-v8-corpus-draw", "docs/decisions",
-                "scripts/analysis", "scripts/diagnostics", "experiments"):
+    for rel in (("docs/evidence/2026-08-29-v8-corpus-draw", "docs/decisions",
+                 "experiments") + m.CODE_ROOTS):
         (tmp_path / rel).mkdir(parents=True, exist_ok=True)
     (tmp_path / "docs/evidence/2026-08-29-v8-corpus-draw/corpus_manifest.json"
      ).write_text(json.dumps(MANIFEST), encoding="utf-8")
@@ -87,7 +89,9 @@ def mod(tmp_path, monkeypatch):
     (tmp_path / "docs/decisions/ok.md").write_text(
         "# A decision\n\nNothing here triggers any check.\n", encoding="utf-8")
     (tmp_path / "docs/evidence/ok.py").write_text("X = 1\n", encoding="utf-8")
-    (tmp_path / "scripts/diagnostics/ok.py").write_text("Y = 2\n", encoding="utf-8")
+    for root in m.CODE_ROOTS:
+        if root != "scripts/analysis":
+            (tmp_path / root / "ok.py").write_text("Y = 2\n", encoding="utf-8")
     (tmp_path / "experiments/registry.jsonl").write_text(
         json.dumps({"id": "EXP-001", "metrics": {"delta_ci": [-0.1, 0.2]}}) + "\n",
         encoding="utf-8")
@@ -415,6 +419,45 @@ def test_a_partially_emptied_scan_root_is_cannot_verify(mod, capsys):
     (mod._tmp / "scripts/diagnostics").mkdir()
     assert mod.main(["--check", "design-weights-read"]) == 1
     assert "scan root(s) scripts/diagnostics" in capsys.readouterr().out
+
+
+def test_the_test_split_is_a_registered_population(mod, capsys):
+    """⛔ REVIEW FINDING. The trigger was two literal CORPUS paths, so five analyses
+    reading `test.jsonl` — the 660 design-weighted rows every v8 number is computed on —
+    were not sites at all. The weight lives in `corpus.jsonl`, so a split reader's "read
+    the weights" is the JOIN; a script that does neither must declare."""
+    _write(mod, "scripts/analysis/split.py",
+           'import json\n'
+           'rows = [json.loads(l) for l in\n'
+           '        open("datasets/training/human_thriving_v8/test.jsonl")]\n'
+           'print(sum(1 for r in rows if r["y"]) / len(rows))\n')
+    assert mod.main(["--check", "design-weights-read"]) == 1
+    assert "test.jsonl" in capsys.readouterr().out
+
+
+def test_an_undecodable_file_is_cannot_verify_not_a_fail(mod, capsys):
+    """⛔ `errors="replace"` IS A SILENT WRONG ANSWER. `±` is a band token; a latin-1
+    markdown file loses it to a replacement character and a properly-qualified ordering
+    reports as unqualified. A file the instrument cannot read is CANNOT VERIFY."""
+    (mod._tmp / "docs/evidence/latin1.md").write_bytes(
+        "# X\n\nepoch 6 leads (0.5000 vs 0.4630), \u00b1 0.05.\n".encode("latin-1"))
+    assert mod.main(["--check", "ordering-needs-band"]) == 1
+    out = capsys.readouterr().out
+    assert "CANNOT VERIFY ordering-needs-band" in out and "not valid UTF-8" in out
+
+
+def test_a_symlinked_root_is_not_silently_empty(mod, capsys):
+    """`os.walk`'s default contributes ZERO files for a symlinked directory — a narrowed
+    instrument with no signal, which is this file's whole subject."""
+    import os
+    real = mod._tmp / "elsewhere"
+    real.mkdir()
+    (real / "linked.md").write_text(
+        "# Linked\n\nThe arms are identical at all eight k, full stop.\n",
+        encoding="utf-8")
+    os.symlink(real, mod._tmp / "docs/evidence/via_symlink")
+    assert mod.main(["--check", "no-difference-range"]) == 1
+    assert "via_symlink/linked.md" in capsys.readouterr().out
 
 
 def test_a_written_declaration_passes_and_is_printed(mod, capsys):

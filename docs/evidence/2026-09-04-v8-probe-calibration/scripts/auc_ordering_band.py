@@ -19,11 +19,17 @@ separately (AUC's precision is governed by the smaller class; 35 positives).
 ⛔ `.venv/bin/python`, not `python3` — the system interpreter has no sklearn, and
 this repo has previously mis-diagnosed that exact failure as "the environment".
 
-# design-weights: NOT READ. This is a paired comparison of two arms on identical
-# rows, so the design weights cancel in the ORDERING even though they would move
-# each arm's absolute AUC. ⛔ That is an argument, not a measurement: no weighted
-# arm has been run, and the CI below is the unweighted one.
 """
+
+# design-weights: NOT READ. This is a paired comparison of two arms on identical rows, so
+# the design weights cancel in the ORDERING even though they would move each arm's
+# absolute AUC. ⛔ That is an argument, not a measurement: no weighted arm has been run,
+# and the CI printed below is the unweighted one.
+# ⚠️ THIS COMMENT SAT INSIDE THE DOCSTRING ABOVE UNTIL 2026-09-05 and the check did not
+# see it -- correctly: `_declaration` reads COMMENT tokens, because a regex over the file
+# text exempted a declaration written inside a string literal. A declaration that is not
+# a comment is not a declaration.
+
 import argparse
 import json
 from pathlib import Path

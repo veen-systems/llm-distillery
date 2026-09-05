@@ -27,6 +27,12 @@ Usage:
         --out-dir /tmp/ht_v8_test
 """
 
+# design-weights: NOT APPLICABLE -- this script publishes no rate. It emits per-row raw
+# and calibrated scores from a single forward pass and aggregates nothing. ⛔ The rows it
+# emits ARE a design-weighted sample (25.1x span, weights in
+# datasets/scored/human_thriving_v8/corpus.jsonl): anything downstream that turns this
+# dump into a rate needs them.
+
 import argparse
 import importlib.util
 import json

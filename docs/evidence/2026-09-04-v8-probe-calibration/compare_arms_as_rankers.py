@@ -22,6 +22,15 @@ batch-composition term sits between the arms) and the labelled split.
         --out docs/evidence/2026-09-04-v8-probe-calibration/arms_as_rankers.json
 """
 
+# design-weights: NOT READ. Every statistic here -- Spearman, discordant-pair share,
+# AUC, average precision, recall at matched flag count -- is an UNWEIGHTED sample
+# quantity over the 660 design-weighted test rows (25.1x span; the weights live in
+# datasets/scored/human_thriving_v8/corpus.jsonl, not in the split file). ⚠️ The
+# comparison is PAIRED on identical rows, so a reweighting moves both arms together and
+# is unlikely to reverse the ordering -- but that is an argument, not a measurement, and
+# the absolute AUCs published from here are sample values. Weighted arm on the same rows:
+# phase_c_outcome.py.
+
 import argparse
 import json
 from pathlib import Path

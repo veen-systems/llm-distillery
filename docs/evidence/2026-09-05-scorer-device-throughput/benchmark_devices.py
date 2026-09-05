@@ -46,6 +46,11 @@ is a file no command produces.
     python $D/benchmark_devices.py --merge $D --out $D/devices.json
 """
 
+# design-weights: NOT APPLICABLE. The split is a fixed WORKLOAD for timing, not a
+# population to estimate from; every number published is ms/article for a model on a
+# device. ⚠️ It would matter if a timing were broken down by a row property the draw
+# stratifies on (score band, script, class A); it is not.
+
 import argparse
 import json
 import os
