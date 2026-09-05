@@ -115,7 +115,35 @@ no filter package. Left for the owner: cd v5 is LIVE and the issue is theirs.
    breaking one filter's `inference.py` makes the repaired test FAIL. **The suite is now
    711 passed / 0 failed** — the first fully green run in months.
 
+## Wrap-up — three more things, two of them defects of mine
+
+**v8 SMOKE-TESTED END TO END** (`scripts/gate/v8_smoke_test.py`, b650-gpu, 4 articles, all
+assertions held). Not the ADR-021 gate — it asks whether an article goes in and a
+well-formed, calibrated, tiered result comes out. ⭐ A hand-written clear positive (audited
+31% bill reduction, replicated) scores **4.33 → `low`**: that is what 4.5 calibrated feels
+like from the inside. The harm-dominant row scores **0.85 → `low`**, the class-A behaviour
+v8 exists for. ⛔ **My first version failed an assertion for the wrong reason** — it read
+`scorer.calibration` where calibration lives on `scorer.stage2_scorer`, so the instrument
+was pointed where it could never succeed, in the session whose subject is that failure.
+
+**#97 IS CITED FOR A RULE IT DOES NOT CONTAIN, in ten places, two of them mine from today.**
+#97 is the TDM assessment and it concluded the models are CLEAN; keeping weights out of git
+is a repo-size rule with **no issue behind it**, and that absence is why ten documents
+reached for the nearest plausible number. Corrected on every live surface; left alone where
+#97 IS right (~25 sites: article text and training splits) and in frozen session records.
+⚠️ **My correction cited `.gitignore` by LINE NUMBER and was stale on arrival** — adding the
+note moved the lines. Re-anchored to the section name.
+
+**The `*_test.*` gitignore trap, third victim** — the smoke test was ignored the moment it
+was written. The 2026-09-04 rescue was scoped to `docs/evidence/` and *said so in its own
+note*, naming the second victim without rescuing it. **A documented limitation left in place
+is a defect with a note attached.** Negations extended to five source directories, verified
+both directions. It surfaced only because `git add <explicit path>` warns where
+`git add <dir>` does not.
+
 ## Owed, still
 
 Nothing is waiting on an owner decision. Phase 8's remaining work is the **deploy-gate run**
 itself (ADR-021, held-out oracle ground truth), which needs the weights on `b650-gpu`.
+Open from this session: **#147** (Stage-1 thresholds inert on six filters, `nature_recovery
+v4` config 3.225 vs runtime 0.75) and **#104** (every op-point figure is CPU-measured).
