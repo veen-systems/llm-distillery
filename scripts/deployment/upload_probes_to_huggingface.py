@@ -7,8 +7,10 @@ FILTER PACKAGE — it reads `config.yaml`, `training_metadata.json` and
 not a filter package: they are experiment artifacts, four of them named after
 production filters while matching the sha256 of no shipped artifact.
 
-⛔ WHY NOT GIT. Owner decision, 2026-09-05. llm-distillery#97 keeps model weights
-out of git; probes are model artifacts and the same argument applies. The Hub is
+⛔ WHY NOT GIT. Owner decision, 2026-09-05. The repo keeps model weights out of git as
+large checkpoints (`.gitignore` § *Model checkpoints (large files)*) and probes are model artifacts, so the same
+argument applies. ⚠️ The first version of this docstring cited llm-distillery#97 for that
+rule; #97 is the TDM assessment and says nothing about it. Corrected the same day. The Hub is
 the path this project already uses for them, it keeps the git policy intact, and
 it gives the committed manifest a durable address to point at. Before this they
 lived only in an untracked home directory on one non-production box — rescued

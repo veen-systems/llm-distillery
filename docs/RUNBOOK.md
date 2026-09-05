@@ -271,7 +271,8 @@ appends `model/` itself.
 **Seed 42 is not bit-reproducible on CUDA** — measured 0.5601 vs 0.5605 val MAE for the same
 epoch across two identical runs. Do not read a 4th-decimal difference as an effect (#95 family).
 
-**Pull the provenance back and commit it.** The weights are gitignored (#97) and live only on
+**Pull the provenance back and commit it.** The weights are gitignored as large model
+checkpoints (`.gitignore` § *Model checkpoints (large files)*; ⚠️ **not** #97, the TDM assessment) and live only on
 the training host, so `training_history.json` + `training_metadata.json` ARE the traceability:
 
 ```bash
@@ -281,6 +282,76 @@ rsync -az b650-gpu:'~/llm-distillery/filters/{name}/v{N}/training_*.json' filter
 Then register the run in `experiments/registry.jsonl` and run
 `python3 scripts/verification/check_experiment_registry.py` — it rejects any metric whose
 string does not appear verbatim in a cited artifact.
+
+## Deriving an operating point (phase 8)
+
+⛔ **Do not pick an op-point by looking for the "best" number.** Sweep it and read the
+SHAPE of the trade, because the shape is what decides. The method, from
+`human_thriving v8` (`docs/decisions/2026-09-05-v8-op-point.md`, `EXP-017`/`EXP-025`):
+
+1. Partition the rows the PREVIOUS filter surfaced by what the new oracle says about them:
+   **junk** (old ≥ op, new < op) and **good** (both ≥ op). `phase_c_outcome.py` is the
+   worked example. ⛔ Never judge a new filter by aggregate recall against the fleet's —
+   two filters with different positive classes give two quantities with one name (v7 vs v8
+   Jaccard **0.246** on identical rows).
+2. Sweep the bar and print the STEP between rows: how many good articles each step costs
+   and how many junk ones it removes.
+3. ⭐ **Find where the curve bends.** v8's bends at 3.50 (−3 good buys −11 junk); from 3.75
+   up every step is ~1 good per 1 junk. In the 1:1 region only the loss function decides,
+   and ADR-023 sends a 1:1 trade to specificity. **The bars just above the bend are the
+   worst place to spend** — they buy volume at exactly par.
+4. Decide on the arm that SHIPS. If the filter has a `calibration.json`, that is the
+   calibrated arm — `filter_base_scorer._process_raw_scores` calibrates BEFORE computing
+   the weighted average that `_assign_tier` sees. **4.5 calibrated is a stricter bar than
+   4.5 raw** (17 rows vs 26 on v8's split); carrying a number across arms silently tightens it.
+5. ⛔ **An op-point cannot exceed `MAX_NORMALIZATION_RAW_MIN` (4.5).** Strict `>`, so 4.5 is
+   accepted with zero margin and the fitter refuses anything above it.
+6. Verify by EXECUTING `_assign_tier` either side of the boundary, never by re-reading
+   `config.yaml` — that block is documentation and editing it alone is a no-op (NM#161, NM#205).
+
+⚠️ **A design-weighted split needs a weighted arm before any share is quoted.** v8's is
+25.1×; weighting moved junk-removed at most +2.44 pp but specificity +2.65 pp and recall
+−8.51 pp, so which quantity you quote decides how much the weighting appears to matter.
+
+## Smoke-testing a filter package before the deploy gate
+
+`scripts/gate/v8_smoke_test.py` is the pattern: **does an article go in and a well-formed,
+calibrated, tiered result come out?** It is much cheaper than the ADR-021 gate and answers a
+different question — mechanism, not accuracy. Run it on the host that has the weights; on
+any other host it exits **2 as CANNOT VERIFY**, because a missing artifact is not a broken
+scorer and reporting it as one is how a red suite gets ignored.
+
+⚠️ **Two false alarms it converts into checked facts, so nobody re-diagnoses them:**
+loading a base model for sequence classification prints `score.weight | MISSING ... newly
+initialized` — that is the BASE checkpoint, and PEFT supplies the trained head from the
+adapter a moment later; and the LoRA keys must be OLD format (`.lora_A.weight`).
+⛔ **Assert against the object that HOLDS the thing.** The first version of that script
+checked `scorer.calibration` and failed — calibration lives on `scorer.stage2_scorer`, so
+the check was pointed where it could never succeed.
+
+## The Stage-1 probe threshold is NOT the operating point
+
+⛔ **Two different numbers, opposite loss functions, and they get confused.** The op-point is
+on the STUDENT's weighted score and decides visibility; ADR-023 optimises **specificity**
+there. The Stage-1 threshold decides ROUTING, and ADR-023 explicitly **does not apply** — the
+probe is a recall-safe screen where the false negative is the expensive error
+(`train_probe.py --objective recall`).
+
+⛔ **On every filter except `human_thriving v8`, `hybrid_inference.stage1.threshold` in
+`config.yaml` is INERT** (verified 2026-08-21). The runtime value is a module-level
+`DEFAULT_THRESHOLD` in each `inference_hybrid.py`, and on two filters the config disagrees
+with it — `nature_recovery v4` ships 3.225 against a runtime **0.75**, `thriving v1` ships
+null against 2.25. Do not cite the config value as the operating threshold and do not "fix"
+production by editing it. v8 wires config to runtime and raises if the block is missing.
+
+⚠️ **Tightening the screen is not a free compute win.** Measured: at the adopted ~89%
+routing the two-stage design saves **1.52%** (`2.345 + 0.89 × 24.740 = 24.36` against
+24.740), break-even is ~53–57% routing, and `EXP-021` found no Stage-2 cost constraint at
+all — the pipeline runs at a **5.57% duty cycle** and `score` is 53.5% of blocking wall
+time against story dedup's 42.4%. And the non-compute cost is unwritten elsewhere: the
+probe's own numbers become the published scores for every screened-out row, and a
+recall-objective probe is biased high. **If it is ever tightened, pair it with a
+regression-objective probe.**
 
 ⚠️ **Verbatim-present is not the same as correct, and the registry checker cannot tell them
 apart.** It traces `metrics` only, never `population`, so a wrong count in `population` passes

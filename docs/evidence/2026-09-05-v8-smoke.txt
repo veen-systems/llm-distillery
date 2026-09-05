@@ -1,0 +1,101 @@
+stage-1 config: threshold=1.75 probe=probe/embedding_probe_e5small.pkl sha_pinned=True
+
+[clear_positive] weighted_average=4.329660773277283 tier='low' stage_used='stage2'
+  PASS  clear_positive: weighted_average is numeric
+  PASS  clear_positive: 6 dimension scores present
+  PASS  clear_positive: every dimension inside [0, 10]
+  PASS  clear_positive: stage_used is one of the two known values
+  PASS  clear_positive: tier 'low' follows weighted_average 4.3297 against the 4.5 op-point (expected 'low')
+  PASS  clear_positive: content_length stamped (the #93 contract)
+
+[clear_negative] weighted_average=0.19962794706225392 tier='low' stage_used='stage2'
+  PASS  clear_negative: weighted_average is numeric
+  PASS  clear_negative: 6 dimension scores present
+  PASS  clear_negative: every dimension inside [0, 10]
+  PASS  clear_negative: stage_used is one of the two known values
+  PASS  clear_negative: tier 'low' follows weighted_average 0.1996 against the 4.5 op-point (expected 'low')
+  PASS  clear_negative: content_length stamped (the #93 contract)
+
+[harm_dominant] weighted_average=0.8462630450725556 tier='low' stage_used='stage2'
+  PASS  harm_dominant: weighted_average is numeric
+  PASS  harm_dominant: 6 dimension scores present
+  PASS  harm_dominant: every dimension inside [0, 10]
+  PASS  harm_dominant: stage_used is one of the two known values
+  PASS  harm_dominant: tier 'low' follows weighted_average 0.8463 against the 4.5 op-point (expected 'low')
+  PASS  harm_dominant: content_length stamped (the #93 contract)
+
+[short_stub] weighted_average=2.1427685976028443 tier='low' stage_used='stage2'
+  PASS  short_stub: weighted_average is numeric
+  PASS  short_stub: 6 dimension scores present
+  PASS  short_stub: every dimension inside [0, 10]
+  PASS  short_stub: stage_used is one of the two known values
+  PASS  short_stub: tier 'low' follows weighted_average 2.1428 against the 4.5 op-point (expected 'low')
+  PASS  short_stub: content_length stamped (the #93 contract)
+
+--- wiring, across the four cases ---
+  PASS  calibration.json is LOADED on stage2_scorer (an uncalibrated arm is a different model)
+  PASS  the adapter carries a TRAINED regression head (['base_model.model.score.weight']) — the loader's `score.weight | MISSING` line is about the BASE checkpoint, not this one
+  PASS  LoRA keys are in the OLD format (.lora_A.weight) — resave_adapter.py must never have run on this
+  PASS  at least one stage exercised (saw {'stage2'})
+  NOTE  stages exercised: ['stage2'] (one only — not a defect at n=4)
+  PASS  the four articles do not all score the same ([4.33, 0.2, 0.846, 2.143]) — an identical set would mean the student is not reading the input
+{
+  "clear_positive": {
+    "weighted_average": 4.329660773277283,
+    "tier": "low",
+    "stage_used": "stage2",
+    "gatekeeper_applied": false,
+    "scores": {
+      "human_wellbeing_impact": 4.752146244049072,
+      "social_cohesion_impact": 4.007243633270264,
+      "justice_rights_impact": 2.7222237586975098,
+      "evidence_level": 3.7254881858825684,
+      "benefit_distribution": 5.393945693969727,
+      "change_durability": 5.215274810791016
+    }
+  },
+  "clear_negative": {
+    "weighted_average": 0.19962794706225392,
+    "tier": "low",
+    "stage_used": "stage2",
+    "gatekeeper_applied": false,
+    "scores": {
+      "human_wellbeing_impact": 0.46341708302497864,
+      "social_cohesion_impact": 0.008417677134275436,
+      "justice_rights_impact": 0.0,
+      "evidence_level": 0.0,
+      "benefit_distribution": 0.08920000493526459,
+      "change_durability": 0.33332857489585876
+    }
+  },
+  "harm_dominant": {
+    "weighted_average": 0.8462630450725556,
+    "tier": "low",
+    "stage_used": "stage2",
+    "gatekeeper_applied": false,
+    "scores": {
+      "human_wellbeing_impact": 1.1827999353408813,
+      "social_cohesion_impact": 1.2463783025741577,
+      "justice_rights_impact": 0.1382097601890564,
+      "evidence_level": 0.7543929815292358,
+      "benefit_distribution": 0.5976982712745667,
+      "change_durability": 0.5747120976448059
+    }
+  },
+  "short_stub": {
+    "weighted_average": 2.1427685976028443,
+    "tier": "low",
+    "stage_used": "stage2",
+    "gatekeeper_applied": false,
+    "scores": {
+      "human_wellbeing_impact": 3.072460889816284,
+      "social_cohesion_impact": 2.303034782409668,
+      "justice_rights_impact": 0.5987629890441895,
+      "evidence_level": 1.719294786453247,
+      "benefit_distribution": 1.6296443939208984,
+      "change_durability": 2.238100051879883
+    }
+  }
+}
+
+PASS v8 smoke: 4 articles scored, all assertions held

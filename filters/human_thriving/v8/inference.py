@@ -8,7 +8,9 @@ Pipeline: Article -> Model -> Gatekeeper -> Calibration -> Tier
 through `inference_hybrid.py`, not through this module. `use_prefilter` therefore
 defaults to False here, and passing True raises rather than silently doing nothing.
 
-⚠️ The model weights are NOT in this repo (#97, gitignored). They live on b650-gpu at
+⚠️ The model weights are NOT in this repo — gitignored as large model checkpoints
+(`.gitignore` § *Model checkpoints (large files)*). ⚠️ NOT #97, which is the TDM assessment (corrected 2026-09-05).
+They live on b650-gpu at
 `~/llm-distillery/filters/human_thriving/v8/model/`. Constructing this scorer without
 them raises FileNotFoundError from `load_lora_local`.
 
@@ -56,7 +58,12 @@ class HumanThrivingScorer(BaseHumanThrivingScorer):
         self._load_model()
 
     def _load_model(self):
-        """Load the trained LoRA adapter from local files (old key format, #97)."""
+        """Load the trained LoRA adapter from local files.
+
+        ⚠️ OLD PEFT key format (`.lora_A.weight` / `score.weight`), which is a
+        CLAUDE.md Hard Constraint and `memory/gemma3-model.md`, not #97 — that
+        citation was wrong and was corrected 2026-09-05.
+        """
         self.model, self.tokenizer = load_lora_local(
             self.model_path, len(self.DIMENSION_NAMES), self.device
         )

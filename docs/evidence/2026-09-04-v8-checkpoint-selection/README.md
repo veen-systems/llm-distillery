@@ -7,8 +7,9 @@ Two checkpoints from the same corpus, same seed, same hyperparameters, differing
 `training/train.py`, where `--select-metric` was accepted and inert (commit
 `1878e7b`).
 
-⛔ **The weights are NOT in this repo.** `adapter_model.safetensors` is gitignored
-(#97). Both arms live on `b650-gpu`:
+⛔ **The weights are NOT in this repo.** `adapter_model.safetensors` is gitignored as a
+large model checkpoint (`.gitignore` § *Model checkpoints (large files)*; ⚠️ **not** #97, which is the TDM assessment —
+corrected 2026-09-05). Both arms live on `b650-gpu`:
 
 | arm | selected on | epoch | path on b650 |
 |---|---|---|---|

@@ -5,7 +5,9 @@
 ✅ **It can score an article ON `b650-gpu`.** `base_scorer.py`, `inference.py`,
 `inference_hybrid.py`, `probe/embedding_probe_e5small.pkl` and `calibration.json` all exist
 as of 2026-09-04 (**EXP-016**, `docs/evidence/2026-09-04-v8-probe-calibration/`).
-⛔ **The weights are not in this repo** (gitignored, #97) — they live on `b650-gpu` only, so
+⛔ **The weights are not in this repo** (gitignored as large model checkpoints,
+`.gitignore` § *Model checkpoints (large files)*; ⚠️ **NOT #97** — that issue is the TDM assessment and it concluded the
+models are CLEAN, corrected 2026-09-05) — they live on `b650-gpu` only, so
 a fresh clone loads the package and cannot run the student. "Scoreable" is a statement about
 one host.
 

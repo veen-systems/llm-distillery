@@ -5997,6 +5997,25 @@ have committed the rewrite without noticing, because every number in the *new* d
 correct. **Correcting a document is a delete of its predecessor unless you carry the old
 values forward.**
 
+## 2026-09-05 (third session) — the `*_test.*` gitignore trap, third victim, because the fix was scoped to the instance [x3]
+
+**Problem**: `scripts/gate/v8_smoke_test.py` was gitignored the moment it was written.
+`.gitignore:170` carries `*_test.*` in a scratch-file block; it is a PATTERN, not a path.
+
+**Root cause**: the 2026-09-04 rescue negated it **only under `docs/evidence/`** — and its own
+note said so in writing: *"the rescue is scoped to `docs/evidence/` only; the pattern still
+swallows `*_test.*` anywhere else in the repo."* That made it a fix for the instance, not for
+the defect, and the note even named the second victim
+(`filters/common/obituary_detector/validation/panel_obit_test.py`) without rescuing it.
+
+**Fix**: negations extended to `scripts/`, `tests/`, `filters/`, `training/` and
+`ground_truth/`. Verified in BOTH directions: the smoke test is stageable, and a
+`scratch_probe_test.json` at the repo root is still ignored. ⭐ **The reusable part is how it
+surfaced: `git add <explicit path>` WARNS, and `git add <dir>` does not** — the 09-04 loss was
+silent for exactly that reason. Do not rely on the warning; the pattern is the hazard.
+⚠️ A documented limitation that is left in place is a defect with a note attached, not a
+mitigation — this one was re-read three times and rescued nobody.
+
 ## 2026-09-05 (third session) — the guard against guards-that-examine-nothing had a root that examined nothing
 
 **Problem**: `check_claim_shapes.py` shipped with `experiments` in its JSON scan roots

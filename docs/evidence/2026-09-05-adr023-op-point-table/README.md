@@ -26,8 +26,10 @@ green and found **none** of them — established that:
 ⛔ **Read §6 before quoting anything here.**
 
 Reproduce — ⚠️ **the dumps and labels are gitignored** (`.gitignore:76 datasets/*`; the
-weights that produced the dumps are llm-distillery#97, the gitignore-the-model-weights
-decision), so a fresh clone cannot run this without fetching them:
+weights that produced the dumps are gitignored as large model checkpoints
+(`.gitignore` § *Model checkpoints (large files)*) — ⚠️ **an earlier draft called this "llm-distillery#97, the
+gitignore-the-model-weights decision"; there is no such decision and #97 is the TDM
+assessment, which concluded the models are clean.** Corrected 2026-09-05), so a fresh clone cannot run this without fetching them:
 
 ```bash
 D=docs/evidence/2026-09-05-adr023-op-point-table

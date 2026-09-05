@@ -18,7 +18,7 @@ defect. Two consistency invariants were unguarded and are now pinned fleet-wide.
 
 | missing | verdict |
 |---|---|
-| `model/` | ⛔ **deploy blocker**, by design — weights are gitignored (#97) and live only on `b650-gpu`. Step 0.5's `check_weights_backed_up` already refuses on this; `verify_filter_package.py` does not. |
+| `model/` | ⛔ **deploy blocker**, by design — weights are gitignored as large checkpoints (`.gitignore` § *Model checkpoints (large files)*, not #97) and live only on `b650-gpu`. Step 0.5's `check_weights_backed_up` already refuses on this; `verify_filter_package.py` does not. |
 | `normalization.json` | expected — **Phase E**, not yet run |
 | `ground_truth_gate.json` | expected — **Phase D**, not yet run |
 | `prefilter.py` | ✅ **deliberate.** ADR-018/019 *Amendment 2026-08-21*: new filters ship no per-lens prefilter. Not a gap. |

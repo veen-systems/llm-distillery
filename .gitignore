@@ -53,7 +53,14 @@ secrets.ini
 .ipynb_checkpoints
 *.ipynb
 
-# Model checkpoints (large files)
+# Model checkpoints (large files).
+# ⚠️ THIS IS A REPO-SIZE RULE AND IT HAS NO ISSUE BEHIND IT. Said here because the
+# absence is what went wrong: with nothing to cite, ten documents cited #97 instead
+# — and #97 is the TDM opt-out assessment, which is about ARTICLE TEXT and concluded
+# the models are clean. Cite this section BY NAME -- line numbers move, and the
+# line-number citation written when this note was added was stale the moment the
+# note itself shifted them. Cite #97 only for article text and training splits,
+# where it IS correct. (Corrected 2026-09-05.)
 inference/models/*/
 filters/**/model/
 # probe pkls (e5-small, ~0.5MB) ARE committed — needed for hybrid inference + reproducibility.
@@ -259,3 +266,21 @@ docs/evidence/**/runs/*.status
 # not be able to delete one.
 !docs/evidence/**/*_test.*
 !docs/evidence/**/*_backup.*
+#
+# ⛔ RECURRENCE 2026-09-05, AND THE FIRST FIX IS WHY. The 09-04 rescue above was scoped
+# to `docs/evidence/` and its own note said so — "the pattern still swallows `*_test.*`
+# anywhere else in the repo" — which made it a fix for the instance, not the defect.
+# `scripts/gate/v8_smoke_test.py` was the third victim, ignored the moment it was
+# written. ⭐ It surfaced only because `git add <explicit path>` WARNS; the 09-04 loss
+# went silent because that was `git add <dir>`. Do not rely on the warning.
+# SOURCE DIRECTORIES ARE NOW NEGATED TOO. A scratch-file pattern must never be able to
+# swallow code or evidence; it exists for `notes_backup.md` in a working directory.
+!scripts/**/*_test.*
+!scripts/**/*_backup.*
+!tests/**/*_test.*
+!filters/**/*_test.*
+!training/**/*_test.*
+!ground_truth/**/*_test.*
+# ⚠️ This also makes `filters/common/obituary_detector/validation/panel_obit_test.py`
+# stageable — the second victim the 09-04 note named and nobody rescued. It is still
+# untracked; committing it is a separate decision, not a side effect of this line.

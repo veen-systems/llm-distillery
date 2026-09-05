@@ -27,6 +27,31 @@ itself against held-out oracle ground truth (ADR-021), which needs the weights o
 
 > **All three ruled by the owner on 2026-09-05 (third session).** Nothing below is waiting
 > on a decision any more. Phase 8's remaining work is the deploy-gate run itself.
+>
+> ✅ **v8 SMOKE-TESTED END TO END, 2026-09-05** — `scripts/gate/v8_smoke_test.py`, run on
+> b650-gpu, 4 articles, all assertions held (`docs/evidence/2026-09-05-v8-smoke.txt`).
+> It is **not** the ADR-021 gate: it asks whether an article goes in and a well-formed,
+> calibrated, tiered result comes out. On any host without the weights it exits **2 as
+> CANNOT VERIFY** rather than failing. ⭐ **Two data points worth the owner's eye.** A
+> hand-written clear positive (audited 31% bill reduction, replicated in two provinces)
+> scores **4.33 → `low`** — that is what 4.5 calibrated feels like from the inside, n=1 and
+> synthetic so it refutes nothing, but it makes *12 of 30 agreed-good kept* concrete. And
+> the harm-dominant row (three killed, charity fund) scores **0.85 → `low`**, which is
+> exactly the class-A behaviour v8 exists for. ⚠️ All four routed to Stage 2, so the screen
+> did not fire at n=4 — consistent with ~89% pass-through, not a defect.
+>
+> ⚙️ **#147 FILED — the Stage-1 probe thresholds, and the answer is not "set a number".**
+> On six of seven filters `hybrid_inference.stage1.threshold` is **read by no code**; the
+> live value is a module-level `DEFAULT_THRESHOLD`. ⛔ `nature_recovery v4` ships **3.225**
+> against a runtime **0.75**, a 4.3× divergence in a file people read. Only v8 wires config
+> to runtime and only v8 pins `probe_sha256` — and `EXP-016` measured why that matters:
+> `--seed 7` moves routing **~14 pp** at the same threshold, silently, because Stage 1
+> produces no output to inspect. ⛔ **Not a compute win**: the screen saves **1.52%** at the
+> adopted routing, break-even is ~53–57%, and `EXP-021` found no Stage-2 cost constraint at
+> all — the pipeline is a **5.57% duty cycle** and the load is story dedup (42.4%), not the
+> probes.
+>
+> ✅ **#139 CLOSED.** The shipped filter was never broken; the test harness was.
 
 1. ✅ **THE PHASE-8 OP-POINT: 4.50 STANDS, ON THE CALIBRATED SCALE.**
    `docs/decisions/2026-09-05-v8-op-point.md`. **No code changed** — the number the runtime
@@ -56,9 +81,9 @@ itself against held-out oracle ground truth (ADR-021), which needs the weights o
    `docs/evidence/2026-09-04-v8-probe-calibration/PHASE_C_REVIEW.md`.
 2. ✅ **THE ELEVEN RESCUED PROBES: NOT git — a PRIVATE Hugging Face repo.**
    `https://huggingface.co/jeergrvgreg/llm-distillery-probes` (verified `private=True`, all
-   11 present by listing the repo, not by the upload not erroring). #97 keeps model weights
-   out of git and probes are model artifacts, so the git policy stays intact and the manifest
-   gains a durable address. Uploaded by
+   11 present by listing the repo, not by the upload not erroring). The repo keeps model
+   weights out of git as large checkpoints (`.gitignore` § *Model checkpoints (large files)*) and probes are model
+   artifacts, so that policy stays intact and the manifest gains a durable address. Uploaded by
    `scripts/deployment/upload_probes_to_huggingface.py`, which sha256-verifies every file
    against the committed manifest **before** sending anything. Second copy stays on b650-gpu.
    ⭐ **Two findings that changed the shape of this decision, both from sha256 rather than
@@ -136,7 +161,8 @@ and the instructions, which is backwards for a file whose job is to say what to 
 1. ✅ **SCOREABLE — on `b650-gpu` only.** `base_scorer.py`, `inference.py`,
    `inference_hybrid.py`, `probe/embedding_probe_e5small.pkl` and `calibration.json` all exist.
    The weights do not (see 2), so a fresh clone loads the package and cannot run the student.
-2. **The weights are NOT in this repo** (gitignored, #97). Epoch 4 of 6 lives at
+2. **The weights are NOT in this repo** (gitignored as large model checkpoints,
+   `.gitignore` § *Model checkpoints (large files)* — ⚠️ **not** #97, the TDM assessment; corrected 2026-09-05). Epoch 4 of 6 lives at
    `b650-gpu:~/llm-distillery/filters/human_thriving/v8/model/`, with the MAE-selected arm kept
    at `model_baseline_mae/`. Provenance is the committed `training_{history,metadata}.json`.
    The 660-row raw-logit dump is at `b650-gpu:~/llm-distillery/ht_v8_test_dump/` so the 16-min
@@ -219,7 +245,8 @@ four are closed, none moves the op-point, and **no deploy happened or was possib
 skipped.** Verified rather than asserted, 2026-09-04: `ls NexusMind/filters/` on sadalsuud
 returns `belonging cultural_discovery foresight investment_risk nature_recovery solutions
 sustainability_technology uplifting` — **no `human_thriving`** — and the v8 weights are
-gitignored (#97) and live only on `b650-gpu`. Phases 8 and 9 have not run.
+gitignored as large model checkpoints (`.gitignore` § *Model checkpoints (large files)*, not #97) and live only on
+`b650-gpu`. Phases 8 and 9 have not run.
 ⚠️ Noticed while checking: **`foresight` and `sustainability_technology` directories are still
 on sadalsuud** although both were removed here on 2026-08-03 (#43). They do not score — the
 overhead measurement sees exactly five filters — so this is leftover directories, not a live
