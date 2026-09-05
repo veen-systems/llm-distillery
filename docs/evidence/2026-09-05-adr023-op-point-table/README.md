@@ -236,7 +236,19 @@ positive mass at the widest. The unweighted "not distinguishable" is a statement
    `probe_e5large.pkl` (recall) and `probe_reg_large.pkl` (regression) **both** as
    `1024 6 mlp` — so it cannot tell them apart. **That gap is unclosed**, and the dumps
    themselves live only in `/tmp` and an untracked home directory on a non-production box.
-7. **Duplicate ids would pass silently.** `load_scores` keeps the last row per id and the
+7. ⛔ **THE ARMS ARE NOT ON THE SAME DEVICE, and no earlier draft said so.** The student
+   dumps (`scores_raw.jsonl`, `scores_calibrated.jsonl`) are the **CPU** pass — confirmed
+   here: `student_raw` flags 26 rows with 17 TP, recall **0.4857**, and EXP-015 recorded
+   raw@4.5 as **0.486 on CPU** against **0.514 on b650-CUDA**. The four probe dumps are
+   **GPU** (EXP-019: *"same corpus, splits, --seed 42, GPU"*). The measured CPU→CUDA term
+   is max |Δ| **0.1956** with 3 flips at the deployed 4.5 (llm-distillery#104), so this is
+   a real cross-device comparison, not a formality. ⭐ **Direction is conservative for the
+   conclusion drawn**: on CUDA the student gains a true positive at the 4.5 bar (18 vs 17),
+   so representing it by its CPU pass **understates the student** — which makes the
+   "not distinguishable from `probe_reg_large`" result *weaker*, not stronger. Re-running
+   both sides on one device is a precondition for any decision that rests on this table.
+
+8. **Duplicate ids would pass silently.** `load_scores` keeps the last row per id and the
    guard checks `len(ids) != 660` on the intersection, so a `>>`-instead-of-`>` rerun
    substitutes values with a green control.
 
