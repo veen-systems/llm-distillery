@@ -638,6 +638,46 @@ extension whitelist, rung ordering), so only the stamp was behind.
 Established the skill-scope split that still governs (see `CLAUDE.md`
 frontmatter). Declined: nothing.
 
+## 2026-09-05 — adopter-side filings on review cost
+
+Two issues filed upstream from the `EXP-024` review round. **Neither is an
+adoption**; both are measurements sent back.
+
+**agent-ready-projects#126 (commented, not filed — it already existed).** A second
+independent measurement of one review round: **557,442 subagent tokens, 148 tool
+calls, four lenses, all completing** — 2.5x the 224k in the issue's own body, where
+two lenses were killed mid-run. What the comment adds beyond a bigger number:
+
+- **The overlap has a size.** Three of four lenses independently found the same two
+  shallow findings — roughly **250k tokens buying a duplicate**.
+- **The unique yield was concentrated in one lens.** Adversarial alone found all three
+  defects that mattered.
+- **It closes that issue's own null.** Its scope limit says the two killed lenses "may
+  have found more"; here they completed and did not — but `guarantee/reachability`
+  returned zero blockers while being *the only lens that verified the verification*
+  (mutation-testing the control, proving a `True` verdict falsifiable). ⛔ **A lens-count
+  decision scored on blockers alone deletes that one.** The finding is not "one lens is
+  enough" — it is that lenses have different jobs and the framework does not distinguish
+  them, so pruning by count prunes the wrong ones.
+
+**agent-ready-projects#127 (filed).** The gap #126 does not cover: `/curate` promotes a
+recurring gotcha to a written pattern and has an Occurrences column to catch a promotion
+that did not take, but **there is no path from a review finding to a mechanical check** —
+so the cost recurs in full every session. Evidence: **four of the five defects in this
+session are mechanically checkable**, each a few lines of script, none checkable before a
+lens had articulated the shape. Proposes a synthesis-phase step ("is this shape
+mechanizable? name the check"), a destination for the answer, and the same Occurrences
+discipline. ⚠️ Explicitly **not** claiming review should shrink, that the four predicates
+generalise, or that mechanizing reduces future round cost — the last is an expectation and
+is the obvious thing to instrument.
+
+⚠️ **Local work still owed regardless of upstream**: the four checks are not written yet,
+and each must be seeded with a true positive and shown to fire. A mechanized check that
+never catches anything is indistinguishable from one that works — the trap the review skill
+documents two steps from where this would live.
+
+---
+
 ---
 
 ## Standing caveat on the stamp
