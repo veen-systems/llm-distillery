@@ -9,9 +9,11 @@ as of 2026-09-04 (**EXP-016**, `docs/evidence/2026-09-04-v8-probe-calibration/`)
 a fresh clone loads the package and cannot run the student. "Scoreable" is a statement about
 one host.
 
-⛔ **Scoreable is not gate-passed.** Phase D has not run, and TWO numbers are inherited
-rather than measured: the **4.5 op-point** (from v7 #102) and Gate B-A's **k**. Reading the
-op-point across from v7 is not neutral — see the calibration entry below.
+⛔ **Scoreable is not gate-passed.** The deploy gate (ADR-021, held-out oracle ground truth)
+has not run. ✅ **The op-point is no longer inherited**: **4.50 on the CALIBRATED scale**,
+re-derived on v8's own held-out split and ratified by the owner 2026-09-05
+(`docs/decisions/2026-09-05-v8-op-point.md`). ⚠️ Gate B-A's **k** is still inherited rather
+than measured.
 
 ⛔ **The doc set is still incomplete** (`memory/filter-doc-standard.md`). `config.yaml`, the
 prompt and now `calibration_report.md` are here; `DEEP_ROOTS.md`, `README.md` and
@@ -99,7 +101,14 @@ only. Resolve at Phase F **by copying, never renaming**.
   number flags **17** rows where raw flags **26** — a 35% cut in surfaced volume. The two arms
   are the same ranker (Spearman **0.9977**, AUC 0.9474 → 0.9488, every matched-volume recall
   difference ≤2 articles). **Carrying v7's 4.5 across is not "keeping the op-point"; it is
-  silently tightening it.** Phase D must re-derive on the calibrated scale.
+  silently tightening it.** ✅ **RE-DERIVED AND RATIFIED 2026-09-05, and the tightening is now
+  the CHOSEN behaviour rather than an accident**: on the calibrated arm every step from 3.75
+  up costs ~1 agreed-good article per junk article removed, and ADR-023 breaks a 1:1 trade
+  toward specificity. 4.50 calibrated removes **94.3%** of what the v8 oracle says v7 was
+  wrong to surface and keeps **12 of 30** both call good, spec **0.9920**; design-weighted,
+  95.0% / 40.2%. ⚠️ The frontier bends at **3.50** (−3 good buys −11 junk) — that is where to
+  go if volume is ever wanted, not 4.0 or 4.25, which buy it at par.
+  `docs/decisions/2026-09-05-v8-op-point.md`.
 - ⛔ **The Stage-1 threshold (1.75) is pinned to the exact probe it was derived against.**
   Same data, objective and code with `--seed 7` gives a probe on which 1.75 routes
   **0.7406/0.7567** instead of **0.8876/0.8935** — ~14 pp fewer articles reaching Stage 2,

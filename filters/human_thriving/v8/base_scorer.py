@@ -13,15 +13,28 @@ lives in FOUR places and moves in ONE commit:
     3. normalization.json stats.raw_min              <- Phase E, does not exist yet
     4. tests/unit/test_normalization_op_point.py     <- the parametrized assertion
 
-⚠️ 4.5 is INHERITED from uplifting v7 (#102, 2026-08-10, ADR-023), not re-derived on
-v8's own held-out oracle split. Phase D must re-derive it, and on TWO grounds:
+✅ RE-DERIVED AND RATIFIED BY THE OWNER, 2026-09-05: 4.5 STANDS, ON THE CALIBRATED
+SCALE. `docs/decisions/2026-09-05-v8-op-point.md`. It is no longer inherited — the
+sweep was computed on v8's own held-out split and the number happens to be the same one.
 
-  1. v8's score distribution is not v7's, and inheriting a number is not measuring it.
-  2. ⛔ v8 now ships a `calibration.json`, and **4.5 on the calibrated scale is a
-     STRICTER operating point than 4.5 on the raw scale** — it flags 17 test rows where
-     raw flags 26, a 34.6% cut in surfaced volume, with the arms indistinguishable as
-     rankers (Spearman 0.9977, AUC 0.9474 -> 0.9488). Carrying the number across is not
-     "keeping the op-point"; it is silently tightening it.
+⛔ THE ARGUMENT IS THE SHAPE OF THE TRADE, NOT THE LEVEL. On the calibrated arm, from
+3.75 upward every step costs almost exactly ONE agreed-good article per junk article
+removed (4.00->4.25 is -2/-2; 4.25->4.50 is -4/-4). ADR-023 breaks a 1:1 trade toward
+specificity — *a false positive costs a reader, a false negative costs nothing visible* —
+so the strictest reachable bar wins. The frontier bends at 3.50, where -3 good buys -11
+junk; anyone who wants materially more volume should move THERE, not to 4.0 or 4.25,
+because the intermediate bars buy volume at exactly par.
+
+⚠️ Held-out, calibrated: 4.50 removes 94.3% of what the v8 oracle says v7 was wrong to
+surface and keeps 12 of the 30 both definitions call good (spec 0.9920). Design-weighted
+on the same rows: 95.0% / 40.2%. The weighting does not move the decision — junk-removed
+shifts at most +2.44 pp and good-kept +0.20 pp over all 7 bars and both arms.
+
+⛔ **4.5 IS THE COMPARISON THE CALIBRATED SCORE MEETS, and that is verified by the code
+path, not assumed**: `filter_base_scorer._process_raw_scores` applies `calibration.json`
+BEFORE computing `weighted_avg` (`:315-317`), and `_assign_tier` sees that value
+(`:340`). v8 ships a `calibration.json`, so the runtime comparison is calibrated-vs-4.5.
+Executed at the boundary: 4.4999 -> `low`, 4.5000 -> `medium`.
 
 ⚠️ No single recall figure belongs in this file, because the one you would quote depends
 on the DEVICE and on whether calibration is applied. Test @4.5, n=660, 35 positives:

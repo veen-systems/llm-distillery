@@ -210,8 +210,10 @@ class TestResolveOpPoint:
         # Added 2026-09-04 with human_thriving v8's base_scorer.py (Phase C). v8 is
         # NOT deployed; it is here because this assertion is one of the four places
         # the op-point lives, and the guard is worth having before the number can
-        # drift, not after. 4.5 is INHERITED from uplifting v7 (#102) and must be
-        # re-derived on v8's own held-out split at Phase D.
+        # drift, not after. ✅ 4.5 was RE-DERIVED on v8's own held-out split and
+        # RATIFIED by the owner on 2026-09-05 (docs/decisions/2026-09-05-v8-op-point.md)
+        # — it is no longer inherited, and it applies to the CALIBRATED score, which is
+        # what `_process_raw_scores` hands `_assign_tier`.
         ("filters/human_thriving/v8", 4.5),
     ],
 )
