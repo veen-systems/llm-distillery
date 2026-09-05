@@ -22,6 +22,20 @@
 
 ## ▶ START HERE — two decisions are owed, both the owner's
 
+> ⚙️ **Also owed, and NOT a decision — it is work: the four mechanical checks from
+> `EXP-024`'s review.** Four of that round's five defects are scriptable and none was
+> checkable before a lens articulated the shape: (a) a *no difference at all X* claim must
+> publish the range over which it COULD have differed; (b) a published CI of `[0,0]` is
+> always a defect signal; (c) a comparative ordering in a decision record needs a paired
+> band or p-value; (d) if the population file carries design weights and the analysis never
+> reads them, flag. ⛔ **Each must be seeded with a true positive and shown to FIRE** — a
+> check that never catches anything is indistinguishable from one that works. Rationale and
+> the upstream framing: `agent-ready-projects#127`; the cost measurement that motivates it:
+> `#126` (**557,442 tokens, 148 tool calls, one round**). ⚠️ **Not claimed**: that
+> mechanizing reduces future round cost. That is an expectation and is the thing to
+> instrument.
+
+
 1. ⛔⛔ **THE PHASE-8 OP-POINT, on the CALIBRATED scale.** It is a **values** call, not a
    technical one, and the detail is under *Read before touching phase 8* immediately below.
    The trade on held-out data, raw arm — junk removed / good kept: **3.00 → 62.1% / 90.0% ·

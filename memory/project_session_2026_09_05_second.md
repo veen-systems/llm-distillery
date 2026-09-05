@@ -93,4 +93,32 @@ drift. **Reading the config before reporting the anomaly was the whole differenc
   regression e5-large probes **both** as `1024 6 mlp`.
 - Commented llm-distillery **#104**, **#127**, **#98**.
 
+## After `/curate` — the review's own cost, sent upstream
+
+⚠️ **This ran AFTER the curation commit**, so it is recorded here rather than in that commit.
+
+Owner: *"it is also very expensive (tokens), maybe we should think of adapting it?"* Measured
+this round: **557,442 subagent tokens, 148 tool calls, four lenses.**
+
+- **`agent-ready-projects#126`** — already open, filed by the owner (*"~224k tokens for one
+  round"*), so **commented rather than duplicated**. Adds a second independent measurement at
+  2.5×, with **all four lenses completing** — which closes that issue's own stated null (it had
+  to kill two). Also sizes the overlap it asserts: **three of four lenses found the same two
+  shallow findings**, ~250k tokens for a duplicate.
+- ⛔ **But argued explicitly AGAINST "one lens is enough."** `guarantee/reachability` returned
+  **zero blockers** and was the only lens that verified *the verification* — mutation-testing the
+  control to prove it exits non-zero and writes nothing, and proving a `True` verdict falsifiable.
+  **A lens-count decision scored on blockers deletes exactly that lens.**
+- **`agent-ready-projects#127`** (filed) — the gap #126 does not cover: `/curate` promotes a
+  recurring gotcha to a pattern and tracks whether the promotion took; **there is no path from a
+  review finding to a mechanical check**, so the cost recurs in full every session.
+- **`augmented-engineering#42`** (filed, per the CLAUDE.md cross-repo instruction) —
+  verification-findings evidence: six consecutive sessions where a fully green battery carried no
+  information about the changed thing, three measurable reasons why, and the behavioural property
+  that a rule reached its **21st occurrence one day after its 20th, inside a document written
+  about the 20th**.
+
+⚙️ **Owed locally regardless of upstream**: the four checks are not written. Each must be seeded
+with a true positive and shown to fire. Now in `docs/TODO.md`'s START HERE block.
+
 ▶ **NEXT: phase 8 — unchanged. The op-point is the owner's values call; nothing here moves it.**
