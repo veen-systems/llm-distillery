@@ -1,0 +1,66 @@
+n=660  positives=35  negatives=625  positive_rate=5.3030%  op-point=4.5
+
+CONTROL - recomputed AUC vs published (abort on mismatch)
+  OK  student_raw                        recomputed 0.9474  published 0.9474  d=0.0000
+  OK  student_calibrated                 recomputed 0.9488  published 0.9488  d=0.0000
+  OK  probe_recall_small [ungated]       recomputed 0.8710  published 0.8710  d=0.0000
+  OK  probe_recall_large [ungated]       recomputed 0.9016  published 0.9016  d=0.0000
+  OK  probe_reg_small [ungated]          recomputed 0.9035  published 0.9035  d=0.0000
+  OK  probe_reg_large [ungated]          recomputed 0.9021  published 0.9021  d=0.0000
+  => control PASSES
+
+DEPLOYABILITY - can the arm reach the literal 4.5 bar?
+arm                        min   median     p99     max  flagged@4.5
+student_raw              0.000    0.816   5.192   5.838           26
+student_calibrated       0.003    0.828   4.884   6.321           17
+probe_recall_small       0.655    3.011   6.522   7.434           96
+probe_recall_large       0.204    2.269   6.497   8.042           61
+probe_reg_small          0.000    0.667   4.418   7.948            5
+probe_reg_large          0.000    0.747   4.870   6.707           14
+
+RECALL / SPECIFICITY at MATCHED FLAG COUNT k  (FP = k - TP identically)
+arm                                         k=17          k=20          k=26          k=30          k=35          k=43          k=50          k=60
+student_raw                          10   98.880   13   98.880   17   98.560   18   98.080   20   97.600   22   96.640   24   95.840   25   94.400
+student_calibrated                   12   99.200   13   98.880   16   98.400   18   98.080   19   97.440   22   96.640   23   95.680   26   94.560
+probe_recall_small [gated]            9   98.720    9   98.240   10   97.440   10   96.800   11   96.160   15   95.520   15   94.400   16   92.960
+probe_recall_small [ungated]          9   98.720    9   98.240   10   97.440   10   96.800   11   96.160   15   95.520   15   94.400   16   92.960
+probe_recall_large [gated]            9   98.720   10   98.400   14   98.080   15   97.600   17   97.120   19   96.160   20   95.200   21   93.760
+probe_recall_large [ungated]          9   98.720   10   98.400   14   98.080   15   97.600   17   97.120   19   96.160   20   95.200   22   93.920
+probe_reg_small [gated]               6   98.240    7   97.920   12   97.760   12   97.120   13   96.480   15   95.520   17   94.720   21   93.760
+probe_reg_small [ungated]             6   98.240    7   97.920   12   97.760   12   97.120   13   96.480   15   95.520   17   94.720   21   93.760
+probe_reg_large [gated]              12   99.200   12   98.720   16   98.400   18   98.080   19   97.440   20   96.320   21   95.360   21   93.760
+probe_reg_large [ungated]            12   99.200   12   98.720   16   98.400   18   98.080   19   97.440   21   96.480   21   95.360   21   93.760
+
+RANKING-METRIC DELTAS with bands (the ordering is NOT a finding on its own)
+  auc_reg_small_minus_reg_large        +0.0014 [-0.0448,+0.0476]  P=0.523
+  ap_reg_small_minus_reg_large         -0.1154 [-0.2587,+0.0210]  P=0.052
+  auc_student_minus_reg_large          +0.0467 [+0.0108,+0.0863]  P=0.995
+
+PAIRED RE-SELECTION BOOTSTRAP on (student_calibrated TP - arm TP), 10000 resamples
+arm                                k=17             k=20             k=26             k=30             k=35             k=43             k=50             k=60
+probe_reg_large              +0 [-4,+4]       +1 [-4,+4]       +0 [-4,+4]       +0 [-4,+5]       +0 [-4,+5]       +1 [-4,+6]       +2 [-3,+8]       +5 [-1,+9]
+probe_reg_small             +6 [+1,+9]*      +6 [+0,+10]      +4 [+0,+11]      +6 [+0,+11]     +6 [+1,+12]*     +7 [+1,+12]*      +6 [+0,+12]      +5 [+0,+11]
+probe_recall_large           +3 [-2,+7]       +3 [-2,+7]       +2 [-3,+8]       +3 [-2,+8]       +2 [-2,+8]       +3 [-1,+7]       +3 [-1,+8]       +4 [+0,+9]
+probe_recall_small           +3 [-2,+8]       +4 [-1,+9]      +6 [+0,+11]     +8 [+2,+13]*     +8 [+2,+14]*     +7 [+2,+14]*     +8 [+3,+14]*    +10 [+3,+15]*
+student_raw                  +2 [-3,+4]       +0 [-3,+4]       -1 [-4,+2]       +0 [-3,+2]       -1 [-3,+2]       +0 [-2,+2]       -1 [-2,+2]       +1 [-2,+3]
+  * = 95% CI excludes zero (distinguishable from student_calibrated at that k)
+  NULL CONTROL (student_calibrated vs itself, k=26): +0 [+0,+0] -> PASS
+
+CASCADES (stage-1 = shipped recall e5-small probe @1.75; a screened row
+publishes the PROBE's score, a routed row the stage-2 arm's) -- TP / specificity%
+  stage-1 routes 90.3% onward; positives screened out: 0/35
+composition                                   k=17          k=20          k=26          k=30          k=35          k=43          k=50          k=60
+A_gate_to_student_calibrated           12   99.200   13   98.880   16   98.400   18   98.080   20   97.600   22   96.640   24   95.840   27   94.720
+B_gate_to_probe_reg_large              12   99.200   12   98.720   16   98.400   18   98.080   19   97.440   21   96.480   21   95.360   21   93.760
+C_probe_reg_large_alone                12   99.200   12   98.720   16   98.400   18   98.080   19   97.440   21   96.480   21   95.360   21   93.760
+D_probe_reg_small_alone                 6   98.240    7   97.920   12   97.760   12   97.120   13   96.480   15   95.520   17   94.720   21   93.760
+  B==C: True   ⛔ but the smallest k at which B COULD differ from C is 140 (grid stops at 60) -> FORCED, carries no information
+
+DESIGN-WEIGHTED (Horvitz-Thompson). unweighted positive rate 5.3030% vs weighted 3.1638%; HT weights 1.17..29.32; stage-1 routing weighted 89.3480% against unweighted 90.3030%
+arm                              share=0.0158           share=0.0237           share=0.0316           share=0.0475           share=0.0633
+student_calibrated           0.329 /  0.99419       0.453 /  0.98987       0.529 /  0.98394       0.604 /  0.97073       0.733 /  0.95796
+student_raw                  0.354 /  0.99481       0.453 /  0.98987       0.554 /  0.98489       0.604 /  0.97073       0.708 /  0.95709
+probe_reg_large              0.301 /  0.99197       0.402 /  0.98843       0.478 /  0.98264       0.551 /  0.96756       0.551 /  0.95178
+probe_reg_small              0.152 /  0.98843       0.252 /  0.98347       0.302 /  0.97702       0.400 /  0.96372       0.551 /  0.95229
+
+wrote docs/evidence/2026-09-05-adr023-op-point-table/adr023_op_point_table.json

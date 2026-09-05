@@ -6,7 +6,7 @@
 > `..._evening.md`, `..._late.md` and `memory/project_session_2026_09_05.md`.
 > Runs: **EXP-015** (training), **EXP-016** (probe + calibration), **EXP-017** (Phase C
 > review), **EXP-018** (e5-large), **EXP-019** (regression probes), **EXP-020** (gating),
-> **EXP-021** (production overhead), **EXP-022** (device throughput) in
+> **EXP-021** (production overhead), **EXP-022** (device throughput), **EXP-024** (op-point table) in
 > `experiments/registry.jsonl`, with `docs/evidence/2026-09-04-scoring-overhead/`,
 > `docs/evidence/2026-09-05-scorer-device-throughput/`, and
 > `docs/evidence/2026-09-04-v8-checkpoint-selection/` and
@@ -32,6 +32,22 @@
    Manifest with sha256s: `docs/evidence/2026-09-05-scorer-device-throughput/`
    `rescued_probes_manifest.txt`. **7.0 MiB** across eleven files; they are what makes EXP-018/019
    reproducible. **Not decided, and not something to do silently.**
+
+⭐ **EXP-024 (2026-09-05) does not move the op-point — and four of its own first-draft
+claims were retracted before it was committed.** Measured at matched surfacing volume on the
+660-row test split: a regression-objective `multilingual-e5-large` probe is **not
+distinguishable from the student at any tested volume** (re-selection bootstrap, CI includes
+zero at all eight k), while regression e5-**small** is six articles worse at k=17 (CI [+1,+9]).
+⛔ **But that is the UNWEIGHTED sample.** The split was drawn under a **25.1×** design, and
+**weighted, the student leads at every share tested** (0.529 vs 0.478 of the positive mass).
+⛔ **Retracted before commit, by `/review-changes` after the whole mechanical battery went
+green and caught none of it:** *"AUC would have picked the wrong arm"* (a coin flip, P=0.523),
+*"the gate buys nothing"* (forced — a screened row could not enter the top-k below k=140, grid
+stops at 60), a bootstrap that emitted a zero-width CI, and the missing design weights.
+⛔ **Nothing ships on this** — 35 positives, one seed, no `calibration.json`. It is the
+**Nth-scorer** lever (defined in that README §7: a shared encoder pass plus a free head, against
+a per-filter student), not a phase-8 input: `H-V8-22`,
+`docs/evidence/2026-09-05-adr023-op-point-table/` — **read its §6 before quoting it.**
 
 ⭐ **Nothing measured on 2026-09-04/05 moves the op-point.** The cost work (`EXP-021`,
 `EXP-022`, `EXP-023`) confirms there is still **no Stage-2 cost constraint**, which is what
