@@ -88,6 +88,32 @@ battery was green throughout.**
 ⭐ **Consequence for phase 8: there is still no Stage-2 cost constraint.** The gating ruling and
 the "is the probe enough" question both turned on one appearing. It has not.
 
+### 2026-09-05 — the device timings now have an experiment behind them (`EXP-022`)
+
+`docs/evidence/2026-09-05-scorer-device-throughput/`. The owner asked whether the CPU/GPU work
+had been logged. The *numbers* were (EXP-019 metrics); the *experiment* was not — no cited
+script, no retained output, host/device/batch only in a docstring, **n=1 per arm**. Re-measured
+with repeats, retained JSON and captured environment.
+
+⛔ **The first re-run reported CUDA as CPU** — 2.37 ms against GPU's 2.34, because
+`EmbeddingStage` caches models on the **model name alone** and ignores `device` on a cache hit
+(`embedding_stage.py:112/213`). True CPU figure **42.41 ms, 18× slower**. **The only tell was
+that the two agreed.** Filed **#146**; the same dict is read/written by NexusMind's
+`story_dedup.py:861`, so it spans two repos. ⚠️ Latent — no two current consumers share a
+model name.
+
+⭐⭐ **The repeats were in the wrong place.** Within-run spread **0.03–0.61%**; between sessions
+on the same box, e5-small GPU moved **1.60×** (3.74 → 2.332). ⛔ **So do not quote a b650
+absolute without a band.** What *does* travel is the ratio the conclusions rest on:
+student ÷ probe **11.68× → 10.61×**, break-even routing **0.5275 → 0.5657**. ⛔ The CPU/GPU
+ratio does **not** (12.62× → 18.19×) — never quote "CPU is N× slower".
+
+✅ **EXP-018/019/020's conclusions are unchanged.** Two-stage at the adopted 89% routing saves
+**1.57%** against student-on-everything (2.5% before); break-even is **56.6%** routing.
+
+⚠️ **e5-large is encoder-only here** — its EXP-018/019 probe head was never retained, so those
+two timings are not reproducible without retraining. Not the same quantity; do not compare.
+
 ### ⛔ Read before touching phase 8
 
 1. ✅ **SCOREABLE — on `b650-gpu` only.** `base_scorer.py`, `inference.py`,

@@ -5905,3 +5905,46 @@ run logs `Story dedup: using GPU embeddings via gpu-server`"* — which I had al
 peer — is **false as stated**; and the instrument **cannot express "CPU" at all**, since the
 CPU branches log a phrase without the word `using`. A set of size 1 is produced identically by
 1 of 8 runs and by 8 of 8; `devices` was a set and was never counted.
+
+## 2026-09-05 — `pgrep -f` matched its own wait-loop again, 7th occurrence
+**Problem**: Waited for a remote benchmark with
+`ssh b650-gpu 'while pgrep -f "bench_devices.py --arm student-gpu"; do sleep 5; done; ...'`.
+It never returned and was killed at the timeout (**exit 143**) — while the benchmark itself
+had finished minutes earlier.
+**Root cause**: `pgrep -f` matches the **full command line**, and the remote shell carrying
+the loop contains the pattern. The loop was waiting for itself. CLAUDE.md documents this at
+six prior occurrences; I wrote it anyway, inside an experiment about instruments that cannot
+say what they claim.
+**Fix**: no data lost — the result was already retrieved by reading the output file directly.
+Use `ps -eo pid,etime,args | grep -v grep`, or check for the artifact the job produces rather
+than for the job. ⭐ **The general form is the session's own theme: I asked "is it still
+running?" of an instrument that had to answer yes.** The wait-loop is a *negative*-detector
+whose positive was guaranteed.
+⚠️ **The tell was available and I did not use it**: an earlier command in the same session had
+already listed the process with `ps -eo pid,etime,args`, which shows the loop and the job as
+separate lines. `pgrep` collapses exactly the distinction that matters.
+
+## 2026-09-05 — a benchmark reported CUDA twice and called one of them CPU
+**Problem**: Measuring v8 throughput by device, the CPU arm read **2.37 ms/article** against
+the GPU arm's **2.34** — a 1% difference between two devices. Measured properly, CPU is
+**42.41 ms/article**, **18× slower**.
+**Root cause**: `filters/common/embedding_stage.py:112` caches loaded models in a class-level
+dict keyed on the **model name alone**. On a cache hit (`:213`) the `device` argument is never
+consulted, so the second `EmbeddingStage(..., device="cpu")` in the process got the
+CUDA-resident model — while `self.device` still read `"cpu"`, and `self.device` *is* honoured
+at `:195` and `:284` for the probe head and the input tensors. **Half the object obeys the
+flag and half ignores it, so nothing crashes.**
+**Fix**: one arm per process, and the script now **reads the device back off the loaded
+model** instead of trusting the flag it passed. Filed **llm-distillery#146** — the same dict
+is read and written by `NexusMind/src/preprocessing/story_dedup.py:861`, so the cache spans
+two repos and each side believes it chooses the device. ⚠️ Latent, not live: checked, and no
+two current consumers share a model name.
+⭐⭐ **THE ONLY TELL WAS THAT THE TWO NUMBERS AGREED.** A 20× error was visible; a 20% one
+would have shipped. *When two arms of an experiment are supposed to differ and don't, that is
+a result about the instrument before it is a result about the world.*
+⭐ **And the second finding is where the repeats belong.** Within one process the arms are
+stable to **0.03–0.61%**; between sessions on the same box with the same script shape,
+e5-small GPU moved **1.60×** (3.74 → 2.332). **Repeats inside one process measure the
+process, not the quantity** — a figure quoted to three significant figures from five such
+repeats is precise about one run. What changed between sessions was not identified, and no
+cause is claimed.

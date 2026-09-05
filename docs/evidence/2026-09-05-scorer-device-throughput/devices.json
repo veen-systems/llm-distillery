@@ -1,0 +1,86 @@
+{
+  "env": {
+    "host": "jwasys-B650-EAGLE-AX",
+    "python": "3.12.3",
+    "torch": "2.13.0+cu130",
+    "cuda": "13.0",
+    "gpu": "NVIDIA GeForce RTX 3090 Ti",
+    "cpu_threads": 8,
+    "batch_size": 64,
+    "rows": 660,
+    "split": "datasets/training/human_thriving_v8/test.jsonl",
+    "note": "model load EXCLUDED via a warm-up pass; b650-gpu is NOT gpu-server",
+    "one_arm_per_process": true,
+    "measured": "2026-09-05"
+  },
+  "arms": {
+    "e5-large encoder-only, GPU": {
+      "repeats": 5,
+      "ms_per_article_median": 16.324,
+      "ms_per_article_min": 16.275,
+      "ms_per_article_max": 16.375,
+      "ms_per_article_all": [
+        16.275,
+        16.311,
+        16.324,
+        16.339,
+        16.375
+      ],
+      "spread_pct_of_median": 0.61,
+      "rows": 660,
+      "device_verified": [
+        "no embedding model in this arm"
+      ]
+    },
+    "e5-small probe, CPU": {
+      "repeats": 3,
+      "ms_per_article_median": 42.409,
+      "ms_per_article_min": 42.398,
+      "ms_per_article_max": 42.472,
+      "ms_per_article_all": [
+        42.398,
+        42.472,
+        42.409
+      ],
+      "spread_pct_of_median": 0.17,
+      "rows": 660,
+      "device_verified": [
+        "cpu"
+      ]
+    },
+    "e5-small probe, GPU": {
+      "repeats": 5,
+      "ms_per_article_median": 2.332,
+      "ms_per_article_min": 2.327,
+      "ms_per_article_max": 2.34,
+      "ms_per_article_all": [
+        2.327,
+        2.331,
+        2.332,
+        2.34,
+        2.34
+      ],
+      "spread_pct_of_median": 0.57,
+      "rows": 660,
+      "device_verified": [
+        "cuda:0"
+      ]
+    },
+    "student, GPU": {
+      "repeats": 3,
+      "ms_per_article_median": 24.733,
+      "ms_per_article_min": 24.732,
+      "ms_per_article_max": 24.74,
+      "ms_per_article_all": [
+        24.732,
+        24.74,
+        24.733
+      ],
+      "spread_pct_of_median": 0.03,
+      "rows": 660,
+      "device_verified": [
+        "no embedding model in this arm"
+      ]
+    }
+  }
+}
