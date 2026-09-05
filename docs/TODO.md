@@ -22,6 +22,18 @@
 
 ## ▶ START HERE — two decisions are owed, both the owner's
 
+
+1. ⛔⛔ **THE PHASE-8 OP-POINT, on the CALIBRATED scale.** It is a **values** call, not a
+   technical one, and the detail is under *Read before touching phase 8* immediately below.
+   The trade on held-out data, raw arm — junk removed / good kept: **3.00 → 62.1% / 90.0% ·
+   4.00 → 82.8% / 73.3% · 4.50 → 90.8% / 56.7% · 5.00 → 96.6% / 23.3%**. Under ADR-023 the
+   inherited 4.5 is defensible and possibly right.
+2. ⚠️ **Do the eleven rescued probes go into git?** They were one reboot from gone in
+   `b650-gpu:/tmp` and now sit in `~/llm-distillery/rescued_probes/`, out of version control.
+   Manifest with sha256s: `docs/evidence/2026-09-05-scorer-device-throughput/`
+   `rescued_probes_manifest.txt`. **7.0 MiB** across eleven files; they are what makes EXP-018/019
+   reproducible. **Not decided, and not something to do silently.**
+
 > ⚙️ **Also owed, and NOT a decision — it is work: the four mechanical checks from
 > `EXP-024`'s review.** Four of that round's five defects are scriptable and none was
 > checkable before a lens articulated the shape: (a) a *no difference at all X* claim must
@@ -34,18 +46,6 @@
 > `#126` (**557,442 tokens, 148 tool calls, one round**). ⚠️ **Not claimed**: that
 > mechanizing reduces future round cost. That is an expectation and is the thing to
 > instrument.
-
-
-1. ⛔⛔ **THE PHASE-8 OP-POINT, on the CALIBRATED scale.** It is a **values** call, not a
-   technical one, and the detail is under *Read before touching phase 8* immediately below.
-   The trade on held-out data, raw arm — junk removed / good kept: **3.00 → 62.1% / 90.0% ·
-   4.00 → 82.8% / 73.3% · 4.50 → 90.8% / 56.7% · 5.00 → 96.6% / 23.3%**. Under ADR-023 the
-   inherited 4.5 is defensible and possibly right.
-2. ⚠️ **Do the eleven rescued probes go into git?** They were one reboot from gone in
-   `b650-gpu:/tmp` and now sit in `~/llm-distillery/rescued_probes/`, out of version control.
-   Manifest with sha256s: `docs/evidence/2026-09-05-scorer-device-throughput/`
-   `rescued_probes_manifest.txt`. **7.0 MiB** across eleven files; they are what makes EXP-018/019
-   reproducible. **Not decided, and not something to do silently.**
 
 ⭐ **EXP-024 (2026-09-05) does not move the op-point — and four of its own first-draft
 claims were retracted before it was committed.** Measured at matched surfacing volume on the
