@@ -57,7 +57,7 @@ This model scores articles across 6 semantic dimensions:
 
 ### Training Configuration
 
-- **Epochs**: 6 trained, checkpoint from epoch 4
+- **Epochs**: 6 trained, checkpoint from epoch 5
 - **Batch size**: 8
 - **Learning rate**: 2e-05
 - **Optimizer**: AdamW
@@ -70,21 +70,21 @@ This model scores articles across 6 semantic dimensions:
 
 | Metric | Value |
 |--------|-------|
-| Validation MAE | 0.5814 |
-| Training MAE | 0.5007 |
-| Validation RMSE | 0.9474 |
-| Training RMSE | 0.7896 |
+| Validation MAE | 0.5715 |
+| Training MAE | 0.4303 |
+| Validation RMSE | 0.9498 |
+| Training RMSE | 0.6781 |
 
 ### Per-Dimension Performance (Validation MAE)
 
 | Dimension | MAE |
 |-----------|-----|
-| Human Wellbeing Impact | 0.5949 |
-| Social Cohesion Impact | 0.5258 |
-| Justice Rights Impact | 0.4362 |
-| Evidence Level | 0.6981 |
-| Benefit Distribution | 0.5969 |
-| Change Durability | 0.6363 |
+| Human Wellbeing Impact | 0.5771 |
+| Social Cohesion Impact | 0.5368 |
+| Justice Rights Impact | 0.4300 |
+| Evidence Level | 0.6756 |
+| Benefit Distribution | 0.5879 |
+| Change Durability | 0.6216 |
 
 
 ## Usage
@@ -134,8 +134,8 @@ for dim, score in zip(dimensions, scores):
   of that corpus and of the filter, and is not asserted here — see the filter's
   `README.md`.
 - Performance may vary on other content types
-- Validation MAE of 0.5814 indicates ~0.8 point average error on 0-10 scale
-- Some overfitting observed (train/val gap: 0.08)
+- Validation MAE of 0.5715 indicates ~0.8 point average error on 0-10 scale
+- Some overfitting observed (train/val gap: 0.14)
 
 ## Ethical Considerations
 

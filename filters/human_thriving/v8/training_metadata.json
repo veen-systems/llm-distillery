@@ -20,15 +20,26 @@
   "warmup_steps": 500,
   "train_examples": 5268,
   "val_examples": 658,
-  "best_val_mae": 0.5813651084899902,
-  "min_val_mae_observed": 0.5605086088180542,
+  "best_val_mae": 0.5715025663375854,
+  "min_val_mae_observed": 0.5597385168075562,
   "include_prompt": false,
   "training_mode": "knowledge_distillation",
   "use_head_tail": false,
   "head_tokens": null,
   "tail_tokens": null,
   "sample_weight_scale": 0.0,
+  "requested_select_metric": "recall_medium",
+  "requested_medium_threshold": 4.5,
+  "requested_medium_threshold_source": "base_scorer.py TIER_THRESHOLDS",
+  "checkpoint_saved": true,
   "select_metric": "recall_medium",
   "select_metric_available": true,
-  "medium_threshold": 4.5
+  "medium_threshold": 4.5,
+  "medium_threshold_source": "base_scorer.py TIER_THRESHOLDS",
+  "git_commit": "64b469d935bc34a87c176b8ee2ad86cbafd5bdde",
+  "git_dirty": false,
+  "git_branches_at_train_time": [
+    "main"
+  ],
+  "git_provenance": "recorded"
 }

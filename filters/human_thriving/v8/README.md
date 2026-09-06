@@ -17,15 +17,34 @@ CUDA, n=660, 35 positives = 5.30% unweighted):
 
 | | value | #95 band |
 |---|---|---|
-| **specificity** | **0.992** | [0.9872, 0.9952] |
-| precision | 0.706 | [0.579, 0.833] |
-| recall | 0.343 | [0.314, 0.429] |
-| F1 | 0.462 | [0.407, 0.566] |
+| **specificity** | **0.9856** | [0.984, 0.992] |
+| precision | 0.550 | [0.500, 0.737] |
+| recall | 0.314 | [0.286, 0.400] |
+| F1 | 0.400 | [0.364, 0.519] |
 
-**The 0.343 is the project's loss function working, not the model failing.** ADR-023: a false
+**20 surfaced, 11 right, 9 wrong** — and the 9 is the number to look at, not the 0.9856.
+
+⛔ **This is the RETRAINED epoch-5 checkpoint** (commit `64b469d`, adapter `074209ff…`). The
+superseded epoch-4 model scored spec 0.9920 / precision 0.706 / recall 0.343, 17 surfaced with
+5 FP. **All four #95 bands overlap, so the two are NOT DISTINGUISHABLE** — the point estimates
+move adversely, which is a direction and not an effect.
+
+⭐ **Most of that precision drop is boundary disagreement, not junk.** By the oracle's own
+`scope_verdict`, **6 of the 9 false positives are `in_scope`** — thriving stories the oracle
+scored just under 4.5 and the student put just over:
+
+| what you count | epoch 5 (ships) | epoch 4 (superseded) |
+|---|---|---|
+| plain precision | 0.550 | 0.706 |
+| genuinely off-lens | 3 of 20 → **0.850** | 2 of 17 → 0.882 |
+| category errors (`harm_is_subject`) | **1** | 1 |
+
+⚠️ Counts of 17 and 20 articles. *"1 versus 1"* compares two single articles, not two rates.
+
+**The 0.314 is the project's loss function working, not the model failing.** ADR-023: a false
 positive reaches a reader; a false negative is invisible and the slot refills. v8 surfaces
-about a third of what the oracle calls on-lens and is right about **70%** of what it does
-surface. **A change that raises recall here without holding specificity is a regression**, and
+about a third of what the oracle calls on-lens and is right about **55%** of what it does
+surface by the plain count — **85%** once the six `in_scope` boundary cases are set aside. **A change that raises recall here without holding specificity is a regression**, and
 "recall is low" is not on its own a finding.
 
 ⛔ **Do not set that recall beside the fleet's 0.59–0.72.** v7 and v8 do not share a positive
@@ -34,7 +53,8 @@ class: on the same 660 rows v7 calls **117** positive, v8 calls **35**, and they
 base *rate* and does **not** survive a change of *definition*. Two recalls of two different
 classes are two quantities with one name.
 
-Full gate output: `ground_truth_gate.json`, `docs/evidence/2026-09-06-v8-deploy-gate/`.
+Full gate output: `ground_truth_gate.json`, `docs/evidence/2026-09-06-v8-retrain-gate/`.
+The superseded epoch-4 run: `docs/evidence/2026-09-06-v8-deploy-gate/`.
 
 ## What v8 is for
 
@@ -62,6 +82,11 @@ content is out **even when v7 scored it high**. That narrowing is scoped, not re
 is what eliminated every pure-ecology candidate from the no-regression search.
 
 ### Measured: v8 does the thing it exists for
+
+⚠️ **Measured on the superseded epoch-4 checkpoint** (EXP-017) and **not re-derived on epoch 5**.
+It is kept because it establishes what v8 is *for* — a property of the definition and the
+oracle, which the retrain did not change — but ⛔ do not quote these as figures for the shipped
+model.
 
 Of the **87** held-out test rows that `uplifting v7` surfaced and the v8 oracle demotes, the
 student removes **82 (94.3%)** on the calibrated arm. On those disputed rows its AUC is
@@ -100,8 +125,9 @@ Re-derived on v8's own held-out split and ratified by the owner 2026-09-05
 (`docs/decisions/2026-09-05-v8-op-point.md`). It is **not** inherited from v7 by default.
 
 ⛔ **4.5 calibrated is a stricter point than 4.5 raw.** Isotonic compresses the top
-(`human_wellbeing_impact` student max 7.9 → calibrated 6.8), so the same number flags **17**
-rows where raw flags **26** — a 35% cut in surfaced volume. Carrying v7's 4.5 across is not
+(`human_wellbeing_impact` student max 7.9 → calibrated 6.8), so the same number flags far
+fewer rows than raw does — **20 vs 29** on the shipped epoch-5 model, and 17 vs 26 on the
+epoch-4 one the op-point was ruled against. Carrying v7's 4.5 across is not
 "keeping the op-point"; it is silently tightening it. The tightening is now the **chosen**
 behaviour: every step from 3.75 up costs about one agreed-good article per junk article
 removed, and ADR-023 breaks a 1:1 trade toward specificity.
@@ -151,11 +177,11 @@ template's default, and it is not a measured claim about this filter.
 - **Oracle**: DeepSeek at k=3, **6,586 labels for $6.8853**; 456 above-op rows re-labelled under `prompt-v8-4.md`
 - **Splits**: 5,268 train / 658 val / 660 test
 - **Config**: 6 epochs, batch 8, lr 2e-5, max_length 512, no head/tail, no sample weighting
-- **Checkpoint**: **epoch 4**, selected on `recall_medium` @4.5 — ⚠️ by a **tie-break**, not by the metric (it saturates at 0.5806 across epochs 4, 5 and 6; selection's strict `>` keeps the earliest). On test the arms are not distinguishable. llm-distillery#144
+- **Checkpoint**: **epoch 5** of 6, selected on `recall_medium` @4.5 (val **0.613** = 19/31), trained under commit **`64b469d`** on `main` with `git_dirty=false`. ⚠️ **Not epoch 4**, which is what the first build shipped: there `recall_medium` **saturated** at 0.5806 across epochs 4/5/6 so the strict `>` tie-break kept the earliest (llm-distillery#144); this run did not saturate, so selection chose outright
 - **Calibration**: per-dimension isotonic on val (ADR-008)
 
-⛔ **The calibration does not improve held-out MAE** (test 0.6029 → 0.6142, worse in 5 of 6
-dimensions) and that is not why it ships. The two arms are the **same ranker** (Spearman
+⛔ **The calibration does not improve held-out MAE** (test 0.5947 → 0.6066, −2.0%; on the
+superseded checkpoint it was 0.6029 → 0.6142, −1.9% — the same finding twice) and that is not why it ships. The two arms are the **same ranker** (Spearman
 0.9977, AUC 0.9474 → 0.9488); calibration ships per ADR-008 and ADR-023's specificity
 tie-break. `calibration_report.md`.
 
@@ -210,10 +236,13 @@ evidence stamps.
    op-point. It comes **after** deployment, as it did for `solutions v6`. ⛔ Do not substitute
    the test split — it is a 25.1× design-weighted sample and a CDF fitted on it would describe
    a population that does not exist.
-3. **The dangling checkpoint.** The shipped weights were trained by the tree that became
-   `1878e7b` via `git commit --amend`, so the training commit (`0697f5a`) is unreachable and
-   will not survive `git gc`. `1878e7b` reproduces the numbers, but *the verified artifact is
-   not the shipped one* until it is retrained under a real commit. Retrain (~90 min on b650)
-   or record the exception — owner's call, and it is recorded in `STATUS.md`.
+3. ✅ **The dangling checkpoint — RESOLVED 2026-09-06 by retraining, not by exception.** The
+   first adapter was built by the tree that became `1878e7b` via `git commit --amend`, so its
+   training commit (`0697f5a`) was reachable from no branch. Owner ruled *"no exception, i
+   want this system to be harmonized"*, and it was retrained under **`64b469d` on `main`**.
+   `train.py` now refuses to train without a commit stamp, and
+   `scripts/verification/check_training_provenance.py` re-checks reachability afterwards.
+   ⚠️ This buys **traceability, not bit-reproducibility** — the run is not deterministic at
+   this seed, so re-running `64b469d` yields a near-identical but different model.
 4. **The v8.1 commencement fix**, ruled 2026-09-03 and unwritten. Acceptance criterion 1 stays
    FAILING until it is measured, with the Travelodge row as negative control.

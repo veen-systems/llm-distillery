@@ -6,96 +6,96 @@
   "noise_floor": 0.16,
   "n_labeled": 660,
   "models": {
-    "calibrated_cuda": {
+    "calibrated": {
       "n": 660,
       "positives": 35,
       "truth_threshold": 4.5,
-      "recall": 0.34285714285714286,
-      "precision": 0.7058823529411765,
-      "specificity": 0.992,
-      "f1": 0.46153846153846156,
-      "spearman": 0.8066003286384467,
-      "mae": 0.5414945652218164,
-      "tp": 12,
-      "fn": 23,
-      "fp": 5,
-      "tn": 620,
+      "recall": 0.3142857142857143,
+      "precision": 0.55,
+      "specificity": 0.9856,
+      "f1": 0.4,
+      "spearman": 0.8105147167525019,
+      "mae": 0.5392919807989137,
+      "tp": 11,
+      "fn": 24,
+      "fp": 9,
+      "tn": 616,
       "noise_floor": 0.16,
       "n_indeterminate": 9,
       "indeterminate_by_cell": {
         "tp": 1,
         "fn": 3,
-        "fp": 2,
-        "tn": 3
+        "fp": 4,
+        "tn": 1
       },
       "recall_band": [
-        0.3142857142857143,
-        0.42857142857142855
+        0.2857142857142857,
+        0.4
       ],
       "precision_band": [
-        0.5789473684210527,
-        0.8333333333333334
+        0.5,
+        0.7368421052631579
       ],
       "specificity_band": [
-        0.9872,
-        0.9952
+        0.984,
+        0.992
       ],
       "f1_band": [
-        0.40740740740740744,
-        0.5660377358490566
+        0.36363636363636365,
+        0.5185185185185185
       ]
     },
-    "raw_cuda": {
+    "raw": {
       "n": 660,
       "positives": 35,
       "truth_threshold": 4.5,
       "recall": 0.4857142857142857,
-      "precision": 0.6538461538461539,
-      "specificity": 0.9856,
-      "f1": 0.5573770491803278,
-      "spearman": 0.8068660725457745,
-      "mae": 0.5317210984423089,
+      "precision": 0.5862068965517241,
+      "specificity": 0.9808,
+      "f1": 0.53125,
+      "spearman": 0.8125588517761081,
+      "mae": 0.5189954159823326,
       "tp": 17,
       "fn": 18,
-      "fp": 9,
-      "tn": 616,
+      "fp": 12,
+      "tn": 613,
       "noise_floor": 0.16,
-      "n_indeterminate": 12,
+      "n_indeterminate": 11,
       "indeterminate_by_cell": {
         "tp": 3,
-        "fn": 2,
-        "fp": 2,
-        "tn": 5
+        "fn": 4,
+        "fp": 1,
+        "tn": 3
       },
       "recall_band": [
         0.4,
-        0.5428571428571428
+        0.6
       ],
       "precision_band": [
-        0.5,
-        0.7307692307692307
+        0.4827586206896552,
+        0.65625
       ],
       "specificity_band": [
-        0.9776,
-        0.9888
+        0.976,
+        0.9824
       ],
       "f1_band": [
-        0.4444444444444445,
-        0.6229508196721311
+        0.43750000000000006,
+        0.626865671641791
       ]
     }
   },
   "inputs": {
-    "generated_utc": "2026-09-06T07:04:32Z",
+    "generated_utc": "2026-09-06T18:46:38Z",
     "argv": [
       "--labels",
       "datasets/training/human_thriving_v8/test.jsonl",
       "--config",
       "filters/human_thriving/v8/config.yaml",
       "--model",
-      "calibrated_cuda=datasets/gate/ht_v8_test_cuda/scores_calibrated.jsonl",
+      "calibrated=ht_v8_test_dump_cuda_retrain/scores_calibrated.jsonl",
       "--model",
-      "raw_cuda=datasets/gate/ht_v8_test_cuda/scores_raw.jsonl",
+      "raw=ht_v8_test_dump_cuda_retrain/scores_raw.jsonl",
       "--recompute-model-wa",
       "--report",
       "filters/human_thriving/v8/ground_truth_gate.json"
@@ -109,33 +109,39 @@
       "sha256": "1ac520e5115f13b9dde6d1ca41c212f7b64e0910169c006863199ea13ff8ac62"
     },
     "models": {
-      "calibrated_cuda": {
-        "path": "datasets/gate/ht_v8_test_cuda/scores_calibrated.jsonl",
-        "sha256": "fef1a56b00d4448bedfc0dfaf2074ddfe94a0d0e04149c831884771af80ff2fb"
+      "calibrated": {
+        "path": "ht_v8_test_dump_cuda_retrain/scores_calibrated.jsonl",
+        "sha256": "d30f12bcec83f176f0d988cbd30c8a8779750ada5e2a776b71ede3300c7c2cf2"
       },
-      "raw_cuda": {
-        "path": "datasets/gate/ht_v8_test_cuda/scores_raw.jsonl",
-        "sha256": "0ead6f6b6e863029083f7bf1ecca3d35f99ea4e560865fbaa33ea6a78d58c7a2"
+      "raw": {
+        "path": "ht_v8_test_dump_cuda_retrain/scores_raw.jsonl",
+        "sha256": "f370b719f373b85c3bac3606bbc50cc4849f73b66ddae75409794d5a95bf4888"
       }
     }
   },
   "provenance": {
-    "measured": "2026-09-06 (ADR-021 deploy gate, phase 8)",
-    "why": "The ADR-021 gate for human_thriving v8: judged against held-out ORACLE ground truth at the ruled op-point (4.50 calibrated, docs/decisions/2026-09-05-v8-op-point.md), never against uplifting v7. \u26d4 v7 and v8 do not share a positive class (Jaccard 0.246 on these same 660 rows), so v8's recall does not belong beside the fleet's 0.59-0.72.",
-    "data": "datasets/training/human_thriving_v8/test.jsonl -- 660 held-out oracle rows, never seen by training or by the calibration fit. \u26a0\ufe0f Drawn under a 25.1x design that over-samples positives: the rates here are UNWEIGHTED sample rates. Design-weighted, the base rate is 3.1638% not 5.3030% (docs/evidence/2026-09-04-v8-probe-calibration/PHASE_C_REVIEW.md).",
-    "calibration": "the DEPLOYED filters/human_thriving/v8/calibration.json (isotonic, n=658, fitted on val) -- not a fresh fit. The `calibrated_cuda` arm is therefore what production would compute; `raw_cuda` is the same forward pass without it, kept because 4.5 means different things on the two scales.",
-    "inference": "the repo's own path -- scripts/analysis/dump_student_scores.py, which reuses fit_calibration.load_scorer + run_inference_raw. ONE forward pass produced both arms, so they differ by calibration and nothing else (#95: a second pass would inject more noise than the effect).",
-    "box": "b650-gpu (jwasys-B650-EAGLE-AX, RTX 3090 Ti 24 GB, driver 580.95.05), venv-prodparity: python 3.11.15, torch 2.11.0+cu130, transformers 5.0.0, peft 0.18.1, CUDA 13.0 -- gpu-server's production pins. NOT the serving box.",
-    "device": "CUDA. \u2b50 This is the point of the run: every prior v8 accuracy number was CPU-measured while production serves on GPU (#104), and CPU->CUDA is worth max |delta| 0.1956 with 3 flips at 4.5 on uplifting v7. The device was asserted off the loaded object -- `parameters=cuda:0`, not off the flag passed (dump_student_scores.py --require-device cuda, added for this run because a cache has already made a 'CPU' arm read as GPU, #146).",
-    "device_term_measured_here": "\u2b50 CPU and CUDA give the SAME verdicts for v8 at 4.5 -- 0 flips on both arms, the same 17 surfaced rows calibrated and the same 26 raw, identical confusion matrices, so this gate's numbers do not depend on the device. Magnitudes: calibrated max |delta| 0.1428 (p50 0.0000, p90 0.0175, p99 0.1083, 411/660 bit-identical); raw max |delta| 0.0508 (p50 0.0029, 8/660 bit-identical). \u26d4 That is a measurement on THIS population at THIS threshold, not a licence to quote a CPU number for another filter or bar -- v7's device term reached 0.1956 and flipped 3 rows at the same 4.5. The CPU dump it was compared against is b650:~/llm-distillery/ht_v8_test_dump/ (2026-09-04), the same script and weights.",
-    "weights": "filters/human_thriving/v8/model/ -- epoch 4 of 6, selected on recall_medium@4.5 by a TIE-BREAK (the metric saturates at 0.5806 across epochs 4-6). adapter_model.safetensors sha256 363fc63d2a622b29bee4ac44fa444650dcca554c0a64a874e46a183d64f9291b. Gitignored as a large model checkpoint -- NOT #97, which is the TDM assessment.",
-    "dump_manifest": "docs/evidence/2026-09-06-v8-deploy-gate/DUMP_MANIFEST.md",
+    "measured": "2026-09-06",
+    "why": "The RETRAIN's gate. The prior v8 adapter was built by a tree that `git commit --amend` orphaned, so the sha that produced it (0697f5a) is reachable from no branch. The owner ruled 2026-09-06 -- 'no exception, harmonize it' -- so the checkpoint was retrained under a commit on `main` rather than shipped with a provenance carve-out. These are the retrained model's numbers.",
+    "checkpoint": "epoch 5 of 6, selected on recall_medium @4.5 (val 0.613 = 19/31). \u26a0\ufe0f NOT epoch 4, which is what EXP-015 shipped: there recall_medium SATURATED at 0.5806 across epochs 4/5/6 and the strict '>' tie-break kept the earliest (#144). This run did not saturate, so selection chose outright. adapter_model.safetensors sha256 074209ff572c4823206569b3c7d89c26b15029263748cf510c9c5b8ce347de08",
+    "training_commit": "64b469d935bc34a87c176b8ee2ad86cbafd5bdde on main, git_dirty=false -- stamped into training_metadata.json by train.py, which now REFUSES to train without it, and re-checked for reachability by scripts/verification/check_training_provenance.py",
+    "code_commit": "0d7115a08779dbb9a4390a77148654cf6ad6e0c8 for the calibration fit, the score dump and this gate run. \u26a0\ufe0f Differs from the training commit by the fit_calibration.py device print and the filter_completeness rewrite; neither touches inference arithmetic.",
+    "data": "datasets/training/human_thriving_v8/test.jsonl, 660 held-out oracle-labelled rows, sha256 e361b5175c66252582c395bf256eb253bfa9b35f780f2479907231fc4d58d726. Untouched by training, checkpoint selection and the calibration fit.",
+    "calibration": "filters/human_thriving/v8/calibration.json sha256 7665f526e77824df4c9c3dca428e3073931a3d642c489e43566ef6597c61f7c0 -- REFITTED on this checkpoint (the previous file was fitted to the epoch-4 weights and is stale). Isotonic, fitted on the 658-row val split, on CUDA.",
+    "dumps": {
+      "dir": "b650-gpu:~/llm-distillery/ht_v8_test_dump_cuda_retrain/",
+      "scores_calibrated.jsonl": "d30f12bcec83f176f0d988cbd30c8a8779750ada5e2a776b71ede3300c7c2cf2",
+      "scores_raw.jsonl": "f370b719f373b85c3bac3606bbc50cc4849f73b66ddae75409794d5a95bf4888",
+      "raw_logits.jsonl": "4bc1a7250446212dc2b02f830b2c567f4489c765239b0165711af3c1d3755a16"
+    },
+    "box": "b650-gpu (jwasys-B650-EAGLE-AX), RTX 3090 Ti 24 GB, driver 580.95.05. \u2b50 ~/llm-distillery is a REAL GIT CHECKOUT as of 2026-09-06 -- it was a partial rsync before, and its training/train.py was the PRE-FIX version missing the 176 lines of checkpoint-selection machinery main says trained the old artifact.",
+    "venv": "venv-prodparity -- py 3.11.15, torch 2.11.0+cu130, transformers 5.0.0, peft 0.18.1 (gpu-server's production pins)",
+    "device": "CUDA for all three steps -- calibration fit, score dump and gate. Read back off next(model.parameters()).device, not off the flag: 'declared=cuda parameters=cuda:0' in both logs (#146). Production serves on GPU, so the whole chain is now one device.",
     "caveats": [
-      "The bands are the #95 batch-composition floor (0.16), not confidence intervals. 9 of 660 calibrated rows sit inside the floor of 4.5 and are INDETERMINATE.",
-      "\u26d4 calibrated vs raw are NOT DISTINGUISHABLE here: recall, specificity and F1 bands all overlap. The arms were never a choice this gate makes -- calibrated is what ships because calibration.json is present and the runtime applies it before the tier comparison (filter_base_scorer.py:315-317 then :340).",
-      "MAE is printed but ADR-023 forbids ranking on it, and precision is base-rate dependent -- recall and specificity are the comparable pair, quoted with the split's 35/660 positive rate (5.30% unweighted)."
-    ],
-    "priority": "\u26d4 READ THE SPECIFICITY FIRST. This project prioritises HIGH CERTAINTY over HIGH DETECTION (ADR-023): a false positive reaches a reader and costs trust, a false negative is invisible and the slot refills. recall 0.343 with specificity 0.992 is that decision working, not a grade -- v8 surfaces about a third of what the oracle calls on-lens and is right about 70% of what it surfaces, letting 5 junk rows through in 660 where the raw arm lets 9. A change that raises recall at this op-point without holding specificity is a REGRESSION, and 'recall is low' is not on its own a finding."
+      "NOT DISTINGUISHABLE FROM THE PREVIOUS CHECKPOINT. Every #95 band overlaps with the epoch-4 model's (recall, precision, specificity, F1). The point estimates all move adversely -- precision 0.706 -> 0.550, specificity 0.9920 -> 0.9856, FP 5 -> 9 -- and under the owner's 2026-08-06 rule two models whose bands overlap are not distinguishable whatever their point estimates say. Do not report the change as a regression, and do not report it as an improvement.",
+      "THE PRECISION DROP IS MOSTLY BOUNDARY DISAGREEMENT, NOT JUNK. Classified by the oracle's own scope_verdict, 6 of the 9 false positives are `in_scope` -- articles the oracle calls thriving stories, scored just under 4.5, which the student put just over. Genuinely off-lens is 3 of 20 (off-lens precision 0.850 vs the old 0.882) and category errors (harm_is_subject) are 1, the SAME as the old checkpoint. \u26a0\ufe0f These are counts of 17 and 20 articles; '1 vs 1' compares two single articles, not two rates.",
+      "\u26d4 DO NOT SET THIS RECALL BESIDE THE FLEET'S 0.59-0.72. v7 and v8 do not share a positive class -- Jaccard 0.246 on these same rows. Two recalls of two different classes are two quantities with one name.",
+      "SAMPLE, NOT POPULATION. The 660 rows are a 25.1x design-weighted draw (inclusion_probability in datasets/scored/human_thriving_v8/corpus.jsonl). Every rate here is unweighted and describes the SPLIT. Production rates must be measured from production output after deploy."
+    ]
   },
-  "provenance_applies_to": "892ae5d1819cb699"
+  "provenance_applies_to": "72add57213054e18"
 }

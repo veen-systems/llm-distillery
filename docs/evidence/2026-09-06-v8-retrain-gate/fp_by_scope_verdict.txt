@@ -1,0 +1,25 @@
+labels: 6586 rows from datasets/scored/human_thriving_v8/labels_v84_merged.jsonl
+
+=== epoch5_SHIPS ===  joined 660 rows
+  surfaced 20   TP 11   FP 9
+  false positives by the oracle's own scope_verdict:
+      harm_is_subject      1  <- category error
+      response_to_harm     1
+      no_person_benefits   0
+      out_of_scope         1
+      in_scope             6  <- NOT junk: the oracle calls it on-lens
+  plain precision      11/20 = 0.550
+  off-lens precision   17/20 = 0.850   (excludes in_scope boundary cases)
+  category errors      1 of 20
+
+=== epoch4_superseded ===  joined 660 rows
+  surfaced 17   TP 12   FP 5
+  false positives by the oracle's own scope_verdict:
+      harm_is_subject      1  <- category error
+      response_to_harm     0
+      no_person_benefits   0
+      out_of_scope         1
+      in_scope             3  <- NOT junk: the oracle calls it on-lens
+  plain precision      12/17 = 0.706
+  off-lens precision   15/17 = 0.882   (excludes in_scope boundary cases)
+  category errors      1 of 17

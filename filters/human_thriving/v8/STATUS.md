@@ -11,14 +11,37 @@ models are CLEAN, corrected 2026-09-05) — they live on `b650-gpu` only, so
 a fresh clone loads the package and cannot run the student. "Scoreable" is a statement about
 one host.
 
-✅ **THE ADR-021 DEPLOY GATE HAS RUN, 2026-09-06 (EXP-026).** Against held-out ORACLE ground
-truth at the ruled op-point, on **CUDA**: **recall 0.343, specificity 0.992**, precision 0.706,
-n=660, 35 positives (5.30% unweighted). `ground_truth_gate.json`,
-`docs/evidence/2026-09-06-v8-deploy-gate/`.
+⛔⛔ **THE MODEL WAS RETRAINED ON 2026-09-06 AND THESE ARE THE NEW NUMBERS.** Owner ruling —
+*"no exception, i want this system to be harmonized"* — on finding that the previous adapter
+was built by a tree `git commit --amend` had orphaned. It was retrained under **commit
+`64b469d` on `main`**, `git_dirty=false`, stamped into `training_metadata.json` by a
+`train.py` that now **refuses to train without it**. The shipped checkpoint is **epoch 5**
+(not epoch 4): `recall_medium` saturated across epochs 4/5/6 in EXP-015 so the tie-break kept
+the earliest, and this run did not saturate, so selection chose outright. **Adapter sha256
+`074209ff…`**; the superseded epoch-4 adapter is preserved at
+`b650-gpu:~/llm-distillery/filters/human_thriving/v8/model_exp015_epoch4_prehatch/`.
+
+✅ **THE ADR-021 DEPLOY GATE HAS RE-RUN ON THE RETRAINED MODEL, 2026-09-06.** Held-out ORACLE
+ground truth at the ruled op-point, on **CUDA**: **recall 0.314, specificity 0.9856**,
+precision 0.550, **20 surfaced of which 9 FP**, n=660, 35 positives (5.30% unweighted).
+`ground_truth_gate.json`, `docs/evidence/2026-09-06-v8-retrain-gate/`.
+
+⛔ **NOT DISTINGUISHABLE FROM THE OLD CHECKPOINT — do not report this as a regression.** The
+epoch-4 model scored recall 0.343 / spec 0.9920 / precision 0.706 with 17 surfaced and 5 FP.
+**Every #95 band overlaps** (recall, precision, specificity, F1), and the owner's 2026-08-06
+rule is that two models whose bands overlap are not distinguishable whatever their point
+estimates say. The point estimates do all move adversely; that is a direction, not an effect.
+
+⭐ **AND THE PRECISION DROP IS MOSTLY BOUNDARY DISAGREEMENT, NOT JUNK.** Classified by the
+oracle's own `scope_verdict`, **6 of the 9 false positives are `in_scope`** — articles the
+oracle calls thriving stories, scored just under 4.5, which the student put just over.
+Genuinely off-lens is **3 of 20** (off-lens precision **0.850** against the old **0.882**) and
+**category errors (`harm_is_subject`) are 1 — the SAME as before**. ⚠️ These are counts over
+17 and 20 surfaced articles; *"1 versus 1"* compares two single articles, not two rates.
 ⛔ **READ THE SPECIFICITY FIRST — we prioritise HIGH CERTAINTY over HIGH DETECTION.** The
-0.343 is the decision working, not the model failing: ADR-023 chooses being right about what
-is surfaced over surfacing more, because a false positive reaches a reader and a false
-negative is invisible. v8 surfaces about a third of what the oracle calls on-lens and is
+0.314 (epoch 5; 0.343 on the superseded epoch 4) is the decision working, not the model
+failing: ADR-023 chooses being right about what is surfaced over surfacing more, because a
+false positive reaches a reader and a false negative is invisible. v8 surfaces about a third of what the oracle calls on-lens and is
 right about **70%** of what it does surface. **A change that raises recall here without
 holding specificity is a regression**, and "recall is low" is not on its own a finding.
 ⛔ **Do NOT set that recall beside the fleet's 0.59–0.72** — v7 and v8 do not share a positive
@@ -52,7 +75,7 @@ because v8's state is complicated enough that "not deployed" is not a useful sum
 | Phase C **probe** | ✅ **2026-09-04, EXP-016.** e5-small, recall objective, seed 42, CPU. Threshold **1.75**, chosen to hold the ruled ~88.6% routing (weighted **0.8876** val / **0.8935** test), FN@MEDIUM+ **0/31** and **0/35**. ⛔ The threshold is pinned to this exact probe — a seed change moves routing 14 pp |
 | Phase C **calibrate** | ✅ **2026-09-04, EXP-016.** Isotonic on val. ⛔ **Does NOT improve held-out MAE** (test 0.6029 → 0.6142) and the two arms are the SAME RANKER (Spearman 0.9977, AUC 0.9474 → 0.9488). Ships per ADR-008 + ADR-023's specificity tie-break, not because it helped. `calibration_report.md` |
 | Phase D gate | ⛔ not started. ⚠️ **Criterion 1 is NOT stably failing** — the 4.400 was a k=3 mean on a coin-toss row; at k=6 under unchanged v8 it is **3.608 ± 2.560, PASS**. `docs/evidence/2026-09-03-v8-1-gate/` |
-| **ADR-021 deploy gate** | ✅ **2026-09-06, EXP-026.** recall **0.343** / spec **0.992** at 4.50 calibrated, on **CUDA**. ⭐ The device does not matter here — CPU and CUDA give **0 verdict flips** and identical confusion matrices (max \|Δ\| 0.1428 calibrated), which had to be measured because v7's device term reached 0.1956 and flipped 3 rows at the same bar (#104) |
+| **ADR-021 deploy gate** | ✅ **RE-RUN 2026-09-06 on the RETRAINED epoch-5 checkpoint**: recall **0.314** / spec **0.9856** / precision **0.550**, 20 surfaced / 9 FP, at 4.50 calibrated on **CUDA**. NOT distinguishable from the epoch-4 model's 0.343/0.992/0.706 — all four #95 bands overlap. Superseded run (EXP-026, epoch 4). ⚠️ **The device measurement below belongs to the EPOCH-4 model, not this one** — CPU vs CUDA gave **0 verdict flips**, identical confusion matrices, max \|Δ\| 0.1428 calibrated, measured on the superseded checkpoint. It is not re-measured for epoch 5; the retrain's whole chain (calibration fit, dump, gate) ran on **CUDA only**, so no device claim is needed for it — but neither is one licensed (#104) |
 | Phase E normalization | ⛔ **BLOCKED, and the ordering is why** — `fit_normalization.py` reads NexusMind production output and needs ≥200 rows above the op-point; sadalsuud has **no `human_thriving`** at all. Normalization comes AFTER deployment, as it did for `solutions v6`. ⛔ Do not substitute the test split: it is a 25.1× design-weighted sample |
 | Phase F deploy | ⚠️ **step 1 of 5 done** — the doc set is complete (2026-09-06). Blocked on two owner decisions: the weight transport, and the dangling checkpoint below |
 
@@ -111,6 +134,17 @@ consistency (`566254b`). Full comparison:
 feeds `get_metadata()`, which nothing in NexusMind reads — provenance only.
 
 ## ⛔ Known-failing and known-missing, before anyone reads the state as green
+
+⛔⛔ **EVERYTHING BELOW THIS LINE THAT QUOTES A STUDENT SCORE WAS MEASURED ON THE
+SUPERSEDED EPOCH-4 CHECKPOINT** (EXP-015/016/017, adapter `363fc63d…`), not on the epoch-5
+model that now ships (`074209ff…`). That includes the Phase C outcome figures (87 disputed
+rows, 90.8%/94.3% removed, AUC 0.8454/0.8521), the 17-vs-26 flag counts, the 94.3% / 12-of-30
+op-point arithmetic, and the raw/calibrated 0.486 / 0.343 pair. **They are kept because the
+op-point RULING rests on them and the ruling was not reopened** — the shape of the trade is a
+property of the calibration curve, not of one checkpoint — but ⛔ **do not quote any of them
+as a figure for the shipped model.** The shipped model's gate numbers are at the top of this
+file and in `ground_truth_gate.json`. Re-deriving them on epoch 5 is owed and untriggered:
+nothing depends on it until the op-point is reopened.
 
 - ✅ **PHASE C DID THE THING v8 EXISTS FOR — measured 2026-09-04 on held-out data.** Of the
   **87** test rows `uplifting v7` surfaced that the v8 oracle demotes, the student removes

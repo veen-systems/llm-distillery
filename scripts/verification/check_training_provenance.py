@@ -18,10 +18,12 @@ Two halves, and the second is the one a stamp alone would miss:
    gc has had the chance to orphan the commit. A stamp is a claim about the past;
    reachability is a property of now, and only now can be measured.
 
-⚠️ THE PRE-EXISTING FILES ARE NOT FAILURES, and the exemption is bounded. Twenty
-`training_metadata.json` files predate the stamp; they are listed in
+⚠️ THE PRE-EXISTING FILES ARE NOT FAILURES, and the exemption is bounded. The
+`training_metadata.json` files that predate the stamp are listed in
 `UNSTAMPED_BASELINE` and reported as NOTES. A NEW unstamped file FAILS — the
-baseline is a frozen list, not a rule, so it can only shrink.
+baseline is a frozen list, not a rule, so it can only shrink. ⛔ No count is
+stated here on purpose: it shrank on its first day, and a hand-written count in a
+docstring goes stale silently. The run prints the live one.
 
 Usage:
     python3 scripts/verification/check_training_provenance.py
@@ -42,6 +44,11 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 # SHRINK (a filter gets retrained under a commit) and must never grow: a new
 # unstamped metadata file means training ran from a tree nobody can name, which
 # is the whole defect. Do not add to it — retrain, or record why in the ADR.
+# ⭐ ALREADY SHRUNK ONCE, the same day it was written: human_thriving v8 was
+# retrained under 64b469d on main and its training_metadata.json now carries the
+# stamp, so it was removed from here rather than left as a permanent excuse.
+# Its `_baseline_mae` sibling stays — that is EXP-015's discarded MAE-selected
+# arm, which nothing will retrain.
 UNSTAMPED_BASELINE = frozenset({
     "filters/belonging/v1/training_metadata.json",
     "filters/cultural_discovery/v1/training_metadata.json",
@@ -49,7 +56,6 @@ UNSTAMPED_BASELINE = frozenset({
     "filters/cultural_discovery/v4/training_metadata.json",
     "filters/cultural_discovery/v5/training_metadata.json",
     "filters/cultural_discovery/v6/training_metadata.json",
-    "filters/human_thriving/v8/training_metadata.json",
     "filters/human_thriving/v8/training_metadata_baseline_mae.json",
     "filters/investment_risk/v2_distillation/training_metadata.json",
     "filters/investment_risk/v2_instruction/training_metadata.json",
