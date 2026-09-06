@@ -46,7 +46,13 @@ them would describe a population that does not exist.
    decide the transport before the deploy, not during it.
 3. **Deploy, then watch the first cycles.** `docs/RUNBOOK.md`, and ⛔ diff before
    `deploy_to_nexusmind.sh` — it overwrites and `.nexusmind-owns` is empty.
-4. **Then Phase E**, once ≥200 production rows sit above 4.5: fit `normalization.json` with
+4. ⚠️ **An owner question BEFORE Phase E, not after it.** Fitting normalization is what arms
+   NM#319: anchoring puts the op-point at **normalized 0.0** by construction, and NexusMind's
+   enrichment gate at **4.0** reads the normalized score. On `uplifting v7` today that leaves
+   **40% of surfaced articles un-enriched** (7,224 of 18,041 over 82 cycles). v8 will inherit
+   the shape. Nothing is broken either way — but the choice belongs to the owner, and it is
+   easier to make before the CDF exists than after.
+5. **Then Phase E**, once ≥200 production rows sit above 4.5: fit `normalization.json` with
    `stats.raw_min` = **4.5** (`test_normalization_invariant.py` enforces the equality) and
    remember it moves **all four** op-point surfaces in one commit.
 
@@ -62,6 +68,22 @@ them would describe a population that does not exist.
   effective bar being raw ≈ 5.05–5.13. Not a v8 regression; it is what percentile normalization
   plus a 4.0 gate already does, and **fitting normalization is the step that turns it on.**
   Whether that is intended is an owner question.
+
+### ⚙️ Owed, opened 2026-09-06 — small, and each has a named trigger
+
+- **`H-V8-23`: isolate the 18-vs-17 gap.** dtype, adapter loader and batch size are
+  confounded; the falsifier is stated. ⛔ **Not worth GPU time on its own** — production's
+  number is settled either way — so the trigger is: *before any document attributes a
+  student-score difference to dtype*, or before a second filter's gate runs through a path
+  that is not `load_lora_local` at batch 16.
+- ✅ **`memory/MEMORY.md` headroom handled in-session, not deferred.** It hit **857 B** of the
+  30,000 limit after this session's entry, so `/curate` moved a **fourth** entry out rather
+  than logging a warning for next time — `MAX_SESSION_ENTRIES = 4` is a **ceiling, not a
+  floor** (`if n <= MAX`), so 3/4 passes. Now **26,504 B, 3,496 under**. ⭐ The rule is
+  *keeps at most four*, and reading it as *must hold four* is what would have made the
+  warning recur every session.
+- **The other filters' gate numbers are still CPU-measured** (#104). v8's device term came out
+  at 0 flips, but that is v8's; nothing licenses back-filling the claim onto the fleet.
 
 ### ✅ What phase 8 closed on 2026-09-06 (`EXP-026`)
 

@@ -6189,3 +6189,55 @@ a grep I ran.
 **Fix**: `out=$(cmd 2>&1); rc=$?` then inspect. True status was 0, so the reported figure
 was right — **by luck**. ⭐ *Articulating the rule is not applying it*: the reading and the
 violation were seconds apart.
+
+## The tests written to prove a guard could not see its worst failure (2026-09-06)
+
+**Problem**: `ground_truth_gate.py` gained a rule that carries a hand-written `provenance`
+block across reruns, plus four tests. All four passed. A review then mutated
+`report["provenance"] = prior["provenance"]` into `report.update(prior)` — which reverts
+**every freshly computed metric** to the previous report's — and **all four still passed**.
+The escaping failure is the worst one that file can have: a retrained model's gate report
+keeping the old model's recall.
+
+**Root cause**: none of the four varied the *scores* between the two gate invocations. They
+proved "a provenance block survives a rerun" and could not distinguish that from "the whole
+prior report survives a rerun", because on identical inputs the two are the same output.
+I mutation-tested three ways and every mutation I chose attacked the mechanism I had just
+written, not the *blast radius* of getting it wrong.
+
+**Fix**: a fifth test that makes the model worse between runs and asserts recall moved
+1.0 → 0.0 while `provenance` persisted. ⭐ **When a guard copies data forward, the test must
+vary the data it must NOT copy.** Mutating the line you wrote checks your intent; mutating
+what the line *touches* checks the damage.
+
+## A guard against stale provenance that shipped stale provenance (2026-09-06)
+
+**Problem**: the same carry-over was written *because* a gate report could not be attributed
+to a device (#104). It then reintroduced that defect one layer up: rerun the gate on a
+different dump and the prose still describes the old run — beside a freshly correct `inputs`
+block whose sha256s make the report look newly attributed.
+
+**Root cause**: I treated "never delete the block" as the whole requirement. Carrying data
+forward and *vouching* for it are different acts, and the fresh metadata beside it did the
+vouching.
+
+**Fix**: stamp the block with a fingerprint of the inputs it described, and report three
+states — `matches` / `UNVERIFIED` / `⛔ STALE`. ⚠️ **My first version conflated the last two**
+and its own test caught it: a hand-written block has no fingerprint, so *unknown* was being
+reported as *stale*, which never converged and would have fired on every rerun. ⭐ A warning
+that cries wolf is ignored within a day, so *unknown* and *wrong* must stay distinguishable.
+
+## Being careful cost 4.2 GB of a 15 GB tmpfs (2026-09-06)
+
+**Problem**: mid-session a plain `pwd` failed with `write error: Disk quota exceeded`.
+`/tmp` was 81% full; 4.2 GB of it was one directory in this session's own scratchpad.
+
+**Root cause**: I told a review lens to copy the repo to `/tmp` before mutating it, so it
+could not damage the working tree. The copy included a **2.1 GB `.venv`** and the filter
+packages. The instruction was right about safety and blind about cost.
+
+**Fix**: removed it (`/tmp` 3.0 GB → 11 GB free) and added the rule to
+`.claude/skills/review-changes/SKILL.md`: **mutate in place and restore from git, or copy
+only the file under mutation.** ⚠️ Note where the space actually was — the caches a reader
+would reach for first (`~/.cache/huggingface` 7.6 GB, puppeteer 1.9 GB) sit on a disk with
+**222 GB free**, so clearing them would have freed nothing where the shortage was.

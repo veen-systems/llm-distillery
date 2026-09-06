@@ -398,6 +398,11 @@ For each changed file:
 2. What could go wrong? Find at least one concrete failure scenario.
 3. Are there SILENT failure modes — things that pass but are wrong?
 4. If this is a test change: what real failure does the weaker test now pass?
+   ⚠️ **To mutation-test, copy only the FILE under mutation** (or mutate in place and restore
+   from git), never the repo. On 2026-09-06 a lens copied this repo into the session
+   scratchpad to mutate safely and wrote **4.2 GB** — a 2.1 GB `.venv` plus the filter
+   packages — onto a 15 GB tmpfs that was already 81% full, and a later `pwd` failed with
+   "Disk quota exceeded". Being careful should not cost gigabytes.
 5. If this touches filters/common/: what breaks in NexusMind on the next sync?
 6. If this touches a skill, agent, template or ADR: what would a future session
    break by following the new version? These are read by someone who was not here.

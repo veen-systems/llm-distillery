@@ -313,6 +313,65 @@ SHAPE of the trade, because the shape is what decides. The method, from
 25.1×; weighting moved junk-removed at most +2.44 pp but specificity +2.65 pp and recall
 −8.51 pp, so which quantity you quote decides how much the weighting appears to matter.
 
+## Running the ADR-021 deploy gate — the dump comes first, and its DEVICE decides
+
+⛔ **Step 1 is not the gate.** The gate is arithmetic over a scored dump; whether its answer
+is production's depends entirely on how that dump was made. First run for `human_thriving v8`
+on 2026-09-06 (`docs/evidence/2026-09-06-v8-deploy-gate/`, `EXP-026`).
+
+1. **Score the held-out split on the DEVICE production serves on** — GPU. CPU dumps from
+   earlier phases are usually already on disk and the gate will happily read them, which is
+   the trap (#104). On b650:
+
+   ```bash
+   ssh b650-gpu 'cd ~/llm-distillery && PYTHONPATH=. HF_HUB_OFFLINE=1 \
+     venv-prodparity/bin/python scripts/analysis/dump_student_scores.py \
+       --filter filters/<name>/v<N> \
+       --split-file datasets/training/<name>_v<N>/test.jsonl \
+       --out-dir ~/llm-distillery/<name>_test_dump_cuda \
+       --require-device cuda'
+   ```
+
+   ⛔ **`--require-device` reads the device back off `next(scorer.model.parameters())`, not
+   off the flag you passed.** Setting `CUDA_VISIBLE_DEVICES` is not the same as being on the
+   device — a "CPU" arm once read 2.37 ms against GPU's 2.34 because a cache ignored the
+   device it was asked for (#146). ⛔ **`--out-dir` under `~`, never `/tmp`**: eleven probes
+   were found one reboot from gone in b650's `/tmp` after 36 days of uptime.
+
+2. ⚠️ **Check the box's checkout against the repo before scoring.** `b650:~/llm-distillery`
+   is **not a git clone**. Four files on the scoring path had drifted when v8's gate was run.
+   A dump that feeds a deploy gate must be produced by the shipped program:
+   `sha256sum` the filter package, `filters/common/*.py` and the two script directories on
+   both sides, sync what differs, and keep the pre-sync copies.
+
+3. **Run the gate with `--config`**, so the threshold and gatekeeper come from what deploys
+   rather than from the nature_recovery v4 fallback constants:
+
+   ```bash
+   PYTHONPATH=. python scripts/gate/ground_truth_gate.py \
+     --labels datasets/training/<name>_v<N>/test.jsonl \
+     --config filters/<name>/v<N>/config.yaml \
+     --model calibrated=<dump>/scores_calibrated.jsonl \
+     --recompute-model-wa --report filters/<name>/v<N>/ground_truth_gate.json
+   ```
+
+   The report records `inputs` (argv plus the sha256 of the labels, the config and every
+   dump) automatically. **A hand-written `provenance` block is what a sha256 cannot say** —
+   box, venv, device — so write one; the gate carries it across reruns and **stamps it with
+   a fingerprint of the inputs it described**, marking it `⛔ STALE` when they change.
+
+4. **Commit a manifest** naming the dump paths, their sha256, the box, the venv pins, the
+   weights' sha256 and the device. The dumps themselves are gitignored (`datasets/*`).
+
+⛔ **Do not compare the resulting recall to another filter's.** Two filters share a positive
+class only if their oracles do; `uplifting v7` and `human_thriving v8` score 0.246 Jaccard on
+the same 660 rows, so those are two quantities with one name.
+
+⚠️ **Whether the device mattered is a MEASUREMENT, not an assumption in either direction.**
+On v8 it did not — CPU vs CUDA gave 0 verdict flips and identical confusion matrices, max
+|Δ| 0.1428, *below* the #95 floor. On `uplifting v7` at the same 4.5 bar it was 0.1956 with
+3 flips. Dump both and diff before claiming either.
+
 ## Smoke-testing a filter package before the deploy gate
 
 `scripts/gate/v8_smoke_test.py` is the pattern: **does an article go in and a well-formed,
@@ -446,8 +505,8 @@ The phases below, in order — `6b` is lettered rather than numbered because oth
 | 6. Training | Distill to Gemma-3-1B + LoRA | Train on gpu-server |
 | 6b. Probe | Stage-1 e5 screen (ADR-006/011) — replaces keyword screening | `scripts/train_probe.py`. ⚠️ `--objective` defaults to `regression`; a needle filter wants `recall` (ADR-023 does **not** apply to the probe — there the FN is the expensive error). ⚠️ **Pass `--seed` and record it** — probes were unseeded before 2026-09-04, and ⛔ **the selected threshold belongs to the PROBE, not the recipe**: on v8, `--seed 7` moved Stage-2 routing 14 pp at the *same* threshold with FN unchanged, and Stage 1 is silent so nothing surfaces it. Train on **CPU** (CUDA reductions are not deterministic under a seed) |
 | 7. Calibration | Fit isotonic calibration | `fit_calibration.py` on val set, **with `--no-config-update`** unless `normalization.json` already exists — see "Fit calibration" above. ⛔ It may not improve held-out MAE and is close to a monotone rescale, so **re-derive the op-point on the calibrated scale at phase 8** |
-| 8. Testing | Judge against held-out ORACLE ground truth, **never against the prior deployed model** (ADR-021) | `scripts/gate/ground_truth_gate.py --labels ... --model name=path`. ⛔ Rank on **recall + specificity, never MAE** (ADR-023), and read `--noise-floor` (#95, default 0.16) before calling any difference an effect. Plus `pytest tests/` and manual review of 30 articles |
-| 9. Deployment | Upload to Hub, copy to NexusMind; fit normalization from a production-representative historical rescore to avoid the cold-start | See deployment + "Fit normalization" sections above |
+| 8. Testing | Judge against held-out ORACLE ground truth, **never against the prior deployed model** (ADR-021) | **See *Running the ADR-021 deploy gate* above — step 1 is the DUMP, on production's device (#104), not the gate.** ⛔ **HIGH CERTAINTY OVER HIGH DETECTION**: read specificity first, rank on **recall + specificity, never MAE** (ADR-023), and state the priority beside any recall you publish — a low one here is usually the choice working. Read `--noise-floor` (#95, default 0.16) before calling any difference an effect. Plus `pytest tests/` and manual review of 30 articles |
+| 9. Deployment | Upload to Hub, copy to NexusMind; **then** fit normalization | See deployment + "Fit normalization" above. ⛔ **Normalization FOLLOWS deployment and cannot precede it**: `fit_normalization.py` reads NexusMind production output and refuses below `MIN_NORMALIZATION_ARTICLES = 200` above the op-point, so an undeployed filter has no population (v8, 2026-09-06; `solutions v6` went gate → deploy → fit in two days). ⚠️ **Fitting it is also what arms NM#319**: anchoring puts the op-point at normalized **0.0** by construction, and NexusMind's enrichment gate at 4.0 reads the NORMALIZED score — on `uplifting v7` only 60.0% of surfaced rows clear it |
 
 ---
 
