@@ -274,6 +274,41 @@ against a mechanism `1/√k` does not touch. **Ask what varied AND what shape it
 ⚠️ n = 30, k = 2, one cohort, one prompt. The 13% is a point estimate with a wide interval;
 it is enough to change the re-score design and not enough to quote as a rate.
 
+## A FIFTH candidate term, unisolated: the PROGRAM (dtype / loader / batch), 2026-09-06
+
+⛔ **Not a floor, and not yet a term — a candidate with two rivals excluded.** `EXP-026`
+found `human_thriving v8`'s raw recall differing by **one article** between two ways of
+scoring the same 660 rows with the same weights: `eval_ht_v8.py` gives **18 TP**, the
+production inference path **17**.
+
+Excluded by measurement:
+
+- **the device** — CPU vs CUDA, same box, same dumps: **0 verdict flips on both arms**,
+  max \|Δ\| **0.1428** calibrated / **0.0508** raw, the same 17 and 26 surfaced
+  (`docs/evidence/2026-09-06-v8-deploy-gate/device_delta.py`). ⛔ Note that 0.1428 is
+  **below** the #95 batch floor of 0.16, so zero flips is the expected outcome here, not a
+  surprising one — this measurement bounds the device term for THIS population, it does not
+  overturn the 0.1956 measured on `uplifting v7`.
+- **the gatekeeper and the clamp** — applying or removing them moves **0 rows** across 4.5
+  on either device (`why_18_not_17.py`).
+
+Still confounded, all three at once: **dtype** (production holds 342 bfloat16 parameters
+against 364 float32, score head in bf16; the other path forces `torch_dtype=torch.float32`),
+**adapter loading** (`load_lora_local` → `get_peft_model` + a hand-rolled remap vs
+`PeftModel.from_pretrained`) and **batch size** (16 vs 8 — itself a #95 composition term).
+The quantisation signature is real — 3,960 logits taking **1,161 distinct values** — but it
+shows bf16 is present, not that it is the cause.
+
+⚠️ **The lesson this file exists for applies to itself here.** *A floor belongs to a
+population and a mechanism*: naming this "the dtype term" and giving it a magnitude would
+create a sixth quotable number out of an unisolated comparison. It is `H-V8-23`, open, with
+a falsifier — **not a term to quote.**
+
+⭐ **What travels instead**: when two numbers for "the same model on the same rows" disagree,
+**the device is now the LEAST likely explanation in this repo and the program is the most** —
+and the previously recorded explanation for this exact gap was the device. Ask which program
+produced each number before reaching for a measured term that happens to be near the gap.
+
 ## Related
 
 - [[project_session_2026_08_03]]

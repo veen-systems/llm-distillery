@@ -6,6 +6,20 @@
 >
 > <!-- verify: bash scripts/verification/check_prod_filters_table.sh -->
 
+## ⛔ Before you read any table here: HIGH CERTAINTY OVER HIGH DETECTION
+
+**ADR-023.** These tables put a recall column next to a specificity column across six
+filters, which invites exactly the ranking the project forbids. **Specificity is the
+criterion; recall is a constraint to satisfy, never a target.** A false positive reaches a
+reader and costs trust; a false negative is invisible and the slot refills within the cycle.
+**The filter with the lowest recall in a column is not the worst one**, and a change that
+raises recall without holding specificity is a regression. Read every recall figure beside
+its split's positive rate — the column is there — and never rank on MAE.
+
+⚠️ `human_thriving v8` gate-passed at **recall 0.343 / spec 0.992** and is deliberately NOT
+in these tables: it is not deployed, and its positive class is not v7's (Jaccard 0.246), so
+its recall is not commensurable with the rows below.
+
 ## ADR-021 deploy-gate results — the whole fleet, first complete 2026-08-10
 
 Before 2026-08-10 only **3 of 6** deployed filters had ever been measured.

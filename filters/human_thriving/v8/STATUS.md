@@ -1,6 +1,6 @@
 # human_thriving v8 — STATUS
 
-**NOT DEPLOYED. TRAINED, PROBED AND CALIBRATED. Labelled, adjudicated; prompt settled at v8.4.** Last updated 2026-09-04.
+**NOT DEPLOYED. TRAINED, PROBED, CALIBRATED AND GATE-MEASURED.** Labelled, adjudicated; prompt settled at v8.4. Last updated 2026-09-06.
 
 ✅ **It can score an article ON `b650-gpu`.** `base_scorer.py`, `inference.py`,
 `inference_hybrid.py`, `probe/embedding_probe_e5small.pkl` and `calibration.json` all exist
@@ -11,9 +11,20 @@ models are CLEAN, corrected 2026-09-05) — they live on `b650-gpu` only, so
 a fresh clone loads the package and cannot run the student. "Scoreable" is a statement about
 one host.
 
-⛔ **Scoreable is not gate-passed.** The deploy gate (ADR-021, held-out oracle ground truth)
-has not run. ✅ **The op-point is no longer inherited**: **4.50 on the CALIBRATED scale**,
-re-derived on v8's own held-out split and ratified by the owner 2026-09-05
+✅ **THE ADR-021 DEPLOY GATE HAS RUN, 2026-09-06 (EXP-026).** Against held-out ORACLE ground
+truth at the ruled op-point, on **CUDA**: **recall 0.343, specificity 0.992**, precision 0.706,
+n=660, 35 positives (5.30% unweighted). `ground_truth_gate.json`,
+`docs/evidence/2026-09-06-v8-deploy-gate/`.
+⛔ **READ THE SPECIFICITY FIRST — we prioritise HIGH CERTAINTY over HIGH DETECTION.** The
+0.343 is the decision working, not the model failing: ADR-023 chooses being right about what
+is surfaced over surfacing more, because a false positive reaches a reader and a false
+negative is invisible. v8 surfaces about a third of what the oracle calls on-lens and is
+right about **70%** of what it does surface. **A change that raises recall here without
+holding specificity is a regression**, and "recall is low" is not on its own a finding.
+⛔ **Do NOT set that recall beside the fleet's 0.59–0.72** — v7 and v8 do not share a positive
+class (Jaccard **0.246** on these same rows), so those are two quantities with one name.
+✅ **The op-point is no longer inherited**: **4.50 on the CALIBRATED scale**, re-derived on v8's
+own held-out split and ratified by the owner 2026-09-05
 (`docs/decisions/2026-09-05-v8-op-point.md`). ⚠️ Gate B-A's **k** is still inherited rather
 than measured.
 
@@ -38,11 +49,33 @@ with `nature_recovery v4`. This file exists because v8's state is complicated en
 | Phase C **probe** | ✅ **2026-09-04, EXP-016.** e5-small, recall objective, seed 42, CPU. Threshold **1.75**, chosen to hold the ruled ~88.6% routing (weighted **0.8876** val / **0.8935** test), FN@MEDIUM+ **0/31** and **0/35**. ⛔ The threshold is pinned to this exact probe — a seed change moves routing 14 pp |
 | Phase C **calibrate** | ✅ **2026-09-04, EXP-016.** Isotonic on val. ⛔ **Does NOT improve held-out MAE** (test 0.6029 → 0.6142) and the two arms are the SAME RANKER (Spearman 0.9977, AUC 0.9474 → 0.9488). Ships per ADR-008 + ADR-023's specificity tie-break, not because it helped. `calibration_report.md` |
 | Phase D gate | ⛔ not started. ⚠️ **Criterion 1 is NOT stably failing** — the 4.400 was a k=3 mean on a coin-toss row; at k=6 under unchanged v8 it is **3.608 ± 2.560, PASS**. `docs/evidence/2026-09-03-v8-1-gate/` |
-| Phase E normalization | ⛔ not started |
-| Phase F deploy | ⛔ not started |
+| **ADR-021 deploy gate** | ✅ **2026-09-06, EXP-026.** recall **0.343** / spec **0.992** at 4.50 calibrated, on **CUDA**. ⭐ The device does not matter here — CPU and CUDA give **0 verdict flips** and identical confusion matrices (max \|Δ\| 0.1428 calibrated), which had to be measured because v7's device term reached 0.1956 and flipped 3 rows at the same bar (#104) |
+| Phase E normalization | ⛔ **BLOCKED, and the ordering is why** — `fit_normalization.py` reads NexusMind production output and needs ≥200 rows above the op-point; sadalsuud has **no `human_thriving`** at all. Normalization comes AFTER deployment, as it did for `solutions v6`. ⛔ Do not substitute the test split: it is a 25.1× design-weighted sample |
+| Phase F deploy | ⛔ not started — but no longer blocked on a missing gate number |
 
 ⚠️ **The labelled corpus is 6,586, not 6,590** — four scrape-junk skips, all JavaScript-required
 boilerplate at 357–489 chars, all *above* the 300-char floor.
+
+## NM#319 — the enrichment gate, answered in two regimes (2026-09-06)
+
+NexusMind gates post-scoring enrichment on `weighted_average >= 4.0`, and that field is the
+**normalized** score (`production_scorer.py:17-18`, `article_fetcher.py:1374`).
+
+- **At deploy, before Phase E:** v8 has no `normalization.json` and `score_scale_factor: 1.0`,
+  so the raw score passes straight through and **every surfaced article (raw ≥ 4.5) clears the
+  4.0 gate.** Nothing to do.
+- **After Phase E:** the fitter anchors the CDF's lower edge to the op-point, so
+  `stats.raw_min == 4.5` and **normalized(4.5) = 0.0 by construction** — the gate then bites in
+  the middle of the surfaced population. Measured on `uplifting v7`, already in that state at
+  the identical op-point, over 82 production cycles 2026-08-23 → 2026-09-06 (251,461 rows):
+  **18,041 surface (7.17%), and only 60.0% of them clear normalized ≥ 4.0** — 7,224 surfaced
+  articles are silently un-enriched, the gate's effective bar being raw ≈ 5.05–5.13.
+
+⚠️ That is v7's CDF as a proxy; v8's share will differ, the mechanism will not. It is not a v8
+regression — it is what percentile normalization plus a 4.0 gate already does — but it means
+**fitting normalization is the step that takes ~40% of surfaced articles below the enrichment
+gate**, and whether that is intended is an owner question.
+`docs/evidence/2026-09-06-v8-deploy-gate/README.md` §3.
 
 ## ✅ Pre-deploy parity against the five deployed packages (2026-09-04)
 
@@ -93,10 +126,21 @@ only. Resolve at Phase F **by copying, never renaming**.
   quantities with one name. ⭐ **And the low recall is not a defect to fix**: under ADR-023 it
   is the cheap error, and moving 4.5 → 4.0 buys 5 good articles while letting 7 junk ones back
   through — the wrong direction under the project's own loss function.
-  ⚠️ EXP-015 reported **0.514** raw at 4.5 on this same split: that is **one article** (18 vs
-  17 of 35) and a **device** difference — EXP-015 on b650-CUDA, this on CPU, i.e. the
-  CPU→CUDA **0.1956** term landing near the bar. Neither is wrong; they are not the same
-  measurement. `memory/filter-status.md`'s figures are post-calibration **and** post-gate — do
+  ⛔ **CORRECTED 2026-09-06 — EXP-015's 0.514 raw is NOT a device difference.** This file said
+  it was the CPU→CUDA **0.1956** term landing near the bar. Measured directly (EXP-026,
+  `docs/evidence/2026-09-06-v8-deploy-gate/device_delta.py`): on this split CPU and CUDA give
+  **0 verdict flips on both arms** and the same 17 TP, so the device cannot produce 18. Nor can
+  the gatekeeper or the clamp — applying and removing them moves **0 rows** across 4.5 on either
+  device. What differs is **the program**, in at least three ways at once: **dtype** (production
+  holds 342 bfloat16 params against 364 fp32, score head included, read off the loaded object;
+  `eval_ht_v8.py` forces `torch_dtype=torch.float32`), **adapter loading** (`load_lora_local` →
+  `get_peft_model` + a hand-rolled remap vs `PeftModel.from_pretrained`) and **batch size**
+  (16 vs 8). ⛔ **Only the dtype was measured to be PRESENT; none of the three was isolated**,
+  so "it is the dtype" is the leading candidate and not a demonstrated cause. ⭐ **What is
+  established is the part that matters: production serves bf16 through `load_lora_local` at
+  batch 16 — this gate's own path — so 17 is production's number and 18 belongs to a program
+  that is not what ships.** Neither is wrong; they are not the same measurement — but the
+  reason recorded here was. `memory/filter-status.md`'s figures are post-calibration **and** post-gate — do
   not put any of these in that table.
 - ⛔⛔ **4.5 ON THE CALIBRATED SCALE IS A STRICTER OPERATING POINT THAN 4.5 RAW.** Isotonic
   compresses the top (`human_wellbeing_impact` student max 7.9 → calibrated 6.8), so the same

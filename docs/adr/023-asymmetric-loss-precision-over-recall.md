@@ -9,11 +9,35 @@ superseded_by:
 
 ## Decision
 
-Every filter in this repo optimises **specificity / precision at its operating
-point**. Recall is a *constraint to satisfy*, never a target to maximise. When
-an op-point choice is genuinely balanced, take the tighter one.
+**We prioritise HIGH CERTAINTY over HIGH DETECTION.** Every filter here is built
+to be right about what it surfaces, not to catch everything it could. Given the
+choice between *surfacing more of the good* and *being surer that what we surface
+belongs*, we take being surer — every time, and by design.
+
+In the metrics that follow from that: every filter optimises **specificity /
+precision at its operating point**. Recall is a *constraint to satisfy*, never a
+target to maximise. When an op-point choice is genuinely balanced, take the
+tighter one.
 
 And: **never rank or compare filters on MAE.**
+
+### ⛔ This binds how numbers are REPORTED, not only how models are tuned
+
+A low recall in this repo is usually the decision working, not the model failing —
+and it does not read that way to anyone meeting the number cold. `human_thriving
+v8` passed its deploy gate at **recall 0.343 / specificity 0.992**: it surfaces
+about a third of what the oracle calls on-lens, and is right about 70% of what it
+does surface. That is the trade this ADR chose, at an op-point the owner ratified
+after seeing the whole frontier.
+
+So **any document that publishes a recall figure states the priority beside it.**
+Not as a caveat in a footnote — in the same breath as the number, because the
+number is otherwise read as a grade. A reader who does not know the loss function
+will reliably conclude the filter is broken, and the reader most likely to do that
+is a future session of this project.
+
+`scripts/gate/ground_truth_gate.py` prints the line itself, so it travels with
+every gate run rather than depending on whoever writes the summary.
 
 ## Context
 

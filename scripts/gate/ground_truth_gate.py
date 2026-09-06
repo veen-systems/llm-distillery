@@ -74,14 +74,28 @@ Usage:
     ... --gatekeeper-cap 2.9
 """
 import argparse
+import hashlib
 import json
 import math
+import sys
+from datetime import datetime, timezone
 from pathlib import Path
 
 # --- nature_recovery v4 defaults (kept so the unit tests + prior runs are
 #     unchanged when no scoring spec is supplied via --config) ---
 MEDIUM = 4.0
 GATEKEEPER_MIN, GATEKEEPER_CAP = 3.0, 3.5
+
+# ADR-023, in the owner's framing: HIGH CERTAINTY over HIGH DETECTION. Printed above
+# every table this script emits, because a recall figure read cold is read as a grade --
+# and here a low one is usually the decision working. Specificity is the criterion;
+# recall is a constraint to satisfy, never a target to maximise; MAE ranks nothing.
+PRIORITY_LINE = (
+    "ADR-023 — we prioritise HIGH CERTAINTY over HIGH DETECTION: specificity at the "
+    "op-point is\nthe criterion, recall is a constraint to satisfy, and MAE ranks nothing. "
+    "A low recall here is\nusually the choice working. Read spec first, and read recall "
+    "beside the positive rate."
+)
 
 # Measured batch-composition noise floor (#95, 2026-08-03: real Gemma-3-1B +
 # LoRA, 120 production articles, max |delta| 0.1617 across batch shapes on one
@@ -93,6 +107,28 @@ WEIGHTS = {"recovery_evidence": .25, "measurable_outcomes": .20,
            "ecological_significance": .20, "restoration_scale": .15,
            "human_agency": .10, "protection_durability": .10}
 DIMS = list(WEIGHTS)
+
+
+def _sha256(path):
+    """sha256 of a file, or None when it cannot be read -- a missing hash must not
+    stop the gate from writing the numbers it just computed."""
+    try:
+        return hashlib.sha256(Path(path).read_bytes()).hexdigest()
+    except OSError:
+        return None
+
+
+def _inputs_fingerprint(inputs):
+    """A stable digest of WHAT WAS READ -- labels, config and every model dump, by
+    content. Deliberately excludes `generated_utc` and `argv`: rerunning the same
+    evaluation must produce the same fingerprint, or every rerun would falsely mark the
+    provenance prose stale and the warning would be noise within a day."""
+    material = {
+        "labels": inputs["labels"]["sha256"],
+        "config": inputs["config"]["sha256"],
+        "models": {n: m["sha256"] for n, m in sorted(inputs["models"].items())},
+    }
+    return hashlib.sha256(json.dumps(material, sort_keys=True).encode()).hexdigest()[:16]
 
 
 def _spec(dims=None, weights=None, gk_dim=None, gk_min=None, gk_cap=None):
@@ -360,6 +396,19 @@ def main():
                          "the config spec (instead of the stored weighted_average)")
     args = ap.parse_args()
 
+    # ⛔ A --config that cannot be READ must not become nature_recovery v4's constants.
+    # load_scoring_spec and load_medium_threshold both swallow every exception and fall
+    # back to the module defaults, so a typo'd path produced a full table at threshold 4.0
+    # / gatekeeper 3.5 -- someone else's operating point -- and exited 0. The fallback is
+    # deliberate and stays, but it is for "this config has no scoring block", never for
+    # "this file is not there".
+    if not Path(args.config).exists():
+        raise SystemExit(
+            f"--config {args.config} does not exist. Refusing to fall back to the "
+            f"nature_recovery v4 defaults (threshold {MEDIUM}, gatekeeper cap "
+            f"{GATEKEEPER_CAP}) and print a table at someone else's operating point."
+        )
+
     spec = load_scoring_spec(args.config)
     if spec is not None and args.gatekeeper_cap is not None:
         spec = dict(spec)
@@ -368,7 +417,10 @@ def main():
 
     medium = args.threshold if args.threshold is not None else load_medium_threshold(args.config)
     truth = load_labels(args.labels, spec=spec)
-    report = {"threshold": medium,
+    # In the ARTIFACT too, not only on stdout: the JSON outlives the terminal, and it is
+    # what a future session reads when it wants to know whether 0.343 was a problem.
+    report = {"priority": PRIORITY_LINE.replace("\n", " "),
+              "threshold": medium,
               "truth_threshold": args.truth_threshold if args.truth_threshold is not None else medium,
               "gatekeeper_cap": (spec or _spec())["gk_cap"],
               "noise_floor": args.noise_floor,
@@ -379,6 +431,80 @@ def main():
         report["models"][name] = evaluate(truth, load_scores(path, spec=model_spec), medium,
                                           noise_floor=args.noise_floor,
                                           truth_threshold=args.truth_threshold)
+
+    # ⛔ A GATE REPORT THAT CANNOT BE ATTRIBUTED IS NOT EVIDENCE. Every v8 accuracy
+    # number was CPU-measured while production serves on GPU (#104) and nothing in the
+    # report said so, because the inputs were named only in a shell history. Record what
+    # was actually read: the paths and their sha256, so a report can be matched to the
+    # dump manifest that carries the box, the venv and the device.
+    report["inputs"] = {
+        "generated_utc": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "argv": sys.argv[1:],
+        "labels": {"path": args.labels, "sha256": _sha256(args.labels)},
+        "config": {"path": args.config, "sha256": _sha256(args.config)},
+        "models": {n: {"path": p, "sha256": _sha256(p)}
+                   for n, p in (m.split("=", 1) for m in args.model)},
+    }
+
+    # A hand-written `provenance` block (uplifting v7 has one) says what the sha256 of a
+    # dump cannot: which box, which venv, which DEVICE. Rewriting the report must not
+    # silently delete it -- that is the single fact this file most needs to keep.
+    #
+    # ⛔ BUT CARRYING IT OVER IS ITSELF THE FAILURE THIS FEATURE EXISTS TO PREVENT, one
+    # layer up. Rerun the gate on a different dump, device or checkpoint and `inputs`
+    # updates correctly while the prose still describes the OLD run -- and the fresh
+    # `inputs` block beside it makes the report look newly attributed. So the block is
+    # kept (never deleted) and STAMPED with the fingerprint of the inputs it was written
+    # against; when that no longer matches, the report says so in the file and on stdout.
+    # Three states, and they are genuinely different. UNKNOWN is not STALE: a block that
+    # has never carried a fingerprint was hand-written, and nothing records what it
+    # described -- calling that "stale" fires on every first rerun, and a warning that
+    # cries wolf is ignored inside a day.
+    # A null hash means a file could not be read. It is not fatal -- the numbers are
+    # already computed -- but it must not pass in silence: an unattributable input is the
+    # thing this block exists to prevent, and `null` reads as "no hash" not "no file".
+    unhashed = [f"{k}={v['path']}" for k, v in
+                [("labels", report["inputs"]["labels"]), ("config", report["inputs"]["config"])]
+                + [(n, m) for n, m in report["inputs"]["models"].items()]
+                if v["sha256"] is None]
+    if unhashed:
+        print(f"⛔ WARNING: could not hash {', '.join(unhashed)} — the report's `inputs` "
+              f"block cannot attribute these, so this run is not reproducible from it.")
+
+    fingerprint = _inputs_fingerprint(report["inputs"])
+    existing = Path(args.report)
+    if existing.exists():
+        try:
+            prior = json.loads(existing.read_text())
+        except json.JSONDecodeError:
+            prior = {}
+        if "provenance" in prior:
+            report["provenance"] = prior["provenance"]
+            prior_fp = prior.get("provenance_applies_to")
+            report["provenance_applies_to"] = fingerprint
+            if prior_fp == fingerprint:
+                print(f"carried over the hand-written `provenance` block in {existing} "
+                      f"(inputs unchanged)")
+            elif prior_fp is None:
+                report["provenance_status"] = (
+                    f"UNVERIFIED — hand-written, and nothing recorded which inputs it "
+                    f"described. Now stamped with this run's fingerprint {fingerprint}. "
+                    f"CHECK that its box, device and checkpoint are this run's."
+                )
+                print(f"NOTE: the `provenance` block in {existing} carried no fingerprint; "
+                      f"stamping it with this run's ({fingerprint}). Check it still "
+                      f"describes the box, device and checkpoint above.")
+            else:
+                report["provenance_status"] = (
+                    f"⛔ STALE — written against DIFFERENT inputs (fingerprint "
+                    f"{prior_fp}); this run's are {fingerprint}. Kept because nothing "
+                    f"regenerates it, but it may describe another box, device or "
+                    f"checkpoint. Rewrite it or delete it deliberately."
+                )
+                print(f"⛔ WARNING: the `provenance` block in {existing} was written "
+                      f"against DIFFERENT inputs ({prior_fp} != {fingerprint}) and is "
+                      f"marked STALE in the report. It may describe another box, device "
+                      f"or checkpoint.")
 
     Path(args.report).parent.mkdir(parents=True, exist_ok=True)
     Path(args.report).write_text(json.dumps(report, indent=2))
@@ -403,6 +529,10 @@ def main():
     print(f"\nGround-truth gate vs held-out oracle labels "
           f"(student threshold {medium}, on-lens := oracle >= {tcut}, "
           f"gatekeeper_cap {report['gatekeeper_cap']}, n={len(truth)})")
+    # The priority travels WITH the number, not in whatever summary someone writes later.
+    # A recall of 0.343 is this project's decision working; met cold it reads as a grade,
+    # and the reader most likely to misread it is a future session of this project.
+    print(PRIORITY_LINE)
     print(hdr)
     print("-" * len(hdr))
     for name, m in report["models"].items():

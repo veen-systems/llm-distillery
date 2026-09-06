@@ -1,0 +1,10 @@
+dims ['human_wellbeing_impact', 'social_cohesion_impact', 'justice_rights_impact', 'evidence_level', 'benefit_distribution', 'change_durability']
+gatekeeper evidence_level 3.0 3.0
+
+cuda: plain dot product      TP 17 FP 9 FN 18 TN 616
+cuda: with gatekeeper+clamp  TP 17 FP 9 FN 18 TN 616
+cuda: rows the gatekeeper moves across 4.5: 0 []
+
+cpu: plain dot product      TP 17 FP 9 FN 18 TN 616
+cpu: with gatekeeper+clamp  TP 17 FP 9 FN 18 TN 616
+cpu: rows the gatekeeper moves across 4.5: 0 []

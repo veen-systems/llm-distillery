@@ -76,7 +76,13 @@ section is about those.
 
 ### 3. Metrics (needle filters especially)
 
-⛔ **NEVER RANK FILTERS ON MAE, AND OPTIMISE SPECIFICITY (ADR-023, owner 2026-08-09).** A
+⛔ **WE PRIORITISE HIGH CERTAINTY OVER HIGH DETECTION — never rank filters on MAE, and
+optimise SPECIFICITY (ADR-023, owner 2026-08-09).** Being right about what a filter
+surfaces beats surfacing more of what it could, every time and by design; recall is a
+constraint to satisfy, not a target. ⚠️ **That binds how you REPORT, not only how you
+tune**: publish the priority beside any recall figure, because a low recall here is
+usually the choice working and does not read that way cold — `human_thriving v8` passed
+its deploy gate at recall **0.343** / spec **0.992**. A
 false positive reaches a reader; a false negative is invisible and the slot refills. **Only
 recall and specificity are conditional on the true class** and therefore comparable across
 splits — precision and MAE move with the base rate, so always report the split's positive

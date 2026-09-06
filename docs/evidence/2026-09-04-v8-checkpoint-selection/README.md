@@ -34,6 +34,18 @@ Test split (n=660, 35 positives at 4.5), untouched by selection:
 | precision | 0.667 | 0.593 |
 | TP / FP / FN | 18 / 9 / 17 | 16 / 11 / 19 |
 
+⚠️ **These are the FLOAT32 arm, and production is bf16** (added 2026-09-06, EXP-026).
+`eval_ht_v8.py` loads the base with `torch_dtype=torch.float32`; the production inference
+path (`load_lora_local`) holds **342 bfloat16 parameters against 364 float32**, score head
+included. Scored through the shipped path, the same checkpoint on the same split gives raw
+**recall 0.486, TP 17** — one article. It is **not** the device: CPU and CUDA give 0 verdict
+flips here, and the gatekeeper and clamp move 0 rows across 4.5. ⛔ The two paths differ in
+**three** ways at once — dtype, adapter loading (`get_peft_model` + remap vs
+`PeftModel.from_pretrained`) and batch size (16 vs 8) — and **none was isolated**, so dtype
+is the leading candidate, not a demonstrated cause.
+Nothing in the selection argument below turns on that one article, but the deploy-gate number
+is the bf16 one: `docs/evidence/2026-09-06-v8-deploy-gate/README.md` §2.
+
 Epoch 4 leads on all three — **by two articles each**, which is not a difference
 this project treats as real:
 
@@ -82,7 +94,11 @@ Raw output: `head_to_head_raw.txt`.
 
 - Nothing about calibrated performance, the Stage-1 probe, or the deploy gate.
 - Nothing about whether epoch 4 or 6 is better — see the verdict.
-- The `@4.0` and `@4.25` rows are diagnostic only. **v8's op-point is 4.5**
-  (`config.yaml scoring.tiers.medium.threshold`); it has no `base_scorer.py` yet,
-  so the runtime source that CLAUDE.md calls authoritative does not exist for this
-  filter and 4.5 is currently a documentation value.
+- The `@4.0` and `@4.25` rows are diagnostic only. **v8's op-point is 4.5.**
+  ⛔ **The second half of this bullet was true when written and is now false** (corrected
+  2026-09-06): it said v8 "has no `base_scorer.py` yet, so … 4.5 is currently a documentation
+  value". `filters/human_thriving/v8/base_scorer.py` has existed since 2026-09-04 and carries
+  `TIER_THRESHOLDS`, the runtime source CLAUDE.md calls authoritative; the op-point was
+  re-derived and ratified on 2026-09-05 at **4.50 on the CALIBRATED scale**
+  (`docs/decisions/2026-09-05-v8-op-point.md`), verified by executing `_assign_tier`
+  (4.4999 → `low`, 4.5 → `medium`). It is not a documentation value.

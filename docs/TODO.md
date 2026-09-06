@@ -1,102 +1,119 @@
 # LLM Distillery - TODO
 
-## 🔵 NEXT SESSION — **the ADR-021 deploy gate, on a CUDA re-score. The op-point question is CLOSED.**
+## 🔵 NEXT SESSION — **phase 9: deploy v8. The gate has run and v8 has a number.**
 
-> ⚠️ **This heading asked "how much good content is the last few points of junk removal
-> worth?" until 2026-09-05.** That was the op-point question and the owner **ruled it**:
-> 4.50 on the calibrated scale (`docs/decisions/2026-09-05-v8-op-point.md`). Do not re-open
-> it; the sweep, the 1:1-trade argument and the design-weighted arm are all recorded there.
+> ⚠️ **This heading said "the ADR-021 deploy gate, on a CUDA re-score" until 2026-09-06.**
+> That gate has now run (`EXP-026`): **recall 0.343 / specificity 0.992 at 4.50 calibrated,
+> on CUDA**, n=660, 35 positives. `filters/human_thriving/v8/ground_truth_gate.json`,
+> `docs/evidence/2026-09-06-v8-deploy-gate/`. The op-point question was closed the day before
+> (`docs/decisions/2026-09-05-v8-op-point.md`); do not re-open either.
 
-> **Updated 2026-09-05 (third session).** Session records:
-> `memory/project_session_2026_09_04.md`, `..._evening.md`, `..._late.md`,
-> `memory/project_session_2026_09_05.md`, `..._second.md` and `..._third.md`.
-> Runs: **EXP-015** (training), **EXP-016** (probe + calibration), **EXP-017** (Phase C
-> review), **EXP-018** (e5-large), **EXP-019** (regression probes), **EXP-020** (gating),
-> **EXP-021** (production overhead), **EXP-022** (device throughput), **EXP-023** (its
-> review), **EXP-024** (op-point table), **EXP-025** (claim-shape checks + the
-> design-weighted arm) in `experiments/registry.jsonl`, with `docs/evidence/2026-09-04-scoring-overhead/`,
-> `docs/evidence/2026-09-05-scorer-device-throughput/`, and
-> `docs/evidence/2026-09-04-v8-checkpoint-selection/` and
-> `docs/evidence/2026-09-04-v8-probe-calibration/`. State:
+> **Updated 2026-09-06.** Session records: `memory/project_session_2026_09_04*.md`,
+> `memory/project_session_2026_09_05*.md`, `memory/project_session_2026_09_06.md`.
+> Runs: **EXP-015** … **EXP-026** in `experiments/registry.jsonl`. State:
 > `filters/human_thriving/v8/STATUS.md`, `filters/human_thriving/v8/calibration_report.md`.
 > Rulings: `docs/decisions/2026-09-03-v8-1-commencement-clause.md`,
-> `docs/decisions/2026-09-03-v8-scope-rulings.md`. Journal: `docs/HUMAN_THRIVING_V8_JOURNAL.md`.
+> `docs/decisions/2026-09-03-v8-scope-rulings.md`, `docs/decisions/2026-09-05-v8-op-point.md`.
+> Journal: `docs/HUMAN_THRIVING_V8_JOURNAL.md`.
 
 **Where we are in the RUNBOOK's nine phases:** 1 Planning ✅ · 2 Architecture ✅ (`prompt-v8-4.md`)
 · 3 Validation ✅ · 4 Prefilter ✅ N/A by ruling · 5 Training data ✅ (6,586 labels, 456 corrected)
-· **6 Training ✅** · **6b Probe ✅ 2026-09-04** · **7 Calibration ✅ 2026-09-04**
-· **8 Testing — op-point ✅ RULED 2026-09-05 (4.50 calibrated), smoke ✅ PASSED 2026-09-05,
-ADR-021 gate ⛔ NOT RUN ← the next action** · 9 Deployment ⛔ (v8 absent from sadalsuud's
-`NexusMind/filters/`, carries `NO_HUB`, no `ground_truth_gate.json` — verified 2026-09-05).
-⚠️ **Phase 8 is not "done" because its decision is made.** What remains is the deploy-gate run
-itself against held-out oracle ground truth (ADR-021), which needs the weights on `b650-gpu`.
+· **6 Training ✅** · **6b Probe ✅** · **7 Calibration ✅** · **8 Testing ✅ COMPLETE
+2026-09-06** (op-point ruled 4.50, smoke test passed, **ADR-021 gate run on CUDA**)
+· **9 Deployment ⛔ ← the next action.** v8 is absent from sadalsuud's `NexusMind/filters/`
+and carries `NO_HUB` — verified 2026-09-06.
 
-## ▶ START HERE — phase 8's op-point is RULED; the ADR-021 GATE has not run, and it is next
+## ▶ START HERE — phase 8 is CLOSED. Phase 9 is next, and Phase E comes AFTER it.
 
-> ⛔ **Phase 9 is NOT next, and the gate is NOT a one-liner.** Read *NEXT SESSION STARTS
-> HERE* below before running anything: the inputs the gate needs are already on disk and
-> they are the WRONG ONES (CPU, #104).
+### ▶ NEXT SESSION STARTS HERE — deployment, and the ordering that surprised phase 8
 
-> **All three ruled by the owner on 2026-09-05 (third session).** Nothing below is waiting
-> on a decision any more. Phase 8's remaining work is the deploy-gate run itself.
->
-> ✅ **v8 SMOKE-TESTED END TO END, 2026-09-05** — `scripts/gate/v8_smoke_test.py`, run on
-> b650-gpu, 4 articles, all assertions held (`docs/evidence/2026-09-05-v8-smoke.txt`).
-> It is **not** the ADR-021 gate: it asks whether an article goes in and a well-formed,
-> calibrated, tiered result comes out. On any host without the weights it exits **2 as
-> CANNOT VERIFY** rather than failing. ⭐ **Two data points worth the owner's eye.** A
-> hand-written clear positive (audited 31% bill reduction, replicated in two provinces)
-> scores **4.33 → `low`** — that is what 4.5 calibrated feels like from the inside, n=1 and
-> synthetic so it refutes nothing, but it makes *12 of 30 agreed-good kept* concrete. And
-> the harm-dominant row (three killed, charity fund) scores **0.85 → `low`**, which is
-> exactly the class-A behaviour v8 exists for. ⚠️ All four routed to Stage 2, so the screen
-> did not fire at n=4 — consistent with ~89% pass-through, not a defect.
->
-> ⚙️ **#147 FILED — the Stage-1 probe thresholds, and the answer is not "set a number".**
-> On six of seven filters `hybrid_inference.stage1.threshold` is **read by no code**; the
-> live value is a module-level `DEFAULT_THRESHOLD`. ⛔ `nature_recovery v4` ships **3.225**
-> against a runtime **0.75**, a 4.3× divergence in a file people read. Only v8 wires config
-> to runtime and only v8 pins `probe_sha256` — and `EXP-016` measured why that matters:
-> `--seed 7` moves routing **~14 pp** at the same threshold, silently, because Stage 1
-> produces no output to inspect. ⛔ **Not a compute win**: the screen saves **1.52%** at the
-> adopted routing, break-even is ~53–57%, and `EXP-021` found no Stage-2 cost constraint at
-> all — the pipeline is a **5.57% duty cycle** and the load is story dedup (42.4%), not the
-> probes.
->
-> ✅ **#139 CLOSED.** The shipped filter was never broken; the test harness was.
+⛔ **Phase E (normalization) CANNOT run first, and this is not a preference.**
+`fit_normalization.py` fits the CDF from **NexusMind production output**
+(`data/filtered/{name}/filtered_*.jsonl`) and refuses below `MIN_NORMALIZATION_ARTICLES = 200`
+rows above the op-point. Verified on sadalsuud 2026-09-06: `data/filtered/` holds `belonging`,
+`cultural_discovery`, `investment_risk`, `nature_recovery`, `solutions`, `uplifting` — **no
+`human_thriving`**, because v8 is not deployed. Normalization comes **after** deployment, the
+way `solutions v6` went (gate 2026-07-27 → deployed → fitted 2026-07-28). ⛔ Do not substitute
+the test split or the draw corpus: they are a 25.1× design-weighted sample, and a CDF fitted on
+them would describe a population that does not exist.
 
-### ▶ NEXT SESSION STARTS HERE — the ADR-021 deploy gate, and step 1 is NOT the gate
+1. **The doc set, which is what actually blocks shipping.** `memory/filter-doc-standard.md`
+   and Phase F1 gate on package parity with `nature_recovery v4`: `DEEP_ROOTS.md`, `README.md`
+   and `README_MODEL.md` are still owed. `STATUS.md`, `config.yaml`, the prompt,
+   `calibration_report.md` and now `ground_truth_gate.json` are present.
+2. **The weights have to reach the serving box.** They are on b650 only, gitignored as large
+   model checkpoints (⚠️ **not #97** — that is the TDM assessment). v8 carries `NO_HUB`, so
+   decide the transport before the deploy, not during it.
+3. **Deploy, then watch the first cycles.** `docs/RUNBOOK.md`, and ⛔ diff before
+   `deploy_to_nexusmind.sh` — it overwrites and `.nexusmind-owns` is empty.
+4. **Then Phase E**, once ≥200 production rows sit above 4.5: fit `normalization.json` with
+   `stats.raw_min` = **4.5** (`test_normalization_invariant.py` enforces the equality) and
+   remember it moves **all four** op-point surfaces in one commit.
 
-⛔ **Do not run the gate on the CPU dumps, even though they are on disk and it would work.**
-`ground_truth_gate.py` needs only `--labels datasets/training/human_thriving_v8/test.jsonl`
-and a scored dump, and both exist — which is exactly the trap. The dumps in
-`/tmp/dump_readme_test2/` (and `b650-gpu:~/llm-distillery/ht_v8_test_dump/`) are the **CPU**
-pass. **A deploy gate is the one artifact that must not inherit #104's caveat**: every v8
-accuracy number is CPU-measured while production serves on GPU, and `EXP-015` measured CUDA
-giving **18 TP against CPU's 17** at 4.5. One article — and the gate's whole job is to be the
-number deployment rests on.
+⚠️ **NM#319 is ANSWERED, in two regimes, and the answer changes at step 4** (measured
+2026-09-06, `docs/evidence/2026-09-06-v8-deploy-gate/README.md` §3):
+- **At deploy, before Phase E** — no `normalization.json` and `score_scale_factor: 1.0`, so the
+  raw score passes through and **every surfaced article clears the 4.0 enrichment gate.**
+  Nothing to do.
+- **After Phase E** — the fitter anchors the CDF to the op-point, so **normalized(4.5) = 0.0 by
+  construction** and the gate bites mid-population. On `uplifting v7`, already in that state at
+  the same op-point, 82 cycles 2026-08-23 → 2026-09-06: **18,041 rows surface (7.17%) and only
+  60.0% clear normalized ≥ 4.0** — **7,224 surfaced articles silently un-enriched**, the gate's
+  effective bar being raw ≈ 5.05–5.13. Not a v8 regression; it is what percentile normalization
+  plus a 4.0 gate already does, and **fitting normalization is the step that turns it on.**
+  Whether that is intended is an owner question.
 
-1. **Re-score the 660-row test split on CUDA**, on b650, writing to
-   `~/llm-distillery/ht_v8_test_dump/` — ⛔ **not `/tmp`**, which is the failure this repo
-   catalogued twice on 2026-09-05. Add the sha256 to a committed manifest.
-   ⚠️ Assert the device off the object, not off the argument you passed: `EmbeddingStage`
-   caches on the model name alone and a "CPU" arm once read 2.37 ms against GPU's 2.34
-   (true CPU 42.41) because of it.
-2. **Run the gate**, letting `--config` supply the threshold so it matches what would deploy:
-   `python3 scripts/gate/ground_truth_gate.py --labels datasets/training/human_thriving_v8/test.jsonl
-   --model calibrated=<dump> --config filters/human_thriving/v8/config.yaml`
-3. ⛔ **Judge against held-out ORACLE ground truth, never against `uplifting v7`** (ADR-021).
-   And never set v8's recall beside the fleet's 0.59–0.72 — v7 and v8 do not share a positive
-   class (Jaccard **0.246** on the same 660 rows), so those are two quantities with one name.
-4. **Then Phase E**: fit `normalization.json` with `stats.raw_min` = **4.5** (the ruled
-   op-point; `test_normalization_invariant.py` enforces the equality), and check v8's
-   normalized CDF against NexusMind's enrichment gate at **4.0** — that gate reads the
-   NORMALIZED score (NM#319) and a filter whose distribution sits below it goes silently
-   un-enriched. The op-point ruling explicitly did **not** settle that.
+### ✅ What phase 8 closed on 2026-09-06 (`EXP-026`)
 
-⚠️ **Only then is phase 9 reachable.** v8 is currently absent from sadalsuud's
-`NexusMind/filters/`, carries `NO_HUB`, and has no `ground_truth_gate.json` — verified
-2026-09-05.
+1. ✅ **THE ADR-021 GATE RAN.** `calibrated_cuda`: **recall 0.343, spec 0.992**, precision
+   0.706, n=660, 35 positives (5.30% unweighted). `raw_cuda`: 0.486 / 0.986.
+   ⛔ **Read the specificity first — we prioritise HIGH CERTAINTY over HIGH DETECTION.** The
+   0.343 is ADR-023's choice working, not a grade: v8 surfaces about a third of what the
+   oracle calls on-lens and is right about 70% of what it surfaces. **Raising recall here
+   without holding specificity is a regression**, and "recall is low" is not a finding. ⛔ The two arms
+   are **NOT DISTINGUISHABLE** — recall, specificity and F1 bands all overlap under the #95
+   floor; calibrated ships because the runtime applies calibration, not because it won.
+   ⛔ **Never set 0.343 beside the fleet's 0.59–0.72**: Jaccard **0.246** between v7's and v8's
+   positive classes on these same rows.
+2. ⭐ **THE DEVICE DOES NOT MATTER HERE — and it had to be measured to know that.** CPU vs CUDA
+   on the same 660 rows: **0 verdict flips on both arms**, identical confusion matrices, max
+   |Δ| **0.1428** calibrated / **0.0508** raw (411/660 and 8/660 bit-identical). v7's term at
+   the same 4.5 was 0.1956 with 3 flips, so this is a result about *this* population, not a
+   licence to quote CPU numbers elsewhere.
+3. ⛔⛔ **AND IT REFUTED A RECORDED EXPLANATION.** `STATUS.md` said EXP-015's raw **0.514** (18
+   TP) against the gate's **0.486** (17) was *"a device difference … the CPU→CUDA 0.1956 term
+   landing near the bar"*. The device gives **0 flips**; the gatekeeper and clamp move **0
+   rows**. It is the **dtype, i.e. the program**: the production path holds **342 bfloat16
+   parameters against 364 float32** (score head in bf16, read off the loaded object) while
+   `eval_ht_v8.py` forces `torch_dtype=torch.float32` at batch 8. ⭐ **Production serves bf16,
+   so 17 is production's number and 18 is the fp32 arm's.** *A dismissal is a claim* — this one
+   survived because it named a real, measured, plausible term the reader was primed for.
+4. ⚙️ **The gate now records what it read, refuses a config it cannot find, and marks its
+   own provenance stale.** `ground_truth_gate.json` gains an `inputs` block (argv, and the
+   sha256 of the labels, the config and every model dump) plus a `priority` line; the writer
+   **carries a hand-written `provenance` block over** rather than deleting it, and **stamps it
+   with a fingerprint of the inputs it described** — three states, `matches` / `UNVERIFIED`
+   (hand-written, never stamped) / `⛔ STALE` (written against different inputs), because
+   conflating the last two makes the warning fire on every rerun and be ignored within a day.
+   ⛔ **A missing `--config` no longer falls back**: `load_scoring_spec` swallows every
+   exception and substitutes `nature_recovery v4`'s constants, so a typo'd path printed a full
+   table at someone else's operating point (threshold 4.0, gatekeeper 3.5) and exited 0.
+   ⭐ **The first four tests had a hole a review found by mutation**: none varied the SCORES
+   between the two gate runs, so `report.update(prior)` — which reverts every freshly computed
+   metric to the previous file's — passed all four. A retrained model's report would have kept
+   the old model's recall. `tests/unit/test_ground_truth_gate.py` now holds **28** tests (17
+   pre-existing pure-function ones plus 11 on the writer), and the mutation that escaped is
+   killed by name. ⚠️ **No whole-suite count is quoted here**: the registry checker refused
+   `715` as untraceable and the review could not reproduce it either — a suite total is a
+   property of the machine and the tmpdir, not of this change.
+5. ⚠️ **b650's `~/llm-distillery` is not a git checkout** and four files on the scoring path had
+   drifted. They were synced from the repo before the CUDA pass — a dump that feeds a deploy
+   gate must be produced by the shipped program. Pre-sync copies:
+   `b650-gpu:~/llm-distillery/.presync_backup_20260906/`. Differences were docstrings plus one
+   off-path argument, checked file by file in `DUMP_MANIFEST.md`, which is why the 2026-09-04
+   CPU pass is still comparable as a device measurement.
+
+### ✅ What was settled on 2026-09-05 (kept for the record)
 
 1. ✅ **THE PHASE-8 OP-POINT: 4.50 STANDS, ON THE CALIBRATED SCALE.**
    `docs/decisions/2026-09-05-v8-op-point.md`. **No code changed** — the number the runtime
@@ -200,6 +217,7 @@ a per-filter student), not a phase-8 input: `H-V8-22`,
 both the gating ruling and the *is the probe enough* answer turned on. The session history
 that established that has moved BELOW the action items — it was sitting between this heading
 and the instructions, which is backwards for a file whose job is to say what to do first.
+
 
 ### ⛔ Read before touching phase 8
 

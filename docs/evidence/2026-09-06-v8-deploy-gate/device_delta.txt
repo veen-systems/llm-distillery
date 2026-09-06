@@ -1,0 +1,11 @@
+threshold=4.5  gk_cap=3.0
+
+scores_calibrated:  bit-identical 411/660 (62.3%)
+  |delta| p50 0.0000  p90 0.0175  p99 0.1083  MAX 0.1428
+  verdict flips at 4.5: 0  []
+  surfaced: cpu 17  cuda 17
+
+scores_raw:  bit-identical 8/660 (1.2%)
+  |delta| p50 0.0029  p90 0.0129  p99 0.0395  MAX 0.0508
+  verdict flips at 4.5: 0  []
+  surfaced: cpu 26  cuda 26

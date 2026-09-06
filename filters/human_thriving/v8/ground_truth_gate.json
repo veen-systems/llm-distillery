@@ -1,0 +1,141 @@
+{
+  "priority": "ADR-023 \u2014 we prioritise HIGH CERTAINTY over HIGH DETECTION: specificity at the op-point is the criterion, recall is a constraint to satisfy, and MAE ranks nothing. A low recall here is usually the choice working. Read spec first, and read recall beside the positive rate.",
+  "threshold": 4.5,
+  "truth_threshold": 4.5,
+  "gatekeeper_cap": 3.0,
+  "noise_floor": 0.16,
+  "n_labeled": 660,
+  "models": {
+    "calibrated_cuda": {
+      "n": 660,
+      "positives": 35,
+      "truth_threshold": 4.5,
+      "recall": 0.34285714285714286,
+      "precision": 0.7058823529411765,
+      "specificity": 0.992,
+      "f1": 0.46153846153846156,
+      "spearman": 0.8066003286384467,
+      "mae": 0.5414945652218164,
+      "tp": 12,
+      "fn": 23,
+      "fp": 5,
+      "tn": 620,
+      "noise_floor": 0.16,
+      "n_indeterminate": 9,
+      "indeterminate_by_cell": {
+        "tp": 1,
+        "fn": 3,
+        "fp": 2,
+        "tn": 3
+      },
+      "recall_band": [
+        0.3142857142857143,
+        0.42857142857142855
+      ],
+      "precision_band": [
+        0.5789473684210527,
+        0.8333333333333334
+      ],
+      "specificity_band": [
+        0.9872,
+        0.9952
+      ],
+      "f1_band": [
+        0.40740740740740744,
+        0.5660377358490566
+      ]
+    },
+    "raw_cuda": {
+      "n": 660,
+      "positives": 35,
+      "truth_threshold": 4.5,
+      "recall": 0.4857142857142857,
+      "precision": 0.6538461538461539,
+      "specificity": 0.9856,
+      "f1": 0.5573770491803278,
+      "spearman": 0.8068660725457745,
+      "mae": 0.5317210984423089,
+      "tp": 17,
+      "fn": 18,
+      "fp": 9,
+      "tn": 616,
+      "noise_floor": 0.16,
+      "n_indeterminate": 12,
+      "indeterminate_by_cell": {
+        "tp": 3,
+        "fn": 2,
+        "fp": 2,
+        "tn": 5
+      },
+      "recall_band": [
+        0.4,
+        0.5428571428571428
+      ],
+      "precision_band": [
+        0.5,
+        0.7307692307692307
+      ],
+      "specificity_band": [
+        0.9776,
+        0.9888
+      ],
+      "f1_band": [
+        0.4444444444444445,
+        0.6229508196721311
+      ]
+    }
+  },
+  "inputs": {
+    "generated_utc": "2026-09-06T07:04:32Z",
+    "argv": [
+      "--labels",
+      "datasets/training/human_thriving_v8/test.jsonl",
+      "--config",
+      "filters/human_thriving/v8/config.yaml",
+      "--model",
+      "calibrated_cuda=datasets/gate/ht_v8_test_cuda/scores_calibrated.jsonl",
+      "--model",
+      "raw_cuda=datasets/gate/ht_v8_test_cuda/scores_raw.jsonl",
+      "--recompute-model-wa",
+      "--report",
+      "filters/human_thriving/v8/ground_truth_gate.json"
+    ],
+    "labels": {
+      "path": "datasets/training/human_thriving_v8/test.jsonl",
+      "sha256": "e361b5175c66252582c395bf256eb253bfa9b35f780f2479907231fc4d58d726"
+    },
+    "config": {
+      "path": "filters/human_thriving/v8/config.yaml",
+      "sha256": "1ac520e5115f13b9dde6d1ca41c212f7b64e0910169c006863199ea13ff8ac62"
+    },
+    "models": {
+      "calibrated_cuda": {
+        "path": "datasets/gate/ht_v8_test_cuda/scores_calibrated.jsonl",
+        "sha256": "fef1a56b00d4448bedfc0dfaf2074ddfe94a0d0e04149c831884771af80ff2fb"
+      },
+      "raw_cuda": {
+        "path": "datasets/gate/ht_v8_test_cuda/scores_raw.jsonl",
+        "sha256": "0ead6f6b6e863029083f7bf1ecca3d35f99ea4e560865fbaa33ea6a78d58c7a2"
+      }
+    }
+  },
+  "provenance": {
+    "measured": "2026-09-06 (ADR-021 deploy gate, phase 8)",
+    "why": "The ADR-021 gate for human_thriving v8: judged against held-out ORACLE ground truth at the ruled op-point (4.50 calibrated, docs/decisions/2026-09-05-v8-op-point.md), never against uplifting v7. \u26d4 v7 and v8 do not share a positive class (Jaccard 0.246 on these same 660 rows), so v8's recall does not belong beside the fleet's 0.59-0.72.",
+    "data": "datasets/training/human_thriving_v8/test.jsonl -- 660 held-out oracle rows, never seen by training or by the calibration fit. \u26a0\ufe0f Drawn under a 25.1x design that over-samples positives: the rates here are UNWEIGHTED sample rates. Design-weighted, the base rate is 3.1638% not 5.3030% (docs/evidence/2026-09-04-v8-probe-calibration/PHASE_C_REVIEW.md).",
+    "calibration": "the DEPLOYED filters/human_thriving/v8/calibration.json (isotonic, n=658, fitted on val) -- not a fresh fit. The `calibrated_cuda` arm is therefore what production would compute; `raw_cuda` is the same forward pass without it, kept because 4.5 means different things on the two scales.",
+    "inference": "the repo's own path -- scripts/analysis/dump_student_scores.py, which reuses fit_calibration.load_scorer + run_inference_raw. ONE forward pass produced both arms, so they differ by calibration and nothing else (#95: a second pass would inject more noise than the effect).",
+    "box": "b650-gpu (jwasys-B650-EAGLE-AX, RTX 3090 Ti 24 GB, driver 580.95.05), venv-prodparity: python 3.11.15, torch 2.11.0+cu130, transformers 5.0.0, peft 0.18.1, CUDA 13.0 -- gpu-server's production pins. NOT the serving box.",
+    "device": "CUDA. \u2b50 This is the point of the run: every prior v8 accuracy number was CPU-measured while production serves on GPU (#104), and CPU->CUDA is worth max |delta| 0.1956 with 3 flips at 4.5 on uplifting v7. The device was asserted off the loaded object -- `parameters=cuda:0`, not off the flag passed (dump_student_scores.py --require-device cuda, added for this run because a cache has already made a 'CPU' arm read as GPU, #146).",
+    "device_term_measured_here": "\u2b50 CPU and CUDA give the SAME verdicts for v8 at 4.5 -- 0 flips on both arms, the same 17 surfaced rows calibrated and the same 26 raw, identical confusion matrices, so this gate's numbers do not depend on the device. Magnitudes: calibrated max |delta| 0.1428 (p50 0.0000, p90 0.0175, p99 0.1083, 411/660 bit-identical); raw max |delta| 0.0508 (p50 0.0029, 8/660 bit-identical). \u26d4 That is a measurement on THIS population at THIS threshold, not a licence to quote a CPU number for another filter or bar -- v7's device term reached 0.1956 and flipped 3 rows at the same 4.5. The CPU dump it was compared against is b650:~/llm-distillery/ht_v8_test_dump/ (2026-09-04), the same script and weights.",
+    "weights": "filters/human_thriving/v8/model/ -- epoch 4 of 6, selected on recall_medium@4.5 by a TIE-BREAK (the metric saturates at 0.5806 across epochs 4-6). adapter_model.safetensors sha256 363fc63d2a622b29bee4ac44fa444650dcca554c0a64a874e46a183d64f9291b. Gitignored as a large model checkpoint -- NOT #97, which is the TDM assessment.",
+    "dump_manifest": "docs/evidence/2026-09-06-v8-deploy-gate/DUMP_MANIFEST.md",
+    "caveats": [
+      "The bands are the #95 batch-composition floor (0.16), not confidence intervals. 9 of 660 calibrated rows sit inside the floor of 4.5 and are INDETERMINATE.",
+      "\u26d4 calibrated vs raw are NOT DISTINGUISHABLE here: recall, specificity and F1 bands all overlap. The arms were never a choice this gate makes -- calibrated is what ships because calibration.json is present and the runtime applies it before the tier comparison (filter_base_scorer.py:315-317 then :340).",
+      "MAE is printed but ADR-023 forbids ranking on it, and precision is base-rate dependent -- recall and specificity are the comparable pair, quoted with the split's 35/660 positive rate (5.30% unweighted)."
+    ],
+    "priority": "\u26d4 READ THE SPECIFICITY FIRST. This project prioritises HIGH CERTAINTY over HIGH DETECTION (ADR-023): a false positive reaches a reader and costs trust, a false negative is invisible and the slot refills. recall 0.343 with specificity 0.992 is that decision working, not a grade -- v8 surfaces about a third of what the oracle calls on-lens and is right about 70% of what it surfaces, letting 5 junk rows through in 660 where the raw arm lets 9. A change that raises recall at this op-point without holding specificity is a REGRESSION, and 'recall is low' is not on its own a finding."
+  },
+  "provenance_applies_to": "892ae5d1819cb699"
+}

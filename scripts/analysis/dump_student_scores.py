@@ -20,11 +20,26 @@ applies the config's weights and gatekeeper identically to both arms:
 ⛔ This does NOT decide anything. It produces two gate inputs; the gate reports recall
 and specificity with the #95 band, and ADR-023 forbids ranking on MAE.
 
-Usage:
-    PYTHONPATH=. CUDA_VISIBLE_DEVICES= python scripts/analysis/dump_student_scores.py \
+Usage — on b650, the shape that feeds a deploy gate:
+    PYTHONPATH=. HF_HUB_OFFLINE=1 venv-prodparity/bin/python \
+      scripts/analysis/dump_student_scores.py \
         --filter filters/human_thriving/v8 \
         --split-file datasets/training/human_thriving_v8/test.jsonl \
-        --out-dir /tmp/ht_v8_test
+        --out-dir ~/llm-distillery/ht_v8_test_dump_cuda \
+        --require-device cuda
+
+⛔ TWO HAZARDS ARE BAKED INTO THAT LINE, and this docstring used to teach both.
+  1. `--require-device` is not decoration. Production serves on GPU; every v8 accuracy
+     number was CPU-measured before 2026-09-06 (#104), and CPU->CUDA is worth max |delta|
+     0.1956 with 3 flips at 4.5 on uplifting v7. Setting CUDA_VISIBLE_DEVICES is NOT the
+     same as being on the device -- a "CPU" arm once read 2.37 ms against GPU's 2.34
+     because a cache ignored the device it was asked for (#146). This flag reads the
+     device back off the loaded model.
+  2. `--out-dir` is under ~, never /tmp. Eleven probes were found one reboot from gone in
+     b650's /tmp on 2026-09-05, after 36 days of uptime.
+
+To dump on CPU deliberately, say so -- `CUDA_VISIBLE_DEVICES= ... --require-device cpu` --
+so the intent is checked rather than assumed.
 """
 
 # design-weights: NOT APPLICABLE -- this script publishes no rate. It emits per-row raw
@@ -69,6 +84,14 @@ def main():
                         help="JSONL with id, title, content, labels")
     parser.add_argument("--out-dir", type=Path, required=True)
     parser.add_argument("--batch-size", type=int, default=16)
+    parser.add_argument("--require-device", choices=("cpu", "cuda"), default=None,
+                        help="Refuse to write unless the model's PARAMETERS are on this "
+                             "device. Not the same as setting CUDA_VISIBLE_DEVICES: this "
+                             "reads the device back off the loaded object. A dump that "
+                             "feeds a deploy gate must not inherit the wrong device "
+                             "(#104), and a 'CPU' arm has already read 2.37 ms against "
+                             "GPU's 2.34 (true CPU 42.41) because a cache ignored the "
+                             "device it was asked for (#146).")
     args = parser.parse_args()
 
     fc = _load_fit_calibration_module()
@@ -88,7 +111,17 @@ def main():
         dimension_names = articles[0]["dimension_names"]
 
     scorer = fc.load_scorer(filter_dir)
-    logger.info(f"device: {scorer.device}")
+
+    # ⛔ Read the device off the OBJECT, not off the argument you passed or the env var
+    # you set. `scorer.device` is a declared attribute; the parameters are where the
+    # forward pass actually happens, and the two have disagreed before (#146).
+    param_device = next(scorer.model.parameters()).device
+    logger.info(f"device: declared={scorer.device}  parameters={param_device}")
+    if args.require_device is not None and param_device.type != args.require_device:
+        raise SystemExit(
+            f"--require-device {args.require_device}, but the model's parameters are on "
+            f"{param_device}. Nothing was written."
+        )
     calibration = scorer.calibration
     if calibration is None:
         raise SystemExit(
