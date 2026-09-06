@@ -232,7 +232,9 @@ Train and validation loss curves showing strong decrease with large train/val di
 
 1. **High Train/Val Gap**
    - 67.8% gap at epoch 9 (highest among all models)
-   - Training MAE (0.23) much lower than validation (0.39)
+   - Training MAE (0.23) much lower than validation (0.39) — ⚠️ *2026-09-06:* an unbanded
+     ordering. No run-variance or bootstrap band was computed for either figure, so the
+     gap's size is a point estimate; the overfitting reading rests on the 67.8% gap above.
    - Indicates significant overfitting
 
 2. **Evidence Quality Dimension**

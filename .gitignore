@@ -207,7 +207,13 @@ model_outputs/
 # Deployment artifacts
 model_backup/
 **/model_backup/
-README_MODEL.md
+# ⛔ `README_MODEL.md` WAS IGNORED HERE UNTIL 2026-09-06, and the doc standard
+# (memory/filter-doc-standard.md item 7) requires it in every filter package. Five
+# existed on disk and NONE was tracked, so a fresh clone had no model card for any
+# filter while every parity check counted the file as present. Its siblings are all
+# derived-and-tracked — calibration.json, training_history.json, normalization.json
+# — so being the one derived doc that is ignored was the inconsistency, not the rule.
+# Regenerate with: upload_to_huggingface.py --filter <dir> --repo-name <id> --card-only
 
 # Claude Code temp files
 tmpclaude-*

@@ -108,16 +108,27 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 # Scan roots, relative to ROOT. ⚠️ These are part of every check's meaning: a
 # claim outside them is unchecked, and moving a directory silently narrows the
 # instrument. Each is required to be non-empty (see `_walk`).
-DOC_ROOTS = ("docs/evidence", "docs/decisions")
+# ⛔ `filters` ADDED 2026-09-06, and the old comment below predicted exactly why.
+# It read: *"`filters/` is deliberately NOT here (167 files): it is production
+# scoring code ... If an analysis ever lands there, this list is wrong."* Phase 9
+# landed `filters/human_thriving/v8/README.md` and `DEEP_ROOTS.md`, which publish
+# rates over the 25.1x design-weighted test split, so the condition was met and the
+# list was wrong. What widening bought, counted before and after: quantified
+# orderings 5 -> 10 sites over 110 -> 273 files, intervals 115 -> 172 over 140 ->
+# 494. It found 6 unbanded orderings (five of them pre-existing, two of which were
+# cross-filter MAE rankings ADR-023 forbids) and 3 artifacts that were not valid
+# UTF-8, one of them also truncated.
+DOC_ROOTS = ("docs/evidence", "docs/decisions", "filters")
 # ⛔ WIDENED 2026-09-05 AFTER REVIEW. The first three roots were the ones that
 # happened to contain an offender on the day this was written, which is a
 # hand-built population — this project's most reliable source of measurement
 # error. An unweighted rate published from `training/`, `ground_truth/` or any
 # other `scripts/` directory was unchecked. The added roots contribute 0 sites
 # today; that is the point of adding them before one appears.
-# ⚠️ `filters/` is deliberately NOT here (167 files): it is production scoring
-# code, which consumes an article and emits a score, and publishes no rate over a
-# drawn population. If an analysis ever lands there, this list is wrong.
+# ⚠️ `filters/` is deliberately NOT in CODE_ROOTS: it is production scoring code,
+# which consumes an article and emits a score, and publishes no rate over a drawn
+# population. (Its DOCS are a different matter — see DOC_ROOTS above, widened
+# 2026-09-06.) If an analysis script ever lands under `filters/`, this list is wrong.
 CODE_ROOTS = ("docs/evidence", "scripts/analysis", "scripts/diagnostics",
               "scripts/corpus", "scripts/gate", "scripts/calibration",
               "scripts/normalization", "training", "ground_truth")
@@ -200,6 +211,43 @@ LOW_HIGH = (("ci_low", "ci_high"), ("lo", "hi"), ("low", "high"),
 # review — and it prints as a NOTE on every run, because a silent carve-out is
 # how the next real [0,0] gets through.
 NULL_CONTROL_RE = re.compile(r"null_control|null_arm|self_control", re.I)
+
+# ⛔ THE SECOND LEGITIMATE ZERO WIDTH, and it is a DATA property, not a carve-out
+# for a name. `ground_truth_gate.py` builds a metric's #95 band by flipping the
+# rows that sit within the noise floor of the threshold — the ones it counts in
+# `indeterminate_by_cell`. A metric whose confusion cells contain NO indeterminate
+# row therefore has a band of exactly zero width, and that is the correct answer:
+# nothing near the bar could move it. `belonging v1` is the live case (fp 0, tn 0
+# → `specificity_band` a point, while `recall_band` is wide because tp 5 / fn 2).
+# ⚠️ The exemption is checked against the SIBLING COUNTS in the same object, so a
+# genuinely frozen instrument (indeterminate rows present, band still zero) still
+# FAILS. It prints as a NOTE on every run — a silent carve-out is how the next
+# real [0, 0] gets through.
+BAND_CELLS = {
+    "recall": ("tp", "fn"),
+    "specificity": ("tn", "fp"),
+    "precision": ("tp", "fp"),
+    "f1": ("tp", "fp", "fn"),
+}
+
+
+def _saturated_band(parent, key):
+    """(exempt, reason) for a zero-width `<metric>_band` given its own object."""
+    if not isinstance(parent, dict) or not key.endswith("_band"):
+        return False, ""
+    cells = BAND_CELLS.get(key[:-len("_band")])
+    if cells is None:
+        return False, ""
+    ind = parent.get("indeterminate_by_cell")
+    if not isinstance(ind, dict):
+        return False, ""
+    missing = [c for c in cells if c not in ind]
+    if missing:
+        return False, ""
+    if any(ind[c] for c in cells):
+        return False, ""
+    return True, ("no row in " + "/".join(cells) + " is within the noise floor "
+                  "of the threshold, so this band could not have any width")
 
 # markdown: `CI [x, y]`, `95% CI of (x, y)`, `confidence interval [x, y]`.
 # ⚠️ Numbers are compared as FLOATS: a lexical test passed `CI [0.0, 0.00]`.
@@ -528,7 +576,7 @@ def check_zero_width_interval():
     def leaf(path):
         return path.rsplit(".", 1)[-1]
 
-    def visit(obj, path, rel):
+    def visit(obj, path, rel, parent=None, key=""):
         nonlocal rc, sites
         if isinstance(obj, dict):
             for a, b in LOW_HIGH:
@@ -547,18 +595,24 @@ def check_zero_width_interval():
                                 f"{obj[a]} — a zero-width interval is an "
                                 f"instrument that could not vary, not a result")
             for k, v in obj.items():
-                visit(v, f"{path}.{k}", rel)
+                visit(v, f"{path}.{k}", rel, parent=obj, key=k)
         elif isinstance(obj, list):
-            key = leaf(path)
+            key = key or leaf(path)
             if len(obj) == 2 and all(num(x) for x in obj) \
                     and INTERVAL_KEY_RE.search(key):
                 sites += 1
                 if obj[0] == obj[1]:
+                    saturated, why = _saturated_band(parent, key)
                     if NULL_CONTROL_RE.search(key):
                         out.append(
                             f"NOTE zero-width-interval: {rel} {path} = {obj} — "
                             f"exempt as a declared null control, where zero width "
                             f"is the PASS condition")
+                    elif saturated:
+                        out.append(
+                            f"NOTE zero-width-interval: {rel} {path} = {obj} — "
+                            f"exempt as a SATURATED band: {why} "
+                            f"(indeterminate_by_cell={parent['indeterminate_by_cell']})")
                     else:
                         rc = 1
                         out.append(
@@ -566,7 +620,7 @@ def check_zero_width_interval():
                             f"a zero-width interval is an instrument that could "
                             f"not vary, not a result")
             for i, v in enumerate(obj):
-                visit(v, f"{path}[{i}]", rel)
+                visit(v, f"{path}[{i}]", rel)   # elements have no band semantics
 
     n_files = 0
     for rel in jsons:

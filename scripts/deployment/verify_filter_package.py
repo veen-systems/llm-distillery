@@ -116,7 +116,10 @@ def check_imports(filter_dir: Path, filter_name: str, version: str) -> list[tupl
             detail = "; ".join(f"L{ln}: {txt}" for ln, txt in bad)
             results.append((False, f"{name}: cross-version imports — {detail}"))
         else:
-            results.append((True, f"{name}: imports ok"))
+            # NOT "imports ok": this is a static scan of `from`/`import` lines for
+            # cross-version references. The module is never imported, so a missing
+            # dependency or a syntax error passes this check. Say what was checked.
+            results.append((True, f"{name}: no cross-version imports"))
     return results
 
 

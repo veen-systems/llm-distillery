@@ -50,4 +50,5 @@ for r in sample:
 print(f"\n=== panel(3-lab) vs gemini agreement: {agree}/{len(sample)} = {agree/len(sample):.0%} ===")
 for r,vs,maj in disagree:
     print(f"  gemini={r['gemini_verdict']:<13} panel={maj:<13} votes={'/'.join(vs)}  :: {(r.get('title') or '')[:55]}")
-json.dump({"agreement":agree/len(sample),"n":len(sample)}, open("audit_result.json","w"))
+json.dump({"agreement":agree/len(sample),"n":len(sample)},
+          open("audit_result.json","w",encoding="utf-8"))

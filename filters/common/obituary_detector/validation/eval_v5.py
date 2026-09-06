@@ -65,7 +65,8 @@ out["heldout_excl33"] = {
 # same rows, nothing excluded — for continuity with the morning numbers
 yA = np.array([1 if r["label"] == "positive" else 0 for r in held])
 out["heldout_full_v5"] = [metrics(yA, np.array([r["v5_score"] for r in held]), t) for t in (0.90, 0.95)]
-with open(BASE / "validation/heldout_v3v4v5_scored_2026-07-30.jsonl", "w") as f:
+with open(BASE / "validation/heldout_v3v4v5_scored_2026-07-30.jsonl", "w",
+          encoding="utf-8") as f:
     for r in held:
         f.write(json.dumps(r, ensure_ascii=False) + "\n")
 
@@ -125,7 +126,8 @@ out["farouq"] = [
     for r, a, b, c in zip(fa, f3, f4, f5)
 ]
 
-with open(BASE / "validation/v5_eval_2026-07-30.json", "w") as f:
+with open(BASE / "validation/v5_eval_2026-07-30.json", "w",
+          encoding="utf-8") as f:
     json.dump(out, f, indent=1, ensure_ascii=False)
 print(json.dumps({k: v for k, v in out.items() if k != "v4_added_rows"}, indent=1)[:4000])
 print("v4_added_rows:")

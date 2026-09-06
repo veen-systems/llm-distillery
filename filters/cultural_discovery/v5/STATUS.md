@@ -41,7 +41,7 @@
 
 - [x] **Phase 4: Oracle pick** — DeepSeek V4 Flash chosen (80.8% vs 19.2% on agent-judged truth set; ~7x cheaper; conservative-oracle principle locked in)
 - [x] **Phase 4: Batch labeling** — 8,029 v4 records re-scored under DS + v5 prompt (`datasets/scored/cd_v5_8k_deepseek_v5_prompt.jsonl`), merged with 522 calibration cohort → 8,551 training records (`datasets/scored/cd_v5_deepseek_merged_for_training.jsonl`). $10.36 actual cost, 14% cache hit rate.
-- [x] **Phase 5: Training** — Gemma-3-1B + LoRA on gpu-server. Val MAE 0.834→0.736→**0.697** across 3 epochs (better than v4's 0.74). `training_history.json`, `training_metadata.json` saved.
+- [x] **Phase 5: Training** — Gemma-3-1B + LoRA on gpu-server. Val MAE 0.834→0.736→**0.697** across 3 epochs. `training_history.json`, `training_metadata.json` saved. ⚠️ *Caveat added 2026-09-06:* this line read *"(better than v4's 0.74)"*. **Retracted as an ordering** — no band or run-variance was ever computed for either figure, the two were measured on different splits with different positive rates, and **ADR-023 forbids ranking filters on MAE** in any case. The epoch trajectory within this run stands; the cross-version comparison does not.
 - [x] **Phase 6a: Calibration** — isotonic regression on val set. `calibration.json` (16KB) + `score_scale_factor` 1.2829 computed.
 - [x] **Phase 6b: Normalization** — deferred to first-week production data; `score_scale_factor` carries baseline.
 - [x] **Phase 7: Hub upload** — `jeergrvgreg/cultural-discovery-filter-v5` (private) verified.

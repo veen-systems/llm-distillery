@@ -28,11 +28,14 @@ own held-out split and ratified by the owner 2026-09-05
 (`docs/decisions/2026-09-05-v8-op-point.md`). ⚠️ Gate B-A's **k** is still inherited rather
 than measured.
 
-⛔ **The doc set is still incomplete** (`memory/filter-doc-standard.md`). `config.yaml`, the
-prompt and now `calibration_report.md` are here; `DEEP_ROOTS.md`, `README.md` and
-`README_MODEL.md` are still owed, and Phase F1 of the plan gates shipping on package parity
-with `nature_recovery v4`. This file exists because v8's state is complicated enough that
-"not deployed" is not a useful summary.
+✅ **THE DOC SET IS COMPLETE, 2026-09-06 (phase 9 step 1).** All six core files of
+`memory/filter-doc-standard.md` are present: `config.yaml`, `prompt-compressed.md`,
+`STATUS.md`, `DEEP_ROOTS.md`, `README.md`, `README_MODEL.md` — plus both optional extensions
+(`calibration_report.md`, and the evidence directories in place of `dimension_analysis/`).
+Item 3 (`prefilter.py`) is not in the core and v8 deliberately ships none.
+✅ **`prompt_hash` is no longer `None`**: `prompt-compressed.md` is a byte copy of
+`prompt-v8-4.md`, so the scorer reports `c4705408c477` (see `PROMPTS.md`). This file exists
+because v8's state is complicated enough that "not deployed" is not a useful summary.
 
 ## Where it actually stands
 
@@ -51,7 +54,7 @@ with `nature_recovery v4`. This file exists because v8's state is complicated en
 | Phase D gate | ⛔ not started. ⚠️ **Criterion 1 is NOT stably failing** — the 4.400 was a k=3 mean on a coin-toss row; at k=6 under unchanged v8 it is **3.608 ± 2.560, PASS**. `docs/evidence/2026-09-03-v8-1-gate/` |
 | **ADR-021 deploy gate** | ✅ **2026-09-06, EXP-026.** recall **0.343** / spec **0.992** at 4.50 calibrated, on **CUDA**. ⭐ The device does not matter here — CPU and CUDA give **0 verdict flips** and identical confusion matrices (max \|Δ\| 0.1428 calibrated), which had to be measured because v7's device term reached 0.1956 and flipped 3 rows at the same bar (#104) |
 | Phase E normalization | ⛔ **BLOCKED, and the ordering is why** — `fit_normalization.py` reads NexusMind production output and needs ≥200 rows above the op-point; sadalsuud has **no `human_thriving`** at all. Normalization comes AFTER deployment, as it did for `solutions v6`. ⛔ Do not substitute the test split: it is a 25.1× design-weighted sample |
-| Phase F deploy | ⛔ not started — but no longer blocked on a missing gate number |
+| Phase F deploy | ⚠️ **step 1 of 5 done** — the doc set is complete (2026-09-06). Blocked on two owner decisions: the weight transport, and the dangling checkpoint below |
 
 ⚠️ **The labelled corpus is 6,586, not 6,590** — four scrape-junk skips, all JavaScript-required
 boilerplate at 357–489 chars, all *above* the 300-char floor.
@@ -100,9 +103,12 @@ consistency (`566254b`). Full comparison:
    rebuilds from the pickle's own config, so a mismatched probe loads fine and weights the
    wrong slots. Not 6 everywhere: cd v5 is 5, solutions v6 is 7.
 
-⚠️ **`prompt_hash` is `None`** for v8 (no `prompt-compressed.md`; `_compute_prompt_hash` looks
-for that exact name). It feeds `get_metadata()`, which nothing in NexusMind reads — provenance
-only. Resolve at Phase F **by copying, never renaming**.
+✅ **`prompt_hash` RESOLVED 2026-09-06** — was `None` (no `prompt-compressed.md`;
+`_compute_prompt_hash` looks for that exact name), now `c4705408c477`, verified by calling
+`_compute_prompt_hash()` on the real `HumanThrivingScorer` class. Resolved **by copying**
+`prompt-v8-4.md`, never renaming. ⚠️ The hash names the current prompt, while 6,130 of the
+6,586 training labels were produced under `prompt-candidate-tail.md` (`003cd35a5122`). It
+feeds `get_metadata()`, which nothing in NexusMind reads — provenance only.
 
 ## ⛔ Known-failing and known-missing, before anyone reads the state as green
 
@@ -224,11 +230,11 @@ only. Resolve at Phase F **by copying, never renaming**.
   (68.1%)**; the 15 survivors are **11 distinct events**, one of which (the US removing Syria
   from its terrorism list) is **9 above-op rows corpus-wide**. Two owner questions remain: the
   Syria cluster under §3, and judicial relief granted to convicted offenders.
-- ⚠️ **The prompt is not named `prompt-compressed.md`**, which is what `load_filter_spec` derives
-  from `config.yaml` and what the doc standard's item 2 calls for. Every run so far passed
-  `--prompt` explicitly. Left as-is on purpose: the 6,586 labels record
-  `prompt_file: filters/human_thriving/v8/prompt-candidate-tail.md` as provenance, and renaming
-  now would break that pointer. Resolve at Phase F, by copying rather than renaming.
+- ✅ **`prompt-compressed.md` now exists** (2026-09-06), a byte copy of `prompt-v8-4.md`. The
+  lineage files stay where they are — the 6,586 labels record
+  `prompt_file: filters/human_thriving/v8/prompt-candidate-tail.md` as provenance and evidence
+  runs stamp the rejected drafts' paths. ⛔ Keep the copy byte-identical; editing it (the stale
+  v7 heading included) changes `c4705408c477`, which the Phase-B2 gate evidence stamps.
 - **`config.yaml` now carries the `hybrid_inference` block** (Phase C, 2026-09-04) and it is the
   **only filter in the repo where that key is live** — every other `inference_hybrid.py`
   carries a module-level `DEFAULT_THRESHOLD` and reads nothing. ⚠️ **The value is not 1.00

@@ -7,6 +7,7 @@ on filter-specific datasets.
 
 import argparse
 import json
+import subprocess
 import random
 import sys
 from pathlib import Path
@@ -340,6 +341,77 @@ def resolve_medium_threshold(filter_dir: Path, config: dict, cli_override=None):
     )
 
 
+def resolve_git_provenance(allow_missing: bool = False) -> dict:
+    """Which commit is training this checkpoint, and is that commit durable?
+
+    ⛔ THE DEFECT THIS EXISTS FOR. `human_thriving v8`'s shipped adapter was built
+    by a tree that became `1878e7b` via `git commit --amend`, so the sha that
+    actually trained it (`0697f5a`) is dangling and will not survive `git gc`.
+    Nothing recorded that, because `training_metadata.json` recorded no commit at
+    all — the run's provenance lived only in a session note, and a session note
+    cannot be checked. Recording the sha here is what lets
+    `scripts/verification/check_training_provenance.py` notice later that it has
+    become unreachable.
+
+    `dirty` is part of the claim: a sha plus uncommitted edits does not identify a
+    tree, and that is the same failure wearing a valid-looking commit id.
+
+    RAISES when it cannot establish provenance — a checkpoint whose origin is
+    unknown is exactly what we are trying to stop shipping. `--allow-missing-git-
+    provenance` is the deliberate opt-out, and it is recorded IN the metadata so
+    the checker still sees it.
+    """
+    repo = Path(__file__).resolve().parent.parent
+
+    def _git(*a):
+        return subprocess.run(("git", "-C", str(repo)) + a, capture_output=True,
+                              text=True, timeout=30)
+
+    probe = _git("rev-parse", "--is-inside-work-tree")
+    if probe.returncode != 0 or probe.stdout.strip() != "true":
+        reason = (f"{repo} is not a git work tree — the training box holds a copy, "
+                  f"not a checkout, so no commit identifies this run")
+        if not allow_missing:
+            raise RuntimeError(
+                f"Refusing to train without provenance: {reason}. Make the box a "
+                f"checkout (git init + fetch + checkout), or pass "
+                f"--allow-missing-git-provenance to record the gap explicitly."
+            )
+        return {"git_commit": None, "git_dirty": None,
+                "git_provenance": f"UNAVAILABLE: {reason}"}
+
+    sha = _git("rev-parse", "HEAD").stdout.strip()
+    # -uno: untracked files (staged datasets, venvs, scratch scripts) are not the
+    # tree that trains. Tracked modifications are.
+    dirty_out = _git("status", "--porcelain", "-uno").stdout.strip()
+    dirty = bool(dirty_out)
+    branches = [b.strip().lstrip("* ").strip()
+                for b in _git("branch", "--contains", sha).stdout.splitlines()
+                if b.strip()]
+
+    if dirty and not allow_missing:
+        raise RuntimeError(
+            f"Refusing to train from a dirty tree: {len(dirty_out.splitlines())} "
+            f"tracked file(s) differ from {sha[:12]}, so that sha does not identify "
+            f"what is about to train. Commit or stash them (explicit paths only), "
+            f"or pass --allow-missing-git-provenance.\n{dirty_out[:2000]}"
+        )
+    if not branches and not allow_missing:
+        raise RuntimeError(
+            f"Refusing to train from a commit on no branch: {sha[:12]} is reachable "
+            f"from no branch, so an amend or a gc can erase it — the exact shape "
+            f"that orphaned human_thriving v8's first checkpoint. Put it on a "
+            f"branch, or pass --allow-missing-git-provenance."
+        )
+    return {
+        "git_commit": sha,
+        "git_dirty": dirty,
+        "git_branches_at_train_time": branches,
+        "git_provenance": ("recorded" if (branches and not dirty)
+                           else "recorded WITH A GAP — see git_dirty/branches"),
+    }
+
+
 def compute_metrics(predictions: torch.Tensor, labels: torch.Tensor, dimension_names: List[str], dimension_weights: List[float] = None, medium_threshold: float = 4.0) -> Dict:
     """
     Compute evaluation metrics per dimension.
@@ -669,6 +741,14 @@ def main():
              "TIER_THRESHOLDS, else config.yaml tiers. Required when neither resolves.",
     )
     parser.add_argument(
+        "--allow-missing-git-provenance",
+        action="store_true",
+        help=("Train even though the commit that would identify this run cannot be "
+              "established (not a checkout, dirty tree, or a commit on no branch). "
+              "The gap is written into training_metadata.json, where "
+              "check_training_provenance.py will report it."),
+    )
+    parser.add_argument(
         "--select-metric",
         choices=["recall_at_20", "recall_medium"],
         default="recall_at_20",
@@ -690,6 +770,17 @@ def main():
     if args.resume_from is not None and args.resume_from.name == "model":
         args.resume_from = args.resume_from.parent
         print(f"Note: stripped trailing /model from --resume-from; using {args.resume_from}")
+
+    # ⛔ BEFORE ANYTHING EXPENSIVE. A provenance gap discovered after a 100-minute
+    # run is a 100-minute run you cannot cite, so this refuses up front.
+    git_provenance = resolve_git_provenance(
+        allow_missing=args.allow_missing_git_provenance)
+    if git_provenance["git_commit"]:
+        print(f"Training under commit {git_provenance['git_commit'][:12]} "
+              f"(dirty={git_provenance['git_dirty']}, "
+              f"branches={git_provenance['git_branches_at_train_time']})")
+    else:
+        print(f"WARNING: {git_provenance['git_provenance']}")
 
     # Set random seed for reproducibility
     set_seed(args.seed)
@@ -1077,6 +1168,10 @@ def main():
         "select_metric_available": saved_select_metric_available,
         "medium_threshold": saved_medium_threshold,
         "medium_threshold_source": saved_medium_threshold_source,
+        # Provenance: which commit trained this, and was it durable at the time.
+        # `check_training_provenance.py` re-checks reachability later, which is
+        # when an amend or a gc has had a chance to orphan it.
+        **git_provenance,
     }
 
     metadata_path = args.output_dir / "training_metadata.json"

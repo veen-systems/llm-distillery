@@ -70,5 +70,6 @@ print(f"\n=== {len(adjudicate)} articles need adjudication (model<->panel confli
 
 json.dump({"rows": rows, "adjudicate_ids": [r["id"] for r in adjudicate],
            "block_precision_lb": (len(block_obit)/len(block) if block else None)},
-          open(HERE / "rollup_obit.json", "w"), indent=2, ensure_ascii=False)
+          open(HERE / "rollup_obit.json", "w", encoding="utf-8"),
+          indent=2, ensure_ascii=False)
 print(f"\nwrote rollup_obit.json")

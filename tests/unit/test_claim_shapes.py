@@ -74,8 +74,8 @@ def mod(tmp_path, monkeypatch):
     m = importlib.util.module_from_spec(spec)
     sys.modules["check_claim_shapes"] = m
     spec.loader.exec_module(m)
-    for rel in (("docs/evidence/2026-08-29-v8-corpus-draw", "docs/decisions",
-                 "experiments") + m.CODE_ROOTS):
+    for rel in (("docs/evidence/2026-08-29-v8-corpus-draw", "experiments")
+                + m.DOC_ROOTS + m.CODE_ROOTS):
         (tmp_path / rel).mkdir(parents=True, exist_ok=True)
     (tmp_path / "docs/evidence/2026-08-29-v8-corpus-draw/corpus_manifest.json"
      ).write_text(json.dumps(MANIFEST), encoding="utf-8")
@@ -86,8 +86,18 @@ def mod(tmp_path, monkeypatch):
     # ⚠️ EVERY SCAN ROOT MUST BE NON-EMPTY, so the healthy fixture has to populate all of
     # them — that requirement is itself a review finding (a partially emptied root used to
     # report PASS), and a fixture that skipped a root would not exercise it.
-    (tmp_path / "docs/decisions/ok.md").write_text(
-        "# A decision\n\nNothing here triggers any check.\n", encoding="utf-8")
+    # ⛔ DERIVED FROM `m.DOC_ROOTS`, NOT LISTED BY HAND. Adding a root used to leave
+    # the fixture one directory short, and `_walk`'s empty-root guard then turned
+    # every doc check into CANNOT VERIFY — which is the guard working, but it fires
+    # in 14 tests at once and reads like the checker broke. Widening the roots on
+    # 2026-09-06 (`filters`) is what demonstrated it.
+    for root in m.DOC_ROOTS:
+        if root == "docs/evidence":
+            continue                      # already populated above
+        (tmp_path / root / "ok.md").write_text(
+            "# Neutral\n\nNothing here triggers any check.\n", encoding="utf-8")
+        (tmp_path / root / "ok.json").write_text(
+            json.dumps({"note": "no interval here"}), encoding="utf-8")
     (tmp_path / "docs/evidence/ok.py").write_text("X = 1\n", encoding="utf-8")
     for root in m.CODE_ROOTS:
         if root != "scripts/analysis":
@@ -221,6 +231,50 @@ def test_a_zero_width_ci_in_prose_fails(mod, capsys):
            "# Bad\n\n`student_raw` at k=30, 95% CI [+0, +0].\n")
     assert mod.main(["--check", "zero-width-interval"]) == 1
     assert "zero width" in capsys.readouterr().out
+
+
+def test_a_saturated_band_is_exempt_but_printed(mod, capsys):
+    """⛔ THE SECOND LEGITIMATE ZERO WIDTH, and it is DATA, not a name.
+    `ground_truth_gate.py` widens a band by flipping the rows inside the noise
+    floor — the ones in `indeterminate_by_cell`. With none in tn/fp, specificity
+    could not have any width, and `belonging v1` is the live case."""
+    _write(mod, "docs/evidence/gate.json",
+           {"m": {"specificity_band": [0.9847, 0.9847],
+                  "indeterminate_by_cell": {"tp": 5, "fn": 2, "fp": 0, "tn": 0}}})
+    assert mod.main(["--check", "zero-width-interval"]) == 0
+    out = capsys.readouterr().out
+    assert "NOTE zero-width-interval" in out and "SATURATED" in out
+    assert "FAIL" not in out
+
+
+def test_a_frozen_band_with_indeterminate_rows_still_fails(mod, capsys):
+    """The exemption is checked against the SIBLING COUNTS. One indeterminate row
+    in a cell the metric depends on and the band should have had width, so a zero
+    one is the instrument, not the data."""
+    _write(mod, "docs/evidence/gate.json",
+           {"m": {"specificity_band": [0.9847, 0.9847],
+                  "indeterminate_by_cell": {"tp": 5, "fn": 2, "fp": 1, "tn": 0}}})
+    assert mod.main(["--check", "zero-width-interval"]) == 1
+    assert "FAIL zero-width-interval" in capsys.readouterr().out
+
+
+def test_the_saturated_exemption_needs_the_sibling_counts(mod, capsys):
+    """No `indeterminate_by_cell` means nothing was checked — do not exempt on the
+    key name alone, which is how the null-control carve-out went wrong once."""
+    _write(mod, "docs/evidence/gate.json",
+           {"m": {"specificity_band": [0.9847, 0.9847]}})
+    assert mod.main(["--check", "zero-width-interval"]) == 1
+    assert "FAIL zero-width-interval" in capsys.readouterr().out
+
+
+def test_the_saturated_exemption_covers_only_known_metrics(mod, capsys):
+    """`spearman` has no confusion cells, so zero-width there is unexplained even
+    when every cell count is 0 — the exemption must not generalise by shape."""
+    _write(mod, "docs/evidence/gate.json",
+           {"m": {"spearman_band": [0.72, 0.72],
+                  "indeterminate_by_cell": {"tp": 0, "fn": 0, "fp": 0, "tn": 0}}})
+    assert mod.main(["--check", "zero-width-interval"]) == 1
+    assert "spearman_band" in capsys.readouterr().out
 
 
 def test_a_declared_null_control_is_exempt_but_printed(mod, capsys):

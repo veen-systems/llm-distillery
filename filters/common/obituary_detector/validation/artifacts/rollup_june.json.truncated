@@ -20,7 +20,7 @@
       "bucket": "block",
       "lens": null,
       "obit_score": 0.9977,
-      "title": "Ein totes Schulkind und Verletzte bei Bus-Zusammenstoﬂ in Bayern",
+      "title": "Ein totes Schulkind und Verletzte bei Bus-Zusammensto√ü in Bayern",
       "verdicts": {
         "gemma3:27b": "obituary",
         "qwen3:14b": "error",
@@ -65,7 +65,7 @@
       "bucket": "block",
       "lens": null,
       "obit_score": 0.9999,
-      "title": "Gene Shalit, longtime ëTodayí show movie critic with bushy hair and massive mustache, dies at 100 - CNN",
+      "title": "Gene Shalit, longtime ‚ÄòToday‚Äô show movie critic with bushy hair and massive mustache, dies at 100 - CNN",
       "verdicts": {
         "gemma3:27b": "obituary",
         "qwen3:14b": "error",
@@ -80,7 +80,7 @@
       "bucket": "block",
       "lens": null,
       "obit_score": 0.9811,
-      "title": "\"Notre petit monde s'est effondrÈ\" : la famille et les habitants de Fleurance rendent hommage ‡ Lyhanna",
+      "title": "\"Notre petit monde s'est effondr√©\" : la famille et les habitants de Fleurance rendent hommage √† Lyhanna",
       "verdicts": {
         "gemma3:27b": "obituary",
         "qwen3:14b": "error",
@@ -185,7 +185,7 @@
       "bucket": "block",
       "lens": null,
       "obit_score": 0.9374,
-      "title": "Stormzy and OritsÈ Williams join tributes to musician stabbed to death in east London",
+      "title": "Stormzy and Orits√© Williams join tributes to musician stabbed to death in east London",
       "verdicts": {
         "gemma3:27b": "obituary",
         "qwen3:14b": "obituary",
@@ -245,7 +245,7 @@
       "bucket": "block",
       "lens": null,
       "obit_score": 0.9966,
-      "title": "\"Tout notre amour ‡ Lyhanna\": l'adieu bouleversant lors des obsËques ‡ Fleurance",
+      "title": "\"Tout notre amour √† Lyhanna\": l'adieu bouleversant lors des obs√®ques √† Fleurance",
       "verdicts": {
         "gemma3:27b": "obituary",
         "qwen3:14b": "obituary",
@@ -275,7 +275,7 @@
       "bucket": "block",
       "lens": null,
       "obit_score": 0.9996,
-      "title": "The life and legacy of Thailandís princess",
+      "title": "The life and legacy of Thailand‚Äôs princess",
       "verdicts": {
         "gemma3:27b": "obituary",
         "qwen3:14b": "obituary",
@@ -290,7 +290,7 @@
       "bucket": "block",
       "lens": null,
       "obit_score": 0.9899,
-      "title": "Argentine: dÈcËs de Carlos Solari, leader du groupe Patricio Rey y sus Redonditos de Ricota",
+      "title": "Argentine: d√©c√®s de Carlos Solari, leader du groupe Patricio Rey y sus Redonditos de Ricota",
       "verdicts": {
         "gemma3:27b": "obituary",
         "qwen3:14b": "obituary",
@@ -470,7 +470,7 @@
       "bucket": "block",
       "lens": null,
       "obit_score": 0.991,
-      "title": "\"On est une grande famille\": les ThaÔlandais rendent hommage ‡ la princesse Bha, fille aÓnÈe du roi, morte aprËs trois ans de coma",
+      "title": "\"On est une grande famille\": les Tha√Ølandais rendent hommage √† la princesse Bha, fille a√Æn√©e du roi, morte apr√®s trois ans de coma",
       "verdicts": {
         "gemma3:27b": "obituary",
         "qwen3:14b": "obituary",
@@ -530,7 +530,7 @@
       "bucket": "block",
       "lens": null,
       "obit_score": 0.985,
-      "title": "Dreikˆpfige Familie stirbt bei Autounfall in Oberbayern",
+      "title": "Dreik√∂pfige Familie stirbt bei Autounfall in Oberbayern",
       "verdicts": {
         "gemma3:27b": "obituary",
         "qwen3:14b": "obituary",
@@ -545,7 +545,7 @@
       "bucket": "block",
       "lens": null,
       "obit_score": 0.9959,
-      "title": "Blackrock mourns the loss of larger-than-life Michael ëBomberí Browne",
+      "title": "Blackrock mourns the loss of larger-than-life Michael ‚ÄòBomber‚Äô Browne",
       "verdicts": {
         "gemma3:27b": "obituary",
         "qwen3:14b": "obituary",
@@ -605,7 +605,7 @@
       "bucket": "block",
       "lens": null,
       "obit_score": 0.978,
-      "title": "Muere a los 47 aÒos la princesa Bha, primogÈnita del rey de Tailandia, tras tres aÒos en coma",
+      "title": "Muere a los 47 a√±os la princesa Bha, primog√©nita del rey de Tailandia, tras tres a√±os en coma",
       "verdicts": {
         "gemma3:27b": "obituary",
         "qwen3:14b": "obituary",
@@ -620,7 +620,7 @@
       "bucket": "block",
       "lens": null,
       "obit_score": 0.9896,
-      "title": "Mort de Bernadette Chirac : vague de rÈactions pour une premiËre dame qui aura marquÈ les esprits",
+      "title": "Mort de Bernadette Chirac : vague de r√©actions pour une premi√®re dame qui aura marqu√© les esprits",
       "verdicts": {
         "gemma3:27b": "obituary",
         "qwen3:14b": "obituary",
@@ -665,7 +665,7 @@
       "bucket": "block",
       "lens": null,
       "obit_score": 0.9995,
-      "title": "Bernadette Chirac, formidable French first lady dubbed ëlast queen of Franceí, dies at 93",
+      "title": "Bernadette Chirac, formidable French first lady dubbed ‚Äòlast queen of France‚Äô, dies at 93",
       "verdicts": {
         "gemma3:27b": "obituary",
         "qwen3:14b": "obituary",
@@ -800,7 +800,7 @@
       "bucket": "block",
       "lens": null,
       "obit_score": 0.9962,
-      "title": "De nombreuse personnalitÈs prÈsentes pour rendre un dernier hommage ‡ Bernadette Chirac ‡ Paris",
+      "title": "De nombreuse personnalit√©s pr√©sentes pour rendre un dernier hommage √† Bernadette Chirac √† Paris",
       "verdicts": {
         "gemma3:27b": "obituary",
         "qwen3:14b": "obituary",
@@ -860,7 +860,7 @@
       "bucket": "block",
       "lens": null,
       "obit_score": 0.9862,
-      "title": "La station Beekkant fermÈe aprËs le dÈcËs díune personne",
+      "title": "La station Beekkant ferm√©e apr√®s le d√©c√®s d‚Äôune personne",
       "verdicts": {
         "gemma3:27b": "obituary",
         "qwen3:14b": "obituary",
@@ -935,7 +935,7 @@
       "bucket": "boundary",
       "lens": null,
       "obit_score": 0.8536,
-      "title": "Prozac, bromas de parejas y champ·n: la cartas privadas entre lady Di y el actor Terence Stamp",
+      "title": "Prozac, bromas de parejas y champ√°n: la cartas privadas entre lady Di y el actor Terence Stamp",
       "verdicts": {
         "gemma3:27b": "not_obituary",
         "qwen3:14b": "not_obituary",
@@ -965,7 +965,7 @@
       "bucket": "boundary",
       "lens": null,
       "obit_score": 0.8355,
-      "title": "Mar de Marchis, la fundadora fantasma de Jot Down que, sin dejarse ver, todo lo veÌa",
+      "title": "Mar de Marchis, la fundadora fantasma de Jot Down que, sin dejarse ver, todo lo ve√≠a",
       "verdicts": {
         "gemma3:27b": "not_obituary",
         "qwen3:14b": "obituary",
@@ -980,7 +980,7 @@
       "bucket": "boundary",
       "lens": null,
       "obit_score": 0.7293,
-      "title": "Un canadiense mostrÛ desde Plaza de Mayo cÛmo vivieron los argentinos la muerte del Indio Solari y se viralizÛ: ìApocalipsisî",
+      "title": "Un canadiense mostr√≥ desde Plaza de Mayo c√≥mo vivieron los argentinos la muerte del Indio Solari y se viraliz√≥: ‚ÄúApocalipsis‚Äù",
       "verdicts": {
         "gemma3:27b": "obituary",
         "qwen3:14b": "not_obituary",
@@ -995,7 +995,7 @@
       "bucket": "boundary",
       "lens": null,
       "obit_score": 0.8657,
-      "title": "Muere David Hockney, el pintor m·s influyente que convirtiÛ las piscinas en objeto de culto",
+      "title": "Muere David Hockney, el pintor m√°s influyente que convirti√≥ las piscinas en objeto de culto",
       "verdicts": {
         "gemma3:27b": "obituary",
         "qwen3:14b": "obituary",
@@ -1010,7 +1010,7 @@
       "bucket": "boundary",
       "lens": null,
       "obit_score": 0.7156,
-      "title": "EN IMAGES. ObsËques de Bernadette Chirac : de nombreuses personnalitÈs ont participÈ ‡ la cÈrÈmonie ‡ Paris",
+      "title": "EN IMAGES. Obs√®ques de Bernadette Chirac : de nombreuses personnalit√©s ont particip√© √† la c√©r√©monie √† Paris",
       "verdicts": {
         "gemma3:27b": "obituary",
         "qwen3:14b": "obituary",
@@ -1070,7 +1070,7 @@
       "bucket": "boundary",
       "lens": null,
       "obit_score": 0.8398,
-      "title": "Trauerfeier f¸r getˆtete Elfj‰hrige in Frankreich",
+      "title": "Trauerfeier f√ºr get√∂tete Elfj√§hrige in Frankreich",
       "verdicts": {
         "gemma3:27b": "obituary",
         "qwen3:14b": "obituary",
@@ -1085,7 +1085,7 @@
       "bucket": "boundary",
       "lens": null,
       "obit_score": 0.7617,
-      "title": "Les obsËques de Bernadette Chirac auront lieu vendredi 12 juin ‡ Paris avec un hommage dimanche 14 juin en CorrËze",
+      "title": "Les obs√®ques de Bernadette Chirac auront lieu vendredi 12 juin √† Paris avec un hommage dimanche 14 juin en Corr√®ze",
       "verdicts": {
         "gemma3:27b": "obituary",
         "qwen3:14b": "obituary",
@@ -1115,7 +1115,7 @@
       "bucket": "boundary",
       "lens": null,
       "obit_score": 0.7119,
-      "title": "Family pay tribute to ëaltruisticí London woman as her killer is jailed",
+      "title": "Family pay tribute to ‚Äòaltruistic‚Äô London woman as her killer is jailed",
       "verdicts": {
         "gemma3:27b": "obituary",
         "qwen3:14b": "obituary",
@@ -1175,7 +1175,7 @@
       "bucket": "recall_chk",
       "lens": null,
       "obit_score": 0.0008,
-      "title": "Gaza post-ëceasefireí deaths hit 983 as Israeli attack targets refugee camp",
+      "title": "Gaza post-‚Äòceasefire‚Äô deaths hit 983 as Israeli attack targets refugee camp",
       "verdicts": {
         "gemma3:27b": "not_obituary",
         "qwen3:14b": "not_obituary",
@@ -1190,7 +1190,7 @@
       "bucket": "recall_chk",
       "lens": null,
       "obit_score": 0.0,
-      "title": "Hong Kong minister defends hospital decision to send girl home after motherís death",
+      "title": "Hong Kong minister defends hospital decision to send girl home after mother‚Äôs death",
       "verdicts": {
         "gemma3:27b": "not_obituary",
         "qwen3:14b": "not_obituary",

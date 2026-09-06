@@ -50,7 +50,7 @@
 ### Design Decisions
 
 **Why 6 dimensions, not 8?**
-ADR-010 finding: oracle consistency predicts MAE better than dimension count. Belonging v1 (6 dims, MAE 0.49) outperforms cultural-discovery v4 (5 dims, MAE 0.74). The issue isn't count — it's whether each dimension is *observable* and *independently variable*. The old bottom-3 dimensions (connectivity 5%, historical_validation 4%, attribution 3%) totaled only 12% weight — too low for a 1B student to learn meaningfully.
+ADR-010 finding: oracle consistency predicts MAE better than dimension count. Belonging v1 scored MAE 0.49 on 6 dimensions and cultural-discovery v4 scored 0.74 on 5. ⚠️ *Caveat added 2026-09-06:* this read *"outperforms"*. **Retracted as an ordering** — the two MAEs come from different splits with different positive rates, no band was computed for either, and **ADR-023 forbids ranking filters on MAE** (a more enriched split carries mechanically larger per-article error at identical quality). The design argument below does not depend on the comparison. The issue isn't count — it's whether each dimension is *observable* and *independently variable*. The old bottom-3 dimensions (connectivity 5%, historical_validation 4%, attribution 3%) totaled only 12% weight — too low for a 1B student to learn meaningfully.
 
 **Why recovery_evidence as gatekeeper, not ecosystem_health?**
 The original config used `ecosystem_health` with threshold 5.0. But ecosystem_health conflated "recovery happening" with "ecosystem importance." An article about a thriving coral reef that was never degraded would score high on ecosystem_health but isn't about *recovery*. The new `recovery_evidence` dimension specifically asks: "is nature bouncing back?" — more precise as a gatekeeper.

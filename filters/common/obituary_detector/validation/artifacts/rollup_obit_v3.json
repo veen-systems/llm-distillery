@@ -35,7 +35,7 @@
       "bucket": "block",
       "lens": null,
       "obit_score": 0.9997,
-      "title": "MuriÛ Fats Fern·ndez, el \"trompetista de Buenos Aires\"",
+      "title": "Muri√≥ Fats Fern√°ndez, el \"trompetista de Buenos Aires\"",
       "verdicts": {
         "gemma3:27b": "obituary",
         "qwen3:14b": "obituary",
@@ -50,7 +50,7 @@
       "bucket": "block",
       "lens": null,
       "obit_score": 0.978,
-      "title": "In a Venezuelan home, a father grieves ëheroí son killed in U.S. raid",
+      "title": "In a Venezuelan home, a father grieves ‚Äòhero‚Äô son killed in U.S. raid",
       "verdicts": {
         "gemma3:27b": "obituary",
         "qwen3:14b": "obituary",
@@ -65,7 +65,7 @@
       "bucket": "block",
       "lens": null,
       "obit_score": 0.9968,
-      "title": "Tˆdlicher Skiunfall in Salzburg: 14-J‰hriger stellte sich nach Flucht",
+      "title": "T√∂dlicher Skiunfall in Salzburg: 14-J√§hriger stellte sich nach Flucht",
       "verdicts": {
         "gemma3:27b": "obituary",
         "qwen3:14b": "obituary",
@@ -80,7 +80,7 @@
       "bucket": "block",
       "lens": null,
       "obit_score": 1.0,
-      "title": "Bangladeshís former Prime Minister Khaleda Zia dies - Al Jazeera",
+      "title": "Bangladesh‚Äôs former Prime Minister Khaleda Zia dies - Al Jazeera",
       "verdicts": {
         "gemma3:27b": "obituary",
         "qwen3:14b": "obituary",
@@ -95,7 +95,7 @@
       "bucket": "block",
       "lens": null,
       "obit_score": 1.0,
-      "title": "Auﬂerirdische - Schweizer Erfolgsautor Erich von D‰niken mit 90 Jahren gestorben",
+      "title": "Au√üerirdische - Schweizer Erfolgsautor Erich von D√§niken mit 90 Jahren gestorben",
       "verdicts": {
         "gemma3:27b": "obituary",
         "qwen3:14b": "obituary",
@@ -155,7 +155,7 @@
       "bucket": "block",
       "lens": null,
       "obit_score": 0.9992,
-      "title": "ObsËques de Brigitte Bardot : ´ O˘ Ètaient les gens du cinÈma ? ª, síagace Mireille Mathieu",
+      "title": "Obs√®ques de Brigitte Bardot : ¬´ O√π √©taient les gens du cin√©ma ? ¬ª, s‚Äôagace Mireille Mathieu",
       "verdicts": {
         "gemma3:27b": "obituary",
         "qwen3:14b": "not_obituary",
@@ -200,7 +200,7 @@
       "bucket": "block",
       "lens": null,
       "obit_score": 0.9997,
-      "title": "Muere Irene de Grecia, hermana de la reina SofÌa",
+      "title": "Muere Irene de Grecia, hermana de la reina Sof√≠a",
       "verdicts": {
         "gemma3:27b": "obituary",
         "qwen3:14b": "obituary",
@@ -275,7 +275,7 @@
       "bucket": "block",
       "lens": null,
       "obit_score": 0.9771,
-      "title": "Warburg: 22-J‰hriger erschieﬂt Bekannten bei mutmaﬂlichem Jagdunfall",
+      "title": "Warburg: 22-J√§hriger erschie√üt Bekannten bei mutma√ülichem Jagdunfall",
       "verdicts": {
         "gemma3:27b": "obituary",
         "qwen3:14b": "not_obituary",
@@ -350,7 +350,7 @@
       "bucket": "block",
       "lens": null,
       "obit_score": 0.9636,
-      "title": "Mathilde verloor zoontje Jona (2) en man Sebastiaan, nu is ze opnieuw verliefd: ëIk mis ze ontzettendí",
+      "title": "Mathilde verloor zoontje Jona (2) en man Sebastiaan, nu is ze opnieuw verliefd: ‚ÄòIk mis ze ontzettend‚Äô",
       "verdicts": {
         "gemma3:27b": "obituary",
         "qwen3:14b": "not_obituary",
@@ -545,7 +545,7 @@
       "bucket": "block",
       "lens": null,
       "obit_score": 0.9952,
-      "title": "Tˆdlicher Skiunfall: Skifahrer nach Zusammenprall in Melchsee-Frutt verstorben",
+      "title": "T√∂dlicher Skiunfall: Skifahrer nach Zusammenprall in Melchsee-Frutt verstorben",
       "verdicts": {
         "gemma3:27b": "obituary",
         "qwen3:14b": "obituary",
@@ -605,7 +605,7 @@
       "bucket": "boundary",
       "lens": null,
       "obit_score": 0.8234,
-      "title": "Muere un hombre en su casa de Oleiros y la acumulaciÛn de basura impide retirar su cad·ver",
+      "title": "Muere un hombre en su casa de Oleiros y la acumulaci√≥n de basura impide retirar su cad√°ver",
       "verdicts": {
         "gemma3:27b": "obituary",
         "qwen3:14b": "obituary",
@@ -620,7 +620,7 @@
       "bucket": "boundary",
       "lens": null,
       "obit_score": 0.7887,
-      "title": "Al menos un muerto y nueve heridos en Carabanchel por una explosiÛn, que derrumba parte de un edificio en obras",
+      "title": "Al menos un muerto y nueve heridos en Carabanchel por una explosi√≥n, que derrumba parte de un edificio en obras",
       "verdicts": {
         "gemma3:27b": "obituary",
         "qwen3:14b": "not_obituary",
@@ -635,7 +635,7 @@
       "bucket": "boundary",
       "lens": null,
       "obit_score": 0.8556,
-      "title": "Man shot during Minneapolis immigration crackdown ëhas diedí",
+      "title": "Man shot during Minneapolis immigration crackdown ‚Äòhas died‚Äô",
       "verdicts": {
         "gemma3:27b": "not_obituary",
         "qwen3:14b": "borderline",
@@ -680,7 +680,7 @@
       "bucket": "boundary",
       "lens": null,
       "obit_score": 0.8608,
-      "title": "Dans le Val-díOise, la disparition díune septuagÈnaire inquiËte ses voisins, des recherches sont lancÈes",
+      "title": "Dans le Val-d‚ÄôOise, la disparition d‚Äôune septuag√©naire inqui√®te ses voisins, des recherches sont lanc√©es",
       "verdicts": {
         "gemma3:27b": "obituary",
         "qwen3:14b": "not_obituary",
@@ -755,7 +755,7 @@
       "bucket": "recall_chk",
       "lens": null,
       "obit_score": 0.0,
-      "title": "Palestine Action hunger strikers near death ëintentí on continuing protests",
+      "title": "Palestine Action hunger strikers near death ‚Äòintent‚Äô on continuing protests",
       "verdicts": {
         "gemma3:27b": "not_obituary",
         "qwen3:14b": "not_obituary",
@@ -830,7 +830,7 @@
       "bucket": "recall_chk",
       "lens": null,
       "obit_score": 0.0,
-      "title": "Annual flu vaccines are far from ideal ó this is why",
+      "title": "Annual flu vaccines are far from ideal ‚Äî this is why",
       "verdicts": {
         "gemma3:27b": "not_obituary",
         "qwen3:14b": "not_obituary",
@@ -875,7 +875,7 @@
       "bucket": "recall_chk",
       "lens": null,
       "obit_score": 0.0,
-      "title": "Most of those who died in protests in Iran were killed by terrorists ó Iranian diplomat",
+      "title": "Most of those who died in protests in Iran were killed by terrorists ‚Äî Iranian diplomat",
       "verdicts": {
         "gemma3:27b": "not_obituary",
         "qwen3:14b": "not_obituary",
@@ -890,7 +890,7 @@
       "bucket": "recall_chk",
       "lens": null,
       "obit_score": 0.0023,
-      "title": "La burocracia retrasa el entierro de Yamina tras el accidente de Adamuz: ìSigue en una nevera y lleva ya una semana muertaî",
+      "title": "La burocracia retrasa el entierro de Yamina tras el accidente de Adamuz: ‚ÄúSigue en una nevera y lleva ya una semana muerta‚Äù",
       "verdicts": {
         "gemma3:27b": "obituary",
         "qwen3:14b": "obituary",

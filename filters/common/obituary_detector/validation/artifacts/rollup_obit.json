@@ -5,7 +5,7 @@
       "bucket": "block",
       "lens": "uplifting",
       "obit_score": 0.939,
-      "title": "CÛrdoba Passes ìJoaquÌn Lawî to Protect Victims",
+      "title": "C√≥rdoba Passes ‚ÄúJoaqu√≠n Law‚Äù to Protect Victims",
       "verdicts": {
         "gemma3:27b": "not_obituary",
         "qwen3:14b": "not_obituary",
@@ -80,7 +80,7 @@
       "bucket": "block",
       "lens": "belonging",
       "obit_score": 0.9899,
-      "title": "Honduras Activist Seeks Justice for Motherís 2016 Murder",
+      "title": "Honduras Activist Seeks Justice for Mother‚Äôs 2016 Murder",
       "verdicts": {
         "gemma3:27b": "not_obituary",
         "qwen3:14b": "not_obituary",
@@ -95,7 +95,7 @@
       "bucket": "block",
       "lens": "cultural_discovery",
       "obit_score": 0.9259,
-      "title": "Montana Bison Hunt Siteís 700-Year Run Ended with Drought",
+      "title": "Montana Bison Hunt Site‚Äôs 700-Year Run Ended with Drought",
       "verdicts": {
         "gemma3:27b": "not_obituary",
         "qwen3:14b": "not_obituary",
@@ -125,7 +125,7 @@
       "bucket": "block",
       "lens": "foresight",
       "obit_score": 0.9722,
-      "title": "Oregon Passes ìKristilís Lawî for Faster Warrants",
+      "title": "Oregon Passes ‚ÄúKristil‚Äôs Law‚Äù for Faster Warrants",
       "verdicts": {
         "gemma3:27b": "obituary",
         "qwen3:14b": "not_obituary",
@@ -170,7 +170,7 @@
       "bucket": "block",
       "lens": "cultural_discovery",
       "obit_score": 0.9993,
-      "title": "÷Tzi the Icemanís Microbes Reveal Ancient Gut Health",
+      "title": "√ñTzi the Iceman‚Äôs Microbes Reveal Ancient Gut Health",
       "verdicts": {
         "gemma3:27b": "not_obituary",
         "qwen3:14b": "not_obituary",
@@ -260,7 +260,7 @@
       "bucket": "block",
       "lens": "uplifting",
       "obit_score": 0.9419,
-      "title": "Ebola Outbreak in DRC and Uganda Tests ìFortressî Strategies",
+      "title": "Ebola Outbreak in DRC and Uganda Tests ‚ÄúFortress‚Äù Strategies",
       "verdicts": {
         "gemma3:27b": "not_obituary",
         "qwen3:14b": "not_obituary",
@@ -425,7 +425,7 @@
       "bucket": "boundary",
       "lens": "cultural_discovery",
       "obit_score": 0.8178,
-      "title": "Martin Heideggers Todestag: An seiner Philosophie f¸hrt auch heute kein Weg vorbei",
+      "title": "Martin Heideggers Todestag: An seiner Philosophie f√ºhrt auch heute kein Weg vorbei",
       "verdicts": {
         "gemma3:27b": "not_obituary",
         "qwen3:14b": "not_obituary",
@@ -560,7 +560,7 @@
       "bucket": "recall_chk",
       "lens": "cultural_discovery",
       "obit_score": 0.0599,
-      "title": "Ether Dome: Landmark Honors Pain Reliefís Bitter Beginnings",
+      "title": "Ether Dome: Landmark Honors Pain Relief‚Äôs Bitter Beginnings",
       "verdicts": {
         "gemma3:27b": "not_obituary",
         "qwen3:14b": "not_obituary",

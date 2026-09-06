@@ -18,23 +18,64 @@ def create_model_card(
     training_metadata: Dict,
     training_history: list,
     repo_name: str,
+    selected_epoch: int = None,
+    no_hub: bool = False,
 ) -> str:
-    """Generate Hugging Face model card (README.md)."""
+    """Generate Hugging Face model card (README.md).
 
-    final_epoch = training_history[-1]
+    ``selected_epoch`` is 1-based and names the epoch the SHIPPED checkpoint came
+    from. It exists because ``training_history[-1]`` is the LAST epoch trained,
+    which is only the shipped one when selection happened to keep the final
+    checkpoint. ``human_thriving v8`` ships epoch 4 of 6 (selected on
+    ``recall_medium`` @4.5), so a card built from ``[-1]`` would publish epoch 6's
+    metrics beside epoch 4's weights with nothing saying so.
+    """
+
+    if selected_epoch is None:
+        final_epoch = training_history[-1]
+        epoch_label = f"{training_metadata['epochs']}"
+    else:
+        if not 1 <= selected_epoch <= len(training_history):
+            raise ValueError(
+                f"selected_epoch {selected_epoch} outside the recorded history "
+                f"(1..{len(training_history)})"
+            )
+        final_epoch = training_history[selected_epoch - 1]
+        epoch_label = (
+            f"{training_metadata['epochs']} trained, checkpoint from epoch "
+            f"{selected_epoch}"
+        )
     val_mae = final_epoch['val']['mae']
 
     # Oracle provenance must come from config, NOT a hardcoded string — solutions
     # v4 and cultural-discovery v5 use DeepSeek, not Gemini. Prefer an explicit
-    # training_metadata.oracle, else config.yaml oracle.recommended, else generic.
+    # training_metadata.oracle, else config.yaml oracle.recommended, else
+    # oracle.decision (human_thriving v8's shape: "deepseek-chat (ruled ...)"),
+    # else generic.
     oracle = (
         training_metadata.get('oracle')
         or filter_config.get('oracle', {}).get('recommended')
+        or filter_config.get('oracle', {}).get('decision')
         or 'the configured oracle'
     )
+    if isinstance(oracle, str):
+        # "deepseek-chat (ruled 2026-09-01)" -> "deepseek-chat"
+        oracle = oracle.split('(')[0].strip()
+
+    # A NO_HUB filter's card is a package document, not a published page. Say so
+    # in the card itself: the heading and the Usage snippet name a repo id that
+    # does not resolve, and a reader who lands on this file has no other signal.
+    no_hub_banner = ""
+    if no_hub:
+        no_hub_banner = (
+            f"> ⛔ **NOT PUBLISHED.** `{repo_name}` does not exist on the Hub. This card is the\n"
+            f"> package's model-card source (`README_MODEL.md`), kept per the project doc\n"
+            f"> standard; the repo id below is the name publishing would use, not a live link.\n"
+            f"> The filter directory's `NO_HUB` file records why and what would change it.\n\n"
+        )
     oracle_label = {
-        'deepseek': 'DeepSeek', 'gemini-flash': 'Gemini Flash',
-        'gemini-pro': 'Gemini Pro',
+        'deepseek': 'DeepSeek', 'deepseek-chat': 'DeepSeek',
+        'gemini-flash': 'Gemini Flash', 'gemini-pro': 'Gemini Pro',
     }.get(str(oracle).lower(), str(oracle))
 
     card = f"""---
@@ -51,7 +92,7 @@ pipeline_tag: text-classification
 
 # {repo_name}
 
-## Model Description
+{no_hub_banner}## Model Description
 
 This model is a fine-tuned version of [{training_metadata['model_name']}](https://huggingface.co/{training_metadata['model_name']})
 for multi-dimensional content scoring using the **{filter_config['filter']['name']}** filter.
@@ -78,7 +119,6 @@ This model scores articles across {training_metadata['num_dimensions']} semantic
 - **Training samples**: {training_metadata['train_examples']:,}
 - **Validation samples**: {training_metadata['val_examples']:,}
 - **Oracle**: {oracle_label} (for ground truth generation)
-- **Quality threshold**: Articles with quality_score >= 0.7
 
 ## Training Procedure
 
@@ -92,7 +132,7 @@ This model scores articles across {training_metadata['num_dimensions']} semantic
 
 ### Training Configuration
 
-- **Epochs**: {training_metadata['epochs']}
+- **Epochs**: {epoch_label}
 - **Batch size**: {training_metadata['batch_size']}
 - **Learning rate**: {training_metadata['learning_rate']}
 - **Optimizer**: AdamW
@@ -165,7 +205,9 @@ for dim, score in zip(dimensions, scores):
 
 ## Limitations
 
-- Model was trained on English news articles
+- Trained on the project's production news corpus. Language coverage is a property
+  of that corpus and of the filter, and is not asserted here — see the filter's
+  `README.md`.
 - Performance may vary on other content types
 - Validation MAE of {val_mae:.4f} indicates ~0.8 point average error on 0-10 scale
 - Some overfitting observed (train/val gap: {val_mae - final_epoch['train']['mae']:.2f})
@@ -227,22 +269,42 @@ def main():
         default=None,
         help="Hugging Face token (or set HF_TOKEN env var)",
     )
+    parser.add_argument(
+        "--selected-epoch",
+        type=int,
+        default=None,
+        help=(
+            "1-based epoch the SHIPPED checkpoint came from. Without it the card "
+            "reports the LAST epoch trained, which is wrong whenever checkpoint "
+            "selection kept an earlier one (human_thriving v8: epoch 4 of 6)."
+        ),
+    )
+    parser.add_argument(
+        "--card-only",
+        action="store_true",
+        help=(
+            "Write README_MODEL.md and stop. Creates no repo, uploads nothing, and "
+            "does not require model/ to be present locally — the doc standard wants "
+            "the card in the package even for a NO_HUB filter."
+        ),
+    )
 
     args = parser.parse_args()
 
-    # Check huggingface_hub is installed
-    try:
-        from huggingface_hub import HfApi, create_repo
-    except ImportError:
-        print("Error: huggingface_hub not installed")
-        print("Install with: pip install huggingface_hub")
-        return
+    # Check huggingface_hub is installed (not needed to build the card alone)
+    if not args.card_only:
+        try:
+            from huggingface_hub import HfApi, create_repo
+        except ImportError:
+            print("Error: huggingface_hub not installed")
+            print("Install with: pip install huggingface_hub")
+            return
 
     # Load model metadata from filter directory
     print(f"Loading model and metadata from {args.filter}")
 
     model_path = args.filter / "model"
-    if not model_path.exists():
+    if not model_path.exists() and not args.card_only:
         print(f"Error: Model not found at {model_path}")
         print(f"Make sure you've trained the model and it's saved in the filter directory")
         return
@@ -275,9 +337,30 @@ def main():
 
     print(f"\nModel: {training_metadata['model_name']}")
     print(f"Filter: {filter_config['filter']['name']} v{filter_config['filter']['version']}")
-    print(f"Validation MAE: {training_history[-1]['val']['mae']:.4f}")
+    _banner_epoch = (
+        training_history[args.selected_epoch - 1]
+        if args.selected_epoch
+        else training_history[-1]
+    )
+    print(f"Validation MAE: {_banner_epoch['val']['mae']:.4f}")
     print(f"Repository: {args.repo_name}")
     print(f"Private: {args.private}")
+
+    if args.card_only:
+        model_card = create_model_card(
+            filter_config,
+            training_metadata,
+            training_history,
+            args.repo_name,
+            selected_epoch=args.selected_epoch,
+            no_hub=(args.filter / "NO_HUB").exists(),
+        )
+        readme_path = args.filter / "README_MODEL.md"
+        with open(readme_path, "w", encoding="utf-8") as f:
+            f.write(model_card)
+        print(f"\n[OK] --card-only: model card written to {readme_path}")
+        print("[OK] No repository created, nothing uploaded.")
+        return
 
     # Get token
     import os
@@ -311,6 +394,7 @@ def main():
         training_metadata,
         training_history,
         args.repo_name,
+        selected_epoch=args.selected_epoch,
     )
 
     # Save model card locally (in filter directory)

@@ -183,7 +183,9 @@ Train and validation loss curves showing steady decrease and stabilization.
 ### Areas for Improvement ⚠️
 
 1. **Harder Dimensions**
-   - Resilience (1.17 MAE) and justice (1.08 MAE) higher than others
+   - Resilience (1.17 MAE) and justice (1.08 MAE) higher than others — ⚠️ *2026-09-06:* an
+     unbanded ordering. No per-dimension band or run variance was computed, so "higher than
+     others" is not established as a difference; treat it as a direction to investigate.
    - Could benefit from additional labeled examples
    - May require prompt refinement for these dimensions
 

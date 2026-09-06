@@ -147,7 +147,7 @@ def main():
               f"votes={'/'.join(vs)}  :: {(r.get('title') or '')[:55]}")
     json.dump({"agreement": frac, "n": len(sample), "agree": agree,
                "n_pos": min(args.n_pos, len(pos)), "n_neg": min(args.n_neg, len(neg))},
-              open(OUT, "w"))
+              open(OUT, "w", encoding="utf-8"))
     print(f"\nwrote {GRADES.name} + {OUT.name}")
 
 if __name__ == "__main__":

@@ -9,10 +9,19 @@ path**, so relocating a rejected draft turns a stamped provenance field into a d
 the same trap that stops `prompt-candidate-tail.md` being renamed to `prompt-compressed.md`.
 Their being clutter is the price of the evidence being reproducible.
 
-⚠️ **None of these is named `prompt-compressed.md`**, which is what `load_filter_spec` derives
-from `config.yaml`. Every run so far passed `--prompt` explicitly. Resolve at phase 9 **by
-copying, never renaming**: 6,586 labels record `prompt-candidate-tail.md` as provenance and a
-rename breaks that pointer.
+✅ **RESOLVED AT PHASE 9, 2026-09-06 — by copying, as planned.** `prompt-compressed.md` is now
+a **byte copy** of `prompt-v8-4.md` (both `c4705408c477a511…`), so
+`FilterBaseScorer._compute_prompt_hash`, which looks for that exact filename, reports
+`c4705408c477` where it previously reported `None`. Nothing was renamed: the 6,586 labels
+record `prompt-candidate-tail.md` as provenance and a rename would break that pointer.
+
+⚠️ **The hash therefore names the CURRENT oracle prompt, not the one that produced most of the
+training labels** — 6,130 of the 6,586 are stamped `003cd35a5122`. It feeds `get_metadata()`,
+which nothing in NexusMind reads: provenance only.
+
+⛔ **Keep the copy byte-identical.** Editing it — including fixing the stale
+*"Uplifting Content Analyst Prompt (v7 …)"* heading both files still carry — changes
+`c4705408c477`, which the Phase-B2 gate evidence stamps. If v8.5 ever ships, copy again.
 
 | file | sha256 (12) | status | what it is |
 |---|---|---|---|
@@ -20,7 +29,7 @@ rename breaks that pointer.
 | `prompt-candidate-tail.md` | `003cd35a5122` | **the labelling prompt** | article moved to the **end**; ADOPTED 2026-08-30 on H-V8-9's label argument. **The 6,586 Phase B labels are stamped with this hash** and 6,130 of them still are |
 | `prompt-v8-1.md` | `32bbbdb68f38` | ⛔ rejected | first v8.1 draft, four clauses. Its §2 wording made commencement a **necessary** condition when the ruling made it **sufficient**, so a response that HAD taken effect escaped §2 |
 | `prompt-v8-1b.md` | `9b71ba58e0c0` | ⛔ rejected | fixes that necessary/sufficient bug. Still carried clause D |
-| `prompt-v8-2.md` | `4942ca92dc33` | ⛔⛔ rejected | all four clauses. Scored the #91 origin row **5.921 with 12/12 `in_scope`** where the labelling prompt pins it at 0.900 sd 0.000 — a **B×D interaction**, worse than any single clause |
+| `prompt-v8-2.md` | `4942ca92dc33` | ⛔⛔ rejected | all four clauses. Scored the #91 origin row **5.921, sd 0.250, 12/12 `in_scope`** at k=12 where the labelling prompt pins it at **0.900, sd 0.000, 0/6** — the spreads do not overlap — a **B×D interaction**, worse than any single clause |
 | **`prompt-v8-4.md`** | **`c4705408c477`** | ✅ **CURRENT** | **B + C + A3, clause D dropped.** Gate B-A **9/9** at k=12, worst class-A sd **2.250 → 0.205**, `in_scope` runs on class A **3 of 108 → 0**, no-regression **4/4**. Used for the 456 above-op re-label |
 
 There is no `prompt-v8-3.md` in this directory: that candidate (D with its licensing sentence
