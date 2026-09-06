@@ -27,7 +27,16 @@ metadata:
 4. `STATUS.md` — current deployment status
 5. `DEEP_ROOTS.md` — the lens rationale / design intent
 6. `README.md` — human-facing overview
-7. `README_MODEL.md` — the Hub model card source
+7. `README_MODEL.md` — the Hub model card source. ⛔ **It was GITIGNORED repo-wide
+   until 2026-09-06**, so five existed on disk, **none was tracked**, and a fresh clone
+   had no model card for any filter while this standard required one and the parity
+   checks counted it present. Un-ignored and all five committed. It is **generated, not
+   written**: `scripts/deployment/upload_to_huggingface.py --filter <dir> --repo-name
+   <id> --card-only` writes it without creating a repo, uploading anything, or needing
+   `model/` on disk. ⚠️ **Pass `--selected-epoch` whenever the shipped checkpoint is not
+   the last epoch trained** — the generator reads `training_history[-1]`, so
+   `human_thriving v8` (epoch 4 of 6) would otherwise publish epoch 6's metrics beside
+   epoch 4's weights, 14 numbers wrong with nothing saying so.
 
 *(Numbering is kept at 1–7 with item 3 struck through, rather than renumbered, so that
 existing references to "item 5 = DEEP_ROOTS.md" elsewhere do not silently shift. The
@@ -44,10 +53,24 @@ updated the same day; if it still lists `prefilter.py` in `core`, this change wa
 - `calibration_report.md` — per-dim calibration narrative
 - `dimension_analysis/` — per-dim diagnostic artifacts
 
-⚠️ **`belonging v1` no longer satisfies this standard** — measured 2026-08-21, it lacks
-`README_MODEL.md`, i.e. the template does not meet the core it defined. **Copy from
-`nature_recovery v4` or `cultural_discovery v5` instead — they are the only two complete
-packages.** Full parity matrix: llm-distillery#126 — whose committed **scope is
+⚠️ **`uplifting v7` cannot satisfy item 7 and that is recorded, not an oversight** —
+it was rsync'd from gpu-server without `training_metadata.json` / `training_history.json`,
+which are the card generator's inputs, so building one would mean reconstructing metrics
+from a README narrative. Its `NO_HUB` file says so. `belonging v1` simply lacks the file.
+
+✅ **`belonging v1` satisfies the standard again as of 2026-09-06** — it lacked
+`README_MODEL.md` from 2026-08-21 (the template not meeting the core it defined), and the
+card was generated with `--card-only` from its own committed `training_metadata.json` /
+`training_history.json` / `config.yaml`. ⭐ **The gap was never that belonging was
+special**: the file was gitignored repo-wide, so *no* filter had a tracked card and the
+parity matrix was reading five on-disk files that a clone would not have. Complete
+packages against the 6-file core are now **four**: `belonging v1`,
+`cultural_discovery v5`, `nature_recovery v4` and `human_thriving v8` — enumerated by
+testing for all six files, not by memory, because the first version of this sentence
+said five and included `solutions v6`. ⛔ **`solutions v6` is NOT complete: no
+`STATUS.md`, no `DEEP_ROOTS.md`** — which is exactly llm-distillery#126's committed
+scope. `solutions v4` lacks the same two. ⚠️ `uplifting v7` lacks those two *and*
+cannot have a card at all — see above. Full parity matrix: llm-distillery#126 — whose committed **scope is
 `solutions v6` only**; the other filters appear there as context, not as work. Related: [[cd-v5-reference-status]].
 
 <!-- Reconstructed 2026-07-05 from the 2026-05-31 session description; listed in that recap but never committed. Grounded in MEMORY.md 2026-05-31 recap. -->

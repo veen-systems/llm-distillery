@@ -224,9 +224,34 @@ Two hosts. **`b650-gpu` is the training node** (RTX 3090 Ti 24 GB, ~1.26 s/it at
 production box — ⛔ never diff a b650 replay against stored production scores without
 matching production's device first (CPU→CUDA is worth 3 flips at 4.5).
 
+⛔ **THE TRAINING RUN MUST NAME A COMMIT, AND `train.py` NOW REFUSES WITHOUT ONE.**
+`human_thriving v8`'s first adapter was built by a tree that `git commit --amend` then
+orphaned, so the sha that produced the shipped weights (`0697f5a`) is reachable from no
+branch — and nothing caught it, because `training_metadata.json` recorded no commit at
+all. The owner's 2026-09-06 ruling was **no exception**: it was retrained rather than
+shipped with a carve-out. `resolve_git_provenance()` runs **before** the ~100-minute run
+and refuses on a non-checkout, a dirty tree, or a commit on no branch;
+`--allow-missing-git-provenance` is the explicit opt-out and is written into the metadata,
+where `scripts/verification/check_training_provenance.py` reports it. **Commit and push
+before you train.**
+
+⭐ **`b650`'s `~/llm-distillery` IS a git checkout as of 2026-09-06** — `git init` + a
+remote + `git checkout -f main`, which left every gitignored artefact (datasets, venvs,
+`model/`) untouched. It had been a partial rsync, and its `training/train.py` was the
+**pre-fix** version missing 176 lines of checkpoint-selection machinery, while its
+`uplifting v7` config/normalization/base_scorer had drifted from the bytes sadalsuud
+actually serves. **Prefer `git fetch && git checkout` over the rsync below**; the
+`git ls-files` recipe is kept for a host where a checkout is not possible.
+
 ```bash
-# 1. Ship code + data. b650's ~/llm-distillery is NOT a git checkout, so send tracked
-#    files only -- then what runs there is exactly what is committed. Verify by md5.
+# 1a. PREFERRED: the box is a checkout, so name a commit instead of copying files.
+ssh b650-gpu 'cd ~/llm-distillery && git fetch -q origin main \
+  && git checkout -q -f main && git reset -q --hard origin/main \
+  && git rev-parse HEAD && git status --porcelain -uno | wc -l'   # expect 0 drift
+
+# 1b. FALLBACK for a non-checkout host: send tracked files only, then what runs there is
+#     exactly what is committed. Verify by md5. Training will need
+#     --allow-missing-git-provenance, and the check will report the gap.
 git ls-files training filters/common filters/{name}/v{N}/config.yaml requirements.txt \
   > /tmp/shiplist.txt
 rsync -az --files-from=/tmp/shiplist.txt ./ b650-gpu:~/llm-distillery/

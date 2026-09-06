@@ -7,7 +7,24 @@ fails with "cannot check — no repo_id extracted". That failure blocked a commi
 2026-09-04 and was the correct behaviour — absence and declaration read identically without
 this file. NexusMind's `filter_loader` sets `hub_class = None` from the same absence.
 
-⚠️ THIS RECORDS THE CURRENT STATE, AND THE DECISION IS STILL OPEN.
+⛔ THE DECISION IS NO LONGER OPEN — owner ruled 2026-09-06: PUBLISH, as an
+off-machine backup. It has not happened yet, so this file is still true.
+
+⛔ AND `inference_hub.py` MUST NOT LAND BEFORE THE REPO EXISTS. `verify_filter_package.py`
+refuses the pair outright — *"NO_HUB sentinel present but inference_hub.py also exists —
+ambiguous deploy state"* — and it blocked a commit for exactly that on 2026-09-06. The
+module is written and verified (repo id resolves, 7/7 with this file removed); it is held
+out of the tree until the transfer runs. THE ORDER IS: publish, verify, then commit
+`inference_hub.py` and DELETE this file in one commit. Never the other way round — #44's
+whole lesson is that a claim in a message does not make the transfer happen.
+
+⚠️ The reason to publish got STRONGER on 2026-09-06. The owner rejected recording a
+provenance exception for the un-reproducible checkpoint and had it retrained under a
+commit on `main`, so the tree that builds the adapter is now pinned — but the 82 MB
+artifact itself is still held by exactly one machine, and a pinned recipe is not a
+backup of the thing it produced.
+
+⚠️ THE TEXT BELOW RECORDS THE STATE BEFORE THAT RULING.
 `docs/HUMAN_THRIVING_V8_PLAN.md` §3c calls a Hub repo for v8 **optional**. So this file
 says "not published today", not "never publish".
 

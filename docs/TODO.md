@@ -37,13 +37,32 @@ way `solutions v6` went (gate 2026-07-27 → deployed → fitted 2026-07-28). �
 the test split or the draw corpus: they are a 25.1× design-weighted sample, and a CDF fitted on
 them would describe a population that does not exist.
 
-1. **The doc set, which is what actually blocks shipping.** `memory/filter-doc-standard.md`
-   and Phase F1 gate on package parity with `nature_recovery v4`: `DEEP_ROOTS.md`, `README.md`
-   and `README_MODEL.md` are still owed. `STATUS.md`, `config.yaml`, the prompt,
-   `calibration_report.md` and now `ground_truth_gate.json` are present.
-2. **The weights have to reach the serving box.** They are on b650 only, gitignored as large
-   model checkpoints (⚠️ **not #97** — that is the TDM assessment). v8 carries `NO_HUB`, so
-   decide the transport before the deploy, not during it.
+> ⛔⛔ **REOPENED 2026-09-06 BY OWNER RULING: "no exception, i want this system to be
+> harmonized".** The shipped checkpoint was trained by a tree that `git commit --amend`
+> orphaned, and the option to record that as an exception was **rejected**. v8 is being
+> **RETRAINED under a commit on `main`** (`64b469d`), which voids `calibration.json`, the
+> ADR-021 gate result and every number derived from the old checkpoint. The Stage-1 probe
+> and its 1.75 threshold are **NOT** affected — the probe is e5-small trained on oracle
+> labels and is independent of the student.
+>
+> ⭐ **Confirmed independently while setting this up:** b650's `training/train.py` was the
+> **pre-fix** version, missing the 176 lines of checkpoint-selection machinery that `main`
+> says trained the shipped artifact. The provenance was not merely unrecorded; the box did
+> not hold the code the record names.
+
+1. ✅ **The doc set — DONE 2026-09-06.** `DEEP_ROOTS.md`, `README.md`, `README_MODEL.md`
+   written; `prompt-compressed.md` added as a **byte copy** of `prompt-v8-4.md`, so
+   `prompt_hash` is `c4705408c477` instead of `None`. ⭐ **`README_MODEL.md` turned out to be
+   gitignored repo-wide** — five on disk, none tracked, for any filter — so the doc standard
+   required a file the repo refused to store. Un-ignored, all six now committed (belonging
+   v1's gap closed too). **Four packages meet the 6-file core**; `solutions v4`/`v6` still
+   lack `STATUS.md` + `DEEP_ROOTS.md` (llm-distillery#126).
+2. ✅ **Transport RULED 2026-09-06: rsync b650 → Situla → sadalsuud, AND publish
+   `jeergrvgreg/human-thriving-filter-v8` private as an off-machine backup.**
+   `inference_hub.py` is written and `verify_filter_package.py` resolves the repo id (7/7).
+   ⛔ `NO_HUB` **stays until the transfer actually runs and verifies**, then is deleted in the
+   same commit — with `inference_hub.py` present and no repo, `--check-hub` fails, and
+   `NO_HUB` is what separates "not published yet" from "the check is broken" (#44).
 3. **Deploy, then watch the first cycles.** `docs/RUNBOOK.md`, and ⛔ diff before
    `deploy_to_nexusmind.sh` — it overwrites and `.nexusmind-owns` is empty.
 4. ⚠️ **An owner question BEFORE Phase E, not after it.** Fitting normalization is what arms
@@ -84,6 +103,13 @@ them would describe a population that does not exist.
   warning recur every session.
 - **The other filters' gate numbers are still CPU-measured** (#104). v8's device term came out
   at 0 flips, but that is v8's; nothing licenses back-filling the claim onto the fleet.
+- ⚙️ **`investment_risk/v4` and `uplifting/v4` carry neither `inference_hub.py` nor `NO_HUB`,
+  so `verify_filter_package.py --check-hub` cannot resolve them** — found 2026-09-06 by the
+  commit-msg hook, which blocked a commit for it. Not given a `NO_HUB` file: both may have Hub
+  repos from their own era, and that is a claim nobody has verified. Trigger: the next commit
+  touching either with a deploy-class word in the message.
+- ⚙️ **Prune `UNSTAMPED_BASELINE`** in `scripts/verification/check_training_provenance.py` once
+  v8's retrained `training_metadata.json` carries `git_commit` — the list may only shrink.
 
 ### ✅ What phase 8 closed on 2026-09-06 (`EXP-026`)
 

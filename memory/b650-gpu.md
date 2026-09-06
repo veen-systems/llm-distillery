@@ -7,6 +7,16 @@ driver 580.95, 699 GB free disk, 30 GB RAM. Reachable via Tailscale:
 ssh b650-gpu        # account is `jeroen` (NOT jwasys); works from situla and sadalsuud
 ```
 
+- ⭐ **`~/llm-distillery` IS A GIT CHECKOUT as of 2026-09-06** (`git init` + remote +
+  `git checkout -f main`; every gitignored artefact — `datasets/`, both venvs,
+  `filters/*/model/` — survived untouched, and tracked-file drift is 0). Before that it
+  was a **partial rsync**, and the drift was not cosmetic: `training/train.py` was the
+  **pre-fix** version missing 176 lines of checkpoint-selection machinery, and
+  `uplifting v7`'s `config.yaml` / `normalization.json` / `base_scorer.py` all differed
+  from what sadalsuud serves (main and sadalsuud were byte-identical, so b650 was the
+  stale one). Pre-checkout copies + diffs: `b650:~/b650-pre-checkout-2026-09-06/`.
+  ⛔ **Sync with `git fetch && git checkout`, not rsync** — `training/train.py` now
+  REFUSES to train outside a checkout, because a copy cannot name the commit that trains.
 - **sudo password**: in owner's Bitwarden (initial photo'd one is dead).
 - **venv**: **two now.** `~/llm-distillery/venv-prodparity` (py 3.11.15, torch
   2.11.0+cu130, transformers 5.0.0 — production's pins, **GPU works**) is the one
