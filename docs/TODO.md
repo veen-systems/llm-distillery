@@ -103,11 +103,15 @@ them would describe a population that does not exist.
   warning recur every session.
 - **The other filters' gate numbers are still CPU-measured** (#104). v8's device term came out
   at 0 flips, but that is v8's; nothing licenses back-filling the claim onto the fleet.
-- ⚙️ **`investment_risk/v4` and `uplifting/v4` carry neither `inference_hub.py` nor `NO_HUB`,
-  so `verify_filter_package.py --check-hub` cannot resolve them** — found 2026-09-06 by the
-  commit-msg hook, which blocked a commit for it. Not given a `NO_HUB` file: both may have Hub
-  repos from their own era, and that is a claim nobody has verified. Trigger: the next commit
-  touching either with a deploy-class word in the message.
+- ⚙️ **14 of 29 filter packages carry NEITHER `inference_hub.py` NOR `NO_HUB`, so
+  `verify_filter_package.py --check-hub` cannot resolve them.** Found 2026-09-06: the
+  commit-msg hook blocked a commit over two of them (`investment_risk/v4`, `uplifting/v4`),
+  and the rebuilt `filter_completeness.py` then counted the rest. ⛔ **Not given `NO_HUB`
+  files**: several may have Hub repos from their own era, and "not published" is a claim
+  nobody has verified — writing it would be inventing provenance, which is the defect this
+  session exists to remove. Most are archived or never-deployed versions; the deployed set is
+  declared. Trigger: the next commit touching one with a deploy-class word in the message.
+  Enumerate with `python3 scripts/analysis/filter_completeness.py`.
 - ⚙️ **Prune `UNSTAMPED_BASELINE`** in `scripts/verification/check_training_provenance.py` once
   v8's retrained `training_metadata.json` carries `git_commit` — the list may only shrink.
 

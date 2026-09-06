@@ -149,6 +149,18 @@ def run_inference_raw(scorer, articles, dimension_names, batch_size=16):
     device = scorer.device
     max_len = scorer.MAX_TOKEN_LENGTH
 
+    # ⛔ READ THE DEVICE OFF THE LOADED MODEL, NOT OFF scorer.device. #146: a "CPU"
+    # arm once read 2.37 ms against GPU's 2.34 (true CPU 42.41, 18x) because a cache
+    # keyed on the model name ignored the device it was asked for. A calibration
+    # fitted on a different device from the one that serves is a silent mismatch, and
+    # the fit is the artifact the op-point is defined on — so print both and let the
+    # log carry it.
+    try:
+        param_device = str(next(model.parameters()).device)
+    except StopIteration:                     # a model with no parameters cannot serve
+        param_device = "unknown (model has no parameters)"
+    print(f"  device: declared={device} parameters={param_device}, batch_size={batch_size}")
+
     all_raw_scores = []
 
     # Check if head+tail preprocessing is enabled
