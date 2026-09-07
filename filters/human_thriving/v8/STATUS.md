@@ -1,6 +1,30 @@
 # human_thriving v8 — STATUS
 
-**NOT DEPLOYED. TRAINED, PROBED, CALIBRATED AND GATE-MEASURED.** Labelled, adjudicated; prompt settled at v8.4. Last updated 2026-09-06.
+✅ **LIVE IN PRODUCTION SINCE 2026-09-07.** Trained, probed, calibrated, gate-measured, published
+and deployed. Labelled, adjudicated; prompt settled at v8.4. Last updated 2026-09-07.
+
+**What shipped:** NexusMind `e0f0af9` (PR #452), scorer restarted on gpu-server, CODE_REVISION
+`f20e6f4f…` round-tripped. Weights are out-of-band at
+`gpu-server:~/NexusMind/filters/human_thriving/v8/model/`. **Full sha256
+`074209ff572c4823206569b3c7d89c26b15029263748cf510c9c5b8ce347de08` read back at each of the three
+hops — b650, Situla, gpu-server — and at all three it matched the value `training_metadata.json`
+records; 0 of 3 differed.** The compared quantity is the whole 52,259,056-byte
+`adapter_model.safetensors` over the full 64 hex digits, so any single-byte corruption in transit
+would have shown. Hub backup:
+`jeergrvgreg/human-thriving-filter-v8` (private).
+
+⭐ **Verified by EXECUTION, not by the deploy script's own report.** The post-deploy smoke test
+covers five filters and has **no `human_thriving` fixture**, so it passed without ever loading v8.
+A direct `POST /filter/human_thriving/score` on gpu-server returned **wa 5.604 → tier medium**,
+`stage_used` stage2, `filter_version` 8.0, `device` cuda. The scorer log confirms the real path:
+`Discovered filters: [… 'human_thriving']`, Stage-1 threshold **1.75 read from config.yaml**,
+adapter loaded from `model/`, e5 probe 384→6.
+⚠️ **A smoke fixture for `human_thriving` is still MISSING** — the gap that let a weightless
+`investment_risk` deploy fail closed once already. Adding one is owed.
+
+⚠️ **`uplifting v7` IS STILL LIVE.** This deploy CREATED `human_thriving`; it retired nothing.
+Both score every cycle. Which one feeds the Thriving tab — and whether v7 is retired — is an
+OPEN OWNER DECISION, not settled by shipping v8.
 
 ✅ **It can score an article ON `b650-gpu`.** `base_scorer.py`, `inference.py`,
 `inference_hybrid.py`, `probe/embedding_probe_e5small.pkl` and `calibration.json` all exist
@@ -95,8 +119,8 @@ because v8's state is complicated enough that "not deployed" is not a useful sum
 | Phase C **calibrate** | ✅ **2026-09-04, EXP-016.** Isotonic on val. ⛔ **Does NOT improve held-out MAE** (test 0.6029 → 0.6142) and the two arms are the SAME RANKER (Spearman 0.9977, AUC 0.9474 → 0.9488). Ships per ADR-008 + ADR-023's specificity tie-break, not because it helped. `calibration_report.md` |
 | Phase D gate | ⛔ not started. ⚠️ **Criterion 1 is NOT stably failing** — the 4.400 was a k=3 mean on a coin-toss row; at k=6 under unchanged v8 it is **3.608 ± 2.560, PASS**. `docs/evidence/2026-09-03-v8-1-gate/` |
 | **ADR-021 deploy gate** | ✅ **RE-RUN 2026-09-06 on the RETRAINED epoch-5 checkpoint**: recall **0.314** / spec **0.9856** / precision **0.550**, 20 surfaced / 9 FP, at 4.50 calibrated on **CUDA**. NOT distinguishable from the epoch-4 model's 0.343/0.992/0.706 — all four #95 bands overlap. Superseded run (EXP-026, epoch 4). ⚠️ **The device measurement below belongs to the EPOCH-4 model, not this one** — CPU vs CUDA gave **0 verdict flips**, identical confusion matrices, max \|Δ\| 0.1428 calibrated, measured on the superseded checkpoint. It is not re-measured for epoch 5; the retrain's whole chain (calibration fit, dump, gate) ran on **CUDA only**, so no device claim is needed for it — but neither is one licensed (#104) |
-| Phase E normalization | ⛔ **BLOCKED, and the ordering is why** — `fit_normalization.py` reads NexusMind production output and needs ≥200 rows above the op-point; sadalsuud has **no `human_thriving`** at all. Normalization comes AFTER deployment, as it did for `solutions v6`. ⛔ Do not substitute the test split: it is a 25.1× design-weighted sample |
-| Phase F deploy | ⚠️ **steps 1–2 of 5 done.** Doc set complete; both owner decisions RULED 2026-09-06 — transport is *rsync b650 → Situla → gpu-server **and** publish `jeergrvgreg/human-thriving-filter-v8` private as an off-machine backup*, and the dangling checkpoint was **retrained**, not excepted. Remaining: the weights must reach **gpu-server** (`~/NexusMind/filters/`, the serving box — `deploy_filters.sh` excludes `model/`, so weights go out-of-band), then the Hub publish, then the NexusMind commit + deploy |
+| Phase E normalization | ⛔ **STILL NOT FITTED — now UNBLOCKED as of the 2026-09-07 deploy.** Production is accumulating rows; fit once ≥200 sit above 4.5. Until then `normalization_method: none` and raw passes through, so every surfaced article clears the 4.0 enrichment gate. Original reasoning:  — `fit_normalization.py` reads NexusMind production output and needs ≥200 rows above the op-point; sadalsuud has **no `human_thriving`** at all. Normalization comes AFTER deployment, as it did for `solutions v6`. ⛔ Do not substitute the test split: it is a 25.1× design-weighted sample |
+| Phase F deploy | ✅ **DONE 2026-09-07** — weights pre-placed on gpu-server, Hub published, `inference_hub.py` landed with `NO_HUB` deleted, NexusMind PR #452 merged, scorer restarted, v8 verified live by direct POST (wa 5.604 → medium). Superseded detail below: ⚠️ **steps 1–2 of 5 done.** Doc set complete; both owner decisions RULED 2026-09-06 — transport is *rsync b650 → Situla → gpu-server **and** publish `jeergrvgreg/human-thriving-filter-v8` private as an off-machine backup*, and the dangling checkpoint was **retrained**, not excepted. Remaining: the weights must reach **gpu-server** (`~/NexusMind/filters/`, the serving box — `deploy_filters.sh` excludes `model/`, so weights go out-of-band), then the Hub publish, then the NexusMind commit + deploy |
 
 ⚠️ **The labelled corpus is 6,586, not 6,590** — four scrape-junk skips, all JavaScript-required
 boilerplate at 357–489 chars, all *above* the 300-char floor.
