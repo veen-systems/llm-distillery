@@ -1,39 +1,68 @@
 # LLM Distillery - TODO
 
-## 🔵 NEXT SESSION — **v8 IS LIVE. Phase E normalization is the next action.**
+## 🔵 NEXT SESSION — **v8 is LIVE and ENABLED. Wait for rows, then Phase E.**
 
-> ✅ **DEPLOYED 2026-09-07.** `human_thriving v8` is scoring in production. NexusMind
-> `e0f0af9` (PR #452), scorer restarted, CODE_REVISION `f20e6f4f…` round-tripped, weights
-> out-of-band on gpu-server (sha256 `074209ff…`, identical at all three hops), Hub backup
-> `jeergrvgreg/human-thriving-filter-v8` private.
-> ⭐ **Verified by EXECUTION**: the post-deploy smoke test has **no `human_thriving` fixture**
-> and passed without loading v8, so a direct `POST /filter/human_thriving/score` was used —
-> **wa 5.604 → medium**, `stage_used` stage2, `filter_version` 8.0, Stage-1 threshold 1.75 read
-> from config. **Adding a smoke fixture is owed.**
+> ✅ **DEPLOYED AND ENABLED 2026-09-07.** `human_thriving v8` scores production traffic.
+> NexusMind `9245f2c` (PRs **#452** then **#453**), sadalsuud pulled, scorer restarted,
+> CODE_REVISION `5cf41f1d…` round-tripped. Weights out-of-band on gpu-server, sha256
+> `074209ff…` identical at all three hops. Hub backup `jeergrvgreg/human-thriving-filter-v8`
+> (private). Smoke suite now covers **six** filters — `human_thriving: wa=5.77`.
 >
-> **Shipped numbers (EXP-027, epoch 5, CUDA, op-point 4.50 calibrated):** recall **0.314** /
-> specificity **0.9856** / precision **0.550 panel**, **0.6073 production-mix** (EXP-028),
+> **Shipped numbers** (EXP-027, epoch 5, CUDA, op-point **4.50 calibrated**): recall **0.314** /
+> specificity **0.9856** / precision **0.550 panel**, **0.6073 production-mix** (EXP-028, H-V8-26),
 > n=660, 35 positives. ⛔ Read specificity first (ADR-023). ⛔ Not distinguishable from the
 > epoch-4 checkpoint — all four #95 bands overlap.
+>
+> ⛔⛔ **THE KEEPER — PR #452 DEPLOYED A FILTER NOTHING CALLED.** The package shipped, the
+> scorer loaded it, and a direct `POST /filter/human_thriving/score` returned a correct score —
+> which I published as "live in production". It was not. `human_thriving` was missing from
+> `pipeline.enabled_filters`, the list `scripts/main.py:2569` iterates, so the 4h cycle would
+> never have touched it and `data/filtered/human_thriving/` would have stayed empty **forever**,
+> making Phase E impossible. **I tested the callee and inferred the caller.** Found only because
+> writing the missing smoke fixture forced a read of `deploy_filters.sh`'s alignment gate — and
+> the smoke suite had passed the whole deploy *having never loaded v8*, because it had no
+> fixture for it. 21st occurrence in `memory/working-rules.md`.
 
-## ▶ NEXT SESSION STARTS HERE — v8 is live; normalization and the tab decision are open
+## ▶ NEXT SESSION STARTS HERE
 
-⛔ **THREE THINGS ARE OPEN, and the first is an owner decision, not a task:**
+⛔ **Step 1 is a MEASUREMENT, not a task: confirm the cycle actually scored v8.**
+No production cycle had run when the session ended (deploy ~09:50 CEST, next
+`fluxus-collection` 12:04). Check first:
 
-1. **`uplifting v7` IS STILL LIVE.** This deploy CREATED `human_thriving`; it retired nothing.
-   Both score every cycle. **Which one feeds the Thriving tab, and whether v7 is retired, is
-   an OPEN OWNER DECISION** (`memory/ovr-lens-set-current.md` still maps Thriving → uplifting v7).
-2. **Phase E normalization — now UNBLOCKED.** `fit_normalization.py` needs ≥200 production rows
-   above 4.5; they are accumulating from the first cycle after the deploy. Until it is fitted,
-   `normalization_method: none` and raw passes through, so every surfaced article clears the
-   4.0 enrichment gate. ⚠️ **Fitting it is the step that takes ~40% of surfaced articles below
-   that gate** (NM#319, measured on v7) — owner accepted, but it is a real change.
-3. **A `human_thriving` smoke-test fixture** in NexusMind's `deploy/smoke_test_articles.jsonl`.
-   Without it the post-deploy gate cannot see v8 at all.
+```bash
+ssh sadalsuud 'cd ~/local_dev/NexusMind && ls -la data/filtered/human_thriving/ && \
+  cat data/filtered/human_thriving/*.jsonl | wc -l'
+```
 
-**Also open:** #150 (a junk-gate layer — decide which categories earn a blocker, from the
-production hand-audit, not the panel), and the ~50-article hand-audit itself, which is the
-only precision measurement taken on the population that matters.
+Empty or missing ⇒ the enablement did not take effect; read `scripts/main.py:2569` and the
+cycle log **before** doing anything else. **Do not treat the config key as the answer — that
+is exactly what went wrong on 2026-09-07.**
+
+Then, in order:
+
+1. **Phase E normalization**, once ≥200 rows sit above 4.5. Fit with `stats.raw_min` = **4.5**
+   (`test_normalization_invariant.py` enforces the equality) and remember an op-point move
+   touches **all four** surfaces in one commit. ⚠️ Fitting it is what arms NM#319: anchoring
+   puts the op-point at normalized 0.0, and NexusMind's enrichment gate reads the **normalized**
+   score at 4.0 — on v7 that leaves ~40% of surfaced articles un-enriched. Owner accepted; it is
+   still a real change.
+2. **The ~50-article production hand-audit** — off-lens count and category-error count on what
+   v8 actually surfaces. **The only precision measurement on the population that matters**;
+   everything published so far is a 25.1× design-weighted panel. It is also the
+   requirements-gathering for **#150**. H-V8-26's revisit trigger: if it lands outside
+   [0.55, 0.82] the weighting model is wrong, not the model.
+3. **#151 — the `uplifting` → `human_thriving` cutover.** Both filters score every cycle right
+   now. Blocked on 12 ovr.news files, a fitted CDF, and an owner ruling on the predicate change
+   (Jaccard **0.246** — v7 and v8 do not share a positive class).
+4. **#150 — the junk-gate layer**, after the audit. Do not design it off the panel.
+
+**Open issues from this work:** **#150** (junk gate), **#151** (cutover scope), **#147**
+(Stage-1 thresholds — v8 confirmed live in production, the other six still inert),
+**#141** (non-Latin recall, blocks any probe-threshold move).
+
+⚠️ **A `human_thriving` smoke fixture now exists** (NexusMind `deploy/smoke_test_articles.jsonl`,
+floor 4.5 = the op-point, so it asserts the article SURFACES). Keep it; it is the only thing
+that makes the post-deploy gate able to see this filter at all.
 
 ## 🟡 PREVIOUS (SUPERSEDED 2026-09-07 BY THE DEPLOY) — Phase 8 is CLOSED. Phase 9 is next
 

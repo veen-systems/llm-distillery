@@ -6296,3 +6296,39 @@ its own instructions were written minutes apart.
 recover N (match `best_val_mae` against `training_history.json`). ⚠️ Three other surfaces said
 "epoch 4 of 6" for a filter that now ships epoch 5 — one of them in `--help`, i.e. visible to
 someone who would then pass `--selected-epoch 4` deliberately.
+
+## A filter was deployed, verified by execution, and called by nothing (2026-09-07)
+**Problem**: `human_thriving v8` shipped to NexusMind (PR #452) with every gate green —
+package synced, weights pre-placed on gpu-server, scorer restarted, CODE_REVISION
+round-tripped, `verify_filter_package.py --check-hub` 9/9, and a direct
+`POST /filter/human_thriving/score` returning wa 5.604 → medium. I published "live in
+production". No production cycle would ever have called it: `human_thriving` was missing from
+`pipeline.enabled_filters`, the list `scripts/main.py:2569` reads and iterates. Left as
+shipped, `data/filtered/human_thriving/` stays empty forever and Phase E normalization — which
+fits its CDF from that directory — becomes impossible.
+**Root cause**: I proved the CALLEE and inferred the CALLER. "Can it score when asked?" and
+"does anything ask it?" are different questions and the first is the easy one, so the
+deliberate outcome check I ran to satisfy the working rule answered the wrong one. Compounding
+it: the post-deploy smoke suite passed through the whole deploy **having never loaded v8**,
+because it had no fixture for that filter — a suite that reports success on a filter it never
+exercised. And a NEW filter has an enablement step that a version upgrade does not, so every
+guard in the chain was built for the upgrade case.
+**Fix**: NexusMind PR #453 — add `human_thriving` to `pipeline.enabled_filters` AND add the
+missing smoke fixture, which must land together because `deploy_filters.sh`'s fixture-name
+alignment gate requires every fixture's filter to be enabled. Found only because writing the
+fixture forced a read of that gate. Recorded as the 21st occurrence of *prove the outcome
+changed* in `memory/working-rules.md`.
+
+## A published count came from a grep with two lossy stages (2026-09-07)
+**Problem**: I told a peer session that ovr.news names `uplifting` in "8 distinct files" and
+then listed 7. The real figure is 12. I used the wrong number to correct a peer who had it
+right.
+**Root cause**: Two independent truncations in one pipeline. The `--include` list was
+`*.ts *.tsx *.svelte`, which silently dropped `.astro` — and the two `.astro` hits are the page
+layer, the most consumer-facing files of the twelve. Then the output was piped through
+`head -15`, which cut three `.ts` files the include DID cover. Neither stage announced itself,
+and the count was published without the enumeration that would have made it re-derivable.
+**Fix**: Re-derive with `grep -rl <term> src --exclude-dir=node_modules | sort` and publish the
+LIST, not the number. `#151` carries the enumeration rather than the figure. The tell was
+visible in my own sentence — "8 distinct files" above a list of 7 — so an internal
+count/enumeration disagreement is worth treating as a defect signal in itself.

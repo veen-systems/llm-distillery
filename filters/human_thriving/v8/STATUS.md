@@ -1,7 +1,21 @@
 # human_thriving v8 — STATUS
 
-✅ **LIVE IN PRODUCTION SINCE 2026-09-07.** Trained, probed, calibrated, gate-measured, published
-and deployed. Labelled, adjudicated; prompt settled at v8.4. Last updated 2026-09-07.
+✅ **DEPLOYED AND ENABLED 2026-09-07.** Trained, probed, calibrated, gate-measured, published,
+deployed and wired into the pipeline.
+
+⛔⛔ **THE DEPLOY WAS NOT THE LAST STEP, AND CALLING IT "LIVE" WAS PREMATURE ONCE ALREADY.**
+PR #452 shipped the package and the scorer loaded it — but `human_thriving` was **missing from
+`pipeline.enabled_filters`**, the list `scripts/main.py:2569` iterates, so no cycle would ever
+have called it and `data/filtered/human_thriving/` would have stayed empty, making Phase E
+impossible. Fixed by PR **#453**, which enabled it *and* added the missing smoke fixture — the two
+are coupled by `deploy_filters.sh`'s fixture-name alignment gate. ⚠️ **A new filter has an
+enablement step that a version upgrade does not**, and every guard in the chain was built for the
+upgrade case. `memory/working-rules.md`, 21st occurrence.
+
+⚠️ **STILL UNCONFIRMED AT TIME OF WRITING: no production cycle had run.** The deploy landed at
+~09:50 CEST and the next `fluxus-collection` was 12:04. The code path is traced
+(`main.py:2569` reads the key, iterates at 2575, scores via `GPUClient`) but **traced is not
+observed** — check `data/filtered/human_thriving/` before quoting v8 as scoring production. Labelled, adjudicated; prompt settled at v8.4. Last updated 2026-09-07.
 
 **What shipped:** NexusMind `e0f0af9` (PR #452), scorer restarted on gpu-server, CODE_REVISION
 `f20e6f4f…` round-tripped. Weights are out-of-band at

@@ -140,7 +140,26 @@ Moved here from `memory/MEMORY.md` on 2026-08-06: they are always-needed
 constraints, and the memory index is navigational. Each was promoted only after
 repeating.
 
-- **Before shipping any gate, cap, threshold, config key or stamp, name the caller that loads it — and then prove the outcome changed at the END of the run.** *(⚠️ **20th occurrence 2026-09-06/07 — THE REFUSAL COULD NOT FIRE, IN THE GUARD BUILT FOR
+- **Before shipping any gate, cap, threshold, config key or stamp, name the caller that loads it — and then prove the outcome changed at the END of the run.** *(⚠️ **21st occurrence 2026-09-07 — I DEPLOYED A FILTER THAT NOTHING CALLED, AND PUBLISHED "LIVE IN PRODUCTION".**
+  `human_thriving v8` shipped to NexusMind (PR #452): package synced, weights pre-placed on
+  gpu-server, scorer restarted, CODE_REVISION round-tripped, `verify_filter_package.py --check-hub`
+  9/9, and — deliberately, because I know the rule — a direct `POST /filter/human_thriving/score`
+  returning **wa 5.604 → medium**. I called that proving the outcome. **It was not.** It proved the
+  scorer COULD score when asked; nothing established that anything ASKED. `human_thriving` was never
+  added to `pipeline.enabled_filters`, which is the list `scripts/main.py:2569` reads and iterates —
+  so the 4h cycle would never have touched it, `data/filtered/human_thriving/` would have stayed
+  empty forever, and **Phase E normalization, which fits its CDF from that directory, could never
+  have run.** ⭐ **The instrument was pointed at the right object and the call path was still dead:
+  I tested the callee and inferred the caller.** "Can it score?" and "does anything score with it?"
+  are different questions, and the first is the one that is easy to answer.
+  ⭐⭐ **What found it was not a check — it was writing an unrelated fixture.** Adding the missing
+  smoke-test row forced me to read `deploy_filters.sh`'s fixture-name alignment gate, which requires
+  every fixture's filter to be in `enabled_filters`. **The gap was invisible to everything green:**
+  the post-deploy smoke suite passed through the entire deploy having never loaded v8, because it had
+  no fixture for it — a suite that reports success on a filter it never exercised. ⚠️ **A deploy that
+  adds a NEW filter has an enablement step that an upgrade of an existing one does not**, and every
+  guard in the chain was built for the upgrade case. `EXP-028` session, NexusMind PR #452 then #453.)*
+  *(⚠️ **20th occurrence 2026-09-06/07 — THE REFUSAL COULD NOT FIRE, IN THE GUARD BUILT FOR
   THAT EXACT FAILURE.** `train.py` gained `resolve_git_provenance()` and a checker, both
   written because `human_thriving v8`'s adapter was orphaned by `git commit --amend` — a
   commit on no branch. Both shipped **unable to detect a commit on no branch**: `git branch
