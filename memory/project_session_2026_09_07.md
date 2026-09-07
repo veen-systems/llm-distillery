@@ -88,3 +88,73 @@ dependency merges are ancestors of my base `e0f0af9`, and the CI run's headSha e
    matters, and the requirements-gathering for #150.
 4. #151 — the cutover, blocked on 12 ovr.news files, a fitted CDF and an owner ruling
    (Jaccard 0.246: v7 and v8 do not share a positive class).
+
+---
+
+## ⛔⛔ ADDENDUM — the enablement took the pipeline down (written after the sections above)
+
+Everything above was written before the first post-enable cycle produced numbers. It did, and
+they were bad.
+
+**The 12:10 cycle ran the SHARED preprocessing stages 7–10× over normal** — og:image backfill
+21,245 pages against a 2.6k–3.1k baseline, hero image extraction **41,435** against 3.3k–4.0k,
+ML candidates 18,206 against a 3,000 cap. It hit the og:image stage's own 3,600s budget (dropping
+5,203) and was on course to exceed `TimeoutStartSec=4h` **before scoring started**: a SIGKILL
+with zero filtered output for **all six filters**, not just the new one.
+
+**Cause — a cold start, not the prefilter.** NexusMind skips articles listed in
+`data/raw/.processed_ids_<filter>.json` (`scripts/main.py:1565`). A new filter has no such file,
+so it loads every article inside `max_article_age_days: 3` — ~18 collection cycles, ~41,400
+against the observed 41,435. Private to the new filter, except dedup and image analysis run once
+on the **union** of every enabled filter's pool (`:3555-3567`).
+
+⛔ **And it does not self-heal.** `_save_processed_ids` is at `:2141`, after the per-filter
+scoring loop. A kill before scoring leaves the file unwritten and the next cycle rebuilds the
+identical pool — a kill loop every 4h until someone intervenes.
+
+⭐⭐ **The keeper, from the `nexusmind-0a` session: THE COST AND THE THING THAT WOULD END IT ARE
+ON OPPOSITE SIDES OF THE SAME TIMEOUT.** Generalised: *a one-time cost whose receipt is written
+only on success is not one-time — it is a loop.* Look for it wherever a first run is expensive
+and its completion marker is written at the end.
+
+⭐ **Two mechanisms fitted the same 10×; only one survived reading the code.** The peer's leading
+hypothesis was that v8's ABSENT PREFILTER widened the candidate set — it fits the magnitude just
+as well and is wrong: that path consults no prefilter. Registered as `H-V8-27` with the rival kept
+in the row, because the refuted one is the instructive half.
+
+**Mitigation (peer session, owner-authorised, 15:27–15:28, NOT me):** stop the unit, copy
+`.processed_ids_uplifting.json` → `.processed_ids_human_thriving.json`, `reset-failed`. ⭐ **My
+contribution was the one detail that changed their command**: copy WHOLESALE. The `versions`
+sidecar is `{id, content_hash, collected_date}`, the superseded-rows mechanism (#119), and it is
+filter-agnostic corpus data — copying only `ids` would have silently disabled change detection
+for v8 across the whole 3-day window. ⚠️ **That seeded file is the mitigation, not a stray
+artifact: deleting it restores the outage.**
+
+**I stood down** and did not touch sadalsuud once my user said the peer was handling it — two
+sessions acting on one production host is its own failure mode.
+
+## ⛔ THE ACCEPTANCE TEST IS UNREAD — first action next session
+
+At 15:41 the unit was `inactive dead` and the next collection was 16:04, so no post-mitigation
+cycle had run. **The diagnosis is consistent with the evidence and not yet confirmed by it.**
+
+```bash
+ssh sadalsuud 'cd ~/local_dev/NexusMind && \
+  grep -E "og:image backfill: fetching|Hero image extraction:" logs/nexusmind.log | tail -2; \
+  cat data/filtered/human_thriving/*.jsonl 2>/dev/null | wc -l'
+```
+
+PASS: og:image **2.6k–3.1k**, hero **3.3k–4.0k**, and `human_thriving` rows appearing.
+⛔ **FAIL on either ⇒ the cold start is not the whole story**: back `human_thriving` out of
+`pipeline.enabled_filters` and redeploy (that is llm-distillery's path, i.e. mine), and
+re-diagnose rather than guessing a third mechanism.
+
+## What today's two misses have in common
+
+**I verified the thing I changed, not the system around it — twice, one layer apart.** First:
+the package deployed and the scorer could score, but nothing called it (`enabled_filters`).
+Then: the filter was enabled and would score, but I never asked what its FIRST cycle would cost.
+Both passed every gate that existed. `working-rules.md` 21st occurrence covers the first; the
+second is now `docs/RUNBOOK.md` § 4b and **#152**.
+
+⚠️ **v8 has still never scored a production article.**
