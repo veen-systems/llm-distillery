@@ -6350,8 +6350,20 @@ count disagreed inside one script and the count was the half I read.
 **Fix**: Read a derived population the way its consumer reads it — for normalization that is
 `nexus_mind_attributes.<filter>.raw_weighted_average` falling back to `weighted_average`. Where
 a lookup can miss silently, print the denominator and the min/max beside the count: `min 0.868
-max 6.961` is what finally showed the field was live. Recorded in `docs/TODO.md` beside the
-Phase E step, because that is where the next reader will need it.
+max 6.961` is what finally showed the field was live. Better still, and what the peer session
+did: **run the wrong reading as a CONTROL beside the right one**, so the zero is visibly an
+artifact rather than a result. Recorded in `docs/TODO.md` beside the Phase E step.
+
+⭐ **The deeper root cause is not the wrong field — it is that the wrong denominator came out
+approximately right.** (Framing from the `nexusmind-0a` session, 2026-09-07, which had the same
+error in four places.) Sizing Phase E off rows *written* (~2,500/cycle) gave "1–2 cycles";
+the true figure, rows *above the op-point*, gives 2. **A coincidentally plausible conclusion is
+the strongest protection a bad measurement can have** — it is what stops anyone re-deriving it.
+That generalises past this case and explains why all three of my zeros read as findings rather
+than as instrument failures: each was a number a real problem could plausibly have produced.
+⚠️ Corollary for this project's own habit: *predict the range first* only helps if the
+prediction and the measurement do not share a source. Here they did — both came from the same
+misunderstanding of what a filtered row contains.
 
 ## An empty directory that reads as a completed cycle (2026-09-07)
 **Problem**: `data/filtered/human_thriving/` existed on sadalsuud with 0 rows. A peer session

@@ -64,10 +64,20 @@ Then, in order:
    falling back to `weighted_average`. A TOP-LEVEL lookup returns a clean, plausible `0 >= 4.5`
    rather than an error** (top level carries only `_commerce_score` / `_obituary_score` /
    `_violence_promotion_score`). That cost three wrong readings on 2026-09-07.
-   ▶ **OWED: notify the `nexusmind-0a` session (or whatever NexusMind session is current) when
-   v8's `normalization.json` is fitted** — that is the trigger for NM#455 step 2, and their probe
-   counts rows written and cannot see whether a CDF exists. ⚠️ This note is a message to a future
-   session, NOT a mechanism: if nobody reads it, nothing fires.
+   ▶ **The NM#455 step-2 trigger is now a PROBE on the NexusMind side, not a note here** — the
+   peer session pointed it at `filters/human_thriving/v8/normalization.json`, falling back to
+   counting rows, so it no longer depends on anyone remembering.
+   ⚠️ **BUT IT FIRES AT DEPLOY, NOT AT FIT, and that is answered rather than assumed**:
+   `fit_normalization.py:883` writes `args.filter / "normalization.json"`, and `--filter` is the
+   **llm-distillery** package path — so the file lands here first and reaches NexusMind only via
+   a later `deploy_to_nexusmind.sh human_thriving v8`. (Confirmed it does travel: the file is
+   tracked in both repos for uplifting v7, solutions v6 and belonging v1.) **So after fitting,
+   deploy the package or tell them explicitly** — otherwise their probe correctly reports "not
+   fitted" while the CDF exists, which is the empty-directory shape again.
+   ⚠️ **A `test -f` on that file is not "step 2 can start" either**: `stats.raw_min` must EQUAL
+   4.5 (`tests/unit/test_normalization_invariant.py`), so a `normalization.json` can exist and be
+   un-deployable — present to a presence probe, blocked in fact. Read `stats.raw_min`, not the
+   file's existence.
    Fit with `stats.raw_min` = **4.5**
    (`test_normalization_invariant.py` enforces the equality) and remember an op-point move
    touches **all four** surfaces in one commit. ⚠️ Fitting it is what arms NM#319: anchoring
