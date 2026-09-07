@@ -1,0 +1,25 @@
+op-point 4.5 (from filters/human_thriving/v8/config.yaml); truth cut 4.5; noise floor 0.16 (#95)
+weights: 1/inclusion_probability over 6590 corpus rows, span 25.1x
+
+=== calibrated ===  joined 660 rows
+                           unweighted  design-weighted
+  positive rate               5.3030%          3.1638%
+  PRECISION                    0.5500           0.6073   band [0.5524, 0.8159]
+  specificity                  0.9856           0.9941   band [0.9933, 0.9974]
+  recall                       0.3143           0.2779   band [0.2531, 0.3535]
+  f1                           0.4000           0.3814
+  cells  unweighted tp 11 fp 9 fn 24 tn 616
+         weighted   tp 138.0 fp 89.2 fn 358.4 tn 15103.7
+
+=== raw ===  joined 660 rows
+                           unweighted  design-weighted
+  positive rate               5.3030%          3.1638%
+  PRECISION                    0.5862           0.5776   band [0.4618, 0.6711]
+  specificity                  0.9808           0.9898   band [0.9865, 0.9915]
+  recall                       0.4857           0.4286   band [0.3535, 0.5290]
+  f1                           0.5312           0.4921
+  cells  unweighted tp 17 fp 12 fn 18 tn 613
+         weighted   tp 212.7 fp 155.6 fn 283.6 tn 15037.4
+
+CONTROL PASSED: the unweighted arm reproduces filters/human_thriving/v8/ground_truth_gate.json cell-for-cell for every model.
+wrote docs/evidence/2026-09-07-v8-weighted-precision/weighted_precision.json

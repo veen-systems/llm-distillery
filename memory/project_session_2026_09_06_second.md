@@ -54,7 +54,9 @@ the oracle's own `scope_verdict` — a field on all 6,586 labelled rows:
 
 **The plain FP count moved 5× more than the reader-facing quantity did, and the two models have
 identical category-error counts.** Specificity 0.9856 and "9 of 20 surfaced are wrong" are the
-same model; the #95 band on specificity is **3 to 8 false positives**, a 3× range inside one
+same model; the #95 band on specificity is **5 to 10 false positives** (⚠️ **corrected 2026-09-07**: this
+line published **3 to 8**, which is the SUPERSEDED epoch-4 arm's band — fp 5, −2/+3. Epoch 5
+is fp 9, −4/+1), a 2× range inside one
 "not distinguishable" verdict. Registered as `H-V8-25` / #149. ⚠️ n=17 and 20; "1 versus 1"
 compares two single articles.
 

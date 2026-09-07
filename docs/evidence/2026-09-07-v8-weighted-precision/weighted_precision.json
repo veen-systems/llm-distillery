@@ -1,0 +1,113 @@
+{
+  "op_point": 4.5,
+  "noise_floor": 0.16,
+  "weight_source": "datasets/scored/human_thriving_v8/corpus.jsonl",
+  "models": {
+    "calibrated": {
+      "n_joined": 660,
+      "unweighted": {
+        "n": 660,
+        "positives": 35,
+        "tp": 11,
+        "fn": 24,
+        "fp": 9,
+        "tn": 616,
+        "recall": 0.3142857142857143,
+        "precision": 0.55,
+        "specificity": 0.9856,
+        "f1": 0.4,
+        "precision_band": [
+          0.5,
+          0.7368421052631579
+        ],
+        "specificity_band": [
+          0.984,
+          0.992
+        ]
+      },
+      "weighted_cells": {
+        "tp": 137.9633308439134,
+        "fn": 358.41249230432356,
+        "fp": 89.2091589909551,
+        "tn": 15103.697503959856
+      },
+      "weighted": {
+        "recall": 0.27794127838235233,
+        "precision": 0.6073065050446859,
+        "specificity": 0.9941282362243099,
+        "f1": 0.38135209043638474,
+        "positive_rate": 0.03163789189136174
+      },
+      "weighted_band": {
+        "precision": [
+          0.5523880579111484,
+          0.8158552475586979
+        ],
+        "recall": [
+          0.25308418228084295,
+          0.35351550474593574
+        ],
+        "specificity": [
+          0.9932997325732297,
+          0.9973930995158827
+        ]
+      },
+      "scores_path": "datasets/gate/ht_v8_test_cuda_retrain/scores_calibrated.jsonl"
+    },
+    "raw": {
+      "n_joined": 660,
+      "unweighted": {
+        "n": 660,
+        "positives": 35,
+        "tp": 17,
+        "fn": 18,
+        "fp": 12,
+        "tn": 613,
+        "recall": 0.4857142857142857,
+        "precision": 0.5862068965517241,
+        "specificity": 0.9808,
+        "f1": 0.53125,
+        "precision_band": [
+          0.4827586206896552,
+          0.65625
+        ],
+        "specificity_band": [
+          0.976,
+          0.9824
+        ]
+      },
+      "weighted_cells": {
+        "tp": 212.7408513816281,
+        "fn": 283.6349717666088,
+        "fp": 155.55174596506515,
+        "tn": 15037.354916985747
+      },
+      "weighted": {
+        "recall": 0.4285882620799915,
+        "precision": 0.5776408565208383,
+        "specificity": 0.9897615545585894,
+        "f1": 0.4920749881436787,
+        "positive_rate": 0.03163789189136174
+      },
+      "weighted_band": {
+        "precision": [
+          0.4618455192452645,
+          0.6711344193086863
+        ],
+        "recall": [
+          0.3535155047459358,
+          0.5290195845450844
+        ],
+        "specificity": [
+          0.98654175460861,
+          0.9915306435659096
+        ]
+      },
+      "scores_path": "datasets/gate/ht_v8_test_cuda_retrain/scores_raw.jsonl"
+    }
+  },
+  "control": {
+    "reproduces": "filters/human_thriving/v8/ground_truth_gate.json",
+    "passed": true
+  }
+}

@@ -26,6 +26,21 @@ ground truth at the ruled op-point, on **CUDA**: **recall 0.314, specificity 0.9
 precision 0.550, **20 surfaced of which 9 FP**, n=660, 35 positives (5.30% unweighted).
 `ground_truth_gate.json`, `docs/evidence/2026-09-06-v8-retrain-gate/`.
 
+⭐ **AND 0.550 IS THE PANEL'S PRECISION, NOT THE FEED'S — under the production mix it is
+0.6073 (2026-09-07, EXP-028).** The 660-row split is a design-weighted draw (span 25.1×) whose
+positive rate is **5.3030% unweighted against 3.1638% design-weighted**; recall and specificity
+are conditional on the true class and survive reweighting, **precision does not**. Horvitz-Thompson
+weighted, the calibrated arm reads **precision 0.6073** (band [0.5524, 0.8159]), **specificity
+0.9941**, recall 0.2779 — the lower base rate pushes precision down, the specificity gain
+(FP rate 1.44% → 0.59%) more than cancels it. ⭐ **The calibrated arm is also ahead of the raw arm on
+both ADR-023 criteria under that mix, and ONE ordering survives its band**: specificity 0.9941
+[0.9933, 0.9974] vs 0.9898 [0.9865, 0.9915] is **disjoint**; precision 0.6073 [0.5524, 0.8159] vs
+0.5776 [0.4618, 0.6711] **overlaps and is NOT distinguishable**. Neither is visible in
+`calibration_report.md`, whose verdict is stated in MAE. ⚠️ Still the ORACLE's opinion on a
+reweighted 660-row sample, not production traffic — the hand-audit of the first ~50 surfaced live
+articles is still the measurement that matters.
+`docs/evidence/2026-09-07-v8-weighted-precision/`.
+
 ⛔ **NOT DISTINGUISHABLE FROM THE OLD CHECKPOINT — do not report this as a regression.** The
 epoch-4 model scored recall 0.343 / spec 0.9920 / precision 0.706 with 17 surfaced and 5 FP.
 **Every #95 band overlaps** (recall, precision, specificity, F1), and the owner's 2026-08-06
@@ -38,6 +53,9 @@ oracle calls thriving stories, scored just under 4.5, which the student put just
 Genuinely off-lens is **3 of 20** (off-lens precision **0.850** against the old **0.882**) and
 **category errors (`harm_is_subject`) are 1 — the SAME as before**. ⚠️ These are counts over
 17 and 20 surfaced articles; *"1 versus 1"* compares two single articles, not two rates.
+⚠️ **The #95 band on this checkpoint's 9 false positives is 5 to 10** (`fp` ± the
+`indeterminate_by_cell` flips: 9 − 4 → 5, 9 + 1 → 10). **3 to 8 is the SUPERSEDED epoch-4
+band** (fp 5, −2/+3) and is wrong for epoch 5 wherever it still appears.
 ⛔ **READ THE SPECIFICITY FIRST — we prioritise HIGH CERTAINTY over HIGH DETECTION.** The
 0.314 (epoch 5; 0.343 on the superseded epoch 4) is the decision working, not the model
 failing: ADR-023 chooses being right about what is surfaced over surfacing more, because a
