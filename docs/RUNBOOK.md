@@ -112,6 +112,67 @@ burst guard; alerts also append to `data/alerts.log`).
 intermittently from Windows Git Bash with `dup() in/out/err failed`. `remote_deploy.sh`
 sidesteps by running it on sadalsuud (Linux) instead.
 
+### 4b. A NEW filter needs its `processed_ids` seeded BEFORE its first cycle
+
+⛔⛔ **This step does not exist for a version bump and is mandatory for a new filter name.
+Skipping it took the whole pipeline down on 2026-09-07.**
+
+NexusMind tracks what each filter has already scored in
+`data/raw/.processed_ids_<filter>.json`, and `load_articles()` skips those ids
+(`scripts/main.py:1565`). A filter with **no such file** therefore loads **every article inside
+`pipeline.max_article_age_days`** — not just the cycle's new ones.
+
+That would be a private cost, except the expensive preprocessing stages are **shared**: story
+dedup and image analysis run once on the **union of every enabled filter's pool**
+(`scripts/main.py:3555-3567`). So one cold-starting filter inflates them for **all** filters.
+
+Measured on the first cycle after enabling `human_thriving v8` (2026-09-07, 3-day window,
+collection every 4h ⇒ ~18 cycles of backlog):
+
+| stage | normal | first cycle | factor |
+|---|---|---|---|
+| og:image backfill | 2.6k–3.1k | **21,245** | 7.0× |
+| hero image extraction | 3.3k–4.0k | **41,435** | 10.2× |
+| ML candidates | under the 3,000 cap | **18,206** | 6× over |
+
+⛔ **And it does not self-heal.** `_save_processed_ids` is called at `scripts/main.py:2141`,
+**after** the per-filter scoring loop completes. The cycle above was on course to exceed
+`TimeoutStartSec=4h` before scoring even started, so the SIGKILL would have left the file
+unwritten and the next cycle would have rebuilt the identical pool — **a kill loop every 4h,
+zero filtered output for every filter, until someone intervenes.** The thing that would end it
+is exactly the thing the kill prevents.
+
+**Do this before enabling a new filter name in `pipeline.enabled_filters`:**
+
+```bash
+# 1. Confirm the gap (an established filter for comparison)
+ssh sadalsuud 'cd ~/local_dev/NexusMind && ls -la data/raw/.processed_ids_*.json'
+
+# 2. Seed from any established filter — same corpus, same id space
+#    (measured 2026-09-07: all five sat at 121,881–121,883 ids)
+ssh sadalsuud 'cd ~/local_dev/NexusMind && \
+  cp data/raw/.processed_ids_uplifting.json data/raw/.processed_ids_{name}.json'
+```
+
+⚠️ **Copy the file WHOLESALE — do not copy only the `ids` map.** It also carries a `versions`
+sidecar of `{id, content_hash, collected_date}`, the superseded-rows mechanism
+(llm-distillery#119) that re-admits an article edited upstream. That is **filter-agnostic corpus
+data** — a content hash is the same whichever filter saw it — so stripping it silently costs the
+new filter change detection for the whole retention window.
+
+⚠️ **The seeded file is the MITIGATION, not a stray artifact.** Deleting it restores the
+backfill, i.e. restores the outage. Say so wherever the deploy is recorded.
+
+⚠️ **Cost of seeding, stated:** the new filter never scores the retention-window backlog. That
+is usually irrelevant — Phase E needs *new* rows above the op-point and gets them at the normal
+per-cycle rate (~147/cycle measured on `uplifting`, 5.81% of 2,530). Take the backlog only if
+something actually needs it, and then plan for a multi-hour cycle rather than discovering one.
+
+**Verification, after the first real cycle** — and predict it before looking: the shared stages
+return to their normal bands (og:image 2.6k–3.1k, hero 3.3k–4.0k). If they stay high, the cold
+start is not the whole story; back the filter out of `enabled_filters` and re-diagnose rather
+than guessing again.
+
 ### 5. Monitor
 
 ```bash

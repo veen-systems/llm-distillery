@@ -23,6 +23,36 @@
 > the smoke suite had passed the whole deploy *having never loaded v8*, because it had no
 > fixture for it. 21st occurrence in `memory/working-rules.md`.
 
+## 🔴 INCIDENT 2026-09-07 — enabling v8 took the pipeline down for a cycle
+
+⛔ **Mitigated by the NexusMind session at 15:27 (option B, owner-authorised). Do not undo it.**
+
+The first cycle after enabling `human_thriving` ran the SHARED preprocessing stages 7–10× over
+normal (og:image backfill 21,245 vs 2.6k–3.1k; hero extraction 41,435 vs 3.3k–4.0k; ML candidates
+18,206 vs a 3,000 cap) and was on course to be SIGKILLed at `TimeoutStartSec=4h` **before scoring
+started** — zero filtered output for all six filters.
+
+**Cause:** a new filter has no `data/raw/.processed_ids_<name>.json`, so it loads the whole
+`max_article_age_days: 3` window (~18 cycles), and dedup + image analysis run on the **union** of
+every enabled filter's pool. ⛔ **It does not self-heal** — `_save_processed_ids` runs after the
+scoring loop, so a kill leaves the file unwritten and the next cycle repeats: a kill loop.
+⭐ **The cost and the thing that would end it are on opposite sides of the same timeout.**
+
+**Fix applied:** `cp data/raw/.processed_ids_uplifting.json data/raw/.processed_ids_human_thriving.json`
+(whole file — the `versions` sidecar is filter-agnostic corpus data and stripping it would have
+disabled superseded-row re-admission for v8). ⚠️ **That file is the MITIGATION, not a stray
+artifact — deleting it restores the outage.** Never let a cleanup pass tidy it away.
+
+▶ **OPEN: the acceptance test has not been read yet.** The next cycle must show hero extraction
+back to **3.3k–4.0k** and og:image backfill to **2.6k–3.1k**. If either stays high, the cold start
+is not the whole story — remove `human_thriving` from `enabled_filters` and re-diagnose, do not
+guess again. Second check: `data/filtered/human_thriving/` filling at ~147/cycle if v8 tracks
+v7's 5.81%.
+
+Written up: `docs/RUNBOOK.md` § *4b*, `memory/gotcha-log.md`, and **#152** (make it a pre-flight
+guard — ⚠️ note the open design question there: enabling happens in a NexusMind PR, so a guard in
+this repo's deploy script would not fire at the triggering moment).
+
 ## ▶ NEXT SESSION STARTS HERE
 
 ⛔ **Step 1 is a MEASUREMENT, not a task: confirm the cycle actually scored v8.**

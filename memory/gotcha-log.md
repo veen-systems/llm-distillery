@@ -6377,3 +6377,38 @@ successful cycle would leave.
 **Fix**: Count ROWS, never test for the directory, and confirm a cycle actually ran with
 `systemctl list-timers fluxus-collection.timer` — LAST must be after the deploy. Both are now
 in `docs/TODO.md`'s step-1 measurement block.
+
+## Enabling a new filter took the whole pipeline down (2026-09-07)
+**Problem**: The first cycle after enabling `human_thriving v8` ran the shared preprocessing
+stages 7–10× over normal — og:image backfill 21,245 pages against a 2.6k–3.1k baseline, hero
+image extraction 41,435 against 3.3k–4.0k, ML candidates 18,206 against a 3,000 cap. It hit the
+og:image stage's own 3,600s budget (dropping 5,203), and was on course to exceed
+`TimeoutStartSec=4h` **before scoring started** — a SIGKILL with zero filtered output for all
+six filters, not just the new one.
+**Root cause**: NexusMind skips articles listed in `data/raw/.processed_ids_<filter>.json`
+(`scripts/main.py:1565`). A new filter has no such file, so it loads **every** article inside
+`max_article_age_days: 3` — 18 collection cycles of backlog, ~41,400, against the observed
+41,435. That would be private to the new filter except story dedup and image analysis run once
+on the **union of every enabled filter's pool** (`scripts/main.py:3555-3567`), so one cold start
+inflates them for everyone. ⛔ **And it does not self-heal**: `_save_processed_ids` runs at
+`scripts/main.py:2141`, after the per-filter scoring loop, so a kill before scoring leaves the
+file unwritten and the next cycle rebuilds the identical pool — a kill loop every 4h until
+someone intervenes. The thing that would end it is what the kill prevents.
+**Fix**: Seed the file from any established filter before enabling a new one — same corpus, same
+id space (all five sat at 121,881–121,883). Copy it **wholesale**: the `versions` sidecar is
+`{id, content_hash, collected_date}`, the superseded-rows mechanism (#119), and it is
+filter-agnostic corpus data, so stripping it costs the new filter change detection for the whole
+window. Now `docs/RUNBOOK.md` § *4b*, as a step that exists for a new filter name and not for a
+version bump.
+⭐⭐ **THE SHARPEST STATEMENT OF IT, from the `nexusmind-0a` session that ran the mitigation:
+the cost and the thing that would end it are on OPPOSITE SIDES OF THE SAME TIMEOUT.**
+`_save_processed_ids` sits after the scoring loop, so the very first run of a new filter is the
+one that both incurs the full backfill *and*, if it does not finish, fails to record that it
+happened. That is the general shape to look for — **a one-time cost whose receipt is written
+only on success is not one-time; it is a loop.** Worth checking wherever a first run is
+expensive and its completion marker is written at the end.
+⭐ **The lesson under the mechanism**: I verified that enabling the filter would make it score,
+and never asked what its FIRST cycle would cost. Same shape as the same day's earlier miss one
+layer out — I checked the thing I changed, not the system around it. A per-entity progress marker
+means the entity's absence is not a neutral starting state, it is a full backlog; and where an
+expensive stage is SHARED across entities, one cold start is everyone's outage.
