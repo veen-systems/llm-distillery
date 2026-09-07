@@ -6332,3 +6332,36 @@ and the count was published without the enumeration that would have made it re-d
 LIST, not the number. `#151` carries the enumeration rather than the figure. The tell was
 visible in my own sentence — "8 distinct files" above a list of 7 — so an internal
 count/enumeration disagreement is worth treating as a defect signal in itself.
+
+## A nested score field read as a clean zero, three times (2026-09-07)
+**Problem**: Sizing Phase E from production output, I measured "rows ≥ 4.5" in
+`data/filtered/uplifting/filtered_*.jsonl` three times and got three wrong answers before the
+right one: `>= 4.5: 0 (0.0%)`, then `raw_weighted_average: ABSENT on all rows` with
+`tier counts: [(None, 2530)]`, then `scored rows: 0 of 2530`. Every one looked like a finding.
+The truth is **147 of 2,530 (5.81%)**.
+**Root cause**: The filter scores are not top-level on those rows. They live one level inside
+`nexus_mind_attributes.<filter>`, which is how `fit_normalization.load_weighted_averages_*`
+reads them. Top level carries only `_commerce_score` / `_obituary_score` /
+`_violence_promotion_score`, so a top-level lookup returns a **plausible zero rather than a
+KeyError** — and 0% surfacing is exactly the shape a real problem would take on a
+newly-deployed filter. The second attempt walked the structure and *printed the right block*,
+but the aggregation loop beneath it iterated one level too shallow, so the diagnostic and the
+count disagreed inside one script and the count was the half I read.
+**Fix**: Read a derived population the way its consumer reads it — for normalization that is
+`nexus_mind_attributes.<filter>.raw_weighted_average` falling back to `weighted_average`. Where
+a lookup can miss silently, print the denominator and the min/max beside the count: `min 0.868
+max 6.961` is what finally showed the field was live. Recorded in `docs/TODO.md` beside the
+Phase E step, because that is where the next reader will need it.
+
+## An empty directory that reads as a completed cycle (2026-09-07)
+**Problem**: `data/filtered/human_thriving/` existed on sadalsuud with 0 rows. A peer session
+reported a dual-scoring cycle had run at ~12:09; it was 11:04, and the last cycle had run at
+08:04 — before the deploy.
+**Root cause**: The directory was created at 10:10 by my own failed
+`run_filters.py --filter human_thriving` attempt — `FilterRunner.__init__` sets up its data
+directories before `_load_filter` raises, and it raised (`No module named 'torch'`: sadalsuud
+orchestrates, gpu-server scores over REST). So a run that scored nothing left the artifact a
+successful cycle would leave.
+**Fix**: Count ROWS, never test for the directory, and confirm a cycle actually ran with
+`systemctl list-timers fluxus-collection.timer` — LAST must be after the deploy. Both are now
+in `docs/TODO.md`'s step-1 measurement block.

@@ -34,13 +34,41 @@ ssh sadalsuud 'cd ~/local_dev/NexusMind && ls -la data/filtered/human_thriving/ 
   cat data/filtered/human_thriving/*.jsonl | wc -l'
 ```
 
-Empty or missing ⇒ the enablement did not take effect; read `scripts/main.py:2569` and the
-cycle log **before** doing anything else. **Do not treat the config key as the answer — that
+⚠️ **The directory EXISTS and is EMPTY as of 2026-09-07 11:04** — created 10:10 by a failed
+manual `run_filters.py` on sadalsuud (no torch there; it scores over REST from gpu-server), NOT
+by a cycle. **An empty-but-present directory reads exactly like "the cycle ran and surfaced
+nothing".** So count ROWS, never test for the directory.
+
+Zero rows after a cycle has demonstrably run ⇒ the enablement did not take effect; read
+`scripts/main.py:2569` and the cycle log **before** doing anything else. Confirm a cycle ran
+with `systemctl list-timers fluxus-collection.timer` (LAST must be after the deploy) — at session
+end the last run was **08:04**, before the ~09:50 deploy, and the next was **12:04**. **Do not treat the config key as the answer — that
 is exactly what went wrong on 2026-09-07.**
 
 Then, in order:
 
-1. **Phase E normalization**, once ≥200 rows sit above 4.5. Fit with `stats.raw_min` = **4.5**
+1. **Phase E normalization**, once ≥200 rows sit above 4.5 — **and it is step 1 of 3, not the
+   last gate** (owner ruling **NM#455**, relayed 2026-09-07). ADR-012 settles what the filter is
+   CALLED; it does **not** establish that v8 serves readers better than v7, and the cutover will
+   not be made on the rename alone. Ruled sequence: fit normalization → **compare rank agreement
+   and the HEAD of each lens on the same day's articles** (the head is what readers see, so a
+   swap changes *what surfaces*, not the mean) → then rule. **Additive dual-scoring is the
+   intended steady state for now, not a transition to finish.** No date was set on purpose; the
+   named failure mode is "temporarily both" becoming permanent, so if the comparison has not run
+   ~a week out, force it.
+   ⚠️ **Sizing, measured 2026-09-07:** the bar is rows **above the op-point**, not rows written.
+   On `filtered_20260907_091612.jsonl`, uplifting is **147 of 2,530 ≥ 4.5 raw (5.81%)** — so ~2
+   cycles at v7's rate. **v8's share will differ and may be lower** (Jaccard 0.246, different
+   positive class); at ~3% it is ~76/cycle and needs 3 cycles.
+   ⛔ **Read the scores the way the fitter does — `nexus_mind_attributes.<filter>.raw_weighted_average`,
+   falling back to `weighted_average`. A TOP-LEVEL lookup returns a clean, plausible `0 >= 4.5`
+   rather than an error** (top level carries only `_commerce_score` / `_obituary_score` /
+   `_violence_promotion_score`). That cost three wrong readings on 2026-09-07.
+   ▶ **OWED: notify the `nexusmind-0a` session (or whatever NexusMind session is current) when
+   v8's `normalization.json` is fitted** — that is the trigger for NM#455 step 2, and their probe
+   counts rows written and cannot see whether a CDF exists. ⚠️ This note is a message to a future
+   session, NOT a mechanism: if nobody reads it, nothing fires.
+   Fit with `stats.raw_min` = **4.5**
    (`test_normalization_invariant.py` enforces the equality) and remember an op-point move
    touches **all four** surfaces in one commit. ⚠️ Fitting it is what arms NM#319: anchoring
    puts the op-point at normalized 0.0, and NexusMind's enrichment gate reads the **normalized**
