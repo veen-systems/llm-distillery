@@ -25,7 +25,9 @@ And: **never rank or compare filters on MAE.**
 
 A low recall in this repo is usually the decision working, not the model failing —
 and it does not read that way to anyone meeting the number cold. `human_thriving
-v8` passed its deploy gate at **recall 0.343 / specificity 0.992**: it surfaces
+v8` passed its deploy gate at **recall 0.314 / specificity 0.9856** (retrained epoch-5
+checkpoint, EXP-027 2026-09-06; the superseded epoch-4 model read 0.343 / 0.992, and the
+two are NOT distinguishable — all four #95 bands overlap): it surfaces
 about a third of what the oracle calls on-lens, and is right about 70% of what it
 does surface. That is the trade this ADR chose, at an op-point the owner ratified
 after seeing the whole frontier.

@@ -200,8 +200,9 @@ is no thriving outcome to verify.
   Belonging, at the same time. Nothing is excluded for being adjacent to another lens.
 - **Not high-recall, and this is deliberate.** ADR-023: a false positive reaches a reader, a
   false negative is invisible and the slot refills. At the operating point v8 surfaces about a
-  third of what the oracle calls on-lens and is right about 70% of what it surfaces. **Read the
-  specificity first.**
+  third of what the oracle calls on-lens and is right about **55%** of what it surfaces by the
+  plain count — **85%** counting only genuinely off-lens errors. **Read the specificity
+  first**, and see `README.md` for why those two numbers differ.
 
 ## Open questions of principle
 

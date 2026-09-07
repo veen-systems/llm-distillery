@@ -223,11 +223,20 @@ NULL_CONTROL_RE = re.compile(r"null_control|null_arm|self_control", re.I)
 # genuinely frozen instrument (indeterminate rows present, band still zero) still
 # FAILS. It prints as a NOTE on every run — a silent carve-out is how the next
 # real [0, 0] gets through.
+# ⛔ READ OFF THE PRODUCER, NOT GUESSED. `ground_truth_gate.py:344-345`:
+#     r_lo, p_lo, f_lo = _prf(tp - ind_tp, fn + ind_tp, fp + ind_tn)
+#     r_hi, p_hi, f_hi = _prf(tp + ind_fn, fn - ind_fn, fp - ind_fp)
+#     s_lo = (tn - ind_tn)/neg ;  s_hi = (tn + ind_fp)/neg
+# so PRECISION and F1 move with ALL FOUR cells, recall with tp/fn, specificity
+# with fp/tn. The first version of this table declared precision as (tp, fp) and
+# f1 as (tp, fp, fn) — review built a report with ind={tp:0,fn:0,fp:0,tn:4} where
+# both were exempted while FOUR rows sat inside the floor, and the NOTE printed a
+# reason that was simply untrue. A printed reason is an assertion too.
 BAND_CELLS = {
     "recall": ("tp", "fn"),
-    "specificity": ("tn", "fp"),
-    "precision": ("tp", "fp"),
-    "f1": ("tp", "fp", "fn"),
+    "specificity": ("fp", "tn"),
+    "precision": ("tp", "fn", "fp", "tn"),
+    "f1": ("tp", "fn", "fp", "tn"),
 }
 
 
@@ -244,10 +253,26 @@ def _saturated_band(parent, key):
     missing = [c for c in cells if c not in ind]
     if missing:
         return False, ""
-    if any(ind[c] for c in cells):
+    # ⛔ EXACTLY INTEGER ZERO. `any(ind[c] ...)` treated null, "", [] and false as
+    # "no indeterminate rows" — and `null` means UNKNOWN, not zero. A future gate
+    # writing null for an empty cell (a natural JSON idiom) would have silently
+    # exempted every band. The repo's rule is to make the missing case raise, never
+    # to read it as a value.
+    for c in cells:
+        v = ind[c]
+        if not (isinstance(v, int) and not isinstance(v, bool)):
+            return False, ""
+        if v != 0:
+            return False, ""
+    # ⛔ AND THE FLOOR MUST HAVE BEEN ON. `ground_truth_gate.py --noise-floor 0`
+    # makes `abs(pred - medium) < 0` unsatisfiable, so every cell is 0 and every
+    # band is zero-width — a SWITCHED-OFF instrument wearing the saturated shape.
+    # `noise_floor` is a sibling key in the same object; read it.
+    floor = parent.get("noise_floor")
+    if not isinstance(floor, (int, float)) or isinstance(floor, bool) or floor <= 0:
         return False, ""
     return True, ("no row in " + "/".join(cells) + " is within the noise floor "
-                  "of the threshold, so this band could not have any width")
+                  f"({floor}) of the threshold, so this band could not have any width")
 
 # markdown: `CI [x, y]`, `95% CI of (x, y)`, `confidence interval [x, y]`.
 # ⚠️ Numbers are compared as FLOATS: a lexical test passed `CI [0.0, 0.00]`.

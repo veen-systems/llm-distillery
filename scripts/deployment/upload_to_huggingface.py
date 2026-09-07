@@ -26,9 +26,10 @@ def create_model_card(
     ``selected_epoch`` is 1-based and names the epoch the SHIPPED checkpoint came
     from. It exists because ``training_history[-1]`` is the LAST epoch trained,
     which is only the shipped one when selection happened to keep the final
-    checkpoint. ``human_thriving v8`` ships epoch 4 of 6 (selected on
-    ``recall_medium`` @4.5), so a card built from ``[-1]`` would publish epoch 6's
-    metrics beside epoch 4's weights with nothing saying so.
+    checkpoint. ``human_thriving v8`` ships epoch 5 of 6 (selected on ``recall_medium`` @4.5;
+    epoch 4 until the 2026-09-06 retrain), so a card built from ``[-1]`` publishes
+    epoch 6's metrics beside epoch 5's weights with nothing saying so — measured at
+    17 changed lines.
     """
 
     if selected_epoch is None:
@@ -276,7 +277,9 @@ def main():
         help=(
             "1-based epoch the SHIPPED checkpoint came from. Without it the card "
             "reports the LAST epoch trained, which is wrong whenever checkpoint "
-            "selection kept an earlier one (human_thriving v8: epoch 4 of 6)."
+            "selection kept an earlier one (human_thriving v8: epoch 5 of 6). "
+            "Recover N by matching training_metadata.json best_val_mae against "
+            "training_history.json."
         ),
     )
     parser.add_argument(

@@ -9,12 +9,19 @@ ssh b650-gpu        # account is `jeroen` (NOT jwasys); works from situla and sa
 
 - ⭐ **`~/llm-distillery` IS A GIT CHECKOUT as of 2026-09-06** (`git init` + remote +
   `git checkout -f main`; every gitignored artefact — `datasets/`, both venvs,
-  `filters/*/model/` — survived untouched, and tracked-file drift is 0). Before that it
-  was a **partial rsync**, and the drift was not cosmetic: `training/train.py` was the
-  **pre-fix** version missing 176 lines of checkpoint-selection machinery, and
-  `uplifting v7`'s `config.yaml` / `normalization.json` / `base_scorer.py` all differed
-  from what sadalsuud serves (main and sadalsuud were byte-identical, so b650 was the
-  stale one). Pre-checkout copies + diffs: `b650:~/b650-pre-checkout-2026-09-06/`.
+  `filters/*/model/` — survived untouched, and tracked-file drift was **0 at the moment
+  of checkout**. ⚠️ It is not 0 in general: a training or calibration run writes
+  `training_{history,metadata}.json`, `calibration.json` and `ground_truth_gate.json`,
+  which are tracked, so the box shows modified files until those are pulled back and
+  committed — that is the retrain working, not drift.)
+  Before that it was a **partial rsync**, and **12 tracked files differed**, of which
+  four are on the scoring path: `training/train.py` was the **pre-fix** version missing
+  176 lines of checkpoint-selection machinery, and `uplifting v7`'s `config.yaml` /
+  `normalization.json` / `base_scorer.py` all differed from what sadalsuud serves (main
+  and sadalsuud were byte-identical, so b650 was the stale one). The other eight were
+  `cultural_discovery v5` ×2, `investment_risk v6` ×3 and three `scripts/analysis/`
+  dumpers. Pre-checkout copies + per-file diffs, and the authoritative list:
+  `b650:~/b650-pre-checkout-2026-09-06/MODIFIED.txt`.
   ⛔ **Sync with `git fetch && git checkout`, not rsync** — `training/train.py` now
   REFUSES to train outside a checkout, because a copy cannot name the commit that trains.
 - **sudo password**: in owner's Bitwarden (initial photo'd one is dead).

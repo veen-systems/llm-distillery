@@ -42,7 +42,8 @@ Genuinely off-lens is **3 of 20** (off-lens precision **0.850** against the old 
 0.314 (epoch 5; 0.343 on the superseded epoch 4) is the decision working, not the model
 failing: ADR-023 chooses being right about what is surfaced over surfacing more, because a
 false positive reaches a reader and a false negative is invisible. v8 surfaces about a third of what the oracle calls on-lens and is
-right about **70%** of what it does surface. **A change that raises recall here without
+right about **55%** of what it does surface by the plain count, **85%** once the six
+`in_scope` boundary cases are set aside (epoch 5; the 70% often quoted is epoch 4's). **A change that raises recall here without
 holding specificity is a regression**, and "recall is low" is not on its own a finding.
 ⛔ **Do NOT set that recall beside the fleet's 0.59–0.72** — v7 and v8 do not share a positive
 class (Jaccard **0.246** on these same rows), so those are two quantities with one name.
@@ -77,7 +78,7 @@ because v8's state is complicated enough that "not deployed" is not a useful sum
 | Phase D gate | ⛔ not started. ⚠️ **Criterion 1 is NOT stably failing** — the 4.400 was a k=3 mean on a coin-toss row; at k=6 under unchanged v8 it is **3.608 ± 2.560, PASS**. `docs/evidence/2026-09-03-v8-1-gate/` |
 | **ADR-021 deploy gate** | ✅ **RE-RUN 2026-09-06 on the RETRAINED epoch-5 checkpoint**: recall **0.314** / spec **0.9856** / precision **0.550**, 20 surfaced / 9 FP, at 4.50 calibrated on **CUDA**. NOT distinguishable from the epoch-4 model's 0.343/0.992/0.706 — all four #95 bands overlap. Superseded run (EXP-026, epoch 4). ⚠️ **The device measurement below belongs to the EPOCH-4 model, not this one** — CPU vs CUDA gave **0 verdict flips**, identical confusion matrices, max \|Δ\| 0.1428 calibrated, measured on the superseded checkpoint. It is not re-measured for epoch 5; the retrain's whole chain (calibration fit, dump, gate) ran on **CUDA only**, so no device claim is needed for it — but neither is one licensed (#104) |
 | Phase E normalization | ⛔ **BLOCKED, and the ordering is why** — `fit_normalization.py` reads NexusMind production output and needs ≥200 rows above the op-point; sadalsuud has **no `human_thriving`** at all. Normalization comes AFTER deployment, as it did for `solutions v6`. ⛔ Do not substitute the test split: it is a 25.1× design-weighted sample |
-| Phase F deploy | ⚠️ **step 1 of 5 done** — the doc set is complete (2026-09-06). Blocked on two owner decisions: the weight transport, and the dangling checkpoint below |
+| Phase F deploy | ⚠️ **steps 1–2 of 5 done.** Doc set complete; both owner decisions RULED 2026-09-06 — transport is *rsync b650 → Situla → gpu-server **and** publish `jeergrvgreg/human-thriving-filter-v8` private as an off-machine backup*, and the dangling checkpoint was **retrained**, not excepted. Remaining: the weights must reach **gpu-server** (`~/NexusMind/filters/`, the serving box — `deploy_filters.sh` excludes `model/`, so weights go out-of-band), then the Hub publish, then the NexusMind commit + deploy |
 
 ⚠️ **The labelled corpus is 6,586, not 6,590** — four scrape-junk skips, all JavaScript-required
 boilerplate at 357–489 chars, all *above* the 300-char floor.
@@ -211,21 +212,23 @@ nothing depends on it until the op-point is reopened.
   not have said otherwise. **Routing asymmetry confirmed; recall asymmetry not measured.**
   This is the layer that replaced the Latin-only keyword prefilter (ADR-018/019 Amendment
   2026-08-21). llm-distillery#141 is the blocker.
-- ⛔⛔ **The checkpoint was NOT produced by any commit now on a branch.** It was trained by the
-  tree that became `1878e7b` via `git commit --amend`, so the exact sha (`0697f5a`) is dangling
-  and will not survive `git gc`. `1878e7b` resolves this filter to the same 4.5 and does not
-  change `recall_at_k` at n=658, so the numbers reproduce — but *the verified artifact is not
-  the shipped one* until it is retrained under a real commit. **Decide before Phase F: retrain
-  (~90 min on b650) or record the exception.**
-- ⚠️ **The two committed metadata files use the PRE-AMEND schema** (`select_metric`,
-  `select_metric_available`, `medium_threshold`). `1878e7b` writes `requested_*` plus
-  checkpoint-scoped fields and `checkpoint_saved`, so a future run's file will not match these
-  key-for-key. Not drift — a schema change, dated here.
-- ⚠️ **The epoch was chosen by a TIE-BREAK, not by the metric.** `recall_medium` saturates at
-  **0.5806 across epochs 4, 5 and 6**; selection's strict `>` keeps the earliest. Epoch 6 is
-  better on `recall_at_20` (0.65 vs 0.55) and NDCG. On test the two arms are **not
-  distinguishable** — every gap is two articles, and they swap rank at 4.25.
-  llm-distillery#144.
+- ✅ **RESOLVED 2026-09-06 — the checkpoint now names a commit on a branch.** It previously did
+  not: the adapter was trained by the tree that became `1878e7b` via `git commit --amend`, so
+  the producing sha (`0697f5a`) was reachable from nothing. Owner ruled *"no exception"* and it
+  was **retrained under `64b469d` on `main`**, `git_dirty=false` (EXP-027). `train.py` now
+  refuses to train without a commit stamp and `check_training_provenance.py` re-checks
+  reachability afterwards. ⚠️ This buys **traceability, not bit-reproducibility** — the run is
+  not deterministic at this seed.
+- ✅ **The metadata schema question is closed by the same retrain.** `training_metadata.json` now
+  carries `requested_*`, the checkpoint-scoped fields, `checkpoint_saved` **and** the four git
+  fields. ⚠️ Only `training_metadata_baseline_mae.json` is still on the pre-amend schema — it is
+  EXP-015's discarded MAE-selected arm and nothing will retrain it.
+- ✅ **The tie-break did NOT decide this checkpoint.** That was true of the epoch-4 build, where
+  `recall_medium` saturated at 0.5806 across epochs 4/5/6 and the strict `>` kept the earliest.
+  The retrain did **not** saturate — 0.000 / 0.226 / (no best) / 0.516 / **0.613** / (no best) —
+  so **epoch 5 was chosen outright**. ⚠️ llm-distillery#144 stays open: the metric can still tie,
+  and selecting on a recall metric under a policy whose criterion is specificity is a separate
+  question.
 
 - ⛔⛔ **CORRECTED 2026-09-03: acceptance criterion 1 was never stably failing.** The 4.400
   that read as a FAIL is a **k=3 mean on a bimodal row**. At **k=6 under the unchanged v8

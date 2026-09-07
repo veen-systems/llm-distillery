@@ -16,7 +16,13 @@ reader and costs trust; a false negative is invisible and the slot refills withi
 raises recall without holding specificity is a regression. Read every recall figure beside
 its split's positive rate — the column is there — and never rank on MAE.
 
-⚠️ `human_thriving v8` gate-passed at **recall 0.343 / spec 0.992** and is deliberately NOT
+⚠️ `human_thriving v8` gate-passed at **recall 0.314 / spec 0.9856 / precision 0.550**
+(20 surfaced, 9 FP) on the **retrained epoch-5** checkpoint, 2026-09-06, commit `64b469d`
+(EXP-027). ⛔ **The widely-quoted 0.343 / 0.992 / 0.706 is the SUPERSEDED epoch-4 model** —
+orphaned by a `git commit --amend` and retrained rather than shipped with a provenance
+exception. All four #95 bands overlap, so the two are **NOT DISTINGUISHABLE**; the point
+estimates move adversely and 6 of the 9 FPs are `in_scope` boundary cases, not junk.
+It is deliberately NOT
 in these tables: it is not deployed, and its positive class is not v7's (Jaccard 0.246), so
 its recall is not commensurable with the rows below.
 

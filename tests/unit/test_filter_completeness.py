@@ -4,10 +4,12 @@
 filters in a hand-written dict, and the dict had gone stale: it listed
 `sustainability_technology v3`, **deleted on 2026-08-03**, so a removed package
 rendered as an incomplete one; it listed two superseded versions; and it omitted
-`nature_recovery`, `solutions` and `human_thriving` altogether. This is the tool
-the package-parity gate invokes, so its population being wrong made every parity
-claim wrong with it — *every measurement error this project has made was a
-hand-built population*.
+`nature_recovery`, `solutions` and `human_thriving` altogether — *every measurement
+error this project has made was a hand-built population*.
+
+⛔ An earlier version of this header said the script was "the tool the package-parity
+gate invokes". It is not; **nothing invokes it**. The real package gate is
+`scripts/deployment/verify_filter_package.py`, run by the commit-msg hook.
 
 ⚠️ The second test is the one that matters over time: `DOC_CORE` is a SECOND COPY
 of `memory/filter-doc-standard.md`'s 6-file core, and two hand-maintained copies of
@@ -17,6 +19,7 @@ either.
 from __future__ import annotations
 
 import importlib.util
+import re
 import sys
 from pathlib import Path
 
@@ -65,12 +68,69 @@ def test_discovery_tracks_deletions(mod):
 
 def test_doc_core_matches_the_written_standard(mod):
     """DOC_CORE is a second copy of the doc standard's 6-file core. Cross-check it
-    against the prose rather than trusting either copy alone."""
+    against the prose rather than trusting either copy alone.
+
+    ⛔ THE FIRST VERSION OF THIS TEST WAS A MENTION CHECK and review broke it:
+    swapping `README_MODEL.md` for `calibration_report.md` — which the standard
+    mentions, as an OPTIONAL extension — still passed. Now each name must appear in
+    its own NUMBERED core item, so a swap with an optional file fails."""
     text = DOC_STANDARD.read_text(encoding="utf-8")
     assert len(mod.DOC_CORE) == 6, mod.DOC_CORE
+    numbered = re.findall(r"^\d+\.\s+~?~?`([^`]+)`", text, re.M)
+    assert numbered, "the doc standard's numbered core list did not parse"
     for fname in mod.DOC_CORE:
-        assert f"`{fname}`" in text, (
-            f"{fname} is in DOC_CORE but the doc standard never names it")
+        assert fname in numbered, (
+            f"{fname} is in DOC_CORE but is not a NUMBERED item of the doc "
+            f"standard's core (numbered items found: {numbered})")
+    # and the struck-through item 3 must NOT be in the core
+    assert "prefilter.py" in numbered, "the standard should still LIST item 3"
+
+
+def test_the_mention_check_swap_is_caught(mod, monkeypatch):
+    """The exact substitution review used, asserted to fail now."""
+    text = DOC_STANDARD.read_text(encoding="utf-8")
+    numbered = re.findall(r"^\d+\.\s+~?~?`([^`]+)`", text, re.M)
+    assert "calibration_report.md" not in numbered, (
+        "calibration_report.md is an OPTIONAL extension; if it ever becomes a "
+        "numbered core item this test stops discriminating")
+    assert "`calibration_report.md`" in text, (
+        "it must still be MENTIONED, or the swap this guards against is not possible "
+        "and the test proves nothing")
+
+
+def test_strict_makes_incompleteness_fail(mod, capsys):
+    """⛔ main() returns 0 however incomplete the fleet is — correct for a report,
+    fatal if it is ever wired into a gate. --strict is the gate mode."""
+    assert mod.main(["--core", "docs"]) == 0
+    capsys.readouterr()
+    assert mod.main(["--core", "docs", "--strict"]) == 1
+    assert "FAIL --strict" in capsys.readouterr().out
+
+
+def test_nothing_actually_invokes_this_script(mod):
+    """The docstring claimed "this is the tool the package-parity gate invokes" and
+    nothing invoked it — mention-as-use, in the file about stale hand-maintained
+    state.
+
+    ⚠️ This asserts the WORLD, not the wording. A first version forbade the phrase
+    in the docstring, which the corrected docstring must still QUOTE to record what
+    was wrong — so the test would have forced deletion of the record. If this script
+    is ever genuinely wired into a hook, a CI job or a `verify:` annotation, this
+    test fails and the docstring should be corrected in the other direction."""
+    import subprocess
+    r = subprocess.run(
+        ["grep", "-rn", "filter_completeness",
+         "--include=*.sh", "--include=*.yml", "--include=*.yaml",
+         "--include=commit-msg", "--include=pre-commit",
+         ".githooks", "scripts/deployment", "memory/MEMORY.md"],
+        cwd=REPO, capture_output=True, text=True)
+    assert r.stdout.strip() == "", (
+        "something now invokes filter_completeness.py — it is a REPORT whose main() "
+        f"returns 0 however incomplete the fleet is; use --strict:\n{r.stdout}")
+    assert "REPORT, NOT A GATE" in (mod.__doc__ or "").upper()
+
+
+def test_prefilter_is_not_in_the_core(mod):
     assert "prefilter.py" not in mod.DOC_CORE, (
         "prefilter.py was removed from the core on 2026-08-21 (owner ruling); "
         "putting it back makes a correctly-built new filter read as INCOMPLETE")

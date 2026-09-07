@@ -35,8 +35,10 @@ metadata:
    <id> --card-only` writes it without creating a repo, uploading anything, or needing
    `model/` on disk. ⚠️ **Pass `--selected-epoch` whenever the shipped checkpoint is not
    the last epoch trained** — the generator reads `training_history[-1]`, so
-   `human_thriving v8` (epoch 4 of 6) would otherwise publish epoch 6's metrics beside
-   epoch 4's weights, 14 numbers wrong with nothing saying so.
+   `human_thriving v8` (**epoch 5** of 6 since the 2026-09-06 retrain) would otherwise
+   publish epoch 6's metrics beside epoch 5's weights — **17 changed lines**, exit 0,
+   measured in review. ⛔ The `.gitignore` comment used to give the regeneration command
+   *without* this flag; running it verbatim reintroduced the defect the flag exists for.
 
 *(Numbering is kept at 1–7 with item 3 struck through, rather than renumbered, so that
 existing references to "item 5 = DEEP_ROOTS.md" elsewhere do not silently shift. The

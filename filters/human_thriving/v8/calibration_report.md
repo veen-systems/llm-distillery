@@ -1,5 +1,32 @@
 # human_thriving v8 — Calibration Report
 
+⛔⛔ **SUPERSEDED 2026-09-06. EVERY NUMBER BELOW DESCRIBES THE EPOCH-4 FIT, AND THE
+`calibration.json` BESIDE IT IS THE EPOCH-5 REFIT.** The model was retrained under a real
+commit (`64b469d`, EXP-027) after `git commit --amend` orphaned the previous checkpoint's
+training commit, so this narrative and the shipped artifact no longer describe the same fit.
+
+The shipped fit, from `docs/evidence/2026-09-06-v8-retrain-gate/`:
+
+| | val (its own fit set) | test (held out) |
+|---|---|---|
+| epoch-5, shipped | 0.5717 → 0.5461 (**+4.5%**) | **0.5855 → 0.6066 (−3.6%)** |
+| epoch-4, below | 0.5805 → 0.5492 (+5.4%) | 0.6029 → 0.6142 (−1.9%) |
+
+⚠️ **The test "before" is the CLAMPED arm.** `fit_calibration.run_inference_raw` keeps
+*unclamped* logits and reports 0.5947 → 0.6066 (−2.0%); `dump_student_scores.py` clamps to
+[0, 10], which is what production does, and on that arm the degradation is **−3.6%**. Both
+numbers are internally correct; the one that describes production is −3.6%. Found in review
+2026-09-06 — the published −2.0% understated it.
+
+⭐ **The finding is unchanged and now holds twice**: calibration does **not** improve held-out
+MAE, and ships on ADR-008 plus ADR-023's specificity tie-break rather than because it helped.
+
+**This file has NOT been re-derived per dimension.** Doing so is owed and untriggered; nothing
+depends on it until the op-point is reopened.
+
+---
+
+
 Per-dimension isotonic regression (ADR-008), fit on the **658-row val split**, evaluated on
 the **660-row test split** (untouched by training, by checkpoint selection, and by the fit).
 Fitted **2026-09-04** on `b650-gpu`, **CPU**, `venv-prodparity`. `EXP-016`.

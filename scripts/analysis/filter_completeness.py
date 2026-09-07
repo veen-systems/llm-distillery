@@ -1,7 +1,6 @@
 """Filter package completeness, against both cores the project actually declares.
 
-⛔ THE FILTER LIST USED TO BE HAND-MAINTAINED, AND IT WENT STALE — which matters
-because this is the tool the package-parity gate invokes. Until 2026-09-06 it
+⛔ THE FILTER LIST USED TO BE HAND-MAINTAINED, AND IT WENT STALE. Until 2026-09-06 it
 named five filters: `uplifting v6` (superseded by v7), `cultural_discovery v4`
 (superseded by v5), and `sustainability_technology v3` — **deleted on 2026-08-03**,
 so every row rendered `---` and a removed package read as an incomplete one. It
@@ -22,9 +21,24 @@ are gitignored as large files, so "missing" here means *missing on this disk*, n
 failures, because conflating the two is how a correctly-built package reads as
 broken.
 
+⚠️ THIS IS A REPORT, NOT A GATE, and an earlier draft of this docstring claimed it
+was "the tool the package-parity gate invokes" — which was false. Nothing invokes
+it: no hook, no CI, no `<!-- verify: -->` annotation (`grep -rn filter_completeness`
+finds only prose, this file and its tests). The actual package gate is
+`scripts/deployment/verify_filter_package.py`, which the commit-msg hook runs.
+Mention-as-use, inside the file whose whole thesis is that hand-maintained state
+goes stale — found in review 2026-09-06.
+
+⚠️ `main()` RETURNS 0 HOWEVER INCOMPLETE THE FLEET IS (today: 4/29 doc-complete).
+That is correct for a report and wrong for a gate, so if it is ever wired into a
+battery it will pass unconditionally. Use `--strict` to make incompleteness a
+non-zero exit; nothing passes that today, deliberately, because most of the 29 are
+archived versions nobody intends to complete.
+
 Usage:
     python3 scripts/analysis/filter_completeness.py
     python3 scripts/analysis/filter_completeness.py --core docs
+    python3 scripts/analysis/filter_completeness.py --strict   # exit 1 if incomplete
 """
 from __future__ import annotations
 
@@ -93,7 +107,12 @@ def present(pkg: str, rel: str) -> bool:
 def main(argv=None) -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--core", choices=("docs", "code", "both"), default="both")
+    ap.add_argument("--strict", action="store_true",
+                    help="exit 1 if any package is incomplete — off by default because "
+                         "this is a report, not a gate, and most of the 29 packages are "
+                         "archived versions nobody intends to complete")
     args = ap.parse_args(argv if argv is not None else [])
+    incomplete = 0
 
     packages = discover()
     if not packages:
@@ -115,6 +134,7 @@ def main(argv=None) -> int:
             status = "COMPLETE" if not missing else "missing: " + " ".join(missing)
             print(f"  {pkg:<{width}}  {status}")
         complete = [p for p in packages if all(present(p, f) for f in core)]
+        incomplete += len(packages) - len(complete)
         print(f"  -- {len(complete)}/{len(packages)} complete")
 
     print("\n=== hub declaration (exactly one of inference_hub.py / NO_HUB) ===")
@@ -135,6 +155,9 @@ def main(argv=None) -> int:
         have = sum(present(pkg, f) for f in LOCAL_ONLY)
         if have:
             print(f"  {pkg:<{width}}  {have}/{len(LOCAL_ONLY)} present on this disk")
+    if args.strict and incomplete:
+        print(f"\nFAIL --strict: {incomplete} package/core pair(s) incomplete")
+        return 1
     return 0
 
 

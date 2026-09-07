@@ -364,30 +364,62 @@ def resolve_git_provenance(allow_missing: bool = False) -> dict:
     repo = Path(__file__).resolve().parent.parent
 
     def _git(*a):
-        return subprocess.run(("git", "-C", str(repo)) + a, capture_output=True,
-                              text=True, timeout=30)
+        # ⛔ git ABSENT or HUNG must reach the opt-out, not a raw traceback. Both
+        # were reproduced in review: FileNotFoundError and TimeoutExpired escaped
+        # uncaught, so `--allow-missing-git-provenance` -- whose entire purpose is
+        # "train even though provenance cannot be established" -- could not be used
+        # on the one box where it is needed.
+        try:
+            return subprocess.run(("git", "-C", str(repo)) + a, capture_output=True,
+                                  text=True, timeout=30)
+        except (FileNotFoundError, subprocess.TimeoutExpired) as exc:
+            return subprocess.CompletedProcess(a, 127, "", f"git unavailable: {exc}")
 
-    probe = _git("rev-parse", "--is-inside-work-tree")
-    if probe.returncode != 0 or probe.stdout.strip() != "true":
-        reason = (f"{repo} is not a git work tree — the training box holds a copy, "
-                  f"not a checkout, so no commit identifies this run")
+    def _unavailable(reason, remedy):
         if not allow_missing:
             raise RuntimeError(
-                f"Refusing to train without provenance: {reason}. Make the box a "
-                f"checkout (git init + fetch + checkout), or pass "
+                f"Refusing to train without provenance: {reason}. {remedy} Or pass "
                 f"--allow-missing-git-provenance to record the gap explicitly."
             )
         return {"git_commit": None, "git_dirty": None,
+                "git_branches_at_train_time": [],
                 "git_provenance": f"UNAVAILABLE: {reason}"}
+
+    probe = _git("rev-parse", "--is-inside-work-tree")
+    if probe.returncode != 0 or probe.stdout.strip() != "true":
+        return _unavailable(
+            f"{repo} is not a git work tree — the training box holds a copy, not a "
+            f"checkout, so no commit identifies this run",
+            "Make the box a checkout (git init + fetch + checkout).")
+
+    # ⛔ `git -C` WALKS UP. A plain copy of the tree dropped anywhere inside another
+    # checkout answers `true` above and then reports the ENCLOSING repo's HEAD --
+    # reproduced in review, stamped `recorded` and clean, for a sha that has nothing
+    # to do with this tree. That is the RUNBOOK's own rsync-fallback scenario. The
+    # work tree must be THIS directory, not an ancestor of it.
+    top = _git("rev-parse", "--show-toplevel").stdout.strip()
+    if not top or Path(top).resolve() != repo:
+        return _unavailable(
+            f"{repo} is not the root of a work tree — git resolved the enclosing "
+            f"repository at {top or '<unknown>'} instead, so a commit from a "
+            f"DIFFERENT tree would be stamped as this run's provenance",
+            "Make this directory itself a checkout, or move it outside the other repo.")
 
     sha = _git("rev-parse", "HEAD").stdout.strip()
     # -uno: untracked files (staged datasets, venvs, scratch scripts) are not the
     # tree that trains. Tracked modifications are.
     dirty_out = _git("status", "--porcelain", "-uno").stdout.strip()
     dirty = bool(dirty_out)
-    branches = [b.strip().lstrip("* ").strip()
-                for b in _git("branch", "--contains", sha).stdout.splitlines()
-                if b.strip()]
+    # ⛔ NOT `git branch --contains`. On a DETACHED HEAD it emits the pseudo-branch
+    # `* (HEAD detached from abc1234)`, which survives lstrip("* ") as a non-empty
+    # string -- so `branches` was truthy and the "commit on no branch" refusal, the
+    # single property this guard exists for, NEVER FIRED for a genuinely unreachable
+    # commit. Reproduced in review. `for-each-ref` enumerates real refs only and
+    # cannot emit a pseudo-branch.
+    branches = [b for b in _git(
+        "for-each-ref", "--format=%(refname:short)",
+        "--contains", sha, "refs/heads", "refs/remotes").stdout.splitlines()
+        if b.strip()]
 
     if dirty and not allow_missing:
         raise RuntimeError(

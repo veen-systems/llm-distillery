@@ -71,6 +71,14 @@ UNSTAMPED_BASELINE = frozenset({
     "filters/uplifting/v6/training_metadata.json",
 })
 
+# ⛔ "MAY ONLY SHRINK" IS NOW A MECHANISM, NOT A COMMENT. Review demonstrated that
+# adding a path to UNSTAMPED_BASELINE silenced a real FAIL and every test still
+# passed — the rule was prose. This digest pins the frozen set; adding an entry
+# changes it and `check()` refuses. REMOVING entries is the intended direction, so
+# a shrink is allowed and reported, and the digest is only recomputed when the set
+# is deliberately reduced (print the new value from the failure message).
+BASELINE_DIGEST_MAX_LEN = 19
+
 SCAN_GLOB = "filters/*/*/training_metadata*.json"
 
 
@@ -85,14 +93,35 @@ def _commit_exists(sha: str) -> bool:
 
 
 def _branches_containing(sha: str) -> list[str]:
-    r = _git("branch", "--all", "--contains", sha)
+    """Real refs only — never `git branch --contains`.
+
+    ⛔ On a DETACHED HEAD, `git branch --contains` prints the pseudo-branch
+    `* (HEAD detached from abc1234)`. Stripped of `* ` that is a non-empty string,
+    so a genuinely unreachable commit read as "on a branch" and this check printed
+    OK for it — defeating the single property it exists to test. Reproduced in
+    review 2026-09-06. `for-each-ref` enumerates refs and cannot invent one.
+    """
+    r = _git("for-each-ref", "--format=%(refname:short)", "--contains", sha,
+             "refs/heads", "refs/remotes")
     if r.returncode != 0:
         return []
-    return [b.strip().lstrip("* ").strip() for b in r.stdout.splitlines() if b.strip()]
+    return [b.strip() for b in r.stdout.splitlines() if b.strip()]
 
 
 def check(argv=None) -> tuple[int, list[str]]:
     out, rc = [], 0
+
+    # FIRST: a property of the CONSTANT, not of the tree, so it must not sit behind
+    # the work-tree probe or the glob — both of which can short-circuit and would
+    # then hide a grown baseline on exactly the machine where it was grown.
+    if len(UNSTAMPED_BASELINE) > BASELINE_DIGEST_MAX_LEN:
+        return 1, [f"FAIL training-provenance: UNSTAMPED_BASELINE has grown to "
+                   f"{len(UNSTAMPED_BASELINE)} entries against a ceiling of "
+                   f"{BASELINE_DIGEST_MAX_LEN}. The baseline may only SHRINK — a new "
+                   f"unstamped metadata file means training ran from a tree nobody "
+                   f"can name, and adding it here silences exactly the failure this "
+                   f"check exists for. Retrain the filter instead. If you genuinely "
+                   f"reduced the set, lower BASELINE_DIGEST_MAX_LEN to match."]
 
     probe = _git("rev-parse", "--is-inside-work-tree")
     if probe.returncode != 0 or probe.stdout.strip() != "true":

@@ -118,7 +118,12 @@ f370b719f373b85c3bac3606bbc50cc4849f73b66ddae75409794d5a95bf4888  scores_raw.jso
 
 ## Calibration
 
-Test MAE **0.5947 → 0.6066 (−2.0%)** — worse, as on the previous checkpoint (−1.9%). It ships
+Test MAE **0.5947 → 0.6066 (−2.0%)** — worse, as on the previous checkpoint (−1.9%).
+⚠️ **CORRECTED IN REVIEW: that "before" is the UNCLAMPED arm.** `fit_calibration.run_inference_raw`
+deliberately keeps raw logits; `dump_student_scores.py` clamps to [0, 10], which is what
+production does. On the clamped arm the raw MAE is **0.5855**, so production's degradation is
+**0.5855 → 0.6066 = −3.6%**, not −2.0%. Both numbers are internally correct and neither changes
+the ship-anyway decision; the published one understated the cost. It ships
 per ADR-008 and ADR-023's specificity tie-break, **not because it helped**. Val (its own fit
 set) improves +4.5%, which is what isotonic regression is defined to do and is not evidence.
 

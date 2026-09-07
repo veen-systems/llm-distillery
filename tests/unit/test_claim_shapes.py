@@ -239,7 +239,7 @@ def test_a_saturated_band_is_exempt_but_printed(mod, capsys):
     floor — the ones in `indeterminate_by_cell`. With none in tn/fp, specificity
     could not have any width, and `belonging v1` is the live case."""
     _write(mod, "docs/evidence/gate.json",
-           {"m": {"specificity_band": [0.9847, 0.9847],
+           {"m": {"specificity_band": [0.9847, 0.9847], "noise_floor": 0.16,
                   "indeterminate_by_cell": {"tp": 5, "fn": 2, "fp": 0, "tn": 0}}})
     assert mod.main(["--check", "zero-width-interval"]) == 0
     out = capsys.readouterr().out
@@ -247,12 +247,66 @@ def test_a_saturated_band_is_exempt_but_printed(mod, capsys):
     assert "FAIL" not in out
 
 
+def test_precision_and_f1_bands_depend_on_all_four_cells(mod):
+    """⛔ THE MAPPING WAS WRONG AGAINST THE PRODUCER. ground_truth_gate.py computes
+    p_lo/f_lo from `fp + ind_tn` and p_hi/f_hi from `fp - ind_fp`, so precision and
+    F1 move with ALL FOUR cells. Declaring precision as (tp, fp) exempted a band
+    while four rows sat inside the floor, and printed a reason that was untrue."""
+    assert set(mod.BAND_CELLS["precision"]) == {"tp", "fn", "fp", "tn"}
+    assert set(mod.BAND_CELLS["f1"]) == {"tp", "fn", "fp", "tn"}
+    assert set(mod.BAND_CELLS["recall"]) == {"tp", "fn"}
+    assert set(mod.BAND_CELLS["specificity"]) == {"fp", "tn"}
+
+
+def test_a_zero_precision_band_with_indeterminate_negatives_is_not_exempt(mod, capsys):
+    """The concrete report review built: tp=0 makes precision degenerate, and the
+    old mapping exempted it while ind_tn was 4."""
+    _write(mod, "docs/evidence/gate.json",
+           {"m": {"precision_band": [0.0, 0.0], "noise_floor": 0.16,
+                  "indeterminate_by_cell": {"tp": 0, "fn": 0, "fp": 0, "tn": 4}}})
+    assert mod.main(["--check", "zero-width-interval"]) == 1
+    assert "FAIL zero-width-interval" in capsys.readouterr().out
+
+
+def test_falsy_but_not_zero_cells_do_not_exempt(mod, capsys):
+    """⛔ `null` means UNKNOWN, not zero. `any(...)` read null/""/[]/false as
+    "no indeterminate rows" and exempted every band."""
+    for bad in (None, "", [], False):
+        _write(mod, "docs/evidence/gate.json",
+               {"m": {"specificity_band": [0.99, 0.99], "noise_floor": 0.16,
+                      "indeterminate_by_cell": {"tp": 0, "fn": 0, "fp": bad, "tn": 0}}})
+        assert mod.main(["--check", "zero-width-interval"]) == 1, bad
+        assert "FAIL zero-width-interval" in capsys.readouterr().out
+
+
+def test_a_switched_off_noise_floor_does_not_exempt(mod, capsys):
+    """⛔ `--noise-floor 0` makes every cell 0 and every band zero-width — a
+    SWITCHED-OFF instrument wearing the saturated shape. The floor is a sibling key
+    in the same object; the exemption must read it."""
+    for floor in (0, 0.0, None, "0.16", True):
+        _write(mod, "docs/evidence/gate.json",
+               {"m": {"specificity_band": [0.99, 0.99], "noise_floor": floor,
+                      "indeterminate_by_cell": {"tp": 0, "fn": 0, "fp": 0, "tn": 0}}})
+        assert mod.main(["--check", "zero-width-interval"]) == 1, floor
+        assert "FAIL zero-width-interval" in capsys.readouterr().out
+
+
+def test_a_live_floor_with_no_indeterminate_rows_still_exempts(mod, capsys):
+    """The legitimate case must survive all of the above tightening."""
+    _write(mod, "docs/evidence/gate.json",
+           {"m": {"specificity_band": [0.99, 0.99], "noise_floor": 0.16,
+                  "indeterminate_by_cell": {"tp": 5, "fn": 2, "fp": 0, "tn": 0}}})
+    assert mod.main(["--check", "zero-width-interval"]) == 0
+    out = capsys.readouterr().out
+    assert "SATURATED" in out and "0.16" in out
+
+
 def test_a_frozen_band_with_indeterminate_rows_still_fails(mod, capsys):
     """The exemption is checked against the SIBLING COUNTS. One indeterminate row
     in a cell the metric depends on and the band should have had width, so a zero
     one is the instrument, not the data."""
     _write(mod, "docs/evidence/gate.json",
-           {"m": {"specificity_band": [0.9847, 0.9847],
+           {"m": {"specificity_band": [0.9847, 0.9847], "noise_floor": 0.16,
                   "indeterminate_by_cell": {"tp": 5, "fn": 2, "fp": 1, "tn": 0}}})
     assert mod.main(["--check", "zero-width-interval"]) == 1
     assert "FAIL zero-width-interval" in capsys.readouterr().out
@@ -271,7 +325,7 @@ def test_the_saturated_exemption_covers_only_known_metrics(mod, capsys):
     """`spearman` has no confusion cells, so zero-width there is unexplained even
     when every cell count is 0 — the exemption must not generalise by shape."""
     _write(mod, "docs/evidence/gate.json",
-           {"m": {"spearman_band": [0.72, 0.72],
+           {"m": {"spearman_band": [0.72, 0.72], "noise_floor": 0.16,
                   "indeterminate_by_cell": {"tp": 0, "fn": 0, "fp": 0, "tn": 0}}})
     assert mod.main(["--check", "zero-width-interval"]) == 1
     assert "spearman_band" in capsys.readouterr().out

@@ -82,7 +82,9 @@ surfaces beats surfacing more of what it could, every time and by design; recall
 constraint to satisfy, not a target. ⚠️ **That binds how you REPORT, not only how you
 tune**: publish the priority beside any recall figure, because a low recall here is
 usually the choice working and does not read that way cold — `human_thriving v8` passed
-its deploy gate at recall **0.343** / spec **0.992**. A
+its deploy gate at recall **0.314** / spec **0.9856** (retrained epoch-5 checkpoint,
+EXP-027, 2026-09-06; the superseded epoch-4 model read 0.343 / 0.992 and is NOT
+distinguishable from it — all four #95 bands overlap). A
 false positive reaches a reader; a false negative is invisible and the slot refills. **Only
 recall and specificity are conditional on the true class** and therefore comparable across
 splits — precision and MAE move with the base rate, so always report the split's positive

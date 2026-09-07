@@ -6241,3 +6241,58 @@ packages. The instruction was right about safety and blind about cost.
 only the file under mutation.** ⚠️ Note where the space actually was — the caches a reader
 would reach for first (`~/.cache/huggingface` 7.6 GB, puppeteer 1.9 GB) sit on a disk with
 **222 GB free**, so clearing them would have freed nothing where the shortage was.
+
+## A guard against orphaned commits could not detect an orphaned commit (2026-09-06)
+
+**Problem**: `train.py`'s `resolve_git_provenance()` and
+`scripts/verification/check_training_provenance.py` were written because
+`human_thriving v8`'s adapter was built by a commit `git commit --amend` had orphaned.
+Both shipped unable to detect that state.
+
+**Root cause**: `git branch --contains <sha>` prints the pseudo-branch
+`* (HEAD detached from abc1234)` when HEAD is detached. `lstrip("* ")` leaves
+`(HEAD detached from abc1234)` — a non-empty string — so the list was truthy and the
+"reachable from no branch" refusal never ran. A second hole beside it: `git -C` walks
+**upward**, so a plain copy of the tree inside any other repository answered
+`--is-inside-work-tree true` and stamped the *enclosing* repo's HEAD as clean.
+
+**Fix**: `git for-each-ref --contains <sha> refs/heads refs/remotes`, which enumerates real
+refs and cannot emit a pseudo-branch; plus `rev-parse --show-toplevel` compared against the
+directory itself. ⭐ **Both were found by mutating the WORLD the guard runs in** — checking out
+a detached HEAD, nesting a copy — rather than the guard's own lines. Neither is visible from
+the code.
+
+## An exemption that could not tell a saturated instrument from a switched-off one (2026-09-06)
+
+**Problem**: `check_claim_shapes.py` gained a `_saturated_band` exemption letting a zero-width
+`#95` band pass when `indeterminate_by_cell` is all zeros. Review showed it exempts a gate run
+made with `--noise-floor 0`, where every cell is zero **because the instrument was disabled**.
+
+**Root cause**: the exemption read the cells and not the parameter that produces them.
+`noise_floor` is a sibling key in the same JSON object. Two smaller holes in the same
+predicate: `any(ind[c] ...)` treated `null`, `""`, `[]` and `false` as "no indeterminate rows"
+— and `null` means *unknown*, not zero — and the cell mapping was **wrong against the
+producer**: `ground_truth_gate.py` computes precision and F1 bands from all four cells, while
+the table declared `precision: (tp, fp)`, so a band was exempted with a printed reason that
+was false.
+
+**Fix**: read `noise_floor` and require it positive; require `isinstance(v, int)` and `v == 0`;
+correct `BAND_CELLS` against the producer's arithmetic and cite the line numbers in a comment.
+⭐ **A printed reason is an assertion** — the NOTE said "no row is within the noise floor" while
+four rows were.
+
+## The documented regeneration command reintroduced the defect it documented (2026-09-06)
+
+**Problem**: `.gitignore` gained a comment giving the command to regenerate a model card:
+`upload_to_huggingface.py --filter <dir> --repo-name <id> --card-only`. Run verbatim against
+`human_thriving v8` it silently rewrote 17 lines to epoch 6's metrics beside epoch 5's weights,
+exit 0.
+
+**Root cause**: `--selected-epoch` was added in the same commit *because* the generator reads
+`training_history[-1]`, and then omitted from the command written to document it. The flag and
+its own instructions were written minutes apart.
+
+**Fix**: the comment now carries `[--selected-epoch N]` with the reason, and says how to
+recover N (match `best_val_mae` against `training_history.json`). ⚠️ Three other surfaces said
+"epoch 4 of 6" for a filter that now ships epoch 5 — one of them in `--help`, i.e. visible to
+someone who would then pass `--selected-epoch 4` deliberately.

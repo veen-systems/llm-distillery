@@ -213,7 +213,13 @@ model_backup/
 # filter while every parity check counted the file as present. Its siblings are all
 # derived-and-tracked — calibration.json, training_history.json, normalization.json
 # — so being the one derived doc that is ignored was the inconsistency, not the rule.
-# Regenerate with: upload_to_huggingface.py --filter <dir> --repo-name <id> --card-only
+# Regenerate with: upload_to_huggingface.py --filter <dir> --repo-name <id>
+#   --card-only [--selected-epoch N]
+# ⛔ --selected-epoch IS NOT OPTIONAL when the shipped checkpoint is not the last
+# epoch trained. Review ran the command without it against human_thriving v8 and
+# it silently rewrote 17 lines to epoch 6's metrics beside epoch 5's weights,
+# exit 0. Recover N by matching training_metadata.json's best_val_mae against
+# training_history.json; v8 is epoch 5 of 6, the other five cards are last-epoch.
 
 # Claude Code temp files
 tmpclaude-*

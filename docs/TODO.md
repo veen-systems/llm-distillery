@@ -2,15 +2,22 @@
 
 ## 🔵 NEXT SESSION — **phase 9: deploy v8. The gate has run and v8 has a number.**
 
-> ⚠️ **This heading said "the ADR-021 deploy gate, on a CUDA re-score" until 2026-09-06.**
-> That gate has now run (`EXP-026`): **recall 0.343 / specificity 0.992 at 4.50 calibrated,
-> on CUDA**, n=660, 35 positives. `filters/human_thriving/v8/ground_truth_gate.json`,
-> `docs/evidence/2026-09-06-v8-deploy-gate/`. The op-point question was closed the day before
+> ⛔⛔ **SUPERSEDED 2026-09-06 EVENING. THE MODEL WAS RETRAINED AND THE GATE RE-RUN.**
+> This block used to publish `EXP-026`'s **recall 0.343 / specificity 0.992** as v8's gate
+> result. That is the **epoch-4** checkpoint, which `git commit --amend` had orphaned; the
+> owner ruled *"no exception, i want this system to be harmonized"* and it was retrained under
+> commit `64b469d` on `main`. **The shipped numbers are `EXP-027`: recall 0.314 / specificity
+> 0.9856 / precision 0.550, 20 surfaced, 9 FP, epoch 5 of 6, on CUDA**, n=660, 35 positives.
+> `filters/human_thriving/v8/ground_truth_gate.json`,
+> `docs/evidence/2026-09-06-v8-retrain-gate/`.
+> ⛔ **All four #95 bands overlap, so the two checkpoints are NOT DISTINGUISHABLE** — the point
+> estimates move adversely and 6 of the 9 false positives are `in_scope` boundary cases rather
+> than junk (`fp_by_scope_verdict.txt`). The op-point question was closed on 2026-09-05
 > (`docs/decisions/2026-09-05-v8-op-point.md`); do not re-open either.
 
 > **Updated 2026-09-06.** Session records: `memory/project_session_2026_09_04*.md`,
 > `memory/project_session_2026_09_05*.md`, `memory/project_session_2026_09_06.md`.
-> Runs: **EXP-015** … **EXP-026** in `experiments/registry.jsonl`. State:
+> Runs: **EXP-015** … **EXP-027** in `experiments/registry.jsonl`. State:
 > `filters/human_thriving/v8/STATUS.md`, `filters/human_thriving/v8/calibration_report.md`.
 > Rulings: `docs/decisions/2026-09-03-v8-1-commencement-clause.md`,
 > `docs/decisions/2026-09-03-v8-scope-rulings.md`, `docs/decisions/2026-09-05-v8-op-point.md`.
@@ -19,11 +26,44 @@
 **Where we are in the RUNBOOK's nine phases:** 1 Planning ✅ · 2 Architecture ✅ (`prompt-v8-4.md`)
 · 3 Validation ✅ · 4 Prefilter ✅ N/A by ruling · 5 Training data ✅ (6,586 labels, 456 corrected)
 · **6 Training ✅** · **6b Probe ✅** · **7 Calibration ✅** · **8 Testing ✅ COMPLETE
-2026-09-06** (op-point ruled 4.50, smoke test passed, **ADR-021 gate run on CUDA**)
+2026-09-06** (op-point ruled 4.50, smoke test passed, **ADR-021 gate run on CUDA — then
+RE-RUN on the retrained epoch-5 checkpoint, EXP-027**)
 · **9 Deployment ⛔ ← the next action.** v8 is absent from sadalsuud's `NexusMind/filters/`
 and carries `NO_HUB` — verified 2026-09-06.
 
-## ▶ START HERE — phase 8 is CLOSED. Phase 9 is next, and Phase E comes AFTER it.
+## ▶ NEXT SESSION STARTS HERE — the weights have not moved yet
+
+⛔ **v8 IS STILL NOT DEPLOYED, and everything before the deploy is done.** Doc set complete,
+model retrained under `64b469d` on `main`, gate re-run (EXP-027), review run (6 lenses,
+9 blockers, all fixed). What remains is the transport and the deploy itself, in this order:
+
+1. **Get the 82 MB adapter to `gpu-server`** — `~/NexusMind/filters/human_thriving/v8/model/`.
+   ⛔ **gpu-server is the SERVING box, not sadalsuud** (sadalsuud orchestrates the deploy).
+   `deploy_filters.sh` **excludes `model/` from both rsync passes**, so weights travel
+   out-of-band and a weightless highest-version package stops the scorer STARTING — which
+   costs the cycle for all six filters (#67, pre-flight guard D). Route: b650 → Situla →
+   gpu-server. Source: `b650-gpu:~/llm-distillery/filters/human_thriving/v8/model/`,
+   adapter sha256 `074209ff572c4823206569b3c7d89c26b15029263748cf510c9c5b8ce347de08`.
+2. **Publish `jeergrvgreg/human-thriving-filter-v8` private** (owner ruling: an off-machine
+   backup, because the adapter exists in exactly one place and the recipe being pinned is not
+   a backup of what it produces). `upload_to_huggingface.py --selected-epoch 5`.
+   ⛔ **THEN, in the same commit: land `inference_hub.py` and DELETE `NO_HUB`.**
+   `verify_filter_package.py` refuses the pair as an ambiguous state and blocked a commit for
+   exactly that. The module is written and verified (7/7 with `NO_HUB` removed) and is parked
+   at `scratchpad/inference_hub.v8.py` — it is deliberately NOT in the tree.
+3. **Deploy**: `deploy_to_nexusmind.sh human_thriving v8 --dry-run` first, read the file list,
+   `git -C $NEXUSMIND_ROOT diff --stat`, then commit on a `chore/` branch + PR (NexusMind uses
+   them), then `remote_deploy.sh`. ⚠️ NexusMind's checkout had **uncommitted docs work from a
+   parallel session** on 2026-09-06 — stage explicit paths only, never `git add -A`.
+4. **Watch the first cycles**, then **Phase E** once ≥200 production rows sit above 4.5.
+   Owner ruled Phase E proceeds as normal (NM#319 accepted: ~40% of surfaced articles fall
+   below the 4.0 enrichment gate once the CDF exists).
+
+⚙️ **Hygiene, from the review:** NexusMind still tracks
+`filters/common/obituary_detector/validation/artifacts/rollup_june.json`; `cp` never deletes, so
+after the next sync gpu-server carries both it and `.truncated`. `git rm` it there by hand.
+
+## ▶ Phase 8 is CLOSED. Phase 9 is next, and Phase E comes AFTER it.
 
 ### ▶ NEXT SESSION STARTS HERE — deployment, and the ordering that surprised phase 8
 
@@ -158,7 +198,7 @@ them would describe a population that does not exist.
    killed by name. ⚠️ **No whole-suite count is quoted here**: the registry checker refused
    `715` as untraceable and the review could not reproduce it either — a suite total is a
    property of the machine and the tmpdir, not of this change.
-5. ⚠️ **b650's `~/llm-distillery` is not a git checkout** and four files on the scoring path had
+5. ⚠️ **b650's `~/llm-distillery` WAS not a git checkout — it IS one since 2026-09-06** and four files on the scoring path had
    drifted. They were synced from the repo before the CUDA pass — a dump that feeds a deploy
    gate must be produced by the shipped program. Pre-sync copies:
    `b650-gpu:~/llm-distillery/.presync_backup_20260906/`. Differences were docstrings plus one

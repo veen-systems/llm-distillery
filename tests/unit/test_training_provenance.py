@@ -91,6 +91,45 @@ def test_a_commit_on_no_branch_fails(mod):
     assert any("reachable from NO BRANCH" in ln for ln in lines)
 
 
+def test_a_detached_head_commit_still_counts_as_no_branch(mod):
+    """⛔ THE HOLE REVIEW FOUND, and it defeated this guard's whole point.
+    `git branch --contains` prints `* (HEAD detached from abc1234)`, which survives
+    lstrip("* ") as a non-empty string — so an unreachable commit read as "on a
+    branch" and printed OK. The earlier test checked out `main` first, which is
+    exactly the state that hides it."""
+    repo = mod._repo
+    _run("git", "checkout", "-q", "--detach", cwd=repo)
+    (repo / "orphan.txt").write_text("y\n", encoding="utf-8")
+    _run("git", "add", "orphan.txt", cwd=repo)
+    _run("git", "commit", "-q", "-m", "orphan", cwd=repo)
+    dangling = _head(repo)
+    # HEAD STAYS DETACHED AT IT — do not check out main.
+    _write_meta(repo, "filters/f/v1/training_metadata.json",
+                {"git_commit": dangling, "git_dirty": False})
+    rc, lines = mod.check()
+    assert rc == 1, lines
+    assert any("reachable from NO BRANCH" in ln for ln in lines), lines
+
+
+def test_branches_containing_returns_no_pseudo_branch(mod):
+    """Directly: the helper must never return a `(HEAD detached ...)` entry."""
+    repo = mod._repo
+    _run("git", "checkout", "-q", "--detach", cwd=repo)
+    got = mod._branches_containing(_head(repo))
+    assert not any(b.startswith("(") for b in got), got
+
+
+def test_the_frozen_baseline_cannot_grow(mod, monkeypatch):
+    """⛔ "must never grow" was a COMMENT. Review added a path to the baseline,
+    silenced a real FAIL, and every test passed. Now it is a ceiling."""
+    monkeypatch.setattr(mod, "UNSTAMPED_BASELINE",
+                        frozenset(f"filters/f{i}/v1/training_metadata.json"
+                                  for i in range(mod.BASELINE_DIGEST_MAX_LEN + 1)))
+    rc, lines = mod.check()
+    assert rc == 1
+    assert any("may only SHRINK" in ln for ln in lines), lines
+
+
 def test_a_nonexistent_commit_fails(mod):
     _write_meta(mod._repo, "filters/f/v1/training_metadata.json",
                 {"git_commit": "0" * 40, "git_dirty": False})
@@ -210,3 +249,60 @@ def test_train_opt_out_records_the_gap_rather_than_hiding_it(train_mod,
     got = train_mod.resolve_git_provenance(allow_missing=True)
     assert got["git_commit"] is None
     assert got["git_provenance"].startswith("UNAVAILABLE:")
+
+
+def test_the_stamp_actually_lands_in_the_metadata_dict(train_mod):
+    """⛔ THE BLAST-RADIUS MUTATION THAT SURVIVED. Review deleted `**git_provenance`
+    from train.py's metadata dict and all 746 tests passed — the PRODUCING half,
+    the thing the whole feature exists for, was untested. Reading the source is the
+    honest test here: running train.py means a ~100-minute GPU job, and a stub of
+    the writer would test the stub."""
+    import inspect
+    src = inspect.getsource(train_mod.main)
+    assert "**git_provenance" in src, (
+        "train.py's training_metadata dict no longer merges git_provenance — the "
+        "checkpoint would ship with no commit stamp and check_training_provenance "
+        "would report it as a pre-stamp baseline file")
+    # and the value must come from the enforcing resolver, not a literal
+    assert "resolve_git_provenance(" in src
+    assert "allow_missing=args.allow_missing_git_provenance" in src
+
+
+def test_resolve_runs_before_anything_expensive(train_mod):
+    """A provenance gap found AFTER a 100-minute run is a run you cannot cite."""
+    import inspect
+    src = inspect.getsource(train_mod.main)
+    assert src.index("resolve_git_provenance(") < src.index("set_seed("), \
+        "provenance must resolve before training starts"
+
+
+def test_a_nested_copy_is_refused(train_mod, monkeypatch, tmp_path_factory):
+    """⛔ `git -C` WALKS UP. A plain copy inside another checkout answered `true`
+    and stamped the ENCLOSING repo's HEAD as this run's provenance."""
+    outer = tmp_path_factory.mktemp("outer_repo")
+    _run("git", "init", "-q", "-b", "main", ".", cwd=outer)
+    _run("git", "config", "user.email", "t@example.com", cwd=outer)
+    _run("git", "config", "user.name", "T", cwd=outer)
+    (outer / "seed.txt").write_text("x\n", encoding="utf-8")
+    _run("git", "add", "seed.txt", cwd=outer)
+    _run("git", "commit", "-q", "-m", "outer", cwd=outer)
+
+    nested = outer / "copy_of_distillery"
+    (nested / "training").mkdir(parents=True)
+    monkeypatch.setattr(train_mod, "__file__", str(nested / "training" / "train.py"))
+    with pytest.raises(RuntimeError, match="not the root of a work tree"):
+        train_mod.resolve_git_provenance()
+    got = train_mod.resolve_git_provenance(allow_missing=True)
+    assert got["git_commit"] is None and got["git_provenance"].startswith("UNAVAILABLE:")
+
+
+def test_missing_git_reaches_the_opt_out(train_mod, monkeypatch, tmp_path_factory):
+    """The documented escape hatch must work on the one box that needs it."""
+    plain = tmp_path_factory.mktemp("no_git_here")
+    monkeypatch.setattr(train_mod, "__file__", str(plain / "training" / "train.py"))
+    monkeypatch.setenv("PATH", str(plain))          # no git on PATH
+    got = train_mod.resolve_git_provenance(allow_missing=True)
+    assert got["git_commit"] is None
+    assert got["git_provenance"].startswith("UNAVAILABLE:")
+    with pytest.raises(RuntimeError):
+        train_mod.resolve_git_provenance()
