@@ -12,11 +12,6 @@ pipeline_tag: text-classification
 
 # jeergrvgreg/human-thriving-filter-v8
 
-> ⛔ **NOT PUBLISHED.** `jeergrvgreg/human-thriving-filter-v8` does not exist on the Hub. This card is the
-> package's model-card source (`README_MODEL.md`), kept per the project doc
-> standard; the repo id below is the name publishing would use, not a live link.
-> The filter directory's `NO_HUB` file records why and what would change it.
-
 ## Model Description
 
 This model is a fine-tuned version of [google/gemma-3-1b-pt](https://huggingface.co/google/gemma-3-1b-pt)
