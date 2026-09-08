@@ -4893,7 +4893,7 @@ something you did not ask.
 pins both directions. ⭐ The tell was the same as last time: the wrong answer was the
 *comfortable* one — "the contracts declare almost everything" is the answer you want.
 
-### I EXPLAINED 78 TEST FAILURES AS "THE ENVIRONMENT" AND IT WAS THE WRONG INTERPRETER (2026-08-25)
+### I EXPLAINED 78 TEST FAILURES AS "THE ENVIRONMENT" AND IT WAS THE WRONG INTERPRETER (2026-08-25) [x2]
 **Problem**: `python3 -m pytest tests/unit` in NexusMind reported **78 failed, 123
 errors**. I checked that none of the failures named my files, attributed the rest to
 "this workstation's environment (missing deps)", and moved on. It was nearly a session
@@ -6412,3 +6412,78 @@ and never asked what its FIRST cycle would cost. Same shape as the same day's ea
 layer out — I checked the thing I changed, not the system around it. A per-entity progress marker
 means the entity's absence is not a neutral starting state, it is a full backlog; and where an
 expensive stage is SHARED across entities, one cold start is everyone's outage.
+
+## A cross-agent export carried the wrong FIELD, and the false finding was mechanistically perfect (2026-09-08)
+**Problem**: A peer session exported v8's 63 live passers for auditing. `len(content)` said 37 of 63
+were under 300 characters, median 233, with the short share *rising* by score band (51% → 67% → 80%).
+That is a train-to-production distribution shift with a named mechanism — the training corpus passed
+an oracle 300-char floor, so the student had never seen stub-length input — and it explained the data.
+It was entirely an artifact.
+**Root cause**: the export wrote `d.get('original_content') or d.get('content')`, preferring the
+**pre-enrichment RSS teaser**. By the `content_length` stamp, exactly **one** row of 63 is under 300
+and the median is 4,098. The 79-char "South Africa has emerged from the 2026 winter season without a
+single blackout" was the teaser; the scorer read the full article.
+**Fix**: read length off the **stamp**, never off the row — the rule `memory/stamp-contract-integrity.md`
+already states, arriving through a field substitution rather than a null. Two things contained it:
+the claim was published with its own killer attached (*"if `content` is a stored snippet, every number
+above dissolves"*), and the check that could settle it lived with the party who held the stamps.
+⭐ **A finding can be mechanistically plausible, have a named cause, explain the data, and be false.
+That combination is the one where "someone should check" reliably fails to become "someone checked" —
+so name the disconfirming test and give it an owner in the same message.**
+
+## A projection corrected by a better projection leaves the frame untested (2026-09-08)
+**Problem**: Two sessions independently sized Phase E's remaining wait. One said ~3.2 cycles (63
+passers/cycle), the other ~7.7 (26/cycle). Each correctly diagnosed the other's denominator — 63 came
+from a 2.45× backlog-draining cycle, 26 was the lowest normal cycle. Both were wrong.
+**Root cause**: `MIN_NORMALIZATION_ARTICLES = 200` is **cumulative across cycle files**, not per-cycle
+— `scripts/normalization/fit_normalization.py:306` globs `filtered_*.jsonl` and pools them, enforced at
+line 723. **168 rows already existed on disk** while both sessions modelled a *rate* against a fresh
+start. `ls` and a sum answered it, at any point in the preceding day.
+**Fix**: before projecting a rate to a threshold, ask whether the quantity is **cumulative and already
+measurable**. ⭐ **The correction round is what made it durable**: a disagreement about the number
+looks like the method being tested, and the shared frame comes out *stronger* for having two
+independent sources agree on it. A correction that changes the number and not the frame is the most
+convincing way to stay wrong.
+
+## A registered acceptance rule that could only ever find fault (2026-09-08)
+**Problem**: A pre-registered decision rule compared a 63-article result against a 17/20 comparator by
+interval overlap: entirely above → supports (a), entirely below → supports (b), overlap → not
+distinguishable. It was written before any verdict was read, which is correct practice, and it was
+still broken.
+**Root cause**: the comparator's Wilson interval is [0.6396, 0.9476] because it rests on **20**
+articles. A **perfect 63/63** has a Wilson lower bound of **0.9425** — below 0.9476. **No outcome of
+the run could return "supports (a)".** The stated boundaries (a ≥ 46, b ≤ 38) also matched neither
+that rule (a never, b ≤ 32) nor a proper Newcombe difference test (a ≥ 62, b ≤ 38) — the b boundary
+was right *under a test that was never registered*, which is worse than a wrong answer because it
+validates the method.
+**Fix**: **before demanding a bar, prove the bar is reachable** — evaluate the rule at its extreme
+outcomes. The mirror of this repo's own `feedback-prove-the-bar-is-reachable`, pointing the other way.
+Where superiority is unprovable at the available n, register the question **one-sided** and say so:
+"does it fall materially below" is answerable and decision-relevant; "is it better" was not.
+
+## A null between two labellers is a RATE-null, and hides case-level disagreement (2026-09-08)
+**Problem**: Holding rubric and truncation fixed, two judge families differed by −0.032 on the
+in_scope rate (McNemar p = 0.73) — a clean null that reads as "the families agree".
+**Root cause**: they disagreed on **8 of 62 articles**, Cohen's **κ 0.587**, 5-way verdict agreement
+50/62. Truncation was *exactly* 0.0000 and still moved **6 of 62** verdicts (b=3, c=3). Only the
+prompt effect was large *and* directional (b=12, c=1). Churn that cancels is invisible in a rate.
+**Fix**: for any null between two labellers, **print the discordant-pair counts and κ beside the
+rate**; a p-value on a difference of proportions says nothing about per-item agreement. Report *"the
+rates are indistinguishable"*, never *"it doesn't matter"* — different claims, only the first measured.
+⭐ This is `CLAUDE.md`'s prefilter rule (*rate agreement and safety-to-enforce are independent
+properties*) arriving in a completely different place, which is the argument for reading it as general.
+It also bounds what a per-row citation can carry: at κ 0.587 no single article is *proven* mis-scored,
+so a 12-row table is evidence as a **pattern** and not as twelve findings.
+
+## "This repo" in a cross-session message resolves to the SPEAKER's repo (2026-09-08)
+**Problem**: A peer wrote *"this repo already has the confound on record at 37.4%"*. I grepped
+**llm-distillery**, found `37.4` (CLAUDE.md's byte size, 37.4k), and reported their figure as a
+coincidence with a file size. Their number was right: 7,816 / 20,881 = 37.43% of lens-rows, recorded
+in **NexusMind**.
+**Root cause**: `this repo` is deictic. Across a session boundary it binds to the sender's tree, not
+the reader's — and the reader has a same-shaped artifact to find, so the wrong answer is available.
+**Fix**: qualify every cross-repo reference in a message the way `feedback-bare-issue-number-resolves-locally`
+already requires for issue numbers; the failure mode is identical and the pronoun is worse, because
+`#167` at least looks ambiguous. ⭐ **And before contradicting a peer's measurement, check that you
+searched the tree they were describing** — a dismissal is a claim (`feedback-a-dismissal-is-a-claim`),
+and this one had a plausible coincidence doing the work of the check.

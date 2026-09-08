@@ -1,0 +1,40 @@
+op-point 4.5   panel n=62 (63rd row dropped: GN + sub-300, see README)
+CONTROL  gate _wa(dims) vs deployed raw_weighted_average : max |diff| 0.000000000  PASS
+CONTROL  weighted_average == raw (no normalization.json)  : max |diff| 0.000000000
+
+ARMS (all DeepSeek, deepseek-chat, prompt-v8-4.md sha256[:12]=c4705408c477 for A)
+  A  full oracle prompt, full text (k=6)   60/62 = 0.9677  Wilson [0.890, 0.991]
+  B  README rubric,      full text (k=1)   49/62 = 0.7903  Wilson [0.674, 0.873]
+  C  README rubric,      4000 chars (k=1)  49/62 = 0.7903  Wilson [0.674, 0.873]
+  A  score precision (k=6 mean >= 4.5)        48/62 = 0.7742  Wilson [0.656, 0.860]
+
+PAIRED CONTRASTS (McNemar exact, same articles)
+  PROMPT      A vs B (text fixed)    b=12 c= 1  delta +0.1774  exact p = 0.0034
+  TRUNCATION  B vs C (prompt fixed)  b= 3 c= 3  delta +0.0000  exact p = 1.0000
+
+UNPAIRED (family; rubric+truncation fixed) vs NexusMind's judges on the same panel
+  DeepSeek(C) 49/62 vs Gemini 2.5 Flash   51/62   diff -0.0323  Newcombe [-0.1712, +0.1079]
+  DeepSeek(C) 49/62 vs Claude             41/63   diff +0.1395  Newcombe [-0.0181, +0.2881]
+
+BAND (student raw score at the op-point)
+  [4.5,5.0)       n=37   scope 35/37 = 0.946   score 25/37 = 0.676
+  [5.0,5.591]     n=20   scope 20/20 = 1.000   score 18/20 = 0.900
+  (5.591,6.129]   n= 5   scope  5/ 5 = 1.000   score  5/ 5 = 1.000
+
+PROMPT FLIPS (12): full oracle prompt says in_scope, README rubric does not
+      5  out_of_scope
+      5  response_to_harm
+      2  no_person_benefits
+  band: {'[4.5,5.0)': 7, '[5.0,5.591]': 4, '(5.591,6.129]': 1}
+  raw-score span of the 5 out_of_scope flips: 4.554-5.544
+
+VS THE DEPLOY GATE (ADR-021, ground_truth_gate.json: scope 17/20, score 11/20)
+  scope precision  prod 60/62=0.9677  gate 17/20=0.850  Newcombe [-0.007, +0.329]  NOT DISTINGUISHABLE
+  score precision  prod 48/62=0.7742  gate 11/20=0.550  Newcombe [-0.001, +0.449]  NOT DISTINGUISHABLE
+
+THREE JUDGES, ONE PANEL  (spread 0.651 to 0.968)
+  Claude   k=1 README rubric  41/63 = 0.6508
+  Gemini   k=1 README rubric  51/62 = 0.8226
+  DeepSeek k=6 full prompt    60/62 = 0.9677
+
+k=6 STABILITY  rows with sd>1.0: 2   max sd 2.062   median sd 0.250

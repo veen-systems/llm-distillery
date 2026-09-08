@@ -1,0 +1,312 @@
+[
+ {
+  "id": "british_irish_bbc_england_c73990d7060a",
+  "verdict": "in_scope",
+  "why": "Vendors earn income and report improved lives; concrete benefit delivered now."
+ },
+ {
+  "id": "british_irish_bbc_business_697732e824b4",
+  "verdict": "in_scope",
+  "why": "Charity delivered uniforms, saving families money and reducing financial stress."
+ },
+ {
+  "id": "science_phys_org_92494ff4e46c",
+  "verdict": "in_scope",
+  "why": "Ukrainian students receive free training and corrected diagnoses; benefit delive"
+ },
+ {
+  "id": "south_asian_indian_express_9f206d53ba0f",
+  "verdict": "out_of_scope",
+  "why": "Court ruling enables church reconstruction, but no benefit delivered to people y"
+ },
+ {
+  "id": "south_asian_indian_express_c7f20fb64869",
+  "verdict": "in_scope",
+  "why": "Mother's custody granted, benefiting children's welfare now, reflecting a proces"
+ },
+ {
+  "id": "east_african_nation_ke_4b865cd41604",
+  "verdict": "in_scope",
+  "why": "Women are trading livestock and beekeeping profitably now, with male support del"
+ },
+ {
+  "id": "australian_abc_au_5c0ae16a5a49",
+  "verdict": "in_scope",
+  "why": "Cultural centre opened, delivering education, jobs, and cultural preservation to"
+ },
+ {
+  "id": "west_african_punch_ng_725518309096",
+  "verdict": "in_scope",
+  "why": "46 million people have improved clean energy access now."
+ },
+ {
+  "id": "eu_policy_analysis_european_correspondent_e004084e2a14",
+  "verdict": "in_scope",
+  "why": "Bulgaria's battery storage delivers lower power prices and grid stability to peo"
+ },
+ {
+  "id": "belgian_vrt_nieuws_nl_f0771317a7d6",
+  "verdict": "in_scope",
+  "why": "Dutch adults access affordable, quality art education benefitting them now."
+ },
+ {
+  "id": "portuguese_nexo_jornal_e11be9b4a991",
+  "verdict": "in_scope",
+  "why": "Coletivos juvenis melhoram a sa\u00fade mental e autoconfian\u00e7a de adolescentes, com b"
+ },
+ {
+  "id": "science_frontiers_medicine_d937cfee3a7e",
+  "verdict": "in_scope",
+  "why": "Post-intervention infection rates decreased measurably; benefit delivered to pat"
+ },
+ {
+  "id": "british_irish_bbc_england_4c7ee290392e",
+  "verdict": "in_scope",
+  "why": "Cafe sessions reduce loneliness; widow and attendees report real friendship and "
+ },
+ {
+  "id": "south_asian_times_of_india_ea09bbec14ef",
+  "verdict": "in_scope",
+  "why": "Girls currently play flag football, growing from 5 to 40, with scholarships alre"
+ },
+ {
+  "id": "belgian_rtbf_info_2dfe35adf54d",
+  "verdict": "in_scope",
+  "why": "Psychological support has helped a police officer recover over months."
+ },
+ {
+  "id": "british_irish_bbc_england_33f32e25bf6a",
+  "verdict": "in_scope",
+  "why": "Weekly choir sessions provide joy, friendship, and belonging to members, improvi"
+ },
+ {
+  "id": "south_american_global_voices_es_b7008a0e3961",
+  "verdict": "in_scope",
+  "why": "Consumers benefit from new nutritious gluten-free products, creating markets and"
+ },
+ {
+  "id": "south_american_andina_ff1159a593bb",
+  "verdict": "out_of_scope",
+  "why": "Reports a study and statistics, no concrete service delivery to people yet."
+ },
+ {
+  "id": "south_asian_nepalnews_2ac8b6d829f4",
+  "verdict": "in_scope",
+  "why": "Apple harvesting is actively benefiting farmers and traders now, with produce be"
+ },
+ {
+  "id": "indonesian_mongabay_id_4a03fd01cc36",
+  "verdict": "no_person_benefits",
+  "why": "Usulan hutan adat belum ditetapkan; manfaat belum terwujud bagi masyarakat kini."
+ },
+ {
+  "id": "belgian_vrt_nieuws_nl_0d366d41981f",
+  "verdict": "out_of_scope",
+  "why": "Only provisional protection announced; no benefit delivered yet."
+ },
+ {
+  "id": "swedish_dagens_nyheter_af571a10b9c6",
+  "verdict": "in_scope",
+  "why": "Women's network actively increases voter turnout, delivering democratic particip"
+ },
+ {
+  "id": "pubmed_294adbdf638c",
+  "verdict": "in_scope",
+  "why": "Children with severe psoriasis improved; PASI scores dropped and benefits delive"
+ },
+ {
+  "id": "south_asian_indian_express_c68acf9d4265",
+  "verdict": "in_scope",
+  "why": "Hospital actively treating flood injured and providing care now using donated eq"
+ },
+ {
+  "id": "south_asian_indian_express_633c5e3194f5",
+  "verdict": "harm_is_subject",
+  "why": "Divorce dispute and cruelty allegations dominate the court ruling; no thriving p"
+ },
+ {
+  "id": "south_asian_indian_express_61bed56ca591",
+  "verdict": "response_to_harm",
+  "why": "Good news is only response to flood harm, not repaired normalcy."
+ },
+ {
+  "id": "central_asian_24_kg_4f00597ee532",
+  "verdict": "in_scope",
+  "why": "Renovated cinema reopened, providing year-round film screenings and improved fac"
+ },
+ {
+  "id": "science_sciencedaily_d40608791c2f",
+  "verdict": "in_scope",
+  "why": "Cognitive improvement delivered after two-year lifestyle program for older adult"
+ },
+ {
+  "id": "australian_the_conversation_au_7cf84914e719",
+  "verdict": "in_scope",
+  "why": "Program delivered measurable gains in resilience, language, and IQ to vulnerable"
+ },
+ {
+  "id": "legal_policy_amnesty_intl_7473fc2f762b",
+  "verdict": "in_scope",
+  "why": "Women achieved education and careers; concrete benefits delivered now."
+ },
+ {
+  "id": "british_irish_independent_uk_706876ecfdbf",
+  "verdict": "in_scope",
+  "why": "Laughter therapy in trial improved COPD patients' breathing and wellbeing."
+ },
+ {
+  "id": "positive_news_good_good_good_5f285a546fd7",
+  "verdict": "in_scope",
+  "why": "Cash transfers directly improved survivors' safety, employment, housing, and wel"
+ },
+ {
+  "id": "arabic_al_monitor_e1e2fb0f7192",
+  "verdict": "harm_is_subject",
+  "why": "Occasion is commemorating 1,014 athletes killed, grief dominates; return tinged "
+ },
+ {
+  "id": "south_asian_indian_express_ca4ef0eb90ba",
+  "verdict": "in_scope",
+  "why": "Bhutan's rabies elimination is a delivered public health victory for people now."
+ },
+ {
+  "id": "us_news_npr_f7fa9daf0b85",
+  "verdict": "in_scope",
+  "why": "Muslim-owned halal barbecue businesses are thriving, gaining recognition and ser"
+ },
+ {
+  "id": "korean_greenpost_korea_b801ebb69a14",
+  "verdict": "in_scope",
+  "why": "\ud0c8\ubd81 \uc608\uc220\uc778\ub4e4\uc774 \uc2e4\uc81c \uacf5\uc5f0\uc744 \ud1b5\ud574 \ubb38\ud654\uc801 \uc131\ucde8\uc640 \uc790\ub9bd\uc744 \uc774\ub8e8\uace0 \uc788\uc74c"
+ },
+ {
+  "id": "east_asian_scmp_e794f0019345",
+  "verdict": "in_scope",
+  "why": "Students safely returned to school; government coordination ensured smooth trans"
+ },
+ {
+  "id": "australian_the_conversation_au_cde8026de9b6",
+  "verdict": "in_scope",
+  "why": "Study shows measurable mental wellbeing improvement after campaign, benefit deli"
+ },
+ {
+  "id": "australian_smh_1cf65a0de40e",
+  "verdict": "in_scope",
+  "why": "Students benefit now through autonomy, tailored learning, and improved outcomes."
+ },
+ {
+  "id": "central_asian_24_kg_8351094c86fd",
+  "verdict": "out_of_scope",
+  "why": "Construction planned but not yet completed; benefit not yet delivered to people."
+ },
+ {
+  "id": "southeast_asian_straits_times_asia_1883a005801e",
+  "verdict": "response_to_harm",
+  "why": "Rescue is a response to disaster harm, not ongoing thriving."
+ },
+ {
+  "id": "west_african_seneweb_ae76d2f2797f",
+  "verdict": "in_scope",
+  "why": "Mobile medical caravan delivers care, treatment, and education to underserved po"
+ },
+ {
+  "id": "west_african_seneweb_e153495c7ddf",
+  "verdict": "in_scope",
+  "why": "800 jeunes ach\u00e8vent une initiation b\u00e9n\u00e9fique, renfor\u00e7ant communaut\u00e9 et identit\u00e9,"
+ },
+ {
+  "id": "healthcare_medrxiv_9b7b493e95fe",
+  "verdict": "in_scope",
+  "why": "Patients benefited from improved prescribing and reduced antibiotic use."
+ },
+ {
+  "id": "australian_abc_au_75320e08641f",
+  "verdict": "out_of_scope",
+  "why": "Development cleared but construction hasn't begun; future benefit, not current."
+ },
+ {
+  "id": "southeast_asian_straits_times_asia_e8108a419034",
+  "verdict": "in_scope",
+  "why": "Birth rate and marriages are rising now, benefiting the people of Tokyo."
+ },
+ {
+  "id": "climate_solutions_the_cool_down_8094f43914ed",
+  "verdict": "out_of_scope",
+  "why": "Ordinance passed but 120-day implementation period means no benefit delivered ye"
+ },
+ {
+  "id": "balkan_index_hr_dbb5be196f88",
+  "verdict": "in_scope",
+  "why": "Estonian education system demonstrably delivers strong student outcomes now, as "
+ },
+ {
+  "id": "australian_the_conversation_au_ff252ce9e831",
+  "verdict": "in_scope",
+  "why": "Indigenous rangers actively protect land, creating jobs and restoring Country, b"
+ },
+ {
+  "id": "canadian_globe_mail_30fbe379e3e3",
+  "verdict": "in_scope",
+  "why": "AI tutor studies show modest learning gains delivered to thousands of students n"
+ },
+ {
+  "id": "swedish_dagens_nyheter_5e0a43889275",
+  "verdict": "in_scope",
+  "why": "Old offices converted to affordable housing, directly benefiting people now."
+ },
+ {
+  "id": "balkan_index_hr_1f652d54af3d",
+  "verdict": "in_scope",
+  "why": "Children moved into new homes, receiving care and support now."
+ },
+ {
+  "id": "healthcare_medrxiv_c754010280ad",
+  "verdict": "in_scope",
+  "why": "Platform piloted with students, improved healthcare access and usability demonst"
+ },
+ {
+  "id": "arabic_gulf_times_f4fd368c7813",
+  "verdict": "in_scope",
+  "why": "Training ceremonies delivered concrete skills to 147 people, including youth, no"
+ },
+ {
+  "id": "romanian_hotnews_0e6082865d21",
+  "verdict": "out_of_scope",
+  "why": "Collection of parental anecdotes; no current process delivering benefit named."
+ },
+ {
+  "id": "us_news_npr_abd685fcb99a",
+  "verdict": "in_scope",
+  "why": "Kindergarteners receive mentoring and support, easing school transition with del"
+ },
+ {
+  "id": "balkan_index_hr_f3a73ac5f013",
+  "verdict": "in_scope",
+  "why": "Free haircuts delivered to children now, bringing joy and preparation for school"
+ },
+ {
+  "id": "czech_idnes_fa9bdb0ca721",
+  "verdict": "in_scope",
+  "why": "Emergency responders successfully guided births, delivering concrete benefit to "
+ },
+ {
+  "id": "south_american_andina_9a4cc1d0f040",
+  "verdict": "in_scope",
+  "why": "Book fair delivered cultural engagement and sales, benefiting visitors now."
+ },
+ {
+  "id": "south_asian_indian_express_b925a724bd68",
+  "verdict": "response_to_harm",
+  "why": "Good news is relief response to ongoing flood harm, not full repair delivered."
+ },
+ {
+  "id": "belgian_la_libre_9286ea1dc9e6",
+  "verdict": "in_scope",
+  "why": "Sheep prevent invasive plants and provide dignified retirement; community attend"
+ },
+ {
+  "id": "south_african_the_citizen_b3a1c84d6bd5",
+  "verdict": "in_scope",
+  "why": "South Africans experienced 476 days without power cuts, a concrete benefit deliv"
+ }
+]

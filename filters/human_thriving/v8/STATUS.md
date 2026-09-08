@@ -12,10 +12,20 @@ are coupled by `deploy_filters.sh`'s fixture-name alignment gate. ⚠️ **A new
 enablement step that a version upgrade does not**, and every guard in the chain was built for the
 upgrade case. `memory/working-rules.md`, 21st occurrence.
 
-⚠️ **STILL UNCONFIRMED AT TIME OF WRITING: no production cycle had run.** The deploy landed at
-~09:50 CEST and the next `fluxus-collection` was 12:04. The code path is traced
-(`main.py:2569` reads the key, iterates at 2575, scores via `GPUClient`) but **traced is not
-observed** — check `data/filtered/human_thriving/` before quoting v8 as scoring production. Labelled, adjudicated; prompt settled at v8.4. Last updated 2026-09-07.
+✅ **CONFIRMED SCORING 2026-09-08.** The first cycle to actually score was
+`filtered_20260907_180414.jsonl` — 6,210 articles, **63 above the 4.50 op-point** *(the 12:10
+cycle died in image enrichment before reaching scoring; incident in `docs/RUNBOOK.md` §4b, #152)*.
+Four cycles in, **168 of Phase E's cumulative 200-row bar** are on disk. Labelled, adjudicated;
+prompt settled at v8.4. Last updated 2026-09-08.
+
+⭐ **FIRST LIVE-OUTPUT AUDIT, 2026-09-08 — the student is faithful; the PROMPT is what diverges.**
+Oracle re-score of 62 live passers at k=6 (`docs/evidence/2026-09-08-v8-live-panel/`, `EXP-029`,
+$0.16): scope precision **0.9677** [0.890, 0.991] against the deploy gate's 0.850 — above it,
+not distinguishable (Newcombe [-0.007, +0.329]). Only **2 of 62** genuinely off-lens.
+⛔ **But holding family and text fixed and swapping only this prompt for the documented rubric
+moves 12 articles out of `in_scope` and 1 in — paired McNemar p = 0.0034 — and those 12 are the
+three gaps listed as owed in §"Known-failing" below (#153).** ⚠️ Pattern-level evidence, not
+per-row proof: κ = 0.587 between judges.
 
 **What shipped:** NexusMind `e0f0af9` (PR #452), scorer restarted on gpu-server, CODE_REVISION
 `f20e6f4f…` round-tripped. Weights are out-of-band at
@@ -299,6 +309,9 @@ nothing depends on it until the op-point is reopened.
   **3 of 108 → 0**, no-regression **4/4**. ⭐ **The gain is variance, not verdict** — both
   prompts pass 9/9; v8.4 makes the labels stable.
 - ⛔⛔ **D (§5 judicial relief) is DROPPED, so the convict-relief ruling is NOT implemented.**
+  ⭐ **LIVE CONSEQUENCE 2026-09-08 (#143, #153):** the Bombay HC custody ruling scores **6.110**,
+  the *second-highest article in the live panel*, and flips to `response_to_harm` under the
+  documented rubric; the Madras HC row flips too. Not confined to the #91 origin row.
   Three corpus rows keep their labels and decision 2 stands unexecuted until a wording is found
   that does not license a positive. **The four clauses are not additive**: each is individually
   safe, and their union scores the #91 origin row **5.921 with 12/12 `in_scope`** where v8 pins
@@ -310,7 +323,10 @@ nothing depends on it until the op-point is reopened.
   at **0.883 ± 0.037**, refuting length and location — *a rule stated as a **test** inside a
   reasoning step becomes a question asked of every article; the same rule as a **category** in an
   exclusion list does not.* `docs/evidence/2026-09-03-v8-1-gate/` PART 2.
-- **A v8.1 prompt fix is owed**, ~6 calls. ✅ **Ruled 2026-09-03** — the fix is on
+- **A v8.1 prompt fix is owed**, ~6 calls. ⭐ **LIVE EVIDENCE 2026-09-08 (#153):** two live
+  passers flip out of `in_scope` on exactly this rule when the documented rubric is applied —
+  Houston rental air-conditioning law **5.544** (*benefit not delivered until December*) and Hong
+  Kong schools *"brace for"* **5.075**. ✅ **Ruled 2026-09-03** — the fix is on
   **commencement** (a policy change that has not taken effect is an announcement), bounded
   **inside §2**, not on prominence and not extended into §1
   (`docs/decisions/2026-09-03-v8-1-commencement-clause.md`). ⛔ **Unwritten and untested** —

@@ -1,0 +1,436 @@
+{
+ "arabic_al_monitor_e1e2fb0f7192": {
+  "oracle_mean": 5.141666666666667,
+  "oracle_sd": 0.42120857857677413,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 4.948515498638153
+ },
+ "arabic_gulf_times_f4fd368c7813": {
+  "oracle_mean": 4.241666666666667,
+  "oracle_sd": 0.40671447806374766,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 4.72251296043396
+ },
+ "australian_abc_au_5c0ae16a5a49": {
+  "oracle_mean": 5.641666666666667,
+  "oracle_sd": 0.2538043866182512,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 4.875781226158143
+ },
+ "australian_abc_au_75320e08641f": {
+  "oracle_mean": 0.9500000000000001,
+  "oracle_sd": 0.07745966692414835,
+  "verdict": "harm_is_subject",
+  "votes": 5,
+  "student_raw": 4.675347375869751
+ },
+ "australian_smh_1cf65a0de40e": {
+  "oracle_mean": 5.3,
+  "oracle_sd": 0.08366600265340758,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 5.34581288099289
+ },
+ "australian_the_conversation_au_7cf84914e719": {
+  "oracle_mean": 6.108333333333333,
+  "oracle_sd": 0.20103896803024696,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 5.196582412719726
+ },
+ "australian_the_conversation_au_cde8026de9b6": {
+  "oracle_mean": 4.983333333333333,
+  "oracle_sd": 0.39200340134578765,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 5.0242052435874935
+ },
+ "australian_the_conversation_au_ff252ce9e831": {
+  "oracle_mean": 6.366666666666667,
+  "oracle_sd": 0.2523225449036742,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 4.921166837215424
+ },
+ "balkan_index_hr_1f652d54af3d": {
+  "oracle_mean": 5.425,
+  "oracle_sd": 0.520336429629908,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 4.872881269454956
+ },
+ "balkan_index_hr_dbb5be196f88": {
+  "oracle_mean": 5.491666666666667,
+  "oracle_sd": 0.45433101002096127,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 5.188548016548157
+ },
+ "balkan_index_hr_f3a73ac5f013": {
+  "oracle_mean": 4.866666666666666,
+  "oracle_sd": 0.3188521078284833,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 5.2783783912658695
+ },
+ "belgian_la_libre_9286ea1dc9e6": {
+  "oracle_mean": 4.083333333333333,
+  "oracle_sd": 0.35023801430836526,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 4.728565835952759
+ },
+ "belgian_rtbf_info_2dfe35adf54d": {
+  "oracle_mean": 5.291666666666667,
+  "oracle_sd": 0.4067144780637478,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 4.854759979248047
+ },
+ "belgian_vrt_nieuws_nl_0d366d41981f": {
+  "oracle_mean": 4.458333333333333,
+  "oracle_sd": 0.269103449748729,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 4.8484985589981076
+ },
+ "belgian_vrt_nieuws_nl_f0771317a7d6": {
+  "oracle_mean": 4.9,
+  "oracle_sd": 0.17029386365926394,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 4.896062958240509
+ },
+ "british_irish_bbc_business_697732e824b4": {
+  "oracle_mean": 5.783333333333334,
+  "oracle_sd": 0.1169045194450012,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 4.968687510490417
+ },
+ "british_irish_bbc_england_33f32e25bf6a": {
+  "oracle_mean": 5.783333333333333,
+  "oracle_sd": 0.07527726527090783,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 5.409401404857635
+ },
+ "british_irish_bbc_england_4c7ee290392e": {
+  "oracle_mean": 6.05,
+  "oracle_sd": 0.2626785107312739,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 5.425792074203491
+ },
+ "british_irish_bbc_england_c73990d7060a": {
+  "oracle_mean": 6.2250000000000005,
+  "oracle_sd": 0.25248762345905196,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 5.772699487209319
+ },
+ "british_irish_independent_uk_706876ecfdbf": {
+  "oracle_mean": 4.233333333333333,
+  "oracle_sd": 0.1807392228230126,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 4.609254336357116
+ },
+ "canadian_globe_mail_30fbe379e3e3": {
+  "oracle_mean": 4.066666666666666,
+  "oracle_sd": 0.10801234497346439,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 4.615798127651214
+ },
+ "central_asian_24_kg_4f00597ee532": {
+  "oracle_mean": 4.1,
+  "oracle_sd": 0.363318042491699,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 4.645981884002685
+ },
+ "central_asian_24_kg_8351094c86fd": {
+  "oracle_mean": 4.85,
+  "oracle_sd": 0.2529822128134701,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 4.887516641616821
+ },
+ "climate_solutions_the_cool_down_8094f43914ed": {
+  "oracle_mean": 6.233333333333333,
+  "oracle_sd": 0.296085573216033,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 5.543778967857361
+ },
+ "czech_idnes_fa9bdb0ca721": {
+  "oracle_mean": 3.9166666666666665,
+  "oracle_sd": 0.5372770855589011,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 4.701429367065429
+ },
+ "east_african_nation_ke_4b865cd41604": {
+  "oracle_mean": 6.208333333333334,
+  "oracle_sd": 0.1828022611092835,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 5.508420407772064
+ },
+ "east_asian_scmp_e794f0019345": {
+  "oracle_mean": 3.4833333333333334,
+  "oracle_sd": 0.34737107920301413,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 5.074545454978943
+ },
+ "eu_policy_analysis_european_correspondent_e004084e2a14": {
+  "oracle_mean": 4.716666666666667,
+  "oracle_sd": 0.09309493362512639,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 4.5287871122360235
+ },
+ "healthcare_medrxiv_9b7b493e95fe": {
+  "oracle_mean": 5.083333333333334,
+  "oracle_sd": 0.1471960144387976,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 4.6646236896514885
+ },
+ "healthcare_medrxiv_c754010280ad": {
+  "oracle_mean": 3.8166666666666664,
+  "oracle_sd": 0.2562550812504342,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 4.552410018444061
+ },
+ "indonesian_mongabay_id_4a03fd01cc36": {
+  "oracle_mean": 6.283333333333333,
+  "oracle_sd": 0.24832774042918898,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 4.655034446716309
+ },
+ "korean_greenpost_korea_b801ebb69a14": {
+  "oracle_mean": 4.766666666666667,
+  "oracle_sd": 0.38815804341359034,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 4.741196095943451
+ },
+ "legal_policy_amnesty_intl_7473fc2f762b": {
+  "oracle_mean": 6.208333333333334,
+  "oracle_sd": 0.19853631070075492,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 4.896137022972107
+ },
+ "portuguese_nexo_jornal_e11be9b4a991": {
+  "oracle_mean": 5.625,
+  "oracle_sd": 0.41563204881240845,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 5.300042915344238
+ },
+ "positive_news_good_good_good_5f285a546fd7": {
+  "oracle_mean": 6.641666666666667,
+  "oracle_sd": 0.08010409893798613,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 5.777216589450836
+ },
+ "pubmed_294adbdf638c": {
+  "oracle_mean": 4.583333333333334,
+  "oracle_sd": 0.22060522810365724,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 4.581679308414459
+ },
+ "romanian_hotnews_0e6082865d21": {
+  "oracle_mean": 3.025,
+  "oracle_sd": 1.2172715391398914,
+  "verdict": "in_scope",
+  "votes": 5,
+  "student_raw": 4.938303470611572
+ },
+ "science_frontiers_medicine_d937cfee3a7e": {
+  "oracle_mean": 4.791666666666667,
+  "oracle_sd": 0.10206207261596577,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 5.150557208061217
+ },
+ "science_phys_org_92494ff4e46c": {
+  "oracle_mean": 5.683333333333334,
+  "oracle_sd": 0.39958311609309344,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 4.573293018341065
+ },
+ "science_sciencedaily_d40608791c2f": {
+  "oracle_mean": 6.716666666666667,
+  "oracle_sd": 0.07527726527090783,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 4.691509532928467
+ },
+ "south_african_the_citizen_b3a1c84d6bd5": {
+  "oracle_mean": 5.133333333333334,
+  "oracle_sd": 0.22060522810365754,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 4.9341597080230715
+ },
+ "south_american_andina_9a4cc1d0f040": {
+  "oracle_mean": 5.108333333333333,
+  "oracle_sd": 0.1357080199054818,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 4.747686386108398
+ },
+ "south_american_andina_ff1159a593bb": {
+  "oracle_mean": 4.35,
+  "oracle_sd": 0.4636809247747852,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 5.234414672851562
+ },
+ "south_american_global_voices_es_b7008a0e3961": {
+  "oracle_mean": 4.3,
+  "oracle_sd": 0.28982753492378865,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 4.767272102832795
+ },
+ "south_asian_indian_express_61bed56ca591": {
+  "oracle_mean": 5.0,
+  "oracle_sd": 0.4538722287164091,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 5.472561979293823
+ },
+ "south_asian_indian_express_633c5e3194f5": {
+  "oracle_mean": 4.816666666666667,
+  "oracle_sd": 0.39200340134578787,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 4.756051540374756
+ },
+ "south_asian_indian_express_9f206d53ba0f": {
+  "oracle_mean": 5.15,
+  "oracle_sd": 0.3016620625799672,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 4.553830218315125
+ },
+ "south_asian_indian_express_b925a724bd68": {
+  "oracle_mean": 4.941666666666666,
+  "oracle_sd": 0.33677391031175,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 5.075642156600951
+ },
+ "south_asian_indian_express_c68acf9d4265": {
+  "oracle_mean": 5.608333333333333,
+  "oracle_sd": 0.14288690166235224,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 5.021606504917145
+ },
+ "south_asian_indian_express_c7f20fb64869": {
+  "oracle_mean": 5.433333333333334,
+  "oracle_sd": 0.2160246899469286,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 6.109754204750061
+ },
+ "south_asian_indian_express_ca4ef0eb90ba": {
+  "oracle_mean": 1.2916666666666665,
+  "oracle_sd": 2.061653866842508,
+  "verdict": "out_of_scope",
+  "votes": 5,
+  "student_raw": 4.7556907653808596
+ },
+ "south_asian_nepalnews_2ac8b6d829f4": {
+  "oracle_mean": 4.858333333333333,
+  "oracle_sd": 0.40424827354815857,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 4.52129989862442
+ },
+ "south_asian_times_of_india_ea09bbec14ef": {
+  "oracle_mean": 5.3,
+  "oracle_sd": 0.15491933384829665,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 5.300123465061188
+ },
+ "southeast_asian_straits_times_asia_1883a005801e": {
+  "oracle_mean": 4.916666666666667,
+  "oracle_sd": 0.051639777949432045,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 4.567392027378082
+ },
+ "southeast_asian_straits_times_asia_e8108a419034": {
+  "oracle_mean": 6.4,
+  "oracle_sd": 0.0,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 5.549369740486145
+ },
+ "swedish_dagens_nyheter_5e0a43889275": {
+  "oracle_mean": 5.3,
+  "oracle_sd": 0.07745966692414852,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 4.528748488426208
+ },
+ "swedish_dagens_nyheter_af571a10b9c6": {
+  "oracle_mean": 5.708333333333333,
+  "oracle_sd": 0.10684880283216393,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 4.675881111621857
+ },
+ "us_news_npr_abd685fcb99a": {
+  "oracle_mean": 4.658333333333333,
+  "oracle_sd": 0.2437553418218084,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 5.053378391265869
+ },
+ "us_news_npr_f7fa9daf0b85": {
+  "oracle_mean": 5.875,
+  "oracle_sd": 0.22079402165819584,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 5.827498996257782
+ },
+ "west_african_punch_ng_725518309096": {
+  "oracle_mean": 6.183333333333334,
+  "oracle_sd": 0.24013884872437175,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 4.913055241107941
+ },
+ "west_african_seneweb_ae76d2f2797f": {
+  "oracle_mean": 5.675000000000001,
+  "oracle_sd": 0.12942179105544793,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 5.347716307640074
+ },
+ "west_african_seneweb_e153495c7ddf": {
+  "oracle_mean": 5.775,
+  "oracle_sd": 0.20432816741702572,
+  "verdict": "in_scope",
+  "votes": 6,
+  "student_raw": 6.128909814357757
+ }
+}

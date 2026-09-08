@@ -1,6 +1,48 @@
 # LLM Distillery - TODO
 
-## 🔵 NEXT SESSION — **v8 is LIVE and ENABLED. Wait for rows, then Phase E.**
+## 🔵 NEXT SESSION — **Phase E is 168/200. Then the free v7-vs-v8 comparison. The defect is the PROMPT.**
+
+> ✅ **v8 SCORING CONFIRMED 2026-09-08.** First cycle to score: `filtered_20260907_180414.jsonl`,
+> 6,210 articles, **63 above the 4.50 op-point**. Four cycles in.
+>
+> **1. Phase E — ~0.9 cycles away, and the bar is CUMULATIVE.** `fit_normalization.py:306` globs
+> `filtered_*.jsonl` and pools them; `MIN_NORMALIZATION_ARTICLES = 200` is enforced at line 723.
+> Counted 2026-09-08: 63 + 45 + 26 + 34 = **168 of 200**. ⛔ **Do not disable v8 while pending** —
+> it discards 168 rows at the finish line. ⚠️ Two sessions projected a *rate* against a fresh start
+> (3.2 cycles, then 7.7) while the rows already sat on disk. `ls` and a sum answered it.
+>
+> **2. ⭐ THE FREE MEASUREMENT NOBODY HAS RUN.** Both lenses already score every article every
+> cycle, so the **v7-vs-v8 same-articles comparison costs $0** — no API calls, no judges
+> (`4596af9`, NM#455). **Everything measured on 09-08 asks whether v8 is CORRECT; only this asks
+> whether it is BETTER THAN WHAT SHIPS — and only the second gates the cutover (#151).**
+>
+> **3. ⛔ THE DEFECT IS THE PROMPT, NOT THE STUDENT (`EXP-029`, #153, $0.16).** Live audit of 62
+> passers: scope precision **0.9677** [0.890, 0.991] vs the gate's 0.850 — above it, not
+> distinguishable; only **2 of 62** off-lens. But holding family and text fixed and swapping
+> `prompt-v8-4.md` for the documented rubric moves **12 articles out of `in_scope` and 1 in**
+> (paired McNemar **p = 0.0034**), and those 12 are `STATUS.md`'s three owed v8.1 gaps:
+> commencement, the money-worded proposal rule (**both unowned before #153**) and dropped clause D
+> (#143). ⭐ A production panel rediscovered all three by a route that never read the prompt.
+>
+> **4. `[4.5, 5.0)` is where everything goes wrong — and you must NOT raise the op-point.** That
+> band holds **58.7%** of shipped volume, both off-lens articles, 7 of 12 prompt flips, 8 of 11
+> Gemini failures, 15 of 22 Claude failures and all 3 of the gate's off-lens FPs — five
+> measurements, three families. ⛔ 7 of the 12 are a *known prompt* problem with a fix already
+> owed; a prompt fix keeps the volume, a threshold move discards it. **And a panel selected on
+> passing structurally cannot measure what a higher bar would lose.** Prompt first, re-measure
+> after (#150).
+>
+> ⚠️ **No single-judge precision number is trustworthy to better than ±16 points** — three judges
+> span **0.651 to 0.968** on the same 63 articles. **Every null is a RATE-null with case churn:**
+> truncation is exactly 0.0000 while moving 6 of 62 verdicts; DeepSeek-vs-Gemini is −0.032 while
+> disagreeing on 8 of 62 (κ 0.587). Say "the rates are indistinguishable", never "it doesn't matter".
+>
+> **Carried, not blocking:** a standing control for the `_wa`-vs-deployed-aggregation agreement
+> (0.000000 on 62/62, asserted in `docs/evidence/2026-09-08-v8-live-panel/decompose.py` but not in
+> the test suite); an authorship-independent judge is **BLOCKED** — `openai_api_key` returns HTTP
+> 401 and DeepSeek/Gemini/Anthropic are all already in the set.
+
+## 🗄️ PRIOR — the deploy that shipped a filter nothing called
 
 > ✅ **DEPLOYED AND ENABLED 2026-09-07.** `human_thriving v8` scores production traffic.
 > NexusMind `9245f2c` (PRs **#452** then **#453**), sadalsuud pulled, scorer restarted,
