@@ -573,6 +573,23 @@ Requirements (enforced by `production_scorer.py` guards — a fit that violates 
 - **≥200 MEDIUM+ articles** (`MIN_NORMALIZATION_ARTICLES`). A needle filter at ~0.3% base rate needs ~145K rescored articles to reach 200 — rescore a large historical harvest (FluxusSource `~/local_dev/FluxusSource/data`) with the deployed model to get there without waiting.
 - **At the production base rate**, NOT the enriched training/val set (enrichment skews the CDF harsh; `raw_min > 4.5` is also rejected, `MAX_NORMALIZATION_RAW_MIN`).
 
+⛔ **A filter whose op-point IS 4.5 cannot currently be fitted — llm-distillery#154, hit by
+`human_thriving v8` on 2026-09-08 with the row bar met (202/200).** The NexusMind#205 hard guard
+compares `sample_min` against an absolute `MAX_NORMALIZATION_RAW_MIN = 4.5`, so at that op-point
+every honest fit fails it: any observed score above the bar is above 4.5 unless it rounds to 4.5
+at four decimals (a 5e-5 window), which makes it a sample-**density** test rather than the bias
+test it documents. `uplifting v7` passed it in August at a true `sample_min` of 4.500027 on 15,698
+rows and **would fail a refit on four cycles today**. ⛔ The fix is two files —
+`tests/unit/test_normalization_invariant.py` asserts the same bound on every committed package —
+and it is an owner ruling, not a workaround. **Do not reach for `--analysis-only`**: it cannot
+write a file named `normalization.json`, by design.
+
+⚠️ **Fitting also arms NexusMind#319, and the obvious sanity check on it is a tautology.** After
+anchoring, the op-point maps to normalized 0.0 and the enrichment gate sits at normalized 4.0 —
+which *is* the 40th percentile of whatever sample you fitted on, so "≈60% of surfaced rows still
+clear it" is arithmetic, not a measurement. Quote the **effective raw bar** instead (4.872 for v8's
+202-row fit, against an op-point of 4.50), or measure the share on cycles the fit did not see.
+
 Writes `normalization.json` to the filter dir; commit it and deploy to both servers. Refit per version.
 
 ---

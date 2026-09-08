@@ -4571,6 +4571,8 @@ A mechanism that is present, configured and unreachable is this repo's defining 
 | 2026-09-05, **18th occurrence** | `check_claim_shapes.py` — the guard written *against* guards that examine nothing — carried `experiments` as a JSON scan root behind `endswith(".json")`. `".jsonl".endswith((".json",))` is **False**, so the root matched **0 files**, `experiments/registry.jsonl` was never scanned, and the `.jsonl` guard beneath it was **unreachable dead code**. Twin in the same file and worse: `_reads_field` accepted any non-docstring string constant, so deleting the **only** real weight read from `phase_c_outcome.py` still PASSED — the name survived in an error message and a JSON label, while the docstring claimed *mention is not use* was fixed. Third, aggregate: emptiness was tested across all roots at once, so losing three of four evidence directories took a check from 7 sites to 1 and still printed PASS. **A fix applied to one shape of a problem and named after all of them.** Found by `/review-changes` after 707 tests and every guard went green |
 | 2026-09-05, **the fix as the mechanism** | the sibling shape, logged under *establish what it excludes* as its 22nd occurrence but belonging here too: a rewrite made to satisfy a new check moved the ordering verb onto a different physical **line** from its two numbers, so the per-line trigger stopped matching. The site was not qualified — it became **invisible**, the check re-ran green, and a published site count failed to reproduce. **After any edit made to satisfy a checker, confirm the site is still EXAMINED: count sites before and after, not just the verdict** |
 | 2026-08-11 evening, **caught pre-ship** | a `solutions v6` re-weighting that moved +19.5pp across an absolute 4.0 — correct at its own layer, erased downstream by a percentile CDF, because the gate reads the *normalized* score. **Not counted in the occurrence total: it never shipped.** Listed because it is the first time reading the caller stopped the recommendation instead of explaining it afterwards |
+| 2026-09-08, **caught pre-commit** | `EXP-030`'s stage-2 control was a **`print`, not an `assert`**, sitting inside a section headed *"they run in `compare.py` and assert, they are not claims in prose"* — and its wording was true in its first clause and false in its second, so 3,162 probe-estimate rows entered every section-2 statistic. **Not counted in the occurrence total: it never shipped.** Listed for what found it: an adversarial lens reading the control's sentence one clause at a time, after 762 green tests and six green guards |
+| 2026-09-08, the **guard's expired enumeration** | `fit_normalization.py`'s NexusMind#205 hard tier compares `sample_min` against a literal **4.5** that IS `human_thriving v8`'s op-point, so at that op-point it is a sample-**density** test and refuses every honest sparse fit. Its own comment names the premise — *"no false-block possible for any real op-point (3.75/4.0)"* — written before llm-distillery#102 moved a filter to 4.5. **A guard that enumerates the values it was safe for has a premise that expires.** llm-distillery#154 |
 
 The cultural_discovery v6 entry is the point of the whole list: **knowing this failure
 mode does not prevent it.** Only running the check against your own work does.
@@ -6487,3 +6489,101 @@ already requires for issue numbers; the failure mode is identical and the pronou
 `#167` at least looks ambiguous. ⭐ **And before contradicting a peer's measurement, check that you
 searched the tree they were describing** — a dismissal is a claim (`feedback-a-dismissal-is-a-claim`),
 and this one had a plausible coincidence doing the work of the check.
+
+## The frame mixed two instruments, and the control that should have caught it was a print (2026-09-08)
+**Problem**: `EXP-030`'s section 2 — Spearman, Pearson, the volume-matched top-K and every
+per-dimension delta — was computed over all 15,372 rows. **3,162 of them carry an e5 PROBE estimate
+in `raw_weighted_average`, not a Gemma score** (`stage_used == "stage1_low"`). The clean both-stage2
+frame gives Spearman **0.7177** where the mixed frame gave 0.5551, and every dimension delta moves
+(`human_wellbeing_impact` −0.618 → −0.882).
+**Root cause**: two failures stacked. The evidence had a control for exactly this, and it was a
+`print`, not an `assert`, inside a section headed *"they run in `compare.py` and assert, they are not
+claims in prose"*. And its wording — *"every surfaced row is stage2, so `raw_weighted_average` is a
+Gemma output everywhere it is used here"* — was **true in its first clause and false in its second**:
+the probe rows never surface, so sections 1/3/4/5 were genuinely safe, and section 2 does not use the
+surfaced set.
+**Fix**: the control asserts (`assert set(surf_st) <= {"stage2"}`), section 2 leads with the
+both-stage2 frame and prints the mixed one beside it, labelled. ⭐ **The general shape: a control
+scoped to one population, described as though it covered the file.** When a control's sentence
+contains "so", check the second clause separately — CLAUDE.md's own rule already says *condition on
+`stage_used` before reading `raw_weighted_average` as a model output*, and this session cited that
+rule in the README while breaking it three sections later.
+
+## The chance level was a straw null, and the null that mattered was free (2026-09-08)
+**Problem**: `EXP-030` published *"volume-matching v8 recovers only 57.0% of v7's passers, against a
+chance level of 7.70%"* to support *"v8 is not a rescaled v7"*. 7.70% is the overlap of a **random**
+top-K — nothing would produce it. The live alternative is *v8 = a monotone-noisy, rescaled v7*.
+Built it (noise on v7 tuned until its Spearman with v7 matches v8's, quantile-mapped onto v8's exact
+marginal): on the published frame it gives overlap **64.4%** and within-union rho **0.3654
+[0.3281, 0.4172]** against an actual 0.3463 — **the actual sits inside the null**. The evidence did
+not exclude the thing its headline claimed.
+**Root cause**: the null was chosen because it was easy to compute, not because anyone would assert
+it. It is the `feedback-prove-the-bar-is-reachable` failure with the sign reversed — an unfalsifiable
+bar rather than an unreachable one.
+**Fix**: `compare.py` runs the noise null on both frames and prints null-vs-actual. On the clean
+both-stage2 frame the null gives 76.8% / 0.5630 against 57.5% / 0.3436 and is excluded decisively.
+⭐ **Two lessons and the second is the sharper one**: name the null someone would actually argue for,
+and note that the *same* contamination that inflated the statistic also **deflated the null toward
+it** — a mixed frame moves the measurement and its comparator the same way, so nothing looks wrong.
+
+## Spearman computed from global ranks restricted to a subset is not Spearman (2026-09-08)
+**Problem**: published *"Spearman rho = 0.224 within the union of the surfaced sets"*. The script
+ranked all 15,372 rows once and then Pearson-correlated those **global** ranks over the 1,200-row
+subset. Spearman re-ranks **inside** the sample. The statistic is **0.3463** — the published figure
+was 35% low, and it was quoted in an issue comment, a registry entry and the always-read TODO.
+**Root cause**: `ranks()` took no key list; the subsetting happened at the correlation step, which
+looks like restriction and is a different estimator. Nothing in the pipeline could catch it — the
+registry's traceability checker confirms a number appears in an artifact, not that the artifact
+computed the right thing.
+**Fix**: `ranks(f, ks)` ranks within `ks`; `scipy.stats.spearmanr` on the committed manifest
+reproduces 0.3463. ⭐ **For any statistic with a "computed within" definition, verify against a
+library implementation on the committed artifact once** — the check is one line and it is the only
+thing that distinguishes a named statistic from a plausible arithmetic neighbour.
+
+## Two counts across different denominators are not a comparison (2026-09-08)
+**Problem**: 10 of `EXP-029`'s 12 prompt flips fall in the `both` set and 2 in `v8_only`, from which
+I concluded *"the owed prompt work is not what separates the two lenses"*. The two sets are **56 and
+6 rows**. On rates: v8-only **2/6 = 33.3%** vs both **10/56 = 17.9%** — flips are **1.87× enriched**
+among the rows that distinguish the lenses, the opposite of the published direction. Fisher two-sided
+**p = 0.328**, so six rows settle nothing either way.
+**Root cause**: the counts were *interesting* — 10 vs 2 is a striking split — and the denominators
+were in a different part of the analysis. `feedback-rate-needs-population` names exactly this and I
+had written the denominators into the same file three sections earlier.
+**Fix**: `flip_overlap.py` prints both rates, the ratio and a Fisher p, and its denominators are
+**panel membership** rather than manifest membership (57 vs 56 — the panel dropped one row). ⭐ **A
+split that is striking as counts is the specific case to convert to rates before believing**, because
+the striking-ness usually comes from the set sizes.
+
+## A guard whose absolute bound EQUALS the op-point is a density test (2026-09-08)
+**Problem**: `fit_normalization.py` refused to write `human_thriving v8`'s normalization — *"Lowest
+observed article (4.51) is above MAX_NORMALIZATION_RAW_MIN (4.5): the reference population never
+reaches the visibility threshold"*. The fit was correct: 202 rows drawn at raw ≥ 4.5 from 18,418
+scored, `sample_min` 4.5069, gap to the anchor **0.0069** against the advisory tier's 0.5.
+**Root cause**: the hard tier compares `sample_min` against the literal **4.5**, and this filter's
+op-point **is** 4.5. Every honest fit above a 4.5 bar has a minimum above 4.5, so the guard passes
+only if the minimum rounds to 4.5 at four decimals — a **5e-5 window**, i.e. a test of sample
+density. The block's own comment names the stale premise: *"no false-block possible for any real
+op-point (3.75/4.0)"*, written 2026-07-16, before #102 moved `uplifting v7` to 4.5. v7 passed it in
+August with a true `sample_min` of **4.500027** on 15,698 rows; **a refit of v7 on four cycles today
+would fail it** (min 4.5018). Same filter, same op-point, opposite verdict.
+**Fix**: not changed — it is a deploy-path guard, so llm-distillery#154 carries the diagnosis and
+three options for the owner. ⭐ **A guard that enumerates the values it was safe for has a premise
+that expires**: list the enumeration in the comment (this one did) and re-run it when a new value
+joins the set. ⛔ And the fix is two files — `tests/unit/test_normalization_invariant.py:190`
+asserts the same bound on every committed package, so a fitter-only change makes the output
+uncommittable.
+
+## An in-sample share measured against a percentile gate is a tautology (2026-09-08)
+**Problem**: published *"60.4% (122/202) of v8's surfaced rows would clear NexusMind's normalized 4.0
+enrichment gate"* and set it beside `uplifting v7`'s measured 60.0% as though the two were
+comparable.
+**Root cause**: the CDF was fitted on the **same 202 rows** the share was then measured over, and the
+normalized scale is `10 × CDF`, so *"share above normalized 4.0"* is *"share above this sample's own
+40th percentile"* — **~60% by construction**, whatever the model does. v7's 60.0% is out-of-sample
+(fitted 2026-08-10 on 15,698 rows, measured over 82 later cycles) and is a measurement. The two
+numbers agreeing to 0.4pp read as corroboration and were nothing of the kind.
+**Fix**: labelled as a projection, and the transferable quantity stated instead — the effective raw
+bar for enrichment lands at **4.872** against an op-point of 4.50. ⭐ **When a threshold is defined
+as a percentile of a fitted distribution, any share measured on the fitting sample is arithmetic.**
+The tell is agreement that is too good: `feedback-predict-the-range-first` says state the believable
+range first, and *"about 60%"* was predictable from the gate's definition alone.
