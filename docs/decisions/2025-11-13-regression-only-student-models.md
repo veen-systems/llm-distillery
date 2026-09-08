@@ -3,6 +3,22 @@
 **Date:** 2025-11-13
 **Status:** Accepted
 
+> ⚠️ **AMENDMENT 2026-09-08 — what this record does NOT decide.**
+> The title reads as though it settles "regression head vs any other head". It does not.
+> The question decided here is **regression vs GENERATIVE** — whether a student should emit
+> *reasoning text* alongside its scores — and it is decided on inference latency (200 ms vs
+> 800 ms per article) and validation complexity. **It says nothing about a classification
+> head**, and it is not a precedent against one.
+>
+> This matters because a **binary scope gate is a step function a regression head cannot
+> represent**, measured on `human_thriving v8`: the oracle zeroes all six dimensions at
+> `scope_verdict != in_scope`, and the student returns 4.66–4.85 on articles the oracle scores
+> 0.80–0.90 — a ~4-point gap, landing just above the 4.50 operating point. See
+> `docs/decisions/2026-09-08-scope-gate-two-head.md` and llm-distillery#150.
+>
+> ⛔ **Do not cite this record against a two-head (classifier + regression) proposal.** Cite it
+> against putting a text generator in the production scoring path, which is what it is about.
+
 ## Context
 
 After training the first student model (sustainability_tech_deployment, 1.5B, MAE 0.978), we considered whether student models should generate reasoning/explanations alongside dimensional scores, similar to how the oracle labels include reasoning.

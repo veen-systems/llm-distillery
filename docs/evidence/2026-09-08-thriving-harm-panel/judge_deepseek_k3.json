@@ -1,0 +1,2057 @@
+[
+ {
+  "id": "global_news_UN_news_a497c0b7dc81",
+  "votes": [
+   "misleading",
+   "misleading",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": true,
+  "whys": [
+   "Report, not implemented measures; only projections of future benefits, no delive",
+   "Report and projections only; no implemented improvement for people yet.",
+   "Report projects future benefits; no concrete current improvement for identifiabl"
+  ]
+ },
+ {
+  "id": "greek_ta_nea_ce5fd519a464",
+  "votes": [
+   "misleading",
+   "misleading",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": true,
+  "whys": [
+   "Announcement of future funding plans, no concrete improvement yet delivered.",
+   "Announcements and promises of future funding; no concrete improvement delivered ",
+   "Reader seeks relief; gets funding promise with no delivered improvement."
+  ]
+ },
+ {
+  "id": "caucasus_azertag_c478318325fe",
+  "votes": [
+   "weak",
+   "fits",
+   "fits"
+  ],
+  "majority": "fits",
+  "unanimous": false,
+  "whys": [
+   "Equipment aid is concrete but minor, affecting only infrastructure repairs, not ",
+   "Concrete aid delivered to repair Ukraine's energy infrastructure.",
+   "Concrete aid delivered to Kyiv region's energy repairs, helping people now."
+  ]
+ },
+ {
+  "id": "east_african_business_daily_ke_e7e5d61f973a",
+  "votes": [
+   "harmful",
+   "harmful",
+   "harmful"
+  ],
+  "majority": "harmful",
+  "unanimous": true,
+  "whys": [
+   "Dominant subject is stroke harm; diagnosis, damage, risk, not improvement.",
+   "Dominant subject is stroke's harms, suffering, and risk\u2014no thriving relief.",
+   "Dominant subject is stroke's harm; no improvement for readers."
+  ]
+ },
+ {
+  "id": "positive_news_the_better_india_1a850d55182e",
+  "votes": [
+   "fits",
+   "fits",
+   "fits"
+  ],
+  "majority": "fits",
+  "unanimous": true,
+  "whys": [
+   "Students gain practical skills and confidence through teacher's ongoing real-lif",
+   "A teacher's longstanding active methods concretely improve students' attendance,",
+   "Teacher's real methods improved student attendance and confidence concretely."
+  ]
+ },
+ {
+  "id": "positive_news_the_better_india_f01ffbbae617",
+  "votes": [
+   "fits",
+   "fits",
+   "fits"
+  ],
+  "majority": "fits",
+  "unanimous": true,
+  "whys": [
+   "Elderly villagers concretely share meals, care, and emergency support daily.",
+   "Elderly residents concretely share meals, care, and emergency support daily.",
+   "Elderly villagers share meals and care, improving daily lives, shown concretely."
+  ]
+ },
+ {
+  "id": "positive_news_the_better_india_093bd76d2505",
+  "votes": [
+   "misleading",
+   "misleading",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": true,
+  "whys": [
+   "No road built yet; lab test and patent, no delivered improvement.",
+   "A promising study/patent; no roads built, no people's lives improved yet.",
+   "Promising lab research, patented but no roads built yet."
+  ]
+ },
+ {
+  "id": "science_mdpi_sustainability_7f3679baeca8",
+  "votes": [
+   "misleading",
+   "misleading",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": true,
+  "whys": [
+   "Study finding, no delivered improvement for readers yet.",
+   "Study findings, no implemented improvement for readers yet.",
+   "Study reports potential, not delivered improvement for people."
+  ]
+ },
+ {
+  "id": "french_france_info_politique_40deabb8d089",
+  "votes": [
+   "misleading",
+   "misleading",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": true,
+  "whys": [
+   "Proposed law debated, no delivered improvement yet.",
+   "Advocacy for a proposed law, no actual improvement delivered yet.",
+   "Law proposal being debated; no concrete improvement delivered yet."
+  ]
+ },
+ {
+  "id": "east_african_fana_bc_d6ae4968dcc9",
+  "votes": [
+   "misleading",
+   "misleading",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": true,
+  "whys": [
+   "No concrete improvement yet; just conference talks and plans.",
+   "Officials speak and plans are discussed, but no concrete improvement has happene",
+   "A conference with speeches and plans; no concrete improvement has happened yet f"
+  ]
+ },
+ {
+  "id": "positive_news_the_better_india_903b66e7df76",
+  "votes": [
+   "fits",
+   "fits",
+   "weak"
+  ],
+  "majority": "fits",
+  "unanimous": false,
+  "whys": [
+   "A woman overcame insults to walk global runways for H&M and Armani.",
+   "Model achieved concrete career success walking for global brands.",
+   "One model's achievement; inspiring but very local, minor impact."
+  ]
+ },
+ {
+  "id": "south_american_el_pais_uy_44e8c2201745",
+  "votes": [
+   "weak",
+   "weak",
+   "misleading"
+  ],
+  "majority": "weak",
+  "unanimous": false,
+  "whys": [
+   "Prevention and first-aid advice; no actual improvement shown for people.",
+   "Prevention advice and first aid steps, no concrete improvement shown.",
+   "Advice on prevention and first aid, but no delivered improvement for people yet."
+  ]
+ },
+ {
+  "id": "spanish_la_vanguardia_d4379357ec57",
+  "votes": [
+   "misleading",
+   "weak",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": false,
+  "whys": [
+   "Commemorative plaques honor past figures, but no current improvement for people ",
+   "Real commemorative plaques installed, but minor local cultural improvement, not ",
+   "Plaques honor memory; no concrete improvement in people's lives yet."
+  ]
+ },
+ {
+  "id": "vietnamese_vnexpress_vn_a653ce3e3475",
+  "votes": [
+   "misleading",
+   "misleading",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": true,
+  "whys": [
+   "New tax rules announced, but effective later; no actual relief yet.",
+   "Explains future tax deduction rules; no actual improvement has happened yet.",
+   "New tax deduction policy not yet in effect, only announced for future."
+  ]
+ },
+ {
+  "id": "caucasus_azertag_85a837e9c63a",
+  "votes": [
+   "harmful",
+   "fits",
+   "fits"
+  ],
+  "majority": "fits",
+  "unanimous": false,
+  "whys": [
+   "Article centers on landmine hazards and neutralization, evoking danger despite p",
+   "Clearing landmines and UXOs objectively improves safety and living conditions fo",
+   "Landmines removed, making land safe for returning civilians; concrete harm reduc"
+  ]
+ },
+ {
+  "id": "vietnamese_vnexpress_vn_63c81fb0fbd1",
+  "votes": [
+   "fits",
+   "fits",
+   "fits"
+  ],
+  "majority": "fits",
+  "unanimous": true,
+  "whys": [
+   "New school kitchen completed, giving students safer meals and better space.",
+   "New kitchen completed; students now have safe, improved dining facility.",
+   "New kitchen completed; students now have safe, proper dining space."
+  ]
+ },
+ {
+  "id": "spanish_la_vanguardia_fe4873a1ae0b",
+  "votes": [
+   "weak",
+   "weak",
+   "weak"
+  ],
+  "majority": "weak",
+  "unanimous": true,
+  "whys": [
+   "Air conditioning installed is real but minor, local, and still incomplete.",
+   "Real but partial cooling aid; main issues unresolved.",
+   "School AC installation is concrete but partial, amidst disputes and plans."
+  ]
+ },
+ {
+  "id": "east_asian_korea_herald_f95898bf4a12",
+  "votes": [
+   "fits",
+   "fits",
+   "fits"
+  ],
+  "majority": "fits",
+  "unanimous": true,
+  "whys": [
+   "Gender pay gap concretely narrowed for public institution employees.",
+   "Women at public institutions now face below 20% pay gap, showing measurable prog",
+   "Pay gap actually fell below 20% for women at public institutions, a concrete imp"
+  ]
+ },
+ {
+  "id": "british_irish_guardian_world_f6c49eead883",
+  "votes": [
+   "fits",
+   "fits",
+   "fits"
+  ],
+  "majority": "fits",
+  "unanimous": true,
+  "whys": [
+   "Union membership rose 411,000; workers gained concrete representation and bargai",
+   "Union membership grew by 411,000, concretely improving workers' lives.",
+   "Union membership grew for thousands of workers, improving their bargaining power"
+  ]
+ },
+ {
+  "id": "south_asian_scroll_in_ac496c6c182f",
+  "votes": [
+   "weak",
+   "weak",
+   "weak"
+  ],
+  "majority": "weak",
+  "unanimous": true,
+  "whys": [
+   "Describes historical legal rulings, not a concrete current improvement for ident",
+   "Analyzes past rulings but no current identifiable people's lives improved.",
+   "Explains past legal rulings; no fresh concrete improvement for identifiable peop"
+  ]
+ },
+ {
+  "id": "geography_nature_high_country_news_86b7fe036eaf",
+  "votes": [
+   "misleading",
+   "misleading",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": true,
+  "whys": [
+   "Tool is in development, not yet preventing conflicts or improving lives.",
+   "A mapping tool in development; no delivered improvement yet.",
+   "A map tool planned, not yet implemented; no conflict prevented yet."
+  ]
+ },
+ {
+  "id": "positive_news_good_news_network_80b11e8cc019",
+  "votes": [
+   "fits",
+   "fits",
+   "fits"
+  ],
+  "majority": "fits",
+  "unanimous": true,
+  "whys": [
+   "Homeless man now housed with stable life, funded by community support.",
+   "Sampson James is housed with stable life, concrete improvement.",
+   "A homeless man was housed and stabilized through concrete community support."
+  ]
+ },
+ {
+  "id": "positive_news_the_better_india_6bd16d07aae8",
+  "votes": [
+   "fits",
+   "fits",
+   "fits"
+  ],
+  "majority": "fits",
+  "unanimous": true,
+  "whys": [
+   "Farmers earn income and restore land, concrete improvements for identifiable peo",
+   "Farmers earn income, improve soil health from restored land, with named benefici",
+   "Farmers earn from biochar, improved yields, income."
+  ]
+ },
+ {
+  "id": "southeast_asian_vn_express_en_aac330aecf5c",
+  "votes": [
+   "fits",
+   "fits",
+   "fits"
+  ],
+  "majority": "fits",
+  "unanimous": true,
+  "whys": [
+   "A premature baby was safely delivered and mother and baby are stable.",
+   "A premature baby was safely delivered, mother and child are stable and healthy.",
+   "Premature baby delivered safely on flight; mother and baby stable and healthy."
+  ]
+ },
+ {
+  "id": "southeast_asian_straits_times_world_2322e99aba44",
+  "votes": [
+   "fits",
+   "fits",
+   "fits"
+  ],
+  "majority": "fits",
+  "unanimous": true,
+  "whys": [
+   "Naga community gains actual return of ancestral remains, restoring heritage.",
+   "Naga community regains ancestral remains, a concrete rights and memory restorati",
+   "Repatriation restores ancestral remains to Naga people, honoring memory and righ"
+  ]
+ },
+ {
+  "id": "dutch_news_nieuwe_oogst_c5a125d744be",
+  "votes": [
+   "fits",
+   "fits",
+   "fits"
+  ],
+  "majority": "fits",
+  "unanimous": true,
+  "whys": [
+   "Farmer's passion and sustainable practice concretely improved after subsidy.",
+   "Dairy farmer regained passion; concrete personal improvement.",
+   "Farmer's renewed passion and concrete farming changes are real improvements."
+  ]
+ },
+ {
+  "id": "global_news_euronews_6470c8065c81",
+  "votes": [
+   "weak",
+   "misleading",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": false,
+  "whys": [
+   "Promotes cultural preservation, but no concrete individual improvement yet.",
+   "Plan to keep village open; no proof it has happened yet.",
+   "Announces future village plan; no concrete improvement delivered for readers see"
+  ]
+ },
+ {
+  "id": "gn_central_america_gn_cuba_ec10b4e09bec",
+  "votes": [
+   "fits",
+   "fits",
+   "fits"
+  ],
+  "majority": "fits",
+  "unanimous": true,
+  "whys": [
+   "Young woman achieved concrete homeownership, gaining privacy and independence.",
+   "Young woman bought her own home, gaining privacy and independence.",
+   "Young woman bought private home; concrete improvement in her life."
+  ]
+ },
+ {
+  "id": "healthcare_medicalxpress_6c89afdc1ee8",
+  "votes": [
+   "fits",
+   "fits",
+   "misleading"
+  ],
+  "majority": "fits",
+  "unanimous": false,
+  "whys": [
+   "Women had improved cycles, PCOS symptoms, and healthy pregnancies after surgery.",
+   "Women studied had improved periods, PCOS symptoms, and healthy pregnancies after",
+   "Study findings show improvements but are research results, not delivered effects"
+  ]
+ },
+ {
+  "id": "japanese_mainichi_jp_ae86b87de249",
+  "votes": [
+   "weak",
+   "fits",
+   "fits"
+  ],
+  "majority": "fits",
+  "unanimous": false,
+  "whys": [
+   "Local amateur baseball victory, minor for general readers.",
+   "Sports victory brings concrete joy; readers get clear positive outcome.",
+   "Team achieves concrete sporting victory; fans feel uplifted."
+  ]
+ },
+ {
+  "id": "science_new_scientist_9103cef7ab94",
+  "votes": [
+   "fits",
+   "misleading",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": false,
+  "whys": [
+   "Participants in trial breathed easier and felt better after therapy.",
+   "Small trial shows promise, but no delivered improvement yet.",
+   "Small trial results, not yet a delivered improvement for people."
+  ]
+ },
+ {
+  "id": "southeast_asian_antara_en_4dce602ef0fa",
+  "votes": [
+   "weak",
+   "misleading",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": false,
+  "whys": [
+   "Festival showcases culture but no concrete improvement in health, rights, or liv",
+   "Minister's statement and festival opening, but no concrete audience improvement ",
+   "Minister opens festival; no concrete improvement yet for people."
+  ]
+ },
+ {
+  "id": "southeast_asian_asia_times_2a0d77260822",
+  "votes": [
+   "weak",
+   "weak",
+   "misleading"
+  ],
+  "majority": "weak",
+  "unanimous": false,
+  "whys": [
+   "Report on recovery amid ruins; real but fragile, limited concrete improvement.",
+   "Firsthand positive observations about Syria's transition, but no concrete measur",
+   "Describes post-war observations, not a concrete achieved improvement for identif"
+  ]
+ },
+ {
+  "id": "spanish_la_vanguardia_9c869d99136e",
+  "votes": [
+   "misleading",
+   "misleading",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": true,
+  "whys": [
+   "School year starts with improvements, but looming strike and disputes dominate.",
+   "School year start is procedural; threatened strike and disputes dim improvement.",
+   "Mostly logistics and projections, with no proven improvement yet delivered."
+  ]
+ },
+ {
+  "id": "spanish_la_vanguardia_b146577bbae5",
+  "votes": [
+   "fits",
+   "fits",
+   "fits"
+  ],
+  "majority": "fits",
+  "unanimous": true,
+  "whys": [
+   "Record theater attendance shows people thriving through cultural access and conn",
+   "Over 3 million theater attendees confirm real, ongoing cultural participation an",
+   "Concrete record theater attendance improvements actual for Barcelona audiences."
+  ]
+ },
+ {
+  "id": "us_news_nbc_news_dce34f65db04",
+  "votes": [
+   "harmful",
+   "harmful",
+   "harmful"
+  ],
+  "majority": "harmful",
+  "unanimous": true,
+  "whys": [
+   "Story centers on flood disaster and prolonged ordeal, not relief.",
+   "Dominant subject is disaster, entrapment, and suffering; rescue relief is second",
+   "Dominant subject is the flood ordeal and trapped suffering, not improvement."
+  ]
+ },
+ {
+  "id": "vietnamese_vnexpress_vn_e954cbad7353",
+  "votes": [
+   "misleading",
+   "weak",
+   "weak"
+  ],
+  "majority": "weak",
+  "unanimous": false,
+  "whys": [
+   "Recounts past race events; no current improvement for people.",
+   "Promotes a marathon event; celebrates community running, not health/rights impro",
+   "Event retrospective shows community's growth, but no direct health/rights improv"
+  ]
+ },
+ {
+  "id": "west_african_seneweb_a34516e6821a",
+  "votes": [
+   "misleading",
+   "misleading",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": true,
+  "whys": [
+   "No improvement yet; they suspended protest hoping for future government action.",
+   "Suspension of protest based on talks, no payment or reinstatement yet.",
+   "Only a suspended protest; no pay or reinstatement yet delivered."
+  ]
+ },
+ {
+  "id": "pubmed_a8d82b856e21",
+  "votes": [
+   "misleading",
+   "misleading",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": true,
+  "whys": [
+   "Preclinical mouse study; no human improvement yet.",
+   "Mouse model study, no human improvement yet; lab research announcement.",
+   "A lab study with no delivered human improvement; readers seek real-life relief."
+  ]
+ },
+ {
+  "id": "west_african_seneweb_96c726ed3af5",
+  "votes": [
+   "misleading",
+   "misleading",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": true,
+  "whys": [
+   "A forum discussed challenges and pledges; no concrete improvement delivered for ",
+   "Forum discussions and plans only; no concrete improvement delivered yet.",
+   "Forum discussions and pledges only, no concrete improvement delivered yet."
+  ]
+ },
+ {
+  "id": "arabic_gulf_times_25e0418d3bcb",
+  "votes": [
+   "fits",
+   "fits",
+   "fits"
+  ],
+  "majority": "fits",
+  "unanimous": true,
+  "whys": [
+   "Food baskets actually delivered; over 6,000 people's immediate hunger reduced.",
+   "Food baskets delivered to identifiable vulnerable families, easing immediate har",
+   "Vulnerable families in Syria received concrete food baskets, easing immediate ha"
+  ]
+ },
+ {
+  "id": "vietnamese_tuoitre_vn_6f9867d8bdb5",
+  "votes": [
+   "weak",
+   "misleading",
+   "weak"
+  ],
+  "majority": "weak",
+  "unanimous": false,
+  "whys": [
+   "No concrete improvement yet; only hope from a clue in ongoing identification pro",
+   "No actual improvement for people yet; only a clue found, hope for future identif",
+   "A hopeful artifact discovery, but no identity confirmed yet; improvement is mino"
+  ]
+ },
+ {
+  "id": "portuguese_ambientemagazine_1a55aca05e09",
+  "votes": [
+   "misleading",
+   "misleading",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": true,
+  "whys": [
+   "Work starts but no improvement delivered yet; future benefit only.",
+   "Construction contract signed; no completed improvement for residents yet.",
+   "Construction begins, but no improved sanitation for residents yet."
+  ]
+ },
+ {
+  "id": "west_african_thisday_bff5f81c25c9",
+  "votes": [
+   "misleading",
+   "weak",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": false,
+  "whys": [
+   "A congratulatory tribute praising achievements, not a concrete improvement shown",
+   "Eulogy lists achieved health improvements but lacks identifiable individuals dir",
+   "Eulogy and past achievements, no new concrete improvement for readers."
+  ]
+ },
+ {
+  "id": "industry_intelligence_innovation_news_07f2efa25326",
+  "votes": [
+   "misleading",
+   "misleading",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": true,
+  "whys": [
+   "Research findings with no delivered real-world improvement yet; future potential",
+   "Research is promising but no efficiency improvement has actually reached people ",
+   "Research and future potential, no current improvement delivered for people."
+  ]
+ },
+ {
+  "id": "central_asian_times_ca_7189ae038ace",
+  "votes": [
+   "misleading",
+   "misleading",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": true,
+  "whys": [
+   "A plan and draft, but no implemented improvements for people yet.",
+   "Plan is draft, no delivered improvement yet; risks outlined, no action taken.",
+   "Draft plan announced through 2035; no concrete improvements delivered yet."
+  ]
+ },
+ {
+  "id": "greek_capital_gr_f25af2dfed28",
+  "votes": [
+   "misleading",
+   "misleading",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": true,
+  "whys": [
+   "Announced future measures; improvements not yet delivered to people.",
+   "Announced future measures and targets, no concrete improvement yet.",
+   "Announced future tax cuts and aid plans; no implemented improvements yet."
+  ]
+ },
+ {
+  "id": "southeast_asian_free_malaysia_c4b2f5177c30",
+  "votes": [
+   "misleading",
+   "misleading",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": true,
+  "whys": [
+   "Announces programs and plans, no delivered improvements for people yet.",
+   "Speech about plans and programs, no delivered improvement yet.",
+   "Announces programs and plans, but no delivered improvement yet for people."
+  ]
+ },
+ {
+  "id": "climate_solutions_the_cool_down_d73aad8e59ef",
+  "votes": [
+   "misleading",
+   "misleading",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": true,
+  "whys": [
+   "Plan, proposal, and aspiration, no tangible improvement delivered for people yet",
+   "Plan to expand seed vault; no concrete improvement yet for people.",
+   "No improvement delivered yet; just proposals and ongoing collection efforts."
+  ]
+ },
+ {
+  "id": "indonesian_mongabay_id_24034377c7f8",
+  "votes": [
+   "fits",
+   "fits",
+   "fits"
+  ],
+  "majority": "fits",
+  "unanimous": true,
+  "whys": [
+   "Slow lorises returned to wild habitat; concrete improvement for identifiable ani",
+   "Six slow lorises returned to wild, locals assist, concrete life improvement.",
+   "Six slow lorises returned to wild habitat; conservation improves their lives."
+  ]
+ },
+ {
+  "id": "portuguese_tek_373a563acd6c",
+  "votes": [
+   "misleading",
+   "misleading",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": true,
+  "whys": [
+   "Plan approved, no actual improvement delivered yet for citizens.",
+   "Government plan approved, but no delivered improvement for people yet.",
+   "Government plan approved; no service improvement delivered to people yet."
+  ]
+ },
+ {
+  "id": "italian_industria_italiana_159faa67e80a",
+  "votes": [
+   "misleading",
+   "misleading",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": true,
+  "whys": [
+   "A study presented with projections, not delivered improvements for identifiable ",
+   "A study presented at a forum, with proposals and estimates, no delivered impact.",
+   "Study presented at forum; no concrete improvement yet, just proposals and estima"
+  ]
+ },
+ {
+  "id": "austrian_krone_1aca9282c874",
+  "votes": [
+   "fits",
+   "fits",
+   "fits"
+  ],
+  "majority": "fits",
+  "unanimous": true,
+  "whys": [
+   "Families received 2500 school supply packages \u2013 concrete help delivered.",
+   "2500 families received school supplies; concrete help delivered now.",
+   "2500 families received school supplies; concrete help delivered."
+  ]
+ },
+ {
+  "id": "portuguese_ambientemagazine_f55a4fad94eb",
+  "votes": [
+   "misleading",
+   "misleading",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": true,
+  "whys": [
+   "Metas cumpridas n\u00e3o significam melhorias concretas para pessoas ainda.",
+   "Completion of administrative milestones; no direct proof of improved lives yet.",
+   "Government milestone, but no concrete improvement for identifiable people yet."
+  ]
+ },
+ {
+  "id": "west_african_vanguard_ng_1ca3613ac77f",
+  "votes": [
+   "misleading",
+   "misleading",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": true,
+  "whys": [
+   "Publishing a consumer code is a plan, not a proven improvement yet.",
+   "Publication of a code is an announcement, not a delivered improvement.",
+   "Code publication announced, no consumer improvement yet delivered."
+  ]
+ },
+ {
+  "id": "south_asian_indian_express_4ca67079d1c6",
+  "votes": [
+   "misleading",
+   "misleading",
+   "weak"
+  ],
+  "majority": "misleading",
+  "unanimous": false,
+  "whys": [
+   "A regulatory directive, not a delivered improvement for people yet.",
+   "Directive improves fee process but no delivered relief for the candidate yet.",
+   "Rights improvement via CIC order, but only directive; actual student benefit pen"
+  ]
+ },
+ {
+  "id": "british_irish_guardian_education_2de912633643",
+  "votes": [
+   "misleading",
+   "misleading",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": true,
+  "whys": [
+   "Minister visits school; no delivered improvement for readers yet.",
+   "Minister's visit and plan, no improved lives yet.",
+   "Visit and blueprint plan, no delivered improvement for families yet."
+  ]
+ },
+ {
+  "id": "west_african_thisday_edc7d04e08bc",
+  "votes": [
+   "fits",
+   "weak",
+   "weak"
+  ],
+  "majority": "weak",
+  "unanimous": false,
+  "whys": [
+   "Concrete increase in local medicine production and manufacturing companies.",
+   "Policy-linked manufacturing gains are real but national-scale, indirect for indi",
+   "Improvements reported but mostly statistical, no identifiable people directly be"
+  ]
+ },
+ {
+  "id": "romanian_adevarul_fb8801d51b01",
+  "votes": [
+   "misleading",
+   "misleading",
+   "weak"
+  ],
+  "majority": "misleading",
+  "unanimous": false,
+  "whys": [
+   "Historical account, not a current improvement; no present-day benefit delivered ",
+   "Vechi subiect istoric, f\u0103r\u0103 \u00eembun\u0103t\u0103\u021bire actual\u0103 pentru oameni.",
+   "Historical account of past relief efforts, no current improvement for readers."
+  ]
+ },
+ {
+  "id": "vietnamese_tuoitre_vn_01df34d5c6c2",
+  "votes": [
+   "misleading",
+   "misleading",
+   "weak"
+  ],
+  "majority": "misleading",
+  "unanimous": false,
+  "whys": [
+   "Article announces plans and pledges for the new school year, no delivered improv",
+   "Plan and pledges for school year; no concrete improvement delivered yet.",
+   "Minor scholarships and pledges, mostly plans for future, not concrete broad impr"
+  ]
+ },
+ {
+  "id": "belgian_vrt_nieuws_nl_0d366d41981f",
+  "votes": [
+   "weak",
+   "misleading",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": false,
+  "whys": [
+   "Protection is preliminary, benefits future, not yet realized for people.",
+   "Bescherming is voorlopig; geen definitief behoud of verbetering voor mensen.",
+   "Protection is preliminary; no final effect yet for people."
+  ]
+ },
+ {
+  "id": "science_frontiers_medicine_d937cfee3a7e",
+  "votes": [
+   "weak",
+   "weak",
+   "fits"
+  ],
+  "majority": "weak",
+  "unanimous": false,
+  "whys": [
+   "Infection rates improved for new mothers locally but study design limits causal ",
+   "Local hospital study shows infection drop but causality uncertain, modest scope.",
+   "Infection rate dropped for 118 women; concrete improvement delivered."
+  ]
+ },
+ {
+  "id": "swedish_dagens_nyheter_af571a10b9c6",
+  "votes": [
+   "weak",
+   "weak",
+   "weak"
+  ],
+  "majority": "weak",
+  "unanimous": true,
+  "whys": [
+   "Volunteer voter drive planned, no increase yet.",
+   "Women's plans to boost turnout, no impact yet; hopes, not delivered improvement.",
+   "Volunteers plan to boost turnout; no voters yet affected."
+  ]
+ },
+ {
+  "id": "science_sciencedaily_d40608791c2f",
+  "votes": [
+   "fits",
+   "weak",
+   "fits"
+  ],
+  "majority": "fits",
+  "unanimous": false,
+  "whys": [
+   "Older adults improved cognition through structured lifestyle program, a concrete",
+   "Cognitive improvement for study participants is real but narrowly evidenced.",
+   "Older adults at risk improved cognition through structured lifestyle coaching."
+  ]
+ },
+ {
+  "id": "british_irish_bbc_england_c73990d7060a",
+  "votes": [
+   "fits",
+   "fits",
+   "fits"
+  ],
+  "majority": "fits",
+  "unanimous": true,
+  "whys": [
+   "Vendors describe concrete income, community, and dignity gained through the Big ",
+   "Vendors describe concrete income, community, and regained dignity from selling t",
+   "Homeless and vulnerable vendors gained income, purpose, and community through re"
+  ]
+ },
+ {
+  "id": "south_asian_indian_express_c68acf9d4265",
+  "votes": [
+   "harmful",
+   "misleading",
+   "fits"
+  ],
+  "majority": "harmful",
+  "unanimous": false,
+  "whys": [
+   "Article centers on flood aftermath, injuries, trauma, and death.",
+   "Historic donation story; recent improvement not yet delivered.",
+   "Hospital equipped by donor funds now actively treats flood injured, offering rea"
+  ]
+ },
+ {
+  "id": "british_irish_independent_uk_706876ecfdbf",
+  "votes": [
+   "misleading",
+   "misleading",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": true,
+  "whys": [
+   "Study findings only, no delivered improvement yet for patients.",
+   "Study results announced, no delivered improvement for patients yet.",
+   "Study results presented, not yet implemented for patients; no delivered improvem"
+  ]
+ },
+ {
+  "id": "legal_policy_amnesty_intl_7473fc2f762b",
+  "votes": [
+   "weak",
+   "misleading",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": false,
+  "whys": [
+   "Stories of resilience and survivors, but only one achieved a midwife career; mos",
+   "Stories show past harm and ongoing struggle, not concrete improved lives now.",
+   "Profiles resistance but no systemic improvement delivered; ongoing harm dominate"
+  ]
+ },
+ {
+  "id": "australian_the_conversation_au_cde8026de9b6",
+  "votes": [
+   "weak",
+   "fits",
+   "weak"
+  ],
+  "majority": "weak",
+  "unanimous": false,
+  "whys": [
+   "Modest wellbeing improvement from campaign, but no healthcare access gains shown",
+   "Study shows measurable mental wellbeing gains, especially for men.",
+   "Small population wellbeing gain; no evidence of direct individual improvement."
+  ]
+ },
+ {
+  "id": "australian_smh_1cf65a0de40e",
+  "votes": [
+   "weak",
+   "fits",
+   "fits"
+  ],
+  "majority": "fits",
+  "unanimous": false,
+  "whys": [
+   "School achievement celebration, but promised health/rights/lives improvement not",
+   "Concrete school improvement for students, with identifiable benefits like autono",
+   "Students' educational outcomes improved with real achievements and autonomy."
+  ]
+ },
+ {
+  "id": "south_american_andina_ff1159a593bb",
+  "votes": [
+   "misleading",
+   "misleading",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": true,
+  "whys": [
+   "Study and statistics presented, no concrete improvement delivered yet.",
+   "Study and projections only; no delivered improvement for people yet.",
+   "Study and projections only; no concrete improvement yet delivered."
+  ]
+ },
+ {
+  "id": "british_irish_bbc_business_697732e824b4",
+  "votes": [
+   "fits",
+   "fits",
+   "fits"
+  ],
+  "majority": "fits",
+  "unanimous": true,
+  "whys": [
+   "Thousands of families received free school uniforms, saving money before school.",
+   "Families saved \u00a369 and children got uniforms, a concrete improvement.",
+   "Families saved money and got uniforms, reducing financial stress before school."
+  ]
+ },
+ {
+  "id": "arabic_al_monitor_e1e2fb0f7192",
+  "votes": [
+   "weak",
+   "misleading",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": false,
+  "whys": [
+   "Football resumes but grief dominates; improvement is symbolic, not concrete heal",
+   "Resumption is framed by mass death; no real improvement yet.",
+   "Event is symbolic; grief dominates, no concrete improvement delivered."
+  ]
+ },
+ {
+  "id": "australian_abc_au_75320e08641f",
+  "votes": [
+   "misleading",
+   "misleading",
+   "harmful"
+  ],
+  "majority": "misleading",
+  "unanimous": false,
+  "whys": [
+   "Court ruling enables housing but no improvement has happened yet.",
+   "No improvement delivered; court ruling enables future housing, not realized bene",
+   "Dominant subject is habitat loss, species endangerment, and legal defeat\u2014no reli"
+  ]
+ },
+ {
+  "id": "belgian_vrt_nieuws_nl_f0771317a7d6",
+  "votes": [
+   "fits",
+   "fits",
+   "weak"
+  ],
+  "majority": "fits",
+  "unanimous": false,
+  "whys": [
+   "Dutch students access affordable art education, improving their creative lives.",
+   "Dutch students now access affordable art classes, improving their lives.",
+   "Genuine access to affordable arts education, but minor local improvement for som"
+  ]
+ },
+ {
+  "id": "canadian_globe_mail_30fbe379e3e3",
+  "votes": [
+   "misleading",
+   "weak",
+   "weak"
+  ],
+  "majority": "weak",
+  "unanimous": false,
+  "whys": [
+   "Study results show modest gains, not concrete delivered improvements for people ",
+   "Research findings only, no delivered improvement for students yet.",
+   "Study results modest, not yet broadly implemented improvement for students."
+  ]
+ },
+ {
+  "id": "central_asian_24_kg_4f00597ee532",
+  "votes": [
+   "fits",
+   "fits",
+   "fits"
+  ],
+  "majority": "fits",
+  "unanimous": true,
+  "whys": [
+   "A cinema reopened, giving residents a functioning cultural venue.",
+   "Renovated cinema reopened, offering new 4K screenings and year-round access to t",
+   "A structurally unsafe cinema was restored and reopened, adding amenities."
+  ]
+ },
+ {
+  "id": "czech_idnes_fa9bdb0ca721",
+  "votes": [
+   "fits",
+   "fits",
+   "fits"
+  ],
+  "majority": "fits",
+  "unanimous": true,
+  "whys": [
+   "Three newborns delivered safely by fathers, emergency dispatchers aided.",
+   "Babies born safely, fathers helped, no harm.",
+   "Three unplanned births ended safely; families and responders clearly identified."
+  ]
+ },
+ {
+  "id": "east_asian_scmp_e794f0019345",
+  "votes": [
+   "misleading",
+   "weak",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": false,
+  "whys": [
+   "No concrete improvement; just government preparedness for school reopening, not ",
+   "Real improvement but thin: back-to-school logistics eased, no major life change.",
+   "No concrete improvement yet; report on readiness, not delivered change."
+  ]
+ },
+ {
+  "id": "pubmed_294adbdf638c",
+  "votes": [
+   "weak",
+   "misleading",
+   "fits"
+  ],
+  "majority": "weak",
+  "unanimous": false,
+  "whys": [
+   "Improvement shown in study participants, but effect is study data, not broad del",
+   "Study findings announced, no delivered improvement yet for readers.",
+   "Children with severe psoriasis measurably improved, proven safe in study."
+  ]
+ },
+ {
+  "id": "south_asian_indian_express_633c5e3194f5",
+  "votes": [
+   "fits",
+   "fits",
+   "fits"
+  ],
+  "majority": "fits",
+  "unanimous": true,
+  "whys": [
+   "Court ruling concretely protects women's rights and personal freedom for identif",
+   "Court ruling affirms wife's rights, concretely improving her legal standing.",
+   "Court ruling concretely affirms a woman's right to refuse orthodox customs."
+  ]
+ },
+ {
+  "id": "south_asian_indian_express_9f206d53ba0f",
+  "votes": [
+   "weak",
+   "weak",
+   "harmful"
+  ],
+  "majority": "weak",
+  "unanimous": false,
+  "whys": [
+   "Legal ruling affirms religious freedom but no direct health/life improvement yet",
+   "Court upholds religious freedom, but concrete local improvement is minor and nar",
+   "Reader seeking relief meets a court case about religious conflict, not improveme"
+  ]
+ },
+ {
+  "id": "south_asian_indian_express_b925a724bd68",
+  "votes": [
+   "harmful",
+   "harmful",
+   "harmful"
+  ],
+  "majority": "harmful",
+  "unanimous": true,
+  "whys": [
+   "Dominant subject is widespread flood devastation, not thriving; relief efforts a",
+   "Flood crisis dominates; relief efforts secondary to widespread harm and loss.",
+   "Dominant subject is flood crisis, harm, and loss, not improvement."
+  ]
+ },
+ {
+  "id": "south_asian_nepalnews_2ac8b6d829f4",
+  "votes": [
+   "fits",
+   "fits",
+   "fits"
+  ],
+  "majority": "fits",
+  "unanimous": true,
+  "whys": [
+   "Apple harvest opened; farmers and traders can now sell, directly improving livel",
+   "Apple farmers can now harvest all varieties, a concrete local economic improveme",
+   "Apple harvest opened, farmers and traders actively working, concrete economic ac"
+  ]
+ },
+ {
+  "id": "us_news_npr_abd685fcb99a",
+  "votes": [
+   "fits",
+   "fits",
+   "fits"
+  ],
+  "majority": "fits",
+  "unanimous": true,
+  "whys": [
+   "Concrete first-day school supports visibly helped children and families transiti",
+   "Shows children starting school with supportive traditions, easing transitions.",
+   "New school year begins with children supported, connected, and thriving."
+  ]
+ },
+ {
+  "id": "french_up_le_mag_cdbd42dc7242",
+  "votes": [
+   "misleading",
+   "misleading",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": true,
+  "whys": [
+   "Describes plans and programs, no concrete improvement for people yet.",
+   "Describes plans, pilots, tools, and intended projects, with no delivered improve",
+   "Describes plans and programs; no concrete improvement has happened yet for peopl"
+  ]
+ },
+ {
+  "id": "french_rfi_d188ba9b8177",
+  "votes": [
+   "misleading",
+   "misleading",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": true,
+  "whys": [
+   "Request for reparations presented, no actual improvement delivered yet.",
+   "Demande pr\u00e9sent\u00e9e, aucun effet concret; pas encore d'am\u00e9lioration r\u00e9elle.",
+   "A request for reparations is a proposal, not actual delivered improvement for pe"
+  ]
+ },
+ {
+  "id": "west_african_myjoyonline_002fe1c368bc",
+  "votes": [
+   "weak",
+   "misleading",
+   "weak"
+  ],
+  "majority": "weak",
+  "unanimous": false,
+  "whys": [
+   "The event holds promise, but no improvement has happened for girls yet.",
+   "Event opening and speeches, no concrete improvement delivered yet.",
+   "Event opening offers skills training but no proven lasting impact yet."
+  ]
+ },
+ {
+  "id": "us_news_wbur_643eb7e14a7b",
+  "votes": [
+   "weak",
+   "fits",
+   "misleading"
+  ],
+  "majority": "weak",
+  "unanimous": false,
+  "whys": [
+   "Raising awareness is real but thin; no measurable lives improved yet.",
+   "Sharing lived experience aids other veterans' mental health, a concrete proactiv",
+   "Sharing her story raises awareness but no concrete improvement for people yet."
+  ]
+ },
+ {
+  "id": "west_african_thisday_d51cd1e62bcf",
+  "votes": [
+   "misleading",
+   "weak",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": false,
+  "whys": [
+   "Resolution adopted, but no concrete improvement for people yet.",
+   "A UN resolution adopted, but no lives improved yet; symbolic, not concrete.",
+   "Resolution adopted but no maps changed yet; only a plan."
+  ]
+ },
+ {
+  "id": "south_american_runrunes_510a6ff045ea",
+  "votes": [
+   "fits",
+   "fits",
+   "weak"
+  ],
+  "majority": "fits",
+  "unanimous": false,
+  "whys": [
+   "Mobile clinics delivered cancer screenings to earthquake-affected communities, i",
+   "Mobile cancer screenings reach earthquake-affected communities, concretely impro",
+   "Mobile cancer screenings delivered but impact likely local and recent."
+  ]
+ },
+ {
+  "id": "korean_ecotiger_026bd1d621a4",
+  "votes": [
+   "misleading",
+   "misleading",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": true,
+  "whys": [
+   "Ceremonies, pledges, and awards planned, but no concrete improvement for people ",
+   "\uae30\ub150\uc77c \ud589\uc0ac\uc640 \uacc4\ud68d\ub9cc \uc788\uace0, \uc2e4\uc81c \uad6d\ubbfc \uc0b6 \uac1c\uc120\uc740 \uc544\uc9c1 \uc5c6\uc74c.",
+   "A commemoration event with ceremonies and pledges, but no actual air quality imp"
+  ]
+ },
+ {
+  "id": "german_deutschlandfunk_26432b86944f",
+  "votes": [
+   "weak",
+   "harmful",
+   "misleading"
+  ],
+  "majority": "weak",
+  "unanimous": false,
+  "whys": [
+   "Real infrastructure improvement, but mainly for trade, not broad wellbeing.",
+   "Aids North Korean regime, not a concrete health/rights improvement for people; p",
+   "Bridge opening aids trade, but no clear health/rights/life improvement yet for i"
+  ]
+ },
+ {
+  "id": "balkan_vecernji_09037e5d67a7",
+  "votes": [
+   "fits",
+   "fits",
+   "fits"
+  ],
+  "majority": "fits",
+  "unanimous": true,
+  "whys": [
+   "Concrete sporting achievement celebrated; identifiable athletes won bronze, brin",
+   "Croatian water polo team won bronze, concrete achievement for players and fans.",
+   "Croatian water polo team won a bronze medal, a concrete achievement."
+  ]
+ },
+ {
+  "id": "balkan_index_hr_6a70da267622",
+  "votes": [
+   "misleading",
+   "harmful",
+   "harmful"
+  ],
+  "majority": "harmful",
+  "unanimous": false,
+  "whys": [
+   "Preparations for potential harm, no improvement yet delivered.",
+   "Dominant subject is anticipated Russian attacks causing hardship, not current th",
+   "Article about preparing for expected Russian attacks, not actual improvement; re"
+  ]
+ },
+ {
+  "id": "danish_politiken_84cc2769e47d",
+  "votes": [
+   "misleading",
+   "misleading",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": true,
+  "whys": [
+   "Political agreement announced, no physical return yet delivered.",
+   "Agreement to return, not yet delivered or improved lives.",
+   "Only an agreement to return; no transfer or concrete improvement yet."
+  ]
+ },
+ {
+  "id": "west_african_benin_web_tv_adccb0a92a22",
+  "votes": [
+   "weak",
+   "weak",
+   "misleading"
+  ],
+  "majority": "weak",
+  "unanimous": false,
+  "whys": [
+   "Temporary protection opens, but no one is documented yet; improvement is procedu",
+   "Temporary protection window opened, but benefits not yet delivered to identifiab",
+   "A registration window opens, but regularization is case-by-case and no one's sta"
+  ]
+ },
+ {
+  "id": "portuguese_observador_f0594632cdd6",
+  "votes": [
+   "weak",
+   "fits",
+   "fits"
+  ],
+  "majority": "fits",
+  "unanimous": false,
+  "whys": [
+   "Cultural event celebrated, but no clear improvement in health, rights, or lives.",
+   "Celebration of nomadic culture, sports, and heritage concluded; readers feel upl",
+   "Celebrates cultural heritage and sports; concrete joy for participants and atten"
+  ]
+ },
+ {
+  "id": "east_african_ktpress_rw_1df272f629e1",
+  "votes": [
+   "fits",
+   "fits",
+   "fits"
+  ],
+  "majority": "fits",
+  "unanimous": true,
+  "whys": [
+   "Mountain gorilla population recovered; communities gained schools, clinics, reve",
+   "Gorilla population concretely increased; named infants benefit people and wildli",
+   "Mountain gorilla population increased; communities got schools, water, clinics; "
+  ]
+ },
+ {
+  "id": "mexican_el_financiero_4e818b0187e7",
+  "votes": [
+   "misleading",
+   "weak",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": false,
+  "whys": [
+   "Plan progress reported, but no delivered improvement for people yet.",
+   "Progress report on plan; improvements partly delivered but still in progress, no",
+   "Plan progress reported, but improvements not yet delivered to people."
+  ]
+ },
+ {
+  "id": "west_african_myjoyonline_2cb902d2b682",
+  "votes": [
+   "fits",
+   "fits",
+   "fits"
+  ],
+  "majority": "fits",
+  "unanimous": true,
+  "whys": [
+   "Mariam became a doctor; scholarship made it happen.",
+   "Mariam graduated as a doctor; her life concretely improved.",
+   "Mariam completed medical school and now works as a doctor."
+  ]
+ },
+ {
+  "id": "south_american_brasil_de_fato_64c2b393d979",
+  "votes": [
+   "harmful",
+   "misleading",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": false,
+  "whys": [
+   "Dominant subjects are femicide, homelessness, and rights attacks, not concrete r",
+   "Protest highlights ongoing crises; no concrete improvement yet delivered.",
+   "Protest and demands reported, no concrete improvement delivered for people."
+  ]
+ },
+ {
+  "id": "arabic_alquds_ar_8ee80e364ba1",
+  "votes": [
+   "harmful",
+   "misleading",
+   "fits"
+  ],
+  "majority": "harmful",
+  "unanimous": false,
+  "whys": [
+   "Dominant subject is Sudan's war and displacement, despite voluntary returns.",
+   "Voluntary returns are planned steps, not yet proven improvements for returnees.",
+   "980 Sudanese people returned home voluntarily, a concrete improvement."
+  ]
+ },
+ {
+  "id": "arabic_aawsat_ar_b65184ca9542",
+  "votes": [
+   "weak",
+   "weak",
+   "fits"
+  ],
+  "majority": "weak",
+  "unanimous": false,
+  "whys": [
+   "Festival offers free cultural events, but ongoing improvements are modest and lo",
+   "A theater festival has launched; concrete cultural enrichment but minor in scope",
+   "Free theater festival venues open, connecting Lebanese audiences across cities."
+  ]
+ },
+ {
+  "id": "balkan_balkan_insight_b4ee2bf5fad0",
+  "votes": [
+   "weak",
+   "weak",
+   "weak"
+  ],
+  "majority": "weak",
+  "unanimous": true,
+  "whys": [
+   "Annual march occurred peacefully but no concrete rights improvement delivered.",
+   "Pride march occurred safely, but rights progress minor and symbolic.",
+   "Pride march held safely is real but minor progress amid ongoing threats."
+  ]
+ },
+ {
+  "id": "french_france_info_10e53b67d17b",
+  "votes": [
+   "fits",
+   "weak",
+   "weak"
+  ],
+  "majority": "weak",
+  "unanimous": false,
+  "whys": [
+   "Students moved into new residences with tutoring and support, improving daily li",
+   "Programme expansion is real but impact limited, only 12 cities.",
+   "Program expansion is announced but new students' actual benefit is just beginnin"
+  ]
+ },
+ {
+  "id": "pan_african_ghanaian_chronicle_09b4be1e199f",
+  "votes": [
+   "fits",
+   "fits",
+   "fits"
+  ],
+  "majority": "fits",
+  "unanimous": true,
+  "whys": [
+   "Residents confirm a peaceful festival after past violence, a real community impr",
+   "Violence ended; residents confirm peaceful festival, concrete community improvem",
+   "Residents confirm peaceful festival ended; concrete improvement over past violen"
+  ]
+ },
+ {
+  "id": "south_african_timeslive_8cb3f44569ab",
+  "votes": [
+   "harmful",
+   "harmful",
+   "harmful"
+  ],
+  "majority": "harmful",
+  "unanimous": true,
+  "whys": [
+   "Article centers on 9/11 deaths, grief, and ongoing illness.",
+   "Dominant subject is 9/11 deaths, grief, and lasting harm, not thriving.",
+   "Dominant subject is 9/11 deaths, grief, and enduring trauma."
+  ]
+ },
+ {
+  "id": "south_asian_the_hindu_d36150927aaa",
+  "votes": [
+   "misleading",
+   "weak",
+   "weak"
+  ],
+  "majority": "weak",
+  "unanimous": false,
+  "whys": [
+   "Infrastructure milestone, no direct improvement yet for readers.",
+   "Infrastructure milestone, but no direct health/rights/life improvement for peopl",
+   "Infrastructure milestone; public benefit upcoming, not yet delivered."
+  ]
+ },
+ {
+  "id": "korean_yonhap_kr_b8394b41d9f0",
+  "votes": [
+   "misleading",
+   "misleading",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": true,
+  "whys": [
+   "Project launch is an announcement; no concrete improvement for people yet.",
+   "Job fair and project launch, no delivered improvement yet.",
+   "Project launch and job fair announced, but no concrete improvement yet delivered"
+  ]
+ },
+ {
+  "id": "south_american_gestion_pe_662dc2df51d8",
+  "votes": [
+   "weak",
+   "misleading",
+   "weak"
+  ],
+  "majority": "weak",
+  "unanimous": false,
+  "whys": [
+   "Explains historical fund, but no current individual improvement described.",
+   "Explains fund history and function; no current improvement for identified people",
+   "Historical fund explainer; no current concrete improvement for identifiable peop"
+  ]
+ },
+ {
+  "id": "ukrainian_ukrinform_en_e7ac5cf6af83",
+  "votes": [
+   "misleading",
+   "misleading",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": true,
+  "whys": [
+   "Campaign launch, no delivered improvement for women yet.",
+   "Recruitment campaign is an announcement, not a delivered improvement for women y",
+   "Recruitment campaign announces opportunity; no improvement delivered yet."
+  ]
+ },
+ {
+  "id": "czech_ct24_d6a56d362133",
+  "votes": [
+   "harmful",
+   "misleading",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": false,
+  "whys": [
+   "Dominant subject is dying fish, dried ponds, worsening water conditions.",
+   "Research findings only; no actual improvement delivered yet.",
+   "Research findings, no concrete improvement delivered for people yet."
+  ]
+ },
+ {
+  "id": "arabic_emirates247_1188a8983545",
+  "votes": [
+   "fits",
+   "fits",
+   "fits"
+  ],
+  "majority": "fits",
+  "unanimous": true,
+  "whys": [
+   "Approved system employs 1,000 seniors, offering purpose, income, and community.",
+   "Senior citizens in Sharjah get concrete part-time jobs and social support, impro",
+   "Approved plan actually hires seniors, giving purpose and income, improving lives"
+  ]
+ },
+ {
+  "id": "south_asian_kathmandu_post_746ddb587d84",
+  "votes": [
+   "misleading",
+   "misleading",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": true,
+  "whys": [
+   "Proposes a future unit; no improvement has happened yet.",
+   "Proposes future coordination unit; no delivered improvement yet.",
+   "Proposes a unit, no delivered improvement for people yet."
+  ]
+ },
+ {
+  "id": "swiss_srf_wirtschaft_3819f9edd3cf",
+  "votes": [
+   "weak",
+   "weak",
+   "misleading"
+  ],
+  "majority": "weak",
+  "unanimous": false,
+  "whys": [
+   "Ongoing platform use helps, but no new concrete improvement for identifiable you",
+   "Platform expansion helps, but concrete job outcomes for youth aren't shown.",
+   "Announces platform events and goals, but no concrete improvement for people has "
+  ]
+ },
+ {
+  "id": "korean_yonhap_kr_996debbb3635",
+  "votes": [
+   "fits",
+   "fits",
+   "fits"
+  ],
+  "majority": "fits",
+  "unanimous": true,
+  "whys": [
+   "150 cars delivered to welfare agencies; concrete help for field workers.",
+   "150 cars delivered to welfare agencies; concrete mobility improvement for worker",
+   "150 small cars delivered to social welfare agencies, improving their field work."
+  ]
+ },
+ {
+  "id": "korean_yonhap_kr_7ec8a5aadbd9",
+  "votes": [
+   "misleading",
+   "misleading",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": true,
+  "whys": [
+   "Appointment only, no concrete improvement delivered yet.",
+   "Appointment announced, no actual improvement yet; readers seeking relief find no",
+   "Appointment of oversight officials, no delivered improvement yet."
+  ]
+ },
+ {
+  "id": "new_zealand_rnz_876ec23cb407",
+  "votes": [
+   "misleading",
+   "misleading",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": true,
+  "whys": [
+   "Recommendations and awareness campaign, but no concrete improvement for people y",
+   "Awareness and recommendations only; no delivered improvement yet.",
+   "Recommendations and calls for reform only; no concrete improvement yet."
+  ]
+ },
+ {
+  "id": "biotech_pharma_bioengineer_5b1da8a39359",
+  "votes": [
+   "misleading",
+   "misleading",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": true,
+  "whys": [
+   "Plan published, no delivered improvement for patients yet.",
+   "Guideline published, but no direct improvement for patients has yet occurred.",
+   "Guideline publication is a plan, not a delivered improvement in children's lives"
+  ]
+ },
+ {
+  "id": "south_african_herald_zw_e1820ed11254",
+  "votes": [
+   "misleading",
+   "misleading",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": true,
+  "whys": [
+   "Funding pledged, no food delivered yet; improvement not actual for readers.",
+   "Funding pledged and signed, but food distribution hasn't occurred yet.",
+   "Funding announced, not yet delivered; improvement for refugees is prospective."
+  ]
+ },
+ {
+  "id": "austrian_krone_7d705491cb40",
+  "votes": [
+   "misleading",
+   "misleading",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": true,
+  "whys": [
+   "App launch is a tool, not yet an actual improvement for people.",
+   "App launch announced, no proven life improvement yet.",
+   "App launch announced; no concrete improvement yet for identifiable people."
+  ]
+ },
+ {
+  "id": "south_asian_kathmandu_post_6de96638b0de",
+  "votes": [
+   "fits",
+   "fits",
+   "fits"
+  ],
+  "majority": "fits",
+  "unanimous": true,
+  "whys": [
+   "576 people actually returned home safely after being stranded.",
+   "576 stranded Nepalis safely returned home; concrete rescue after floods.",
+   "576 stranded people safely returned home, a concrete improvement realized."
+  ]
+ },
+ {
+  "id": "global_news_le_monde_f8d2bd4b7066",
+  "votes": [
+   "fits",
+   "fits",
+   "fits"
+  ],
+  "majority": "fits",
+  "unanimous": true,
+  "whys": [
+   "Women now gain literacy and formal education, a concrete improvement.",
+   "Senior women like Yoo Gyeong-sun now gain literacy and elementary schooling, a r",
+   "Elderly Korean women now gain literacy skills, improving their lives concretely."
+  ]
+ },
+ {
+  "id": "positive_news_indian_country_today_1000472ff943",
+  "votes": [
+   "misleading",
+   "weak",
+   "weak"
+  ],
+  "majority": "weak",
+  "unanimous": false,
+  "whys": [
+   "Event is upcoming, not yet delivered; no improvement has occurred.",
+   "Planned future event, no improvement has happened for people yet.",
+   "A future event with plans, no delivered improvement yet for people."
+  ]
+ },
+ {
+  "id": "south_african_herald_zw_5511afab5269",
+  "votes": [
+   "fits",
+   "misleading",
+   "fits"
+  ],
+  "majority": "fits",
+  "unanimous": false,
+  "whys": [
+   "Thousands of displaced Zimbabweans received safe repatriation, aid, and reintegr",
+   "Assistance described, but no lasting improvement evident; mostly praise and plan",
+   "Returnees received aid, health care, transport, helping them reintegrate."
+  ]
+ },
+ {
+  "id": "austrian_orf_wirtschaft_bfdeb6ccf85e",
+  "votes": [
+   "weak",
+   "misleading",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": false,
+  "whys": [
+   "Bonus for 59 schools is minor; mainly policy changes, no proven improvement yet.",
+   "Article describes new policies/plans, not concrete improvements yet.",
+   "Mostly announcements of plans, not delivered improvements for identifiable peopl"
+  ]
+ },
+ {
+  "id": "austrian_krone_0ce4e16f6549",
+  "votes": [
+   "weak",
+   "weak",
+   "misleading"
+  ],
+  "majority": "weak",
+  "unanimous": false,
+  "whys": [
+   "Agreement improves conditions but major effects start 2027; currently just annou",
+   "Deal agreed, but payment model only starts 2027, no delivered improvement yet.",
+   "Agreement announced but new pay model only starts 2027; no current improvement."
+  ]
+ },
+ {
+  "id": "british_irish_cityam_0cac036a3b4d",
+  "votes": [
+   "harmful",
+   "harmful",
+   "harmful"
+  ],
+  "majority": "harmful",
+  "unanimous": true,
+  "whys": [
+   "Dominant subject is ongoing pay discrimination harm, despite legal win for emplo",
+   "Dominant subject is pay discrimination harm; court victory for employer, not wor",
+   "Dominant story is discrimination harm, despite a court win; relief reader meets "
+  ]
+ },
+ {
+  "id": "south_african_groundup_c3b778fcdc6e",
+  "votes": [
+   "misleading",
+   "harmful",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": false,
+  "whys": [
+   "Bail fund helped 154, but 3,300 still jailed; no systemic improvement yet.",
+   "Dominant subject is poverty-driven pretrial detention, harm and injustice, not r",
+   "Bail fund exists, but article mainly exposes ongoing harm, not actual improvemen"
+  ]
+ },
+ {
+  "id": "global_news_NPR_world_c2f5917c0543",
+  "votes": [
+   "misleading",
+   "misleading",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": true,
+  "whys": [
+   "Resolution is a pledge; no delivered improvement yet.",
+   "Resolution and program expansion are plans, not yet delivered improvements for p",
+   "UN resolution is a pledge, not a delivered improvement for people yet."
+  ]
+ },
+ {
+  "id": "arabic_aawsat_ar_fdf531a5677f",
+  "votes": [
+   "harmful",
+   "harmful",
+   "harmful"
+  ],
+  "majority": "harmful",
+  "unanimous": true,
+  "whys": [
+   "Article centers on deportations and harm to migrants, not relief.",
+   "Dominant subject is deportation of migrants, a harm, not improvement.",
+   "Dominant subject is migrant deportations, evoking crisis and harm, not improveme"
+  ]
+ },
+ {
+  "id": "austrian_krone_9b8e69ddfba3",
+  "votes": [
+   "weak",
+   "weak",
+   "misleading"
+  ],
+  "majority": "weak",
+  "unanimous": false,
+  "whys": [
+   "School staffing improved but no identifiable people's lives concretely better ye",
+   "School staffing and investments improve, but children not yet better off.",
+   "Mostly about school staffing readiness, no concrete improvement happened yet."
+  ]
+ },
+ {
+  "id": "austrian_orf_wirtschaft_230c14a265a2",
+  "votes": [
+   "weak",
+   "misleading",
+   "weak"
+  ],
+  "majority": "weak",
+  "unanimous": false,
+  "whys": [
+   "Offers reassurance and tips for school transition, no concrete improvement yet.",
+   "No improvement yet; only advice and staffing concerns.",
+   "Real but minor reassurance; no concrete improvement shown."
+  ]
+ },
+ {
+  "id": "czech_ct24_6bb62d50f768",
+  "votes": [
+   "weak",
+   "misleading",
+   "misleading"
+  ],
+  "majority": "misleading",
+  "unanimous": false,
+  "whys": [
+   "Housing self-building option explored; one success story but no broad improvemen",
+   "Article explores self-building trend; no broad improvement has occurred for peop",
+   "Article discusses housing options and trends, no concrete improvement delivered "
+  ]
+ },
+ {
+  "id": "south_african_herald_zw_84e9f66d3467",
+  "votes": [
+   "fits",
+   "fits",
+   "weak"
+  ],
+  "majority": "fits",
+  "unanimous": false,
+  "whys": [
+   "Cultural celebration uniting thousands, preserving heritage, no harm noted.",
+   "Cultural celebration unites thousands, preserving heritage and cross-border conn",
+   "Cultural celebration is positive but not health/rights/lives improving."
+  ]
+ },
+ {
+  "id": "south_african_herald_zw_ee4d85e5e073",
+  "votes": [
+   "misleading",
+   "weak",
+   "weak"
+  ],
+  "majority": "weak",
+  "unanimous": false,
+  "whys": [
+   "School term start is routine, not an improvement; no concrete progress delivered",
+   "School term started, but no clear health/rights/life improvement confirmed yet.",
+   "School term start is routine, no concrete improvement shown."
+  ]
+ }
+]

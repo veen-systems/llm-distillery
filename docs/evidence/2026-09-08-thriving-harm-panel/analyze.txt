@@ -1,0 +1,208 @@
+==============================================================================
+CONTROLS
+==============================================================================
+  deepseek: 137 articles judged, set-identical to the frame, 0 ERROR majorities
+  gemini: 137 articles judged, set-identical to the frame, 0 ERROR majorities
+  strata match the pre-registration: {'v8_only': 37, 'v7_only': 60, 'both': 40}
+  the two judges are different objects: they disagree on 61 of 137 rows (raw agreement 0.555, Cohen kappa 0.375)
+  deepseek: 59/137 articles had a SPLIT k=3 vote (43.1%) — a majority is not a settled verdict
+  gemini: k=1 — NO churn measure available (unanimity is vacuous at k=1)
+
+==============================================================================
+VERDICTS — judge: deepseek   (v8's own oracle family)
+==============================================================================
+  stratum         harmful   misleading         weak         fits
+  v7_only       2   3.3%   38  63.3%    9  15.0%   11  18.3%
+  both          3   7.5%   12  30.0%    7  17.5%   18  45.0%
+  v8_only       4  10.8%    8  21.6%   12  32.4%   13  35.1%
+
+  ⛔ THE #91 RATE — `harmful`, judge deepseek:
+    v7_only     2/60 =   3.3%  [ 0.9,  11.4]   <- CONSERVATIVE (opposing family)
+    both        3/40 =   7.5%  [ 2.6,  19.9]
+    v8_only     4/37 =  10.8%  [ 4.3,  24.7]   <- own family, flattering
+    v7-only vs v8-only, Fisher exact two-sided p = 0.1978
+  `misleading` (the #125 shape): v7-only 38/60 = 63.3%  vs  v8-only 8/37 = 21.6%   Fisher p = 0.0001
+  on-promise (`fits`+`weak`): v7-only 20/60 = 33.3%  vs  v8-only 25/37 = 67.6%
+
+==============================================================================
+VERDICTS — judge: gemini   (v7's own oracle family)
+==============================================================================
+  stratum         harmful   misleading         weak         fits
+  v7_only      14  23.3%   29  48.3%    0   0.0%   17  28.3%
+  both          8  20.0%    9  22.5%    2   5.0%   21  52.5%
+  v8_only      10  27.0%    8  21.6%    1   2.7%   18  48.6%
+
+  ⛔ THE #91 RATE — `harmful`, judge gemini:
+    v7_only    14/60 =  23.3%  [14.4,  35.4]   <- own family, flattering
+    both        8/40 =  20.0%  [10.5,  34.8]
+    v8_only    10/37 =  27.0%  [15.4,  43.0]   <- CONSERVATIVE (opposing family)
+    v7-only vs v8-only, Fisher exact two-sided p = 0.8092
+  `misleading` (the #125 shape): v7-only 29/60 = 48.3%  vs  v8-only 8/37 = 21.6%   Fisher p = 0.0101
+  on-promise (`fits`+`weak`): v7-only 17/60 = 28.3%  vs  v8-only 19/37 = 51.4%
+
+==============================================================================
+ABSOLUTE HARM REACHING THE TAB PER 4 CYCLES — judge: deepseek
+==============================================================================
+  v7_only    rate 2/60 ->  17.4 of 523 articles [ 4.8,  59.4]
+  both       rate 3/40 ->   9.8 of 131 articles [ 3.4,  26.0]
+  v8_only    rate 4/37 ->   4.0 of  37 articles [ 1.6,   9.1]  (CENSUS — all of them, not a sample)
+
+  TODAY   (tab = both + v7-only, 654 articles): ~27 harm-subject articles [8, 85]
+  CUTOVER (tab = both + v8-only, 168 articles): ~14 harm-subject articles [5, 35]
+  -> point estimate 2.0x FEWER harm-subject articles after the cutover, DESPITE v8-only's higher RATE.
+  ⚠ The bands overlap. The direction follows from volume, not from v8 being
+  safer per-article — on the rate it is not, and that is the finding.
+
+==============================================================================
+ABSOLUTE HARM REACHING THE TAB PER 4 CYCLES — judge: gemini
+==============================================================================
+  v7_only    rate 14/60 -> 122.0 of 523 articles [75.5, 185.3]
+  both       rate 8/40 ->  26.2 of 131 articles [13.8,  45.5]
+  v8_only    rate 10/37 ->  10.0 of  37 articles [ 5.7,  15.9]  (CENSUS — all of them, not a sample)
+
+  TODAY   (tab = both + v7-only, 654 articles): ~148 harm-subject articles [89, 231]
+  CUTOVER (tab = both + v8-only, 168 articles): ~36 harm-subject articles [19, 61]
+  -> point estimate 4.1x FEWER harm-subject articles after the cutover, DESPITE v8-only's higher RATE.
+  ⚠ The bands overlap. The direction follows from volume, not from v8 being
+  safer per-article — on the rate it is not, and that is the finding.
+
+==============================================================================
+EVERY ARTICLE EITHER JUDGE CALLED `harmful`
+==============================================================================
+  [both    ] deepseek=harmful gemini=harmful
+      v7 raw 5.93 disp 8.12 | v8 raw 5.28 disp 5.28 | ar
+      980 سودانيا يغادرون مصر إلى بلادهم ضمن برنامج العودة الطوعية
+      deepseek: Dominant subject is Sudan's war and displacement, despite voluntary returns.
+      gemini: Dominant subject is an ongoing war; people returning to crisis, not thriving.
+  [both    ] deepseek=misleading gemini=harmful
+      v7 raw 5.97 disp 8.25 | v8 raw 4.62 disp 4.62 | de
+      Nach Testphase - Offizieller Startschuss für Zivilschutz-App „ZIVA“
+      gemini: Dominant subject is worsening crises and threats, not an achieved improvement.
+  [both    ] deepseek=misleading gemini=harmful
+      v7 raw 5.58 disp 6.73 | v8 raw 5.15 disp 5.15 | de
+      59 Schulen bekommen heuer Chancen-Bonus
+      gemini: Includes new headscarf ban for girls, a restriction on rights with potential fin
+  [both    ] deepseek=harmful gemini=harmful
+      v7 raw 6.18 disp 8.85 | v8 raw 4.84 disp 4.84 | en
+      Next dodges ‘hammer blow’ with equal pay court victory
+      deepseek: Dominant subject is ongoing pay discrimination harm, despite legal win for emplo
+      gemini: Legal setback for equal pay claimants, not rights advancing or lives improving.
+  [both    ] deepseek=misleading gemini=harmful
+      v7 raw 6.67 disp 9.65 | v8 raw 4.90 disp 4.90 | en
+      ‘I refused this marriage’: Meet West African women who fought for their right to education
+      gemini: Dominant subject is harm of child marriage, with detailed accounts of violence a
+  [both    ] deepseek=misleading gemini=harmful
+      v7 raw 6.55 disp 9.50 | v8 raw 4.68 disp 4.68 | en
+      Prisoners of poverty: unaffordable bail keeps thousands behind bars
+      gemini: Dominant subject is harm of unjust detention and prison conditions, despite 154 
+  [both    ] deepseek=misleading gemini=harmful
+      v7 raw 5.22 disp 4.76 | v8 raw 4.76 disp 4.76 | pt
+      32º Grito dos Excluídos e Excluídas une moradia, terra e vida das mulheres nas ruas de Porto Alegre
+      gemini: Dominant subject is worsening feminicide and ongoing housing crisis, despite one
+  [both    ] deepseek=harmful gemini=harmful
+      v7 raw 5.65 disp 7.07 | v8 raw 5.02 disp 5.02 | en
+      Hospital in Nepal heals flood injured with a helping hand from Express readers
+      deepseek: Article centers on flood aftermath, injuries, trauma, and death.
+      gemini: Focuses on recent devastating flood, injured people, deaths, and PTSD; reader me
+  [v7_only ] deepseek=fits gemini=harmful
+      v7 raw 5.80 disp 7.65 | v8 raw 4.08 disp 4.08 | en
+      Qatar Charity distributes over 1,200 food baskets to vulnerable families in Syria
+      gemini: Dominant subject is the crisis and harm faced by families, despite aid distribut
+  [v7_only ] deepseek=harmful gemini=harmful
+      v7 raw 5.30 disp 5.22 | v8 raw 3.73 disp 3.73 | hr
+      Kijev očekuje tešku zimu zbog ruskih udara. Spremaju zalihe hrane i vode
+      deepseek: Preparations for potential harm, no improvement yet delivered.
+      gemini: Dominant subject is anticipated war harm; preparations are crisis response, not 
+  [v7_only ] deepseek=misleading gemini=harmful
+      v7 raw 6.29 disp 9.09 | v8 raw 1.55 disp 1.55 | en
+      Kyrgyzstan Drafts $850 Million Climate Adaptation Plan Through 2035
+      gemini: Dominant subject is worsening climate conditions, future harms, economic loss, a
+  [v7_only ] deepseek=harmful gemini=harmful
+      v7 raw 5.41 disp 5.83 | v8 raw 3.90 disp 3.90 | en
+      Why more women are being diagnosed with stroke
+      deepseek: Dominant subject is stroke harm; diagnosis, damage, risk, not improvement.
+      gemini: Dominant subject is stroke; details harm, struggle, and risks, not actual improv
+  [v7_only ] deepseek=misleading gemini=harmful
+      v7 raw 6.30 disp 9.12 | v8 raw 3.89 disp 3.89 | fr
+      "La loi c'est le signal et l'orientation" qui sont "donnés à une société", lance une figure de la lu
+      gemini: Mentions murder of 11-year-old child, a crisis, in first paragraph. Readers seek
+  [v7_only ] deepseek=misleading gemini=harmful
+      v7 raw 5.68 disp 7.20 | v8 raw 1.24 disp 1.24 | fr
+      Esclavage: une demande «historique» de réparations présentée par la Jamaïque au Royaume-Uni
+      gemini: Dominant subject is slavery's profound harm and legacy, not a delivered improvem
+  [v7_only ] deepseek=misleading gemini=harmful
+      v7 raw 5.92 disp 8.10 | v8 raw 1.16 disp 1.16 | en
+      You may be a victim of economic abuse and not even realise it
+      gemini: Dominant subject is widespread, unrecognized abuse. Readers seeking relief meet 
+  [v7_only ] deepseek=misleading gemini=harmful
+      v7 raw 5.44 disp 6.00 | v8 raw 3.62 disp 3.62 | ro
+      „Salvări” înscenate după 11 septembrie. Cum au fost încurajați câinii care au participat la căutarea
+      gemini: About 9/11 disaster; dogs' coping not human thriving.
+  [v7_only ] deepseek=weak gemini=harmful
+      v7 raw 5.23 disp 4.85 | v8 raw 1.48 disp 1.48 | es
+      Cómo prevenir el atragantamiento infantil y qué hacer ante una obstrucción de las vías aéreas, según
+      gemini: Dominant subject is child choking, a life-threatening harm. Reader seeking relie
+  [v7_only ] deepseek=misleading gemini=harmful
+      v7 raw 5.61 disp 6.89 | v8 raw 2.78 disp 2.78 | en
+      When the ground disappears, the sky must be organised
+      gemini: Opens with vivid disaster details; reader seeking relief meets crisis unprepared
+  [v7_only ] deepseek=misleading gemini=harmful
+      v7 raw 5.79 disp 7.62 | v8 raw 3.08 disp 3.08 | en
+      Ukrainian Ground Forces launch campaign to recruit women for USF
+      gemini: The article is about recruitment for military roles in an active war, directly r
+  [v7_only ] deepseek=weak gemini=harmful
+      v7 raw 5.53 disp 6.49 | v8 raw 3.14 disp 3.14 | en
+      An Army veteran is using her suicide attempt story to stop others
+      gemini: Dominant subject is suicide and high veteran death rates, confronting reader wit
+  [v7_only ] deepseek=weak gemini=harmful
+      v7 raw 5.19 disp 4.63 | v8 raw 1.81 disp 1.81 | vi
+      Phát hiện cây bút khắc tên 'Ngô Học' trong mộ liệt sĩ ở Kon Tum
+      gemini: About identifying war dead; reminds readers of past harm, not current thriving f
+  [v7_only ] deepseek=misleading gemini=harmful
+      v7 raw 5.25 disp 4.98 | v8 raw 3.85 disp 3.85 | fr
+      Ministère des Mines : 27 mois sans salaire, les 44 agents licenciés suspendent leur sit-in prévu le 
+      gemini: Dominant subject is ongoing harm (unpaid salaries, unemployment), not delivered 
+  [v8_only ] deepseek=harmful gemini=harmful
+      v7 raw 4.99 disp 3.34 | v8 raw 4.66 disp 4.66 | ar
+      «فرونتكس»: ترحيل أكثر من 33 ألف مهاجر من الاتحاد الأوروبي خلال 6 أشهر
+      deepseek: Article centers on deportations and harm to migrants, not relief.
+      gemini: About mass deportations; a hardship, not 'lives getting better' for people seeki
+  [v8_only ] deepseek=misleading gemini=harmful
+      v7 raw 5.10 disp 4.05 | v8 raw 4.95 disp 4.95 | en
+      With joy and grief, Palestinian football marks return
+      gemini: Dominant subject is extensive war deaths, grief, and ongoing conflict, not thriv
+  [v8_only ] deepseek=misleading gemini=harmful
+      v7 raw 3.82 disp 0.00 | v8 raw 4.68 disp 4.68 | en
+      Court ruling clears way for 124-home Byron Shire development
+      gemini: Focuses on lost environmental fight, disappointing activists, clearing way for h
+  [v8_only ] deepseek=weak gemini=harmful
+      v7 raw 5.12 disp 4.17 | v8 raw 4.78 disp 4.78 | en
+      Belgrade Pride March Marks 25 Years with Call for Tolerance
+      gemini: Dominant subject highlights ongoing threats, violence, and 'minor' progress; rea
+  [v8_only ] deepseek=weak gemini=harmful
+      v7 raw 5.10 disp 4.08 | v8 raw 4.94 disp 4.94 | en
+      Learners troop back to school as third term begins
+      gemini: Details specific incident of unsafe transport ('death trap' bus) putting childre
+  [v8_only ] deepseek=harmful gemini=harmful
+      v7 raw 1.83 disp 0.00 | v8 raw 4.85 disp 4.85 | en
+      How three people shaped by 9/11 live with the legacy, 25 years on
+      deepseek: Article centers on 9/11 deaths, grief, and ongoing illness.
+      gemini: Dominant subject is 9/11's enduring legacy, focusing on loss, trauma, and ongoin
+  [v8_only ] deepseek=harmful gemini=harmful
+      v7 raw 5.08 disp 3.91 | v8 raw 5.08 disp 5.08 | en
+      Community kitchens, boat ambulances: Bihar copes with floods that have hit 22 lakh
+      deepseek: Dominant subject is widespread flood devastation, not thriving; relief efforts a
+      gemini: Dominant subject is a massive flood disaster affecting millions, requiring emerg
+  [v8_only ] deepseek=weak gemini=harmful
+      v7 raw 4.25 disp 0.00 | v8 raw 5.25 disp 5.25 | en
+      Journeying through Syria’s shattered cities as war turns to peace
+      gemini: Overwhelming focus on war's devastation and ongoing suffering, despite small pos
+  [v8_only ] deepseek=misleading gemini=harmful
+      v7 raw 4.00 disp 0.00 | v8 raw 5.78 disp 5.78 | es
+      Vuelta al cole en Madrid: Más de un millón de alumnos empiezan el curso escolar
+      gemini: Prominent threat of indefinite strike and union conflict contradicts 'step away 
+  [v8_only ] deepseek=harmful gemini=harmful
+      v7 raw 4.86 disp 2.47 | v8 raw 4.56 disp 4.56 | en
+      Nepal flood survivor’s family relieved at dramatic rescue after 10 days trapped
+      deepseek: Story centers on flood disaster and prolonged ordeal, not relief.
+      gemini: Rescue is from disaster/harm; reader encounters crisis unprepared.
