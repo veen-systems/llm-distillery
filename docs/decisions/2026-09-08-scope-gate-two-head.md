@@ -110,10 +110,16 @@ trained on:
 23.9% / 76.1% — an ordinary classification problem, not a needle. (The 5-way version is
 trainable except `no_person_benefits`, at 30 rows.)
 
-⛔ **But `training/prepare_data.py` DROPS it.** The field has zero references there, and
-`datasets/training/human_thriving_v8/train.jsonl` carries only `labels` (the six dimension
-scores) and `dimension_names`. **The signal is produced at label time and discarded at split
-time** — that is the whole gap between here and a trainable gate.
+⛔ **But `training/prepare_data.py` DROPS it** (llm-distillery#155). The field has zero
+references there — `:415` builds each record as exactly `{id, title, content, url, labels,
+dimension_names}` — so `datasets/training/human_thriving_v8/train.jsonl` carries only the six
+dimension scores. **The signal is produced at label time and discarded at split time** — that is
+the whole gap between here and a trainable gate, and it is the one blocking prerequisite.
+
+⚠️ **Re-running `prepare_data.py` re-draws the splits.** The current 5,268/658/660 come from one
+stratified split at seed 42, and every v8 number on record (`EXP-026`/`027`/`028`) is measured
+against that test set. Regenerate to a new directory, or pin the seed and verify byte-identity,
+before retraining anything — otherwise the deploy-gate numbers stop being comparable.
 
 **2. The balance is a passer's, not a blocker's.** 76% of the corpus is *not* in scope. A
 blocker implies most things pass and a few are removed; here most things do not belong and a
