@@ -1,98 +1,59 @@
 # LLM Distillery - TODO
 
-## 🔵 NEXT SESSION — **Phase E is at 202/200 and BLOCKED BY OUR OWN GUARD (#154). The cutover has its number.**
+## 🔵 NEXT SESSION — **NexusMind is FROZEN. Three lanes, one of them frozen. Start at lane C.**
 
-> ✅ **THE FREE COMPARISON RAN (`EXP-030`, $0).** `uplifting v7` vs `human_thriving v8` on the
-> **same 15,372 production articles**, four consecutive cycles, surfacing verified against each
-> row's own `tier` rather than a retyped constant. Evidence:
-> `docs/evidence/2026-09-08-v7-v8-same-articles/`; posted to #151.
+> ⛔ **OWNER DECISION 2026-09-08 (relayed via the NexusMind session): PRODUCTION FREEZES AS-IS**
+> while `human_thriving` is reconsidered. **No cutover, no Phase E fit, no config change.** Both
+> lenses keep scoring. ⛔ **Do not disable v8** — rows keep accumulating.
 >
-> **1. ⛔ THE CUTOVER IS NOT A SWAP, IT IS A 7× CUT.** v7 surfaces **1,184**, v8 surfaces **168**
-> (pass rates 7.702% vs 1.093%). **both 152 · v7-only 1,032 · v8-only 16 · Jaccard 0.127**, and
-> v8 is nearly a SUBSET — 90.5% of its passers already pass v7. v8 produced **no `high` tier at
-> all** (max raw 6.222 vs v7's 7.560). ⚠️ Jaccard 0.127 vs the eval split's 0.246 is **not** a
-> correction and **not the same quantity**: 0.246 is between the two ORACLES' label sets on 660
-> labelled rows, 0.127 between the two deployed STUDENTS' surfaced sets on 15,372 unlabelled
-> production articles. Different instruments and different populations; neither transfers.
->
-> **2. ⛔ AND LOWERING v8's OP-POINT DOES NOT FIX IT — tested against a null that could have said
-> otherwise.** On the clean **both-stage2** frame (n=12,210; `raw_weighted_average` is a Gemma
-> output only on `stage2` rows) volume-matching v8 to v7's volume needs op-point **2.820** and
-> recovers only **57.5%** of v7's passers, where a Spearman-matched *"v8 = noisy rescaled v7"*
-> null gives **76.8%**; within-union Spearman is **0.3436** against the null's **0.5630**.
-> Both far outside. Not #95 noise either: **28 of 1,032 (2.7%)** are within 0.16, and even at
-> **0.25** — beyond any measured term — it is only 60 (5.8%).
->
-> **3. ⭐ WHERE THE DROPPED ROWS GO — the half that changes the ruling.** Free, because the other
-> lenses scored these same cycles: **44.7%** of the 1,032 are already surfaced by another lens
-> (baseline **7.65%**), so **~55.3% are surfaced by NO other lens** — **242 · 128 · 96 · 105** per
-> cycle, **110** on the three normal ones. `solutions` 337, `belonging` 128, `cultural_discovery`
-> 68, `nature_recovery` 11. ⛔ **That is a SURFACING measurement, not a reader-facing one** —
-> enrichment (NM#319) and `getArticlesForBuild` are downstream, and nobody checked whether all
-> 1,032 are currently published.
->
-> **4. ⚠️ THE PROMPT WORK AND THE LENS GAP — what the panel can and cannot say.** **10 of
-> `EXP-029`'s 12 prompt flips are in the `both` set**, so a v8.1 (#153, #143) with a corrected
-> scope removes rows from v8's passer set that v7 keeps until cutover: it **widens** the supply
-> gap. ⛔ But *"the prompt work is not what separates the lenses"* — the first reading — was a
-> count comparison across a 6-vs-56 denominator; on **rates** it points the other way (v8-only
-> **2/6 = 33.3%** vs both **10/56 = 17.9%**, 1.87×, Fisher **p = 0.328**), and 6 rows settle
-> nothing.
->
-> ⚠️ **None of this says which lens is RIGHT.** No labels. `EXP-029` gave v8 live scope precision
-> 0.968 — the **top of a three-judge spread of 0.651–0.968**; nothing comparable exists for v7,
-> and judging the 1,032 is the part that costs money.
->
-> ⛔ **DO NOT DISABLE v8** while Phase E is pending — it discards the accumulated rows at the
-> finish line, and #154 means they are still accumulating unfitted.
->
-> **5. ⛔ PHASE E: THE ROWS ARRIVED AND THE FITTER REFUSED THEM (#154).** 63+45+26+34+34 =
-> **202 of 200** at the 09:30 cycle. `fit_normalization.py` fits cleanly (n=202, `raw_min` **4.5**
-> exactly, a file both consumer guards accept) and then **hard-errors on its own deploy guard**:
-> the #205 check compares `sample_min` (**4.5069**) against an *absolute* `MAX_NORMALIZATION_RAW
-> _MIN = 4.5` — which **is** this filter's op-point. Gap to anchor **0.0069** against the advisory
-> tier's 0.5, so the bias signature it names is absent by ~70×. Its own comment states the stale
-> premise: *"no false-block possible for any real op-point (3.75/4.0)"*, written 2026-07-16
-> (`4d8f305`) before #102 moved v7 to 4.5. ⚠️ **v7 passed the same guard at the same op-point**
-> on 15,698 rows — its true `sample_min` is **4.500027**, inside the guard's effective 5e-5
-> window, so **the discriminator is DENSITY, not bias**; a refit of v7 on these four cycles would
-> **fail its own guard** (min 4.5018). ⛔ **A fitter-only fix is not enough** —
-> `tests/unit/test_normalization_invariant.py:190` asserts `sample_min <= 4.5` on every committed
-> package, so v8's `normalization.json` would be uncommittable; both must move in one commit.
-> ⛔ **Not changed: it is a deploy-path guard and the fix is an owner ruling.**
->
-> **6. ⚠️ AND FITTING IT ARMS NM#319.** **60.4%** (122/202) of v8's surfaced rows would clear
-> NexusMind's `pipeline.enrichment.min_score: 4.0`, which reads the **normalized** score, against
-> **100%** today under `score_scale_factor: 1.0`; effective raw bar **4.872** vs an op-point of
-> 4.50, so **80 of 202 un-enriched**. ⛔ **That 60.4% is IN-SAMPLE and near-tautological** — the
-> CDF is fitted on the same 202 rows and normalized 4.0 *is* their own 40th percentile, so ~60%
-> is guaranteed by construction. **A projection, not a measurement**, and NOT like-for-like with
-> `uplifting v7`'s 60.0%, which is out-of-sample (fitted 2026-08-10 on 15,698 rows, measured over
-> 82 later cycles). What the 202 rows do establish is the shape: the effective bar lands well
-> above the op-point. Owner question, not a filter question.
->
-> **7. ⛔ THE DEFECT IS STILL THE PROMPT (`EXP-029`, #153, $0.16).** Live audit of 62 passers:
-> scope precision **0.9677** [0.890, 0.991] vs the gate's 0.850 — above it, not distinguishable;
-> only **2 of 62** off-lens. Swapping `prompt-v8-4.md` for the documented rubric moves **12 out of
-> `in_scope` and 1 in** (paired McNemar **p = 0.0034**), and those 12 are `STATUS.md`'s three owed
-> v8.1 gaps: commencement, the money-worded proposal rule and dropped clause D (#143).
->
-> **8. `[4.5, 5.0)` is where everything goes wrong — and you must NOT raise the op-point.** That
-> band holds **58.7%** of shipped volume, both off-lens articles, 7 of 12 prompt flips, 8 of 11
-> Gemini failures, 15 of 22 Claude failures and all 3 of the gate's off-lens FPs. ⛔ 7 of the 12
-> are a *known prompt* problem with a fix already owed; a prompt fix keeps the volume, a threshold
-> move discards it. **And a panel selected on passing structurally cannot measure what a higher
-> bar would lose.** Prompt first, re-measure after (#150).
->
-> ⚠️ **No single-judge precision number is trustworthy to better than ±16 points** — three judges
-> span **0.651 to 0.968** on the same 63 articles. **Every null is a RATE-null with case churn:**
-> truncation is exactly 0.0000 while moving 6 of 62 verdicts; DeepSeek-vs-Gemini is −0.032 while
-> disagreeing on 8 of 62 (κ 0.587). Say "the rates are indistinguishable", never "it doesn't matter".
->
-> **Carried, not blocking:** a standing control for the `_wa`-vs-deployed-aggregation agreement
-> (0.000000 on 62/62, asserted in `docs/evidence/2026-09-08-v8-live-panel/decompose.py` but not in
-> the test suite); an authorship-independent judge is **BLOCKED** — `openai_api_key` returns HTTP
-> 401 and DeepSeek/Gemini/Anthropic are all already in the set.
+> ⛔ **OWNER DECISION: a redo is `human_thriving/v9` — a new VERSION, NOT a new name.**
+> `NexusMind/scripts/main.py:415` keys `.processed_ids_<name>.json` on the **filter name**, so a
+> new *name* re-creates the 2026-09-07 outage (41,435 articles vs ~4,000, and it does not
+> self-heal). A version bump reuses the file and the failure mode is **absent, not mitigated**.
+> ⚠️ `NexusMind/src/filters/filter_loader.py:195` takes the **highest `vN` on disk**, so dropping
+> `v9` there IS the deploy — but `load_filter(version_dir=...)` pins a version and the NM#229
+> agreement gate already dual-scores two versions (`filters/uplifting/` holds v6 **and** v7).
+> **Stage v9 pinned; do not rely on a review step that does not exist.**
+
+### Lane A — FROZEN, touch nothing
+
+`#151` cutover · Phase E normalization (**202/200 rows, blocked by `#154`**) · `#154` itself.
+⚠️ **`#154` may become moot**: at an op-point of 4.5 the fit population makes `sample_min >= 4.5`
+true *by construction*, so the guard degenerates. **An op-point other than 4.5 in v9 deletes the
+whole failure mode** — decide it at design time, not with a two-file guard change later.
+Owner on `#154`, 2026-09-08: *"don't know"* — it is parked, not pending.
+
+### Lane B — the v9 redo. Spec exists; ONE prerequisite blocks it
+
+1. **`#155` — `training/prepare_data.py` drops `scope_verdict`.** The blocking prerequisite.
+   The field is on **all 6,586 rows** of `labels_v84_merged.jsonl` (`in_scope` 23.9%,
+   `harm_is_subject` 19.0%) and is discarded at split time. ⚠️ Re-running `prepare_data.py`
+   **re-draws the 5,268/658/660 splits** every v8 gate number is measured against — new
+   directory or pinned seed.
+2. **The prompt spec is already written**: the three owed gaps — commencement, the money-worded
+   announcement rule, and dropped clause D (`#143`, `#153`). Production rediscovered all three
+   independently (`EXP-029`, 12 flips, p=0.0034).
+3. **The architecture is written**: `docs/decisions/2026-09-08-scope-gate-two-head.md` — a binary
+   scope gate is a step function a regression head cannot carry (measured: oracle 0.80–0.90 vs
+   student 4.66–4.85, gaps +3.8 to +4.0). Split it: gate → regression on `in_scope` only.
+4. **The bar v9 must beat is already measured** (`EXP-031`, and its rubric comes from the
+   reader-facing tab copy so it **survives a lens rewrite**): harm **10.8%** / **27.0%**,
+   `misleading` **21.6%**, on-promise **67.6%** / **51.4%**. ⚠️ κ 0.375 between judges — read
+   within-judge comparisons only.
+
+### ⭐ Lane C — START HERE. Independent of the freeze, and it helps the LIVE lens
+
+**`#156` — cross-lens harm detector.** Stamp `harm_is_subject` on every article; each lens decides
+by config (ADR-022). ⛔ **Stamp, not block** — "Bihar copes with floods" betrays Thriving and is
+arguably correct under Solutions; Recovery is *about* recovering from damage.
+
+**Why this and not the redo:** it gates **`uplifting v7`**, the lens actually serving readers
+(harm 23.3% / 3.3%, shared stratum 20.0% / 7.5%), **without retraining anything**. Lane B does
+nothing for v7, and v7 is what ships. Labels exist (1,253 positives); blocked only on `#155`,
+which Lane B needs anyway. Ship **stamp-only first**, measure, then flip per lens.
+
+> **Today's spend: $0.35** (`EXP-031`). Everything through `b11e42f` is pushed.
+> Session record: `memory/project_session_2026_09_08_second.md` and the `/curate` entry after it.
 
 ## 🗄️ PRIOR — the deploy that shipped a filter nothing called
 
