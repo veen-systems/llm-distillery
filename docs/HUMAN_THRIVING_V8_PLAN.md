@@ -525,6 +525,14 @@ strings did **not** survive `prepare_data.py`. Only the six numeric labels did. 
 wants to diff old-vs-new `content_type` (e.g. to check `individual_crime` now fires), the
 raw scored file must be found separately or the diff is unavailable.
 
+⚠️ **Read the paragraph above as a statement about the stored 2026-09-03 artifact, not
+about the script.** `prepare_data.py` stopped dropping those fields on **2026-09-08**
+(llm-distillery#155): it now carries the analysis block whole under `oracle_meta`. The
+splits on disk still predate that and are unchanged — regenerating them from
+`labels_v84_merged.jsonl` at seed 42 reproduces the same 5,268/658/660 rows in the same
+order (measured 2026-09-08), so the diff above is now available at the cost of one re-run,
+without disturbing the test set the gate numbers are measured against.
+
 ⛔ **Do not copy this corpus into the repo.** 22 MB of full article text is the hazard #97 surfaced
 (#97 itself is the TDM-position assessment; the 812 committed rows of full text were a
 finding inside it, not its subject). Stage it on the training host, keep the repo holding excerpts only.

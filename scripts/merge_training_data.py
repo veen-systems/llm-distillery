@@ -5,6 +5,10 @@ Handles two input formats:
 1. Existing training format: {"id", "title", "content", "url", "labels": [...], "dimension_names": [...]}
 2. Oracle-scored format: {"id", "title", "content", ..., "{filter}_analysis": {"dim": {"score": X, "evidence": "..."}}}
 
+Newly-converted rows carry every source field plus the analysis block under
+"oracle_meta" (#155). Rows loaded from an --existing-dir built before that fix do
+not, so the merge prints its oracle_meta coverage and warns when it is partial.
+
 Deduplicates by article ID, re-splits 80/10/10 with stratification.
 
 Usage:
@@ -85,14 +89,22 @@ def convert_oracle_to_training(
         else:
             labels.append(0.0)
 
-    return {
+    # Same shape as training/prepare_data.py: carry every source field through,
+    # then overlay the derived ones, and keep the analysis block whole under the
+    # stable key "oracle_meta" (#155). An allowlist here would silently drop the
+    # oracle's non-dimensional output -- scope_verdict, dominant_subject,
+    # content_type -- on exactly the rows active learning just paid to score.
+    record = {k: v for k, v in article.items() if k != analysis_field}
+    record.update({
         "id": article.get("id", ""),
         "title": article.get("title", ""),
         "content": article.get("content", ""),
         "url": article.get("url", ""),
         "labels": labels,
         "dimension_names": dimensions,
-    }
+        "oracle_meta": analysis,
+    })
+    return record
 
 
 def assign_score_bin(avg_score: float) -> str:
@@ -197,6 +209,19 @@ def main():
     print(f"  New: {len(converted)}")
     print(f"  Duplicates (existing articles re-scored): {existing_dupes}")
     print(f"  Merged total: {len(merged)}")
+
+    # Coverage, printed rather than assumed. Rows loaded from an --existing-dir
+    # built before #155 carry no oracle_meta, so a merge can be PARTIALLY
+    # covered. A consumer counting scope_verdict presence on a partial merge
+    # reads the gap as a real rate; say it out loud instead.
+    with_meta = sum(1 for a in merged if a.get("oracle_meta"))
+    pct = (with_meta / len(merged) * 100) if merged else 0.0
+    print(f"  oracle_meta coverage: {with_meta}/{len(merged)} ({pct:.1f}%)")
+    if merged and with_meta < len(merged):
+        print(f"  WARNING: {len(merged) - with_meta} merged rows carry no oracle_meta "
+              f"(splits in {args.existing_dir} predate llm-distillery#155).")
+        print(f"           Do NOT read a scope_verdict rate off these splits -- "
+              f"rebuild from the label file with training/prepare_data.py instead.")
 
     # 5. Re-split with stratification
     print(f"\nSplitting 80/10/10 with stratification...")

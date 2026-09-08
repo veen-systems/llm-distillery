@@ -72,13 +72,21 @@ Pre-split datasets ready for model training. Standard 80/10/10 split with strati
 #### Data Format (training)
 ```json
 {
-  "article_id": "source_domain_hash",
+  "id": "source_domain_hash",
   "title": "Article title",
   "content": "Full article text...",
+  "url": "https://...",
   "labels": [7.5, 4.0, 6.5, 3.0, 8.0],
-  "dimension_names": ["dim1", "dim2", "dim3", "dim4", "dim5"]
+  "dimension_names": ["dim1", "dim2", "dim3", "dim4", "dim5"],
+  "oracle_meta": { "...": "the whole oracle analysis block, verbatim" },
+  "source": "...", "published_date": "...", "language": "..."
 }
 ```
+
+⚠️ **`oracle_meta` and the source passthrough exist only in splits built on or
+after 2026-09-08 (llm-distillery#155).** Every split file on disk before that
+date carries the six keys only. The key is `id`, never `article_id`. Rebuild with
+`training/prepare_data.py` rather than reading a scope field off an older split.
 
 ### 1.3 Trained Models
 

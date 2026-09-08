@@ -5,8 +5,9 @@ This script:
 1. Reads filter configuration to extract dimensions, tiers, analysis field
 2. Loads oracle-labeled data
 3. Splits into train/val/test sets (stratified by tier)
-4. Converts to simplified training format (score arrays only)
-5. Exports in JSONL format for Qwen training
+4. Converts to training format: score arrays, the oracle analysis block under
+   "oracle_meta", and every other source field carried through (#155)
+5. Exports in JSONL format for student training
 
 Usage:
     python training/prepare_data.py \
@@ -338,11 +339,11 @@ def convert_to_training_format(
     dimension_names: List[str]
 ) -> List[Dict[str, Any]]:
     """
-    Convert oracle-labeled articles to simplified training format.
+    Convert oracle-labeled articles to training format.
 
-    Extracts dimensional scores from oracle analysis and creates a format
-    suitable for training regression models. The output uses score arrays
-    for efficient batch processing during training.
+    Extracts dimensional scores from oracle analysis into a score array for
+    efficient batch processing during training, and carries the rest of the
+    record through rather than dropping it.
 
     Input format (oracle labels):
         {
@@ -365,8 +366,36 @@ def convert_to_training_format(
             "content": "Full article text...",
             "url": "https://...",
             "labels": [7, 8, 6, 5, 7, 4],  # Scores in dimension order
-            "dimension_names": ["agency", "progress", ...]
+            "dimension_names": ["agency", "progress", ...],
+            "oracle_meta": {...},          # The whole analysis block, verbatim
+            ...                            # plus every other source field
         }
+
+    Nothing the oracle emitted is dropped from a record that HAS an analysis
+    block: the block is carried whole under the stable key "oracle_meta", and
+    every other top-level source field (source, published_date, language, ...)
+    passes through unchanged. Two exceptions, both deliberate: an article with
+    no analysis block is skipped entirely (counted and printed, see Notes), and
+    a derived key wins over a same-named source key. Trainers read
+    "labels"/"dimension_names" and ignore the rest; a scope-gate classifier
+    reads oracle_meta["scope_verdict"] (#155; consumers #150 and #156).
+
+    WARNING -- "oracle_meta" is carried VERBATIM and is neither validated nor
+    homogeneous. Do not assume a key is present, or that it means the same
+    thing on every row. Measured over all 6,586 rows of
+    datasets/scored/human_thriving_v8/labels_v84_merged.jsonl (2026-09-08):
+
+        - scope_verdict is str on 6,586/6,586 -- the only non-dimension key
+          measured present on every row, and the one #156 needs.
+        - runs is a LIST of per-run detail on 6,130 rows and an INT count on
+          456. Same key, two meanings, one file: len() raises on 456 rows,
+          and reading it as a count is silently wrong on 6,130.
+        - weighted_mean_major is present on 6,130/6,586 (absent on 6.9%).
+        - the six dimension values are float on 6,130 rows and {"score": float}
+          on 456 -- which is why the score array is extracted, not assumed.
+
+    Condition on the shape before reading a key, the way CLAUDE.md requires for
+    content_length and raw_weighted_average.
 
     Args:
         labels: List of articles with oracle analysis
@@ -375,21 +404,26 @@ def convert_to_training_format(
                         the position of each score in the labels array.
 
     Returns:
-        List of training examples with score arrays
+        List of training examples: score arrays, oracle_meta, and the source
+        fields. One per input article that HAS an analysis block.
 
     Notes:
-        - Articles without analysis are silently skipped
+        - Articles without an analysis block are skipped, and the count is
+          printed -- a dropped row must never be silent (#155)
         - Missing dimensions default to score 0
         - Supports both nested format (dim: {score, reasoning})
           and flat format (dim: score)
+        - Derived keys win over same-named source keys
     """
     training_data = []
+    skipped = 0
 
     for label in labels:
         analysis = label.get(analysis_field, {})
 
         if not analysis:
-            continue  # Skip if no analysis
+            skipped += 1  # No analysis: the whole row is dropped
+            continue
 
         # Extract dimension scores in correct order
         # Handle two formats:
@@ -412,14 +446,28 @@ def convert_to_training_format(
         # Get content (handle different field names)
         content = label.get('content', label.get('description', ''))
 
-        training_data.append({
+        # Carry every source field through before overlaying the derived ones.
+        # The oracle emits more than the dimension scores -- scope_verdict,
+        # dominant_subject, content_type -- and enumerating an allowlist here is
+        # what dropped them silently for v8 (#155). Passthrough first, derived
+        # keys last: a derived key always wins over a same-named source key.
+        record = {k: v for k, v in label.items() if k != analysis_field}
+        record.update({
             'id': label.get('id', ''),
             'title': label.get('title', ''),
             'content': content,
             'url': label.get('url', ''),
             'labels': score_array,
-            'dimension_names': dimension_names
+            'dimension_names': dimension_names,
+            # Stable, filter-agnostic key: consumers read the oracle's
+            # non-dimensional output without knowing the analysis field name.
+            'oracle_meta': analysis,
         })
+        training_data.append(record)
+
+    if skipped:
+        print(f"  Skipped {skipped} of {len(labels)} articles "
+              f"(no '{analysis_field}' block)")
 
     return training_data
 
@@ -613,7 +661,7 @@ Examples:
     )
 
     # Convert to training format
-    print(f"\nConverting to training format (score arrays only)...")
+    print(f"\nConverting to training format...")
     train_data = convert_to_training_format(train_set, analysis_field, dimension_names)
     val_data = convert_to_training_format(val_set, analysis_field, dimension_names)
     test_data = convert_to_training_format(test_set, analysis_field, dimension_names)
@@ -629,7 +677,7 @@ Examples:
     print("="*70)
     print(f"\nFilter: {filter_name} ({len(dimension_names)} dimensions)")
     print(f"Output directory: {output_dir}")
-    print(f"Format: Simplified score arrays")
+    print(f"Format: score arrays + oracle_meta + source passthrough")
     print(f"Stratification: Maintains tier proportions across splits")
     print(f"Note: Tier labels are metadata only, training uses dimensional scores")
 

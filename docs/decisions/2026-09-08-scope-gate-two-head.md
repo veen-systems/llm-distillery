@@ -110,16 +110,32 @@ trained on:
 23.9% / 76.1% — an ordinary classification problem, not a needle. (The 5-way version is
 trainable except `no_person_benefits`, at 30 rows.)
 
-⛔ **But `training/prepare_data.py` DROPS it** (llm-distillery#155). The field has zero
-references there — `:415` builds each record as exactly `{id, title, content, url, labels,
-dimension_names}` — so `datasets/training/human_thriving_v8/train.jsonl` carries only the six
-dimension scores. **The signal is produced at label time and discarded at split time** — that is
-the whole gap between here and a trainable gate, and it is the one blocking prerequisite.
+⛔ **`training/prepare_data.py` DROPPED it** (llm-distillery#155). The field had zero
+references there — `:415` built each record as exactly `{id, title, content, url, labels,
+dimension_names}` — so `datasets/training/human_thriving_v8/train.jsonl` carried only the six
+dimension scores. **The signal was produced at label time and discarded at split time** — the
+whole gap between here and a trainable gate.
 
-⚠️ **Re-running `prepare_data.py` re-draws the splits.** The current 5,268/658/660 come from one
-stratified split at seed 42, and every v8 number on record (`EXP-026`/`027`/`028`) is measured
-against that test set. Regenerate to a new directory, or pin the seed and verify byte-identity,
-before retraining anything — otherwise the deploy-gate numbers stop being comparable.
+✅ **RESOLVED 2026-09-08.** The converter carries every source field through and the analysis
+block whole under the stable key `oracle_meta`. Regenerating v8's splits gives `scope_verdict`
+on **6,586/6,586** rows, with the gate's positive class at **1,011 / 105 / 137**
+(`harm_is_subject`, train/val/test). No new oracle spend. The same fix landed in
+`scripts/merge_training_data.py`, the active-learning writer of the same three files, which had
+the identical defect and no tests.
+
+⭐ **The re-draw caution is RETIRED for this input — and only for it.** Re-running at seed 42 on
+`labels_v84_merged.jsonl` reproduces 5,268/658/660 with **identical id order, identical labels,
+0 rows moved** (measured 2026-09-08, all three splits). Regeneration does **not** contaminate the
+660-row test set `EXP-026`/`027`/`028` are measured against. The redraw risk is real for a
+**changed input file or changed `config.yaml` tier boundaries** — those change the strata — not
+for re-running the script.
+
+⚠️ **The bytes do change**: `test.jsonl` goes `e361b517…` → `e524c632…`, and that hash is pinned
+in `docs/evidence/2026-09-06-v8-deploy-gate/DUMP_MANIFEST.md`. Annotated there, so a future
+session reads it as *the same test set with more fields* rather than a different one.
+⚠️ **`oracle_meta` is carried verbatim and is heterogeneous**: `runs` is a list on 6,130 rows and
+an int on 456; `weighted_mean_major` is absent on those same 456. `scope_verdict` is the only
+non-dimension key measured present on all 6,586. Condition on shape before reading a key.
 
 **2. The balance is a passer's, not a blocker's.** 76% of the corpus is *not* in scope. A
 blocker implies most things pass and a few are removed; here most things do not belong and a

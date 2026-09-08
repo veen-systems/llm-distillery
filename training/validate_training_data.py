@@ -83,6 +83,28 @@ class TrainingDataValidator:
             if missing:
                 self.issues.append(f"Example {i}: Missing fields {missing}")
 
+        # oracle_meta coverage -- over EVERY row, not a sample.
+        # Nothing inspected the produced split files, which is how #155 survived a
+        # whole training cycle: the oracle's non-dimensional output (scope_verdict,
+        # dominant_subject, content_type) was dropped at split time in silence.
+        # A warning, not an issue: splits built before 2026-09-08 legitimately have
+        # none, and those must still validate.
+        if all_data:
+            with_meta = sum(1 for ex in all_data if ex.get('oracle_meta'))
+            self.stats['oracle_meta_coverage'] = (with_meta, len(all_data))
+            if with_meta == 0:
+                self.warnings.append(
+                    f"No oracle_meta on any of {len(all_data)} rows - these splits predate "
+                    f"llm-distillery#155. Rebuild with training/prepare_data.py before "
+                    f"training anything that needs scope_verdict."
+                )
+            elif with_meta < len(all_data):
+                self.warnings.append(
+                    f"oracle_meta on only {with_meta}/{len(all_data)} rows (PARTIAL). A "
+                    f"scope_verdict rate read off these splits is a coverage artefact, not "
+                    f"a rate - see scripts/merge_training_data.py."
+                )
+
         # Check for duplicate IDs
         all_ids = [ex['id'] for ex in all_data]
         id_counts = Counter(all_ids)

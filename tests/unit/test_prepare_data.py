@@ -346,3 +346,270 @@ class TestGetAnalysisFieldName:
         """Compound filter name should get _analysis suffix."""
         assert get_analysis_field_name("investment_risk") == "investment_risk_analysis"
         assert get_analysis_field_name("sustainability_tech") == "sustainability_tech_analysis"
+
+
+class TestNoSilentFieldDrop:
+    """The oracle's non-dimensional output must survive the split (#155).
+
+    `scope_verdict` was produced at label time and destroyed at split time for
+    the whole of human_thriving v8 -- present on all 6,586 label rows, absent
+    from every split file, with nothing printed. These tests fail if any field
+    the oracle emitted stops reaching the training records, whatever it is
+    called: they enumerate the input rather than an allowlist, so a new oracle
+    field is covered the day it appears.
+    """
+
+    # The real label file carries TWO analysis shapes, measured 2026-09-08 over
+    # all 6,586 rows of datasets/scored/human_thriving_v8/labels_v84_merged.jsonl:
+    #   6,130 rows -- 20 keys, dimensions are float,          runs is a LIST
+    #     456 rows -- 19 keys, dimensions are {"score": ...},  runs is an INT
+    # An earlier version of this fixture carried 12 scalar keys and called itself
+    # "shaped like" that file. It was not: it omitted every non-scalar value, so a
+    # type-conditional drop (`if not isinstance(v, list)`) passed all six tests
+    # while losing scope_verdicts_per_run on 6,586/6,586 real rows -- #155's own
+    # failure mode one level up, the check unable to see the fields most at risk.
+    # Both shapes are reproduced below, and test_real_corpus_row_survives reads
+    # the actual file when it is present.
+
+    @staticmethod
+    def _v8_shaped_label():
+        """The MAJORITY real shape: 20 analysis keys, float dimensions, runs a list."""
+        return {
+            "id": "ht-1",
+            "title": "Flood response in Bihar",
+            "url": "https://example.org/a",
+            "content": "Community kitchens and boat ambulances.",
+            "source": "example.org",
+            "published_date": "2026-09-01",
+            "language": "en",
+            "human_thriving_analysis": {
+                "human_wellbeing_impact": 8.0,
+                "social_cohesion_impact": 7.0,
+                "justice_rights_impact": 6.0,
+                "evidence_level": 5.0,
+                "benefit_distribution": 4.0,
+                "change_durability": 3.0,
+                "scope_verdict": "harm_is_subject",
+                "scope_flipped": False,
+                "scope_verdicts_per_run": ["harm_is_subject"] * 3,
+                "dominant_subject": "a flood",
+                "content_type": "news",
+                "weighted_mean_all": 5.5,
+                "weighted_mean_major": 5.5,
+                "aggregate_used": "all",
+                "k": 3,
+                "runs": [{"scope_verdict": "harm_is_subject"} for _ in range(3)],
+                "filter_version": "8.0-deepseek",
+                "analyzed_by": "deepseek-deepseek-chat",
+                "prompt_hash": "003cd35a5122",
+                "prompt_file": "filters/human_thriving/v8/prompt-v8-4.md",
+            },
+        }
+
+    @staticmethod
+    def _v8_minority_shape_label():
+        """The 456-row real shape: dimensions are {"score": ...}, runs is an INT.
+
+        `runs` means two different things across one file, which is why
+        oracle_meta is documented as heterogeneous rather than as a schema.
+        """
+        return {
+            "id": "ht-2",
+            "title": "Edge-AI framework for agricultural support",
+            "url": "https://example.org/b",
+            "content": "A research paper.",
+            "source": "example.org",
+            "published_date": "2026-09-02",
+            "language": "en",
+            "human_thriving_analysis": {
+                "human_wellbeing_impact": {"score": 5.0},
+                "social_cohesion_impact": {"score": 2.1667},
+                "justice_rights_impact": {"score": 1.8333},
+                "evidence_level": {"score": 4.5},
+                "benefit_distribution": {"score": 4.3333},
+                "change_durability": {"score": 4.0},
+                "scope_verdict": "in_scope",
+                "scope_flipped": True,
+                "scope_verdicts_per_run": ["in_scope"] * 4 + ["out_of_scope"] * 2,
+                "dominant_subject": "a research paper",
+                "content_type": "solutions_story",
+                "weighted_mean_all": 3.6917,
+                "aggregate_used": "all",
+                "k": 6,
+                "runs": 6,
+                "filter_version": "8.0-deepseek",
+                "analyzed_by": "deepseek-deepseek-chat",
+                "prompt_hash": "c4705408c477",
+                "prompt_file": "filters/human_thriving/v8/prompt-v8-4.md",
+            },
+        }
+
+    @property
+    def _dims(self):
+        return [
+            "human_wellbeing_impact",
+            "social_cohesion_impact",
+            "justice_rights_impact",
+            "evidence_level",
+            "benefit_distribution",
+            "change_durability",
+        ]
+
+    def _convert(self):
+        label = self._v8_shaped_label()
+        record = convert_to_training_format(
+            [label],
+            analysis_field="human_thriving_analysis",
+            dimension_names=self._dims,
+        )[0]
+        return label, record
+
+    def test_scope_verdict_reaches_the_split(self):
+        """The specific field #155 is about, read the way a gate trainer would."""
+        _, record = self._convert()
+        assert record["oracle_meta"]["scope_verdict"] == "harm_is_subject"
+
+    def test_every_analysis_field_reaches_the_split(self):
+        """No key of the analysis block may be dropped -- enumerated, not allowlisted."""
+        label, record = self._convert()
+        analysis = label["human_thriving_analysis"]
+        missing = [k for k in analysis if k not in record["oracle_meta"]]
+        assert missing == [], f"analysis fields dropped at split time: {missing}"
+        for key, value in analysis.items():
+            assert record["oracle_meta"][key] == value
+
+    def test_every_source_field_reaches_the_split(self):
+        """Non-oracle metadata (source, published_date, language) survives too."""
+        label, record = self._convert()
+        missing = [
+            k for k in label
+            if k != "human_thriving_analysis" and k not in record
+        ]
+        assert missing == [], f"source fields dropped at split time: {missing}"
+        assert record["language"] == "en"
+        assert record["published_date"] == "2026-09-01"
+
+    def test_training_contract_is_unchanged(self):
+        """Trainers still see exactly the labels array they saw before."""
+        _, record = self._convert()
+        assert record["labels"] == [8.0, 7.0, 6.0, 5.0, 4.0, 3.0]
+        assert record["dimension_names"] == self._dims
+        assert record["id"] == "ht-1"
+        assert record["content"] == "Community kitchens and boat ambulances."
+
+    def test_analysis_block_is_not_duplicated(self):
+        """The passthrough EXCLUDES the analysis key; it lives under oracle_meta only.
+
+        Without this, `record = dict(label)` passes every other test and writes
+        the whole block twice -- measured 41.0 MB vs 31.7 MB on v8's train.jsonl.
+        """
+        _, record = self._convert()
+        assert "human_thriving_analysis" not in record
+
+    def test_minority_real_shape_survives(self):
+        """The 456-row shape: dict-valued dimensions and an int-valued `runs`."""
+        label = self._v8_minority_shape_label()
+        record = convert_to_training_format(
+            [label],
+            analysis_field="human_thriving_analysis",
+            dimension_names=self._dims,
+        )[0]
+        assert record["labels"] == [5.0, 2.1667, 1.8333, 4.5, 4.3333, 4.0]
+        assert record["oracle_meta"]["scope_verdict"] == "in_scope"
+        # Carried verbatim, both meanings, no coercion.
+        assert record["oracle_meta"]["runs"] == 6
+        assert record["oracle_meta"]["scope_verdicts_per_run"].count("out_of_scope") == 2
+        missing = [
+            k for k in label["human_thriving_analysis"]
+            if k not in record["oracle_meta"]
+        ]
+        assert missing == [], f"analysis fields dropped on the minority shape: {missing}"
+
+    def test_skipped_rows_are_counted_out_loud(self, capsys):
+        """A dropped row must never be silent -- that is the whole of #155.
+
+        Articles with no analysis block are still skipped, which is correct, but
+        the count is printed so the split total can be reconciled against the
+        input total instead of quietly diverging.
+        """
+        labels = [
+            self._v8_shaped_label(),
+            {"id": "no-analysis-1", "title": "t", "content": "c"},
+            {"id": "no-analysis-2", "title": "t", "content": "c"},
+        ]
+        records = convert_to_training_format(
+            labels,
+            analysis_field="human_thriving_analysis",
+            dimension_names=self._dims,
+        )
+        assert len(records) == 1
+        out = capsys.readouterr().out
+        assert "Skipped 2 of 3 articles" in out
+        assert "human_thriving_analysis" in out
+
+    def test_nothing_is_printed_when_nothing_is_skipped(self, capsys):
+        """The counter is a signal, not noise -- silence means zero drops."""
+        self._convert()
+        assert "Skipped" not in capsys.readouterr().out
+
+    def test_real_corpus_row_survives(self):
+        """Read a real row off disk -- the fixtures are a model of it, not proof.
+
+        Skips where the corpus is absent (datasets/ is gitignored, so a fresh
+        clone has none). It is the fixtures that must hold in CI; this is the
+        check that the fixtures still describe reality.
+        """
+        import json
+        from pathlib import Path
+
+        corpus = (
+            Path(__file__).resolve().parents[2]
+            / "datasets/scored/human_thriving_v8/labels_v84_merged.jsonl"
+        )
+        if not corpus.exists():
+            pytest.skip(f"corpus not on disk: {corpus}")
+
+        with open(corpus, encoding="utf-8") as f:
+            labels = [json.loads(line) for _, line in zip(range(500), f) if line.strip()]
+
+        records = convert_to_training_format(
+            labels,
+            analysis_field="human_thriving_analysis",
+            dimension_names=self._dims,
+        )
+        assert len(records) == len(labels)
+        for label, record in zip(labels, records):
+            analysis = label["human_thriving_analysis"]
+            missing = [k for k in analysis if k not in record["oracle_meta"]]
+            assert missing == [], f"{record['id']}: analysis fields dropped: {missing}"
+            assert record["oracle_meta"]["scope_verdict"] == analysis["scope_verdict"]
+            assert "human_thriving_analysis" not in record
+
+    def test_derived_keys_win_over_source_keys(self):
+        """A source row carrying its own 'labels' must not shadow the scores."""
+        label = self._v8_shaped_label()
+        label["labels"] = "not-a-score-array"
+        label["oracle_meta"] = "stale"
+        record = convert_to_training_format(
+            [label],
+            analysis_field="human_thriving_analysis",
+            dimension_names=self._dims,
+        )[0]
+        assert record["labels"] == [8.0, 7.0, 6.0, 5.0, 4.0, 3.0]
+        assert record["oracle_meta"]["scope_verdict"] == "harm_is_subject"
+
+    def test_nested_dimension_format_keeps_siblings(self):
+        """The nested {score, reasoning} shape must not lose the sibling fields."""
+        label = {
+            "id": "nested-1",
+            "content": "x",
+            "uplifting_analysis": {
+                "dimensions": {d: {"score": 5, "reasoning": "r"} for d in self._dims},
+                "scope_verdict": "in_scope",
+            },
+        }
+        record = convert_to_training_format(
+            [label], analysis_field="uplifting_analysis", dimension_names=self._dims
+        )[0]
+        assert record["labels"] == [5] * 6
+        assert record["oracle_meta"]["scope_verdict"] == "in_scope"

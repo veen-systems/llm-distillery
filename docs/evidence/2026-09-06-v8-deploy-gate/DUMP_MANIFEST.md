@@ -29,6 +29,17 @@ must not inherit that caveat, so the split was re-scored on CUDA before the gate
 | Split | `datasets/training/human_thriving_v8/test.jsonl`, 660 rows, sha256 `e361b5175c66252582c395bf256eb253bfa9b35f780f2479907231fc4d58d726` | same |
 | Calibration | the deployed `filters/human_thriving/v8/calibration.json`, sha256 `23c40f41cffe30da…` (isotonic, n=658, fitted on val) | same |
 
+⚠️ **The split hash `e361b517…` pins BYTES, and the bytes changed on 2026-09-08 without
+the test set changing.** `training/prepare_data.py` now carries the oracle analysis block
+into each split under `oracle_meta` (llm-distillery#155), so a regenerated
+`test.jsonl` hashes **`e524c6320b2ec247080e75df61bcee71742fccca94dd10f9e3d1d3a13facbb24`**
+— measured, seed 42, same input `labels_v84_merged.jsonl`. The rows are the **same 660 in
+the same order**, with identical `id` and `labels` (verified row-by-row against this
+file's `e361b517…` copy); only the added keys differ. **The file on disk has NOT been
+regenerated** — it still hashes `e361b517…`, and this gate's numbers stand untouched.
+Whoever regenerates it should expect `e524c632…` and read it as *the same test set with
+more fields*, not as a different one.
+
 ### sha256
 
 **CUDA**

@@ -23,13 +23,20 @@ true *by construction*, so the guard degenerates. **An op-point other than 4.5 i
 whole failure mode** — decide it at design time, not with a two-file guard change later.
 Owner on `#154`, 2026-09-08: *"don't know"* — it is parked, not pending.
 
-### Lane B — the v9 redo. Spec exists; ONE prerequisite blocks it
+### Lane B — the v9 redo. Spec exists; the prerequisite is CLEARED
 
-1. **`#155` — `training/prepare_data.py` drops `scope_verdict`.** The blocking prerequisite.
-   The field is on **all 6,586 rows** of `labels_v84_merged.jsonl` (`in_scope` 23.9%,
-   `harm_is_subject` 19.0%) and is discarded at split time. ⚠️ Re-running `prepare_data.py`
-   **re-draws the 5,268/658/660 splits** every v8 gate number is measured against — new
-   directory or pinned seed.
+1. ✅ **`#155` — DONE 2026-09-08.** `training/prepare_data.py` carries every source field
+   through plus the analysis block under `oracle_meta`; `scope_verdict` now lands on
+   **6,586/6,586** split rows (`harm_is_subject` **1,011 / 105 / 137** train/val/test).
+   Same fix + first tests for `scripts/merge_training_data.py`, which wrote the same three
+   files with the same defect. `training/validate_training_data.py` warns on zero or PARTIAL
+   coverage, so a pre-fix directory can no longer be mistaken for a real rate.
+   ⭐ **The split-redraw caution is retired for this input**: seed 42 on
+   `labels_v84_merged.jsonl` reproduces 5,268/658/660 with identical id order, identical
+   labels, 0 rows moved — regeneration does **not** touch the test set the gate numbers use.
+   ⚠️ It is a **changed input file or changed `config.yaml` tiers** that redraws, not the
+   re-run. ⚠️ The splits on disk still predate the fix and nothing regenerates them
+   automatically — #156's classifier must rebuild, never read what is there now.
 2. **The prompt spec is already written**: the three owed gaps — commencement, the money-worded
    announcement rule, and dropped clause D (`#143`, `#153`). Production rediscovered all three
    independently (`EXP-029`, 12 flips, p=0.0034).
@@ -49,10 +56,18 @@ arguably correct under Solutions; Recovery is *about* recovering from damage.
 
 **Why this and not the redo:** it gates **`uplifting v7`**, the lens actually serving readers
 (harm 23.3% / 3.3%, shared stratum 20.0% / 7.5%), **without retraining anything**. Lane B does
-nothing for v7, and v7 is what ships. Labels exist (1,253 positives); blocked only on `#155`,
-which Lane B needs anyway. Ship **stamp-only first**, measure, then flip per lens.
+nothing for v7, and v7 is what ships. Ship **stamp-only first**, measure, then flip per lens.
 
-> **Today's spend: $0.35** (`EXP-031`). Everything through `b11e42f` is pushed.
+▶ **UNBLOCKED 2026-09-08 — `#155` is done, so this starts with training, not plumbing.**
+Rebuild the splits (`training/prepare_data.py`, seed 42, to a NEW directory — the on-disk ones
+predate the fix), read the positive class off `oracle_meta["scope_verdict"]`
+(**1,011 / 105 / 137**), and train the binary detector. ⚠️ **`oracle_meta` is verbatim and
+heterogeneous** — `runs` is a list on 6,130 rows and an int on 456, `weighted_mean_major` is
+absent on those 456; only `scope_verdict` is measured present on all 6,586. Condition on shape
+before reading any other key.
+
+> **Today's spend: $0.35** (`EXP-031`) — the `#155` work that followed cost **$0**, no oracle
+> calls. Everything through `b11e42f` is pushed.
 > Session record: `memory/project_session_2026_09_08_second.md` and the `/curate` entry after it.
 
 ## 🗄️ PRIOR — the deploy that shipped a filter nothing called
