@@ -1,0 +1,152 @@
+==============================================================================
+CONTROLS
+==============================================================================
+  c1: uplifting 6210  human_thriving 6210  symmetric_diff 0
+  c2: uplifting 3189  human_thriving 3189  symmetric_diff 0
+  c3: uplifting 2954  human_thriving 2954  symmetric_diff 0
+  c4: uplifting 3019  human_thriving 3019  symmetric_diff 0
+  paired rows: 15372
+  distinct articles across the 4 cycles: 15372 (no cycle-to-cycle repeats)
+  uplifting: raw>=4.5 reproduces the pipeline's tier on all 15372 rows
+  human_thriving: raw>=4.5 reproduces the pipeline's tier on all 15372 rows
+  [presence control] substituting uplifting's NORMALIZED score disagrees on 530 rows -> control 2 is specific to the raw score, not trivially true
+  uplifting: stage_used={'stage2': 13768, 'stage1_low': 1604}  surfaced_by_stage={'stage2': 1184}  gatekeeper_applied=50  normalization={'percentile': 15372}
+  human_thriving: stage_used={'stage2': 13491, 'stage1_low': 1881}  surfaced_by_stage={'stage2': 168}  gatekeeper_applied=2  normalization={'none': 15372}
+
+==============================================================================
+1. SURFACING AT raw >= 4.5 — the same articles, the two lenses
+==============================================================================
+  c1: n= 6210  v7= 470  v8= 63  both= 57  v7only= 413  v8only= 6  Jaccard=0.120  v7/v8=7.5x
+  c2: n= 3189  v7= 282  v8= 45  both= 39  v7only= 243  v8only= 6  Jaccard=0.135  v7/v8=6.3x
+  c3: n= 2954  v7= 201  v8= 26  both= 24  v7only= 177  v8only= 2  Jaccard=0.118  v7/v8=7.7x
+  c4: n= 3019  v7= 231  v8= 34  both= 32  v7only= 199  v8only= 2  Jaccard=0.137  v7/v8=6.8x
+  ALL: n=15372  v7=1184  v8=168  both=152  v7only=1032  v8only=16  Jaccard=0.127
+  pass rate  v7 7.702% [7.291, 8.134]   v8 1.093% [0.940, 1.270]   ratio 7.05x
+  v8 is nearly a SUBSET of v7: 152/168 = 90.5% of v8's passers also pass v7
+  tier 'high' (raw >= 7.0):  v7 17   v8 0   (v8 max raw 6.222, v7 max 7.560)
+
+==============================================================================
+2. IS v8 A STRICTER v7, OR A DIFFERENTLY-ORDERED FILTER?
+==============================================================================
+  FRAMES: all rows n=15372 (MIXED — 3162 rows carry a probe
+  estimate on at least one lens) · both-stage2 n=12210 (clean, the primary frame)
+
+  [both-stage2 (PRIMARY)] n=12210  v7=1177  v8=168
+    volume-matched: v8's top-1177 needs an op-point of 2.820 (deployed 4.5)
+    overlap with v7's surfaced set: 677 = 57.5%  (random-top-K chance 9.64%)
+    Spearman rho, all of frame: 0.7177
+    Spearman rho WITHIN the surfaced union (n=1193): 0.3436
+    raw: v7 mean 2.186 sd 1.355   v8 mean 1.144 sd 1.032   pearson 0.7609
+    v8 - v7 per article: median -0.839  p05 -2.872  p95 -0.064
+
+  [all rows (mixed)] n=15372  v7=1184  v8=168
+    volume-matched: v8's top-1184 needs an op-point of 2.823 (deployed 4.5)
+    overlap with v7's surfaced set: 675 = 57.0%  (random-top-K chance 7.70%)
+    Spearman rho, all of frame: 0.5551
+    Spearman rho WITHIN the surfaced union (n=1200): 0.3463
+    raw: v7 mean 1.975 sd 1.289   v8 mean 1.125 sd 0.954   pearson 0.7133
+    v8 - v7 per article: median -0.726  p05 -2.666  p95 +0.437
+
+  NOISE NULL — 'v8 is a noisy, rescaled v7', Spearman-matched, v8's exact marginal
+    [both-stage2 (PRIMARY)] sd=0.839 (Spearman matched to 0.7177)
+      volume-matched overlap  NULL 76.8% [75.9, 77.8]   ACTUAL 57.5%
+      within-union rho        NULL 0.5630 [0.5318, 0.5897]   ACTUAL 0.3436
+    [all rows (mixed)] sd=1.299 (Spearman matched to 0.5551)
+      volume-matched overlap  NULL 64.4% [62.2, 67.1]   ACTUAL 57.0%
+      within-union rho        NULL 0.3654 [0.3281, 0.4172]   ACTUAL 0.3463
+
+  per-dimension mean delta (v8 - v7), same articles, both frames:
+  ⚠️ the six dimension NAMES are shared; the two lenses' RUBRICS are not — different
+  oracle prompts, so a delta is a difference of two definitions, not of one quantity.
+    human_wellbeing_impact     both-stage2 -0.882   all rows -0.618
+    social_cohesion_impact     both-stage2 -1.014   all rows -0.884
+    justice_rights_impact      both-stage2 -1.220   all rows -1.053
+    evidence_level             both-stage2 -1.130   all rows -0.982
+    benefit_distribution       both-stage2 -1.360   all rows -1.155
+    change_durability          both-stage2 -0.951   all rows -0.781
+
+==============================================================================
+3. IS THE DISAGREEMENT BOUNDARY NOISE? (#95 floor |delta| <= 0.16)
+==============================================================================
+  v7-only n=1032: 28 (2.7%) sit within 0.16 of the other lens's op-point
+    the other lens's score on them: median 2.833  min 0.327  max 4.495
+    sensitivity to the floor chosen: 0.16(#95 batch)=28  0.1428(v8 device, EXP-026)=26  0.1956(CPU->CUDA device)=37  0.2008(library stack)=42  0.25(beyond any measured)=60
+  v8-only n=16: 2 (12.5%) sit within 0.16 of the other lens's op-point
+    the other lens's score on them: median 3.990  min 1.825  max 4.450
+    sensitivity to the floor chosen: 0.16(#95 batch)=2  0.1428(v8 device, EXP-026)=2  0.1956(CPU->CUDA device)=2  0.2008(library stack)=2  0.25(beyond any measured)=5
+  v7-only, distance below v8's bar: median 1.667   within 0.5: 128   within 1.0: 305
+
+==============================================================================
+4. DO THE DROPPED ROWS LEAVE ovr.news, OR DOES ANOTHER LENS ALREADY CARRY THEM?
+==============================================================================
+  [control 5] cross-lens rows failing to join a paired article: 0
+  other lenses' surfaced totals, same 4 cycles: {'belonging': 388, 'cultural_discovery': 268, 'nature_recovery': 19, 'solutions': 662}
+  (investment_risk is PAUSED since 2026-08-25 and writes no files — absent by design)
+  [baseline] any-other-lens coverage over all 15372 articles: 1176 = 7.65%
+  v7-only (v8 would drop these)  n=1032: carried by >=1 other lens 461 = 44.7%   by none 571 = 55.3%
+    per-lens: {'solutions': 337, 'belonging': 128, 'cultural_discovery': 68, 'nature_recovery': 11}
+    carried by none, PER CYCLE: {'c1': 242, 'c2': 128, 'c3': 96, 'c4': 105} (c1 is the backlog cycle; do not average it in)
+  both  n=152: carried by >=1 other lens 121 = 79.6%   by none 31 = 20.4%
+    per-lens: {'solutions': 99, 'belonging': 51, 'cultural_discovery': 24, 'nature_recovery': 6}
+    carried by none, PER CYCLE: {'c1': 10, 'c2': 9, 'c3': 5, 'c4': 7} (c1 is the backlog cycle; do not average it in)
+  v8-only (v8 would add these)  n=16: carried by >=1 other lens 5 = 31.2%   by none 11 = 68.8%
+    per-lens: {'belonging': 4, 'cultural_discovery': 2, 'solutions': 1}
+    carried by none, PER CYCLE: {'c1': 6, 'c2': 3, 'c4': 2} (c1 is the backlog cycle; do not average it in)
+
+==============================================================================
+5. COMPOSITION OF THE THREE SETS
+==============================================================================
+  both  n=152  english 105 = 69.1%
+    languages: {'en': 105, 'de': 9, 'es': 7, 'fr': 5, 'pt': 4, 'ar': 4}
+    source_group: {'south_asian': 11, 'positive_news': 10, 'british_irish': 8, 'southeast_asian': 8, 'austrian': 8}
+    content length: median 3817  min 88  max 13599
+  v7-only  n=1032  english 583 = 56.5%
+    languages: {'en': 583, 'es': 91, 'ko': 59, 'fr': 47, 'de': 36, 'pt': 24}
+    source_group: {'science': 78, 'south_american': 67, 'south_asian': 65, 'korean': 59, 'west_african': 46}
+    content length: median 2982  min 64  max 94052
+  v8-only  n=16  english 10 = 62.5%
+    languages: {'en': 10, 'es': 1, 'nl': 1, 'ja': 1, 'cs': 1, 'de': 1}
+    source_group: {'south_asian': 3, 'spanish': 1, 'south_african': 1, 'belgian': 1, 'australian': 1}
+    content length: median 3676  min 119  max 31449
+
+  the 16 v8-only articles (what the Thriving tab would GAIN):
+    v8 5.776 / v7 4.005  [es] Vuelta al cole en Madrid: Más de un millón de alumnos empiezan el curso escolar
+    v8 5.255 / v7 4.252  [en] Journeying through Syria’s shattered cities as war turns to peace
+    v8 5.222 / v7 3.631  [vi] Dấu ấn giải chạy đêm Hà Nội qua 5 mùa tổ chức
+    v8 5.094 / v7 4.160  [de] Ferien zu Ende - 15.047 Taferlklassler beginnen Abenteuer Schule
+    v8 5.075 / v7 2.817  [en] Hong Kong’s local schools should not have to brace for the worst
+    v8 4.897 / v7 4.297  [cs] Stavba domu vlastními silami je pro řadu Španělů možností, jak si zajistit bydlení
+    v8 4.896 / v7 4.450  [nl] Kunstacademies in de Kempen trekken veel Nederlandse leerlingen aan: "Kunstlessen zi
+    v8 4.849 / v7 1.825  [en] How three people shaped by 9/11 live with the legacy, 25 years on
+    v8 4.793 / v7 3.323  [en] Chennai Metro Rail to complete tunnelling work from Royapettah to Thousand Lights ne
+    v8 4.756 / v7 4.265  [en] Wife’s refusal to follow orthodox customs not cruelty, rules Andhra Pradesh High Cou
+    v8 4.715 / v7 4.410  [en] Preserving the past: Kyrgyzstan's World Nomad Games continues as new village brings 
+    v8 4.675 / v7 3.817  [en] Court ruling clears way for 124-home Byron Shire development
+    v8 4.616 / v7 3.374  [en] The question isn’t whether AI can teach. It’s whether students will let it
+    v8 4.595 / v7 3.400  [ja] CLUB REBASE、クラブ野球選手権初優勝 日本選手権へ
+    v8 4.554 / v7 4.176  [en] Madras High Court upholds permission to reconstruct church near Hindu temple
+    v8 4.507 / v7 3.976  [en] 20-year-old proudly shows off her humble home in Cuba: "I bought my own space where 
+
+  top 20 of the v7-only articles by v7 score (what the tab would LOSE):
+    v7 7.446 / v8 4.265  [en] [belonging,solutions] Africa: Africa's Rangelands Are the Frontline of Resilience - COP17 Sh
+    v7 7.401 / v8 4.079  [en] [solutions] ‘Advance safety for all’: International police cooperation helps tackl
+    v7 7.307 / v8 1.348  [pt] [belonging] Quais os caminhos para defender o ECA e proteger a infância
+    v7 7.155 / v8 3.352  [ko] [-] 푸른 하늘의 날
+    v7 7.062 / v8 2.833  [en] [solutions] [Research] The Energy–Water–Food Nexus Under Abundant Clean Power
+    v7 7.055 / v8 4.053  [en] [cultural_discovery,nature_recovery,solutions] From 6 to 194: How Assam Is Bringing the World’s Smallest Pig Back to 
+    v7 7.044 / v8 3.981  [es] [solutions] México: compromiso histórico con las energías renovables
+    v7 7.022 / v8 4.386  [en] [belonging,cultural_discovery,solutions] 500+ Tonnes of Waste Removed: How These Volunteers Clean Himachal’s Hi
+    v7 6.930 / v8 2.833  [es] [-] “El fuego es solo el final de una historia que comienza meses antes”: 
+    v7 6.911 / v8 3.695  [en] [belonging,solutions] This Maharashtra Teacher Is Rethinking Education | Hichki in Real Life
+    v7 6.900 / v8 1.949  [en] [solutions] SOME ACTIONABLE SOLUTIONS
+    v7 6.872 / v8 2.276  [es] [solutions] México busca consolidar ‘soberanía tecnológica’ con Plan Nacional de I
+    v7 6.870 / v8 2.475  [en] [solutions] How AI is transforming EU public procurement transparency
+    v7 6.803 / v8 4.255  [en] [belonging,solutions] Inside Ananda, A Quaint Hillside Sanctuary for India’s Elderly Street 
+    v7 6.797 / v8 2.958  [en] [belonging] OPINION: Arts education can change lives, but we must invest in people
+    v7 6.788 / v8 3.791  [en] [cultural_discovery,solutions] South Korea pitches global seed backup for crops facing heat, pests, a
+    v7 6.760 / v8 3.840  [it] [belonging,cultural_discovery] Rai Storia ripropone la prima lezione di Alberto Manzi: così la tv ins
+    v7 6.752 / v8 2.808  [pt] [belonging,cultural_discovery,nature_recovery,solutions] Como os ecossistemas se recuperam depois do fogo?
+    v7 6.739 / v8 3.195  [en] [-] Mansour bin Zayed issues resolution approving family charter to safegu
+    v7 6.736 / v8 4.486  [es] [-] Acuerdo histórico que pone freno al diseño digital adictivo
+
+wrote union manifest (1200 rows) to docs/evidence/2026-09-08-v7-v8-same-articles/union_manifest.jsonl

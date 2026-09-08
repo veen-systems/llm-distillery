@@ -1,0 +1,32 @@
+EXP-029 prompt flips (arm A in_scope, arm B not): 12
+  both: 10
+    v8 6.110 / v7 6.178  Citing barefoot Beed woman’s ‘struggle’, Bombay High Court gives m
+    v8 5.544 / v7 6.534  Houston now requires air conditioning in all rentals, making cooli
+    v8 5.473 / v7 5.817  For Varanasi’s flood-hit children, the walk to school is now just 
+    v8 5.076 / v7 5.075  Community kitchens, boat ambulances: Bihar copes with floods that 
+    v8 4.938 / v7 5.292  De la „vine fericit acasă” la „a schimbat trei învătoare în trei a
+    v8 4.896 / v7 6.671  ‘I refused this marriage’: Meet West African women who fought for 
+    v8 4.888 / v7 6.088  New water supply systems to be built in three regions of Kyrgyzsta
+    v8 4.848 / v7 5.449  Station van Kortrijk wordt dan toch beschermd: "Dit betekent niet 
+    v8 4.655 / v7 6.671  Kembalikan Hutan Mentawai pada Masyarakat Adat
+    v8 4.567 / v7 5.826  ‘Mummy, mummy’: 5-year-old stuck in muddy sludge rescued three day
+  v8_only: 2
+    v8 5.075 / v7 2.817  Hong Kong’s local schools should not have to brace for the worst
+    v8 4.554 / v7 4.176  Madras High Court upholds permission to reconstruct church near Hi
+
+v8-only rows overall: 16; in the panel cycle c1: 6
+v8-only rows that are prompt flips: 2 -> ['east_asian_scmp_e794f0019345', 'south_asian_indian_express_9f206d53ba0f']
+prompt flips in the 'both' set (v7 surfaces them too): 10 of 12
+
+RATES within the panel cycle (the counts above are NOT comparable -- different denominators):
+  v8-only: 2/6 = 33.3%
+  both:    10/56 = 17.9%
+  ratio 1.87x -- flips are ENRICHED among v8-only rows, the
+  OPPOSITE of what the raw counts suggest, and n=6 cannot establish it either way.
+  Fisher exact two-sided p = 0.328 -- not distinguishable.
+
+Reading, corrected: the panel CANNOT say whether the owed prompt work is what separates
+the lenses -- 6 v8-only rows is too few. What it does establish is that 10 of the 12 flips
+are articles v7 surfaces too, so a corrected scope in a v8.1 would remove rows from v8's
+passer set that v7 keeps until cutover: the supply gap widens. Direction only; no retrain
+has been run, and the rate comparison above is underpowered.

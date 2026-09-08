@@ -1,0 +1,16 @@
+nature_recovery	c1	filtered_20260907_180128.jsonl	n=6210	surfaced=9
+nature_recovery	c2	filtered_20260907_212951.jsonl	n=3189	surfaced=3
+nature_recovery	c3	filtered_20260908_012636.jsonl	n=2954	surfaced=5
+nature_recovery	c4	filtered_20260908_053104.jsonl	n=3019	surfaced=2
+solutions	c1	filtered_20260907_175109.jsonl	n=6209	surfaced=244
+solutions	c2	filtered_20260907_212350.jsonl	n=3190	surfaced=155
+solutions	c3	filtered_20260908_012105.jsonl	n=2954	surfaced=119
+solutions	c4	filtered_20260908_052527.jsonl	n=3019	surfaced=144
+cultural_discovery	c1	filtered_20260907_175623.jsonl	n=6210	surfaced=104
+cultural_discovery	c2	filtered_20260907_212639.jsonl	n=3189	surfaced=86
+cultural_discovery	c3	filtered_20260908_012339.jsonl	n=2954	surfaced=38
+cultural_discovery	c4	filtered_20260908_052806.jsonl	n=3019	surfaced=40
+belonging	c1	filtered_20260907_175900.jsonl	n=6210	surfaced=155
+belonging	c2	filtered_20260907_212821.jsonl	n=3189	surfaced=81
+belonging	c3	filtered_20260908_012508.jsonl	n=2954	surfaced=78
+belonging	c4	filtered_20260908_052935.jsonl	n=3019	surfaced=74
