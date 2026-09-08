@@ -6587,3 +6587,52 @@ bar for enrichment lands at **4.872** against an op-point of 4.50. ⭐ **When a 
 as a percentile of a fitted distribution, any share measured on the fitting sample is arithmetic.**
 The tell is agreement that is too good: `feedback-predict-the-range-first` says state the believable
 range first, and *"about 60%"* was predictable from the gate's definition alone.
+
+## A judge's verdict is a rate; two judges' verdicts are a rate and an instrument check (2026-09-08)
+**Problem**: The Thriving harm panel ran two judges — DeepSeek and Gemini — and they disagreed on
+**61 of 137** articles, Cohen **κ 0.375**. On the same rows, `harmful` reads **3.3%** (DeepSeek)
+or **23.3%** (Gemini) for `v7_only`: a factor of seven. Either number alone would have been
+published as *the* harm rate.
+**Root cause**: I picked two judges to defeat an authorship confound — v7's oracle is Gemini,
+v8's is DeepSeek, so each family flatters its own lens — and got a second, unplanned result: the
+**absolute level of a judged rate is not a property of the articles**. The *within-judge*
+comparisons agreed on direction in every case; the levels did not agree at all.
+**Fix**: report within-judge comparisons and never the absolute level, and say so at the point of
+citation rather than in a caveats section. ⭐ **The design generalises past this confound: when a
+conclusion depends on two measuring instruments being independent, run both and ASSERT they
+measurably differ** — `analyze.py` fails if the two judges agree on every row, because that state
+means the cross-family design proved nothing while looking maximally clean. **A control that
+fires when the result is too tidy is rarer than one that fires on a bad result, and this is the
+shape that needs it.**
+
+## `cmd | tail` turns a guard's exit code into 0 — three instances in one evening, two repos (2026-09-08)
+**Problem**: The Gemini judge arm aborted correctly after 5 consecutive HTTP 429s and exited **3**.
+My invocation was `python3 judge.py … 2>&1 | tail -4`, so the pipeline reported **exit 0** and the
+run read as a clean completion. It was caught only because the output file was missing.
+**Root cause**: a shell pipeline's status is the **last** command's. Every guard in the harness
+was correct — the checkpointing, the retry, the consecutive-error abort, the refusal to write
+ERROR rows — and all of it was silenced one layer up, at the call site.
+**Fix**: `PIPESTATUS`, or do not pipe a command whose exit code is the result. ⭐ **The general
+form, and it is why this recurs: the defect is at the INVOCATION, not in the checked thing, so no
+amount of hardening the guard prevents it and no checker that reads the guard can see it.** Third
+instance this evening across two repos — the NexusMind session masked its verify runner's output
+entirely by the same route, and this repo already logs the shape at `[x5]`. **When a guard's exit
+code decides anything, invoke it bare and read `$?` on the next line.**
+
+## The record held the diagnosis; nobody had drawn the consequence (2026-09-08)
+**Problem**: v8 leaks its harm gate because a **binary scope gate is a step function and the
+student is a regression head**. Every input to that sentence was already written down — ADR-015
+recorded the identical bimodality on `thriving v1` (*"a sparse 2-5 dead zone the student model
+couldn't learn"*), the 2026-08-28 session found `scope_verdict` zeroes all six dimensions and
+called v8 *"a STEP FUNCTION"*, and #135 was filed off it. **Nobody joined them.**
+**Root cause**: the 08-28 finding was framed as **oracle label noise** — *13% of identical re-runs
+flip the gate*, i.e. a problem for k and for cost. The consequence for the **student** — that the
+distillation target contains a discontinuity the architecture cannot represent — is one step
+further and was never taken. The owner recognised the shape immediately when shown the symptom;
+the record could not surface it because it was filed under a different question.
+**Fix**: when a finding is filed, ask **who else consumes this quantity** — here, the oracle's
+gate is also the student's target, so a fact about the gate is automatically a fact about the
+training signal. ⭐ **And searching the record for a REMEDY is not the same as searching it for a
+DIAGNOSIS**: all three prior bimodality fixes were findable, and all three were inapplicable
+(they changed the target; v8's target is the harm rule we require). **A precedent that matches the
+symptom can still be unavailable — check what made the earlier fix legal, not just that it worked.**

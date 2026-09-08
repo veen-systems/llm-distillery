@@ -1,8 +1,14 @@
-# Session 2026-09-08 (second) — the cutover is a 7× cut, and Phase E's rows arrived to a guard that refuses them
+# Session 2026-09-08 (second) — the cutover is a 7× cut, and a step function distilled into a regression head
 
-**Spend: $0.** No oracle calls, no judges, no GPU. Registry **EXP-030**.
-Evidence `docs/evidence/2026-09-08-v7-v8-same-articles/`. New issue **#154**.
-Commits `b28e456`, `9fb3feb` (not pushed).
+**Spend: $0.35** (harm panel two arms $0.34, oracle re-check k=3 ~$0.01). Registry **EXP-030**
+and **EXP-031**. Evidence `docs/evidence/2026-09-08-v7-v8-same-articles/` and
+`docs/evidence/2026-09-08-thriving-harm-panel/`. New issues **#154**, **#155**, **#156**.
+Decision records `2026-09-08-scope-gate-two-head.md` (new) and an amendment to
+`2025-11-13-regression-only-student-models.md`. Pushed through **`9386017`**.
+
+⛔ **Two owner rulings landed mid-session and reframe everything below: production FREEZES
+as-is, and a redo is `human_thriving/v9` — a VERSION, not a name.** Sections 1–2 were written
+before the freeze and are kept as-is; the "Second half" section carries the rulings.
 
 ## What was picked up
 
@@ -89,12 +95,90 @@ follow-up rather than an edit. Four superseded surfaces updated: `CLAUDE.md`,
 sizing projection (which predicted 2–3 cycles at v7's 5.81%; v8's measured rate is **1.093%** and
 it took five).
 
+## Second half — the harm panel, and the answer to "what went wrong with v8"
+
+⛔ **OWNER RULINGS, both relayed through the session and recorded in `docs/TODO.md`:**
+**production FREEZES as-is** (no cutover, no Phase E fit, no config change; both lenses keep
+scoring), and **a redo is `human_thriving/v9` — a new VERSION, not a new name**, because
+`NexusMind/scripts/main.py:415` keys `.processed_ids_<name>.json` on the filter NAME, so a
+rename re-creates the 2026-09-07 outage while a version bump makes it **absent, not mitigated**.
+
+**`EXP-031` — the harm panel, $0.35, owner-authorised.** The question no precision number here
+had asked: not *is this on-lens* but *would a reader be harmed seeing this under Thriving*
+(#91). Pre-registered in `c54f595` **before any call**, with a named failure condition.
+
+⛔ **MY PRIMARY PREDICTION WAS REFUTED, under both judges.** `harmful` on what each lens uniquely
+surfaces: v7-only **3.3%** vs v8-only **10.8%** (DeepSeek, p=0.198); **23.3%** vs **27.0%**
+(Gemini, p=0.809). **v8 is NOT safer per article than v7 on harm.** ⚠️ Neither difference is
+distinguishable — the point estimates reverse the prediction, the tests do not establish that v8
+is worse. ⭐ What v8 *does* win under both judges: `misleading` **21.6%** vs 63.3%/48.3%
+(p=0.0001/0.0101), on-promise 67.6%/51.4% vs 33.3%/28.3%. **v8 is substantially better at what
+the tab promises and is not better at avoiding harm — separable axes, and reporting either alone
+misleads in opposite directions.**
+
+⭐⭐ **THE KEEPER — the answer to the owner's "what went wrong": a step function distilled into a
+regression head.** Re-scoring the flagged rows with **v8's own oracle** at k=3: it fires
+`harm_is_subject` at wa **0.80–0.90** on three articles where the student returns **4.66–4.85** —
+gaps of **+3.76 to +4.04**, landing just above the 4.50 op-point. v8's prompt forces all six
+dimensions to 0–2 when the scope gate fires; a regression head cannot represent a discontinuity
+and interpolates across it. ⭐ **The leak is GENERAL** — the same gap appears on two v7-only rows
+(+3.00, +2.88) where the interpolated value landed *below* the op-point and harmed nobody. **A
+threshold move cannot fix a 4-point leak.**
+
+⭐ **The owner recognised the shape, and the record was sharper than either of us recalled.** We
+have hit bimodality three times — **ADR-015 on `thriving v1`, the SAME lens** (*"a sparse 2-5 dead
+zone the student model couldn't learn"*), `solutions` v4→v6, and ADR-003's needle-in-haystack.
+**Every prior fix changed the TARGET so the student could learn it, and none transfers**:
+`thriving v1`'s cliff was an accidental orthogonality clause ADR-015 simply deleted, whereas
+**v8's cliff IS the harm gate #91 says we need**. Written up as
+`docs/decisions/2026-09-08-scope-gate-two-head.md`.
+
+⭐ **Owner's framing — "a crude passer, not a blocker" — was load-bearing, not semantics.**
+`scope_verdict` is a five-way scope decision on **all 6,586 rows** of `labels_v84_merged.jsonl`
+(`in_scope` 23.9%, `harm_is_subject` 19.0%), so the classifier needs **no re-labelling and costs
+$0** — but `training/prepare_data.py` **drops it at split time** (**#155**, the one blocking
+prerequisite). Two consequences the blocker framing would have got wrong: **scope is per-lens,
+junk is cross-lens**, so the gate belongs inside the filter package; and the scope gate is
+**specificity-first** where the Stage-1 probe is recall-first, so reusing the probe recipe tunes
+it exactly backwards.
+
+⭐ **And the owner's second idea beat my write-up**: a **cross-lens harm detector** (**#156**).
+Measured: of the 9 articles both judges called harmful, **6 are already on `solutions` or
+`belonging`** — at a 53% cross-lens rate against a **58% panel baseline**, i.e. harm-subject
+content is as cross-lens as anything else. ⛔ **Which is why it must STAMP, not block**: "Bihar
+copes with floods" betrays Thriving and is arguably right under Solutions; Recovery is *about*
+recovering from damage. **It gates `uplifting v7` — the lens actually serving readers — without
+retraining anything**, which a per-lens v9 gate cannot do.
+
+⚙️ Also: `docs/decisions/2025-11-13-regression-only-student-models.md` now carries an **amendment
+note** — its title reads as a blocker for the two-head proposal and it is not; it decides
+regression vs *generative* on inference latency.
+
+## Cross-session
+
+Five exchanges with `nexusmind-0a`. ⭐ **They independently reproduced `EXP-030` exactly**
+(1,184/168/152/1,032/16, Jaccard 0.127) before my message arrived. ⛔ **They corrected me once and
+were wrong** (`raw_min` vs `sample_min` — two fields, two guards; their own 4.503588 measurement
+was the best evidence *for* the density reading they were arguing against), and ⛔ **they caught
+a real ambiguity in mine** — a handover figure written as "what the lens uniquely surfaces"
+without naming the lens, where the two readings point opposite ways. They blocked rather than
+guessed. Also corrected my symbol name (`_build_filter_config`, not `load_filter`), and I
+corrected their "no staging exists" (the `version_dir` pin, and `uplifting` already runs v6+v7).
+
+⚠️ **Their per-lens rate table was wrong** — a uniform `raw >= 4.5` applied to five lenses it does
+not belong to (`solutions` 0.21% vs the true 4.31%); the diagnostic that found it was that **the
+two lenses we both measured directly agreed exactly and the four reached by a retyped threshold
+did not**. Retracted in three places on their side.
+
 ## State at close
 
-- ⛔ **Phase E is 202/200 and BLOCKED BY #154, not by data.** Do not disable v8 — rows keep
-  accumulating unfitted.
-- **The cutover ruling (#151 step 5) now has its numbers.** Four options are laid out in the
-  evidence README; none is recommended, because which lens is *right* is unmeasured.
+- ⛔ **FROZEN**: #151 cutover, Phase E (202/200, blocked by #154), #154 itself — parked, owner
+  *"don't know"*, and **possibly moot** if v9 takes an op-point other than 4.5.
+- ▶ **START AT #156** (harm detector), first step **#155**, which the v9 redo needs anyway.
+- **`docs/TODO.md`'s top block was rewritten** into three lanes so a cold session opens in the
+  right place — it had still been opening on Phase E and the cutover, both frozen.
+- Everything pushed through `9386017`. Nothing deployed, enabled or fitted; sadalsuud untouched
+  beyond reads.
 - **Nothing was pushed**, and nothing on sadalsuud was touched.
 - **Carried from the 09-08 first session:** the `_wa` aggregation control is still not in the test
   suite; an authorship-independent judge is still blocked.
