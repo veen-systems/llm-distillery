@@ -46,8 +46,9 @@ framework_reconciliation: |
 ## Tech Stack
 
 - **Oracle**: Gemini Flash 2.5 (real-time — **there is no Batch API call site**, so Batch
-  pricing is not an option we can pick); DeepSeek V4 Flash is **1.74× cheaper than the
-  Gemini path that exists** even after the 2026-08-16 hike, so the cd v5 default stands.
+  pricing is not an option we can pick); DeepSeek V4.1 Flash is **2.44× cheaper than the
+  Gemini path that exists** after the 2026-09-10 cut, so the cd v5 default stands. ⚠️ We
+  call the `deepseek-chat` ALIAS, so V4.1 replaced V4 under us unmeasured — **#157**.
   ⛔ **Never quote a $/article figure without naming the prompt** — cost is set by the
   input/output ratio (measured 20–43) and by the prompt's own **cache ceiling**
   (1.5%–35.7%, #131). Rates, measured shapes and the arithmetic:

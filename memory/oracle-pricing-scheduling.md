@@ -1,8 +1,92 @@
 ---
 name: oracle-pricing-scheduling
-description: Oracle cost — both rate cards verified 2026-08-24, but Gemini Batch is a price we CANNOT PAY (no .batches call site, 2026-08-25), so among IMPLEMENTED paths DeepSeek off-peak wins by 1.74x; the answer is a RATIO (DeepSeek needs input/output < 8.4, ours are 20-43), not an anchor; the real lever is the per-prompt CACHE CEILING set by where build_prompt inserts the article (1.5%-35.7%), which flips the ranking at 19-27%; MEASURED 2026-08-28 on the real call site: the ceiling is REACHABLE (0.0% -> 90.2% by moving the article to the end of the template) and a cached run costs 5.3x less; Gemini AI Studio forces Prepay by 2026-10-12
+description: Oracle cost — DeepSeek CUT prices on 2026-09-10 04:00 UTC (V4.1 Flash: 0.003/0.15/0.60 off-peak, ~30% below the V4 card), and that KILLS the ratio argument this file was built on: cache-miss input now EQUALS Gemini Batch's $0.15/M, so DeepSeek wins at every prompt shape and every cache rate with no crossover — and DeepSeek PEAK now undercuts the Gemini realtime path that actually exists; Gemini Batch is still a price we CANNOT PAY (no .batches call site); the cache ceiling (1.5%-35.7%, reachable to 90.2%) survives as a ~5x cost lever but no longer decides the vendor; ⚠️ we call the `deepseek-chat` ALIAS so V4.1 swapped in under us with no code change and no label-parity run (ADR-010); Gemini AI Studio forces Prepay by 2026-10-12
 metadata:
   type: reference
+---
+
+> 🟢🟢 **PRICE CUT — DeepSeek V4.1 Flash, effective 04:00 UTC 2026-09-10** (announcement
+> email dated 2026-09-09 23:07 +0800, to jveen1@proton.me). This is the third rate move
+> this file has recorded and the first *downward* one. **Read this block before anything
+> below it: everything under the 2026-08-16 heading is priced on the superseded V4 card.**
+>
+> | $/1M, OFF-PEAK | cache-hit in | cache-miss in | out |
+> |---|---|---|---|
+> | V4 Flash (2026-08-16 → 09-10) | 0.007 | 0.22 | 0.66 |
+> | **V4.1 Flash (from 09-10)** | **0.003** | **0.15** | **0.60** |
+>
+> Peak is still exactly 2×. **The peak windows are UNCHANGED** — 01:00–04:00 and
+> 06:00–10:00 UTC, **Monday–Friday**, all other hours off-peak — so the weekend rule and
+> the whole scheduling section below still stand as written.
+>
+> ⛔ **SOURCE IS THE EMAIL, NOT THE PRICING PAGE.** Fetched
+> `https://api-docs.deepseek.com/quick_start/pricing/` on 2026-09-09: it still carried the
+> **V4** card, because the cut had not taken effect yet. These rates are therefore
+> *announced*, not *verified against the vendor page* — re-read the page after the cutover
+> before quoting them as established. The 2026-08-23 lesson applies in reverse.
+> Both sources are frozen in `docs/evidence/2026-09-09-deepseek-v41-price-cut/` —
+> ⚠️ the decoded body and headers, **not** the original `.eml`, which had vanished
+> from `~/Downloads` ten minutes after it was read. That README says so on its face.
+> <!-- verify: P=$(curl -sL --max-time 30 https://api-docs.deepseek.com/quick_start/pricing/ 2>/dev/null) || { echo "CANNOT VERIFY: pricing page unreachable"; exit 0; }; if echo "$P" | grep -q '0\.15'; then echo "page now carries 0.15 cache-miss input — V4.1 card is VERIFIED, drop the email-only caveat"; elif echo "$P" | grep -q '0\.22'; then echo "page STILL carries the V4 0.22 card — V4.1 rates remain email-only, or the cut did not land"; else echo "CANNOT VERIFY: page shape changed, read it by hand"; fi -->
+>
+> ⭐⭐ **THE RATIO ARGUMENT IS MOOT — not re-derived, ABOLISHED.** DeepSeek's cache-miss
+> input drops to **$0.15/M, exactly Gemini Batch's input rate**, while output goes to
+> **$0.60 against Batch's $1.25**. So DeepSeek ties at worst on input and wins outright on
+> output: it is cheaper **at every prompt shape and every cache rate**, and
+> `crossover_ratio()` now returns `None` everywhere. The unconditional flip point falls
+> **32.9% → 0.0%**. ⛔ **Do not re-quote "DeepSeek wins only when I/O < 8.4", the 19.0–26.5%
+> per-shape flip points, or the 32.9% figure** — all are properties of the V4 card. The
+> long argument below about which anchor to use was decided by rates that no longer exist.
+>
+> **Recomputed on the same COUNTED shapes** (`scripts/analysis/oracle_cost.py`, only the
+> rate dict swapped — token counts unchanged, still measured, still not back-solved):
+>
+> | prompt (measured) | I/O | DS V4 | **DS V4.1** | DS V4.1 **peak** | GemBatch *(no call site)* | Gemini realtime *(implemented)* |
+> |---|---|---|---|---|---|---|
+> | nature_recovery v3, n=3,641 | 30.6 | 0.001442 | **0.001012** | 0.002025 | 0.001175 | 0.002350 |
+> | uplifting v7 | 19.9 | 0.001756 | **0.001249** | 0.002499 | 0.001526 | 0.003052 |
+> | human_thriving v8 | 28.3 | 0.002168 | **0.001525** | 0.003050 | 0.001741 | 0.003482 |
+> | human_thriving v8r2 | 43.3 | 0.002585 | **0.001801** | 0.003601 | 0.002100 | 0.004201 |
+> | human_thriving v8r3 | 42.8 | 0.002675 | **0.001864** | 0.003727 | 0.002127 | 0.004255 |
+>
+> ~30% off at every shape (0.697×–0.712×). Per 8K-article retrain at the `uplifting v7`
+> shape: **$14.04 → $9.99** off-peak. Against the implemented Gemini path the margin widens
+> **1.74× → 2.44×**.
+>
+> ⚠️ **One conclusion below FLIPS: "peak is unambiguously wrong" is no longer true.**
+> Under the V4 card, DeepSeek peak ($0.0046/article) was dearer than Gemini realtime. Under
+> V4.1, peak **undercuts Gemini realtime at every measured shape (1.12×–1.22× cheaper)**.
+> Peak is now merely 2× wasteful rather than worse-than-the-alternative. **This changes
+> nothing about what to do** — off-peak is free to obtain (run Sat/Sun) — but it removes the
+> second, independent reason never to run at peak, so a peak run is now a cost mistake, not
+> a vendor mistake.
+>
+> ✅ **What does NOT change.** (a) **Gemini Batch is still a price we cannot pay** — the
+> `.batches` call site still does not exist, and the verify below still passes; the cut only
+> widens a gap that was already decided. (b) **The cache ceiling survives as a ~5× cost
+> lever** (1.5%–35.7% per prompt, measured reachable to 90.2%) — it simply no longer has any
+> ranking to flip, so its whole justification is now cost, and ADR-010's consistency
+> objection to reordering the prompt is unopposed by any vendor argument. (c) The
+> AI-Studio-Prepay deadline of **2026-10-12** is untouched.
+>
+> ⚠️⚠️ **THE REAL EXPOSURE IS NOT THE MONEY — THE MODEL SWAPPED UNDER US.** We call the
+> **`deepseek-chat` alias**, never a pinned id (`scripts/score_ollama_oracle.py:226` and
+> `scripts/validate_deepseek_oracle.py:276` both warn that pinning the literal
+> `deepseek-v4-flash` enables reasoning mode and returns empty `content`). The alias resolves
+> **server-side**, so at 04:00 UTC 2026-09-10 the oracle behind every DeepSeek scoring run
+> becomes V4.1 Flash **with no code change, no config change and no signal in our logs**.
+> The announcement also routes **all `deepseek-v4-pro` requests to V4.1 Flash at Flash
+> price** until V4.1 Pro ships. **ADR-010 ranks oracle consistency above cost**, and no
+> V4-vs-V4.1 label-parity run exists or can exist until the model does. **UNMEASURED.** Any
+> oracle run spanning the cutover mixes two models’ labels into one dataset. → **#157**.
+>
+> ⛔ **Two stale facts below, corrected 2026-09-09 against the live API and the page.**
+> (a) *"`GET /models` returns exactly two IDs"* (verified 2026-08-14) is **no longer true** —
+> it now returns **three**: `deepseek-v4-flash`, `deepseek-v4-pro`, and
+> `deepseek-v4-flash-vision-exp`. The substantive claim it supported — **no lighter tier to
+> retreat to** — still holds; vision-exp is priced identically to flash. (b) Pro is
+> **exactly 3× flash** on every line (0.022 / 0.66 / 1.98), not the *"~3.1×"* recorded below.
+
 ---
 
 > 🔴 **THE NOTICE LANDED — effective 16:00 UTC, 2026-08-16 (email dated

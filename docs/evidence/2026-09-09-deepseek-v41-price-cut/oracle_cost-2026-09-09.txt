@@ -1,0 +1,87 @@
+==============================================================================
+RATE CARD IN FORCE — DeepSeek V4.1 Flash, from 2026-09-10 04:00 UTC
+==============================================================================
+  off-peak  hit $0.003/M   miss $0.15/M   out $0.6/M   (peak = 2x)
+  superseded V4 card, 2026-08-16 to 2026-09-10:  0.007 / 0.22 / 0.66
+  peak windows UNCHANGED: 01:00-04:00 and 06:00-10:00 UTC, Mon-Fri.
+  ⛔ Source is the announcement email, not the pricing page — the page still
+     carried the V4 card on 2026-09-09. Re-read it before quoting these.
+
+==============================================================================
+COUNTED BASELINE — nr_v4_batch.log, n=3,641 articles
+==============================================================================
+  5,986 input / 195.9 output tokens per article   cache hit 0.34%   I/O = 30.6
+  rate-card check vs the log's own total: $3.24 vs $3.24  OK
+
+==============================================================================
+PER-ARTICLE COST AT MEASURED SHAPES ($/article, DeepSeek OFF-PEAK)
+==============================================================================
+prompt                    I/O   DS@meas    DSpeak  GemBatch GemRealtm  cheapest IMPLEMENTED
+nature_recovery v3       30.6  0.001012  0.002025  0.001175  0.002350  DeepSeek off-peak
+uplifting v7             19.9  0.001249  0.002499  0.001526  0.003052  DeepSeek off-peak
+human_thriving v8        28.3  0.001525  0.003050  0.001741  0.003482  DeepSeek off-peak
+human_thriving v8r2      43.3  0.001801  0.003601  0.002100  0.004201  DeepSeek off-peak
+human_thriving v8r3      42.8  0.001864  0.003727  0.002127  0.004255  DeepSeek off-peak
+  note: the nature_recovery Gemini columns scale DeepSeek's counts by the
+        +2.0% input / +5.7% output tokenizer gap measured on Gate A. Estimated.
+  note: DeepSeek PEAK now undercuts Gemini realtime at every shape, so peak is
+        merely 2x wasteful, no longer worse than the alternative that exists.
+        Off-peak is still free to obtain — weekends bill off-peak entirely.
+
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  !! THE GemBatch COLUMN IS A PRICE WE CANNOT PAY TODAY. There is no Batch API
+  !! call site in this repo: ground_truth/batch_scorer.py and
+  !! scripts/score_ollama_oracle.py both call models.generate_content (realtime),
+  !! and `.batches` appears nowhere. Against the Gemini path that EXISTS,
+  !! DeepSeek off-peak is the cheaper oracle at every measured shape.
+  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+==============================================================================
+THE ANSWER IS A RATIO, NOT AN ANCHOR
+==============================================================================
+  cache   0.3%  DeepSeek wins at EVERY prompt shape
+  cache  14.0%  DeepSeek wins at EVERY prompt shape
+  cache  30.0%  DeepSeek wins at EVERY prompt shape
+  cache   0.0%  DeepSeek wins at EVERY prompt shape
+  There is NO crossover under this card at any cache rate: DeepSeek's
+  cache-miss input equals Gemini Batch's $0.15/M, so it ties at worst on
+  input and wins on output. The ratio argument that decided #103 is moot.
+  unconditional flip point (any shape): cache hit >= 0.0%
+
+  Cache rate at which DeepSeek off-peak overtakes Gemini Batch, per shape:
+    nature_recovery v3     I/O  30.6   already ahead at 0% cache
+    uplifting v7           I/O  19.9   already ahead at 0% cache
+    human_thriving v8      I/O  28.3   already ahead at 0% cache
+    human_thriving v8r2    I/O  43.3   already ahead at 0% cache
+    human_thriving v8r3    I/O  42.8   already ahead at 0% cache
+
+==============================================================================
+CACHE CEILING PER PROMPT (share of template before the article placeholder)
+==============================================================================
+    1.5%      617 / 42,406   filters/human_thriving/v8/prompt-candidate.md
+    2.2%      682 / 31,190   filters/nature_recovery/v4/prompt-compressed.md
+    2.6%      617 / 23,662   filters/uplifting/v7/prompt-compressed.md
+    3.1%      600 / 19,080   filters/belonging/v1/prompt-compressed.md
+    3.2%      682 / 21,354   filters/nature_recovery/v1/prompt-compressed.md
+    3.2%      682 / 21,354   filters/nature_recovery/v2/prompt-compressed.md
+    3.7%      861 / 23,240   filters/thriving/v1/prompt-compressed.md
+   10.2%    1,806 / 17,772   filters/investment_risk/v6/prompt-compressed.md
+   11.0%    2,128 / 19,354   filters/uplifting/v6/prompt-compressed.md
+   12.4%    2,136 / 17,166   filters/cultural_discovery/v1/prompt-compressed.md
+   12.4%    2,136 / 17,166   filters/cultural_discovery/v2/prompt-compressed.md
+   12.4%    2,136 / 17,166   filters/cultural_discovery/v4/prompt-compressed.md
+   16.9%    6,393 / 37,894   filters/cultural_discovery/v5/prompt-compressed.md
+   16.9%    6,393 / 37,894   filters/cultural_discovery/v6/prompt-compressed.md
+   32.4%   12,858 / 39,667   filters/solutions/v4/prompt-compressed.md
+   35.7%   14,966 / 41,869   filters/solutions/v5/prompt-compressed.md
+   35.7%   14,968 / 41,871   filters/solutions/v6/prompt-compressed.md
+   95.8%   40,626 / 42,411   filters/human_thriving/v8/prompt-candidate-tail.md
+   96.0%   42,506 / 44,291   filters/human_thriving/v8/prompt-compressed.md
+   96.0%   42,506 / 44,291   filters/human_thriving/v8/prompt-v8-4.md
+   96.0%   43,053 / 44,838   filters/human_thriving/v8/prompt-v8-1.md
+   96.0%   43,197 / 44,982   filters/human_thriving/v8/prompt-v8-2.md
+   96.0%   43,350 / 45,135   filters/human_thriving/v8/prompt-v8-1b.md
+  char share is a PROXY for the billed token share — an order-of-magnitude bound.
+  Moving the placeholder to the END of a template lifts the ceiling toward ~97%,
+  which crosses the unconditional flip point. That is a DIFFERENT PROMPT and needs
+  a label-parity run before any retrain uses it (ADR-010). Untested.

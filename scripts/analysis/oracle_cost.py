@@ -11,8 +11,12 @@ depending on either anchor.
 Rates read first-hand from the vendor pages on 2026-08-24:
   https://api-docs.deepseek.com/quick_start/pricing/
   https://ai.google.dev/gemini-api/docs/pricing
-Re-read them before trusting the output — DeepSeek raised prices on 2026-08-16
-and this file has no way to know it happened again.
+Re-read them before trusting the output — DeepSeek moved prices on 2026-08-16 and
+again on 2026-09-10, and this file has no way to know it happened a third time.
+
+⛔ The V4.1 card below came from the ANNOUNCEMENT EMAIL (2026-09-09), not from the
+pricing page: the page still showed the V4 card when this was written, because the
+cut had not taken effect yet. Confirm it against the page before quoting.
 
 Usage:  PYTHONPATH=. python3 scripts/analysis/oracle_cost.py
 """
@@ -24,11 +28,18 @@ from pathlib import Path
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
-# $ per 1M tokens.
-DS = {"hit": 0.007, "miss": 0.22, "out": 0.66}      # deepseek-v4-flash, OFF-PEAK
+# $ per 1M tokens. Every DeepSeek card here is OFF-PEAK; peak is exactly 2x.
+# Three cards, because two of them are still needed: DS_V3 reconciles the 2026-07-07
+# batch log, DS_V4 is what the invoices between 08-16 and 09-10 were billed at.
+DS_V41 = {"hit": 0.003, "miss": 0.15, "out": 0.6}    # V4.1 Flash, from 2026-09-10 04:00Z
+DS_V4 = {"hit": 0.007, "miss": 0.22, "out": 0.66}    # deepseek-v4-flash, 08-16 to 09-10
 DS_OLD = {"hit": 0.0028, "miss": 0.14, "out": 0.28}  # pre-2026-08-16, for the log check
+DS = DS_V41                                          # the card this script reports at
 GEM_BATCH = {"in": 0.15, "out": 1.25}                # gemini-2.5-flash Batch API
 GEM_STD = {"in": 0.30, "out": 2.50}                  # gemini-2.5-flash realtime
+
+# The instant the DS_V41 card replaces DS_V4, from the announcement email.
+DS_V41_EFFECTIVE = "2026-09-10 04:00 UTC"
 
 PLACEHOLDER = "[Paste the summary of the article here]"
 
@@ -66,8 +77,10 @@ def gemini_cost(inp: float, out: float, rates: dict = GEM_BATCH) -> float:
 def crossover_ratio(cache: float) -> float | None:
     """input/output below which DeepSeek off-peak is cheaper than Gemini Batch.
 
-    None means DeepSeek's blended input rate is already under Gemini's, so it wins
-    at every shape and there is no crossover.
+    None means DeepSeek's blended input rate is already at or under Gemini's, so it
+    wins at every shape and there is no crossover. Under the V4.1 card that is true
+    at EVERY cache rate: cache-miss input is $0.15/M on both sides, so DeepSeek can
+    only win or tie on input and wins outright on output ($0.60 vs $1.25).
     """
     blended_in = cache * DS["hit"] + (1.0 - cache) * DS["miss"]
     denom = blended_in - GEM_BATCH["in"]
@@ -139,6 +152,17 @@ def main() -> int:
     cache = batch["cached"] / batch["in"]
 
     print("=" * 78)
+    print(f"RATE CARD IN FORCE — DeepSeek V4.1 Flash, from {DS_V41_EFFECTIVE}")
+    print("=" * 78)
+    print(f"  off-peak  hit ${DS['hit']}/M   miss ${DS['miss']}/M   out ${DS['out']}/M"
+          f"   (peak = 2x)")
+    print(f"  superseded V4 card, 2026-08-16 to 2026-09-10:"
+          f"  {DS_V4['hit']} / {DS_V4['miss']} / {DS_V4['out']}")
+    print("  peak windows UNCHANGED: 01:00-04:00 and 06:00-10:00 UTC, Mon-Fri.")
+    print("  ⛔ Source is the announcement email, not the pricing page — the page still")
+    print("     carried the V4 card on 2026-09-09. Re-read it before quoting these.")
+    print()
+    print("=" * 78)
     print(f"COUNTED BASELINE — {batch['source']}, n={batch['n']:,} articles")
     print("=" * 78)
     print(f"  {per_in:,.0f} input / {per_out:.1f} output tokens per article   "
@@ -156,20 +180,29 @@ def main() -> int:
     print("=" * 78)
     print("PER-ARTICLE COST AT MEASURED SHAPES ($/article, DeepSeek OFF-PEAK)")
     print("=" * 78)
-    print(f"{'prompt':22s} {'I/O':>6s} {'DS@meas':>9s} {'GemBatch':>9s} {'GemRealtm':>9s}  "
-          f"cheapest IMPLEMENTED")
+    print(f"{'prompt':22s} {'I/O':>6s} {'DS@meas':>9s} {'DSpeak':>9s} {'GemBatch':>9s} "
+          f"{'GemRealtm':>9s}  cheapest IMPLEMENTED")
     shapes = [("nature_recovery v3", per_in, per_out,
                per_in * 1.020, per_out * 1.057)]  # gemini tokens scaled from Gate A
     shapes += [(name, di, do, gi, go) for name, (di, do, gi, go) in GATE_A.items()]
+    peak_card = {k: 2 * v for k, v in DS.items()}
+    peak_beats_rt = True
     for name, di, do, gi, go in shapes:
         d_meas = deepseek_cost(di, do, cache)
+        d_peak = deepseek_cost(di, do, cache, peak_card)
         g_batch = gemini_cost(gi, go)
         g_rt = gemini_cost(gi, go, GEM_STD)
+        peak_beats_rt &= d_peak < g_rt
         # Only DeepSeek and Gemini REALTIME have a call site in this repo.
         implemented = "DeepSeek off-peak" if d_meas < g_rt else "Gemini realtime"
-        print(f"{name:22s} {di / do:6.1f} {d_meas:9.6f} {g_batch:9.6f} {g_rt:9.6f}  {implemented}")
+        print(f"{name:22s} {di / do:6.1f} {d_meas:9.6f} {d_peak:9.6f} {g_batch:9.6f} "
+              f"{g_rt:9.6f}  {implemented}")
     print("  note: the nature_recovery Gemini columns scale DeepSeek's counts by the")
     print("        +2.0% input / +5.7% output tokenizer gap measured on Gate A. Estimated.")
+    if peak_beats_rt:
+        print("  note: DeepSeek PEAK now undercuts Gemini realtime at every shape, so peak is")
+        print("        merely 2x wasteful, no longer worse than the alternative that exists.")
+        print("        Off-peak is still free to obtain — weekends bill off-peak entirely.")
     print()
     print("  " + "!" * 72)
     print("  !! THE GemBatch COLUMN IS A PRICE WE CANNOT PAY TODAY. There is no Batch API")
@@ -189,16 +222,23 @@ def main() -> int:
             print(f"  cache {100 * c:5.1f}%  DeepSeek wins at EVERY prompt shape")
         else:
             print(f"  cache {100 * c:5.1f}%  DeepSeek off-peak wins only when I/O < {r:5.2f}")
-    print(f"  every prompt we run measures I/O = 19.9 - 43.3, so no output length reaches it")
+    if crossover_ratio(0.0) is None:
+        print("  There is NO crossover under this card at any cache rate: DeepSeek's")
+        print("  cache-miss input equals Gemini Batch's $0.15/M, so it ties at worst on")
+        print("  input and wins on output. The ratio argument that decided #103 is moot.")
+    else:
+        print("  every prompt we run measures I/O = 19.9 - 43.3, so no output length reaches it")
     print(f"  unconditional flip point (any shape): cache hit >= "
           f"{100 * unconditional_cache_point():.1f}%")
     print()
-    print("  ...but each measured shape flips EARLIER than that. Cache rate at which")
-    print("  DeepSeek off-peak overtakes Gemini Batch, per shape:")
+    print("  Cache rate at which DeepSeek off-peak overtakes Gemini Batch, per shape:")
     for name, di, do, gi, go in shapes:
         needed = (DS["miss"] - (GEM_BATCH["in"] + (GEM_BATCH["out"] - DS["out"]) * do / di)) \
             / (DS["miss"] - DS["hit"])
-        print(f"    {name:22s} I/O {di / do:5.1f}   flips at cache >= {100 * needed:5.1f}%")
+        if needed <= 0:
+            print(f"    {name:22s} I/O {di / do:5.1f}   already ahead at 0% cache")
+        else:
+            print(f"    {name:22s} I/O {di / do:5.1f}   flips at cache >= {100 * needed:5.1f}%")
 
     print()
     print("=" * 78)

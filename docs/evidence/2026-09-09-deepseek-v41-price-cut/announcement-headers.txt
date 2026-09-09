@@ -1,0 +1,12 @@
+Headers as printed from the .eml at 2026-09-09 20:03 local, before the file
+disappeared from ~/Downloads (see README).
+
+From: DeepSeek <support@sc.mail.deepseek.com>
+To: jveen1@proton.me
+Subject: Announcement on DeepSeek V4.1 Flash API Pricing
+Date: Wed, 09 Sep 2026 23:07:50 +0800
+Reply-To: DeepSeek <support@sc.mail.deepseek.com>
+Return-Path: <b7240e26-ac6e-11f1-9f2d-525400432308@sc.mail.deepseek.com>
+
+Structure: multipart/mixed > multipart/related > text/html (base64).
+The decoded text/html part is archived beside this file as announcement-body.html.
