@@ -300,6 +300,14 @@ every band is the permissive one; and `labels_v84_merged.jsonl` is **gitignored*
 | H-AP5 | the v8 label corpus contains the failure mode v9/#156 must learn | ⛔ **REFUTED for the FINAL LABELS; the ABSOLUTE form is itself REFUTED.** True and asserted: **1,253** `harm_is_subject`, max `weighted_mean_all` **2.7667**, **0** at ≥4.0, and **all 316 rows ≥4.50 are `in_scope`**. ⛔ **But "zero examples and CANNOT have any" is FALSE** — **178** rows carry ≥1 harm run-vote with a non-harm final verdict, **1** of them above the op-point (5.367), **1,079** are `scope_flipped`, **178** harm rows have split run votes. ⛔ **And the above-op population is ONE PROMPT ARM**: 316/316 come from the 456-row `prompt-v8-4.md` relabel set (69.30% above-op) while the 6,130-row `prompt-candidate-tail.md` arm has **0** — and `H-V8-30` measured that swap moving `in_scope` by **+0.1774** (p=0.0034). **Defensible claim: the corpus's final labels cannot exhibit STUDENT/oracle disagreement, because they are the oracle's output.** Two **$0** routes remain open (per-run votes; a detector on the existing 1,011/105/137 positives evaluated against EXP-031's 9/32) |
 | H-AP6 | adverse examples can be selected LEXICALLY (harm keywords over high scorers) | ⛔ **REFUTED for the THRIVING family — mechanism, not tuning.** An uplifting story about overcoming adversity necessarily names the adversity, so a harm-keyword filter preferentially surfaces recovery narratives — the lens's core competence. ⚠️ **Scope:** NexusMind-reported and **NOT adjudicated**; does **not** generalise to keyword *corpus* strategies elsewhere (violence-promotion v2, `BasePreFilter.EXCLUSION_PATTERNS` under ADR-018/019 both run and are unaffected) |
 
+<!-- verify: R=/home/jeroen/repos/veen-systems/llm-distillery; L=$R/datasets/scored/human_thriving_v8/labels_v84_merged.jsonl; if [ ! -f "$L" ]; then echo "CANNOT VERIFY: $L absent (datasets/* is gitignored)"; else python3 $R/docs/evidence/2026-09-09-adverse-pool-consult/analyze.py >/dev/null && echo "H-AP5 core holds: analyze.py asserted 0 harm rows at >=4.0 and all above-op rows in_scope" ; fi -->
+
+⛔ **H-AP5's core is a PROBE, not prose.** The annotation above runs `analyze.py`, whose six
+assertions fail the run if a harm row reaches 4.0, if an above-op row carries any verdict but
+`in_scope`, if `aggregate_used` stops being uniform, or if a row loses its design weight. It reports
+**CANNOT VERIFY** when the gitignored corpus is absent rather than certifying the claim against a
+missing file. Mutation-tested six ways on 2026-09-09: all six killed, control passes.
+
 **Method pinned for H-AP1/H-AP2, before any call** — a **four**-arm competence check (the fourth is
 the stratum control the review forced), each arm at **k=2** reading `unanimous` (never `majority`:
 `Counter.most_common` on an even-k tie returns vote order dressed as a verdict):
