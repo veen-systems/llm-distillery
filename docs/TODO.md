@@ -68,9 +68,47 @@ heterogeneous** — `runs` is a list on 6,130 rows and an int on 456, `weighted_
 absent on those 456; only `scope_verdict` is measured present on all 6,586. Condition on shape
 before reading any other key.
 
+⭐ **2026-09-09 — the training-data question is NARROWED, not settled** (`EXP-032`,
+`docs/evidence/2026-09-09-adverse-pool-consult/`, **$0**). ⛔ **A four-lens review found 5 blockers
+in my first write-up of this and every number below is the corrected form — read the evidence README's
+trap table before quoting any of it.**
+
+**What holds, asserted not printed:** `harm_is_subject` is **1,253** rows (**19.03% sample /
+20.96% design-weighted**), **max `weighted_mean_all` 2.7667**, **0** at ≥4.0, and **all 316 rows at
+or above 4.50 are `in_scope`** (**4.798% / 2.709%**). ⇒ **The corpus's FINAL LABELS cannot exhibit
+STUDENT/oracle disagreement, because they are the oracle's own output** (`H-AP5`).
+
+⛔ **What does NOT hold, and I published it:** *"zero examples and cannot have any"* and *"a
+production-scored pool is the only route."* Both false. **178** rows carry ≥1 `harm_is_subject`
+run-vote with a non-harm final verdict (**1** above the op-point at 5.367), **1,079** are
+`scope_flipped`, **178** harm rows have split run votes — and a **$0** detector arm on the existing
+1,011/105/137 positives, evaluated against EXP-031's 9/32 judge-flagged rows, was never costed.
+⛔ **Cost the two $0 routes BEFORE spending anything.**
+
+⛔ **And the above-op population is ONE PROMPT ARM, not a corpus rate:** all 316 come from the
+456-row `prompt-v8-4.md` relabel set (69.30% above-op, itself selected for being above-op earlier)
+while the 6,130-row `prompt-candidate-tail.md` arm has **0** — and `H-V8-30` measured that swap
+moving `in_scope` by **+0.1774** (p=0.0034).
+
+The selection criterion for a *pool* is still *rows the deployed student scored ≥4.5 that a judge
+calls harmful* — ⛔ **not keyword-mined** (`H-AP6`, a Dead End, ⚠️ scoped to the thriving family
+only; keyword corpus work elsewhere is unaffected).
+
+⏸️ **AWAITING OWNER: ~$3.2–3.6 of judge spend, and it is no longer the only option.** NexusMind has
+pinned a pool — 4,698 long-only rows, sha256 `eee377d8…`, manifest beside it on sadalsuud, and a
+pre-registration committed in the NexusMind repo
+(`NexusMind/docs/investigation/2026-09-09-adverse-pool-prereg.md`). Judging it is **Gemini k=1
+census (~$2.20–2.47) then DeepSeek k=3 on the ~23.4% it flags (~$1.02–1.15)**, plus **~$0.07** for
+`H-AP1`'s now-**four**-arm competence control. ⚠️ **Estimated from character counts, not counted** —
+prompt is `judge.py`'s `RUBRIC` (**1,516** chars, prefill-dominated, I/O 44–50). ⚠️ **23.4% is a
+137-row stratified panel's rate with n=9 on the DeepSeek arm** (rule-of-three 95% upper bound on the
+screen's miss rate: **33%**); the nearer anchor for a v8-shaped pool is `v8_only`'s own **27.0%**.
+⛔ **Nothing degrades while it waits** — the pool is hashed.
+
 > **Today's spend: $0.35** (`EXP-031`) — the `#155` work that followed cost **$0**, no oracle
-> calls. Everything through `b11e42f` is pushed.
-> Session record: `memory/project_session_2026_09_08_second.md` and the `/curate` entry after it.
+> calls, and so did the 2026-09-09 consult (`EXP-032`). Everything through `b11e42f` is pushed.
+> Session records: `memory/project_session_2026_09_08_second.md`,
+> `memory/project_session_2026_09_09.md`, and the `/curate` entries after them.
 
 ## 🗄️ PRIOR — the deploy that shipped a filter nothing called
 
@@ -135,6 +173,20 @@ at that some other time"*). Only `#155` inside Lane B item 1 is closed.
 in `memory/hypothesis-ledger.md` **before** the first run, the way `c54f595` did for the harm
 panel. Take the next `EXP-` id from `experiments/README.md`.
 
+⛔ **Step 0b — read `H-AP3`/`H-AP5` in the ledger first; they change the design, and Step 2 below
+is now WRONG WITHOUT THIS.** (a) The corpus's **final labels** cannot exhibit student/oracle
+disagreement — all **316** rows ≥4.50 are `in_scope`, max harm `weighted_mean_all` **2.7667**, 0 at
+≥4.0. ⛔ **But that is not "no route": 178 rows carry a harm run-vote with a non-harm final verdict
+and a $0 detector arm exists — cost both before spending.** ⚠️ The above-op population is 316/316
+from one 456-row prompt arm; the other 6,130 rows have **0**. (b) If judging is involved, the two
+families are **NESTED** on binary `harmful` (DeepSeek 9 ⊂ Gemini 32, 0 reversals, and nested within
+every stratum) so Gemini k=1 screens and ~**23.4%** need k=3 — ⚠️ **bounded, not shown**: 0 misses in
+**9**, rule-of-three upper bound **33%**. ⛔ **Never quote κ 0.375 against a binary harm decision —
+and do not reach for the binary κ either, it is 0.3749, indistinguishable.** (c) ⚠️ **The rubric's
+on-promise axis is confounded**: pooled `fits` falls −15.1/−12.3pp en→non-en, but **within stratum
+the sign REVERSES** (v8_only +12.4/+13.7). No per-language on-promise number is valid without
+`H-AP1`'s four-arm control.
+
 **Step 1 — rebuild the splits to a NEW directory.** `datasets/training/human_thriving_v8/`
 predates `#155` and carries no `oracle_meta`; do not overwrite it — it is what every v8 gate
 number is measured against.
@@ -147,8 +199,18 @@ PYTHONPATH=. python training/prepare_data.py \
 ```
 
 **Step 2 — train the binary detector** on `oracle_meta["scope_verdict"] == "harm_is_subject"`.
-Positive class **1,011 / 105 / 137** (train/val/test), 19.0% base rate — an ordinary
-classification problem, not a needle. No new oracle spend.
+Positive class **1,011 / 105 / 137** (train/val/test). No new oracle spend.
+
+⛔ **AMENDED 2026-09-09 — read Step 0b first, this step's framing was wrong twice.**
+(a) **19.0% is a SAMPLE share, not a base rate.** The corpus is a 25.1×-stratified draw; the
+design-weighted estimate is **20.96%** and production is a different number again. *"An ordinary
+classification problem, not a needle"* rested on the unweighted figure — the claim may still hold,
+but it has not been made on the right quantity. (b) ⚠️ **These positives are the harm the ORACLE
+ALREADY CATCHES** (every one scores below 2.7667; the corpus has none above 4.0). A detector trained
+only on them learns the oracle's own gate, **not the leak `#156` exists to stamp** — the leak is the
+student scoring harm content ≥4.5, which this corpus cannot contain. Train it anyway (it is free and
+it is the baseline), but ⛔ **evaluate it on EXP-031's 9/32 judge-flagged rows, not only on the test
+split**, or the number will describe agreement with the oracle rather than harm reaching readers.
 
 **Step 3 — STAMP ONLY** (ADR-022, and `#156` is explicit about it). Measure what it *would*
 block per lens, per cycle, from the shadow stamp. Then a per-lens config decision.

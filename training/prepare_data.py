@@ -78,6 +78,15 @@ def get_analysis_field_name(filter_name: str) -> str:
     return analysis_field_name(filter_name)
 
 
+# design-weights: NOT APPLICABLE -- this script publishes no population estimate. It
+# PARTITIONS rows and writes them through; the only percentages it prints are the
+# stratum composition OF THE FILES IT IS WRITING, used to confirm the split balanced,
+# which is a property of those files rather than an estimate of anything. Registered
+# as a site 2026-09-09 when `labels_v84_merged.jsonl` was added to DESIGN_WEIGHTED --
+# a sixth alias for the same 25.1x draw. ⛔ The rows it emits ARE design-weighted
+# (`inclusion_probability` lives in datasets/scored/human_thriving_v8/corpus.jsonl, not
+# in the split), and train/val/test.jsonl are themselves registered sites: anything
+# that turns a split into a RATE must perform the join there.
 def load_labels(input_path: Path) -> List[Dict[str, Any]]:
     """
     Load oracle-labeled articles from JSONL file(s).

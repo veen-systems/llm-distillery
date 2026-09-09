@@ -278,6 +278,58 @@ not inside the analysis field. Read the writer before joining outputs from the t
 | **H-V8-38** | training a scope-gate classifier requires re-labelling the corpus | ⛔ **REFUTED 2026-09-08 — the labels already exist and the cost is $0.** `scope_verdict` is a five-way scope decision present on **all 6,586 rows** of `datasets/scored/human_thriving_v8/labels_v84_merged.jsonl`: `out_of_scope` 3,543 (53.8%), `in_scope` 1,572 (23.9%), `harm_is_subject` 1,253 (19.0%), `response_to_harm` 188 (2.9%), `no_person_benefits` 30 (0.5%). An ordinary binary balance, not a needle. ⛔ **`training/prepare_data.py` DROPPED it at split time** (zero references; `:415` kept only `{id,title,content,url,labels,dimension_names}`) — it was **the one blocking prerequisite** for both #150 and #156. ✅ **RESOLVED 2026-09-08**: the converter now carries every source field through plus the analysis block whole under `oracle_meta`; regenerating v8 yields `scope_verdict` on **6,586/6,586** split rows (`harm_is_subject` **1,011 / 105 / 137** across train/val/test). ⭐ **The re-draw caution is RETIRED for this input, and only for it**: re-running at seed 42 on `labels_v84_merged.jsonl` reproduces 5,268/658/660 with **identical id ORDER and labels, 0 rows moved** (measured). ⚠️ **That zero carries its POSITIVE CONTROL** (2026-09-09): the same comparison reports **1,044/584/599** moved at seed 43 and **1,041/593/580** with tier thresholds shifted +0.5 (sizes also drift, 660→661) — the instrument can say "moved", so the zero is a real absence. Seed 43 replaces **599 of 660** test rows, which sizes what a redraw would cost. The redraw risk belongs to a changed seed, changed `config.yaml` tiers or a changed input file — not to re-running. ⚠️ The bytes still change (`test.jsonl` `e361b517…` → `e524c632…`) and that hash is pinned in `docs/evidence/2026-09-06-v8-deploy-gate/DUMP_MANIFEST.md` — annotated there. ⚠️ **Splits on disk still predate the fix**; `training/validate_training_data.py` now warns on zero or PARTIAL `oracle_meta` coverage. #155 |
 | **H-V8-39** | this project has met this bimodality before, so a documented fix exists to reuse | ⚠️ **HALF-CONFIRMED 2026-09-08, and the half that fails is the load-bearing one.** The DIAGNOSIS is recorded three times: **ADR-015 on `thriving v1` — the SAME lens** (*"bimodal oracle score distribution with a sparse 2-5 dead zone the student model couldn't learn"*, MAE 0.94 vs v7's 0.67), `solutions` v4→v6 (bimodal → continuous), and **ADR-003's needle-in-haystack** (94% low-tier ⇒ the model learns "predict 2.0"; `evidence_quality` MAE 4.12 on the 8–10 range). ⛔ **But every prior fix changed the TARGET so the student could learn it, and NONE transfers**: `thriving v1`'s cliff was an *accidental* orthogonality clause ADR-015 simply deleted, whereas **v8's cliff IS the harm gate #91 requires**. ⚠️ Bimodality alone is not fatal — `uplifting v7` is itself bimodal (30–43% zeros/dimension) and shipped at MAE 0.67. Open: does a two-head split actually score better? **Nothing has been trained.** `docs/decisions/2026-09-08-scope-gate-two-head.md` |
 
+### Adverse-pool consult / judge instrument — `H-AP` (2026-09-09, `docs/evidence/2026-09-09-adverse-pool-consult/`)
+
+Opened while answering the NexusMind session's v9 adverse-example proposal. **$0, no oracle calls** —
+re-analysis of EXP-031's committed panel plus the v8 label corpus. ⛔ **A four-lens review found 5
+blockers and 8 warnings in the first draft of this section; every row below is the corrected form.**
+
+⛔ **Before quoting any figure here:** the corpus score is `weighted_mean_all` (the producer's own
+`aggregate_used`, `"all"` on 6,586/6,586 — an earlier `weighted_mean_major` fallback published
+351/5.3% for the correct 316/4.798%); shares are **sample** shares unless marked design-weighted
+(the draw spans 25.132×); the 4.50 op-point is **calibrated** while these labels are **raw**, so
+every band is the permissive one; and `labels_v84_merged.jsonl` is **gitignored** (sha256
+`b085b01b07d8…`).
+
+| id | claim | verdict |
+|---|---|---|
+| H-AP1 | the harm rubric's `fits` clause (*"if you cannot name who is better off… it is not `fits`"*) leaks **judge fluency**, so on-promise rates are not comparable across language | ⏳ **OPEN, and WEAKER than first written.** Pooled `fits` falls **−15.1pp** (DeepSeek) / **−12.3pp** (Gemini) en→non-en. ⛔ **Within stratum the sign REVERSES under both judges** — v7_only −7.1/−2.4, both **−40.5/−39.3**, v8_only **+12.4/+13.7** — and the panel is stratified with English share varying by stratum (45.0 / 70.0 / 62.2%). **The pooled effect is substantially COMPOSITION**; *"both families, same direction"* does not survive the design variable. Method must stratify |
+| H-AP2 | `harmful` is language-flat, so harm-rate work is unaffected by H-AP1 | ⏳ **OPEN, weakly supported.** DeepSeek 7.7%→5.1% (**6 vs 3 rows** — establishes very little), Gemini 24.4%→22.0% (19 vs 13). **Do not upgrade on this n** |
+| H-AP3 | κ 0.375 makes single-judge screening unusable | **REFUTED — but NOT by the κ argument.** ⛔ **The binary-`harmful` κ is 0.3749, indistinguishable from the 4-class 0.3753** — "that's the 4-class figure" implies the binary is better and it is not. The screen rests **entirely on NESTING**: DeepSeek 9 ⊂ Gemini 32, **0** reversals, and it nests **within every stratum** (2⊂14, 3⊂8, 4⊂10). ⚠️ **P=7.83e-07 tests INDEPENDENCE between two judges reading the same articles — guaranteed false, so it shows correlation, not screen safety.** ⚠️ Safety is **0 misses in 9**; rule-of-three 95% upper bound on the miss rate **33%**. "Recall-safe" is **bounded, not shown** |
+| H-AP4 | the Gemini-only harm rows are boundary flutter | **REFUTED** — DeepSeek cast ≥1 harmful vote on only **3 of 23** (asserted in `analyze.py`) |
+| H-AP5 | the v8 label corpus contains the failure mode v9/#156 must learn | ⛔ **REFUTED for the FINAL LABELS; the ABSOLUTE form is itself REFUTED.** True and asserted: **1,253** `harm_is_subject`, max `weighted_mean_all` **2.7667**, **0** at ≥4.0, and **all 316 rows ≥4.50 are `in_scope`**. ⛔ **But "zero examples and CANNOT have any" is FALSE** — **178** rows carry ≥1 harm run-vote with a non-harm final verdict, **1** of them above the op-point (5.367), **1,079** are `scope_flipped`, **178** harm rows have split run votes. ⛔ **And the above-op population is ONE PROMPT ARM**: 316/316 come from the 456-row `prompt-v8-4.md` relabel set (69.30% above-op) while the 6,130-row `prompt-candidate-tail.md` arm has **0** — and `H-V8-30` measured that swap moving `in_scope` by **+0.1774** (p=0.0034). **Defensible claim: the corpus's final labels cannot exhibit STUDENT/oracle disagreement, because they are the oracle's output.** Two **$0** routes remain open (per-run votes; a detector on the existing 1,011/105/137 positives evaluated against EXP-031's 9/32) |
+| H-AP6 | adverse examples can be selected LEXICALLY (harm keywords over high scorers) | ⛔ **REFUTED for the THRIVING family — mechanism, not tuning.** An uplifting story about overcoming adversity necessarily names the adversity, so a harm-keyword filter preferentially surfaces recovery narratives — the lens's core competence. ⚠️ **Scope:** NexusMind-reported and **NOT adjudicated**; does **not** generalise to keyword *corpus* strategies elsewhere (violence-promotion v2, `BasePreFilter.EXCLUSION_PATTERNS` under ADR-018/019 both run and are unaffected) |
+
+**Method pinned for H-AP1/H-AP2, before any call** — a **four**-arm competence check (the fourth is
+the stratum control the review forced), each arm at **k=2** reading `unanimous` (never `majority`:
+`Counter.most_common` on an even-k tie returns vote order dressed as a verdict):
+
+1. ~50 **unchanged English** rows → the instrument's own reproducibility floor.
+2. ~50 **unchanged non-English** rows → reproducibility on the population of interest.
+3. ~50 **translated non-English** rows → the treatment.
+4. ⛔ **All three arms drawn WITHIN a single stratum, or stratum-balanced and reported per stratum.**
+   Pooling is what produced the sign reversal above.
+
+**Directional prediction:** fluency predicts translation moves the flip rate **DOWN toward the
+English floor**. A *reduction* is the positive signal. If arm 2 already flips above arm 1, that is
+the signal on its own and arm 3 is confirmatory — arm 3 alone cannot separate fluency from
+translationese.
+
+⛔ **A positive control on the control is REQUIRED, and the FILE-TOTAL form is not enough.**
+`judge.py`'s resume cache keys on `(id, pass)` in `<out.json>.partial.jsonl` (`judge.py:60-71`,
+`:76-78`), so an arm reusing the main run's output path returns cached verdicts with **no API call**
+and flips at **exactly 0%** — which the verdict rule would read as *"the contrast is sound and
+earned."* **The reassuring answer is the one the bug produces.** Requirements:
+- a distinct `<out.json>` per arm, and per-arm id suffixes so a merge cannot collide them;
+- ⛔ **count lines APPENDED BY THIS PROCESS, or assert a non-zero call/spend counter — not the
+  file's total.** An interrupted-then-rerun arm at its own path has exactly `n × k` lines with zero
+  API calls and reproduces the same reassuring 0%. **A zero has to be earned, not inherited.**
+
+⛔ **Do not borrow a floor across arms.** 45.8% is the **non-English** split-vote rate; DeepSeek's
+own k=3 rate is **43.1%** (59/137) and Gemini at k=1 has no such quantity at all. Measure the floor
+inside the arm on the same instrument. See `feedback-noise-floor-per-population` in the assistant
+auto-memory.
+
 ### `solutions-v6-dimension-hypotheses.md` — `community_practice_strength` and re-weighting
 
 | id | claim | verdict |

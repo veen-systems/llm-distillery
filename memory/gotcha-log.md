@@ -6694,3 +6694,116 @@ ordering that surprised phase 8`, which contains the `##` form as a substring.
 trailing newline pins the end of the line. Cheap, and the assertion caught it, which is the system
 working; noted because the shape recurs wherever a doc keeps a current and an archived block under
 the same title.
+
+## Persisted the outputs and a frame, not the model INPUT — the panel cannot be replayed (2026-09-09)
+**Problem**: `docs/evidence/2026-09-08-thriving-harm-panel/` commits `panel_frame.jsonl`,
+`judge.py`, both judges' per-row verdicts, `analyze.py` and its output — and the panel still cannot
+be re-run. `judge.py` reads `id` / `title` / `content`, and the frame carries **no `content` field
+on any of its 137 rows**. The real judge input was assembled at runtime and never written down.
+**Root cause**: the frame was built for `analyze.py`'s joins (stratum, both lenses' scores, source,
+language, url), so it *looks* like the population and is complete for the analysis it was written
+for. Two artefacts were needed and one file appeared to be both. The directory's own file list
+describes it as "137 rows, both lenses' scores, stratum" — accurate, and nobody asked what the model
+had actually been shown.
+**Fix**: documented in that README and in `docs/evidence/2026-09-09-adverse-pool-consult/README.md`.
+The panel is **auditable as reported and not reproducible from source**, so EXP-031's figures stay
+usable as an anchor while *"the anchor was wrong"* stops being a testable hypothesis downstream — a
+materially different reading of a failed prediction, and it is now written into the NexusMind
+pre-registration that depends on it. ⭐ **The rule: persist the exact model input, not the outputs
+plus a frame you believe reconstructs it.** A frame sufficient for the analysis is not evidence of
+what the instrument was shown. **Caught by a peer session about to model a new judge-input schema on
+that frame** — which would have shipped a content-free file that fails on row 1.
+
+## A control whose failure mode is silence, and whose silence reads as a pass (2026-09-09)
+**Problem**: proposed a re-judge control to a peer — feed rows back through `judge.py` and read the
+flip rate — with the verdict rule *"flips below the floor ⇒ the contrast is sound and earned."*
+`judge.py`'s resume cache keys on `(id, pass)` and is loaded from `<out.json>.partial.jsonl`
+(`judge.py:60-71`, `:76-78`), so an arm reusing the main run's output path returns **every cached
+verdict with no API call**. The flip rate would have been **exactly 0%**, and 0% is below any floor.
+**Root cause**: the control's failure mode was *silence*, and the rule read silence as success. ⭐
+**The reassuring answer is the one the bug produces** — which is worse than having no control,
+because it converts an unchecked assumption into a documented one.
+**Fix**: three requirements, all before the run — a distinct `<out.json>` per arm, per-arm id
+suffixes so a later merge cannot collide them, and **a positive control on the control**: assert
+`n × k` FRESH lines in the arm's `.partial.jsonl` before reading any flip rate. If the arm cost
+$0.00 it measured nothing. **A zero has to be earned, not inherited.** Pinned as the Method under
+`H-AP1` in `memory/hypothesis-ledger.md`.
+
+## Borrowed a noise floor across the JUDGE and its SAMPLING STRUCTURE (2026-09-09)
+**Problem**: set a verify-arm threshold of *"flips above ~46%"* for an arm that was to run on
+**Gemini at k=1**. ⛔ **And 45.8% was not even the rate I named it as**: it is the **NON-ENGLISH**
+split-vote rate; DeepSeek's own k=3 rate is **43.1%** (59/137), stated in the sibling evidence
+README the same commit edited. So the borrowed floor was a *stratum's* rate relabelled as an
+instrument's — inside the very entry about borrowing a floor across populations. Caught by review.
+**Root cause**: two transfers inside one number — a different judge, and a different sampling
+structure. ⛔ **And the sharper half: at k=1 there is no split-vote rate at all**, because one vote
+has nothing to disagree with. The floor was not merely moved somewhere it fitted badly; it was moved
+somewhere the quantity **does not exist**, and the comparison would have returned a number anyway.
+**Fix**: measure the floor **inside the arm** — k=2, read `unanimous`, never `majority` (at even k
+`Counter.most_common(1)` resolves a tie to the first-encountered vote: vote order dressed as a
+verdict). Caught by the peer session. Standing form: **a floor belongs to an instrument and a
+population jointly, neither transfers alone, and check the quantity is even DEFINED on the target.**
+Recorded in the assistant auto-memory as `feedback-noise-floor-per-population`; the project-side
+list of measured floors is `memory/score-batch-shape-noise.md`.
+
+## A count of matching rows is not coverage of a failure mode (2026-09-09)
+**Problem**: asked what v9's training data lacks. `human_thriving v8`'s corpus holds **1,253
+`harm_is_subject` rows (19.0% of 6,586)**, and the obvious read — a peer's first read, and nearly
+mine — is *"not short of harm data."* It is backwards. **Not one reaches `weighted_mean_all` 4.0**
+(max **2.7667**), and **all 316 rows at or above the 4.50 op-point are `in_scope`**.
+**Root cause**: the labelling process cannot emit the row that matters. The failure mode is harm
+content the STUDENT scores ≥4.5 (#150: oracle gates at 0.80–0.90, student returns 4.66–4.85) — i.e.
+student/oracle *disagreement* — and the label comes from the instrument that got those rows right.
+**Fix**: cross-tabulate the verdict against the **score band** rather than counting the verdict, and
+before concluding a corpus covers a failure, name the process that assigned the labels and ask what
+it **cannot** emit. ⭐ **The mirror of *prove the instrument could have said yes*: a positive count
+of 1,253 carried as little information as a zero, and a big reassuring number is the harder half
+because nobody interrogates it.** `H-AP5`; `feedback-count-is-not-coverage` in the auto-memory.
+⛔ **AND THE FIX OVERSHOT — review refuted my own absolute.** I wrote *"zero examples and CANNOT
+have any"* and *"a production-scored population is the only route."* Both are false: the corpus's
+**per-run** votes carry the shape (**178** rows with ≥1 harm run-vote and a non-harm final verdict,
+**1** above the op-point at 5.367, **1,079** `scope_flipped`, **178** harm rows with split run
+votes), and a $0 detector arm on the existing 1,011/105/137 positives was never costed before the
+pool was called "the only" route. **`analyze.py` never read `scope_verdicts_per_run` or
+`scope_flipped` — fields sitting in the same JSON object.** The defensible claim is narrow: the
+corpus's FINAL LABELS cannot exhibit student/oracle disagreement. ⭐ **An absolute is a measurement,
+and mine went further than the thing I had measured — in the same paragraph that named the rule.**
+
+## The convenience fallback that unioned two labelling generations (2026-09-09)
+**Problem**: `analyze.py`'s score helper read `weighted_mean_major` and fell back to
+`weighted_mean_all`. Published **351 rows above the op-point = 5.3% of the corpus**, quoted onward
+into six surfaces including the auto-loaded memory index.
+**Root cause**: the corpus declares its own aggregate. Every row carries
+`aggregate_used == "all"` — **6,586/6,586** — written by `scripts/oracle/aggregate_k_runs.py` and
+asserted in its unit test. The fallback therefore read the **non-declared** field on the 6,130 rows
+that have it. ⛔ **And the 456 rows lacking `weighted_mean_major` are not a shape quirk — they are a
+different labelling generation**: `prompt-v8-4.md` (hash `c4705408c477`, k=6) against
+`prompt-candidate-tail.md` (`003cd35a5122`, k=3), and they were *selected* for being above-op under
+an earlier pass. So `351 = 35 + 316` glued a rate on one population to a census of another under one
+variable name. Correct figure: **316 = 4.798%** unweighted, **2.709%** design-weighted.
+**Fix**: read the declared aggregate and `assert` it uniform at load; report design-weighted beside
+unweighted; print the per-prompt-arm above-op rate, which shows the majority arm has **0** and the
+minority arm **69.30%**. ⭐ **The repo's shape rule passed and its semantics rule failed** — the
+`isinstance` guard that CLAUDE.md asks for was present and correct, and a field being *present* said
+nothing about it being the one the producer used. **`aggregate_used` appeared in no document in the
+repo.** ⚠️ Note the conclusion survived: 0 harm rows at ≥4.0 and all-`in_scope` above-op hold under
+every aggregate definition. **The published quantity was wrong while the finding was right**, which
+is exactly why the quantity gets its own check.
+
+## My headline conclusion was a hardcoded print, and a data mutation proved it (2026-09-09)
+**Problem**: `analyze.py`'s Part B ended in four `print()` calls stating *"ALL 351 rows at or above
+the op-point are in_scope … has ZERO training examples and cannot have any."* The number was typed
+in and the sentence was unconditional.
+**Root cause**: Part A gated its conclusion (`if only_d == 0:`); Part B — the load-bearing half —
+gated nothing. Two review lenses independently mutated the DATA (flipping rows to
+`harm_is_subject`, pushing one above the op-point) and the script **printed the claim verbatim, exit
+0**, while the computed line two lines above it disagreed.
+**Fix**: `assert set(av) == {"in_scope"}` and `assert n40 == 0`, with the sentence interpolating
+`len(above)`. Then mutation-tested six ways — harm row to 9.0, harm row to 4.1, an above-op row
+relabelled harm, an above-op row relabelled `out_of_scope`, a mixed `aggregate_used`, a missing
+design weight — **all six killed, control passes**, and the `in_scope` assert proven to fire
+independently of the ≥4.0 one.
+⭐ **This is the fifth mutation rung again — the lens mutated the DATA, not the code — and it landed
+on the one sentence the whole directory exists to support.** The repo's own precedent was explicit
+and one directory away: EXP-030's review blocker read *"the control was a print, not an assert."*
+

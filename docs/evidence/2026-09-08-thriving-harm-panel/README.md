@@ -85,9 +85,35 @@ judges agree on the direction; neither establishes the magnitude.
   judge is still blocked (`openai_api_key` → HTTP 401).
 - Four cycles in an 11h38m window; c1 is the backlog cycle.
 
+## ⚠️ This panel cannot be replayed FROM THIS DIRECTORY (found 2026-09-09)
+
+`panel_frame.jsonl` carries **no `content` field — 0 of 137 rows**, and `judge.py` reads
+`id` / `title` / `content`. The real judge input was assembled at runtime and never
+committed, so **nothing in this directory can re-run the judges against the same text.**
+
+Consequences, and they are not cosmetic:
+
+- Every figure here is **auditable as reported** (the per-row verdicts are committed and
+  `analyze.py` recomputes every rate from them) and **not reproducible from source**.
+- Any downstream work anchored to these numbers cannot test *"the anchor was wrong"* **from
+  this repo**. A missed prediction attributes to the new population, not to this panel. The
+  2026-09-09 NexusMind pre-registration says so explicitly for that reason.
+- ⚠️ **NOT "unrecoverable" — the archive was never checked.** `NexusMind/config/app.yaml` sets
+  `archive_before_cleanup: true` / `archive_retention_days: 730`, and EXP-030's registry entry
+  names the four source `filtered_*.jsonl` files exactly. Recovering the bodies from sadalsuud
+  is untried, not impossible. Scope the claim to this directory until someone looks.
+- ⛔ **Do not model a new judge-input schema on `panel_frame.jsonl`** — it would ship a
+  content-free file that `judge.py` fails on at the first row.
+
+The general lesson is in `memory/gotcha-log.md`: **persist the exact model input, not the
+outputs plus a frame you believe reconstructs it.** The frame here was built for
+`analyze.py`'s joins, which is why it looks complete and is not.
+
 ## Files
 
 `PREREGISTRATION.md` · `panel_frame.jsonl` (137 rows, both lenses' scores, stratum) ·
 `judge.py` · `judge_deepseek_k3.json` · `judge_gemini_k1.json` · `analyze.py` / `analyze.txt` ·
 `oracle_recheck_input.jsonl` and `oracle_recheck_run{1,2,3}.jsonl` (v8's own oracle, k=3, on the
-nine articles either judge called harmful).
+nine articles **both** judges called harmful — ⚠️ corrected 2026-09-09: DeepSeek's 9 harmful rows
+are a strict SUBSET of Gemini's 32, so the intersection is 9 and the *union* is 32; "either" named
+the wrong set. See `H-AP3`).

@@ -309,6 +309,16 @@ DESIGN_WEIGHTED = {
         "field": "inclusion_probability", "manifest": _HT_MANIFEST},
     "datasets/training/human_thriving_v8/train.jsonl": {
         "field": "inclusion_probability", "manifest": _HT_MANIFEST},
+    # ⛔ A SIXTH NAME FOR THE SAME SAMPLE, and it was invisible for the same reason
+    # the splits were (2026-09-09 review). `labels_v84_merged.jsonl` is a 6,586-row
+    # subset of the 6,590-row draw — verified `labels ⊆ corpus`, every row carrying a
+    # weight — and EXP-032 read it unweighted, publishing 19.0% and 4.798% where the
+    # design-weighted estimates are 20.96% and 2.709%. The check PASSED because this
+    # path was not a site at all. **A path alias is still the same population**, and
+    # the aliases keep arriving: add the row rather than trusting the next one to
+    # look familiar.
+    "datasets/scored/human_thriving_v8/labels_v84_merged.jsonl": {
+        "field": "inclusion_probability", "manifest": _HT_MANIFEST},
 }
 # The opt-out. ⛔ IT MUST BE A REAL COMMENT, found by `tokenize` — an unanchored
 # regex over the file text exempted a declaration sitting inside a string literal

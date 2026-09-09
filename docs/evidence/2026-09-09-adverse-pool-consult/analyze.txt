@@ -1,0 +1,134 @@
+
+==============================================================================
+A. JUDGE AGREEMENT — is kappa 0.375 the statistic that decides single-judge screening?
+==============================================================================
+  4-class Cohen kappa = 0.3753   (agree 76/137, disagree 61)
+
+  Confusion, rows = DeepSeek k=3 majority, cols = Gemini k=1:
+                   harmful  misleading        weak        fits
+  harmful                9           0           0           0
+  misleading            16          32           1           9
+  weak                   6          10           0          12
+  fits                   1           4           2          35
+
+  BINARY harmful:  DeepSeek 9   Gemini 32   overlap 9   DeepSeek-only 0
+  binary-harmful kappa = 0.3749
+  ⛔ the binary kappa is NOT better than the 4-class 0.3753 — they are
+     indistinguishable. The screen argument rests on NESTING, not on kappa.
+
+  NESTED: every DeepSeek-harmful row is also Gemini-harmful. P(by chance) = 7.83e-07
+  ⚠️  that null is INDEPENDENCE between two judges reading the same articles —
+     guaranteed false, so it establishes correlation, NOT screen safety.
+  ⚠️  screen safety is 0 misses in 9 DeepSeek positives. Rule-of-three 95%
+     upper bound on the miss rate = 33%. 'recall-safe' is bounded, not shown.
+  staged cost on THIS panel: 32/137 = 23.4% reach the k=3 arm.
+
+  Nesting per stratum (pooling could hide a reversal):
+    v7_only   n= 60  DeepSeek  2 ⊂ Gemini 14   DeepSeek-only 0   NESTED
+    both      n= 40  DeepSeek  3 ⊂ Gemini  8   DeepSeek-only 0   NESTED
+    v8_only   n= 37  DeepSeek  4 ⊂ Gemini 10   DeepSeek-only 0   NESTED
+
+  Is the gap boundary flutter?  Gemini-only-harmful rows: 23; DeepSeek cast >=1 harmful vote on 3.
+      => a definitional offset, not marginal disagreement.
+
+  Severity direction: Gemini stricter on 39, DeepSeek stricter on 22, agree on 76
+
+  Stratum contrast (the WITHDRAWN void condition's quantity):
+    DeepSeek  harmful     both   7.5% (n=40)  rest   6.2% (n=97)  ratio 1.21
+    DeepSeek  on-promise  both  62.5% (n=40)  rest  46.4% (n=97)  ratio 1.35
+    Gemini    harmful     both  20.0% (n=40)  rest  24.7% (n=97)  ratio 0.81
+    Gemini    on-promise  both  57.5% (n=40)  rest  37.1% (n=97)  ratio 1.55
+
+==============================================================================
+B. CORPUS COVERAGE — can the labelled corpus hold the failure mode v9/#156 needs?
+==============================================================================
+  corpus: 6586 rows  (datasets/scored/human_thriving_v8/labels_v84_merged.jsonl)
+  sha256 b085b01b07d835eff93f3507e1dad940de594c4e7edcf14fcd2dda8a990d614c  ⛔ GITIGNORED — not in a clean clone
+  aggregate_used = 'all' on 6586/6586 rows, so the score is weighted_mean_all
+  op-point 4.5 read by EXECUTING filters/human_thriving/v8/base_scorer.py
+  ⚠️  that op-point is on the CALIBRATED scale (2026-09-05-v8-op-point.md);
+     weighted_mean_all is an UNCALIBRATED oracle mean, so this band is the
+     more permissive of the two. Every count below is a raw-scale count.
+  design weights: inclusion_probability from corpus.jsonl, span 25.132x
+
+  scope_verdict: {'out_of_scope': 3543, 'in_scope': 1572, 'harm_is_subject': 1253, 'response_to_harm': 188, 'no_person_benefits': 30}
+  harm_is_subject: 1253 rows   unweighted 19.0252%   design-weighted 20.9607%
+    ⛔ 19.0% is the SAMPLE share. The production estimate is ~21.0%.
+
+  max weighted_mean_all among harm_is_subject rows: 2.7667
+  harm_is_subject rows with weighted_mean_all >= 4.0: 0
+
+  rows at or above 4.5: 316   unweighted 4.7981%   design-weighted 2.7093%
+  their scope_verdict: {'in_scope': 316}
+  => COMPUTED: all 316 rows at or above 4.5 are in_scope, and no
+     harm_is_subject row reaches 4.0. Both asserted, not printed.
+
+  ⛔ WHICH PROMPT PRODUCED THEM — the above-op population is NOT the corpus:
+    003cd35a5122  prompt-candidate-tail.md     n= 6130  above-op    0 =   0.00%
+    c4705408c477  prompt-v8-4.md               n=  456  above-op  316 =  69.30%
+  => 316 of 316 above-op rows (100.0%) come from the
+     MINORITY prompt arm, which was itself selected for being above-op under an
+     earlier pass. The MAJORITY arm (6130 rows) has 0.
+  ⚠️  H-V8-30 measured that this exact prompt swap moves in_scope by +0.1774
+     (McNemar p=0.0034), i.e. it moves the variable being cross-tabulated.
+
+  ⛔ WHAT THE LABELS DO CONTAIN — per-run scope disagreement (a $0 route):
+    scope_flipped True: 1079
+    >=1 harm run-vote with a NON-harm final verdict: 178
+    of those, at or above 4.5: 1
+      5.367  final=in_scope  votes=['in_scope', 'in_scope', 'in_scope', 'in_scope', 'harm_is_subject', 'in_scope']
+    harm_is_subject rows whose own run votes SPLIT: 178
+  ⇒ SO THE ABSOLUTE 'CANNOT HAVE ANY' IS FALSE. 1 row(s) carry a harm
+    run-vote and a non-harm final verdict above the op-point. What IS true is
+    narrower: the corpus's FINAL LABELS cannot exhibit student/oracle
+    disagreement, because they are the oracle's own output.
+
+  content length  corpus min 300 median 2332   harm median 2594
+  ⚠️  min 300 is an EXCLUSION: the #93 labelling-time floor in
+     ground_truth.batch_scorer.make_oracle_prefilter. Sub-300-char rows are
+     absent by construction, not by measurement.
+  english share   corpus unweighted 52.4749%  design-weighted 51.5600%
+                  harm_is_subject unweighted 39.7446%
+  NOTE: that harm-stratum English share is the SUPPLY of harm content per
+        language in a labelled corpus. It is not an error-rate signal and is
+        not a prior about where the student fails.
+
+==============================================================================
+C. JUDGE COMPETENCE ACROSS LANGUAGE — does the rubric's `fits` clause leak fluency?
+==============================================================================
+  Mechanism under test, quoted from judge.py RUBRIC:
+    "If you cannot name who is better off and how, it is not `fits`."
+
+  panel: english 78 = 56.9%, non-english 59
+  DeepSeek k=3  en      n= 78  harmful=  7.7% ( 6)  misleading= 37.2% (29)  weak= 17.9% (14)  fits= 37.2% (29)
+  DeepSeek k=3  non-en  n= 59  harmful=  5.1% ( 3)  misleading= 49.2% (29)  weak= 23.7% (14)  fits= 22.0% (13)
+  Gemini k=1    en      n= 78  harmful= 24.4% (19)  misleading= 26.9% (21)  weak=  2.6% ( 2)  fits= 46.2% (36)
+  Gemini k=1    non-en  n= 59  harmful= 22.0% (13)  misleading= 42.4% (25)  weak=  1.7% ( 1)  fits= 33.9% (20)
+
+  POOLED: `fits` falls and `misleading` absorbs it, in both families:
+      DeepSeek  fits        en 37.2% -> non-en 22.0%   delta -15.1pp
+      DeepSeek  misleading  en 37.2% -> non-en 49.2%   delta +12.0pp
+      DeepSeek  harmful     en  7.7% (6) -> non-en  5.1% (3)   FLAT ⚠️ 6 vs 3 rows
+      Gemini    fits        en 46.2% -> non-en 33.9%   delta -12.3pp
+      Gemini    misleading  en 26.9% -> non-en 42.4%   delta +15.4pp
+      Gemini    harmful     en 24.4% (19) -> non-en 22.0% (13)   FLAT ⚠️ 19 vs 13 rows
+
+  ⛔ WITHIN STRATUM — the panel is stratified and English share varies with it:
+    v7_only   n= 60  english 45.0%   DS fits delta   -7.1pp   GM fits delta   -2.4pp
+    both      n= 40  english 70.0%   DS fits delta  -40.5pp   GM fits delta  -39.3pp
+    v8_only   n= 37  english 62.2%   DS fits delta  +12.4pp   GM fits delta  +13.7pp
+  ⇒ THE SIGN REVERSES in v8_only under BOTH judges, and `both` is far larger
+    than pooled. The pooled -15.1/-12.3pp is SUBSTANTIALLY COMPOSITION.
+    'Both families, same direction' does NOT survive the panel's own design
+    variable. No stratum control was pre-registered; H-AP1 stays OPEN and its
+    method must stratify.
+
+  Not raw confusion — DeepSeek k=3 split-vote rate by language:
+      en      32/78 = 41.0%
+      non-en  27/59 = 45.8%
+      ALL     59/137 = 43.1%  <- THIS is 'DeepSeek's k=3 split-vote rate'
+      ⛔ 45.8% is the NON-ENGLISH rate, not DeepSeek's rate. Do not cite it as one.
+
+==============================================================================
+DONE — Part A/C inputs are committed; Part B's is gitignored and sha256-pinned.
+==============================================================================
