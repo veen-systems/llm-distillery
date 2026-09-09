@@ -34,9 +34,11 @@ Owner on `#154`, 2026-09-08: *"don't know"* — it is parked, not pending.
    ⭐ **The split-redraw caution is retired for this input**: seed 42 on
    `labels_v84_merged.jsonl` reproduces 5,268/658/660 with identical id order, identical
    labels, 0 rows moved — regeneration does **not** touch the test set the gate numbers use.
-   ⚠️ It is a **changed input file or changed `config.yaml` tiers** that redraws, not the
-   re-run. ⚠️ The splits on disk still predate the fix and nothing regenerates them
-   automatically — #156's classifier must rebuild, never read what is there now.
+   ⚠️ **The zero carries its positive control** (2026-09-09): the same comparison reports
+   **1,044/584/599** moved at seed 43 and **1,041/593/580** with tier thresholds +0.5, so it
+   can say "moved". Seed 43 replaces **599 of 660** test rows — that is what a redraw costs.
+   ⚠️ The splits on disk still predate the fix and nothing regenerates them automatically —
+   #156's classifier must rebuild to a NEW directory, never read what is there now.
 2. **The prompt spec is already written**: the three owed gaps — commencement, the money-worded
    announcement rule, and dropped clause D (`#143`, `#153`). Production rediscovered all three
    independently (`EXP-029`, 12 flips, p=0.0034).
@@ -123,7 +125,49 @@ Written up: `docs/RUNBOOK.md` § *4b*, `memory/gotcha-log.md`, and **#152** (mak
 guard — ⚠️ note the open design question there: enabling happens in a NexusMind PR, so a guard in
 this repo's deploy script would not fire at the triggering moment).
 
-## ▶ NEXT SESSION STARTS HERE
+## ▶ NEXT SESSION STARTS HERE — **Lane C, `#156`. The plumbing is done; this is modelling.**
+
+⛔ **Lanes A and B stay OPEN and untouched** (owner, 2026-09-09: *"keep the lanes open, we look
+at that some other time"*). Only `#155` inside Lane B item 1 is closed.
+
+**Step 0 — pre-register before training anything.** This project's norm, and the reason
+`EXP-031`'s refutation was trustworthy: state the hypothesis, the bar and the revisit trigger
+in `memory/hypothesis-ledger.md` **before** the first run, the way `c54f595` did for the harm
+panel. Take the next `EXP-` id from `experiments/README.md`.
+
+**Step 1 — rebuild the splits to a NEW directory.** `datasets/training/human_thriving_v8/`
+predates `#155` and carries no `oracle_meta`; do not overwrite it — it is what every v8 gate
+number is measured against.
+
+```bash
+PYTHONPATH=. python training/prepare_data.py \
+    --filter filters/human_thriving/v8 \
+    --input datasets/scored/human_thriving_v8/labels_v84_merged.jsonl \
+    --output-dir datasets/training/human_thriving_v8_scoped --seed 42
+```
+
+**Step 2 — train the binary detector** on `oracle_meta["scope_verdict"] == "harm_is_subject"`.
+Positive class **1,011 / 105 / 137** (train/val/test), 19.0% base rate — an ordinary
+classification problem, not a needle. No new oracle spend.
+
+**Step 3 — STAMP ONLY** (ADR-022, and `#156` is explicit about it). Measure what it *would*
+block per lens, per cycle, from the shadow stamp. Then a per-lens config decision.
+⛔ **Never a cross-lens blocker** — "Bihar copes with floods" betrays Thriving and is arguably
+constitutive under Solutions; Recovery is *about* recovering from damage.
+
+⚠️ **Two traps, both measured 2026-09-08:**
+- **`oracle_meta` is verbatim and heterogeneous.** `runs` is a **list** on 6,130 rows and an
+  **int** on 456; `weighted_mean_major` is absent on those same 456; the six dimension values
+  are `float` on 6,130 and `{"score": float}` on 456. **`scope_verdict` is the only
+  non-dimension key present on all 6,586.** Condition on shape before reading any other key —
+  the same trap as `content_length` and `raw_weighted_average`.
+- **Judge it on SPECIFICITY, not recall** (ADR-023). A harmful article reaching a reader costs
+  a reader; a missed one costs a slot that refills. The honest target is "blocks a few
+  percent", not "solves harm".
+
+---
+
+## ▶ PRIOR NEXT-SESSION BLOCK (2026-09-07) — kept for its reasoning
 
 ⛔ **Step 1 is a MEASUREMENT, not a task: confirm the cycle actually scored v8.**
 No production cycle had run when the session ended (deploy ~09:50 CEST, next

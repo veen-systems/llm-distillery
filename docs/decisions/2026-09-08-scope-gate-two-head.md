@@ -126,9 +126,23 @@ the identical defect and no tests.
 ⭐ **The re-draw caution is RETIRED for this input — and only for it.** Re-running at seed 42 on
 `labels_v84_merged.jsonl` reproduces 5,268/658/660 with **identical id order, identical labels,
 0 rows moved** (measured 2026-09-08, all three splits). Regeneration does **not** contaminate the
-660-row test set `EXP-026`/`027`/`028` are measured against. The redraw risk is real for a
-**changed input file or changed `config.yaml` tier boundaries** — those change the strata — not
-for re-running the script.
+660-row test set `EXP-026`/`027`/`028` are measured against.
+
+⚠️ **That is a NEGATIVE, so it carries its positive control** (2026-09-09). The same comparison,
+same instrument, run against two arms that MUST differ:
+
+| arm | train moved | val moved | test moved | sizes |
+|---|---|---|---|---|
+| **seed 42** (the claim) | **0** | **0** | **0** | 5,268 / 658 / 660 |
+| seed 43 (control) | 1,044 | 584 | 599 | 5,268 / 658 / 660 |
+| tier thresholds +0.5 (control) | 1,041 | 593 | 580 | 5,267 / 658 / **661** |
+
+So the comparison **can** say "moved", and the zero is a real absence rather than a broken check.
+It also sizes what a redraw would cost: seed 43 replaces **599 of 660** test rows (91%). The
+redraw risk is therefore real and measured for a **changed seed or changed `config.yaml` tier
+boundaries** — both change the strata or the shuffle — and, by the same mechanism though not
+separately measured here, for a **changed input file**. It is not real for re-running the script
+unchanged.
 
 ⚠️ **The bytes do change**: `test.jsonl` goes `e361b517…` → `e524c632…`, and that hash is pinned
 in `docs/evidence/2026-09-06-v8-deploy-gate/DUMP_MANIFEST.md`. Annotated there, so a future

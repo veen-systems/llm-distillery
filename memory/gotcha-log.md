@@ -6636,3 +6636,61 @@ training signal. ⭐ **And searching the record for a REMEDY is not the same as 
 DIAGNOSIS**: all three prior bimodality fixes were findable, and all three were inapplicable
 (they changed the target; v8's target is the harm rule we require). **A precedent that matches the
 symptom can still be unavailable — check what made the earlier fix legal, not just that it worked.**
+
+## A test fixture is a POPULATION, and mine excluded exactly the rows at risk (2026-09-08)
+**Problem**: Fixing #155 (`prepare_data.py` dropping the oracle's non-dimensional output) I wrote
+six tests that enumerate the *input* rather than an allowlist — deliberately, so a new oracle field
+would be covered the day it appeared. The review then applied one mutation,
+`'oracle_meta': {k: v for k, v in analysis.items() if not isinstance(v, list)}`, and **all 35 tests
+passed** while the real corpus lost `scope_verdicts_per_run` on **6,586/6,586** rows and `runs` on
+6,130.
+**Root cause**: the fixture's docstring said *"shaped like `labels_v84_merged.jsonl`"* and it was
+not. It carried 12 scalar keys against the real 20 and **omitted every value that was a list or a
+dict** — so "enumerated, not allowlisted" was true of the wrong population. The real file also has
+**two** shapes (6,130 rows: float dimensions, `runs` a list; 456 rows: `{"score": float}`
+dimensions, `runs` an **int**), and the fixture modelled neither exactly.
+**Fix**: both real shapes are now fixtures, plus a test that reads real rows off disk and skips when
+the gitignored corpus is absent. ⭐ **The durable lesson is that this is #155's own failure mode one
+level up** — the thing meant to detect a silent drop could not see the fields most likely to be
+dropped. A fixture is a hand-built population and inherits every hazard of one; the tell is that it
+contains only the *easy* types. **Ask what a fixture EXCLUDES before trusting a green test**, and
+prefer one row read from the real artifact over any number of invented ones. Extends the auto-memory
+entry `feedback-hand-built-population` to test fixtures.
+
+## I shipped a negative in a commit before running its positive control (2026-09-08)
+**Problem**: Measured that regenerating v8's splits at seed 42 reproduces them exactly — *"identical
+id order, identical labels, **0 rows moved**"* — wrote it into a decision record, the hypothesis
+ledger and a commit message, and **committed**. Only afterwards did I ask whether the comparison
+could report anything other than zero.
+**Root cause**: the number was the *answer I wanted* (regeneration is safe), so it read as a
+finding rather than as a negative needing an instrument check. The working rule — *before believing
+a negative, prove the instrument could have said yes* — was one I had quoted in the same session.
+**Fix**: ran the control after the fact. Seed 43 moves **1,044/584/599** rows and shifted tier
+thresholds move **1,041/593/580** (sizes drift 660→661), so the instrument can say "moved" and the
+zero is real. Recorded beside the claim in all three places. ⭐ **The ordering was the defect, not
+the result** — a control run after the commit protects the next reader, not the commit. It also
+sized the risk it was clearing: seed 43 replaces **599 of 660** test rows, which is what a redraw
+would have cost.
+
+## Telling a review agent to "restore from git" would have deleted the fix under review (2026-09-08)
+**Problem**: I asked a mutation-testing subagent to mutate `training/prepare_data.py` in place and
+restore it with `git checkout -- training/prepare_data.py`. The fix under review was **uncommitted**,
+so that command restores HEAD — reverting the mutation *and the entire change*, silently, while the
+agent reports success.
+**Root cause**: "restore from git" reads as "undo my edit" and actually means "return to the last
+commit". The two are identical only when the working tree is clean, which during a pre-commit review
+is exactly when it is not.
+**Fix**: snapshotted both files to the scratchpad the moment I noticed, and confirmed the md5 was
+unchanged when the agent finished. **Hand a mutation agent an explicit byte backup to restore from,
+never a git verb** — and note this is the same family as the standing rule that no git verb may take
+the whole tree, one scope narrower: here the *path* was explicit and the *revision* was wrong.
+
+## A heading anchor that is a prefix of a deeper heading matched twice (2026-09-08)
+**Problem**: An exact-match edit anchored on `## ▶ NEXT SESSION STARTS HERE` asserted one occurrence
+and found two — the file also contains `### ▶ NEXT SESSION STARTS HERE — deployment, and the
+ordering that surprised phase 8`, which contains the `##` form as a substring.
+**Root cause**: a markdown heading string is a prefix of every deeper heading with the same text.
+**Fix**: anchor on `"\n## ▶ NEXT SESSION STARTS HERE\n"` — leading newline pins the heading level,
+trailing newline pins the end of the line. Cheap, and the assertion caught it, which is the system
+working; noted because the shape recurs wherever a doc keeps a current and an archived block under
+the same title.
