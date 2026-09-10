@@ -44,15 +44,31 @@ from train_v1 import (                      # one definition, not a tidied copy 
 )
 
 
-def git_commit(repo: Path) -> str:
+def git_provenance(repo: Path) -> dict:
+    """Commit plus what the worktree looked like — the two are different claims.
+
+    A blanket `-dirty` on any porcelain output is misleading: a build box carries stray
+    scratch files (`bench.py`, an old backup dir) that cannot change the program, and
+    stamping that identically to "someone edited the trainer" destroys the distinction the
+    stamp exists to make. Untracked files are still reported, because a stray module CAN
+    shadow an import — they are just not the same finding as modified tracked code.
+    """
     r = subprocess.run(["git", "-C", str(repo), "rev-parse", "HEAD"],
                        capture_output=True, text=True)
     if r.returncode != 0:
         raise RuntimeError("not a git checkout — an artifact that cannot name its commit "
                            "cannot be traced back to the code that made it")
-    dirty = subprocess.run(["git", "-C", str(repo), "status", "--porcelain"],
-                           capture_output=True, text=True).stdout.strip()
-    return r.stdout.strip() + ("-dirty" if dirty else "")
+    porcelain = subprocess.run(["git", "-C", str(repo), "status", "--porcelain"],
+                               capture_output=True, text=True).stdout.splitlines()
+    tracked = [l for l in porcelain if not l.startswith("??")]
+    untracked = [l for l in porcelain if l.startswith("??")]
+    return {
+        "commit": r.stdout.strip(),
+        "worktree": ("modified-tracked" if tracked
+                     else "untracked-only" if untracked else "clean"),
+        "modified_tracked_files": [l[3:] for l in tracked],
+        "untracked_count": len(untracked),
+    }
 
 
 def main():
@@ -66,7 +82,7 @@ def main():
     args = ap.parse_args()
 
     repo = Path(__file__).resolve().parents[4]
-    commit = git_commit(repo)
+    prov = git_provenance(repo)
 
     sp = Path(args.splits)
     tr_txt, y_tr = load_split(sp / "train.jsonl")
@@ -122,7 +138,7 @@ def main():
                    "val": len(va_txt), "val_pos": int(y_va.sum()),
                    "test": len(te_txt), "test_pos": int(y_te.sum())},
         "sklearn_version": sklearn.__version__,
-        "commit": commit,
+        "provenance": prov,
         "built_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "experiment": "EXP-037",
         "issue": "llm-distillery#156",
@@ -140,7 +156,8 @@ def main():
                  "says nothing about solutions, belonging, nature_recovery or cultural_discovery."),
     }
     Path(args.report).write_text(json.dumps(report, indent=2), encoding="utf-8")
-    print(f"\nwrote {args.out_dir} and {args.report}\ncommit {commit}")
+    print(f"\nwrote {args.out_dir} and {args.report}\n"
+          f"commit {prov['commit']}  worktree {prov['worktree']}")
     print("\nENSEMBLE sweep (test spec/recall, panel catches):")
     for r in ens_sweep:
         print(f"  thr {r['threshold']:.2f}  flagged {r['panel_flagged']:3d} "
