@@ -47,6 +47,10 @@ from pathlib import Path
 import requests
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from ground_truth.deepseek_models import (
+    UnsafeDeepSeekModel,
+    assert_safe_deepseek_model,
+)
 from ground_truth.text_cleaning import (
     clean_article as clean_article_comprehensive,
     sanitize_text_comprehensive,
@@ -414,10 +418,13 @@ def main():
 
     api_key = None
     if args.provider == "deepseek":
-        if args.model.startswith("deepseek-v4"):
-            print(f"ERROR: --model {args.model} is the literal id, which enables reasoning mode")
-            print("       and returns EMPTY content, breaking the parser silently.")
-            print("       Use the alias: --model deepseek-chat  (memory/gotcha-log.md 2026-08-14)")
+        # ⛔ ALLOWLIST, not a prefix denylist. `startswith("deepseek-v4")` stood here until
+        # 2026-09-10 and stopped covering the flash line that morning, when DeepSeek renamed
+        # it to `deepseek-flash`. See ground_truth/deepseek_models.py for the measurement.
+        try:
+            assert_safe_deepseek_model(args.model)
+        except UnsafeDeepSeekModel as e:
+            print(f"ERROR: {e}")
             sys.exit(1)
         api_key = get_api_key("deepseek_api_key", "DEEPSEEK_API_KEY")
     elif args.provider == "gemini":

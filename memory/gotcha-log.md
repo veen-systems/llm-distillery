@@ -1251,6 +1251,51 @@ you inspect** (`d['model']`, `usage.completion_tokens_details`, and whether `con
 `deepseek-v4-flash`, `deepseek-v4-pro`), so there is **no lighter tier** to retreat to under the
 price rise. See `memory/oracle-pricing-scheduling.md`.
 
+### ⭐ ADDENDUM 2026-09-10 — the vendor renamed the model and the guard silently stopped covering it
+
+**The rule above still holds. The guard enforcing it did not.** `score_ollama_oracle.py:416`
+tested `args.model.startswith("deepseek-v4")` — a denylist of the ids that existed the day it
+was written. On 2026-09-10 DeepSeek renamed the flash line: `GET /models` now returns exactly
+**`deepseek-flash`** and **`deepseek-v4-pro`**. Both `deepseek-v4-flash` and
+`deepseek-v4-flash-vision-exp` are **gone from the listing** (the former still resolves if sent).
+So **the one flash id the vendor now advertises — the id anyone reading `GET /models` would
+reach for — did not match the guard.** The other two DeepSeek entry points
+(`score_deepseek_production.py`, `validate_deepseek_oracle.py`) had **no guard at all**.
+
+⚠️ **THE SYMPTOM CHANGED, AND THE NEW ONE DOES NOT RAISE.** Re-measured today, matched prompt
+and matched request shape:
+
+| request shape | `--model deepseek-chat` | `--model deepseek-flash` |
+|---|---|---|
+| `max_tokens=16`, plain | content `'OK'`, 1 tok | content `''`, 16 tok all reasoning — the 2026-08-14 break |
+| `max_tokens=4096`, `response_format=json_object` (**production**) | content `{"score": 7}`, **6** tok | content `{"score":7}` — **correct** — but **208** tok |
+
+The empty-`content` parser break was a **truncation artifact of a small token budget**, not the
+whole failure. Under the shape production actually uses, the literal id returns **valid JSON**
+and merely bills **~34.7×** the output tokens. ⚠️ n=1 on one trivial prompt — direction and rough
+magnitude only, **not a calibrated multiplier**; a real scoring prompt was not measured. A run
+on the literal id now looks entirely healthy. Nothing downstream would catch it.
+
+**Fix**: `ground_truth/deepseek_models.py` — an **allowlist** (`{"deepseek-chat"}`), endpoint-aware
+so `--base-url` at Gemini's OpenAI-compatible endpoint is passed through, wired into all three
+scripts and covered by `tests/unit/test_deepseek_model_guard.py` (subprocess tests that run each
+script for real and assert it exits before loading a prompt or a key, plus two positive controls).
+Both mutations killed: removing the guard from one script fails that script's test; widening the
+allowlist fails all three.
+
+**Generalisation**: ⭐ **a denylist of known-bad values is a HAND-BUILT POPULATION, and the vendor
+gets to add to it without telling you.** Enumerate the one thing that is allowed instead. The
+denylist was correct code, on the right path, with a passing rationale — it stopped working
+because a name changed **outside the repo**, which is exactly the class the 2026-08-14 entry above
+already named and did not defend against.
+
+⛔ **And the "pin it instead" escape is CLOSED, not merely inadvisable.** There is no versioned
+flash id to pin: `GET /models` carries no version, the response `model` field reads
+`deepseek-flash` whatever you send (alias, new literal, or the retired `deepseek-v4-flash`), and
+no response header carries one. **The served version is not observable through this API** — so
+llm-distillery#157's proposed "stamp the served model" buys the **tier**, not the version, and
+would not have distinguished V4 from V4.1.
+
 ---
 
 ## NEVER MASK A UNIT THAT SITS IN AN `OnSuccess=` CHAIN — the loss has no failure surface (2026-08-14)

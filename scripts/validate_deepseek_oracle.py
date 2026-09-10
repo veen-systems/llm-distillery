@@ -36,6 +36,8 @@ from collections import Counter, defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
+from ground_truth.deepseek_models import UnsafeDeepSeekModel, assert_safe_deepseek_model
+
 import requests
 
 # Reuse the existing sanitization + json-repair helpers so the prompt going to
@@ -272,17 +274,25 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--n-sample", type=int, default=50)
     parser.add_argument("--model", default="deepseek-chat",
-                        help="DeepSeek model ALIAS. Default 'deepseek-chat' resolves "
-                             "server-side to deepseek-v4-flash in non-reasoning mode. "
-                             "Do NOT 'pin' it to the literal 'deepseek-v4-flash' — that "
-                             "enables reasoning mode and returns empty content "
-                             "(see memory/gotcha-log.md, 2026-08-14)")
+                        help="DeepSeek model ALIAS. 'deepseek-chat' is the ONLY accepted "
+                             "value and is enforced. It resolves server-side to the flash "
+                             "line in non-reasoning mode; any literal id enables reasoning "
+                             "mode. There is no versioned flash id to pin — GET /models "
+                             "returns deepseek-flash and deepseek-v4-pro only, and the "
+                             "response reports no version (llm-distillery#157, "
+                             "memory/gotcha-log.md 2026-08-14)")
     parser.add_argument(
         "--output",
         default="datasets/scored/cd_v5_deepseek_validation/results.jsonl",
     )
     parser.add_argument("--seed", type=int, default=42)
     args = parser.parse_args()
+
+    try:                                   # before the key, the prompt and any file I/O
+        assert_safe_deepseek_model(args.model)
+    except UnsafeDeepSeekModel as e:
+        print(f"ERROR: {e}")
+        sys.exit(1)
 
     api_key = get_deepseek_key()
     prompt_template = V5_PROMPT_PATH.read_text(encoding="utf-8")

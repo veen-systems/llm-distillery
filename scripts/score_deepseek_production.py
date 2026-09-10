@@ -28,6 +28,10 @@ import yaml
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
+from ground_truth.deepseek_models import (
+    UnsafeDeepSeekModel,
+    assert_safe_deepseek_model,
+)
 from ground_truth.text_cleaning import (
     clean_article as clean_article_comprehensive,
     is_scrape_junk,
@@ -287,6 +291,14 @@ def main():
                         help="Completion token budget (reasoning models like gemini-2.5 "
                         "spend thinking tokens from this budget; raise if JSON truncates)")
     args = parser.parse_args()
+
+    # Endpoint-aware: --base-url can point this script at Gemini's OpenAI-compatible
+    # endpoint, and that call must not be blocked. Only DeepSeek's own host is enforced.
+    try:                                   # before the key, the prompt and any file I/O
+        assert_safe_deepseek_model(args.model, args.base_url)
+    except UnsafeDeepSeekModel as e:
+        print(f"ERROR: {e}")
+        sys.exit(1)
 
     global DIMENSIONS, ANALYSIS_FIELD, FILTER_VERSION
     prompt_path = V5_PROMPT_PATH

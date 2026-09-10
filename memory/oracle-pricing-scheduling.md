@@ -103,6 +103,28 @@ metadata:
 > `deepseek-v4-flash-vision-exp`. The substantive claim it supported — **no lighter tier to
 > retreat to** — still holds; vision-exp is priced identically to flash. (b) Pro is
 > **exactly 3× flash** on every line (0.022 / 0.66 / 1.98), not the *"~3.1×"* recorded below.
+>
+> ⚠️⚠️ **(a) WENT STALE AGAIN WITHIN A DAY — re-read 2026-09-10, and this is the second
+> correction to the same line in 24 hours.** `GET /models` now returns **two** ids again, but
+> **not the 2026-08-14 pair**: **`deepseek-flash`** and **`deepseek-v4-pro`**. The flash line was
+> **RENAMED** — `deepseek-v4-flash` and `deepseek-v4-flash-vision-exp` are both gone from the
+> listing (the former still resolves if sent). ⭐ **Treat this row as a WINDOW, not a fact**: it
+> has now been right, wrong, right and wrong again in four weeks. Re-query before quoting it.
+>
+> ⛔ **THE SERVED VERSION IS NOT OBSERVABLE THROUGH THIS API — measured, 6 calls, 2026-09-10.**
+> The response `model` field reads **`deepseek-flash`** whatever you send (the `deepseek-chat`
+> alias, the new literal, or the retired `deepseek-v4-flash`); no response header carries a
+> version; and there is **no versioned flash id to pin**. So the model behind our oracle can be
+> swapped again exactly as it was this morning, and **stamping the response `model` field would
+> record the TIER, not the version** — it would not have distinguished V4 from V4.1. This closes
+> both options #157 proposed. → **#157**, `memory/gotcha-log.md` (2026-09-10 addendum).
+>
+> 🔒 **The rename also walked past our guard, now fixed.** `score_ollama_oracle.py`'s
+> `startswith("deepseek-v4")` denylist did not match `deepseek-flash`, and the other two DeepSeek
+> entry points had no guard at all. Replaced by an allowlist in `ground_truth/deepseek_models.py`.
+> ⚠️ **The cost consequence belongs in this file:** under the production request shape the literal
+> id returns *valid JSON* and bills **~34.7× the output tokens** (208 vs 6, n=1, one trivial
+> prompt — direction only). ⛔ **Every $/article figure in this file assumes the alias.**
 
 ---
 
