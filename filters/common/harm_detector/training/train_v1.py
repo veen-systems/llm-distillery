@@ -151,6 +151,11 @@ def run_arm(X_tr, y_tr, X_val, y_val, X_te, y_te, X_pan, ids, gem, both, seed):
 
     return {
         "seed": seed,
+        # ⚠️ The panel is STRATIFIED (60 v7_only / 40 both / 37 v8_only) and production is
+        # not (523 / 131 / 37). A flag RATE read off the panel carries the panel's design
+        # weighting and is NOT a production blocking rate. Per-row probabilities are dumped
+        # so the rate can be re-weighted per stratum without retraining.
+        "panel_probs": {i: round(float(p), 6) for i, p in zip(ids, p_pan)},
         "sweep": sweep_arm(p_te, y_te, p_pan, ids, gem, both),
         "threshold": round(t, 4),
         "val_spec_target_met": t <= 1.0,
