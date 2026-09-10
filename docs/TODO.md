@@ -137,10 +137,20 @@ was **wrong on 3 of 5 seeds** — a val constraint does not transfer to test.
 **Blocking rate, re-weighted to production strata** (523/131/37 vs the panel's 60/40/37):
 **6.09% design-weighted at 0.50**, which is exactly `#156`'s predicted *"blocks a few percent"*.
 
-▶ **NEXT in Lane C — `#156` step 3, and it is now a NexusMind change, not a modelling one.**
-Ship the stamp: train a keeper artifact on a **pre-registered** threshold rule (the one used here
-was chosen on val and proved too conservative — do not reuse 0.50, it is post-hoc), then stamp
-`harm_is_subject` on every article and measure what it *would* block per lens, per cycle.
+✅ **THE ARTIFACT IS BUILT — `filters/common/harm_detector/v1/`** (owner: *"ok stamp first"*,
+2026-09-10). A **5-seed ensemble**, and ⛔ **no threshold is shipped**: it stamps
+`harm_is_subject_score` + `harm_detector_version` and gates nothing. ⭐ **The threshold question
+DISSOLVED** — the ensemble holds **3 of 9** across a plateau from 0.30 to 0.70 where single seeds
+bounced 0–3, so there was nothing to guess. Verified: shipped module reproduces the builder to
+8.1e-07 (= the stored rounding), **CPU vs CUDA 0 verdict flips**, artifacts byte-identical 6/6,
+and `tests/unit/test_harm_detector_contract.py` fails if a threshold ever appears (3 mutations
+killed).
+
+▶ **NEXT in Lane C — the WIRING, and it is a NexusMind PR, not a modelling task.**
+Five steps in `filters/common/harm_detector/v1/README.md`: copy `models/` out-of-band, verify
+against `SHA256SUMS.txt` **before** restarting, batch-score in the pass that already loads the
+embedder, stamp every article, gate nothing — then measure what it *would* block per lens, per
+cycle, from the stamp.
 ⛔ **Stamp-only. Never a cross-lens blocker** — "Bihar copes with floods" betrays Thriving and is
 arguably constitutive under Solutions.
 ⚠️ **The panel says nothing about `solutions`, `belonging`, `nature_recovery` or
