@@ -103,6 +103,35 @@ def pick_threshold(p_val, y_val, target=VAL_SPECIFICITY_TARGET):
     return 1.01
 
 
+SWEEP = [0.30, 0.40, 0.50, 0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90, 0.95, 0.99]
+
+
+def sweep_arm(p_te, y_te, p_pan, ids, gem, both):
+    """The pre-registration's escape hatch, honoured.
+
+    It said: if the chosen threshold flags <2% or >40% of the panel, the catch count is a
+    property of the threshold rather than of the detector, and the whole sweep must be
+    reported instead of a headline. Three of five seeds land at or under 2%, so this runs.
+    """
+    out = []
+    for t in SWEEP:
+        te_spec, te_rec, *_ = spec_recall(y_te, (p_te >= t).astype(int))
+        flagged = {i for i, p in zip(ids, p_pan) if p >= t}
+        out.append({
+            "threshold": t,
+            "test_specificity": round(te_spec, 4),
+            "test_recall": round(te_rec, 4),
+            "panel_flagged": len(flagged),
+            "panel_flag_rate": round(len(flagged) / len(ids), 4),
+            "caught_both9": len(flagged & both),
+            "caught_gem32": len(flagged & gem),
+            # Of everything the detector flags on the panel, how much a judge also called
+            # harmful. The firing-rate control, expressed per flag rather than per row.
+            "panel_precision_vs_gem32": round(len(flagged & gem) / len(flagged), 4) if flagged else None,
+        })
+    return out
+
+
 def run_arm(X_tr, y_tr, X_val, y_val, X_te, y_te, X_pan, ids, gem, both, seed):
     scaler = StandardScaler().fit(X_tr)
     clf = MLPClassifier(hidden_layer_sizes=HIDDEN, max_iter=400, early_stopping=True,
@@ -122,6 +151,7 @@ def run_arm(X_tr, y_tr, X_val, y_val, X_te, y_te, X_pan, ids, gem, both, seed):
 
     return {
         "seed": seed,
+        "sweep": sweep_arm(p_te, y_te, p_pan, ids, gem, both),
         "threshold": round(t, 4),
         "val_spec_target_met": t <= 1.0,
         "test_specificity": round(te_spec, 4),
@@ -135,6 +165,8 @@ def run_arm(X_tr, y_tr, X_val, y_val, X_te, y_te, X_pan, ids, gem, both, seed):
 
 def band(rows, key):
     v = [r[key] for r in rows]
+    if any(isinstance(x, list) for x in v):
+        raise TypeError(f"band() called on list-valued key {key!r} — bands are for scalars")
     return {"min": min(v), "mean": round(float(np.mean(v)), 4), "max": max(v)}
 
 
