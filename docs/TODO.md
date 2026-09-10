@@ -116,6 +116,43 @@ screen's miss rate: **33%**); the nearer anchor for a v8-shaped pool is `v8_only
 > Session records: `memory/project_session_2026_09_08_second.md`,
 > `memory/project_session_2026_09_09.md`, and the `/curate` entries after them.
 
+## ✅ 2026-09-10 (evening) — Lane C started and its FIRST question is answered, $0
+
+**`EXP-037` — the free arm of `#156` works PARTLY.** Pre-registered before the first run
+(`docs/evidence/2026-09-10-harm-detector/`), $0, nothing deployed, no model artifact kept.
+
+**Primary: 2.0 of the 9 both-judge-flagged `EXP-031` panel rows** (band 0–3 over 5 seeds) at the
+pre-registered threshold rule, against a **shuffled-label null arm of 0.0 of 9 firing at TWICE the
+rate**. ⛔ **Read it against the null, not against zero.** Test recall 0.4599–0.5766.
+
+⛔ **The decision was FIXED IN ADVANCE and lands in the middle bucket: stamp anyway (free, ADR-022),
+and the ~$3.2–3.6 pool spend becomes a RANKED OPTION rather than the only route.** It is *not*
+upgraded because the post-hoc 0.50 threshold reads better (3–4 of 9, no seed at zero).
+
+**Two predictions failed, both recorded** (`H-HD2`, `H-HD3`): 6–16 of the 32 Gemini-flagged rows
+was **refuted** (2.0 vs the null's 1.6, and **zero** of the 23 Gemini-only rows — the detector
+agrees with judge *consensus*, not the wider net); and *"test specificity ≥0.98 by construction"*
+was **wrong on 3 of 5 seeds** — a val constraint does not transfer to test.
+
+**Blocking rate, re-weighted to production strata** (523/131/37 vs the panel's 60/40/37):
+**6.09% design-weighted at 0.50**, which is exactly `#156`'s predicted *"blocks a few percent"*.
+
+▶ **NEXT in Lane C — `#156` step 3, and it is now a NexusMind change, not a modelling one.**
+Ship the stamp: train a keeper artifact on a **pre-registered** threshold rule (the one used here
+was chosen on val and proved too conservative — do not reuse 0.50, it is post-hoc), then stamp
+`harm_is_subject` on every article and measure what it *would* block per lens, per cycle.
+⛔ **Stamp-only. Never a cross-lens blocker** — "Bihar copes with floods" betrays Thriving and is
+arguably constitutive under Solutions.
+⚠️ **The panel says nothing about `solutions`, `belonging`, `nature_recovery` or
+`cultural_discovery`** — it is v7/v8 display-eligible rows only. Their per-lens numbers must come
+from the shadow stamp, not from this evidence.
+⚠️ **NexusMind is FROZEN** (owner 2026-09-08). A stamp is additive and ADR-022-shaped, but it is a
+production change: **get the owner's call before deploying it**, and note that `#152`'s cold-start
+trap applies to anything new entering the pipeline.
+
+> **Spend this session: $0** on the detector; **< $0.01** total, all of it six DeepSeek probe calls
+> for `#157`. Nothing deployed was touched and no filter package changed.
+
 ## ✅ 2026-09-10 — the detector-architecture strand: four questions asked, three closed, $0
 
 Triggered by a cross-repo request from ovr.news (would a BERT-like encoder beat what we run?).
