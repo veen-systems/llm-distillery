@@ -1,0 +1,82 @@
+77 false negatives at 0.85
+
+--- body-only ALSO below 0.85 (title and body both read as non-obit) ---
+  0.0051/0.0126 | Local health officials identify first pediatric flu death in Ohio - WHIO TV
+  0.0065/0.0127 | Gold für Moskau, Grundstein in Margareten: Zum Tod von Anatoly Evtushenko
+  0.0106/0.0429 | Man ziet zijn vrouw door haai aangevallen worden bij triatlontraining, restanten dagen later te
+  0.0137/0.0129 | In Memoriam: Silvério Tsereburã Tserenhib’ru Xavante
+  0.0164/0.0000 | METRO RAMPAGE: Man died trying to stop Taipei stabbing suspect
+  0.0191/0.0147 | Hindu man crushed to death in Bangladesh
+  0.0215/0.0109 | Jesus sei am Kreuz gar nicht gestorben, behauptete Johannes Fried: Der Historiker, der gern an 
+  0.0253/0.0750 | Drame de Crans-Montana : à Sète, les derniers rayons de Cyane, la jeune fille solaire
+  0.0272/0.0000 | Man arrested for ‘hacking wife to death’
+  0.0320/0.6682 | Inquest opens into Withernsea sea deaths
+  0.0407/0.0000 | College lecturer stabbed to death on local train at Mumbai’s Malad; fellow traveller arrested
+  0.0416/0.0008 | Israel bids farewell to Thai captive before remains return home
+  0.0422/0.4884 | Jackson Browne’s Son Ethan’s Cause of Death Revealed After Actor Died at 52 - Rolling Stone
+  0.0441/0.0397 | Falklands, flags at half-mast to the memory of a much loved former legislator and historian
+  0.0708/0.0069 | Waltzing Matilda tribute for youngest victim of the Bondi shooting
+  0.1000/0.3610 | Mbumba, Pohamba hail Kanana Hishoono as unifier
+  0.1077/0.0858 | Vrienden en familie van Lulu-May (25) kapot van verdriet na dodelijke aanrijding: ‘Je gunde haa
+  0.1349/0.1595 | He saved 262 Christians where govt failed — CAN mourns Imam Abdullahi
+  0.1350/0.2909 | Gracias a ella existe el GPS y Google Maps: muere Gladys West, la matemática que revolucionó la
+  0.1413/0.0156 | Coroner's autopsy on Canadian backpacker points to drowning as cause of death
+  0.1805/0.5071 | 'An unspeakable loss': Funeral takes place for rabbi killed in Bondi shooting
+  0.2021/0.0904 | Interfaith couple hacked to death in Moradabad
+  0.2397/0.0326 | Rob Reiner's family breaks silence as son Nick faces judge on murder charges
+  0.2512/0.0001 | Muere uno de los hombres arrastrados por el mar en Lanzarote
+  0.2890/0.1064 | Former Singapore lawyer and human rights activist M Ravi dies
+  0.3021/0.0000 | Stewart Cheifet, PBS host who chronicled the PC revolution, dies at 87
+  0.3234/0.5532 | Explosión letal en Carabanchel: "Hemos intentado ayudar, pero no podíamos hacer nada"
+  0.3259/0.8149 | La Familia Real, sin Juan Carlos I, despide a Irene de Grecia en Madrid
+  0.3642/0.7079 | Vom Einkleider der First Lady zum Rosenzüchter: Valentino's Erbe
+  0.3662/0.7989 | Dornbirn: Leiche vor Kindergarten gefunden
+  0.3709/0.4880 | Horrific murder in Mumbai local: New CCTV footage shows moment teacher was stabbed to death
+  0.4064/0.0107 | Biathleten „extrem traurig“: Tränen und eine besondere Geste nach Tod von Bakken
+  0.4180/0.0523 | Nueve j√≥venes futbolistas, entre los fallecidos en el tr√°gico incendio en el bar de Crans-Mon
+  0.4738/0.0000 | Technician at government hospital dies by suicide
+  0.4793/0.4468 | Dode vrouw gevonden omringd door dingo's op populair Australisch eiland K'gari
+  0.5152/0.0003 | I funerali di Giovanni Tamburi, la madre: "Mi commuove vedere quanto era amato mio figlio"
+  0.5165/0.5292 | Teen mauled to death after climbing into lion enclosure at Brazil zoo
+  0.5272/0.3481 | Noida techie Yuvraj Mehta's car pulled from Greater Noida's water-filled pit three days after h
+  0.5576/0.5685 | Pensionistin in Wiener Heim getötet
+  0.5609/0.4337 | Inmate dies by suicide at Spijkenisse police station
+  0.5723/0.8311 | Décès suspects à Ciney : un seul coup de couteau pour Jesse, une multitude pour sa maman
+  0.5914/0.0000 | ‘Tum jo chale gaye’: Heartbreaking last video of Dharmendra and Hema Malini singing together mo
+  0.5921/0.4468 | Pulp Fiction
+  0.6231/0.1260 | Second patient at St. Joseph's University Medical Center in Paterson, NJ infected with Legionel
+  0.6360/0.1983 | “Non posso credere che non potrò più chiederti consigli”: le lacrime della sorella di Chiara Co
+  0.6467/0.0696 | Muere un hombre en su casa de Oleiros y la acumulación de basura impide retirar su cadáver
+  0.6529/0.3471 | Dame Gillian Wagner obituary
+  0.6603/0.2515 | Dame Sarah Anderson obituary
+  0.6828/0.0000 | ‘Unexplained death’: Three-year-old’s body found at North Shore home
+  0.6960/0.8030 | Dode bij verkeersongeval in Zevenhuizen
+  0.7292/0.0000 | Man shot during Minneapolis immigration crackdown ‘has died’
+  0.7440/0.5298 | Rachael Carpani: Australische Schauspielerin aus »McLeods Töchter« gestorben
+  0.7550/0.0011 | NSW's first female governor Dame Marie Bashir dies aged 95
+  0.7961/0.0000 | Even in death, he served: Retired Army soldier saves 4 lives through organ donation
+  0.8102/0.7996 | Police probe 'unexplained' death of man on path in Coatbridge
+  0.8378/0.7894 | Two die in Lagos-Ibadan Expressway crash
+  0.8418/0.5024 | Man beaten to death over alleged paddy theft at Bihar rice mill; 4 arrested
+
+--- body-only >= 0.85 (BODY reads as obituary, title overrode it) ---
+  0.0254/0.9468 | Municipalidad de Lima suspende serenata a Lima tras muerte de trabajadores de Emape
+  0.0854/0.9822 | Fourth arrest after man's Boxing Day death
+  0.1036/0.9561 | Renee Good, Victim in Minneapolis ICE Shooting, Remembered for Her Kindness
+  0.2441/0.9595 | It appears that person responsible for gas explosion on Bauskas Street in Riga died in the expl
+  0.3321/0.9757 | "Ça fait très, très mal": des milliers de personnes rendent hommage à El Hacen Diarra, mort en 
+  0.3431/0.8802 | Bangladesh: Hindu mechanic burnt to death in his workshop
+  0.3444/0.9678 | Echecs : La mort du grand maître Daniel Naroditsky, à 29 ans, reconnue sans lien avec une drogu
+  0.4993/0.9995 | “Ik ben nooit bang geweest voor de dood”: na 4,5 jaar leven in verlengingen is Tore Sercu overl
+  0.5023/0.9173 | Al menos un muerto y nueve heridos en Carabanchel por una explosión, que derrumba parte de un e
+  0.5631/0.9112 | Three people die in tragic crash in Tukums municipality - The Baltic Times
+  0.6534/0.9325 | Bricks, stones and iron rods: 35-year-old woman beaten to death by neighbours
+  0.6620/0.9939 | 12 canciones con las que Robe Iniesta elevó a la música española
+  0.6638/0.8515 | How kidnappers killed Abuja-based lawyer, Princess Chigbo, after N3m ransom demand — Family
+  0.6781/0.9089 | Achille Barosi, il ricordo di sua madre e il pensiero per l’amica Matilde: “Voi due anime gemel
+  0.7112/0.9256 | Größte Red-Bull-Blamage: Der Salzburg-Schreck starb mit nur 42 Jahren
+  0.7187/0.9853 | With political savvy and outrage over drug prices, advocate David Mitchell was ahead of his tim
+  0.7458/0.9691 | Alterio no era de método, tampoco del método
+  0.7881/0.9183 | Northern Govs, CAN Mourn Plateau Islamic Cleric Who Saved over 200 Christians
+  0.8303/0.9936 | Taoiseach leads tributes to late senator Mary White
+  0.8428/0.8705 | Twee Nederlandse vrouwen onder doden van steekpartij in Suriname

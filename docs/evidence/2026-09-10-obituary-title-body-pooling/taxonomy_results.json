@@ -1,0 +1,9 @@
+{
+ "positives": 344,
+ "fn": 77,
+ "A_body_dilution": 17,
+ "B_title_overrides": 17,
+ "C_no_signal": 43,
+ "n_passing_title": 244,
+ "pct_passing_titles_diluted_under": 0.06967213114754098
+}

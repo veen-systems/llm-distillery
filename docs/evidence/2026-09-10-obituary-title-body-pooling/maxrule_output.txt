@@ -1,0 +1,10 @@
+heldout n=1562 positives=344 negatives=1218, threshold 0.85
+
+  current: full text                 recall 0.7762  spec 0.9901  prec 0.9570   (tp 267 fp 12 fn 77)
+  max(title, full)                   recall 0.8256  spec 0.9770  prec 0.9103   (tp 284 fp 28 fn 60)
+
+  max(title@0.9, full@0.85)          recall 0.8198  spec 0.9811  prec 0.9246   (tp 282 fp 23 fn 62)
+  max(title@0.95, full@0.85)         recall 0.8023  spec 0.9836  prec 0.9324   (tp 276 fp 20 fn 68)
+  max(title@0.99, full@0.85)         recall 0.7936  spec 0.9885  prec 0.9512   (tp 273 fp 14 fn 71)
+
+  delta vs current for plain max(): recall +0.0494, specificity -0.0131 (+16 false positives on 1218 negatives)

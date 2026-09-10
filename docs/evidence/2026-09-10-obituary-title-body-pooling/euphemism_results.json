@@ -1,0 +1,20 @@
+{
+ "n": 1562,
+ "positives": 344,
+ "fn_at_op": 77,
+ "op": 0.85,
+ "corr_title_full": 0.6571374498572405,
+ "corr_body_full": 0.4264447548839058,
+ "fn_title_below_0.15": 33,
+ "fn_body_above_op": 20,
+ "pass_rate_title_hi": 0.930327868852459,
+ "pass_rate_title_lo": 0.3125,
+ "n_title_hi": 244,
+ "n_title_lo": 48,
+ "by_script": {
+  "LATIN": {
+   "positives": 344,
+   "fns": 77
+  }
+ }
+}
