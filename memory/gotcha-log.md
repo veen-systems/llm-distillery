@@ -1251,6 +1251,56 @@ you inspect** (`d['model']`, `usage.completion_tokens_details`, and whether `con
 `deepseek-v4-flash`, `deepseek-v4-pro`), so there is **no lighter tier** to retreat to under the
 price rise. See `memory/oracle-pricing-scheduling.md`.
 
+### A FIX IS THE LEAST-REVIEWED CODE IN A SESSION — I repeated a defect inside its own repair, three times (2026-09-10)
+
+**Problem**: fixing a batch of review findings, three of my repairs carried the same shape as the
+defects they were fixing: **a cheap check placed after expensive work**.
+
+- `scaler.pkl` was unpickled **before** `_verify_hashes()` — the integrity check ran after the one
+  file it was already loading.
+- The `from sentence_transformers import SentenceTransformer` line sat **above** every integrity
+  check, so an ensemble mismatch, a bad hash and a missing manifest were all unreachable until a
+  ~7-second ML library had loaded — and unreachable *entirely* in a checkout without it, which is
+  where CI runs.
+- The empty-ensemble guard in `batch_score` ran **after** the embedding pass, so discovering there
+  was nothing to score cost a full embed.
+
+**Root cause**: each was written minutes after articulating the principle in a commit message. A
+fix feels like a correction rather than a change, so it does not get the scrutiny a change gets —
+and the framework's own review skill records that most introduced defects come from a previous
+round's fixes.
+
+**Fix**: all three reordered. **Verify before you load; refuse before you spend.**
+
+**Same session, same shape, different axis**: I removed a **denylist** from the DeepSeek guard and
+then wrote `load_split` treating any unknown `scope_verdict` as a negative, and a `band()` that
+named `list` while falling through on dicts. Both are unbounded-negative enumerations. Both fixed
+to allowlists.
+
+**Lesson**: ⭐ **Re-read a fix as a change, at the tier of the file it lands in.** The two questions
+that would have caught all five: *does this check run before the thing it guards?* and *does this
+enumerate the good or the bad?*
+
+### MY COUNT OF A SURFACE WAS WRONG TWICE IN ONE SESSION — three, six, then eight (2026-09-10)
+
+**Problem**: guarding the DeepSeek call sites, I wrote *"the three entry points"* in a commit
+message and an issue comment. An adversarial review lens found **six**. A test I then wrote to
+enumerate the surface by grepping the tree found **eight**.
+
+**Root cause**: I counted by recalling the files I had edited, not by asking the code. The two the
+test added name the host only inside **commented-out** config with no dispatch function behind it —
+latent rather than present, a distinction a hand-written list cannot carry and a grep can.
+
+**Fix**: `test_every_deepseek_call_site_is_guarded` greps for the host, strips comment lines before
+deciding a file talks to DeepSeek, asserts on live callers and **prints** the latent ones.
+
+**Lesson**: ⭐ **Enumerate a surface from the code and ship the enumeration as a test.** A list in a
+docstring is a snapshot of what you grepped once; the test is the inventory. ⚠️ And when correcting
+a check that over-reports, narrowing the predicate to match the claim is legitimate — *loosening it
+so the run goes green is not*. The tell is whether the narrowed predicate still fires on the real
+case: uncommenting either entry puts that file straight back in.
+
+
 ### A NULL ARM THAT CANNOT FIRE IS NOT A CONTROL — read its FLAG RATE, not only its catch count (2026-09-10)
 
 **Problem**: `EXP-037`'s threshold sweep concluded *"and the null is still 0.0"* — presented as

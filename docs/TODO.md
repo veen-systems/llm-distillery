@@ -154,27 +154,19 @@ killed).
 ⛔ **No `threshold` and no `enforce` key exist anywhere in it**, and three mutations are killed
 (a threshold in the stage, a verdict key in the stamp, a failed score written as 0.0).
 
-▶ **NEXT in Lane C — three owner decisions, none of them modelling:**
-1. **Merge `NM#474`?** It is additive and defaults off, but NexusMind is FROZEN (2026-09-08).
-2. **Then flip `pipeline.harm_detector.enabled: true`** — a separate act. ⚠️ `#152`'s cold-start
-   trap applies to anything new entering the pipeline.
-3. ⚠️ **Two costs a reviewer should weigh, both stated on the PR:** it adds **14 MB of pickles
-   to NexusMind's history permanently** (five heads × 2.7 MB), and **a third full mpnet embedding
-   pass per cycle** — `#89` (one embed, several heads) would fix the second and was deliberately
-   not attempted during a freeze.
+▶ **NEXT in Lane C — `NM#474` needs a REVIEW ROUND and a SMOKE TEST, then an owner call.**
+The PR was rewritten 2026-09-10 to the in-process design (owner: NexusMind consolidates into one
+GPU-hosted package soon, so the gpu-server endpoint was scaffolding for a boundary that goes away).
+**All five review blockers are closed** — two of them by deletion rather than repair — and
+**1,649 NexusMind tests pass**. ⛔ **It is still a DRAFT and must not merge yet**: the rewrite has
+had no review round and no smoke test, and NexusMind is frozen.
 
-Then, and only then: measure what it *would* block per lens per cycle from the stamp.
-⛔ **Stamp-only. Never a cross-lens blocker** — "Bihar copes with floods" betrays Thriving and is
-arguably constitutive under Solutions.
-⚠️ **The panel says nothing about `solutions`, `belonging`, `nature_recovery` or
-`cultural_discovery`** — it is v7/v8 display-eligible rows only. Their per-lens numbers must come
-from the shadow stamp, not from this evidence.
-⚠️ **NexusMind is FROZEN** (owner 2026-09-08). A stamp is additive and ADR-022-shaped, but it is a
-production change: **get the owner's call before deploying it**, and note that `#152`'s cold-start
-trap applies to anything new entering the pipeline.
+⚠️ **`enabled: false` still ships.** Enabling is a separate act. `#152`'s cold-start trap is
+addressed (`max_articles_per_run: 3000`, newest files first) but not proven in production.
 
-> **Spend this session: $0** on the detector; **< $0.01** total, all of it six DeepSeek probe calls
-> for `#157`. Nothing deployed was touched and no filter package changed.
+▶ **Then**: measure what the stamp *would* block **per lens, per cycle** — the panel says nothing
+about solutions, belonging, nature_recovery or cultural_discovery, where the same content may be
+constitutive rather than harmful.
 
 ## ✅ 2026-09-10 — the detector-architecture strand: four questions asked, three closed, $0
 

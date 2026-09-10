@@ -47,8 +47,43 @@ Plus: cold start ≈ **34,661 articles / 347 chunks** against a 60-req/60-s shar
 - ⛔ **I ran `git stash -- .`** — a git verb taking the whole tree, the shape the working rules prohibit because a parallel session may share the checkout. Caught immediately, popped, tree verified. The rule exists so I do not have to get lucky.
 - ⛔ **Second occurrence: I read 78→9 test collection errors as "the environment"** when it was `python3` instead of `venv/bin/python`. With the project interpreter: 1,643 pass. **A dismissal is a claim.**
 
+## 5. All of it fixed, same session — and three of the fixes had the same defect as the code
+
+**Owner call: NexusMind consolidates into one GPU-hosted package in the near term.** So the
+gpu-server endpoint was **scaffolding for a boundary that goes away**, and building it was
+building a deletion. `NM#474` rewritten: **8,660 chars out of `deploy/gpu-server/main.py`, 3,894
+out of `gpu_client.py`**, zero harm references left. ⭐ **Blockers 1 and 3 were DELETED, not
+patched** — the unwrapped lifespan load and the `r.get("score")` silent no-op cannot exist without
+an endpoint. Measured cost of staying in-process: **19.9 articles/s on CPU** (137 real articles),
+~3 min/cycle on the 8-core pipeline host. Cold start bounded to 3,000/run, **newest files first**.
+
+Blockers 2, 4, 5 fixed with a test each. `_harm_detector_stack` now on the row (the 0.2008 stack
+floor must stay separable). llm-distillery side: the ensemble check made **bidirectional**, pickle
+hashes **actually verified** (`SHA256SUMS.txt` was read by nothing), `sklearn_version` read,
+`batch_score` raises instead of returning `[]`, `stamp()` prefixed, the FQDN bypass closed,
+`load_split` verdicts **enumerated**, `band()` allowlisting scalars, `val_spec_target_met` read.
+
+⛔⛔ **THREE OF MY OWN FIXES REPEATED THE SHAPE THEY WERE FIXING: cheap checks placed after
+expensive work.** The scaler was unpickled **before** its hash was verified; the
+`sentence_transformers` import sat **above** every integrity check, making them unreachable in a
+checkout without it — which is where CI runs; the empty-ensemble guard ran **after** the embedding
+pass. All three moved. ⭐ **Verify before you load, and refuse before you spend.**
+
+⛔ **My count of the DeepSeek surface was wrong TWICE** — three, then six, then **eight** from a
+test that greps the tree. ⭐ **Enumerate a surface from the code, never from a list**; a list is
+what was wrong both times.
+
+⛔ **One mutation SURVIVED**: deleting the per-article cap passed all 11 tests, because the only
+cap test exercised *file-level* deferral. Fixed, and the new test kills it. **11 + 6 mutations
+killed overall; 790 + 1,649 tests pass.**
+
 ## Next session
 
-1. **`#474` blockers**, one at a time — start with the unguarded lifespan load, which also retires obituary's identical exposure.
-2. **`#157` residue** — the three unguarded DeepSeek call sites and the FQDN bypass.
-3. **DeepSeek V4-vs-V4.1 parity**, designed and costed at ~$0.92: arm A is **free and already on disk** (6,130 rows carry k=3 per-run V4 votes under a prompt whose file still hashes to `003cd35a5122`), arm B is V4.1 ×3 on the same rows. Awaits the owner.
+1. **`NM#474`: a REVIEW ROUND and a SMOKE TEST** (owner deferred both). It is a draft; the rewrite
+   has not been reviewed. Then the merge and the enable are two separate owner calls.
+2. **DeepSeek V4-vs-V4.1 parity**, ~$0.92, arm A **free and on disk** (6,130 rows carry k=3 V4
+   votes under a prompt file still hashing to `003cd35a5122`).
+3. **Three decisions still open**: the ovr.news ADR-045 recency axis vs `#85`'s adjudicated rule
+   (⚠️ `#85` is already RULED — what is open is cross-repo governance and the relabel it implies);
+   `H-DET5` (re-measure across the `EXP-033` seed set first — mine, not the owner's);
+   `filters/resilience/v1` (delete vs index).
