@@ -146,11 +146,23 @@ bounced 0–3, so there was nothing to guess. Verified: shipped module reproduce
 and `tests/unit/test_harm_detector_contract.py` fails if a threshold ever appears (3 mutations
 killed).
 
-▶ **NEXT in Lane C — the WIRING, and it is a NexusMind PR, not a modelling task.**
-Five steps in `filters/common/harm_detector/v1/README.md`: copy `models/` out-of-band, verify
-against `SHA256SUMS.txt` **before** restarting, batch-score in the pass that already loads the
-embedder, stamp every article, gate nothing — then measure what it *would* block per lens, per
-cycle, from the stamp.
+✅ **THE WIRING IS WRITTEN AND OPEN FOR REVIEW — `NM#474`** (branch
+`feat/harm-detector-shadow-stamp`, **not merged, not deployed**). Six files: vendored package +
+`src/preprocessing/harm.py` + `gpu_client.predict_harm` + a `/harm/predict` endpoint +
+`scripts/main.py` stage + `config/app.yaml`, **`enabled: false`**. NexusMind's 1,581 tests pass.
+⛔ **No `threshold` and no `enforce` key exist anywhere in it**, and three mutations are killed
+(a threshold in the stage, a verdict key in the stamp, a failed score written as 0.0).
+
+▶ **NEXT in Lane C — three owner decisions, none of them modelling:**
+1. **Merge `NM#474`?** It is additive and defaults off, but NexusMind is FROZEN (2026-09-08).
+2. **Then flip `pipeline.harm_detector.enabled: true`** — a separate act. ⚠️ `#152`'s cold-start
+   trap applies to anything new entering the pipeline.
+3. ⚠️ **Two costs a reviewer should weigh, both stated on the PR:** it adds **14 MB of pickles
+   to NexusMind's history permanently** (five heads × 2.7 MB), and **a third full mpnet embedding
+   pass per cycle** — `#89` (one embed, several heads) would fix the second and was deliberately
+   not attempted during a freeze.
+
+Then, and only then: measure what it *would* block per lens per cycle from the stamp.
 ⛔ **Stamp-only. Never a cross-lens blocker** — "Bihar copes with floods" betrays Thriving and is
 arguably constitutive under Solutions.
 ⚠️ **The panel says nothing about `solutions`, `belonging`, `nature_recovery` or
