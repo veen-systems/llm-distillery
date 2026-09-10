@@ -376,6 +376,21 @@ errors**. Its `H4` is a cross-reference, not a local hypothesis — do not cite 
 
 ---
 
+### Detector architecture — the frozen-mpnet pre-scorers (2026-09-10, `EXP-033`–`EXP-036`)
+
+⛔ **Before quoting any figure here:** all four studies are on `paraphrase-multilingual-mpnet-base-v2` at the production 128-token window unless stated; obituary figures are the **heldout**, whose denominator differs by study (**1,562** raw / **1,537** leakage-free / the published **1,529** graded-excluded) — the exclusion is part of the figure. Evidence: `docs/evidence/2026-09-10-*` (four directories).
+
+| id | claim | verdict |
+|---|---|---|
+| H-DET1 | widening the detector window 128 → 512 improves recall/specificity | **REFUTED.** Every seed band overlaps on both detectors and violence_promotion LOSES recall at 0.95, at 3.82× GPU cost. `EXP-033`. **128 is now a defensible baseline** — the "crippled baseline" objection to any future fine-tuning comparison is answered |
+| H-DET2 | the shipped detector metrics are a property of the model | ⛔ **REFUTED — they are ONE SEED.** Obituary recall at 0.85 spans **0.6599–0.8081** across five seeds with corpus, window and hyperparameters fixed (`early_stopping=True` lets `random_state` pick the validation split). Every shipped detector number in this project is a single draw. `EXP-033` |
+| H-DET3 | the v3 → v4 → v5 recall ordering is real | ⛔ **REFUTED.** All three pairwise bands overlap at 0.85/0.90/0.95 and the versions finish in **three different orders** across five seeds. v4's mean is the **highest**, reversing ovr's ADR-042 flag rather than merely weakening it. `EXP-034`. **Stop citing the comparison** |
+| H-DET4 | the detector's misses are euphemistic titles (lexical coverage) | **REFUTED as stated, CONFIRMED in substance.** The class is not euphemism; **44% of misses are title/body disagreement** averaged into one mean-pooled window (22.1% body-dilution, 22.1% title-override). `EXP-035`. ⛔ I had told ovr the mechanism was refuted after testing their two **examples** rather than the **class** — see `feedback-a-dismissal-is-a-claim` |
+| H-DET5 | `max(title, full)` recovers the body-dilution class at acceptable cost | ⏳ **OPEN — measured once, one model, one seed, NOT recommended.** Plain max +0.0494 recall / −0.0131 specificity; gated at 0.99, +0.0174 / −0.0016. **Recall-first (owner 2026-07-30) and ADR-023 point at different variants**, so it is an owner decision. Method to close it: re-measure across the `EXP-033` seed set before any config change. `EXP-035` |
+| H-DET6 | the live detector is blind to non-Latin scripts | ⛔ **REFUTED.** Latin **1.252%** vs non-Latin **1.249%** flag rate over 319,156 stamped production rows, and every script reaches max ≈ 1.0. `EXP-036`. ⚠️ **Measures neither recall nor precision** — no labels. Arabic (0.410%) and Hangul (0.621%) run 2–3× below Latin while still maxing near 1.0: base rate or degraded recall, **indistinguishable here**, and the only place worth spending labelling money |
+
+⚠️ **What none of H-DET1–H-DET5 can see: all 344 obituary heldout positives are Latin-script.** That corpus would return a guaranteed zero on any multilingual question, which is why H-DET6 had to go to production data instead. ⛔ **This is the instrument register these five rows would otherwise lack** — see the structural gap noted below.
+
 ## Where the *experiments* live, as opposed to the hypotheses
 
 | kind | home |

@@ -6807,3 +6807,61 @@ independently of the ≥4.0 one.
 on the one sentence the whole directory exists to support.** The repo's own precedent was explicit
 and one directory away: EXP-030's review blocker read *"the control was a print, not an assert."*
 
+
+## I "refuted" a peer's hypothesis by testing their two EXAMPLES, not the CLAIM (2026-09-10)
+**Problem**: ovr.news proposed that a good obituary headline over a long biography gets dragged
+under the op-point. I scored their two example headlines, found both at 0.98–1.00 on the title
+alone and still above 0.85 under 128 tokens of padding, and told them the diagnosis was
+**refuted** — adding that dilution was *"real but bounded; it does not reach 1e-4."* Measured over
+the population two days later: **22.1% of all the detector's misses are exactly that mechanism**
+(title passes alone, full text does not, median 0.9556 → 0.6529).
+**Root cause**: Two failures, and the second is the one with reach. (a) A hypothesis is about a
+**class**; refuting the instances it was illustrated with refutes nothing — their two rows
+genuinely do not reproduce, and that is compatible with the class being real and common. (b)
+**"Bounded" was measured against the wrong bar.** Dilution never had to reach 1e-4; it only had to
+cross **0.85**, the operating point. The number was correct and the reference point was wrong, and
+nothing in a green run fires on that.
+**Fix**: Went to the population and reported against myself (`EXP-035`,
+`docs/evidence/2026-09-10-obituary-title-body-pooling/`). Two rules, both now in the assistant's
+auto-memory under `feedback-a-dismissal-is-a-claim`: **"refuted" is the most expensive word
+available and needs a population behind it, not an example**; and **before calling a magnitude too
+small, name the threshold the effect would have to cross — for anything near an op-point that bar
+is the op-point, never zero.**
+⭐ **Third instance of one shape in a single day, across three surfaces** — a real number checked
+against the wrong reference. The other two were peer-reported: `2828/2828` read off a file that is
+100% passers by construction, and **n=1,529 vs n=1,537** (both "the obituary heldout", different
+exclusion criteria) printed as comparable.
+
+## A corpus filename off by one character and four rows would have answered a different question (2026-09-10)
+**Problem**: Retraining obituary v3/v4/v5 across seeds needed each version's own training corpus.
+Staged on b650 were `train_split_corpus.jsonl`, `v4_train_seed.jsonl`, `v4b_train_seed.jsonl` and
+`v5_train_seed.jsonl`. The obvious pick for v4 is the one named `v4_train_seed.jsonl`. **It is not
+v4's corpus** — it holds 11,304 rows (2,673/8,631) against v4's published 11,308 (2,673/8,635).
+`v4b_train_seed.jsonl` is the real one.
+**Root cause**: A name is an assertion, and an intermediate artefact kept the un-suffixed name
+while the shipped one took the suffix. Nothing about the four-row difference is visible without
+checking, and a grid built on the wrong file would have looked completely clean.
+**Fix**: Identified all three by **label counts against the shipped `training_config.json`**
+(`n_samples`/`n_positive`/`n_negative`), never by filename — all three matched exactly. The peer
+had asked for exactly this ("if they turn out not to reconstruct the versions as shipped, say so
+and stop"), which is why it was checked before training rather than after.
+⭐ Same session, same family: **leakage had to be computed, not hand-listed** — 25 heldout rows are
+in v5's training corpus, 4 in v4's, 0 in v3's. Excluding the union gives n=1,537 and reconciles the
+published n=1,529, which drops all 33 **panel-graded** rows; the 8-row gap is rows a human
+adjudicated but no model trained on. Two defensible criteria, different questions, not
+interchangeable in one column.
+
+## `early_stopping=True` makes `random_state` pick the validation split — every shipped detector metric is one draw (2026-09-10)
+**Problem**: Both detector trainers build the head as `MLPClassifier(..., early_stopping=True,
+n_iter_no_change=15, random_state=SEED)` with `SEED = 42` hardcoded. With corpus, embedder, window
+and hyperparameters all fixed, **obituary heldout recall at the live 0.85 spans 0.6599–0.8081
+across five seeds** — 0.148, and 0.285 at threshold 0.95.
+**Root cause**: `early_stopping=True` carves an internal validation split, and `random_state` picks
+it. So the seed does not merely perturb initialisation; it changes what the model is selected on.
+**Fix**: Filed as **#158**. Any detector comparison must average over a seed set and report the
+band. This is not academic: a downstream repo's ADR argument rested on a 0.136 recall delta sitting
+inside a 0.148 seed band, and once seeds were varied the ordering produced **three different
+orders across five seeds** and the point estimate reversed.
+⛔ **The trap is that a seed band is invisible to every check this project runs** — the tests pass,
+the gate passes, the number is reproducible on the same seed forever. Nothing distinguishes "this
+model is better" from "this seed was luckier" without deliberately varying it.

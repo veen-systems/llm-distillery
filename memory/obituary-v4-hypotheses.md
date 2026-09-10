@@ -74,3 +74,35 @@ metadata:
 - **NEW (addendum 8/9): does a lede- or title-weighted representation fix the dilution class?** The downstream ovr.news rule reads the first sentence of a generated summary and catches every known FN, including the two no threshold can reach. That is evidence the signal survives in a short window and is lost in the document embedding.
 - **NEW (addendum 8): are newsletter/roundup sources a structural FN class?** Obituary in the lede plus unrelated items dilutes the death frame in the embedding the same way biography does.
 - **NEW: does the hard-negative↔positive interference (addendum 7) mean v6 needs paired examples** — for every hard-negative class added, a matched hard-positive set from the same surface style (memorial-events-blocked vs festivals-kept now inverts under the grief-vs-news rule anyway)?
+
+---
+
+## ⛔ Addendum 2026-09-10 — items 3 and 5 above rest on single-seed numbers
+
+**`EXP-033`/`EXP-034`, evidence in `docs/evidence/2026-09-10-obituary-version-ordering-multiseed/`.**
+
+Every v3/v4/v5 figure on this page — the 0.744 → 0.608 heldout recall drop, the OOF-vs-heldout
+gap in item 5, the op-point reasoning in item 3 — comes from models trained at **seed 42 only**.
+Retraining each version from its own corpus across five seeds:
+
+- **obituary recall at 0.85 spans 0.6599–0.8081** with corpus, window and hyperparameters fixed
+- **all three pairwise bands overlap** at 0.85/0.90/0.95
+- the versions finish in **three different orders** across the five seeds
+- **v4's mean recall is the HIGHEST of the three**, not the lowest
+
+⛔ **So item 5's "OOF metrics overstate the tradeoff" is not established.** The OOF/heldout gap it
+describes is smaller than the seed band on either measurement. The observation may still be true;
+nothing here refutes it, and nothing on this page ever tested it.
+
+⛔ **Item 3's falsification still stands and is NOT weakened** — it rests on a named production
+false negative (the Farouq Hilal tribute) and on the blocking-vs-routing argument, neither of
+which is a seed-sensitive metric. **Do not read this addendum as reopening the recall-first
+decision**; the owner's 2026-07-30 directive is unaffected.
+
+⚠️ Item 4's FP-class taxonomy ("Greek/Spanish/Chinese historical profiles") is a *false positive*
+observation and is untouched by the 2026-09-10 work, which measured false **negatives**.
+
+**What replaced the version comparison as the useful frame:** the misses are a title/body pooling
+conflict, not a version-quality difference — 44% of them are the two halves of an article
+disagreeing inside one mean-pooled 128-token vector
+(`docs/evidence/2026-09-10-obituary-title-body-pooling/`).

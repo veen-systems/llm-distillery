@@ -2,6 +2,12 @@
 
 ## 🔵 NEXT SESSION — **NexusMind is FROZEN. Three lanes, one of them frozen. Start at lane C.**
 
+> ✅ **2026-09-10 added a FOURTH strand and CLOSED it — the frozen-mpnet detectors. It does NOT
+> compete with lane C.** Four experiments (`EXP-033`–`EXP-036`), **$0**, nothing deployed touched.
+> Read the block lower in this file before re-proposing any of it: the window question, the
+> version comparison and the multilingual-blindness worry are all **settled**, and one candidate
+> (`H-DET5`) is parked awaiting an owner call. **Lane C remains the priority.**
+
 > ⛔ **OWNER DECISION 2026-09-08 (relayed via the NexusMind session): PRODUCTION FREEZES AS-IS**
 > while `human_thriving` is reconsidered. **No cutover, no Phase E fit, no config change.** Both
 > lenses keep scoring. ⛔ **Do not disable v8** — rows keep accumulating.
@@ -109,6 +115,63 @@ screen's miss rate: **33%**); the nearer anchor for a v8-shaped pool is `v8_only
 > calls, and so did the 2026-09-09 consult (`EXP-032`). Everything through `b11e42f` is pushed.
 > Session records: `memory/project_session_2026_09_08_second.md`,
 > `memory/project_session_2026_09_09.md`, and the `/curate` entries after them.
+
+## ✅ 2026-09-10 — the detector-architecture strand: four questions asked, three closed, $0
+
+Triggered by a cross-repo request from ovr.news (would a BERT-like encoder beat what we run?).
+Answer: **we already run one** — the pre-scorer detectors are frozen XLM-RoBERTa-base
+(`paraphrase-multilingual-mpnet-base-v2`) with a sklearn MLP head. Evidence in four directories
+under `docs/evidence/2026-09-10-*`; registry rows `EXP-033`–`EXP-036`; hypotheses `H-DET1`–`H-DET6`
+in `memory/hypothesis-ledger.md`.
+
+**⛔ Settled — do not re-propose without reading the evidence:**
+
+1. **Window 128 → 512 buys nothing** (`EXP-033`). Bands overlap on both detectors;
+   violence_promotion *loses* recall at 0.95; 3.82× GPU cost. **128 is now a defensible
+   baseline**, so the "crippled baseline" objection to a fine-tuning comparison is answered.
+2. **The v3/v4/v5 recall comparison is unusable** (`EXP-034`). Three different orderings across
+   five seeds, all bands overlapping. v4's mean is the *highest*, reversing ovr's ADR-042 flag.
+   **Stop citing it.** `memory/obituary-v4-hypotheses.md` carries the addendum.
+3. **The detector is not blind to non-Latin scripts** (`EXP-036`). Latin 1.252% vs non-Latin
+   1.249% flag rate over 319,156 stamped production rows. The non-Latin corpus build is
+   **deprioritised** — it was going to be the next spend.
+
+**⏳ Open, and each has a named trigger:**
+
+- **`H-DET5` — `max(title, full)` is an OWNER CALL, not a task.** 44% of the detector's misses are
+  title/body disagreement inside one mean-pooled window (`EXP-035`). Plain max buys +0.0494 recall
+  for −0.0131 specificity; gated at 0.99, +0.0174 / −0.0016. **Recall-first (owner 2026-07-30) and
+  ADR-023 point at different variants.** ⛔ Before any config change, re-measure across the
+  `EXP-033` seed set — it is currently one model at one seed, and this session spent a day showing
+  what that is worth.
+- **⭐ `H-DET2` generalises beyond the detectors and nobody has acted on it.** `early_stopping=True`
+  lets `random_state` pick the validation split, so obituary recall at 0.85 spans **0.6599–0.8081**
+  with everything else fixed. **Every shipped detector metric in this repo is a single draw.**
+  Trigger: any future detector comparison must average over seeds or it is measuring the seed.
+- **Arabic (0.410%) and Hangul (0.621%) flag 2–3× below Latin** while still reaching max ≈ 1.0
+  (`EXP-036`). Base rate or degraded recall — indistinguishable without labels. **If multilingual
+  labelling money is ever spent, it goes here, not at a broad non-Latin corpus.**
+- **The class-C definitional dispute is upstream of all of it.** Most of the remaining misses are
+  death-as-news (crime, accident, disease), which is `#51` broad-rule vs `#85`'s adjudicated rule
+  vs ovr's ADR-045 recency axis. That is a **decision to be made, not a measurement to run**, and
+  it contaminates every recall number in the estate while it stays open.
+
+**⚠️ Doc-sync finding, flagged not fixed (needs an owner call):** `filters/resilience/v1/` exists
+on disk — README, `config.yaml`, `prefilter.py`, `prompt-compressed.md` — with **no model, no
+`calibration.json`, no `normalization.json`**, so it has never been trained. It is named **nowhere**:
+not in `CLAUDE.md`'s Production Filters table, not in `docs/TODO.md`, not in
+`memory/filter-status.md`. It is either a draft worth an index row or a dead spec worth deleting,
+and that is not the agent's call. Found by the 2026-09-10 `/curate` doc-sync step.
+
+**Cosmetic, filed not fixed:** `NexusMind/deploy/gpu-server/main.py` hardcodes
+`model_version="v4"` in the obituary response and its docstring still says SHADOW, while v5 is
+what loads (md5-verified on the host) and enforcement is live. The only caller discards the
+field — `_obituary_model` is stamped from `MODEL_VERSION` = v5 on both branches — so **no stored
+row is affected.** One-line cleanup for whoever is next in that file.
+
+> **Today's spend: $0.** No oracle calls. Four commits, evidence only; **nothing deployed was
+> touched and no filter package changed.** Both remote hosts (b650-gpu, sadalsuud) were left
+> clean — read-only on sadalsuud.
 
 ## 🗄️ PRIOR — the deploy that shipped a filter nothing called
 
