@@ -1,6 +1,6 @@
 ---
 name: oracle-pricing-scheduling
-description: Oracle cost — DeepSeek CUT prices on 2026-09-10 04:00 UTC (V4.1 Flash: 0.003/0.15/0.60 off-peak, ~30% below the V4 card), and that KILLS the ratio argument this file was built on: cache-miss input now EQUALS Gemini Batch's $0.15/M, so DeepSeek wins at every prompt shape and every cache rate with no crossover — and DeepSeek PEAK now undercuts the Gemini realtime path that actually exists; Gemini Batch is still a price we CANNOT PAY (no .batches call site); the cache ceiling (1.5%-35.7%, reachable to 90.2%) survives as a ~5x cost lever but no longer decides the vendor; ⚠️ we call the `deepseek-chat` ALIAS so V4.1 swapped in under us with no code change and no label-parity run (ADR-010); Gemini AI Studio forces Prepay by 2026-10-12
+description: Oracle cost — DeepSeek CUT prices on 2026-09-10 04:00 UTC, now PAGE-VERIFIED (V4.1 Flash: 0.003/0.15/0.60 off-peak, ~30% below the V4 card), and that KILLS the ratio argument this file was built on: cache-miss input now EQUALS Gemini Batch's $0.15/M, so DeepSeek wins at every prompt shape and every cache rate with no crossover — and DeepSeek PEAK now undercuts the Gemini realtime path that actually exists; Gemini Batch is still a price we CANNOT PAY (no .batches call site); the cache ceiling (1.5%-35.7%, reachable to 90.2%) survives as a ~5x cost lever but no longer decides the vendor; ⚠️ we call the `deepseek-chat` ALIAS so V4.1 swapped in under us with no code change and no label-parity run (ADR-010); V4 **Pro** shutdown postponed to 04:00 UTC 2026-09-14, which changes nothing here because we never call Pro; Gemini AI Studio forces Prepay by 2026-10-12
 metadata:
   type: reference
 ---
@@ -19,15 +19,21 @@ metadata:
 > 06:00–10:00 UTC, **Monday–Friday**, all other hours off-peak — so the weekend rule and
 > the whole scheduling section below still stand as written.
 >
-> ⛔ **SOURCE IS THE EMAIL, NOT THE PRICING PAGE.** Fetched
-> `https://api-docs.deepseek.com/quick_start/pricing/` on 2026-09-09: it still carried the
-> **V4** card, because the cut had not taken effect yet. These rates are therefore
-> *announced*, not *verified against the vendor page* — re-read the page after the cutover
-> before quoting them as established. The 2026-08-23 lesson applies in reverse.
-> Both sources are frozen in `docs/evidence/2026-09-09-deepseek-v41-price-cut/` —
-> ⚠️ the decoded body and headers, **not** the original `.eml`, which had vanished
-> from `~/Downloads` ten minutes after it was read. That README says so on its face.
-> <!-- verify: P=$(curl -sL --max-time 30 https://api-docs.deepseek.com/quick_start/pricing/ 2>/dev/null) || { echo "CANNOT VERIFY: pricing page unreachable"; exit 0; }; if echo "$P" | grep -q '0\.15'; then echo "page now carries 0.15 cache-miss input — V4.1 card is VERIFIED, drop the email-only caveat"; elif echo "$P" | grep -q '0\.22'; then echo "page STILL carries the V4 0.22 card — V4.1 rates remain email-only, or the cut did not land"; else echo "CANNOT VERIFY: page shape changed, read it by hand"; fi -->
+> ✅ **RATES NOW VERIFIED ON THE VENDOR PAGE — 2026-09-10, after the 04:00 UTC cutover.**
+> `https://api-docs.deepseek.com/quick_start/pricing/` carries the **0.15 cache-miss**
+> card, so the email-only caveat that stood here is **DISCHARGED**: quote these rates as
+> established. ⚠️ **Keep the lesson, not the caveat** — on 2026-09-09 the same page still
+> showed the **V4** card *because the cut had not taken effect yet*, so an announced rate
+> is not a verified one until its effective time has passed; check the clock before
+> concluding a page disagrees with an announcement. The 2026-08-23 lesson applies in
+> reverse. A **second** announcement email (2026-09-10 12:46 +0800, DKIM/SPF/DMARC pass)
+> restates the identical table — two independent emails and the page now agree.
+> ⛔ **That second `.eml` was deliberately NOT archived** (owner, 2026-09-10: *"we do not
+> need to save the eml, just ingest the info for decision making"*) — it added no rate this
+> file did not already carry. Decoded body + headers of the FIRST email remain frozen in
+> `docs/evidence/2026-09-09-deepseek-v41-price-cut/` — ⚠️ not the original `.eml`, which had
+> vanished from `~/Downloads` ten minutes after it was read. That README says so on its face.
+> <!-- verify: P=$(curl -sL --max-time 30 https://api-docs.deepseek.com/quick_start/pricing/ 2>/dev/null) || { echo "CANNOT VERIFY: pricing page unreachable"; exit 0; }; if echo "$P" | grep -q '0\.15'; then echo "page still carries 0.15 cache-miss input — V4.1 card HOLDS"; elif echo "$P" | grep -q '0\.22'; then echo "page has REVERTED to the V4 0.22 card — every rate in this block is now wrong, re-read by hand"; else echo "CANNOT VERIFY: page shape changed, read it by hand"; fi -->
 >
 > ⭐⭐ **THE RATIO ARGUMENT IS MOOT — not re-derived, ABOLISHED.** DeepSeek's cache-miss
 > input drops to **$0.15/M, exactly Gemini Batch's input rate**, while output goes to
@@ -75,8 +81,19 @@ metadata:
 > `deepseek-v4-flash` enables reasoning mode and returns empty `content`). The alias resolves
 > **server-side**, so at 04:00 UTC 2026-09-10 the oracle behind every DeepSeek scoring run
 > becomes V4.1 Flash **with no code change, no config change and no signal in our logs**.
-> The announcement also routes **all `deepseek-v4-pro` requests to V4.1 Flash at Flash
-> price** until V4.1 Pro ships. **ADR-010 ranks oracle consistency above cost**, and no
+> **The V4 Pro shutdown has a DATE, and it was pushed back: 04:00 UTC 2026-09-14** (12:00
+> Beijing) — a follow-up announcement on 2026-09-10 12:46 +0800 postponed it. At that moment
+> all `deepseek-v4-pro` requests route to V4.1 Flash and bill at **Flash** price; until then
+> Pro bills at unchanged Pro rates. ⚠️ **This moves nothing of ours — we never call Pro**;
+> the exposure was always the Flash alias, which already flipped at 04:00 UTC 2026-09-10.
+> The date matters only if something starts calling `deepseek-v4-pro` before 09-14 and
+> expects Pro behaviour after it. DeepSeek claims V4.1 Flash *"comprehensively surpassed V4
+> Pro across all key metrics"* — **vendor assertion, unmeasured here.**
+> (Verified 2026-09-10: **zero `deepseek-v4-pro` call sites** in this repo — every DeepSeek
+> path takes the `deepseek-chat` alias, though `--model` is an overridable default on
+> `score_deepseek_production.py` / `validate_deepseek_oracle.py`.)
+>
+> **ADR-010 ranks oracle consistency above cost**, and no
 > V4-vs-V4.1 label-parity run exists or can exist until the model does. **UNMEASURED.** Any
 > oracle run spanning the cutover mixes two models’ labels into one dataset. → **#157**.
 >
