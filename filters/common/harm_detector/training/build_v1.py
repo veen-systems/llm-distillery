@@ -9,7 +9,9 @@ threshold had to be guessed today, and why choosing one now would be the mistake
 ⭐ **Why an ensemble and not "the best seed".** `H-DET2` (measured 2026-09-10): with everything
 else fixed, `early_stopping=True` lets `random_state` pick the internal validation split, so a
 detector's headline metric swings wildly by seed — obituary recall at 0.85 spanned 0.6599-0.8081,
-and this detector's own catch count on the panel spanned 0-3 across five seeds. **Picking the seed
+and this detector's own catch count on the panel spanned 0-3 at the val-picked operating point.
+⚠️ Over the 0.30-0.70 plateau single seeds span **2-4** and at 0.30 three of them catch 4, beating
+the ensemble's 3 — the ensemble removes the CHOICE, it does not dominate. **Picking the seed
 that scores best is seed-shopping and ships a lottery ticket.** Averaging the five removes the
 choice entirely, and it is free at inference: one embedding pass feeds five very small MLPs.
 

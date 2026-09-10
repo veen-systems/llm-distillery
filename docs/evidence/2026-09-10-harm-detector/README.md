@@ -52,7 +52,9 @@ Gemini called harmful. The detector agrees with judge *consensus*, not with the 
 
 The pre-registration said: *if the chosen threshold flags <2% or >40% of the panel, the catch
 count is a property of the threshold, not the detector — report the sweep, no headline.* **Three
-of five seeds landed at or under 2%.** So:
+of five seeds landed at or under 2%.** ⛔ **Corrected 2026-09-10 by review: it was TWO of five
+(0.0073 and 0.0146; 0.0219 is above 2%). The clause still fires and the decision is unaffected —
+the count was wrong.** So:
 
 | thr | flagged /137 | rate | of 9 (null) | of 32 (null) | panel precision | test spec | test recall |
 |---|---|---|---|---|---|---|---|
@@ -63,8 +65,29 @@ of five seeds landed at or under 2%.** So:
 | 0.90 | 1.6 | 1.17% | 0–2 (0.0) | 0–2 (0.0) | 0.542 | 0.9847 | 0.3971 |
 
 ⭐ **The seed instability at the operating point was largely a THRESHOLD artifact.** At the
-val-picked threshold the band on the 9 includes **0**; at 0.50 it is **3–4 with no seed at zero**,
-and the null is still 0.0. The detector is more stable than its operating point suggested.
+val-picked threshold the band on the 9 includes **0**; at 0.50 it is **3–4 with no seed at zero**.
+
+⛔⛔ **RETRACTED 2026-09-10 BY REVIEW — "and the null is still 0.0" IS NOT A RESULT IN THIS TABLE.**
+The null arm's *flag count* over the sweep, which this table omitted, is what settles it:
+
+| thr | real flagged /137 | **null flagged /137** |
+|---|---|---|
+| 0.30 | 10.6 | **22.4** |
+| 0.50 | 7.6 | 1.8 |
+| 0.65 | 5.4 | **0.0** |
+| 0.70 | 4.4 | **0.0** |
+| 0.85 | 2.0 | **0.0** |
+
+**At 0.65 and above the null flags ZERO of 137 rows in all five seeds, so its catch of 0 is
+arithmetically forced, not measured — the instrument could not have said yes.** And at 0.30 the
+null fires **more** than the real arm, not less, so the *"it fires at twice the rate"* defence
+below holds **only at the pre-registered rule** (real 2.04%, null 4.09%) and is reversed at the
+low end of the sweep.
+
+✅ **The PRIMARY is unaffected and stands.** At the pre-registered threshold rule the null is
+genuinely rate-advantaged and still touches the 9 zero times. It is the *sweep's* null reading
+that was wrong — and it was wrong in the one way this project has a standing rule against:
+**a negative from an instrument that could not have produced a positive carries no information.**
 
 ⛔ **0.50 is POST-HOC.** It is not the pre-registered rule and no decision may be taken on it
 without a fresh pre-registered threshold rule. It is reported because the clause required it.

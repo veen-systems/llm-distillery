@@ -17,7 +17,10 @@ Architecture (matching `obituary v5`, `violence_promotion v1`, `commerce v2`):
 
 ⭐ **The five heads are not an accuracy trick — they are the fix for `H-DET2`.** With everything
 else held fixed, `early_stopping=True` lets `random_state` choose the internal validation split,
-and this detector's catch count on the held-out panel spanned **0-3** across five seeds. Shipping
+and this detector's catch count on the held-out panel spanned **0-3 at the val-picked operating
+point**. ⚠️ **Over the 0.30-0.70 plateau single seeds span 2-4, not 0-3, and at 0.30 three of them
+catch 4 — beating the ensemble's 3.** The ensemble removes the CHOICE of seed; it does not
+dominate every seed. Shipping
 one seed ships a lottery ticket; the mean of five removes the choice. Cost is negligible because
 the embedding pass — the expensive part — is shared.
 

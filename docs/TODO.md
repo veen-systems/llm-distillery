@@ -141,7 +141,8 @@ was **wrong on 3 of 5 seeds** — a val constraint does not transfer to test.
 2026-09-10). A **5-seed ensemble**, and ⛔ **no threshold is shipped**: it stamps
 `harm_is_subject_score` + `harm_detector_version` and gates nothing. ⭐ **The threshold question
 DISSOLVED** — the ensemble holds **3 of 9** across a plateau from 0.30 to 0.70 where single seeds
-bounced 0–3, so there was nothing to guess. Verified: shipped module reproduces the builder to
+bounced 0–3 *at the val-picked operating point* (⛔ **over the plateau itself they span 2–4** —
+corrected by review), so there was nothing to guess. Verified: shipped module reproduces the builder to
 8.1e-07 (= the stored rounding), **CPU vs CUDA 0 verdict flips**, artifacts byte-identical 6/6,
 and `tests/unit/test_harm_detector_contract.py` fails if a threshold ever appears (3 mutations
 killed).

@@ -11,8 +11,11 @@ ambulances: Bihar copes with floods"* betrays Thriving's *"lives getting better"
 exactly right under Solutions; Nature Recovery is **about** recovering from damage. Measured: of
 the 9 articles both judges called harmful, **6 were already surfaced by another lens**.
 
-⛔ **NOT DEPLOYED.** Built, verified and documented here. NexusMind is frozen (owner, 2026-09-08);
-wiring it is a separate, owner-approved NexusMind PR — see *Wiring* below.
+⛔ **NOT DEPLOYED, NOT ENABLED.** The wiring is open as **NexusMind PR #474** (branch
+`feat/harm-detector-shadow-stamp`), which ships `pipeline.harm_detector.enabled: false`.
+⚠️ **That flag is NexusMind-side only** — review found the gpu-server loads the detector
+unconditionally once the model directory is deployed, so "rollback = `enabled: false`" is true of
+the stamping pass and **false of the server half**. NexusMind is frozen (owner, 2026-09-08).
 
 ## Architecture
 
@@ -25,7 +28,8 @@ Same contract as `obituary v5`, `violence_promotion v1`, `commerce v2`, except f
 
 ⭐ **The ensemble is the fix for `H-DET2`, not a performance trick.** With everything else fixed,
 `early_stopping=True` lets `random_state` choose the internal validation split. Measured on this
-exact detector: single seeds caught **0–3** of the 9 held-out judged-harmful articles. **Shipping
+exact detector: at the val-picked operating point single seeds caught **0–3** of the 9 held-out
+judged-harmful articles. **Shipping
 "the best seed" is seed-shopping and ships a lottery ticket.** The mean of five removes the
 choice, and it is nearly free — the embedding pass, which dominates, is shared.
 
@@ -49,8 +53,12 @@ Held-out arbiter: the 137-row `EXP-031` panel (judged blind by both oracle famil
 | 0.85 | 3 | 2.19% | 2 | 2 | 0.9809 | 0.4307 |
 | 0.90 | 1 | 0.73% | 0 | 0 | 0.9904 | 0.3650 |
 
-⭐ **The ensemble holds 3 of 9 across a plateau from 0.30 to 0.70** where individual seeds bounced
-0–3. That stability is the shipped improvement.
+⭐ **The ensemble holds 3 of 9 across a plateau from 0.30 to 0.70.** ⛔ **Corrected 2026-09-10 by
+review — the earlier wording here said single seeds "bounced 0–3" over that plateau, and they do
+not: over 0.30–0.70 they span 2–4, and at 0.30 three seeds catch 4, beating the ensemble's 3.**
+The 0–3 spread is real but belongs to the *val-picked operating point*, not the plateau. So the
+ensemble's value is that it removes the CHOICE of seed and is flat across a wide band — **not that
+it beats every seed**, which the original sentence implied in the direction that flattered it.
 
 ⚠️ **Read it against the null arm, not against zero.** In `EXP-037` a shuffled-label detector
 caught **0.0 of 9** while firing at **twice** the rate. That is what makes 3 of 9 a signal.
@@ -76,16 +84,26 @@ versions). Built with **sklearn 1.8.0**, matching the other detectors' pickles.
 
 ## Artifacts
 
-`*.pkl` are gitignored and travel **out-of-band**, like every other detector here. `SHA256SUMS.txt`
-and `training_config.json` are tracked so identity can be checked at every hop.
+⚠️ **This differs by repo, and the vendored copy of this file cannot say so for itself.**
+In **llm-distillery** `*.pkl` is gitignored (`.gitignore:73`), the pickles travel out-of-band, and
+`models/SHA256SUMS.txt` is the manifest. In **NexusMind** the pickles are **committed** — 13.85 MB,
+not ignored — each with its own `<file>.sha256` sidecar, and there is no `SHA256SUMS.txt`. That is
+NexusMind's established convention (`obituary_detector` 9.8 MB, `violence_promotion` 29 MB are
+committed the same way) and its deploy depends on it. `training_config.json` is tracked in both.
 
-## Wiring (NOT done — this is the plan)
+⛔ **Every repo-relative path below resolves in llm-distillery only.** This file is vendored into
+NexusMind verbatim, so its Reproduce block is not runnable there.
+
+## Wiring — open as NexusMind PR #474, **not merged**
 
 1. Copy `models/` out-of-band to the serving host; verify against `SHA256SUMS.txt` **before**
    restarting anything.
-2. Instantiate once, batch-score in the same pass that runs the other pre-scorer detectors —
-   the embedder is the expensive part and is already loaded there.
-3. Stamp `harm_is_subject_score` and `harm_detector_version` on **every** article. **Gate nothing.**
+2. Instantiate once and batch-score. ⚠️ **The shipped PR does NOT share the embedder** — the
+   gpu-server holds three separate `SentenceTransformer` instances (commerce, obituary, harm).
+   Sharing one is llm-distillery`#89`, deliberately not attempted during a freeze.
+3. Stamp `_harm_is_subject_score` and `_harm_detector_model` on **every** article. **Gate nothing.**
+   ⚠️ Note the leading underscores — `HarmDetectorV1.stamp()` returns *un*-prefixed names and is not
+   what the pipeline calls (dead code; a name trap if anyone wires it in).
 4. Let it run, then measure what it *would* block per lens per cycle from the stamp.
 5. Only then a per-lens config decision. Thriving first; ⛔ **never a cross-lens blocker.**
 
