@@ -1,0 +1,38 @@
+{
+  "version": "v1",
+  "detector": "harm_is_subject",
+  "stamp_only": true,
+  "threshold": null,
+  "ensemble_seeds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "embedder": "paraphrase-multilingual-mpnet-base-v2",
+  "hidden_layer_sizes": [
+    256,
+    128
+  ],
+  "positive_label": "harm_is_subject",
+  "trained_from": "datasets/training/human_thriving_v8_scoped",
+  "counts": {
+    "train": 5268,
+    "train_pos": 1011,
+    "val": 658,
+    "val_pos": 105,
+    "test": 660,
+    "test_pos": 137
+  },
+  "sklearn_version": "1.8.0",
+  "provenance": {
+    "commit": "b1e945b69960f8f5bf5871097e73b3ef979f1496",
+    "worktree": "untracked-only",
+    "modified_tracked_files": [],
+    "untracked_count": 28
+  },
+  "built_utc": "2026-09-10T17:37:43+00:00",
+  "experiment": "EXP-037",
+  "issue": "llm-distillery#156"
+}
