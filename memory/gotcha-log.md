@@ -1251,6 +1251,76 @@ you inspect** (`d['model']`, `usage.completion_tokens_details`, and whether `con
 `deepseek-v4-flash`, `deepseek-v4-pro`), so there is **no lighter tier** to retreat to under the
 price rise. See `memory/oracle-pricing-scheduling.md`.
 
+### A NULL ARM THAT CANNOT FIRE IS NOT A CONTROL — read its FLAG RATE, not only its catch count (2026-09-10)
+
+**Problem**: `EXP-037`'s threshold sweep concluded *"and the null is still 0.0"* — presented as
+evidence the detector's catch was real across the whole sweep. It is not evidence anywhere above
+0.65.
+
+**Root cause**: the sweep table reported the null's **catch count** and omitted its **flag count**.
+At thresholds ≥0.65 the shuffled-label arm flags **0 of 137 rows in all five seeds**, so a catch of
+zero is arithmetically forced — the instrument could not have said yes. Worse, the direction
+reverses: at 0.30 the null flags **22.4** rows against the real arm's **10.6**, so the defence
+*"it fires at TWICE the real arm's rate"* — true at the pre-registered operating point — is
+backwards at the low end of the same table.
+
+**Fix**: retracted in the evidence README, with the null's flag column added beside the catch
+column. The PRIMARY result is unaffected: at the pre-registered rule the null is genuinely
+rate-advantaged and still touches the 9 zero times.
+
+**Lesson**: ⭐ **This is the instrument rule — already in `CLAUDE.md` — applied to a CONTROL rather
+than to a measurement, and that is the axis nobody checks.** A control is built to produce a
+reassuring negative, so its own ability to fire is the last thing interrogated. **Report a null
+arm's firing rate beside its catch count, always; a control with a zero firing rate is not a weak
+control, it is not a control.** Found by an adversarial review lens, in a document whose own text
+was congratulating itself on having a null arm.
+
+### A DENYLIST OF KNOWN-BAD VALUES IS A HAND-BUILT POPULATION, AND THE VENDOR EXTENDS IT (2026-09-10)
+
+**Problem**: `score_ollama_oracle.py` refused the literal DeepSeek model ids with
+`args.model.startswith("deepseek-v4")`. On 2026-09-10 DeepSeek renamed the flash line;
+`GET /models` began returning **`deepseek-flash`**, which does not match the prefix — so the one
+id the vendor now advertises, the id anyone would reach for, walked straight past the guard. The
+other two DeepSeek entry points had no guard at all.
+
+**Root cause**: the guard enumerated the **bad** values, and that set is owned by someone outside
+the repo. It was correct code on the right path with a passing rationale; nothing in the codebase
+changed and it stopped working anyway.
+
+**Fix**: `ground_truth/deepseek_models.py` — an allowlist of the one known-good alias, endpoint-aware
+so a Gemini `--base-url` is passed through, wired into all three scripts before the key, the prompt
+and any file I/O; subprocess tests plus two positive controls, both mutations killed.
+
+**Lesson**: ⭐ **Enumerate what is ALLOWED. A denylist is a hand-built population whose maintainer
+is the vendor.** ⚠️ And the review found the fix's own scoping was wrong: there are **six** DeepSeek
+call sites, not three (`violence_promotion/v1/oracle.py` takes the model as a constructor argument),
+and `urlparse().hostname` is fooled by a root-anchored FQDN — `api.deepseek.com.` reaches the real
+API and skips the check. **Fixing the shape is not the same as covering the surface.**
+
+### A GUARD WHOSE DOCSTRING NAMES ITS PURPOSE AND WHOSE PREDICATE IS NARROWER IS WORSE THAN NONE (2026-09-10)
+
+**Problem**: `test_no_threshold_anywhere_in_the_inference_module` existed to stop a threshold
+appearing in a stamp-only artifact, and its docstring said so: *"the thing that notices if someone
+adds a convenient default later."* It walked `ast.arg` and `ast.Name`. The natural way to add a
+threshold — `self.threshold = 0.85` — is an `ast.Attribute` whose `Name` is `self`, and it passed
+in silence. So did a float knob under another name (`cut=0.85`). Its sibling matched **substrings**
+against a hand-written forbidden list, so any newly-invented key name passed.
+
+**Root cause**: the test was written from the shape I had in mind while writing the module, not from
+the shapes an editor would reach for later. A green test on a narrow predicate proves the narrow
+predicate; the docstring then sells it as the wide one.
+
+**Fix**: widened to Attributes and to float defaults on `__init__`, and the key test now **parses
+the returned dict** and requires exactly two keys, so an ADDITION fails rather than only a known-bad
+name — the same denylist→allowlist move as the entry above, on the same day, in a file written the
+same afternoon. Three mutations killed.
+
+**Lesson**: **A guard is read as covering what its docstring claims.** When the two diverge the
+docstring wins in every future reader's head, which makes an over-promising guard strictly worse
+than an absent one. Mutate the guard with the shape a *later* author would write, not the shape you
+just avoided.
+
+
 ### ⭐ ADDENDUM 2026-09-10 — the vendor renamed the model and the guard silently stopped covering it
 
 **The rule above still holds. The guard enforcing it did not.** `score_ollama_oracle.py:416`
