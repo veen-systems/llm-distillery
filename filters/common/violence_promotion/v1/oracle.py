@@ -63,6 +63,8 @@ def _load_api_key() -> Optional[str]:
 
 
 DEEPSEEK_URL = "https://api.deepseek.com/chat/completions"
+from ground_truth.deepseek_models import assert_safe_deepseek_model
+
 DEEPSEEK_MODEL = "deepseek-chat"
 
 
@@ -88,6 +90,11 @@ class ViolencePromotionOracle:
     """
 
     def __init__(self, model: str = DEEPSEEK_MODEL):
+        # ⛔ `model` is caller-supplied, which makes this a latent surface for the reasoning-mode
+        # trap: a literal DeepSeek id returns correct JSON at production max_tokens while
+        # billing ~35x the output tokens (measured 2026-09-10), or empty content at a small one.
+        # llm-distillery#157. The allowlist is the same one the three oracle scripts use.
+        assert_safe_deepseek_model(model)
         self.model = model
         self.api_key = _load_api_key()
         if not self.api_key:

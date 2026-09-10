@@ -54,8 +54,19 @@ class UnsafeDeepSeekModel(ValueError):
 
 
 def is_deepseek_endpoint(base_url: str) -> bool:
-    """True when `base_url` points at DeepSeek's own API host."""
-    return urlparse(base_url).hostname in DEEPSEEK_HOSTS
+    """True when `base_url` points at DeepSeek's own API host.
+
+    ⛔ The hostname is NORMALISED first, and that is not cosmetic. A root-anchored FQDN —
+    `https://api.deepseek.com./v1/...` — is legal, resolves, reaches the real API, and
+    `urlparse().hostname` returns it verbatim as `api.deepseek.com.`, which is not in the set.
+    Measured 2026-09-10 against the live endpoint: the trailing dot walked straight past this
+    check and returned DeepSeek's own 401. `urlparse` already lowercases and strips userinfo
+    and the port; the trailing dot is the part it leaves.
+    """
+    host = urlparse(base_url).hostname
+    if not host:
+        return False
+    return host.rstrip(".") in DEEPSEEK_HOSTS
 
 
 def assert_safe_deepseek_model(model: str, base_url: str | None = None) -> str:

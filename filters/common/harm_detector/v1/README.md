@@ -94,23 +94,32 @@ committed the same way) and its deploy depends on it. `training_config.json` is 
 ⛔ **Every repo-relative path below resolves in llm-distillery only.** This file is vendored into
 NexusMind verbatim, so its Reproduce block is not runnable there.
 
-## Wiring — open as NexusMind PR #474, **not merged**
+## Wiring — NexusMind PR #474, **still a draft**
 
-1. Copy `models/` out-of-band to the serving host; verify against `SHA256SUMS.txt` **before**
-   restarting anything.
-2. Instantiate once and batch-score. ⚠️ **The shipped PR does NOT share the embedder** — the
-   gpu-server holds three separate `SentenceTransformer` instances (commerce, obituary, harm).
-   Sharing one is llm-distillery`#89`, deliberately not attempted during a freeze.
-3. Stamp `_harm_is_subject_score` and `_harm_detector_model` on **every** article. **Gate nothing.**
-   ⚠️ Note the leading underscores — `HarmDetectorV1.stamp()` returns *un*-prefixed names and is not
-   what the pipeline calls (dead code; a name trap if anyone wires it in).
-4. Let it run, then measure what it *would* block per lens per cycle from the stamp.
-5. Only then a per-lens config decision. Thriving first; ⛔ **never a cross-lens blocker.**
+⭐ **In-process, not over HTTP** (owner direction, 2026-09-10). The other detectors call
+gpu-server because the pipeline host has no GPU; NexusMind is consolidating into one GPU-hosted
+package in the near term, which **removes that machine boundary** — and with it the chunking, the
+request cap, the rate limiter, the two-deployable version skew, and a class of silent failure
+where a changed response shape yields `None` scores that look real. Building the endpoint first
+would have been building a deletion.
 
-⚠️ **`#152`'s cold-start trap applies to anything new entering the pipeline.**
-⚠️ **The panel is `uplifting v7` / `human_thriving v8` display-eligible rows only.** It says
-**nothing** about solutions, belonging, nature_recovery or cultural_discovery. Their numbers must
-come from the shadow stamp — not from this table.
+**Measured cost of staying in-process** — 137 real articles, mean body 4,189 chars, CPU:
+**19.9 articles/s** on a 16-core Ryzen 7. The pipeline host is an 8-core Ryzen 3, so ~2–2.5×
+that: a cycle's ~1,421-article intake is **~3 minutes** inside a 4-hour window.
+
+1. Copy `models/` to the host; the loader now verifies every digest against `SHA256SUMS.txt` or
+   per-file `.sha256` sidecars and **refuses to unpickle anything unverified**.
+2. `pipeline.harm_detector.enabled: true`. `device: null` auto-selects CUDA when torch sees it.
+3. ⛔ **Leave `max_articles_per_run` bounded.** An unbounded first run covers the whole
+   `max_article_age_days` window — measured **34,661 articles, ~60–75 min** — which is
+   llm-distillery`#152`'s outage shape. Newest files are stamped first, so the backlog drains
+   over a few cycles and today's articles never wait.
+4. Stamp only. **Gate nothing.** Then measure what it *would* block per lens, per cycle.
+5. Only then a per-lens config decision. ⛔ **Never a cross-lens blocker.**
+
+⚠️ **The panel behind every number here is `uplifting v7` / `human_thriving v8` display-eligible
+rows only.** It says **nothing** about solutions, belonging, nature_recovery or cultural_discovery
+— their numbers must come from the shadow stamp.
 
 ## Reproduce
 

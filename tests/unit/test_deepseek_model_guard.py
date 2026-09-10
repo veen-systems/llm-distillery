@@ -120,3 +120,79 @@ def test_call_site_lets_a_gemini_endpoint_through():
              "--input", "/nonexistent.jsonl", "--output", "/nonexistent/out.jsonl")
     assert "is a literal DeepSeek id" not in r.stdout
     assert "Scoring with:" in r.stdout, r.stdout + r.stderr
+
+
+# ---- host normalisation, added 2026-09-10 after review reached the live API around it ----
+
+@pytest.mark.parametrize("url", [
+    "https://api.deepseek.com./v1/chat/completions",     # root-anchored FQDN — the live bypass
+    "https://API.DEEPSEEK.COM/v1/chat/completions",
+    "https://api.deepseek.com:443/v1/chat/completions",
+    "https://user:pw@api.deepseek.com/v1/chat/completions",
+])
+def test_deepseek_host_variants_are_all_recognised(url):
+    """⛔ The trailing dot is the one that was measured reaching the real API.
+
+    `urlparse` lowercases the host and strips userinfo and port, so those three were already
+    covered; it leaves the root anchor, and `api.deepseek.com.` is not `api.deepseek.com`.
+    """
+    assert is_deepseek_endpoint(url), url
+    with pytest.raises(UnsafeDeepSeekModel):
+        assert_safe_deepseek_model("deepseek-flash", url)
+
+
+@pytest.mark.parametrize("url", [
+    "https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+    "https://api.deepseek.com.evil.test/v1/chat/completions",   # must NOT match
+    "http://localhost:11434/v1/chat/completions",
+])
+def test_non_deepseek_hosts_are_passed_through(url):
+    assert not is_deepseek_endpoint(url), url
+    assert assert_safe_deepseek_model("some-other-model", url) == "some-other-model"
+
+
+# ---- coverage of the SURFACE, not just the shape (added 2026-09-10) -------------------------
+
+def test_every_deepseek_call_site_is_guarded():
+    """⛔ I claimed three entry points. Review found SIX.
+
+    The fix's shape was right and its scope was wrong — `filters/common/violence_promotion/v1/
+    oracle.py` takes the model as a CONSTRUCTOR ARGUMENT, so it was a latent surface, not merely
+    an unguarded literal. This test enumerates the surface from the code rather than from my
+    memory of it: any file that posts to DeepSeek must reference the allowlist.
+    """
+    import subprocess
+
+    r = subprocess.run(
+        ["grep", "-rl", "api.deepseek.com", "--include=*.py", str(REPO)],
+        capture_output=True, text=True,
+    )
+    callers = [Path(p) for p in r.stdout.split() if "/docs/evidence/" not in p]
+    assert callers, "grep found no DeepSeek callers — the check examined nothing"
+
+    unguarded, latent = [], []
+    for f in callers:
+        if f.name == "deepseek_models.py":
+            continue
+        raw = f.read_text(encoding="utf-8", errors="replace")
+        # ⚠️ Strip comments before deciding the file talks to DeepSeek. Two panel runners name
+        # the host ONLY in a commented-out MODELS entry with no dispatch function behind it —
+        # they cannot post to DeepSeek today. Narrowing the predicate to match the claim is not
+        # the same as loosening the check: an uncommented entry puts the file straight back in.
+        live = "\n".join(l for l in raw.splitlines() if not l.lstrip().startswith("#"))
+        if "api.deepseek.com" not in live:
+            latent.append(str(f.relative_to(REPO)))
+            continue
+        if "requests.post" not in live and "urlopen" not in live and "session.post" not in live:
+            continue                                   # names the host but makes no call
+        if "assert_safe_deepseek_model" not in live:
+            unguarded.append(str(f.relative_to(REPO)))
+    assert not unguarded, (
+        "these files POST to DeepSeek without passing the model through the allowlist: "
+        + ", ".join(unguarded)
+    )
+    # Not an assertion: a commented-out entry is a future surface, not a present defect. It is
+    # printed so the count stays visible — my own count of these has been wrong twice.
+    if latent:
+        print(f"latent (DeepSeek named only in comments): {', '.join(latent)}")
+

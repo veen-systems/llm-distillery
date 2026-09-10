@@ -80,7 +80,7 @@ def test_stamp_returns_exactly_two_keys_parsed_not_grepped():
         "stamp() must return a single dict literal, so its keys are statically checkable"
     )
     keys = {k.value for k in returns[0].value.keys if isinstance(k, ast.Constant)}
-    assert keys == {"harm_is_subject_score", "harm_detector_version"}, (
+    assert keys == {"_harm_is_subject_score", "_harm_detector_model"}, (
         f"stamp() returns {sorted(keys)} — the stamp-only contract is exactly a score and a "
         f"version; anything else is a decision or an unreviewed field"
     )
@@ -88,8 +88,8 @@ def test_stamp_returns_exactly_two_keys_parsed_not_grepped():
 
 def test_stamp_keys_are_score_and_version_only():
     src = INFERENCE.read_text(encoding="utf-8")
-    assert "harm_is_subject_score" in src
-    assert "harm_detector_version" in src
+    assert "_harm_is_subject_score" in src
+    assert "_harm_detector_model" in src
     for forbidden in ("is_harm", "harm_verdict", "should_block", "blocked"):
         assert f'"{forbidden}"' not in src, f"stamp must not carry `{forbidden}`"
 
@@ -115,3 +115,118 @@ def test_every_declared_head_has_a_recorded_hash():
     for seed in cfg["ensemble_seeds"]:
         assert f"mlp_classifier_seed{seed}.pkl" in sums, f"seed {seed} declared but unhashed"
     assert "scaler.pkl" in sums
+
+
+# ---- the loader's refusals, added 2026-09-10 after review found each one one-directional ----
+
+@pytest.mark.skipif(not CONFIG.exists(), reason="artifact not built in this checkout")
+@pytest.mark.parametrize("declared,why", [
+    ([0, 1], "fewer heads than on disk — silently loaded 2 of 5 with an identical version stamp"),
+    ([0, 1, 2, 3, 4, 5], "more heads than on disk"),
+])
+def test_load_refuses_an_ensemble_that_disagrees_with_the_directory(tmp_path, declared, why):
+    """⛔ Both directions. The first version checked only that every DECLARED seed existed.
+
+    Measured before the fix: `ensemble_seeds: [0,1]` loaded two heads out of five, produced a
+    0.083 score shift on identical input, and stamped the SAME version string.
+    """
+    import json as _json
+    import shutil as _shutil
+
+    from filters.common.harm_detector.v1.inference import HarmDetectorV1
+
+    src = PKG / "v1" / "models"
+    dst = tmp_path / "models"
+    dst.mkdir()
+    for f in src.iterdir():
+        if f.is_file():
+            _shutil.copy2(f, dst / f.name)
+    cfg = _json.loads((dst / "training_config.json").read_text(encoding="utf-8"))
+    cfg["ensemble_seeds"] = declared
+    (dst / "training_config.json").write_text(_json.dumps(cfg), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="ensemble mismatch"):
+        HarmDetectorV1(model_dir=dst)._load()
+
+
+@pytest.mark.skipif(not CONFIG.exists(), reason="artifact not built in this checkout")
+def test_load_refuses_a_pickle_whose_hash_does_not_match(tmp_path):
+    """SHA256SUMS.txt existed and nothing read it — any pickle could be swapped silently."""
+    import shutil as _shutil
+
+    from filters.common.harm_detector.v1.inference import HarmDetectorV1
+
+    src = PKG / "v1" / "models"
+    dst = tmp_path / "models"
+    dst.mkdir()
+    for f in src.iterdir():
+        if f.is_file():
+            _shutil.copy2(f, dst / f.name)
+    target = dst / "mlp_classifier_seed0.pkl"
+    target.write_bytes(target.read_bytes() + b"\x00")     # one byte is enough
+
+    with pytest.raises(ValueError, match="integrity check FAILED"):
+        HarmDetectorV1(model_dir=dst)._load()
+
+
+@pytest.mark.skipif(not CONFIG.exists(), reason="artifact not built in this checkout")
+def test_load_refuses_when_no_hash_is_recorded_at_all(tmp_path):
+    """A missing manifest must raise, not silently skip the check — an unverified pickle is
+    arbitrary code, and 'no expectation' is exactly how a hash guard becomes decoration."""
+    import shutil as _shutil
+
+    from filters.common.harm_detector.v1.inference import HarmDetectorV1
+
+    src = PKG / "v1" / "models"
+    dst = tmp_path / "models"
+    dst.mkdir()
+    for f in src.iterdir():
+        if f.is_file() and not f.name.endswith(".sha256") and f.name != "SHA256SUMS.txt":
+            _shutil.copy2(f, dst / f.name)
+
+    with pytest.raises(ValueError, match="no recorded hash"):
+        HarmDetectorV1(model_dir=dst)._load()
+
+
+def test_batch_score_raises_rather_than_returning_an_empty_list_for_a_full_input():
+    """⛔ Added because a mutation survived: `_load` now refuses an empty ensemble, so this
+    guard is unreachable through it — and therefore untested until it is tested directly.
+
+    Measured before the fix: `zip(*[])` is empty for ANY input, so 100 articles in returned 0
+    scores out with no error, and a caller doing `zip(articles, batch_score(articles))` stamped
+    nothing and reported success.
+    """
+    from filters.common.harm_detector.v1.inference import HarmDetectorV1
+
+    d = HarmDetectorV1()
+    d._classifiers = []                       # bypass _load: the state a refactor could reach
+    d._scaler = object()
+    d._embedder = object()
+    with pytest.raises(RuntimeError, match="no classifier heads"):
+        d.batch_score([{"title": "t", "content": "c"}] * 100)
+
+
+def test_batch_score_refuses_a_score_list_shorter_than_its_input():
+    """The second half of the same defect: a length mismatch must not reach the caller."""
+    import numpy as np
+
+    from filters.common.harm_detector.v1.inference import HarmDetectorV1
+
+    class _ShortHead:
+        def predict_proba(self, z):
+            return np.zeros((1, 2))           # one row, whatever the input length
+
+    class _PassthroughScaler:
+        def transform(self, x):
+            return x
+
+    class _Embedder:
+        def encode(self, texts, **kw):
+            return np.zeros((len(texts), 8))
+
+    d = HarmDetectorV1()
+    d._classifiers = [_ShortHead()]
+    d._scaler = _PassthroughScaler()
+    d._embedder = _Embedder()
+    with pytest.raises(RuntimeError, match="refusing to return a list"):
+        d.batch_score([{"title": "t", "content": "c"}] * 5)

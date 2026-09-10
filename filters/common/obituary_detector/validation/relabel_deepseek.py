@@ -42,6 +42,10 @@ def _load_key():
 KEY = _load_key()
 URL = "https://api.deepseek.com/chat/completions"
 MODEL = "deepseek-chat"
+# Asserted at import: the constant is the only thing standing between this script and the
+# reasoning-mode trap, and a constant nothing checks is a comment. llm-distillery#157.
+from ground_truth.deepseek_models import assert_safe_deepseek_model  # noqa: E402
+assert_safe_deepseek_model(MODEL)
 
 # SHARPENED-BROAD rule (owner decision 2026-06-14): block death-EVENT reporting of a
 # specific PERSON (obituary, accident, crime, disaster), but DO NOT block politics /

@@ -38,6 +38,8 @@ import argparse, json, os, sys, time
 from pathlib import Path
 import requests
 
+from ground_truth.deepseek_models import assert_safe_deepseek_model
+
 LD = Path("/home/jeroen/repos/veen-systems/llm-distillery")
 sys.path.insert(0, str(LD))
 from ground_truth.text_cleaning import (
@@ -167,7 +169,7 @@ def call_deepseek(prompt):
     r = requests.post(DEEPSEEK_URL,
                       headers={"Authorization": f"Bearer {secret('deepseek_api_key')}",
                                "Content-Type": "application/json"},
-                      json={"model": "deepseek-chat",
+                      json={"model": assert_safe_deepseek_model("deepseek-chat"),
                             "messages": [{"role": "user", "content": prompt}],
                             "temperature": 0.3, "max_tokens": 4096,
                             "response_format": {"type": "json_object"}}, timeout=180)

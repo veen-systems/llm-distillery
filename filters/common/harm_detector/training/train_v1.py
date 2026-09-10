@@ -39,6 +39,11 @@ from sklearn.preprocessing import StandardScaler
 EMBEDDER = "paraphrase-multilingual-mpnet-base-v2"
 HIDDEN = (256, 128)
 POSITIVE_VERDICT = "harm_is_subject"
+#: The full `scope_verdict` vocabulary as measured on labels_v84_merged.jsonl (6,586 rows).
+#: Adding a value here is a decision about the labelling function, not a config tweak.
+KNOWN_VERDICTS = frozenset({
+    "harm_is_subject", "in_scope", "out_of_scope", "response_to_harm", "no_person_benefits",
+})
 VAL_SPECIFICITY_TARGET = 0.98      # ADR-023: specificity first. Where deployed filters sit.
 N_SEEDS = 5                        # H-DET2. Not negotiable down to 1.
 
@@ -61,6 +66,16 @@ def load_split(path: Path):
             raise ValueError(
                 f"{path}:{lineno} has no oracle_meta.scope_verdict — this split predates #155. "
                 f"Rebuild with training/prepare_data.py; do NOT treat absence as a negative."
+            )
+        # ⛔ ENUMERATED, not "anything else is a negative". The unbounded-negative form is the
+        # denylist shape this repo removed from the DeepSeek guard on 2026-09-10: a partial
+        # rename upstream would shrink the positive class SILENTLY, and only a TOTAL rename
+        # crashes (MLPClassifier needs two classes). An unknown verdict is a corpus change.
+        if verdict not in KNOWN_VERDICTS:
+            raise ValueError(
+                f"{path}:{lineno} has scope_verdict {verdict!r}, which is not in "
+                f"{sorted(KNOWN_VERDICTS)}. The vocabulary changed upstream — decide what the "
+                f"new value means before training on it; do not let it become a negative."
             )
         texts.append(f"{r.get('title') or ''} {r.get('content') or ''}".strip())
         y.append(1 if verdict == POSITIVE_VERDICT else 0)
@@ -170,8 +185,13 @@ def run_arm(X_tr, y_tr, X_val, y_val, X_te, y_te, X_pan, ids, gem, both, seed):
 
 def band(rows, key):
     v = [r[key] for r in rows]
-    if any(isinstance(x, list) for x in v):
-        raise TypeError(f"band() called on list-valued key {key!r} — bands are for scalars")
+    bad = [type(x).__name__ for x in v if not isinstance(x, (int, float)) or isinstance(x, bool)]
+    if bad:
+        # An ALLOWLIST of scalar types, not a denylist of list. The first version named `list`
+        # and fell straight through on `panel_probs`, a DICT on the same rows — min()/mean()
+        # over dicts, silently. Same shape as the DeepSeek denylist, same day.
+        raise TypeError(f"band() called on non-scalar key {key!r} (saw {sorted(set(bad))}) — "
+                        f"bands are for numbers")
     return {"min": min(v), "mean": round(float(np.mean(v)), 4), "max": max(v)}
 
 
@@ -211,6 +231,18 @@ def main():
         null.append(run_arm(X_tr, rng.permutation(y_tr), X_va, rng.permutation(y_va),
                             X_te, y_te, X_pan, ids, gem, both, seed))
         print("  null", null[-1])
+
+    # ⛔ An unreachable val constraint must be LOUD. `pick_threshold` returns the 1.01 sentinel,
+    # which yields test_specificity 1.0 / recall 0.0 / flag_rate 0 — indistinguishable from "an
+    # unusually conservative seed" — and `band()` then averages 1.01 in with real thresholds.
+    # The flag existed and nothing read it.
+    unreachable = [r["seed"] for r in real + null if not r["val_spec_target_met"]]
+    if unreachable:
+        raise RuntimeError(
+            f"seeds {unreachable} could not reach val specificity {VAL_SPECIFICITY_TARGET} at "
+            f"any threshold. Their metrics are sentinels, not measurements — fix the target or "
+            f"the data before reading this report."
+        )
 
     keys = ["test_specificity", "test_recall", "panel_flag_rate", "panel_caught_both9",
             "panel_caught_gem32", "panel_specificity_on_105", "threshold"]

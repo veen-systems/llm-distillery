@@ -46,6 +46,9 @@ MODELS = [
     {"name": "qwen3:14b",        "kind": "ollama", "think": False},  # disable thinking -> valid JSON
     {"name": "phi4:14b",         "kind": "ollama"},
     {"name": "gemini-2.5-flash", "kind": "gemini"},
+    # ⚠️ Uncommenting this entry makes the file a DeepSeek caller. The model MUST then go
+    # through ground_truth.deepseek_models.assert_safe_deepseek_model — a literal id
+    # enables reasoning mode (llm-distillery#157). No dispatch exists for it today.
     # {"name": "deepseek-chat",  "kind": "openai", "base": "https://api.deepseek.com", "key_env": "DEEPSEEK_API_KEY"},
 ]
 
