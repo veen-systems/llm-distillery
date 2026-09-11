@@ -28,8 +28,11 @@ framework_reconciliation: |
     the profile and must be invoked BY HAND. A lens believed to be running and
     not running is this repo's signature defect.
   - `test-verify-memory` stays PROJECT-LOCAL.
-  - No *hypothesis-log.md* at either path, by choice — hypotheses live in
-    per-topic memory files. `curate` Step 0.6 is a deliberate no-op here.
+  - No *hypothesis-log.md* at the framework's path or shape, by choice. ⚠️ **But
+    this repo DOES have a ledger — `memory/hypothesis-ledger.md`, 121 KB, the
+    index's designated "START HERE to recall prior work"** — so `curate` Step 0.6
+    is **NOT** a no-op: it has a file to review for staleness. The 2026-09-11
+    audit found this bullet still claiming otherwise.
   - DECLINED v1.20.0's gotcha-log `Occurrences` column: no Promoted table exists
     here, promotion targets § "Working rules", and the rate is already in prose.
     So `curate` Step 2 asks every session to increment a column with no home —
