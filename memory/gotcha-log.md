@@ -1,6 +1,61 @@
 # Gotcha Log
 
 
+## A TEST'S NAME ASSERTED MORE THAN THE TEST CHECKED, AND THE MUTATION PROVED IT (2026-09-11)
+**Problem**: Added a three-outcome exit contract to `refcheck.py` with six tests, including
+`test_findings_are_deduplicated`. Four mutations run. Three killed. The fourth —
+`len(set(findings))` → `len(findings)` — **left all six green**.
+**Root cause**: The test asserted the EXIT CODE. Five duplicate findings and one finding
+both exit 1, so the branch is identical either way; dedup only changes the printed COUNT,
+which nothing read. The test was named for a property it never touched, and the name is what
+a future reader would trust — `[[feedback-a-name-is-an-assertion]]`, now on a test function.
+**Fix**: Rewrote it to capture stdout and assert `1 unique finding(s)`; M4 now dies.
+⭐ **A mutation that survives is not a gap in coverage — it is a NAME that is lying.** Pick
+each mutation to attack the property the test NAMES, not the line it executes; three of my
+four attacked the code I had just written and could not have found this.
+
+## TWO REVIEW LENSES, OPPOSITE ERRORS, AND THE TRUTH WAS NEITHER (2026-09-11)
+**Problem**: Asked whether a guarantee on `filters/*/v*/model/**` could ever fire. The
+adversarial lens reported **0 tracked files** and called the guarantee unreachable. The
+doc-accuracy lens reported **32 tracked files** and called the pattern diff-visible. Both
+were confident, both cited a command.
+**Root cause**: Adversarial ran `git ls-files 'filters/*/v*/model/'` — a trailing slash with
+no filename wildcard matches NOTHING whatever is tracked, so its negative came from a broken
+instrument. Doc-accuracy counted correctly but stopped one question early. The 32 files all
+belong to DEAD filters (`investment_risk/v2_*`, `uplifting/v4*`, `commerce_prefilter/v1`)
+that predate `.gitignore:65`; **every current production filter has 0**. So the conclusion
+"unreachable" was right on wrong evidence, and the evidence "32 tracked" was right with the
+wrong conclusion.
+**Fix**: Measured per-filter rather than in aggregate, and repointed the guarantee at
+`scripts/deployment/*`. ⭐ **When two lenses disagree, do not pick the more emphatic one —
+the disagreement is the finding, and the answer is usually a THIRD thing.** Note the shape:
+one was a broken instrument (*prove it could have said yes*) and one was a correct number
+under an unasked question (*a count is not coverage*), so the standard rules catch one each
+and neither catches both.
+
+## `git ls-files 'dir/'` WITH A TRAILING SLASH SILENTLY MATCHES NOTHING (2026-09-11)
+**Problem**: `git ls-files 'filters/*/v*/model/'` printed nothing and exited 0 on a tree
+holding 32 tracked files under those paths. Read as "nothing is tracked there".
+**Root cause**: A git pathspec with a trailing slash and no filename component matches no
+FILES; `git ls-files` lists files, so the empty result is correct and useless. It is the
+zero-that-carries-no-information shape in a one-character form.
+**Fix**: `git ls-files 'filters/*/*/model/*'`, or `git ls-files | grep '/model/'`.
+⛔ **Before believing an empty `git ls-files`, run it once with a pattern you KNOW matches.**
+
+## A HAND-EXTRACTED CONFIG DROPPED RULES WHILE ITS RECORD CLAIMED COMPLETENESS (2026-09-11)
+**Problem**: Split a 546-line review skill into a generic half and a 163-line repo profile,
+extracting the repo-specific rules by hand. Wrote "extracted from the fork" and "one
+invariant was repaired" — implying the tiering moved intact. It had not: two rules were gone,
+including `docs/evidence/** is HIGH when it ships a .py`, over a directory holding **58 .py
+files**. A pre-commit lens found both.
+**Root cause**: `[[feedback-hand-built-population]]` — hand extraction loses exactly what is
+not in front of you, and nothing in the result looks wrong, so review cannot find it by
+reading the artifact. The completeness claim made it worse: it told the next reader not to
+check.
+**Fix**: Restored both rules; the record now names the drop instead of asserting fidelity.
+⭐ **When you move rules by hand, diff the OLD against the NEW by rule, not by reading the
+new one — and never write "extracted" as though it were "copied".**
+
 ## A GREEN SUITE IS A STATEMENT ABOUT THE ORDER IT RAN IN (2026-09-11)
 **Problem**: A new test file's fixtures were named `content_items_*.jsonl` in `tmp_path`.
 `scripts/contract_check.py:276` globs `**/content_items_*.jsonl` from `path.parent.parent`,
