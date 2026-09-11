@@ -9,6 +9,18 @@ differences are noted under *Adaptations*.
 
 ## What this is NOT
 
+⛔ **NOT THE DATA, AND GREPPING THIS FILE FOR AN ID IS HOW THAT GOES WRONG.** The entries live in
+`registry.jsonl`; this file is the schema and the rules. On 2026-09-11 two independent readers —
+an agent and a review lens — each grepped *this file* for `EXP-0NN`, found nothing past the two
+ids quoted in its prose, and reported six experiments as never registered. Both were wrong: all
+37 were in `registry.jsonl`, and `scripts/verification/check_experiment_registry.py` had been
+printing `entries 37  untraceable 0` throughout. ⭐ **Ask the checker, not the prose:**
+
+```bash
+python3 scripts/verification/check_experiment_registry.py      # entries, metrics, untraceable
+grep -o '"id": *"EXP-[0-9]*"' experiments/registry.jsonl | sort -u | tail -5
+```
+
 ⛔ **Not a place numbers live.** Every figure in an entry must appear **verbatim** in one of the
 files the entry's `artifacts` list, or be `null`. A registry that restates numbers becomes a
 fourth hand-maintained copy of them, and this project's rule is that two copies disagree the

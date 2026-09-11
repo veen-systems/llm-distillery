@@ -1,6 +1,78 @@
 # Gotcha Log
 
 
+## A GREEN SUITE IS A STATEMENT ABOUT THE ORDER IT RAN IN (2026-09-11)
+**Problem**: A new test file's fixtures were named `content_items_*.jsonl` in `tmp_path`.
+`scripts/contract_check.py:276` globs `**/content_items_*.jsonl` from `path.parent.parent`,
+which for a pytest `tmp_path` is the **session-shared basetemp** — so the harm fixtures were
+read as producer collections, the measured delivery cadence collapsed, and
+`freshness.input_stale` asserted error. Measured: `test_contract_check.py` alone 52 passed;
+harm tests first then contract_check **6 FAILED**, 58 passed; reverse order 64 passed.
+**Root cause**: The full suite passed only because `c` sorts before `h`. Two sessions reported
+"1,649 pass" and both were true. The victim was the exact test that exists to prove the check
+does not false-red on a conforming producer row — so the thing measuring false-reds was itself
+false-redding, invisibly.
+**Fix**: Renamed the fixtures (`raw_items_*`); the name was never load-bearing since
+`process_files` takes an explicit file list. ⭐ **A suite's pass is conditional on its
+collection order. When a test writes files whose names another test GLOBS, the shared
+basetemp is the coupling — and pytest's default alphabetical order hides it.**
+
+## A PROPERTY INSERTED MID-METHOD ORPHANED THE REST BEHIND A RETURN, AND 16 TESTS PASSED (2026-09-11)
+**Problem**: Adding a `stack_id` property to `HarmDetectorV1` placed it between
+`self.version = ...` and the end of `_load()`. Everything after it — `_warn_on_stack_drift()`
+and `self._embedder = SentenceTransformer(...)` — became unreachable code after the property's
+`return`. `_embedder` stayed `None` and the next `batch_score` died on
+`'NoneType' object has no attribute 'encode'`.
+**Root cause**: Every one of the 16 unit tests substitutes a `_FakeDetector`, so not one
+executes `_load`. The review had warned *"inference.py has zero test coverage"* in the same
+session; the warning came true within the hour, inside the fix for a different finding from
+the same review. No syntax error, no lint, no failing test.
+**Fix**: Moved the property after `_load`; added `test_load_finishes_and_sets_the_embedder`,
+which stubs only the heavy import and reproduces the defect exactly when mutated. ⭐ **A fix is
+the least-reviewed code in a session, and a class whose tests all use a stand-in has no test
+for the object itself. Smoke-run real data after editing a loader — that is what caught it.**
+
+## A CROSS-REPO SYNC DONE FROM MEMORY PUSHED THE BROKEN FILE (2026-09-11)
+**Problem**: `filters/common/harm_detector/v1/inference.py` is byte-identical in llm-distillery
+and NexusMind. I copied it to llm-distillery, then found and fixed a defect in the NexusMind
+worktree copy, and never re-synced. Commit `5681c66` shipped the broken loader to
+llm-distillery `main` and I pushed it. Repaired in `bb5a52d`.
+**Root cause**: The sync happened at the point in the session where the file was WRONG, and
+"I synced it" survived in my head as a completed fact while the file underneath changed. The
+existing rule (`feedback-diff-before-cross-repo-sync`) is about the deploy script; this was a
+hand `cp`, which felt too small to verify.
+**Fix**: `cmp -s` both copies after every sync, and re-sync after ANY later edit to either.
+⭐ **A sync is not a copy until you diff it — and a file that is byte-identical across repos by
+contract needs the diff run at the END of the session, not at the moment of copying.**
+
+## A NUMBER THAT HAS BEEN COPIED HAS BEEN COPIED MORE THAN ONCE (2026-09-11)
+**Problem**: The harm detector asserted the **0.2008** stack noise floor "was taken on exactly
+this architecture (mpnet + sklearn MLP)". It is the Gemma-3-1B student's — `uplifting v7`, 660
+held-out rows, b650 vs gpu-server's venv, CPU both sides. My first correction pass fixed the
+module docstring and moved on. A grep found it in **five** places: two docstrings, a README, a
+test docstring, and the `RuntimeWarning` text **emitted into production logs on every off-pin
+load**.
+**Root cause**: I worked from the review's finding list instead of grepping the files — the
+same shape as the DeepSeek surface count (three, then six, then eight) one session earlier,
+which is already a promoted pattern. A fabricated provenance is invisible to every control:
+the number is real, the mechanism is real, only the population is wrong.
+**Fix**: All five corrected to say this architecture's term is UNMEASURED. ⭐ **Enumerate a
+claim's occurrences FROM THE FILES before correcting any of them, and when inheriting a
+measured constant, carry whose it is.**
+
+## `git checkout -- <path>` DESTROYED UNCOMMITTED WORK MID-MUTATION-TEST (2026-09-11)
+**Problem**: Restoring a mutated test file with `git checkout -- tests/unit/test_x.py` reverted
+it to HEAD — discarding a test I had written minutes earlier and not yet committed. The
+mutation run then reported "restored: 17 passed" where 18 was correct, and only the count
+caught it.
+**Root cause**: The working rule bans whole-tree git verbs (`git add -A`, bare `git stash`,
+`git checkout .`). This passed an explicit path, so it read as compliant — but the hazard is
+not the tree, it is that `checkout` restores from HEAD and HEAD did not contain the new work.
+**Fix**: Mutation-test with `cp file /tmp/bak` and `cp` back. Never use a git verb to undo an
+edit to a file that has uncommitted work in it. ⭐ **The count in the "restored" line is the
+control — read it, do not assume the restore worked.**
+
+
 ## VERIFICATION IS NOT REVIEW, AND I SUBSTITUTED ONE FOR THE OTHER (2026-08-30)
 **Problem**: Committed and pushed on green — 493 unit tests, 3 killed mutations in 3
 directions, 4 budget guards, the doc-claim checker, refcheck. `/review-changes` was not run.

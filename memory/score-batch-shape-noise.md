@@ -197,6 +197,24 @@ what varied — batch composition (0.16), the **library stack** (0.2008), the
 one that varied in *your* comparison. ⛔ **"The machine" is not on that list**: with
 pins and device matched, two machines are bit-identical.
 
+⛔ **AND THE POPULATION TRAVELS WITH IT — a shipped artifact got this wrong on
+2026-09-11.** `harm_detector/v1`'s `inference.py` stated the **0.2008** "was taken on
+exactly this architecture (mpnet + sklearn MLP, differing sentence-transformers
+versions)". It was not: 0.2008 is the **Gemma-3-1B student's**, measured on `uplifting
+v7`'s 660 held-out rows, b650 vs gpu-server's serving venv, CPU both sides. The
+mpnet + sklearn-MLP architecture's stack term is **UNMEASURED**. The claim had reached
+**five** places in the package — two docstrings, a README, a test docstring, and the
+`RuntimeWarning` **emitted into production logs on every off-pin load** — and the first
+correction pass fixed one of them, because I worked from a list instead of grepping the
+files. Corrected in `bb5a52d` (llm-distillery) and NM#474.
+
+⭐ **Two lessons, and the second is the one that generalises.** A floor belongs to a
+population AND a mechanism, so an inherited one must say whose it is — carrying it as an
+explicit order-of-magnitude caution is honest, asserting it as *"measured on exactly this
+architecture"* is a fabricated provenance that no control can catch. And **a number that
+has been copied is a number that has been copied more than once**: enumerate its
+occurrences from the code before correcting any of them.
+
 ### ⚠️ What `k=3` actually leaves — first measured 2026-08-31, n=6 pairs
 
 Item 4 above is **arithmetic**. The first direct look at the residual came from re-scoring the

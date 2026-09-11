@@ -154,19 +154,67 @@ killed).
 ⛔ **No `threshold` and no `enforce` key exist anywhere in it**, and three mutations are killed
 (a threshold in the stage, a verdict key in the stamp, a failed score written as 0.0).
 
-▶ **NEXT in Lane C — `NM#474` needs a REVIEW ROUND and a SMOKE TEST, then an owner call.**
-The PR was rewritten 2026-09-10 to the in-process design (owner: NexusMind consolidates into one
-GPU-hosted package soon, so the gpu-server endpoint was scaffolding for a boundary that goes away).
-**All five review blockers are closed** — two of them by deletion rather than repair — and
-**1,649 NexusMind tests pass**. ⛔ **It is still a DRAFT and must not merge yet**: the rewrite has
-had no review round and no smoke test, and NexusMind is frozen.
+## ✅ 2026-09-11 — round 2 on `NM#474`: five MORE blockers, all fixed, $0
 
-⚠️ **`enabled: false` still ships.** Enabling is a separate act. `#152`'s cold-start trap is
-addressed (`max_articles_per_run: 3000`, newest files first) but not proven in production.
+Three lenses (guarantee-preservation, adversarial, doc-accuracy) + a smoke test on real production
+rows. Commits `d35ab24`, `009a55e`, `f1a1f40`; llm-distillery `5681c66`, `bb5a52d`.
+**PR marked ready for review.** ⛔ **Still not merged and NOT deployed; `enabled: false` unchanged.**
 
-▶ **Then**: measure what the stamp *would* block **per lens, per cycle** — the panel says nothing
-about solutions, belonging, nature_recovery or cultural_discovery, where the same content may be
-constitutive rather than harmful.
+⭐ **THE KEEPER — a green suite is a statement about the ORDER IT RAN IN.** The new test file's
+fixtures were named `content_items_*.jsonl`, which `contract_check.py:276` globs from the
+**session-shared** pytest basetemp: 52 passed alone → **6 FAILED** with the harm tests first → 64
+after a rename. Both prior sessions' *"1,649 pass"* were true and hid it, because `c` sorts before
+`h`. The victim was the test that exists to prove the check does not false-red (`H-HD9`).
+
+⛔ **The recency key was mtime, and mtime is not recency here** (`H-HD7`). Commerce and obituary
+rewrite the same raw files earlier in the cycle, inverting mtime order on exactly the multi-file
+**cold start** the cap exists for. Real `data/raw`: filename and mtime order **diverge at position
+0**, 11/87 files ranked differently. Now keyed on the `(\d{8}_\d{6})` filename stamp.
+
+⛔ **The 0.2008 stack floor was attributed to the WRONG ARCHITECTURE in five places**, including
+the `RuntimeWarning` that ships into production logs. It is the Gemma-3-1B student's; **mpnet +
+sklearn MLP is UNMEASURED**. My first pass fixed one, because I worked from a list rather than
+grepping. Details: `memory/score-batch-shape-noise.md`. And `_harm_detector_stack` hardcoded
+`st-mpnet`, omitting the libraries that own the embedding (`H-HD8`).
+
+⛔⛔ **I PUSHED A BROKEN LOADER TO llm-distillery `main` (`5681c66`) AND REPAIRED IT (`bb5a52d`).**
+Placing the new `stack_id` property mid-`_load()` orphaned the embedder assignment behind a
+`return`; **all 16 unit tests passed**, because every one uses a fake detector. A smoke run on real
+rows caught it — then the same defect rode a cross-repo sync I did from memory instead of `cmp`.
+Both repos now have a test for the real `_load`. ⭐ *Verification is not review, and a sync is not
+a copy until you diff it.*
+
+✅ **The three register entries are in** (`docs/article_record_status.yaml`) — a **hard
+precondition** for ever flipping `enabled: true`, since the register errors on all three fields at
+once the first cycle after the flip. Simulated: **0 errors** with them, and a 4th unlisted field
+still errors. ⚠️ **No `record_path` on any of them** — the record schema declares no
+`nexusmind.signals.harm_*` and `validate_status` rejects a dangling pointer (verified against a
+bogus control). That entry is owed **after** `stamp_census.py` confirms population.
+
+⏸️ **Three warnings PARKED with owner agreement, recorded on the PR**: `deferred_over_cap`
+under-reports (50-row file at cap 7 logs *"0 files deferred"* while 43 rows are unstamped); a
+valid-JSON **non-object line crashes the stage** (reachable via the `aggregator_export_*` glob —
+**0 such files in production today**); a NaN score would write invalid JSON into `data/raw`.
+
+▶ **NEXT in Lane C, in order:**
+1. **Merge `NM#474`** once CI is green (it was pending at session end). Merge and **enable are two
+   separate owner calls**; production is frozen, so the merge lands dormant code.
+2. **The remaining $0 arm** — and it is ONE, not two: *"a detector on the existing labels"* **is**
+   `EXP-037`, already run. What is left is **per-run scope disagreement** — **178** rows with ≥1
+   `harm_is_subject` run-vote and a non-harm final verdict (**1** above the op-point), **178** harm
+   rows with split run votes, **1,079** `scope_flipped`. `analyze.py`'s first version never read
+   those fields. This narrows the ~$3.2–3.6 pool decision at no cost.
+3. **Then**: measure what the stamp *would* block **per lens, per cycle** — the panel says nothing
+   about solutions, belonging, nature_recovery or cultural_discovery, where the same content may be
+   constitutive rather than harmful.
+
+⭐ **The per-lens MECHANISM already exists and already runs** (verified 2026-09-11, posted to
+`#156`): `short_content.cap` in `filters/common/filter_base_scorer.py` is a per-lens,
+config-gated, stamp-reading decision point loaded from each filter's own `config.yaml`
+(`:67` → `_load_preprocessing_config`), applied once at `_process_raw_scores:336` and mirrored for
+the hybrid Stage-1 branch at `hybrid_scorer.py:255`. Per-lens harm gating is a second instance of
+it, not new architecture. ⚠️ **Code-proven, not outcome-proven**: `short_content.cap` is `None` on
+all 26 config files, so that branch has never fired in production.
 
 ## ✅ 2026-09-10 — the detector-architecture strand: four questions asked, three closed, $0
 
