@@ -2,8 +2,10 @@
 stack: Python 3.12, PyTorch, Transformers, PEFT/LoRA
 status: Production
 repo: github.com/ducroq/llm-distillery
-framework: agent-ready-projects v1.36.1   # a NUMBER, not a status — never write "current" here; the framework's release cadence falsifies the adjective, not the pin
+framework: agent-ready-projects v1.40.0   # a NUMBER, not a status — never write "current" here; the framework's release cadence falsifies the adjective, not the pin
 framework_reconciliation: |
+  v1.37.0-v1.40.0 triaged 2026-09-11: 2 adopt, 0 decline, 2 n/a, 3 already-in-force.
+  Stamp bumped only AFTER both adopt items landed in the tree.
   v1.26.1+v1.27.0+v1.28.0 triaged 2026-08-26: 3 adopt, 0 decline. STAMP HELD at
   v1.26.0 until 2 unlanded adopt items ship — held, NOT unreviewed. Every release,
   and which adopt items landed: `docs/decisions/framework-adoption-history.md`.
@@ -15,10 +17,17 @@ framework_reconciliation: |
   - `curate` and `audit-context` are USER-GLOBAL. The project-local copies were
     DELETED, not reconciled — a global shadows a local silently and the local was
     never loading. Do not re-create them.
-  - `review-changes` and `test-verify-memory` stay PROJECT-LOCAL.
-    `review-changes` is re-mapped, not copied: the template's risk tiers key on
-    paths this repo does not have, so a verbatim install would tier every change
-    here as LOW and quietly do nothing.
+  - `review-changes` became USER-GLOBAL at v1.40.0 (2026-09-11). The re-mapped
+    project-local fork was DELETED — it had been INERT, shadowed by the global
+    copy, and the framework's own `--check` failed on it. Its repo-specific half
+    now lives in `.claude/review-profile.md`, which the global skill reads at
+    Step 1 and WITHOUT WHICH IT STOPS. Do not re-create the local copy.
+    ⛔ Three project lenses (reachability, claim-verification, sync-safety) have
+    NO slot in the profile contract and DO NOT FIRE — upstream
+    `ducroq/agent-ready-projects#166`. The prompts are preserved at the foot of
+    the profile and must be invoked BY HAND. A lens believed to be running and
+    not running is this repo's signature defect.
+  - `test-verify-memory` stays PROJECT-LOCAL.
   - No *hypothesis-log.md* at either path, by choice — hypotheses live in
     per-topic memory files. `curate` Step 0.6 is a deliberate no-op here.
   - DECLINED v1.20.0's gotcha-log `Occurrences` column: no Promoted table exists
@@ -307,5 +316,5 @@ This project is a source project for [augmented-engineering](https://github.com/
 
 ---
 
-*Last updated: 2026-08-30. **Framework: agent-ready-projects v1.36.1 — triaged through v1.36.1, 0 releases behind (checked 2026-08-29 against the REMOTE, not the clone).** The three user-global skills are **byte-identical to the v1.36.1 reference install, 0 differing lines** — diff against `.claude/skills/<name>/SKILL.md` at the tag, never against `templates/`, because there is no install-time transform. ⛔ **Never write "current" here** — upstream moved twice within hours of this line being written, and a state claim in an always-loaded file decays silently. ⛔ **A stamp bump requires the adopt items in the tree first** — ahead of its content it silences the check that would catch the gap. ⛔ **Do not name an upstream section's contents here** — this sentence named v1.26.1's while calling it *unreleased*; it shipped 2026-08-25. Read the changelog, don't quote it. ⚠️ **Do not re-add a self-referential size claim** ("cut to the size you see"): the 08-16 wording was falsified by the next edit to this file. Per-tag triage: `docs/decisions/framework-adoption-history.md`. Structural state, open decisions and every number that moves live in `docs/TODO.md` (top block) and the memory index — deliberately NOT restated here, because two hand-maintained copies of a number disagree the moment one is updated. Session records: the memory index.*
+*Last updated: 2026-09-11. **Framework: agent-ready-projects v1.40.0 — triaged through v1.40.0, 0 releases behind (checked 2026-09-11 against the REMOTE, not the clone).** The **FOUR** user-global skills (`review-changes` joined at v1.40.0) were **byte-identical to the v1.40.0 reference install, 0 differing lines, when enumerated 2026-09-11** — a dated reading of files OUTSIDE this repo, which no commit here can hold still — diff against `.claude/skills/<name>/SKILL.md` at the tag, never against `templates/`, because there is no install-time transform. ⛔ **Do not write a skill COUNT you did not just enumerate** — this sentence said *three* for as long as it took upstream to move one skill, and read as a verified fact throughout. ⛔ **Never write "current" here** — upstream moved twice within hours of this line being written, and a state claim in an always-loaded file decays silently. ⛔ **A stamp bump requires the adopt items in the tree first** — ahead of its content it silences the check that would catch the gap. ⛔ **Do not name an upstream section's contents here** — this sentence named v1.26.1's while calling it *unreleased*; it shipped 2026-08-25. Read the changelog, don't quote it. ⚠️ **Do not re-add a self-referential size claim** ("cut to the size you see"): the 08-16 wording was falsified by the next edit to this file. Per-tag triage: `docs/decisions/framework-adoption-history.md`. Structural state, open decisions and every number that moves live in `docs/TODO.md` (top block) and the memory index — deliberately NOT restated here, because two hand-maintained copies of a number disagree the moment one is updated. Session records: the memory index.*
 

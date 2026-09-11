@@ -14,6 +14,149 @@ Upstream changelog: https://github.com/ducroq/agent-ready-projects/blob/master/C
 
 ---
 
+## 2026-09-11 — `/update-drift`: **4 releases behind (v1.36.1 → v1.40.0)**, stamp bumped after both adopt items landed
+
+Upstream latest tag **v1.40.0**; clone in sync with the remote (`git ls-remote` tags match
+`git tag -l`). Four intervening releases: v1.37.0, v1.38.0, v1.39.0, v1.40.0. Seven table rows below:
+**2 adopt, 0 decline, 2 not-applicable, 3 already-in-force**.
+
+**Step 0 reconciliation**: **42** mentioned `(file, framework)` pairs, **16 stamped**, 26 in
+the difference, all dispositioned — `agent-ready-papers` (second framework, declined by
+design), `agent-ready-assessment` (prose in one gotcha war story), `agent-ready-fixture`
+(matcher false positive: a deliberately-unreachable path inside the verify-protocol test
+fixture), the rest historical session prose and permission globs. Operand `templates/` is
+**absent from this repo and was not searched** — stated because a single-operand run
+self-reconciles and always agrees. No unresolvable pin. Re-derive the three figures with the
+Step 0 reconciliation block from `~/.claude/skills/update-drift/SKILL.md` over
+`OPERANDS="CLAUDE.md docs memory .claude"`; they move as the prose does and are a
+snapshot, not an invariant.
+
+| From | What | Outcome |
+|------|------|---------|
+| v1.37.0 | Step 1.5 shell syntax fix (#105/#112/#103), rung 3/4 provenance (#108/#119/#120), size-budget units (#109/#110), `curate` Step 0.1 false positives (#104/#106) | **Already in force** — these land in the user-global skills, verified byte-identical below |
+| v1.37.0 | lint rules 1-13, CI action pinning (#124), private-name scrub (#131) | **Not applicable** — maintainer-side surfaces; this repo has no counterpart |
+| v1.38.0 | `review-changes` could certify a clean result on wholly unreviewed content — root-commit baseline fallback (#149) | **Already in force** — `#149` markers present at installed lines **31, 57, 122** (`grep -n '#149' ~/.claude/skills/review-changes/SKILL.md`) |
+| v1.39.0 | BOM/awk portability (`sub(/^\357\273\277/, "")`) | **Not applicable** — maintainer lint fixture |
+| v1.39.0 | Step 5 statistic re-derived: 24 introduced / 13 missed (65%), 24 / 219 (11%) | **Already in force** — installed line 458 |
+| v1.40.0 | `review-changes` → user-global skill + per-repo `.claude/review-profile.md` | **ADOPTED** — see below |
+| v1.40.0 | `audit-context` Step 4 → `tests/fixtures/reference-integrity/SPEC.md` | **ADOPTED (partial)** — skill body is in force; this repo's `refcheck.py` differs from the framework's by **1,629 lines** (re-mapped) and has no `SPEC.md`. Deferred to `/audit-context`, NOT silently copied |
+
+**Verified by execution**, not by reading the changelog:
+
+- **All FOUR user-global skills are byte-identical to the v1.40.0 reference install** —
+  `curate`, `audit-context`, `update-drift`, `review-changes`, **0 differing lines** each,
+  diffed against `.claude/skills/<name>/SKILL.md` at the tag. They were updated outside this
+  repo, which is why nothing in the tree recorded it. Against the **v1.36.1** tag the same
+  files differ by **177 / 134 / 2 / 164** (`curate` / `audit-context` / `update-drift` /
+  `review-changes`) — so the bytes prove v1.40.0 specifically, not merely "not v1.36.1".
+- **Test baseline re-measured**: `.venv/bin/python -m pytest tests/ -q` → **822 passed, 25
+  skipped**, 125s. The memory index's "493 tests" was stale (2026-08-30).
+- **The framework's own checker failed on this repo, then passed.** Before:
+  `FAIL inert local copy: .claude/skills/review-changes/SKILL.md (shadowed by
+  ~/.claude/skills/review-changes)`. After removal: `OK — global skills match the tracked
+  source`, 0 candidate paths.
+
+### ⛔ The live defect this run found: `/review-changes` was BROKEN here, and nothing said so
+
+The project-local fork (546 lines, adapted from v1.12.0) had been **inert** — Claude Code
+loads the user-global copy in preference, so edits to the local file changed nothing.
+⚠️ **The onset is BOUNDED, not known**: `docs/TODO.md:5711` records an earlier check finding
+*no* global `review-changes` shadowing the project one, and v1.40.0 (2026-09-10) is when
+upstream moved it into `GLOBAL_SKILLS`. The window sits between those two, and this entry
+does not pretend to narrow it further — a window is part of a source.
+
+⚠️ **Consequence for THIS file**: its older rows still read `**Adopted** →
+`.claude/skills/review-changes/SKILL.md`` (v1.22.0, v1.25.0, v1.25.1, v1.27.0, v1.28.0),
+several marked *verified by execution*. Those adoptions now live in a deleted file. **Spot-
+checked against the installed global copy and they survive there** — `$(0)` present, the
+CRLF strip present, `core.quotePath=false` present, the absolutes rule present — because
+upstream carries them. The rows are correct as history; they are not a live inventory. The global copy **stops** without
+`.claude/review-profile.md`, which did not exist. This repo's session-close ritual calls
+that skill.
+
+This is the repo's own signature defect — *a mechanism present, configured, and unable to
+fire* — landing on the tool whose job is to catch it. ⚠️ **`/update-drift` found it, and the
+first draft of this line said "no review could have" — which the deleted file refutes.** Its
+own lines 18-22 carried the check: *"if a global of this name ever reappears, this adaptation
+is silently shadowed again. Check the 'Base directory' line the invocation prints."* A review
+applying this repo's reachability lens to a change touching that file had a named one-line
+test available. It is not that review could not; it is that no review was run on a file
+nobody was editing. Note the
+shape: the fork was **not** the 768-line adopter v1.40.0 measured (ours carries the
+`"$BASE"...HEAD` term), so *"we are not the one in the release note"* was true and
+irrelevant.
+
+### Adopted → `.claude/review-profile.md` (new, 163 lines)
+
+Extracted from the fork rather than written fresh; the fork is in git history at `93e2bcf`.
+Carries the risk-tier table, nine guarantee surfaces, the measured test baseline and four
+project carve-outs.
+
+⛔ **The move SILENTLY NARROWED two tier rules, and the pre-commit review caught it — this
+paragraph originally claimed the tiering moved intact.** Extracting by hand is a hand-built
+population, and it lost exactly what a hand-built population loses: the rules that were not
+in front of me. Dropped and now restored:
+
+- **`docs/evidence/**` is MEDIUM, and HIGH when it ships a `.py`** (fork line 79, added
+  2026-08-29). `docs/evidence/` holds **58 `.py` files**; without the row they fell to the
+  catch-all MEDIUM, losing guarantee-preservation and sync-safety — and the report renders
+  that as a clean pass, which is what the profile's own carve-out says must never happen.
+- **Escalate an unmatched file to HIGH if it is executable or is copied into NexusMind**
+  (fork line 115).
+
+⚠️ **Two further tier holes were found by the same review and did NOT come from the move** —
+both pre-date it and are now fixed: `docs/decisions/**` matched **no row at all** (found by
+the profile's own Unclassified rule, on its first run), and `scripts/deploy_to_nexusmind.sh`
+tiered MEDIUM via `scripts/**` — so the **sync-safety lens could never fire on the very
+script it is about**. That is this repo's signature defect inside the lens written to catch
+it, carried unnoticed through the fork's whole life.
+
+⛔⛔ **I claimed an invariant was "repaired" and the review proved the outcome did not
+change — CLAUDE.md working rule #1, violated inside the fix for the class of defect the rule
+exists for.** The PEFT-adapter guarantee named **no path at all** in the fork. I added
+`filters/*/v*/model/**` to the HIGH row, named the caller, and stopped. But `.gitignore:65`
+is `filters/**/model/` and the only re-include is `!filters/**/training_*.json`, which does
+not cover `adapter_config.json`: **every current production filter has 0 tracked files under
+`model/`** (human_thriving v8, uplifting v7, cultural_discovery v5, belonging v1,
+nature_recovery v4, solutions v6). The guarantee still could not fire on any filter anyone
+would change today. The guarantee is now pointed at `scripts/deployment/*` — code a diff can
+actually contain — and says in terms that review cannot enforce the adapter files and must
+not pretend to.
+
+⭐ **Both lenses were wrong about this, in opposite directions, and the truth was neither.**
+The adversarial lens reported *zero tracked files* from `git ls-files 'filters/*/v*/model/'`
+— a trailing slash with no filename wildcard matches nothing whatever is tracked, so its
+negative came from a broken instrument (*prove the instrument could have said yes* —
+applied to me in the same report). The doc-accuracy lens measured **32 tracked files**
+correctly and concluded the pattern "can appear in a diff". Both stopped one question early:
+the 32 all belong to **dead** filters (`investment_risk/v2_*`, `investment_risk/v4`,
+`uplifting/v4*`, `commerce_prefilter/v1`) that predate the ignore rule. Right conclusion on
+wrong evidence, and right evidence with the wrong conclusion — which is the argument for
+running lenses with different framings rather than one.
+
+**What the move did fix**: the fork's entry named **no path at
+all**, and the adapters it governs live in `filters/*/v*/model/`, which **no HIGH
+pattern matched** — a guarantee on a sub-HIGH path
+can never fire, and the report renders that as a clean pass. `filters/*/v*/model/**` and
+`filters/*/v*/inference*.py` were added to the HIGH row. The fork had the same hole; the
+split is what made it visible, because both halves now sit in one file.
+
+### ⛔ Known loss, NOT a decline: three project lenses do not fire
+
+v1.40.0's Step 2 lens list is **closed** — the generic skill reads the profile for tiers,
+guarantees, baseline and carve-outs, and nothing else. `reachability`, `claim-verification`
+and `sync-safety` have no slot. Upstream **`ducroq/agent-ready-projects#166`** (filed
+2026-09-11) is exactly this gap.
+
+The prompts are preserved verbatim at the foot of the profile under a heading that says
+twice that nothing runs them, and must be invoked **by hand**. `reachability` is CLAUDE.md's
+#1 working rule, so this is a real reduction in coverage until
+`ducroq/agent-ready-projects#166` lands — recorded here
+rather than absorbed silently, because a lens believed to be running and not running is the
+failure this repo catalogues.
+
+---
+
 ## 2026-08-29 (late) — `/update-drift` re-run: **0 releases behind, stamp unchanged at v1.36.1**
 
 No release rows: upstream's latest tag is **v1.36.1**, which is what this repo pins.

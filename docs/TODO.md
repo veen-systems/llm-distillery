@@ -1,27 +1,33 @@
 # LLM Distillery - TODO
 
-## 🔵 NEXT SESSION — **START WITH `/update-drift`, THEN `/audit-context`. Owner, 2026-09-11.**
+## 🔵 NEXT SESSION — **`/update-drift` DONE 2026-09-11. `/audit-context` is next.**
 
-⛔ **The framework stamp is WRONG, not merely old.** `CLAUDE.md` claims *triaged through v1.36.1,
-0 releases behind* **and** that the three user-global skills are *byte-identical to the v1.36.1
-reference install*. NexusMind's review-profile records the skill at **v1.40.0** and the installed
-`review-changes` carries v1.39.0 content, so the byte-identical half is false whatever it was on
-2026-08-29. ⚠️ **Triage FIRST, because the memory layer is what moved** (`/curate`'s budget rules
-cite framework #109/#110 — measure the whole auto-loaded set, in characters), and
-**`audit-context` is the oldest skill installed at v1.25.0** — restructuring with it before
-adopting is rework. ⛔ **Drift adoption deletes ZERO bytes**; it is the prerequisite, not the fix.
+✅ **The stamp was wrong and is now v1.40.0** — 4 releases triaged (2 adopt, 0 decline, 2 n/a,
+3 already-in-force). The owner's diagnosis was right and understated: the installed skills were
+at **v1.40.0**, not v1.39.0, and there are **four** of them, not three — `review-changes` became
+user-global at v1.40.0. ⭐ **The live defect: `/review-changes` was BROKEN here.** The 546-line
+project-local fork was **inert** (shadowed by the global copy), and the global copy *stops*
+without `.claude/review-profile.md`, which did not exist. The fork is deleted; the profile is
+written. ⛔ **Three project lenses — `reachability`, `claim-verification`, `sync-safety` — have
+no slot in v1.40.0's closed lens list and DO NOT FIRE** (upstream
+`ducroq/agent-ready-projects#166`); the prompts are preserved at the foot of the profile and must
+be run BY HAND. Full record: `docs/decisions/framework-adoption-history.md` (2026-09-11 entry).
+⚠️ **Left for `/audit-context`, deliberately NOT done blind**: this repo's
+`tests/fixtures/reference-integrity/refcheck.py` differs from the framework's by **1,629 lines**
+and has no `SPEC.md` (v1.40.0 moved the Step 4 spec there). ⛔ **Drift adoption deleted ZERO
+bytes**; it was the prerequisite, not the fix.
 
 ⛔ **THE BLOAT, MEASURED 2026-09-11: the corpus is 2,387,361 chars — 8× `/curate`'s 300k read
 threshold, so THAT SESSION CURATED AGAINST METADATA AND NEVER OPENED IT.** The audit tooling can
 no longer see its own inputs; that is the cost, not the disk. ⚠️ **The always-loaded layer is
-FINE** (52,380 B of 60,000) — the damage is in the *reachable* layer. It is concentrated:
+FINE** (53,277 B of 60,000, re-measured 2026-09-11) — the damage is in the *reachable* layer. It is concentrated:
 `memory/gotcha-log.md` **649.8 KB / 454 entries = 27% of the whole corpus**, then
 `cross-repo-prioritization` 132.9 KB, `hypothesis-ledger` 118.8 KB, `session-log` 112.5 KB; the
 97 session files are 0.8 MB and are append-only records, arguably correct.
 ⭐ **Diagnosis already made once: this is `#123` one layer down** — no rotation rule, no ceiling,
 no updating step, so it grows every session (5 entries added 2026-09-11 alone). First question
 for `/audit-context` is whether the gotcha log gets `#123`'s treatment.
-⚠️ Also pending and unrelated to bloat: **`CLAUDE.md` is 36,369 B against its own 40,000 cap.**
+⚠️ Also pending and unrelated to bloat: **`CLAUDE.md` is 37,266 B against its own 40,000 cap** (the drift adoption added ~900 B).
 
 ### Then — NexusMind is FROZEN. Three lanes, one of them frozen. Lane C is the live work.
 
@@ -1285,7 +1291,9 @@ length could not.
 >   matching (glyph/BOM/ANSI/markdown), stdout and stderr no longer concatenated,
 >   comment-stripped classification, widened `DELEGATES`, truncated-command refusal,
 >   `CANNOT VERIFY` tested before the returncode, FAIL beating CANNOT VERIFY.
-> - **`.claude/skills/**` is a named MEDIUM row** in `/review-changes`' tier table. It
+> - **`.claude/skills/**` is a named MEDIUM row** in the tier table. ⚠️ **Superseded
+>   2026-09-11: that table moved to `.claude/review-profile.md`** when `review-changes`
+>   became user-global at framework v1.40.0; the row survives there as `.claude/**`. It
 >   changes no tier — it makes a skill reviewed on purpose, and names doc-accuracy as the
 >   lens that earns it.
 >
@@ -5703,6 +5711,9 @@ Full record: `memory/project_session_2026_08_07_night.md`.
       `agent-ready-projects` v1.15.1 is genuinely installed (five marker strings
       present; installed mtime matches the commit to the second), `curate` body
       identical to template, no global `review-changes` shadowing the project one.
+      ⚠️ **NO LONGER TRUE, and this line is the LOWER BOUND on the window in which the
+      project-local copy was inert** — a global copy does shadow it now, and the fork was
+      deleted 2026-09-11. See `docs/decisions/framework-adoption-history.md`, 2026-09-11.
       `agent-ready-papers` is at v2.4.0 + 2 doc-only commits and is **not adopted
       here by design**.
 
