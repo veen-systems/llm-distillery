@@ -1,6 +1,29 @@
 # LLM Distillery - TODO
 
-## 🔵 NEXT SESSION — **NexusMind is FROZEN. Three lanes, one of them frozen. Start at lane C.**
+## 🔵 NEXT SESSION — **START WITH `/update-drift`, THEN `/audit-context`. Owner, 2026-09-11.**
+
+⛔ **The framework stamp is WRONG, not merely old.** `CLAUDE.md` claims *triaged through v1.36.1,
+0 releases behind* **and** that the three user-global skills are *byte-identical to the v1.36.1
+reference install*. NexusMind's review-profile records the skill at **v1.40.0** and the installed
+`review-changes` carries v1.39.0 content, so the byte-identical half is false whatever it was on
+2026-08-29. ⚠️ **Triage FIRST, because the memory layer is what moved** (`/curate`'s budget rules
+cite framework #109/#110 — measure the whole auto-loaded set, in characters), and
+**`audit-context` is the oldest skill installed at v1.25.0** — restructuring with it before
+adopting is rework. ⛔ **Drift adoption deletes ZERO bytes**; it is the prerequisite, not the fix.
+
+⛔ **THE BLOAT, MEASURED 2026-09-11: the corpus is 2,387,361 chars — 8× `/curate`'s 300k read
+threshold, so THAT SESSION CURATED AGAINST METADATA AND NEVER OPENED IT.** The audit tooling can
+no longer see its own inputs; that is the cost, not the disk. ⚠️ **The always-loaded layer is
+FINE** (52,380 B of 60,000) — the damage is in the *reachable* layer. It is concentrated:
+`memory/gotcha-log.md` **649.8 KB / 454 entries = 27% of the whole corpus**, then
+`cross-repo-prioritization` 132.9 KB, `hypothesis-ledger` 118.8 KB, `session-log` 112.5 KB; the
+97 session files are 0.8 MB and are append-only records, arguably correct.
+⭐ **Diagnosis already made once: this is `#123` one layer down** — no rotation rule, no ceiling,
+no updating step, so it grows every session (5 entries added 2026-09-11 alone). First question
+for `/audit-context` is whether the gotcha log gets `#123`'s treatment.
+⚠️ Also pending and unrelated to bloat: **`CLAUDE.md` is 36,369 B against its own 40,000 cap.**
+
+### Then — NexusMind is FROZEN. Three lanes, one of them frozen. Lane C is the live work.
 
 > ✅ **2026-09-10 added a FOURTH strand and CLOSED it — the frozen-mpnet detectors. It does NOT
 > compete with lane C.** Four experiments (`EXP-033`–`EXP-036`), **$0**, nothing deployed touched.

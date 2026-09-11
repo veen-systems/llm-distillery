@@ -160,7 +160,16 @@ version never read those fields.
 
 ## Next session
 
-1. **Merge `NM#474`** — CI was still pending after ~30 minutes at session end. Check
+⛔ **0. OWNER, at session close: `/update-drift` FIRST, then `/audit-context`** — the
+   framework stamp is wrong (claims byte-identical to v1.36.1; the installed skills carry
+   v1.39.0/v1.40.0 content), the memory layer is what moved upstream, and `audit-context` is the
+   oldest skill installed. The bloat itself: corpus **2,387,361 chars**, 8× the read threshold,
+   **27% of it in `gotcha-log.md` alone** (649.8 KB, 454 entries, no rotation rule — `#123` one
+   layer down). ⚠️ Drift adoption deletes zero bytes; it is the prerequisite.
+
+1. ✅ **`NM#474` MERGED** (`01a9809`, CI green 4m37s; 1,655 pass on main; `enabled: false` intact;
+   sadalsuud untouched at `b9e8cdb`, no harm code, so NOT deployed — production is frozen and
+   enabling is a separate call). Originally: — CI was still pending after ~30 minutes at session end. Check
    `gh pr checks 474`, then `gh pr merge 474 --merge` (the repo uses merge commits). ⛔ Enabling
    is a separate owner call and production is frozen, so the merge lands dormant code.
 2. **The per-run scope-disagreement arm** ($0) — the last free route before the ~$3.2–3.6 pool.
