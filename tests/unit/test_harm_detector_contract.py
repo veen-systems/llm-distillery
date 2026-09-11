@@ -230,3 +230,97 @@ def test_batch_score_refuses_a_score_list_shorter_than_its_input():
     d._embedder = _Embedder()
     with pytest.raises(RuntimeError, match="refusing to return a list"):
         d.batch_score([{"title": "t", "content": "c"}] * 5)
+
+
+# ---- added 2026-09-11 after the NM#474 round-2 review, and after breaking the loader ----
+
+MODELS = PKG / "v1" / "models"
+
+
+@pytest.mark.skipif(not (MODELS / "SHA256SUMS.txt").exists(),
+                    reason="artifact not built in this checkout")
+def test_the_recorded_digests_actually_match_the_pickles_on_disk():
+    """⛔ Nothing checked this. A reviewer had to do it by hand on 2026-09-10.
+
+    `test_every_declared_head_has_a_recorded_hash` asserts a head is NAMED in the manifest;
+    it never opens the file. So a rebuilt pickle with a stale digest passed every test here
+    and failed at production runtime instead — inside the degrade-gracefully wrapper, which
+    means one ERROR line, zero stamps for the cycle, and no CI signal.
+    """
+    import hashlib
+    recorded = {}
+    for line in (MODELS / "SHA256SUMS.txt").read_text(encoding="utf-8").splitlines():
+        parts = line.split()
+        if len(parts) == 2:
+            recorded[parts[1].lstrip("*")] = parts[0]
+    assert recorded, "SHA256SUMS.txt parsed to nothing — the check would pass vacuously"
+
+    checked = 0
+    for name, expected in sorted(recorded.items()):
+        path = MODELS / name
+        if not path.exists():          # pickles are gitignored; skip what is out-of-band
+            continue
+        got = hashlib.sha256(path.read_bytes()).hexdigest()
+        assert got == expected, f"{name}: on disk {got[:12]}, manifest says {expected[:12]}"
+        checked += 1
+    if checked == 0:
+        pytest.skip("no pickles present in this checkout — digests unverifiable here")
+
+
+@pytest.mark.skipif(not CONFIG.exists(), reason="artifact not built in this checkout")
+def test_load_completes_and_assigns_the_embedder(monkeypatch):
+    """⛔ The control for a defect introduced on 2026-09-11 while EDITING this file.
+
+    Adding the `stack_id` property mid-`_load()` orphaned everything after it behind a
+    `return`: `_warn_on_stack_drift()` stopped running and `self._embedder` stayed None, so
+    the next `batch_score` died on `'NoneType' has no attribute 'encode'`. Every existing
+    test here exercises `_load`'s REFUSALS and none of them its success, so all of them
+    still passed. A smoke run on real rows is what caught it.
+
+    Stubs only the heavy import, so this stays runnable in a bare CI checkout.
+    """
+    import sys, types
+    from filters.common.harm_detector.v1.inference import HarmDetectorV1
+
+    built = {}
+    stub = types.ModuleType("sentence_transformers")
+    stub.SentenceTransformer = lambda name, device=None: built.setdefault("m", (name, device))
+    monkeypatch.setitem(sys.modules, "sentence_transformers", stub)
+
+    det = HarmDetectorV1(device="cpu")
+    warned = []
+    monkeypatch.setattr(det, "_warn_on_stack_drift", lambda: warned.append(True))
+    det._load()
+
+    assert det._embedder is not None, "_load returned without assigning the embedder"
+    assert built["m"][1] == "cpu", built
+    assert warned == [True], "the stack-drift check did not run"
+    assert len(det._classifiers) == 5, det._classifiers
+    assert det._scaler is not None
+
+
+def test_stack_id_names_every_library_that_can_move_the_score():
+    """⛔ The control for a field whose NAME asserted more than its value carried.
+
+    The stack string was composed in NexusMind's caller as `st-mpnet/sklearn-<v>/<device>`,
+    where `st-mpnet` was a LITERAL: two runs under different sentence-transformers or torch
+    versions — the libraries that own the embedding, which dominates — stamped identical
+    strings. A mixed corpus then looks separable and is not (LD#83's shape).
+
+    Needs no artifact: the property must work on an unloaded detector, and must not drag the
+    heavy imports above the integrity checks in `_load`.
+    """
+    import sys
+    from filters.common.harm_detector.v1.inference import HarmDetectorV1, EMBEDDER
+
+    before = {m for m in ("torch", "sentence_transformers") if m in sys.modules}
+    det = HarmDetectorV1.__new__(HarmDetectorV1)
+    det.device = "cpu"
+    stack = det.stack_id
+    after = {m for m in ("torch", "sentence_transformers") if m in sys.modules}
+
+    assert stack.startswith(EMBEDDER + "/"), stack
+    for term in ("/st-", "/torch-", "/sklearn-"):
+        assert term in stack, f"{term} missing from {stack}"
+    assert stack.endswith("/cpu"), stack
+    assert after == before, f"stack_id imported {after - before}"

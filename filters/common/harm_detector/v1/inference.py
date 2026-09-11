@@ -118,22 +118,26 @@ class HarmDetectorV1:
         # The version is a property of the ARTIFACT, not of this file. Reading a module
         # constant is how a 2-head load stamped the same string as the measured 5-head one.
         self.version = self._config.get("version", MODEL_VERSION)
+        self._warn_on_stack_drift()
+
+        from sentence_transformers import SentenceTransformer
+        self._embedder = SentenceTransformer(EMBEDDER, device=self.device)
 
     @property
     def stack_id(self) -> str:
         """What a score produced here is comparable WITHIN.
 
         ⛔ **Every library that can move the number, not just the one that is easy to reach.**
-        The previous form was `st-mpnet/sklearn-<v>/<device>`, in which `st-mpnet` was a
-        LITERAL: two runs under different sentence-transformers or torch versions produced
-        byte-identical strings while the embeddings — which dominate — differed. A field named
-        for the stack that omits most of the stack is worse than no field, because a mixed
-        corpus then looks separable and is not.
+        The previous form was built in the caller as `st-mpnet/sklearn-<v>/<device>`, in which
+        `st-mpnet` was a LITERAL: two runs under different sentence-transformers or torch
+        versions produced byte-identical strings while the embeddings — which dominate — could
+        differ. A field NAMED for the stack that omits most of the stack is worse than no
+        field, because a mixed corpus then looks separable and is not (LD#83's shape).
 
-        Read from installed metadata rather than by importing, so this stays callable without
-        pulling sentence-transformers in above the integrity checks (see `_load`). A version
-        that cannot be read is recorded as `unknown` — never silently dropped, because a
-        missing term is exactly what made the old string wrong.
+        Read from installed metadata rather than by importing, so this stays callable on an
+        unloaded detector and never drags the heavy imports above the integrity checks in
+        `_load`. A version that cannot be read is recorded as `unknown` — never silently
+        dropped, since a missing term is exactly what made the old string wrong.
         """
         from importlib.metadata import version, PackageNotFoundError
 
@@ -145,10 +149,6 @@ class HarmDetectorV1:
 
         return (f"{EMBEDDER}/st-{_v('sentence-transformers')}/torch-{_v('torch')}"
                 f"/sklearn-{_v('scikit-learn')}/{self.device}")
-        self._warn_on_stack_drift()
-
-        from sentence_transformers import SentenceTransformer
-        self._embedder = SentenceTransformer(EMBEDDER, device=self.device)
 
     def _verify_hashes(self, filenames):
         """Refuse to unpickle a file whose digest matches no recorded one.
