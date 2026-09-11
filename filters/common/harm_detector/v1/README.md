@@ -36,7 +36,7 @@ choice, and it is nearly free — the embedding pass, which dominates, is shared
 ## What it was trained on
 
 `datasets/training/human_thriving_v8_scoped/`, rebuilt with `prepare_data.py --seed 42` after
-`#155`. Positive class `oracle_meta["scope_verdict"] == "harm_is_subject"`:
+`llm-distillery#155`. Positive class `oracle_meta["scope_verdict"] == "harm_is_subject"`:
 **1,011 / 105 / 137** over train **5,268** / val **658** / test **660**.
 
 ## Measured — the ensemble
@@ -60,27 +60,46 @@ The 0–3 spread is real but belongs to the *val-picked operating point*, not th
 ensemble's value is that it removes the CHOICE of seed and is flat across a wide band — **not that
 it beats every seed**, which the original sentence implied in the direction that flattered it.
 
-⚠️ **Read it against the null arm, not against zero.** In `EXP-037` a shuffled-label detector
-caught **0.0 of 9** while firing at **twice** the rate. That is what makes 3 of 9 a signal.
+⚠️ **Read it against the null arm — and read the null's FLAG RATE before its catch count.**
+The *"shuffled-label control caught 0 of 9"* defence holds at exactly one operating point: the
+pre-registered val-picked rule. There the real arm flags **2.04%** of the panel and the null
+**4.09%** — the null is genuinely rate-advantaged and still touches the 9 **zero** times. ⚠️ The
+real arm's catch at that rule is **2.0 of 9** (band 0–3), not the 3 the table above reports at its
+fixed gates.
+
+⛔ **It does NOT hold across the plateau, and the wording here claimed it did until 2026-09-10.**
+Over the 5-seed sweep (means over seeds, so not directly comparable to the ensemble table above):
+at **0.65 and above the null flags 0.0 of 137 rows in all five seeds**, so its catch of zero is
+**arithmetically forced, not measured** — an instrument that cannot say yes carries no information
+when it says no. At **0.30 the null fires MORE than the real arm** (22.4 vs 10.6 rows), reversing
+the defence outright. Full table: `docs/evidence/2026-09-10-harm-detector/` in llm-distillery.
 
 ## Verified
 
-`scripts/verification/verify_harm_detector_v1.py` — run it wherever the detector is served.
+`scripts/verification/verify_harm_detector_v1.py` (**llm-distillery only** — it does not exist in
+NexusMind; see the Artifacts note below) — run it wherever the detector is served.
 
 - **The shipped module reproduces the builder**: max |Δ| **8.1e-07** over 137 rows. Not
-  bit-identical because `panel_probs_ensemble` is stored rounded to 6 dp — that |Δ| **is** the
-  storage precision.
+  bit-identical because `panel_probs_ensemble` is stored rounded to 6 dp — ⚠️ **but rounding alone
+  does not account for it**: 6-dp storage bounds one value's error at 5.0e-07, and 8.1e-07 is 1.62×
+  that. The residual is the same order as the CPU-vs-CUDA term below (7.15e-07) and is consistent
+  with the two hops running on different devices — **not verified**. Re-run both hops on one device
+  before quoting this line as a precision claim.
 - ⭐ **Device is immaterial for this detector**: CPU vs CUDA max |Δ| **7.15e-07**, and **0 verdict
   flips** at 0.30 / 0.50 / 0.70 / 0.85. ⛔ **Do not generalise this** — the Gemma student's
   CPU→CUDA term is **0.1956**. A floor belongs to a population and a mechanism, and this one was
   measured here, on this architecture, on these rows.
 - Artifacts **byte-identical across both hops**, 6/6 (`models/SHA256SUMS.txt`).
-- Contract held by `tests/unit/test_harm_detector_contract.py`, which fails if a threshold
-  appears in the module, if one reaches the built config, or if a declared head loses its hash.
+- Contract held by `tests/unit/test_harm_detector_contract.py` (**llm-distillery only**; NexusMind
+  ships `tests/unit/test_harm_preprocessor.py`, which asserts the stamping contract, not these
+  three), which fails if a threshold appears in the module, if one reaches the built config, or if
+  a declared head loses its hash.
 
-⚠️ **Scores are not comparable across library stacks.** The **stack** noise floor of **0.2008**
-was measured on exactly this architecture (mpnet + sklearn MLP across sentence-transformers
-versions). Built with **sklearn 1.8.0**, matching the other detectors' pickles.
+⚠️ **Scores are not comparable across library stacks — and this architecture's own stack term is
+UNMEASURED.** ⛔ The **0.2008** quoted elsewhere in the estate is the **Gemma-3-1B student's**
+(`uplifting v7`, 660 rows, b650 vs gpu-server's venv, CPU both sides) — a different population and
+mechanism, carried here as an order-of-magnitude caution only. Built with **sklearn 1.8.0**,
+matching the other detectors' pickles.
 
 ## Artifacts
 
@@ -104,8 +123,9 @@ where a changed response shape yields `None` scores that look real. Building the
 would have been building a deletion.
 
 **Measured cost of staying in-process** — 137 real articles, mean body 4,189 chars, CPU:
-**19.9 articles/s** on a 16-core Ryzen 7. The pipeline host is an 8-core Ryzen 3, so ~2–2.5×
-that: a cycle's ~1,421-article intake is **~3 minutes** inside a 4-hour window.
+**19.9 articles/s** on a 16-core Ryzen 7. ⚠️ **Measured on that box, not on the pipeline host.**
+The pipeline host is an 8-core Ryzen 3, taken as **~2–2.5× SLOWER** (≈8–10 art/s, *derived, never
+run there*), which puts a cycle's ~1,421-article intake at **~3 minutes** inside a 4-hour window.
 
 1. Copy `models/` to the host; the loader now verifies every digest against `SHA256SUMS.txt` or
    per-file `.sha256` sidecars and **refuses to unpickle anything unverified**.

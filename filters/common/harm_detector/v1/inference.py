@@ -25,9 +25,14 @@ So the ensemble's value is that it removes the CHOICE of seed and is flat across
 **not that it beats every seed**. Shipping one seed ships a lottery ticket; averaging five removes
 the lottery. Cost is negligible: the embedding pass, which dominates, is shared across the heads.
 
-⚠️ **Scores are NOT comparable across library stacks.** The measured **stack** noise floor of
-**0.2008** was taken on exactly this architecture (mpnet + sklearn MLP, differing
-sentence-transformers versions). Compare scores only within one environment.
+⚠️ **Scores are NOT comparable across library stacks — and THIS architecture's own stack term is
+UNMEASURED.** ⛔ The **0.2008** figure quoted elsewhere in the estate belongs to a different
+population and a different mechanism: `uplifting v7`'s **Gemma-3-1B student**, 660 held-out rows,
+b650 vs gpu-server's serving venv, CPU both sides (llm-distillery `memory/b650-gpu.md`,
+`memory/score-batch-shape-noise.md`). A floor belongs to a population and a mechanism, never to a
+project, so it is carried here as an ORDER-OF-MAGNITUDE caution only — not as this detector's
+number. Compare scores only within one environment; measure the term on mpnet + sklearn MLP before
+quoting one for this detector.
 
 Numbers, the shuffled-label null arm, and two refuted predictions: `EXP-037`,
 `docs/evidence/2026-09-10-harm-detector/`. ⚠️ Its panel is `uplifting v7` / `human_thriving v8`
@@ -150,9 +155,10 @@ class HarmDetectorV1:
     def _warn_on_stack_drift(self):
         """`sklearn_version` was recorded by the builder and read by nothing.
 
-        The measured STACK floor for this architecture is **0.2008** — larger than the batch
-        floor — so a version difference is not cosmetic. Warns rather than raises: refusing to
-        load would take a lens down over a number that is usually fine.
+        This architecture's own stack term is UNMEASURED; the 0.2008 quoted elsewhere is the
+        Gemma-3-1B student's (see the module docstring). A version difference is treated as
+        not-cosmetic on that order-of-magnitude caution alone. Warns rather than raises: refusing
+        to load would take a lens down over a number that is probably fine.
         """
         built = self._config.get("sklearn_version")
         if not built:
@@ -164,8 +170,8 @@ class HarmDetectorV1:
         if sklearn.__version__ != built:
             warnings.warn(
                 f"harm detector was built on scikit-learn {built}, loading under "
-                f"{sklearn.__version__}. Scores are NOT comparable across library stacks "
-                f"(measured stack floor 0.2008 on this architecture).",
+                f"{sklearn.__version__}. Scores are NOT comparable across library stacks; "
+                f"this architecture's stack term is UNMEASURED.",
                 RuntimeWarning, stacklevel=2)
 
     # ---- text -------------------------------------------------------------

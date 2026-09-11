@@ -15,10 +15,18 @@ flips at plausible gates are.
 
 Needs `datasets/panel/panel_content.jsonl` (gitignored) and a built
 `filters/common/harm_detector/v1/models/`. Requires GPU only for the cuda arm.
+
+⛔ **As of 2026-09-11 that input does not exist on this machine and cannot be rebuilt from
+`docs/evidence/2026-09-08-thriving-harm-panel/panel_frame.jsonl`, which carries no `content`
+on any of its 137 rows.** So none of (a), (b) or (c) is currently verifiable here — the
+numbers in the detector README came from the build session and have not been re-checked
+since. The unchecked place is the 730-day sadalsuud archive.
 """
 import json, sys
 from pathlib import Path
-sys.path.insert(0, str(Path(__file__).resolve().parent))
+# Repo ROOT, not this script's directory: `filters/` lives at the root, and pointing at
+# scripts/verification/ made the import fail unless the caller happened to set PYTHONPATH.
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from filters.common.harm_detector.v1.inference import HarmDetectorV1
 
 report = json.loads(Path("filters/common/harm_detector/v1/calibration_report.json").read_text())
@@ -49,6 +57,6 @@ for device in ("cuda", "cpu"):
             print(f"      gate {t:.2f}: cuda flags {fc}, cpu flags {fp}, verdict flips {flips}")
     # stamp shape
     st = d.stamp(arts[0])
-    assert set(st) == {"harm_is_subject_score", "harm_detector_version"}, st
+    assert set(st) == {"_harm_is_subject_score", "_harm_detector_model"}, st
     assert "verdict" not in json.dumps(st) and "is_harm" not in json.dumps(st)
 print("stamp shape OK: score + version only, no verdict key")
