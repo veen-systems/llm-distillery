@@ -1,6 +1,40 @@
 # Gotcha Log
 
 
+## A FAILED `git add` LET THE COMMIT RUN ANYWAY, AND HALF A REVERT WENT TO `main` (2026-09-12)
+**Problem**: Ran `git add <8 paths>` where one was `tests/unit/test_refcheck_exit_contract.py`
+— already staged as a deletion by an earlier `git rm`, so the pathspec matched **no file**.
+`git add` printed `fatal: pathspec ... did not match any files` and exited non-zero. **It is
+ATOMIC over its argument list, so none of the other seven were staged.** The `git commit` on
+the next line ran against an index holding only that deletion, and I pushed it. For one commit
+`main` carried `refcheck.py` **still holding the exit contract** with its tests deleted, under
+a message saying the contract was reverted.
+**Root cause**: Two, and the second is the real one. (1) A non-matching pathspec is fatal for
+the WHOLE `git add`. (2) **I verified the commit by reading the message I had just written
+rather than `git show --stat`.** `git status --porcelain` printed the eight unstaged files in
+the same output block, immediately above the commit — the evidence was on screen, unread.
+**Fix**: Follow-up commit carrying the other seven (no force-push; the bad commit was public).
+⛔ **Put `git diff --cached --stat` between staging and committing, or `&&` them so the commit
+cannot run on a failed add.** ⭐ **A deletion already staged by `git rm` must NOT be re-listed
+in a later `git add`** — the commonest way to make a pathspec that matches nothing. ⭐ **Same
+shape as the thing being reverted: I confirmed an outcome from the artifact that DESCRIBES it
+instead of the artifact that RECORDS it.**
+
+## A TRUNCATED HEADER READ IS NOT A HEADER READ — `| head -6` HID THE ANSWER (2026-09-12)
+**Problem**: `/audit-context` and `/curate` both say to review the gotcha log by reading its
+**headers**. I ran `grep -nE '^#{2,3} ' memory/gotcha-log.md | head -6` and read six. The entry
+that would have stopped a day's wasted work — **`## I RE-ADOPTED A RECORDED DECLINE, IN THE
+FILE THAT RECORDS IT (2026-08-29)`** — is at **line 307**, entry ~24 of 458. I then wrote an
+almost identically-titled entry for the same defect without noticing its twin.
+**Root cause**: `head -6` was there to keep output small on a 665 KB file. The step's whole
+value is that headers are ~6% of the file and CAN all be read; truncating restores the cost
+problem while looking like the cheap solution. **A capped read reports like a complete one.**
+**Fix**: Read all 458 headers, or `grep` them for the term you are about to act on
+(`grep -nE '^#{2,3} ' <log> | grep -i decline`) — which is one command and would have hit.
+⛔ **Never `| head` a check whose purpose is completeness.** ⭐ The log had the answer, in the
+right place, correctly titled, at a line number no truncation reached — the memory layer
+worked and the read did not.
+
 ## I RE-ADOPTED A RECORDED DECLINE — THE THIRD TIME, AND THE ANSWER WAS IN THE FILE I WAS EDITING (2026-09-12)
 **Problem**: `/audit-context` found `refcheck.py` had no `sys.exit` — a check structurally
 unable to fail — and added a three-outcome exit contract with 6 tests and 4 killed mutations.
