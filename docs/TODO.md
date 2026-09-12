@@ -1,33 +1,54 @@
 # LLM Distillery - TODO
 
-## 🔵 NEXT SESSION — **`/update-drift` DONE 2026-09-11. `/audit-context` is next.**
+## 🔵 NEXT SESSION — **drift + audit + curate ALL DONE 2026-09-11/12. Three decisions are waiting.**
 
-✅ **The stamp was wrong and is now v1.40.0** — 4 releases triaged (2 adopt, 0 decline, 2 n/a,
-3 already-in-force). The owner's diagnosis was right and understated: the installed skills were
-at **v1.40.0**, not v1.39.0, and there are **four** of them, not three — `review-changes` became
-user-global at v1.40.0. ⭐ **The live defect: `/review-changes` was BROKEN here.** The 546-line
-project-local fork was **inert** (shadowed by the global copy), and the global copy *stops*
-without `.claude/review-profile.md`, which did not exist. The fork is deleted; the profile is
-written. ⛔ **Three project lenses — `reachability`, `claim-verification`, `sync-safety` — have
-no slot in v1.40.0's closed lens list and DO NOT FIRE** (upstream
-`ducroq/agent-ready-projects#166`); the prompts are preserved at the foot of the profile and must
-be run BY HAND. Full record: `docs/decisions/framework-adoption-history.md` (2026-09-11 entry).
-⚠️ **Left for `/audit-context`, deliberately NOT done blind**: this repo's
-`tests/fixtures/reference-integrity/refcheck.py` differs from the framework's by **1,629 lines**
-and has no `SPEC.md` (v1.40.0 moved the Step 4 spec there). ⛔ **Drift adoption deleted ZERO
-bytes**; it was the prerequisite, not the fix.
+✅ **Framework v1.36.1 → v1.40.0** (2 adopt, 0 decline, 2 n/a, 3 already-in-force), ✅ `/audit-context`
+(verdict DEFECTS, fixed), ✅ `/curate`, pushed `93e2bcf..4eca14e`. **$0, no oracle, nothing in
+`filters/`, deploy N/A — not skipped, inapplicable.** Full record:
+`docs/decisions/framework-adoption-history.md` + `memory/project_session_2026_09_11_evening.md`.
 
-⛔ **THE BLOAT, MEASURED 2026-09-11: the corpus is 2,387,361 chars — 8× `/curate`'s 300k read
-threshold, so THAT SESSION CURATED AGAINST METADATA AND NEVER OPENED IT.** The audit tooling can
-no longer see its own inputs; that is the cost, not the disk. ⚠️ **The always-loaded layer is
-FINE** (53,277 B of 60,000, re-measured 2026-09-11) — the damage is in the *reachable* layer. It is concentrated:
-`memory/gotcha-log.md` **649.8 KB / 454 entries = 27% of the whole corpus**, then
-`cross-repo-prioritization` 132.9 KB, `hypothesis-ledger` 118.8 KB, `session-log` 112.5 KB; the
-97 session files are 0.8 MB and are append-only records, arguably correct.
-⭐ **Diagnosis already made once: this is `#123` one layer down** — no rotation rule, no ceiling,
-no updating step, so it grows every session (5 entries added 2026-09-11 alone). First question
-for `/audit-context` is whether the gotcha log gets `#123`'s treatment.
-⚠️ Also pending and unrelated to bloat: **`CLAUDE.md` is 37,266 B against its own 40,000 cap** (the drift adoption added ~900 B).
+⛔ **THREE OWNER DECISIONS, none of which I should make alone:**
+
+1. **Which `refcheck.py` is authoritative, and does ours get a SPEC.md?** Two instruments, 1,629
+   lines apart. ⛔ **CORRECTED 2026-09-12: ours exits 0 by DESIGN — a recorded Decline.** The
+   2026-09-11 audit added a three-outcome exit contract; it was the **THIRD** re-adoption of a
+   feature declined for this fork, and is reverted. *"The script cannot fail"* is worth fixing
+   only in the same change that gives it a caller — there is no CI and `run.sh` uses `|| true`.
+   Exit 2 is **unreachable in its own motivating scenario** (forced `SIBS=[]` still yields 22
+   findings → exit 1). Full write-up: `framework-adoption-history.md` 2026-09-12; also
+   `veen-systems/llm-distillery#134`. Ours: 520 lines, 34 auto-discovered docs, ignores CLI args,
+   stale-placeholder detection, 22 findings. Framework's: 1,151 lines, `--sibling-root`,
+   collisions, 218 findings (**115 COLLISION** on basenames with 12–34 copies; **39 of the 102
+   UNRESOLVED are rung-4 naming, not dead files**). ⛔ **Do NOT ship the framework's SPEC.md beside
+   our script** — it documents a different program. Ties into **#134**, which is real and now
+   measured: `--docs` exists and works (**272 files, 401 findings**), but the DEFAULT set still
+   excludes `docs/`.
+2. **Does `memory/gotcha-log.md` get `#123`'s treatment?** 665 KB / **458** entries = **27% of a
+   2.43 MB corpus**, no rotation rule, no ceiling, no updating step. The read surface is
+   **2,408,600 chars — 8.0× `/curate`'s 300k threshold, so the corpus is NOT read and 125 of 129
+   memory files were never opened.** The audit tooling cannot see its own inputs; that is the
+   cost, not the disk. Next in size: `cross-repo-prioritization` 133 KB, `hypothesis-ledger`
+   121 KB, `session-log` 115 KB; the 97 session files are 0.8 MB and are append-only, arguably
+   correct.
+3. **`#116` (activation/arousal) is still the open ethics call** and is scoped in
+   `persuasion-scorer`, not here.
+
+⚠️ **`CLAUDE.md` is 37,432 B / ~36,990 chars against a 40,000 hard cap and a 35,000 soft one —
+OVER SOFT.** Pointer budget **40 rows, 4 of 5 carve-outs used**. Always-loaded layer 54,087 B of
+60,000. ⛔ **Drift adoption deleted ZERO bytes**; it was the prerequisite, not the fix.
+
+⭐ **#122 CONFIRMED AGAIN, and it bit this session.** The `CLAUDE.md` frontmatter does not reach
+session context — verified first-hand on 2026-09-12 — and on 2026-09-11 I put the new
+`review-changes` operative rule *in that block*. A rule that only lives there governs nothing.
+The operative half is now a row in § Before You Start; the frontmatter keeps provenance and
+points at it. **Check placement against #122 before adding any rule to that block.**
+
+⛔⛔ **AND THE RULE THAT WOULD HAVE SAVED A WHOLE DAY'S WORK: before adopting anything into a
+fork — a framework feature, an upstream fix, a "missing" exit code — `grep
+docs/decisions/framework-adoption-history.md` for the feature's own name.** A decline's reason
+is LOCAL; upstream does not know it, so reading the CHANGELOG, the skill and the code cannot
+recover it. Missing that grep cost the exit-contract work above, and it is now the third time
+the same decline has been re-adopted.
 
 ### Then — NexusMind is FROZEN. Three lanes, one of them frozen. Lane C is the live work.
 

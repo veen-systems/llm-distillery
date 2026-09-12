@@ -1,6 +1,29 @@
 # Gotcha Log
 
 
+## I RE-ADOPTED A RECORDED DECLINE — THE THIRD TIME, AND THE ANSWER WAS IN THE FILE I WAS EDITING (2026-09-12)
+**Problem**: `/audit-context` found `refcheck.py` had no `sys.exit` — a check structurally
+unable to fail — and added a three-outcome exit contract with 6 tests and 4 killed mutations.
+It was **recorded as Declined for this fork**, had already been re-adopted and reverted once
+on 2026-08-29, and I made it occurrence three. I had appended my own entry to the TOP of
+`docs/decisions/framework-adoption-history.md` the same session without reading further down.
+**Root cause**: I verified the feature against the CHANGELOG, the installed skill and the
+code. **A decline's reason is LOCAL — upstream does not know it — so no amount of reading
+upstream can recover it.** Neither the review battery nor the mutations could help: both ask
+*does the mechanism work*, and the defect was that it should not exist.
+⛔ **Worse, my test asserted the unreachable branch and passed.** `test_coverage_incomplete_exit_2`
+used a synthetic `findings=[]`; forcing `SIBS=[]` on the real repo still yields 22 findings →
+exit 1, so exit 2 **cannot fire**. Four killed mutations on a branch with no reachable input —
+*prove the bar is reachable*, violated inside the test written to guard it.
+**Fix**: Reverted the block and deleted the test file. ⭐ **Before adopting anything into a
+fork, `grep docs/decisions/framework-adoption-history.md` for the feature's OWN NAME** — the
+file that records declines is not the file you are adopting from, and that is the whole point.
+⭐ **And "this check cannot fail" is not automatically a defect**: a status nothing reads is a
+mechanism with no caller, which is the same class. Fix it in the change that adds the caller.
+**How it was actually caught**: `gh issue view 134 --comments`, during an unrelated sweep the
+next day. The comment saying *"recorded so it is not re-attempted"* worked — one day late,
+and only because someone opened the thread.
+
 ## A TEST'S NAME ASSERTED MORE THAN THE TEST CHECKED, AND THE MUTATION PROVED IT (2026-09-11)
 **Problem**: Added a three-outcome exit contract to `refcheck.py` with six tests, including
 `test_findings_are_deduplicated`. Four mutations run. Three killed. The fourth —
@@ -13,6 +36,11 @@ a future reader would trust — `[[feedback-a-name-is-an-assertion]]`, now on a 
 ⭐ **A mutation that survives is not a gap in coverage — it is a NAME that is lying.** Pick
 each mutation to attack the property the test NAMES, not the line it executes; three of my
 four attacked the code I had just written and could not have found this.
+⚠️ **The ARTIFACT is gone — the exit contract and this test file were reverted 2026-09-12 as
+the third re-adoption of a recorded decline** (see the 09-12 entry above). The lesson stands
+and is why this entry stays; do not go looking for `tests/unit/test_refcheck_exit_contract.py`.
+⛔ And note what the two entries say together: the test-name defect was found by MY mutation,
+and the *branch should not have existed at all* was not — no mutation can ask that.
 
 ## TWO REVIEW LENSES, OPPOSITE ERRORS, AND THE TRUTH WAS NEITHER (2026-09-11)
 **Problem**: Asked whether a guarantee on `filters/*/v*/model/**` could ever fire. The

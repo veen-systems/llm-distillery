@@ -14,6 +14,52 @@ Upstream changelog: https://github.com/ducroq/agent-ready-projects/blob/master/C
 
 ---
 
+## 2026-09-12 — ⛔⛔ THE SAME DECLINE WAS RE-ADOPTED A THIRD TIME, BY ME, AND IS REVERTED AGAIN
+
+**`refcheck.py`'s three-outcome exit contract (`coverage incomplete`, exit 2) was added on
+2026-09-11 by `/audit-context` and reverted on 2026-09-12.** It is recorded as **Declined** in
+the v1.26.1→v1.31.0 section, was re-adopted and reverted once already on **2026-08-29**, and
+I did it again — after appending my own entry to the top of *this document* without reading
+further down. **That is verbatim the failure the 2026-08-29 entry records happening to it.**
+
+⭐ **The 08-29 entry's transferable lesson is the one I failed:** *"A recorded decline is a
+decision, and this file is where decisions live … Before adopting anything into a fork, grep
+this file for the feature's own name."* I grepped the CHANGELOG, the skill and the code. Not
+this file. **The reason for a decline is LOCAL; upstream does not know it, so no amount of
+reading upstream can recover it.**
+
+**How it surfaced**: not from the code and not from the tests — from `gh issue view 134
+--comments`, while doing an unrelated issue sweep. Neither the review battery nor the four
+mutations could have caught it; both were pointed at whether the mechanism WORKS, and the
+defect was that it should not exist.
+
+**The premise was re-verified before reverting, not taken on faith.** Still holds:
+
+- No `.github/workflows/`; `run.sh` uses `|| true`, accepting 1 and 2 identically; the only
+  `$? -eq 2` in the tree was **the comment I had just written asserting such a caller could
+  exist** — the same sentence the 08-29 entry reports writing.
+- ⭐ **Exit 2 is UNREACHABLE in the exact scenario its own comment names.** Measured
+  2026-09-12: forcing `SIBS = []` (the fresh-clone / CI case) still yields **22 findings →
+  `DEFECTS` / exit 1**, never `coverage incomplete`. (08-29 measured 1 → 181 on the framework
+  checker; ours holds at 22 because its cross-repo arm classifies neighbourless refs as
+  `unver` rather than findings. Different number, same conclusion.)
+
+⛔ **And my TEST asserted the unreachable branch and passed.** `test_coverage_incomplete_exit_2`
+ran the block with a synthetic `findings=[]` — a state the real program never produces with
+`SIBS` empty. Four mutations killed, six tests green, on a branch that cannot fire. **That is
+`prove the bar is reachable` violated inside the test written to guard it**: I proved the
+branch works in isolation and never asked whether the program can reach it.
+
+**Reverted**: the exit block is gone from `refcheck.py` (0 `sys.exit`, exits 0 as before) and
+`tests/unit/test_refcheck_exit_contract.py` is deleted.
+
+⚠️ **The observation that motivated it is still true and still not a defect**: the script
+cannot fail. The decline's answer is that a status nothing reads is a mechanism with no
+caller, which is the *same* class — so "it cannot fail" is only worth fixing **in the same
+change that gives it a caller**. If CI ever arrives, reopen this with the caller in hand.
+
+---
+
 ## 2026-09-11 — `/update-drift`: **4 releases behind (v1.36.1 → v1.40.0)**, stamp bumped after both adopt items landed
 
 Upstream latest tag **v1.40.0**; clone in sync with the remote (`git ls-remote` tags match

@@ -17,16 +17,11 @@ framework_reconciliation: |
   - `curate` and `audit-context` are USER-GLOBAL. The project-local copies were
     DELETED, not reconciled — a global shadows a local silently and the local was
     never loading. Do not re-create them.
-  - `review-changes` became USER-GLOBAL at v1.40.0 (2026-09-11). The re-mapped
-    project-local fork was DELETED — it had been INERT, shadowed by the global
-    copy, and the framework's own `--check` failed on it. Its repo-specific half
-    now lives in `.claude/review-profile.md`, which the global skill reads at
-    Step 1 and WITHOUT WHICH IT STOPS. Do not re-create the local copy.
-    ⛔ Three project lenses (reachability, claim-verification, sync-safety) have
-    NO slot in the profile contract and DO NOT FIRE — upstream
-    `ducroq/agent-ready-projects#166`. The prompts are preserved at the foot of
-    the profile and must be invoked BY HAND. A lens believed to be running and
-    not running is this repo's signature defect.
+  - `review-changes` became USER-GLOBAL at v1.40.0 (2026-09-11); the re-mapped
+    project-local fork was DELETED (it was INERT, shadowed by the global copy).
+    Do not re-create it. ⚠️ The OPERATIVE half is a row in § Before You Start,
+    NOT here — #122: this block does not reach session context, so a rule that
+    lives only here governs nothing.
   - `test-verify-memory` stays PROJECT-LOCAL.
   - No *hypothesis-log.md* at the framework's path or shape, by choice. ⚠️ **But
     this repo DOES have a ledger — `memory/hypothesis-ledger.md`, 121 KB, the
@@ -259,6 +254,7 @@ bounded: `python3 scripts/verification/check_index_budget.py --target pointers`.
 | Understanding system design | `docs/ARCHITECTURE.md` |
 | Reviewing work quality | `docs/checklists/` — architect, test, implement, QA gates |
 | Stuck on tooling or infra | `memory/gotcha-log.md` — problem/fix archive |
+| **Running `/review-changes`, or told it stopped** | **`.claude/review-profile.md` — REQUIRED; the skill STOPS without it.** ⛔ 3 lenses DO NOT FIRE (`ducroq/agent-ready-projects#166`); invoke by hand |
 | **About to weaken, delete or argue with a working rule** | **`memory/working-rules.md`** — the full text of each rule plus the evidence and occurrence catalogue behind it. Every one exists because something shipped broken. |
 | **Touching corroboration, story-dedup, or any matching feature** | **`memory/corroboration-feature-hypotheses.md`** — confirmed, refuted and untested. ⚠️ **The threshold is NOT the lever.** |
 | Planning across repos, or asking "what should I work on" | `memory/cross-repo-prioritization.md` — issue landscape, chains, and the two standing traps it names |

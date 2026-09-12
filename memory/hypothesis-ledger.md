@@ -436,5 +436,18 @@ Add a row **when a hypothesis is created**, not when it resolves — an unresolv
 hypothesis nobody can find is the case this file exists for. Keep every row to one line;
 if a row needs a paragraph, the paragraph belongs in the source file.
 
+⚠️ **Audited 2026-09-12 (`/audit-context` + `/curate`): 31 rows, 0 past-due `Review by:`,
+and THREE whose verdict is not retrievable by scanning — `H-E2`, `H-E3`, `H-E4`** (all in
+the `enrichment-delta` / oracle-slope cluster). The verdict may be in the body of the source
+file; it is not in the heading, so a scan cannot recover it and every future audit will
+re-report them. **Surfaced, not resolved** — resolving means reading each source and applying
+its Method, which is the engineer's call. ⛔ Not a defect in this file: it is recorded above
+that `not stated in heading` means exactly this, and the source is what needs the heading.
+
+⚠️ **That session created NO new hypotheses.** It was framework/tooling work (drift adoption,
+structural audit, curation) with no empirical claim about the pipeline, so there is nothing
+to add. Recorded because *"no rows added"* and *"nobody checked"* are otherwise
+indistinguishable.
+
 Related: [[corroboration-feature-hypotheses]], [[calibration-history]], [[working-rules]],
 [[cross-repo-prioritization]].

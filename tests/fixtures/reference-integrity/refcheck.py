@@ -518,30 +518,3 @@ for k in sorted(_sd):
     if _fd[k]: print(f"  {k+'/':44s} {_fd[k]:4d} unique in {_sd[k]:4d} file(s)")
 _silent = [k for k in sorted(_sd) if not _fd[k]]
 print(f"  -- clean: {', '.join(_silent) if _silent else '(none)'}")
-
-# --- Exit contract (agent-ready-projects v1.40.0, /audit-context Step 4) ---------------
-# Added 2026-09-11. Until then this script had NO `sys.exit` anywhere: it printed findings
-# and always exited 0, so `refcheck.py && ...` could never fail and the check was
-# structurally incapable of firing. Nothing wired it, so nothing broke -- but a guard that
-# cannot fail is this repo's signature defect, not a style question.
-#
-# THREE outcomes, and 2 must stay non-zero (framework Step 4):
-#   1  DEFECTS           -- a rung that actually ran ruled a reference out or ambiguous.
-#   2  COVERAGE INCOMPLETE -- nothing was ruled out, but rung 4 had no sibling repo to run
-#                          against, so cross-repo references were never decided. A caller
-#                          written `refcheck.py && ...` keeps its old meaning; one that
-#                          accepts an undecided run opts in with `|| [ $? -eq 2 ]`.
-#   0  CLEAN             -- nothing found, and rung 4 had neighbours to rule with.
-# Collapsing 2 into 1 fails on WHERE it ran; collapsing it into 0 buries a real break in
-# the same bucket. Both are why this is three values and not a boolean.
-import sys as _sys
-_n = len(set(findings))
-if _n:
-    print(f"\n== VERDICT: DEFECTS -- {_n} unique finding(s) (exit 1) ==")
-    _sys.exit(1)
-if not SIBS:
-    print("\n== VERDICT: COVERAGE INCOMPLETE -- no sibling repo reachable, so rung 4 "
-          "never ran and every cross-repo reference is undecided (exit 2) ==")
-    _sys.exit(2)
-print("\n== VERDICT: CLEAN -- no findings, and rung 4 had neighbours to rule with (exit 0) ==")
-_sys.exit(0)

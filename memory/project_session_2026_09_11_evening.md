@@ -69,11 +69,20 @@ at the foot of the profile; must be invoked BY HAND. `reachability` is CLAUDE.md
 
 ## `/audit-context`: VERDICT DEFECTS
 
+⛔⛔ **REVERTED 2026-09-12 — read this before the paragraph below.** The exit contract added
+here was the **THIRD** re-adoption of a feature **recorded as Declined for this fork**, and is
+reverted in full. I grepped the CHANGELOG, the skill and the code — not
+`docs/decisions/framework-adoption-history.md`, which is where declines live and which says in
+terms to grep it. Exit 2 is **unreachable in its own motivating scenario** (forced `SIBS=[]`
+still gives 22 findings → exit 1), and my test for it passed only on a synthetic `findings=[]`
+the program never produces. Full write-up: that file's 2026-09-12 entry, and
+`veen-systems/llm-distillery#134`.
+
 ⭐ **`tests/fixtures/reference-integrity/refcheck.py` had NO `sys.exit` anywhere.** It printed
 findings and always exited 0 — `refcheck.py && ...` could never fail. Nothing wires it (no
-CI), so nothing broke, but a guard structurally incapable of firing is the signature defect.
-Added the three-outcome contract (1 defects / **2 coverage-incomplete, NON-ZERO** / 0 clean)
-and 6 tests reading the block out of the shipped file.
+CI), so nothing broke. **I read that as the signature defect; it is a recorded DECISION.** A
+status nothing reads is itself a mechanism with no caller — the same class — so it is worth
+fixing only in the same change that gives it a caller.
 
 ⭐ **M4 survived**: `len(set(findings))` → `len(findings)` left all six green.
 `test_findings_are_deduplicated` asserted the EXIT CODE, and five duplicates and one finding
