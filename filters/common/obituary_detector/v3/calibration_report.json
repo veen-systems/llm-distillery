@@ -132,6 +132,11 @@
     "oof_f1_at_0.95": 0.7906,
     "oof_precision_at_0.95": 0.942,
     "oof_recall_at_0.95": 0.6811,
+    "single_seed": {
+      "seed": 42,
+      "issue": "llm-distillery#158",
+      "why": "Built before llm-distillery#158 by training/train_v1.py with SEED = 42 hardcoded, so every oof_* number here is ONE DRAW. Not rebuilt: EXP-034 measured the v3/v4/v5 recall bands as fully overlapping with three different orderings across five seeds, so a rebuild would change the numbers without settling anything, and #158 is a reporting defect rather than a model defect."
+    },
     "note": "AUDIT-ONLY baseline. Do not enforce before threshold sign-off."
   }
 }

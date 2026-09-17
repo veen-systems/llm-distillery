@@ -132,6 +132,11 @@
     "oof_f1_at_0.95": 0.7372,
     "oof_precision_at_0.95": 0.9551,
     "oof_recall_at_0.95": 0.6002,
+    "single_seed": {
+      "seed": 42,
+      "issue": "llm-distillery#158",
+      "why": "Built before llm-distillery#158 by training/train_v1.py with SEED = 42 hardcoded. This is the head serving at 0.85 in production, and #158 explicitly does not claim it is bad: recall at that op-point spans 0.6599-0.8081 across seeds, which is a property of the protocol, not a reason to replace what is live. Rebuild belongs to #85 (obituary v6), under the new banded trainer."
+    },
     "note": "AUDIT-ONLY baseline. Do not enforce before threshold sign-off."
   }
 }

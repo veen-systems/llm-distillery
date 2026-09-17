@@ -132,6 +132,11 @@
     "oof_f1_at_0.95": 0.7995,
     "oof_precision_at_0.95": 0.9274,
     "oof_recall_at_0.95": 0.7026,
+    "single_seed": {
+      "seed": 42,
+      "issue": "llm-distillery#158",
+      "why": "Built before llm-distillery#158 by training/train_v1.py with SEED = 42 hardcoded. The v3->v4 regression flag this file's note implies is NOT supported once seeds vary: EXP-034 found v4's mean recall the HIGHEST of the three. One draw, kept as history."
+    },
     "note": "AUDIT-ONLY baseline. Do not enforce before threshold sign-off."
   }
 }

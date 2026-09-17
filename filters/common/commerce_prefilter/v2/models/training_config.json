@@ -21,5 +21,10 @@
   ],
   "train_samples": 1701,
   "test_samples": 190,
-  "created": "2026-01-23"
+  "created": "2026-01-23",
+  "single_seed": {
+    "seed": "UNRECORDED",
+    "issue": "llm-distillery#158",
+    "why": "Pre-dates llm-distillery#158 by seven months (created 2026-01-23) and its seed cannot be established without guessing: this config declares classifier_type MLPClassifier while the trainer in the tree (training/train.py) builds a transformers Trainer at seed=42, so the shipped head did not come from that path. Recorded as UNRECORDED rather than assumed to be 42."
+  }
 }

@@ -30,14 +30,20 @@ import sys
 from pathlib import Path
 
 import numpy as np
-from sklearn.model_selection import StratifiedKFold
 from sklearn.preprocessing import StandardScaler
-from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import f1_score, precision_score, recall_score, confusion_matrix
 
-SEED = 42
+sys.path.insert(0, str(Path(__file__).resolve().parents[4]))
+from filters.common.detector_seeds import (  # noqa: E402
+    ARTIFACT_SEED, HIDDEN as SHARED_HIDDEN, SEED_SET, make_mlp, metric_bands, oof_by_seed)
+
+# ⛔ `SEED = 42` used to live here and every published number was one draw from it
+# (llm-distillery#158). The seed set, the artifact seed and the head factory now live in
+# filters/common/detector_seeds.py, and the metrics below are published as BANDS.
 EMBEDDER = "paraphrase-multilingual-mpnet-base-v2"
-HIDDEN = (256, 128)
+#: ⛔ Read from the shared module rather than restated: two copies of an architecture constant
+#: disagree the moment one is edited, and `make_mlp` builds the head from the shared one.
+HIDDEN = SHARED_HIDDEN
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--seed", required=True, help="oracle-scored corpus jsonl")
@@ -89,24 +95,11 @@ X = np.asarray(X)
 print(f"embeddings: {X.shape}")
 
 
-def make_mlp():
-    return MLPClassifier(
-        hidden_layer_sizes=HIDDEN,
-        max_iter=400,
-        early_stopping=True,
-        n_iter_no_change=15,
-        random_state=SEED,
-    )
-
-
-# ---- 5-fold OOF probabilities ---------------------------------------------
-skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=SEED)
-oof = np.zeros(len(y), dtype=float)
-for fold, (tr, te) in enumerate(skf.split(X, y)):
-    sc = StandardScaler().fit(X[tr])
-    clf = make_mlp().fit(sc.transform(X[tr]), y[tr])
-    oof[te] = clf.predict_proba(sc.transform(X[te]))[:, 1]
-    print(f"  fold {fold}: train={len(tr)} test={len(te)}")
+# ---- 5-fold OOF probabilities, ONCE PER SEED (llm-distillery#158) ---------
+# The sweep and the per-filter table below still read the ARTIFACT seed's vector, so those
+# tables describe the head that ships. The BANDS describe the protocol.
+oofs = oof_by_seed(X, y, seeds=SEED_SET)
+oof = oofs[ARTIFACT_SEED]
 
 
 # ---- threshold sweep on OOF ------------------------------------------------
@@ -150,7 +143,7 @@ for th in [0.8, 0.9, 0.95, 0.97]:
 
 # ---- final artifact: refit on ALL data ------------------------------------
 scaler = StandardScaler().fit(X)
-final = make_mlp().fit(scaler.transform(X), y)
+final = make_mlp(ARTIFACT_SEED).fit(scaler.transform(X), y)
 
 import pickle
 
@@ -161,6 +154,11 @@ with open(out_dir / "scaler.pkl", "wb") as f:
 
 # headline metrics at the commerce-default 0.95 for orientation
 m95 = at(0.95)
+bands = metric_bands(
+    oofs, y,
+    {"f1": f1_score, "precision": precision_score, "recall": recall_score},
+    thresholds=[0.95],
+)
 training_config = {
     "embedder_model": EMBEDDER,
     "embedding_dim": int(X.shape[1]),
@@ -170,9 +168,14 @@ training_config = {
     "n_positive": int(y.sum()),
     "n_negative": int((1 - y).sum()),
     "cv": "5-fold stratified OOF",
+    # ⛔ Every point metric here is the ARTIFACT SEED's draw and is labelled as such by
+    # `artifact_seed`; the band beside it is the publishable quantity (llm-distillery#158).
+    "seed_set": list(SEED_SET),
+    "artifact_seed": ARTIFACT_SEED,
     "oof_f1_at_0.95": round(f1_score(y, (oof >= 0.95).astype(int)), 4),
     "oof_precision_at_0.95": m95["precision"],
     "oof_recall_at_0.95": m95["recall"],
+    **bands,
     "note": "AUDIT-ONLY baseline. Do not enforce before threshold sign-off.",
 }
 with open(out_dir / "training_config.json", "w") as f:
@@ -187,6 +190,12 @@ with open(report_dir / "calibration_report.json", "w") as f:
     json.dump(report, f, indent=2)
 
 # ---- console summary -------------------------------------------------------
+print("\n=== seed bands (llm-distillery#158) — the publishable quantity ===")
+for k, vv in bands.items():
+    print(f"   {k:<34} min {vv['min']:.4f}  median {vv['median']:.4f}  max {vv['max']:.4f}  "
+          f"spread {vv['spread']:.4f}  over seeds {vv['seeds']}")
+print(f"   point metrics are seed {ARTIFACT_SEED} only — the head that ships")
+
 print("\n=== threshold sweep (5-fold OOF) ===")
 print(f"{'thresh':>7} {'prec':>7} {'recall':>7} {'tp':>4} {'fp':>4} {'fn':>4} {'tn':>4}")
 for s in sweep:

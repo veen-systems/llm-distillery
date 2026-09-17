@@ -13,5 +13,10 @@
   "oof_f1_at_0.95": 0.6925,
   "oof_precision_at_0.95": 0.9355,
   "oof_recall_at_0.95": 0.5498,
+  "single_seed": {
+    "seed": 42,
+    "issue": "llm-distillery#158",
+    "why": "Built before llm-distillery#158 by training/train_v1.py with SEED = 42 hardcoded. EXP-033 measured this detector LOSING recall at 0.95 when the window was widened, i.e. its numbers move for reasons the point estimate cannot show. One draw, kept as history."
+  },
   "note": "AUDIT-ONLY baseline. Do not enforce before threshold sign-off."
 }
