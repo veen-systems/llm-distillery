@@ -14,6 +14,63 @@ Upstream changelog: https://github.com/ducroq/agent-ready-projects/blob/master/C
 
 ---
 
+## 2026-09-17 — `/update-drift`: **6 releases behind (v1.40.0 → v1.45.1)**; ⛔ **STAMP NOT BUMPED — the adopt items are not in the tree**
+
+**3 adopt · 2 already in force · 1 decline · 3 n/a sub-items.** Latest tag read from
+`git ls-remote` (authoritative), not the clone; the clone was 0 commits behind its remote.
+
+| From | What | Outcome |
+|------|------|---------|
+| v1.41.0 | Step 3.1 mechanization triage + `## Mechanized` gotcha-log table | **Adopt** — section absent from `memory/gotcha-log.md`, so Step 3.1 findings land nowhere |
+| v1.42.0 | install-source fixes, `update-drift` inventories, `⊘` withdrawn, Layer-4 log history | **Already in force**. n/a: zero `⊘` here; the log-history advice presumes a gitignored log and ours is **tracked** (`memory/` 131 files, `gotcha-log.md` 220 commits) |
+| v1.43.0 | 15 issues; **#166**, **#136**, #145/#153/#164/#134/#135, `refcheck.py` | **Adopt** — see below |
+| v1.44.0 | `review-changes` two-round cap | **Already in force** — banked free |
+| v1.45.0 | `curate` −27% (75,534→54,941 B); `audit-context` **Step 8 retirement** | **Adopt** — 3 stale sub-step citations here; Step 8 pass recommended |
+| v1.45.1 | `review-changes` body −11%; cheaper HIGH tier | body **already in force**; cheaper HIGH **DECLINED** |
+
+**All four user-global skills measured byte-identical to the v1.45.1 reference install**
+(0 differing lines; monotone fall to an exact zero across tags). Diffed against
+`.claude/skills/<name>/SKILL.md` at the tag, never `templates/` — there is no
+install-time transform.
+
+### ⛔ DECLINE, with the reason, so it is not re-derived: the cheaper HIGH tier (v1.45.1)
+
+Upstream offers HIGH as one adversarial lens plus two conditional ones, and **explicitly
+declines to make it the default**: n=2, same author, same day, same reviewer model, and
+*"the recall of both runs is unmeasurable by construction"* because the v1.44.0 round cap
+means no second round will classify what they missed. ~17% of the headline saving belongs
+to the round cap, **which we already have for free**. Our HIGH tier covers shipped filter
+math and the NexusMind sync — the two surfaces where a miss reaches a reader (ADR-023).
+⚠️ **If it is ever taken, both conditional lenses are not optional**; a HIGH row naming
+neither retires them silently.
+
+### #166 — three project lenses were annotated DEAD and are not dead
+
+`.claude/review-profile.md:118` read `## Project lenses — ⛔ NOT READ BY THE SKILL` and
+`CLAUDE.md:257` said `⛔ 3 lenses DO NOT FIRE … invoke by hand`. Verified against the
+**installed** skill, not the changelog: `~/.claude/skills/review-changes/SKILL.md:83`
+reads *"**Project lenses** … both read in Step 2"*, and `:300` says *"Run the profile's
+`Project lenses` too"*. ⚠️ **The ⛔ in the heading is worse than stale** — it tells the
+agent reading the profile to ignore what the skill just told it to run.
+
+### #136 — the stamp probe, verified by execution in three directions
+
+`curate` now ships `stampcheck`, deriving the version from the stamp so a bump re-arms it.
+Run here: `bash -n` parses; against the current v1.40.0 stamp → `DRIFT`, exit 1; in a
+throwaway repo stamped v1.45.1 → `3 global skills byte-identical to v1.45.1`, exit 0.
+**The instrument can say yes.** ⚠️ It checks **3** skills, not the 4 installed —
+`review-changes` is not in its `want` list.
+
+### Stale `curate` sub-step citations (v1.45.0 renumbering)
+
+Installed `curate` numbers the verify runner **sub-step 3** (`SKILL.md:65`) and the
+hypothesis surface **sub-step 5** (`:329`). Still to correct here:
+`.claude/skills/test-verify-memory/SKILL.md` ("sub-step 5" → 3), `CLAUDE.md:28` and
+`memory/working-rules.md:179` (both "Step 0.6" → sub-step 5).
+
+⛔ **Stamp stays at v1.40.0 until those land** — a stamp ahead of its content silences the
+check that would catch the gap, and `stampcheck` is now that check.
+
 ## 2026-09-12 — ⛔⛔ THE SAME DECLINE WAS RE-ADOPTED A THIRD TIME, BY ME, AND IS REVERTED AGAIN
 
 **`refcheck.py`'s three-outcome exit contract (`coverage incomplete`, exit 2) was added on

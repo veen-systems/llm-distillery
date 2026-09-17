@@ -1,6 +1,59 @@
 # LLM Distillery - TODO
 
-## 🔵 NEXT SESSION — **b650's GPU was swapped 2026-09-17; the device term was re-derived the same day. Three decisions still waiting, plus one new one.**
+## 🔵 NEXT SESSION — **ADR-013 widened to all framework text; review found my own evidence unsound and the compliance zero FALSE. Framework 6 releases behind, stamp deliberately NOT bumped.**
+
+✅ **ADR-013 amended — English is the framework's own language, not just names.** `$0`, no
+oracle, nothing in `filters/`, **deploy N/A — inapplicable, not skipped** (no filter package,
+model, calibration or threshold changed). Carve-out: match patterns, boilerplate strippers and
+test fixtures are **data the code matches**, not language it is written in.
+
+⛔⛔ **THE KEEPER — MY POSITIVE CONTROL WAS OF THE WRONG CLASS.** The first draft claimed
+**zero violations** from a 36-token Dutch **function-word** sweep. The class ADR-013 polices is
+Dutch **names**, which contain no function words: that list scores **0** on both real violation
+sites. The instrument *had* a control — it found the Dutch fixture *sentences* — so it looked
+sound. ⭐ **A positive control must be of the CLASS UNDER TEST, not merely the language under
+test.** Two open violations, owner call, **#160**: `docs/adr/009-...:25,34,35,37,60`
+(`Welzijn`/`Erfgoed`/`Vooruitgang` in ADR prose) and `scripts/analysis/cross_filter_landscape.py`
+(39 occurrences). ⚠️ ADR-013's own Consequences `:86` already carried an open action pointing
+at exactly that leftover class.
+
+⛔ **Review found FIVE blockers in ~34 lines of my own doc change** — 4 lenses, MEDIUM. Every
+piece of evidence I attached to a correct decision was unsound: a **retracted** 19.9%/13.0%
+pooled framing (corrected 2026-08-02), bound to the **wrong study** (LD#86's 135/871 over 20
+cycles, not NM#285's 8,283), a **reversed sign** (cd v5's Dutch pattern is an `EXCLUSION` —
+deleting it costs **specificity**, the ADR-023 priority), *"measured, not hypothetical"* about a
+prefilter **dead in production since 2026-02-10** (NM#284), and a false *"cited across five
+repos"* (5 files, one repo; four other repos have unrelated ADR-013s). ⭐ **The decision survived
+all four lenses; only its evidence failed.**
+
+🆕 **`CLAUDE.md:74` still carries the retracted 19.9%/13.0% framing** — six weeks after the
+correction, in the always-loaded file, which is where I took it from. Three more copies:
+`docs/HUMAN_THRIVING_V8_PLAN.md:176`, `memory/cross-repo-prioritization.md:1173`/`:1359`.
+**Two copies carry the correction, four carry the retraction.** Not fixed this session — it is a
+separate change and deserves its own review.
+
+### ⛔ Framework: 6 releases behind (v1.40.0 → v1.45.1), stamp NOT bumped
+
+All four user-global skills are **byte-identical to the v1.45.1 reference install** (0 differing
+lines), so the skill content is already in force; what is stale is our stamp and four adopter
+surfaces. Full triage + the decline: `docs/decisions/framework-adoption-history.md`.
+
+- [ ] **#166 — three project lenses are annotated DEAD and are not dead.** `.claude/review-profile.md:118`
+      says `⛔ NOT READ BY THE SKILL`; the installed skill reads them at `SKILL.md:83`/`:300`. **They fired
+      this session and found real blockers.** Remove the annotation; fix `CLAUDE.md:257`.
+- [ ] **#136 — adopt the `stampcheck` probe** (verified: `bash -n` OK; DRIFT/exit 1 on the current
+      stamp; pass/exit 0 on a v1.45.1 stamp). Mechanizes `CLAUDE.md:318`'s hand-dated claim.
+- [ ] **Three stale `curate` sub-step citations** (v1.45.0 renumbering): `.claude/skills/test-verify-memory/SKILL.md`
+      "sub-step 5"→3; `CLAUDE.md:28` and `memory/working-rules.md:179` "Step 0.6"→sub-step 5.
+- [ ] **Append `## Mechanized`** to `memory/gotcha-log.md` (v1.41.0) — Step 3.1 findings currently land nowhere.
+- [ ] **THEN bump the stamp to v1.45.1** in `CLAUDE.md:5` and `:318`. ⛔ Not before — `stampcheck` is
+      now the check a premature bump would silence.
+- [ ] **Run `audit-context` Step 8 (retirement) here.** Upstream's own pass cut `curate` 27%. Our
+      always-loaded layer is **55,459 B** against the framework's 35,000 soft target and Claude Code's
+      40,000 warn — 4,541 left under our locally-raised 60,000. Highest-leverage token item we have.
+- [ ] **Mechanize the language rule (#160)** — `scripts/verification/check_framework_language.py` whose
+      allowlist **is** the carve-out table. Seed it with the two known sites and show it go red first.
+
 
 ✅ **`EXP-038` — b650: RTX 3090 Ti (Ampere) → RTX 5090 (Blackwell).** `$0, no oracle, nothing in
 `filters/`, **deploy N/A — inapplicable, not skipped** (no filter package, model, calibration or

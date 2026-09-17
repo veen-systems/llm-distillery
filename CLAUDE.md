@@ -175,7 +175,7 @@ Full details in `memory/filter-status.md`. Summary:
 - **Lens-aligned filter naming — the backlog is CLOSED, don't re-open it at a version bump.** Settled 2026-08-06: `cultural_discovery`, `nature_recovery` and `solutions` all keep their names; the only rename left is `uplifting` → **`human_thriving` at v8** (not bare `thriving`, an existing parked directory). Reasoning: `docs/adr/README.md`, ADR-012 as amended
 - **Oracle consistency over data volume** — prompt precision predicts MAE better than dataset size; use belonging v1 as template (ADR-010)
 - **Embedding screening for needle filters** — use Phase 3 positives as e5-small seeds to screen corpora; replaces keyword screening (ADR-011)
-- **English lens names** — all lens/tab names in English, no Dutch (ADR-013)
+- **English everywhere the framework speaks, no Dutch** — lens/filter/tab names AND docs, ADRs, comments, memory, commits. ⛔ NOT match patterns, boilerplate strippers or fixtures: those are data the code reads, and the cd v5 one is an EXCLUSION, so deleting it costs SPECIFICITY. ⚠️ Compliance NOT swept — a function-word sweep cannot see a Dutch NAME (ADR-013 as amended)
 - **Cross-filter percentile normalization** — non-linear mapping from production CDF; supersedes score_scale_factor (ADR-014)
 - **Lenses as perspectives, not partitions** — overlap between lenses is correct; never exclude adjacent lens content in oracle prompts (ADR-015)
 - **Drop tier assignments** — filters output pass/block + continuous score only; tiers add no value over the score itself (ADR-016)

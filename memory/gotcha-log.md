@@ -7286,3 +7286,44 @@ orders across five seeds** and the point estimate reversed.
 ⛔ **The trap is that a seed band is invisible to every check this project runs** — the tests pass,
 the gate passes, the number is reproducible on the same seed forever. Nothing distinguishes "this
 model is better" from "this seed was luckier" without deliberately varying it.
+
+## A POSITIVE CONTROL OF THE WRONG CLASS — THE INSTRUMENT SAID YES AND STILL COULD NOT SEE THE VIOLATION (2026-09-17)
+
+**Problem**: Amended ADR-013 to require English across all framework-internal text, swept the
+repo, and published **"Zero framework-internal prose violations."** A review lens falsified it
+in under a minute: `docs/adr/009-add-filters-first-reduce-later.md:25,34,35,37,60` carries
+`Welzijn`/`Erfgoed`/`Vooruitgang` as ADR prose, and `scripts/analysis/cross_filter_landscape.py`
+carries 39 occurrences as dict keys, identifiers and printed column headers. Both sites are
+inside the sweep's own declared scope.
+
+**Root cause**: The wordlist was 36 Dutch **function words** (`niet`, `wordt`, `omdat`, …). The
+violation class ADR-013 polices is Dutch **names**, which contain no function words. Measured:
+the list scores **0** on both files. ⛔ **And I DID run a positive control — it passed.** The
+control was the Dutch fixture *sentences* at `filters/uplifting/v7/prefilter.py:567` and
+`filters/common/commerce_prefilter/training/benchmark_models.py:61`, which are full of function
+words. A Dutch sentence and a Dutch lens name are different classes; the control only ever
+proved the first, so the instrument looked sound the whole way.
+
+**Fix**: Claim retracted the same day, the two sites filed as **#160** for an owner call (an ADR
+is a historical record — rewriting one is not obviously right). ⭐ **The rule: a positive control
+must be of the CLASS UNDER TEST, not merely the language, domain or file type under test.** This
+is `CLAUDE.md`'s own instrument rule — *"prove the instrument could have said yes"* — and "it
+said yes" is not enough; it has to have said yes **to the thing you are about to claim is
+absent**. ⚠️ ADR-013's own Consequences `:86` already carried an open action pointing at exactly
+the leftover class that was missed, and the sweep declared zero without reconciling it: **an open
+action in the document you are amending is part of the evidence.**
+
+## `grep` ON THIS WORKSTATION IS ugrep, AND IT REFUSES BOUNDED REPETITION (2026-09-17)
+
+**Problem**: A context-extraction command using `grep -oE ".{0,70}#123.{0,90}"` printed
+`ugrep: error at position 620 … exceeds complexity limits` and returned nothing for every line.
+Under the `2>/dev/null` that such one-liners usually carry, it would have returned a silent empty
+result and read as "no matches".
+
+**Root cause**: `grep` here resolves to **ugrep**, not GNU grep. ugrep rejects bounded-repetition
+quantifiers over a UTF-8 character class as too complex. `agent-ready-projects`' `update-drift`
+skill documents exactly this for `(^|[^A-Za-z])` and prescribes `\b` instead.
+
+**Fix**: Use Python for context extraction around a match, or `\b`-anchored patterns for
+detection. ⭐ **A non-zero exit with no stdout is indistinguishable from a clean run once stderr
+is discarded** — never `2>/dev/null` a grep whose empty result you intend to read as evidence.
