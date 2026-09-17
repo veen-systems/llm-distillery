@@ -1,5 +1,99 @@
 # Gotcha Log
 
+## A SHAPE TEST INSIDE AN EXISTENCE-TEST DISJUNCTION — THE CONTROL COULD NEVER STOP FIRING, AND THE FIRST REMEDY DELETED THE EVIDENCE (2026-09-17)
+
+**Problem**: `/audit-context` step 4 reported 3 references as `STALE PLACEHOLDER MARKER (the
+path resolves)` — `data/raw/.processed_ids_<name>.json` and twins. They are correct references.
+
+**Root cause**: `refcheck.py`'s STALE test asks "is this marked path actually THERE?" through a
+disjunction of rungs. Every rung in it is an existence test except `rung3`, which is
+`frag.startswith(STATE_DIRS)` — a **shape** test that no file system can falsify. Any
+angle-segment path under a state directory therefore "resolved", always. The angle form is
+*mandatory* for a variable segment, so the author had **no legal move**: marked → STALE,
+unmarked → the angle branch again.
+
+⭐ **THE PART WORTH KEEPING: THE COUPLING WAS ALREADY MEASURED, AND THE REMEDY CHOSEN WAS TO
+DELETE THE EVIDENCE.** A comment in the same file, 2026-08-16: *"rung3 sits INSIDE the
+STALE-PLACEHOLDER `resolves` disjunction, so adding a dir here makes any `<!-- placeholder -->`
+on that dir fire STALE IMMEDIATELY — measured, findings went 1 → 4. The two mechanisms are
+alternatives, never both: the three markers these dirs cover were removed in the same commit."*
+The measurement was right and the conclusion was backwards. Removing the markers satisfies a
+shape test that **cannot stop matching**, so it buys silence until the next time anyone writes a
+state path — which happened four times, 2026-09-07..09-10, and would have recurred at every
+future audit forever.
+
+⚠️ **The generalisable form: when a check has no legal move, the defect is in the CHECK, and
+"remove the thing it flags" is the remedy that guarantees recurrence.** `/audit-context` step 4
+says to distinguish wolf-crying from residue before touching anything. The tell for wolf-crying
+is not "it keeps coming back" — it is **"no input could make it stop"**.
+
+⛔ **And the mirror, from the same skill: do not loosen without seeding what the loosening newly
+permits.** Excluding rung 3 permits exactly one new case — a path angle-marked, under a state
+dir, and really on disk. Rung 1 is tested first in the same expression and catches it. Seeded
+both ways (`run.sh` 34/35) and both proven non-vacuous by mutation: 34 FAILS on the pre-change
+code, 35 dies when rung 1 is removed. Fixed in `ad32356`; the obsolete comment was rewritten
+rather than deleted, because a note that contradicts the code is worse than no note.
+
+---
+
+## I RAN THE WRONG CHECKER, BECAUSE THE SKILL NAMED THE UPSTREAM ONE AND WE HAVE A FORK (2026-09-17)
+
+**Problem**: `/audit-context` step 4 gives a literal command rooted at
+`~/repos/agent-ready-projects/tests/fixtures/reference-integrity/refcheck.py`. I ran it. It
+reported **216 findings**, 113 of them `COLLISION` on bare basenames (`config.yaml` ×18). The
+fork in this repo reports **23** on the same tree.
+
+**Root cause**: `tests/fixtures/reference-integrity/refcheck.py` here is a genuine **fork**,
+1,629 lines different, recorded as a deliberate partial adoption of v1.40.0 in
+`docs/decisions/framework-adoption-history.md:145` — *"deferred to `/audit-context`, NOT silently
+copied"*. It carries a doc-relative rung, a systemd-unit class, a rung-5 auto-memory extension
+and a `GENERIC ARTIFACT NAMES` section that absorbs the collisions. The two programs answer
+different questions.
+
+⭐ **Two numbers from two instruments is the shape, and the DANGEROUS half is that both were
+correct.** Neither run was broken. Had I reported "references regressed from 1 to 216" — which
+was one sentence away — the reader's next move would have been to hunt a regression that does not
+exist. ⛔ **A skill's literal command is an instruction about the FRAMEWORK's tree, not about
+yours. Before running a named tool, check whether this repo re-mapped it** — the decisions file
+is where declines and forks live, and `feedback-decline-reason-is-local` already says to grep it
+by the feature's own name.
+
+⚠️ Prior-audit numbers are only comparable if they came from the same instrument: the
+"24 findings → 1" of 2026-08-27 is a **fork** number.
+
+---
+
+## I CAPPED A FILE AND SHIPPED NOTHING THAT HOLDS THE CAP (2026-09-17)
+
+**Problem**: the always-loaded layer was over its soft budget. Attribution said the growth was
+the auto-memory index (~370 B/day) and not `CLAUDE.md` (~19 B/day). I capped its 25 pointer rows
+the way `CLAUDE.md`'s are, recovered 5,187 B, and reported the layer fixed.
+
+**Root cause**: `check_index_budget.py --target pointers` reads `CLAUDE.md` **only**. So the cap
+I had just applied to the other file was a one-time hand trim with no mechanism behind it —
+precisely the state `CLAUDE.md` was in *before* #133, and at 370 B/day it refills in about a
+fortnight.
+
+⭐ **I caught it while writing the issue comment, not while doing the work** — the sentence
+"remedy applied, not just diagnosed" would not finish honestly, because the diagnosis was
+*a byte budget is an alarm and a cap is the mechanism* and I had shipped the alarm's remedy.
+⚠️ **Writing the claim out for someone else is a cheap control that ran after the change instead
+of before it.** Same shape as `feedback-articulating-is-not-applying`: the check is least likely
+to be present right after you have been most articulate about needing it.
+
+**Fix**: `--target pointers` now covers both always-loaded surfaces (its own extractor — the
+auto-memory index is a bullet list, not a table, and reusing `_pointer_rows` would have returned
+CANNOT VERIFY forever). Four tests pin the arms, including *absent is reported as unchecked and
+never as a pass*. Mutation-proven: gutting the cap kills
+`test_automem_row_over_the_cap_fails`.
+
+⛔ **The cap is 400 and that number is BORROWED, not derived** — it is `POINTER_CARVEOUT_CAP`,
+already in the file. A ratchet at today's max (437) would only say "do not get worse"; 400 has
+precedent and bit one row, trimmed in the same change with its caveat verified present in the
+target first.
+
+---
+
 ## RECORDING A COMMIT HASH IN A FILE THAT IS PART OF THAT COMMIT, THEN `--amend` (2026-09-17)
 **Problem**: Committed `EXP-038` with `experiments/registry.jsonl` recording `"commits":
 ["70555e2","32919c3"]`, where `32919c3` was the hash printed by that very commit. Then ran

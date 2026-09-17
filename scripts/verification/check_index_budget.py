@@ -67,6 +67,12 @@ wall for that file, the tool's property, not a number chosen here. `--target ind
 is likewise not part of the layer; it bounds a navigational file and carries the
 #123 session-entry rotation, which is why it survives its subject not being loaded.
 
+⚠️ SINCE 2026-09-17 `--target pointers` COVERS BOTH ALWAYS-LOADED SURFACES, not
+just `CLAUDE.md`. The cap was on the file everyone watches and absent from the one
+nobody does; measured over 19 days the capped file grew ~19 B/day and the uncapped
+auto-memory index ~370. An absent auto-memory index is REPORTED as unchecked and
+never as a pass -- see `AUTOMEM_ROW_CAP` for the cap's provenance.
+
 ⚠️ A BYTE BUDGET IS AN ALARM, NOT THE MECHANISM. #133 measured `CLAUDE.md` growing
 ~486 B/day against a ceiling that trimming could not outrun, and the thing that
 actually held was a CAP PER POINTER ROW (`--target pointers`) — a capped table
@@ -275,6 +281,34 @@ POINTER_CARVEOUTS = {
 
 POINTER_HEADER = "| When you're... | Read... |"
 
+# ---------------------------------------------- the OTHER always-loaded surface
+# /audit-context 2026-09-17. `--target pointers` read `CLAUDE.md` alone, which is
+# the same scoping defect #138 fixed one layer out: the cap was on the file
+# everyone watches and absent from the file nobody does.
+#
+# MEASURED, and this is why the cap is the mechanism and the byte total is not.
+# Over the 19 days from #138's baseline, same author, same period:
+#     CLAUDE.md            (capped)   37,445 -> 37,800 B   ~19 B/day
+#     auto-memory MEMORY.md (uncapped) ~10,638 -> 17,659 B  ~370 B/day
+# ~19x apart, and the uncapped file drove the LAYER over its soft budget on its
+# own. Trimming it recovered 5,187 B; at 370 B/day that refills in a fortnight,
+# so a one-time trim with nothing holding it is not a fix.
+#
+# ⚠️ IT IS A BULLET LIST, NOT A TABLE, so it needs its own extractor -- reusing
+# `_pointer_rows` would have found no header and returned CANNOT VERIFY forever,
+# which reads as a broken check rather than as a missing one.
+#
+# ⚠️ THE CAP IS 400 AND THAT NUMBER IS BORROWED, NOT DERIVED. It is
+# POINTER_CARVEOUT_CAP, already in this file. The honest alternative was a
+# ratchet at today's measured max (437), and a cap set to current-max+ε only
+# says "do not get worse". 400 has precedent and bites: one row was over it and
+# was trimmed in the same change, its caveat verified present in the target
+# first. Tightening toward POINTER_CAP's 250 is a separate pass -- these rows are
+# recall aids read without opening anything, not routing rows, so the case for
+# 250 has to be made rather than assumed.
+AUTOMEM_ROW_CAP = 400
+AUTOMEM_ROW_RE = re.compile(r"^- .*\]\([^)]+\.md\)")
+
 
 def _pointer_rows(raw):
     """The pointer table's data rows, as (line_no, text).
@@ -341,6 +375,34 @@ def _check_pointers():
     out.append(f"PASS pointer rows: {len(rows)} rows, longest {longest}, cap "
                f"{POINTER_CAP} ({len(POINTER_CARVEOUTS)}/{MAX_CARVEOUTS} carve-outs "
                f"at {POINTER_CARVEOUT_CAP})")
+
+    # The second always-loaded surface. A MISS is reported as a miss and is never
+    # a silent pass -- same doctrine as _check_loaded's member lines. On a machine
+    # where Claude Code has never run, the file genuinely is not in anyone's
+    # context and failing would be false; but the check must say it measured
+    # nothing rather than print PASS over an empty examination.
+    am = globals()["AUTO_MEMORY"]
+    if not os.path.isfile(am) or os.path.getsize(am) == 0:
+        out.append(f"  auto-memory index NOT PRESENT at {am} -- 0 rows examined, "
+                   f"this half of the layer is UNCHECKED (not a pass)")
+        return 0, out
+    am_rows = [(i + 1, l) for i, l in enumerate(
+        open(am, "rb").read().decode("utf-8", "replace").split("\n"))
+        if AUTOMEM_ROW_RE.match(l)]
+    if not am_rows:
+        out.append("  CANNOT VERIFY: auto-memory index present but no pointer row "
+                   "matched -- the check examined nothing. Update AUTOMEM_ROW_RE.")
+        return 1, out
+    am_bad = [(ln, len(t)) for ln, t in am_rows if len(t) > AUTOMEM_ROW_CAP]
+    if am_bad:
+        out.append(f"FAIL auto-memory pointer rows: {len(am_bad)} of {len(am_rows)} "
+                   f"over the {AUTOMEM_ROW_CAP} cap.")
+        out.extend(f"  auto-memory MEMORY.md:{ln} is {n} chars -- move the lesson "
+                   f"into the file it links, leave the trigger plus one clause"
+                   for ln, n in am_bad)
+        return 1, out
+    out.append(f"  auto-memory pointer rows: {len(am_rows)} rows, longest "
+               f"{max(len(t) for _, t in am_rows)}, cap {AUTOMEM_ROW_CAP}")
     return 0, out
 
 # The index carries the newest MAX_SESSION_ENTRIES session entries; the next one

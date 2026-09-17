@@ -1,6 +1,38 @@
 # LLM Distillery - TODO
 
-## 🔵 NEXT SESSION — **ADR-013 widened to all framework text; review found my own evidence unsound and the compliance zero FALSE. Framework 6 releases behind, stamp deliberately NOT bumped.**
+## 🔵 NEXT SESSION — **`/audit-context` done; references 23 → 0 in the DEFAULT scan set, which excludes 167 `docs/` files. Framework still 6 releases behind, stamp still NOT bumped.**
+
+✅ **`/audit-context` 2026-09-17** (`ad32356` + this commit). `$0`, no oracle, nothing in
+`filters/`, **deploy N/A — inapplicable, not skipped** (no filter package, model, calibration or
+threshold changed).
+
+⛔⛔ **THE KEEPER — A CONTROL THAT COULD NEVER STOP FIRING, AND THE FIRST REMEDY DELETED THE
+EVIDENCE INSTEAD.** `rung3` is a SHAPE test (`frag.startswith(STATE_DIRS)`), not an existence
+test, and it sat inside refcheck's STALE-placeholder `resolves` disjunction. So
+`data/raw/.processed_ids_<name>.json` — the correct way to write a per-filter state store — was
+ruled STALE unconditionally, with **no legal move** for the author. ⭐ **The coupling was already
+measured on 2026-08-16**, in a comment in that same file (*"findings went 1 → 4 … the two
+mechanisms are alternatives, never both"*), and the remedy taken then was to **delete the three
+markers** rather than decouple. A shape test cannot stop matching, so it returned the moment
+anyone wrote a state path again — four sites, 2026-09-07..09-10 — and would have recurred at
+every future audit. rung 3 is now excluded at that site only and stays live in the main ladder.
+
+⛔ **I RAN THE WRONG CHECKER FIRST.** The skill body names the framework's `refcheck.py`; this
+repo has a **1,629-line fork**, recorded as a deliberate partial adoption in
+`framework-adoption-history.md:145`. Framework copy: **216** findings here. Fork: **23**. Different
+doc sets — comparing them would have compared two instruments, and the fork's is the number every
+prior audit was measured with.
+
+🆕 **SCOPE CAVEAT ON THE 0.** References went 23 → 0, but that verdict covers `CLAUDE.md` +
+`memory/*.md` + the auto-memory index — the **default** scan set. `--docs` is opt-in, so **167
+`docs/` files were excluded**, where the same instrument reports **376** (LD#134, re-measured
+today: 338 → 376 in 20 days, **+34 of the +37 in the FROZEN tier**). Do not read the 0 wider than
+it was measured.
+
+⛔ **Still open from the previous session, untouched here**: the retracted 19.9%/13.0% framing at
+`CLAUDE.md:74` and three more copies; **#160**'s two Dutch-name violations.
+
+## 🔵 PREVIOUS SESSION — **ADR-013 widened to all framework text; review found my own evidence unsound and the compliance zero FALSE. Framework 6 releases behind, stamp deliberately NOT bumped.**
 
 ✅ **ADR-013 amended — English is the framework's own language, not just names.** `$0`, no
 oracle, nothing in `filters/`, **deploy N/A — inapplicable, not skipped** (no filter package,
@@ -48,9 +80,15 @@ surfaces. Full triage + the decline: `docs/decisions/framework-adoption-history.
 - [ ] **Append `## Mechanized`** to `memory/gotcha-log.md` (v1.41.0) — Step 3.1 findings currently land nowhere.
 - [ ] **THEN bump the stamp to v1.45.1** in `CLAUDE.md:5` and `:318`. ⛔ Not before — `stampcheck` is
       now the check a premature bump would silence.
-- [ ] **Run `audit-context` Step 8 (retirement) here.** Upstream's own pass cut `curate` 27%. Our
-      always-loaded layer is **55,459 B** against the framework's 35,000 soft target and Claude Code's
-      40,000 warn — 4,541 left under our locally-raised 60,000. Highest-leverage token item we have.
+- [x] ~~**Run `audit-context` Step 8 (retirement) here.**~~ **DONE 2026-09-17** (`ad32356`).
+      Layer **55,459 → 50,164 B**; the attribution was the finding — `CLAUDE.md` grew ~19 B/day
+      while the **auto-memory index** grew ~370, so the remedy belonged to the file nobody
+      watches. Its 25 pointer rows are capped and, since this session, **mechanized**
+      (`--target pointers` now covers both surfaces, 4 new tests, mutation-proven).
+      Step 8 record + the per-step catch table: `docs/decisions/2026-09-17-audit-step-attribution.md`.
+      ⛔ **Step 7 (gitignore) has caught nothing in its whole history — recorded as a retirement
+      candidate NOT retired**, with a release condition, because it has a prevention story and the
+      class is covered nowhere else.
 - [ ] **Mechanize the language rule (#160)** — `scripts/verification/check_framework_language.py` whose
       allowlist **is** the carve-out table. Seed it with the two known sites and show it go red first.
 

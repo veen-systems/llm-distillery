@@ -391,3 +391,75 @@ def test_the_shipped_layer_obeys_its_own_rule():
     assert mod.main(["--target", "loaded"]) == 0
     total = sum(len(open(getattr(mod, a), "rb").read()) for a, _ in mod.LOADED_MEMBERS)
     assert total < mod.LOADED_HARD
+
+
+# ---------------------------------------------------------------------------
+# The AUTO-MEMORY half of the pointer cap (/audit-context 2026-09-17).
+#
+# `--target pointers` read CLAUDE.md alone — the same scoping defect #138 fixed
+# one layer out, and the measurement says which half mattered: over 19 days the
+# CAPPED file grew ~19 B/day and the UNCAPPED one ~370. These pin the three ways
+# the new half can be wrong, because a one-time trim with nothing holding it is
+# not a fix, and a cap that cannot fire is worse than no cap.
+# ---------------------------------------------------------------------------
+
+def _pointers_with_automem(content, tmp_path):
+    """The real guard, with only the auto-memory member redirected."""
+    spec = importlib.util.spec_from_file_location("cib_am", GUARD)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    if content is None:
+        mod.AUTO_MEMORY = str(tmp_path / "definitely-absent.md")
+    else:
+        p = tmp_path / "am.md"
+        p.write_text(content, encoding="utf-8")
+        mod.AUTO_MEMORY = str(p)
+    return mod._check_pointers()
+
+
+def test_automem_row_over_the_cap_fails(tmp_path):
+    """The cap must BITE. Asserted on the exit code AND the named line, because
+    a message without a line number cannot be acted on."""
+    code, lines = _pointers_with_automem(
+        "- [X](x.md) — " + "z" * 500 + "\n", tmp_path)
+    assert code == 1
+    joined = "\n".join(lines)
+    assert "FAIL auto-memory pointer rows" in joined
+    assert "MEMORY.md:1" in joined
+
+
+def test_automem_all_rows_under_the_cap_passes_and_says_what_it_measured(tmp_path):
+    """A pass must report the ROW COUNT it examined. `PASS` over zero rows is the
+    shape this whole module exists to refuse."""
+    code, lines = _pointers_with_automem(
+        "- [X](x.md) — short\n- [Y](y.md) — also short\n", tmp_path)
+    assert code == 0
+    assert "auto-memory pointer rows: 2 rows" in "\n".join(lines)
+
+
+def test_automem_present_but_no_row_matched_is_CANNOT_VERIFY_not_a_pass(tmp_path):
+    """Renaming the row shape must not silently retire the check. This is the
+    `_pointer_rows` doctrine — a guard that cannot fire reports success."""
+    code, lines = _pointers_with_automem("nothing here at all\n", tmp_path)
+    assert code == 1
+    assert "CANNOT VERIFY" in "\n".join(lines)
+
+
+def test_automem_absent_is_reported_as_unchecked_and_never_silently_passes(tmp_path):
+    """On a clone at another path the file genuinely is not in anyone's context,
+    so this is exit 0 — but it must SAY it measured nothing. An absent member
+    that prints nothing is how a sum quietly shrinks (#138)."""
+    code, lines = _pointers_with_automem(None, tmp_path)
+    assert code == 0
+    joined = "\n".join(lines)
+    assert "NOT PRESENT" in joined and "UNCHECKED" in joined
+
+
+def test_the_shipped_automem_index_obeys_its_own_cap():
+    """The REAL file, not a fixture — skipped when it is genuinely absent."""
+    spec = importlib.util.spec_from_file_location("cib_am_shipped", GUARD)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    if not os.path.isfile(mod.AUTO_MEMORY):
+        pytest.skip(f"auto-memory index not present at {mod.AUTO_MEMORY}")
+    assert mod.main(["--target", "pointers"]) == 0
