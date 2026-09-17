@@ -233,7 +233,7 @@ bounded: `python3 scripts/verification/check_index_budget.py --target pointers`.
 
 | When you're... | Read... |
 |----------------|---------|
-| Starting a new session | `memory/MEMORY.md` — project memory index, current work status |
+| **Starting a session, or told only "continue"** | `memory/MEMORY.md` (index), then **`docs/TODO.md` ▶ START HERE** — the ordered queue. ⛔ **A bare "continue" means that list, top down**; nothing else routed it until 2026-09-17 |
 | Resuming thriving v1 work | `memory/thriving-v1-scoring.md` — scoring status, resume commands, full pipeline |
 | Starting calibration / scorer-training / oracle-prompt work | `memory/calibration-history.md` — Dead Ends section: which approaches are already known dead (#69) |
 | **Touching a prefilter, or considering an enforcement flip** | **`memory/prefilter-length-floor-hypotheses.md`** — what each prefilter actually blocks (measured), and why a matching pass rate is **not** a safety argument. Then #93. |
