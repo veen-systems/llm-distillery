@@ -89,12 +89,18 @@ pass. Check it in this direction: read each entry here, then find its tier above
 
 ⚠️ **Name the interpreter.** Bare `python3` is `/usr/bin/python3` here and lacks the deps —
 it produces a phantom failure baseline that gets believed (this project has done exactly
-that: 78 "failures" that were the wrong interpreter).
+that: 78 "failures" that were the wrong interpreter). ⛔ **SECOND OCCURRENCE 2026-09-17, by an
+agent that had not opened this file**: `python3 -m pytest` reported **13 failed, 6 errors** on the
+#158 change and they were reported to the owner as "environmental, pre-existing" before
+`.venv/bin/python` returned **0 failures**. ⭐ The diagnosis was right and still useless — a
+phantom baseline is not made harmless by being explained, because the explanation is what makes it
+believed. **Run `.venv/bin/python -m pytest` and say which interpreter produced the number.**
 
-**Measured 2026-09-17 (final): `894 passed, 25 skipped` in 126s** (was `848 passed,
-25 skipped` earlier the same day; the +46 are the #134 step-2 docs tier —
-`tests/unit/test_refcheck_docs_tier.py` 37 and `tests/unit/test_refcheck_tier_reparse.py` 6
-— plus 3 seeding the new `suite-baseline` claim check that guards THIS line). Re-measure rather than trust this line — a stale baseline is how a
+**Measured 2026-09-17 (final): `912 passed, 25 skipped` in 125s** (was `894 passed,
+25 skipped` earlier the same day, and `848` before that; the +46 were the #134 step-2 docs
+tier — `tests/unit/test_refcheck_docs_tier.py` 37 and `tests/unit/test_refcheck_tier_reparse.py`
+6 — plus 3 seeding the `suite-baseline` claim check that guards THIS line, and the latest +18
+are `tests/unit/test_detector_metric_bands.py`, llm-distillery#158). Re-measure rather than trust this line — a stale baseline is how a
 real regression reads as pre-existing. ⚠️ **This line is the ONLY live copy of the number
 and is meant to be**; the 2026-09-11 change that added tests left it stale, and the
 2026-09-17 draft that fixed it wrote 834 and was falsified by its own next commit. ⛔ **Occurrence three was caught by review, not by anyone re-reading this line**: the #134 step-2 record wrote its own copy of the count while quoting this rule. The
