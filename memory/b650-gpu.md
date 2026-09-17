@@ -75,6 +75,15 @@ ssh b650-gpu        # account is `jeroen` (NOT jwasys); works from situla and sa
   `qwen3-coder:30b` (+128k/192k), `qwen3-vl:8b`. **`gemma3:27b` has since been pulled**
   (this line said it was missing); **`phi4` still is not** — pull before a 4-model panel.
   ⛔ Do not quote this list without re-running `curl -s .../api/tags`; it is a snapshot.
+- ⭐ **`nature_recovery v4`'s test split was staged 2026-09-17** at
+  `datasets/training/nature_recovery_v4/test.jsonl` (391 rows) — it was the one live filter
+  whose split this box lacked, so `EXP-041` could not have run without it. **Keep it**: it is
+  data staging, not scratch, and re-copying costs a workstation round trip.
+- ⚠️ **`EXP-039`/`040`/`041` left NOTHING else behind** (cleaned 2026-09-17): the parity dumps
+  moved to the repo's tracked `datasets/parity/` after a per-file sha256 check, the detector
+  retrains' configs to `docs/evidence/2026-09-17-detector-seed-bands/`, and the scratch dirs,
+  driver scripts and `/tmp` logs were removed. ⛔ **Their model pickles are gone** — re-derive
+  from the committed trainers rather than looking for them.
 - **Data staged**: `~/llm-distillery/filters/common/obituary_detector/` —
   training corpora (131 MB) + v3/v4/v5 model artifacts + train_v1.py/build_v5_seed.py.
 - **Benchmark**: 1,562-row mpnet embed in 1.9 s (~830 rows/s) — ~5× gpu-server.
