@@ -557,11 +557,19 @@ valid-JSON **non-object line crashes the stage** (reachable via the `aggregator_
    `f1a1f40`, so the config describes code that no longer exists.** Not fixed 2026-09-17: that
    checkout was on `fix/nm497-robots-denominator` with `config/app.yaml` already modified, and the
    fix must not ride an unrelated branch. Needs its own branch off `main`.
-2. **The remaining $0 arm** — and it is ONE, not two: *"a detector on the existing labels"* **is**
-   `EXP-037`, already run. What is left is **per-run scope disagreement** — **178** rows with ≥1
-   `harm_is_subject` run-vote and a non-harm final verdict (**1** above the op-point), **178** harm
-   rows with split run votes, **1,079** `scope_flipped`. `analyze.py`'s first version never read
-   those fields. This narrows the ~$3.2–3.6 pool decision at no cost.
+2. ✅ **DONE 2026-09-17 — `EXP-039`, $0, and it came back NEGATIVE.** The per-run votes add
+   nothing: **−0.4 of 9 paired per seed**, ~30% more panel flags for the same catch, **1.4 vs 2.2**
+   at matched flag counts. ⇒ ⏸️ **THE ~$3.2–3.6 POOL SPEND IS NOW THE DECISION, not a ranked
+   option** — the free route is exhausted *as specified*, and that phrase is load-bearing: arm C
+   (the 178 rows alone) **could not have said yes** — test recall 0.0417–0.0833, 0.00% of the panel
+   flagged above 0.40 — so its 0 of 9 is about 136 positives being too few, not about the rows.
+   ⛔ **Do not re-run this arm without a bigger positive class and a new pre-registered bar.**
+   Evidence: `docs/evidence/2026-09-17-harm-vote-arm/`; `H-HD10` refuted, `H-HD11` not answered,
+   `H-HD12` holds. ⭐ **Side finding worth more than the primary**: 4 of 5 seeds reproduced
+   `EXP-037` **exactly** on the swapped GPU, and seed 1 changed only because `pick_threshold` is a
+   selection step that turned a median **4.3e-05** probability wobble into a **0.795 → 0.905**
+   threshold move. Test recall was identical on all five seeds — **a stable metric said nothing
+   about the stability of the flagged set.**
 3. **Then**: measure what the stamp *would* block **per lens, per cycle** — the panel says nothing
    about solutions, belonging, nature_recovery or cultural_discovery, where the same content may be
    constitutive rather than harmful.
