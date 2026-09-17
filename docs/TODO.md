@@ -1,6 +1,32 @@
 # LLM Distillery - TODO
 
-## 🔵 NEXT SESSION — **`/audit-context` done; references 23 → 0 in the DEFAULT scan set, which excludes 167 `docs/` files. Framework still 6 releases behind, stamp still NOT bumped.**
+## ▶️ START HERE — the ordered queue, as of 2026-09-17 (late)
+
+*A bare "continue" means this list, top down. Each line names the FIRST action, not the
+topic. Re-read the block under it before starting; the reasons are there, not here.*
+
+1. **Framework adopt queue — `#166` first** (`.claude/review-profile.md:118` annotates three
+   lenses DEAD that the installed skill reads at `SKILL.md:83`/`:300`; fix `CLAUDE.md:257` too).
+   Then `#136` stampcheck, then `## Mechanized` into `memory/gotcha-log.md`, then the three
+   stale `curate` citations. ⛔ **Bump the stamp LAST** — ahead of its content it silences
+   the check that would catch the gap. Full triage: `docs/decisions/framework-adoption-history.md`.
+2. **LD#134 step 2 — tier `docs/`, and decide whether `--docs` comes off the flag.** Best-evidenced
+   item on the board after 2026-09-17: **376** findings, **43% frozen and climbing at ~8× the live
+   rate** (338→376 in 20 days, +34 of +37 frozen). Step 1 is done and must not be redone —
+   `docs/evidence/2026-08-28-refcheck-docs/`.
+3. **The retracted 19.9%/13.0% framing is still live in the always-loaded file** — `CLAUDE.md:74`,
+   plus `docs/HUMAN_THRIVING_V8_PLAN.md:176` and `memory/cross-repo-prioritization.md:1173`/`:1359`.
+   Two copies carry the correction, four carry the retraction. Deserves its own review.
+4. **#160 — two Dutch-name violations**, owner call pending: `docs/adr/009-...:25,34,35,37,60`
+   and `scripts/analysis/cross_filter_landscape.py` (39 occurrences). Mechanize with
+   `check_framework_language.py` whose allowlist **is** the carve-out table; show it go red first.
+
+⚠️ **Before quoting this session's `references 23 → 0`**: that is the DEFAULT scan set only.
+`--docs` is opt-in and excludes 167 files. See item 2.
+
+---
+
+## 🔵 LAST SESSION — **`/audit-context` + curate; references 23 → 0 in the DEFAULT scan set. Framework still 6 releases behind, stamp still NOT bumped.**
 
 ✅ **`/audit-context` 2026-09-17** (`ad32356` + this commit). `$0`, no oracle, nothing in
 `filters/`, **deploy N/A — inapplicable, not skipped** (no filter package, model, calibration or
