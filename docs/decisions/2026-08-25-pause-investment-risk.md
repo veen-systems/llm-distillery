@@ -1,5 +1,17 @@
 # Pause `investment_risk` — 2026-08-25
 
+> ⛔ **SUPERSEDED 2026-09-17 — the pause became a RETIREMENT.** NexusMind **ADR-025**
+> (NM#499) retired `investment_risk` and the Aegis export: the corpus its 4.25 op-point was
+> measured on no longer exists (FluxusSource retired all 194 publisher-named Google News
+> proxies on 2026-09-16), and nothing consumed it. **The three-file un-pause procedure below
+> is history, not instructions** — the `pipeline.aegis_export` block it names is gone from
+> the deployed config, and reviving the filter now needs the package restored from
+> `/home/jeroen/repos/_archive/nexusmind-investment_risk/` plus a re-measured op-point.
+> ⚠️ Still true, and kept deliberately by that ADR: Contract C, the 251 days of archives,
+> and `filters/investment_risk/v6/` **in this repo**. **Nothing below is edited** — this is
+> what was decided on 2026-08-25, and a record is not rewritten to match what is true now.
+
+
 **Owner ruling, verbatim:** *"aegis is dormant, nobody reads it - pause it"*
 
 **Status:** applied in NexusMind `config/app.yaml`. Not deployed at the time of

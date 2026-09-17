@@ -41,6 +41,7 @@ RULES = os.path.join(ROOT, "memory", "working-rules.md")
 FILTER_STATUS = os.path.join(ROOT, "memory", "filter-status.md")
 RUNBOOK = os.path.join(ROOT, "docs", "RUNBOOK.md")
 BATCH_SCORER = os.path.join(ROOT, "ground_truth", "batch_scorer.py")
+REVIEW_PROFILE = os.path.join(ROOT, ".claude", "review-profile.md")
 
 ORDINAL = re.compile(r"(\d+)(?:st|nd|rd|th)\b")
 
@@ -312,8 +313,70 @@ def check_runbook_oracle_flags():
     return rc, out
 
 
+SUITE_COUNT = re.compile(r"\b(\d{2,4}) passed, (\d+) skipped")
+# ⚠️ FROZEN ACCOUNTS OF A MOMENT. A dated session record saying "on 2026-09-11 the suite
+# was 828" stays true forever and is not a live copy. Same carve-out, same reasoning, as
+# refcheck.py's --sessions and its docs/ FROZEN tier.
+SUITE_HISTORY = ("memory/project_session_", "memory/session-log.md",
+                 "docs/decisions/", "docs/evidence/")
+
+
+def check_suite_baseline_single_copy():
+    """`.claude/review-profile.md` says its test-suite count is the ONLY live copy.
+
+    ⛔ THIS EXISTS BECAUSE THE CLAIM WAS BROKEN BY THE CHANGE THAT QUOTED IT. On
+    2026-09-17 the #134 step-2 decision record wrote its own copy of `891 passed` into a
+    controls table while citing the profile's rule in the sentence beside it — the third
+    recorded occurrence, the first two being noted in the profile itself. A review lens
+    caught it; `check_doc_claims.py` could not, because its four checks are hand-listed
+    CLAIM PAIRS and this class is "any number restated anywhere". That is a finding about
+    the CHECK, not about the finding (memory/gotcha-log.md § Mechanized).
+
+    The rule mechanized here is exactly the profile's own sentence: the CURRENT value
+    appears in the profile and nowhere else outside a dated record. It cannot tell you
+    the value is right — only that there is one live copy of it, which is what #133 asks.
+    """
+    try:
+        text = open(REVIEW_PROFILE).read()
+    except OSError:
+        return 1, [f"CANNOT VERIFY suite baseline: {REVIEW_PROFILE} unreadable"]
+    m = SUITE_COUNT.search(text)
+    if not m:
+        return 1, ["CANNOT VERIFY suite baseline: no `N passed, M skipped` in "
+                   ".claude/review-profile.md — the line this check exists to protect "
+                   "is gone, and a missing baseline reads as a passing check"]
+    current = m.group(0)
+    strays = []
+    for dirpath, dirnames, filenames in os.walk(ROOT):
+        dirnames[:] = [d for d in dirnames
+                       if d not in (".git", ".venv", "node_modules", "__pycache__",
+                                    ".pytest_cache")]
+        for fn in filenames:
+            if not fn.endswith(".md"):
+                continue
+            rel = os.path.relpath(os.path.join(dirpath, fn), ROOT).replace(os.sep, "/")
+            if os.path.join(dirpath, fn) == REVIEW_PROFILE \
+               or rel == ".claude/review-profile.md" \
+               or rel.startswith(SUITE_HISTORY):
+                continue
+            try:
+                body = open(os.path.join(dirpath, fn)).read()
+            except OSError:
+                continue
+            if current in body:
+                strays.append(rel)
+    if strays:
+        return 1, [f"FAIL suite baseline: `{current}` is restated in "
+                   f"{', '.join(sorted(strays))} — .claude/review-profile.md says it is "
+                   f"the ONLY live copy, and two hand-maintained copies disagree the "
+                   f"moment one is updated (#133). Point at the profile instead."]
+    return 0, [f"PASS suite baseline: `{current}` lives only in "
+               f".claude/review-profile.md (dated session records excepted)"]
+
+
 CHECKS = {
     "rule-ordinals":   check_rule_ordinals,
+    "suite-baseline":  check_suite_baseline_single_copy,
     "cd-v6-row":       check_cd_v6_row,
     "framework-stamp": check_framework_stamp,
     "runbook-oracle-flags": check_runbook_oracle_flags,

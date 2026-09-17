@@ -81,13 +81,23 @@ metadata:
 > `deepseek-v4-flash` enables reasoning mode and returns empty `content`). The alias resolves
 > **server-side**, so at 04:00 UTC 2026-09-10 the oracle behind every DeepSeek scoring run
 > becomes V4.1 Flash **with no code change, no config change and no signal in our logs**.
-> **The V4 Pro shutdown has a DATE, and it was pushed back: 04:00 UTC 2026-09-14** (12:00
-> Beijing) — a follow-up announcement on 2026-09-10 12:46 +0800 postponed it. At that moment
-> all `deepseek-v4-pro` requests route to V4.1 Flash and bill at **Flash** price; until then
-> Pro bills at unchanged Pro rates. ⚠️ **This moves nothing of ours — we never call Pro**;
+> ⛔ **THE V4 PRO SHUTDOWN IS OFF — CANCELLED, NOT POSTPONED AGAIN (vendor mail
+> 2026-09-11 20:17 +0800, surfaced by the owner and read 2026-09-17).** *"In response to
+> user demand, we have decided to continue providing API services for DeepSeek V4 Pro after
+> September 14, 2026, with the billing method remaining unchanged. We will provide further
+> notice should there be any changes."* There is now **no published end date and no
+> announced routing to Flash**. This passage previously read *"pushed back: 04:00 UTC
+> 2026-09-14"* — true when written on 2026-09-10, superseded the next day by a mail nobody
+> here had read until six days later.
+> ⭐ **The transferable part is not the date, it is that the date moved TWICE in 48 hours.**
+> A plan that assumes an alias keeps resolving to one model until a published date is unsafe
+> in **both** directions — the retirement can slip, and, as **#157** records, the
+> substitution can land early and silently. Schedule against measurement, never against a
+> vendor calendar. ⚠️ **This moves nothing of ours — we never call Pro**;
 > the exposure was always the Flash alias, which already flipped at 04:00 UTC 2026-09-10.
-> The date matters only if something starts calling `deepseek-v4-pro` before 09-14 and
-> expects Pro behaviour after it. DeepSeek claims V4.1 Flash *"comprehensively surpassed V4
+> With the shutdown cancelled, `deepseek-v4-pro` simply stays available at Pro rates, so the
+> only thing that changes for us is that a cost comparison against Pro is **live again**
+> rather than expiring. DeepSeek claims V4.1 Flash *"comprehensively surpassed V4
 > Pro across all key metrics"* — **vendor assertion, unmeasured here.**
 > (Verified 2026-09-10: **zero `deepseek-v4-pro` call sites** in this repo — every DeepSeek
 > path takes the `deepseek-chat` alias, though `--model` is an overridable default on

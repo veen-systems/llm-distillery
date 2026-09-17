@@ -24,6 +24,12 @@ import pytest
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 GUARD = os.path.join(ROOT, "scripts", "verification", "check_doc_claims.py")
 
+PROFILE_FIXTURE = """# Review Profile — fixture
+
+**Measured 2026-01-01: `123 passed, 4 skipped` in 1s.** ⚠️ This line is the ONLY live
+copy of the number and is meant to be.
+"""
+
 CLAUDE_FIXTURE = """---
 framework: agent-ready-projects v1.36.1
 ---
@@ -83,10 +89,13 @@ def mod(tmp_path, monkeypatch):
                              ("RULES", "working-rules.md", RULES_FIXTURE),
                              ("FILTER_STATUS", "filter-status.md", STATUS_FIXTURE),
                              ("RUNBOOK", "RUNBOOK.md", RUNBOOK_FIXTURE),
+                             ("REVIEW_PROFILE", "review-profile.md", PROFILE_FIXTURE),
                              ("BATCH_SCORER", "batch_scorer.py", SCORER_FIXTURE)):
         p = tmp_path / name
         p.write_text(body, encoding="utf-8")
         monkeypatch.setattr(m, attr, str(p))
+    # the suite-baseline check WALKS the tree, so the root must be the fixture's
+    monkeypatch.setattr(m, "ROOT", str(tmp_path))
     m._tmp = tmp_path
     return m
 
@@ -102,7 +111,7 @@ def test_the_healthy_fixture_passes(mod, capsys):
     assert mod.main([]) == 0
     out = capsys.readouterr().out
     assert "FAIL" not in out and "CANNOT VERIFY" not in out
-    assert out.strip().splitlines()[-1].startswith("PASS 5/5 doc claims agree")
+    assert out.strip().splitlines()[-1].startswith("PASS 6/6 doc claims agree")
 
 
 # --------------------------------------------------------------- rule ordinals
@@ -251,7 +260,7 @@ def test_a_failure_is_reported_even_when_other_checks_pass(mod, capsys):
     assert mod.main([]) == 1
     out = capsys.readouterr().out.strip().splitlines()
     assert out[0].startswith("FAIL")
-    assert out[-1].startswith("FAIL 4/5 doc claims agree")
+    assert out[-1].startswith("FAIL 5/6 doc claims agree")
 
 
 def test_a_faithful_port_of_the_shell_one_liners(capsys):
@@ -401,3 +410,48 @@ def test_a_PROSE_mention_of_the_scorer_is_not_an_invocation(mod, capsys):
     assert body.index("make_oracle_prefilter") < body.index("python -m ground_truth"), (
         "the fixture must keep the prose mention ahead of the command, or this test "
         "cannot distinguish a fixed matcher from a lucky one")
+
+
+# ------------------------------------------------------- suite baseline (#133)
+
+def test_a_second_live_copy_of_the_suite_count_fails(mod, capsys):
+    """The failure this check was written from, seeded.
+
+    On 2026-09-17 the #134 step-2 decision record wrote its own copy of `891 passed`
+    into a controls table while citing, one sentence away, the profile's rule that its
+    line is the only live copy. A review lens caught it; this check could not, because
+    its siblings are hand-listed CLAIM PAIRS and the class is "any number restated".
+    """
+    (mod._tmp / "some-record.md").write_text(
+        "The suite is green: `123 passed, 4 skipped`.\n", encoding="utf-8")
+    assert mod.main(["--check", "suite-baseline"]) == 1
+    out = capsys.readouterr().out
+    assert "FAIL suite baseline" in out and "some-record.md" in out
+
+
+def test_a_dated_session_record_may_carry_an_old_count(mod, capsys):
+    """A frozen account of a moment is not a live copy — same carve-out as --sessions.
+
+    Without this the check would forbid a session record from ever stating what it
+    measured, which is the compression #123 forbids applied to the wrong surface.
+    """
+    d = mod._tmp / "memory"
+    d.mkdir(exist_ok=True)
+    (d / "project_session_2026_01_01.md").write_text(
+        "That session ended at `123 passed, 4 skipped`.\n", encoding="utf-8")
+    assert mod.main(["--check", "suite-baseline"]) == 0
+    assert "PASS suite baseline" in capsys.readouterr().out
+
+
+def test_the_profile_losing_its_baseline_cannot_verify(mod, capsys):
+    """A missing baseline must not read as a passing check.
+
+    Deleting the protected line removes every copy, so a naive "is it restated?" test
+    is vacuously satisfied — this repo's signature defect, a guard reporting success
+    because it looked at nothing.
+    """
+    _edit(mod, "REVIEW_PROFILE", "`123 passed, 4 skipped`", "(not measured yet)")
+    assert mod.main(["--check", "suite-baseline"]) == 1
+    out = capsys.readouterr().out
+    assert "CANNOT VERIFY suite baseline" in out
+    assert "PASS suite baseline" not in out

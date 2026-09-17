@@ -71,7 +71,9 @@ an **already-relative** path resolves against the **CWD**, so every directory-gr
 section was cwd-dependent. Fixed with one `_relroot()`; `--docs` output byte-identical.
 
 Verification: 18 mutants / 18 killed (manual run, listed in the record); `run.sh` **40/40** and
-shown going RED on a seeded regression; **43** new tests; suite **891 passed, 25 skipped**.
+shown going RED on a seeded regression; **43** new tests; suite green — ⛔ **the count is not
+restated here**, it lives once in `.claude/review-profile.md` and
+`check_doc_claims.py --check suite-baseline` now enforces that.
 
 ---
 

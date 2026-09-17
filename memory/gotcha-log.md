@@ -7553,10 +7553,24 @@ false finding in the reference audit, which trains readers to dismiss that audit
 | 2026-09-17 | An always-loaded file asserts byte-identity with an installed skill *outside* the repo, hand-dated; no commit here can hold it still and it decays silently | `scripts/verification/check_framework_stamp.sh` | live | 0 |
 | 2026-08-27 | A pointer row in the always-loaded layer grows past its cap; a byte budget loses the race, a per-row cap does not (#133) | `scripts/verification/check_index_budget.py --target pointers` | live | 1 |
 | 2026-09-17 | A reference-integrity rung that is a SHAPE test inside an existence-test disjunction — it cannot stop matching, so the flagged author has no legal move | `tests/fixtures/reference-integrity/run.sh` (cases 34/35) | live | 0 |
-| 2026-09-17 | A number restated into a second file from PROSE rather than re-measured — the copy is plausible, self-consistent and wrong | `scripts/verification/check_doc_claims.py` | live | 0 |
+| 2026-09-17 | A number restated into a second file from PROSE rather than re-measured — the copy is plausible, self-consistent and wrong | `scripts/verification/check_doc_claims.py` | live | **1** |
+| 2026-09-17 | The test-suite baseline gets a SECOND live copy — the profile's own "only live copy" rule broken by the change that quotes it | `scripts/verification/check_doc_claims.py --check suite-baseline` | live | 0 |
 | 2026-09-17 | A reference-checker's SCAN SET narrowed without notice — fewer findings reads exactly like a repo that got cleaner, and the tier decides which files are opened at all | `tests/unit/test_refcheck_docs_tier.py` (37 tests) | live | 0 |
 | 2026-09-17 | An argument a CLI does not know scans the default set and prints a small, reassuring count — including a positional, which "starts with `--`" guards miss | `tests/fixtures/reference-integrity/run.sh`, the `guard_fail` block (7 rejected + 4 accepted) | live | 0 |
 | 2026-09-17 | Dutch NAMES in framework text (ADR-013) — a function-word sweep scores 0 on both real violation sites, so the instrument must carry the names themselves and its allowlist **is** the carve-out table | `scripts/verification/check_framework_language.py` <!-- placeholder --> | proposed | — |
+
+⛔ **THE FIRST OCCURRENCE, AND IT IS A FINDING ABOUT THE CHECK (2026-09-17).** The #134
+step-2 battery found a number restated from prose — the decision record wrote its own copy
+of the suite count while citing, one sentence away, the rule that
+`.claude/review-profile.md` holds the only live copy. That is the row above's class
+exactly, and `check_doc_claims.py` **could not have fired**: its checks are four
+hand-listed CLAIM PAIRS between `CLAUDE.md` and named memory files, and the class is "any
+number restated anywhere". **Scoped to the wrong population**, per this table's own
+instruction to investigate the check rather than the finding. Remedy shipped in the same
+session: the `suite-baseline` check below, which walks the tree for the profile's CURRENT
+value and excepts only dated records. It went red on the real restatement (not a synthetic
+one) before `docs/TODO.md` was fixed, and `CANNOT VERIFY` when the protected line is
+deleted.
 
 **First positives, in prose** (they are what made the `live` rows live, and predate the
 occurrence counter):
