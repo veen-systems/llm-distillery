@@ -91,11 +91,17 @@ STATE_DIRS = ("data/","state/","cache/","logs/","run/","var/","artifacts/",
               # broken reference most needs reported, and a bare prefix would
               # mark all 22 expected-absent.
               #
-              # ⚠️ rung3 sits INSIDE the STALE-PLACEHOLDER `resolves` disjunction
-              # (see below), so adding a dir here makes any `<!-- placeholder -->`
-              # on that dir fire STALE IMMEDIATELY -- measured, findings went
-              # 1 -> 4. The two mechanisms are alternatives, never both: the three
-              # markers these dirs cover were removed in the same commit.
+              # ⚠️ HISTORICAL, AND NO LONGER TRUE OF THE CODE (superseded
+              # 2026-09-17). This note used to read: "rung3 sits INSIDE the
+              # STALE-PLACEHOLDER `resolves` disjunction, so adding a dir here makes
+              # any `<!-- placeholder -->` on that dir fire STALE IMMEDIATELY --
+              # measured, findings went 1 -> 4. The two mechanisms are alternatives,
+              # never both." The measurement was right and the remedy was the wrong
+              # one: the three markers were removed to satisfy a shape test that can
+              # never stop matching, so the coupling came back the moment anyone wrote
+              # a state path again (it did, four times, 2026-09-07..09-10). rung3 is
+              # now excluded from that disjunction at its own site, and the two
+              # mechanisms are independent. Adding a dir here is safe for markers.
               "datasets/raw/","datasets/scored/","datasets/training/",
               "datasets/screening/","datasets/calibration/","datasets/gate/")
 STATE_SHAPE = re.compile(r"(_state\.json|_health\.json|\.pid|\.sock|\.log)$")
@@ -169,6 +175,55 @@ def _mask_spans(line):
     backticks (this file, or any doc explaining the convention) is not read as
     a marker in use."""
     return SPAN_RE.sub(lambda m: " " * len(m.group(0)), line)
+# ---------------------------------------------------------------- #122
+# PATH SHAPES NOT EXTRACTED. Ported from the framework's refcheck.py on
+# 2026-09-17 (/audit-context); the fork had the EXTENSIONS line and not this one.
+#
+# ⚠️ THE TWO OMISSION AXES ARE DIFFERENT, AND ONLY ONE WAS REPORTED. "Report what
+# the extractor dropped" was implemented for dropped EXTENSIONS. A dropped SHAPE
+# had no equivalent line, so a document naming `C:\dev\notes.md` -- or, here,
+# `filters/{name}/v{N}/prefilter.py` and `~/.claude/projects/<slug>/memory/MEMORY.md`
+# -- got a clean verdict from a run that never examined it. That is this repo's own
+# negatives rule turned on its checker: a CLEAN says nothing about what was never
+# looked at. Measured on the real corpus at port time: 6 tokens across CLAUDE.md and
+# memory/gotcha-log.md.
+#
+# These are NOT findings. Nothing here is known to be wrong, only unchecked. Naming
+# them decides nothing and forecloses nothing; giving each shape a rung is a separate
+# change needing a disposition and seeded cases per shape.
+#
+# ⚠️ NAMED SHAPES, NOT A GENERIC SEPARATOR CLASS. Upstream wrote the generic form
+# first, measured it, and refuted it: `[/\\{[]` plus an extension tail reported 61
+# entries / 26 distinct tokens over its own tracked markdown, most not path
+# references at all (a regex `X\.Y\.Z`, an npm package, a git ref). Adding a shape
+# means adding a ROW here -- the visible edit that widening a character class is not.
+# The tail is the EXTRACTOR'S OWN whitelist, which also stops the two axes
+# overlapping: an unwhitelisted extension is the EXTENSIONS line's business.
+_TAIL = r"\.(?:" + "|".join(EXT) + r")$"
+UNEXTRACTED_SHAPES = (
+    ("brace group",         re.compile(r"^[^\s`]*\{[^\s`]*\}[^\s`]*" + _TAIL)),
+    ("bracket placeholder", re.compile(r"^[^\s`]*\[[^\s`]+\][^\s`]*" + _TAIL)),
+    ("root-absolute",       re.compile(r"^/[^\s`]*" + _TAIL)),
+    ("home-relative",       re.compile(r"^~/[^\s`]*" + _TAIL)),
+    ("Windows path",        re.compile(r"^[A-Za-z]:\\[^\s`]*" + _TAIL)),
+    ("UNC path",            re.compile(r"^\\\\[^\s`]+" + _TAIL)),
+)
+
+def _unextracted_shapes(raw_line):
+    """Backticked spans that look like a path and that PATH_RE did not take."""
+    out = []
+    for m in SPAN_RE.finditer(raw_line):
+        frag = m.group(0).strip("`").strip()
+        if not frag or PATH_RE.fullmatch("`" + frag + "`"):
+            continue
+        if "://" in frag:
+            continue
+        for label, rx in UNEXTRACTED_SHAPES:
+            if rx.match(frag):
+                out.append((frag, label))
+                break
+    return out
+
 # spans whose paths are ASSERTED ABSENT — scoped to the span, never the line
 #
 # 2026-08-11: added the "we keep no X" family. The audit reported CLAUDE.md's
@@ -305,6 +360,7 @@ AUTOMEM=os.path.expanduser("~/.claude/projects/"
     + ROOT.replace("/", "-") + "/memory")
 findings, resolved, skipped, generic, placeheld = [], [], [], [], []
 declined, identifiers = [], []
+dropped_shapes = []   # backticked path shapes outside the population (#122)
 seen_ext=set()
 for doc in DOCS:
     text=open(doc if os.path.isabs(doc) else os.path.join(ROOT,doc)).read()
@@ -351,6 +407,9 @@ for doc in DOCS:
         # intentional -- the defect already measured once for strikethrough.
         placeheld_frags=set()
         mline=_mask_link_labels(line)      # #55: label is presentation, URL is the reference
+        for _shfrag, _shlbl in _unextracted_shapes(line):
+            if (doc, _shfrag, _shlbl) not in dropped_shapes:   # a token repeats per line
+                dropped_shapes.append((doc, _shfrag, _shlbl))
         url_refs, url_dec = _link_urls(line)
         for u,why in url_dec: declined.append((doc,u,why))
         eligible=[m for m in PATH_RE.finditer(mline)]
@@ -402,11 +461,34 @@ for doc in DOCS:
                 # here (7 of 12 markers mislabelling real files) was a CROSS-REPO
                 # finding, so dropping rung 2 does not touch that evidence. Verified:
                 # seeds 13/14 resolve at rung 1 and 20 at rung 4, so all three survive.
+                #
+                # ⛔ RUNG 3 IS EXCLUDED HERE, AND IT IS THE ONLY RUNG THAT HAS TO BE
+                # (/audit-context 2026-09-17). Every other rung asks "is this file
+                # THERE?"; rung 3 asks "does this path LOOK like runtime state?" --
+                # `frag.startswith(STATE_DIRS)`, a pure shape test that no file system
+                # can falsify. So an angle-segment path under a state directory --
+                # `data/raw/.processed_ids_<name>.json`, the correct way to write a
+                # per-filter state store -- was ruled STALE unconditionally, and the
+                # author had no legal move: the angle form is mandatory for a variable
+                # segment, and rung 3 always says it "resolves". That is exactly the
+                # no-correct-move shape the #56 note above describes, one rung over.
+                # Measured: 3 of this audit's 23 findings, all four sites written
+                # 2026-09-07..09-10 and guaranteed to recur at every future audit
+                # because a shape test cannot stop matching. Upstream's checker already
+                # counts these in its declared-placeholder section ("decided at rung 3
+                # (runtime state)"); the fork was the one diverging.
+                #
+                # ⚠️ WHAT THIS NEWLY PERMITS, and why it is bounded: a path that is
+                # angle-marked, under a state directory, AND really on disk. Rung 1 is
+                # tested FIRST in the same expression and catches precisely that case,
+                # so the only thing lost is a path that does NOT exist and merely
+                # starts with `data/` -- which was never evidence of mislabelling.
+                # Seeded both ways (run.sh cases 34/35) before this line was written.
                 resolves = (os.path.exists(os.path.join(ROOT,bare))
                             or (_ss and os.path.exists(os.path.join(ROOT,_ss)))
                             or (docdir and os.path.exists(os.path.join(
                                    ROOT, os.path.normpath(os.path.join(docdir,bare)))))
-                            or rung3(bare) or rung4(bare, ctx)
+                            or rung4(bare, ctx)
                             or (re.match(AUTOMEM_RE, bare)
                                 and os.path.exists(os.path.join(AUTOMEM, bare))))
                 if resolves:
@@ -498,6 +580,13 @@ for d,f in sorted(set(identifiers)): print(f"  {d:22s} {f}")
 if not identifiers: print("  (none)")
 tree_ext={p.rsplit('.',1)[-1] for p in TREE if '.' in os.path.basename(p)}
 drop=sorted(e for e in tree_ext if e not in EXT and len(e)<=12 and e.isalnum())
+if dropped_shapes:
+    print(f"\n### PATH SHAPES NOT EXTRACTED ({len(dropped_shapes)} unique) — outside the population, never checked")
+    for _d, _f, _l in sorted(dropped_shapes):
+        print(f"  {_d:22s} {_f:50s} {_l}")
+    print("  Backticked, path-shaped, and never extracted — each labelled with the shape that\n"
+          "  put it here. NOT findings: unchecked, not known-wrong. The FINDINGS count above\n"
+          "  says nothing about these (#122).")
 print(f"\n### EXTENSIONS IN TREE NOT IN WHITELIST (dropped by the extractor)\n  {', '.join(drop[:40])}")
 
 # llm-distillery#134 step 2 needs findings attributed to a TIER, not a total. A single

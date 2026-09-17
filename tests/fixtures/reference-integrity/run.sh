@@ -40,6 +40,12 @@ must_be_placeheld+=("fixtures/reference-integrity/run.sh")  # 31 #56: rung2 no l
                                             #    adjudicates intent, so this is COUNTED
 must_be_silent+=(no_such_struck_target.md)  # 30 struck LINK is an absence assertion
 must_catch+=(project_session_1999_01_01.md) # 33 rung5 extension must not launder
+# 2026-09-17 — rung 3 excluded from the STALE `resolves` test. 34 is what the
+# loosening newly permits (a state-dir angle path may now be counted rather than
+# reported); 35 is the laundering case it must NOT permit, caught by rung 1, which
+# is tested first in the same expression.
+must_be_placeheld+=("data/raw/.processed_ids_<seedname>.json")           # 34
+must_catch+=("datasets/scored/<solutions_v6_rescored.jsonl>")            # 35
 for p in "${must_catch[@]}"; do
   grep -q -- "$p" <<<"$findings" && echo "  ok    caught  $p" \
     || { echo "  FAIL  missed  $p"; fail=1; }
@@ -61,6 +67,19 @@ for p in "${must_be_placeheld[@]}"; do
   grep -q -- "$p" <<<"$placeheld" && echo "  ok    counted $p" \
     || { echo "  FAIL  not in counted skip section: $p"; fail=1; }
 done
+# 36/37 (#122, ported 2026-09-17) — the shape section must NAME what it skipped.
+# Asserted on the section and the LABEL, not on absence from FINDINGS: absence is
+# exactly what the defect looked like for the whole life of the fork.
+shapes="$(sed -n '/### PATH SHAPES NOT EXTRACTED/,/### EXTENSIONS/p' <<<"$out")"
+grep -q "filters/{seedname}/v{N}/never_extracted.py .*brace group" <<<"$shapes" \
+  && echo "  ok    named   brace-group shape (labelled, not dropped)" \
+  || { echo "  FAIL  brace-group shape not named in its section"; fail=1; }
+grep -q 'C:\\dev\\seed_notes.md .*Windows path' <<<"$shapes" \
+  && echo "  ok    named   Windows-path shape (labelled, not dropped)" \
+  || { echo "  FAIL  Windows-path shape not named in its section"; fail=1; }
+grep -q "seed_notes.md" <<<"$findings" \
+  && { echo "  FAIL  a NOT-EXTRACTED shape leaked into FINDINGS"; fail=1; } \
+  || echo "  ok    shapes are not findings (deliberate)"
 grep -q "COVERS NO PATH" <<<"$findings" && echo "  ok    caught  marker-covering-no-path" \
   || { echo "  FAIL  missed  marker-covering-no-path"; fail=1; }
 # --- back-port assertions that need an exact SECTION, not mere absence ---
@@ -82,6 +101,6 @@ grep -q 'DROPPED AS IDENTIFIER-SHAPED (1 unique)' <<<"$out" && echo "  ok    cou
 grep -q 'no_such_label_path.md' <<<"$findings" \
   && { echo "  FAIL  label extracted as a reference (masking broken)"; fail=1; } \
   || echo "  ok    label not extracted (accepted loss, deliberate)"
-total=$(( ${#must_catch[@]} + ${#must_be_silent[@]} + ${#must_be_placeheld[@]} + 5 ))
+total=$(( ${#must_catch[@]} + ${#must_be_silent[@]} + ${#must_be_placeheld[@]} + 8 ))
 [ $fail -eq 0 ] && echo "SENSITIVITY: $total/$total PASS" || echo "SENSITIVITY: FAILED"
 exit $fail

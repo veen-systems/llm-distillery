@@ -61,7 +61,7 @@ wrong reason.
 
 
 ## A FAILED `git add` LET THE COMMIT RUN ANYWAY, AND HALF A REVERT WENT TO `main` (2026-09-12)
-**Problem**: Ran `git add <8 paths>` where one was `tests/unit/test_refcheck_exit_contract.py`
+**Problem**: Ran `git add <8 paths>` where one was `tests/unit/test_refcheck_exit_contract.py` <!-- placeholder -->
 — already staged as a deletion by an earlier `git rm`, so the pathspec matched **no file**.
 `git add` printed `fatal: pathspec ... did not match any files` and exited non-zero. **It is
 ATOMIC over its argument list, so none of the other seven were staged.** The `git commit` on
@@ -131,7 +131,7 @@ each mutation to attack the property the test NAMES, not the line it executes; t
 four attacked the code I had just written and could not have found this.
 ⚠️ **The ARTIFACT is gone — the exit contract and this test file were reverted 2026-09-12 as
 the third re-adoption of a recorded decline** (see the 09-12 entry above). The lesson stands
-and is why this entry stays; do not go looking for `tests/unit/test_refcheck_exit_contract.py`.
+and is why this entry stays; do not go looking for `tests/unit/test_refcheck_exit_contract.py` <!-- placeholder --> — deleted by the revert `222d6a6`, deliberately absent.
 ⛔ And note what the two entries say together: the test-name defect was found by MY mutation,
 and the *branch should not have existed at all* was not — no mutation can ask that.
 
@@ -182,7 +182,7 @@ new one — and never write "extracted" as though it were "copied".**
 `scripts/contract_check.py:276` globs `**/content_items_*.jsonl` from `path.parent.parent`,
 which for a pytest `tmp_path` is the **session-shared basetemp** — so the harm fixtures were
 read as producer collections, the measured delivery cadence collapsed, and
-`freshness.input_stale` asserted error. Measured: `test_contract_check.py` alone 52 passed;
+`freshness.input_stale` asserted error. Measured: the NexusMind suite's `NexusMind/tests/unit/test_contract_check.py` alone 52 passed;
 harm tests first then contract_check **6 FAILED**, 58 passed; reverse order 64 passed.
 **Root cause**: The full suite passed only because `c` sorts before `h`. Two sessions reported
 "1,649 pass" and both were true. The victim was the exact test that exists to prove the check
@@ -4346,7 +4346,7 @@ it guards.** A guard nobody has watched fail is a guard nobody has tested.
 
 **Problem**: `/review-changes` in llm-distillery ran a checklist written for the
 *personal notes* repo — tiering on `Nieuw huis/`, `career/jobspy/`, `modellen/*.py`,
-`ovr.news/principes.md` <!-- placeholder --> (paths in the *personal notes* repo — `principes.md` <!-- placeholder --> is at `personal/Nieuw huis/principes.md`; none of them resolve in this estate, which is the point), and asserting *"the container itself has no git"*, which is false here.
+`ovr.news/principes.md` <!-- placeholder --> (paths in the *personal notes* repo — `personal/Nieuw huis/principes.md` is the real one, and it DOES resolve at rung 4; what does not resolve is the `ovr.news/` spelling the stray checklist used, which is the point), and asserting *"the container itself has no git"*, which is false here.
 The tier table had to be rewritten mid-run to mean anything. Meanwhile this repo's own
 `.claude/skills/review-changes/` — 219 lines, re-mapped to `filters/common/*.py`,
 `ground_truth/batch_scorer.py` and the gate/normalization scripts — sat unused.
@@ -6052,9 +6052,9 @@ sole source for every test-split number published in that directory's README, in
 `git add <dir>`. No message, no warning, exit 0. Its `_val` and `_test_seed7` siblings staged fine.
 **Root cause**: `.gitignore:163` carries `*_test.*` in a scratch-file block beside `*.bak`,
 `*.old` and `*_backup.*`. It is a PATTERN, not a path, so it applies repo-wide and matched an
-evidence artifact whose name happened to end `_test.json`.
+evidence artifact whose name happened to end `_test.json` <!-- placeholder --> (a suffix, never a file).
 **Fix**: `!docs/evidence/**/*_test.*` and `!docs/evidence/**/*_backup.*`, verified in both
-directions — the JSON is stageable, and `scripts/foo_test.py` is still ignored. ⛔ **Scoped to
+directions — the JSON is stageable, and `scripts/foo_test.py` <!-- placeholder --> is still ignored. ⛔ **Scoped to
 `docs/evidence/` only**; the pattern still swallows `*_test.*` elsewhere.
 ⭐ **The question that found it was not "did the add succeed?" but "what is in the staged set?"** —
 `git add -n` listed 13 files where the directory held 14. Blast radius measured
@@ -6433,7 +6433,7 @@ the defect, and the note even named the second victim
 
 **Fix**: negations extended to `scripts/`, `tests/`, `filters/`, `training/` and
 `ground_truth/`. Verified in BOTH directions: the smoke test is stageable, and a
-`scratch_probe_test.json` at the repo root is still ignored. ⭐ **The reusable part is how it
+`scratch_probe_test.json` <!-- placeholder --> at the repo root is still ignored. ⭐ **The reusable part is how it
 surfaced: `git add <explicit path>` WARNS, and `git add <dir>` does not** — the 09-04 loss was
 silent for exactly that reason. Do not rely on the warning; the pattern is the hazard.
 ⚠️ A documented limitation that is left in place is a defect with a note attached, not a
@@ -7255,10 +7255,10 @@ exclusion criteria) printed as comparable.
 
 ## A corpus filename off by one character and four rows would have answered a different question (2026-09-10)
 **Problem**: Retraining obituary v3/v4/v5 across seeds needed each version's own training corpus.
-Staged on b650 were `train_split_corpus.jsonl`, `v4_train_seed.jsonl`, `v4b_train_seed.jsonl` and
-`v5_train_seed.jsonl`. The obvious pick for v4 is the one named `v4_train_seed.jsonl`. **It is not
+Staged on b650 (off-tree; none of these four is in this repo) were `train_split_corpus.jsonl` <!-- placeholder -->, `v4_train_seed.jsonl` <!-- placeholder -->, `v4b_train_seed.jsonl` <!-- placeholder --> and
+`v5_train_seed.jsonl` <!-- placeholder -->. The obvious pick for v4 is the one named `v4_train_seed.jsonl` <!-- placeholder -->. **It is not
 v4's corpus** — it holds 11,304 rows (2,673/8,631) against v4's published 11,308 (2,673/8,635).
-`v4b_train_seed.jsonl` is the real one.
+`v4b_train_seed.jsonl` <!-- placeholder --> is the real one.
 **Root cause**: A name is an assertion, and an intermediate artefact kept the un-suffixed name
 while the shipped one took the suffix. Nothing about the four-row difference is visible without
 checking, and a grid built on the wrong file would have looked completely clean.

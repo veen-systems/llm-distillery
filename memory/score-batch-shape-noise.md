@@ -325,7 +325,7 @@ it is enough to change the re-score design and not enough to quote as a rate.
 
 ⛔ **Not a floor, and not yet a term — a candidate with two rivals excluded.** `EXP-026`
 found `human_thriving v8`'s raw recall differing by **one article** between two ways of
-scoring the same 660 rows with the same weights: `eval_ht_v8.py` gives **18 TP**, the
+scoring the same 660 rows with the same weights: `eval_ht_v8.py` <!-- placeholder --> gives **18 TP**, the
 production inference path **17**.
 
 Excluded by measurement:

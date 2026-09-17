@@ -138,3 +138,25 @@ case, not the fix:
 
 33. **fabricated auto-memory session file** — must stay a FINDING, not be absorbed by
     the new pattern: `project_session_1999_01_01.md`
+
+### rung 3 excluded from the STALE-marker test (/audit-context 2026-09-17)
+
+`rung3` is a SHAPE test (`frag.startswith(STATE_DIRS)`), not an existence test, so
+while it sat inside the STALE `resolves` disjunction every angle-segment path under a
+state directory was ruled STALE unconditionally and the author had no legal move.
+Removing it is a LOOSENING, so 35 seeds the laundering case, not the fix.
+
+34. **angle-segment path under a state dir that is NOT on disk** — must now be COUNTED
+    as a declared placeholder, never reported STALE:
+    `data/raw/.processed_ids_<seedname>.json`
+35. **angle-wrapped path under a state dir that IS on disk** — rung 1 is tested first
+    and must still catch the mislabel:
+    `datasets/scored/<solutions_v6_rescored.jsonl>` <!-- placeholder -->
+
+### #122 — path shapes outside the extractor's population (ported 2026-09-17)
+
+The EXTENSIONS line reports one omission axis; this reports the other. Asserted on the
+SECTION, never on absence from FINDINGS — absence is what the bug looked like.
+
+36. **brace group** — `filters/{seedname}/v{N}/never_extracted.py`
+37. **Windows path** — `C:\dev\seed_notes.md`
