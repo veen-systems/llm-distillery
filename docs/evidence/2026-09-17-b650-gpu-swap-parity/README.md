@@ -121,6 +121,10 @@ batch size, a different composition (#95) or a different driver.
    *architectures*. Treat "the box is free" as strictly weaker than it was.
 5. **Speed: 12 s for 660 rows on the 5090**, against ~2 min recorded for the
    3090 Ti and ~9 min 13 s for CPU on the same box today (07:38:39 → 07:47:52).
+   ⚠️ **One reading, and `H-V8-21` exists because this box's absolutes moved 1.60×
+   between sessions** on the old card — with zero between-session data on the new
+   one. The defensible figure is the **same-day CUDA ÷ CPU ratio**; treat the 12 s
+   as provisional.
    The CUDA dump was checked for completeness (661 lines = 1 `_meta` + 660 rows,
    `device: cuda`, production pins in the header) before the figure was believed.
 6. ⚠️ **None of this transfers to another filter.** `human_thriving v8`'s own

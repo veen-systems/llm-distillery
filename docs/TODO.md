@@ -1,11 +1,59 @@
 # LLM Distillery - TODO
 
-## 🔵 NEXT SESSION — **drift + audit + curate ALL DONE 2026-09-11/12. Three decisions are waiting.**
+## 🔵 NEXT SESSION — **b650's GPU was swapped 2026-09-17; the device term was re-derived the same day. Three decisions still waiting, plus one new one.**
 
-✅ **Framework v1.36.1 → v1.40.0** (2 adopt, 0 decline, 2 n/a, 3 already-in-force), ✅ `/audit-context`
-(verdict DEFECTS, fixed), ✅ `/curate`, pushed `93e2bcf..4eca14e`. **$0, no oracle, nothing in
-`filters/`, deploy N/A — not skipped, inapplicable.** Full record:
-`docs/decisions/framework-adoption-history.md` + `memory/project_session_2026_09_11_evening.md`.
+✅ **`EXP-038` — b650: RTX 3090 Ti (Ampere) → RTX 5090 (Blackwell).** `$0, no oracle, nothing in
+`filters/`, **deploy N/A — inapplicable, not skipped** (no filter package, model, calibration or
+threshold changed; this is measurement and documentation). Pushed `cd2b204..HEAD`. Record:
+`docs/evidence/2026-09-17-b650-gpu-swap-parity/`.
+
+**The result, in one line: the device term SHRANK and still flipped two verdicts.**
+
+| term | max \|Δ\| | rows > 0.16 | flips @4.0 | flips @4.5 |
+|---|---|---|---|---|
+| CPU→CUDA, **Ampere** (dead hardware) | 0.1956 | 3 | 1 | 3 |
+| CPU→CUDA, **Blackwell** (current) | **0.1572** | **0** | 1 | **2** |
+| **Ampere→Blackwell, the swap** | **0.2357** | 3 | **2** | 1 |
+
+⭐ **Carry this one forward: a term with ZERO rows above the #95 0.16 floor still changed two
+verdicts** (the flipping rows moved 0.0467 and 0.1421). A max-|Δ| check against a floor is
+structurally blind to flips, because a flip is a *small* delta *near the bar*. **Read the flip
+count at the op-point, never the magnitude alone.** Attribution rests on a byte-identical CPU
+control (660/660, five weeks and a swap apart), not on an md5 list.
+
+⛔ **Operationally: stored b650-CUDA dumps are Ampere artefacts — re-dump, never diff.** The
+CPU-side host (0.0000) and stack (0.2008) terms are untouched; the gpu-server CUDA-to-CUDA
+extrapolation got *worse*, since it now crosses two architectures.
+
+🆕 **FOURTH OWNER DECISION — `H-DEV-1`, and it gates #85 and #158.** Everything above is
+**inference on fixed weights**. Whether a LoRA adapter *trained* on the 5090 is interchangeable
+with one trained on the 3090 Ti is **unmeasured**, and a 2026-07-09 gotcha already records that
+the same seed and a fresh re-train give different weights on one box. ⛔ **Do not call b650
+"cleared for training"** — it is cleared for *probe* work on a measured basis, which is a
+different claim. **First step is cheap and same-box** (train twice at one seed on the 5090 and
+diff the weights; 660 rows now take 12 s); only if that is reproducible does an
+across-architecture comparison mean anything. `memory/hypothesis-ledger.md` H-DEV-1.
+
+⚠️ **`H-V8-21` (b650 throughput 1.60× swing) can no longer be falsified as written** — both its
+readings are 3090 Ti numbers and its stated ≥8-point method would now cross the swap. Close it as
+unmeasurable or re-raise it on the 5090; the ⭐ lesson inside it (repeats inside one interpreter
+are precise about that interpreter) survives either way.
+
+⚠️ **`H-V8-23`'s method has the same new confound** — its 17-vs-18 baseline is a 3090 Ti dump, and
+0.2357 is larger than the one-article gap the row exists to explain. Re-dump the bf16 baseline on
+the 5090 *before* varying dtype against it.
+
+✅ Also fixed, unrelated and small: **`sadalsuud → b650` ssh was broken by `User jwasys`** in
+sadalsuud's `~/.ssh/config` (the key was always correct and is in b650's `authorized_keys`).
+Changed to `User jeroen` and verified end-to-end; backup at `~/.ssh/config.bak-20260917-b650user`.
+Both `memory/b650-gpu.md` and `CLAUDE.md` had this wrong, in opposite directions.
+
+---
+
+*Previous session (2026-09-11/12):* ✅ **Framework v1.36.1 → v1.40.0** (2 adopt, 0 decline, 2 n/a,
+3 already-in-force), ✅ `/audit-context` (verdict DEFECTS, fixed), ✅ `/curate`, pushed
+`93e2bcf..4eca14e`. Full record: `docs/decisions/framework-adoption-history.md` +
+`memory/project_session_2026_09_11_evening.md`.
 
 ⛔ **THREE OWNER DECISIONS, none of which I should make alone:**
 
@@ -33,9 +81,12 @@
 3. **`#116` (activation/arousal) is still the open ethics call** and is scoped in
    `persuasion-scorer`, not here.
 
-⚠️ **`CLAUDE.md` is 37,432 B / ~36,990 chars against a 40,000 hard cap and a 35,000 soft one —
-OVER SOFT.** Pointer budget **40 rows, 4 of 5 carve-outs used**. Always-loaded layer 54,087 B of
-60,000. ⛔ **Drift adoption deleted ZERO bytes**; it was the prerequisite, not the fix.
+⚠️ **`CLAUDE.md` is 37,496 B against a 40,000 hard cap and a 35,000 soft one — OVER SOFT.**
+Pointer budget **40 rows, 4 of 5 carve-outs used**. ⛔ **Always-loaded layer 55,155 B of 60,000 —
+the budget checker now prints WARN** (`4,845 left ... act now, while there is still room to choose
+what goes`). It crossed on 2026-09-17: the layer was already 5,328 under before that session and
+the b650 result added ~480 B. ⛔ **Drift adoption deleted ZERO bytes**; it was the prerequisite,
+not the fix. Re-measure rather than quoting these — `check_index_budget.py --target loaded`.
 
 ⭐ **#122 CONFIRMED AGAIN, and it bit this session.** The `CLAUDE.md` frontmatter does not reach
 session context — verified first-hand on 2026-09-12 — and on 2026-09-11 I put the new

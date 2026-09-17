@@ -1,5 +1,64 @@
 # Gotcha Log
 
+## RECORDING A COMMIT HASH IN A FILE THAT IS PART OF THAT COMMIT, THEN `--amend` (2026-09-17)
+**Problem**: Committed `EXP-038` with `experiments/registry.jsonl` recording `"commits":
+["70555e2","32919c3"]`, where `32919c3` was the hash printed by that very commit. Then ran
+`git commit --amend` to stage one more file. The amend rewrote the commit as `81e1498`, so
+the registry at `HEAD` pointed at an object **no longer reachable from any branch** —
+`check_experiment_registry.py` still passed, because it checks that metrics are traceable to
+artifacts, not that a recorded hash resolves.
+**Root cause**: a chicken-and-egg that reads as an ordinary two-step. A commit's hash covers
+its own tree, so a file inside the commit can never hold that commit's hash in one step. I
+worked around it by recording the hash *after* committing and then amending — which is the
+one move that invalidates exactly what I had just written. `--amend` is the trap, not the
+two-step.
+**Fix**: record the hash in a **follow-up commit**, never an amend. The follow-up's own hash
+does not need recording. Caught by re-reading `git log --oneline -3` after the amend and
+noticing the hash had changed; nothing automated would have. ⭐ **Generalises past git: any
+artifact that records an identifier derived from its own content cannot be written in one
+pass, and every "just amend it" shortcut re-breaks it.** Same family as the 2026-09-04
+`git commit --amend` orphaning the commit that produced a trained model — third time `--amend`
+has cost something here.
+
+## AN ORDERING PUBLISHED WITH NO BAND — AND THE GUARD CAUGHT IT, NOT ME (2026-09-17) [x2]
+**Problem**: Wrote *"the new GPU agrees with CPU BETTER than the old one did — max |Δ| 0.1572
+against 0.1956"* as the one-line answer of an evidence document. `check_claim_shapes.py`
+failed it on `ordering-needs-band`, plus two `no-difference-range` failures on *"the `_meta`
+stack fingerprint is identical in every dump"* and *"recall is identical on all three"*.
+Three failures, all in a document I had just written carefully.
+**Root cause**: both figures are a **max over 660 rows** — an extreme-value statistic, the
+least stable thing a sample publishes — and the Ampere arm **can never be replicated**,
+because the card is out of the machine. So there is no paired band and no way to get one. I
+had the repeatability figure for the *new* arm (run-to-run 0.0000) and let it stand in for a
+band across two arms, which it is not. ⛔ **This is the same defect as the 2026-09-05 "AUC
+would have picked the wrong arm" entry** — a point-estimate ordering promoted to a finding —
+so it is occurrence two, written by someone who had read that entry's lesson in the same
+session's memory index.
+**Fix**: state the ordering as *two single measurements*, say the Ampere arm is
+unreplicable, and move the load onto the **flip counts**, which are counts and not
+extreme-value statistics. ⭐ **The durable half: the guard is the control, and its failure was
+it working.** I fixed the substance rather than the wording — the tempting move was to add the
+word "band" until it went green, which would have left the claim exactly as wrong.
+
+## TWO MEMORY SURFACES DISAGREED ABOUT SSH ACCESS; ONE WAS RIGHT ABOUT THE OUTCOME AND BOTH WERE WRONG ABOUT THE CAUSE (2026-09-17)
+**Problem**: `memory/b650-gpu.md` said `ssh b650-gpu` *"works from situla and sadalsuud"*.
+`CLAUDE.md`'s pointer row said *"works from the workstation, NOT from sadalsuud"*. Flat
+contradiction, both always-loaded or near it, and neither referenced the other.
+**Root cause**: `CLAUDE.md` was right about the **outcome** and wrong about the **reason**,
+which is why nobody fixed it — it read as a known limitation rather than as a bug. The actual
+cause was one word: sadalsuud's `~/.ssh/config` said `User jwasys` (the box owner's account)
+instead of `jeroen`. The **key was correct the whole time** — sadalsuud's
+`~/.ssh/b650_gpu.pub` fingerprint matches the `jeroen@sadalsuud-to-b650` entry in b650's
+`authorized_keys` exactly. So a true-sounding limitation concealed a one-line fix for six
+weeks, and `memory/b650-gpu.md` even carried the warning *"the account is `jeroen` (NOT
+jwasys)"* three lines above the claim it contradicted.
+**Fix**: changed to `User jeroen` and **proved the outcome** — `sadalsuud → b650` now returns
+the hostname, `jeroen`, and the GPU — rather than declaring the config edit done. Backup at
+`sadalsuud:~/.ssh/config.bak-20260917-b650user`. ⭐ **A "doesn't work from X" note with no
+cause beside it is a bug report nobody triaged.** Record the mechanism or the note becomes
+permanent; and when two surfaces disagree, the one that is right may still be right for the
+wrong reason.
+
 
 ## A FAILED `git add` LET THE COMMIT RUN ANYWAY, AND HALF A REVERT WENT TO `main` (2026-09-12)
 **Problem**: Ran `git add <8 paths>` where one was `tests/unit/test_refcheck_exit_contract.py`
@@ -6264,7 +6323,15 @@ peer — is **false as stated**; and the instrument **cannot express "CPU" at al
 CPU branches log a phrase without the word `using`. A set of size 1 is produced identically by
 1 of 8 runs and by 8 of 8; `devices` was a set and was never counted.
 
-## 2026-09-05 — `pgrep -f` matched its own wait-loop TWICE in one session (7th and 8th)
+## 2026-09-05 — `pgrep -f` matched its own wait-loop TWICE in one session (7th and 8th) [x3, 9th occurrence 2026-09-17]
+*(⭐ **9th, 2026-09-17 — FIRED AND WAS CAUGHT, which is what the rule buys.** Launching the
+parity run, `pgrep -af "box_parity.py"` returned **three** lines: two were the `bash -c` and
+the ssh command carrying the pattern, one was the real process. Unlike the 7th and 8th it cost
+nothing, because `CLAUDE.md`'s working rule — **"if a process check decides whether you act,
+print the matching line before believing it"** — was followed and the pid was read off the
+printed line rather than off a count. Recorded as an occurrence anyway: the trap's **rate** is
+the thing worth knowing, and only counting the times it wins understates it.)*
+
 **Problem**: Waited for a remote benchmark with
 `ssh b650-gpu 'while pgrep -f "bench_devices.py --arm student-gpu"; do sleep 5; done; ...'`.
 It never returned and was killed at the timeout (**exit 143**) — while the benchmark itself
@@ -6472,7 +6539,7 @@ the comparison always ships with the range over which it could have failed. The 
 (drop the gate) survives on two independent legs that need no data: 0 of 35 positives
 screened out, and the 85.7% break-even against ~90% routing.
 
-## 2026-09-05 (second session) — an ordering published as a finding, with no band
+## 2026-09-05 (second session) — an ordering published as a finding, with no band [x2 — recurred 2026-09-17, see the entry at the top]
 
 **Problem**: *"AUC would have picked the wrong arm"* was labelled ⭐⭐ THE REUSABLE FINDING
 in four places, on a gap of **+0.0014**.

@@ -81,6 +81,10 @@ ssh b650-gpu        # account is `jeroen` (NOT jwasys); works from situla and sa
   ⚠️ **3090 Ti figure, not re-run on the 5090.** What *was* timed on the 5090
   (2026-09-17): the `uplifting v7` student over 660 rows in **12 s** on CUDA
   against **9 min 13 s** on this box's CPU, and ~2 min recorded for the 3090 Ti.
+  ⚠️ **That 12 s is ONE reading, and `H-V8-21` is exactly about this box's absolutes
+  swinging 1.60× between sessions** — on the old card, with no between-session data
+  on the new one at all. **Quote the ratio (CUDA ÷ CPU, same box, same day), never
+  the absolute**, which is the ledger row's own standing instruction.
 - ⚠️ **"Cross-box" skew — MIS-NAMED, and scoped; do not apply it blanket** (2026-08-09;
   renamed 2026-08-29). The |0.16| was measured on the **obituary detector: mpnet +
   sklearn MLP**, ST 5.6.1 here vs 5.2.2 on gpu-server (gotcha-log 2026-07-30) — i.e.

@@ -280,10 +280,16 @@ python training/validate_training_data.py \
 
 ### Train on GPU
 
-Two hosts. **`b650-gpu` is the training node** (RTX 3090 Ti 24 GB, ~1.26 s/it at batch 8;
+Two hosts. **`b650-gpu` is the training node** (⭐ **RTX 5090 32 GB since 2026-09-17**, was a
+3090 Ti 24 GB; the ~1.26 s/it at batch 8 is a 3090 Ti figure and has not been re-timed;
 `memory/b650-gpu.md`) and ends Ollama-vs-training contention on gpu-server. It is NOT a
 production box — ⛔ never diff a b650 replay against stored production scores without
-matching production's device first (CPU→CUDA is worth 3 flips at 4.5).
+matching production's device first (CPU→CUDA on the current card is worth 2 flips at 4.5).
+⛔ **And never diff a b650-CUDA replay against a b650-CUDA dump taken before 2026-09-17** —
+the two GPUs disagree at max |Δ| **0.2357**, 2 flips at 4.0. Re-dump instead.
+⚠️ **Training across the swap is UNMEASURED** (`H-DEV-1`): everything in `EXP-038` is
+inference on fixed weights. Before a retrain here is compared against a pre-swap baseline,
+read `memory/hypothesis-ledger.md` H-DEV-1 — the cheap same-box step comes first.
 
 ⛔ **THE TRAINING RUN MUST NAME A COMMIT, AND `train.py` NOW REFUSES WITHOUT ONE.**
 `human_thriving v8`'s first adapter was built by a tree that `git commit --amend` then
@@ -457,6 +463,13 @@ the same 660 rows, so those are two quantities with one name.
 On v8 it did not — CPU vs CUDA gave 0 verdict flips and identical confusion matrices, max
 |Δ| 0.1428, *below* the #95 floor. On `uplifting v7` at the same 4.5 bar it was 0.1956 with
 3 flips. Dump both and diff before claiming either.
+⛔ **AND "BELOW THE FLOOR" IS NOT "NO FLIPS" — that inference is invalid, and 2026-09-17
+supplied the counter-example.** After b650's GPU swap, `uplifting v7`'s device term measured
+**0.1572 with ZERO rows above 0.16 and still 2 flips at 4.5** (the flipping rows moved 0.0467
+and 0.1421). A flip is a small delta near the bar; a max-|Δ| comparison cannot see one.
+**So v8's 0 flips above is load-bearing and its 0.1428 is not** — always read the flip count.
+⚠️ Both of those numbers are 3090 Ti measurements. `EXP-038`,
+`docs/evidence/2026-09-17-b650-gpu-swap-parity/`.
 
 ## Smoke-testing a filter package before the deploy gate
 
