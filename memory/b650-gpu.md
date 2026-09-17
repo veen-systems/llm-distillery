@@ -1,11 +1,32 @@
 # b650 GPU (Arian's box)
 
-Commissioned 2026-07-30. RTX 3090 Ti **24 GB** (vs gpu-server's 16), CUDA 12.0
-driver 580.95, 699 GB free disk, 30 GB RAM. Reachable via Tailscale:
+Commissioned 2026-07-30. ⭐ **GPU SWAPPED 2026-09-17: RTX 5090 32 GB (Blackwell,
+`sm_120`), driver 580.173.02 / CUDA 13.0, 600 W cap** — it was an RTX 3090 Ti 24 GB
+(Ampere, `sm_86`), driver 580.95 / CUDA 12.0. **Only the GPU changed**: same box,
+Ryzen 7 9700X (16 threads), 30 GB RAM, 591 GB free of 915 GB, Ubuntu 24.04.3 /
+kernel 6.14. Reachable via Tailscale:
 
 ```bash
 ssh b650-gpu        # account is `jeroen` (NOT jwasys); works from situla and sadalsuud
 ```
+
+- ⭐ **The 5090 is verified working end-to-end, 2026-09-17 — measured, not assumed.**
+  Both venvs see the device and carry `sm_120` in `torch.cuda.get_arch_list()`
+  (`venv-prodparity` torch 2.11.0+cu130, `venv` torch 2.13.0+cu130). The real
+  student path runs: `load_base_model_for_seq_cls` + `PeftModel.from_pretrained(
+  "filters/uplifting/v7/model")` on CUDA, bf16, **3.1 s load, 211 ms first forward**,
+  6 logits. Triton JIT compiles a kernel in **both** venvs. Tracked-file drift at the
+  checkout was **0** (28 untracked artefacts, all `??`).
+- ⛔ **EVERY CUDA NUMBER IN THIS FILE WAS MEASURED ON THE 3090 Ti AND IS NOW STALE.**
+  Concretely: the device term **C→G, CPU→CUDA max |Δ| 0.1956, 1 flip @4.0, 3 @4.5**
+  (`docs/evidence/2026-08-10-b650-gpu-production-stack-parity.md`, run G = `b650 |
+  CUDA | production's pins`) was measured on Ampere; the arm no longer exists. So is
+  the "~2 min per 660 rows" figure below. **The CPU-side terms survive** — P→C (host,
+  660/660 bit-identical, 0.0000) held the device at CPU and the CPU did not change —
+  and so does the library-stack term B→C (0.2008), also CPU-only. Re-run
+  `box_parity.py` + `diff_box_parity.py --threshold` before quoting ANY b650-CUDA
+  number, and note the extrapolation it feeds got *worse*: gpu-server-CUDA vs
+  b650-CUDA was already unmeasured, and the two are now different architectures.
 
 - ⭐ **`~/llm-distillery` IS A GIT CHECKOUT as of 2026-09-06** (`git init` + remote +
   `git checkout -f main`; every gitignored artefact — `datasets/`, both venvs,
@@ -28,17 +49,25 @@ ssh b650-gpu        # account is `jeroen` (NOT jwasys); works from situla and sa
 - **venv**: **two now.** `~/llm-distillery/venv-prodparity` (py 3.11.15, torch
   2.11.0+cu130, transformers 5.0.0 — production's pins, **GPU works**) is the one
   to use for anything touching the student; `~/llm-distillery/venv` (py 3.12.3,
-  torch 2.13.0, **CPU only** — triton cannot build) is kept because the
-  2026-08-09 parity dumps cite it as provenance. Both created with **uv**
+  torch 2.13.0) is kept because the 2026-08-09 parity dumps cite it as provenance.
+  ⚠️ **It is NO LONGER CPU-only** — the triton JIT that could not build now compiles
+  there (measured 2026-09-17, trivial kernel, both venvs). `/usr/include/python3.12`
+  is still absent, so the unblocker is the newer stack, not a dev package; the old
+  diagnosis below is history, not current state. **This does not make it a parity
+  instrument** — its pins are not production's, and B→C values that gap at 0.2008. Both created with **uv**
   (`~/.local/bin/uv`);
   system `python3 -m venv` is BROKEN (no ensurepip; python3.12-venv needs sudo).
   Stack: torch 2.13.0+cu130, sentence-transformers 5.6.1, **scikit-learn pinned
   1.8.0** (matches obituary pickle version).
-- **Ollama**: 100.87.225.76:11434 over tailnet (qwen3:14b, qwen3-coder:30b,
-  qwen2.5:14b pulled; NO gemma3:27b/phi4 yet — pull before running 4-model panels here).
+- **Ollama**: 100.87.225.76:11434 over tailnet. Enumerated 2026-09-17: `bge-m3`,
+  `gemma3:27b`, `llama3.1:8b`, `mistral:7b`, `qwen2.5:3b`, `qwen2.5:14b`, `qwen3:14b`,
+  `qwen3-coder:30b` (+128k/192k), `qwen3-vl:8b`. **`gemma3:27b` has since been pulled**
+  (this line said it was missing); **`phi4` still is not** — pull before a 4-model panel.
+  ⛔ Do not quote this list without re-running `curl -s .../api/tags`; it is a snapshot.
 - **Data staged**: `~/llm-distillery/filters/common/obituary_detector/` —
   training corpora (131 MB) + v3/v4/v5 model artifacts + train_v1.py/build_v5_seed.py.
 - **Benchmark**: 1,562-row mpnet embed in 1.9 s (~830 rows/s) — ~5× gpu-server.
+  ⚠️ **3090 Ti figure, not re-run on the 5090.**
 - ⚠️ **"Cross-box" skew — MIS-NAMED, and scoped; do not apply it blanket** (2026-08-09;
   renamed 2026-08-29). The |0.16| was measured on the **obituary detector: mpnet +
   sklearn MLP**, ST 5.6.1 here vs 5.2.2 on gpu-server (gotcha-log 2026-07-30) — i.e.
@@ -76,8 +105,8 @@ ssh b650-gpu        # account is `jeroen` (NOT jwasys); works from situla and sa
   `docs/evidence/2026-08-09-cross-box-parity-uplifting-v7.md` (stack, confounded as
   "cross-box") and the 08-10 decomposition (all four terms).
 - ✅ **SOLVED 2026-08-10 — b650 runs the student on GPU. Use
-  `~/llm-distillery/venv-prodparity`.** ~2 min per 660 rows, vs ~16 min on CPU
-  here and ~30 on gpu-server's CPU. **No sudo was needed.** The old venv is built
+  `~/llm-distillery/venv-prodparity`.** ~2 min per 660 rows (**3090 Ti timing; not re-run
+  on the 5090**), vs ~16 min on CPU here and ~30 on gpu-server's CPU. **No sudo was needed.** The old venv is built
   on the *system* python (`pyvenv.cfg` <!-- placeholder --> → `home = /usr/bin`), which ships no
   headers; `uv` can download a standalone CPython that does:
   ```bash

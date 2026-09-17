@@ -258,7 +258,7 @@ bounded: `python3 scripts/verification/check_index_budget.py --target pointers`.
 | **About to weaken, delete or argue with a working rule** | **`memory/working-rules.md`** — the full text of each rule plus the evidence and occurrence catalogue behind it. Every one exists because something shipped broken. |
 | **Touching corroboration, story-dedup, or any matching feature** | **`memory/corroboration-feature-hypotheses.md`** — confirmed, refuted and untested. ⚠️ **The threshold is NOT the lever.** |
 | Planning across repos, or asking "what should I work on" | `memory/cross-repo-prioritization.md` — issue landscape, chains, and the two standing traps it names |
-| Running anything long, or told "the GPU is free" | `memory/b650-gpu.md` — the non-production 3090 Ti. `ssh b650-gpu` works from the workstation, NOT from sadalsuud |
+| Running anything long, or told "the GPU is free" | `memory/b650-gpu.md` — the non-production GPU box. ⛔ **RTX 5090 since 2026-09-17; its CUDA numbers predate it.** `ssh b650-gpu` works from the workstation, NOT from sadalsuud |
 | Checking which lens/tab a filter feeds | `memory/ovr-lens-set-current.md` — current lens→filter→tab mapping |
 | Writing docs for a deployed filter | `memory/filter-doc-standard.md` — the required documentation set |
 | Building a filter on a DeepSeek oracle, or citing cultural_discovery v5 as a reference | `memory/cd-v5-reference-status.md` — why v5 is the DeepSeek-oracle reference example, and the ADR-020 methodology it demonstrates |
