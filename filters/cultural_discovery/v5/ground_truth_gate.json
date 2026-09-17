@@ -58,6 +58,22 @@
       "Adapter weights were md5-verified against production's own copy before scoring (gpu-server llm-distillery for belonging/cultural_discovery; NexusMind's filters/ tree for investment_risk, whose llm-distillery copy on gpu-server lives under the HYPHENATED name 'investment-risk').",
       "DO NOT RANK FILTERS ON `mae` (ADR-023). Each split has its own positive rate -- uplifting v7 32.7%, investment_risk v6 15.6%, solutions v6 16.2%, nature_recovery v4 15.3%, cultural_discovery v5 8.8%, belonging v1 11.5% -- and a more enriched split carries mechanically larger per-article error for identical quality. Only recall and specificity are conditional on the true class and comparable across filters.",
       "This config has NO `tiers` block (pre-ADR-014, still on score_scale_factor), so the 4.0 op-point was supplied explicitly and cross-checked against normalization.json stats.raw_min = 4.0006. Its gatekeeper is flagged INLINE on `evidence_quality` (threshold 3, max_score 4.0) rather than in a `gatekeepers:` block -- the gate reads both forms. It BINDS 0 TIMES in 857 rows, which is the llm-distillery#94 shape; not a defect in this measurement, but worth its own look."
-    ]
+    ],
+    "device_parity": {
+      "experiment": "EXP-041",
+      "issue": "llm-distillery#104",
+      "measured": "2026-09-17",
+      "op_point": 4.0,
+      "rows": 857,
+      "verdict_flips_cpu_vs_cuda_at_op_point": 0,
+      "bit_identical_rows": "6/857",
+      "calibrated_wavg_max_abs_delta": 0.2701,
+      "parity_instrument_recall_cuda": 0.5867,
+      "parity_instrument_recall_cpu": 0.5867,
+      "parity_instrument_specificity_cuda": 0.9795,
+      "parity_instrument_specificity_cpu": 0.9795,
+      "evidence": "docs/evidence/2026-09-17-gate-device-parity/",
+      "caveat": "EXP-041 device-only parity, b650 RTX 5090, venv-prodparity, both arms one box with only CUDA_VISIBLE_DEVICES differing. A=CUDA (production serves on GPU), B=CPU (what the gate numbers above were measured on). ⛔ The recall/specificity in THIS block come from diff_box_parity.py, whose on-lens cut is the PLAIN weighted sum, not this gate's gatekeepered one -- they are not comparable to the gate's own figures and only the A-vs-B DIFFERENCE is a device measurement. ⛔ Read the flip count, not the magnitude: human_thriving v8 moves 0.4218 (2.6x the #95 floor) with zero flips, while uplifting v7 has the smallest max delta of the six and is the only filter that flips."
+    }
   }
 }

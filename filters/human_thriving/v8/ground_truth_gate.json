@@ -1,5 +1,5 @@
 {
-  "priority": "ADR-023 \u2014 we prioritise HIGH CERTAINTY over HIGH DETECTION: specificity at the op-point is the criterion, recall is a constraint to satisfy, and MAE ranks nothing. A low recall here is usually the choice working. Read spec first, and read recall beside the positive rate.",
+  "priority": "ADR-023 — we prioritise HIGH CERTAINTY over HIGH DETECTION: specificity at the op-point is the criterion, recall is a constraint to satisfy, and MAE ranks nothing. A low recall here is usually the choice working. Read spec first, and read recall beside the positive rate.",
   "threshold": 4.5,
   "truth_threshold": 4.5,
   "gatekeeper_cap": 3.0,
@@ -122,9 +122,9 @@
   "provenance": {
     "measured": "2026-09-06",
     "why": "The RETRAIN's gate. The prior v8 adapter was built by a tree that `git commit --amend` orphaned, so the sha that produced it (0697f5a) is reachable from no branch. The owner ruled 2026-09-06 -- 'no exception, harmonize it' -- so the checkpoint was retrained under a commit on `main` rather than shipped with a provenance carve-out. These are the retrained model's numbers.",
-    "checkpoint": "epoch 5 of 6, selected on recall_medium @4.5 (val 0.613 = 19/31). \u26a0\ufe0f NOT epoch 4, which is what EXP-015 shipped: there recall_medium SATURATED at 0.5806 across epochs 4/5/6 and the strict '>' tie-break kept the earliest (#144). This run did not saturate, so selection chose outright. adapter_model.safetensors sha256 074209ff572c4823206569b3c7d89c26b15029263748cf510c9c5b8ce347de08",
+    "checkpoint": "epoch 5 of 6, selected on recall_medium @4.5 (val 0.613 = 19/31). ⚠️ NOT epoch 4, which is what EXP-015 shipped: there recall_medium SATURATED at 0.5806 across epochs 4/5/6 and the strict '>' tie-break kept the earliest (#144). This run did not saturate, so selection chose outright. adapter_model.safetensors sha256 074209ff572c4823206569b3c7d89c26b15029263748cf510c9c5b8ce347de08",
     "training_commit": "64b469d935bc34a87c176b8ee2ad86cbafd5bdde on main, git_dirty=false -- stamped into training_metadata.json by train.py, which now REFUSES to train without it, and re-checked for reachability by scripts/verification/check_training_provenance.py",
-    "code_commit": "0d7115a08779dbb9a4390a77148654cf6ad6e0c8 for the calibration fit, the score dump and this gate run. \u26a0\ufe0f Differs from the training commit by the fit_calibration.py device print and the filter_completeness rewrite; neither touches inference arithmetic.",
+    "code_commit": "0d7115a08779dbb9a4390a77148654cf6ad6e0c8 for the calibration fit, the score dump and this gate run. ⚠️ Differs from the training commit by the fit_calibration.py device print and the filter_completeness rewrite; neither touches inference arithmetic.",
     "data": "datasets/training/human_thriving_v8/test.jsonl, 660 held-out oracle-labelled rows, sha256 e361b5175c66252582c395bf256eb253bfa9b35f780f2479907231fc4d58d726. Untouched by training, checkpoint selection and the calibration fit.",
     "calibration": "filters/human_thriving/v8/calibration.json sha256 7665f526e77824df4c9c3dca428e3073931a3d642c489e43566ef6597c61f7c0 -- REFITTED on this checkpoint (the previous file was fitted to the epoch-4 weights and is stale). Isotonic, fitted on the 658-row val split, on CUDA.",
     "dumps": {
@@ -133,15 +133,31 @@
       "scores_raw.jsonl": "f370b719f373b85c3bac3606bbc50cc4849f73b66ddae75409794d5a95bf4888",
       "raw_logits.jsonl": "4bc1a7250446212dc2b02f830b2c567f4489c765239b0165711af3c1d3755a16"
     },
-    "box": "b650-gpu (jwasys-B650-EAGLE-AX), RTX 3090 Ti 24 GB, driver 580.95.05. \u2b50 ~/llm-distillery is a REAL GIT CHECKOUT as of 2026-09-06 -- it was a partial rsync before, and its training/train.py was the PRE-FIX version missing the 176 lines of checkpoint-selection machinery main says trained the old artifact.",
+    "box": "b650-gpu (jwasys-B650-EAGLE-AX), RTX 3090 Ti 24 GB, driver 580.95.05. ⭐ ~/llm-distillery is a REAL GIT CHECKOUT as of 2026-09-06 -- it was a partial rsync before, and its training/train.py was the PRE-FIX version missing the 176 lines of checkpoint-selection machinery main says trained the old artifact.",
     "venv": "venv-prodparity -- py 3.11.15, torch 2.11.0+cu130, transformers 5.0.0, peft 0.18.1 (gpu-server's production pins)",
     "device": "CUDA for all three steps -- calibration fit, score dump and gate. Read back off next(model.parameters()).device, not off the flag: 'declared=cuda parameters=cuda:0' in both logs (#146). Production serves on GPU, so the whole chain is now one device.",
     "caveats": [
       "NOT DISTINGUISHABLE FROM THE PREVIOUS CHECKPOINT. Every #95 band overlaps with the epoch-4 model's (recall, precision, specificity, F1). The point estimates all move adversely -- precision 0.706 -> 0.550, specificity 0.9920 -> 0.9856, FP 5 -> 9 -- and under the owner's 2026-08-06 rule two models whose bands overlap are not distinguishable whatever their point estimates say. Do not report the change as a regression, and do not report it as an improvement.",
-      "THE PRECISION DROP IS MOSTLY BOUNDARY DISAGREEMENT, NOT JUNK. Classified by the oracle's own scope_verdict, 6 of the 9 false positives are `in_scope` -- articles the oracle calls thriving stories, scored just under 4.5, which the student put just over. Genuinely off-lens is 3 of 20 (off-lens precision 0.850 vs the old 0.882) and category errors (harm_is_subject) are 1, the SAME as the old checkpoint. \u26a0\ufe0f These are counts of 17 and 20 articles; '1 vs 1' compares two single articles, not two rates.",
-      "\u26d4 DO NOT SET THIS RECALL BESIDE THE FLEET'S 0.59-0.72. v7 and v8 do not share a positive class -- Jaccard 0.246 on these same rows. Two recalls of two different classes are two quantities with one name.",
+      "THE PRECISION DROP IS MOSTLY BOUNDARY DISAGREEMENT, NOT JUNK. Classified by the oracle's own scope_verdict, 6 of the 9 false positives are `in_scope` -- articles the oracle calls thriving stories, scored just under 4.5, which the student put just over. Genuinely off-lens is 3 of 20 (off-lens precision 0.850 vs the old 0.882) and category errors (harm_is_subject) are 1, the SAME as the old checkpoint. ⚠️ These are counts of 17 and 20 articles; '1 vs 1' compares two single articles, not two rates.",
+      "⛔ DO NOT SET THIS RECALL BESIDE THE FLEET'S 0.59-0.72. v7 and v8 do not share a positive class -- Jaccard 0.246 on these same rows. Two recalls of two different classes are two quantities with one name.",
       "SAMPLE, NOT POPULATION. The 660 rows are a 25.1x design-weighted draw (inclusion_probability in datasets/scored/human_thriving_v8/corpus.jsonl). Every rate here is unweighted and describes the SPLIT. Production rates must be measured from production output after deploy."
-    ]
+    ],
+    "device_parity": {
+      "experiment": "EXP-041",
+      "issue": "llm-distillery#104",
+      "measured": "2026-09-17",
+      "op_point": 4.5,
+      "rows": 660,
+      "verdict_flips_cpu_vs_cuda_at_op_point": 0,
+      "bit_identical_rows": "0/660",
+      "calibrated_wavg_max_abs_delta": 0.4218,
+      "parity_instrument_recall_cuda": 0.3143,
+      "parity_instrument_recall_cpu": 0.3143,
+      "parity_instrument_specificity_cuda": 0.9856,
+      "parity_instrument_specificity_cpu": 0.9856,
+      "evidence": "docs/evidence/2026-09-17-gate-device-parity/",
+      "caveat": "EXP-041 device-only parity, b650 RTX 5090, venv-prodparity, both arms one box with only CUDA_VISIBLE_DEVICES differing. A=CUDA (production serves on GPU), B=CPU (what the gate numbers above were measured on). ⛔ The recall/specificity in THIS block come from diff_box_parity.py, whose on-lens cut is the PLAIN weighted sum, not this gate's gatekeepered one -- they are not comparable to the gate's own figures and only the A-vs-B DIFFERENCE is a device measurement. ⛔ Read the flip count, not the magnitude: human_thriving v8 moves 0.4218 (2.6x the #95 floor) with zero flips, while uplifting v7 has the smallest max delta of the six and is the only filter that flips."
+    }
   },
   "provenance_applies_to": "72add57213054e18"
 }

@@ -57,6 +57,22 @@
       "MEASURED ON CPU; PRODUCTION SERVES ON GPU. CPU-vs-CUDA on the student is worth 1 verdict flip at a 4.0 op-point and 3 at 4.5 on uplifting v7 (max |delta| 0.1956). That term is UNQUANTIFIED for this filter. See llm-distillery#104.",
       "Adapter weights were md5-verified against production's own copy before scoring (gpu-server llm-distillery for belonging/cultural_discovery; NexusMind's filters/ tree for investment_risk, whose llm-distillery copy on gpu-server lives under the HYPHENATED name 'investment-risk').",
       "DO NOT RANK FILTERS ON `mae` (ADR-023). Each split has its own positive rate -- uplifting v7 32.7%, investment_risk v6 15.6%, solutions v6 16.2%, nature_recovery v4 15.3%, cultural_discovery v5 8.8%, belonging v1 11.5% -- and a more enriched split carries mechanically larger per-article error for identical quality. Only recall and specificity are conditional on the true class and comparable across filters."
-    ]
+    ],
+    "device_parity": {
+      "experiment": "EXP-041",
+      "issue": "llm-distillery#104",
+      "measured": "2026-09-17",
+      "op_point": 4.0,
+      "rows": 738,
+      "verdict_flips_cpu_vs_cuda_at_op_point": 0,
+      "bit_identical_rows": "7/738",
+      "calibrated_wavg_max_abs_delta": 0.3176,
+      "parity_instrument_recall_cuda": 0.6,
+      "parity_instrument_recall_cpu": 0.6,
+      "parity_instrument_specificity_cuda": 0.9847,
+      "parity_instrument_specificity_cpu": 0.9847,
+      "evidence": "docs/evidence/2026-09-17-gate-device-parity/",
+      "caveat": "EXP-041 device-only parity, b650 RTX 5090, venv-prodparity, both arms one box with only CUDA_VISIBLE_DEVICES differing. A=CUDA (production serves on GPU), B=CPU (what the gate numbers above were measured on). ⛔ The recall/specificity in THIS block come from diff_box_parity.py, whose on-lens cut is the PLAIN weighted sum, not this gate's gatekeepered one -- they are not comparable to the gate's own figures and only the A-vs-B DIFFERENCE is a device measurement. ⛔ Read the flip count, not the magnitude: human_thriving v8 moves 0.4218 (2.6x the #95 floor) with zero flips, while uplifting v7 has the smallest max delta of the six and is the only filter that flips."
+    }
   }
 }

@@ -17,5 +17,25 @@
       "fp": 24,
       "tn": 841
     }
+  },
+  "provenance": {
+    "device": "UNRECORDED",
+    "device_unrecorded_why": "The device this gate's own numbers were measured on is not recorded anywhere in the artifact and cannot be established without guessing, so it is UNRECORDED rather than assumed to be cpu (llm-distillery#104). What IS measured is the device TERM for this filter, in device_parity below.",
+    "device_parity": {
+      "experiment": "EXP-041",
+      "issue": "llm-distillery#104",
+      "measured": "2026-09-17",
+      "op_point": 2.25,
+      "rows": 1032,
+      "verdict_flips_cpu_vs_cuda_at_op_point": 0,
+      "bit_identical_rows": "1/1032",
+      "calibrated_wavg_max_abs_delta": 0.1941,
+      "parity_instrument_recall_cuda": 0.6707,
+      "parity_instrument_recall_cpu": 0.6707,
+      "parity_instrument_specificity_cuda": 0.9711,
+      "parity_instrument_specificity_cpu": 0.9711,
+      "evidence": "docs/evidence/2026-09-17-gate-device-parity/",
+      "caveat": "EXP-041 device-only parity, b650 RTX 5090, venv-prodparity, both arms one box with only CUDA_VISIBLE_DEVICES differing. A=CUDA (production serves on GPU), B=CPU (what the gate numbers above were measured on). ⛔ The recall/specificity in THIS block come from diff_box_parity.py, whose on-lens cut is the PLAIN weighted sum, not this gate's gatekeepered one -- they are not comparable to the gate's own figures and only the A-vs-B DIFFERENCE is a device measurement. ⛔ Read the flip count, not the magnitude: human_thriving v8 moves 0.4218 (2.6x the #95 floor) with zero flips, while uplifting v7 has the smallest max delta of the six and is the only filter that flips."
+    }
   }
 }

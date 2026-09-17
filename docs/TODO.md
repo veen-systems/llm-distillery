@@ -30,6 +30,37 @@ and `docs/` is still opt-in. See item 1.
 
 ---
 
+## ✅ 2026-09-17 (evening) — **#104 ANSWERED at all six live op-points: the device costs ONE filter two false positives. $0.**
+
+⛔ **1 of 6 live filters flips at its op-point, and it is the one serving readers.** `uplifting v7`
+moves **2 rows of 660 (0.30%)** CPU→CUDA, **both false-positive side**: specificity
+**0.9687 → 0.9642**. Under ADR-023 that is the deciding metric and the direction is the unsafe one —
+**the device production serves on is the one with more junk**. The other five flip **0**.
+
+⭐ **The magnitude does not predict the risk.** `uplifting v7` has the **smallest** max |Δ| of the six
+(0.1572) and is the only one that flips; `human_thriving v8` moves **0.4218 — 2.6× the #95 floor —
+with zero flips**. Read the flip count, not the magnitude, in BOTH directions.
+
+**Decision, pre-registered before the first dump** (`9dd8d03`): the middle branch — **stamp
+`device`, carry the term as a band.** Re-measuring every gate on GPU is NOT warranted by 0.0045
+against a declared #95 band **55× wider**. ⛔ **Shipped**: the **six live** filters carry a
+`device_parity` block (⚠️ **not all eight** — `investment_risk v6` and `solutions v4` were not
+re-measured and carry none rather than borrowing another filter's term), the three silent gates
+carry `device: "UNRECORDED"` with a stated reason, and
+`check_gate_device_stamp.py` (10 tests, seeded red on the real tree) fails if a gate ever again
+declines to say. Its PASS prints the census and **warns when the tree holds more than one device**.
+
+⚠️ **Two of my own population errors, caught in-session and corrected in place**: the device field
+lives at `provenance.device` and I had grepped top-level keys only (so "no gate records a device"
+was false); and **the tree holds EIGHT gate artifacts, not six** — I enumerated the live filters
+from my own list instead of globbing, missing `investment_risk v6` (`cpu`) and `solutions v4` (no
+provenance block at all). ⭐ *Enumeration is not inventory.*
+
+⛔ **Read the evidence README before quoting a number**: the recall/specificity there come from
+`diff_box_parity.py`'s plain-weighted truth, **not** the gate's gatekeepered truth, so only the
+A-vs-B difference is a device measurement. `docs/evidence/2026-09-17-gate-device-parity/`,
+`EXP-041`, `H-DEV1` refuted, `H-DEV2` unfalsifiable-as-written.
+
 ## ✅ 2026-09-17 (afternoon) — **#158 is MECHANIZED and the first banded artifacts exist. $0.**
 
 **The rule is in code, not prose** (`842e39e`, `45a17c7`): `filters/common/detector_seeds.py` owns

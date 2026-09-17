@@ -17,5 +17,11 @@
       "fp": 23,
       "tn": 1341
     }
+  },
+  "provenance": {
+    "device": "UNRECORDED",
+    "device_unrecorded_why": "solutions v4 is SUPERSEDED by v6 and this artifact carries no provenance block at all — no box, no venv, no device. It cannot be established without guessing, and it was not re-measured by EXP-041 because v4 is not live. Recorded as UNRECORDED so the gap is visible rather than silent (llm-distillery#104).",
+    "measured": "UNRECORDED",
+    "status": "superseded by solutions v6; kept as history"
   }
 }

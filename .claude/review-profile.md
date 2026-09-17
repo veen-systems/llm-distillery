@@ -96,11 +96,12 @@ agent that had not opened this file**: `python3 -m pytest` reported **13 failed,
 phantom baseline is not made harmless by being explained, because the explanation is what makes it
 believed. **Run `.venv/bin/python -m pytest` and say which interpreter produced the number.**
 
-**Measured 2026-09-17 (final): `912 passed, 25 skipped` in 125s** (was `894 passed,
+**Measured 2026-09-17 (final): `922 passed, 25 skipped` in 118s** (was `912`, then `894 passed,
 25 skipped` earlier the same day, and `848` before that; the +46 were the #134 step-2 docs
 tier — `tests/unit/test_refcheck_docs_tier.py` 37 and `tests/unit/test_refcheck_tier_reparse.py`
 6 — plus 3 seeding the `suite-baseline` claim check that guards THIS line, and the latest +18
-are `tests/unit/test_detector_metric_bands.py`, llm-distillery#158). Re-measure rather than trust this line — a stale baseline is how a
+were `tests/unit/test_detector_metric_bands.py` (llm-distillery#158) and the latest +10 are
+`tests/unit/test_gate_device_stamp.py`, llm-distillery#104). Re-measure rather than trust this line — a stale baseline is how a
 real regression reads as pre-existing. ⚠️ **This line is the ONLY live copy of the number
 and is meant to be**; the 2026-09-11 change that added tests left it stale, and the
 2026-09-17 draft that fixed it wrote 834 and was falsified by its own next commit. ⛔ **Occurrence three was caught by review, not by anyone re-reading this line**: the #134 step-2 record wrote its own copy of the count while quoting this rule. The

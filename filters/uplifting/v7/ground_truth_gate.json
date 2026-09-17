@@ -77,6 +77,22 @@
     "on_lens_definition": "oracle gatekeepered weighted average >= 4.0, PINNED. The oracle's definition of on-lens did NOT move with the student's bar -- otherwise recall here would not be comparable to the 4.0 row.",
     "predictions": "datasets/parity/uplifting_v7_test660_gpuserver-serving-venv_2026-08-09.jsonl (production's own serving venv), calibrated with the deployed calibration.json",
     "device": "cpu",
-    "not_deployed": "PREPARED, NOT DEPLOYED as of 2026-08-10. Lives on branch uplifting-v7-op-point-4.5. Reaching production needs: (1) merge, (2) scripts/deploy_to_nexusmind.sh uplifting v7, (3) a NexusMind commit -- after which NexusMind's own deploy_filters.sh ships it on the next 4-hourly cycle. Nothing scheduled invokes step 2, so this commit cannot reach production on its own."
+    "not_deployed": "PREPARED, NOT DEPLOYED as of 2026-08-10. Lives on branch uplifting-v7-op-point-4.5. Reaching production needs: (1) merge, (2) scripts/deploy_to_nexusmind.sh uplifting v7, (3) a NexusMind commit -- after which NexusMind's own deploy_filters.sh ships it on the next 4-hourly cycle. Nothing scheduled invokes step 2, so this commit cannot reach production on its own.",
+    "device_parity": {
+      "experiment": "EXP-041",
+      "issue": "llm-distillery#104",
+      "measured": "2026-09-17",
+      "op_point": 4.5,
+      "rows": 660,
+      "verdict_flips_cpu_vs_cuda_at_op_point": 2,
+      "bit_identical_rows": "5/660",
+      "calibrated_wavg_max_abs_delta": 0.1572,
+      "parity_instrument_recall_cuda": 0.6103,
+      "parity_instrument_recall_cpu": 0.6103,
+      "parity_instrument_specificity_cuda": 0.9642,
+      "parity_instrument_specificity_cpu": 0.9687,
+      "evidence": "docs/evidence/2026-09-17-gate-device-parity/",
+      "caveat": "EXP-041 device-only parity, b650 RTX 5090, venv-prodparity, both arms one box with only CUDA_VISIBLE_DEVICES differing. A=CUDA (production serves on GPU), B=CPU (what the gate numbers above were measured on). ⛔ The recall/specificity in THIS block come from diff_box_parity.py, whose on-lens cut is the PLAIN weighted sum, not this gate's gatekeepered one -- they are not comparable to the gate's own figures and only the A-vs-B DIFFERENCE is a device measurement. ⛔ Read the flip count, not the magnitude: human_thriving v8 moves 0.4218 (2.6x the #95 floor) with zero flips, while uplifting v7 has the smallest max delta of the six and is the only filter that flips."
+    }
   }
 }

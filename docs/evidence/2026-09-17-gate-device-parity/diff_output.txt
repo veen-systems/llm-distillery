@@ -1,0 +1,190 @@
+
+################ uplifting_v7  (op-point 4.5, truth cut 4.0) ################
+box A: jwasys-B650-EAGLE-AX  py 3.11.15  torch 2.11.0+cu130  transformers 5.0.0  peft 0.18.1  device=cuda
+box B: jwasys-B650-EAGLE-AX  py 3.11.15  torch 2.11.0+cu130  transformers 5.0.0  peft 0.18.1  device=cpu
+matched by exact id: 660 of 660 / 660
+
+bit-identical on every dimension: 5/660 (0.8%)
+
+max |delta| per raw dimension:
+  human_wellbeing_impact       0.125000
+  social_cohesion_impact       0.125000
+  justice_rights_impact        0.093750
+  evidence_level               0.093750
+  benefit_distribution         0.093750
+  change_durability            0.125000
+
+calibrated wavg |delta|: p50=0.0000 p90=0.0429 p99=0.1319 max=0.1572
+rows exceeding the #95 floor (0.16): 0 (0.00%)
+signed mean (B - A): -0.00120  -> noise, not a shift
+
+--- student op-point 4.5  (on-lens := oracle >= 4.0) ---
+verdict flips between boxes: 2 of 660 (0.30%)
+  east_african_fana_bc_9215ea90cfb8             A=4.5386 B=4.4919
+  global_south_global_voices_92ffdd907e45       A=4.5340 B=4.3919
+  A (jwasys-B650-EAGLE-AX  ) tp=130 fn= 83 fp= 16 tn=431  recall=0.6103 spec=0.9642 prec=0.8904 FPR=0.0358
+  B (jwasys-B650-EAGLE-AX  ) tp=130 fn= 83 fp= 14 tn=433  recall=0.6103 spec=0.9687 prec=0.9028 FPR=0.0313
+
+--- student op-point 5.0  (on-lens := oracle >= 4.0) ---
+verdict flips between boxes: 2 of 660 (0.30%)
+  east_african_fana_bc_492f76eaa8d0             A=4.8630 B=5.0013
+  global_news_BBC_world_e8775e40513c            A=5.0618 B=4.9989
+  A (jwasys-B650-EAGLE-AX  ) tp=103 fn=110 fp=  5 tn=442  recall=0.4836 spec=0.9888 prec=0.9537 FPR=0.0112
+  B (jwasys-B650-EAGLE-AX  ) tp=102 fn=111 fp=  6 tn=441  recall=0.4789 spec=0.9866 prec=0.9444 FPR=0.0134
+
+################ human_thriving_v8  (op-point 4.5, truth cut 4.5) ################
+box A: jwasys-B650-EAGLE-AX  py 3.11.15  torch 2.11.0+cu130  transformers 5.0.0  peft 0.18.1  device=cuda
+box B: jwasys-B650-EAGLE-AX  py 3.11.15  torch 2.11.0+cu130  transformers 5.0.0  peft 0.18.1  device=cpu
+matched by exact id: 660 of 660 / 660
+
+bit-identical on every dimension: 0/660 (0.0%)
+
+max |delta| per raw dimension:
+  human_wellbeing_impact       0.093750
+  social_cohesion_impact       0.125000
+  justice_rights_impact        0.046875
+  evidence_level               0.093750
+  benefit_distribution         0.093750
+  change_durability            0.062500
+
+calibrated wavg |delta|: p50=0.0000 p90=0.0200 p99=0.0836 max=0.4218
+rows exceeding the #95 floor (0.16): 1 (0.15%)
+   french_lemonde_societe_6aa32013bda1           A=4.9114 B=5.3332
+signed mean (B - A): +0.00013  -> noise, not a shift
+
+--- student op-point 4.5  (on-lens := oracle >= 4.5) ---
+verdict flips between boxes: 0 of 660 (0.00%)
+  A (jwasys-B650-EAGLE-AX  ) tp= 11 fn= 24 fp=  9 tn=616  recall=0.3143 spec=0.9856 prec=0.5500 FPR=0.0144
+  B (jwasys-B650-EAGLE-AX  ) tp= 11 fn= 24 fp=  9 tn=616  recall=0.3143 spec=0.9856 prec=0.5500 FPR=0.0144
+
+--- student op-point 5.0  (on-lens := oracle >= 4.5) ---
+verdict flips between boxes: 1 of 660 (0.15%)
+  french_lemonde_societe_6aa32013bda1           A=4.9114 B=5.3332
+  A (jwasys-B650-EAGLE-AX  ) tp=  8 fn= 27 fp=  1 tn=624  recall=0.2286 spec=0.9984 prec=0.8889 FPR=0.0016
+  B (jwasys-B650-EAGLE-AX  ) tp=  8 fn= 27 fp=  2 tn=623  recall=0.2286 spec=0.9968 prec=0.8000 FPR=0.0032
+
+################ cultural_discovery_v5  (op-point 4.0, truth cut 4.0) ################
+box A: jwasys-B650-EAGLE-AX  py 3.11.15  torch 2.11.0+cu130  transformers 5.0.0  peft 0.18.1  device=cuda
+box B: jwasys-B650-EAGLE-AX  py 3.11.15  torch 2.11.0+cu130  transformers 5.0.0  peft 0.18.1  device=cpu
+matched by exact id: 857 of 857 / 857
+
+bit-identical on every dimension: 6/857 (0.7%)
+
+max |delta| per raw dimension:
+  discovery_novelty            0.109375
+  heritage_significance        0.062500
+  cross_cultural_connection    0.050781
+  human_resonance              0.062500
+  evidence_quality             0.156250
+
+calibrated wavg |delta|: p50=0.0000 p90=0.0262 p99=0.0981 max=0.2701
+rows exceeding the #95 floor (0.16): 3 (0.35%)
+   dutch_news_nos_algemeen_8b917a8b6c54          A=5.6504 B=5.8148
+   french_france24_fr_ee19c840e017               A=2.4948 B=2.2246
+   pubmed_3d26d06946b6                           A=2.2409 B=2.0406
+signed mean (B - A): -0.00237  -> noise, not a shift
+
+--- student op-point 4.0  (on-lens := oracle >= 4.0) ---
+verdict flips between boxes: 0 of 857 (0.00%)
+  A (jwasys-B650-EAGLE-AX  ) tp= 44 fn= 31 fp= 16 tn=766  recall=0.5867 spec=0.9795 prec=0.7333 FPR=0.0205
+  B (jwasys-B650-EAGLE-AX  ) tp= 44 fn= 31 fp= 16 tn=766  recall=0.5867 spec=0.9795 prec=0.7333 FPR=0.0205
+
+--- student op-point 4.5  (on-lens := oracle >= 4.0) ---
+verdict flips between boxes: 0 of 857 (0.00%)
+  A (jwasys-B650-EAGLE-AX  ) tp= 35 fn= 40 fp=  9 tn=773  recall=0.4667 spec=0.9885 prec=0.7955 FPR=0.0115
+  B (jwasys-B650-EAGLE-AX  ) tp= 35 fn= 40 fp=  9 tn=773  recall=0.4667 spec=0.9885 prec=0.7955 FPR=0.0115
+
+################ belonging_v1  (op-point 4.0, truth cut 4.0) ################
+box A: jwasys-B650-EAGLE-AX  py 3.11.15  torch 2.11.0+cu130  transformers 5.0.0  peft 0.18.1  device=cuda
+box B: jwasys-B650-EAGLE-AX  py 3.11.15  torch 2.11.0+cu130  transformers 5.0.0  peft 0.18.1  device=cpu
+matched by exact id: 738 of 738 / 738
+
+bit-identical on every dimension: 7/738 (0.9%)
+
+max |delta| per raw dimension:
+  intergenerational_bonds      0.062500
+  community_fabric             0.062500
+  reciprocal_care              0.062500
+  rootedness                   0.062500
+  purpose_beyond_self          0.062500
+  slow_presence                0.046875
+
+calibrated wavg |delta|: p50=0.0000 p90=0.0177 p99=0.0755 max=0.3176
+rows exceeding the #95 floor (0.16): 2 (0.27%)
+   dutch_news_ad_algemeen_d1c2afa4c8b6           A=1.9717 B=2.1350
+   dutch_news_nos_algemeen_5966ef5ad282          A=3.4878 B=3.8053
+signed mean (B - A): -0.00017  -> noise, not a shift
+
+--- student op-point 4.0  (on-lens := oracle >= 4.0) ---
+verdict flips between boxes: 0 of 738 (0.00%)
+  A (jwasys-B650-EAGLE-AX  ) tp= 51 fn= 34 fp= 10 tn=643  recall=0.6000 spec=0.9847 prec=0.8361 FPR=0.0153
+  B (jwasys-B650-EAGLE-AX  ) tp= 51 fn= 34 fp= 10 tn=643  recall=0.6000 spec=0.9847 prec=0.8361 FPR=0.0153
+
+--- student op-point 4.5  (on-lens := oracle >= 4.0) ---
+verdict flips between boxes: 0 of 738 (0.00%)
+  A (jwasys-B650-EAGLE-AX  ) tp= 40 fn= 45 fp=  7 tn=646  recall=0.4706 spec=0.9893 prec=0.8511 FPR=0.0107
+  B (jwasys-B650-EAGLE-AX  ) tp= 40 fn= 45 fp=  7 tn=646  recall=0.4706 spec=0.9893 prec=0.8511 FPR=0.0107
+
+################ nature_recovery_v4  (op-point 3.75, truth cut 3.75) ################
+box A: jwasys-B650-EAGLE-AX  py 3.11.15  torch 2.11.0+cu130  transformers 5.0.0  peft 0.18.1  device=cuda
+box B: jwasys-B650-EAGLE-AX  py 3.11.15  torch 2.11.0+cu130  transformers 5.0.0  peft 0.18.1  device=cpu
+matched by exact id: 391 of 391 / 391
+
+bit-identical on every dimension: 2/391 (0.5%)
+
+max |delta| per raw dimension:
+  recovery_evidence            0.062500
+  measurable_outcomes          0.062500
+  ecological_significance      0.062500
+  restoration_scale            0.062500
+  human_agency                 0.062500
+  protection_durability        0.046875
+
+calibrated wavg |delta|: p50=0.0000 p90=0.0217 p99=0.1421 max=0.3083
+rows exceeding the #95 floor (0.16): 2 (0.51%)
+   belgian_vrt_nieuws_nl_e33cf24620ba            A=0.8827 B=1.0507
+   british_irish_bbc_news_top_797141f1d9f3       A=3.3791 B=3.0708
+signed mean (B - A): +0.00016  -> noise, not a shift
+
+--- student op-point 3.75  (on-lens := oracle >= 3.75) ---
+verdict flips between boxes: 0 of 391 (0.00%)
+  A (jwasys-B650-EAGLE-AX  ) tp= 39 fn= 23 fp=  7 tn=322  recall=0.6290 spec=0.9787 prec=0.8478 FPR=0.0213
+  B (jwasys-B650-EAGLE-AX  ) tp= 39 fn= 23 fp=  7 tn=322  recall=0.6290 spec=0.9787 prec=0.8478 FPR=0.0213
+
+--- student op-point 4.25  (on-lens := oracle >= 3.75) ---
+verdict flips between boxes: 0 of 391 (0.00%)
+  A (jwasys-B650-EAGLE-AX  ) tp= 34 fn= 28 fp=  7 tn=322  recall=0.5484 spec=0.9787 prec=0.8293 FPR=0.0213
+  B (jwasys-B650-EAGLE-AX  ) tp= 34 fn= 28 fp=  7 tn=322  recall=0.5484 spec=0.9787 prec=0.8293 FPR=0.0213
+
+################ solutions_v6  (op-point 2.25, truth cut 2.25) ################
+box A: jwasys-B650-EAGLE-AX  py 3.11.15  torch 2.11.0+cu130  transformers 5.0.0  peft 0.18.1  device=cuda
+box B: jwasys-B650-EAGLE-AX  py 3.11.15  torch 2.11.0+cu130  transformers 5.0.0  peft 0.18.1  device=cpu
+matched by exact id: 1032 of 1032 / 1032
+
+bit-identical on every dimension: 1/1032 (0.1%)
+
+max |delta| per raw dimension:
+  solution_concreteness        0.218750
+  systemic_impact              0.203125
+  evidence_strength            0.148438
+  governance_intervention_strength 0.148438
+  community_practice_strength  0.109375
+  equity_access                0.164062
+  economic_viability           0.125000
+
+calibrated wavg |delta|: p50=0.0000 p90=0.0133 p99=0.0848 max=0.1941
+rows exceeding the #95 floor (0.16): 2 (0.19%)
+   portuguese_exame_73726a8b6c9a                 A=1.3101 B=1.5042
+   spanish_eldiario_ea3ff3dae193                 A=2.8707 B=2.6946
+signed mean (B - A): -0.00051  -> noise, not a shift
+
+--- student op-point 2.25  (on-lens := oracle >= 2.25) ---
+verdict flips between boxes: 0 of 1032 (0.00%)
+  A (jwasys-B650-EAGLE-AX  ) tp=112 fn= 55 fp= 25 tn=840  recall=0.6707 spec=0.9711 prec=0.8175 FPR=0.0289
+  B (jwasys-B650-EAGLE-AX  ) tp=112 fn= 55 fp= 25 tn=840  recall=0.6707 spec=0.9711 prec=0.8175 FPR=0.0289
+
+--- student op-point 2.75  (on-lens := oracle >= 2.25) ---
+verdict flips between boxes: 1 of 1032 (0.10%)
+  spanish_eldiario_ea3ff3dae193                 A=2.8707 B=2.6946
+  A (jwasys-B650-EAGLE-AX  ) tp= 97 fn= 70 fp= 16 tn=849  recall=0.5808 spec=0.9815 prec=0.8584 FPR=0.0185
+  B (jwasys-B650-EAGLE-AX  ) tp= 97 fn= 70 fp= 15 tn=850  recall=0.5808 spec=0.9827 prec=0.8661 FPR=0.0173

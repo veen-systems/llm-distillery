@@ -31,11 +31,23 @@ field lives at `provenance.device`. Measured properly:
 | `nature_recovery v4` | **absent** |
 | `solutions v6` | **absent** |
 
-⭐ **And the corrected fact is worse than the one I published, not better.** The tree does not hold
-six CPU gates; it holds **four CPU gates, one CUDA gate and two that do not say** — so an
-ADR-021 comparison across filters is already mixing devices, which is the exact risk `#104` names
-in its third bullet. The stamp deliverable narrows to two files and widens to a CHECK: a hand-written
-provenance block is only as good as the hand, and two of six hands forgot.
+⭐ **And the corrected fact is worse than the one I published, not better.** Across the six live
+filters the tree holds **3 CPU gates, 1 CUDA gate and 2 that do not say** — so an ADR-021
+comparison across filters is already mixing devices, which is the exact risk `#104` names in its
+third bullet.
+
+⛔ **SECOND CORRECTION, and the first one was wrong twice over.** Its prose said *"four CPU gates,
+one CUDA gate and two that do not say"* — **seven categories over six rows**, contradicting the
+table directly above it. And the population was wrong: **the tree holds EIGHT gate artifacts, not
+six.** I enumerated the six live filters from my own list instead of globbing
+`filters/**/ground_truth_gate.json`, which also returns `investment_risk v6` (device `cpu`;
+retired downstream, package kept) and `solutions v4` (**no `provenance` block at all**). The
+checker found both the moment it ran against the tree. ⭐ *Enumeration is not inventory: state a
+surface's size from the code, never from the list you were already carrying.*
+
+The stamp deliverable therefore widens from two files to **three**, and from a hand edit to a
+CHECK — a hand-written provenance block is only as good as the hand, and three of eight hands
+forgot.
 
 ## Op-points, established by EXECUTION not by reading config
 
