@@ -2,6 +2,28 @@
 
 *Newest-first, dated entries. **One standing section lives at the BOTTOM**: [`## Mechanized`](#mechanized) — the destination for `/review-changes` Step 3.1, where a review finding that became a deterministic check is recorded. It is named here because nobody scrolls to the bottom of this file.*
 
+## A PREDICTION THAT COULD NOT FAIL, AND A SELECTION STEP THAT AMPLIFIED 4e-05 INTO A VERDICT FLIP (2026-09-17)
+
+**Problem**: Two separate ways a pre-registered number carried less than it looked like it did.
+(a) `H-DEV2` predicted *"`solutions v6` flips **at least as often as** the median filter"*. The
+median filter flipped **0** and `solutions v6` flipped **0**, so the prediction passed with no
+possible failing branch — the idea behind it (a lower op-point sits deeper in the score mass) got
+no test at all. (b) In `EXP-039`, arm A reproduced `EXP-037` exactly on **4 of 5 seeds**; the fifth
+changed its verdict count 0 → 1 because a median **4.3e-05** probability difference moved the
+val-picked threshold **0.795 → 0.905**.
+
+**Root cause**: (a) A comparative prediction against a statistic that can land on the floor has no
+failing branch — it is the mirror of `feedback-prove-the-bar-is-reachable`: not an unreachable bar
+but an **unmissable** one. (b) `pick_threshold` is a **selection** step, not a measurement: it picks
+the lowest threshold meeting a constraint, so an arbitrarily small perturbation can select a
+different operating point and move every threshold-mediated number with it.
+
+**Fix**: (a) Predict an **absolute**, or name the value that would refute the prediction, and say so
+in the pre-registration. (b) When a probe's output passes through a selection step, report the
+selected value beside the metric — and do not read a stable metric as evidence of a stable decision:
+in the same run **test recall was identical on all five seeds** across the GPU swap while the
+flagged panel SET moved. Both recorded in `memory/hypothesis-ledger.md` (`H-DEV2`, `H-HD12`).
+
 ## A TIER RULE WHOSE WARRANT WAS AN ABSOLUTE NOBODY HAD ENUMERATED — TWICE, IN ONE CHANGE (2026-09-17)
 
 **Problem**: `refcheck.py`'s new `docs/` tier assigned LIVE/FROZEN by directory, warranted
@@ -5496,7 +5518,9 @@ something you did not ask.
 pins both directions. ⭐ The tell was the same as last time: the wrong answer was the
 *comfortable* one — "the contracts declare almost everything" is the answer you want.
 
-### I EXPLAINED 78 TEST FAILURES AS "THE ENVIRONMENT" AND IT WAS THE WRONG INTERPRETER (2026-08-25) [x2]
+### I EXPLAINED 78 TEST FAILURES AS "THE ENVIRONMENT" AND IT WAS THE WRONG INTERPRETER (2026-08-25) [x3]
+
+**Occurrence 3 (2026-09-17)**: `python3 -m pytest` on the #158 change reported **13 failed, 6 errors**, and I relayed them to the owner as *"all ModuleNotFoundError … pre-existing and unrelated"*. `.venv/bin/python -m pytest` returned **0 failed**. ⛔ The diagnosis was RIGHT and that is what made it useless — an explained phantom baseline is a believed one. `.claude/review-profile.md` carries the warning **six lines above** the baseline number and I had not opened the file. Recorded there too, as its occurrence two.
 **Problem**: `python3 -m pytest tests/unit` in NexusMind reported **78 failed, 123
 errors**. I checked that none of the failures named my files, attributed the rest to
 "this workstation's environment (missing deps)", and moved on. It was nearly a session

@@ -1,9 +1,16 @@
 # LLM Distillery - TODO
 
-## ▶️ START HERE — the ordered queue, as of 2026-09-17 (night)
+## ▶️ START HERE — the ordered queue, as of 2026-09-17 (evening, after the #156/#158/#104 session)
 
 *A bare "continue" means this list, top down. Each line names the FIRST action, not the
 topic. Re-read the block under it before starting; the reasons are there, not here.*
+
+0. ⏸️ **OWNER DECISION, NOTHING ELSE UNBLOCKS IT: the ~$3.2–3.6 adverse-pool spend (`#156`).**
+   `EXP-039` closed the last free route with a negative — the per-run votes buy nothing — so the
+   pool is now the route to new signal rather than a ranked option. ⛔ **Do not re-run the free
+   arm**; its one untested variant needs a bigger positive class AND a new pre-registered bar.
+   The pool is sha256-pinned, so nothing degrades while it waits.
+   Owner said 2026-09-17: *"i need to think about this later."*
 
 1. **LD#134 step 3 — the MARKING PASS over the live tier.** Steps 1 and 2 are done and must
    not be redone (`docs/decisions/2026-09-17-refcheck-docs-tier.md`). The tier is in code;
@@ -24,6 +31,15 @@ topic. Re-read the block under it before starting; the reasons are there, not he
 4. **H-MECH-1 — watch, do not act yet.** Three `/review-changes` batteries from 2026-09-17,
    check whether the new `Occurrences` column ever moved. If not, delete or mechanize it;
    do not re-explain it. `memory/hypothesis-ledger.md`.
+5. **The HELDOUT detector band (`#158`'s remaining half).** `EXP-040` measured out-of-fold bands;
+   the issue quotes **heldout** recall and the two are not comparable. Cheap on the 5090 (embed +
+   5 fits per detector) and it is what would give the live 0.85 obituary op-point a defensible
+   range. ⛔ Heldout corpora are on b650 at `filters/common/obituary_detector/training/data/`.
+6. **`#104` item 1 — the only arm that measures PRODUCTION's configuration.** `EXP-041` did the
+   device axis on one box; gpu-server's own GPU is untouched, and CUDA-to-CUDA across the two
+   boxes is now a comparison across two GPU ARCHITECTURES. ⚠️ Needs a gap between pipeline cycles
+   (`nexusmind-scorer` has `Conflicts=ollama.service`), which is what makes it the expensive one.
+   ⛔ This is NOT blocking anything: the shipped decision was stamp-and-band, already done.
 
 ⚠️ **Before quoting `references 23 → 0`** (2026-09-17 audit): that is the DEFAULT scan set only,
 and `docs/` is still opt-in. See item 1.
