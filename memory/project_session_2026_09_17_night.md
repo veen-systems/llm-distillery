@@ -102,6 +102,19 @@ test baseline left at 822 by the change that made it 848; a re-diff command hard
 - **`CLAUDE.md` grew +647 B**, the wrong direction for the file the previous day's audit
   flagged. Stated once, with its command, in `docs/decisions/framework-adoption-history.md`.
 
+## Issues updated
+
+- **`llm-distillery#122`** — commented: the frontmatter block did not reach session context
+  again, observed directly, and it cost a correction this session.
+- **`agent-ready-projects#136`** — adopter report: its `want` list is three skills where four
+  are installed; `N_WANT=3` beside a three-name list is the same hand-kept duplicate the block
+  warns about, reproduced; plus the worktree and missing-file-at-tag cases.
+- **`agent-ready-projects#166`** — adoption confirmed, **with a correction to my own first
+  justification**: nothing greps the heading, so the contract is social, not lexical, and the
+  outcome proof is a report that NAMES the lenses.
+- **`augmented-engineering#46`** — filed, per `CLAUDE.md` § Cross-Repo Evidence: the no-caller
+  finding (verification findings) and the spelling-check test (LLM behavioural properties).
+
 ## Next session
 
 `docs/TODO.md` ▶ START HERE, top down. Item 1 is **LD#134 step 2** (tier `docs/`; 376 findings,
