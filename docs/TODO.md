@@ -30,6 +30,37 @@ and `docs/` is still opt-in. See item 1.
 
 ---
 
+## ✅ 2026-09-17 (afternoon) — **#158 is MECHANIZED and the first banded artifacts exist. $0.**
+
+**The rule is in code, not prose** (`842e39e`, `45a17c7`): `filters/common/detector_seeds.py` owns
+the seed set, both detector trainers lost `SEED = 42`, and every metric they write now carries a
+`<metric>_band` plus the seeds it was computed over. ⛔ **The ARTIFACT seed stays 42 on purpose** —
+#158 is a REPORTING defect and changing which head ships would quietly make it a model change.
+
+⛔ **The nine pre-#158 sites are declared, not retrained** — each carries `single_seed` naming the
+seed, the issue and why it was left alone. ⚠️ **Commerce v2's says `UNRECORDED`, not 42**: its
+config declares an MLPClassifier while the trainer in the tree builds a transformers Trainer, so
+the shipped head did not come from that path and a 42 there would be a hand-built fact.
+
+⭐ **TWO SITES, and the one that ships is the gitignored one's twin.** Obituary's `models/` is
+gitignored, so `v{3,4,5}/models/training_config.json` exists only on the boxes that built it —
+while `v{N}/calibration_report.json` is TRACKED and embeds the same numbers. Checking only
+`models/` would have left **4 of the 9 sites** unguarded, i.e. every copy a reader can open.
+
+✅ **AND THE MECHANISM HAS NOW PRODUCED ARTIFACTS — `EXP-040`, both trainers run on b650's 5090**
+(`docs/evidence/2026-09-17-detector-seed-bands/`). At `842e39e` the checker read **0 banded**: in
+place, never fired. It now reads **2 banded, 0 declared** per detector. ⛔ **Read the evidence
+README before quoting a number** — these are out-of-fold on the TRAINING corpus and #158's issue
+body quotes HELDOUT recall; the two are not comparable. ⭐ The keeper: **on the obituary corpus
+seed 42 — the seed every shipped number was published at — is the MINIMUM of five at both
+thresholds**, while on the violence corpus it is the median and reproduces the shipped figure
+exactly. Nothing shipped was touched; both runs wrote to scratch dirs.
+
+⚠️ **I reported a phantom test baseline to the owner mid-session**: `python3 -m pytest` (the system
+interpreter, no deps) gave 13 failed / 6 errors and I called them environmental and pre-existing.
+`.venv/bin/python` gives **0 failed**. `.claude/review-profile.md` warns about exactly this six
+lines above the baseline and now records it as occurrence two. ⛔ **Name the interpreter.**
+
 ## 🔵 LAST SESSION — **LD#134 step 2: the tier is settled and in CODE; `--docs` stays flag-gated. Review found my tier rule wrong TWICE, the same way.**
 
 ✅ **#134 step 2, 2026-09-17.** `$0`, no oracle, no GPU, nothing in `filters/`. **Deploy N/A —
