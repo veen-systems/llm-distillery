@@ -1,32 +1,84 @@
 # LLM Distillery - TODO
 
-## ▶️ START HERE — the ordered queue, as of 2026-09-17 (late)
+## ▶️ START HERE — the ordered queue, as of 2026-09-17 (night)
 
 *A bare "continue" means this list, top down. Each line names the FIRST action, not the
 topic. Re-read the block under it before starting; the reasons are there, not here.*
 
-1. **Framework adopt queue — `#166` first** (`.claude/review-profile.md:118` annotates three
-   lenses DEAD that the installed skill reads at `SKILL.md:83`/`:300`; fix `CLAUDE.md:257` too).
-   Then `#136` stampcheck, then `## Mechanized` into `memory/gotcha-log.md`, then the three
-   stale `curate` citations. ⛔ **Bump the stamp LAST** — ahead of its content it silences
-   the check that would catch the gap. Full triage: `docs/decisions/framework-adoption-history.md`.
-2. **LD#134 step 2 — tier `docs/`, and decide whether `--docs` comes off the flag.** Best-evidenced
-   item on the board after 2026-09-17: **376** findings, **43% frozen and climbing at ~8× the live
-   rate** (338→376 in 20 days, +34 of +37 frozen). Step 1 is done and must not be redone —
+1. **LD#134 step 2 — tier `docs/`, and decide whether `--docs` comes off the flag.** Best-evidenced
+   item on the board: **376** findings, **43% frozen and climbing at ~8× the live rate**
+   (338→376 in 20 days, +34 of +37 frozen). Step 1 is done and must not be redone —
    `docs/evidence/2026-08-28-refcheck-docs/`.
-3. **The retracted 19.9%/13.0% framing is still live in the always-loaded file** — `CLAUDE.md:74`,
-   plus `docs/HUMAN_THRIVING_V8_PLAN.md:176` and `memory/cross-repo-prioritization.md:1173`/`:1359`.
-   Two copies carry the correction, four carry the retraction. Deserves its own review.
-4. **#160 — two Dutch-name violations**, owner call pending: `docs/adr/009-...:25,34,35,37,60`
+2. **The retracted 19.9%/13.0% framing is still live in the always-loaded file** — `CLAUDE.md`'s
+   prefilter constraint, plus `docs/HUMAN_THRIVING_V8_PLAN.md:176` and
+   `memory/cross-repo-prioritization.md:1173`/`:1359`. Two copies carry the correction, four
+   carry the retraction. Deserves its own review. ⚠️ **Cite it by name, not by line** — it was
+   `CLAUDE.md:74` until 2026-09-17 and the frontmatter edits move these numbers every session.
+3. **LD#160 — two Dutch-name violations**, owner call pending: `docs/adr/009-...:25,34,35,37,60`
    and `scripts/analysis/cross_filter_landscape.py` (39 occurrences). Mechanize with
    `check_framework_language.py` whose allowlist **is** the carve-out table; show it go red first.
+   ⚠️ It now has a `proposed` row in `memory/gotcha-log.md` § Mechanized — move it to `live`
+   only after a seeded positive, not after writing the script.
+4. **H-MECH-1 — watch, do not act yet.** Three `/review-changes` batteries from 2026-09-17,
+   check whether the new `Occurrences` column ever moved. If not, delete or mechanize it;
+   do not re-explain it. `memory/hypothesis-ledger.md`.
 
-⚠️ **Before quoting this session's `references 23 → 0`**: that is the DEFAULT scan set only.
-`--docs` is opt-in and excludes 167 files. See item 2.
+⚠️ **Before quoting `references 23 → 0`** (2026-09-17 audit): that is the DEFAULT scan set only.
+`--docs` is opt-in and excludes 167 files. See item 1.
 
 ---
 
-## 🔵 LAST SESSION — **`/audit-context` + curate; references 23 → 0 in the DEFAULT scan set. Framework still 6 releases behind, stamp still NOT bumped.**
+## 🔵 LAST SESSION — **framework adopt queue CLOSED (v1.45.1); I built a probe to kill a decaying claim and gave it no caller.**
+
+✅ **Framework v1.40.0 → v1.45.1, 2026-09-17 (night).** `$0`, no oracle, no GPU, nothing in
+`filters/`. **Deploy N/A — inapplicable, not skipped** (no filter package, model, calibration,
+threshold or probe-for-scoring changed). **Merge N/A** — worked on `main`, no branch.
+
+All four adopt items landed in the order the stamp rule requires, stamp bumped **last**:
+`agent-ready-projects#166` (the three project lenses are not dead), `agent-ready-projects#136`
+(the stamp probe), the `## Mechanized` table, and the stale `curate` sub-step citations —
+**the triage named three and there were four**.
+
+⛔⛔ **THE KEEPER — I REPLACED A DECAYING SENTENCE WITH A COMMAND NOTHING RAN.** The footer's
+hand-dated "four skills byte-identical to v1.40.0, enumerated 2026-09-11" was false six days
+later and nothing said so, so I deleted it and pointed at
+`scripts/verification/check_framework_stamp.sh`. The `reachability` lens then found the probe
+had **no caller**: not `.githooks/` (only `commit-msg`), not CI (no `.github/`), not a skill.
+The claim still depended on a human remembering — **the exact dependency the change said it
+removed**, in this repo's signature shape, inside the mechanism built to remove it. Fixed with
+a `<!-- verify: -->` block in `memory/MEMORY.md` and proven both ways: `pass … 4 global skills
+byte-identical to v1.45.1`, and a seeded `FRAMEWORK=/nope` arm made the runner print
+`CANNOT VERIFY` and exit 1. ⚠️ **`/curate`'s own `stampcheck()` is NOT this probe** — three
+skills, skipping `review-changes`; a green curate says nothing about the fourth.
+
+⛔ **Review found 24 findings in ~377 lines of my own change** (6 lenses, HIGH, round 1), then
+**5 more in round 2** on the rewrite alone. Six false-PASS paths in the probe itself, every one
+reproduced by execution — `diff`'s status unchecked so an unreadable file read as *identical*
+(exit 0); `N_WANT=4` beside a four-name `WANT`; `head -1` letting prose outrank the stamp;
+`$HOME` unset exiting 1, i.e. an environment fault reported as DRIFT.
+
+⭐ **Round 2's keeper: a test of mine passed for the wrong reason.**
+`test_count_is_derived_not_restated` asserted a *spelling* (`"N_WANT=$(printf" in src`) and
+exercised only the happy path, so a mutant deriving the count from a literal list satisfied it.
+**A name that was lying, inside the test written to stop a hand-kept count.** It also found the
+condemned `diff | grep -c` reintroduced **six lines below the comment condemning it**. Two
+recurrences of one class → **a CENSUS, not a third round** (the round-cap rule's own remedy):
+all 21 substitution/pipe sites enumerated, last live instance closed with an invariant.
+**13 mutations, 13 killed**; 21 guard tests; suite **848 passed, 25 skipped**.
+
+⚠️ **And nine prose defects about the probe — the code was well-proven, the writing was not.**
+A `## Mechanized` row whose date, test count and citation all pointed at the wrong commit
+because I copied it from a TODO summary instead of measuring; "each killed by exactly one test"
+flattened into three files; a branch list naming a branch that had no test; `7,400` against a
+measured `7,479`; a baseline left at 822 by the change that made it 848. ⭐ **Every one is the
+shape the table I had just added exists to catch.**
+
+⚠️ `CLAUDE.md` grew **+647 B** — the wrong direction for the file the previous day's audit
+flagged. Stated once, with its command, in `docs/decisions/framework-adoption-history.md`.
+
+---
+
+## 🔵 PREVIOUS SESSION — **`/audit-context` + curate; references 23 → 0 in the DEFAULT scan set. Framework still 6 releases behind, stamp still NOT bumped.**
 
 ✅ **`/audit-context` 2026-09-17** (`ad32356` + this commit). `$0`, no oracle, nothing in
 `filters/`, **deploy N/A — inapplicable, not skipped** (no filter package, model, calibration or
@@ -90,22 +142,46 @@ correction, in the always-loaded file, which is where I took it from. Three more
 **Two copies carry the correction, four carry the retraction.** Not fixed this session — it is a
 separate change and deserves its own review.
 
-### ⛔ Framework: 6 releases behind (v1.40.0 → v1.45.1), stamp NOT bumped
+### ✅ Framework: CLOSED 2026-09-17 — v1.45.1 adopted, stamp bumped last
 
-All four user-global skills are **byte-identical to the v1.45.1 reference install** (0 differing
-lines), so the skill content is already in force; what is stale is our stamp and four adopter
-surfaces. Full triage + the decline: `docs/decisions/framework-adoption-history.md`.
+⛔ **Do not restate the byte-identity here** — that is what decayed. Ask the probe:
+`bash scripts/verification/check_framework_stamp.sh` (exit 0 verified · 1 drift · 2 undecided),
+which derives the tag from the stamp and runs every session via `memory/MEMORY.md`'s
+`<!-- verify: -->` block. Full triage + the decline (v1.45.1's cheaper HIGH tier):
+`docs/decisions/framework-adoption-history.md`.
 
-- [ ] **#166 — three project lenses are annotated DEAD and are not dead.** `.claude/review-profile.md:118`
-      says `⛔ NOT READ BY THE SKILL`; the installed skill reads them at `SKILL.md:83`/`:300`. **They fired
-      this session and found real blockers.** Remove the annotation; fix `CLAUDE.md:257`.
-- [ ] **#136 — adopt the `stampcheck` probe** (verified: `bash -n` OK; DRIFT/exit 1 on the current
-      stamp; pass/exit 0 on a v1.45.1 stamp). Mechanizes `CLAUDE.md:318`'s hand-dated claim.
-- [ ] **Three stale `curate` sub-step citations** (v1.45.0 renumbering): `.claude/skills/test-verify-memory/SKILL.md`
-      "sub-step 5"→3; `CLAUDE.md:28` and `memory/working-rules.md:179` "Step 0.6"→sub-step 5.
-- [ ] **Append `## Mechanized`** to `memory/gotcha-log.md` (v1.41.0) — Step 3.1 findings currently land nowhere.
-- [ ] **THEN bump the stamp to v1.45.1** in `CLAUDE.md:5` and `:318`. ⛔ Not before — `stampcheck` is
-      now the check a premature bump would silence.
+- [x] ~~**`agent-ready-projects#166` — three project lenses are annotated DEAD and are not dead.**~~ **DONE 2026-09-17.**
+      `.claude/review-profile.md`'s heading is now exactly `## Project lenses`, which the skill names
+      at `SKILL.md:83`/`:300`; the `/review-changes` pointer row in `CLAUDE.md` no longer says they
+      are dead. ⚠️ **Nothing greps that heading** — the skill tells an agent to read the file, so
+      the old decorated heading would still have been FOUND; what suppressed the lenses was its
+      *instruction* not to run them. ✅ **Outcome proof obtained**: this session's battery ran 6
+      lenses and `reachability` + `claim-verification` each returned a finding no shipped lens did.
+- [x] ~~**`agent-ready-projects#136` — adopt the `stampcheck` probe.**~~ ⛔ **NOT this repo's #136** (that
+      is the commit-msg deploy guard, still open — see `docs/TODO.md` hygiene block). **DONE 2026-09-17** — shipped as
+      `scripts/verification/check_framework_stamp.sh` (**four** skills, not upstream's three) +
+      `tests/unit/test_framework_stamp_guard.py` (21 tests). Both arms proven on the real tree:
+      DRIFT 27/372/26/240, exit 1 at the v1.40.0 stamp → `4 global skills byte-identical to
+      v1.45.1`, exit 0 after the bump. **13 mutations, 13 killed** — the per-mutation table is
+      in the history file and is deliberately NOT restated here. ⛔ **Two rounds: the first
+      draft shipped six false-PASS paths and had NO CALLER; round 2 found a test of mine that
+      passed for the wrong reason and the condemned construction reintroduced six lines under
+      the comment condemning it.** A census closed the class instead of a third round.
+- [x] ~~**Three stale `curate` sub-step citations**~~ **DONE 2026-09-17 — and there were FOUR.**
+      The fourth, missed by the triage, is `.claude/skills/test-verify-memory/test-fixtures/memory/verified-cannot-verify.md:14`
+      (the `ping` guard form: sub-step 5 → **3**, it is at installed `curate` `SKILL.md:244`).
+      Found by re-grepping after the named three — an enumeration is not an inventory.
+- [x] ~~**Append `## Mechanized`** to `memory/gotcha-log.md` (v1.41.0)~~ **DONE 2026-09-17** —
+      5 rows (4 `live` with their first positives in prose, 1 `proposed` carrying the
+      `<!-- placeholder -->` marker, which `refcheck.py` absorbs — 0 findings, verified).
+      ⚠️ A STANDING table at the BOTTOM of a long newest-first log, so the file's top line now
+      names it.
+- [x] ~~**THEN bump the stamp to v1.45.1**~~ **DONE 2026-09-17, LAST**, after all four landed.
+      The footer's hand-dated byte-identity sentence was **deleted, not updated** — it is the
+      probe's job now. ⚠️ `CLAUDE.md` still grew, the wrong direction for the file yesterday's
+      audit flagged; the measured delta and its command live in the history file and are
+      deliberately NOT restated here — the first draft put the number in two files and the very
+      next edit falsified both.
 - [x] ~~**Run `audit-context` Step 8 (retirement) here.**~~ **DONE 2026-09-17** (`ad32356`).
       Layer **55,459 → 50,164 B**; the attribution was the finding — `CLAUDE.md` grew ~19 B/day
       while the **auto-memory index** grew ~370, so the remedy belonged to the file nobody

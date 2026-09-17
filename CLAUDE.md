@@ -2,8 +2,12 @@
 stack: Python 3.12, PyTorch, Transformers, PEFT/LoRA
 status: Production
 repo: github.com/ducroq/llm-distillery
-framework: agent-ready-projects v1.40.0   # a NUMBER, not a status — never write "current" here; the framework's release cadence falsifies the adjective, not the pin
+framework: agent-ready-projects v1.45.1   # a NUMBER, not a status — never write "current" here; the framework's release cadence falsifies the adjective, not the pin
 framework_reconciliation: |
+  v1.41.0-v1.45.1 triaged 2026-09-17: 3 adopt RELEASES carrying FOUR work items,
+  1 decline, 2 already-in-force. Stamp bumped only AFTER all four landed. The
+  decline is v1.45.1's cheaper HIGH tier; its reason is in the history file, so
+  it is not re-derived.
   v1.37.0-v1.40.0 triaged 2026-09-11: 2 adopt, 0 decline, 2 n/a, 3 already-in-force.
   Stamp bumped only AFTER both adopt items landed in the tree.
   v1.26.1+v1.27.0+v1.28.0 triaged 2026-08-26: 3 adopt, 0 decline. STAMP HELD at
@@ -25,13 +29,15 @@ framework_reconciliation: |
   - `test-verify-memory` stays PROJECT-LOCAL.
   - No *hypothesis-log.md* at the framework's path or shape, by choice. ⚠️ **But
     this repo DOES have a ledger — `memory/hypothesis-ledger.md`, 121 KB, the
-    index's designated "START HERE to recall prior work"** — so `curate` Step 0.6
-    is **NOT** a no-op: it has a file to review for staleness. The 2026-09-11
+    index's designated "START HERE to recall prior work"** — so `curate` Step 0
+    sub-step 5 is **NOT** a no-op: it has a file to review for staleness. The 2026-09-11
     audit found this bullet still claiming otherwise.
   - DECLINED v1.20.0's gotcha-log `Occurrences` column: no Promoted table exists
     here, promotion targets § "Working rules", and the rate is already in prose.
     So `curate` Step 2 asks every session to increment a column with no home —
-    expected, not a bug to fix.
+    expected, not a bug to fix. ⚠️ **Scoped to the PROMOTED table only** —
+    `memory/gotcha-log.md`'s `## Mechanized` table (added 2026-09-17) has its
+    own `Occurrences`, counting sightings after a check went `live`.
   - OPEN, pre-dating the v1.19/v1.20 gap: this file has no framework-drift
     session row (`templates/project-file.md:25` ships one). Its absence is the
     likely reason that drift sat two releases unreviewed. Engineer's call.
@@ -254,7 +260,7 @@ bounded: `python3 scripts/verification/check_index_budget.py --target pointers`.
 | Understanding system design | `docs/ARCHITECTURE.md` |
 | Reviewing work quality | `docs/checklists/` — architect, test, implement, QA gates |
 | Stuck on tooling or infra | `memory/gotcha-log.md` — problem/fix archive |
-| **Running `/review-changes`, or told it stopped** | **`.claude/review-profile.md` — REQUIRED; the skill STOPS without it.** ⛔ 3 lenses DO NOT FIRE (`ducroq/agent-ready-projects#166`); invoke by hand |
+| **Running `/review-changes`, or told it stopped** | **`.claude/review-profile.md` — REQUIRED; the skill STOPS without it.** Its 3 project lenses DO fire since `agent-ready-projects#166` (v1.43.0) — ⛔ confirm by NAME in the report |
 | **About to weaken, delete or argue with a working rule** | **`memory/working-rules.md`** — the full text of each rule plus the evidence and occurrence catalogue behind it. Every one exists because something shipped broken. |
 | **Touching corroboration, story-dedup, or any matching feature** | **`memory/corroboration-feature-hypotheses.md`** — confirmed, refuted and untested. ⚠️ **The threshold is NOT the lever.** |
 | Planning across repos, or asking "what should I work on" | `memory/cross-repo-prioritization.md` — issue landscape, chains, and the two standing traps it names |
@@ -315,5 +321,5 @@ This project is a source project for [augmented-engineering](https://github.com/
 
 ---
 
-*Last updated: 2026-09-11. **Framework: agent-ready-projects v1.40.0 — triaged through v1.40.0, 0 releases behind (checked 2026-09-11 against the REMOTE, not the clone).** The **FOUR** user-global skills (`review-changes` joined at v1.40.0) were **byte-identical to the v1.40.0 reference install, 0 differing lines, when enumerated 2026-09-11** — a dated reading of files OUTSIDE this repo, which no commit here can hold still — diff against `.claude/skills/<name>/SKILL.md` at the tag, never against `templates/`, because there is no install-time transform. ⛔ **Do not write a skill COUNT you did not just enumerate** — this sentence said *three* for as long as it took upstream to move one skill, and read as a verified fact throughout. ⛔ **Never write "current" here** — upstream moved twice within hours of this line being written, and a state claim in an always-loaded file decays silently. ⛔ **A stamp bump requires the adopt items in the tree first** — ahead of its content it silences the check that would catch the gap. ⛔ **Do not name an upstream section's contents here** — this sentence named v1.26.1's while calling it *unreleased*; it shipped 2026-08-25. Read the changelog, don't quote it. ⚠️ **Do not re-add a self-referential size claim** ("cut to the size you see"): the 08-16 wording was falsified by the next edit to this file. Per-tag triage: `docs/decisions/framework-adoption-history.md`. Structural state, open decisions and every number that moves live in `docs/TODO.md` (top block) and the memory index — deliberately NOT restated here, because two hand-maintained copies of a number disagree the moment one is updated. Session records: the memory index.*
+*Last updated: 2026-09-17. **Framework: agent-ready-projects v1.45.1 — triaged through v1.45.1, 0 releases behind (checked 2026-09-17 against the REMOTE, not the clone).** ⛔ **THE SKILL BYTE-IDENTITY CLAIM IS A COMMAND NOW, NOT A SENTENCE — `bash scripts/verification/check_framework_stamp.sh`**, which derives the tag from the stamp (so a bump re-arms it) and runs every session from `memory/MEMORY.md`. Exit status carries the verdict: **0** verified, **1** drift, **2** could not decide. Its hand-dated predecessor was true when written and **false six days later**, and nothing said so. Diff against `.claude/skills/<name>/SKILL.md` at the tag, never `templates/`: there is no install-time transform. ⛔ **Do not write a skill COUNT you did not just enumerate** — this sentence said *three* for as long as it took upstream to move one skill, and read as a verified fact throughout. ⛔ **Never write "current" here** — upstream moved twice within hours of this line being written, and a state claim in an always-loaded file decays silently. ⛔ **A stamp bump requires the adopt items in the tree first** — ahead of its content it silences the check that would catch the gap. ⛔ **Do not name an upstream section's contents here** — this sentence named v1.26.1's while calling it *unreleased*; it shipped 2026-08-25. Read the changelog, don't quote it. ⚠️ **Do not re-add a self-referential size claim** ("cut to the size you see"): the 08-16 wording was falsified by the next edit to this file. Per-tag triage: `docs/decisions/framework-adoption-history.md`. Structural state, open decisions and every number that moves live in `docs/TODO.md` (top block) and the memory index — deliberately NOT restated here, because two hand-maintained copies of a number disagree the moment one is updated. Session records: the memory index.*
 

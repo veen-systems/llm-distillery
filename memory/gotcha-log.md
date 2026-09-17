@@ -1,5 +1,64 @@
 # Gotcha Log
 
+*Newest-first, dated entries. **One standing section lives at the BOTTOM**: [`## Mechanized`](#mechanized) — the destination for `/review-changes` Step 3.1, where a review finding that became a deterministic check is recorded. It is named here because nobody scrolls to the bottom of this file.*
+
+## I REPLACED A DECAYING SENTENCE WITH A COMMAND, AND GAVE THE COMMAND NO CALLER (2026-09-17)
+
+**Problem**: `CLAUDE.md`'s footer asserted "the FOUR user-global skills were byte-identical to
+the v1.40.0 reference install, 0 differing lines, when enumerated 2026-09-11". Six days later
+upstream had shipped six releases and the installed copies had moved with them. The sentence
+was false and nothing said so. I deleted it and pointed the footer at a new probe,
+`scripts/verification/check_framework_stamp.sh`.
+
+**Root cause**: the probe was invoked by **nothing**. Not `.githooks/` (which holds only
+`commit-msg`), not CI (there is no `.github/`), not any skill. Its unit test is deliberately
+hermetic, so a green suite cannot report drift in `~/.claude/skills`. The claim therefore still
+depended on a human remembering to run a command — **the exact dependency the change was made
+to remove**. Naming the caller would not have helped either: I had not named one.
+
+**Fix**: a `<!-- verify: -->` block in `memory/MEMORY.md` naming the probe, executed by `scripts/verification/run_verify_annotations.py` (this repo's
+implementation of `/curate` Step 0 sub-step 3). Proven in both directions, not read: it reports
+`pass … 4 global skills byte-identical to v1.45.1`, and a seeded `FRAMEWORK=/nope` arm made the
+runner print `CANNOT VERIFY` and exit 1.
+
+⛔ **The generalisable form: replacing a claim with a mechanism is only half the work — the
+mechanism needs a caller, and "it is a command now" is not one.** A command in a document is a
+sentence with a shell prompt in front of it.
+⚠️ **And `/curate`'s own `stampcheck()` is NOT this probe**: three skills, skipping
+`review-changes`, so a green curate says nothing about the fourth. Two probes, similar names,
+different populations. `scripts/verification/check_doc_claims.py:191` defines a third function
+literally called `check_framework_stamp()`, which only asks whether two lines of `CLAUDE.md`
+agree with *each other*.
+
+---
+
+## A TEST THAT PASSED FOR THE WRONG REASON, INSIDE THE TEST WRITTEN TO STOP A HAND-KEPT COUNT (2026-09-17)
+
+**Problem**: round 1 of review found `N_WANT=4` hand-written beside a four-name `WANT` list —
+the shape that reproduces upstream's original false PASS once the two disagree. I derived the
+count and wrote `test_count_is_derived_not_restated` to pin it. Round 2 killed the test: a
+mutant deriving the count from an unrelated literal list (`printf '%s\n' a b c d | wc -l`) left
+**all 17 tests green**.
+
+**Root cause**: the test asserted `"N_WANT=$(printf" in src` — a **spelling check** — and its
+behavioural half exercised only the 4-of-4 happy path, where a literal and a derivation agree
+by construction. The name claimed derivation; the assertions proved orthography.
+
+**Fix**: the test now writes a variant of the script whose `WANT` carries a fifth name and
+requires `compared 4 of 5 skills`, exit 2. A literal count prints `byte-identical`, exit 0, and
+the test fails. Mutation-proven.
+
+⛔ **The generalisable form: when a test's subject is "this value must FOLLOW that one",
+the only test is one where they MUST DISAGREE if it does not.** A happy-path assertion cannot
+distinguish a derivation from a coincidence, and `grep`ping the source for the fix's own
+spelling is the weakest check that still looks like one — see `feedback-a-name-is-an-assertion`.
+⚠️ Round 2 also found the condemned `diff | grep -c` construction reintroduced **six lines
+below the comment condemning it**. Two recurrences of one class in one file triggered a
+**census** rather than a third round: all 21 substitution/pipe sites enumerated at once, the
+last live instance closed with an invariant.
+
+---
+
 ## A SHAPE TEST INSIDE AN EXISTENCE-TEST DISJUNCTION — THE CONTROL COULD NEVER STOP FIRING, AND THE FIRST REMEDY DELETED THE EVIDENCE (2026-09-17)
 
 **Problem**: `/audit-context` step 4 reported 3 references as `STALE PLACEHOLDER MARKER (the
@@ -7421,3 +7480,83 @@ skill documents exactly this for `(^|[^A-Za-z])` and prescribes `\b` instead.
 **Fix**: Use Python for context extraction around a match, or `\b`-anchored patterns for
 detection. ⭐ **A non-zero exit with no stdout is indistinguishable from a clean run once stderr
 is discarded** — never `2>/dev/null` a grep whose empty result you intend to read as evidence.
+
+---
+
+## Mechanized
+
+⚠️ **A STANDING TABLE, NOT A DATED ENTRY.** Everything above is newest-first chronological;
+this section sits at the bottom because it is appended to, not prepended. Adopted from
+`agent-ready-projects` v1.41.0 — it is the destination for `/review-changes` **Step 3.1**,
+which until 2026-09-17 had nowhere to land, so every mechanization triage it ran was written
+into a report and lost.
+
+**Separate from the log above because the destinations differ**: a gotcha becomes PROSE an
+agent reads; a review finding becomes a CHECK that runs.
+
+⛔ **`live` requires a SEEDED POSITIVE — never the author's read of the code.** A check that
+has never caught anything is indistinguishable from one that does not work; that is this
+repo's signature defect (a mechanism present, configured, unable to fire) arriving in the
+table built to prevent it. Status values: `proposed` (shape named, no check yet),
+`live` (check exists AND a seeded case made it go red), `rejected` (Check cell carries the
+reason — kept, not deleted, because a shape rejected twice is worth another look),
+`retired` (say what removed the class).
+
+⚠️ **OCCURRENCES does NOT mean what it means in a promotion table.** It counts sightings
+**after** the row went `live` — before that there is no check to have failed. A `proposed`
+row reads `—`. A lens finding a class its own `live` check covers is a finding about the
+CHECK: it does not fire on the real shape, is scoped to the wrong population, or was never
+wired in. Investigate the check, not the finding.
+
+⚠️ A `proposed` row's Check cell names the path the check WILL live at and marks it
+`<!-- placeholder -->` **immediately after the path, in that path's own cell** — the marker
+binds to the nearest path *before* it. Without the marker every proposed row is a standing
+false finding in the reference audit, which trains readers to dismiss that audit.
+
+| Date | Finding shape | Check | Status | Occurrences |
+|------|---------------|-------|--------|-------------|
+| 2026-09-17 | An always-loaded file asserts byte-identity with an installed skill *outside* the repo, hand-dated; no commit here can hold it still and it decays silently | `scripts/verification/check_framework_stamp.sh` | live | 0 |
+| 2026-08-27 | A pointer row in the always-loaded layer grows past its cap; a byte budget loses the race, a per-row cap does not (#133) | `scripts/verification/check_index_budget.py --target pointers` | live | 1 |
+| 2026-09-17 | A reference-integrity rung that is a SHAPE test inside an existence-test disjunction — it cannot stop matching, so the flagged author has no legal move | `tests/fixtures/reference-integrity/run.sh` (cases 34/35) | live | 0 |
+| 2026-09-17 | A number restated into a second file from PROSE rather than re-measured — the copy is plausible, self-consistent and wrong | `scripts/verification/check_doc_claims.py` | live | 0 |
+| 2026-09-17 | Dutch NAMES in framework text (ADR-013) — a function-word sweep scores 0 on both real violation sites, so the instrument must carry the names themselves and its allowlist **is** the carve-out table | `scripts/verification/check_framework_language.py` <!-- placeholder --> | proposed | — |
+
+**First positives, in prose** (they are what made the `live` rows live, and predate the
+occurrence counter):
+
+- **`check_framework_stamp.sh`** — on the tree it shipped into it printed `DRIFT` for all four
+  skills against the `v1.40.0` stamp, exit 1, with per-skill line counts 27/372/26/240 matching
+  an independently-run `diff` across tags; after the bump, `4 global skills byte-identical to
+  v1.45.1`, exit 0. **Thirteen mutations, thirteen killed**, each listed with the test that killed it
+  in `docs/decisions/framework-adoption-history.md`. Its automatic caller is a
+  `<!-- verify: -->` block in `memory/MEMORY.md`, run by
+  `scripts/verification/run_verify_annotations.py` (= `/curate` Step 0 sub-step 3); a seeded
+  `FRAMEWORK=/nope` arm made that runner report `CANNOT VERIFY` and exit 1, so the caller can
+  say no.
+  ⛔ **Its FIRST draft is the thing worth remembering, and a pre-commit review found all of
+  it**: `diff`'s exit status unchecked, so an unreadable file read as *identical*, exit 0;
+  `N_WANT=4` hand-written beside a four-name `WANT`, reproducing upstream's original false PASS
+  the moment the two disagree; `head -1` on the version, so prose naming an older release
+  outranked the stamp; `$HOME` unset exiting **1**, i.e. an environment fault reported as
+  DRIFT; and three branches — not-a-git-repo and both `$HOME` defaults — with **no test at
+  all**, proven by surviving mutants. Six of the eight were false PASSes in a probe whose
+  entire job is to refuse one.
+- **`--target pointers`** — live since **2026-08-27** (`5bd0cdb`; 11 tests in
+  `tests/unit/test_pointer_row_cap.py` at its first commit, mutation evidence in `768678f`).
+  **Extended** to the auto-memory index on 2026-09-17 (`ad6eba5`, 5 further tests in
+  `tests/unit/test_index_budget_guard.py`). ⚠️ This bullet first read *"added 2026-09-17 with
+  4 tests"* — wrong on date, count and citation, because it was copied from a TODO summary
+  instead of measured, and `ad6eba5`'s own message says *four* where the diff adds five.
+  **Occurrences 1**: on 2026-09-17 the check was found to read `CLAUDE.md` only while the
+  surface actually growing was the auto-memory index — a finding about the CHECK's population,
+  which is exactly what this column exists to surface.
+- **run.sh 34/35** — seeded both ways and both proven non-vacuous: case 34 FAILS on the
+  pre-change code, case 35 dies when rung 1 is removed. See the 2026-09-17 entry at the top
+  of this file. ⚠️ `/audit-context` Step 4 runs `refcheck.py`, **not** `run.sh` — so the rung
+  runs monthly while the 34/35 cases that prove it non-vacuous fire only by hand.
+- **`check_doc_claims.py`** — already owns the frontmatter-vs-footer stamp rung; printed
+  `PASS framework stamp: both say v1.45.1` during this review, and it is wired into
+  `memory/MEMORY.md`. ⛔ **NOT the same check as `check_framework_stamp.sh`**, though
+  `check_doc_claims.py:191` defines a function of that very name: it asks only whether two
+  lines of `CLAUDE.md` agree with *each other*, never whether either matches upstream. A
+  reader told "the framework-stamp check is green" gets the weaker one.

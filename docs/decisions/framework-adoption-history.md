@@ -14,16 +14,16 @@ Upstream changelog: https://github.com/ducroq/agent-ready-projects/blob/master/C
 
 ---
 
-## 2026-09-17 — `/update-drift`: **6 releases behind (v1.40.0 → v1.45.1)**; ⛔ **STAMP NOT BUMPED — the adopt items are not in the tree**
+## 2026-09-17 — `/update-drift`: **6 releases behind (v1.40.0 → v1.45.1)**; ✅ **all four adopt items landed later the same day, stamp then bumped to v1.45.1**
 
-**3 adopt · 2 already in force · 1 decline · 3 n/a sub-items.** Latest tag read from
+**3 adopt releases — FOUR work items — · 2 already in force · 1 decline · 2 n/a sub-items.** Latest tag read from
 `git ls-remote` (authoritative), not the clone; the clone was 0 commits behind its remote.
 
 | From | What | Outcome |
 |------|------|---------|
 | v1.41.0 | Step 3.1 mechanization triage + `## Mechanized` gotcha-log table | **Adopt** — section absent from `memory/gotcha-log.md`, so Step 3.1 findings land nowhere |
 | v1.42.0 | install-source fixes, `update-drift` inventories, `⊘` withdrawn, Layer-4 log history | **Already in force**. n/a: zero `⊘` here; the log-history advice presumes a gitignored log and ours is **tracked** (`memory/` 131 files, `gotcha-log.md` 220 commits) |
-| v1.43.0 | 15 issues; **#166**, **#136**, #145/#153/#164/#134/#135, `refcheck.py` | **Adopt** — see below |
+| v1.43.0 | 15 issues; **`agent-ready-projects#166`**, **`agent-ready-projects#136`**, its #145/#153/#164/#134/#135, `refcheck.py` | **Adopt** — see below |
 | v1.44.0 | `review-changes` two-round cap | **Already in force** — banked free |
 | v1.45.0 | `curate` −27% (75,534→54,941 B); `audit-context` **Step 8 retirement** | **Adopt** — 3 stale sub-step citations here; Step 8 pass recommended |
 | v1.45.1 | `review-changes` body −11%; cheaper HIGH tier | body **already in force**; cheaper HIGH **DECLINED** |
@@ -32,6 +32,56 @@ Upstream changelog: https://github.com/ducroq/agent-ready-projects/blob/master/C
 (0 differing lines; monotone fall to an exact zero across tags). Diffed against
 `.claude/skills/<name>/SKILL.md` at the tag, never `templates/` — there is no
 install-time transform.
+
+### ⛔ What review caught — 6 lenses, 24 findings, in ~377 lines of my own change
+
+`/review-changes` at HIGH (a new `scripts/**/*.sh`), full battery: the four shipped lenses
+plus the profile's `reachability` and `claim-verification`. `sync-safety` did not fire — no
+`filters/common/` or deployed filter in the diff. **Structural pre-check: 8 markdown files,
+0 problems.** This run is also the outcome proof for `agent-ready-projects#166`: the two lenses that fired
+returned the two findings below that nothing else did.
+
+⛔ **THE KEEPER — A PROBE THAT MECHANIZES A CLAIM, WITH NOBODY TO RUN IT.** `reachability`
+found `check_framework_stamp.sh` had **no caller**: not a hook (`.githooks/` holds only
+`commit-msg`), not CI (no `.github/`), not the skills. The footer sentence had been replaced
+by a command that nothing executed, so the claim still depended on a human remembering — the
+exact dependency the change said it removed, in the exact shape this repo keeps shipping.
+Fixed with a `<!-- verify: -->` block in `memory/MEMORY.md` and proven both ways.
+⚠️ **And `/curate`'s own `stampcheck()` is NOT this probe** — it checks three skills and
+skips `review-changes`, so a green curate says nothing about the fourth.
+
+⛔ **Six false-PASS paths in the probe itself**, from `adversarial` and `shell-correctness`,
+every one reproduced by execution rather than argued: `diff`'s exit status unchecked (an
+unreadable file counted as *identical*, exit 0, with `Permission denied` on stderr beside the
+success line); `N_WANT=4` written beside a four-name `WANT`, reproducing upstream's original
+false PASS verbatim once they disagree; `head -1` on the version, so a prose mention of an
+older release outranked the stamp — and `CLAUDE.md` now carries the version twice, so a
+half-bump would have verified the stale copy; `$HOME` unset aborting with exit **1**, an
+environment fault reported as DRIFT; `git show TAG:path` failing for a missing FILE but
+blaming the TAG, sending the reader to a `git fetch` that cannot help; and trailing-newline
+normalization, so "byte-identical" was not what was measured. Now: `cmp` status, a derived
+count, version unanimity, an explicit `$HOME` guard, `rev-parse --verify` before the `show`.
+
+⛔ **And nine prose defects about the probe, which is the part worth keeping.** The code was
+well-proven; the writing about it was not. A mutation result flattened to "each killed by
+exactly one test" and copied into two more files; a list of six executed branches naming one
+that had no test; "four releases in six days" where there were six; a `## Mechanized` row
+whose date, test count and citation all pointed at the wrong commit, because it was copied
+from a TODO summary instead of measured; "7,400-line" against a measured 7,479; a `~19 B/day`
+rate restated with no window, whose sign reverses on a different endpoint pick; a test
+baseline left at 822 by the change that made it 834; and a re-diff command hardcoding
+`v1.45.1` in the same file whose script header forbids hardcoding a tag, in bold.
+⭐ **Every one is the shape the table I had just added exists to catch.**
+
+### ⚠️ One correction landed in a surface that does not reach session context (#122)
+
+The `Occurrences` scoping note — *"the v1.20.0 decline is about the PROMOTED table only"* — went
+into `CLAUDE.md`'s `framework_reconciliation` frontmatter. **#122 says that block does not reach
+session context, and this session is fresh evidence: the `CLAUDE.md` delivered to me began at
+`# CLAUDE.md - LLM Distillery`, with no frontmatter at all.** So that note is provenance, not a
+governing rule. ✅ The operative half is safe — the `Occurrences` definition lives in the
+`## Mechanized` section's own preamble in `memory/gotcha-log.md`, which an agent reaching the
+table necessarily reads. Kept in both places deliberately; only one of them fires.
 
 ### ⛔ DECLINE, with the reason, so it is not re-derived: the cheaper HIGH tier (v1.45.1)
 
@@ -44,7 +94,106 @@ math and the NexusMind sync — the two surfaces where a miss reaches a reader (
 ⚠️ **If it is ever taken, both conditional lenses are not optional**; a HIGH row naming
 neither retires them silently.
 
-### #166 — three project lenses were annotated DEAD and are not dead
+### ✅ LANDED 2026-09-17 — the four adopt items, in the order the stamp rule requires
+
+The triage below was written before any of it was in the tree; the sub-sections keep their
+original findings and each now carries what shipped.
+
+1. **`agent-ready-projects#166`** — `.claude/review-profile.md`'s heading is now exactly `## Project lenses`, the
+   string the skill names, and the preamble states the v1.43.0 landing, the v1.45.1
+   byte-identity, the re-diff command and that **the outcome proof is a report NAMING the
+   three lenses**, not the heading. The `/review-changes` pointer row no longer says they are
+   dead — it sat at `CLAUDE.md:257` before this change and the frontmatter additions moved it
+   down, so cite it by name rather than by line.
+2. **`agent-ready-projects#136`** — adopted as `scripts/verification/check_framework_stamp.sh`, **not** by copying
+   the inline probe. Two deliberate differences from upstream, both recorded in the script's
+   header: it checks the **four** skills installed here (upstream's `want` list has three and
+   omits `review-changes`, which v1.40.0 moved global — three-of-four passing is the shape
+   this repo keeps shipping), and `FRAMEWORK` defaults to this estate's clone.
+   ⭐ **Both arms proven on the REAL tree, not in a fixture**: against the v1.40.0 stamp it
+   printed `DRIFT` for all four with per-skill line counts **27 / 372 / 26 / 240**, exit 1 —
+   independently reproduced by a `diff` across tags before the script existed; after the stamp
+   bump, `4 global skills byte-identical to v1.45.1`, exit 0. **The arm that matters is the
+   false PASS: 3 of 4 installed and all 3 identical must exit 2.**
+   ⛔ **THE FIRST DRAFT SHIPPED SIX FALSE-PASS PATHS AND THE PRE-COMMIT REVIEW FOUND THEM
+   ALL** — in a probe whose entire job is to refuse one. Listed under ⛔ *What review caught*.
+   **Thirteen mutations, thirteen killed** (`tests/unit/test_framework_stamp_guard.py`,
+   21 tests) — nine after round 1, four more after round 2:
+
+   | Mutation | Killed by |
+   |---|---|
+   | drop `[ "$n" = "$N_WANT" ]` | `test_skipped_skill_is_not_a_pass` |
+   | `FRAMEWORK` default → nonexistent | `test_framework_default_is_used_when_unset` |
+   | `CLAUDE_SKILLS` default → nonexistent | `test_skills_default_is_used_when_unset` + `test_real_estate_reaches_a_verdict` |
+   | drop the not-a-git-repo guard | `test_outside_a_git_repo_cannot_decide` |
+   | `cmp` status → `diff` piped to `grep -c` | `test_unreadable_installed_file_cannot_decide` |
+   | version unanimity → `head -1` | `test_two_versions_in_claude_md_cannot_decide` |
+   | drop the `$HOME` guard | `test_home_unset_is_undecidable_not_drift` |
+   | drop the tag-vs-file distinction | `test_tag_absent_from_clone_cannot_decide` |
+   | `N_WANT` derived → hardcoded `4` | `test_count_is_derived_not_restated` |
+   | worktree guard → `[ -d "$FRAMEWORK/.git" ]` | `test_a_worktree_is_a_usable_clone` |
+   | drop the frontmatter-key anchor | `test_frontmatter_key_outranks_prose` + `test_corroboration_cannot_silently_not_run` |
+   | drop the census invariant | `test_corroboration_cannot_silently_not_run` |
+   | break the corroborating scan's pattern | `test_corroboration_cannot_silently_not_run` |
+
+   ⚠️ **"Each killed by exactly one test" is false and was written here anyway** — one
+   mutation kills two — then copied into two more files before review caught it. A table
+   replaces the sentence because a table cannot be flattened.
+   ⚠️ The first draft also listed six executed branches *including* "not a repo", which had
+   **no test**: a mutant removing that guard survived. `prove the bar is reachable`, failing
+   inside the evidence written to satisfy it.
+
+   ⛔ **ROUND 2 — five more, and two were the SAME CLASS AGAIN, which is why a CENSUS ran
+   instead of a third round.** (a) `test_count_is_derived_not_restated` **passed for the
+   wrong reason**: it asserted `"N_WANT=$(printf" in src` and exercised only the happy path,
+   so a mutant deriving the count from a literal list satisfied both halves — a name that
+   was lying, in the test written to stop a hand-kept count. It now runs a variant whose
+   `WANT` has a fifth name and requires `compared 4 of 5`, exit 2. (b) The condemned
+   `diff | grep -c` form was **reintroduced six lines below the comment condemning it**, on
+   the message path: a NUL byte in the installed file prints `differs … by 0 lines`.
+   (c) Unanimity over the scan is unanimity over *what the scan could see* — the
+   `[^0-9]{0,40}` bound silently drops a loosely-worded stamp, so a stale provenance line
+   wins uncontested **and unanimously**, exit 0, naming a tag nobody pinned. The frontmatter
+   key is now authority and the scan only corroborates. (d) `[ -d "$FRAMEWORK/.git" ]`
+   rejects a worktree, whose `.git` is a FILE — and its message was in this suite's own skip
+   list, so such a machine would read green-with-a-skip while the probe was permanently
+   undecidable. (e) `test_real_estate_reaches_a_verdict` **skipped on the defect `CLAUDE.md`
+   warns about in bold**: "not in the framework clone" covers a stamp naming a release that
+   does not exist, and its own docstring called that state invisible to every hermetic test.
+
+   ⭐ **THE CENSUS** (the round-cap rule's remedy when a class recurs): the class is *a
+   command's FAILURE read as a VALUE*. Enumerated all 21 substitution/pipe sites in the
+   script; every one is now either status-checked, value-only, or decoration. The last live
+   instance was the pair of `grep` extractions, whose `2>/dev/null` makes a failed grep
+   indistinguishable from a no-match — closed with an invariant, since the key pattern is a
+   strict subset of the scan pattern, so *key matched and scan empty* is unreachable from
+   data and can only mean the scan broke.
+3. **`## Mechanized`** — appended to `memory/gotcha-log.md` with four seeded rows (3 `live`,
+   1 `proposed` carrying the `<!-- placeholder -->` marker) and the first positives in prose.
+   ⚠️ It is a **standing** table at the BOTTOM of a long newest-first log, so the file's top
+   line now names it — a destination nobody can find is the same defect as no destination.
+   (An earlier draft said "7,400-line": it was 7,479 the day it was written and grows every
+   session. Do not put a line count in prose that nothing re-measures.)
+4. **Stale `curate` sub-step citations — the triage named three, there were FOUR.** The fourth:
+   `.claude/skills/test-verify-memory/test-fixtures/memory/verified-cannot-verify.md:14` cites
+   the `ping` guard form as sub-step 5. It is at installed `curate` `SKILL.md:244`, inside
+   sub-step **3**. Found by re-grepping after the three named ones were fixed — an enumeration
+   is not an inventory.
+
+**Then** the stamp: `CLAUDE.md:5` and the footer, both to v1.45.1. The footer's hand-dated
+byte-identity sentence was **deleted, not updated** — it is the probe's job now, and the probe
+has an automatic caller: a `<!-- verify: -->` block in `memory/MEMORY.md`, executed by
+`run_verify_annotations.py` (= `/curate` Step 0 sub-step 3). Proven in both directions — it
+reports `pass … 4 global skills byte-identical to v1.45.1`, and a seeded `FRAMEWORK=/nope`
+arm made that runner print `CANNOT VERIFY` and exit 1.
+Cost to the always-loaded file: **+647 B** (37,800 → 38,447), net of a trim —
+the wrong direction for the file `/audit-context` had just flagged, and stated here **once**,
+because the first draft wrote it into two files and the second edit falsified both:
+`echo $(( $(wc -c < CLAUDE.md) - $(git show HEAD:CLAUDE.md | wc -c) ))`. Test suite
+**`.venv/bin/python -m pytest tests/ -q`** — naming the interpreter matters, since bare
+`python3` here cannot collect at all.
+
+### `agent-ready-projects#166` — three project lenses were annotated DEAD and are not dead
 
 `.claude/review-profile.md:118` read `## Project lenses — ⛔ NOT READ BY THE SKILL` and
 `CLAUDE.md:257` said `⛔ 3 lenses DO NOT FIRE … invoke by hand`. Verified against the
@@ -53,7 +202,7 @@ reads *"**Project lenses** … both read in Step 2"*, and `:300` says *"Run the 
 `Project lenses` too"*. ⚠️ **The ⛔ in the heading is worse than stale** — it tells the
 agent reading the profile to ignore what the skill just told it to run.
 
-### #136 — the stamp probe, verified by execution in three directions
+### `agent-ready-projects#136` — the stamp probe, verified by execution in three directions
 
 `curate` now ships `stampcheck`, deriving the version from the stamp so a bump re-arms it.
 Run here: `bash -n` parses; against the current v1.40.0 stamp → `DRIFT`, exit 1; in a
@@ -69,7 +218,8 @@ hypothesis surface **sub-step 5** (`:329`). Still to correct here:
 `memory/working-rules.md:179` (both "Step 0.6" → sub-step 5).
 
 ⛔ **Stamp stays at v1.40.0 until those land** — a stamp ahead of its content silences the
-check that would catch the gap, and `stampcheck` is now that check.
+check that would catch the gap, and `stampcheck` is now that check. *(They landed the same
+day; see ✅ LANDED above. The rule stands — it is why the bump was last.)*
 
 ## 2026-09-12 — ⛔⛔ THE SAME DECLINE WAS RE-ADOPTED A THIRD TIME, BY ME, AND IS REVERTED AGAIN
 

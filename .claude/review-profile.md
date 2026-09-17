@@ -91,8 +91,13 @@ pass. Check it in this direction: read each entry here, then find its tier above
 it produces a phantom failure baseline that gets believed (this project has done exactly
 that: 78 "failures" that were the wrong interpreter).
 
-**Measured 2026-09-11: `822 passed, 25 skipped` in 125s.** Re-measure rather than trust
-this line; a stale baseline is how a real regression reads as pre-existing.
+**Measured 2026-09-17: `848 passed, 25 skipped` in 94s** (was `822 passed, 25 skipped` on
+2026-09-11; the +26 are `tests/unit/test_framework_stamp_guard.py`, 21, plus the
+2026-09-17 audit's 5). Re-measure rather than trust this line — a stale baseline is how a
+real regression reads as pre-existing. ⚠️ **This line is the ONLY live copy of the number
+and is meant to be**; the 2026-09-11 change that added tests left it stale, and the
+2026-09-17 draft that fixed it wrote 834 and was falsified by its own next commit. The
+history file deliberately records the COMMAND and no number.
 
 ## Always-full-depth carve-outs (project additions)
 
@@ -115,17 +120,33 @@ always apply and cannot be removed here. Project additions:
 adaptation, or has it drifted from what it was adopted from?** That question belongs to
 `/update-drift`; a reviewer's job is to notice it is owed, not to answer it in the review.
 
-## Project lenses — ⛔ NOT READ BY THE SKILL
+## Project lenses
 
-⛔ **The v1.40.0 skill's Step 2 lens list is CLOSED. Nothing below fires automatically.**
-These three lenses lived in the pre-v1.40.0 local fork and have no slot in the profile
-contract. Upstream **`ducroq/agent-ready-projects#166`** (filed 2026-09-11) is exactly this
-gap. They are kept here so the split does not silently delete them — **not** because
-anything runs them.
+**Read by the skill — Step 1 (`SKILL.md:83`) and Step 2 (`SKILL.md:300`), which name this
+section by the heading `Project lenses`. Keep the heading undecorated.** Upstream
+**`ducroq/agent-ready-projects#166`** (filed 2026-09-11) landed in **v1.43.0** — it adds three
+optional profile sections, of which this repo uses one.
 
-**Until #166 lands, invoke these by hand** when the tier calls for them: paste the prompt
-into a review subagent alongside the skill's own lenses. A lens you believe is running and
-is not is this repo's signature defect; that is why this heading says so twice.
+⚠️ **Undecorated for a reason that is NOT a string match.** Nothing greps this file: the
+skill instructs an *agent* to read it, so the old heading (`## Project lenses — ⛔ NOT READ BY
+THE SKILL`) would still have been found. What suppressed these lenses was the decoration's
+**instruction** — *"Nothing below fires automatically … invoke these by hand"* — which a
+reader obeys. Do not restate this as a matcher; there is no matcher.
+
+⚠️ **A dated claim about a file OUTSIDE this repo, which no commit here can hold still.**
+The annotation this paragraph replaced was **true when written on 2026-09-11** and false six
+days later, upstream having shipped **six** releases (v1.41.0…v1.45.1) in between. Do not
+hardcode a tag here — the probe derives it from the stamp:
+
+```bash
+bash scripts/verification/check_framework_stamp.sh    # 0 verified · 1 drift · 2 undecided
+```
+
+These three lenses **add** to the shipped set (`guarantee-preservation`, `adversarial`,
+`doc-accuracy`, `shell-correctness`); a project lens never replaces a shipped one, and no
+shipped lens asks what these ask. ⛔ **Naming the caller is not sufficient proof here either
+— the outcome proof is a `/review-changes` report that NAMES these three lenses.** If a
+report does not name them, they did not run, whatever this heading says.
 
 ### Lens: reachability (HIGH and MEDIUM — this repo's signature defect)
 

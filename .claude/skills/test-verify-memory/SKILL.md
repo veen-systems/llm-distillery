@@ -4,7 +4,7 @@ description: Test the self-verifying memory protocol against fixture files
 disable-model-invocation: false
 ---
 
-Test the self-verifying memory protocol (curate Step 0, sub-step 5) against fixture files with known expected outcomes.
+Test the self-verifying memory protocol (curate Step 0, sub-step 3) against fixture files with known expected outcomes.
 
 ## Setup
 
@@ -18,7 +18,7 @@ If the fixtures are missing, fetch them from the [agent-ready-projects](https://
 
 ## Test protocol
 
-For each `.md` file in the fixture directory, run the curate verification logic from Step 0 sub-step 5:
+For each `.md` file in the fixture directory, run the curate verification logic from Step 0 sub-step 3:
 
 1. Read the file
 2. Detect whether it contains a state claim (trigger words: "shipped," "deployed," "live," "running," "working in production")
