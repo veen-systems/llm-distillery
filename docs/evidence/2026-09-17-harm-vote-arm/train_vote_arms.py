@@ -24,8 +24,10 @@ Usage (b650-gpu, venv-prodparity):
 """
 
 import argparse
+import hashlib
 import importlib.util
 import json
+import subprocess
 from pathlib import Path
 
 import numpy as np
@@ -113,6 +115,30 @@ def topk_catch(p_pan, ids, both, k):
     """
     order = np.argsort(-np.asarray(p_pan))[:k]
     return len({ids[i] for i in order} & both)
+
+
+def provenance(device: str) -> dict:
+    """What produced this report, recorded so a number can be traced to a tree and a box.
+
+    ⛔ This script may run from a checkout that is AHEAD of the box's HEAD (it is copied there as
+    an untracked evidence script). Hashing both files defeats that: `repo_head` names the tree the
+    ARCHITECTURE came from, and the two digests name the exact bytes that ran.
+    """
+    def sha(path: Path) -> str:
+        return hashlib.sha256(path.read_bytes()).hexdigest()
+
+    try:
+        head = subprocess.run(["git", "-C", str(REPO), "rev-parse", "--short", "HEAD"],
+                              capture_output=True, text=True, check=True).stdout.strip()
+    except Exception as exc:                      # a box without git is a provenance gap, not a crash
+        head = f"UNAVAILABLE: {exc}"
+    return {
+        "repo_head": head,
+        "script_sha256": sha(Path(__file__).resolve()),
+        "train_v1_sha256": sha(TRAIN_V1),
+        "device": device,
+        "host": subprocess.run(["hostname"], capture_output=True, text=True).stdout.strip(),
+    }
 
 
 def main():
@@ -220,7 +246,7 @@ def main():
         "embedder": T.EMBEDDER,
         "hidden": list(T.HIDDEN),
         "n_seeds": T.N_SEEDS,
-        "device": args.device,
+        "provenance": provenance(args.device),
         "val_specificity_target": T.VAL_SPECIFICITY_TARGET,
         "panel": {"n": len(ids), "gemini_harmful": len(gem), "both_harmful": len(both)},
         "arms": results,
