@@ -15,8 +15,27 @@ GPU (Blackwell, 2026-09-17): max |Δ| **0.1572**, **0 rows above the #95 floor**
 4.0 / 2 at 4.5** — ⛔ flips survive even when no row exceeds the floor, which is why this reads the
 flip count and not the magnitude.
 
-**Nobody has run the other five.** Every `ground_truth_gate.json` in the tree is a CPU measurement
-and none of them says so — there is no `device` field on any of the six.
+**Nobody has run the other five.**
+
+⛔ **CORRECTION, same day, before any result was read: the sentence that stood here was wrong.**
+It said *"every `ground_truth_gate.json` in the tree is a CPU measurement and none of them says so
+— there is no `device` field on any of the six."* I had grepped **top-level keys only**, and the
+field lives at `provenance.device`. Measured properly:
+
+| filter | `provenance.device` |
+|---|---|
+| `uplifting v7` | `cpu` |
+| `cultural_discovery v5` | `cpu` |
+| `belonging v1` | `cpu` |
+| `human_thriving v8` | **CUDA** — *"read back off `next(model.parameters()).device`, not off the flag"* (#146) |
+| `nature_recovery v4` | **absent** |
+| `solutions v6` | **absent** |
+
+⭐ **And the corrected fact is worse than the one I published, not better.** The tree does not hold
+six CPU gates; it holds **four CPU gates, one CUDA gate and two that do not say** — so an
+ADR-021 comparison across filters is already mixing devices, which is the exact risk `#104` names
+in its third bullet. The stamp deliverable narrows to two files and widens to a CHECK: a hand-written
+provenance block is only as good as the hand, and two of six hands forgot.
 
 ## Op-points, established by EXECUTION not by reading config
 
