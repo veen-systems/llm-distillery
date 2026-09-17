@@ -17,6 +17,20 @@ Produced by `scripts/verification/box_parity.py`, compared with
 | `uplifting_v7_test660_b650-GPU-prodstack_2026-08-10.jsonl` | b650, **CUDA** | same pins; 1 flip at 4.0, 3 at 4.5 |
 | `uplifting_v7_test660_b650-CPU-prodstack_2026-09-17.jsonl` | b650, **CPU**, after the GPU swap | same pins — **byte-identical to the 2026-08-10 CPU dump, 660/660** |
 | `uplifting_v7_test660_b650-GPU5090-prodstack_2026-09-17.jsonl` | b650, **CUDA — RTX 5090** | same pins; 1 flip at 4.0, 2 at 4.5 |
+| `human_thriving_v8_test_b650-{CPU,GPU5090}-prodstack_2026-09-17.jsonl` | b650, both devices | `EXP-041`; 660 rows, **0 flips** at 4.5, max \|Δ\| **0.4218** |
+| `cultural_discovery_v5_test_b650-{CPU,GPU5090}-prodstack_2026-09-17.jsonl` | b650, both devices | `EXP-041`; 857 rows, **0 flips** at 4.0, max \|Δ\| 0.2701 |
+| `belonging_v1_test_b650-{CPU,GPU5090}-prodstack_2026-09-17.jsonl` | b650, both devices | `EXP-041`; 738 rows, **0 flips** at 4.0, max \|Δ\| 0.3176 |
+| `nature_recovery_v4_test_b650-{CPU,GPU5090}-prodstack_2026-09-17.jsonl` | b650, both devices | `EXP-041`; 391 rows, **0 flips** at 3.75, max \|Δ\| 0.3083 |
+| `solutions_v6_test_b650-{CPU,GPU5090}-prodstack_2026-09-17.jsonl` | b650, both devices | `EXP-041`; 1032 rows, **0 flips** at 2.25, max \|Δ\| 0.1941 |
+
+⭐ **`EXP-041` produced its own `uplifting v7` pair and they are BYTE-IDENTICAL to the `EXP-038`
+rows above** — same box, venv, device, split and day, two separate processes about nine hours
+apart, sha256 equal on both arms. So this directory holds **one** uplifting pair, not two, and the
+device term measured on it carries **no run-to-run component**. ⚠️ One filter, two arms, two runs —
+it is a control for `EXP-041`, not a general determinism claim.
+
+⛔ **The `{CPU,GPU5090}` brace above is shorthand for two files each**, not a filename. Interpretation
+and every op-point number: `docs/evidence/2026-09-17-gate-device-parity/`.
 
 The first two are CPU-only; the third is the same box on CUDA with production's
 library versions pinned from `constraints/production-gpu-server.txt`, which is

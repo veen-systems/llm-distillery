@@ -101,7 +101,14 @@ tree where every gate answers can still be a tree that mixes them.
 
 ## Files
 
-`PREREGISTRATION.md` (with its correction) · `diff_output.txt` — the full 190-line output for all
-six filters, including per-dimension max deltas and both arms' confusion matrices. The 12 dumps
-(2.6 MB) stay on b650 at `~/exp041/`; they are re-derivable from the recipe in the pre-registration
-and from `#104`'s own reproduce block. Registry: `EXP-041`. Ledger: `H-DEV1`, `H-DEV2`.
+`PREREGISTRATION.md` (with its corrections) · `diff_output.txt` — the full 190-line output for all
+six filters, including per-dimension max deltas and both arms' confusion matrices.
+
+**The dumps are in `datasets/parity/`**, the tracked home this repo already uses for parity
+evidence, named to its convention and listed in its README. ⭐ **`EXP-041`'s own `uplifting v7` pair
+came back BYTE-IDENTICAL to `EXP-038`'s** (sha256 equal on both arms, two separate processes about
+nine hours apart on the same box, venv, device and split), so only ten files were added and **the
+device term here carries no run-to-run component**. ⚠️ One filter, two arms, two runs — a control
+for this experiment, not a determinism claim about the student in general.
+
+Registry: `EXP-041`. Ledger: `H-DEV1`, `H-DEV2`.
