@@ -493,7 +493,8 @@ and `tests/unit/test_harm_detector_contract.py` fails if a threshold ever appear
 killed).
 
 ✅ **THE WIRING IS WRITTEN AND OPEN FOR REVIEW — `NM#474`** (branch
-`feat/harm-detector-shadow-stamp`, **not merged, not deployed**). Six files: vendored package +
+`feat/harm-detector-shadow-stamp`, **not merged, not deployed** — ⚠️ **true on 2026-09-10,
+SUPERSEDED: see the ▶ NEXT block below**). Six files: vendored package +
 `src/preprocessing/harm.py` + `gpu_client.predict_harm` + a `/harm/predict` endpoint +
 `scripts/main.py` stage + `config/app.yaml`, **`enabled: false`**. NexusMind's 1,581 tests pass.
 ⛔ **No `threshold` and no `enforce` key exist anywhere in it**, and three mutations are killed
@@ -504,6 +505,7 @@ killed).
 Three lenses (guarantee-preservation, adversarial, doc-accuracy) + a smoke test on real production
 rows. Commits `d35ab24`, `009a55e`, `f1a1f40`; llm-distillery `5681c66`, `bb5a52d`.
 **PR marked ready for review.** ⛔ **Still not merged and NOT deployed; `enabled: false` unchanged.**
+⚠️ **SUPERSEDED 2026-09-17 — the first half no longer holds; the `enabled: false` half does.**
 
 ⭐ **THE KEEPER — a green suite is a statement about the ORDER IT RAN IN.** The new test file's
 fixtures were named `content_items_*.jsonl`, which `contract_check.py:276` globs from the
@@ -542,8 +544,19 @@ valid-JSON **non-object line crashes the stage** (reachable via the `aggregator_
 **0 such files in production today**); a NaN score would write invalid JSON into `data/raw`.
 
 ▶ **NEXT in Lane C, in order:**
-1. **Merge `NM#474`** once CI is green (it was pending at session end). Merge and **enable are two
-   separate owner calls**; production is frozen, so the merge lands dormant code.
+1. ✅ **DONE — `NM#474` merged `01a9809`, 2026-09-11, both checks green.** ⛔ **And it is ON THE
+   PRODUCTION HOST, dormant** (verified 2026-09-17 by reading sadalsuud, not by inference:
+   `/home/jeroen/local_dev/NexusMind` is on `main` at `ce8ea31`, `src/preprocessing/harm.py`
+   present, `config/app.yaml` `harm_detector.enabled: false`). **Merge and enable were always two
+   separate owner calls — the enable one is untaken**, so the stage returns
+   `{"skipped": "disabled"}` at `scripts/main.py:825` and stamps nothing. ⚠️ The `record_path` entry owed on the three register fields stays owed: it waits on
+   `stamp_census.py` confirming population, which cannot happen while `enabled: false`.
+   ⚠️ **OWED, one comment: `NexusMind/config/app.yaml` still calls the mtime ordering a
+   "⛔ KNOWN DEFECT … until that is keyed on the filename timestamp" — `src/preprocessing/harm.py`
+   `_collection_time` (`:92`) HAS been keyed on the `(\d{8}_\d{6})` filename stamp since
+   `f1a1f40`, so the config describes code that no longer exists.** Not fixed 2026-09-17: that
+   checkout was on `fix/nm497-robots-denominator` with `config/app.yaml` already modified, and the
+   fix must not ride an unrelated branch. Needs its own branch off `main`.
 2. **The remaining $0 arm** — and it is ONE, not two: *"a detector on the existing labels"* **is**
    `EXP-037`, already run. What is left is **per-run scope disagreement** — **178** rows with ≥1
    `harm_is_subject` run-vote and a non-harm final verdict (**1** above the op-point), **178** harm
