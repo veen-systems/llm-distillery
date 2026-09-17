@@ -1,5 +1,16 @@
 # #134 step 1 — `refcheck.py --docs`, run once, measured
 
+> **Addendum 2026-09-17 — the tier table below is SUPERSEDED; the measurement is not.**
+> Step 2 settled the tier and it is now in code (`DOCS_TIER` → `_tier_of_doc` in
+> `tests/fixtures/reference-integrity/refcheck.py`), not in a table:
+> `docs/decisions/2026-09-17-refcheck-docs-tier.md`. It differs from the proposal below
+> in three ways — `reports/` and `experiments/` are FROZEN, `templates/` is LIVE, and a
+> frozen DIRECTORY no longer freezes a file that `CLAUDE.md`/`memory/MEMORY.md` routes
+> an agent into, or an undated index. **Nothing below is edited**: the run, the counts
+> and the prediction are what this directory is for. Only this pointer is added, because
+> a superseded table with no forward pointer is read as current.
+
+
 **2026-08-28. Step 1 only: measure with the real instrument.** No reference was fixed, no
 file under `docs/` was edited to satisfy the checker, and `docs/` is **not** in the default
 scan set. The tiering decision (#134 step 2) is proposed at the bottom and not applied.

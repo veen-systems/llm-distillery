@@ -2,6 +2,41 @@
 
 *Newest-first, dated entries. **One standing section lives at the BOTTOM**: [`## Mechanized`](#mechanized) — the destination for `/review-changes` Step 3.1, where a review finding that became a deterministic check is recorded. It is named here because nobody scrolls to the bottom of this file.*
 
+## A TIER RULE WHOSE WARRANT WAS AN ABSOLUTE NOBODY HAD ENUMERATED — TWICE, IN ONE CHANGE (2026-09-17)
+
+**Problem**: `refcheck.py`'s new `docs/` tier assigned LIVE/FROZEN by directory, warranted
+with *"every frozen entry is dated BY CONSTRUCTION"*. False.
+`docs/decisions/framework-adoption-history.md` is undated, was edited the same day, is
+routed into from `CLAUDE.md` twice, and carries the largest finding count of any single
+frozen file — and the rule declared it *"never to be edited to satisfy this checker"*,
+along with four more pointer targets and every undated index.
+
+**Then the fix did it again.** Rule 3 became *"undated ⇒ live"*, warranted with *"an
+undated file in a dated directory is an index or a running history"*. Also an
+unenumerated absolute: it admitted **13 files of which 10 are frozen accounts** — six
+verbatim copies of other repos' ADRs, two reports for a filter removed 2026-08-03 — worth
+**21 findings, 7.7%** of the live total the promotion decision rests on. Depth-restricting
+it to files sitting *directly* in the frozen directory leaves three, and the one arguable
+member is named in the code.
+
+**Root cause**: the tier is a claim about a POPULATION, and both drafts asserted it
+without enumerating that population. Neither the 17 tests written to guard the tier nor a
+full green suite could see it — a tier defect narrows the scan set, and a narrower scan
+set reports FEWER findings, which reads exactly like a repo that got cleaner.
+
+**Fix**: the rule is three tests, one of them computed from `CLAUDE.md`/`memory/MEMORY.md`
+rather than hand-listed; the residue of each is enumerated in the code beside it; the
+count of files reaching LIVE by override is printed in the report, because rule 2 makes
+the tier a function of mutable text. Guard tests run the checker and read what it did —
+the first pair were source-text greps, and three behaviour-changing mutants survived them.
+
+⭐ **The transferable part is the process, not the rule.** Round 1 of `/review-changes`
+found the first instance; round 2, scoped to the fixes, found the second. Two instances is
+a CLASS, and the round cap's own remedy is a **census, not a third round**. Two ran: every
+absolute about behaviour in the change's prose (3 more defects, all fixed), and every count
+either tool prints against the population it is over (19 surfaces, both defects already
+known). Full record: `docs/decisions/2026-09-17-refcheck-docs-tier.md`.
+
 ## I REPLACED A DECAYING SENTENCE WITH A COMMAND, AND GAVE THE COMMAND NO CALLER (2026-09-17)
 
 **Problem**: `CLAUDE.md`'s footer asserted "the FOUR user-global skills were byte-identical to
@@ -7519,6 +7554,8 @@ false finding in the reference audit, which trains readers to dismiss that audit
 | 2026-08-27 | A pointer row in the always-loaded layer grows past its cap; a byte budget loses the race, a per-row cap does not (#133) | `scripts/verification/check_index_budget.py --target pointers` | live | 1 |
 | 2026-09-17 | A reference-integrity rung that is a SHAPE test inside an existence-test disjunction — it cannot stop matching, so the flagged author has no legal move | `tests/fixtures/reference-integrity/run.sh` (cases 34/35) | live | 0 |
 | 2026-09-17 | A number restated into a second file from PROSE rather than re-measured — the copy is plausible, self-consistent and wrong | `scripts/verification/check_doc_claims.py` | live | 0 |
+| 2026-09-17 | A reference-checker's SCAN SET narrowed without notice — fewer findings reads exactly like a repo that got cleaner, and the tier decides which files are opened at all | `tests/unit/test_refcheck_docs_tier.py` (37 tests) | live | 0 |
+| 2026-09-17 | An argument a CLI does not know scans the default set and prints a small, reassuring count — including a positional, which "starts with `--`" guards miss | `tests/fixtures/reference-integrity/run.sh`, the `guard_fail` block (7 rejected + 4 accepted) | live | 0 |
 | 2026-09-17 | Dutch NAMES in framework text (ADR-013) — a function-word sweep scores 0 on both real violation sites, so the instrument must carry the names themselves and its allowlist **is** the carve-out table | `scripts/verification/check_framework_language.py` <!-- placeholder --> | proposed | — |
 
 **First positives, in prose** (they are what made the `live` rows live, and predate the

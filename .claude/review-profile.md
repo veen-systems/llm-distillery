@@ -91,12 +91,12 @@ pass. Check it in this direction: read each entry here, then find its tier above
 it produces a phantom failure baseline that gets believed (this project has done exactly
 that: 78 "failures" that were the wrong interpreter).
 
-**Measured 2026-09-17: `848 passed, 25 skipped` in 94s** (was `822 passed, 25 skipped` on
-2026-09-11; the +26 are `tests/unit/test_framework_stamp_guard.py`, 21, plus the
-2026-09-17 audit's 5). Re-measure rather than trust this line — a stale baseline is how a
+**Measured 2026-09-17 (late): `891 passed, 25 skipped` in 117s** (was `848 passed,
+25 skipped` earlier the same day; the +43 are the #134 step-2 docs tier —
+`tests/unit/test_refcheck_docs_tier.py` 37 and `tests/unit/test_refcheck_tier_reparse.py` 6). Re-measure rather than trust this line — a stale baseline is how a
 real regression reads as pre-existing. ⚠️ **This line is the ONLY live copy of the number
 and is meant to be**; the 2026-09-11 change that added tests left it stale, and the
-2026-09-17 draft that fixed it wrote 834 and was falsified by its own next commit. The
+2026-09-17 draft that fixed it wrote 834 and was falsified by its own next commit. ⛔ **Occurrence three was caught by review, not by anyone re-reading this line**: the #134 step-2 record wrote its own copy of the count while quoting this rule. The
 history file deliberately records the COMMAND and no number.
 
 ## Always-full-depth carve-outs (project additions)

@@ -101,6 +101,30 @@ grep -q 'DROPPED AS IDENTIFIER-SHAPED (1 unique)' <<<"$out" && echo "  ok    cou
 grep -q 'no_such_label_path.md' <<<"$findings" \
   && { echo "  FAIL  label extracted as a reference (masking broken)"; fail=1; } \
   || echo "  ok    label not extracted (accepted loss, deliberate)"
-total=$(( ${#must_catch[@]} + ${#must_be_silent[@]} + ${#must_be_placeheld[@]} + 8 ))
+# 2026-09-17 (#134 step 2) — THE ARGUMENT GUARD, seeded here because it is the one part
+# of that change this harness CAN reach: it runs at module level on argv, above the DOCS
+# ternary that SEED short-circuits. Asserted on the exit status AND on the absence of a
+# findings section: the defect being guarded is an unrecognised argument producing a
+# small, reassuring count, so "no findings section" is the observable, not "no match".
+# ⚠️ `.` and `CLAUDE.md` are in the list on purpose. The first version of the guard
+# rejected only `--`-prefixed tokens while its message claimed there were no positional
+# arguments, and the /audit-context command with its flag dropped ran clean to exit 0.
+guard_fail=0
+for bad in --doc --docs-frozn --sibling-root -docs -h . CLAUDE.md; do
+  gout="$(SEED="$here/SEED.md" python3 "$here/refcheck.py" "$bad" 2>&1)"; grc=$?
+  if [ $grc -eq 0 ] || grep -q '### FINDINGS' <<<"$gout"; then
+    echo "  FAIL  unrecognised argument accepted: $bad (rc=$grc)"; fail=1; guard_fail=1
+  fi
+done
+[ $guard_fail -eq 0 ] && echo "  ok    rejected 7 unrecognised arguments (flags AND positionals)"
+# ...and the complement, or the guard could simply reject everything: a KNOWN flag must
+# still run. Under SEED the docs flags change nothing, which is the point — they must not
+# be an error either.
+for good in --sessions --docs --docs-live --docs-frozen; do
+  SEED="$here/SEED.md" python3 "$here/refcheck.py" "$good" >/dev/null 2>&1 \
+    || { echo "  FAIL  known flag rejected: $good"; fail=1; }
+done
+echo "  ok    accepted 4 known flags (the guard is not simply refusing everything)"
+total=$(( ${#must_catch[@]} + ${#must_be_silent[@]} + ${#must_be_placeheld[@]} + 10 ))
 [ $fail -eq 0 ] && echo "SENSITIVITY: $total/$total PASS" || echo "SENSITIVITY: FAILED"
 exit $fail

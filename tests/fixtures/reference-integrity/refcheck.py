@@ -17,6 +17,21 @@ ROOT = os.environ.get("REFCHECK_ROOT") or os.path.abspath(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", ".."))
 SIBLING_ROOTS = [os.path.dirname(ROOT), os.path.dirname(os.path.dirname(ROOT))]
 import os as _o
+
+
+def _relroot(d):
+    """Path as written relative to ROOT, with forward slashes; '' if outside ROOT.
+
+    ⚠️ NOT os.path.relpath(d, ROOT) on its own: that resolves an already-relative
+    path against the CWD first, so every report section below was silently
+    cwd-dependent and emitted "../../.." directory keys when the checker ran from
+    outside the repo (REFCHECK_ROOT exists exactly for that case, and the tier tests
+    run that way). Found 2026-09-17 while tiering docs/ for #134 step 2.
+    """
+    r = os.path.relpath(d, ROOT) if os.path.isabs(d) else d
+    r = r.replace(os.sep, "/")
+    return "" if r.startswith("../") or r == ".." else r
+
 # The USER-LEVEL auto-memory index is auto-loaded every session and its pointers
 # name repo files — but it lived outside DOCS until 2026-08-13, when a curate pass
 # found THREE dead session pointers in it (files never committed). The audit could
@@ -53,24 +68,193 @@ def _topic_files():
 # and what THEY reference was unchecked. A pointer that resolves into a document full of
 # dead references is a working door into a broken room.
 #
-# ⚠️ FLAG-GATED ON PURPOSE, and it must stay that way until the tiering in #134 step 2 is
-# settled. `docs/evidence/` and (largely) `docs/decisions/` are frozen accounts of a
-# moment -- structurally identical to `memory/project_session_*.md`, which this file
-# already excludes by default with exactly that rationale. Promoting docs/ to the default
-# scan set before tiering would MANUFACTURE findings against files that are correct as
-# history, and the pressure would then be to edit the history to silence the checker,
-# which is the compression #123 forbids.
+# ⚠️ STILL FLAG-GATED, and step 2 (2026-09-17) is the decision NOT to promote, taken with
+# the number in hand rather than deferred again: the LIVE tier alone carries 274 findings
+# in 65 of the 120 files it scans, against a default run of 0. Promoting replaces the 0
+# baseline -- the thing that makes a NEW break visible -- with a section the reader learns
+# to skip. ⛔ The precondition is the MARKING PASS, not more measurement: `memory/` went
+# 23 -> 0 on 2026-09-17 with 19 of the 23 moving into the counted placeholder section and
+# only ONE being a genuine stale marker, and `docs/` has never had that pass.
 #
-# ⛔ Step 1 is to MEASURE, so this flag deliberately takes ALL of docs/**/*.md rather than
-# a guessed live subset: the per-directory breakdown printed at the end of the run is the
-# evidence the tiering decision needs, and a subset chosen up front would decide the
-# question it was supposed to inform.
+# ⛔ THE TIER IS CODE, NOT A README TABLE. It lived as a hand-written table in
+# `docs/evidence/2026-08-28-refcheck-docs/README.md`, and the drift re-read was recomputed
+# by hand in llm-distillery#134's comments -- a hand-built population, which is what every
+# measurement error this project has made turned out to be. `### FINDINGS BY TIER` below
+# is emitted by the instrument that produced the findings.
+#
+# FROZEN means "a frozen account of a moment": a reference that broke because the world
+# moved is NOT decay there, and editing the record to silence the checker is the
+# compression #123 forbids. Same rationale and same disposition as
+# `memory/project_session_*.md` under --sessions.
+#
+# ⛔ THE DIRECTORY IS NOT THE TIER, AND THE FIRST DRAFT OF THIS CODE SAID IT WAS. It
+# warranted a directory-only rule with "every frozen entry is dated BY CONSTRUCTION",
+# which is false: `docs/decisions/framework-adoption-history.md` is undated, was edited
+# the same day, is routed into from `CLAUDE.md` TWICE, and carries the largest
+# finding count of any single file in the frozen set. A directory-only rule froze it
+# -- "never to be edited to satisfy this checker" -- along with 4 more pointer targets
+# and every undated index. Caught by the adversarial lens of `/review-changes`, not by
+# the 17 tests written to guard the tier. So the tier is three tests, in this order:
+#
+#   1. LIVE if the directory says so (anything not in DOCS_FROZEN_DIRS).
+#   2. LIVE if the ALWAYS-LOADED layer routes an agent into it -- the LIVE criterion's
+#      own wording, computed from the two files rather than hand-listed. Five files
+#      qualify today, all under docs/decisions/, and one of them
+#      (2026-08-25-pause-investment-risk.md) is reached for an UN-PAUSE PROCEDURE: a
+#      dated filename on an operational document.
+#   3. LIVE if the path carries no date AND sits DIRECTLY in the frozen directory --
+#      an undated file among dated siblings is an index or a running history, not an
+#      account of a moment. `_archive/` is exempt: frozen by definition, not by date.
+#      ⛔ THE DEPTH RESTRICTION IS NOT TIDINESS, and its absence was the SECOND round's
+#      repeat of the first round's defect -- another unhedged absolute about a population
+#      nobody had enumerated. Undated at ANY depth admitted 13 files of which 10 are
+#      frozen accounts by the tier's own definition: six verbatim copies of OTHER repos'
+#      ADRs under `evidence/adr/`, two training reports for a filter removed 2026-08-03,
+#      an article draft, a log excerpt -- 21 findings, 7.7% of the live total the
+#      promotion decision and the marking pass both rest on. A nested undated directory
+#      is a COLLECTION inside a frozen one; only a file beside the dated ones is an
+#      index. Enumerated at depth 3: `decisions/README.md`, `evidence/README.md`,
+#      `evidence/hypothesis-log-excerpts.md` -- two indexes and one excerpt file that is
+#      arguably frozen, carrying 1 finding. That residue is named, not hidden.
+#
+# ⚠️ ROUTED_FROM is IN-REPO ONLY, deliberately. The user-level auto-memory index is
+# auto-loaded too, but it lives outside the repo and is absent on another machine or a
+# fresh clone -- and a tier that differs by machine makes the split differ by who ran it.
+# Measured 2026-09-17: including it changes nothing (17 docs targets either way, the same
+# 5 in frozen directories), so the determinism is free.
+#
+# ⚠️ `templates/` IS LIVE, reversing step 1's "frozen or marked" proposal. A template is a
+# MAINTAINED document whose paths are non-resolving BY PURPOSE, and this instrument
+# already has the purpose-built mechanism for that: the `<!-- placeholder -->` marker,
+# which COUNTS them in their own section. Dropping a maintained file from the scan to hide
+# paths known not to resolve is the silent skip the whole instrument exists to prevent.
+DOCS_FROZEN_DIRS = ("_archive", "decisions", "evidence", "experiments", "reports")
+DOCS_LIVE_DIRS = ("<root>", "adr", "agents", "articles", "checklists", "guides",
+                  "ideas", "proposals", "references", "templates")
+ROUTED_FROM = ("CLAUDE.md", "memory/MEMORY.md")
+# ⛔ THE LEFT BOUNDARY IS THE WHOLE POINT. Without it, `NexusMind/docs/ARTICLE_RECORD.md`
+# -- a CROSS-REPO path, and `CLAUDE.md` carries two of them -- matched from its `docs/`
+# onward and registered as a routing target for a file of ours that does not exist. So
+# did a github.com URL ending in a docs path (fixture-verified, both directions). The
+# cross-repo pair was live in this repo while the pattern was unanchored: measured
+# 2026-09-17, the routed set went 17 -> 15 when the boundary landed, and the two that
+# left were exactly those NexusMind paths. They were inert only because no local file
+# happened to share their names, which is not a property anyone chose. `../docs/...` must still match -- `memory/MEMORY.md` writes its
+# pointers that way -- so the boundary is in front of the OPTIONAL `../`, not in front of
+# `docs/`, and the prefix is stripped after matching.
+#
+# ⚠️ WHAT IT STILL CANNOT SEE, stated because a residue nobody names is read as zero: the
+# pattern is context-blind. A path inside a fenced code block, inside a sentence saying it
+# does NOT exist, or inside a ~~struck~~ deletion marker still registers as routed. That
+# over-includes into LIVE -- more scanned, not less -- and the count of files reaching
+# LIVE this way is printed in FINDINGS BY TIER so a wrong one is visible rather than
+# silent. Building fence/polarity parsing here would be a second extractor beside the
+# one this file already has, and that is the duplication this change exists to remove.
+ROUTED_RE = re.compile(r"(?<![A-Za-z0-9_/-])((?:\.\./)*docs/[A-Za-z0-9_./-]+\.md)")
+_DATED_RE = re.compile(r"(19|20)\d\d[-_]\d\d[-_]\d\d")
+DOCS_FLAGS = ("--docs", "--docs-live", "--docs-frozen")
+# ⛔ `--docs` KEEPS MEANING ALL OF docs/. Every number on record -- 339 (2026-08-28), 401
+# (2026-09-12), 376 and 377 (2026-09-17, four surfaces and this file's own earlier draft)
+# -- was measured with it, and silently narrowing a flag to a subset would make those
+# readings wrong without touching the documents that quote them. `--docs-live` is the
+# preview of what promotion would put in the default set.
+KNOWN_FLAGS = ("--sessions",) + DOCS_FLAGS
+
+
+_ROUTED_CACHE = None
+
+
+def _routed_targets():
+    """docs/ paths the always-loaded layer routes an agent into (see ROUTED_FROM)."""
+    global _ROUTED_CACHE
+    if _ROUTED_CACHE is not None:
+        return _ROUTED_CACHE
+    out = set()
+    for f in ROUTED_FROM:
+        try:
+            text = open(_o.path.join(ROOT, f)).read()
+        except OSError:
+            # ⛔ Not a silent skip. A missing routing surface means the OVERRIDE cannot
+            # fire, so files that should be live would be tiered frozen and never
+            # scanned -- a narrowing that reports FEWER findings, which reads exactly
+            # like a repo that got cleaner.
+            raise SystemExit(f"refcheck: cannot read {f}, which the docs tier is derived "
+                             f"from (ROUTED_FROM). Refusing to tier without it.")
+        out |= {m.group(1).replace("../", "") for m in ROUTED_RE.finditer(text)}
+    _ROUTED_CACHE = out
+    return out
+
+
+def _tier_of_doc(rel, routed=None):
+    """Tier of a `docs/...` path. Raises if its directory has not been tiered.
+
+    Three tests in order -- see the DOCS_FROZEN_DIRS comment for why the directory
+    alone is not the tier.
+    """
+    parts = rel.split("/")
+    seg = parts[1] if len(parts) > 2 else "<root>"
+    if seg in DOCS_LIVE_DIRS:
+        return "live"
+    if seg not in DOCS_FROZEN_DIRS:
+        # ⛔ RAISE, never default into a tier. Landing silently in LIVE puts findings in
+        # the default set the day promotion happens; landing silently in FROZEN hides them
+        # forever; neither reads as a decision anyone took. And a run that cannot say what
+        # its scan set EXCLUDES must not print a number -- that is the same rule this
+        # instrument is built to enforce, applied to itself.
+        #
+        # ⚠️ NOT the three-outcome exit contract, which is a recorded DECLINE: originally
+        # at v1.29.0, then re-adopted and reverted twice (2026-08-29, and 2026-09-11 ->
+        # 2026-09-12) -- docs/decisions/framework-adoption-history.md, llm-distillery#134.
+        # That was a VERDICT nothing read. This aborts BEFORE any verdict, and what
+        # carries it is the printed demand, which the human running the audit reads --
+        # the caller this script actually has.
+        raise SystemExit(
+            f"refcheck: docs/{seg}/ has no tier, so the scan set is undefined -- refusing "
+            f"to report a number. Add '{seg}' to DOCS_LIVE_DIRS (maintained; a dead "
+            f"reference there costs something) or DOCS_FROZEN_DIRS (dated accounts of a "
+            f"moment, correct as history). llm-distillery#134 step 2.")
+    if rel in (_routed_targets() if routed is None else routed):
+        return "live"                       # the always-loaded layer points agents here
+    if seg == "_archive":
+        return "frozen"                     # frozen by definition, not by date
+    if _DATED_RE.search(rel):
+        return "frozen"
+    # rule 3, depth-restricted: docs/<frozen-dir>/<file>.md only
+    return "live" if len(parts) == 3 else "frozen"
+
+
+# ⛔ An UNRECOGNISED ARGUMENT must not read as a clean run, and "unrecognised" is not
+# "starts with --". The first draft checked only `--`-prefixed tokens and its own error
+# message then asserted "there are no positional arguments" while not enforcing it:
+# `refcheck.py . CLAUDE.md memory/MEMORY.md` -- the /audit-context command with its one
+# flag dropped -- ran to exit 0 and printed the full default report, which is precisely
+# the "small, reassuring findings count" the guard was written against. `-docs`, `-h` and
+# an em-dash `--docs` did the same, and em dashes are everywhere in this repo's prose.
+# Found by the adversarial lens of /review-changes; all four reproduced before this line
+# was widened. Upstream's checker DOES take --sibling-root and positional arguments, so a
+# command copied from the skill runs a DIFFERENT PROGRAM here.
+#
+# Module level, not inside _docs_files(): under SEED the DOCS ternary never calls that
+# function, and the harness is where a typo is most likely to be copied.
+for _a in _o.sys.argv[1:]:
+    if _a not in KNOWN_FLAGS:
+        raise SystemExit(f"refcheck: unrecognised argument {_a!r}. This fork takes only "
+                         f"{', '.join(KNOWN_FLAGS)} -- siblings are auto-discovered and "
+                         f"there are no positional arguments.")
+
+
 def _docs_files():
-    if "--docs" not in _o.sys.argv:
+    argv = _o.sys.argv
+    want = {"live": ("--docs" in argv or "--docs-live" in argv),
+            "frozen": ("--docs" in argv or "--docs-frozen" in argv)}
+    if not any(want.values()):
         return []
-    return [_o.path.relpath(f, ROOT)
-            for f in sorted(_g.glob(_o.path.join(ROOT, "docs", "**", "*.md"),
-                                    recursive=True))]
+    out = []
+    for f in sorted(_g.glob(_o.path.join(ROOT, "docs", "**", "*.md"), recursive=True)):
+        rel = _o.path.relpath(f, ROOT).replace(os.sep, "/")
+        if want[_tier_of_doc(rel)]:
+            out.append(rel)
+    return out
 
 
 DOCS = ["CLAUDE.md", "memory/MEMORY.md", "memory/gotcha-log.md"] \
@@ -372,11 +556,10 @@ for doc in DOCS:
     # LABEL rather than the mere absence of a finding.
     # The auto-memory index genuinely is outside ROOT, where doc-relative has no
     # meaning; rung5 covers it.
-    if os.path.isabs(doc):
-        _rel = os.path.relpath(doc, ROOT)
-        docdir = "" if _rel.startswith("..") else os.path.dirname(_rel)
-    else:
-        docdir = os.path.dirname(doc)
+    # ⚠️ ONE spelling of "relative to ROOT, or outside it". This was a second,
+    # independent copy of _relroot()'s predicate (`startswith("..")` against its
+    # `startswith("../") or == ".."`), which is how two copies of one rule drift apart.
+    docdir = os.path.dirname(_relroot(doc))
     absent=set()
     for rx in ABSENT_SPANS:
         for m in rx.finditer(text):
@@ -546,14 +729,21 @@ print("="*96); print("STEP 4 — REFERENCE INTEGRITY"); print("="*96)
 # scan set you cannot reconstruct is the "establish what a source EXCLUDES" failure in its
 # purest form, and this instrument's own history is two widenings whose prior clean results
 # were true-but-narrow.
-_flags = [f for f in ("--sessions", "--docs") if f in sys.argv] or ["(none)"]
+#
+# ⛔ THE FLAGS LINE PRINTS ON BOTH BRANCHES, and until 2026-09-17 it printed on neither
+# that mattered: `flags:` sat only in the >34 branch, and the default scan set is EXACTLY
+# 34 documents -- so the one run anybody makes routinely said nothing about its own scope,
+# and one more memory/*.md file would have flipped it. An absolute in a comment
+# ("always say which flags were in effect") that the code applies to one branch is the
+# same shape as a guard on a path its input never reaches.
+_flags = [f for f in KNOWN_FLAGS if f in sys.argv] or ["(none)"]
 if len(DOCS) <= 34:
-    print(f"docs scanned: {', '.join(DOCS)}   working-tree files: {len(TREE):,}   siblings found: {len(SIBS)}")
+    print(f"docs scanned: {', '.join(DOCS)}   flags: {' '.join(_flags)}   "
+          f"working-tree files: {len(TREE):,}   siblings found: {len(SIBS)}")
 else:
     _grp = defaultdict(int)
     for d in DOCS:
-        _grp[(os.path.dirname(os.path.relpath(d, ROOT)) or "<repo root>")
-             if not os.path.isabs(d) or not os.path.relpath(d, ROOT).startswith("..")
+        _grp[(os.path.dirname(_relroot(d)) or "<repo root>") if _relroot(d)
              else "<outside repo>"] += 1
     print(f"docs scanned: {len(DOCS)} files   flags: {' '.join(_flags)}   "
           f"working-tree files: {len(TREE):,}   siblings found: {len(SIBS)}")
@@ -597,13 +787,83 @@ print(f"\n### EXTENSIONS IN TREE NOT IN WHITELIST (dropped by the extractor)\n  
 print("\n### FINDINGS BY DIRECTORY — attribution, because a total cannot be tiered")
 _fd, _sd = defaultdict(int), defaultdict(int)
 for d, *_ in set(findings):
-    _fd[(os.path.dirname(os.path.relpath(d, ROOT)) if not os.path.isabs(d)
+    _fd[(os.path.dirname(_relroot(d)) if _relroot(d)
          else "<outside repo>") or "<repo root>"] += 1
 for d in DOCS:
-    _sd[(os.path.dirname(os.path.relpath(d, ROOT)) if not os.path.isabs(d)
+    _sd[(os.path.dirname(_relroot(d)) if _relroot(d)
          else "<outside repo>") or "<repo root>"] += 1
 if not findings: print("  (no findings)")
 for k in sorted(_sd):
     if _fd[k]: print(f"  {k+'/':44s} {_fd[k]:4d} unique in {_sd[k]:4d} file(s)")
 _silent = [k for k in sorted(_sd) if not _fd[k]]
 print(f"  -- clean: {', '.join(_silent) if _silent else '(none)'}")
+
+# llm-distillery#134 step 2 (2026-09-17) — THE TIER, EMITTED BY THE INSTRUMENT. It was a
+# hand-written table, and its drift re-read was recomputed by hand in the issue's
+# comments; a hand-built population is what every measurement error this project has made
+# turned out to be.
+#
+# ⛔ THE SPLIT IS THE SIGNAL, BUT IT IS NOT A RATE, AND THE FIRST DRAFT OF THIS COMMENT
+# READ IT AS ONE. It said "frozen grew ~7x faster", and #134's own comment said "~8x".
+# The denominator kills both: over those twenty days the whole `docs/` corpus went from
+# 168 files to 242, the growth almost entirely DATED EVIDENCE DIRECTORIES, which is the
+# frozen tier by construction. More frozen findings because there are more frozen files
+# is not a rot rate. Re-scored under today's rule by
+# `scripts/analysis/refcheck_tier_reparse.py`, from the two stored logs:
+# live 265 -> 274, frozen 73 -> 104. The promotion decision rests on neither -- 274 live
+# findings against a 0-finding default stands alone -- and the file counts below are
+# printed so the next reader is not handed a count to mistake for a rate.
+#
+# ⚠️ Printed only for a tier that is IN the scan set. A tier that was not scanned prints
+# "not scanned", never 0: "live 0 / frozen 0" would be a verdict over a population that
+# contains none of that tier -- a zero carrying no information, which is the failure this
+# file's own header warns about. The first draft printed the zero under --docs-live and
+# --docs-frozen, i.e. in the two runs this change exists to add, and a test asserted it.
+_docs_in_scan = [d for d in DOCS if _relroot(d).startswith("docs/")]
+if _docs_in_scan:
+    _tf, _tfiles, _thit = defaultdict(int), defaultdict(int), defaultdict(set)
+    # ⛔ THE OVERRIDES ARE COUNTED IN THE REPORT, because rule 2 makes the tier a
+    # function of MUTABLE TEXT. `CLAUDE.md` is the most-edited file here and its pointer
+    # table is under a per-row cap that every audit trims, so the likely edit is a
+    # REMOVAL -- which moves a file live -> frozen and makes the LIVE count FALL. A
+    # falling LIVE count reads as "the marking pass is working", which is the exact
+    # direction this instrument's own tests say they exist to catch. It cannot be
+    # prevented without going back to a hand-kept list, so it is made VISIBLE: if this
+    # number drops, a pointer went away, and the report says so where the audit reads it.
+    _ovr = defaultdict(int)
+    for d in _docs_in_scan:
+        _rel = _relroot(d)
+        _parts = _rel.split("/")
+        if len(_parts) > 2 and _parts[1] in DOCS_FROZEN_DIRS \
+           and _tier_of_doc(_rel) == "live":
+            _ovr["routing" if _rel in _routed_targets() else "undated index"] += 1
+        _tfiles[_tier_of_doc(_rel)] += 1
+    for d, *_ in set(findings):
+        rel = _relroot(d)
+        if rel.startswith("docs/"):
+            _tf[_tier_of_doc(rel)] += 1
+            _thit[_tier_of_doc(rel)].add(rel)
+    print("\n### FINDINGS BY TIER — docs/ only (#134 step 2); the split, not the total")
+    for t in ("live", "frozen"):
+        dirs = ", ".join(DOCS_LIVE_DIRS if t == "live" else DOCS_FROZEN_DIRS)
+        if not _tfiles[t]:
+            print(f"  {t.upper():7s} not scanned   {dirs}")
+            continue
+        # ⚠️ TWO file counts, because one word cannot carry both. "212 in 103 files" was
+        # read as "103 files have findings" when 103 was the files SCANNED -- and it is
+        # the number that sizes the marking pass, so the ~2x error landed in the document
+        # defining the work.
+        why = ""
+        if t == "live" and _ovr:
+            why = "   [+" + ", +".join(f"{n} by {k}" for k, n in sorted(_ovr.items())) + "]"
+        print(f"  {t.upper():7s} {_tf[t]:4d} unique in {len(_thit[t]):4d} of "
+              f"{_tfiles[t]:4d} scanned file(s)   {dirs}{why}")
+    # ⚠️ These lines deliberately do NOT begin with a tier name. They did, and a
+    # consumer matching "the line starting with LIVE" then picked up the prose instead
+    # of the numbers -- it raised rather than asserting, which is luck, not a guard.
+    print("  The live tier is the promotion candidate and is NOT in the default scan\n"
+          "  set: it would replace a 0-finding baseline with 200+ and cost the ability\n"
+          "  to see a NEW break. Frozen records stay flag-gated permanently -- correct\n"
+          "  as history, never to be edited to satisfy this checker (#123). A frozen\n"
+          "  DIRECTORY does not freeze a file the always-loaded layer routes into, or an\n"
+          "  undated index sitting beside the dated ones: see _tier_of_doc.")

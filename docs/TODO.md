@@ -5,10 +5,12 @@
 *A bare "continue" means this list, top down. Each line names the FIRST action, not the
 topic. Re-read the block under it before starting; the reasons are there, not here.*
 
-1. **LD#134 step 2 — tier `docs/`, and decide whether `--docs` comes off the flag.** Best-evidenced
-   item on the board: **376** findings, **43% frozen and climbing at ~8× the live rate**
-   (338→376 in 20 days, +34 of +37 frozen). Step 1 is done and must not be redone —
-   `docs/evidence/2026-08-28-refcheck-docs/`.
+1. **LD#134 step 3 — the MARKING PASS over the live tier.** Steps 1 and 2 are done and must
+   not be redone (`docs/decisions/2026-09-17-refcheck-docs-tier.md`). The tier is in code;
+   `--docs-live` prints the promotion preview. ⛔ **Read the record before quoting a number
+   here** — this line deliberately carries none, and the "~8× faster" framing it used to
+   carry was refuted: that was a count over a population that grew 168 → 242 files.
+   Promotion to the default set comes AFTER marking, in a separate change.
 2. **The retracted 19.9%/13.0% framing is still live in the always-loaded file** — `CLAUDE.md`'s
    prefilter constraint, plus `docs/HUMAN_THRIVING_V8_PLAN.md:176` and
    `memory/cross-repo-prioritization.md:1173`/`:1359`. Two copies carry the correction, four
@@ -23,12 +25,57 @@ topic. Re-read the block under it before starting; the reasons are there, not he
    check whether the new `Occurrences` column ever moved. If not, delete or mechanize it;
    do not re-explain it. `memory/hypothesis-ledger.md`.
 
-⚠️ **Before quoting `references 23 → 0`** (2026-09-17 audit): that is the DEFAULT scan set only.
-`--docs` is opt-in and excludes 167 files. See item 1.
+⚠️ **Before quoting `references 23 → 0`** (2026-09-17 audit): that is the DEFAULT scan set only,
+and `docs/` is still opt-in. See item 1.
 
 ---
 
-## 🔵 LAST SESSION — **framework adopt queue CLOSED (v1.45.1); I built a probe to kill a decaying claim and gave it no caller.**
+## 🔵 LAST SESSION — **LD#134 step 2: the tier is settled and in CODE; `--docs` stays flag-gated. Review found my tier rule wrong TWICE, the same way.**
+
+✅ **#134 step 2, 2026-09-17.** `$0`, no oracle, no GPU, nothing in `filters/`. **Deploy N/A —
+inapplicable, not skipped** (no filter package, model, calibration, threshold or scoring probe
+changed). **Merge N/A** — worked on `main`, no branch. Full record:
+`docs/decisions/2026-09-17-refcheck-docs-tier.md`; posted to #134.
+
+**The decision: `--docs` does NOT come off the flag.** Live tier **254 findings in 60 of 111
+scanned files** against a default run of **0**; promotion would replace the 0 baseline with a
+section the reader learns to skip. Precondition is the marking pass (step 3), not more
+measurement. Nothing under `docs/` was edited to satisfy the checker.
+
+⛔⛔ **THE KEEPER — I WARRANTED A TIER RULE WITH AN ABSOLUTE ABOUT A POPULATION I HAD NOT
+ENUMERATED, AND THEN THE FIX DID IT AGAIN.** Draft 1 tiered by directory ("every frozen entry
+is dated BY CONSTRUCTION"): false — it froze `docs/decisions/framework-adoption-history.md`,
+undated, edited that same day, routed into from `CLAUDE.md` twice, largest finding count of any
+single frozen file, and declared it *"never to be edited to satisfy this checker"*. Draft 2's
+fix ("undated ⇒ live") admitted **13 files of which 10 are frozen accounts** — six copies of
+OTHER repos' ADRs, two reports for a filter removed 2026-08-03 — **21 findings, 7.7%** of the
+live total the decision rests on. ⭐ **Two instances is a CLASS, and the round cap's own remedy
+is a CENSUS, not a third round**: ran two (every absolute about behaviour in the new prose — 3
+more defects; every count either tool prints against its population — 19 surfaces).
+
+⛔ **The skill's own command ran clean against this fork.** `refcheck.py . CLAUDE.md
+memory/MEMORY.md` — the `/audit-context` invocation with its one flag dropped — **exited 0 and
+printed the full default report**, because the new guard rejected only `--`-prefixed tokens
+while its message asserted there were no positional arguments. `-docs`, `-h` and an em-dash
+`--docs` too. Now: any unrecognised argument stops the run, seeded both ways in `run.sh`.
+
+⚠️ **Two numbers retracted from #134's own comments.** "43% frozen, climbing ~8× the live rate"
+does not survive its denominator — the `docs/` corpus went **168 → 242 files** over those 20
+days, almost all dated evidence directories, i.e. the frozen tier by construction. And the
+"+4/+34" was not a re-scoring effect. Re-scored under one rule by a committed script
+(`scripts/analysis/refcheck_tier_reparse.py`): live 245 → 254, frozen 93 → 124, both lower
+bounds.
+
+⚠️ **Latent bug found writing the tests, unrelated to the tier:** `os.path.relpath(d, ROOT)` on
+an **already-relative** path resolves against the **CWD**, so every directory-grouped report
+section was cwd-dependent. Fixed with one `_relroot()`; `--docs` output byte-identical.
+
+Verification: 18 mutants / 18 killed (manual run, listed in the record); `run.sh` **40/40** and
+shown going RED on a seeded regression; **43** new tests; suite **891 passed, 25 skipped**.
+
+---
+
+## 🔵 PREVIOUS SESSION — **framework adopt queue CLOSED (v1.45.1); I built a probe to kill a decaying claim and gave it no caller.**
 
 ✅ **Framework v1.40.0 → v1.45.1, 2026-09-17 (night).** `$0`, no oracle, no GPU, nothing in
 `filters/`. **Deploy N/A — inapplicable, not skipped** (no filter package, model, calibration,
@@ -78,7 +125,7 @@ flagged. Stated once, with its command, in `docs/decisions/framework-adoption-hi
 
 ---
 
-## 🔵 PREVIOUS SESSION — **`/audit-context` + curate; references 23 → 0 in the DEFAULT scan set. Framework still 6 releases behind, stamp still NOT bumped.**
+## 🔵 EARLIER SESSION — **`/audit-context` + curate; references 23 → 0 in the DEFAULT scan set. Framework still 6 releases behind, stamp still NOT bumped.**
 
 ✅ **`/audit-context` 2026-09-17** (`ad32356` + this commit). `$0`, no oracle, nothing in
 `filters/`, **deploy N/A — inapplicable, not skipped** (no filter package, model, calibration or
@@ -257,8 +304,10 @@ Both `memory/b650-gpu.md` and `CLAUDE.md` had this wrong, in opposite directions
    only in the same change that gives it a caller — there is no CI and `run.sh` uses `|| true`.
    Exit 2 is **unreachable in its own motivating scenario** (forced `SIBS=[]` still yields 22
    findings → exit 1). Full write-up: `framework-adoption-history.md` 2026-09-12; also
-   `veen-systems/llm-distillery#134`. Ours: 520 lines, 34 auto-discovered docs, ignores CLI args,
-   stale-placeholder detection, 22 findings. Framework's: 1,151 lines, `--sibling-root`,
+   `veen-systems/llm-distillery#134`. Ours: 34 auto-discovered docs, **four flags and nothing
+   else — an unrecognised argument now stops the run** (2026-09-17; before that the skill's
+   `--sibling-root … . CLAUDE.md` command scanned the default set and printed a clean count),
+   stale-placeholder detection. Framework's: 1,151 lines, `--sibling-root`,
    collisions, 218 findings (**115 COLLISION** on basenames with 12–34 copies; **39 of the 102
    UNRESOLVED are rung-4 naming, not dead files**). ⛔ **Do NOT ship the framework's SPEC.md beside
    our script** — it documents a different program. Ties into **#134**, which is real and now
