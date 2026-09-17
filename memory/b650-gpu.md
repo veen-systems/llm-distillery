@@ -17,16 +17,27 @@ ssh b650-gpu        # account is `jeroen` (NOT jwasys); works from situla and sa
   "filters/uplifting/v7/model")` on CUDA, bf16, **3.1 s load, 211 ms first forward**,
   6 logits. Triton JIT compiles a kernel in **both** venvs. Tracked-file drift at the
   checkout was **0** (28 untracked artefacts, all `??`).
-- ⛔ **EVERY CUDA NUMBER IN THIS FILE WAS MEASURED ON THE 3090 Ti AND IS NOW STALE.**
-  Concretely: the device term **C→G, CPU→CUDA max |Δ| 0.1956, 1 flip @4.0, 3 @4.5**
-  (`docs/evidence/2026-08-10-b650-gpu-production-stack-parity.md`, run G = `b650 |
-  CUDA | production's pins`) was measured on Ampere; the arm no longer exists. So is
-  the "~2 min per 660 rows" figure below. **The CPU-side terms survive** — P→C (host,
-  660/660 bit-identical, 0.0000) held the device at CPU and the CPU did not change —
-  and so does the library-stack term B→C (0.2008), also CPU-only. Re-run
-  `box_parity.py` + `diff_box_parity.py --threshold` before quoting ANY b650-CUDA
-  number, and note the extrapolation it feeds got *worse*: gpu-server-CUDA vs
-  b650-CUDA was already unmeasured, and the two are now different architectures.
+- ⭐ **RE-MEASURED THE SAME DAY — `docs/evidence/2026-09-17-b650-gpu-swap-parity/`
+  (EXP-038). The control is byte-identical 660/660**, so the GPU is the only free
+  variable, and b650's device term is now a Blackwell number:
+  | term | max \|Δ\| | rows > 0.16 | flips @4.0 | flips @4.5 |
+  |---|---|---|---|---|
+  | CPU→CUDA, **Ampere** (dead hardware) | 0.1956 | 3 | 1 | 3 |
+  | CPU→CUDA, **Blackwell** (current) | **0.1572** | **0** | 1 | **2** |
+  | **Ampere→Blackwell, the swap itself** | **0.2357** | 3 | **2** | 1 |
+
+  ⛔ **STORED b650-CUDA DUMPS MAY NOT BE DIFFED AGAINST NEW ONES** — that is the
+  0.2357 row, above the #95 floor and 2 flips at the deployed 4.0. Re-dump instead.
+  ⛔ **AND DO NOT READ 0.1572 AS "THE DEVICE IS FREE NOW": it has NO row above the
+  floor and still flipped two verdicts at 4.5** (the rows moved 0.0467 and 0.1421).
+  Flips come from small deltas *near the bar*; max-|Δ| against a floor cannot see
+  them. **Read the flip count, not the magnitude.**
+  ✅ **The CPU-side terms survive untouched** — P→C (host, 660/660 bit-identical,
+  0.0000) and B→C (stack, 0.2008) both held the device at CPU, and the control
+  re-proves the CPU arm today. ⚠️ The gpu-server extrapolation got *worse*:
+  CUDA-to-CUDA across the boxes was already unmeasured and is now a comparison
+  across two GPU architectures. ⚠️ **Inference only — whether the swap changes a
+  TRAINED adapter is unmeasured, and is the louder question.**
 
 - ⭐ **`~/llm-distillery` IS A GIT CHECKOUT as of 2026-09-06** (`git init` + remote +
   `git checkout -f main`; every gitignored artefact — `datasets/`, both venvs,
@@ -67,7 +78,9 @@ ssh b650-gpu        # account is `jeroen` (NOT jwasys); works from situla and sa
 - **Data staged**: `~/llm-distillery/filters/common/obituary_detector/` —
   training corpora (131 MB) + v3/v4/v5 model artifacts + train_v1.py/build_v5_seed.py.
 - **Benchmark**: 1,562-row mpnet embed in 1.9 s (~830 rows/s) — ~5× gpu-server.
-  ⚠️ **3090 Ti figure, not re-run on the 5090.**
+  ⚠️ **3090 Ti figure, not re-run on the 5090.** What *was* timed on the 5090
+  (2026-09-17): the `uplifting v7` student over 660 rows in **12 s** on CUDA
+  against **9 min 13 s** on this box's CPU, and ~2 min recorded for the 3090 Ti.
 - ⚠️ **"Cross-box" skew — MIS-NAMED, and scoped; do not apply it blanket** (2026-08-09;
   renamed 2026-08-29). The |0.16| was measured on the **obituary detector: mpnet +
   sklearn MLP**, ST 5.6.1 here vs 5.2.2 on gpu-server (gotcha-log 2026-07-30) — i.e.

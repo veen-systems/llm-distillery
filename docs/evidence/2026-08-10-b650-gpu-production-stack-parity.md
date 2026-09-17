@@ -28,6 +28,17 @@ is **the library stack plus the device**, and **hardware contributes nothing**.
 > missing fourth run (b650 **CPU** + production pins, ~16 min on a free box)
 > settles it and shows the reverse. **Pinning works. It works perfectly.**
 
+> ⛔ **RUN G'S HARDWARE NO LONGER EXISTS (added 2026-09-17).** Run G is
+> `b650 | CUDA | production's pins`, and that CUDA was an **RTX 3090 Ti**. b650 now
+> has an **RTX 5090**. The C→G device term below (**0.1956**, 1 flip @4.0, 3 @4.5)
+> remains a correct measurement of CPU→CUDA-on-Ampere; it is **no longer a
+> description of b650**. Re-measured the day of the swap, with the CPU arm
+> reproducing byte-identically 660/660 as the control: CPU→CUDA on Blackwell is
+> **0.1572** (0 rows over the floor, but still 2 flips at 4.5), and the two GPUs
+> disagree with **each other** at **0.2357**. The P→C host term and the B→C stack
+> term are untouched — both held the device at CPU.
+> `docs/evidence/2026-09-17-b650-gpu-swap-parity/`, EXP-038.
+
 ## The four runs
 
 | id | host | device | stack |

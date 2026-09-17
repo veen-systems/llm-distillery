@@ -135,6 +135,9 @@ not measured. The production-relevant number is therefore an estimate.
   The two real terms are the **library stack** (max |Δ| **0.2008**, 3 flips at 4.5)
   and the **device, CPU→CUDA** (max |Δ| **0.1956**, 1 flip at 4.0, 3 at 4.5) — so
   *"same magnitude as 0.16"* was wrong as well: both exceed it.
+  ⚠️ **That 0.1956 is CPU→CUDA on a 3090 Ti, which b650 no longer has.** Its
+  Blackwell replacement measures **0.1572** — see the ⭐ block below before
+  quoting either, and note the sub-floor one still flips verdicts.
   ⚠️ Everything below was measured 2026-08-09 with the **stack unmatched**, so read
   it as the stack term, not a box term.
   **NOW MEASURED FOR THE GEMMA STUDENT TOO (2026-08-09 night)**, and it is the
@@ -156,6 +159,32 @@ not measured. The production-relevant number is therefore an estimate.
   ⛔ *That last line read "still unmeasured for the student: CPU vs CUDA" until
   2026-08-29. It was measured the NEXT DAY at **0.1956**, 1 flip at 4.0 and 3 at
   4.5 — see the correction block above.*
+  ⭐ **THE DEVICE TERM IS HARDWARE-SPECIFIC, AND b650'S WAS RE-MEASURED
+  2026-09-17 WHEN ITS GPU WAS SWAPPED** (3090 Ti / Ampere → RTX 5090 / Blackwell;
+  `docs/evidence/2026-09-17-b650-gpu-swap-parity/`, EXP-038). Same box, same pins,
+  same 660 rows, and the **control is byte-identical 660/660** — the CPU arm
+  reproduces the 2026-08-10 dump bit for bit five weeks and a hardware swap later,
+  so the GPU is the only free variable. Three numbers, all on `uplifting v7`:
+  - **CPU→CUDA on Ampere: 0.1956**, 3 rows over the floor, 1 flip @4.0, 3 @4.5.
+  - **CPU→CUDA on Blackwell: 0.1572**, **0 rows over the floor**, 1 flip @4.0, **2 @4.5**.
+  - **Ampere→Blackwell (the swap itself): 0.2357**, 3 rows over, 2 flips @4.0, 1 @4.5.
+
+  ⛔ **AND THIS IS THE COUNTER-EXAMPLE TO "BELOW THE FLOOR MEANS FREE": the
+  Blackwell device term has NO row above 0.16 and still flipped two verdicts at
+  4.5.** The flipping rows moved by **0.0467** and **0.1421**. Flips are made by
+  small deltas *near the bar*, not by large ones — a max-|Δ| comparison against a
+  floor cannot see them, so **read the flip count, never the magnitude alone**.
+  Reach for this run whenever someone (including me) argues a sub-floor term can
+  be ignored.
+
+  ⚠️ Two confounds were ruled out rather than assumed: the 5090 is
+  **self-deterministic run-to-run** (byte-identical 660/660, so none of the 0.2357
+  is the GPU failing to repeat itself) — though that is one process shape on one
+  box, **not** stability across batch size or composition — and the stored
+  `_meta` stack fingerprints are identical across all dumps.
+  ⛔ **Stored b650-CUDA dumps predate the swap and may NOT be diffed against new
+  ones.** The CPU-side terms (host 0.0000, stack 0.2008) are untouched: both were
+  measured with the device held at CPU, and the control re-proves the CPU arm.
 
 ## A THIRD cousin, and it is 4× larger: ORACLE run-to-run noise (measured 2026-08-12)
 

@@ -15,6 +15,8 @@ Produced by `scripts/verification/box_parity.py`, compared with
 | `uplifting_v7_test660_b650_2026-08-09.jsonl` | b650, **CPU** | py 3.12.3, torch 2.13.0+cu130, transformers 5.14.1, peft 0.19.1 |
 | `uplifting_v7_test660_b650-CPU-prodstack_2026-08-10.jsonl` | b650, **CPU** | py 3.11.15 + production's pins — **660/660 bit-identical to production** |
 | `uplifting_v7_test660_b650-GPU-prodstack_2026-08-10.jsonl` | b650, **CUDA** | same pins; 1 flip at 4.0, 3 at 4.5 |
+| `uplifting_v7_test660_b650-CPU-prodstack_2026-09-17.jsonl` | b650, **CPU**, after the GPU swap | same pins — **byte-identical to the 2026-08-10 CPU dump, 660/660** |
+| `uplifting_v7_test660_b650-GPU5090-prodstack_2026-09-17.jsonl` | b650, **CUDA — RTX 5090** | same pins; 1 flip at 4.0, 2 at 4.5 |
 
 The first two are CPU-only; the third is the same box on CUDA with production's
 library versions pinned from `constraints/production-gpu-server.txt`, which is
@@ -29,6 +31,16 @@ from the stack (it had not) and that pinning made agreement worse (it does the
 opposite). All three: batch size 16, same 660-row `uplifting_v7` held-out oracle test
 split, md5-identical adapter weights / tokenizer / `inference.py` /
 `base_scorer.py` / `config.yaml` / `calibration.json` / `filters/common/*`.
+
+⛔ **THE TWO `2026-08-10` GPU DUMPS ARE AMPERE ARTEFACTS.** b650's RTX 3090 Ti was
+replaced by an RTX 5090 on 2026-09-17, and the two GPUs disagree with each other by
+max |Δ| **0.2357** — above the #95 floor, 2 flips at the deployed 4.0. **Do not diff
+a stored CUDA dump against a fresh one; re-dump.** The CPU dumps are unaffected and
+the control proves it: the 2026-09-17 CPU arm reproduces the 2026-08-10 one
+byte-identically, 660/660, five weeks and a hardware swap apart. The new device term
+is **0.1572 with zero rows above the floor — which still flipped two verdicts at
+4.5**, so read the flip count rather than the magnitude.
+`docs/evidence/2026-09-17-b650-gpu-swap-parity/` (EXP-038).
 
 **They are committed because regenerating them is expensive and constrained**:
 ~30 min of CPU on the serving box, which is only free between pipeline cycles
