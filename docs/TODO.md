@@ -1,48 +1,60 @@
 # LLM Distillery - TODO
 
-## ▶️ START HERE — the ordered queue, as of 2026-09-17 (evening, after the #156/#158/#104 session)
+## ▶️ START HERE — the ordered queue, as of 2026-09-21 (after the harm-stamp enable, `NM#519`)
 
 *A bare "continue" means this list, top down. Each line names the FIRST action, not the
 topic. Re-read the block under it before starting; the reasons are there, not here.*
 
-0. ⏸️ **OWNER DECISION, NOTHING ELSE UNBLOCKS IT: the ~$3.2–3.6 adverse-pool spend (`#156`).**
+0. **THE HARM STAMP IS LIVE — measure the per-lens flag rate off production rows (`#156` step 2).**
+   Owner said 2026-09-21 *"i want the harm detector in operation"*; `NM#519` merged and pulled onto
+   sadalsuud, `pipeline.harm_detector.enabled: true` (read back through the host's own
+   `UnifiedConfigManager`, not off the file). Stamp-only: no threshold ships with the detector, no
+   filter config reads the fields, nothing is gated. ⛔ **The population check is the deliverable,
+   not the flip** — run `NexusMind/scripts/stamp_census.py` before quoting any coverage figure, and
+   a cold start is capped at 3,000/run (~12 cycles, ~2 days), so early cycles are legitimately
+   part-stamped. Then per-lens flag rates, the only thing that can set a cap. ⚠️ The `record_path`
+   entry on the three register fields is OWED once the census confirms population. `NM#519`, `#156`.
+
+1. ⏸️ **OWNER DECISION, STILL OPEN: the ~$3.2–3.6 adverse-pool spend (`#156`).** ⚠️ **Item 0
+   did NOT answer this** — the shadow stamp counts what the detector FINDS and is structurally
+   blind to what it misses, so it narrows the per-lens GATING decision, not this one.
    `EXP-039` closed the last free route with a negative — the per-run votes buy nothing — so the
    pool is now the route to new signal rather than a ranked option. ⛔ **Do not re-run the free
    arm**; its one untested variant needs a bigger positive class AND a new pre-registered bar.
    The pool is sha256-pinned, so nothing degrades while it waits.
    Owner said 2026-09-17: *"i need to think about this later."*
 
-1. **LD#134 step 3 — the MARKING PASS over the live tier.** Steps 1 and 2 are done and must
+2. **LD#134 step 3 — the MARKING PASS over the live tier.** Steps 1 and 2 are done and must
    not be redone (`docs/decisions/2026-09-17-refcheck-docs-tier.md`). The tier is in code;
    `--docs-live` prints the promotion preview. ⛔ **Read the record before quoting a number
    here** — this line deliberately carries none, and the "~8× faster" framing it used to
    carry was refuted: that was a count over a population that grew 168 → 242 files.
    Promotion to the default set comes AFTER marking, in a separate change.
-2. **The retracted 19.9%/13.0% framing is still live in the always-loaded file** — `CLAUDE.md`'s
+3. **The retracted 19.9%/13.0% framing is still live in the always-loaded file** — `CLAUDE.md`'s
    prefilter constraint, plus `docs/HUMAN_THRIVING_V8_PLAN.md:176` and
    `memory/cross-repo-prioritization.md:1173`/`:1359`. Two copies carry the correction, four
    carry the retraction. Deserves its own review. ⚠️ **Cite it by name, not by line** — it was
    `CLAUDE.md:74` until 2026-09-17 and the frontmatter edits move these numbers every session.
-3. **LD#160 — two Dutch-name violations**, owner call pending: `docs/adr/009-...:25,34,35,37,60`
+4. **LD#160 — two Dutch-name violations**, owner call pending: `docs/adr/009-...:25,34,35,37,60`
    and `scripts/analysis/cross_filter_landscape.py` (39 occurrences). Mechanize with
    `check_framework_language.py` whose allowlist **is** the carve-out table; show it go red first.
    ⚠️ It now has a `proposed` row in `memory/gotcha-log.md` § Mechanized — move it to `live`
    only after a seeded positive, not after writing the script.
-4. **H-MECH-1 — watch, do not act yet.** Three `/review-changes` batteries from 2026-09-17,
+5. **H-MECH-1 — watch, do not act yet.** Three `/review-changes` batteries from 2026-09-17,
    check whether the new `Occurrences` column ever moved. If not, delete or mechanize it;
    do not re-explain it. `memory/hypothesis-ledger.md`.
-5. **The HELDOUT detector band (`#158`'s remaining half).** `EXP-040` measured out-of-fold bands;
+6. **The HELDOUT detector band (`#158`'s remaining half).** `EXP-040` measured out-of-fold bands;
    the issue quotes **heldout** recall and the two are not comparable. Cheap on the 5090 (embed +
    5 fits per detector) and it is what would give the live 0.85 obituary op-point a defensible
    range. ⛔ Heldout corpora are on b650 at `filters/common/obituary_detector/training/data/`.
-6. **`#104` item 1 — the only arm that measures PRODUCTION's configuration.** `EXP-041` did the
+7. **`#104` item 1 — the only arm that measures PRODUCTION's configuration.** `EXP-041` did the
    device axis on one box; gpu-server's own GPU is untouched, and CUDA-to-CUDA across the two
    boxes is now a comparison across two GPU ARCHITECTURES. ⚠️ Needs a gap between pipeline cycles
    (`nexusmind-scorer` has `Conflicts=ollama.service`), which is what makes it the expensive one.
    ⛔ This is NOT blocking anything: the shipped decision was stamp-and-band, already done.
 
 ⚠️ **Before quoting `references 23 → 0`** (2026-09-17 audit): that is the DEFAULT scan set only,
-and `docs/` is still opt-in. See item 1.
+and `docs/` is still opt-in. See item 2.
 
 ---
 
@@ -622,19 +634,22 @@ valid-JSON **non-object line crashes the stage** (reachable via the `aggregator_
 **0 such files in production today**); a NaN score would write invalid JSON into `data/raw`.
 
 ▶ **NEXT in Lane C, in order:**
-1. ✅ **DONE — `NM#474` merged `01a9809`, 2026-09-11, both checks green.** ⛔ **And it is ON THE
-   PRODUCTION HOST, dormant** (verified 2026-09-17 by reading sadalsuud, not by inference:
-   `/home/jeroen/local_dev/NexusMind` is on `main` at `ce8ea31`, `src/preprocessing/harm.py`
-   present, `config/app.yaml` `harm_detector.enabled: false`). **Merge and enable were always two
-   separate owner calls — the enable one is untaken**, so the stage returns
-   `{"skipped": "disabled"}` at `scripts/main.py:825` and stamps nothing. ⚠️ The `record_path` entry owed on the three register fields stays owed: it waits on
-   `stamp_census.py` confirming population, which cannot happen while `enabled: false`.
-   ⚠️ **OWED, one comment: `NexusMind/config/app.yaml` still calls the mtime ordering a
-   "⛔ KNOWN DEFECT … until that is keyed on the filename timestamp" — `src/preprocessing/harm.py`
-   `_collection_time` (`:92`) HAS been keyed on the `(\d{8}_\d{6})` filename stamp since
-   `f1a1f40`, so the config describes code that no longer exists.** Not fixed 2026-09-17: that
-   checkout was on `fix/nm497-robots-denominator` with `config/app.yaml` already modified, and the
-   fix must not ride an unrelated branch. Needs its own branch off `main`.
+1. ✅ **DONE — `NM#474` merged `01a9809`, 2026-09-11; the ENABLE call followed on 2026-09-21**
+   (`NM#519`, owner: *"i want the harm detector in operation"*). ⛔ **Merge and enable were always
+   two separate owner calls**, and the second was taken six weeks after the first — the dormant
+   state was a decision, not an oversight. sadalsuud is on `1d4dc40` with
+   `harm_detector.enabled: true`, read back through the host's own `UnifiedConfigManager`.
+   ⭐ **The flip was outcome-proven before it shipped, not predicate-proven**: the stage ran
+   through its real caller over 3,004 real `data/raw` rows and stamped 3,000 (`device: cpu`), where
+   the same call returns `{"skipped": "disabled"}` at `scripts/main.py:825` beforehand.
+   ⚠️ **The smoke REPRODUCED a parked warning instead of clearing it** — the cap cut mid-file and
+   `deferred_over_cap` reported **0** while 4 rows went unstamped. Known, on `NM#474`, still open.
+   ⚠️ The `record_path` entry owed on the three register fields is now unblocked but still OWED:
+   it waits on `stamp_census.py` confirming population on real post-flip rows.
+   ✅ The stale mtime comment rode `NM#519`: `config/app.yaml` had called the ordering a
+   "⛔ KNOWN DEFECT … until that is keyed on the filename timestamp" while `_collection_time`
+   (`src/preprocessing/harm.py:92`) had been keyed on the `(\d{8}_\d{6})` filename stamp since
+   `f1a1f40` — the config was describing code that no longer existed.
 2. ✅ **DONE 2026-09-17 — `EXP-039`, $0, and it came back NEGATIVE.** The per-run votes add
    nothing: **−0.4 of 9 paired per seed**, ~30% more panel flags for the same catch, **1.4 vs 2.2**
    at matched flag counts. ⇒ ⏸️ **THE ~$3.2–3.6 POOL SPEND IS NOW THE DECISION, not a ranked
