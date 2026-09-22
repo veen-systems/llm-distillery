@@ -10,10 +10,16 @@ topic. Re-read the block under it before starting; the reasons are there, not he
    sadalsuud, `pipeline.harm_detector.enabled: true` (read back through the host's own
    `UnifiedConfigManager`, not off the file). Stamp-only: no threshold ships with the detector, no
    filter config reads the fields, nothing is gated. ⛔ **The population check is the deliverable,
-   not the flip** — run `NexusMind/scripts/stamp_census.py` before quoting any coverage figure, and
-   a cold start is capped at 3,000/run (~12 cycles, ~2 days), so early cycles are legitimately
-   part-stamped. Then per-lens flag rates, the only thing that can set a cap. ⚠️ The `record_path`
-   entry on the three register fields is OWED once the census confirms population. `NM#519`, `#156`.
+   not the flip** — run `NexusMind/scripts/stamp_census.py` before quoting any coverage figure.
+   ⛔ **DO NOT WAIT FOR THE BACKLOG TO CLEAR — IT CANNOT** (`NM#522`, measured 2026-09-22): the
+   3,000/run cap sits BELOW intake (3,072 and 3,650 over two cycles), so there is nothing spare to
+   drain the 36,694 unstamped rows inside the 3-day window, and newest-first puts the whole
+   shortfall in the OLDEST tail. The config's *"~12 cycles, ~2 days"* is a fixed backlog divided by
+   the cap with no intake term — structurally wrong, not stale, **and I repeated it here and on
+   `#156` before measuring it**. Filtered-population presence (61.17% → 85.29% over three cycles) is
+   what the per-lens measurement needs; the corpus-wide rate is the thing that stays unavailable.
+   Then per-lens flag rates, the only thing that can set a cap. ✅ `record_path` DONE (`73ad620`,
+   contracts 1.20.0 / article-record 0.7.0). `NM#519`, `NM#522`, `#156`.
 
 1. ⏸️ **OWNER DECISION, STILL OPEN: the ~$3.2–3.6 adverse-pool spend (`#156`).** ⚠️ **Item 0
    did NOT answer this** — the shadow stamp counts what the detector FINDS and is structurally
