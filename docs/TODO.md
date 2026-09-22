@@ -1,27 +1,56 @@
 # LLM Distillery - TODO
 
-## ▶️ START HERE — the ordered queue, as of 2026-09-21 (after the harm-stamp enable, `NM#519`)
+## ▶️ START HERE — the ordered queue, as of 2026-09-22 (harm stamp live; `ADR-022` amendment drafted, unruled)
 
 *A bare "continue" means this list, top down. Each line names the FIRST action, not the
 topic. Re-read the block under it before starting; the reasons are there, not here.*
 
-0. **THE HARM STAMP IS LIVE — measure the per-lens flag rate off production rows (`#156` step 2).**
-   Owner said 2026-09-21 *"i want the harm detector in operation"*; `NM#519` merged and pulled onto
-   sadalsuud, `pipeline.harm_detector.enabled: true` (read back through the host's own
-   `UnifiedConfigManager`, not off the file). Stamp-only: no threshold ships with the detector, no
-   filter config reads the fields, nothing is gated. ⛔ **The population check is the deliverable,
-   not the flip** — run `NexusMind/scripts/stamp_census.py` before quoting any coverage figure.
-   ⛔ **DO NOT WAIT FOR THE BACKLOG TO CLEAR — IT CANNOT** (`NM#522`, measured 2026-09-22): the
-   3,000/run cap sits BELOW intake (3,072 and 3,650 over two cycles), so there is nothing spare to
-   drain the 36,694 unstamped rows inside the 3-day window, and newest-first puts the whole
-   shortfall in the OLDEST tail. The config's *"~12 cycles, ~2 days"* is a fixed backlog divided by
-   the cap with no intake term — structurally wrong, not stale, **and I repeated it here and on
-   `#156` before measuring it**. Filtered-population presence (61.17% → 85.29% over three cycles) is
-   what the per-lens measurement needs; the corpus-wide rate is the thing that stays unavailable.
-   Then per-lens flag rates, the only thing that can set a cap. ✅ `record_path` DONE (`73ad620`,
-   contracts 1.20.0 / article-record 0.7.0). `NM#519`, `NM#522`, `#156`.
+⛔ **ITEMS 0–2 ARE NOT EXECUTABLE BY A SESSION TODAY — the first one you can DO is item 3.**
+0 is an owner ruling, 1 is date-gated (earliest ~2026-09-24), 2 is an owner spend decision.
+Read them so you know what is blocked and on whom, then start at 3. ⚠️ This line exists
+because a review found a bare "continue" walking into two dead ends in a row.
 
-1. ⏸️ **OWNER DECISION, STILL OPEN: the ~$3.2–3.6 adverse-pool spend (`#156`).** ⚠️ **Item 0
+0. ⏸️ **OWNER RULING — the `ADR-022` amendment is DRAFT and unruled (`#161`).**
+   `docs/adr/022-stamp-always-single-gate.md` carries a drafted amendment. ⛔ **Evidence that it
+   is unsettled is the DRAFT line at `:13`, NOT the `deciders:` field** — that field names the
+   owner on settled ADRs too (`023-asymmetric-loss...:4` is identical), and this ADR's
+   frontmatter reads `status: Accepted`, so a reader sent to the frontmatter concludes the
+   opposite. Two options are stated at the end of the amendment: **(a)** record signals as an
+   exception inside `ADR-022`, as drafted, or **(b)** split signals into their own ADR.
+   ⛔ **Do not re-litigate the finding** — the ORIGINAL Decision's clause 1 requires the
+   `_is_<detector>` bool harm deliberately omits, its clause 2 requires ONE central enforcement
+   point where harm plans N per-lens ones. The design survives because that clause says *"bool at
+   the deployed op-point"* and harm ships no op-point → **inapplicable, not unmet**.
+   ⚠️ **"Clause N" is ambiguous in this ADR — always say WHICH list.** The original Decision
+   and the amendment each number from 1, and the amendment's own clause 1 says the opposite
+   (*"no verdict field, ever"*). The amendment's clause 4 is separately **blocked on `NM#521`**.
+   ✅ **Once ruled, exactly ONE citation is outstanding: `#156`'s body** (*"That is ADR-022
+   verbatim"*). ⛔ The other three are not pending work: `NM 73ad620` is a commit message and is
+   immutable, the NM contracts changelog was corrected before this queue entry was written, and
+   `H-V8-37` is done. ⚠️ Two NM schema descriptions already carry the `#161` qualification and
+   were missing from the first version of this list — *enumeration is not inventory*, firing
+   inside the item whose whole subject is citing without checking.
+
+1. ⏳ **DATE-GATED (earliest ~2026-09-24) — THE PER-LENS HARM FLAG RATES (`#156` step 2).**
+   **First command: `NexusMind/scripts/stamp_census.py`** on sadalsuud — CLAUDE.md's rule is to
+   run it before quoting any stamped field, and it is the mandated instrument for exactly this.
+   ⛔ **DO NOT WAIT FOR THE BACKLOG TO CLEAR** (`H-HD13`, `NM#522`): the 3,000/run cap sits below
+   the intake measured so far, so the unstamped tail persists **at the current cap and intake**
+   and is systematically the OLDEST rows. ⚠️ **Not "permanent"** — both sources carry a dated
+   expiry: GN retires **2026-10-15** (6.71% of delivered rows) and the deficit may close on its
+   own. ⚠️ And the deficit rests on **n=2 cycles**, one of which (3,072) is only 2.4% above the
+   cap. Wait instead for filtered-population presence to plateau — two census reads so far,
+   **61.17%** (2026-09-21, 23,520 rows) and **85.29%** (2026-09-22, 36,838 rows); ⛔ two points
+   are not a plateau, so take a third before calling it one.
+   Method: for each lens, among rows at/above **that lens's own op-point**, the share with
+   `_harm_is_subject_score` above candidate thresholds. ⛔ **Per-lens, never pooled** — every harm
+   figure that exists today is the `uplifting v7` / `human_thriving v8` panel. `solutions`,
+   `belonging`, `nature_recovery` and `cultural_discovery` have **no computed rate** (their rows
+   *are* stamped — what is missing is the analysis, not the data), and for **Solutions and Nature
+   Recovery** the ADR argues "no cap, ever" may be right: one is about responses to harm, the
+   other is literally about recovering from damage. Then, and only then, a cap on `uplifting v7`.
+
+2. ⏸️ **OWNER DECISION, STILL OPEN: the ~$3.2–3.6 adverse-pool spend (`#156`).** ⚠️ **Item 1
    did NOT answer this** — the shadow stamp counts what the detector FINDS and is structurally
    blind to what it misses, so it narrows the per-lens GATING decision, not this one.
    `EXP-039` closed the last free route with a negative — the per-run votes buy nothing — so the
@@ -30,37 +59,38 @@ topic. Re-read the block under it before starting; the reasons are there, not he
    The pool is sha256-pinned, so nothing degrades while it waits.
    Owner said 2026-09-17: *"i need to think about this later."*
 
-2. **LD#134 step 3 — the MARKING PASS over the live tier.** Steps 1 and 2 are done and must
+3. **LD#134 step 3 — the MARKING PASS over the live tier.** Steps 1 and 2 are done and must
    not be redone (`docs/decisions/2026-09-17-refcheck-docs-tier.md`). The tier is in code;
    `--docs-live` prints the promotion preview. ⛔ **Read the record before quoting a number
    here** — this line deliberately carries none, and the "~8× faster" framing it used to
    carry was refuted: that was a count over a population that grew 168 → 242 files.
    Promotion to the default set comes AFTER marking, in a separate change.
-3. **The retracted 19.9%/13.0% framing is still live in the always-loaded file** — `CLAUDE.md`'s
+4. **The retracted 19.9%/13.0% framing is still live in the always-loaded file** — `CLAUDE.md`'s
    prefilter constraint, plus `docs/HUMAN_THRIVING_V8_PLAN.md:176` and
    `memory/cross-repo-prioritization.md:1173`/`:1359`. Two copies carry the correction, four
    carry the retraction. Deserves its own review. ⚠️ **Cite it by name, not by line** — it was
    `CLAUDE.md:74` until 2026-09-17 and the frontmatter edits move these numbers every session.
-4. **LD#160 — two Dutch-name violations**, owner call pending: `docs/adr/009-...:25,34,35,37,60`
+5. **LD#160 — two Dutch-name violations**, owner call pending: `docs/adr/009-...:25,34,35,37,60`
    and `scripts/analysis/cross_filter_landscape.py` (39 occurrences). Mechanize with
    `check_framework_language.py` whose allowlist **is** the carve-out table; show it go red first.
    ⚠️ It now has a `proposed` row in `memory/gotcha-log.md` § Mechanized — move it to `live`
    only after a seeded positive, not after writing the script.
-5. **H-MECH-1 — watch, do not act yet.** Three `/review-changes` batteries from 2026-09-17,
-   check whether the new `Occurrences` column ever moved. If not, delete or mechanize it;
-   do not re-explain it. `memory/hypothesis-ledger.md`.
-6. **The HELDOUT detector band (`#158`'s remaining half).** `EXP-040` measured out-of-fold bands;
+6. **H-MECH-1 — watch, do not act yet. ⚠️ BATTERY 1 of 3 HAS RUN and the column DID move**
+   (to 1) — `memory/hypothesis-ledger.md` already records it, with a raised bar: an increment
+   must name whether the check *could* have fired. **Two batteries left**, so this line's old
+   "check whether it ever moved" is already answered and must not be re-asked.
+7. **The HELDOUT detector band (`#158`'s remaining half).** `EXP-040` measured out-of-fold bands;
    the issue quotes **heldout** recall and the two are not comparable. Cheap on the 5090 (embed +
    5 fits per detector) and it is what would give the live 0.85 obituary op-point a defensible
    range. ⛔ Heldout corpora are on b650 at `filters/common/obituary_detector/training/data/`.
-7. **`#104` item 1 — the only arm that measures PRODUCTION's configuration.** `EXP-041` did the
+8. **`#104` item 1 — the only arm that measures PRODUCTION's configuration.** `EXP-041` did the
    device axis on one box; gpu-server's own GPU is untouched, and CUDA-to-CUDA across the two
    boxes is now a comparison across two GPU ARCHITECTURES. ⚠️ Needs a gap between pipeline cycles
    (`nexusmind-scorer` has `Conflicts=ollama.service`), which is what makes it the expensive one.
    ⛔ This is NOT blocking anything: the shipped decision was stamp-and-band, already done.
 
 ⚠️ **Before quoting `references 23 → 0`** (2026-09-17 audit): that is the DEFAULT scan set only,
-and `docs/` is still opt-in. See item 2.
+and `docs/` is still opt-in. See item 3.
 
 ---
 
@@ -633,6 +663,10 @@ once the first cycle after the flip. Simulated: **0 errors** with them, and a 4t
 still errors. ⚠️ **No `record_path` on any of them** — the record schema declares no
 `nexusmind.signals.harm_*` and `validate_status` rejects a dangling pointer (verified against a
 bogus control). That entry is owed **after** `stamp_census.py` confirms population.
+⚠️ **SUPERSEDED 2026-09-22 — true when written, false now.** The census ran, the record schema
+gained `nexusmind.signals.harm_is_subject`, and all three entries carry a `record_path`
+(contracts **1.20.0** / article-record **0.7.0**). The dated wording above is kept as the
+record of what was true on 2026-09-11; do not read it as current state.
 
 ⏸️ **Three warnings PARKED with owner agreement, recorded on the PR**: `deferred_over_cap`
 under-reports (50-row file at cap 7 logs *"0 files deferred"* while 43 rows are unstamped); a
@@ -650,8 +684,11 @@ valid-JSON **non-object line crashes the stage** (reachable via the `aggregator_
    the same call returns `{"skipped": "disabled"}` at `scripts/main.py:825` beforehand.
    ⚠️ **The smoke REPRODUCED a parked warning instead of clearing it** — the cap cut mid-file and
    `deferred_over_cap` reported **0** while 4 rows went unstamped. Known, on `NM#474`, still open.
-   ⚠️ The `record_path` entry owed on the three register fields is now unblocked but still OWED:
-   it waits on `stamp_census.py` confirming population on real post-flip rows.
+   ✅ **The `record_path` entry is DONE** (2026-09-22, contracts **1.20.0** / article-record
+   **0.7.0**, `NM 73ad620`): the census confirmed population on real post-flip rows, the record
+   schema gained `nexusmind.signals.harm_is_subject`, and all three status entries now point at
+   it. ⚠️ This line read "still OWED" for one commit after it was done, which is why it is
+   stated here rather than only in a queue item that later got rewritten.
    ✅ The stale mtime comment rode `NM#519`: `config/app.yaml` had called the ordering a
    "⛔ KNOWN DEFECT … until that is keyed on the filename timestamp" while `_collection_time`
    (`src/preprocessing/harm.py:92`) had been keyed on the `(\d{8}_\d{6})` filename stamp since
