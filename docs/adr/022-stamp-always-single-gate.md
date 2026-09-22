@@ -35,13 +35,23 @@ body (*"That is ADR-022 verbatim"*), and `memory/hypothesis-ledger.md:280`.
 This ADR governs **gate modules that DROP on a GLOBAL VERDICT**. Harm has neither property,
 and that is measured rather than asserted:
 
-- **No global verdict is possible.** Of 9 articles two blind judges *both* called harmful,
-  **6 were already surfaced by another lens** (`H-V8-37`). "Bihar copes with floods" betrays
-  Thriving's promise and is arguably correct under Solutions; Nature Recovery is *about*
-  recovering from damage. ⚠️ With the control that makes it a finding: 53% of harm-flagged
-  rows carry to ≥1 other lens against a **58% whole-panel baseline** — harm content is **as**
-  cross-lens as anything else, not enriched for it. A cross-lens verdict would not be a
-  stricter gate; it would remove two lenses' subject matter.
+- **No global verdict is possible — the LENS-PROMISE argument, and this is the one that
+  carries the claim.** The same article is a betrayal under one lens's promise and
+  constitutive of another's: "Bihar copes with floods" breaks Thriving's *"lives getting
+  better"* and is arguably exactly right under Solutions; Nature Recovery is *about*
+  recovering from damage. There is no single answer to stamp, so there is no bool.
+- **A SHARED detector rather than per-lens duplication — a SEPARATE argument on separate
+  evidence, and it is what justifies emitting ONE field for every lens.** Of 9 articles two
+  blind judges *both* called harmful, 6 were already surfaced by another lens, and ⚠️ with
+  the control that makes it a finding: 53% of harm-flagged rows carry to ≥1 other lens
+  against a **58% whole-panel baseline** — harm content is **as** cross-lens as anything
+  else, *not enriched* for it (`H-V8-37`).
+  ⛔ **These two must not be merged, and an earlier draft of this amendment merged them**,
+  citing the carriage figure as proof that no global verdict is possible. It is not: it
+  shows the concern is corpus-wide, which is an argument about WHERE THE DETECTOR LIVES.
+  The lens-promise argument is what shows the verdict cannot be global. Both halves are
+  needed and they support different clauses — the same collapse was made independently by
+  a reviewer relaying this decision, which suggests the pairing invites it.
 - **Nothing is dropped.** The per-lens mechanism is a **cap** on the weighted average
   (`filters/common/filter_base_scorer.py`, `short_content.cap`'s shape), not a removal. The
   article survives; its score falls below *that lens's* op-point. Clause 2 forbids a *drop*
@@ -99,6 +109,18 @@ Gate-Module Contract does not reach it.** Signals are recorded here as the excep
    which stamps Contract B declares**. Landing clause 4 before that rule exists would add N
    undeclared stamps on the strength of an issue arguing that undeclared stamps are the
    problem. **NM#521 first, then this.**
+
+⭐ **A third argument arrived after this draft was written, from ovr.news, and it closes the
+remaining escape route.** Their ingest is a whitelist at **both** boundaries: a top-level
+stamp never reaches the `metadata` projection because it stops earlier at a fixed column
+list and a fixed `ArticleInsert` shape, and selection reads the DB at build time, so nothing
+in memory is reachable. `content_quality` is their standing precedent. ⇒ *"stamp in NM,
+exclude in ovr"* is **not** the "cheap field check" the cross-repo dependency rows assume —
+it costs a schema change plus a write plus a read **per concern**. So consumer-side
+enforcement of a signal is not merely forbidden by this ADR on evidence; for the one
+consumer that would do it, it is expensive by construction. ⚠️ Reported via the review
+session, not verified in this repo, and ovr.news's own suggestion — a namespaced object
+passed through whole, one migration instead of N — is **undecided**.
 
 ### What this does NOT license
 
