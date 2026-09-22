@@ -59,6 +59,43 @@ logger = logging.getLogger(__name__)
 # NexusMind; if they drift, this script cheerfully produces dead files.
 MIN_NORMALIZATION_ARTICLES = 200   # ADR-018 safety valve; below this the CDF is sampling noise
 MAX_NORMALIZATION_RAW_MIN = 4.5    # NexusMind#205: the loader REJECTS files whose raw_min exceeds this
+# The fit-sample bias test, kept SEPARATE from the loader bound above (#154, ruled
+# 2026-09-22, option 1). What the #205 root cause looks like is a sample whose lowest
+# article sits far ABOVE the anchor — a GAP — and a gap is relative to the op-point.
+# Reusing the loader's absolute 4.5 made this a density test at a 4.5 op-point: it
+# blocked `human_thriving v8`'s legitimate 202-row fit (sample_min 4.5069) and let its
+# 2,976-row fit through only because round(4.500042, 4) == 4.5.
+#
+# ⛔ This is NOT "unchanged for the op-points the guard was written for" — an earlier
+# version of this comment and of the decision record both said so, and it is true at
+# EXACTLY 4.0 and nowhere else. `sample_min > 4.5` is `gap > (4.5 - op_point)`, so:
+#     op-point 2.25 (solutions v4/v6)     old gap 2.25  -> new 0.5   STRICTER
+#     op-point 3.75 (nature_recovery v4)  old gap 0.75  -> new 0.5   STRICTER
+#     op-point 4.0  (most filters)        old gap 0.5   -> new 0.5   identical
+#     op-point 4.25 (investment_risk v6)  old gap 0.25  -> new 0.5   LOOSER
+#     op-point 4.5  (human_thriving v8)   old gap 0.0   -> new 0.5   LOOSER (the fix)
+# No committed package is affected either way — the largest gap on disk is
+# nature_recovery v4 at 0.0438 — but a future sparse refit of solutions or
+# nature_recovery is hard-blocked where it previously only warned. That tightening is
+# deliberate and is pinned by a test; the loosening above 4.0 is what the advisory
+# below exists to keep from being silent.
+MAX_SAMPLE_GAP = 0.5
+
+# ⚠️ The hard limit is a RAW-SCORE distance, and the harm it stands for is a SHARE of
+# the visible population — those are not the same quantity. Measured across this repo's
+# committed CDFs, a 0.5 raw gap spans very different shares depending on how wide the
+# filter's distribution is, and `human_thriving v8` (raw_std 0.368) is the narrowest.
+# A fit whose sample starts at NexusMind's enrichment bar (raw 4.794 for v8) has a gap
+# of only 0.294 and would clear the hard limit while missing a large part of the band —
+# which is #205's literal root cause, "sample drawn from already-filtered output".
+# Whether the hard limit should be a percentile instead of a raw distance is an OPEN
+# DESIGN QUESTION for the owner (raised by review 2026-09-22); it is not settled here,
+# because a first fit cannot compute the missing share from its own sample — the band
+# below sample_min is empty in its own data by construction.
+# What IS shipped is this advisory, so the band is never silent: the unobserved
+# [anchor, sample_min) stretch as a share of the fitted span [anchor, raw_max]. It
+# blocks nothing and is computable from the fit alone.
+SAMPLE_GAP_ADVISORY_SPAN_SHARE = 0.05
 
 # How far stats.raw_min may sit from the operating point. Since 2026-07-16 the
 # fitter anchors the CDF's lower edge to the op-point (fit_normalization's
@@ -803,38 +840,59 @@ def main():
     # (playbook §6). Anchoring makes such a file LOADABLE (raw_min == op_point),
     # so without a gate here the gross case would ship where the pre-anchor
     # fitter hard-blocked it (raw_min was the sample minimum, > 4.5 → rejected).
-    # Two tiers, honestly imperfect:
-    #   sample_min > 4.5 (the old reject bound)  -> HARD ERROR on the deploy path;
-    #       exactly the protection the pre-anchor code gave, no false-block
-    #       possible for any real op-point (3.75/4.0).
-    #   gap > 0.5 but sample_min <= 4.5          -> advisory WARNING only. No
-    #       static threshold separates a subtly biased sample from a legitimately
-    #       sparse needle fit — they are indistinguishable in the data. The gap
-    #       is recorded as stats.sample_min for audit; representativeness is the
-    #       operator's verification, playbook §6.
+    # ONE tier, and it measures the GAP rather than an absolute bound (#154, ruled
+    # 2026-09-22 option 1). The old code hard-errored on `sample_min > 4.5`, reusing the
+    # LOADER's bound (which is about raw_min, and is still checked below) as if it were a
+    # margin. That works only while the op-point sits far enough under 4.5 — true for the
+    # 3.75/4.0 op-points of 2026-07-16, false the moment an op-point IS 4.5:
+    #   - `human_thriving v8`, 202 rows, sample_min 4.5069, gap 0.0069 -> HARD-BLOCKED,
+    #     though the signature it names (population never reaches the bar) was absent ~70x
+    #     over. Phase E was held up by this and not by the data.
+    #   - the same filter, 2,976 rows, true minimum 4.500042 -> allowed, but only because
+    #     stats.sample_min is round(x, 4). Measured density at the bar is ~5,100 rows per
+    #     unit raw, so the chance of landing inside that 5e-5 rounding window is ~22%:
+    #     the verdict on a production fit was decided at the 5th decimal.
+    # The gap test keeps the real #205 protection at EVERY op-point. It is identical at
+    # 4.0 (sample_min > 4.5 there is precisely gap > 0.5), STRICTER below it and LOOSER
+    # above it — see MAX_SAMPLE_GAP's own comment for the per-op-point table.
+    # The old advisory tier fired at `gap > 0.5`, which is now the hard error, so it
+    # could not stay as it was. It is REPLACED rather than deleted: deleting it left the
+    # whole [0, 0.5] band silent at a 4.5 op-point, where the old code had errored on
+    # every gap — i.e. exactly the band this fix opens would have had no signal at all.
     sample_gap = stats["sample_min"] - anchor
-    if stats["sample_min"] > MAX_NORMALIZATION_RAW_MIN:
+    span = stats["raw_max"] - anchor
+    unobserved_share = (sample_gap / span) if span > 0 else 0.0
+    logger.info(
+        f"  Sample gap: {sample_gap:.4f} (lowest observed {stats['sample_min']:.4f} - "
+        f"anchor {anchor}), limit {MAX_SAMPLE_GAP}; unobserved band is "
+        f"{unobserved_share:.2%} of the fitted span, advisory over "
+        f"{SAMPLE_GAP_ADVISORY_SPAN_SHARE:.0%}"
+    )
+    if sample_gap <= MAX_SAMPLE_GAP and unobserved_share > SAMPLE_GAP_ADVISORY_SPAN_SHARE:
+        logger.warning(
+            f"Lowest observed article ({stats['sample_min']:.4f}) leaves "
+            f"{unobserved_share:.1%} of the fitted span [{anchor}, {stats['raw_max']:.2f}] "
+            f"never observed — under the {MAX_SAMPLE_GAP} hard limit, so this WILL be "
+            f"written, but check the sample is not drawn from already-filtered or "
+            f"enriched output before deploying (#205's root cause; playbook §6). The "
+            f"unobserved band normalizes onto a 0-percentile ramp."
+        )
+    if sample_gap > MAX_SAMPLE_GAP:
         msg = (
-            f"Lowest observed article ({stats['sample_min']:.2f}) is above "
-            f"MAX_NORMALIZATION_RAW_MIN ({MAX_NORMALIZATION_RAW_MIN}): the reference "
-            f"population never reaches the visibility threshold {anchor} — the #205 "
-            f"root-cause signature (sample drawn from already-filtered/oracle-biased "
-            f"output; playbook §6). The anchor would make this file loadable, hiding "
-            f"what the pre-anchor fitter hard-blocked."
+            f"Lowest observed article ({stats['sample_min']:.2f}) sits {sample_gap:.2f} "
+            f"above the anchor {anchor}, over MAX_SAMPLE_GAP ({MAX_SAMPLE_GAP}): the "
+            f"reference population never reaches down to the visibility threshold — the "
+            f"#205 root-cause signature (sample drawn from already-filtered/oracle-biased "
+            f"output; playbook §6). The whole [{anchor}, {stats['sample_min']:.2f}) band "
+            f"was never observed and would normalize onto a 0-percentile ramp, and the "
+            f"anchor would make this file loadable, hiding what the pre-anchor fitter "
+            f"hard-blocked."
         )
         if not args.analysis_only:
             logger.error(msg + "\n  Nothing is written.")
             sys.exit(1)
         logger.warning(msg + f"\n  Writing to {args.out} anyway (--analysis-only); never "
                              f"deploy this file.")
-    elif sample_gap > 0.5:
-        logger.warning(
-            f"Lowest observed article ({stats['sample_min']:.2f}) sits {sample_gap:.2f} above "
-            f"the anchor {anchor}: the whole [{anchor}, {stats['sample_min']:.2f}) band was "
-            f"never observed and normalizes onto a 0-percentile ramp. For a gap this large, "
-            f"check the sample isn't drawn from already-filtered output (#205's root cause) "
-            f"before deploying."
-        )
 
     # Post-fit mirror of the repo invariant (tests/unit/test_normalization_invariant.py)
     # and of the consumer's load guard, applied to what we are about to write. With the

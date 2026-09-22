@@ -1067,6 +1067,14 @@ never against v7. `--noise-floor 0.16` (default). Verify the report writes to
 **Report recall + specificity with the split's positive rate. Never rank on MAE** (ADR-023).
 
 ### Phase E — normalization
+
+✅ **DONE 2026-09-22** — fitted on **2,976** production rows, `raw_min == op_point == 4.5`
+exactly. Record: `docs/decisions/2026-09-22-phase-e-fit-and-the-154-guard.md`. ⛔ **Fitting
+is not a cutover** — `uplifting v7` still scores. ⚠️ It armed NM#319 (owner-accepted). ⛔ **Do not quote the in-sample %** — normalized 4.0 is
+the fit sample's own 40th percentile, so ≈60%/40% is arithmetic. The effective **raw** bar is
+**4.794** against op-point 4.50; v7's out-of-sample 40% is the real comparison.
+The requirements below are kept as the standing convention for the next filter.
+
 - `MIN_NORMALIZATION_ARTICLES = 200`; below it production **silently** falls back to
   `score_scale_factor`.
 - **Close the cold-start at deploy** by rescoring a production-representative historical
@@ -1074,7 +1082,10 @@ never against v7. `--noise-floor 0.16` (default). Verify the report writes to
   `data/filtered/human_thriving/` — there is no live history to fit against, so this is
   mandatory, not optional.
 - Fit anchored at the op-point. `raw_min == op_point` by construction; **4.5 is accepted
-  with zero margin**, so the op-point cannot rise.
+  with zero margin**, so the op-point cannot rise. ⛔ **Assert that as EXACT equality in the
+  fit record, never as "under the cap"** — the loader's test is a strict `>`, so the whole
+  margin is one float ULP (measured: 4.5 normalizes, 4.500000000000001 goes inert), and going
+  inert is a `logger.warning` with a silent fall-through to `score_scale_factor`, not a refusal.
 - An op-point move touches **four** places in one commit: `TIER_THRESHOLDS` in
   `base_scorer.py` (the runtime one), `config.yaml scoring.tiers` (documentation),
   `normalization.json stats.raw_min`, and `tests/unit/test_normalization_op_point.py`.

@@ -70,17 +70,29 @@ def test_no_config_update_wins_over_force(tmp_path):
     assert write is False
 
 
-def test_the_shipped_v8_package_would_be_refused():
-    """The concrete case: v8 has a calibration.json and no normalization.json, so a
-    re-run at Phase D without any flag must not write 1.3787 into its config."""
-    v8 = REPO_ROOT / "filters" / "human_thriving" / "v8"
-    assert (v8 / "calibration.json").exists(), "precondition: v8 is calibrated"
-    assert not (v8 / "normalization.json").exists(), (
-        "precondition changed: v8 now HAS a normalization.json, so this test no longer "
-        "covers the dangerous case — point it at a filter that does not."
+def test_a_shipped_calibrated_package_without_normalization_would_be_refused():
+    """The concrete case: a package with a calibration.json and NO normalization.json,
+    where a re-run at Phase D without any flag must not write a score_scale_factor into
+    its config.
+
+    ⚠️ Re-pointed 2026-09-22. This test named `human_thriving v8` and FAILED when Phase E
+    fitted v8's normalization.json — the precondition assertion firing exactly as written,
+    i.e. the control working, not a regression. Do NOT repair such a failure by deleting
+    the precondition: it is what stops this becoming a test that passes because it can no
+    longer reach the dangerous branch. It now searches for a qualifying package instead of
+    naming one, so the next Phase E does not silently hollow it out."""
+    candidates = [
+        d.parent for d in sorted(REPO_ROOT.glob("filters/*/v*/calibration.json"))
+        if not (d.parent / "normalization.json").exists()
+    ]
+    assert candidates, (
+        "no package left with calibration.json and no normalization.json — this test can "
+        "no longer reach the branch it exists for. Build the shape in tmp_path instead of "
+        "deleting the test."
     )
-    write, _ = fc.score_scale_factor_decision(v8, False, False)
-    assert write is False
+    for pkg in candidates:
+        write, _ = fc.score_scale_factor_decision(pkg, False, False)
+        assert write is False, f"{pkg} would have its config written"
 
 
 def test_deployed_filters_with_normalization_are_unaffected():

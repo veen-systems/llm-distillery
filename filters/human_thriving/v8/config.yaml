@@ -15,7 +15,10 @@
 #
 # ⚠️ STILL INCOMPLETE, BUT LESS SO. Phase C ADDED the `hybrid_inference` block on
 # 2026-09-04 (it is at the foot of this file, and for this filter it is LIVE, not
-# documentation). Phase E still owes the normalization anchor. Blocks that would be
+# documentation). ✅ Phase E FITTED 2026-09-22 (`normalization.json`, raw_min == 4.5 exactly).
+# ⚠️ `score_scale_factor` below is now INERT-BY-PRECEDENCE, not inert-by-value: the loader
+# prefers normalization.json and only falls back to the factor if that file is REJECTED, which
+# happens at raw_min > 4.5 — a strict `>` we sit on with zero margin. Blocks that would be
 # inherited unread are omitted below with the reason, because a key that looks live and is
 # dead is this repo's signature defect.
 

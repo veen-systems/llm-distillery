@@ -10,7 +10,7 @@ it alone is a no-op in production (NM#161, NM#205 were both this drift). The op-
 lives in FOUR places and moves in ONE commit:
     1. TIER_THRESHOLDS here                          <- what actually scores
     2. config.yaml scoring.tiers.medium.threshold    <- documentation
-    3. normalization.json stats.raw_min              <- Phase E, does not exist yet
+    3. normalization.json stats.raw_min              <- Phase E, FITTED 2026-09-22 at 4.5
     4. tests/unit/test_normalization_op_point.py     <- the parametrized assertion
 
 ✅ RE-DERIVED AND RATIFIED BY THE OWNER, 2026-09-05: 4.5 STANDS, ON THE CALIBRATED

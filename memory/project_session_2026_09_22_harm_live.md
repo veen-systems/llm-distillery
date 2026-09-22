@@ -76,6 +76,10 @@ status entries, and the three `meaning:` blocks removed because
 
 ## 4. ⭐⭐ ADR-022 SAYS THE OPPOSITE OF WHAT FOUR DOCUMENTS CITED IT FOR (`#161`)
 
+✅ **RULED 2026-09-22, option (a), by the owner in a later session of the same day** — the
+amendment is no longer a draft. ⚠️ The ruling arrived DIRECTLY, not via the peer relay this
+file records; that relay was refused and stayed refused.
+
 ADR-022 requires the stamp triple **including `_is_<detector>`**, requires ONE central
 enforcement point (*"never a consumer-side drop"*), and calls stamps *"observability/audit
 fields, not routing fields"*. Harm omits the bool, plans N per-lens points, and exists to be
@@ -86,7 +90,7 @@ op-point"* and harm ships no op-point ⇒ **INAPPLICABLE, not unmet**. And the A
 prescribed the remedy nobody used — *Revisit If*: an exception is justified *"as an explicit
 exception recorded here"*. **The defect was the missing record.**
 
-⛔ **A DRAFT amendment is in `docs/adr/022-stamp-always-single-gate.md` and is NOT RULED.**
+✅ **RULED 2026-09-22, option (a)** — the amendment in `docs/adr/022-stamp-always-single-gate.md` is no longer a draft. *(This line read "A DRAFT amendment … is NOT RULED" when written, hours before the ruling.)*
 
 ## ⛔ My errors this session
 

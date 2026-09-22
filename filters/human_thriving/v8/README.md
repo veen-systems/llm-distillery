@@ -231,7 +231,9 @@ evidence stamps.
 
 1. **Deployment.** v8 is absent from sadalsuud's `NexusMind/filters/`, and the weights exist
    in exactly one place — `b650-gpu:~/llm-distillery/filters/human_thriving/v8/model/`.
-2. **Phase E normalization.** Blocked by ordering, not by preference: `fit_normalization.py`
+2. ✅ **Phase E normalization — DONE 2026-09-22**, 2,976 rows, `raw_min == 4.5` exactly.
+   Was blocked by ordering, then by `#154`'s guard; both are resolved. The ordering reason
+   still governs the NEXT filter: `fit_normalization.py`
    fits the CDF from NexusMind production output and refuses below 200 rows above the
    op-point. It comes **after** deployment, as it did for `solutions v6`. ⛔ Do not substitute
    the test split — it is a 25.1× design-weighted sample and a CDF fitted on it would describe

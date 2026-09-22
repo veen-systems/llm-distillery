@@ -2,6 +2,74 @@
 
 *Newest-first, dated entries. **One standing section lives at the BOTTOM**: [`## Mechanized`](#mechanized) — the destination for `/review-changes` Step 3.1, where a review finding that became a deterministic check is recorded. It is named here because nobody scrolls to the bottom of this file.*
 
+## A GUARD THAT BORROWS ANOTHER GUARD'S CONSTANT IS MEASURING THE WRONG QUANTITY (2026-09-22)
+
+**Problem**: `fit_normalization.py`'s NexusMind#205 bias check hard-errored on
+`sample_min > MAX_NORMALIZATION_RAW_MIN`. That constant is the **loader's** bound, and the
+loader applies it to `raw_min`. Reusing it for `sample_min` silently turns a **bias** test
+(is the sample's floor far above the op-point?) into a **density** test (did the sample
+happen to reach 4.5?), because the distance it allows is `4.5 - op_point` — a number that
+shrinks to nothing as a filter's op-point approaches 4.5 and goes NEGATIVE above it.
+**Root cause**: the guard measured an ABSOLUTE position where the thing it stands for is a
+RELATIVE distance. Its own comment recorded the premise — *"no false-block possible for any
+real op-point (3.75/4.0)"* — which was true in July 2026 and expired when #102 moved a filter
+to 4.5. ⭐ **The tell nobody looked for: at op-point 4.5 the guard could not be SATISFIED by
+any correct fit.** The population is filtered AT the op-point, so its minimum is always above
+it. A guard with no passing input is not strict; it is broken, and it reads as strict.
+**Fix**: `MAX_SAMPLE_GAP = 0.5`, its own name, tested as `sample_min - anchor`, in the fitter
+and the invariant test together (llm-distillery#154, owner-ruled option 1).
+⛔ **Two things the fix taught that the issue had not:**
+1. **It is NOT "unchanged at the op-points it was written for".** A flat 0.5 is *stricter*
+   below 4.0 (nature_recovery 3.75: 0.75 → 0.5; solutions 2.25: 2.25 → 0.5), identical at
+   4.0, *looser* above it. All three directions are now pinned by tests. **When you replace
+   an absolute bound with a relative one, every op-point moves — enumerate them.**
+2. **Deleting the advisory tier left the opened band SILENT.** The old code errored on every
+   gap at 4.5; the new one admits everything under 0.5 and said nothing. A sample drawn from
+   *enriched* output starts at the enrichment bar (raw 4.794 for v8) — gap 0.294, under the
+   limit, missing 13% of the span, which is #205's literal root cause. Replaced with a
+   span-relative advisory. ⭐ **A loosening's blast radius is the band it opens, not the case
+   it was written for.**
+⚠️ **The proof of the deploy-path branch lived only in a scratch directory** until review
+said so; it is now `tests/unit/test_fit_normalization_guard.py`, running the real CLI.
+
+## THE SAME TAUTOLOGY, TWICE, PAST THREE WARNINGS WRITTEN FOR IT (2026-09-22)
+
+**Problem**: published *"60.0% (1,786/2,976) of v8's surfaced rows clear the normalized 4.0
+enrichment gate"* as a **recomputation that corrected** the retracted 60.4% from 202 rows.
+It corrects nothing. Both are the same identity: the CDF is fitted on those very rows and
+the normalized scale is `10 × CDF`, so *"above normalized 4.0"* is *"above this sample's own
+40th percentile"* — ≈60% by construction for any percentile-normalized filter.
+**Root cause**: ⛔ **a bigger sample felt like a better measurement.** The defect was never
+the sample size; it was that the quantity is not a function of the model. Re-deriving it on
+15× the rows reproduced the tautology at higher confidence.
+⭐⭐ **THE KEEPER: this gotcha log already had the entry, dated 2026-09-08, and two more
+surfaces carried the warning** — `docs/RUNBOOK.md`'s Phase E section and the v8 package's own
+`STATUS.md:149` (*"in-sample and near-tautological … read it as shape, not as a
+measurement"*). **Three written warnings, all in files the task routes you to, and the
+session read none of them before recomputing.** A gotcha entry is not a guard: it fires only
+if someone opens it, and nothing made anyone open it.
+**Fix**: quote the **effective raw bar** (4.794 against op-point 4.50) — the transferable
+quantity — and, for a share, measure on cycles the fit did not see, which is exactly what
+makes `uplifting v7`'s 40%-un-enriched real (82 cycles, 18,041 surfaced, out-of-sample).
+⚠️ The parity argument built on it was the casualty: it set an identity beside a measurement,
+and the agreement to 0.01pp read as corroboration. *`feedback-predict-the-range-first` names
+this tell: "about 60%" was predictable from the gate's definition alone.*
+
+## A TEST THAT PLANTS ITS DEFECTS IN THE REAL TRACKED FILE (2026-09-22)
+
+**Problem**: a `timeout`-killed pytest run left `experiments/registry.jsonl` **corrupted in
+the working tree** — `EXP-001`'s `spend_usd` deleted and its `decision` set to
+`probably-fine`. Five suite failures followed, in a file nothing in the diff touched, and
+they were nearly read as pre-existing breakage.
+**Root cause**: `tests/unit/test_experiment_registry.py:16-26`'s `run_against()` writes its
+fixtures **into the committed registry** and restores in a `finally`. A `finally` does not run
+when the process is killed, so any interrupted or concurrent run leaves planted defects on
+disk — in a tracked data file `CLAUDE.md` routes *"did we ever test X?"* to.
+**Fix**: restored with `git checkout -- experiments/registry.jsonl` (explicit path — a
+parallel session may be live). ⛔ **Not repaired in code**: the test should copy to `tmp_path`.
+⭐ **A test harness that mutates a tracked file is a hand-built population with a fuse on it**
+— and the corruption is indistinguishable from a real regression at the moment you read it.
+
 ## A PREDICTION THAT COULD NOT FAIL, AND A SELECTION STEP THAT AMPLIFIED 4e-05 INTO A VERDICT FLIP (2026-09-17)
 
 **Problem**: Two separate ways a pre-registered number carried less than it looked like it did.
@@ -7574,6 +7642,9 @@ false finding in the reference audit, which trains readers to dismiss that audit
 
 | Date | Finding shape | Check | Status | Occurrences |
 |------|---------------|-------|--------|-------------|
+| 2026-09-22 | A doc states a code guard's rule as a literal (`sample_min > 4.5`) and the code moves without it | `scripts/verification/check_guard_doc_sync.py` <!-- placeholder --> — assert each guard CONSTANT named in `fit_normalization.py` appears in `NORMALIZATION_METHOD.md` §5.3's table, and that retired literals do not appear as live rules | proposed | — |
+| 2026-09-22 | An in-sample share quoted against a percentile gate, i.e. a tautology presented as a measurement | `scripts/verification/check_doc_claims.py` <!-- placeholder --> — any live doc quoting a `%` share against `normalized 4.0` / the enrichment gate must carry `in-sample`, `tautolog` or `arithmetic` within the same block | proposed | — |
+| 2026-09-22 | A number attributed to an `EXP-` id that the experiment's own evidence file contradicts | `scripts/verification/check_experiment_citations.py` <!-- placeholder --> — for each `EXP-NNN` cited beside a numeric literal, assert the literal occurs in that experiment's evidence README or registry row | proposed | — |
 | 2026-09-22 | A mutation set that moves a value AWAY from every valid option: proves only that invalid values are caught, silent on swaps/parents/siblings INSIDE the valid set. 3 survivors on a check I called "6 mutations, 6 killed" | `scripts/verification/check_mutation_directions.py` <!-- placeholder --> — ⚠️ shape is hard to detect mechanically; the realistic form is a CHECKLIST rung in the review profile, not a grep | proposed | — |
 | 2026-09-22 | A closed-form number in a config comment reads as MEASURED ("at 3000/run the backlog needs ~12 cycles" = a fixed backlog over a cap, no intake term). Quoted onward twice before anyone checked it | needs intent — no grep separates a derived quotient from a measured one. The mechanizable half is narrower: flag a comment carrying an arithmetic claim with no date and no command beside it | rejected | — |
 | 2026-09-22 | A doc claim citing a real source against the WRONG REFERENT — ovr.news Chain 7.5/7.6 quoted accurately for a field that file never mentions (0 hits for `harm_is_subject`/`_harm_`) | `grep -c` the cited file for the identifier the claim is about, before citing it; mechanizable as a rung in `check_doc_claims.py` for claims that name a cross-repo document | proposed | — |

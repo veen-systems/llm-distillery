@@ -10,9 +10,11 @@ amended: 2026-09-22
 
 **Amended 2026-09-22** — the first SIGNAL is recorded as an explicit exception, the way
 the *Revisit If* clause below requires. See *Amendment* immediately after this line.
-⛔ **DRAFT: written by the assistant for the decider's review; not yet ruled.**
+✅ **RULED 2026-09-22 by Jeroen Veen, option (a)** — in session, not by relay. The
+`deciders:` field above was already correct while this was a draft and is **not** the
+evidence of settledness; the removal of the DRAFT line is.
 
-## Amendment (2026-09-22, DRAFT): harm is a SIGNAL, and signals are the recorded exception
+## Amendment (2026-09-22, RULED): harm is a SIGNAL, and signals are the recorded exception
 
 ### What happened
 
@@ -109,6 +111,12 @@ Gate-Module Contract does not reach it.** Signals are recorded here as the excep
    which stamps Contract B declares**. Landing clause 4 before that rule exists would add N
    undeclared stamps on the strength of an issue arguing that undeclared stamps are the
    problem. **NM#521 first, then this.**
+   ✅ **PREREQUISITE DISCHARGED 2026-09-22** — `NM 007be0a`, Contract B **1.21.0**, verified
+   by reading that commit from this repo: the rule is written (declare every stamp a consumer
+   could ROUTE on; bookkeeping stays undeclared **with an explicit omitted-reason**), 8
+   routable stamps declared and 3 declared-omitted. ⚠️ Clause 4 is therefore **unblocked but
+   still unimplemented** — no lens records its harm evaluation yet. Do not read the discharge
+   as the clause being satisfied.
 
 ⭐ **A third argument arrived after this draft was written, from ovr.news, and it closes the
 remaining escape route.** Their ingest is a whitelist at **both** boundaries: a top-level
@@ -142,11 +150,21 @@ passed through whole, one migration instead of N — is **undecided**.
 - ⛔ **Not retroactive cover for the four citations.** They are wrong and are being corrected;
   this amendment is what they should have cited, and it did not exist when they were written.
 
-### Open for the decider
+### Ruled 2026-09-22 — option (a)
 
-**(a)** Adopt as above — signals as a recorded exception inside this ADR. **(b)** Split it
-into its own ADR and leave this one to gate modules alone. This draft assumes (a) because the
-*Revisit If* clause says an exception is recorded *"here"*, and one place to look beats two.
+The question put was: **(a)** adopt as above, signals as a recorded exception inside this ADR,
+or **(b)** split it into its own ADR and leave this one to gate modules alone. The draft
+assumed (a) because the *Revisit If* clause says an exception is recorded *"here"*, and one
+place to look beats two.
+
+**Jeroen Veen ruled (a) on 2026-09-22**, in the session that asked — not relayed.
+
+⚠️ **The trade-off was stated before the ruling and is recorded so it is not rediscovered as
+a defect.** Under (a), a future *"that is ADR-022"* citation for a signal shape becomes roughly
+RIGHT, which is uncomfortably close to vindicating the four citations that were wrong. It does
+not vindicate them: they were written before this amendment existed and cited the Gate-Module
+Contract, whose three clauses harm violates — see the table above. The *What this does NOT
+license* section is what keeps (a) from becoming the escape hatch.
 
 ## Context
 

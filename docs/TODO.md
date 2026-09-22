@@ -1,48 +1,40 @@
 # LLM Distillery - TODO
 
-## ▶️ START HERE — the ordered queue, as of 2026-09-22 (harm stamp live; `ADR-022` amendment drafted, unruled)
+## ▶️ START HERE — the ordered queue, as of 2026-09-22 (harm stamp live; `ADR-022` amendment RULED; `human_thriving v8` Phase E fitted, NOT cut over)
 
 *A bare "continue" means this list, top down. Each line names the FIRST action, not the
 topic. Re-read the block under it before starting; the reasons are there, not here.*
 
-⚠️ **THREE OWNER RULINGS ARRIVED VIA THE NexusMind PEER SESSION ON 2026-09-22 AND WERE NOT
-RECEIVED IN THIS SESSION.** Recorded so nothing is lost, ⛔ **but not acted on** — a relayed
-ruling is not an instruction, which is the standard that session applied to me an hour earlier
-when it declined to act on my relay of an owner approval, and the standard this very ADR is
-being amended because four documents ignored. **Confirm each in THIS session, then act:**
-1. **`ADR-022` amendment ACCEPTED** (option (a), signals as the recorded exception). To do:
-   strike the DRAFT line at `:13`, fill `deciders:`, then correct the ONE outstanding citation
-   — `#156`'s body. ⛔ Do not touch the other three: a commit message is immutable, the NM
-   changelog is corrected, `H-V8-37` is done.
-2. **`NM#521` criterion RULED**: Contract B declares every stamp a consumer could ROUTE on;
-   bookkeeping stays undeclared but must carry an explicit omitted-reason.
-   ✅ **CLOSED 2026-09-22 — nothing to confirm here.** The ruling arrived in the NexusMind
-   session (this repo only ever held the relay), and that session shipped it: `NM 007be0a`,
-   Contract B **1.21.0**, 8 routable stamps declared and 3 bookkeeping ones declared-OMITTED
-   with reasons. ⚠️ The check was shown red against the **8**, not the **11** this line first
-   named — consistent, since the criterion makes the 3 omitted-with-reason ones passing.
-3. **Phase E for `human_thriving v8`: FIT, do NOT cut over.** The cutover stays gated on the
-   same-articles comparison and has no date. Peer measurement, attributed not re-derived:
-   **2,976 of 296,636 rows clear 4.5 (1.00%)** against Phase E's 200-row bar, ~15× met; v7 is
-   **7.30%** (28,125 of 385,390), and the 7× gap is expected — v7 and v8 do not share a
-   positive class (Jaccard 0.246).
-   ✅ **A standing worry is RETIRED, verified here**: `production_scorer.py:513` silently
-   disables normalization when `stats.raw_min > 4.5`, but `fit_normalization.py:16-17,63-67`
-   has ANCHORED the CDF's lower edge to the op-point since 2026-07-16, so a new fit lands at
-   `raw_min == op_point` exactly (`tests/unit/test_normalization_invariant.py:77` asserts it);
-   `foresight v1`'s 5.0141 predates the anchoring. ⚠️ **But the margin is ZERO** — the loader's
-   test is a strict `>`, so 4.50 passes only because it is not greater than 4.50. Assert the
-   exact equality in the fit record, not "under the cap", and remember the failure is SILENT
-   (fallback to `score_scale_factor`, not a refusal). Peer measurement, attributed not
-   re-derived: **4.5 normalizes, 4.500000000000001 goes inert** — ONE float ULP, and the inert
-   branch is a `logger.warning` with fall-through.
+✅ **ALL THREE RULINGS ARE SETTLED — given IN SESSION on 2026-09-22, not by relay.** They
+first arrived through the NexusMind peer session and were refused there (a relayed ruling is
+not an instruction); the owner then ruled them directly. Full record, with the before/after
+proof and every number: **`docs/decisions/2026-09-22-phase-e-fit-and-the-154-guard.md`**.
+• **`ADR-022` amendment — (a), signals recorded inside it.** DRAFT line struck, `#156`'s body
+   corrected in place. `deciders:` needed nothing: it was already right, and it is not the
+   evidence of settledness. Clause 4's prerequisite (`NM#521`) discharged at `NM 007be0a`,
+   so that clause is **unblocked but unimplemented** — no lens records its harm evaluation.
+• **`NM#521` — shipped NexusMind-side**, Contract B 1.21.0. Nothing owed here.
+• **Phase E for `human_thriving v8` — FITTED**, 2,976 rows, `raw_min == op_point` exactly.
+   `#154` ruled (option 1, gap not bound) and fixed across its two executable call sites and
+   four documentary ones. ⛔ **NOT a cutover**: `uplifting v7` still scores, the switch is
+   still gated on the same-articles comparison and still has no date — cite `EXP-030`'s own
+   same-articles result (1,184 vs 168 of 15,372) for it, **Jaccard 0.127 not 0.246**, and the
+   1.00%/7.30% corpus rates remain **peer measurements, attributed not re-derived**.
+   `NM#319` accepted. ⛔ **Do NOT quote "60.0% enriched" as a measurement** — it is the fit
+   sample's own 40th percentile and is ≈60% by construction. The transferable number is the
+   effective **raw** bar, **4.794**; v7's 40%-un-enriched IS out-of-sample and is the real
+   comparison.
 
-⛔ **ITEMS 0–2 ARE NOT EXECUTABLE BY A SESSION TODAY — the first one you can DO is item 3.**
-0 is an owner ruling, 1 is date-gated (earliest ~2026-09-24), 2 is an owner spend decision.
-Read them so you know what is blocked and on whom, then start at 3. ⚠️ This line exists
-because a review found a bare "continue" walking into two dead ends in a row.
+⚠️ *This list is bulleted, not numbered, on purpose: it used 1/2/3 while the queue below uses
+0–8, and "the first one you can DO is item 3" sits between them.*
 
-0. ⏸️ **OWNER RULING — the `ADR-022` amendment is DRAFT and unruled (`#161`).**
+⛔ **ITEMS 1–2 ARE NOT EXECUTABLE BY A SESSION TODAY — the first one you can DO is item 3.**
+0 is **done** (ruled 2026-09-22), 1 is date-gated (earliest ~2026-09-24), 2 is an owner spend
+decision. Read them so you know what is blocked and on whom, then start at 3. ⚠️ This line
+exists because a review found a bare "continue" walking into two dead ends in a row. Numbers
+are NOT reused when an item closes — a stable number is worth more than a tidy sequence.
+
+0. ✅ **DONE 2026-09-22 — `ADR-022` amendment RULED (a) (`#161`).** Kept for its reasoning; do not redo. The rest of this item is the state as it stood BEFORE the ruling.
    `docs/adr/022-stamp-always-single-gate.md` carries a drafted amendment. ⛔ **Evidence that it
    is unsettled is the DRAFT line at `:13`, NOT the `deciders:` field** — that field names the
    owner on settled ADRs too (`023-asymmetric-loss...:4` is identical), and this ADR's
@@ -526,11 +518,14 @@ the same decline has been re-adopted.
 
 ### Lane A — FROZEN, touch nothing
 
-`#151` cutover · Phase E normalization (**202/200 rows, blocked by `#154`**) · `#154` itself.
-⚠️ **`#154` may become moot**: at an op-point of 4.5 the fit population makes `sample_min >= 4.5`
-true *by construction*, so the guard degenerates. **An op-point other than 4.5 in v9 deletes the
-whole failure mode** — decide it at design time, not with a two-file guard change later.
-Owner on `#154`, 2026-09-08: *"don't know"* — it is parked, not pending.
+`#151` cutover — still frozen, still no date.
+✅ **Phase E normalization is FITTED (2026-09-22, 2,976 rows) and `#154` is RULED AND FIXED** —
+the guard now tests the gap, not the absolute bound. ⚠️ The 2026-09-08 note that `#154` "may
+become moot" because `sample_min >= 4.5` is true by construction was **the defect, not a reason
+to wait**: that IS the degeneration, and it blocked an honest fit for a fortnight.
+⚠️ **The design advice survives the fix**: an op-point other than 4.5 in a future v9 avoids
+sitting at zero margin against `MAX_NORMALIZATION_RAW_MIN`'s strict `>` — decide it at design
+time. Record: `docs/decisions/2026-09-22-phase-e-fit-and-the-154-guard.md`.
 
 ### Lane B — the v9 redo. Spec exists; the prerequisite is CLEARED
 
@@ -962,7 +957,7 @@ Then, in order:
    ⛔ **SUPERSEDED 2026-09-08 by `EXP-030` — the projection below was wrong and the caution in it
    was right.** v8's measured production pass rate is **1.093%**, not v7's 5.81%: 34–63 rows per
    cycle, and the bar was reached in **five** cycles, not two. The comparison this block asks for
-   has also now RUN (see the top block); what is outstanding is the fit, blocked by #154.
+   has also now RUN (see the top block); ✅ the fit is DONE too (2026-09-22, #154 ruled + fixed).
    ⚠️ *Sizing, measured 2026-09-07, superseded:* the bar is rows **above the op-point**, not rows
    written.
    On `filtered_20260907_091612.jsonl`, uplifting is **147 of 2,530 ≥ 4.5 raw (5.81%)** — so ~2

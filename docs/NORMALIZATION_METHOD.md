@@ -156,11 +156,35 @@ foresight v1 was fitted from already-filtered output: lowest article 5.01. Every
 didn't cover clipped to ~0 — raw 4.60 → normalized 0.02. The loader now rejects
 `raw_min > 4.5` (`MAX_NORMALIZATION_RAW_MIN`, strict `>`), but anchoring makes such files
 *loadable* (`raw_min == op_point`), so the detection had to move with the signal: the fitter
-hard-blocks `sample_min > 4.5` on the deploy path, and the invariant test asserts the same on
-every committed package. **Residual, accepted gap:** a *subtly* biased sample (`sample_min ≤
-4.5`, ≤ 0.5 above the op-point) is statistically indistinguishable from a legitimately sparse
-needle fit — `sample_min` is recorded for audit, a > 0.5 gap warns, and representativeness
-stays an operator check (rescore provenance, playbook §6).
+hard-blocks a fit whose `sample_min` sits too far above the anchor, and the invariant test
+asserts the same on every committed package.
+
+⚠️ **Changed 2026-09-22 (llm-distillery#154, owner-ruled).** That block used to compare
+`sample_min` against the **absolute** 4.5 — the loader's bound, which is about `raw_min`. At an
+op-point of 4.5 that is not a bias test at all but a **density** test: the population is
+filtered AT the op-point, so its minimum is always above it, and no correct fit can satisfy
+`sample_min ≤ 4.5` except by rounding. It blocked `human_thriving v8`'s honest 202-row Phase E
+fit (gap 0.0069) and admitted its 2,976-row fit only because `round(4.500042, 4) == 4.5`. The
+test is now the **GAP**, `sample_min - anchor > MAX_SAMPLE_GAP (0.5)`.
+⛔ **This is identical at op-point 4.0 and nowhere else** — `sample_min > 4.5` means
+`gap > (4.5 - op_point)`, so the new flat 0.5 is **stricter below 4.0** (`nature_recovery` 3.75:
+0.75 → 0.5; `solutions` 2.25: 2.25 → 0.5) and **looser above it** (`investment_risk` 4.25:
+0.25 → 0.5). No committed package is affected — largest gap on disk is `nature_recovery v4` at
+0.0438. All three directions are pinned by tests.
+
+**Residual, accepted gap, restated for the new rule:** a *subtly* biased sample (gap under 0.5)
+is still statistically indistinguishable from a legitimately sparse needle fit — that was the
+stated reason the old tier only warned, and promoting 0.5 to a hard error does not settle it.
+What replaces the old advisory is a **span-relative** one: the unobserved `[anchor, sample_min)`
+band as a share of the fitted span `[anchor, raw_max]`, warning above
+`SAMPLE_GAP_ADVISORY_SPAN_SHARE` (5%), blocking nothing. It exists because deleting the advisory
+outright left the whole `[0, 0.5]` band SILENT at a 4.5 op-point — and a fit whose sample starts
+at NexusMind's enrichment bar (raw 4.794 for v8) has a gap of only 0.294 while missing 13% of
+the span, which is #205's literal root cause. ⚠️ **Open design question, NOT settled:** the hard
+limit is a raw-score distance while the harm it stands for is a share of the population, and
+those diverge with a filter's spread. A first fit cannot compute the missing share from its own
+sample (that band is empty in its own data by construction). Representativeness stays an
+operator check (rescore provenance, playbook §6).
 
 ### 5.3 The guard table
 
@@ -177,7 +201,8 @@ producing a deployable file.
 | fitter, pre-fit | anchor > 4.5 refused (advice: fix `TIER_THRESHOLDS`, not `--min-score`) | op-point itself above the loader bound |
 | fitter, pre-fit | `--all-versions` / `--allow-thin-fit` ⇒ analysis-only; `--out` cannot target another package's `normalization.json` | version blends, thin fits, cross-package writes |
 | fitter, load | non-finite scores excluded (they pass `wa < min_score` and would inflate the article floor); only this filter's attribute block matched (hyphen/underscore-normalized) | NaN-shrunk fits, foreign-filter blends |
-| fitter, post-fit | `abs(raw_min − op_point) ≤ 0.01`; `sample_min ≤ 4.5` | anything that slipped through; biased samples (§5.2) |
+| fitter, post-fit | `abs(raw_min − op_point) ≤ 0.01`; `sample_min - anchor ≤ MAX_SAMPLE_GAP (0.5)` — **not** the absolute 4.5, #154 | anything that slipped through; biased samples (§5.2) |
+| fitter, post-fit | advisory only: unobserved `[anchor, sample_min)` > 5% of the fitted span | shallow bias under the hard limit — warns, never blocks |
 | commit time | `tests/unit/test_normalization_invariant.py` — same two assertions, EPS imported from the fitter, globbed over every `filters/*/v*/normalization.json` (no hand-maintained list); exemptions must cite their incident and go stale-red if they start conforming | drifted or hand-placed files, whatever their origin |
 | load time (NexusMind) | `n_articles ≥ 200`; `raw_min ≤ 4.5` (else silent fallback to `score_scale_factor`); missing file → raw passthrough | thin fits, gross drift, safe rollout |
 

@@ -31,6 +31,7 @@ is exactly the rot this test must not inherit.
 
 import importlib.util
 import json
+import shutil
 import sys
 from pathlib import Path
 
@@ -54,6 +55,12 @@ _spec.loader.exec_module(_fitter)
 # ProductionScorer rejects the CDF at load and silently falls back to the linear
 # score_scale_factor — the #205 failure mode.
 MAX_RAW_MIN = _fitter.MAX_NORMALIZATION_RAW_MIN
+
+# The fit-sample bias bound, which is a GAP above the op-point and NOT the consumer
+# bound above (#154, ruled 2026-09-22). These must stay two names: sharing one made
+# the sample test a density test at a 4.5 op-point. Imported rather than restated so
+# the fitter and this invariant cannot drift apart.
+MAX_SAMPLE_GAP = _fitter.MAX_SAMPLE_GAP
 
 # Filters allowed to violate the invariant, each with the incident that made it
 # permanent. Every entry must remain a REAL violation — test_no_stale_normalization_exemptions
@@ -96,8 +103,10 @@ def _within_invariant(raw_min, op_point):
     stale-exemptions test call this — a second inlined copy is exactly how the
     round-1 fix and its own test drifted apart within a single commit.
 
-    The second disjunct mirrors the fitter's post-fit guard exactly: unreachable
-    for today's op-points (3.75/4.0, both far below 4.5), but without it an
+    The second disjunct mirrors the fitter's post-fit guard exactly. ⚠️ It was
+    annotated "unreachable for today's op-points (3.75/4.0, both far below 4.5)"
+    until 2026-09-22, when `human_thriving v8` joined this parametrization AT 4.5
+    — reachable now, with ZERO margin (the comparison is a strict `>`). Without it an
     op-point of e.g. 4.495 could bless raw_min 4.505 — within EPS of its op-point
     yet strictly above the consumer's reject bound, i.e. the test accepting a
     file the loader rejects."""
@@ -187,27 +196,30 @@ def test_normalization_fitted_at_the_tier_threshold(filter_name, version):
     # lack the field (raw_min was the sample minimum there, checked above).
     sample_min = _stat(filter_name, version, "sample_min")
     if sample_min is not None:
-        assert sample_min <= MAX_RAW_MIN, (
-            f"{filter_name}/{version}: stats.sample_min={sample_min} exceeds "
-            f"MAX_NORMALIZATION_RAW_MIN ({MAX_RAW_MIN}): no article in the fit population "
-            f"reaches the visibility threshold, so the CDF ranks against a population "
-            f"production never sees (the NexusMind#205 root cause — foresight was fitted "
-            f"from oracle-biased output). Refit from a production-representative slice "
-            f"(playbook §6)."
+        sample_gap = sample_min - op_point
+        assert sample_gap <= MAX_SAMPLE_GAP, (
+            f"{filter_name}/{version}: stats.sample_min={sample_min} sits {sample_gap:.4f} "
+            f"above the op-point {op_point}, over MAX_SAMPLE_GAP ({MAX_SAMPLE_GAP}): no "
+            f"article in the fit population reaches down to the visibility threshold, so the "
+            f"CDF ranks against a population production never sees (the NexusMind#205 root "
+            f"cause — foresight was fitted from oracle-biased output). Refit from a "
+            f"production-representative slice (playbook §6)."
         )
 
 
-def _write_synthetic_package(root: Path, sample_min: float):
+def _write_synthetic_package(root: Path, sample_min: float, op_point: float = 3.75):
     """A minimal anchored-fit package: raw_min pinned to the op-point (as the
-    fitter guarantees by construction), sample_min set by the caller."""
+    fitter guarantees by construction), sample_min set by the caller. op_point is
+    a parameter because the guard's whole defect (#154) was that it behaved
+    differently at 4.5 than at the 3.75/4.0 it was written for."""
     pkg = root / "filters" / "synthetic" / "v1"
     pkg.mkdir(parents=True)
     (pkg / "base_scorer.py").write_text(
-        'TIER_THRESHOLDS = [("high", 7.0), ("medium", 3.75), ("low", 0.0)]\n',
+        f'TIER_THRESHOLDS = [("high", 7.0), ("medium", {op_point}), ("low", 0.0)]\n',
         encoding="utf-8",
     )
     (pkg / "normalization.json").write_text(
-        json.dumps({"stats": {"raw_min": 3.75, "sample_min": sample_min}}),
+        json.dumps({"stats": {"raw_min": op_point, "sample_min": sample_min}}),
         encoding="utf-8",
     )
 
@@ -231,6 +243,81 @@ def test_sample_min_guard_passes_a_representative_fit(tmp_path, monkeypatch):
     so the guard can't rot into rejecting every anchored fit either."""
     monkeypatch.setattr(sys.modules[__name__], "REPO_ROOT", tmp_path)
     _write_synthetic_package(tmp_path, sample_min=3.9)
+    test_normalization_fitted_at_the_tier_threshold("synthetic", "v1")
+
+
+def test_sample_gap_admits_a_sparse_needle_fit_at_a_4_5_op_point(tmp_path, monkeypatch):
+    """llm-distillery#154, the regression this guard's own constant caused. At an
+    op-point of 4.5 the OLD rule (sample_min <= MAX_NORMALIZATION_RAW_MIN, also 4.5)
+    could not be satisfied by any correct fit: the population is filtered AT 4.5, so
+    its minimum is always above it. It hard-blocked `human_thriving v8`'s 202-row
+    Phase E fit at sample_min 4.5069 — a gap of 0.0069 against the 0.5 the advisory tier
+    then used (and which is now the hard limit), i.e. the signature it names absent by
+    ~70x. ⚠️ Mutation, stated precisely because the count depends on which one you apply:
+    replacing ONLY the predicate with `sample_min <= MAX_RAW_MIN` and keeping the message
+    reddens THIS test alone (verified); replacing the predicate AND the message reddens
+    three, because two others match on `MAX_SAMPLE_GAP` appearing in the text."""
+    monkeypatch.setattr(sys.modules[__name__], "REPO_ROOT", tmp_path)
+    _write_synthetic_package(tmp_path, sample_min=4.5069, op_point=4.5)
+    test_normalization_fitted_at_the_tier_threshold("synthetic", "v1")
+
+
+def test_sample_gap_still_fires_at_a_4_5_op_point(tmp_path, monkeypatch):
+    """...and the #205 ROOT CAUSE must still be caught at that same op-point, or the
+    fix traded a false block for a missing one. 5.2 against a 4.5 anchor is a gap of
+    0.7: the [4.5, 5.2) band was never observed and would normalize onto a
+    0-percentile ramp."""
+    monkeypatch.setattr(sys.modules[__name__], "REPO_ROOT", tmp_path)
+    _write_synthetic_package(tmp_path, sample_min=5.2, op_point=4.5)
+    with pytest.raises(AssertionError, match="MAX_SAMPLE_GAP"):
+        test_normalization_fitted_at_the_tier_threshold("synthetic", "v1")
+
+
+def test_sample_gap_is_identical_at_op_point_4_0_only(tmp_path, monkeypatch):
+    """⛔ At 4.0 AND NOWHERE ELSE. The name is the assertion, and an earlier version of it
+    said "at the op_points the guard was written for" while testing 4.0 alone — the 2026-07-16
+    promise it quoted was "no false-block possible for any real op-point (3.75/4.0)", and 3.75
+    is exactly where the new rule is NOT identical. At 4.0, `sample_min > 4.5` and
+    `gap > 0.5` are the same predicate: 4.51 fails, 4.49 passes."""
+    monkeypatch.setattr(sys.modules[__name__], "REPO_ROOT", tmp_path)
+    _write_synthetic_package(tmp_path, sample_min=4.49, op_point=4.0)
+    test_normalization_fitted_at_the_tier_threshold("synthetic", "v1")
+
+    shutil.rmtree(tmp_path / "filters")
+    _write_synthetic_package(tmp_path, sample_min=4.51, op_point=4.0)
+    with pytest.raises(AssertionError, match="MAX_SAMPLE_GAP"):
+        test_normalization_fitted_at_the_tier_threshold("synthetic", "v1")
+
+
+def test_sample_gap_is_deliberately_STRICTER_below_op_point_4_0(tmp_path, monkeypatch):
+    """The other half of the same change, pinned so it is a decision and not a surprise.
+    The old rule fired at `sample_min > 4.5`, i.e. at `gap > (4.5 - op_point)`, so below 4.0
+    it was LOOSER than the new flat 0.5 — at `nature_recovery v4`'s 3.75 the old tolerance
+    was 0.75 and only WARNED in (4.25, 4.5]; it now hard-fails. `solutions v4/v6` sit at 2.25,
+    where the old tolerance was 2.25. No committed package is affected (largest gap on disk is
+    nature_recovery v4 at 0.0438), but `nature_recovery v5` (#71) is the filter that would meet
+    this. If this test ever becomes inconvenient, that is the policy question surfacing — do
+    not relax it silently."""
+    monkeypatch.setattr(sys.modules[__name__], "REPO_ROOT", tmp_path)
+    # 4.3 at op-point 3.75: gap 0.55. OLD rule passed it (4.3 <= 4.5, advisory only).
+    _write_synthetic_package(tmp_path, sample_min=4.3, op_point=3.75)
+    with pytest.raises(AssertionError, match="MAX_SAMPLE_GAP"):
+        test_normalization_fitted_at_the_tier_threshold("synthetic", "v1")
+
+    # ...and the band that stays acceptable there is unchanged in kind: gap 0.3 passes.
+    shutil.rmtree(tmp_path / "filters")
+    _write_synthetic_package(tmp_path, sample_min=4.05, op_point=3.75)
+    test_normalization_fitted_at_the_tier_threshold("synthetic", "v1")
+
+
+def test_sample_gap_is_LOOSER_above_op_point_4_0(tmp_path, monkeypatch):
+    """And the third direction, which no other test covers. At `investment_risk v6`'s 4.25
+    the old bound fired at gap > 0.25; the flat 0.5 now admits up to 4.75. That filter is
+    retired downstream (NexusMind ADR-025) so nothing is at risk today — this exists so the
+    widening is on the record rather than discovered by the next filter to sit above 4.0."""
+    monkeypatch.setattr(sys.modules[__name__], "REPO_ROOT", tmp_path)
+    # 4.6 at op-point 4.25: gap 0.35. OLD rule HARD-ERRORED (4.6 > 4.5). Now accepted.
+    _write_synthetic_package(tmp_path, sample_min=4.6, op_point=4.25)
     test_normalization_fitted_at_the_tier_threshold("synthetic", "v1")
 
 
