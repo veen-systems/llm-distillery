@@ -115,8 +115,16 @@ replacement. Four issues filed: `NM#520`, `NM#521`, `NM#522`, `#161`.
   The peer session (`nexusmind-0f`) was still working and asked to hold; it owns the push.
   ⚠️ **If its handoff does not claim this, it is the first action next session** — a step both
   sessions think the other owns is the shape that gets skipped.
+  ✅ **DISCHARGED 2026-09-22, and VERIFIED HERE rather than taken**: the peer's close message
+  claimed it, and `git rev-parse origin/main` (NexusMind clone) and `ssh sadalsuud ... git
+  rev-parse HEAD` both read **`8c54bef`**, clean tree. Its handoff does claim it from that
+  side, so the both-sessions-think-the-other shape did not occur.
 - ⚠️ **After that push, pull sadalsuud but do NOT run `deploy/install.sh`.** `34fab3e`
   touches `deploy/systemd/`, whose files are installed as root-owned copies a pull does not
   update. Owner ruled: bundle the install into the next real deploy. The unit headers stay
   stale on the host **deliberately**.
 - The `record_path` → record-schema declarations are done; `NM#521`'s missing RULE is not.
+  ✅ **Now done too, NexusMind-side at `007be0a` (Contract B 1.21.0), verified here by reading
+  that commit.** 8 routable stamps declared, 3 bookkeeping ones declared-OMITTED with reasons.
+  ⚠️ The check was shown red against the **8**, not against the 11 this repo's queue named —
+  consistent, because the criterion makes the 3 omitted-with-reason ones passing, not missing.

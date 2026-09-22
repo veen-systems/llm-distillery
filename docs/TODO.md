@@ -15,9 +15,12 @@ being amended because four documents ignored. **Confirm each in THIS session, th
    — `#156`'s body. ⛔ Do not touch the other three: a commit message is immutable, the NM
    changelog is corrected, `H-V8-37` is done.
 2. **`NM#521` criterion RULED**: Contract B declares every stamp a consumer could ROUTE on;
-   bookkeeping stays undeclared but must carry an explicit omitted-reason. ⛔ Implementation and
-   the check are NexusMind-side and still owed; the check must be shown **red against today's
-   11** first.
+   bookkeeping stays undeclared but must carry an explicit omitted-reason.
+   ✅ **CLOSED 2026-09-22 — nothing to confirm here.** The ruling arrived in the NexusMind
+   session (this repo only ever held the relay), and that session shipped it: `NM 007be0a`,
+   Contract B **1.21.0**, 8 routable stamps declared and 3 bookkeeping ones declared-OMITTED
+   with reasons. ⚠️ The check was shown red against the **8**, not the **11** this line first
+   named — consistent, since the criterion makes the 3 omitted-with-reason ones passing.
 3. **Phase E for `human_thriving v8`: FIT, do NOT cut over.** The cutover stays gated on the
    same-articles comparison and has no date. Peer measurement, attributed not re-derived:
    **2,976 of 296,636 rows clear 4.5 (1.00%)** against Phase E's 200-row bar, ~15× met; v7 is
@@ -30,7 +33,9 @@ being amended because four documents ignored. **Confirm each in THIS session, th
    `foresight v1`'s 5.0141 predates the anchoring. ⚠️ **But the margin is ZERO** — the loader's
    test is a strict `>`, so 4.50 passes only because it is not greater than 4.50. Assert the
    exact equality in the fit record, not "under the cap", and remember the failure is SILENT
-   (fallback to `score_scale_factor`, not a refusal).
+   (fallback to `score_scale_factor`, not a refusal). Peer measurement, attributed not
+   re-derived: **4.5 normalizes, 4.500000000000001 goes inert** — ONE float ULP, and the inert
+   branch is a `logger.warning` with fall-through.
 
 ⛔ **ITEMS 0–2 ARE NOT EXECUTABLE BY A SESSION TODAY — the first one you can DO is item 3.**
 0 is an owner ruling, 1 is date-gated (earliest ~2026-09-24), 2 is an owner spend decision.
