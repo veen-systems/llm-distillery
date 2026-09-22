@@ -3,9 +3,94 @@ status: Accepted
 date: 2026-07-31
 deciders: [Jeroen Veen]
 superseded_by:
+amended: 2026-09-22
 ---
 
 # ADR-022: Stamp Always, Decide Once — Gate-Module Contract
+
+**Amended 2026-09-22** — the first SIGNAL is recorded as an explicit exception, the way
+the *Revisit If* clause below requires. See *Amendment* immediately after this line.
+⛔ **DRAFT: written by the assistant for the decider's review; not yet ruled.**
+
+## Amendment (2026-09-22, DRAFT): harm is a SIGNAL, and signals are the recorded exception
+
+### What happened
+
+`harm_is_subject` (llm-distillery#156, NexusMind#463) shipped as a cross-lens detector that
+stamps a continuous score, ships **no threshold**, has **no `_is_harm`**, and is intended to
+be read per-lens from each filter's own `config.yaml`. Four documents cited *this ADR* as the
+authority for that shape — NexusMind `73ad620`, its contracts changelog, llm-distillery#156's
+body (*"That is ADR-022 verbatim"*), and `memory/hypothesis-ledger.md:280`.
+
+⛔ **That citation was backwards, on all three clauses of the Decision below:**
+
+| this ADR requires | harm does |
+|---|---|
+| the stamp triple, including `_is_<detector>` (bool at the deployed op-point) | ships **no** bool, deliberately |
+| one enforcement point, the central load/dedup gate, `pipeline.<detector>.enforce` | N per-lens decision points, in `filters/*/config.yaml` |
+| stamps are *"observability/audit fields, not routing fields"* (Risks) | the stamp exists **to be routed on** |
+
+### Why the design is nonetheless right, and the citation is what was wrong
+
+This ADR governs **gate modules that DROP on a GLOBAL VERDICT**. Harm has neither property,
+and that is measured rather than asserted:
+
+- **No global verdict is possible.** Of 9 articles two blind judges *both* called harmful,
+  **6 were already surfaced by another lens** (`H-V8-37`). "Bihar copes with floods" betrays
+  Thriving's promise and is arguably correct under Solutions; Nature Recovery is *about*
+  recovering from damage. ⚠️ With the control that makes it a finding: 53% of harm-flagged
+  rows carry to ≥1 other lens against a **58% whole-panel baseline** — harm content is **as**
+  cross-lens as anything else, not enriched for it. A cross-lens verdict would not be a
+  stricter gate; it would remove two lenses' subject matter.
+- **Nothing is dropped.** The per-lens mechanism is a **cap** on the weighted average
+  (`filters/common/filter_base_scorer.py`, `short_content.cap`'s shape), not a removal. The
+  article survives; its score falls below *that lens's* op-point. Clause 2 forbids a *drop*
+  outside the central gate, and a cap is not a drop.
+- **Clause 1 is inapplicable, not merely unmet.** `_is_<detector>` is specified as *"bool at
+  the deployed op-point"*. Harm ships no op-point, so there is no bool to stamp; inventing one
+  would assert a global answer this ADR's own evidence says does not exist.
+
+### The decision
+
+**A concern that cannot carry a global verdict is a SIGNAL, not a gate module, and the
+Gate-Module Contract does not reach it.** Signals are recorded here as the exception the
+*Revisit If* clause anticipated, and they carry their own contract:
+
+1. **Stamp the score, the model version and the stack.** No verdict field, ever — a verdict
+   on a signal asserts the global answer that made it a signal in the first place. Enforced
+   in code, not prose: `tests/unit/test_harm_preprocessor.py::test_the_declared_harm_shape_carries_no_verdict`
+   (NexusMind), which goes red when a `verdict` member or a boolean `_harm_*` appears.
+2. **A signal is declared under `nexusmind.signals.*`, never `nexusmind.gates.*`**
+   (`contracts/article-record.schema.json` 0.7.0). The filing location is the assertion.
+3. **Consumption is per-lens, config-gated, and must CAP rather than DROP.** One cap per lens
+   per concern, in that lens's own `config.yaml`. A drop outside the central gate remains
+   forbidden — this amendment does not reopen Option B.
+4. ⛔ **The audit trail is owed per-lens, and harm does not yet have it.** This is the one
+   guarantee clause 1 provided that is genuinely lost, and it must not be waived: this ADR's
+   own evidence — the 2026-07-31 obituary diagnosis separating 47 shadow-era carryovers from
+   2 true v5 FNs — was only possible because a stamped bool recorded what the deployed
+   op-point had decided **at the time**. **A lens that caps on a signal MUST stamp that the
+   cap fired**, with the threshold it used. Per-lens, so no global answer is asserted;
+   reproducible, so the FP review this ADR exists to protect survives.
+
+### What this does NOT license
+
+- ⛔ **Not a general escape hatch.** Commerce, obituary and violence promotion remain gate
+  modules under the unamended contract. "Different lenses might want different policies" is
+  not sufficient — the test is whether a global verdict is **impossible**, demonstrated on
+  data, as `H-V8-37` did.
+- ⛔ **Not consumer-side enforcement across repos.** ovr.news excluding stamped articles at
+  selection (its `docs/cross-repo-dependencies.md` Chain 7.6, *"exclude stamped articles at
+  selection"*) is exactly Option B and exactly what the measurement above forbids. Chain 7.6
+  needs re-posing before it is filed.
+- ⛔ **Not retroactive cover for the four citations.** They are wrong and are being corrected;
+  this amendment is what they should have cited, and it did not exist when they were written.
+
+### Open for the decider
+
+**(a)** Adopt as above — signals as a recorded exception inside this ADR. **(b)** Split it
+into its own ADR and leave this one to gate modules alone. This draft assumes (a) because the
+*Revisit If* clause says an exception is recorded *"here"*, and one place to look beats two.
 
 ## Context
 
