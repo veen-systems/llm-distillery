@@ -1,9 +1,34 @@
 # LLM Distillery - TODO
 
-## ▶️ START HERE — the ordered queue, as of 2026-09-22 (harm stamp live; `ADR-022` amendment RULED; `human_thriving v8` Phase E fitted, NOT cut over)
+## ▶️ START HERE — the ordered queue, as of 2026-09-22 (all three rulings settled; Phase E fitted, NOT cut over; the READ SURFACE is now the top item)
 
 *A bare "continue" means this list, top down. Each line names the FIRST action, not the
 topic. Re-read the block under it before starting; the reasons are there, not here.*
+
+⛔⛔ **NEXT SESSION STARTS AT ITEM −1, NOT ITEM 3.** Owner, 2026-09-22, on seeing how much
+this session had to read: *"that means we need to start pruning, thinning, mechanizing,
+retiring."* That is now the work, ahead of the queue below.
+
+−1. ▶ **THE READ SURFACE (`#163`) — START HERE, and start with MECHANIZE.**
+   **First action: pick the `in-sample tautology` row from `memory/gotcha-log.md` §
+   *Mechanized*, write the check, and make it go RED on a seeded case before anything else.**
+   Then the other two proposed rows (guard-doc sync, experiment citation). ⛔ **A row is
+   `live` only after a seeded positive** — the table says so and it is this repo's signature
+   defect arriving in the table built to prevent it.
+   **Why this is first, measured 2026-09-22:** the bare-"continue" path is **605,198 B /
+   7,362 lines** before any work starts — `docs/TODO.md` alone is **546,771 B / 6,977
+   lines**, `memory/gotcha-log.md` is **715,093 B**, and `CLAUDE.md` routes to **30** topic
+   files. ⭐ **And the surface is now producing defects, not just costing tokens**: the
+   NM#319 tautology was written down in **three** places on the task's own routing path and a
+   session recomputed it anyway and called it a correction. `H-CTX-1` records that
+   *writing it down* is REFUTED as a remedy; `H-CTX-2` records that `#133`'s cap was the
+   right fix to the wrong file.
+   ⛔ **Do not raise a budget** — the always-loaded layer PASSES (51,681 of 60,000). The
+   pointed-at layer is the problem and has no budget by design.
+   ⛔ **Retiring is not deleting.** Establish what an entry is currently buying before
+   removing it — *a failing check may be the control working* applies to prose too.
+   Order: **mechanize → retire → thin → prune.** Prune last; it needs session-record
+   evidence about which pointer rows have ever changed a decision.
 
 ✅ **ALL THREE RULINGS ARE SETTLED — given IN SESSION on 2026-09-22, not by relay.** They
 first arrived through the NexusMind peer session and were refused there (a relayed ruling is
@@ -28,7 +53,7 @@ proof and every number: **`docs/decisions/2026-09-22-phase-e-fit-and-the-154-gua
 ⚠️ *This list is bulleted, not numbered, on purpose: it used 1/2/3 while the queue below uses
 0–8, and "the first one you can DO is item 3" sits between them.*
 
-⛔ **ITEMS 1–2 ARE NOT EXECUTABLE BY A SESSION TODAY — the first one you can DO is item 3.**
+⛔ **ITEMS 1–2 ARE NOT EXECUTABLE BY A SESSION TODAY — and item −1 above outranks item 3.**
 0 is **done** (ruled 2026-09-22), 1 is date-gated (earliest ~2026-09-24), 2 is an owner spend
 decision. Read them so you know what is blocked and on whom, then start at 3. ⚠️ This line
 exists because a review found a bare "continue" walking into two dead ends in a row. Numbers
