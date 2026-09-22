@@ -63,15 +63,42 @@ Gate-Module Contract does not reach it.** Signals are recorded here as the excep
 2. **A signal is declared under `nexusmind.signals.*`, never `nexusmind.gates.*`**
    (`contracts/article-record.schema.json` 0.7.0). The filing location is the assertion.
 3. **Consumption is per-lens, config-gated, and must CAP rather than DROP.** One cap per lens
-   per concern, in that lens's own `config.yaml`. A drop outside the central gate remains
-   forbidden — this amendment does not reopen Option B.
+   per concern, in that lens's own `config.yaml`.
+   ⛔ **This is the carve-out to clause 2 of the Decision, stated here so the two do not
+   contradict each other.** Clause 2 forbids *"a drop inside the detector"* and *"a
+   consumer-side drop"*. A per-lens cap is neither: it runs inside NexusMind's own scoring
+   path (`filters/common/filter_base_scorer.py`), not in a downstream repo, and it **removes
+   nothing** — the article survives and its score falls below that lens's op-point. Option B
+   stays closed: a *drop* outside the central gate remains forbidden, and a downstream repo
+   filtering on a signal stamp is still the failure this ADR was written about.
 4. ⛔ **The audit trail is owed per-lens, and harm does not yet have it.** This is the one
    guarantee clause 1 provided that is genuinely lost, and it must not be waived: this ADR's
    own evidence — the 2026-07-31 obituary diagnosis separating 47 shadow-era carryovers from
-   2 true v5 FNs — was only possible because a stamped bool recorded what the deployed
-   op-point had decided **at the time**. **A lens that caps on a signal MUST stamp that the
-   cap fired**, with the threshold it used. Per-lens, so no global answer is asserted;
-   reproducible, so the FP review this ADR exists to protect survives.
+   2 true v5 FNs — was only possible because a stamp recorded what the deployed op-point had
+   decided **at the time**, and a threshold reconstructed later from config is not the
+   threshold as applied.
+   **A lens that consumes a signal MUST record its EVALUATION, not merely its firing**, and
+   MUST do so by `$ref`-ing the existing `$defs.gate_verdict` in
+   `contracts/article-record.schema.json` rather than minting a fourth vocabulary. That
+   definition already carries exactly the members this needs, with `score`, `verdict`,
+   `model`, `enforced` and `stamped` required and `threshold` declared:
+   - `stamped` — whether the lens evaluated this row at all;
+   - `enforced` — whether a positive would have been capped, i.e. shadow vs live;
+   - `threshold` — the value this row was judged at, not the one config holds today.
+   ⚠️ **"Stamp that the cap fired" is not sufficient and an earlier draft of this clause said
+   exactly that.** A row with no cap record would then mean either *no cap is configured for
+   this lens* or *a cap is configured and did not fire* — the same absence-vs-judged collapse
+   the signal's own score is careful to avoid (*"ABSENT, never 0.0"*), reintroduced one layer
+   up. `stamped` and `enforced` being separate members is what prevents it.
+   ⚠️ **The `verdict` member here is a LENS's verdict, not the signal's**, and that is the
+   whole distinction this amendment turns on: the signal carries no global answer (clause 1),
+   while each lens's own decision is exactly the kind of thing that has one and must be
+   recorded.
+   ⛔ **Blocked on a prerequisite, deliberately.** This clause multiplies stamped fields by
+   lens count, and NexusMind#521 has established that the project has **no written rule for
+   which stamps Contract B declares**. Landing clause 4 before that rule exists would add N
+   undeclared stamps on the strength of an issue arguing that undeclared stamps are the
+   problem. **NM#521 first, then this.**
 
 ### What this does NOT license
 
@@ -79,10 +106,17 @@ Gate-Module Contract does not reach it.** Signals are recorded here as the excep
   modules under the unamended contract. "Different lenses might want different policies" is
   not sufficient — the test is whether a global verdict is **impossible**, demonstrated on
   data, as `H-V8-37` did.
-- ⛔ **Not consumer-side enforcement across repos.** ovr.news excluding stamped articles at
-  selection (its `docs/cross-repo-dependencies.md` Chain 7.6, *"exclude stamped articles at
-  selection"*) is exactly Option B and exactly what the measurement above forbids. Chain 7.6
-  needs re-posing before it is filed.
+- ⛔ **Not consumer-side enforcement across repos.** A downstream repo excluding articles on
+  a signal stamp at selection time is exactly Option B, and the measurement above is exactly
+  why: a cross-lens exclusion removes two lenses' subject matter rather than gating harder.
+  ⚠️ **An earlier draft named ovr.news's `docs/cross-repo-dependencies.md` Chain 7.5/7.6 as
+  a live instance of this. That was WRONG and is withdrawn.** Chain 7 is
+  *trajectory-framing / constructiveness* (LD#61 → LD#60/#87); that file contains **zero**
+  occurrences of `harm_is_subject`, `#156` or `_harm_`, 7.5 is a conjunction whose other half
+  is *"ship retrained scorers / prefilter"*, and both its blockers (LD#60, LD#87) are open.
+  *"The field"* there is not this field. ⛔ **The error was confirming the QUOTE and not the
+  REFERENT** — the rows were read and quoted accurately against the wrong premise. That file's
+  own banner records the same failure twice before, in Chain 2 and in this same Chain 7.
 - ⛔ **Not retroactive cover for the four citations.** They are wrong and are being corrected;
   this amendment is what they should have cited, and it did not exist when they were written.
 
