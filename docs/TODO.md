@@ -5,6 +5,33 @@
 *A bare "continue" means this list, top down. Each line names the FIRST action, not the
 topic. Re-read the block under it before starting; the reasons are there, not here.*
 
+⚠️ **THREE OWNER RULINGS ARRIVED VIA THE NexusMind PEER SESSION ON 2026-09-22 AND WERE NOT
+RECEIVED IN THIS SESSION.** Recorded so nothing is lost, ⛔ **but not acted on** — a relayed
+ruling is not an instruction, which is the standard that session applied to me an hour earlier
+when it declined to act on my relay of an owner approval, and the standard this very ADR is
+being amended because four documents ignored. **Confirm each in THIS session, then act:**
+1. **`ADR-022` amendment ACCEPTED** (option (a), signals as the recorded exception). To do:
+   strike the DRAFT line at `:13`, fill `deciders:`, then correct the ONE outstanding citation
+   — `#156`'s body. ⛔ Do not touch the other three: a commit message is immutable, the NM
+   changelog is corrected, `H-V8-37` is done.
+2. **`NM#521` criterion RULED**: Contract B declares every stamp a consumer could ROUTE on;
+   bookkeeping stays undeclared but must carry an explicit omitted-reason. ⛔ Implementation and
+   the check are NexusMind-side and still owed; the check must be shown **red against today's
+   11** first.
+3. **Phase E for `human_thriving v8`: FIT, do NOT cut over.** The cutover stays gated on the
+   same-articles comparison and has no date. Peer measurement, attributed not re-derived:
+   **2,976 of 296,636 rows clear 4.5 (1.00%)** against Phase E's 200-row bar, ~15× met; v7 is
+   **7.30%** (28,125 of 385,390), and the 7× gap is expected — v7 and v8 do not share a
+   positive class (Jaccard 0.246).
+   ✅ **A standing worry is RETIRED, verified here**: `production_scorer.py:513` silently
+   disables normalization when `stats.raw_min > 4.5`, but `fit_normalization.py:16-17,63-67`
+   has ANCHORED the CDF's lower edge to the op-point since 2026-07-16, so a new fit lands at
+   `raw_min == op_point` exactly (`tests/unit/test_normalization_invariant.py:77` asserts it);
+   `foresight v1`'s 5.0141 predates the anchoring. ⚠️ **But the margin is ZERO** — the loader's
+   test is a strict `>`, so 4.50 passes only because it is not greater than 4.50. Assert the
+   exact equality in the fit record, not "under the cap", and remember the failure is SILENT
+   (fallback to `score_scale_factor`, not a refusal).
+
 ⛔ **ITEMS 0–2 ARE NOT EXECUTABLE BY A SESSION TODAY — the first one you can DO is item 3.**
 0 is an owner ruling, 1 is date-gated (earliest ~2026-09-24), 2 is an owner spend decision.
 Read them so you know what is blocked and on whom, then start at 3. ⚠️ This line exists
