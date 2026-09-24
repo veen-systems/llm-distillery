@@ -28,3 +28,11 @@ n=10). It is not independent human truth. Self-consistency (0.946–0.960) is no
 - **The training rule for moved-out rows**, i.e. how their six dimensions are set. PLAN.md left
   this open. It must be written before any retrain.
 - Retrain (b650), the ADR-021 gate, and a live audit.
+
+## Training rule for moved-out rows — decided 2026-09-24 by the ASSISTANT (owner: "no idea")
+
+Each of the six dimensions of a moved-out row is capped at **2.0** (`min(label, 2.0)`). This is the
+oracle prompt's own out-of-scope rule ("score 0-2 on ALL dimensions"), so the student sees one
+convention. Kept-in rows and rows below 3.5 are unchanged. The splits are **v8's exact
+train/val/test ids**, so v8 and the retrain are compared on the same rows:
+`datasets/training/human_thriving_v8_adj1/` (gitignored) — capped 447 train / 56 val / 50 test.
