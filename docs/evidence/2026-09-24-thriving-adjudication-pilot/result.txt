@@ -1,0 +1,16 @@
+1. controls, pass A: 4/4
+     out_of_scope expected        out_of_scope  climate_solutions_the_cool_down_8094f43914ed
+     out_of_scope expected        out_of_scope  indonesian_mongabay_id_4a03fd01cc36
+     out_of_scope expected        out_of_scope  south_asian_indian_express_9f206d53ba0f
+         in_scope expected            in_scope  south_asian_indian_express_c7f20fb64869
+1. controls, pass B: 4/4
+     out_of_scope expected        out_of_scope  climate_solutions_the_cool_down_8094f43914ed
+     out_of_scope expected        out_of_scope  indonesian_mongabay_id_4a03fd01cc36
+     out_of_scope expected        out_of_scope  south_asian_indian_express_9f206d53ba0f
+         in_scope expected            in_scope  south_asian_indian_express_c7f20fb64869
+2. A vs B binary agreement 0.960 (bar >= 0.90), kappa 0.908 (bar >= 0.75), n=50
+4. stratum near: consensus on 25, disagrees with oracle on 23 (92.0%); in->out 23, out->in 0
+4. stratum above: consensus on 23, disagrees with oracle on 10 (43.5%); in->out 10, out->in 0
+3. owner spot-check list written: spot_check.md (10 rows, 10 from consensus-vs-oracle disagreements)
+
+ITEMS 1, 2, 4: HOLD

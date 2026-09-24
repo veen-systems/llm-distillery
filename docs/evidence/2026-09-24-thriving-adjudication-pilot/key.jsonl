@@ -1,0 +1,54 @@
+{"id": "arabic_aawsat_ar_5f22b69508fd", "stratum": "near", "n_in_stratum": 562, "oracle_mean": 4.3167, "oracle_verdict": "in_scope"}
+{"id": "west_african_seneweb_d905bc1d8e2b", "stratum": "near", "n_in_stratum": 562, "oracle_mean": 3.9333, "oracle_verdict": "in_scope"}
+{"id": "china_sciencenet_cn_531dd3c90a2d", "stratum": "near", "n_in_stratum": 562, "oracle_mean": 3.7833, "oracle_verdict": "in_scope"}
+{"id": "austrian_vol_at_72bf87f581a9", "stratum": "near", "n_in_stratum": 562, "oracle_mean": 4.0667, "oracle_verdict": "in_scope"}
+{"id": "south_american_gestion_pe_8588ecd2a761", "stratum": "near", "n_in_stratum": 562, "oracle_mean": 4.1667, "oracle_verdict": "in_scope"}
+{"id": "icelandic_ruv_388841423ed9", "stratum": "near", "n_in_stratum": 562, "oracle_mean": 4.0, "oracle_verdict": "in_scope"}
+{"id": "science_arxiv_cs_97ae13a6b7ee", "stratum": "near", "n_in_stratum": 562, "oracle_mean": 4.3833, "oracle_verdict": "in_scope"}
+{"id": "south_asian_hindustan_times_5e4f6ddaf6d7", "stratum": "near", "n_in_stratum": 562, "oracle_mean": 3.8333, "oracle_verdict": "in_scope"}
+{"id": "west_african_myjoyonline_2a6b22b5dd56", "stratum": "near", "n_in_stratum": 562, "oracle_mean": 4.15, "oracle_verdict": "in_scope"}
+{"id": "portuguese_nexo_jornal_86979580054f", "stratum": "near", "n_in_stratum": 562, "oracle_mean": 3.95, "oracle_verdict": "in_scope"}
+{"id": "pubmed_3c5e081111d3", "stratum": "near", "n_in_stratum": 562, "oracle_mean": 4.25, "oracle_verdict": "in_scope"}
+{"id": "south_asian_hindustan_times_3da07a906999", "stratum": "near", "n_in_stratum": 562, "oracle_mean": 3.85, "oracle_verdict": "in_scope"}
+{"id": "west_african_punch_ng_04576c12a6d8", "stratum": "near", "n_in_stratum": 562, "oracle_mean": 4.3667, "oracle_verdict": "in_scope"}
+{"id": "global_news_euronews_ddc14765b967", "stratum": "near", "n_in_stratum": 562, "oracle_mean": 4.4167, "oracle_verdict": "in_scope"}
+{"id": "automotive_cleantechnica_ev_3ff73285bf8f", "stratum": "near", "n_in_stratum": 562, "oracle_mean": 4.3167, "oracle_verdict": "in_scope"}
+{"id": "healthcare_medicalxpress_a93adfdbcb75", "stratum": "near", "n_in_stratum": 562, "oracle_mean": 4.2167, "oracle_verdict": "in_scope"}
+{"id": "finnish_yle_uutiset_70a3f2b2c414", "stratum": "near", "n_in_stratum": 562, "oracle_mean": 3.5, "oracle_verdict": "in_scope"}
+{"id": "healthcare_medicalxpress_d83079a320c0", "stratum": "near", "n_in_stratum": 562, "oracle_mean": 4.2667, "oracle_verdict": "in_scope"}
+{"id": "arabic_skynewsarabia_ar_c27e0a98d0e4", "stratum": "near", "n_in_stratum": 562, "oracle_mean": 3.6, "oracle_verdict": "in_scope"}
+{"id": "belgian_dh_les_sports_68a9e366c36e", "stratum": "near", "n_in_stratum": 562, "oracle_mean": 4.2833, "oracle_verdict": "in_scope"}
+{"id": "science_arxiv_math_1a34a6fb51ad", "stratum": "near", "n_in_stratum": 562, "oracle_mean": 3.6, "oracle_verdict": "in_scope"}
+{"id": "southeast_asian_antara_en_7d165e21a9a0", "stratum": "near", "n_in_stratum": 562, "oracle_mean": 3.6334, "oracle_verdict": "in_scope"}
+{"id": "pan_african_all_africa_3264e9ca6ea5", "stratum": "near", "n_in_stratum": 562, "oracle_mean": 4.0083, "oracle_verdict": "in_scope"}
+{"id": "baltic_lrt_4d429c5166ea", "stratum": "near", "n_in_stratum": 562, "oracle_mean": 4.1167, "oracle_verdict": "in_scope"}
+{"id": "greek_protothema_2637ade64304", "stratum": "near", "n_in_stratum": 562, "oracle_mean": 4.05, "oracle_verdict": "in_scope"}
+{"id": "south_american_la_nacion_ar_0843b6b45fb0", "stratum": "above", "n_in_stratum": 316, "oracle_mean": 6.7833, "oracle_verdict": "in_scope"}
+{"id": "french_linfodurable_9ef6fd5fd90c", "stratum": "above", "n_in_stratum": 316, "oracle_mean": 6.3417, "oracle_verdict": "in_scope"}
+{"id": "south_asian_nepalnews_6f897212ced0", "stratum": "above", "n_in_stratum": 316, "oracle_mean": 4.925, "oracle_verdict": "in_scope"}
+{"id": "vietnamese_tuoitre_vn_8dfd035df168", "stratum": "above", "n_in_stratum": 316, "oracle_mean": 5.7417, "oracle_verdict": "in_scope"}
+{"id": "south_asian_indian_express_36947550e02c", "stratum": "above", "n_in_stratum": 316, "oracle_mean": 5.6083, "oracle_verdict": "in_scope"}
+{"id": "south_american_guyana_times_f76779ceb5cf", "stratum": "above", "n_in_stratum": 316, "oracle_mean": 4.6083, "oracle_verdict": "in_scope"}
+{"id": "south_american_el_pais_uy_6ae0fec66221", "stratum": "above", "n_in_stratum": 316, "oracle_mean": 5.0667, "oracle_verdict": "in_scope"}
+{"id": "south_american_el_comercio_ec_59e14dea12af", "stratum": "above", "n_in_stratum": 316, "oracle_mean": 4.5417, "oracle_verdict": "in_scope"}
+{"id": "south_american_el_nacional_714722834005", "stratum": "above", "n_in_stratum": 316, "oracle_mean": 4.55, "oracle_verdict": "in_scope"}
+{"id": "italian_repubblica_esteri_f6178db3480b", "stratum": "above", "n_in_stratum": 316, "oracle_mean": 4.5417, "oracle_verdict": "in_scope"}
+{"id": "australian_the_conversation_au_72c33e0f3a2a", "stratum": "above", "n_in_stratum": 316, "oracle_mean": 4.925, "oracle_verdict": "in_scope"}
+{"id": "ukrainian_kyiv_post_9a5b93d1aaf9", "stratum": "above", "n_in_stratum": 316, "oracle_mean": 5.4583, "oracle_verdict": "in_scope"}
+{"id": "dutch_news_nrc_e30721c3b290", "stratum": "above", "n_in_stratum": 316, "oracle_mean": 5.3083, "oracle_verdict": "in_scope"}
+{"id": "spanish_xataka_23082fedc58b", "stratum": "above", "n_in_stratum": 316, "oracle_mean": 5.2333, "oracle_verdict": "in_scope"}
+{"id": "science_interesting_engineering_c11a49f09f26", "stratum": "above", "n_in_stratum": 316, "oracle_mean": 5.0417, "oracle_verdict": "in_scope"}
+{"id": "vietnamese_vnexpress_vn_9dc4954740b6", "stratum": "above", "n_in_stratum": 316, "oracle_mean": 4.7667, "oracle_verdict": "in_scope"}
+{"id": "south_african_timeslive_0f9b8d9cc67e", "stratum": "above", "n_in_stratum": 316, "oracle_mean": 4.75, "oracle_verdict": "in_scope"}
+{"id": "british_irish_independent_uk_e805729af976", "stratum": "above", "n_in_stratum": 316, "oracle_mean": 4.75, "oracle_verdict": "in_scope"}
+{"id": "italian_greenme_ade92efbd436", "stratum": "above", "n_in_stratum": 316, "oracle_mean": 6.2, "oracle_verdict": "in_scope"}
+{"id": "east_african_fana_bc_ce836cb39293", "stratum": "above", "n_in_stratum": 316, "oracle_mean": 5.45, "oracle_verdict": "in_scope"}
+{"id": "south_american_gestion_pe_94fa0c527fa6", "stratum": "above", "n_in_stratum": 316, "oracle_mean": 6.0167, "oracle_verdict": "in_scope"}
+{"id": "southeast_asian_antara_en_d951a658be23", "stratum": "above", "n_in_stratum": 316, "oracle_mean": 4.6667, "oracle_verdict": "in_scope"}
+{"id": "us_media_mother_jones_d24125a29b28", "stratum": "above", "n_in_stratum": 316, "oracle_mean": 6.0667, "oracle_verdict": "in_scope"}
+{"id": "south_american_andina_77ede0e1a60c", "stratum": "above", "n_in_stratum": 316, "oracle_mean": 5.6083, "oracle_verdict": "in_scope"}
+{"id": "south_asian_the_hindu_1906259c2f4c", "stratum": "above", "n_in_stratum": 316, "oracle_mean": 6.0, "oracle_verdict": "in_scope"}
+{"id": "climate_solutions_the_cool_down_8094f43914ed", "stratum": "control", "expected": "out_of_scope"}
+{"id": "indonesian_mongabay_id_4a03fd01cc36", "stratum": "control", "expected": "out_of_scope"}
+{"id": "south_asian_indian_express_9f206d53ba0f", "stratum": "control", "expected": "out_of_scope"}
+{"id": "south_asian_indian_express_c7f20fb64869", "stratum": "control", "expected": "in_scope"}
