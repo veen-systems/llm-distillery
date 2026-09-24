@@ -9,6 +9,26 @@ topic. Re-read the block under it before starting; the reasons are there, not he
 this session had to read: *"that means we need to start pruning, thinning, mechanizing,
 retiring."* That is now the work, ahead of the queue below.
 
+−2. ▶ **FIRST, from 2026-09-25 05:00 (b650 is NOT available before — owner, 2026-09-24): retrain
+   `human_thriving v8` on the Claude-adjudicated labels.** Evidence and every number:
+   `docs/evidence/2026-09-24-thriving-adjudication-full/README.md` (553 of 878 labels ≥ 3.5 moved
+   out; pilot owner-checked 10/10; drift check 0.946). Data: `datasets/training/human_thriving_v8_adj1/`
+   (**gitignored, local only** — v8's exact split ids, moved-out rows capped at 2.0).
+   Steps:
+   1. `ssh b650-gpu 'nvidia-smi; ollama ps'` — ⛔ **if anything holds the GPU, stop and ask**;
+      b650 is shared, and the 2026-09-24 holder was `qwen3.5:35b-a3b` (NexusMind#523's run).
+   2. `ssh b650-gpu 'cd ~/llm-distillery && git pull'` (it was at `eeeb84d`; `train.py` refuses
+      without a clean commit), then `rsync -a datasets/training/human_thriving_v8_adj1/
+      b650-gpu:llm-distillery/datasets/training/human_thriving_v8_adj1/`.
+   3. Train with v8's settings, into a **separate** output dir so the deployed adapter is untouched:
+      `venv-prodparity/bin/python training/train.py --filter filters/human_thriving/v8
+      --data-dir datasets/training/human_thriving_v8_adj1 --output-dir runs/human_thriving_v8_adj1
+      --epochs 6 --batch-size 8 --seed 42 --select-metric recall_medium`.
+   4. ADR-021 gate on the test split, **against BOTH label sets** (oracle and adjudicated), v8 vs
+      the retrain on the same 660 rows, reading specificity first (ADR-023) and the flip count.
+      Pre-register the bar before step 3 finishes.
+   5. Only if it wins: a live audit of passers, then the cutover question (#151).
+
 −1. ▶ **THE READ SURFACE (`#163`) — START HERE, and start with MECHANIZE.**
    ✅ **Row 1 DONE 2026-09-24** — the `in-sample tautology` row is `live`
    (`check_doc_claims.py --check gate-share-sample`; red on the real tree, 4 blocks, fixed).
