@@ -1,0 +1,10 @@
+CONTROL (n=50, same prompt v8-4, V4 -> V4.1): median delta -0.267, mean -0.331, IQR [-0.652, +0.144] -> MIX new rows into train/val/test (rule |d| <= 0.30)
+NEW: 186 kept, 12 excluded (oracle majority not in_scope)
+  weighted >= 4.5: 120   >= 6: 21   >= 7: 2
+  per dimension (new kept rows):   >=6   >=8
+    Wellbeing      99     9
+    Connection     42     0
+    Justice        21     4
+    Evidence       89     7
+    Reach          39     1
+    Durability     85     7

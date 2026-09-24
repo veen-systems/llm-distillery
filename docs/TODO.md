@@ -20,7 +20,12 @@ retiring."* That is now the work, ahead of the queue below.
    2. `ssh b650-gpu 'cd ~/llm-distillery && git pull'` (it was at `eeeb84d`; `train.py` refuses
       without a clean commit), then `rsync -a datasets/training/human_thriving_v8_adj1/
       b650-gpu:llm-distillery/datasets/training/human_thriving_v8_adj1/`.
-   3. Train with v8's settings, into a **separate** output dir so the deployed adapter is untouched:
+   3. ⭐ **TWO runs now** (added 2026-09-24 evening): `human_thriving_v8_adj1` (adjudicated labels
+      only) AND `human_thriving_v8_adj2` (adj1 + 186 new positives,
+      `docs/evidence/2026-09-24-thriving-more-positives/README.md`). rsync BOTH dirs. Compare all
+      three models (v8, adj1, adj2) on **v8's original 660 test ids**, the rows common to all.
+      Same command for each, with its own `--data-dir` and `--output-dir runs/<name>`.
+      Train with v8's settings, into a **separate** output dir so the deployed adapter is untouched:
       `venv-prodparity/bin/python training/train.py --filter filters/human_thriving/v8
       --data-dir datasets/training/human_thriving_v8_adj1 --output-dir runs/human_thriving_v8_adj1
       --epochs 6 --batch-size 8 --seed 42 --select-metric recall_medium`.
