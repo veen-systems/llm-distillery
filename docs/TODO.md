@@ -25,8 +25,9 @@ retiring."* That is now the work, ahead of the queue below.
    dated before 2026-09-01 moved verbatim to `memory/gotcha-log-archive.md` (lossless, 0
    lines missing/extra). Kept: September on, the unreachable-mechanism catalogue, *Mechanized*,
    the entry template. Headings `/curate` reads each session: ~477 → 184.
-   **Next: not yet chosen.** Candidates, largest first: `docs/CONTRACTS_PLAN.md`,
-   `memory/cross-repo-prioritization.md`, and `CLAUDE.md` itself (1,348 B under its wall). ⛔ **A row is
+   **Next: not yet chosen.** Candidates, measured 2026-09-24: `docs/CONTRACTS_PLAN.md` 149 KB,
+   `memory/hypothesis-ledger.md` 142 KB, `memory/cross-repo-prioritization.md` 136 KB, and
+   `CLAUDE.md` itself (1,348 B under its wall). ⛔ **A row is
    `live` only after a seeded positive** — the table says so and it is this repo's signature
    defect arriving in the table built to prevent it.
    **Why this is first, measured 2026-09-22:** the bare-"continue" path is **605,198 B /
