@@ -31,6 +31,7 @@ which nothing in NexusMind reads: provenance only.
 | `prompt-v8-1b.md` | `9b71ba58e0c0` | ⛔ rejected | fixes that necessary/sufficient bug. Still carried clause D |
 | `prompt-v8-2.md` | `4942ca92dc33` | ⛔⛔ rejected | all four clauses. Scored the #91 origin row **5.921, sd 0.250, 12/12 `in_scope`** at k=12 where the labelling prompt pins it at **0.900, sd 0.000, 0/6** — the spreads do not overlap — a **B×D interaction**, worse than any single clause |
 | **`prompt-v8-4.md`** | **`c4705408c477`** | ✅ **CURRENT** | **B + C + A3, clause D dropped.** Gate B-A **9/9** at k=12, worst class-A sd **2.250 → 0.205**, `in_scope` runs on class A **3 of 108 → 0**, no-regression **4/4**. Used for the 456 above-op re-label |
+| `prompt-v8-5.md` | `8f5aaa244876` | ⛔ rejected 2026-09-24 | v8-4 + §5 *"nothing has taken effect"* widened (not in force / permit / "to be built" / petition). **EXP-042: 0 of 4 targets credited** — Houston and Mentawai became coin tosses, Madras unmoved. Also found: the V4→V4.1 swap alone moved 3 of 12 panel rows across 4.5 (`docs/evidence/2026-09-24-v8-5-gate/`) |
 
 There is no `prompt-v8-3.md` in this directory: that candidate (D with its licensing sentence
 removed) lives in the evidence dir as `ablate_v83.md` because it was rejected before promotion.

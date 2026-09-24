@@ -1,0 +1,21 @@
+F4 prompt c4705408c477   F5 prompt 8f5aaa244876   k=6   op-point 4.5
+
+      F4 mean±sd     F5 mean±sd  F5 in_scope  title
+T    1.096±0.327    0.817±0.075  0/6        New water supply systems to be built in three regions of Kyr
+    -> Kyrgyz water systems: F5 below with margin yes (band 0.061); F4 at/over op-point or within band NO -> not credited
+T    5.908±0.184    3.583±1.931  3/6        Houston now requires air conditioning in all rentals, making
+    -> Houston AC law: F5 below with margin NO (band 1.577); F4 at/over op-point or within band yes -> not credited
+T    5.425±0.471    3.396±1.608  3/6        Kembalikan Hutan Mentawai pada Masyarakat Adat
+    -> Mentawai petition: F5 below with margin NO (band 1.313); F4 at/over op-point or within band yes -> not credited
+T    5.308±0.146    5.221±0.327  6/6        Madras High Court upholds permission to reconstruct church n
+    -> Madras HC permission: F5 below with margin NO (band 0.267); F4 at/over op-point or within band yes -> not credited
+     3.642±0.382    3.108±0.861  5/6        Station van Kortrijk wordt dan toch beschermd: "Dit betekent
+     2.958±0.093    1.629±0.943  2/6        Hong Kong’s local schools should not have to brace for the w
+     5.417±0.347    5.633±0.416  6/6        ‘I refused this marriage’: Meet West African women who fough
+     2.433±0.834    2.042±0.683  4/6        De la „vine fericit acasă” la „a schimbat trei învătoare în 
+     4.892±0.207    4.967±0.114  6/6        For Varanasi’s flood-hit children, the walk to school is now
+     2.871±1.580    3.908±1.196  5/6        Community kitchens, boat ambulances: Bihar copes with floods
+     5.679±0.147    5.467±0.080  6/6        Citing barefoot Beed woman’s ‘struggle’, Bombay High Court g
+     1.183±0.134    1.150±0.168  0/6        ‘Mummy, mummy’: 5-year-old stuck in muddy sludge rescued thr
+
+Targets credited: 0 of 4 (bar: at least 3) -> NOT MET

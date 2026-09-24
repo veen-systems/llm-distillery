@@ -1,0 +1,43 @@
+adverse-suite gate   k=12 over 12 file(s)   prompt_hash c4705408c477   t=2.0 (band = t·sd/√k)
+suite 22 rows · scored 13 · not scored 9
+context floors, NOT used to decide: {'#95 batch composition': 0.16, '§1f oracle decoder (mean/max)': (0.82, 2.25)}
+
+  PASS           0.787  sd 0.139  [  raw < 3.85]  margin 3.062 ≥ band 0.080
+                Dozens of greyhounds to land in Australia as NZ racing ban begins
+  PASS           1.150  sd 0.100  [  raw < 3.85]  margin 2.700 ≥ band 0.058
+                Parents of baby girl killed at nursery fear unsafe sleeping ‘rife’ in sector
+  PASS           0.917  sd 0.037  [  raw < 3.85]  margin 2.933 ≥ band 0.022
+                Children’s helpline says number of calls about child domestic abuse cases ha
+  PASS           1.065  sd 0.214  [  raw < 3.85]  margin 2.785 ≥ band 0.124
+                Domestic violence victim left traumatised after Travelodge staff gave abuser
+  PASS           0.967  sd 0.047  [  raw < 3.85]  margin 2.883 ≥ band 0.027
+                Assault, harassment and stalking top calls to victim line
+  PASS           5.596  sd 0.139  [   raw > 4.5]  margin 1.096 ≥ band 0.080
+                De schokkende voordelen van minder luchtvervuiling: een voorbeeld uit Grieke
+  PASS           6.183  sd 0.238  [   raw > 4.5]  margin 1.683 ≥ band 0.138
+                London’s Ultra Low Emission Zone cleaned up the city’s air. Then children’s 
+  PASS           1.050  sd 0.000  [  raw < 3.85]  margin 2.800 ≥ band 0.000
+                NEW: Five men arrested in Mashonaland Central for raping a minor
+  PASS           0.808  sd 0.019  [  raw < 3.85]  margin 3.042 ≥ band 0.011
+                Rethink Business Centre Management
+  SKIP           4.275  sd 0.183  [DELTA assertion — needs a v7 arm this gate was not given]
+                Unifesp identifica resíduo compatível com sangue no antigo DOI-Codi/SP
+  PASS           1.050  sd 0.000  [  raw < 3.85]  margin 2.800 ≥ band 0.000
+                Woman ‘tortured’ for taking possession of grabbed land in Sahiwal
+  PASS           1.925  sd 0.900  [  raw < 3.85]  margin 1.925 ≥ band 0.519
+                Celebrated at birth, pushed into sex work
+  INDETERMINATE  4.575  sd 0.138  [   raw > 4.5]  margin 0.075 < band 0.079 → need k≈14
+                The silent crisis on our plates
+
+  {'PASS': 11, 'SKIP': 1, 'INDETERMINATE': 1}
+  NOT SCORED    [Research] Systematic solvent screening and selection for papaya seeds
+  NOT SCORED    Engineered nanovesicles targeting m6A writer METTL3 curb neuroinflamma
+  NOT SCORED    Fehlende Zeichensetzung: Ich war ein Rechtschreibschnösel
+  NOT SCORED    EBA ESG risk dashboard shows stable climate risk exposures and continu
+  NOT SCORED    Sihem Djoudi, médecin algérienne, nommée à la tête d’une nouvelle clin
+  NOT SCORED    Sustainability, Vol. 18, Pages 8098: Prospective Life Cycle Assessment
+  NOT SCORED    Boys must not be left behind, says child welfare minister Emma Kantema
+  NOT SCORED    Curing the cause
+  NOT SCORED    Pioneering marine scientist Sylvia Earle reflects on decades under the
+
+⚠️ GATE REFUSES A VERDICT — 1 row(s) do not clear their band at k=12. Raise k to the largest k_needed above and re-run. A gate that cannot resolve a row must not certify it.
