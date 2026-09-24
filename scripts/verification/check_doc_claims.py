@@ -387,7 +387,7 @@ GATE_SHARE_CLEAR = re.compile(r"\bclear(?:s|ed|ing)?\b", re.I)
 # about the ANCHOR while quoting v7's 60.0% bare, so a looser list passed the very block
 # this check exists for. The marker must name the SAMPLE.
 GATE_SHARE_MARK = re.compile(r"in-sample|out-of-sample|out of sample|tautolog", re.I)
-GATE_SHARE_HISTORY = SUITE_HISTORY + ("memory/gotcha-log.md",)
+GATE_SHARE_HISTORY = SUITE_HISTORY + ("memory/gotcha-log",)   # the log and its archive
 
 
 def _md_blocks(text):

@@ -21,8 +21,12 @@ retiring."* That is now the work, ahead of the queue below.
    something?"*** — then approved this retire step. *My gloss, not a ruling:* a check that
    retires no prose GROWS the surface, so retire first and ship a new check only with the
    prose it lets you delete.
-   **First action now: `memory/gotcha-log.md` (715 KB)** — same move: dated entries verbatim
-   into an archive, keep the § *Mechanized* table and whatever `CLAUDE.md`/memory point at. ⛔ **A row is
+   ✅ **RETIRE step 2 DONE 2026-09-24 — `memory/gotcha-log.md` 715,877 → 256,970 B**; entries
+   dated before 2026-09-01 moved verbatim to `memory/gotcha-log-archive.md` (lossless, 0
+   lines missing/extra). Kept: September on, the unreachable-mechanism catalogue, *Mechanized*,
+   the entry template. Headings `/curate` reads each session: ~477 → 184.
+   **Next: not yet chosen.** Candidates, largest first: `docs/CONTRACTS_PLAN.md`,
+   `memory/cross-repo-prioritization.md`, and `CLAUDE.md` itself (1,348 B under its wall). ⛔ **A row is
    `live` only after a seeded positive** — the table says so and it is this repo's signature
    defect arriving in the table built to prevent it.
    **Why this is first, measured 2026-09-22:** the bare-"continue" path is **605,198 B /
