@@ -374,9 +374,100 @@ def check_suite_baseline_single_copy():
                f".claude/review-profile.md (dated session records excepted)"]
 
 
+# A share quoted against NexusMind's enrichment gate (`pipeline.enrichment.min_score`,
+# which reads the NORMALIZED score at 4.0).
+GATE_SHARE_GATE = re.compile(
+    r"normali[sz]ed(?:\s*(?:≥|>=|>)\s*|[- ])4\.0|enrichment gate", re.I)
+GATE_SHARE_PCT = re.compile(r"\d+(?:\.\d+)?\s?%")
+# A LEVEL share ("N% clear it"), not a crossing ("moves N% across the gate") — a
+# crossing compares two scorings under ONE normalization and is not the tautology.
+GATE_SHARE_CLEAR = re.compile(r"\bclear(?:s|ed|ing)?\b", re.I)
+# ⚠️ Deliberately NOT `by construction` or `arithmetic`, which the Mechanized row
+# proposed: `docs/TODO.md`'s NM#319 block says "normalized(4.5) = 0.0 by construction"
+# about the ANCHOR while quoting v7's 60.0% bare, so a looser list passed the very block
+# this check exists for. The marker must name the SAMPLE.
+GATE_SHARE_MARK = re.compile(r"in-sample|out-of-sample|out of sample|tautolog", re.I)
+GATE_SHARE_HISTORY = SUITE_HISTORY + ("memory/gotcha-log.md",)
+
+
+def _md_blocks(text):
+    """(first line number, text) per paragraph; every table row is its own block, so a
+    marker in one row cannot excuse a bare share in the next."""
+    cur, start = [], 1
+    for i, line in enumerate(text.split("\n"), 1):
+        if line.lstrip().startswith("|"):
+            if cur:
+                yield start, "\n".join(cur)
+                cur = []
+            yield i, line
+        elif not line.strip():
+            if cur:
+                yield start, "\n".join(cur)
+            cur = []
+        else:
+            if not cur:
+                start = i
+            cur.append(line)
+    if cur:
+        yield start, "\n".join(cur)
+
+
+def check_gate_share_sample():
+    """A share of rows clearing the normalized-4.0 enrichment gate must say WHICH sample.
+
+    ⛔ THE SHAPE IT CATCHES IS A TAUTOLOGY THAT READS AS A MEASUREMENT. Normalization is
+    a percentile CDF fitted on production rows, so normalized 4.0 IS the fit sample's own
+    40th percentile and ~60% of that sample clears it by construction. On 2026-09-22 a
+    session published "60.0% (1,786/2,976) clear the gate" as a CORRECTION of a retracted
+    60.4% — the tautology was already written down in three places on that task's routing
+    path (memory/gotcha-log.md, H-CTX-1). Measured OUT of sample the same share is a real
+    number (`uplifting v7`: fitted 2026-08-10, 60.0% over 2026-08-23 → 09-06), which is
+    why the rule is "declare the sample", not "never quote it".
+
+    Live docs only: dated records keep what was said when it was said.
+    """
+    bare, declared = [], 0
+    for dirpath, dirnames, filenames in os.walk(ROOT):
+        dirnames[:] = [d for d in dirnames
+                       if d not in (".git", ".venv", "node_modules", "__pycache__",
+                                    ".pytest_cache")]
+        for fn in filenames:
+            if not fn.endswith(".md"):
+                continue
+            path = os.path.join(dirpath, fn)
+            rel = os.path.relpath(path, ROOT).replace(os.sep, "/")
+            if rel.startswith(GATE_SHARE_HISTORY):
+                continue
+            try:
+                body = open(path, encoding="utf-8").read()
+            except (OSError, UnicodeDecodeError):
+                continue
+            for line_no, block in _md_blocks(body):
+                if not (GATE_SHARE_GATE.search(block) and GATE_SHARE_PCT.search(block)
+                        and GATE_SHARE_CLEAR.search(block)):
+                    continue
+                if GATE_SHARE_MARK.search(block):
+                    declared += 1
+                else:
+                    bare.append(f"{rel}:{line_no}")
+    if bare:
+        return 1, [f"FAIL gate-share sample: {len(bare)} block(s) quote a share clearing "
+                   f"the normalized-4.0 enrichment gate without saying in-sample or "
+                   f"out-of-sample: {', '.join(bare)} — in-sample, ~60% clears it BY "
+                   f"CONSTRUCTION (the gate is the fit's own 40th percentile). Say which."]
+    if not declared:
+        # Presence control: the tree carries such shares today. Zero matches means the
+        # patterns stopped matching the prose, not that the prose got cleaner.
+        return 1, ["CANNOT VERIFY gate-share sample: no live doc quotes a share against "
+                   "the enrichment gate at all — the patterns have lost their subject"]
+    return 0, [f"PASS gate-share sample: {declared} gate-share block(s), each declaring "
+               f"its sample (dated records excepted)"]
+
+
 CHECKS = {
     "rule-ordinals":   check_rule_ordinals,
     "suite-baseline":  check_suite_baseline_single_copy,
+    "gate-share-sample": check_gate_share_sample,
     "cd-v6-row":       check_cd_v6_row,
     "framework-stamp": check_framework_stamp,
     "runbook-oracle-flags": check_runbook_oracle_flags,

@@ -65,6 +65,9 @@ RUNBOOK_FIXTURE = """# Runbook
 
 `--llm` accepts `claude` | `gemini` | `gpt4`, defaulting to **`claude`**.
 DeepSeek runs through `scripts/score_deepseek_production.py`, a separate script.
+
+On `uplifting v7` only 60.0% of surfaced rows clear the normalized 4.0 enrichment gate
+(out-of-sample, measured after its fit).
 """
 
 # A miniature argparse call — the check reads this with `ast`, not with grep, so the
@@ -111,7 +114,7 @@ def test_the_healthy_fixture_passes(mod, capsys):
     assert mod.main([]) == 0
     out = capsys.readouterr().out
     assert "FAIL" not in out and "CANNOT VERIFY" not in out
-    assert out.strip().splitlines()[-1].startswith("PASS 6/6 doc claims agree")
+    assert out.strip().splitlines()[-1].startswith("PASS 7/7 doc claims agree")
 
 
 # --------------------------------------------------------------- rule ordinals
@@ -260,7 +263,7 @@ def test_a_failure_is_reported_even_when_other_checks_pass(mod, capsys):
     assert mod.main([]) == 1
     out = capsys.readouterr().out.strip().splitlines()
     assert out[0].startswith("FAIL")
-    assert out[-1].startswith("FAIL 5/6 doc claims agree")
+    assert out[-1].startswith("FAIL 6/7 doc claims agree")
 
 
 def test_a_faithful_port_of_the_shell_one_liners(capsys):
@@ -279,6 +282,7 @@ def test_a_faithful_port_of_the_shell_one_liners(capsys):
     assert "PASS establish what a source excludes" in out
     assert "PASS cd v6: both layers say it is not deployed" in out
     assert "PASS framework stamp" in out
+    assert "PASS gate-share sample" in out
 
 
 def test_claude_md_states_no_occurrence_count():
@@ -455,3 +459,74 @@ def test_the_profile_losing_its_baseline_cannot_verify(mod, capsys):
     out = capsys.readouterr().out
     assert "CANNOT VERIFY suite baseline" in out
     assert "PASS suite baseline" not in out
+
+
+# ------------------------------------------- gate-share sample (NM#319 tautology)
+
+BARE_SHARE = ("After Phase E, 60.0% (1,786/2,976) of surfaced rows clear the "
+              "normalized 4.0 enrichment gate.\n")
+
+
+def test_a_bare_in_sample_share_fails(mod, capsys):
+    """The failure this check was written from, seeded: the 2026-09-22 sentence that
+    published the fit sample's own 40th percentile as a correction."""
+    (mod._tmp / "notes.md").write_text(BARE_SHARE, encoding="utf-8")
+    assert mod.main(["--check", "gate-share-sample"]) == 1
+    out = capsys.readouterr().out
+    assert "FAIL gate-share sample" in out and "notes.md:1" in out
+
+
+def test_naming_the_sample_passes(mod, capsys):
+    (mod._tmp / "notes.md").write_text(
+        BARE_SHARE.replace(".\n", " — in-sample, so ~60% by construction.\n"),
+        encoding="utf-8")
+    assert mod.main(["--check", "gate-share-sample"]) == 0
+
+
+def test_by_construction_elsewhere_in_the_block_does_not_excuse_it(mod, capsys):
+    """The real NM#319 block said "normalized(4.5) = 0.0 by construction" about the
+    ANCHOR beside a bare 60.0%; the Mechanized row's proposed marker list passed it."""
+    (mod._tmp / "notes.md").write_text(
+        "Anchoring makes normalized(4.5) = 0.0 by construction, as arithmetic shows.\n"
+        + BARE_SHARE, encoding="utf-8")
+    assert mod.main(["--check", "gate-share-sample"]) == 1
+
+
+def test_a_marker_in_one_table_row_does_not_excuse_the_next(mod, capsys):
+    (mod._tmp / "notes.md").write_text(
+        "| a | 60.0% clear the enrichment gate, in-sample |\n"
+        "| b | 55.0% clear the enrichment gate |\n", encoding="utf-8")
+    assert mod.main(["--check", "gate-share-sample"]) == 1
+    assert "notes.md:2" in capsys.readouterr().out
+
+
+def test_a_crossing_is_not_a_level_share(mod, capsys):
+    """"Moves 2.5% across the gate" compares two scorings under ONE normalization —
+    not the tautology, and flagging it would train readers to ignore the check."""
+    (mod._tmp / "notes.md").write_text(
+        "Enrichment moves 7 of 280 (2.5%) across the normalized 4.0 gate.\n",
+        encoding="utf-8")
+    assert mod.main(["--check", "gate-share-sample"]) == 0
+
+
+def test_a_dated_record_may_keep_what_it_said(mod, capsys):
+    d = mod._tmp / "memory"
+    d.mkdir(exist_ok=True)
+    (d / "project_session_2026_01_01.md").write_text(BARE_SHARE, encoding="utf-8")
+    assert mod.main(["--check", "gate-share-sample"]) == 0
+
+
+def test_losing_every_gate_share_cannot_verify(mod, capsys):
+    """Presence control: zero matches means the patterns lost their subject, not that
+    the tree got cleaner."""
+    _edit(mod, "RUNBOOK", "normalized 4.0 enrichment gate", "threshold")
+    assert mod.main(["--check", "gate-share-sample"]) == 1
+    assert "CANNOT VERIFY gate-share sample" in capsys.readouterr().out
+
+
+def test_a_gate_sentence_without_a_share_is_not_flagged(mod, capsys):
+    """Describing the gate is not quoting a share of it."""
+    (mod._tmp / "notes.md").write_text(
+        "Rows that clear the normalized 4.0 enrichment gate are enriched.\n",
+        encoding="utf-8")
+    assert mod.main(["--check", "gate-share-sample"]) == 0

@@ -96,7 +96,7 @@ agent that had not opened this file**: `python3 -m pytest` reported **13 failed,
 phantom baseline is not made harmless by being explained, because the explanation is what makes it
 believed. **Run `.venv/bin/python -m pytest` and say which interpreter produced the number.**
 
-**Measured 2026-09-22: `932 passed, 25 skipped` in 123s** — `.venv/bin/python3 -m pytest tests/ -q`,
+**Measured 2026-09-24: `940 passed, 25 skipped` in 127s** (+8 `gate-share-sample` tests; the tree held only that change) — `.venv/bin/python3 -m pytest tests/ -q`,
 **on a clean tree, alone on the machine**. ⚠️ Both qualifiers are load-bearing and were learned
 the hard way in the same session: an earlier line said `926 passed` and was true when taken, then
 went stale twice — once because more tests were added, once because a `timeout`-killed run left
@@ -110,7 +110,7 @@ rule moved in — stricter below op-point 4.0, identical at 4.0, looser above), 
 real CLI), and **1** new parametrization — `human_thriving-v8` joined
 `test_normalization_fitted_at_the_tier_threshold` the moment Phase E wrote its
 `normalization.json`, which is a test count moving because DATA changed, not code.
-*Prior: 2026-09-17 (final): `922 passed, 25 skipped` in 118s* (was `912`, then `894 passed,
+*Prior: 2026-09-22: 932 passed in 123s. 2026-09-17 (final): `922 passed, 25 skipped` in 118s* (was `912`, then `894 passed,
 25 skipped` earlier the same day, and `848` before that; the +46 were the #134 step-2 docs
 tier — `tests/unit/test_refcheck_docs_tier.py` 37 and `tests/unit/test_refcheck_tier_reparse.py`
 6 — plus 3 seeding the `suite-baseline` claim check that guards THIS line, and the latest +18

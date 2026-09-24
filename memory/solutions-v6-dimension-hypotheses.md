@@ -93,7 +93,7 @@ worth its own change.**
 
 - **Whether NM#319's enrichment starvation has any cause visible from here.**
   Side result: normalized 4.0 corresponds to **raw 3.261**, and **75.6%** of
-  surfacing training rows clear it — so the weighting scale is not the cause.
+  surfacing training rows clear it (out-of-sample: the CDF is fitted on production rows) — so the weighting scale is not the cause.
   That is a prediction about production data and was **not** tested against it.
 - **Whether the 2 genuine misses generalise.** Both are hybrid articles tagged
   single-type, where Step 2's hard `content_type` gate deletes the dimension

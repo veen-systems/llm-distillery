@@ -10,9 +10,10 @@ this session had to read: *"that means we need to start pruning, thinning, mecha
 retiring."* That is now the work, ahead of the queue below.
 
 −1. ▶ **THE READ SURFACE (`#163`) — START HERE, and start with MECHANIZE.**
-   **First action: pick the `in-sample tautology` row from `memory/gotcha-log.md` §
-   *Mechanized*, write the check, and make it go RED on a seeded case before anything else.**
-   Then the other two proposed rows (guard-doc sync, experiment citation). ⛔ **A row is
+   ✅ **Row 1 DONE 2026-09-24** — the `in-sample tautology` row is `live`
+   (`check_doc_claims.py --check gate-share-sample`; red on the real tree, 4 blocks, fixed).
+   **First action now: the guard-doc sync row**, then experiment citation — same bar, a
+   seeded RED before the row turns `live`. ⛔ **A row is
    `live` only after a seeded positive** — the table says so and it is this repo's signature
    defect arriving in the table built to prevent it.
    **Why this is first, measured 2026-09-22:** the bare-"continue" path is **605,198 B /
@@ -1095,7 +1096,7 @@ them would describe a population that does not exist.
 - **After Phase E** — the fitter anchors the CDF to the op-point, so **normalized(4.5) = 0.0 by
   construction** and the gate bites mid-population. On `uplifting v7`, already in that state at
   the same op-point, 82 cycles 2026-08-23 → 2026-09-06: **18,041 rows surface (7.17%) and only
-  60.0% clear normalized ≥ 4.0** — **7,224 surfaced articles silently un-enriched**, the gate's
+  60.0% clear normalized ≥ 4.0** (out-of-sample: v7's CDF was fitted 2026-08-10) — **7,224 surfaced articles silently un-enriched**, the gate's
   effective bar being raw ≈ 5.05–5.13. Not a v8 regression; it is what percentile normalization
   plus a 4.0 gate already does, and **fitting normalization is the step that turns it on.**
   Whether that is intended is an owner question.

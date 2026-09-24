@@ -168,7 +168,7 @@ NexusMind gates post-scoring enrichment on `weighted_average >= 4.0`, and that f
   `stats.raw_min == 4.5` and **normalized(4.5) = 0.0 by construction** — the gate then bites in
   the middle of the surfaced population. Measured on `uplifting v7`, already in that state at
   the identical op-point, over 82 production cycles 2026-08-23 → 2026-09-06 (251,461 rows):
-  **18,041 surface (7.17%), and only 60.0% of them clear normalized ≥ 4.0** — 7,224 surfaced
+  **18,041 surface (7.17%), and only 60.0% of them clear normalized ≥ 4.0** (out-of-sample: v7's CDF was fitted 2026-08-10, before the window) — 7,224 surfaced
   articles are silently un-enriched, the gate's effective bar being raw ≈ 5.05–5.13.
 
 ⚠️ That is v7's CDF as a proxy; v8's share will differ, the mechanism will not. It is not a v8
