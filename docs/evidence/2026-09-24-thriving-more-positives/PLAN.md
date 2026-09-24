@@ -55,3 +55,12 @@ k=3 on one article costs ≈ $0.00077 once the prompt is cached (EXP-010 reprice
 - **Oracle disagrees with Claude:** if the oracle's k=3 majority verdict on a Claude-`in_scope`
   row is not `in_scope`, its dimensions are forced to 0–2 and are unusable as a positive. The row
   is **excluded** and counted, not relabelled.
+
+## Hard negatives — APPROVED by the owner 2026-09-24 ("yes pls"), rules fixed before any call
+
+The 439 sampled production passers that Claude judged NOT in scope (332 out_of_scope, 48
+harm_is_subject, 39 no_person_benefits, 18 response_to_harm, 2 A/B splits) are added as hard
+negatives. They are oracle-scored k=3 with `prompt-v8-4.md`, and **each dimension is capped at 2.0**,
+the same rule as the 553 moved-out rows, **whatever the oracle's own verdict**. How often the oracle
+calls one of them `in_scope` is counted and reported: that is the oracle's own leak rate on
+production mistakes. `adj3` = `adj2` + these rows, seeded 80/10/10. Estimated ~$0.34.
