@@ -20,8 +20,9 @@ retiring."* That is now the work, ahead of the queue below.
    2. `ssh b650-gpu 'cd ~/llm-distillery && git pull'` (it was at `eeeb84d`; `train.py` refuses
       without a clean commit), then `rsync -a datasets/training/human_thriving_v8_adj1/
       b650-gpu:llm-distillery/datasets/training/human_thriving_v8_adj1/`.
-   3. ⭐ **TWO runs now** (added 2026-09-24 evening): `human_thriving_v8_adj1` (adjudicated labels
-      only) AND `human_thriving_v8_adj2` (adj1 + 186 new positives,
+   3. ⭐ **TWO runs now** (updated 2026-09-24 late): `human_thriving_v8_adj1` (adjudicated labels
+      only) AND `human_thriving_v8_adj3` (adj1 + 186 new positives + 439 capped production hard
+      negatives; `adj2` is the intermediate without the negatives, optional third run;
       `docs/evidence/2026-09-24-thriving-more-positives/README.md`). rsync BOTH dirs. Compare all
       three models (v8, adj1, adj2) on **v8's original 660 test ids**, the rows common to all.
       Same command for each, with its own `--data-dir` and `--output-dir runs/<name>`.

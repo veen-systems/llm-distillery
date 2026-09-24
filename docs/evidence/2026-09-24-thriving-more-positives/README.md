@@ -47,3 +47,13 @@ Result (`oracle_result.txt`, from `analyse_oracle.py`, rules fixed in PLAN.md be
   still empty.** This round filled the middle-high band (≥ 6), not the top.
 - **`datasets/training/human_thriving_v8_adj2/`** (gitignored) = adj1 plus the 186 new rows,
   seeded 80/10/10 (149/18/19). Labels ≥ 4.5: train 161 → **257**, val 20 → **34**, test 23 → **33**.
+
+## Hard negatives — DONE, spend $0.37 (counted tokens)
+
+`adj3_result.txt` (from `build_adj3.py`, rules pre-registered in PLAN.md):
+- 439 production passers judged NOT Thriving were added with every dimension capped at 2.0.
+- ⭐ **The oracle's own k=3 majority called 123 of them (28.0%) `in_scope`, and on 28 its
+  uncapped label is ≥ 4.5.** With its own labels the oracle would have taught the student to
+  surface those 28. That is the oracle-side leak the adjudication closes.
+- **`datasets/training/human_thriving_v8_adj3/`** (gitignored) = adj2 + 351/44/44 hard negatives.
+  Labels ≥ 4.5 are unchanged (257/34/33). The test split now holds 44 real production mistakes.

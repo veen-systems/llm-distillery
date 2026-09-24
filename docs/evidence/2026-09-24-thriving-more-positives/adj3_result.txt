@@ -1,0 +1,4 @@
+hard negatives: 439; oracle k=3 majority in_scope on 123 (28.0%); uncapped oracle label >= 4.5 on 28 — i.e. the oracle itself would have taught the student to surface these
+train rows 5768 (+351 hard negatives)  labels >= 4.5: 257
+val   rows 720 (+44 hard negatives)  labels >= 4.5: 34
+test  rows 723 (+44 hard negatives)  labels >= 4.5: 33
