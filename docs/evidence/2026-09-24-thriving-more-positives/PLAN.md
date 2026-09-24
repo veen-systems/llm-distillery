@@ -1,0 +1,41 @@
+# More Thriving positives — plan (written before adjudication)
+
+**2026-09-24, evening.** The owner asked "should we get more data in the meantime?" and
+"also more distributed among all possible output dimensions?". The assistant proposed this plan.
+The owner then left the session open **without approving the ~$3 oracle step**. So this runs
+**only the $0 part** and stops before any oracle call.
+
+## Why (measured on `datasets/training/human_thriving_v8_adj1/`)
+Labels ≥ 4.5: train 161, val 20, test 23. The high end is nearly empty: 33 rows ≥ 6, 1 ≥ 7. By
+dimension, rows ≥ 8: justice 12, cohesion 3, distribution **0**, durability 3.
+
+## Pool (read-only on sadalsuud, 2026-09-18 → 09-24, ~39 cycles per lens)
+Stage-2 passers at each lens's EXECUTED op-point: uplifting 4.5, human_thriving 4.5, belonging 4.0.
+Solutions uses **5.0** (its `medium_high` tier), not its 2.25 op-point, to raise the yield of
+strong candidates. Excluded: `news.google.com` in the url (standing rule; never oracle a GN row),
+content < 300 chars, ids already in the v8 corpus, and duplicate `content_hash`.
+**11,946 unique candidates.**
+
+## Sample (`sample.jsonl`, seed 20260924) — ⚠️ DESIGN-WEIGHTED, on purpose
+| stratum | pool | drawn |
+|---|---|---|
+| v8_hit (any v8 pass) | 1,389 | 200 |
+| belonging_no_v8 | 2,910 | 200 |
+| uplifting_only | 7,610 | 200 |
+| solutions (≥ 5.0) | 37 | 37 (all) |
+
+This is **active learning toward positives** (ADR-005), not a production-representative sample.
+In-scope yields are reported **per stratum**. No pooled "production rate" may be derived from it.
+
+## Steps
+1. Blind Claude scope adjudication. Same rubric, rulings, instructions and verdict set as the
+   full run. Pass A covers every row; pass B covers a seeded 20% as the drift check (stop below
+   0.90); an A/B split goes out.
+2. **STOP.** Oracle dimension scoring of the in-scope rows (k=3, DeepSeek V4.1), the V4-vs-V4.1
+   control on ~50 existing in-scope rows, and the 80/10/10 split need the owner's approval
+   (~$3).
+
+## Predicted (before running)
+In-scope yield: v8_hit **50–70%**, belonging_no_v8 **25–45%**, uplifting_only **15–35%**,
+solutions **30–60%**. These are guesses anchored on the full run's 35.4% moved-out rate for
+labels ≥ 4.5.
