@@ -1,0 +1,6580 @@
+# LLM Distillery — TODO archive (verbatim, not on the `continue` path)
+
+*Moved out of `docs/TODO.md` on 2026-09-24, **byte-for-byte and in original order** (#163, the
+read surface: `docs/TODO.md` was 548,758 B, most of it closed session blocks). Nothing here
+was shortened. ⛔ **Do not restore sections into `docs/TODO.md`** — the queue is ▶ START HERE
+there; unchecked boxes from these sections were copied into its *Unchecked boxes* section.
+Line-number citations into the old `docs/TODO.md` point here now; cite by sentence and grep.*
+
+
+## ✅ 2026-09-17 (evening) — **#104 ANSWERED at all six live op-points: the device costs ONE filter two false positives. $0.**
+
+⛔ **1 of 6 live filters flips at its op-point, and it is the one serving readers.** `uplifting v7`
+moves **2 rows of 660 (0.30%)** CPU→CUDA, **both false-positive side**: specificity
+**0.9687 → 0.9642**. Under ADR-023 that is the deciding metric and the direction is the unsafe one —
+**the device production serves on is the one with more junk**. The other five flip **0**.
+
+⭐ **The magnitude does not predict the risk.** `uplifting v7` has the **smallest** max |Δ| of the six
+(0.1572) and is the only one that flips; `human_thriving v8` moves **0.4218 — 2.6× the #95 floor —
+with zero flips**. Read the flip count, not the magnitude, in BOTH directions.
+
+**Decision, pre-registered before the first dump** (`9dd8d03`): the middle branch — **stamp
+`device`, carry the term as a band.** Re-measuring every gate on GPU is NOT warranted by 0.0045
+against a declared #95 band **55× wider**. ⛔ **Shipped**: the **six live** filters carry a
+`device_parity` block (⚠️ **not all eight** — `investment_risk v6` and `solutions v4` were not
+re-measured and carry none rather than borrowing another filter's term), the three silent gates
+carry `device: "UNRECORDED"` with a stated reason, and
+`check_gate_device_stamp.py` (10 tests, seeded red on the real tree) fails if a gate ever again
+declines to say. Its PASS prints the census and **warns when the tree holds more than one device**.
+
+⚠️ **Two of my own population errors, caught in-session and corrected in place**: the device field
+lives at `provenance.device` and I had grepped top-level keys only (so "no gate records a device"
+was false); and **the tree holds EIGHT gate artifacts, not six** — I enumerated the live filters
+from my own list instead of globbing, missing `investment_risk v6` (`cpu`) and `solutions v4` (no
+provenance block at all). ⭐ *Enumeration is not inventory.*
+
+⛔ **Read the evidence README before quoting a number**: the recall/specificity there come from
+`diff_box_parity.py`'s plain-weighted truth, **not** the gate's gatekeepered truth, so only the
+A-vs-B difference is a device measurement. `docs/evidence/2026-09-17-gate-device-parity/`,
+`EXP-041`, `H-DEV1` refuted, `H-DEV2` unfalsifiable-as-written.
+
+## ✅ 2026-09-17 (afternoon) — **#158 is MECHANIZED and the first banded artifacts exist. $0.**
+
+**The rule is in code, not prose** (`842e39e`, `45a17c7`): `filters/common/detector_seeds.py` owns
+the seed set, both detector trainers lost `SEED = 42`, and every metric they write now carries a
+`<metric>_band` plus the seeds it was computed over. ⛔ **The ARTIFACT seed stays 42 on purpose** —
+#158 is a REPORTING defect and changing which head ships would quietly make it a model change.
+
+⛔ **The nine pre-#158 sites are declared, not retrained** — each carries `single_seed` naming the
+seed, the issue and why it was left alone. ⚠️ **Commerce v2's says `UNRECORDED`, not 42**: its
+config declares an MLPClassifier while the trainer in the tree builds a transformers Trainer, so
+the shipped head did not come from that path and a 42 there would be a hand-built fact.
+
+⭐ **TWO SITES, and the one that ships is the gitignored one's twin.** Obituary's `models/` is
+gitignored, so `v{3,4,5}/models/training_config.json` exists only on the boxes that built it —
+while `v{N}/calibration_report.json` is TRACKED and embeds the same numbers. Checking only
+`models/` would have left **4 of the 9 sites** unguarded, i.e. every copy a reader can open.
+
+✅ **AND THE MECHANISM HAS NOW PRODUCED ARTIFACTS — `EXP-040`, both trainers run on b650's 5090**
+(`docs/evidence/2026-09-17-detector-seed-bands/`). At `842e39e` the checker read **0 banded**: in
+place, never fired. It now reads **2 banded, 0 declared** per detector. ⛔ **Read the evidence
+README before quoting a number** — these are out-of-fold on the TRAINING corpus and #158's issue
+body quotes HELDOUT recall; the two are not comparable. ⭐ The keeper: **on the obituary corpus
+seed 42 — the seed every shipped number was published at — is the MINIMUM of five at both
+thresholds**, while on the violence corpus it is the median and reproduces the shipped figure
+exactly. Nothing shipped was touched; both runs wrote to scratch dirs.
+
+⚠️ **I reported a phantom test baseline to the owner mid-session**: `python3 -m pytest` (the system
+interpreter, no deps) gave 13 failed / 6 errors and I called them environmental and pre-existing.
+`.venv/bin/python` gives **0 failed**. `.claude/review-profile.md` warns about exactly this six
+lines above the baseline and now records it as occurrence two. ⛔ **Name the interpreter.**
+
+## 🔵 LAST SESSION — **LD#134 step 2: the tier is settled and in CODE; `--docs` stays flag-gated. Review found my tier rule wrong TWICE, the same way.**
+
+✅ **#134 step 2, 2026-09-17.** `$0`, no oracle, no GPU, nothing in `filters/`. **Deploy N/A —
+inapplicable, not skipped** (no filter package, model, calibration, threshold or scoring probe
+changed). **Merge N/A** — worked on `main`, no branch. Full record:
+`docs/decisions/2026-09-17-refcheck-docs-tier.md`; posted to #134.
+
+**The decision: `--docs` does NOT come off the flag.** Live tier **254 findings in 60 of 111
+scanned files** against a default run of **0**; promotion would replace the 0 baseline with a
+section the reader learns to skip. Precondition is the marking pass (step 3), not more
+measurement. Nothing under `docs/` was edited to satisfy the checker.
+
+⛔⛔ **THE KEEPER — I WARRANTED A TIER RULE WITH AN ABSOLUTE ABOUT A POPULATION I HAD NOT
+ENUMERATED, AND THEN THE FIX DID IT AGAIN.** Draft 1 tiered by directory ("every frozen entry
+is dated BY CONSTRUCTION"): false — it froze `docs/decisions/framework-adoption-history.md`,
+undated, edited that same day, routed into from `CLAUDE.md` twice, largest finding count of any
+single frozen file, and declared it *"never to be edited to satisfy this checker"*. Draft 2's
+fix ("undated ⇒ live") admitted **13 files of which 10 are frozen accounts** — six copies of
+OTHER repos' ADRs, two reports for a filter removed 2026-08-03 — **21 findings, 7.7%** of the
+live total the decision rests on. ⭐ **Two instances is a CLASS, and the round cap's own remedy
+is a CENSUS, not a third round**: ran two (every absolute about behaviour in the new prose — 3
+more defects; every count either tool prints against its population — 19 surfaces).
+
+⛔ **The skill's own command ran clean against this fork.** `refcheck.py . CLAUDE.md
+memory/MEMORY.md` — the `/audit-context` invocation with its one flag dropped — **exited 0 and
+printed the full default report**, because the new guard rejected only `--`-prefixed tokens
+while its message asserted there were no positional arguments. `-docs`, `-h` and an em-dash
+`--docs` too. Now: any unrecognised argument stops the run, seeded both ways in `run.sh`.
+
+⚠️ **Two numbers retracted from #134's own comments.** "43% frozen, climbing ~8× the live rate"
+does not survive its denominator — the `docs/` corpus went **168 → 242 files** over those 20
+days, almost all dated evidence directories, i.e. the frozen tier by construction. And the
+"+4/+34" was not a re-scoring effect. Re-scored under one rule by a committed script
+(`scripts/analysis/refcheck_tier_reparse.py`): live 245 → 254, frozen 93 → 124, both lower
+bounds.
+
+⚠️ **Latent bug found writing the tests, unrelated to the tier:** `os.path.relpath(d, ROOT)` on
+an **already-relative** path resolves against the **CWD**, so every directory-grouped report
+section was cwd-dependent. Fixed with one `_relroot()`; `--docs` output byte-identical.
+
+Verification: 18 mutants / 18 killed (manual run, listed in the record); `run.sh` **40/40** and
+shown going RED on a seeded regression; **43** new tests; suite green — ⛔ **the count is not
+restated here**, it lives once in `.claude/review-profile.md` and
+`check_doc_claims.py --check suite-baseline` now enforces that.
+
+---
+
+## 🔵 PREVIOUS SESSION — **framework adopt queue CLOSED (v1.45.1); I built a probe to kill a decaying claim and gave it no caller.**
+
+✅ **Framework v1.40.0 → v1.45.1, 2026-09-17 (night).** `$0`, no oracle, no GPU, nothing in
+`filters/`. **Deploy N/A — inapplicable, not skipped** (no filter package, model, calibration,
+threshold or probe-for-scoring changed). **Merge N/A** — worked on `main`, no branch.
+
+All four adopt items landed in the order the stamp rule requires, stamp bumped **last**:
+`agent-ready-projects#166` (the three project lenses are not dead), `agent-ready-projects#136`
+(the stamp probe), the `## Mechanized` table, and the stale `curate` sub-step citations —
+**the triage named three and there were four**.
+
+⛔⛔ **THE KEEPER — I REPLACED A DECAYING SENTENCE WITH A COMMAND NOTHING RAN.** The footer's
+hand-dated "four skills byte-identical to v1.40.0, enumerated 2026-09-11" was false six days
+later and nothing said so, so I deleted it and pointed at
+`scripts/verification/check_framework_stamp.sh`. The `reachability` lens then found the probe
+had **no caller**: not `.githooks/` (only `commit-msg`), not CI (no `.github/`), not a skill.
+The claim still depended on a human remembering — **the exact dependency the change said it
+removed**, in this repo's signature shape, inside the mechanism built to remove it. Fixed with
+a `<!-- verify: -->` block in `memory/MEMORY.md` and proven both ways: `pass … 4 global skills
+byte-identical to v1.45.1`, and a seeded `FRAMEWORK=/nope` arm made the runner print
+`CANNOT VERIFY` and exit 1. ⚠️ **`/curate`'s own `stampcheck()` is NOT this probe** — three
+skills, skipping `review-changes`; a green curate says nothing about the fourth.
+
+⛔ **Review found 24 findings in ~377 lines of my own change** (6 lenses, HIGH, round 1), then
+**5 more in round 2** on the rewrite alone. Six false-PASS paths in the probe itself, every one
+reproduced by execution — `diff`'s status unchecked so an unreadable file read as *identical*
+(exit 0); `N_WANT=4` beside a four-name `WANT`; `head -1` letting prose outrank the stamp;
+`$HOME` unset exiting 1, i.e. an environment fault reported as DRIFT.
+
+⭐ **Round 2's keeper: a test of mine passed for the wrong reason.**
+`test_count_is_derived_not_restated` asserted a *spelling* (`"N_WANT=$(printf" in src`) and
+exercised only the happy path, so a mutant deriving the count from a literal list satisfied it.
+**A name that was lying, inside the test written to stop a hand-kept count.** It also found the
+condemned `diff | grep -c` reintroduced **six lines below the comment condemning it**. Two
+recurrences of one class → **a CENSUS, not a third round** (the round-cap rule's own remedy):
+all 21 substitution/pipe sites enumerated, last live instance closed with an invariant.
+**13 mutations, 13 killed**; 21 guard tests; suite **848 passed, 25 skipped**.
+
+⚠️ **And nine prose defects about the probe — the code was well-proven, the writing was not.**
+A `## Mechanized` row whose date, test count and citation all pointed at the wrong commit
+because I copied it from a TODO summary instead of measuring; "each killed by exactly one test"
+flattened into three files; a branch list naming a branch that had no test; `7,400` against a
+measured `7,479`; a baseline left at 822 by the change that made it 848. ⭐ **Every one is the
+shape the table I had just added exists to catch.**
+
+⚠️ `CLAUDE.md` grew **+647 B** — the wrong direction for the file the previous day's audit
+flagged. Stated once, with its command, in `docs/decisions/framework-adoption-history.md`.
+
+---
+
+## 🔵 EARLIER SESSION — **`/audit-context` + curate; references 23 → 0 in the DEFAULT scan set. Framework still 6 releases behind, stamp still NOT bumped.**
+
+✅ **`/audit-context` 2026-09-17** (`ad32356` + this commit). `$0`, no oracle, nothing in
+`filters/`, **deploy N/A — inapplicable, not skipped** (no filter package, model, calibration or
+threshold changed).
+
+⛔⛔ **THE KEEPER — A CONTROL THAT COULD NEVER STOP FIRING, AND THE FIRST REMEDY DELETED THE
+EVIDENCE INSTEAD.** `rung3` is a SHAPE test (`frag.startswith(STATE_DIRS)`), not an existence
+test, and it sat inside refcheck's STALE-placeholder `resolves` disjunction. So
+`data/raw/.processed_ids_<name>.json` — the correct way to write a per-filter state store — was
+ruled STALE unconditionally, with **no legal move** for the author. ⭐ **The coupling was already
+measured on 2026-08-16**, in a comment in that same file (*"findings went 1 → 4 … the two
+mechanisms are alternatives, never both"*), and the remedy taken then was to **delete the three
+markers** rather than decouple. A shape test cannot stop matching, so it returned the moment
+anyone wrote a state path again — four sites, 2026-09-07..09-10 — and would have recurred at
+every future audit. rung 3 is now excluded at that site only and stays live in the main ladder.
+
+⛔ **I RAN THE WRONG CHECKER FIRST.** The skill body names the framework's `refcheck.py`; this
+repo has a **1,629-line fork**, recorded as a deliberate partial adoption in
+`framework-adoption-history.md:145`. Framework copy: **216** findings here. Fork: **23**. Different
+doc sets — comparing them would have compared two instruments, and the fork's is the number every
+prior audit was measured with.
+
+🆕 **SCOPE CAVEAT ON THE 0.** References went 23 → 0, but that verdict covers `CLAUDE.md` +
+`memory/*.md` + the auto-memory index — the **default** scan set. `--docs` is opt-in, so **167
+`docs/` files were excluded**, where the same instrument reports **376** (LD#134, re-measured
+today: 338 → 376 in 20 days, **+34 of the +37 in the FROZEN tier**). Do not read the 0 wider than
+it was measured.
+
+⛔ **Still open from the previous session, untouched here**: the retracted 19.9%/13.0% framing at
+`CLAUDE.md:74` and three more copies; **#160**'s two Dutch-name violations.
+
+## 🔵 PREVIOUS SESSION — **ADR-013 widened to all framework text; review found my own evidence unsound and the compliance zero FALSE. Framework 6 releases behind, stamp deliberately NOT bumped.**
+
+✅ **ADR-013 amended — English is the framework's own language, not just names.** `$0`, no
+oracle, nothing in `filters/`, **deploy N/A — inapplicable, not skipped** (no filter package,
+model, calibration or threshold changed). Carve-out: match patterns, boilerplate strippers and
+test fixtures are **data the code matches**, not language it is written in.
+
+⛔⛔ **THE KEEPER — MY POSITIVE CONTROL WAS OF THE WRONG CLASS.** The first draft claimed
+**zero violations** from a 36-token Dutch **function-word** sweep. The class ADR-013 polices is
+Dutch **names**, which contain no function words: that list scores **0** on both real violation
+sites. The instrument *had* a control — it found the Dutch fixture *sentences* — so it looked
+sound. ⭐ **A positive control must be of the CLASS UNDER TEST, not merely the language under
+test.** Two open violations, owner call, **#160**: `docs/adr/009-...:25,34,35,37,60`
+(`Welzijn`/`Erfgoed`/`Vooruitgang` in ADR prose) and `scripts/analysis/cross_filter_landscape.py`
+(39 occurrences). ⚠️ ADR-013's own Consequences `:86` already carried an open action pointing
+at exactly that leftover class.
+
+⛔ **Review found FIVE blockers in ~34 lines of my own doc change** — 4 lenses, MEDIUM. Every
+piece of evidence I attached to a correct decision was unsound: a **retracted** 19.9%/13.0%
+pooled framing (corrected 2026-08-02), bound to the **wrong study** (LD#86's 135/871 over 20
+cycles, not NM#285's 8,283), a **reversed sign** (cd v5's Dutch pattern is an `EXCLUSION` —
+deleting it costs **specificity**, the ADR-023 priority), *"measured, not hypothetical"* about a
+prefilter **dead in production since 2026-02-10** (NM#284), and a false *"cited across five
+repos"* (5 files, one repo; four other repos have unrelated ADR-013s). ⭐ **The decision survived
+all four lenses; only its evidence failed.**
+
+🆕 **`CLAUDE.md:74` still carries the retracted 19.9%/13.0% framing** — six weeks after the
+correction, in the always-loaded file, which is where I took it from. Three more copies:
+`docs/HUMAN_THRIVING_V8_PLAN.md:176`, `memory/cross-repo-prioritization.md:1173`/`:1359`.
+**Two copies carry the correction, four carry the retraction.** Not fixed this session — it is a
+separate change and deserves its own review.
+
+### ✅ Framework: CLOSED 2026-09-17 — v1.45.1 adopted, stamp bumped last
+
+⛔ **Do not restate the byte-identity here** — that is what decayed. Ask the probe:
+`bash scripts/verification/check_framework_stamp.sh` (exit 0 verified · 1 drift · 2 undecided),
+which derives the tag from the stamp and runs every session via `memory/MEMORY.md`'s
+`<!-- verify: -->` block. Full triage + the decline (v1.45.1's cheaper HIGH tier):
+`docs/decisions/framework-adoption-history.md`.
+
+- [x] ~~**`agent-ready-projects#166` — three project lenses are annotated DEAD and are not dead.**~~ **DONE 2026-09-17.**
+      `.claude/review-profile.md`'s heading is now exactly `## Project lenses`, which the skill names
+      at `SKILL.md:83`/`:300`; the `/review-changes` pointer row in `CLAUDE.md` no longer says they
+      are dead. ⚠️ **Nothing greps that heading** — the skill tells an agent to read the file, so
+      the old decorated heading would still have been FOUND; what suppressed the lenses was its
+      *instruction* not to run them. ✅ **Outcome proof obtained**: this session's battery ran 6
+      lenses and `reachability` + `claim-verification` each returned a finding no shipped lens did.
+- [x] ~~**`agent-ready-projects#136` — adopt the `stampcheck` probe.**~~ ⛔ **NOT this repo's #136** (that
+      is the commit-msg deploy guard, still open — see `docs/TODO.md` hygiene block). **DONE 2026-09-17** — shipped as
+      `scripts/verification/check_framework_stamp.sh` (**four** skills, not upstream's three) +
+      `tests/unit/test_framework_stamp_guard.py` (21 tests). Both arms proven on the real tree:
+      DRIFT 27/372/26/240, exit 1 at the v1.40.0 stamp → `4 global skills byte-identical to
+      v1.45.1`, exit 0 after the bump. **13 mutations, 13 killed** — the per-mutation table is
+      in the history file and is deliberately NOT restated here. ⛔ **Two rounds: the first
+      draft shipped six false-PASS paths and had NO CALLER; round 2 found a test of mine that
+      passed for the wrong reason and the condemned construction reintroduced six lines under
+      the comment condemning it.** A census closed the class instead of a third round.
+- [x] ~~**Three stale `curate` sub-step citations**~~ **DONE 2026-09-17 — and there were FOUR.**
+      The fourth, missed by the triage, is `.claude/skills/test-verify-memory/test-fixtures/memory/verified-cannot-verify.md:14`
+      (the `ping` guard form: sub-step 5 → **3**, it is at installed `curate` `SKILL.md:244`).
+      Found by re-grepping after the named three — an enumeration is not an inventory.
+- [x] ~~**Append `## Mechanized`** to `memory/gotcha-log.md` (v1.41.0)~~ **DONE 2026-09-17** —
+      5 rows (4 `live` with their first positives in prose, 1 `proposed` carrying the
+      `<!-- placeholder -->` marker, which `refcheck.py` absorbs — 0 findings, verified).
+      ⚠️ A STANDING table at the BOTTOM of a long newest-first log, so the file's top line now
+      names it.
+- [x] ~~**THEN bump the stamp to v1.45.1**~~ **DONE 2026-09-17, LAST**, after all four landed.
+      The footer's hand-dated byte-identity sentence was **deleted, not updated** — it is the
+      probe's job now. ⚠️ `CLAUDE.md` still grew, the wrong direction for the file yesterday's
+      audit flagged; the measured delta and its command live in the history file and are
+      deliberately NOT restated here — the first draft put the number in two files and the very
+      next edit falsified both.
+- [x] ~~**Run `audit-context` Step 8 (retirement) here.**~~ **DONE 2026-09-17** (`ad32356`).
+      Layer **55,459 → 50,164 B**; the attribution was the finding — `CLAUDE.md` grew ~19 B/day
+      while the **auto-memory index** grew ~370, so the remedy belonged to the file nobody
+      watches. Its 25 pointer rows are capped and, since this session, **mechanized**
+      (`--target pointers` now covers both surfaces, 4 new tests, mutation-proven).
+      Step 8 record + the per-step catch table: `docs/decisions/2026-09-17-audit-step-attribution.md`.
+      ⛔ **Step 7 (gitignore) has caught nothing in its whole history — recorded as a retirement
+      candidate NOT retired**, with a release condition, because it has a prevention story and the
+      class is covered nowhere else.
+- [ ] **Mechanize the language rule (#160)** — `scripts/verification/check_framework_language.py` whose
+      allowlist **is** the carve-out table. Seed it with the two known sites and show it go red first.
+
+
+✅ **`EXP-038` — b650: RTX 3090 Ti (Ampere) → RTX 5090 (Blackwell).** `$0, no oracle, nothing in
+`filters/`, **deploy N/A — inapplicable, not skipped** (no filter package, model, calibration or
+threshold changed; this is measurement and documentation). Pushed `cd2b204..HEAD`. Record:
+`docs/evidence/2026-09-17-b650-gpu-swap-parity/`.
+
+**The result, in one line: the device term SHRANK and still flipped two verdicts.**
+
+| term | max \|Δ\| | rows > 0.16 | flips @4.0 | flips @4.5 |
+|---|---|---|---|---|
+| CPU→CUDA, **Ampere** (dead hardware) | 0.1956 | 3 | 1 | 3 |
+| CPU→CUDA, **Blackwell** (current) | **0.1572** | **0** | 1 | **2** |
+| **Ampere→Blackwell, the swap** | **0.2357** | 3 | **2** | 1 |
+
+⭐ **Carry this one forward: a term with ZERO rows above the #95 0.16 floor still changed two
+verdicts** (the flipping rows moved 0.0467 and 0.1421). A max-|Δ| check against a floor is
+structurally blind to flips, because a flip is a *small* delta *near the bar*. **Read the flip
+count at the op-point, never the magnitude alone.** Attribution rests on a byte-identical CPU
+control (660/660, five weeks and a swap apart), not on an md5 list.
+
+⛔ **Operationally: stored b650-CUDA dumps are Ampere artefacts — re-dump, never diff.** The
+CPU-side host (0.0000) and stack (0.2008) terms are untouched; the gpu-server CUDA-to-CUDA
+extrapolation got *worse*, since it now crosses two architectures.
+
+🆕 **FOURTH OWNER DECISION — `H-DEV-1`, and it gates #85 and #158.** Everything above is
+**inference on fixed weights**. Whether a LoRA adapter *trained* on the 5090 is interchangeable
+with one trained on the 3090 Ti is **unmeasured**, and a 2026-07-09 gotcha already records that
+the same seed and a fresh re-train give different weights on one box. ⛔ **Do not call b650
+"cleared for training"** — it is cleared for *probe* work on a measured basis, which is a
+different claim. **First step is cheap and same-box** (train twice at one seed on the 5090 and
+diff the weights; 660 rows now take 12 s); only if that is reproducible does an
+across-architecture comparison mean anything. `memory/hypothesis-ledger.md` H-DEV-1.
+
+⚠️ **`H-V8-21` (b650 throughput 1.60× swing) can no longer be falsified as written** — both its
+readings are 3090 Ti numbers and its stated ≥8-point method would now cross the swap. Close it as
+unmeasurable or re-raise it on the 5090; the ⭐ lesson inside it (repeats inside one interpreter
+are precise about that interpreter) survives either way.
+
+⚠️ **`H-V8-23`'s method has the same new confound** — its 17-vs-18 baseline is a 3090 Ti dump, and
+0.2357 is larger than the one-article gap the row exists to explain. Re-dump the bf16 baseline on
+the 5090 *before* varying dtype against it.
+
+✅ Also fixed, unrelated and small: **`sadalsuud → b650` ssh was broken by `User jwasys`** in
+sadalsuud's `~/.ssh/config` (the key was always correct and is in b650's `authorized_keys`).
+Changed to `User jeroen` and verified end-to-end; backup at `~/.ssh/config.bak-20260917-b650user`.
+Both `memory/b650-gpu.md` and `CLAUDE.md` had this wrong, in opposite directions.
+
+---
+
+*Previous session (2026-09-11/12):* ✅ **Framework v1.36.1 → v1.40.0** (2 adopt, 0 decline, 2 n/a,
+3 already-in-force), ✅ `/audit-context` (verdict DEFECTS, fixed), ✅ `/curate`, pushed
+`93e2bcf..4eca14e`. Full record: `docs/decisions/framework-adoption-history.md` +
+`memory/project_session_2026_09_11_evening.md`.
+
+⛔ **THREE OWNER DECISIONS, none of which I should make alone:**
+
+1. **Which `refcheck.py` is authoritative, and does ours get a SPEC.md?** Two instruments, 1,629
+   lines apart. ⛔ **CORRECTED 2026-09-12: ours exits 0 by DESIGN — a recorded Decline.** The
+   2026-09-11 audit added a three-outcome exit contract; it was the **THIRD** re-adoption of a
+   feature declined for this fork, and is reverted. *"The script cannot fail"* is worth fixing
+   only in the same change that gives it a caller — there is no CI and `run.sh` uses `|| true`.
+   Exit 2 is **unreachable in its own motivating scenario** (forced `SIBS=[]` still yields 22
+   findings → exit 1). Full write-up: `framework-adoption-history.md` 2026-09-12; also
+   `veen-systems/llm-distillery#134`. Ours: 34 auto-discovered docs, **four flags and nothing
+   else — an unrecognised argument now stops the run** (2026-09-17; before that the skill's
+   `--sibling-root … . CLAUDE.md` command scanned the default set and printed a clean count),
+   stale-placeholder detection. Framework's: 1,151 lines, `--sibling-root`,
+   collisions, 218 findings (**115 COLLISION** on basenames with 12–34 copies; **39 of the 102
+   UNRESOLVED are rung-4 naming, not dead files**). ⛔ **Do NOT ship the framework's SPEC.md beside
+   our script** — it documents a different program. Ties into **#134**, which is real and now
+   measured: `--docs` exists and works (**272 files, 401 findings**), but the DEFAULT set still
+   excludes `docs/`.
+2. **Does `memory/gotcha-log.md` get `#123`'s treatment?** 665 KB / **458** entries = **27% of a
+   2.43 MB corpus**, no rotation rule, no ceiling, no updating step. The read surface is
+   **2,408,600 chars — 8.0× `/curate`'s 300k threshold, so the corpus is NOT read and 125 of 129
+   memory files were never opened.** The audit tooling cannot see its own inputs; that is the
+   cost, not the disk. Next in size: `cross-repo-prioritization` 133 KB, `hypothesis-ledger`
+   121 KB, `session-log` 115 KB; the 97 session files are 0.8 MB and are append-only, arguably
+   correct.
+3. **`#116` (activation/arousal) is still the open ethics call** and is scoped in
+   `persuasion-scorer`, not here.
+
+⚠️ **`CLAUDE.md` is 37,496 B against a 40,000 hard cap and a 35,000 soft one — OVER SOFT.**
+Pointer budget **40 rows, 4 of 5 carve-outs used**. ⛔ **Always-loaded layer 55,155 B of 60,000 —
+the budget checker now prints WARN** (`4,845 left ... act now, while there is still room to choose
+what goes`). It crossed on 2026-09-17: the layer was already 5,328 under before that session and
+the b650 result added ~480 B. ⛔ **Drift adoption deleted ZERO bytes**; it was the prerequisite,
+not the fix. Re-measure rather than quoting these — `check_index_budget.py --target loaded`.
+
+⭐ **#122 CONFIRMED AGAIN, and it bit this session.** The `CLAUDE.md` frontmatter does not reach
+session context — verified first-hand on 2026-09-12 — and on 2026-09-11 I put the new
+`review-changes` operative rule *in that block*. A rule that only lives there governs nothing.
+The operative half is now a row in § Before You Start; the frontmatter keeps provenance and
+points at it. **Check placement against #122 before adding any rule to that block.**
+
+⛔⛔ **AND THE RULE THAT WOULD HAVE SAVED A WHOLE DAY'S WORK: before adopting anything into a
+fork — a framework feature, an upstream fix, a "missing" exit code — `grep
+docs/decisions/framework-adoption-history.md` for the feature's own name.** A decline's reason
+is LOCAL; upstream does not know it, so reading the CHANGELOG, the skill and the code cannot
+recover it. Missing that grep cost the exit-contract work above, and it is now the third time
+the same decline has been re-adopted.
+
+### Then — NexusMind is FROZEN. Three lanes, one of them frozen. Lane C is the live work.
+
+> ✅ **2026-09-10 added a FOURTH strand and CLOSED it — the frozen-mpnet detectors. It does NOT
+> compete with lane C.** Four experiments (`EXP-033`–`EXP-036`), **$0**, nothing deployed touched.
+> Read the block lower in this file before re-proposing any of it: the window question, the
+> version comparison and the multilingual-blindness worry are all **settled**, and one candidate
+> (`H-DET5`) is parked awaiting an owner call. **Lane C remains the priority.**
+
+> ⛔ **OWNER DECISION 2026-09-08 (relayed via the NexusMind session): PRODUCTION FREEZES AS-IS**
+> while `human_thriving` is reconsidered. **No cutover, no Phase E fit, no config change.** Both
+> lenses keep scoring. ⛔ **Do not disable v8** — rows keep accumulating.
+>
+> ⛔ **OWNER DECISION: a redo is `human_thriving/v9` — a new VERSION, NOT a new name.**
+> `NexusMind/scripts/main.py:415` keys `.processed_ids_<name>.json` on the **filter name**, so a
+> new *name* re-creates the 2026-09-07 outage (41,435 articles vs ~4,000, and it does not
+> self-heal). A version bump reuses the file and the failure mode is **absent, not mitigated**.
+> ⚠️ `NexusMind/src/filters/filter_loader.py:195` takes the **highest `vN` on disk**, so dropping
+> `v9` there IS the deploy — but `load_filter(version_dir=...)` pins a version and the NM#229
+> agreement gate already dual-scores two versions (`filters/uplifting/` holds v6 **and** v7).
+> **Stage v9 pinned; do not rely on a review step that does not exist.**
+
+### Lane A — FROZEN, touch nothing
+
+`#151` cutover — still frozen, still no date.
+✅ **Phase E normalization is FITTED (2026-09-22, 2,976 rows) and `#154` is RULED AND FIXED** —
+the guard now tests the gap, not the absolute bound. ⚠️ The 2026-09-08 note that `#154` "may
+become moot" because `sample_min >= 4.5` is true by construction was **the defect, not a reason
+to wait**: that IS the degeneration, and it blocked an honest fit for a fortnight.
+⚠️ **The design advice survives the fix**: an op-point other than 4.5 in a future v9 avoids
+sitting at zero margin against `MAX_NORMALIZATION_RAW_MIN`'s strict `>` — decide it at design
+time. Record: `docs/decisions/2026-09-22-phase-e-fit-and-the-154-guard.md`.
+
+### Lane B — the v9 redo. Spec exists; the prerequisite is CLEARED
+
+1. ✅ **`#155` — DONE 2026-09-08.** `training/prepare_data.py` carries every source field
+   through plus the analysis block under `oracle_meta`; `scope_verdict` now lands on
+   **6,586/6,586** split rows (`harm_is_subject` **1,011 / 105 / 137** train/val/test).
+   Same fix + first tests for `scripts/merge_training_data.py`, which wrote the same three
+   files with the same defect. `training/validate_training_data.py` warns on zero or PARTIAL
+   coverage, so a pre-fix directory can no longer be mistaken for a real rate.
+   ⭐ **The split-redraw caution is retired for this input**: seed 42 on
+   `labels_v84_merged.jsonl` reproduces 5,268/658/660 with identical id order, identical
+   labels, 0 rows moved — regeneration does **not** touch the test set the gate numbers use.
+   ⚠️ **The zero carries its positive control** (2026-09-09): the same comparison reports
+   **1,044/584/599** moved at seed 43 and **1,041/593/580** with tier thresholds +0.5, so it
+   can say "moved". Seed 43 replaces **599 of 660** test rows — that is what a redraw costs.
+   ⚠️ The splits on disk still predate the fix and nothing regenerates them automatically —
+   #156's classifier must rebuild to a NEW directory, never read what is there now.
+2. **The prompt spec is already written**: the three owed gaps — commencement, the money-worded
+   announcement rule, and dropped clause D (`#143`, `#153`). Production rediscovered all three
+   independently (`EXP-029`, 12 flips, p=0.0034).
+3. **The architecture is written**: `docs/decisions/2026-09-08-scope-gate-two-head.md` — a binary
+   scope gate is a step function a regression head cannot carry (measured: oracle 0.80–0.90 vs
+   student 4.66–4.85, gaps +3.8 to +4.0). Split it: gate → regression on `in_scope` only.
+4. **The bar v9 must beat is already measured** (`EXP-031`, and its rubric comes from the
+   reader-facing tab copy so it **survives a lens rewrite**): harm **10.8%** / **27.0%**,
+   `misleading` **21.6%**, on-promise **67.6%** / **51.4%**. ⚠️ κ 0.375 between judges — read
+   within-judge comparisons only.
+
+### ⭐ Lane C — START HERE. Independent of the freeze, and it helps the LIVE lens
+
+**`#156` — cross-lens harm detector.** Stamp `harm_is_subject` on every article; each lens decides
+by config (ADR-022). ⛔ **Stamp, not block** — "Bihar copes with floods" betrays Thriving and is
+arguably correct under Solutions; Recovery is *about* recovering from damage.
+
+**Why this and not the redo:** it gates **`uplifting v7`**, the lens actually serving readers
+(harm 23.3% / 3.3%, shared stratum 20.0% / 7.5%), **without retraining anything**. Lane B does
+nothing for v7, and v7 is what ships. Ship **stamp-only first**, measure, then flip per lens.
+
+▶ **UNBLOCKED 2026-09-08 — `#155` is done, so this starts with training, not plumbing.**
+Rebuild the splits (`training/prepare_data.py`, seed 42, to a NEW directory — the on-disk ones
+predate the fix), read the positive class off `oracle_meta["scope_verdict"]`
+(**1,011 / 105 / 137**), and train the binary detector. ⚠️ **`oracle_meta` is verbatim and
+heterogeneous** — `runs` is a list on 6,130 rows and an int on 456, `weighted_mean_major` is
+absent on those 456; only `scope_verdict` is measured present on all 6,586. Condition on shape
+before reading any other key.
+
+⭐ **2026-09-09 — the training-data question is NARROWED, not settled** (`EXP-032`,
+`docs/evidence/2026-09-09-adverse-pool-consult/`, **$0**). ⛔ **A four-lens review found 5 blockers
+in my first write-up of this and every number below is the corrected form — read the evidence README's
+trap table before quoting any of it.**
+
+**What holds, asserted not printed:** `harm_is_subject` is **1,253** rows (**19.03% sample /
+20.96% design-weighted**), **max `weighted_mean_all` 2.7667**, **0** at ≥4.0, and **all 316 rows at
+or above 4.50 are `in_scope`** (**4.798% / 2.709%**). ⇒ **The corpus's FINAL LABELS cannot exhibit
+STUDENT/oracle disagreement, because they are the oracle's own output** (`H-AP5`).
+
+⛔ **What does NOT hold, and I published it:** *"zero examples and cannot have any"* and *"a
+production-scored pool is the only route."* Both false. **178** rows carry ≥1 `harm_is_subject`
+run-vote with a non-harm final verdict (**1** above the op-point at 5.367), **1,079** are
+`scope_flipped`, **178** harm rows have split run votes — and a **$0** detector arm on the existing
+1,011/105/137 positives, evaluated against EXP-031's 9/32 judge-flagged rows, was never costed.
+⛔ **Cost the two $0 routes BEFORE spending anything.**
+
+⛔ **And the above-op population is ONE PROMPT ARM, not a corpus rate:** all 316 come from the
+456-row `prompt-v8-4.md` relabel set (69.30% above-op, itself selected for being above-op earlier)
+while the 6,130-row `prompt-candidate-tail.md` arm has **0** — and `H-V8-30` measured that swap
+moving `in_scope` by **+0.1774** (p=0.0034).
+
+The selection criterion for a *pool* is still *rows the deployed student scored ≥4.5 that a judge
+calls harmful* — ⛔ **not keyword-mined** (`H-AP6`, a Dead End, ⚠️ scoped to the thriving family
+only; keyword corpus work elsewhere is unaffected).
+
+⏸️ **AWAITING OWNER: ~$3.2–3.6 of judge spend, and it is no longer the only option.** NexusMind has
+pinned a pool — 4,698 long-only rows, sha256 `eee377d8…`, manifest beside it on sadalsuud, and a
+pre-registration committed in the NexusMind repo
+(`NexusMind/docs/investigation/2026-09-09-adverse-pool-prereg.md`). Judging it is **Gemini k=1
+census (~$2.20–2.47) then DeepSeek k=3 on the ~23.4% it flags (~$1.02–1.15)**, plus **~$0.07** for
+`H-AP1`'s now-**four**-arm competence control. ⚠️ **Estimated from character counts, not counted** —
+prompt is `judge.py`'s `RUBRIC` (**1,516** chars, prefill-dominated, I/O 44–50). ⚠️ **23.4% is a
+137-row stratified panel's rate with n=9 on the DeepSeek arm** (rule-of-three 95% upper bound on the
+screen's miss rate: **33%**); the nearer anchor for a v8-shaped pool is `v8_only`'s own **27.0%**.
+⛔ **Nothing degrades while it waits** — the pool is hashed.
+
+> **Today's spend: $0.35** (`EXP-031`) — the `#155` work that followed cost **$0**, no oracle
+> calls, and so did the 2026-09-09 consult (`EXP-032`). Everything through `b11e42f` is pushed.
+> Session records: `memory/project_session_2026_09_08_second.md`,
+> `memory/project_session_2026_09_09.md`, and the `/curate` entries after them.
+
+## ✅ 2026-09-10 (evening) — Lane C started and its FIRST question is answered, $0
+
+**`EXP-037` — the free arm of `#156` works PARTLY.** Pre-registered before the first run
+(`docs/evidence/2026-09-10-harm-detector/`), $0, nothing deployed, no model artifact kept.
+
+**Primary: 2.0 of the 9 both-judge-flagged `EXP-031` panel rows** (band 0–3 over 5 seeds) at the
+pre-registered threshold rule, against a **shuffled-label null arm of 0.0 of 9 firing at TWICE the
+rate**. ⛔ **Read it against the null, not against zero.** Test recall 0.4599–0.5766.
+
+⛔ **The decision was FIXED IN ADVANCE and lands in the middle bucket: stamp anyway (free, ADR-022),
+and the ~$3.2–3.6 pool spend becomes a RANKED OPTION rather than the only route.** It is *not*
+upgraded because the post-hoc 0.50 threshold reads better (3–4 of 9, no seed at zero).
+
+**Two predictions failed, both recorded** (`H-HD2`, `H-HD3`): 6–16 of the 32 Gemini-flagged rows
+was **refuted** (2.0 vs the null's 1.6, and **zero** of the 23 Gemini-only rows — the detector
+agrees with judge *consensus*, not the wider net); and *"test specificity ≥0.98 by construction"*
+was **wrong on 3 of 5 seeds** — a val constraint does not transfer to test.
+
+**Blocking rate, re-weighted to production strata** (523/131/37 vs the panel's 60/40/37):
+**6.09% design-weighted at 0.50**, which is exactly `#156`'s predicted *"blocks a few percent"*.
+
+✅ **THE ARTIFACT IS BUILT — `filters/common/harm_detector/v1/`** (owner: *"ok stamp first"*,
+2026-09-10). A **5-seed ensemble**, and ⛔ **no threshold is shipped**: it stamps
+`harm_is_subject_score` + `harm_detector_version` and gates nothing. ⭐ **The threshold question
+DISSOLVED** — the ensemble holds **3 of 9** across a plateau from 0.30 to 0.70 where single seeds
+bounced 0–3 *at the val-picked operating point* (⛔ **over the plateau itself they span 2–4** —
+corrected by review), so there was nothing to guess. Verified: shipped module reproduces the builder to
+8.1e-07 (= the stored rounding), **CPU vs CUDA 0 verdict flips**, artifacts byte-identical 6/6,
+and `tests/unit/test_harm_detector_contract.py` fails if a threshold ever appears (3 mutations
+killed).
+
+✅ **THE WIRING IS WRITTEN AND OPEN FOR REVIEW — `NM#474`** (branch
+`feat/harm-detector-shadow-stamp`, **not merged, not deployed** — ⚠️ **true on 2026-09-10,
+SUPERSEDED: see the ▶ NEXT block below**). Six files: vendored package +
+`src/preprocessing/harm.py` + `gpu_client.predict_harm` + a `/harm/predict` endpoint +
+`scripts/main.py` stage + `config/app.yaml`, **`enabled: false`**. NexusMind's 1,581 tests pass.
+⛔ **No `threshold` and no `enforce` key exist anywhere in it**, and three mutations are killed
+(a threshold in the stage, a verdict key in the stamp, a failed score written as 0.0).
+
+## ✅ 2026-09-11 — round 2 on `NM#474`: five MORE blockers, all fixed, $0
+
+Three lenses (guarantee-preservation, adversarial, doc-accuracy) + a smoke test on real production
+rows. Commits `d35ab24`, `009a55e`, `f1a1f40`; llm-distillery `5681c66`, `bb5a52d`.
+**PR marked ready for review.** ⛔ **Still not merged and NOT deployed; `enabled: false` unchanged.**
+⚠️ **SUPERSEDED 2026-09-17 — the first half no longer holds; the `enabled: false` half does.**
+
+⭐ **THE KEEPER — a green suite is a statement about the ORDER IT RAN IN.** The new test file's
+fixtures were named `content_items_*.jsonl`, which `contract_check.py:276` globs from the
+**session-shared** pytest basetemp: 52 passed alone → **6 FAILED** with the harm tests first → 64
+after a rename. Both prior sessions' *"1,649 pass"* were true and hid it, because `c` sorts before
+`h`. The victim was the test that exists to prove the check does not false-red (`H-HD9`).
+
+⛔ **The recency key was mtime, and mtime is not recency here** (`H-HD7`). Commerce and obituary
+rewrite the same raw files earlier in the cycle, inverting mtime order on exactly the multi-file
+**cold start** the cap exists for. Real `data/raw`: filename and mtime order **diverge at position
+0**, 11/87 files ranked differently. Now keyed on the `(\d{8}_\d{6})` filename stamp.
+
+⛔ **The 0.2008 stack floor was attributed to the WRONG ARCHITECTURE in five places**, including
+the `RuntimeWarning` that ships into production logs. It is the Gemma-3-1B student's; **mpnet +
+sklearn MLP is UNMEASURED**. My first pass fixed one, because I worked from a list rather than
+grepping. Details: `memory/score-batch-shape-noise.md`. And `_harm_detector_stack` hardcoded
+`st-mpnet`, omitting the libraries that own the embedding (`H-HD8`).
+
+⛔⛔ **I PUSHED A BROKEN LOADER TO llm-distillery `main` (`5681c66`) AND REPAIRED IT (`bb5a52d`).**
+Placing the new `stack_id` property mid-`_load()` orphaned the embedder assignment behind a
+`return`; **all 16 unit tests passed**, because every one uses a fake detector. A smoke run on real
+rows caught it — then the same defect rode a cross-repo sync I did from memory instead of `cmp`.
+Both repos now have a test for the real `_load`. ⭐ *Verification is not review, and a sync is not
+a copy until you diff it.*
+
+✅ **The three register entries are in** (`docs/article_record_status.yaml`) — a **hard
+precondition** for ever flipping `enabled: true`, since the register errors on all three fields at
+once the first cycle after the flip. Simulated: **0 errors** with them, and a 4th unlisted field
+still errors. ⚠️ **No `record_path` on any of them** — the record schema declares no
+`nexusmind.signals.harm_*` and `validate_status` rejects a dangling pointer (verified against a
+bogus control). That entry is owed **after** `stamp_census.py` confirms population.
+⚠️ **SUPERSEDED 2026-09-22 — true when written, false now.** The census ran, the record schema
+gained `nexusmind.signals.harm_is_subject`, and all three entries carry a `record_path`
+(contracts **1.20.0** / article-record **0.7.0**). The dated wording above is kept as the
+record of what was true on 2026-09-11; do not read it as current state.
+
+⏸️ **Three warnings PARKED with owner agreement, recorded on the PR**: `deferred_over_cap`
+under-reports (50-row file at cap 7 logs *"0 files deferred"* while 43 rows are unstamped); a
+valid-JSON **non-object line crashes the stage** (reachable via the `aggregator_export_*` glob —
+**0 such files in production today**); a NaN score would write invalid JSON into `data/raw`.
+
+▶ **NEXT in Lane C, in order:**
+1. ✅ **DONE — `NM#474` merged `01a9809`, 2026-09-11; the ENABLE call followed on 2026-09-21**
+   (`NM#519`, owner: *"i want the harm detector in operation"*). ⛔ **Merge and enable were always
+   two separate owner calls**, and the second was taken six weeks after the first — the dormant
+   state was a decision, not an oversight. sadalsuud is on `1d4dc40` with
+   `harm_detector.enabled: true`, read back through the host's own `UnifiedConfigManager`.
+   ⭐ **The flip was outcome-proven before it shipped, not predicate-proven**: the stage ran
+   through its real caller over 3,004 real `data/raw` rows and stamped 3,000 (`device: cpu`), where
+   the same call returns `{"skipped": "disabled"}` at `scripts/main.py:825` beforehand.
+   ⚠️ **The smoke REPRODUCED a parked warning instead of clearing it** — the cap cut mid-file and
+   `deferred_over_cap` reported **0** while 4 rows went unstamped. Known, on `NM#474`, still open.
+   ✅ **The `record_path` entry is DONE** (2026-09-22, contracts **1.20.0** / article-record
+   **0.7.0**, `NM 73ad620`): the census confirmed population on real post-flip rows, the record
+   schema gained `nexusmind.signals.harm_is_subject`, and all three status entries now point at
+   it. ⚠️ This line read "still OWED" for one commit after it was done, which is why it is
+   stated here rather than only in a queue item that later got rewritten.
+   ✅ The stale mtime comment rode `NM#519`: `config/app.yaml` had called the ordering a
+   "⛔ KNOWN DEFECT … until that is keyed on the filename timestamp" while `_collection_time`
+   (`src/preprocessing/harm.py:92`) had been keyed on the `(\d{8}_\d{6})` filename stamp since
+   `f1a1f40` — the config was describing code that no longer existed.
+2. ✅ **DONE 2026-09-17 — `EXP-039`, $0, and it came back NEGATIVE.** The per-run votes add
+   nothing: **−0.4 of 9 paired per seed**, ~30% more panel flags for the same catch, **1.4 vs 2.2**
+   at matched flag counts. ⇒ ⏸️ **THE ~$3.2–3.6 POOL SPEND IS NOW THE DECISION, not a ranked
+   option** — the free route is exhausted *as specified*, and that phrase is load-bearing: arm C
+   (the 178 rows alone) **could not have said yes** — test recall 0.0417–0.0833, 0.00% of the panel
+   flagged above 0.40 — so its 0 of 9 is about 136 positives being too few, not about the rows.
+   ⛔ **Do not re-run this arm without a bigger positive class and a new pre-registered bar.**
+   Evidence: `docs/evidence/2026-09-17-harm-vote-arm/`; `H-HD10` refuted, `H-HD11` not answered,
+   `H-HD12` holds. ⭐ **Side finding worth more than the primary**: 4 of 5 seeds reproduced
+   `EXP-037` **exactly** on the swapped GPU, and seed 1 changed only because `pick_threshold` is a
+   selection step that turned a median **4.3e-05** probability wobble into a **0.795 → 0.905**
+   threshold move. Test recall was identical on all five seeds — **a stable metric said nothing
+   about the stability of the flagged set.**
+3. **Then**: measure what the stamp *would* block **per lens, per cycle** — the panel says nothing
+   about solutions, belonging, nature_recovery or cultural_discovery, where the same content may be
+   constitutive rather than harmful.
+
+⭐ **The per-lens MECHANISM already exists and already runs** (verified 2026-09-11, posted to
+`#156`): `short_content.cap` in `filters/common/filter_base_scorer.py` is a per-lens,
+config-gated, stamp-reading decision point loaded from each filter's own `config.yaml`
+(`:67` → `_load_preprocessing_config`), applied once at `_process_raw_scores:336` and mirrored for
+the hybrid Stage-1 branch at `hybrid_scorer.py:255`. Per-lens harm gating is a second instance of
+it, not new architecture. ⚠️ **Code-proven, not outcome-proven**: `short_content.cap` is `None` on
+all 26 config files, so that branch has never fired in production.
+
+## ✅ 2026-09-10 — the detector-architecture strand: four questions asked, three closed, $0
+
+Triggered by a cross-repo request from ovr.news (would a BERT-like encoder beat what we run?).
+Answer: **we already run one** — the pre-scorer detectors are frozen XLM-RoBERTa-base
+(`paraphrase-multilingual-mpnet-base-v2`) with a sklearn MLP head. Evidence in four directories
+under `docs/evidence/2026-09-10-*`; registry rows `EXP-033`–`EXP-036`; hypotheses `H-DET1`–`H-DET6`
+in `memory/hypothesis-ledger.md`.
+
+**⛔ Settled — do not re-propose without reading the evidence:**
+
+1. **Window 128 → 512 buys nothing** (`EXP-033`). Bands overlap on both detectors;
+   violence_promotion *loses* recall at 0.95; 3.82× GPU cost. **128 is now a defensible
+   baseline**, so the "crippled baseline" objection to a fine-tuning comparison is answered.
+2. **The v3/v4/v5 recall comparison is unusable** (`EXP-034`). Three different orderings across
+   five seeds, all bands overlapping. v4's mean is the *highest*, reversing ovr's ADR-042 flag.
+   **Stop citing it.** `memory/obituary-v4-hypotheses.md` carries the addendum.
+3. **The detector is not blind to non-Latin scripts** (`EXP-036`). Latin 1.252% vs non-Latin
+   1.249% flag rate over 319,156 stamped production rows. The non-Latin corpus build is
+   **deprioritised** — it was going to be the next spend.
+
+**⏳ Open, and each has a named trigger:**
+
+- **`H-DET5` — `max(title, full)` is an OWNER CALL, not a task.** 44% of the detector's misses are
+  title/body disagreement inside one mean-pooled window (`EXP-035`). Plain max buys +0.0494 recall
+  for −0.0131 specificity; gated at 0.99, +0.0174 / −0.0016. **Recall-first (owner 2026-07-30) and
+  ADR-023 point at different variants.** ⛔ Before any config change, re-measure across the
+  `EXP-033` seed set — it is currently one model at one seed, and this session spent a day showing
+  what that is worth.
+- **⭐ `H-DET2` generalises beyond the detectors and nobody has acted on it.** `early_stopping=True`
+  lets `random_state` pick the validation split, so obituary recall at 0.85 spans **0.6599–0.8081**
+  with everything else fixed. **Every shipped detector metric in this repo is a single draw.**
+  Trigger: any future detector comparison must average over seeds or it is measuring the seed.
+- **Arabic (0.410%) and Hangul (0.621%) flag 2–3× below Latin** while still reaching max ≈ 1.0
+  (`EXP-036`). Base rate or degraded recall — indistinguishable without labels. **If multilingual
+  labelling money is ever spent, it goes here, not at a broad non-Latin corpus.**
+- **The class-C definitional dispute is upstream of all of it.** Most of the remaining misses are
+  death-as-news (crime, accident, disease), which is `#51` broad-rule vs `#85`'s adjudicated rule
+  vs ovr's ADR-045 recency axis. That is a **decision to be made, not a measurement to run**, and
+  it contaminates every recall number in the estate while it stays open.
+
+**⚠️ Doc-sync finding, flagged not fixed (needs an owner call):** `filters/resilience/v1/` exists
+on disk — README, `config.yaml`, `prefilter.py`, `prompt-compressed.md` — with **no model, no
+`calibration.json`, no `normalization.json`**, so it has never been trained. It is named **nowhere**:
+not in `CLAUDE.md`'s Production Filters table, not in `docs/TODO.md`, not in
+`memory/filter-status.md`. It is either a draft worth an index row or a dead spec worth deleting,
+and that is not the agent's call. Found by the 2026-09-10 `/curate` doc-sync step.
+
+**Cosmetic, filed not fixed:** `NexusMind/deploy/gpu-server/main.py` hardcodes
+`model_version="v4"` in the obituary response and its docstring still says SHADOW, while v5 is
+what loads (md5-verified on the host) and enforcement is live. The only caller discards the
+field — `_obituary_model` is stamped from `MODEL_VERSION` = v5 on both branches — so **no stored
+row is affected.** One-line cleanup for whoever is next in that file.
+
+> **Today's spend: $0.** No oracle calls. Four commits, evidence only; **nothing deployed was
+> touched and no filter package changed.** Both remote hosts (b650-gpu, sadalsuud) were left
+> clean — read-only on sadalsuud.
+
+## 🗄️ PRIOR — the deploy that shipped a filter nothing called
+
+> ✅ **DEPLOYED AND ENABLED 2026-09-07.** `human_thriving v8` scores production traffic.
+> NexusMind `9245f2c` (PRs **#452** then **#453**), sadalsuud pulled, scorer restarted,
+> CODE_REVISION `5cf41f1d…` round-tripped. Weights out-of-band on gpu-server, sha256
+> `074209ff…` identical at all three hops. Hub backup `jeergrvgreg/human-thriving-filter-v8`
+> (private). Smoke suite now covers **six** filters — `human_thriving: wa=5.77`.
+>
+> **Shipped numbers** (EXP-027, epoch 5, CUDA, op-point **4.50 calibrated**): recall **0.314** /
+> specificity **0.9856** / precision **0.550 panel**, **0.6073 production-mix** (EXP-028, H-V8-26),
+> n=660, 35 positives. ⛔ Read specificity first (ADR-023). ⛔ Not distinguishable from the
+> epoch-4 checkpoint — all four #95 bands overlap.
+>
+> ⛔⛔ **THE KEEPER — PR #452 DEPLOYED A FILTER NOTHING CALLED.** The package shipped, the
+> scorer loaded it, and a direct `POST /filter/human_thriving/score` returned a correct score —
+> which I published as "live in production". It was not. `human_thriving` was missing from
+> `pipeline.enabled_filters`, the list `scripts/main.py:2569` iterates, so the 4h cycle would
+> never have touched it and `data/filtered/human_thriving/` would have stayed empty **forever**,
+> making Phase E impossible. **I tested the callee and inferred the caller.** Found only because
+> writing the missing smoke fixture forced a read of `deploy_filters.sh`'s alignment gate — and
+> the smoke suite had passed the whole deploy *having never loaded v8*, because it had no
+> fixture for it. 21st occurrence in `memory/working-rules.md`.
+
+## 🔴 INCIDENT 2026-09-07 — enabling v8 took the pipeline down for a cycle
+
+⛔ **Mitigated by the NexusMind session at 15:27 (option B, owner-authorised). Do not undo it.**
+
+The first cycle after enabling `human_thriving` ran the SHARED preprocessing stages 7–10× over
+normal (og:image backfill 21,245 vs 2.6k–3.1k; hero extraction 41,435 vs 3.3k–4.0k; ML candidates
+18,206 vs a 3,000 cap) and was on course to be SIGKILLed at `TimeoutStartSec=4h` **before scoring
+started** — zero filtered output for all six filters.
+
+**Cause:** a new filter has no `data/raw/.processed_ids_<name>.json`, so it loads the whole
+`max_article_age_days: 3` window (~18 cycles), and dedup + image analysis run on the **union** of
+every enabled filter's pool. ⛔ **It does not self-heal** — `_save_processed_ids` runs after the
+scoring loop, so a kill leaves the file unwritten and the next cycle repeats: a kill loop.
+⭐ **The cost and the thing that would end it are on opposite sides of the same timeout.**
+
+**Fix applied:** `cp data/raw/.processed_ids_uplifting.json data/raw/.processed_ids_human_thriving.json`
+(whole file — the `versions` sidecar is filter-agnostic corpus data and stripping it would have
+disabled superseded-row re-admission for v8). ⚠️ **That file is the MITIGATION, not a stray
+artifact — deleting it restores the outage.** Never let a cleanup pass tidy it away.
+
+▶ **OPEN: the acceptance test has not been read yet.** The next cycle must show hero extraction
+back to **3.3k–4.0k** and og:image backfill to **2.6k–3.1k**. If either stays high, the cold start
+is not the whole story — remove `human_thriving` from `enabled_filters` and re-diagnose, do not
+guess again. Second check: `data/filtered/human_thriving/` filling at ~147/cycle if v8 tracks
+v7's 5.81%.
+
+Written up: `docs/RUNBOOK.md` § *4b*, `memory/gotcha-log.md`, and **#152** (make it a pre-flight
+guard — ⚠️ note the open design question there: enabling happens in a NexusMind PR, so a guard in
+this repo's deploy script would not fire at the triggering moment).
+
+## ▶ NEXT SESSION STARTS HERE — **Lane C, `#156`. The plumbing is done; this is modelling.**
+
+⛔ **Lanes A and B stay OPEN and untouched** (owner, 2026-09-09: *"keep the lanes open, we look
+at that some other time"*). Only `#155` inside Lane B item 1 is closed.
+
+**Step 0 — pre-register before training anything.** This project's norm, and the reason
+`EXP-031`'s refutation was trustworthy: state the hypothesis, the bar and the revisit trigger
+in `memory/hypothesis-ledger.md` **before** the first run, the way `c54f595` did for the harm
+panel. Take the next `EXP-` id from `experiments/README.md`.
+
+⛔ **Step 0b — read `H-AP3`/`H-AP5` in the ledger first; they change the design, and Step 2 below
+is now WRONG WITHOUT THIS.** (a) The corpus's **final labels** cannot exhibit student/oracle
+disagreement — all **316** rows ≥4.50 are `in_scope`, max harm `weighted_mean_all` **2.7667**, 0 at
+≥4.0. ⛔ **But that is not "no route": 178 rows carry a harm run-vote with a non-harm final verdict
+and a $0 detector arm exists — cost both before spending.** ⚠️ The above-op population is 316/316
+from one 456-row prompt arm; the other 6,130 rows have **0**. (b) If judging is involved, the two
+families are **NESTED** on binary `harmful` (DeepSeek 9 ⊂ Gemini 32, 0 reversals, and nested within
+every stratum) so Gemini k=1 screens and ~**23.4%** need k=3 — ⚠️ **bounded, not shown**: 0 misses in
+**9**, rule-of-three upper bound **33%**. ⛔ **Never quote κ 0.375 against a binary harm decision —
+and do not reach for the binary κ either, it is 0.3749, indistinguishable.** (c) ⚠️ **The rubric's
+on-promise axis is confounded**: pooled `fits` falls −15.1/−12.3pp en→non-en, but **within stratum
+the sign REVERSES** (v8_only +12.4/+13.7). No per-language on-promise number is valid without
+`H-AP1`'s four-arm control.
+
+**Step 1 — rebuild the splits to a NEW directory.** `datasets/training/human_thriving_v8/`
+predates `#155` and carries no `oracle_meta`; do not overwrite it — it is what every v8 gate
+number is measured against.
+
+```bash
+PYTHONPATH=. python training/prepare_data.py \
+    --filter filters/human_thriving/v8 \
+    --input datasets/scored/human_thriving_v8/labels_v84_merged.jsonl \
+    --output-dir datasets/training/human_thriving_v8_scoped --seed 42
+```
+
+**Step 2 — train the binary detector** on `oracle_meta["scope_verdict"] == "harm_is_subject"`.
+Positive class **1,011 / 105 / 137** (train/val/test). No new oracle spend.
+
+⛔ **AMENDED 2026-09-09 — read Step 0b first, this step's framing was wrong twice.**
+(a) **19.0% is a SAMPLE share, not a base rate.** The corpus is a 25.1×-stratified draw; the
+design-weighted estimate is **20.96%** and production is a different number again. *"An ordinary
+classification problem, not a needle"* rested on the unweighted figure — the claim may still hold,
+but it has not been made on the right quantity. (b) ⚠️ **These positives are the harm the ORACLE
+ALREADY CATCHES** (every one scores below 2.7667; the corpus has none above 4.0). A detector trained
+only on them learns the oracle's own gate, **not the leak `#156` exists to stamp** — the leak is the
+student scoring harm content ≥4.5, which this corpus cannot contain. Train it anyway (it is free and
+it is the baseline), but ⛔ **evaluate it on EXP-031's 9/32 judge-flagged rows, not only on the test
+split**, or the number will describe agreement with the oracle rather than harm reaching readers.
+
+**Step 3 — STAMP ONLY** (ADR-022, and `#156` is explicit about it). Measure what it *would*
+block per lens, per cycle, from the shadow stamp. Then a per-lens config decision.
+⛔ **Never a cross-lens blocker** — "Bihar copes with floods" betrays Thriving and is arguably
+constitutive under Solutions; Recovery is *about* recovering from damage.
+
+⚠️ **Two traps, both measured 2026-09-08:**
+- **`oracle_meta` is verbatim and heterogeneous.** `runs` is a **list** on 6,130 rows and an
+  **int** on 456; `weighted_mean_major` is absent on those same 456; the six dimension values
+  are `float` on 6,130 and `{"score": float}` on 456. **`scope_verdict` is the only
+  non-dimension key present on all 6,586.** Condition on shape before reading any other key —
+  the same trap as `content_length` and `raw_weighted_average`.
+- **Judge it on SPECIFICITY, not recall** (ADR-023). A harmful article reaching a reader costs
+  a reader; a missed one costs a slot that refills. The honest target is "blocks a few
+  percent", not "solves harm".
+
+---
+
+## ▶ PRIOR NEXT-SESSION BLOCK (2026-09-07) — kept for its reasoning
+
+⛔ **Step 1 is a MEASUREMENT, not a task: confirm the cycle actually scored v8.**
+No production cycle had run when the session ended (deploy ~09:50 CEST, next
+`fluxus-collection` 12:04). Check first:
+
+```bash
+ssh sadalsuud 'cd ~/local_dev/NexusMind && ls -la data/filtered/human_thriving/ && \
+  cat data/filtered/human_thriving/*.jsonl | wc -l'
+```
+
+⚠️ **The directory EXISTS and is EMPTY as of 2026-09-07 11:04** — created 10:10 by a failed
+manual `run_filters.py` on sadalsuud (no torch there; it scores over REST from gpu-server), NOT
+by a cycle. **An empty-but-present directory reads exactly like "the cycle ran and surfaced
+nothing".** So count ROWS, never test for the directory.
+
+Zero rows after a cycle has demonstrably run ⇒ the enablement did not take effect; read
+`scripts/main.py:2569` and the cycle log **before** doing anything else. Confirm a cycle ran
+with `systemctl list-timers fluxus-collection.timer` (LAST must be after the deploy) — at session
+end the last run was **08:04**, before the ~09:50 deploy, and the next was **12:04**. **Do not treat the config key as the answer — that
+is exactly what went wrong on 2026-09-07.**
+
+Then, in order:
+
+1. **Phase E normalization**, once ≥200 rows sit above 4.5 — **and it is step 1 of 3, not the
+   last gate** (owner ruling **NM#455**, relayed 2026-09-07). ADR-012 settles what the filter is
+   CALLED; it does **not** establish that v8 serves readers better than v7, and the cutover will
+   not be made on the rename alone. Ruled sequence: fit normalization → **compare rank agreement
+   and the HEAD of each lens on the same day's articles** (the head is what readers see, so a
+   swap changes *what surfaces*, not the mean) → then rule. **Additive dual-scoring is the
+   intended steady state for now, not a transition to finish.** No date was set on purpose; the
+   named failure mode is "temporarily both" becoming permanent, so if the comparison has not run
+   ~a week out, force it.
+   ⛔ **SUPERSEDED 2026-09-08 by `EXP-030` — the projection below was wrong and the caution in it
+   was right.** v8's measured production pass rate is **1.093%**, not v7's 5.81%: 34–63 rows per
+   cycle, and the bar was reached in **five** cycles, not two. The comparison this block asks for
+   has also now RUN (see the top block); ✅ the fit is DONE too (2026-09-22, #154 ruled + fixed).
+   ⚠️ *Sizing, measured 2026-09-07, superseded:* the bar is rows **above the op-point**, not rows
+   written.
+   On `filtered_20260907_091612.jsonl`, uplifting is **147 of 2,530 ≥ 4.5 raw (5.81%)** — so ~2
+   cycles at v7's rate. **v8's share will differ and may be lower** (Jaccard 0.246, different
+   positive class); at ~3% it is ~76/cycle and needs 3 cycles.
+   ⛔ **Read the scores the way the fitter does — `nexus_mind_attributes.<filter>.raw_weighted_average`,
+   falling back to `weighted_average`. A TOP-LEVEL lookup returns a clean, plausible `0 >= 4.5`
+   rather than an error** (top level carries only `_commerce_score` / `_obituary_score` /
+   `_violence_promotion_score`). That cost three wrong readings on 2026-09-07.
+   ▶ **The NM#455 step-2 trigger is now a PROBE on the NexusMind side, not a note here** — the
+   peer session pointed it at `filters/human_thriving/v8/normalization.json`, falling back to
+   counting rows, so it no longer depends on anyone remembering.
+   ⚠️ **BUT IT FIRES AT DEPLOY, NOT AT FIT, and that is answered rather than assumed**:
+   `fit_normalization.py:883` writes `args.filter / "normalization.json"`, and `--filter` is the
+   **llm-distillery** package path — so the file lands here first and reaches NexusMind only via
+   a later `deploy_to_nexusmind.sh human_thriving v8`. (Confirmed it does travel: the file is
+   tracked in both repos for uplifting v7, solutions v6 and belonging v1.) **So after fitting,
+   deploy the package or tell them explicitly** — otherwise their probe correctly reports "not
+   fitted" while the CDF exists, which is the empty-directory shape again.
+   ⚠️ **A `test -f` on that file is not "step 2 can start" either**: `stats.raw_min` must EQUAL
+   4.5 (`tests/unit/test_normalization_invariant.py`), so a `normalization.json` can exist and be
+   un-deployable — present to a presence probe, blocked in fact. Read `stats.raw_min`, not the
+   file's existence.
+   Fit with `stats.raw_min` = **4.5**
+   (`test_normalization_invariant.py` enforces the equality) and remember an op-point move
+   touches **all four** surfaces in one commit. ⚠️ Fitting it is what arms NM#319: anchoring
+   puts the op-point at normalized 0.0, and NexusMind's enrichment gate reads the **normalized**
+   score at 4.0 — on v7 that leaves ~40% of surfaced articles un-enriched. Owner accepted; it is
+   still a real change.
+2. **The ~50-article production hand-audit** — off-lens count and category-error count on what
+   v8 actually surfaces. **The only precision measurement on the population that matters**;
+   everything published so far is a 25.1× design-weighted panel. It is also the
+   requirements-gathering for **#150**. H-V8-26's revisit trigger: if it lands outside
+   [0.55, 0.82] the weighting model is wrong, not the model.
+3. **#151 — the `uplifting` → `human_thriving` cutover.** Both filters score every cycle right
+   now. Blocked on 12 ovr.news files, a fitted CDF, and an owner ruling on the predicate change
+   (Jaccard **0.246** — v7 and v8 do not share a positive class).
+4. **#150 — the junk-gate layer**, after the audit. Do not design it off the panel.
+
+**Open issues from this work:** **#150** (junk gate), **#151** (cutover scope), **#147**
+(Stage-1 thresholds — v8 confirmed live in production, the other six still inert),
+**#141** (non-Latin recall, blocks any probe-threshold move).
+
+⚠️ **A `human_thriving` smoke fixture now exists** (NexusMind `deploy/smoke_test_articles.jsonl`,
+floor 4.5 = the op-point, so it asserts the article SURFACES). Keep it; it is the only thing
+that makes the post-deploy gate able to see this filter at all.
+
+## 🟡 PREVIOUS (SUPERSEDED 2026-09-07 BY THE DEPLOY) — Phase 8 is CLOSED. Phase 9 is next
+
+> ⛔ **This block is the PRE-DEPLOY handoff and is kept for its reasoning, not its state.**
+> Every "not deployed" / "no `human_thriving` on sadalsuud" statement below is now FALSE:
+> v8 shipped 2026-09-07 (NexusMind `e0f0af9`, PR #452) and Phase E is unblocked. The
+> ordering argument it makes — normalization follows deployment — is what actually held.
+
+### ▶ NEXT SESSION STARTS HERE — deployment, and the ordering that surprised phase 8
+
+⛔ **Phase E (normalization) CANNOT run first, and this is not a preference.**
+`fit_normalization.py` fits the CDF from **NexusMind production output**
+(`data/filtered/{name}/filtered_*.jsonl`) and refuses below `MIN_NORMALIZATION_ARTICLES = 200`
+rows above the op-point. Verified on sadalsuud 2026-09-06: `data/filtered/` holds `belonging`,
+`cultural_discovery`, `investment_risk`, `nature_recovery`, `solutions`, `uplifting` — **no
+`human_thriving`**, because v8 is not deployed. Normalization comes **after** deployment, the
+way `solutions v6` went (gate 2026-07-27 → deployed → fitted 2026-07-28). ⛔ Do not substitute
+the test split or the draw corpus: they are a 25.1× design-weighted sample, and a CDF fitted on
+them would describe a population that does not exist.
+
+> ⛔⛔ **REOPENED 2026-09-06 BY OWNER RULING: "no exception, i want this system to be
+> harmonized".** The shipped checkpoint was trained by a tree that `git commit --amend`
+> orphaned, and the option to record that as an exception was **rejected**. v8 is being
+> **RETRAINED under a commit on `main`** (`64b469d`), which voids `calibration.json`, the
+> ADR-021 gate result and every number derived from the old checkpoint. The Stage-1 probe
+> and its 1.75 threshold are **NOT** affected — the probe is e5-small trained on oracle
+> labels and is independent of the student.
+>
+> ⭐ **Confirmed independently while setting this up:** b650's `training/train.py` was the
+> **pre-fix** version, missing the 176 lines of checkpoint-selection machinery that `main`
+> says trained the shipped artifact. The provenance was not merely unrecorded; the box did
+> not hold the code the record names.
+
+1. ✅ **The doc set — DONE 2026-09-06.** `DEEP_ROOTS.md`, `README.md`, `README_MODEL.md`
+   written; `prompt-compressed.md` added as a **byte copy** of `prompt-v8-4.md`, so
+   `prompt_hash` is `c4705408c477` instead of `None`. ⭐ **`README_MODEL.md` turned out to be
+   gitignored repo-wide** — five on disk, none tracked, for any filter — so the doc standard
+   required a file the repo refused to store. Un-ignored, all six now committed (belonging
+   v1's gap closed too). **Four packages meet the 6-file core**; `solutions v4`/`v6` still
+   lack `STATUS.md` + `DEEP_ROOTS.md` (llm-distillery#126).
+2. ✅ **Transport RULED 2026-09-06: rsync b650 → Situla → sadalsuud, AND publish
+   `jeergrvgreg/human-thriving-filter-v8` private as an off-machine backup.**
+   `inference_hub.py` is written and `verify_filter_package.py` resolves the repo id (7/7).
+   ⛔ `NO_HUB` **stays until the transfer actually runs and verifies**, then is deleted in the
+   same commit — with `inference_hub.py` present and no repo, `--check-hub` fails, and
+   `NO_HUB` is what separates "not published yet" from "the check is broken" (#44).
+3. **Deploy, then watch the first cycles.** `docs/RUNBOOK.md`, and ⛔ diff before
+   `deploy_to_nexusmind.sh` — it overwrites and `.nexusmind-owns` is empty.
+4. ⚠️ **An owner question BEFORE Phase E, not after it.** Fitting normalization is what arms
+   NM#319: anchoring puts the op-point at **normalized 0.0** by construction, and NexusMind's
+   enrichment gate at **4.0** reads the normalized score. On `uplifting v7` today that leaves
+   **40% of surfaced articles un-enriched** (7,224 of 18,041 over 82 cycles). v8 will inherit
+   the shape. Nothing is broken either way — but the choice belongs to the owner, and it is
+   easier to make before the CDF exists than after.
+5. **Then Phase E**, once ≥200 production rows sit above 4.5: fit `normalization.json` with
+   `stats.raw_min` = **4.5** (`test_normalization_invariant.py` enforces the equality) and
+   remember it moves **all four** op-point surfaces in one commit.
+
+⚠️ **NM#319 is ANSWERED, in two regimes, and the answer changes at step 4** (measured
+2026-09-06, `docs/evidence/2026-09-06-v8-deploy-gate/README.md` §3):
+- **At deploy, before Phase E** — no `normalization.json` and `score_scale_factor: 1.0`, so the
+  raw score passes through and **every surfaced article clears the 4.0 enrichment gate.**
+  Nothing to do.
+- **After Phase E** — the fitter anchors the CDF to the op-point, so **normalized(4.5) = 0.0 by
+  construction** and the gate bites mid-population. On `uplifting v7`, already in that state at
+  the same op-point, 82 cycles 2026-08-23 → 2026-09-06: **18,041 rows surface (7.17%) and only
+  60.0% clear normalized ≥ 4.0** (out-of-sample: v7's CDF was fitted 2026-08-10) — **7,224 surfaced articles silently un-enriched**, the gate's
+  effective bar being raw ≈ 5.05–5.13. Not a v8 regression; it is what percentile normalization
+  plus a 4.0 gate already does, and **fitting normalization is the step that turns it on.**
+  Whether that is intended is an owner question.
+
+### ⚙️ Owed, opened 2026-09-06 — small, and each has a named trigger
+
+- **`H-V8-23`: isolate the 18-vs-17 gap.** dtype, adapter loader and batch size are
+  confounded; the falsifier is stated. ⛔ **Not worth GPU time on its own** — production's
+  number is settled either way — so the trigger is: *before any document attributes a
+  student-score difference to dtype*, or before a second filter's gate runs through a path
+  that is not `load_lora_local` at batch 16.
+- ✅ **`memory/MEMORY.md` headroom handled in-session, not deferred.** It hit **857 B** of the
+  30,000 limit after this session's entry, so `/curate` moved a **fourth** entry out rather
+  than logging a warning for next time — `MAX_SESSION_ENTRIES = 4` is a **ceiling, not a
+  floor** (`if n <= MAX`), so 3/4 passes. Now **26,504 B, 3,496 under**. ⭐ The rule is
+  *keeps at most four*, and reading it as *must hold four* is what would have made the
+  warning recur every session.
+- **The other filters' gate numbers are still CPU-measured** (#104). v8's device term came out
+  at 0 flips, but that is v8's; nothing licenses back-filling the claim onto the fleet.
+- ⚙️ **14 of 29 filter packages carry NEITHER `inference_hub.py` NOR `NO_HUB`, so
+  `verify_filter_package.py --check-hub` cannot resolve them.** Found 2026-09-06: the
+  commit-msg hook blocked a commit over two of them (`investment_risk/v4`, `uplifting/v4`),
+  and the rebuilt `filter_completeness.py` then counted the rest. ⛔ **Not given `NO_HUB`
+  files**: several may have Hub repos from their own era, and "not published" is a claim
+  nobody has verified — writing it would be inventing provenance, which is the defect this
+  session exists to remove. Most are archived or never-deployed versions; the deployed set is
+  declared. Trigger: the next commit touching one with a deploy-class word in the message.
+  Enumerate with `python3 scripts/analysis/filter_completeness.py`.
+- ⚙️ **Prune `UNSTAMPED_BASELINE`** in `scripts/verification/check_training_provenance.py` once
+  v8's retrained `training_metadata.json` carries `git_commit` — the list may only shrink.
+
+### ✅ What phase 8 closed on 2026-09-06 (`EXP-026`)
+
+1. ✅ **THE ADR-021 GATE RAN.** `calibrated_cuda`: **recall 0.343, spec 0.992**, precision
+   0.706, n=660, 35 positives (5.30% unweighted). `raw_cuda`: 0.486 / 0.986.
+   ⛔ **Read the specificity first — we prioritise HIGH CERTAINTY over HIGH DETECTION.** The
+   0.343 is ADR-023's choice working, not a grade: v8 surfaces about a third of what the
+   oracle calls on-lens and is right about 70% of what it surfaces. **Raising recall here
+   without holding specificity is a regression**, and "recall is low" is not a finding. ⛔ The two arms
+   are **NOT DISTINGUISHABLE** — recall, specificity and F1 bands all overlap under the #95
+   floor; calibrated ships because the runtime applies calibration, not because it won.
+   ⛔ **Never set 0.343 beside the fleet's 0.59–0.72**: Jaccard **0.246** between v7's and v8's
+   positive classes on these same rows.
+2. ⭐ **THE DEVICE DOES NOT MATTER HERE — and it had to be measured to know that.** CPU vs CUDA
+   on the same 660 rows: **0 verdict flips on both arms**, identical confusion matrices, max
+   |Δ| **0.1428** calibrated / **0.0508** raw (411/660 and 8/660 bit-identical). v7's term at
+   the same 4.5 was 0.1956 with 3 flips, so this is a result about *this* population, not a
+   licence to quote CPU numbers elsewhere.
+3. ⛔⛔ **AND IT REFUTED A RECORDED EXPLANATION.** `STATUS.md` said EXP-015's raw **0.514** (18
+   TP) against the gate's **0.486** (17) was *"a device difference … the CPU→CUDA 0.1956 term
+   landing near the bar"*. The device gives **0 flips**; the gatekeeper and clamp move **0
+   rows**. It is the **dtype, i.e. the program**: the production path holds **342 bfloat16
+   parameters against 364 float32** (score head in bf16, read off the loaded object) while
+   `eval_ht_v8.py` forces `torch_dtype=torch.float32` at batch 8. ⭐ **Production serves bf16,
+   so 17 is production's number and 18 is the fp32 arm's.** *A dismissal is a claim* — this one
+   survived because it named a real, measured, plausible term the reader was primed for.
+4. ⚙️ **The gate now records what it read, refuses a config it cannot find, and marks its
+   own provenance stale.** `ground_truth_gate.json` gains an `inputs` block (argv, and the
+   sha256 of the labels, the config and every model dump) plus a `priority` line; the writer
+   **carries a hand-written `provenance` block over** rather than deleting it, and **stamps it
+   with a fingerprint of the inputs it described** — three states, `matches` / `UNVERIFIED`
+   (hand-written, never stamped) / `⛔ STALE` (written against different inputs), because
+   conflating the last two makes the warning fire on every rerun and be ignored within a day.
+   ⛔ **A missing `--config` no longer falls back**: `load_scoring_spec` swallows every
+   exception and substitutes `nature_recovery v4`'s constants, so a typo'd path printed a full
+   table at someone else's operating point (threshold 4.0, gatekeeper 3.5) and exited 0.
+   ⭐ **The first four tests had a hole a review found by mutation**: none varied the SCORES
+   between the two gate runs, so `report.update(prior)` — which reverts every freshly computed
+   metric to the previous file's — passed all four. A retrained model's report would have kept
+   the old model's recall. `tests/unit/test_ground_truth_gate.py` now holds **28** tests (17
+   pre-existing pure-function ones plus 11 on the writer), and the mutation that escaped is
+   killed by name. ⚠️ **No whole-suite count is quoted here**: the registry checker refused
+   `715` as untraceable and the review could not reproduce it either — a suite total is a
+   property of the machine and the tmpdir, not of this change.
+5. ⚠️ **b650's `~/llm-distillery` WAS not a git checkout — it IS one since 2026-09-06** and four files on the scoring path had
+   drifted. They were synced from the repo before the CUDA pass — a dump that feeds a deploy
+   gate must be produced by the shipped program. Pre-sync copies:
+   `b650-gpu:~/llm-distillery/.presync_backup_20260906/`. Differences were docstrings plus one
+   off-path argument, checked file by file in `DUMP_MANIFEST.md`, which is why the 2026-09-04
+   CPU pass is still comparable as a device measurement.
+
+### ✅ What was settled on 2026-09-05 (kept for the record)
+
+1. ✅ **THE PHASE-8 OP-POINT: 4.50 STANDS, ON THE CALIBRATED SCALE.**
+   `docs/decisions/2026-09-05-v8-op-point.md`. **No code changed** — the number the runtime
+   already carries is the number chosen; what changed is its status, from *inherited from
+   uplifting v7* to *re-derived on v8's own held-out split and ratified*.
+   ⭐ **The argument is the SHAPE of the trade, not the level.** On the calibrated arm every
+   step from 3.75 up costs almost exactly **one agreed-good article per junk article
+   removed** (4.00→4.25 is −2/−2; 4.25→4.50 is −4/−4), and ADR-023 breaks a 1:1 trade toward
+   specificity. ⚠️ **The frontier bends at 3.50**, where −3 good buys −11 junk — that, not
+   4.0 or 4.25, is where to go if volume is ever wanted, because the intermediate bars buy
+   it at par. ⛔ **5.00 was never available**: `MAX_NORMALIZATION_RAW_MIN = 4.5`, strict `>`,
+   so 4.5 is accepted with zero margin.
+   ⚠️ **Cost, stated**: 17 of 660 held-out rows surfaced, 12 true / 5 false, recall 0.343,
+   spec 0.9920. Verified by EXECUTION (`_assign_tier(4.4999)` → `low`, `4.5` → `medium`) and
+   by the code path — `filter_base_scorer.py:315-317` calibrates *before* `:340` assigns the
+   tier, so the runtime comparison really is calibrated-vs-4.5.
+   ⭐ **The design-weighted arm is now computed and it does NOT change this decision**
+   (2026-09-05, `EXP-025`). Horvitz–Thompson on the same rows: **3.00 → 62.7% / 90.0% ·
+   4.00 → 84.9% / 73.4% · 4.50 → 92.4% / 56.8% · 5.00 → 97.4% / 23.5%**. Maxima over all 7
+   bars and **both** arms: junk-removed **+2.44 pp** (calibrated @4.00), good-kept
+   **+0.20 pp** (calibrated @4.50). ⛔ **But the two quantities that move least are the two
+   quoted.** Specificity — ADR-023's own criterion — moves up to **+2.65 pp** and recall
+   **−8.51 pp**, both rates over the whole split where the design over-samples positives; the
+   base rate goes **5.3030% → 3.1638%**. The trade columns are conditional on the v7-surfaced
+   partition, which is why they are the stabler instrument here and why quoting only them
+   understates the weighting elsewhere. Table:
+   `docs/evidence/2026-09-04-v8-probe-calibration/PHASE_C_REVIEW.md`.
+2. ✅ **THE ELEVEN RESCUED PROBES: NOT git — a PRIVATE Hugging Face repo.**
+   `https://huggingface.co/jeergrvgreg/llm-distillery-probes` (verified `private=True`, all
+   11 present by listing the repo, not by the upload not erroring). The repo keeps model
+   weights out of git as large checkpoints (`.gitignore` § *Model checkpoints (large files)*) and probes are model
+   artifacts, so that policy stays intact and the manifest gains a durable address. Uploaded by
+   `scripts/deployment/upload_probes_to_huggingface.py`, which sha256-verifies every file
+   against the committed manifest **before** sending anything. Second copy stays on b650-gpu.
+   ⭐ **Two findings that changed the shape of this decision, both from sha256 rather than
+   filenames.** (a) **Two of the eleven were already in git** byte-identically under other
+   names — `embedding_probe_e5small.pkl` is `nature_recovery v4`'s shipped probe and
+   `probe_v2.pkl` is **`human_thriving v8`'s**. (b) ⛔ **Four are named after production
+   filters and are NOT those filters' shipped probes** — they match no tracked sha and carry
+   the older metadata format. *A name is an assertion*; the manifest and the Hub README both
+   say so now.
+   ✅ **The identity gap EXP-024 §6 logged is half-closed**: every pickle carries its own
+   `objective`/`embedding_model`/`seed`/`device` under `metrics` (not at top level), so
+   `probe_e5large` (recall, cpu) and `probe_reg_large` (regression, cuda) are no longer
+   confusable. Which *invocation* wrote each still rests on a log outside this repo.
+
+3. ✅ **#139 — FIXED, and the shipped filter was never the problem.**
+   `tests/ml/test_inference.py::test_inference_module_importable` was red for months because
+   it loaded modules with `spec_from_file_location`, which gives them no package, so
+   `cultural_discovery v5`'s `from .base_scorer import ...` could not resolve — while
+   cd v5 has been LIVE in production throughout. Now imported by dotted path, the way
+   production loads them. ⭐ **Seeded with a true positive before being believed**: breaking
+   one filter's `inference.py` makes it FAIL, so the repaired instrument can still say no.
+   A hyphenated filter directory (`ai-engineering-practice`, absent from the fixture only
+   because it has no trained model) now SKIPS with a reason rather than failing.
+
+> ✅ **The four mechanical checks are DONE (2026-09-05, `EXP-025`)** —
+> `scripts/verification/check_claim_shapes.py`, wired into `memory/MEMORY.md`'s verify
+> annotations. **They flagged 13 real sites over a tree that had just passed the whole
+> battery**: two orderings published without a band (`adr023-op-point-table` §7,
+> `scorer-device-throughput` §5), a third found after the checks were tightened
+> (`GATING_DECISION.md` — *"ranks far better", ΔAUC +0.0325, 95% CI [−0.0054, +0.0725],
+> P = 0.094, **not distinguishable***, now measured in `scripts/auc_ordering_band.py`), six
+> unqualified no-difference-over-a-grid claims in the parity and enrichment records, and four
+> analyses reading the 25.1×-design corpus unweighted. All 13 are fixed or declared.
+> ⛔ **The four-lens `/review-changes` on this work found 3 blockers and 10 warnings the
+> mechanical battery had passed — including that one of my own first fixes deleted a
+> check's trigger instead of the defect, and that the flagship file survived its own
+> mutation.** Both are recorded in the script's docstring; the mutation record is M1–M7,
+> all killed on the real tree. Fixing the disclosed-but-unfixed findings then widened the
+> instrument twice: `CODE_ROOTS` now covers `training/`, `ground_truth/` and the rest of
+> `scripts/` rather than the three directories that happened to hold an offender that day,
+> and **the three v8 splits are registered populations** — `test.jsonl` is the 660
+> design-weighted rows every v8 number is computed on, and five analyses reading it were
+> not sites at all. **19 sites flagged in total across the three rounds**; the checks now
+> examine 9 no-difference claims, 115 intervals, 5 orderings and 19 weighted-population
+> reads over 83 files. Two working-rule occurrences logged
+> (`memory/working-rules.md` 18th and 22nd, with `memory/gotcha-log.md` rows). ⚠️ **Still not claimed**: that mechanising
+> reduces future review-round cost (`agent-ready-projects#127`; the cost measurement is
+> `agent-ready-projects#126` — **557,442 tokens, 148 tool calls, one round**). That is an
+> expectation and remains the thing to instrument.
+
+⭐ **EXP-024 (2026-09-05) does not move the op-point — and four of its own first-draft
+claims were retracted before it was committed.** Measured at matched surfacing volume on the
+660-row test split: a regression-objective `multilingual-e5-large` probe is **not
+distinguishable from the student at any tested volume** (re-selection bootstrap, CI includes
+zero at all eight k), while regression e5-**small** is six articles worse at k=17 (CI [+1,+9]).
+⛔ **But that is the UNWEIGHTED sample.** The split was drawn under a **25.1×** design, and
+**weighted, the student leads at every share tested** (0.529 vs 0.478 of the positive mass).
+⛔ **Retracted before commit, by `/review-changes` after the whole mechanical battery went
+green and caught none of it:** *"AUC would have picked the wrong arm"* (a coin flip, P=0.523),
+*"the gate buys nothing"* (forced — a screened row could not enter the top-k below k=140, grid
+stops at 60), a bootstrap that emitted a zero-width CI, and the missing design weights.
+⛔ **Nothing ships on this** — 35 positives, one seed, no `calibration.json`. It is the
+**Nth-scorer** lever (defined in that README §7: a shared encoder pass plus a free head, against
+a per-filter student), not a phase-8 input: `H-V8-22`,
+`docs/evidence/2026-09-05-adr023-op-point-table/` — **read its §6 before quoting it.**
+
+⭐ **Nothing measured on 2026-09-04/05 moves the op-point.** The cost work (`EXP-021`,
+`EXP-022`, `EXP-023`) confirms there is still **no Stage-2 cost constraint**, which is what
+both the gating ruling and the *is the probe enough* answer turned on. The session history
+that established that has moved BELOW the action items — it was sitting between this heading
+and the instructions, which is backwards for a file whose job is to say what to do first.
+
+
+### ⛔ Read before touching phase 8
+
+1. ✅ **SCOREABLE — on `b650-gpu` only.** `base_scorer.py`, `inference.py`,
+   `inference_hybrid.py`, `probe/embedding_probe_e5small.pkl` and `calibration.json` all exist.
+   The weights do not (see 2), so a fresh clone loads the package and cannot run the student.
+2. **The weights are NOT in this repo** (gitignored as large model checkpoints,
+   `.gitignore` § *Model checkpoints (large files)* — ⚠️ **not** #97, the TDM assessment; corrected 2026-09-05). Epoch 4 of 6 lives at
+   `b650-gpu:~/llm-distillery/filters/human_thriving/v8/model/`, with the MAE-selected arm kept
+   at `model_baseline_mae/`. Provenance is the committed `training_{history,metadata}.json`.
+   The 660-row raw-logit dump is at `b650-gpu:~/llm-distillery/ht_v8_test_dump/` so the 16-min
+   CPU pass need not be repeated.
+3. ⛔⛔ **THE OP-POINT IS THE PHASE-8 DECISION, and it is a VALUES call, not a technical one.**
+   4.5 is not a neutral carry-over: **4.5 calibrated is a stricter bar than 4.5 raw** (17 test
+   rows flagged where raw flags 26). The trade, held-out, raw arm — junk removed / good kept:
+   **3.00 → 62.1% / 90.0% · 4.00 → 82.8% / 73.3% · 4.50 → 90.8% / 56.7% · 5.00 → 96.6% /
+   23.3%**. ⭐ **Under ADR-023 the inherited 4.5 is defensible and possibly right**: moving to
+   4.0 buys 5 good articles and lets 7 junk ones back through, which is the wrong direction
+   when *"a false positive costs a reader and a false negative costs nothing visible"*. **The
+   low recall is the cheap error, deliberately chosen.** Decide on the **calibrated** scale.
+4. ✅ **PHASE C DID WORK — the number to judge it by was never aggregate recall** (reviewed
+   2026-09-04, **EXP-017**, `docs/evidence/2026-09-04-v8-probe-calibration/PHASE_C_REVIEW.md`).
+   Of the **87** test rows `uplifting v7` surfaced that the v8 oracle demotes, the student
+   removes **79 (90.8%) raw / 82 (94.3%) calibrated**, with AUC on the 117 disputed rows
+   **0.8454 / 0.8521 against v7's own 0.7218** — it learned a distinction v7 lacked, not just
+   a lower scale. Cost: of the **30** rows both definitions call positive it keeps **17
+   (56.7%) raw / 12 (40.0%) calibrated**.
+5. ⛔⛔ **NEVER SET v8's RECALL BESIDE THE FLEET'S 0.59–0.72. The comparison is VOID.** v7 and
+   v8 do not share a positive class: same 660 rows, v7 says **117**, v8 says **35**, they agree
+   on **30** — Jaccard **0.246**. Recall is conditional on the true class, so it survives a
+   change of base RATE and not a change of DEFINITION. The figures are right (raw **0.486** /
+   calibrated **0.343** at 4.5); only the comparison was wrong, and it was repeated on six
+   surfaces before being caught. ⚠️ Also always name the DEVICE: EXP-015's **0.514** was
+   b650-CUDA, this is CPU, one article apart.
+4. ⛔⛔ **The checkpoint was produced by no commit on a branch** (trained under `0697f5a`, amended
+   into `1878e7b`; tag `exp-015-training-code` keeps it from gc). **Decision owed before phase
+   9: retrain under a real commit, or record the exception.** Recommended: fold the retrain into
+   whatever phase 6b/7 concludes, so the artifacts are written once — a retrain now invalidates
+   the committed provenance for nothing, and seed 42 is not bit-reproducible on CUDA anyway.
+5. ⚠️ **The epoch was chosen by a TIE-BREAK, not a metric** — `recall_medium` saturates at 0.5806
+   across epochs 4/5/6 (#144). The two arms are **not distinguishable** on test.
+
+### Two training-side levers, both untested for v8 (H-V8-15)
+
+⭐ **Now the live option, because 6b/7 did NOT move recall** (finding 4, *PHASE C DID WORK*, under *Read before touching phase 8*): the probe is
+recall-safe and the calibration is a monotone rescale, so neither touches the number. The
+cheaper move first is the op-point re-derivation in phase 8; these are what remains after it.
+**Do not run them together** — one variable at a time.
+
+- **Clamp 0→1.0 targets.** v7's own record: unclamped/3 epochs MAE 0.96, clamped/6 epochs 0.78 on
+  a similarly zero-inflated distribution. ⚠️ **That was an MAE argument, which ADR-023 forbids
+  ranking on** — re-judge on recall/specificity. There is **no clamping in `train.py` today.**
+- **`--use-head-tail`.** Content median is 2,331 chars against a ~2,000-char 512-token window, so
+  a real fraction of every article is truncated away.
+
+### Before `prepare_data.py` runs (kept — applies to any re-prepare)
+
+1. **Use `labels_v84_merged.jsonl`**, not `labels_k3.jsonl` — 456 above-op rows corrected under
+   v8.4, per-row `prompt_hash`. The k=3 file is untouched, so this is reversible.
+2. ⛔ **`--filter` picks the analysis field from `filter.name`.** Point it at v7 and it writes
+   **0 examples to all three splits, prints COMPLETE and exits 0.** v8's config says
+   `filter.name: human_thriving`.
+3. ⚠️ **The probe's positive base rate is 4.80%**, not 6.92% and not production's 7.74%. Phase 6b
+   set `--objective recall` against it; the realised train rate was **4.7% (250/5268)**.
+4. ⚠️ **The prompt is `prompt-v8-4.md`, not `prompt-compressed.md`** — `load_filter_spec` derives
+   the latter from `config.yaml`. Resolve at phase 9 **by copying, never renaming**: 6,586 labels
+   record the old path as provenance. Lineage: `filters/human_thriving/v8/PROMPTS.md`.
+
+### Three owner items, none blocking phase 6
+
+- **The phase-3 mRNA row** demoted 5.13 → 0.52 and probably should not have — a Moderna/Merck
+  personalised cancer vaccine result with patients and a measured reduction in recurrence, which
+  is not the preclinical class-B shape. Row and scores in
+  `datasets/scored/human_thriving_v8/v8_4/comparison.json`.
+- **#142 — the train/test overlap** on the adverse suite: 7 of 18 rows are designated hard
+  negatives *and* Gate B-A judges against them. **Six benchmark candidates wait on it**, two of
+  them Greek against a 16/18-English suite (#141).
+- **#143 — the convict-relief ruling is RULED but UNEXECUTED**; its clause is inert alone and
+  breaks the #91 origin row in combination. Suggested for v9, not a v8.1 patch.
+
+
+---
+
+### What the third session of 2026-09-04 settled — four questions, none of them phase 8
+
+⭐ **Phase 8 is unchanged and still next.** These were owner questions raised alongside it; all
+four are closed, none moves the op-point, and **no deploy happened or was possible — N/A, not
+skipped.** Verified rather than asserted, 2026-09-04: `ls NexusMind/filters/` on sadalsuud
+returns `belonging cultural_discovery foresight investment_risk nature_recovery solutions
+sustainability_technology uplifting` — **no `human_thriving`** — and the v8 weights are
+gitignored as large model checkpoints (`.gitignore` § *Model checkpoints (large files)*, not #97) and live only on
+`b650-gpu`. Phases 8 and 9 have not run.
+⚠️ Noticed while checking: **`foresight` and `sustainability_technology` directories are still
+on sadalsuud** although both were removed here on 2026-08-03 (#43). They do not score — the
+overhead measurement sees exactly five filters — so this is leftover directories, not a live
+filter. Not chased; worth one look before the next deploy.
+
+1. **Pre-deploy parity — `PREDEPLOY_PARITY.md`.** Compared v8's package against the five working
+   scorers: **no part is missing or misimplemented.** **Three** previously unguarded
+   invariants are now pinned by `tests/unit/test_filter_package_consistency.py` (head_tail
+   matches training; probe output dim; stage1 threshold below the gatekeeper cap) — the first
+   two from this review, the third from `93cdeac`.
+2. **"Isn't the e5 probe simply enough?" — `IS_THE_PROBE_ENOUGH.md`, EXP-018/EXP-019.** No, and
+   the fair version of the question had to be built first: every probe compared until then was
+   trained as a *screen*. Regression-objective probes at both encoder sizes still lose to the
+   student, and the decision rule was fixed **before** the run (replacement requires the paired
+   bootstrap CI on ΔAUC to include zero; it does not). ⛔ **Do not carry "e5-large is the cheap option" out of this.** It closes 70% of the gap
+   and `IS_THE_PROBE_ENOUGH.md` rules it out **on cost** for AUC 0.9016 against the student's
+   0.9474. ⚠️ **Two different cost comparisons were spliced into one sentence here on
+   2026-09-04 and the splice survived a review**: the *"~27% cheaper"* is
+   `IS_THE_PROBE_ENOUGH.md`'s CPU-scaled estimate, while the GPU pair 26.79 vs 43.70 ms is
+   **38.7% cheaper (1.63×)**. Quote one or the other, and per **EXP-022** quote neither
+   absolute without a band — the b650 figures moved 1.60× between sessions. `EXP-020` goes
+   further: the adopted 89% routing is the only reason e5-large-alone looks competitive at
+   all, and past the break-even the two-stage design wins on cost *and* quality.
+   ⛔ **That break-even is ~53% on EXP-020's numbers and 56.6% on EXP-022's, and the two are
+   not a reproduction** — the e5-large term changed from a full probe to encoder-only. Use
+   EXP-020's for the ruling it supports; do not present the pair as agreement.
+3. **"89% pass-through does not sound needle" — `GATING_DECISION.md`, EXP-020.** The 2026-08-28
+   hold ruling **survives**, on its own stated premise. Harder gating is available at ~1 needle
+   in 35, and ⛔ **tightening has a non-compute cost nobody had written down**: the probe's own
+   numbers become the published scores for every screened-out row, and the shipped recall probe
+   is biased high. If it is ever tightened, pair it with a regression-objective probe.
+4. **"Is the probe actually multilingual?" — `MULTILINGUAL_REALITY.md`.** Encoder: yes, verified
+   over 10 scripts, zero UNK. Routing: fewer non-Latin rows reach Stage 2, but the gap is
+   **entirely in the negatives** — every positive routes in both scripts. Judgement: **not
+   measurable**, 2 non-Latin test positives (#141 is the blocker). ⭐ The finding that survives is
+   about the **student**: Gemma needs 843 tokens for a median non-Latin article against e5's 694,
+   so it sees ~61% of one against ~89% of a Latin one. **Untested what that does to its scores.**
+
+### ⚠️ The cost question was asked and answered, and the answer was somewhere else
+
+`docs/evidence/2026-09-04-scoring-overhead/`, **EXP-021**. Owner: *"my cpu/gpu is heavily
+occupied, I believe the e5 probes are running on sadalsuud."*
+
+**Not the filter probes** — filter scoring is entirely on gpu-server, costs sadalsuud 52.1 min
+per 29.17 h, and runs at a 1.18× wall/compute multiplier. ⛔ **But `score` is only 53.5% of the
+pipeline's blocking wall time**: story dedup is **42.4%**, and **at most 4.4% of it is GPU
+work**. Whole pipeline: **5,846.5 s per 29.17 h, a 5.57% duty cycle.** Handed to the NexusMind
+peer session, which has taken the dedup question; nothing owed here.
+
+⛔ **THREE corrections in that work, all mine, all logged** (`memory/gotcha-log.md`; working
+rule *a window is part of a source*, which carries the count):
+
+1. A **4× overhead** figure from pairing two different windows whose **per-call rates agreed**.
+2. A **config read presented as a runtime proof** — where the config predicted the opposite of
+   what the log shows.
+3. ⭐ **A subtraction named as a category.** *"86% of dedup is clustering on sadalsuud's CPU"*
+   subtracted a **centroid-migration** timer from dedup's wall; the article embedding pass is
+   untimed on that side, so the remainder still holds its blocking HTTP wait. Honest claim:
+   **≤4.4% of dedup is GPU work, ≥95.6% is sadalsuud-side, and clustering vs embedding client
+   overhead is NOT separable** without instrumenting dedup.
+
+⚠️ **`/review-changes` found all three, plus a live instrument defect** — the script filtered
+the gpu journal to the window without asserting it *covered* it, which reproduces correction 1
+silently (4.80× against a true 2.40× on a synthetic pair). Guarded now. **The mechanical
+battery was green throughout.**
+
+⭐ **Consequence for phase 8: there is still no Stage-2 cost constraint.** The gating ruling and
+the "is the probe enough" question both turned on one appearing. It has not.
+
+### 2026-09-05 — the device timings now have an experiment behind them (`EXP-022`)
+
+`docs/evidence/2026-09-05-scorer-device-throughput/`. The owner asked whether the CPU/GPU work
+had been logged. The *numbers* were (EXP-019 metrics); the *experiment* was not — no cited
+script, no retained output, host/device/batch only in a docstring, **n=1 per arm**. Re-measured
+with repeats, retained JSON and captured environment.
+
+⛔ **The first re-run reported CUDA as CPU** — 2.37 ms against GPU's 2.34, because
+`EmbeddingStage` caches models on the **model name alone** and ignores `device` on a cache hit
+(`embedding_stage.py:112`, read back at `:214`). True CPU figure **42.41 ms, 18× slower**.
+**The only tell was that the two agreed.** Filed **#146** (the cache defect); the same dict is
+read (`:861`) and written (`:881`) by NexusMind's `story_dedup.py`, so it spans two repos.
+⚠️ **Latent, and the first wording of why was false**: fourteen filter configs *do* share
+`multilingual-e5-small`. What makes it latent is the **device** axis — none of them passes
+`device`, so all resolve identically at `embedding_stage.py:141-142`. The claim is about
+`(name, device)` pairs.
+
+⭐⭐ **The repeats were in the wrong place.** Within-run spread **0.03–0.61%**; between sessions
+on the same box, e5-small GPU moved **1.60×** (3.74 → 2.332). ⛔ **So do not quote a b650
+absolute without a band.** What *does* travel is the one ratio the conclusions rest on:
+student ÷ probe **11.68× → 10.61×** (9.2% apart, base = the 2026-09-04 value). ⛔ The CPU/GPU
+ratio does **not** (12.62× → 18.19×, 44% apart) — never quote "CPU is N× slower". ⛔ And the
+break-even is **not** a third travelling ratio: its e5-large term changed definition between
+the two runs, so 0.5275 → 0.5657 is confounded, not a reproduction.
+
+✅ **EXP-018/019/020's conclusions are unchanged.** Two-stage at the adopted 89% routing saves
+**1.57%** against student-on-everything (**2.44%** on the same arithmetic before — EXP-019's
+prose says 2.5%, computed off a rounded 42.6 ms).
+
+⛔⛔ **AND THEN THE REVIEW FOUND FIVE DEFECTS IN THAT WORK — `EXP-023` supersedes `EXP-022`.**
+The worst: *"the e5-large probe was never retained"* was **false**. It was at
+`b650-gpu:/tmp/probe_e5large.pkl` the whole time, together with **ten others** including both
+EXP-019 regression heads and the seed-42/seed-7 pair — on a box with 36 days of uptime, one
+reboot from gone. My `find` was rooted at `/home/jeroen`, which cannot reach `/tmp`: **the
+instrument could not have said yes.** All rescued to `~/llm-distillery/rescued_probes/`;
+manifest committed. ⚠️ **They are not in git — an owner decision, not something to do
+silently.**
+
+⭐ **Full e5-large probe: 16.417 ms/article**, against encoder-only 16.514 — **the MLP head is
+free**, so the substitution was numerically harmless, which is precisely why nobody re-checked
+the premise. Corrected figures: student ÷ probe **10.55×**, break-even **56.9%** (now
+like-for-like), two-stage saving **1.52%**. **EXP-018/019/020's conclusions still stand.**
+
+⭐⭐ **The variance is arm-specific, not a session effect.** Three runs of the e5-small GPU arm
+the same day: **2.332 / 4.746 / 2.345** — 2.04× apart — while the student and CPU arms
+reproduced to 0.03% and 0.31%. The unstable one is the **short** arm (~1.5 s of work), and run 2
+coincided with another process benchmarking the same GPU. ⛔ **Cause not established** —
+registered as **H-V8-21** with a method and a falsifier. The "0.03–0.61% spread" `EXP-022`
+published was a property of four quiet processes, not of the arms; 32% and 111% appeared later.
+
+⚠️ Four further corrections in `EXP-023`: the encoder arm truncated 27.7% of the corpus; the
+student's "unknown provenance" was two commands away on the box; *"the only tell was that the
+two numbers agreed"* was false (**EXP-019 already recorded 47.2 ms** for that arm — a 20×
+disagreement in the registry this work was repairing); and `device_verified` was recorded but
+never **asserted**, so an all-arms wrapper would have re-created #146 and exited 0.
+⛔ **The mechanical battery was green throughout and found none of it. Four of the six came
+from a reviewer going and looking on the machine.**
+
+
+### ⛔⛔ THE KEEPER — nothing stopped a guard row being drawn into its own training corpus
+`scripts/corpus/draw_v8_corpus.py` had **no exclusion for the acceptance-test rows**. The first
+draw came out disjoint purely because all three rows in the set at the time had **aged out of the
+window**, so the pool could not contain them — a negative that carried no information. The two
+rows added today **are** in the pool, in design cell `pos_clear|latin|-`, whose inclusion
+probability is **0.0794**: roughly a 1-in-13 chance per row that a re-draw silently swallows a
+guard and hands it to the gate as a training example it has already seen.
+
+Now removed **before stratification**, and the draw **refuses to run** if the set is missing or
+empty. Proven on the real 177,592-row pool rather than on a predicate — `4 declared / 2 removed`,
+`guard ids present: []` in the 6,590 drawn rows — with both refusals returning **exit 1** and
+creating no output directory, exit status captured directly rather than through a pipe.
+
+### ⛔ WHAT THE REVIEW FOUND AFTER THE COMMIT — verification is not review
+
+`0ff35c8` was committed and pushed on green: 493 unit tests, 3 killed mutations, 4 budget
+guards, the doc-claim checker, refcheck. `/review-changes` was **not** run. It was run when the
+owner asked, and found **five** defects — three of them in work that had just been called
+verified. All are fixed; recorded because the substitution is the lesson:
+
+1. **A broken consumer.** `docs/evidence/2026-08-29-v8-h-v8-9-adjudication/no_regression_analyse.py`
+   reads the **live** no-regression set and replays a **fixed** 2026-08-29 run; changing the set
+   made it raise `KeyError`. It had been named as a consumer during the work and waved off as
+   *"evidence, don't touch"*. **Naming a consumer is not checking it.** It now reconciles both
+   directions and **exits 2** on partial coverage, so a replay cannot read as a clean pass over
+   rows it never scored.
+2. ⛔ **`177,593` was a LINE count published as a row count.** `pool_v2.jsonl`'s first line is
+   the `__provenance__` record — the article count is **177,592**, and `experiments/registry.jsonl`
+   already carried `drawable: 177592` one file away. The wrong figure reached seven documents,
+   the commit message and the owner report. Corrected everywhere; the commit message cannot be.
+3. **The exclusion ran AFTER the short-form filter**, so a short guard row would have been
+   dropped as short, counted as **zero** removals, and printed under *"not in this window"* — a
+   message asserting a reason it had not established. Moved to run first.
+4. **The loader checked only for an `id`.** `datasets/adverse/uplifting.jsonl` sits in the same
+   directory with the same shape and 18 rows labelled `adverse`; pointed at it the drawer would
+   have run clean and **silently stripped 18 adverse rows from training**. Now refuses any row
+   not labelled `no_regression`.
+5. **Two documentation contradictions in `HUMAN_THRIVING_V8_PLAN.md` §5b**, both a few
+   paragraphs from text the same edit had written: *"it is THREE articles, not four — do not
+   re-count this set as four"*, and *"the three carry different assertions, only two are
+   op-point assertions"*. ⭐ Both were **counts stated to make a point about membership**, and
+   the count is what went stale. Every live count of the set is now removed from the docs —
+   `wc -l` the file.
+
+Guard now at **9 tests / 5 mutations, all killed**. Structural pre-check: 9 markdown files in
+scope, 0 violations. Lenses run inline (guarantee-preservation, reachability,
+claim-verification, adversarial, doc-accuracy); **sync-safety N/A — nothing under `filters/`
+or `filters/common/` changed**, stated so its silence does not read as a pass.
+
+### ✅ Session close-out 2026-08-30
+
+- **Hypothesis ledger updated**: `H-V8-3` and `H-V8-9` carry their rulings (adopted on the
+  label argument; row dropped + replaced, and ⛔ **the delta option recorded as REFUTED** —
+  that row is where the wrong recommendation was made). New **`H-V8-10`** opened with a Method
+  and a revisit trigger: is the non-Latin gap above the op-point a **scoring** property or a
+  **collection** property? The scan cannot separate them; the discriminator is a within-content
+  control (translated pairs, or a source publishing in both scripts). ⚠️ Prove the pair set is
+  non-empty before believing any negative.
+- **Issues**: **#127** commented (manifest now records the exclusion; ⛔ still open for the five
+  filters with no manifest at all, and their windows have rolled — unrecoverable), **#135**
+  commented (k=3 ruled; ⚠️ two corrections to its own body — 13% is not distinguishable from
+  5.3% at n=200, and the "~860 rows" prize is really **~83**), **#141** commented with the
+  `H-V8-10` pointer.
+- **Merge/deploy: N/A, not skipped.** Work is on `main`, pushed. Nothing under `filters/` or
+  `filters/common/` changed, so there is nothing for `deploy_to_nexusmind.sh` to carry and no
+  Hub upload. No model, threshold, probe or op-point moved. Spend $0.
+
+### ✅ 2026-08-31 — the no-regression gate re-run, and it was not a formality
+
+**$0.0205**, 36 calls, 0 errors, off-peak. Item 4 below is **DONE**, and it needed doing for a
+reason the 08-30 ruling did not state: the criterion was closed **by construction**, not by
+measurement. The two replacement rows were selected from `uplifting v7` **student** scores and
+had **never been scored under any oracle prompt** — the 08-29 analyser exited **2** on both
+(*"NOT SCORED BY THIS RUN"*). ⛔ A student score is not an oracle score: the Rappler row's stored
+`observed` is 6.4864 from the deployed model and **4.900** under the v8 reordered prompt.
+
+All 4 rows re-scored, 3 arms × k=3, one judge, full text — **coverage 4 of 4, analyser exit 0,
+all four PASS** under the adopted reordered prompt: **5.100** (Rappler) / delta **+1.850**
+(Unifesp) / **6.417** (Fast Company) / **5.550** (Welingelichte Kringen).
+
+⚠️ **Two margins sit inside the 0.436/0.687 oracle decoder floor.** Rappler clears the op-point
+by 0.600 and its *lowest single run* by **0.15**; one Unifesp run lands **below** 4.5 (its
+assertion is the delta, so it is not failed by that). **Criterion 2 is a k=3 verdict and must
+never be read off one pass** — that is now data, not policy.
+
+⭐ **The free control: a k=3 mean is not stable to three digits.** Re-scoring the two
+carried-over rows moved their k=3 means by up to **+0.484** between 08-29 and 08-31 with judge,
+prompt hash, text and weights all fixed. ⚠️ **That 0.484 is a MAX over 6 pairs and the 0.436 is
+a MEAN over 40, so it does not refute `1/√k`** — the surviving claim is only that a k=3 mean can
+move about half a point. ⛔ Do not read a ≤0.5 movement of one on this population as an effect.
+(n=6; a server-side `deepseek-chat` change — it is a moving pointer — is **not separable** from
+it.)
+
+⛔ **My own pre-registered risk call was wrong.** The Dutch row, flagged *"most likely to fail"*
+on short + non-Latin-adjacent + a step-function scope gate, is the most stable object in the
+run — **5.55 / 5.55 / 5.55** under arm A and 5.75 / 5.75 / 5.75 under v7, zero decoder spread,
+against a 13,107-char English row that spreads 0.75. All four predicted ranges were hit, and
+three of them were wide enough to survive being wrong about the mechanism.
+`docs/evidence/2026-08-31-v8-no-regression-gate/`, `EXP-007`.
+
+### ✅ 2026-09-01 — Phase B pre-flight: three defects fixed before any bulk spend
+
+**$0.0182**, 25 calls, 0 errors. ⚠️ **Billed at PEAK** — 07:0x UTC on a Tuesday, inside the
+06:00–10:00 UTC window; off-peak would have been $0.0091. Trivial money, but it is exactly the
+trap `memory/oracle-pricing-scheduling.md` names, so **the 6,590-row run must not start before
+10:00 UTC**. Record: `docs/evidence/2026-09-01-v8-phase-b-preflight/`, `EXP-008`.
+
+1. ⛔⛔ **The chain after labelling wrote ZERO examples and exited 0.** `filters/human_thriving/v8/`
+   had no `config.yaml`, and that file's `filter.name` is what selects the analysis field. Label
+   with `uplifting`'s config — which is what every v8 experiment did — and `prepare_data.py`
+   prints `Analysis field: uplifting_analysis`, writes **0 examples to all three splits**, prints
+   **"TRAINING DATA PREPARATION COMPLETE"** and **exits 0**. Its own docstring: *"Articles without
+   analysis are silently skipped; missing dimensions default to score 0"* — so a **renamed**
+   dimension becomes a silent column of zeros, a wrong label rather than a missing one.
+   ✅ v8 config written (labelling scope; `hybrid_inference` and normalization land at Phases C/E,
+   and `prefilter`/`content_type_caps` are omitted **with the reason where the block would be**).
+   Chain proven end to end on 8 real rows: **6 train / 2 test, labels `[6.0, 2.0, 7.0, 7.0, 3.0,
+   7.0]`, all-zero? False**, against the control's 0 examples.
+   ⭐ **A weight change needs no re-labelling** (ADR-001), so plan §9 Q4 does **not** gate the run.
+2. ⛔ **The k=3 aggregator deleted the evidence the runbook requires be reported.**
+   `average_oracle_runs.py` replaces the analysis object with six averaged numbers —
+   `scope_verdict`, `dominant_subject`, `content_type` and every evidence quote gone — so #135's
+   flip rate becomes unmeasurable *after* the money is spent. It also joins on `url` (the
+   scorer's key is `id`), silently intersects partial runs, and the shape documented in the
+   RUNBOOK and `CLAUDE.md` **exits 1** ("Run directory not found").
+   ✅ `scripts/oracle/aggregate_k_runs.py`: joins on `id`, refuses partial coverage, keeps every
+   run, prints the flip rate, writes **both** aggregates. ⭐ **They are not close**: on 8 rows,
+   2 flipped and `|mean_all − mean_major|` was **median 1.304 / max 1.383** — and on one row
+   **3.667 vs 5.050**, i.e. opposite sides of the 4.5 op-point. The old script made that choice
+   silently. The choice itself can wait: every run is kept.
+3. ⛔ **All 18 Gate B-A rows were 300-char excerpts** — and nothing on the scoring path stops a
+   paid run against them (`is_scrape_junk` floors at **25**; the 300-char oracle floor lives only
+   in `ground_truth.batch_scorer`, which the DeepSeek path does not use).
+   ✅ **18 of 18 recovered in full**, 3 from the live window and 15 from
+   `nexusmind_2026-08.tar.gz`; **5,449 → 100,460** content chars; **9 of 9 class-A rows** now full
+   text; every length equal to the recorded `content_original_length`; no other field changed.
+   ⛔ **This corrects a premise**: *"their windows have rolled — unrecoverable"* (#127 thread, and
+   the 08-30 rulings) is wrong — NexusMind archives **monthly**, 9 tarballs back to 2025-10.
+   ⚠️ The FluxusSource tarballs are **not** a substitute: producer bytes only, 447/133/441 chars
+   for rows whose enriched originals are 14,546/2,917/3,652.
+
+⛔ **`head -N corpus_v8_final.jsonl` is NOT a sample.** The file is grouped by design cell and
+the **first 47 rows are exactly the class-A supplement** (18 `pos_clear|latin|classA` + 29
+`pos_marginal|latin|classA`); row 48 is `pos_clear|non_latin|-`. So the 2-of-8 flip rate above is
+a **class-A** number, not a corpus one, and at n=8 its interval contains #135's 5.3% easily.
+
+⚠️ **`$10.32` is a ceiling, not an estimate.** H-V8-8 multiplied one pass by 3 on the reasoning
+that a corpus pass scores 6,590 *different* articles — true of one pass, but k=3 re-scores the
+*same* ones. Whole-request cache was observed surviving **two days** (`hit` 11,904 / 12,160
+against a 10,368 prefix, `miss` 56 / 20). Whether 6,590 **distinct** prompts stay cached is a
+capacity question nobody has measured. ⭐ Caching does **not** defeat k=3 — three ~100%-cached
+runs still returned 5.25 / 4.65 / 5.40. Cheap check: run pass 1, then 50 rows of pass 2.
+
+### ⛔⛔ 2026-09-01/02 — PHASE B RAN AND WAS CUT OFF. The DeepSeek balance ran out mid-corpus
+
+**Ruled and launched** (`docs/decisions/2026-09-01-v8-oracle-ruling.md`): oracle **DeepSeek**,
+run authorised, corpus staged to `datasets/` and hash-verified (`5e2cf729…`).
+
+| pass | scored | errors | cost |
+|---|---|---|---|
+| run1 | **6,586** | 0 | $3.4513 |
+| run2 | **4,078** | **2,508** (`HTTP 402 Insufficient Balance`) | $1.1084 |
+| run3 | **0** | **6,586** (all 402) | $0.0000 |
+
+⛔ **The corpus is at k=1 on 2,512 rows and k=2 on 4,078. There is no aggregated label set.**
+Nothing is lost — pass 1's labels are on disk. **Total DeepSeek spend this session $4.61.**
+✅ `aggregate_k_runs.py` **refused to write anything**, which is the only thing that caught it
+downstream and is exactly what `average_oracle_runs.py` would have absorbed by intersecting.
+
+⛔ **Three scorer defects, fixed** (`tests/unit/test_scorer_run_fatal.py`, 5 mutations killed):
+a run-fatal status treated as a per-row error, so pass 3 made **6,586 doomed calls in 11
+minutes**; **exit 0** on total failure, making `Successful: 0  Errors: 6586` indistinguishable
+from a clean run; and the cost line pricing **any** endpoint with DeepSeek's card (it printed
+`$0.00` for a Gemini run). ⚠️ `raise SystemExit` was not the fix — inside a `ThreadPoolExecutor`
+worker it surfaces only at `future.result()` and the executor drains every queued future first,
+which is why 401/403 were already unreliable.
+
+▶ **TO RESUME: top up the account, re-run the same two commands** (already-scored ids are
+skipped, error rows are retried), then aggregate. Remaining 9,098 rows at pass 2's measured
+**$0.000272/row** ≈ **$2.5**, so k=3 lands near **$7.1** — under the $10.32 ceiling, and closer
+to the **$6.92** H-V8-8 retracted. ⚠️ Extrapolation from one measured rate, not a measurement.
+Commands and caveats: `docs/evidence/2026-09-01-phase-b-labels/`.
+
+⚠️ **Gemini was also billed this session**: 28 calls, 333,776 input / 9,231 output tokens on
+`gemini_billing_api_key` — the oracle bake-off. Not priced here; this project quotes no rate it
+has not verified.
+
+### ✅ 2026-09-02 — PHASE B COMPLETE. 6,586 labels at k=3, **$6.8853**
+
+Finished off-peak at 12:00 UTC after the balance was topped up. All three passes 6,586 scored,
+0 outstanding. Labels at `datasets/scored/human_thriving_v8/labels_k3.jsonl` (gitignored).
+`docs/evidence/2026-09-01-phase-b-labels/`, `EXP-010`.
+
+⛔⛔ **H-V8-8's retraction was WRONG and the measurement settles it.** It retracted ≈$6.92 and
+replaced it with ≈$10.32; the measured total is **$6.8853**. Its reasoning — *"a corpus pass
+scores 6,590 different articles every time: only the prefix caches"* — is true of **one** pass
+and false of k=3, which re-scores **the same** articles. Pass 1 hit 88.9% (prefix only) and cost
+$3.4513; passes 2 and 3 hit **99.4%** whole-request cache and cost **$1.7218 / $1.7122** — half
+each. ⭐ **A cost model must name whether the repeats are over the same rows or different ones.**
+
+⭐⭐ **Scope gate at corpus scale: 15.35% of rows disagreed across k=3 — and that is NOT the
+number that matters.** Four of the five verdicts force all six dimensions to 0–2, so most
+disagreement is between two *out-of-scope* categories where the score does not move. ⛔ **The
+decision-relevant figure is 0.53% — 35 rows where the aggregation rule decides which side of 4.5
+the label lands.** ⚠️ Not comparable to the 4.98% measured at k=2: that was *"two runs disagree
+about the side"*, this is *"the two aggregation rules disagree"*. k=3 resolves what k=2 could
+only detect, and **that** is what the third pass bought — 35 coin-toss rows settled, not 15% of
+labels rescued.
+
+✅ **The draw is validated by its own labels**: `pos_clear` lands at **47.8% latin / 48.7%
+non-latin** above the op-point — the positive class is not script-dependent at the top — and
+`stage1_low` returns **0 of 619** above it in both scripts, which is what a recall-safe Stage-1
+screen looks like from the far side. Corpus positive rate **6.92%** ⚠️ (the corpus's, drawn to a
+ruled shape — **not** production's base rate).
+
+⛔ **The labelled corpus is 6,586, not 6,590** — four scrape-junk skips, all JavaScript-required
+boilerplate at 357–489 chars and all *above* the 300-char floor, so pattern matching caught what
+length could not.
+
+### ▶ NEXT — Phase B2 and Phase C
+1. ⛔ **Adjudicate the 47-row class-A supplement** (rows 1–47 of the corpus file), still
+   `tp_fp_status: adjudication-pending`. Now with numbers: **31.9% above the op-point** and
+   **29.8% gate-flipped** against the corpus's 15.35% — nearly double, which is what
+   "drawn to over-sample the boundary" should produce and the first confirmation it did.
+2. **v8.1 prompt fix**, ~6 calls, deliberately NOT done during Phase B: §2's qualifier
+   *"especially as a trailing sentence"* leaks on a policy change that occupies a third of the
+   body. The Travelodge and nursery rows bracket the boundary.
+3. **Phase B2** — hard negatives for the student residue, $0 oracle (plan §4b).
+4. **Phase C** — `prepare_data.py --filter filters/human_thriving/v8 --input <labels> --output-dir
+   datasets/training/human_thriving_v8`, then probe, train, calibrate.
+1. ⛔⛔ **THE ORACLE RULING — measurement DONE 2026-09-01, the ruling is still the owner's.**
+   ⛔ **First: the bake-off had already been run on 2026-08-23 and the plan was never updated
+   with its answer.** Phase B and §9 Q1 still carried the superseded **n=3** *"Gemini is the
+   stricter arm"* — in the section a reader consults while deciding how to spend $10. Both are
+   now marked stale in place rather than deleted, so the correction is dateable.
+   ⭐⭐ **And the 08-23 verdict does not carry to the ADOPTED prompt.** It picked DeepSeek on one
+   row — *"Five men arrested… for raping a minor"*, DeepSeek 3.00 vs Gemini **7.43**. Under
+   `prompt-candidate-tail.md` that row is **DeepSeek 1.050 / Gemini 1.025**, `harm_is_subject`
+   3/3 on both. The reorder fixed Gemini's STEP-1 adherence there, which I had pre-registered a
+   prediction *against*.
+   **Standing evidence** — 9 class-A rows at **FULL TEXT** for the first time, k=3, both arms
+   through the same call site ($0.0093 DeepSeek + 321,564/8,585 Gemini tokens, 54 calls, 0
+   errors): **DeepSeek 8/9 Gate B-A and 8/9 STEP-1 applied; Gemini 7/9 and 7/9.** ⚠️ 8 vs 7 on
+   n=9 is **one row** — the argument is which row: Gemini's extra loss is **stable** (3/3 runs)
+   and is the **#91 origin article** at **7.158**, the one that led the ovr.news homepage and
+   started v8. DeepSeek is also ~7× cheaper, and ⛔ the ≈$10.32 estimate is built on **DeepSeek
+   prefix caching** — Gemini's endpoint has no such field, so a Gemini relabel would need its
+   own price. `docs/evidence/2026-09-01-v8-oracle-choice/`, `EXP-009`.
+   ⛔ **Separately: Gate B-A passes on NEITHER oracle.** Both fail *"Parents of baby girl killed
+   at nursery"*, and on both it is a **scope-gate coin toss** (DeepSeek 6.10/0.90/6.20, Gemini
+   7.20/7.15/1.05). That is #135's step function, not a prompt defect — and `--aggregate
+   majority` makes it **worse** on both, because the majority verdict is `in_scope` and
+   restricting to it deletes the one run that got it right. Acceptance criterion 1 is a separate
+   blocker with a different fix (k, an aggregation rule, or a §5 clause).
+2. **The labelling run itself**: reordered prompt, k=3, 6,590 rows, **≤ ≈$10.32**, staged at
+   `b650-gpu:~/v8_corpus/`. ⛔ Runs from the workstation — **b650 is not a checkout** (no
+   `scripts/`, no v8 prompts, no `secrets.ini`) — and stages to `datasets/` (gitignored, real
+   disk), **never `/tmp`, which is tmpfs**. Start **after 10:00 UTC**.
+3. **Adjudicate the 47 class-A supplement rows** — they are rows 1–47 of the corpus file, and
+   the manifest still records `tp_fp_status: adjudication-pending`. Re-measure the scope-flip
+   rate over all 47 while doing it.
+4. ✅ **DONE 2026-08-31 — Gate A re-run against the 4-row no-regression set.**
+5. ✅ **DONE 2026-09-01 — Gate B-A's 18 rows restored to full text.** B5's *"re-read all in full
+   before this gate blocks anything"* is now executable; the reading itself is still owed.
+
+### ⚠️ Standing, carried forward
+- `refcheck.py` reports **1 finding** (`narrative_risk.json`), recorded as real and deliberately
+  left standing in `memory/session-log.md`. Do **not** fix it by editing.
+- **`tests/ml/test_inference.py::test_inference_module_importable` FAILS** — pre-existing (#139),
+  `filters/cultural_discovery/v5/inference.py` uses a relative import while the test execs it
+  standalone. Entered at `6acd013`; **cd v5 is LIVE**.
+  ✅ **The "worth a look before it is worth a fix" look was taken, 2026-09-05, and the module
+  is FINE**: `.venv/bin/python -c "import filters.cultural_discovery.v5.inference"` from the
+  repo root imports it without error (namespace packages; only `v5/` has an `__init__.py`).
+  ⭐ **So the broken thing is the TEST HARNESS, not the shipped filter** — the test builds a
+  synthetic module name with `spec_from_file_location`, which gives the module no package, so
+  `from .base_scorer import ...` cannot resolve. The fix is test-side (`importlib.import_module`
+  on the dotted path) and touches no filter package. **Left for the owner: it is a HIGH-tier
+  directory by the review tiering and the issue is theirs.**
+- Stale branch `docs/event-identity-encoder-plan` (1 commit, `0c283c6`) — land it or drop it.
+- **#140**: the two filter-development guides are banner-flagged, bodies not rewritten.
+
+---
+
+## Previous session — 2026-08-29 (later): the hygiene queue cleared, and the always-loaded layer measured
+
+> **Updated 2026-08-29 (later).** **No spend, no model, no filter, no threshold, no probe,
+> nothing deployed — deploy is N/A, not skipped.** Changed files are
+> `scripts/verification/`, `tests/unit/`, `.claude/skills/`, `CLAUDE.md`, `memory/`.
+> Nothing reaches a path NexusMind runs. Session record:
+> `memory/project_session_2026_08_29_later.md`.
+>
+> ### ✅ DONE — all four queued items (#138, CLAUDE.md runway, #137, the skills tier row)
+> - **#138 — the budget guard now measures the LAYER, not one file of it.** New
+>   `--target loaded` sums `CLAUDE.md` + the USER auto-memory index (the two files a
+>   session actually receives — established by reading a live session's context, not the
+>   docs). Owner call: **the total governs, per-file lines attribute**; HARD 60,000 /
+>   SOFT 55,000. ⚠️ `memory/MEMORY.md` is NOT a member — it is pointer-reached, and its
+>   own `--target index` budget survives for the #123 session rotation.
+> - **The auto-memory index's session log is gone** (owner call): 9,160 B, 47% of that
+>   file, no rotation rule, no ceiling, two sessions stale. Moved **verbatim** into
+>   `memory/session-log.md`'s frozen appendix after checking **121 evidence atoms with
+>   `git grep -F` — 119 found, the 2 misses both `00cf55c`, a real commit here** — plus a
+>   control atom that correctly did not resolve. **Always-loaded layer 56,933 → 46,167 B.**
+> - **`CLAUDE.md` 37,445 → 35,394 B**, runway 2,555 → **4,606**. The lever was NOT a trim:
+>   the four inline `<!-- verify: -->` blocks were **2,047 B, 5.5% of the file**, guard
+>   mechanism spending the budget it policed. Moved to
+>   `scripts/verification/check_doc_claims.py`, annotated from `memory/MEMORY.md`.
+>   **Zero content removed.** Same argument that moved `check_index_budget.py` out of
+>   `memory/MEMORY.md` on 2026-08-17 — it took two weeks to reach one file over.
+> - **#137 — all ten shapes fixed, each with a seeded positive.** Normalisation before
+>   matching (glyph/BOM/ANSI/markdown), stdout and stderr no longer concatenated,
+>   comment-stripped classification, widened `DELEGATES`, truncated-command refusal,
+>   `CANNOT VERIFY` tested before the returncode, FAIL beating CANNOT VERIFY.
+> - **`.claude/skills/**` is a named MEDIUM row** in the tier table. ⚠️ **Superseded
+>   2026-09-11: that table moved to `.claude/review-profile.md`** when `review-changes`
+>   became user-global at framework v1.40.0; the row survives there as `.claude/**`. It
+>   changes no tier — it makes a skill reviewed on purpose, and names doc-accuracy as the
+>   lens that earns it.
+>
+> ### ⛔⛔ THE KEEPER — the verify report's own denominator was 18% phantom
+> `BLOCK` matches any `<!-- verify: ... -->`, **including the empty one that appears when a
+> memory file QUOTES the idiom while explaining a lesson about it.** Ten of them — eight in
+> `memory/gotcha-log.md`, two in `memory/working-rules.md` — were counted in `blocks found`
+> and tallied `skipped`. **56 reported, 46 real.** ⭐ **It was found by writing an
+> eleventh**: the count moved when a *prose sentence* was added, and that was the only tell.
+> Nothing executable was ever affected (`passed`/`failed`/`errored` identical across the
+> fix), so no check was disabled — but this is a report whose entire job is to state how
+> much is checked, and it was counting mentions of checking. Empty blocks are now **named
+> and counted separately, never silently dropped** — an unfilled annotation is a real defect.
+>
+> ### ⭐ Two of mine, both caught by the method rather than by review
+> - **A mutation that "survived" had never applied.** Two of eight mutation probes reported
+>   the test suite green; both were shell-escaping artifacts in the mutation command
+>   (`\b` became a backspace, a BOM literal did not match). Re-run with
+>   `assert s.count(old) == 1` in the mutator, **both died instantly.** ⛔ **A mutation
+>   script must assert that it mutated** — a no-op mutation is indistinguishable from a
+>   test gap, and it reads as the more alarming of the two.
+> - **#137 shape 1 was live one stage EARLIER than the issue describes.** `ASSERTS` used
+>   `\bFAIL\b` against the annotation *text*, and both `\033[31mFAIL` and a BOM put a WORD
+>   character immediately before the verdict, so the block was NO-ASSERTION: never run, no
+>   output line, exit 0. The issue only described the output-reading stage. Found by the
+>   seeded fixture, which is the point of seeding them.
+>
+> ### ⚠️ Standing
+> - `refcheck.py` reports **1 finding** (`narrative_risk.json`), recorded as real and
+>   deliberately left standing in `memory/session-log.md`. Do **not** fix it by editing.
+> - **`tests/ml/test_inference.py::test_inference_module_importable` FAILS**, and it is
+>   **pre-existing, not from this session**: `filters/cultural_discovery/v5/inference.py`
+>   uses `from .base_scorer import ...` while the test execs it standalone. The relative
+>   import entered at `6acd013` (the v5 DeepSeek retrain) and the file has not been touched
+>   since. **cd v5 is LIVE**, so this is worth a look before it is worth a fix. Not filed.
+> - Stale branch `docs/event-identity-encoder-plan` (1 commit, `0c283c6`, the #100 plan) —
+>   land it or drop it; not mine to delete.
+>
+> ### ✅ ALSO DONE — RUNBOOK drift, asked for after the queue
+> `docs/RUNBOOK.md` was **not** aligned with the scorer, in five places. The keeper:
+> **its oracle command could not select the oracle the project decided on** — `--llm` is
+> `claude|gemini|gemini-pro|gemini-flash|gpt4`, **default `claude`**, DeepSeek is not a value
+> (it is `scripts/score_deepseek_production.py`), and the runbook named neither the flag nor
+> the script. Following it scored against Claude. Also fixed: phase 4 still said write a
+> `prefilter.py` (ADR-018/019 *Amendment 2026-08-21* says new filters ship none); no probe or
+> gate step (0 mentions of `train_probe.py`, `ground_truth_gate.py`, ADR-021, ADR-023 — now
+> `6b` and phase 8); averaging advice that is wrong for v8 (`1/√k` cannot touch #135's
+> Bernoulli); and a footer four months stale against `git log`.
+>
+> ⭐ **The drift ran one hop further.** `docs/FILTER_PLAYBOOK.md` (the SSoT) had 0 mentions of
+> the prefilter amendment and 0 of ADR-023; the two guides the runbook points at last changed
+> **2026-07-10** and have 0 of either plus 0 of `ground_truth_gate`. Playbook now carries both
+> rulings; both guides carry a dated staleness banner. ⚠️ **Their bodies were NOT rewritten** —
+> 73 and 11 prefilter mentions run through them, and a partial rewrite is worse than a flagged
+> one. New guard: `check_doc_claims.py --check runbook-oracle-flags` (reads `--llm` from the
+> parser with `ast`; 4 mutations, 4 killed).
+>
+> ### ✅ `/curate` — 4 fixes, 2 promotions, 3 new issues
+> Read surface **1,855,639 chars**, 6.2× the 300k threshold, so the corpus was NOT read —
+> metadata and runners only; the 77 session records and 30 of 32 topic files were not opened.
+> Dead refs **0 / 5 unresolvable / 3 skipped / 73 resolved** (was 2 dead — both documents
+> *quoting* a wrong path, fixed by rendering). Index self-consistency: 4 shared identifiers,
+> **0 contradicting pairs**. 7 open hypotheses, under the clutter threshold.
+>
+> ⛔⛔ **THE CURATE KEEPER — *mention is not use*, three times in one session, on three
+> different matchers, and the third was inside the guard written after the second.** The
+> verify runner counted 10 prose mentions of `<!-- verify: -->` as annotations; `/curate`'s
+> path extractor reported 2 records-of-a-wrong-path as dead; and the new CLAUDE.md oracle
+> check matched the bare dotted path `ground_truth.batch_scorer`, hit a Hard Constraint 200
+> lines above the command, and **reported the file it had just fixed as broken.** A fourth
+> landed while writing it up: the gotcha entry describing the defect created a new dead
+> reference by quoting a filename. Promoted to `memory/working-rules.md`.
+>
+> ⛔ **Step 4 found the RUNBOOK defect ALSO live in `CLAUDE.md`** — the always-loaded copy of
+> the `batch_scorer` command, no `--llm`. Fixed, and `check_doc_claims.py` now asserts both
+> copies. **Fixing one copy of a drifted command and not the other is how drift survives the
+> session that found it.**
+>
+> Also: `| tail; echo $?` status laundering **recurred [x2]**, by the session that wrote the
+> entry, one screen below it — promoted. `H-CX3` registered, then its revisit trigger
+> corrected because it was **already true when written**. **#139** (cd v5 inference import,
+> red since `6acd013`, v5 is LIVE), **#140** (two filter guides 7 weeks stale, banner-flagged
+> only) filed; **#122** replicated from this session's own context.
+>
+
+---
+
+## v8 Phase 0 — **measured; two numbers are the owner's**
+
+> **Updated 2026-08-28.** **No spend, no model, no filter, nothing deployed, and no
+> threshold or probe touched.** Changed files are `scripts/analysis/`, `docs/`, `memory/`
+> and `CLAUDE.md`. Nothing reaches a path NexusMind runs — **deploy is N/A, not skipped.**
+> Session record: `memory/project_session_2026_08_28.md`.
+>
+> ### ✅ THE THREE RESERVED NUMBERS — ALL RULED 2026-08-28
+> Record with the full reasoning: **`docs/decisions/2026-08-28-v8-gate0-corpus-spec.md`**.
+> 1. **Positive base rate: 19.5%, enrichment factor 2.0× — RECORDED, not inherited.**
+>    Drawable production is **9.76%**; v7 was **28.22%** (2.9×, accidental and unstated —
+>    *that* was the defect, not the enrichment). Correct for the 2.0× downstream in class
+>    weighting or calibration. ⛔ *"Match production"* was and stays the WRONG fix (ADR-003).
+> 2. **Stage-1 aggressiveness: HOLD NEAR PASS-THROUGH.** Retrain the probe on v8 but do not
+>    screen harder — preserve today's **88.6%** routing. No stage-2 cost constraint was
+>    claimed, so the FN risk is not bought. ⚠️ v8-only; re-open only with a measured cost
+>    problem and an FN ceiling named *before* the sweep.
+> 3. **Class-A supplement: 3:1 TP:FP** (~75% harm-answered / ~25% harm-dominant), at
+>    **≥0.70%** of the corpus, sampled **above** the op-point (ADR-023). Deliberately
+>    FP-richer than §1g's ~9:1 screen, from which ⛔ no rate may be inherited anyway.
+>
+> ### ✅ SETTLED — Gate 0 needs no further measurement
+> ⛔⛔ **All five targets were computed over a census INCLUDING `news.google.com` (22.1%)
+> while the same plan says in bold to exclude it.** Corrected: base rate 7.74%→**9.76%**,
+> non-Latin 7.26%→**9.76%**, median length 1,349→**1,900**, p10 84→**235**, sub-300-char
+> 30.8%→**11.9%**, class-A 0.87%→**0.70%**, pool 206,221 rows→**179,111 articles**.
+> ⭐ *"The short-form regime is under-trained"* is largely a statement about GN headline
+> echoes — real, and about a third the size recorded (21,374 articles).
+> **12th occurrence of *establish what a source excludes*, opposite sign.**
+>
+> ⭐⭐ **The corpus SHAPE, and the FN trap the owner flagged.** The corpus is **4.21×**
+> over-weighted in 5.5–10 (15.8× at 7.0–7.5, **134×** at 7.5–8.0) and thinnest at 1.5–3.5
+> (**0.43×**) — fat where the task is easy, thin where stage-2 false positives are born.
+> ⛔ **This refuted the three-region spec drafted the same day.** And the stage-1 danger is
+> the positive **MIX**, not the rate: production positives are **63.5% marginal (4.5–5.5)**,
+> the corpus's **46.8%**, so **v7's probe recall is validated on an easier population than it
+> serves — today, not hypothetically.** Spec in Phase 0: add no mass above 5.5; hold the mix
+> at 63.5/36.5; spend the freed budget on 1.5–3.5; validate FN@MEDIUM+ on a production-mix
+> cohort via `train_probe.py --recall-check-file`, never the enriched val split.
+>
+> ### ⚠️ Carry these in
+> - **The archive window ROLLS.** Now `08-14 → 08-28`, not `08-07 → 08-21`; the 236,879-row
+>   figure names a window no longer on disk. **Re-enumerate before every draw** — a draw
+>   next week is a different population, so the manifest records the window, not just counts.
+> - **The census scripts had never been runnable** (`hcv1_probe` imported, never committed).
+>   Repaired `818721f` and proven **byte-identical** against the frozen corpus. ⛔ gpu-server's
+>   `~/llm-distillery` is **not a git repo** and its prefilter is dated 2026-03-09 — it cannot
+>   run the census and never did.
+> - **The archive rolled again overnight: 84 cycle files, not 83.** Re-enumerate at draw
+>   time; do not carry a count across a session boundary.
+>
+> ### ✅ #134 STEP 1 DONE — measured, nothing fixed, `docs/` still flag-gated
+> `refcheck.py --docs` added (mirrors `--sessions`). Scan set **34 → 202 files**, findings
+> **1 → 339**, of which **338 are `docs/`**. ⭐ **Above my pre-registered 60–250 range**, so
+> it was triaged before being reported: **155 unmarked cross-repo** (NexusMind 73, ovr.news
+> 25, FluxusSource 18, agent-ready-projects 16), **170 not-found**, 13 collisions/stale.
+> ⛔ **338 findings is NOT 338 defects** — template placeholders, rolling dated artefacts and
+> forward references are in there. **Confirmed real decay: `docs/README.md`, the repo's own
+> docs index, points at three `docs/agents/*.md` files that do not exist.**
+> ⛔ **FROZEN tier behaved exactly as #134 predicted** — its 71 not-found are dominated by
+> 2025-11 Qwen-era decision records that are *correct as history*. Keep it flag-gated.
+> Step 2 (tiering) is proposed, **not applied**. Evidence + prediction + log:
+> `docs/evidence/2026-08-28-refcheck-docs/`. Controls: sensitivity **33/33** before and
+> after; default run byte-identical bar the new attribution section.
+>
+> ### ⛔⛔ NEW 2026-08-28 — **#135**, and it outranks the corpus questions: THE v8 PROMPT IS UNSTABLE
+> **Spend $0.12, 90 calls, 0 errors. Nothing deployed.** Probe:
+> `docs/evidence/2026-08-28-v8-prompt-order-probe/`.
+> Two runs of the **identical** prompt on the **identical** 30 articles disagree on
+> **5/30 (17%) op-point crossings**. The mechanism is the prompt's own **binary scope gate**:
+> `scope_verdict` → "ALL six dimensions 0–2", so a marginal verdict swings the weighted
+> average in one jump. **Gate-stable rows move a median 0.100** (inside the #95 band);
+> **gate-flipped rows move a median 3.750**; 4 of the 5 large movers are gate flips and
+> **0 of the 25 small movers are**. Gate A never saw this — it ran k=3 and averaged over it.
+> ⇒ **A k=1 v8 re-score labels ~13% of rows by a coin toss (~860 of 6,590), concentrated at
+> the boundary. The re-score needs k ≥ 3 with aggregation.**
+>
+> ### ✅ And the cache fix that pays for it
+> The v8 prompt's cache ceiling was **1.5%, the lowest of 17 prompts here** (article at char
+> 617 of 42,406). `prompt-candidate-tail.md` moves the article to just before §7 —
+> content-preserving, one `---` of difference — lifting the ceiling to **95.8%** and the
+> **measured** rate from **0.0% → 90.2%** (median, warm rows) on the real call site.
+> **k=3 reordered = $10.16 / 6,590 rows vs k=1 as-is = $18.00. Three labels for 56% of the
+> price of one.** ⛔ The plan's "≈$12" was a single run at the old shape.
+> ⛔ **PARITY IS UNPROVEN, NOT PROVEN** — the reorder sits *inside* its own null arm (null sd
+> 1.44 / 5 flips vs treatment 1.57 / 3), so the honest reading is *no effect detectable above
+> noise*. **Adopt the reordered prompt for the Phase A k=3 calibration run, where parity gets
+> settled; do not adopt it into a re-score on this probe alone.**
+> ⛔ The null arm's **99.4% cache is an artifact** — it re-sent identical articles, so the
+> whole prompt matched, not the prefix. Never quote it as a cache result.
+> ⛔ **THIS BLOCK IS SUPERSEDED — read the 2026-08-29 entry below before quoting anything
+> from it.** Its `$10.16 vs $18.00`, its `~13% / ~860 of 6,590`, and its *"PARITY IS
+> UNPROVEN"* were all answered on 2026-08-29 at n=200: ≈$6.9 vs ≈$21.7, 5.3% production-mix
+> (with the 13% *not* refuted, see below), and parity SETTLED and FAILED.
+> ✅ **DONE 2026-08-29** — `scope_verdict` / `dominant_subject` are persisted (below).
+>
+> ### ▶ NEXT SESSION — start here, in this order
+> 1. ✅ **DONE 2026-08-29 — `scope_verdict` + `dominant_subject` persisted** in
+>    `scripts/score_deepseek_production.py`, **inside** the analysis field beside
+>    `content_type` (`score_ollama_oracle.py` writes the same two at the record ROOT — read
+>    the writer before joining). Guard: `tests/unit/test_scope_verdict_stamp.py`, **16 tests,
+>    5 seeded mutations each caught** (a second review found two survivors). Outcome-proven on the real call site: 6 probe-cohort
+>    articles, **6/6 rows carry both stamps**, 3 `out_of_scope` / 3 `in_scope` (not a
+>    constant). Spend **$0.0017**. ⛔ That run is **not** an agreement measurement (the 6 were
+>    selected *by* the old inference, 3 a side), **not** evidence on the flip rate (0/6 flips
+>    has P≈0.43 at 13%), and **not** a cache or cost number (it re-sent 08-28's articles, so
+>    its 99.4% hit is the same artifact as the null arm's). `batch_scorer.py` needs no change
+>    — it returns the parsed JSON unfiltered (read-proven only; no v8 run uses that path).
+> 2. ✅ **DONE 2026-08-29 — Phase A k=3 ran, n=200, **$0.867**, 1,200 calls, 0 errors**
+>    (`docs/evidence/2026-08-29-v8-phase-a-k3/`; design pre-registered in `ff88b56`, one
+>    commit before the results, four of seven predicted ranges missed).
+>    ⛔⛔ **H-V8-3 RESOLVED AGAINST THE PLAN: the reorder CHANGES THE LABELS.**
+>    mean(reordered − as-is) **−0.239** production-mix ([−0.409, −0.080]) — survives a
+>    sign-flip permutation (p=0.0049) and source clustering ([−0.410, −0.078]); **−0.443** at
+>    the boundary (p=0.0063). ⛔ **NOT multiplicity-robust** — 0.0049 does not clear 0.05/16,
+>    the family the script prints, and no family was pre-registered. The Bonferroni interval
+>    the first write-up cited was seed noise and has been removed. Rows above the op-point at k=3,
+>    **per stratum**: 8/150 vs 11/150 and 7/50 vs 12/50. The reordered prompt is a **stricter
+>    oracle**; adopting it is a scoring decision, not a budgeting one. **Still not adopted.**
+>    ⛔ **WITHDRAWN by same-day review** — *"−0.235 on the 41 gate-stable rows, so it is not
+>    just the gate"* and *"15 vs 23 above the op-point"*. Both **pooled the strata this run's
+>    own pre-registration forbids pooling**, and the first also conditions on an outcome the
+>    treatment changes (collider). Per stratum the gate-stable effect is R n=21
+>    **[−0.516, +0.036], includes zero**.
+>    ⚠️ Flip rate at n=200: **5.3%** production-mix ([2.7%, 8.4%]), **6.7%** (as-is) /
+>    **9.3%** (reordered) at the boundary. ⛔ **Not smaller than the probe's 13% in any
+>    testable sense** — 4/30's CI is [3.8%, 30.7%] and covers all of them (Fisher p=0.118;
+>    **p=0.4648** vs the like-for-like boundary cell; the earlier 0.722 named no cell and used
+>    a non-comparable one). Non-unanimous at k=3: **8.0% / 10–14%**. k≥3 stands.
+>    ✅ Real $/article, run 1 only: **$0.000519** reordered vs **$0.002736** as-is (5.27×).
+>    ⛔ The k=3 repeat discount is **unproven at corpus scale** — schedule k=3 as three
+>    back-to-back calls per article, not three passes, and the assumption disappears.
+>    ✅ The stamp paid immediately: the old "all six dims ≤ 2" inference is **98.8%** right
+>    over 1,200 recorded labels, and the 1.2% plus the verdict mix were invisible without it.
+>    ⚠️ **Total spend $0.867, not the $0.85 first published** — that figure divided a
+>    `$0.02f` rounded display by 200 instead of re-deriving from the `usage` token counts in
+>    the same committed file. ⚠️ That error was **not uniformly low**: A1 −3.7%, total −2.0%, but B1 **+0.5% HIGH**, repeats −7.5%, ratio **+4.4% HIGH**. Two of five had the wrong sign — 'all ~2–5% low' was itself unmeasured.
+>    ⚠️ **Those six run files predate the `prompt_hash` stamp** added the same day: both arms
+>    carry an identical `filter_version`, so arm identity rests on filenames. Any re-run
+>    carries `prompt_hash` + `prompt_file`.
+>
+> ### ▶ NEXT SESSION — start here, in this order
+> 1. ⛔ **OWNER DECISION, and it blocks everything below: adopt the reordered prompt or not.**
+>    ~5.27× cheaper on the paying call and a **different, stricter** labelling function
+>    (−0.239, ~30% fewer rows above the op-point). ADR-023 wants specificity, so stricter is
+>    not obviously wrong — but v8 was adjudicated in its **as-is** form, ≈$15 on the corpus is
+>    small against adjudication time, and **nothing here measures either arm against ground
+>    truth**. ⛔ Do not resolve it from the price.
+>    **If you want evidence before ruling, that is H-V8-9 and it is cheap**: adjudicate only
+>    the rows that CROSS the op-point between arms (n≈9 production-mix, 12 boundary) against
+>    §5b's no-regression set. A reorder that only drops true positives is a regression
+>    whatever it costs.
+> 2. **Then the corpus**: size it, stage on b650, write `corpus_manifest.json` (#127). Both
+>    arms now have measured per-article prices, so it is budgetable either way.
+>    ⚠️ **Budget k=3 honestly — the repeat discount is H-V8-8 and UNPROVEN at corpus scale.**
+>    Either measure the cache TTL (~$0.05, method in the ledger) or schedule k=3 as three
+>    back-to-back calls *per article*, which makes the question moot.
+> 3. #134 step 2 (tiering) and #136 (the commit-msg guard) — hygiene, opportunistic. ⚠️ #136
+>    tripped ~6 more times on 2026-08-29; every session commit here says "nothing deployed".
+>
+> ### Carry-in
+> - **`memory/hypothesis-ledger.md` has 6 open (⏳) entries**, three of them v8's. H-V8-8 and
+>   H-V8-9 were opened 2026-08-29 with Methods and Revisit triggers; H-V8-6 gained one.
+> - **A stale branch exists**: `docs/event-identity-encoder-plan`, 1 commit not in `main`
+>   (`0c283c6`, the #100 event-identity plan). Not deleted — it is unmerged work, and whether
+>   it lands or is dropped is an owner call.
+> - ⚠️ **`CLAUDE.md` is at ~37.4k/40k.** #133 is CLOSED and its routing rule is the adopted
+>   remedy, enforced by `check_index_budget.py --target pointers`. New content goes in the
+>   target file, not here; the 2026-08-29 trim homed the last known orphan (#107 → 
+>   `memory/filter-status.md`) before shortening its row.
+>
+> ⚠️ **Carry in:** the archive window rolls — it was 83 files at session start and **84**
+> three hours later. Re-enumerate at draw time; never carry a count across a session.
+>
+> ### Remaining Phase 0 work, none of it blocked
+> 1. ⛔ **Corpus SIZE is the one number still unstated** — the three ruled numbers are
+>    fractions and cannot size a draw. v7 was 6,590 rows (re-scored as a seed, plan step 1);
+>    the supplement is on top of that. It is a **spend** decision, so name the prompt before
+>    quoting any $/article (`memory/oracle-pricing-scheduling.md`, #131).
+> 2. Stage the corpus on b650 + `corpus_manifest.json` (#127) whose counts reconcile with a
+>    freshly prepared split. ⚠️ **The class-A supplement's 3:1 split cannot be computed
+>    mechanically** — TP vs FP on a harm-shaped row is an editorial judgement (§1g
+>    adjudicated 158 by hand). Plan for an adjudication pass, not a rule.
+> 3. #134 step 2: settle the live/frozen tiering, then a marking pass, then promote — ⛔ **not
+>    in one change**, or the default run's 1-finding baseline is lost.
+
+## 🟡 PREVIOUS — **the framework pin caught up; the treadmill under it got measured (#133 now CLOSED)**
+
+> **Updated 2026-08-27 (evening).** Two sessions in one day. **No spend, no model, no
+> filter, no scoring-path change, nothing deployed** — every changed file is `CLAUDE.md`,
+> `docs/`, `memory/`, `.claude/skills/` and `tests/fixtures/`. Nothing touches a path that
+> reaches NexusMind, so **deploy is N/A, not skipped.**
+>
+> ### ✅ SETTLED — the stamp is at v1.31.0, and the hold was discharged on evidence
+> The morning block asked the owner to remember which two adopt items the 08-26 triage
+> meant. **That question is retired: it was answerable by measurement.** `/update-drift`
+> across six releases (v1.26.1 → v1.31.0) gave **3 adopt / 1 decline / 4 n/a / 9 already
+> in force**, every adopt item named and landed the same session
+> (`docs/decisions/framework-adoption-history.md`). Stamp bumped in both places.
+>
+> ⭐ **The finding that reshaped it: the three user-global skills were ALREADY at
+> v1.31.0** — `audit-context`, `update-drift` and `curate` each differ from upstream's
+> template by *only* the installer's SAVE-AS-comment → frontmatter conversion. Most of
+> four releases were in force here with nothing for this repo to do, and it is invisible
+> to `git status`. ⛔ **Method, because the naive one gives the wrong answer:** diff the
+> installed file against **every tag** and read which one minimises. Diffing against
+> latest alone cannot separate *behind by four* from *current plus installer*, and the
+> wrong reading is the one that makes an adopter re-copy a re-mapped skill.
+>
+> ### ⛔ THE OPEN DECISION FOR THE OWNER — where does a new lesson land?
+> `CLAUDE.md` grew **35,094 → 39,955 bytes between 08-16 and 08-26, ~486/day**, measured
+> across 25 commits. Today's two trims bought it back to 37,462 (**2,538 free ≈ 5 days**).
+> ⛔ **Do not read the audit-time headroom figure as a growth rate** — the file is trimmed
+> to the wall at each audit and refills; "45 bytes of movement in a cycle" is a headroom
+> reading, not stability, and this block previously implied otherwise.
+>
+> **Trimming is a treadmill.** The file refills because it is the default destination for
+> every new lesson. Three options, with a recommendation:
+> 1. **Routing rule (recommended)** — a new lesson goes to its topic file; the pointer row
+>    is capped (~250 chars) and never grows. **Carve-out:** prohibitions that guard money
+>    or a wrong published number stay at full length, because a pointer does not fire
+>    without opening the target. That tension is real and was hit twice today.
+> 2. **Raise the cap** — treat 40,000 as advisory. Cheapest; the value is that it becomes
+>    a decision rather than a drift.
+> 3. **Split the file** — Hard Constraints stay loaded, the pointer table moves out.
+>    ⚠️ #122 makes another load-order dependency risky.
+>
+> ⭐ **Evidence for the routing rule beyond size:** all three stale claims found today were
+> in the always-loaded file or a spec header, and each had been wrong for weeks. The
+> pointer table is not just big — it is the part that **rots**, because it restates
+> numbers that live somewhere else.
+>
+> ### ⚠️ Still open — the one reference left standing, deliberately
+> `NexusMind/scripts/research/nm188_mojibake_derived.py`, cited in
+> `memory/corroboration-feature-hypotheses.md`. Never committed to NexusMind, absent from
+> disk, while its `nm188_*` siblings exist. **Zero is not the target**: a change driving
+> this to zero would have disabled the check. Someone who remembers that experiment should
+> say what the script was really called.
+>
+> ### ⚠️ #122 — third confirmation, and a one-command probe
+> `CLAUDE.md` arrived in context beginning at line 34 again; the 32-line frontmatter
+> did not arrive. **Probe: compare `wc -l CLAUDE.md` against what is visible in context.**
+> The stamp now lives in `framework_reconciliation` (inside that block) *and* the footer —
+> a deliberate duplication while #122 is open.
+>
+> ### ✅ Upstream feedback — all actioned, and it moved upstream twice more
+> Every finding shipped: #50's missing markers and the Step 3 per-tag method are in
+> **v1.32.0**; the dead-reference extractor's cross-repo blindness is fixed in **v1.33.0**
+> (both filed from here as `agent-ready-projects#101`/`#100`; #99 and #100 remain open).
+>
+> ⚠️ **So the pin is behind again — v1.32.0 and v1.33.0 are UNTRIAGED.** Adopting them is
+> a next-session decision. Two things to carry in:
+> 1. ✅ **v1.33.0's sensitivity loss is already fixed in v1.34.0** — it bit here, measured
+>    (our one deliberately-live finding, `NexusMind/scripts/research/nm188_mojibake_derived.py`,
+>    is a *true* dead reference whose neighbour is on disk, and v1.33.0 reclassified it as
+>    "not checkable from here"). A sibling on disk now decides, with v1.33.0's disposition
+>    kept as the fall-through — the v1.29.0 three-verdict shape. **Adopt v1.34.1** (v1.34.0
+>    plus one corrected paragraph and a fixture case; PATCH, no behaviour change).
+>    ⚠️ Residual exposure is a **sparse checkout** — and ONLY sparse. ⛔ **I claimed shallow
+>    and partial clones reproduce it and that was wrong**, stated as a measurement without
+>    running it, and it shipped in v1.34.0's wording before the maintainer caught it.
+>    Verified here afterwards: `--depth 1` gives `is-shallow: true` with **all 58 files
+>    present** (depth truncates HISTORY, not the tree); sparse gives **58 tracked, 13 on
+>    disk**, a tracked file outside the cone genuinely absent. *(`--filter=blob:none` is
+>    untested — the local `file://` transport ignored the filter. Blobs are fetched at
+>    checkout, so it is not expected to reproduce, but I have not shown it.)*
+>    Measured 2026-08-27: **all 16 sibling repos are full checkouts.** ⛔ A WINDOW, not a
+>    property — re-run `git -C <repo> config --get core.sparseCheckout` before relying on
+>    it. ⛔ **The other three flags are not merely a superset, they can LIE**: a
+>    `--filter` clone over `file://` writes `remote.origin.promisor=true` and
+>    `partialclonefilter` even though the server ignored the filter, so the repo reads
+>    partial by every flag while having **zero missing blobs**. Against repos cloned from a
+>    real server those readings are sound; against anything cloned locally they are not.
+>    `core.sparseCheckout` is the one that means what it says.
+> 2. **Rule 10 (v1.32.0) shipped its first draft reporting `0 violations` while unable to
+>    fire at all.** Its scope is a floor, not a ceiling. Exercise the
+>    ablation-that-cannot-kill case deliberately; do not trust it on a clean run.
+>
+> ⛔ **And the lesson that cost a commit: the footer said "current" and was false within
+> hours.** Upstream tagged twice the evening the v1.31.0 stamp landed. The stamp was right;
+> the adjective was a state claim. Never write "current" in that position.
+## 🟡 PREVIOUS — **#132 is closed and verified live; the number it rested on was one cycle wide**
+
+> **Updated 2026-08-26.** No spend, no model, no filter, no scoring-path change. All code in
+> **NexusMind** (`7adb615`, `5fce395`, `2a51e9d`), deployed to sadalsuud and **outcome-verified**.
+>
+> ### ✅ #132 CLOSED — `data/prefiltered_out/` has a retention policy instead of luck
+> Archived to `data/archived/prefiltered_YYYY-MM.tar.gz` (one directory **per gate** inside the
+> tarball), swept by the same 14-day cleanup, retention-cleaned, and added to `sync_backup.sh`.
+> Decision record: `docs/decisions/2026-08-26-prefiltered-out-retention.md`.
+>
+> **Verified live, 17:36:** 183 loose files → **100 archived and removed, 83 inside the cutoff
+> untouched**, verifier exit 0. Confirmed independently of the verifying script — `tar tzf` gives
+> 29 + 71 = **100** members. 8.9 MB loose → 1.28 MB of tarballs.
+> ⚠️ **First off-site upload is Sun 2026-08-30 03:03** (`nexusmind-backup.timer`) — until then
+> the tier is local-only, exactly the state NM#403 exists to close for `blocked_*`.
+>
+> ### ⛔ The keeper: a verified, correct number that was ONE CYCLE wide
+> #132's decision rested on *"90.6% of flagged rows never reach the block ledger"*. Real
+> measurement, exact join (39 of 39), checked **before** the decision. It was **one file, one
+> cycle**, and it reached a GitHub issue, a decision record, an ADR index, a spec, four
+> docstrings and three commit messages before anyone asked what its window was.
+>
+> | | flagged | in ledger | kept | kept % |
+> |---|---|---|---|---|
+> | pooled, **12 joinable cycles** | 4,801 | 561 | 4,240 | **88.3%** |
+> | per-cycle range | | | | **72.5% – 92.9%** |
+>
+> **90.6% was the second-highest of twelve.** The decision does not change — it rests on the
+> **worst** cycle, and even at 72.5% the ledger is missing most of the flagged population — but
+> ⛔ **do not quote the share, re-run it**: `NexusMind/scripts/research/measure_shadow_kept_share.py`.
+> ⭐ **1,497 green tests, 11 of them new, 6 mutations all killed — and none of that machinery
+> can fire on this defect, because the defect was in the EVIDENCE, not the code.** Filed as
+> augmented-engineering#38.
+>
+> Two instrument rules the wider window produced, both now in the script:
+> - **A newly-deployed ledger's first run is a backlog flush, not a cycle** (239 flagged, 239
+>   blocked, 0.0% kept). Pooling it in drags the share to 84.1%. It is printed and labelled
+>   rather than dropped — a run excluded without being shown is indistinguishable from one that
+>   was never there.
+> - **A flagged run whose ledger file has aged out is NOT "0 blocked" — it is unobservable.**
+>   Counting those as zero manufactures a 100% kept share out of retention, in the flattering
+>   direction.
+>
+> ### ⛔ Second keeper: `systemctl is-active` answered for the WRONG UNIT
+> The deploy touched `scripts/main.py`, so the rule is "pull when the service is inactive".
+> `nexusmind.service` read `inactive` at 09:18:55 — **and the box was not idle.** Cleanup is a
+> **separate unit**, `nexusmind-cleanup.service`, chained by `OnSuccess=` and running
+> `scripts/main.py --cleanup-only` in its own cgroup; it stayed `activating` another 8 minutes,
+> executing the very code path the deploy was replacing. ⭐ **This is the pgrep rule's own
+> recommended remedy failing: the service manager answers for the unit you NAME, and a chained
+> unit is a different name.** Enumerate first (`systemctl list-units 'nexusmind*' --all`), then
+> ask all of them. 6th occurrence; `memory/working-rules.md` + `CLAUDE.md` updated.
+>
+> ### Two defects I shipped and caught before deploy
+> - **The writer appends the flagged COUNT after the timestamp**
+>   (`flagged_20260826_031106_485.jsonl`). A date regex copied from `blocked_*` matches
+>   **nothing**, silently — "no expiring files to archive" forever while the directory grows.
+> - **My first sweep globbed `flagged_*.jsonl` + mtime.** That glob is *wider* than the
+>   archiver's date regex, so an odd-named file would have been deleted **un-archived**. It now
+>   deletes exactly the paths the archiver reports putting in a tarball (`archived_paths`,
+>   appended only after the temp archive is moved into place). **A sweep must not reach further
+>   than the thing that preserves what it deletes.**
+>
+> ### Do next, in this order
+>
+> 1. **NM#404 — decide whether the STORED `other_sources` shape should carry real quality.**
+>    Untouched today. ⚠️ Commented there: its headline **51.4% cross-run** is, by its own
+>    argument, a *"share that reflects how long the corpus has been running"* — so it is
+>    window-dependent and must be **re-measured, not re-quoted**, before it justifies persisting
+>    quality in the saved cluster record.
+> 2. **Q11 (new, `memory/violence-promotion-v1-hypotheses.md`) — flagged VOLUME rose ~66% in
+>    three days** (280 → 495, then a plateau). ⛔ **Not a finding yet**: the raw count has never
+>    been divided by the cycle's own scored population, which is the denominator error this
+>    project keeps making. Both numbers are in the pipeline's own log lines. Cheap.
+> 3. **Confirm the Sunday 03:03 backup actually uploaded `prefiltered_*.tar.gz`** — one `rclone
+>    lsf` against `veenbox:NexusMind-backup/article-archives`. NM#403's `blocked_*` first tarball
+>    is due ~09-07 and stays open until then.
+> 4. **CLAUDE.md is 39,955 of a 40k warn** and de-padding reclaims nothing. Two rows were merged
+>    today to pay for the rule edit, which is not a strategy. The next structural session has to
+>    move content out to topic files — same shape as #123, one layer up.
+
+## 🟡 PREVIOUS — **the register is populated; step 3 is the free one left**
+
+> **Updated 2026-08-25.** No spend, no model, no deploy to the scoring path. The work is
+> in **NexusMind** (`97677b3`); this repo carries the spec, the audit and the evidence.
+>
+> ### ✅ 🅑b DONE — the register is generated, and it exits 1 on drift
+> `NexusMind/docs/ARTICLE_RECORD_REGISTER.md`, from
+> `python3 scripts/stamp_census.py --cycles 12 --emit-register docs/ARTICLE_RECORD_REGISTER.md`.
+> It joins the measured half (a census of production rows) to the human half
+> (`docs/article_record_status.yaml`, **109 fields classified by hand**). Every row carries
+> population, consumers, semantics, writer and migration target.
+>
+> - **`scope` is DERIVED from the contracts and derived by EXACT path.** Contract B declares
+>   `nexus_mind_attributes` as an open object, so a prefix test would report all 31 lens
+>   fields as declared — including the seven that are the reason the register exists.
+> - **Semantics are referenced, not restated.** 70 of 109 render from a contract
+>   `description`; the 39 with none carry a `meaning:` in the YAML. Zero fields render
+>   `-NO DEFINITION-`.
+> - **The drift check is asymmetric on purpose.** Observed-and-unclassified exits 1;
+>   classified-and-not-observed is only reported, because the census reads a WINDOW.
+> - **Verified against production, not fixtures:** three seeded mutations (a deleted entry,
+>   a bogus `status`, a `record_path` the record schema does not declare) all caught, exit 1.
+>   The clean run's zero is therefore not vacuous.
+>
+> ⚠️ **The undeclared count is 19 by exact-path counting, not the 20 this repo has been
+> quoting.** The difference is `nexus_mind_attributes.*.scores.<dims>`: Contract B declares
+> the `scores` container; the per-dimension NAMES, which are what is really undeclared, are
+> per-filter vocabulary the census collapses into one synthetic leaf. Both readings are
+> defensible — the register states which one it used. ⛔ And **109 owned fields, 260 total,
+> is a 12-cycle window** (`filtered_20260823_124156 .. filtered_20260825_130949`). At 2
+> cycles the same script says 229. Quote the window or quote nothing.
+>
+> ### ✅ Two instrument defects fixed first, because each produced a wrong register row
+> - **F8 — a nullable object's population was the count of its own ABSENCE.** `flatten`
+>   recorded a parent path only when the value was not a dict, so
+>   `image_analysis.extracted_image_dimensions` read `NEVER-POPULATED (0 of 1,410)` while
+>   its own `.height`/`.width` read 100%. **Nullable dicts were mis-reported by
+>   construction, in every census run before 2026-08-25.**
+> - **F7 — check A could not see a top-level declaration.** It read only
+>   `properties.nexus_mind_attributes.additionalProperties.properties`. Reading every level
+>   found what the audit predicted on the first run: **`_corroboration` and its three
+>   children, declared in Contract B, present on 0 of 164,572 rows** — the dict is popped at
+>   `scripts/main.py:2028` before persistence. ⭐ A ghost the instrument is *structurally
+>   unable to report* is worse than one it misses by luck.
+>
+> 23 tests (18 new register + 5 new census). **3 of the 5 census tests fail against the
+> script they replace**; the other 2 are presence controls and pass on both sides by design.
+>
+> ### ✅ DEPLOYED and regenerated from the checkout
+> sadalsuud was at `651aa55` when the register was generated (it is now `17da21d`, see the
+> deploy block below), working tree clean, and
+> `NexusMind/docs/ARTICLE_RECORD_REGISTER.md` is the run from that checkout: **177,466 rows,
+> 72 files, `filtered_20260823_124537 .. filtered_20260825_131739`, exit 0.**
+>
+> ⚠️ **The pull was made while `nexusmind.service` read `activating`, deliberately.** The rule
+> is "deploy when inactive", and the reason for it is code the pipeline imports. Proven not to
+> apply here before pulling: `grep -rn "stamp_census\|article_record_register" src scripts
+> deploy filters` finds **one docstring mention and no import**, and `scripts/main.py` is
+> unchanged. A rule whose premise you have checked is a different thing from one you skipped.
+> **1,457 unit tests pass** (1,431 + 26 new).
+>
+> ### ✅ 🅒 Migration step 3 (additive half) — COMMITTED **and DEPLOYED 17:32**
+> `nexusmind.content` / `.signals` / `.corroboration` are emitted beside
+> `.run`/`.disposition`/`.gates` (NexusMind `67b70e5`, `b26c384`). Lens copies untouched —
+> a dual-write, no reader changed. **Cost measured on 26,530 production rows: median
+> +338 B, 6.09% of the median row, max +1,147 B.** 13 tests, all 13 fail against the
+> previous module; 1,470 pass.
+>
+> ⛔ **The plan's premise was wrong by two fields — "13 lens-invariant" is 11.** Re-measured
+> over **4,838** multi-lens articles (2026-08-25): `content_length` and
+> `original_content_length` differ across lenses on **4** of them, every one an article
+> `investment_risk` post-enriched mid-cycle. The lenses written EARLIER in that cycle
+> (`solutions`, `uplifting`) carry the pre-enrichment length; those written later carry the
+> enriched body plus `_post_enriched` / `_post_enriched_from`. **4 of 4 match, 0 unexplained
+> either way.** Nothing is lying — each row is correct as of its own write — but the field
+> is a property of the **ROW**, and `nexusmind.content.length` is documented that way.
+>
+> ⛔ **`corroboration.other_sources` was declared as an array of STRING and never was one.**
+> Every entry on disk is an object. Nothing emitted the field, so nothing contradicted a
+> declaration written from the field's *name* — the same shape as `gates.academic_merge`,
+> found the same way: by trying to emit it. Schema **0.4.0 → 0.5.0**.
+>
+> ⭐ **The rule the step established: THE DUAL-WRITE DUPLICATES SCALARS, NEVER PAYLOADS.**
+> `content.original` (a body) and `corroboration.other_sources` (mean 228 B of 592, **11,737 B
+> on one row**) are deliberately absent and arrive when step 4 removes their old home.
+> Excluding them took worst-case row growth from 12,237 B to 1,147 B.
+>
+> ### ✅ OWNER RULING 2026-08-25 — `investment_risk` PAUSED
+> Verbatim: *"aegis is dormant, nobody reads it - pause it"*. `investment_risk` out of
+> `pipeline.enabled_filters`, `pipeline.aegis_export.enabled: false` (its only input was
+> that filter). **PAUSED ≠ REMOVED** — package, HF Hub repo, Contract C and 251 days of
+> archives stay; un-pause is two config lines. Record:
+> `docs/decisions/2026-08-25-pause-investment-risk.md`. ⚠️ The gist FREEZES at today's
+> file; ⚠️ ovr.news's allow-list must STAY (draining rows still validate against it);
+> ⚠️ block-ledger `placements` drops 6 → 5; ⚠️ every census over `data/filtered/` keeps
+> seeing 6 lenses for up to 14 days.
+>
+> ⭐ **Predicted, not measured:** this should also remove most of the ordering handicap —
+> `investment_risk` was 51 of 70 post-scoring enrichments and ran third, so `solutions`
+> and `uplifting` were persisted with pre-enrichment text on **18 of 31,596** multi-lens
+> articles (0.057%, `solutions` losing 18 of 18, median gap **26×**). The remaining
+> enrichers run first and second. **Re-run `ordering_effect.py` after a few cycles.**
+> The config reorder I proposed is therefore NOT needed unless that prediction fails.
+>
+> ### ✅ DEPLOYED 17:26 + 17:32 — and VERIFIED LIVE 2026-08-26 07:50
+> *(This block said "first thing next session" and was already stale when written — the two
+> pulls happened at the end of the same session. Corrected 2026-08-25 17:40 by reading the
+> box, not the note.)*
+>
+> Both changes are on sadalsuud: `git reflog` shows `pull --ff-only origin main` at
+> **17:26:06** (→ `c7af891`, the `investment_risk` pause) and **17:32:32** (→ `17da21d`,
+> which contains step 3's `67b70e5` + `b26c384`). Service read `inactive` at both moments,
+> so the "deploy when inactive" rule held with its premise intact — this one **does** touch
+> the pipeline's import graph (`scripts/main.py`, `src/archiving/block_ledger.py`).
+>
+> ⛔ **THE 20:03 CYCLE NEVER RAN — the pause needed a THIRD file.** `nexusmind.service`
+> FAILED at 20:09:54 on a fail-closed deploy gate: `deploy/smoke_test_articles.jsonl` still
+> carried an `investment_risk` row, and `deploy_filters.sh` refuses to deploy when a fixture
+> names a filter that is not in `enabled_filters` (the smoke test would 404 against
+> `/filter/investment_risk/score`). ⭐ **The gate is the control working** — fail-closed since
+> 2026-07-17, and it caught a real inconsistency the same evening the pause created it.
+> Fixed by removing the fixture row, not by weakening the gate (NexusMind `5c94a0e`): with the
+> row gone, an un-pause that forgets it produces a WARN, never a failure. **Nothing in the
+> config names that fixture and no test covers the pair**, which is why a two-line config
+> change surfaced as a missed production cycle three hours later. No data lost — one cycle of
+> latency. Detail in `docs/decisions/2026-08-25-pause-investment-risk.md`.
+>
+> ### ✅ ALL FOUR CHECKS PASS (00:00 and 04:00 cycles, both "All smoke tests passed")
+> 1. **The step-3 namespace is on real rows.** `filtered_20260826_051337.jsonl`, first row:
+>    `['content', 'corroboration', 'disposition', 'gates', 'run', 'signals']` —
+>    `content {"length": 2003, "should_translate": false}`,
+>    `signals {"obit_pattern_count": 0, "primary_literature_detected": true}`,
+>    `corroboration {source_verified, source_tier, credibility_score, type_classification}`.
+> 2. **`verify_block_ledger.py` exit 0** — 10 files, **205,427 rows**, index present, all
+>    conformant to `article-record.schema.json` **v0.6.0**, one row per article.
+> 3. **Register regenerated, exit 0**, "every observed field is classified" — **125
+>    NexusMind-owned fields** in the 12-cycle window `filtered_20260823_204645 ..
+>    filtered_20260826_051752` (109 was the 08-25 window; the count is a property of the
+>    WINDOW). The 18 step-3 paths are now OBSERVED, not classified-and-absent.
+> 4. ⭐ **The pause's own outcome proof: `placements per row` is now
+>    `{6: 194403, 3: 1, 1: 1, 5: 11022}`** — 11,022 five-placement rows since the pause,
+>    exactly the predicted 6 → 5. ⚠️ Note what this costs the diagnosis below: the ONE
+>    pre-pause `placements: 5` anomaly is now indistinguishable from a normal post-pause row.
+>
+> ⛔ **The verification found a defect the tests could not: three `_corroboration.*` children
+> were still printed as ghosts** although the parent is marked `x-intermediate`. A mark is a
+> statement about a SUBTREE. Fixed and outcome-proven on production (NexusMind `69b6d74`,
+> `20b1898`): section A now prints one `??` answered line and one `!!` (the separate,
+> known `short_content_cap_applied` code-half ghost). **Found by running the shipped script on
+> production, not by review.**
+>
+> Rollback for step 3 remains `git revert 67b70e5` + redeploy — the namespace is not
+> config-gated.
+>
+> ### ⛔ Open, not forgotten
+> - ⛔ **RETRACTED same day: `_corroboration` is NOT a dead declaration.** Its own
+>   description has always said *Intermediate field — consumed by `scripts/main.py` and
+>   re-emitted under `source_quality` before JSONL write*, and that is what happens:
+>   `display_ranking._corroboration_boost` reads it in-process, `scripts/main.py:2028` pops
+>   it. 0 of 164,572 filtered rows AND 0 of 3,000 block-ledger rows, **with an in-process
+>   reader** — the shape of an intermediate, not of a corpse. ⭐ **The instrument could not
+>   tell the two apart because the fact was in PROSE.** Contract B **1.18.0 → 1.18.1** marks
+>   it `x-intermediate: true` (annotation only) and check A excludes marked fields while
+>   still printing them once.
+>   ⚠️ `source_unreliable` was the OTHER check-A ghost from that run — **ANSWERED the same
+>   evening, see below.** **A ghost is a question, not a verdict — and both of the two
+>   turned out to have answers.**
+> - **`#123` the index-budget guard** is still acute — and it now needs an OWNER CALL
+>   between the four options in the issue, not another trim. The lever is measured spent:
+>   the 08-25 trim removed 23 lines and one entry plus one revision consumed it.
+> - The rest of the 08-24 list: `.ledger_index.json` off the cleanup path and off-site
+>   backup of `blocked_*` are unchanged; **the `placements` singletons are DIAGNOSED
+>   (below)**.
+
+### ✅ RESOLVED 2026-08-25 evening — `source_unreliable` is RARE, not dead
+NexusMind `80d665d`. It needs `source_tier == "override"` **and** `credibility_score < 3.0`,
+and those cannot currently co-occur. `override` means a curator entry in FluxusSource
+`config/domains/credibility.yaml` — **733 entries, exactly 5 below 3.0** (infowars.com 1.0,
+rt.com 2.0, sputniknews.com 2.0, sputnikglobe.com 2.0, tass.com 2.0) — and **3 of those 5
+are `enabled: false` feeds** (HELD-DISABLED on editorial grounds, `rss_russian.yaml`,
+unblock = NM#253) while the other 2 are in no source config at all. Measured over
+**237,132 distinct articles** (510 files, `filtered_20260811_175032 ..
+filtered_20260825_171209`): `override`'s minimum credibility is **3.8**, and all **204**
+sub-3.0 articles sit at `verified` tier, which the predicate excludes.
+
+⭐ **The answer is a fact about the CORPUS, and one config line changes it** — so it ships
+as `x-rare: true` (Contract B **1.18.1 → 1.18.2**) with the **falsifier** in the
+description, and `stamp_census.py` now reports such a field as ANSWERED instead of
+re-asking it as a ghost every run. Unlike `x-intermediate`, a rare field stays in the
+declared set and is only re-labelled at report time: the day it fires, nothing has to be
+un-suppressed. An `x-rare` mark with no description is a silenced finding, and the census
+prints `NO DESCRIPTION` when it meets one.
+
+⛔ **The latent defect this surfaced is the keeper.** `article-record.schema.json`'s
+`corroboration` is `additionalProperties: false`, and the flag was in neither that schema
+nor `_CORROBORATION_FIELDS`. **The first row ever to carry it would have been the first row
+to FAIL VALIDATION** — a flag that only appears in an emergency is the worst one to
+discover missing. Now declared (**0.5.0 → 0.6.0**) and copied; the copy skips absent keys,
+so it costs 0 bytes until it fires. 8 tests (4 fail against the code they replace, 4 are
+presence controls), 1 mutation killed, 1,480 pass.
+
+⚠️ **Second finding, same trace: `other_sources` carries TWO SHAPES.** A within-run entry
+holds the other article's real quality; a **cross-run** entry holds `source_tier: "unknown"`
+/ `credibility_score: null` **HARDCODED**, because `story_dedup._annotate_cross_run` builds
+it from a saved cluster record that never persisted quality. **104,201 of 202,893 entries
+(51.4%)** over 110,645 articles are cross-run and **100% of those read `unknown`** — so
+97.7% of this field's `unknown` is bookkeeping. Same shape as the `stage_used` /
+`raw_weighted_average` trap. **Never average credibility over these entries.**
+
+### ✅ DIAGNOSED 2026-08-25 evening — the `placements` anomalies (now three)
+`{6: 194403, 3: 1, 1: 1, 5: 1}`. NexusMind `8969d73`, spec half in
+`docs/BLOCK_LEDGER_SPEC.md`. **`placements` is NOT "how many lenses saw this article"** —
+it is how many filed a LEDGER-REASON block in the cycle where the article was *first*
+recorded. Two benign mechanisms:
+1. **An earlier loop dropped it for a non-ledger reason.** `already_processed` is
+   per-filter state; one article is marked processed in exactly the first three filters
+   (2026-08-23) and in none of the last three, which recorded it `too_old` the next day.
+   Verified against `data/raw/.processed_ids_*.json` — an instrument independent of the
+   ledger.
+2. ⭐ **The freshness cutoff MOVES BETWEEN LOOPS.** `load_articles` recomputes
+   `now − max_article_age_days` **once per filter**, so one cycle runs against six cutoffs
+   seconds apart. The other two published **12 s** and **6 s** before the cutoff in force
+   when they were recorded. All three `per_filter` maps are **suffixes** of
+   `enabled_filters` order — ~1-in-720 by chance.
+
+**Never divide a ledger row count by the lens count**, and `placements < N` is not a
+defect. ⚠️ Normal is **5 from 2026-08-25** (`investment_risk` paused); the verifier only
+prints the histogram, so no check breaks.
+
+## 🟡 PREVIOUS — **the ledger's second flush, and the census's own columns**
+
+> **Updated 2026-08-24 (afternoon).** Two sessions have run on 08-24. **Thread 🅒 (The
+> Article Record) was taken and became threads 🅒 + 🅑 at once.** No spend, no model.
+> ✅ **The block ledger and the census fix are both deployed AND outcome-verified** — the
+> ledger's first flush landed 13:05 and reconciles exactly against the cycle's own counters.
+> ⏳ **The one open question is the SECOND flush** (16:00 cycle): first flush was 320 MB
+> against a 42 MB estimate, and whether that recurs decides one-time-backfill from
+> 1.9 GB/day. All work is in **NexusMind**; this repo carries the spec and the evidence.
+>
+> ### ✅ Built, deployed, and now verified LIVE (see 🅐 below)
+> - **The record has a DEFINITION**: `NexusMind/contracts/article-record.schema.json`.
+>   Owner ruled it **PRESCRIPTIVE** and composed — Contract A by `$ref`, plus one `nexusmind`
+>   namespace. Producer fields have exactly one definition and cannot drift.
+> - **`nexusmind.disposition` + `nexusmind.gates` SHIPPED into the code** (migration steps 1+2):
+>   the block ledger writes every dropped article to `data/blocked/`, archived on the same path
+>   as `filtered/`, and kept rows carry the same namespace as a dual-write. **Write-only — no
+>   admission decision changes.** Rollback = `pipeline.block_ledger.enabled: false`.
+> - **Offline proof on real production input** (`content_items_20260823_161050.jsonl`, 3,074
+>   rows, 6 filter loops): **430 blocked articles**, 406 with full content, every row
+>   `placements: 6`, tallies reconciling exactly (`commerce 1,698 = 283 × 6`, and 283 is the
+>   input's own `_is_commerce: true` count). All 430 validate against the schema, with a
+>   negative control proving the schema is not merely permissive.
+> - **46 new tests, 1,482 pass.** 9 mutations run, 8 killed; the survivor was **my own test
+>   asserting something that could not fail** — see the traps below.
+>
+> ### ✅ 🅐 VERIFIED LIVE 2026-08-24 13:05 — the ledger works
+> Deployed 08:54 at `169d7ea`; the **12:00 cycle wrote its first flush at 13:05** and
+> `scripts/verify_block_ledger.py` exits **0**: 1 file, index present, **168,486 rows**, all
+> conformant to `article-record.schema.json v0.4.0`, one row per article.
+>
+> **Every mechanism reconciles EXACTLY against the pipeline's own independent counters**
+> (`Loaded 4809 articles (skipped: ...)`, journal, same cycle) — not a closed-accounting
+> check, a per-bucket one against a different instrument:
+>
+> | mechanism | ledger | cycle log |
+> |---|---|---|
+> | `gate.commerce` | 18,930 | 18,930 |
+> | `gate.obituary` | 3,325 | 3,325 |
+> | `dedup.title` | 3,024 | 3,024 |
+> | `freshness.too_old` | 142,899 | 142,899 |
+> | `freshness.future_date` | 69 | 69 |
+> | `gate.violence_promotion` | 239 | (stamped at a later stage; not in that line) |
+>
+> Sum 168,486 = the ledger's row count. 157,299 rows carry full content. 320 MB on disk
+> (`blocked_20260824_130550.jsonl` 322 MB, `.ledger_index.json` 12.3 MB); filesystem at 13%,
+> 389 GB free.
+>
+> ⛔ **THE SIZING ESTIMATE WAS WRONG BY 7.6×, and the shape of the error is the lesson.**
+> Predicted ~22,237 rows / ~42 MB. The portion I actually sized — gate-blocked — came in at
+> **22,494 against 22,237, 1.2% off**. All the rest is `freshness.too_old` at **142,899 rows,
+> 85% of the ledger**, which the estimate carried as an unquantified prose clause ("plus
+> freshness and dedup rows"). **The bucket nobody counted held six sevenths of the volume.**
+> Closed accounting would not have caught it; only sizing each bucket against its own counter
+> does.
+>
+> ### ✅ 🅐b RESOLVED 2026-08-24 17:04 — the second flush settles it, H-AR12 REFUTED
+> **3,257 rows / 6.72 MB**, not another 320 MB. The written-id index works. The pipeline's
+> own line — *"Block ledger: 3257 new blocked articles written (3169 with content), 165308
+> already recorded"* — matches the verifier exactly: 168,486 + 3,257 = **171,743 rows**,
+> exit **0**, 2 files, all conformant to `article-record.schema.json v0.4.0`.
+>
+> **The 320 MB first flush was the standing backlog, one-time. Steady state is ~3.3K rows /
+> ~6.7 MB per cycle ⇒ ~20K rows / ~40 MB per day at 6 cycles/day** — not 1.9 GB/day. So:
+> off-site backup (NM#403) is affordable as-is, `pipeline.block_ledger.enabled` stays
+> **true**, and no reasons-list change is needed.
+>
+> ⚠️ **`too_old` is still 87.6% of the increment** (2,852 of 3,257) — H-AR11's shape holds
+> at the margin, so any sizing that ignores freshness is wrong at steady state too.
+> ⚠️ **The INDEX grows faster than the ledger:** `.ledger_index.json` went 12.36 → 12.59 MB
+> for 3,257 new ids ≈ **73.5 bytes/id ⇒ ~1.4 MB/day**.
+> ⛔ **"and nothing prunes it" was WRONG — corrected 2026-08-25.** `BlockLedger._prune_index`
+> runs on **every flush** and drops entries older than `index_retention_days` (default 30,
+> not overridden in config). Nothing has aged out yet because the ledger is one day old:
+> measured 17:17 today, **194,406 entries / 14.25 MB spanning 2026-08-24 11:05 →
+> 2026-08-25 15:17**. So the growth curve seen so far is the *fill* phase, not unbounded
+> growth. Arithmetic, not measurement: ~20K new ids/day ⇒ a **plateau near 45 MB** once the
+> 30-day window is full, with the 168K-entry backlog ageing out from ~2026-09-23.
+> ⚠️ Pruning is by FIRST-SEEN stamp (a hit does not refresh it), which is correct here:
+> 30 days > the 14-day raw retention, so no entry is dropped while its article can still
+> be re-read.
+>
+> **Both held items are RESOLVED (2026-08-25 evening):**
+> - **`.ledger_index.json` on the cleanup path** — ⛔ **the stated reason was already
+>   stale**: the blocked sweep globs `blocked_*.jsonl`, not `*.jsonl`, so the index is
+>   protected by the PREFIX as well as the extension, and a test already pins it.
+>   ⭐ **But the same question asked of `data/raw/` found a live bug**: that sweep globs
+>   `("*.jsonl", "*.jsonl.bak", "*.json")`, **`pathlib.Path.glob` matches dotfiles**
+>   (`glob.glob` does not), and `data/raw/` holds the per-filter state stores
+>   `.processed_ids_<filter>.json` (~29 MB each). A running filter rewrites its store every
+>   cycle so it never ages — **a PAUSED one does**, and `investment_risk` was paused today,
+>   so its store would have been deleted ~2026-09-08 and "un-pause = two config lines"
+>   would have become "re-score the whole 14-day window". Fixed in NexusMind `96b29f3`
+>   (skip leading-dot names; 1 test that fails against the old code, plus a control that
+>   the sweep still deletes real stale data). **A data sweep must not reach state.**
+> - **`placements per row`** — **DIAGNOSED**, see the resolved block in the NEXT SESSION
+>   section above. Three anomalies now, two mechanisms, both benign.
+>
+> ⚠️ `deploy_filters.sh` did **not** carry this — its auto-pull is path-scoped to filter changes
+> (NM#362) and there are none here. It was an explicit `git pull --ff-only origin main`.
+>
+> ⭐ **Sizing the first flush, measured 2026-08-24 so it is not a surprise:** `find_input_files`
+> reads the WHOLE 14-day raw window every cycle — **90 files, 273,779 rows** — so the first
+> ledger write contains the entire standing backlog: **22,237 distinct gate-blocked articles
+> (18,938 commerce, 3,299 obituary), ≈42 MB** with full content, plus freshness and dedup rows.
+> Call it 50–60 MB once. Every later cycle writes only genuinely new blocks (order 300–500)
+> because of the written-id index. **The spec's "seed without content on first run" mitigation
+> is therefore NOT needed** — that call was made on an unmeasured estimate.
+>
+> Not deployed because a cycle was mid-run. Then **after the next cycle**
+> run `python3 scripts/verify_block_ledger.py` — it exits **2**, not 0, when it finds no files
+> to scan, because a check that scans nothing reports clean. Reconcile its article count
+> against the cycle's own placement counters (`N articles × 6 filters`).
+> ⚠️ Deploy when `systemctl is-active nexusmind.service` is **inactive**, not `activating`.
+>
+> ### ✅ 🅑a The instrument is FIXED — 2026-08-24, NexusMind `e73c5ef`, deployed
+> All three mis-defined columns repaired and verified by running the deployed script on
+> sadalsuud. `pop%` split into **`pres%`** (present / all rows) + **`fill%`** (populated /
+> rows present) with a `RARE-FIELD` flag; `distinct` exact to `DISTINCT_CAP=5000` then
+> `>=5000`, hashing the FULL value rather than a 28-char truncation; the reader search
+> qualified with the parent segment, else marked `RDRS-AMBIGUOUS` and raising no consumer
+> finding. The run now prints its **window** beside the field count.
+>
+> Outcome on 145,301 production rows (`filtered_20260822_124557` .. `filtered_20260824_084855`):
+> `_post_enriched` 100.0% → **0.03 / 100.00 on 46 rows**; `metadata.doi` distinct **13 → 288**;
+> `content_hash` **13 → >=5000**; `content_quality.score` unmoved at 100.00/100.00 (the control).
+> Shared leaves: **7, covering 14 of 212 fields**. 15 tests, **12 fail against the previous
+> script**; full NexusMind unit suite 1,431 passed.
+>
+> ### 🅑b Populate the register — now unblocked
+> `docs/article_record_status.yaml` classifying the fields, then a join + render behind
+> `stamp_census.py --emit-register`. The set to classify is **20 undeclared NexusMind
+> fields**, not 132: Contract A declares 39 and Contract B 51 of the 212 observed.
+> ⛔ **Quote no field count without its window** — 163 at 2 cycles, 212 at 12, same box,
+> same day. The script prints the window; carry it.
+>
+> ### 🅒 Migration steps 3 and 4
+> **Step 3 is free** — no external reader: hoist the **13 lens fields measured identical across
+> every lens** on all 2,495 multi-lens articles (`content_length`, `original_content_length`,
+> `pre_enriched`, `should_translate`, `obit_pattern_count`, `primary_literature_detected`, and
+> all 7 `source_quality`), stored six times today for one fact. ⚠️ Three more measured invariant
+> and must **not** be hoisted — `passed_prefilter`, `normalization_method`,
+> `primary_literature_cap_would_apply` — their invariance is the value being constant, not the
+> fact being article-level. **Step 4 is paid**: `nexus_mind_attributes` → `nexusmind.lenses`
+> plus `display_rank`/`image_analysis`/`content_quality` touches four ovr.news files and needs a
+> Contract B bump. Its own issue.
+>
+> ---
+>
+> ### ⛔ Open, not forgotten
+> - **"132 fields" is a 2-cycle window, not the record.** At `--cycles 12` it is **212**, because
+>   `metadata.*` is per-source vocabulary. Any register must print its window.
+> - **The dual-write costs +593 bytes/row, 10.1%** of a 5,844-byte median filtered row. Drops
+>   back when steps 3–4 remove the duplicated flat stamps.
+> - **Block-ledger archives are NOT backed up off-site.** `sync_backup.sh` uploads only
+>   `nexusmind_*.tar.gz`; `raw_*` and the new `blocked_*` are local-only.
+> - ✅ **RESOLVED 2026-08-26 (#132, NexusMind `7adb615`)** — archived to
+>   `data/archived/prefiltered_YYYY-MM.tar.gz` (one directory per gate), swept by the same
+>   14-day cleanup, retention-cleaned and backed up off-site; the sweep is fail-closed and
+>   deletes exactly what the archiver reported archiving.
+>   `docs/decisions/2026-08-26-prefiltered-out-retention.md`.
+>   ⛔ **The 90.6% below is ONE CYCLE and is superseded**: over the 12 cycles the ledger can
+>   be joined on, pooled **88.3%** never reach it, per-cycle **72.5%–92.9%**. The single-cycle
+>   figure sat near the top of the range and was quoted in five documents before anyone asked
+>   what its window was. The conclusion is unchanged — the floor is the argument, not the
+>   pooled value. `NexusMind/scripts/research/measure_shadow_kept_share.py`.
+> - **`data/prefiltered_out/` is still in neither the cleanup nor the archive path** — it
+>   survives on luck, and it is the corpus that made LD#82 auditable.
+>   **Measured 2026-08-25:** one subdirectory (`violence_promotion`), **178 files, 7.7 MB**,
+>   `flagged_20260727_063455` .. `flagged_20260825_150946` — one file per cycle at ~200 KB,
+>   so **~1.2 MB/day, ~440 MB/year**. Growth is not the problem; **loss** is.
+>   ⛔ **It is NOT redundant with the block ledger, and the ratio is the reason to keep it:**
+>   the newest file holds **414 flagged rows** and only **39** of them appear in that cycle's
+>   ledger as `gate.violence_promotion` (39 of 39 matched, so the join is exact). The other
+>   **375 (90.6%) are flagged-but-KEPT** — the shadow population, which is precisely the
+>   evidence any argument about where the threshold sits has to be made on, and the ledger
+>   by construction never contains it. Rows carry id/title/url/source/`_violence_promotion_score`
+>   only — no content, which is why it is this cheap.
+>   **Decision taken 2026-08-26:** archive it on the `filtered/`+`blocked/` path (option 1).
+>   Doing nothing had been indistinguishable from choosing option 2, which was the part worth
+>   fixing either way.
+> - **Mark blocked articles processed** — the owner ruling that also ends ~22,000 re-evaluations
+>   per cycle. Deliberately NOT bundled: it changes admission behaviour, the ledger does not.
+> - **Stage ordering caps what a blocked row can say.** An article dropped in `load_articles` was
+>   never judged by violence_promotion or the academic merge gate — both carry
+>   `stamped`/`evaluated: false`, which is *not judged*, not *cleared*.
+>
+> ### ⚠️ Traps paid for this session
+> - ⛔ **A mutation survived because MY OWN TEST asserted something that could not fail.** I
+>   claimed the cleanup glob protected the ledger index; the index is `.json` and the glob is
+>   `*.jsonl`, so they never collide. Fixed the fragility (the index is now rebuildable), not
+>   the test. **Mutation testing found it; review did not.**
+> - ⛔ **I declared `gates.academic_merge` in the schema and never emitted it** — the exact
+>   defect class this record exists to catch, one hour old, and the OWNER caught it, not me.
+> - ⛔ **"Declared nowhere" was wrong.** Two contracts already declare most of the layer. Check
+>   what a premise excludes before building on it.
+> - ⚠️ **The service runs `--skip-cleanup`**; cleanup is a separate `OnSuccess` unit. A stage
+>   wired into `cleanup_old_data` still runs — but verify the unit, do not read the ExecStart.
+
+## 🟢 PREVIOUS — **three independent threads; pick one, they do not block each other**
+
+> **Updated 2026-08-23 evening.** Long session, large divergence, and the divergence produced
+> the most valuable thing: **`violence_promotion` went from 26 days of shadow to ENFORCING and
+> VERIFIED in production.** Everything below is committed and pushed.
+>
+> ### ✅ Shipped today
+> - **violence_promotion enforcing** (NexusMind `25d0ae2`, config only, rollback = `enforce: false`,
+>   next cycle, no deploy). Verified end-to-end: *"dropped 444 article placements across 6
+>   filters"*, **444 = 74 × 6 exactly**, and none of the 74 in that cycle's output (4,990 rows
+>   scanned, with a rows-scanned>0 control). **#82's audit is done** — the blocker was never data,
+>   it was that nobody had read 11,826 flagged rows sitting on disk.
+> - **`human_thriving` v8 step 1 rewritten and measured** (`232231e`). Class A **4/9 → 9/9**
+>   DeepSeek, **4/9 → 8/9** Gemini; the 4.4-point oracle disagreement is **closed** (arrest row
+>   1.00 / 1.05). Evidence: `docs/evidence/2026-08-23-step1-rewrite-r2-r3.md`.
+> - **Two owner rulings applied to the prompt**: accountability turns on **is anyone better off**
+>   (not on delivery); **money committed is not a protection established**.
+> - **Four documents**: `docs/BINARY_GATE_STANDARD.md`, `docs/BLOCK_LEDGER_SPEC.md`,
+>   `NexusMind/docs/ARTICLE_RECORD.md`, plus the evidence file. **#129** filed (crime detector).
+>
+> ---
+>
+> ### 🅐 The v8 accountability control set — **oldest debt, half an hour, ~$0.24**
+> ⛔ **I applied an owner ruling to the prompt and it has NO TEST.** The 15-row gate set contains
+> no accountability story, so re-running Gate A would not exercise the change at all. The rows
+> that would catch an over-suppression — the Brussels survivor/perpetrator meeting, the $30M abuse
+> settlement, the Myanmar amnesty — are **saved nowhere**. Candidates already located in `ovr.db`
+> (incl. *"Peruvian cardinal hails $150m lead poisoning settlement for 1,300 people"*, uplifting
+> 6.80 — the cleanest "someone is better off" case). ⚠️ That list came from crude keyword matching
+> and contains at least one false match (Amnesty International board elections); review before use.
+> **Hydrate 4–5 rows → add to `datasets/adverse/uplifting_no_regression.jsonl` → re-run Gate A.**
+>
+> ### 🅑 The block ledger — **now TIME-SENSITIVE, and today made it so**
+> ⭐⭐ `_is_commerce` and `_is_obituary` are **CONSTANT `False` across 25,122 rows** — not broken
+> stamps, constant *by construction*, because each gate's positives are dropped before persistence.
+> **`_is_violence_promotion` had 2 distinct values only because it was in shadow; from the next
+> cycle it is constant-`False` too.** Enforcing a gate removes it from the record. The ledger is
+> what restores it. Spec: `docs/BLOCK_LEDGER_SPEC.md` (P0 = stamp `_blocked_by` at the drop point;
+> the reason string already exists and is thrown away). **Owner ruling: a blocked article is never
+> reprocessed — mark it processed**, which also ends ~22,000 pointless re-evaluations per cycle.
+>
+> ### 🅒 The Article Record — **populate it** (`NexusMind/docs/ARTICLE_RECORD.md`)
+> Name and shape settled. Next: `docs/article_record_status.yaml` classifying all 132 fields, then
+> `--emit-register` on `stamp_census.py` to join machine half + human half. ⚠️ **Re-run at
+> `--cycles 12+` before acting on any `NEVER-POPULATED` finding** — at 2 cycles a rare field is
+> indistinguishable from a dead one, and the script says so itself.
+>
+> ---
+>
+> ### ⛔ Open, not forgotten
+> - **#129 crime detector is deliberately PARKED** until violence has run a few cycles. It is the
+>   same architecture; let the pilot prove the pattern before cloning it.
+> - **Six-lens re-check**: today's outcome proof covered `uplifting` + `solutions` only — the other
+>   four had not written when checked. Re-verify on any later cycle.
+> - **~29% of article placements reach the violence enforcement step unstamped and FAIL OPEN**
+>   (6,570 of 22,353). Not a regression — the documented behaviour — but it bounds the gate to
+>   ~71% coverage, and combined with recall 0.55 the honest description is *judges ~71%, catches
+>   ~half within that*. Worth its own NexusMind issue.
+> - **`nexus_mind_attributes.*.scores.<dims>` has no consumer outside the writers** — the
+>   per-dimension oracle scores, the most detailed thing the pipeline computes.
+> - **Phase B2 hard negatives (student side)** — still the larger half of class A and still **$0**.
+>   §1f measured 2 of 3 class-A rows as the *student* disagreeing with all three oracles. Untouched.
+>
+> ### ⚠️ Traps paid for today — do not re-learn these
+> - ⛔ **A check that scans zero files reports "clean".** My first outcome proof globbed
+>   `filtered_20260823_14*` — flagged files are named in **UTC**, filtered files in **local**. It
+>   matched 0 files and found 0 leaks. **Every negative needs a "could this have said yes?" control.**
+> - ⛔ **Absent from hot storage is NOT absent.** I reported 4 articles "aged out of retention";
+>   the 730-day archive had all of them. `tar xzOf data/archived/nexusmind_YYYY-MM.tar.gz | grep <id>`.
+> - ⛔ **Precision measured on the wrong population blocked a good gate for 26 days.** 99.6% of
+>   violence flags never reach a lens op-point. **Judge a gate on the SURFACING set.**
+> - ⛔ **`qwen3:14b` is not a usable judge** — unparseable on 74/75 here, and it zeroed a positive
+>   control on 08-22. Use `qwen2.5:14b` + a second judge, always with a random-negative control arm.
+> - ⛔ **commerce runs v1, not v2** — deliberate rollback; the shadow comparison found v2 not at
+>   parity on production traffic. Do not "upgrade" it.
+> - ⚠️ **Keyword harvesting for hard negatives was 92% wrong** (244 candidates → 8 confirmed).
+>   Mine the surfacing set, where FPs run ~50%.
+>
+
+## 🟡 PREVIOUS — human_thriving v8 plan (superseded in part by the Gate A run above)
+
+### The 08-22 planning block — **`human_thriving` v8: the plan is written and reviewed. Nothing is built.**
+
+> **Updated 2026-08-23.** The 2026-08-20 block below is superseded; its "academic register
+> is the defect" framing was wrong. **Read `docs/HUMAN_THRIVING_V8_PLAN.md` first** — this
+> block is a pointer, not a substitute.
+>
+> ### The plan in one line
+> v8 = **rewritten prompt + rebuilt corpus + retrained probe + hard negatives**, plus the
+> `uplifting` → `human_thriving` rename and a package brought to `nature_recovery v4` parity.
+> ⛔ An earlier draft called it "a relabelling, not a modelling change". Wrong on three counts.
+>
+> ### Three owner rulings now govern it
+> 1. **Class A (harm-adjacent / dominant subject, #91) is the priority** — *"the ones flagged
+>    by reader are actually far far worse."* Class B (#125, academic register) is secondary.
+> 2. **On harm/violence, optimise against the false positive** — *"way worse than missed
+>    detections."* Settles ADR-020 §3 vs ADR-023 in **ADR-023's favour**, scoped to this class.
+> 3. **Drop the per-lens keyword prefilter; retrain the probe** — it is a **four-language**
+>    instrument (**77** patterns, EN/NL/DE/FR = 74.9% of production; Spanish filtered at
+>    **0.89%** vs English's **8.89%**; Korean/Croatian match crime_violence at **0.00%**).
+>    Measured 2026-08-22. This is **ADR-011 finally applied**; same move as #98 for cultural_discovery.
+>
+> ### ⭐⭐ The finding that shapes the work
+> **A prompt-only v8 fixes about a THIRD of class A.** Three-oracle bake-off (Gemini /
+> DeepSeek / qwen3:14b on b650): 1 of 3 rows fails on all three oracles (label defect),
+> **2 of 3 are the student alone** — no prompt reaches those. Hence **Phase B2**, playbook
+> §4b hard negatives, $0 oracle.
+>
+> ### ⛔ The honest state — read before trusting any phase
+> **Class A's mechanism is STILL NOT established, and one candidate is now dead.** Confirmed:
+> harm-adjacent articles reach the top of the feed. Confirmed: the student fails where the
+> oracle succeeds (2 of 3 rows, §1f).
+>
+> ⛔ **H-CV1 is REFUTED (2026-08-22) — premise and all: the keyword prefilter NEVER RAN on
+> the v7 corpus.** The March-2026 version blocks **15.493%** (1,021/6,590) of the corpus it
+> supposedly built; those rows are in the splits, so it cannot have run. Corroborated by
+> `batch_scorer.py:1615`'s legacy `--prompt` mode marked *"NO PREFILTER SUPPORT"*. **There is
+> no depletion to undo.** Evidence: `docs/evidence/2026-08-22-uplifting-v7-corpus-provenance.md`.
+>
+> ⭐⭐ **But the corpus IS wrong, differently — H-UP10, and it is now the leading candidate.**
+> Owner: *"I want a proper data corpus to train on … the corpus partly determines the quality
+> of the result."* Four gaps, same instrument both sides:
+>
+> | | corpus (6,590) | production (205,939 stage2) | gap |
+> |---|---|---|---|
+> | harm as **dominant subject** (title) | **0.46%** (30) | 0.87% (1,798) | 1.9× under |
+> | …teaching the FIX (< 3.85) | **25 rows** | 1,663 | — |
+> | **positive base rate (≥ 4.5)** | **28.22%** | **7.74%** | **3.6× enriched** |
+> | non-Latin script | 4.57% | 7.26% | 1.6× under |
+> | median length | 2,658 ch | 1,349 ch | 2× longer |
+>
+> ⚠️ **A composition gap is not a mechanism.** The student saw 350 harm rows, conservatively
+> labelled, and still scores a torture story at 5.976. **Do not assume the rebuild fixes class
+> A — Phase B2 hard negatives stays load-bearing.**
+>
+> ⭐ **Class B is NOT a corpus problem** — the corpus *under*-represents primary literature
+> (arxiv 4.23% vs production 7.92%). #125 is a **prompt** defect. Spend no corpus budget on it.
+>
+> ### Where to start
+> 1. **Phase A — the prompt.** Lead with the dominant-subject rule (class A), then **step 2b,
+>    the live-process rule** — added 2026-08-22 and the cheapest large win in the plan:
+>    `evidence_level`'s own 0–2 band already reads *"No uplifting outcome to verify"*, which
+>    would cap the two worst owner-flagged rows at **3.0**, under both the op-point and the
+>    3.85 adverse bar. It scored them 6.21 and 6.44, so the one gatekeeper never fired.
+> 2. **Phase 0 — rebuild the corpus** against the four Gate 0 targets now written into the
+>    plan. ⚠️ "Match production's 7.74%" is the **wrong** base-rate fix — make the enrichment
+>    factor chosen and recorded, not accidental.
+> 3. **Land `corpus_manifest.json` (#127)** as part of Phase 0 — v8 would be the first filter
+>    whose corpus records how it was drawn. Gate 0 already demands most of the fields.
+> 4. **Scope the independent panel** (~200–300 rows, pipeline-sampled above the op-point,
+>    never shown to the oracle). Today **22 editorial rows** are the entire evidence base
+>    independent of the oracle; everything else grades the student against its own teacher.
+>
+> ### ⚠️ Traps that will bite, all measured
+> - **b650's GPU diverges from production at 4.5 — this filter's op-point** (3 verdict flips;
+>   specificity 0.9730 vs 0.9662). Train on GPU, **run the gate on CPU with `venv-prodparity`
+>   or on gpu-server**.
+> - **Oracle run-to-run noise is 0.82 mean / 2.25 max** (n=7) — 5× the #95 band. **A
+>   single-run oracle score is not a measurement.** Every oracle-side gate is a k-run mean.
+> - **`_load_prefilter` is an `@abstractmethod`** — dropping the file is safe, omitting the
+>   method means `TypeError` at startup and **no filter scores at all**.
+> - **A rename creates a SEVENTH filter**, scored in parallel, automatically.
+>
+> ### Still undeployed from 2026-08-20 (NexusMind, not this repo)
+> `NexusMind/src/scoring/primary_literature_cap.py` + hook + config — stamp-only shadow for
+> **H-UP6**. Deploy = `git pull` on sadalsuud while both units are idle; touches nothing in
+> `filters/`, so the gpu-server scorer never restarts. ⚠️ Pulling also brings 3 unreviewed
+> NM#188 research commits (`32e6c89`, `9b2a34b`, `34ac30e`) — `scripts/research/` only.
+>
+> ---
+
+## 🔵 PREVIOUS NEXT-SESSION BLOCK — **start at the 79.3%. It is the reliable-CDCR problem and it has a number**
+
+> **Owner direction 2026-08-16, superseding everything else: *"priority has to really have
+> reliable CDCR."* And: ⏸️ ***"park investment"*** (park, NOT remove — see below).**
+>
+> ### ⭐⭐ 1. The clustering is 79.3% artefact. Start here.
+> Four fifths of what production calls a merge sits **below** the 0.88 bar — articles match a
+> cluster **centroid** and inherit co-membership with items they are nowhere near. All 30
+> sampled pairs 0.772–0.873; one WWII-motorcycle article appears in **6 of 30**, an mpox
+> preprint in 4. **That is NM#188 / NM#228 / NM#278 and it dwarfs everything else in this
+> area.** Evidence table, the attractor examples and the caveats:
+> `memory/corroboration-feature-hypotheses.md` § *2026-08-16/17*.
+> ⛔ **Sequence is already settled and is NOT threshold-first:** complete-linkage via
+> **NM#228**'s shadow protocol, *then* NM#278. Tightening 0.88 → 0.92 destroys **94%** of
+> cross-language corroboration. **Still blocked on the one measurement nobody has made:**
+> complete-linkage declines ~39% of what production merges and nothing separates *false
+> merges correctly refused* from *real corroboration destroyed*. **That adjudication is the
+> single highest-value unstarted thing on this board.**
+>
+> ### 2. The temporal feature — built, certified, and shipping the REFUTED width
+> ⛔ It is **not** blocked on certification (that was my stale claim; INST-10 was certified
+> 2026-08-09 by a non-author — a session of *this* repo). Three real blockers: the
+> certification is **precision-side only**; the **recall test has never run** and INST-3 is
+> uncertified and lives off the deploy host; and **`sigma_hours: 72.0` is the refuted value**
+> (σ=18 → 83.6/85.9; σ=72 → 99.1/20.6 **fails**), where the term flattens into a near-uniform
+> bonus — arithmetically a threshold decrease, an axis already measured dead.
+> ⭐ **And the AUC cannot arbitrate σ — it is σ-invariant BY CONSTRUCTION.** Any before/after
+> merge-set delta must run at **σ∈[12,24]**, never 72.
+>
+> ### 3. Nothing else in this repo is urgent
+> `investment_risk` parked. #120/#121 closed. Contract A done. The corpus dedup on `id` is
+> specified and unrun — worth doing **before the next training run**, not before that.
+>
+> **#124 (self-hosted open-weight oracle) was filed 2026-08-17 and is DELIBERATELY NOT
+> NEXT** — owner: *"important experiments, but not right now."* P3-low. It exists so the
+> question is not re-derived from scratch; do not let it displace the 79.3%. ⚠️ **One
+> non-obvious coupling worth knowing before you touch either:** its step 1 (compare the
+> **already-collected** `qwen3:14b` / `phi4:14b` scores on the frozen 522-article cd v5 set
+> against the Gemini/DeepSeek scores in the same multi-oracle mix) is **free, needs no new
+> hardware, and produces exactly the evidence #109 Arm B is blocked on** — Arm B's gap #1 is
+> that the judge model is never named. Whoever unblocks Arm B should run #124 step 1 as the
+> same piece of work, not as a second one.
+>
+> ---
+>
+> ### ✅ LIVE 2026-08-17 09:50 CEST — the academic gate, in NexusMind
+> `006f8b9`, merged `cae561e` (PR NM#393), **deployed to sadalsuud while both units were
+> idle**. Tracking issue is **NM#392** (⚠️ *not* NM#391 — that number was cited in 8 places
+> before the issue existed and #391 was already a closed Contract A issue; caught before
+> commit. **A wrong issue number is invisible to every check we have, including `/curate`'s
+> dead-reference pass, because `#391` is not a path.** Verified 2026-08-17: no `#391`/`#392`
+> reference ever entered this repo). Review-by **2026-08-23**, deliberately shared with
+> NM#390 and NM#388 so one session settles all three.
+>
+> ⭐ **Config resolution was verified through the runtime config manager on the box, not by
+> reading the YAML** — **a MISSING key falls through to the code default `False` and is
+> indistinguishable from a working deploy at file level.** Same family as this repo's
+> four-places op-point rule: the file is documentation, the resolver is the truth.
+> ⭐ The `candidates == 0` **ABORT is recorded in NexusMind's hypothesis log as a hard rule
+> of the method, not a note**, so the 08-23 session cannot repeat the clean-looking pass.
+>
+> ### ✅ WHAT WAS BUILT — the academic gate, in NexusMind
+> Both-sides semantics, reads `metadata.primary_literature.detected` (a stamp that had **zero
+> consumers at three hops**), `pipeline.story_dedup.academic_gate.enabled`, ADR-022
+> stamp-always. **Suite 1403 green; five mutations each caught by a named test.** Value
+> `pl_pl` **0 correct of 28** (⚠️ rule-of-three bound ~10.7%, never quote 0.0% bare); cost
+> **322:1**. Enabled on the owner's instruction once my acceptance hold was withdrawn.
+> ⚠️ One batch, deliberately the densest (29.4% PL vs ~10% typical).
+> ⛔ **`largest_cluster` 456 → 43 is NOT banked in the gate's justification** — now
+> corroborated from a second direction and filed as NM#188 evidence instead.
+>
+> **Zero spend this session.** The paid re-adjudication I nearly commissioned was made
+> unnecessary by a free path: the 599 verdicts already existed; only the *label* on their
+> articles was missing, and two of six evidence classes were recomputable from stored rows.
+>
+> ### 🔁 Three method findings that outlive the gate
+> 1. ⛔ **Before DEMANDING a zero, prove a zero is ACHIEVABLE.** I set `newly kept == 0` as
+>    non-negotiable; it is unreachable for *any* gate in a greedy centroid clusterer, and I
+>    would have blocked a good gate indefinitely. The mirror of a rule we already enforce.
+>    ⭐ Killed by a **three-arm control**: off-vs-off **0** · off-vs-gate **302** ·
+>    off-vs-**random at matched prevalence 37,692 from FEWER refusals**. **A null arm that
+>    shares the mechanism but not the hypothesis.**
+> 2. ⚠️ **ADR-022's shadow pattern has a testable limit:** sound **provided the mechanism
+>    terminates its own scan.** The shadow counter read 885 off / **22,335** on until the
+>    cascade was barred (→ 904) — endogenous to the decision it was meant to forecast.
+> 3. ⛔ **A gate that refuses a merge must not CAUSE a different merge.** The refusal count
+>    alone looked excellent and would have shipped 247 invented news↔news merges.
+>
+> ⚠️ **Both predictions about the 302 were refuted** (mine: a real fraction genuinely good —
+> 0 of 30; theirs: garbage a minority — 28 of 30), and **the mechanism neither of us named
+> was the sub-threshold one.** ⭐ NexusMind corrected their own "7.4% of surviving merges are
+> invented" by measuring the denominator rather than assuming the 302 were a new defect
+> class. **A ratio only exists once someone measures the baseline.**
+
+## 🧹 2026-08-17 — `/audit-context`: housekeeping only. **Does not change the priority above.**
+
+> No filter, no model, no package, no deploy, **zero spend.** The reliable-CDCR / 79.3%
+> work above is untouched and is still first.
+>
+> ### ✅ FIXED this run
+> - **The index had no entry for the 08-16 night → 08-17 session** — the one that took the
+>   academic gate live. Ten commits and a production deploy were unindexed while
+>   `CLAUDE.md`'s *"Starting a new session"* row pointed at the file that did not know.
+>   Entry added, and it now carries the **deploy record durably**: `f28d3ca` wrote the LIVE
+>   line only into this file's top block, which is rewritten every session.
+> - **`memory/MEMORY.md` was 23 chars from its own hard-FAIL** (29,977 / 30,000). Six
+>   oversized entries trimmed — each verified to have its full repo session file **first**.
+>   Three values that existed **nowhere else** (`21+` validators, the `27–107` range, "the
+>   two schemas overlap on ZERO metadata keys") were **moved** into
+>   `memory/stamp-contract-integrity.md`, not cut. → **#123**
+> - **Last orphaned topic file closed**: `memory/opinion-genre-hypotheses.md` had an index
+>   entry but no `CLAUDE.md` pointer row. Added, with the op-point trap (#121's issue body
+>   scores `solutions` at 4.0; it is **2.25**).
+>
+> ### 🆕 OPEN — filed this run
+> - **#122** — `CLAUDE.md`'s frontmatter says *"OPERATIVE RULES (these govern)"* and the
+>   block **did not reach session context**. ⚠️ **One instrument (my own context window).**
+>   Confirm from a fresh session before fixing. Scope is wider than this repo: the framework
+>   template ships that frontmatter and **19 repos here carry it**.
+> - **#123** — the budget guard hard-FAILs with no soft stage, so a session's entry goes
+>   somewhere else **silently**. Headroom after this run is ~1.5k chars ≈ **one entry**, so
+>   the next close hits the same wall. Symptom fixed, mechanism not.
+>
+> ### 📋 NOT DONE — audit findings left on the table
+> - `project_session_2026_07_28.md` is a **name collision**, not a duplicate: the repo copy
+>   and the Claude-Code auto-memory copy are *different sessions* under one filename.
+> - Two auto-memory session copies (`_07_30`, `_07_31`) are stale, shorter duplicates of repo
+>   files. ⛔ Do **not** touch `_08_01/_08_02/_08_03` — marked *no repo file*, only record.
+> - `## Before You Start` is 9.4k — 26% of the loaded body — and **25 of 27 topic files are
+>   hooked in both layers**, with hooks grown from pointers into summaries. That is the
+>   duplication feeding #123's growth.
+>
+> ### 🔁 Method findings
+> - ⭐ **A self-referential size claim falsifies itself on the next edit.** The 08-16 footer
+>   said this file was *"cut to the size you see"*; my first edit made that false. Replaced,
+>   with a warning not to re-add the shape.
+> - ⭐ **Compressing an adjacent entry can silently drop a rung-4 reference** — the 08-15
+>   night lesson, and it fired again: `stamp_census.py` left the index. Caught by **diffing
+>   the resolved-reference sets before and after**, not by re-reading. Verified it survives
+>   in `CLAUDE.md` (the always-loaded layer, where the imperative belongs).
+> - ⚠️ **The reference checker was run on the seeded fixture FIRST** (24/24) so that the
+>   1-finding result read as a live check rather than a disabled one.
+
+## 🗄️ EARLIER 2026-08-16 — **#120 and #121 closed here; what is left is in other repos**
+
+> ### ✅ ARC CLOSED 2026-08-16 — ruled, built, deployed, verified on a live cycle
+>
+> NexusMind `fdffc4b` (Contract A **1.33.0**) deployed to sadalsuud; FluxusSource
+> `ae52470` pushed. **First post-deploy cycle 12:03 → 12:50:13 clean**: `PIPELINE
+> COMPLETE`, six filtered files, presence control PASS on all six loads, supersede
+> `+0 / 0` (the predicted ramp), `dup-url` 33,147 → 5,134 and `dup-id` 8 → 28,113 with
+> the **sum conserved to +92**, 0 duplicate ids, `content_length` 2265/2265. No trip, no
+> traceback.
+>
+> **Three things stay open, none of them this repo's to close:**
+> 1. **ovr's half of #119** — a **hash column on `summaries`**, entirely local and
+>    measurable today. ⚠️ *Corrected 2026-08-16 after I posted the wrong scope on #119:*
+>    ovr has **two** summary caches and only the **DB** one is id-keyed
+>    (`summarize.ts:826`); the JSON file cache is content-hash validated at all four
+>    lookup sites and **already re-summarises on an edit**. So ovr computes its own hash
+>    and **projecting `content_hash` does NOT gate this** — worth doing (both it and
+>    `collected_date` die at `RawArticle`, `types.ts:64-96`) but not a blocker.
+>    ⛔ **ovr still cannot use its own `collected_date`** for an ordering term: ovr's
+>    clock (`db-articles.ts:142`), frozen at first insert by `COALESCE` (`:81`).
+>    ⚠️ **And the ordering clause is UNESTABLISHED at ovr** — the ping-pong was simulated
+>    at NexusMind, which re-reads all of `data/raw` every run; ovr reads filtered output
+>    written once per cycle, and its file cache has run a bare hash-differs test at four
+>    production sites with no thrashing. **A contract term is not evidence that it binds
+>    at every consumer.** ovr is measuring hash *oscillation* over ~42 cycles to decide.
+>    Until something lands, a reader gets a corrected link under a pre-edit headline.
+>    #119 stays OPEN.
+> 2. ✅ **NM#390 — FIXED, MERGED AND DEPLOYED 2026-08-16 16:49 CEST** (`7726f5e` in
+>    `c78c031`, sadalsuud on `ca2816b`). `_normalize_url` stripped the query string,
+>    concealing the loss inside `duplicate_url`. Kept-set replay over a true fortnight:
+>    **+821 recovered, 0 newly dropped.** ⚠️ Still OPEN to its **2026-08-23** review-by —
+>    the replay is stored bytes, not a production observation. ⛔ **A production deploy
+>    happened here without a sign-off step; owner should know.** Full record, the four
+>    mutations and the 8-row open residual: § *NM#390 — SUPERSEDED* below.
+> 3. **NM#388's 08-23 watch** — the first `superseded_reprocessed > 0`. ⛔ **A zero
+>    before ~08-22 is the ramp, not a result.**
+>
+> ### ✅ DONE 2026-08-16 (evening) — #121 measured, #120 triaged. No filter, model,
+> package or deploy from this repo.
+>
+> **#121 (opinion/editorial) — MEASURED, and the motivating hypothesis is REFUTED where
+> it is measurable.** 233,338 rows, 85 cycles, 14 days, deduped by `id`; the issue's
+> first look was n=33. The within-source control **dissolves the effect in 5 of 6
+> lenses** — `belonging` 5.9× → **MH OR 0.98**. Only `investment_risk` survives (**2.05**,
+> 66 of 89 sources same direction, zero ties, reproducing on three independent detector
+> arms at 2.23 / 2.15 / 1.83). `solutions` **reverses** (0.50). Full record, traps and
+> reproduce commands: **`memory/opinion-genre-hypotheses.md`**.
+> ⛔ **#121's issue body measures `solutions` at op-point 4.0. It is 2.25** (runtime
+> `base_scorer.py`), which manufactured one of the two zeros its own "this contradicts my
+> motivation" paragraph rested on. Corrected in a comment, not in the body.
+> ⚠️ **What is NOT established: that the surfaced opinion is wrong.** The 25 flagged
+> `investment_risk` rows above op-point are geopolitical op-eds, and Hormuz *is*
+> investment risk. **A topic confound survives inside each source and MH cannot remove
+> it.** The remaining question is a lens-definition one for the owner, not a detector one.
+>
+> **#120 (references) — 50 → 1**, `48f48a5`. 33 repo markers, 15 placeholders (each
+> verified absent from every repo first), 1 strikethrough, 1 collision, 1 `vmodel` →
+> `vmodel.eu`. The survivor is `logo300.png`, deliberately left: it exists in no repo and
+> may be illustrative. **Zero was not reached by disabling anything** — `run.sh` 24/24
+> before and after, plus four seeded mutations (wrong-repo marker, fabricated file behind
+> a correct repo name, placeholder on a resolving path, mentioned-but-not-present), all
+> caught.
+>
+> ### ⚠️ THREE THINGS WAITING ON AN OWNER DECISION — 1 and 2 CLOSED 2026-08-16 (orchestrator)
+>
+> 1. ✅ **CLOSED — `datasets/` into `STATE_DIRS` was REFUSED as proposed, and a narrowed
+>    version shipped.** Two defects in the proposal, both measured, neither visible from
+>    reading it:
+>    - **It would have fired the finding it was written to prevent, immediately.** `rung3`
+>      sits *inside* the STALE-PLACEHOLDER `resolves` disjunction (`refcheck.py:274`), so a
+>      `STATE_DIRS` entry makes a `<!-- placeholder -->` on that dir resolve → STALE. Run
+>      with bare `datasets/`: findings **1 → 4**, the 3 new ones being exactly the markers
+>      at issue. The two mechanisms are alternatives, never both.
+>    - **The blast radius was understated and the benefit overstated.** `datasets/` holds
+>      **22 git-tracked files** (`adverse/` 14, `parity/` 8) — committed adjudication and
+>      cross-box parity sets, the files a broken reference most needs reported on. And of
+>      the "15 placeholders", only **3** carry a `datasets/` path (30 markers exist repo-wide).
+>
+>    **Shipped instead:** the six 0-tracked corpus subdirs only (`raw/ scored/ training/
+>    screening/ calibration/ gate/`) **plus removal of the 3 now-redundant markers.**
+>    Verified in all four states — old code/corpus absent **1**, old code/corpus
+>    materialised **4** (the predicted breakage, reproduced, not assumed), new code both
+>    states **1**. Seeded harness 24/24, annotations 18/0.
+> 2. ✅ **CLOSED — the #119 addendum is WRITTEN, with its central claim withdrawn.** "Measured
+>    not to occur — 1 of 157,870 rows has an empty url" measures identity *collision*, not a
+>    repoint, and could not have returned a positive. The rate is **17 of 161** shared
+>    content-hash values across two archive samples, same-source — repoints occur. Full text,
+>    limits and the do-not-restate caveat: § *Addendum 2026-08-16* under the #119 ruling.
+>    ⛔ Still owner's to ACCEPT: it narrows a published ruling to "edits are superseded,
+>    except where the URL moved."
+> 3. **CLAUDE.md is 35,464 — 464 over the soft target.** The file went over *after* the
+>    last curate reported 35.1k (`57ff0e2` added 354 with no size pass). Cutting the rest
+>    means touching text this session did not write: an `/audit-context` job.
+>
+> ### ✅ FS#133 (`metadata.syndication`) — RULED **NO** 2026-08-16
+>
+> FluxusSource measured all four questions I put and **argued against its own offer**;
+> I adopted their reasoning. ⛔ **The decisive number is not the 0.07% reach.** It is that
+> the field's VALUES are feed slugs: **38.4% of byte-identical drops are one publisher
+> colliding with itself** (BBC business vs BBC health, NYT politics vs NYT us, FAZ vs FAZ
+> Wirtschaft), so a `carried_by` array would have **named BBC twice and read as two
+> sources** — manufacturing the illusion the field existed to prevent, one layer down in
+> the data. A field can be correctly populated, schema-valid, and still wrong because its
+> values are not the thing its name promises. Zero distinct publishers in the entire
+> observed stampable population (n=6).
+>
+> Reach, for the record: 0.92–1.32% of rows are cross-source drops, and only **7.7%** of
+> those have the survivor still in hand (`seen_hashes` persists across runs, so most
+> collisions are against an already-delivered row) → **~0.07%, about 1 row in 1,400.**
+> ⚠️ **Their own correction runs the other way and they published it anyway:** FS#133's
+> "30 drops/day" was per-RUN mislabelled as per-day; the real figure is ~163/day, ~5×,
+> which made their offer look *better*. Instrument (an awk one-liner over `aggregator.log`)
+> is on the issue with the number.
+>
+> **Carrier vs source: they cannot separate them, and for 53.2% they cannot name the
+> carrier either** — GN's `url` is the opaque redirect and its `source` is our country-query
+> slug. ⛔ The one place the publisher IS named — GN's `" - <Publisher>"` title suffix — is
+> **parsed and discarded** at `rss_aggregator.py:609`, behind a comment asserting it "is
+> preserved separately in the ContentItem `source` field". **It is not.** Filed by them as a
+> false-comment defect, which is the more valuable finding: same class as this repo's dead
+> prefilter config, which survived six months because a comment vouched for it.
+>
+> **Counter-offer `metadata.publisher_host` on 100% of rows: NOT commissioned, and
+> deliberately narrowed.** It is derivable from `url` today for non-GN rows, so for those it
+> is convenience, not information, and convenience does not earn a producer change or a
+> contract slot. The only informative half is the GN case. ⛔ **Price the upstream fix before
+> the downstream one:** the entire benefit is reader-visible corroboration inflation and
+> nobody has measured it. Commissioned from ovr instead, on data that exists today
+> (host-from-url, zero FluxusSource work): *of clusters with a reader-visible corroboration
+> count ≥2, what share have 2+ members on the same publisher host* — GN-excluded,
+> GN-included, and the GN share reported separately, because the redirect breaks host
+> attribution in **both** directions. Range predicted in advance, 15–40%. High → ask them to
+> stop discarding the GN suffix. Low → close it, nobody spends the time.
+>
+> ✅ **CLOSED by FluxusSource the same evening** — FS#133 closed with the values-not-reach
+> reframing as its lead, the awk instrument published beside the corrected figure, and the
+> comment defect filed separately as **FS#186** (false-comment class, citing this repo's
+> dead-prefilter-config precedent). `publisher_host` recorded as *not commissioned* and
+> parked in their `memory/open-threads.md` so it cannot be re-proposed blind. Their edits
+> sit on `fix/fs133-syndication-closeout`, unmerged — owner's call.
+>
+> ⚠️ **The per-run/per-day correction INVERTS a ratio that was being quoted cross-repo.**
+> Their `memory/open-threads.md` said *"roughly 3× more syndicated copy passes through than
+> we remove"*, comparing ~84/day surviving against the **mislabelled** 25–30/day. Against
+> the real ~160/day it goes the other way; both sides are floors on different proxies, so
+> the honest statement is now **"same order of magnitude, neither dominates"**. ✅ **Checked
+> here: the 3× never reached this repo** (the 3× hits are unrelated: GN over-representation
+> in sub-300-char stubs, and cross-language pairs retained under complete-linkage).
+> ⛔ **It HAD reached ovr** — `ovr.news/memory/current-state.md:233`, found by FluxusSource
+> running the sweep across all four repos: **ovr.news 1 · pipeline-atlas 0 · NexusMind 0 ·
+> llm-distillery 0** (our 2 hits are the correction itself). Being replaced with *"same order
+> of magnitude, neither dominates"* rather than restated inverted — both sides are floors on
+> different proxies, so a ratio in **either** direction overstates what either measurement
+> supports. ovr's directly-measured 7-titles/14-rows figure is unaffected; only the scaled
+> comparison moves. ⭐ **I declined to assert absence from a tree I had not enumerated, and
+> that caution was load-bearing** — the soft form ("if it reached ovr") would have closed it.
+>
+> ⭐⭐ **THE SHARP PART, and it is FluxusSource's: ovr's bullet did EVERYTHING RIGHT and
+> still carried it.** It was labelled a pointer rather than ovr's own measurement, marked a
+> floor, carried all three caveats, and said re-derive before acting. **Every one of those
+> held, and not one could catch it** — because the defect was a *label on a number ovr had
+> correctly attributed*. **Provenance hygiene protects against misattribution, not against
+> the source being wrong in a way that passes arithmetic.** A unit or label rides untouched
+> through every reconciliation-shaped check we have. Third demonstration in one evening,
+> alongside the closed-accounting trap above; the general form is *when a figure is derived
+> from another figure, re-derive the UNIT at the boundary, because the arithmetic agrees
+> either way.*
+>
+> ### 📊 ovr MEASURED IT — and my pre-registered decision rule returned the WRONG ANSWER
+>
+> ⛔ **I pre-registered "high → commission, low → close" and it came back low. I am NOT
+> closing, and the reason must be read before the numbers, because setting aside a
+> pre-registered rule after seeing the data is exactly the move this project distrusts.**
+> The rule is void, not overridden: **its instrument was structurally blind to the
+> population in question.** ovr dedupes on `URL.hostname` (www-stripped, our PR#299 rule)
+> **upstream of the count** (`corroboration.ts` `getIndependentSources`), so a badge of N is
+> N distinct hostnames BY DEFINITION — reader-visible collisions are **0 of 554 by
+> construction**, and ovr ran that as a control expecting zero. Meanwhile every GN member is
+> unidentifiable by construction, so it can never enter the numerator my rule was reading.
+> **A rate that cannot be non-zero cannot license a "low".** My own working rule; my own
+> rule-writing missed it.
+>
+> **Raw upstream membership** (full host, not registrable-domain collapsed): GN-excluded
+> **24.1%** (102/423) · GN-included **22.6%** (125/554) · GN share of members **16.2%**
+> (268/1,653), clusters touching GN **32.7%**. ⛔ **Quote 5.4%, NOT 22.6%, as the
+> cross-publisher rate** — of the 125, **85 (15.3%) are the primary's own host echoed back
+> into its own sibling list**, an artifact of ovr's cluster-folding; only **30 (5.4%)** are
+> two SIBLINGS sharing a host, 10 both. ovr caught this before shipping me the headline.
+> Predictions on record beforehand: mine 15–40%, theirs 25–40%; both in range on a number
+> that turned out to answer the wrong question.
+>
+> **Population:** `fetchArticles()` → `allLensArticles` → drop `manual_suppression` → drop
+> summaries under `minDisplayWords` 50, mirroring `[lang]/artikel/[id].astro`. **Not**
+> `live_articles`. 2,714 pages, **554 (20.4%) carry a badge**, window 2026-08-06 → 08-16,
+> **span 10.43 days pinned by `ranking.maxAgeDays = 10`** — bounded by the population, not
+> the world. Upstream `corroborating_sources` exceeds the reader-visible count on **42.2%**.
+>
+> **What actually decides it, and none of it is the headline rate:**
+> - ✅ **GN members already collapse to one per cluster** (max 1 across all 554) — they share
+>   the hostname key, so my worry (i) was already handled, and not by accident.
+> - ✅ **The suffix is effectively 0% recoverable at ovr's boundary**: 12 of 181 GN members
+>   carry anything suffix-shaped, and hand-checking kills all 12 (`"Focus - In Nepal…"`,
+>   `"…' - news"`). **Independent downstream confirmation of FS#186** from the consumer end.
+> - ⛔ **THE EXPOSURE: 132 of 554 badges — 23.8% of ALL badges, 74.2% of GN-touching ones —
+>   are exactly primary + ONE GN member and nothing else.** If that member is the primary's
+>   own publisher re-routed through a GN country query, the corroboration claim is spurious.
+>   Not hypothetical: GN country queries aggregate outlets from the primary's own country,
+>   and one sampled cluster is an `east_african_the_citizen_tz` primary with a
+>   `gn_africa_gn_tanzania` sibling. **ovr can neither verify nor bound this.**
+> - ⚠️ **Pointing the other way:** of 67 GN members carrying a real-publisher `source` id,
+>   **zero** collide with a non-GN sibling. Small, non-random slice — weak, but it is the
+>   only direct evidence and it is exculpatory.
+> - 🆕 **Ours, not GN's: 2 of 554 badges (0.4%) count two members sharing an NM `source` id
+>   on DIFFERENT hosts** (`climate_solutions_daily_climate`, `global_news_el_pais_america`)
+>   — reader-visible same-outlet double-counting the hostname rule misses. Tiny, but it
+>   proves **host and `source` id disagree in BOTH directions**, so neither key alone is
+>   sound.
+>
+> ### ✅ CLOSED 2026-08-16 — **DO NOTHING.** All three sessions stood down, nothing built
+>
+> **Owner-facing one-pager (pick this up cold, don't re-read the thread below):**
+> https://claude.ai/code/artifact/d031e39f-e814-4647-a6a5-dc0c137ea2ee
+>
+> **The decision:** the exposure is real, **mostly self-liquidating, and no error has ever been
+> demonstrated.** ovr classified the 132 lone-corroborator badges by population, derived from
+> the feed config rather than guessed (positive control: the classifier reproduces ADR-007's
+> own A=59 / B=230 / C=13 exactly, and sadalsuud's live config diffs to zero against the
+> clone): **A 92 (69.7%) · B 37 (28.0%) · C 3 (2.3%) · unclassifiable 0.**
+>
+> - **B cannot produce a false badge — 0 of 37, structurally.** Those feeds exist *because* the
+>   native feed died, so only **4 of 34** distinct B hosts ever appear as a primary in a
+>   461-host corpus. Nothing to collide with. ⭐ ovr established this by **testing what their
+>   own free win would buy** — 37/37 resolve today with no producer change — and finding it
+>   buys **labelling, not correctness**. They talked themselves out of a cheap change.
+> - **C is 3 badges.** Permanent, negligible by count.
+> - **92 sit in population A, which ADR-007 retires** — unbounded in *time*, not in size.
+> - **Residual after A retires and B resolves: 3 badges.** No cross-repo change is worth that.
+>
+> ⚠️ **THE REVISIT TRIGGER, and it is the honest limit: population A was NEVER TESTED
+> DIRECTLY, and A is where the mechanism lives** (a country query can genuinely return the
+> primary's own publisher). Both zeros come from populations that either cannot collide (B) or
+> are a small non-random slice (the 67 GN rows with a real publisher id). **If A has not
+> meaningfully retired in a few months, test those 92.** That settles it; everything else is
+> settled.
+>
+> ⭐ **ovr's denominator catch, nearly a fifth wrong-thing number:** all 132 are GN by
+> construction, so the comparison is **within-GN** (A 67.6 / B 30.7 / C 1.7) — observed
+> 69.7/28.0/2.3, **almost exactly proportional**. Against all-rows share it reads as a uniform
+> ~3.5× over-representation, which is an artifact. They checked before writing up a skew.
+>
+> ### ⛔ POSTSCRIPT — the whole name-matching problem NEVER EXISTED. Struck, not restated
+>
+> **GN RSS carries a structured `<source url="https://www.itv.com">ITVX</source>` on every
+> item.** Measured live by FluxusSource, per population, unpooled: **A 892/892 · B 528/528 ·
+> C 1,156/1,156 = 2,576 of 2,576 (100%), every one with an http host.** ⛔ **So strike the
+> 14.1%** — do not restate it. The underlying claim (a large share of GN entries name a
+> publisher already in the corpus) is still true and probably much higher, but it came from
+> the wrong instrument. Everything downstream of it was an artefact of parsing a *display
+> string* while a structured host sat in the same item: the 31.6%→14.1% saga,
+> `Reuters`→`reutersinstitute`, the empty-string `سانا` bug, and the "floor because it cannot
+> see `The Jerusalem Post`→`jpost.com`" caveat. **There is nothing to normalize and no floor.**
+>
+> ⭐⭐ **AND THEIR OWN ISSUE #145 HAD IT FILED THE WHOLE TIME, WITH THE ANSWER IN THE TITLE** —
+> *"Harvest native publishers from GN's `<source url>` — 100% coverage, free, and 2.5× more
+> accurate than name-guessing."* Open all evening. It surfaced only because their owner asked
+> an unrelated question and sent them to `gh issue list`. **The generalisable form, theirs:
+> the ISSUE TRACKER IS A MEMORY LAYER, and it is the one nothing in the session-start path
+> loads** — CLAUDE.md, the handoff hook and the memory index all load; `gh issue list` does
+> not. **Before measuring a mechanism, grep the open issues for it.**
+> ⭐ Second, and it is the rule we already had applied everywhere except to itself:
+> **"there is only one way to get X" is a NEGATIVE EXISTENCE CLAIM**, and it was asserted from
+> reading the code in front of them rather than probing for alternatives.
+>
+> ⚠️ **Nothing re-opens.** RECOVER stayed closed on *value* — 92 A / 37 B with 0 spurious /
+> 3 C, three residual badges — and **a cheaper mechanism does not revive a benefit that is not
+> there.** FS#186 is *stronger*: the false comment claimed the publisher was preserved in
+> `source`, and it was in fact available **twice over**, in the suffix and in a structured
+> element — the comment stopped anyone looking for either.
+>
+> ### ⭐⭐ The three platform feeds were CAUGHT AND FIXED ON 2026-07-26 — and re-enabled
+>
+> Fixed and deployed. But the history is the cleaner instance of the promotion-did-not-take
+> shape than anything in the badge work: **they were caught on 2026-07-26 and disabled, with
+> the diagnosis written into each feed's own `notes` field** — *"captures ALL Substack, not
+> just one blog"*. **A bulk recovery sweep re-enabled both on 2026-08-04** because they
+> *"still yield (100 entries, newest 0.0d)"*. ⛔ **Yielding is exactly what that defect does,
+> so the acceptance test was measuring the SYMPTOM AS HEALTH.** And the sharpest part:
+> **the intent was not missing from the tool's inputs — it was in the very field the tool
+> rewrote.**
+>
+> ⭐⭐ **ovr's closing catch, and it is about HOW this was stopped, not what was decided:**
+> I stopped this thread for the owner's sake — he said he was lost — and the evidence closed
+> it independently in the same hour. **Those two aligning was LUCK, not design.** Had population
+> A come back untested *and* the evidence still been live, *"he's lost, let's stop"* would have
+> been the wrong call wearing the kind one's clothes. **Fatigue and resolution arriving together
+> is a coincidence to notice, not a confirmation.** Parked at ovr with a refutation criterion
+> (resolve the 92, compare against the primary's host; a non-trivial rate means the badge is
+> *wrong* rather than unverifiable, and SUPPRESS stops being conservative and becomes a
+> correction), a three-month review, and triggers on A's retirement or an owner re-decision.
+>
+> ⭐ **The estimate lesson, which outlives this question entirely:** **three cost estimates were
+> wrong in one evening, and every correction came from measuring something nobody had checked
+> was still there — never from an argument.** Every check any of the four repos runs verifies
+> *answers*. **Nothing anywhere verifies an ESTIMATE, and estimates are what the decisions
+> turned on.**
+>
+> ⛔ **A label collision I created and must not recur:** I named my OPTIONS A/B/C while ADR-007
+> names the POPULATIONS A/B/C, so *"B is free"* was true of population B and the exact opposite
+> for option B. Options renamed **SUPPRESS / RECOVER / DROP**. A/B/C = populations only.
+>
+> ### 🆕 SEPARATE, ACTIONABLE, NOT MINE — three feeds point at HOSTING PLATFORMS
+>
+> `ai_jellyfish_engineering` → `site:substack.com` (49 rows) · `economics_grumpy_economist` →
+> `site:blogspot.com` (30) · `ai_news_acm` → `site:go-vip.net` (5). All `enabled: true`, all on
+> curated **ai**/**economics** shelves, so arbitrary platform content (a Vikings QB competition,
+> a Maryland police shooting, Lagarde *becoming* ECB president) inherits editorial tags and
+> arrives looking curated. **84 rows of ~160,000 — trivial by volume, not by kind**; junk on a
+> curated shelf is the ADR-023 failure. `economics_grumpy_economist` presumably lost the
+> `johnhcochrane.` subdomain. ⭐ **The defect is not three feeds — it is that `site:` accepts a
+> hosting domain SILENTLY.** Syntactically perfect, semantically "the entire platform", live,
+> fetching, returning entries, passing every health check. **It surfaced only because I asked
+> for an enumeration for an unrelated reason — the discovery was luck, and the guard is a
+> deny-list of platform domains, not vigilance.** With FluxusSource's owner.
+>
+> ⭐⭐ **And the discipline keeper of the whole arc: FluxusSource produced a 62-item key/host
+> mismatch list and BINNED IT.** A ≥4-char stem test flagged `ai_ibm_quantum`→`ibm.com` and
+> `balkan_b92`→`b92.net` — a long, plausible, wrong list, same family as `سانا`→`herald`. They
+> shipped the 3 they had hand-verified off an explicit deny-list instead. **A big number in
+> hand at the end of an evening that had been about big numbers, and they threw it away.**
+>
+> <details><summary>The full thread — premise checks, four price revisions, and the A-vs-B
+> framing. Superseded by the closure above; kept for the reasoning.</summary>
+>
+> ### ⏳ BLOCKED ON ONE MEASUREMENT — "we're phasing out GN anyway" checked and REFUSED
+>
+> **Owner 2026-08-16: *"we are planning to phase out GN, so any trouble on their behalf can
+> be ignored, right?"* — NO, and `memory/google-news-corpus-hypotheses.md:211` already
+> forbids exactly this move**: *"do not budget for a GN phase-out, and never let one be sold
+> as a fix for short-content scoring."* Written 2026-08-12 about a different downstream
+> problem; fires identically here. ⭐ **The reasoning was sound and the premise was false** —
+> "don't fix what's leaving" is correct; Google News is not leaving.
+>
+> **ADR-007 (FluxusSource's) retires population A ONLY**, and A is ~59 of ~302 GN feeds:
+> **A** 55–59 country proxies, retiring on **no target date and no rate, by design** (gated
+> on a native replacement verified collecting in production, so it lands as many small
+> unscheduled per-country batches) · **B** ~230 enabled, **not in scope, hard by
+> construction** — repointed to GN *because the native feed died* · ⛔ **C** 13 topic
+> queries, **can never be migrated at all** (no `site:` operator ⇒ no publisher to return
+> to) = a **permanent GN floor**. GN share was still 24.1% before the first migration batch;
+> ⛔ *"do not infer a curve from the 6-feed Africa batch."*
+>
+> ⭐ **The twist that makes B stronger under a partial phase-out, not weaker:** the record
+> says the `site:` operator is what lets a GN feed resolve to a publisher, and a feed without
+> one *"cannot resolve to a publisher and falls through to `google.com`"* — that is C by
+> definition. **So the population that can never migrate is also the one that can never be
+> attributed by the normal route.** The headline suffix is a *different mechanism* from
+> `site:`, so it may be the only publisher handle on the permanent floor.
+>
+> ⛔ **BLOCKING GAP, and it is mine: FluxusSource's 1,142/1,142 was measured on 30 of 59
+> `gn_*` COUNTRY feeds — population A only.** I relayed it to the owner as "the suffix is
+> always there", generalising past their own stated sample. **Whether B and C carry it is
+> UNMEASURED and asked for**, per-population, unpooled.
+> **If the suffix rides on B and C** → B is right and gets *better* under the phase-out.
+> **If it is A-only** → B fixes the departing population and misses the permanent one, and
+> the recommendation inverts to dropping the badge. Prior stated in advance: near-100% on
+> all three, because the suffix looks like a GN rendering convention rather than a property
+> of the query.
+>
+> ### 🟠 OWNER RULED **B** 2026-08-16 — then I TOOK IT BACK: the price I gave him was wrong
+>
+> ⛔ **NOTHING IS AUTHORIZED. Nobody is building.** FluxusSource holds (not started), ovr
+> holds (not standing down — their ingest widening is likely on the critical path).
+>
+> **B is a THREE-repo change, not a producer parse, and the comparison the owner ruled on
+> was wrong in B's favour.** A is one repo ovr owns. B is FluxusSource's parse **plus** an
+> ovr ingest change **plus** probably a NexusMind pass-through, and it **delivers nothing
+> until the last one lands**.
+>
+> ⭐⭐ **The killer is MY OWN acceptance criterion, applied to the delivery and not to the
+> decision I made in the same message:** *a field that ships and never reaches them is the
+> same as no field.* "Producer work" is not "the change". Same shape as everything else this
+> evening — the number was right, the thing it was a number **of** was wrong.
+>
+> **Two sessions found the gate independently, neither reading the other's tree:**
+> `ovr.news/scripts/summarize.ts:963` and `:1424` explicitly reconstruct
+> `metadata: { quality }` only, and `RawArticle` (`types.ts:75-78`) declares just
+> `og_image_url` + `quality` — so **`metadata.*` is dead on arrival at ovr**, measured, with
+> the two lines that do it. ovr adds a **second gate in series**: field-by-field mapping at
+> the two `upsertArticle({` call sites. Neither gate announces itself. The standing proof is
+> `articles.content_hash` at **0 non-null across ~22k rows while being sent on every one**.
+> ⏳ **Open hop, asked of NexusMind:** does a *new top-level* Contract A field reach ovr, or
+> must NexusMind forward it too? Not assertable from outside their tree.
+>
+> ⭐ **FluxusSource corrected this AGAINST THEIR OWN INTEREST, twice** — they re-priced B
+> down (which got it chosen) and then back up (when the work would have been theirs).
+> ⭐⭐ **And the reusable finding is ovr's:** *the cost estimate that decided this was wrong
+> until someone re-fetched the live wire.* B looked expensive while everyone reasoned about
+> stored rows, then cheap while everyone priced only the producer. **Neither was an
+> argument; both were fixed by measuring something nobody had checked was still there. The
+> ESTIMATE was the weakest link twice in one evening — and estimates are the one part of
+> this process nobody runs a check on.**
+>
+> ⚠️ **Acceptance metric corrected (FluxusSource's catch on my own constraint): the 14.1%
+> CANNOT be it** — that number was produced by resolving names to hosts, which is exactly
+> what I forbade. Acceptance is *rows carrying a non-empty publisher name / delivered rows*,
+> expected near 100% of GN rows. The 14.1% retires to being an argument that the exposure is
+> real. **Whole-chain acceptance is ovr's:** re-run the 2026-08-16 probe against the 178
+> GN-counting badges and watch that number move.
+>
+> **Design constraints below stand unchanged — they are unaffected by the re-pricing.**
+>
+> <details><summary>The ruling and its design constraints, as issued before the re-pricing</summary>
+>
+> Commissioned to FluxusSource; ovr told explicitly **not** to build option A. **The
+> re-fetch is what decided it** — B was written up as unscoped research and turned out to be
+> a parse over data arriving on every fetch, which made preserving the badges the *cheaper
+> honest* option rather than the expensive one. ovr's framing (*exposure, not measured error
+> rate*; "under 5% would have closed it, this does not") is what made the question answerable.
+>
+> ⚠️ **Design constraints are MINE, not the owner's ruling** — he ruled *recover rather than
+> suppress*, nothing below:
+> - ⛔ **Deliver the publisher NAME verbatim; do NOT resolve to a host at the producer.** A
+>   wrong resolution is strictly worse than an unresolved name — it manufactures a false
+>   identity that reads as authoritative downstream, which is exactly what killed
+>   `metadata.syndication`. Any resolved host ships as a **separate nullable field**, exact
+>   token-boundary matches only, **null when unsure, never guess**.
+> - Assert non-empty **after** normalization at the point of comparison; no substring
+>   matching; count and expose the unmatched (that list is evidence the rule is too tight,
+>   not that the data is bad).
+> - Contract A declaration first, all-optional. ⛔ Does **not** re-open `metadata.syndication`
+>   or `publisher_host`; ⛔ **nothing is re-keyed on it** — it is an attribute, not identity.
+> - **Acceptance: observed on delivered rows with a population count, AND attributable at
+>   ovr's boundary.** A field that ships and never reaches the consumer is the same as no
+>   field.
+>
+> </details>
+>
+> <details><summary>The A-vs-B framing as it stood before the ruling (kept: the reasoning is
+> the reusable part)</summary>
+>
+> ⏳ **OWNER DECISION — I did NOT commission the FluxusSource work, and ovr's "commission it"
+> is not the only option on the table.** The honest framing is **exposure, not measured error
+> rate**: 23.8% of badges rest on a claim ovr cannot check. Two ways to stop asserting an
+> unverifiable thing, and the cheap one was never considered:
+> **A. Downstream, free, conservative** — ovr suppresses the badge when the ONLY corroborating
+> member is a GN row of unknown publisher. No producer change, no FluxusSource work, strictly
+> reduces unverifiable reader-facing claims. **Costs up to 23.8% of badges.**
+> ⛔ **I first wrote "shaped like llm-distillery ADR-023" and that citation is WITHDRAWN.**
+> ovr caught the seam on their own side (their ADR-042 governs article *removal*, not claim
+> strength on a published article) and asked whether ours had it. **It does, identically.**
+> llm-distillery ADR-023 is about **whether an article SURFACES at an op-point** — "the slot
+> refills" is explicitly about selection. A corroboration badge is a *different object*: the
+> article is already published and the question is whether an additional claim about it is
+> warranted. The intuition transfers; **the warrant does not.** Option A must be argued on
+> its own merits, not on a borrowed ADR. ⚠️ This is a second failure mode for bare ADR
+> numbers, distinct from the known one: not *resolving in the wrong repo*, but **resolving
+> in the RIGHT repo to a real ADR whose SCOPE does not cover the case** — and it is worse,
+> because qualifying the repo name (which I did) does not catch it.
+> **B. Upstream, preserves badges — and it is CHEAPER than it looked when I wrote this.**
+> FluxusSource stops discarding the GN title suffix (FS#186's site) so GN members become
+> attributable. ⭐ **Re-priced 2026-08-16 by them re-fetching the feeds live rather than
+> reasoning about them: 30 of 59 `gn_*` country feeds, 1,142 entries, and the
+> `" - <Publisher>"` suffix is present on 1,142 of 1,142 — 100%, no exceptions.** The data
+> is on the wire and re-fetchable; B is a parse plus a name→host table, not a research
+> project. **At least 14.1% (161/1,142) name a publisher we ALSO collect natively**
+> (aljazeera.com, thecitizen.co.tz, timesofisrael.com, France 24, Middle East Eye…).
+>
+> ⛔ **That 14.1% is a FLOOR and must NOT be set against ovr's 23.8% — different
+> denominators.** FluxusSource measured *"the GN entry names a publisher we collect at
+> all"*; ovr's 23.8% is the narrower *"the GN member is THIS cluster's primary's
+> publisher"*. It **bounds the mechanism, and is not a measurement of the exposure's size**.
+> Floor because matching is exact-equality only, so `The Jerusalem Post` → `jpost.com`
+> (which is in the config) is invisible. ⭐ **Their first pass said 31.6% and they threw it
+> away and told me**: substring matching gave `Reuters`→`reutersinstitute` (a different
+> organisation), `Daily Monitor`→`daily`, and `سانا`→`herald` because the Arabic name
+> normalized to the **empty string** and `"" in anything` is True. *A normalizer that can
+> return empty makes substring matching universally true* — worth carrying anywhere we match
+> names. They quoted the number they can defend, not the one they believe.
+>
+> **Net effect on the decision: the exposure is no longer plausibility.** At least 1 in 7 GN
+> country-query entries is a publisher already in the corpus, so a native copy and a GN copy
+> of one story arriving at ovr as two hostnames is a routine event. ⭐ **FS#186 now has 100%
+> present at the producer and 0% attributable at the consumer, measured independently at
+> both ends with neither side reading the other's code.**
+> ⛔ B is the expensive fix and A has not been priced against it. **Product/editorial call,
+> not mine:** A trades badge volume for honesty; B buys the volume back at a producer cost.
+>
+> </details>
+>
+> ⭐⭐ **WHY OPTION A WAS INVISIBLE FOR THIS WHOLE THREAD — ovr's, and the best thing in it.**
+> The question was framed as *"can we attribute GN?"* rather than *"must we claim it?"*, and
+> **the first framing only has producer-side answers.** Every measurement, every dispatch and
+> both of my rulings inherited that, so the free downstream option was excluded before any
+> evidence arrived. **The framing did the excluding, not the evidence.** ⚠️ Note the shape:
+> nothing was wrong at any step. The measurements were sound, the reasoning was sound, the
+> pre-registration was honest, and the answer set was still short one option — because a
+> question of the form "can we obtain X" silently presupposes X is required. **Before pricing
+> options, ask what the question presupposes.** This is not caught by any check we run; all
+> of ours verify answers.
+>
+> **Confirmed by them, and now recorded in `scripts/contracts/contract_a_smoke.py`'s own
+> docstring:** `FIELDS EMITTED: n/18` is **not** a completeness score. `charset_detected`,
+> `charset_detected_confidence` and `content_meta.error` are **conditional by design** —
+> chardet runs only when the strict UTF-8 rung fails, and it failed on 0 of 2,101 rows. So
+> **15/18 is a CLEAN result, not a partial one.** The note is in the script rather than a
+> memory file because the misreading happens when the output is read.
+>
+> </details>
+>
+> ### ⏸️ `investment_risk` — **PARKED 2026-08-16 by owner instruction.** #121 closes as moot
+>
+> **Owner: *"park investment"*.** ⛔ **PARKED means PARKED — nothing removed, nothing
+> deprecated, no package deleted, no lens retired.** `investment_risk v6` stays deployed
+> (HF Hub private, op-point 4.25) and keeps scoring. This is a *stop working on it* order,
+> not a teardown order; the 2026-08-03 `sustainability_technology` / `foresight` removal is
+> **not** the precedent to follow unless he says so.
+>
+> **Consequence: #121 closes as MOOT, not on its merits.** The lens-definition question below
+> was never answered and does not need to be. ⚠️ Note what dies with it: `investment_risk`
+> was the **only** lens where the opinion effect survived the within-source control
+> (MH OR 2.05, reproducing on three independent detector arms at 2.23 / 2.15 / 1.83). That
+> finding is real and is now parked with the filter — **do not re-derive it from scratch if
+> the filter is ever un-parked**; the record is `memory/opinion-genre-hypotheses.md`.
+>
+> ### 🟡 #121 — the question that is now moot
+>
+> **Owner 2026-08-16, verbatim: *"i think i am going to drop that filter, i am not really
+> interested anymore."*** So the lens-definition question below is **moot if
+> `investment_risk` goes**, and #121 does not need answering on its merits either way.
+>
+> ⚠️ **Marking the gloss: this is an INTENT, not a ruling.** "I think I am going to" is not
+> "remove it", and **nothing has been removed, deprecated or touched.** `investment_risk v6`
+> is still deployed (HF Hub private, op-point 4.25) and still scoring every cycle.
+> **Do not act on this line as authorization.**
+>
+> **What a drop would actually involve, so the decision can be made with the cost visible**
+> — precedent is the 2026-08-03 removal of `sustainability_technology` and `foresight`
+> (packages deleted, recoverable from git history):
+> 1. NexusMind stops loading it — it is the filter with the **narrowest** source-type
+>    admission (169,922 rows vs 233,338 for the others), so removing it changes no other
+>    filter's population.
+> 2. Its ovr lens/tab retires — `memory/ovr-lens-set-current.md` is the mapping, and this is
+>    the reader-visible half.
+> 3. Package deleted here; HF Hub repo is private and can stay.
+> 4. **#121 closes as moot**, and it is the *only* lens where the opinion effect survived the
+>    within-source control (MH OR 2.05, reproducing on three detector arms) — so the finding
+>    that motivated #121 dies with the filter it was about.
+> ⛔ Nothing above is scheduled. It is a cost sheet, not a plan.
+>
+> <details><summary>The lens-definition question as framed before the answer (unanswered,
+> and now moot)</summary>
+>
+> **Are `investment_risk`'s geopolitical op-eds false positives at all?** The 25 flagged
+> rows above op-point are geopolitical op-eds, and Hormuz genuinely *is* investment risk.
+> Everything measurable in #121 is answered; this is a lens-definition question, **the same
+> shape as #107** (where the scorer was faithfully serving a definition ovr had not
+> published). Not a detector question — a topic confound survives inside each source and MH
+> cannot remove it. Consequence either way, so it is a one-line answer:
+> **YES, they are false positives** → llm-distillery ADR-023 applies (a false positive
+> reaches a reader), and `investment_risk` needs an oracle-prompt change at the next version
+> — not a threshold move, since the confound is topical.
+> **NO, commentary about real risk is in-lens** → #121 closes with the detector recorded and
+> unbuilt, and the 2.05 MH OR becomes a documented property rather than a defect.
+>
+> </details>
+>
+> ### 🆕 FROM FluxusSource 2026-08-16 — **dedup the training corpus on `id`**
+>
+> Owner direction for the next arc, relayed by FluxusSource: *do dedup right, and do CDCR
+> right.* One half lands here. **The word was doing three jobs** and peer sessions were
+> arguing terminology: (1) exact/near-duplicate dedup — same text, cause is **syndication**,
+> mechanical, and FluxusSource does this and deliberately nothing else (MinHash removed in
+> FS#134, a Hard Constraint forbids ML in the collector); (2) **cross-document event
+> coreference** — same event, different wording, NexusMind's; (3) **corroboration** —
+> independent sources for a *claim*, a journalistic standard, **not an outlet count**, and
+> nobody measures it.
+>
+> **Actionable here:** archive re-emission means the same article can appear in the corpus
+> more than once, and llm-distillery#119 already ruled that `id` is identity
+> (`content_hash` is the change-detector). RSS ids key on the raw URL, so a re-emitted
+> article carries the **same `id`** — archive dedup is a one-key operation on this side,
+> and this is the right side for it: the collector cannot dedup across an eviction boundary
+> it has already passed, and we read 253 days of archive. Given the literature on
+> duplicated training data degrading models, worth doing before the next training run.
+>
+> **MEASURED 2026-08-16 by FluxusSource, after I flagged the bound — dedup-on-`id` lands
+> at ~89.4%, and the residual is a known shape rather than an unknown.** Same two archive
+> samples ~35 days apart: **161 `content_hash` values present in both**, of which 144 also
+> match on `id` (caught) and **17 have the same content and a DIFFERENT `id` (missed) =
+> ~10.6%**. Split by `source` to separate the two possible causes: **17 same-source (URL
+> changed), 0 different-source (syndication)** — so the residual is entirely this repo's
+> case and is *not* inflated by wire copy, which would carry the same `content_hash` and a
+> different `id` by construction.
+>
+> **Why it is that small, and why it is believable:** verified here —
+> `FluxusSource/src/utils/content_hasher.py:94 normalize_url_hash` canonicalises protocol,
+> trailing slash, parameter *ordering* and tracking parameters, while `id` keys on the
+> **raw** url (`FluxusSource/src/aggregators/rss_aggregator.py:702`). The canonicalisation
+> exists and simply is not in the id. Independently: on one 2,101-row collection 35.0% of
+> URLs carry a query string, but the tracking-ish params are **constant per feed**
+> (`?ref=rss` 58, `?utm_source=rss_feed` 52, `?UTM_Source=cgtn` 24) rather than per-visit
+> tokens — constant params do not change between emissions, so most re-emissions keep
+> their URL and their id. ~10% is what that predicts.
+>
+> ⛔ **Do NOT "fix" this by re-keying `id` on the normalized URL.** It would re-mint every
+> RSS id estate-wide and orphan every downstream row — the failure llm-distillery#119's
+> identity ruling makes catastrophic. Stated by FluxusSource as an observation, not a
+> proposal.
+>
+> **If the last ~10% is wanted the second key is `content_hash`, and that is a
+> training-data judgement, not an identity one.** It is a change-detector, so it also
+> collapses *genuine edits* into one row — precisely why #119 ruled it is not identity.
+> Defensible for a training corpus, wrong for the pipeline. ⚠️ It is title +
+> first-500-chars, so an article edited past char 500 is invisible to it.
+>
+> **Limits, as stated by the measurer:** two samples, not the population; >30-day
+> separation means TTL/cap evictions (expected behaviour), not the shorter 8–19 day gap
+> that closes ~2026-08-27.
+>
+> ⛔ **Do NOT quote FluxusSource's "4 ids of 159,971 appear in more than one run".** The
+> on-disk span (~8d) and the dedup retention window (~8d) coincide, so a repeat has almost
+> no room to be *observable* — structurally blind, and **the same trap that produced my own
+> retracted "0 reader exposure" on #119.** Measured where it *can* be seen, two archive
+> samples ~35 days apart share **183 of 44,095 ids ≈ 0.4%**, roughly 46× what the hot-window
+> figure suggests — and that is **a floor, not a rate** (samples, not the population).
+> ⚠️ Also live until ~2026-08-27: their dedup window is 8.0d against a widest per-feed
+> cutoff of 19d (aftermath of FS#142's store wipe, refilling ~1d/day, WARNING on every run),
+> so items aged 8–19 days can re-emit. Self-healing, no code change planned.
+>
+> **Offer on the table, not taken:** they count cross-source drops (30 on 08-15, 25 on
+> 08-16 — identical wire copy from two outlets) but stamp nothing on the survivor. They
+> could add `metadata.syndication = {count, sources[]}` — additive, mechanical, and it lets
+> any downstream CDCR discount a syndicated cluster to one independent source instead of N.
+> Scoped against FS#133. **Owner decision.**
+
+> ### ⛔ NM#390 — SUPERSEDED 2026-08-16 evening. **It is committed, merged AND DEPLOYED.**
+>
+> ⛔ **Every premise in the block below this was STALE within hours, and I relayed all four
+> to NexusMind as fact.** Corrected by that session re-deriving from its own tree rather
+> than adopting my message — which is the third round running where a relay was wrong and
+> only the receiver's re-derivation caught it. **Do not relay a cross-repo tree state; ask
+> the session that owns the tree.**
+>
+> What is actually true: fix is `7726f5e`, merged in `c78c031`, tree clean on `main`. The
+> two tests were **already converted, in that same commit, along the lines I later "ruled"**
+> — `test_duplicate_url` became a PAIR (`test_url_gate_off_by_default_keeps_the_row` +
+> `test_url_gate_drops_the_row_when_enabled`), old coverage reclassified from default to
+> rollback rather than deleted. sadalsuud is on `ca2816b` with
+> `pipeline.url_dedup.enabled: false` present, **deployed 2026-08-16 16:49 CEST** — before
+> either session wrote, so this is a past action to learn about, not a pending one to
+> approve. ⚠️ **Owner: a production deploy happened without a sign-off step.** Flagged as
+> the item; not the deploying session's to justify.
+>
+> **The kept-set replay, run because my `|old \ new| = 0` prediction was not on record** —
+> and it was not trivially true, because the TITLE gate is a live side channel: rows the url
+> gate used to drop now reach `seen_titles` and could newly collide. 87 collections,
+> 195,233 rows, window **2026-07-12 → 2026-07-26 = 14.08 days, a true fortnight, no
+> pro-rating**. `|new|` 183,313 · `|old|` 182,492 · **`|new \ old|` 821** · **`|old \ new|`
+> 0** (stop condition clear). Side channel reclassifies rather than creates:
+> `duplicate_title` 3,031 → 3,251 (+220), `duplicate_url` 1,049 → 0, none of the 220
+> previously kept. All 821 distinct on id, content_hash AND title; 10 read by hand (distinct
+> PLOS DOIs, gdacs eventids, HN item ids).
+>
+> ⚠️ **821 landing inside the predicted 800–1,000 is NOT independent confirmation.** That
+> range traces back to the earlier 157,870-id comparison — same instrument, different
+> window. What makes the result strong is `|old \ new| = 0` with the side channel live.
+> ✅ **The 8-row residual is CLOSED, and my explanation was REFUTED, not confirmed.** I
+> guessed counters-are-events vs kept-set-is-distinct-ids. Tested directly: `duplicate_url`
+> events = 1,049, distinct ids = 1,049, **repeats = 0** — an id can be url-dropped at most
+> once by construction, because `_check_batch_id` returns before the url check, so a second
+> row with that id dies as `duplicate_in_batch` and never reaches the url gate.
+>
+> **Real cause: two gates run AFTER the url check** inside `_is_duplicate` — commerce
+> (~:1092) and obituary (~:1099) sit below it (~:1079), so rows the old arm killed at the
+> url gate never reached them. Full fate of all 1,049: **821 newly kept · 220 title gate ·
+> 7 commerce_blocked · 1 obituary_blocked = 1,049 exactly**, every counter delta
+> reconciling independently, and newly-kept ids not in the url-dropped set = 0 (no
+> second-order additions).
+>
+> ⭐⭐ **THE KEEPER, and it is theirs: their FIRST pass also summed to 1,049.** It reported
+> 212 title-drops + 8 `duplicate_in_batch` — an equally satisfying story that closed just as
+> neatly, and was wrong: dispositions were keyed with `dict(events)`, which keeps the LAST
+> event per id, and **94 ids carry more than one drop event** (row A dies at the title gate,
+> row A′ then dies as `duplicate_in_batch`). Those 8 were title-drops wearing the wrong
+> label. Re-keying on the FIRST drop event gives 220, matching its counter delta exactly.
+>
+> ⛔ **So: A CLOSED ACCOUNTING IS NOT A CORRECT ATTRIBUTION.** *Two different attributions
+> both summing to the same total is the thing to distrust, not the sum.* The sum closing is
+> a weak check whenever the parts are derived from one partition — it is guaranteed by
+> construction and cannot discriminate between partitions. What actually caught it was a
+> **cross-instrument disagreement**: 212 did not match the +220 counter delta. Had the two
+> been read off the same object, nothing would have found it. ⚠️ Note the shape I warned
+> about in my own message *did* occur — one level in from where I predicted it, and my
+> prediction of the shape did not protect against it; an independent counter did.
+>
+> **Mutations, four directions:** A (delete url block) RED · B (restore always-on) RED ·
+> C (wrong reason string) RED, assertion reached · **D (url check moved before id check)
+> STAYED GREEN — reported, not hidden.** Two tests added for the same-url/same-id contract
+> do **not** discriminate D (with the gate off the url check cannot return early, so the
+> swap is a no-op); kept for contract + counter attribution, **docstrings rewritten to say
+> they are documentation, not protection.** ⭐ Generalise that: *a passing test whose
+> discriminating power was never established is the same object as a config key nobody
+> proved is loaded.* Rollback verified by EXECUTION — gate off, `len(seen_urls)` = 3,979,
+> members printed, flip-on drops immediately. Suite 1,396 passed (+2).
+>
+> ⚠️ **This is a counterfactual replay over stored bytes, NOT an observation of production.**
+> NM#390 stays open to its **2026-08-23** review-by; first cycle under the change was 20:01
+> CEST 08-16. ⛔ At that observation the obvious check is invalid again — `duplicate_url` → 0
+> is the intended effect and cannot separate a working gate from one that stopped running.
+> Compare kept volume against the replay's +821/fortnight, print window span and file count,
+> and **make zero files ABORT rather than report**.
+
+> **Contract A is DONE and running.** 17 of 18 fields on delivered rows, four consecutive
+> deliveries clean against both schemas, all code pushed and deployed across three repos,
+> nothing dirty or unpushed anywhere. #111 and #112 closed with the measurements. The
+> daily check fired unattended for the first time at **02:22:45 on 2026-08-16** — confirmed
+> in the journal, and the only unattended fire so far; the three later runs that day were
+> hand-started.
+>
+> ⚠️ **That 02:22 fire read `ok / info`, not `clean`, and this block said otherwise until
+> 2026-08-16** *(corrected against the journal and NexusMind's own reflog)*. Three errors in
+> one sentence, all in the flattering direction: (1) the first `clean` run was **08:38:42**,
+> not 02:22; (2) at 02:22 the check had **three** classes, not five — `emission.structural_
+> block_absent` and `freshness.input_stale` landed in NM#382 seven seconds before the 08:38
+> run; (3) **`info` never meant a finding.** It is manufactured at `contract_check.py:984-986`
+> from `classes_not_asserted > 0` on an otherwise-`clean` roll-up, so it means *"I could not
+> look at one thing"*, with `status: ok` and exit 0. What made it assert was neither code nor
+> the collection: NexusMind's own pipeline wrote `data/ingest_contract_stats.json` at
+> 08:14:41, and `unreported.schema_invalid` had been waiting for that file to exist.
+>
+> ⛔ **`clean` is a PER-RUN VERDICT, not an achieved state — do not record it as one.** It
+> means every class was evaluable on that run's bytes and none went red.
+> `emission.structural_block_absent` is scoped to `source_type == "rss"` and goes
+> *not-asserted* (never `clean`) on a delivery with no RSS rows, which reverts the headline
+> to `info`; `freshness.input_stale` needs three retained collections. A future `info` is
+> designed output, not a regression.
+
+### ✅ #119 RULED 2026-08-16 — `id` is identity, `content_hash` detects the edit, last-write-wins
+
+**Ruled twice the same day, because the cost I quoted the first time was wrong.**
+
+> **Identity is `id`. `content_hash` is a CHANGE-DETECTOR, not an identity** — a differing
+> hash on a known `id` means EDITED upstream, a case distinct from *duplicate*. Both fields
+> are already `required` and already delivered, so this names the pair rather than adding to
+> it. **On a repeat id with a new hash: replace, last-write-wins.**
+
+**Scope — three changes across two repos, none of them here.** ⛔ *The contract sentence
+alone is not the decision; shipping only it declares a norm no consumer implements.*
+
+1. **NexusMind** lets an edited row through as if new. ⚠️ **Not** a branch in `_is_duplicate`
+   — wrong altitude: it returns into a loop that can only `continue`/`append`, and across
+   runs the earlier copy was already scored into a prior `filtered_*.jsonl` this run never
+   opens. Sufficient for the row itself: ovr's `ON CONFLICT(id) DO UPDATE SET title, url,
+   content` (`db-articles.ts:65-127`) is unconditional.
+2. **`content_hash` is propagated** to ovr — today `articles.content_hash` is **0 of 22,191
+   rows non-null**, so the change-detector the rule names never reaches the display layer.
+3. **ovr invalidates the summary cache** on a hash change. Its summary — what the reader
+   actually reads — is cached on **article id only** (`summarize.ts:826`), so a corrected row
+   hits `if (cached) continue`. **Steps 1+2 alone yield a pre-edit headline pointed at a
+   post-edit URL** — neither the correction nor the original. That is what forced the re-ask.
+
+⚠️ **Two false-positive modes for "a differing hash means an upstream edit":** a producer-side
+extraction/cleaning change flips the hash on stable ids with nothing changed upstream (FS#143
+precedent — changing hash inputs re-emits the whole back catalogue as new; guard with a
+volume trip); and `content_hash` is MD5 of `title | content[:500]`, so an edit past 500 chars
+changes neither key. **The second belongs in the contract sentence, not a footnote.** If LWW
+is tie-broken on `collected_date`, read `collected.clock_source` first — 19 aggregators stamp
+host-local (CEST) in a shape byte-identical to UTC; per-`id` ordering is safe, cross-family is
+off by 2h (FS#176).
+
+#### ⛔ Retracted the same day: "RSS cannot produce this signal"
+
+**RSS `id = md5(f"{source}_{url}")[:12]`, keyed on the RAW URL** (`rss_aggregator.py:702-703`),
+so a content edit at a stable URL **keeps the id**; only a repoint mints a new one. The split
+is not family-vs-RSS, it is *what changed*. What hides the case is the producer's seen-URL
+cache — **and only while the item is in it.** Effective window **~7.7 days** against
+`feed_cutoff_days` of **10 and 19**, so past eviction an edited RSS article arrives as
+same-id/new-hash: #119's exact shape on ~99% of the corpus. **Open right now**; it closes as
+the store refills past the widest cutoff.
+
+⛔ **And the measurement could not have seen it.** The on-disk collection span (~8 days) is
+the same length as the eviction window (~7.7 days), so a repeat requiring eviction has no
+room to appear. **`0 observed` is what that population must return whatever the truth is** —
+the fifth structurally-guaranteed zero in two rounds. The surviving half is family mix,
+re-measured on a sound superset (`ovr.db articles`, **22,191 rows, 2026-04-04 → 08-16**):
+hackernews **0**, github **0**, stackoverflow **0**, reddit **0**, pubmed 98, arxiv 14.
+
+⚠️ **Also retracted: `live_articles` is NOT the reader population.** It is legacy and off the
+build path — the site reads `getArticlesForBuild` (`db-articles.ts:270`, called at
+`data/pipeline.ts:83`), a join over `article_filter_scores` + `summaries`. Two comments in
+ovr warn about this; one was written after a script made the same error. **The deployed view
+has itself drifted from `db-schema.ts:793`** — the live DDL filters `tier IN ('high','medium')`
+where the source says `weighted_average >= 4.5`. See `memory/nexusmind-data-sources.md`.
+
+**Filed, owner ruled record-only: FS#183** — an RSS article edited at a stable URL is
+suppressed at the producer before its content is ever compared (`content_aggregator.py:565-570`,
+the `continue` at `:570`). Same mechanism as #119 on the other side of the eviction boundary,
+not the inverse case. 2,888 of 4,950 candidates suppressed in one run, 2,773 on the URL key.
+
+#### 📌 Addendum 2026-08-16 — the repoint case has a RATE, and it is not zero
+
+The retraction above already names the case: *only a repoint mints a new id.* What was missing
+is how often. ⛔ **The figure offered with this addendum — "measured not to occur, 1 of 157,870
+rows has an empty url" — does not measure it, and is withdrawn rather than filed.**
+
+An empty `url` collapses every row of a source onto `md5(f"{source}_")[:12]`: that is an
+IDENTITY-COLLISION probe. A repoint is two rows with two *different, non-empty* urls and two
+different ids — precisely what an empty-url count cannot register. The instrument was pointed
+somewhere that cannot produce a positive, so the negative carried no information. Sixth
+structurally-guaranteed zero in two rounds, and the second in this file where the instrument
+was the defect.
+
+**The rate, from evidence already in this document (§ dedup the training corpus on `id`):** two
+archive samples ~35 days apart share **161 `content_hash` values, of which 17 have the same
+content, a different `id`, and the SAME `source`** — a URL that changed under a stable article.
+Repoints occur, and are not rare where re-emission happens.
+
+⚠️ **Do not restate 17/161 as "10.6% of articles are repointed."** The denominator is
+content-hash values present in *both* samples — heavily conditioned, not the corpus. Three
+further limits: `content_hash` is title + first-500-chars, so "same content" is an
+approximation; two samples, not the population; and identical content at a new URL is not
+necessarily a publisher *editing* a link — republication at a new path has the same signature
+and the same consequence for identity.
+
+**Effect on the ruling: bounds it, does not overturn it.** `id` stays identity, `content_hash`
+stays the change-detector, LWW stays correct. The bound is that for the repoint fraction the
+supersede path *structurally cannot fire* — the edit arrives as a new item and the old row is
+left standing. So #119 promises "edits are superseded, EXCEPT where the URL moved." ⛔ Still the
+owner's to accept, because it narrows a published ruling. ⛔ And it is **not** fixed by re-keying
+`id` on the normalized URL — see the corpus-dedup section for why that orphans the estate.
+
+**Producer-side gap this created:** `FluxusSource/docs/OUTPUT_CONTRACT.md:33` documents `id`
+as `<source>_<hash12>` and says nothing about what it survives — the one property the ruling
+depends on. With the FluxusSource session's own owner.
+
+**Deliberately NOT next:** distribution drift, the last uncovered observability pillar. It
+is the heaviest to build and, unlike the two closed this morning, **nothing suggests it is
+biting us.** Wait for evidence.
+
+### ✅ CONTRACT A IS IMPLEMENTED — 17 of 18 declared fields ride on delivered rows
+
+**Built and deployed 2026-08-15 evening, ~4 hours end to end.** Measured on delivered
+bytes twice, by this session and by FluxusSource independently, with identical results:
+
+| delivery | rows | blocks | validation |
+|---|---|---|---|
+| `collection_20260815_200845` | 3,040 | all six | producer schema **0 errors** · Contract A 1.30.0 **0 errors** |
+| `collection_20260816_000647` | 2,318 | all six | **0 errors** · **0 errors** |
+
+⚠️ **`published.element` is VALID but nearly vacuous as evidence** *(NexusMind, over 9,451
+delivered rows)*: the distribution is rss `updated` **9,076** / `null` 89 and **nothing
+else**, api `publishedAt` 245 / `created_at` 41 — **one of nine enum members**. Verified
+against feedparser 6.0.12 with a hand-built document: an RSS **`<pubDate>` is exposed as
+BOTH `.updated` AND `.published`**, `entry.pubDate` never exists, and the probe walks
+`RSS_DATE_ELEMENTS` in order. **So `element` records which probe key matched first, not
+which element the publisher wrote** — an RSS `<pubDate>` and an Atom `<updated>` are
+indistinguishable. ⭐ And the hypothesis predicted `tags.term` would be 0 and read
+observing 0 as confirmation: it **could not have been anything else**. NM#384. The enum
+stays (0 rows rejected, and `date_fields` derives from the tuple so the two cannot
+drift); the entry is downgraded, not confirmed.
+
+```
+published    3,031/3,040   raw · element · had_timezone · precision · fabricated
+collected    3,040/3,040   clock_source
+content_meta 2,937/3,040   kind · echoes_title      (= 100% of RSS)
+fetch        2,937/3,040   at · charset_declared · charset_detected · charset_used
+                           · charset_detected_confidence
+feed           405/3,040   ttl_declared
+origin         573/3,040   country · region · timezone
+```
+
+The 18th field, `content_meta.error`, is **correctly absent**: it exists only on a
+derivation fault and none occurred. ⛔ **Do not report that as a gap.**
+
+**Deleted rather than implemented (Contract A 1.27.0):** `fetch.{http_status,
+url_requested, url_final, content_encoding}` and `feed.cadence_hours` — one constant by
+construction, four per-feed facts that belong in the per-run feed-health report. Measured
+first: **0 of 170,266 delivered rows across 54 collections** carried a `fetch` or `feed`
+block, so no reader could break.
+
+#### ⭐ Four results the fields produced in their first two deliveries
+
+1. **`fabricated: true` observed in a DELIVERED run for the first time** — 44 rows at
+   20:02 across four sources (`austrian_vienna_at` 24, `china_nikkei_asia` 10,
+   `indonesian_mongabay_id` 7, `norwegian_dagbladet` 3), each carrying `raw`/`element`/
+   `had_timezone`/`precision` as **null**. That confirms Contract A 1.24.0's
+   null-⟺-fabricated clause **on live bytes**; it had only ever been tested against a
+   hand-written row.
+2. **`clock_source` partitions #176 EXACTLY**: `host_local` 95 / `utc` 2,945 at 20:02 and
+   82 / 2,236 at 00:02 — the `host_local` count equals the api row count and `utc` equals
+   rss + social, **with no mixed cases in either run**. ⭐ A clean partition is falsifiable
+   in a way a percentage is not.
+3. **The single-byte decode rung became countable** — 41 rows at 00:02, all
+   `southeast_asian_antara_en`, no declared charset, chardet `iso-8859-1` @ **0.73**,
+   decoded `cp1252`, and **zero carrying the mojibake signature**. It logs at DEBUG and had
+   been invisible for the life of that repo. First producer-side datum for the mojibake
+   thread — ⚠️ **`FS#170`** (open; `FS#167` closed on its analysis, `FS#168`, `FS#124`),
+   **never a bare `#167`**: both repos number from 1, and a bare relay of this one was
+   recorded as `NM#167` — an unrelated closed normalization issue — in Contract A's own
+   schema and CHANGELOG before being caught. Always qualify a cross-repo id. Its
+   shape matters: one non-Western publisher, no declared charset — consistent with NM#338's
+   6.86× non-English skew.
+4. ⚠️ **`charset_detected != charset_used` is EXPECTED, not a signal.**
+   `ENCODING_CONFIDENCE_MIN = 0.85` and the guess enters the attempt list only above it, so
+   below the bar the two disagree **by construction** for the entire population. The
+   mojibake pair is **`charset_declared` vs `charset_used`**. Landed in Contract A 1.31.0
+   with a test, before anyone could write the obvious check that would have flagged all 41
+   healthy rows.
+
+#### ⚠️ Five errors this session made, all caught by measuring rather than reasoning
+
+- **`clock_source` derived from `tzinfo` would have been WRONG on 96% of rows.**
+  `get_timezone_naive_now()` is naive **and genuinely UTC**. A wrong value, not a missing
+  one, on the field that exists to tell the clocks apart — and **my own tests passed against
+  the broken version**, because I wrote them from the same wrong model.
+- **`origin`'s `legal_policy` shelf**: I voted on a **hand-parsed YAML population** instead
+  of the loader's, so a 4-source vote stamped `NL` onto a 22-source subject shelf. The rule
+  that replaced it is structural, not statistical: **a geography shelf's origin is stable
+  under new members, a subject shelf's is not.** ⚠️ And the tighter *statistical* fix I first
+  tried (dominant ccTLD ≥50% of ALL sources) **re-imported the regional bias** — it drops
+  `mexican` while keeping `australian`/`canadian`, penalising outlets that prefer `.com`.
+- **A `str.replace` without an assert is a no-op that reports success** — my `to_dict`
+  emission edit silently did nothing because a peer's blocks had moved the tail I anchored
+  on. `_origin_block()` returned the right dict while nothing was emitted; only the
+  round-trip test caught it.
+- **My smoke test hand-listed the field names** and so reported 16/17 on a delivery carrying
+  17/18 — it could not see a field that shipped after the list was written. It now derives
+  the list from the schema. *A hand-built population inside the instrument measuring whether
+  the contract is implemented.*
+- **`country: NO` is a YAML 1.1 BOOLEAN.** Caught by the test asserting country codes are
+  two-character strings, which stays as the guard.
+
+### ⏳ OWNER DECISION — delete 5 declarations rather than implement them
+
+Measured in the producer's code; **the fastest route to a contract that describes reality is
+deleting the fields that cannot carry information on the rows that exist.**
+
+| off the row | why |
+|---|---|
+| `fetch.http_status` | **200 by construction** — all three body-returning sites in `robust_feed_parser.py` (`:484`, `:594`, `:763`) are guarded on 200; no 304/ETag path; non-200 branches return `None` |
+| `fetch.url_requested` · `url_final` · `content_encoding` | real facts, but **per-FEED**, not per-row — they belong in the per-run feed-health report, which is rewritten each run and costs nothing in the archive |
+| `feed.cadence_hours` | per-**source** constant repeated on every row → Category G's sidecar |
+
+**Worth writing instead:** `fetch.at` (⚠️ through `time_utils.utc_now()` — stamped from
+`datetime.now()` it inherits #176 and puts a host-local fetch time beside a UTC
+`collected_date`, giving the skew a second witness that makes it look like a real interval),
+`charset_used`, `charset_detected` (emit only when the strict-UTF-8 fast path fails, so
+absence means "clean" and the field is near-free), `charset_declared`, `collected.clock_source`,
+`feed.ttl_declared`, `published.precision`.
+
+⚠️⚠️ **Two of my three charset calls were WRONG and the reason is reusable.** I argued they
+duplicate a decision feedparser makes — but the producer **decodes before parsing**
+(`_fix_encoding_issues` → `_parse_with_fallbacks(content: str)`), so feedparser never sees
+wire bytes and `feed.encoding` is a tautology. **I inferred a mechanism from a general
+pattern true of the library rather than following the call path.** On the corrected reading
+`charset_declared` is the **most** interesting of the three — nothing reads the publisher's
+declared charset today, so it is the only field that could compare a claim against reality.
+⭐ **And the finding beside it is worth more than the field**: the ladder's docstring says
+*"strict UTF-8 → declared/detected encoding → …"* and **the declared step does not exist in
+the code** (filed by FluxusSource, `cee0044`).
+
+⚠️ `origin.country`/`region` must NOT be derived from `domain_mappings.yaml` — measured
+coverage on the live collection is **51.8%** (exact 214, by-suffix 478, TLD-fallback 571 of
+2,437), and the **48.2% unmapped are systematically non-Western** (hindustantimes, lrt.lt,
+vnexpress, nst.com.my, tovima.gr, seneweb). A geography field absent exactly where geography
+is the question invites a consumer to read its coverage as a distribution. GDELT passthrough
++ `origin.method` only.
+
+⚠️ **The four rows above read differently on 2026-08-15 evening than they did that afternoon,
+and the correction is the point: this table said "awaiting owner commit" for work that was
+already committed, merged, installed and in one case deployed.** Re-derived by reading the
+schema off NexusMind `main`, both peers' git logs, and `systemctl` on sadalsuud — not from
+either session's report. **A handoff table decays faster than anything else in this file**,
+because it describes other repos' states and nothing here changes when they move.
+
+⭐ **THE FINDING OF THE ROUND, and it is about how the round was run: three of this
+session's own calls were wrong, and every one was caught because the receiving session
+RE-DERIVED instead of adopting.** (1) `content_meta.error`'s type — the owner ruling
+settled *whether to declare*; `(string, nullable)` was this repo's parenthetical
+**inheriting authority by adjacency**. (2) *"measured at fetch needs a new read"* — it
+needs a new **write**. (3) ⛔ **I recommended spending the only non-circular acceptance
+control**, to drive a violation count to zero — *the very number whose trustworthiness it
+establishes.* Promoted to `memory/working-rules.md`: **a failing check may be the control
+working.**
+
+⚠️ **Do NOT re-derive these, they are settled:** `published.had_timezone` is nullable as
+of 1.22.0 (a **recommendation**, not a ruling — FluxusSource may still push back);
+`content_meta.error` is **non-nullable** (`type(exc).__name__` has no null branch);
+`published.element` is pinned as a **root conditional**, not a flat enum, because its
+vocabulary is closed for RSS and **open overall**; `collected.clock_source` is **two
+values, not three** — three call sites, two clocks.
+
+⚠️ A mechanical "unpinned string" scan flags **16 of 23** fields and is useless —
+`published.raw` is a publisher's literal string. The curated list is in the doc; do not
+re-run the naive scan and treat its output as the backlog.
+
+### ⭐ Contract A closeout — what is actually left, verified against the live schema 2026-08-15
+
+**Two owner decisions, then four items. Nothing here is blocked on a machine.**
+
+1. ✅ **DONE — NexusMind W0 is MERGED. Contract A 1.24.0 on `main`** (PR #368, `8e9c489`),
+   46 contract tests, suite 1322, conformance on 165,107 producer-delivered rows:
+   **3 → 3 violation classes, none new.** `null` ⟺ `fabricated` is now **enforced** rather
+   than asserted. Verified here by reading the schema off `main`, not on report.
+2. ✅ **DONE — FluxusSource Track A is committed AND deployed.** `08c4f56` emits the
+   top-level `published` block; the deploy is recorded in their curate commit `0fb7a57`.
+   The storage commitment (+95 bytes/row, ~1.5 MB/day, against archives kept indefinitely
+   since #164) therefore **shipped without being decided separately** — it is now a fact to
+   note, not a decision to take. ⚠️ *This item read "the only owner decision left in this
+   round" for a day after it was closed.*
+3. ✅ **RULED 2026-08-15 — `content_meta.truncated` comes OUT of Contract A**, and the
+   distinction is **re-filed as a NexusMind enrichment stamp**, not dropped. It was declared
+   against the wrong producer: detecting whether the *source* truncated a body needs the feed
+   body compared against the full article, and full-text fetch left FluxusSource when
+   `full_text_fetcher.py` was deleted. `pre_enrich` already computes both sides. **The
+   distinction is real and bears on #114** — the description is the only place it is written
+   down, so it must survive into the new issue verbatim rather than paraphrased. Relayed to
+   NexusMind; theirs to execute (a property removal on a field 0 of 14,409 live rows carry,
+   so no reader breaks). **W0 item 9 is closed.**
+4. ⏳ **Track B — the blocker is gone; only the deploy call is left.** FluxusSource landed the
+   `echoes_title` split on `feat/contract-a-content-meta-kind`, tip **`690c2dd`**, rebased onto
+   `master`, **not merged, not deployed** — correctly still the owner's call.
+   ⭐ **The naive split would have been a bug**: `body == title` is also true when **both are
+   empty**, so it stamps `echoes_title: true` on a row that echoes nothing. Guarded with
+   `bool(body)` first. Not visible in the one-line derivation.
+   ⭐ **Measured, and the number to quote is 0.12% — not 6.3%.** Replayed through the real
+   `from_dict`/`to_dict` over 12,516 prod rows (6 runs, 2026-08-14 20:08 → 08-15 12:05):
+   11,892 RSS stamped, 624 non-RSS absent, **0 derivation errors**; `feed_summary` 93.68%,
+   `headline_only ∧ ¬echoes` 6.21%, **`headline_only ∧ echoes_title` 14 rows = 0.12%**
+   (china_cgtn 6, gestion_pe 3, tagesschau 2, seneweb / el_comercio_pe / irish_telegraph 1
+   each — 6 sources, against 50 in the empty half). `kind` moved for **no row** — same
+   predicate read twice, which is a test rather than a claim, so the 08-10→14 percentages
+   survive. **Anything sized against this field is sized against 0.12%.**
+   ⚠️ **A live SEMANTIC mismatch inside 1.24.0, silent class:** the schema says `echoes_title`
+   is *"substantially a repeat of the title"*; the producer's predicate is **exact equality of
+   the stripped strings** (title-plus-a-full-stop reads `false`). `type: boolean` accepts both,
+   so it validates clean forever — the same shape `kind` had before its enum was pinned.
+   **The producer's predicate is the authority** (principle 2), so the fix is a NexusMind
+   description change; widening is refused because the same predicate decides `kind` and would
+   move rows between kinds. Relayed.
+5. 🔨 **The canary is MERGED, INSTALLED, ARMED — and HAS REPORTED THE CONTROL. W2.2 is held
+   to the first AUTOMATIC fire, 02:22 tonight.** NM#361 merged (`1c2f20f`), units installed.
+   Verified from this workstation over ssh, 2026-08-15:
+
+   ```
+   nexusmind-contract-check.timer    LoadState=loaded  ActiveState=active  LastTriggerUSec=  (EMPTY)
+   next elapse                       Sun 2026-08-16 02:22:48 CEST
+   artefact /home/jeroen/local_dev/NexusMind/data/contract_check.json  0644 jeroen:jeroen
+   additionalProperties.<root>.source_group   asserted=true  rows=2722  errors=2722  error
+   ```
+
+   ⭐⭐ **The control fired against genuine producer bytes — the check DETECTS, it does not
+   merely run.** That is the precondition the plan set for W2.2, and it is met.
+   ⛔ **W2.2 still waits, and the reason is the whole thesis:** the artefact was produced by a
+   **hand invocation**, and the timer has never fired. `LoadState=loaded` proves installation,
+   not execution. NexusMind then proved the *unit definition* works (`systemctl start` →
+   `ExecMainStatus=1` by design, `ProtectSystem=strict` + `ReadWritePaths` do not block the
+   write — a real unretired risk, now retired) and **correctly refused to bank it**: a
+   `systemctl start` satisfies "a run I did not invoke by hand" while being a hand invocation
+   one level up. ⭐ **My acceptance criterion was itself the unreachable-mechanism shape it
+   was written to catch.** Their in-repo test names two release conditions (automatic caller
+   **and** a named replacement control); only the second is discharged. **Third session pushed
+   to spend this control early and refused.**
+   ⭐ **Replacement control named: `eval_query` on a pinned historical collection** — a
+   producer-chosen field on producer-delivered bytes the check was never shown, and **frozen**,
+   so unlike `source_group` the producer can never fix it away. Its limit, which must travel
+   with it: it fires on **pinned bytes, not current input**. Spending `source_group` trades a
+   **live-path control for a fixture-path one** — say that in the commit that spends it.
+   ⚠️ **The artefact's own `scope.edges_not_covered` hardcodes the `source_group` hold**
+   (`build_artefact`, `scripts/contract_check.py`). Declaring without moving it leaves the
+   artefact asserting a held control that no longer exists.
+   ⭐ **Artefact gains `invocation: {trigger, invocation_id, unit}`** (additive, schema stays 1)
+   so "who ran this" is answerable at the surface where it is asked. ⚠️ **My proposed mechanism
+   was defective**: systemd sets `INVOCATION_ID` for a service and **every child inherits it
+   through the environment**, so a hand run from a terminal inside a scope unit stamps
+   `systemd` — a false positive in the one direction that matters, and **a one-sided test
+   passes against it**. NexusMind replaced it with the leaf of `/proc/self/cgroup` compared to
+   the unit name (not inheritable across units), verified in both directions.
+   ⚠️ `trigger: "systemd"` still does **not** mean the timer fired — a hand `systemctl start`
+   is genuinely systemd. `LastTriggerUSec` + a fresh `generated_at_iso` is the pair that
+   answers it. **Absent `invocation` means UNKNOWN, never "manual"** — it dates the artefact,
+   it does not describe the run.
+5b. ✅ **RULED 2026-08-15 — `eval_query` stays UNDECLARED, and NM#367 closes as a written
+   decision**, not an omission. The field is **dead by decision**: FluxusSource retired the
+   three #119 eval arms in `eda28eb` (#158, ADR-007 decisions 2 and 3), pulled onto sadalsuud
+   **16:56:08 on 2026-08-11**, and the five identities that stopped are `newsdata_eval_{td,mg,bi}`,
+   `gnews_eval_td`, `gdelt_constructive_madagascar`. Both switches were thrown (`enabled: false`
+   **and** removal from `aggregator.enabled_sources`). So declaring it would declare something
+   the producer stopped emitting, and it would spend the fixture-path control above.
+   ⚠️⚠️ **TWO CORRECTIONS to figures this document held for a few hours, both FluxusSource's:**
+   **(a) the stop boundary was four days too early.** The claimed edge was
+   `…080541` → `…095038`. But `collection_20260811_095038` is an **off-grid partial run — 4
+   sources / 933 items against a full cycle's ~1,950 / ~5,700 — that ran no eval aggregator at
+   all.** Its zero means *did not run*, not *ran and yielded nothing*, and the field was still
+   emitted at 12:08 (16 rows) and 16:06 (9 rows). ⭐ **The real edge is 16:06 → 17:02, six
+   minutes after the deploy** — cause and effect, no gap. **Rule: bound a stop by last non-zero
+   → first zero, and verify the run between is a FULL one.** Single-run zeros were normal
+   throughout the emitting stretch (2–51 rows/run), so any single zero was never evidence.
+   **(b) "511 is cumulative history" is wrong** — it is exactly the **7-day hot window** (26
+   runs, `…0807_160813` → `…0811_160635`), so it **decays to 0 around 2026-08-18** as those runs
+   age out. Recording it as a lifetime count would later read as the corpus losing rows. The
+   lifetime figure lives in `data/archived/` (retained indefinitely since #164) and is uncounted.
+   ⚠️ **Not a divergence, and the tidy-up it invites is destructive:** FluxusSource's own
+   `config/schemas/output_schema.json` **must keep declaring `eval_query`** — their root is
+   `additionalProperties: false` and `validate_output.py --archives` samples the indefinitely
+   retained archive, whose rows carry the field. **Contract A undeclared + producer schema
+   declared is correct: different windows, different jobs.**
+   *(An earlier owner answer of "declare as expiring" was taken on my wrong premise and changed
+   the moment the measurement reached them.)*
+   ⚠️ **`source_group`'s 20.5% is a DATE, not a rate** — it landed 2026-08-13 16:57, 0%
+   before and 100% after, so a presence-based check must key on **run date**. And point it
+   at delivered bytes (`~/mirrors/sadalsuud/local_dev/FluxusSource/data/current/collection_*/`,
+   52 collections / 165,107 rows), **not `data/raw`**, whose real problem is **vintage**:
+   it predates `source_group` entirely.
+6. ⏳ **`published.precision` is UNWRITTEN, not merely unpinned** — zero occurrences in
+   `date_parser.py`. It is declared and nullable, so nothing is broken; it is simply the
+   one field that is genuinely new producer code rather than threading-out. Sequence last.
+   ✅ **Confirmed by FluxusSource 2026-08-15** against their own tree (`grep -c precision
+   src/utils/date_parser.py` → 0; the 3 hits across `src/` are unrelated). **Not started, by
+   agreement** — it is theirs and it stays last.
+
+**Already settled — do not reopen:** `content_meta.error` non-nullable · `had_timezone` /
+`precision` nullable · `element` pinned as a **root conditional**, not a flat enum ·
+`clock_source` = `["host_local","utc"]` · `fetch.at` carries the canonical pattern ·
+the **`null` ⟺ `fabricated`** `if`/`then` clause **landed on both sides**.
+
+### New, unowned, and none of it blocks the above
+
+- ~~**`eval_query` is a SECOND undeclared root field** (511 rows)~~ — **superseded, see 5b.**
+  True as far as it went, and **the 511 was cumulative history, not a live population**: the
+  field stopped on 2026-08-11 and is 0 in all 26 collections since. ⭐ **A row count with no
+  time axis read as a standing condition** — the same denominator-must-travel shape as
+  `source_group`'s "20.5%", and pointing the opposite way: one is a field that **started**,
+  the other a field that **stopped**, and a bare count cannot tell them apart.
+- **A fifth fabrication class at ~0h** — `devto`/`fda`/`clinicaltrials` do
+  `if not published_date: published_date = datetime.now()`. **Not a wrong constant: the
+  signal is at zero**, outside the 2h/4h taxonomy entirely. `fabricated` is **UNDEFINED**
+  there, not false.
+- **`CEST` maps to an LMT offset** in FluxusSource — `09:15:00 CEST` parses to **09:06**,
+  so a wrong `published_date` can ride a correct `had_timezone: true`. Unfiled, theirs.
+- **Track A costs +95 bytes/row (~1.5 MB/day) against archives kept indefinitely** — a
+  storage commitment nobody has agreed to.
+- **Ours: `merge_fluxus_data.py` / `merge_historical_data.py` sort undated articles
+  FIRST** while commenting *"will be at the end"*. Measured **dead — 0 of 165,107** rows,
+  because undated entries arrive fabricated rather than null. Comment wrong either way.
+  Same two files still default to Windows Google Drive paths abandoned 2026-06-29.
+
+### ✅ CLOSED: the ovr.news corpus backfill — answer is NO
+
+Carried for weeks as *"authorised and not run"*. **Three successive refutations, two of
+them ovr's of its own reasoning.** The population was never 79 rows (**21,520 = 98.2%**);
+*"value increases with delay"* is **false** (the naive population is **closed**); there is
+**no time trigger and no event trigger** (the write boundary canonicalises before storage,
+so an offset never reaches `ORDER BY` as one — **0 inversions in 21,948 production rows**,
+0 in a seeded post-FS#174 simulation); and the last benefit fails on **scope** — it
+rewrites the DB only, while the append-only archive is the **durable** copy since
+ADR-022/#262. ✅ **llm-distillery is a structural non-stakeholder**: reads no ovr archives,
+and both `sort_articles_by_date` impls truncate at `'T'`, so the sort key is `YYYY-MM-DD`.
+
+## 🔵 Also open (updated 2026-08-15)
+
+**Nothing was deployed and no filter package was touched; `deploy` is not applicable.**
+Seven commits, all documentation and findings, `041cc10` → `24d5ff2`, pushed.
+
+### The three decisions waiting on the owner
+
+1. **#114 — the 300-char floor's rationale has never been measured, and it now gates
+   more than the floor.** Settling it needs a **paired** oracle measurement (same
+   article at stub and full length) ⇒ **spend approval.** Three repos hold three
+   different views of why the floor exists and none has evidence; FluxusSource has
+   already shipped *"Length was never the property being measured"* into a
+   machine-readable contract as a flat assertion about **our** rationale.
+2. **`CLAUDE.md` is 37.4k against a 35k soft target**, and the savepoint's advice
+   (check formatter table padding first) does not apply — **0 recoverable padding
+   bytes** across all 51 table lines, 0 trailing whitespace. Cutting content is the
+   only lever. `## Before You Start` is **10,415 chars = 28% of the file** and is a
+   router that has drifted into summarizing its own targets. **Recommend
+   `/audit-context` over a hand-trim**, for exactly the duplication reason the file's
+   own footer gives.
+3. **Category G** now needs an **implementer, not a decision** (grain decision taken
+   below). Candidate FluxusSource, after their (b) sequence.
+
+### What is NOT ours and should not be started here
+
+`published.fabricated`/`had_timezone`/`raw`, the `content_meta.kind` deploy, and
+`clock_source` are **FluxusSource's**, confirmed with that session. The canary is
+**NexusMind's** — it is item 1 in their own brief. ⛔ **`content_meta.kind`'s consumer
+was deliberately NOT written**: the field is emitted on **0 of 14,409** production rows,
+so it would be dead code with green tests, and its premise is #114.
+
+### One local branch left deliberately
+
+`docs/event-identity-encoder-plan` — **unmerged, 1 commit ahead** of `main` (#100 work).
+Five merged branches were pruned locally this session; all five still exist on `origin`,
+so `git checkout <name>` restores any of them.
+
+---
+
+## 🔵 Contract A — the envelope is LANDED. The producer emits nothing yet.
+
+**2026-08-14, late: the redesign was implemented as far as it can go without producer
+code.** The decision record is
+**`docs/decisions/2026-08-14-contract-a-envelope.md`**; the five-repo detail is
+`docs/CONTRACTS_PLAN.md` § *Round 3*.
+
+### What landed — verified against `origin/main`, not taken on report
+
+```
+NexusMind/contracts/fluxussource-output.schema.json   version 1.20.0
+root additionalProperties  false            ← the decision, intact
+blocks   published · collected · fetch · content_meta · feed · origin · payload
+published                  element · fabricated · had_timezone · precision · raw
+language                   type: string     ← the collision, avoided
+source_group declared      False            ← the hold, UNSPENT
+required                   the original 8 keys, unchanged
+```
+
+NM#360 merged (`7d1086f`), NM#364 merged (`0652414`), 1,305 tests green.
+**Nothing deployed — sadalsuud remains on `b115fda`.**
+
+⭐ **The envelope answer, in one line:** the blocker was never
+`additionalProperties: false` — it was assuming that *declaring* a field and
+*emitting* one are the same step. **Declare the whole shape first, all optional;
+after that every field ships independently.** Verified runtime-inert: no production
+path opens either schema file.
+
+### ⭐ The redesign got SMALLER, and that is the result
+
+| removed | why |
+|---|---|
+| the whole `language` block | `language` is already a live top-level **string** on 100% of rows and read as one at 8 production sites. Declaring it an object fails `type` on every row — optionality cannot help, the property is *present*, not absent. Once the rename ban applied it was one new fact and five relocations. |
+| `source`, `item` | same class: re-nesting a live flat field is a *relocation*, which is the forbidden act |
+| `published.instant` | **same moment as `published_date`** — adds no temporal information, only an offset that `origin.timezone`/`had_timezone` carry better. And the defect it was justified by is a **consumer bug** (ovr's JS reads naive as local) with a one-line fix. |
+| `collected.at`, `content_meta.raw_length`, `feed.title`, `feed.declared_language` | declared duplicates of live flat keys |
+
+### ✅ H-D2 CLOSED 2026-08-14 ~20:10 — the 6h spike was arXiv, not a date defect
+
+Ran the discriminating measurement (condition the gap on `source`) that both sessions
+had deliberately deferred. The **7,478-row population is exactly two NexusMind raw
+deliveries** (3,835 + 3,643), and the recorded bins reproduce digit for digit. **974 of
+the 1,046 rows in the 6.0 bin (93.1%) are arXiv**, 983 sharing one `published_date`
+(`2026-08-14T04:00`, arXiv's daily announcement).
+
+⭐ **The gap walks with the collection timer** — arXiv sits at 2.06h / 6.12h / 10.10h /
+14.08h across four consecutive deliveries, +4h each, because `published` is fixed and
+`collected` moves. FluxusSource's *"11h spike is 84% `science_arxiv_cs`"* is the same
+batch at their cadence: **one phenomenon at two phases, not two phenomena.**
+
+⚠️ **The trap, and it is the reusable part:** this artifact passes through **2.06h**
+once per daily cycle — the fabrication signature's own bin. `collected − published` is
+**not** a fabrication instrument without a `source` breakdown.
+
+⭐ **Sharpened by the FluxusSource session the same evening, and it inverts my
+framing.** I said H-D1 survives "by a margin" (arXiv 216s outside its 2h ± 5s window).
+Their run put the same batch **452s** out — and *two different margins is the finding*.
+arXiv announces **04:00 UTC**; the timer fires **06:00 UTC** (08:00 Amsterdam, FS#132),
+exactly 2h later. **The coincidence is a scheduled tick, not a hypothetical**, and the
+only thing holding a whole announcement batch out of the fabrication window is how long
+a run takes to reach that aggregator — which no invariant fixes. **Correct conclusion:
+`published.fabricated` must be stamped at the point of fabrication, because no
+downstream rule can separate a fabricated date from a real one genuinely 2h old.**
+Recorded in FS#173 (comment + body correction). Full record:
+`memory/date-error-recency-boost-hypotheses.md`.
+
+### Do first, in this order
+
+1. **`fabricated` + `had_timezone` + `raw`, TOGETHER** — not `fabricated` alone.
+   `display_ranking.py` applies a flat **1.3× boost under 24h** on `published_date`,
+   and the producer invents `now − 2h` for date-less entries, so a fabricated date
+   reads as maximally fresh and wins it. **But the population is wider than
+   fabrication** — see the hypothesis file — and those three fields are exactly what
+   separates the causes. **`fabricated` cannot be interpreted without the other two.**
+   All three are declared on `main` and nothing populates them.
+2. **`content_meta.kind` deploy** — built, reviewed, moved to top-level, verified over
+   5,995 prod rows (emitted on exactly the 5,739 RSS rows, 0 schema violations).
+   ⚠️ **The commit is `7bc20a0` on `feat/contract-a-content-meta-kind`, NOT `f3e8954`**
+   — that hash was amended away, is an ancestor of no branch, survives only in
+   FluxusSource's reflog and is GC-eligible. Corrected 2026-08-14; **build against
+   `7bc20a0`.** Branch **not merged** (their `master` is `cb4f6ac`, sadalsuud
+   `6455c06`, `grep -rn content_meta src/` on master returns nothing), and it is
+   **correctly parked, not racing** — its own gate is *"not for deploy until
+   NexusMind's envelope declaration merges"*, consumer-declares-first. ⭐ **That gate
+   now appears SATISFIED** (Contract A 1.20.0 is on NexusMind `main`, `25dc482`) —
+   FluxusSource's call to make, not ours.
+
+   **The emitted vocabulary is TWO values, not three** — `feed_summary` and
+   `headline_only`. There is no `summary`. `error` is a **sibling key** (an exception
+   type name, present only if derivation faults) so a fault stays distinguishable from
+   a non-RSS row; the sub-object is `additionalProperties: false`. `full_text` is
+   deliberately absent for **two independent reasons** — enrichment moved to our side,
+   *and* `rss_aggregator` never reads `entry.content`/`content:encoded` at all —
+   so removing either one alone does not reopen it. Measured 2026-08-10→14 over 97,526
+   RSS rows: **5.3% `headline_only` overall, 6.9% of native RSS, 0.0% of 25,607 GN rows.**
+
+   ⚠️ **The consumer's fallback keys on `source_type`, NOT on the field's absence.**
+   Absence means **not applicable, not unknown** — there is no feed document behind an
+   api/social/data row, which is also why `kind` can never become `required`. So: RSS
+   row with no `kind` ⇒ pre-deploy data, fall back to length. Non-RSS row ⇒ the length
+   question is meaningless, don't apply a document-shaped prefilter at all.
+
+   ⚠️ **This does NOT retire the floor on its own — see `H-L1` in
+   `memory/prefilter-length-floor-hypotheses.md`.** `kind` never looks at length (the
+   whole derivation is `'headline_only' if not body or body == title else
+   'feed_summary'`), and the floor's stated rationale is *framework leakage*, which is
+   a function of **how much text the oracle sees**. A `feed_summary` of 143 chars still
+   hands the oracle 143 chars. **That rationale has never been measured.**
+3. **`collected.clock_source`**, then `fetch.*`, then `element`, then `precision` last
+   (the only one that is new code rather than threading-out).
+   ⚠️ **My "move `clock_source` up" suggestion is WITHDRAWN AS ARGUED** — the reasoning
+   (a latent *false-positive* collision at ~1.98h) was wrong twice over: the 1.98h was
+   an artifact of comparing to the run median when NewsAPI **runs first**, and for a
+   skewed producer `gap = true_age + 2h`, so a real article hits `2h ± 5s` only if it is
+   under **5 seconds** old. Sequencing is FluxusSource's call.
+
+   ⭐ **The real interaction is a FALSE NEGATIVE, and it is active — now `FS#176`.**
+   `DateParser.ensure_valid_date:217` is a **second** fabrication site, called from the
+   `news_api`/`github`/`academic`/`patent` aggregators, several of which are the
+   clock-skewed ones. Fabricated-in-UTC + collected-on-local-clock ⇒ **`gap = 4h`, two
+   hours outside FS#173's detection window.** Verified here on 155,513 rows: **46 rows
+   at `4h ± 5s`, 32 `semantic_scholar`, 32/32 carrying microseconds** on `published_date`
+   with published/collected agreeing to ~35µs — one instant, two clocks. **So FS#173
+   undercounts fabrication.** A detector keyed on a fixed gap is keyed on the
+   *producer's clock* and needs a new constant per aggregator **and after every DST
+   transition** (4h in CEST, 3h in CET). Detail:
+   `memory/date-error-recency-boost-hypotheses.md`.
+
+   ⚠️⚠️ **STANDING DATA RULE until FS#176 lands — archives are NOT being backfilled.**
+   `collected_date` is on the **host local clock (+2h CEST)** for **8 of 768 sources**:
+   `newsapi_general`, `github`, `hackernews`, `stackoverflow`, `ourworldindata`, NASA
+   APOD, and two Dev.to author-named sources. The other ~760 are UTC; `published_date`
+   is unaffected. **Any llm-distillery analysis treating `collected_date` as uniformly
+   UTC is wrong by 2h on that slice**, in `data/current/` and in the archive.
+
+### ⭐ A DECLARED FIELD WITH NO PRODUCER — `content_meta.truncated` (found 2026-08-14)
+
+Contract A **1.20.0 declares `content_meta.truncated`** (verified by reading the schema
+on NexusMind `main`, `25dc482`: `content_meta -> ['echoes_title', 'kind', 'truncated']`).
+**FluxusSource does not emit it, has no plan to, and nothing named `truncated` exists
+anywhere in their tree** — the only `truncat*` hits are `collection_truncated` in
+`content_aggregator.py`, which is source/category collection caps and unrelated.
+
+⚠️ **Both sides were right and neither was wrong** — which is the whole session's theme
+one more time. **Declaring a field and emitting one are separate acts**, and the
+envelope decision made declaration cheap *on purpose*. The cost is that the schema now
+documents a capability that has no owner, and a consumer reading the schema would plan
+for truncation detection that is never coming.
+
+⭐ **This is the exact inverse of `source_group`**, which is *emitted on every row and
+declared nowhere*. Contract A currently has a gap in **both** directions, and only one
+of them (`source_group`) is on anyone's list. **Neither is visible to a validator**:
+undeclared-and-emitted needs the canary to be caught, declared-and-unemitted is
+invisible to any check that validates rows that exist.
+
+⚠️ **My "delete it" suggestion is WITHDRAWN — I had not read the field's description.**
+It says: *"Whether the **source itself** truncated the body (e.g. a partial-feed
+publisher), as opposed to the body simply being short."* That is a **real and useful
+distinction**, and FluxusSource not truncating is exactly why they cannot answer it —
+detecting it means comparing the feed body against the full article, and full-text
+fetch lives on **our/NexusMind's** side since `full_text_fetcher.py` was deleted from
+theirs. **So `truncated` is declared against the WRONG PRODUCER, not declared
+uselessly.** Structurally unownable at FluxusSource. Assign it here or drop it
+deliberately — but not as dead weight.
+
+### ⛔ THREE SHAPE MISMATCHES IN `content_meta` — and only ONE fails closed
+
+**Verified 2026-08-14 by reading `origin/main` (`25dc482`), not on report.** Found by
+FluxusSource off the back of the `truncated` note. `content_meta` is
+`additionalProperties: false` and declares exactly `echoes_title`, `kind`, `truncated`.
+
+⚠️ **`7bc20a0`'s deploy gate was *"not until NexusMind's envelope declaration merges."*
+It has merged — so the gate is satisfied IN LETTER, and the next person to read that
+commit message sees a green light.** These three are why that would be wrong.
+
+| # | mismatch | fails how |
+|---|---|---|
+| **1** | **`content_meta.error` is UNDECLARED** on a closed sub-object. The producer emits it (an exception type name) on derivation fault. | ⛔ **HARD VALIDATION FAILURE.** The one path added so a fault stays *visible* is the path that turns a fault into a contract violation. **This is the only one that fails closed** — and it is FluxusSource's to fix, not NexusMind's. |
+| **2** | **`kind` has NO `enum`** — just a description naming **four** notions (*"full article, RSS summary, title-only, empty"*). The producer emits **two**: `feed_summary` \| `headline_only`. | 🔇 **SILENT.** `type: string` accepts both, so it validates clean today and diverges whenever either side ships. An unpinned enum on a closed object. |
+| **3** | **`echoes_title` is a SPLIT the producer collapsed.** Their derivation is `headline_only if not body or body == title` — **empty OR echoes-title fused into one value.** The schema separates precisely those two. | 🔇 **SILENT, and lossy both ways.** A consumer reading `echoes_title` cannot obtain it from `kind`; a consumer reading `kind == 'headline_only'` cannot tell an empty body from a title echo. ⭐ **The schema's split is the better model** and both halves already exist in the producer's one line — cheap to adopt. |
+
+⭐ **The shape of this is the session's thesis again**: a gate written as *"wait for X to
+merge"* tracks **whether X happened**, never **whether the two shapes agree**. Merging
+satisfied the gate and changed nothing about the mismatch. `kind`'s own description
+even says *"NexusMind currently infers this from length, which is a guess the producer
+does not have to make"* — the consumer had a view about the rationale all along, and
+it is not the one in `batch_scorer.py:146`. See H-L1.
+
+### ⚠️ Unassigned — the list is now ONE item, not three
+
+- ~~**The canonical-serialization defect**~~ — ✅ **CLOSED the same evening, before this
+  list was read.** Fixed in `94e7337` at the single predicted site
+  (`ContentItem._canonical_timestamp` → `utils/time_utils.canonical_timestamp`),
+  deployed to sadalsuud **19:20:42**, and **verified live by this session**:
+  `collection_20260814_161408` carried 143/143 microsecond `collected_date`,
+  `collection_20260814_193603` carries **2,891/2,891 canonical on both date fields**.
+  Follow-up **FS#174** tightens `output_schema.json`'s pattern and is deliberately
+  held to ~2026-08-21 so the 7-day hot window rolls first — otherwise the validator
+  exits 1 every run for a week and gets switched off.
+  ⚠️ **This moved H-D1's expiry boundary**: the fingerprint dies at a *run*
+  (`…_193603`), not at "~17:00" — the 16:02 and 16:14 runs are still quotable.
+  `memory/date-error-recency-boost-hypotheses.md` corrected.
+- ~~**The canary**~~ — not unowned: it is item 1 in the **nexusmind** session's own
+  brief. Leave it there; two sessions building one canary is worse than none.
+- **Category G** (`collection.*`, the non-event sidecar) — **the only genuinely
+  unassigned item, and it was NOT "spec-ready" as the savepoint claimed.** This plan's
+  own status table said so (`⏸ spec needs the per-tier grain decision before anything
+  else`); the savepoint line was stale. pipeline-atlas supplied the model facts and
+  correctly declined the code, since that repo owns no pipeline code.
+
+  ⭐ **GRAIN DECISION MADE 2026-08-14 (llm-distillery), and it was already written in
+  § *Round 3* — nobody had taken it.** The grain problem is not intrinsic to G; it
+  **arrived with four fields that don't belong to G at all.**
+
+  | field | disposition |
+  |---|---|
+  | `health_state`, `raw_item_count`, `items_emitted` | **MOVE OUT to categories A–F.** All three describe *how a fetch went*, which is A–F by this plan's own framing. They drifted in from the neighbours and **brought the grain problem with them** — `concurrent_rss` is one source name holding the whole feed tier, while `health_state` runs per *feed*. |
+  | `poll_interval_actual_h` | **KEEP in G, with per-tier semantics declared.** It is per-*source* for exactly the population that needs it: FS#121's collect-every-tick sources fall through `select_sources_to_collect` **precisely for having no per-feed scheduling metadata**, so for them there are no feeds to disagree about. It is per-feed only for `concurrent_rss`, which is not the overpoll case. Losing it loses the only field that can expose #121. |
+  | `refusal_reason` | **KEEP, but NAME IT AN AGGREGATE** at Site B's `no_feeds_due` exit — it summarises per-feed decisions under a source-name grain. Unnamed, *"the tier was refused"* and *"no feed was due"* become indistinguishable. |
+  | `outcome` | **Written at the refusal site, never derived.** Derived from `collection_stats` it inherits the defect it exists to expose: Site B's `_record_skip` output is already classified downstream as `empty_sources`, so `refused_in_aggregator` and `empty` are indistinguishable **by construction** — a field that can never emit two of its four values. |
+
+  **With those four moved out, G is clean, per source name, and the least-blocked item
+  in the redesign.** ⚠️ Two things it still needs before code: *"measured at fetch"*
+  requires **adding a read that does not exist** (the collection path only ever writes
+  to the health tracker — a new coupling, fine if intended, but an explicit spec line
+  and not a free field); and the enum is refusal-shaped, so it has **no value for
+  FS#121's "fetched, but on the wrong cadence"**.
+
+  **Owner candidate: FluxusSource**, positioned *after* the (b) sequence
+  (`fabricated`/`had_timezone`/`raw` → `content_meta.kind` → `clock_source` → `fetch.*`
+  → `element` → `precision`). Not started, not promised — G is a sidecar and every item
+  ahead of it is on a live contract.
+
+  ⭐ **Why it is worth doing at all, in pipeline-atlas's strongest form:** a block of
+  European feeds sat `enabled: true` **collecting nothing for most of a year** — no
+  error, no warning, no zero-yield alert. The source loader walks one level, so a key
+  that never became a source cannot report zero. **A contract check validates rows that
+  exist; a source emitting no rows is invisible to it at any strictness.** That is
+  Category G's argument one level up, and no row schema will ever reach it.
+
+### The offset gate has THREE parts, not one
+
+FS#171 is **OPEN** and aimed at `published_date` itself.
+`clock fixed` **and** `ovr#321` are **independent** gates, not a chain — adding an
+offset *serialises whatever the value already is*, so on the 3.87% of rows carrying a
++2h local clock it converts a silent error into a durable explicit one.
+⚠️ **Nothing downstream protects ovr**: NexusMind **relays `published_date`
+byte-for-byte** (proven by a 6,024-row byte-identical join), so FS#171's offsets reach
+ovr's 20 lexicographic sort sites unchanged.
+
+### Parked
+
+| repo | state |
+|---|---|
+| **NexusMind** | #360 + #364 **merged**. NM#361 (the checker) still stood down. Nothing installed; sadalsuud `b115fda`. |
+| **ovr.news** | Three items committed: the Contract B drop reader (`FilterStats.validation`, on `/ops/`), the write-boundary test, the archive comparator. ⚠️ **Corpus backfill still authorised and NOT RUN** — and it is the **only** fix that reaches the delete boundary, because rows there are ~20 days old and only ≤10-day rows are rewritten. |
+| **FluxusSource** | `source_schema.yaml` priority-polarity fix — **the committed file is still wrong**. |
+| **pipeline-atlas** | Blind-spot section shipped with a mutation-tested verify command. Units still correctly **NOT ARMED** — and arming should wait until the check reads clean, or it trains the override it exists to prevent. |
+
+## 🔵 Then: **the Thriving predicate is RULED; two decisions left.**
+
+**✅ RULED 2026-08-13 — the lens predicate, in ovr.news `docs/BRAND.md` `a70609b`** (commit
+verified here, not taken from the relay): *Thriving qualifies when the article shows **a
+process going well for people** — health, safety, capability or circumstances improving, or
+a protection established that will improve them. Not when the event only establishes that a
+harm occurred, or that one has been answered; nor when the beneficiary is an institution.*
+**#107 is SCOPED, not reversed** — its three adjacent-lens rows stand, and the ruling says
+plainly *"the scorer is not miscalibrated; it is faithfully serving a definition we do not
+publish."* **This makes ADR-012's `uplifting` → `human_thriving` rename LOAD-BEARING**: the
+oracle prompt is written against the scorer's name, and the name carries the wrong
+predicate. ⚠️ Build any predicate against two rows, not the prose — **Vox/Vision Zero**
+(strongest qualifier, entirely about traffic deaths: a harm-vocabulary exclusion fails here
+first) and **Banco Azteca's banking awards** (admitting it means you kept `uplifting`'s
+meaning). Boundary pair that must BOTH qualify: Nepal's ILO ratification and Israel's
+cigarette warnings — they answer a harm *and leave a protection behind*. ⚠️ **A retrain
+trap**: the Commonwealth Games medallist story qualifies but its headline leads with the
+beating — **if labels come from headlines this class is mislabelled systematically.**
+
+### Framework drift closed 2026-08-13 evening: v1.25.0 → v1.26.0 (+ one candidate fix ported)
+
+Checked `/home/jeroen/repos/agent-ready-projects` (clone 0 behind origin). **Two of the
+three intervening releases describe defects this session actually hit**, which is the
+argument for checking drift rather than assuming currency.
+
+| release | verdict | why |
+|---|---|---|
+| **v1.25.1** — `review-changes` Step 1.5 CRLF | **already in force** | our copy already carries `core.quotePath=false` (5 occurrences) |
+| **v1.26.0** — `curate` verify runner must take the PROJECT FILE | **ADOPTED, and it found a real gap** | `CLAUDE.md` has **0** annotations so that half is latent here — but `docs/TODO.md` has **2 that had never been run**, because this session's curate invoked the runner over `memory/*.md` only. Both now run and **both PASS** (`commerce_prefilter/v1` present; NM#185 OPEN) |
+| **v1.26.1** (candidate, unreleased) — `review-changes` reports "nothing to review" on a **pushed** branch | **PORTED AHEAD OF RELEASE** | ⚠️ **I hit this today.** `/review-changes` returned an empty change set on a clean pushed `main`, and I substituted scope by hand (`277e6c6~1..dc691ce`) *without recognising it as a defect* — exactly what the upstream entry says happened there twice. Now resolves a default-branch baseline (`origin/HEAD` → `origin/main` → … ) and says **"SCOPE NOT ESTABLISHED"** rather than reporting a clean diff |
+
+**Ported, not swapped** — `review-changes` here is project-local and deliberately re-mapped
+to this repo's paths (a verbatim install would tier every change LOW and quietly do
+nothing). The 2026-08-12 lesson stands: a straight swap of a shared instrument can be a
+regression.
+
+⚠️ **Needs an owner call — `~/.claude/skills/curate/SKILL.md` DIFFERS from
+`agent-ready-projects/templates/curate.md`.** It is a **global** skill shared by every
+project, so v1.26.0's project-file change was **not** applied to it from here. Until it is,
+`/curate` in any repo will keep scanning `memory/*.md` alone. Two options: re-install the
+global skill from the framework, or accept the divergence deliberately and record why.
+
+**Interim rule for this repo**: invoke the verify runner as
+`bash verify-runner.sh <repo>/memory/*.md <repo>/CLAUDE.md <repo>/docs/TODO.md`.
+
+## 🔵 Then: two owner decisions, then #104.
+
+**Cross-repo sync is CLOSED as of 2026-08-13 midday, and it was the only real gap.**
+Verified three ways rather than assumed: gpu-server ↔ sadalsuud was already exact
+(42/42 files md5-identical across the six live filters; `filters/CODE_REVISION`
+re-stamped every cycle, so that hop self-verifies every 4h), sadalsuud was 2 commits
+behind origin on **docs only** and auto-pulls `--ff-only` (`deploy_filters.sh:130-138`),
+and the actual drift was llm-distillery → NexusMind: 3 files, all inert at runtime,
+now pushed as `7ae74ba` + `bb204be`. ⚠️ Those two went **straight to NexusMind `main`
+with no PR**, against that repo's `chore/*` branch convention — owner authorised the
+content, the process miss is ours; revert-and-redo-as-PR is still on the table.
+
+**⚠️ NEW owner decision — #47 REOPENED (`NO_HUB` does not cross the repo boundary).**
+NexusMind still carries `filters/uplifting/v7/inference_hub.py`, which we deleted here;
+`cp -r` never deletes. It points at `jeergrvgreg/uplifting-filter-v7`, which **404s under
+an authenticated token** (measured with positive *and* negative controls — an
+unauthenticated probe returns 401 for repos that exist and is worthless here). Deleting
+it turns **3 NM#312 tests red**, because they assert `get_scorer_class(use_hub=True)`
+resolves for every discovered filter — i.e. they were green *because of* the stale file,
+and assert importability rather than repo existence. **Recommendation: delete the file
+AND teach `filter_loader` to honour `NO_HUB`**, re-scoping those tests to the true
+invariant (every filter resolves a scorer by its *declared* path, hub or local). The easy
+way out is closed: `training_metadata.json` / `training_history.json` are still absent for
+v7 and `upload_to_huggingface.py` reads both, so uploading would fabricate the metrics
+#47 closed against. Weigh against ADR-012 (uplifting → `human_thriving` at v8, where the
+sentinel goes away anyway; the `filter_loader` half is version-independent).
+
+**Shipped 2026-08-13: checklist item 5 is now a guard (`d969a23`).**
+`preflight_deploy_guards.py` guard D probes gpu-server for
+`{filter}/{version}/model/adapter_model.safetensors` and aborts if absent — fails **closed**
+when it cannot ask, with `--weights-preplaced` as the documented offline override. Proven
+against production, not a fixture: **cd v5 passes, cd v6 fails**, so the pending cutover
+cannot be started by accident from either deploy path. ⚠️ **Consequence to weigh:** every
+`deploy_to_nexusmind.sh` run now needs ssh reachability to `gpu-server`. Fine from this
+workstation; from the Windows box (still the script's default paths) the host alias may
+not resolve and deploys will abort. Owner asked to decide whether an *unknown host* should
+degrade to a warning, distinct from *unreachable*.
+
+**Framework verified CURRENT at session close 2026-08-13:** pinned v1.25.0, upstream v1.25.0
+(`889b038`), clone **0 commits behind origin**. No drift, nothing to triage.
+H-E1 and the #109 Arm B design gap are both closed.
+
+**Owner decisions waiting (nothing is blocked on a machine):**
+
+0. **NM#284 — DELETE the per-lens rule prefilters, or wire them up?** NexusMind
+   recommends deleting and asks us to own it, because `filters/*/v*/prefilter.py`
+   and `config.yaml` are ours. **Verified here: 5 of 6 deployed filters still declare
+   `prefilter.enabled: true`** (`solutions v6`, `uplifting v7`, `cultural_discovery v5`,
+   `belonging v1`, `nature_recovery v4`; only `investment_risk v6` declares no `enabled:` key — it still carries a `prefilter:` block) —
+   config has promised something the runtime never delivered since 2026-02-10.
+   **My recommendation: DELETE.** Three reasons, and the second is the strongest:
+   the e5 probe already absorbed the cheap-triage role — **`stage1_low` is 65.83% of
+   `solutions` and 56.00% of `cultural_discovery`**, re-derived 2026-08-12 over
+   `nexus_mind_attributes.<lens>.stage_used` on sadalsuud, **denominator = STAMPED rows**
+   (235,873 / 235,904 all-rows; the of-all-rows figure is 19.61% / 16.69% because
+   pre-2026-08-08 rows carry no stamp — a **3.4× swing from denominator choice alone**,
+   so always state which). ⚠️ The peer session's figures were 66.1% / **59.8%**; the
+   `cultural_discovery` half **does not reproduce** — its daily range is 52.35–58.32%,
+   so 59.8% is above every single day. Use the re-derived numbers.
+   Verify: `ssh sadalsuud` + count `stage1_low` over `nexus_mind_attributes.<lens>.stage_used`
+   (**not** `analysis.stage_used`, which is `None` on all 105,304 rows — the wrong-path trap); **enabling them would INTRODUCE a
+   language gap that does not currently exist** — our own #99 found `DISCOVERY_PATTERNS`
+   is an English-only back door (66/516 English passers vs **0/265** everything else),
+   and **#99 was closed by removal in v6 ONLY — v5 is the LIVE version and `filters/cultural_discovery/v5/prefilter.py:269` still declares `DISCOVERY_PATTERNS`**, so switching the gate on ships that defect into production for the first time (the argument is stronger than first written); and the dead code is
+   what let a stale number steer NM#292's gating row for two weeks, because
+   `enabled: true` made it look live.
+   ⚠️ **Sequencing is in our favour and must not be reversed:** NexusMind's NM#284
+   shadow evaluator is currently the ONLY thing measuring these prefilters. **We decide
+   and delete first; they strip the plumbing after.** Removing their half first would
+   cost observability before the decision.
+
+1. **#109 Arm B — go / no-go.** The design blocker is gone: judges are now named
+   (**Qwen3:14b + Phi4:14b**, local, non-Gemini, **$0** on b650), with a
+   both-must-agree rule and a per-judge planted-error gate that runs before any
+   real sample. Scoping comment is on the issue. ⚠️ Read it with #108's retitle:
+   the *motivation* Arm B drew from #108 is weaker than it was, because whether
+   the 300-char floor is a language filter turns on a pipeline stage nobody has
+   established. Arm B still answers "are the labels correct", which is worth
+   having either way — but the priority argument changed.
+2. **`cultural_discovery v6` cutover** (#98). The `tiers:` gap is closed and now
+   guarded. Remaining: fit `normalization.json` on real 6.0 rows, and **update
+   `ACTIVE_FILTERS` to v6 in the same commit that promotes it**.
+
+**Then #104** (every accuracy number is CPU-measured; production serves on GPU —
+worth 1 verdict flip at the deployed op-point). Unchanged, unstarted.
+
+**New and cheap, from H-E1:** `nature_recovery`'s `protection_durability` is the
+only dimension in the enrichment pilot with a materially negative delta (−0.173,
+24 of 48 rows down). Untested hypothesis on **#71**: enrichment is *correcting* an
+over-score, not damaging a good one. **Do not "fix" it before establishing the
+direction is wrong.**
+
+### ✅ 2026-08-12: the `tiers:` gap is CLOSED, and it is now guarded rather than remembered
+
+**Done, not pending.** `filters/cultural_discovery/v5/config.yaml` **and
+`v6/config.yaml`** both carry a `tiers:` block mirroring `base_scorer.py`
+(7.0 / 4.0 / 0.0). They were the only two deployed/staged filters without one.
+
+**It is not documentation-only, and the earlier claim here that it was is
+withdrawn.** No PRODUCTION SCORING code reads the block — `production_scorer.py:142`
+takes the op-point from `base.TIER_THRESHOLDS` — but **eight llm-distillery tools do**:
+`fit_normalization`, `ground_truth_gate` (the ADR-021 threshold), `prepare_data`,
+`fit_calibration`, `train_scope_probe`, `calibrate_hybrid_threshold`,
+`evaluate_models`, and `uplifting v1`'s postfilter. Measured consequence for
+`cultural_discovery`: `prepare_data.extract_filter_info` goes `tier_boundaries={}` →
+`{'high':7.0,'medium':4.0,'low':0.0}`, flipping `use_score_bins` True→False, so **a
+future retrain's train/val/test splits stratify by TIER instead of score bins.** The
+normalization fit floor is unchanged (`resolve_op_point` returns 4.0 both ways).
+Other consumers were unaffected only because cd's op-point is 4.0 and their fallbacks
+are hardcoded 4.0 — a coincidence of value. **On `nature_recovery` (3.75),
+`investment_risk` (4.25), `uplifting` (4.5) or `solutions` (2.25) the same edit would
+move the ADR-021 gate threshold.**
+
+**Now enforced, not remembered:** `scripts/deployment/preflight_deploy_guards.py`
+runs as Step 0.5 of **both** `deploy_to_nexusmind.sh` and `.ps1`, and refuses a
+package whose `scoring.tiers` is missing from, disagrees with, or declares a
+different tier *set* than `base_scorer.py`. 34 tests, each proven to fire on the real
+defect and stay quiet on the healthy case.
+
+**Still open, and it is the hand-maintained list:** `ACTIVE_FILTERS` in
+`tests/unit/test_filter_config_schema.py` names `cultural_discovery v5`. **Update it
+to v6 in the same commit that promotes v6** — that list lagging is exactly how drift
+in a deployed version went unseen for six weeks.
+
+**On version selection — scoped, because the earlier wording here overclaimed.**
+NexusMind's `filter_loader._find_latest_version()` (`src/filters/filter_loader.py:178-193`;
+the selection is at `:192-193`) serves the **highest `vN` on disk**. So **there is no
+version-selection step anywhere** — nothing names v6, no config flip activates it, and
+there is nothing to forget. ⚠️ But *"the deploy and the cutover are the same
+keystroke"* was **FALSE and is withdrawn**: the canonical chain
+(`docs/FILTER_PLAYBOOK.md` § Deploy safety checklist) is **llm-distillery git →
+NexusMind git → sadalsuud `deploy_filters.sh` → gpu-server**, and that last script
+ships `git archive HEAD` (never the working tree), hard-exits on uncommitted or
+untracked scorer-tree files, then rsyncs and restarts. Landing a directory in the
+NexusMind checkout does **not** reach readers; that run is the last checkpoint.
+
+**The two trees currently disagree** — the v5 fix landed here; NexusMind's own copy of
+`cultural_discovery/v5/config.yaml` has no `tiers:` block. **This self-heals:** the
+next `deploy_to_nexusmind.sh cultural_discovery v5` propagates it. Do **not**
+hand-patch the NexusMind copy. ⚠️ Note that deploy also lands the **LD#86 multilingual
+topic-gate extension** — our `prefilter.py` is 87 lines ahead of NexusMind's and has
+been since 2026-08-06. Runtime impact there is nil (the per-lens rule prefilter runs
+with `use_prefilter=False`), but NM#284's **shadow pass rates will move**. Direction is
+safe: llm-distillery is newer, this is not NexusMind divergence.
+
+⚠️ **Do NOT reach for `.nexusmind-owns` — it CANNOT protect per-filter files, and it
+fails silently.** Verified 2026-08-12: Step 1 of `deploy_to_nexusmind.sh` is an
+unconditional `cp -r "${SOURCE_DIR}/"* "$DEST_DIR/"` with **no manifest lookup**; the
+manifest is consulted only in Step 2, for `filters/common/`. The script's own header
+says so. **Adding a `filters/{name}/v{N}/` path to the manifest is accepted and does
+nothing.** Same silent-success shape as the op-point reader above. Per-filter content
+is **one-way**: upstream overwrites NexusMind unconditionally. This is now guard A and
+will abort the deploy rather than accept the entry.
+
+Also worth knowing if controlled divergence is ever genuinely needed there: `cp -r`
+runs **without `--delete`**, so it overwrites and merges rather than pruning — a file
+NexusMind *adds* under a version dir survives, a file it *edits* does not. Adding is
+durable, editing is not.
+
+**Evening 2026-08-12 (fourth context): #106 CLOSED, and the GN thread reached a
+mechanism.** Nothing deployed, no filter package touched, no oracle spend. Seven
+commits, all docs/memory/one analysis script.
+
+**The single most useful number to come out of it, and it will not drift:**
+enrichment attempted **35,229 Google News proxy rows over nine days and replaced
+zero of them** — 100.0%, CI 100.0–100.0, against control arms failing 0.7–7.1%.
+FluxusSource had independently predicted it pre-gate from the URL scheme alone (a
+GN `url` is an opaque redirect, so `pre_enrich` fetches a Google interstitial, never
+a body). **State it as mechanism + measurement, and ALWAYS NAME THE FETCHER —
+"NexusMind's `pre_enrich` cannot resolve GN, here is the confirmation" — never as a
+bare number.** ⚠️ **The stronger form of this claim is REFUTED (2026-08-12):** "a
+property of the URL scheme, so no fetcher change moves it" generalized from one
+fetcher to the scheme and is false — **ovr.news resolves these URLs and enriched 74
+of 103**, via `batchexecute`. See `memory/google-news-corpus-hypotheses.md` for the
+scoped version and what the over-generalization nearly cost. ⚠️ It also does **not**
+support FS#145 (which recovers a publisher *domain*, not a fetchable URL).
+
+⚠️ **The window 2026-07-31..08-08 cannot be extended and there is no remedy** —
+from 08-09 all six filters exclude `eval_aggregator`, and the arms stopped upstream
+2026-08-11T14:06Z. `data/raw` is pre-enrichment; `shadow_mode` stamps forward-only.
+Both were considered and rejected with FluxusSource. **Do not re-propose either.**
+
+**⚠️ FRAMEWORK: still pinned v1.23.0, upstream still v1.25.0 (`889b038`,
+re-checked at close).** No new releases since the morning triage, so the decision
+table below is current and this is now **the first task of the next session** by the
+owner's instruction.
+
+**Carry forward from arm A, independent of cd v5:** ν, the **within-oracle**
+run-to-run floor on a cd-lens population, is **0.436 mean / 2.10 max** at
+temperature 0.3, measured by scoring 40 articles twice. It is **not** #95's 0.16
+— that is a *student* batch-composition band and a different quantity. Any future
+cross-oracle claim needs a gap above ~0.44 to mean anything, and the floor is
+**arm-asymmetric** (0.238 on off-lens rows vs 0.634 on on-lens rows, n=20 each),
+because off-lens rows return zeros from both runs and agree trivially.
+
+| # | What | State |
+|---|---|---|
+| ~~**#109 Arm A**~~ | **DONE 2026-08-12 — verdict WITHIN NOISE, and it is a BOUNDED null.** 150/150 matched pairs, 300/300 rows scored, 0 errors. `MAD_refused` 0.8325 vs `MAD_passed` 0.8370, `D` = −0.0045, CI **[−0.216, +0.195]**, against a **measured** within-oracle floor **ν = 0.436** — the CI's widest excursion sits *below* the noise floor, so no interpretable effect can hide in the residual. **Per #109's pre-registered table this closes #105's `cultural_discovery` half: a retrain there is a base-rate change, not a label-quality repair.** $1.37 actual vs ~$1.20 estimated. Evidence: `docs/evidence/2026-08-12-cd-v5-cross-oracle-arm-a.md` (pre-registration committed in `6741da2` *before* any score existed; result in `e01f1f1`). **Scope, which is the easiest thing to lose:** the estimand is the **pair-matchable** refused population, 2,024 of 4,458 (45.4%); the other 54.6% comes from outlets the lens gate refuses wholesale (`eco.sapo.pt` 0.93, `www.theverge.com` 0.90, `www.ad.nl` 0.87) and has no passed rows to match against. | **Closed** |
+| ~~**#109 Arm A follow-up — the op-point band**~~ | **DONE 2026-08-12, $0.26. The +1.044 did NOT replicate: 66 pairs give `D₄` = +0.3958, CI [+0.056, +0.750], ν₄ = 0.6869 → NOT MATERIAL / not interpretable.** Not a clean refutation either (sign holds, CI excludes 0) — the effect, if real, is below what the instrument sees. **The instrument IS the finding: ν₄ = 0.687 exceeds the 0.396 it was meant to adjudicate, so a single-shot cross-oracle comparison at this op-point is unfalsifiable at ANY `n`** — the floor is per-article and does not shrink with sample size. The fix is repeated draws: `k = 4` puts the floor near 0.34 for ~$1.05 (arithmetic, assumes normality 40 pairs cannot establish). Also measured, and easy to misread: every row is stored ≥ 4.0 by construction and Gemini puts **37/66 refused (56%)** and **27/66 passed (41%)** back below it — that is **cross-oracle disagreement, not error**. Evidence: `docs/evidence/2026-08-12-cd-v5-op-point-band-followup.md` (pre-reg `d79a4be`, result `c43ed66`). | **Closed** |
+| ~~**Pre- vs post-enrichment score delta**~~ | **DONE 2026-08-12 — NM#310 is a compute story, not a quality story.** Pilot n=300 across all six filters, b650 `venv-prodparity` CPU. **Control PASSED: 231/231 `stage2` rows within 0.16, median \|Δ\| 0.0000**, so the result is production-anchored. Delta: mean +0.270, **median +0.112**, 26.4% negative, p95 +1.452. **Crossings: 10/280 (3.6%) raw and 7/280 (2.5%) normalized, ALL UPWARD, 0 downward** — under ADR-023 enrichment cannot let junk through here, only surface what was already present. **The finding that travels: the SHORTEST stubs gain the LEAST** (0–150 chars +0.216 vs 300–600 +0.426), and GN stubs are median 89 chars — so the extrapolation to the population this cannot reach predicts *less* gain (H-E2, contested). Three new facts: **GN is 0.0% of the paired population** (0 of 122,557, by construction); **empty pre-enrichment bodies are 7.71%** and are a different harm (`_validate_article` rejects empty, so production could not have scored them either — enrichment is existence, not improvement); and **`stage_used` must be conditioned on** before `raw_weighted_average` is treated as a model output (23% of rows were `stage1_low` probe estimates). Also measured: this population's batch-composition floor is **0.000000**, so #95's 0.16 does not apply. Evidence: `docs/evidence/2026-08-12-pre-post-enrichment-score-delta.md`; open hypotheses in `memory/enrichment-delta-hypotheses.md`. | **Closed** |
+| **`nature_recovery v4` returned a delta of ZERO — run the per-dimension check before believing it** | **H-E1, open.** +0.023 mean / +0.033 median with 39.6% negatives, against `cultural_discovery` +0.409 and `uplifting` +0.428, and 0 gained / 0 lost at both thresholds. The 397-row normalization fit is **ruled out** for the delta (computed on raw scores, normalization applies after) but not for the crossing count. **Do not cite "+0.023" as evidence enrichment is useless for `nature_recovery`** until per-dimension deltas are compared against `cultural_discovery`'s — an aggregate zero can be a cancellation. Costs nothing: the paired scores already exist. Fold into **#71**. | **Runnable, cheap** |
+| ~~**Pre- vs post-enrichment score delta (original assignment)**~~ | **OWNER-ASSIGNED to llm-distillery 2026-08-12** (relayed via the NexusMind session). Decides whether NM#310 is a compute story or a quality story, and lands on ovr#312's ordering argument. Same article, same model, score on pre-enrichment text vs post-enrichment text. **Asked for beyond the headline:** the delta *distribution* not a central estimate; the sign breakdown **at the normalized 4.0 gate specifically** ("how many articles cross a gate they would not have crossed"); and split by **whether the body actually changed** — enrichment can succeed and return substantively the same text, and those rows drag any average toward zero for a reason unrelated to the effect. **Two traps:** #95's \|0.16\| band means small deltas are not effects, and before comparing two score sets ask WHAT VARIED — ⛔ *not* "two different machines": the host term is **0.0000** (660/660 bit-identical); the terms that bite are the library **stack** (max \|Δ\| 0.2008) and the **device**, CPU→CUDA (0.1956). Corrected 2026-08-29. **This is the measurement I do NOT have** — my #310-vs-#309 ranking was inference from adjacent numbers (op-point de-selection, CDF residue, published share), and I told the peer so. | **Next** |
+| **#109 Arm B** | **HELD on gaps 1–4, and cost is explicitly not the reason** (≤$7 total; $0 on b650 with local judges). Blocking gap is #1: the judge model is never named, and the obvious default (Gemini Flash) is the model that *made* `investment_risk v6`'s labels — that turns Arm B into a self-consistency check. Needs non-Gemini judges; precedent is cd v5's Qwen3:14b / Phi4:14b via `scripts/score_ollama_oracle.py`. Gaps 2–4 have proposed answers on the issue needing confirmation, not invention. **⭐ Gap #1 has a free path, added 2026-08-17: #124 step 1 compares the ALREADY-COLLECTED Qwen3:14b / Phi4:14b scores on the frozen 522-article cd v5 set against the Gemini/DeepSeek scores in the same mix. That is the evidence for naming a judge — no new spend, no new hardware, and the scores exist. Run it as part of unblocking Arm B, not separately.** | Held |
+| ~~**#106**~~ | **CLOSED 2026-08-12 evening by owner ruling — no longer load-bearing.** The residue is real, small and one-way: max normalized Δ from removing all GN mass is **0.128 on `belonging`**, 0.0% of articles move ≥0.5, every crossing of the normalized-4.0 enrichment gate is **downward** — GN presence causes *more* enrichment, the cheap direction under ADR-023. The supporting reframe — *that experiment deletes all GN, so it forecasts the phase-out* — was **over-scoped and corrected the same evening by the FluxusSource session (my error, second comment on the issue)**: **ADR-007 retires population A only** (B stays, C can never migrate — a permanent GN floor), on **no date and no rate by design**, and **FS#145 is an attribution instrument, not the migration lever**. The decided deletion is strictly smaller than the one measured, so the *safety* claim is conservative in the right direction and survives; nothing else does. **Three carry-outs:** `nature_recovery v4`'s 0.367 is a small-fit problem, already on **#71** (397 rows vs a floor of 200) — nothing further needed there; **do not build a headline-only publication ban or a framing gate as GN-motivated work**; and **"GN gone" is neither "stubs gone" nor a decided outcome** — deleting *all* GN still leaves 10.0% of the corpus sub-300, and the decided scope removes nearer ~40% than 65% of stubs (order-of-magnitude, **do not quote**). Refit trigger belongs on our own measured GN share, not on upstream retirement events. Evidence: `docs/evidence/2026-08-12-gn-share-of-normalization-cdf.md`. | **Closed** |
+| ~~**#107**~~ | **RULED + CLOSED 2026-08-12: a positive outcome suffices, a pleasant subject is not required.** Also settles the three held adjacent-lens rows (coffee frog, Buenos Aires estancia, Antalya nomadic tents). **#91 is untouched** — there the dominant subject and the scored text *disagree*, which this ruling does not license. Owner intends a retrain anyway; the home for any subject-weighting work is **`human_thriving` v8** (ADR-012 amended, #90), scoped against #91's mechanism. Unmeasured and stated: how often positive-outcome/unpleasant-subject items reach the lens. | Closed |
+| ~~**Should ovr.news enrich at all?**~~ | **DECIDED 2026-08-12 by the owner: enrichment moves UPSTREAM.** ovr deletes its own pass; NexusMind's `pre_enrich` becomes the single enrichment point (**NM#339**; recorded on ovr#312). **The GN resolver is explicitly NOT ported** — Google News is being retired, so that half dies with the source. **The argument that decided it was structural and neither side had stated it: ovr's pass is the only enrichment in the chain that cannot RESCORE**, because ovr has no scorer, while NexusMind's `enrich_articles` enriches *and* re-scores. So the ordering problem is not "enrichment happens downstream of scoring" — it is *one specific pass changes the text without redoing the decision*. ⚠️ **My "don't fix the GN resolver" call was RIGHT and I withdrew it wrongly** — it never rested on the refuted URL-scheme claim, it rested on the retirement. See the gotcha entry *Conceding a correct conclusion because a neighbouring sentence was refuted*. Also: the four "correctly refused" rows from our 68-id lookup (cookie wall, paywall, video block, under-floor) did more work in the decision than the 38-article headline — ovr counted all four as *successes* because it accepts any text longer than what it had. **Carry-out for us: ovr#313's pre-flight source-length floor must land WITH the migration, not after it** — with no local enrichment, anything NexusMind cannot enrich arrives at ~100–140 chars and would be summarized from a stub (measured cut 29 summaries / 23 published per 11 days, 0.7% of published). ⚠️ **PRECONDITION added 2026-08-13, and it was nearly missed: consolidation routes ALL enrichment through NexusMind's decoder — the one that had the NM#338 charset bug when this was decided.** It held by luck of timing (fixed hours earlier). Posted to NM#339 as an explicit precondition. **The durable half is ovr's: the redundancy being deleted was also, incidentally, ERROR-DETECTION** — NM#338 was found by pairing against a second copy, so after consolidation the same fault reaches everything with nothing positioned to notice. Wants a *standing* probe, not a one-time check; the cheap one is the U+FFFD count (it is 4, and 4 is what moves if the surviving decoder regresses). | **Closed** |
+
+### ⚠️ Framework drift again: pinned v1.23.0, upstream is **v1.25.0** — triaged 2026-08-12, ADOPTION DEFERRED to next session by the owner
+
+Checked at session close (`/home/jeroen/repos/agent-ready-projects` @ `889b038`).
+Two releases behind, both shipped 2026-08-12 — the same day we adopted v1.23.0, so
+this is upstream velocity, not neglect. **Owner's instruction: continue in the next
+session.** Pre-triage so it starts from a decision list:
+
+| release | change | first read |
+|---|---|---|
+| v1.24.0 | `curate` reads **metadata, not documents** — Step 0.3 reads headings, a body is opened only for an entry being acted on | **Adopt.** Direct win on this repo's 203-entry gotcha log |
+| v1.24.0 | `curate` Step 1 header read was level-blind | Adopt with the above |
+| v1.24.0 | lint rule 8 — ratchet adopter-facing template sizes | Probably n/a; we ship no templates upstream |
+| v1.25.0 | adversarial lens: **one rule — a claim that needs a measurement gets one, gets hedged, or is not ready** (merges #35 + #39) | **Adopt.** It is this repo's central failure mode stated in one line |
+| v1.25.0 | `hypothesis-log` gains a **trigger in the working path**: write the entry at the moment the claim is made, with the lens finding as the cue | **Adopt.** Exactly the gap hit today — H-E3 was noticed while writing results up, not when the claim was made |
+| v1.25.0 | shape rule: **never end a bolded phrase with a `**`-suffixed glob** (prettier ≤3.8.1 corrupts it) | Adopt as a writing rule; check our own skill files for the construct |
+| v1.25.0 | the gotcha-log "2–3 lines" rule is **withdrawn** — *"Adopter action: none. If you have been ignoring it, you were right to"* | **No action, and note it vindicates our log.** llm-distillery IS the evidence: 203 entries, median 1,200 chars, 35% >1500 — cited upstream |
+
+**Framework: adopted to v1.23.0 on 2026-08-12** (was v1.21.0, 2 releases behind —
+v1.22.0 and v1.23.0 both shipped 2026-08-11 evening, so last session's "unreleased
+candidate, do not pin it" is superseded). Triage table:
+`docs/decisions/framework-adoption-history.md`. **The memory verify runner now
+reads 25 pass / 0 fail / 0 error / 0 malformed, exit 0**, all 38 annotations
+accounted for — up from the framework's own measurement of this repo at
+12 pass / 9 fail / 5 error / 3 malformed. **One annotation needs
+`VERIFY_TIMEOUT=120`** (the LD#92 DiD bootstrap, ~50s vs a 30s default); it is
+annotated in place, so do not read its timeout as a broken claim. One item
+deferred: v1.23.0's `<!-- placeholder -->` markers, to the next `audit-context`
+run — 0 paths are marked today and a marker is only meaningful against a live
+findings list.
+
+**Earlier, still current:** `solutions v6`'s `community_practice_strength` is
+**not dead — it is rare**, and no change is worth making. Three measurements in
+`docs/evidence/2026-08-11-solutions-v6-community-practice-dimension.md` (commit
+`3ea78a5`). Afternoon record: `memory/project_session_2026_08_11_afternoon.md`.
+| ~~**Withholding gate**~~ | **NO LONGER A READER-SAFETY ITEM.** ovr#311 (a guard rejecting any summary longer than its source) blocks the whole class structurally, one stage earlier than a Chief Editor rule would; ovr#310 closed as superseded and the rule was never built. Reopen trigger over there is **non-GN only** — for Google News, NM#310 means the redirect never resolves, so the body cannot grow and the ratio cannot invert. Any remaining NexusMind-side ask is **data hygiene** (stop scoring/storing stubs), not reader safety, and is weaker. | Owner, if still wanted |
+
+### Three enrichment passes, and why that is not as mad as it looks
+
+Answering the owner's *"I cannot imagine we need multiple enrichments?"* — **measured,
+not inferred**:
+
+1. **NexusMind `pre_enrich`** — before scoring, short articles, no score gate
+2. **NexusMind `enrich_articles`** — after scoring, `min_score` 4.0
+3. **ovr.news** (`summarize.ts:453`) — before summarising, `content < 500` **AND NOT**
+   `wasEnrichedUpstream`
+
+**(3) exists for exactly one reason: it is the only one that can resolve Google News
+links** — NexusMind has no GN resolution at all (verified). ovr places it late
+deliberately: resolving at collection would be ~13,000 requests/day against a private
+Google endpoint; late it costs ~15/day.
+
+⚠️ **"But that unique capability fails every time" — REFUTED 2026-08-12 by the
+ovr.news session, and the "don't fix the resolver" conclusion that stood here is
+WITHDRAWN.** It was my error: ovr#312's line 20 cites NM#310 for *"these URLs can
+never resolve"*, and NM#310 measures **NexusMind's** fetcher, which has no resolver
+(verified: `grep -rniE "batchexecute|data-n-a-sg|resolve.*google.?news"` over
+NexusMind `src/`+`scripts/` returns nothing). **ovr's resolver works and is live** —
+`src/lib/google-news.ts:106-107` scrapes the `data-n-a-sg`/`data-n-a-ts` signature,
+posts to Google's private `batchexecute` (`:43`), then fetches the *publisher* URL.
+Measured on ovr's live DB: **74 of 103 GN rows enriched**, median 95 → 3,074 chars,
+most recent success 2026-08-12 06:58. Acting on "don't fix the resolver" would have
+retired a capability carrying **22 of ovr's 38** GN-derived published articles.
+
+**And the consolidation argument inverts:** moving enrichment upstream to NexusMind
+would *lose* GN resolution entirely, because there is no resolver there to move it
+to. That belongs in the deferred *should ovr.news enrich* decision.
+
+The ADR-007 direction is unchanged and still real (6 feeds moved 2026-08-08, median
+length **89 → 326**, sub-300 share **100% → 47%**) — but it retires **population A
+only**, so it does not make the resolver redundant on any stated date. The
+withholding gate remains independent of all of it.
+
+### Peer-owned, do not duplicate
+
+ovr.news **#310** (withholding rule), **#311** (summaries longer than source — 324
+published, 40 at ~8.9× expansion, **current** at 24 in August; the mechanism behind
+their reader-reported #286), **#312** (silent enrichment refusal).
+NexusMind **#322** (sizes the unmeasured wrong-body region; **n=300 is the threshold,
+n=150 settles nothing** — unstarted; the LD-side source distribution they asked for
+was sent 2026-08-12 and is **stratum-design input, not a frame**: it is a
+cd-lens corpus published 2025-10-08 → 2026-05-27 and identifies no wrong-body
+candidates), **#323** (post-scoring enrichment does not fan out across lenses —
+0.1%, structural). FluxusSource **#145** / **#157**.
+
+⚠️ **The earlier "NM#314 / PR #317 has not run a cycle" line here was STALE and is
+deleted.** Peer-reported 2026-08-12 (their measurement, not verified by me):
+merged and deployed to sadalsuud ~14:12 CEST 2026-08-11, 2 cycles on deploy day,
+9 batches, `lines == candidates` in every one, and running every cycle since —
+outcome-proven, not merely code-proven. Also from that session: NM#326 fixed a
+verifier that printed `PASS` while never running the completeness check, so
+**read its exit code, not its last line** (0 pass / 1 problem found / 2 gate did
+not run).
+
+**Two standing traps re-confirmed today.** Never oracle-score sub-300 content —
+and note the corollary found this session: **difference-of-differences does NOT
+rescue it**, because the short-content effect is length-dependent and therefore
+confounded with the treatment variable itself (#109 § arm B). And when sampling
+anything by length, **stratify by source** — #108 is the precedent.
+
+---
+
+## 🟢 2026-08-11 (afternoon) — OP-POINT CYCLE VERIFIED. Both read zero. #102 CLOSED.
+
+**Done. The 12:02 cycle of 2026-08-11 confirmed both moves.** Full record:
+`docs/evidence/2026-08-10-uplifting-v7-op-point-4.5-VERIFIED.md` (renamed off
+`-PREPARED`).
+
+| filter | op-point | rows tiered `medium` in the old band | baseline | verdict |
+|---|---|---|---|---|
+| `uplifting v7` | 4.0 → **4.5** | **0** (50 band rows, all `low`) | 81 | **PASS** |
+| `investment_risk v6` | 4.0 → **4.25** | **0** (49 band rows, all `low`) | 82 | **PASS** |
+
+**The secondary expectation was not met and that is correct, not a miss.**
+`medium` read 58 and 224 against a predicted ≈152 and ≈318 — but this cycle's
+batches are far smaller than the baseline's (1,720 vs 4,676; 1,210 vs 1,928), so
+the absolute counts are **not comparable quantities**. As shares: `uplifting`
+3.37% observed vs 3.25% predicted (matches); `investment_risk` 18.51% vs 16.49%
+(runs high, which is the pre-registered `proxy_aggregator` caveat). **Do not
+re-derive this as a failure next session.**
+
+Both batches were confirmed **fully written before reading** (size stable across
+3s; per-row counts sum to line counts). Pre-cycle, `TIER_THRESHOLDS` was read from
+**NexusMind's checkout on sadalsuud** — the runtime source — not from `config.yaml`.
+
+**#102 is closed** (2026-08-11), with its step 1 recorded as NOT RUN rather than
+silently dropped: no second oracle batch was collected, and that step's second
+half ("reach the sub-300 rows the first batch could not grade") is now refused by
+the do-not-oracle-score-short-content rule. The known non-random hole in its
+precision figures — 26 of 170 ungraded, 11 in the marginal band — therefore
+survives the closure.
+
+**Only remaining on this thread:** if a cycle-wide rather than
+first-batch-per-lens count is wanted, re-run the command in the evidence doc.
+
+### 2. Then: measure the `proxy_aggregator` after-side
+
+Baseline saved at
+`docs/evidence/2026-08-11-investment-risk-v6-proxy-aggregator-baseline.json` —
+**it is unrecreatable.** Expected: `investment_risk v6` keeps excluding Google
+News (now via `proxy_aggregator` instead of accidentally via `academic`) and gains
+~310 rows: Guardian 290, Ars Technica 19, Quanta 1, IEEE 2.
+
+**Attribute only the `google.com` row to this work.** The same FluxusSource
+regeneration applied ~15 unrelated pre-existing drift changes (`nytimes.com`
+unknown→news_major, `brookings.edu` think_tank→academic, several art/disability
+feeds). FluxusSource flagged it unprompted.
+
+### 3. ✅ DONE 2026-08-11 afternoon — #105's open question is ANSWERED, and it split in two
+
+**Two deployed filters were trained on corpora >50% refused by TODAY'S labelling
+gate**: `investment_risk v6` **51.6%** (length floor) and `cultural_discovery v5`
+**52.2%** (its own `no_cultural_topic_signal` gate). `nature_recovery v4` is the
+clean reference at **0.0%**.
+
+**Answered without any oracle spend** — refused rows already carry the label they
+were trained on, so comparing refused-vs-passed label distributions settles it for
+free and never runs the oracle outside its validated range.
+`scripts/research/gate_refused_label_audit.py`.
+
+- **`cultural_discovery v5` — the RULE tightened, the labels are fine.** Lens-refused
+  rows: mean label **1.102**, **2.4%** at/above the 4.0 op-point. Passed rows:
+  **2.214**, **16.1%**. The gate refuses what the oracle also scored low, stripping
+  tech/commerce domains hardest — off-lens for a culture filter, working as designed.
+  **But**: dropping 4,458 rows that are 97.6% negative roughly **doubles the positive
+  rate, 9.0% → 16.2%**, so any across-retrain comparison is non-comparable per ADR-023.
+- **`investment_risk v6` — neither. Split out as #108.** The corpus-level numbers look
+  like #92 short-stub inflation (refused mean 2.633 / 19.6% at-or-above vs passed
+  2.245 / 8.3%) and **that reading is REFUTED**: length is near-perfectly collinear
+  with source (elpais 97.8% short, spiegel 99.5%, aljazeera 100.0%), the one domain
+  with both sides runs the *opposite* way (`ad.nl` short 2.086/9.7% vs long
+  2.502/19.4%), and the 300–600 bucket **passes** the gate while looking identical to
+  100–300. The floor is a **de-facto source and language filter** — a retrain removes
+  six mostly non-English outlets at 93–100% each. Lands on NM#292.
+
+**Still not established** (both halves): whether the labels are *correct*. This
+compared distributions, not truth. Correctness needs the judge-panel substitute
+below, never a re-score.
+
+⚠️ **INSTRUMENT TRAP** — do **not** oracle-re-score Google News rows. Median
+content is **89 characters**, and the 300-char floor exists precisely because short
+content makes the LLM analyse the evaluation framework instead of the article. The
+valid substitute is a judge panel asking *does the headline support the score?*
+Full detail: `memory/google-news-corpus-hypotheses.md`.
+
+### Owner rulings waiting
+
+*(Both #107 and #106 have since been ruled and closed — kept here only as the
+record of what the midday session handed over. The live decision state is the top
+block of this file, not this list.)*
+
+1. ~~**#107**~~ — **RULED + CLOSED 2026-08-12**: a positive outcome suffices, a
+   pleasant subject is not required; also settles the three adjacent-lens rows.
+2. ~~**#106 — Kačanik.**~~ — **CLOSED 2026-08-12 evening as no longer
+   load-bearing**, after the residue was measured rather than assumed. Note the
+   options list in the issue is superseded: option 1 (do not publish headline-only
+   items) should **not** be built as GN-motivated work — but not because the
+   population goes away on its own. ADR-007 retires only population A, on no
+   schedule, and populations B and C stay.
+3. **#104** — every accuracy number is CPU-measured; production serves on GPU.
+   **Still open.**
+
+### What the midday session established (do not re-derive)
+
+**`memory/google-news-corpus-hypotheses.md`** is the file. Summary:
+
+- **100.0%** of all 14,357 Google News items are sub-300-char headline echoes —
+  both populations, max 277/283. With NexusMind#310 they are content-free at
+  collection *and* unfixable downstream.
+- Training corpora are **0–4.9% GN** against **25.3–25.5%** in production; three
+  filters have never seen a GN row in training.
+- GN is **1.1% of what is PUBLISHED** but **8.2% of `nature_recovery`**.
+  A surfacing share is not a reader-exposure number.
+- Panel of **all 39** published GN articles: ~33 of 39 defensible. But **19
+  `nature_recovery` articles are 9 stories — Nepal's tiger census published six
+  times** (→ NexusMind#188, with a cheap discriminator proposed).
+- **#93 step-4 re-measure: gate still CLOSED, do not set `short_content.cap`.**
+  The decisive ground survived a doubled window — short `solutions` rows max raw
+  **4.878**, zero ≥ 5.0 over 13,406 rows.
+- **REFUTED this session** (all mine unless noted): "96% removed downstream"
+  (denominator error), "GN scores like its training labels" (measured **20.2%**,
+  not ~50%), "ADR-007 closes the 25%/5% gap" (**58%** — population B needs a
+  second lever), "a Nepal story arrived via a Zambia proxy" (grouping artifact),
+  and the feed-count→item-mass inference (FluxusSource's).
+
+### Landmine closed
+
+`deploy_to_nexusmind.sh` **Step 1 is a bare `cp -r` with no manifest lookup.**
+`.nexusmind-owns` covers only Step 2 (`filters/common/`), so **nothing** under
+`filters/{name}/v{N}/` is protected and adding a manifest entry would not help.
+`proxy_aggregator` had been committed NexusMind-side only and would have been
+deleted silently on the next filter deploy. Ported into llm-distillery; usage block
+corrected; both entries in `memory/gotcha-log.md`.
+
+### Framework drift — 2 releases behind, unreviewed
+
+**Stamped `v1.18.0`; agent-ready-projects released `v1.19.0` and `v1.20.0` on
+2026-08-10.** The earlier "Framework: no drift" note further down this file was
+true when written and is now marked superseded.
+
+**Run `/update-drift` to triage properly — do not bulk-adopt.** One thing already
+checked: **v1.20.0's load-bearing change does not apply here.** It adds a
+session-start row to the project-file template so something points at the memory
+index at the moment it matters; `CLAUDE.md:168` already has that row. The rest of
+v1.19/v1.20 is documentation correcting the claim that the in-repo memory index is
+auto-loaded (it is not — it is pointer-reached), which this repo's own
+`/audit-context` run has now measured directly.
+
+---
+
+## 🟢 2026-08-10 — #102 (uplifting v7 specificity) step 2 DONE + the 21 `solutions_story` candidates adjudicated. Read this block first.
+
+**NOTHING WAS DEPLOYED.** No config edit, no refit, no filter sync. Everything
+below is evidence and curated data.
+
+### 1. #102 step 2 — the op-point sweep, through the ADR-021 ground-truth gate
+
+**`docs/evidence/2026-08-10-uplifting-v7-threshold-sweep-102.md`**,
+machine-readable at `docs/evidence/2026-08-10-uplifting-v7-threshold-sweep.json`.
+
+**Moving 4.0 → 4.5 is a real specificity gain, not noise.** FPR **8.11% →
+2.70%**; specificity bands **[0.901, 0.941] vs [0.957, 0.982] — DISJOINT**. The
+recall cost is real too ([0.685, 0.773] vs [0.583, 0.644], also disjoint): **24
+fewer FPs for 27 more FNs**. **F1 bands OVERLAP** — expected, and the reason not
+to use F1 here: it is symmetric, this problem is not (ADR-023). Recall and
+specificity are conditional on the true class, so both transfer to production
+despite the split's 32.7% enrichment; precision/MAE/F1 do not.
+
+Ran on **production's own predictions** (the committed parity dump) — no
+re-scoring, so it cost seconds instead of ~30 min on the serving box.
+**Control passed:** at 4.0 the pipeline reproduces the committed
+`ground_truth_gate.json` exactly (tp=159 fn=57 fp=36 tn=408, indeterminate 37).
+
+**A hard constraint found, and it removes 2 of 5 candidate thresholds:**
+**`MAX_NORMALIZATION_RAW_MIN = 4.5`.** `test_normalization_invariant.py` requires
+`normalization.json` `raw_min` == the tier threshold, and
+`production_scorer.py:513` rejects `raw_min > 4.5` and falls back to
+`score_scale_factor` **with only a log warning**. uplifting v7's fit is
+`raw_min: 4.0`. So **4.5 is reachable but sits ON the bound with zero margin;
+4.75 and 5.0 are not reachable** without raising the constant in both repos, and
+**any op-point move must refit normalization in the same change.**
+
+**PRODUCTION FEED IMPACT (step 3, done).** Estimated from the 2026-08-09 oracle
+batch band table; the 4.5 cut lands on a band boundary so nothing is
+interpolated. Surfacing **1,193 → 870 per 6 cycles** (≈199 → ≈145 per cycle,
+**−27%**); **off-lens reaching readers 302 → 164, i.e. 25.3% → 18.8%, 46%
+fewer**; on-lens retained **79%**.
+
+⚠️ **Correction to this block's first version: 4.5 does NOT "remove roughly
+two-thirds of surfacing volume."** Two-thirds is the **false-positive**
+reduction (36 → 12). Volume falls ~26% on the split, ~27% on the feed. I
+conflated the two.
+
+**WHICH TPs ARE LOST (step 3, done).** The 27 have oracle median **5.00**, range
+4.20–6.25, **none above 6.5** — the loss is entirely the weakest quarter of the
+positive set. They are **enriched in academic/preprint sources: 22.2% (6/27) vs
+12.2% of the 189 survivors and 7.9% of the split** — the same class the adverse
+adjudication called the dominant off-lens failure, i.e. part of the "recall cost"
+is the oracle and student sharing a blind spot. **n=6: directional, not
+established.** Genuinely on-lens losses to weigh: Dutch housing for young single
+women, Paralympic curling gender integration, a high-court VAT ruling, a
+physician on women's health literacy.
+
+**⚠️ I RETRACTED YESTERDAY'S b650 CLAIM AND THE RETRACTION WAS WRONG. It is
+withdrawn; the 2026-08-09 conclusion stands.** I argued "b650 not cleared at 4.5"
+failed because the #95 specificity bands overlap. **Wrong instrument.** The #95
+band answers *"what if batch composition changed"*; parity runs hold batch
+composition **fixed**, so batch noise is not the source of between-box variation
+and a band built from it proves nothing. Settled by a third run — see below.
+
+**Three gaps closed in `ground_truth_gate.py`** (all backward-compatible; 270
+unit tests green): specificity now carries a #95 band and is overlap-checked
+**first and separately from F1**; new `--truth-threshold` pins what "on-lens"
+means while the student's bar sweeps (without it the positive set moved under the
+sweep, 216 → 193, and recall stopped being comparable across thresholds); the
+overlap check now prints **DISJOINT** explicitly instead of only warning.
+New: `scripts/verification/parity_dump_to_gate_input.py`.
+
+### 1b. b650's GPU WORKS — and pinning production's stack CLEARS THE BOX COMPLETELY
+
+**`docs/evidence/2026-08-10-b650-gpu-production-stack-parity.md`.** Two new dumps:
+`…_b650-GPU-prodstack_…` and `…_b650-CPU-prodstack_…` in `datasets/parity/`.
+
+**Use `~/llm-distillery/venv-prodparity` on b650.** **No sudo was needed** — the
+old venv is built on the system python (`home = /usr/bin`, no headers); `uv
+python install 3.11` downloads a standalone CPython that ships them. The old
+`venv/` is untouched (the 08-09 dumps cite it as provenance).
+
+**THE HEADLINE, and it reverses what I wrote three hours earlier: on CPU with
+production's pins, b650 is 660/660 rows BIT-IDENTICAL to production, with ZERO
+verdict flips at every threshold 4.0–5.0.** Different machine, different site,
+different python patch level — not one score differs. **b650-CPU-prodparity is a
+production-exact measuring instrument**; quote its numbers without qualification.
+That removes the "only free between pipeline cycles" constraint from every future
+threshold question.
+
+**Decomposed one variable at a time** (this is what the fourth run bought):
+
+| change | bit-identical | flips @4.0 | flips @4.5 |
+|---|---|---|---|
+| **host** (gpu-server CPU → b650 CPU, pins held) | **660/660** | **0** | **0** |
+| **library stack** (b650 CPU, old pins → prod pins) | 15/660 | 0 | 3 |
+| **device** (b650, CPU → CUDA, pins held) | 4/660 | **1** | 3 |
+
+**⚠️ I published the opposite of this at midday and it was confounded.** I wrote
+*"matching the library stack made agreement WORSE"* and hardened it into a rule —
+*"you cannot clear a box by pinning its library versions"* — across five surfaces.
+The comparison changed the stack **and** the device at once. The review battery
+caught it; a ~16-min run on the free box settled it. **Pinning works, completely.**
+
+**New open question, and it is not small:** CPU-vs-CUDA on the student is worth
+**1 verdict flip at the deployed 4.0 op-point** and 3 at 4.5 (max |Δ| 0.1956).
+**Production SERVES on GPU, while `ground_truth_gate.json` and the entire #102
+sweep were measured on CPU.** The deployed numbers carry that term and nobody has
+quantified it end-to-end.
+
+**`constraints/production-gpu-server.txt`'s documented install command is
+UNSATISFIABLE** — found by running it. `requirements.txt` needs
+`datasets>=2.14.0,<3.0.0`, every version of which caps `fsspec<=2024.6.1`, while
+**the constraints file itself** pins `fsspec==2026.1.0` and a `-c` file is a pin.
+Production's serving venv has **no `datasets` at all**. *(A first fix blamed
+torch for the fsspec pin; torch declares `fsspec>=0.8.5` — wrong mechanism, right
+conclusion.)* The header now carries a command that works.
+
+**`sadaltager` is predicted to need the same `uv python install` fix. Untested.**
+
+**NEXT — the sweep still does NOT decide the flip:**
+- **owner call**: is a ~145-article/cycle uplifting feed acceptable for 46% less
+  junk? That is a product judgement, not a metrics one;
+- re-examine the oracle labels on the 6 academic "lost positives" — if they are
+  mislabelled, 4.5's real recall cost is lower than 0.611 implies;
+- if it goes ahead: **refit `normalization.json` at 4.5 in the same change**, and
+  note it lands exactly on `MAX_NORMALIZATION_RAW_MIN` with zero margin.
+
+### 2. The 21 `solutions_story` candidates — adjudicated: 7 accepted, 3 rejected, 11 held
+
+**`datasets/adverse/2026-08-10-uplifting-oracle-batch-adjudication.md`.**
+`uplifting.jsonl` goes 4 → 11 rows.
+
+**The framing was wrong and this is the part that outlives the batch.**
+`content_type: solutions_story` is **not a lens signal** — it is the oracle's
+*residual bucket* (none of the five penalty caps applied) and the tag the prompt
+puts on its **own 7.3/10 and 5.8/10 good examples**. So "uplifting is absorbing
+solutions-lens material" was an artifact of reading it as routing, and the
+ADR-015 overlap defence covers **2 rows, not 21**. The real dominant class in the
+21 is **academic-abstract register (9 of 21; 6 of the 13 in the 4.0–4.5 band)** — abstract prose
+supplying benefit vocabulary and a high `evidence_level` with no beneficiary in
+the text.
+
+Two rules now written down: **`raw ≥ 4.01` is the admission bar** (an assertion
+closer to the bar than the #95 floor is a coin flip, not a gate — one candidate
+rejected on exactly that, raw 4.004), and **`oracle_wa` in 3.5–4.0 is held, not
+labelled**. New fields `assertion_margin` and `oracle` on promoted rows.
+
+Two accepted rows document **oracle-prompt gaps**: the `corporate_finance` cap
+does not cover prudential regulation (EBA dashboard), and check C (speculation)
+did not fire on an aspiration with no programme behind it (Namibian minister).
+
+**Owner call still open — one question, not eleven:** three held rows are good
+articles in an adjacent lens (new frog species, Buenos Aires estancia, Antalya
+nomadic tents). *"Delight/discovery is not uplifting"* is an editorial line, not
+a fact, and one ruling covers the class. The other 8 split **6 + 2**: six are
+mechanical (a second oracle pass — `oracle_wa` in 3.5–4.0), two are valid accepts
+left out so one register would not take 5 of 11 rows — a curation choice, not a
+measurement gap. **The other 13 candidates (`doom_framed` 7,
+`community_building` 3, `speculation` 2, `politics` 1) are untouched.**
+
+### 2b. The review battery found 3 blockers in my own same-day work
+
+`/review-changes` at HIGH tier, 6 lenses. Worth recording because every finding
+was in work committed hours earlier and none was caught by 273 green tests:
+
+1. **A guard that did not guard.** `parity_dump_to_gate_input.py` refused
+   "uncalibrated" output by checking `load_calibration` returned something truthy
+   — but a calibration file with a partial `dimensions` block is truthy, and
+   `apply_calibration` passes those dims through raw. Measured cost: recall 0.759
+   / spec 0.914 against the true 0.736 / 0.919, printed under a success line.
+   This repo's signature defect, in a guard whose own message cites #98. Fixed.
+2. **An evidence file inside a deployed filter package.** `threshold_sweep.json`
+   sat in `filters/uplifting/v7/`; `deploy_to_nexusmind.sh:137` is an unfiltered
+   `cp -r`, and a `--dry-run` would leave it **untracked** under `filters/`,
+   where `deploy_filters.sh`'s `scorer_untracked_blocking()` runs in the every-4h
+   `ExecStartPre` — **the scorer would refuse to start.** Moved to
+   `docs/evidence/`. **`ground_truth_gate.json` still carries the same hazard.**
+3. **A confounded causal claim** (see 1b) and **a vacuous statistical argument**
+   (see 1). Plus: a DISJOINT verdict I added that fires 23.7% of the time when a
+   model is compared against a subsample of *itself* — reworded to state only
+   what it excludes; a silent all-zeros gate report when `--recompute-model-wa`
+   is omitted — now a hard error; and ~12 doc-level errors, all fixed.
+
+### 2c. The three unmeasured filters now have numbers, and the fleet is complete
+
+`docs/evidence/2026-08-10-fleet-deploy-gate-completion.md`. `belonging v1`,
+`cultural_discovery v5` and `investment_risk v6` were **live with no accuracy
+number of any kind**. First measurements, at each filter's own 4.0 op-point:
+
+| filter | recall | spec | **FPR** | n |
+|---|---|---|---|---|
+| uplifting v7 | 0.736 | 0.919 | **8.1%** | 660 |
+| **investment_risk v6** | **0.761** | 0.955 | **4.5%** | 1045 |
+| solutions v6 | 0.671 | 0.972 | 2.8% | 1032 |
+| nature_recovery v4 | 0.650 | 0.979 | 2.1% | 391 |
+| **cultural_discovery v5** | 0.587 | 0.980 | 2.0% | 857 |
+| **belonging v1** | 0.600 | 0.985 | 1.5% | 738 |
+
+**#102's premise survives the completed set** — uplifting is 1.79× the next worst
+and 5.4× the best. **New: `investment_risk v6` at 4.5% FPR is the second
+concern**, invisible until today, and it carries the fleet's *best* recall.
+`belonging` and `cultural_discovery` are conservative, not broken (lowest FPR and
+lowest recall together). Only recall/specificity are quoted — split positive
+rates run 8.8–32.7% (ADR-023).
+
+`cultural_discovery v5`'s gatekeeper **binds 0 times in 857 rows** — the #94
+shape, second instance found. Worth its own look.
+
+### 2d. The op-point move is PREPARED ON A BRANCH, not deployed
+
+**Branch `uplifting-v7-op-point-4.5`** (pushed).
+`docs/evidence/2026-08-10-uplifting-v7-op-point-4.5-VERIFIED.md`.
+
+Staged rather than shipped: a filter deploy restarts the scorer and this could
+not be verified until **08:00 on 11 Aug**, because the 04:00 cycle dies with the
+Odido uplink. **Nothing scheduled invokes `deploy_to_nexusmind.sh`**, so it
+cannot reach production on its own — verified, not assumed.
+
+**Read this before deploying it:** the op-point lives in **four** places, and
+`config.yaml` is **not** the runtime one — `base_scorer.py TIER_THRESHOLDS` is.
+Changing the config alone is a no-op in production. I nearly did exactly that;
+`fit_normalization.py` caught it by refusing to agree with itself and fitting at
+the old anchor. All four now agree at 4.5, 273 tests pass, and the tier
+assignment was **executed** (raw 4.49 → `low`, 4.50 → `medium`) rather than
+inferred.
+
+Before the cheaper alternative is proposed again: **a register/source-type rule
+was tested out-of-sample and REFUTED** — it removes 2 false positives and costs
+21 true ones. Details in the #102 evidence doc.
+
+### 3. Housekeeping
+
+- **Spam comment on #95 handled** (owner request): `michaelmanly`'s comment
+  minimized as spam, account **blocked org-wide from `veen-systems`**. Personal
+  block needs `gh auth refresh -h github.com -s user` (token lacks the scope);
+  reporting to GitHub Trust & Safety has no API and needs a browser click. The
+  account's public events are 71 issue comments across ~25 unrelated repos in
+  bursts (12 repos in 37 minutes on 08-07), 0 followers, and GitHub's search API
+  refuses to return it while the profile still resolves — likely a hidden/flagged
+  account.
+- `datasets/adverse/README.md` contents table had drifted a **second** time
+  (uplifting n=2 vs 4 on disk, belonging n=1 vs 2). Fixed, and the table now
+  carries the one-liner that regenerates the counts.
+- `OpenAlex` rows carry `publication_year: 2050` / `original_published_date:
+  2050-01-01`. Not chased.
+
+---
+
+## 2026-08-09 (night) — previous session close.
+
+Sent to start #102. **Did not start it** — a prerequisite turned out to be
+unverified, so this session removed the confound instead. Nothing was deployed;
+nothing needs to be.
+
+### What was actually established
+
+1. **#102's premise survives.** `uplifting v7` spec **0.9189** was measured
+   yesterday on b650, not the serving box. Re-scored the same 660 rows on
+   gpu-server's own serving venv with model weights, all filter + `common/` code
+   and the split md5-identical: **0 verdict flips at the 4.0 op-point, identical
+   confusion matrix** (tp=159 fn=57 fp=36 tn=408). The number is production's.
+2. **But the student is not box-clean, and 4.5 is inside the skew.** Only
+   **2.3%** of rows are bit-identical; calibrated |Δ| max **0.2008**, *above* the
+   #95 0.16 floor; at **4.5** three rows flip and specificity splits **0.9730
+   (production) vs 0.9662 (b650)**. **A box is cleared at a threshold, never in
+   general** — the e5 probe's 4.2e-6 does not transfer to the student.
+   `docs/evidence/2026-08-09-cross-box-parity-uplifting-v7.md`.
+3. **#102's sweep, on production predictions** (on-lens fixed at oracle ≥4.0):
+   4.0 → FPR **8.11%**; 4.25 → 5.41%; **4.5 → 2.70%**; 4.75 → 1.58%; 5.0 → 1.13%.
+   4.5 lands between `solutions v6` (2.8%) and `nature_recovery v4` (2.1%),
+   trading 24 fewer FPs for 27 more FNs — right direction under ADR-023.
+   **Not a decision**: no #95 band applied, `ground_truth_gate.py` not used,
+   split is 32.7% enriched.
+
+### Two corrections to yesterday's block
+
+- **b650's GPU failure was misdiagnosed.** It is **not** a CUDA/libcuda link
+  error. Triton's helper compile dies on `Python.h: No such file or directory` —
+  **`python3.12-dev` is not installed**. `libcuda.so.1` *and* the dev symlink are
+  both present and `gcc` links them fine (exit 0). The old reading came from the
+  tail of a `CalledProcessError`, which prints the command line ending in
+  `-l:libcuda.so.1`. **Fix (untried, needs sudo): `sudo apt install
+  python3.12-dev`**, then `ssh b650-gpu '~/llm-distillery/venv/bin/python /tmp/tk.py'`.
+- **`requirements.txt` ranges are the root cause of the wrong-interpreter class
+  of error**, not any one box. Five interpreters across four machines all satisfy
+  it with five different resolutions (torch 2.5.1 / 2.11.0 / 2.12.1 / 2.13.0;
+  transformers 4.57.6 / 5.0.0 / 5.12.1 / 5.14.1). Production is now frozen in
+  **`constraints/production-gpu-server.txt`** (91 packages, diffed against a
+  fresh freeze). Note `torch==2.11.0` there is really `2.11.0+cu130` — pip freeze
+  strips the CUDA tag.
+
+### New, from two emails the owner forwarded
+
+- **DeepSeek is raising API prices** — "significant increase", no numbers, no
+  date (2026-08-06 announcement; continued use = acceptance). **The threshold
+  that decides it is +64%**: DeepSeek off-peak $0.0011/article vs Gemini Batch
+  ~$0.0018. Above that, Gemini Batch is cheapest and the cd v5
+  DeepSeek-as-default precedent is void. DeepSeek *peak* ($0.0022) is already
+  dearer than Gemini Batch today. Whole decision ≈ $5–6 per 8K-article retrain.
+  Not affected: #102 (Gemini Flash oracle). Banner on
+  `memory/oracle-pricing-scheduling.md`.
+- **Odido maintenance 11 Aug, 01:00–07:00** takes the home uplink down. situla,
+  sadalsuud and sadaltager all route via 192.168.1.1 — one uplink, all three go,
+  plus Tailscale reach to gpu-server/b650. **The 04:00 cycle will be lost**
+  (`Persistent=true` will NOT catch it: the host stays up and the timer fires, it
+  just fails). 08:00 recovers. Expect a failed cycle in Tuesday's logs; do not
+  diagnose it as a regression.
+
+### Fourth box found: `sadaltager`
+
+RTX 5060 Ti 16 GB (Blackwell sm_120), driver 610.43.02, 12 cores / 14 GB RAM,
+425 GB free, on the home LAN. Only venv is `~/torch-test`: **torch 2.11.0+cu128
+and nothing else** — no numpy/transformers/peft. Because it is empty it is the
+cheapest box to build *from the lockfile*, and its torch already matches
+production's version. **Prediction, unverified: it has no `python3-dev` either,
+so it will hit b650's exact triton failure the moment it JITs on GPU.**
+
+---
+
+## 2026-08-09 (evening) — previous session close.
+
+Sent to fix a calibration defect. **There wasn't one.** What the day actually
+produced: one irreversible risk closed, a new ADR, two of my own headline claims
+retracted, and the first accuracy number `uplifting v7` has ever had.
+
+**NOTHING WAS DEPLOYED, and nothing needs to be.** Every artifact committed
+today is either md5-identical to what production already runs (the three
+recovered probe pickles), or training/dev evidence that production never reads
+(adverse data, ADR, `requirements.txt`, gate JSON). The one live divergence —
+`cultural_discovery/v5/prefilter.py`, repo 87 lines ahead — is **inert in
+production** (`skip_prefilter=True`, `scripts/main.py:1207`), so shipping it
+changes nothing and is not urgent.
+
+**Framework: no drift.** agent-ready-projects is at **v1.18.0**, adopted. The
+only commit past the tag is a README badge fix, and it is **unpushed in the
+framework repo** (`294d83c`) — owner's to push.
+
+> **SUPERSEDED 2026-08-11** (`/audit-context`): true when written, false now.
+> The framework released **v1.19.0 and v1.20.0** on 2026-08-10; this repo is
+> still stamped v1.18.0. See the top block. Left in place because this is a
+> dated session record, not current state.
+
+### The three things a next session should not re-derive
+
+1. **`nature_recovery` is not miscalibrated and neither is anything else.** The
+   173× surfacing spread is mostly genuine base-rate difference. Oracle-checked
+   at 87% precision with ~8 true positives per 2,190 articles. Details below.
+2. **ADR-023 now governs every quality claim**: optimise specificity, recall is
+   a floor, **never rank filters on MAE**. Promoted to CLAUDE.md Hard
+   Constraints. Two of my own claims died to it the same day.
+3. **The oracle cannot see errors it shares with the student.** It graded
+   `uplifting`'s ≥5.5 band 29/29 perfect; readers flagged articles at 6.85,
+   6.49 and 6.09 in that band. **Oracle-only active learning cannot fix that
+   class** — reader flags are the only independent label source.
+
+### Open, in priority order
+
+- **#102** (new) — `uplifting v7` specificity: 8.1% FPR vs 2–3% elsewhere; run
+  the ADR-021 gate on a 4.5 op-point. First concrete target of #90.
+- **Adjudicate the 21 `solutions_story` candidates** in
+  `datasets/adverse/candidates/` — under ADR-015 they may legitimately belong in
+  both lenses, so this decides most of the batch. Owner call.
+- **One reader flag still open** — the Global Voices Assyrian-erasure essay,
+  `belonging` 7.67. `datasets/adverse/2026-08-09-reader-flags.md`.
+- **#81 repointed** — the sklearn mismatch is resolved (both boxes 1.8.0). The
+  live one is **sentence-transformers 5.6.0 (sadalsuud) vs 5.2.2 (gpu-server)**
+  on the mpnet + sklearn-MLP detectors, where the |0.16| skew was measured.
+  **Obituary enforces at 0.85 with a 0.0012 margin.** Unmeasured.
+- Three filters still have no ground-truth gate: `belonging v1`,
+  `cultural_discovery v5`, `investment_risk v6`.
+
+### Traps this session walked into, so the next one doesn't
+
+- **gpu-server's system `python3` is NOT production.** The scorer runs
+  `/home/hcl/gpu-server/nexusmind-scorer/venv` with
+  `PYTHONPATH=/home/hcl/NexusMind`. Read it off `systemctl cat`. I published
+  numbers from the wrong interpreter and had to redo them.
+- ~~**b650 cannot run the Gemma student on GPU**~~ — **SOLVED 2026-08-10, and it
+  needed no sudo. Use `~/llm-distillery/venv-prodparity` (~2 min per 660 rows).**
+  `uv python install 3.11` downloads a standalone CPython that ships the headers
+  triton wants; the old venv was built on the system python, which does not. The
+  diagnosis history, kept because both readings were wrong once: ~~triton fails
+  to compile its CUDA helper (`gcc` linking `libcuda.so.1`)~~ → **corrected
+  2026-08-09 night to a missing `python3.12-dev`** (right cause, wrong remedy —
+  the apt install was never run). Timing correction stands: on CPU the 660-row
+  split takes **~16 min** on b650 and **~30 min** on gpu-server, not ~7. The e5
+  probe path was never affected.
+- **Matching articles by source prefix silently grabs the wrong one** — there
+  are two `australian_abc_au` and two `south_african_namibian` rows in play.
+  Use exact ids with an assert.
+- **Excerpts are not sufficient for adjudication** — three of five adverse
+  drafts moved after reading the full articles, in both directions.
+
+---
+
+## 🔴 2026-08-09 (evening) — scorer architecture/state audit: one real risk, and the calibration lead was a dead end
+
+### The calibration thread ends here — nature_recovery is NOT miscalibrated
+
+Oracle-scored 160 production articles with DeepSeek (nature_recovery's own
+oracle, $0.21, 160/160 parsed), stratified by the student's own score over
+6 cycles / 13,142 unique articles:
+
+| band (student) | population | n | oracle ≥3.75 | implied/cycle |
+|---|---|---|---|---|
+| A ≥3.75 (surfacing) | 30 | 30 | **26/30 = 87%** | 4.3 |
+| B 2.00–3.75 | 50 | 40 | 12/40 = 30% | 2.5 |
+| C 1.00–2.00 | 353 | 40 | 1/40 = 2% | 1.5 |
+| D 0.50–1.00 | 2,300 | 25 | **0/25** | 0 |
+| E <0.50 | 10,409 | 25 | **0/25** | 0 |
+
+Bands D+E are 96.7% of the corpus and the oracle's **maximum** there is 1.05 —
+nothing is crushed down there. Precision at the gate **0.87** (recorded: 0.848);
+implied ~8 oracle-positives/cycle vs ~5 surfaced → recall **~0.6** (recorded:
+0.65). **"3 of 2,152" is not a defect — there are only about 8 of 2,190.** The
+corpus genuinely holds ~0.36% nature-recovery content.
+
+**RETRACTED, mine, same day:** I found an isotonic plateau in
+`calibration.json` (`recovery_evidence` jumps **+2.47 over a 0.06 student
+step**; >52% of the student's range maps to calibrated ≤1.33) and called it the
+cause of the 173× spread. The plateau is real and measured — its *cost* is
+about **3 articles/cycle**. Refitting it is not worth doing. **Do not re-open
+the "isotonic crushes the scale" lead without re-reading this band table.**
+
+Consequence for the 173× spread: the outlier is **investment_risk at 24.2%**,
+not nature_recovery at 0.14%. Owner has deprioritised investment_risk for now.
+Blocked anyway: `google-genai` is not installed and `requirements.txt:6` pins
+the old `google-generativeai`, while `ground_truth/batch_scorer.py:569` imports
+`from google import genai` — the declared env cannot run the Gemini oracle.
+
+Suggestive, NOT significant: among oracle-positives, English recall 11/14=0.79
+vs non-English 15/25=0.60, **Fisher exact p=0.304**. NM#292 axis; needs ~4× the
+sample. One false positive worth knowing: a Bosnian article on *prirodni
+priraštaj* (natural population **increase** = birth rates) scored 3.77 by the
+student, 0.00 by the oracle.
+
+### ✅ Done — the one real risk is closed (`b790b1b`)
+
+**All six lenses run an e5 probe in production; only three pickles were in this
+repo.** `cultural_discovery v5`, `investment_risk v6` and `uplifting v7`
+existed on gpu-server and nowhere else. `.nexusmind-owns` is empty and
+`deploy_to_nexusmind.sh` overwrites — the next sync would have deleted them.
+Recovered, md5-verified against the running copies, committed.
+
+Also pulled (gitignored by `filters/**/model/`, same as nature_recovery v4 and
+solutions v6): **`uplifting v7`'s adapter weights, which existed in ONE place.**
+NO_HUB because `training_metadata.json`/`training_history.json` were never
+produced, so git ignores it and the Hub never had it. Verified md5
+`eb0bf8416206b841`; PEFT keys OLD format (183 `.lora_A.weight`, 0 `.default.`).
+**A durable second copy still needs an owner decision** — Hub upload would need
+an honest model card that declares the metrics unknown.
+
+**Why the repo was behind, and it is not the release path.** 35 of 36 shared
+code/config files are byte-identical repo ↔ gpu-server. The gap is confined to
+binary artifacts git was told to ignore. Root `.gitignore` ignores `*.pkl`; the
+negation re-admitting probes (`!filters/*/v*/probe/*.pkl`) carried a trailing
+same-line comment, which gitignore treats as part of the pattern, so it was
+inert. Fixed 2026-07-10 (`f910032`). The split falls exactly on that date —
+everything deployed before it is missing, everything after it is present.
+
+### Two items from the audit that dissolved on measurement — do not redo them
+
+- **cd v5's deployed `prefilter.py` is 87 lines behind this repo** (the
+  2026-08-06 multilingual extension). **Deploying it changes nothing**: the
+  per-filter rule prefilter still does not run in production —
+  `scripts/main.py:1207` passes `skip_prefilter=True` and every scorer is built
+  `use_prefilter=False` (NM#284, unchanged). The repo holds the good copy.
+- **The #94 GATEKEEPER_CAP violations (cd v5 = 4.0, solutions v6 = 3.0) are
+  already known, exempted and dated** in `tests/unit/test_gatekeeper_invariant.py`,
+  with stated closure paths (cd when NexusMind moves to v6; solutions at its
+  next version bump). Measured over 13,142 articles: **0 caps applied in
+  either**; only 1 cd article with `evidence_quality<3.0` exceeds raw 3.50, and
+  0 solutions articles with `concreteness<3.0` exceed raw 2.50. **Changing
+  either cap now would fail `test_every_exemption_matches_a_real_violation`.**
+
+### 🟡 Remaining, and it is the real work: Stage 1 is uncalibrated on 5 of 6 lenses
+
+Only `solutions v6`'s runtime threshold equals its probe's own computed value.
+
+| lens | runtime `DEFAULT_THRESHOLD` | probe's `selected_threshold` | corpus decided by probe alone |
+|---|---|---|---|
+| investment_risk v6 | 1.50 | *none* | 8.8% |
+| nature_recovery v4 | 0.75 | **3.225** (ignored, documented) | 11.5% |
+| uplifting v7 | 1.00 | *none* | 12.4% |
+| belonging v1 | 1.00 | *none* | 14.9% |
+| cultural_discovery v5 | 1.25 | *none* | **53.7%** |
+| solutions v6 | **1.225** | **1.225** ✓ | **67.2%** |
+
+Two training regimes: nr + solutions carry `selected_threshold` / `target_fn
+0.02` / `val_fn_rate` / `val_recall_medium ≈0.98` (`train_probe.py --objective
+recall`). The other four carry **only `val_mae`** — no threshold, no recall
+guarantee. Probe val_mae: belonging 0.54, investment_risk 0.56,
+cultural_discovery 0.87, **uplifting 1.10**.
+
+**MEASURED 2026-08-09 — and the finding downgrades from correctness to
+efficiency. At every deployed threshold the val FN-rate is 0.000.** All four
+eyeballed thresholds landed on the conservative side. There is no live recall
+bug in Stage 1.
+
+Refitted all four on b650 (`--objective recall --target-fn 0.02`), probes kept
+out of the repo in the session scratchpad, **nothing deployed**:
+
+| lens | deployed | **val FN @ deployed** | recall-calibrated | val stage2-rate: deployed → calibrated |
+|---|---|---|---|---|
+| belonging v1 | 1.00 | **0.000** | 2.95 | 0.827 → 0.373 |
+| cultural_discovery v5 | 1.25 | **0.000** | 3.25 | 0.826 → 0.316 |
+| investment_risk v6 | 1.50 | **0.000** | 3.15 | 0.767 → 0.322 |
+| uplifting v7 | 1.00 | **0.000** | 2.85 | 1.000 → 0.747 |
+
+**Do NOT deploy the calibrated thresholds as a default action.** They buy a
+2–3× cut in Stage-2 calls at 1.3–1.9% val FN — i.e. they trade recall for
+speed, which is the wrong direction while the open complaint is that too little
+surfaces. Take them only if throughput becomes the binding constraint.
+
+⚠️ **val stage2-rate is NOT the production screening rate** — the val sets are
+enriched (belonging 78 positives/738 = 10.6% vs 3.8% production surfacing).
+Different quantities, not noisy versions of one (`rate-needs-population`).
+Notable: `uplifting v7` at its deployed 1.00 passes **100% of val** — its probe
+does nothing there — yet screens 12.4% of production.
+
+**Cross-box parity: b650 is CLEARED to train probes for gpu-server.** Measured,
+not argued — same 160 articles, same probe, the real `embedding_stage.py`
+class: b650 (ST 5.6.1 / torch 2.13.0+cu130) vs the serving venv (ST 5.2.2 /
+torch 2.11.0+cu130) gives **max |Δ| 4.2e-6, zero screening flips** at
+0.75/1.0/1.25/1.5/2.85/3.25, bit-identical embedding checksums. That is
+*smaller* than the serving venv's own CPU-vs-CUDA difference (5.4e-6).
+**Scope correction:** `memory/b650-gpu.md`'s |0.16| cross-box skew was measured
+on the **obituary detector** (mpnet + sklearn MLP). It does **not** generalise
+to the multilingual-e5-small + torch MLP probe path.
+
+⚠️ **THREE distinct stacks are in play; the SYSTEM python on gpu-server is NOT
+production.** The service pins its own venv plus `PYTHONPATH=/home/hcl/NexusMind`:
+
+    serving venv (gpu-server)  py3.11.2  torch 2.11.0+cu130  ST 5.2.2  tf 5.0.0   peft 0.18.1
+    gpu-server system python   py3.11.2  torch 2.5.1+cu124   ST 5.2.3  tf 5.2.0   peft MISSING
+    b650 venv                  py3.12.3  torch 2.13.0+cu130  ST 5.6.1  tf 5.14.1  peft 0.19.1
+
+An earlier pass of this audit quoted the system python as production and had to
+be redone. Read the venv off `systemctl cat nexusmind-scorer`, not `which python3`.
+
+**Dependencies (`996c0c7`): two declared defects fixed, blanket upgrade
+declined.** `google-genai` was never declared though `batch_scorer.py:569,579`
+imports it — a clean install could not run the Gemini oracle at all.
+`transformers<5.0.0` *excluded the 5.0.0 production serves*. No blanket upgrade:
+the cross-box identity above currently holds and no open defect traces to a
+stale dependency, so a bump would forfeit a measured property for nothing. The
+parity harness is the acceptance gate for any future bump — require zero
+screening flips.
+
+Two smaller state notes: `belonging v1` and `uplifting v7` probes were pickled
+with **sklearn 1.7.1** against gpu-server's **1.8.0** and emit
+`InconsistentVersionWarning` on every load (the other four are clean).
+Fitting-set sizes vary widely — calibration val n 389 (nr) … 1,045 (ir);
+normalization 272 … 26,375 articles, a 97× spread. Only nr v4 and solutions v6
+have a `ground_truth_gate.json` at all.
+
+**Clean, verified:** all six probes load; all six normalization anchors correct
+(`x[0]` == medium threshold); all six weight sets sum to 1.0;
+`surfacing AND stage1_low` = **0 across all six lenses / 13,142 articles**, so
+the hybrid design's core safety claim still holds. `pytest tests/unit` 270
+passed, 4 skipped.
+
+## 🔴 2026-08-09 — the lenses are not mutually calibrated, and #75/#76's closure does not hold
+
+Owner: *"the mutual calibration of the lenses seems not to work"* — articles not
+landing in the right outlets. Measured, one cycle, the same 2,152 articles
+scored by all six lenses.
+
+| lens | medium gate | raw p90 (all) | **surfaced** |
+|---|---|---|---|
+| investment_risk | 4.0 | 5.35 | **24.2%** |
+| uplifting | 4.0 | 3.81 | 9.4% |
+| belonging | 4.0 | 1.79 | 3.1% |
+| solutions | 2.25 | 1.04 | 2.7% |
+| cultural_discovery | ~4.0 | 1.94 | 2.4% |
+| **nature_recovery** | **3.75** | **0.68** | **0.14% — 3 of 2,152** |
+
+**A 173× spread in surfacing rate on identical input.** Five lenses gate at ~4.0
+against raw distributions differing **8× at p90**. The gate is a fixed constant;
+the scale it is applied to is not.
+
+**NORMALIZATION IS NOT THE DEFECT — I said it was and was wrong.** Among
+*surfacing* articles the normalized medians are **4.84 / 5.01 / 5.42 / 5.12 /
+4.81** across five lenses (p90 8.8–9.6). That is exactly the cross-lens
+comparability ADR-014 promises. The all-article `norm p90 = 0.00` that I first
+read as "flooring 90% of articles" is expected: only ~3% surface, and
+normalization is fitted on surfacing rows by design. **The defect is which
+articles get to be surfacing, not how they rank once they are.** So this is
+ADR-008 (calibration) territory, not ADR-014.
+
+**#74, #75, #76 are all CLOSED — and #75's stated reason does not survive
+re-measurement.** It was closed as *"nature_recovery v4 healthy; #75 was a
+measurement artifact (probe-capped rows + files predating normalization)"*.
+Checked that specific explanation against current data, splitting by
+`stage_used` (now 100% populated since NM#300):
+
+    stage2      (full model, NOT probe-capped)  n=3,532  p50 0.24  p90 0.67  max 5.44  surfaced 5
+    stage1_low  (probe-capped)                  n=  493  p50 0.46  p90 0.71  surfaced 0
+
+**The artifact explanation runs the wrong way** — probe-capped rows score
+*higher* (p50 0.46 vs 0.24), so excluding them makes the picture worse. 3,532
+fully-scored articles, p90 at **18% of their own gate**, five surfaced. The
+condition is present in the non-artifact population.
+
+**Do not re-open blind.** #76's other three threads were genuinely resolved
+(uplifting unit-mismatch refit, belonging drift refit, the `_assign_tier`
+double-cut under NM#280). Only the nature_recovery disposition is contradicted.
+
+**Next step is diagnosis, not a refit** — a refit that does not know why the raw
+scale sits at 0.2–0.7 will re-fit the same scale. Two candidates named in
+`memory/calibration-history.md`: boundary-crush (raw ordering sound, gate too
+high) vs scale-collapse (model barely fires). nature_recovery looks like the
+second; belonging/cd like the first. **They need different fixes**, and
+`memory/calibration-history.md` Dead Ends must be read first — `% norm<0.5` is a
+known metric artifact there.
+
+### Also measured the same day, unrelated to calibration
+
+- **Junk detectors**: all three stamp 100% of rows, `obituary v5` / `violence v1`
+  / `commerce v1`. Obituary and commerce **enforcing** (0 flagged survivors).
+  **Violence flags 386 of 12,531 rows (3.1%) and ships them anyway** — shadow
+  since 2026-07-28, never enforced, recall 0.550 @0.95 precision. That is a
+  standing decision nobody has come back to.
+- **Scorer staleness**: `investment_risk v6` deployed **2026-02-21** (5½ months,
+  and it is the 24.2% outlier); **`uplifting v7` has NO MAE recorded at all**,
+  raw or calibrated — a deployed filter whose accuracy has never been measured;
+  `belonging v1` MAE 0.534, the weakest recorded; `nature_recovery v4` trained on
+  3.9K, half of everyone else.
+
+
+## 2026-08-09 (later) — the deletion happens three layers up, and one fix had been sitting merged-ready for six days
+
+Full record: `memory/project_session_2026_08_09_later.md`. The session was sent to
+certify one instrument; the owner's own question — *"FluxusSource is supposed to do
+dedup only, then NexusMind does corroboration — are we on the right level?"* — turned
+out to be the more valuable thread.
+
+### ✅ Done
+
+- [x] **INST-10 CERTIFIED by a non-author** (NexusMind `b90ba9e`), registered in
+      V&V registry §2 together with INST-11, closing an open BACKLOG item where
+      "nothing ships on `CERTIFIED: no`" was unenforceable for want of a row.
+      Reproduced exactly: unweighted AUC **0.798 / 0.767**, 6/6 strata monotone,
+      Kish ESS 36.1, robust to the date-only confound (0.798 → 0.794).
+- [x] **REFUSED the flip it was meant to unblock, with evidence.** Certification
+      does not authorise `temporal.enabled: true` — PROP-1's pre-registered
+      falsification is a **recall** test at fixed cluster size, and INST-10 is
+      precision-side-only by construction. That test has never been run.
+      **And `sigma_hours: 72.0` in `config/app.yaml` is the refuted value**: at
+      σ=72 the term nudges 99.1% of true pairs *and 79.4% of false merges*
+      upward — a merge-more lever on a population already 83% wrong. Two-sided
+      window is **σ ∈ [6, 36]**.
+- [x] **Two INST-10 defects fixed.** Its docstring's weighted figures never
+      reproduced (0.902/0.748 claimed vs 0.915/0.756 actual). Stratum weights
+      were computed before exclusions, flattering the `--exclude-date-only`
+      robustness check specifically (candidate 0.756 → **0.719**, ESS 83 → 31).
+- [x] **NexusMind PR #299 MERGED** (`8ed8139`, closes NM#296) — the load-time
+      `duplicate_title` drop is now source-aware. Rebased from `CONFLICTING`;
+      the conflict was **one documentation row**. Tests 1021 → **1038**, +17,
+      zero failures, CI green.
+- [x] **Three deletion points identified, in series** — the answer to the
+      owner's layering question. See below.
+
+### The finding: three source-blind deletion points, not one
+
+| # | Where | Deletes | Volume | State |
+|---|---|---|---|---|
+| 1 | FluxusSource content hash | same title+opening, **any outlet** | ~20 cross-source/run flagged (**provisional** — post-FS#142 reset) | FS#133 open; reframed as a **policy** bug, which unparks it |
+| 2 | NexusMind `_is_duplicate` title check, **at load** | same normalised title, **any outlet** | **5,405 dup-title/cycle**, ~46.7% cross-outlet when measured | **FIXED — PR #299 merged, NOT DEPLOYED** |
+| 3 | NexusMind `story_dedup` | whole clusters, keeps one | ~1,500/cycle | The counting/deleting conflation — unaddressed |
+
+**Point 2 mattered most and was invisible from here**: it runs *before a single
+embedding is computed*, so no threshold or representation change can ever reach
+it — and it has been censoring the corroboration programme's own measurement
+population. Every number in the V&V registry, the 0.173 precision included, is
+computed on a corpus whose easiest positives were deleted first.
+
+**Point 3 is the design flaw the owner's question actually names.** One clustering
+pass with one threshold does two jobs with opposite risk profiles: it deletes
+~1,500 articles/cycle *and* emits the `corroborating_sources` count that drives
+ovr.news ranking. A wrong merge silently bins a distinct article **and** inflates
+a trust signal. Nobody has measured how many of those deletions are wrong —
+INST-12's row says so explicitly.
+
+### Measurements made this session
+
+- **Cross-source drops are ~half junk.** Classified FluxusSource's logged
+      cross-source drops: **46% Google News feeds colliding with each other,
+      42% real distinct outlets, 11% mixed** (corrected by the FluxusSource
+      session from my `gn_`-prefix classification, which named only one of three
+      GN populations). So "just stop deleting cross-source copies" would preserve
+      more junk than signal — it needs a **publisher-identity** rule. PR #299's
+      full-host comparison is exactly that, and independently replicates its own
+      53.3/46.7 split on a different mechanism.
+- **Generic-headline false-corroboration risk is not in the data.** 21,570
+      titles, **282 cross-host collisions**, median title length 69 chars,
+      **1 of 282 under 30 chars**. All specific events, no boilerplate.
+- **PR #299's O(n²) safety net is fine** — 60 ms at 8,000 articles at a 40%
+      duplicate rate, vs production's 2–4k/cycle.
+
+### ⚠️ Corrections owed — three claims this repo gave the owner were false
+
+Two of them drove owner decisions. All now corrected in
+`memory/corroboration-feature-hypotheses.md` (`43815bb`).
+
+1. **FS#143** — *"removes 100% of the duplicate class; 0 titles appear in ≥2
+      category feeds"*. Both false. Category feeds duplicate **each other 738×
+      in 7 days** (`cs_lg`×`cs` 452, `cs`×`math` 64, `cs`×`physics` 41), and
+      **123 titles were unique to the dropped feed** (cond-mat 34, astro-ph 15,
+      quant-ph 8…). The drop was still right — 82.8% of its titles were already
+      carried elsewhere. **Consequence: 738 pairs/7 days remain, larger than what
+      was removed. FS#143 did not close arXiv's contribution.**
+2. **Contract A** — *"`additionalProperties: false`, so collection-stamping needs
+      a schema change"*. False. `metadata` is open in **both** contracts; #305
+      assumed a top-level field. This was the main reason post-enrichment was
+      recommended.
+3. **The post-enrichment recommendation itself** — measured 65/65 recall on 2,178
+      scored rows, but that sample held **zero arXiv rows**, and `arxiv_announce`
+      is the largest evidence class by 4× *and* reads 0.000 after enrichment. The
+      gap was named when the decision was put to the owner and recommended past
+      anyway. **A named gap is not a discharged one.**
+
+**The shape, twice in one session:** a prior session's measurement relayed as fact
+without re-derivation, inside a question that drove an owner decision.
+
+### ⚠️ READ FIRST — direction, and a correction the agent had to make to itself
+
+The goal is **releasing ovr.news to the general public**. A proposed working-rule
+promotion was **declined** — do not re-propose the "an instrument that has never
+returned a positive has not been shown to be able to" rule for `CLAUDE.md`; it
+stays in the gotcha log.
+
+**Then the agent over-corrected and was told so.** It concluded the next session
+should be an ovr.news *issue triage* rather than pipeline work. The owner's
+answer, verbatim in substance: **"getting the pipeline right is the most
+important thing, otherwise I will not launch."** Pipeline correctness is not a
+competing priority to the launch — **it is the gate**. Do not read the ranking
+below as "stop working on the pipeline"; read it as "research on a switched-off
+feature is not pipeline correctness".
+
+**→ THE NEXT SESSION IS NexusMind#306, ON ITS OWN.** See the block after the
+table.
+
+**Ranking of the corroboration track against the goal:**
+
+| | bearing on a public launch |
+|---|---|
+| **PR #299 (deployed)** | **Real.** ~392 more articles/day, and survivor selection fixed — 216 measured cases where a `news.google.com` redirect survived and the actual publisher was deleted. The publisher URL is the better one for article text *and* hero images, so this is page quality |
+| **NM#301, the "N related sources" line** | **Judgement call.** It is a truth claim on the page, and 87.7% of what it counts is one wire story republished. "Related" is defensible; it is also exactly what a reviewer pokes at |
+| **NM#306** | **Reader-visible.** Corrupted bodies miss the panel but reach the FILTERS, so articles get scored on text that is not theirs and the wrong things surface. ~18% for one outlet, unmeasured elsewhere |
+| **INST-10 / PROP-1** | **None.** Research on a feature that is off and stays off. It was most of the session |
+
+### 🔴 NEXT SESSION: ducroq/NexusMind#306, on its own — enrichment corrupts scoring input
+
+**Found by the FluxusSource session, not this one.** Enrichment replaces a
+correct article body with unrelated wire/widget content. One detector applied at
+three stages: **0/725** at FluxusSource output, **0/300** at NexusMind
+pre-enrichment, **282/1550 (18.2%)** post-enrichment. Two flagged rows carry the
+*identical* wire body under different headlines — the signature of a page-level
+widget being extracted instead of per-article content.
+
+**Why it is launch-blocking and not merely a bug:**
+
+- **The filters score whatever `content` holds.** A corrupted body means the lens
+  score is computed on a different article than the title says, so the wrong
+  things surface and the right things don't. Reader-visible by definition.
+- **It is invisible to every check that exists.** Faithfulness scoring compares
+  summary-against-input and the summary *is* faithful to the wrong text. The
+  contracts check shape. `stamp_census.py` checks population. **Nothing checks
+  whether the body belongs to the title.**
+- **Nobody knows the corpus rate.** 18.2% is *one outlet*. If it is one Italian
+  paper it is a bug; if it is 5% of the corpus it stops the launch. **Measuring
+  this is the first task, not the fix.**
+
+**⚠️ Cross-repo dependency — THE ORDERING CONSTRAINT IS REAL. My "it dissolves"
+conclusion is RETRACTED, and it was the worst error of the session.**
+
+I measured on `data/raw` files that were **all from Sunday 2026-08-09**, and
+**arXiv does not announce at weekends** — verified after the fact: **0 arXiv rows
+in 6,222 comparable rows**, `science_arxiv_*` and `ai_arxiv_*` feeds logged
+"parsed successfully but contains no entries". *The population the exclusion
+protects was not in the sample.* On a weekday arXiv is ~10.8k rows/week and
+**100% `detected`**.
+
+**I had written this exact lesson into the gotcha log hours earlier** — "the field
+is bimodal and the corpus average measures the weekday" — and then drew an
+adjacent conclusion from the same Sunday sample. Knowing the failure mode did not
+prevent it; only applying it to *this* number would have.
+
+**THE SEQUENCE, which is the part that would have hurt:**
+
+    WRONG  delete the label first -> arxiv.org becomes `unknown`, investment_risk
+           still excludes the STRING `academic`, arXiv stops being excluded,
+           Aegis fills with preprints.
+    RIGHT  investment_risk moves onto `metadata.primary_literature.detected`
+           FIRST — arXiv stays excluded via the stamp, being 100% detected —
+           and only THEN does FS#144 delete the topic-category branch.
+
+Checked against config, not inferred: `arxiv.org` reaches
+`type_classification: academic` **only** through the topic-category branch FS#144
+deletes, across 14 feeds; same for biorxiv, mdpi, frontiersin, plos.
+
+**What survives unchanged:** the 386 "would re-enter" rows are Global South news
+mislabelled through the `google.com` collision, and releasing them is the fix —
+that remains the best evidence for doing #144 at all. And it is **still not a
+config change we can make**: `excluded_source_types` compares only against
+`metadata.quality.type_classification`, so gating on the stamp needs NexusMind
+code. Ordering is ours to schedule; implementation is theirs.
+
+*Original measurement, retained because the numbers are right for the window they
+were taken in and wrong to generalise from:*
+
+Measured on `data/raw`, restricted to the 3,026 rows that carry the new stamp:
+
+| | rows | meaning |
+|---|---|---|
+| `academic` AND `detected` | **69** | covered by the new stamp |
+| `academic` NOT `detected` | **386** | "would re-enter" |
+| `detected` NOT `academic` | **0** | no gain — the stamp is strictly narrower here |
+
+**The 386 are overwhelmingly NOT preprints.** Top sources: `gn_asia_gn_united_arab_emirates` 75, `gn_africa_gn_algeria` 73, `gn_europe_gn_serbia` 62, `gn_central_america_gn_guatemala` 28, `gn_africa_gn_benin` 25, `gn_oceania_gn_papua_new_guinea` 25. That is **FS#144 exactly** — Global South news mislabelled `academic` because 308 Google News feeds collide on domain `google.com`. **Letting them re-enter is the fix, not the regression.** The genuine remainder is small and is science-*journalism* (`bioengineer` 13, `neuroscience_news` 12), `academic` because it writes *about* science.
+
+**And it is NOT a config change we can make.** `excluded_source_types` is compared against **`metadata.quality.type_classification`** only — `src/scoring/source_filter.py::_get_type_classification`, three levels deep. **There is no mechanism to gate on `metadata.primary_literature.detected`.** Supporting that is NexusMind code, not a filter package, so **this belongs with the NexusMind session, not here.**
+
+Also flagged: `detected` fires on **2.3%** of these rows (69/3,026) against the **8.94%** the FluxusSource replay reported over 167,234 rows. Different window and a small sample — but reconcile before anyone sizes a gate on it.
+
+**Trap that nearly cost the whole thing:** `metadata.primary_literature` is a **dict** (`{"detected": false, "evidence": [], "detector_version": "v2"}`), so a truthiness test reads **8,864 of 10,955 = 81%**. Gating on truthiness would have blocked ~80% of the corpus. Read `.detected`.
+
+**✅ STEPS 1–3 ARE DONE (NexusMind session, 2026-08-09). Read this before redoing any of it.**
+
+- **Detector rebuilt and validated both ends**, with a per-source **null control** — each title also scored against a different row's body from the same source, so the threshold is read off a known-mismatched distribution. Sources that don't separate report **UNMEASURED**, not 0%. `israeli_israel_hayom` is UNMEASURED by design: its bodies are editorial standfirsts that paraphrase the headline with zero shared vocabulary.
+- **Corpus rate: ~1%.** 25,707 of 115,843 judged replacements broke the title link (22.19%), **but 95% of those are the NM#276 consent/paywall class, fixed 2026-07-26**, and that window predates the fix. The #306 residual is **1,284 rows ≈ 1.1%**, an upper bound. **510 of 660 sources at exactly 0.00%**; worst are `southeast_asian_nst` 81.9%, `german_golem` 73.0%, `french_mediapart` 58.2%, `italian_il_fatto` 25.0%.
+- **Guard shipped**: `should_replace_content` refuses a replacement whose title-affinity **collapses** (≥0.75 → ≤0.25). Beats strict-zero on **both** axes — 98.0% vs 85.0% of known-bad, firing on 0.66% vs 1.47% of the rest — so it is not a trade-off point someone picked. Recall on il Fatto **47/47**. `resolved_url` persisted, contract 1.16.0, additive, never `required`.
+- **#276 was never fixed for non-English sources.** Its keyword list is English-only: **25.9%** of the residual is foreign-language consent walls (German, French, Dutch, Swedish, Malay). That is the **NM#292 axis** and the reason a *relationship* check is right — it catches them without knowing any of those languages.
+
+**Numbers that were revised, all against the flattering direction, all labelling/plumbing rather than detector logic:** instrument recall 97.0% → **90.2%**, guard recall 59% → **47/47**, known positives 33 → **51**, non-English share 45.3% → **25.9%**. Their export v1 was truncated at 2,000 chars by a spool cache — **do not use it; v2 is clean**.
+
+**Still open on #306:** the guard is **uncommitted** in the NexusMind working tree, so it is neither merged nor deployed — the defect is live until it ships. Then verify by outcome on a cycle, not by the predicate.
+
+*Original session shape, retained. Corrected 2026-08-09 after the FluxusSource
+session pushed back: an earlier version put "corpus rate" first. That ordering is
+incoherent — the rate cannot precede the instrument — and the bias runs the wrong
+way. A guarded detector silently skips every CJK, Korean, Greek, Hebrew and
+Ukrainian source, so the rate understates **specifically on the non-Latin half**,
+which NM#292 already says is disadvantaged at four independent stages.*
+
+1. **Build a detector that can be trusted, before believing any null.** The
+   existing one fails in two opposite directions, both proven 2026-08-09: it
+   over-flags outlets writing proper standfirsts (Repubblica reads 73–86%,
+   legitimately), and a Latin-only tokenizer flags every non-Latin title as
+   disjoint by construction (`korean_yonhap_kr` 99.0%, `israeli_israel_hayom`
+   99.7%). Guarding it with a minimum-token skip then makes it report **0 flagged
+   for sources it cannot inspect** — identical to a clean source. Report
+   **examined / skipped / flagged**, and validate against known positives (the il
+   Fatto rows) *and* known negatives before trusting it.
+   Requirements before any rate is quoted: report **`examined / skipped /
+   flagged` per source, never flagged alone** (200 examined / 200 skipped must
+   not appear as 0%); script-appropriate tokenization or an explicit per-script
+   strategy — **character-bigram overlap for CJK**, where whitespace tokenization
+   does not work; and validate at **both ends** — it must flag the known il Fatto
+   positives *and* stay silent on a hand-checked sample of clean rows from at
+   least one non-Latin source.
+2. **Measure the corpus rate** — all sources, all six filters, not one outlet.
+   **Per-source framing beats a corpus average**, because outlets writing proper
+   standfirsts over-flag on top of everything else.
+
+   **The repair path exists and is written down nowhere else:** the only
+   surviving copy of a displaced body is in **`FluxusSource/data/archived/`,
+   keyed by the same `id`, inside a 730-day window**. That turns #306 from
+   "detect and prevent" into "detect, prevent, **and repair what is already
+   stored**". Asked the FluxusSource session to put the exact path, file-naming
+   pattern and id field on NM#306 before they wrapped.
+3. **Locate the mechanism**: `should_replace_content` / `article_fetcher`.
+   **NM#276 is the same family** (RSS summaries swapped for Google consent
+   pages), so the code path is known. #276's guard is *content-shaped* — it knows
+   what a consent page looks like. This one needs a **relationship** check:
+   refuse a replacement whose body shares no distinctive token with the title.
+4. **Acceptance test is a persisted row, not the code** — NM#300 and NM#303
+   precedent. A green predicate test proves only the predicate.
+
+**Related and already corrected: NM#307's central claim is retracted.**
+`pre_enriched` and `original_content_length` *are* persisted — 6,014 of 6,014
+rows where pre-enrichment ran, inside `nexus_mind_attributes.<lens>`, not at top
+level. What survives is narrow but real: the **length** is kept, the **text** is
+not, so a same-length substitution leaves no evidence in the row. Length is a
+weak signal — il Fatto new/original ratio median **8.41** when enrichment is
+correct vs **17.31** when a wire body was swapped in, overlapping distributions.
+
+---
+
+**After #306**, and only then: a launch-readiness pass over ovr.news's ~89 open
+issues. Noticed but not investigated: **ovr#304 — `displayScoreThreshold` gates
+publication on the normalized score, not raw, contradicting ADR-022**, which
+decides what reaches readers at all. Also open: ovr#138 (private beta with
+students), ovr#150 (launch newsletter). **ovr#299 — headline-only summaries
+mostly invented — is CLOSED** (2026-08-05).
+
+The corroboration items below are not withdrawn, just behind #306.
+
+### Then — three owner decisions are TAKEN, these are their implementations
+
+*Items 1 (deploy #299) and 3 (CLAUDE.md) from the earlier version of this list are
+DONE. Decisions recorded on ducroq/NexusMind#301 and in
+`NexusMind/docs/investigation/2026-08-09-prop1-recall-prereg.md`.*
+
+1. **Boost on distinct headlines only** (owner decision 1, ovr.news).
+      `corroboration-boost.ts` — the flat 1.3× on `display_rank` applies only
+      where a related source carries a genuinely distinct headline. Display
+      keeps counting all carriage; the label is already hedged. Also fix line
+      13's "independent sources", which is measurably wrong.
+2. **Persist the resolved URL at enrichment** (owner decision 2, NexusMind).
+      Enrichment already fetches these pages and throws the final URL away. One
+      field, no extra requests. Fixes `_outlet_identity`, the Google News
+      ambiguity, and part of FS#144. Declare it in the contract so
+      `stamp_census.py` sees it; **never `required` initially** (NM#300).
+3. **PROP-1 recall test** (owner decision 3) — follow the pre-registration
+      exactly. Baseline **3×** on different traversal seeds to measure the
+      harness's noise floor FIRST, then temporal at **σ=18h** (not the shipped
+      72, which is refuted). Ship only on all three: gain > floor, largest
+      cluster does not grow, intervals do not overlap. b650 is idle and staged.
+4. **Separate counting from deleting in `story_dedup`** — the design flaw the
+      owner's layering question named. One pass, one threshold, two jobs with
+      opposite risk profiles.
+5. **PROP-2 ratio-margin scoring** — still the top untouched per-pair lever.
+6. Deepen panel-v3's giant stratum, then revisit 0.94/0.90.
+7. **~2026-08-18: re-measure on the CAPPED system.** Every precision figure in
+      this area was measured with the 25-member cap disabled; the oversized
+      clusters drain via the 14-day TTL around then.
+
+### Not ours, in flight on the FluxusSource session
+
+- `metadata.primary_literature` stamped at collection (`33c7f41`, deployed):
+      replayed over 167,234 rows, **8.94% detected, 0 faults**. Verification was
+      the 12:01 CEST run. Once live this is the primary-document exclusion
+      predicate — worth **0.344 → 0.459** — with no source list.
+- FS#143 executed (`754a4fe`, config-gated) plus 7 substitute archive feeds
+      (`50b9150`); all 14 arXiv feeds moved to 12h because a daily *replaced*
+      batch at 24h ±25% jitter can skip an entire day.
+- FS#144 classifier fix, which must land before `investment_risk`/v6 moves off
+      `academic` or arXiv preprints re-enter Aegis.
+
+## 2026-08-09 — corroboration: the shippable change was refuted, the gate is the lever
+
+Full record: `memory/project_session_2026_08_09.md`. Feature detail:
+`memory/corroboration-feature-hypotheses.md`.
+
+### ✅ Done
+
+- [x] **Step 2 (a): production embeds `title_raw`** — `_prepare_text` returns
+      `f"query: {title}"`, no stripping. The hypotheses file had quoted the
+      `title_stripped` row for the live config; corrected.
+- [x] **Step 2 (b): the 0.92 threshold does NOT transfer, and that was already
+      known.** The v2 panel was adjudicated 2026-08-06 (registry OBS-13/27/28/29,
+      PROP-6 "DOES NOT SHIP AS SPECIFIED"). My starting brief said the panel was
+      unadjudicated — it was, in a gitignored NexusMind dir never copied to b650.
+- [x] **Turn-over point measured** — fresh 680-pair panel v3, pre-registered rule
+      (`NexusMind/docs/investigation/2026-08-08-turnover-prereg.md`).
+      **`title_body@0.94/0.90`** passes all three gates. `title_body@0.92/0.88`
+      decisively dead (17.7M merged pairs, giant stratum 0/25).
+- [x] **Filed**: ducroq/FluxusSource#143 (arXiv duplicates defeat collection
+      dedup — 600/8 days), ducroq/FluxusSource#144 (+scope-correction comment),
+      ducroq/NexusMind#305 (article-derived primary-literature detection).
+- [x] **Regression check**: `content_length` / `stage_used` / `stage1_estimate`
+      **100% on the latest cycle**, all six filters (15,422 rows). The 54.8% over
+      4 cycles is pre-fix rows in the window, not a regression.
+
+### ⛔ NOT done, deliberately — do not read the pass as a green light
+
+- [ ] **Do NOT flip `cross_source_threshold` yet.** 0.94/0.90 passes *my*
+      pre-registered rule but **ties live under the #95 standard** (overlapping
+      CIs). The live baseline moved **0.283 → 0.173** between two draws at
+      n_eff 36, because 83% of pair mass sits in giant clusters sampled 25 deep.
+      **Deepen the giant stratum first** — cheap re-run, not new machinery.
+- [ ] **Production untouched.** No config changed, nothing deployed, in any repo.
+
+### ~~Next session, in order~~ — SUPERSEDED, see the 2026-08-09 (later) section above
+
+*Items 1–3 were all resolved or refuted the same day. Kept verbatim because three
+of the five carried claims that turned out to be false, and the corrections are
+the useful part.*
+
+1. ~~**Certify INST-10 and turn the temporal term on.** Blocked *only* on review
+      by a non-author.~~ **HALF DONE, AND "ONLY" WAS WRONG.** Certified — but
+      certification cannot authorise the flip: PROP-1's falsification is a
+      **recall** test and INST-10 is precision-side-only by construction. Plus
+      the shipped `sigma_hours: 72.0` is the refuted value.
+2. ~~**NM#305** — decide the stage; **Contract A is `additionalProperties:
+      false`**~~ **SHIPPED AT COLLECTION by the FluxusSource session, and the
+      Contract A premise was FALSE** — `metadata` is open in both contracts.
+3. ~~**FS#143** — removes 100% of the duplicate class; 0 titles in ≥2 category
+      feeds.~~ **DONE, but both measurements were FALSE.** The category feeds
+      duplicate *each other* **738 times/7 days**, and 123 titles were unique to
+      the dropped feed. The drop was right on other evidence (82.8% overlap).
+4. **PROP-2 ratio-margin scoring** — still untouched, still the top per-pair
+      lever (ART-11: F1 77.0 → 94.8 on the *same* embeddings). No new labels.
+5. Deepen panel-v3's giant stratum, then revisit 0.94/0.90. Still untouched.
+
+### Refuted this session (do not re-propose without new evidence)
+
+- **Shared numbers as a corroboration feature** — AUC 0.581, rare-number variant
+      **0.503**. Good argument, no signal on this data.
+- **`type_classification` as the exclusion mechanism** — 86% of `academic` is
+      Global South news, and the root defect (topic read as source type) survives
+      the Google News retirement.
+
+## 2026-08-08 (afternoon) — proven by outcome, and a self-inflicted outage
+
+Full record: `memory/project_session_2026_08_08.md` (same file, second half).
+
+### ✅ NM#300 + LD#88 — VERIFIED on production rows, both CLOSED
+
+- [x] **`content_length` 100% populated in all six filters** (17:10 cycle), from
+      **0 of 50,605**. `stage_used` / `stage1_estimate` likewise 100%.
+- [x] **It was FIVE allowlists in series, not two.** The morning's fix corrected
+      hops 1 and 5; the 12:03 cycle still read **0 of 2,170** with both fixes
+      provably loaded. The three unexamined hops were all on the
+      response → result-object boundary (`gpu_client.py` dataclass, its
+      construction, `main.py`'s dict conversion). The earlier "verified there is
+      no third" checked the *article → disk* seam, which is true and is not where
+      the loss was. **Patching the sender proves nothing unless the receiver's
+      parser is checked too.**
+- [x] **Bonus, unasked**: with `stage_used` on disk for the first time —
+      **no surfacing article is ever probe-scored.** `stage1_low` rows peak at raw
+      0.75–1.50 against op-points of 2.25/4.0, so `surfacing AND stage1_low` is
+      **0** in every filter. The hybrid design's core safety claim, assumed since
+      2026-02, measured at last.
+- [x] Contract B `content_length` → `required`: **still NO.** Now populated, but
+      promote only after it holds across several cycles; rows before
+      `filtered_20260808_17*` are absent-or-null forever.
+
+### 🔴 I took the pipeline down, and it was a decision, not a slip
+
+`nexusmind.service` FAILED at 16:07 and would have failed every 4h. Not a crash —
+the fail-closed deploy gate refused to ship because
+`src/scoring/gpu_client.py.bak_nm300third_20260808` was untracked under a guarded
+path. **I had decided ~20 minutes earlier to keep those `.bak` files as a
+rollback for an unverified fix**, when the commits were already pushed and git
+*was* the rollback. Recovered 16:23; the 16:07 collection was reprocessed, no
+data lost, one cycle delayed. Gotcha logged (`0c14de4`) — patch in place and rely
+on git, or write backups **outside** the repo.
+
+### ✅ cd v6 — both cutover blockers cleared, NOT deployed
+
+- [x] Hub repo `cultural-discovery-filter-v6` created (private, v5 adapter
+      verbatim, md5-identical, OLD PEFT keys, no `resave_adapter.py`).
+- [x] `normalization.json` fitted n=3,680, `raw_min` 4.0, from `filter_version=5.0`
+      rows **deliberately** — the "needs a historical rescore" framing was
+      circular (a rescore needs the Hub repo) and its stated reason applies to the
+      firehose, not to the `raw >= 4.0` fit set where the probe blocks 1 of 2,653.
+- [x] `--check-hub` **9/9**; loaded end-to-end from its own Hub repo and scored.
+- [ ] **The cutover itself** — deferred by owner decision so it doesn't share a
+      cycle with NM#300. Then refit normalization from real 6.0 rows, then #87.
+
+### ✅ LD#93 step 4 — sized, then the sizing was withdrawn
+
+- [x] **Verdict: do not set the cap.** A cap ≥ the op-point removes **zero** false
+      positives (visibility keys on raw), and nothing short reaches `medium_high`
+      (max 4.93), so its stated purpose is already met and any cap ≥ 5.0 is a
+      no-op.
+- [x] Two corrections, both caught by the FluxusSource session: the residual was
+      understated 3× (post-ADR-007 is **8.0/cycle**, not 2.6 — ADR-007 retires 59
+      `gn_*` proxies, not the 243 publisher-named GN feeds), and the "topic feeds
+      emit solution vocabulary" mechanism was **refuted** — `google_news_uplifting`
+      is 80 short rows and **0** surfacing. It is one feed × one lens:
+      `energy_storage` on solutions, 56.8%, and 0% on the other five.
+- [ ] Re-measure gated on **measured GN-URL share per cycle**, not on "migration
+      complete" — FluxusSource says there is no near-term done.
+
+### ✅ Shipped alongside
+
+- [x] **NM#303** production contract validation (`11d5860`) — Contract B CLEAN
+      over 27,831 rows; **Contract A had never met production either** → **NM#304**
+      filed with 4 defects (priority max 8 vs a 1–10 scale, `word_count` required
+      on body-less sources, `source_type` enum missing `social`, undeclared
+      `eval_query`).
+- [x] **Census check A hardened** (`3f1bf07`) — it false-positived on
+      `enriched`/`enriched_at`, which are rare-but-working (0–3 per filter per
+      cycle). My first patch referenced a variable that does not exist and
+      `py_compile` was green; only executing it caught that.
+- [x] **`commit-msg` hook fixed** (`8741fa1`) — it false-failed on private Hub
+      repos with no `HF_TOKEN`, and its own advice on failure is `--no-verify`.
+- [x] **Framework v1.15.1 → v1.17.0** (`c286bb3`), reconciled by content.
+      **agent-ready-projects#33** filed: `install-global-skills.sh` installs from
+      the working tree, so an adopter can receive unreleased, later-reverted
+      content — which happened for ~42 minutes today.
+
+### Board
+
+**197** — LD 34 · NM 44 · ovr 89 · FS 14 · ps 12 · atlas 3.
+Closed today: NM#300, LD#88. Filed: NM#304, agent-ready-projects#33.
+
+## 2026-08-08 — the checks failed, the analysis didn't
+
+Full record: `memory/project_session_2026_08_08.md`. New topic file:
+`memory/stamp-contract-integrity.md`.
+
+### ✅ LD#101 — CLOSED, confirmed by outcome
+
+- [x] **Confirmed live on the 08:49–08:55 cycle.** `eval_aggregator` rows in each
+      filter's output went **21 → 0**, all six. Control: that cycle's *input*
+      carried **22** such articles, so they were collected, scored, and stopped.
+- [x] **Committed out of drift** — it had been running as *uncommitted
+      working-tree edits on sadalsuud*, with nothing in `ducroq/NexusMind`
+      referencing `eval_aggregator` at all. Now `9fb441a`; box fast-forwarded,
+      tree clean, the six `.bak` files verified byte-identical to `e63202b`
+      before deletion.
+- [x] **The 30 published rows: 4 suppressed, 26 left to expire.** Not a cleanup
+      job — all sat inside the 10-day window and age out 08-09..08-14 on their
+      own, and most are good global-south coverage (Iringa/Njombe pine
+      smallholders, Tanzania science policy, tree-kangaroo conservation deed,
+      Els Xiquets de Tarragona). Bulk deletion would have hit exactly the
+      population Chain 14 protects. `ovr.news@75bde57`, via the
+      `manual_suppression` config kill switch — **not** a DB edit, because the
+      live site builds from the R2 copy.
+- [x] **Re-checked after the build 2026-08-08 — PASS exactly as pre-registered.**
+      `gdelt_constructive_madagascar_7ff89d70aaf8` **404**,
+      `newsdata_eval_td_456de0a16300` **404**, control
+      `newsdata_eval_bi_1c78d8e397b7` **200**. The control holding is the part
+      that matters: the suppression list is not over-matching.
+- [ ] **Loose thread:** eval-arm articles cluster at **9.4–9.99** on uplifting and
+      solutions. Unusually good stream, or scorers over-rewarding it? Check
+      against LD#91 and NM#289 upper-tail inflation.
+
+### 🔴 The pre-registered check would have called this fix broken
+
+The check was *"`source_filter excluded N` must exceed the 121 baseline"*. It came
+in at **86** — lower. That line aggregates all excluded types and swings with
+corpus composition (**69 → 121 → 86** in one day; investment_risk 519 → 545 →
+946). It was never sensitive to the one type added. **A metric that moves for
+reasons unrelated to your change cannot confirm your change.** Two more of my
+instruments broke the same day (a `len>3` language heuristic; a watcher whose
+hour-glob matched the *date*), against zero broken conclusions.
+
+### 🟢 NM#300 — fixed, deployed, NOT yet proven *(SUPERSEDED — see the afternoon section: it was FIVE drops, and it is now verified and closed)*
+
+- [x] **Two drops in series**, so fixing either alone changes nothing:
+      `FilterScoreResult` in `deploy/gpu-server/main.py` is a Pydantic allowlist
+      (**kills it first**), then `scripts/main.py`'s `analysis` allowlist.
+      Verified there is no third — `analysis` is attached whole and written with
+      `json.dumps(article)`.
+- [x] **Both halves deployed.** Free: the scorer was already down with ollama
+      holding the GPU, so no restart and ollama untouched. gpu-server half
+      **proven on the box** by `ast`-extracting the model classes verbatim from
+      the deployed file and executing them in the scorer venv.
+- [x] **OUTCOME CHECK RAN AND FAILED** — the 12:03 cycle read **0 of 2,170** with
+      both fixes provably loaded. *"Suspect a third drop"* was the right
+      instruction and there were **three** more. Closed out in the afternoon
+      section above.
+- [ ] Promote `content_length` to `required` in Contract B **only after** the
+      census shows it populated **across several cycles**. One green cycle is not
+      enough for a field that reached zero rows for months.
+
+### 🟢 Stamp census + contracts — new, and they found things nobody asked about
+
+- [x] `scripts/stamp_census.py` (`e64a45f`) — checks **population** and
+      **consumers**, which no schema can express. It **failed its own acceptance
+      test on first run** (missed NM#300, because absent ≠ null; missed LD#94,
+      because six filters averaged hide a single-filter constant). Both gaps are
+      why checks A and per-filter constancy exist.
+- [x] **Contract B 1.15.0** (`3030e35`) — first-ever validation against
+      production: **908 violations**. `image_analysis.image_confidence` declared
+      `0..1` is a **raw logit** (−12.330..6.365, median −2.696, 68.4% outside).
+      Producer right, contract wrong since it was written; fixtures could never
+      have caught it. **908 → 1**, that one real and left failing.
+- [x] Filed **NM#303** (contract tests validate fixtures, never production) and
+      **FS#138** (a `null` inside `tags`).
+- [x] **LD#88 item 1 gained evidence**: the census found `stage_used` and
+      `stage1_estimate` assigned by a writer and present on **no** row. Fixed and
+      verified the same day; **LD#88 closed** (all four items).
+      ⚠️ Check A also **false-positived** on `enriched`/`enriched_at` in the same
+      run — rare-but-working, 0–3 per filter per cycle. Hardened in `3f1bf07`.
+
+### Board
+
+**196** — LD 36 · NM 43 · ovr 89 · FS 13 · ps 12 · atlas 3. Sediment **74**
+(cutoff 2026-07-09 — quote the cutoff, it moves on its own).
+
+**Chain 8 (Google News) is CLOSED** — `ADR-007` accepted, FS#120 + FS#119 closed,
+native-first, GN proxies and all three eval arms retired. **Done by a parallel
+session 30 minutes before I commented on the issue asking for a decision already
+taken.** So the board now has **no calendar-bound item at all**.
+
+## 2026-08-07 (night) — the dedup question answered by mechanism, and a deadline in trouble
+
+Full record: `memory/project_session_2026_08_07_night.md`.
+
+### 🔴 LD#101 — evaluation arms are scored AND PUBLISHED (filed tonight, needs an owner decision)
+
+- [x] **DECIDED 2026-08-08: exclude via `excluded_source_types`** — because that
+      mechanism **already is** "score, don't publish".
+      `NexusMind/src/scoring/source_filter.py::apply_source_filter` marks
+      **already-scored** articles as `passed_prefilter = False`, so scores are
+      kept and the rows never reach `filtered/` or ovr.news. *I first recommended
+      building the same gate in ovr.news, on the wrong premise that
+      `excluded_source_types` prevents scoring — it does not, and
+      `memory/nexusmind-data-sources.md` had said so since 2026-08-02.*
+      No new code, no third-repo change, no LD#95 batch perturbation (the corpus
+      is unchanged), and it keys on `type_classification`, which is verified to
+      survive into `ovr.db`.
+      **Count corrected: 30 published rows, not 28** — `source LIKE '%_eval_%'`
+      misses `gdelt_constructive_*` entirely. The two extra are Traditional
+      Chinese Taiwanese local news at tier `high` under a Madagascar query.
+      **Never key on the source string.**
+- [x] **SHIPPED 2026-08-08.** `eval_aggregator` added to `excluded_source_types`
+      in all 6 live filters + `cultural_discovery/v6` (the cutover candidate), and
+      `eval_aggregator` added to `KNOWN_SOURCE_TYPES` in
+      `tests/unit/test_filter_config_schema.py` — the schema gate rejected it
+      otherwise, exactly as designed. Suite green (269 passed, 4 skipped).
+      Copied surgically to `NexusMind/filters/*/config.yaml` (**not** via
+      `deploy_to_nexusmind.sh`), backups at `config.yaml.bak_20260808_074336`.
+      No restart needed: `nexusmind.service` is a per-cycle process, dead between
+      runs, so configs load fresh; `scripts/main.py:1016-1018` is the caller.
+      **Verified by EXECUTING the guard on the deployed config**, not by reading
+      the key — positive and negative control:
+      `eval_aggregator → passed_prefilter False`, `news_regional → True`,
+      `excluded_count 1`. All 6 confirmed `eval_aggregator=True, shadow_mode=False`.
+- [ ] **Confirm on the next cycle's log** (00:02 / 04:00 grid) — the `N scored,
+      M prefiltered` line should show the eval arms among the prefiltered. That is
+      the end-of-run outcome check; the guard test above proves the predicate and
+      the load, not the production run.
+- [x] **`memory/nexusmind-data-sources.md` updated** with the two traps this
+      creates: corpus statistics over `data/filtered/*` will silently omit the
+      eval arms, and FS#120's funnel must be read from the **GPU scorer log**,
+      not from `filtered/`.
+- [ ] **Remediate the 30 already-published rows** — reader-facing, ovr.news side,
+      independent of the decision.
+- [ ] **Check the Zimbabwe funeral row against the obituary gate** (enforcement is
+      ON at v5@0.85). If it scored under threshold it is a live false negative and
+      belongs in `memory/project-obituary-detector.md`.
+
+- [ ] **FS#133's question is STILL OPEN — my "arbitrary" answer was retracted
+      the same night.** The dedup survivor *within a run* is decided by
+      `as_completed()` completion order — that part holds, though it is
+      **untestable**: no fetch-duration field exists anywhere. But my premise
+      ("both drops happened inside one source") is an **instrument artefact** —
+      only **4,116 of 40,693 hashes (10.1%) carry a source**, so cross-run drops
+      are structurally undetectable and every countable drop is same-run *by
+      construction*. FS#133's own first comment said not to conclude from n=2; I
+      did. **The cross-run mechanism is the bigger one and it is systematic**:
+      `seen_hashes` persists 30 days, so the winner is whichever *run* polled
+      first, set by `update_frequency` — GN feeds are **1 sub-12h vs 159 non-GN
+      sub-12h**, i.e. **publisher-correlated**. And the loss is **sticky for up to
+      30 days**, not reversible next run. Re-read after the next cycle: incumbents
+      now carry sources, so cross-run drops become visible for the first time.
+- [ ] **Measure near-duplicate SURVIVAL, not just deletion.** In the 20:06 run,
+      **6 cross-source syndicated stories survived** dedup (different snippet →
+      different hash) against **2 dropped** — one survivor being the same story as
+      a drop, via a third outlet. Exact-hash dedup may not be where the
+      corroboration evidence goes at all. Nobody has measured this.
+- [x] **FS#134 DECIDED: delete.** Four independent grounds; the signal already
+      exists downstream (E5 cosine at `cross_source_threshold=0.88`), it degrades
+      cross-language, wiring it into dedup makes corroboration *worse*, and the
+      emit-instead option is blocked by a live `numpy.uint64` JSON bug. Deleting
+      drops `scipy` too — **114 MB of a 450 MB venv** — and removes the import
+      that caused a 26-hour outage on 2026-06-30. Posted to FS#134.
+- [x] **Board maintenance DONE** — NM#225 → Chain 15 (**re-dated 2026-05-28; the
+      chain is 71 days old, not 2, and NM#225 is its root and the most actionable
+      of the three derivations**), NM#226 → Chain 13, NM#254 → Chain 16 (it holds
+      the SemEval-2023 taxonomy decision), **Chain 17 (NER) promoted** into the
+      canonical chain list with five dependents.
+- [x] **Cross-repo dependency audit: 13 live instances** of an OPEN issue citing a
+      CLOSED dependency. FS#85 alone has **five** dependents (NM#223, ovr#222,
+      ovr#223, ovr#231, ovr#232). Correcting comments filed on all uncorrected
+      ones plus LD#38 (→NM#108), LD#56 (→NM#161), LD#23 (→NM#88).
+      **Two were my own, filed the previous session** — FS#133 and FS#134 both
+      cited NM#213 as the live consumer; NM#213 has been closed since 2026-05-23.
+- [x] **Framework adoption verified by content, not by stamp** —
+      `agent-ready-projects` v1.15.1 is genuinely installed (five marker strings
+      present; installed mtime matches the commit to the second), `curate` body
+      identical to template, no global `review-changes` shadowing the project one.
+      ⚠️ **NO LONGER TRUE, and this line is the LOWER BOUND on the window in which the
+      project-local copy was inert** — a global copy does shadow it now, and the fork was
+      deleted 2026-09-11. See `docs/decisions/framework-adoption-history.md`, 2026-09-11.
+      `agent-ready-papers` is at v2.4.0 + 2 doc-only commits and is **not adopted
+      here by design**.
+
+### ⚠️ FS#120 (due ~2026-08-14, 7 days) — two measurement defects found
+
+- [ ] **`newsdata_eval`: the local-publisher share is 40% / 12% / 8%, and that is
+      probably H3's ANSWER, not a defect to fix.** ~~Same defect as GNews; add
+      `country_queries`~~ — **WITHDRAWN, and it would have damaged the gate.**
+      NewsData sends `country=` with **no `q=` at all**: it filters on *publisher
+      location*, so it is the **geographic** arm, while `gnews_eval` uses `q=`
+      only because its free tier can search topic alone. A comment at
+      `newsdata_eval_aggregator.py:104-108` says exactly this and I read past it.
+      Adding `country_queries` would convert the only geographic arm into a second
+      topical one and destroy the like-for-like comparison against GDELT.
+      My "77–97% off-topic" therefore measured the **wrong property** — an article
+      from a Chadian publisher about cricket is *correctly* returned. Re-measured
+      on publisher over the same 8 runs: **Chad 40.0%** genuinely local
+      (`alwihdainfo`), **Madagascar 11.8%** (58.8% is `ign_za`, a South African
+      video-game site), **Burundi 8.3%** (79.2% is `thecitizen_co_tz`, Tanzanian).
+      **Score H3 on `metadata.publisher_name`, not article topic**, and re-derive
+      at the API response — those denominators (65/34/24) survive a 49% dedup drop.
+- [ ] **`items/day` is censored** — every eval identity is capped per run
+      (`max_articles: 10` × 3 countries = 30; GDELT `max_records` 30–50 hardcoded).
+      `gnews_eval` sat at exactly 30 in **13 of 44 runs (29.5%)** — and the more
+      informative half is the floor: **21 of 44 runs returned only 10**, i.e. two of
+      three countries yielded nothing. (30 is the ceiling *by arithmetic*, 3 countries
+      × `max_articles: 10`, not an empirical discovery.) The readout must say it
+      compares *tier ceilings* against the GN proxies' uncapped RSS supply.
+- [ ] **H2 (GDELT starvation) — my "76% → 66%" was REFUTED; the sign is backwards.**
+      Full record: pre-fix **66.4%** (122 runs) → post **76.9%** (13) / **80.0%**
+      (10); Fisher **p = 0.546**; items/run 19.1 → 10.0. My "76% pre" was the
+      issue's last-8-runs snapshot and my "66% post" was Aug 7 alone, dropping four
+      post-fix Aug-6 runs that all yielded zero. I also split on the GitHub **close
+      time** rather than the deploy time (`git reflog`: `0fa9ffa` 08-05 18:09,
+      `61be1b1` 08-06 07:49 — two commits, the first still broken). **What holds:**
+      FS#125's *coverage* half is real; the *yield* half cannot move — it is an
+      external per-IP quota shared by two identities, and the plan doc already says
+      "~50% zero is the designed behaviour". **H2's real question is whether the
+      free tier is viable at all** — FS#125's Option 3, still undecided, and
+      FS#132 still gates `gdelt_constructive`'s half.
+- [ ] **Every rate in the readout needs a "measured over which window, across
+      which config changes" line.** The eval period contains FS#125 (08-06),
+      FS#128 (08-06) and the GNews `country_queries` change (08-05). I published a
+      72.6% figure that straddled the FS#125 boundary and had to correct it.
+
+## 2026-08-07 (late) — coverage pass, a refuted plan, one instrument shipped
+
+Board was reported unchanged at **195 open** — *corrected 2026-08-07 night to **198**; this pass never re-counted after filing FS#133/#134*. The work was in what it does not cover, and in
+one finding upstream. Full record: `memory/project_session_2026_08_07_late.md`.
+Feature-level detail: `memory/corroboration-feature-hypotheses.md`.
+
+- [x] **Cross-source dedup stamp SHIPPED + DEPLOYED** — `ducroq/FluxusSource@4994d61`,
+      live on sadalsuud. Collection dedup drops on `md5(title + content[:500])`
+      **with no source comparison**, so the same wire copy from two outlets is
+      deleted before NexusMind ever embeds it. Drop behaviour unchanged; the
+      collision is now counted and reported at INFO. **FS#133.**
+- [x] **FS#134 filed** — MinHash + Jaccard implemented, `datasketch` pinned,
+      **zero call sites**. Wire it up as a corroboration feature or delete it.
+- [x] **NM#232 planned, then refuted by a six-lens review.** Findings filed on the
+      issue. Do not build as specified: its consumer list omits the only consumer
+      with code (the matching model — **NM#188/NM#301**; NM#213 is CLOSED), which wants a cross-lingual *offline
+      re-run*, not a CPU pipeline stage.
+- [x] **Dependency corrections filed** on NM#223 and ovr#222 — both cite
+      `FluxusSource#85`, which is CLOSED and re-homed to NM#232.
+- [x] **Read the cross-source count** — done 2026-08-07 night, and the count is
+      **not yet readable**: only one run has carried the stamp (20:06), giving 2
+      drops; the timer is 6 runs/day and the figure stays a floor until
+      ~2026-09-06. **The question it was meant to answer was settled by reading
+      the call path instead** (see the night block above). Step 3 of the
+      corroboration track is still gated — but expect "the pairs were never
+      there", not "the pairs are biased".
+- [x] **Board maintenance** — done 2026-08-07 night, plus Chain 17 promoted and
+      seven stale entries corrected (NM#213/#220/#91, LD#43/#49, FS#125/#126) and
+      a count error fixed (**198 open, not 195** — the pass never re-counted after
+      filing FS#133/#134).
+- [ ] **Owner call**: does `ducroq/augmented-engineering` (34 open, **1 closed
+      ever**) belong on the board? CLAUDE.md mandates filing evidence into it.
+
+## 2026-08-06 evening — four owner decisions taken, three backlogs closed
+
+Session was decision-bound, not work-bound: three calls were blocking #87, #93 step 4
+and #98, and a fourth (naming) had been re-scheduled through four version bumps.
+
+- [x] **#95 step 2 — noise becomes a band.** See the corrected entry below; "pin a batch size" was not an option.
+- [x] **#98 criterion 4 + package parity.** cd v6 can now score. Two prerequisites remain and neither is doable from a laptop — see "Next session".
+- [x] **#94 — static invariant shipped.** `tests/unit/test_gatekeeper_invariant.py`: any filter declaring a gatekeeper must have `GATEKEEPER_CAP` **below** its medium tier threshold, or it cannot change visibility (the only outcome a filter has under ADR-016/ADR-022). Reads both values off the **scorer class**, never config. Catches cd v5 (cap 4.0 == 4.0) and solutions v6 (cap 3.0 > 2.25); both are EXEMPTIONS entries that must keep matching a real violation. cd v6 drops its gatekeeper entirely, so that exemption dies when cd v6 goes live.
+- [x] **#97 assessed and remedied.** See the corrected CARVE-OUT 1 entry below.
+- [x] **#88 items 2-4.** nature_recovery v4's `3.225` marked documentation-only (runtime `DEFAULT_THRESHOLD = 0.75`); its raw `high` tier 7.0 documented as structurally dead (calibrated ceiling 6.8) but KEPT, since ADR-022 reassigns tier on the normalized score where the band is reachable; investment_risk v6 tiers aligned to runtime (`medium` 3.0 → 4.0, declared `medium_high` 5.0 removed — the runtime has three tiers). **Item 1 (`stage_used` into row attributes) is NexusMind-side** and shares a root cause with ducroq/NexusMind#300.
+- [x] **#84 v7 corrections written** next to the v6 prompt, not into it (`prompt_hash` is stamped into every scored result). The router points at a disposition that does not exist: "does NOT pass Step 1 → route to Flag A", but Step-3 flags apply only to articles that *passed* Step 1. Fix is a distinct **A2 `action_without_outcomes`** flag whose carve-out requires measured outcomes rather than committed resources.
+- [x] **#99 closed by removal** — `DISCOVERY_PATTERNS` went with the keyword gate.
+- [x] **ADR-012 rename backlog CLOSED.** Two cancelled, one confirmed, one named and scheduled. The ADR needed a third clause: its obvious reading is "rename to the lens name, or don't", a binary with no room for `{qualifier}_{lens}` — which is what left `uplifting` unresolved for five months.
+- [ ] **NOT done, and deliberately: #87.** Unblocked now (it was waiting on #95) but not folded into #98 — that issue was scoped *probe first, dimensions later*, and merging them makes any change in the numbers unattributable.
+
+**Self-review caught one of my own errors:** the ADR-012 amendment first said "five scheduled renames, one carried out". It is **four** — `belonging` "already matches" is not a rename and wisdom/education were never built. Corrected in the ADR before commit.
+
+
+## 2026-08-06 — cd v6 probe (#98), the English escape hatch (#99), and an instrument for FS#120
+
+- [x] **#98 probe trained and measured; all three acceptance criteria pass.** `filters/cultural_discovery/v6/`. Held-out oracle labels (test split, 75 MEDIUM+ positives): probe @ 2.50 FN **0/75**, keyword gate **10/75**. Production, 64 cycles / 156,226 rows / 2,653 surfacing, both arms in one pass over identical rows: surfacing blocked **337 (12.7%) → 1 (0.04%)**, high-tier **0 → 0**, every language except Portuguese at 0.0%. Full write-up in that directory's `STATUS.md`.
+- [x] **Threshold is 2.50, not `train_probe.py`'s 3.025.** The trainer selects off the **val** recall curve, so val FN is optimistic by construction — it reported 1.3% where held-out gives 6.7%. Val and test independently both give FN 0.000 at ≤ 2.50 (0/152 positives).
+- [x] **Two self-corrections, both recorded in the package rather than only in chat.** (a) Criterion 2 is a **regression** — on production the probe screens 63.7% against the gate's 70.2%; an earlier claim of parity came from the test split, which does not transfer (label set is 9% MEDIUM+ against a 1.7% production surfacing rate). (b) **Four of the five held-out positives** recovered by the lower threshold read as **off-lens** on inspection, so the FN gain is partly #87's lens dilution appearing inside the labels. 2.50 rests on recall being Stage 1's job, not on those five being losses.
+- [x] **The probe is batch-invariant** — max |Δ| **3×10⁻⁶** across shuffled order, chunk 256→97, encode batch 64→1; zero threshold flips. Unlike student scores (#95, |Δ| ≤ 0.162), a probe decision is reproducible. `scripts/gate/probe_batch_invariance.py`.
+- [x] **#98 criterion 4 EXECUTED 2026-08-06 evening** (owner call). Keyword gate, four exclusion categories and three domain blocklists deleted; `prefilter.py` 800 → ~90 lines, commerce-only pass-through on the ADR-018/019 declarative shape. `classify_content_type` deleted too — grepped first, only callers were each cd version's own self-test. **Package parity also reached**: three inference modules added, `calibration.json` copied from v5 (correct — the student is unchanged), `score_scale_factor` corrected **1.2829 → 1.0**, `normalization.json` still deliberately absent. `verify_filter_package.py` 7/7 offline.
+- [x] **#99 filed** — `DISCOVERY_PATTERNS` is an English-only escape hatch: 66/516 English surfacing articles pass the cultural gate on lens-neutral science-journalism words, 0/265 non-English, all 66 read and none cultural. Also feeds `classify_content_type`, which a probe does **not** replace.
+- [x] **FS#120 (~08-14) answered; the measurement is ours.** `pre_enrich` fires at **500**, not 300 (`config/app.yaml:171`). Their proposed denominator confounds enrichment success with native article length — supplied a third, conditional instrument. Blocking them back: `eval_query` is stamped on **28 of 547** eval rows, so their "drop Chad, keep Tchad" cut is unexecutable; and three of eight arms project to n≈13–35 by the 14th.
+- [x] **ducroq/NexusMind#300 filed** — the #93 `content_length` stamp is computed by the scorer and lost before persistence: **0 of 50,605** rows carry it, though the deployed code is md5-identical to the repo. ADR-022's stamp half is not holding. Does **not** block FS#120.
+- [x] **Four SSH-dependent verify assertions re-run** after slipping three curate passes; all PASS. Obituary blocked count 1208 → 2573 with no gap; rescore reproduces 07-31 to four decimals.
+- [ ] **sadalsuud carries the pre-`80dd399` cd gate** (235 topic stems vs 453). Zero production effect — that prefilter does not run (NexusMind#284) — but flipping enforcement without syncing restores the exact skew #86 removed. Recorded on #86 as a trap; **do not close it by syncing**, since #98 deletes the file.
+
+## 2026-08-05 — TDM / training-data position, and the two carve-outs it leaves open
+
+- [x] **#28 decided — AI-crawler opt-out directives do not bar distillation training.** Record: `docs/decisions/2026-08-05-tdm-opt-out-training-data.md`. Grounds, strongest first: the directives name **other parties' crawlers** (of 333 flagged domains: GPTBot on 286, CCBot 270, Bytespider 235, ClaudeBot 231, Google-Extended 230 — we operate none; **corrected 2026-08-06, the first figures counted matching lines, not domains, and GPTBot's 401 exceeded the 333 total**); the student has a **regression head and cannot emit text at all**, so no output can substitute for a publisher's work; and the use is referral, not substitution. Sibling decision for the fetching layer is ovr.news ADR-043. **Recorded against itself:** *"modelling is not mining"* is not a distinction the DSM Directive draws — its TDM definition covers fitting a model to text. The position rests on the **Art. 4(3) reservation** question and on harm, not on being outside the definition; do not carry the shorter phrasing forward.
+- [x] **#28's numbers were stale** — it cited 238/971 domains from March; the 2026-08-04 scan says **333/1,357**. Also **117 domains failed open** (unreachable, counted as clean) — a publisher behind a WAF that 403s non-browser agents scores clean, and that is exactly the publisher most likely to be reserving. Any future "we checked" is only as strong as those 117.
+- [x] **CARVE-OUT 1 ASSESSED 2026-08-06 (#97).** Models clean: **zero of the 333 opted-out domains carry a `User-agent: *` reservation** — every signal names a third-party crawler we do not operate — so grounds 1-3 cover the already-trained filters with nothing left over. Overlap is real but irrelevant to that conclusion (solutions v6 29.5% of training rows, nature_recovery v4 14.6%). **Q2 did NOT come back clean**: the Hub is fine and splits are gitignored, but 812 committed JSONL rows carried full article bodies in a PUBLIC repo. That is republication, not mining — grounds 2-3 are silent on it. **Remedied the same day** (owner: truncate in place): 45 files, 834 rows, **1,889,627 chars removed**, capped at 300. Does NOT unpublish — the text remains in public git history; history was not rewritten.
+- [x] **CARVE-OUT 2 — the oracle ships full article text to third parties.** Gemini Flash (Google) and DeepSeek receive complete article content under their own terms. None of the three grounds cover it, and ground 2 specifically fails because **the recipient is a generative model**. **Owner decision 2026-08-05: risk identified and knowingly accepted** — *"this is the only way I can do this, so if someone objects in future, let's see then."* Recorded with revisit triggers in `ovr.news/docs/compliance-register.md` §3 (it lives there because the summarisation path makes the same transfer; this repo is one of two callers).
+- [ ] **The `tdm_opt_outs.json` scan is unscheduled.** It has run exactly once (2026-08-04). A reservation added tomorrow is invisible. Quarterly is enough for a signal that moves this slowly — the implementation sketch in #28 is retained there as the thing to build **if this decision is ever reversed**, not as work to do now.
+
+## 2026-08-02 — Chain 4 measured: two of the previous day's own P0 conclusions overturned
+
+Both P0 issues carried into this session had the **mechanism right and the target wrong**. Neither correction needed new tooling — one came from widening a sample, the other from reconciling a denominator.
+
+- [x] **NM#285 measured, resolved as Option B** (`89f2e5b`, NexusMind main). Same-row full-vs-truncated replay, 4 cycles, n=8,283. Truncation effect: nature_recovery **+0.0000**, solutions **+0.0000**, cultural_discovery +0.0005, belonging +0.0008, uplifting +0.0028, investment_risk +0.0097. **The 0.638–0.649 cluster is NOT a truncation artifact.** Option C declined — its cost saving came almost entirely from the length floor, the one rule we now have evidence against enforcing; Option A buys a rounding error. Shipped instead: every shadow line carries `contract=title+content`, `pre_source_filter=true`, and `INCOMPLETE(inert:url,source)` derived from declared rule containers (not a hardcoded list), verified to flag exactly the four filters with a non-zero measured effect.
+- [x] **Real cause of the cluster found.** `nature_recovery v4` and `solutions v6` prefilters are **pure length floors** — both declare `EXCLUSION_PATTERNS = {}` by design (commerce upstream, ADR-004) and their `POSITIVE_PATTERNS` are force-pass overrides, a no-op with nothing to override. Zero lens blocks across 8,283 articles. `expected_pass_rate` **deleted** from both (`3ed47e1`), not corrected — 0.644 is "fraction of articles ≥300 chars", a corpus statistic, not a lens spec.
+- [x] **Larger, opposite-signed defect found underneath**: the shadow denominator counts articles `source_filter` discards *after* scoring. investment_risk logs 0.642 while the rate on articles that can reach production is **0.770** — 13× the truncation effect, other direction.
+- [x] **LD#92 — IDENTIFIED 2026-08-05, supersedes the n=60 caveat below.** The two discriminating tests the 08-02 review demanded were run, predictions pre-registered in the sampler before any oracle call. **D3 (matched percentile depth, where the selection artifact is largely removed) is the LARGEST effect, not the collapse toward zero the artifact predicted** — see the cap entry below for the numbers. Second oracle confirms. Two bookkeeping defects in the first write-up were caught by the newly-adopted `/review-changes` skill and corrected: the p-values were article-level permutation (anticonservative under source clustering) and the verify command's data was never committed. Both fixed; fixtures now in `tests/fixtures/ld92/`.
+- [x] **NM#286 items 1+2 shipped together** (`23a9068`, NexusMind main): `pipeline.commerce_prefilter.enforce` (default **true** — unlike obituary's false, so a config predating the key cannot silently open a live gate), and `enrich_survivors.py` now reads the same key instead of re-deciding. 920 tests green.
+- [x] **LD#86 answered — DO NOT FLIP.** cd's rate matches its declared 0.25, but enforcing it costs **15.5% of surfacing articles** (135/871 over 20 cycles), 0% of high tier. **A matching pass rate and safety-to-enforce are independent properties.** The "skewed non-English" framing is **corrected**: German 4.9% / French 5.3% are blocked *below* English's 13.0%, so pooling was wrong. The entire gap is one rule — `no_cultural_topic_signal`, 9.9% en vs 19.2% non-en, while the other three fire *more* on English. It is uneven `TOPIC_GATE_PATTERNS` keyword coverage, which is fixable and falsifiable.
+- [x] **Chain 4 root — length floor split out of the per-filter prefilters (#93)** — LD side shipped 2026-08-03. `apply_filter()` no longer gates on length in any filter; the floor moved to `make_oracle_prefilter` (labelling-time, where the framework-leakage rationale lives); every scoring result carries a `content_length` stamp; one config-gated `short_content.cap` exists and is **off everywhere**. A/B over 2,917 production rows: the oracle verdict is **byte-identical** for five of six filters (cd is the intended exception, above). **Still open:** sync `filters/common/` + the six prefilters to NexusMind, then re-run the NM#284 shadow — its pass rates will jump, and for the first time they will describe lens behaviour rather than a length floor (what LD#90 item 2 needs).
+- [ ] **Fit the solutions short-content cap** (#93 step 4) — **#92 no longer blocks it; #95 still does.** The second-op-point re-run ran 2026-08-05 and the defect is **identified**: D1 (both arms ≥2.25) −0.790, D2 (≥4.00) −0.861, **D3 (matched percentile depth) −1.119** [−1.61,−0.61], cluster-bootstrap p Holm-corrected 0.0032 / 0.0012 / <1.5e-4. The selection artifact predicted D2 markedly more negative and D3 → 0; D2 moved −0.071 and D3 is the *largest*. A gemini-2.5-flash cross-check on the same D3 sample gives **−1.351** [−1.73,−0.96] — two oracles with clearly different absolute bias, same gap, which rules out "the judge penalises short input". Harness + fixtures committed (`scripts/diagnostics/ld92_*.py`, `tests/fixtures/ld92/`). **Remaining blocker is Batch F.1 (#95)**: the cap value is a threshold fit and inherits the |Δ| ≤ 0.16 batch-composition noise floor. Also weigh the recall cost against NM#231/#292 before setting a value — `gn_africa_*` / `gn_asia_*` feeds lead solutions' short-and-clearing list.
+- [ ] **Reader-reported defects 2026-08-03, filed upstream — all three land outside this repo.** A single reader complaint about ovr.news decomposed into three defects in three different repos, which is the clearest instance yet of "the repo where a symptom appears is not the repo that owns the fix":
+  - **FluxusSource#124** — feed titles/content stored with UTF-8→MacRoman mojibake (`años` → `a√±os`). **5.0% of articles** (463/9,343 in one day), concentrated in `baltic_lrt` / `spanish_*` / `vietnamese_*` / `german_*`; English essentially unaffected, which is why English spot-checks never saw it. Present in FluxusSource's own collection file before NexusMind reads it. **Relevant here:** it degrades multilingual embeddings, so it touches any cross-language work this repo does.
+  - **NexusMind#290** — hero extraction publishes third-party page chrome (a Google Play badge) as the article image; reproduces on current code *with* NM#287 in place. No cross-domain check exists. Compounded by `hero_validation_cap: 200` against ~968 heroes/run, so ~79% are never validated and visibility of the defect is a lottery.
+  - **NexusMind#291** — cross-source dedup threshold 0.88 sits above where genuine same-story pairs land (**measured 0.8355** on a confirmed RU/ES pair, `multilingual-e5-large`, title-only). Method note: the mojibake was my first hypothesis for this and was **measured and refuted** — repairing the encoding buys +0.013, nowhere near the gap.
+- [x] **#95 step 2 SETTLED 2026-08-06 — and "pin `batch_size`" was never an available option.** `DEFAULT_BATCH_SIZE = 16` (`filters/common/filter_base_scorer.py:50`) is already fixed and never varies in production; the variable is batch *composition*, which the seeded shuffle already addressed. Owner decision: **budget for the floor, do not try to remove it.** An article predicted within **0.16** of the surfacing threshold is *indeterminate*; every metric at that threshold carries a band, and **two models whose bands overlap are NOT DISTINGUISHABLE**. `scripts/gate/ground_truth_gate.py` computes and prints it (`--noise-floor`, default 0.16; `0` reproduces prior runs). Worked example — solutions v6 on its own held-out test set, 19/1,032 indeterminate: **F1 0.739 [0.712, 0.771]**, recall 0.671 [0.659, 0.707]. **This unblocks #87 and #93 step 4**, which only needed a stated rule for what counts as a difference. NOT attempted, still open: whether fixed-length padding would make scores batch-invariant.
+
+- [ ] **Price the upstream fix before the downstream one (NEW 2026-08-05).** Google News is 14–17% of scored articles but **48–56% of all sub-300-char stubs** (~3× over-represented, measured within-period over 149,075 solutions v6 rows / 80 cycles). Pre-enrichment already rescues ~62% and fires below **500** chars — the net is not too small; GN survives because its `url` is a `news.google.com/rss/articles/…` redirect, so the fetcher retrieves Google's redirect page. **Retiring the GN proxies removes roughly half the population the solutions cap exists to handle, at no recall cost to genuine articles.** That decision is FluxusSource#120, due **~2026-08-14** — the only calendar-bound item on the board. Evidence and a suggested `enrichable rate` readout column posted there. Sequence: FS#120 → then size the cap against what remains.
+
+- [ ] **Does the scorer share the summariser's fixed-budget failure? (NEW, ovr#299)** For English sources, summary content words absent from the article *and* title run 31.6% (1000+ chars) → 73.9% (120–299) → **83.4% (<120)**, monotone over 18,756 summaries. The mechanism there is a fixed output length target (medians 1159/968/875/1065 against a 40× input range) that the model fills — compressing an article, generating from a headline. **Open for this repo: whether the student has an analogous behaviour, or whether its short-content error is purely vocabulary-without-subject.** The fixes differ — one is a budget, the other a cap — so this is worth one experiment before building either.
+- [x] **#93 synced to NexusMind** 2026-08-03 (`c932065` content, `c1df13c` record; 950 NM tests pass). Surfaced and fixed a second drift — `investment_risk v6` blocked `arxiv`/`mastodon_`/`bluesky` in NexusMind since 2026-05-18 and never upstream (`e51309d` ports them back). **Diff both copies before every sync**; `.nexusmind-owns` is empty so nothing else compares them.
+- [ ] **`foresight v1` still floors on length** — the one prefilter left calling `check_content_length` inside `apply_filter` after #93. Deliberately out of scope (PARKED, merged into solutions #43, not in the production set), but fix it at the same time as any un-parking so it does not silently re-inherit the shape #93 removed.
+- [ ] **Re-run the NM#284 shadow** now that the length floor is out of the prefilters *(deployed to gpu-server 2026-08-03 ~15:45 CEST, rev `2d5c54aa…`; first cycle carrying it is 16:10)* — its pass rates finally describe lens behaviour, which is what LD#90 item 2 needs. Rates measured before 2026-08-03 are not comparable to ones measured after.
+- [ ] **NM#286 item 3** (violence stamping skipped in single-filter / `--no-dedup` / dedup-exception runs). Verified in code; **live blast radius zero today** (production runs multi-filter, violence `enforce: false`), so it is an audit gap, not admitted violence. Still a hard prerequisite for any violence enforce flip, with LD#82.
+- [ ] **Fix `no_cultural_topic_signal` multilingual coverage**, then re-run the identical LD#86 recall check — falsifies whether the language skew is the gate or the corpus.
+- [x] **Retitle/relocate LD#92 to solutions** and correct the op-point in its body — done; the issue now reads "solutions v6 over-scores sub-300-char stubs (DiD −1.13) — NOT uplifting; original n=15 result did not replicate".
+
+## 2026-08-01 — NM#281 gate contract + adversarial review of the day's own work
+
+- [x] **NM#281 gate-contract harmonization** — shipped `0fd462b`, **corrected `b85a467`**, deployed. `_commerce_model` / `_violence_model` stamps; `pipeline.violence_promotion.enforce` (default false); `violence_blocked` accounting. Ships inert.
+- [x] **Five-lens adversarial battery over the same day's changes** — found 2 blockers, both mine, both invisible to the tests shipped with them:
+  1. **The violence gate could never fire.** Placed in `_is_duplicate`, which runs *before* violence stamping; `enforce: true` would have dropped 0 while logging `0 violence`. Commerce/obituary work there only because their preprocessors rewrite the input JSONL first. Fixed: drop moved to `_enforce_violence_promotion()` right after stamping; dead check removed; ordering asserted structurally (AST).
+  2. **The shadow loader armed a dead branch.** Leaving `target.prefilter` populated makes `HybridScorer`'s third guard clause truthy — constructing the wrapper flipped a `use_prefilter=True` hybrid to blocking with null scores. Now restored to `None` after capture.
+  Also fixed: the `MODEL_VERSION` getattr default was itself the v1-claiming bug the stamp prevents (→ `"unknown"`); shadow errors were dead code so a broken shadow logged nothing; digit-collapsing fragmented the histogram it existed to unify. **978 tests green** (was 969).
+- [x] **NM#285 — RESOLVED 2026-08-02.** Measured: truncation is +0.0000 to +0.0097, so the cluster was never an artifact and the ~0.59 reading below was wrong. Option C **declined** on the measurement (see the 2026-08-02 section). Option B shipped `89f2e5b`.
+- [x] **NM#286 — items 1+2 shipped 2026-08-02** (`23a9068`); item 3 still open and still blocks any violence enforce flip.
+
+## 2026-08-01 — Cross-repo: ovr#280 cluster_id diagnosis corrected
+
+- [x] **ovr#280 "upstream never sends cluster_id" — REFUTED 2026-08-01.** Measured on the live 12:4x cycle: **7,629 / 16,128 rows (~47%)** carry `nexus_mind_attributes.<lens>.source_quality.cluster_id`, with `corroborating_sources` + `other_sources` on exactly the same rows; present in the 2026-07-22 files too. The diagnosis had sampled `metadata.quality` (FluxusSource's block — its key list `bias_category, credibility_score, source_tier, type_classification` is quoted verbatim in the issue) instead of the per-lens NexusMind block one level deeper. **No NexusMind change needed**; ovr#280's Option A is already done, and the break is downstream between the JSONL and their DB. Posted to ovr#280.
+- [ ] **NM#278 is the real fix for the reported symptom** — the five-articles-on-one-story report is a *threshold* problem, not a plumbing one: NexusMind clusters on source text pre-summarization, where cross-outlet paraphrases look far apart; two of the five only converge after ovr.news summarizes. Caution recorded on NM#278: NexusMind *removes* rather than *labels* (32%/run), and anything removed upstream can never surface as an "N sources" badge — so prefer labelling over dropping when re-tuning.
+
+## 2026-08-01 — Post-deploy verification + NM#284 (prefilters never ran in production)
+
+Verification of the 2026-07-31 deploys: **refits and the NM#280 tier gate both green** (closed NM#279, NM#280, LD#74, LD#76). The third check — LD#86's cultural_discovery topic gate — was red, and the cause turned out to be architectural rather than cd-specific: **per-filter prefilters have never run in the production scoring path** since 2026-02-10. See the NM#284 items below and `memory/calibration-history.md` Dead Ends (two new entries).
+
+## 2026-07-31 — LD#76 Calibration Audit (11-agent battery, all verdicts adversarially verified)
+
+Full synthesis: LD#76 issuecomment-5140079896. Headline: **no shared root cause, no scale-collapse anywhere, no retrains needed**. `% norm < 0.5` retired as health metric (≈ 1−base-rate by construction; healthy investment_risk is itself 75% "invisible" by it). Healthy criteria going forward (from ir reference): raw p90 above op-point + populated spread-out MEDIUM+ band + separation intact + anchored fresh fit.
+
+- [x] **uplifting v7 normalization refit** (NM#279) — **EXECUTED 2026-07-31**, **VERIFIED LIVE 2026-08-01**: raw 5.00 → norm ≈5.18 (was ~3.0), `percentile` on 2647/2647 rows. NM#279 closed.
+- [x] **belonging v1 normalization refit** (NM#279 / #74) — **EXECUTED 2026-07-31**, **VERIFIED LIVE 2026-08-01**: MEDIUM+ p90 norm 8.71 (n=205 over 3 cycles), visible share 1.03% → 2.68%. NM#279 + #74 closed.
+- [x] **NexusMind `_assign_tier` double-cut (NM#280)** — **DEPLOYED 2026-07-31, VERIFIED LIVE 2026-08-01**: `count(tier != low) == count(raw >= op-point)` holds exactly for all six live filters across six consecutive cycles (live from the 07-31 12:5x cycle). Restored visibility: uplifting +196%, ir +70%, belonging +82%, cd +67%, solutions +33%, nr +33%. Caps path untested in production (0 caps applied in these cycles). NM#280 closed.
+- [ ] **cd v5 dead prefilter (#86)** — the gate is **correct and now production-validated, but still not enforced**. Verified 2026-08-01 by NM#284 **in-path** shadow measurement on the 12:46 cycle: **0.255 observed vs 0.25 declared (n=2099, full cycle)**, matching the fix's own offline validation (0.245 on 14,923 rows). *(An earlier claim here — "production stamps 2647/2647 pass, replay gives 28.8%" — was retracted: that baseline came from `filtered_*.jsonl`, which only receives `passed_prefilter: true` rows, so it is 100% passers by construction. See NM#284 issuecomment-5151154862.)* **Root cause is not cd-specific: the per-lens rule prefilter has never run in production** (NexusMind `deploy/gpu-server/main.py` L915 `use_prefilter=False` + L1318 `skip_prefilter=True`, since `66582e7`, 2026-02-10). e5 probe, commerce/obituary/violence, and the NM#189 source allowlist all verified running. Filed **NM#284**. #86 closes when NM#284 stage 3 flips cd to enforcement — the fix itself needs no further work.
+- [x] **NM#284 stage 1 — shadow measurement** — **IMPLEMENTED + DEPLOYED + VERIFIED LIVE 2026-08-01** (`cd4fc6d` + `5d53774`, deployed ~11:59 CEST). `ProductionScorer` loads each filter's prefilter via the `_load_prefilter` hook (without flipping `use_prefilter`, keeping evaluation and enforcement separate levers) and logs observed vs declared pass rate. Enforces nothing; no schema change. Rollback `NM_FILTER_PREFILTER_SHADOW=0`. First cycle (12:46): **cd 0.255 vs declared 0.25 — LD#86 gate validated in production**; uplifting 0.525 vs 0.20; solutions 0.591 vs 0.20; ir 0.589 (no declared rate). Two defects the first live run exposed and fixed: drift judged at n=1 (smoke test scores one article/filter → six false "gate appears inert" alarms; now `MIN_SHADOW_SAMPLE=50`), and `expected_pass_rate: ~0.25` parsed as a YAML *string* and silently dropped.
+- [ ] **NM#284 stage 1b — per-row shadow stamps into the JSONL**: needs `prefilter_shadow_pass` / `prefilter_shadow_reason` plumbed through gpu-server `main.py` (Pydantic `FilterScoreResult` drops unknown keys at the service boundary) → `src/scoring/gpu_client.py` → the `analysis` dict in `scripts/main.py`. Blocked on unrelated uncommitted WIP in `scripts/main.py` (image-classifier thresholds, NM#282) — staging it would sweep that in. Log-based measurement is sufficient for the enforcement decision, so this is a convenience, not a blocker.
+- [x] **NM#284 stage 2 — global short-content gate before fan-out — REFUTED, DO NOT BUILD** (2026-08-02, superseded by #93 2026-08-03). The ~25%-of-inferences saving was real but it is bought by dropping content the oracle validates at the same rate as long content (uplifting: 67% short vs 65% long above the op-point), and the loss skews to the `gn_*` / `spanish_*` / `french_*` population NM#231 already flags as under-served. The floor is now a labelling-time precondition plus an off-by-default per-filter cap (#93), not a gate at any level. See `memory/calibration-history.md` Dead Ends before proposing this again.
+- [ ] ⚠️ **SUPERSEDED PENDING DECISION 0 (2026-08-12) — do not act on this.** The top-block recommendation is to **DELETE** the per-lens prefilters rather than flip enforcement on, because enabling them would ship #99's English-only `DISCOVERY_PATTERNS` back door (still live in v5) into production for the first time. Resolve decision 0 before touching this line. ~~**NM#284 stage 3 — per-filter enforcement flip**, once a few cycles of shadow data exist.~~ cd is the only filter whose observed rate currently matches its declared one, and it is also the one LD#86 needs. Op-point / normalization re-derivation for affected filters is downstream of the flip (gates #87).
+- [ ] **cd v6 lens fidelity scope (#87)** — ccc 0.25 weight ceiling (mean 0.64), 27% off-lens hard science in visible band, "4.5 display threshold" vs shipped 4.0 unreconciled. Design ticket; not urgent. The 3.5 op-point proposal was REFUTED (sampling artifact) — any re-derivation needs a randomized [3.0,4.5) sample **after NM#284 lands**: the v5 op-point and normalization CDF were both fitted on a distribution still containing the ~71% the prefilter should have removed.
+- [x] **#75 CLOSED as measurement artifact 2026-07-31** (owner confirmed) — nature_recovery v4 is healthy.
+- [ ] **Lens harmonization program (#90)** — owner directive 2026-07-31: bring all lens filters to the successful template (op-point at the distribution, fresh anchored fit, working positive gate, hybrid + stamps, ADR-021 gate) **The rename half is CLOSED as of 2026-08-06 — do not re-open it here.** ADR-012 amended: `cultural_discovery` and `nature_recovery` KEEP their names (their Hub repos are public standalone artefacts; `discovery-filter-vN` / `recovery-filter-vN` drop the qualifier that says what the model is about), `solutions` confirmed as-is, and `uplifting` → **`human_thriving`** at v8 — not bare `thriving`, which is an existing parked directory. What remains under #90 is the template half only.
+- [ ] **Hygiene batch** — emit `stage_used` into row attrs; document nr runtime stage-1 threshold 0.75 (config.yaml says 3.225, inert); fix stale ir config tiers (3.0 vs live 4.0); note nr raw HIGH tier 7.0 > calibrated ceiling 6.8 (structurally dead).
+- [ ] **`human_thriving` v8 — acceptance criteria (owner decision 2026-08-07).** Two open scorer-fidelity defects in `uplifting v7` are **not** separate work: they die in this retrain or they do not die. Both become held-out eval slices, judged under ADR-021 against oracle ground truth, and both carry #95's ±0.16 band — an article predicted within 0.16 of the op-point is indeterminate and cannot be counted as a pass.
+  1. **#91 — dominant subject.** v7 scored a child-trafficking investigation raw **6.77**; it led the homepage with a trafficking price list as pull quote. The scorer rewards narrative fragments over what the article is *about*. Adverse examples are curated at `datasets/adverse/uplifting.jsonl` (`5be62dd`) — **2 records** today (6.7661 and 5.8601), so the slice must be grown before it can gate anything. **Criterion: every adverse record scores below `max_acceptable_wa`**, which the file itself declares as **3.85** (p90 of its reference population) — *not* the 4.0 op-point; the two are different bars and the file's own bar wins. Note both records are labelled `"editorial judgement … NOT oracle-scored"`, so this criterion is judged against an asserted upper bound, not against ADR-021 oracle ground truth — say so rather than implying otherwise.
+    *Denominators, kept separate on purpose:* "median 1.36 / p90 3.85" is over **1,947** scored uplifting articles in `filtered_20260801`; the "6th of 3,530" ranking is a different, unstated population. Both derive from `data/filtered/uplifting/*.jsonl`, which is **100% passers by construction and drops source-type-excluded rows** — neither figure is currently re-derivable locally (the NexusMind mirror ends at `filtered_20260726`).
+  2. **ducroq/NexusMind#231 — non-English under-scoring.** 19 panel-confirmed reader-facing documented-outcome articles score **3.52–4.42, median 3.74**, against a **4.0** op-point. **They are NOT mostly inside the noise band** — an earlier draft of this entry claimed that; ±0.16 around 4.0 is [3.84, 4.16], and every article listed in the issue is ≤3.74, missing by 1.6× the band at the median. The gap is real and larger than noise, which makes it a better criterion, not a worse one. **Blocker on using it at all:** the evidence file NM#231 describes as "(committed)", `data/held-out/golden-uplifting-2026-06-12.jsonl`, is neither on disk nor tracked in git — **the slice this criterion names cannot currently be enumerated.** Recover or rebuild it first. Note also NM#231's sample is drawn from a `weighted_average ∈ [3.5,4.5]` band with a ≥500-char floor (selection *into* a band around the op-point) and is measured against a "~5.0 hot-DB floor", not 4.0 — state which quantity the criterion means. **Criterion: the 19 clear the op-point, and the English/non-English mean-score gap is reported on one denominator** — not "improved", reported, so v9 has a baseline.
+    This is Chain 14's *scoring* stage. It is **not** "the only stage not resolved" — an earlier draft said so and this repo's own board contradicts it: FS#124 (collection) and NM#291 (dedup) are both open and banded P1. Gating (#86) is the one that is measured and decided.
+  Note the interaction: #91 wants the scorer to attend to the dominant subject, NM#231 wants it to stop discounting non-English framing. Neither is a threshold move, and a threshold move would trade them against each other — do not resolve either by shifting the op-point.
+- [ ] **NM#231 re-measure after uplifting refit** — non-English under-scoring is real but secondary; size the residual model-side gap before considering v8 work. *(2026-08-07: superseded in scope by the v8 criteria above — the re-measure is now a v8 acceptance test, not a prerequisite study.)*
+- [ ] **Drift guard** — uplifting violated the >20%-relative-pass-rate refit trigger by an order of magnitude for ~4 months, undetected; the prefilter kill (NM#284) hid for ~6 months the same way. Add per-cycle pass-rate logging or a scheduled drift check covering both normalization freshness and declared-vs-observed prefilter pass rate (owner question).
+
+## 2026-07-27 Session — Small LD Issues Closed
+
+- [x] **LD#49** — Remove 6 broken/superseded filter version dirs (`3e1ccec`). −61,314 lines.
+- [x] **LD#68** — Add per-dim `description` field check to `verify_filter_package.py` (`c2ab571`).
+- [x] **LD#63** — Branded/sponsored URL path blocking in uplifting v7 prefilter (`623ea51`).
+- [x] **LD#57** — Schema gate for `source_filter:` block. Already implemented; closed.
+
+## #52 belonging v1 migration notes (2026-04-29)
+
+Belonging is the second prefilter migrated to ADR-018 declarative shape.
+Diverged from sustech v3's "fully declarative" template in two ways:
+
+1. **Data shape only.** Exclusion patterns moved into `EXCLUSION_PATTERNS`
+   dict (compiled once by base `__init__`); per-category counts dropped from
+   `get_statistics()` and rebuilt from the dict. Iteration order preserved.
+2. **Custom apply_filter retained.** Belonging uses per-category
+   positive-signal thresholds (3/3/3/2/3/2/special), not BasePreFilter's
+   binary `OVERRIDE_KEYWORDS` bypass. Plus URL-based domain exclusions and
+   the obit `pos>=1`-floor-when-exception-present rule. None of that fits
+   the standard `apply_filter()` pipeline; ADR-018 explicitly allows
+   "custom form" for this. The harmonization is at the *data* layer; the
+   *control* layer stays specialized.
+
+`POSITIVE_PATTERNS` class attr was kept (shadows `BasePreFilter.POSITIVE_PATTERNS`)
+so base compiles it into `_compiled_positives`. `POSITIVE_THRESHOLD` stays at
+0, so base's `_has_override` never reads it — belonging consumes the
+compiled list directly via `count_pattern_matches`. Documented at the class
+attr.
+
+Pattern preservation verified by counts (9/7/9/9/7/6/11/6 exclusion
+categories; 10 exceptions; 12 positives; 9 multilingual positives — all
+identical to baseline) and 19/19 self-test pass.
+
+No downstream consumers reference the renamed private attrs (verified via
+grep across the repo); only the public class symbol + `apply_filter()`
+contract are used by `base_scorer.py` and `verify_belonging_v1.py`.
+
+## #52 cultural-discovery v4 migration notes (2026-04-29)
+
+CD v4 is the third migrated prefilter. Same partial-declarative shape as
+belonging — exclusion data harmonized, custom `apply_filter` retained.
+But the divergence from base differs:
+
+1. **Per-category exception lists.** Each exclusion category
+   (appropriation_debate, political_conflict, tourism_fluff, celebrity_art)
+   has its own escape-hatch list — celebrity_art has philanthropy /
+   repatriation exceptions, political_conflict has reconciliation / peace
+   exceptions, etc. BasePreFilter's single `OVERRIDE_KEYWORDS` slot is
+   global; CD's exceptions are category-scoped. Modeled with a parallel
+   `EXCEPTION_PATTERNS_PER_CATEGORY` dict keyed by exclusion-category name,
+   compiled in `__init__` into `_compiled_exceptions_per_category`.
+
+2. **classify_content_type method preserved.** Distinct from apply_filter
+   — used (currently only by self-tests, but kept for API stability) to
+   tag articles as `cultural_discovery` (>=2 positive boost matches) or
+   one of the four exclusion categories or `general`. Rewritten on the
+   new dict-based structure.
+
+3. **CULTURAL_DISCOVERY_BOOST_PATTERNS → POSITIVE_PATTERNS.** Same trick
+   as belonging: rename so base's `__init__` compiles them into
+   `_compiled_positives`. POSITIVE_THRESHOLD stays at 0, so base's
+   `_has_override` never reads them — only `classify_content_type` does.
+
+4. **Surfaced bug: missing content-length check.** v3's `apply_filter`
+   called `check_content_length` first; v4's does not. Looks like an
+   unintentional regression when v4 was created. **Preserved as-is in
+   this migration commit** (scope: zero behavior change). Tracked above
+   under "Prefilter Quality" as a separate one-line fix at next CD bump.
+
+Behavior preservation verified by 10/10 self-test pass plus identical
+pattern counts (11/14, 17/12, 15/14, 15/14 across the four categories;
+12 positives; 8/4/6 domain counts).
+
+No downstream consumers (verified via grep): only `base_scorer.py`
+references `CulturalDiscoveryPreFilterV4` as a class symbol +
+`apply_filter()` call. Older CD versions (v1/v2/v3) keep their old
+attr names internally — no cross-version import.
+
+Next: uplifting v7 (flat-list-per-category, pattern-pair override — no count).
+
+## #52 uplifting v7 migration notes (2026-04-29)
+
+Uplifting v7 is the fourth migrated prefilter. Same shape as CD v4 for 3 of
+4 categories, with one extra wrinkle: a count-based block.
+
+1. **Three pattern-with-exception categories.** corporate_finance,
+   military_security, crime_violence — all use the
+   `EXCLUSION_PATTERNS` + `EXCEPTION_PATTERNS_PER_CATEGORY` pair, identical
+   to CD v4's structure.
+
+2. **One count-based block (pure_speculation).** Doesn't fit the
+   pattern-with-exception shape. Outcome-evidence patterns are a parallel
+   *count* check, not a per-pattern exception. Kept as separate
+   `SPECULATION_PATTERNS` / `OUTCOME_EVIDENCE_PATTERNS` class attrs;
+   inline check after the exclusion-dict iteration:
+   `speculation_count >= 3 AND outcome_count == 0`.
+
+3. **classify_content_type preserved.** Has a custom first-check ordering:
+   "peace_process" wins when both military_security pattern AND its
+   exception fire (e.g. military buildup article that's actually a peace
+   accord). Standard category iteration follows. Speculation classification
+   uses a looser threshold (>=2 / <=1) than apply_filter (>=3 / 0).
+
+4. **Subclass ThrivingPreFilterV1 verified.** `filters/thriving/v1/prefilter.py`
+   inherits from UpliftingPreFilterV7 with only a VERSION override. Public
+   API preserved, so the subclass still works post-migration (verified with
+   a smoke test exercising all 4 categories).
+
+5. **Surfaced bug: multilingual `\b` boundary leak.** Dutch `munitie`
+   (without `\b`) matches inside English "communities". Pre-existing v7
+   FP — preserved here, tracked separately under Prefilter Quality.
+   Same bug shape as the RIP/rip-current case (#45). Audit all 3
+   multilingual exclusion lists at next uplifting version bump.
+
+Behavior preservation verified by 12/12 self-test pass plus identical
+pattern counts (21/11, 19/18, 37/25 across the three pattern-with-exception
+categories; 7 speculation; 6 outcome-evidence; 8/4/6 domain counts).
+
+No additional downstream consumers (verified via grep): only
+`base_scorer.py` references `UpliftingPreFilterV7` directly, plus
+`thriving/v1/prefilter.py` via inheritance — neither reaches into private
+attrs.
+
+Next: investment-risk v6 (re-exports v5; needs own class — class-name drift
+fix is part of the migration).
+
+## #52 investment-risk v6 migration notes (2026-04-29)
+
+Investment-risk is the fifth migrated prefilter and the most structurally
+divergent so far. Two things landed in this commit:
+
+1. **Drift fix** — v6 was a thin re-export of v5 (importlib trick because
+   the hyphen in `investment-risk` blocks normal imports). v6 now has its
+   own `InvestmentRiskPreFilterV6` class. Backward-compat aliases
+   (`InvestmentRiskPreFilterV5 = V6`, `InvestmentRiskPreFilter = V6`) plus
+   legacy `prefilter()` / `get_stats()` functions preserved so existing
+   imports keep working — including v6/base_scorer.py's import via
+   importlib (now updated to call `InvestmentRiskPreFilterV6` directly).
+
+2. **Migration to declarative shape** — but only data-shape harmonization;
+   apply_filter stays custom for three reasons:
+     - **Source-based filtering** runs against `source` / `source_type` /
+       `id` fields, not URL or text. Has its own early-return flow:
+       allowed-source -> pass, investment-keyword -> pass, blocked-source
+       -> block, all before content patterns.
+     - **Reasons include matched-pattern info** —
+       `allowed_source:reuters`, `investment_keyword:recession`,
+       `blocked_source:github`. The base pipeline's `excluded_<category>`
+       shape would lose this signal.
+     - **Clickbait operates on title only**, not combined text. Stays as
+       a separate class attr with its own check below the EXCLUSION_PATTERNS
+       iteration.
+
+Three text-pattern categories did get the dict treatment:
+fomo_speculation (8 patterns, no exceptions), stock_picking (6 patterns,
+12 macro-context exceptions), affiliate_conflict (4 patterns, no
+exceptions). The macro_context list is the only per-category exception
+this filter has — modeled as `EXCEPTION_PATTERNS_PER_CATEGORY['stock_picking']`.
+
+`(True, "default_allow")` and `(True, "passed")` are intentionally
+distinct — investment-risk reports the *reason* an article passed, not
+just the fact that it did. Default-allow means "no source/keyword/pattern
+fired, falling through to the philosophy: when in doubt, score it."
+
+Behavior preservation verified by 11/11 self-test pass plus identical
+pattern counts (19 blocked sources, 25 allowed, 30 keywords; 8/0, 6/12,
+4/0 across pattern-with-optional-exception categories; 5 clickbait).
+
+Next: nature_recovery v2 (inline list in method form — simplest of the
+remaining; class-name drift fix V1→V2 deferred to the cleanup batch).
+
+## #52 nature_recovery v2 migration notes (2026-04-29)
+
+Sixth migrated prefilter. Simplest of the lot — single text-pattern
+category with a single recovery-pattern exception, plus a permissive
+nature-relatedness gate.
+
+The structure looked like a clean fit for *fully declarative* shape (sustech
+v3 style — base apply_filter + `_filter_specific_final_check` for the
+nature gate). But three behavior-preservation concerns ruled that out:
+
+1. **Order**: nature-relatedness check runs FIRST today; base pipeline
+   would run it LAST (via `_filter_specific_final_check`). Articles that
+   are both off-topic and disaster-themed would change blocking reason
+   from `not_nature_topic` to `excluded_disaster_no_recovery` — a
+   user-observable change, no matter how rare.
+2. **Reason strings**: current returns are bare (`"disaster_no_recovery"`,
+   `"not_nature_topic"`); base prepends `excluded_<category>`.
+3. **Content-length gap**: current v2 doesn't call `check_content_length`
+   (same gap as CD v4 — see Prefilter Quality follow-ups). Base pipeline
+   would add the call — also a behavior change.
+
+Settled on data-shape harmonization with a custom apply_filter, same
+strategy as belonging / CD v4 / uplifting v7 / investment-risk. The
+disaster category fits the EXCLUSION_PATTERNS + EXCEPTION_PATTERNS_PER_CATEGORY
+shape cleanly even though it's the only category in this filter.
+
+Class-name drift (file v2 / class V1 / VERSION="1.0") preserved as planned
+— part of the deferred cleanup batch alongside sustech V2→V3, gated on
+NexusMind cross-repo coordination since their `tests/unit/test_prefilter.py`
+imports the V1 name.
+
+Behavior preservation: 6/6 self-test pass. Pattern counts: 33 nature
+keywords (duplicate `deforestation` in the original list preserved
+verbatim), 1 disaster regex, 1 recovery-exception regex.
+
+Next: foresight v1 (count-based override — `POSITIVE_THRESHOLD = 3`).
+
+## #52 foresight v1 migration notes (2026-04-29)
+
+Seventh and final per-filter migration. Foresight's "count-based override"
+turned out to NOT fit BasePreFilter's POSITIVE_THRESHOLD slot — the
+semantics differ:
+
+- Base `POSITIVE_THRESHOLD`: bypass when `sum(p.findall() for p in
+  POSITIVE_PATTERNS) >= POSITIVE_THRESHOLD` — total match count.
+- Foresight v1: bypass when `count(group_name for group in
+  POSITIVE_PATTERN_GROUPS if any pattern in group matches) >= 3` —
+  distinct categories with at least one hit.
+
+A single repeated keyword in one foresight category counts as 1, not as N.
+Migrating to base's semantics would have changed the bypass behavior —
+some articles with 3+ matches all in one category would start bypassing
+where they previously didn't, and vice versa.
+
+Settled on: data-shape harmonization with a **custom slot**
+(`POSITIVE_PATTERN_GROUPS`, not `POSITIVE_PATTERNS`) so the difference is
+visible at the class definition. Six block categories DID move into
+`EXCLUSION_PATTERNS` cleanly (no per-category exceptions). Custom
+apply_filter retained for the distinct-categories-fired logic, the two
+pass reasons (`passed_positive_signals` vs `passed`), and URL-based
+domain exclusions.
+
+Behavior preservation: 10/10 self-test pass; pattern counts
+bit-for-bit identical to baseline (4/4/3/4/3/3 block; 8/4/4/6/3/15
+positive; 8/5 domain).
+
+## #52 retrospective (2026-04-29) — what we learned
+
+**All 7 production filters now share a consistent EXCLUSION_PATTERNS data
+shape**, even though only sustech v3 ended up using BasePreFilter's full
+declarative pipeline. The other 6 retained custom apply_filter for one
+or more of these reasons:
+
+| Reason for custom apply_filter | Filters affected |
+|---|---|
+| URL-based domain exclusions | belonging v1, CD v4, uplifting v7, foresight v1 |
+| Per-category exception lists | CD v4, uplifting v7, investment-risk v6 |
+| Per-category positive-count thresholds | belonging v1 |
+| Count-based block (not pattern-with-exception) | uplifting v7 (pure_speculation), foresight v1 (positive_categories) |
+| Source-based filtering on non-URL field | investment-risk v6 |
+| Matched-pattern reason strings (`allowed_source:reuters`) | investment-risk v6 |
+| Title-only checks | investment-risk v6 (clickbait), belonging v1 (#45 obit) |
+| Reason-precedence ordering depends on flow | nature_recovery v2 |
+| Bare reason strings (no `excluded_` prefix) | belonging v1, CD v4, uplifting v7, NR v2, foresight v1 |
+| Distinct pass reasons (`passed_positive_signals` etc.) | foresight v1 |
+| Existing `check_content_length` gap to preserve | CD v4, NR v2 |
+
+**The harmonization is in the *data*, not the *control flow*.** This is
+the right call given the genuine variety of filter logic. ADR-018
+explicitly permits "custom form" precisely for this case. Future filter
+authors can:
+
+1. Read EXCLUSION_PATTERNS to see what each filter blocks.
+2. Read EXCEPTION_PATTERNS_PER_CATEGORY (or POSITIVE_PATTERN_GROUPS, or
+   the filter-specific override slot) to see what pulls articles back through.
+3. Read apply_filter for the specific control flow this filter needs.
+
+That third step is no longer about hunting compiled-regex attributes and
+helper methods scattered through the file.
+
+**Surfaced bugs (preserved for zero-behavior-change scope; tracked under
+Prefilter Quality):**
+- CD v4 missing `check_content_length` call (regression vs v3).
+- nature_recovery v2 missing `check_content_length` call.
+- uplifting v7 multilingual `\b` boundary leak (Dutch `munitie` matches
+  inside English "co-MMUNITIE-s"; same bug shape as RIP/rip-current #45).
+
+**Remaining #52 work:**
+- Class-name drift cleanup batch: sustech V2→V3, nature_recovery V1→V2.
+  Deferred until cross-repo coordination with NexusMind (whose
+  `tests/unit/test_prefilter.py` imports the V2 / V1 names).
+- The three Prefilter Quality follow-ups above can be picked up with the
+  next version bump on each filter.
+
+
