@@ -39,3 +39,19 @@ In-scope yields are reported **per stratum**. No pooled "production rate" may be
 In-scope yield: v8_hit **50–70%**, belonging_no_v8 **25–45%**, uplifting_only **15–35%**,
 solutions **30–60%**. These are guesses anchored on the full run's 35.4% moved-out rate for
 labels ≥ 4.5.
+
+## Oracle step — APPROVED by the owner 2026-09-24 (topped up; "dolne" = done), rules fixed before any call
+
+The measured cost is ~$0.20, not the ~$3 first quoted. That figure was priced at the uncached rate;
+k=3 on one article costs ≈ $0.00077 once the prompt is cached (EXP-010 repriced at V4.1).
+
+- **Prompt: `prompt-v8-4.md`** (the current oracle prompt), k=3, DeepSeek `deepseek-chat` (V4.1).
+- **Control (the model swap):** 50 existing rows, seeded, that are adjudicated `in_scope` and whose
+  label was produced by **v8-4 under V4** (`prompt_hash c4705408c477`, the 456-row relabel). Only
+  the model differs. Rule: let `d` = median of (V4.1 − V4) on the weighted average over the 50.
+  **If |d| ≤ 0.30, the new rows are mixed into train/val/test (80/10/10). If |d| > 0.30, the new
+  rows go to TEST ONLY**, because mixing two oracle versions into one training set is a
+  hand-built population.
+- **Oracle disagrees with Claude:** if the oracle's k=3 majority verdict on a Claude-`in_scope`
+  row is not `in_scope`, its dimensions are forced to 0–2 and are unusable as a positive. The row
+  is **excluded** and counted, not relabelled.
