@@ -1,0 +1,84 @@
+{
+  "priority": "ADR-023 \u2014 we prioritise HIGH CERTAINTY over HIGH DETECTION: specificity at the op-point is the criterion, recall is a constraint to satisfy, and MAE ranks nothing. A low recall here is usually the choice working. Read spec first, and read recall beside the positive rate.",
+  "threshold": 4.5,
+  "truth_threshold": 4.5,
+  "gatekeeper_cap": 3.0,
+  "noise_floor": 0.16,
+  "n_labeled": 660,
+  "models": {
+    "v9_calibrated_cuda5090": {
+      "n": 660,
+      "positives": 23,
+      "truth_threshold": 4.5,
+      "recall": 0.34782608695652173,
+      "precision": 0.8888888888888888,
+      "specificity": 0.9984301412872841,
+      "f1": 0.5,
+      "spearman": 0.7822395263680523,
+      "mae": 0.4617284476675318,
+      "tp": 8,
+      "fn": 15,
+      "fp": 1,
+      "tn": 636,
+      "noise_floor": 0.16,
+      "n_indeterminate": 2,
+      "indeterminate_by_cell": {
+        "tp": 2,
+        "fn": 0,
+        "fp": 0,
+        "tn": 0
+      },
+      "recall_band": [
+        0.2608695652173913,
+        0.34782608695652173
+      ],
+      "precision_band": [
+        0.8571428571428571,
+        0.8888888888888888
+      ],
+      "specificity_band": [
+        0.9984301412872841,
+        0.9984301412872841
+      ],
+      "f1_band": [
+        0.4,
+        0.5
+      ]
+    }
+  },
+  "inputs": {
+    "generated_utc": "2026-09-25T12:51:56Z",
+    "argv": [
+      "--labels",
+      "datasets/training/human_thriving_v8_adj1/test.jsonl",
+      "--config",
+      "filters/human_thriving/v9/config.yaml",
+      "--model",
+      "v9_calibrated_cuda5090=datasets/gate/ht_v8_adj_2026-09-25/adj3/scores_calibrated.jsonl",
+      "--recompute-model-wa",
+      "--report",
+      "filters/human_thriving/v9/ground_truth_gate.json"
+    ],
+    "labels": {
+      "path": "datasets/training/human_thriving_v8_adj1/test.jsonl",
+      "sha256": "a2424bcde2fd7dd45f665dc67eb577c89acdb626aed76c54d5961c92b6bf8b1d"
+    },
+    "config": {
+      "path": "filters/human_thriving/v9/config.yaml",
+      "sha256": "e3bea0ac3ff3dc42b1c82fb42ba9b14c6f8df35d62f108ebc320300c9a2acb24"
+    },
+    "models": {
+      "v9_calibrated_cuda5090": {
+        "path": "datasets/gate/ht_v8_adj_2026-09-25/adj3/scores_calibrated.jsonl",
+        "sha256": "133c32453a965e30bd4140472178ea6c2f7d8bcc6a22250503557c230a8f5ddf"
+      }
+    }
+  },
+  "provenance": {
+    "measured": "2026-09-25",
+    "why": "v9's own gate: adj3 (v8 retrained on adjudicated labels + new positives + hard negatives), on v8's 660 test ids against the ADJUDICATED labels (datasets/training/human_thriving_v8_adj1/test.jsonl). The four-arm comparison with v8 and the oracle-label run: docs/evidence/2026-09-25-v8-adj-retrain-gate/.",
+    "code_commit": "bbf99b5a5eb25d6ed469e66807dc72b43602d0a2 for training, the calibration fit and the score dump (b650 checkout, clean). This gate file was re-run locally on those stored dumps; the gate recomputes the weighted average from per-dimension scores and does no model arithmetic.",
+    "device": "CUDA for the calibration fit and the score dump, b650 RTX 5090. Read back off the loaded model, not the flag: 'declared=cuda parameters=cuda:0' in logs/calib_adj3.log and logs/dump_adj3.log (#146). Production serves on GPU.",
+    "labels_note": "Adjudicated labels are Claude's judgment under the owner's rubric (pilot owner-checked 10/10), not independent human truth."
+  }
+}

@@ -57,6 +57,7 @@ ACTIVE_FILTERS = [
 # weighted average is computed. Promote the entry into ACTIVE_FILTERS at deploy.
 IN_DEVELOPMENT_FILTERS = [
     ("human_thriving", "v8"),
+    ("human_thriving", "v9"),
 ]
 
 # --- Canonical schema ---------------------------------------------------

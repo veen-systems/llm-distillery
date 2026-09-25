@@ -66,15 +66,21 @@ def cannot_verify(msg):
 def main():
     root = Path(__file__).resolve().parents[2]
     sys.path.insert(0, str(root))
-    pkg = root / "filters" / "human_thriving" / "v8"
+    # Optional first argument: the package version, e.g. `v9` (added 2026-09-25 for v9, whose
+    # code is v8's with a retrained student). Default v8, so every existing caller is unchanged.
+    version = sys.argv[1] if len(sys.argv) > 1 else "v8"
+    if version not in ("v8", "v9"):
+        raise SystemExit(f"unknown version {version!r}: expected v8 or v9")
+    pkg = root / "filters" / "human_thriving" / version
     weights = pkg / "model" / "adapter_model.safetensors"
     if not weights.is_file():
         return cannot_verify(
             f"no weights at {weights} — this host cannot run the student. "
             f"Run on b650-gpu; see the module docstring.")
 
-    from filters.human_thriving.v8.inference_hybrid import (
-        HumanThrivingHybridScorer, load_stage1_config)
+    import importlib
+    _hyb = importlib.import_module(f"filters.human_thriving.{version}.inference_hybrid")
+    HumanThrivingHybridScorer, load_stage1_config = _hyb.HumanThrivingHybridScorer, _hyb.load_stage1_config
 
     stage1 = load_stage1_config()
     print(f"stage-1 config: threshold={stage1['threshold']} "
@@ -172,7 +178,7 @@ def main():
     if failures:
         print(f"\nFAIL {len(failures)} assertion(s): {failures}")
         return 1
-    print(f"\nPASS v8 smoke: {len(CASES)} articles scored, all assertions held")
+    print(f"\nPASS {version} smoke: {len(CASES)} articles scored, all assertions held")
     return 0
 
 

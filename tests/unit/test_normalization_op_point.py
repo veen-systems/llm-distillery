@@ -215,6 +215,9 @@ class TestResolveOpPoint:
         # — it is no longer inherited, and it applies to the CALIBRATED score, which is
         # what `_process_raw_scores` hands `_assign_tier`.
         ("filters/human_thriving/v8", 4.5),
+        # Added 2026-09-25 with v9 (v8 retrained on adjudicated labels). 4.5 RULED by the
+        # owner on v9's own gate + live-week audit (docs/evidence/2026-09-25-v8-adj3-live-audit/).
+        ("filters/human_thriving/v9", 4.5),
     ],
 )
 def test_production_filters_resolve_their_op_point(filter_dir, expected):
