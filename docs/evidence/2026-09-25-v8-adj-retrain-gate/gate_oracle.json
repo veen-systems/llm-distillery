@@ -1,0 +1,212 @@
+{
+  "priority": "ADR-023 \u2014 we prioritise HIGH CERTAINTY over HIGH DETECTION: specificity at the op-point is the criterion, recall is a constraint to satisfy, and MAE ranks nothing. A low recall here is usually the choice working. Read spec first, and read recall beside the positive rate.",
+  "threshold": 4.5,
+  "truth_threshold": 4.5,
+  "gatekeeper_cap": 3.0,
+  "noise_floor": 0.16,
+  "n_labeled": 660,
+  "models": {
+    "v8": {
+      "n": 660,
+      "positives": 35,
+      "truth_threshold": 4.5,
+      "recall": 0.3142857142857143,
+      "precision": 0.55,
+      "specificity": 0.9856,
+      "f1": 0.4,
+      "spearman": 0.8110547920716559,
+      "mae": 0.5387937505867874,
+      "tp": 11,
+      "fn": 24,
+      "fp": 9,
+      "tn": 616,
+      "noise_floor": 0.16,
+      "n_indeterminate": 8,
+      "indeterminate_by_cell": {
+        "tp": 1,
+        "fn": 2,
+        "fp": 4,
+        "tn": 1
+      },
+      "recall_band": [
+        0.2857142857142857,
+        0.37142857142857144
+      ],
+      "precision_band": [
+        0.5,
+        0.7222222222222222
+      ],
+      "specificity_band": [
+        0.984,
+        0.992
+      ],
+      "f1_band": [
+        0.36363636363636365,
+        0.490566037735849
+      ]
+    },
+    "adj1": {
+      "n": 660,
+      "positives": 35,
+      "truth_threshold": 4.5,
+      "recall": 0.2571428571428571,
+      "precision": 0.75,
+      "specificity": 0.9952,
+      "f1": 0.3829787234042553,
+      "spearman": 0.7921754532229831,
+      "mae": 0.5805204398794711,
+      "tp": 9,
+      "fn": 26,
+      "fp": 3,
+      "tn": 622,
+      "noise_floor": 0.16,
+      "n_indeterminate": 4,
+      "indeterminate_by_cell": {
+        "tp": 2,
+        "fn": 1,
+        "fp": 0,
+        "tn": 1
+      },
+      "recall_band": [
+        0.2,
+        0.2857142857142857
+      ],
+      "precision_band": [
+        0.6363636363636364,
+        0.7692307692307693
+      ],
+      "specificity_band": [
+        0.9936,
+        0.9952
+      ],
+      "f1_band": [
+        0.30434782608695654,
+        0.41666666666666663
+      ]
+    },
+    "adj3": {
+      "n": 660,
+      "positives": 35,
+      "truth_threshold": 4.5,
+      "recall": 0.22857142857142856,
+      "precision": 0.8888888888888888,
+      "specificity": 0.9984,
+      "f1": 0.3636363636363636,
+      "spearman": 0.7882290988168735,
+      "mae": 0.5952435018363919,
+      "tp": 8,
+      "fn": 27,
+      "fp": 1,
+      "tn": 624,
+      "noise_floor": 0.16,
+      "n_indeterminate": 2,
+      "indeterminate_by_cell": {
+        "tp": 2,
+        "fn": 0,
+        "fp": 0,
+        "tn": 0
+      },
+      "recall_band": [
+        0.17142857142857143,
+        0.22857142857142856
+      ],
+      "precision_band": [
+        0.8571428571428571,
+        0.8888888888888888
+      ],
+      "specificity_band": [
+        0.9984,
+        0.9984
+      ],
+      "f1_band": [
+        0.2857142857142857,
+        0.3636363636363636
+      ]
+    },
+    "adj2": {
+      "n": 660,
+      "positives": 35,
+      "truth_threshold": 4.5,
+      "recall": 0.22857142857142856,
+      "precision": 0.8888888888888888,
+      "specificity": 0.9984,
+      "f1": 0.3636363636363636,
+      "spearman": 0.7931792801140263,
+      "mae": 0.5811561262616532,
+      "tp": 8,
+      "fn": 27,
+      "fp": 1,
+      "tn": 624,
+      "noise_floor": 0.16,
+      "n_indeterminate": 3,
+      "indeterminate_by_cell": {
+        "tp": 0,
+        "fn": 2,
+        "fp": 0,
+        "tn": 1
+      },
+      "recall_band": [
+        0.22857142857142856,
+        0.2857142857142857
+      ],
+      "precision_band": [
+        0.8,
+        0.9090909090909091
+      ],
+      "specificity_band": [
+        0.9968,
+        0.9984
+      ],
+      "f1_band": [
+        0.3555555555555555,
+        0.43478260869565216
+      ]
+    }
+  },
+  "inputs": {
+    "generated_utc": "2026-09-25T10:12:05Z",
+    "argv": [
+      "--labels",
+      "datasets/training/human_thriving_v8/test.jsonl",
+      "--config",
+      "filters/human_thriving/v8/config.yaml",
+      "--model",
+      "v8=datasets/gate/ht_v8_adj_2026-09-25/v8/scores_calibrated.jsonl",
+      "--model",
+      "adj1=datasets/gate/ht_v8_adj_2026-09-25/adj1/scores_calibrated.jsonl",
+      "--model",
+      "adj3=datasets/gate/ht_v8_adj_2026-09-25/adj3/scores_calibrated.jsonl",
+      "--model",
+      "adj2=datasets/gate/ht_v8_adj_2026-09-25/adj2/scores_calibrated.jsonl",
+      "--recompute-model-wa",
+      "--report",
+      "docs/evidence/2026-09-25-v8-adj-retrain-gate/gate_oracle.json"
+    ],
+    "labels": {
+      "path": "datasets/training/human_thriving_v8/test.jsonl",
+      "sha256": "e361b5175c66252582c395bf256eb253bfa9b35f780f2479907231fc4d58d726"
+    },
+    "config": {
+      "path": "filters/human_thriving/v8/config.yaml",
+      "sha256": "42fad72735ceb91d11aac59e73b9d846dd216c30f07b1931d710e59b2519aaee"
+    },
+    "models": {
+      "v8": {
+        "path": "datasets/gate/ht_v8_adj_2026-09-25/v8/scores_calibrated.jsonl",
+        "sha256": "b7ae1486e5060c8e7b3bc1643a4ef05b83df54c0a16dc2a0e5d40c8793b5c9ed"
+      },
+      "adj1": {
+        "path": "datasets/gate/ht_v8_adj_2026-09-25/adj1/scores_calibrated.jsonl",
+        "sha256": "af007028f10094e101616019f24acee23d84551a5b8c497ad86beaf90806cae4"
+      },
+      "adj3": {
+        "path": "datasets/gate/ht_v8_adj_2026-09-25/adj3/scores_calibrated.jsonl",
+        "sha256": "133c32453a965e30bd4140472178ea6c2f7d8bcc6a22250503557c230a8f5ddf"
+      },
+      "adj2": {
+        "path": "datasets/gate/ht_v8_adj_2026-09-25/adj2/scores_calibrated.jsonl",
+        "sha256": "2d1820779024804d9f56f1f59191aad83aa5816a7608ee9421229d611ef1342b"
+      }
+    }
+  }
+}

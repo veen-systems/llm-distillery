@@ -1,0 +1,45 @@
+
+== adj1 vs v8 (paired, 660 rows)
+  dropped a negative     indeterminate v8 4.50 -> 3.44  balkan_delo_de35acb2b196           Sedemdeset let zgodb, ki jih soustvarjajo ljudje
+  dropped a negative     determinate   v8 4.86 -> 2.83  british_irish_uk_gov_news_ee597e2f Victims and survivors of rape and sexual abuse to be supported
+  dropped a negative     determinate   v8 4.91 -> 3.19  french_lemonde_societe_6aa32013bda La Ville de Paris annonce la « mise à l’abri » de 250 personnes, migra
+  dropped a negative     indeterminate v8 4.65 -> 3.00  mexican_la_jornada_74c9947e4fcc    Versos en lenguas originarias de América y en spanglish resplandecen e
+  dropped a TRUE POS     determinate   v8 5.44 -> 4.02  pan_african_allAfrica_environment_ Uganda: Government Commissions Shs6bn Water Projects in Kyankwanzi
+  added a negative       determinate   v8 3.82 -> 4.82  russian_meduza_en_44ba09065fc2     Many Russians who left because of the war had to start over abroad. So
+  dropped a negative     indeterminate v8 4.63 -> 4.49  science_frontiers_psychology_babd7 Chat-based interaction in virtual classes: EFL students’ perceptions, 
+  dropped a TRUE POS     determinate   v8 5.12 -> 3.99  south_american_brasil_de_fato_69fc Indígenas Kaingang iniciam retomada de território entre Porto Alegre e
+  dropped a negative     determinate   v8 5.00 -> 3.31  south_asian_kathmandu_post_7b419bb Government, family reach agreement over rape and murder of Bara girl
+  dropped a negative     indeterminate v8 4.52 -> 2.57  spanish_20minutos_es_c2dce8cbbfcb  Una dosis alta y temprana de vitamina B3 podría frenar una enfermedad 
+  remaining FPs (adjudicated): [('russian_meduza_en_44ba09065fc2', 4.82, 4.37, 'Many Russians who left because of the war had to start over abroad. So'), ('community_social_hackernews_fr', 4.59, 1.59, 'Babies born under sugar rationing grew into adults with lower cancer r'), ('balkan_mia_mk_d764951308e8', 5.14, 4.33, 'Крводарителска акција во Кочани, собрана 31 крвна единица'), ('industry_intelligence_fast_com', 4.79, 1.95, 'Tech is helping grocery stores waste less food. That’s a problem for f'), ('positive_news_labor_notes_8e7d', 4.73, 2.0, 'Dolly Parton Helped Us to Speak Up and Join Together')]
+
+== adj3 vs v8 (paired, 660 rows)
+  dropped a negative     indeterminate v8 4.50 -> 4.24  balkan_delo_de35acb2b196           Sedemdeset let zgodb, ki jih soustvarjajo ljudje
+  added a TRUE POS       determinate   v8 4.11 -> 5.47  british_irish_bbc_england_9055e7d8 Homeless man becomes a superhero sign cleaner
+  dropped a negative     determinate   v8 4.86 -> 2.28  british_irish_uk_gov_news_ee597e2f Victims and survivors of rape and sexual abuse to be supported
+  dropped a negative     determinate   v8 4.93 -> 4.15  community_social_hackernews_front_ Babies born under sugar rationing grew into adults with lower cancer r (oracle-pos, adjudicated OUT)
+  dropped a negative     determinate   v8 4.91 -> 3.69  french_lemonde_societe_6aa32013bda La Ville de Paris annonce la « mise à l’abri » de 250 personnes, migra
+  dropped a negative     determinate   v8 4.95 -> 3.51  industry_intelligence_fast_company Tech is helping grocery stores waste less food. That’s a problem for f
+  dropped a negative     indeterminate v8 4.65 -> 3.00  mexican_la_jornada_74c9947e4fcc    Versos en lenguas originarias de América y en spanglish resplandecen e
+  dropped a negative     determinate   v8 5.01 -> 3.00  positive_news_labor_notes_8e7dd02e Dolly Parton Helped Us to Speak Up and Join Together (oracle-pos, adjudicated OUT)
+  dropped a negative     indeterminate v8 4.63 -> 3.72  science_frontiers_psychology_babd7 Chat-based interaction in virtual classes: EFL students’ perceptions, 
+  dropped a TRUE POS     determinate   v8 5.12 -> 2.59  south_american_brasil_de_fato_69fc Indígenas Kaingang iniciam retomada de território entre Porto Alegre e
+  dropped a negative     determinate   v8 5.00 -> 3.05  south_asian_kathmandu_post_7b419bb Government, family reach agreement over rape and murder of Bara girl
+  dropped a negative     indeterminate v8 4.52 -> 2.60  spanish_20minutos_es_c2dce8cbbfcb  Una dosis alta y temprana de vitamina B3 podría frenar una enfermedad 
+  dropped a TRUE POS     indeterminate v8 4.65 -> 4.13  us_media_time_310951f3882a         A One-Time Treatment for High Cholesterol Shows Promising Results
+  remaining FPs (adjudicated): [('balkan_mia_mk_d764951308e8', 4.76, 4.33, 'Крводарителска акција во Кочани, собрана 31 крвна единица')]
+
+== adj2 vs v8 (paired, 660 rows)
+  dropped a negative     indeterminate v8 4.50 -> 3.00  balkan_delo_de35acb2b196           Sedemdeset let zgodb, ki jih soustvarjajo ljudje
+  dropped a negative     indeterminate v8 4.91 -> 4.41  balkan_mia_mk_d764951308e8         Крводарителска акција во Кочани, собрана 31 крвна единица
+  dropped a negative     determinate   v8 4.86 -> 2.75  british_irish_uk_gov_news_ee597e2f Victims and survivors of rape and sexual abuse to be supported
+  dropped a negative     determinate   v8 4.93 -> 2.96  community_social_hackernews_front_ Babies born under sugar rationing grew into adults with lower cancer r (oracle-pos, adjudicated OUT)
+  dropped a negative     determinate   v8 4.91 -> 3.85  french_lemonde_societe_6aa32013bda La Ville de Paris annonce la « mise à l’abri » de 250 personnes, migra
+  dropped a negative     indeterminate v8 4.65 -> 3.49  mexican_la_jornada_74c9947e4fcc    Versos en lenguas originarias de América y en spanglish resplandecen e
+  dropped a negative     determinate   v8 5.01 -> 3.82  positive_news_labor_notes_8e7dd02e Dolly Parton Helped Us to Speak Up and Join Together (oracle-pos, adjudicated OUT)
+  dropped a negative     indeterminate v8 4.63 -> 3.21  science_frontiers_psychology_babd7 Chat-based interaction in virtual classes: EFL students’ perceptions, 
+  added a TRUE POS       determinate   v8 4.20 -> 4.68  science_illinois_edu_44b420883ed3  Emotion-regulation training reduces distress, changes the brain, team 
+  dropped a TRUE POS     determinate   v8 5.12 -> 4.05  south_american_brasil_de_fato_69fc Indígenas Kaingang iniciam retomada de território entre Porto Alegre e
+  dropped a TRUE POS     indeterminate v8 5.01 -> 4.49  south_american_inews_guyana_213fbe 59 individuals benefit from cancer screening and health education outr
+  dropped a negative     determinate   v8 5.00 -> 3.73  south_asian_kathmandu_post_7b419bb Government, family reach agreement over rape and murder of Bara girl
+  dropped a negative     indeterminate v8 4.52 -> 3.01  spanish_20minutos_es_c2dce8cbbfcb  Una dosis alta y temprana de vitamina B3 podría frenar una enfermedad 
+  remaining FPs (adjudicated): [('industry_intelligence_fast_com', 5.16, 1.95, 'Tech is helping grocery stores waste less food. That’s a problem for f')]

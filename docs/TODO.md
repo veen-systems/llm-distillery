@@ -9,7 +9,14 @@ topic. Re-read the block under it before starting; the reasons are there, not he
 this session had to read: *"that means we need to start pruning, thinning, mechanizing,
 retiring."* That is now the work, ahead of the queue below.
 
-−2. ▶ **FIRST, from 2026-09-25 05:00 (b650 is NOT available before — owner, 2026-09-24): retrain
+−2. ✅ **2026-09-25 RESULT: steps 1–4 DONE — all three retrains WIN the pre-registered bar; adj3 is the
+   candidate** (adjudicated labels: FP 11 → **1**, TP 9 → 8 of 23; spec band [0.9984] vs v8 [0.9812, 0.9890]).
+   ⚠️ The recall clause passed with ZERO margin. ⭐ FPs also fall 9 → 1 under the ORACLE's own labels.
+   Everything, caveats first: `docs/evidence/2026-09-25-v8-adj-retrain-gate/README.md`.
+   ▶ **NEXT = step 5, the live audit of adj3's passers — its plan (window, judge) is the OWNER's call.**
+   Staged on b650: `filters/human_thriving/v8_adj3/` (untracked). Original item text below, now history.
+
+   ~~FIRST~~, from 2026-09-25 05:00 (b650 is NOT available before — owner, 2026-09-24): retrain
    `human_thriving v8` on the Claude-adjudicated labels.** Evidence and every number:
    `docs/evidence/2026-09-24-thriving-adjudication-full/README.md` (553 of 878 labels ≥ 3.5 moved
    out; pilot owner-checked 10/10; drift check 0.946). Data: `datasets/training/human_thriving_v8_adj1/`
