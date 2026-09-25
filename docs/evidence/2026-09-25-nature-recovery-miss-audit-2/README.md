@@ -13,9 +13,9 @@ without outcomes stay out). Output: `result.txt`.
 | model | nr < 2.0 | 0 observed (0/59) | 0 – ~860 |
 | probe | screened out by nr's probe | 0 observed (0/100) | 0 – ~55 |
 
-**Point estimate: ~36 missed per week (~0.9 per 4-hour cycle).** Nature recovery itself publishes ~4 per
-cycle, so it lets about one more story per cycle go past than it keeps... and only ~47% (14/30) of what it DOES publish is in scope
-by the same definition (the precision control, 0.302–0.639).
+**Point estimate: ~36 missed per week (~0.9 per 4-hour cycle).** For scale: nr publishes ~4.1 per cycle, and only
+~47% of those (14/30, 0.302–0.639) are in scope by the same definition, i.e. ~1.9 good stories per cycle. So it misses
+roughly one good story for every two it catches, and half of what it does publish is not Nature recovery.
 
 ⚠️ **Correction to `analyse.py`'s own printout.** It prints `0 [0, 0]` for the two zero strata and a total
 interval of 18–57. That comes from a percentile bootstrap, which is **degenerate at 0 positives**, so those
