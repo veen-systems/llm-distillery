@@ -1,0 +1,41 @@
+Prompt: filters/human_thriving/v8/prompt-v8-4.md sha256[:12]=c4705408c477
+Scoring with: dims=['human_wellbeing_impact', 'social_cohesion_impact', 'justice_rights_impact', 'evidence_level', 'benefit_distribution', 'change_durability'] | field=human_thriving_analysis | prompt=prompt-v8-4.md
+Loaded 439 articles from docs/evidence/2026-09-24-thriving-more-positives/oracle_neg_input.jsonl
+  [  50/439] 50 OK | 0 err | 0 junk | 7.7 art/s | ETA 1 min | cache hit 98%
+  [ 100/439] 100 OK | 0 err | 0 junk | 8.0 art/s | ETA 1 min | cache hit 98%
+  [ 150/439] 150 OK | 0 err | 0 junk | 8.0 art/s | ETA 1 min | cache hit 98%
+  [ 200/439] 200 OK | 0 err | 0 junk | 8.2 art/s | ETA 0 min | cache hit 98%
+  [ 250/439] 250 OK | 0 err | 0 junk | 8.5 art/s | ETA 0 min | cache hit 98%
+  [ 300/439] 299 OK | 1 err | 0 junk | 8.6 art/s | ETA 0 min | cache hit 98%
+  [ 350/439] 349 OK | 1 err | 0 junk | 8.6 art/s | ETA 0 min | cache hit 98%
+  [ 400/439] 399 OK | 1 err | 0 junk | 8.7 art/s | ETA 0 min | cache hit 98%
+  [ 439/439] 438 OK | 1 err | 0 junk | 8.7 art/s | ETA 0 min | cache hit 98%
+
+============================================================
+COMPLETE
+============================================================
+Successful: 438  Errors: 1  Scrape-junk skipped: 0
+Wall clock: 0.8 min
+Tokens: input 5,376,837  output 108,855  cached 5,294,021
+Cache hit rate: 98.5%
+Estimated cost: $0.13 off-peak / $0.25 peak
+Output tokens/article: 249 (the number that decides DeepSeek vs Gemini Batch -- see memory/oracle-pricing-scheduling.md)
+Output: docs/evidence/2026-09-24-thriving-more-positives/runs/neg_2.jsonl
+
+1 row(s) errored. Re-run the same command to fill them — already-scored ids are skipped on resume.
+Prompt: filters/human_thriving/v8/prompt-v8-4.md sha256[:12]=c4705408c477
+Scoring with: dims=['human_wellbeing_impact', 'social_cohesion_impact', 'justice_rights_impact', 'evidence_level', 'benefit_distribution', 'change_durability'] | field=human_thriving_analysis | prompt=prompt-v8-4.md
+Loaded 439 articles from docs/evidence/2026-09-24-thriving-more-positives/oracle_neg_input.jsonl
+Resuming: 438 already scored, 1 remaining
+  [   1/1] 1 OK | 0 err | 0 junk | 0.6 art/s | ETA 0 min | cache hit 99%
+
+============================================================
+COMPLETE
+============================================================
+Successful: 1  Errors: 0  Scrape-junk skipped: 0
+Wall clock: 0.0 min
+Tokens: input 12,447  output 267  cached 12,288
+Cache hit rate: 98.7%
+Estimated cost: $0.00 off-peak / $0.00 peak
+Output tokens/article: 267 (the number that decides DeepSeek vs Gemini Batch -- see memory/oracle-pricing-scheduling.md)
+Output: docs/evidence/2026-09-24-thriving-more-positives/runs/neg_2.jsonl
