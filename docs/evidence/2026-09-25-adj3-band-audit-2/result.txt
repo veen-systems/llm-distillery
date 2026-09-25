@@ -1,0 +1,3 @@
+controls: 6/6 as ruled
+drift: A vs B 0.887 on 80 rows (stop below 0.90)
+STOP: drift check failed
