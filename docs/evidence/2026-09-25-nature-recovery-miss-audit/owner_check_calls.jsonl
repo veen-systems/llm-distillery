@@ -1,0 +1,20 @@
+{"n": 1, "id": "british_irish_bbc_england_230fd5c847a6", "owner": "IN"}
+{"n": 2, "id": "pan_african_africa_news_d1d561cab5d3", "owner": "IN"}
+{"n": 3, "id": "dutch_news_groene_amsterdammer_0ebe6cacf3ed", "owner": "OUT"}
+{"n": 4, "id": "german_tagesschau_cef5be3b9773", "owner": "IN"}
+{"n": 5, "id": "south_american_talcual_23061a9c451f", "owner": "OUT"}
+{"n": 6, "id": "south_asian_indian_express_0377d81efc92", "owner": "IN"}
+{"n": 7, "id": "south_asian_times_of_india_96a6af8c5ef9", "owner": "IN"}
+{"n": 8, "id": "balkan_index_hr_46690598be90", "owner": "OUT"}
+{"n": 9, "id": "arabic_gulf_times_10c3d6a96d78", "owner": "IN", "note": "the assistant's question added 'No outcome measurements reported' (its own gloss, leaning OUT)"}
+{"n": 10, "id": "science_phys_org_a813f1b74aaf", "owner": "IN", "note": "owner: 'people truly caring about the reef, so a bit loose, but in'; the assistant's question added 'A research finding, no recovery reported' (its own gloss)"}
+{"n": 11, "id": "south_asian_times_of_india_931b8567bffe", "owner": "OUT"}
+{"n": 12, "id": "china_solidot_74fee7e5f739", "owner": "OUT"}
+{"n": 13, "id": "belgian_bruzz_f281baca02fe", "owner": "IN"}
+{"n": 14, "id": "china_sciencenet_cn_fc4ce2b99b55", "owner": "OUT", "note": "owner first: 'this is a solution, maybe we need to finetune that lens too?'; asked for a binary call: OUT"}
+{"n": 15, "id": "spanish_la_vanguardia_9de3d5fb2c00", "owner": "IN"}
+{"n": 16, "id": "southeast_asian_antara_en_5a882ffc4ff0", "owner": "IN"}
+{"n": 17, "id": "portuguese_ambientemagazine_02b1cbf9ad7d", "owner": "OUT", "note": "owner: 'also a solution, so out'"}
+{"n": 18, "id": "mexican_el_financiero_919d1d76dad8", "owner": "OUT"}
+{"n": 19, "id": "science_smithsonian_697fadaa653e", "owner": "OUT", "note": "owner first: 'i suppose it is more belonging?'; confirmed OUT"}
+{"n": 20, "id": "spanish_20minutos_es_8a5956f9fc7f", "owner": "OUT", "note": "owner: 'out, this is a solution'"}
