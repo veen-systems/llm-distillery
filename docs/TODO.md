@@ -22,6 +22,12 @@ retiring."* That is now the work, ahead of the queue below.
    the band is ambiguous, not measurable at this bar (`docs/evidence/2026-09-25-adj3-band-audit-2/README.md`).
    Owner: step 2a (package adj3 as v9 → parallel slot) YES; reader-facing cutover (#151) NOT YET.
    ✅ **v9 LIVE 2026-09-25, replacing v8** in the reader-invisible slot (owner: replace). NM#530. ▶ Check the first
+   ⚠️ From the NexusMind session's review (2026-09-25): (a) REFIT v9's normalization from PRODUCTION rows once
+   ~200 real v9 rows clear raw 4.5 (~10 cycles); today's CDF is fitted on a replay of the week. (b) The enrichment
+   trigger for this lens moves from raw >= 4.0 (v8, unnormalized) to ~raw >= 4.95: cheaper, some recall lost, same rule
+   as every normalized lens. (c) Count passers on nexus_mind_attributes.human_thriving.RAW_weighted_average >= 4.5, never
+   the normalized weighted_average (reads ~half). (d) The 18 drifted filters/common files: llm-distillery is canonical,
+   but violence_promotion/v1/oracle.py now imports ground_truth.deepseek_models, absent in NexusMind: never blind-copy.
    cycle (20:02): `data/filtered/human_thriving/` rows carry `version 9.0`. Still open for the owner:
    (1) [ruled: replace];
    (2) consumer-court compensation vs ruling 1 (`docs/decisions/2026-09-25-thriving-scope-rulings.md`);
