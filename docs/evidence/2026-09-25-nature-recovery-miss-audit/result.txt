@@ -1,0 +1,14 @@
+controls: 4/4 as expected
+drift: A vs B 0.989 on 90 rows (stop below 0.90)
+
+stratum           N/week judged   in   rate      Wilson 95%   est. in-scope/week  leak
+nr_passes            155     30   12  0.400  [0.246, 0.577]        62 [36, 88]  precision control  (cannot_judge 0)
+near_3.0_3.75         61     59    7  0.119  [0.059, 0.225]         7 [3, 12]  cut-off  (cannot_judge 2)
+low_2.0_3.0          210     47    2  0.043  [0.012, 0.142]         9 [0, 22]  model  (cannot_judge 3)
+very_low_lt2       14082     60    0  0.000  [0.000, 0.060]         0 [0, 0]  model  (cannot_judge 0)
+probe_screened      1487    100    0  0.000  [0.000, 0.037]         0 [0, 0]  probe  (cannot_judge 0)
+
+estimated nature-recovery stories MISSED by nr but published by another lens, per week: 16 [5, 31] (~0.4 per cycle)
+  via probe   :      0
+  via model   :      9
+  via cut-off :      7
