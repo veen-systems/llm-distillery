@@ -1,6 +1,10 @@
 # human_thriving v8 retrained on adjudicated labels — the gate bar, written BEFORE any retrain result
 
 **Written 2026-09-25 ~10:40, while `adj1` was in epoch 2 on b650. No retrain score existed.**
+*Correction, same morning: `adj1` was in **epoch 1**, not 2 (the log's progress bar restarts each
+epoch; I misread it). The claim that matters, that no retrain score existed, is unaffected.
+`verdict.py` applies the bar below mechanically; it was committed, and mutation-tested in five
+directions, before any retrain finished.*
 The bar is the **assistant's proposal**; the owner asked for the work to continue (TODO item −2)
 and did not rule on a bar. Anything below that turns out to need the owner is flagged ⏸️.
 
