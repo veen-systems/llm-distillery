@@ -1,0 +1,11 @@
+{
+ "_strata": {
+  "low_2.0_3.0": 210,
+  "near_3.0_3.75": 61,
+  "nr_passes": 155,
+  "probe_screened": 1487,
+  "very_low_lt2": 14082
+ },
+ "other_lens_passers": 16063,
+ "with_nr_score": 15995
+}
