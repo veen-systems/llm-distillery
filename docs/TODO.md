@@ -34,6 +34,14 @@ retiring."* That is now the work, ahead of the queue below.
       the retrain on the same 660 rows, reading specificity first (ADR-023) and the flip count.
       Pre-register the bar before step 3 finishes.
    5. Only if it wins: a live audit of passers, then the cutover question (#151).
+   ⚠️ **2026-09-25 05:07 check: the GPU was HELD** (`ollama` `gemma3:27b`, 20 GB, 95%, most
+   likely NexusMind#523's tier-2 run), so nothing was started. The owner then said *"i think it
+   should be free now"*. Step 1 still applies: check it, do not assume it.
+   ⏸️ **OPEN OWNER QUESTION — the ≥ 7 pool.** About 720 production articles scored ≥ 7 by a
+   production model, 2026-09-02 → 09-24 (uplifting v7: 231, Belonging: 489; v8 and Solutions:
+   0). Same route as the more-positives run: blind Claude adjudication, then k=3 oracle on the
+   in-scope ones, est. $0.10–0.20. It doubles as the test of whether the empty top (0 labels
+   ≥ 8, 3 at 7–8 of 6,772) is the oracle's SCALE or missing data. Not started: no yes given.
 
 −1. ▶ **THE READ SURFACE (`#163`) — START HERE, and start with MECHANIZE.**
    ✅ **Row 1 DONE 2026-09-24** — the `in-sample tautology` row is `live`
