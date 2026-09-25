@@ -1,0 +1,12 @@
+controls: 4/4 as ruled
+drift: A vs B binary agreement 0.944 on 72 rows (stop below 0.90)
+group A: N=250, judged 149, cannot_judge 1, junk 39/149 = 0.262
+group R: N=754, judged 150, cannot_judge 0, junk 78/150 = 0.520
+group B: N=576, judged 60, cannot_judge 0, junk 6/60 = 0.100
+
+junk share of what each model publishes (re-weighted by N): v8 0.338, adj3 0.149
+D = v8 - adj3 = +0.189, 95% bootstrap CI [+0.136, +0.244]
+VERDICT (PREREGISTRATION.md): WIN
+
+per cycle, over the audit population (42 cycles): v8 publishes 31.7 (~10.7 junk, ~21.0 in scope); adj3 publishes 19.7 (~2.9 junk, ~16.7 in scope)
+in-scope articles lost ~362, gained ~185 over the week

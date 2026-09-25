@@ -13,7 +13,10 @@ retiring."* That is now the work, ahead of the queue below.
    candidate** (adjudicated labels: FP 11 → **1**, TP 9 → 8 of 23; spec band [0.9984] vs v8 [0.9812, 0.9890]).
    ⚠️ The recall clause passed with ZERO margin. ⭐ FPs also fall 9 → 1 under the ORACLE's own labels.
    Everything, caveats first: `docs/evidence/2026-09-25-v8-adj-retrain-gate/README.md`.
-   ▶ **NEXT = step 5, the live audit of adj3's passers — its plan (window, judge) is the OWNER's call.**
+   ✅ **Step 5 DONE 2026-09-25 — the live audit: adj3 WINS.** Junk share of what it publishes 33.8% (v8) →
+   14.9% (adj3), +0.189 [+0.136, +0.244]; ~20% fewer in-scope articles. Owner blind check 16/20 (bar 18),
+   resolved to 19/20. `docs/evidence/2026-09-25-v8-adj3-live-audit/README.md`.
+   ▶ **NEXT = the cutover question (#151): adj3 vs `uplifting v7`, which Thriving actually serves. Owner's call.**
    Staged on b650: `filters/human_thriving/v8_adj3/` (untracked). Original item text below, now history.
 
    ~~FIRST~~, from 2026-09-25 05:00 (b650 is NOT available before — owner, 2026-09-24): retrain
