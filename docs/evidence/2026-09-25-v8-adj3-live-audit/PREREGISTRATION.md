@@ -1,6 +1,8 @@
 # human_thriving adj3 vs v8 on a week of production — the audit bar, written BEFORE any adj3 production score
 
-**Written 2026-09-25 ~13:05, while b650 was scoring chunk 0 with v8. No adj3 production score existed.**
+**Written 2026-09-25 while b650 was scoring chunk 0 with v8 (commit `0ca203a` carries the time). No adj3
+production score existed.** *(Corrected: this line and the amendment below first gave clock times
+"~13:05" and "13:15" that were guesses and wrong; b650's clock read 12:58 after both.)*
 Owner, 2026-09-25: approved the 7-day window and chose the judge (**Claude blind, owner re-judges a
 random 20 blind**). The bar below is the **assistant's proposal**; the owner did not rule on it.
 
@@ -45,7 +47,7 @@ three rulings in `docs/decisions/2026-09-24-thriving-scope-rulings.md`, the verd
 < 300 chars). **Junk := any verdict except `in_scope`.** `cannot_judge` rows are counted and reported per
 group, and left out of the rates.
 
-**Amendment, 13:15, still before any adj3 production score — the two controls the 2026-09-24 runs
+**Amendment (commit `6c59615`), still before any adj3 production score — the two controls the 2026-09-24 runs
 had, which this plan left out:**
 - **Known-answer controls:** the pilot's 4 controls (3 expected `out_of_scope`, 1 `in_scope`; ids
   in `../2026-09-24-thriving-adjudication-pilot/key.jsonl`) are hidden in pass A. **Pass A must
