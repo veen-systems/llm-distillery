@@ -41,6 +41,9 @@ ACTIVE_FILTERS = [
     ("investment_risk", "v6"),
     ("belonging", "v1"),
     ("nature_recovery", "v4"),
+    # Added 2026-09-25 with v9's NexusMind deploy (v9 replaces v8 in the reader-invisible slot;
+    # Thriving still reads uplifting v7). v8 was live 2026-09-07 -> 2026-09-25 and never listed here.
+    ("human_thriving", "v9"),
 ]
 
 # --- In development -----------------------------------------------------
@@ -57,7 +60,6 @@ ACTIVE_FILTERS = [
 # weighted average is computed. Promote the entry into ACTIVE_FILTERS at deploy.
 IN_DEVELOPMENT_FILTERS = [
     ("human_thriving", "v8"),
-    ("human_thriving", "v9"),
 ]
 
 # --- Canonical schema ---------------------------------------------------
@@ -203,6 +205,16 @@ EXEMPTIONS: set[tuple[str, str, str]] = {
     ("cultural_discovery", "v6", "missing_top_level:deployment"),
     ("cultural_discovery", "v6", "missing_top_level:training"),
     ("cultural_discovery", "v6", "scoring_missing:gatekeepers"),
+    # human_thriving v9 (2026-09-25; v8's config, never in ACTIVE_FILTERS, carried the same three):
+    # - prefilter: ABSENT BY RULE. ADR-018/019 Amendment 2026-08-21, new filters ship no per-lens
+    #   prefilter; the e5 probe replaces it. Adding one would be the defect.
+    # - preprocessing: ABSENT ON PURPOSE, and it IS read at runtime (FilterBaseScorer head_tail).
+    #   Every v9 measurement (gate, live-week audit, normalization fit) was taken WITHOUT head_tail,
+    #   so adding the block would ship behaviour nothing measured. Unblock: re-measure with it.
+    # - deployment: documentation-only; no reader found in either repo (grep 2026-09-25).
+    ("human_thriving", "v9", "missing_top_level:prefilter"),
+    ("human_thriving", "v9", "missing_top_level:preprocessing"),
+    ("human_thriving", "v9", "missing_top_level:deployment"),
 }
 # Migration B complete (2026-05-04): all 7 active filters conform to the
 # canonical schema. Add an exemption here only with a written justification
