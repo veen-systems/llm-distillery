@@ -45,6 +45,17 @@ three rulings in `docs/decisions/2026-09-24-thriving-scope-rulings.md`, the verd
 < 300 chars). **Junk := any verdict except `in_scope`.** `cannot_judge` rows are counted and reported per
 group, and left out of the rates.
 
+**Amendment, 13:15, still before any adj3 production score — the two controls the 2026-09-24 runs
+had, which this plan left out:**
+- **Known-answer controls:** the pilot's 4 controls (3 expected `out_of_scope`, 1 `in_scope`; ids
+  in `../2026-09-24-thriving-adjudication-pilot/key.jsonl`) are hidden in pass A. **Pass A must
+  return 4/4 as ruled, or the run STOPS.** They prove the judge can say both yes and no.
+- **Pass B (drift check):** a seeded 20% of the panel (seed 20260925) judged blind again in a
+  different shuffle. **A-vs-B binary agreement < 0.90 → the run is not used; reported, not repaired.**
+  An A/B split on in/out counts as **not in scope** (ADR-023 tie rule, as on 2026-09-24).
+- The subagents' exact instructions are saved as `judge_instructions.md` beside this file before
+  the first batch runs (the 2026-09-24 runs did not record theirs).
+
 **Owner check (gates whether the result is reported as a measurement):** 20 panel rows drawn
 uniformly (seed 20260925), re-judged blind by the owner. Binary in/out agreement **≥ 18/20** →
 proceed. Below that, the Claude-judged figures are NOT reported as a result until the
