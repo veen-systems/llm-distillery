@@ -17,6 +17,14 @@ retiring."* That is now the work, ahead of the queue below.
    14.9% (adj3), +0.189 [+0.136, +0.244]; ~20% fewer in-scope articles. Owner blind check 16/20 (bar 18),
    resolved to 19/20. `docs/evidence/2026-09-25-v8-adj3-live-audit/README.md`.
    ▶ **NEXT = the cutover question (#151): adj3 vs `uplifting v7`, which Thriving actually serves. Owner's call.**
+   ✅ **Cut-off RULED 2026-09-25 (owner): v9 = adj3 at 4.5**, the only measured point; volume grows later via
+   training (more real positives), not the cut-off. Two band audits of [3.5, 4.5) FAILED drift (0.844, 0.887):
+   the band is ambiguous, not measurable at this bar (`docs/evidence/2026-09-25-adj3-band-audit-2/README.md`).
+   Owner: step 2a (package adj3 as v9 → parallel slot) YES; reader-facing cutover (#151) NOT YET.
+   ⏸️ Open for the owner: (1) does v9 REPLACE v8 in the parallel slot (the 09-08 freeze said don't disable v8);
+   (2) consumer-court compensation vs ruling 1 (`docs/decisions/2026-09-25-thriving-scope-rulings.md`);
+   (3) the ≥ 7 pool (the volume lever). ▶ Queued after v9: the Nature recovery miss audit (owner approved;
+   1,585 of 16,795 other-lens passers were screened out by nr's probe that week).
    Staged on b650: `filters/human_thriving/v8_adj3/` (untracked). Original item text below, now history.
 
    ~~FIRST~~, from 2026-09-25 05:00 (b650 is NOT available before — owner, 2026-09-24): retrain
