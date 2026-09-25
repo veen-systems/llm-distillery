@@ -1,0 +1,3 @@
+controls: 4/4 as ruled
+drift: A vs B 0.844 on 32 rows (stop below 0.90)
+STOP: drift check failed
