@@ -24,7 +24,7 @@ from scripts.gate.ground_truth_gate import load_scores, load_scoring_spec  # noq
 D = REPO / "datasets/audit/ht_2026-09-25"
 OP, FLOOR, SEED = 4.5, 0.16, 20260925
 CAP = {"A": 150, "R": 150, "B": 60}
-BATCH = 28
+BATCH = 56  # was 28; raised before any judging to use 9 subagents, as the 09-24 full run used 60
 PILOT = REPO / "docs/evidence/2026-09-24-thriving-adjudication-pilot"
 
 

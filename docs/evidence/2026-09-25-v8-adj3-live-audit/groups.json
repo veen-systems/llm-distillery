@@ -1,0 +1,20 @@
+{
+ "window": "filtered_20260918_145649.jsonl -> filtered_20260925_093350.jsonl",
+ "cycles": 42,
+ "stage2_ids": 123994,
+ "excluded_training_overlap": 620,
+ "audit_ids": 123374,
+ "control": {
+  "prod_v8_passers": 1321,
+  "b650_v8_passers": 1330,
+  "union": 1351,
+  "disagree": 51,
+  "disagree_outside_band": 2,
+  "share_outside_band": 0.0015
+ },
+ "N": {
+  "A": 250,
+  "R": 754,
+  "B": 576
+ }
+}
