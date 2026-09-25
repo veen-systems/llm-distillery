@@ -21,7 +21,9 @@ retiring."* That is now the work, ahead of the queue below.
    training (more real positives), not the cut-off. Two band audits of [3.5, 4.5) FAILED drift (0.844, 0.887):
    the band is ambiguous, not measurable at this bar (`docs/evidence/2026-09-25-adj3-band-audit-2/README.md`).
    Owner: step 2a (package adj3 as v9 → parallel slot) YES; reader-facing cutover (#151) NOT YET.
-   ⏸️ Open for the owner: (1) does v9 REPLACE v8 in the parallel slot (the 09-08 freeze said don't disable v8);
+   ✅ **v9 LIVE 2026-09-25, replacing v8** in the reader-invisible slot (owner: replace). NM#530. ▶ Check the first
+   cycle (20:02): `data/filtered/human_thriving/` rows carry `version 9.0`. Still open for the owner:
+   (1) [ruled: replace];
    (2) consumer-court compensation vs ruling 1 (`docs/decisions/2026-09-25-thriving-scope-rulings.md`);
    (3) the ≥ 7 pool (the volume lever). ▶ Queued after v9: the Nature recovery miss audit (owner approved;
    1,585 of 16,795 other-lens passers were screened out by nr's probe that week).
