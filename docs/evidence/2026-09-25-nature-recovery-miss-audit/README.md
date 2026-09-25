@@ -23,6 +23,11 @@ Also: in #9 and #10 the assistant's question text added its own gloss ("no outco
 | probe screened (probe) | 1,487 | **0/100** | 0 |
 
 By its own definition nr misses ~16 stories/week that other lenses published (CI 5–31), none via the probe.
+
+⚠️ **Corrected 2026-09-25 (re-judge README):** "none via the probe" and the zero-stratum CIs came from a
+percentile bootstrap, which is DEGENERATE at 0 positives (resampling 0/100 is always 0). Honest bound: 0/100 of
+1,487/week is 0 with an N × Wilson 95% upper of **~55/week**; the very-low stratum (0/59 of 14,082) is
+uninformative about rare misses (upper ~860/week). "None observed", not "none".
 The prediction for the probe stratum (2–10%) was wrong. Only 40% of what nr publishes meets its own
 strict definition: the filter is loose where it passes and tight in the prompt.
 
