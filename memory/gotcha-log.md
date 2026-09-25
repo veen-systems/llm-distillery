@@ -4,6 +4,24 @@
 
 *⚠️ **Entries dated before 2026-09-01 live in [`gotcha-log-archive.md`](gotcha-log-archive.md)**, verbatim (moved 2026-09-24, #163). The unreachable-mechanism catalogue stayed here. For a recurrence match, grep both: `grep -n <term> memory/gotcha-log*.md`.*
 
+## A CLAIM-SHAPE CHECK WHOSE ONLY CALLER RUNS AT SESSION EDGES LET A FAILING COMMIT LAND, AND A WHOLE SESSION LEFT NO RECORD (2026-09-25)
+**Problem**: `f7119a6` (2026-09-24 20:51) added `docs/evidence/2026-09-24-thriving-adjudication-full/merge.py`,
+which reads the 25.1×-design-weighted `labels_v84_merged.jsonl`, prints an agreement rate and
+move counts, and carries no `# design-weights:` line. `check_claim_shapes.py` goes red on exactly
+this, and stayed red for ~13 h through 14 more commits. `/curate` found it. That same 09-24 run
+also wrote no session file and no index row, so the index stopped at 2026-09-22 while $0.78 of
+oracle spend and 553 relabels happened.
+**Root cause**: the check's callers are a `verify:` annotation in `memory/MEMORY.md` and its own
+unit tests. Nothing runs it at COMMIT time (`.githooks/` holds only `commit-msg`). It is the
+"a command with no caller at the moment it matters" shape (see the 2026-09-17 entry *I replaced
+a decaying sentence with a command, and gave the command no caller*). A fast run of small
+commits never reaches a session edge, so neither the check nor the session record fired.
+**Fix**: declared the line in `merge.py` (the output is a per-row relabel; the printed figures are
+sample quantities); 26/26 clean after, red before. The session record was rebuilt from the commits:
+`project_session_2026_09_24_adjudication.md`. **Open, owner's call:** add `check_claim_shapes.py`
+to a pre-commit hook. It has to run on staged `docs/evidence/**.py`, and it was never measured
+for speed.
+
 ## A GUARD THAT BORROWS ANOTHER GUARD'S CONSTANT IS MEASURING THE WRONG QUANTITY (2026-09-22)
 
 **Problem**: `fit_normalization.py`'s NexusMind#205 bias check hard-errored on

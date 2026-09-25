@@ -19,6 +19,14 @@ F = Path(__file__).resolve().parent
 P = F.parent / "2026-09-24-thriving-adjudication-pilot"
 REPO = F.parents[2]
 SRC = REPO / "datasets/scored/human_thriving_v8/labels_v84_merged.jsonl"
+# design-weights: NOT READ. The output is a per-row relabel, and a verdict on one row does
+# not depend on any weight. Two things ARE printed: the drift check (A vs B agreement on
+# the B sample, a judge-consistency statistic over those rows) and the in/out move counts
+# (counts over the adjudicated rows). Both are unweighted sample quantities, correct as
+# such. ⛔ SRC is the 25.1x design-weighted v8 draw (`inclusion_probability` on every
+# corpus row), so the moment a share derived from these counts -- "N moved out of M" -- is
+# quoted as a corpus or production rate it needs Horvitz-Thompson weights, and it has none.
+# Declared 2026-09-25 by /curate, after check_claim_shapes.py flagged the missing line.
 OUT = REPO / "datasets/scored/human_thriving_v8/labels_adjudicated_v1.jsonl"
 VERDICTS = {"in_scope", "out_of_scope", "harm_is_subject", "response_to_harm", "no_person_benefits"}
 
