@@ -317,7 +317,7 @@ SUITE_COUNT = re.compile(r"\b(\d{2,4}) passed, (\d+) skipped")
 # ⚠️ FROZEN ACCOUNTS OF A MOMENT. A dated session record saying "on 2026-09-11 the suite
 # was 828" stays true forever and is not a live copy. Same carve-out, same reasoning, as
 # refcheck.py's --sessions and its docs/ FROZEN tier.
-SUITE_HISTORY = ("memory/project_session_", "memory/session-log.md",
+SUITE_HISTORY = ("memory/project_session_", "memory/archive/", "memory/session-log.md",
                  "docs/decisions/", "docs/evidence/")
 
 

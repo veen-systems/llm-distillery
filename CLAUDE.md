@@ -2,324 +2,169 @@
 stack: Python 3.12, PyTorch, Transformers, PEFT/LoRA
 status: Production
 repo: github.com/ducroq/llm-distillery
-framework: agent-ready-projects v1.45.1   # a NUMBER, not a status — never write "current" here; the framework's release cadence falsifies the adjective, not the pin
-framework_reconciliation: |
-  v1.41.0-v1.45.1 triaged 2026-09-17: 3 adopt RELEASES carrying FOUR work items,
-  1 decline, 2 already-in-force. Stamp bumped only AFTER all four landed. The
-  decline is v1.45.1's cheaper HIGH tier; its reason is in the history file, so
-  it is not re-derived.
-  v1.37.0-v1.40.0 triaged 2026-09-11: 2 adopt, 0 decline, 2 n/a, 3 already-in-force.
-  Stamp bumped only AFTER both adopt items landed in the tree.
-  v1.26.1+v1.27.0+v1.28.0 triaged 2026-08-26: 3 adopt, 0 decline. STAMP HELD at
-  v1.26.0 until 2 unlanded adopt items ship — held, NOT unreviewed. Every release,
-  and which adopt items landed: `docs/decisions/framework-adoption-history.md`.
-  v1.23.0's placeholder markers were DEFERRED there and are now DONE — 14 paths
-  marked, counted by `refcheck.py` (2026-08-16).
-  Stamp = which framework surfaces were reconciled. It does NOT assert that any
-  behaviour changed, nor that a skill has since been run.
-  OPERATIVE RULES (these govern; the history file is provenance only):
-  - `curate` and `audit-context` are USER-GLOBAL. The project-local copies were
-    DELETED, not reconciled — a global shadows a local silently and the local was
-    never loading. Do not re-create them.
-  - `review-changes` became USER-GLOBAL at v1.40.0 (2026-09-11); the re-mapped
-    project-local fork was DELETED (it was INERT, shadowed by the global copy).
-    Do not re-create it. ⚠️ The OPERATIVE half is a row in § Before You Start,
-    NOT here — #122: this block does not reach session context, so a rule that
-    lives only here governs nothing.
-  - `test-verify-memory` stays PROJECT-LOCAL.
-  - No *hypothesis-log.md* at the framework's path or shape, by choice. ⚠️ **But
-    this repo DOES have a ledger — `memory/hypothesis-ledger.md`, 121 KB, the
-    index's designated "START HERE to recall prior work"** — so `curate` Step 0
-    sub-step 5 is **NOT** a no-op: it has a file to review for staleness. The 2026-09-11
-    audit found this bullet still claiming otherwise.
-  - DECLINED v1.20.0's gotcha-log `Occurrences` column: no Promoted table exists
-    here, promotion targets § "Working rules", and the rate is already in prose.
-    So `curate` Step 2 asks every session to increment a column with no home —
-    expected, not a bug to fix. ⚠️ **Scoped to the PROMOTED table only** —
-    `memory/gotcha-log.md`'s `## Mechanized` table (added 2026-09-17) has its
-    own `Occurrences`, counting sightings after a check went `live`.
-  - OPEN, pre-dating the v1.19/v1.20 gap: this file has no framework-drift
-    session row (`templates/project-file.md:25` ships one). Its absence is the
-    likely reason that drift sat two releases unreviewed. Engineer's call.
-  Verify installs: agent-ready-projects/scripts/install-global-skills.sh --check ~/repos
+framework: agent-ready-projects v1.49.0   # a NUMBER, not a status
+framework_reconciliation: see docs/decisions/framework-adoption-history.md (operative rules + per-release triage)
 ---
 
 # CLAUDE.md - LLM Distillery
 
 ## What Is This?
 
-**LLM Distillery** is a knowledge distillation framework. It trains small, cheap, local classifiers (Gemma-3-1B + LoRA) to replicate expensive cloud LLM scoring (Gemini Flash) at 100x lower cost and 50x faster inference.
+**LLM Distillery** trains small local classifiers (Gemma-3-1B + LoRA) to replicate cloud LLM scoring (Gemini Flash) at ~100x lower cost and ~50x faster inference.
 
-**Core workflow:** Oracle (Gemini Flash) scores articles on dimensions (0-10) → Train student model (Gemma-3-1B) → Deploy as filter package
+**Workflow:** oracle scores articles on dimensions (0-10) → train student → deploy as a filter package. llm-distillery creates filters; NexusMind runs them. The interface is `filters/{name}/v{N}/` (copied between repos) plus HuggingFace Hub uploads.
 
-**System context:** llm-distillery creates filters. NexusMind deploys them for production scoring. The interface is the filter package: `filters/{name}/v{N}/` directories copied between repos, plus HuggingFace Hub uploads.
-
-**Downstream consumer (2026-08-01):** `veen-systems/persuasion-scorer` — the #78/#79 persuasion-technique scorer. It **depends on** this repo's distillation machinery; **it must never vendor a copy.** #78/#79 stay open here as definition/origin. **#116 (activation/arousal) is scoped THERE, not here** (its DR-007); #116 stays open here as the ethics decision.
+**Downstream:** `veen-systems/persuasion-scorer` (#78/#79, persuasion techniques) **depends on** this repo's machinery and **must never vendor a copy**. #116 (activation/arousal) is scoped there; it stays open here as the ethics decision.
 
 ## Tech Stack
 
-- **Oracle**: Gemini Flash 2.5 (real-time — **there is no Batch API call site**, so Batch
-  pricing is not an option we can pick); DeepSeek V4.1 Flash is **2.44× cheaper than the
-  Gemini path that exists** after the 2026-09-10 cut, so the cd v5 default stands. ⚠️ We
-  call the `deepseek-chat` ALIAS, so V4.1 replaced V4 under us unmeasured — **#157**.
-  ⛔ **Never quote a $/article figure without naming the prompt** — cost is set by the
-  input/output ratio (measured 20–43) and by the prompt's own **cache ceiling**
-  (1.5%–35.7%, #131). Rates, measured shapes and the arithmetic:
-  `memory/oracle-pricing-scheduling.md`; recompute with `scripts/analysis/oracle_cost.py`.
-- **Student**: Gemma-3-1B (`google/gemma-3-1b-pt`) with PEFT/LoRA adapters
-- **Calibration**: Per-dimension isotonic regression (ADR-008)
-- **Hybrid inference**: e5-small embedding probe (Stage 1) + fine-tuned model (Stage 2, ADR-006)
-- **Training data**: 5K-10K oracle-scored articles per filter, 80/10/10 splits
+- **Oracle**: Gemini Flash 2.5, real-time — **no Batch API call site exists**, so Batch pricing is not an option. DeepSeek V4.1 Flash is 2.44× cheaper than that path after the 2026-09-10 cut (cd v5 default). We call the `deepseek-chat` alias, so V4.1 replaced V4 unmeasured (#157). ⛔ **Never quote a $/article figure without naming the prompt** — `memory/oracle-pricing-scheduling.md`, `scripts/analysis/oracle_cost.py`.
+- **Student**: Gemma-3-1B (`google/gemma-3-1b-pt`) + PEFT/LoRA. **Calibration**: per-dimension isotonic (ADR-008). **Hybrid inference**: e5-small probe (Stage 1) + fine-tuned model (Stage 2, ADR-006). **Data**: 5K-10K oracle-scored articles per filter, 80/10/10.
 
 ## Hard Constraints
 
-- **Oracle outputs scores only.** Dimensional scores (0-10), never tier/stage classifications. Tier assignment is postprocessing. Changing thresholds must never require re-labeling.
-- **Use `load_base_model_for_seq_cls()`** from `filters/common/model_loading.py`. Never use `AutoModelForSequenceClassification` directly — Gemma-3-1B's `gemma3_text` config isn't in the Auto mapping.
-- **Keep PEFT adapters in OLD key format.** `.lora_A.weight` / `score.weight`, not `.lora_A.default.weight`. Never run `resave_adapter.py` before Hub upload — it breaks `PeftModel.from_pretrained()`.
-- **The 300-char length floor is a labelling-time rule only (#93, 2026-08-03).** No `prefilter.apply_filter()` checks content length. The floor lives in `ground_truth.batch_scorer.make_oracle_prefilter` — its rationale is LLM framework leakage, which is a property of the oracle *prompt*, and the student sees no prompt. The scoring path stamps `content_length` on every result and applies at most one config-gated `short_content.cap` (off on every filter; the only candidate defect, solutions v6, is still confounded — #92). That stamp is **populated on 100% of rows in all six filters** since the 2026-08-08 17:10 cycle. ⚠️ **Rows written before `filtered_20260808_17*` still have it absent or null** — historical analysis must use `len(content)` on the persisted row (pre-enrichment runs *before* scoring, so it is the post-enrich length) plus `pre_enriched` / `original_content_length`. Adding `check_content_length` to a prefilter re-creates what #93 removed. `validate_article` still rejects empty content — **empty is not short**. Why it read 0 for two days, the five-allowlists-in-series diagnosis and *code-proven is not outcome-proven*: `memory/stamp-contract-integrity.md`.
-- **Most per-filter prefilters have no lens rules at all — and a matching pass rate does not mean a gate is safe to enforce.** Measured 2026-08-02 over 8,283 production articles (NM#285), length's share of all blocking ran from **100%** (`nature_recovery v4`, `solutions v6`) to **0%** (`cultural_discovery`), so "enforce the prefilter" mostly meant "enforce a 300-char length floor" — which is why `expected_pass_rate` was **deleted** from nr/solutions rather than corrected. ⚠️ **cd's observed rate *matches* its declared 0.25 and enforcing it still costs 15.5% of surfacing articles** (19.9% non-English vs 13.0% English). **Rate agreement and safety-to-enforce are independent properties — measure recall before any flip (ADR-021).** Per-filter shares and the pre-/post-#93 caveat: `docs/FILTER_PLAYBOOK.md` §0b, `memory/prefilter-length-floor-hypotheses.md`.
-- **A filter's `prefilter` config does NOT mean the prefilter runs in production.** The per-lens *rule* prefilter (`filters/{name}/v{N}/prefilter.py`, ADR-018/019) has never executed in the production scoring path — dead since 2026-02-10, found 2026-08-01 (NM#284). It *does* run in the llm-distillery oracle/training path, which is why it survived six months. **Never check prefilter state from `data/filtered/*/filtered_*.jsonl`** — written only under an `if result["passed_prefilter"]:` guard, so it is 100% passers by construction; use the pipeline's `N scored, M prefiltered` line or the shadow log. **Don't infer runtime behavior from config keys** (`memory/calibration-history.md` Dead Ends). What is unaffected, and the shadow-log biases: `docs/FILTER_PLAYBOOK.md` §0b.
+- **Oracle outputs scores only** (0-10 per dimension), never tiers. Tiering is postprocessing; a threshold change must never require re-labelling.
+- **Use `load_base_model_for_seq_cls()`** (`filters/common/model_loading.py`), never `AutoModelForSequenceClassification` — `gemma3_text` is not in the Auto mapping.
+- **Keep PEFT adapters in OLD key format** (`.lora_A.weight` / `score.weight`). Never run `resave_adapter.py` before Hub upload — it breaks `PeftModel.from_pretrained()`.
+- **The 300-char length floor is labelling-time only** (#93): it lives in `ground_truth.batch_scorer.make_oracle_prefilter`. No `prefilter.apply_filter()` checks length; never add `check_content_length` to a prefilter. Scoring stamps `content_length` (populated since the `filtered_20260808_17*` cycle; for older rows use `len(content)` — a POST-enrichment length — plus `pre_enriched` / `original_content_length`). Empty is not short — `validate_article` still rejects it. → `memory/stamp-contract-integrity.md`
+- **A matching prefilter pass rate is not evidence a gate is safe to enforce** — measure recall first (ADR-021). cd matches its declared 0.25 and enforcing still costs 15.5% of surfacing articles (135/871). → `docs/FILTER_PLAYBOOK.md` §0b, `memory/prefilter-length-floor-hypotheses.md`
+- **A filter's `prefilter` config does NOT mean it runs in production** — the per-lens rule prefilter has never run there (NM#284); it runs only in the oracle/training path. Never read prefilter state from `data/filtered/*/filtered_*.jsonl` (100% passers by construction); use the pipeline's `N scored, M prefiltered` line or the shadow log.
+- **There is a `|Δ| ≤ 0.16` score noise floor from batch composition (#95).** A run-to-run difference below ~0.1 near an op-point is noise; two models whose bands overlap are NOT distinguishable. Owner: budget for it, don't remove it. `scripts/gate/ground_truth_gate.py --noise-floor`. ⚠️ 0.16 is the batch-composition floor only; library stack and device are separate terms that can exceed it, and a sub-floor term still flips verdicts — read the FLIP COUNT at the op-point, not max |Δ|. Measure with `box_parity.py` + `diff_box_parity.py --threshold`. → `memory/score-batch-shape-noise.md`
+- **Optimise SPECIFICITY; never rank filters on MAE (ADR-023).** A false positive costs a reader, a false negative costs nothing visible. Compare filters ONLY on recall + specificity (precision and MAE are base-rate dependent), each with the split's positive rate, and state the priority beside any recall figure. Active learning samples ABOVE the op-point; ties inside the #95 band go to specificity. **Not** for the Stage-1 e5 probe (recall-safe screen: `train_probe.py --objective recall`). → `memory/filter-status.md`
+- **Fit `calibration.json` after every training run** (isotonic on val) and commit it with the package.
+- **`.nexusmind-owns` must stay empty** unless an entry has a tracked issue and a deadline. `filters/common/filter_base_scorer.py` and `hybrid_scorer.py` are shared math; sync freely.
+- **An op-point lives in FOUR places; `config.yaml` is not the runtime one.** `base_scorer.py` `TIER_THRESHOLDS` scores; `normalization.json` `stats.raw_min` must equal it; `tests/unit/test_normalization_op_point.py` pins it. Move all four in one commit, refit normalization, verify by executing tier assignment. `MAX_NORMALIZATION_RAW_MIN = 4.5` (above it the loader silently falls back). NexusMind's `pipeline.enrichment.min_score` (4.0, reads the NORMALIZED score) is a separate constant — lowering an op-point or shipping a low-scoring filter can starve enrichment (NM#319). → `docs/NORMALIZATION_METHOD.md`
 
-- **A score is not a function of the article alone — there is a measured `|Δ| ≤ 0.16` noise floor under every comparison (#95, 2026-08-03).** Batch composition alone; it changes decisions, not just digits. **A run-to-run difference below ~0.1 near an op-point is indistinguishable from noise; never report one as an effect.** **Owner decision 2026-08-06: budget for the floor, don't try to remove it** — every metric at the threshold carries a band, and **two models whose bands overlap are NOT DISTINGUISHABLE** whatever their point estimates say. `scripts/gate/ground_truth_gate.py` prints it (`--noise-floor`, default 0.16). ⚠️ **Its sibling is NOT the box** (corrected 2026-08-29): with pins and device matched **on CPU**, two machines were **bit-identical, 660/660** — CUDA-to-CUDA is **UNMEASURED**, so that is an extrapolation, not a rule. Real terms: **stack 0.2008**, **CPU→CUDA 0.1956** — MAX |Δ| over 660 rows (1 and 3 rows exceed 0.16), not typical magnitudes. Dump with `box_parity.py`, then **`diff_box_parity.py --threshold`** — the threshold lives there, not on the dump. Flip rates, the run-seed mechanism, *replay is not stability*, and the corpus-wide share: `memory/score-batch-shape-noise.md`, `docs/FILTER_PLAYBOOK.md` §7.
-- **HIGH CERTAINTY OVER HIGH DETECTION. A false positive costs a reader; a false negative costs nothing visible. Optimise SPECIFICITY, and NEVER rank filters on MAE (ADR-023, owner 2026-08-09).** Owner, verbatim: *"letting junk through is way worse than not catching positives. Junk kills readers; positives they don't know about don't hurt them."* **Precision and MAE are base-rate dependent — only recall and specificity are conditional on the true class and comparable across splits.** Report both, always with the split's positive rate — **and state the priority beside any recall figure you publish**: a low recall here is usually the choice working and does not read that way cold (`human_thriving v8` gate-passed at recall **0.314** / spec **0.9856**). Consequences: **active-learning batches sample ABOVE the op-point** (where junk reaches readers), not below it (which hunts the cheap error); ties inside the #95 band go to specificity. **Does NOT apply to the Stage-1 e5 probe**, a recall-safe screen by design — there the FN is the expensive error, hence `train_probe.py --objective recall`. The retracted 2026-08-09 MAE ranking, why MAE is wrong twice over, and the ~27% composition arithmetic that stops the retraction being overstated: `memory/filter-status.md`.
-- **Fit `calibration.json` after every training run.** Isotonic regression on the val set. Commit with the filter package. The base scorer auto-loads it.
-- **`.nexusmind-owns` must stay empty.** Entries only with a tracked issue and a resolution deadline — the escape-hatch rationale and the 18-day normalization-drift incident are in the file's own header comment. `filters/common/filter_base_scorer.py` and `filters/common/hybrid_scorer.py` are pure shared math; sync freely.
+### Working rules — non-negotiable
 
-- **An operating point lives in FOUR places, and `config.yaml` is NOT the runtime one.** `base_scorer.py`'s `TIER_THRESHOLDS` is what scores; `config.yaml scoring.tiers` is documentation. Changing the config alone is a **no-op in production**. The other two are `normalization.json` `stats.raw_min` (which `tests/unit/test_normalization_invariant.py` requires to equal the tier threshold) and the expectation in `tests/unit/test_normalization_op_point.py`. **Any op-point move changes all four in one commit and refits normalization**, and `MAX_NORMALIZATION_RAW_MIN = 4.5` caps how high it can go (strict `>`, so 4.5 is accepted with zero margin; above that the production loader silently falls back to `score_scale_factor`). Both NM#161 and NM#205 were `raw_min` drifting off the threshold — the incidents with numbers are in `docs/NORMALIZATION_METHOD.md`. Verify by **executing** the tier assignment, not by re-reading the config. **A FIFTH place holds the same number and is NOT a tier boundary: NexusMind's `pipeline.enrichment.min_score` (`NexusMind/config/app.yaml`), which gates post-scoring enrichment at 4.0.** It is an independent constant that happens to share the value — moving a filter's op-point does **not** move it, and a filter whose distribution sits below 4.0 goes silently un-enriched (NM#319). Raising an op-point cannot starve it further; **lowering one, or shipping a filter that scores low, can.** ⚠️ **That gate reads the NORMALIZED score**, so a rescale cannot move a filter across it — a percentile CDF maps it straight back (`memory/solutions-v6-dimension-hypotheses.md` R3).
+Full text, evidence and occurrence counts: `memory/working-rules.md`. Read it before weakening any rule.
 
-### Working rules — non-negotiable, not tips
-
-**Full text, evidence and occurrence catalogue: `memory/working-rules.md`.** The
-imperatives stay here because they are needed every session; the war stories moved
-out on 2026-08-12 for the size budget. **Read the evidence before weakening any of
-them** — each exists because something shipped broken.
-
-- **Before shipping any gate, cap, threshold, config key or stamp — or comparing
-  against an option, price or quota — name the caller that would load it, then
-  PROVE THE OUTCOME CHANGED at the end of the run.** An annotation, a test and a
-  check are mechanisms too. Naming the caller is **not sufficient**: guards have
-  shipped with correct callers on the right paths and still done nothing. A green
-  test on the predicate proves only the predicate. Never infer runtime behaviour
-  from a config key's presence.
-  → **`memory/working-rules.md` holds the occurrence COUNT and the evidence; this
-  file deliberately restates neither** (#133 — the surface that restates is the
-  surface that rots, and a count here can only grow). Shape-by-shape catalogue:
-  `memory/gotcha-log.md` § *The unreachable-mechanism catalogue*.
-- **A failing check may be the CONTROL WORKING — never "fix" it before asking what
-  it proves.** *(⭐⭐ promoted 2026-08-15; the imperative did not arrive in this file
-  until 2026-08-16.)* Before repairing a thing that is failing, dead or disabled,
-  establish what its failure is currently buying you: 788/788 violations was the
-  control firing, and the archive survived only because the purge was broken.
-  → `memory/working-rules.md`.
-- **`raw_weighted_average` is NOT always a model output — condition on `stage_used`
-  first.** A `stage1_low` row's score is an **e5 probe estimate**, not a Gemma score
-  (23% of rows measured). Same shape as the length-field trap: the field exists, is
-  populated, and means different things per row.
-- **Before using any source as evidence, establish what it EXCLUDES.** Applies to
-  data, to nested structures, to prior work, to literature, to hosts, and to
-  **time**. A wrong path and a dead field both read as zero, and the wrong one is
-  the more exciting finding. ⚠️ **A window is part of a source.** If it is a
-  denominator, a baseline, or a claim of absence — enumerate the source first.
-  ⭐ **One root, and it covers the INSTRUMENT too: IT WAS POINTED SOMEWHERE THAT
-  CANNOT PRODUCE A POSITIVE, SO THE NEGATIVE CARRIED NO INFORMATION. Before
-  believing a negative, prove the instrument could have said yes** — and, since
-  that is only the broken-instrument half, **also ask what would have made the
-  "before" different**: an instrument can be sound, its number correct, and still
-  not be a function of the thing under test.
-  → **`memory/working-rules.md` holds the occurrence COUNT and all of the
-  evidence; this file deliberately restates neither** (#133). Read it before
-  weakening this rule.
-- **Every measurement error this project has made was a HAND-BUILT POPULATION.**
-  *(2026-08-12, across four repos.)* Prefer a population the pipeline already
-  computes to one you construct. Make the missing case raise, never return `None`.
-- **A parallel agent session may be in the same checkout, so no git verb may take
-  the whole tree as its argument.** Never `git add -A`, bare `git stash`,
-  `git checkout .`, `git clean`. Always pass explicit paths; `git status --porcelain`
-  before committing and stage only what you recognise.
-- **`pgrep -f "<pattern>"` cannot answer "is it running?" — and neither can
-  `systemctl is-active <one-unit>`.** *(The service manager answers for the unit
-  you NAME: `nexusmind.service` read `inactive` while the **chained**
-  `nexusmind-cleanup.service` ran the very code the deploy was replacing. And a
-  wait-loop matching ITSELF, twice — most recently a `pgrep` inside the very ssh
-  command carrying the pattern.)* → **`memory/working-rules.md` holds the
-  occurrence COUNT and the evidence; this file deliberately restates neither**
-  (#133 — a count here can only go stale, and this bullet's did). **Enumerate the
-  units, then ask all of them**
-  (`systemctl list-units 'nexusmind*' --all`); `OnSuccess=`/`Requires=` chains are
-  part of what "is it running?" means. `pgrep`/`pkill -f` additionally match the
-  shell carrying the pattern — use `ps -eo pid,etime,args | grep -v grep` or the
-  log's last timestamp. **If a process check decides whether you act, print the
-  matching line before believing it.**
+- **Before shipping any gate, cap, threshold, config key or stamp — or comparing against an option, price or quota — name the caller that would load it, then PROVE THE OUTCOME CHANGED at the end of the run.** Naming the caller is not sufficient; a green test on the predicate proves only the predicate. → `memory/working-rules.md`, `memory/gotcha-log.md` § *The unreachable-mechanism catalogue*
+- **A failing check may be the CONTROL WORKING** — ask what its failure is buying you before repairing it. → `memory/working-rules.md`
+- **`raw_weighted_average` is NOT always a model output — condition on `stage_used` first.** A `stage1_low` row carries an e5 probe estimate.
+- **Before using any source as evidence, establish what it EXCLUDES** — data, structures, prior work, hosts, and time (a window is part of a source). Before believing a negative, prove the instrument could have said yes — and ask what would have made the "before" different. → `memory/working-rules.md`
+- **Prefer a population the pipeline already computes to a hand-built one.** Make the missing case raise, never return `None`.
+- **A parallel session may share this checkout:** never `git add -A`, bare `git stash`, `git checkout .`, `git clean`. Pass explicit paths; `git status --porcelain` before committing and stage only what you recognise.
+- **`pgrep -f` and `systemctl is-active <one-unit>` cannot answer "is it running?"** Enumerate units (`systemctl list-units 'nexusmind*' --all`, including `OnSuccess=` chains); `pgrep`/`pkill -f` also match the shell carrying the pattern: use `ps -eo pid,etime,args | grep -v grep` and print the matching line before acting. → `memory/working-rules.md`
 
 ## Production Filters
 
-Full details in `memory/filter-status.md`. Summary:
+Details: `memory/filter-status.md`.
 
 | Filter | Version | Recall / Spec ⛔ read spec first | Status |
 |--------|---------|-----|--------|
-| **uplifting** | v7 | recall 0.61 / spec 0.97 | Deployed (NO_HUB, hybrid inference). **Op-point 4.5 since 2026-08-11 (#102)**. ⚠️ **Its consumer lens (Thriving) carries a NARROWER predicate than this scorer's name implies** — #107, scoped not reversed, and it **binds the v8 `human_thriving` prompt**. What the lens excludes, and why ADR-012's rename is load-bearing: `memory/filter-status.md` |
-| **investment-risk** | v6 | recall 0.72 / spec 0.97 | ⛔ **RETIRED DOWNSTREAM 2026-09-17 — NexusMind ADR-025 (NM#499), not paused.** Its op-point's corpus is gone (FluxusSource retired 194 GN proxies) and nothing consumed it, so **un-pausing is a PROJECT, not a config edit**. ⚠️ That ADR is NexusMind-scoped: **`filters/investment_risk/v6/` HERE is untouched and stays**, as do Contract C and the archives. The 2026-08-25 three-file un-pause procedure is now **history, not instructions**: `memory/filter-status.md` |
-| **human_thriving** | v9 | spec 0.998 / recall 0.348 (adjudicated labels) | **LIVE in NexusMind 2026-09-25, replacing v8** (NM#530; `filter_version 9.0`, percentile normalization active, read back from production). v8 retrained on adjudicated labels; op-point 4.5 (owner). ⚠️ **Thriving still reads `uplifting v7`**: the reader-facing cutover (#151) is NOT decided. Evidence and v8's history: `filters/human_thriving/v9/README.md`, `memory/filter-status.md` |
-| **cultural-discovery** | v5 | recall 0.59 / spec 0.98 | **LIVE.** v6's cutover failed on 2026-08-13 and was reverted, so v5 is still what scores |
-| **cultural-discovery** | v6 | (v5's) | **NOT DEPLOYED** — fixed and verified offline (`dcf2860`), never redeployed. ⚠️ **v5 ALREADY runs two-stage**, so v6 does **not** introduce probe screening — it changes the probe and threshold. The failed cutover, the rollback and the probe numbers: `memory/filter-status.md`, `memory/cd-v6-probe-hypotheses.md` |
+| **uplifting** | v7 | recall 0.61 / spec 0.97 | Deployed (NO_HUB, hybrid). Op-point 4.5 (#102). Its Thriving lens is narrower than the name (#107) |
+| **investment-risk** | v6 | recall 0.72 / spec 0.97 | ⛔ **RETIRED downstream 2026-09-17** (NexusMind ADR-025, NM#499). Package here stays. Un-pausing is a project |
+| **human_thriving** | v9 | spec 0.998 / recall 0.348 (adjudicated labels) | **LIVE 2026-09-25**, replacing v8 (NM#530). Thriving still reads `uplifting v7`; cutover #151 undecided |
+| **cultural-discovery** | v5 | recall 0.59 / spec 0.98 | **LIVE** (v6 cutover failed 2026-08-13, reverted) |
+| **cultural-discovery** | v6 | (v5's) | **NOT DEPLOYED** — fixed and verified offline (`dcf2860`), never redeployed. v5 already runs two-stage; v6 changes the probe and threshold. → `memory/cd-v6-probe-hypotheses.md` |
 | **belonging** | v1 | recall 0.60 / spec 0.985 | Deployed (HF Hub) |
 | **nature_recovery** | v4 | recall 0.65 / prec 0.85 | Deployed (recall-first probe, v5 planned #71) |
-| **solutions** | v6 | recall 0.67 / spec 0.97 | **LIVE** — gate passed 2026-07-27, normalization fitted 2026-07-28 |
-| **sustainability_technology** v3, **foresight** v1 | — | — | **BOTH REMOVED 2026-08-03**, merged into solutions (#43, closes #64); packages deleted, recover from git history |
+| **solutions** | v6 | recall 0.67 / spec 0.97 | **LIVE** |
+| **sustainability_technology** v3, **foresight** v1 | — | — | Removed 2026-08-03, merged into solutions (#43) |
 | **thriving** | v1 | — | PARKED indefinitely (ADR-015) |
-| **ai-engineering-practice** | v1 | — | Separate product, not ovr.news (table read v2; only v1 is on disk) |
+| **ai-engineering-practice** | v1 | — | Separate product, not ovr.news |
 
 ## Key Decisions
 
-- **Dimensional regression (0-10)** — not classifications (ADR-001)
-- **Screen+merge for needle-in-haystack filters** (ADR-003)
-- **Commerce is the only universal prefilter** (ADR-004)
-- **Active learning for rare tiers** (ADR-005)
-- **Fine-tuning beats embedding probes** — research confirmed
-- **Gemma-3-1B** — replaced Qwen2.5; better MAE, faster inference
-- **Add filters first, reduce later** — deploy as separate tabs, dedup later (ADR-009)
-- **Lens-aligned filter naming — the backlog is CLOSED, don't re-open it at a version bump.** Settled 2026-08-06: `cultural_discovery`, `nature_recovery` and `solutions` all keep their names; the only rename left is `uplifting` → **`human_thriving` at v8** (not bare `thriving`, an existing parked directory). Reasoning: `docs/adr/README.md`, ADR-012 as amended
-- **Oracle consistency over data volume** — prompt precision predicts MAE better than dataset size; use belonging v1 as template (ADR-010)
-- **Embedding screening for needle filters** — use Phase 3 positives as e5-small seeds to screen corpora; replaces keyword screening (ADR-011)
-- **English everywhere the framework speaks, no Dutch** — lens/filter/tab names AND docs, ADRs, comments, memory, commits. ⛔ NOT match patterns, boilerplate strippers or fixtures: those are data the code reads, and the cd v5 one is an EXCLUSION, so deleting it costs SPECIFICITY. ⚠️ Compliance NOT swept — a function-word sweep cannot see a Dutch NAME (ADR-013 as amended)
-- **Cross-filter percentile normalization** — non-linear mapping from production CDF; supersedes score_scale_factor (ADR-014)
-- **Lenses as perspectives, not partitions** — overlap between lenses is correct; never exclude adjacent lens content in oracle prompts (ADR-015)
-- **Drop tier assignments** — filters output pass/block + continuous score only; tiers add no value over the score itself (ADR-016)
-- **Declarative prefilter shape** — extend `BasePreFilter` with `EXCLUSION_PATTERNS` / `OVERRIDE_KEYWORDS` / `POSITIVE_PATTERNS` / `POSITIVE_THRESHOLD` class attrs; standard `apply_filter()` pipeline lives on the base (ADR-018, #52). ⚠️ **Amended 2026-08-21: new filters ship NO per-lens prefilter** — keyword screening is Latin-script only; the multilingual e5 probe replaces it (ADR-011). Governs shape where one exists, not whether to have one
-- **Per-category exclusion overrides** — `CATEGORY_OVERRIDES` dict (TypedDict-typed) + `_compound_override_applies()` Template Method hook on `BasePreFilter`. Subclasses inject only special-case rules; base owns the fallback chain (compound hook → dict → global `_has_override`). Unblocks belonging/foresight/sustech/cultural-discovery from custom `apply_filter()` (ADR-019, #52)
-- **Ground-truth deploy gate** — judge each model against held-out ORACLE ground truth, never against the prior deployed model (ADR-021)
-- **Stamp always, decide once** — gate modules stamp score+flag+model version always; exactly one config-gated drop point per concern; every enforcement decision is a config flip. Tier semantics follow the same principle: visibility = raw ≥ op-point, normalized score is rank/badge only (ADR-022, NM#280)
-- **Asymmetric loss — precision over recall** — a false positive reaches a reader, a false negative is invisible and the slot refills; optimise specificity at the op-point, never rank filters on MAE, compare only on recall + specificity (ADR-023)
+Index: `docs/adr/README.md`; records: `docs/decisions/`.
 
-See `docs/adr/README.md` for full ADR index, `docs/decisions/` for detailed records.
+- Dimensional regression, not classification (ADR-001); screen+merge for needle filters (ADR-003); commerce is the only universal prefilter (ADR-004); active learning for rare tiers (ADR-005)
+- Oracle consistency over data volume; belonging v1 is the prompt template (ADR-010). Embedding screening with e5-small seeds replaces keyword screening (ADR-011)
+- Lens-aligned naming is CLOSED: only `uplifting` → `human_thriving` (ADR-012 as amended)
+- **English everywhere the framework speaks** — names, docs, comments, memory, commits (ADR-013). NOT match patterns, strippers or fixtures: those are data, and deleting an exclusion costs specificity
+- Percentile normalization from the production CDF supersedes `score_scale_factor` (ADR-014). Lenses are perspectives, overlap is correct — never exclude adjacent lens content in oracle prompts (ADR-015). No tiers — pass/block + score (ADR-016)
+- Declarative prefilter shape on `BasePreFilter` (ADR-018/019); **new filters ship NO per-lens prefilter** (amended 2026-08-21)
+- Ground-truth deploy gate against held-out oracle labels, never the prior model (ADR-021). Stamp always, decide once — one config-gated drop point per concern, every enforcement decision a config flip; visibility = raw ≥ op-point, the normalized score is rank/badge only (ADR-022). Precision over recall (ADR-023)
 
 ## How To Write Answers Here
 
-Rules for **chat replies**, not for code or docs. Origin and the rejected
-alternative: `feedback-plain-answers` in the Claude Code auto-memory.
-
-1. **Answer the question first, in one line.** If asked "is X OK?", the first
-   line is yes, no, or not yet. Detail comes after, and only the detail that
-   would change what the owner does.
-2. **Never invent a label and then use it as if it were shared.** "Chain 13",
-   "Batch F", "the NM#284 shape" — coined mid-session and immediately reused as
-   common vocabulary. If a cluster needs a name, define it once in the same
-   sentence, or don't name it.
-3. **Expand an issue number the first time it appears in a reply.** "#86 (the
-   cultural-discovery gate)" — not "#86". The owner works across five repos and
-   should not have to hold the numbering in their head.
-4. **Separate measured from guessed, every time.** "Measured over 8,283
-   articles" vs "I think" vs "not tested". This project's failure mode is a
-   confident claim nobody verified — see the `feedback-claim-requires-verify` and
-   `feedback-verify-call-path` entries in the assistant's own memory (they live in
-   the Claude Code auto-memory directory, **not** in this repo's `memory/`).
-5. **Keep the caveats, cut the recap.** Brevity must never come out of the
-   verification detail. The obituary answer on 2026-08-03 was only trustworthy
-   *because* of "max score among survivors is 0.8488, zero at or above 0.85".
-   Cut preamble, restatement of the question, and lists of things not pursued.
-6. **Say what you did to the owner's machine and how to undo it.**
+For chat replies:
+1. Answer first, in one line (yes / no / not yet); then only detail that changes what the owner does.
+2. Never coin a label and reuse it as shared vocabulary.
+3. Expand an issue number the first time: "#86 (the cultural-discovery gate)". Qualify cross-repo numbers every time.
+4. Separate measured from guessed, every time.
+5. Keep the caveats, cut the recap.
+6. Say what you did to the owner's machine and how to undo it.
 
 ## Before You Start
 
-**Always read `memory/MEMORY.md` first** — it's the project memory index with current work status, gotchas, and pointers to topic files.
-
-⛔ **A POINTER ROW IS CAPPED AT 250 CHARS AND A NEW LESSON GOES IN THE TARGET, NOT HERE
-(#133).** This file refilled at **~486 bytes/day** while every audit trimmed it back to
-the wall — a budget loses that race, a per-row cap cannot. State the trigger, name the
-file, stop. ⚠️ **The carve-out is the honest part, not a loophole:** a pointer does not
-fire without opening the target, so four rows whose prohibition prevents *spending money*
-or *publishing a wrong number* may reach 400. Enforced, with the exemption list itself
-bounded: `python3 scripts/verification/check_index_budget.py --target pointers`.
+**Read `memory/MEMORY.md` first.** Pointer rows are capped at 250 chars (carve-outs at 400): a new lesson goes in the target file, not here (`check_index_budget.py --target pointers`).
 
 | When you're... | Read... |
 |----------------|---------|
-| **Starting a session, or told only "continue"** | `memory/MEMORY.md` (index), then **`docs/TODO.md` ▶ START HERE** — the ordered queue. ⛔ **A bare "continue" means that list, top down**; nothing else routed it until 2026-09-17 |
-| Resuming thriving v1 work | `memory/thriving-v1-scoring.md` — scoring status, resume commands, full pipeline |
-| Starting calibration / scorer-training / oracle-prompt work | `memory/calibration-history.md` — Dead Ends section: which approaches are already known dead (#69) |
-| **Touching a prefilter, or considering an enforcement flip** | **`memory/prefilter-length-floor-hypotheses.md`** — what each prefilter actually blocks (measured), and why a matching pass rate is **not** a safety argument. Then #93. |
-| **A legal/compliance question, or the training-data source** | `docs/decisions/2026-08-05-tdm-opt-out-training-data.md` — ⚠️ **one carve-out is open**: the oracle ships article text to the vendor. It names the ovr.news companion register. |
-| **Anything about the pipeline CONTRACTS — schemas, validators, what a row carries between repos** | **`docs/decisions/2026-08-14-contract-a-envelope.md`**, then **`docs/CONTRACTS_PLAN.md` § *Round 3*** + **`memory/stamp-contract-integrity.md`**. ⛔ **Never quote a Contract A version from here** — read it off a delivered row (`scripts/contracts/contract_a_smoke.py`). |
-| **Asking what an article field IS, or where a blocked article went** | **`NexusMind/contracts/article-record.schema.json`** — prescriptive and composed. Human half `NexusMind/docs/ARTICLE_RECORD.md`; per-field answer **`NexusMind/docs/ARTICLE_RECORD_REGISTER.md`**. ⛔ **Never quote a field count — this table included**; every count is a WINDOW. Blocked: `docs/BLOCK_LEDGER_SPEC.md`. |
-| **Adding a stamp / config key, or trusting a stamped field in an analysis** | **`memory/stamp-contract-integrity.md`** — the schemas check SHAPE only. ⛔ **Run `NexusMind/scripts/stamp_census.py` for population before quoting any stamped field.** |
-| **Reading a number off NexusMind production data** | **`memory/nexusmind-data-sources.md`** — reconcile denominators before diffing two sources. ⛔ **`live_articles` is NOT the reader population** — legacy, off the build path, and nothing can reconverge it; use `getArticlesForBuild`. `weighted_average` there is NORMALIZED, not raw. |
-| **Quoting any Google News number, or touching the GN population** | **`memory/google-news-corpus-hypotheses.md`** — ⛔ **Never oracle-re-score a GN row** (sub-300-char headline echoes), and **never match GN on a `gn_` key prefix** (feeds and items undercount by different factors). ⚠️ **Always name the fetcher** (NM#310). |
-| **Touching normalization (fitting, debugging a score/tier that looks wrong, ovr ranking)** | **`docs/NORMALIZATION_METHOD.md`** — method and guards; ADR-014, playbook §6. ⚠️ `raw >= threshold` with `tier: low` is **expected, not a bug**. |
-| **Reading a date, a recency boost, or anything about `published_date`** | **`memory/date-error-recency-boost-hypotheses.md`** — a flat **1.3× boost under 24h** means any date error landing inside 24h wins it, invisibly. |
-| **Measuring anything near an operating point, or comparing two runs' scores** | **`memory/score-batch-shape-noise.md`** — #95, and the Hard Constraint above. |
-| **Touching enrichment, or citing a pre/post-enrichment score delta** | **`memory/enrichment-delta-hypotheses.md`** — H-E1 RESOLVED. ⚠️ Condition on `stage_used` before reading `raw_weighted_average` as a model output. |
-| **Changing a dimension WEIGHT, or calling any dimension "dead"** | **`memory/solutions-v6-dimension-hypotheses.md`** — ⛔ **A dimension's zero rate is base rate, not breakage.** Re-weighting measured inert. |
-| **Quoting any #121 number, or building an opinion/editorial genre stamp** | **`memory/opinion-genre-hypotheses.md`** — the within-source control **dissolves it in 5 of 6 lenses**. ⛔ **#121's issue body uses a wrong op-point for `solutions`.** |
-| **Touching cultural_discovery v6, or citing its probe numbers** | **`memory/cd-v6-probe-hypotheses.md`** — #98's confirmed / refuted / traps. ⚠️ **v6 cannot score at all** — no inference module, no `calibration.json`. |
-| **Anything obituary/grief-related, or reading the junk-gate state** | `memory/project-obituary-detector.md` — enforcement is ON at v5@0.85; carryover, the two live v5 false negatives, and the four SSH verify assertions live here. |
-| **Creating OR retraining ANY filter (START HERE)** | **`docs/FILTER_PLAYBOOK.md`** — the single source of truth: every compiled lesson plus the canonical reference (`nature_recovery v4`). Read before touching filter code. |
-| Deploying to NexusMind or gpu-server | `docs/RUNBOOK.md` — deployment, training, scoring how-to |
-| Training on GPU server | `memory/gpu-server.md` — venv, PYTHONPATH, HF_HUB_OFFLINE |
-| Debugging model loading or PEFT issues | `memory/gemma3-model.md` — Auto mapping fix, key format details |
-| Making architectural decisions | `docs/adr/README.md` — 22 settled ADRs (001–019, 021–023; 020 is a draft) |
-| Checking priorities or planning work | `docs/TODO.md` and `docs/ROADMAP.md` |
-| Understanding system design | `docs/ARCHITECTURE.md` |
-| Reviewing work quality | `docs/checklists/` — architect, test, implement, QA gates |
-| Stuck on tooling or infra | `memory/gotcha-log.md` — problem/fix archive |
-| **Running `/review-changes`, or told it stopped** | **`.claude/review-profile.md` — REQUIRED; the skill STOPS without it.** Its 3 project lenses DO fire since `agent-ready-projects#166` (v1.43.0) — ⛔ confirm by NAME in the report |
-| **About to weaken, delete or argue with a working rule** | **`memory/working-rules.md`** — the full text of each rule plus the evidence and occurrence catalogue behind it. Every one exists because something shipped broken. |
-| **Touching corroboration, story-dedup, or any matching feature** | **`memory/corroboration-feature-hypotheses.md`** — confirmed, refuted and untested. ⚠️ **The threshold is NOT the lever.** |
-| Planning across repos, or asking "what should I work on" | `memory/cross-repo-prioritization.md` — issue landscape, chains, and the two standing traps it names |
-| Running anything long, or told "the GPU is free" | `memory/b650-gpu.md` — the non-production GPU box. ⛔ **RTX 5090 since 2026-09-17; its CUDA numbers predate it.** `ssh b650-gpu` works from the workstation, NOT from sadalsuud |
-| Checking which lens/tab a filter feeds | `memory/ovr-lens-set-current.md` — current lens→filter→tab mapping |
-| Writing docs for a deployed filter | `memory/filter-doc-standard.md` — the required documentation set |
-| Building a filter on a DeepSeek oracle, or citing cultural_discovery v5 as a reference | `memory/cd-v5-reference-status.md` — why v5 is the DeepSeek-oracle reference example, and the ADR-020 methodology it demonstrates |
-| Retraining uplifting, Thriving false positives (#125), or the junk gates | `memory/uplifting-v7-training.md`, `memory/uplifting-oracle-genre-hypotheses.md`, `memory/obituary-v4-hypotheses.md`, `memory/violence-promotion-v1-hypotheses.md` |
-| **Wanting the whole chain in one place, or the live pipeline state** | **`veen-systems/pipeline-atlas`** — the four repos as one signal path plus an ops snapshot every 20 min, on Tailscale (`http://100.78.93.76:8099/`), not GitHub Pages. |
-| **Concluding an experiment, or asking "did we ever test X?"** | **`experiments/registry.jsonl`** — the data. ⛔ `README.md` is its SCHEMA and holds no ids. ⛔ It restates no number. |
-| Ending a session | Run `/curate` |
-| Monthly or after major restructuring | Run `/audit-context` |
+| **Starting a session, or told only "continue"** | `memory/MEMORY.md`, then **`docs/TODO.md` ▶ START HERE** — a bare "continue" means that list, top down |
+| Resuming thriving v1 work | `memory/thriving-v1-scoring.md` |
+| Starting calibration / scorer-training / oracle-prompt work | `memory/calibration-history.md` — Dead Ends (#69) |
+| Touching a prefilter, or considering an enforcement flip | `memory/prefilter-length-floor-hypotheses.md`, then #93 |
+| A legal/compliance question, or the training-data source | `docs/decisions/2026-08-05-tdm-opt-out-training-data.md` — one carve-out open (oracle ships text to the vendor) |
+| **Anything about the pipeline CONTRACTS** | `docs/decisions/2026-08-14-contract-a-envelope.md`, `docs/CONTRACTS_PLAN.md` § *Round 3*, `memory/stamp-contract-integrity.md`. ⛔ **Never quote a Contract A version from here** — read a delivered row (`scripts/contracts/contract_a_smoke.py`) |
+| **Asking what an article field IS, or where a blocked article went** | `NexusMind/contracts/article-record.schema.json`, `NexusMind/docs/ARTICLE_RECORD_REGISTER.md`; blocked: `docs/BLOCK_LEDGER_SPEC.md`. ⛔ **Never quote a field count** — every count is a window |
+| Adding a stamp / config key, or trusting a stamped field | `memory/stamp-contract-integrity.md` — run `NexusMind/scripts/stamp_census.py` before quoting a stamped field |
+| **Reading a number off NexusMind production data** | `memory/nexusmind-data-sources.md`. ⛔ **`live_articles` is NOT the reader population** — use `getArticlesForBuild`; `weighted_average` there is NORMALIZED |
+| **Quoting any Google News number, or touching the GN population** | `memory/google-news-corpus-hypotheses.md`. ⛔ **Never oracle-re-score a GN row**, never match GN on a `gn_` prefix, always name the fetcher (NM#310) |
+| Touching normalization | `docs/NORMALIZATION_METHOD.md` — `raw >= threshold` with `tier: low` is expected |
+| Reading a date or recency boost (`published_date`) | `memory/date-error-recency-boost-hypotheses.md` |
+| Measuring near an op-point, or comparing two runs | `memory/score-batch-shape-noise.md` |
+| Touching enrichment, or citing a pre/post-enrichment delta | `memory/enrichment-delta-hypotheses.md` |
+| Changing a dimension weight, or calling one "dead" | `memory/solutions-v6-dimension-hypotheses.md` — a zero rate is base rate, not breakage |
+| Quoting any #121 number (opinion/editorial genre) | `memory/opinion-genre-hypotheses.md` — #121's body uses a wrong `solutions` op-point |
+| Touching cultural_discovery v6 | `memory/cd-v6-probe-hypotheses.md` |
+| Obituary/grief, or the junk-gate state | `memory/project-obituary-detector.md` — enforcement ON at v5@0.85 |
+| **Creating OR retraining ANY filter** | **`docs/FILTER_PLAYBOOK.md`** — read before touching filter code |
+| Deploying to NexusMind or gpu-server | `docs/RUNBOOK.md` |
+| Training on GPU server | `memory/gpu-server.md` |
+| Debugging model loading or PEFT | `memory/gemma3-model.md` |
+| Making architectural decisions | `docs/adr/README.md` |
+| Planning work | `docs/TODO.md`, `docs/ROADMAP.md`; across repos: `memory/cross-repo-prioritization.md` |
+| Understanding system design / reviewing quality | `docs/ARCHITECTURE.md`, `docs/checklists/` |
+| Stuck on tooling or infra | `memory/gotcha-log.md` (+ `gotcha-log-archive.md`; grep both) |
+| **Running `/review-changes`** | `.claude/review-profile.md` — REQUIRED; the skill stops without it. Confirm its 3 project lenses by NAME in the report |
+| About to weaken or argue with a working rule | `memory/working-rules.md` |
+| Touching corroboration or story-dedup | `memory/corroboration-feature-hypotheses.md` — the threshold is not the lever |
+| Running anything long, or told "the GPU is free" | `memory/b650-gpu.md` — RTX 5090 since 2026-09-17; older CUDA numbers predate it |
+| Checking which lens/tab a filter feeds | `memory/ovr-lens-set-current.md` |
+| Writing docs for a deployed filter | `memory/filter-doc-standard.md` |
+| Building on a DeepSeek oracle, or citing cd v5 | `memory/cd-v5-reference-status.md` |
+| Retraining uplifting, Thriving FPs (#125), or the junk gates | `memory/uplifting-v7-training.md`, `memory/uplifting-oracle-genre-hypotheses.md`, `memory/obituary-v4-hypotheses.md`, `memory/violence-promotion-v1-hypotheses.md` |
+| Wanting the whole chain, or live pipeline state | `veen-systems/pipeline-atlas` (Tailscale `http://100.78.93.76:8099/`) |
+| **Concluding an experiment, or "did we ever test X?"** | `experiments/registry.jsonl` (`README.md` is its schema) |
+| Memory past its month | `python3 scripts/maintenance/retire_memory.py {gotcha,sessions} --before <YYYY-MM-01> --apply` (dry run without `--apply`) |
+| Ending a session / monthly | `/curate` / `/audit-context` |
 
 ## Getting Started
 
 ```bash
 pip install -r requirements.txt
+git config core.hooksPath .githooks          # once per clone: blocks unverified "deploy" claims (#44)
+# HF token: config/credentials/secrets.ini
 
-# One-time per clone: enable the commit-msg hook that blocks unverified "deploy"
-# claims (see .githooks/commit-msg, llm-distillery#44 for background).
-git config core.hooksPath .githooks
-
-# Configure: add HF token to config/credentials/secrets.ini
-# Oracle scoring. ⛔ NAME --llm: it defaults to `claude`, and DeepSeek is a separate
-# script (scripts/score_deepseek_production.py), not a --llm value. RUNBOOK § Oracle Scoring.
+# Oracle scoring. ⛔ NAME --llm (default is `claude`); DeepSeek is scripts/score_deepseek_production.py
 python -m ground_truth.batch_scorer --filter filters/{name}/v{N} --llm gemini-flash \
     --source datasets/raw/master_dataset.jsonl
 
-# Prepare training splits. ⛔ --input/--output-dir; there is NO --data-source flag. And
-# --filter's `filter.name` picks the analysis field: point it at the wrong filter and it
-# writes 0 examples, prints COMPLETE and exits 0. RUNBOOK § Training.
+# Training splits. ⛔ No --data-source flag; the wrong --filter writes 0 examples and exits 0
 python training/prepare_data.py --filter filters/{name}/v{N} \
     --input datasets/scored/{name}_v{N}.jsonl --output-dir datasets/training/{name}_v{N}
 
-# Fit calibration (after training). ⛔ PASS --no-config-update unless normalization.json
-# exists: by default this EDITS config.yaml's score_scale_factor (ADR-014 superseded it;
-# ≠1.0 with no normalization silently stretches every score). RUNBOOK § Fit calibration.
+# Calibration. ⛔ --no-config-update unless normalization.json exists (else it edits score_scale_factor)
 PYTHONPATH=. python scripts/calibration/fit_calibration.py \
     --filter filters/{name}/v{N} --data-dir datasets/training/{name}_v{N} \
     --test-data datasets/training/{name}_v{N}/test.jsonl --no-config-update
 
-# Fit normalization (after production data accumulates)
+# Normalization (after production data accumulates)
 MSYS_NO_PATHCONV=1 PYTHONPATH=. python scripts/normalization/fit_normalization.py \
     --filter filters/{name}/v{N} --ssh sadalsuud \
     --remote-dir /home/jeroen/local_dev/NexusMind/data/filtered/{name}
 
-# Upload to Hub
+# Hub upload
 python scripts/deployment/upload_to_huggingface.py \
     --filter filters/{name}/v{N} --repo-name jeergrvgreg/{name}-filter-v{N} \
     --token $HF_TOKEN --private
 ```
 
-See `docs/RUNBOOK.md` for full operational commands.
-
-## Cross-Repo Evidence
-
-This project is a source project for [augmented-engineering](https://github.com/ducroq/augmented-engineering) — a proposition about what's new when engineers work with AI agents. When you find evidence for its four patterns (verification findings, context-architecture lessons, reproduce-don't-assess examples, LLM behavioural properties), file an issue there with the pattern name, quantified results, and which claims it supports.
+Full commands: `docs/RUNBOOK.md`. Evidence for the four patterns of [augmented-engineering](https://github.com/ducroq/augmented-engineering) goes there as an issue (pattern, quantified result, claims supported).
 
 ---
 
-*Last updated: 2026-09-17. **Framework: agent-ready-projects v1.45.1 — triaged through v1.45.1, 0 releases behind (checked 2026-09-17 against the REMOTE, not the clone).** ⛔ **THE SKILL BYTE-IDENTITY CLAIM IS A COMMAND NOW, NOT A SENTENCE — `bash scripts/verification/check_framework_stamp.sh`**, which derives the tag from the stamp (so a bump re-arms it) and runs every session from `memory/MEMORY.md`. Exit status carries the verdict: **0** verified, **1** drift, **2** could not decide. Its hand-dated predecessor was true when written and **false six days later**, and nothing said so. Diff against `.claude/skills/<name>/SKILL.md` at the tag, never `templates/`: there is no install-time transform. ⛔ **Do not write a skill COUNT you did not just enumerate** — this sentence said *three* for as long as it took upstream to move one skill, and read as a verified fact throughout. ⛔ **Never write "current" here** — upstream moved twice within hours of this line being written, and a state claim in an always-loaded file decays silently. ⛔ **A stamp bump requires the adopt items in the tree first** — ahead of its content it silences the check that would catch the gap. ⛔ **Do not name an upstream section's contents here** — this sentence named v1.26.1's while calling it *unreleased*; it shipped 2026-08-25. Read the changelog, don't quote it. ⚠️ **Do not re-add a self-referential size claim** ("cut to the size you see"): the 08-16 wording was falsified by the next edit to this file. Per-tag triage: `docs/decisions/framework-adoption-history.md`. Structural state, open decisions and every number that moves live in `docs/TODO.md` (top block) and the memory index — deliberately NOT restated here, because two hand-maintained copies of a number disagree the moment one is updated. Session records: the memory index.*
-
+*Framework: agent-ready-projects v1.49.0 — verify with `bash scripts/verification/check_framework_stamp.sh` (0 verified · 1 drift · 2 undecided). Bump the stamp only after its adopt items land. `curate`, `audit-context`, `review-changes` and `update-drift` are USER-GLOBAL — never re-create project-local copies (a global silently shadows them); `test-verify-memory` stays local. Triage and standing rules: `docs/decisions/framework-adoption-history.md`. A measured figure here is a copy — quote it from the file its bullet points to, which is kept current.*

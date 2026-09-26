@@ -27,7 +27,7 @@ inference rather than by a contemporaneous record, it says so.
 | **4** references | 2026-08-13 three dead auto-memory pointers; 2026-08-27 24→1; 2026-09-11 **`refcheck.py` had no `sys.exit` and could not fail**; 2026-09-17 23 findings, incl. a shape test ruling 3 correct references STALE forever | **Keep** |
 | **5** reachability | 2026-08-12 late, 1 orphan; 2026-08-29, 1 orphan homed; 2026-09-17 three unlinked session records, one of them **asserted absent while sitting in the same directory** | **Keep** |
 | **6** drift | 2026-08-15 **a premature stamp had silenced its own drift check**; 2026-08-27 a hold with no release condition | **Keep** |
-| **7** gitignore | **No catch in its whole recorded history.** The only audit that reports on it (`memory/project_session_2026_08_29_late.md:25`) says "gitignore correct". The one real gitignore finding on record — `.claude/review-profile.md` untracked and unignored, 2026-09-11 evening — came from `/review-changes`, **not from this step** | **Retirement candidate — NOT retired.** See below |
+| **7** gitignore | **No catch in its whole recorded history.** The only audit that reports on it (`memory/archive/project_session_2026_08_29_late.md:25`) says "gitignore correct". The one real gitignore finding on record — `.claude/review-profile.md` untracked and unignored, 2026-09-11 evening — came from `/review-changes`, **not from this step** | **Retirement candidate — NOT retired.** See below |
 
 ## Step 7: the retirement that was not taken, and why
 

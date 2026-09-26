@@ -156,7 +156,7 @@ ssh b650-gpu        # account is `jeroen` (NOT jwasys); works from situla and sa
   production's device before comparing against production's numbers.
   ⛔ **The concrete act to avoid: diffing ANY b650 replay against STORED PRODUCTION
   SCORES without first matching production's device.** **Production serves on GPU**
-  (`memory/filter-status.md`, `memory/project_session_2026_08_09_night.md`), so the
+  (`memory/filter-status.md`, `memory/archive/project_session_2026_08_09_night.md`), so the
   comparable b650 configuration is **CUDA + `venv-prodparity`** — run **G**'s shape,
   not run C's. A b650 **CPU** replay diffed against stored production output crosses
   the device term, the larger of the two and the one that reaches 4.5.

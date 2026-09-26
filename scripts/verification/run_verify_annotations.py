@@ -248,6 +248,12 @@ def docs(include_sessions):
         if "project_session_" in rel and not include_sessions:
             continue
         out.append(rel)
+    # Session files dated before the current month live in memory/archive/ since
+    # 2026-09-26 (scripts/maintenance/retire_memory.py). They are session records, so
+    # they join the scan exactly when --sessions asks for session records.
+    if include_sessions:
+        for f in sorted(glob.glob(os.path.join(ROOT, "memory", "archive", "*.md"))):
+            out.append(os.path.relpath(f, ROOT))
     return out
 
 

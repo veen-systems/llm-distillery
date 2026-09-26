@@ -21,8 +21,8 @@ branches executed" while one of the six it named was untested.
 `~/repos/agent-ready-projects` and `~/.claude/skills`. A test asserting against this
 machine's real installs would fail on every upstream release, which is the one moment the
 probe must still be trusted. `test_real_estate_reaches_a_verdict` is the deliberate
-exception: it is the only arm that can catch `WANT` drifting out of step with what is
-really installed, which no hermetic test can see.
+exception: it is the only arm that can catch the installer's `GLOBAL_SKILLS` drifting out
+of step with what is really installed, which no hermetic test can see.
 """
 
 import os
@@ -36,6 +36,10 @@ GUARD = os.path.join(ROOT, "scripts", "verification", "check_framework_stamp.sh"
 
 SKILLS = ("audit-context", "curate", "update-drift", "review-changes")
 TAG = "v1.45.1"
+
+
+def _installer(skills):
+    return f'#!/usr/bin/env bash\nGLOBAL_SKILLS="{" ".join(skills)}"   # generic\nLOCAL_ONLY="release"\n'
 
 
 def _git(cwd, *args):
@@ -58,6 +62,8 @@ def estate(tmp_path):
         d = fw / ".claude" / "skills" / s
         d.mkdir()
         (d / "SKILL.md").write_text(f"# {s}\nbody of {s}\n")
+    (fw / "scripts").mkdir()
+    (fw / "scripts" / "install-global-skills.sh").write_text(_installer(SKILLS))
     _git(fw, "add", "-A")
     _git(fw, "commit", "-qm", "skills")
     _git(fw, "tag", TAG)
@@ -130,37 +136,77 @@ def test_drift_plus_a_hole_still_reports_the_hole(estate):
     assert "compared 3 of 4 skills" in r.stdout
 
 
-def test_count_is_derived_not_restated(estate, tmp_path):
-    """The count must FOLLOW `WANT`, proven by making them disagree.
+def _retag(fw, tag, skills_line):
+    (fw / "scripts" / "install-global-skills.sh").write_text(skills_line)
+    _git(fw, "add", "-A")
+    _git(fw, "commit", "-qm", "installer changed")
+    _git(fw, "tag", tag)
 
-    `N_WANT=4` beside a four-name `WANT` reproduces upstream's original false PASS the
-    moment the two drift apart: the mutant printed "CANNOT VERIFY: <skill> is not
-    installed" and then "4 global skills byte-identical", exit 0.
 
-    ⛔ **This test was a SPELLING CHECK until round 2 killed it.** It asserted
-    `"N_WANT=$(printf" in src` and exercised only the 4-of-4 happy path, so a mutant that
-    derived the count from a literal list — `printf '%s\n' a b c d | wc -l` — satisfied
-    both halves and all 17 tests passed. A name is an assertion: the test claimed to prove
-    derivation and proved spelling. The only thing that kills it is a run where `WANT` and
-    the count MUST disagree if the count is a literal.
+def test_count_is_derived_not_restated(estate):
+    """The count must FOLLOW the installer's list, proven by making them disagree.
+
+    A literal count of 4 beside a five-name list reproduces upstream's original false
+    PASS: "CANNOT VERIFY: <skill> is not installed" and then "4 global skills
+    byte-identical", exit 0. Only a run where list and literal MUST disagree kills it.
     """
-    variant = tmp_path / "with-a-fifth-skill.sh"
-    src = open(GUARD).read()
-    assert 'WANT="audit-context curate update-drift review-changes"' in src
-    variant.write_text(
-        src.replace(
-            'WANT="audit-context curate update-drift review-changes"',
-            'WANT="audit-context curate update-drift review-changes not-installed-skill"',
-        )
-    )
-    repo, fw, skills = estate
-    e = dict(os.environ, FRAMEWORK=str(fw), CLAUDE_SKILLS=str(skills))
-    r = subprocess.run(
-        ["bash", str(variant)], cwd=str(repo), env=e, capture_output=True, text=True
-    )
+    repo, fw, _skills = estate
+    _retag(fw, "v2.0.0", _installer(SKILLS + ("not-installed-skill",)))
+    (repo / "CLAUDE.md").write_text("*Framework: agent-ready-projects v2.0.0*\n")
+    r = _run(estate)
     # A DERIVED count says 4 of 5 and refuses; a literal 4 says "byte-identical", exit 0.
     assert r.returncode == 2, r.stdout + r.stderr
     assert "compared 4 of 5 skills" in r.stdout
+    assert "byte-identical" not in r.stdout
+
+
+def test_skill_list_is_read_at_the_stamped_tag(estate):
+    """#200: the list comes from the installer AT THE TAG, so a smaller set verifies as that set.
+
+    A hardcoded four-name list would say "compared 3 of 4" here — or, upstream's original
+    shape, silently skip the fourth skill for as many releases as it stayed hardcoded.
+    """
+    repo, fw, _skills = estate
+    _retag(fw, "v2.0.0", _installer(SKILLS[:3]))
+    (repo / "CLAUDE.md").write_text("*Framework: agent-ready-projects v2.0.0*\n")
+    r = _run(estate)
+    assert r.returncode == 0, r.stdout + r.stderr
+    assert "3 global skills byte-identical to v2.0.0" in r.stdout
+
+
+def test_installer_absent_at_the_tag_cannot_decide(estate):
+    repo, fw, _skills = estate
+    (fw / "scripts" / "install-global-skills.sh").unlink()
+    _git(fw, "add", "-A")
+    _git(fw, "commit", "-qm", "no installer")
+    _git(fw, "tag", "v2.0.0")
+    (repo / "CLAUDE.md").write_text("*Framework: agent-ready-projects v2.0.0*\n")
+    r = _run(estate)
+    assert r.returncode == 2
+    assert "has no scripts/install-global-skills.sh" in r.stdout
+
+
+@pytest.mark.parametrize("line", ["GLOBAL_SKILLS='a b'\n", '  GLOBAL_SKILLS="a b"\n',
+                                  'GLOBAL_SKILLS=""\n'])
+def test_unparseable_list_names_the_real_cause(estate, line):
+    """One assignment the parser cannot read must not be reported as "set 1 times, not once"."""
+    repo, fw, _skills = estate
+    _retag(fw, "v2.0.0", line)
+    (repo / "CLAUDE.md").write_text("*Framework: agent-ready-projects v2.0.0*\n")
+    r = _run(estate)
+    assert r.returncode == 2, r.stdout
+    assert "no parseable GLOBAL_SKILLS" in r.stdout
+    assert "times, not once" not in r.stdout
+
+
+@pytest.mark.parametrize("extra", ['GLOBAL_SKILLS+="extra"\n', 'export GLOBAL_SKILLS="x"\n'])
+def test_list_assigned_twice_refuses_rather_than_passing_on_its_first_half(estate, extra):
+    repo, fw, _skills = estate
+    _retag(fw, "v2.0.0", _installer(SKILLS) + extra)
+    (repo / "CLAUDE.md").write_text("*Framework: agent-ready-projects v2.0.0*\n")
+    r = _run(estate)
+    assert r.returncode == 2, r.stdout
+    assert "sets GLOBAL_SKILLS 2 times, not once" in r.stdout
     assert "byte-identical" not in r.stdout
 
 
@@ -380,11 +426,11 @@ def test_skills_default_is_used_when_unset(estate, tmp_path):
 
 
 def test_real_estate_reaches_a_verdict():
-    """The only arm that can catch `WANT` drifting out of step with what is installed.
+    """The only arm that can catch the installer's list drifting out of step with installs.
 
     Deliberately asserts a VERDICT, not a value: 0 or 1 are both real answers about this
     machine, and pinning either would make the suite fail on the next upstream release.
-    Exit 2 means the probe could not decide — a `WANT` naming a skill that no longer
+    Exit 2 means the probe could not decide — a list naming a skill that no longer
     exists, or a clone without the stamped tag — and that is the state no hermetic test
     can see.
     """

@@ -4,15 +4,91 @@ Per-release reconciliation record. Moved out of `CLAUDE.md`'s
 `framework_reconciliation` frontmatter on 2026-08-11, where it had grown to
 4,931 chars (12.5% of a file 358 chars under Claude Code's 40k warn threshold).
 
-**The frontmatter keeps only what is still operative** — the current stamp, the
-standing skill-scope rules, and open decisions. Everything below is the
-historical record: correct when written, and kept for provenance rather than for
-reading every session.
+**Since 2026-09-26 the frontmatter keeps only the stamp.** The standing
+skill-scope rules and open decisions it carried are in § *Operative rules* below,
+verbatim (frontmatter never reaches session context, so they governed nothing
+there — #122). Everything after that section is the historical record: correct
+when written, kept for provenance rather than for reading every session.
 
 Current stamp lives in `CLAUDE.md` frontmatter (`framework: agent-ready-projects vX.Y.Z`).
 Upstream changelog: https://github.com/ducroq/agent-ready-projects/blob/master/CHANGELOG.md
 
 ---
+
+## Operative rules (moved verbatim from `CLAUDE.md` frontmatter, 2026-09-26)
+
+Inside the block, "the history file is provenance only" means the dated sections BELOW
+it; the block itself still governs. Its "121 KB" was true when written — measure with
+`wc -c memory/hypothesis-ledger.md`.
+
+```
+  Stamp = which framework surfaces were reconciled. It does NOT assert that any
+  behaviour changed, nor that a skill has since been run.
+  OPERATIVE RULES (these govern; the history file is provenance only):
+  - `curate` and `audit-context` are USER-GLOBAL. The project-local copies were
+    DELETED, not reconciled — a global shadows a local silently and the local was
+    never loading. Do not re-create them.
+  - `review-changes` became USER-GLOBAL at v1.40.0 (2026-09-11); the re-mapped
+    project-local fork was DELETED (it was INERT, shadowed by the global copy).
+    Do not re-create it. ⚠️ The OPERATIVE half is a row in § Before You Start,
+    NOT here — #122: this block does not reach session context, so a rule that
+    lives only here governs nothing.
+  - `test-verify-memory` stays PROJECT-LOCAL.
+  - No *hypothesis-log.md* at the framework's path or shape, by choice. ⚠️ **But
+    this repo DOES have a ledger — `memory/hypothesis-ledger.md`, 121 KB, the
+    index's designated "START HERE to recall prior work"** — so `curate` Step 0
+    sub-step 5 is **NOT** a no-op: it has a file to review for staleness. The 2026-09-11
+    audit found this bullet still claiming otherwise.
+  - DECLINED v1.20.0's gotcha-log `Occurrences` column: no Promoted table exists
+    here, promotion targets § "Working rules", and the rate is already in prose.
+    So `curate` Step 2 asks every session to increment a column with no home —
+    expected, not a bug to fix. ⚠️ **Scoped to the PROMOTED table only** —
+    `memory/gotcha-log.md`'s `## Mechanized` table (added 2026-09-17) has its
+    own `Occurrences`, counting sightings after a check went `live`.
+  - OPEN, pre-dating the v1.19/v1.20 gap: this file has no framework-drift
+    session row (`templates/project-file.md:25` ships one). Its absence is the
+    likely reason that drift sat two releases unreviewed. Engineer's call.
+  Verify installs: agent-ready-projects/scripts/install-global-skills.sh --check ~/repos
+```
+
+Rules also moved out of the `CLAUDE.md` footer the same day (still in force):
+never write "current" beside the stamp (a state claim in an always-loaded file
+decays silently); never write a skill COUNT you did not just enumerate; never name
+an upstream section's contents there — read the changelog; do not re-add a
+self-referential size claim. The skill byte-identity claim is the command
+`bash scripts/verification/check_framework_stamp.sh` (0 verified · 1 drift · 2
+undecided), never a sentence.
+
+---
+
+## 2026-09-26 — `/update-drift`: **5 releases behind (v1.45.1 → v1.49.0)**; stamp → v1.49.0 after all four adopt items landed
+
+**v1.49.0 was released mid-session** (commit 11:26:57, tag 11:27:00 — `git for-each-ref
+--format='%(taggerdate:iso)' refs/tags/v1.49.0`) and the global skills reinstalled from it at
+11:27:06 — the gap was four releases when the triage started and five when it ended. Read
+the remote's tags (`git ls-remote`), not the clone's.
+
+**Outcomes: 4 adopt · 0 decline · 2 n/a · 8 already in force** (14 outcomes over 13 rows — the first v1.46.0 row carries two). All four user-global skills are
+byte-identical to the v1.49.0 reference install (`check_framework_stamp.sh`, exit 0 after
+the bump). The owner's steer for this triage: rank framework changes by what they cut
+from the token bill — harness verbosity, doc bloat, retirement to archives,
+mechanization, English only.
+
+| From | What | Outcome |
+|------|------|---------|
+| v1.46.0 | `curate`/`review-changes` thinned; `verify-runner.sh`; arc-closing section; `stampcheck` derives its list (upstream #200) | Skills **already in force**. #200 **adopted** → `check_framework_stamp.sh` reads `GLOBAL_SKILLS` from the installer at the stamped tag (was hardcoded) |
+| v1.46.0 | `refcheck.py` #199/#155 | **Already in force** — run from the clone |
+| v1.46.0 | installer Git Bash guard (#198) | **N/a** — Linux estate |
+| v1.46.0–v1.48.1 | lint rules 8/11/17/18/19/20–23, fixtures, ablation guards | **N/a** — maintainer tooling |
+| v1.47.0 | `audit-context`/`update-drift`/`release` thinned | **Already in force** (`release` not installed here) |
+| v1.47.0 | `curate` archive pass above ~300k, project-file flag above ~15k | **Adopted** → session files before 2026-09 moved to `memory/archive/` (79 files); `CLAUDE.md` trimmed 38,141 → 17,749 chars (`wc -m`), every dropped span checked present in its pointed file. ⚠️ The gotcha archive stays at `memory/gotcha-log-archive.md`, outside `archive/`, so curate's size measurement still counts it — moving it is open |
+| v1.47.0 | project-file template: Hard Constraints lead with the rule, no narrative | **Adopted** as the trim rule for `CLAUDE.md` |
+| v1.47.0 | `refcheck.py` gitignored-resolution listing (#154) | **Already in force** |
+| v1.48.0 | `update-drift`/`curate`/`review-changes`/`audit-context` step changes | **Already in force** |
+| v1.48.0 | `gotcha-log` Retire phase (#178) | **Adopted with a local selector** → `scripts/maintenance/retire_memory.py`. Upstream selects on a `[RESOLVED` prefix; of the 15 entries this pass retired only **1** carried it (`git show 83ddf6b:memory/gotcha-log.md \| grep -c '^## \[RESOLVED'` → 1; a second entry, dated September, carries it as a suffix), so as shipped it would have moved 1 of 15. Selects on the heading DATE instead, both ISO and `(Feb 2026)` shapes — the 2026-09-24 pass (#163) matched ISO only and left 15 Feb–May entries live. The 49 dated `###` entries inside the unreachable-mechanism catalogue are kept by rule (it is pinned) and the script prints that count. Review (6 lenses) found the first draft's lossless check equal by construction; the shipped one reconstructs both files independently and was mutation-tested (12 mutants over two rounds, all killed; `tests/unit/test_retire_memory.py`) |
+| v1.48.0 | installer `--check` INFO listing | **Already in force** |
+| v1.48.1 | `audit-context` Step 4 scope (#117) | **Already in force** |
+| v1.49.0 | `review-changes` one-token emphasis (#158); offsetting thin | **Already in force** |
 
 ## 2026-09-17 — `/update-drift`: **6 releases behind (v1.40.0 → v1.45.1)**; ✅ **all four adopt items landed later the same day, stamp then bumped to v1.45.1**
 
@@ -350,7 +426,7 @@ paragraph originally claimed the tiering moved intact.** Extracting by hand is a
 population, and it lost exactly what a hand-built population loses: the rules that were not
 in front of me. Dropped and now restored:
 
-- **`docs/evidence/**` is MEDIUM, and HIGH when it ships a `.py`** (fork line 79, added
+- `docs/evidence/**` **is MEDIUM, and HIGH when it ships a `.py`** (fork line 79, added
   2026-08-29). `docs/evidence/` holds **58 `.py` files**; without the row they fell to the
   catch-all MEDIUM, losing guarantee-preservation and sync-safety — and the report renders
   that as a clean pass, which is what the profile's own carve-out says must never happen.
@@ -703,7 +779,7 @@ citations rot — cite the sentence.
 upstream `v1.28.0`.
 
 ⛔ **THE STAMP IS DELIBERATELY HELD AT v1.26.0, and that is the operative fact.**
-Recorded verbatim in `memory/project_session_2026_08_26_evening.md`: *"stamp stays
+Recorded verbatim in `memory/archive/project_session_2026_08_26_evening.md`: *"stamp stays
 v1.26.0 until adopt items land. A stamp ahead of its content silences the check that
 would catch the gap."* This is the v1.25.1 lesson applied (see the section below —
 a footer stamp ran ahead of its content for two days and silenced exactly this check).
@@ -929,7 +1005,7 @@ exit 0
 
 **All 38 accounted for**, as the runner's reconciliation rule demands: 25 ran,
 6 manual, 7 prose mentions inside code spans (6 in `memory/gotcha-log.md`, 1 in
-`memory/project_session_2026_07_26.md`) — those are documentation of the syntax
+`memory/archive/project_session_2026_07_26.md`) — those are documentation of the syntax
 and are correctly not extracted.
 
 Three defects were real and are fixed:

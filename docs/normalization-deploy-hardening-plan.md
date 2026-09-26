@@ -12,7 +12,7 @@ including a production-halt regression in my own round-3 fix. These are ROOT fix
 with fresh context + full verification — not more inline patches under end-of-cycle pressure.
 **Held branches (do NOT merge as-is):** llm-distillery `nature-recovery-v4` carries `a8309d4`;
 NexusMind `fix/deploy-dirty-check-untracked` carries `7e525ee`. Both are references, not
-foundations. Full findings: `memory/project_session_2026_07_16.md` + task outputs
+foundations. Full findings: `memory/archive/project_session_2026_07_16.md` + task outputs
 `wcs9cbopi.output` (llm-distillery, ~7 findings) / `ww59k1uwh.output` (NexusMind, 6 findings).
 
 ---

@@ -10,23 +10,17 @@
 # always-loaded file is what this script exists to replace.
 #
 # Adopted from `ducroq/agent-ready-projects` v1.43.0 (THAT repo's #136 — this repo's
-# #136 is the commit-msg deploy guard, an unrelated issue), whose `curate`
-# Step 0 ships the same probe inline. THREE deliberate differences:
-#   1. It checks the FOUR skills installed here; upstream's `want` list has
-#      three and omits `review-changes`, which v1.40.0 moved into the global
-#      set. Three of four passing is the shape this repo keeps shipping.
-#   2. `FRAMEWORK` defaults to the clone this estate actually uses, so the
+# #136 is the commit-msg deploy guard, an unrelated issue). Upstream's `curate` Step 0
+# ships the same probe inline; since v1.46.0 (upstream #200) both derive the skill list
+# from `GLOBAL_SKILLS` in the installer AT THE STAMPED TAG. Two differences remain:
+#   1. `FRAMEWORK` defaults to the clone this estate actually uses, so the
 #      probe runs with no environment set up. An explicit `FRAMEWORK=` wins.
-#   3. It compares BYTES (`cmp`), not diff lines, so the success line means
+#   2. It compares BYTES (`cmp`), not diff lines, so the success line means
 #      what it says.
 #
-# ⚠️ UPSTREAM'S COPY STILL RUNS AND IS NOT THIS ONE. `/curate` Step 0 executes
-# its own inline `stampcheck()` over THREE skills; it will keep doing so, and it
-# skips `review-changes`. A green curate does not mean this script passed.
 # ⚠️ NOT the same check as `check_doc_claims.py`'s identically-named
 # `check_framework_stamp()`, which asks only whether CLAUDE.md's frontmatter and
-# footer agree with EACH OTHER — a much weaker question, and the one that is
-# already wired into `memory/MEMORY.md`.
+# footer agree with EACH OTHER — a much weaker question.
 #
 # ⛔ THE VERSION IS DERIVED FROM THE STAMP, NEVER HARDCODED. A probe pinned to
 # a literal tag has the lifetime of that tag, not of the claim — it expires at
@@ -44,14 +38,6 @@
 #         CLAUDE_SKILLS=/path/to/skills   # where the installed SKILL.md files live
 
 set -u
-
-WANT="audit-context curate update-drift review-changes"
-# DERIVED, never written down: a hand-kept second copy of this number reproduces
-# upstream's original false PASS the moment the two disagree.
-# ⚠️ `$(( ))`-wrapped because BSD/macOS `wc` pads its output with spaces, and the
-# comparisons below are STRING equality — unpadded it reads `4`, padded `       4`,
-# and every run on such a host would report "compared 4 of        4", exit 2.
-N_WANT=$(( $(printf '%s\n' $WANT | wc -l) ))
 
 R=$(git rev-parse --show-toplevel 2>/dev/null) ||
   { echo "CANNOT VERIFY: not in a git repo"; exit 2; }
@@ -133,6 +119,23 @@ echo "stamp: $P   framework: $FRAMEWORK   skills: $SKILLS"
 # into the global set.
 git -C "$FRAMEWORK" rev-parse -q --verify "$P^{commit}" >/dev/null ||
   { echo "CANNOT VERIFY: $P is not in the framework clone — fetch tags"; exit 2; }
+
+# ⛔ The skill list is READ FROM THE INSTALLER AT THE STAMPED TAG, never restated
+# here: a hardcoded list missed `review-changes` for four upstream releases (#200).
+# An older stamp is checked against the skills that were global at that version.
+# An installer that assigns `GLOBAL_SKILLS` more than once (`+=`, `export`, a second
+# line) refuses rather than passing on its first half.
+INST=$(git -C "$FRAMEWORK" show "$P:scripts/install-global-skills.sh" 2>/dev/null) ||
+  { echo "CANNOT VERIFY: $P has no scripts/install-global-skills.sh"; exit 2; }
+WANT=$(printf '%s\n' "$INST" | sed -n 's/^GLOBAL_SKILLS="\([^"]*\)".*/\1/p')
+NSET=$(( $(printf '%s\n' "$INST" | grep -o 'GLOBAL_SKILLS+\{0,1\}=' | wc -l) ))
+# `$(( ))`-wrapped because BSD/macOS `wc` pads its output, and the comparisons
+# below are STRING equality.
+N_WANT=$(( $(printf '%s\n' $WANT | grep -c .) ))
+[ "$NSET" = 1 ] ||
+  { echo "CANNOT VERIFY: $P's installer sets GLOBAL_SKILLS $NSET times, not once"; exit 2; }
+[ "$N_WANT" -gt 0 ] ||
+  { echo "CANNOT VERIFY: $P's installer has no parseable GLOBAL_SKILLS=\"...\" line at column 0"; exit 2; }
 
 TMP=$(mktemp) || { echo "CANNOT VERIFY: cannot create a temp file"; exit 2; }
 trap 'rm -f "$TMP"' EXIT

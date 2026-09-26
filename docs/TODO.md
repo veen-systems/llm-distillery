@@ -52,9 +52,24 @@ verified and B waits on the owner, item −1 (the read surface) is the work.
    dated before 2026-09-01 moved verbatim to `memory/gotcha-log-archive.md` (lossless, 0
    lines missing/extra). Kept: September on, the unreachable-mechanism catalogue, *Mechanized*,
    the entry template. Headings `/curate` reads each session: ~477 → 184.
-   **Next: not yet chosen.** Candidates, measured 2026-09-24: `docs/CONTRACTS_PLAN.md` 149 KB,
-   `memory/hypothesis-ledger.md` 142 KB, `memory/cross-repo-prioritization.md` 136 KB, and
-   `CLAUDE.md` itself (1,348 B under its wall). ⛔ **A row is
+   ✅ **RETIRE step 3 + THIN, DONE 2026-09-26** (`/update-drift` v1.45.1 → v1.49.0; record:
+   `docs/decisions/framework-adoption-history.md` § 2026-09-26). Retiring is now a command —
+   `scripts/maintenance/retire_memory.py {gotcha,sessions} --before <YYYY-MM-01> [--apply]`,
+   18 tests, 12 mutants killed. It moved 79 pre-September session files to `memory/archive/`
+   and 15 month-dated (Feb–May) gotchas the 09-24 pass missed. `CLAUDE.md` was thinned from
+   38,141 to 17,749 chars (`wc -m`). The always-loaded layer went 52,133 → ~31 KB
+   (`check_index_budget.py --target loaded`).
+   ▶ **Next, in order:**
+   1. **Move `memory/gotcha-log-archive.md` into `memory/archive/`** — curate's size measurement
+      excludes only `*/archive/*`, so the 467k archive still counts. Rewrite its references
+      (`git grep -l gotcha-log-archive`) and the `memory/gotcha-log*.md` recurrence glob in
+      curate's grep instructions here, then add it to `retire_memory.py` as the archive path.
+   2. **Thin `memory/MEMORY.md` (17 KB, read every session) the way `CLAUDE.md` was**: lead each
+      line with the rule, pointer to the target, no narrative.
+   3. Candidates measured 2026-09-24, still unretired: `docs/CONTRACTS_PLAN.md` 149 KB,
+      `memory/hypothesis-ledger.md` 142 KB, `memory/cross-repo-prioritization.md` 136 KB.
+   4. The Mechanized table's `proposed` row `check_claude_md_trim.py` — a trim kept every
+      token and still dropped five operative CLAUSES; only a review lens noticed. ⛔ **A row is
    `live` only after a seeded positive** — the table says so and it is this repo's signature
    defect arriving in the table built to prevent it.
    **Why this is first, measured 2026-09-22:** the bare-"continue" path is **605,198 B /
