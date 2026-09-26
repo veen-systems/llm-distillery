@@ -22,9 +22,17 @@ A medal, a season's champions or a world record, reported as a result, is OUT.
 A headline plus a line or two of teaser (paywall, Google News echo) is **OUT**, not `cannot_judge`.
 `cannot_judge` stays only for text that is broken or not an article at all.
 
-## ⏸️ Open, NOT ruled: consumer-court compensation vs ruling 1
+## 6. Consumer-court compensation — ruling 1 NARROWED (ruled 2026-09-26)
 
-Ruling 1 says court rulings are IN when they deliver something to a named person, and names
-*compensation* as an example. In the band audit's owner check (#5) the owner kept a consumer
-commission's Rs 60k award to one bus passenger **OUT**. That contradicts ruling 1 as worded. It is
-recorded here for the owner to settle; ruling 1 is **not** changed, and the judges still apply it.
+**Owner ruling, given in session 2026-09-26**, choosing between options the assistant wrote. The option
+selected, verbatim: *"Narrow ruling 1 — Routine individual consumer or damages awards are OUT. Rulings
+that change rights or deliver to a group stay IN. Your band-audit call stands."*
+
+So the consumer commission's Rs 60k award to one bus passenger (band audit, owner check #5) is **OUT**,
+and ruling 1's *compensation* example now covers only awards that change a right or reach a group.
+*My gloss, not ruled:* where "routine" ends (a large individual award, a precedent-setting one) was not
+asked; judges should flag such cases rather than decide them.
+
+*Superseded text, kept:* Ruling 1 says court rulings are IN when they deliver something to a named
+person, and names *compensation* as an example. In the band audit's owner check (#5) the owner kept a
+consumer commission's Rs 60k award to one bus passenger **OUT**. That contradicts ruling 1 as worded.

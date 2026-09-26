@@ -35,7 +35,30 @@ A. ✅ **VERIFIED 2026-09-26 ~15:45 CEST, from outcomes (one cycle each; the ori
       pre-change 140. Stage wall-clock expected ~+4 min (untimed at 6000); name it for NexusMind #517.
    3. **human_thriving v9 in production:** rows `version 9.0`, ~20–25 passers/cycle (first cycle: 24).
 
-B. ⏸️ **OWNER DECISIONS, in the order to put them (none time-critical):**
+B. ✅ **RULED 2026-09-26 (owner, in session, choosing between options the assistant wrote).** Original list kept below.
+   1. **#151 cutover: "Cut over now."** Evidence put to the owner, measured on sadalsuud `data/filtered/`, the 5 cycles
+      since v9 went live (15,608 articles scored by both): v7 surfaces 1,206 at raw ≥ 4.5, v9 112 (104 shared, v9-only
+      8, v7-only 1,102); reaching the site (normalized ≥ 4.5, ovr.news #304) 681 vs 62. **Head of lens, 2026-09-26
+      (the NexusMind#455 ruling's required comparison):** top-15 overlap **1 of 15**; v7's head is mostly environmental
+      (fireflies, rivers, Mary River, climate legacy), v9's is people-centred (rural schools, libraries, a girls' surf
+      school, an embryo-use ruling); on-tab that day v7 530 vs v9 48. *Gloss:* under #372 narrow-first, many of v7's
+      environmental heads go to Recovery/Solutions anyway, so today's real tab head is not v7's raw top 15.
+      ▶ Implementation order is #151's (teach ovr.news the name in its 12 files → then disable `uplifting`; NexusMind
+      has a probe that fails if `enabled_filters` loses `uplifting`, update it in the same change). Cross-repo.
+   2. **≥ 7 pool: "Yes, run it."** Not started.
+   3. **Compensation: "Narrow ruling 1"** — recorded in `docs/decisions/2026-09-25-thriving-scope-rulings.md` § 6.
+      ⚠️ It binds ADJUDICATION (judges) only; v9's oracle prompt still scores compensation 7–8 (`prompt-compressed.md`
+      :286), so the ruling reaches the model only through adjudicated labels.
+   4. **#164: "Diff all 18, then ask."** Done 2026-09-26: 15 differ and **every NexusMind version is an ancestor of
+      llm-distillery's** (12 found in llm-distillery git history by blob hash; `obituary_detector/v5/models/
+      training_config.json` is untracked here and equals ours minus the #158 `single_seed` block). 4 are
+      llm-distillery-only (`detector_seeds.py`, `harm_detector/training/{build,train}_v1.py`, `SHA256SUMS.txt`).
+      22 are NexusMind-only (model `.pkl`s and `.sha256` sidecars, `obituary_detector/v3/__init__.py`, a June
+      rollup) and survive a sync: `deploy_to_nexusmind.sh` step 2 is `cp`-only, it deletes nothing. Compared against
+      the `~/repos` NexusMind working tree (HEAD `bbeb431`), not sadalsuud's. ▶ owner: which side.
+   5. Not asked (owner "NOT SURE", do not push).
+
+   *Original list:* **OWNER DECISIONS, in the order to put them (none time-critical):**
    1. **The Thriving cutover, uplifting v7 → human_thriving v9 (#151).** Prepare the free same-articles v7-vs-v9
       comparison on the days v9 has run (both score every article); the owner said "not yet" on 2026-09-25.
       v9 facts: `filters/human_thriving/v9/README.md`. ovr.news also names `uplifting` in 12 files (#151 body).

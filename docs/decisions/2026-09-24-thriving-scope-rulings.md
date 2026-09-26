@@ -15,6 +15,9 @@ Anything beyond that wording (the "consequences" lines) is the assistant's gloss
 > right recognised, compensation. Still OUT: sentencing/arrests (harm being answered, already in
 > the prompt) and relief for convicted violent offenders (the 2026-09-03 ruling, #143).
 
+⚠️ **NARROWED 2026-09-26** (`2026-09-25-thriving-scope-rulings.md` § 6): routine individual consumer or
+damages awards are OUT; compensation stays IN only when the ruling changes a right or delivers to a group.
+
 *Consequence (gloss):* the Bombay High Court custody ruling (EXP-029 panel, 6.110) is
 **correctly in scope**. EXP-029's rubric arm counted it among the 12 flips, so that flip was the
 rubric being wrong, not the oracle. The count of real errors among the 12 drops accordingly.
