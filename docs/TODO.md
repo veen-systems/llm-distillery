@@ -1,78 +1,40 @@
 # LLM Distillery - TODO
 
-## ▶️ START HERE — the ordered queue, as of 2026-09-22 (all three rulings settled; Phase E fitted, NOT cut over; the READ SURFACE is now the top item)
+## ▶️ START HERE — the ordered queue, as of 2026-09-26 (v9 LIVE in the invisible slot; ovr.news narrow-lens-first MERGED)
 
 *A bare "continue" means this list, top down. Each line names the FIRST action, not the
 topic. Re-read the block under it before starting; the reasons are there, not here.*
 
-⛔⛔ **NEXT SESSION STARTS AT ITEM −1, NOT ITEM 3.** Owner, 2026-09-22, on seeing how much
-this session had to read: *"that means we need to start pruning, thinning, mechanizing,
-retiring."* That is now the work, ahead of the queue below.
+A. ▶ **FIRST: verify three things that went live at the end of 2026-09-26's session, from OUTCOMES, not configs.**
+   1. **ovr.news #372, narrow lens first** (merged `58c7359`, live with the first Cloudflare build after the
+      12:04 cycle's summarize → deploy hook, ~13:30): on the live site, articles that passed Recovery AND another
+      lens should now sit on Recovery. Check the ovr.news build log for `Canonical lens collapse` and a few shared
+      ids. Evidence: `docs/evidence/2026-09-26-lens-assignment-benchmark/README.md`. ⚠️ The rule was benchmarked
+      on Claude judges (the owner delegated), so show the owner a handful of shared articles and their new tab.
+   2. **Harm cap 3000 → 6000** (NM#531, on sadalsuud since 10:1x): `journalctl -u nexusmind.service` must show
+      `Harm preprocessing (SHADOW, stamp-only) complete: ... (cap 6000)` and `files deferred` falling below the
+      pre-change 140. Stage wall-clock expected ~+4 min (untimed at 6000); name it for NexusMind #517.
+   3. **human_thriving v9 in production:** rows `version 9.0`, ~20–25 passers/cycle (first cycle: 24).
 
-−2. ✅ **2026-09-25 RESULT: steps 1–4 DONE — all three retrains WIN the pre-registered bar; adj3 is the
-   candidate** (adjudicated labels: FP 11 → **1**, TP 9 → 8 of 23; spec band [0.9984] vs v8 [0.9812, 0.9890]).
-   ⚠️ The recall clause passed with ZERO margin. ⭐ FPs also fall 9 → 1 under the ORACLE's own labels.
-   Everything, caveats first: `docs/evidence/2026-09-25-v8-adj-retrain-gate/README.md`.
-   ✅ **Step 5 DONE 2026-09-25 — the live audit: adj3 WINS.** Junk share of what it publishes 33.8% (v8) →
-   14.9% (adj3), +0.189 [+0.136, +0.244]; ~20% fewer in-scope articles. Owner blind check 16/20 (bar 18),
-   resolved to 19/20. `docs/evidence/2026-09-25-v8-adj3-live-audit/README.md`.
-   ▶ **NEXT = the cutover question (#151): adj3 vs `uplifting v7`, which Thriving actually serves. Owner's call.**
-   ✅ **Cut-off RULED 2026-09-25 (owner): v9 = adj3 at 4.5**, the only measured point; volume grows later via
-   training (more real positives), not the cut-off. Two band audits of [3.5, 4.5) FAILED drift (0.844, 0.887):
-   the band is ambiguous, not measurable at this bar (`docs/evidence/2026-09-25-adj3-band-audit-2/README.md`).
-   Owner: step 2a (package adj3 as v9 → parallel slot) YES; reader-facing cutover (#151) NOT YET.
-   ✅ **v9 LIVE 2026-09-25, replacing v8** in the reader-invisible slot (owner: replace). NM#530. ▶ Check the first
-   ⚠️ From the NexusMind session's review (2026-09-25): (a) REFIT v9's normalization from PRODUCTION rows once
-   ~200 real v9 rows clear raw 4.5 (~10 cycles); today's CDF is fitted on a replay of the week. (b) The enrichment
-   trigger for this lens moves from raw >= 4.0 (v8, unnormalized) to ~raw >= 4.95: cheaper, some recall lost, same rule
-   as every normalized lens. (c) Count passers on nexus_mind_attributes.human_thriving.RAW_weighted_average >= 4.5, never
-   the normalized weighted_average (reads ~half). (d) The 18 drifted filters/common files: llm-distillery is canonical,
-   but violence_promotion/v1/oracle.py now imports ground_truth.deepseek_models, absent in NexusMind: never blind-copy.
-   cycle (20:02): `data/filtered/human_thriving/` rows carry `version 9.0`. Still open for the owner:
-   (1) [ruled: replace];
-   (2) consumer-court compensation vs ruling 1 (`docs/decisions/2026-09-25-thriving-scope-rulings.md`);
-   (3) the ≥ 7 pool (the volume lever).
-   ✅ Nature recovery: miss audit + NR-1 re-judge DONE (~36 misses/week, mostly model/cut-off, none observed via probe);
-   relabel pilot FAILED (judges stricter than owner, 3/10) and the relabel was DROPPED by the owner 2026-09-26.
-   Next for NR is v5 (#71) with the owner's concept written into the prompt:
-   `docs/evidence/2026-09-25-nature-recovery-relabel/PILOT_RESULT.md`. ⚠️ The miss audit's ~47% precision is SUSPECT.
-   ✅ Harm detector cap 3000 -> 6000 (owner), NM#531 merged + on sadalsuud 2026-09-26 10:1x; proof = the 12:04 cycle
-   logs `(cap 6000)`.
-   Staged on b650: `filters/human_thriving/v8_adj3/` (untracked). Original item text below, now history.
+B. ⏸️ **OWNER DECISIONS, in the order to put them (none time-critical):**
+   1. **The Thriving cutover, uplifting v7 → human_thriving v9 (#151).** Prepare the free same-articles v7-vs-v9
+      comparison on the days v9 has run (both score every article); the owner said "not yet" on 2026-09-25.
+      v9 facts: `filters/human_thriving/v9/README.md`. ovr.news also names `uplifting` in 12 files (#151 body).
+   2. **The ≥ 7 pool** (~720 articles, est. $0.10–0.20; blind adjudication then k=3 oracle): the volume lever the
+      owner chose for v9 instead of a lower cut-off.
+   3. **Consumer-court compensation vs ruling 1** (`docs/decisions/2026-09-25-thriving-scope-rulings.md`, open).
+   4. **18 filters/common detector files differ llm-distillery ↔ NexusMind (#164)**:
+      which side is canonical. Coordinate with the NexusMind session before any sync.
+   5. On the judges' reading vs the owner's, the owner said "NOT SURE" whether to write the differences into rulings
+      (candidate rulings are in the 2026-09-26 session file); do not push it.
 
-   ~~FIRST~~, from 2026-09-25 05:00 (b650 is NOT available before — owner, 2026-09-24): retrain
-   `human_thriving v8` on the Claude-adjudicated labels.** Evidence and every number:
-   `docs/evidence/2026-09-24-thriving-adjudication-full/README.md` (553 of 878 labels ≥ 3.5 moved
-   out; pilot owner-checked 10/10; drift check 0.946). Data: `datasets/training/human_thriving_v8_adj1/`
-   (**gitignored, local only** — v8's exact split ids, moved-out rows capped at 2.0).
-   Steps:
-   1. `ssh b650-gpu 'nvidia-smi; ollama ps'` — ⛔ **if anything holds the GPU, stop and ask**;
-      b650 is shared, and the 2026-09-24 holder was `qwen3.5:35b-a3b` (NexusMind#523's run).
-   2. `ssh b650-gpu 'cd ~/llm-distillery && git pull'` (it was at `eeeb84d`; `train.py` refuses
-      without a clean commit), then `rsync -a datasets/training/human_thriving_v8_adj1/
-      b650-gpu:llm-distillery/datasets/training/human_thriving_v8_adj1/`.
-   3. ⭐ **TWO runs now** (updated 2026-09-24 late): `human_thriving_v8_adj1` (adjudicated labels
-      only) AND `human_thriving_v8_adj3` (adj1 + 186 new positives + 439 capped production hard
-      negatives; `adj2` is the intermediate without the negatives, optional third run;
-      `docs/evidence/2026-09-24-thriving-more-positives/README.md`). rsync BOTH dirs. Compare all
-      three models (v8, adj1, adj2) on **v8's original 660 test ids**, the rows common to all.
-      Same command for each, with its own `--data-dir` and `--output-dir runs/<name>`.
-      Train with v8's settings, into a **separate** output dir so the deployed adapter is untouched:
-      `venv-prodparity/bin/python training/train.py --filter filters/human_thriving/v8
-      --data-dir datasets/training/human_thriving_v8_adj1 --output-dir runs/human_thriving_v8_adj1
-      --epochs 6 --batch-size 8 --seed 42 --select-metric recall_medium`.
-   4. ADR-021 gate on the test split, **against BOTH label sets** (oracle and adjudicated), v8 vs
-      the retrain on the same 660 rows, reading specificity first (ADR-023) and the flip count.
-      Pre-register the bar before step 3 finishes.
-   5. Only if it wins: a live audit of passers, then the cutover question (#151).
-   ⚠️ **2026-09-25 05:07 check: the GPU was HELD** (`ollama` `gemma3:27b`, 20 GB, 95%, most
-   likely NexusMind#523's tier-2 run), so nothing was started. The owner then said *"i think it
-   should be free now"*. Step 1 still applies: check it, do not assume it.
-   ⏸️ **OPEN OWNER QUESTION — the ≥ 7 pool.** About 720 production articles scored ≥ 7 by a
-   production model, 2026-09-02 → 09-24 (uplifting v7: 231, Belonging: 489; v8 and Solutions:
-   0). Same route as the more-positives run: blind Claude adjudication, then k=3 oracle on the
-   in-scope ones, est. $0.10–0.20. It doubles as the test of whether the empty top (0 labels
-   ≥ 8, 3 at 7–8 of 6,772) is the oracle's SCALE or missing data. Not started: no yes given.
+C. **Later: Nature recovery v5 (#71)** with the owner's concept in the prompt:
+   `docs/evidence/2026-09-25-nature-recovery-relabel/PILOT_RESULT.md` (relabel DROPPED by the owner).
+
+⛔ **Standing since 2026-09-22 (owner): "we need to start pruning, thinning, mechanizing, retiring."** When A is
+verified and B waits on the owner, item −1 (the read surface) is the work.
+
+✅ *Item −2 (v9 and the Nature recovery audits, 2026-09-24 → 26) moved verbatim to `docs/TODO-archive.md`.*
 
 −1. ▶ **THE READ SURFACE (`#163`) — START HERE, and start with MECHANIZE.**
    ✅ **Row 1 DONE 2026-09-24** — the `in-sample tautology` row is `live`

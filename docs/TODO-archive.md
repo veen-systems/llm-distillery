@@ -6578,3 +6578,73 @@ Prefilter Quality):**
   next version bump on each filter.
 
 
+
+
+## Moved 2026-09-26 from TODO START HERE — item −2 (human_thriving v9: retrain, gates, live audit, cut-off,
+## deploy; Nature recovery miss audit and relabel pilot). Verbatim.
+
+−2. ✅ **2026-09-25 RESULT: steps 1–4 DONE — all three retrains WIN the pre-registered bar; adj3 is the
+   candidate** (adjudicated labels: FP 11 → **1**, TP 9 → 8 of 23; spec band [0.9984] vs v8 [0.9812, 0.9890]).
+   ⚠️ The recall clause passed with ZERO margin. ⭐ FPs also fall 9 → 1 under the ORACLE's own labels.
+   Everything, caveats first: `docs/evidence/2026-09-25-v8-adj-retrain-gate/README.md`.
+   ✅ **Step 5 DONE 2026-09-25 — the live audit: adj3 WINS.** Junk share of what it publishes 33.8% (v8) →
+   14.9% (adj3), +0.189 [+0.136, +0.244]; ~20% fewer in-scope articles. Owner blind check 16/20 (bar 18),
+   resolved to 19/20. `docs/evidence/2026-09-25-v8-adj3-live-audit/README.md`.
+   ▶ **NEXT = the cutover question (#151): adj3 vs `uplifting v7`, which Thriving actually serves. Owner's call.**
+   ✅ **Cut-off RULED 2026-09-25 (owner): v9 = adj3 at 4.5**, the only measured point; volume grows later via
+   training (more real positives), not the cut-off. Two band audits of [3.5, 4.5) FAILED drift (0.844, 0.887):
+   the band is ambiguous, not measurable at this bar (`docs/evidence/2026-09-25-adj3-band-audit-2/README.md`).
+   Owner: step 2a (package adj3 as v9 → parallel slot) YES; reader-facing cutover (#151) NOT YET.
+   ✅ **v9 LIVE 2026-09-25, replacing v8** in the reader-invisible slot (owner: replace). NM#530. ▶ Check the first
+   ⚠️ From the NexusMind session's review (2026-09-25): (a) REFIT v9's normalization from PRODUCTION rows once
+   ~200 real v9 rows clear raw 4.5 (~10 cycles); today's CDF is fitted on a replay of the week. (b) The enrichment
+   trigger for this lens moves from raw >= 4.0 (v8, unnormalized) to ~raw >= 4.95: cheaper, some recall lost, same rule
+   as every normalized lens. (c) Count passers on nexus_mind_attributes.human_thriving.RAW_weighted_average >= 4.5, never
+   the normalized weighted_average (reads ~half). (d) The 18 drifted filters/common files: llm-distillery is canonical,
+   but violence_promotion/v1/oracle.py now imports ground_truth.deepseek_models, absent in NexusMind: never blind-copy.
+   cycle (20:02): `data/filtered/human_thriving/` rows carry `version 9.0`. Still open for the owner:
+   (1) [ruled: replace];
+   (2) consumer-court compensation vs ruling 1 (`docs/decisions/2026-09-25-thriving-scope-rulings.md`);
+   (3) the ≥ 7 pool (the volume lever).
+   ✅ Nature recovery: miss audit + NR-1 re-judge DONE (~36 misses/week, mostly model/cut-off, none observed via probe);
+   relabel pilot FAILED (judges stricter than owner, 3/10) and the relabel was DROPPED by the owner 2026-09-26.
+   Next for NR is v5 (#71) with the owner's concept written into the prompt:
+   `docs/evidence/2026-09-25-nature-recovery-relabel/PILOT_RESULT.md`. ⚠️ The miss audit's ~47% precision is SUSPECT.
+   ✅ Harm detector cap 3000 -> 6000 (owner), NM#531 merged + on sadalsuud 2026-09-26 10:1x; proof = the 12:04 cycle
+   logs `(cap 6000)`.
+   Staged on b650: `filters/human_thriving/v8_adj3/` (untracked). Original item text below, now history.
+
+   ~~FIRST~~, from 2026-09-25 05:00 (b650 is NOT available before — owner, 2026-09-24): retrain
+   `human_thriving v8` on the Claude-adjudicated labels.** Evidence and every number:
+   `docs/evidence/2026-09-24-thriving-adjudication-full/README.md` (553 of 878 labels ≥ 3.5 moved
+   out; pilot owner-checked 10/10; drift check 0.946). Data: `datasets/training/human_thriving_v8_adj1/`
+   (**gitignored, local only** — v8's exact split ids, moved-out rows capped at 2.0).
+   Steps:
+   1. `ssh b650-gpu 'nvidia-smi; ollama ps'` — ⛔ **if anything holds the GPU, stop and ask**;
+      b650 is shared, and the 2026-09-24 holder was `qwen3.5:35b-a3b` (NexusMind#523's run).
+   2. `ssh b650-gpu 'cd ~/llm-distillery && git pull'` (it was at `eeeb84d`; `train.py` refuses
+      without a clean commit), then `rsync -a datasets/training/human_thriving_v8_adj1/
+      b650-gpu:llm-distillery/datasets/training/human_thriving_v8_adj1/`.
+   3. ⭐ **TWO runs now** (updated 2026-09-24 late): `human_thriving_v8_adj1` (adjudicated labels
+      only) AND `human_thriving_v8_adj3` (adj1 + 186 new positives + 439 capped production hard
+      negatives; `adj2` is the intermediate without the negatives, optional third run;
+      `docs/evidence/2026-09-24-thriving-more-positives/README.md`). rsync BOTH dirs. Compare all
+      three models (v8, adj1, adj2) on **v8's original 660 test ids**, the rows common to all.
+      Same command for each, with its own `--data-dir` and `--output-dir runs/<name>`.
+      Train with v8's settings, into a **separate** output dir so the deployed adapter is untouched:
+      `venv-prodparity/bin/python training/train.py --filter filters/human_thriving/v8
+      --data-dir datasets/training/human_thriving_v8_adj1 --output-dir runs/human_thriving_v8_adj1
+      --epochs 6 --batch-size 8 --seed 42 --select-metric recall_medium`.
+   4. ADR-021 gate on the test split, **against BOTH label sets** (oracle and adjudicated), v8 vs
+      the retrain on the same 660 rows, reading specificity first (ADR-023) and the flip count.
+      Pre-register the bar before step 3 finishes.
+   5. Only if it wins: a live audit of passers, then the cutover question (#151).
+   ⚠️ **2026-09-25 05:07 check: the GPU was HELD** (`ollama` `gemma3:27b`, 20 GB, 95%, most
+   likely NexusMind#523's tier-2 run), so nothing was started. The owner then said *"i think it
+   should be free now"*. Step 1 still applies: check it, do not assume it.
+   ⏸️ **OPEN OWNER QUESTION — the ≥ 7 pool.** About 720 production articles scored ≥ 7 by a
+   production model, 2026-09-02 → 09-24 (uplifting v7: 231, Belonging: 489; v8 and Solutions:
+   0). Same route as the more-positives run: blind Claude adjudication, then k=3 oracle on the
+   in-scope ones, est. $0.10–0.20. It doubles as the test of whether the empty top (0 labels
+   ≥ 8, 3 at 7–8 of 6,772) is the oracle's SCALE or missing data. Not started: no yes given.
+

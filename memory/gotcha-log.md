@@ -4,6 +4,30 @@
 
 *⚠️ **Entries dated before 2026-09-01 live in [`gotcha-log-archive.md`](gotcha-log-archive.md)**, verbatim (moved 2026-09-24, #163). The unreachable-mechanism catalogue stayed here. For a recurrence match, grep both: `grep -n <term> memory/gotcha-log*.md`.*
 
+## A NOTIFICATION FOR WORK I DID NOT REMEMBER — AND THREE BATCHES THAT WERE NEVER LAUNCHED (2026-09-25)
+**Problem**: Background-task notifications arrived for "NR re-judge" judges while my context held no record of the Nature
+recovery audit, ruling NR-1 or the re-judge. I told the owner twice that the audit had not started. Git showed it had
+(commits at 18:45–19:00), and 3 of its 8 batches (A06/B01/B02) had never been launched, so the run would have waited forever.
+**Root cause**: The session lost its record of an hour of its own work. I answered from context instead of from artifacts.
+**Fix**: When a notification names work you do not remember, read `git log`, the evidence dir and the task outputs FIRST,
+and say the correction plainly. Reconcile "launched" against "expected" by grepping task outputs for each batch's input
+path; a batch with no task was never started.
+
+## A PERCENTILE BOOTSTRAP PRINTED "0 [0, 0]" AND I WROTE "NONE VIA THE PROBE" (2026-09-25)
+**Problem**: The NR miss audit's analyse.py reported 0 missed stories via the probe with interval [0, 0] (0/100 judged),
+and a commit said "none via the probe". Wilson allows up to ~3.7% of 1,487/week, i.e. ~55/week.
+**Root cause**: Resampling a stratum with zero positives always yields zero, so a percentile bootstrap is degenerate there.
+**Fix**: For zero (or all) positive strata, report N × Wilson bounds and say "none OBSERVED". Corrected in both READMEs.
+The claim-shapes `zero-width-interval` check reads JSON artifacts, not printed tables, which is why it did not fire.
+
+## THE OWNER JUDGED MY SUMMARIES, NOT THE ARTICLES (2026-09-25)
+**Problem**: In the band audit's owner check, my one-line gloss of a Nigerian pardon omitted "the use of human parts for
+rituals", and in the next check an excerpt I cut stopped before the pension amount the story turned on. Both flipped
+the owner's call once the full text was shown.
+**Root cause**: A summary is a second instrument between the article and the owner, and it drops the detail that decides.
+**Fix**: Owner checks show a faithful translation of the full opening text (or the whole text when short), never a gloss.
+When a call rests on a detail the excerpt might have cut, show the rest before recording.
+
 ## A CLAIM-SHAPE CHECK WHOSE ONLY CALLER RUNS AT SESSION EDGES LET A FAILING COMMIT LAND, AND A WHOLE SESSION LEFT NO RECORD (2026-09-25)
 **Problem**: `f7119a6` (2026-09-24 20:51) added `docs/evidence/2026-09-24-thriving-adjudication-full/merge.py`,
 which reads the 25.1×-design-weighted `labels_v84_merged.jsonl`, prints an agreement rate and
@@ -1797,7 +1821,7 @@ Expect it; do not "fix" it by weakening the guard.
 reads `git diff --cached`, which is empty on an amend, so a filter-touching commit can be amended
 with any wording at all (found 2026-09-01, reported, not fixed).
 
-## 2026-09-03 — `| tail` swallowed an exit code while I was testing exit codes **[x5]**
+## 2026-09-03 — `| tail` swallowed an exit code while I was testing exit codes **[x6 — recurred 2026-09-25, v9 smoke test `echo exit=$?` after `| tail`; re-run for the real code]**
 
 **Problem.** Checking the four exit codes of a new gate, I ran
 `python3 gate.py <bad-glob> 2>&1 | tail -1; echo $?` and read **0** for two refusal paths that
