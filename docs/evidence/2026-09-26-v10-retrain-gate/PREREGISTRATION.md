@@ -43,6 +43,14 @@ the likely outcomes**; either is a finding. A WIN would be one draw clearing the
   model trained on them): TP and FP for both arms. This is where more power is. These rows are
   design-weighted toward production ≥ 7 articles, so they are not a production rate.
 - Oracle labels on the 660; flip count at 4.5 by determinate/indeterminate; never max |Δ|.
+- **Owner-flagged articles (added 2026-09-26 ~18:00, BEFORE any training).** The owner flagged 3 Thriving
+  articles on ovr.news as harm, not thriving (via `ovr.news/scripts/flag-evidence.ts`, run by the ovr.news
+  session): `british_irish_thejournal_ie_1054d9e24638` (forced sterilisation of disabled women),
+  `greek_ta_nea_ef17d7bef963` (UN femicide report), `east_african_lexpress_madagascar_8a1e2f8d6794` (a book
+  on illegal abortions). All three were surfaced by **uplifting v7** (raw 6.23–6.71, drain articles after
+  #373). **v9 already rejects all three** (production stage-2 raw 1.074 / 1.210 / 3.219). Check: adj4 must
+  also score each below 4.5. Reported per article; a failure is a named regression the owner sees, not a
+  gate clause (n = 3). None of the three is in adj4's training data.
 
 ## What each outcome does next
 - **WIN** → live audit of adj4 vs v9 on a production week (the v9 protocol), then the owner.
