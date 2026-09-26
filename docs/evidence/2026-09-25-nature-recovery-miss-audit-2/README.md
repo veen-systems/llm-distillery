@@ -1,5 +1,9 @@
 # Nature recovery miss audit — RE-JUDGE under ruling NR-1: RESULT (2026-09-25)
 
+⛔ **2026-09-26: the "~47% in scope" precision figure below is SUSPECT.** The relabel pilot showed the same judges are
+stricter than the owner on borderline nature stories (owner vs judges 3/10, owner vs oracle 8/10):
+`../2026-09-25-nature-recovery-relabel/PILOT_RESULT.md`. Do not quote it as nr's precision.
+
 **Measured, and reportable:** owner check **18/20** (bar ≥ 18), controls 4/4, drift A-vs-B **0.967** on 90 rows.
 Same panel (301 + 4 controls) and `analyse.py` as the first run; the judges also applied NR-1 (completed
 restoration/protection steps count before recovery is measured; plans, short-lived gains and research
