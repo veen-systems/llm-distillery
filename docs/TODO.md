@@ -43,6 +43,7 @@ B. ✅ **RULED 2026-09-26 (owner, in session, choosing between options the assis
       (fireflies, rivers, Mary River, climate legacy), v9's is people-centred (rural schools, libraries, a girls' surf
       school, an embryo-use ruling); on-tab that day v7 530 vs v9 48. *Gloss:* under #372 narrow-first, many of v7's
       environmental heads go to Recovery/Solutions anyway, so today's real tab head is not v7's raw top 15.
+      ✅ **Re-confirmed after the head comparison: "Yes, cut over."** Both PRs shown to the owner before merging.
       ▶ Implementation order is #151's (teach ovr.news the name in its 12 files → then disable `uplifting`; NexusMind
       has a probe that fails if `enabled_filters` loses `uplifting`, update it in the same change). Cross-repo.
    2. **≥ 7 pool: "Yes, run it."** Not started.
@@ -55,7 +56,8 @@ B. ✅ **RULED 2026-09-26 (owner, in session, choosing between options the assis
       llm-distillery-only (`detector_seeds.py`, `harm_detector/training/{build,train}_v1.py`, `SHA256SUMS.txt`).
       22 are NexusMind-only (model `.pkl`s and `.sha256` sidecars, `obituary_detector/v3/__init__.py`, a June
       rollup) and survive a sync: `deploy_to_nexusmind.sh` step 2 is `cp`-only, it deletes nothing. Compared against
-      the `~/repos` NexusMind working tree (HEAD `bbeb431`), not sadalsuud's. ▶ owner: which side.
+      the `~/repos` NexusMind working tree (HEAD `bbeb431`), not sadalsuud's. ✅ **Owner: "llm-distillery"** canonical;
+      sync the 18 as their own reviewed NexusMind PR (not inside a filter deploy), after telling the NexusMind session.
    5. Not asked (owner "NOT SURE", do not push).
 
    *Original list:* **OWNER DECISIONS, in the order to put them (none time-critical):**
