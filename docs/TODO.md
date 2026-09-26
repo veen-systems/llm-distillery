@@ -5,7 +5,26 @@
 *A bare "continue" means this list, top down. Each line names the FIRST action, not the
 topic. Re-read the block under it before starting; the reasons are there, not here.*
 
-A. ▶ **FIRST: verify three things that went live at the end of 2026-09-26's session, from OUTCOMES, not configs.**
+A. ✅ **VERIFIED 2026-09-26 ~15:45 CEST, from outcomes (one cycle each; the original text is kept below).**
+   1. **#372 works: 124 of 124** live articles whose `nature_recovery` row clears the build's gate sit on Recovery
+      (production `ovr.db` on sadalsuud, read-only, against the live `search-index.json`, build `11:52:46Z`). Of 449
+      live multi-lens ids, all 80 that include `nature_recovery` are on Recovery. ⭐ **16 more pass NR on raw
+      (≥ 3.75) and are NOT on Recovery, and #372 is not the cause**: `getArticlesForBuild` admits a lens only at
+      NORMALIZED `weighted_average >= 4.5` (`displayScoreThreshold`), and all 16 are below it — that is
+      ovr.news #304 (open since 2026-08-12, the ADR-022 inversion), now with a Recovery count on it.
+      Owner eyeball: *Toronto park restoration*, *Cerrado restoration* and *reintroduced dormice* (all also passed
+      Solutions) and *African wild dogs travelled 4,000 km* (also passed Discovery) are now on Recovery.
+      Not done: the Cloudflare build log (`Canonical lens collapse`); the DB outcome makes it redundant.
+   2. **Harm cap 6000 is live**: the 12:11 cycle logged `6000 stamped (cap 6000), 15000 already stamped, 129 too old
+      … 140 files deferred`. ⚠️ The baseline below is wrong: deferred was **141 → 142 → 143 → 144** over the
+      four cap-3000 cycles (+1 per cycle, never converging); the first cap-6000 cycle took it to **140**. One cycle
+      is a direction, not a rate. Stage wall-clock (detector load → complete): **4m12s at 3000 (08:15) vs 8m16s
+      at 6000 (12:15)**, +4m04s — the number NexusMind #517 asked for.
+   3. **v9 in production**: every row in the five cycles since cutover is `version 9.0`, and all passers are
+      `stage2`. Passers at raw ≥ 4.5: **24, 37, 19, 20, 12** (0.50–0.95% of 2,408–3,906 rows); v8's last three:
+      34, 21, 37. The 13:24 cycle's 12 is the lowest so far; one cycle is not a trend.
+
+   *Original item A:* **FIRST: verify three things that went live at the end of 2026-09-26's session, from OUTCOMES, not configs.**
    1. **ovr.news #372, narrow lens first** (merged `58c7359`, live with the first Cloudflare build after the
       12:04 cycle's summarize → deploy hook, ~13:30): on the live site, articles that passed Recovery AND another
       lens should now sit on Recovery. Check the ovr.news build log for `Canonical lens collapse` and a few shared
