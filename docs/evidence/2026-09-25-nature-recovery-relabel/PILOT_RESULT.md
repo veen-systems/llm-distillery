@@ -29,3 +29,13 @@ The disagreements name categories the rubric excludes and the owner includes: po
 reintroductions and translocations, natural (not human-made) recoveries, protected-area expansion. Either
 (a) the owner rules on those and the pilot re-runs on a fresh sample, or (b) the relabel is dropped: the oracle
 labels already match the owner 8/10.
+
+## ✅ Owner decision 2026-09-26: DROP the relabel
+nature_recovery v4 stays as is (its labels match the owner 8/10 on these rows). The lever for missed stories is
+the model and cut-off, revisited at **v5 (#71)**. ⭐ Input for v5's prompt: the owner calls these IN, and the v4
+STEP 1 + NR-1 rubric does not: breeding/population counts (Rust storks), natural recoveries and biocontrol
+(moss-killing fungus), reintroductions/translocations (KZN giraffes), wildlife colonising man-made structures
+(Humboldt penguins on a breakwater), protected-area expansion with measured gains (India's elephant reserves),
+species monitoring with nesting counts (Qatar hawksbills). OUT for the owner: community fishing closures (Pemba,
+'maybe a solution?'), a teaser with no outcome (Jabarkhet). These are owner CALLS on single articles, not
+rulings; v5 should turn them into written rules and put them to the owner before any labelling.

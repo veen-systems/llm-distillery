@@ -31,8 +31,13 @@ retiring."* That is now the work, ahead of the queue below.
    cycle (20:02): `data/filtered/human_thriving/` rows carry `version 9.0`. Still open for the owner:
    (1) [ruled: replace];
    (2) consumer-court compensation vs ruling 1 (`docs/decisions/2026-09-25-thriving-scope-rulings.md`);
-   (3) the ≥ 7 pool (the volume lever). ▶ Queued after v9: the Nature recovery miss audit (owner approved;
-   1,585 of 16,795 other-lens passers were screened out by nr's probe that week).
+   (3) the ≥ 7 pool (the volume lever).
+   ✅ Nature recovery: miss audit + NR-1 re-judge DONE (~36 misses/week, mostly model/cut-off, none observed via probe);
+   relabel pilot FAILED (judges stricter than owner, 3/10) and the relabel was DROPPED by the owner 2026-09-26.
+   Next for NR is v5 (#71) with the owner's concept written into the prompt:
+   `docs/evidence/2026-09-25-nature-recovery-relabel/PILOT_RESULT.md`. ⚠️ The miss audit's ~47% precision is SUSPECT.
+   ✅ Harm detector cap 3000 -> 6000 (owner), NM#531 merged + on sadalsuud 2026-09-26 10:1x; proof = the 12:04 cycle
+   logs `(cap 6000)`.
    Staged on b650: `filters/human_thriving/v8_adj3/` (untracked). Original item text below, now history.
 
    ~~FIRST~~, from 2026-09-25 05:00 (b650 is NOT available before — owner, 2026-09-24): retrain
