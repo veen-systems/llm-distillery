@@ -40,3 +40,10 @@ accuracy and reported separately; they are junk that reached the site through ev
 Per stratum and N-weighted: hit rate of R0, R1, R3 and R3b with Wilson 95%; owner-vs-judge agreement; the count of
 "truly both". **No bar and no decision here.** The owner chooses the rule, or the model route, from the numbers.
 A rule is "not distinguishable" from another when their paired intervals overlap.
+
+## ⚠️ Amendment 2026-09-26, before any rule was scored: the owner delegated the labelling
+Owner, asked to judge 100 (then offered 30): *"keep it simple for me, i think you know what i want."*
+**The benchmark is therefore the JUDGES' consensus, not the owner.** Where passes A and B agree, that answer is the
+label; where they disagree the row is reported and excluded from rule accuracy. This measures which rule matches
+**Claude's reading of the five tabs**, which diverged from the owner's today on Nature recovery (3/10) and Thriving
+(14–16/20). The result is a recommendation for the owner to confirm on examples, not a measurement of the owner.

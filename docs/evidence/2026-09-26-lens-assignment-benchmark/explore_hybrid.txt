@@ -1,0 +1,7 @@
+NR     18/21
+CD     8/9
+S+U    10/15
+B+U    5/5
+B+S+U  7/10
+B+S    3/3
+H N-weighted 0.764 | unweighted 51/63  (EXPLORATORY; compare R1 0.781, R0 0.662)
