@@ -10,7 +10,7 @@ selects on the DATE in the heading instead, the rule the 2026-09-24 pass (#163) 
 Two moves, DRY-RUN BY DEFAULT (`--apply` writes):
 
   gotcha    Top-level `## ` entries of memory/gotcha-log.md dated before --before go,
-            verbatim and in order, to the END of memory/gotcha-log-archive.md. `### `
+            verbatim and in order, to the END of memory/archive/gotcha-log-archive.md. `### `
             subsections travel with their parent. Dates are read in both shapes the log
             uses: ISO (`2026-08-30`) and month (`Feb 2026`, counted as the LAST day of
             its month, so a month entry is never retired early); a heading naming several
@@ -48,7 +48,7 @@ import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 LOG = os.path.join(ROOT, "memory", "gotcha-log.md")
-ARCHIVE = os.path.join(ROOT, "memory", "gotcha-log-archive.md")
+ARCHIVE = os.path.join(ROOT, "memory", "archive", "gotcha-log-archive.md")
 SESSION_ARCHIVE = os.path.join("memory", "archive")
 
 KEEP_HEADINGS = ("[Short description]", "The unreachable-mechanism catalogue", "Mechanized")

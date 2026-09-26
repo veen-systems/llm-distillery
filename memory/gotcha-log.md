@@ -2,7 +2,17 @@
 
 *Newest-first, dated entries. **One standing section lives at the BOTTOM**: [`## Mechanized`](#mechanized) — the destination for `/review-changes` Step 3.1, where a review finding that became a deterministic check is recorded. It is named here because nobody scrolls to the bottom of this file.*
 
-*⚠️ **Entries dated before 2026-09-01 live in [`gotcha-log-archive.md`](gotcha-log-archive.md)**, verbatim (moved 2026-09-24, #163; the month-dated Feb–May entries followed on 2026-09-26). Next pass: `python3 scripts/maintenance/retire_memory.py gotcha --before <first of this month> --apply` (dry run without `--apply`). It retires top-level entries only; the `###` entries inside the catalogue are kept by rule and counted. The unreachable-mechanism catalogue stayed here. For a recurrence match, grep both: `grep -n <term> memory/gotcha-log*.md`.*
+*⚠️ **Entries dated before 2026-09-01 live in [`archive/gotcha-log-archive.md`](archive/gotcha-log-archive.md)**, verbatim (moved 2026-09-24; into `archive/` 2026-09-26 so curate's size measurement stops counting it, #163; the month-dated Feb–May entries followed on 2026-09-26). Next pass: `python3 scripts/maintenance/retire_memory.py gotcha --before <first of this month> --apply` (dry run without `--apply`). It retires top-level entries only; the `###` entries inside the catalogue are kept by rule and counted. The unreachable-mechanism catalogue stayed here. For a recurrence match, grep both: `grep -n <term> memory/gotcha-log*.md`.*
+
+## AN UNANCHORED `archive/` IN THE SCRATCH BLOCK HAD BEEN SWALLOWING `memory/archive/` — AND MY FIRST FIX NEGATED THE INSTANCE AGAIN (2026-09-26) [4th of the `*_test.*` class]
+**Problem**: Six session files recovered into `memory/archive/` by `/audit-context` did not appear in `git status` at all. `.gitignore`'s "Temporary files" block (`a1a0768`, 2025-11-15) carried a bare `archive/`, which matches that name at ANY depth. The 79 tracked files there survived only because `retire_memory.py` moves them with `git mv`, and a tracked file stays tracked inside an ignored directory. So the defect was invisible to every tracked-file count, and Step 7's `git ls-files` pass had nothing to see.
+**Root cause**: a scratch PATTERN written as if it were a PATH. That is the `*_test.*` mechanism for the fourth time, and my first fix, `!memory/archive/`, was the 2026-09-05 entry's own named mistake: it rescued one instance while the framework prescribes `docs/work-items/archive/`, which the pattern would eat too.
+**Fix**: root-anchored `/archive/`, `/tmp/` and `/temp/`, with the negation removed. Verified both ways with `git check-ignore`: nested `memory/archive/`, `docs/work-items/archive/` and `filters/a/tmp/` are trackable; root `archive/`, `tmp/` and `temp/` are still ignored. Zero files changed ignore state (`git status --porcelain --ignored` showed none under those names). ⭐ **Anchoring makes the failure LOUD** (a nested scratch dir shows as untracked) where negation leaves every other instance SILENT. ⛔ The unanchored scratch patterns still in that block (`*_test.*`, `*_backup.*`, …) are the same hazard; an audit of that block is not done.
+
+## MUTATION-TESTED A FILE WITH `git checkout --` TO UNDO THE MUTANT, AND THREW AWAY MY REAL EDIT (2026-09-26)
+**Problem**: To prove `retire_memory.py` fails loudly on the old archive path, I sed-reverted its `ARCHIVE` constant, ran it, and then restored with `git checkout -- <file>`. That restored HEAD, not my working version, so both intended edits vanished. `git diff --stat` printing nothing was the only sign.
+**Root cause**: the mutant's parent was an UNCOMMITTED edit, and `git checkout` knows only commits. An hour earlier in the same session I had done it right for `refcheck.py`: `cp` to the scratchpad, mutate, `cp` back.
+**Fix**: re-applied with count-asserted replacements, and confirmed with `git diff --stat` (2+/2−), a dry run and 18/18 tests. ⛔ **Mutate a working-tree file only from a copy: `cp f $S/f.fixed`, mutate, `cp $S/f.fixed f`.** Never restore with git while the change under test is uncommitted.
 
 ## A TRIM THAT KEPT EVERY TOKEN AND LOST FIVE RULES, AND A FIX THAT INTRODUCED THE ROUND'S ONLY BLOCKER (2026-09-26)
 **Problem**: Four defects in one `/update-drift` adoption, each passing my own checks and each caught only by a review lens.
@@ -2204,7 +2214,7 @@ have committed the rewrite without noticing, because every number in the *new* d
 correct. **Correcting a document is a delete of its predecessor unless you carry the old
 values forward.**
 
-## 2026-09-05 (third session) — the `*_test.*` gitignore trap, third victim, because the fix was scoped to the instance [x3]
+## 2026-09-05 (third session) — the `*_test.*` gitignore trap, third victim, because the fix was scoped to the instance [x4 — recurred 2026-09-26: an unanchored `archive/` swallowed `memory/archive/`; see that day's entry]
 
 **Problem**: `scripts/gate/v8_smoke_test.py` was gitignored the moment it was written.
 `.gitignore:170` carries `*_test.*` in a scratch-file block; it is a PATTERN, not a path.

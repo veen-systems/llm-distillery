@@ -4,7 +4,7 @@
 read surface: the log was 715 KB and `/curate` reads every heading of it each session). Nothing
 was shortened. Kept in the live log: entries from 2026-09 on, *The unreachable-mechanism
 catalogue*, the *Mechanized* table and the entry template. ⚠️ **Recurrence matching** (curate
-Step 1) must grep BOTH files — `grep -n <term> memory/gotcha-log*.md`. Line-number citations into
+Step 1) must grep BOTH files — `grep -n <term> memory/gotcha-log.md memory/archive/gotcha-log-archive.md` (this file moved into `archive/` 2026-09-26, TODO item −1 step 1). Line-number citations into
 the old log point here now; cite by heading.*
 
 

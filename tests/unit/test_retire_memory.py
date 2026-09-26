@@ -23,10 +23,10 @@ def mod(tmp_path):
     spec = importlib.util.spec_from_file_location("retire_memory", SCRIPT)
     m = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(m)
-    (tmp_path / "memory").mkdir()
+    (tmp_path / "memory" / "archive").mkdir(parents=True)
     m.ROOT = str(tmp_path)
     m.LOG = str(tmp_path / "memory" / "gotcha-log.md")
-    m.ARCHIVE = str(tmp_path / "memory" / "gotcha-log-archive.md")
+    m.ARCHIVE = str(tmp_path / "memory" / "archive" / "gotcha-log-archive.md")
     return m
 
 

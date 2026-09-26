@@ -118,7 +118,7 @@ For chat replies:
 | Making architectural decisions | `docs/adr/README.md` |
 | Planning work | `docs/TODO.md`, `docs/ROADMAP.md`; across repos: `memory/cross-repo-prioritization.md` |
 | Understanding system design / reviewing quality | `docs/ARCHITECTURE.md`, `docs/checklists/` |
-| Stuck on tooling or infra | `memory/gotcha-log.md` (+ `gotcha-log-archive.md`; grep both) |
+| Stuck on tooling or infra | `memory/gotcha-log.md` (+ `memory/archive/gotcha-log-archive.md`; grep both) |
 | **Running `/review-changes`** | `.claude/review-profile.md` — REQUIRED; the skill stops without it. Confirm its 3 project lenses by NAME in the report |
 | About to weaken or argue with a working rule | `memory/working-rules.md` |
 | Touching corroboration or story-dedup | `memory/corroboration-feature-hypotheses.md` — the threshold is not the lever |

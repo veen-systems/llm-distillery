@@ -60,7 +60,7 @@ verified and B waits on the owner, item −1 (the read surface) is the work.
    38,141 to 17,749 chars (`wc -m`). The always-loaded layer went 52,133 → ~31 KB
    (`check_index_budget.py --target loaded`).
    ▶ **Next, in order:**
-   1. **Move `memory/gotcha-log-archive.md` into `memory/archive/`** — curate's size measurement
+   1. ✅ **DONE 2026-09-26 (evening)**: `git mv` to `memory/archive/gotcha-log-archive.md`, references and `retire_memory.py` `ARCHIVE` updated, 18/18 tests, and the old path fails loudly. Curate's read surface went **1,944,516 → 1,477,580 chars**. ⭐ Owner call pending: a mid-month `retire_memory.py … --before 2026-09-17` (dry run: live gotcha log 251,953 → 134,708 chars, 19 session files) departs from the `<YYYY-MM-01>` convention. Original text: **Move `memory/gotcha-log-archive.md` into `memory/archive/`** — curate's size measurement
       excludes only `*/archive/*`, so the 467k archive still counts. Rewrite its references
       (`git grep -l gotcha-log-archive`) and the `memory/gotcha-log*.md` recurrence glob in
       curate's grep instructions here, then add it to `retire_memory.py` as the archive path.

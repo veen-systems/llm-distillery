@@ -133,14 +133,15 @@ test_batch_labeler.py
 docs/_build/
 site/
 
-# Temporary files
-archive/
-# ...but NOT the memory archive: it is tracked context (retired session files, verbatim).
-# `git mv` of tracked files kept 79 of them in; a file CREATED there was silently
-# ignored (/audit-context 2026-09-26, Step 7's first catch).
-!memory/archive/
-tmp/
-temp/
+# Temporary files -- ROOT-ANCHORED on purpose. Unanchored, `archive/` matched
+# memory/archive/ (tracked context: 79 files survived only via `git mv`, a file CREATED
+# there was silently ignored -- /audit-context 2026-09-26) and would eat the framework's
+# docs/work-items/archive/ too. Same class as `*_test.*` below: the PATTERN is the hazard,
+# so fix the pattern, never negate one instance. Anchored, a nested scratch dir shows
+# up as untracked (loud) instead of vanishing (silent).
+/archive/
+/tmp/
+/temp/
 *.tmp
 cache/
 nul
