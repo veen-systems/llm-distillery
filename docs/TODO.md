@@ -5,6 +5,15 @@
 *A bare "continue" means this list, top down. Each line names the FIRST action, not the
 topic. Re-read the block under it before starting; the reasons are there, not here.*
 
+▶ **NEXT SESSION (written 2026-09-26 evening, tokens ran out):**
+   1. **Review round 2 on `deploy_to_nexusmind.sh` fixes is NOT DONE** — two lenses were stopped unfinished. Commit
+      below is tested (1011 passed; 5 mutants caught) but unreviewed: run adversarial + reachability on it first.
+      The round-1 report (7 lenses on `356cd70`, 1 blocker fixed) is summarised in the commit message.
+   2. **v10 training** — set up and gate bar RULED (`docs/evidence/2026-09-26-v10-retrain-gate/PREREGISTRATION.md`);
+      waits for the owner to free b650's GPU (roofvision). Check it is free; do not assume.
+   3. **ovr.news #373 (Thriving cutover)** — owner merges; then record the 3 outcome checks (on the PR) on #151.
+   4. #165 detector packages: design/ADR only. Add the round-1 finding: commerce v2 weights exist only in NexusMind.
+
 A. ✅ **VERIFIED 2026-09-26 ~15:45 CEST, from outcomes (one cycle each; the original text is kept below).**
    1. **#372 works: 124 of 124** live articles whose `nature_recovery` row clears the build's gate sit on Recovery
       (production `ovr.db` on sadalsuud, read-only, against the live `search-index.json`, build `11:52:46Z`). Of 449

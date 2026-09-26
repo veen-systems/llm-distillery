@@ -33,8 +33,9 @@ The rule this encodes: a guard that fails beats a comment that explains. See
 `memory/gotcha-log.md`, entries dated 2026-08-12.
 
 SCOPE, stated because an earlier version of this docstring overclaimed it: these
-guards run from `deploy_to_nexusmind.sh` AND `deploy_to_nexusmind.ps1`. Any other
-route that copies a filter directory into NexusMind bypasses them.
+guards run from `deploy_to_nexusmind.sh`, the only deploy route since 2026-09-26 (the
+PowerShell twin was deleted: Linux-only, owner). Any other route that copies a filter
+directory into NexusMind bypasses them.
 
 Exit codes: 0 = all guards pass, 1 = a guard failed (deploy must abort),
 2 = usage/IO error.

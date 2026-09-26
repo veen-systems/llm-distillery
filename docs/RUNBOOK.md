@@ -49,8 +49,7 @@ export HF_TOKEN=$(python -c "import configparser;c=configparser.ConfigParser();c
 DISTILLERY_ROOT=$PWD NEXUSMIND_ROOT=/home/jeroen/repos/veen-systems/NexusMind \
   bash scripts/deploy_to_nexusmind.sh {name} v{N} --dry-run
 
-# then without --dry-run, or PowerShell:
-.\scripts\deploy_to_nexusmind.ps1 {name} v{N}
+# then without --dry-run. (The PowerShell twin was deleted 2026-09-26: Linux only.)
 ```
 
 > **Diff before you sync.** The script overwrites NexusMind's copies and honours
@@ -65,22 +64,31 @@ DISTILLERY_ROOT=$PWD NEXUSMIND_ROOT=/home/jeroen/repos/veen-systems/NexusMind \
 
 > **Step 2 ships `filters/common/` RUNTIME files only** (owner ruling, #164, 2026-09-26).
 > The selection is one module, `scripts/deployment/common_runtime_files.py`. It excludes
-> `*/training/`, `*/validation/`, `*/docs/`, `*/tests/`, `oracle.py` and `prompt.md`, and
-> ships everything else, including files git does not track. Preview it without touching
-> NexusMind: `python3 scripts/deployment/common_runtime_files.py` (98 of 199 files on
-> 2026-09-26). Two facts decide the rule, and `tests/unit/test_common_runtime_files.py`
-> pins both:
-> - **The detector weights travel ONLY through this copy.** Every `*.pkl` and `*.safetensors`
->   under `filters/common` is gitignored here, and none is on the Hub. Switching step 2 to
->   `git ls-files` would stop shipping them.
+> `*/training/`, `*/validation/`, `*/docs/`, `*/tests/` and `__pycache__/`, plus
+> `oracle.py`, `prompt.md` and `detector_seeds.py`, and ships everything else, including
+> files git does not track. Preview it without touching NexusMind:
+> `python3 scripts/deployment/common_runtime_files.py`. The count depends on the local
+> tree (gitignored weights included), so run it rather than quote one.
+> `tests/unit/test_common_runtime_files.py` pins the two facts that decide the rule:
+> - **Updated detector weights reach NexusMind only through this copy.** Every `*.pkl` and
+>   `*.safetensors` under `filters/common` here is gitignored, so switching step 2 to
+>   `git ls-files` would stop shipping them. (NexusMind git-tracks its own copies, and the
+>   commerce v2 weights exist only there: #165.)
 > - **Some "training"-named files are runtime.** `harm_detector/v1/inference.py` reads
 >   `models/training_config.json` and `models/SHA256SUMS.txt` at load, so never exclude by
->   file name.
+>   those names.
 >
-> It only copies. A file dropped from the selection is **not deleted** in NexusMind;
-> removing stale copies there is NexusMind's own change.
-> Detectors are not yet packaged like filters (no Hub weights, no package check): see the
-> follow-up issue named in #164.
+> It excludes by directory, so some metadata outside those directories still ships
+> (`calibration_report.json`, `training_metrics.json`, `results/`): none of it is loaded,
+> and #165's manifest is where it gets settled. Untracked scratch files in `filters/common`
+> ship too, and are then committed in NexusMind: keep that tree clean before deploying.
+>
+> **Step 0.6 stops the deploy if a pickle about to ship would sit next to a stale `.sha256`
+> sidecar in NexusMind** (sidecars survive every deploy, because it only copies). It runs
+> before step 1, so NexusMind is untouched on failure. Update or remove the sidecar in
+> NexusMind in its own change. Removing files that dropped out of the selection is
+> NexusMind's job too: the deploy never deletes. Detectors are not yet packaged like filters:
+> #165.
 
 > ⚠️ **`--dry-run` still writes.** It copies the files and skips only the
 > `git add`/`commit`/`push`, so it dirties the NexusMind working tree. That matters

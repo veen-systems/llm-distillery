@@ -495,51 +495,22 @@ def test_probe_asks_about_the_adapter_specifically(monkeypatch):
     assert "BatchMode=yes" in seen["argv"]  # never hang on a password prompt
 
 
-# --- Caller parity ----------------------------------------------------------
+# --- Single caller ----------------------------------------------------------
 #
-# The 2026-08-12 review found `deploy_to_nexusmind.ps1` had NO Step 0.5 at all
-# while the guard module's docstring called the `.sh` "the ONE chokepoint" — a
-# documented alternative deploy path, one keystroke from bypassing every guard.
-# That was fixed by hand, and nothing has since stopped the two from drifting
-# apart again. These tests are that stop.
+# The 2026-08-12 review found `deploy_to_nexusmind.ps1` had NO Step 0.5 at all: a
+# documented second deploy path, one keystroke from bypassing every guard. Parity tests
+# kept the two in step until 2026-09-26, when the PowerShell twin was deleted (Linux only;
+# it also bypassed the #164 runtime-only rule). What stops a second path from coming back
+# is `tests/unit/test_common_runtime_files.py::test_no_second_deploy_route_copies_filters_common`.
 
 
-def _callers():
+def test_the_only_caller_invokes_the_guards():
     from pathlib import Path
 
     repo = Path(__file__).resolve().parents[2]
-    return (
-        (repo / "scripts" / "deploy_to_nexusmind.sh").read_text(encoding="utf-8"),
-        (repo / "scripts" / "deploy_to_nexusmind.ps1").read_text(encoding="utf-8"),
-    )
-
-
-def test_both_callers_invoke_the_guards():
-    """The original defect: a second deploy path that skipped Step 0.5 entirely."""
-    sh, ps1 = _callers()
+    sh = (repo / "scripts" / "deploy_to_nexusmind.sh").read_text(encoding="utf-8")
     assert "preflight_deploy_guards.py" in sh
-    assert "preflight_deploy_guards.py" in ps1
-
-
-def test_callers_expose_the_same_guard_flags():
-    """Derived from the parser, not restated. Any guard-weakening flag reachable
-    from one deploy path must be reachable from the other — otherwise the two
-    paths enforce different things and the weaker one wins by being available."""
-    from scripts.deployment.preflight_deploy_guards import build_parser
-
-    known = {
-        opt
-        for action in build_parser()._actions
-        for opt in action.option_strings
-        if opt.startswith("--")
-    }
-    sh, ps1 = _callers()
-    in_sh = {f for f in known if f in sh}
-    in_ps1 = {f for f in known if f in ps1}
-    assert in_sh == in_ps1, (
-        f"deploy caller drift — only in .sh: {sorted(in_sh - in_ps1)}, "
-        f"only in .ps1: {sorted(in_ps1 - in_sh)}"
-    )
+    assert not (repo / "scripts" / "deploy_to_nexusmind.ps1").exists()
 
 
 # --- Guard E: weights exist in the backed-up tree ---------------------------

@@ -10,11 +10,12 @@ even where the .pkl files are absent) and on the real tree. The two failure mode
 
 from __future__ import annotations
 
+import hashlib
 from pathlib import Path
 
 import pytest
 
-from scripts.deployment.common_runtime_files import is_runtime, runtime_files
+from scripts.deployment.common_runtime_files import is_runtime, runtime_files, stale_sidecars
 
 REPO = Path(__file__).resolve().parents[2]
 COMMON = REPO / "filters" / "common"
@@ -39,6 +40,7 @@ STAYS = [
     "violence_promotion/v1/oracle.py",   # imports ground_truth, absent in NexusMind
     "commerce_prefilter/v1/prompt.md",   # read only by commerce's oracle.py
     "harm_detector/v1/__pycache__/inference.cpython-312.pyc",
+    "detector_seeds.py",                 # #158 seed-band helper; only training imports it
 ]
 
 
@@ -90,3 +92,61 @@ def test_deploy_script_uses_the_module_not_find():
     script = (REPO / "scripts" / "deploy_to_nexusmind.sh").read_text()
     assert "scripts/deployment/common_runtime_files.py" in script
     assert 'find "$COMMON_SOURCE"' not in script
+    assert 'done <<< "$COMMON_LIST"' in script      # the copy loop reads the module's list
+
+
+def test_deploy_script_checks_sidecars_before_copying_anything():
+    script = (REPO / "scripts" / "deploy_to_nexusmind.sh").read_text()
+    assert "--check-sidecars" in script
+    assert script.index("--check-sidecars") < script.index("# Step 1: Copy filter folder")
+
+
+def test_no_second_deploy_route_copies_filters_common():
+    """The PowerShell twin copied the whole tree and bypassed the rule (review of 356cd70)."""
+    assert not (REPO / "scripts" / "deploy_to_nexusmind.ps1").exists()
+    for other in REPO.joinpath("scripts").rglob("*"):
+        if other.suffix in {".ps1", ".sh"} and other.name != "deploy_to_nexusmind.sh":
+            assert "filters/common" not in other.read_text(errors="ignore"), other
+
+
+def _tree(root, files):
+    for rel, data in files.items():
+        p = root / rel
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_bytes(data)
+
+
+def _sha(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def test_stale_nexusmind_sidecar_is_reported(tmp_path):
+    src, nm = tmp_path / "src", tmp_path / "nm"
+    _tree(src, {"det/v1/models/scaler.pkl": b"retrained"})
+    _tree(nm, {"det/v1/models/scaler.pkl.sha256": (_sha(b"old") + "\n").encode()})
+    problems = stale_sidecars(src, nm)
+    assert len(problems) == 1 and "det/v1/models/scaler.pkl" in problems[0]
+
+
+def test_matching_or_absent_sidecar_passes(tmp_path):
+    src, nm = tmp_path / "src", tmp_path / "nm"
+    _tree(src, {"a/v1/models/x.pkl": b"same", "b/v1/models/y.pkl": b"no sidecar anywhere"})
+    _tree(nm, {"a/v1/models/x.pkl.sha256": (_sha(b"same") + "  x.pkl\n").encode()})
+    assert stale_sidecars(src, nm) == []
+
+
+def test_a_shipped_sidecar_is_the_one_checked(tmp_path):
+    """A sidecar that ships overwrites NexusMind's, so NexusMind's stale one must not fail it."""
+    src, nm = tmp_path / "src", tmp_path / "nm"
+    _tree(src, {"d/v1/models/m.pkl": b"new", "d/v1/models/m.pkl.sha256": _sha(b"new").encode()})
+    _tree(nm, {"d/v1/models/m.pkl.sha256": _sha(b"old").encode()})
+    assert stale_sidecars(src, nm) == []
+    _tree(src, {"d/v1/models/m.pkl.sha256": _sha(b"wrong").encode()})
+    assert len(stale_sidecars(src, nm)) == 1
+
+
+def test_sidecar_check_on_the_real_trees_when_nexusmind_is_present():
+    nm = REPO.parent / "NexusMind" / "filters" / "common"
+    if not nm.is_dir():
+        pytest.skip("no NexusMind checkout beside this repo")
+    assert stale_sidecars(COMMON, nm) == []

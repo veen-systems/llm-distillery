@@ -231,6 +231,19 @@ fi
 }
 echo ""
 
+# Step 0.6: stale .sha256 sidecars (review of 356cd70; llm-distillery#165). NexusMind keeps
+# per-file sidecars this repo does not ship, and step 2 never deletes, so a retrained .pkl
+# would land next to a stale sidecar and the detector would refuse to load in production.
+# Checked BEFORE step 1, so a failure leaves NexusMind untouched.
+echo "0.6 Checking NexusMind .sha256 sidecars against the pickles about to ship..."
+python3 "${DISTILLERY_ROOT}/scripts/deployment/common_runtime_files.py" \
+    --check-sidecars "$COMMON_DEST" "$COMMON_SOURCE" || {
+    echo "ERROR: a shipped .pkl does not match NexusMind's .sha256 sidecar (STALE SIDECAR above)."
+    echo "  Update or remove that sidecar in NexusMind in its own reviewed change, then re-run."
+    exit 1
+}
+echo ""
+
 # Step 1: Copy filter folder
 echo "1. Copying filter: ${FILTER_PATH}"
 mkdir -p "$DEST_DIR"
