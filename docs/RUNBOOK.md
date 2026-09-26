@@ -63,6 +63,25 @@ DISTILLERY_ROOT=$PWD NEXUSMIND_ROOT=/home/jeroen/repos/veen-systems/NexusMind \
 > (`arxiv`/`mastodon_`/`bluesky`) that had been production-only since
 > 2026-05-18 — see llm-distillery#93.
 
+> **Step 2 ships `filters/common/` RUNTIME files only** (owner ruling, #164, 2026-09-26).
+> The selection is one module, `scripts/deployment/common_runtime_files.py`. It excludes
+> `*/training/`, `*/validation/`, `*/docs/`, `*/tests/`, `oracle.py` and `prompt.md`, and
+> ships everything else, including files git does not track. Preview it without touching
+> NexusMind: `python3 scripts/deployment/common_runtime_files.py` (98 of 199 files on
+> 2026-09-26). Two facts decide the rule, and `tests/unit/test_common_runtime_files.py`
+> pins both:
+> - **The detector weights travel ONLY through this copy.** Every `*.pkl` and `*.safetensors`
+>   under `filters/common` is gitignored here, and none is on the Hub. Switching step 2 to
+>   `git ls-files` would stop shipping them.
+> - **Some "training"-named files are runtime.** `harm_detector/v1/inference.py` reads
+>   `models/training_config.json` and `models/SHA256SUMS.txt` at load, so never exclude by
+>   file name.
+>
+> It only copies. A file dropped from the selection is **not deleted** in NexusMind;
+> removing stale copies there is NexusMind's own change.
+> Detectors are not yet packaged like filters (no Hub weights, no package check): see the
+> follow-up issue named in #164.
+
 > ⚠️ **`--dry-run` still writes.** It copies the files and skips only the
 > `git add`/`commit`/`push`, so it dirties the NexusMind working tree. That matters
 > when a parallel session shares that checkout: revert with **explicit paths**

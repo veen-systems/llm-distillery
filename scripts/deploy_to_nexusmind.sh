@@ -243,8 +243,19 @@ echo "   Copied to: $DEST_DIR"
 # default — see gotcha-log "Manifest as Anti-Pattern" (2026-05-04). When an
 # entry is added, pair it with a tracked issue and a deadline to remove it.
 echo ""
-echo "2. Copying common utilities: filters/common/ (honoring .nexusmind-owns)"
+echo "2. Copying common utilities: filters/common/ RUNTIME files only (honoring .nexusmind-owns)"
+# What ships is defined in ONE place, scripts/deployment/common_runtime_files.py (#164):
+# no */training/, */validation/, */docs/, */tests/, oracle.py or prompt.md. Untracked
+# model files still ship — this copy is how detector weights reach NexusMind.
+# Copy-only: files removed or excluded here are NOT deleted in NexusMind.
 mkdir -p "$COMMON_DEST"
+COMMON_LIST=$(python3 "${DISTILLERY_ROOT}/scripts/deployment/common_runtime_files.py" "$COMMON_SOURCE") || {
+    echo "ERROR: could not list filters/common runtime files"; exit 1; }
+COMMON_COUNT=$(printf '%s\n' "$COMMON_LIST" | grep -c . || true)
+if [ "$COMMON_COUNT" -eq 0 ]; then
+    echo "ERROR: 0 filters/common runtime files selected from $COMMON_SOURCE"; exit 1
+fi
+echo "   ${COMMON_COUNT} runtime files selected"
 
 NEXUSMIND_OWNS_FILE="${DISTILLERY_ROOT}/.nexusmind-owns"
 OWNED_PATHS=()
@@ -293,8 +304,8 @@ is_owned() {
 # Walk the source tree and copy file-by-file, skipping owned files. Drift
 # between distillery and NexusMind copies of an owned file is collected and
 # fails the deploy after the loop (unless --force-skip-owned-drift was passed).
-while IFS= read -r src; do
-    rel_inside_common="${src#$COMMON_SOURCE/}"
+while IFS= read -r rel_inside_common; do
+    src="${COMMON_SOURCE}/${rel_inside_common}"
     rel_from_root="filters/common/${rel_inside_common}"
 
     if is_owned "$rel_from_root"; then
@@ -311,7 +322,7 @@ while IFS= read -r src; do
     dest="${COMMON_DEST}/${rel_inside_common}"
     mkdir -p "$(dirname "$dest")"
     cp "$src" "$dest"
-done < <(find "$COMMON_SOURCE" -type f -not -path '*/__pycache__/*')
+done <<< "$COMMON_LIST"
 
 if [ "$DRIFT_FOUND" -eq 1 ] && [ "$FORCE_SKIP_OWNED_DRIFT" -ne 1 ]; then
     echo ""
