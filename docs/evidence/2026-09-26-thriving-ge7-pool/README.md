@@ -47,6 +47,14 @@ Reach stay nearly empty at the top.
 **$0.10–0.20 estimate** the owner approved. The estimate was low; the 2026-09-24 round's $0.24
 for a similar size was the better anchor.
 
+## Hard negatives — DONE (owner: "Yes, add them"), `analyse_neg.py` → `neg_result.txt`
+Rule fixed in PLAN.md before any call. **471 of 473** labelled with every dimension capped at 2.0
+(`neg_labels.jsonl`); 2 never completed k=3 after six resume passes and are excluded.
+- ⭐ **The oracle's own k=3 majority calls 197 of them (41.8%) `in_scope`, and 65 (13.8%) have an
+  uncapped weighted ≥ 4.5.** On 09-24's op-point passers the same leak was 28.0% / 28 rows. Among
+  articles production scored ≥ 7, the oracle agrees with production more often than Claude does.
+  Left uncapped, those 65 would teach the student to surface them.
+- Cost ≈ **$0.75** off-peak (≈ $1.11 for the whole pool, counted tokens), against the ~$0.70 estimate.
+
 ## Not done (owner calls)
-- Hard negatives: the 473 not-in-scope rows as capped negatives (adj3 precedent). Not run.
 - A retrain on adj3 + these 177 rows (v10 candidate): a separate, gated step (ADR-021).

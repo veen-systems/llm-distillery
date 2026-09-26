@@ -1,0 +1,116 @@
+Prompt: filters/human_thriving/v8/prompt-v8-4.md sha256[:12]=c4705408c477
+Scoring with: dims=['human_wellbeing_impact', 'social_cohesion_impact', 'justice_rights_impact', 'evidence_level', 'benefit_distribution', 'change_durability'] | field=human_thriving_analysis | prompt=prompt-v8-4.md
+Loaded 473 articles from docs/evidence/2026-09-26-thriving-ge7-pool/oracle_neg_input.jsonl
+  [  50/473] 50 OK | 0 err | 0 junk | 6.5 art/s | ETA 1 min | cache hit 89%
+  [ 100/473] 98 OK | 2 err | 0 junk | 7.2 art/s | ETA 1 min | cache hit 89%
+  [ 150/473] 148 OK | 2 err | 0 junk | 7.5 art/s | ETA 1 min | cache hit 89%
+  [ 200/473] 198 OK | 2 err | 0 junk | 7.7 art/s | ETA 1 min | cache hit 89%
+  [ 250/473] 248 OK | 2 err | 0 junk | 7.8 art/s | ETA 0 min | cache hit 90%
+  [ 300/473] 297 OK | 3 err | 0 junk | 7.9 art/s | ETA 0 min | cache hit 90%
+  [ 350/473] 345 OK | 5 err | 0 junk | 8.0 art/s | ETA 0 min | cache hit 90%
+  [ 400/473] 394 OK | 6 err | 0 junk | 8.0 art/s | ETA 0 min | cache hit 90%
+  [ 450/473] 443 OK | 7 err | 0 junk | 8.0 art/s | ETA 0 min | cache hit 90%
+  [ 473/473] 466 OK | 7 err | 0 junk | 7.9 art/s | ETA 0 min | cache hit 90%
+
+============================================================
+COMPLETE
+============================================================
+Successful: 466  Errors: 7  Scrape-junk skipped: 0
+Wall clock: 1.0 min
+Tokens: input 5,759,725  output 125,850  cached 5,172,724
+Cache hit rate: 89.8%
+Estimated cost: $0.25 off-peak / $0.50 peak
+Output tokens/article: 270 (the number that decides DeepSeek vs Gemini Batch -- see memory/oracle-pricing-scheduling.md)
+Output: docs/evidence/2026-09-26-thriving-ge7-pool/runs/neg_1.jsonl
+
+7 row(s) errored. Re-run the same command to fill them — already-scored ids are skipped on resume.
+Prompt: filters/human_thriving/v8/prompt-v8-4.md sha256[:12]=c4705408c477
+Scoring with: dims=['human_wellbeing_impact', 'social_cohesion_impact', 'justice_rights_impact', 'evidence_level', 'benefit_distribution', 'change_durability'] | field=human_thriving_analysis | prompt=prompt-v8-4.md
+Loaded 473 articles from docs/evidence/2026-09-26-thriving-ge7-pool/oracle_neg_input.jsonl
+Resuming: 466 already scored, 7 remaining
+  [   7/7] 0 OK | 7 err | 0 junk | 1.0 art/s | ETA 0 min | cache hit 0%
+
+============================================================
+COMPLETE
+============================================================
+Successful: 0  Errors: 7  Scrape-junk skipped: 0
+Wall clock: 0.1 min
+Tokens: input 0  output 0  cached 0
+Cache hit rate: 0.0%
+Estimated cost: $0.00 off-peak / $0.00 peak
+Output tokens/article: 0 (the number that decides DeepSeek vs Gemini Batch -- see memory/oracle-pricing-scheduling.md)
+Output: docs/evidence/2026-09-26-thriving-ge7-pool/runs/neg_1.jsonl
+
+7 row(s) errored. Re-run the same command to fill them — already-scored ids are skipped on resume.
+Prompt: filters/human_thriving/v8/prompt-v8-4.md sha256[:12]=c4705408c477
+Scoring with: dims=['human_wellbeing_impact', 'social_cohesion_impact', 'justice_rights_impact', 'evidence_level', 'benefit_distribution', 'change_durability'] | field=human_thriving_analysis | prompt=prompt-v8-4.md
+Loaded 473 articles from docs/evidence/2026-09-26-thriving-ge7-pool/oracle_neg_input.jsonl
+Resuming: 466 already scored, 7 remaining
+  [   7/7] 0 OK | 7 err | 0 junk | 1.0 art/s | ETA 0 min | cache hit 0%
+
+============================================================
+COMPLETE
+============================================================
+Successful: 0  Errors: 7  Scrape-junk skipped: 0
+Wall clock: 0.1 min
+Tokens: input 0  output 0  cached 0
+Cache hit rate: 0.0%
+Estimated cost: $0.00 off-peak / $0.00 peak
+Output tokens/article: 0 (the number that decides DeepSeek vs Gemini Batch -- see memory/oracle-pricing-scheduling.md)
+Output: docs/evidence/2026-09-26-thriving-ge7-pool/runs/neg_1.jsonl
+
+7 row(s) errored. Re-run the same command to fill them — already-scored ids are skipped on resume.
+Prompt: filters/human_thriving/v8/prompt-v8-4.md sha256[:12]=c4705408c477
+Scoring with: dims=['human_wellbeing_impact', 'social_cohesion_impact', 'justice_rights_impact', 'evidence_level', 'benefit_distribution', 'change_durability'] | field=human_thriving_analysis | prompt=prompt-v8-4.md
+Loaded 473 articles from docs/evidence/2026-09-26-thriving-ge7-pool/oracle_neg_input.jsonl
+Resuming: 466 already scored, 7 remaining
+  [   7/7] 5 OK | 2 err | 0 junk | 2.6 art/s | ETA 0 min | cache hit 98%
+
+============================================================
+COMPLETE
+============================================================
+Successful: 5  Errors: 2  Scrape-junk skipped: 0
+Wall clock: 0.0 min
+Tokens: input 62,825  output 1,821  cached 61,824
+Cache hit rate: 98.4%
+Estimated cost: $0.00 off-peak / $0.00 peak
+Output tokens/article: 364 (the number that decides DeepSeek vs Gemini Batch -- see memory/oracle-pricing-scheduling.md)
+Output: docs/evidence/2026-09-26-thriving-ge7-pool/runs/neg_1.jsonl
+
+2 row(s) errored. Re-run the same command to fill them — already-scored ids are skipped on resume.
+Prompt: filters/human_thriving/v8/prompt-v8-4.md sha256[:12]=c4705408c477
+Scoring with: dims=['human_wellbeing_impact', 'social_cohesion_impact', 'justice_rights_impact', 'evidence_level', 'benefit_distribution', 'change_durability'] | field=human_thriving_analysis | prompt=prompt-v8-4.md
+Loaded 473 articles from docs/evidence/2026-09-26-thriving-ge7-pool/oracle_neg_input.jsonl
+Resuming: 471 already scored, 2 remaining
+  [   2/2] 1 OK | 1 err | 0 junk | 0.7 art/s | ETA 0 min | cache hit 98%
+
+============================================================
+COMPLETE
+============================================================
+Successful: 1  Errors: 1  Scrape-junk skipped: 0
+Wall clock: 0.0 min
+Tokens: input 12,502  output 289  cached 12,288
+Cache hit rate: 98.3%
+Estimated cost: $0.00 off-peak / $0.00 peak
+Output tokens/article: 289 (the number that decides DeepSeek vs Gemini Batch -- see memory/oracle-pricing-scheduling.md)
+Output: docs/evidence/2026-09-26-thriving-ge7-pool/runs/neg_1.jsonl
+
+1 row(s) errored. Re-run the same command to fill them — already-scored ids are skipped on resume.
+Prompt: filters/human_thriving/v8/prompt-v8-4.md sha256[:12]=c4705408c477
+Scoring with: dims=['human_wellbeing_impact', 'social_cohesion_impact', 'justice_rights_impact', 'evidence_level', 'benefit_distribution', 'change_durability'] | field=human_thriving_analysis | prompt=prompt-v8-4.md
+Loaded 473 articles from docs/evidence/2026-09-26-thriving-ge7-pool/oracle_neg_input.jsonl
+Resuming: 472 already scored, 1 remaining
+  [   1/1] 0 OK | 1 err | 0 junk | 0.4 art/s | ETA 0 min | cache hit 0%
+
+============================================================
+COMPLETE
+============================================================
+Successful: 0  Errors: 1  Scrape-junk skipped: 0
+Wall clock: 0.0 min
+Tokens: input 0  output 0  cached 0
+Cache hit rate: 0.0%
+Estimated cost: $0.00 off-peak / $0.00 peak
+Output tokens/article: 0 (the number that decides DeepSeek vs Gemini Batch -- see memory/oracle-pricing-scheduling.md)
+Output: docs/evidence/2026-09-26-thriving-ge7-pool/runs/neg_1.jsonl
+
+1 row(s) errored. Re-run the same command to fill them — already-scored ids are skipped on resume.

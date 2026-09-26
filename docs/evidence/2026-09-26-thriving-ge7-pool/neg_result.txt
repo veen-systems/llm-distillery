@@ -1,0 +1,2 @@
+HARD NEGATIVES: 471 labelled (capped at 2.0), 2 excluded (not scored k=3)
+  oracle k=3 majority in_scope: 197 (41.8%); uncapped weighted >= 4.5: 65 (13.8%)
