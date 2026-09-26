@@ -692,6 +692,18 @@ for doc in DOCS:
                 dr=os.path.normpath(os.path.join(docdir,frag))
                 if not dr.startswith("..") and os.path.exists(os.path.join(ROOT,dr)):
                     resolved.append((doc,frag,"rung1b",dr)); continue
+            # rung 1b-outside (/audit-context 2026-09-26) — the same doc-relative
+            # semantics for a doc OUTSIDE ROOT, which `docdir` above cannot express.
+            # The auto-memory index links `../../../../repos/.../memory/X.md`: correct,
+            # existing, and ruled UNRESOLVED because rung5 only knows the auto-memory
+            # directory's own files. A LOOSENING, so bounded: the resolved path must
+            # land INSIDE ROOT and exist. A `../` escape to anywhere else is still a
+            # finding. Both halves seeded in run.sh (38, 39, 40).
+            elif not _relroot(doc):
+                ab=os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(doc)),frag))
+                inr=_relroot(ab)
+                if inr and os.path.exists(ab):
+                    resolved.append((doc,frag,"rung1b-outside",inr)); continue
             h=rung2(frag)
             if len(h)==1: resolved.append((doc,frag,"rung2",h[0])); continue
             if len(h)>1:

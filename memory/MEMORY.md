@@ -26,7 +26,7 @@
 
 
 
-- 🧭 **[`/audit-context` Step 8 — what each check has ever caught](../docs/decisions/2026-09-17-audit-step-attribution.md)** — the per-step catch table, and the standing rule that every audit close records findings WITH THE STEP THAT FOUND THEM. ⛔ Step 7 is a retirement candidate **not retired**; its release condition is in the file.
+- 🧭 **[`/audit-context` Step 8 — what each check has ever caught](../docs/decisions/2026-09-17-audit-step-attribution.md)** — the per-step catch table, and the standing rule that every audit close records findings WITH THE STEP THAT FOUND THEM. Step 7 had its first catch 2026-09-26 (`memory/archive/` was gitignored), so it is no longer a retirement candidate.
 
 - 📓 **Older sessions — [`memory/session-log.md`](session-log.md)** — every entry before the four above, VERBATIM and unabridged (**72** as of 2026-09-22 — `grep -cE '^- ' memory/session-log.md`, do not quote this from memory). The index keeps the newest four; `/curate` MOVES the fifth into the log rather than compressing it, so no finding is ever shortened to buy space. **Look there before concluding something was never recorded.** Session files dated before 2026-09 are in [`archive/`](archive/) (moved 2026-09-26 by `scripts/maintenance/retire_memory.py sessions`).
 

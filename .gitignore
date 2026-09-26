@@ -135,6 +135,10 @@ site/
 
 # Temporary files
 archive/
+# ...but NOT the memory archive: it is tracked context (retired session files, verbatim).
+# `git mv` of tracked files kept 79 of them in; a file CREATED there was silently
+# ignored (/audit-context 2026-09-26, Step 7's first catch).
+!memory/archive/
 tmp/
 temp/
 *.tmp

@@ -125,6 +125,28 @@ for good in --sessions --docs --docs-live --docs-frozen; do
     || { echo "  FAIL  known flag rejected: $good"; fail=1; }
 done
 echo "  ok    accepted 4 known flags (the guard is not simply refusing everything)"
-total=$(( ${#must_catch[@]} + ${#must_be_silent[@]} + ${#must_be_placeheld[@]} + 10 ))
+# 38-40 (/audit-context 2026-09-26) — rung 1b-outside, a LOOSENING for docs outside
+# ROOT (the auto-memory index). SEED.md lives inside ROOT and cannot reach it, so this
+# is a second seed written OUTSIDE the repo. 38 is the case it was built for; 39 and 40
+# are what it newly permits: a fabricated `../` link into ROOT, and a `../` escape to a
+# file that EXISTS but lies outside ROOT — the bound, not existence, must rule on 40.
+outdir="$(mktemp -d)"; mkdir -p "$outdir/a/b"; : > "$outdir/a/exists_outside_root.md"
+repo="$(cd "$here/../../.." && pwd)"
+rel="$(python3 -c 'import os,sys; print(os.path.relpath(sys.argv[1], sys.argv[2]))' "$repo" "$outdir/a/b")"
+cat > "$outdir/a/b/OUTSIDE_SEED.md" <<EOF
+- [real](${rel}/CLAUDE.md)
+- [fabricated](${rel}/memory/no_such_outside_seed_file.md)
+- [escape](../exists_outside_root.md)
+EOF
+oout="$(SEED="$outdir/a/b/OUTSIDE_SEED.md" python3 "$here/refcheck.py" 2>&1)"
+ofind="$(sed -n '/### FINDINGS/,/### RESOLVED/p' <<<"$oout")"
+grep -q '/CLAUDE.md .*\[rung1b-outside\] -> CLAUDE.md' <<<"$oout" \
+  && echo "  ok    fired   rung1b-outside (38)" || { echo "  FAIL  rung1b-outside never fired (38)"; fail=1; }
+grep -q 'no_such_outside_seed_file.md' <<<"$ofind" \
+  && echo "  ok    caught  fabricated ../ link into ROOT (39)" || { echo "  FAIL  missed fabricated ../ link (39)"; fail=1; }
+grep -q '\.\./exists_outside_root.md' <<<"$ofind" \
+  && echo "  ok    caught  ../ escape outside ROOT (40)" || { echo "  FAIL  ../ escape outside ROOT laundered (40)"; fail=1; }
+rm -rf "$outdir"
+total=$(( ${#must_catch[@]} + ${#must_be_silent[@]} + ${#must_be_placeheld[@]} + 13 ))
 [ $fail -eq 0 ] && echo "SENSITIVITY: $total/$total PASS" || echo "SENSITIVITY: FAILED"
 exit $fail

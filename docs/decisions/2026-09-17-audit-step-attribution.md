@@ -27,7 +27,19 @@ inference rather than by a contemporaneous record, it says so.
 | **4** references | 2026-08-13 three dead auto-memory pointers; 2026-08-27 24→1; 2026-09-11 **`refcheck.py` had no `sys.exit` and could not fail**; 2026-09-17 23 findings, incl. a shape test ruling 3 correct references STALE forever | **Keep** |
 | **5** reachability | 2026-08-12 late, 1 orphan; 2026-08-29, 1 orphan homed; 2026-09-17 three unlinked session records, one of them **asserted absent while sitting in the same directory** | **Keep** |
 | **6** drift | 2026-08-15 **a premature stamp had silenced its own drift check**; 2026-08-27 a hold with no release condition | **Keep** |
-| **7** gitignore | **No catch in its whole recorded history.** The only audit that reports on it (`memory/archive/project_session_2026_08_29_late.md:25`) says "gitignore correct". The one real gitignore finding on record — `.claude/review-profile.md` untracked and unignored, 2026-09-11 evening — came from `/review-changes`, **not from this step** | **Retirement candidate — NOT retired.** See below |
+| **7** gitignore | **No catch in its whole recorded history.** The only audit that reports on it (`memory/archive/project_session_2026_08_29_late.md:25`) says "gitignore correct". The one real gitignore finding on record — `.claude/review-profile.md` untracked and unignored, 2026-09-11 evening — came from `/review-changes`, **not from this step** | ~~Retirement candidate~~ — **candidacy ENDED 2026-09-26** (first catch, below). Keep |
+
+### 2026-09-26 audit (framework v1.49.0) — findings by the step that found them
+
+| Step | Caught |
+|---|---|
+| **1** size | The auto-memory index at 68 lines against the ~60-line flag (13,314 chars; loaded layer 31,432 B). Now 66 lines / 12,800 B — the residue is headings, blanks and the #138 tombstone, not entries |
+| **2** duplication | Two auto-memory rows restating repo files: `b650 GPU box` (`CLAUDE.md:125` + `memory/MEMORY.md`) and `Working rules` (`CLAUDE.md`). Removed |
+| **3** wrong-layer | **First independent catch.** Two PROJECT facts in the user layer, and both had gone **stale there while the repo moved on**: `NM#338 … LIVE, not closed` (NexusMind#338 closed 2026-08-12, fix verified on production rows) and `3,000/run cap … CANNOT converge` (cap raised to 6,000 on 2026-09-26, NexusMind#531). Rewritten as a rule + pointer |
+| **4** references | A **checker** defect, not a doc defect: rung 1b cannot express doc-relative for a doc OUTSIDE ROOT, so the auto-memory index's correct `../../../../repos/…/cross-repo-prioritization.md` was UNRESOLVED. Fixed as `rung1b-outside`, bounded to ROOT; seeds 38–40, three mutations each caught |
+| **5** reachability | **Six session files orphaned in the auto-memory directory** (`project_session_2026_07_28 … 08_03`), three of them the only copy anywhere — #138 moved the log, not these. Recovered byte-identical to `memory/archive/`. ⚠️ the archive's 2026-08-13 entry says `_02` "has no repo file… the only surviving record" is the index summary; the full file sat in this directory the whole time |
+| **6** drift | Nothing — stamp v1.49.0 is the latest |
+| **7** gitignore | ⭐ **FIRST CATCH in its recorded history.** `.gitignore`'s `archive/` (under "Temporary files", since `a1a0768` 2025-11-15) matches `memory/archive/`. The 79 tracked files there survive only because `retire_memory.py` uses `git mv`; the six recovered files were CREATED there and `git status` showed nothing. Fixed with `!memory/archive/`. Found by following Step 5's fix into `git status`, not by the step's own `git ls-files` pass — the tracked-file count looked correct |
 
 ## Step 7: the retirement that was not taken, and why
 
@@ -49,6 +61,10 @@ Step 7 is **kept**, for a reason that is not "it might be useful":
 **and** a mechanised tracking check landing somewhere per-commit. Then it is a
 per-session check replacing a monthly one, and the retirement is a gain rather than a
 loss. Do not retire it on the zero alone.
+
+✅ **Superseded 2026-09-26: the zero ended.** Step 7's first catch (the `archive/` rule
+ignoring `memory/archive/`) is in the 2026-09-26 table above. It is kept; the release
+condition no longer applies.
 
 ## Tombstones
 
