@@ -30,8 +30,8 @@ that change rights or deliver to a group stay IN. Your band-audit call stands."*
 
 So the consumer commission's Rs 60k award to one bus passenger (band audit, owner check #5) is **OUT**,
 and ruling 1's *compensation* example now covers only awards that change a right or reach a group.
-*My gloss, not ruled:* where "routine" ends (a large individual award, a precedent-setting one) was not
-asked; judges should flag such cases rather than decide them.
+*Not ruled (assistant's note):* where "routine" ends — a large individual award, or one that sets a
+precedent — was not asked. Until it is, apply the wording above as written.
 
 *Superseded text, kept:* Ruling 1 says court rulings are IN when they deliver something to a named
 person, and names *compensation* as an example. In the band audit's owner check (#5) the owner kept a
