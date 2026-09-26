@@ -53,3 +53,12 @@ uplifting_only 11.5% and belonging_no_v8 19.0% at the op-point; a ≥ 7 score sh
 Whether the not-in-scope rows are added as capped hard negatives (the adj3 precedent) — that adds
 oracle cost and changes the negative mix; it goes to the owner with step 1's numbers. Any retrain
 (v10 candidate) is a separate, gated step (ADR-021).
+
+## Hard negatives — APPROVED by the owner 2026-09-26 ("Yes, add them"), rule fixed before any call
+The **473** pool rows NOT judged in scope (356 out_of_scope, 78 harm_is_subject, 21
+no_person_benefits, 8 response_to_harm, 10 A/B splits) are oracle-scored k=3 with `prompt-v8-4.md`
+and **every dimension is capped at 2.0, whatever the oracle's verdict** — the adj3 rule. How often
+the oracle's k=3 majority calls one `in_scope`, and how many have an uncapped weighted ≥ 4.5, is
+counted and reported (the oracle's own leak rate on production ≥ 7 mistakes). Estimate ~$0.70
+(scaled from this pool's measured $0.36; an estimate). Any rows that never score after retries
+are excluded and counted.
