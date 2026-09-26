@@ -1,0 +1,19 @@
+
+Ground-truth gate vs held-out oracle labels (student threshold 4.5, on-lens := oracle >= 4.5, gatekeeper_cap 3.0, n=660)
+ADR-023 — we prioritise HIGH CERTAINTY over HIGH DETECTION: specificity at the op-point is
+the criterion, recall is a constraint to satisfy, and MAE ranks nothing. A low recall here is
+usually the choice working. Read spec first, and read recall beside the positive rate.
+model      n  recall    prec    spec      f1  spearman    mae
+-------------------------------------------------------------
+v9       660   0.229   0.889   0.998   0.364     0.788  0.595
+adj4     660   0.229   0.889   0.998   0.364     0.788  0.606
+
+Batch-noise band (#95, floor 0.16) — the range each metric could occupy if every
+article predicted within 0.16 of 4.5 landed on the other side of it:
+  v9     indeterminate    2/660   recall [0.171, 0.229]  spec [0.998, 0.998]  prec [0.857, 0.889]  f1 [0.286, 0.364]
+  adj4   indeterminate    1/660   recall [0.229, 0.229]  spec [0.998, 1.000]  prec [0.889, 1.000]  f1 [0.364, 0.372]
+  ! v9 vs adj4: specificity bands OVERLAP — NOT DISTINGUISHABLE at this threshold. Do not report the point difference as an effect (#95).
+  ! v9 vs adj4: recall bands OVERLAP — NOT DISTINGUISHABLE at this threshold. Do not report the point difference as an effect (#95).
+  ! v9 vs adj4: F1 bands OVERLAP — NOT DISTINGUISHABLE at this threshold. Do not report the point difference as an effect (#95).
+
+Report: docs/evidence/2026-09-26-v10-retrain-gate/gate_oracle.json

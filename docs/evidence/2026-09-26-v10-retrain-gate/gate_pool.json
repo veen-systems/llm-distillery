@@ -1,0 +1,122 @@
+{
+  "priority": "ADR-023 \u2014 we prioritise HIGH CERTAINTY over HIGH DETECTION: specificity at the op-point is the criterion, recall is a constraint to satisfy, and MAE ranks nothing. A low recall here is usually the choice working. Read spec first, and read recall beside the positive rate.",
+  "threshold": 4.5,
+  "truth_threshold": 4.5,
+  "gatekeeper_cap": 3.0,
+  "noise_floor": 0.16,
+  "n_labeled": 65,
+  "models": {
+    "v9": {
+      "n": 65,
+      "positives": 15,
+      "truth_threshold": 4.5,
+      "recall": 0.8666666666666667,
+      "precision": 0.8125,
+      "specificity": 0.94,
+      "f1": 0.8387096774193549,
+      "spearman": 0.7862460698136152,
+      "mae": 0.9906126998632382,
+      "tp": 13,
+      "fn": 2,
+      "fp": 3,
+      "tn": 47,
+      "noise_floor": 0.16,
+      "n_indeterminate": 3,
+      "indeterminate_by_cell": {
+        "tp": 3,
+        "fn": 0,
+        "fp": 0,
+        "tn": 0
+      },
+      "recall_band": [
+        0.6666666666666666,
+        0.8666666666666667
+      ],
+      "precision_band": [
+        0.7692307692307693,
+        0.8125
+      ],
+      "specificity_band": [
+        0.94,
+        0.94
+      ],
+      "f1_band": [
+        0.7142857142857142,
+        0.8387096774193549
+      ]
+    },
+    "adj4": {
+      "n": 65,
+      "positives": 15,
+      "truth_threshold": 4.5,
+      "recall": 0.6,
+      "precision": 0.9,
+      "specificity": 0.98,
+      "f1": 0.7200000000000001,
+      "spearman": 0.792641621997602,
+      "mae": 0.8260551750965607,
+      "tp": 9,
+      "fn": 6,
+      "fp": 1,
+      "tn": 49,
+      "noise_floor": 0.16,
+      "n_indeterminate": 1,
+      "indeterminate_by_cell": {
+        "tp": 0,
+        "fn": 1,
+        "fp": 0,
+        "tn": 0
+      },
+      "recall_band": [
+        0.6,
+        0.6666666666666666
+      ],
+      "precision_band": [
+        0.9,
+        0.9090909090909091
+      ],
+      "specificity_band": [
+        0.98,
+        0.98
+      ],
+      "f1_band": [
+        0.7200000000000001,
+        0.7692307692307692
+      ]
+    }
+  },
+  "inputs": {
+    "generated_utc": "2026-09-26T19:40:42Z",
+    "argv": [
+      "--labels",
+      "datasets/gate/ht_v10_2026-09-26/pool_test_labels.jsonl",
+      "--config",
+      "filters/human_thriving/v9/config.yaml",
+      "--recompute-model-wa",
+      "--model",
+      "v9=datasets/gate/ht_v10_2026-09-26/v9_pool/scores_calibrated.jsonl",
+      "--model",
+      "adj4=datasets/gate/ht_v10_2026-09-26/adj4_pool/scores_calibrated.jsonl",
+      "--report",
+      "docs/evidence/2026-09-26-v10-retrain-gate/gate_pool.json"
+    ],
+    "labels": {
+      "path": "datasets/gate/ht_v10_2026-09-26/pool_test_labels.jsonl",
+      "sha256": "55dd68fb92771fb0f7766c22080380dfe33c7932480eacc6ac6b82e53a8fec36"
+    },
+    "config": {
+      "path": "filters/human_thriving/v9/config.yaml",
+      "sha256": "b1a1927c107f64df826e69264855c7490919df8acae202e11814470d7f07d5ee"
+    },
+    "models": {
+      "v9": {
+        "path": "datasets/gate/ht_v10_2026-09-26/v9_pool/scores_calibrated.jsonl",
+        "sha256": "59529393c6bf33c814523fe3a62c0047e0b079f9cb538681c38f4b075603deff"
+      },
+      "adj4": {
+        "path": "datasets/gate/ht_v10_2026-09-26/adj4_pool/scores_calibrated.jsonl",
+        "sha256": "25ad5ad3eeea8be75039caa1fee343a30130b6bd4bcca5555525b7cca22f5ffa"
+      }
+    }
+  }
+}

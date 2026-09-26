@@ -9,9 +9,9 @@ topic. Re-read the block under it before starting; the reasons are there, not he
    1. **Review round 2 on `deploy_to_nexusmind.sh` fixes is NOT DONE** — two lenses were stopped unfinished. Commit
       below is tested (1011 passed; 5 mutants caught) but unreviewed: run adversarial + reachability on it first.
       The round-1 report (7 lenses on `356cd70`, 1 blocker fixed) is summarised in the commit message.
-   2. **v10 training** — set up and gate bar RULED (`docs/evidence/2026-09-26-v10-retrain-gate/PREREGISTRATION.md`);
-      waits for the owner to free b650's GPU (roofvision). Check it is free; do not assume.
-   3. **ovr.news #373 (Thriving cutover)** — owner merges; then record the 3 outcome checks (on the PR) on #151.
+   2. ✅ **v10 TRAINED + GATED 2026-09-26: NOT DISTINGUISHABLE; v9 stays live** (`docs/evidence/2026-09-26-v10-retrain-gate/README.md`).
+      On the pool's held-out rows v10 is STRICTER (recall 0.60 vs 0.87), not more generous. ▶ owner: next step (a/b/c there).
+   3. ✅ #373 outcome checks recorded on #151 (50 v9 rows ingested; 28 v9 on Thriving, 726 v7 draining). Owner's 3 flags: v7 drain; v9 and v10 reject all.
    4. #165 detector packages: design/ADR only. Add the round-1 finding: commerce v2 weights exist only in NexusMind.
 
 A. ✅ **VERIFIED 2026-09-26 ~15:45 CEST, from outcomes (one cycle each; the original text is kept below).**
