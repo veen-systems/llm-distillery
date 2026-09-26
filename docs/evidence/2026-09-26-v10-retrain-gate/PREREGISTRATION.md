@@ -1,6 +1,6 @@
 # human_thriving v10 candidate (adj4) — the gate bar, written BEFORE any training
 
-**2026-09-26. DRAFT — the bar below is the assistant's proposal and awaits the owner's ruling.**
+**2026-09-26. RULED: the owner chose the bar below ("Recall up, spec held", an option the assistant wrote), before any training.**
 No adj4 model exists; nothing has trained. v9's numbers below are from the 2026-09-25 gate
 (`../2026-09-25-v8-adj-retrain-gate/README.md`), seen before writing, and disclosed here.
 
@@ -48,6 +48,6 @@ the likely outcomes**; either is a finding. A WIN would be one draw clearing the
 - **WIN** → live audit of adj4 vs v9 on a production week (the v9 protocol), then the owner.
 - **NOT DISTINGUISHABLE / LOSE** → report. ⏸️ The owner decides; v9 stays live either way.
 
-## ⏸️ Needs the owner before training
-1. This bar, or a different one.
-2. The GPU: a `roofvision` process holds 24.5 of 32.6 GB (0% utilisation at 2026-09-26 ~17:30).
+## Before training
+1. ✅ Bar ruled by the owner, 2026-09-26.
+2. ⏸️ The GPU — owner: "Wait; I'll free it". Check it is free before starting; do not assume. At setup, a `roofvision` process holds 24.5 of 32.6 GB (0% utilisation at 2026-09-26 ~17:30).

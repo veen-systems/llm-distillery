@@ -49,7 +49,7 @@ B. ✅ **RULED 2026-09-26 (owner, in session, choosing between options the assis
    2. **≥ 7 pool: "Yes, run it."** ✅ **DONE 2026-09-26** (`docs/evidence/2026-09-26-thriving-ge7-pool/README.md`):
       183 of 656 in scope (drift 0.924); oracle kept **177**, alias control d = +0.017 → MIX; weighted ≥ 6: 58,
       ≥ 7: 8, ≥ 8: **0**. Cost **$0.36** off-peak vs the $0.10–0.20 estimate. ▶ owner: hard negatives (473 rows)
-      ✅ hard negatives DONE (471 capped; oracle leak 41.8% in_scope). ▶ v10 retrain (adj3 + 177 + 471) through ADR-021.
+      ✅ hard negatives DONE (471 capped; oracle leak 41.8% in_scope). ✅ v10 SET UP: `adj4` built and staged on b650, gate bar RULED (`docs/evidence/2026-09-26-v10-retrain-gate/PREREGISTRATION.md`). ▶ train when the owner frees the GPU (roofvision holds 24.5 GB).
    3. **Compensation: "Narrow ruling 1"** — recorded in `docs/decisions/2026-09-25-thriving-scope-rulings.md` § 6.
       ⚠️ It binds ADJUDICATION (judges) only; v9's oracle prompt still scores compensation 7–8 (`prompt-compressed.md`
       :286), so the ruling reaches the model only through adjudicated labels.
