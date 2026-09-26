@@ -1,0 +1,33 @@
+Prompt: filters/human_thriving/v8/prompt-v8-4.md sha256[:12]=c4705408c477
+Scoring with: dims=['human_wellbeing_impact', 'social_cohesion_impact', 'justice_rights_impact', 'evidence_level', 'benefit_distribution', 'change_durability'] | field=human_thriving_analysis | prompt=prompt-v8-4.md
+Loaded 50 articles from docs/evidence/2026-09-26-thriving-ge7-pool/oracle_control_input.jsonl
+  [  50/50] 49 OK | 1 err | 0 junk | 2.6 art/s | ETA 0 min | cache hit 98%
+
+============================================================
+COMPLETE
+============================================================
+Successful: 49  Errors: 1  Scrape-junk skipped: 0
+Wall clock: 0.3 min
+Tokens: input 602,169  output 17,147  cached 592,631
+Cache hit rate: 98.4%
+Estimated cost: $0.02 off-peak / $0.04 peak
+Output tokens/article: 350 (the number that decides DeepSeek vs Gemini Batch -- see memory/oracle-pricing-scheduling.md)
+Output: docs/evidence/2026-09-26-thriving-ge7-pool/runs/control_1.jsonl
+
+1 row(s) errored. Re-run the same command to fill them — already-scored ids are skipped on resume.
+Prompt: filters/human_thriving/v8/prompt-v8-4.md sha256[:12]=c4705408c477
+Scoring with: dims=['human_wellbeing_impact', 'social_cohesion_impact', 'justice_rights_impact', 'evidence_level', 'benefit_distribution', 'change_durability'] | field=human_thriving_analysis | prompt=prompt-v8-4.md
+Loaded 50 articles from docs/evidence/2026-09-26-thriving-ge7-pool/oracle_control_input.jsonl
+Resuming: 49 already scored, 1 remaining
+  [   1/1] 1 OK | 0 err | 0 junk | 0.4 art/s | ETA 0 min | cache hit 98%
+
+============================================================
+COMPLETE
+============================================================
+Successful: 1  Errors: 0  Scrape-junk skipped: 0
+Wall clock: 0.0 min
+Tokens: input 11,632  output 336  cached 11,392
+Cache hit rate: 97.9%
+Estimated cost: $0.00 off-peak / $0.00 peak
+Output tokens/article: 336 (the number that decides DeepSeek vs Gemini Batch -- see memory/oracle-pricing-scheduling.md)
+Output: docs/evidence/2026-09-26-thriving-ge7-pool/runs/control_1.jsonl

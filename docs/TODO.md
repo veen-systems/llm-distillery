@@ -46,7 +46,10 @@ B. ✅ **RULED 2026-09-26 (owner, in session, choosing between options the assis
       ✅ **Re-confirmed after the head comparison: "Yes, cut over."** Both PRs shown to the owner before merging.
       ▶ Implementation order is #151's (teach ovr.news the name in its 12 files → then disable `uplifting`; NexusMind
       has a probe that fails if `enabled_filters` loses `uplifting`, update it in the same change). Cross-repo.
-   2. **≥ 7 pool: "Yes, run it."** Not started.
+   2. **≥ 7 pool: "Yes, run it."** ✅ **DONE 2026-09-26** (`docs/evidence/2026-09-26-thriving-ge7-pool/README.md`):
+      183 of 656 in scope (drift 0.924); oracle kept **177**, alias control d = +0.017 → MIX; weighted ≥ 6: 58,
+      ≥ 7: 8, ≥ 8: **0**. Cost **$0.36** off-peak vs the $0.10–0.20 estimate. ▶ owner: hard negatives (473 rows)
+      yes/no, then a v10 retrain (adj3 + 177) through the ADR-021 gate.
    3. **Compensation: "Narrow ruling 1"** — recorded in `docs/decisions/2026-09-25-thriving-scope-rulings.md` § 6.
       ⚠️ It binds ADJUDICATION (judges) only; v9's oracle prompt still scores compensation 7–8 (`prompt-compressed.md`
       :286), so the ruling reaches the model only through adjudicated labels.

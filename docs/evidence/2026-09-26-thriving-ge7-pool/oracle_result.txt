@@ -1,0 +1,10 @@
+CONTROL (n=50, same prompt v8-4, deepseek-chat alias 2026-09-24 -> 2026-09-26): median delta +0.017, mean +0.022, IQR [-0.079, +0.133] -> MIX new rows into train/val/test (rule |d| <= 0.30)
+NEW: 177 kept, 6 excluded (oracle majority not in_scope)
+  weighted >= 4.5: 154   >= 6: 58   >= 7: 8   >= 8: 0   max 7.35
+  per dimension (new kept rows):   >=6   >=8
+    Wellbeing     110    23
+    Connection     99     4
+    Justice        29     5
+    Evidence       99    16
+    Reach          63     4
+    Durability    123    21

@@ -1,0 +1,7 @@
+validation problems: 0
+pass A rows 656 | drift A vs B (binary) 121/131 = 0.924  (stop below 0.90) -> PASS
+A/B splits (tie rule -> not in scope): 10
+  belonging               89 / 450 = 19.8%
+  belonging+uplifting      8 /  14 = 57.1%
+  uplifting               86 / 192 = 44.8%
+in scope total: 183 | verdicts: {'in_scope': 183, 'out_of_scope': 356, 'harm_is_subject': 78, 'no_person_benefits': 21, 'response_to_harm': 8, 'split': 10}
