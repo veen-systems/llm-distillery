@@ -29,3 +29,16 @@ $0 oracle. b650 GPU ~52 min (shared with a roofvision job from ~10:13).
 ## Left on machines
 - b650: `filters/human_thriving/v8_adj4p` and `runs/human_thriving_v8_adj4p` (untracked; `rm -rf` to undo), as `v8_adj4`.
 - local: `datasets/gate/ht_v10_2026-09-26/adj4p_*` (gitignored); `/tmp/claude-1000/si.json` and review scratch dirs.
+
+## Afternoon (after the midday checkpoint, owner: "we have time and tokens today")
+| thread | state |
+|---|---|
+| Retire step 3 (TODO −1) | ✅ `13045c9`: ledger 146,560 → 83,641; cross-repo 136,125 → 61,087; contracts plan 149,056 → 56,931 B. Independent lossless checker (mutation-tested); a review lens caught a reproduce command silently printing 0 (then 13 ≠ 17 until it read both files) and open contract items that had moved to the archive (moved back) |
+| #165 → ADR-024 | ✅ drafted PROPOSED, `7c0712c`; Sonnet review: all facts held, 3 warnings fixed. ⭐ Production filters do not load from the Hub either (`use_hub=False`, `HF_HUB_OFFLINE=1`). Needs the owner's ruling + 5 questions |
+| `/update-drift` | ✅ v1.49.0 → v1.49.2, both already in force, `a6cd7cf` (owner said "go") |
+| `check_claude_md_trim.py` (TODO −1 step 4) | ⛔ REJECTED with evidence, `0ccbf14`: ≤ 2/3 seeds at 52/125 false flags |
+
+Measured: curate read surface 1,486,729 → 1,355,588 chars (the gotcha log, ~250k, is the largest left).
+⛔ Mine: my first `curate` marker grep used a regex where I meant a literal string and returned 0 for a present
+marker. The first trim-check extractor saw only BOLD imperatives, and today's `CLAUDE.md` states the ADR-015
+rule unbolded. The evidence script broke when it moved folders.

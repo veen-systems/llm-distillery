@@ -5,7 +5,10 @@
 *A bare "continue" means this list, top down. Each line names the FIRST action, not the
 topic. Re-read the block under it before starting; the reasons are there, not here.*
 
-▶ **NEXT SESSION (rewritten 2026-09-27 midday checkpoint; the session continued — see the latest session file):**
+▶ **NEXT SESSION (rewritten 2026-09-27 afternoon close):** items 1, 2, 4 below are DONE; what remains needs the owner.
+   ▶ **First:** ask the owner for (i) the ADR-024 ruling + its 5 questions (`docs/adr/024-detector-packages.md`), (ii) the
+   mid-month retire `retire_memory.py --before 2026-09-17` (gotcha log ~252k → ~135k chars), (iii) the Thriving tab read
+   (H-TV5). With none of those: the two archived ledger threads (`H-V8-3`, `H-V8-26`, bottom of this file).
    1. ✅ **DONE 2026-09-27: retire step 3.** Ledger 146,560 → 83,641 B (74 closed rows → `memory/archive/
       hypothesis-ledger-archive.md`); cross-repo 136,125 → 61,087 B (Aug snapshots → `memory/archive/cross-repo-
       prioritization-archive.md`); `docs/CONTRACTS_PLAN.md` 149,056 → 56,931 B (rounds 1–4 → `docs/CONTRACTS_PLAN-rounds-
