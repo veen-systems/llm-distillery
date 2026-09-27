@@ -4,6 +4,24 @@
 
 *⚠️ **Entries dated before 2026-09-17 live in [`archive/gotcha-log-archive.md`](archive/gotcha-log-archive.md)**, verbatim (the 09-01 → 09-16 ones moved 2026-09-27 by an owner-approved MID-MONTH pass, `--before 2026-09-17`; earlier ones moved 2026-09-24; into `archive/` 2026-09-26 so curate's size measurement stops counting it, #163; the month-dated Feb–May entries followed on 2026-09-26). Next pass: `python3 scripts/maintenance/retire_memory.py gotcha --before <first of this month> --apply` (dry run without `--apply`). It retires top-level entries only; the `###` entries inside the catalogue are kept by rule and counted. The unreachable-mechanism catalogue stayed here. For a recurrence match, grep both: `grep -n <term> memory/gotcha-log*.md`.*
 
+## I NAMED FOUR HUB REPOS BY DERIVING FROM FOLDER NAMES THAT SHARE NO PATTERN (2026-09-27)
+**Problem**: `harm-detector`, `obituary-detector`, `violence-promotion`, `commerce-prefilter`. The owner asked why they
+were not harmonized. Two repos had to be renamed after upload.
+**Root cause**: `name.replace('_', '-')` copies whatever inconsistency the source names carry. A name that outsiders
+will see (a Hub repo, a URL, a package) is a DECISION, and I made it with a string transform.
+**Fix**: an explicit `REPO_NAMES` table (`scripts/deployment/upload_detector_to_hub.py`); an unnamed detector raises
+`KeyError` rather than getting an invented name. ⭐ **Before creating anything public-facing and named, propose the
+convention to the owner in one line.** A Hub rename keeps revisions, so it was cheap this time.
+
+## A LOCAL SIBLING CHECKOUT IS NOT "WHAT PRODUCTION SERVES" — IT WAS ON ANOTHER SESSION'S FEATURE BRANCH (2026-09-27)
+**Problem**: the ADR-024 backfill needed the bytes production serves. `../NexusMind` was checked out on
+`fix/integration-inference-tests`, another session's branch.
+**Root cause**: a sibling repo on the workstation belongs to whichever session last switched it.
+**Fix**: hash on the serving host (`sadalsuud:~/local_dev/NexusMind`, `git status -sb` = `main`), and cross-check the
+other copies (gpu-server, workstation) with `verify --strict`. Record `served_commit` in the artifact. The bytes
+happened to match, and that was luck, not the method. Related: `shlex.quote("~/x")` produces a literal `~` directory
+over ssh (`remote_path()` fixes it).
+
 ## THE GUARD'S TESTS PROVED THE PREDICATE, NOT THE WIRING — AND A PLANNED TRIM LOST CLAUSES ANYWAY (2026-09-27)
 **Problem**: Four slips in one session, each caught by a review lens or by the owner, none by my own checks.
 1. **`054a0a3`'s sidecar guard** was committed with "5 mutants of the fixes all caught". Round 2 then found **4 surviving mutants that disable it**: CLI exit forced to 0, arguments swapped in Python or in the `.sh`, `exit 1` dropped. Every test called the predicate. The only `.sh` test was a text search for `--check-sidecars`.

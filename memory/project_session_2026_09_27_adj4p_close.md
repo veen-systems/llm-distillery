@@ -42,3 +42,18 @@ Measured: curate read surface 1,486,729 → 1,355,588 chars (the gotcha log, ~25
 ⛔ Mine: my first `curate` marker grep used a regex where I meant a literal string and returned 0 for a present
 marker. The first trim-check extractor saw only BOLD imperatives, and today's `CLAUDE.md` states the ADR-015
 rule unbolded. The evidence script broke when it moved folders.
+
+## Evening (owner rulings, then ADR-024 steps 1–2)
+| thread | state |
+|---|---|
+| Owner rulings | ✅ ADR-024 Option C; one Hub repo per detector named `<concept>-detector`; obit v3/v4 + commerce v2 retired (v2 lost to v1 in #80); Q3 gpu-server reads the manifest, Q4 per-detector enforcement, Q5 record stack + warn; our `training_config.json` canonical (obit v5, violence v1); mid-month retire YES |
+| Mid-month retire | ✅ `457b802`: gotcha 259,473 → 143,570 chars (86 entries), 19 session files; read surface now ~1.07M chars (1.49M this morning) |
+| ADR-024 step 1 | ✅ `0aed2e4`: manifests for harm v1 / obit v5 / violence v1 / commerce v1 (distilbert only), verified `--strict` on sadalsuud, gpu-server, workstation; review: 3 warnings fixed |
+| ADR-024 step 2 | ✅ `b2f8f00`, `e85b257`: 4 private Hub repos, pinned, re-download verified; `adopt` command; obit v5 config now tracked |
+| NexusMind (`nexusmind-b2`) | told the Hub design, rulings, revisions, rename; accepts the order; owns step 4, `/commerce/predict` retirement, Venezuela grouping |
+| pipeline-atlas (`pipeline-atlas-b3`) | answered its boundary question: 5 items; main one, its model says "copied + HF Hub" but production never reads the Hub |
+| Step 3 | OPEN → NEXT SESSION item 0 |
+
+⛔ Mine (evening): derived Hub repo names from folder names that share no pattern, so the owner had to ask "why not
+harmonized?" (renamed); `shlex.quote` made `~` a literal directory in the first remote backfill; the local NexusMind
+checkout was on another session's FEATURE BRANCH — hashing it would have recorded the wrong bytes (caught, sadalsuud used).

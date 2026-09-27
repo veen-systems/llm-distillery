@@ -5,10 +5,26 @@
 *A bare "continue" means this list, top down. Each line names the FIRST action, not the
 topic. Re-read the block under it before starting; the reasons are there, not here.*
 
-▶ **NEXT SESSION (rewritten 2026-09-27 afternoon close):** items 1, 2, 4 below are DONE; what remains needs the owner.
-   ▶ **First:** ask the owner for (i) ✅ ADR-024 RULED 2026-09-27 (Option C, one Hub repo per detector, obit v3/v4 retired) → ✅ step 1 BUILT 2026-09-27 (manifests verified on 3 hosts) → ✅ step 2 DONE (4 private repos, pinned, re-download verified; our training_config canonical) → ▶ step 3: `deploy_to_nexusmind.sh` step 2 manifest-driven (fetch → verify → place → prune), dry-run first, prove on one detector; Q3–Q5 open, NexusMind (nexusmind-b2) told, (ii) ✅ the
-   mid-month retire (DONE 2026-09-27), (iii) the Thriving tab read
-   (H-TV5). With none of those: the two archived ledger threads (`H-V8-3`, `H-V8-26`, bottom of this file).
+▶ **NEXT SESSION (rewritten 2026-09-27 evening close). A bare "continue" = item 0, then the rest.**
+   0. ▶ **ADR-024 order step 3** (`docs/adr/024-detector-packages.md`, llm-distillery#165): make `deploy_to_nexusmind.sh`
+      step 2 manifest-driven for the four packaged detectors: fetch hub-origin files at the pinned revision into staging →
+      verify every sha256 against `MANIFEST.json` → place → prune ONLY files the previous manifest listed (no readable
+      previous manifest = no prune, report extras). REFUSE a manifest whose `hub` is null while it has hub-origin files.
+      Non-packaged `filters/common` files keep today's runtime-file copy. Build with `--dry-run` first; prove it on ONE
+      detector (harm v1: it adopts nothing, so a real run should change 0 bytes except shipping MANIFEST.json); then
+      `verify_detector_package.py verify --all --target ../NexusMind --strict` must pass (obituary v5 / violence v1 then
+      carry OUR training_config.json, the owner-ruled canonical copy). Tools already built: `scripts/deployment/
+      {detector_manifest,verify_detector_package,upload_detector_to_hub}.py`. Repos: `jeergrvgreg/{harm,obituary,
+      violence-promotion,commerce}-detector`. Review the change (adversarial + reachability) BEFORE any real deploy.
+   0b. Then tell the NexusMind session (`ListAgents`; it was `nexusmind-b2`) that step 4 (their loaders read the manifest,
+      log-only flag, per detector) is unblocked. Their open owner items: retire gpu-server `/commerce/predict` + its v2
+      files; the Venezuela story grouping (NexusMind PR #542).
+   *Owner, not urgent:* H-TV5 (watch Thriving while v7 drains); delete the stale Hub repo `commerce-prefilter-v1`
+   (different tokenizer files from production's) or keep it as history; obit v5 / violence v1 have no recorded sklearn
+   version (Q5 skew check has no baseline until a rebuild).
+   *Done 2026-09-27 (details: `memory/project_session_2026_09_27_adj4p_close.md`):* adj4p (EXP-043); deploy review
+   rounds 2–3; MEMORY.md thinned; retire step 3 + mid-month retire (read surface 1.49M → 1.07M chars); ADR-024 ruled,
+   steps 1–2 built (manifests, 4 private Hub repos pinned); update-drift v1.49.2; trim check REJECTED.
    1. ✅ **DONE 2026-09-27: retire step 3.** Ledger 146,560 → 83,641 B (74 closed rows → `memory/archive/
       hypothesis-ledger-archive.md`); cross-repo 136,125 → 61,087 B (Aug snapshots → `memory/archive/cross-repo-
       prioritization-archive.md`); `docs/CONTRACTS_PLAN.md` 149,056 → 56,931 B (rounds 1–4 → `docs/CONTRACTS_PLAN-rounds-
