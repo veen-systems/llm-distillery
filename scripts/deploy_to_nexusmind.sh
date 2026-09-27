@@ -242,7 +242,7 @@ echo ""
 # .pkl would land next to a stale sidecar and the detector would refuse to load in production.
 # Checked BEFORE step 1, so a failure leaves NexusMind untouched.
 # Checked here: step 1's filter package (probe pickles) and step 2b's UNPACKAGED filters/common
-# files (retired obituary v3/v4). The packaged detectors' sidecars ship with their pickles and are
+# files (no detector is unpackaged today; retired versions do not ship, RETIRED_DIRS). The packaged detectors' sidecars ship with their pickles and are
 # checked against the manifest by step 0.7.
 echo "0.6 Checking NexusMind .sha256 sidecars against the pickles about to ship..."
 SIDECAR_OK=1
@@ -310,8 +310,8 @@ python3 "${DISTILLERY_ROOT}/scripts/deployment/deploy_detectors.py" place \
 }
 # 2b. Everything else under filters/common ships as before. What ships is defined in ONE place,
 # scripts/deployment/common_runtime_files.py (#164): no */training/, */validation/, */docs/, */tests/,
-# */__pycache__/, oracle.py, prompt.md or detector_seeds.py, and (--unpackaged) no packaged detector dir.
-# Untracked model files of UNPACKAGED detectors (retired obituary v3/v4) still ship from this tree.
+# */__pycache__/, oracle.py, prompt.md or detector_seeds.py, no retired version (RETIRED_DIRS: obituary
+# v3/v4, commerce v2; owner 2026-09-27) and (--unpackaged) no packaged detector dir.
 # Copy-only: files removed or excluded here are NOT deleted in NexusMind.
 COMMON_LIST=$(python3 "${DISTILLERY_ROOT}/scripts/deployment/common_runtime_files.py" --unpackaged "$COMMON_SOURCE") || {
     echo "ERROR: could not list filters/common runtime files"; exit 1; }

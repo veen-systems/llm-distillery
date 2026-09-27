@@ -86,8 +86,8 @@ DISTILLERY_ROOT=$PWD NEXUSMIND_ROOT=/home/jeroen/repos/veen-systems/NexusMind \
 > `python3 scripts/deployment/common_runtime_files.py --unpackaged`. The count depends on the local
 > tree (gitignored weights included), so run it rather than quote one.
 > `tests/unit/test_common_runtime_files.py` pins the two facts that decide the rule:
-> - **Weights of UNPACKAGED detectors (retired obituary v3/v4) still reach NexusMind only through this copy.**
->   They are gitignored here, so switching to `git ls-files` would stop shipping them.
+> - **Weights of an UNPACKAGED detector would reach NexusMind only through this copy** (gitignored here, so
+>   `git ls-files` would stop shipping them). Retired versions (`RETIRED_DIRS`: obituary v3/v4, commerce v2) never ship (owner, 2026-09-27).
 > - **Some "training"-named files are runtime.** `harm_detector/v1/inference.py` reads
 >   `models/training_config.json` (and, if present, `models/SHA256SUMS.txt`) at load, so never exclude by
 >   those names.

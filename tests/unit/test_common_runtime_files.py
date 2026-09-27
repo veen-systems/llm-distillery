@@ -31,6 +31,8 @@ SHIPS = [
     "obituary_detector/v5/models/scaler.pkl.sha256",  # _verify_pickle_integrity sidecar
     "violence_promotion/v1/config.yaml",
     "commerce_prefilter/v1/models/distilbert/model.safetensors",
+    "harm_detector/v3/inference.py",        # a retired VERSION name under another detector still ships
+    "obituary_detector/v30/inference.py",   # exact version match, not a prefix
 ]
 STAYS = [
     "harm_detector/training/train_v1.py",
