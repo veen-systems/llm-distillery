@@ -6,8 +6,8 @@
 topic. Re-read the block under it before starting; the reasons are there, not here.*
 
 ▶ **NEXT SESSION (rewritten 2026-09-27 afternoon close):** items 1, 2, 4 below are DONE; what remains needs the owner.
-   ▶ **First:** ask the owner for (i) the ADR-024 ruling + its 5 questions (`docs/adr/024-detector-packages.md`), (ii) the
-   mid-month retire `retire_memory.py --before 2026-09-17` (gotcha log ~252k → ~135k chars), (iii) the Thriving tab read
+   ▶ **First:** ask the owner for (i) ✅ ADR-024 RULED 2026-09-27 (Option C, one Hub repo per detector, obit v3/v4 retired) → ▶ build order step 1 (manifest writer + `verify_detector_package.py`, reporting mode); Q3–Q5 open, NexusMind (nexusmind-b2) told, (ii) ✅ the
+   mid-month retire (DONE 2026-09-27), (iii) the Thriving tab read
    (H-TV5). With none of those: the two archived ledger threads (`H-V8-3`, `H-V8-26`, bottom of this file).
    1. ✅ **DONE 2026-09-27: retire step 3.** Ledger 146,560 → 83,641 B (74 closed rows → `memory/archive/
       hypothesis-ledger-archive.md`); cross-repo 136,125 → 61,087 B (Aug snapshots → `memory/archive/cross-repo-
@@ -136,7 +136,7 @@ verified and B waits on the owner, item −1 (the read surface) is the work.
    38,141 to 17,749 chars (`wc -m`). The always-loaded layer went 52,133 → ~31 KB
    (`check_index_budget.py --target loaded`).
    ▶ **Next, in order:**
-   1. ✅ **DONE 2026-09-26 (evening)**: `git mv` to `memory/archive/gotcha-log-archive.md`, references and `retire_memory.py` `ARCHIVE` updated, 18/18 tests, and the old path fails loudly. Curate's read surface went **1,944,516 → 1,477,580 chars**. ⭐ Owner call pending: a mid-month `retire_memory.py … --before 2026-09-17` (dry run: live gotcha log 251,953 → 134,708 chars, 19 session files) departs from the `<YYYY-MM-01>` convention. Original text: **Move `memory/gotcha-log-archive.md` into `memory/archive/`** — curate's size measurement
+   1. ✅ **DONE 2026-09-26 (evening)**: `git mv` to `memory/archive/gotcha-log-archive.md`, references and `retire_memory.py` `ARCHIVE` updated, 18/18 tests, and the old path fails loudly. Curate's read surface went **1,944,516 → 1,477,580 chars**. ✅ **Owner approved and RUN 2026-09-27**: mid-month `retire_memory.py … --before 2026-09-17` (gotcha 259,473 → 143,570 chars; 19 session files). Was: owner call pending: a mid-month `retire_memory.py … --before 2026-09-17` (dry run: live gotcha log 251,953 → 134,708 chars, 19 session files) departs from the `<YYYY-MM-01>` convention. Original text: **Move `memory/gotcha-log-archive.md` into `memory/archive/`** — curate's size measurement
       excludes only `*/archive/*`, so the 467k archive still counts. Rewrite its references
       (`git grep -l gotcha-log-archive`) and the `memory/gotcha-log*.md` recurrence glob in
       curate's grep instructions here, then add it to `retire_memory.py` as the archive path.
