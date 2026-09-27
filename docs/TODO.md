@@ -6,7 +6,7 @@
 topic. Re-read the block under it before starting; the reasons are there, not here.*
 
 ▶ **NEXT SESSION (rewritten 2026-09-27 late-afternoon close). A bare "continue" = item 0, then the rest.**
-   0. ▶ **Close `H-DP3`: did NexusMind PR #550 land in production unchanged?** (`memory/hypothesis-ledger.md`.) #550 merged
+   0. ✅ **DONE 2026-09-27 16:22 CEST: H-DP3 CONFIRMED** (4× OK on sadalsuud after the 16:08 cycle; served commit `80bf318` has no weight file; ledger + ADR-024 + #165 comment). gpu-server check not run. Was: **Close `H-DP3`: did NexusMind PR #550 land in production unchanged?** (`memory/hypothesis-ledger.md`.) #550 merged
       13:47Z as `dafbbc9`, due at the ~16:10 CEST 2026-09-27 cycle. First prove it arrived, then check it:
       `ssh sadalsuud 'cd ~/local_dev/NexusMind && git merge-base --is-ancestor dafbbc9 HEAD && echo IN'`, then
       `python3 scripts/deployment/verify_detector_package.py verify --all --target sadalsuud:~/local_dev/NexusMind --strict`.
