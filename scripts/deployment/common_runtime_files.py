@@ -4,8 +4,8 @@ Owner ruling, llm-distillery#164 (2026-09-26): NexusMind carries RUNTIME files o
 ground-truth, training or validation material.
 
 The rule excludes by DIRECTORY plus two labelling-only file names. It deliberately does NOT
-use `git ls-files`: the model files of UNPACKAGED detectors (retired obituary v3/v4) are
-gitignored here and reach NexusMind only through this copy. The four packaged detectors
+use `git ls-files`: the model files of an UNPACKAGED detector are gitignored here and would
+reach NexusMind only through this copy. (Retired versions, RETIRED_DIRS, do not ship at all.) The four packaged detectors
 (ADR-024) ship by MANIFEST.json through deploy_detectors.py instead; `--unpackaged` leaves them out. Nor does it exclude by names such
 as `training_config.json` or `SHA256SUMS.txt`: `harm_detector/v1/inference.py` reads both at
 load time. `tests/unit/test_common_runtime_files.py` pins both facts on the real tree.
@@ -44,11 +44,18 @@ EXCLUDED_DIRS = frozenset({"training", "validation", "docs", "tests", "__pycache
 # violence's oracle.py imports `ground_truth`, which NexusMind lacks), and detector_seeds.py,
 # the #158 seed-band helper that only training code imports.
 EXCLUDED_NAMES = frozenset({"oracle.py", "prompt.md", "detector_seeds.py"})
+# Retired detector versions: kept here as history, never shipped (owner, 2026-09-27). NexusMind
+# loads none of them (commerce.py pins v1, obituary.py pins v5; gpu-server's /commerce/predict
+# serves its own deploy/gpu-server/models copy) and deletes its copies in the same change.
+RETIRED_DIRS = frozenset({("obituary_detector", "v3"), ("obituary_detector", "v4"),
+                          ("commerce_prefilter", "v2")})
 
 
 def is_runtime(rel: Path) -> bool:
     """True when `rel` (relative to filters/common) ships to NexusMind."""
     if EXCLUDED_DIRS.intersection(rel.parts[:-1]):
+        return False
+    if tuple(rel.parts[:2]) in RETIRED_DIRS:
         return False
     return rel.name not in EXCLUDED_NAMES
 

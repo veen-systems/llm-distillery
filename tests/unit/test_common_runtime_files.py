@@ -15,7 +15,8 @@ from pathlib import Path
 
 import pytest
 
-from scripts.deployment.common_runtime_files import is_runtime, runtime_files, stale_sidecars
+from scripts.deployment.common_runtime_files import (
+    RETIRED_DIRS, is_runtime, runtime_files, stale_sidecars)
 
 REPO = Path(__file__).resolve().parents[2]
 COMMON = REPO / "filters" / "common"
@@ -41,6 +42,9 @@ STAYS = [
     "commerce_prefilter/v1/prompt.md",   # read only by commerce's oracle.py
     "harm_detector/v1/__pycache__/inference.cpython-312.pyc",
     "detector_seeds.py",                 # #158 seed-band helper; only training imports it
+    "obituary_detector/v3/models/scaler.pkl",           # retired (RETIRED_DIRS)
+    "obituary_detector/v4/inference.py",                # retired
+    "commerce_prefilter/v2/models/training_config.json",  # retired
 ]
 
 
@@ -69,7 +73,7 @@ def test_real_tree_ships_every_tracked_runtime_read():
                 "harm_detector/v1/inference.py",
                 "obituary_detector/v5/inference.py",
                 "violence_promotion/v1/inference.py",
-                "commerce_prefilter/v2/inference.py"):
+                "commerce_prefilter/v1/inference.py"):
         assert rel in selected, rel
 
 
@@ -79,7 +83,18 @@ def test_real_tree_ships_every_local_model_file():
     models = [p.relative_to(COMMON).as_posix() for p in COMMON.rglob("*")
               if p.suffix in {".pkl", ".safetensors"} and "__pycache__" not in p.parts]
     for rel in models:
+        if tuple(Path(rel).parts[:2]) in RETIRED_DIRS:
+            continue
         assert rel in selected, rel
+
+
+def test_real_tree_ships_nothing_from_a_retired_version():
+    """Owner 2026-09-27: obituary v3/v4 and commerce v2 stop shipping. The presence control
+    proves the dirs still exist here, so an empty selection is the rule working, not a moved tree."""
+    for parts in RETIRED_DIRS:
+        assert any(p.is_file() for p in COMMON.joinpath(*parts).rglob("*")), parts
+    shipped = [r.as_posix() for r in runtime_files(COMMON) if tuple(r.parts[:2]) in RETIRED_DIRS]
+    assert shipped == []
 
 
 def test_real_tree_ships_no_training_validation_or_docs():
