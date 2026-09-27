@@ -144,6 +144,23 @@ route detector weights have. A retrained detector today ships whatever the worki
    (`_warn_on_stack_drift`). Record the build stack in the manifest and check it at load (warn), or leave it
    to `training_config.json`?
 
+## NexusMind's review (2026-09-27, session `nexusmind-b2`, relayed; peer ENGINEERING VIEWS, not owner rulings)
+
+- **The order (steps 1–5, NexusMind's as reviewed PRs) is accepted by NexusMind.** Nothing is needed from them before step 4.
+- **commerce v2, measured by NexusMind:**
+  - The pipeline does NOT load v2. `src/preprocessing/commerce.py:190-197` (LD#80) forces local v1, so
+    production commerce stamps come from v1.
+  - gpu-server DOES load v2 when `models/mlp_classifier.pkl` exists (`deploy/gpu-server/main.py:1059-1062`).
+    Its journal shows it loaded at 10:08:26 and unloaded at 10:08:35 on 2026-09-27; the caller is unidentified.
+  - ▶ **Owner question (new): package v2 only if gpu-server's `/commerce/predict` should keep working.**
+    Nothing in NexusMind's scoring depends on it.
+- **Q3 (their view):** gpu-server reads the same `MANIFEST.json`. Its env-var hashes (`CLASSIFIER_HASH`,
+  `main.py:~478`) and baked-in obituary v5 value are a second integrity record that can drift.
+- **Q4 (their view):** enforce per detector, so a bad manifest takes out one detector, not all.
+- **Q5 (their view):** yes. Record the sklearn/joblib versions and warn on skew at load.
+
+*All three match this ADR's leanings. They become rulings only when the owner rules them.*
+
 ## Consequences
 
 ### Positive
