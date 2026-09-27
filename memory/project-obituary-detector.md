@@ -88,6 +88,8 @@ Superseded strata (v5@0.92 shadow era, June-increment panel pre-recall-first fra
 
 ## What it is
 
+⛔ **v3/v4 are RETIRED and no longer ship (owner, 2026-09-27; llm-distillery `3e7f565` `RETIRED_DIRS`, NexusMind PR #553 deletes their copies).** Only v5 is live. The v3/v4 paths below are history.
+
 Multilingual obituary/death-memorial classifier: frozen `paraphrase-multilingual-mpnet-base-v2` → StandardScaler → sklearn MLP(256,128) → predict_proba. Blocks obituaries upstream of lens scoring in NexusMind. Same architecture as commerce_prefilter v2.
 
 ## v3 key numbers
