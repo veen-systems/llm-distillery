@@ -21,7 +21,9 @@
 #      was added to investment_risk v6 NexusMind-side and would have been lost
 #      on the next deploy. Precedent: normalization plumbing deleted from
 #      NexusMind 2026-04-16, unnoticed for 18 days.)
-#   2. Copies filters/common/ (shared utilities) — honors .nexusmind-owns
+#   0/0.5/0.6. Guards (package, cross-repo, stale .sha256 sidecars); all run
+#      before anything is copied, so a failure leaves NexusMind untouched.
+#   2. Copies filters/common/ runtime files (shared utilities) — honors .nexusmind-owns
 #      manifest at repo root: listed files are skipped, and the deploy fails
 #      if a listed file has drifted from NexusMind's copy (issue #50).
 #      THIS IS THE ONLY STEP THAT CONSULTS THE MANIFEST.
@@ -235,13 +237,22 @@ echo ""
 # per-file sidecars this repo does not ship, and step 2 never deletes, so a retrained .pkl
 # would land next to a stale sidecar and the detector would refuse to load in production.
 # Checked BEFORE step 1, so a failure leaves NexusMind untouched.
+# Both copies are checked: step 1 ships every file of the filter package (probe pickles),
+# step 2 the filters/common runtime files (detector pickles).
 echo "0.6 Checking NexusMind .sha256 sidecars against the pickles about to ship..."
+SIDECAR_OK=1
 python3 "${DISTILLERY_ROOT}/scripts/deployment/common_runtime_files.py" \
-    --check-sidecars "$COMMON_DEST" "$COMMON_SOURCE" || {
+    --check-filter-sidecars "$DEST_DIR" "$SOURCE_DIR" || SIDECAR_OK=0
+python3 "${DISTILLERY_ROOT}/scripts/deployment/common_runtime_files.py" \
+    --check-sidecars "$COMMON_DEST" "$COMMON_SOURCE" || SIDECAR_OK=0
+if [ "$SIDECAR_OK" -ne 1 ]; then
     echo "ERROR: a shipped .pkl does not match NexusMind's .sha256 sidecar (STALE SIDECAR above)."
-    echo "  Update or remove that sidecar in NexusMind in its own reviewed change, then re-run."
+    echo "  Fix: write the matching sidecar HERE, next to the pickle"
+    echo "  (sha256sum X.pkl > X.pkl.sha256), so this deploy ships pickle and sidecar in ONE"
+    echo "  NexusMind commit. Never delete the NexusMind sidecar: embedding_stage then loads the"
+    echo "  pickle unchecked, and harm_detector refuses to load without SHA256SUMS.txt."
     exit 1
-}
+fi
 echo ""
 
 # Step 1: Copy filter folder
@@ -258,7 +269,8 @@ echo "   Copied to: $DEST_DIR"
 echo ""
 echo "2. Copying common utilities: filters/common/ RUNTIME files only (honoring .nexusmind-owns)"
 # What ships is defined in ONE place, scripts/deployment/common_runtime_files.py (#164):
-# no */training/, */validation/, */docs/, */tests/, oracle.py or prompt.md. Untracked
+# no */training/, */validation/, */docs/, */tests/, */__pycache__/, oracle.py, prompt.md or
+# detector_seeds.py. Untracked
 # model files still ship — this copy is how detector weights reach NexusMind.
 # Copy-only: files removed or excluded here are NOT deleted in NexusMind.
 mkdir -p "$COMMON_DEST"

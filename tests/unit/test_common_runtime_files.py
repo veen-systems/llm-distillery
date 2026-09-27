@@ -150,3 +150,94 @@ def test_sidecar_check_on_the_real_trees_when_nexusmind_is_present():
     if not nm.is_dir():
         pytest.skip("no NexusMind checkout beside this repo")
     assert stale_sidecars(COMMON, nm) == []
+
+
+# --- The guard as the deploy runs it (round-2 review of 054a0a3) -------------------------
+# The tests above prove the predicate. These prove the WIRING: the CLI's exit code, the
+# argument order, and that the real deploy_to_nexusmind.sh stops before step 1. Four
+# mutants (exit code forced to 0, arguments swapped in Python or in the .sh, `exit 1`
+# dropped) passed every test above.
+
+import os
+import shutil
+import subprocess
+import sys
+
+MODULE = REPO / "scripts" / "deployment" / "common_runtime_files.py"
+DEPLOY = REPO / "scripts" / "deploy_to_nexusmind.sh"
+
+
+def _cli(*args):
+    return subprocess.run([sys.executable, str(MODULE), *map(str, args)],
+                          capture_output=True, text=True)
+
+
+@pytest.mark.parametrize("flag", ["--check-sidecars", "--check-filter-sidecars"])
+def test_cli_exit_code_and_argument_order(tmp_path, flag):
+    src, nm = tmp_path / "src", tmp_path / "nm"
+    _tree(src, {"m/s.pkl": b"retrained"})
+    _tree(nm, {"m/s.pkl": b"old", "m/s.pkl.sha256": (_sha(b"old") + "\n").encode()})
+    stale = _cli(flag, nm, src)
+    assert stale.returncode == 1 and "STALE SIDECAR" in stale.stderr
+    # Swapped, NexusMind's own pickle matches its own sidecar: the guard would be blind.
+    # Pinning that the swap passes is what makes the order above load-bearing.
+    assert _cli(flag, src, nm).returncode == 0
+    (nm / "m/s.pkl.sha256").write_text(_sha(b"retrained") + "\n")
+    assert _cli(flag, nm, src).returncode == 0
+
+
+def test_filter_check_covers_files_the_common_rule_excludes(tmp_path):
+    """Step 1 copies the whole package with `cp -r`, so no runtime-file rule applies."""
+    src, nm = tmp_path / "src", tmp_path / "nm"
+    _tree(src, {"training/p.pkl": b"new"})
+    _tree(nm, {"training/p.pkl.sha256": (_sha(b"old") + "\n").encode()})
+    assert _cli("--check-sidecars", nm, src).returncode == 0
+    assert _cli("--check-filter-sidecars", nm, src).returncode == 1
+
+
+def _git_repo(root, files):
+    _tree(root, files)
+    g = ["git", "-C", str(root), "-c", "user.name=t", "-c", "user.email=t@t"]
+    subprocess.run(["git", "init", "-q", str(root)], check=True)
+    subprocess.run(g + ["add", "-A"], check=True)
+    subprocess.run(g + ["commit", "-qm", "init"], check=True)
+
+
+@pytest.mark.skipif(shutil.which("bash") is None or shutil.which("git") is None,
+                    reason="needs bash and git")
+@pytest.mark.parametrize("where", ["filter", "common", "none"])
+def test_real_deploy_script_stops_before_step1_on_a_stale_sidecar(tmp_path, where):
+    """Runs the shipped .sh against throwaway trees; steps 0 and 0.5 are stubbed to pass."""
+    dist, nm = tmp_path / "dist root", tmp_path / "nm root"   # spaces on purpose
+    ok = b"import sys; sys.exit(0)\n"
+    _git_repo(dist, {
+        "filters/x/v1/probe/p.pkl": b"new probe",
+        "filters/common/det/v1/models/s.pkl": b"new detector",
+        "scripts/deployment/verify_filter_package.py": ok,
+        "scripts/deployment/preflight_deploy_guards.py": ok,
+        "scripts/deployment/common_runtime_files.py": MODULE.read_bytes(),
+    })
+    stale = (_sha(b"old") + "\n").encode()
+    nm_files = {"README": b"nm\n"}
+    if where == "filter":
+        nm_files["filters/x/v1/probe/p.pkl.sha256"] = stale
+    elif where == "common":
+        nm_files["filters/common/det/v1/models/s.pkl.sha256"] = stale
+    _git_repo(nm, nm_files)
+    bin_dir = tmp_path / "bin"
+    bin_dir.mkdir()
+    (bin_dir / "python").symlink_to(sys.executable)
+    (bin_dir / "python3").symlink_to(sys.executable)
+    env = {**os.environ, "DISTILLERY_ROOT": str(dist), "NEXUSMIND_ROOT": str(nm),
+           "HF_TOKEN": "unused", "PATH": f"{bin_dir}{os.pathsep}{os.environ['PATH']}"}
+    r = subprocess.run(["bash", str(DEPLOY), "x", "v1", "--dry-run"],
+                       capture_output=True, text=True, env=env, timeout=120)
+    out = r.stdout + r.stderr
+    if where == "none":   # presence control: the same harness reaches the copy
+        assert "1. Copying filter" in out, out
+        return
+    assert r.returncode == 1, out
+    assert "STALE SIDECAR" in out and "1. Copying filter" not in out, out
+    status = subprocess.run(["git", "-C", str(nm), "status", "--porcelain"],
+                            capture_output=True, text=True, check=True).stdout
+    assert status == "", status

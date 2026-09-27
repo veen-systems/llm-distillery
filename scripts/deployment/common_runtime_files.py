@@ -14,6 +14,8 @@ Usage:
         prints one shipped path per line, relative to filters/common, sorted
     python scripts/deployment/common_runtime_files.py --check-sidecars NEXUSMIND_COMMON [COMMON_DIR]
         exits 1 if a shipped .pkl would sit next to a .sha256 sidecar that does not match it
+    python scripts/deployment/common_runtime_files.py --check-filter-sidecars NEXUSMIND_FILTER_DIR FILTER_DIR
+        the same check for step 1, which copies EVERY file of the filter package (probe pickles)
 
 Why the sidecar check: NexusMind keeps per-file `.sha256` sidecars this repo does not have,
 and the deploy only copies, so they survive every deploy. A retrained pickle shipped next to
@@ -58,14 +60,21 @@ def _sidecar_digest(path: Path) -> str:
     return parts[0] if parts else ""
 
 
-def stale_sidecars(common_dir: Path, nexusmind_common: Path) -> list[str]:
+def all_files(src_dir: Path) -> list[Path]:
+    """Every file under `src_dir`, relative to it: what step 1's `cp -r` ships."""
+    return sorted(p.relative_to(src_dir) for p in src_dir.rglob("*") if p.is_file())
+
+
+def stale_sidecars(common_dir: Path, nexusmind_common: Path,
+                   shipped: list[Path] | None = None) -> list[str]:
     """Shipped .pkl files that would sit next to a non-matching .sha256 after the copy.
 
     A sidecar that ships from this repo overwrites NexusMind's, so it is the one checked;
     otherwise NexusMind's existing sidecar is. No sidecar on either side: nothing to check
-    (the loaders then skip or use SHA256SUMS.txt).
+    (the loaders then skip or use SHA256SUMS.txt). `shipped` defaults to the step 2 rule
+    (`runtime_files`); step 1 passes `all_files`.
     """
-    shipped = set(runtime_files(common_dir))
+    shipped = set(runtime_files(common_dir) if shipped is None else shipped)
     problems = []
     for rel in sorted(shipped):
         if rel.suffix != ".pkl":
@@ -83,6 +92,18 @@ def stale_sidecars(common_dir: Path, nexusmind_common: Path) -> list[str]:
 
 def main(argv: list[str]) -> int:
     default_common = Path(__file__).resolve().parents[2] / "filters" / "common"
+    if len(argv) > 1 and argv[1] == "--check-filter-sidecars":
+        if len(argv) != 4:
+            print("ERROR: --check-filter-sidecars needs NEXUSMIND_FILTER_DIR FILTER_DIR", file=sys.stderr)
+            return 1
+        src = Path(argv[3])
+        if not src.is_dir():
+            print(f"ERROR: not a directory: {src}", file=sys.stderr)
+            return 1
+        problems = stale_sidecars(src, Path(argv[2]), all_files(src))
+        for p in problems:
+            print(f"STALE SIDECAR: {p}", file=sys.stderr)
+        return 1 if problems else 0
     if len(argv) > 1 and argv[1] == "--check-sidecars":
         if len(argv) < 3:
             print("ERROR: --check-sidecars needs NEXUSMIND_COMMON", file=sys.stderr)
