@@ -248,7 +248,8 @@ python3 "${DISTILLERY_ROOT}/scripts/deployment/common_runtime_files.py" \
 if [ "$SIDECAR_OK" -ne 1 ]; then
     echo "ERROR: a shipped .pkl does not match NexusMind's .sha256 sidecar (STALE SIDECAR above)."
     echo "  Fix: write the matching sidecar HERE, next to the pickle"
-    echo "  (sha256sum X.pkl > X.pkl.sha256), so this deploy ships pickle and sidecar in ONE"
+    echo "  (sha256sum X.pkl > X.pkl.sha256) and COMMIT it (no untracked guard covers filters/common),"
+    echo "  so this deploy ships pickle and sidecar in ONE"
     echo "  NexusMind commit. Never delete the NexusMind sidecar: embedding_stage then loads the"
     echo "  pickle unchecked, and harm_detector refuses to load without SHA256SUMS.txt."
     exit 1

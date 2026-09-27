@@ -42,21 +42,25 @@ no pool negatives) trained 09:59–10:51 on b650 (`logs/adj4p_20260927.sh`), bes
 | | adj4 | 0.600 [0.600, 0.667] | 0.980 [0.980, 0.980] |
 | | **adj4p** | **0.933 [0.933, 0.933]** | **0.860 [0.860, 0.900]** |
 | 660, adjudicated labels | v9 | 0.348 [0.261, 0.348] | 0.998 [0.998, 0.998] |
+| | adj4 | 0.348 [0.348, 0.348] | 0.998 [0.998, 1.000] |
 | | **adj4p** | **0.522 [0.478, 0.522]** | **0.994 [0.992, 0.997]** |
 | 660, oracle labels | v9 | 0.229 [0.171, 0.229] | 0.998 [0.998, 0.998] |
+| | adj4 | 0.229 [0.229, 0.229] | 0.998 [0.998, 1.000] |
 | | **adj4p** | **0.371 [0.314, 0.371]** | **0.995 [0.994, 0.997]** |
 
 - **Rule clause 1:** adj4p pool recall `lo` 0.933 > adj4 `hi` 0.667 → **the negatives caused the strictness.**
 - **Rule clause 2** (adj4p `hi` < v9 `lo`) does **not** hold. The rule named no conclusion for the other direction;
   *observed, not ruled:* adj4p's recall band sits above v9's on all three populations, and its **specificity
-  band sits below v9's on all three**. Positives alone buy volume, and they pay for it in specificity.
+  band sits below v9's on all three**. *Gloss, not ruled:* consistent with positives adding volume at a specificity cost (one seed).
 - **Owner flags (must-reject): all 3 rejected** (3 of 3) — adj4p 2.853 / 1.911 / 1.360 (v9 and adj4 reproduce
-  yesterday's 3.171 / 1.172 / 1.074 and 3.146 / 1.169 / 1.112 exactly: the control).
-- **As a candidate it would LOSE under the owner-ruled bar**: clause 2 (candidate spec `hi` ≥ v9 spec `lo`) fails,
-  0.997 < 0.998 on the adjudicated 660. It is diagnostic and nothing is deployed; v9 stays live.
+  yesterday's 3.171 / 1.172 / 1.074 and 3.146 / 1.169 / 1.112 exactly: the control). File: `flagged3_weighted.json`.
+- *Gloss:* under adj4's bar (adj4p has none of its own) it would meet the LOSES condition, spec `hi` 0.997 < v9
+  `lo` 0.998 on the adjudicated 660, while clause 1 (recall `lo` 0.478 > 0.348) would have passed. It is
+  diagnostic and nothing is deployed; v9 stays live.
 - ⚠️ Every band here is the #95 batch-composition band only; single seed (EXP-015), and on the pool one article
   is 0.067 recall. Measured counts: pool positives caught v9 13, adj4 9, adj4p 14 of 15; pool false positives
-  v9 3, adj4 1, adj4p 7 of 50.
+  v9 3, adj4 1, adj4p 7 of 50. ⚠️ `PREREGISTRATION.md` describes the pool held-out as 18 positives / 47 negatives;
+  the gate reports read 15 / 50 at on-lens := oracle ≥ 4.5. Unexplained here; the reports are what was measured.
 
 ## What next (owner)
 Per the pre-registration: report; v9 stays live. Options, not ruled: (a) stop here: v9 is the model;

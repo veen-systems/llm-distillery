@@ -1,0 +1,20 @@
+{
+ "note": "weighted_average via scripts/gate/ground_truth_gate.py load_scoring_spec(v9 config)+load_scores on datasets/gate/ht_v10_2026-09-26/<arm>_flagged/scores_calibrated.jsonl (b650 CUDA dumps); must-reject: < 4.5",
+ "scores": {
+  "v9": {
+   "east_african_lexpress_madagascar_8a1e2f8d6794": 3.1708582639694214,
+   "greek_ta_nea_ef17d7bef963": 1.1718358516693115,
+   "british_irish_thejournal_ie_1054d9e24638": 1.0738541610538959
+  },
+  "adj4": {
+   "east_african_lexpress_madagascar_8a1e2f8d6794": 3.145872139930725,
+   "greek_ta_nea_ef17d7bef963": 1.1686852276325226,
+   "british_irish_thejournal_ie_1054d9e24638": 1.1117401912808418
+  },
+  "adj4p": {
+   "east_african_lexpress_madagascar_8a1e2f8d6794": 2.8534428358078,
+   "greek_ta_nea_ef17d7bef963": 1.9112477362155915,
+   "british_irish_thejournal_ie_1054d9e24638": 1.3602029353380203
+  }
+ }
+}

@@ -88,7 +88,7 @@ DISTILLERY_ROOT=$PWD NEXUSMIND_ROOT=/home/jeroen/repos/veen-systems/NexusMind \
 > both copies: the filter package (step 1, probe pickles) and `filters/common` (step 2,
 > detector pickles). It runs before step 1, so NexusMind is untouched on failure. Fix: write
 > the matching sidecar in llm-distillery next to the pickle (`sha256sum X.pkl > X.pkl.sha256`)
-> so pickle and sidecar land in ONE NexusMind commit. ⛔ Never delete the NexusMind sidecar:
+> and commit it (no untracked-file guard covers `filters/common`), so pickle and sidecar land in ONE NexusMind commit. ⛔ Never delete the NexusMind sidecar:
 > `embedding_stage` then loads the pickle unchecked, and `harm_detector` refuses to load
 > without `SHA256SUMS.txt`. Removing files that dropped out of the selection is
 > NexusMind's job too: the deploy never deletes. Detectors are not yet packaged like filters:

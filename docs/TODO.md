@@ -5,28 +5,23 @@
 *A bare "continue" means this list, top down. Each line names the FIRST action, not the
 topic. Re-read the block under it before starting; the reasons are there, not here.*
 
-▶ **NEXT SESSION (rewritten 2026-09-27 at close):**
-   1. ✅ **adj4p RESULT 2026-09-27 (EXP-043): gloss SUPPORTED** — the capped negatives made adj4 stricter; positives alone
-      raise recall but cost specificity on all 3 populations, so it would LOSE as a candidate. v9 stays. README §
-      Diagnostic (b). ▶ Owner: stop the v10 line, or a seed band (option c)? Original pickup text:
-      **Diagnostic (b) adj4p — owner CHOSE (b); it is TRAINING on b650** (started 09-27 09:59, ~1 h;
-      `logs/adj4p_20260927.sh`). Pick up: `ssh b650-gpu 'cat ~/llm-distillery/logs/adj4p_20260927.out'` → wait for
-      `ADJ4P DONE`, then `rsync -a b650-gpu:llm-distillery/gate_dumps/2026-09-26/ datasets/gate/ht_v10_2026-09-26/` and:
-      `G=datasets/gate/ht_v10_2026-09-26; .venv/bin/python scripts/gate/ground_truth_gate.py --config filters/human_thriving/v9/config.yaml --recompute-model-wa --labels <L> --model v9=$G/v9_<S>/scores_calibrated.jsonl --model adj4=$G/adj4_<S>/scores_calibrated.jsonl --model adj4p=$G/adj4p_<S>/scores_calibrated.jsonl`
-      with (L, S) = (`datasets/training/human_thriving_v8_adj1/test.jsonl`, gate) and (`$G/pool_test_labels.jsonl`, pool);
-      flagged 3: weighted average of `$G/adj4p_flagged/scores_calibrated.jsonl` must be < 4.5 each.
-      Apply the reading rule in `docs/evidence/2026-09-26-v10-retrain-gate/PREREGISTRATION.md` § Diagnostic (b);
-      write the result into that dir's README. v9 stays live whatever it shows.
-   2. ✅ **Review round 2 on `054a0a3` DONE 2026-09-27 → `675c101`** (adversarial + reachability, fresh contexts):
-      no blocker; 4 guard-disabling mutants had survived (tests proved the predicate, not the wiring) — now a CLI
-      and a real-`.sh` end-to-end test, 7/7 mutants caught; step 0.6 now also covers step 1's probe pickles;
-      remedy is "ship the matching sidecar, never delete one". Not changed: `C:/` default roots (fail safe).
-   3. ✅ #165: round-1 finding posted (commerce v2 `.pkl`s exist only in NexusMind git, from `3864388`; not on
-      this checkout or b650). Design/ADR itself still open.
-   4. ✅ Item −1 step 2 DONE 2026-09-27: `memory/MEMORY.md` pointer rows thinned, 14,349 → 10,519 B; a clause-loss
-      review lens found 2 lost clauses, 1 wrong NM#310 expansion, 1 narrowed trigger — all restored.
-   *Done 09-26/27 (details in `memory/project_session_2026_09_26_decisions_v10.md`):* v10 NOT DISTINGUISHABLE, v9 stays;
-   #373 cutover live, checks on #151; owner's 3 flags are v7 drain, rejected by v9 and v10.
+▶ **NEXT SESSION (rewritten 2026-09-27 midday checkpoint; the session continued — see the latest session file):**
+   1. ▶ **TODO item −1 step 3: RETIRE the three largest unretired files, verbatim, to an archive** —
+      `docs/CONTRACTS_PLAN.md` (149 KB), `memory/hypothesis-ledger.md` (142 KB), `memory/cross-repo-prioritization.md`
+      (136 KB), measured 2026-09-24; re-measure with `wc -c` first. Method as for TODO/gotcha-log: closed sections
+      move losslessly (every line present, order kept); open ones stay. ⛔ Retiring is not deleting.
+   2. **#165 detector packages: design/ADR only.** Inputs on the issue: the NexusMind-side stale path list, and
+      commerce v2 `.pkl`s existing only in NexusMind git (`3864388`).
+   3. **Owner calls pending (do not push):** (a) Thriving: watch the tab while v7 drains (~10 days) → H-TV5 in
+      `memory/hypothesis-ledger.md` names the three branches; (b) mid-month `retire_memory.py --before 2026-09-17`;
+      (c) the deploy script's `C:/` default roots (harmless; changing them makes an env-less run hit real repos).
+   4. **`/update-drift` v1.49.0 → v1.49.2**: `check_framework_stamp.sh` FAILS (2026-09-27 curate): global `curate` (6
+      lines) and `audit-context` (2 lines) differ from the v1.49.0 stamp; the clone is at v1.49.2.
+   5. NexusMind owns the Venezuela 7-article Thriving cluster (story grouping, "lead + N sources"): NexusMind PR #542
+      handoff, unverified. Not ours.
+   *Done 2026-09-27:* adj4p (EXP-043, H-TV4 SUPPORTED, v9 stays; #151 comment); deploy review rounds 2+3 (`675c101`
+   + remedy "commit the sidecar"); #165 finding posted; `memory/MEMORY.md` thinned 14,349 → 10,519 B. Details:
+   `memory/project_session_2026_09_27_adj4p_close.md` (written by /curate).
 
 A. ✅ **VERIFIED 2026-09-26 ~15:45 CEST, from outcomes (one cycle each; the original text is kept below).**
    1. **#372 works: 124 of 124** live articles whose `nature_recovery` row clears the build's gate sit on Recovery
