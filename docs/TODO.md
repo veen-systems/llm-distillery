@@ -7,6 +7,10 @@ topic. Re-read the block under it before starting; the reasons are there, not he
 
 ▶ **NEXT SESSION (rewritten 2026-09-27 evening close). A bare "continue" = item 0, then the rest.**
    0. ✅ **BUILT 2026-09-27 (`6c16056`, `44b703d`, pushed), NOT DEPLOYED.** Record: ADR-024 § *Order step 3 BUILT*.
+      ▶ **PR OPEN 2026-09-27: NexusMind PR #550** (branch `llm-distillery/adr-024-detector-manifests` off `a8835c0`; the
+      NexusMind session signalled ready). Next: their review + CI, merge, then after the NEXT cycle run
+      `verify_detector_package.py verify --all --target sadalsuud:~/local_dev/NexusMind --strict` (commerce `model.safetensors`
+      is served out of band; step 5). Ruling that produced it:
       ⏸ **Owner ruling 2026-09-27: WAIT for the NexusMind session's signal, then deliver the first deploy as a PR** against
       NexusMind `main` from a fresh clone on a branch (script without `--push`; push the branch, `gh pr create`), never a
       direct commit and never into the shared `~/repos/veen-systems/NexusMind` checkout while a peer uses it. Merged ≠
