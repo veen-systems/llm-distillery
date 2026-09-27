@@ -154,7 +154,12 @@ from scripts.deployment.upload_detector_to_hub import find_local, repo_id_for  #
 
 def test_repo_id_is_one_repo_per_detector():
     assert repo_id_for("harm_detector") == "jeergrvgreg/harm-detector"
-    assert repo_id_for("commerce_prefilter") == "jeergrvgreg/commerce-prefilter"
+    assert repo_id_for("commerce_prefilter") == "jeergrvgreg/commerce-detector"
+    assert repo_id_for("violence_promotion") == "jeergrvgreg/violence-promotion-detector"
+    assert all(n.endswith("-detector") for n in (repo_id_for(d) for d in ("harm_detector", "obituary_detector",
+                                                                           "violence_promotion", "commerce_prefilter")))
+    with pytest.raises(KeyError):
+        repo_id_for("new_detector")   # an unnamed detector must not get an invented name
 
 
 def test_find_local_refuses_a_copy_whose_hash_differs(tmp_path):

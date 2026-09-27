@@ -14,7 +14,7 @@
   "sklearn_version"
  ],
  "hub": {
-  "repo_id": "jeergrvgreg/violence-promotion",
+  "repo_id": "jeergrvgreg/violence-promotion-detector",
   "revision": "e0b5eb9521ac3fd8229d23e8b3cc5de30b4b73d0",
   "path_prefix": "v1"
  },

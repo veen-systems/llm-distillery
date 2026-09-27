@@ -12,7 +12,7 @@
  },
  "build_stack_unrecorded": [],
  "hub": {
-  "repo_id": "jeergrvgreg/commerce-prefilter",
+  "repo_id": "jeergrvgreg/commerce-detector",
   "revision": "6d5102acd2e08d7a889edc9c5903007ac2062bd2",
   "path_prefix": "v1"
  },

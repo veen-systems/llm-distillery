@@ -3,7 +3,7 @@
 
     python scripts/deployment/upload_detector_to_hub.py harm_detector/v1 [--dry-run]
 
-Per the owner's ruling (2026-09-27) there is ONE private repo per detector, `jeergrvgreg/<detector-with-dashes>`,
+Per the owner's rulings (2026-09-27) there is ONE private repo per detector, named `jeergrvgreg/<concept>-detector` (REPO_NAMES),
 and each version lives under `<version>/` in it. The script:
   1. finds, for every `origin: "hub"` file in the committed MANIFEST.json, a local copy whose sha256 matches the
      manifest (this repo first, then the NexusMind checkout beside it). A file with no matching copy STOPS the run:
@@ -32,8 +32,20 @@ OWNER = "jeergrvgreg"
 SEARCH = (REPO, REPO.parent / "NexusMind")
 
 
+# Owner ruling 2026-09-27: `<concept>-detector`, parallel to the filters' `<name>-filter-v<N>`. An explicit table,
+# not a derivation from the folder name: the folders do not share a pattern, and deriving copied that into the
+# first four repos (two were renamed the same day: violence-promotion, commerce-prefilter).
+REPO_NAMES = {
+    "harm_detector": "harm-detector",
+    "obituary_detector": "obituary-detector",
+    "violence_promotion": "violence-promotion-detector",
+    "commerce_prefilter": "commerce-detector",
+}
+
+
 def repo_id_for(detector: str) -> str:
-    return f"{OWNER}/{detector.replace('_', '-')}"
+    """Raises for a detector with no ruled name, rather than inventing one."""
+    return f"{OWNER}/{REPO_NAMES[detector]}"
 
 
 def find_local(package: str, rel: str, sha: str, size: int, roots=SEARCH) -> Path:

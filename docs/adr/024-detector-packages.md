@@ -184,14 +184,14 @@ Decision 1: `backfilled_from`, `served_commit`, `build_stack`, `build_stack_unre
 - The pickles present here match production; the `.sha256` sidecars exist only in NexusMind.
 
 ✅ **Order step 2 DONE 2026-09-27** (owner OK in session; `scripts/deployment/upload_detector_to_hub.py`). Four
-private repos, one per detector, each version under `<version>/`. Each is verified by re-downloading at the pinned
+private repos, one per detector, each version under `<version>/`. **Names ruled the same day: `<concept>-detector`** (two repos renamed; revisions survive a Hub rename). Each is verified by re-downloading at the pinned
 revision and comparing sha256 + size with the manifest:
 | package | repo | revision |
 |---|---|---|
 | harm v1 | `jeergrvgreg/harm-detector` | `ee1663ccf875` |
 | obituary v5 | `jeergrvgreg/obituary-detector` | `be3399ae3188` |
-| violence v1 | `jeergrvgreg/violence-promotion` | `e0b5eb9521ac` |
-| commerce v1 | `jeergrvgreg/commerce-prefilter` | `6d5102acd2e0` |
+| violence v1 | `jeergrvgreg/violence-promotion-detector` | `e0b5eb9521ac` |
+| commerce v1 | `jeergrvgreg/commerce-detector` | `6d5102acd2e0` |
 - **Owner ruling, 2026-09-27: llm-distillery's `training_config.json` is canonical** for obituary v5 and violence v1
   (it adds the #158 `single_seed` block). It is recorded in each manifest's `adopted_from_this_repo`, and
   obituary v5's copy is now tracked here (`.gitignore` narrowed). Production MISMATCHES on that one file until
