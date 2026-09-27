@@ -9,7 +9,7 @@ superseded_by:
 
 ✅ **RULED 2026-09-27 by Jeroen Veen, in session** (answering questions the assistant wrote): **Option C
 accepted**; open question 2 → **one Hub repo per detector**; open question 1 (in part) → **obituary v3/v4 are
-retired, not packaged**. Questions 3–5 stay OPEN. Nothing is built yet; order step 1 comes first, and the
+retired, not packaged**. Questions 3–5 were ruled later the same day (see *NexusMind's review*). Nothing is built yet; order step 1 comes first, and the
 NexusMind session reviews the cross-repo order before step 4. "ADR-024" is **llm-distillery's**; NexusMind
 numbers its own ADRs.
 
@@ -160,6 +160,18 @@ route detector weights have. A retrained detector today ships whatever the worki
 - **Q5 (their view):** yes. Record the sklearn/joblib versions and warn on skew at load.
 
 *All three match this ADR's leanings. They become rulings only when the owner rules them.*
+
+✅ **RULED 2026-09-27 by Jeroen Veen, in session** ("ok, let us do it", answering the assistant's question
+whether to take all four as rulings):
+- **Q3:** gpu-server reads the same `MANIFEST.json`.
+- **Q4:** enforce per detector.
+- **Q5:** record the sklearn/joblib versions and warn on skew at load.
+- **commerce v2 is RETIRED, not packaged.** It lost to v1 on 1,000 production articles (llm-distillery#80:
+  under-blocks commerce, over-blocks Greek news), and the pipeline has forced v1 since.
+  *Gloss:* gpu-server's `/commerce/predict` then loses its model; retiring the endpoint is NexusMind's
+  change to make.
+
+**Package set (ruled): harm v1, obituary v5, violence_promotion v1, commerce_prefilter v1.**
 
 ## Consequences
 
