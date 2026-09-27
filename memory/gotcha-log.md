@@ -4,6 +4,21 @@
 
 *⚠️ **Entries dated before 2026-09-01 live in [`archive/gotcha-log-archive.md`](archive/gotcha-log-archive.md)**, verbatim (moved 2026-09-24; into `archive/` 2026-09-26 so curate's size measurement stops counting it, #163; the month-dated Feb–May entries followed on 2026-09-26). Next pass: `python3 scripts/maintenance/retire_memory.py gotcha --before <first of this month> --apply` (dry run without `--apply`). It retires top-level entries only; the `###` entries inside the catalogue are kept by rule and counted. The unreachable-mechanism catalogue stayed here. For a recurrence match, grep both: `grep -n <term> memory/gotcha-log*.md`.*
 
+## I COPIED THE PRECEDENT SCRIPT THAT HAD ALREADY FAILED, AND v10 CALIBRATION FAILED THE SAME WAY (2026-09-26/27) [*a precedent is a mechanism claim*, recurred]
+**Problem**: For v10 I copied b650's `logs/adj_post_20260925.sh`. It staged the model under `staging/`, and `fit_calibration.py` refused it ("Expected 'filters' in path"), after 51 minutes of training. The 09-25 run had hit exactly this and fixed it in `adj_post2_20260925.sh`, which sat in the same directory.
+**Root cause**: I picked the precedent by NAME (the first `adj_post*` I found), not by which one had produced the results I was reproducing. A directory holding `x.sh` and `x2.sh` means the first one failed.
+**Fix**: Re-ran only the post-training step, staged under `filters/human_thriving/v8_adj4`. ⛔ **When reusing a run script, take the one whose output the evidence cites (read the log it wrote), and when there are `name` and `name2`, read both first.**
+
+## I STOPPED AT A CREDENTIAL ERROR INSTEAD OF ASKING THE PEER SESSION THAT HAD ACCESS (2026-09-26)
+**Problem**: `ovr.news/scripts/flag-evidence.ts` failed with Cloudflare "Authentication error" here, and I told the owner to run `wrangler login`. Owner: *"what? you always were able to do that. ask the ovr.news peer session"*. The peer ran it at once.
+**Root cause**: I treated my own failed call as the system's limit. A peer session on the same machine, working in that repo daily, was listed by `ListAgents` and had already done cross-repo work with me that day.
+**Fix**: ⛔ **Before handing the owner an interactive step, ask the session that owns the repo whether it can do it.**
+
+## I RELAYED THE OWNER'S QUESTION AS A CLAIM, AND ASSERTED A FACT I HAD NOT CHECKED (2026-09-26) [*relay marks its gloss*, recurred]
+**Problem**: Two in one handoff to ovr.news. (1) The owner asked "i think that is working?" and I wrote to the peer "The owner thinks it's working"; the peer rightly refused to treat it as merge approval. (2) I told the peer that v7 and v9 dimension names DIFFER, and they are identical; the peer measured it.
+**Root cause**: (1) a question paraphrased into a ruling; (2) an inference from "different filter, different prompt" written as fact.
+**Fix**: Quote the owner verbatim in a relay. Label every fact in a handoff measured or guessed, the same rule chat replies follow.
+
 ## AN UNANCHORED `archive/` IN THE SCRATCH BLOCK HAD BEEN SWALLOWING `memory/archive/` — AND MY FIRST FIX NEGATED THE INSTANCE AGAIN (2026-09-26) [4th of the `*_test.*` class]
 **Problem**: Six session files recovered into `memory/archive/` by `/audit-context` did not appear in `git status` at all. `.gitignore`'s "Temporary files" block (`a1a0768`, 2025-11-15) carried a bare `archive/`, which matches that name at ANY depth. The 79 tracked files there survived only because `retire_memory.py` moves them with `git mv`, and a tracked file stays tracked inside an ignored directory. So the defect was invisible to every tracked-file count, and Step 7's `git ls-files` pass had nothing to see.
 **Root cause**: a scratch PATTERN written as if it were a PATH. That is the `*_test.*` mechanism for the fourth time, and my first fix, `!memory/archive/`, was the 2026-09-05 entry's own named mistake: it rescued one instance while the framework prescribes `docs/work-items/archive/`, which the pattern would eat too.
