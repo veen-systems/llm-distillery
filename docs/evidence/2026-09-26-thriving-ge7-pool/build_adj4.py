@@ -8,11 +8,13 @@ X = Path(__file__).resolve().parent
 REPO = X.parents[2]
 sys.path.insert(0, str(REPO / "scripts" / "gate"))
 import adverse_suite_gate as G  # noqa: E402
-SRC, DST = REPO / "datasets/training/human_thriving_v8_adj3", REPO / "datasets/training/human_thriving_v8_adj4"
+POSITIVES_ONLY = "--positives-only" in sys.argv   # adj4p: the owner-chosen diagnostic (b), 2026-09-27
+SRC = REPO / "datasets/training/human_thriving_v8_adj3"
+DST = REPO / ("datasets/training/human_thriving_v8_adj4p" if POSITIVES_ONLY else "datasets/training/human_thriving_v8_adj4")
 pool = {json.loads(l)["id"]: json.loads(l) for l in open(X / "pool.jsonl", encoding="utf-8")}
 base_ids = {json.loads(l)["id"] for sp in ("train", "val", "test") for l in open(SRC / f"{sp}.jsonl", encoding="utf-8")}
 sets = {}
-for name, fn in (("positives", "new_labels.jsonl"), ("negatives", "neg_labels.jsonl")):
+for name, fn in (("positives", "new_labels.jsonl"),) + (() if POSITIVES_ONLY else (("negatives", "neg_labels.jsonl"),)):
     rows = [json.loads(l) for l in open(X / fn, encoding="utf-8")]
     rows.sort(key=lambda r: r["id"])
     clash = base_ids.intersection(r["id"] for r in rows)
@@ -38,4 +40,4 @@ for sp in ("train", "val", "test"):
         for r in out:
             f.write(json.dumps(r, ensure_ascii=False) + "\n")
     pos = sum(G.weighted_average(dict(zip(G.DIMS, r["labels"]))) >= 4.5 for r in out)
-    print(f"{sp:5} rows {len(out)} (+{added['positives']} pos, +{added['negatives']} neg)  labels >= 4.5: {pos}")
+    print(f"{sp:5} rows {len(out)} (+{added['positives']} pos, +{added.get('negatives', 0)} neg)  labels >= 4.5: {pos}")

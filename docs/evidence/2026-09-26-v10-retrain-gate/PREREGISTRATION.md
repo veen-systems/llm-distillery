@@ -59,3 +59,14 @@ the likely outcomes**; either is a finding. A WIN would be one draw clearing the
 ## Before training
 1. ✅ Bar ruled by the owner, 2026-09-26.
 2. ⏸️ The GPU — owner: "Wait; I'll free it". Check it is free before starting; do not assume. At setup, a `roofvision` process holds 24.5 of 32.6 GB (0% utilisation at 2026-09-26 ~17:30).
+
+## Diagnostic (b) — adj4p, owner-chosen 2026-09-27, written BEFORE its training
+`adj4p` = adj3 + the 177 positives only (same seed, so the same positive splits as adj4; no pool negatives).
+It tests the gloss in `README.md`: *the 471 capped negatives, not the positives, made adj4 stricter*.
+**It is diagnostic: it cannot replace v9 by itself** (any candidate from it gets its own pre-registered gate).
+- Scored like adj4: v8's 660 (adjudicated + oracle labels), the same 65 pool held-out rows, the 3 owner flags.
+- **Reading rule, fixed now:** on the 65 pool rows, if adj4p recall `lo` > adj4 recall `hi` (0.667), the
+  negatives caused the strictness (gloss SUPPORTED). If adj4p recall `hi` < v9 recall `lo` (0.667) as well,
+  the positives alone do not add volume either. Overlapping bands → NOT DISTINGUISHABLE; nothing is concluded.
+  n = 15 positives here: one article is 0.067, so the likely outcome is NOT DISTINGUISHABLE.
+- adj4p must also reject the 3 owner flags, and its spec on the 660 is reported beside v9's.
