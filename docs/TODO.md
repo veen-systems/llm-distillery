@@ -14,10 +14,14 @@ topic. Re-read the block under it before starting; the reasons are there, not he
       flagged 3: weighted average of `$G/adj4p_flagged/scores_calibrated.jsonl` must be < 4.5 each.
       Apply the reading rule in `docs/evidence/2026-09-26-v10-retrain-gate/PREREGISTRATION.md` § Diagnostic (b);
       write the result into that dir's README. v9 stays live whatever it shows.
-   2. **Review round 2 on `054a0a3`** (deploy fixes: step 0.6 sidecar guard, PowerShell twin deleted): adversarial +
-      reachability, fresh contexts. Tested (1011 passed; 5 mutants caught), not yet re-reviewed.
-   3. #165 detector packages: design/ADR only. Add the round-1 finding: commerce v2 weights exist only in NexusMind.
-   4. Then TODO item −1 step 2 (thin `memory/MEMORY.md`).
+   2. ✅ **Review round 2 on `054a0a3` DONE 2026-09-27 → `675c101`** (adversarial + reachability, fresh contexts):
+      no blocker; 4 guard-disabling mutants had survived (tests proved the predicate, not the wiring) — now a CLI
+      and a real-`.sh` end-to-end test, 7/7 mutants caught; step 0.6 now also covers step 1's probe pickles;
+      remedy is "ship the matching sidecar, never delete one". Not changed: `C:/` default roots (fail safe).
+   3. ✅ #165: round-1 finding posted (commerce v2 `.pkl`s exist only in NexusMind git, from `3864388`; not on
+      this checkout or b650). Design/ADR itself still open.
+   4. ✅ Item −1 step 2 DONE 2026-09-27: `memory/MEMORY.md` pointer rows thinned, 14,349 → 10,519 B; a clause-loss
+      review lens found 2 lost clauses, 1 wrong NM#310 expansion, 1 narrowed trigger — all restored.
    *Done 09-26/27 (details in `memory/project_session_2026_09_26_decisions_v10.md`):* v10 NOT DISTINGUISHABLE, v9 stays;
    #373 cutover live, checks on #151; owner's 3 flags are v7 drain, rejected by v9 and v10.
 
@@ -127,7 +131,7 @@ verified and B waits on the owner, item −1 (the read surface) is the work.
       excludes only `*/archive/*`, so the 467k archive still counts. Rewrite its references
       (`git grep -l gotcha-log-archive`) and the `memory/gotcha-log*.md` recurrence glob in
       curate's grep instructions here, then add it to `retire_memory.py` as the archive path.
-   2. **Thin `memory/MEMORY.md` (17 KB, read every session) the way `CLAUDE.md` was**: lead each
+   2. ✅ DONE 2026-09-27 (14,349 → 10,519 B; see NEXT SESSION). **Thin `memory/MEMORY.md` (17 KB, read every session) the way `CLAUDE.md` was**: lead each
       line with the rule, pointer to the target, no narrative.
    3. Candidates measured 2026-09-24, still unretired: `docs/CONTRACTS_PLAN.md` 149 KB,
       `memory/hypothesis-ledger.md` 142 KB, `memory/cross-repo-prioritization.md` 136 KB.
