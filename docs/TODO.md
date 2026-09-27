@@ -141,7 +141,7 @@ verified and B waits on the owner, item −1 (the read surface) is the work.
       line with the rule, pointer to the target, no narrative.
    3. ✅ DONE 2026-09-27 (see NEXT SESSION 1). Candidates measured 2026-09-24, still unretired: `docs/CONTRACTS_PLAN.md` 149 KB,
       `memory/hypothesis-ledger.md` 142 KB, `memory/cross-repo-prioritization.md` 136 KB.
-   4. The Mechanized table's `proposed` row `check_claude_md_trim.py` — a trim kept every
+   4. ✅ **REJECTED 2026-09-27 with evidence** (`docs/evidence/2026-09-27-claude-md-trim-check/`): lexical matching caught ≤ 2/3 seeds at 52/125 false flags. The clause-loss REVIEW LENS is the check. ▶ Option, not ruled: a hook that blocks a commit shrinking `CLAUDE.md`/`memory/MEMORY.md` by > 10% unless the message cites a clause-loss review. Original: The Mechanized table's `proposed` row `check_claude_md_trim.py` — a trim kept every
       token and still dropped five operative CLAUSES; only a review lens noticed. ⛔ **A row is
    `live` only after a seeded positive** — the table says so and it is this repo's signature
    defect arriving in the table built to prevent it.
