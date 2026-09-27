@@ -17,6 +17,8 @@ validation/rollup_obit.json
 **/models/*
 # ADR-024 (2026-09-27, owner): llm-distillery's v5 training_config.json is canonical and ships in the MANIFEST
 !v5/models/training_config.json
+# ADR-024 step 3: the manifest lists the .sha256 sidecars as git-origin, so they are committed here
+!v5/models/*.sha256
 v1/
 v2/
 *.pkl

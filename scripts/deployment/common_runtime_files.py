@@ -4,16 +4,20 @@ Owner ruling, llm-distillery#164 (2026-09-26): NexusMind carries RUNTIME files o
 ground-truth, training or validation material.
 
 The rule excludes by DIRECTORY plus two labelling-only file names. It deliberately does NOT
-use `git ls-files`: the detector model files (`*/models/*.pkl`, `*.safetensors`) are
-gitignored here and reach NexusMind only through this copy. Nor does it exclude by names such
+use `git ls-files`: the model files of UNPACKAGED detectors (retired obituary v3/v4) are
+gitignored here and reach NexusMind only through this copy. The four packaged detectors
+(ADR-024) ship by MANIFEST.json through deploy_detectors.py instead; `--unpackaged` leaves them out. Nor does it exclude by names such
 as `training_config.json` or `SHA256SUMS.txt`: `harm_detector/v1/inference.py` reads both at
 load time. `tests/unit/test_common_runtime_files.py` pins both facts on the real tree.
 
 Usage:
     python scripts/deployment/common_runtime_files.py [COMMON_DIR]
         prints one shipped path per line, relative to filters/common, sorted
+    python scripts/deployment/common_runtime_files.py --unpackaged [COMMON_DIR]
+        the same, WITHOUT the packaged detector dirs (ADR-024): what step 2 still copies file by file
     python scripts/deployment/common_runtime_files.py --check-sidecars NEXUSMIND_COMMON [COMMON_DIR]
         exits 1 if a shipped .pkl would sit next to a .sha256 sidecar that does not match it
+        (unpackaged files only: a packaged detector's sidecars are checked by deploy_detectors.py stage)
     python scripts/deployment/common_runtime_files.py --check-filter-sidecars NEXUSMIND_FILTER_DIR FILTER_DIR
         the same check for step 1, which copies EVERY file of the filter package (probe pickles)
 
@@ -29,6 +33,9 @@ from __future__ import annotations
 import hashlib
 import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from scripts.deployment.detector_manifest import PACKAGES  # noqa: E402
 
 # A path with any of these as a directory component is not shipped.
 EXCLUDED_DIRS = frozenset({"training", "validation", "docs", "tests", "__pycache__"})
@@ -55,6 +62,13 @@ def runtime_files(common_dir: Path) -> list[Path]:
     )
 
 
+def unpackaged_runtime_files(common_dir: Path) -> list[Path]:
+    """`runtime_files` minus every packaged detector dir (ADR-024 step 3). Those ship ONLY through
+    deploy_detectors.py, from their MANIFEST.json: never from this working tree's copy."""
+    packaged = [tuple(p.split("/")) for p in PACKAGES]
+    return [r for r in runtime_files(common_dir) if not any(r.parts[:len(p)] == p for p in packaged)]
+
+
 def _sidecar_digest(path: Path) -> str:
     parts = path.read_text(encoding="utf-8").split()
     return parts[0] if parts else ""
@@ -71,8 +85,8 @@ def stale_sidecars(common_dir: Path, nexusmind_common: Path,
 
     A sidecar that ships from this repo overwrites NexusMind's, so it is the one checked;
     otherwise NexusMind's existing sidecar is. No sidecar on either side: nothing to check
-    (the loaders then skip or use SHA256SUMS.txt). `shipped` defaults to the step 2 rule
-    (`runtime_files`); step 1 passes `all_files`.
+    (the loaders then skip or use SHA256SUMS.txt). `shipped` defaults to every runtime file
+    (`runtime_files`); step 1 passes `all_files`, and step 0.6's common check `unpackaged_runtime_files`.
     """
     shipped = set(runtime_files(common_dir) if shipped is None else shipped)
     problems = []
@@ -112,15 +126,17 @@ def main(argv: list[str]) -> int:
         if not common.is_dir():
             print(f"ERROR: not a directory: {common}", file=sys.stderr)
             return 1
-        problems = stale_sidecars(common, Path(argv[2]))
+        problems = stale_sidecars(common, Path(argv[2]), unpackaged_runtime_files(common))
         for p in problems:
             print(f"STALE SIDECAR: {p}", file=sys.stderr)
         return 1 if problems else 0
-    common = Path(argv[1]) if len(argv) > 1 else default_common
+    unpackaged = len(argv) > 1 and argv[1] == "--unpackaged"
+    rest = argv[2:] if unpackaged else argv[1:]
+    common = Path(rest[0]) if rest else default_common
     if not common.is_dir():
         print(f"ERROR: not a directory: {common}", file=sys.stderr)
         return 1
-    for rel in runtime_files(common):
+    for rel in (unpackaged_runtime_files if unpackaged else runtime_files)(common):
         print(rel.as_posix())
     return 0
 

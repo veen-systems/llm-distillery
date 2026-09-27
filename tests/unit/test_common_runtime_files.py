@@ -216,6 +216,8 @@ def test_real_deploy_script_stops_before_step1_on_a_stale_sidecar(tmp_path, wher
         "scripts/deployment/verify_filter_package.py": ok,
         "scripts/deployment/preflight_deploy_guards.py": ok,
         "scripts/deployment/common_runtime_files.py": MODULE.read_bytes(),
+        "scripts/deployment/detector_manifest.py": (MODULE.parent / "detector_manifest.py").read_bytes(),
+        "scripts/deployment/deploy_detectors.py": ok,   # step 0.7 / 2a: tested in test_deploy_detectors.py
     })
     stale = (_sha(b"old") + "\n").encode()
     nm_files = {"README": b"nm\n"}

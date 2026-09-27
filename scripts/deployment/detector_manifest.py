@@ -177,5 +177,5 @@ def verify(manifest: dict, tree: dict[str, tuple[str, int]]) -> dict[str, list[s
             out["missing"].append(p)
         elif tree[p] != (d, n):
             out["mismatch"].append(f"{p}: manifest {d[:12]}/{n} B, tree {tree[p][0][:12]}/{tree[p][1]} B")
-    out["extra"] = sorted(set(tree) - set(listed))
+    out["extra"] = sorted(set(tree) - set(listed) - {MANIFEST})   # step 3 ships the manifest beside its files
     return out

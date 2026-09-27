@@ -23,10 +23,14 @@
 #      NexusMind 2026-04-16, unnoticed for 18 days.)
 #   0/0.5/0.6. Guards (package, cross-repo, stale .sha256 sidecars); all run
 #      before anything is copied, so a failure leaves NexusMind untouched.
-#   2. Copies filters/common/ runtime files (shared utilities) — honors .nexusmind-owns
+#   0.7 Stages the packaged detectors (ADR-024) from their MANIFEST.json: Hub files at the pinned
+#      revision, every sha256 verified, before anything is copied.
+#   2. Places the staged detectors (prune by previous manifest only; --dry-run plans), then
+#      copies the other filters/common/ runtime files (shared utilities) — honors .nexusmind-owns
 #      manifest at repo root: listed files are skipped, and the deploy fails
 #      if a listed file has drifted from NexusMind's copy (issue #50).
-#      THIS IS THE ONLY STEP THAT CONSULTS THE MANIFEST.
+#      THIS IS THE ONLY STEP THAT CONSULTS .nexusmind-owns (step 0.7 refuses an entry inside a
+#      packaged detector, whose files ship by MANIFEST.json only).
 #   3. Commits changes to NexusMind repo
 #   4. Optionally pushes and shows pull commands for servers
 
@@ -234,11 +238,12 @@ fi
 echo ""
 
 # Step 0.6: stale .sha256 sidecars (review of 356cd70; llm-distillery#165). NexusMind keeps
-# per-file sidecars this repo does not ship, and step 2 never deletes, so a retrained .pkl
-# would land next to a stale sidecar and the detector would refuse to load in production.
+# per-file sidecars this repo may not ship, and the file-by-file copies never delete, so a retrained
+# .pkl would land next to a stale sidecar and the detector would refuse to load in production.
 # Checked BEFORE step 1, so a failure leaves NexusMind untouched.
-# Both copies are checked: step 1 ships every file of the filter package (probe pickles),
-# step 2 the filters/common runtime files (detector pickles).
+# Checked here: step 1's filter package (probe pickles) and step 2b's UNPACKAGED filters/common
+# files (retired obituary v3/v4). The packaged detectors' sidecars ship with their pickles and are
+# checked against the manifest by step 0.7.
 echo "0.6 Checking NexusMind .sha256 sidecars against the pickles about to ship..."
 SIDECAR_OK=1
 python3 "${DISTILLERY_ROOT}/scripts/deployment/common_runtime_files.py" \
@@ -248,12 +253,29 @@ python3 "${DISTILLERY_ROOT}/scripts/deployment/common_runtime_files.py" \
 if [ "$SIDECAR_OK" -ne 1 ]; then
     echo "ERROR: a shipped .pkl does not match NexusMind's .sha256 sidecar (STALE SIDECAR above)."
     echo "  Fix: write the matching sidecar HERE, next to the pickle"
-    echo "  (sha256sum X.pkl > X.pkl.sha256) and COMMIT it (no untracked guard covers filters/common),"
+    echo "  (sha256sum X.pkl > X.pkl.sha256) and COMMIT it (no untracked guard covers unpackaged filters/common),"
     echo "  so this deploy ships pickle and sidecar in ONE"
     echo "  NexusMind commit. Never delete the NexusMind sidecar: embedding_stage then loads the"
     echo "  pickle unchecked, and harm_detector refuses to load without SHA256SUMS.txt."
     exit 1
 fi
+echo ""
+
+# Step 0.7: packaged detectors (ADR-024 step 3, llm-distillery#165). Fetch every file each committed
+# MANIFEST.json lists (hub files at the PINNED revision, git files from this repo) into a staging dir and
+# verify each sha256 there, BEFORE step 1, so a refusal leaves NexusMind untouched. The working-tree
+# pickles are never read. Step 2 places from the staging dir.
+echo "0.7 Staging packaged detectors from their MANIFEST.json (Hub at pinned revisions)..."
+# Absolute: the EXIT trap fires after step 3's `cd "$NEXUSMIND_ROOT"`, and a relative TMPDIR would
+# then point it at the wrong directory and leave the staged weights behind.
+DETECTOR_STAGING=$(cd "$(mktemp -d)" && pwd)
+trap 'rm -rf "$DETECTOR_STAGING"' EXIT
+python3 "${DISTILLERY_ROOT}/scripts/deployment/deploy_detectors.py" stage --staging "$DETECTOR_STAGING" || {
+    echo "ERROR: staging the packaged detectors failed (REFUSED / ERROR / traceback above). Aborting deploy."
+    echo "  Nothing was copied. Fix the manifest or the files it names; never edit a manifest by hand"
+    echo "  (scripts/deployment/verify_detector_package.py writes it)."
+    exit 1
+}
 echo ""
 
 # Step 1: Copy filter folder
@@ -268,14 +290,29 @@ echo "   Copied to: $DEST_DIR"
 # default — see gotcha-log "Manifest as Anti-Pattern" (2026-05-04). When an
 # entry is added, pair it with a tracked issue and a deadline to remove it.
 echo ""
-echo "2. Copying common utilities: filters/common/ RUNTIME files only (honoring .nexusmind-owns)"
-# What ships is defined in ONE place, scripts/deployment/common_runtime_files.py (#164):
-# no */training/, */validation/, */docs/, */tests/, */__pycache__/, oracle.py, prompt.md or
-# detector_seeds.py. Untracked
-# model files still ship — this copy is how detector weights reach NexusMind.
-# Copy-only: files removed or excluded here are NOT deleted in NexusMind.
+echo "2. Common utilities: packaged detectors by MANIFEST.json, then filters/common/ RUNTIME files"
+# 2a. Packaged detectors (ADR-024): place the staged files, prune ONLY what the previous NexusMind
+# manifest listed and the new one does not (no readable previous manifest = no prune, extras reported),
+# then re-hash NexusMind's copy against the manifest. Under --dry-run this only PLANS: nothing is written.
 mkdir -p "$COMMON_DEST"
-COMMON_LIST=$(python3 "${DISTILLERY_ROOT}/scripts/deployment/common_runtime_files.py" "$COMMON_SOURCE") || {
+PLACE_FLAGS=()
+if [ "$DRY_RUN" -eq 1 ]; then
+    PLACE_FLAGS+=(--plan)
+fi
+python3 "${DISTILLERY_ROOT}/scripts/deployment/deploy_detectors.py" place \
+    --staging "$DETECTOR_STAGING" --target "$COMMON_DEST" "${PLACE_FLAGS[@]}" || {
+    echo "ERROR: placing the packaged detectors failed (ERROR lines or traceback above)."
+    echo "  Step 1 and part of step 2 were already copied; a package with an error did NOT get its new"
+    echo "  MANIFEST.json, so a re-run prunes against the old one. NexusMind is NOT committed. Inspect with"
+    echo "  'git -C $NEXUSMIND_ROOT status --porcelain' before re-running."
+    exit 1
+}
+# 2b. Everything else under filters/common ships as before. What ships is defined in ONE place,
+# scripts/deployment/common_runtime_files.py (#164): no */training/, */validation/, */docs/, */tests/,
+# */__pycache__/, oracle.py, prompt.md or detector_seeds.py, and (--unpackaged) no packaged detector dir.
+# Untracked model files of UNPACKAGED detectors (retired obituary v3/v4) still ship from this tree.
+# Copy-only: files removed or excluded here are NOT deleted in NexusMind.
+COMMON_LIST=$(python3 "${DISTILLERY_ROOT}/scripts/deployment/common_runtime_files.py" --unpackaged "$COMMON_SOURCE") || {
     echo "ERROR: could not list filters/common runtime files"; exit 1; }
 COMMON_COUNT=$(printf '%s\n' "$COMMON_LIST" | grep -c . || true)
 if [ "$COMMON_COUNT" -eq 0 ]; then
@@ -370,7 +407,7 @@ git status --short
 # Step 4: Commit
 echo ""
 if [ "$DRY_RUN" -eq 1 ]; then
-    echo "4. DRY RUN: skipping git add/commit. THE FILES WERE STILL COPIED."
+    echo "4. DRY RUN: skipping git add/commit. THE FILES WERE STILL COPIED (packaged detectors: planned only)."
     echo "   Inspect $NEXUSMIND_ROOT, then revert with"
     echo "   'git -C $NEXUSMIND_ROOT checkout -- .' if you do not want to keep the changes."
     echo "   ⚠️ That reverts TRACKED files only. Anything new this deploy introduced —"
