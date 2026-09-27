@@ -35,7 +35,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parents[2]
+REPO = Path(__file__).resolve().parents[3]  # docs/evidence/<dir>/ -> repo root
 KEEP_FRACTION = 0.7
 IMPERATIVE = re.compile(r"\b(never|do not|don't|must|only|always|not)\b", re.I)
 IMPERATIVE_ANY = re.compile(r"\b(never|do not|don.t|must not|must)\b|\bNOT\b|\bONLY\b", re.I)
