@@ -1,5 +1,5 @@
 ---
-status: Proposed
+status: Accepted
 date: 2026-09-27
 deciders: [Jeroen Veen]
 superseded_by:
@@ -7,9 +7,11 @@ superseded_by:
 
 # ADR-024: Detectors as Deploy Packages — Manifest, Hub Record, Required Integrity, Removal by Manifest
 
-⛔ **DRAFT — PROPOSED, NOT RULED.** Written for llm-distillery#165 (design before code). Nothing here is
-built. The owner rules on the *Decision* and on the five *Open questions*; the NexusMind session reviews the
-cross-repo order before any of it starts. "ADR-024" is **llm-distillery's**; NexusMind numbers its own ADRs.
+✅ **RULED 2026-09-27 by Jeroen Veen, in session** (answering questions the assistant wrote): **Option C
+accepted**; open question 2 → **one Hub repo per detector**; open question 1 (in part) → **obituary v3/v4 are
+retired, not packaged**. Questions 3–5 stay OPEN. Nothing is built yet; order step 1 comes first, and the
+NexusMind session reviews the cross-repo order before step 4. "ADR-024" is **llm-distillery's**; NexusMind
+numbers its own ADRs.
 
 ## Context
 
@@ -82,7 +84,7 @@ route detector weights have. A retrained detector today ships whatever the worki
 
 ## Decision
 
-**Proposed: Option C.** Per detector version (`filters/common/<detector>/<version>/`):
+**Option C (ruled 2026-09-27).** Per detector version (`filters/common/<detector>/<version>/`):
 
 1. **`MANIFEST.json`, committed here**: `detector`, `version`, `source_commit`, `built_utc`, and `files` — each
    `{path, sha256, bytes, origin: "git" | "hub"}`. Plus `hub: {repo_id, revision}` when any file is `hub`.
@@ -91,8 +93,8 @@ route detector weights have. A retrained detector today ships whatever the worki
    the commit it records; that is the trust root, stated rather than assumed. The writer's file boundary is
    the detector's own `<detector>/<version>/` dir, pinned by a test (as `common_runtime_files.py` is) so a
    refactor cannot pull a shared `filters/common/*.py` module into one detector's manifest.
-2. **Weights recorded on the Hub**: one private repo per detector, with `revision` = the commit that
-   uploaded the version, pinned in the manifest. Code and small JSON stay in git (`origin: "git"`).
+2. **Weights recorded on the Hub**: one private repo per DETECTOR (ruled), with `revision` = the commit
+   that uploaded the version, pinned in the manifest. Code and small JSON stay in git (`origin: "git"`).
 3. **Deploy = fetch, verify, place, prune.** The deploy fetches `hub` files at the pinned revision into a
    staging dir. It verifies every file against the manifest, copies them, then deletes exactly the files
    that the PREVIOUS manifest listed and the new one does not. It never deletes an unlisted file. A
@@ -127,12 +129,12 @@ route detector weights have. A retrained detector today ships whatever the worki
 
 ## Open questions (owner)
 
-1. **Which versions to package vs retire.** Measured 2026-09-27: commerce v1 IS loaded
+1. **Which versions to package vs retire.** ✅ *Ruled in part:* obituary v3/v4 → retire, don't package. Measured 2026-09-27: commerce v1 IS loaded
    (`NexusMind/src/preprocessing/commerce.py:35,286`), so its 541 MB model must be packaged. commerce v2 is
    named by gpu-server (`deploy/gpu-server/main.py:853`, `src/scoring/gpu_client.py:505`), and whether
    anything loads it there was not checked. Obituary v3/v4 have no loader in NexusMind: retire them, don't
    package them?
-2. **One Hub repo per detector, or one per detector version?** Filters use one per version
+2. ✅ **RULED: one Hub repo per detector.** *(Was: one Hub repo per detector, or one per detector version?)* Filters use one per version
    (`{name}-filter-v{N}`). Per detector with pinned revisions is fewer repos; per version matches filters.
 3. **Does gpu-server keep its own detector copies** (`main.py` loads obituary v5 and commerce from its own
    paths with baked-in hashes), or read the same manifest?
