@@ -173,6 +173,16 @@ whether to take all four as rulings):
 
 **Package set (ruled): harm v1, obituary v5, violence_promotion v1, commerce_prefilter v1.**
 
+✅ **Order step 1 BUILT 2026-09-27** (`scripts/deployment/detector_manifest.py`, `verify_detector_package.py`,
+21 tests, 6/6 mutants caught). Manifests were backfilled from sadalsuud (NexusMind `d5d9362`) and verified OK,
+`--strict`, on sadalsuud, gpu-server `/home/hcl/NexusMind` and the workstation checkout. Schema additions to
+Decision 1: `backfilled_from`, `served_commit`, `build_stack`, `build_stack_unrecorded`. Findings:
+- **obituary v5 and violence v1 never recorded their sklearn version**, so Q5's skew warning has no baseline for
+  them until they are rebuilt or the version is recovered.
+- **llm-distillery's obituary v5 and violence v1 `training_config.json` differ from production's** (ours carries
+  the #158 seed block). Step 3 would stop on that until someone rules which copy is canonical.
+- The pickles present here match production; the `.sha256` sidecars exist only in NexusMind.
+
 ## Consequences
 
 ### Positive

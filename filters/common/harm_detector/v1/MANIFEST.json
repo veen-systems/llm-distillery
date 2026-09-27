@@ -1,0 +1,108 @@
+{
+ "schema": 1,
+ "detector": "harm_detector",
+ "version": "v1",
+ "source_commit": "6fbcb63",
+ "built_utc": "2026-09-10T17:37:43+00:00",
+ "backfilled_from": "sadalsuud:~/local_dev/NexusMind",
+ "served_commit": "d5d9362",
+ "written_utc": "2026-09-27T11:44:31Z",
+ "build_stack": {
+  "sklearn_version": "1.8.0",
+  "embedder": "paraphrase-multilingual-mpnet-base-v2"
+ },
+ "build_stack_unrecorded": [],
+ "hub": null,
+ "files": [
+  {
+   "path": "__init__.py",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0,
+   "origin": "git"
+  },
+  {
+   "path": "inference.py",
+   "sha256": "acb43ff3278ae7cdb2c137036237f25ff2a1e7785ccff003557c7beb295a2b4d",
+   "bytes": 13158,
+   "origin": "git"
+  },
+  {
+   "path": "models/mlp_classifier_seed0.pkl",
+   "sha256": "c77295f492c17a6c978430999130cb777e83efd7096560966062ad381c052f26",
+   "bytes": 2766666,
+   "origin": "hub"
+  },
+  {
+   "path": "models/mlp_classifier_seed0.pkl.sha256",
+   "sha256": "22e8c7884a7de2d65b3464f29b53797316bc42ae92600082a5b9b26b7b392a51",
+   "bytes": 65,
+   "origin": "git"
+  },
+  {
+   "path": "models/mlp_classifier_seed1.pkl",
+   "sha256": "0c45296c5924a04d21dd6e06eae3902cfecc3b575f1291b3e441f2f9ca5cde42",
+   "bytes": 2766668,
+   "origin": "hub"
+  },
+  {
+   "path": "models/mlp_classifier_seed1.pkl.sha256",
+   "sha256": "6d2ecd1fa910b1e8bdf8590e68c1e6681940f7495dd90584b8a362b76e9995c9",
+   "bytes": 65,
+   "origin": "git"
+  },
+  {
+   "path": "models/mlp_classifier_seed2.pkl",
+   "sha256": "c18299442ab09429b2874808ce134113e5c140ea6e0af01f339879f5e79fc7ab",
+   "bytes": 2766638,
+   "origin": "hub"
+  },
+  {
+   "path": "models/mlp_classifier_seed2.pkl.sha256",
+   "sha256": "811ea1b15cc4dddb8e39f70ebf3e5bba6101db2e83a8c747ce43c8948f184801",
+   "bytes": 65,
+   "origin": "git"
+  },
+  {
+   "path": "models/mlp_classifier_seed3.pkl",
+   "sha256": "196b64209dd79f5f758fe734edd1df738e2cd678d425cad9bd83d19ea9b97836",
+   "bytes": 2766666,
+   "origin": "hub"
+  },
+  {
+   "path": "models/mlp_classifier_seed3.pkl.sha256",
+   "sha256": "ef804bcc488ae304c523ed2450c836487b5cdfecdb9b0430348ee14daa9bc1eb",
+   "bytes": 65,
+   "origin": "git"
+  },
+  {
+   "path": "models/mlp_classifier_seed4.pkl",
+   "sha256": "6696d55b967bd08ef5a850981bfacdd5ea4db7d7aa08ef54cdb8eb1eb9c8c677",
+   "bytes": 2766951,
+   "origin": "hub"
+  },
+  {
+   "path": "models/mlp_classifier_seed4.pkl.sha256",
+   "sha256": "34eb040d2c73bb6c7957e9480b669f2c4dce2ebaff2d5f2859d6f4fa5ae2f5a6",
+   "bytes": 65,
+   "origin": "git"
+  },
+  {
+   "path": "models/scaler.pkl",
+   "sha256": "b954cfe9f33b7b7f6240e1785aacb976e42d44ef177a60f4c8eaf952b0f03647",
+   "bytes": 18861,
+   "origin": "hub"
+  },
+  {
+   "path": "models/scaler.pkl.sha256",
+   "sha256": "bbf90bb022ed992df61165d9f88a253455c98b399946f2452b5d513239d73856",
+   "bytes": 65,
+   "origin": "git"
+  },
+  {
+   "path": "models/training_config.json",
+   "sha256": "21193fbe145363dc3b9363fbd558a914d56a5f90017a4b095f47e1e29621a11c",
+   "bytes": 807,
+   "origin": "git"
+  }
+ ]
+}

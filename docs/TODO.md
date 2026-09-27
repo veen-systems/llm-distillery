@@ -6,7 +6,7 @@
 topic. Re-read the block under it before starting; the reasons are there, not here.*
 
 ▶ **NEXT SESSION (rewritten 2026-09-27 afternoon close):** items 1, 2, 4 below are DONE; what remains needs the owner.
-   ▶ **First:** ask the owner for (i) ✅ ADR-024 RULED 2026-09-27 (Option C, one Hub repo per detector, obit v3/v4 retired) → ▶ build order step 1 (manifest writer + `verify_detector_package.py`, reporting mode); Q3–Q5 open, NexusMind (nexusmind-b2) told, (ii) ✅ the
+   ▶ **First:** ask the owner for (i) ✅ ADR-024 RULED 2026-09-27 (Option C, one Hub repo per detector, obit v3/v4 retired) → ✅ step 1 BUILT 2026-09-27 (manifests verified on 3 hosts) → ▶ step 2: upload the 4 packages' hub-origin files to one private Hub repo per detector, pin revisions, verify by re-download; decide the canonical `training_config.json` for obit v5 / violence v1 first; Q3–Q5 open, NexusMind (nexusmind-b2) told, (ii) ✅ the
    mid-month retire (DONE 2026-09-27), (iii) the Thriving tab read
    (H-TV5). With none of those: the two archived ledger threads (`H-V8-3`, `H-V8-26`, bottom of this file).
    1. ✅ **DONE 2026-09-27: retire step 3.** Ledger 146,560 → 83,641 B (74 closed rows → `memory/archive/

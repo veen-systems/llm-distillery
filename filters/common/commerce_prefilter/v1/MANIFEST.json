@@ -1,0 +1,65 @@
+{
+ "schema": 1,
+ "detector": "commerce_prefilter",
+ "version": "v1",
+ "source_commit": "6fbcb63",
+ "built_utc": null,
+ "backfilled_from": "sadalsuud:~/local_dev/NexusMind",
+ "served_commit": "d5d9362",
+ "written_utc": "2026-09-27T11:44:33Z",
+ "build_stack": {
+  "transformers_version": "4.57.6"
+ },
+ "build_stack_unrecorded": [],
+ "hub": null,
+ "files": [
+  {
+   "path": "__init__.py",
+   "sha256": "2799ae412520a009d3b563a1d4ad8ac64a27ca4c52b3bbab127c891cfd44b34c",
+   "bytes": 224,
+   "origin": "git"
+  },
+  {
+   "path": "inference.py",
+   "sha256": "2c40cdd0ea35fd6ba1a23f6f02e0e49403c34e5f6fdfabe1ac36ae1549bcea1c",
+   "bytes": 11267,
+   "origin": "git"
+  },
+  {
+   "path": "models/distilbert/config.json",
+   "sha256": "e42c818c327f1bf042f8fc1f3b9d0c671d651cb6ca1ceee223c3e91b192563ea",
+   "bytes": 587,
+   "origin": "git"
+  },
+  {
+   "path": "models/distilbert/model.safetensors",
+   "sha256": "ac899bbc7dfb196a45f82406f90e4be204aff05e1dde92cefe88118d84d82bdb",
+   "bytes": 541317368,
+   "origin": "hub"
+  },
+  {
+   "path": "models/distilbert/special_tokens_map.json",
+   "sha256": "b6d346be366a7d1d48332dbc9fdf3bf8960b5d879522b7799ddba59e76237ee3",
+   "bytes": 125,
+   "origin": "git"
+  },
+  {
+   "path": "models/distilbert/tokenizer.json",
+   "sha256": "a4a4fa4b10a2a40361529954532f10257fda53cb22177554a862bcc661b7e4d8",
+   "bytes": 2919615,
+   "origin": "git"
+  },
+  {
+   "path": "models/distilbert/tokenizer_config.json",
+   "sha256": "91955163d30880d1ef0928cfdd729baaf413401dc4456f3ab1a48b3eec2ec624",
+   "bytes": 1228,
+   "origin": "git"
+  },
+  {
+   "path": "models/distilbert/vocab.txt",
+   "sha256": "fe0fda7c425b48c516fc8f160d594c8022a0808447475c1a7c6d6479763f310c",
+   "bytes": 995526,
+   "origin": "git"
+  }
+ ]
+}

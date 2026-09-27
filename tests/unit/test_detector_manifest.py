@@ -1,0 +1,144 @@
+"""ADR-024 step 1: detector package manifests (scripts/deployment/detector_manifest.py + verify_detector_package.py).
+
+Pins: the package boundary (a detector's manifest never reaches outside its own dir, #165 review), that a
+missing runtime file raises instead of shrinking the manifest, that verify tells missing / mismatch / extra
+apart, the remote-path quoting that broke the first backfill (`~` quoted into a literal directory name), and the
+CLI's exit codes, because a guard's tests must break the CALL SITE too (gotcha 2026-09-27).
+"""
+
+from __future__ import annotations
+
+import hashlib
+import json
+import subprocess
+import sys
+from pathlib import Path
+
+import pytest
+
+from scripts.deployment.detector_manifest import (
+    COMMON, PACKAGES, build, listing_local, parse_listing, remote_path, select, verify)
+
+REPO = Path(__file__).resolve().parents[2]
+CLI = REPO / "scripts" / "deployment" / "verify_detector_package.py"
+
+
+def _sha(b: bytes) -> str:
+    return hashlib.sha256(b).hexdigest()
+
+
+def test_package_set_is_the_owner_ruling():
+    """ADR-024, 2026-09-27: harm v1, obituary v5, violence v1, commerce v1; obit v3/v4 and commerce v2 retired."""
+    assert sorted(PACKAGES) == ["commerce_prefilter/v1", "harm_detector/v1", "obituary_detector/v5",
+                                "violence_promotion/v1"]
+
+
+@pytest.mark.parametrize("pkg", sorted(PACKAGES))
+def test_patterns_stay_inside_the_package(pkg):
+    for pat in PACKAGES[pkg]:
+        assert not pat.startswith(("/", "..")) and ".." not in pat.split("/"), pat
+        assert "embedding_stage" not in pat and "model_loading" not in pat, pat
+
+
+def test_select_raises_on_a_missing_runtime_file():
+    listing = {"inference.py": ("a" * 64, 1)}
+    with pytest.raises(ValueError, match="no file matches"):
+        select("obituary_detector/v5", listing)
+
+
+def test_select_takes_exactly_the_runtime_files():
+    names = ["__init__.py", "inference.py", "README.md", "calibration_report.json", "config.yaml",
+             "models/training_config.json", "models/scaler.pkl", "models/scaler.pkl.sha256",
+             "models/mlp_classifier_seed0.pkl", "models/mlp_classifier_seed0.pkl.sha256",
+             "models/mlp_classifier_seed1.pkl", "models/sub/mlp_classifier_seed9.pkl"]
+    got = select("harm_detector/v1", {n: ("a" * 64, 1) for n in names})
+    assert sorted(got) == sorted(n for n in names if n not in
+                                 {"README.md", "calibration_report.json", "config.yaml",
+                                  "models/sub/mlp_classifier_seed9.pkl"})   # `*` never crosses a `/`
+
+
+def test_commerce_v1_ships_only_distilbert():
+    names = ["__init__.py", "inference.py"] + [f"models/{m}/{f}" for m in ("distilbert", "minilm", "xlm-roberta")
+                                               for f in ("config.json", "model.safetensors", "tokenizer.json",
+                                                         "tokenizer_config.json", "special_tokens_map.json",
+                                                         "vocab.txt")]
+    got = select("commerce_prefilter/v1", {n: ("a" * 64, 1) for n in names})
+    assert all(p.startswith("models/distilbert/") for p in got if p.startswith("models/"))
+
+
+def test_verify_separates_missing_mismatch_extra():
+    m = build("obituary_detector/v5", {"a.py": (_sha(b"a"), 1), "m.pkl": (_sha(b"m"), 1)}, "src", {}, "abc")
+    res = verify(m, {"a.py": (_sha(b"a"), 1), "m.pkl": (_sha(b"X"), 1), "README.md": (_sha(b"r"), 1)})
+    assert res["missing"] == [] and len(res["mismatch"]) == 1 and res["extra"] == ["README.md"]
+    res = verify(m, {"a.py": (_sha(b"a"), 1)})
+    assert res["missing"] == ["m.pkl"]
+
+
+def test_build_marks_origin_and_unrecorded_stack():
+    m = build("violence_promotion/v1", {"inference.py": ("a" * 64, 3), "models/m.pkl": ("b" * 64, 9)},
+              "src", {"embedder_model": "e5"}, "abc")
+    assert {f["path"]: f["origin"] for f in m["files"]} == {"inference.py": "git", "models/m.pkl": "hub"}
+    assert m["build_stack_unrecorded"] == ["sklearn_version"] and m["hub"] is None
+
+
+def test_remote_path_keeps_tilde_expandable():
+    assert remote_path("~/local_dev/NexusMind") == '"$HOME"/local_dev/NexusMind'
+    assert remote_path("/home/x/a b") == "'/home/x/a b'"
+
+
+def test_parse_listing_strips_dot_slash_and_rejects_garbage():
+    assert parse_listing(f"{'a' * 64} 12 ./models/x.pkl\n") == {"models/x.pkl": ("a" * 64, 12)}
+    with pytest.raises(ValueError):
+        parse_listing("nothex 12 ./x\n")
+
+
+def test_listing_local_hashes_and_skips_pycache(tmp_path):
+    (tmp_path / "__pycache__").mkdir()
+    (tmp_path / "__pycache__" / "x.pyc").write_bytes(b"c")
+    (tmp_path / "a.py").write_bytes(b"abc")
+    assert listing_local(tmp_path) == {"a.py": (_sha(b"abc"), 3)}
+
+
+@pytest.mark.parametrize("pkg", sorted(PACKAGES))
+def test_committed_manifests_are_well_formed(pkg):
+    m = json.loads((COMMON / pkg / "MANIFEST.json").read_text())
+    assert (m["detector"], m["version"]) == tuple(pkg.split("/"))
+    assert m["files"] and all(len(f["sha256"]) == 64 and f["bytes"] > 0 or f["path"].endswith("__init__.py")
+                              for f in m["files"])
+    assert select(pkg, {f["path"]: (f["sha256"], f["bytes"]) for f in m["files"]})   # every pattern covered
+
+
+def _run(*args):
+    return subprocess.run([sys.executable, str(CLI), *args], capture_output=True, text=True, cwd=REPO)
+
+
+def test_cli_exit_codes_on_a_tree_missing_the_package(tmp_path):
+    (tmp_path / "filters" / "common" / "violence_promotion" / "v1").mkdir(parents=True)
+    report = _run("verify", "violence_promotion/v1", "--target", str(tmp_path))
+    assert report.returncode == 0 and "MISSING" in report.stdout and "reporting mode" in report.stdout
+    strict = _run("verify", "violence_promotion/v1", "--target", str(tmp_path), "--strict")
+    assert strict.returncode == 1 and "FAIL" in strict.stdout
+
+
+def test_cli_strict_passes_on_a_matching_tree(tmp_path):
+    """Presence control: the same harness passes when the bytes match, so the failure above is the check."""
+    m = json.loads((COMMON / "violence_promotion" / "v1" / "MANIFEST.json").read_text())
+    nm = REPO.parent / "NexusMind" / "filters" / "common" / "violence_promotion" / "v1"
+    if not all((nm / f["path"]).is_file() for f in m["files"]):
+        pytest.skip("needs the NexusMind checkout beside this repo")
+    r = _run("verify", "violence_promotion/v1", "--target", str(REPO.parent / "NexusMind"), "--strict")
+    assert r.returncode == 0 and "OK" in r.stdout, r.stdout
+
+
+def test_a_pattern_never_matches_a_deeper_path():
+    """Segment count must agree: without it, `inference.py` matches `inference.py/x` (zip stops early)."""
+    from scripts.deployment.detector_manifest import _match
+    assert _match("models/*.pkl", "models/a.pkl")
+    assert not _match("inference.py", "inference.py/x")
+    assert not _match("models/*.pkl", "models/a.pkl/b")
+
+
+def test_cli_missing_local_target_exits_2(tmp_path):
+    """Review 2026-09-27: a mistyped local path read as 26 MISSING lines and exit 0."""
+    r = _run("verify", "--all", "--target", str(tmp_path / "typo"))
+    assert r.returncode == 2 and "not a directory" in r.stderr

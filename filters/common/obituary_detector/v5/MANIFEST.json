@@ -1,0 +1,61 @@
+{
+ "schema": 1,
+ "detector": "obituary_detector",
+ "version": "v5",
+ "source_commit": "6fbcb63",
+ "built_utc": null,
+ "backfilled_from": "sadalsuud:~/local_dev/NexusMind",
+ "served_commit": "d5d9362",
+ "written_utc": "2026-09-27T11:44:31Z",
+ "build_stack": {
+  "embedder_model": "paraphrase-multilingual-mpnet-base-v2"
+ },
+ "build_stack_unrecorded": [
+  "sklearn_version"
+ ],
+ "hub": null,
+ "files": [
+  {
+   "path": "__init__.py",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0,
+   "origin": "git"
+  },
+  {
+   "path": "inference.py",
+   "sha256": "a9d868f2688a0f8fbc5b180308ac98ccfca571a811b8275bb7d94c070cbcef36",
+   "bytes": 8918,
+   "origin": "git"
+  },
+  {
+   "path": "models/mlp_classifier.pkl",
+   "sha256": "6f271360d42abbf0bdcf201b9c16b5dac77b557222827f7a464a09a05121a180",
+   "bytes": 2766752,
+   "origin": "hub"
+  },
+  {
+   "path": "models/mlp_classifier.pkl.sha256",
+   "sha256": "0ab09a146ef0659c80cb06bf346c38294e7d52876f788946c12a06d0a7097625",
+   "bytes": 65,
+   "origin": "git"
+  },
+  {
+   "path": "models/scaler.pkl",
+   "sha256": "16c79508a516aeac0ba9e0f6733a38209795eb119d01d25134b6b401fdba321a",
+   "bytes": 18861,
+   "origin": "hub"
+  },
+  {
+   "path": "models/scaler.pkl.sha256",
+   "sha256": "7ca421e3c7277610b129e85815c905e94e128bf05c8324bd6f760abdf2535c52",
+   "bytes": 65,
+   "origin": "git"
+  },
+  {
+   "path": "models/training_config.json",
+   "sha256": "14964eceb811e85f3dac9bd5bbb58dde586f92de2590900dcaa76ba2c8942f87",
+   "bytes": 771,
+   "origin": "git"
+  }
+ ]
+}

@@ -1,0 +1,55 @@
+{
+ "schema": 1,
+ "detector": "violence_promotion",
+ "version": "v1",
+ "source_commit": "6fbcb63",
+ "built_utc": null,
+ "backfilled_from": "sadalsuud:~/local_dev/NexusMind",
+ "served_commit": "d5d9362",
+ "written_utc": "2026-09-27T11:44:32Z",
+ "build_stack": {
+  "embedder_model": "paraphrase-multilingual-mpnet-base-v2"
+ },
+ "build_stack_unrecorded": [
+  "sklearn_version"
+ ],
+ "hub": null,
+ "files": [
+  {
+   "path": "inference.py",
+   "sha256": "375f8297a4d0271c9f4d10617177b97e9ccb556b2e18634fe375af9fe8a31c06",
+   "bytes": 7985,
+   "origin": "git"
+  },
+  {
+   "path": "models/mlp_classifier.pkl",
+   "sha256": "f2e932985e7b0acd53e4c8624e858a80431f0145ad747fb7863d467c60d5144f",
+   "bytes": 2766749,
+   "origin": "hub"
+  },
+  {
+   "path": "models/mlp_classifier.pkl.sha256",
+   "sha256": "bea747c6298155465984db9d2e1e43601ed973205ab7895296e7cd9c76a7b8ef",
+   "bytes": 65,
+   "origin": "git"
+  },
+  {
+   "path": "models/scaler.pkl",
+   "sha256": "8356b7d2a8e63c0f4f11bb104d5550b37d7b92f556ffb50cb4a7ecdc791f458f",
+   "bytes": 18861,
+   "origin": "hub"
+  },
+  {
+   "path": "models/scaler.pkl.sha256",
+   "sha256": "6dcb19d024e4f40f98b632f423aa8886fd76299a87820f18bd4995c90a3d6c85",
+   "bytes": 65,
+   "origin": "git"
+  },
+  {
+   "path": "models/training_config.json",
+   "sha256": "cee1f7260a3f2ed8ad839a7e8f1c8d0f0c4db279c1b501cda85d46b1df806656",
+   "bytes": 436,
+   "origin": "git"
+  }
+ ]
+}
