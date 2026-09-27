@@ -9,7 +9,8 @@ read-surface steps −1.1–4) moved VERBATIM to `docs/TODO-archive.md` § *Move
 
 0. ▶ **Verify NexusMind PR #553 (deletes retired obituary v3/v4 + commerce v2) reached production.**
    Owner ruled 2026-09-27 "stop shipping + delete"; ours is live (`3e7f565`, `5590f88`: `RETIRED_DIRS`).
-   If #553 is merged: after the next cycle, `ssh sadalsuud 'cd ~/local_dev/NexusMind && git log -1 --format=%h
+   ✅ **#553 MERGED** (0cbfd4c at 2026-09-27T14:38:24Z, CI green); ships at the next 4-hourly cycle. First prove it arrived
+   (`git merge-base --is-ancestor 0cbfd4c HEAD` on sadalsuud), then, `ssh sadalsuud 'cd ~/local_dev/NexusMind && git log -1 --format=%h
    && ls filters/common/obituary_detector filters/common/commerce_prefilter'` must show only `v5` / `v1`, and
    `python3 scripts/deployment/verify_detector_package.py verify --all --target sadalsuud:~/local_dev/NexusMind
    --strict` must still print 4× OK. If NOT merged: nothing to do; do not push them. ⚠️ gpu-server keeps orphan
