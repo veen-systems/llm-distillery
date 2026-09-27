@@ -15,8 +15,11 @@ topic. Re-read the block under it before starting; the reasons are there, not he
       `docs/CONTRACTS_PLAN.md` (149 KB), `memory/hypothesis-ledger.md` (142 KB), `memory/cross-repo-prioritization.md`
       (136 KB), measured 2026-09-24; re-measure with `wc -c` first. Method as for TODO/gotcha-log: closed sections
       move losslessly (every line present, order kept); open ones stay. ⛔ Retiring is not deleting.
-   2. **#165 detector packages: design/ADR only.** Inputs on the issue: the NexusMind-side stale path list, and
-      commerce v2 `.pkl`s existing only in NexusMind git (`3864388`).
+   2. ✅ **#165: ADR-024 DRAFTED 2026-09-27** (`docs/adr/024-detector-packages.md`, PROPOSED): manifest + Hub
+      record fetched at DEPLOY time (production filters do not load from the Hub either: `use_hub=False`,
+      `HF_HUB_OFFLINE=1`), required integrity behind a log-first flag, prune only by previous manifest.
+      Reviewed (facts all held; 3 warnings fixed). ▶ **Owner: rule the Decision + 5 open questions; then the
+      NexusMind session reviews the cross-repo order. No code before that.**
    3. **Owner calls pending (do not push):** (a) Thriving: watch the tab while v7 drains (~10 days) → H-TV5 in
       `memory/hypothesis-ledger.md` names the three branches; (b) mid-month `retire_memory.py --before 2026-09-17`;
       (c) the deploy script's `C:/` default roots (harmless; changing them makes an env-less run hit real repos).
