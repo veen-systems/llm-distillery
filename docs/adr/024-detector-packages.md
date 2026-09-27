@@ -198,7 +198,7 @@ revision and comparing sha256 + size with the manifest:
   step 3 ships it, as intended.
 - The older private repo `jeergrvgreg/commerce-prefilter-v1` (2026-07-28, #80's backup) holds the same
   `model.safetensors` bytes but DIFFERENT tokenizer files from production's (e.g. `special_tokens_map.json` 695 vs
-  125 B). It is left untouched and is not the record.
+  125 B). It was not the record, and was DELETED 2026-09-27 on the owner's ruling (its `model.safetensors` sha256 equalled `commerce-detector`'s pinned copy). Same day: the retired obituary v3/v4 and commerce v2 stopped shipping (`3e7f565`, `RETIRED_DIRS`); NexusMind PR #553 deletes their copies.
 
 ✅ **Order step 3 BUILT 2026-09-27 and MERGED as NexusMind PR #550** (`dafbbc9`, 13:47Z, after NexusMind's two-lens
 review; owner ruling: wait for NexusMind's signal, then a PR, never a direct commit). Production outcome = `H-DP3`

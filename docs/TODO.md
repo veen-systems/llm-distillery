@@ -17,11 +17,11 @@ topic. Re-read the block under it before starting; the reasons are there, not he
    1. After that, ADR-024 is NexusMind's: step 4 (loaders read the manifest, log-only flag, per detector; its start is the
       owner's call) and step 5 (commerce `model.safetensors` is gitignored there; `deploy_filters.sh` does not `--delete`
       under `models/`). Nothing more of ours unless they ask.
-   2. *Owner call, new:* the retired detectors (obituary v3/v4, commerce v2) still ship through step 2b's unpackaged copy,
+   2. ✅ **Owner ruled 2026-09-27: stop shipping + delete.** Ours: `3e7f565` (`RETIRED_DIRS`). NexusMind PR #553 deletes their copies (open; nexusmind-b2 told). ▶ After it merges + the next cycle: `ssh sadalsuud 'ls ~/local_dev/NexusMind/filters/common/obituary_detector'` shows only v5. gpu-server keeps orphan `{v3,v4,v2}/models/` (rsync excludes models/). Was: *Owner call, new:* the retired detectors (obituary v3/v4, commerce v2) still ship through step 2b's unpackaged copy,
       pickles included; #550 carried their #158 blocks. Stop shipping them (and delete them in NexusMind), or leave them?
    3. *Optional, ours:* the gotcha-log § Mechanized row `check_committed_idiom.py` is `proposed` (an `ls-files` used as a
       "committed" test); build it only with a seeded positive.
-   *Owner, not urgent:* H-TV5 (watch Thriving while v7 drains); delete the stale Hub repo `commerce-prefilter-v1`
+   *Owner, not urgent:* H-TV5 (watch Thriving while v7 drains); ~~delete the stale Hub repo `commerce-prefilter-v1`~~ ✅ DELETED 2026-09-27 (owner yes; weights sha256 = `commerce-detector`'s, 404 confirmed)
    (different tokenizer files from production's) or keep it as history; obit v5 / violence v1 have no recorded sklearn
    version (Q5 skew check has no baseline until a rebuild); the deploy script's `C:/` default roots.
    *Done 2026-09-27 afternoon:* ADR-024 step 3 built, reviewed in 3 rounds, delivered as NexusMind PR #550 (merged).
