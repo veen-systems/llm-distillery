@@ -12,7 +12,11 @@
   "embedder": "paraphrase-multilingual-mpnet-base-v2"
  },
  "build_stack_unrecorded": [],
- "hub": null,
+ "hub": {
+  "repo_id": "jeergrvgreg/harm-detector",
+  "revision": "ee1663ccf87580efd147a79f2aa06b6b36df4ac6",
+  "path_prefix": "v1"
+ },
  "files": [
   {
    "path": "__init__.py",

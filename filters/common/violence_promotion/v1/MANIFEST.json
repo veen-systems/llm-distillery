@@ -13,7 +13,11 @@
  "build_stack_unrecorded": [
   "sklearn_version"
  ],
- "hub": null,
+ "hub": {
+  "repo_id": "jeergrvgreg/violence-promotion",
+  "revision": "e0b5eb9521ac3fd8229d23e8b3cc5de30b4b73d0",
+  "path_prefix": "v1"
+ },
  "files": [
   {
    "path": "inference.py",
@@ -47,9 +51,16 @@
   },
   {
    "path": "models/training_config.json",
-   "sha256": "cee1f7260a3f2ed8ad839a7e8f1c8d0f0c4db279c1b501cda85d46b1df806656",
-   "bytes": 436,
+   "sha256": "f9d9cec756ef5ff23e27fff48d669dd6a2e31064f0345e94886ba3e4af21b839",
+   "bytes": 782,
    "origin": "git"
+  }
+ ],
+ "adopted_from_this_repo": [
+  {
+   "path": "models/training_config.json",
+   "was": "cee1f7260a3f",
+   "why": "owner ruling 2026-09-27: llm-distillery's copy is canonical (#164); it adds the #158 single_seed block"
   }
  ]
 }

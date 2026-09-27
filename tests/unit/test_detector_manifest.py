@@ -121,12 +121,15 @@ def test_cli_exit_codes_on_a_tree_missing_the_package(tmp_path):
 
 
 def test_cli_strict_passes_on_a_matching_tree(tmp_path):
-    """Presence control: the same harness passes when the bytes match, so the failure above is the check."""
-    m = json.loads((COMMON / "violence_promotion" / "v1" / "MANIFEST.json").read_text())
-    nm = REPO.parent / "NexusMind" / "filters" / "common" / "violence_promotion" / "v1"
+    """Presence control: the same harness passes when the bytes match, so the failure above is the check.
+    harm v1, because it adopts nothing: obituary v5 / violence v1 name OUR training_config.json (owner ruling
+    2026-09-27) and legitimately MISMATCH NexusMind until step 3 ships it."""
+    m = json.loads((COMMON / "harm_detector" / "v1" / "MANIFEST.json").read_text())
+    assert not m.get("adopted_from_this_repo")
+    nm = REPO.parent / "NexusMind" / "filters" / "common" / "harm_detector" / "v1"
     if not all((nm / f["path"]).is_file() for f in m["files"]):
         pytest.skip("needs the NexusMind checkout beside this repo")
-    r = _run("verify", "violence_promotion/v1", "--target", str(REPO.parent / "NexusMind"), "--strict")
+    r = _run("verify", "harm_detector/v1", "--target", str(REPO.parent / "NexusMind"), "--strict")
     assert r.returncode == 0 and "OK" in r.stdout, r.stdout
 
 
@@ -142,3 +145,36 @@ def test_cli_missing_local_target_exits_2(tmp_path):
     """Review 2026-09-27: a mistyped local path read as 26 MISSING lines and exit 0."""
     r = _run("verify", "--all", "--target", str(tmp_path / "typo"))
     assert r.returncode == 2 and "not a directory" in r.stderr
+
+
+# --- step 2: Hub record ------------------------------------------------------------------------------------
+
+from scripts.deployment.upload_detector_to_hub import find_local, repo_id_for  # noqa: E402
+
+
+def test_repo_id_is_one_repo_per_detector():
+    assert repo_id_for("harm_detector") == "jeergrvgreg/harm-detector"
+    assert repo_id_for("commerce_prefilter") == "jeergrvgreg/commerce-prefilter"
+
+
+def test_find_local_refuses_a_copy_whose_hash_differs(tmp_path):
+    """Nothing may be uploaded in the manifest's name unless its bytes are the manifest's bytes."""
+    p = tmp_path / "filters" / "common" / "x" / "v1" / "m.pkl"
+    p.parent.mkdir(parents=True)
+    p.write_bytes(b"retrained")
+    with pytest.raises(FileNotFoundError, match="no local copy"):
+        find_local("x/v1", "m.pkl", _sha(b"served"), 6, roots=(tmp_path,))
+    assert find_local("x/v1", "m.pkl", _sha(b"retrained"), 9, roots=(tmp_path,)) == p
+
+
+@pytest.mark.parametrize("pkg", sorted(PACKAGES))
+def test_committed_manifests_pin_a_hub_revision(pkg):
+    """A manifest with hub-origin files and no pinned revision is what step 3 must refuse (ADR-024)."""
+    m = json.loads((COMMON / pkg / "MANIFEST.json").read_text())
+    assert m["hub"]["repo_id"] == repo_id_for(m["detector"])
+    assert len(m["hub"]["revision"]) == 40 and m["hub"]["path_prefix"] == m["version"]
+
+
+def test_adopt_refuses_an_untracked_file(tmp_path):
+    r = _run("adopt", "harm_detector/v1", "models/scaler.pkl", "--why", "test")
+    assert r.returncode == 2 and "not a git-origin file" in r.stderr

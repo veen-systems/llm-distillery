@@ -25,7 +25,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from scripts.deployment.detector_manifest import (  # noqa: E402
-    COMMON, MANIFEST, PACKAGES, REPO, STACK_SOURCES, build, listing, remote_path, select, verify)
+    COMMON, MANIFEST, PACKAGES, REPO, STACK_SOURCES, _hash_file, build, listing, remote_path, select, verify)
 
 
 def _read_text(source: str, package: str, rel: str) -> str:
@@ -68,6 +68,26 @@ def cmd_write(pkg: str, source: str) -> int:
     return 0
 
 
+def cmd_adopt(pkg: str, rel: str, why: str) -> int:
+    """Make THIS repo's copy of a git-origin file the one the manifest names (e.g. an owner ruling that our
+    training_config.json is canonical). Production then differs until step 3 ships it: that is the point."""
+    mpath = COMMON / pkg / MANIFEST
+    m = json.loads(mpath.read_text(encoding="utf-8"))
+    entry = next((f for f in m["files"] if f["path"] == rel), None)
+    if entry is None or entry["origin"] != "git":
+        raise ValueError(f"{pkg}: {rel} is not a git-origin file in the manifest")
+    src = COMMON / pkg / rel
+    if subprocess.run(["git", "-C", str(REPO), "ls-files", "--error-unmatch", str(src)],
+                      capture_output=True).returncode != 0:
+        raise ValueError(f"{src.relative_to(REPO)} is not tracked here: commit it before adopting it")
+    old = entry["sha256"][:12]
+    entry["sha256"], entry["bytes"] = _hash_file(src)
+    m.setdefault("adopted_from_this_repo", []).append({"path": rel, "was": old, "why": why})
+    mpath.write_text(json.dumps(m, indent=1) + "\n", encoding="utf-8")
+    print(f"ADOPTED {pkg}/{rel}: {old} -> {entry['sha256'][:12]} ({why})")
+    return 0
+
+
 def cmd_verify(pkg: str, target: str) -> tuple[int, int]:
     mpath = COMMON / pkg / MANIFEST
     if not mpath.is_file():
@@ -87,6 +107,8 @@ def main(argv: list[str]) -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     sub = ap.add_subparsers(dest="cmd", required=True)
     w = sub.add_parser("write"); w.add_argument("package", choices=sorted(PACKAGES)); w.add_argument("--source", required=True)
+    ad = sub.add_parser("adopt"); ad.add_argument("package", choices=sorted(PACKAGES)); ad.add_argument("path")
+    ad.add_argument("--why", required=True)
     v = sub.add_parser("verify"); v.add_argument("package", nargs="?", choices=sorted(PACKAGES))
     v.add_argument("--all", action="store_true"); v.add_argument("--target", required=True)
     v.add_argument("--strict", action="store_true", help="exit 1 on any missing/mismatching file")
@@ -94,6 +116,8 @@ def main(argv: list[str]) -> int:
     try:
         if a.cmd == "write":
             return cmd_write(a.package, a.source)
+        if a.cmd == "adopt":
+            return cmd_adopt(a.package, a.path, a.why)
         pkgs = sorted(PACKAGES) if a.all else [a.package] if a.package else None
         if not pkgs:
             ap.error("verify needs a package or --all")

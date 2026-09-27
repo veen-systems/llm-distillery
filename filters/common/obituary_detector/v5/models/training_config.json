@@ -1,0 +1,22 @@
+{
+  "embedder_model": "paraphrase-multilingual-mpnet-base-v2",
+  "embedding_dim": 768,
+  "classifier_type": "MLPClassifier",
+  "hidden_layers": [
+    256,
+    128
+  ],
+  "n_samples": 11329,
+  "n_positive": 2694,
+  "n_negative": 8635,
+  "cv": "5-fold stratified OOF",
+  "oof_f1_at_0.95": 0.7372,
+  "oof_precision_at_0.95": 0.9551,
+  "oof_recall_at_0.95": 0.6002,
+  "single_seed": {
+    "seed": 42,
+    "issue": "llm-distillery#158",
+    "why": "Built before llm-distillery#158 by training/train_v1.py with SEED = 42 hardcoded. This is the head serving at 0.85 in production, and #158 explicitly does not claim it is bad: recall at that op-point spans 0.6599-0.8081 across seeds, which is a property of the protocol, not a reason to replace what is live. Rebuild belongs to #85 (obituary v6), under the new banded trainer."
+  },
+  "note": "v5 corrective retrain (LD#83): 21 panel-graded FN-delta hard positives added (real obituaries v4@0.90 missed; 12/21 unanimous 4-model panel). v4's 12 hard negatives all still rejected (max 0.44). Heldout n=1529 (33 graded rows excluded): v5@0.90 prec 0.983 / rec 0.750; Farouq 0.9546. Shadow-mode only. Do not enforce before threshold sign-off. Eval: validation/artifacts/v5_eval_2026-07-30.json"
+}

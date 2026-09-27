@@ -14,7 +14,9 @@ training/data/
 validation/grades_panel_obit.jsonl
 validation/rollup_obit.json
 # Model binaries live on gpu-server (v1 broken, v2 proof); regenerate via training/
-models/
+**/models/*
+# ADR-024 (2026-09-27, owner): llm-distillery's v5 training_config.json is canonical and ships in the MANIFEST
+!v5/models/training_config.json
 v1/
 v2/
 *.pkl

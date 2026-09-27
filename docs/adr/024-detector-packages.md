@@ -183,6 +183,23 @@ Decision 1: `backfilled_from`, `served_commit`, `build_stack`, `build_stack_unre
   the #158 seed block). Step 3 would stop on that until someone rules which copy is canonical.
 - The pickles present here match production; the `.sha256` sidecars exist only in NexusMind.
 
+✅ **Order step 2 DONE 2026-09-27** (owner OK in session; `scripts/deployment/upload_detector_to_hub.py`). Four
+private repos, one per detector, each version under `<version>/`. Each is verified by re-downloading at the pinned
+revision and comparing sha256 + size with the manifest:
+| package | repo | revision |
+|---|---|---|
+| harm v1 | `jeergrvgreg/harm-detector` | `ee1663ccf875` |
+| obituary v5 | `jeergrvgreg/obituary-detector` | `be3399ae3188` |
+| violence v1 | `jeergrvgreg/violence-promotion` | `e0b5eb9521ac` |
+| commerce v1 | `jeergrvgreg/commerce-prefilter` | `6d5102acd2e0` |
+- **Owner ruling, 2026-09-27: llm-distillery's `training_config.json` is canonical** for obituary v5 and violence v1
+  (it adds the #158 `single_seed` block). It is recorded in each manifest's `adopted_from_this_repo`, and
+  obituary v5's copy is now tracked here (`.gitignore` narrowed). Production MISMATCHES on that one file until
+  step 3 ships it, as intended.
+- The older private repo `jeergrvgreg/commerce-prefilter-v1` (2026-07-28, #80's backup) holds the same
+  `model.safetensors` bytes but DIFFERENT tokenizer files from production's (e.g. `special_tokens_map.json` 695 vs
+  125 B). It is left untouched and is not the record.
+
 ## Consequences
 
 ### Positive

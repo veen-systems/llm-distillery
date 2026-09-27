@@ -13,7 +13,11 @@
  "build_stack_unrecorded": [
   "sklearn_version"
  ],
- "hub": null,
+ "hub": {
+  "repo_id": "jeergrvgreg/obituary-detector",
+  "revision": "be3399ae318889584083a15752fec0dc1a01ad02",
+  "path_prefix": "v5"
+ },
  "files": [
   {
    "path": "__init__.py",
@@ -53,9 +57,16 @@
   },
   {
    "path": "models/training_config.json",
-   "sha256": "14964eceb811e85f3dac9bd5bbb58dde586f92de2590900dcaa76ba2c8942f87",
-   "bytes": 771,
+   "sha256": "7b5f6b5ba76f8c0505d0416ea3a2e097595e9859310ea56411c01a7df81308a3",
+   "bytes": 1237,
    "origin": "git"
+  }
+ ],
+ "adopted_from_this_repo": [
+  {
+   "path": "models/training_config.json",
+   "was": "14964eceb811",
+   "why": "owner ruling 2026-09-27: llm-distillery's copy is canonical (#164); it adds the #158 single_seed block"
   }
  ]
 }
