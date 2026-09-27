@@ -6,8 +6,11 @@
 topic. Re-read the block under it before starting; the reasons are there, not here.*
 
 ▶ **NEXT SESSION (rewritten 2026-09-27 evening close). A bare "continue" = item 0, then the rest.**
-   0. ✅ **BUILT 2026-09-27 (`6c16056`), NOT DEPLOYED.** Record: ADR-024 § *Order step 3 BUILT*. ▶ **Owner: approve the
-      first real deploy** (it needs a NexusMind checkout on `main`, clean; the local one was on a peer branch with WIP).
+   0. ✅ **BUILT 2026-09-27 (`6c16056`, `44b703d`, pushed), NOT DEPLOYED.** Record: ADR-024 § *Order step 3 BUILT*.
+      ⏸ **Owner ruling 2026-09-27: WAIT for the NexusMind session's signal, then deliver the first deploy as a PR** against
+      NexusMind `main` from a fresh clone on a branch (script without `--push`; push the branch, `gh pr create`), never a
+      direct commit and never into the shared `~/repos/veen-systems/NexusMind` checkout while a peer uses it. Merged ≠
+      deployed there: it reaches sadalsuud at the next cycle's `deploy_filters.sh`, so verify after that cycle.
       Expected outcome, predicted by `--plan`: 4 new `MANIFEST.json`, obituary v5 / violence v1 `training_config.json`,
       nothing pruned. After it lands: `verify_detector_package.py verify --all --target <checkout> --strict`, then on
       sadalsuud after the pull. Original text:
@@ -21,8 +24,8 @@ topic. Re-read the block under it before starting; the reasons are there, not he
       carry OUR training_config.json, the owner-ruled canonical copy). Tools already built: `scripts/deployment/
       {detector_manifest,verify_detector_package,upload_detector_to_hub}.py`. Repos: `jeergrvgreg/{harm,obituary,
       violence-promotion,commerce}-detector`. Review the change (adversarial + reachability) BEFORE any real deploy.
-   0b. Then tell the NexusMind session (`ListAgents`; it was `nexusmind-b2`) that step 4 (their loaders read the manifest,
-      log-only flag, per detector) is unblocked. Their open owner items: retire gpu-server `/commerce/predict` + its v2
+   0b. ✅ DONE 2026-09-27: NexusMind session (`nexusmind-b2`) told; step 4 is in their handoff, start is the owner's call.
+      Was: tell the NexusMind session that step 4 (their loaders read the manifest, log-only flag, per detector) is unblocked. Their open owner items: retire gpu-server `/commerce/predict` + its v2
       files; the Venezuela story grouping (NexusMind PR #542).
    *Owner, not urgent:* H-TV5 (watch Thriving while v7 drains); delete the stale Hub repo `commerce-prefilter-v1`
    (different tokenizer files from production's) or keep it as history; obit v5 / violence v1 have no recorded sklearn
