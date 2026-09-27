@@ -6,7 +6,10 @@
 topic. Re-read the block under it before starting; the reasons are there, not here.*
 
 ▶ **NEXT SESSION (rewritten 2026-09-27 at close):**
-   1. ▶ **Diagnostic (b) adj4p — owner CHOSE (b); it is TRAINING on b650** (started 09-27 09:59, ~1 h;
+   1. ✅ **adj4p RESULT 2026-09-27 (EXP-043): gloss SUPPORTED** — the capped negatives made adj4 stricter; positives alone
+      raise recall but cost specificity on all 3 populations, so it would LOSE as a candidate. v9 stays. README §
+      Diagnostic (b). ▶ Owner: stop the v10 line, or a seed band (option c)? Original pickup text:
+      **Diagnostic (b) adj4p — owner CHOSE (b); it is TRAINING on b650** (started 09-27 09:59, ~1 h;
       `logs/adj4p_20260927.sh`). Pick up: `ssh b650-gpu 'cat ~/llm-distillery/logs/adj4p_20260927.out'` → wait for
       `ADJ4P DONE`, then `rsync -a b650-gpu:llm-distillery/gate_dumps/2026-09-26/ datasets/gate/ht_v10_2026-09-26/` and:
       `G=datasets/gate/ht_v10_2026-09-26; .venv/bin/python scripts/gate/ground_truth_gate.py --config filters/human_thriving/v9/config.yaml --recompute-model-wa --labels <L> --model v9=$G/v9_<S>/scores_calibrated.jsonl --model adj4=$G/adj4_<S>/scores_calibrated.jsonl --model adj4p=$G/adj4p_<S>/scores_calibrated.jsonl`

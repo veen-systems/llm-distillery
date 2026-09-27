@@ -1,0 +1,27 @@
+
+Ground-truth gate vs held-out oracle labels (student threshold 4.5, on-lens := oracle >= 4.5, gatekeeper_cap 3.0, n=660)
+ADR-023 — we prioritise HIGH CERTAINTY over HIGH DETECTION: specificity at the op-point is
+the criterion, recall is a constraint to satisfy, and MAE ranks nothing. A low recall here is
+usually the choice working. Read spec first, and read recall beside the positive rate.
+model      n  recall    prec    spec      f1  spearman    mae
+-------------------------------------------------------------
+v9       660   0.229   0.889   0.998   0.364     0.788  0.595
+adj4     660   0.229   0.889   0.998   0.364     0.788  0.606
+adj4p    660   0.371   0.812   0.995   0.510     0.776  0.599
+
+Batch-noise band (#95, floor 0.16) — the range each metric could occupy if every
+article predicted within 0.16 of 4.5 landed on the other side of it:
+  v9     indeterminate    2/660   recall [0.171, 0.229]  spec [0.998, 0.998]  prec [0.857, 0.889]  f1 [0.286, 0.364]
+  adj4   indeterminate    1/660   recall [0.229, 0.229]  spec [0.998, 1.000]  prec [0.889, 1.000]  f1 [0.364, 0.372]
+  adj4p  indeterminate    4/660   recall [0.314, 0.371]  spec [0.994, 0.997]  prec [0.733, 0.867]  f1 [0.440, 0.520]
+  ! v9 vs adj4: specificity bands OVERLAP — NOT DISTINGUISHABLE at this threshold. Do not report the point difference as an effect (#95).
+  ! v9 vs adj4: recall bands OVERLAP — NOT DISTINGUISHABLE at this threshold. Do not report the point difference as an effect (#95).
+  ! v9 vs adj4: F1 bands OVERLAP — NOT DISTINGUISHABLE at this threshold. Do not report the point difference as an effect (#95).
+  + v9 vs adj4p: specificity bands do not overlap ([0.998, 0.998] vs [0.994, 0.997]). This rules out batch composition as the WHOLE explanation — it is not evidence the difference is real. Sampling error, differing populations, library-stack skew (0.2008) and device skew (0.1956) are all unmodelled here.
+  + v9 vs adj4p: recall bands do not overlap ([0.171, 0.229] vs [0.314, 0.371]). This rules out batch composition as the WHOLE explanation — it is not evidence the difference is real. Sampling error, differing populations, library-stack skew (0.2008) and device skew (0.1956) are all unmodelled here.
+  + v9 vs adj4p: F1 bands do not overlap ([0.286, 0.364] vs [0.440, 0.520]). This rules out batch composition as the WHOLE explanation — it is not evidence the difference is real. Sampling error, differing populations, library-stack skew (0.2008) and device skew (0.1956) are all unmodelled here.
+  + adj4 vs adj4p: specificity bands do not overlap ([0.998, 1.000] vs [0.994, 0.997]). This rules out batch composition as the WHOLE explanation — it is not evidence the difference is real. Sampling error, differing populations, library-stack skew (0.2008) and device skew (0.1956) are all unmodelled here.
+  + adj4 vs adj4p: recall bands do not overlap ([0.229, 0.229] vs [0.314, 0.371]). This rules out batch composition as the WHOLE explanation — it is not evidence the difference is real. Sampling error, differing populations, library-stack skew (0.2008) and device skew (0.1956) are all unmodelled here.
+  + adj4 vs adj4p: F1 bands do not overlap ([0.364, 0.372] vs [0.440, 0.520]). This rules out batch composition as the WHOLE explanation — it is not evidence the difference is real. Sampling error, differing populations, library-stack skew (0.2008) and device skew (0.1956) are all unmodelled here.
+
+Report: docs/evidence/2026-09-26-v10-retrain-gate/adjp_oracle.json
