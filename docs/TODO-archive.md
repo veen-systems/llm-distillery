@@ -6648,3 +6648,264 @@ Prefilter Quality):**
    in-scope ones, est. $0.10–0.20. It doubles as the test of whether the empty top (0 labels
    ≥ 8, 3 at 7–8 of 6,772) is the oracle's SCALE or missing data. Not started: no yes given.
 
+
+## Moved 2026-09-27 (evening) — the START HERE block of 2026-09-26/27, verbatim
+
+## ▶️ START HERE — the ordered queue, as of 2026-09-26 (v9 LIVE in the invisible slot; ovr.news narrow-lens-first MERGED)
+
+*A bare "continue" means this list, top down. Each line names the FIRST action, not the
+topic. Re-read the block under it before starting; the reasons are there, not here.*
+
+▶ **NEXT SESSION (rewritten 2026-09-27 late-afternoon close). A bare "continue" = item 0, then the rest.**
+   0. ✅ **DONE 2026-09-27 16:22 CEST: H-DP3 CONFIRMED** (4× OK on sadalsuud after the 16:08 cycle; served commit `80bf318` has no weight file; ledger + ADR-024 + #165 comment). gpu-server check not run. Was: **Close `H-DP3`: did NexusMind PR #550 land in production unchanged?** (`memory/hypothesis-ledger.md`.) #550 merged
+      13:47Z as `dafbbc9`, due at the ~16:10 CEST 2026-09-27 cycle. First prove it arrived, then check it:
+      `ssh sadalsuud 'cd ~/local_dev/NexusMind && git merge-base --is-ancestor dafbbc9 HEAD && echo IN'`, then
+      `python3 scripts/deployment/verify_detector_package.py verify --all --target sadalsuud:~/local_dev/NexusMind --strict`.
+      4× OK → H-DP3 CONFIRMED; record it in the ledger, ADR-024 § *Order step 3 BUILT* and a #165 comment. Any `.pkl` or
+      sidecar MISMATCH → REFUTED: tell the NexusMind session (`ListAgents`) and do NOT redeploy to "fix" it. Optionally run the
+      same check against gpu-server `/home/hcl/NexusMind`: it gets `models/` by rsync without `--delete` (step 5).
+      ⚠️ If this session closes before the cycle, the result may already be in the NexusMind session's messages.
+   1. After that, ADR-024 is NexusMind's: step 4 (loaders read the manifest, log-only flag, per detector; its start is the
+      owner's call) and step 5 (commerce `model.safetensors` is gitignored there; `deploy_filters.sh` does not `--delete`
+      under `models/`). Nothing more of ours unless they ask.
+   2. ✅ **Owner ruled 2026-09-27: stop shipping + delete.** Ours: `3e7f565` (`RETIRED_DIRS`). NexusMind PR #553 deletes their copies (open; nexusmind-b2 told). ▶ After it merges + the next cycle: `ssh sadalsuud 'ls ~/local_dev/NexusMind/filters/common/obituary_detector'` shows only v5. gpu-server keeps orphan `{v3,v4,v2}/models/` (rsync excludes models/). Was: *Owner call, new:* the retired detectors (obituary v3/v4, commerce v2) still ship through step 2b's unpackaged copy,
+      pickles included; #550 carried their #158 blocks. Stop shipping them (and delete them in NexusMind), or leave them?
+   3. *Optional, ours:* the gotcha-log § Mechanized row `check_committed_idiom.py` is `proposed` (an `ls-files` used as a
+      "committed" test); build it only with a seeded positive.
+   *Owner, not urgent:* H-TV5 (watch Thriving while v7 drains); ~~delete the stale Hub repo `commerce-prefilter-v1`~~ ✅ DELETED 2026-09-27 (owner yes; weights sha256 = `commerce-detector`'s, 404 confirmed)
+   (different tokenizer files from production's) or keep it as history; obit v5 / violence v1 have no recorded sklearn
+   version (Q5 skew check has no baseline until a rebuild); the deploy script's `C:/` default roots.
+   *Done 2026-09-27 afternoon:* ADR-024 step 3 built, reviewed in 3 rounds, delivered as NexusMind PR #550 (merged).
+   Details: the session file written by /curate. Previous item 0, kept:
+   0-prev. ✅ **BUILT 2026-09-27 (`6c16056`, `44b703d`, pushed); MERGED as NexusMind PR #550 (`dafbbc9`).** Record: ADR-024 § *Order step 3 BUILT*.
+      ▶ **PR OPEN 2026-09-27: NexusMind PR #550** (branch `llm-distillery/adr-024-detector-manifests` off `a8835c0`; the
+      NexusMind session signalled ready). Next: their review + CI, merge, then after the NEXT cycle run
+      `verify_detector_package.py verify --all --target sadalsuud:~/local_dev/NexusMind --strict` (commerce `model.safetensors`
+      is served out of band; step 5). Ruling that produced it:
+      ⏸ **Owner ruling 2026-09-27: WAIT for the NexusMind session's signal, then deliver the first deploy as a PR** against
+      NexusMind `main` from a fresh clone on a branch (script without `--push`; push the branch, `gh pr create`), never a
+      direct commit and never into the shared `~/repos/veen-systems/NexusMind` checkout while a peer uses it. Merged ≠
+      deployed there: it reaches sadalsuud at the next cycle's `deploy_filters.sh`, so verify after that cycle.
+      Expected outcome, predicted by `--plan`: 4 new `MANIFEST.json`, obituary v5 / violence v1 `training_config.json`,
+      nothing pruned. After it lands: `verify_detector_package.py verify --all --target <checkout> --strict`, then on
+      sadalsuud after the pull. Original text:
+      **ADR-024 order step 3** (`docs/adr/024-detector-packages.md`, llm-distillery#165): make `deploy_to_nexusmind.sh`
+      step 2 manifest-driven for the four packaged detectors: fetch hub-origin files at the pinned revision into staging →
+      verify every sha256 against `MANIFEST.json` → place → prune ONLY files the previous manifest listed (no readable
+      previous manifest = no prune, report extras). REFUSE a manifest whose `hub` is null while it has hub-origin files.
+      Non-packaged `filters/common` files keep today's runtime-file copy. Build with `--dry-run` first; prove it on ONE
+      detector (harm v1: it adopts nothing, so a real run should change 0 bytes except shipping MANIFEST.json); then
+      `verify_detector_package.py verify --all --target ../NexusMind --strict` must pass (obituary v5 / violence v1 then
+      carry OUR training_config.json, the owner-ruled canonical copy). Tools already built: `scripts/deployment/
+      {detector_manifest,verify_detector_package,upload_detector_to_hub}.py`. Repos: `jeergrvgreg/{harm,obituary,
+      violence-promotion,commerce}-detector`. Review the change (adversarial + reachability) BEFORE any real deploy.
+   0b. ✅ DONE 2026-09-27: NexusMind session (`nexusmind-b2`) told; step 4 is in their handoff, start is the owner's call.
+      Was: tell the NexusMind session that step 4 (their loaders read the manifest, log-only flag, per detector) is unblocked. Their open owner items: retire gpu-server `/commerce/predict` + its v2
+      files; the Venezuela story grouping (NexusMind PR #542).
+   *Done 2026-09-27 morning (details: `memory/project_session_2026_09_27_adj4p_close.md`):* adj4p (EXP-043); deploy review
+   rounds 2–3; MEMORY.md thinned; retire step 3 + mid-month retire (read surface 1.49M → 1.07M chars); ADR-024 ruled,
+   steps 1–2 built (manifests, 4 private Hub repos pinned); update-drift v1.49.2; trim check REJECTED.
+   1. ✅ **DONE 2026-09-27: retire step 3.** Ledger 146,560 → 83,641 B (74 closed rows → `memory/archive/
+      hypothesis-ledger-archive.md`); cross-repo 136,125 → 61,087 B (Aug snapshots → `memory/archive/cross-repo-
+      prioritization-archive.md`); `docs/CONTRACTS_PLAN.md` 149,056 → 56,931 B (rounds 1–4 → `docs/CONTRACTS_PLAN-rounds-
+      archive.md`, "Standing after round 4" kept live). Lossless by an independent checker (mutation-tested) and a
+      review lens; curate read surface 1,486,729 → ~1.36M chars. ▶ Next retire candidate: `memory/gotcha-log.md` (~250k).
+      Original text:
+      `docs/CONTRACTS_PLAN.md` (149 KB), `memory/hypothesis-ledger.md` (142 KB), `memory/cross-repo-prioritization.md`
+      (136 KB), measured 2026-09-24; re-measure with `wc -c` first. Method as for TODO/gotcha-log: closed sections
+      move losslessly (every line present, order kept); open ones stay. ⛔ Retiring is not deleting.
+   2. ✅ **#165: ADR-024 DRAFTED 2026-09-27** (`docs/adr/024-detector-packages.md`, PROPOSED): manifest + Hub
+      record fetched at DEPLOY time (production filters do not load from the Hub either: `use_hub=False`,
+      `HF_HUB_OFFLINE=1`), required integrity behind a log-first flag, prune only by previous manifest.
+      Reviewed (facts all held; 3 warnings fixed). ▶ **Owner: rule the Decision + 5 open questions; then the
+      NexusMind session reviews the cross-repo order. No code before that.**
+   3. **Owner calls pending (do not push):** (a) Thriving: watch the tab while v7 drains (~10 days) → H-TV5 in
+      `memory/hypothesis-ledger.md` names the three branches; (b) mid-month `retire_memory.py --before 2026-09-17`;
+      (c) the deploy script's `C:/` default roots (harmless; changing them makes an env-less run hit real repos).
+   4. ✅ DONE 2026-09-27: stamp → v1.49.2, both releases already in force (`docs/decisions/framework-adoption-history.md`). Was: **`/update-drift` v1.49.0 → v1.49.2**: `check_framework_stamp.sh` FAILS (2026-09-27 curate): global `curate` (6
+      lines) and `audit-context` (2 lines) differ from the v1.49.0 stamp; the clone is at v1.49.2.
+   5. NexusMind owns the Venezuela 7-article Thriving cluster (story grouping, "lead + N sources"): NexusMind PR #542
+      handoff, unverified. Not ours.
+   *Done 2026-09-27:* adj4p (EXP-043, H-TV4 SUPPORTED, v9 stays; #151 comment); deploy review rounds 2+3 (`675c101`
+   + remedy "commit the sidecar"); #165 finding posted; `memory/MEMORY.md` thinned 14,349 → 10,519 B. Details:
+   `memory/project_session_2026_09_27_adj4p_close.md` (written by /curate).
+
+A. ✅ **VERIFIED 2026-09-26 ~15:45 CEST, from outcomes (one cycle each; the original text is kept below).**
+   1. **#372 works: 124 of 124** live articles whose `nature_recovery` row clears the build's gate sit on Recovery
+      (production `ovr.db` on sadalsuud, read-only, against the live `search-index.json`, build `11:52:46Z`). Of 449
+      live multi-lens ids, all 80 that include `nature_recovery` are on Recovery. ⭐ **16 more pass NR on raw
+      (≥ 3.75) and are NOT on Recovery, and #372 is not the cause**: `getArticlesForBuild` admits a lens only at
+      NORMALIZED `weighted_average >= 4.5` (`displayScoreThreshold`), and all 16 are below it — that is
+      ovr.news #304 (open since 2026-08-12, the ADR-022 inversion), now with a Recovery count on it.
+      Owner eyeball: *Toronto park restoration*, *Cerrado restoration* and *reintroduced dormice* (all also passed
+      Solutions) and *African wild dogs travelled 4,000 km* (also passed Discovery) are now on Recovery.
+      Not done: the Cloudflare build log (`Canonical lens collapse`); the DB outcome makes it redundant.
+   2. **Harm cap 6000 is live**: the 12:11 cycle logged `6000 stamped (cap 6000), 15000 already stamped, 129 too old
+      … 140 files deferred`. ⚠️ The baseline below is wrong: deferred was **141 → 142 → 143 → 144** over the
+      four cap-3000 cycles (+1 per cycle, never converging); the first cap-6000 cycle took it to **140**. One cycle
+      is a direction, not a rate. Stage wall-clock (detector load → complete): **4m12s at 3000 (08:15) vs 8m16s
+      at 6000 (12:15)**, +4m04s — the number NexusMind #517 asked for.
+   3. **v9 in production**: every row in the five cycles since cutover is `version 9.0`, and all passers are
+      `stage2`. Passers at raw ≥ 4.5: **24, 37, 19, 20, 12** (0.50–0.95% of 2,408–3,906 rows); v8's last three:
+      34, 21, 37. The 13:24 cycle's 12 is the lowest so far; one cycle is not a trend.
+
+   *Original item A:* **FIRST: verify three things that went live at the end of 2026-09-26's session, from OUTCOMES, not configs.**
+   1. **ovr.news #372, narrow lens first** (merged `58c7359`, live with the first Cloudflare build after the
+      12:04 cycle's summarize → deploy hook, ~13:30): on the live site, articles that passed Recovery AND another
+      lens should now sit on Recovery. Check the ovr.news build log for `Canonical lens collapse` and a few shared
+      ids. Evidence: `docs/evidence/2026-09-26-lens-assignment-benchmark/README.md`. ⚠️ The rule was benchmarked
+      on Claude judges (the owner delegated), so show the owner a handful of shared articles and their new tab.
+   2. **Harm cap 3000 → 6000** (NM#531, on sadalsuud since 10:1x): `journalctl -u nexusmind.service` must show
+      `Harm preprocessing (SHADOW, stamp-only) complete: ... (cap 6000)` and `files deferred` falling below the
+      pre-change 140. Stage wall-clock expected ~+4 min (untimed at 6000); name it for NexusMind #517.
+   3. **human_thriving v9 in production:** rows `version 9.0`, ~20–25 passers/cycle (first cycle: 24).
+
+B. ✅ **RULED 2026-09-26 (owner, in session, choosing between options the assistant wrote).** Original list kept below.
+   1. **#151 cutover: "Cut over now."** Evidence put to the owner, measured on sadalsuud `data/filtered/`, the 5 cycles
+      since v9 went live (15,608 articles scored by both): v7 surfaces 1,206 at raw ≥ 4.5, v9 112 (104 shared, v9-only
+      8, v7-only 1,102); reaching the site (normalized ≥ 4.5, ovr.news #304) 681 vs 62. **Head of lens, 2026-09-26
+      (the NexusMind#455 ruling's required comparison):** top-15 overlap **1 of 15**; v7's head is mostly environmental
+      (fireflies, rivers, Mary River, climate legacy), v9's is people-centred (rural schools, libraries, a girls' surf
+      school, an embryo-use ruling); on-tab that day v7 530 vs v9 48. *Gloss:* under #372 narrow-first, many of v7's
+      environmental heads go to Recovery/Solutions anyway, so today's real tab head is not v7's raw top 15.
+      ✅ **Re-confirmed after the head comparison: "Yes, cut over."** Both PRs shown to the owner before merging.
+      ▶ Implementation order is #151's (teach ovr.news the name in its 12 files → then disable `uplifting`; NexusMind
+      has a probe that fails if `enabled_filters` loses `uplifting`, update it in the same change). Cross-repo.
+   2. **≥ 7 pool: "Yes, run it."** ✅ **DONE 2026-09-26** (`docs/evidence/2026-09-26-thriving-ge7-pool/README.md`):
+      183 of 656 in scope (drift 0.924); oracle kept **177**, alias control d = +0.017 → MIX; weighted ≥ 6: 58,
+      ≥ 7: 8, ≥ 8: **0**. Cost **$0.36** off-peak vs the $0.10–0.20 estimate. ▶ owner: hard negatives (473 rows)
+      ✅ hard negatives DONE (471 capped; oracle leak 41.8% in_scope). ✅ v10 SET UP: `adj4` built and staged on b650, gate bar RULED (`docs/evidence/2026-09-26-v10-retrain-gate/PREREGISTRATION.md`). ▶ train when the owner frees the GPU (roofvision holds 24.5 GB).
+   3. **Compensation: "Narrow ruling 1"** — recorded in `docs/decisions/2026-09-25-thriving-scope-rulings.md` § 6.
+      ⚠️ It binds ADJUDICATION (judges) only; v9's oracle prompt still scores compensation 7–8 (`prompt-compressed.md`
+      :286), so the ruling reaches the model only through adjudicated labels.
+   4. **#164: "Diff all 18, then ask."** Done 2026-09-26: 15 differ and **every NexusMind version is an ancestor of
+      llm-distillery's** (12 found in llm-distillery git history by blob hash; `obituary_detector/v5/models/
+      training_config.json` is untracked here and equals ours minus the #158 `single_seed` block). 4 are
+      llm-distillery-only (`detector_seeds.py`, `harm_detector/training/{build,train}_v1.py`, `SHA256SUMS.txt`).
+      22 are NexusMind-only (model `.pkl`s and `.sha256` sidecars, `obituary_detector/v3/__init__.py`, a June
+      rollup) and survive a sync: `deploy_to_nexusmind.sh` step 2 is `cp`-only, it deletes nothing. Compared against
+      the `~/repos` NexusMind working tree (HEAD `bbeb431`), not sadalsuud's. ✅ **Owner: "llm-distillery"** canonical;
+      sync the 18 as their own reviewed NexusMind PR (not inside a filter deploy), after telling the NexusMind session.
+   5. Not asked (owner "NOT SURE", do not push).
+
+   *Original list:* **OWNER DECISIONS, in the order to put them (none time-critical):**
+   1. **The Thriving cutover, uplifting v7 → human_thriving v9 (#151).** Prepare the free same-articles v7-vs-v9
+      comparison on the days v9 has run (both score every article); the owner said "not yet" on 2026-09-25.
+      v9 facts: `filters/human_thriving/v9/README.md`. ovr.news also names `uplifting` in 12 files (#151 body).
+   2. **The ≥ 7 pool** (~720 articles, est. $0.10–0.20; blind adjudication then k=3 oracle): the volume lever the
+      owner chose for v9 instead of a lower cut-off.
+   3. **Consumer-court compensation vs ruling 1** (`docs/decisions/2026-09-25-thriving-scope-rulings.md`, open).
+   4. **18 filters/common detector files differ llm-distillery ↔ NexusMind (#164)**:
+      which side is canonical. Coordinate with the NexusMind session before any sync.
+   5. On the judges' reading vs the owner's, the owner said "NOT SURE" whether to write the differences into rulings
+      (candidate rulings are in the 2026-09-26 session file); do not push it.
+
+C. **Later: Nature recovery v5 (#71)** with the owner's concept in the prompt:
+   `docs/evidence/2026-09-25-nature-recovery-relabel/PILOT_RESULT.md` (relabel DROPPED by the owner).
+
+⛔ **Standing since 2026-09-22 (owner): "we need to start pruning, thinning, mechanizing, retiring."** When A is
+verified and B waits on the owner, item −1 (the read surface) is the work.
+
+✅ *Item −2 (v9 and the Nature recovery audits, 2026-09-24 → 26) moved verbatim to `docs/TODO-archive.md`.*
+
+−1. ▶ **THE READ SURFACE (`#163`) — START HERE, and start with MECHANIZE.**
+   ✅ **Row 1 DONE 2026-09-24** — the `in-sample tautology` row is `live`
+   (`check_doc_claims.py --check gate-share-sample`; red on the real tree, 4 blocks, fixed).
+   ✅ **RETIRE step 1 DONE 2026-09-24 — 57 closed sections moved VERBATIM to
+   `docs/TODO-archive.md`** (lossless: every original line present, order kept). This file
+   went **548,758 → 59,911 B**; the bare-"continue" path (`CLAUDE.md` + `memory/MEMORY.md` +
+   this file) **~605 KB → 117,552 B / 887 lines**. 38 unchecked boxes from moved sections were
+   copied, unverified, into the *Unchecked boxes* section at the bottom.
+   ⛔ **Owner, 2026-09-24, on the mechanize-only result: *"i do not really think we achieved
+   something?"*** — then approved this retire step. *My gloss, not a ruling:* a check that
+   retires no prose GROWS the surface, so retire first and ship a new check only with the
+   prose it lets you delete.
+   ✅ **RETIRE step 2 DONE 2026-09-24 — `memory/gotcha-log.md` 715,877 → 256,970 B**; entries
+   dated before 2026-09-01 moved verbatim to `memory/gotcha-log-archive.md` (lossless, 0
+   lines missing/extra). Kept: September on, the unreachable-mechanism catalogue, *Mechanized*,
+   the entry template. Headings `/curate` reads each session: ~477 → 184.
+   ✅ **RETIRE step 3 + THIN, DONE 2026-09-26** (`/update-drift` v1.45.1 → v1.49.0; record:
+   `docs/decisions/framework-adoption-history.md` § 2026-09-26). Retiring is now a command —
+   `scripts/maintenance/retire_memory.py {gotcha,sessions} --before <YYYY-MM-01> [--apply]`,
+   18 tests, 12 mutants killed. It moved 79 pre-September session files to `memory/archive/`
+   and 15 month-dated (Feb–May) gotchas the 09-24 pass missed. `CLAUDE.md` was thinned from
+   38,141 to 17,749 chars (`wc -m`). The always-loaded layer went 52,133 → ~31 KB
+   (`check_index_budget.py --target loaded`).
+   ▶ **Next, in order:**
+   1. ✅ **DONE 2026-09-26 (evening)**: `git mv` to `memory/archive/gotcha-log-archive.md`, references and `retire_memory.py` `ARCHIVE` updated, 18/18 tests, and the old path fails loudly. Curate's read surface went **1,944,516 → 1,477,580 chars**. ✅ **Owner approved and RUN 2026-09-27**: mid-month `retire_memory.py … --before 2026-09-17` (gotcha 259,473 → 143,570 chars; 19 session files). Was: owner call pending: a mid-month `retire_memory.py … --before 2026-09-17` (dry run: live gotcha log 251,953 → 134,708 chars, 19 session files) departs from the `<YYYY-MM-01>` convention. Original text: **Move `memory/gotcha-log-archive.md` into `memory/archive/`** — curate's size measurement
+      excludes only `*/archive/*`, so the 467k archive still counts. Rewrite its references
+      (`git grep -l gotcha-log-archive`) and the `memory/gotcha-log*.md` recurrence glob in
+      curate's grep instructions here, then add it to `retire_memory.py` as the archive path.
+   2. ✅ DONE 2026-09-27 (14,349 → 10,519 B; see NEXT SESSION). **Thin `memory/MEMORY.md` (17 KB, read every session) the way `CLAUDE.md` was**: lead each
+      line with the rule, pointer to the target, no narrative.
+   3. ✅ DONE 2026-09-27 (see NEXT SESSION 1). Candidates measured 2026-09-24, still unretired: `docs/CONTRACTS_PLAN.md` 149 KB,
+      `memory/hypothesis-ledger.md` 142 KB, `memory/cross-repo-prioritization.md` 136 KB.
+   4. ✅ **REJECTED 2026-09-27 with evidence** (`docs/evidence/2026-09-27-claude-md-trim-check/`): lexical matching caught ≤ 2/3 seeds at 52/125 false flags. The clause-loss REVIEW LENS is the check. ▶ Option, not ruled: a hook that blocks a commit shrinking `CLAUDE.md`/`memory/MEMORY.md` by > 10% unless the message cites a clause-loss review. Original: The Mechanized table's `proposed` row `check_claude_md_trim.py` — a trim kept every
+      token and still dropped five operative CLAUSES; only a review lens noticed. ⛔ **A row is
+   `live` only after a seeded positive** — the table says so and it is this repo's signature
+   defect arriving in the table built to prevent it.
+   **Why this is first, measured 2026-09-22:** the bare-"continue" path is **605,198 B /
+   7,362 lines** before any work starts — `docs/TODO.md` alone is **546,771 B / 6,977
+   lines**, `memory/gotcha-log.md` is **715,093 B**, and `CLAUDE.md` routes to **30** topic
+   files. ⭐ **And the surface is now producing defects, not just costing tokens**: the
+   NM#319 tautology was written down in **three** places on the task's own routing path and a
+   session recomputed it anyway and called it a correction. `H-CTX-1` records that
+   *writing it down* is REFUTED as a remedy; `H-CTX-2` records that `#133`'s cap was the
+   right fix to the wrong file.
+   ⛔ **Do not raise a budget** — the always-loaded layer PASSES (51,681 of 60,000). The
+   pointed-at layer is the problem and has no budget by design.
+   ⛔ **Retiring is not deleting.** Establish what an entry is currently buying before
+   removing it — *a failing check may be the control working* applies to prose too.
+   Order: **mechanize → retire → thin → prune.** Prune last; it needs session-record
+   evidence about which pointer rows have ever changed a decision.
+
+✅ **ALL THREE RULINGS ARE SETTLED — given IN SESSION on 2026-09-22, not by relay.** They
+first arrived through the NexusMind peer session and were refused there (a relayed ruling is
+not an instruction); the owner then ruled them directly. Full record, with the before/after
+proof and every number: **`docs/decisions/2026-09-22-phase-e-fit-and-the-154-guard.md`**.
+• **`ADR-022` amendment — (a), signals recorded inside it.** DRAFT line struck, `#156`'s body
+   corrected in place. `deciders:` needed nothing: it was already right, and it is not the
+   evidence of settledness. Clause 4's prerequisite (`NM#521`) discharged at `NM 007be0a`,
+   so that clause is **unblocked but unimplemented** — no lens records its harm evaluation.
+• **`NM#521` — shipped NexusMind-side**, Contract B 1.21.0. Nothing owed here.
+• **Phase E for `human_thriving v8` — FITTED**, 2,976 rows, `raw_min == op_point` exactly.
+   `#154` ruled (option 1, gap not bound) and fixed across its two executable call sites and
+   four documentary ones. ⛔ **NOT a cutover**: `uplifting v7` still scores, the switch is
+   still gated on the same-articles comparison and still has no date — cite `EXP-030`'s own
+   same-articles result (1,184 vs 168 of 15,372) for it, **Jaccard 0.127 not 0.246**, and the
+   1.00%/7.30% corpus rates remain **peer measurements, attributed not re-derived**.
+   `NM#319` accepted. ⛔ **Do NOT quote "60.0% enriched" as a measurement** — it is the fit
+   sample's own 40th percentile and is ≈60% by construction. The transferable number is the
+   effective **raw** bar, **4.794**; v7's 40%-un-enriched IS out-of-sample and is the real
+   comparison.
+
+⚠️ *This list is bulleted, not numbered, on purpose: it used 1/2/3 while the queue below uses
+0–8, and "the first one you can DO is item 3" sits between them.*
+
+⛔ **ITEMS 1–2 ARE NOT EXECUTABLE BY A SESSION TODAY — and item −1 above outranks item 3.**
+0 is **done** (ruled 2026-09-22), 1 is date-gated (earliest ~2026-09-24), 2 is an owner spend
+decision. Read them so you know what is blocked and on whom, then start at 3. ⚠️ This line
+exists because a review found a bare "continue" walking into two dead ends in a row. Numbers
+are NOT reused when an item closes — a stable number is worth more than a tidy sequence.
+
+0. ✅ **DONE 2026-09-22 — `ADR-022` amendment RULED (a) (`#161`).** Kept for its reasoning; do not redo. The rest of this item is the state as it stood BEFORE the ruling.
+   `docs/adr/022-stamp-always-single-gate.md` carries a drafted amendment. ⛔ **Evidence that it
+   is unsettled is the DRAFT line at `:13`, NOT the `deciders:` field** — that field names the
+   owner on settled ADRs too (`023-asymmetric-loss...:4` is identical), and this ADR's
+   frontmatter reads `status: Accepted`, so a reader sent to the frontmatter concludes the
+   opposite. Two options are stated at the end of the amendment: **(a)** record signals as an
+   exception inside `ADR-022`, as drafted, or **(b)** split signals into their own ADR.
+   ⛔ **Do not re-litigate the finding** — the ORIGINAL Decision's clause 1 requires the
+   `_is_<detector>` bool harm deliberately omits, its clause 2 requires ONE central enforcement
+   point where harm plans N per-lens ones. The design survives because that clause says *"bool at
+   the deployed op-point"* and harm ships no op-point → **inapplicable, not unmet**.
+   ⚠️ **"Clause N" is ambiguous in this ADR — always say WHICH list.** The original Decision
+   and the amendment each number from 1, and the amendment's own clause 1 says the opposite
+   (*"no verdict field, ever"*). The amendment's clause 4 is separately **blocked on `NM#521`**.
+   ✅ **Once ruled, exactly ONE citation is outstanding: `#156`'s body** (*"That is ADR-022
+   verbatim"*). ⛔ The other three are not pending work: `NM 73ad620` is a commit message and is
+   immutable, the NM contracts changelog was corrected before this queue entry was written, and
+   `H-V8-37` is done. ⚠️ Two NM schema descriptions already carry the `#161` qualification and
+   were missing from the first version of this list — *enumeration is not inventory*, firing
+   inside the item whose whole subject is citing without checking.
+

@@ -96,7 +96,7 @@ agent that had not opened this file**: `python3 -m pytest` reported **13 failed,
 phantom baseline is not made harmless by being explained, because the explanation is what makes it
 believed. **Run `.venv/bin/python -m pytest` and say which interpreter produced the number.**
 
-**Measured 2026-09-24: `940 passed, 25 skipped` in 127s** (+8 `gate-share-sample` tests; the tree held only that change) — `.venv/bin/python3 -m pytest tests/ -q`,
+**Measured 2026-09-27 (evening): `1102 passed, 25 skipped` in 139s** (clean tree at `5590f88`, alone on the machine; the +162 since 09-24 were not decomposed). *Prior: 2026-09-24: `940 passed, 25 skipped` in 127s* (+8 `gate-share-sample` tests; the tree held only that change) — `.venv/bin/python3 -m pytest tests/ -q`,
 **on a clean tree, alone on the machine**. ⚠️ Both qualifiers are load-bearing and were learned
 the hard way in the same session: an earlier line said `926 passed` and was true when taken, then
 went stale twice — once because more tests were added, once because a `timeout`-killed run left
