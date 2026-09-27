@@ -61,6 +61,21 @@ undecided), never a sentence.
 
 ---
 
+## 2026-09-27 — `/update-drift`: **2 releases behind (v1.49.0 → v1.49.2)**; both already in force; stamp → v1.49.2
+
+Found by `/curate`'s verify runner: `check_framework_stamp.sh` FAILED (curate 6 lines and audit-context 2 lines
+differed from the v1.49.0 reference install). Stamps: `CLAUDE.md:5` and `:170`. Reconciliation: 45 mentioned
+pairs and 18 stamped; the other 27 are mentions (history, archive, the local `test-verify-memory` fetch link,
+settings permissions), not pins.
+
+| From | What | Outcome |
+|---|---|---|
+| v1.49.1 | `audit-context` Step 2: a routing pointer stays in the project file when its trigger can fire before the index loads (#228) | **Already in force**: the global is byte-identical to v1.49.1/v1.49.2 (0 lines); the marker is present. `CLAUDE.md` "Before You Start" already keeps routing pointers in the project file |
+| v1.49.2 | `curate` Step 1: a new gotcha goes above `^#+ Promoted`, and `grep -cE '^#+ Promoted'` must not change (#233) | **Already in force** (global byte-identical to v1.49.2). **The placement clause is NOT APPLICABLE here:** `memory/gotcha-log.md` is newest-first by its own header and has NO `Promoted` heading (0 before and after the 2026-09-27 insert); promoted patterns live in the auto-memory `feedback-*.md` files. Do not "fix" the log to match |
+
+0 adopted · 0 declined · 2 already in force. Verified by execution: tag-by-tag diff of both installs, fixed-string marker
+greps, Promoted count before/after. Stamp bumped in the same commit as this record (no content was pending).
+
 ## 2026-09-26 — `/update-drift`: **5 releases behind (v1.45.1 → v1.49.0)**; stamp → v1.49.0 after all four adopt items landed
 
 **v1.49.0 was released mid-session** (commit 11:26:57, tag 11:27:00 — `git for-each-ref

@@ -23,7 +23,7 @@ topic. Re-read the block under it before starting; the reasons are there, not he
    3. **Owner calls pending (do not push):** (a) Thriving: watch the tab while v7 drains (~10 days) → H-TV5 in
       `memory/hypothesis-ledger.md` names the three branches; (b) mid-month `retire_memory.py --before 2026-09-17`;
       (c) the deploy script's `C:/` default roots (harmless; changing them makes an env-less run hit real repos).
-   4. **`/update-drift` v1.49.0 → v1.49.2**: `check_framework_stamp.sh` FAILS (2026-09-27 curate): global `curate` (6
+   4. ✅ DONE 2026-09-27: stamp → v1.49.2, both releases already in force (`docs/decisions/framework-adoption-history.md`). Was: **`/update-drift` v1.49.0 → v1.49.2**: `check_framework_stamp.sh` FAILS (2026-09-27 curate): global `curate` (6
       lines) and `audit-context` (2 lines) differ from the v1.49.0 stamp; the clone is at v1.49.2.
    5. NexusMind owns the Venezuela 7-article Thriving cluster (story grouping, "lead + N sources"): NexusMind PR #542
       handoff, unverified. Not ours.

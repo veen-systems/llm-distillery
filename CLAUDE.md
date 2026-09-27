@@ -2,7 +2,7 @@
 stack: Python 3.12, PyTorch, Transformers, PEFT/LoRA
 status: Production
 repo: github.com/ducroq/llm-distillery
-framework: agent-ready-projects v1.49.0   # a NUMBER, not a status
+framework: agent-ready-projects v1.49.2   # a NUMBER, not a status
 framework_reconciliation: see docs/decisions/framework-adoption-history.md (operative rules + per-release triage)
 ---
 
@@ -167,4 +167,4 @@ Full commands: `docs/RUNBOOK.md`. Evidence for the four patterns of [augmented-e
 
 ---
 
-*Framework: agent-ready-projects v1.49.0 — verify with `bash scripts/verification/check_framework_stamp.sh` (0 verified · 1 drift · 2 undecided). Bump the stamp only after its adopt items land. `curate`, `audit-context`, `review-changes` and `update-drift` are USER-GLOBAL — never re-create project-local copies (a global silently shadows them); `test-verify-memory` stays local. Triage and standing rules: `docs/decisions/framework-adoption-history.md`. A measured figure here is a copy — quote it from the file its bullet points to, which is kept current.*
+*Framework: agent-ready-projects v1.49.2 — verify with `bash scripts/verification/check_framework_stamp.sh` (0 verified · 1 drift · 2 undecided). Bump the stamp only after its adopt items land. `curate`, `audit-context`, `review-changes` and `update-drift` are USER-GLOBAL — never re-create project-local copies (a global silently shadows them); `test-verify-memory` stays local. Triage and standing rules: `docs/decisions/framework-adoption-history.md`. A measured figure here is a copy — quote it from the file its bullet points to, which is kept current.*
