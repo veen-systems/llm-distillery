@@ -13,6 +13,9 @@ and each version lives under `<version>/` in it. The script:
      upload's exit code is not the evidence;
   4. only then writes `hub: {repo_id, revision, path_prefix}` into the manifest.
 The token comes from HF_TOKEN or config/credentials/secrets.ini, as deploy_to_nexusmind.sh reads it.
+⚠️ Not idempotent: every run makes a NEW Hub commit (a new revision), even for unchanged bytes. If step 3 fails
+after the commit, the manifest stays unpinned and the Hub keeps an unreferenced commit: harmless (nothing points
+at it), but re-running uploads again rather than reusing it.
 """
 
 from __future__ import annotations

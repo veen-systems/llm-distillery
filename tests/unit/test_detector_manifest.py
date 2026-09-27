@@ -183,3 +183,38 @@ def test_committed_manifests_pin_a_hub_revision(pkg):
 def test_adopt_refuses_an_untracked_file(tmp_path):
     r = _run("adopt", "harm_detector/v1", "models/scaler.pkl", "--why", "test")
     assert r.returncode == 2 and "not a git-origin file" in r.stderr
+
+
+def test_adopt_refuses_an_untracked_git_origin_file(tmp_path, monkeypatch):
+    """The path the CLI actually refused on 2026-09-27 (obituary v5's config before it was committed).
+    Review: the earlier test hit the hub-origin branch, and deleting the ls-files guard left the suite green."""
+    import scripts.deployment.verify_detector_package as v
+    pkg = tmp_path / "filters" / "common" / "violence_promotion" / "v1"
+    (pkg / "models").mkdir(parents=True)
+    (pkg / "models" / "training_config.json").write_text("{}")
+    m = build("violence_promotion/v1", {"models/training_config.json": (_sha(b"x"), 1)}, "s", {}, "c")
+    (pkg / "MANIFEST.json").write_text(json.dumps(m))
+    subprocess.run(["git", "init", "-q", str(tmp_path)], check=True)
+    monkeypatch.setattr(v, "COMMON", tmp_path / "filters" / "common")
+    monkeypatch.setattr(v, "REPO", tmp_path)
+    with pytest.raises(ValueError, match="not tracked here"):
+        v.cmd_adopt("violence_promotion/v1", "models/training_config.json", "test")
+
+
+def test_adopt_refreshes_the_build_stack_from_the_adopted_config(tmp_path, monkeypatch):
+    import scripts.deployment.verify_detector_package as v
+    pkg = tmp_path / "filters" / "common" / "violence_promotion" / "v1"
+    (pkg / "models").mkdir(parents=True)
+    (pkg / "models" / "training_config.json").write_text(json.dumps({"sklearn_version": "1.8.0"}))
+    m = build("violence_promotion/v1", {"models/training_config.json": (_sha(b"x"), 1),
+                                        "models/m.pkl": (_sha(b"m"), 1)}, "s", {"embedder_model": "e"}, "c")
+    assert m["build_stack_unrecorded"] == ["sklearn_version"]
+    (pkg / "MANIFEST.json").write_text(json.dumps(m))
+    g = ["git", "-C", str(tmp_path), "-c", "user.name=t", "-c", "user.email=t@t"]
+    subprocess.run(["git", "init", "-q", str(tmp_path)], check=True)
+    subprocess.run(g + ["add", "-A"], check=True)
+    monkeypatch.setattr(v, "COMMON", tmp_path / "filters" / "common")
+    monkeypatch.setattr(v, "REPO", tmp_path)
+    v.cmd_adopt("violence_promotion/v1", "models/training_config.json", "test")
+    out = json.loads((pkg / "MANIFEST.json").read_text())
+    assert out["build_stack"] == {"sklearn_version": "1.8.0"} and out["build_stack_unrecorded"] == []

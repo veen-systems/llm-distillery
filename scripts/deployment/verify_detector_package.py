@@ -82,6 +82,11 @@ def cmd_adopt(pkg: str, rel: str, why: str) -> int:
         raise ValueError(f"{src.relative_to(REPO)} is not tracked here: commit it before adopting it")
     old = entry["sha256"][:12]
     entry["sha256"], entry["bytes"] = _hash_file(src)
+    if rel in STACK_SOURCES:   # the build stack must describe the file the manifest now names (review 2026-09-27)
+        fresh = build(pkg, {}, "", json.loads(src.read_text(encoding="utf-8")), "")
+        m["build_stack"] = fresh["build_stack"]
+        pkl = any(f["path"].endswith(".pkl") for f in m["files"])
+        m["build_stack_unrecorded"] = ["sklearn_version"] if pkl and "sklearn_version" not in fresh["build_stack"] else []
     m.setdefault("adopted_from_this_repo", []).append({"path": rel, "was": old, "why": why})
     mpath.write_text(json.dumps(m, indent=1) + "\n", encoding="utf-8")
     print(f"ADOPTED {pkg}/{rel}: {old} -> {entry['sha256'][:12]} ({why})")
