@@ -251,7 +251,8 @@ def test_an_unsafe_path_in_the_previous_manifest_is_not_followed(tmp_path):
     t = _target(tmp_path, {}, prev)
     r = place(PKG, stg, t)
     assert (tmp_path / "nm" / "victim.txt").read_text() == "keep"
-    assert any("unsafe path" in e for e in r["errors"])
+    # Not an error on every run (round 2: that never converges): the manifest is no prune basis at all.
+    assert r["errors"] == [] and "nothing pruned" in r["prune_basis"]
 
 
 def test_a_symlinked_dir_in_the_target_carries_no_write_or_delete_out(tmp_path):
@@ -266,6 +267,88 @@ def test_a_symlinked_dir_in_the_target_carries_no_write_or_delete_out(tmp_path):
     assert (outside / "precious.pkl").read_bytes() == b"p"
     assert not (outside / "s.pkl").exists()
     assert any("outside" in e for e in r["errors"])
+
+
+@pytest.mark.parametrize("site", ["tmp", "dest", "manifest"])
+def test_no_write_follows_a_symlinked_file_out_of_the_package(tmp_path, site):
+    """Every write site of the symlink class (round 2 found the temp file after round 1 fixed dest)."""
+    stg = _staged(tmp_path)
+    outside = tmp_path / "outside.bin"
+    outside.write_bytes(b"precious")
+    t = _target(tmp_path, {"inference.py": b"old\n"})
+    link = {"tmp": "models/s.pkl.deploy-tmp", "dest": "models/s.pkl", "manifest": MANIFEST}[site]
+    (t / PKG / link).parent.mkdir(parents=True, exist_ok=True)
+    (t / PKG / link).symlink_to(outside)
+    r = place(PKG, stg, t)
+    assert outside.read_bytes() == b"precious", site
+    assert r["errors"] == [], r["errors"]
+    assert not (t / PKG / "models/s.pkl").is_symlink() and not (t / PKG / MANIFEST).is_symlink()
+
+
+def test_pruning_a_symlinked_file_removes_the_link_not_its_target(tmp_path):
+    stg = _staged(tmp_path)
+    outside = tmp_path / "outside.bin"
+    outside.write_bytes(b"precious")
+    prev = _manifest({**_files(), "models/old.pkl": (b"o", "hub")})
+    t = _target(tmp_path, {}, prev)
+    (t / PKG / "models").mkdir(parents=True, exist_ok=True)
+    (t / PKG / "models/old.pkl").symlink_to(outside)
+    r = place(PKG, stg, t)
+    assert r["pruned"] == ["models/old.pkl"] and r["errors"] == []
+    assert outside.read_bytes() == b"precious" and not (t / PKG / "models/old.pkl").is_symlink()
+
+
+def test_a_dangling_symlink_listed_by_the_previous_manifest_is_pruned(tmp_path):
+    stg = _staged(tmp_path)
+    t = _target(tmp_path, {}, _manifest({**_files(), "models/old.pkl": (b"o", "hub")}))
+    (t / PKG / "models").mkdir(parents=True, exist_ok=True)
+    (t / PKG / "models/old.pkl").symlink_to(tmp_path / "gone")
+    r = place(PKG, stg, t)
+    assert r["pruned"] == ["models/old.pkl"] and not (t / PKG / "models/old.pkl").is_symlink()
+
+
+def test_a_symlink_to_the_right_bytes_is_still_replaced_by_a_real_file(tmp_path):
+    """Hash-equal through a link is not 'unchanged': the target could change under it after the deploy."""
+    stg = _staged(tmp_path)
+    outside = tmp_path / "outside.pkl"
+    outside.write_bytes(PKL)
+    t = _target(tmp_path, {})
+    (t / PKG / "models").mkdir(parents=True, exist_ok=True)
+    (t / PKG / "models/s.pkl").symlink_to(outside)
+    r = place(PKG, stg, t)
+    assert "models/s.pkl" in r["written"] and not (t / PKG / "models/s.pkl").is_symlink()
+
+
+@pytest.mark.parametrize("level", ["package", "detector"])
+def test_a_symlinked_package_or_detector_dir_places_nothing(tmp_path, level):
+    """Round 3: with tpkg itself a symlink, tpkg.resolve() is already outside and every containment check passed."""
+    stg = _staged(tmp_path)
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    t = tmp_path / "nm"
+    link = t / PKG if level == "package" else t / PKG.split("/")[0]
+    link.parent.mkdir(parents=True)
+    link.symlink_to(outside, target_is_directory=True)
+    r = place(PKG, stg, t)
+    assert list(outside.rglob("*")) == [] and any("symlink" in e for e in r["errors"])
+
+
+def test_a_symlink_loop_in_the_target_is_an_error_not_a_traceback(tmp_path):
+    stg = _staged(tmp_path)
+    t = _target(tmp_path, {"inference.py": b"old\n"})
+    (t / PKG / "models").symlink_to(t / PKG / "models")
+    r = place(PKG, stg, t)
+    assert r["errors"] and not (t / PKG / MANIFEST).exists()
+
+
+@pytest.mark.parametrize("old_is", ["file", "dir"])
+def test_a_file_dir_layout_change_is_a_loud_error_not_a_traceback(tmp_path, old_is):
+    stg = _staged(tmp_path)
+    t = _target(tmp_path, {"models": b"old file"} if old_is == "file" else {"inference.py/x": b"old dir"})
+    r = place(PKG, stg, t)
+    assert any("layout changed" in e for e in r["errors"]), r["errors"]
+    assert not (t / PKG / MANIFEST).exists()              # no new manifest: the next run still has its old basis
+    assert not list((t / PKG).rglob("*.deploy-tmp"))
 
 
 def test_a_failed_prune_keeps_the_old_manifest_so_the_rerun_retries_it(tmp_path):

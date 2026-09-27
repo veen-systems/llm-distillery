@@ -134,18 +134,38 @@ def _previous(target_pkg: Path, package: str) -> dict | None:
             return None
         files = prev.get("files")
         ok = isinstance(files, list) and all(isinstance(f, dict) and isinstance(f.get("path"), str) for f in files)
+        if ok:
+            for f in files:
+                _safe_rel(f["path"])   # an unsafe path would fail every run: treat as "no prune basis" instead
         return prev if ok else None   # a malformed entry makes the whole manifest unusable as a prune basis
+    except Refused:
+        return None
     except (OSError, ValueError, KeyError, TypeError, AttributeError):
         return None
 
 
 def _inside(root: Path, p: Path) -> bool:
-    """`p` resolves under `root`: a symlinked directory in the target must not carry a write or a delete out."""
+    """`p`'s DIRECTORY resolves under `root`: a symlinked directory in the target must not carry a write or a delete
+    out. The final component is not followed: every write first removes a symlink there (`_write`), and `unlink`
+    removes a link, not its target."""
     try:
-        p.resolve().relative_to(root.resolve())
+        p.parent.resolve().relative_to(root)
         return True
-    except ValueError:
+    except (ValueError, RuntimeError, OSError):   # RuntimeError: a symlink loop
         return False
+
+
+def _write(src: Path, dest: Path) -> None:
+    """Copy via a temp file and rename. Neither the temp name nor `dest` is written THROUGH if it is a symlink
+    (round-2 review: a leftover `.deploy-tmp` symlink redirected the copy out of the package)."""
+    tmp = dest.with_name(dest.name + ".deploy-tmp")
+    tmp.unlink(missing_ok=True)
+    shutil.copyfile(src, tmp)
+    try:
+        os.replace(tmp, dest)   # replaces a symlink at `dest` itself, never its target
+    except OSError:
+        tmp.unlink(missing_ok=True)
+        raise
 
 
 def place(package: str, staging: Path, target_common: Path, plan: bool = False) -> dict:
@@ -153,24 +173,36 @@ def place(package: str, staging: Path, target_common: Path, plan: bool = False) 
     staged = staging / package
     m = json.loads((staged / MANIFEST).read_text(encoding="utf-8"))
     tpkg = target_common / package
+    # Containment is measured against the REAL path of target_common + package, never tpkg.resolve(): a symlinked
+    # package dir (or detector dir) would otherwise resolve outside and make every check pass (round-3 review).
+    root = target_common.resolve() / package
     listed = [f["path"] for f in m["files"]]
     prev = _previous(tpkg, package)
     res = {"written": [], "same": [], "pruned": [], "extra": [], "prune_basis": "previous manifest" if prev
-           else "none (no readable previous manifest): nothing pruned", "errors": []}
+           else "none (no readable previous manifest): nothing pruned", "errors": [], "manifest": "not written"}
+    try:
+        linked = tpkg.exists() and tpkg.resolve() != root
+    except (RuntimeError, OSError):
+        linked = True
+    if linked or any(d.is_symlink() for d in (tpkg, tpkg.parent)):
+        res["errors"].append(f"{tpkg} (or its detector dir) is a symlink: nothing placed. Replace it with a real dir")
+        return res
     for f in m["files"]:
         dest = tpkg / _safe_rel(f["path"])
-        if not _inside(tpkg, dest):
+        if not _inside(root, dest):
             res["errors"].append(f"{f['path']} resolves outside {tpkg} (symlink): not written")
             continue
-        if dest.is_file() and _hash_file(dest) == (f["sha256"], f["bytes"]):
+        if dest.is_file() and not dest.is_symlink() and _hash_file(dest) == (f["sha256"], f["bytes"]):
             res["same"].append(f["path"])
             continue
         res["written"].append(f["path"])
         if not plan:
-            dest.parent.mkdir(parents=True, exist_ok=True)
-            tmp = dest.with_name(dest.name + ".deploy-tmp")
-            shutil.copyfile(staged / f["path"], tmp)
-            os.replace(tmp, dest)
+            try:
+                dest.parent.mkdir(parents=True, exist_ok=True)
+                _write(staged / f["path"], dest)
+            except OSError as e:   # e.g. a file where the new layout needs a dir: loud, with the way out
+                res["errors"].append(f"write {f['path']}: {e.__class__.__name__}: {e}. The package layout changed "
+                                     f"(file <-> dir); remove the old path in the target by hand, then re-run")
     if prev:
         for rel in sorted({f["path"] for f in prev["files"]} - set(listed)):
             try:
@@ -178,9 +210,9 @@ def place(package: str, staging: Path, target_common: Path, plan: bool = False) 
             except Refused as e:
                 res["errors"].append(str(e))
                 continue
-            if rel == MANIFEST or not p.is_file():
+            if rel == MANIFEST or not (p.is_file() or p.is_symlink()):
                 continue
-            if not _inside(tpkg, p):
+            if not _inside(root, p):
                 res["errors"].append(f"prune {rel}: resolves outside {tpkg} (symlink): not deleted")
                 continue
             res["pruned"].append(rel)
@@ -195,14 +227,14 @@ def place(package: str, staging: Path, target_common: Path, plan: bool = False) 
     # still prunes against it, so a failed copy or prune is retried rather than forgotten.
     if not plan and not res["errors"]:
         tpkg.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(staged / MANIFEST, tpkg / MANIFEST)
+        _write(staged / MANIFEST, tpkg / MANIFEST)
     if tpkg.is_dir():
         present = {p.relative_to(tpkg).as_posix() for p in tpkg.rglob("*")
                    if p.is_file() and "__pycache__" not in p.parts}
         res["extra"] = sorted(present - set(listed) - set(res["pruned"]) - {MANIFEST})
     if not plan and not res["errors"]:   # prove the outcome, not the copy: re-hash what is now in the target
         tree = {p.relative_to(tpkg).as_posix(): _hash_file(p) for p in tpkg.rglob("*")
-                if p.is_file() and "__pycache__" not in p.parts}
+                if p.is_file() and not p.is_symlink() and "__pycache__" not in p.parts}   # a link is not a placed file
         check = verify(m, tree)
         if tree.get(MANIFEST) != _hash_file(staged / MANIFEST):
             check["mismatch"].append(f"{MANIFEST}: not the staged manifest")

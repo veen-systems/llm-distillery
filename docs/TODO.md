@@ -6,7 +6,12 @@
 topic. Re-read the block under it before starting; the reasons are there, not here.*
 
 ▶ **NEXT SESSION (rewritten 2026-09-27 evening close). A bare "continue" = item 0, then the rest.**
-   0. ▶ **ADR-024 order step 3** (`docs/adr/024-detector-packages.md`, llm-distillery#165): make `deploy_to_nexusmind.sh`
+   0. ✅ **BUILT 2026-09-27 (`6c16056`), NOT DEPLOYED.** Record: ADR-024 § *Order step 3 BUILT*. ▶ **Owner: approve the
+      first real deploy** (it needs a NexusMind checkout on `main`, clean; the local one was on a peer branch with WIP).
+      Expected outcome, predicted by `--plan`: 4 new `MANIFEST.json`, obituary v5 / violence v1 `training_config.json`,
+      nothing pruned. After it lands: `verify_detector_package.py verify --all --target <checkout> --strict`, then on
+      sadalsuud after the pull. Original text:
+      **ADR-024 order step 3** (`docs/adr/024-detector-packages.md`, llm-distillery#165): make `deploy_to_nexusmind.sh`
       step 2 manifest-driven for the four packaged detectors: fetch hub-origin files at the pinned revision into staging →
       verify every sha256 against `MANIFEST.json` → place → prune ONLY files the previous manifest listed (no readable
       previous manifest = no prune, report extras). REFUSE a manifest whose `hub` is null while it has hub-origin files.

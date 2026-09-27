@@ -200,6 +200,26 @@ revision and comparing sha256 + size with the manifest:
   `model.safetensors` bytes but DIFFERENT tokenizer files from production's (e.g. `special_tokens_map.json` 695 vs
   125 B). It is left untouched and is not the record.
 
+✅ **Order step 3 BUILT 2026-09-27, NOT yet deployed** (`6c16056` + review fixes; `scripts/deployment/deploy_detectors.py`,
+`tests/unit/test_deploy_detectors.py`). The fetch/verify half runs as a new step **0.7**, before step 1 copies
+anything; step **2a** places, prunes and re-hashes; step **2b** is the old runtime-file copy minus the packaged dirs
+(`common_runtime_files.py --unpackaged`). Beyond Decision 3: `stage` also refuses a manifest or git-origin file not
+committed as-is, a sidecar not carrying its pickle's manifest digest, and a `.nexusmind-owns` entry inside a packaged
+dir; `place` writes `MANIFEST.json` only after every copy and prune succeeded, and neither writes nor deletes through
+a symlink out of the package dir, nor into a symlinked package or detector dir (review rounds 2 and 3 each found
+another site of that class; round 3 was the cap's last). The ten `.sha256` sidecars the manifests list as git-origin are now committed here.
+- **Proven through the shipped script on a throwaway local clone of NexusMind** (no push, no remote): harm and
+  commerce write 0 existing bytes, obituary v5 / violence v1 write only `training_config.json` (the ruling above),
+  nothing pruned (no previous manifest), `verify_detector_package.py verify --all --strict` OK; a second deploy is a
+  no-op with the previous manifest as prune basis.
+- ⚠️ **What step 3 cannot reach, measured by the reachability lens:** NexusMind gitignores `*.safetensors`, so
+  commerce v1's verified `model.safetensors` stops in the deploying checkout; sadalsuud and gpu-server keep their
+  out-of-band copies. And `NexusMind/scripts/deploy_filters.sh` excludes `models/` from its `--delete` pass, so a
+  pruned pickle stays live on gpu-server. Both belong to step 5.
+- Packaged dirs stop shipping files no loader reads (harm `README.md`, `calibration_report.json`,
+  `SHA256SUMS.txt`; commerce v1's benchmark folders). The first deploy leaves the NexusMind copies in place and reports
+  them as outside the package, by Decision 3.
+
 ## Consequences
 
 ### Positive

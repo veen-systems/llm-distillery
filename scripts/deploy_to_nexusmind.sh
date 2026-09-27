@@ -268,7 +268,8 @@ echo ""
 echo "0.7 Staging packaged detectors from their MANIFEST.json (Hub at pinned revisions)..."
 # Absolute: the EXIT trap fires after step 3's `cd "$NEXUSMIND_ROOT"`, and a relative TMPDIR would
 # then point it at the wrong directory and leave the staged weights behind.
-DETECTOR_STAGING=$(cd "$(mktemp -d)" && pwd)
+DETECTOR_STAGING=$(mktemp -d) && DETECTOR_STAGING=$(cd "$DETECTOR_STAGING" && pwd) && [ -n "$DETECTOR_STAGING" ] || {
+    echo "ERROR: could not create an absolute staging dir (mktemp -d)"; exit 1; }
 trap 'rm -rf "$DETECTOR_STAGING"' EXIT
 python3 "${DISTILLERY_ROOT}/scripts/deployment/deploy_detectors.py" stage --staging "$DETECTOR_STAGING" || {
     echo "ERROR: staging the packaged detectors failed (REFUSED / ERROR / traceback above). Aborting deploy."
