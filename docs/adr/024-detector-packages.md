@@ -200,7 +200,9 @@ revision and comparing sha256 + size with the manifest:
   `model.safetensors` bytes but DIFFERENT tokenizer files from production's (e.g. `special_tokens_map.json` 695 vs
   125 B). It is left untouched and is not the record.
 
-✅ **Order step 3 BUILT 2026-09-27, NOT yet deployed** (`6c16056` + review fixes; `scripts/deployment/deploy_detectors.py`,
+✅ **Order step 3 BUILT 2026-09-27 and MERGED as NexusMind PR #550** (`dafbbc9`, 13:47Z, after NexusMind's two-lens
+review; owner ruling: wait for NexusMind's signal, then a PR, never a direct commit). Production outcome = `H-DP3`
+(`memory/hypothesis-ledger.md`), checked after the next cycle. Code: `6c16056` + review fixes (`44b703d`; `scripts/deployment/deploy_detectors.py`,
 `tests/unit/test_deploy_detectors.py`). The fetch/verify half runs as a new step **0.7**, before step 1 copies
 anything; step **2a** places, prunes and re-hashes; step **2b** is the old runtime-file copy minus the packaged dirs
 (`common_runtime_files.py --unpackaged`). Beyond Decision 3: `stage` also refuses a manifest or git-origin file not

@@ -5,8 +5,28 @@
 *A bare "continue" means this list, top down. Each line names the FIRST action, not the
 topic. Re-read the block under it before starting; the reasons are there, not here.*
 
-▶ **NEXT SESSION (rewritten 2026-09-27 evening close). A bare "continue" = item 0, then the rest.**
-   0. ✅ **BUILT 2026-09-27 (`6c16056`, `44b703d`, pushed), NOT DEPLOYED.** Record: ADR-024 § *Order step 3 BUILT*.
+▶ **NEXT SESSION (rewritten 2026-09-27 late-afternoon close). A bare "continue" = item 0, then the rest.**
+   0. ▶ **Close `H-DP3`: did NexusMind PR #550 land in production unchanged?** (`memory/hypothesis-ledger.md`.) #550 merged
+      13:47Z as `dafbbc9`, due at the ~16:10 CEST 2026-09-27 cycle. First prove it arrived, then check it:
+      `ssh sadalsuud 'cd ~/local_dev/NexusMind && git merge-base --is-ancestor dafbbc9 HEAD && echo IN'`, then
+      `python3 scripts/deployment/verify_detector_package.py verify --all --target sadalsuud:~/local_dev/NexusMind --strict`.
+      4× OK → H-DP3 CONFIRMED; record it in the ledger, ADR-024 § *Order step 3 BUILT* and a #165 comment. Any `.pkl` or
+      sidecar MISMATCH → REFUTED: tell the NexusMind session (`ListAgents`) and do NOT redeploy to "fix" it. Optionally run the
+      same check against gpu-server `/home/hcl/NexusMind`: it gets `models/` by rsync without `--delete` (step 5).
+      ⚠️ If this session closes before the cycle, the result may already be in the NexusMind session's messages.
+   1. After that, ADR-024 is NexusMind's: step 4 (loaders read the manifest, log-only flag, per detector; its start is the
+      owner's call) and step 5 (commerce `model.safetensors` is gitignored there; `deploy_filters.sh` does not `--delete`
+      under `models/`). Nothing more of ours unless they ask.
+   2. *Owner call, new:* the retired detectors (obituary v3/v4, commerce v2) still ship through step 2b's unpackaged copy,
+      pickles included; #550 carried their #158 blocks. Stop shipping them (and delete them in NexusMind), or leave them?
+   3. *Optional, ours:* the gotcha-log § Mechanized row `check_committed_idiom.py` is `proposed` (an `ls-files` used as a
+      "committed" test); build it only with a seeded positive.
+   *Owner, not urgent:* H-TV5 (watch Thriving while v7 drains); delete the stale Hub repo `commerce-prefilter-v1`
+   (different tokenizer files from production's) or keep it as history; obit v5 / violence v1 have no recorded sklearn
+   version (Q5 skew check has no baseline until a rebuild); the deploy script's `C:/` default roots.
+   *Done 2026-09-27 afternoon:* ADR-024 step 3 built, reviewed in 3 rounds, delivered as NexusMind PR #550 (merged).
+   Details: the session file written by /curate. Previous item 0, kept:
+   0-prev. ✅ **BUILT 2026-09-27 (`6c16056`, `44b703d`, pushed); MERGED as NexusMind PR #550 (`dafbbc9`).** Record: ADR-024 § *Order step 3 BUILT*.
       ▶ **PR OPEN 2026-09-27: NexusMind PR #550** (branch `llm-distillery/adr-024-detector-manifests` off `a8835c0`; the
       NexusMind session signalled ready). Next: their review + CI, merge, then after the NEXT cycle run
       `verify_detector_package.py verify --all --target sadalsuud:~/local_dev/NexusMind --strict` (commerce `model.safetensors`
@@ -31,10 +51,7 @@ topic. Re-read the block under it before starting; the reasons are there, not he
    0b. ✅ DONE 2026-09-27: NexusMind session (`nexusmind-b2`) told; step 4 is in their handoff, start is the owner's call.
       Was: tell the NexusMind session that step 4 (their loaders read the manifest, log-only flag, per detector) is unblocked. Their open owner items: retire gpu-server `/commerce/predict` + its v2
       files; the Venezuela story grouping (NexusMind PR #542).
-   *Owner, not urgent:* H-TV5 (watch Thriving while v7 drains); delete the stale Hub repo `commerce-prefilter-v1`
-   (different tokenizer files from production's) or keep it as history; obit v5 / violence v1 have no recorded sklearn
-   version (Q5 skew check has no baseline until a rebuild).
-   *Done 2026-09-27 (details: `memory/project_session_2026_09_27_adj4p_close.md`):* adj4p (EXP-043); deploy review
+   *Done 2026-09-27 morning (details: `memory/project_session_2026_09_27_adj4p_close.md`):* adj4p (EXP-043); deploy review
    rounds 2–3; MEMORY.md thinned; retire step 3 + mid-month retire (read surface 1.49M → 1.07M chars); ADR-024 ruled,
    steps 1–2 built (manifests, 4 private Hub repos pinned); update-drift v1.49.2; trim check REJECTED.
    1. ✅ **DONE 2026-09-27: retire step 3.** Ledger 146,560 → 83,641 B (74 closed rows → `memory/archive/

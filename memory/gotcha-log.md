@@ -4,6 +4,21 @@
 
 *⚠️ **Entries dated before 2026-09-17 live in [`archive/gotcha-log-archive.md`](archive/gotcha-log-archive.md)**, verbatim (the 09-01 → 09-16 ones moved 2026-09-27 by an owner-approved MID-MONTH pass, `--before 2026-09-17`; earlier ones moved 2026-09-24; into `archive/` 2026-09-26 so curate's size measurement stops counting it, #163; the month-dated Feb–May entries followed on 2026-09-26). Next pass: `python3 scripts/maintenance/retire_memory.py gotcha --before <first of this month> --apply` (dry run without `--apply`). It retires top-level entries only; the `###` entries inside the catalogue are kept by rule and counted. The unreachable-mechanism catalogue stayed here. For a recurrence match, grep both: `grep -n <term> memory/gotcha-log*.md`.*
 
+## THREE REVIEW ROUNDS EACH FOUND ANOTHER SITE OF ONE SYMLINK-ESCAPE CLASS (2026-09-27)
+**Problem**: ADR-024 step 3's `place()` got a symlink containment fix in round 1 (a dir symlink under the package); round 2 found the `.deploy-tmp` temp file bypassing it; round 3 found the package dir ITSELF being a symlink (`tpkg.resolve()` was already outside, so every check passed). Each fix was tested and mutation-killed, and each was still the wrong SCOPE.
+**Root cause**: I fixed the site the reviewer named, not the class. The class's sites are every path operation (open, copy, replace, unlink, mkdir) times every component from the trusted root down; I never listed them.
+**Fix**: containment measured against `target_common.resolve() / package`, never the resolved target; every write removes a symlink at its temp and dest names first; a symlinked package/detector dir places nothing (`44b703d`). ⭐ **When a review finds one site of a class, enumerate the class's sites BY OPERATION and BY PATH COMPONENT before fixing the first one** — the round cap (3) was spent learning the list one site at a time.
+
+## "MUST BE COMMITTED" CHECKED WITH `git ls-files`, WHICH PASSES A STAGED-ONLY FILE — IN THE CODE AND IN ITS TEST (2026-09-27)
+**Problem**: `deploy_detectors.stage` refused an "untracked" git-origin file via `git ls-files --error-unmatch`; the ten new sidecars were staged, not committed, and passed. The real-tree test used the same idiom, so it was green in the same state. Found by 3 of 6 review lenses.
+**Root cause**: `ls-files` answers "is it in the INDEX", not "is it in HEAD". The helper also computed a HEAD-clean flag and the caller discarded it. Test and code shared the instrument, so the checker and the checked were one object.
+**Fix**: `_committed()` = `git cat-file -e HEAD:<rel>` + `git diff --quiet HEAD`; the real-tree test reads `git show HEAD:<rel>` and went red until the commit (`6c16056`). Mechanized row `check_committed_idiom.py` proposed.
+
+## A PR BODY'S "BEFORE" CLAIM WAS MEASURED ON A CLONE OF THE WRONG BRANCH (2026-09-27)
+**Problem**: NexusMind PR #550's body said `main` "passes the other two" detectors. That was measured on clones of a local checkout that sat on a feature branch, not on `main`; on a clean `main` commerce reports MISSING (its model file is gitignored there). Caught by re-measuring on a `git worktree` of `origin/main` before messaging the peer, and corrected with `gh pr edit`.
+**Root cause**: a local clone inherits the source checkout's HEAD, not the remote default branch — the same trap as the sibling-checkout entry below, arriving through `git clone ../NexusMind`.
+**Fix**: a PR's "before" is measured on the PR's own BASE commit (`git worktree add <dir> origin/main`), named by sha in the body. Clone from the remote URL, never from a sibling path.
+
 ## I NAMED FOUR HUB REPOS BY DERIVING FROM FOLDER NAMES THAT SHARE NO PATTERN (2026-09-27)
 **Problem**: `harm-detector`, `obituary-detector`, `violence-promotion`, `commerce-prefilter`. The owner asked why they
 were not harmonized. Two repos had to be renamed after upload.
@@ -13,7 +28,7 @@ will see (a Hub repo, a URL, a package) is a DECISION, and I made it with a stri
 `KeyError` rather than getting an invented name. ⭐ **Before creating anything public-facing and named, propose the
 convention to the owner in one line.** A Hub rename keeps revisions, so it was cheap this time.
 
-## A LOCAL SIBLING CHECKOUT IS NOT "WHAT PRODUCTION SERVES" — IT WAS ON ANOTHER SESSION'S FEATURE BRANCH (2026-09-27)
+## A LOCAL SIBLING CHECKOUT IS NOT "WHAT PRODUCTION SERVES" — IT WAS ON ANOTHER SESSION'S FEATURE BRANCH (2026-09-27) [x2: 2026-09-27 afternoon — `../NexusMind` was on `chore/resolve-0904-unmerge`, then `research/gt2-harness-freeze`, both with WIP; applied this time: every deploy proof ran on a fresh clone, the real deploy went in as NexusMind PR #550]
 **Problem**: the ADR-024 backfill needed the bytes production serves. `../NexusMind` was checked out on
 `fix/integration-inference-tests`, another session's branch.
 **Root cause**: a sibling repo on the workstation belongs to whichever session last switched it.

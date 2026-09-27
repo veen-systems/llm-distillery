@@ -62,37 +62,47 @@ DISTILLERY_ROOT=$PWD NEXUSMIND_ROOT=/home/jeroen/repos/veen-systems/NexusMind \
 > (`arxiv`/`mastodon_`/`bluesky`) that had been production-only since
 > 2026-05-18 — see llm-distillery#93.
 
-> **Step 2 ships `filters/common/` RUNTIME files only** (owner ruling, #164, 2026-09-26).
-> The selection is one module, `scripts/deployment/common_runtime_files.py`. It excludes
-> `*/training/`, `*/validation/`, `*/docs/`, `*/tests/` and `__pycache__/`, plus
+> **Packaged detectors ship by `MANIFEST.json` (ADR-024 step 3, 2026-09-27).** harm v1, obituary v5,
+> violence_promotion v1 and commerce_prefilter v1 (`PACKAGES` in `scripts/deployment/detector_manifest.py`) never
+> ship from this working tree. **Step 0.7**, before anything is copied, runs `deploy_detectors.py stage`: every
+> file the committed manifest lists is fetched (weights from the Hub at the pinned revision, the rest from this
+> repo) and sha256-verified. It refuses an uncommitted manifest or git-origin file, an unpinned `hub`, a sidecar
+> that does not carry its pickle's manifest digest, and a `.nexusmind-owns` entry inside a packaged dir. It needs
+> Hub access and the token from `config/credentials/secrets.ini` (anonymous only works from the HF cache).
+> **Step 2a** (`place`) writes the files, deletes ONLY what the previous NexusMind manifest listed and the new one
+> does not (no readable previous manifest = nothing deleted, extras reported), writes `MANIFEST.json` last and
+> only on success, and re-hashes the target. Under `--dry-run` it only PLANS. Check any tree afterwards with
+> `python3 scripts/deployment/verify_detector_package.py verify --all --target <nexusmind root or host:path> --strict`.
+> To change a packaged detector: rebuild, upload (`upload_detector_to_hub.py`), rewrite the manifest
+> (`verify_detector_package.py write`), commit, deploy — never edit a manifest by hand.
+> ⚠️ Limits (ADR-024 step 5, NexusMind's): NexusMind gitignores `*.safetensors`, so commerce v1's model stays in
+> the deploying checkout; `deploy_filters.sh` does not delete under `models/` on gpu-server.
+
+> **Step 2b ships the other `filters/common/` RUNTIME files** (owner ruling, #164, 2026-09-26).
+> The selection is one module, `scripts/deployment/common_runtime_files.py --unpackaged`. It excludes
+> the packaged detector dirs, `*/training/`, `*/validation/`, `*/docs/`, `*/tests/` and `__pycache__/`, plus
 > `oracle.py`, `prompt.md` and `detector_seeds.py`, and ships everything else, including
 > files git does not track. Preview it without touching NexusMind:
-> `python3 scripts/deployment/common_runtime_files.py`. The count depends on the local
+> `python3 scripts/deployment/common_runtime_files.py --unpackaged`. The count depends on the local
 > tree (gitignored weights included), so run it rather than quote one.
 > `tests/unit/test_common_runtime_files.py` pins the two facts that decide the rule:
-> - **Updated detector weights reach NexusMind only through this copy.** Every `*.pkl` and
->   `*.safetensors` under `filters/common` here is gitignored, so switching step 2 to
->   `git ls-files` would stop shipping them. (NexusMind git-tracks its own copies, and the
->   commerce v2 weights exist only there: #165.)
+> - **Weights of UNPACKAGED detectors (retired obituary v3/v4) still reach NexusMind only through this copy.**
+>   They are gitignored here, so switching to `git ls-files` would stop shipping them.
 > - **Some "training"-named files are runtime.** `harm_detector/v1/inference.py` reads
->   `models/training_config.json` and `models/SHA256SUMS.txt` at load, so never exclude by
+>   `models/training_config.json` (and, if present, `models/SHA256SUMS.txt`) at load, so never exclude by
 >   those names.
 >
-> It excludes by directory, so some metadata outside those directories still ships
-> (`calibration_report.json`, `training_metrics.json`, `results/`): none of it is loaded,
-> and #165's manifest is where it gets settled. Untracked scratch files in `filters/common`
-> ship too, and are then committed in NexusMind: keep that tree clean before deploying.
+> Untracked scratch files in `filters/common` outside the packaged dirs ship too, and are then committed in
+> NexusMind: keep that tree clean before deploying.
 >
 > **Step 0.6 stops the deploy if a pickle about to ship would sit next to a stale `.sha256`
-> sidecar in NexusMind** (sidecars survive every deploy, because it only copies). It checks
-> both copies: the filter package (step 1, probe pickles) and `filters/common` (step 2,
-> detector pickles). It runs before step 1, so NexusMind is untouched on failure. Fix: write
+> sidecar in NexusMind.** It checks the filter package (step 1, probe pickles) and step 2b's
+> unpackaged files; packaged detectors' sidecars ship with their pickles and are checked by step 0.7.
+> It runs before step 1, so NexusMind is untouched on failure. Fix: write
 > the matching sidecar in llm-distillery next to the pickle (`sha256sum X.pkl > X.pkl.sha256`)
-> and commit it (no untracked-file guard covers `filters/common`), so pickle and sidecar land in ONE NexusMind commit. ⛔ Never delete the NexusMind sidecar:
+> and commit it, so pickle and sidecar land in ONE NexusMind commit. ⛔ Never delete the NexusMind sidecar:
 > `embedding_stage` then loads the pickle unchecked, and `harm_detector` refuses to load
-> without `SHA256SUMS.txt`. Removing files that dropped out of the selection is
-> NexusMind's job too: the deploy never deletes. Detectors are not yet packaged like filters:
-> #165.
+> without a recorded hash. Step 2b never deletes; removing files that dropped out of its selection is NexusMind's job.
 
 > ⚠️ **`--dry-run` still writes.** It copies the files and skips only the
 > `git add`/`commit`/`push`, so it dirties the NexusMind working tree. That matters
