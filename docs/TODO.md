@@ -5,19 +5,21 @@
 *A bare "continue" means this list, top down. Each line names the FIRST action, not the
 topic. Re-read the block under it before starting; the reasons are there, not here.*
 
-▶ **NEXT SESSION (written 2026-09-26 evening, tokens ran out):**
-   1. **Review round 2 on `deploy_to_nexusmind.sh` fixes is NOT DONE** — two lenses were stopped unfinished. Commit
-      below is tested (1011 passed; 5 mutants caught) but unreviewed: run adversarial + reachability on it first.
-      The round-1 report (7 lenses on `356cd70`, 1 blocker fixed) is summarised in the commit message.
-   2. ✅ **v10 TRAINED + GATED 2026-09-26: NOT DISTINGUISHABLE; v9 stays live** (`docs/evidence/2026-09-26-v10-retrain-gate/README.md`).
-      On the pool's held-out rows v10 is STRICTER (recall 0.60 vs 0.87), not more generous. ▶ owner: next step (a/b/c there).
-   2b. ▶ **Diagnostic (b) adj4p is TRAINING on b650** (started 2026-09-27 09:59, `logs/adj4p_20260927.sh`, ~1 h). Pick up:
-      `ssh b650-gpu 'cat ~/llm-distillery/logs/adj4p_20260927.out'` → wait for `ADJ4P DONE`, then
-      `rsync -a b650-gpu:llm-distillery/gate_dumps/2026-09-26/ datasets/gate/ht_v10_2026-09-26/` and score it
-      like adj4 (commands in `docs/evidence/2026-09-26-v10-retrain-gate/README.md`; pool labels file
-      `datasets/gate/ht_v10_2026-09-26/pool_test_labels.jsonl`). Apply the reading rule in PREREGISTRATION.md § Diagnostic (b).
-   3. ✅ #373 outcome checks recorded on #151 (50 v9 rows ingested; 28 v9 on Thriving, 726 v7 draining). Owner's 3 flags: v7 drain; v9 and v10 reject all.
-   4. #165 detector packages: design/ADR only. Add the round-1 finding: commerce v2 weights exist only in NexusMind.
+▶ **NEXT SESSION (rewritten 2026-09-27 at close):**
+   1. ▶ **Diagnostic (b) adj4p — owner CHOSE (b); it is TRAINING on b650** (started 09-27 09:59, ~1 h;
+      `logs/adj4p_20260927.sh`). Pick up: `ssh b650-gpu 'cat ~/llm-distillery/logs/adj4p_20260927.out'` → wait for
+      `ADJ4P DONE`, then `rsync -a b650-gpu:llm-distillery/gate_dumps/2026-09-26/ datasets/gate/ht_v10_2026-09-26/` and:
+      `G=datasets/gate/ht_v10_2026-09-26; .venv/bin/python scripts/gate/ground_truth_gate.py --config filters/human_thriving/v9/config.yaml --recompute-model-wa --labels <L> --model v9=$G/v9_<S>/scores_calibrated.jsonl --model adj4=$G/adj4_<S>/scores_calibrated.jsonl --model adj4p=$G/adj4p_<S>/scores_calibrated.jsonl`
+      with (L, S) = (`datasets/training/human_thriving_v8_adj1/test.jsonl`, gate) and (`$G/pool_test_labels.jsonl`, pool);
+      flagged 3: weighted average of `$G/adj4p_flagged/scores_calibrated.jsonl` must be < 4.5 each.
+      Apply the reading rule in `docs/evidence/2026-09-26-v10-retrain-gate/PREREGISTRATION.md` § Diagnostic (b);
+      write the result into that dir's README. v9 stays live whatever it shows.
+   2. **Review round 2 on `054a0a3`** (deploy fixes: step 0.6 sidecar guard, PowerShell twin deleted): adversarial +
+      reachability, fresh contexts. Tested (1011 passed; 5 mutants caught), not yet re-reviewed.
+   3. #165 detector packages: design/ADR only. Add the round-1 finding: commerce v2 weights exist only in NexusMind.
+   4. Then TODO item −1 step 2 (thin `memory/MEMORY.md`).
+   *Done 09-26/27 (details in `memory/project_session_2026_09_26_decisions_v10.md`):* v10 NOT DISTINGUISHABLE, v9 stays;
+   #373 cutover live, checks on #151; owner's 3 flags are v7 drain, rejected by v9 and v10.
 
 A. ✅ **VERIFIED 2026-09-26 ~15:45 CEST, from outcomes (one cycle each; the original text is kept below).**
    1. **#372 works: 124 of 124** live articles whose `nature_recovery` row clears the build's gate sit on Recovery
