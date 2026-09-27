@@ -31,7 +31,7 @@
 - 📓 **Older sessions — [`memory/session-log.md`](session-log.md)** — every entry before the four above, VERBATIM and unabridged (**72** as of 2026-09-22 — `grep -cE '^- ' memory/session-log.md`, do not quote this from memory). The index keeps the newest four; `/curate` MOVES the fifth into the log rather than compressing it, so no finding is ever shortened to buy space. **Look there before concluding something was never recorded.** Session files dated before 2026-09 are in [`archive/`](archive/) (moved 2026-09-26 by `scripts/maintenance/retire_memory.py sessions`).
 
 - [Date errors & the recency boost](date-error-recency-boost-hypotheses.md) — any date error landing inside the boost window wins it, invisibly. ⚠️ `collected_date − published_date` is NOT a fabrication instrument without a `source` breakdown. Read before touching dates, the boost or an age-derived figure
-- [Hypothesis ledger](hypothesis-ledger.md) — ⭐ **start here to recall prior work**: every hypothesis, verdict and experiment location across two repos. ⛔ `H4` is defined in FOUR files — always qualify the id; corroboration ids live in NexusMind's V&V registry
+- [Hypothesis ledger](hypothesis-ledger.md) — ⭐ **start here to recall prior work**: open hypotheses; closed rows in [`archive/hypothesis-ledger-archive.md`](archive/hypothesis-ledger-archive.md) — grep both. ⛔ `H4` is defined in FOUR files — always qualify the id; corroboration ids live in NexusMind's V&V registry
 - [Corroboration feature hypotheses](corroboration-feature-hypotheses.md) — the cosine/time/NER features already exist and were measured. **The threshold is not the lever** (a gate is). Read before proposing NER or matching-feature work
 - [Google News corpus hypotheses](google-news-corpus-hypotheses.md) — ⛔ never oracle-re-score a GN row, never match GN on a `gn_` prefix, always say feeds vs rows vs items (up to 5× apart). Read before quoting any GN number
 - [CD v6 probe hypotheses](cd-v6-probe-hypotheses.md) — #98 (the cd e5 probe): screening is a REGRESSION; v6 cannot score (no inference module, no calibration)
@@ -52,7 +52,7 @@
 - [ovr lens set](ovr-lens-set-current.md) — current lens→filter→tab mapping
 - [Filter doc standard](filter-doc-standard.md) — deployed filter documentation set
 - [CD v5 reference status](cd-v5-reference-status.md) — cultural_discovery v5 as the DeepSeek-oracle reference, ADR-020 methodology
-- [Obituary detector](project-obituary-detector.md) — enforcement state, live false negatives, the four SSH verify assertions. Read before touching or reading the junk gates. 44% of misses are title/body pooling (#159, `obituary-v4-hypotheses.md`); NOT blind to non-Latin (ledger H-DET6)
+- [Obituary detector](project-obituary-detector.md) — enforcement state, live false negatives, the four SSH verify assertions. Read before touching or reading the junk gates. 44% of misses are title/body pooling (#159, `obituary-v4-hypotheses.md`); NOT blind to non-Latin (H-DET6, ledger archive)
 - [Obituary v4 hypotheses](obituary-v4-hypotheses.md) — small-N hard negatives work, panel beats oracle labels. ⛔ its v3/v4/v5 numbers are SINGLE-SEED and the ordering does not survive (#158)
 - [Violence promotion v1 hypotheses](violence-promotion-v1-hypotheses.md) — recipe transfer confirmed; the recall gap is the open question
 - [Uplifting v7 training](uplifting-v7-training.md) — training history; v7 deployed (hybrid inference)

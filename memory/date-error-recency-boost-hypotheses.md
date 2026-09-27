@@ -586,7 +586,7 @@ wrong field.** That figure describes **our emitted `published_date`, which we st
   clean run `collection_20260814_193603`) and it erased H-D1's microsecond
   fingerprint.** Two correct, unrelated changes, one of which
   silently destroyed the other's evidence — which is the argument for explicit fields
-  over accidental signals. See `docs/CONTRACTS_PLAN.md` § *Round 3*.
+  over accidental signals. See `docs/CONTRACTS_PLAN-rounds-archive.md` § *Round 3*.
 - **The two-hop 2h disagreement** (NexusMind reads naive as UTC, ovr's JavaScript reads
   it as local) is a **consumer** bug with a one-line fix on ovr's side. It is *not*
   H-D1b, though the two share a vocabulary and were conflated for most of 2026-08-14.

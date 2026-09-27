@@ -6,7 +6,12 @@
 topic. Re-read the block under it before starting; the reasons are there, not here.*
 
 ▶ **NEXT SESSION (rewritten 2026-09-27 midday checkpoint; the session continued — see the latest session file):**
-   1. ▶ **TODO item −1 step 3: RETIRE the three largest unretired files, verbatim, to an archive** —
+   1. ✅ **DONE 2026-09-27: retire step 3.** Ledger 146,560 → 83,641 B (74 closed rows → `memory/archive/
+      hypothesis-ledger-archive.md`); cross-repo 136,125 → 61,087 B (Aug snapshots → `memory/archive/cross-repo-
+      prioritization-archive.md`); `docs/CONTRACTS_PLAN.md` 149,056 → 56,931 B (rounds 1–4 → `docs/CONTRACTS_PLAN-rounds-
+      archive.md`, "Standing after round 4" kept live). Lossless by an independent checker (mutation-tested) and a
+      review lens; curate read surface 1,486,729 → ~1.36M chars. ▶ Next retire candidate: `memory/gotcha-log.md` (~250k).
+      Original text:
       `docs/CONTRACTS_PLAN.md` (149 KB), `memory/hypothesis-ledger.md` (142 KB), `memory/cross-repo-prioritization.md`
       (136 KB), measured 2026-09-24; re-measure with `wc -c` first. Method as for TODO/gotcha-log: closed sections
       move losslessly (every line present, order kept); open ones stay. ⛔ Retiring is not deleting.
@@ -131,7 +136,7 @@ verified and B waits on the owner, item −1 (the read surface) is the work.
       curate's grep instructions here, then add it to `retire_memory.py` as the archive path.
    2. ✅ DONE 2026-09-27 (14,349 → 10,519 B; see NEXT SESSION). **Thin `memory/MEMORY.md` (17 KB, read every session) the way `CLAUDE.md` was**: lead each
       line with the rule, pointer to the target, no narrative.
-   3. Candidates measured 2026-09-24, still unretired: `docs/CONTRACTS_PLAN.md` 149 KB,
+   3. ✅ DONE 2026-09-27 (see NEXT SESSION 1). Candidates measured 2026-09-24, still unretired: `docs/CONTRACTS_PLAN.md` 149 KB,
       `memory/hypothesis-ledger.md` 142 KB, `memory/cross-repo-prioritization.md` 136 KB.
    4. The Mechanized table's `proposed` row `check_claude_md_trim.py` — a trim kept every
       token and still dropped five operative CLAUSES; only a review lens noticed. ⛔ **A row is
@@ -238,7 +243,7 @@ are NOT reused when an item closes — a stable number is worth more than a tidy
    Promotion to the default set comes AFTER marking, in a separate change.
 4. **The retracted 19.9%/13.0% framing is still live in the always-loaded file** — `CLAUDE.md`'s
    prefilter constraint, plus `docs/HUMAN_THRIVING_V8_PLAN.md:176` and
-   `memory/cross-repo-prioritization.md:1173`/`:1359`. Two copies carry the correction, four
+   `memory/cross-repo-prioritization.md` (grep `19.9%`; its line numbers moved 2026-09-27 when dated sections were retired). Two copies carry the correction, four
    carry the retraction. Deserves its own review. ⚠️ **Cite it by name, not by line** — it was
    `CLAUDE.md:74` until 2026-09-17 and the frontmatter edits move these numbers every session.
 5. **LD#160 — two Dutch-name violations**, owner call pending: `docs/adr/009-...:25,34,35,37,60`
@@ -552,6 +557,10 @@ Items surfaced by the multi-agent code review of the migration commits (2026-04-
 ---
 
 *Last updated: 2026-08-01*
+
+## ☐ Open threads inside ARCHIVED ledger rows (2026-09-27 retire; rows in `memory/archive/hypothesis-ledger-archive.md`)
+- [ ] `H-V8-3`: the reorder's multiplicity question "is still open": no pre-registered family was ever run. v8 is superseded by v9, so likely moot; close it or run it.
+- [ ] `H-V8-26`: its revisit trigger is a ~50-article hand-audit of v8's reader-facing precision; no audit record was found (review 2026-09-27). Moot now that v9 is live? Owner call.
 
 ## ☐ Unchecked boxes carried out of the archived sections (2026-09-24)
 

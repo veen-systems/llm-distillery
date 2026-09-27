@@ -256,7 +256,7 @@ question arrives as a hard blocker rather than a design choice. Full invalidatio
 
 # The contracts layer (2026-08-13, five sessions in parallel)
 
-**Plan and full round-1 review: `docs/CONTRACTS_PLAN.md`. This section holds the
+**Plan: `docs/CONTRACTS_PLAN.md`; full round-1 review: `docs/CONTRACTS_PLAN-rounds-archive.md`. This section holds the
 measurements and the traps.** Nothing was executed or committed in any repo.
 
 ## The finding
@@ -398,7 +398,7 @@ their only home, and an index entry is a hook, not a record.*
 **17 of 18 declared fields ride on delivered rows**, four consecutive deliveries, **0
 validation errors against both schemas**, measured by this session and by FluxusSource
 independently with identical results. Detail and the per-block counts:
-`docs/TODO.md` and `docs/CONTRACTS_PLAN.md` § *Round 4*. The 18th,
+`docs/TODO.md` and `docs/CONTRACTS_PLAN-rounds-archive.md` § *Round 4*. The 18th,
 `content_meta.error`, is correctly absent — it exists only on a derivation fault.
 
 **Verify (the script is in-repo now, not a loose file on the box):**

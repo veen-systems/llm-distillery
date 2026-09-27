@@ -27,7 +27,8 @@ Three findings from building it, each of which shapes the code:
     AND COUNTED, never dropped — a silent skip reads exactly like a pass.
 
   * ⛔ A BLOCK THAT PRINTS A NUMBER AND ASSERTS NOTHING IS NOT A CHECK. Eight blocks
-    in `cross-repo-prioritization.md` print issue counts with nothing comparing them
+    in `cross-repo-prioritization.md` (in `memory/archive/cross-repo-prioritization-archive.md` since
+    2026-09-27, so a default run no longer reads them) print issue counts with nothing comparing them
     to what the document claims, so they cannot fail. They are reported separately
     as NO-ASSERTION rather than counted as passes.
 

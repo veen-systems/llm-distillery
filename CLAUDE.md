@@ -98,7 +98,7 @@ For chat replies:
 | Starting calibration / scorer-training / oracle-prompt work | `memory/calibration-history.md` — Dead Ends (#69) |
 | Touching a prefilter, or considering an enforcement flip | `memory/prefilter-length-floor-hypotheses.md`, then #93 |
 | A legal/compliance question, or the training-data source | `docs/decisions/2026-08-05-tdm-opt-out-training-data.md` — one carve-out open (oracle ships text to the vendor) |
-| **Anything about the pipeline CONTRACTS** | `docs/decisions/2026-08-14-contract-a-envelope.md`, `docs/CONTRACTS_PLAN.md` § *Round 3*, `memory/stamp-contract-integrity.md`. ⛔ **Never quote a Contract A version from here** — read a delivered row (`scripts/contracts/contract_a_smoke.py`) |
+| **Anything about the pipeline CONTRACTS** | `docs/decisions/2026-08-14-contract-a-envelope.md`, `docs/CONTRACTS_PLAN-rounds-archive.md` § *Round 3*, `memory/stamp-contract-integrity.md`. ⛔ **Never quote a Contract A version from here** — read a delivered row (`scripts/contracts/contract_a_smoke.py`) |
 | **Asking what an article field IS, or where a blocked article went** | `NexusMind/contracts/article-record.schema.json`, `NexusMind/docs/ARTICLE_RECORD_REGISTER.md`; blocked: `docs/BLOCK_LEDGER_SPEC.md`. ⛔ **Never quote a field count** — every count is a window |
 | Adding a stamp / config key, or trusting a stamped field | `memory/stamp-contract-integrity.md` — run `NexusMind/scripts/stamp_census.py` before quoting a stamped field |
 | **Reading a number off NexusMind production data** | `memory/nexusmind-data-sources.md`. ⛔ **`live_articles` is NOT the reader population** — use `getArticlesForBuild`; `weighted_average` there is NORMALIZED |
