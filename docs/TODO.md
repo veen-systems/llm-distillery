@@ -11,6 +11,11 @@ topic. Re-read the block under it before starting; the reasons are there, not he
       The round-1 report (7 lenses on `356cd70`, 1 blocker fixed) is summarised in the commit message.
    2. ✅ **v10 TRAINED + GATED 2026-09-26: NOT DISTINGUISHABLE; v9 stays live** (`docs/evidence/2026-09-26-v10-retrain-gate/README.md`).
       On the pool's held-out rows v10 is STRICTER (recall 0.60 vs 0.87), not more generous. ▶ owner: next step (a/b/c there).
+   2b. ▶ **Diagnostic (b) adj4p is TRAINING on b650** (started 2026-09-27 09:59, `logs/adj4p_20260927.sh`, ~1 h). Pick up:
+      `ssh b650-gpu 'cat ~/llm-distillery/logs/adj4p_20260927.out'` → wait for `ADJ4P DONE`, then
+      `rsync -a b650-gpu:llm-distillery/gate_dumps/2026-09-26/ datasets/gate/ht_v10_2026-09-26/` and score it
+      like adj4 (commands in `docs/evidence/2026-09-26-v10-retrain-gate/README.md`; pool labels file
+      `datasets/gate/ht_v10_2026-09-26/pool_test_labels.jsonl`). Apply the reading rule in PREREGISTRATION.md § Diagnostic (b).
    3. ✅ #373 outcome checks recorded on #151 (50 v9 rows ingested; 28 v9 on Thriving, 726 v7 draining). Owner's 3 flags: v7 drain; v9 and v10 reject all.
    4. #165 detector packages: design/ADR only. Add the round-1 finding: commerce v2 weights exist only in NexusMind.
 
