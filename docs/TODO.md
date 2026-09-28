@@ -27,12 +27,11 @@ read-surface steps −1.1–4) moved VERBATIM to `docs/TODO-archive.md` § *Move
       independent `sort | comm` multiset check (0 lost, 4 header lines added; two mutations caught; order kept).
       Kept live on purpose: `H-JO1` (partial for Thriving), `H-CTX-*` (kept 2026-09-27 too), and the `cd-v6`/
       `sol-v6` index rows (they index live topic files; `check_doc_claims.py` pins `cd-v6-row`).
-   b. ◐ **TODO body audit — PARTLY DONE 2026-09-28** (`ec4ddc5` + next commit). Done: all `[x]` lines of the four
-      named sections moved verbatim to `docs/TODO-archive.md`; 6 of the carried-over boxes closed there, each with
-      its reason. Finding: NexusMind#286 item 3 is unfixed while violence enforces (annotated on its box).
-      **Left:** the ~30 remaining carried-over boxes — nearly all cite an issue that is still OPEN (checked
-      2026-09-28: LD#86/87/90/93/95/98/160, NM#278/284/286/231/292), so each needs a read of its issue, not a
-      state lookup. Unread: the 2026-08-07/08 FluxusSource-eval cluster and the per-lens-prefilter "decision 0" boxes.
+   b. ✅ **DONE 2026-09-28: TODO body audit** (`ec4ddc5`, `ba1b26c` + next). All `[x]` lines of the four named
+      sections and 16 carried-over boxes moved verbatim to `docs/TODO-archive.md`, each box with its closing reason;
+      lossless by `sort | comm`. The ~19 boxes left are LIVE: each cites an OPEN issue or waits on an owner call —
+      ⚠️ notably **decision 0** (delete the old per-lens prefilters, NexusMind#284): the 2026-08-21 ruling covers
+      NEW filters only, so the five boxes hanging on it stay. Finding: NexusMind#286 item 3 (on its box).
    c. **Gotcha log**: on/after 2026-10-01, `python3 scripts/maintenance/retire_memory.py {gotcha,sessions}
       --before 2026-10-01` (dry run first, then `--apply`).
    d. *Option, not ruled:* a hook blocking a commit that shrinks `CLAUDE.md`/`memory/MEMORY.md` by > 10% unless
@@ -403,10 +402,8 @@ queue is ▶ START HERE, not this list. Close or delete a line once checked agai
 - [ ] **Mechanize the language rule (#160)** — `scripts/verification/check_framework_language.py` whose
 
 **From:** 2026-08-09 — corroboration: the shippable change was refuted, the gate is the lever
-- [ ] **Do NOT flip `cross_source_threshold` yet.** 0.94/0.90 passes *my*
 
 **From:** 2026-08-08 (afternoon) — proven by outcome, and a self-inflicted outage
-- [ ] **The cutover itself** — deferred by owner decision so it doesn't share a
 - [ ] Re-measure gated on **measured GN-URL share per cycle**, not on "migration
 
 **From:** 2026-08-08 — the checks failed, the analysis didn't
@@ -414,14 +411,8 @@ queue is ▶ START HERE, not this list. Close or delete a line once checked agai
 - [ ] Promote `content_length` to `required` in Contract B **only after** the
 
 **From:** 2026-08-07 (night) — the dedup question answered by mechanism, and a deadline in trouble
-- [ ] **Confirm on the next cycle's log** (00:02 / 04:00 grid) — the `N scored,
 - [ ] **Remediate the 30 already-published rows** — reader-facing, ovr.news side,
 - [ ] **Check the Zimbabwe funeral row against the obituary gate** (enforcement is
-- [ ] **Measure near-duplicate SURVIVAL, not just deletion.** In the 20:06 run,
-- [ ] **`newsdata_eval`: the local-publisher share is 40% / 12% / 8%, and that is
-- [ ] **`items/day` is censored** — every eval identity is capped per run
-- [ ] **H2 (GDELT starvation) — my "76% → 66%" was REFUTED; the sign is backwards.**
-- [ ] **Every rate in the readout needs a "measured over which window, across
 
 **From:** 2026-08-07 (late) — coverage pass, a refuted plan, one instrument shipped
 - [ ] **Owner call**: does `ducroq/augmented-engineering` (34 open, **1 closed
@@ -436,9 +427,7 @@ queue is ▶ START HERE, not this list. Close or delete a line once checked agai
 
 **From:** 2026-08-02 — Chain 4 measured: two of the previous day's own P0 conclusions overturned
 - [ ] **Fit the solutions short-content cap** (#93 step 4) — **#92 no longer blocks it; #95 still does.** The second-op-point re-run ran 2026-08-05 and the defect is **identified**: D1 (both arms ≥2.25) −0.790, D2 (≥4.00) −0.861, **D3 (matched percentile depth) −1.119** [−1.61,−0.61], cluster-bootstrap p Holm-corrected 0.0032 / 0.0012 / <1.5e-4. The selection artifact predicted D2 markedly more negative and D3 → 0; D2 moved −0.071 and D3 is the *largest*. A gemini-2.5-flash cross-check on the same D3 sample gives **−1.351** [−1.73,−0.96] — two oracles with clearly different absolute bias, same gap, which rules out "the judge penalises short input". Harness + fixtures committed (`scripts/diagnostics/ld92_*.py`, `tests/fixtures/ld92/`). **Remaining blocker is Batch F.1 (#95)**: the cap value is a threshold fit and inherits the |Δ| ≤ 0.16 batch-composition noise floor. Also weigh the recall cost against NM#231/#292 before setting a value — `gn_africa_*` / `gn_asia_*` feeds lead solutions' short-and-clearing list.
-- [ ] **Reader-reported defects 2026-08-03, filed upstream — all three land outside this repo.** A single reader complaint about ovr.news decomposed into three defects in three different repos, which is the clearest instance yet of "the repo where a symptom appears is not the repo that owns the fix":
 - [ ] **Does the scorer share the summariser's fixed-budget failure? (NEW, ovr#299)** For English sources, summary content words absent from the article *and* title run 31.6% (1000+ chars) → 73.9% (120–299) → **83.4% (<120)**, monotone over 18,756 summaries. The mechanism there is a fixed output length target (medians 1159/968/875/1065 against a 40× input range) that the model fills — compressing an article, generating from a headline. **Open for this repo: whether the student has an analogous behaviour, or whether its short-content error is purely vocabulary-without-subject.** The fixes differ — one is a budget, the other a cap — so this is worth one experiment before building either.
-- [ ] **`foresight v1` still floors on length** — the one prefilter left calling `check_content_length` inside `apply_filter` after #93. Deliberately out of scope (PARKED, merged into solutions #43, not in the production set), but fix it at the same time as any un-parking so it does not silently re-inherit the shape #93 removed.
 - [ ] **Re-run the NM#284 shadow** now that the length floor is out of the prefilters *(deployed to gpu-server 2026-08-03 ~15:45 CEST, rev `2d5c54aa…`; first cycle carrying it is 16:10)* — its pass rates finally describe lens behaviour, which is what LD#90 item 2 needs. Rates measured before 2026-08-03 are not comparable to ones measured after.
 - [ ] **NM#286 item 3** (violence stamping skipped in single-filter / `--no-dedup` / dedup-exception runs). Verified in code; **live blast radius zero today** (production runs multi-filter, violence `enforce: false`), so it is an audit gap, not admitted violence. Still a hard prerequisite for any violence enforce flip, with LD#82.
   - ⛔ **2026-09-28: the premise is gone and the fix is not in.** Violence has ENFORCED since 2026-08-23 (`config/app.yaml` comment on sadalsuud); `_run_violence_promotion_prefilter` still returns with NO stamps when `_article_cache` is empty (read on sadalsuud today), and `_enforce_violence_promotion` fails open. Live multi-filter cycles stamp, so today's exposure is a shared-dedup exception or an ad-hoc single-filter run. The 09:05 cycle logged `10344 unstamped articles left in place` — cause NOT measured (dedup-removed copies is a guess). NexusMind's code; owner to decide whether to raise it on NM#286.

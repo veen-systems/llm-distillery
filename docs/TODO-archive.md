@@ -6963,3 +6963,28 @@ are NOT reused when an item closes — a stable number is worth more than a tidy
   - *Closed 2026-09-28: overtaken: v8 was superseded by v9, LIVE 2026-09-25 (NM#530).*
 - [ ] **NM#231 re-measure after uplifting refit** — non-English under-scoring is real but secondary; size the residual model-side gap before considering v8 work. *(2026-08-07: superseded in scope by the v8 criteria above — the re-measure is now a v8 acceptance test, not a prerequisite study.)*
   - *Closed 2026-09-28: overtaken with the v8 box above; NexusMind#231 itself stays OPEN and carries the question.*
+
+## Moved 2026-09-28 (second pass) — closed boxes from TODO § *Unchecked boxes…*, verbatim
+
+*Each box (with any indented sub-bullets) is followed by the reason it closed; box text unedited. Full original wording of each box is further up this file, in its dated section.*
+
+- [ ] **Do NOT flip `cross_source_threshold` yet.** 0.94/0.90 passes *my*
+  - *Closed 2026-09-28: a standing caution, carried by `memory/corroboration-feature-hypotheses.md` ("the threshold is not the lever", CLAUDE.md pointer row); NexusMind#291 (the threshold itself) stays OPEN.*
+- [ ] **The cutover itself** — deferred by owner decision so it doesn't share a
+  - *Closed 2026-09-28: overtaken: the cd v6 cutover ran 2026-08-13, failed and was reverted; v6 is fixed offline and NOT deployed (CLAUDE.md filter table, `memory/cd-v6-probe-hypotheses.md`).*
+- [ ] **Confirm on the next cycle's log** (00:02 / 04:00 grid) — the `N scored,
+  - *Closed 2026-09-28: LD#101 (eval arms published) CLOSED 2026-08-08, with the exclusion verified by outcome per its closing comment.*
+- [ ] **Measure near-duplicate SURVIVAL, not just deletion.** In the 20:06 run,
+  - *Closed 2026-09-28: FluxusSource#133 (source-blind content-hash dedup) CLOSED 2026-08-16 after a measured ruling on this population.*
+- [ ] **`newsdata_eval`: the local-publisher share is 40% / 12% / 8%, and that is
+  - *Closed 2026-09-28: eval-readout item; FluxusSource#119 and #120 (the readout and its decision gate) are CLOSED.*
+- [ ] **`items/day` is censored** — every eval identity is capped per run
+  - *Closed 2026-09-28: eval-readout item; FluxusSource#119 and #120 are CLOSED.*
+- [ ] **H2 (GDELT starvation) — my "76% → 66%" was REFUTED; the sign is backwards.**
+  - *Closed 2026-09-28: eval-readout item; FluxusSource#125 and #132 (the GDELT issues it names) are CLOSED.*
+- [ ] **Every rate in the readout needs a "measured over which window, across
+  - *Closed 2026-09-28: eval-readout item; FluxusSource#120 CLOSED. The general rule lives in `feedback-window-is-part-of-a-source`.*
+- [ ] **Reader-reported defects 2026-08-03, filed upstream — all three land outside this repo.** A single reader complaint about ovr.news decomposed into three defects in three different repos, which is the clearest instance yet of "the repo where a symptom appears is not the repo that owns the fix":
+  - *Closed 2026-09-28: filed-upstream note, not our task: FluxusSource#124 and NexusMind#290 CLOSED; NexusMind#291 stays OPEN and carries the third.*
+- [ ] **`foresight v1` still floors on length** — the one prefilter left calling `check_content_length` inside `apply_filter` after #93. Deliberately out of scope (PARKED, merged into solutions #43, not in the production set), but fix it at the same time as any un-parking so it does not silently re-inherit the shape #93 removed.
+  - *Closed 2026-09-28: moot: `filters/foresight/` no longer exists (removed 2026-08-03, merged into solutions #43).*
