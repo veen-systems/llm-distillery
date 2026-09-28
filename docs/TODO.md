@@ -57,8 +57,11 @@ read-surface steps −1.1–4) moved VERBATIM to `docs/TODO-archive.md` § *Move
    cycles) — plateaued. At harm ≥ 0.5 above each lens's own op-point (2 days, filtered population):
    belonging **10.9%**, human_thriving 7.7%, uplifting 5.7%, nature_recovery 5.3% (**n=38**, useless),
    solutions **1.9%**, cd 1.2%. ⛔ Flag rates, NOT harm rates — detector precision off the Thriving lenses
-   is unmeasured. ▶ **NEXT, owner:** the `uplifting v7` cap the method ends in, and whether belonging's
-   10.9% is junk or constitutive (a labelled sample would answer it; titles suggest mixed).
+   is unmeasured. ⛔ **The `uplifting v7` cap this method ended in is MOOT** (found 2026-09-28): Thriving reads
+   `human_thriving v9` since 2026-09-26 (ovr.news#373) and v7 is draining; a cap acts at scoring time, so it
+   would change nothing a reader sees. ▶ **NEXT, owner:** no cap is justified yet on any lens. Hand-check the
+   18 flagged v9 rows (titles read as mostly fine) and ~50 flagged belonging rows (junk vs constitutive);
+   a cap only if most are real misfits. NexusMind#286 item 3 raised with the `nexusmind-55` session.
    *Original wording kept below.*
    ~~DATE-GATED (earliest ~2026-09-24)~~ — THE PER-LENS HARM FLAG RATES (`#156` step 2).
    🆕 **MEASURED 2026-09-28 (journal, sadalsuud): the harm stage has reported `0 files deferred` every cycle
