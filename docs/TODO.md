@@ -33,8 +33,9 @@
      `human_thriving v9` rows and ~50 flagged `belonging` rows at harm ≥ 0.5 (I can pull the list from
      sadalsuud). `docs/evidence/2026-09-28-per-lens-harm-rates/`.
    - **NexusMind#286 item 3** (violence stamping skipped on an empty article cache, fail-open, while violence
-     ENFORCES): confirmed unfixed by the `nexusmind-55` session at `9dfcf2a`; **scheduling is being put to the
-     owner in that session**. Nothing leaks in a normal cycle (their 3-cycle identity). Detail: the
+     ENFORCES): confirmed unfixed at `9dfcf2a`; owner handed timing to NexusMind 2026-09-28 → **NexusMind PR #561 OPEN,
+     CI green (checked 2026-09-28), merge is the owner's call there.** Outcome check is theirs: after deploy every
+     filter logs `Violence safety net [<filter>]: N unstamped survivors` — all six must read 0 on the first real cycle. Nothing leaks in a normal cycle (their 3-cycle identity). Detail: the
      `NM#286 item 3` box under *Unchecked boxes carried out…*.
    - ✅ **Decision 0 RULED 2026-09-28 — DELETE the per-lens rule prefilters** (NexusMind#284). Owner, verbatim:
      *"delete is suppose"*. Relayed to `nexusmind-55`; sequencing unchanged — **we delete first, NexusMind strips
