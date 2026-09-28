@@ -27,10 +27,12 @@ read-surface steps −1.1–4) moved VERBATIM to `docs/TODO-archive.md` § *Move
       independent `sort | comm` multiset check (0 lost, 4 header lines added; two mutations caught; order kept).
       Kept live on purpose: `H-JO1` (partial for Thriving), `H-CTX-*` (kept 2026-09-27 too), and the `cd-v6`/
       `sol-v6` index rows (they index live topic files; `check_doc_claims.py` pins `cd-v6-row`).
-   b. **TODO body audit** (below this block): `## Commerce Prefilter SLM - NEEDS REWORK` (commerce v2 is now
-      retired and deleted — re-read it against that), `## Code Quality (Feb 2026)`, `## Prefilter Quality (Apr
-      2026)`, `## Post-#52 Review-Battery Followups`, and the 38 *Unchecked boxes* — check each against current
-      state, move closed ones verbatim to the archive.
+   b. ◐ **TODO body audit — PARTLY DONE 2026-09-28** (`ec4ddc5` + next commit). Done: all `[x]` lines of the four
+      named sections moved verbatim to `docs/TODO-archive.md`; 6 of the carried-over boxes closed there, each with
+      its reason. Finding: NexusMind#286 item 3 is unfixed while violence enforces (annotated on its box).
+      **Left:** the ~30 remaining carried-over boxes — nearly all cite an issue that is still OPEN (checked
+      2026-09-28: LD#86/87/90/93/95/98/160, NM#278/284/286/231/292), so each needs a read of its issue, not a
+      state lookup. Unread: the 2026-08-07/08 FluxusSource-eval cluster and the per-lens-prefilter "decision 0" boxes.
    c. **Gotcha log**: on/after 2026-10-01, `python3 scripts/maintenance/retire_memory.py {gotcha,sessions}
       --before 2026-10-01` (dry run first, then `--apply`).
    d. *Option, not ruled:* a hook blocking a commit that shrinks `CLAUDE.md`/`memory/MEMORY.md` by > 10% unless
@@ -402,7 +404,6 @@ queue is ▶ START HERE, not this list. Close or delete a line once checked agai
 
 **From:** 2026-08-09 — corroboration: the shippable change was refuted, the gate is the lever
 - [ ] **Do NOT flip `cross_source_threshold` yet.** 0.94/0.90 passes *my*
-- [ ] **Production untouched.** No config changed, nothing deployed, in any repo.
 
 **From:** 2026-08-08 (afternoon) — proven by outcome, and a self-inflicted outage
 - [ ] **The cutover itself** — deferred by owner decision so it doesn't share a
@@ -416,7 +417,6 @@ queue is ▶ START HERE, not this list. Close or delete a line once checked agai
 - [ ] **Confirm on the next cycle's log** (00:02 / 04:00 grid) — the `N scored,
 - [ ] **Remediate the 30 already-published rows** — reader-facing, ovr.news side,
 - [ ] **Check the Zimbabwe funeral row against the obituary gate** (enforcement is
-- [ ] **FS#133's question is STILL OPEN — my "arbitrary" answer was retracted
 - [ ] **Measure near-duplicate SURVIVAL, not just deletion.** In the 20:06 run,
 - [ ] **`newsdata_eval`: the local-publisher share is 40% / 12% / 8%, and that is
 - [ ] **`items/day` is censored** — every eval identity is capped per run
@@ -427,7 +427,6 @@ queue is ▶ START HERE, not this list. Close or delete a line once checked agai
 - [ ] **Owner call**: does `ducroq/augmented-engineering` (34 open, **1 closed
 
 **From:** 2026-08-06 evening — four owner decisions taken, three backlogs closed
-- [ ] **NOT done, and deliberately: #87.** Unblocked now (it was waiting on #95) but not folded into #98 — that issue was scoped *probe first, dimensions later*, and merging them makes any change in the numbers unattributable.
 
 **From:** 2026-08-06 — cd v6 probe (#98), the English escape hatch (#99), and an instrument for FS#120
 - [ ] **sadalsuud carries the pre-`80dd399` cd gate** (235 topic stems vs 453). Zero production effect — that prefilter does not run (NexusMind#284) — but flipping enforcement without syncing restores the exact skew #86 removed. Recorded on #86 as a trap; **do not close it by syncing**, since #98 deletes the file.
@@ -438,11 +437,11 @@ queue is ▶ START HERE, not this list. Close or delete a line once checked agai
 **From:** 2026-08-02 — Chain 4 measured: two of the previous day's own P0 conclusions overturned
 - [ ] **Fit the solutions short-content cap** (#93 step 4) — **#92 no longer blocks it; #95 still does.** The second-op-point re-run ran 2026-08-05 and the defect is **identified**: D1 (both arms ≥2.25) −0.790, D2 (≥4.00) −0.861, **D3 (matched percentile depth) −1.119** [−1.61,−0.61], cluster-bootstrap p Holm-corrected 0.0032 / 0.0012 / <1.5e-4. The selection artifact predicted D2 markedly more negative and D3 → 0; D2 moved −0.071 and D3 is the *largest*. A gemini-2.5-flash cross-check on the same D3 sample gives **−1.351** [−1.73,−0.96] — two oracles with clearly different absolute bias, same gap, which rules out "the judge penalises short input". Harness + fixtures committed (`scripts/diagnostics/ld92_*.py`, `tests/fixtures/ld92/`). **Remaining blocker is Batch F.1 (#95)**: the cap value is a threshold fit and inherits the |Δ| ≤ 0.16 batch-composition noise floor. Also weigh the recall cost against NM#231/#292 before setting a value — `gn_africa_*` / `gn_asia_*` feeds lead solutions' short-and-clearing list.
 - [ ] **Reader-reported defects 2026-08-03, filed upstream — all three land outside this repo.** A single reader complaint about ovr.news decomposed into three defects in three different repos, which is the clearest instance yet of "the repo where a symptom appears is not the repo that owns the fix":
-- [ ] **Price the upstream fix before the downstream one (NEW 2026-08-05).** Google News is 14–17% of scored articles but **48–56% of all sub-300-char stubs** (~3× over-represented, measured within-period over 149,075 solutions v6 rows / 80 cycles). Pre-enrichment already rescues ~62% and fires below **500** chars — the net is not too small; GN survives because its `url` is a `news.google.com/rss/articles/…` redirect, so the fetcher retrieves Google's redirect page. **Retiring the GN proxies removes roughly half the population the solutions cap exists to handle, at no recall cost to genuine articles.** That decision is FluxusSource#120, due **~2026-08-14** — the only calendar-bound item on the board. Evidence and a suggested `enrichable rate` readout column posted there. Sequence: FS#120 → then size the cap against what remains.
 - [ ] **Does the scorer share the summariser's fixed-budget failure? (NEW, ovr#299)** For English sources, summary content words absent from the article *and* title run 31.6% (1000+ chars) → 73.9% (120–299) → **83.4% (<120)**, monotone over 18,756 summaries. The mechanism there is a fixed output length target (medians 1159/968/875/1065 against a 40× input range) that the model fills — compressing an article, generating from a headline. **Open for this repo: whether the student has an analogous behaviour, or whether its short-content error is purely vocabulary-without-subject.** The fixes differ — one is a budget, the other a cap — so this is worth one experiment before building either.
 - [ ] **`foresight v1` still floors on length** — the one prefilter left calling `check_content_length` inside `apply_filter` after #93. Deliberately out of scope (PARKED, merged into solutions #43, not in the production set), but fix it at the same time as any un-parking so it does not silently re-inherit the shape #93 removed.
 - [ ] **Re-run the NM#284 shadow** now that the length floor is out of the prefilters *(deployed to gpu-server 2026-08-03 ~15:45 CEST, rev `2d5c54aa…`; first cycle carrying it is 16:10)* — its pass rates finally describe lens behaviour, which is what LD#90 item 2 needs. Rates measured before 2026-08-03 are not comparable to ones measured after.
 - [ ] **NM#286 item 3** (violence stamping skipped in single-filter / `--no-dedup` / dedup-exception runs). Verified in code; **live blast radius zero today** (production runs multi-filter, violence `enforce: false`), so it is an audit gap, not admitted violence. Still a hard prerequisite for any violence enforce flip, with LD#82.
+  - ⛔ **2026-09-28: the premise is gone and the fix is not in.** Violence has ENFORCED since 2026-08-23 (`config/app.yaml` comment on sadalsuud); `_run_violence_promotion_prefilter` still returns with NO stamps when `_article_cache` is empty (read on sadalsuud today), and `_enforce_violence_promotion` fails open. Live multi-filter cycles stamp, so today's exposure is a shared-dedup exception or an ad-hoc single-filter run. The 09:05 cycle logged `10344 unstamped articles left in place` — cause NOT measured (dedup-removed copies is a guess). NexusMind's code; owner to decide whether to raise it on NM#286.
 - [ ] **Fix `no_cultural_topic_signal` multilingual coverage**, then re-run the identical LD#86 recall check — falsifies whether the language skew is the gate or the corpus.
 
 **From:** 2026-08-01 — Cross-repo: ovr#280 cluster_id diagnosis corrected
@@ -455,6 +454,4 @@ queue is ▶ START HERE, not this list. Close or delete a line once checked agai
 - [ ] **cd v6 lens fidelity scope (#87)** — ccc 0.25 weight ceiling (mean 0.64), 27% off-lens hard science in visible band, "4.5 display threshold" vs shipped 4.0 unreconciled. Design ticket; not urgent. The 3.5 op-point proposal was REFUTED (sampling artifact) — any re-derivation needs a randomized [3.0,4.5) sample **after NM#284 lands**: the v5 op-point and normalization CDF were both fitted on a distribution still containing the ~71% the prefilter should have removed.
 - [ ] **Lens harmonization program (#90)** — owner directive 2026-07-31: bring all lens filters to the successful template (op-point at the distribution, fresh anchored fit, working positive gate, hybrid + stamps, ADR-021 gate) **The rename half is CLOSED as of 2026-08-06 — do not re-open it here.** ADR-012 amended: `cultural_discovery` and `nature_recovery` KEEP their names (their Hub repos are public standalone artefacts; `discovery-filter-vN` / `recovery-filter-vN` drop the qualifier that says what the model is about), `solutions` confirmed as-is, and `uplifting` → **`human_thriving`** at v8 — not bare `thriving`, which is an existing parked directory. What remains under #90 is the template half only.
 - [ ] **Hygiene batch** — emit `stage_used` into row attrs; document nr runtime stage-1 threshold 0.75 (config.yaml says 3.225, inert); fix stale ir config tiers (3.0 vs live 4.0); note nr raw HIGH tier 7.0 > calibrated ceiling 6.8 (structurally dead).
-- [ ] **`human_thriving` v8 — acceptance criteria (owner decision 2026-08-07).** Two open scorer-fidelity defects in `uplifting v7` are **not** separate work: they die in this retrain or they do not die. Both become held-out eval slices, judged under ADR-021 against oracle ground truth, and both carry #95's ±0.16 band — an article predicted within 0.16 of the op-point is indeterminate and cannot be counted as a pass.
-- [ ] **NM#231 re-measure after uplifting refit** — non-English under-scoring is real but secondary; size the residual model-side gap before considering v8 work. *(2026-08-07: superseded in scope by the v8 criteria above — the re-measure is now a v8 acceptance test, not a prerequisite study.)*
 - [ ] **Drift guard** — uplifting violated the >20%-relative-pass-rate refit trigger by an order of magnitude for ~4 months, undetected; the prefilter kill (NM#284) hid for ~6 months the same way. Add per-cycle pass-rate logging or a scheduled drift check covering both normalization freshness and declared-vs-observed prefilter pass rate (owner question).
