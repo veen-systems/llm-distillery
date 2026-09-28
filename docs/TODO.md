@@ -36,10 +36,21 @@
      ENFORCES): confirmed unfixed by the `nexusmind-55` session at `9dfcf2a`; **scheduling is being put to the
      owner in that session**. Nothing leaks in a normal cycle (their 3-cycle identity). Detail: the
      `NM#286 item 3` box under *Unchecked boxes carried out…*.
-   - **Decision 0** (NexusMind#284): delete the old per-lens rule prefilters? The 2026-08-21 ruling covers NEW
-     filters only; five carried-over boxes wait on it.
+   - ✅ **Decision 0 RULED 2026-09-28 — DELETE the per-lens rule prefilters** (NexusMind#284). Owner, verbatim:
+     *"delete is suppose"*. Relayed to `nexusmind-55`; sequencing unchanged — **we delete first, NexusMind strips
+     its shadow evaluator after we say our side landed.** Execution is item 1b below.
+   - **Harm hand check** — the list is pulled: `docs/evidence/2026-09-28-per-lens-harm-rates/harm_handcheck_list.tsv`
+     (19 v9 rows = all; 50 of 136 belonging rows, seeded per lens; window one cycle later than EXP-044's, hence
+     19/136 not 18/128). Owner marks `junk` / `fits`; then a cap decision per lens.
    - Standing: the ~$3.2–3.6 adverse pool (#156, numbered item 2); H-TV5 (Thriving fullness under v9, ~10-day
      drain from 2026-09-26).
+
+1b. **Execute decision 0 (ours first).** ⛔ First name every caller of `filters/*/v*/prefilter.py` —
+   CLAUDE.md says the per-lens prefilter runs ONLY in the oracle/training path, so deleting it changes what
+   future oracle runs label (`ground_truth.batch_scorer`; the 300-char floor lives separately in
+   `make_oracle_prefilter` and stays). Then delete per filter (prefilter.py, config `prefilter:` block, tests,
+   package-consistency expectations), prove the outcome (a batch_scorer dry run passes the rows the prefilter
+   used to drop), close the five boxes that waited on decision 0, and tell `nexusmind-55` our side landed.
 
 2. **Small, ours:** `cultural_discovery v5` `normalization.json` `raw_min` **4.0006** vs `TIER_THRESHOLDS`
    **4.0** — breaks the must-equal rule (CLAUDE.md, op-point in four places). Read
