@@ -6909,3 +6909,40 @@ are NOT reused when an item closes — a stable number is worth more than a tidy
    were missing from the first version of this list — *enumeration is not inventory*, firing
    inside the item whose whole subject is citing without checking.
 
+## Moved 2026-09-28 — closed items from the TODO body (START HERE item 1b), verbatim
+
+*Every `- [x]` line of `## Commerce Prefilter SLM`, `## Post-#52 Review-Battery Followups` and `## Prefilter Quality (Apr 2026)`, plus the whole `## Code Quality (Feb 2026)` section (all `[x]`). Each block repeats its source heading; order kept. Open `[ ]` items stayed live.*
+
+## Code Quality (Feb 2026)
+
+- [x] **FilterBaseScorer extraction** (#10) - Shared base class in `filters/common/filter_base_scorer.py`, all 4 production filters migrated
+- [x] **load_lora extraction** (#11) - Shared `load_lora_model()` in `filters/common/model_loading.py`
+- [x] **Code quality sweep** (#12-#19) - Resolved 8 issues: removed dead code, cleaned stale comments, fixed inconsistencies (-314 lines)
+
+
+## Commerce Prefilter SLM - NEEDS REWORK — its `[x]` items
+
+- [x] **v1 Training data collection** - 2,847 examples (commerce + journalism)
+- [x] **v1 Model training** - DistilBERT, MiniLM, XLM-RoBERTa compared
+- [x] **v1 Backtesting** - 56,336 articles, threshold optimization
+
+## Post-#52 Review-Battery Followups — its `[x]` items
+
+- [x] **RIP guard repair** (2026-04-29, commit `dd20749`). Code-reviewer caught that the `(?-i:\bRIP\b)` "fix" from `598fa72` was inert in production — `_get_combined_clean_text` lowercases input before pattern matching, so the inline case-sensitive flag had no uppercase chars left to enforce. Real fix: read the raw title directly and run a case-sensitive `\bRIP\b` against it. Title-only. 20/20 tests.
+- [x] **POSITIVE_PATTERNS shadow rename** (2026-04-29, commit `7f22d01`). Refactoring agent flagged that belonging v1 + CD v4 shadowed `BasePreFilter.POSITIVE_PATTERNS` with incompatible semantics — a future maintainer setting `POSITIVE_THRESHOLD > 0` would silently activate wrong base behavior. Renamed to `POSITIVE_SIGNAL_PATTERNS` (belonging) / `DISCOVERY_PATTERNS` (CD) and compiled locally.
+- [x] **CD v4 truncation** (2026-04-29, commit `e2595dc`). Security audit flagged CD v4 ran ~60 patterns against unbounded body. Added `[:MAX_PREFILTER_CONTENT]` slice in apply_filter + classify_content_type, matching uplifting v7's pattern.
+- [x] **uplifting v7 multilingual `\b` boundary sweep** (2026-04-29, commit `d0916f4`). Far broader than the known `munitie`/communities bug — `viol`/`acquisition`/`fusion`/`auteur`/`association` were all unbounded multilingual alternations causing real false-positives on English content. All `\b` anchors added; locked-in test rewritten to expect correct `pure_speculation` outcome.
+- [x] **Investment-risk v6 cleanups** (2026-04-29, commit `24af3f8`). `\bfed\b` keyword tightened (no longer fires on "fed up" / "force-fed"), `get_statistics` alias added for cross-filter naming consistency, reason-string raw-regex contract documented at construction sites.
+- [x] **CD v4 colonial exception tightening** (2026-04-29, commit `ffffdf9`). Bare `\bcolonial\b` was too broad — bypassed celebrity_art on "colonial mansion auctioned by billionaire" et al. Dropped; surrounding repatriation/restitution/provenance patterns provide adequate coverage.
+- [x] **`_check_domain_exclusions` hoist + `_pre_exclusion_check` hook** (2026-04-29, this commit). 4 identical implementations consolidated into `BasePreFilter._check_domain_exclusions` driven by a per-filter `DOMAIN_EXCLUSIONS` dict. Symmetric `_pre_exclusion_check` hook added to `BasePreFilter.apply_filter` (mirrors `_filter_specific_final_check` — useful for filters with a gate-in check that should short-circuit before exclusions). All 4 filter test suites pass; sustech v3 unaffected.
+- [x] **ADR-019 first migration: belonging v1** (2026-05-22, commits `ba6b7cb` + `c1ebc98`). Per-category bypass logic (non-obit `has_exc OR pos >= threshold` rule, obit floor `pos >= 2 OR (has_exc AND pos >= 1)`) lifted out of `apply_filter` into `_compound_override_applies` hook. apply_filter shrank ~65 → ~30 LOC. Custom apply_filter retained for the three ADR-019-flagged reasons (URL-domain-first ordering, bare reason strings, case-sensitive `\bRIP\b` raw-title force-fire). 20/20 self-tests green; multi-agent review battery (code-reviewer + refactoring-guide + security-auditor in parallel) returned PASS with three inlinable findings (threshold>0 guard, assert on unhandled category, base docstring drift), all applied in `c1ebc98`.
+
+## Prefilter Quality (Apr 2026) — its `[x]` items
+
+- [x] **belonging v1 obituary leak (#45)** - 2026-04-28. 5 bypass classes patched (dies-with-verb, procession, vigil, RIP/rest in peace, killed-in-year), `dies at \d` → `\d+` bug fix, override floor on obit branch. Plus `(?-i:\bRIP\b)` follow-up after the case-insensitive false positive on "rip current".
+- [x] **sustainability_technology v3 clickbait leak (#46)** - 2026-04-28. CLICKBAIT category added with 6 patterns (you-won't-believe, without-knowing, this-common, you're-probably, X-things-you-didn't, shocking-fact). Pattern 5 bounded `.{0,120}` after review caught cross-sentence FP risk.
+- [x] **cultural-discovery v4/v5 missing content_length check** — CLOSED 2026-08-03 by #93, in the opposite direction from the one planned. No `apply_filter` calls `check_content_length` any more; the floor is enforced once, in the oracle path, for every filter. cd was the only filter whose *labelling* path had no floor, so #93 restores one there: measured on a short-skewed stress corpus (`data/raw`, 66% sub-300) that withholds ~40% of what cd would have sent to the oracle. The production-realistic share is lower and unmeasured — **re-measure before the next cd oracle run** (#87).
+- [x] **nature_recovery v2 missing content_length check** — MOOT 2026-08-03 (#93). Not a gap any more: no prefilter checks length.
+- [x] **uplifting v7 multilingual `\b` boundary leak** - FIXED 2026-04-29. Sweep of NL/DE/FR multilingual alternations added `\b` boundaries to every category in EXCLUSION_PATTERNS + EXCEPTION_PATTERNS_PER_CATEGORY. Big offenders cleaned up: `munitie` no longer fires inside "communities", `viol` no longer matches inside "violence"/"violation"/"viola"/"violin" (was a major crime_violence FP vector on English content), `fusion`/`acquisition` (false corporate_finance), `auteur` (false on "auteur theory"), `association` exception (over-broad bypass). Locked-in test case for "New Technology Could Transform Energy Production" rewritten — now correctly hits `pure_speculation` instead of bug-induced `military_security`. 12/12 tests pass; ThrivingPreFilterV1 subclass verified.
+- [x] **Universal obituary detector (#51/#83)** — DONE through enforcement 2026-07-30 session 3: v5 trained (21 FN-delta hard positives), 3-reviewer battery corrected the eval (fair table excl-24; June-increment panel 0.71–0.83, threshold-insensitive), owner adjudicated 14 boundary rows (grief-vs-news rule, flips both sharpened-broad clauses), owner went recall-first ("I just hate obits coming through") → **ENFORCEMENT ON: v5 @ 0.85** (NexusMind `b904edc`, `obituary_blocked` in dedup gate, config-gated rollback via `pipeline.obituary_detector.enforce`). **Enforcement VERIFIED 2026-07-30 20:12 + overnight sanity check PASSED 2026-07-31** (1158→1208→1249 blocked, all-v5 stamps, zero post-enforcement obit leaks in 133 collected). ovr#204 handled ovr-side (editorial gate retired 2026-07-30; sentinel re-derivation ~5% after Aug 6; downstream death-rate 7.9%→2.9% past the boundary). Site carryover (47 flagged shadow-era articles + 2 v5 FNs) washes out by ~Aug 13 — owner accepted, no purge.
+- [x] **Violence promotion prefilter (#73)** — v1 shadow-deployed NM#274 (2026-07-28). Frozen mpnet-base-v2 + MLP(256,128), 1,957 training samples. OOF precision 0.936, recall 0.550 @0.95. Stamp-only per ADR-004. Next: shadow accumulation → panel validate → v2 retrain with more data (recall is low at 0.55).
