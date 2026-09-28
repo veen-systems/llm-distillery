@@ -7,14 +7,13 @@ START HERE block (2026-09-26/27: H-DP3, ADR-024 step 3, adj4p, the #151 cutover 
 read-surface steps −1.1–4) moved VERBATIM to `docs/TODO-archive.md` § *Moved 2026-09-27 (evening)*
 — grep there before concluding something was never recorded.*
 
-0. ▶ **Verify NexusMind PR #553 (deletes retired obituary v3/v4 + commerce v2) reached production.**
-   Owner ruled 2026-09-27 "stop shipping + delete"; ours is live (`3e7f565`, `5590f88`: `RETIRED_DIRS`).
-   ✅ **#553 MERGED** (0cbfd4c at 2026-09-27T14:38:24Z, CI green); ships at the next 4-hourly cycle. First prove it arrived
-   (`git merge-base --is-ancestor 0cbfd4c HEAD` on sadalsuud), then, `ssh sadalsuud 'cd ~/local_dev/NexusMind && git log -1 --format=%h
-   && ls filters/common/obituary_detector filters/common/commerce_prefilter'` must show only `v5` / `v1`, and
-   `python3 scripts/deployment/verify_detector_package.py verify --all --target sadalsuud:~/local_dev/NexusMind
-   --strict` must still print 4× OK. If NOT merged: nothing to do; do not push them. ⚠️ gpu-server keeps orphan
-   `{v3,v4,v2}/models/*.pkl` (`deploy_filters.sh` excludes `models/` from `--delete`) — NexusMind's to `rm`.
+0. ✅ **CLOSED 2026-09-28 — NexusMind PR #553 is in production.** On sadalsuud: HEAD `5976fd2`, `0cbfd4c` is an
+   ancestor; `filters/common/obituary_detector` holds only `v5`, `commerce_prefilter` only `v1`;
+   `verify_detector_package.py verify --all --strict` printed 4× OK. Cycles since the merge: 17:06, 21:09, 05:32,
+   09:18 Finished; **00:58 OOM-killed in pre-enrichment** (23.1G peak) — already NexusMind#558, not caused by #553
+   (the kill came during fetch, after detector load). ⚠️ gpu-server orphans still there: the 08:09 sync logs
+   `cannot delete non-empty directory: common/obituary_detector/{v3,v4}, common/commerce_prefilter/v2` (plus
+   `investment_risk/v5`, `uplifting/v5`) — NexusMind's to `rm`, as predicted.
 
 1. ▶ **THE READ SURFACE (`#163`) — owner, standing since 2026-09-22 and re-stated 2026-09-27: "prune, thin,
    mechanize, retire."** Order: **mechanize → retire → thin → prune**; ⛔ retiring is not deleting (move
@@ -23,8 +22,11 @@ read-surface steps −1.1–4) moved VERBATIM to `docs/TODO-archive.md` § *Move
    `memory/gotcha-log.md` 149,894; `memory/hypothesis-ledger.md` 85,687; `memory/cross-repo-prioritization.md`
    61,176; `CLAUDE.md` 17,933; `memory/MEMORY.md` 10,677; always-loaded layer PASS 30,750 / 60,000.
    First actions, in order:
-   a. **Ledger retire**: move CLOSED rows of `memory/hypothesis-ledger.md` (H-DP3 closed 2026-09-27, and any
-      other ✅/❌ row) to `memory/archive/hypothesis-ledger-archive.md`, same method as 2026-09-27's retire step 3.
+   a. ✅ **DONE 2026-09-28: ledger retire.** 8 rows (`H-TV1`–`H-TV4`, `H-LA1`, `H-HC1`, `H-DP1`, `H-DP3`) moved
+      verbatim to `memory/archive/hypothesis-ledger-archive.md`; ledger 85,726 → 81,818 B. Lossless by an
+      independent `sort | comm` multiset check (0 lost, 4 header lines added; two mutations caught; order kept).
+      Kept live on purpose: `H-JO1` (partial for Thriving), `H-CTX-*` (kept 2026-09-27 too), and the `cd-v6`/
+      `sol-v6` index rows (they index live topic files; `check_doc_claims.py` pins `cd-v6-row`).
    b. **TODO body audit** (below this block): `## Commerce Prefilter SLM - NEEDS REWORK` (commerce v2 is now
       retired and deleted — re-read it against that), `## Code Quality (Feb 2026)`, `## Prefilter Quality (Apr
       2026)`, `## Post-#52 Review-Battery Followups`, and the 38 *Unchecked boxes* — check each against current
@@ -50,6 +52,12 @@ read-surface steps −1.1–4) moved VERBATIM to `docs/TODO-archive.md` § *Move
    executable. Item 2 is an owner spend decision. Numbers are NOT reused when an item closes.
 
 1. ⏳ **DATE-GATED (earliest ~2026-09-24) — THE PER-LENS HARM FLAG RATES (`#156` step 2).**
+   🆕 **MEASURED 2026-09-28 (journal, sadalsuud): the harm stage has reported `0 files deferred` every cycle
+   since 2026-09-27 04:17** — the cycle before it said 132. In that one cycle `already stamped` went 57,000 →
+   108,000 (+51,000 against a 6,000 cap; 2,834 stamped) and `too old` 1,537 → 454,072. ⛔ **Cause unknown** — no
+   matching NexusMind commit since 2026-09-26; an out-of-band backfill is a GUESS. So the "unstamped tail
+   persists" premise below may be void, but part of the old tail left by AGEING OUT, not by being stamped.
+   The census is still the instrument that decides it.
    **First command: `NexusMind/scripts/stamp_census.py`** on sadalsuud — CLAUDE.md's rule is to
    run it before quoting any stamped field, and it is the mandated instrument for exactly this.
    ⛔ **DO NOT WAIT FOR THE BACKLOG TO CLEAR** (`H-HD13`, `NM#522`): the 3,000/run cap sits below
