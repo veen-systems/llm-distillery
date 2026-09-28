@@ -1,0 +1,50 @@
+== uplifting: 88 rows with harm>=0.7; random 12
+  h=0.95 raw=5.85  La police espagnole rapatrie une femme victime d'un mariage forcé au Pakistan
+  h=0.92 raw=4.55  Pet migranata se utopilo u rijeci Kupi u Hrvatskoj, policajac uspio spasiti pet drugih
+  h=0.91 raw=4.93  बाढी र पहिरोका कारण गुल्मीमा ११ परिवार विस्थापित
+  h=0.90 raw=4.54  سوريا: توقيف 16 طياراً بسلاح الجو السابق في أقل من شهر
+  h=0.86 raw=4.80  Dieron de baja a “Robinson”, cabecilla de la Segunda Marquetalia
+  h=0.85 raw=5.14  Projekt Stolperstein – Eine Erinnerung an jemanden, von dem es kein Bild gibt
+  h=0.85 raw=4.76  New Jersey tenants at 5 buildings launch rent strike, citing rats, leaks, and no superintendent
+  h=0.84 raw=4.96  Zwangsräumung einer 87-Jährigen: Wohnungsnot-Proteste setzen Spaniens Regierung unter Druck
+  h=0.82 raw=4.91  Allt fler unga kvinnor döms för våldsbrott – forskare i Umeå vill ha mer kunskap
+  h=0.81 raw=6.05  Bastar village looks for truth and reconciliation as Maoist-police strife ends
+  h=0.77 raw=4.91  Judge blocks White House ban on news outlets, but reporters still denied access
+  h=0.72 raw=4.74  Russian forces shell Sumy region border areas daily, 155 people evacuated in September
+== human_thriving: 8 rows with harm>=0.7; random 12
+  h=0.92 raw=5.41  The IRS mistakenly sent a farmer $20,000 and penalized him for it. Then a country music star stepped in.
+  h=0.89 raw=4.76  New York tenants facing eviction get a 24-hour lifeline from Legal Aid's emergency team
+  h=0.85 raw=4.91  Seeing my father break down in tears over my condition was heartbreaking – Amputee
+  h=0.84 raw=5.11  Being hit by a football in her face revealed my daughter's cancer
+  h=0.81 raw=6.17  Schiavi per il consolato Usa: risarcimento senza precedenti per gli operai sfruttati a Milano
+  h=0.81 raw=4.66  Bastar village looks for truth and reconciliation as Maoist-police strife ends
+  h=0.75 raw=5.64  Excarcelan a presos por casos «falsos positivos Tancol», «Gedeón», «Óscar Pérez» y demás
+  h=0.71 raw=5.01  Vente Venezuela confirmó excarcelación de Wilder Vásquez tras casi ocho años de detención
+== solutions: 11 rows with harm>=0.7; random 12
+  h=0.98 raw=4.10  Uganda: Naguru Hospital Records Up to 10 Boda Boda Emergencies Daily
+  h=0.97 raw=3.31  Japanese police to use fake accounts to fight <i>tokuryū</i> crime
+  h=0.95 raw=3.83  Four million traffic violations caught on camera
+  h=0.89 raw=2.83  'A lot more activity' - significant rise in people trafficking investigations
+  h=0.89 raw=4.18  New York tenants facing eviction get a 24-hour lifeline from Legal Aid's emergency team
+  h=0.81 raw=2.93  Bastar village looks for truth and reconciliation as Maoist-police strife ends
+  h=0.78 raw=2.45  Mii de bucureșteni vor rămâne fără apă caldă începând de luni. Termoenergetica face lucrări în sectoarele 4 și
+  h=0.77 raw=3.29  Shannon felt a ‘sense of doom’ as she sought justice for sexual assault. A new NSW program hopes to alleviate 
+  h=0.75 raw=2.39  Piratus atsekti nesudėtinga: už „torentų“ naudojimą šiemet nubausta 200 žmonių
+  h=0.73 raw=2.74  « Chaque jour, nous prenons le risque de retarder l’arrestation d’un meurtrier ou d’un violeur, faute d’appliq
+  h=0.72 raw=3.00  Ranipet police returns recovered phones to owners
+== belonging: 71 rows with harm>=0.7; random 12
+  h=0.98 raw=5.16  A month on, Nepal flood victims remain missing as hope and posters fade
+  h=0.96 raw=5.93  Visually Impaired Cuban Bread Vendor on Bicycle Robbed in Matanzas
+  h=0.96 raw=5.62  Vader van overleden Valérie uit Oosterzele organiseert herdenking: "Na 7 jaar weten we nog altijd niet wat er 
+  h=0.93 raw=4.07  #TeExplicamosElDía | Viernes 25 de septiembre
+  h=0.93 raw=5.54  Detroit and Flint teens are struggling with their mental health – and worried adults around them feel ‘helples
+  h=0.86 raw=5.39  "אישה ערה כל הלילה כדי שלא ישרפו לה את הבית עם הילדים"
+  h=0.84 raw=5.41  Being hit by a football in her face revealed my daughter's cancer
+  h=0.82 raw=5.41  No es la primera vez: vandalizan capilla en Osorno y daños son estimados en más de $1,5 millones
+  h=0.74 raw=4.29  Gebäude in Hofstetten-Grünau in Brand: Riesiger Feuerwehreinsatz
+  h=0.73 raw=5.38  Άγιαξ: Ο αδελφός του Νούρι που κατέρρευσε συγκλονίζει – «Το χαμόγελό του μετά από τρία χρόνια ήταν αδύνατο να 
+  h=0.71 raw=4.42  How sanitary pad shortages are disrupting girls’ education in Homa Bay
+  h=0.71 raw=4.05  Striscione anti-razzista tolto da polizia in una scuola di Genova, genitori lanciano mobilitazione
+== nature_recovery: 0 rows with harm>=0.7; random 12
+== cultural_discovery: 1 rows with harm>=0.7; random 12
+  h=0.90 raw=4.51  “Miró se alimentó de los linchamientos de los que fue objeto para cuestionar su pintura y convertirla en objet

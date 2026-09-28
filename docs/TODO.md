@@ -52,7 +52,15 @@ read-surface steps −1.1–4) moved VERBATIM to `docs/TODO-archive.md` § *Move
 4. **Then the numbered work items below** (1–8). ⚠️ Item 1's date gate (~2026-09-24) has passed; it is
    executable. Item 2 is an owner spend decision. Numbers are NOT reused when an item closes.
 
-1. ⏳ **DATE-GATED (earliest ~2026-09-24) — THE PER-LENS HARM FLAG RATES (`#156` step 2).**
+1. ✅ **MEASURED 2026-09-28 — THE PER-LENS HARM FLAG RATES (`#156` step 2), `EXP-044`,
+   `docs/evidence/2026-09-28-per-lens-harm-rates/`.** Third census read taken: 99.28% of 195,901 rows (12
+   cycles) — plateaued. At harm ≥ 0.5 above each lens's own op-point (2 days, filtered population):
+   belonging **10.9%**, human_thriving 7.7%, uplifting 5.7%, nature_recovery 5.3% (**n=38**, useless),
+   solutions **1.9%**, cd 1.2%. ⛔ Flag rates, NOT harm rates — detector precision off the Thriving lenses
+   is unmeasured. ▶ **NEXT, owner:** the `uplifting v7` cap the method ends in, and whether belonging's
+   10.9% is junk or constitutive (a labelled sample would answer it; titles suggest mixed).
+   *Original wording kept below.*
+   ~~DATE-GATED (earliest ~2026-09-24)~~ — THE PER-LENS HARM FLAG RATES (`#156` step 2).
    🆕 **MEASURED 2026-09-28 (journal, sadalsuud): the harm stage has reported `0 files deferred` every cycle
    since 2026-09-27 04:17** — the cycle before it said 132. In that one cycle `already stamped` went 57,000 →
    108,000 (+51,000 against a 6,000 cap; 2,834 stamped) and `too old` 1,537 → 454,072. ⛔ **Cause unknown** — no
