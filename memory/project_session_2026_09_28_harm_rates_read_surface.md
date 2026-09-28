@@ -30,4 +30,11 @@ the wrong interpreter again (caught before any claim, `[x4]`). Review battery: t
 `memory/gotcha-log.md` § *unreachable-mechanism catalogue* ~71 KB; `memory/hypothesis-ledger.md`
 § `H-V8` **40 KB of 83 KB** (v8 superseded by v9 2026-09-25).
 
+**After the close (same evening), owner rulings:** (1) harm hand-check list pulled —
+`docs/evidence/.../harm_handcheck_list.tsv` (19 v9 + 50 of 136 belonging, seeded per lens), awaiting
+the owner's junk numbers; (2) NM#286 item 3 timing handed to NexusMind → **NexusMind PR #561** (open,
+CI green; merge is the owner's; outcome = 0 unstamped survivors per filter); (3) **decision 0 ruled
+DELETE** the per-lens prefilters ("delete is suppose") — ours first (START HERE 1b), NexusMind strips
+its shadow evaluator after we say so; comment on NM#284.
+
 ▶ **NEXT:** `docs/TODO.md` ▶ START HERE (2026-09-28 close).
