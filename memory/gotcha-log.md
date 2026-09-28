@@ -4,6 +4,21 @@
 
 *⚠️ **Entries dated before 2026-09-17 live in [`archive/gotcha-log-archive.md`](archive/gotcha-log-archive.md)**, verbatim (the 09-01 → 09-16 ones moved 2026-09-27 by an owner-approved MID-MONTH pass, `--before 2026-09-17`; earlier ones moved 2026-09-24; into `archive/` 2026-09-26 so curate's size measurement stops counting it, #163; the month-dated Feb–May entries followed on 2026-09-26). Next pass: `python3 scripts/maintenance/retire_memory.py gotcha --before <first of this month> --apply` (dry run without `--apply`). It retires top-level entries only; the `###` entries inside the catalogue are kept by rule and counted. The unreachable-mechanism catalogue stayed here. For a recurrence match, grep both: `grep -n <term> memory/gotcha-log*.md`.*
 
+## THE EVIDENCE FILE WAS A DIFFERENT SAMPLE FROM THE ONE I DESCRIBED — one seed shared across lenses (2026-09-28)
+**Problem**: For EXP-044 I read 12 flagged titles per lens, wrote "belonging: mixed (Gaza strike, funeral mix-up … Stolperstein)" into the evidence README, then re-ran `harm_titles.py` to SAVE the sample with the lenses in a different order. `random.seed(0)` is set once, so every lens drew different rows: the committed file had none of the titles the README cited, and the Stolperstein row sat under uplifting. The adversarial review lens caught it; the claims-vs-evidence lens (and I) had not.
+**Root cause**: A sample whose draw depends on argument order is not reproducible by "the same command", and I wrote the prose from the first run while committing the second — the verified artifact was not the shipped one.
+**Fix**: Prose rewritten from the committed file (belonging now reads *mostly harm-dominated*), with a dated correction. Rule: **save the output you read, in the same run; never re-run to save.** Seed per stratum (`random.Random(lens)`), never one global seed across strata. Recurs *the verified artifact is the shipped one*.
+
+## I RECOMMENDED A CAP FROM THE PLAN'S WRITTEN METHOD WITHOUT CHECKING ITS PREMISE — the lens had switched two days earlier (2026-09-28)
+**Problem**: TODO item 1 ended "Then, and only then, a cap on `uplifting v7`", and I recommended exactly that to the owner. Thriving had read `human_thriving v9` since 2026-09-26 (ovr.news#373), so a scoring-time cap on v7 changes nothing a reader sees. The owner's "why a cap?" surfaced it. `CLAUDE.md`'s filter table still said "Thriving still reads `uplifting v7`; cutover #151 undecided" — stale by two days, and on the always-loaded path.
+**Root cause**: A written method is a claim about the world as of when it was written (*a marker is a claim*); its last step inherits every premise the preceding days may have changed. The stale always-loaded row agreed with the stale plan, so nothing disagreed.
+**Fix**: Before recommending the action a plan ends in, name the premise it rests on (here: "v7 is what readers see") and check it against the newest record (the session file, the merged PR). `CLAUDE.md` and `memory/ovr-lens-set-current.md` corrected. Recurs *a marker is a claim* / *a precedent is a mechanism claim*.
+
+## DATED ENTRIES NESTED UNDER THE TEMPLATE HEADING ESCAPE RETIREMENT (2026-09-28)
+**Problem**: Five `### ` entries dated 2026-09-10 (~12 KB) sit under `## [Short description] (YYYY-MM-DD)`, the template heading that `retire_memory.py`'s `KEEP_HEADINGS` always keeps — while the file header says entries before 2026-09-17 live in the archive. The 2026-10-01 retire would leave them behind silently.
+**Root cause**: Entries were appended under the template instead of as top-level `## ` entries; the keep-list matches the heading, not the content's date.
+**Fix**: NOT yet applied (session close). Next session, before the 10-01 retire: move those entries out from under the template (as top-level entries, verbatim bodies), and make `retire_memory.py` report dated entries found under a KEEP heading instead of keeping them silently.
+
 ## A NEGATIVE FROM AN INSTRUMENT THAT SILENTLY DROPPED PART OF ITS POPULATION — twice in one change (2026-09-27, evening)
 **Problem**: Retiring obituary v3/v4 + commerce v2, I grepped for text still saying they ship, naming `scripts/deployment/deploy_to_nexusmind.sh` — a path that does not exist (the script is `scripts/deploy_to_nexusmind.sh`). `ugrep` printed a stderr warning and the other files' (zero) hits; I read the silence as clean. Review found three stale "v3/v4 still ship" comments, two in that very script (`5590f88`). Minutes later a dry run said "THE FILES WERE STILL COPIED" and `git status` was clean — but the retired pickles are gitignored in NexusMind, so `git status` could not have shown a re-added one.
 **Root cause**: both instruments exclude part of the population without failing: grep over a missing operand exits on the other operands; git's view excludes ignored files. Same class as the `ls-files`-as-"committed" entry below.
@@ -1040,7 +1055,7 @@ something you did not ask.
 pins both directions. ⭐ The tell was the same as last time: the wrong answer was the
 *comfortable* one — "the contracts declare almost everything" is the answer you want.
 
-### I EXPLAINED 78 TEST FAILURES AS "THE ENVIRONMENT" AND IT WAS THE WRONG INTERPRETER (2026-08-25) [x3]
+### I EXPLAINED 78 TEST FAILURES AS "THE ENVIRONMENT" AND IT WAS THE WRONG INTERPRETER (2026-08-25) [x4: 2026-09-28 — `python3 -m pytest tests/unit -x` stopped on `ModuleNotFoundError: transformers`; caught before any claim, `.venv/bin/python3 -m pytest tests/` matched the baseline in `.claude/review-profile.md`]
 
 **Occurrence 3 (2026-09-17)**: `python3 -m pytest` on the #158 change reported **13 failed, 6 errors**, and I relayed them to the owner as *"all ModuleNotFoundError … pre-existing and unrelated"*. `.venv/bin/python -m pytest` returned **0 failed**. ⛔ The diagnosis was RIGHT and that is what made it useless — an explained phantom baseline is a believed one. `.claude/review-profile.md` carries the warning **six lines above** the baseline number and I had not opened the file. Recorded there too, as its occurrence two.
 **Problem**: `python3 -m pytest tests/unit` in NexusMind reported **78 failed, 123

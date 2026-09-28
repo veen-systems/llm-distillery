@@ -14,14 +14,24 @@ For each lens, the share of rows at or above **that lens's own op-point** whose
   never receives them), everything the commerce, obituary and **violence** gates dropped before
   persistence (violence has enforced since 2026-08-23), and rows scored `stage1_low` — 0 of those
   reached an op-point in this window. It is the scored-and-persisted population, **not** the
-  reader population (`getArticlesForBuild`), so dedup and enrichment losses downstream are not in it.
-- **Op-points:** `filters/<lens>/v<N>/normalization.json` `stats.raw_min` = the runtime
-  `TIER_THRESHOLDS` cut: uplifting v7 4.5, human_thriving v9 4.5, solutions v6 2.25, belonging v1 4.0,
+  reader population (`getArticlesForBuild`): it is a SUPERSET that still **includes** copies
+  NexusMind later removes by dedup and rows never enriched.
+- ⚠️ **The op-point is not the effective reader bar.** NexusMind's `pipeline.enrichment.min_score`
+  (4.0) reads the NORMALIZED score (NM#319); for `human_thriving v9` that is an effective raw bar of
+  4.794 (`memory/filter-status.md`), so rows between the op-point and that bar are counted here but
+  are likely never shown. The bar differs per lens and was not applied.
+- ⚠️ **Dedup rule, unmeasured bias:** an id is kept if ANY copy in the window reached the op-point,
+  and the last such copy's harm score wins. Duplicate ids were not counted.
+- **Op-points:** `filters/<lens>/v<N>/normalization.json` `stats.raw_min`, which equals the runtime
+  `TIER_THRESHOLDS` cut for five lenses — ⚠️ **not for cultural_discovery** (4.0006 vs 4.0, against
+  CLAUDE.md's must-equal rule; only rows in [4.0, 4.0006) are affected): uplifting v7 4.5, human_thriving v9 4.5, solutions v6 2.25, belonging v1 4.0,
   nature_recovery v4 3.75, cultural_discovery v5 4.0006. Compared on `raw_weighted_average`
   (ADR-022: visibility = raw ≥ op-point).
-- **Stamp presence:** 98.0–100% of op-point rows per lens. `stamp_census.py` on the whole filtered
+- **Stamp presence:** 98.0–100% of op-point rows per lens; unstamped rows leave the denominator
+  (worst case if all were flagged: cultural_discovery +2.0 pp, 12 of 601; others ≤ 0.6 pp). `stamp_census.py` on the whole filtered
   population: 99.28% of 195,901 rows (`--cycles 12`) and 100.00% of 43,092 (`--cycles 2`), after
-  61.17% (2026-09-21) and 85.29% (2026-09-22) — the third read the TODO asked for; it has plateaued.
+  61.17% (2026-09-21) and 85.29% (2026-09-22) — the third read the TODO asked for. ⚠️ The census
+  output was read in-session and **not saved**; one new point after two, so "plateaued" is a reading.
 
 ## Result (harm ≥ 0.5; Wilson 95%; full sweep in `harm_rates_12cycles.txt`)
 
@@ -44,12 +54,20 @@ predicted highest and is second-lowest**; belonging is highest. Uplifting landed
   (`calibration_report.json`: *"says nothing about solutions, belonging, nature_recovery or
   cultural_discovery"*). Its precision on those four lenses is **unmeasured**, and it is structurally
   blind to what it misses.
-- **Title read, not labels** (`harm_titles_ge07_sample.txt`, 12 random rows ≥ 0.7 per lens, seed 0),
-  my reading: uplifting's flags look mostly harm-dominated (court verdicts, "terrorists
-  neutralised", expulsions); belonging's are mixed — some harm-dominated (Gaza strike, a funeral
-  mix-up, quake survivors), some plausibly constitutive (Stolperstein remembrance); solutions'
-  flags are **responses** to harm (police, legal aid), consistent with the ADR's "no cap, ever"
-  argument for Solutions. Nobody labelled these.
+- **Title read, not labels** (`harm_titles_ge07_sample.txt`: up to 12 random rows at harm **≥ 0.7**
+  per lens — so it says nothing about the 0.5–0.7 band the table counts; uplifting 12, belonging 12,
+  solutions 11 = all, human_thriving 8 = all, nature_recovery 0, cd 1). My reading of that file:
+  **belonging's flags are mostly harm-dominated** (missing flood victims, a robbery, vandalism, a
+  fire, a daily news digest), only a couple plausibly constitutive (a memorial, an anti-racism
+  mobilisation); **uplifting's are mixed** (drownings, displacement, shelling, arrests vs a
+  Stolperstein memorial, a truth-and-reconciliation story); **solutions'** read as responses to harm
+  (police, legal aid, hospital emergencies), consistent with the ADR's "no cap" argument;
+  **human_thriving's 8** read mostly as good-outcome stories (a farmer rescued from a tax error,
+  legal aid, released prisoners). Nobody labelled these.
+  ⛔ **Correction, same day:** an earlier, unsaved run of `harm_titles.py` with the lenses in a
+  different order drew DIFFERENT rows (one `random.seed(0)` shared across lenses, so the sample
+  depends on argument order), and the first draft of this paragraph described that run — including
+  "belonging: mixed". The committed file is the only sample that counts.
 - **nature_recovery: n = 38** — the CI spans 1.5–17.3%; no decision can rest on it.
 - Two days of production; one window. `human_thriving` and `uplifting` share articles.
 

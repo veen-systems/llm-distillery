@@ -21,11 +21,11 @@ The reason in one line: ADR-012's three stated audiences were all *internal*, an
 <!-- verify: grep -q "human_thriving" docs/adr/012-lens-aligned-filter-naming.md && echo PASS || echo FAIL -->
 <!-- verify: grep -q "renames to \`discovery\` and \`recovery\` are cancelled" docs/adr/012-lens-aligned-filter-naming.md && echo PASS || echo FAIL -->
 
-**Lens → filter powering it** (as of 2026-07-27; grounded in CLAUDE.md filter table):
+**Lens → filter powering it** (as of 2026-07-27, Thriving row 2026-09-28; grounded in CLAUDE.md filter table):
 
 | ovr.news tab/lens | Filter (version) | Note |
 |---|---|---|
-| **Thriving** | uplifting **v7** | thriving v1 PARKED (bimodal, ADR-015); uplifting stays as the Thriving tab |
+| **Thriving** | human_thriving **v9** | **since 2026-09-26** (ovr.news#373 merged 14:59Z, #151 ruled); before that uplifting **v7**, still scored, its surfaced articles draining. thriving v1 PARKED (ADR-015) |
 | **Discovery** | cultural_discovery **v5** | resolves #62 leakage; DeepSeek oracle |
 | **Solutions** | solutions **v6** | v6 trained + gate passed 2026-07-27 (F1 0.739); normalization pending. v5 serving as fallback. Replaces sustech v3 + foresight v1. |
 | **Belonging** | belonging **v1** | |

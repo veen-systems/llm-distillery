@@ -1,56 +1,57 @@
 # LLM Distillery - TODO
 
-## ▶️ START HERE — the ordered queue, as of 2026-09-27 (evening close)
+## ▶️ START HERE — the ordered queue, as of 2026-09-28 (close)
 
-*A bare "continue" means this list, top down. Each line names the FIRST action. The previous
-START HERE block (2026-09-26/27: H-DP3, ADR-024 step 3, adj4p, the #151 cutover rulings, the
-read-surface steps −1.1–4) moved VERBATIM to `docs/TODO-archive.md` § *Moved 2026-09-27 (evening)*
-— grep there before concluding something was never recorded.*
+*A bare "continue" means this list, top down. Each line names the FIRST action. The previous block
+(2026-09-27 evening: #553 prod check, ledger retire, TODO body audit) moved VERBATIM to
+`docs/TODO-archive.md` § *Moved 2026-09-28 — the START HERE block of 2026-09-27 (evening)*.*
 
-0. ✅ **CLOSED 2026-09-28 — NexusMind PR #553 is in production.** On sadalsuud: HEAD `5976fd2`, `0cbfd4c` is an
-   ancestor; `filters/common/obituary_detector` holds only `v5`, `commerce_prefilter` only `v1`;
-   `verify_detector_package.py verify --all --strict` printed 4× OK. Cycles since the merge: 17:06, 21:09, 05:32,
-   09:18 Finished; **00:58 OOM-killed in pre-enrichment** (23.1G peak) — already NexusMind#558, not caused by #553
-   (the kill came during fetch, after detector load). ⚠️ gpu-server orphans still there: the 08:09 sync logs
-   `cannot delete non-empty directory: common/obituary_detector/{v3,v4}, common/commerce_prefilter/v2` (plus
-   `investment_risk/v5`, `uplifting/v5`) — NexusMind's to `rm`, as predicted.
+0. ▶ **THE READ SURFACE (`#163`) — owner, 2026-09-28: "Large read surface — start pruning, thinning,
+   mechanizing, retiring!"** Measured at close (curate Step 0, `wc -m` over non-archive `memory/` +
+   `docs/work-items/`): **1,086,050 chars**. Order stays **mechanize → retire → thin → prune**; ⛔ retiring is
+   moving VERBATIM + an independent lossless check (`sort | comm`, mutation-tested — the 2026-09-28 method);
+   ⛔ a new check ships only WITH the prose it lets you delete. First actions, in order:
+   a. **Unshield the gotcha log** (precondition for c): five `### ` entries dated 2026-09-10 (~12 KB) sit under
+      the template heading `## [Short description]`, which `retire_memory.py` `KEEP_HEADINGS` always keeps.
+      Move them out verbatim; make the script REPORT dated entries under a keep-heading (seeded test).
+      Gotcha log 2026-09-28.
+   b. **Retire the `H-V8` section of `memory/hypothesis-ledger.md`** — 40,380 B of 83 KB; v8 was superseded by
+      v9 on 2026-09-25. Read its still-open rows first and keep a one-line live pointer for any that are
+      method questions beyond v8 (candidates: `H-V8-22` e5-large at the op-point, `H-V8-25` FP weighting).
+   c. **Gotcha log, on/after 2026-10-01**: `python3 scripts/maintenance/retire_memory.py gotcha --before
+      2026-10-01` (dry run, then `--apply`; `sessions` too).
+   d. **The unreachable-mechanism catalogue** (~71 KB, ~47% of `memory/gotcha-log.md`, 55 dated entries kept
+      by rule): mechanize → retire — an entry whose class has a `live` row in § *Mechanized* moves verbatim to
+      the archive. Changing the keep-rule is an owner call; propose it with the list.
+   e. `memory/cross-repo-prioritization.md` (61 KB): its largest section is `### P1 — This week` (8.2 KB) —
+      check it is still this week's.
+   f. *Options, not ruled:* a hook blocking a commit that shrinks `CLAUDE.md`/`memory/MEMORY.md` by > 10%
+      without a clause-loss review; mechanize `check_committed_idiom.py` (gotcha § Mechanized, `proposed`).
 
-1. ▶ **THE READ SURFACE (`#163`) — owner, standing since 2026-09-22 and re-stated 2026-09-27: "prune, thin,
-   mechanize, retire."** Order: **mechanize → retire → thin → prune**; ⛔ retiring is not deleting (move
-   verbatim, prove lossless with an independent checker); ⛔ a new check ships only WITH the prose it lets
-   you delete. Measured 2026-09-27 close (`wc -c`): `docs/TODO.md` 80,441 → 57,999 (this close);
-   `memory/gotcha-log.md` 149,894; `memory/hypothesis-ledger.md` 85,687; `memory/cross-repo-prioritization.md`
-   61,176; `CLAUDE.md` 17,933; `memory/MEMORY.md` 10,677; always-loaded layer PASS 30,750 / 60,000.
-   First actions, in order:
-   a. ✅ **DONE 2026-09-28: ledger retire.** 8 rows (`H-TV1`–`H-TV4`, `H-LA1`, `H-HC1`, `H-DP1`, `H-DP3`) moved
-      verbatim to `memory/archive/hypothesis-ledger-archive.md`; ledger 85,726 → 81,818 B. Lossless by an
-      independent `sort | comm` multiset check (0 lost, 4 header lines added; two mutations caught; order kept).
-      Kept live on purpose: `H-JO1` (partial for Thriving), `H-CTX-*` (kept 2026-09-27 too), and the `cd-v6`/
-      `sol-v6` index rows (they index live topic files; `check_doc_claims.py` pins `cd-v6-row`).
-   b. ✅ **DONE 2026-09-28: TODO body audit** (`ec4ddc5`, `ba1b26c` + next). All `[x]` lines of the four named
-      sections and 16 carried-over boxes moved verbatim to `docs/TODO-archive.md`, each box with its closing reason;
-      lossless by `sort | comm`. The ~19 boxes left are LIVE: each cites an OPEN issue or waits on an owner call —
-      ⚠️ notably **decision 0** (delete the old per-lens prefilters, NexusMind#284): the 2026-08-21 ruling covers
-      NEW filters only, so the five boxes hanging on it stay. Finding: NexusMind#286 item 3 (on its box).
-   c. **Gotcha log**: on/after 2026-10-01, `python3 scripts/maintenance/retire_memory.py {gotcha,sessions}
-      --before 2026-10-01` (dry run first, then `--apply`).
-   d. *Option, not ruled:* a hook blocking a commit that shrinks `CLAUDE.md`/`memory/MEMORY.md` by > 10% unless
-      the message cites a clause-loss review.
-   e. *Optional mechanize:* gotcha-log § Mechanized row `check_committed_idiom.py` (`proposed`; `ls-files` used
-      as a "committed" test) — build only with a seeded positive AND a prose line it retires.
+1. **OWNER DECISIONS waiting** (nothing blocked on a machine):
+   - **Harm caps (`H-HD17`)**: no cap is justified yet on any lens. First a hand check — the 18 flagged
+     `human_thriving v9` rows and ~50 flagged `belonging` rows at harm ≥ 0.5 (I can pull the list from
+     sadalsuud). `docs/evidence/2026-09-28-per-lens-harm-rates/`.
+   - **NexusMind#286 item 3** (violence stamping skipped on an empty article cache, fail-open, while violence
+     ENFORCES): confirmed unfixed by the `nexusmind-55` session at `9dfcf2a`; **scheduling is being put to the
+     owner in that session**. Nothing leaks in a normal cycle (their 3-cycle identity). Detail: the
+     `NM#286 item 3` box under *Unchecked boxes carried out…*.
+   - **Decision 0** (NexusMind#284): delete the old per-lens rule prefilters? The 2026-08-21 ruling covers NEW
+     filters only; five carried-over boxes wait on it.
+   - Standing: the ~$3.2–3.6 adverse pool (#156, numbered item 2); H-TV5 (Thriving fullness under v9, ~10-day
+     drain from 2026-09-26).
 
-2. **ADR-024 steps 4–5 are NexusMind's** (step 4: loaders read `MANIFEST.json`, log-only flag, per detector;
-   its start is the owner's call. Step 5: commerce `model.safetensors` is gitignored there). Nothing of ours
-   unless they ask. Also theirs: retire gpu-server `/commerce/predict` (unreachable from the pipeline, LD#80).
+2. **Small, ours:** `cultural_discovery v5` `normalization.json` `raw_min` **4.0006** vs `TIER_THRESHOLDS`
+   **4.0** — breaks the must-equal rule (CLAUDE.md, op-point in four places). Read
+   `tests/unit/test_normalization_op_point.py` to see why it passes; fix or record the tolerance.
 
-3. *Owner, not urgent:* H-TV5 (watch Thriving while uplifting v7 drains, ~10 days from 2026-09-26); obituary v5 /
-   violence v1 have no recorded sklearn version (the Q5 skew check has no baseline until a rebuild); the deploy
-   script's `C:/` default roots (changing them makes an env-less run hit real repos). NexusMind owns the
-   Venezuela Thriving story cluster (NexusMind PR #542). *Later:* Nature recovery v5 (#71),
-   `docs/evidence/2026-09-25-nature-recovery-relabel/PILOT_RESULT.md`.
+3. **Then numbered items 3 (LD#134 marking pass) and 4 (the retracted 19.9%/13.0% framing)** below.
 
-4. **Then the numbered work items below** (1–8). ⚠️ Item 1's date gate (~2026-09-24) has passed; it is
-   executable. Item 2 is an owner spend decision. Numbers are NOT reused when an item closes.
+4. **NexusMind's, nothing of ours:** ADR-024 steps 4–5; gpu-server orphan dirs (obituary v3/v4, commerce v2,
+   investment_risk/v5, uplifting/v5 — `cannot delete non-empty directory` in the sync log); NexusMind#558 (OOM
+   in pre-enrichment, 2026-09-28 00:58); retire gpu-server `/commerce/predict` (LD#80).
+
+*Numbered work items (numbers are NOT reused when an item closes):*
 
 1. ✅ **MEASURED 2026-09-28 — THE PER-LENS HARM FLAG RATES (`#156` step 2), `EXP-044`,
    `docs/evidence/2026-09-28-per-lens-harm-rates/`.** Third census read taken: 99.28% of 195,901 rows (12
@@ -60,7 +61,8 @@ read-surface steps −1.1–4) moved VERBATIM to `docs/TODO-archive.md` § *Move
    is unmeasured. ⛔ **The `uplifting v7` cap this method ended in is MOOT** (found 2026-09-28): Thriving reads
    `human_thriving v9` since 2026-09-26 (ovr.news#373) and v7 is draining; a cap acts at scoring time, so it
    would change nothing a reader sees. ▶ **NEXT, owner:** no cap is justified yet on any lens. Hand-check the
-   18 flagged v9 rows (titles read as mostly fine) and ~50 flagged belonging rows (junk vs constitutive);
+   18 flagged v9 rows (only the 8 at ≥ 0.7 were read: mostly good-outcome stories) and ~50 flagged belonging
+   rows (junk vs constitutive; the ≥ 0.7 sample reads mostly harm-dominated);
    a cap only if most are real misfits. NexusMind#286 item 3 raised with the `nexusmind-55` session.
    *Original wording kept below.*
    ~~DATE-GATED (earliest ~2026-09-24)~~ — THE PER-LENS HARM FLAG RATES (`#156` step 2).

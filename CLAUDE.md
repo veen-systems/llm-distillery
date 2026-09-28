@@ -55,7 +55,7 @@ Details: `memory/filter-status.md`.
 |--------|---------|-----|--------|
 | **uplifting** | v7 | recall 0.61 / spec 0.97 | Deployed (NO_HUB, hybrid). Op-point 4.5 (#102). Its Thriving lens is narrower than the name (#107) |
 | **investment-risk** | v6 | recall 0.72 / spec 0.97 | ⛔ **RETIRED downstream 2026-09-17** (NexusMind ADR-025, NM#499). Package here stays. Un-pausing is a project |
-| **human_thriving** | v9 | spec 0.998 / recall 0.348 (adjudicated labels) | **LIVE 2026-09-25**, replacing v8 (NM#530). Thriving still reads `uplifting v7`; cutover #151 undecided |
+| **human_thriving** | v9 | spec 0.998 / recall 0.348 (adjudicated labels) | **LIVE 2026-09-25**, replacing v8 (NM#530). **Thriving reads it since 2026-09-26** (ovr.news#373, #151 ruled); `uplifting v7` is still scored and its surfaced articles drain (~10 days) |
 | **cultural-discovery** | v5 | recall 0.59 / spec 0.98 | **LIVE** (v6 cutover failed 2026-08-13, reverted) |
 | **cultural-discovery** | v6 | (v5's) | **NOT DEPLOYED** — fixed and verified offline (`dcf2860`), never redeployed. v5 already runs two-stage; v6 changes the probe and threshold. → `memory/cd-v6-probe-hypotheses.md` |
 | **belonging** | v1 | recall 0.60 / spec 0.985 | Deployed (HF Hub) |
