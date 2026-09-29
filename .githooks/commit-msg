@@ -50,29 +50,34 @@ done
 # Negation (#136). Every session commit here says "Nothing deployed" or
 # "deploy N/A", and the word test above cannot tell that from a claim. It
 # blocked those commits, and its own advice was --no-verify, the override
-# behind #44. The message passes only if EVERY deploy-class word is negated:
-# a negator (no/not/nothing/never/none/neither/nor/without/cannot/…n't) at most
-# two words before it in the same clause, or a trailing "N/A"/"none"/"skipped".
-# A clause ends at punctuation, a newline or and/but/or/then/so, so "No
-# regressions, deployed v1" and "no regressions and deployed v1" are still
-# claims. FAILS CLOSED: only the literal output "negated" lets the message
-# through. No interpreter, a crash or any other output means "claim", and the
-# verifier runs.
+# behind #44. The message passes only if EVERY deploy-class word sits in one of
+# three anchored phrases, the ones this repo's commits actually use (read off
+# `git log`, 2026-09-29):
+#   "nothing [was|is|has been] <word>", at the start of a clause
+#   "not [yet|been|re-]<word>"
+#   "<word>[:] n/a|none|skipped"
+# and only the end of the clause may follow the phrase. Anything else is a
+# claim: "No regressions deployed v7" and "Without a hitch deployed v7" are
+# success reports, and a free negator window let them through (PR #167 review).
+# FAILS CLOSED: only the literal output "negated" lets the message through. No
+# interpreter, a crash, no deploy word Python can see, or any other output
+# means "claim", and the verifier runs.
 NEGATION_PY=$(cat <<'PY'
 import re, sys
 words = sys.argv[1]
-text = sys.stdin.buffer.read().decode("utf-8", "replace").lower().replace("\u2019", "'")
-text = re.sub(r"\b(?:%s)\b\s*[:=]?\s*(?:n/a|none|skipped)\b" % words, " ", text)
-NEG = {"no", "not", "nothing", "never", "none", "neither", "nor", "without", "cannot"}
-BREAK = {"and", "but", "or", "then", "so"}
-claim = False
-for clause in re.split(r"[\n.;:!?()\[\],\u2014\u2013]", text):
-    for m in re.finditer(r"\b(?:%s)\b" % words, clause):
-        toks = re.findall(r"[a-z']+(?:-[a-z']+)*", clause[:m.start()])
-        cut = max((i for i, t in enumerate(toks) if t in BREAK), default=-1)
-        window = toks[cut + 1:][-3:]
-        if not any(t in NEG or t.endswith("n't") for t in window):
-            claim = True
+text = sys.stdin.buffer.read().decode("utf-8", "replace").lower()
+END = r"\s*(?:$|--|[\n.;:,!?()\[\]\u2014\u2013])"
+START = r"(?:^|--|[\n.;:,!?(\[\u2014\u2013])\s*"
+NOTHING = re.compile(START + r"nothing\s+(?:(?:was|is|has\s+been)\s+)?$")
+NOT = re.compile(r"\bnot\s+(?:yet\s+|been\s+|re-)?$")
+AFTER = re.compile(r"\s*:?\s*(?:n/a|none|skipped)" + END)
+matches = list(re.finditer(r"\b(?:%s)\b" % words, text))
+claim = not matches
+for m in matches:
+    pre, post = text[:m.start()], text[m.end():]
+    before = (NOTHING.search(pre) or NOT.search(pre)) and re.match(END, post)
+    if not (before or AFTER.match(post)):
+        claim = True
 print("claim" if claim else "negated")
 PY
 )

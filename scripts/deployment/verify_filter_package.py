@@ -203,6 +203,10 @@ def check_base_scorer_version(filter_dir: Path, version: str) -> tuple[bool, str
     )
 
 
+# Files that cannot make a directory deployable (#136). Anything else can.
+NON_PACKAGE_SUFFIXES = {".md", ".txt"}
+
+
 def check_hub(filter_dir: Path, repo_id: str | None, token: str | None) -> list[tuple[bool, str]]:
     """Verify repo exists on Hub and was updated after local adapter_model.safetensors."""
     results: list[tuple[bool, str]] = []
@@ -229,13 +233,16 @@ def check_hub(filter_dir: Path, repo_id: str | None, token: str | None) -> list[
         results.append((True, "hub: skip — NO_HUB sentinel present (file-copy deploy only)"))
         return results
 
-    # Not a package (#136): with neither config.yaml nor inference_hub.py there is
-    # nothing that could be deployed, so there is nothing to verify. Without this,
-    # a prompt file staged under filters/*/v*/ FAILED on the repo_id below — a
-    # failure derived from a file the static checks had just skipped as absent.
-    # A directory WITH config.yaml is a package and still fails without a repo_id.
-    if not (filter_dir / "config.yaml").exists() and not (filter_dir / "inference_hub.py").exists():
-        results.append((True, "hub: N/A — not a deployable package (no config.yaml, no inference_hub.py)"))
+    # Not a package (#136): a directory holding nothing but prose cannot be
+    # deployed, so there is nothing to verify. Without this, a prompt file staged
+    # under filters/*/v*/ FAILED on the repo_id below, a failure derived from a
+    # file the static checks had just skipped as absent. An ALLOWLIST, not "no
+    # config.yaml and no inference_hub.py": weights, any *.py, a model/ dir or a
+    # config.yml is a package in progress and still fails without a repo_id
+    # (PR #167 review). Callers: .githooks/commit-msg and deploy_to_nexusmind.sh.
+    files = [f for f in filter_dir.rglob("*") if f.is_file()]
+    if files and all(f.suffix.lower() in NON_PACKAGE_SUFFIXES for f in files):
+        results.append((True, "hub: N/A — not a deployable package (only .md/.txt files)"))
         return results
 
     if not repo_id:
