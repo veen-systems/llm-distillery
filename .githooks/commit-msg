@@ -29,7 +29,67 @@ STRIPPED=$(echo "$COMMIT_MSG" | grep -vE '^\s*#' || true)
 # Case-insensitive match against deploy-class words. Word boundaries to avoid
 # matching "redeployable" etc., though false positives here just trigger verify
 # which is cheap for already-good packages.
-if ! echo "$STRIPPED" | grep -iqE '\b(deploy|deployed|deploying|ship|shipped|shipping|upload|uploaded|uploading|live in production|released)\b'; then
+DEPLOY_WORDS='deploy|deploys|deployed|deploying|redeploy|redeployed|redeploying|ship|ships|shipped|shipping|upload|uploads|uploaded|uploading|live in production|released'
+if ! echo "$STRIPPED" | grep -iqE "\\b($DEPLOY_WORDS)\\b"; then
+    exit 0
+fi
+
+# Resolve the interpreter rather than assuming `python` is on PATH. On a stock
+# Debian/Ubuntu box only `python3` exists, so a bare `python` made every
+# verification fail with "command not found" — fail-closed, but for the wrong
+# reason: the gate could never actually pass, which trains --no-verify as a
+# habit and hands back the silent-stale-deploy hole this hook exists to close.
+PYTHON_BIN=""
+for candidate in python3 python; do
+    if command -v "$candidate" > /dev/null 2>&1; then
+        PYTHON_BIN="$candidate"
+        break
+    fi
+done
+
+# Negation (#136). Every session commit here says "Nothing deployed" or
+# "deploy N/A", and the word test above cannot tell that from a claim. It
+# blocked those commits, and its own advice was --no-verify, the override
+# behind #44. The message passes only if EVERY deploy-class word sits in one of
+# three phrases that OPEN a clause, the ones this repo's commits actually use
+# (read off `git log`, 2026-09-29):
+#   "nothing [was|is|has been] <word>"
+#   "not [yet|been|re-]<word>"
+#   "<word>[:] n/a"
+# and only the end of the clause may follow. A clause opens at the start of the
+# message, a newline, .;:,!?[ an em/en dash or "--"; it closes at the end, a
+# newline, .;:,!()[] a dash or "--". Anything else is a claim: "No regressions
+# deployed v7", "Errors during deploy: none" and "Rumour that v7 was not
+# uploaded: debunked" are reports, not denials (PR #167 review, rounds 1-2).
+# FAILS CLOSED: only the literal output "negated" lets the message through. No
+# interpreter, a crash, no deploy word Python can see, or any other output
+# means "claim", and the verifier runs.
+NEGATION_PY=$(cat <<'PY'
+import re, sys
+words = sys.argv[1]
+text = sys.stdin.buffer.read().decode("utf-8", "replace").lower()
+END = r"\s*(?:$|--|[\n.;:,!()\[\]\u2014\u2013])"
+START = r"(?:^|--|[\n.;:,!?\[\u2014\u2013])\s*"
+NOTHING = re.compile(START + r"nothing\s+(?:(?:was|is|has\s+been)\s+)?$")
+NOT = re.compile(START + r"not\s+(?:yet\s+|been\s+|re-)?$")
+AFTER = re.compile(r"\s*:?\s*n/a" + END)
+matches = list(re.finditer(r"\b(?:%s)\b" % words, text))
+claim = not matches
+for m in matches:
+    pre, post = text[:m.start()], text[m.end():]
+    before = (NOTHING.search(pre) or NOT.search(pre)) and re.match(END, post)
+    after = re.search(START + "$", pre) and AFTER.match(post)
+    if not (before or after):
+        claim = True
+print("claim" if claim else "negated")
+PY
+)
+VERDICT=""
+if [ -n "$PYTHON_BIN" ]; then
+    VERDICT=$(printf '%s' "$STRIPPED" | "$PYTHON_BIN" -c "$NEGATION_PY" "$DEPLOY_WORDS" 2>/dev/null || true)
+fi
+if [ "$VERDICT" = "negated" ]; then
+    echo "commit-msg: deploy-class word(s) appear only negated (e.g. \"nothing deployed\") — no claim, letting through."
     exit 0
 fi
 
@@ -58,19 +118,6 @@ if [ ! -f "$VERIFY" ]; then
     echo "commit-msg: ERROR — $VERIFY not found. Cannot verify. Install the script or use --no-verify (discouraged)."
     exit 1
 fi
-
-# Resolve the interpreter rather than assuming `python` is on PATH. On a stock
-# Debian/Ubuntu box only `python3` exists, so a bare `python` made every
-# verification fail with "command not found" — fail-closed, but for the wrong
-# reason: the gate could never actually pass, which trains --no-verify as a
-# habit and hands back the silent-stale-deploy hole this hook exists to close.
-PYTHON_BIN=""
-for candidate in python3 python; do
-    if command -v "$candidate" > /dev/null 2>&1; then
-        PYTHON_BIN="$candidate"
-        break
-    fi
-done
 
 if [ -z "$PYTHON_BIN" ]; then
     echo "commit-msg: ERROR — no python3/python interpreter on PATH. Cannot verify."
