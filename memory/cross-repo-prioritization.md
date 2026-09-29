@@ -155,6 +155,20 @@ vs the profile's 25 skipped. All 18 fail identically on `main` itself: missing g
 prompt**, or a session either "fixes" environmental failures or reports a suite count it cannot have
 produced — PR #166's `1104 passed, 25 skipped` came from the local tree (keys and models present), not the branch.
 
+**Pilot 2 — #136 → PR #167, merged `4ec7850` (2026-09-29). ⛔ ALSO NOT A CLOUD RUN** — the owner ran
+the `--teleport` line (read as "a view"; it is not) at ~13:05 (pid 97345), and it continued locally.
+Cost (`/usage`, owner-pasted): **$4.76** — 66.2k output, 10.0M cache-read, 11m49s API, **including two
+fix rounds**. ⭐ **Review was the value, not the first draft**: the PR arrived with 34 green tests, 13/13
+mutations caught and a thorough body, and still let real claims through — round 1: any "no X" within
+3 words of the deploy word passed (`No regressions deployed v7` landed unverified; found by all 4
+reviewers, reproduced end-to-end); round 2: the fix's `deploy: none` rule was unanchored (`Errors during
+deploy: none` landed). Round 3 (deterministic): 40 claims blocked, 6 real negations pass, 101 tests,
+suite = the same 18 fresh-clone failures by name. Its own green tests could not find this because it
+wrote them against its own reading of the rule. **So: price a cloud fix as draft + local review, and
+never merge a cloud PR on its own evidence.** Relay worked through a file the owner pastes
+(`Read <path> and do what it says`); a `SendMessage` to a teleported session waits for approval and expired once.
+Running total, both pilots: **$6.89 model cost**, not counting the local reviews (6 + 4 subagents).
+
 ## Cross-Repo Dependency Chains
 
 `→` means "blocked on" or "feeds into."

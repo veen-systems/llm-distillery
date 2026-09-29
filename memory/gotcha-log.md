@@ -1373,7 +1373,7 @@ failure from a file it had already logged as legitimately absent.
 #44. Filed as #136. ⭐ Recorded because of the *direction* of the failure: a guard that fires
 on correct messages spends operator trust, and the cheapest-looking exit is the dangerous
 one. **A false positive in a safety check is a safety problem, not an annoyance.**
-**2026-09-29: PR #167.** Prose-only `filters/*/v*/` dirs verify as N/A; "nothing deployed", "not deployed" and "deploy N/A" pass. Mention still counts as use.
+**2026-09-29: PR #167 (merged `4ec7850`).** Prose-only `filters/*/v*/` dirs verify as N/A; "nothing deployed", "not deployed" and "deploy N/A" pass. Mention still counts as use.
 
 ### A BOOTSTRAP QUANTILE IN THE FAR TAIL IS ONE ORDER STATISTIC, AND I PRINTED IT AS A DECISION (2026-08-29)
 **Problem**: To "handle multiplicity" I added a Bonferroni interval to an evidence script and
@@ -1564,7 +1564,7 @@ going free, an unavoidable false positive on a news corpus.
 **Fix**: Reword. ⛔ **Not `--no-verify`** — the hook's own message records that a prior override
 cost three days of production scoring with wrong weights (#44), and it fails **closed**, which is
 the right direction for a guard whose failure mode is a false deployment claim.
-**2026-09-29: negation, PR #167** (three anchored phrases only). Mention still counts as use: naming the word, quoting it or "the shipped one" still arms the guard.
+**2026-09-29: negation, PR #167 (merged `4ec7850`)** (three anchored phrases only). Mention still counts as use: naming the word, quoting it or "the shipped one" still arms the guard.
 
 ⭐ **The generalisable half, and it inverts a pattern already promoted here.** This log records
 *mention is not use* — records that merely **quote** a dead path should not be counted as
@@ -1759,6 +1759,7 @@ false finding in the reference audit, which trains readers to dismiss that audit
 | 2026-09-26 | A file move that computes path edits BEFORE the move and writes them AFTER, recreating a moved file at its old path (introduced by a round-1 fix) | `tests/unit/test_retire_memory.py::test_a_moved_file_that_references_another_is_not_resurrected` | live | 0 |
 | 2026-09-26 | A trim of `CLAUDE.md` that keeps every token (paths, numbers, issue ids) but drops an operative CLAUSE — five were lost and only a review lens noticed; the token survival check passed | **REJECTED 2026-09-27** — lexical clause survival cannot separate compression from loss: best setting caught 2/3 seeds (never the polarity flip) at 52/125 false flags on the reviewed 09-26 trim; 1/3 at 25/125. Script and grid: `docs/evidence/2026-09-27-claude-md-trim-check/`. The working check is a clause-loss REVIEW LENS (caught 5 clauses on 09-26 and 2 on 09-27); mechanize its invocation, not its judgement | rejected | — |
 | 2026-09-29 | A test writes a path inside the repo (tracked or not) and cleans it up in `finally`, which SIGKILL skips — llm-distillery#162's class; `tests/unit/test_verify_annotation_runner.py:100-105` (`MEMORY_FIXTURE.md` at repo root) is a surviving instance, found reviewing PR #166 | `tests/lint/test_no_repo_writes_in_tests.py` <!-- placeholder --> — AST-scan `tests/**/*.py` for `write_text`/`open(...,'w')`/`unlink` on a path rooted at `REPO`/`PROJECT_ROOT`; allowlist `tmp_path`/`tempfile` | proposed | 2 |
+| 2026-09-29 | A negation/allowlist rule in a lexical guard that is not anchored at clause start admits the success-report idiom (`No regressions deployed v7`, `Errors during deploy: none`) — PR #167 rounds 1 and 2, same class twice | `tests/unit/test_commit_msg_hook.py` CLAIMS list (40 must-block messages from both review rounds) + 26 mutations incl. dropping each clause-start anchor; seeded positives re-run by a second session: rule-2 anchor removed → 6 fail, rule-3 anchor removed → 1 fail | live | 2 |
  | 2026-09-27 | "Must be committed" enforced with `git ls-files --error-unmatch`, which passes a file that is only STAGED (ADR-024 step 3: in the code AND its real-tree test; found by 3 of 6 review lenses) | `tests/lint/check_committed_idiom.py` <!-- placeholder --> — flag `ls-files --error-unmatch` in `scripts/**` where the surrounding message or name says committed/commit; accept `cat-file -e HEAD:` or `diff --quiet HEAD` | proposed | 1 |
 
 ⛔ **THE FIRST OCCURRENCE, AND IT IS A FINDING ABOUT THE CHECK (2026-09-17).** The #134
