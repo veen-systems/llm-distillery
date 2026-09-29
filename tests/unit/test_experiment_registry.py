@@ -5,7 +5,7 @@ registry at all, and augur -- whose method this repo adopted -- had to run an au
 that found 19 untraceable numbers. The check that prevents that is only worth having if it can be
 shown to fail, so every guard below is exercised with a planted defect.
 """
-import json, subprocess, sys, tempfile, unittest
+import hashlib, json, subprocess, sys, tempfile, unittest
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
@@ -14,15 +14,14 @@ REG = REPO / "experiments" / "registry.jsonl"
 
 
 def run_against(lines):
-    """Run the checker against a temporary registry by swapping the file, always restoring it."""
-    original = REG.read_text(encoding="utf-8")
-    try:
-        REG.write_text("\n".join(json.dumps(e, ensure_ascii=False) for e in lines) + "\n",
-                       encoding="utf-8")
-        return subprocess.run([sys.executable, str(CHECK)], capture_output=True, text=True)
-    finally:
-        REG.write_text(original, encoding="utf-8")
-        assert REG.read_text(encoding="utf-8") == original, "registry not restored"
+    """Run the checker against a planted registry in a temp dir. ⛔ Never write the tracked file:
+    the old swap-and-restore left it corrupted whenever a run was killed (llm-distillery#162)."""
+    with tempfile.TemporaryDirectory() as d:
+        planted = Path(d) / "registry.jsonl"
+        planted.write_text("\n".join(json.dumps(e, ensure_ascii=False) for e in lines) + "\n",
+                           encoding="utf-8")
+        return subprocess.run([sys.executable, str(CHECK), "--registry", str(planted)],
+                              capture_output=True, text=True)
 
 
 def entries():
@@ -96,6 +95,33 @@ class RegistryTest(unittest.TestCase):
         r = run_against(e)
         self.assertNotEqual(r.returncode, 0)
         self.assertIn("missing required field", r.stdout)
+
+    def test_planting_a_defect_never_writes_the_tracked_registry(self):
+        """#162: a restore in `finally` does not run under SIGKILL or a `timeout`, so the only safe
+        helper is one that never writes REG at all. Byte-equality alone cannot see a
+        write-then-restore; the mtime can. (A digest, not the bytes: rendering a difflib diff of
+        a 180 KB mismatch ran >2 minutes without finishing.)"""
+        state = lambda: (REG.stat().st_mtime_ns, hashlib.sha256(REG.read_bytes()).hexdigest())
+        before = state()
+        e = entries()
+        e[0]["metrics"]["invented_figure"] = "99.9999%"
+        r = run_against(e)
+        self.assertNotEqual(r.returncode, 0, "the planted defect must still be caught")
+        self.assertEqual(state(), before,
+                         "planting a defect wrote the tracked experiments/registry.jsonl")
+
+    def test_the_checker_reads_the_registry_it_is_given(self):
+        """The helper is only safe if the checker honours `--registry`; were the flag ignored, it
+        would check the clean tracked file and every planted defect would silently pass."""
+        e = entries()
+        e[0]["metrics"]["invented_figure"] = "99.9999%"
+        with tempfile.TemporaryDirectory() as d:
+            planted = Path(d) / "registry.jsonl"
+            planted.write_text("\n".join(json.dumps(x) for x in e) + "\n", encoding="utf-8")
+            r = subprocess.run([sys.executable, str(CHECK), "--registry", str(planted)],
+                               capture_output=True, text=True)
+        self.assertEqual(r.returncode, 1, r.stdout + r.stderr)
+        self.assertIn("`invented_figure` = 99.9999% is NOT traceable", r.stdout)
 
     def test_every_entry_states_its_spend(self):
         """`0` is a claim a reader can check; absent is not."""

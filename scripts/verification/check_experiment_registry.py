@@ -10,8 +10,11 @@ the commit message of a cited commit). `null` always passes -- an unrecoverable 
 null with an explanation in `notes`, never invented.
 
 Exit 0 = all checks pass. Exit 1 = at least one FAIL.
+
+`--registry PATH` checks another file (tests plant defects in a temp copy, never in the tracked
+one -- llm-distillery#162). Artifact paths and commits still resolve against the repo.
 """
-import json, re, subprocess, sys
+import argparse, json, re, subprocess, sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
@@ -65,12 +68,16 @@ def traceable(value, text):
     return False, str(value)
 
 
-def main():
-    if not REG.exists():
-        print(f"FAIL: {REG} does not exist")
+def main(argv=None):
+    ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
+    ap.add_argument("--registry", type=Path, default=REG,
+                    help="registry file to check (default: the tracked experiments/registry.jsonl)")
+    reg = ap.parse_args(argv).registry
+    if not reg.exists():
+        print(f"FAIL: {reg} does not exist")
         return 1
     fails, entries = [], []
-    for n, line in enumerate(REG.read_text(encoding="utf-8").splitlines(), 1):
+    for n, line in enumerate(reg.read_text(encoding="utf-8").splitlines(), 1):
         if not line.strip():
             continue
         try:
