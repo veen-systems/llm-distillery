@@ -135,7 +135,12 @@ session); the docs give no per-session figure. ⚠️ GUESS, not measured: a C-c
 dollars, so $100 is on the order of 15–30 C rows. **First step: dispatch 2–3 C rows, read `/usage` per
 session, then set the pace from those numbers** — and record them here with the date.
 
-**Pilot 1 — #162 → PR #166 (2026-09-29).** Review (`/review-changes`, 4 lenses incl. reachability +
+**Pilot 1 — #162 → PR #166 (2026-09-29). ⛔ NOT A CLOUD RUN.** Launched with `claude --cloud`, but a
+`claude --teleport <session>` process started ~08:37 (pid 20998, `ps` etime) and the work ran in the
+LOCAL main checkout (reflog: checkout to the fix branch 09:18, commit 09:25, back to `main` 09:26 — the
+checkout another session was using). So the cloud environment (setup script, allowlist, no secrets) is
+still **untested**; only the model cost carries over. ⛔ **Never run the `--teleport` line `--cloud`
+prints** — it pulls the session onto this machine. Review (`/review-changes`, 4 lenses incl. reachability +
 claim-verification): **0 blockers, 3 warnings**; the code held under 5 mutations re-run locally. Cost
 (`/usage` in the cloud session, owner-pasted): **$2.13** — Opus 5.5, 17.9k output, 3.7M cache-read tokens,
 3m21s API time over 3h44m wall (idle ~3h after the PR, which matches PR creation 09:25). ⚠️ `$` is the
@@ -148,7 +153,7 @@ vs the profile's 25 skipped. All 18 fail identically on `main` itself: missing g
 (`secrets.ini`) and detector model files (`test_scorer_run_fatal` 7, `test_preflight_deploy_guards` 6,
 `test_harm_detector_contract` 3, `test_deepseek_model_guard` 2). **Put this baseline in every cloud
 prompt**, or a session either "fixes" environmental failures or reports a suite count it cannot have
-produced — PR #166's body claims `1104 passed, 25 skipped`, which a keyless clone does not give.
+produced — PR #166's `1104 passed, 25 skipped` came from the local tree (keys and models present), not the branch.
 
 ## Cross-Repo Dependency Chains
 
