@@ -4,6 +4,21 @@
 
 *⚠️ **Entries dated before 2026-09-17 live in [`archive/gotcha-log-archive.md`](archive/gotcha-log-archive.md)**, verbatim (the 09-01 → 09-16 ones moved 2026-09-27 by an owner-approved MID-MONTH pass, `--before 2026-09-17`; earlier ones moved 2026-09-24; into `archive/` 2026-09-26 so curate's size measurement stops counting it, #163; the month-dated Feb–May entries followed on 2026-09-26). Next pass: `python3 scripts/maintenance/retire_memory.py gotcha --before <first of this month> --apply` (dry run without `--apply`). It retires top-level entries only; the `###` entries inside the catalogue are kept by rule and counted. The unreachable-mechanism catalogue stayed here. For a recurrence match, grep both: `grep -n <term> memory/gotcha-log*.md`.*
 
+## THE LOSSLESS CHECK ITSELF LIED UNTIL `LC_ALL=C` — `comm` under a UTF-8 locale (2026-09-29)
+**Problem**: The first verbatim-retirement check (`comm -23 <(sort before) <(sort after+dest)`) printed "missing 570" — and the mutation arm ALSO printed 570, with `comm: file 1 is not in sorted order` on stderr. Both arms agreeing is the instrument signal, not a result.
+**Root cause**: `sort` and `comm` collate differently under a UTF-8 locale on lines with `⛔`/`—`/`→`, so `comm` sees unsorted input and its output is meaningless. The TODO's method line said `sort | comm` with no locale.
+**Fix**: `export LC_ALL=C` before both; then missing 0 and the mutation arm fires (3/4/5 lines). Method line in `docs/TODO.md` now says `LC_ALL=C sort | comm`. Any earlier `sort | comm` check run without it should be treated as unverified.
+
+## `--teleport` IS NOT A VIEW, AND A PEER MESSAGE TO ANOTHER PERMISSION MODE EXPIRES (2026-09-29)
+**Problem**: Two "cloud" pilots ran on this machine, in the shared checkout: the owner ran the `Resume with: claude --teleport …` line to watch them. Separately, two `SendMessage`s to such sessions expired unapproved and were never delivered.
+**Root cause**: `--teleport` moves the session local; the `View:` URL is the viewer. A session in a different permission mode holds cross-session messages for its user, who may not be looking.
+**Fix**: Follow cloud runs only via `View:`; detect with `ps -eo pid,etime,args | grep teleport`. Relay to a held session as a FILE the owner pastes (`Read <path> and do what it says`) — no approval step to expire.
+
+## A HEADLINE TALLY WRITTEN FROM THE STORY, NOT COUNTED — "3 of 3" was 2 of 3 (2026-09-29)
+**Problem**: I wrote "3 of 3 pilot PRs carried a defect only local review found" into three files; both close reviewers refuted it — pilot 1's code held (0 blockers), only its PR text had a wrong suite count.
+**Root cause**: The number came from the narrative ("review always found something"), not from enumerating the three records sitting in the same file.
+**Fix**: Corrected to "2 of 3 (the 3rd: a suite count from the local tree)". Rule: a tally in a lesson gets its items listed beside it; if you cannot list them, you have not counted.
+
 ## THE EVIDENCE FILE WAS A DIFFERENT SAMPLE FROM THE ONE I DESCRIBED — one seed shared across lenses (2026-09-28)
 **Problem**: For EXP-044 I read 12 flagged titles per lens, wrote "belonging: mixed (Gaza strike, funeral mix-up … Stolperstein)" into the evidence README, then re-ran `harm_titles.py` to SAVE the sample with the lenses in a different order. `random.seed(0)` is set once, so every lens drew different rows: the committed file had none of the titles the README cited, and the Stolperstein row sat under uplifting. The adversarial review lens caught it; the claims-vs-evidence lens (and I) had not.
 **Root cause**: A sample whose draw depends on argument order is not reproducible by "the same command", and I wrote the prose from the first run while committing the second — the verified artifact was not the shipped one.

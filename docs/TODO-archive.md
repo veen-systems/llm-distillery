@@ -7044,3 +7044,68 @@ read-surface steps −1.1–4) moved VERBATIM to `docs/TODO-archive.md` § *Move
 4. **Then the numbered work items below** (1–8). ⚠️ Item 1's date gate (~2026-09-24) has passed; it is
    executable. Item 2 is an owner spend decision. Numbers are NOT reused when an item closes.
 
+## Moved 2026-09-29 — the START HERE block of 2026-09-28 (close), verbatim
+
+## ▶️ START HERE — the ordered queue, as of 2026-09-28 (close)
+
+*A bare "continue" means this list, top down. Each line names the FIRST action. The previous block
+(2026-09-27 evening: #553 prod check, ledger retire, TODO body audit) moved VERBATIM to
+`docs/TODO-archive.md` § *Moved 2026-09-28 — the START HERE block of 2026-09-27 (evening)*.*
+
+0. ▶ **THE READ SURFACE (`#163`) — owner, 2026-09-28: "Large read surface — start pruning, thinning,
+   mechanizing, retiring!"** Measured at close (curate Step 0, `wc -m` over non-archive `memory/` +
+   `docs/work-items/`): **1,086,050 chars**. Order stays **mechanize → retire → thin → prune**; ⛔ retiring is
+   moving VERBATIM + an independent lossless check (`sort | comm`, mutation-tested — the 2026-09-28 method);
+   ⛔ a new check ships only WITH the prose it lets you delete. First actions, in order:
+   a. **Unshield the gotcha log** (precondition for c): five `### ` entries dated 2026-09-10 (~12 KB) sit under
+      the template heading `## [Short description]`, which `retire_memory.py` `KEEP_HEADINGS` always keeps.
+      Move them out verbatim; make the script REPORT dated entries under a keep-heading (seeded test).
+      Gotcha log 2026-09-28.
+   b. **Retire the `H-V8` section of `memory/hypothesis-ledger.md`** — 40,380 B of 83 KB; v8 was superseded by
+      v9 on 2026-09-25. Read its still-open rows first and keep a one-line live pointer for any that are
+      method questions beyond v8 (candidates: `H-V8-22` e5-large at the op-point, `H-V8-25` FP weighting).
+   c. **Gotcha log, on/after 2026-10-01**: `python3 scripts/maintenance/retire_memory.py gotcha --before
+      2026-10-01` (dry run, then `--apply`; `sessions` too).
+   d. **The unreachable-mechanism catalogue** (~71 KB, ~47% of `memory/gotcha-log.md`, 55 dated entries kept
+      by rule): mechanize → retire — an entry whose class has a `live` row in § *Mechanized* moves verbatim to
+      the archive. Changing the keep-rule is an owner call; propose it with the list.
+   e. `memory/cross-repo-prioritization.md` (61 KB): its largest section is `### P1 — This week` (8.2 KB) —
+      RETIRED 2026-09-29 (see START HERE item 2).
+   f. *Options, not ruled:* a hook blocking a commit that shrinks `CLAUDE.md`/`memory/MEMORY.md` by > 10%
+      without a clause-loss review; mechanize `check_committed_idiom.py` (gotcha § Mechanized, `proposed`).
+
+1. **OWNER DECISIONS waiting** (nothing blocked on a machine):
+   - **Harm caps (`H-HD17`)**: no cap is justified yet on any lens. First a hand check — the 18 flagged
+     `human_thriving v9` rows and ~50 flagged `belonging` rows at harm ≥ 0.5 (I can pull the list from
+     sadalsuud). `docs/evidence/2026-09-28-per-lens-harm-rates/`.
+   - **NexusMind#286 item 3** (violence stamping skipped on an empty article cache, fail-open, while violence
+     ENFORCES): confirmed unfixed at `9dfcf2a`; owner handed timing to NexusMind 2026-09-28 → **NexusMind PR #561 OPEN,
+     CI green (checked 2026-09-28), merge is the owner's call there.** Outcome check is theirs: after deploy every
+     filter logs `Violence safety net [<filter>]: N unstamped survivors` — all six must read 0 on the first real cycle. Nothing leaks in a normal cycle (their 3-cycle identity). Detail: the
+     `NM#286 item 3` box under *Unchecked boxes carried out…*.
+   - ✅ **Decision 0 RULED 2026-09-28 — DELETE the per-lens rule prefilters** (NexusMind#284). Owner, verbatim:
+     *"delete is suppose"*. Relayed to `nexusmind-55`; sequencing unchanged — **we delete first, NexusMind strips
+     its shadow evaluator after we say our side landed.** Execution is item 1b below.
+   - **Harm hand check** — the list is pulled: `docs/evidence/2026-09-28-per-lens-harm-rates/harm_handcheck_list.tsv`
+     (19 v9 rows = all; 50 of 136 belonging rows, seeded per lens; window one cycle later than EXP-044's, hence
+     19/136 not 18/128). Owner marks `junk` / `fits`; then a cap decision per lens.
+   - Standing: the ~$3.2–3.6 adverse pool (#156, numbered item 2); H-TV5 (Thriving fullness under v9, ~10-day
+     drain from 2026-09-26).
+
+1b. **Execute decision 0 (ours first).** ⛔ First name every caller of `filters/*/v*/prefilter.py` —
+   CLAUDE.md says the per-lens prefilter runs ONLY in the oracle/training path, so deleting it changes what
+   future oracle runs label (`ground_truth.batch_scorer`; the 300-char floor lives separately in
+   `make_oracle_prefilter` and stays). Then delete per filter (prefilter.py, config `prefilter:` block, tests,
+   package-consistency expectations), prove the outcome (a batch_scorer dry run passes the rows the prefilter
+   used to drop), close the five boxes that waited on decision 0, and tell `nexusmind-55` our side landed.
+
+2. **Small, ours:** `cultural_discovery v5` `normalization.json` `raw_min` **4.0006** vs `TIER_THRESHOLDS`
+   **4.0** — breaks the must-equal rule (CLAUDE.md, op-point in four places). Read
+   `tests/unit/test_normalization_op_point.py` to see why it passes; fix or record the tolerance.
+
+3. **Then numbered items 3 (LD#134 marking pass) and 4 (the retracted 19.9%/13.0% framing)** below.
+
+4. **NexusMind's, nothing of ours:** ADR-024 steps 4–5; gpu-server orphan dirs (obituary v3/v4, commerce v2,
+   investment_risk/v5, uplifting/v5 — `cannot delete non-empty directory` in the sync log); NexusMind#558 (OOM
+   in pre-enrichment, 2026-09-28 00:58); retire gpu-server `/commerce/predict` (LD#80).
+

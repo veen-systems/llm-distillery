@@ -90,7 +90,7 @@ the length floor blocks*.
    That is the convergence DiD exists to produce, and it rules out "the judge
    penalises short input" as the explanation.
    ⚠️ **Still do not fit the cap VALUE**: that is a threshold fit and inherits
-   #95's |Δ| ≤ 0.16 noise floor (Batch F.1 first). Identification is cleared;
+   #95's |Δ| ≤ 0.16 noise floor (Batch F.1 first — `archive/cross-repo-prioritization-archive.md`). Identification is cleared;
    calibration is not.
    ⏱️ **The next annotation needs `VERIFY_TIMEOUT=120`.** It is a source-clustered
    bootstrap with no iteration flag and takes ~50s, against the curate runner's
@@ -149,7 +149,7 @@ the length floor blocks*.
    Identification is settled (hypothesis 5). What is not settled is the number,
    and two things constrain it:
    - **#95 first.** The cap is a threshold fit and inherits the measured
-     |Δ| ≤ 0.16 batch-composition noise floor. Batch F.1 (pin `batch_size`)
+     |Δ| ≤ 0.16 batch-composition noise floor. Batch F.1 (archived; pin `batch_size`)
      precedes any value.
    - **Recall cost against NM#231/#292.** The same populations lead solutions'
      short-and-clearing list (`gn_africa_gn_sudan`, `gn_asia_gn_afghanistan`,

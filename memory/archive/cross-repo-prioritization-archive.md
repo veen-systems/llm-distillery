@@ -1037,3 +1037,227 @@ against issues, whenever one issue carries two.
 
 ---
 
+## Retired 2026-09-29 — Priority Rankings (P0–P4), Coverage, Sequenced Work Batches, Housekeeping, Standing Operator Decisions — verbatim
+
+*Moved byte-for-byte from `memory/cross-repo-prioritization.md` at the 2026-09-29 close (#163 read surface). All of it was August 2026 state; the source already said "re-query before acting on one".*
+
+## Priority Rankings
+
+### P0 — Now
+
+| ID | Repo | Title | Why P0 |
+|----|------|-------|--------|
+| **(carryover)** | NexusMind | Verify the post-14:04 cycle: 4 first-time-in-production checks | NM#281's corrected gate has never been observed live. `gpu-server-unpinned` = LD#80 regression. |
+| ~~NM#285~~ | NexusMind | ~~Shadow measures a truncated Article~~ | **RESOLVED 2026-08-02** — Option B shipped (`89f2e5b`). Truncation ≤0.01; no longer blocks LD#86/#87/#90. |
+| **NEW: length floor → cap** | both | Split `MIN_CONTENT_LENGTH` out of per-filter prefilters into a cap/penalty (ADR-022 shape) | Replaces NM#285 as Chain 4's root. Blocks every NM#284 enforce flip: for 4 of 6 filters "enforce the prefilter" is 87–100% "enforce a length floor". |
+| **LD#91** | llm-distillery | uplifting ranks child-trafficking investigation top-6 of 3,530 | Reputational, reader-visible, live. Scorer fidelity, not threshold. |
+| **LD#92** | llm-distillery | ~~uplifting~~ **solutions** over-scores sub-300-char stubs | **CORRECTED 2026-08-02 at n=60/group.** uplifting does NOT replicate (DiD +0.44; P(original result from n=15)=0.0000). The effect is in **solutions v6** (DiD −1.13 [−1.74,−0.52], MAE 1.51×), ~49 FPs/8 cycles — not 460. Root cause of the original: op-point mix-up (2.25 is solutions', uplifting's is 4.0). Retitle/relocate. |
+| **LD#95** | llm-distillery | Inference scores depend on batch composition (max \|Δ\| 0.162) | **Same shape that made NM#285 a P0: it gates the validity of decisions queued behind it.** Measured to flip 7.1% / 9.1% of near-boundary articles. Every op-point flip, cap fit, refit and ADR-021 gate on this board compares this quantity. ~~Pinning the production batch size is cheap.~~ **SETTLED 08-06 — pinning was never available**: `DEFAULT_BATCH_SIZE` is already 16 and the variable is *composition*. Shipped instead: seeded replay (`f7fef85`) and the floor as a **band the deploy gate prints**. |
+| **ovr#284** | ovr.news | Comscore beacon as hero image | **Record DISCHARGED 2026-08-05**; control shape decided 08-07 (deny-list shipped, off-domain host stamped not blocked, allowlist declined). **Live remainder: recover the exposure window** — the one UNKNOWN that could reopen the Art. 33 conclusion. |
+| ~~**ovr#285**~~ | ovr.news | ~~Orphan reclamation NULLs raw_weighted_average + source_quality~~ | **CLOSED 2026-08-03.** ovr#283 (publication floor) is unblocked and is now an owner decision. |
+
+### P1 — This week
+
+| ID | Repo | Title | Why P1 |
+|----|------|-------|--------|
+| **NM#286** | NexusMind | ADR-022 gaps (commerce enforce key, consumer-side drop, violence run-modes) | Items 1+2 must move together; item 3 blocks Chain 2. |
+| **ovr#277** | ovr.news | editorial_decisions destructive on re-gate | Prerequisite for the whole of Chain 7. |
+| **LD#82** | llm-distillery | violence v1 shadow audit | Defines what `enforce: false` is waiting on. |
+| **FS#120** | FluxusSource | #119 eval readout + ADR-007 gate | **Hard date ~2026-08-14.** Dependency now shipped. |
+| **ovr#280 → NM#278** | both | cluster_id ingestion, then dedup retune | Reader-reported: 5 articles = ~10% of a 52-article lens. |
+| **ovr#281** | ovr.news | Stock heroes on ~10% of articles | Measured, decomposed, fixable in two independent halves. |
+| **ovr#204** | ovr.news | Remove hardcoded obituary detection | Chain 1's last link; upstream verified. |
+| **ovr#262** | ovr.news | Data archiving lossy & unreliable | Irreplaceable editorial signal lost forever. |
+| **NM#244** | NexusMind | gpu-server 422s drop whole chunks, reason not logged | Silent data loss in scoring. |
+| ~~**NM#290**~~ | NexusMind | ~~Hero extractor still picks third-party chrome post-#288~~ | **CLOSED 2026-08-03.** The *class* outlived it — see Chain 9: NM#294, ovr#295, ovr#297. |
+| **ovr#287** | ovr.news | Backfill wrong-story heroes | **DECIDED 08-07: BLANK**, scoped per row to what is still buildable (6 today, incl. one at normalized 9.10 that a per-pattern flag had missed). The `image_source` stamp blocked a DB-wide re-fetch, not blanking known ids → **ovr#305**. Open until the R2 round-trip runs. |
+| **NM#291** | NexusMind | Cross-source dedup threshold 0.88 vs measured 0.836 | Unblocks NM#278 with a measured number instead of a guess. |
+| **NM#289** | NexusMind | Medium fixture scores into high on the three percentile filters | Possible upper-tail counterpart to the Chain 3 crush; if the CDFs are stale this is an llm-distillery refit, not a NexusMind fix. Check refit dates first — cheap. |
+| ~~**FS#124**~~ | FluxusSource | UTF-8→MacRoman mojibake | **FIXED `ea25ae8`, verified not assumed**: 0.60–2.38%/run before, **0.00%** on the first run after. ⚠️ **The "0.78/run since, residual ~5/day is publisher-caused" claim is WITHDRAWN 2026-08-12 — that residual was 100% FALSE POSITIVES (FS#167), and the genuine residual is 0.** `’` is `0xD5` in MacRoman, a valid UTF-8 lead byte, so `l’é` / `c’è` forms a valid 2-byte sequence and the detector "repairs" correct French and Italian into Armenian (`l’éclipse` → `lՎclipse`). **Note the shape: the artefact was load-bearing** — it was the reason to believe a live collection-stage effect survived `ea25ae8`, which is part of why #124 stayed plausible as a #292 stage. An instrument's bias did not merely add noise; it kept a stage alive. Independently corroborated from our side: over 302,592 rows the defect fires **730 times, en 24 (0.012%) vs non-en 706 (0.67%) — 55×** — and **every hit is between 2026-07-29 and 2026-08-03, zero after**, matching FluxusSource's deploy boundary from a different instrument in a different repo. So #124 was real and strongly non-English-specific *while live*, and is now historical. ⚠️ **RETRACTED SAME DAY (2026-08-12): the collection stage is NOT historical and FS#166 does NOT replace it.** The defect **RELOCATED into NexusMind's enricher** — **NM#338**. `article_fetcher.py:291` does `.decode(resp.encoding or "utf-8")`, and `requests` gives a charset-less `text/*` response `ISO-8859-1`, **not `None`**, so the guard is dead code. Corrected measurement (120 files, 20 per lens, 08-10→08-12, peer-sourced from the NexusMind session): **1,466 / 25,996 = 5.639% introduced by enrichment**, English **1.341%** vs non-English **9.202%** — **6.86×**; by codec arm cp1252 1,210 / mac_roman 256. ⚠️ **And FluxusSource is NOT at 0.000%** — that figure came from a detector blind to cp1252 smart quotes (83% of the population); corrected it is **21 / 25,996 = 0.081%**. **So: FS#124's fix holds and the limb is live again at a different stage, in a different repo.** FS#166 (source acquisition) stands entirely on its own and is a *separate* collection-stage fact, not a replacement. Chain 14's root is **NM#292**. 🛑 **ovr#291 (repair ~474 stored rows) IS NOT SAFE TO RUN WITH THIS DETECTOR** — ours is warn-only so a false positive costs a wrong line in a report, but a *repair pass* silently and irreversibly converts correct French and Italian into Armenian codepoints. ✅ **SUPERSEDED 2026-08-13 — the repair question is MOOT.** Owner: *repairment should not be necessary; if it is, there are bugs upstream.* **ovr#291 is now RE-DERIVE FROM UPSTREAM, not repair.** A repairer needs a detector, a detector must *guess*, and the guess is the only reason FS#167's 2,030 false-positive pairs ever mattered. A clean copy of every row sits one hop upstream (`original_content`, 0.000% through a three-round challenge), so **nothing need be inferred and there is no false-positive class at all.** Two conditions, both measured: **NM#338 is fixed** (raw bytes to trafilatura), so the corrupted set is bounded and the job terminates rather than becoming a treadmill; and **U+FFFD — the one irreversibly-lossy class, which re-derivation ALONE can cure** — is **4 of 21,316 rows, 0 of 160 cache rows**. The old repairer spec survives as the **verification** spec, where a false positive costs a second look instead of a destroyed row. ⚠️ **Everything below is retained as HISTORY** — the reasoning recurs, and the record of what a guess would have required is worth keeping. ⚠️ **DATE-SCOPING IS NOT A SUFFICIENT MITIGATION — I wrote that here first and it is wrong.** Measured by the ovr.news session over their 21,174 rows: **449 flagged, 7 of them the false-positive class** (`l’âme`, `cos’è`, `l’Égypte`, `l’étang`), and **all 7 pre-date the 2026-08-03 cutoff** — so a date-scoped repair would still have destroyed every one of them. **Only the pattern exclusion saves them — and NO VALIDATED EXCLUSION EXISTS YET, so ovr#291 CANNOT BE SAFELY RUN AT ALL TODAY.** ⚠️ **A round-trip confirmation does NOT fix this, and I claimed it would — wrongly, about a destructive operation.** Verified here 2026-08-12, 5 of 5 cases survive: `'l’éclipse solaire'.encode('mac_roman').decode('utf-8')` → `'lՎclipse solaire'` — **different, valid, and wrong**. Also `cos’è`→`cosՏ`, `l’âme`→`lՉme`, `l’Égypte`→`lՃgypte`, `121\xa0°C`→`121ʡC`. **The round-trip IS the operation that produces the false positives**, so it cannot detect them; that is why FS#167 is open rather than solved. **What actually makes a detector safe is the CONJUNCTION: an unambiguous signature (candidate generation on marker classes — `Ã â √ ‚ ¬`, which `’` is not in) AND a clean inversion, then hand-review the residue.** NexusMind's detector is safe because of its *candidate* stage, not its round-trip stage — and getting that backwards is what would license the destructive run. Do not route "round-trip makes it safe" anywhere without this distinction attached. FS#167 is **open, not pending**: the obvious guard (reject repairs introducing a foreign script) scores 6/8 and fails both ways — rejects genuine emoji repairs on the variation selector, and *accepts* `121\xa0°C` → `121ʡC` because U+02A1 is Latin by name and category. The class is also far wider than first recorded: not apostrophe-elision but **2,030 firing pairs** (48 UTF-8 lead chars × 64 continuations — `«` `»` `—` `“` `…` `€` `√` and NBSP as leads; accented vowels plus `°` `µ` `©` `™` `≤` as continuations), i.e. European typography *and* scientific units. Date-scoping remains useful for *reducing blast radius* (448 before the cutoff vs 1 after) but must never be the only guard. Current state: **ovr#291 is OPEN with no repair script written, so nothing has been destroyed.** The single post-cutoff row is a `RaÃºl` in a Times of India row collected 08-07 and may be publisher-origin rather than a leak in `ea25ae8` — not to be treated as a counterexample without checking the feed. |
+
+### P2 — This month
+
+| ID | Repo | Title |
+|----|------|-------|
+| **LD#86 / LD#87 / LD#90** | llm-distillery | cd prefilter enforce → cd v6 op-point → lens harmonization. ~~all downstream of NM#285~~ — **NM#285 RESOLVED 08-02**; #87 was unblocked 08-06 by the #95 band decision. |
+| **ovr#235 → ovr#270** | ovr.news | Held-out gate, then summarizer swap (behind ovr#277) |
+| **ovr#286** | ovr.news | Backfill 397 metadata-absence summaries |
+| **ovr#276** | ovr.news | Editorial gate no longer byte-identical at temp=0 |
+| **NM#231** | NexusMind | uplifting under-scores non-English documented-outcome news (sibling of LD#91) |
+| **LD#61** | llm-distillery | Cross-filter trajectory-framing mis-lensing (sibling of LD#91) |
+| ~~**ovr#283**~~ | ovr.news | **CLOSED won't-do 2026-08-07** — no stored row is below raw 4.03, so a floor binds nothing, and the monitoring alternative is mis-specified against its own motivating case. Reopened one level down as **ovr#304**. |
+| ~~**FS#121**~~ | FluxusSource | ~~fda/patent aggregators never run~~ — **CLOSED 08-03.** Generalized by **FS#126**: nothing alarms on a zero-yielding aggregator, so FS#121, FS#125 and FS#128 are three instances of one missing check. |
+| **LD#84** | llm-distillery | solutions oracle prompt router self-contradictory |
+| **LD#94** | llm-distillery | solutions v6 `concreteness_gatekeeper` inert — 0 binds in 191,616 articles (benign NM#284 shape: a config key that declares an enforcement point with no runtime effect). Recommend remove-or-document; raising the threshold is a real behavior change needing an ADR-021 recall check. **Run the same two-condition count on `nature_recovery v4`'s `recovery_evidence`** — the redundancy argument generalizes. |
+| **LD#81** | llm-distillery | Align sklearn across training + inference |
+| **LD#89** | llm-distillery | Share frozen-mpnet embed pass between obituary + violence |
+| **LD#23 / LD#70 / LD#71** | llm-distillery | cd evidence_quality; nr protection scope; nr v5 recall |
+| **ovr#214 / ovr#255 / ovr#256** | ovr.news | Language leak; academic stock photos; US-centric abbreviations |
+| **NM#221 / ~~NM#220~~ / NM#96** | NexusMind | GPU multi-tenancy, ~~Ollama coexistence~~, sustainable hosting — **NM#220 CLOSED/COMPLETED 2026-07-07, verified 2026-08-07** |
+
+### P3 — Backlog
+
+LD#52, LD#66, LD#48, LD#88 (hygiene batch), NM#196, NM#82, NM#23, NM#185,
+NM#187, NM#188, NM#170, ovr#63, ovr#55, ovr#19, ovr#278 (safe-fetch defence in
+depth), FS#105 (systemd units — **ovr#254, the other half, closed 08-03 14:01**),
+FS#11, FS#103, FS#107, FS#114, FS#122.
+
+**FS#122 is a closed question, not an open task.** It began as an "economy lens"
+proposal for ovr.news and the measurement answered it: `solutions v6` already
+surfaces cooperative/commons/ownership material at **6× the corpus rate**
+(29.8% ≥ op-point vs 4.9%) — there is simply almost none of it (104 strict
+matches in 191,616, 0.054%). **The gap is source selection, not scoring, so no
+new lens is warranted** — this belongs with FluxusSource source acquisition, and
+it should be cited before anyone re-proposes an economy lens (cf. LD#40).
+
+### P4 — Future
+
+LD#38, LD#40, LD#24, LD#78, LD#79, ovr#232, ovr#223, ovr#211, ovr#213,
+ovr#242, ovr#133, FS#19, plus the ovr non-engineering track.
+
+**That track is now 25 issues, and it is no longer the `#137–#160` range** the
+previous pass described — it has grown a second cluster at `#216–#221` (NLnet
+future round, HAN student outreach). Full list, re-run 2026-08-03:
+`61 137 138 139 140 143 145 146 147 150 151 152 153 154 157 158 159 160 216
+217 218 219 220 221 255`. **Caveat: `ovr#255` is in that list only because it
+carries the `content` label — it is a real hero-image bug and is banded at P2.**
+So the label filter over-counts by one: **24 non-engineering, 56 engineering.**
+
+## Coverage — what this memo does *not* band
+
+Stated explicitly so the priority tables are not mistaken for full coverage.
+**57 of the 177 open issues appear in no chain and no P0–P4 band**, of which
+~37 are engineering:
+
+| repo | unbanded | numbers |
+|---|---|---|
+| llm-distillery | 9 | 25, 28, 30, 33, 42, 55, 56, 60, 64 |
+| NexusMind | 4 | 104, 228, 229, 251 — *225 → Chain 15 and 226 → Chain 13, 2026-08-07 night. **This row is independently stale**: it omits 232, 223 and 254, while the same-day coverage pass says **11** NexusMind issues are uncovered — two different definitions, never reconciled.* |
+| ovr.news | 42 (20 of them non-engineering) | engineering: 41, 59, 68, 115, 177, 180, 207, 210, 224, 228, 229, 230, 233, 234, 239, 243, 245, 247, 248, 263, 265, 271 |
+| FluxusSource | 0 | — |
+| **persuasion-scorer** | **12 → 0** | **This row did not exist until 2026-08-07 and the omission was the point: all 12 were counted in every total and banded nowhere. Now [Chain 16](#chain-16-persuasion-scorer-verification-track--new-2026-08-07-was-never-banded).** |
+
+**Also mentioned somewhere on this board but placed in no chain and no band
+(checked 2026-08-07):** ovr#301 (Chain 7 material — the re-summarisation test
+that picks between the two #29x candidates), FS#127, FS#132.
+
+This is sediment, not a hidden backlog — most predates the current chains. Two
+are worth a second look, though, because they are *methodology* items the last
+month has independently re-derived: **NM#229** (agreement-gate for scorer
+retrains, catching K-shape over-demotion before deploy) and **ovr#234**
+(schema-constrained gate output with per-finding confidence). Both were filed
+2026-06-04 from the vmodel pattern; Chain 13 is now arguing for that same kind
+of gate from measurement rather than from principle. Their sibling **ovr#235**
+is already banded, in Chain 7.
+
+## Sequenced Work Batches
+
+### Batch A — status after 2026-08-02
+1. ~~Verify the post-14:04 cycle~~ **DONE — all 4 checks PASS.**
+2. ~~NM#285 measurement + Option C decision~~ **DONE — Option B shipped (`89f2e5b`); C declined on the measurement.**
+3. ~~NM#286 items 1+2~~ **DONE (`23a9068`, on main).** Item 3 still open, still blocks any violence flip.
+4. **LD#82** violence audit — next, with NM#286 item 3.
+5. **NEW ROOT: length floor → cap/penalty.** LD#93 steps 1-3 shipped (`4d17e75`)
+   and are synced; **step 4 (fit the solutions cap) is blocked on LD#92's
+   second-op-point re-run AND now on Batch F.1** — it is a threshold fit, so it
+   inherits LD#95's noise. Step 5 (re-run the NM#284 shadow) needs the sync
+   verified in a cycle. Blocks LD#86/#87/#90.
+6. **Verify next cycle** after `89f2e5b`: shadow lines carry `contract=title+content` + `pre_source_filter=true`, four filters show `INCOMPLETE(inert:…)`, and nature_recovery/solutions log **no** `declared=` (key deleted).
+
+### Batch B — Reader-visible quality (can run in parallel with A)
+1. **LD#91** — uplifting dominant-subject failure. Read alongside LD#61 and NM#231; likely one shared mechanism.
+2. ~~ovr#285~~ **CLOSED 08-03** → **ovr#283** decision is unblocked and is the owner's.
+3. **ovr#280** ingestion fix → **NM#278** retune, now with **NM#291**'s measured 0.836. *(Sequencing: complete-linkage via NM#228 first — see the 08-04 section.)*
+4. **ovr#281** — stock heroes (two independent halves: stickiness, validate false-rejects).
+5. **ovr#204** — remove hardcoded obituary filter.
+6. ~~NM#290~~ **CLOSED 08-03** → replaced by **NM#294** (~79% of heroes unvalidated) and **ovr#295 / ovr#297** (publisher logos via the upstream-supplied path).
+7. ~~**ovr#287** — hero backfill, after the `image_source` stamp is disambiguated.~~ **DONE differently 2026-08-07:** the stamp was a blocker for a DB-wide re-fetch, not for blanking known ids. Blanking targets by URL pattern; the stamp ambiguity went to **ovr#305**.
+
+### Batch C — Legal / compliance — **grew 08-04/08-05**
+> **Mostly CLOSED as of 2026-08-07.** Items 2-5 are all closed issues; the
+> batch's framing ("sequence it before anything that fits a distribution")
+> is void. Only 1, 6 and 7 carry live work.
+
+1. **ovr#284** — record DISCHARGED 2026-08-05; control shape decided 08-07 (deny-list shipped, off-domain host stamped not blocked). **Live remainder: recover the exposure window**, the one UNKNOWN that could reopen the Art. 33 conclusion.
+2. ~~**ovr#292** TDM opt-out sweep~~ — **CLOSED 2026-08-05, ADR-043: the directives do not bind our fetcher.** Live remainder is operational, not policy: **schedule the scan** (it has run once) and **fix the 117 fail-open errors** — a publisher behind a WAF that 403s non-browser agents is the one most likely to be reserving.
+3. ~~**LD#28** TDM for training data~~ — **CLOSED 2026-08-05**, its own record rather than inheriting ovr#292's. See **LD#97** for the already-trained-models half.
+4. ~~**ovr#293** AI Act art. 50~~ — **CLOSED 2026-08-06.**
+5. ~~**ovr#294** unassessed obligations~~ — **CLOSED 2026-08-06.**
+6. **ovr#274** — full threat-surface security review (standing).
+7. **ovr#278** — safe-fetch defence-in-depth leftovers.
+
+Batch C was three code-adjacent items; it is now the only batch on the board
+whose head item (ovr#292) is a **policy decision with a corpus-wide consequence**
+— 333 domains is 24.5% of sources, and dropping them changes what every lens
+downstream can see. Sequence it before anything that fits a distribution.
+
+### Batch D — Deadline track
+1. **FS#120** — eval readout, ADR-007 gate, **~2026-08-14**. Start the readout script well before the date; ovr#275's attribution export is live.
+2. Close **ovr#275** after the ~Aug 2 backlog washout check.
+
+### Batch E — Summarizer (strictly sequenced)
+1. **ovr#277** (non-destructive re-gate) → 2. **ovr#276** (determinism) → 3. **ovr#235** (gate) → 4. **ovr#270** (swap) → 5. **ovr#286** (backfill).
+
+### Batch F — Measurement trust (NEW 08-03; **precedes any threshold decision**)
+Listed last but sequenced first: Batch A.5 and every Chain 4 enforce flip depend
+on it.
+1. ~~**LD#95** — pin the batch size~~ **SETTLED 2026-08-06: the second half only.**
+   Pinning was never available — `DEFAULT_BATCH_SIZE` is already fixed at 16
+   and the variable is batch *composition*. The floor is now a **band the
+   deploy gate prints** (`--noise-floor`, default 0.16), and two models whose
+   bands overlap are NOT DISTINGUISHABLE. This is what unblocked #87 and #93
+   step 4.
+2. **NM#289** — check the three percentile CDFs' refit dates against current
+   production raw percentiles. Cheap; may reopen Chain 3 at the upper tail.
+3. **LD#94** — remove or document the inert gatekeeper, and run the same
+   two-condition count on `nature_recovery v4`.
+4. Only then: **LD#93 step 4** (fit the solutions short-content cap) and any
+   Chain 4 enforce flip. Both are threshold fits that inherit LD#95's noise.
+5. **NEW 08-05 — Chain 15's missing count:** what share of lens placements is
+   decided by a margin smaller than **0.16**? Already known: 16.1% of published
+   articles are scored by 2+ filters and 52.6% of those are placed under a 0.5
+   margin (ovr.news hypothesis log). The sub-0.16 slice is the part that is not
+   measured, and it is the part that distinguishes a close call from a coin flip.
+   ovr#296's tie-break epsilon is where it belongs. Same family as items 1–3: it
+   says whether a comparison means anything before anyone acts on one.
+
+## Housekeeping (opportunistic)
+
+- Delete retired sustech/foresight dirs (post-drain — due now).
+- Sync `score_normalization.py` (44-line divergence LD ↔ NM).
+- ~~LD#49~~ / LD#48 — remove superseded filter versions; normalize Hub naming. **LD#49 CLOSED/COMPLETED 2026-07-27** (verified 2026-08-07); LD#48 still open.
+- FS#105 — version systemd units in-repo (ovr#254, its twin, **closed 08-03**).
+- ~~NM#91 sadalsuud healthcheck drift~~ — **CLOSED/COMPLETED 2026-03-06, and the description was wrong**: NM#91 is *"Pipeline-run summary notification on success (not just failure)"*, nothing to do with healthcheck drift (verified 2026-08-07). If healthcheck drift is still a live operator concern it has no issue.
+
+## Standing Operator Decisions (Jeroen's call)
+
+> **CLEARED 2026-08-07 — every item that was open here has been decided.**
+> This section is the one an operator reads as the live to-do list, and it had
+> drifted furthest: it still listed all six of the 08-07 decisions as open, two
+> of them (ovr#283, ovr#292/LD#28) against issues already CLOSED on GitHub, and
+> ovr#283 twice. See *Ordering 2026-08-07* in [`archive/cross-repo-prioritization-archive.md`](archive/cross-repo-prioritization-archive.md).
+> **All seven are now taken.** Item 7 was created by this session's own review and closed the same day.
+
+- ~~**7. ovr.news's own corroboration boost**~~ — **DECIDED + SHIPPED
+  2026-08-07** (`1ecf853`): **bounded to a flat 1.3× for 2–10 total sources,
+  1.0× above**, matching NexusMind's shape in `1bbadb5`. The ladder was removed
+  rather than retuned because precision is **not monotone** in cluster size and
+  no band beats the 2-source case (0.560). Subtractive by construction.
+  ovr.news `under-the-hood/ranking.astro` updated in the same commit — and while there,
+  **a separate published defect**: decay published as **0.95** against a
+  configured **0.85** (0.70 vs 0.32 at 7 days), so the worked table understated
+  decay roughly twofold. ovr#303 closed. **Still open in the hypothesis log:
+  whether the remaining 1.3× is earned at all — decidable ~2026-08-18**, once
+  the TTL drains the oversized clusters and precision can be measured on the
+  *capped* system.
+- ~~NM#285 Option C~~ — DECLINED 2026-08-02 on the measurement (Option B shipped). Reopen only if prefilters regain lens rules worth enforcing.
+- ~~**ovr#283** publication floor~~ — **CLOSED won't-do 2026-08-07.** Listed twice here; both are dead.
+- ~~**ovr#284** who writes the Art. 5(2) record~~ — **stale when written**; the record was authored 2026-08-05. The live decision was the control shape, taken 08-07: deny-list, stamp not block, no allowlist.
+- ~~**ovr#292 / LD#28** do the 333 domains bind us~~ — **DECIDED 2026-08-05, ADR-043: they do not.** Both issues CLOSED. The 08-07 follow-on (disclose on `/accountability`?) was answered **no**.
+- ~~**ovr#287** re-extract or blank~~ — **BLANK, 2026-08-07**, scoped to rows still inside the build window.
+- ~~**LD#95** pin the production batch size~~ — **not available and superseded.** Batch size is already fixed at 16; the variable is *composition*. Settled 08-06: the floor became a band the deploy gate prints, and two models whose bands overlap are not distinguishable.
+- ~~**Chain 14** run the common-denominator comparison, or close won't-do~~ — **NEITHER, 2026-08-07:** NM#292 stays open and is retargeted as the index plus the cross-cutting constraint list; the aggregate measurement is dropped.
+- **LD#85** obituary v6 relabel — PARKED; reactivate on obit-flag or over-block harm.
+- ~~NM#91 healthcheck drift~~ (closed 2026-03-06, and mis-described — see above); uplifting v7 NO_HUB backup; cd v5 config-schema exemptions.
+- FluxusSource: 71 DEAD disable candidates; OVER_POLLED audit; global-broadening yield check.
+
