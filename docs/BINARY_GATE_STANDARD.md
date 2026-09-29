@@ -145,7 +145,7 @@ special case and the warning comment that guards it. **Verify by executing**, no
 the current arrangement exists precisely because an earlier check silently did nothing.
 
 ### P3 — a shared base class
-`filters/common/binary_gate.py` holding `_load_models`, `_prepare_text`, `batch_predict`,
+`filters/common/binary_gate.py` <!-- placeholder --> holding `_load_models`, `_prepare_text`, `batch_predict`,
 `get_score`, and a generic `predict()`; subclasses declare `CONCEPT`, `VERSION`,
 `DEFAULT_THRESHOLD`. Keep the per-gate predicate (`is_commerce`…) as a thin alias so no caller
 changes. **~95% of the three inference files is already identical.**

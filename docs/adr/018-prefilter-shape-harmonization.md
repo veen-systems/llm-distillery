@@ -111,7 +111,7 @@ Class-name version drift (3 of 7) is fixed in a separate batch pass once all mig
 - llm-distillery#52 — the harmonization issue (filed 2026-04-28).
 - llm-distillery#45, #46 — per-filter prefilter patches that motivated the refactor.
 - llm-distillery#51 — universal obituary detector (downstream consumer of the harmonized shape).
-- `memory/feedback-regex-ignorecase-trap.md` — the case-insensitive override trap, an example of a class of bug that one canonical compile-site prevents.
+- `feedback-regex-ignorecase-trap.md` (owner auto-memory, `~/.claude`) — the case-insensitive override trap, an example of a class of bug that one canonical compile-site prevents.
 
 ## Amendment 2026-08-21 — new filters ship no per-lens prefilter (owner ruling)
 

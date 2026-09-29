@@ -75,15 +75,15 @@
 
 ## Related Decisions
 
-- [ADR-001: Title](../adr/001-title.md) - Relationship
-- [Decision: Title](../decisions/YYYY-MM-DD-title.md) - Relationship
+- ADR-001: Title (`docs/adr/001-title.md` <!-- placeholder -->) - Relationship
+- Decision: Title (`docs/decisions/YYYY-MM-DD-title.md` <!-- placeholder -->) - Relationship
 
 ---
 
 ## References
 
 - [Document 1](link)
-- [Code reference](path/to/file.py)
+- Code reference: `path/to/file.py` <!-- placeholder -->
 
 ---
 

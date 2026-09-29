@@ -16,9 +16,9 @@ Complete documentation for knowledge distillation from large language model orac
 
 - **[Agents Overview](agents/README.md)** - Development workflow agents
 - **[Filter Development Guide](agents/filter-development-guide.md)** - Complete 9-phase filter lifecycle
-- **[Filter Harmonizer](agents/filter-harmonizer.md)** - Consistency checking and validation
-- **[Dimensional Regression QA](agents/dimensional-regression-qa-agent.md)** - Training data validation
-- **[Oracle Calibration](agents/oracle-calibration-agent.md)** - Oracle quality validation
+- **Filter Harmonizer** (`docs/agents/filter-harmonizer.md` <!-- placeholder -->) - Consistency checking and validation
+- **[Dimensional Regression QA](agents/templates/dimensional-regression-qa-agent.md)** - Training data validation
+- **[Oracle Calibration](agents/templates/oracle-calibration-agent.md)** - Oracle quality validation
 
 ### Filter Development
 

@@ -72,6 +72,6 @@ The experiment validates the original oracle choice (see ADR-010). No reason to 
 
 ## References
 
-- Raw comparison data: `scripts/three_way_comparison.json`
-- Comparison script: `scripts/compare_github_models.py`
+- Raw comparison data: `scripts/three_way_comparison.json` <!-- placeholder -->
+- Comparison script: `scripts/compare_github_models.py` <!-- placeholder -->
 - ADR-010: Oracle consistency > data volume

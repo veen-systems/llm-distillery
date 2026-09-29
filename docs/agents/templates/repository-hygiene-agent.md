@@ -224,7 +224,7 @@ NICE-TO-HAVE: Old experiments
 
 ## Report Format
 
-Generate a markdown report: `reports/repository_hygiene_YYYY-MM-DD.md`
+Generate a markdown report: `reports/repository_hygiene_YYYY-MM-DD.md` <!-- placeholder -->
 
 ### Executive Summary
 

@@ -291,7 +291,7 @@ See docs/SESSION_STATE.md for details."
 - Validation: Dimensional regression QA criteria
 
 **4. Training Pipeline**
-- Preparation: `scripts/prepare_training_data.py` (generic, reads config)
+- Preparation: `training/prepare_data.py` (generic, reads config)
 - Training: `training/train.py` (planned)
 - Evaluation: Per-dimension MAE/RMSE
 
@@ -338,7 +338,7 @@ llm-distillery/
 ### Important Files
 
 **Always read first:**
-- `docs/SESSION_STATE.md` - Current status, accomplishments, next steps
+- `docs/SESSION_STATE.md` <!-- placeholder --> - Current status, accomplishments, next steps
 
 **Reference as needed:**
 - `docs/agents/agent-operations.md` - Agent operational guide
@@ -444,6 +444,6 @@ You're doing this right when:
 - `docs/agents/templates/dimensional-regression-qa-agent.md` - Dataset QA template
 - `docs/agents/templates/ADR-TEMPLATE.md` - Architecture decision record template
 - `docs/decisions/` - Architecture Decision Records
-- `docs/SESSION_STATE.md` - Current project status (read this first!)
+- `docs/SESSION_STATE.md` <!-- placeholder --> - Current project status (read this first!)
 - `sandbox/README.md` - Experimentation guidelines
 - `C:\local_dev\AI_AUGMENTED_SOLO_DEV_FRAMEWORK.md` - Original framework inspiration

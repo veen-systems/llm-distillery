@@ -200,6 +200,6 @@ python filters/common/commerce_prefilter/training/train.py \
 
 ## References
 
-- [Jackery case study](../filters/sustainability_technology/v3/prefilter.py) - v3 prefilter patterns
-- [Prefilter harmonization](./PREFILTER_HARMONIZATION_TASK.md)
+- Jackery case study (`NexusMind/filters/sustainability_technology/v3/prefilter.py`; removed here 2026-08-03) - v3 prefilter patterns
+- Prefilter harmonization (`docs/PREFILTER_HARMONIZATION_TASK.md` <!-- placeholder -->)
 - [Filter architecture](./ARCHITECTURE.md)

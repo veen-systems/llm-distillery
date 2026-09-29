@@ -8,7 +8,7 @@
 ## What Was Created
 
 ### 1. Main Agent Specification
-**File:** `filter-harmonizer.md`
+**File:** `filter-harmonizer.md` <!-- placeholder -->
 **Size:** ~21 KB
 **Purpose:** Complete agent specification for maintaining structural consistency across LLM filter prompts
 

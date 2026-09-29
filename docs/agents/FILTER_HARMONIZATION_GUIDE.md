@@ -34,7 +34,7 @@ The LLM Distillery uses a **3-stage filter architecture**:
 
 **This guide focuses on Stage 2 (Oracle/Model) harmonization** - ensuring all filter prompts follow consistent structure and oracle output discipline.
 
-For the complete architecture, see [ARCHITECTURE.md](../../ARCHITECTURE.md).
+For the complete architecture, see [ARCHITECTURE.md](../ARCHITECTURE.md).
 
 ---
 
@@ -232,9 +232,9 @@ Filters violate core principles. Fix before release.
 
 ### Active Filters (Check These)
 - `filters/uplifting/v4/prompt-compressed.md` (reference implementation)
-- `filters/investment-risk/v2/prompt-compressed.md`
-- `filters/sustainability_tech_deployment/v3/prompt-compressed.md`
-- `filters/sustainability_tech_innovation/v1/prompt-compressed.md`
+- `filters/investment_risk/v2/prompt-compressed.md`
+- `filters/sustainability_tech_deployment/v3/prompt-compressed.md` <!-- placeholder -->
+- `filters/sustainability_tech_innovation/v1/prompt-compressed.md` <!-- placeholder -->
 
 ### Legacy Filters (Archive)
 - `filters/uplifting/v3/` (superseded by v4)
@@ -264,9 +264,9 @@ python scripts/check_filter_harmonization.py \
 
 ## Related Documentation
 
-- **Agent template:** `docs/agents/filter-harmonizer.md`
+- **Agent template:** `docs/agents/filter-harmonizer.md` <!-- placeholder -->
 - **Agent workflow guide:** `docs/agents/agent-operations.md`
-- **Filter development guide:** `docs/FILTER_DEVELOPMENT.md` (if exists)
+- **Filter development guide:** `docs/FILTER_DEVELOPMENT.md` <!-- placeholder --> (if exists)
 - **Oracle calibration:** `docs/agents/templates/oracle-calibration-agent.md`
 
 ---

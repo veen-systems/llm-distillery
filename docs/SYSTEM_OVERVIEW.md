@@ -209,7 +209,7 @@ The LLM Distillery implements **knowledge distillation** for content filtering: 
 
 ### filter-harmonizer Agent
 
-**Location**: `docs/agents/filter-harmonizer.md`
+**Location**: `docs/agents/filter-harmonizer.md` <!-- placeholder -->
 **Created**: 2025-11-17
 **Purpose**: Automated filter consistency checking and harmonization
 
@@ -220,7 +220,7 @@ The LLM Distillery implements **knowledge distillation** for content filtering: 
 - Auto-fixes common issues
 
 **Documentation**:
-- `docs/agents/filter-harmonizer.md` - Full specification
+- `docs/agents/filter-harmonizer.md` <!-- placeholder --> - Full specification
 - `docs/agents/FILTER_HARMONIZATION_GUIDE.md` - Quick reference
 - `docs/agents/FILTER_CHECKLIST.md` - Development checklist
 - `docs/agents/README_FILTER_HARMONIZER.md` - Overview
@@ -396,10 +396,10 @@ python -m training.knowledge_distillation \
 ### Key Documents
 
 - **This file**: System overview and current status
-- `filters/sustainability_tech_innovation/v1/FINAL_PROMPT_COMPARISON.md`: Harmonization comparison
-- `filters/sustainability_tech_innovation/v1/PROMPT_STRUCTURE_COMPARISON.md`: Pre-harmonization analysis
-- `filters/investment-risk/v3/README.md`: investment-risk v3 documentation
-- `docs/agents/filter-harmonizer.md`: Filter harmonization agent
+- `filters/sustainability_tech_innovation/v1/FINAL_PROMPT_COMPARISON.md` <!-- placeholder -->: Harmonization comparison
+- `filters/sustainability_tech_innovation/v1/PROMPT_STRUCTURE_COMPARISON.md` <!-- placeholder -->: Pre-harmonization analysis
+- `filters/investment_risk/v3/README.md`: investment-risk v3 documentation
+- `docs/agents/filter-harmonizer.md` <!-- placeholder -->: Filter harmonization agent
 - `reports/filter_harmonization_report_2025-11-17.md`: Harmonization changes report
 - `datasets/raw/master_dataset_20251010_20251114_profile.json`: Dataset profile
 

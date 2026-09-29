@@ -20,7 +20,7 @@ The current filter's purpose is tech maturity tracking, so v3 uses TRL approach.
 ## What Was Created
 
 ### 1. Filter Configuration
-**File:** `filters/sustainability_tech_deployment/v3/config.yaml`
+**File:** `filters/sustainability_tech_deployment/v3/config.yaml` <!-- placeholder -->
 
 **3 Dimensions:**
 ```yaml
@@ -49,7 +49,7 @@ They CAN vary independently (with explicit contrastive examples):
 - High performance + Low economics = Advanced nuclear: works great but costly
 
 ### 2. Oracle Prompt with Contrastive Examples
-**File:** `filters/sustainability_tech_deployment/v3/prompt-compressed.md`
+**File:** `filters/sustainability_tech_deployment/v3/prompt-compressed.md` <!-- placeholder -->
 
 **Key Innovation:** Explicit contrastive examples showing independent dimension variation:
 ```markdown
