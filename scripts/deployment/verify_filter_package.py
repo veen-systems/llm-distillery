@@ -240,8 +240,12 @@ def check_hub(filter_dir: Path, repo_id: str | None, token: str | None) -> list[
     # config.yaml and no inference_hub.py": weights, any *.py, a model/ dir or a
     # config.yml is a package in progress and still fails without a repo_id
     # (PR #167 review). Callers: .githooks/commit-msg and deploy_to_nexusmind.sh.
-    files = [f for f in filter_dir.rglob("*") if f.is_file()]
-    if files and all(f.suffix.lower() in NON_PACKAGE_SUFFIXES for f in files):
+    # Any symlink disqualifies: rglob does not descend into a linked model/ dir,
+    # and a dangling x.safetensors is not is_file(), so either would hide.
+    entries = list(filter_dir.rglob("*"))
+    files = [f for f in entries if f.is_file()]
+    if (files and not any(e.is_symlink() for e in entries)
+            and all(f.suffix.lower() in NON_PACKAGE_SUFFIXES for f in files)):
         results.append((True, "hub: N/A — not a deployable package (only .md/.txt files)"))
         return results
 

@@ -156,6 +156,24 @@ def test_check_hub_fails_for_a_package_in_progress(tmp_path, files):
     assert not ok and "cannot check" in msg
 
 
+@pytest.mark.parametrize("link", ["dir", "dangling"])
+def test_check_hub_fails_when_a_symlink_hides_a_package(tmp_path, link):
+    """PR #167 review round 2: rglob does not descend into a linked model/ dir, and a
+    dangling x.safetensors is not is_file(), so prose plus either read as N/A."""
+    d = tmp_path / "filters" / "demo" / "v1"
+    d.mkdir(parents=True)
+    (d / "README.md").write_text("x")
+    if link == "dir":
+        real = tmp_path / "real" / "model"
+        real.mkdir(parents=True)
+        (real / "adapter_model.safetensors").write_text("w")
+        (d / "model").symlink_to(real, target_is_directory=True)
+    else:
+        (d / "x.safetensors").symlink_to(tmp_path / "missing")
+    [(ok, msg)] = _load_verifier().check_hub(d, None, None)
+    assert not ok and "cannot check" in msg
+
+
 # --- Gap 2: the word test --------------------------------------------------------------
 
 # The three allowlisted phrases, in the forms this repo's commits actually use. The first
@@ -172,17 +190,13 @@ NEGATED = [
     "No oracle calls, nothing in filters/, deploy N/A -- inapplicable",   # cae6998
     "No spend -- nothing deployed",
     "Deploy N/A, not skipped: nothing reached NexusMind",                 # 577c3d8
-    "Opened NexusMind PR #474, not merged and not deployed",              # 4d89aa4
-    "Held at v7 - v7 NOT deployed: MAE 0.61",                             # b2705df
     "Docs only. Nothing deployed.",
     "Fix typo\n\n$0, no oracle, nothing in filters/, deploy N/A \u2014 inapplicable, not skipped.",
     "Prepare v2 package; not deployed",
-    "Weights were not uploaded",
     "Nothing has been deployed",
     "Nothing was deployed.",
     "Package built, not yet uploaded",
     "Checked the diff; not re-deployed",
-    "Update config: deploy: none",
 ]
 
 # Real negations OUTSIDE the allowlist. They block, and that is the price of an anchored
@@ -196,6 +210,13 @@ OUTSIDE_ALLOWLIST = [
     "Neither uploaded nor deployed",
     "Deploy is N/A rather than skipped",
     "Merged without uploading.",
+    "No deploy.",
+    # Round 2: "not" and "<word>: n/a" must OPEN the clause, and "none"/"skipped" are
+    # gone. These two were real passes in git log, and the anchor costs them.
+    "Opened NexusMind PR #474, not merged and not deployed",              # 4d89aa4
+    "Held at v7 - v7 NOT deployed: MAE 0.61",                             # b2705df
+    "Weights were not uploaded",
+    "Update config: deploy: none",
 ]
 
 CLAIMS = [
@@ -236,6 +257,25 @@ CLAIMS = [
     "Deploy N/A for v6, done for v7",
     # "nothing" must open the clause.
     "Fixed nothing deployed v7",
+    # PR #167 review round 2: rules 2 and 3 were not anchored at clause start, and
+    # "none"/"skipped" after a deploy word admitted status lines.
+    "Errors during deploy: none",
+    "Pending deploys: none",
+    "Files that failed to upload: none",
+    "Blockers to deploy: none.",
+    "Steps skipped during deploy: none",
+    "v7 to Hub, failures during upload: none",
+    "Rollbacks after deploy: none; v7 is on the Hub",
+    "Outstanding uploads: none",
+    "Uploaded: none, all 12 files verified",
+    "Items not yet uploaded: none",
+    "Rumour that v7 was not uploaded: debunked",
+    "Not deployed? False.",
+    "(not deployed)",
+    "Errors during deploy: n/a",
+    # Not in the word list before round 2, so these skipped the gate entirely.
+    "Redeployed v7",
+    "v7 ships today",
     "Regressed nothing deployed.",
     # Only was/is/has been may sit between "nothing" and the word.
     "Nothing broke when we deployed.",

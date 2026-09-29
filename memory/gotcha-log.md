@@ -1373,7 +1373,7 @@ failure from a file it had already logged as legitimately absent.
 #44. Filed as #136. ⭐ Recorded because of the *direction* of the failure: a guard that fires
 on correct messages spends operator trust, and the cheapest-looking exit is the dangerous
 one. **A false positive in a safety check is a safety problem, not an annoyance.**
-**2026-09-29: fixed by PR #167.** Prose-only `filters/*/v*/` dirs verify as N/A; "nothing deployed", "not deployed" and "deploy N/A" pass. Mention still counts as use.
+**2026-09-29: PR #167.** Prose-only `filters/*/v*/` dirs verify as N/A; "nothing deployed", "not deployed" and "deploy N/A" pass. Mention still counts as use.
 
 ### A BOOTSTRAP QUANTILE IN THE FAR TAIL IS ONE ORDER STATISTIC, AND I PRINTED IT AS A DECISION (2026-08-29)
 **Problem**: To "handle multiplicity" I added a Bonferroni interval to an evidence script and
@@ -1564,7 +1564,7 @@ going free, an unavoidable false positive on a news corpus.
 **Fix**: Reword. ⛔ **Not `--no-verify`** — the hook's own message records that a prior override
 cost three days of production scoring with wrong weights (#44), and it fails **closed**, which is
 the right direction for a guard whose failure mode is a false deployment claim.
-**2026-09-29: negation fixed by PR #167** (three anchored phrases only). Mention still counts as use: naming the word, quoting it or "the shipped one" still arms the guard.
+**2026-09-29: negation, PR #167** (three anchored phrases only). Mention still counts as use: naming the word, quoting it or "the shipped one" still arms the guard.
 
 ⭐ **The generalisable half, and it inverts a pattern already promoted here.** This log records
 *mention is not use* — records that merely **quote** a dead path should not be counted as
