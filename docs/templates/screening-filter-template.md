@@ -380,7 +380,7 @@ python training/train.py ...
 ## Examples
 
 See implemented screening filters:
-- `filters/cultural-discovery/v2/screening_filter.py` (when available)
+- `filters/cultural_discovery/v2/screening_filter.py` (when available)
 
 ---
 
