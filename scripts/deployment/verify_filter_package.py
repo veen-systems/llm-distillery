@@ -229,6 +229,15 @@ def check_hub(filter_dir: Path, repo_id: str | None, token: str | None) -> list[
         results.append((True, "hub: skip — NO_HUB sentinel present (file-copy deploy only)"))
         return results
 
+    # Not a package (#136): with neither config.yaml nor inference_hub.py there is
+    # nothing that could be deployed, so there is nothing to verify. Without this,
+    # a prompt file staged under filters/*/v*/ FAILED on the repo_id below — a
+    # failure derived from a file the static checks had just skipped as absent.
+    # A directory WITH config.yaml is a package and still fails without a repo_id.
+    if not (filter_dir / "config.yaml").exists() and not (filter_dir / "inference_hub.py").exists():
+        results.append((True, "hub: N/A — not a deployable package (no config.yaml, no inference_hub.py)"))
+        return results
+
     if not repo_id:
         results.append((False, "hub: cannot check — no repo_id extracted from inference_hub.py"))
         return results
