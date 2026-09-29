@@ -186,7 +186,7 @@ preprocessing:
 
 ### 3.2 Update README.md Scorecard
 
-Update the Model Performance table in `filters/uplifting/v5/README.md`:
+Update the Model Performance table in `filters/uplifting/v5/README.md` <!-- placeholder -->:
 
 | Metric | Old (baseline) | New (head+tail) |
 |--------|----------------|-----------------|
@@ -296,7 +296,7 @@ Same process as uplifting, applied to sustainability_technology.
 
 Before training, need to update sustainability_technology v2 with head+tail support:
 
-- [ ] Add `yaml` import to `filters/sustainability_technology/v2/base_scorer.py`
+- [ ] Add `yaml` import to `filters/sustainability_technology/v2/base_scorer.py` <!-- placeholder -->
 - [ ] Add `_load_preprocessing_config()` method
 - [ ] Update `score_article()` to apply head+tail
 - [ ] Update `score_batch()` to apply head+tail

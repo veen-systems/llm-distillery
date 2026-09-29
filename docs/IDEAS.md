@@ -183,7 +183,7 @@ Extract first 256 tokens (intro/summary) + last 256 tokens (conclusion/outcome) 
 Hypothesis: Most signal is at beginning and end of articles, middle can be skipped.
 
 #### Implementation
-See `research/embedding_vs_finetuning/prepare_head_tail_data.py`
+See `research/embedding_vs_finetuning/prepare_head_tail_data.py` <!-- placeholder -->
 
 ```python
 # Extract head + tail with separator
@@ -276,7 +276,7 @@ Implemented as two-stage hybrid inference pipeline. See `docs/adr/006-hybrid-inf
 
 - `filters/common/embedding_stage.py` - Stage 1: embedding + MLP probe
 - `filters/common/hybrid_scorer.py` - Two-stage orchestrator
-- `filters/uplifting/v5/inference_hybrid.py` - First filter integration
+- `filters/uplifting/v5/inference_hybrid.py` <!-- placeholder --> - First filter integration
 - `evaluation/calibrate_hybrid_threshold.py` - Threshold calibration
 
 Threshold set at 3.0 (not 2.5 as originally proposed) — gives ~1.0 safety margin below MEDIUM tier (4.0), targeting <2% FN rate. ~68% of articles skip Stage 2.

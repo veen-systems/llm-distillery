@@ -37,7 +37,7 @@ After decision to pivot, discovered `sustainability_tech_innovation/v1` exists b
    - Deploy to production pipeline immediately
    - Accumulate clean deployment data over 10-12 months (target: 5k+ articles)
    - Train deployment model in Q4 2025 when data sufficient
-   - Documentation: `filters/sustainability_tech_deployment/v3/DEPLOYMENT_STRATEGY.md`
+   - Documentation: `filters/sustainability_tech_deployment/v3/DEPLOYMENT_STRATEGY.md` <!-- placeholder -->
 
 2. **Innovation v1: Fix and train NOW**
    - Status: BROKEN (85.7% FP rate, 2.3% pass rate)
