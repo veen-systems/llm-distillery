@@ -74,6 +74,67 @@ decomposed into three defects in three repos, none of them ovr.news:
 Same shape earlier the same day: NM#284 and NM#285 were both filed in NexusMind
 and the fix was **LD#93** in llm-distillery. One defect, three issues, two repos.
 
+## The cloud angle — what a Claude Code cloud session can close (2026-09-29)
+
+**Owner, 2026-09-29: $100 of Claude Code cloud budget; which part of the backlog can be fixed from there?**
+⚠️ A SNAPSHOT: issue sets from the `gh` loop at **2026-09-29 08:31 +02:00** (≈410 open, 6 repos),
+triaged mostly **from titles** — read each issue before dispatching it. Two rows spot-checked in code
+(LD#145 `prepare_data.py:183` still an unweighted mean; LD#144 `train.py:1116` still strict `<`).
+
+**What a cloud session cannot reach** (docs, via claude-code-guide, 2026-09-29 — code.claude.com
+`claude-code-on-the-web`, `costs`): Anthropic-managed VM, GitHub repos only (several per session; private
+via the GitHub App), push + PR yes, network default *Trusted* allowlist. **Not documented, so assume NO:
+Tailscale, SSH to sadalsuud/gpu-server/b650, any GPU.** Measured from this checkout: `datasets/*`,
+`data/`, `filters/**/model/` are gitignored — **no oracle-scored data, no training splits, no student
+weights** in a clone (probe `.pkl`s are tracked). Also missing in cloud: the USER-GLOBAL skills
+(`/review-changes`, `/curate`, `/audit-context`) and the auto-memory `feedback-*` rules in `~/.claude` —
+a cloud session reads `CLAUDE.md` and repo `memory/` only.
+
+**So the working rule decides the split: a cloud session can prove the PREDICATE (a test), almost never
+the OUTCOME** (a production cycle, a flip count, a recall figure). Three classes:
+
+| class | what it means | ship as |
+|---|---|---|
+| **C — closes in cloud** | inputs in git, done = a test or a static check | PR; merge after a local read |
+| **D — draft in cloud, prove locally** | the code change is self-contained, the outcome needs a cycle or data | PR + an outcome line written into the PR body; the local session runs it |
+| **L — local only** | GPU, oracle spend, production data, a deploy, or an owner ruling | not dispatched |
+
+**C — candidates (read the issue first):**
+- **llm-distillery**: #162 (registry test writes into the tracked registry), #144 (checkpoint ties),
+  #146 (EmbeddingStage cache key lacks device), #115 (merge-script date sort), #136 (commit-msg guard
+  can't read negation), #134 (refcheck skips `docs/`), #160 (ADR-013 Dutch-name sweep), #140 (two stale
+  guides), #117 (license NOASSERTION), #118 (dependabot half only — the lockfile half needs the prod
+  venv, #81). TODO item 2 (cd v5 `raw_min` 4.0006 vs 4.0) if the answer is "record the tolerance".
+- **FluxusSource**: FS#240 (caption becomes summary), FS#239 (tag twins), FS#243 (comments feed picked),
+  FS#200 (notes silently replaced), FS#179 (CEST → LMT offset), FS#198 (two ticked-but-absent tests),
+  FS#168 (requests charset), FS#170 (mojibake conjunction detector — detector only, never a repair run).
+- **ovr.news**: ovr#354 (mobile nav), ovr#320 (`startsWith` on compound names), ovr#297 (size-suffixed
+  logos), ovr#289 (COALESCE vs `'{}'`), ovr#243 (safeId allowlist), ovr#362 (voice-ab REGISTER_CURRENT),
+  ovr#369 (Gemini fallback docs), ovr#19 / ovr#63 / ovr#55 (tests + CI).
+- **persuasion-scorer** doc/process rows: #23, #21, #18, #16, #11, #7.
+- **pipeline-atlas**: #58 (SVG note wrap), #56, #12, #4, #85 (estate page deleted by render).
+
+**D — draft in cloud, prove locally:** LD#145 (weighted overall_score — changes every future training
+split; needs an owner nod), LD#165 / NM#556 (detector manifest + sha256 — weights live on the Hub, needs
+an HF token in the cloud env), **TODO item 1b (execute decision 0: delete per-lens prefilters)** — the
+deletion is repo-local, the "batch_scorer passes the rows it used to drop" proof needs data. NexusMind
+code bugs with a production outcome: NM#506, NM#524, NM#526, NM#472, NM#525, NM#532, NM#487, NM#466,
+NM#465, NM#459, NM#399, NM#355, NM#352, NM#350, NM#344, NM#362, NM#302, NM#518. ovr.news: ovr#376,
+ovr#342, ovr#341, ovr#361. ⛔ Anything that syncs into NexusMind still goes through the diff-first rule
+(`deploy_to_nexusmind.sh --dry-run`) locally.
+
+**L — never dispatch:** training/seeds (LD#85, #71, #98, #100, #158, #104), oracle spend (LD#156 adverse
+pool, #124, persuasion #4), production reads (LD#141, #128, #135, #147, #153, harm hand check), owner
+rulings (LD#130, #159, #116, H-HD17), deploys/cutovers (LD#151, NM#395), and **FS source-health rows
+(FS#232, NM#509/#510)** — a cloud VM's IP is a different fetcher, so its 403s answer a different question.
+LD#163 (the read surface) is text-only and fits the VM, but its method needs `/curate`'s rules and the
+owner's keep-rule calls — pair it, don't dispatch it.
+
+**Budget — nothing here is measured yet.** Cloud usage is metered like any Claude usage (`/usage` in the
+session); the docs give no per-session figure. ⚠️ GUESS, not measured: a C-class fix with tests is a few
+dollars, so $100 is on the order of 15–30 C rows. **First step: dispatch 2–3 C rows, read `/usage` per
+session, then set the pace from those numbers** — and record them here with the date.
+
 ## Cross-Repo Dependency Chains
 
 `→` means "blocked on" or "feeds into."
