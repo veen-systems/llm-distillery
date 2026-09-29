@@ -169,6 +169,22 @@ never merge a cloud PR on its own evidence.** Relay worked through a file the ow
 (`Read <path> and do what it says`); a `SendMessage` to a teleported session waits for approval and expired once.
 Running total, both pilots: **$6.89 model cost**, not counting the local reviews (6 + 4 subagents).
 
+**Pilot 3 — #134 step 3 → PR #168, merged `30e668d` (2026-09-29). ✅ THE FIRST REAL CLOUD RUN.** Cost:
+**not read** (no `/usage` pasted before the owner stopped the pilots). Cloud facts, measured by that run:
+push works (branch `claude/…`); `gh` absent and the GitHub API 403s (so it could not read issue comments);
+the **full test suite hung ~2 h** (locally ~80 s, cause unknown) — cloud prompts must name targeted tests
+only; `refcheck.py` counts and `run.sh` sensitivity are **environment-dependent** (no sibling repos, no
+auto-memory, checkout named `repo`): clone 409 → 359 vs in place **277 → 227**. The work was right (11 fixes
+all correct, no prose deleted) but 4 of its placeholder marks were false claims only this machine could
+see (auto-memory, NexusMind). A 4th data point for the rule: **a cloud PR is a draft; the review needs
+this machine.** Separately, a 4th session (`nexusmind-44`) did #136 in the cloud and **could not push**
+(reason not established) — it reproduced both #167 bypasses independently, so the blind spot is the
+test-writer's, not one session's.
+
+**PILOTS STOPPED 2026-09-29 by the owner — focus moved to the gpu-server → sadaltager migration
+(NexusMind#395).** Resume from here: the C-class list above is still valid; put the fresh-clone baseline and
+"targeted tests only" in every prompt, follow via the `View:` link, never `--teleport` mid-run.
+
 ## Cross-Repo Dependency Chains
 
 `→` means "blocked on" or "feeds into."
