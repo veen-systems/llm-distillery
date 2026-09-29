@@ -114,6 +114,6 @@ else:
 ## References
 
 - Implementation: `ground_truth/batch_scorer.py:344-547`
-- Example modern format: `filters/sustainability_technology/v1/prompt-compressed.md`
+- Example modern format: `filters/sustainability_technology/v1/prompt-compressed.md` <!-- placeholder -->
 - Example legacy format: `filters/uplifting/v4/prompt-compressed.md`
 - Updated guide: `docs/agents/filter-development-guide.md:173-215`

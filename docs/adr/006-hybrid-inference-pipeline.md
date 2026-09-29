@@ -196,4 +196,4 @@ To add hybrid inference to a new filter:
 - Embedding stage: `filters/common/embedding_stage.py`
 - Hybrid scorer: `filters/common/hybrid_scorer.py`
 - Calibration: `evaluation/calibrate_hybrid_threshold.py`
-- First integration: `filters/uplifting/v5/inference_hybrid.py`
+- First integration: `filters/uplifting/v5/inference_hybrid.py` <!-- placeholder -->

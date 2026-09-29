@@ -77,7 +77,7 @@ superseded_by:
 
 ## Related Decisions
 
-- [ADR-NNN](NNN-slug.md) — relationship
+- ADR-NNN (`NNN-slug.md` <!-- placeholder -->) — relationship
 
 ## References
 

@@ -211,7 +211,7 @@ bespoke `apply_filter()` to ~10–20 LOC of declarations plus an optional
 - llm-distillery#52 — prefilter harmonization tracking issue.
 - `filters/belonging/v1/prefilter.py` — current state of per-category
   override logic; the migration target.
-- `filters/foresight/v1/prefilter.py` — distinct-positive-categories
+- `filters/foresight/v1/prefilter.py` <!-- placeholder --> — distinct-positive-categories
   override variant.
 
 ## Amendment 2026-08-21 — new filters ship no per-lens prefilter (owner ruling)
