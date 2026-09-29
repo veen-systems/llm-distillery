@@ -296,7 +296,7 @@ Same process as uplifting, applied to sustainability_technology.
 
 Before training, need to update sustainability_technology v2 with head+tail support:
 
-- [ ] Add `yaml` import to `filters/sustainability_technology/v2/base_scorer.py` <!-- placeholder -->
+- [ ] Add `yaml` import to `NexusMind/filters/sustainability_technology/v2/base_scorer.py` (removed here 2026-08-03)
 - [ ] Add `_load_preprocessing_config()` method
 - [ ] Update `score_article()` to apply head+tail
 - [ ] Update `score_batch()` to apply head+tail
