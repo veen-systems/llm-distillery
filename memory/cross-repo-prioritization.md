@@ -135,6 +135,21 @@ session); the docs give no per-session figure. ⚠️ GUESS, not measured: a C-c
 dollars, so $100 is on the order of 15–30 C rows. **First step: dispatch 2–3 C rows, read `/usage` per
 session, then set the pace from those numbers** — and record them here with the date.
 
+**Pilot 1 — #162 → PR #166 (2026-09-29).** Review (`/review-changes`, 4 lenses incl. reachability +
+claim-verification): **0 blockers, 3 warnings**; the code held under 5 mutations re-run locally. Cost
+(`/usage` in the cloud session, owner-pasted): **$2.13** — Opus 5.5, 17.9k output, 3.7M cache-read tokens,
+3m21s API time over 3h44m wall (idle ~3h after the PR, which matches PR creation 09:25). ⚠️ `$` is the
+API-equivalent figure; the same panel shows plan-limit bars (session 14%, week 22%), so whether this
+drew on the $100 credit or on the subscription is **not established** — check the billing page.
+The local `/review-changes` (4 subagents) is extra and was not metered here. On this one sample,
+$100 ≈ 45 fixes of #162's size — one sample, a small and well-specified issue. ⚠️ **A fresh clone is NOT the local baseline**: measured on a clean
+`origin/main` worktree (`9d7304e`, `.venv/bin/python -m pytest tests/ -q`) — **18 failed, 48 skipped**
+vs the profile's 25 skipped. All 18 fail identically on `main` itself: missing gitignored API keys
+(`secrets.ini`) and detector model files (`test_scorer_run_fatal` 7, `test_preflight_deploy_guards` 6,
+`test_harm_detector_contract` 3, `test_deepseek_model_guard` 2). **Put this baseline in every cloud
+prompt**, or a session either "fixes" environmental failures or reports a suite count it cannot have
+produced — PR #166's body claims `1104 passed, 25 skipped`, which a keyless clone does not give.
+
 ## Cross-Repo Dependency Chains
 
 `→` means "blocked on" or "feeds into."
