@@ -312,8 +312,8 @@ Compare against uplifting v4 as reference."
 
 **Best practice examples:**
 - `filters/uplifting/v4/prompt-compressed.md` - Excellent structure, comprehensive inline filters
-- `filters/investment-risk/v2/prompt-compressed.md` - Good inline filters, clear philosophy
-- `filters/sustainability_tech_deployment/v3/prompt-compressed.md` - Clear gatekeepers, good structure
+- `filters/investment_risk/v2/prompt-compressed.md` - Good inline filters, clear philosophy
+- `filters/sustainability_tech_deployment/v3/prompt-compressed.md` <!-- placeholder --> - Clear gatekeepers, good structure
 
 ---
 
@@ -335,7 +335,7 @@ Compare against uplifting v4 as reference."
 - [Filter Harmonization Guide](FILTER_HARMONIZATION_GUIDE.md)
 - [Oracle Calibration Template](templates/oracle-calibration-agent.md)
 - [Agent Operations Guide](agent-operations.md)
-- [Filter Harmonizer](filter-harmonizer.md)
+- Filter Harmonizer (`filter-harmonizer.md` <!-- placeholder -->)
 
 ---
 

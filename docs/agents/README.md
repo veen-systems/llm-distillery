@@ -90,7 +90,7 @@ Template for Architecture Decision Records. Copy this when documenting significa
 
 **At session start:**
 1. Read `AI_AUGMENTED_WORKFLOW.md` - Get the operating system
-2. Read project's `docs/SESSION_STATE.md` - Understand current status
+2. Read project's `docs/SESSION_STATE.md` <!-- placeholder --> - Understand current status
 3. Orient the user
 
 **During work:**
@@ -99,7 +99,7 @@ Template for Architecture Decision Records. Copy this when documenting significa
 - Reference `agent-operations.md` for detailed workflows
 
 **At session end:**
-- Update project's `docs/SESSION_STATE.md`
+- Update project's `docs/SESSION_STATE.md` <!-- placeholder -->
 - Suggest commit message
 - Summarize progress
 
@@ -112,7 +112,7 @@ Template for Architecture Decision Records. Copy this when documenting significa
    - Directory structure
    - Important files
    - Common tasks
-3. Create project's `docs/SESSION_STATE.md`
+3. Create project's `docs/SESSION_STATE.md` <!-- placeholder -->
 4. AI assistants now know how to work!
 
 **What to customize:**

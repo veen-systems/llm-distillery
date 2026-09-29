@@ -44,7 +44,7 @@ Provide detailed prompt describing task and expected output
 Validate ground truth datasets for multi-dimensional regression training, ensuring dimensional score quality (not tier classification accuracy).
 
 ### Template Location
-`docs/guides/dimensional-regression-qa-agent.md`
+`docs/agents/templates/dimensional-regression-qa-agent.md`
 
 ### When to Use
 - After consolidating labeled data
@@ -506,8 +506,8 @@ Create an ADR when making significant decisions that:
 **Agent action:**
 1. Recognize the decision (architectural choice, trade-off, pattern establishment)
 2. Offer to create ADR: "This seems like a significant decision. Should I create an ADR documenting it?"
-3. If approved, create ADR in `docs/decisions/YYYY-MM-DD-title.md`
-4. Update `docs/SESSION_STATE.md` to reference the new ADR
+3. If approved, create ADR in `docs/decisions/YYYY-MM-DD-title.md` <!-- placeholder -->
+4. Update `docs/SESSION_STATE.md` <!-- placeholder --> to reference the new ADR
 
 **ADR Template:**
 ```markdown
@@ -557,7 +557,7 @@ Create an ADR when making significant decisions that:
 
 ### Example ADR
 
-**File:** `docs/decisions/2025-11-09-dimensional-regression-training.md`
+**File:** `docs/decisions/2025-11-09-dimensional-regression-training.md` <!-- placeholder -->
 
 ```markdown
 # Use Dimensional Regression (Not Tier Classification) for Training
@@ -608,13 +608,13 @@ Train models on multi-dimensional regression (8 scores per article, 0-10 range) 
 
 ## Implementation Notes
 
-- Dataset QA uses dimensional regression criteria (see `docs/guides/dimensional-regression-qa-agent.md`)
+- Dataset QA uses dimensional regression criteria (see `docs/agents/templates/dimensional-regression-qa-agent.md`)
 - Training format: `labels: [7, 8, 6, 5, 7, 4, 6, 5]` as array
 - Tier labels present in labeled data but marked as "metadata only" in README files
 
 ## References
 
-- `docs/guides/dimensional-regression-qa-agent.md`
+- `docs/agents/templates/dimensional-regression-qa-agent.md`
 - `datasets/scored/uplifting/README.md` - Training Data Format section
 - `datasets/scored/sustainability_tech_deployment/README.md` - Training Data Format section
 ```
@@ -712,8 +712,8 @@ Assistant proceeds to update all three documents.
 ### How to Load Context
 
 **1. Start Broad (Always)**
-- Read `docs/SESSION_STATE.md` - Current project status
-- Read `docs/PROJECT_OVERVIEW.md` (if exists) - High-level understanding
+- Read `docs/SESSION_STATE.md` <!-- placeholder --> - Current project status
+- Read `docs/PROJECT_OVERVIEW.md` <!-- placeholder --> (if exists) - High-level understanding
 - Scan `docs/ARCHITECTURE.md` (if exists) - System structure
 
 **2. Navigate to Relevant Area**

@@ -131,7 +131,7 @@ Planning → Architecture → Validation → Prefilter → Training Data → Tra
 - STATUS.md template: `filters/belonging/v1/STATUS.md` (most comprehensive)
 - DEEP_ROOTS.md template: `filters/belonging/v1/DEEP_ROOTS.md` or `filters/nature_recovery/v2/DEEP_ROOTS.md`
 - README.md template: `filters/cultural_discovery/v5/README.md` (most recent, with package contents table)
-- calibration_report.md template: `filters/cultural_discovery/v3/calibration_report.md` or `filters/cultural_discovery/v5/calibration_report.md`
+- calibration_report.md template: `filters/cultural_discovery/v3/calibration_report.md` <!-- placeholder --> or `filters/cultural_discovery/v5/calibration_report.md`
 
 **config.yaml example**:
 ```yaml
@@ -223,7 +223,7 @@ scoring:
 - Include `**INPUT DATA:** [Paste the summary of the article here]` placeholder
 - batch_scorer replaces placeholder with actual article data
 - Allows any custom structure (LCSA framework, tables, etc.)
-- Example: `filters/sustainability_technology/v1/prompt-compressed.md`
+- Example: `filters/sustainability_technology/v1/prompt-compressed.md` <!-- placeholder -->
 
 **Legacy Format**:
 - Requires `## PROMPT TEMPLATE` section wrapper
