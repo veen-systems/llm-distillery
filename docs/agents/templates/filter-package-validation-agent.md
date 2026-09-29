@@ -508,7 +508,7 @@ docs/agents/templates/filter-package-validation-agent.md"
 **Agent will:**
 1. Check all 10 validation criteria
 2. Generate `filters/uplifting/v4/validation_report.md` (technical)
-3. Generate `filters/uplifting/v4/release_report.md` (stakeholder-facing)
+3. Generate `filters/uplifting/v4/release_report.md` <!-- placeholder --> (stakeholder-facing)
 4. Provide production readiness decision
 
 ---
