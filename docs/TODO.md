@@ -6,7 +6,17 @@
 (2026-09-28 close) moved VERBATIM to `docs/TODO-archive.md` § *Moved 2026-09-29 — the START HERE block of
 2026-09-28 (close)*. Session record: `memory/project_session_2026_09_29_cloud_pilots.md`.*
 
-0. ▶ **THE MIGRATION (NexusMind#395) — the owner's focus since 2026-09-29.** gpu-server (HCL) went offline
+0. ▶ **BELONGING v2, built to the #130 ruling ("cohesion holding or growing") — owner agreed 2026-10-01.** Why:
+   the #130 ruling, the `H-HD17` hand-check (35/50 harm-flagged rows junk) and ovr EXP-025 (Belonging lowest,
+   1.33, top picks grievance-framed at 9.97+) all point at the oracle rewarding the TOPIC. A harm cap cannot
+   fix it ("San communities…" belonging 9.99, harm 0.22). **First action, free and local:** build the v2 test
+   set BEFORE touching the prompt — EXP-025's weak top picks (ovr `data/held-out/blind-selection-2026-09-28/`),
+   the 50 hand-check rows (`docs/evidence/2026-09-28-per-lens-harm-rates/harm_handcheck_list.tsv`), the #130
+   worked examples — as the pass/fail bar. Then prompt rewrite → ~100-article oracle validation → only then
+   relabel/retrain (`docs/FILTER_PLAYBOOK.md`; ADR-021 gate, judge on specificity). ⛔ No $ figure until the
+   prompt exists. The shadow harm cap (NexusMind side, low priority) is v2's before/after instrument.
+
+0b. ▶ **THE MIGRATION (NexusMind#395) — the owner's focus since 2026-09-29.** gpu-server (HCL) went offline
    ~2026-09-28 21:20; last scored cycle 09-28 16:08. `nexusmind-44` owns NM#395 step 1: a scorer-only image
    on **sadaltager, which is ON** (woken 2026-09-29 16:34; normal state is off). Parity, measured by
    nexusmind-44 and read by our rules (flips split at 0.16 from the op-point): **0 flips beyond the band over
