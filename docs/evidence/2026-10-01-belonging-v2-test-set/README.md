@@ -1,0 +1,85 @@
+# Belonging v2 test set (2026-10-01)
+
+`docs/TODO.md` ▶ START HERE item 0. This is the pass/fail bar for a rewritten belonging oracle
+prompt, built **before** any prompt change. It applies the #130 ruling (owner, 2026-09-28):
+**belonging means cohesion that is holding or growing.** A grievance or a threat does not
+qualify on topic alone. Harm-answered cohesion qualifies only when the response is the story.
+
+**108 rows: 10 P (qualifies), 70 F (does not), 28 B (borderline, reported, never judged).** Only 99 can be
+oracle-scored: 9 rows are under the 300-char floor (see Caveats). That leaves **8 P / 65 F / 26 B.**
+
+| stratum | n | P / F / B | source |
+|---|---|---|---|
+| `handcheck_HHD17` | 50 | 6 / 32 / 12 | `H-HD17` list (`../2026-09-28-per-lens-harm-rates/harm_handcheck_list.tsv`), random 50 of 136 rows with harm ≥ 0.5 above 4.0 |
+| `random_surfacing` | 40 | 1 / 29 / 10 | seeded random draw from all 1,521 stage-2 rows with raw ≥ 4.0 (1,550 before excluding the other strata's urls), files 2026-09-27..30 — no 09-29 file exists, the gpu-server outage (rule in `fetch_rows.py`) |
+| `exp025_top` / `exp025_random` | 6 / 6 | 1/4/1 · 1/1/4 | ovr EXP-025 Belonging picks (ovr.news `data/held-out/blind-selection-2026-09-28/`) |
+| `ruling_130_example` | 4 | 1 / 2 / 1 | the four titles quoted in #130, from `raw_2026-08.tar.gz` |
+| `adverse_existing` | 2 | 0 / 2 / 0 | owner-labelled rows in `datasets/adverse/belonging.jsonl` |
+
+## Who labelled what
+
+Counts are from `label_basis` in `labels.tsv`.
+- **`ruling`** (4 rows): #130 names the verdict. ⚠️ It ruled on the HEADLINE. The Robinvale body is about the Tati Tati owners
+  protecting the site, which is the exception #130 itself names. The owner has to confirm the F.
+- **`owner`** (2 rows): the existing adverse rows.
+- **`handcheck`** (38 rows): the `H-HD17` verdicts, which were Claude's title-only calls that the owner accepted wholesale.
+  The 32 `junk` → F rows were **not** re-read in full.
+- **`handcheck→claude`** (12 rows): hand-check verdicts I **revised to B** after reading the full body (7 `fits`, 5 `junk`).
+  Each row gives its reason.
+- **`claude`** (52 rows): my reading, not reviewed by the owner. Two kinds:
+  - Strata labelled from the title plus the first ~600 characters.
+  - The three #130 examples, labelled from their whole 123–179-character text.
+- **Review, 2026-10-01**: an independent adversarial pass read all 85 P/F rows in full. **10 labels moved to B**,
+  each marked `REVISED after full-text review`. The standing rule drove them (owner, 2026-08-20): a row with a
+  serious true-positive reading is a bad probe, so anything arguable is `B`, not `F`.
+- **Protest rows:** a march FOR DEMANDS is F (grievance), e.g. housing and Ayotzinapa. A march that also shows the
+  community holding together is B.
+
+## The bar, as proposed (the owner sets the numbers)
+
+Score each row with the oracle. Take its weighted average and compare it with the 4.0 op-point:
+- **specificity**: the share of F rows below 4.0
+- **recall**: the share of P rows at or above 4.0
+- B rows: report their scores and do not judge them
+
+⛔ **Run the v1 prompt over the same rows first, as the control.** Every score on these rows today
+comes from the **student**. Nobody has asked the v1 oracle about them. If the v1 oracle already puts
+the F rows below 4.0, the defect is in the student or its training data, and a new prompt fixes nothing.
+Without that run, no improvement can be attributed to the prompt. The bar's numbers come after the
+control, so they can be shown to be reachable.
+
+## Caveats
+
+- **9 rows are under the 300-char labelling floor** (#93, `make_oracle_prefilter`): 2 P, 5 F, 2 B.
+  - Both under-floor P rows matter: the #130 "qualifies" example, and Nkrumah.
+  - Six rows come from PRE-enrichment raw archives: the four #130 examples and both adverse rows.
+    Charleville is 149 chars here against 2,794 enriched. Diego Arria passes the floor at 415 chars,
+    but that is 3% of its 13,446.
+  - The oracle path drops the under-floor rows. Before scoring, fetch the enriched text or report these rows
+    separately. Never bypass the floor.
+- **The recall side is thin: 8 scorable P rows.** One row moves recall by 12.5 points. That catches a
+  prompt that zeroes everything. It cannot rank two prompts. More P rows are the first thing to add.
+- **The random stratum reads as 1 P / 29 F / 10 B of 40.** This is my judgement, unverified.
+  - If it holds, most of what belonging surfaces today is off-lens in general (galas, ministries,
+    op-eds), not the #130 grievance shape.
+  - That would make the student, or the v1 oracle's breadth, the bigger lever, not grievance framing.
+- **The Morwell march (B) and Charleville (owner F) have the same shape.** Charleville was labelled
+  before the ruling. Only the owner can settle which way that shape goes.
+
+## Rebuild
+
+```bash
+scp docs/evidence/2026-10-01-belonging-v2-test-set/{fetch_rows.py,labels.tsv} sadalsuud:/tmp/
+ssh sadalsuud 'cd /tmp && python3 fetch_rows.py labels.tsv > rows.jsonl'   # ~1 min, raises on a missing url
+scp sadalsuud:/tmp/rows.jsonl /tmp/ && python3 docs/evidence/2026-10-01-belonging-v2-test-set/build_test_set.py /tmp/rows.jsonl
+```
+
+Verified 2026-10-01:
+- All 108 rows were found, and the content is byte-identical to the first pull.
+- Dropping one row makes the builder exit 1.
+- The reviewer re-ran the random draw independently and got the same 40 urls in the same order.
+- `fetch_rows.py` keeps a url's first occurrence (the oldest file). The live `filtered/` files rotate
+out (the oldest rows here are from 2026-09-21). After that, the hand-check and random rows survive only
+as pre-enrichment text in the raw archives. Keep `datasets/belonging_v2_test/test_set_full.jsonl` (gitignored).
+`test_set.jsonl` here is the committed copy, cut to 300-char excerpts (the public-repo rule
+from `datasets/adverse/README.md`).

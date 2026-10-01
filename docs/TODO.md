@@ -15,6 +15,12 @@
    worked examples — as the pass/fail bar. Then prompt rewrite → ~100-article oracle validation → only then
    relabel/retrain (`docs/FILTER_PLAYBOOK.md`; ADR-021 gate, judge on specificity). ⛔ No $ figure until the
    prompt exists. The shadow harm cap (NexusMind side, low priority) is v2's before/after instrument.
+   ✅ **Test set BUILT 2026-10-01**: `docs/evidence/2026-10-01-belonging-v2-test-set/` — 108 rows (10 P / 70 F /
+   28 B; 99 scorable). 64 labels are Claude's (12 of them revisions of hand-check verdicts). The owner has NOT reviewed them. ▶ **Next, owner:** (1) review the labels,
+   and rule on the Morwell-march vs Charleville shape; (2) approve the **v1-prompt oracle CONTROL run** on
+   this set. Every score on these rows today is the STUDENT's, so if v1's oracle already rejects the F rows,
+   the prompt is not the defect. (3) Set the bar's numbers after the control. Open: 9 rows are under the
+   300-char floor (2 of them P), and the recall side is thin (8 scorable P rows). Add P rows first.
 
 0b. ▶ **THE MIGRATION (NexusMind#395) — the owner's focus since 2026-09-29.** gpu-server (HCL) went offline
    ~2026-09-28 21:20; last scored cycle 09-28 16:08. `nexusmind-44` owns NM#395 step 1: a scorer-only image
@@ -25,6 +31,12 @@
    ⚠️ **H-V8-23** (bf16 vs fp32 moved one article at the op-point) is the dtype question any box move
    inherits — ask whether the image pins the production dtype. First action: `ListAgents`; if
    nexusmind-44 is gone, read NM#395's latest comments before assuming its state.
+   **2026-10-01 read:** NexusMind#395 step 1 is **LIVE**: production has scored through the
+   `nexusmind-scorer` container on sadaltager since 2026-09-29 (owner go). sadalsuud wrote 4 belonging
+   cycles today. `deploy/scorer-image/` sets no dtype, so the image runs the scorer code's default, the same
+   code path gpu-server ran. H-V8-23 is answered by the parity run, not by a pin. ⚠️ sadalsuud no longer
+   auto-pulls (NM#395 comment 2026-09-30), so the decision-0 sync (item 1) also needs a manual pull and an
+   image rebuild.
 
 1. ✅ **DONE 2026-10-01 — decision 0 executed: every per-lens prefilter DELETED** (28 `prefilter.py`, 28
    `prefilter:` blocks; `ai-engineering-practice` kept, separate product). Outcome proven on one pre-enrichment
