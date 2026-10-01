@@ -42,7 +42,7 @@ class ThrivingScorer(BaseThrivingScorer):
         self,
         model_path: Optional[Path] = None,
         device: Optional[str] = None,
-        use_prefilter: bool = True,
+        use_prefilter: bool = False,
     ):
         if model_path is None:
             model_path = Path(__file__).parent / "model"
@@ -72,7 +72,7 @@ def main():
         "--output", "-o", type=Path, help="Output JSONL file for results"
     )
     parser.add_argument(
-        "--no-prefilter", action="store_true", help="Skip prefilter"
+        "--no-prefilter", action="store_true", help="No effect: per-lens prefilters were deleted (NexusMind#284, decision 0); kept so old invocations still parse"
     )
     parser.add_argument(
         "--batch-size", type=int, default=16, help="Batch size for inference"
@@ -81,7 +81,7 @@ def main():
     args = parser.parse_args()
 
     print("Initializing scorer...")
-    scorer = ThrivingScorer(use_prefilter=not args.no_prefilter)
+    scorer = ThrivingScorer(use_prefilter=False)
 
     if args.input:
         print(f"Loading articles from {args.input}")

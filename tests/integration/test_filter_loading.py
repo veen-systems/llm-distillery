@@ -2,8 +2,9 @@
 Integration tests for filter package loading.
 
 Tests the complete filter loading workflow:
-- load_filter_package(): Loading prefilter, prompt, config
-- Prefilter apply_filter(): End-to-end prefiltering
+- load_filter_package(): prompt and config, and (since 2026-10-01) NO per-lens
+  prefilter object — those were deleted (NexusMind#284, decision 0)
+- make_oracle_prefilter(): the oracle-path gate that remains (length floor + validation)
 """
 
 import pytest
@@ -24,134 +25,49 @@ class TestFilterPackageLoading:
 
     @pytest.fixture
     def uplifting_filter_path(self, project_root):
-        """Path to uplifting v6 filter."""
-        return project_root / "filters" / "uplifting" / "v6"
-
-    @pytest.fixture
-    def sustainability_filter_path(self, project_root):
-        """Path to sustainability_technology v3 filter."""
-        return project_root / "filters" / "sustainability_technology" / "v3"
+        """Path to uplifting v7 filter."""
+        return project_root / "filters" / "uplifting" / "v7"
 
     def test_load_uplifting_filter(self, uplifting_filter_path):
-        """Should load uplifting v6 filter package."""
-        if not uplifting_filter_path.exists():
-            pytest.skip("Uplifting v5 filter not available")
+        """Should load uplifting v7: prompt and config, no lens prefilter."""
+        assert uplifting_filter_path.exists()
 
         from ground_truth.batch_scorer import load_filter_package
 
         prefilter, prompt_path, config = load_filter_package(uplifting_filter_path)
 
-        # Prefilter should be loaded
-        assert prefilter is not None
-        assert hasattr(prefilter, 'apply_filter')
-        assert hasattr(prefilter, 'VERSION')
-
-        # Prompt should exist
+        assert prefilter is None
         assert prompt_path.exists()
         assert prompt_path.suffix == ".md"
-
-    def test_load_sustainability_filter(self, sustainability_filter_path):
-        """Should load sustainability_technology v3 filter package."""
-        if not sustainability_filter_path.exists():
-            pytest.skip("Sustainability technology v1 filter not available")
-
-        from ground_truth.batch_scorer import load_filter_package
-
-        prefilter, prompt_path, config = load_filter_package(sustainability_filter_path)
-
-        assert prefilter is not None
-        assert prompt_path.exists()
-
-    def test_prefilter_accepts_valid_article(self, uplifting_filter_path, valid_article):
-        """Prefilter should accept valid uplifting-style article."""
-        if not uplifting_filter_path.exists():
-            pytest.skip("Uplifting v5 filter not available")
-
-        from ground_truth.batch_scorer import load_filter_package
-
-        prefilter, _, _ = load_filter_package(uplifting_filter_path)
-
-        # Community solar article should be considered potentially uplifting
-        passed, reason = prefilter.apply_filter(valid_article)
-        # Just verify it returns a tuple with bool and string
-        assert isinstance(passed, bool)
-        assert isinstance(reason, str)
-
-    def test_prefilter_returns_valid_tuple(self, uplifting_filter_path):
-        """Prefilter should return a valid (bool, str) tuple."""
-        if not uplifting_filter_path.exists():
-            pytest.skip("Uplifting v5 filter not available")
-
-        from ground_truth.batch_scorer import load_filter_package
-
-        prefilter, _, _ = load_filter_package(uplifting_filter_path)
-
-        # Any article should return valid tuple
-        article = {
-            "title": "Test Article",
-            "content": "This is test content that is long enough." * 20
-        }
-
-        result = prefilter.apply_filter(article)
-
-        # Should return tuple of (bool, str)
-        assert isinstance(result, tuple)
-        assert len(result) == 2
-        assert isinstance(result[0], bool)
-        assert isinstance(result[1], str)
-
-    def test_prefilter_rejects_short_content(self, uplifting_filter_path):
-        """Prefilter should reject content that's too short."""
-        if not uplifting_filter_path.exists():
-            pytest.skip("Uplifting v5 filter not available")
-
-        from ground_truth.batch_scorer import load_filter_package
-
-        prefilter, _, _ = load_filter_package(uplifting_filter_path)
-
-        short_article = {
-            "title": "Good News",
-            "content": "This is too short."
-        }
-
-        passed, reason = prefilter.apply_filter(short_article)
-        assert passed is False
-        assert "short" in reason.lower() or "length" in reason.lower() or "content" in reason.lower()
+        assert config["filter"]["name"] == "uplifting"
 
 
-class TestPrefilterValidation:
-    """Tests for prefilter input validation."""
+class TestOracleGateOnALoadedPackage:
+    """The gate batch_scorer builds from a loaded package, end to end."""
 
     @pytest.fixture
-    def uplifting_prefilter(self):
-        """Load uplifting prefilter if available."""
-        project_root = Path(__file__).parent.parent.parent
-        filter_path = project_root / "filters" / "uplifting" / "v6"
+    def gate(self):
+        from ground_truth.batch_scorer import load_filter_package, make_oracle_prefilter
 
-        if not filter_path.exists():
-            pytest.skip("Uplifting v6 filter not available")
-
-        from ground_truth.batch_scorer import load_filter_package
+        filter_path = Path(__file__).parent.parent.parent / "filters" / "uplifting" / "v7"
         prefilter, _, _ = load_filter_package(filter_path)
-        return prefilter
+        return make_oracle_prefilter(prefilter)
 
-    def test_handles_missing_title(self, uplifting_prefilter):
-        """Prefilter should handle article with missing title gracefully."""
-        article = {"content": "Some content here that is long enough." * 20}
+    def test_accepts_valid_article(self, gate, valid_article):
+        assert gate(valid_article) is True
 
-        # Should not crash - returns a result (may pass or fail depending on implementation)
-        try:
-            result = uplifting_prefilter.apply_filter(article)
-            # If it doesn't raise, should return valid tuple
-            assert isinstance(result, tuple)
-            assert len(result) == 2
-        except (KeyError, TypeError, ValueError):
-            # Also acceptable to raise these for invalid input
-            pass
+    def test_rejects_short_content(self, gate):
+        assert gate({"title": "Good News", "content": "This is too short."}) is False
 
-    def test_handles_empty_content(self, uplifting_prefilter):
-        """Prefilter should handle article with empty content."""
-        article = {"title": "Test", "content": ""}
+    def test_rejects_empty_content(self, gate):
+        assert gate({"title": "Test", "content": ""}) is False
 
-        passed, reason = uplifting_prefilter.apply_filter(article)
-        assert passed is False
+    def test_admits_what_the_deleted_lens_rules_blocked(self, gate):
+        # uplifting v7's prefilter blocked this as `corporate_finance`; the oracle
+        # now labels it (decision 0)
+        article = {
+            "title": "Company announces quarterly earnings beat and share buyback",
+            "content": "The firm reported quarterly earnings above analyst estimates "
+                       "and announced a share buyback programme. " * 10,
+        }
+        assert gate(article) is True

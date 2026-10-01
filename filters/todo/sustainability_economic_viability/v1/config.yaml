@@ -8,23 +8,6 @@ filter:
   pillar: "Pillar 2: Economics Favor Climate Action (it's not sacrifice anymore)"
   purpose: "Prove that green is economically rational, not expensive sacrifice"
 
-prefilter:
-  enabled: true
-  expected_pass_rate: null  # To be determined during calibration
-  description: "Blocks pure advocacy/opinions without economic data"
-
-  block_keywords:
-    - pure_advocacy
-    - no_economic_data
-    - subsidy_only
-
-  pass_keywords:
-    - lcoe
-    - cost_competitive
-    - profitability
-    - investment
-    - job_creation
-
 oracle:
   recommended: null  # To be determined during calibration
   candidates:

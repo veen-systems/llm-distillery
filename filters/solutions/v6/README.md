@@ -40,7 +40,6 @@ The probe (unchanged from v5, calibrated for ≤2% FN rate) screens ~96% of prod
 - `inference.py` — SolutionsScorer (local LoRA load)
 - `inference_hybrid.py` — SolutionsHybridScorer (e5 probe + model)
 - `inference_hub.py` — SolutionsScorerHub (Hub load)
-- `prefilter.py` — SolutionsPreFilterV6
 - `probe/` — e5-small embedding probe (same as v5, threshold 1.225)
 - `calibration.json` — per-dim isotonic (ADR-008)
 - `model/` — LoRA adapter (gitignored)

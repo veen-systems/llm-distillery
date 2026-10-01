@@ -48,14 +48,16 @@ class HybridScorer(ABC):
     def __init__(
         self,
         device: Optional[str] = None,
-        use_prefilter: bool = True,
+        use_prefilter: bool = False,
     ):
         """
         Initialize the hybrid scorer.
 
         Args:
             device: Device to use ('cuda', 'cpu', or None for auto)
-            use_prefilter: Whether to apply rule-based prefilter
+            use_prefilter: Must be False. Per-lens prefilters were deleted
+                (NexusMind#284, decision 0); the keyword survives because
+                NexusMind's loader passes use_prefilter=False.
         """
         import torch
 
@@ -64,7 +66,12 @@ class HybridScorer(ABC):
         else:
             self.device_str = device
 
-        self.use_prefilter = use_prefilter
+        if use_prefilter:
+            raise ValueError(
+                "use_prefilter=True: per-lens prefilters were deleted "
+                "(NexusMind#284, decision 0). Construct with use_prefilter=False."
+            )
+        self.use_prefilter = False
 
         # Load Stage 2 scorer (the existing fine-tuned model)
         self.stage2_scorer = self._create_stage2_scorer()
@@ -122,8 +129,8 @@ class HybridScorer(ABC):
     def _create_stage2_scorer(self):
         """Create and return the Stage 2 scorer (existing fine-tuned model).
 
-        The returned scorer should have use_prefilter=False since the
-        HybridScorer handles prefiltering itself.
+        The returned scorer must be built with use_prefilter=False (the only
+        value FilterBaseScorer accepts since the per-lens prefilters were deleted).
         """
         pass
 
@@ -148,7 +155,7 @@ class HybridScorer(ABC):
 
         Args:
             article: Dict with 'title' and 'content' keys
-            skip_prefilter: Force skip prefilter
+            skip_prefilter: No effect (per-lens prefilters deleted, NexusMind#284)
 
         Returns:
             Result dict matching existing scorer interface, plus:
@@ -169,14 +176,14 @@ class HybridScorer(ABC):
 
         Pipeline:
             1. Validate articles
-            2. Apply prefilter (if enabled)
-            3. Stage 1: Embedding + MLP probe screening
-            4. Stage 2: Fine-tuned model (only for Stage 1 candidates)
+            2. Stage 1: Embedding + MLP probe screening
+            3. Stage 2: Fine-tuned model (only for Stage 1 candidates)
 
         Args:
             articles: List of article dicts
             batch_size: Batch size for Stage 2 inference
-            skip_prefilter: Skip rule-based prefilter
+            skip_prefilter: No effect (per-lens prefilters deleted, NexusMind#284);
+                accepted because NexusMind's scorer service passes it
 
         Returns:
             List of result dicts with stage_used and stage1_estimate fields
@@ -189,8 +196,9 @@ class HybridScorer(ABC):
         # Initialize results
         results = [None] * len(articles)
 
-        # Phase 1: Prefilter pass (using Stage 2 scorer's prefilter)
-        prefilter_passed_indices = []
+        # Phase 1: validation (invalid articles get passed_prefilter=False, a
+        # field NexusMind reads; there is no per-lens prefilter any more)
+        valid_indices = []
 
         for i, article in enumerate(articles):
             # Validate
@@ -205,35 +213,22 @@ class HybridScorer(ABC):
                 results[i] = result
                 continue
 
-            # Prefilter
-            if self.use_prefilter and not skip_prefilter and self.stage2_scorer.prefilter:
-                passed, reason = self.stage2_scorer.prefilter.apply_filter(article)
-                if not passed:
-                    result = self.stage2_scorer._create_empty_result()
-                    self.stage2_scorer._stamp_content_length(article, result)
-                    result["passed_prefilter"] = False
-                    result["prefilter_reason"] = reason
-                    result["stage_used"] = None
-                    result["stage1_estimate"] = None
-                    results[i] = result
-                    continue
+            valid_indices.append(i)
 
-            prefilter_passed_indices.append(i)
-
-        if not prefilter_passed_indices:
+        if not valid_indices:
             return results
 
         # Phase 2: Stage 1 screening
-        passed_articles = [articles[i] for i in prefilter_passed_indices]
+        passed_articles = [articles[i] for i in valid_indices]
         screening_results = self.embedding_stage.screen_batch(
             passed_articles, batch_size=batch_size
         )
 
         # Separate into Stage 1 LOW vs Stage 2 candidates
-        stage2_indices = []  # indices into prefilter_passed_indices
+        stage2_indices = []  # indices into valid_indices
         stage2_articles = []
 
-        for j, (idx, screen) in enumerate(zip(prefilter_passed_indices, screening_results)):
+        for j, (idx, screen) in enumerate(zip(valid_indices, screening_results)):
             if screen.needs_stage2:
                 stage2_indices.append(j)
                 stage2_articles.append(articles[idx])
@@ -268,11 +263,11 @@ class HybridScorer(ABC):
             stage2_results = self.stage2_scorer.score_batch(
                 stage2_articles,
                 batch_size=batch_size,
-                skip_prefilter=True,  # Already prefiltered
+                skip_prefilter=True,  # no-op; kept for older FilterBaseScorer copies
             )
 
             for j, s2_result in zip(stage2_indices, stage2_results):
-                idx = prefilter_passed_indices[j]
+                idx = valid_indices[j]
                 screen = screening_results[j]
                 s2_result["stage_used"] = "stage2"
                 s2_result["stage1_estimate"] = screen.weighted_avg
@@ -285,13 +280,13 @@ class HybridScorer(ABC):
         stage2_count = sum(
             1 for r in results if r and r.get("stage_used") == "stage2"
         )
-        prefilter_blocked = sum(
+        invalid = sum(
             1 for r in results if r and not r.get("passed_prefilter", True)
         )
 
         logger.info(
             f"Hybrid batch scored {len(articles)} articles in {elapsed:.2f}s: "
-            f"prefilter_blocked={prefilter_blocked}, "
+            f"invalid={invalid}, "
             f"stage1_low={stage1_count}, stage2={stage2_count}"
         )
 

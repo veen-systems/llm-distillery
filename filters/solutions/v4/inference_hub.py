@@ -41,7 +41,7 @@ class SolutionsScorerHub(BaseSolutionsScorer):
         repo_id: str = "jeergrvgreg/solutions-filter-v4",
         token: Optional[str] = None,
         device: Optional[str] = None,
-        use_prefilter: bool = True,
+        use_prefilter: bool = False,
         torch_dtype=None,
     ):
         self.repo_id = repo_id

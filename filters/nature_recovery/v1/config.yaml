@@ -29,11 +29,6 @@ filter:
     - target_samples increased from 2000 to 7000
     - Anti-hallucination rule: evidence must be EXACT QUOTE
 
-prefilter:
-  enabled: true
-  expected_pass_rate: 0.20
-  description: "Blocks non-environmental content and pure doom; passes recovery/improvement stories"
-
 oracle:
   recommended: gemini-flash
   candidates:

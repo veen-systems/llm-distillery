@@ -8,10 +8,6 @@ filter:
   focus: "Real workflow integration, not hype or speculation"
   purpose: "Learn from practitioners: what works, what fails, how to adapt"
 
-prefilter:
-  enabled: true
-  description: "Blocks AI hype, model benchmarks, funding news. Passes empirical workflow reports."
-
 oracle:
   recommended: null
   candidates: [gemini-flash, gemini-pro, claude-sonnet]

@@ -26,11 +26,6 @@ source_filter:
   - developer_aggregator
   - firehose_aggregator
   shadow_mode: false
-prefilter:
-  enabled: true
-  expected_pass_rate: 0.2
-  description: Blocks off-topic and shopping content; broad solutions keyword net
-    passes tech, policy, and community coverage
 oracle:
   recommended: deepseek
   candidates:

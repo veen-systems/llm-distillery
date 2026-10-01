@@ -7,11 +7,6 @@ filter:
   description: "Rate content for uplifting semantic value based on genuine human and planetary wellbeing"
   focus: "MEANING not TONE - what is happening for human/planetary wellbeing, not emotional writing style"
 
-prefilter:
-  enabled: true
-  expected_pass_rate: null  # To be determined during calibration
-  description: "Blocks corporate finance, military buildups, and business news without collective benefit"
-
 oracle:
   recommended: null  # To be determined during calibration
   candidates:

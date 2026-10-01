@@ -46,7 +46,6 @@ The oracle prompt explicitly calls out the Thriving vs Belonging boundary:
 | `config.yaml` | Filter configuration, dimensions, weights, tiers |
 | `prompt-compressed.md` | Oracle scoring prompt (5 dimensions, Belonging distinction) |
 | `base_scorer.py` | Base scorer class with filter constants |
-| `prefilter.py` | Rule-based prefilter (inherits from uplifting v7) |
 | `inference.py` | Local model inference |
 | `inference_hub.py` | HuggingFace Hub inference |
 | `inference_hybrid.py` | Two-stage hybrid inference (after probe training) |

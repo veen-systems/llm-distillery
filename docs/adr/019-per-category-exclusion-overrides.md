@@ -1,5 +1,5 @@
 ---
-status: Accepted
+status: Superseded (2026-10-01 — every per-lens prefilter deleted, decision 0; see Amendment 2026-10-01 below)
 date: 2026-05-05
 deciders: [team]
 superseded_by:
@@ -209,7 +209,7 @@ bespoke `apply_filter()` to ~10–20 LOC of declarations plus an optional
 - llm-distillery#51 — universal obituary detector. The trigger for
   per-filter consumption.
 - llm-distillery#52 — prefilter harmonization tracking issue.
-- `filters/belonging/v1/prefilter.py` — current state of per-category
+- `filters/belonging/v1/prefilter.py` <!-- placeholder --> (deleted 2026-10-01, decision 0; `git show fe6c018:<path>`) — state of per-category
   override logic; the migration target.
 - `NexusMind/filters/foresight/v1/prefilter.py` (removed here 2026-08-03) — distinct-positive-categories
   override variant.
@@ -247,3 +247,31 @@ lens blocks across 8,283 production articles**.
 - Existing filters keep their prefilters; this is not a retro-removal.
 
 Detail: `docs/HUMAN_THRIVING_V8_PLAN.md` §F2, llm-distillery#98.
+
+## Amendment 2026-10-01 — every per-lens prefilter deleted (decision 0, NexusMind#284)
+
+**This ADR and ADR-018 now govern no live code in the ovr filters.** Owner ruling 2026-09-28
+(decision 0: delete rather than enforce), executed 2026-10-01. Deleted: all 28 per-lens
+`prefilter.py` files (every version of every ovr filter, plus the `filters/todo/` stubs) and
+every `config.yaml` `prefilter:` block. Kept: `filters/common/base_prefilter.py` (and its re-export
+shim `filters/base_prefilter.py`; it carries the
+#93 floor, `validate_article` and `content_length` for the oracle gate and the stamps) and
+`ai-engineering-practice` v1 (a separate product, not covered by NexusMind#284).
+
+- The oracle path's whole gate is now `make_oracle_prefilter` with no lens object (floor +
+  validation). Measured on one pre-enrichment production cycle through batch_scorer's own
+  loader: exactly the rows a lens rule used to block now pass, none newly blocked, floor
+  verdicts identical — counts, population and re-run recipe in
+  `docs/evidence/2026-10-01-decision-0-prefilter-deletion/`. **Future oracle runs on cd and
+  investment_risk label more rows** (direction measured, size not) — the cost of the ruling,
+  not a defect.
+- `FilterBaseScorer` / `HybridScorer` refuse `use_prefilter=True` (ValueError). The keyword
+  and `skip_prefilter` survive only because NexusMind's scorer service passes them.
+- ⛔ **Corrections to the 2026-08-21 consequences above:** "Existing filters keep their
+  prefilters" no longer holds — they are deleted. A package's `_load_prefilter` now RAISES
+  `NotImplementedError` (not `self.prefilter = None`), and it is no longer an
+  `@abstractmethod` here. It stays defined (raising) in every package `base_scorer.py`
+  anyway, because NexusMind's copy of the base still declares it abstract until it syncs —
+  without it no filter would construct there. Pinned by
+  `tests/unit/test_no_per_lens_prefilters.py`, which also forbids a `prefilter.py` or
+  `prefilter:` block from returning.

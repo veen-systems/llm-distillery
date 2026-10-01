@@ -155,9 +155,10 @@ construct on a mismatch. Retraining the probe means re-deriving the threshold an
 by hand).
 
 ⚠️ **v8 ships no per-lens prefilter** (ADR-018/019 Amendment 2026-08-21). Keyword screening is
-Latin-script only; the multilingual probe replaces it. `_load_prefilter` sets
-`self.prefilter = None` deliberately — it is an `@abstractmethod`, so omitting it would raise
-at scorer startup.
+Latin-script only; the multilingual probe replaces it. `_load_prefilter` RAISES
+`NotImplementedError` deliberately (a scorer asking for a screen that does not exist must not
+silently pass everything). It stays defined because NexusMind's copy of `FilterBaseScorer` still
+declares it `@abstractmethod`; since 2026-10-01 every per-lens prefilter is deleted (decision 0).
 
 ## Language coverage — half-answered, and the answered half is adverse
 

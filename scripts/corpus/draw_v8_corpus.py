@@ -203,10 +203,13 @@ def class_a_instrument():
     importable, and the manifest records which one ran.
     """
     try:
-        from filters.uplifting.v7.prefilter import UpliftingPreFilterV7
-        pats = UpliftingPreFilterV7()._compiled_exclusions["crime_violence"]
+        # The v7 prefilter was deleted 2026-10-01 (NexusMind#284, decision 0); its
+        # crime_violence patterns are frozen verbatim beside this script.
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        from uplifting_v7_crime_violence import COMPILED as pats
         return (lambda t: any(p.search(t) for p in pats) if t else False,
-                f"filters/uplifting/v7/prefilter.py crime_violence ({len(pats)} patterns) -- "
+                f"filters/uplifting/v7/prefilter.py crime_violence ({len(pats)} patterns, "
+                f"frozen in scripts/corpus/uplifting_v7_crime_violence.py) -- "
                 f"the 2026-08-28 census's instrument")
     except Exception as e:
         rx = _harm_re_fallback()

@@ -75,15 +75,21 @@ class BaseCulturalDiscoveryScorer(ABC):
     def __init__(
         self,
         device: Optional[str] = None,
-        use_prefilter: bool = True,
+        use_prefilter: bool = False,
     ):
         """
         Initialize the base scorer.
 
         Args:
             device: Device to use ('cuda', 'cpu', or None for auto)
-            use_prefilter: Whether to apply prefilter before scoring
+            use_prefilter: Must be False — per-lens prefilters were deleted
+                (NexusMind#284, decision 0, 2026-10-01)
         """
+        if use_prefilter:
+            raise ValueError(
+                "use_prefilter=True: per-lens prefilters were deleted "
+                "(NexusMind#284, decision 0). Construct with use_prefilter=False."
+            )
         if device is None:
             self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         else:
@@ -101,13 +107,11 @@ class BaseCulturalDiscoveryScorer(ABC):
             self._load_prefilter()
 
     def _load_prefilter(self):
-        """Load the prefilter module (handles hyphenated path)."""
-        import importlib.util
-        prefilter_path = Path(__file__).parent / "prefilter.py"
-        spec = importlib.util.spec_from_file_location("prefilter", prefilter_path)
-        prefilter_module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(prefilter_module)
-        self.prefilter = prefilter_module.CulturalDiscoveryPreFilterV1()
+        """Per-lens prefilters were deleted (NexusMind#284, decision 0, 2026-10-01)."""
+        raise NotImplementedError(
+            "per-lens prefilters were deleted (NexusMind#284, decision 0); "
+            "construct with use_prefilter=False"
+        )
 
     def _load_preprocessing_config(self):
         """Load preprocessing config from config.yaml."""

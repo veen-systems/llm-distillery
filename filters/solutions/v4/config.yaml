@@ -42,10 +42,6 @@ source_filter:
 
 # Two-stage prefilter same shape as v3; will swap embedding seeds at training
 # time for v4-specific positives.
-prefilter:
-  enabled: true
-  expected_pass_rate: 0.20
-  description: "Blocks off-topic and shopping content; broad solutions keyword net passes tech, policy, and community coverage"
 
 oracle:
   # Ratified DeepSeek for v4 (ADR-020 two-judge bake-off, 2026-07-17) — see

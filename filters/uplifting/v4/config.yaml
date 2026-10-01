@@ -10,11 +10,6 @@ filter:
   focus: "MEANING not TONE - what is happening for human/planetary wellbeing, not emotional writing style"
   changelog_v4: "Applied inline filters pattern - moved scope filters from top-level OUT OF SCOPE section into each dimension definition. Reduced false positive rate from 87.5% (v3) to 0% (v4) on tested categories. Prevents fast models from skipping scope checks."
 
-prefilter:
-  enabled: true
-  expected_pass_rate: null  # To be determined during calibration
-  description: "Blocks corporate finance, military buildups, and business news without collective benefit"
-
 oracle:
   recommended: gemini-flash
   candidates:

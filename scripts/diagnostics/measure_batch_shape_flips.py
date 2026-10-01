@@ -46,7 +46,11 @@ for line in corpus.open(encoding="utf-8"):
 
 print(f"filter={filter_key}  op_point={op_point}  corpus={len(articles)}", flush=True)
 
-scorer = scorer_cls(use_prefilter=True)
+# Was use_prefilter=True until 2026-10-01, when the per-lens prefilters were deleted
+# (NexusMind#284, decision 0) and True started raising. ⚠️ Runs before that date dropped
+# the rows the lens rules blocked before scoring; runs after score every row, so flip
+# counts from the two are over DIFFERENT populations and are not directly comparable.
+scorer = scorer_cls(use_prefilter=False)
 print(f"device={scorer.device}", flush=True)
 
 BAND = 0.30  # generous: max observed batch noise was 0.162

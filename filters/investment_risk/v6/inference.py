@@ -43,7 +43,7 @@ class InvestmentRiskScorer(BaseInvestmentRiskScorer):
         self,
         model_path: Optional[Path] = None,
         device: Optional[str] = None,
-        use_prefilter: bool = True,
+        use_prefilter: bool = False,
     ):
         if model_path is None:
             model_path = Path(__file__).parent / "model"

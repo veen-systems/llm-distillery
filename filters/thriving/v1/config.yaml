@@ -20,11 +20,6 @@ filter:
     - 5 dimensions (was 6)
     - Oracle scoring: 3-run averaging for continuous targets (ADR-010)
 
-prefilter:
-  enabled: true
-  expected_pass_rate: 0.20
-  description: "Blocks corporate finance, military buildups, and pure speculation without outcomes"
-
 oracle:
   recommended: gemini-flash
   candidates:

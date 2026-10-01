@@ -85,7 +85,7 @@ class CulturalDiscoveryHybridScorer(HybridScorer):
         probe_path: Optional[Path] = None,
         threshold: float = DEFAULT_THRESHOLD,
         device: Optional[str] = None,
-        use_prefilter: bool = True,
+        use_prefilter: bool = False,
         repo_id: Optional[str] = None,
         token: Optional[str] = None,
     ):
@@ -99,8 +99,8 @@ class CulturalDiscoveryHybridScorer(HybridScorer):
             probe_path: Stage-1 probe (default: ./probe/embedding_probe_e5small.pkl)
             threshold: Stage-1 threshold; articles below it skip Stage 2
             device: 'cuda', 'cpu', or None for auto
-            use_prefilter: whether to apply the rule prefilter (v6's is a
-                commerce-only pass-through — see prefilter.py)
+            use_prefilter: must be False (per-lens prefilters, including v6's
+                commerce-only pass-through, deleted 2026-10-01, NexusMind#284)
             repo_id: override the Hub repo for Stage 2
             token: HuggingFace token, for private repos
         """
@@ -178,7 +178,7 @@ def main():
     )
     parser.add_argument("--input", "-i", type=Path, help="Input JSONL file with articles")
     parser.add_argument("--output", "-o", type=Path, help="Output JSONL file for results")
-    parser.add_argument("--no-prefilter", action="store_true", help="Skip prefilter")
+    parser.add_argument("--no-prefilter", action="store_true", help="No effect: per-lens prefilters were deleted (NexusMind#284, decision 0); kept so old invocations still parse")
     parser.add_argument("--batch-size", type=int, default=16, help="Batch size for inference")
     parser.add_argument(
         "--threshold", type=float, default=DEFAULT_THRESHOLD,
@@ -194,7 +194,7 @@ def main():
     scorer = CulturalDiscoveryHybridScorer(
         model_path=args.model_path,
         threshold=args.threshold,
-        use_prefilter=not args.no_prefilter,
+        use_prefilter=False,
     )
 
     if args.input:

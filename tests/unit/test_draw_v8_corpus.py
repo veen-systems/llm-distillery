@@ -94,9 +94,8 @@ class FixtureSanityTest(unittest.TestCase):
     assertion in this file vacuously true. Check the fixture itself."""
 
     def test_harm_fixture_matches_the_production_class_a_instrument(self):
-        sys.path.insert(0, str(REPO))
-        from filters.uplifting.v7.prefilter import UpliftingPreFilterV7
-        pats = UpliftingPreFilterV7()._compiled_exclusions["crime_violence"]
+        sys.path.insert(0, str(REPO / "scripts" / "corpus"))
+        from uplifting_v7_crime_violence import COMPILED as pats
         self.assertGreater(sum(1 for p in pats if p.search(HARM_TITLE)), 0,
                            "the harm fixture matches none of the 37 crime_violence patterns — "
                            "every class-A test here would pass on an empty class")

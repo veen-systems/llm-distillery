@@ -22,11 +22,15 @@ import json, glob, os, sys, re
 from collections import Counter
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from filters.uplifting.v7.prefilter import UpliftingPreFilterV7
+# uplifting v7 prefilter.py was deleted 2026-10-01 (NexusMind#284, decision 0); the
+# crime_violence instrument is frozen verbatim in scripts/corpus/.
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "corpus"))
+from filters.common.base_prefilter import BasePreFilter
+from uplifting_v7_crime_violence import COMPILED as _FROZEN_CV
 from prefilter_removal_probe import script_of
 
-P = UpliftingPreFilterV7()
-CV = P._compiled_exclusions["crime_violence"]
+P = BasePreFilter  # has_any_pattern is a staticmethod
+CV = _FROZEN_CV
 OP, ADVERSE_BAR = 4.5, 3.85
 ORACLE_FLOOR = 300          # ground_truth.batch_scorer.make_oracle_prefilter (#93)
 GN_DOMAIN = "news.google.com"

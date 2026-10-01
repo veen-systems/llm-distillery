@@ -42,7 +42,7 @@ class UpliftingScorerHub(BaseUpliftingScorer):
         repo_id: str = "jeergrvgreg/uplifting-filter-v6",
         token: Optional[str] = None,
         device: Optional[str] = None,
-        use_prefilter: bool = True,
+        use_prefilter: bool = False,
         torch_dtype=None,
     ):
         """

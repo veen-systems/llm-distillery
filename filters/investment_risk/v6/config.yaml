@@ -201,15 +201,6 @@ scoring:
       note: "Can still have high evidence quality"
 
 # Prefilter configuration (unchanged from v5)
-prefilter:
-  version: "5.0"
-  target_pass_rate: "40-70%"
-  categories:
-    - fomo_speculation
-    - stock_picking
-    - affiliate_marketing
-    - clickbait
-    - non_financial
 
 # Ground truth generation
 oracle:

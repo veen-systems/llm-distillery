@@ -163,7 +163,7 @@ the ovr.news homepage with a trafficking price list as its pull quote.
 > rather than flip enforcement on"*, because enabling them would ship #99's English-only
 > `DISCOVERY_PATTERNS` into production for the first time.
 >
-> **Measured, so this is not a preference:** `filters/uplifting/v7/prefilter.py` is 662
+> **Measured, so this is not a preference:** `filters/uplifting/v7/prefilter.py` <!-- placeholder --> (deleted 2026-10-01, decision 0; `git show fe6c018:<path>`) is 662
 > lines and contains exactly two families of non-ASCII characters — **Latin (78) and
 > em-dashes (30)**. No Cyrillic, Arabic, CJK, Devanagari, Greek or Hebrew. Coverage is
 > EN + NL/DE/FR across **77** patterns in three categories (`crime_violence` **37**,

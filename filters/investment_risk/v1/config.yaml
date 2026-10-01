@@ -110,32 +110,6 @@ scoring:
       description: "Clickbait content penalized"
 
 # Pre-filter configuration
-prefilter:
-  version: "1.0"
-  class_name: "InvestmentRiskPreFilterV1"
-  target_pass_rate: "40-70%"  # Conservative filtering
-
-  categories:
-    fomo_speculation:
-      description: "Hot stocks, meme stocks, crypto pumping, FOMO"
-      patterns: 8
-      action: "block"
-
-    stock_picking:
-      description: "Individual stock recommendations without macro context"
-      patterns: 6
-      exceptions: 6  # Macro context patterns (allow if present)
-      action: "block_unless_macro"
-
-    affiliate_conflict:
-      description: "Affiliate marketing, promotional codes, sponsored content"
-      patterns: 4
-      action: "block"
-
-    clickbait:
-      description: "Sensationalist headlines without substantive analysis"
-      patterns: 5
-      action: "block"
 
 # Ground truth generation configuration
 ground_truth:

@@ -66,7 +66,8 @@ IN_DEVELOPMENT_FILTERS = [
 
 REQUIRED_TOP_LEVEL = {
     "filter",             # filter metadata (name, version, id)
-    "prefilter",          # keyword prefilter config
+    # "prefilter" removed 2026-10-01: per-lens prefilters deleted (NexusMind#284,
+    # decision 0); tests/unit/test_no_per_lens_prefilters.py now forbids the block.
     "oracle",             # training-data oracle (NOT "ground_truth")
     "preprocessing",      # text preprocessing (head+tail, max_tokens, etc.)
     "scoring",            # dimensions, gatekeepers, tiers, scale factor
@@ -206,13 +207,10 @@ EXEMPTIONS: set[tuple[str, str, str]] = {
     ("cultural_discovery", "v6", "missing_top_level:training"),
     ("cultural_discovery", "v6", "scoring_missing:gatekeepers"),
     # human_thriving v9 (2026-09-25; v8's config, never in ACTIVE_FILTERS, carried the same three):
-    # - prefilter: ABSENT BY RULE. ADR-018/019 Amendment 2026-08-21, new filters ship no per-lens
-    #   prefilter; the e5 probe replaces it. Adding one would be the defect.
     # - preprocessing: ABSENT ON PURPOSE, and it IS read at runtime (FilterBaseScorer head_tail).
     #   Every v9 measurement (gate, live-week audit, normalization fit) was taken WITHOUT head_tail,
     #   so adding the block would ship behaviour nothing measured. Unblock: re-measure with it.
     # - deployment: documentation-only; no reader found in either repo (grep 2026-09-25).
-    ("human_thriving", "v9", "missing_top_level:prefilter"),
     ("human_thriving", "v9", "missing_top_level:preprocessing"),
     ("human_thriving", "v9", "missing_top_level:deployment"),
 }
@@ -332,7 +330,6 @@ class TestSourceFilterValidation:
         """Minimal valid-ish config so we can layer source_filter on top."""
         return {
             "filter": {"name": "test", "version": "v1"},
-            "prefilter": {},
             "oracle": {},
             "preprocessing": {},
             "scoring": {

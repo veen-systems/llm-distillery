@@ -40,7 +40,7 @@ class BelongingScorerHub(BaseBelongingScorer):
         repo_id: str = "jeergrvgreg/belonging-filter-v1",
         token: Optional[str] = None,
         device: Optional[str] = None,
-        use_prefilter: bool = True,
+        use_prefilter: bool = False,
         torch_dtype=None,
     ):
         """

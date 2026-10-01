@@ -52,11 +52,6 @@ source_filter:
   excluded_source_types: [code_repo, developer_aggregator, firehose_aggregator]
   shadow_mode: false
 
-prefilter:
-  enabled: true
-  expected_pass_rate: ~0.15
-  description: "Blocks political conflict framing, tourism fluff, celebrity news, cultural war content"
-
 oracle:
   recommended: gemini-flash
   target_model: "Gemini Flash 2.5"

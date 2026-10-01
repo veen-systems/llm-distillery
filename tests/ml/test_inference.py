@@ -201,7 +201,9 @@ class TestModelInference:
 
         try:
             from filters.uplifting.v6.inference import UpliftingScorer
-            return UpliftingScorer(use_prefilter=True)
+            # use_prefilter=True raises since the 2026-10-01 deletion (decision 0); inside
+            # this except it would turn every test below into a silent skip.
+            return UpliftingScorer(use_prefilter=False)
         except Exception as e:
             pytest.skip(f"Failed to load model: {e}")
 

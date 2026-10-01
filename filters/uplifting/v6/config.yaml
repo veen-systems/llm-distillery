@@ -15,11 +15,6 @@ filter:
     - 495 additional MEDIUM-tier articles from active learning
     - Total training data: 10,495 articles
 
-prefilter:
-  enabled: true
-  expected_pass_rate: ~0.20
-  description: "Blocks corporate finance, military buildups, and pure speculation without outcomes"
-
 oracle:
   recommended: gemini-flash
   candidates:

@@ -34,6 +34,13 @@ LONG_CONTENT = (
 )
 
 
+LIVE_PACKAGES = [
+    "filters/solutions/v6", "filters/uplifting/v7", "filters/cultural_discovery/v5",
+    "filters/cultural_discovery/v6", "filters/investment_risk/v6", "filters/belonging/v1",
+    "filters/nature_recovery/v4", "filters/human_thriving/v9",
+]
+
+
 def _article(content: str, **extra) -> dict:
     article = {"title": "Community garden opens", "content": content}
     article.update(extra)
@@ -75,32 +82,6 @@ class TestApplyFilterNoLongerGatesOnLength:
         assert passed is False
         assert reason == expected
 
-    @pytest.mark.parametrize(
-        "module_path,class_name",
-        [
-            ("filters/nature_recovery/v4/prefilter.py", None),
-            ("filters/solutions/v6/prefilter.py", None),
-            ("filters/uplifting/v7/prefilter.py", None),
-            ("filters/belonging/v1/prefilter.py", None),
-            ("filters/investment_risk/v6/prefilter.py", None),
-            ("filters/cultural_discovery/v5/prefilter.py", None),
-        ],
-    )
-    def test_production_prefilters_never_emit_content_too_short(
-        self, module_path, class_name
-    ):
-        """No production prefilter may block on length any more.
-
-        Asserted on the reason string rather than on pass/pass: a filter is free
-        to block this article for a lens reason (that is its job), but never for
-        being short.
-        """
-        prefilter = _load_prefilter(module_path, class_name)
-        _passed, reason = prefilter.apply_filter(
-            _article(SHORT_CONTENT, url="https://example.org/garden", source="local_news")
-        )
-        assert "content_too_short" not in reason
-
 
 class TestOraclePrefilterKeepsTheFloor:
     """The labelling half: the oracle wrapper composes floor + lens rules."""
@@ -121,8 +102,8 @@ class TestOraclePrefilterKeepsTheFloor:
         package was labelled with NO length floor at all, silently. It never
         bit because every deployed package shipped a prefilter.py.
 
-        The per-lens rule prefilters are being deleted (dead in production
-        since 2026-02-10), which makes that the case for EVERY filter at once.
+        The per-lens rule prefilters were deleted 2026-10-01 (dead in production
+        since 2026-02-10), which made that the case for EVERY filter at once.
         Under the old contract, deleting the lens rules would have deleted the
         #93 floor as a side effect — two unrelated decisions, one of them
         unmade. So the gate is now always a callable, and with no prefilter
@@ -148,25 +129,25 @@ class TestOraclePrefilterKeepsTheFloor:
         gate = make_oracle_prefilter(Blocking())
         assert gate(_article(LONG_CONTENT)) is False
 
-    def test_floor_is_uniform_across_filters(self):
-        """cultural_discovery v5 is now floored too — an intended side effect.
+    @pytest.mark.parametrize("pkg", LIVE_PACKAGES)
+    def test_floor_is_uniform_across_filters(self, pkg):
+        """Every live package's oracle gate IS the floor, with no lens rules.
 
-        cd v4/v5's custom `apply_filter` never called `check_content_length`
-        (a v3 regression its own module docstring records as an open
-        follow-up), so before #93 cd was the one filter whose ORACLE path had
-        no length floor. Hoisting the floor into the wrapper restores it
-        uniformly. Measured on a short-skewed stress corpus this withholds ~40%
-        of what cd would otherwise have sent to the oracle, so it must stay a
-        pinned decision rather than an accident: if cd should be exempt, exempt
-        it here explicitly.
+        Rewritten 2026-10-01 when the per-lens prefilters were deleted
+        (NexusMind#284, decision 0). It used to pin that cultural_discovery v5 —
+        whose own apply_filter never checked length — was floored by the wrapper
+        anyway. With no lens object left anywhere, every package goes through
+        the `prefilter_obj is None` branch, so uniformity is now asserted on
+        the loader batch_scorer actually uses, per package.
         """
-        prefilter = _load_prefilter("filters/cultural_discovery/v5/prefilter.py", None)
-        short_but_on_lens = _article(
-            "A new museum of textile craft opened in Oaxaca this week.",
-            title="Oaxaca opens a museum of Indigenous textile craft",
-        )
-        assert prefilter.apply_filter(short_but_on_lens)[0] is True
-        assert make_oracle_prefilter(prefilter)(short_but_on_lens) is False
+        from ground_truth.batch_scorer import load_filter_package
+
+        obj, _, _ = load_filter_package(Path(__file__).resolve().parents[2] / pkg)
+        assert obj is None, f"{pkg} still yields a lens prefilter object"
+        gate = make_oracle_prefilter(obj)
+        assert gate(_article(SHORT_CONTENT)) is False
+        assert gate(_article(LONG_CONTENT)) is True
+        assert gate(_article("")) is False  # empty is not short: rejected at any length
 
     def test_object_without_length_check_gets_the_floor_anyway(self):
         """CONTRACT CHANGED 2026-08-13. Was: short content passed here.
@@ -417,80 +398,29 @@ class _FakeEmbeddingStage:
         ]
 
 
-def _load_prefilter(module_path: str, class_name):
-    """Load a filter-package prefilter the way batch_scorer does."""
-    import importlib.util
-
-    root = Path(__file__).parent.parent.parent
-    path = root / module_path
-    spec = importlib.util.spec_from_file_location("prefilter_under_test", path)
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-
-    if class_name:
-        return getattr(module, class_name)()
-
-    candidates = [
-        obj
-        for name, obj in vars(module).items()
-        if isinstance(obj, type)
-        and issubclass(obj, BasePreFilter)
-        and obj.__module__ == module.__name__
-    ]
-    assert candidates, f"no prefilter class found in {module_path}"
-    return candidates[0]()
-
-
 # --- #93 guarantee, enforced by AST rather than by eye ----------------------
 
 
-def test_no_live_prefilter_checks_length_inside_apply_filter():
+def test_no_scoring_path_checks_length():
     """#93: the 300-char floor is labelling-time only. No SCORING path may check it.
 
-    Enforced here because the guarantee was previously checkable only by a human
-    running a grep — and on 2026-08-13 a review did exactly that, truncated the
-    output with `head -5`, and reported the guarantee intact while
-    `filters/ai-engineering-practice/v1/prefilter.py:374` was violating it. An
-    AST walk cannot be truncated and cannot be fooled by the word appearing in a
-    comment, which is why several live packages mention `check_content_length`
-    in prose and correctly pass.
-
-    SCOPE IS LIVE FILTERS ONLY, deliberately. Three archived packages
-    (`cultural_discovery` v1 and v2, `uplifting` v6) still call it inside
-    `apply_filter`. That is historically correct — they predate #93 — and they
-    sit on no scoring path. Rewriting them would falsify the record. If one is
-    ever promoted back into ACTIVE_FILTERS, this test starts failing, which is
-    the behaviour we want.
+    Until 2026-10-01 this walked each live package's `prefilter.py` `apply_filter`
+    (an AST walk, because a truncated grep once reported the guarantee intact while
+    ai-engineering-practice violated it). The per-lens prefilters are deleted
+    (NexusMind#284, decision 0), so the scoring path is now the shared scorer code
+    alone; walk that instead.
     """
     import ast
-    from pathlib import Path
 
     repo = Path(__file__).resolve().parents[2]
-    live = [
-        ("solutions", "v6"), ("uplifting", "v7"), ("cultural_discovery", "v5"),
-        ("cultural_discovery", "v6"), ("investment_risk", "v6"),
-        ("belonging", "v1"), ("nature_recovery", "v4"),
-    ]
-    checked, violations = [], []
-    for name, ver in live:
-        p = repo / "filters" / name / ver / "prefilter.py"
-        if not p.exists():
-            continue  # the NM#284 deletion removes these; absence is not a failure
-        checked.append(f"{name}/{ver}")
-        tree = ast.parse(p.read_text(encoding="utf-8"))
-        for node in ast.walk(tree):
-            if isinstance(node, ast.FunctionDef) and node.name == "apply_filter":
-                for call in ast.walk(node):
-                    if (isinstance(call, ast.Call)
-                            and getattr(call.func, "attr", "") == "check_content_length"):
-                        violations.append(f"{name}/{ver}:{call.lineno}")
-    # A pass with nothing checked is indistinguishable from a disabled test.
-    # ⛔ This read `assert checked or True` until 2026-08-27 — `or True` makes the
-    # assertion unconditional, so it permitted exactly the case the line above
-    # names. The comment stated the rule and the code defeated it, two lines apart.
-    # Proven by mutation: with `checked` forced empty the old form still passed.
-    assert checked, "no live prefilters on disk — this test examined nothing"
-    assert not violations, (
-        "#93 violated — check_content_length called inside apply_filter (a SCORING "
-        f"path) in: {violations}. Checked: {checked}"
-    )
+    files = [repo / "filters/common/filter_base_scorer.py",
+             repo / "filters/common/hybrid_scorer.py"]
+    violations = []
+    for p in files:
+        for call in ast.walk(ast.parse(p.read_text(encoding="utf-8"))):
+            if isinstance(call, ast.Call) and getattr(call.func, "attr", "") in (
+                "check_content_length", "apply_filter"
+            ):
+                violations.append(f"{p.name}:{call.lineno}")
+    assert len(files) == 2 and all(p.exists() for p in files), "walked nothing"
+    assert not violations, f"#93 violated — a scoring path gates on a prefilter: {violations}"

@@ -3,7 +3,7 @@ Solutions Filter v6 - Base Scorer Class
 
 Inherits all shared logic from FilterBaseScorer (calibration loading + apply,
 head+tail preprocessing, score clamping, weighted average, gatekeeper, tiering,
-batch inference). Subclasses only define constants + _load_prefilter().
+batch inference). Subclasses only define constants.
 
 Lineage: renamed from sustainability_technology v3 (ADR-012). v4 replaces v3's
 TRL gatekeeper with a universal `solution_concreteness` gatekeeper spanning the
@@ -98,10 +98,13 @@ class BaseSolutionsScorer(FilterBaseScorer):
     GATEKEEPER_CAP = 3.0
 
     def _load_prefilter(self):
-        import importlib.util
+        """Per-lens prefilters were deleted 2026-10-01 (NexusMind#284, decision 0).
 
-        prefilter_path = self._get_filter_dir() / "prefilter.py"
-        spec = importlib.util.spec_from_file_location("prefilter", prefilter_path)
-        prefilter_module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(prefilter_module)
-        self.prefilter = prefilter_module.SolutionsPreFilterV6()
+        Defined here even though FilterBaseScorer now raises the same way: an
+        older FilterBaseScorer copy (NexusMind's, until it syncs) declares this
+        an @abstractmethod, and a package without it would fail to construct
+        there, so no filter would score.
+        """
+        raise NotImplementedError(
+            "per-lens prefilters were deleted (NexusMind#284, decision 0)"
+        )

@@ -1,0 +1,129 @@
+{
+ "source": {
+  "host": "sadalsuud",
+  "path": "/home/jeroen/local_dev/NexusMind/data/raw/content_items_20261001_080513.jsonl",
+  "sha256": "3b1efcc7414bcb7deec3ead327cf56f68a5e64da96f62bbfbba1eabf292dc784",
+  "rows": 5177,
+  "stage": "pre-enrichment (NexusMind data/raw)",
+  "cycle": "2026-10-01 08:05 CEST collection"
+ },
+ "packages": {
+  "filters/uplifting/v7": {
+   "before_has_lens_object": true,
+   "after_has_lens_object": false,
+   "floor_and_valid_pass": 3113,
+   "before_pass": 2963,
+   "after_pass": 3113,
+   "newly_pass": 150,
+   "newly_block": 0,
+   "floor_verdicts_identical": true,
+   "before_lens_block_reasons": {
+    "corporate_finance": 99,
+    "crime_violence": 25,
+    "military_security": 18,
+    "excluded_domain_code": 5,
+    "excluded_domain_vc_startup": 2,
+    "pure_speculation": 1
+   }
+  },
+  "filters/cultural_discovery/v5": {
+   "before_has_lens_object": true,
+   "after_has_lens_object": false,
+   "floor_and_valid_pass": 3113,
+   "before_pass": 1156,
+   "after_pass": 3113,
+   "newly_pass": 1957,
+   "newly_block": 0,
+   "floor_verdicts_identical": true,
+   "before_lens_block_reasons": {
+    "no_cultural_topic_signal": 1848,
+    "celebrity_art": 49,
+    "political_conflict": 27,
+    "tourism_fluff": 26,
+    "excluded_domain_code": 5,
+    "excluded_domain_vc_startup": 2
+   }
+  },
+  "filters/cultural_discovery/v6": {
+   "before_has_lens_object": true,
+   "after_has_lens_object": false,
+   "floor_and_valid_pass": 3113,
+   "before_pass": 3113,
+   "after_pass": 3113,
+   "newly_pass": 0,
+   "newly_block": 0,
+   "floor_verdicts_identical": true,
+   "before_lens_block_reasons": {}
+  },
+  "filters/belonging/v1": {
+   "before_has_lens_object": true,
+   "after_has_lens_object": false,
+   "floor_and_valid_pass": 3113,
+   "before_pass": 3023,
+   "after_pass": 3113,
+   "newly_pass": 90,
+   "newly_block": 0,
+   "floor_verdicts_identical": true,
+   "before_lens_block_reasons": {
+    "networking_professional": 63,
+    "self_help": 12,
+    "online_only": 8,
+    "obituary_funeral": 6,
+    "wellness_industry": 1
+   }
+  },
+  "filters/nature_recovery/v4": {
+   "before_has_lens_object": true,
+   "after_has_lens_object": false,
+   "floor_and_valid_pass": 3113,
+   "before_pass": 3113,
+   "after_pass": 3113,
+   "newly_pass": 0,
+   "newly_block": 0,
+   "floor_verdicts_identical": true,
+   "before_lens_block_reasons": {}
+  },
+  "filters/solutions/v6": {
+   "before_has_lens_object": true,
+   "after_has_lens_object": false,
+   "floor_and_valid_pass": 3113,
+   "before_pass": 3113,
+   "after_pass": 3113,
+   "newly_pass": 0,
+   "newly_block": 0,
+   "floor_verdicts_identical": true,
+   "before_lens_block_reasons": {}
+  },
+  "filters/investment_risk/v6": {
+   "before_has_lens_object": true,
+   "after_has_lens_object": false,
+   "floor_and_valid_pass": 3113,
+   "before_pass": 1354,
+   "after_pass": 3113,
+   "newly_pass": 1759,
+   "newly_block": 0,
+   "floor_verdicts_identical": true,
+   "before_lens_block_reasons": {
+    "blocked_source:arxiv": 1726,
+    "blocked_source:phys_org": 12,
+    "affiliate_conflict": 10,
+    "stock_picking": 6,
+    "fomo_speculation": 2,
+    "blocked_source:good_news": 1,
+    "blocked_source:hackernews": 1,
+    "blocked_source:mastodon_": 1
+   }
+  },
+  "filters/human_thriving/v9": {
+   "before_has_lens_object": false,
+   "after_has_lens_object": false,
+   "floor_and_valid_pass": 3113,
+   "before_pass": 3113,
+   "after_pass": 3113,
+   "newly_pass": 0,
+   "newly_block": 0,
+   "floor_verdicts_identical": true,
+   "before_lens_block_reasons": {}
+  }
+ }
+}

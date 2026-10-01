@@ -43,7 +43,7 @@ class CulturalDiscoveryScorer(BaseCulturalDiscoveryScorer):
         self,
         model_path: Optional[Path] = None,
         device: Optional[str] = None,
-        use_prefilter: bool = True,
+        use_prefilter: bool = False,
     ):
         # Set model path before calling super().__init__
         if model_path is None:

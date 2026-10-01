@@ -65,7 +65,7 @@ def run_scorer_cli(scorer_class, filter_name: str, demo_article: Dict):
         "--output", "-o", type=Path, help="Output JSONL file for results"
     )
     parser.add_argument(
-        "--no-prefilter", action="store_true", help="Skip prefilter"
+        "--no-prefilter", action="store_true", help="No effect: per-lens prefilters were deleted (NexusMind#284, decision 0); kept so old invocations still parse"
     )
     parser.add_argument(
         "--batch-size", type=int, default=16, help="Batch size for inference"
@@ -74,7 +74,7 @@ def run_scorer_cli(scorer_class, filter_name: str, demo_article: Dict):
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.INFO)
-    scorer = scorer_class(use_prefilter=not args.no_prefilter)
+    scorer = scorer_class(use_prefilter=False)
 
     if args.input:
         _score_from_file(scorer, args.input, args.output, args.batch_size)

@@ -41,7 +41,7 @@ class InvestmentRiskScorerHub(BaseInvestmentRiskScorer):
         repo_id: str = "jeergrvgreg/investment-risk-filter-v6",
         token: Optional[str] = None,
         device: Optional[str] = None,
-        use_prefilter: bool = True,
+        use_prefilter: bool = False,
         torch_dtype=None,
     ):
         """

@@ -81,7 +81,7 @@ def main():
     required_files = [
         "base_scorer.py", "inference.py", "inference_hub.py",
         "inference_hybrid.py", "config.yaml", "calibration.json",
-        "prefilter.py", "training_history.json", "training_metadata.json",
+        "training_history.json", "training_metadata.json",  # prefilter.py deleted 2026-10-01
         "model/adapter_config.json", "model/adapter_model.safetensors",
         "model/tokenizer.json", "model/tokenizer_config.json",
     ]
@@ -180,37 +180,11 @@ def main():
     # ================================================================
     print("\n--- 6. Prefilter ---")
     # ================================================================
-    try:
-        from filters.belonging.v1.prefilter import BelongingPreFilterV1
-        pf = BelongingPreFilterV1()
-        check("Prefilter loads", True)
-
-        # Should pass: genuine belonging content (must be >300 chars to pass length check)
-        pass_article = {
-            "title": "Three Generations Under One Roof in Rural Japan",
-            "content": "In the small town of Ogimi, Okinawa, 85-year-old Tanaka lives with "
-                       "her daughter and two grandchildren. Every morning they share breakfast "
-                       "together before tending the community garden with neighbors. The family "
-                       "has lived in this village for five generations. Their home sits on land "
-                       "that Tanaka's great-grandmother cultivated. The neighbors bring food when "
-                       "someone is sick, and the children play freely between yards. Every Sunday "
-                       "the extended family gathers for a long meal that lasts well into the evening."
-        }
-        passed_pf, reason = pf.apply_filter(pass_article)
-        check("Prefilter passes belonging content", passed_pf, f"reason={reason}")
-
-        # Should block: wellness/commercial
-        block_article = {
-            "title": "10 Blue Zone Diet Hacks for Longevity",
-            "content": "Discover the top supplements and biohacking techniques inspired by "
-                       "Blue Zone centenarians. Our premium longevity course reveals the secrets "
-                       "to living past 100 with optimized nutrition and anti-aging protocols."
-        }
-        blocked, reason = pf.apply_filter(block_article)
-        check("Prefilter blocks wellness/commercial", not blocked, "should have blocked")
-
-    except Exception as e:
-        check("Prefilter loads", False, str(e))
+    # Deleted 2026-10-01 with every per-lens prefilter (NexusMind#284, decision 0).
+    # Check the absence instead, so a prefilter that comes back is noticed here too.
+    from pathlib import Path as _P
+    check("No per-lens prefilter.py (decision 0)",
+          not (_P(__file__).resolve().parents[2] / "filters/belonging/v1/prefilter.py").exists())
 
     # ================================================================
     print("\n--- 7. Model Loading & Single Article Scoring ---")
@@ -219,7 +193,7 @@ def main():
         from filters.belonging.v1.inference import BelongingScorer
         print("  Loading model (this may take 30-60s on CPU)...")
         t0 = time.time()
-        scorer = BelongingScorer(use_prefilter=True)
+        scorer = BelongingScorer(use_prefilter=False)
         load_time = time.time() - t0
         check(f"Model loads ({load_time:.1f}s)", True)
         check("Model on expected device", scorer.device is not None)

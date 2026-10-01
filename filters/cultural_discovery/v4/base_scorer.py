@@ -2,7 +2,7 @@
 Cultural Discovery Filter v4 - Base Scorer Class
 
 Inherits all shared logic from FilterBaseScorer.
-Defines filter-specific constants and prefilter loading.
+Defines filter-specific constants.
 """
 
 from filters.common.filter_base_scorer import FilterBaseScorer
@@ -46,9 +46,13 @@ class BaseCulturalDiscoveryScorer(FilterBaseScorer):
     GATEKEEPER_CAP = 4.0  # Raised from 3.0 — evidence_quality MAE 1.31 caused excessive false gating (#23)
 
     def _load_prefilter(self):
-        import importlib.util
-        prefilter_path = self._get_filter_dir() / "prefilter.py"
-        spec = importlib.util.spec_from_file_location("prefilter", prefilter_path)
-        prefilter_module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(prefilter_module)
-        self.prefilter = prefilter_module.CulturalDiscoveryPreFilterV4()
+        """Per-lens prefilters were deleted 2026-10-01 (NexusMind#284, decision 0).
+
+        Defined here even though FilterBaseScorer now raises the same way: an
+        older FilterBaseScorer copy (NexusMind's, until it syncs) declares this
+        an @abstractmethod, and a package without it would fail to construct
+        there, so no filter would score.
+        """
+        raise NotImplementedError(
+            "per-lens prefilters were deleted (NexusMind#284, decision 0)"
+        )

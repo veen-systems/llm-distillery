@@ -5,7 +5,7 @@ Extracted from the 4 production base_scorer.py files (uplifting v6,
 sustainability_technology v3, investment_risk v6, cultural_discovery v4)
 which were ~400 lines each with ~350 lines identical.
 
-Subclasses define constants and _load_prefilter(); everything else lives here.
+Subclasses define constants and _load_model(); everything else lives here.
 
 See GitHub issue #10.
 """
@@ -30,7 +30,6 @@ class FilterBaseScorer(ABC):
     Provides shared logic for both local model loading and HuggingFace Hub
     loading. Subclasses must define class constants and implement:
         - _load_model(): Load model from local files or Hub
-        - _load_prefilter(): Load the filter-specific prefilter
     """
 
     # --- Subclasses MUST define these ---
@@ -52,14 +51,23 @@ class FilterBaseScorer(ABC):
     def __init__(
         self,
         device: Optional[str] = None,
-        use_prefilter: bool = True,
+        use_prefilter: bool = False,
     ):
         if device is None:
             self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         else:
             self.device = torch.device(device)
 
-        self.use_prefilter = use_prefilter
+        # Per-lens prefilters were DELETED 2026-10-01 (NexusMind#284, decision 0).
+        # The keyword survives only because NexusMind's scorer service passes
+        # use_prefilter=False; asking for True is asking for a screen that no
+        # longer exists, so refuse rather than silently score everything.
+        if use_prefilter:
+            raise ValueError(
+                "use_prefilter=True: per-lens prefilters were deleted "
+                "(NexusMind#284, decision 0). Construct with use_prefilter=False."
+            )
+        self.use_prefilter = False
         self.prefilter = None
         self.model = None
         self.tokenizer = None
@@ -68,8 +76,6 @@ class FilterBaseScorer(ABC):
         self._load_calibration()
         self._compute_prompt_hash()
 
-        if use_prefilter:
-            self._load_prefilter()
 
     # --- Directory resolution ---
 
@@ -226,10 +232,16 @@ class FilterBaseScorer(ABC):
         """Load the model. Implemented by subclasses."""
         pass
 
-    @abstractmethod
     def _load_prefilter(self):
-        """Load the filter-specific prefilter. Implemented by subclasses."""
-        pass
+        """Per-lens prefilters were deleted (NexusMind#284, decision 0, 2026-10-01).
+
+        Kept as a raising hook, not removed: NexusMind's NM#284 shadow evaluator
+        calls it inside a try/except and logs "shadow prefilter unavailable",
+        which is the honest outcome until that evaluator is stripped.
+        """
+        raise NotImplementedError(
+            "per-lens prefilters were deleted (NexusMind#284, decision 0)"
+        )
 
     # --- Validation ---
 
@@ -355,7 +367,8 @@ class FilterBaseScorer(ABC):
 
         Args:
             article: Dict with 'title' and 'content' keys
-            skip_prefilter: Force skip prefilter even if enabled
+            skip_prefilter: No effect (per-lens prefilters deleted, NexusMind#284);
+                accepted because NexusMind's scorer service passes it
 
         Returns:
             Dict with scores, tier, gatekeeper info
@@ -364,13 +377,6 @@ class FilterBaseScorer(ABC):
 
         result = self._create_empty_result()
         self._stamp_content_length(article, result)
-
-        if self.use_prefilter and not skip_prefilter:
-            passed, reason = self.prefilter.apply_filter(article)
-            if not passed:
-                result["passed_prefilter"] = False
-                result["prefilter_reason"] = reason
-                return result
 
         text = f"{article['title']}\n\n{article['content']}"
 
@@ -417,7 +423,8 @@ class FilterBaseScorer(ABC):
         Args:
             articles: List of article dicts
             batch_size: Batch size for inference (default: DEFAULT_BATCH_SIZE)
-            skip_prefilter: Skip prefilter for all articles
+            skip_prefilter: No effect (per-lens prefilters deleted, NexusMind#284);
+                accepted because NexusMind's scorer service passes it
 
         Returns:
             List of result dicts (same structure as score_article)
@@ -447,14 +454,6 @@ class FilterBaseScorer(ABC):
                 continue
 
             self._stamp_content_length(article, result)
-
-            if self.use_prefilter and not skip_prefilter:
-                passed, reason = self.prefilter.apply_filter(article)
-                if not passed:
-                    result["passed_prefilter"] = False
-                    result["prefilter_reason"] = reason
-                    results.append(result)
-                    continue
 
             articles_to_score.append(article)
             article_indices.append(i)

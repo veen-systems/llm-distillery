@@ -7,11 +7,6 @@ filter:
   description: "Rate content for sustainability relevance, impact potential, and credibility"
   focus: "Distinguishes announcements from deployments, detects greenwashing/vaporware/fossil fuel delay tactics"
 
-prefilter:
-  enabled: true
-  expected_pass_rate: null  # To be determined during calibration
-  description: "Blocks greenwashing, vaporware, and fossil fuel transition delay tactics"
-
 oracle:
   recommended: null  # To be determined during calibration
   candidates:

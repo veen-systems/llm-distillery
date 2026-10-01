@@ -1,5 +1,5 @@
 ---
-status: Accepted
+status: Superseded (2026-10-01 — every per-lens prefilter deleted, decision 0; see ADR-019 Amendment 2026-10-01)
 date: 2026-04-28
 deciders: [team]
 superseded_by:

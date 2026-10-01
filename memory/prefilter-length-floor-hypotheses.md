@@ -7,6 +7,10 @@ metadata:
 
 # Per-Filter Prefilters & the Short-Content Floor — Hypotheses
 
+> ⛔ **2026-10-01: every per-lens prefilter this file measures is DELETED** (decision 0, NexusMind#284;
+> ADR-019 *Amendment 2026-10-01*). The short-content floor half is still live (`make_oracle_prefilter`).
+> Read the per-filter rows as history; nothing here is enforceable any more.
+
 **Date:** 2026-08-02
 
 Context: NexusMind#284 found the per-filter prefilters have never run in

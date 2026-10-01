@@ -154,52 +154,6 @@ scoring:
       note: "These belong in a different filter, not resilience"
 
 # Prefilter configuration
-prefilter:
-  version: "1.0"
-  target_pass_rate: "30-50%"
-  strategy: "keyword + structure"
-
-  include_signals:
-    # Response language
-    - "recovery"
-    - "rebuild"
-    - "restore"
-    - "reform"
-    - "lesson"
-    - "learn"
-    - "adapt"
-    - "respond"
-    - "address"
-    - "solve"
-    - "fix"
-    - "improve"
-    # Outcome language
-    - "after the"
-    - "in the wake of"
-    - "following the"
-    - "since the"
-    - "recovered from"
-    - "bounced back"
-    # Institutional language
-    - "new protocol"
-    - "policy change"
-    - "commission"
-    - "inquiry"
-    - "review found"
-    - "report recommends"
-
-  exclude_signals:
-    # Pure doom
-    - "could cause"
-    - "may lead to"
-    - "threatens to"
-    - "warns of"
-    - "fears of"
-    # Pure positivity (no adversity baseline)
-    - "new product"
-    - "launches"
-    - "announces"
-    - "celebrates"
 
 # Example articles (for oracle calibration)
 examples:

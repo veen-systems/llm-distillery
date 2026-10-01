@@ -23,11 +23,6 @@ filter:
     - ovr.news (Wisdom tab)
     - Busara
 
-prefilter:
-  enabled: true
-  expected_pass_rate: ~0.15  # Estimated 15% of random articles
-  description: "Blocks political conflict framing, tourism fluff, celebrity news, cultural war content"
-
 screening_filter:
   enabled: true
   purpose: "Training data enrichment - enrich signal before oracle scoring"

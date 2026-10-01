@@ -38,11 +38,6 @@ source_filter:
   excluded_source_types: [code_repo, developer_aggregator, firehose_aggregator, eval_aggregator]
   shadow_mode: false
 
-prefilter:
-  enabled: true
-  expected_pass_rate: 0.15
-  description: "Blocks wellness industry, professional networking, tourism, and self-help content"
-
 oracle:
   recommended: gemini-flash
   candidates:

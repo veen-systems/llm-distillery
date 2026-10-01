@@ -121,7 +121,6 @@ Each filter is a self-contained package:
 filters/<filter-name>/v<version>/
 ├── config.yaml              # Dimensions, weights, tier definitions
 ├── prompt-compressed.md     # Oracle prompt (used for scoring)
-├── prefilter.py             # Fast rule-based noise filter
 ├── base_scorer.py           # Subclass of FilterBaseScorer (shared logic)
 ├── inference.py             # Local inference (loads adapter from model/)
 ├── inference_hub.py         # HuggingFace Hub inference (loads from Hub)

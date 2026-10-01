@@ -236,24 +236,23 @@ def train_final_probe(X: np.ndarray, y: np.ndarray) -> LogisticRegression:
 # ---------------------------------------------------------------------------
 
 def load_prefilter(filter_dir: Path):
-    """Load the belonging prefilter from filter directory."""
-    # Import dynamically based on filter dir structure
-    import importlib
+    """The oracle-path gate batch_scorer applies, as an `apply_filter` object.
 
-    filter_name = filter_dir.parent.name  # e.g. "belonging"
-    version = filter_dir.name             # e.g. "v1"
+    Per-lens prefilters were deleted 2026-10-01 (NexusMind#284, decision 0); this
+    used to import `filters.<name>.<ver>.prefilter`. Screening for the oracle now
+    uses the very gate the oracle run applies (#93 length floor + validation),
+    reused rather than re-implemented so the two cannot drift.
+    """
+    from ground_truth.batch_scorer import load_filter_package, make_oracle_prefilter
 
-    module_path = f"filters.{filter_name}.{version}.prefilter"
-    module = importlib.import_module(module_path)
+    lens_obj, _, _ = load_filter_package(filter_dir)
+    gate = make_oracle_prefilter(lens_obj)
 
-    # Find the prefilter class (convention: *PreFilter*)
-    for attr_name in dir(module):
-        attr = getattr(module, attr_name)
-        if isinstance(attr, type) and attr_name.endswith(("PreFilter", "PreFilterV1")):
-            if attr_name != "BasePreFilter":
-                return attr()
+    class _OracleGate:
+        def apply_filter(self, article):
+            return (True, "passed") if gate(article) else (False, "oracle_gate")
 
-    raise ValueError(f"No prefilter class found in {module_path}")
+    return _OracleGate()
 
 
 def stream_master_dataset(path: Path):

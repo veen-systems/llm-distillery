@@ -8,23 +8,6 @@ filter:
   pillar: "Pillar 3: Policy Works (when done right)"
   purpose: "Prove that smart policy drives change - show blueprints others can copy"
 
-prefilter:
-  enabled: true
-  expected_pass_rate: null  # To be determined during calibration
-  description: "Blocks policy announcements without outcomes, pure advocacy"
-
-  block_keywords:
-    - no_outcomes
-    - policy_announced_only
-    - pure_advocacy
-    - future_only
-
-  pass_keywords:
-    - emissions_fell
-    - deployment_grew
-    - countries_adopting
-    - measurable_outcomes
-
 oracle:
   recommended: null
   candidates:

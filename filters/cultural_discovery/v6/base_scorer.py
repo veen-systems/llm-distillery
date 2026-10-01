@@ -2,7 +2,7 @@
 Cultural Discovery Filter v6 - Base Scorer Class
 
 Inherits all shared logic from FilterBaseScorer.
-Defines filter-specific constants and prefilter loading.
+Defines filter-specific constants.
 
 v6 vs v5 deltas (#98 — architecture migration, "probe first, dimensions later"):
   - FILTER_VERSION bumped to "6.0"
@@ -16,6 +16,8 @@ v6 vs v5 deltas (#98 — architecture migration, "probe first, dimensions later"
     the four exclusion categories and the three domain blocklists are gone
     (#98 criterion 4, executed after the probe beat the gate on held-out oracle
     ground truth — FN 0/75 vs 10/75).
+  - Both v6 prefilter states above were DELETED 2026-10-01 with every per-lens
+    prefilter (NexusMind#284, decision 0); neither ever ran in production.
   - DROPS the evidence_quality gatekeeper (#94, owner decision at this bump).
     See the block below TIER_THRESHOLDS for why that is a no-op.
 
@@ -79,9 +81,13 @@ class BaseCulturalDiscoveryScorer(FilterBaseScorer):
     # any filter that declares one.
 
     def _load_prefilter(self):
-        import importlib.util
-        prefilter_path = self._get_filter_dir() / "prefilter.py"
-        spec = importlib.util.spec_from_file_location("prefilter", prefilter_path)
-        prefilter_module = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(prefilter_module)
-        self.prefilter = prefilter_module.CulturalDiscoveryPreFilterV6()
+        """Per-lens prefilters were deleted 2026-10-01 (NexusMind#284, decision 0).
+
+        Defined here even though FilterBaseScorer now raises the same way: an
+        older FilterBaseScorer copy (NexusMind's, until it syncs) declares this
+        an @abstractmethod, and a package without it would fail to construct
+        there, so no filter would score.
+        """
+        raise NotImplementedError(
+            "per-lens prefilters were deleted (NexusMind#284, decision 0)"
+        )

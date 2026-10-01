@@ -40,7 +40,7 @@ class ThrivingScorerHub(BaseThrivingScorer):
         repo_id: str = "jeergrvgreg/thriving-filter-v1",
         token: Optional[str] = None,
         device: Optional[str] = None,
-        use_prefilter: bool = True,
+        use_prefilter: bool = False,
         torch_dtype=None,
     ):
         """

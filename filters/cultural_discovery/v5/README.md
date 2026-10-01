@@ -41,7 +41,7 @@
 |---|---|---|
 | `config.yaml` | ✅ | Dimensions, weights, gatekeeper |
 | `prompt-compressed.md` | ✅ | Oracle prompt (latest with F-K tightenings + A-E split) |
-| `prefilter.py` | ✅ | Rule-based prefilter (inherits v4 unchanged — F-K is LLM-level) |
+| `prefilter.py` | ❌ | Deleted 2026-10-01 with every per-lens prefilter (decision 0, NexusMind#284); it never ran in production |
 | `STATUS.md` | ✅ | Phase-by-phase tracker — read this for current state |
 | `DEEP_ROOTS.md` | ✅ | Philosophical/scientific grounding (Pinker/Rosling, trajectory principle) |
 | `calibration_report.md` | 🟡 draft | Phase 3 formal artifact — fills in as multi-oracle data lands |

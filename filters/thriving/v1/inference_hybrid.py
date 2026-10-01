@@ -50,7 +50,7 @@ class ThrivingHybridScorer(HybridScorer):
         probe_path: Optional[Path] = None,
         threshold: float = DEFAULT_THRESHOLD,
         device: Optional[str] = None,
-        use_prefilter: bool = True,
+        use_prefilter: bool = False,
     ):
         """
         Initialize the hybrid thriving scorer.
@@ -60,7 +60,7 @@ class ThrivingHybridScorer(HybridScorer):
             probe_path: Path to Stage 1 probe file (default: ./probe/embedding_probe_e5small.pkl)
             threshold: Stage 1 threshold (articles below skip Stage 2)
             device: Device to use ('cuda', 'cpu', or None for auto)
-            use_prefilter: Whether to apply rule-based prefilter
+            use_prefilter: must be False (per-lens prefilters deleted 2026-10-01, NexusMind#284)
         """
         self._model_path = model_path
         self._probe_path = probe_path or (
@@ -73,8 +73,8 @@ class ThrivingHybridScorer(HybridScorer):
     def _create_stage2_scorer(self):
         """Create the existing ThrivingScorer as Stage 2.
 
-        Prefilter is disabled: HybridScorer handles prefiltering itself,
-        so Stage 2 doesn't need to load or run the prefilter again.
+        Built with use_prefilter=False, the only value accepted since the per-lens
+        prefilters were deleted (NexusMind#284, decision 0, 2026-10-01).
         """
         return ThrivingScorer(
             model_path=self._model_path,
@@ -105,7 +105,7 @@ def main():
         "--output", "-o", type=Path, help="Output JSONL file for results"
     )
     parser.add_argument(
-        "--no-prefilter", action="store_true", help="Skip prefilter"
+        "--no-prefilter", action="store_true", help="No effect: per-lens prefilters were deleted (NexusMind#284, decision 0); kept so old invocations still parse"
     )
     parser.add_argument(
         "--batch-size", type=int, default=16, help="Batch size for inference"
@@ -120,7 +120,7 @@ def main():
     print("Initializing hybrid scorer...")
     scorer = ThrivingHybridScorer(
         threshold=args.threshold,
-        use_prefilter=not args.no_prefilter,
+        use_prefilter=False,
     )
 
     if args.input:

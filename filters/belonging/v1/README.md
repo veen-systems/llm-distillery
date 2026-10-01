@@ -148,7 +148,6 @@ filters/belonging/v1/
 ├── DEEP_ROOTS.md                # Philosophical grounding
 ├── config.yaml                  # Dimensions, weights, gatekeeper
 ├── prompt-compressed.md         # Oracle prompt
-├── prefilter.py                 # Rule-based filter
 ├── base_scorer.py               # Scoring logic
 ├── inference.py                 # Local inference
 ├── inference_hub.py             # Hub inference

@@ -58,7 +58,9 @@ def load_filter_package(filter_path: Path) -> Tuple[Optional[object], Path, Dict
 
     A filter package follows the structure:
         filters/<name>/v<N>/
-        ├── prefilter.py      # Optional: PreFilter class for early filtering
+        ├── prefilter.py      # Legacy, ai-engineering-practice only: the ovr per-lens
+        │                     #   prefilters were deleted 2026-10-01 (NexusMind#284,
+        │                     #   decision 0); tests/unit/test_no_per_lens_prefilters.py
         ├── prompt.md         # Required: LLM prompt template
         ├── prompt-compressed.md  # Optional: Compressed version (preferred)
         └── config.yaml       # Optional: Filter configuration
@@ -156,12 +158,10 @@ def make_oracle_prefilter(prefilter_obj):
     2026-08-13, NM#284). It used to: this returned `None` when there was no
     prefilter object, and the consumer reads `if pre_filter and not
     pre_filter(article)` — so a package without a `prefilter.py` was labelled
-    with **no length floor at all**, silently. That was harmless only because
-    every deployed package happened to ship one. With the per-lens rule
-    prefilters being deleted (they have never run in production since
-    2026-02-10), that assumption is about to stop holding for every filter at
-    once, which would have removed the #93 floor as a side effect of deleting
-    something unrelated to it.
+    with **no length floor at all**, silently. The per-lens rule prefilters
+    were deleted 2026-10-01 (decision 0; they never ran in production after
+    2026-02-10), so every ovr package now takes the `prefilter_obj is None`
+    branch below and this floor is the whole oracle-path gate.
 
     `check_content_length` is a `@staticmethod` on `BasePreFilter`, so the floor
     needs no instance and nothing had to move to keep it.
@@ -186,13 +186,10 @@ def make_oracle_prefilter(prefilter_obj):
         if not check_length(article)[0]:
             return False
         if prefilter_obj is None:
-            # ⚠️ AS OF 2026-08-13 THIS BRANCH DOES NOT FIRE IN PRACTICE: every
-            # live filter package still ships a prefilter.py, so prefilter_obj
-            # is never None. It is a PREREQUISITE for the NM#284 deletion, not
-            # a live path — and an inert mechanism with green tests is this
-            # repo's signature defect, so it is dated rather than left to look
-            # exercised. If that deletion is abandoned, DELETE THIS BRANCH; do
-            # not leave it standing as decoration.
+            # THE LIVE PATH for every ovr package since 2026-10-01, when the
+            # per-lens prefilters were deleted (NexusMind#284, decision 0).
+            # Before that it never fired. Outcome measured on the day through
+            # this loader: docs/evidence/2026-10-01-decision-0-prefilter-deletion/.
             #
             # `apply_filter` opens with validate_article, so with no prefilter
             # object that check would vanish along with the lens rules — the

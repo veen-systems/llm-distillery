@@ -5,7 +5,7 @@ Renamed from uplifting (ADR-012: lens-aligned naming).
 Dimension change: removed social_cohesion_impact (overlaps with Belonging).
 
 Inherits all shared logic from FilterBaseScorer.
-Defines filter-specific constants and prefilter loading.
+Defines filter-specific constants.
 """
 
 from filters.common.filter_base_scorer import FilterBaseScorer
@@ -49,5 +49,13 @@ class BaseThrivingScorer(FilterBaseScorer):
     GATEKEEPER_CAP = 3.0
 
     def _load_prefilter(self):
-        from filters.thriving.v1.prefilter import ThrivingPreFilterV1
-        self.prefilter = ThrivingPreFilterV1()
+        """Per-lens prefilters were deleted 2026-10-01 (NexusMind#284, decision 0).
+
+        Defined here even though FilterBaseScorer now raises the same way: an
+        older FilterBaseScorer copy (NexusMind's, until it syncs) declares this
+        an @abstractmethod, and a package without it would fail to construct
+        there, so no filter would score.
+        """
+        raise NotImplementedError(
+            "per-lens prefilters were deleted (NexusMind#284, decision 0)"
+        )

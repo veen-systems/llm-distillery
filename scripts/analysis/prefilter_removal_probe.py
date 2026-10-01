@@ -13,9 +13,25 @@ import json, glob, os, sys, re
 from collections import Counter, defaultdict
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from filters.uplifting.v7.prefilter import UpliftingPreFilterV7
 
-P = UpliftingPreFilterV7()
+
+class _DeletedPrefilter:
+    """The instrument this probe measured no longer exists.
+
+    `filters/uplifting/v7/prefilter.py` was deleted 2026-10-01 (NexusMind#284,
+    decision 0). `script_of` below is still imported as the census's non-Latin
+    instrument, so the module must stay importable; any use of the prefilter
+    itself refuses instead of measuring nothing.
+    """
+
+    def __getattr__(self, name):
+        raise SystemExit(
+            "uplifting v7 prefilter.py was deleted 2026-10-01 (NexusMind#284, decision 0). "
+            "To re-run this probe, check out fe6c018 in a scratch worktree."
+        )
+
+
+P = _DeletedPrefilter()
 
 
 def diagnose(article):
