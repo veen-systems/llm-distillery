@@ -1,6 +1,6 @@
 # LLM Distillery - TODO
 
-## ▶️ START HERE — the ordered queue, as of 2026-09-29 (close)
+## ▶️ START HERE — the ordered queue, as of 2026-10-01 (close)
 
 *A bare "continue" means this list, top down. Each line names the FIRST action. The previous block
 (2026-09-28 close) moved VERBATIM to `docs/TODO-archive.md` § *Moved 2026-09-29 — the START HERE block of

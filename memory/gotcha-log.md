@@ -4,6 +4,11 @@
 
 *⚠️ **Entries dated before 2026-09-17 live in [`archive/gotcha-log-archive.md`](archive/gotcha-log-archive.md)**, verbatim (the 09-01 → 09-16 ones moved 2026-09-27 by an owner-approved MID-MONTH pass, `--before 2026-09-17`; earlier ones moved 2026-09-24; into `archive/` 2026-09-26 so curate's size measurement stops counting it, #163; the month-dated Feb–May entries followed on 2026-09-26). Next pass: `python3 scripts/maintenance/retire_memory.py gotcha --before <first of this month> --apply` (dry run without `--apply`). It retires top-level entries only; the `###` entries inside the catalogue are kept by rule and counted. The unreachable-mechanism catalogue stayed here. For a recurrence match, grep both: `grep -n <term> memory/gotcha-log*.md`.*
 
+## TURNING A NO-OP INTO A RAISE IN SHARED CODE BREAKS EVERY CONSUMER STILL ON THE OLD DEFAULT — and the rule I broke at the end of the same session (2026-10-01)
+**Problem**: Decision 0 made `use_prefilter=True` raise in `FilterBaseScorer` (the right call: a silent no-op is the NM#284 shape). Green suite, outcome proven. Review then found three callers still passing `True` (one inside `except: pytest.skip`, which would have hidden the raise as a skip forever), ~12 docs still describing prefilters in the present tense, and a cross-repo trap: NexusMind's package copies default `use_prefilter=True`, so syncing `filters/common` ALONE makes every un-redeployed package raise off the GPU path. At session close I ran `git add -A memory/`, which the working rules forbid even when scoped.
+**Root cause**: I grepped for callers of the deleted MODULE, not for callers of the changed VALUE. A deletion changes two surfaces: who imports it, and who passes the argument whose meaning changed. The `add -A` was speed at the end of a long session; checked after the fact (25 files, all mine) rather than prevented.
+**Fix**: `test_no_caller_asks_for_use_prefilter_true` (AST, `live` in § Mechanized; it went red on the real missed caller). Sync sequence recorded in `docs/TODO.md` item 1 and sent to NexusMind. **Lesson: when a value changes meaning, enumerate callers of the VALUE across BOTH repos, and when shared code tightens a default, list who still runs the old default before shipping.**
+
 ## [Short description] (YYYY-MM-DD)
 **Problem**: What went wrong or was confusing.
 **Root cause**: Why it happened.
