@@ -71,10 +71,10 @@
    - ✅ **Harm caps (`H-HD17`) RULED 2026-10-01 (owner):** hand-check marked (belonging 35/50 junk, v9 4/19;
      title-only, Claude's calls accepted). **belonging: SHADOW cap first, threshold later on real cycles;
      human_thriving v9: no cap.** ▶ Next: the shadow stamp is a NexusMind change (ADR-022 drop point, OFF).
-   - **Cloud billing**: did the ≥ $6.89 of pilot cost (pilot 3 unread) draw on the $100 credit or the subscription? (claude.ai billing page.)
+   - ✅ **Cloud billing — DROPPED 2026-10-01 (owner):** owner believes the ≥ $6.89 came from the $100 credit; **not verified**, and not worth chasing while cloud pilots are stopped.
    - **#156 adverse pool (~$3.2–3.6) — RULED 2026-10-01 (owner): DEFER until the harm hand-check above is
      marked.** *(Gloss: the pool measures what the detector MISSES, which only matters if a cap goes in.)*
-   - Standing: H-TV5 (Thriving fullness under v9).
+   - Standing: H-TV5 (Thriving fullness under v9) — **owner 2026-10-01: tab "seems all right"** (day 5 of the ~10-day v7 drain, so v7 articles still fill it); one last look ~2026-10-06, then close.
 
 4. **Small, ours:** `cultural_discovery v5` `normalization.json` `raw_min` **4.0006** vs `TIER_THRESHOLDS`
    **4.0** — breaks the must-equal rule. Read `tests/unit/test_normalization_op_point.py` to see why it
@@ -461,7 +461,6 @@ queue is ▶ START HERE, not this list. Close or delete a line once checked agai
 - [ ] **Check the Zimbabwe funeral row against the obituary gate** (enforcement is
 
 **From:** 2026-08-07 (late) — coverage pass, a refuted plan, one instrument shipped
-- [ ] **Owner call**: does `ducroq/augmented-engineering` (34 open, **1 closed
 
 **From:** 2026-08-06 evening — four owner decisions taken, three backlogs closed
 

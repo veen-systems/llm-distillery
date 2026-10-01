@@ -7140,3 +7140,8 @@ read-surface steps −1.1–4) moved VERBATIM to `docs/TODO-archive.md` § *Move
   - **Closed 2026-10-01:** moot: nothing left to shadow after the 2026-10-01 deletion (decision 0).
 - [ ] ⚠️ **SUPERSEDED PENDING DECISION 0 (2026-08-12) — do not act on this.** The top-block recommendation is to **DELETE** the per-lens prefilters rather than flip enforcement on, because enabling them would ship #99's English-only `DISCOVERY_PATTERNS` back door (still live in v5) into production for the first time. Resolve decision 0 before touching this line. ~~**NM#284 stage 3 — per-filter enforcement flip**, once a few cycles of shadow data exist.~~ cd is the only filter whose observed rate currently matches its declared one, and it is also the one LD#86 needs. Op-point / normalization re-derivation for affected filters is downstream of the flip (gates #87).
   - **Closed 2026-10-01:** DECIDED: decision 0 = DELETE (owner 2026-09-28), executed 2026-10-01; enforcement will never be flipped.
+
+## Moved 2026-10-01 — parked by the owner
+
+- [ ] **Owner call**: does `ducroq/augmented-engineering` (34 open, **1 closed
+  - **Closed 2026-10-01:** the line was already truncated in TODO.md; owner has parked augmented-engineering — leave it.
