@@ -58,8 +58,9 @@
      does not edit it; its findings are counted, not fixed. **(c)** ADR templates KEEP the code span +
      placeholder form PR #168 left. *(Gloss, not ruled: the archive therefore never goes to 0 under
      `--docs-live`, so promotion to the default set must exclude it or count it separately.)*
-   - **Harm caps (`H-HD17`)**: hand-check list is pulled —
-     `docs/evidence/2026-09-28-per-lens-harm-rates/harm_handcheck_list.tsv`; owner marks `junk`/`fits`.
+   - ✅ **Harm caps (`H-HD17`) RULED 2026-10-01 (owner):** hand-check marked (belonging 35/50 junk, v9 4/19;
+     title-only, Claude's calls accepted). **belonging: SHADOW cap first, threshold later on real cycles;
+     human_thriving v9: no cap.** ▶ Next: the shadow stamp is a NexusMind change (ADR-022 drop point, OFF).
    - **Cloud billing**: did the ≥ $6.89 of pilot cost (pilot 3 unread) draw on the $100 credit or the subscription? (claude.ai billing page.)
    - **#156 adverse pool (~$3.2–3.6) — RULED 2026-10-01 (owner): DEFER until the harm hand-check above is
      marked.** *(Gloss: the pool measures what the detector MISSES, which only matters if a cap goes in.)*
