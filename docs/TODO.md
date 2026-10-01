@@ -4,7 +4,7 @@
 
 *A bare "continue" means this list, top down. Each line names the FIRST action. The previous block
 (2026-09-28 close) moved VERBATIM to `docs/TODO-archive.md` § *Moved 2026-09-29 — the START HERE block of
-2026-09-28 (close)*. Session record: `memory/archive/project_session_2026_09_29_cloud_pilots.md`.*
+2026-09-28 (close)*. Session record: `memory/project_session_2026_10_01_decision0.md` (previous: `memory/archive/project_session_2026_09_29_cloud_pilots.md`).*
 
 0. ▶ **BELONGING v2, built to the #130 ruling ("cohesion holding or growing") — owner agreed 2026-10-01.** Why:
    the #130 ruling, the `H-HD17` hand-check (35/50 harm-flagged rows junk) and ovr EXP-025 (Belonging lowest,
