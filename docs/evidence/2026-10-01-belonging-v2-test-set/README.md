@@ -163,3 +163,32 @@ gatekeeper as v1. The prompt adds STEP 1b, the cohesion test.
   pit. The next mechanism has to be arithmetic in CODE, not another rule in the prompt.
 - **Cost: not measured** (no token log). There were 7 oracle runs of 99–150 rows (839 scorings). At the
   ~$0.0035/row pre-run estimate, that is roughly $3.
+
+## Result: two oracle probes on the 49 read passers (2026-10-01, owner-approved)
+
+**Probe set:** the 33 `junk` and 16 `fits` rows among the v2-draft2 held-out passers
+(`v2_draft2_prod_passers_read.tsv`). These are Claude's verdicts, and the owner has not reviewed them.
+Script: `probe_eval.py`.
+
+| probe | junk still >= 4.0 | fits >= 4.0 |
+|---|---|---|
+| v2 draft 2, Flash (the baseline: every row passed) | 33/33 | 16/16 |
+| **A**: Flash + a dedicated `cohesion_shown` quote question + a code cap (cf <= 2.5 on "no") | **30/33** | 16/16 |
+| **B**: Gemini 2.5 Pro (thinking budget 1024), v2 prompt unchanged | **15/33** | 15/16 (the loss is at 3.95) |
+
+**A fails.** Flash answers "yes, cohesion shown" for 31 of 33 junk rows, so the code cap fires twice.
+- The problem is the oracle's judgement, not its arithmetic.
+- Its quotes are literal readings of the ruling: a close-knit research crew, fans raising money together, a
+  crowd welcoming a ship home.
+- The prompt variant is in `probeA_quote_question_prompt.md`. Two exclusions taken from these very rows were
+  REMOVED before the run, so the probe tests the mechanism only.
+
+**B halves the junk and does not clean it.** Pro still passes: a school-kit donation, a governor's
+ceremony, an academic study, a pet-blessing listing, a press conference it tags `official_event` itself.
+
+**The yardstick is in question.** Many "junk" verdicts apply a stricter test than the ruling's words: a
+community's own lasting bonds as the SUBJECT, not a prosocial event or act. If the owner rules that
+stricter test in, the prompt can say so. If the owner does not, a large part of the "junk" is on-lens.
+
+Google returned 121 `503 UNAVAILABLE` on the Pro run; the scorer's retries recovered all 49 rows.
+**Cost: not measured** (no token log).

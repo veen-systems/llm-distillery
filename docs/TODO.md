@@ -29,7 +29,12 @@
      my reading (animals, donations, ceremonies, essays).
    - The oracle ignores the prompt's 2.5 cap (its own `official_event` tag still passes).
    ▶ **Owner decision:** how to make the cap arithmetic instead of advisory (code-side, at label time).
-   Options are in the session report. No relabel until the passer list is clean. Open: 9 rows are under the
+   Options are in the session report. No relabel until the passer list is clean.
+   ✅ **Probes run 2026-10-01** (README § *two oracle probes*): a code cap does not help (Flash judges
+   31/33 junk as cohesion); Gemini Pro passes 15/33 junk vs Flash's 33/33.
+   ▶ **Owner decision FIRST: the definition.** Does a prosocial event or act count as belonging (a
+   donation, a crowd welcoming a ship, a crew working well together), or only a community's own lasting
+   bonds as the subject? That ruling sets the yardstick; oracle choice (Pro costs more) comes after. Open: 9 rows are under the
    300-char floor (2 of them P), and the recall side is thin (8 scorable P rows). Add P rows first.
 
 0b. ▶ **THE MIGRATION (NexusMind#395) — the owner's focus since 2026-09-29.** gpu-server (HCL) went offline
