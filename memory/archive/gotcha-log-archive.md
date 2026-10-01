@@ -6064,3 +6064,627 @@ orders across five seeds** and the point estimate reversed.
 the gate passes, the number is reproducible on the same seed forever. Nothing distinguishes "this
 model is better" from "this seed was luckier" without deliberately varying it.
 
+
+## THE LOSSLESS CHECK ITSELF LIED UNTIL `LC_ALL=C` — `comm` under a UTF-8 locale (2026-09-29)
+**Problem**: The first verbatim-retirement check (`comm -23 <(sort before) <(sort after+dest)`) printed "missing 570" — and the mutation arm ALSO printed 570, with `comm: file 1 is not in sorted order` on stderr. Both arms agreeing is the instrument signal, not a result.
+**Root cause**: `sort` and `comm` collate differently under a UTF-8 locale on lines with `⛔`/`—`/`→`, so `comm` sees unsorted input and its output is meaningless. The TODO's method line said `sort | comm` with no locale.
+**Fix**: `export LC_ALL=C` before both; then missing 0 and the mutation arm fires (3/4/5 lines). Method line in `docs/TODO.md` now says `LC_ALL=C sort | comm`. Any earlier `sort | comm` check run without it should be treated as unverified.
+
+## `--teleport` IS NOT A VIEW, AND A PEER MESSAGE TO ANOTHER PERMISSION MODE EXPIRES (2026-09-29)
+**Problem**: Two "cloud" pilots ran on this machine, in the shared checkout: the owner ran the `Resume with: claude --teleport …` line to watch them. Separately, two `SendMessage`s to such sessions expired unapproved and were never delivered.
+**Root cause**: `--teleport` moves the session local; the `View:` URL is the viewer. A session in a different permission mode holds cross-session messages for its user, who may not be looking.
+**Fix**: Follow cloud runs only via `View:`; detect with `ps -eo pid,etime,args | grep teleport`. Relay to a held session as a FILE the owner pastes (`Read <path> and do what it says`) — no approval step to expire.
+
+## A HEADLINE TALLY WRITTEN FROM THE STORY, NOT COUNTED — "3 of 3" was 2 of 3 (2026-09-29)
+**Problem**: I wrote "3 of 3 pilot PRs carried a defect only local review found" into three files; both close reviewers refuted it — pilot 1's code held (0 blockers), only its PR text had a wrong suite count.
+**Root cause**: The number came from the narrative ("review always found something"), not from enumerating the three records sitting in the same file.
+**Fix**: Corrected to "2 of 3 (the 3rd: a suite count from the local tree)". Rule: a tally in a lesson gets its items listed beside it; if you cannot list them, you have not counted.
+
+## THE EVIDENCE FILE WAS A DIFFERENT SAMPLE FROM THE ONE I DESCRIBED — one seed shared across lenses (2026-09-28)
+**Problem**: For EXP-044 I read 12 flagged titles per lens, wrote "belonging: mixed (Gaza strike, funeral mix-up … Stolperstein)" into the evidence README, then re-ran `harm_titles.py` to SAVE the sample with the lenses in a different order. `random.seed(0)` is set once, so every lens drew different rows: the committed file had none of the titles the README cited, and the Stolperstein row sat under uplifting. The adversarial review lens caught it; the claims-vs-evidence lens (and I) had not.
+**Root cause**: A sample whose draw depends on argument order is not reproducible by "the same command", and I wrote the prose from the first run while committing the second — the verified artifact was not the shipped one.
+**Fix**: Prose rewritten from the committed file (belonging now reads *mostly harm-dominated*), with a dated correction. Rule: **save the output you read, in the same run; never re-run to save.** Seed per stratum (`random.Random(lens)`), never one global seed across strata. Recurs *the verified artifact is the shipped one*.
+
+## I RECOMMENDED A CAP FROM THE PLAN'S WRITTEN METHOD WITHOUT CHECKING ITS PREMISE — the lens had switched two days earlier (2026-09-28)
+**Problem**: TODO item 1 ended "Then, and only then, a cap on `uplifting v7`", and I recommended exactly that to the owner. Thriving had read `human_thriving v9` since 2026-09-26 (ovr.news#373), so a scoring-time cap on v7 changes nothing a reader sees. The owner's "why a cap?" surfaced it. `CLAUDE.md`'s filter table still said "Thriving still reads `uplifting v7`; cutover #151 undecided" — stale by two days, and on the always-loaded path.
+**Root cause**: A written method is a claim about the world as of when it was written (*a marker is a claim*); its last step inherits every premise the preceding days may have changed. The stale always-loaded row agreed with the stale plan, so nothing disagreed.
+**Fix**: Before recommending the action a plan ends in, name the premise it rests on (here: "v7 is what readers see") and check it against the newest record (the session file, the merged PR). `CLAUDE.md` and `memory/ovr-lens-set-current.md` corrected. Recurs *a marker is a claim* / *a precedent is a mechanism claim*.
+
+## DATED ENTRIES NESTED UNDER THE TEMPLATE HEADING ESCAPE RETIREMENT (2026-09-28)
+**Problem**: Five `### ` entries dated 2026-09-10 (~12 KB) sit under `## [Short description] (YYYY-MM-DD)`, the template heading that `retire_memory.py`'s `KEEP_HEADINGS` always keeps — while the file header says entries before 2026-09-17 live in the archive. The 2026-10-01 retire would leave them behind silently.
+**Root cause**: Entries were appended under the template instead of as top-level `## ` entries; the keep-list matches the heading, not the content's date.
+**Fix**: NOT yet applied (session close). Next session, before the 10-01 retire: move those entries out from under the template (as top-level entries, verbatim bodies), and make `retire_memory.py` report dated entries found under a KEEP heading instead of keeping them silently.
+
+## A NEGATIVE FROM AN INSTRUMENT THAT SILENTLY DROPPED PART OF ITS POPULATION — twice in one change (2026-09-27, evening)
+**Problem**: Retiring obituary v3/v4 + commerce v2, I grepped for text still saying they ship, naming `scripts/deployment/deploy_to_nexusmind.sh` — a path that does not exist (the script is `scripts/deploy_to_nexusmind.sh`). `ugrep` printed a stderr warning and the other files' (zero) hits; I read the silence as clean. Review found three stale "v3/v4 still ship" comments, two in that very script (`5590f88`). Minutes later a dry run said "THE FILES WERE STILL COPIED" and `git status` was clean — but the retired pickles are gitignored in NexusMind, so `git status` could not have shown a re-added one.
+**Root cause**: both instruments exclude part of the population without failing: grep over a missing operand exits on the other operands; git's view excludes ignored files. Same class as the `ls-files`-as-"committed" entry below.
+**Fix**: for grep, list operands with `ls` first or grep the directory, and run a control pattern that must hit in the SAME file; for "did a copy re-create X", check the disk (`ls -d`), then run the control (the check removed → the dirs reappeared). Both done in-session for the second case; the first was caught by review, not by me.
+
+## THREE REVIEW ROUNDS EACH FOUND ANOTHER SITE OF ONE SYMLINK-ESCAPE CLASS (2026-09-27)
+**Problem**: ADR-024 step 3's `place()` got a symlink containment fix in round 1 (a dir symlink under the package); round 2 found the `.deploy-tmp` temp file bypassing it; round 3 found the package dir ITSELF being a symlink (`tpkg.resolve()` was already outside, so every check passed). Each fix was tested and mutation-killed, and each was still the wrong SCOPE.
+**Root cause**: I fixed the site the reviewer named, not the class. The class's sites are every path operation (open, copy, replace, unlink, mkdir) times every component from the trusted root down; I never listed them.
+**Fix**: containment measured against `target_common.resolve() / package`, never the resolved target; every write removes a symlink at its temp and dest names first; a symlinked package/detector dir places nothing (`44b703d`). ⭐ **When a review finds one site of a class, enumerate the class's sites BY OPERATION and BY PATH COMPONENT before fixing the first one** — the round cap (3) was spent learning the list one site at a time.
+
+## "MUST BE COMMITTED" CHECKED WITH `git ls-files`, WHICH PASSES A STAGED-ONLY FILE — IN THE CODE AND IN ITS TEST (2026-09-27)
+**Problem**: `deploy_detectors.stage` refused an "untracked" git-origin file via `git ls-files --error-unmatch`; the ten new sidecars were staged, not committed, and passed. The real-tree test used the same idiom, so it was green in the same state. Found by 3 of 6 review lenses.
+**Root cause**: `ls-files` answers "is it in the INDEX", not "is it in HEAD". The helper also computed a HEAD-clean flag and the caller discarded it. Test and code shared the instrument, so the checker and the checked were one object.
+**Fix**: `_committed()` = `git cat-file -e HEAD:<rel>` + `git diff --quiet HEAD`; the real-tree test reads `git show HEAD:<rel>` and went red until the commit (`6c16056`). Mechanized row `check_committed_idiom.py` proposed.
+
+## A PR BODY'S "BEFORE" CLAIM WAS MEASURED ON A CLONE OF THE WRONG BRANCH (2026-09-27)
+**Problem**: NexusMind PR #550's body said `main` "passes the other two" detectors. That was measured on clones of a local checkout that sat on a feature branch, not on `main`; on a clean `main` commerce reports MISSING (its model file is gitignored there). Caught by re-measuring on a `git worktree` of `origin/main` before messaging the peer, and corrected with `gh pr edit`.
+**Root cause**: a local clone inherits the source checkout's HEAD, not the remote default branch — the same trap as the sibling-checkout entry below, arriving through `git clone ../NexusMind`.
+**Fix**: a PR's "before" is measured on the PR's own BASE commit (`git worktree add <dir> origin/main`), named by sha in the body. Clone from the remote URL, never from a sibling path.
+
+## I NAMED FOUR HUB REPOS BY DERIVING FROM FOLDER NAMES THAT SHARE NO PATTERN (2026-09-27)
+**Problem**: `harm-detector`, `obituary-detector`, `violence-promotion`, `commerce-prefilter`. The owner asked why they
+were not harmonized. Two repos had to be renamed after upload.
+**Root cause**: `name.replace('_', '-')` copies whatever inconsistency the source names carry. A name that outsiders
+will see (a Hub repo, a URL, a package) is a DECISION, and I made it with a string transform.
+**Fix**: an explicit `REPO_NAMES` table (`scripts/deployment/upload_detector_to_hub.py`); an unnamed detector raises
+`KeyError` rather than getting an invented name. ⭐ **Before creating anything public-facing and named, propose the
+convention to the owner in one line.** A Hub rename keeps revisions, so it was cheap this time.
+
+## A LOCAL SIBLING CHECKOUT IS NOT "WHAT PRODUCTION SERVES" — IT WAS ON ANOTHER SESSION'S FEATURE BRANCH (2026-09-27) [x2: 2026-09-27 afternoon — `../NexusMind` was on `chore/resolve-0904-unmerge`, then `research/gt2-harness-freeze`, both with WIP; applied this time: every deploy proof ran on a fresh clone, the real deploy went in as NexusMind PR #550]
+**Problem**: the ADR-024 backfill needed the bytes production serves. `../NexusMind` was checked out on
+`fix/integration-inference-tests`, another session's branch.
+**Root cause**: a sibling repo on the workstation belongs to whichever session last switched it.
+**Fix**: hash on the serving host (`sadalsuud:~/local_dev/NexusMind`, `git status -sb` = `main`), and cross-check the
+other copies (gpu-server, workstation) with `verify --strict`. Record `served_commit` in the artifact. The bytes
+happened to match, and that was luck, not the method. Related: `shlex.quote("~/x")` produces a literal `~` directory
+over ssh (`remote_path()` fixes it).
+
+## THE GUARD'S TESTS PROVED THE PREDICATE, NOT THE WIRING — AND A PLANNED TRIM LOST CLAUSES ANYWAY (2026-09-27)
+**Problem**: Four slips in one session, each caught by a review lens or by the owner, none by my own checks.
+1. **`054a0a3`'s sidecar guard** was committed with "5 mutants of the fixes all caught". Round 2 then found **4 surviving mutants that disable it**: CLI exit forced to 0, arguments swapped in Python or in the `.sh`, `exit 1` dropped. Every test called the predicate. The only `.sh` test was a text search for `--check-sidecars`.
+2. **`memory/MEMORY.md` thinning**, the day after the 09-26 trim entry below and with a clause-loss lens planned in advance, still lost 2 operative clauses (H-DET6 non-Latin refutation, "do not infer the session from its name"), narrowed a trigger ("threshold or op-point" → "op-point"), and wrote a wrong NM#310 expansion.
+3. **The adj4p write-up** stated "positives alone buy volume" as a finding and "would LOSE under the owner-ruled bar", although that bar was adj4's and adj4p had none. Both were glosses the pre-registered rule did not license.
+4. **To the owner I said "stop the v10 line"**, a label I coined (they had to ask what it meant). I also said the Venezuela story "appears 5 times": that count came from a date-filtered subset, and the full count was 7.
+**Root cause**: (1) The mutants I chose were mutants of the predicate, the part I had just written, not of the path the operator runs. (2) Knowing the failure mode does not stop a rewrite from paraphrasing a clause away; the lens caught it, my eyes did not. (3) and (4): a sentence that feels like a summary gets written as a result.
+**Fix**: (1) A CLI exit-code test plus an end-to-end test that runs the real `deploy_to_nexusmind.sh` against throwaway git repos with a presence control (`675c101`); 7 of 7 wiring mutants caught. ⭐ **For any guard, one mutant must break the CALL SITE, not the function.** (2) Restored from the lens report. Keep running a clause-loss lens on every index rewrite: it is the check, not a courtesy. (3) Relabelled as *gloss* in the README, EXP-043 and the ledger; EXP-043 `decision` changed from `rejected` to `parked`. (4) Say the thing, not a label; count from the unfiltered population.
+
+## I COPIED THE PRECEDENT SCRIPT THAT HAD ALREADY FAILED, AND v10 CALIBRATION FAILED THE SAME WAY (2026-09-26/27) [*a precedent is a mechanism claim*, recurred]
+**Problem**: For v10 I copied b650's `logs/adj_post_20260925.sh`. It staged the model under `staging/`, and `fit_calibration.py` refused it ("Expected 'filters' in path"), after 51 minutes of training. The 09-25 run had hit exactly this and fixed it in `adj_post2_20260925.sh`, which sat in the same directory.
+**Root cause**: I picked the precedent by NAME (the first `adj_post*` I found), not by which one had produced the results I was reproducing. A directory holding `x.sh` and `x2.sh` means the first one failed.
+**Fix**: Re-ran only the post-training step, staged under `filters/human_thriving/v8_adj4`. ⛔ **When reusing a run script, take the one whose output the evidence cites (read the log it wrote), and when there are `name` and `name2`, read both first.**
+
+## I STOPPED AT A CREDENTIAL ERROR INSTEAD OF ASKING THE PEER SESSION THAT HAD ACCESS (2026-09-26)
+**Problem**: `ovr.news/scripts/flag-evidence.ts` failed with Cloudflare "Authentication error" here, and I told the owner to run `wrangler login`. Owner: *"what? you always were able to do that. ask the ovr.news peer session"*. The peer ran it at once.
+**Root cause**: I treated my own failed call as the system's limit. A peer session on the same machine, working in that repo daily, was listed by `ListAgents` and had already done cross-repo work with me that day.
+**Fix**: ⛔ **Before handing the owner an interactive step, ask the session that owns the repo whether it can do it.**
+
+## I RELAYED THE OWNER'S QUESTION AS A CLAIM, AND ASSERTED A FACT I HAD NOT CHECKED (2026-09-26) [*relay marks its gloss*, recurred]
+**Problem**: Two in one handoff to ovr.news. (1) The owner asked "i think that is working?" and I wrote to the peer "The owner thinks it's working"; the peer rightly refused to treat it as merge approval. (2) I told the peer that v7 and v9 dimension names DIFFER, and they are identical; the peer measured it.
+**Root cause**: (1) a question paraphrased into a ruling; (2) an inference from "different filter, different prompt" written as fact.
+**Fix**: Quote the owner verbatim in a relay. Label every fact in a handoff measured or guessed, the same rule chat replies follow.
+
+## AN UNANCHORED `archive/` IN THE SCRATCH BLOCK HAD BEEN SWALLOWING `memory/archive/` — AND MY FIRST FIX NEGATED THE INSTANCE AGAIN (2026-09-26) [4th of the `*_test.*` class]
+**Problem**: Six session files recovered into `memory/archive/` by `/audit-context` did not appear in `git status` at all. `.gitignore`'s "Temporary files" block (`a1a0768`, 2025-11-15) carried a bare `archive/`, which matches that name at ANY depth. The 79 tracked files there survived only because `retire_memory.py` moves them with `git mv`, and a tracked file stays tracked inside an ignored directory. So the defect was invisible to every tracked-file count, and Step 7's `git ls-files` pass had nothing to see.
+**Root cause**: a scratch PATTERN written as if it were a PATH. That is the `*_test.*` mechanism for the fourth time, and my first fix, `!memory/archive/`, was the 2026-09-05 entry's own named mistake: it rescued one instance while the framework prescribes `docs/work-items/archive/`, which the pattern would eat too.
+**Fix**: root-anchored `/archive/`, `/tmp/` and `/temp/`, with the negation removed. Verified both ways with `git check-ignore`: nested `memory/archive/`, `docs/work-items/archive/` and `filters/a/tmp/` are trackable; root `archive/`, `tmp/` and `temp/` are still ignored. Zero files changed ignore state (`git status --porcelain --ignored` showed none under those names). ⭐ **Anchoring makes the failure LOUD** (a nested scratch dir shows as untracked) where negation leaves every other instance SILENT. ⛔ The unanchored scratch patterns still in that block (`*_test.*`, `*_backup.*`, …) are the same hazard; an audit of that block is not done.
+
+## MUTATION-TESTED A FILE WITH `git checkout --` TO UNDO THE MUTANT, AND THREW AWAY MY REAL EDIT (2026-09-26)
+**Problem**: To prove `retire_memory.py` fails loudly on the old archive path, I sed-reverted its `ARCHIVE` constant, ran it, and then restored with `git checkout -- <file>`. That restored HEAD, not my working version, so both intended edits vanished. `git diff --stat` printing nothing was the only sign.
+**Root cause**: the mutant's parent was an UNCOMMITTED edit, and `git checkout` knows only commits. An hour earlier in the same session I had done it right for `refcheck.py`: `cp` to the scratchpad, mutate, `cp` back.
+**Fix**: re-applied with count-asserted replacements, and confirmed with `git diff --stat` (2+/2−), a dry run and 18/18 tests. ⛔ **Mutate a working-tree file only from a copy: `cp f $S/f.fixed`, mutate, `cp $S/f.fixed f`.** Never restore with git while the change under test is uncommitted.
+
+## A TRIM THAT KEPT EVERY TOKEN AND LOST FIVE RULES, AND A FIX THAT INTRODUCED THE ROUND'S ONLY BLOCKER (2026-09-26) [x2: 2026-09-27, `memory/MEMORY.md` thinning — see the 09-27 entry]
+**Problem**: Four defects in one `/update-drift` adoption, each passing my own checks and each caught only by a review lens.
+1. **`CLAUDE.md` trim.** My survival check confirmed every dropped backticked span, number and issue id was still in the repo. Five operative CLAUSES were still lost, among them the ADR-015 ban on excluding adjacent-lens content from oracle prompts and "compare filters ONLY on recall + specificity".
+2. **`retire_memory.py`'s "lossless" check** compared two line multisets built from the same blocks, so it was equal by construction and could never fail.
+3. **"This log has 0 `[RESOLVED`."** I grepped `^### ` on a log whose entries are `## `. That is working-rules' 24th occurrence of an instrument that could not say yes.
+4. **The fix for the resurrection-prone ordering** (git mv first, then write the edits) wrote a moved file's edit back to its OLD path. It was round 2's only blocker, and it was introduced by a round-1 fix.
+
+**Root cause**: Each check measured something adjacent to the claim: tokens rather than clauses, blocks against themselves, one heading level rather than the log. A fix is the least-reviewed code in a session (`feedback-articulating-is-not-applying`).
+
+**Fix**:
+- The five clauses were restored.
+- The lossless check now rebuilds both files independently, from the original text by string deletion, and re-reads them after writing.
+- Every defect has a seeded test in `tests/unit/test_retire_memory.py`, with 12 mutants killed across two rounds.
+- The clause-survival check is `proposed` in § Mechanized.
+
+**Rule**: Before calling a trim or move lossless, name the unit the loss would be in (clause, entry, line), and check THAT unit with an instrument built independently of the thing it checks.
+
+**Also**: upstream tagged v1.49.0 mid-triage, and the global skills were reinstalled under me at 11:27. Re-read the remote's tags before bumping a stamp, never the number the triage started with.
+
+## A NOTIFICATION FOR WORK I DID NOT REMEMBER — AND THREE BATCHES THAT WERE NEVER LAUNCHED (2026-09-25)
+**Problem**: Background-task notifications arrived for "NR re-judge" judges while my context held no record of the Nature
+recovery audit, ruling NR-1 or the re-judge. I told the owner twice that the audit had not started. Git showed it had
+(commits at 18:45–19:00), and 3 of its 8 batches (A06/B01/B02) had never been launched, so the run would have waited forever.
+**Root cause**: The session lost its record of an hour of its own work. I answered from context instead of from artifacts.
+**Fix**: When a notification names work you do not remember, read `git log`, the evidence dir and the task outputs FIRST,
+and say the correction plainly. Reconcile "launched" against "expected" by grepping task outputs for each batch's input
+path; a batch with no task was never started.
+
+## A PERCENTILE BOOTSTRAP PRINTED "0 [0, 0]" AND I WROTE "NONE VIA THE PROBE" (2026-09-25)
+**Problem**: The NR miss audit's analyse.py reported 0 missed stories via the probe with interval [0, 0] (0/100 judged),
+and a commit said "none via the probe". Wilson allows up to ~3.7% of 1,487/week, i.e. ~55/week.
+**Root cause**: Resampling a stratum with zero positives always yields zero, so a percentile bootstrap is degenerate there.
+**Fix**: For zero (or all) positive strata, report N × Wilson bounds and say "none OBSERVED". Corrected in both READMEs.
+The claim-shapes `zero-width-interval` check reads JSON artifacts, not printed tables, which is why it did not fire.
+
+## THE OWNER JUDGED MY SUMMARIES, NOT THE ARTICLES (2026-09-25)
+**Problem**: In the band audit's owner check, my one-line gloss of a Nigerian pardon omitted "the use of human parts for
+rituals", and in the next check an excerpt I cut stopped before the pension amount the story turned on. Both flipped
+the owner's call once the full text was shown.
+**Root cause**: A summary is a second instrument between the article and the owner, and it drops the detail that decides.
+**Fix**: Owner checks show a faithful translation of the full opening text (or the whole text when short), never a gloss.
+When a call rests on a detail the excerpt might have cut, show the rest before recording.
+
+## A CLAIM-SHAPE CHECK WHOSE ONLY CALLER RUNS AT SESSION EDGES LET A FAILING COMMIT LAND, AND A WHOLE SESSION LEFT NO RECORD (2026-09-25)
+**Problem**: `f7119a6` (2026-09-24 20:51) added `docs/evidence/2026-09-24-thriving-adjudication-full/merge.py`,
+which reads the 25.1×-design-weighted `labels_v84_merged.jsonl`, prints an agreement rate and
+move counts, and carries no `# design-weights:` line. `check_claim_shapes.py` goes red on exactly
+this, and stayed red for ~13 h through 14 more commits. `/curate` found it. That same 09-24 run
+also wrote no session file and no index row, so the index stopped at 2026-09-22 while $0.78 of
+oracle spend and 553 relabels happened.
+**Root cause**: the check's callers are a `verify:` annotation in `memory/MEMORY.md` and its own
+unit tests. Nothing runs it at COMMIT time (`.githooks/` holds only `commit-msg`). It is the
+"a command with no caller at the moment it matters" shape (see the 2026-09-17 entry *I replaced
+a decaying sentence with a command, and gave the command no caller*). A fast run of small
+commits never reaches a session edge, so neither the check nor the session record fired.
+**Fix**: declared the line in `merge.py` (the output is a per-row relabel; the printed figures are
+sample quantities); 26/26 clean after, red before. The session record was rebuilt from the commits:
+`project_session_2026_09_24_adjudication.md`. **Open, owner's call:** add `check_claim_shapes.py`
+to a pre-commit hook. It has to run on staged `docs/evidence/**.py`, and it was never measured
+for speed.
+
+## A GUARD THAT BORROWS ANOTHER GUARD'S CONSTANT IS MEASURING THE WRONG QUANTITY (2026-09-22)
+
+**Problem**: `fit_normalization.py`'s NexusMind#205 bias check hard-errored on
+`sample_min > MAX_NORMALIZATION_RAW_MIN`. That constant is the **loader's** bound, and the
+loader applies it to `raw_min`. Reusing it for `sample_min` silently turns a **bias** test
+(is the sample's floor far above the op-point?) into a **density** test (did the sample
+happen to reach 4.5?), because the distance it allows is `4.5 - op_point` — a number that
+shrinks to nothing as a filter's op-point approaches 4.5 and goes NEGATIVE above it.
+**Root cause**: the guard measured an ABSOLUTE position where the thing it stands for is a
+RELATIVE distance. Its own comment recorded the premise — *"no false-block possible for any
+real op-point (3.75/4.0)"* — which was true in July 2026 and expired when #102 moved a filter
+to 4.5. ⭐ **The tell nobody looked for: at op-point 4.5 the guard could not be SATISFIED by
+any correct fit.** The population is filtered AT the op-point, so its minimum is always above
+it. A guard with no passing input is not strict; it is broken, and it reads as strict.
+**Fix**: `MAX_SAMPLE_GAP = 0.5`, its own name, tested as `sample_min - anchor`, in the fitter
+and the invariant test together (llm-distillery#154, owner-ruled option 1).
+⛔ **Two things the fix taught that the issue had not:**
+1. **It is NOT "unchanged at the op-points it was written for".** A flat 0.5 is *stricter*
+   below 4.0 (nature_recovery 3.75: 0.75 → 0.5; solutions 2.25: 2.25 → 0.5), identical at
+   4.0, *looser* above it. All three directions are now pinned by tests. **When you replace
+   an absolute bound with a relative one, every op-point moves — enumerate them.**
+2. **Deleting the advisory tier left the opened band SILENT.** The old code errored on every
+   gap at 4.5; the new one admits everything under 0.5 and said nothing. A sample drawn from
+   *enriched* output starts at the enrichment bar (raw 4.794 for v8) — gap 0.294, under the
+   limit, missing 13% of the span, which is #205's literal root cause. Replaced with a
+   span-relative advisory. ⭐ **A loosening's blast radius is the band it opens, not the case
+   it was written for.**
+⚠️ **The proof of the deploy-path branch lived only in a scratch directory** until review
+said so; it is now `tests/unit/test_fit_normalization_guard.py`, running the real CLI.
+
+## THE SAME TAUTOLOGY, TWICE, PAST THREE WARNINGS WRITTEN FOR IT (2026-09-22)
+
+**Problem**: published *"60.0% (1,786/2,976) of v8's surfaced rows clear the normalized 4.0
+enrichment gate"* as a **recomputation that corrected** the retracted 60.4% from 202 rows.
+It corrects nothing. Both are the same identity: the CDF is fitted on those very rows and
+the normalized scale is `10 × CDF`, so *"above normalized 4.0"* is *"above this sample's own
+40th percentile"* — ≈60% by construction for any percentile-normalized filter.
+**Root cause**: ⛔ **a bigger sample felt like a better measurement.** The defect was never
+the sample size; it was that the quantity is not a function of the model. Re-deriving it on
+15× the rows reproduced the tautology at higher confidence.
+⭐⭐ **THE KEEPER: this gotcha log already had the entry, dated 2026-09-08, and two more
+surfaces carried the warning** — `docs/RUNBOOK.md`'s Phase E section and the v8 package's own
+`STATUS.md:149` (*"in-sample and near-tautological … read it as shape, not as a
+measurement"*). **Three written warnings, all in files the task routes you to, and the
+session read none of them before recomputing.** A gotcha entry is not a guard: it fires only
+if someone opens it, and nothing made anyone open it.
+**Fix**: quote the **effective raw bar** (4.794 against op-point 4.50) — the transferable
+quantity — and, for a share, measure on cycles the fit did not see, which is exactly what
+makes `uplifting v7`'s 40%-un-enriched real (82 cycles, 18,041 surfaced, out-of-sample).
+⚠️ The parity argument built on it was the casualty: it set an identity beside a measurement,
+and the agreement to 0.01pp read as corroboration. *`feedback-predict-the-range-first` names
+this tell: "about 60%" was predictable from the gate's definition alone.*
+
+## A TEST THAT PLANTS ITS DEFECTS IN THE REAL TRACKED FILE (2026-09-22)
+
+**Problem**: a `timeout`-killed pytest run left `experiments/registry.jsonl` **corrupted in
+the working tree** — `EXP-001`'s `spend_usd` deleted and its `decision` set to
+`probably-fine`. Five suite failures followed, in a file nothing in the diff touched, and
+they were nearly read as pre-existing breakage.
+**Root cause**: `tests/unit/test_experiment_registry.py:16-26`'s `run_against()` writes its
+fixtures **into the committed registry** and restores in a `finally`. A `finally` does not run
+when the process is killed, so any interrupted or concurrent run leaves planted defects on
+disk — in a tracked data file `CLAUDE.md` routes *"did we ever test X?"* to.
+**Fix**: restored with `git checkout -- experiments/registry.jsonl` (explicit path — a
+parallel session may be live). ⛔ **Not repaired in code**: the test should copy to `tmp_path`.
+⭐ **A test harness that mutates a tracked file is a hand-built population with a fuse on it**
+— and the corruption is indistinguishable from a real regression at the moment you read it.
+
+## A PREDICTION THAT COULD NOT FAIL, AND A SELECTION STEP THAT AMPLIFIED 4e-05 INTO A VERDICT FLIP (2026-09-17)
+
+**Problem**: Two separate ways a pre-registered number carried less than it looked like it did.
+(a) `H-DEV2` predicted *"`solutions v6` flips **at least as often as** the median filter"*. The
+median filter flipped **0** and `solutions v6` flipped **0**, so the prediction passed with no
+possible failing branch — the idea behind it (a lower op-point sits deeper in the score mass) got
+no test at all. (b) In `EXP-039`, arm A reproduced `EXP-037` exactly on **4 of 5 seeds**; the fifth
+changed its verdict count 0 → 1 because a median **4.3e-05** probability difference moved the
+val-picked threshold **0.795 → 0.905**.
+
+**Root cause**: (a) A comparative prediction against a statistic that can land on the floor has no
+failing branch — it is the mirror of `feedback-prove-the-bar-is-reachable`: not an unreachable bar
+but an **unmissable** one. (b) `pick_threshold` is a **selection** step, not a measurement: it picks
+the lowest threshold meeting a constraint, so an arbitrarily small perturbation can select a
+different operating point and move every threshold-mediated number with it.
+
+**Fix**: (a) Predict an **absolute**, or name the value that would refute the prediction, and say so
+in the pre-registration. (b) When a probe's output passes through a selection step, report the
+selected value beside the metric — and do not read a stable metric as evidence of a stable decision:
+in the same run **test recall was identical on all five seeds** across the GPU swap while the
+flagged panel SET moved. Both recorded in `memory/hypothesis-ledger.md` (`H-DEV2`, `H-HD12`).
+
+## A TIER RULE WHOSE WARRANT WAS AN ABSOLUTE NOBODY HAD ENUMERATED — TWICE, IN ONE CHANGE (2026-09-17)
+
+**Problem**: `refcheck.py`'s new `docs/` tier assigned LIVE/FROZEN by directory, warranted
+with *"every frozen entry is dated BY CONSTRUCTION"*. False.
+`docs/decisions/framework-adoption-history.md` is undated, was edited the same day, is
+routed into from `CLAUDE.md` twice, and carries the largest finding count of any single
+frozen file — and the rule declared it *"never to be edited to satisfy this checker"*,
+along with four more pointer targets and every undated index.
+
+**Then the fix did it again.** Rule 3 became *"undated ⇒ live"*, warranted with *"an
+undated file in a dated directory is an index or a running history"*. Also an
+unenumerated absolute: it admitted **13 files of which 10 are frozen accounts** — six
+verbatim copies of other repos' ADRs, two reports for a filter removed 2026-08-03 — worth
+**21 findings, 7.7%** of the live total the promotion decision rests on. Depth-restricting
+it to files sitting *directly* in the frozen directory leaves three, and the one arguable
+member is named in the code.
+
+**Root cause**: the tier is a claim about a POPULATION, and both drafts asserted it
+without enumerating that population. Neither the 17 tests written to guard the tier nor a
+full green suite could see it — a tier defect narrows the scan set, and a narrower scan
+set reports FEWER findings, which reads exactly like a repo that got cleaner.
+
+**Fix**: the rule is three tests, one of them computed from `CLAUDE.md`/`memory/MEMORY.md`
+rather than hand-listed; the residue of each is enumerated in the code beside it; the
+count of files reaching LIVE by override is printed in the report, because rule 2 makes
+the tier a function of mutable text. Guard tests run the checker and read what it did —
+the first pair were source-text greps, and three behaviour-changing mutants survived them.
+
+⭐ **The transferable part is the process, not the rule.** Round 1 of `/review-changes`
+found the first instance; round 2, scoped to the fixes, found the second. Two instances is
+a CLASS, and the round cap's own remedy is a **census, not a third round**. Two ran: every
+absolute about behaviour in the change's prose (3 more defects, all fixed), and every count
+either tool prints against the population it is over (19 surfaces, both defects already
+known). Full record: `docs/decisions/2026-09-17-refcheck-docs-tier.md`.
+
+## I REPLACED A DECAYING SENTENCE WITH A COMMAND, AND GAVE THE COMMAND NO CALLER (2026-09-17)
+
+**Problem**: `CLAUDE.md`'s footer asserted "the FOUR user-global skills were byte-identical to
+the v1.40.0 reference install, 0 differing lines, when enumerated 2026-09-11". Six days later
+upstream had shipped six releases and the installed copies had moved with them. The sentence
+was false and nothing said so. I deleted it and pointed the footer at a new probe,
+`scripts/verification/check_framework_stamp.sh`.
+
+**Root cause**: the probe was invoked by **nothing**. Not `.githooks/` (which holds only
+`commit-msg`), not CI (there is no `.github/`), not any skill. Its unit test is deliberately
+hermetic, so a green suite cannot report drift in `~/.claude/skills`. The claim therefore still
+depended on a human remembering to run a command — **the exact dependency the change was made
+to remove**. Naming the caller would not have helped either: I had not named one.
+
+**Fix**: a `<!-- verify: -->` block in `memory/MEMORY.md` naming the probe, executed by `scripts/verification/run_verify_annotations.py` (this repo's
+implementation of `/curate` Step 0 sub-step 3). Proven in both directions, not read: it reports
+`pass … 4 global skills byte-identical to v1.45.1`, and a seeded `FRAMEWORK=/nope` arm made the
+runner print `CANNOT VERIFY` and exit 1.
+
+⛔ **The generalisable form: replacing a claim with a mechanism is only half the work — the
+mechanism needs a caller, and "it is a command now" is not one.** A command in a document is a
+sentence with a shell prompt in front of it.
+⚠️ **And `/curate`'s own `stampcheck()` is NOT this probe**: three skills, skipping
+`review-changes`, so a green curate says nothing about the fourth. Two probes, similar names,
+different populations. `scripts/verification/check_doc_claims.py:191` defines a third function
+literally called `check_framework_stamp()`, which only asks whether two lines of `CLAUDE.md`
+agree with *each other*.
+
+---
+
+## A TEST THAT PASSED FOR THE WRONG REASON, INSIDE THE TEST WRITTEN TO STOP A HAND-KEPT COUNT (2026-09-17)
+
+**Problem**: round 1 of review found `N_WANT=4` hand-written beside a four-name `WANT` list —
+the shape that reproduces upstream's original false PASS once the two disagree. I derived the
+count and wrote `test_count_is_derived_not_restated` to pin it. Round 2 killed the test: a
+mutant deriving the count from an unrelated literal list (`printf '%s\n' a b c d | wc -l`) left
+**all 17 tests green**.
+
+**Root cause**: the test asserted `"N_WANT=$(printf" in src` — a **spelling check** — and its
+behavioural half exercised only the 4-of-4 happy path, where a literal and a derivation agree
+by construction. The name claimed derivation; the assertions proved orthography.
+
+**Fix**: the test now writes a variant of the script whose `WANT` carries a fifth name and
+requires `compared 4 of 5 skills`, exit 2. A literal count prints `byte-identical`, exit 0, and
+the test fails. Mutation-proven.
+
+⛔ **The generalisable form: when a test's subject is "this value must FOLLOW that one",
+the only test is one where they MUST DISAGREE if it does not.** A happy-path assertion cannot
+distinguish a derivation from a coincidence, and `grep`ping the source for the fix's own
+spelling is the weakest check that still looks like one — see `feedback-a-name-is-an-assertion`.
+⚠️ Round 2 also found the condemned `diff | grep -c` construction reintroduced **six lines
+below the comment condemning it**. Two recurrences of one class in one file triggered a
+**census** rather than a third round: all 21 substitution/pipe sites enumerated at once, the
+last live instance closed with an invariant.
+
+---
+
+## A SHAPE TEST INSIDE AN EXISTENCE-TEST DISJUNCTION — THE CONTROL COULD NEVER STOP FIRING, AND THE FIRST REMEDY DELETED THE EVIDENCE (2026-09-17)
+
+**Problem**: `/audit-context` step 4 reported 3 references as `STALE PLACEHOLDER MARKER (the
+path resolves)` — `data/raw/.processed_ids_<name>.json` and twins. They are correct references.
+
+**Root cause**: `refcheck.py`'s STALE test asks "is this marked path actually THERE?" through a
+disjunction of rungs. Every rung in it is an existence test except `rung3`, which is
+`frag.startswith(STATE_DIRS)` — a **shape** test that no file system can falsify. Any
+angle-segment path under a state directory therefore "resolved", always. The angle form is
+*mandatory* for a variable segment, so the author had **no legal move**: marked → STALE,
+unmarked → the angle branch again.
+
+⭐ **THE PART WORTH KEEPING: THE COUPLING WAS ALREADY MEASURED, AND THE REMEDY CHOSEN WAS TO
+DELETE THE EVIDENCE.** A comment in the same file, 2026-08-16: *"rung3 sits INSIDE the
+STALE-PLACEHOLDER `resolves` disjunction, so adding a dir here makes any `<!-- placeholder -->`
+on that dir fire STALE IMMEDIATELY — measured, findings went 1 → 4. The two mechanisms are
+alternatives, never both: the three markers these dirs cover were removed in the same commit."*
+The measurement was right and the conclusion was backwards. Removing the markers satisfies a
+shape test that **cannot stop matching**, so it buys silence until the next time anyone writes a
+state path — which happened four times, 2026-09-07..09-10, and would have recurred at every
+future audit forever.
+
+⚠️ **The generalisable form: when a check has no legal move, the defect is in the CHECK, and
+"remove the thing it flags" is the remedy that guarantees recurrence.** `/audit-context` step 4
+says to distinguish wolf-crying from residue before touching anything. The tell for wolf-crying
+is not "it keeps coming back" — it is **"no input could make it stop"**.
+
+⛔ **And the mirror, from the same skill: do not loosen without seeding what the loosening newly
+permits.** Excluding rung 3 permits exactly one new case — a path angle-marked, under a state
+dir, and really on disk. Rung 1 is tested first in the same expression and catches it. Seeded
+both ways (`run.sh` 34/35) and both proven non-vacuous by mutation: 34 FAILS on the pre-change
+code, 35 dies when rung 1 is removed. Fixed in `ad32356`; the obsolete comment was rewritten
+rather than deleted, because a note that contradicts the code is worse than no note.
+
+---
+
+## I RAN THE WRONG CHECKER, BECAUSE THE SKILL NAMED THE UPSTREAM ONE AND WE HAVE A FORK (2026-09-17)
+
+**Problem**: `/audit-context` step 4 gives a literal command rooted at
+`~/repos/agent-ready-projects/tests/fixtures/reference-integrity/refcheck.py`. I ran it. It
+reported **216 findings**, 113 of them `COLLISION` on bare basenames (`config.yaml` ×18). The
+fork in this repo reports **23** on the same tree.
+
+**Root cause**: `tests/fixtures/reference-integrity/refcheck.py` here is a genuine **fork**,
+1,629 lines different, recorded as a deliberate partial adoption of v1.40.0 in
+`docs/decisions/framework-adoption-history.md:145` — *"deferred to `/audit-context`, NOT silently
+copied"*. It carries a doc-relative rung, a systemd-unit class, a rung-5 auto-memory extension
+and a `GENERIC ARTIFACT NAMES` section that absorbs the collisions. The two programs answer
+different questions.
+
+⭐ **Two numbers from two instruments is the shape, and the DANGEROUS half is that both were
+correct.** Neither run was broken. Had I reported "references regressed from 1 to 216" — which
+was one sentence away — the reader's next move would have been to hunt a regression that does not
+exist. ⛔ **A skill's literal command is an instruction about the FRAMEWORK's tree, not about
+yours. Before running a named tool, check whether this repo re-mapped it** — the decisions file
+is where declines and forks live, and `feedback-decline-reason-is-local` already says to grep it
+by the feature's own name.
+
+⚠️ Prior-audit numbers are only comparable if they came from the same instrument: the
+"24 findings → 1" of 2026-08-27 is a **fork** number.
+
+---
+
+## I CAPPED A FILE AND SHIPPED NOTHING THAT HOLDS THE CAP (2026-09-17)
+
+**Problem**: the always-loaded layer was over its soft budget. Attribution said the growth was
+the auto-memory index (~370 B/day) and not `CLAUDE.md` (~19 B/day). I capped its 25 pointer rows
+the way `CLAUDE.md`'s are, recovered 5,187 B, and reported the layer fixed.
+
+**Root cause**: `check_index_budget.py --target pointers` reads `CLAUDE.md` **only**. So the cap
+I had just applied to the other file was a one-time hand trim with no mechanism behind it —
+precisely the state `CLAUDE.md` was in *before* #133, and at 370 B/day it refills in about a
+fortnight.
+
+⭐ **I caught it while writing the issue comment, not while doing the work** — the sentence
+"remedy applied, not just diagnosed" would not finish honestly, because the diagnosis was
+*a byte budget is an alarm and a cap is the mechanism* and I had shipped the alarm's remedy.
+⚠️ **Writing the claim out for someone else is a cheap control that ran after the change instead
+of before it.** Same shape as `feedback-articulating-is-not-applying`: the check is least likely
+to be present right after you have been most articulate about needing it.
+
+**Fix**: `--target pointers` now covers both always-loaded surfaces (its own extractor — the
+auto-memory index is a bullet list, not a table, and reusing `_pointer_rows` would have returned
+CANNOT VERIFY forever). Four tests pin the arms, including *absent is reported as unchecked and
+never as a pass*. Mutation-proven: gutting the cap kills
+`test_automem_row_over_the_cap_fails`.
+
+⛔ **The cap is 400 and that number is BORROWED, not derived** — it is `POINTER_CARVEOUT_CAP`,
+already in the file. A ratchet at today's max (437) would only say "do not get worse"; 400 has
+precedent and bit one row, trimmed in the same change with its caveat verified present in the
+target first.
+
+---
+
+## RECORDING A COMMIT HASH IN A FILE THAT IS PART OF THAT COMMIT, THEN `--amend` (2026-09-17)
+**Problem**: Committed `EXP-038` with `experiments/registry.jsonl` recording `"commits":
+["70555e2","32919c3"]`, where `32919c3` was the hash printed by that very commit. Then ran
+`git commit --amend` to stage one more file. The amend rewrote the commit as `81e1498`, so
+the registry at `HEAD` pointed at an object **no longer reachable from any branch** —
+`check_experiment_registry.py` still passed, because it checks that metrics are traceable to
+artifacts, not that a recorded hash resolves.
+**Root cause**: a chicken-and-egg that reads as an ordinary two-step. A commit's hash covers
+its own tree, so a file inside the commit can never hold that commit's hash in one step. I
+worked around it by recording the hash *after* committing and then amending — which is the
+one move that invalidates exactly what I had just written. `--amend` is the trap, not the
+two-step.
+**Fix**: record the hash in a **follow-up commit**, never an amend. The follow-up's own hash
+does not need recording. Caught by re-reading `git log --oneline -3` after the amend and
+noticing the hash had changed; nothing automated would have. ⭐ **Generalises past git: any
+artifact that records an identifier derived from its own content cannot be written in one
+pass, and every "just amend it" shortcut re-breaks it.** Same family as the 2026-09-04
+`git commit --amend` orphaning the commit that produced a trained model — third time `--amend`
+has cost something here.
+
+## AN ORDERING PUBLISHED WITH NO BAND — AND THE GUARD CAUGHT IT, NOT ME (2026-09-17) [x2]
+**Problem**: Wrote *"the new GPU agrees with CPU BETTER than the old one did — max |Δ| 0.1572
+against 0.1956"* as the one-line answer of an evidence document. `check_claim_shapes.py`
+failed it on `ordering-needs-band`, plus two `no-difference-range` failures on *"the `_meta`
+stack fingerprint is identical in every dump"* and *"recall is identical on all three"*.
+Three failures, all in a document I had just written carefully.
+**Root cause**: both figures are a **max over 660 rows** — an extreme-value statistic, the
+least stable thing a sample publishes — and the Ampere arm **can never be replicated**,
+because the card is out of the machine. So there is no paired band and no way to get one. I
+had the repeatability figure for the *new* arm (run-to-run 0.0000) and let it stand in for a
+band across two arms, which it is not. ⛔ **This is the same defect as the 2026-09-05 "AUC
+would have picked the wrong arm" entry** — a point-estimate ordering promoted to a finding —
+so it is occurrence two, written by someone who had read that entry's lesson in the same
+session's memory index.
+**Fix**: state the ordering as *two single measurements*, say the Ampere arm is
+unreplicable, and move the load onto the **flip counts**, which are counts and not
+extreme-value statistics. ⭐ **The durable half: the guard is the control, and its failure was
+it working.** I fixed the substance rather than the wording — the tempting move was to add the
+word "band" until it went green, which would have left the claim exactly as wrong.
+
+## TWO MEMORY SURFACES DISAGREED ABOUT SSH ACCESS; ONE WAS RIGHT ABOUT THE OUTCOME AND BOTH WERE WRONG ABOUT THE CAUSE (2026-09-17)
+**Problem**: `memory/b650-gpu.md` said `ssh b650-gpu` *"works from situla and sadalsuud"*.
+`CLAUDE.md`'s pointer row said *"works from the workstation, NOT from sadalsuud"*. Flat
+contradiction, both always-loaded or near it, and neither referenced the other.
+**Root cause**: `CLAUDE.md` was right about the **outcome** and wrong about the **reason**,
+which is why nobody fixed it — it read as a known limitation rather than as a bug. The actual
+cause was one word: sadalsuud's `~/.ssh/config` said `User jwasys` (the box owner's account)
+instead of `jeroen`. The **key was correct the whole time** — sadalsuud's
+`~/.ssh/b650_gpu.pub` fingerprint matches the `jeroen@sadalsuud-to-b650` entry in b650's
+`authorized_keys` exactly. So a true-sounding limitation concealed a one-line fix for six
+weeks, and `memory/b650-gpu.md` even carried the warning *"the account is `jeroen` (NOT
+jwasys)"* three lines above the claim it contradicted.
+**Fix**: changed to `User jeroen` and **proved the outcome** — `sadalsuud → b650` now returns
+the hostname, `jeroen`, and the GPU — rather than declaring the config edit done. Backup at
+`sadalsuud:~/.ssh/config.bak-20260917-b650user`. ⭐ **A "doesn't work from X" note with no
+cause beside it is a bug report nobody triaged.** Record the mechanism or the note becomes
+permanent; and when two surfaces disagree, the one that is right may still be right for the
+wrong reason.
+
+
+## 2026-09-03 — `| tail` swallowed an exit code while I was testing exit codes **[x6 — recurred 2026-09-25, v9 smoke test `echo exit=$?` after `| tail`; re-run for the real code]**
+
+**Problem.** Checking the four exit codes of a new gate, I ran
+`python3 gate.py <bad-glob> 2>&1 | tail -1; echo $?` and read **0** for two refusal paths that
+in fact exit 1 and 3. The pipeline's status is the last command's, and `tail` always succeeds.
+
+**Fix.** Redirect to a file and echo `$?` on the next line, or use `${PIPESTATUS[0]}`. **If an
+exit code decides anything, do not put a formatter after it.**
+
+⭐ This is the **fifth** recorded occurrence, and the sharpest: it happened *inside the task of
+verifying exit codes*, and it masked a real defect — the gate's plumbing errors were exiting 1,
+the same code as "a row FAILS", so a gate that never ran was indistinguishable from a gate that
+ran and failed. Both were fixed only because the second check had no pipe.
+
+## 2026-09-05 — `pgrep -f` matched its own wait-loop TWICE in one session (7th and 8th) [x3, 9th occurrence 2026-09-17]
+*(⭐ **9th, 2026-09-17 — FIRED AND WAS CAUGHT, which is what the rule buys.** Launching the
+parity run, `pgrep -af "box_parity.py"` returned **three** lines: two were the `bash -c` and
+the ssh command carrying the pattern, one was the real process. Unlike the 7th and 8th it cost
+nothing, because `CLAUDE.md`'s working rule — **"if a process check decides whether you act,
+print the matching line before believing it"** — was followed and the pid was read off the
+printed line rather than off a count. Recorded as an occurrence anyway: the trap's **rate** is
+the thing worth knowing, and only counting the times it wins understates it.)*
+
+**Problem**: Waited for a remote benchmark with
+`ssh b650-gpu 'while pgrep -f "bench_devices.py --arm student-gpu"; do sleep 5; done; ...'`.
+It never returned and was killed at the timeout (**exit 143**) — while the benchmark itself
+had finished minutes earlier.
+**Root cause**: `pgrep -f` matches the **full command line**, and the remote shell carrying
+the loop contains the pattern. The loop was waiting for itself. CLAUDE.md documents this at
+six prior occurrences; I wrote it anyway, inside an experiment about instruments that cannot
+say what they claim.
+**Fix**: no data lost — the result was already retrieved by reading the output file directly.
+Use `ps -eo pid,etime,args | grep -v grep`, or check for the artifact the job produces rather
+than for the job. ⭐ **The general form is the session's own theme: I asked "is it still
+running?" of an instrument that had to answer yes.** The wait-loop is a *negative*-detector
+whose positive was guaranteed.
+⚠️ **The tell was available and I did not use it**: an earlier command in the same session had
+already listed the process with `ps -eo pid,etime,args`, which shows the loop and the job as
+separate lines. `pgrep` collapses exactly the distinction that matters.
+⛔⛔ **AND I DID IT AGAIN ~40 MINUTES AFTER WRITING THIS ENTRY.** Same session, same box, same
+shape: `ssh b650-gpu 'while pgrep -f "venv/bin/python benchmark_devices.py"; do sleep 5; done'`
+— exit **143** again. **8th occurrence.** I had just written the paragraph above, in this file,
+naming the mechanism and the remedy. ⭐ *Articulating the rule is not applying it, and the gap
+here was under an hour.* The remedy that would have worked both times is the one already
+written down and still not used: **wait on the ARTIFACT the job produces, never on the job.**
+
+## 2026-09-05 (third session) — the `*_test.*` gitignore trap, third victim, because the fix was scoped to the instance [x4 — recurred 2026-09-26: an unanchored `archive/` swallowed `memory/archive/`; see that day's entry]
+
+**Problem**: `scripts/gate/v8_smoke_test.py` was gitignored the moment it was written.
+`.gitignore:170` carries `*_test.*` in a scratch-file block; it is a PATTERN, not a path.
+
+**Root cause**: the 2026-09-04 rescue negated it **only under `docs/evidence/`** — and its own
+note said so in writing: *"the rescue is scoped to `docs/evidence/` only; the pattern still
+swallows `*_test.*` anywhere else in the repo."* That made it a fix for the instance, not for
+the defect, and the note even named the second victim
+(`filters/common/obituary_detector/validation/panel_obit_test.py`) without rescuing it.
+
+**Fix**: negations extended to `scripts/`, `tests/`, `filters/`, `training/` and
+`ground_truth/`. Verified in BOTH directions: the smoke test is stageable, and a
+`scratch_probe_test.json` <!-- placeholder --> at the repo root is still ignored. ⭐ **The reusable part is how it
+surfaced: `git add <explicit path>` WARNS, and `git add <dir>` does not** — the 09-04 loss was
+silent for exactly that reason. Do not rely on the warning; the pattern is the hazard.
+⚠️ A documented limitation that is left in place is a defect with a note attached, not a
+mitigation — this one was re-read three times and rescued nobody.
+
+## 2026-09-05 (second session) — an ordering published as a finding, with no band [x2 — recurred 2026-09-17, see the entry at the top]
+
+**Problem**: *"AUC would have picked the wrong arm"* was labelled ⭐⭐ THE REUSABLE FINDING
+in four places, on a gap of **+0.0014**.
+
+**Root cause**: the two arms' AUCs were compared as point estimates. With its band the gap
+is CI **[−0.0448, +0.0476]**, **P = 0.523** — a coin flip, the band ~30× the gap. CLAUDE.md
+already states the rule (*two models whose bands overlap are NOT DISTINGUISHABLE whatever
+their point estimates say*); it was applied rigorously to the TP comparison in the same
+document and not at all to this one.
+
+**Fix**: retracted. The script now computes bands for every ranking-metric delta it reports.
+⚠️ The converse is the part worth keeping: **AUC separates the student from `probe_reg_large`
+(P = 0.995) where the op-point test cannot**, so "the op-point is the better criterion" and
+"the op-point test is underpowered" are both live, and the artifact now says so.
+
+## A POSITIVE CONTROL OF THE WRONG CLASS — THE INSTRUMENT SAID YES AND STILL COULD NOT SEE THE VIOLATION (2026-09-17)
+
+**Problem**: Amended ADR-013 to require English across all framework-internal text, swept the
+repo, and published **"Zero framework-internal prose violations."** A review lens falsified it
+in under a minute: `docs/adr/009-add-filters-first-reduce-later.md:25,34,35,37,60` carries
+`Welzijn`/`Erfgoed`/`Vooruitgang` as ADR prose, and `scripts/analysis/cross_filter_landscape.py`
+carries 39 occurrences as dict keys, identifiers and printed column headers. Both sites are
+inside the sweep's own declared scope.
+
+**Root cause**: The wordlist was 36 Dutch **function words** (`niet`, `wordt`, `omdat`, …). The
+violation class ADR-013 polices is Dutch **names**, which contain no function words. Measured:
+the list scores **0** on both files. ⛔ **And I DID run a positive control — it passed.** The
+control was the Dutch fixture *sentences* at `filters/uplifting/v7/prefilter.py:567` and
+`filters/common/commerce_prefilter/training/benchmark_models.py:61`, which are full of function
+words. A Dutch sentence and a Dutch lens name are different classes; the control only ever
+proved the first, so the instrument looked sound the whole way.
+
+**Fix**: Claim retracted the same day, the two sites filed as **#160** for an owner call (an ADR
+is a historical record — rewriting one is not obviously right). ⭐ **The rule: a positive control
+must be of the CLASS UNDER TEST, not merely the language, domain or file type under test.** This
+is `CLAUDE.md`'s own instrument rule — *"prove the instrument could have said yes"* — and "it
+said yes" is not enough; it has to have said yes **to the thing you are about to claim is
+absent**. ⚠️ ADR-013's own Consequences `:86` already carried an open action pointing at exactly
+the leftover class that was missed, and the sweep declared zero without reconciling it: **an open
+action in the document you are amending is part of the evidence.**
+
+## `grep` ON THIS WORKSTATION IS ugrep, AND IT REFUSES BOUNDED REPETITION (2026-09-17)
+
+**Problem**: A context-extraction command using `grep -oE ".{0,70}#123.{0,90}"` printed
+`ugrep: error at position 620 … exceeds complexity limits` and returned nothing for every line.
+Under the `2>/dev/null` that such one-liners usually carry, it would have returned a silent empty
+result and read as "no matches".
+
+**Root cause**: `grep` here resolves to **ugrep**, not GNU grep. ugrep rejects bounded-repetition
+quantifiers over a UTF-8 character class as too complex. `agent-ready-projects`' `update-drift`
+skill documents exactly this for `(^|[^A-Za-z])` and prescribes `\b` instead.
+
+**Fix**: Use Python for context extraction around a match, or `\b`-anchored patterns for
+detection. ⭐ **A non-zero exit with no stdout is indistinguishable from a clean run once stderr
+is discarded** — never `2>/dev/null` a grep whose empty result you intend to read as evidence.
+
+---
+

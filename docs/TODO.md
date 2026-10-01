@@ -4,7 +4,7 @@
 
 *A bare "continue" means this list, top down. Each line names the FIRST action. The previous block
 (2026-09-28 close) moved VERBATIM to `docs/TODO-archive.md` § *Moved 2026-09-29 — the START HERE block of
-2026-09-28 (close)*. Session record: `memory/project_session_2026_09_29_cloud_pilots.md`.*
+2026-09-28 (close)*. Session record: `memory/archive/project_session_2026_09_29_cloud_pilots.md`.*
 
 0. ▶ **BELONGING v2, built to the #130 ruling ("cohesion holding or growing") — owner agreed 2026-10-01.** Why:
    the #130 ruling, the `H-HD17` hand-check (35/50 harm-flagged rows junk) and ovr EXP-025 (Belonging lowest,
@@ -53,8 +53,9 @@
    a. **Unshield the gotcha log**: five `### ` entries dated 2026-09-10 (~12 KB) sit under the template
       heading `## [Short description]`, which `retire_memory.py` `KEEP_HEADINGS` always keeps. Move them out
       verbatim; make the script REPORT dated entries under a keep-heading (seeded test).
-   b. **On/after 2026-10-01**: `python3 scripts/maintenance/retire_memory.py gotcha --before 2026-10-01`
-      (dry run, then `--apply`; `sessions` too).
+   b. ✅ **DONE 2026-10-01**: `retire_memory.py gotcha` moved 42 entries (live log 158,044 → 100,946 chars,
+      reconstruction check passed); `sessions` moved 18 files (09-17..09-29) to `memory/archive/`. Default
+      refcheck 5 → **0** — ⚠️ the 5 (item e) moved WITH their entries into the unscanned archive; not fixed, out of view.
    c. **The unreachable-mechanism catalogue** (~71 KB of `memory/gotcha-log.md`): mechanize → retire — an
       entry whose class has a `live` row in § *Mechanized* moves verbatim. Changing the keep-rule is an owner call.
    d. **Next-largest files**: `memory/session-log.md` (151 KB, unbounded by design — propose a rotation),

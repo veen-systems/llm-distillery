@@ -77,7 +77,7 @@ and the fix was **LD#93** in llm-distillery. One defect, three issues, two repos
 ## The cloud angle — what a Claude Code cloud session can close (2026-09-29)
 
 ⛔ **Standing rules only — the triage, the three pilot records and the cloud-environment facts were retired
-VERBATIM 2026-09-29 to [`project_session_2026_09_29_cloud_pilots.md`](project_session_2026_09_29_cloud_pilots.md)
+VERBATIM 2026-09-29 to [`archive/project_session_2026_09_29_cloud_pilots.md`](archive/project_session_2026_09_29_cloud_pilots.md)
 § *Retired verbatim*.** Pilots **STOPPED** by the owner the same day (focus: NexusMind#395 migration).
 
 - **Class decides dispatch.** C = inputs in git, done = a test → cloud. D = code self-contained, outcome needs a
