@@ -54,13 +54,16 @@
       `scripts/deployment/deploy_to_nexusmind.sh` <!-- placeholder -->, `x.sh` <!-- placeholder -->, `x2.sh` <!-- placeholder -->). Mark or fix; a check that is never 0 stops being read.
 
 3. **OWNER DECISIONS waiting:**
-   - **#134 (a)**: may the marking pass edit `docs/TODO-archive.md` (its header says byte-for-byte), or does
-     it stay untouched with its 89 findings counted? **(c)**: ADR templates — code span + placeholder
-     (as PR #168 left them) or back to real links?
+   - ✅ **#134 RULED 2026-10-01 (owner):** **(a)** `docs/TODO-archive.md` stays UNTOUCHED — the marking pass
+     does not edit it; its findings are counted, not fixed. **(c)** ADR templates KEEP the code span +
+     placeholder form PR #168 left. *(Gloss, not ruled: the archive therefore never goes to 0 under
+     `--docs-live`, so promotion to the default set must exclude it or count it separately.)*
    - **Harm caps (`H-HD17`)**: hand-check list is pulled —
      `docs/evidence/2026-09-28-per-lens-harm-rates/harm_handcheck_list.tsv`; owner marks `junk`/`fits`.
    - **Cloud billing**: did the ≥ $6.89 of pilot cost (pilot 3 unread) draw on the $100 credit or the subscription? (claude.ai billing page.)
-   - Standing: the ~$3.2–3.6 adverse pool (#156, numbered item 2); H-TV5 (Thriving fullness under v9).
+   - **#156 adverse pool (~$3.2–3.6) — RULED 2026-10-01 (owner): DEFER until the harm hand-check above is
+     marked.** *(Gloss: the pool measures what the detector MISSES, which only matters if a cap goes in.)*
+   - Standing: H-TV5 (Thriving fullness under v9).
 
 4. **Small, ours:** `cultural_discovery v5` `normalization.json` `raw_min` **4.0006** vs `TIER_THRESHOLDS`
    **4.0** — breaks the must-equal rule. Read `tests/unit/test_normalization_op_point.py` to see why it
