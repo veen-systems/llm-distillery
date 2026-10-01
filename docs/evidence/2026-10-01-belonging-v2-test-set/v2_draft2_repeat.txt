@@ -1,0 +1,30 @@
+== rep1  (op-point 4.0; n = scorable rows)
+  P: 19/19 at or above op-point
+  F: 14/65 at or above op-point
+  B: 18/26 at or above op-point
+  F above op-point by stratum: adverse_existing 0/1, exp025_random 0/1, exp025_top 1/4, handcheck_HHD17 8/31, random_surfacing 5/28
+== rep2  (op-point 4.0; n = scorable rows)
+  P: 19/19 at or above op-point
+  F: 11/65 at or above op-point
+  B: 18/26 at or above op-point
+  F above op-point by stratum: adverse_existing 0/1, exp025_random 0/1, exp025_top 1/4, handcheck_HHD17 6/31, random_surfacing 4/28
+
+== verdict changes rep1 -> rep2 (label | rep1 | rep2 | title)
+  F |  4.72 |  3.23 | More deaths, less outrage: are we becoming numb to the horrors of family violenc
+  F |  5.52 |  2.98 | Judíos mexicanos
+  F |  4.35 |  1.40 | A month after Nepal's floods, husband still hopes his wife can be found
+
+== rep2: F rows still at or above op-point
+   7.08 | exp025_top | Massacre site concerns halt plans for regional Victorian dog park
+   6.23 | random_surfaci | Young Arrernte boxer sets sights on Olympics after AIS opportunity
+   5.95 | random_surfaci | The making of Moby Dick - when Hollywood came to a tiny Welsh harbour
+   5.70 | handcheck_HHD1 | Centenas de pessoas acampadas em Madrid sem data para sair
+   5.70 | handcheck_HHD1 | Tchad : le déficit pluviométrique menace la campagne agricole à Bohobé (Lac Iro)
+   5.30 | random_surfaci | Iran’s children return to school under the shadow of war
+   4.78 | handcheck_HHD1 | Desplazados de La Guaira en Bermúdez y Paria siguen a la espera de ayuda para re
+   4.72 | handcheck_HHD1 | Being hit by a football in her face revealed my daughter's cancer
+   4.67 | random_surfaci | Mining couple have explosive gender reveal at Kalgoorlie's Super Pit
+   4.62 | handcheck_HHD1 | Flotaba en un estanque y, cuando se acercó, comprendió que luchaba por su vida: 
+   4.53 | handcheck_HHD1 | बाढी र पहिरोका कारण गुल्मीमा ११ परिवार विस्थापित
+
+== rep2: P rows below op-point

@@ -22,7 +22,14 @@
    the prompt is not the defect. (3) Set the bar's numbers after the control.
    ✅ **Control RAN 2026-10-01** (README § Result): the v1 ORACLE passes 41/65 F rows (EXP-025 5/5, hand-check
    23/31) → the prompt rewrite is justified. It also REJECTS 15/28 random-stratum F rows the student passed →
-   a second, student-side defect that no prompt fixes. Both need a plan. Open: 9 rows are under the
+   a second, student-side defect that no prompt fixes. Both need a plan.
+   ✅ **v2 prompt drafted and tested 2026-10-01** (`filters/belonging/v2/`, DRAFT; README § *Result: the v2 prompt*):
+   - Test set: F rows >= 4.0 drop 41 → 11–14 of 65, all 19 P kept.
+   - Held-out production sample: v1 passes 121/150, v2 passes 71/150, but ~33 of v2's 71 passers are junk by
+     my reading (animals, donations, ceremonies, essays).
+   - The oracle ignores the prompt's 2.5 cap (its own `official_event` tag still passes).
+   ▶ **Owner decision:** how to make the cap arithmetic instead of advisory (code-side, at label time).
+   Options are in the session report. No relabel until the passer list is clean. Open: 9 rows are under the
    300-char floor (2 of them P), and the recall side is thin (8 scorable P rows). Add P rows first.
 
 0b. ▶ **THE MIGRATION (NexusMind#395) — the owner's focus since 2026-09-29.** gpu-server (HCL) went offline

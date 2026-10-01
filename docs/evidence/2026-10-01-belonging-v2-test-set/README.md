@@ -5,8 +5,8 @@ prompt, built **before** any prompt change. It applies the #130 ruling (owner, 2
 **belonging means cohesion that is holding or growing.** A grievance or a threat does not
 qualify on topic alone. Harm-answered cohesion qualifies only when the response is the story.
 
-**108 rows: 10 P (qualifies), 70 F (does not), 28 B (borderline, reported, never judged).** Only 99 can be
-oracle-scored: 9 rows are under the 300-char floor (see Caveats). That leaves **8 P / 65 F / 26 B.**
+**119 rows: 21 P (qualifies), 70 F (does not), 28 B (borderline, reported, never judged).** Only 110 can be
+oracle-scored: 9 rows are under the 300-char floor (see Caveats). That leaves **19 P / 65 F / 26 B.**
 
 | stratum | n | P / F / B | source |
 |---|---|---|---|
@@ -15,6 +15,7 @@ oracle-scored: 9 rows are under the 300-char floor (see Caveats). That leaves **
 | `exp025_top` / `exp025_random` | 6 / 6 | 1/4/1 · 1/1/4 | ovr EXP-025 Belonging picks (ovr.news `data/held-out/blind-selection-2026-09-28/`) |
 | `ruling_130_example` | 4 | 1 / 2 / 1 | the four titles quoted in #130, from `raw_2026-08.tar.gz` |
 | `adverse_existing` | 2 | 0 / 2 / 0 | owner-labelled rows in `datasets/adverse/belonging.jsonl` |
+| `v1_heldout_top` | 11 | 11 / 0 / 0 | added after the control: of the 45 rows with the highest v1-oracle score in v1's held-out test/val splits (b650-gpu, `fetch_v1_heldout.py`), the 11 read as clear P. ⛔ Exclude them from any v2 training draw |
 
 ## Who labelled what
 
@@ -57,8 +58,8 @@ control, so they can be shown to be reachable.
     but that is 3% of its 13,446.
   - The oracle path drops the under-floor rows. Before scoring, fetch the enriched text or report these rows
     separately. Never bypass the floor.
-- **The recall side is thin: 8 scorable P rows.** One row moves recall by 12.5 points. That catches a
-  prompt that zeroes everything. It cannot rank two prompts. More P rows are the first thing to add.
+- **The recall side was thin: 8 scorable P rows.** Raised to 19 with `v1_heldout_top`. Those 11 were chosen
+  from rows the v1 oracle scores >= 6.15, so they are easy P rows. They do not test borderline recall.
 - **The random stratum reads as 1 P / 29 F / 10 B of 40.** This is my judgement, unverified.
   - If it holds, most of what belonging surfaces today is off-lens in general (galas, ministries,
     op-eds), not the #130 grievance shape.
@@ -70,8 +71,11 @@ control, so they can be shown to be reachable.
 
 ```bash
 scp docs/evidence/2026-10-01-belonging-v2-test-set/{fetch_rows.py,labels.tsv} sadalsuud:/tmp/
-ssh sadalsuud 'cd /tmp && python3 fetch_rows.py labels.tsv > rows.jsonl'   # ~1 min, raises on a missing url
-scp sadalsuud:/tmp/rows.jsonl /tmp/ && python3 docs/evidence/2026-10-01-belonging-v2-test-set/build_test_set.py /tmp/rows.jsonl
+ssh sadalsuud 'cd /tmp && python3 fetch_rows.py labels.tsv > rows.jsonl'   # ~1 min; v1_heldout_top rows are NOT here (see next step)
+scp docs/evidence/2026-10-01-belonging-v2-test-set/{fetch_v1_heldout.py,labels.tsv} b650-gpu:/tmp/
+ssh b650-gpu 'cd /tmp && python3 fetch_v1_heldout.py labels.tsv > rows_v1.jsonl'                # the v1_heldout_top stratum
+scp sadalsuud:/tmp/rows.jsonl b650-gpu:/tmp/rows_v1.jsonl /tmp/ && cat /tmp/rows.jsonl /tmp/rows_v1.jsonl > /tmp/rows_all.jsonl
+python3 docs/evidence/2026-10-01-belonging-v2-test-set/build_test_set.py /tmp/rows_all.jsonl
 ```
 
 Verified 2026-10-01:
@@ -117,3 +121,45 @@ How F rows split by stratum (oracle ≥ 4.0 / n):
 
 **Cost: NOT measured.** The scorer logs no token counts. The pre-run estimate was ~$0.35. Read the actual
 figure from the Google billing console.
+
+## Result: the v2 prompt (2026-10-01)
+
+Package: `filters/belonging/v2/` (DRAFT: config + prompt only). Same oracle, dimensions, weights and code
+gatekeeper as v1. The prompt adds STEP 1b, the cohesion test.
+
+**On the test set** (110 scorable rows; F = fail rows scoring >= 4.0, P = pass rows scoring >= 4.0):
+
+| run | F >= 4.0 | P >= 4.0 |
+|---|---|---|
+| v1 | 41/65 | 19/19 |
+| v2 draft 1 (carve-outs 1-6) | 13/65 | 19/19 |
+| v2 draft 2 (+ 7 one-person stories, 8 talk about cohesion) | 14/65 | 19/19 |
+| v2 draft 2, repeat run (same prompt) | 11/65 | 19/19 |
+
+- **Same-prompt noise:** 3 of 110 verdicts flip (`v2_draft2_repeat.txt`).
+- **Draft 1 → draft 2:** 17 verdicts change (`v2_draft2_vs_draft1.txt`). Draft 2 fixed the individual-story
+  and talk rows. It broke protest, war and Robinvale rows that draft 1 had rejected.
+- **Drafts 1 and 2 cannot be ranked:** each sits inside the other's noise band. Adding rules moved the
+  failures; it did not remove them (calibration-history Dead End).
+
+**Held-out production sample** (FILTER_PLAYBOOK §1b; `fetch_prod_sample.py`):
+- **The sample:** 150 random rows from the 857 that the live student surfaced on 2026-10-01. None of
+  them was seen while writing the prompt.
+- **Pass counts:** v1 passes **121**, v2 draft 2 passes **71**. 70 rows pass both; 51 pass v1 only.
+- **What v2 removed:** by title, the 51 v1-only rows are almost all excluded shapes: grievances, ministry
+  ceremonies, individual achievements, harm stories.
+- **I read all 71 v2 passers** (`v2_draft2_prod_passers_read.tsv`, my verdicts, owner not consulted):
+  **16 fit, 22 borderline, 33 junk.**
+  - The junk classes: animal rescues, donations, scholarships and aid deliveries, official ceremonies and
+    press conferences, academic studies, opinion essays, a brand advert, a political rally.
+  - Two passers carry the oracle's own `official_event` tag. The oracle names the carve-out and does not
+    apply the 2.5 cap.
+
+**Reading.**
+- v2 is a large improvement on v1.
+- It is **not clean enough to label with**. The playbook bar is a clean passer list, and half the passers
+  are junk.
+- More prompt rules is the documented dead end. The cap failure is the playbook's "caps read as advisory"
+  pit. The next mechanism has to be arithmetic in CODE, not another rule in the prompt.
+- **Cost: not measured** (no token log). There were 7 oracle runs of 99–150 rows (839 scorings). At the
+  ~$0.0035/row pre-run estimate, that is roughly $3.

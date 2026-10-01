@@ -20,7 +20,7 @@ random.Random("belonging-v2-random").sample(sorted(ids), 40)."""
 import glob, json, os, sys, tarfile
 
 labels = [l.rstrip('\n').split('\t') for l in open(sys.argv[1])][1:]
-want = {row[1]: row[0] for row in labels}
+want = {row[1]: row[0] for row in labels if row[0] != 'v1_heldout_top'}  # that stratum: fetch_v1_heldout.py on b650-gpu
 base = os.path.expanduser('~/local_dev/NexusMind/data')
 found = {}
 

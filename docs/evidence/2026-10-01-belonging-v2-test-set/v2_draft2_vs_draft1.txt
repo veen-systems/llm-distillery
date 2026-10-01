@@ -1,0 +1,47 @@
+== v2d1  (op-point 4.0; n = scorable rows)
+  P: 19/19 at or above op-point
+  F: 13/65 at or above op-point
+  B: 20/26 at or above op-point
+  F above op-point by stratum: adverse_existing 0/1, exp025_random 1/1, exp025_top 1/4, handcheck_HHD17 5/31, random_surfacing 6/28
+== v2d2  (op-point 4.0; n = scorable rows)
+  P: 19/19 at or above op-point
+  F: 14/65 at or above op-point
+  B: 18/26 at or above op-point
+  F above op-point by stratum: adverse_existing 0/1, exp025_random 0/1, exp025_top 1/4, handcheck_HHD17 8/31, random_surfacing 5/28
+
+== verdict changes v2d1 -> v2d2 (label | v2d1 | v2d2 | title)
+  B |  2.62 |  4.65 | Garvaghy Road standoff brings Northern Ireland’s old wounds back to surface
+  B |  6.15 |  3.42 | Albany 2026: Biography ‘Lead, Follow or Get Out of the Bloody Way’ tells story o
+  B |  5.38 |  3.12 | Una marea verde por la educación pública desborda Madrid y termina junto a la ac
+  B |  4.20 |  2.42 | Seine Bight Computer Lab ready, but still waiting on internet
+  F |  3.27 |  6.10 | Massacre site concerns halt plans for regional Victorian dog park
+  F |  2.42 |  5.52 | Judíos mexicanos
+  F |  3.42 |  5.47 | Centenas de pessoas acampadas em Madrid sem data para sair
+  F |  3.42 |  5.30 | Iran’s children return to school under the shadow of war
+  F |  3.20 |  4.72 | More deaths, less outrage: are we becoming numb to the horrors of family violenc
+  F |  3.12 |  4.35 | A month after Nepal's floods, husband still hopes his wife can be found
+  F |  3.60 |  4.20 | Flotaba en un estanque y, cuando se acercó, comprendió que luchaba por su vida: 
+  F |  5.83 |  3.42 | Cserpes István elárulta, mi vezetett oda, hogy eladja híres sajtműhelyét
+  F |  6.65 |  3.42 | From burning food in his mother’s kitchen to winning World Koesister Day competi
+  F |  5.42 |  3.42 | We knew he would be a musician, but we didn’t know he would be this big – 2Baba’
+  F |  6.47 |  3.42 | San communities call for ownership of their history
+  F |  5.58 |  2.58 | Kourittenga/Rentrée scolaire : Le CCEB de Yargo fixe de nouveau cap sous le sign
+  F |  4.00 |  2.58 | Marcela Cheloni, counselor especializada en pareja, familia y salud perinatal: “
+
+== v2d2: F rows still at or above op-point
+   6.10 | exp025_top | Massacre site concerns halt plans for regional Victorian dog park
+   5.95 | random_surfaci | Young Arrernte boxer sets sights on Olympics after AIS opportunity
+   5.65 | random_surfaci | The making of Moby Dick - when Hollywood came to a tiny Welsh harbour
+   5.52 | random_surfaci | Judíos mexicanos
+   5.47 | handcheck_HHD1 | Tchad : le déficit pluviométrique menace la campagne agricole à Bohobé (Lac Iro)
+   5.47 | handcheck_HHD1 | Centenas de pessoas acampadas em Madrid sem data para sair
+   5.30 | random_surfaci | Iran’s children return to school under the shadow of war
+   4.95 | handcheck_HHD1 | Being hit by a football in her face revealed my daughter's cancer
+   4.78 | random_surfaci | Mining couple have explosive gender reveal at Kalgoorlie's Super Pit
+   4.72 | handcheck_HHD1 | More deaths, less outrage: are we becoming numb to the horrors of family violenc
+   4.70 | handcheck_HHD1 | बाढी र पहिरोका कारण गुल्मीमा ११ परिवार विस्थापित
+   4.55 | handcheck_HHD1 | Desplazados de La Guaira en Bermúdez y Paria siguen a la espera de ayuda para re
+   4.35 | handcheck_HHD1 | A month after Nepal's floods, husband still hopes his wife can be found
+   4.20 | handcheck_HHD1 | Flotaba en un estanque y, cuando se acercó, comprendió que luchaba por su vida: 
+
+== v2d2: P rows below op-point
