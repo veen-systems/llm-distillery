@@ -155,7 +155,8 @@
    `memory/cross-repo-prioritization.md` (grep `19.9%`; its line numbers moved 2026-09-27 when dated sections were retired). Two copies carry the correction, four
    carry the retraction. Deserves its own review. ⚠️ **Cite it by name, not by line** — it was
    `CLAUDE.md:74` until 2026-09-17 and the frontmatter edits move these numbers every session.
-5. **LD#160 — two Dutch-name violations**, owner call pending: `docs/adr/009-...:25,34,35,37,60`
+5. **LD#160 — two Dutch-name violations — RULED 2026-10-01 (owner): ADR-009 gets a dated NOTE, not a rewrite;
+   the script is RENAMED to English AND `check_framework_language.py` is built (shown red on the script first).** Sites: `docs/adr/009-...:25,34,35,37,60`
    and `scripts/analysis/cross_filter_landscape.py` (39 occurrences). Mechanize with
    `check_framework_language.py` whose allowlist **is** the carve-out table; show it go red first.
    ⚠️ It now has a `proposed` row in `memory/gotcha-log.md` § Mechanized — move it to `live`
@@ -434,7 +435,7 @@ Items surfaced by the multi-agent code review of the migration commits (2026-04-
 
 ## ☐ Open threads inside ARCHIVED ledger rows (2026-09-27 retire; rows in `memory/archive/hypothesis-ledger-archive.md`)
 - [ ] `H-V8-3`: the reorder's multiplicity question "is still open": no pre-registered family was ever run. v8 is superseded by v9, so likely moot; close it or run it.
-- [ ] `H-V8-26`: its revisit trigger is a ~50-article hand-audit of v8's reader-facing precision; no audit record was found (review 2026-09-27). Moot now that v9 is live? Owner call.
+- [x] `H-V8-26`: its revisit trigger is a ~50-article hand-audit of v8's reader-facing precision; no audit record was found (review 2026-09-27). Moot now that v9 is live? Owner call. **CLOSED 2026-10-01 (owner): moot — v8 no longer serves readers; the live question is `H-TV5`.**
 
 ## ☐ Unchecked boxes carried out of the archived sections (2026-09-24)
 
@@ -482,4 +483,4 @@ queue is ▶ START HERE, not this list. Close or delete a line once checked agai
 - [ ] **cd v6 lens fidelity scope (#87)** — ccc 0.25 weight ceiling (mean 0.64), 27% off-lens hard science in visible band, "4.5 display threshold" vs shipped 4.0 unreconciled. Design ticket; not urgent. The 3.5 op-point proposal was REFUTED (sampling artifact) — any re-derivation needs a randomized [3.0,4.5) sample **after NM#284 lands**: the v5 op-point and normalization CDF were both fitted on a distribution still containing the ~71% the prefilter should have removed.
 - [ ] **Lens harmonization program (#90)** — owner directive 2026-07-31: bring all lens filters to the successful template (op-point at the distribution, fresh anchored fit, working positive gate, hybrid + stamps, ADR-021 gate) **The rename half is CLOSED as of 2026-08-06 — do not re-open it here.** ADR-012 amended: `cultural_discovery` and `nature_recovery` KEEP their names (their Hub repos are public standalone artefacts; `discovery-filter-vN` / `recovery-filter-vN` drop the qualifier that says what the model is about), `solutions` confirmed as-is, and `uplifting` → **`human_thriving`** at v8 — not bare `thriving`, which is an existing parked directory. What remains under #90 is the template half only.
 - [ ] **Hygiene batch** — emit `stage_used` into row attrs; document nr runtime stage-1 threshold 0.75 (config.yaml says 3.225, inert); fix stale ir config tiers (3.0 vs live 4.0); note nr raw HIGH tier 7.0 > calibrated ceiling 6.8 (structurally dead).
-- [ ] **Drift guard** — uplifting violated the >20%-relative-pass-rate refit trigger by an order of magnitude for ~4 months, undetected; the prefilter kill (NM#284) hid for ~6 months the same way. Add per-cycle pass-rate logging or a scheduled drift check covering both normalization freshness and declared-vs-observed prefilter pass rate (owner question).
+- [ ] **Drift guard** — uplifting violated the >20%-relative-pass-rate refit trigger by an order of magnitude for ~4 months, undetected; the prefilter kill (NM#284) hid for ~6 months the same way. Add per-cycle pass-rate logging or a scheduled drift check covering both normalization freshness and declared-vs-observed prefilter pass rate (owner question). **RULED 2026-10-01 (owner): keep, rescoped to NORMALIZATION FRESHNESS only (the prefilter half died with decision 0); later, after belonging v2.**
