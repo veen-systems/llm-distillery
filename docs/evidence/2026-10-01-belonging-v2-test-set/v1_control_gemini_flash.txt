@@ -1,0 +1,88 @@
+class=BaseBelongingScorer weights={'intergenerational_bonds': 0.25, 'community_fabric': 0.25, 'reciprocal_care': 0.1, 'rootedness': 0.15, 'purpose_beyond_self': 0.15, 'slow_presence': 0.1} gate=community_fabric<3.0->cap 3.42; op-point 4.0
+
+label  n  oracle>=4.0  student>=4.0(all were)  oracle median
+P   8    8    8/8  6.84
+F  65   41   64/64  5.05
+B  26   26   26/26  6.19
+
+F rows by stratum: oracle >= 4.0 / n
+  exp025_top           4/4
+  exp025_random        1/1
+  handcheck_HHD17      23/31
+  random_surfacing     13/28
+  adverse_existing     0/1
+
+P and F rows (oracle | student | title):
+P  8.10 | 7.32 | exp025_rando | Más allá de las aulas, los abuelos y sabios enseñan a los niños en la 
+P  7.80 | 8.07 | exp025_top | Connecting food systems at Portland Inaugural Indigenous food summit
+P  7.53 | 5.38 | handcheck_HH | Άγιαξ: Ο αδελφός του Νούρι που κατέρρευσε συγκλονίζει – «Το χαμόγελό τ
+P  6.97 | 6.33 | handcheck_HH | In India un villaggio di 38 famiglie ha riportato in vita 230 ettari d
+P  6.70 | 5.75 | handcheck_HH | Los custodios del agua del páramo de Cumbal
+P  6.55 | 4.01 | handcheck_HH | Dwa dni po ataku wrócił do opactwa. Ranny ksiądz stanął przy ołtarzu
+P  6.53 | 4.91 | random_surfa | After historic migration wave, Ceuta works to rebuild a better sense o
+P  5.75 | 4.05 | handcheck_HH | Striscione anti-razzista tolto da polizia in una scuola di Genova, gen
+F  7.78 | 7.83 | exp025_top | This Sicilian community has endured for centuries. Can it survive a ch
+F  7.45 | 7.81 | exp025_top | The commodification of Indigenous cultures and traditions
+F  7.20 | 7.87 | exp025_top | San communities call for ownership of their history
+F  6.95 | 5.61 | handcheck_HH | Menina faz apelo em meio às queimadas no Amazonas: “Não conseguimos re
+F  6.95 | 4.23 | handcheck_HH | Hezbollah chief says Israel unable to ‘break’ the resistance on annive
+F  6.85 | 4.78 | handcheck_HH | Thousands protest Spain's housing crisis
+F  6.70 | 7.88 | exp025_top | Massacre site concerns halt plans for regional Victorian dog park
+F  6.62 | 5.72 | random_surfa | September 27 — enduring symbol of national will and sacrifice
+F  6.50 | 4.38 | handcheck_HH | Centenas de pessoas acampadas em Madrid sem data para sair
+F  6.45 | 6.47 | exp025_rando | From burning food in his mother’s kitchen to winning World Koesister D
+F  6.38 | 7.13 | random_surfa | Young Arrernte boxer sets sights on Olympics after AIS opportunity
+F  6.25 | 5.08 | random_surfa | Iran’s children return to school under the shadow of war
+F  6.10 | 5.38 | random_surfa | The making of Moby Dick - when Hollywood came to a tiny Welsh harbour
+F  6.08 | 5.35 | handcheck_HH | Tchad : le déficit pluviométrique menace la campagne agricole à Bohobé
+F  6.05 | 5.12 | handcheck_HH | Cserpes István elárulta, mi vezetett oda, hogy eladja híres sajtműhely
+F  5.83 | 5.39 | handcheck_HH | Los 500 huérfanos del "apocalipsis" de Nepal y el llamamiento de su pr
+F  5.80 | 5.24 | handcheck_HH | La Amazonía perdió casi 33 mil hectáreas de agua de cuatro grandes río
+F  5.75 | 4.01 | random_surfa | Olawepo-Hashim Lauded For Longstanding Support For Igbomina
+F  5.73 | 5.83 | handcheck_HH | “Impotencia y bronca”: se cayó un puente de 1930 y llevan 220 días sin
+F  5.70 | 5.43 | random_surfa | We knew he would be a musician, but we didn’t know he would be this bi
+F  5.70 | 5.5 | random_surfa | Judíos mexicanos
+F  5.67 | 5.16 | handcheck_HH | A month on, Nepal flood victims remain missing as hope and posters fad
+F  5.67 | 5.41 | handcheck_HH | Being hit by a football in her face revealed my daughter's cancer
+F  5.53 | 5.04 | handcheck_HH | Thousands protest ahead of Mexican president’s report on missing stude
+F  5.47 | 4.29 | handcheck_HH | बाढी र पहिरोका कारण गुल्मीमा ११ परिवार विस्थापित
+F  5.47 | 4.68 | random_surfa | Kourittenga/Rentrée scolaire : Le CCEB de Yargo fixe de nouveau cap so
+F  5.38 | 5.16 | handcheck_HH | Sostinėje pražygiavo „Žygis už gyvybę“: abortams nepritaria, bet sako 
+F  5.22 | 5.53 | handcheck_HH | Desplazados de La Guaira en Bermúdez y Paria siguen a la espera de ayu
+F  5.17 | 5.93 | handcheck_HH | Visually Impaired Cuban Bread Vendor on Bicycle Robbed in Matanzas
+F  5.17 | 5.87 | handcheck_HH | Twee Palestijnse hongerstakers in Begijnhofkerk overgebracht naar ziek
+F  5.17 | 4.29 | random_surfa | Mining couple have explosive gender reveal at Kalgoorlie's Super Pit
+F  5.08 | 4.05 | handcheck_HH | Meerdere gewonden door steekvlam op buurtfeest in De Wilp
+F  5.05 | 5.96 | handcheck_HH | As tariffs hit art, Indigenous artists face frustrating roadblocks and
+F  4.95 | 5.75 | random_surfa | Namibia: Marginalised Table Demands On VP's Desk
+F  4.85 | 4.06 | random_surfa | Remembrance Day events held in Shusha, Zangilan and Jabrayil
+F  4.67 | 4.57 | handcheck_HH | More deaths, less outrage: are we becoming numb to the horrors of fami
+F  4.67 | 5.27 | random_surfa | Van der Velde ’t Veentje Verhuizingen krijgt gemeentelijke onderscheid
+F  4.60 | 5.35 | random_surfa | Lost document uncovers true story of 'hero' who led infamous revolt
+F  4.50 | 4.84 | handcheck_HH | Flotaba en un estanque y, cuando se acercó, comprendió que luchaba por
+F  4.30 | 4.37 | handcheck_HH | Kiev residents brace for harsh winter amid increased attacks
+F  4.03 | 5.41 | handcheck_HH | No es la primera vez: vandalizan capilla en Osorno y daños son estimad
+F  3.52 | 4.1 | random_surfa | After a stalled start, this couple found a lasting match
+F  3.42 | 4.08 | random_surfa | La visite du pape à Metz sous le sceau de l’Europe et de la paix : « L
+F  3.38 | 4.73 | random_surfa | Raising 4 kids is wearing me down. I'm looking forward to connecting w
+F  3.25 | 4.73 | random_surfa | Marcela Cheloni, counselor especializada en pareja, familia y salud pe
+F  3.02 | 4.7 | handcheck_HH | Diagnosed with nephrotic syndrome at six, 11-year-old Gunit Banga shar
+F  2.95 | 4.6 | random_surfa | Computer training centre opened for children at Muwadora Uyana housing
+F  2.62 | 4.13 | random_surfa | More protein, less sugar: 500 seniors to learn tips for healthy eating
+F  2.08 | 4.12 | random_surfa | Next 4 years to focus on multifaceted transformation of Guyana – Pres 
+F  2.00 | 5.84 | handcheck_HH | 'Living in limbo': One year on from Gus Lamont's disappearance
+F  2.00 | 4.21 | random_surfa | Magoti aagiza wanaokunywa pombe asubuhi kukamatwa
+F  2.00 | 4.15 | random_surfa | MAFS, MBSSE Engages 16 School Pupils in Freetown to Tackle Food Securi
+F  1.80 | 4.23 | random_surfa | Zanzibar urged to cash in on culture, arts during AFCON
+F  1.80 | 4.22 | random_surfa | 2027: Abia North stakeholders back Otti’s re-election
+F  1.68 | 4.86 | random_surfa | Israel cannot secure the Red Sea without an African strategy - opinion
+F  1.65 | 4.42 | handcheck_HH | A month after Nepal's floods, husband still hopes his wife can be foun
+F  1.55 | 6.33 | random_surfa | World Bank Mission Engages Port Loko Communities on Land Administratio
+F  1.55 | 5.9 | random_surfa | Trump’s Mass Detention Machine in Pennsylvania
+F  1.40 | 4.18 | handcheck_HH | Krwawe żniwa. Dlaczego polscy rolnicy wciąż giną przy pracy?
+F  1.30 | 4.13 | handcheck_HH | Power cuts, rubble: millions come home to find Sudan's capital unlivab
+F  1.25 | 4.07 | handcheck_HH | Γυναικοκτονία στην Ηγουμενίτσα: Συγκλονίζει ο αδερφός της 25χρονης – «
+F  1.15 | 4.21 | random_surfa | He stole his first instrument at the age of five. Eventually, all was 
+F  1.12 | 6.16 | handcheck_HH | Neun Jahre in der Mühl-Kommune: Das Gegenteil von freiem Sex
+F  1.07 | 5.96 | handcheck_HH | Two men and a bomb blast: When Bhagat Singh and Sardar Patel’s brother
+F  1.00 | None | adverse_exis | Diego Arria: “La destrucción de la hacienda La Carolina es reflejo del

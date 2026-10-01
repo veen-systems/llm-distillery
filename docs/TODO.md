@@ -19,7 +19,10 @@
    28 B; 99 scorable). 64 labels are Claude's (12 of them revisions of hand-check verdicts). The owner has NOT reviewed them. ▶ **Next, owner:** (1) review the labels,
    and rule on the Morwell-march vs Charleville shape; (2) approve the **v1-prompt oracle CONTROL run** on
    this set. Every score on these rows today is the STUDENT's, so if v1's oracle already rejects the F rows,
-   the prompt is not the defect. (3) Set the bar's numbers after the control. Open: 9 rows are under the
+   the prompt is not the defect. (3) Set the bar's numbers after the control.
+   ✅ **Control RAN 2026-10-01** (README § Result): the v1 ORACLE passes 41/65 F rows (EXP-025 5/5, hand-check
+   23/31) → the prompt rewrite is justified. It also REJECTS 15/28 random-stratum F rows the student passed →
+   a second, student-side defect that no prompt fixes. Both need a plan. Open: 9 rows are under the
    300-char floor (2 of them P), and the recall side is thin (8 scorable P rows). Add P rows first.
 
 0b. ▶ **THE MIGRATION (NexusMind#395) — the owner's focus since 2026-09-29.** gpu-server (HCL) went offline

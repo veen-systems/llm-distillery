@@ -83,3 +83,37 @@ out (the oldest rows here are from 2026-09-21). After that, the hand-check and r
 as pre-enrichment text in the raw archives. Keep `datasets/belonging_v2_test/test_set_full.jsonl` (gitignored).
 `test_set.jsonl` here is the committed copy, cut to 300-char excerpts (the public-repo rule
 from `datasets/adverse/README.md`).
+
+## Result: v1-prompt control (2026-10-01, owner-approved)
+
+Command: `.venv/bin/python -m ground_truth.batch_scorer --filter filters/belonging/v1 --llm gemini-flash
+--source datasets/belonging_v2_test/test_set_full.jsonl --output-dir datasets/scored/belonging_v1_control_20261001`
+(Gemini 2.5 Flash, thinking off). 99/99 rows scored, 0 failed. The floor dropped exactly the 9 short rows.
+The weighted average uses `BaseBelongingScorer`'s own weights and its community_fabric gatekeeper. Per-row
+table: `v1_control_gemini_flash.txt`.
+
+| label | n | v1 ORACLE ≥ 4.0 | STUDENT ≥ 4.0 |
+|---|---|---|---|
+| P | 8 | 8 | 8 |
+| F | 65 | **41** (63%) | 64/64 scored |
+| B | 26 | 26 | 26 |
+
+How F rows split by stratum (oracle ≥ 4.0 / n):
+
+| stratum | oracle ≥ 4.0 / n | reading |
+|---|---|---|
+| EXP-025 | 5/5 | |
+| hand-check | 23/31 | the #130 shapes: the prompt passes them |
+| random surfacing | 13/28 | the oracle rejects 15 rows the student passed |
+
+**Reading.** One oracle run, my labels, no repeat run, so the run-to-run band is unknown. **Two defects, not one:**
+1. **The v1 prompt rewards the topic.** The grievance and harm rows clear 4.0 at the ORACLE, not just at the student:
+   Sicilian 7.78, commodification 7.45, San 7.20 and Robinvale 6.70, against student scores of 7.8–7.9.
+   A v2 prompt is the right fix for this.
+2. **The student over-scores generic off-lens content that the oracle rejects.** Examples: World Bank
+   mission (oracle 1.55, student 6.33), Mühl commune (1.12, student 6.16), Gus Lamont (2.00, student 5.84). A
+   prompt change does not reach this; it is a student/training-data defect (hard negatives, retrain).
+   Many of these sit just above the op-point (student 4.0–4.3), which is inside the #95 noise band.
+
+**Cost: NOT measured.** The scorer logs no token counts. The pre-run estimate was ~$0.35. Read the actual
+figure from the Google billing console.
