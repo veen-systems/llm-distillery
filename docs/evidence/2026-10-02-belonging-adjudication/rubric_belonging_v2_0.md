@@ -1,6 +1,4 @@
-# Belonging adjudication rubric v2.1 (APPROVED by the owner 2026-10-02; v2.1 adds the calibration rulings)
-
-*v2.0, the text pilots v2 and v3 and the first calibration ran on, is kept verbatim in `rubric_belonging_v2_0.md`.*
+# Belonging adjudication rubric v2 (APPROVED by the owner 2026-10-02)
 
 Judges read this before any article. It replaces `rubric_belonging.md`, whose pilot failed the owner check (3/10;
 `README.md` § *Item 3 failed*). The plan is `docs/TODO.md` ▶ START HERE item 0.
@@ -42,18 +40,12 @@ The article shows specific people, now, in one of these:
   alive.
 - **Purpose through contribution:** ongoing service to one's own community.
 - **Slow presence and rituals:** shared meals, festivals and traditions **the people themselves carry** (Q1, ruled),
-  and unhurried time together. **Out** (Q1, ruled; restored in v2.1): a listing of celebrations, an anniversary of a
-  group, a royal or state ceremony told through one participant, and a spectacle reported from the audience side.
+  and unhurried time together.
 - **Reciprocal care:** caring for family, elders or neighbours as an ongoing relationship. This includes
   **recognition of carers and helpers** (ruled).
-- **Community events where people take part**, not events where they only watch (ruled). **This includes a
-  one-day action where people act together**, e.g. residents cleaning their hospital or planting trees together
-  (ruled at calibration, v2.1). It does not need to be ongoing.
-- **Programmes where the participants create or build something together over time** (Q3, ruled), e.g. inmates
-  making theatre together, women writing songs together, women who keep meeting in a workshop to build things. **The
-  article does not need to spell out the bonds between them**; making something together is enough (ruled at
-  calibration, v2.1). This holds even when a charity or professional runs it. A service delivered TO people by staff
-  (care, therapy, advice, a response team), with participants only receiving, does not count.
+- **Community events where people take part**, not events where they only watch (ruled).
+- **Programmes where the participants build something together** (Q3, ruled). A service delivered by staff does not
+  count.
 - **A movement or protest, only when the article is about the community it built:** the people supporting each other,
   organising and sustaining one another (ruled). A protest's political fight or outcome is `out_harm_is_story`.
 - **A volunteer movement told through its founder:** in only when the article shows the volunteers and their bonds.

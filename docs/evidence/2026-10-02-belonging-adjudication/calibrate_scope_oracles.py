@@ -34,6 +34,14 @@ VERDICTS = ["in_scope", "out_gift_official", "out_one_moment", "out_harm_is_stor
 MODELS = {"gemini": "gemini-2.5-flash", "deepseek": "deepseek-chat", "claude": "claude-opus-5-5"}
 # $ per 1M tokens, as recorded in memory/oracle-pricing-scheduling.md (Gemini, DeepSeek; DeepSeek OFF-PEAK
 # cache-miss input) and the claude-api skill's model table (2026-09-25). Thinking tokens bill as output.
+# Owner rulings made at calibration (2026-10-02, rubric v2.1): label overrides, and the rows rubric v2.1 now
+# describes in its own examples (reported apart: an oracle reading v2.1 has been told the answer for them).
+OWNER_OVERRIDES = {"pilot3:british_irish_bbc_northern_ireland_dc99721a35e2": "in"}
+NAMED_IN_RUBRIC_V2_1 = {"pilot3:british_irish_bbc_northern_ireland_dc99721a35e2",
+                        "exemplar:pan_african_alwihda_info_001ee450862f", "exemplar:new_zealand_rnz_ea40d98aca4b",
+                        "exemplar:positive_news_upworthy_7475185b4e12", "exemplar:australian_abc_au_3e493327e09f",
+                        "exemplar:belgian_gazet_van_antwerpen_c8ce317be3c6", "exemplar:new_zealand_rnz_5fff0c2b0765",
+                        "exemplar:south_african_the_citizen_41a1e118ea3d"}
 PRICES = {"gemini": (0.30, 2.50), "deepseek": (0.15, 0.60), "claude": (4.00, 20.00)}
 
 
@@ -68,6 +76,13 @@ def build():
                          calib_id=f"exemplar:{r['id']}"))
         key.append(dict(calib_id=f"exemplar:{r['id']}", id=r["id"], source_set="exemplar",
                         label="in" if r["code"] == "P" else "out", label_kind="claude_exemplar_owner_lines"))
+    for k in key:
+        if k["calib_id"] in OWNER_OVERRIDES:
+            k.update(label=OWNER_OVERRIDES[k["calib_id"]], label_kind="owner_ruling_2026-10-02")
+        k["named_in_rubric_v2_1"] = k["calib_id"] in NAMED_IN_RUBRIC_V2_1
+    missing = (set(OWNER_OVERRIDES) | NAMED_IN_RUBRIC_V2_1) - {k["calib_id"] for k in key}
+    if missing:
+        raise SystemExit(f"override/named ids not in the set: {sorted(missing)}")
     ids = [k["calib_id"] for k in key]
     if len(set(ids)) != len(ids):
         raise SystemExit("duplicate calib_id")
@@ -147,7 +162,7 @@ def call(oracle, prompt, keys):
     raise SystemExit(f"unknown oracle {oracle}")
 
 
-def run(oracle, limit, workers):
+def run(oracle, limit, workers, rubric_file="rubric_belonging_v2.md", tag=""):
     from ground_truth.secrets_manager import get_secrets_manager
     sm = get_secrets_manager()
     import configparser  # DeepSeek is not in the secrets manager; read it as score_deepseek_production.py does
@@ -157,10 +172,10 @@ def run(oracle, limit, workers):
             "deepseek": cp.get("api_keys", "deepseek_api_key", fallback=None)}
     if not keys[oracle] and oracle != "claude":  # Claude: None lets the SDK resolve ANTHROPIC_API_KEY / an `ant` profile
         raise SystemExit(f"no API key for {oracle}")
-    rubric = (HERE / "rubric_belonging_v2.md").read_text()
+    rubric = (HERE / rubric_file).read_text()
     template = (HERE / "oracle_scope_prompt.md").read_text()
     rows = [json.loads(l) for l in open(OUT / "calib_set.jsonl")]
-    out_path = OUT / f"{oracle}.jsonl"
+    out_path = OUT / f"{oracle}{tag}.jsonl"
     done = set()
     if out_path.exists():
         done = {json.loads(l)["calib_id"] for l in open(out_path) if "error" not in json.loads(l)}
@@ -224,11 +239,14 @@ def wilson(k, n):
     return (max(0, c - h), min(1, c + h))
 
 
-def analyse():
+def analyse(tag="", exclude_named=False):
     key = {json.loads(l)["calib_id"]: json.loads(l) for l in open(HERE / "calib_key.jsonl")}
+    if exclude_named:
+        print(f"(excluding {sum(k['named_in_rubric_v2_1'] for k in key.values())} rows named in rubric v2.1's examples)")
+        key = {c: k for c, k in key.items() if not k["named_in_rubric_v2_1"]}
     res = {}
     for o in MODELS:
-        p = OUT / f"{o}.jsonl"
+        p = OUT / f"{o}{tag}.jsonl"
         if not p.exists():
             continue
         latest = {}
@@ -283,7 +301,16 @@ if __name__ == "__main__":
     r.add_argument("--oracle", required=True, choices=list(MODELS))
     r.add_argument("--limit", type=int, default=0)
     r.add_argument("--workers", type=int, default=8)
-    sub.add_parser("analyse")
+    r.add_argument("--rubric", default="rubric_belonging_v2.md")
+    r.add_argument("--tag", default="")
+    an = sub.add_parser("analyse")
+    an.add_argument("--tag", default="")
+    an.add_argument("--exclude-named", action="store_true")
     sub.add_parser("import-subagents")
     a = ap.parse_args()
-    {"build": build, "analyse": analyse, "import-subagents": import_subagents}.get(a.cmd, lambda: run(a.oracle, a.limit, a.workers))()
+    if a.cmd == "run":
+        run(a.oracle, a.limit, a.workers, a.rubric, a.tag)
+    elif a.cmd == "analyse":
+        analyse(a.tag, a.exclude_named)
+    else:
+        {"build": build, "import-subagents": import_subagents}[a.cmd]()

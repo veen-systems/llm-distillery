@@ -151,3 +151,52 @@ these). These look like LABEL or RUBRIC problems, not oracle problems:
   - DeepSeek would lose about half the positives before anyone sees them.
 - **Before scaling,** fix items 1–4 with the owner; they are a rubric problem. The recall intervals stay wide: n=17,
   13 of them exemplars.
+
+## Step 5: owner rulings on the four disagreements, and rubric v2.1 (2026-10-02)
+
+**The rulings:**
+1. **The DIY classes for women are in.** The judge label is overridden (`OWNER_OVERRIDES` in the script). The
+   calibration set is now 219 out / 18 in / 5 split.
+2. **A one-day action where people act together is in.** It does not need to be ongoing.
+3. **Programmes count when participants create or build together over time.** The article does not need to spell
+   out their bonds, and a charity or a professional may run it. A service delivered TO people still does not count.
+4. **The Q1 OUT examples are restored** to the rubric: a listing of celebrations, an anniversary, a ceremony told
+   through one participant, a spectacle.
+
+**The rubric:** `rubric_belonging_v2.md` is now v2.1. v2.0 is kept verbatim as `rubric_belonging_v2_0.md`; it is the
+text pilots v2 and v3 and Step 4 ran on.
+
+⚠️ **v2.1's new examples describe 8 calibration rows** (`NAMED_IN_RUBRIC_V2_1`). An oracle reading v2.1 has been
+told their answer, so they are excluded from v2.1 headlines (`analyse --exclude-named`).
+
+**Gemini re-run on v2.1** (`run --oracle gemini --tag _v2_1`; output `calibration_v2_1_gemini.txt`, 216 rows with the
+named rows excluded):
+
+| rubric | specificity | recall | cost |
+|---|---|---|---|
+| v2.0 | 206/216 = 0.954 [0.917, 0.975] | 13/13 | $0.237 |
+| v2.1 | **199/216 = 0.921** [0.878, 0.950] | 13/13 | $0.255 |
+
+The false ins rose from 10 to 17; 11 of the 17 are new under v2.1.
+
+**Reading (Claude's):**
+- **The specificity drop is not a clean measurement.** The labels were made under v2.0, and v2.1 widened the line.
+- **Some of the new false ins are probably in under the owner's rulings:**
+  - the single mothers' workshop
+  - apprentices painting a homeless shelter
+  - young people planting cashew trees together
+- **Others are clearly wrong:**
+  - a celebrity's daily ritual
+  - a housing-protest camp
+  - a networking group
+  - a paid sobriety programme
+  - colleagues at a media company
+
+  Gemini reads v2.1's widening as licence to be looser.
+- **Before Gemini is trusted as a screen on v2.1,** the calibration set needs labels made under v2.1. Out→in label
+  changes that Gemini also missed would be invisible, so recall is unmeasured too.
+
+**Spend so far** (token counts × list price, billing unconfirmed):
+- Gemini: $0.237 + $0.255.
+- DeepSeek: $0.096.
+- Claude: 534,506 subagent tokens.

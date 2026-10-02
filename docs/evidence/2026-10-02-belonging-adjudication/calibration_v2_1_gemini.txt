@@ -1,0 +1,10 @@
+(excluding 8 rows named in rubric v2.1's examples)
+
+=== gemini (gemini-2.5-flash): 242 judged, 0 missing
+  [all] specificity 199/216 = 0.921 [0.878, 0.950]   recall 13/13 = 1.000 [0.772, 1.000]
+  [pilots only] specificity 176/190 = 0.926 [0.880, 0.956]   recall 4/4 = 1.000 [0.510, 1.000]
+  false in (17): ['pilot2:positive_news_upworthy_d41e8c7a6ec2', 'pilot2:positive_news_upworthy_58d02e3ac532', 'pilot2:dutch_news_ad_algemeen_39d72e83ddd5', 'pilot2:spanish_eldiario_ecb947968120', 'pilot2:southeast_asian_straits_times_059f3008c0a5', 'pilot2:austrian_krone_2c17098389c1', 'pilot3:austrian_kleine_zeitung_328a3add228b', 'pilot3:central_asian_asia_plus_5c6697334d32', 'pilot3:indonesian_mongabay_id_e3c0aae861f4', 'pilot3:south_asian_indian_express_b2012a1e5598', 'pilot3:west_african_seneweb_e5a4438128e8', 'pilot3:mental_health_the_sober_curator_88ac7af6f2a0', 'pilot3:positive_news_good_good_good_8b4021582952', 'pilot3:south_asian_indian_express_690c82e86d08', 'exemplar:positive_news_reasons_to_be_cheerful_e4a08299c3bb', 'exemplar:belgian_dh_les_sports_7b211d4e274c', 'exemplar:australian_abc_au_620918255c16']
+  missed in (0): []
+  split rows: [('pilot2:spanish_mongabay_latam_5de90b6aeba3', 'in_scope'), ('pilot3:positive_news_indian_country_today_e7ae96e783bc', 'in_scope'), ('pilot3:west_african_aib_burkina_94474a780caa', 'in_scope'), ('pilot3:indonesian_mongabay_id_e9351bcb842d', 'in_scope'), ('pilot3:turkish_trt_world_70c9f9445bfc', 'in_scope')]
+  tokens in 632,563 out 26,044; cost at list price $0.255 ($1.05 per 1,000 articles, THIS prompt: rubric v2 + article, judge text)
+  models seen: ['gemini-2.5-flash']
