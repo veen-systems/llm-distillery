@@ -1,0 +1,30 @@
+
+=== gemini (gemini-2.5-flash): 242 judged, 0 missing
+  [all] specificity 209/220 = 0.950 [0.913, 0.972]   recall 15/17 = 0.882 [0.657, 0.967]
+  [pilots only] specificity 182/191 = 0.953 [0.913, 0.975]   recall 4/4 = 1.000 [0.510, 1.000]
+  false in (11): ['pilot2:community_social_dev_to_e470de9e894b', 'pilot2:positive_news_upworthy_d41e8c7a6ec2', 'pilot2:positive_news_upworthy_58d02e3ac532', 'pilot2:southeast_asian_straits_times_059f3008c0a5', 'pilot3:british_irish_bbc_northern_ireland_dc99721a35e2', 'pilot3:new_zealand_the_spinoff_cba950c31d31', 'pilot3:south_asian_indian_express_b2012a1e5598', 'pilot3:south_american_brasil_de_fato_aa44f7ae3d03', 'pilot3:mental_health_the_sober_curator_88ac7af6f2a0', 'exemplar:belgian_dh_les_sports_7b211d4e274c', 'exemplar:australian_abc_au_620918255c16']
+  missed in (2): ['exemplar:pan_african_alwihda_info_001ee450862f', 'exemplar:new_zealand_rnz_ea40d98aca4b']
+  split rows: [('pilot2:spanish_mongabay_latam_5de90b6aeba3', 'in_scope'), ('pilot3:positive_news_indian_country_today_e7ae96e783bc', 'in_scope'), ('pilot3:west_african_aib_burkina_94474a780caa', 'in_scope'), ('pilot3:indonesian_mongabay_id_e9351bcb842d', 'in_scope'), ('pilot3:turkish_trt_world_70c9f9445bfc', 'in_scope')]
+  tokens in 574,241 out 25,869; cost at list price $0.237 ($0.98 per 1,000 articles, THIS prompt: rubric v2 + article, judge text)
+  models seen: ['gemini-2.5-flash']
+
+=== deepseek (deepseek-chat): 242 judged, 0 missing
+  [all] specificity 217/220 = 0.986 [0.961, 0.995]   recall 9/17 = 0.529 [0.310, 0.738]
+  [pilots only] specificity 189/191 = 0.990 [0.963, 0.997]   recall 2/4 = 0.500 [0.150, 0.850]
+  false in (3): ['pilot3:british_irish_bbc_northern_ireland_dc99721a35e2', 'pilot3:new_zealand_the_spinoff_cba950c31d31', 'exemplar:australian_abc_au_620918255c16']
+  missed in (8): ['pilot2:community_social_reddit_made_me_smile_4f9f4c128f9a', 'pilot3:greek_protothema_3d4a8e200a0b', 'exemplar:pan_african_alwihda_info_001ee450862f', 'exemplar:new_zealand_rnz_27443af4a058', 'exemplar:new_zealand_rnz_ea40d98aca4b', 'exemplar:new_zealand_rnz_ee2a0e342301', 'exemplar:positive_news_upworthy_7475185b4e12', 'exemplar:australian_abc_au_3e493327e09f']
+  split rows: [('pilot2:spanish_mongabay_latam_5de90b6aeba3', 'in_scope'), ('pilot3:positive_news_indian_country_today_e7ae96e783bc', 'out_harm_is_story'), ('pilot3:west_african_aib_burkina_94474a780caa', 'out_one_moment'), ('pilot3:indonesian_mongabay_id_e9351bcb842d', 'out_culture_topic'), ('pilot3:turkish_trt_world_70c9f9445bfc', 'in_scope')]
+  tokens in 566,465 out 18,793; cost at list price $0.096 ($0.40 per 1,000 articles, THIS prompt: rubric v2 + article, judge text)
+  models seen: ['deepseek-flash']
+
+=== claude (claude-opus-5-5): 242 judged, 0 missing
+  [all] specificity 216/220 = 0.982 [0.954, 0.993]   recall 13/17 = 0.765 [0.527, 0.904]
+  [pilots only] specificity 189/191 = 0.990 [0.963, 0.997]   recall 4/4 = 1.000 [0.510, 1.000]
+  false in (4): ['pilot3:british_irish_bbc_northern_ireland_dc99721a35e2', 'pilot3:indonesian_mongabay_id_e3c0aae861f4', 'exemplar:new_zealand_rnz_5fff0c2b0765', 'exemplar:belgian_gazet_van_antwerpen_c8ce317be3c6']
+  missed in (4): ['exemplar:pan_african_alwihda_info_001ee450862f', 'exemplar:new_zealand_rnz_ea40d98aca4b', 'exemplar:positive_news_upworthy_7475185b4e12', 'exemplar:australian_abc_au_3e493327e09f']
+  split rows: [('pilot2:spanish_mongabay_latam_5de90b6aeba3', 'in_scope'), ('pilot3:positive_news_indian_country_today_e7ae96e783bc', 'in_scope'), ('pilot3:west_african_aib_burkina_94474a780caa', 'in_scope'), ('pilot3:indonesian_mongabay_id_e9351bcb842d', 'in_scope'), ('pilot3:turkish_trt_world_70c9f9445bfc', 'in_scope')]
+  cost: no per-call token counts (Claude Code subagents; see CALIBRATION.md for subagent tokens)
+  models seen: ['claude-opus-5-5 (Claude Code subagent)']
+agreement gemini vs deepseek (binary): 225/242
+agreement gemini vs claude (binary): 227/242
+agreement deepseek vs claude (binary): 230/242

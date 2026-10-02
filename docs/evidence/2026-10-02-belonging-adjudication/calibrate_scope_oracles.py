@@ -189,6 +189,31 @@ def run(oracle, limit, workers):
     print(f"{oracle}: {sum('error' not in r for r in recs)} ok, {sum('error' in r for r in recs)} error lines in file")
 
 
+def import_subagents():
+    """Claude oracle via Claude Code subagents (no Anthropic API key on this machine; owner, 2026-10-02).
+    Five blind batches C1-C5 under calib/claude_subagent/, opaque ids mapped back by id_map.json. Writes claude.jsonl."""
+    base = OUT / "claude_subagent"
+    id_map = json.load(open(base / "id_map.json"))
+    recs = []
+    for b in sorted(base.glob("C*")):
+        inp = [json.loads(l)["id"] for l in open(b / "input.jsonl")]
+        out = [json.loads(l) for l in open(b / "out.jsonl")]
+        if [r["id"] for r in out] != inp:
+            raise SystemExit(f"{b.name}: ids are not the input ids in input order")
+        for r in out:
+            if r["verdict"] not in VERDICTS:
+                raise SystemExit(f"{b.name}: {r['id']} verdict {r['verdict']!r}")
+            recs.append(dict(calib_id=id_map[r["id"]], oracle="claude", model="claude-opus-5-5 (Claude Code subagent)",
+                             usage=None, batch=b.name, verdict=r["verdict"], quote=r.get("quote", ""),
+                             reason=r.get("reason", "")))
+    if sorted(r["calib_id"] for r in recs) != sorted(id_map.values()):
+        raise SystemExit("subagent outputs do not cover the calibration set exactly once")
+    with open(OUT / "claude.jsonl", "w") as f:
+        for r in recs:
+            f.write(json.dumps(r, ensure_ascii=False) + "\n")
+    print(len(recs), "claude rows imported")
+
+
 def wilson(k, n):
     if n == 0:
         return (float("nan"), float("nan"))
@@ -230,6 +255,10 @@ def analyse():
         print(f"  missed in ({len(fn)}): {fn}")
         split = [c for c, k in key.items() if k["label"] == "split" and c in R]
         print(f"  split rows: {[(c, R[c]['verdict']) for c in split]}")
+        if any(not r.get("usage") for r in R.values()):
+            print("  cost: no per-call token counts (Claude Code subagents; see CALIBRATION.md for subagent tokens)")
+            print(f"  models seen: {sorted({r['model'] for r in R.values()})}")
+            continue
         tin = sum(r["usage"]["input"] for r in R.values())
         tout = sum(r["usage"]["output"] for r in R.values())
         pi, po = PRICES[o]
@@ -255,5 +284,6 @@ if __name__ == "__main__":
     r.add_argument("--limit", type=int, default=0)
     r.add_argument("--workers", type=int, default=8)
     sub.add_parser("analyse")
+    sub.add_parser("import-subagents")
     a = ap.parse_args()
-    {"build": build, "analyse": analyse}.get(a.cmd, lambda: run(a.oracle, a.limit, a.workers))()
+    {"build": build, "analyse": analyse, "import-subagents": import_subagents}.get(a.cmd, lambda: run(a.oracle, a.limit, a.workers))()
