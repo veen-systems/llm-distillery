@@ -6,52 +6,38 @@
 moved VERBATIM to `docs/TODO-archive.md` § *Moved 2026-10-02*; its numbered items 1–8 are re-listed below as one-liners.
 Session records: `memory/project_session_2026_10_02_belonging_reshape.md` (latest), `memory/project_session_2026_10_02_belonging_v2.md`.*
 
-0. ▶ **BELONGING — reshape the training data (the human_thriving v9 recipe). Plan approved by the owner 2026-10-02.**
-   Why: ovr.news reads less engaging than an external human-curated selection (ovr EXP-025: Belonging weakest),
-   while readers want Belonging most (EXP-005). **All numbers live in
-   `docs/evidence/2026-10-02-belonging-reader-snapshot/README.md`. Read it; do not copy figures here.**
-   - **Measured:** passer volume and its raw bands. Reader-facing rows are only the winners of ovr's top-50-per-lens
-     cap (raw ≥ ~5.6), not every passer. Also measured: v1's positive count, and where the curator's picks score.
-   - **Claude's read (owner not checked):** most reader-facing articles are off-lens, and the score does not separate
-     fits from junk. Most v1 positives are feel-good stories from positive-news feeds.
-   - **Owner rulings 2026-10-02:** the middle definition plus the "doing" test, and three boundaries (Q1–Q3 in the
-     adjudication rubric). Detail in
-     `docs/evidence/2026-10-01-belonging-v2-test-set/README.md` § *Owner rulings*. The v2 DRAFT prompt is PARKED.
+0. ▶ **BELONGING — retrain on adjudicated data, REVISED PLAN (owner-approved 2026-10-02, evening).**
+   The first rubric failed the owner check (3/10). The doing test had been overextended, and the external curator turned
+   out to be a generalist feed: it is no longer the yardstick.
+   - **Definition:** `docs/evidence/2026-10-02-belonging-adjudication/rubric_belonging_v2.md`, APPROVED. It rests on
+     Baumeister & Leary 1995, McMillan & Chavis 1986, v1's STEP 1 and the owner's rulings.
+   - **All evidence:** `docs/evidence/2026-10-02-belonging-adjudication/README.md`. The full plan is local, at
+     `~/.claude/plans/splendid-purring-acorn.md`.
    ▶ **Phases** (owner checkpoint after each):
-   1. ✅ **Rubric + exemplars (2026-10-02).** `docs/evidence/2026-10-02-belonging-adjudication/`: the rubric and 51
-      exemplars. The owner ruled Q1–Q3 (festivals, marches, programmes), each time as proposed. The owner ruled the
-      lines, not the rows. The test set was rebuilt to the rulings (23 P / 68 F / 28 B).
-   2. ⛔ **Pilot run 2026-10-02: FAILED the owner check, 3/10.**
-      - Controls passed 4/4, and A vs B agreed 1.000. The rubric was stricter than the owner.
-      - The definition is REOPENED, and the curator is dropped as Belonging's yardstick.
-      - **The plan is being REVISED** (research-grounded rubric, then a fresh pilot). Evidence:
-        `docs/evidence/2026-10-02-belonging-adjudication/README.md`.
-      - ▶ **NEXT:** the revised plan for owner approval, then the rubric draft. Do NOT run phase 3 on the current
-        rubric.
-   3. **Adjudicate v1's rows at ≥ 3.5** (b650 splits). Moved-out rows are capped at 2.0 **on every dimension**.
-   4. **Production harvest, adjudicated.** Strata:
-      - passers that win the cap (raw ≥ ~5.6)
-      - passers that lose it (4.0–5.6)
-      - plus the curator picks the student passes; they sit in both strata
-      - the 2.5–4.0 near-miss band
-
-      In-scope rows get Gemini v1-prompt scores, k=3 (**owner approves the spend, ~$1–3 est.**). Out-of-scope rows
-      become hard negatives.
-   5. **Build `belonging_v1_adj1` and retrain on b650** (`--medium-threshold 4.0` explicit). Use belonging's weights,
-      NOT `adverse_suite_gate`'s (uplifting v7).
-   6. **Gate on v1's test ids**, with the verdict rule committed first. ⚠️ `ground_truth_gate.py`'s
-      `load_scoring_spec` falls back to nature_recovery's weights on any config parse error, so assert that the
-      report shows `gatekeeper_cap` 3.42 and belonging's dims.
-   7. **Live audit**, plus whether the curator's stories win cap slots (never checked for v1).
-   ⛔ **Never name the curator in this repo or on GitHub** (owner, 2026-10-02). Its data stays in the gitignored
-   `datasets/external_curator/`.
-   ⛔ Exemplar ids, the v2 test set and the 200 reader sample stay out of every training draw.
-   - **Full plan** (local, not in the repo): `~/.claude/plans/adaptive-tumbling-naur.md`. Thriving scripts to adapt:
-     `docs/evidence/2026-09-24-thriving-adjudication-full/merge.py` and
-     `docs/evidence/2026-09-24-thriving-more-positives/build_adj3.py`. `judge_instructions.md` and `build_panel.py`
-     are in `docs/evidence/2026-09-25-v8-adj3-live-audit/`.
-   - **Owner decision pending:** the curator's name is already public in this repo and on one GitHub issue comment.
-     The inventory and the options are in the local plan file. Do nothing until the owner rules.
+   - 1R. ✅ Rubric v2 plus `exemplars_v2.tsv` (13 P / 9 B / 29 out). The dev check on the 10 first-pilot rows is in
+     `dev_check_v2.tsv`.
+   - 2R. ⚠️ **Pilot v2 ran.**
+     - Controls 4/4. The owner agreed 7, disagreed 0, was unsure on 3: the line is aligned.
+     - κ failed on prevalence: 1 disagreement in 100, with ~2 in-scope rows.
+     - **In-scope stories are nearly absent at random:** v1 above 1/39, production 0/30.
+     - ▶ **NEXT (owner decision):** an enriched re-pilot plus a retrieval-based harvest, using
+       `scripts/screening/embedding_screener.py` (ADR-011) seeded with the P exemplars.
+   - 3. Adjudicate v1's rows at ≥ 3.5. Moved-out rows are capped at 2.0 on every dimension.
+   - 4. **The production harvest is now the MAIN positive source**, in two rounds sized from the measured in-scope
+     rate.
+     - The builder must RAISE on any exemplar overlap.
+     - Oracle spend: Gemini v1 prompt, k=3, owner-approved per round.
+   - 5. Build `belonging_v1_adj1` and retrain on b650. Weights come from belonging's `base_scorer.py`,
+     `--medium-threshold 4.0`.
+   - 6. Gate on v1's test ids, with the verdict rule committed first. Assert that the 3.42 cap and belonging's dims
+     appear. Morwell is a recall miss by design.
+   - 7. Live audit: the owner's blind 20. The curator is a footnote only.
+   ⛔ **Never name the curator** in this repo or on GitHub. Its data stays in the gitignored `datasets/external_curator/`.
+   ⛔ Exemplars, the dev rows, both pilots' samples, the v2 test set and the reader sample stay out of every training draw.
+   - **Owner decision pending:** the curator's name is already public in places. The inventory is in the old local plan,
+     `~/.claude/plans/adaptive-tumbling-naur.md`.
+   - **Cross-repo:** the curator question (cross-lens selection, EXP-025) belongs to ovr.news. Tell that session; post
+     nothing without the owner.
 
 1. **Decision-0 sync to NexusMind** — ONE NexusMind commit. The sequence is in the archived block (item 1):
    - dry-run diff first

@@ -1,0 +1,11 @@
+n	id	stratum	score	oracle_in	consensus	A_verdict	B_verdict	owner	agree
+1	community_social_reddit_made_me_smile_4f9f4c128f9a	above	5.775	True	in	in_scope	in_scope	in	True
+2	dutch_news_nos_algemeen_5173c808a4c8	near	3.825	False	out	out_harm_is_story	out_harm_is_story	unsure	-
+3	dutch_news_nos_algemeen_8fe9760c8f72	above	5.1	True	out	out_harm_is_story	out_harm_is_story	out	True
+4	positive_news_upworthy_06b3b6acb364	above	4.15	True	out	out_one_moment	out_one_moment	out	True
+5	south_asian_times_of_india_e736af1649ab	prod	7.0456	True	out	out_one_moment	out_one_moment	unsure	-
+6	south_american_cuba_headlines_e949bbfa3217	prod	4.1216	True	out	out_harm_is_story	out_harm_is_story	out	True
+7	french_sciences_et_avenir_2c4a3e2a4845	above	6.625	True	out	out_harm_is_story	out_harm_is_story	out	True
+8	community_social_reddit_made_me_smile_d35fef8ac7d1	above	5.1	True	out	out_one_moment	out_one_moment	out	True
+9	west_african_vanguard_ng_d5451ee65597	prod	4.774	True	out	out_other	out_other	out	True
+10	austrian_krone_2c17098389c1	prod	5.1234	True	out	out_other	out_other	unsure	-

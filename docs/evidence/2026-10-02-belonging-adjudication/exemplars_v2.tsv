@@ -1,0 +1,52 @@
+code	claude_verdict	article_id	from	language	raw	title	reason
+P	in_scope	british_irish_guardian_uk_3243001d4d87	curator_pick	en	6.59	‘It’s transformed the village’: the volunteers greening up Britain’s train stations	volunteer groups keep their stations planted: ongoing bonds around a shared place
+P	in_scope	pan_african_alwihda_info_4f54e2c1d59c	reader_sample	fr	6.56	Chad alumni restore historic school	former pupils re-roof and fence their old school: place attachment, contribution
+P	in_scope	positive_news_upworthy_59a8c7bcb616	reader_sample	en	6.58	Texas retirement home residents build furniture and community	residents of a retirement home keep helping neighbours assemble furniture
+P	in_scope	pan_african_alwihda_info_001ee450862f	reader_sample	fr	6.65	Chad’s youth and women clean up hospital	youth and women's networks clean their hospital together (a community event people take part in)
+P	in_scope	new_zealand_rnz_27443af4a058	reader_sample	en	7.42	Māori-led project restores Aotea Great Barrier Island ecosystem	iwi-led restoration of their island; "protecting native species and healing whanau"
+P	in_scope	new_zealand_rnz_ea40d98aca4b	reader_sample	en	6.32	New Zealanders plant kauri seedlings to fight tree dieback	mana whenua and volunteers plant kauri on their ranges
+P	in_scope	indonesian_mongabay_id_df1256862239	reader_sample	id	6.73	Lombok villagers sustain water sources through ritual	a village ritual the people carry that maintains their springs (Q1 IN list)
+P	in_scope	vietnamese_vnexpress_vn_adc0f4200ce3	reader_sample	vi	6.70	Estonia’s Seto people revive tradition with one-day “kingdom”	a border-divided people stage their own yearly kingdom and re-meet (Q1 IN list)
+P	in_scope	new_zealand_rnz_ee2a0e342301	reader_sample	en	7.05	Children learn water safety through te reo Māori	schools run a swim event in te reo: a language carried by the community (Q1 IN list)
+P	in_scope	positive_news_upworthy_7475185b4e12	reader_sample	en	6.38	Italy’s oldest prison uses theatre to help inmates heal	inmates co-create a prison theatre company over decades (Q3 IN)
+P	in_scope	australian_abc_au_3e493327e09f	curator_pick	en	6.72	'Silenced' women regain their voices through Queensland music program	women leaving shelters write and sing together (Q3 IN)
+P	in_scope	arabic_khaleej_times_96980715085f	reader_sample	en	6.75	Dubai club fosters community for senior expats	a seniors' club meeting every other Saturday: ongoing bonds (ruled IN)
+P	in_scope	spanish_eldiario_1292add7258e	reader_sample	es	7.06	Lario family shapes clay in Lorca for 465 years	one family passes a pottery craft down for 465 years: intergenerational (ruled IN)
+B	borderline	australian_abc_au_62f89804707d	reader_sample	en	6.61	Kalumburu opens men’s centre to address domestic violence	a police sergeant's idea, residents collaborate; the centre is also a service
+B	borderline	positive_news_good_good_good_b7018371df8b	reader_sample	en	7.32	Colombian Indigenous fishers shift from shark hunting to conservation	a non-profit conservation programme, told through one fisher
+B	borderline	south_asian_kathmandu_post_b174b0718f3f	reader_sample	en	6.15	Nepal flood response led by local communities	researchers' opinion column on what communities do in general
+B	borderline	positive_news_the_better_india_ad0d12b375d0	reader_sample	en	6.65	Volunteers remove hundreds of tonnes of waste from Himalayan trails	volunteers removed 500+ tonnes of waste, told as a founder's foundation (founder-told ruling)
+B	borderline	british_irish_guardian_global_development_b1f393447e12	curator_pick	en	4.09	Ethics and evil: the villagers reviving India’s debating traditions	a 754-char teaser: thousands gather for debate tournaments
+B	borderline	canadian_global_news_4a972b8d4973	reader_sample	en	6.33	Edmonton menders seek sustainability through clothing repair	residents mend clothes together at a one-off event
+B	borderline	british_irish_guardian_society_f638847b2ce9	curator_pick	en	5.38	‘The fears begin to fall away’: why Britain’s mosques are opening their doors to public	mosques open doors to neighbours after attacks; an 838-char teaser, institutions as actors
+B	borderline	balkan_klix_ba_9293dc1e3839	reader_sample	bs	6.28	Golden circle event supports children with cancer in Bosnia	citizens walk for children with cancer (taking part), opened by a mayor, a minister and sponsors
+B	borderline	british_irish_guardian_world_4fd06b1ecec8	curator_pick	en	6.68	Seeds of hope: how a local farming project is offering a lifeline to Gaza	a community seed bank told through its founder and his daughter (founder-told ruling)
+out_gift_official	out_gift_official	pan_african_ghanaian_chronicle_43da82a4c491	reader_sample	en	6.01	Ghanaian Chief supports students with resources	a chief donates learning materials
+out_gift_official	out_gift_official	west_african_punch_ng_09d36ee26016	reader_sample	en	5.89	Nigerian Navy brings water to Gombe community	the navy inaugurates a water project
+out_gift_official	out_gift_official	industry_intelligence_fast_company_3563f570db8e	curator_pick	en	5.17	Dolly Parton’s beloved free-book program is getting a major expansion after her death	a celebrity foundation's free-book program expands
+out_gift_official	out_gift_official	balkan_klix_ba_bd27573beaeb	reader_sample	bs	6.42	Restored mosque reopens in Bosnia and Herzegovina	officials and clergy reopen a restored mosque
+out_gift_official	out_gift_official	west_african_aib_burkina_568a2c586e0f	reader_sample	fr	5.85	Women’s cooperative donates hygiene products to Burkina Faso health center	a women's cooperative donates soap: a group's one-off gift (Q3)
+out_gift_official	out_gift_official	positive_news_indian_country_today_702c427322a1	reader_sample	en	7.47	Orange Shirt Day honors boarding school children	government-sponsored remembrance events (state commemoration)
+out_one_moment	out_one_moment	portuguese_sonoticiaboa_7b16a6d053ec	reader_sample	pt	6.69	Mother from Rio’s Cidade de Deus graduates university at 45	a mother graduates at 45: an achievement
+out_one_moment	out_one_moment	south_american_cuba_headlines_d8011b247ea7	reader_sample	en	6.72	Cuban barber brings hope with free haircuts in Las Vegas	one barber gives free haircuts: a viral kindness
+out_one_moment	out_one_moment	south_african_the_citizen_41a1e118ea3d	reader_sample	en	7.63	Zulu Reed Dance draws 30,000 maidens in cultural display	a royal reed dance told through one debutante (Q1 OUT list)
+out_harm_is_story	out_harm_is_story	canadian_globe_mail_25d28179bec7	reader_sample	en	6.21	Shooting at Ontario synagogue escalates antisemitism concerns	a synagogue shooting
+out_harm_is_story	out_harm_is_story	mexican_la_jornada_4e91608fec09	reader_sample	es	7.12	Rarámuri communities demand self-determination in Chihuahua	communities demand self-determination: the political fight
+out_harm_is_story	out_harm_is_story	arabic_aljazeera_en_58e9bf65540b	reader_sample	en	7.47	Palestinian farmers defend farms from settler attacks in Hebron	one farmer endures settler attacks: the harm is the story
+out_harm_is_story	out_harm_is_story	belgian_bruzz_158fc4479141	reader_sample	nl	7.02	Brussels residents remember Jewish victims of 1942 raid	residents march to remember a 1942 raid: remembering only (Q2)
+out_harm_is_story	out_harm_is_story	belgian_vrt_nieuws_en_44ea7f8f1042	reader_sample	en	6.47	Antwerp’s Nepali community mourns flood victims	a diaspora community gathers to mourn flood victims: grieving only (Q2)
+out_culture_topic	out_culture_topic	caucasus_hetq_91f3097815a3	reader_sample	en	7.26	Museum exhibits centuries of Syrian-Armenian metalwork	a museum's metalwork collection
+out_culture_topic	out_culture_topic	arabic_aljazeera_en_112f5841e86c	reader_sample	en	6.93	Kashmir’s ancient wedding feast evolves with the times	a wedding feast tradition, as a photo essay
+out_culture_topic	out_culture_topic	balkan_vecernji_945ff97a63eb	reader_sample	hr	6.95	Bosnian franciscan’s book offers new theological perspectives	a theologian's new book
+out_event_spectated	out_event_spectated	australian_abc_au_fb9f91573d7b	reader_sample	en	6.84	Red CentreNATS drives enthusiasm and economy in Alice Springs	a car festival: drag races and burnouts watched by crowds
+out_event_spectated	out_event_spectated	east_african_lexpress_madagascar_b156bebd2863	reader_sample	fr	7.66	Morengy wrestling gains momentum in northern Madagascar	crowds watch traditional wrestling
+out_event_spectated	out_event_spectated	southeast_asian_free_malaysia_4a48f131f94f	reader_sample	en	6.66	Horse race revives tradition in West Bank village	a horse race returns: jockeys race, spectators cheer
+out_event_spectated	out_event_spectated	new_zealand_rnz_5fff0c2b0765	reader_sample	en	7.03	New Zealand’s Asian communities celebrate harvest festivals	a listing of mid-autumn celebrations (Q1 OUT list)
+out_event_spectated	out_event_spectated	belgian_gazet_van_antwerpen_c8ce317be3c6	reader_sample	nl	6.12	Belgian musicians mark 45 years of street performances	a street band marks its 45th year (Q1 OUT list)
+out_other	out_other	us_news_npr_a1ebc2062563	curator_pick	en	5.82	How unarmed 911 teams are reshaping public safety in nearly 100 cities	a city's unarmed response teams: a service run by staff (Q3)
+out_other	out_other	positive_news_reasons_to_be_cheerful_e4a08299c3bb	curator_pick	en	6.37	With Adapted Sailing, the Sea Is for Everyone	a sailing programme told through one participant (Q3)
+out_other	out_other	belgian_dh_les_sports_7b211d4e274c	reader_sample	fr	6.48	Students tutor teenagers in Belgium’s Brabant wallon region	a non-profit tutoring programme with paid student tutors (Q3)
+out_other	out_other	australian_abc_au_620918255c16	reader_sample	en	6.58	Young Australians build agriculture networks	a young professionals' networking group (v1 OUT: professional networking)
+out_other	out_other	baltic_err_ee_965fde51649d	reader_sample	en	6.32	Dog finds home after four years in Estonian shelter	a shelter dog finds a home
+out_other	out_other	south_asian_kathmandu_post_b576b8c2d153	reader_sample	en	6.24	Nepal’s Tenzing Sherpa wins karate bronze at Asian Games	a karate bronze medal
+out_other	out_other	us_news_npr_786c48d8cebc	curator_pick	en	6.01	This farm raised thousands of pigs for slaughter. Now it's growing mushrooms instead	one family farm switches from pigs to mushrooms

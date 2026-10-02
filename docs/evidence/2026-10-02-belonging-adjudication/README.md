@@ -229,3 +229,55 @@ shorter window). Some rows are `stage1_low`: 4 each for cd, nr and solutions. Th
 - 46 picks over one month, matched on url.
 - About half of the curator's in-window stories never reached our scoring.
 - The pass counts are student scores, not oracle labels.
+
+## Phase 1R and 2R: rubric v2 and the second pilot (2026-10-02, evening)
+
+The plan was revised with owner approval; it is local at `~/.claude/plans/splendid-purring-acorn.md`.
+
+**Rubric:** `rubric_belonging_v2.md`, approved by the owner. It rests on Baumeister & Leary 1995 and McMillan & Chavis
+1986, both checked on 2026-10-02, plus v1's STEP 1 and the owner's rulings.
+
+**Rulings made at the dev check** (`dev_check_v2.tsv`, against the first pilot's 10 rows):
+- Protests count only when the article is about the community the movement built.
+- A founder-told movement counts only when the volunteers and their bonds are shown.
+- A portrait of one person at a shared event is out.
+- Social clubs whose members keep meeting are in.
+- One family passing a craft down the generations is in.
+
+**Exemplars:** `exemplars_v2.tsv` has 13 P, 9 B and 29 out. ⚠️ The P rows cover collective action and place well,
+but intergenerational ties, care and slow presence barely appear among the candidates.
+
+**Pilot v2** (`PREREGISTRATION_v2.md`, `pilot_v2_result.txt`). Cost: $0, four subagents of ~95–112k tokens each.
+
+| bar item | result |
+|---|---|
+| 1. controls | **4/4 in both passes**, including both newly ruled IN shapes |
+| 2. A vs B | binary agreement **0.990**, κ **0.662**: **FAIL** (bar 0.75) |
+| 3. owner spot-check | **7 agree, 0 disagree, 3 unsure** (`spot_check_v2_owner.tsv`). Under the ≥ 9/10 bar: **not met** |
+| 4. presence | 68 of 99 consensus rows disagree with the oracle |
+
+**Consensus `in_scope` rate per stratum:**
+
+| stratum | in scope | predicted |
+|---|---|---|
+| v1 near | 0/30 | 5–25% |
+| v1 above | 1/39 | 15–35% |
+| production passers | **0/30** | 25–50% |
+
+**Reading** (Claude's read, after reading all 70 above/prod rows):
+- **The line is aligned.** The owner disagreed with the judges on 0 rows, against 6 in the first pilot.
+- **The three unsure rows are boundaries, not errors:**
+  - neighbours in a flooded street
+  - a lone artisan's festival craft
+  - a single mothers' workshop programme
+- **Item 2 fails on prevalence, not on disagreement.** The passes differ on 1 row of 100. With ~2 in-scope rows in the
+  sample, one disagreement caps κ near 0.66. **The bar was unreachable at this rarity** and was not checked before it
+  was set (`feedback-prove-the-bar-is-reachable`). It is reported as FAIL and not re-scored.
+- **The in-scope side is untested.** Only 1 consensus-`in_scope` row existed outside the controls.
+- **Random samples contain almost no lived belonging.**
+  - The production prediction came from the reader sample, whose rows had all won the top-50 cap (raw ≥ 5.6).
+    A random passer sits much lower.
+  - The judges' out verdicts on production read as right: a fashion show, a council report, protests, road spending.
+- **The consequence for the plan:** phase 4's random harvest would yield almost no positives. Positives have to be
+  RETRIEVED, using `scripts/screening/embedding_screener.py` (ADR-011, e5-small seeds) with the P exemplars as seeds.
+  The pilot also needs an enriched stratum before κ and the in-scope side can be tested.

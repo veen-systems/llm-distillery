@@ -1,0 +1,11 @@
+n	id	owner_spot_check	owner_amended	claude_v2	agree	note
+1	(spot_check_key.tsv row 1)	unsure	unsure	out_one_moment	-	a founder's biography
+2	(row 2)	in	out	out_one_moment	yes	one-person split ruled: a one-off rescue is out
+3	(row 3)	in	in	in_scope	yes	children and parents taking part in a community afternoon
+4	(row 4)	out	out	out_harm_is_story	yes	
+5	(row 5)	out	out	out_other	yes	
+6	(row 6)	out	out	out_other	yes	
+7	(row 7)	in	depends	out_other	ruled	founder-told movement: in only when the volunteers and bonds are shown; this text is a profile with totals
+8	(row 8)	in	out	out_one_moment	ruled	the owner ruled a portrait at a shared event is out
+9	(row 9)	in	in	in_scope	yes	recognition of carers (ruled in)
+10	(row 10)	in	out	out_harm_is_story	ruled	the protest line ruled: only the community it built counts
