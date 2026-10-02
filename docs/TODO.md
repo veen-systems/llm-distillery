@@ -28,8 +28,9 @@
         every row.
       - The owner's "unsure" rows get their own label.
       - Then `calibrate_scope_oracles.py analyse --tag _v2_1` recomputes Gemini; no new calls are needed.
-      - Optional: **one more Gemini v2.0 run as a noise floor**, about $0.24 estimated, needs owner approval. 15 of
-        242 verdicts flipped between runs, so there is no floor yet.
+      - **Plus one more Gemini v2.0 run as a noise floor** (APPROVED by the owner 2026-10-02, about $0.24 estimated):
+        `calibrate_scope_oracles.py run --oracle gemini --tag _v2_0_rep`. 15 of 242 verdicts flipped between runs,
+        so there is no floor yet.
    2. **Owner check, 10 rows in both directions:** Gemini-vs-judge disagreements plus consensus-in rows. The owner
       reads the article's own opening. Positives anchored to the owner are the gap: 13 of 18 positives are Claude's
       exemplars.
@@ -47,8 +48,13 @@
       - gate on v1's test ids (Morwell is a recall miss by design)
       - a live audit with the owner's blind 20
    ⛔ **Never name the curator** in this repo or on GitHub. Its data stays in the gitignored `datasets/external_curator/`.
-   The owner decision on the name already being public is still pending; the inventory is in the old local plan,
-   `~/.claude/plans/adaptive-tumbling-naur.md`.
+   **Ruled 2026-10-02 (owner): forward-only redaction plus a guard. Done:**
+   - 41 tracked files (59 lines) now read `positive_news_curator_a` / `curator-a.invalid`; the reverse map is local
+     in `datasets/external_curator/redaction_map.json`.
+   - The #130 comment was edited. GitHub keeps its edit history, and only deleting it would remove that.
+   - `.githooks/pre-commit` and `commit-msg` block the name. The patterns are in the gitignored
+     `config/credentials/forbidden_names.txt`; another clone needs that file.
+   - History was NOT rewritten.
    - **Cross-repo:** the curator question (cross-lens selection, EXP-025) belongs to ovr.news. Post nothing without the
      owner.
 
@@ -71,8 +77,11 @@
      frozen appendix moved VERBATIM to `memory/archive/session-log-2026-08-and-appendix.md` (0 lines lost, checked).
      Read surface: **911,068 → 838,699 chars** (`/curate` Step 0's command).
    - **Open, in order:**
-     - c. **The unreachable-mechanism catalogue**: 55 dated `###` entries are kept by rule. Mechanize, then retire
-       entries whose class has a `live` row in § *Mechanized*. Changing the keep-rule is an **owner call**.
+     - c. **The unreachable-mechanism catalogue** (55 dated `###` entries).
+       - **Keep-rule CHANGED (owner, 2026-10-02):** an entry whose class has a `live` row in § *Mechanized* moves
+         VERBATIM to `memory/archive/`.
+       - **Measured 2026-10-02:** 0 of the 55 entries NAME a live check, so this needs a per-entry judgement of which
+         live check covers each class. ▶ First action next time: that pass, then move the covered entries.
      - d. ✅ session-log rotated (above). **Next: `corroboration-feature-hypotheses.md` (79 KB) and `working-rules.md`
        (65 KB)**. Retire closed rows verbatim into `memory/archive/`. Also the hypothesis ledger (50 KB): move CLOSED rows
        into `memory/archive/hypothesis-ledger-archive.md`.

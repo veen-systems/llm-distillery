@@ -81,3 +81,14 @@ The ask was "continue" (START HERE item 0, phase 1). It became a replan with the
 3. **An owner check** of 10 Gemini-vs-judge disagreements.
 4. **If Gemini holds:** a screen-and-confirm harvest, with the owner approving the spend (about $1 per 1,000 articles
    on this prompt).
+
+## Pending items resolved with the owner at close
+- **#130 closed as ruled.**
+- **The curator name: forward-only redaction plus a guard.**
+  - 41 files / 59 lines changed, and the #130 comment was edited (GitHub keeps its edit history).
+  - The pre-commit and commit-msg guard is mutation-tested.
+  - History was not rewritten.
+- **The Gemini v2.0 noise-floor run** was approved for next session.
+- **The catalogue keep-rule was changed.** 0 of 55 entries name a live check, so the per-entry pass is next.
+- ⛔ **Mine:** I used `pkill -f` on a grep pattern, and it killed its own shell (gotcha `[x4]`, now `[x5]`). No other
+  process was affected.

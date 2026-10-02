@@ -1,0 +1,3 @@
+#!/bin/bash
+# pre-commit: forbidden-name guard (see check_forbidden_names.sh). Install: git config core.hooksPath .githooks
+exec "$(git rev-parse --show-toplevel)/.githooks/check_forbidden_names.sh"
