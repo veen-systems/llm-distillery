@@ -1,0 +1,201 @@
+n	claude_verdict	article_id	normalized_score	raw_score	source	language	english_title
+1	one person/family	portuguese_sonoticiaboa_7b16a6d053ec	9.19	6.69	portuguese_sonoticiaboa	pt	Mother from Rio’s Cidade de Deus graduates university at 45
+2	fits	belgian_vrt_nieuws_en_44ea7f8f1042	8.78	6.47	belgian_vrt_nieuws_en	en	Antwerp’s Nepali community mourns flood victims
+3	fits	arabic_khaleej_times_96980715085f	9.26	6.75	arabic_khaleej_times	en	Dubai club fosters community for senior expats
+4	borderline	british_irish_guardian_uk_environment_a8b0c95e1b6e	9.36	6.82	british_irish_guardian_uk_environment	en	Belfast garden revives city’s linen heritage
+5	culture topic only	caucasus_hetq_91f3097815a3	9.73	7.26	caucasus_hetq	en	Museum exhibits centuries of Syrian-Armenian metalwork
+6	official/gift	austrian_orf_wirtschaft_e7ee6538f8df	8.84	6.49	austrian_orf_wirtschaft	de	Pope blesses chapel bell in Austria’s tyrol region
+7	harm/grievance/politics	us_media_deseret_news_e92ae3ee26a8	8.29	6.28	us_media_deseret_news	en	Lessons from 9/11, a shooting, and a surgeon’s camp
+8	culture topic only	south_asian_indian_express_9fa01235c33a	9.15	6.67	south_asian_indian_express	en	Zohra Sehgal Festival celebrates a life lived on her own terms
+9	one person/family	dutch_news_ad_algemeen_47a232435d0e	8.71	6.44	dutch_news_ad_algemeen	nl	Man rebuilds family bonds as grandfather after years of absence
+10	borderline	spanish_eldiario_1292add7258e	9.59	7.06	spanish_eldiario	es	Lario family shapes clay in Lorca for 465 years
+11	culture topic only	australian_abc_au_ab537748cb65	7.65	6.05	australian_abc_au	en	Playwright chronicles seven-year fight for AFLW
+12	other off-lens	south_asian_kathmandu_post_b576b8c2d153	8.2	6.24	south_asian_kathmandu_post	en	Nepal’s Tenzing Sherpa wins karate bronze at Asian Games
+13	borderline	new_zealand_rnz_844d9e319698	9.66	7.15	new_zealand_rnz	en	Man reconnects with Māori language after attempting assimilation
+14	harm/grievance/politics	pacific_rnz_pacific_ffd91ca091df	9.34	6.8	pacific_rnz_pacific	en	September 11 attacks remembered 25 years later
+15	official/gift	west_african_aib_burkina_721b7f829257	7.71	6.07	west_african_aib_burkina	fr	Burkina Faso officials encourage school enrollment
+16	harm/grievance/politics	canadian_globe_mail_25d28179bec7	8.12	6.21	canadian_globe_mail	en	Shooting at Ontario synagogue escalates antisemitism concerns
+17	other off-lens	baltic_err_ee_965fde51649d	8.38	6.32	baltic_err_ee	en	Dog finds home after four years in Estonian shelter
+18	culture topic only	pan_african_rfi_afrique_2b3c73bd3997	8.98	6.57	pan_african_rfi_afrique	fr	Chad’s Soléa Damas blends traditional music with modern sounds
+19	official/gift	vietnamese_tuoitre_vn_ef9ffe7a0a91	7.82	6.1	vietnamese_tuoitre_vn	vi	Vietnam community honors local workers
+20	official/gift	portuguese_observador_e6b71c04ddeb	9.23	6.73	portuguese_observador	pt	Indigenous alliance wins Gulbenkian prize to protect Amazon
+21	harm/grievance/politics	south_american_brasil_de_fato_e109b983834b	8.14	6.22	south_american_brasil_de_fato	pt	Brazilian magazine highlights violence against black youth
+22	official/gift	southeast_asian_antara_en_abbd2ece39f1	7.54	6.02	southeast_asian_antara_en	en	Simeulue languages gain national heritage status in Indonesia
+23	fits	australian_abc_au_62f89804707d	9.06	6.61	australian_abc_au	en	Kalumburu opens men’s centre to address domestic violence
+24	fits	global_news_euronews_4ec3301c70b9	9.61	7.09	global_news_euronews	en	Udi Christians resume worship in Azerbaijan’s Karabakh monasteries
+25	official/gift	southeast_asian_free_malaysia_2ddf773efbfc	9.59	7.06	southeast_asian_free_malaysia	en	Penang leaders mourn Reformasi veteran Idrus
+26	fits	belonging_cultural_survival_f519d8a17333	9.95	7.74	belonging_cultural_survival	en	Namibia’s Rehoboth Basters preserve identity through self-governance
+27	official/gift	west_african_thisday_84186466181e	9.02	6.59	west_african_thisday	en	Tinubu calls for public-focused leadership in Nigeria
+28	other off-lens	swedish_expressen_6d102e8d835f	9.23	6.73	swedish_expressen	sv	Family dispute over inheritance and royal court role
+29	harm/grievance/politics	caucasus_report_az_6a09b53bbc91	9.73	7.27	caucasus_report_az	en	Azerbaijanis’ lost village of Abilkend documented
+30	harm/grievance/politics	us_media_the_atlantic_a18c4628f4fd	8.96	6.56	us_media_the_atlantic	en	Arrested union leader faces dropped charges, lasting impact
+31	borderline	arabic_aljazeera_en_112f5841e86c	9.49	6.93	arabic_aljazeera_en	en	Kashmir’s ancient wedding feast evolves with the times
+32	borderline	positive_news_upworthy_7475185b4e12	8.53	6.38	positive_news_upworthy	en	Italy’s oldest prison uses theatre to help inmates heal
+33	harm/grievance/politics	swiss_nzz_international_7aa606b02d44	8.07	6.19	swiss_nzz_international	de	New war resumes in Tigray, Ethiopia, after brief peace
+34	other off-lens	south_african_namibian_8115d3f28507	6.77	5.77	south_african_namibian	en	Namibia battles foot-and-mouth disease outbreak
+35	harm/grievance/politics	us_news_fox_news_b5840c953565	9.65	7.15	us_news_fox_news	en	Daughter honors father’s 9/11 memory with mental health support
+36	official/gift	pan_african_ghanaian_chronicle_43da82a4c491	7.53	6.01	pan_african_ghanaian_chronicle	en	Ghanaian Chief supports students with resources
+37	borderline	south_asian_nepalnews_0ee396ce9e1e	7.78	6.08	south_asian_nepalnews	ne	Nepal’s history of aid reflects societal shifts
+38	fits	australian_abc_au_620918255c16	9.01	6.58	australian_abc_au	en	Young Australians build agriculture networks
+39	fits	south_african_the_citizen_41a1e118ea3d	9.92	7.63	south_african_the_citizen	en	Zulu Reed Dance draws 30,000 maidens in cultural display
+40	borderline	belgian_rtbf_info_42bb2d63ce93	7.16	5.89	belgian_rtbf_info	fr	Luxembourg agency seeks foster families to support children in crisis
+41	harm/grievance/politics	positive_news_waging_nonviolence_fbfe7d0f6113	8.23	6.25	positive_news_waging_nonviolence	en	Communities organize to disrupt weapons supply to Israel
+42	one person/family	south_american_la_nacion_ar_2c9158ffdb1f	8.69	6.43	south_american_la_nacion_ar	es	Woman reconnects with great-aunt after 15 years on TV show
+43	official/gift	south_american_andina_42dee4bfd462	9.93	7.67	south_american_andina	es	Peru shares Nomatsigenga stories in free bilingual comic
+44	official/gift	south_asian_times_of_india_4335e2efaae0	9.4	6.85	south_asian_times_of_india	en	Historic California church becomes community hub
+45	official/gift	east_african_lexpress_madagascar_aa674dee9589	8.78	6.47	east_african_lexpress_madagascar	fr	Madagascar’s mangrove restoration brightens local lives
+46	harm/grievance/politics	south_american_brasil_de_fato_22f36141dc3b	8.4	6.34	south_american_brasil_de_fato	pt	Energy project fails to consult quilombola communities
+47	fits	new_zealand_rnz_ee2a0e342301	9.58	7.05	new_zealand_rnz	en	Children learn water safety through te reo Māori
+48	other off-lens	spanish_la_vanguardia_e7b9ef09dc3f	9.07	6.61	spanish_la_vanguardia	es	Inheritance: how past shapes present in Spain
+49	official/gift	british_irish_bbc_england_c6f16a26e805	9.32	6.79	british_irish_bbc_england	en	Parade honors Cornish hero’s 9/11 sacrifice
+50	borderline	ukrainian_kyiv_post_e374325c9dc7	9.45	6.88	ukrainian_kyiv_post	en	Kherson theater defies war with international festival
+51	fits	new_zealand_rnz_5fff0c2b0765	9.57	7.03	new_zealand_rnz	en	New Zealand’s Asian communities celebrate harvest festivals
+52	fits	indonesian_mongabay_id_e2b81d7437c6	8.37	6.32	indonesian_mongabay_id	id	Man protects wild orchids in Indonesian forest
+53	borderline	spanish_eldiario_9d430c93acba	9.44	6.87	spanish_eldiario	es	Painter Alfredo Palmero revived Cervantes and Parisian life
+54	culture topic only	balkan_vecernji_945ff97a63eb	9.51	6.95	balkan_vecernji	hr	Bosnian franciscan’s book offers new theological perspectives
+55	other off-lens	portuguese_observador_2d3a53895fe0	9.09	6.63	portuguese_observador	pt	Opinion: night and laughter after September 11th
+56	fits	new_zealand_rnz_ea40d98aca4b	8.38	6.32	new_zealand_rnz	en	New Zealanders plant kauri seedlings to fight tree dieback
+57	official/gift	austrian_kurier_9b0fc9bff6ee	7.41	5.97	austrian_kurier	de	Austrian Red Cross marks 80 years of service in Burgenland
+58	one person/family	arabic_emirates247_d76c9ed9964b	7.41	5.97	arabic_emirates247	en	Sheikh Mohammed bin Rashid honours wife of 47 years
+59	one person/family	south_american_el_pais_uy_9482ab59824b	8.52	6.38	south_american_el_pais_uy	es	Family’s sheep return to Uruguayan Expo after honor
+60	official/gift	british_irish_rte_ireland_2314d0b7e7de	9.83	7.43	british_irish_rte_ireland	en	Ireland honors victims of 1926 cinema fire
+61	fits	new_zealand_rnz_27443af4a058	9.82	7.42	new_zealand_rnz	en	Māori-led project restores Aotea Great Barrier Island ecosystem
+62	harm/grievance/politics	care_systems_nonprofit_quarterly_b84a0f1c8518	9.0	6.58	care_systems_nonprofit_quarterly	en	Environmental justice depends on local news
+63	borderline	new_zealand_rnz_274ddae1d7e5	9.9	7.59	new_zealand_rnz	en	Robot interpreter bridges Māori sign language and culture
+64	fits	vietnamese_vnexpress_vn_adc0f4200ce3	9.19	6.7	vietnamese_vnexpress_vn	vi	Estonia’s Seto people revive tradition with one-day “kingdom”
+65	borderline	south_american_brasil_de_fato_2f5a48317637	8.38	6.33	south_american_brasil_de_fato	pt	Recife artists will transform street into open-air studio
+66	official/gift	south_african_namibian_f7faa053827f	7.98	6.16	south_african_namibian	en	Namibia distributes farmland to resettlement beneficiaries
+67	official/gift	south_american_brasil_de_fato_889091634118	8.56	6.4	south_american_brasil_de_fato	pt	Brazilian university brings healthcare to remote Amazon communities
+68	one person/family	care_systems_national_disability_institute_67b37e75b3e8	9.34	6.8	care_systems_national_disability_institute	en	Mother’s lessons evolve with financial tools
+69	harm/grievance/politics	west_african_guinee7_6ef2933b70fc	9.56	7.02	west_african_guinee7	fr	Guinean youth vow to continue Sidya Touré’s political work
+70	official/gift	east_african_daily_news_tz_4182994ed547	8.85	6.5	east_african_daily_news_tz	en	Prayers held in Tanzania for president’s husband
+71	borderline	us_media_cnbc_2c3e5280c321	8.47	6.36	us_media_cnbc	en	Gloria Steinem’s living room fostered connection and change
+72	official/gift	west_african_aip_cote_divoire_7e9f8b086d7c	7.29	5.93	west_african_aip_cote_divoire	fr	Ivorian first ladies build decades of charitable work
+73	harm/grievance/politics	us_news_cbs_news_d597166c7db7	9.09	6.63	us_news_cbs_news	en	Flight 93 passengers prevented Capitol attack on 9/11
+74	harm/grievance/politics	southeast_asian_the_diplomat_59dbec9781a3	8.42	6.34	southeast_asian_the_diplomat	en	Afghanistan war’s lingering responsibilities
+75	borderline	french_lemonde_societe_db247e57e9df	9.12	6.64	french_lemonde_societe	fr	Radio host connects rural community in Lozère, France
+76	fits	canadian_global_news_4a972b8d4973	8.38	6.33	canadian_global_news	en	Edmonton menders seek sustainability through clothing repair
+77	culture topic only	south_american_brasil_de_fato_1338268b2621	9.2	6.71	south_american_brasil_de_fato	pt	Brazilian play “Ombela” celebrates African roots in Recife
+78	culture topic only	australian_smh_e40e92f19f95	8.9	6.53	australian_smh	en	Opinion: Muslim parents find deep meaning in naming children
+79	fits	west_african_aip_cote_divoire_aa369aa39e18	9.45	6.88	west_african_aip_cote_divoire	fr	Ivorian villages formalize bond through yam festival
+80	official/gift	belgian_vrt_nieuws_nl_986a24faaf4d	9.2	6.7	belgian_vrt_nieuws_nl	nl	Belgium honors pilot and resistance in new monument
+81	fits	west_african_aib_burkina_12113bcb8d5b	8.46	6.36	west_african_aib_burkina	fr	Courage FC wins first fraternal tournament in Burkina Faso
+82	harm/grievance/politics	belgian_het_laatste_nieuws_81e1ab9d80e3	8.24	6.25	belgian_het_laatste_nieuws	nl	Mother dedicates memorial to son found after disappearance
+83	fits	belgian_gazet_van_antwerpen_c8ce317be3c6	7.9	6.12	belgian_gazet_van_antwerpen	nl	Belgian musicians mark 45 years of street performances
+84	harm/grievance/politics	global_south_global_voices_904f4cab5df6	9.5	6.95	global_south_global_voices	en	Mozambique’s journey from colonial subject to citizen
+85	borderline	australian_abc_au_71c7427c6b49	9.56	7.02	australian_abc_au	en	Advocate’s death prompts lifesaving device in remote Australia
+86	one person/family	southeast_asian_cna_sg_f6ecac0e7da1	8.77	6.46	southeast_asian_cna_sg	en	Teacher’s kindness reunites her with former student
+87	one person/family	south_african_daily_maverick_0050dcf9339c	9.39	6.84	south_african_daily_maverick	en	Ecologist Yadvinder Malhi integrates physics and fieldwork
+88	borderline	west_african_aib_burkina_40c620a27ef0	9.36	6.82	west_african_aib_burkina	fr	Burkina Faso volunteers clean public spaces to improve life
+89	one person/family	mexican_excelsior_c7d10173a0ca	8.56	6.4	mexican_excelsior	es	Former governor finds purpose in Madrid neighborhood
+90	official/gift	east_african_ktpress_rw_1df272f629e1	8.79	6.47	east_african_ktpress_rw	en	Rwanda’s naming ceremony revives gorilla population
+91	other off-lens	southeast_asian_free_malaysia_9fe0bfe929c8	8.61	6.41	southeast_asian_free_malaysia	en	Former MMA champion now advocates for animals in Malaysia
+92	official/gift	west_african_aib_burkina_39a86af2dfa4	7.96	6.15	west_african_aib_burkina	fr	Burkina Faso celebrates revolution night with community run
+93	fits	belgian_bruzz_158fc4479141	9.56	7.02	belgian_bruzz	nl	Brussels residents remember Jewish victims of 1942 raid
+94	official/gift	south_african_herald_zw_7812baea08ba	7.96	6.15	south_african_herald_zw	en	Zimbabwe commemorates history, democracy, and leadership
+95	culture topic only	south_american_el_nacional_9ae7183d9ea2	9.69	7.2	south_american_el_nacional	es	Ismael Querales, Venezuelan bandola player, dies
+96	borderline	baltic_lsm_lv_8a01be9c8315	9.39	6.84	baltic_lsm_lv	en	American family builds new life in Latvia
+97	borderline	canadian_globe_mail_08238c222fe2	8.88	6.51	canadian_globe_mail	en	Dads across Canada learn hairstyling to connect with daughters
+98	other off-lens	balkan_klix_ba_b2d4454158f5	8.46	6.36	balkan_klix_ba	bs	Cat travels between three families over five years
+99	harm/grievance/politics	luxembourg_lequotidien_78cbb4b59230	9.37	6.83	luxembourg_lequotidien	fr	Greece’s Thymaina island faces school closure amid population decline
+100	harm/grievance/politics	mexican_la_jornada_4e91608fec09	9.63	7.12	mexican_la_jornada	es	Rarámuri communities demand self-determination in Chihuahua
+101	harm/grievance/politics	arabic_aljazeera_en_0eeb46502288	9.07	6.62	arabic_aljazeera_en	en	Israeli demolitions disrupt education in Masafer Yatta
+102	borderline	positive_news_indian_country_today_702c427322a1	9.86	7.47	positive_news_indian_country_today	en	Orange Shirt Day honors boarding school children
+103	one person/family	british_irish_bbc_northern_ireland_014ce83a7133	9.39	6.84	british_irish_bbc_northern_ireland	en	Family from Northern Ireland receives papal blessing while wearing Gaelic football jersey
+104	borderline	italian_il_fatto_92e8590afe59	9.23	6.73	italian_il_fatto	it	Italian grandparents bridge distance with technology
+105	official/gift	australian_abc_au_44f84298ad8a	8.33	6.3	australian_abc_au	en	Man funds academy to help at-risk Cairns youth
+106	fits	australian_the_west_australian_6c01092d2cf2	8.31	6.29	australian_the_west_australian	en	Theatre 180 celebrates Albany’s history with community stories
+107	fits	pan_african_alwihda_info_4f54e2c1d59c	8.96	6.56	pan_african_alwihda_info	fr	Chad alumni restore historic school
+108	culture topic only	balkan_vecernji_e0927777e9e6	8.29	6.28	balkan_vecernji	hr	Forgotten world of old šokadija revealed through folklore
+109	borderline	australian_abc_au_00acf70689de	9.86	7.48	australian_abc_au	en	World Nomad Games revive Central Asian heritage
+110	fits	positive_news_indian_country_today_64640df54f12	10.0	8.07	positive_news_indian_country_today	en	Indigenous food summit connects communities in Portland
+111	one person/family	south_african_timeslive_adbe28cdbc17	8.94	6.55	south_african_timeslive	en	South African teacher wins award after difficult start
+112	official/gift	swedish_goteborgs_posten_c2caad6f6dab	7.84	6.1	swedish_goteborgs_posten	sv	Valter Nilsson supports Gothenburg city mission with concert
+113	one person/family	professional_business_business_insider_2058979c881a	9.35	6.81	professional_business_business_insider	en	Road trip forges unexpected friendship after loss
+114	fits	positive_news_good_good_good_b7018371df8b	9.76	7.32	positive_news_good_good_good	en	Colombian Indigenous fishers shift from shark hunting to conservation
+115	one person/family	professional_business_business_insider_4c72f154d042	8.88	6.52	professional_business_business_insider	en	Woman delays retirement to care for 102-year-old mother
+116	one person/family	south_american_cuba_headlines_d8011b247ea7	9.22	6.72	south_american_cuba_headlines	en	Cuban barber brings hope with free haircuts in Las Vegas
+117	culture topic only	australian_abc_au_f33202679cb1	8.61	6.41	australian_abc_au	en	Indigenous artist wins Defence art prize with kangaroo skin sculpture
+118	other off-lens	professional_business_business_insider_043f634159c7	8.28	6.27	professional_business_business_insider	en	Taco shop thrives as Meta builds AI center in Louisiana
+119	culture topic only	australian_the_conversation_au_015bd0bb3230	9.92	7.62	australian_the_conversation_au	en	Australians reclaim convict ancestry after centuries of shame
+120	fits	belonging_cultural_survival_9a5f76cd0f7d	9.93	7.67	belonging_cultural_survival	en	Indigenous self-governance systems endure globally
+121	fits	south_asian_kathmandu_post_b174b0718f3f	7.96	6.15	south_asian_kathmandu_post	en	Nepal flood response led by local communities
+122	official/gift	north_african_le_360_e49a7d438224	9.51	6.96	north_african_le_360	en	Morocco to open first publicly funded Jewish Culture museum
+123	one person/family	australian_abc_au_0a7124666bce	8.9	6.53	australian_abc_au	en	95-year-old continues skydiving tradition in Australia
+124	borderline	west_african_aip_cote_divoire_08bce3bf2dbb	7.69	6.06	west_african_aip_cote_divoire	fr	Côte d’Ivoire schools include students with disabilities
+125	borderline	west_african_aib_burkina_568a2c586e0f	7.06	5.85	west_african_aib_burkina	fr	Women’s cooperative donates hygiene products to Burkina Faso health center
+126	official/gift	west_african_le_sahel_579bdb4b59fe	8.07	6.19	west_african_le_sahel	fr	Niger’s traditional leaders support national security
+127	borderline	australian_abc_au_fb9f91573d7b	9.38	6.84	australian_abc_au	en	Red CentreNATS drives enthusiasm and economy in Alice Springs
+128	official/gift	italian_italiachecambia_f3c88f8c0085	9.8	7.36	italian_italiachecambia	it	Fava’s legacy lives on in Sicily
+129	borderline	portuguese_observador_883ce145c47a	9.51	6.96	portuguese_observador	pt	Family serves traditional pastries at Portuguese fair for 82 years
+130	other off-lens	australian_abc_au_66383b51dee6	8.81	6.48	australian_abc_au	en	Riverland men trade farms and tools for disability support
+131	official/gift	south_african_daily_maverick_6f19840a18b2	9.31	6.78	south_african_daily_maverick	en	Limpopo centre offers stability to vulnerable children
+132	fits	southeast_asian_free_malaysia_4a48f131f94f	9.15	6.66	southeast_asian_free_malaysia	en	Horse race revives tradition in West Bank village
+133	other off-lens	positive_news_good_good_good_3e930163dee9	8.48	6.37	positive_news_good_good_good	en	After 9/11, Americans prioritise connection during trauma
+134	official/gift	canadian_vancouver_sun_5e13cfedd045	9.85	7.47	canadian_vancouver_sun	en	Opinion: Peace Arch ceremony highlights US-Canada unity on 9/11
+135	one person/family	australian_abc_au_3de06b717c91	8.2	6.24	australian_abc_au	en	Kyra cooney-cross honours mother in Arsenal return
+136	official/gift	west_african_aib_burkina_4a263ede22e0	8.74	6.45	west_african_aib_burkina	fr	Burkina Faso empowers teen girls with life skills training
+137	borderline	belgian_dh_les_sports_7b211d4e274c	8.8	6.48	belgian_dh_les_sports	fr	Students tutor teenagers in Belgium’s Brabant wallon region
+138	harm/grievance/politics	west_african_aib_burkina_2cabe454dfa8	8.81	6.48	west_african_aib_burkina	fr	Burkina Faso residents rally support for leader and armed forces
+139	one person/family	geography_nature_grist_f820973e2f7f	8.36	6.31	geography_nature_grist	en	Farmers in Michigan balance land preservation and economic pressures
+140	other off-lens	british_irish_bbc_uk_878466ea6231	8.68	6.43	british_irish_bbc_uk	en	Andy Burnham pauses duties after father’s death
+141	one person/family	us_media_deseret_news_ff0bb8a242f0	8.08	6.19	us_media_deseret_news	en	Cousins lead church congregations in Washington state
+142	one person/family	south_american_el_comercio_ec_3a1fb2b796ab	8.96	6.56	south_american_el_comercio_ec	es	Priest’s work strengthens communities across Ecuador
+143	fits	australian_abc_au_a83db806bf91	9.87	7.51	australian_abc_au	en	Morwell residents march to condemn violence, honour lost
+144	one person/family	south_american_el_nacional_692d368a037d	8.43	6.35	south_american_el_nacional	es	Dancer vows to care for nephews after Venezuela earthquake
+145	one person/family	ukrainian_kyiv_independent_f505b09f54ab	7.81	6.09	ukrainian_kyiv_independent	en	Kyiv restaurant rebuilds after repeated Russian attacks
+146	one person/family	vietnamese_tuoitre_vn_35f92104719f	7.51	6.01	vietnamese_tuoitre_vn	vi	Mother carries daughter to university for a decade, faces tuition costs
+147	other off-lens	positive_news_indian_country_today_8618f1d01cb3	9.18	6.69	positive_news_indian_country_today	en	Tribal leaders urge early voting and drop box use
+148	harm/grievance/politics	arabic_aljazeera_en_58e9bf65540b	9.85	7.47	arabic_aljazeera_en	en	Palestinian farmers defend farms from settler attacks in Hebron
+149	harm/grievance/politics	geography_nature_mongabay_739f6f3a234e	9.85	7.47	geography_nature_mongabay	en	India’s island tribes face threats despite protecting biodiversity
+150	official/gift	south_american_andina_e483e8b78303	9.9	7.6	south_american_andina	es	Peruvian project highlights afro-descendant leaders in schools
+151	one person/family	south_asian_indian_express_30098c838e66	8.22	6.25	south_asian_indian_express	en	Homemaker with large following leaves quiz show with prize money
+152	borderline	swedish_dagens_nyheter_34993a165d30	9.34	6.8	swedish_dagens_nyheter	sv	Sweden’s local cinema served more than movies
+153	harm/grievance/politics	south_asian_kathmandu_post_fbd55be4dd31	9.59	7.06	south_asian_kathmandu_post	en	Can Nepal legally protect its cultural heritage?
+154	harm/grievance/politics	global_news_BBC_world_9ac3e7ddecef	7.94	6.14	global_news_BBC_world	en	Haitian caregivers lose US work status, leaving Families scrambling
+155	borderline	french_sciences_et_avenir_3c2628c6aebd	9.14	6.65	french_sciences_et_avenir	fr	Radio Pinpon: patients find voice through hospital broadcast
+156	fits	positive_news_the_better_india_ad0d12b375d0	9.13	6.65	positive_news_the_better_india	en	Volunteers remove hundreds of tonnes of waste from Himalayan trails
+157	official/gift	west_african_punch_ng_09d36ee26016	7.15	5.89	west_african_punch_ng	en	Nigerian Navy brings water to Gombe community
+158	fits	indonesian_mongabay_id_df1256862239	9.23	6.73	indonesian_mongabay_id	id	Lombok villagers sustain water sources through ritual
+159	one person/family	south_asian_kathmandu_post_b93e6048defc	8.96	6.56	south_asian_kathmandu_post	en	Man resumes flood relief work after losing family
+160	borderline	south_asian_indian_express_f050112f28ab	9.7	7.21	south_asian_indian_express	en	Indian communities build lives around water
+161	harm/grievance/politics	spanish_mongabay_latam_36735f399073	9.58	7.05	spanish_mongabay_latam	es	Ecuador’s indigenous leader jailed amid land dispute
+162	fits	positive_news_upworthy_59a8c7bcb616	9.01	6.58	positive_news_upworthy	en	Texas retirement home residents build furniture and community
+163	culture topic only	art_hyperallergic_c4f98ece831d	9.84	7.46	art_hyperallergic	en	Poems and paintings reflect Lebanon’s enduring spirit
+164	harm/grievance/politics	us_news_cbs_news_768cca83c10b	9.17	6.68	us_news_cbs_news	en	Family meets woman who took historic 9/11 call
+165	harm/grievance/politics	south_american_brasil_de_fato_c330f2542fec	7.98	6.16	south_american_brasil_de_fato	pt	Opinion: Minas Gerais youth organize for political action
+166	fits	balkan_klix_ba_9293dc1e3839	8.29	6.28	balkan_klix_ba	bs	Golden circle event supports children with cancer in Bosnia
+167	one person/family	portuguese_observador_9d64a25cf0fc	8.76	6.46	portuguese_observador	pt	A southwestern estate: family, memory, and change
+168	harm/grievance/politics	south_asian_hasht_e_subh_en_36159c3bc8aa	9.2	6.71	south_asian_hasht_e_subh_en	en	Germany commemorates Hazara Genocide, advocates for Afghan unity
+169	borderline	global_news_el_pais_america_c7bc7ed7d095	9.24	6.73	global_news_el_pais_america	en	DC theater shelters Latino community from ICE raids
+170	official/gift	biotech_pharma_bioengineer_4c947762a362	9.6	7.07	biotech_pharma_bioengineer	en	California funds study of Indigenous healing in Medicaid
+171	one person/family	british_irish_bbc_england_92604a699683	8.99	6.57	british_irish_bbc_england	en	Restaurant owner reconnects with daughter’s doctor
+172	official/gift	positive_news_good_good_good_5f285a546fd7	7.01	5.83	positive_news_good_good_good	en	Cash aid empowers domestic violence survivors to rebuild lives
+173	one person/family	south_asian_dawn_1fdec9c9a319	8.39	6.33	south_asian_dawn	en	Nepal principal evacuates 900 students before school’s collapse
+174	culture topic only	pan_african_africa_news_564e7832cab4	9.14	6.66	pan_african_africa_news	en	African languages see revival among youth
+175	one person/family	south_american_cuba_headlines_4717a9881e7a	8.35	6.31	south_american_cuba_headlines	en	Cuban family reunites after years of separation
+176	harm/grievance/politics	south_american_brasil_de_fato_3eba44b55c71	9.36	6.82	south_american_brasil_de_fato	pt	Paraíba groups seek candidate commitments to water and farming
+177	borderline	geography_nature_grist_24f0f7a5cfe4	9.88	7.56	geography_nature_grist	en	Inuit bear guards protect communities in a changing Arctic
+178	official/gift	pan_african_alwihda_info_3eecddd383ec	9.1	6.63	pan_african_alwihda_info	fr	Chad: group receives tools to boost women’s income
+179	borderline	pan_african_allAfrica_environment_b76bcb3a7651	8.9	6.53	pan_african_allAfrica_environment	en	Uganda links gorilla conservation to community wellbeing
+180	borderline	us_media_deseret_news_8ee8c44a02ec	9.05	6.6	us_media_deseret_news	en	Salt Lake City cathedral welcomes all to worship
+181	other off-lens	british_irish_guardian_uk_9f7a072ec2e8	9.5	6.94	british_irish_guardian_uk	en	Andy Burnham mourns father’s death, cancels public appearances
+182	fits	balkan_klix_ba_bd27573beaeb	8.65	6.42	balkan_klix_ba	bs	Restored mosque reopens in Bosnia and Herzegovina
+183	official/gift	pan_african_ghanaian_chronicle_6a4a6582762a	9.16	6.67	pan_african_ghanaian_chronicle	en	SOTA International provides water to schools in Ghana
+184	harm/grievance/politics	west_african_aib_burkina_a11d3fe01dab	8.3	6.28	west_african_aib_burkina	fr	Burkina Faso residents celebrate four years of political change
+185	official/gift	belgian_dh_les_sports_8b18dc9db023	9.73	7.28	belgian_dh_les_sports	fr	Mussy honors local artist Fernand Tomasi with sculptures
+186	harm/grievance/politics	australian_abc_au_c3387d244045	9.88	7.55	australian_abc_au	en	Two Aboriginal men hanged in Hobart after disputed trial
+187	harm/grievance/politics	new_zealand_rnz_09b0fb16a157	9.28	6.76	new_zealand_rnz	en	Vanuatu mourns 45 lives lost in recent boat disasters
+188	harm/grievance/politics	south_african_daily_maverick_50c3c33489cf	9.28	6.76	south_african_daily_maverick	en	Kempton Park residents fear for safety after five women found dead
+189	borderline	australian_abc_au_acb3cf2a5cd8	9.39	6.84	australian_abc_au	en	Karen community celebrates football premiership in Australia
+190	culture topic only	baltic_lrt_ce655eef5023	8.72	6.44	baltic_lrt	lt	Actor shares family history in moving performance
+191	fits	british_irish_irish_independent_203480410193	8.55	6.39	british_irish_irish_independent	en	People return to Irish island after half century
+192	culture topic only	east_african_lexpress_madagascar_55b49d2bab1e	9.03	6.59	east_african_lexpress_madagascar	fr	OANA app blends Malagasy tradition with artificial intelligence
+193	official/gift	australian_abc_au_c3f14ca4f6eb	9.82	7.41	australian_abc_au	en	Mount Isa Rodeo supports young rider’s US dream
+194	borderline	east_african_lexpress_madagascar_b156bebd2863	9.93	7.66	east_african_lexpress_madagascar	fr	Morengy wrestling gains momentum in northern Madagascar
+195	official/gift	west_african_aib_burkina_f9f28a292b2f	9.01	6.59	west_african_aib_burkina	fr	Burkina Faso community builds bonds before national holiday
+196	borderline	south_asian_nepalnews_f6dcb96dc5dc	7.69	6.06	south_asian_nepalnews	ne	Nepal resumes daily religious sermons after earthquake
+197	culture topic only	mexican_la_jornada_bdf006e7016d	9.81	7.39	mexican_la_jornada	es	Film connects rarámuri runner to French poet
+198	official/gift	west_african_le_sahel_bb0f79ac86a0	8.71	6.44	west_african_le_sahel	fr	Niger launches campaign to strengthen community peace
+199	fits	pan_african_alwihda_info_001ee450862f	9.12	6.65	pan_african_alwihda_info	fr	Chad’s youth and women clean up hospital
+200	harm/grievance/politics	israeli_jpost_6066f5407bff	8.48	6.36	israeli_jpost	en	Former hostage leads prayer service marking release from Hamas

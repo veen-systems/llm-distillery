@@ -7,6 +7,80 @@ there; unchecked boxes from these sections were copied into its *Unchecked boxes
 Line-number citations into the old `docs/TODO.md` point here now; cite by sentence and grep.*
 
 
+## Moved 2026-10-02 (afternoon): § Filters history
+
+*From `docs/TODO.md` § Filters, verbatim (read surface, #163 item e). Every entry is `[x]` done, superseded or parked; the
+current state is in `memory/filter-status.md`. Kept as the training record.*
+
+### Production Ready
+- [x] **uplifting v6** - Deployed on HuggingFace Hub (private)
+  - Val MAE: 0.673 (was 0.688 in v5), 12% faster inference
+  - Gemma-3-1B base model (was Qwen2.5-1.5B)
+  - 10,495 training articles with data sculpting: active learning (495 MEDIUM enrichment) + label correction (57 crime articles capped)
+  - v5 crime news issue fixed via manual label correction in training data
+- [x] **uplifting v5** - Superseded by v6
+  - Val MAE: 0.68, 10,000 training articles
+- [x] **sustainability_technology v1** - Deployed on HuggingFace Hub
+  - Test MAE: 0.690
+- [x] ~~**sustainability_technology v3**~~ — **REMOVED 2026-08-03**, replaced by solutions. Package deleted; recover from git history. Entry kept for the training record below, not as a statement of what is deployed.
+  - Val MAE: 0.734 (calibrated test: 0.724), Gemma-3-1B
+  - 10,608 training articles (v2 10,039 + 569 active learning enrichment)
+  - All 3 inference paths: local, Hub, hybrid (probe MAE 0.91)
+- [x] **sustainability_technology v2** - Superseded by v3
+  - Val MAE: 0.71, 7,990 training samples
+- [x] **investment-risk v6** - Deployed on HuggingFace Hub (private)
+  - Val MAE: 0.497 (calibrated: 0.465), Gemma-3-1B
+  - 10,448 training articles (v5 10,198 + 250 active learning enrichment)
+  - Tier simplification: RED/YELLOW/GREEN/BLUE/NOISE -> high/medium_high/medium/low
+  - All 3 inference paths: local, Hub, hybrid (probe MAE 0.557)
+- [x] **investment-risk v5** - Superseded by v6
+  - Test MAE: 0.484 (excellent)
+  - 10,000 training articles
+- [x] **cultural-discovery v5** - Deployed on HuggingFace Hub + gpu-server (private) — 2026-05-31
+  - Val MAE: 0.697 (v4 was 0.74), Gemma-3-1B
+  - 8,551 training articles, DeepSeek V4 Flash oracle (first non-Gemini lineage)
+  - Resolves llm-distillery#62 discovery-lens leakage via F/G/H/I/K soft-penalty flags (historical_harm_reckoning, commemoration, perpetrator_biography, decline, launch)
+  - Provisional reference example for ADR-020 methodology (multi-oracle calibration + agent judging)
+  - Target: ovr.news Discovery tab
+- [x] **cultural-discovery v4** - Superseded by v5; on disk locally + git + HF Hub for rollback if needed
+  - Calibrated test MAE: 0.74 (v3 was 0.77), Gemma-3-1B
+  - 8,029 training articles (v3 7,827 + 202 active learning enrichment)
+  - All 3 inference paths verified (local, Hub, hybrid)
+- [x] **cultural-discovery v3** - Superseded by v4
+
+### In Active Development (priority: ovr.news tabs)
+- [x] **belonging v1** - Deployed, val MAE 0.49 (calibrated), 7,370 articles. Next: ovr.news tab
+- [x] **nature_recovery v2** - Deployed to Hub + gpu-server + sadalsuud (Hub upload actually completed 2026-04-19 after #44; prior commit claimed it without uploading)
+  - Val MAE 0.53 (calibrated), probe MAE 0.49, 3,517 articles
+  - v1 had zero discrimination (#41); v2 uses sample weighting (scale=2)
+  - Recall@20: 0.70 (v1: 0.55), NDCG@10: 0.86 (v1: 0.71), false negatives: 17% (v1: 41%)
+  - Hub: `jeergrvgreg/nature-recovery-filter-v2` (private)
+  - Remaining: normalization (needs production CDF), ovr.news Recovery tab frontend
+- [x] **uplifting v7** - ADR-010 prompt rewrite, deployed with hybrid inference (2026-04-06)
+  - v7 prompt: scope check, anti-hallucination, reframed assessment dimensions
+  - Hybrid inference: probe MAE 1.10, threshold 1.00, 0.5% FN, 1.07x speedup
+  - Evolved into thriving v1: renamed, social_cohesion_impact removed, 3-run averaging planned
+- [ ] ~~**thriving v1**~~ - PARKED indefinitely. Uplifting v7 (MAE 0.67) stays as Thriving tab.
+  - Root cause: orthogonal lens design created bimodal distribution (ADR-015)
+  - A fixed thriving v2 would converge back to uplifting v7. Not worth retraining.
+  - Assets preserved in `memory/thriving-v1-scoring.md` if ever revisited
+- [x] ~~**foresight v1**~~ — **REMOVED 2026-08-03**, merged into solutions (#43, closing out #64). Was signs_of_wisdom. Package deleted; recover from git history.
+  - Val MAE 0.75, 3,480 training articles, 6 dimensions
+  - Hybrid inference: probe trained, threshold 2.25 (default, calibrate on production data)
+  - Remaining: ovr.news Foresight tab frontend integration
+
+### Active Learning In Progress
+- [x] **cultural-discovery v5** - **DEPLOYED** (HF Hub, DeepSeek oracle, MAE 0.70). Stale `[ ]` corrected 2026-08-03 — the entry below describes the training-data prep that has long since shipped. Live follow-ups are #86 (prefilter is dead in production — measured, DO NOT enforce) and #87 (v6 scope: lens-fidelity + op-point re-derivation).
+  - Oracle-scored 473 production MEDIUM+ articles with Gemini Flash (active-learning lane, 2026-04-06)
+  - Smooth distribution (bell curve centered at WA 4.8), no bimodality
+  - 2026-05-29: #62 hard-negatives cohort added — 49 articles labeled with v5 oracle prompt (5 new pre-classification flags F,G,H,I,K)
+  - v5 prompt deltas: TRAJECTORY OVER VOCABULARY principle, CAP ENFORCEMENT clamp rule, F carve-out covers wartime restitution (Modigliani fixed), J intentionally omitted (handled by `filters/common/obit_signal.py` per #51)
+  - Cohort stats: production v4 mean 8.27 → v5 oracle mean 4.05; 44 hard-negatives + 5 calibration-confirmed positives (tagged `_v5_oracle_reclassified`)
+  - Next: train on gpu-server, calibrate, retrain probe, deploy
+- [x] **nature_recovery v2** - Trained, calibrated, deployed (2026-04-16)
+  - Sample weighting (scale=2) + active learning enrichment (237 articles)
+  - Remaining: normalization (needs production CDF), hybrid threshold recalibration
+
 ## ✅ 2026-09-17 (evening) — **#104 ANSWERED at all six live op-points: the device costs ONE filter two false positives. $0.**
 
 ⛔ **1 of 6 live filters flips at its op-point, and it is the one serving readers.** `uplifting v7`

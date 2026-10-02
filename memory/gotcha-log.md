@@ -4,6 +4,27 @@
 
 *⚠️ **Entries dated before 2026-09-17 live in [`archive/gotcha-log-archive.md`](archive/gotcha-log-archive.md)**, verbatim (the 09-01 → 09-16 ones moved 2026-09-27 by an owner-approved MID-MONTH pass, `--before 2026-09-17`; earlier ones moved 2026-09-24; into `archive/` 2026-09-26 so curate's size measurement stops counting it, #163; the month-dated Feb–May entries followed on 2026-09-26). Next pass: `python3 scripts/maintenance/retire_memory.py gotcha --before <first of this month> --apply` (dry run without `--apply`). It retires top-level entries only; the `###` entries inside the catalogue are kept by rule and counted. The unreachable-mechanism catalogue stayed here. For a recurrence match, grep both: `grep -n <term> memory/gotcha-log*.md`.*
 
+## "READER-FACING" WAS DEFINED BY THE QUERY I WROTE, NOT THE GATE THAT BINDS (2026-10-02)
+**Problem**: I described 2,368 belonging articles as "normalized ≥ 4.5, what readers could see". Then I concluded
+that the curator's community stories (raw 4.1–6.7) "pass, mid-pack". Every sampled row had raw ≥ 5.77, and 6 of the
+17 picks could never have reached readers.
+**Root cause**: `ovr.db` holds only the winners of ovr's top-50-per-lens cap, a competition per run. My WHERE clause
+was looser than the gate that had already filtered the table, so it constrained nothing. Nobody compared the
+sample's minimum with the stated predicate.
+**Fix**: Before naming a population, print the min/max of the predicate column in the sample. A minimum far above
+your threshold means an upstream gate binds, so name it. This is the working rule "establish what a source
+EXCLUDES", again.
+
+## WRITING DOWN THE LEAK RULE LEAKED THE LOCATION (2026-10-02)
+**Problem**: The owner said never to name an external curator in this public repo. I recorded that rule in
+`docs/TODO.md`, and in the same item listed WHERE the name already leaks (the source-id prefix and the dirs).
+`git grep` then finds it in one step. It reached an unpushed commit, and was squashed out before the push.
+**Root cause**: The same mechanism as "for a lexical guard, mention IS use" (2026-09-02, archive), a second
+occurrence. Describing what must not appear means writing a pointer to it.
+**Fix**: Keep the inventory of a sensitive thing in a LOCAL file (here, the plan file), and keep only the rule in
+the repo. Before pushing, grep the staged diff AND the unpushed commits (`git log -p origin/main..HEAD`).
+
+
 ## "SYNTHETIC" EXAMPLES I WROTE AFTER READING THE TEST SET WERE THE TEST SET (2026-10-02)
 **Problem**: The belonging v2 prompt's contrast examples were called "synthetic, so no contamination". Six of
 them paraphrase test rows (the parish reopening, the rent march, the chef, the burial ground, the souvenir
@@ -1023,6 +1044,7 @@ false finding in the reference audit, which trains readers to dismiss that audit
 | 2026-09-26 | A trim of `CLAUDE.md` that keeps every token (paths, numbers, issue ids) but drops an operative CLAUSE — five were lost and only a review lens noticed; the token survival check passed | **REJECTED 2026-09-27** — lexical clause survival cannot separate compression from loss: best setting caught 2/3 seeds (never the polarity flip) at 52/125 false flags on the reviewed 09-26 trim; 1/3 at 25/125. Script and grid: `docs/evidence/2026-09-27-claude-md-trim-check/`. The working check is a clause-loss REVIEW LENS (caught 5 clauses on 09-26 and 2 on 09-27); mechanize its invocation, not its judgement | rejected | — |
 | 2026-09-29 | A test writes a path inside the repo (tracked or not) and cleans it up in `finally`, which SIGKILL skips — llm-distillery#162's class; `tests/unit/test_verify_annotation_runner.py:100-105` (`MEMORY_FIXTURE.md` <!-- placeholder --> at repo root, created and deleted by the test) is a surviving instance, found reviewing PR #166 | `tests/lint/test_no_repo_writes_in_tests.py` <!-- placeholder --> — AST-scan `tests/**/*.py` for `write_text`/`open(...,'w')`/`unlink` on a path rooted at `REPO`/`PROJECT_ROOT`; allowlist `tmp_path`/`tempfile` | proposed | 2 |
 | 2026-09-29 | A negation/allowlist rule in a lexical guard that is not anchored at clause start admits the success-report idiom (`No regressions deployed v7`, `Errors during deploy: none`) — PR #167 rounds 1 and 2, same class twice | `tests/unit/test_commit_msg_hook.py` CLAIMS list (40 must-block messages from both review rounds) + 26 mutations incl. dropping each clause-start anchor; seeded positives re-run by a second session: rule-2 anchor removed → 6 fail, rule-3 anchor removed → 1 fail | live | 2 |
+| 2026-10-02 | A name the owner forbids in this public repo reaches a commit, and its location is written beside the rule | `.githooks/pre-commit` <!-- placeholder --> reading a denylist from a GITIGNORED local file (so the pattern never lands) and rejecting a staged diff that matches | proposed | 1 |
  | 2026-09-27 | "Must be committed" enforced with `git ls-files --error-unmatch`, which passes a file that is only STAGED (ADR-024 step 3: in the code AND its real-tree test; found by 3 of 6 review lenses) | `tests/lint/check_committed_idiom.py` <!-- placeholder --> — flag `ls-files --error-unmatch` in `scripts/**` where the surrounding message or name says committed/commit; accept `cat-file -e HEAD:` or `diff --quiet HEAD` | proposed | 1 |
 
 ⛔ **THE FIRST OCCURRENCE, AND IT IS A FINDING ABOUT THE CHECK (2026-09-17).** The #134

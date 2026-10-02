@@ -1,31 +1,52 @@
 # LLM Distillery - TODO
 
-## ▶️ START HERE — the ordered queue, as of 2026-10-02 (close)
+## ▶️ START HERE — the ordered queue, as of 2026-10-02 (afternoon close)
 
 *A bare "continue" means this list, top down. Each line names the FIRST action. The previous block (2026-10-01 close)
 moved VERBATIM to `docs/TODO-archive.md` § *Moved 2026-10-02*; its numbered items 1–8 are re-listed below as one-liners.
-Session record: `memory/project_session_2026_10_02_belonging_v2.md`.*
+Session records: `memory/project_session_2026_10_02_belonging_reshape.md` (latest), `memory/project_session_2026_10_02_belonging_v2.md`.*
 
-0. ▶ **BELONGING v2 — blocked on OWNER RULINGS, then a clean re-test.** Evidence:
-   `docs/evidence/2026-10-01-belonging-v2-test-set/README.md` (read § *Review corrections* FIRST) and ledger `H-BV1`–`H-BV6`.
-   - **Where it stands:** a v2 DRAFT prompt (`filters/belonging/v2/`) halves the passers on 150 held-out production
-     rows (v1 121 → v2 71). About half of the 71 still read as junk (Claude's verdicts only).
-   - **Ruled out:** a code cap (probe A). Gemini Pro (probe B) cuts the junk further; that result is weak.
-   ▶ **First, ask the owner:**
-   - (a) **The definition (`H-BV6`).** Does a prosocial event or act count as belonging (a donation, a crowd
-     welcoming a ship, a crew working well), or only a community's own lasting bonds as the subject?
-   - (b) Robinvale (#130 rules it F on the headline; the body is the community protecting the site).
-   - (c) Solidarity marches after a harm: B or F?
-   - (d) Optionally, skim Claude's 75 test labels and the 71 passer verdicts
-     (`v2_draft2_prod_passers_read.tsv`).
-   ▶ **Then, per the ruling:**
-   - Rewrite the prompt's contrast examples from rows OUTSIDE every evaluation set. Today's examples
-     paraphrase test rows (leakage).
-   - Build a fresh held-out sample.
-   - Score Flash ×2 (a noise control) and Pro on all of it.
-   - Read every passer.
-   ⛔ **No relabel until the passer list is clean** (FILTER_PLAYBOOK §1b). Watch the cliff risk
-   (`filters/belonging/v2/STATUS.md`). Pro's cost is unmeasured; measure it before proposing Pro for a 7K relabel.
+0. ▶ **BELONGING — reshape the training data (the human_thriving v9 recipe). Plan approved by the owner 2026-10-02.**
+   Why: ovr.news reads less engaging than an external human-curated selection (ovr EXP-025: Belonging weakest),
+   while readers want Belonging most (EXP-005). **All numbers live in
+   `docs/evidence/2026-10-02-belonging-reader-snapshot/README.md`. Read it; do not copy figures here.**
+   - **Measured:** passer volume and its raw bands. Reader-facing rows are only the winners of ovr's top-50-per-lens
+     cap (raw ≥ ~5.6), not every passer. Also measured: v1's positive count, and where the curator's picks score.
+   - **Claude's read (owner not checked):** most reader-facing articles are off-lens, and the score does not separate
+     fits from junk. Most v1 positives are feel-good stories from positive-news feeds.
+   - **Owner rulings 2026-10-02:** the middle definition plus the "doing" test. Detail in
+     `docs/evidence/2026-10-01-belonging-v2-test-set/README.md` § *Owner rulings*. The v2 DRAFT prompt is PARKED.
+   ▶ **Phases** (owner checkpoint after each):
+   1. **Rubric + exemplars.**
+      - Sources: the curator picks in our corpus (`datasets/external_curator/`, local only), the reader-sample fits,
+        and adverse examples per junk class.
+      - **Owner reviews them**, including: does a festival or tradition kept alive count?
+      - Re-run `build_test_set.py` first: `test_set.jsonl` and `test_set_full.jsonl` still carry the PRE-ruling labels.
+   2. **Adjudication pilot:** blind judges, hidden controls, a pass-B drift check, the owner's 10.
+   3. **Adjudicate v1's rows at ≥ 3.5** (b650 splits). Moved-out rows are capped at 2.0 **on every dimension**.
+   4. **Production harvest, adjudicated.** Strata:
+      - passers that win the cap (raw ≥ ~5.6)
+      - passers that lose it (4.0–5.6)
+      - plus the curator picks the student passes; they sit in both strata
+      - the 2.5–4.0 near-miss band
+
+      In-scope rows get Gemini v1-prompt scores, k=3 (**owner approves the spend, ~$1–3 est.**). Out-of-scope rows
+      become hard negatives.
+   5. **Build `belonging_v1_adj1` and retrain on b650** (`--medium-threshold 4.0` explicit). Use belonging's weights,
+      NOT `adverse_suite_gate`'s (uplifting v7).
+   6. **Gate on v1's test ids**, with the verdict rule committed first. ⚠️ `ground_truth_gate.py`'s
+      `load_scoring_spec` falls back to nature_recovery's weights on any config parse error, so assert that the
+      report shows `gatekeeper_cap` 3.42 and belonging's dims.
+   7. **Live audit**, plus whether the curator's stories win cap slots (never checked for v1).
+   ⛔ **Never name the curator in this repo or on GitHub** (owner, 2026-10-02). Its data stays in the gitignored
+   `datasets/external_curator/`.
+   ⛔ Exemplar ids, the v2 test set and the 200 reader sample stay out of every training draw.
+   - **Full plan** (local, not in the repo): `~/.claude/plans/adaptive-tumbling-naur.md`. Thriving scripts to adapt:
+     `docs/evidence/2026-09-24-thriving-adjudication-full/merge.py` and
+     `docs/evidence/2026-09-24-thriving-more-positives/build_adj3.py`. `judge_instructions.md` and `build_panel.py`
+     are in `docs/evidence/2026-09-25-v8-adj3-live-audit/`.
+   - **Owner decision pending:** the curator's name is already public in this repo and on one GitHub issue comment.
+     The inventory and the options are in the local plan file. Do nothing until the owner rules.
 
 1. **Decision-0 sync to NexusMind** — ONE NexusMind commit. The sequence is in the archived block (item 1):
    - dry-run diff first
@@ -40,6 +61,8 @@ Session record: `memory/project_session_2026_10_02_belonging_v2.md`.*
      - 2a: six dated entries moved out from under the gotcha-log template heading, verbatim (103.2 → 92.1 KB).
      - The START HERE block went 19.1 KB → this one.
      - Default refcheck 1 → 0 (a moot recall-cost hypothesis was marked).
+     - Afternoon: § *Filters* `[x]` history moved verbatim to `docs/TODO-archive.md` (TODO 37.4 → 33.0 KB). Read surface
+       measured at 908,775 chars (`/curate` Step 0's command).
    - **Open, in order:**
      - c. **The unreachable-mechanism catalogue**: 55 dated `###` entries are kept by rule. Mechanize, then retire
        entries whose class has a `live` row in § *Mechanized*. Changing the keep-rule is an **owner call**.
@@ -123,74 +146,9 @@ See `filters/common/commerce_prefilter/docs/` for full documentation.
 
 ## Filters
 
-### Production Ready
-- [x] **uplifting v6** - Deployed on HuggingFace Hub (private)
-  - Val MAE: 0.673 (was 0.688 in v5), 12% faster inference
-  - Gemma-3-1B base model (was Qwen2.5-1.5B)
-  - 10,495 training articles with data sculpting: active learning (495 MEDIUM enrichment) + label correction (57 crime articles capped)
-  - v5 crime news issue fixed via manual label correction in training data
-- [x] **uplifting v5** - Superseded by v6
-  - Val MAE: 0.68, 10,000 training articles
-- [x] **sustainability_technology v1** - Deployed on HuggingFace Hub
-  - Test MAE: 0.690
-- [x] ~~**sustainability_technology v3**~~ — **REMOVED 2026-08-03**, replaced by solutions. Package deleted; recover from git history. Entry kept for the training record below, not as a statement of what is deployed.
-  - Val MAE: 0.734 (calibrated test: 0.724), Gemma-3-1B
-  - 10,608 training articles (v2 10,039 + 569 active learning enrichment)
-  - All 3 inference paths: local, Hub, hybrid (probe MAE 0.91)
-- [x] **sustainability_technology v2** - Superseded by v3
-  - Val MAE: 0.71, 7,990 training samples
-- [x] **investment-risk v6** - Deployed on HuggingFace Hub (private)
-  - Val MAE: 0.497 (calibrated: 0.465), Gemma-3-1B
-  - 10,448 training articles (v5 10,198 + 250 active learning enrichment)
-  - Tier simplification: RED/YELLOW/GREEN/BLUE/NOISE -> high/medium_high/medium/low
-  - All 3 inference paths: local, Hub, hybrid (probe MAE 0.557)
-- [x] **investment-risk v5** - Superseded by v6
-  - Test MAE: 0.484 (excellent)
-  - 10,000 training articles
-- [x] **cultural-discovery v5** - Deployed on HuggingFace Hub + gpu-server (private) — 2026-05-31
-  - Val MAE: 0.697 (v4 was 0.74), Gemma-3-1B
-  - 8,551 training articles, DeepSeek V4 Flash oracle (first non-Gemini lineage)
-  - Resolves llm-distillery#62 discovery-lens leakage via F/G/H/I/K soft-penalty flags (historical_harm_reckoning, commemoration, perpetrator_biography, decline, launch)
-  - Provisional reference example for ADR-020 methodology (multi-oracle calibration + agent judging)
-  - Target: ovr.news Discovery tab
-- [x] **cultural-discovery v4** - Superseded by v5; on disk locally + git + HF Hub for rollback if needed
-  - Calibrated test MAE: 0.74 (v3 was 0.77), Gemma-3-1B
-  - 8,029 training articles (v3 7,827 + 202 active learning enrichment)
-  - All 3 inference paths verified (local, Hub, hybrid)
-- [x] **cultural-discovery v3** - Superseded by v4
-
-### In Active Development (priority: ovr.news tabs)
-- [x] **belonging v1** - Deployed, val MAE 0.49 (calibrated), 7,370 articles. Next: ovr.news tab
-- [x] **nature_recovery v2** - Deployed to Hub + gpu-server + sadalsuud (Hub upload actually completed 2026-04-19 after #44; prior commit claimed it without uploading)
-  - Val MAE 0.53 (calibrated), probe MAE 0.49, 3,517 articles
-  - v1 had zero discrimination (#41); v2 uses sample weighting (scale=2)
-  - Recall@20: 0.70 (v1: 0.55), NDCG@10: 0.86 (v1: 0.71), false negatives: 17% (v1: 41%)
-  - Hub: `jeergrvgreg/nature-recovery-filter-v2` (private)
-  - Remaining: normalization (needs production CDF), ovr.news Recovery tab frontend
-- [x] **uplifting v7** - ADR-010 prompt rewrite, deployed with hybrid inference (2026-04-06)
-  - v7 prompt: scope check, anti-hallucination, reframed assessment dimensions
-  - Hybrid inference: probe MAE 1.10, threshold 1.00, 0.5% FN, 1.07x speedup
-  - Evolved into thriving v1: renamed, social_cohesion_impact removed, 3-run averaging planned
-- [ ] ~~**thriving v1**~~ - PARKED indefinitely. Uplifting v7 (MAE 0.67) stays as Thriving tab.
-  - Root cause: orthogonal lens design created bimodal distribution (ADR-015)
-  - A fixed thriving v2 would converge back to uplifting v7. Not worth retraining.
-  - Assets preserved in `memory/thriving-v1-scoring.md` if ever revisited
-- [x] ~~**foresight v1**~~ — **REMOVED 2026-08-03**, merged into solutions (#43, closing out #64). Was signs_of_wisdom. Package deleted; recover from git history.
-  - Val MAE 0.75, 3,480 training articles, 6 dimensions
-  - Hybrid inference: probe trained, threshold 2.25 (default, calibrate on production data)
-  - Remaining: ovr.news Foresight tab frontend integration
-
-### Active Learning In Progress
-- [x] **cultural-discovery v5** - **DEPLOYED** (HF Hub, DeepSeek oracle, MAE 0.70). Stale `[ ]` corrected 2026-08-03 — the entry below describes the training-data prep that has long since shipped. Live follow-ups are #86 (prefilter is dead in production — measured, DO NOT enforce) and #87 (v6 scope: lens-fidelity + op-point re-derivation).
-  - Oracle-scored 473 production MEDIUM+ articles with Gemini Flash (active-learning lane, 2026-04-06)
-  - Smooth distribution (bell curve centered at WA 4.8), no bimodality
-  - 2026-05-29: #62 hard-negatives cohort added — 49 articles labeled with v5 oracle prompt (5 new pre-classification flags F,G,H,I,K)
-  - v5 prompt deltas: TRAJECTORY OVER VOCABULARY principle, CAP ENFORCEMENT clamp rule, F carve-out covers wartime restitution (Modigliani fixed), J intentionally omitted (handled by `filters/common/obit_signal.py` per #51)
-  - Cohort stats: production v4 mean 8.27 → v5 oracle mean 4.05; 44 hard-negatives + 5 calibration-confirmed positives (tagged `_v5_oracle_reclassified`)
-  - Next: train on gpu-server, calibrate, retrain probe, deploy
-- [x] **nature_recovery v2** - Trained, calibrated, deployed (2026-04-16)
-  - Sample weighting (scale=2) + active learning enrichment (237 articles)
-  - Remaining: normalization (needs production CDF), hybrid threshold recalibration
+*The `[x]` history that stood here (Production Ready, In Active Development, Active Learning In Progress) moved
+VERBATIM to `docs/TODO-archive.md` § *Moved 2026-10-02 (afternoon): § Filters history* (read surface, #163 item e).
+Current filter state lives in `memory/filter-status.md` and the `CLAUDE.md` table.*
 
 ### Other Filters
 - [ ] ~~**future-of-education**~~ - DROPPED: education stories land naturally in Breakthroughs (research)

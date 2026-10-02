@@ -1,4 +1,9 @@
-# belonging v2 — DRAFT (2026-10-01)
+# belonging v2 — DRAFT (2026-10-01), PARKED 2026-10-02
+
+⛔ **PARKED (owner-approved plan, 2026-10-02):** the next belonging model reshapes the TRAINING DATA, the human_thriving
+v9 recipe: adjudicated v1 labels, production positives and hard negatives, v1's prompt for dimension scores. This
+prompt is not the lever. Its leakage, and the record that added rules move failures without removing them, both point
+that way. Plan: `docs/TODO.md` ▶ START HERE item 0; evidence `docs/evidence/2026-10-02-belonging-reader-snapshot/`.
 
 Prompt and config only. No model, no scorer code, no calibration, and nothing deployed. Production runs
 belonging **v1**.
