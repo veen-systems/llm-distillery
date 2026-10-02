@@ -84,8 +84,8 @@ def build():
     if missing:
         raise SystemExit(f"override/named ids not in the set: {sorted(missing)}")
     ids = [k["calib_id"] for k in key]
-    if len(set(ids)) != len(ids):
-        raise SystemExit("duplicate calib_id")
+    if len(set(ids)) != len(ids) or len({k["id"] for k in key}) != len(key):
+        raise SystemExit("duplicate calib_id or the same article twice")
     OUT.mkdir(parents=True, exist_ok=True)
     with open(OUT / "calib_set.jsonl", "w") as f:
         for r in rows:
@@ -162,7 +162,7 @@ def call(oracle, prompt, keys):
     raise SystemExit(f"unknown oracle {oracle}")
 
 
-def run(oracle, limit, workers, rubric_file="rubric_belonging_v2.md", tag=""):
+def run(oracle, limit, workers, rubric_file="rubric_belonging_v2_0.md", tag=""):
     from ground_truth.secrets_manager import get_secrets_manager
     sm = get_secrets_manager()
     import configparser  # DeepSeek is not in the secrets manager; read it as score_deepseek_production.py does
@@ -172,18 +172,26 @@ def run(oracle, limit, workers, rubric_file="rubric_belonging_v2.md", tag=""):
             "deepseek": cp.get("api_keys", "deepseek_api_key", fallback=None)}
     if not keys[oracle] and oracle != "claude":  # Claude: None lets the SDK resolve ANTHROPIC_API_KEY / an `ant` profile
         raise SystemExit(f"no API key for {oracle}")
+    import hashlib
     rubric = (HERE / rubric_file).read_text()
     template = (HERE / "oracle_scope_prompt.md").read_text()
+    prompt_sha = hashlib.sha256((rubric + "\x00" + template).encode()).hexdigest()[:16]
     rows = [json.loads(l) for l in open(OUT / "calib_set.jsonl")]
     out_path = OUT / f"{oracle}{tag}.jsonl"
     done = set()
     if out_path.exists():
-        done = {json.loads(l)["calib_id"] for l in open(out_path) if "error" not in json.loads(l)}
+        old = [json.loads(l) for l in open(out_path)]
+        shas = {r.get("prompt_sha") for r in old if "error" not in r}
+        if shas - {None, prompt_sha} or (None in shas and old):
+            if not (shas == {None} and rubric_file == "rubric_belonging_v2_0.md"):
+                raise SystemExit(f"{out_path.name} holds verdicts from a different prompt/rubric; use another --tag")
+        done = {r["calib_id"] for r in old if "error" not in r}
     todo = [r for r in rows if r["calib_id"] not in done][: limit or None]
     print(f"{oracle}: {len(done)} done, {len(todo)} to call", flush=True)
 
     def one(r):
-        rec = dict(calib_id=r["calib_id"], oracle=oracle)
+        rec = dict(calib_id=r["calib_id"], oracle=oracle, rubric_file=rubric_file, prompt_sha=prompt_sha,
+                   ts=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()))
         try:
             text, usage, model, secs = call(oracle, prompt_for(r, rubric, template), keys)
             rec.update(model=model, usage=usage, seconds=round(secs, 2), raw=text)
@@ -195,11 +203,15 @@ def run(oracle, limit, workers, rubric_file="rubric_belonging_v2.md", tag=""):
                 raise
         return rec
 
-    with open(out_path, "a") as f, ThreadPoolExecutor(max_workers=workers) as ex:
-        for fut in as_completed([ex.submit(one, r) for r in todo]):
-            rec = fut.result()
-            f.write(json.dumps(rec, ensure_ascii=False) + "\n")
-            f.flush()
+    with open(out_path, "a") as f:
+        ex = ThreadPoolExecutor(max_workers=workers)
+        try:
+            for fut in as_completed([ex.submit(one, r) for r in todo]):
+                rec = fut.result()
+                f.write(json.dumps(rec, ensure_ascii=False) + "\n")
+                f.flush()
+        finally:  # a FATAL (auth/balance) must not keep calling and billing the queued rows
+            ex.shutdown(wait=True, cancel_futures=True)
     recs = [json.loads(l) for l in open(out_path)]
     print(f"{oracle}: {sum('error' not in r for r in recs)} ok, {sum('error' in r for r in recs)} error lines in file")
 
@@ -259,8 +271,8 @@ def analyse(tag="", exclude_named=False):
         missing = [c for c in key if c not in R]
         print(f"\n=== {o} ({MODELS[o]}): {len(R)} judged, {len(missing)} missing")
         for scope_name, pred in (("all", lambda k: True), ("pilots only", lambda k: k["source_set"] != "exemplar")):
-            pos = [c for c, k in key.items() if k["label"] == "in" and pred(k) and c in R]
-            neg = [c for c, k in key.items() if k["label"] == "out" and pred(k) and c in R]
+            pos = [c for c, k in key.items() if k["label"] == "in" and pred(k) and c in R and R[c]["verdict"] != "cannot_judge"]
+            neg = [c for c, k in key.items() if k["label"] == "out" and pred(k) and c in R and R[c]["verdict"] != "cannot_judge"]
             tp = sum(R[c]["verdict"] == "in_scope" for c in pos)
             tn = sum(R[c]["verdict"] != "in_scope" for c in neg)
             sl, sh = wilson(tn, len(neg))
@@ -271,14 +283,18 @@ def analyse(tag="", exclude_named=False):
         fn = [c for c, k in key.items() if k["label"] == "in" and c in R and R[c]["verdict"] != "in_scope"]
         print(f"  false in ({len(fp)}): {fp}")
         print(f"  missed in ({len(fn)}): {fn}")
+        cj = sum(r["verdict"] == "cannot_judge" for c, r in R.items() if c in key)
+        print(f"  cannot_judge (excluded from both denominators): {cj}")
         split = [c for c, k in key.items() if k["label"] == "split" and c in R]
         print(f"  split rows: {[(c, R[c]['verdict']) for c in split]}")
         if any(not r.get("usage") for r in R.values()):
             print("  cost: no per-call token counts (Claude Code subagents; see CALIBRATION.md for subagent tokens)")
             print(f"  models seen: {sorted({r['model'] for r in R.values()})}")
             continue
-        tin = sum(r["usage"]["input"] for r in R.values())
-        tout = sum(r["usage"]["output"] for r in R.values())
+        billed = [json.loads(l) for l in open(OUT / f"{o}{tag}.jsonl")]
+        billed = [r for r in billed if r.get("usage")]  # every billed call, incl. rows whose reply failed to parse
+        tin = sum(r["usage"]["input"] for r in billed)
+        tout = sum(r["usage"]["output"] for r in billed)
         pi, po = PRICES[o]
         cost = tin / 1e6 * pi + tout / 1e6 * po
         print(f"  tokens in {tin:,} out {tout:,}; cost at list price ${cost:.3f} "
@@ -301,7 +317,7 @@ if __name__ == "__main__":
     r.add_argument("--oracle", required=True, choices=list(MODELS))
     r.add_argument("--limit", type=int, default=0)
     r.add_argument("--workers", type=int, default=8)
-    r.add_argument("--rubric", default="rubric_belonging_v2.md")
+    r.add_argument("--rubric", default="rubric_belonging_v2_0.md")
     r.add_argument("--tag", default="")
     an = sub.add_parser("analyse")
     an.add_argument("--tag", default="")

@@ -1,5 +1,8 @@
 # Belonging adjudication PILOT v3, the enriched pilot: pre-registration (before the draw and before any judging)
 
+> ⚠️ **Rubric pointer (2026-10-02 close):** "rubric_belonging_v2.md" below meant **v2.0** (`rubric_belonging_v2_0.md`). **Corrections:** pilot v2's owner check was 7/10, which does NOT meet its bar ("aligned" overstated it). This file was committed together with its results, and its addendum came after the draw. **Result:** the bar was **not met**; item 2 was NOT EVALUATED and item 3 never ran (`README.md` § *Review corrections*).
+
+
 **2026-10-02.** Pilot v2 aligned the line: the owner agreed 7, disagreed 0, was unsure on 3.
 - **What v2 could not test** was the in-scope side. Random samples held ~1 in-scope row in 100, so κ was unreachable.
 - **This pilot** tests the judges on candidates RETRIEVED as likely positives. It also measures how much retrieval

@@ -1,3 +1,8 @@
+> ⛔ **REVIEW CORRECTIONS (2026-10-02 close): read § *Review corrections* at the end BEFORE quoting anything here.**
+> - Step 4's table predates the DIY override.
+> - The v2.0 baseline in Step 5 was computed after excluding exactly the oracles' misses.
+> - "Gemini is the candidate" holds against DeepSeek only.
+
 # Belonging scope-oracle calibration: Gemini vs DeepSeek vs Claude (2026-10-02)
 
 **The question.** Pilot v3 showed that lived belonging is ~2–4% of what the student passes, and that e5 retrieval
@@ -36,7 +41,7 @@ be compared and every step documented.
 
 ## Step 2: the prompt (`oracle_scope_prompt.md`)
 
-**Identical for all three oracles:**
+**One prompt file, sent unchanged to every oracle:**
 1. a short task header
 2. **`rubric_belonging_v2.md` verbatim**
 3. the verdict list and the "remove the relationship" rule, as in the judge instructions
@@ -84,6 +89,8 @@ the labels is therefore inflated by shared bias. Only the owner's spot-checks ar
 ## Step 4: results (`calibrate_scope_oracles.py analyse`)
 
 Smoke test first: 2 rows per oracle, all valid. Then full runs. Gemini and DeepSeek: 242/242 judged, 0 errors.
+⚠️ **The table below uses the labels from BEFORE the Step 5 DIY override (220 out / 17 in).** The current numbers
+are in § *Review corrections*.
 
 | oracle | specificity (220 out) | recall (17 in) | recall, pilots only (4 in) | the 5 split rows: says in | tokens in / out | cost, 242 rows |
 |---|---|---|---|---|---|---|
@@ -177,7 +184,7 @@ named rows excluded):
 | v2.0 | 206/216 = 0.954 [0.917, 0.975] | 13/13 | $0.237 |
 | v2.1 | **199/216 = 0.921** [0.878, 0.950] | 13/13 | $0.255 |
 
-The false ins rose from 10 to 17; 11 of the 17 are new under v2.1.
+The false ins rose from 10 to 17: 10 of the 17 are new under v2.1, 7 persist, and 3 of the v2.0 false ins went away.
 
 **Reading (Claude's):**
 - **The specificity drop is not a clean measurement.** The labels were made under v2.0, and v2.1 widened the line.
@@ -200,3 +207,71 @@ The false ins rose from 10 to 17; 11 of the 17 are new under v2.1.
 - Gemini: $0.237 + $0.255.
 - DeepSeek: $0.096.
 - Claude: 534,506 subagent tokens.
+
+## Review corrections (2026-10-02, session close)
+
+Three reviewers, on different models and with different lenses, ran over this file and its scripts:
+claims-vs-files, adversarial methodology, and code correctness. Every number below was recomputed by Claude from the
+stored verdicts after the review.
+
+**1. Current numbers on the FULL set,** under rubric v2.0, the post-override labels (219 out / 18 in), and
+`cannot_judge` excluded from both denominators. `analyse` now does all three.
+
+| oracle | specificity | recall (18) | pilot positives (5) | cannot_judge |
+|---|---|---|---|---|
+| Gemini 2.5 Flash | 208/218 = 0.954 [0.918, 0.975] | 16/18 = 0.889 [0.672, 0.969] | 5/5 | 1 |
+| Claude Opus 5.5 (subagents) | 216/219 = 0.986 [0.961, 0.995] | 14/18 = 0.778 [0.548, 0.910] | 5/5 | 0 |
+| DeepSeek | 215/217 = 0.991 [0.967, 0.997] | 10/18 = 0.556 [0.337, 0.754] | 3/5 | 2 |
+
+**2. `--exclude-named` removed exactly the oracles' mistakes.**
+- The 8 rows named in rubric v2.1 hold all of Gemini's v2.0 misses (2/2) and all of Claude's (4/4).
+- **So Step 5's "v2.0 … 13/13" hides the only misses there were.** The v2.0 headline is the full set, 16/18.
+- **The named rows as their own check** (do the rulings get through?): Gemini on v2.1 gets **6/8** right.
+  - The kauri planting is still **out**, although it is ruled in.
+  - `rnz_5fff`, the festival listing, turns **in**, although it is now a restored OUT example.
+
+**3. Screen choice.** The supported claim is **Gemini over DeepSeek** (paired, 6 to 0 on the in-rows).
+- **Gemini and Claude cannot be told apart:** 2 exemplar rows separate them, and both score 5/5 on pilot positives.
+- **Recall is barely anchored to the owner.** 13 of 18 positives are Claude's exemplars. The owner has confirmed
+  the in-side on 1 row plus the DIY override, and pilot v3's owner spot-check never ran.
+
+**4. The false-in load on production.** On random/production passers labelled out, Gemini says in for **2/57**
+(v2.0) and **4/57** (v2.1).
+- At a ~2–4% in-rate, false ins will roughly EQUAL true ins.
+- "The confirmation step absorbs ~5% false ins" understated the judging load.
+
+**5. No noise floor for v2.0 → v2.1.**
+- 15 of 242 binary verdicts flipped between the two Gemini runs, and v2.0 was never re-run.
+- The specificity drop is 7 rows net, so it cannot be separated from run-to-run variation.
+
+**6. The labels can only move toward the oracles.**
+- The owner reviewed only rows where all three oracles disagreed with the label. Rows where the oracles agree with
+  a wrong label are never seen.
+- The 3 rows the owner marked **unsure** in pilot v2 are labelled plain `out` (`krone_2c17` then counts as a v2.1
+  false in).
+- **The v2.1 relabel must be blind to the oracle verdicts, cover every row, and give unsure rows their own label.**
+
+**7. This set is now a DEVELOPMENT set.**
+- Rubric v2.1's rulings and examples were written from its disagreement rows.
+- `NAMED_IN_RUBRIC_V2_1` was hand-built and misses at least the cashew-planting row, which "planting trees together"
+  also describes.
+- **Freeze v2.1, then draw a FRESH held-out set** before trusting any screen number.
+
+**8. Rubric provenance.**
+- `run` now defaults to `rubric_belonging_v2_0.md` (what Step 4 ran).
+- Every record is stamped with the rubric file, a prompt hash and a timestamp.
+- `run` refuses to append verdicts from a different prompt to an existing file (mutation-tested: exit 1, file
+  unchanged). The v2.1 run lives in `gemini_v2_1.jsonl`.
+
+**9. Pre-registrations.** All three were committed in the SAME commit as their results, so their timing cannot be
+verified from the repo. `PREREGISTRATION_v3.md` also carries an addendum written after the draw, and its
+nearest-seed method was chosen by eye after retrieval had run.
+
+**10. Code fixes from the code review:**
+- **A FATAL (auth or balance) error** now cancels queued calls. Before, it kept calling and billing them.
+- **Cost** is summed over every billed record.
+- **Duplicate articles:** `build` raises on the same article appearing twice.
+- **`retrieve_v3.py`** writes and checks `ids.json` and scores float16 vectors on both paths.
+- **`extract_corpus_v3.py`** excludes before it deduplicates.
+
+  The 2026-10-02 corpus and pilot v3 were built by the old code; the fixes are noted in both files.

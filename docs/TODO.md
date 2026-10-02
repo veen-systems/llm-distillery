@@ -1,43 +1,56 @@
 # LLM Distillery - TODO
 
-## ▶️ START HERE — the ordered queue, as of 2026-10-02 (afternoon close)
+## ▶️ START HERE — the ordered queue, as of 2026-10-02 (evening close)
 
-*A bare "continue" means this list, top down. Each line names the FIRST action. The previous block (2026-10-01 close)
-moved VERBATIM to `docs/TODO-archive.md` § *Moved 2026-10-02*; its numbered items 1–8 are re-listed below as one-liners.
-Session records: `memory/project_session_2026_10_02_belonging_reshape.md` (latest), `memory/project_session_2026_10_02_belonging_v2.md`.*
+*A bare "continue" means this list, top down. Each line names the FIRST action. Session record:
+`memory/project_session_2026_10_02_belonging_calibration.md`. Evidence: `docs/evidence/2026-10-02-belonging-adjudication/`
+(`README.md` and `CALIBRATION.md`; read each file's § *Review corrections* first).*
 
-0. ▶ **BELONGING — retrain on adjudicated data, REVISED PLAN (owner-approved 2026-10-02, evening).**
-   The first rubric failed the owner check (3/10). The doing test had been overextended, and the external curator turned
-   out to be a generalist feed: it is no longer the yardstick.
-   - **Definition:** `docs/evidence/2026-10-02-belonging-adjudication/rubric_belonging_v2.md`, APPROVED. It rests on
-     Baumeister & Leary 1995, McMillan & Chavis 1986, v1's STEP 1 and the owner's rulings.
-   - **All evidence:** `docs/evidence/2026-10-02-belonging-adjudication/README.md`. The full plan is local, at
-     `~/.claude/plans/splendid-purring-acorn.md`.
-   ▶ **Phases** (owner checkpoint after each):
-   - 1R. ✅ Rubric v2 plus `exemplars_v2.tsv` (13 P / 9 B / 29 out). The dev check on the 10 first-pilot rows is in
-     `dev_check_v2.tsv`.
-   - 2R. ⚠️ **Pilot v2 ran.**
-     - Controls 4/4. The owner agreed 7, disagreed 0, was unsure on 3: the line is aligned.
-     - κ failed on prevalence: 1 disagreement in 100, with ~2 in-scope rows.
-     - **In-scope stories are nearly absent at random:** v1 above 1/39, production 0/30.
-     - ▶ **NEXT (owner decision):** an enriched re-pilot plus a retrieval-based harvest, using
-       `scripts/screening/embedding_screener.py` (ADR-011) seeded with the P exemplars.
-   - 3. Adjudicate v1's rows at ≥ 3.5. Moved-out rows are capped at 2.0 on every dimension.
-   - 4. **The production harvest is now the MAIN positive source**, in two rounds sized from the measured in-scope
-     rate.
-     - The builder must RAISE on any exemplar overlap.
-     - Oracle spend: Gemini v1 prompt, k=3, owner-approved per round.
-   - 5. Build `belonging_v1_adj1` and retrain on b650. Weights come from belonging's `base_scorer.py`,
-     `--medium-threshold 4.0`.
-   - 6. Gate on v1's test ids, with the verdict rule committed first. Assert that the 3.42 cap and belonging's dims
-     appear. Morwell is a recall miss by design.
-   - 7. Live audit: the owner's blind 20. The curator is a footnote only.
+0. ▶ **BELONGING: find positives to retrain on (revised plan, owner-approved; local plan
+   `~/.claude/plans/splendid-purring-acorn.md`).**
+   - **Definition:** `rubric_belonging_v2.md`, now **v2.1**, approved. It rests on research and the owner's rulings.
+     v2.0 is kept as `rubric_belonging_v2_0.md`.
+   - **Where we are (measured, judge-relative):**
+     - Lived belonging is rare: random passers 1/58 under v2.0.
+     - e5 retrieval did not find more: 2/48, with a 95% upper bound of 14%.
+     - A scope oracle on rubric v2.0, against Claude-judge labels:
+
+       | oracle | specificity | recall |
+       |---|---|---|
+       | Gemini Flash | 0.954 | 0.889 |
+       | Claude (subagents) | 0.986 | 0.778 |
+       | DeepSeek | 0.991 | 0.556 |
+
+     - Supported: **Gemini over DeepSeek.** Gemini and Claude cannot be told apart.
+   ▶ **Next, in order:**
+   1. **Re-label the 242-row calibration set under v2.1.**
+      - Two blind Claude judge passes (`judge_instructions_v2.md` pointed at v2.1), BLIND to the oracle verdicts,
+        every row.
+      - The owner's "unsure" rows get their own label.
+      - Then `calibrate_scope_oracles.py analyse --tag _v2_1` recomputes Gemini; no new calls are needed.
+      - Optional: **one more Gemini v2.0 run as a noise floor**, about $0.24 estimated, needs owner approval. 15 of
+        242 verdicts flipped between runs, so there is no floor yet.
+   2. **Owner check, 10 rows in both directions:** Gemini-vs-judge disagreements plus consensus-in rows. The owner
+      reads the article's own opening. Positives anchored to the owner are the gap: 13 of 18 positives are Claude's
+      exemplars.
+   3. **Freeze v2.1, then draw a FRESH held-out set.** The calibration set is now a DEV set, because v2.1 was written
+      from its disagreement rows.
+   4. **If the screen holds:** a Gemini screen plus judge confirmation over production rows, at about $1 per 1,000
+      articles on this prompt (owner approves the spend).
+      - ⚠️ The false ins will roughly equal the true ins (2–4 of 57 random passers), so the judging load is real.
+      - The builder must call `belonging_exclusions.assert_disjoint()` (in the evidence dir; 771 ids from 10 sources,
+        mutation-tested). It raises on any overlap, and on a missing source. v1's splits are excluded separately on
+        b650.
+   5. Then phases 3–7 as planned:
+      - adjudicate v1's rows at ≥ 3.5
+      - build `belonging_v1_adj1` and retrain on b650
+      - gate on v1's test ids (Morwell is a recall miss by design)
+      - a live audit with the owner's blind 20
    ⛔ **Never name the curator** in this repo or on GitHub. Its data stays in the gitignored `datasets/external_curator/`.
-   ⛔ Exemplars, the dev rows, both pilots' samples, the v2 test set and the reader sample stay out of every training draw.
-   - **Owner decision pending:** the curator's name is already public in places. The inventory is in the old local plan,
-     `~/.claude/plans/adaptive-tumbling-naur.md`.
-   - **Cross-repo:** the curator question (cross-lens selection, EXP-025) belongs to ovr.news. Tell that session; post
-     nothing without the owner.
+   The owner decision on the name already being public is still pending; the inventory is in the old local plan,
+   `~/.claude/plans/adaptive-tumbling-naur.md`.
+   - **Cross-repo:** the curator question (cross-lens selection, EXP-025) belongs to ovr.news. Post nothing without the
+     owner.
 
 1. **Decision-0 sync to NexusMind** — ONE NexusMind commit. The sequence is in the archived block (item 1):
    - dry-run diff first
@@ -54,11 +67,15 @@ Session records: `memory/project_session_2026_10_02_belonging_reshape.md` (lates
      - Default refcheck 1 → 0 (a moot recall-cost hypothesis was marked).
      - Afternoon: § *Filters* `[x]` history moved verbatim to `docs/TODO-archive.md` (TODO 37.4 → 33.0 KB). Read surface
        measured at 908,775 chars (`/curate` Step 0's command).
+   - **Done 2026-10-02 (evening):** `memory/session-log.md` rotated, 153 KB → 70 KB. Entries before 2026-09-01 and the
+     frozen appendix moved VERBATIM to `memory/archive/session-log-2026-08-and-appendix.md` (0 lines lost, checked).
+     Read surface: **911,068 → 838,699 chars** (`/curate` Step 0's command).
    - **Open, in order:**
      - c. **The unreachable-mechanism catalogue**: 55 dated `###` entries are kept by rule. Mechanize, then retire
        entries whose class has a `live` row in § *Mechanized*. Changing the keep-rule is an **owner call**.
-     - d. **Propose a rotation for `memory/session-log.md`** (152 KB, unbounded by design). Then
-       `corroboration-feature-hypotheses.md` (79 KB) and `working-rules.md` (65 KB).
+     - d. ✅ session-log rotated (above). **Next: `corroboration-feature-hypotheses.md` (79 KB) and `working-rules.md`
+       (65 KB)**. Retire closed rows verbatim into `memory/archive/`. Also the hypothesis ledger (50 KB): move CLOSED rows
+       into `memory/archive/hypothesis-ledger-archive.md`.
      - e. **`docs/TODO.md` below START HERE** (~31 KB of section backlog). Audit each section: close, archive or
        keep. Example: § *Commerce Prefilter SLM* and § *Prefilter Quality (Apr 2026)*. Check them against
        decision 0 and ADR-004 before touching them.

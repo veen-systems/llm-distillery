@@ -4,6 +4,43 @@
 
 *⚠️ **Entries dated before 2026-09-17 live in [`archive/gotcha-log-archive.md`](archive/gotcha-log-archive.md)**, verbatim (the 09-01 → 09-16 ones moved 2026-09-27 by an owner-approved MID-MONTH pass, `--before 2026-09-17`; earlier ones moved 2026-09-24; into `archive/` 2026-09-26 so curate's size measurement stops counting it, #163; the month-dated Feb–May entries followed on 2026-09-26). Next pass: `python3 scripts/maintenance/retire_memory.py gotcha --before <first of this month> --apply` (dry run without `--apply`). It retires top-level entries only; the `###` entries inside the catalogue are kept by rule and counted. The unreachable-mechanism catalogue stayed here. For a recurrence match, grep both: `grep -n <term> memory/gotcha-log*.md`.*
 
+## A RULE BORROWED FROM ITS ORIGIN BECAME THE DEFINITION — the "doing" test (2026-10-02)
+**Problem**: I adopted ovr.news `BRAND.md:84`'s "doing, not feeling" test as the core of the belonging rubric.
+The first adjudication pilot passed every instrument check (controls 4/4, A vs B 1.000) and failed the owner
+check at 3/10.
+**Root cause**: The test was written for ONE case, belonging whose occasion is a harm, and was marked "Undecided"
+there. Generalised, it excluded what 0.50 of v1's weight rewards (intergenerational, rootedness, slow presence).
+Chasing an external curator's picks, which mostly come from solutions-style stories, had pulled me toward it.
+**Fix**: Before importing a rule, read the paragraph it came from and name the case it was built for
+(`feedback-precedent-is-a-mechanism-claim`). Ground a lens definition in its own dimensions and in research,
+not in a benchmark from a different lens.
+
+## A PRE-REGISTERED κ BAR THAT RARITY MADE UNREACHABLE (2026-10-02)
+**Problem**: Pilot v2's bar was κ ≥ 0.75. The passes agreed on 99/100 rows and κ was 0.66: FAIL.
+**Root cause**: With ~2 in-scope rows in 100, one disagreement caps κ near 0.66. I never checked the bar could be
+met at the expected prevalence (`feedback-prove-the-bar-is-reachable`).
+**Fix**: Before setting an agreement bar, simulate it at the predicted prevalence (pilot v3 did: one disagreement
+in 100 at p=0.25 gives κ 0.973). Below a minimum count of positives, report κ and do not judge it.
+
+## MY PREDICTIONS FROM TITLES OVERSHOT THREE TIMES IN ONE DAY (2026-10-02)
+**Problem**: I predicted in-scope rates of 15–35%, 25–50% and 25–50%. The judges measured 1/39, 0/30 and 2/48.
+**Root cause**: Titles of belonging-shaped stories oversell. The predictor (me, from titles) and the judges
+(Claude, from full text) share a model but not an input; only the full text decides.
+**Fix**: Do not size a harvest, a stratum or a budget from a title read. Predict, but measure on full text before
+any decision rests on the rate.
+
+## PARALLEL SUBAGENTS SHARED ONE SCRATCH FILE (2026-10-02)
+**Problem**: In the first pilot one judge overwrote another judge's temporary script in the shared scratchpad, and
+fixed its output by hand.
+**Fix**: Give every parallel subagent its own input/output directory AND its own `scratch/`, and say so in the
+instructions (pilots v2/v3 and the calibration did; no recurrence).
+
+## A RUBRIC EXAMPLE THAT DESCRIBES A CALIBRATION ROW TELLS THE ORACLE THE ANSWER (2026-10-02)
+**Problem**: Rubric v2.1's new examples (a hospital clean-up, inmates making theatre, a DIY workshop) were taken
+from calibration rows the owner had just ruled on. Re-running an oracle on v2.1 would score those rows trivially.
+**Fix**: Flag such rows (`NAMED_IN_RUBRIC_V2_1`) and report them apart from the headline. The same leak as the
+v2 prompt's "synthetic" examples, from the opposite direction: rulings flowing INTO the instrument.
+
 ## "READER-FACING" WAS DEFINED BY THE QUERY I WROTE, NOT THE GATE THAT BINDS (2026-10-02)
 **Problem**: I described 2,368 belonging articles as "normalized ≥ 4.5, what readers could see". Then I concluded
 that the curator's community stories (raw 4.1–6.7) "pass, mid-pack". Every sampled row had raw ≥ 5.77, and 6 of the
@@ -1045,6 +1082,8 @@ false finding in the reference audit, which trains readers to dismiss that audit
 | 2026-09-29 | A test writes a path inside the repo (tracked or not) and cleans it up in `finally`, which SIGKILL skips — llm-distillery#162's class; `tests/unit/test_verify_annotation_runner.py:100-105` (`MEMORY_FIXTURE.md` <!-- placeholder --> at repo root, created and deleted by the test) is a surviving instance, found reviewing PR #166 | `tests/lint/test_no_repo_writes_in_tests.py` <!-- placeholder --> — AST-scan `tests/**/*.py` for `write_text`/`open(...,'w')`/`unlink` on a path rooted at `REPO`/`PROJECT_ROOT`; allowlist `tmp_path`/`tempfile` | proposed | 2 |
 | 2026-09-29 | A negation/allowlist rule in a lexical guard that is not anchored at clause start admits the success-report idiom (`No regressions deployed v7`, `Errors during deploy: none`) — PR #167 rounds 1 and 2, same class twice | `tests/unit/test_commit_msg_hook.py` CLAIMS list (40 must-block messages from both review rounds) + 26 mutations incl. dropping each clause-start anchor; seeded positives re-run by a second session: rule-2 anchor removed → 6 fail, rule-3 anchor removed → 1 fail | live | 2 |
 | 2026-10-02 | A name the owner forbids in this public repo reaches a commit, and its location is written beside the rule | `.githooks/pre-commit` <!-- placeholder --> reading a denylist from a GITIGNORED local file (so the pattern never lands) and rejecting a staged diff that matches | proposed | 1 |
+| 2026-10-02 | An exclusion rule ("never draw these ids") lives only in prose, so a later builder silently draws an exemplar/pilot/test row | `docs/evidence/2026-10-02-belonging-adjudication/belonging_exclusions.py` `assert_disjoint()` (771 ids, 10 sources; raises on overlap AND on a missing source; mutation-tested 2026-10-02) | live (belonging only) | 1 |
+| 2026-10-02 | An oracle output file silently mixes verdicts from two rubric versions after the rubric file is edited in place | `calibrate_scope_oracles.py run` stamps `prompt_sha` and refuses a mixed file (mutation-tested: exit 1, file unchanged) | live (belonging only) | 1 |
  | 2026-09-27 | "Must be committed" enforced with `git ls-files --error-unmatch`, which passes a file that is only STAGED (ADR-024 step 3: in the code AND its real-tree test; found by 3 of 6 review lenses) | `tests/lint/check_committed_idiom.py` <!-- placeholder --> — flag `ls-files --error-unmatch` in `scripts/**` where the surrounding message or name says committed/commit; accept `cat-file -e HEAD:` or `diff --quiet HEAD` | proposed | 1 |
 
 ⛔ **THE FIRST OCCURRENCE, AND IT IS A FINDING ABOUT THE CHECK (2026-09-17).** The #134

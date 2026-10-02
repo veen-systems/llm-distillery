@@ -17,13 +17,17 @@ out = sys.argv[3]
 os.makedirs(out, exist_ok=True)
 model = SentenceTransformer('intfloat/multilingual-e5-small')
 S = embed_batch(model, [article_to_text(a) for a in seeds])
-emb_path = os.path.join(out, 'emb.npy')
+emb_path, ids_path = os.path.join(out, 'emb.npy'), os.path.join(out, 'ids.json')
+ids = [a['id'] for a in corpus]
 if os.path.exists(emb_path):
-    E = np.load(emb_path).astype(np.float32)
-    assert E.shape[0] == len(corpus), 'cached embeddings do not match the corpus'
+    if json.load(open(ids_path)) != ids:
+        raise SystemExit('cached embeddings belong to a different corpus or order')
 else:
-    E = embed_batch(model, [article_to_text(a) for a in corpus], batch_size=512)
-    np.save(emb_path, E.astype(np.float16))
+    np.save(emb_path, embed_batch(model, [article_to_text(a) for a in corpus], batch_size=512).astype(np.float16))
+    json.dump(ids, open(ids_path, 'w'))
+E = np.load(emb_path).astype(np.float32)  # both paths score the same float16-rounded vectors
+# NOTE (review 2026-10-02): the 2026-10-02 run scored float32 vectors before caching; a rerun can move the
+# top-2000 cut slightly. pilot v3 was drawn from that first run.
 c = S.mean(axis=0)
 c /= np.linalg.norm(c)
 cent = E @ c

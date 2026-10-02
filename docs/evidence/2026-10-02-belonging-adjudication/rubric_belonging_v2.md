@@ -2,6 +2,8 @@
 
 *v2.0, the text pilots v2 and v3 and the first calibration ran on, is kept verbatim in `rubric_belonging_v2_0.md`.*
 
+*The owner approved the RULINGS. The "e.g." examples added in v2.1 and the list "(care, therapy, advice, a response team)" are Claude's wording; most are drawn from calibration rows (`CALIBRATION.md` § Review corrections, item 7).*
+
 Judges read this before any article. It replaces `rubric_belonging.md`, whose pilot failed the owner check (3/10;
 `README.md` § *Item 3 failed*). The plan is `docs/TODO.md` ▶ START HERE item 0.
 

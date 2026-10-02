@@ -1,5 +1,8 @@
 # Belonging adjudication PILOT v2: pre-registration (written before the draw and before any judging)
 
+> ⚠️ **Rubric pointer (2026-10-02 close):** "rubric_belonging_v2.md" below meant **v2.0**, now kept verbatim as `rubric_belonging_v2_0.md`; the path now holds v2.1. **Result:** item 3 (owner) **not met**, 7/10 against ≥ 9/10 (`README.md` § *Review corrections*).
+
+
 **2026-10-02.** Phase 2R of the revised plan (`docs/TODO.md` ▶ START HERE item 0). The first pilot failed the owner
 check at 3/10 (`PREREGISTRATION.md`, `README.md`).
 

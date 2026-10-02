@@ -25,12 +25,8 @@ for f in sorted(glob.glob(D + 'filtered_*.jsonl')):
             continue
         n['stage2'] += 1
         url, content, h = r.get('url') or '', r.get('content') or '', r.get('content_hash')
-        if r['id'] in seen_ids or (h and h in seen_hash):
-            n['dup'] += 1
-            continue
-        seen_ids.add(r['id'])
-        if h:
-            seen_hash.add(h)
+        # NOTE (review 2026-10-02): the 2026-10-02 corpus deduplicated BEFORE excluding, so a GN or short first copy
+        # could hide a later full copy. Exclusion now runs first.
         if 'news.google.com' in url:
             n['gn'] += 1
             continue
@@ -40,6 +36,12 @@ for f in sorted(glob.glob(D + 'filtered_*.jsonl')):
         if r['id'] in ex_ids or url in ex_urls:
             n['excluded'] += 1
             continue
+        if r['id'] in seen_ids or (h and h in seen_hash):
+            n['dup'] += 1
+            continue
+        seen_ids.add(r['id'])
+        if h:
+            seen_hash.add(h)
         n['kept'] += 1
         print(json.dumps(dict(id=r['id'], title=r.get('title'), url=url, source=r.get('source'),
                               source_type=r.get('source_type'), content=content[:4000],

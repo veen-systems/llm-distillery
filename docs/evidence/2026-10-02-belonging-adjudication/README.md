@@ -1,4 +1,12 @@
-# Belonging adjudication: phase 1, rubric and exemplars (2026-10-02)
+# Belonging adjudication (2026-10-02): rubrics, three pilots, and the scope-oracle calibration
+
+> ⛔ **REVIEW CORRECTIONS (2026-10-02 close): read § *Review corrections* at the end BEFORE quoting anything below.**
+> - Pilot v2's owner check did NOT meet its bar (7/10 against ≥ 9/10).
+> - Pilot v3's bar was NOT met: item 2 was not evaluated and item 3 never ran.
+> - "~2–4% of passers" is superseded.
+> - "No lift" is scoped.
+>
+> **The calibration is in [`CALIBRATION.md`](CALIBRATION.md).**
 
 `docs/TODO.md` ▶ START HERE item 0, phase 1 (the human_thriving v9 recipe applied to belonging).
 
@@ -24,6 +32,12 @@ the owner has not checked them row by row. Phase 2's owner spot-check is the row
 | `PREREGISTRATION.md`, `judge_instructions.md` | phase 2 pilot design and bar, written before any judging |
 | `draw_pilot.py`, `build_pilot_inputs.py`, `key.jsonl` | the pilot sample (b650), the four blind judge inputs (gitignored), the key |
 | `analyse_pilot.py`, `pilot_result.txt` | bar items 1, 2, 4 and the owner spot-check list |
+| `rubric_belonging_v2.md` (now **v2.1**), `rubric_belonging_v2_0.md` (v2.0 verbatim; what pilots v2/v3 and calibration Step 4 ran on) | the research-grounded rubric |
+| `exemplars_v2.tsv`, `build_exemplars_v2.py`, `dev_check_v2.tsv` | v2 exemplars (13 P / 9 B / 29 out) and the dev check |
+| `PREREGISTRATION_v2.md`, `draw_pilot_v2.py`, `draw_prod_v2.py`, `build_pilot_inputs_v2.py`, `judge_instructions_v2.md`, `key_v2.jsonl`, `analyse_pilot_v2.py`, `pilot_v2_result.txt`, `spot_check_v2_*.tsv` | pilot v2 |
+| `PREREGISTRATION_v3.md`, `extract_corpus_v3.py`, `retrieve_v3.py`, `draw_pilot_v3.py`, `build_pilot_inputs_v3.py`, `key_v3.jsonl`, `analyse_pilot_v3.py`, `pilot_v3_result.txt` | pilot v3 (enriched by e5 retrieval) |
+| `CALIBRATION.md`, `calibrate_scope_oracles.py`, `oracle_scope_prompt.md`, `calib_key.jsonl`, `calibration_result.txt`, `calibration_v2_1_gemini.txt` | the three-way scope-oracle calibration |
+| `curator_lens_match.py` | which lens the external curator's picks pass |
 
 ## Where the exemplars come from
 
@@ -330,3 +344,43 @@ Pre-registered in `PREREGISTRATION_v3.md`; output `pilot_v3_result.txt`.
   - That is roughly 10–20 articles a day out of ~500 passers. This is a guess built on n=76.
 - **The training problem:** positives cannot be found by e5 similarity, and sampling yields ~3 per 100 judged.
   Hundreds of positives would need thousands of full-text judgements.
+
+## Review corrections (2026-10-02, session close)
+
+Three reviewers ran: claims-vs-files, adversarial methodology, and code correctness. Their findings were verified
+by recomputation. These corrections supersede the sections above.
+
+1. **Pilot v2's item 3 is a FAIL.**
+   - The owner agreed on 7 of 10, against a bar of ≥ 9/10; under pilot v3's own rule, "unsure" counts as not
+     agreeing.
+   - "0 disagreements" is true. "**The line is aligned**" overstated it; read it as "no disagreement, bar not met".
+2. **Pilot v3's bar is NOT met.**
+   - Item 2 is **NOT EVALUATED**, not PASS. Its "below 10 consensus-in" exemption was added after v2's κ failure,
+     and its reachability check assumed a 25% prevalence, which was Claude's overshooting prediction.
+     `analyse_pilot_v3.py` now prints NOT EVALUATED and exits 1; `pilot_v3_result.txt` was regenerated.
+   - Item 3 (the owner check) never ran.
+3. **"Lived belonging is ~2–4% of passers" is superseded.** The supportable statement is a judge-relative rate under
+   rubric **v2.0**.
+   - **Measured:** random passers **1/58 = 1.7% [0.3%, 9.1%]**, pooling pilot v2's `prod` (0/30) and pilot v3's
+     `random_pass` (1/28).
+   - **The population excludes** off-lens sources, Google News, rows under 300 characters, and the reader, pilot
+     and test ids.
+   - **2/48 is the retrieved stratum's rate,** not a rate among passers.
+   - **v2.1 widened the line,** so the rate under v2.1 is unmeasured.
+   - "~500 passers a day" comes from the reader snapshot (`../2026-10-02-belonging-reader-snapshot/README.md`).
+4. **The retrieval claim, scoped:** the retrieved rate's 95% upper bound is **~14%**. That refutes the 25–50%
+   prediction. It does NOT exclude a 3–4× lift: one method and one seed set were tested, and the seeds were mostly
+   exemplars.
+5. **"Not a judge defect"** (the reading after pilot v3) is contradicted by the calibration, which found a wrong
+   judge label: the DIY classes, overridden by the owner.
+6. **Exclusions for every future draw** (phase 3/4 builders must RAISE on overlap, not only on exemplars):
+   - `key.jsonl`, `key_v2.jsonl` and `key_v3.jsonl` (all three pilots)
+   - `calib_key.jsonl`
+   - both exemplar lists
+   - the v2 test set, the 150-row held-out sample, the 49 probe rows, and the 200-row reader sample
+7. **Field-name caveat:**
+   - `key_v3.jsonl`'s `oracle_in` holds the STUDENT's raw ≥ 4.0, not an oracle verdict.
+   - `key_v2.jsonl` dropped the v1 `split` column, so the count of pilot rows from v1's test split must be recovered
+     from the b650 splits before the phase-6 gate.
+8. **Truncation:** pilot v3's judges and the calibration oracles read content cut at 4,000 characters. A production
+   oracle sees the full text.

@@ -1,6 +1,6 @@
 # Judge instructions v2: given verbatim to every blind subagent (pilot v2, pass A and pass B)
 
-*Saved before the first batch ran. `{DIR}` is the judge's own directory.*
+*Saved before the first batch ran. `{DIR}` is the judge's own directory.* ⚠️ When pilots v2 and v3 ran, `rubric_belonging_v2.md` held **v2.0**, now kept verbatim as `rubric_belonging_v2_0.md`. To reproduce them, point the instructions there.
 
 ---
 

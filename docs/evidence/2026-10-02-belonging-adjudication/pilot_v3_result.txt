@@ -8,7 +8,7 @@
       in_scope expected            in_scope  spanish_eldiario_1292add7258e
            out expected      out_one_moment  south_american_cuba_headlines_d8011b247ea7
            out expected  out_event_spectated  australian_abc_au_fb9f91573d7b
-2. A vs B binary agreement 0.960 (bar 0.90), kappa 0.579 (bar 0.75, NOT judged: < 10 consensus in_scope) on n=100, 3 consensus in_scope: PASS
+2. A vs B binary agreement 0.960 (bar 0.90), kappa 0.579 (bar 0.75) on n=100, 3 consensus in_scope: NOT EVALUATED (< 10 consensus in_scope; the bar is NOT met)
    exact-verdict agreement (8 classes): 86/100
 4. presence: consensus disagrees with the oracle on 73 of 96 consensus rows: PASS
 

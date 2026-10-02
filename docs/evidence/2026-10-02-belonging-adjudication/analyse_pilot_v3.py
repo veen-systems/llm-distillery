@@ -84,11 +84,11 @@ def main():
     k = kappa(a, b)
     n_cons_in = sum(x and y for x, y in zip(a, b))
     judged = n_cons_in >= 10
-    item2 = agree >= 0.90 and (k >= 0.75 or not judged)
-    print(f"2. A vs B binary agreement {agree:.3f} (bar 0.90), kappa {k:.3f} (bar 0.75"
-          f"{'' if judged else ', NOT judged: < 10 consensus in_scope'}) on n={len(sample)}, "
-          f"{n_cons_in} consensus in_scope: {'PASS' if item2 else 'FAIL'}")
-    ok &= item2
+    item2 = agree >= 0.90 and k >= 0.75 if judged else None
+    print(f"2. A vs B binary agreement {agree:.3f} (bar 0.90), kappa {k:.3f} (bar 0.75) on n={len(sample)}, "
+          f"{n_cons_in} consensus in_scope: "
+          f"{'PASS' if item2 else 'FAIL' if judged else 'NOT EVALUATED (< 10 consensus in_scope; the bar is NOT met)'}")
+    ok &= bool(item2)  # NOT EVALUATED does not pass (review 2026-10-02)
     exact = sum(A[i]["verdict"] == B[i]["verdict"] for i in sample)
     print(f"   exact-verdict agreement (8 classes): {exact}/{len(sample)}")
 
