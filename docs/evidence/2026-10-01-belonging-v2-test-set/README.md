@@ -1,5 +1,11 @@
 # Belonging v2 test set (2026-10-01)
 
+> ⛔ **REVIEW CORRECTIONS 2026-10-02: read § *Review corrections* at the end BEFORE quoting anything below.**
+> - The v2 prompt's contrast examples paraphrase test rows, so this set is now a DEV set for v2.
+> - v1's 19/19 pass-row recall is circular.
+> - The "student-side defect" is not established.
+> - The probe-49 baseline is circular by construction.
+
 `docs/TODO.md` ▶ START HERE item 0. This is the pass/fail bar for a rewritten belonging oracle
 prompt, built **before** any prompt change. It applies the #130 ruling (owner, 2026-09-28):
 **belonging means cohesion that is holding or growing.** A grievance or a threat does not
@@ -25,9 +31,10 @@ Counts are from `label_basis` in `labels.tsv`.
 - **`owner`** (2 rows): the existing adverse rows.
 - **`handcheck`** (38 rows): the `H-HD17` verdicts, which were Claude's title-only calls that the owner accepted wholesale.
   The 32 `junk` → F rows were **not** re-read in full.
-- **`handcheck→claude`** (12 rows): hand-check verdicts I **revised to B** after reading the full body (7 `fits`, 5 `junk`).
+- **`handcheck→claude`** (12 rows): hand-check verdicts I **revised to B** after reading the full body (9 `fits`, 3 `junk`).
   Each row gives its reason.
-- **`claude`** (52 rows): my reading, not reviewed by the owner. Two kinds:
+- **`claude`** (63 rows, including the 11 `v1_heldout_top` rows): my reading, not reviewed by the owner. Three kinds:
+  - The 11 `v1_heldout_top` P rows, read in full (title plus ~900 characters).
   - Strata labelled from the title plus the first ~600 characters.
   - The three #130 examples, labelled from their whole 123–179-character text.
 - **Review, 2026-10-01**: an independent adversarial pass read all 85 P/F rows in full. **10 labels moved to B**,
@@ -92,7 +99,9 @@ from `datasets/adverse/README.md`).
 
 Command: `.venv/bin/python -m ground_truth.batch_scorer --filter filters/belonging/v1 --llm gemini-flash
 --source datasets/belonging_v2_test/test_set_full.jsonl --output-dir datasets/scored/belonging_v1_control_20261001`
-(Gemini 2.5 Flash, thinking off). 99/99 rows scored, 0 failed. The floor dropped exactly the 9 short rows.
+(Gemini 2.5 Flash, thinking off). 99/99 rows scored, 0 failed. The floor dropped exactly the 9 short rows. The 11
+`v1_heldout_top` rows were scored into the same directory later. The table and `v1_control_gemini_flash.txt` are
+the 99-row snapshot.
 The weighted average uses `BaseBelongingScorer`'s own weights and its community_fabric gatekeeper. Per-row
 table: `v1_control_gemini_flash.txt`.
 
@@ -161,8 +170,8 @@ gatekeeper as v1. The prompt adds STEP 1b, the cohesion test.
   are junk.
 - More prompt rules is the documented dead end. The cap failure is the playbook's "caps read as advisory"
   pit. The next mechanism has to be arithmetic in CODE, not another rule in the prompt.
-- **Cost: not measured** (no token log). There were 7 oracle runs of 99–150 rows (839 scorings). At the
-  ~$0.0035/row pre-run estimate, that is roughly $3.
+- **Cost: not measured** (no token log). There were 7 Flash runs: 99 + 11 + 4×110 + 2×150 = 850 scorings. At
+  the ~$0.0035/row pre-run estimate, that is roughly $3. The probes add 98 more (one of them on Pro).
 
 ## Result: two oracle probes on the 49 read passers (2026-10-01, owner-approved)
 
@@ -192,3 +201,44 @@ stricter test in, the prompt can say so. If the owner does not, a large part of 
 
 Google returned 121 `503 UNAVAILABLE` on the Pro run; the scorer's retries recovered all 49 rows.
 **Cost: not measured** (no token log).
+
+## Review corrections (2026-10-02)
+
+Two independent reviews ran: claims-vs-files and adversarial methodology. These corrections supersede the
+sections above.
+
+1. **Test-set leakage, so the test set is now a DEV set for v2.** At least six of the v2 prompt's "synthetic"
+   contrast examples paraphrase test rows:
+   - the parish reopening after an attack
+   - the rent-control march (the Spain housing protest)
+   - the chef crediting his mother's kitchen (Koesister)
+   - the burial ground and the demand (Robinvale)
+   - Indigenous weaving sold as souvenirs (the commodification row)
+   - the minister opening a community centre (the Colombo computer centre)
+
+   "41 → 11–14 of 65" is therefore a development score. **The only clean v2 evidence is the 150-row held-out
+   production sample** (121 → 71 passers), and its junk verdicts are Claude's alone. Before the next prompt
+   change, build a fresh test set whose rows the prompt author has not seen.
+2. **v1's recall is 8/8, not 19/19.** The 11 `v1_heldout_top` rows were selected for a v1 oracle score of at
+   least 6.15. For v2, report 8/8 on the original P rows plus 11/11 on those easy rows, separately.
+3. **The "student-side defect" is NOT established.**
+   - **Expected false positives:** the oracle rejects 15/28 random-stratum F rows the student passed. That is
+     consistent with the student's documented false-positive rate at a low base rate (spec 0.985, recall 0.60).
+   - **Op-point noise:** 5 of the 15 student scores sit within 0.16 of 4.0.
+   - **Different windows:** the oracle reads the first 560 + last 240 words; the student reads 512 tokens.
+   - **Wrong examples:** two of the three examples cited above (Mühl, Gus Lamont) are HAND-CHECK rows, not
+     random-stratum rows.
+   - **"No prompt fixes it" was wrong:** v2 labels plus a retrain replace the student.
+4. **The probe-49 baseline is circular.**
+   - All 49 rows were selected because v2-Flash passed them, so 33/33 and 16/16 hold by construction.
+   - A Flash re-run alone flips about 3 of 14 F passers (`v2_draft2_repeat.txt`), so probe A's 3-row drop may
+     be noise.
+   - Probe B's correct reading is "Pro passes 15/33 of the junk that Flash passed". Pro's own false positives
+     on the 79 rows Flash rejected are unmeasured.
+   - **Before comparing oracles:** run Pro on all 150 rows, plus a Flash re-run control.
+5. **A cliff risk (FILTER_PLAYBOOK §1b).** The prompt caps community_fabric at 2.5, and the code gatekeeper caps
+   the whole score at 3.42 when community_fabric < 3.0. Together they make a step that a regression student can
+   leak across. Check student scores on capped rows near 3.0 before any deploy.
+6. **One row passes v2 only:** a Vietnamese resort scholarship ceremony, which Claude reads as junk.
+7. **The `v1_heldout_top` candidate selection** (the top 45 by v1 oracle score) is described in
+   `fetch_v1_heldout.py`, not scripted. Only the labels carry the selection.

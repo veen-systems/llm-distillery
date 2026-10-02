@@ -190,9 +190,11 @@ the length floor blocks*.
    *below* English (13.0%) while Italian (28.6%) and Korean (37.5%) sit well
    above — consistent with keyword coverage, not with language per se.
    Falsification: extend the keyword set for the poorly-covered languages, re-run
-   NexusMind's `scripts/measure_prefilter_recall_cost.py`, and check whether the per-language
+   NexusMind's prefilter recall-cost script, and check whether the per-language
    rates converge. If they do, the residual 15.5% is genuine editorial blocking
    and enforcement can be re-argued on its merits.
+   ⛔ **MOOT since 2026-10-01:** decision 0 deleted every per-lens prefilter, so there is no enforcement left to
+   re-argue, and the recall-cost script is gone from both repos (flagged by the default refcheck 2026-10-02).
 
 10. **Is exposure predictive of defect? Evidence so far says no.**
     investment_risk has by far the largest short-content exposure (635 clearing

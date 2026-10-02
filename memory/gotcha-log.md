@@ -4,6 +4,36 @@
 
 *⚠️ **Entries dated before 2026-09-17 live in [`archive/gotcha-log-archive.md`](archive/gotcha-log-archive.md)**, verbatim (the 09-01 → 09-16 ones moved 2026-09-27 by an owner-approved MID-MONTH pass, `--before 2026-09-17`; earlier ones moved 2026-09-24; into `archive/` 2026-09-26 so curate's size measurement stops counting it, #163; the month-dated Feb–May entries followed on 2026-09-26). Next pass: `python3 scripts/maintenance/retire_memory.py gotcha --before <first of this month> --apply` (dry run without `--apply`). It retires top-level entries only; the `###` entries inside the catalogue are kept by rule and counted. The unreachable-mechanism catalogue stayed here. For a recurrence match, grep both: `grep -n <term> memory/gotcha-log*.md`.*
 
+## "SYNTHETIC" EXAMPLES I WROTE AFTER READING THE TEST SET WERE THE TEST SET (2026-10-02)
+**Problem**: The belonging v2 prompt's contrast examples were called "synthetic, so no contamination". Six of
+them paraphrase test rows (the parish reopening, the rent march, the chef, the burial ground, the souvenir
+weaving, the minister's centre). The headline 41 → 11–14/65 became a DEV score, and the methodology review
+caught it, not me. In the same session I had removed two probe-derived exclusions from probe A for exactly
+this reason.
+**Root cause**: An author who has read the evaluation rows cannot write examples independent of them.
+Paraphrase does not launder it: the SHAPE is what the prompt teaches and the test probes.
+**Fix**: Write prompt examples BEFORE reading the evaluation set, or from rows outside it, and record their
+source beside each example. Treat any set the prompt author has read as a dev set. Clean evidence comes only
+from a sample drawn AFTER the prompt is frozen.
+
+## A ROW SELECTED BY THE INSTRUMENT CANNOT TEST THE INSTRUMENT — 19/19 recall, 33/33 baseline (2026-10-02)
+**Problem**: Two circular numbers from the same session:
+- 11 P rows were added because the v1 oracle scored them ≥ 6.15, and then v1 recall was reported as 19/19.
+- The 49-row probe was selected because v2-Flash passed it, and its 33/33 "baseline" held by construction;
+  a Flash re-run alone flips about 3 of 14.
+**Root cause**: The selection criterion was the measured quantity. The same shape as "the checker and the
+checked must be different objects" ([[feedback-hand-built-population]]).
+**Fix**: Before reporting a rate on a hand-added stratum, write down what selected it. If the selector is the
+instrument under test, report that stratum separately and add a re-run control.
+
+## `S=x && (job1) & (job2) &` — THE ASSIGNMENT LIVES ONLY IN THE FIRST BACKGROUND JOB (2026-10-01)
+**Problem**: The second oracle run wrote to `/v2_draft1.log` (Permission denied) and never started. The first
+run succeeded, so the pair looked half-done, not broken.
+**Root cause**: `A && B & C &` parses as `(A && B) &` then `C &`, so `S` was set only inside the first
+background list.
+**Fix**: Assign variables on their own line before backgrounding, or use absolute paths. Check BOTH logs'
+`Articles scored` lines before reading results.
+
 ## TURNING A NO-OP INTO A RAISE IN SHARED CODE BREAKS EVERY CONSUMER STILL ON THE OLD DEFAULT — and the rule I broke at the end of the same session (2026-10-01)
 **Problem**: Decision 0 made `use_prefilter=True` raise in `FilterBaseScorer` (the right call: a silent no-op is the NM#284 shape). Green suite, outcome proven. Review then found three callers still passing `True` (one inside `except: pytest.skip`, which would have hidden the raise as a skip forever), ~12 docs still describing prefilters in the present tense, and a cross-repo trap: NexusMind's package copies default `use_prefilter=True`, so syncing `filters/common` ALONE makes every un-redeployed package raise off the GPU path. At session close I ran `git add -A memory/`, which the working rules forbid even when scoped.
 **Root cause**: I grepped for callers of the deleted MODULE, not for callers of the changed VALUE. A deletion changes two surfaces: who imports it, and who passes the argument whose meaning changed. The `add -A` was speed at the end of a long session; checked after the fact (25 files, all mine) rather than prevented.
@@ -48,173 +78,6 @@
      history is a separate, engineer-approved decision, and this file is
      1,995 lines precisely because it predates the rule.
 -->
-
----
-
-### A FIX IS THE LEAST-REVIEWED CODE IN A SESSION — I repeated a defect inside its own repair, three times (2026-09-10)
-
-**Problem**: fixing a batch of review findings, three of my repairs carried the same shape as the
-defects they were fixing: **a cheap check placed after expensive work**.
-
-- `scaler.pkl` was unpickled **before** `_verify_hashes()` — the integrity check ran after the one
-  file it was already loading.
-- The `from sentence_transformers import SentenceTransformer` line sat **above** every integrity
-  check, so an ensemble mismatch, a bad hash and a missing manifest were all unreachable until a
-  ~7-second ML library had loaded — and unreachable *entirely* in a checkout without it, which is
-  where CI runs.
-- The empty-ensemble guard in `batch_score` ran **after** the embedding pass, so discovering there
-  was nothing to score cost a full embed.
-
-**Root cause**: each was written minutes after articulating the principle in a commit message. A
-fix feels like a correction rather than a change, so it does not get the scrutiny a change gets —
-and the framework's own review skill records that most introduced defects come from a previous
-round's fixes.
-
-**Fix**: all three reordered. **Verify before you load; refuse before you spend.**
-
-**Same session, same shape, different axis**: I removed a **denylist** from the DeepSeek guard and
-then wrote `load_split` treating any unknown `scope_verdict` as a negative, and a `band()` that
-named `list` while falling through on dicts. Both are unbounded-negative enumerations. Both fixed
-to allowlists.
-
-**Lesson**: ⭐ **Re-read a fix as a change, at the tier of the file it lands in.** The two questions
-that would have caught all five: *does this check run before the thing it guards?* and *does this
-enumerate the good or the bad?*
-
-### MY COUNT OF A SURFACE WAS WRONG TWICE IN ONE SESSION — three, six, then eight (2026-09-10)
-
-**Problem**: guarding the DeepSeek call sites, I wrote *"the three entry points"* in a commit
-message and an issue comment. An adversarial review lens found **six**. A test I then wrote to
-enumerate the surface by grepping the tree found **eight**.
-
-**Root cause**: I counted by recalling the files I had edited, not by asking the code. The two the
-test added name the host only inside **commented-out** config with no dispatch function behind it —
-latent rather than present, a distinction a hand-written list cannot carry and a grep can.
-
-**Fix**: `test_every_deepseek_call_site_is_guarded` greps for the host, strips comment lines before
-deciding a file talks to DeepSeek, asserts on live callers and **prints** the latent ones.
-
-**Lesson**: ⭐ **Enumerate a surface from the code and ship the enumeration as a test.** A list in a
-docstring is a snapshot of what you grepped once; the test is the inventory. ⚠️ And when correcting
-a check that over-reports, narrowing the predicate to match the claim is legitimate — *loosening it
-so the run goes green is not*. The tell is whether the narrowed predicate still fires on the real
-case: uncommenting either entry puts that file straight back in.
-
-
-### A NULL ARM THAT CANNOT FIRE IS NOT A CONTROL — read its FLAG RATE, not only its catch count (2026-09-10)
-
-**Problem**: `EXP-037`'s threshold sweep concluded *"and the null is still 0.0"* — presented as
-evidence the detector's catch was real across the whole sweep. It is not evidence anywhere above
-0.65.
-
-**Root cause**: the sweep table reported the null's **catch count** and omitted its **flag count**.
-At thresholds ≥0.65 the shuffled-label arm flags **0 of 137 rows in all five seeds**, so a catch of
-zero is arithmetically forced — the instrument could not have said yes. Worse, the direction
-reverses: at 0.30 the null flags **22.4** rows against the real arm's **10.6**, so the defence
-*"it fires at TWICE the real arm's rate"* — true at the pre-registered operating point — is
-backwards at the low end of the same table.
-
-**Fix**: retracted in the evidence README, with the null's flag column added beside the catch
-column. The PRIMARY result is unaffected: at the pre-registered rule the null is genuinely
-rate-advantaged and still touches the 9 zero times.
-
-**Lesson**: ⭐ **This is the instrument rule — already in `CLAUDE.md` — applied to a CONTROL rather
-than to a measurement, and that is the axis nobody checks.** A control is built to produce a
-reassuring negative, so its own ability to fire is the last thing interrogated. **Report a null
-arm's firing rate beside its catch count, always; a control with a zero firing rate is not a weak
-control, it is not a control.** Found by an adversarial review lens, in a document whose own text
-was congratulating itself on having a null arm.
-
-### A DENYLIST OF KNOWN-BAD VALUES IS A HAND-BUILT POPULATION, AND THE VENDOR EXTENDS IT (2026-09-10)
-
-**Problem**: `score_ollama_oracle.py` refused the literal DeepSeek model ids with
-`args.model.startswith("deepseek-v4")`. On 2026-09-10 DeepSeek renamed the flash line;
-`GET /models` began returning **`deepseek-flash`**, which does not match the prefix — so the one
-id the vendor now advertises, the id anyone would reach for, walked straight past the guard. The
-other two DeepSeek entry points had no guard at all.
-
-**Root cause**: the guard enumerated the **bad** values, and that set is owned by someone outside
-the repo. It was correct code on the right path with a passing rationale; nothing in the codebase
-changed and it stopped working anyway.
-
-**Fix**: `ground_truth/deepseek_models.py` — an allowlist of the one known-good alias, endpoint-aware
-so a Gemini `--base-url` is passed through, wired into all three scripts before the key, the prompt
-and any file I/O; subprocess tests plus two positive controls, both mutations killed.
-
-**Lesson**: ⭐ **Enumerate what is ALLOWED. A denylist is a hand-built population whose maintainer
-is the vendor.** ⚠️ And the review found the fix's own scoping was wrong: there are **six** DeepSeek
-call sites, not three (`violence_promotion/v1/oracle.py` takes the model as a constructor argument),
-and `urlparse().hostname` is fooled by a root-anchored FQDN — `api.deepseek.com.` reaches the real
-API and skips the check. **Fixing the shape is not the same as covering the surface.**
-
-### A GUARD WHOSE DOCSTRING NAMES ITS PURPOSE AND WHOSE PREDICATE IS NARROWER IS WORSE THAN NONE (2026-09-10)
-
-**Problem**: `test_no_threshold_anywhere_in_the_inference_module` existed to stop a threshold
-appearing in a stamp-only artifact, and its docstring said so: *"the thing that notices if someone
-adds a convenient default later."* It walked `ast.arg` and `ast.Name`. The natural way to add a
-threshold — `self.threshold = 0.85` — is an `ast.Attribute` whose `Name` is `self`, and it passed
-in silence. So did a float knob under another name (`cut=0.85`). Its sibling matched **substrings**
-against a hand-written forbidden list, so any newly-invented key name passed.
-
-**Root cause**: the test was written from the shape I had in mind while writing the module, not from
-the shapes an editor would reach for later. A green test on a narrow predicate proves the narrow
-predicate; the docstring then sells it as the wide one.
-
-**Fix**: widened to Attributes and to float defaults on `__init__`, and the key test now **parses
-the returned dict** and requires exactly two keys, so an ADDITION fails rather than only a known-bad
-name — the same denylist→allowlist move as the entry above, on the same day, in a file written the
-same afternoon. Three mutations killed.
-
-**Lesson**: **A guard is read as covering what its docstring claims.** When the two diverge the
-docstring wins in every future reader's head, which makes an over-promising guard strictly worse
-than an absent one. Mutate the guard with the shape a *later* author would write, not the shape you
-just avoided.
-
-
-### ⭐ ADDENDUM 2026-09-10 — the vendor renamed the model and the guard silently stopped covering it
-
-**The rule above still holds. The guard enforcing it did not.** `score_ollama_oracle.py:416`
-tested `args.model.startswith("deepseek-v4")` — a denylist of the ids that existed the day it
-was written. On 2026-09-10 DeepSeek renamed the flash line: `GET /models` now returns exactly
-**`deepseek-flash`** and **`deepseek-v4-pro`**. Both `deepseek-v4-flash` and
-`deepseek-v4-flash-vision-exp` are **gone from the listing** (the former still resolves if sent).
-So **the one flash id the vendor now advertises — the id anyone reading `GET /models` would
-reach for — did not match the guard.** The other two DeepSeek entry points
-(`score_deepseek_production.py`, `validate_deepseek_oracle.py`) had **no guard at all**.
-
-⚠️ **THE SYMPTOM CHANGED, AND THE NEW ONE DOES NOT RAISE.** Re-measured today, matched prompt
-and matched request shape:
-
-| request shape | `--model deepseek-chat` | `--model deepseek-flash` |
-|---|---|---|
-| `max_tokens=16`, plain | content `'OK'`, 1 tok | content `''`, 16 tok all reasoning — the 2026-08-14 break |
-| `max_tokens=4096`, `response_format=json_object` (**production**) | content `{"score": 7}`, **6** tok | content `{"score":7}` — **correct** — but **208** tok |
-
-The empty-`content` parser break was a **truncation artifact of a small token budget**, not the
-whole failure. Under the shape production actually uses, the literal id returns **valid JSON**
-and merely bills **~34.7×** the output tokens. ⚠️ n=1 on one trivial prompt — direction and rough
-magnitude only, **not a calibrated multiplier**; a real scoring prompt was not measured. A run
-on the literal id now looks entirely healthy. Nothing downstream would catch it.
-
-**Fix**: `ground_truth/deepseek_models.py` — an **allowlist** (`{"deepseek-chat"}`), endpoint-aware
-so `--base-url` at Gemini's OpenAI-compatible endpoint is passed through, wired into all three
-scripts and covered by `tests/unit/test_deepseek_model_guard.py` (subprocess tests that run each
-script for real and assert it exits before loading a prompt or a key, plus two positive controls).
-Both mutations killed: removing the guard from one script fails that script's test; widening the
-allowlist fails all three.
-
-**Generalisation**: ⭐ **a denylist of known-bad values is a HAND-BUILT POPULATION, and the vendor
-gets to add to it without telling you.** Enumerate the one thing that is allowed instead. The
-denylist was correct code, on the right path, with a passing rationale — it stopped working
-because a name changed **outside the repo**, which is exactly the class the 2026-08-14 entry above
-already named and did not defend against.
-
-⛔ **And the "pin it instead" escape is CLOSED, not merely inadvisable.** There is no versioned
-flash id to pin: `GET /models` carries no version, the response `model` field reads
-`deepseek-flash` whatever you send (alias, new literal, or the retired `deepseek-v4-flash`), and
-no response header carries one. **The served version is not observable through this API** — so
-llm-distillery#157's proposed "stamp the served model" buys the **tier**, not the version, and
-would not have distinguished V4 from V4.1.
 
 ---
 

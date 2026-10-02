@@ -319,6 +319,20 @@ stamped, and where the same content may be **constitutive** rather than harmful.
 | `H-TV5` | v9 alone keeps the Thriving tab adequately full once uplifting v7's articles age out | ⏳ **OPEN — the owner's call, not a metric.** **Owner 2026-10-01: "seems all right"** (mid-drain; final look ~2026-10-06). Measured: over 5 cycles v9 put 62 on site vs v7's 681; the live tab held 706 Thriving articles 2026-09-27, mostly v7's. Test: the owner watches the tab over the ~10-day drain. If thin but right → seed band + one negative-ratio run; if wrong stories → labels/prompt (compensation ruling is not in v9's prompt) |
 | `H-DP2` | the sklearn that unpickles obituary v5 / violence v1 in production is the one they were built with | ⏳ **UNTESTABLE as recorded** — neither `training_config.json` records `sklearn_version` (manifest `build_stack_unrecorded`). Test: rebuild under the #158 banded trainer (records it), or recover it from the pickles' `_sklearn_version` state without unpickling |
 
+### Belonging v2 to the #130 ruling — `H-BV` (2026-10-01/02, `docs/evidence/2026-10-01-belonging-v2-test-set/`)
+
+All verdicts are Claude's labels; the owner has not reviewed them. Every oracle figure is ONE run per arm
+unless it says otherwise. The one repeat measured: 3/110 verdicts flip with the same prompt.
+
+| id | hypothesis | status |
+|---|---|---|
+| H-BV1 | The v1 ORACLE prompt (not only the student) rewards the topic and the grievance shape | **SUPPORTED, one run.** The v1 prompt on Gemini Flash passes 41/65 F rows, including all 5 EXP-025 rows and 23/31 hand-check F rows. The student is copying its oracle here |
+| H-BV2 | The student surfaces off-lens content that the v1 oracle rejects: a defect separate from the student's known false-positive rate | ⏳ **OPEN, NOT established (review 2026-10-02).** 15/28 rejections is consistent with the documented false-positive rate (spec 0.985 at a low base rate). 5 of the 15 sit within 0.16 of 4.0, and the oracle and student read different windows (560+240 words vs 512 tokens). A v2 relabel and retrain would replace the student anyway |
+| H-BV3 | A prompt that defines community_fabric by the ruling (STEP 1b), with the code gatekeeper doing the gating, cuts F passers without losing P | **DEV score only, NOT on held-out.** The test set leaked into the prompt's examples (review 2026-10-02), so 41 → 11–14/65 F is a development score. v1 recall is 8/8 on the original P rows; 11 easy rows were added for v1 score ≥ 6.15. Held-out sample (150 student-surfaced rows): v1 passes 121, v2 passes 71, and Claude read 33 of those 71 as junk. Drafts 1 and 2 cannot be ranked |
+| H-BV4 | The residual junk is the oracle ignoring an advisory cap, so a code cap on a yes/no judgement fixes it | ❌ **REFUTED (probe A); the mechanism, not the noise:** Flash answers "cohesion shown" for 31/33 junk rows. The judgement is the defect, not the arithmetic |
+| H-BV5 | A stronger oracle removes the residual junk | ⏳ **OPEN, weakly supported (probe B).** Pro passes 15/33 of the junk that Flash passed, and 15/16 fits. The baseline is circular, Pro's false positives on Flash's rejects are unmeasured, and cost is not measured. Test: Pro on all 150 rows plus a Flash re-run control |
+| H-BV6 | Much of the residual "junk" is a DEFINITION gap: a prosocial event or act (a donation, a homecoming, a crew that works well) vs a community's own lasting bonds as the subject | ⏳ **OPEN — owner ruling needed first.** The oracle's quotes are literal readings of "cohesion holding or growing". The yardstick (Claude's 49 verdicts) applies the stricter test |
+
 ## Where the *experiments* live, as opposed to the hypotheses
 
 | kind | home |

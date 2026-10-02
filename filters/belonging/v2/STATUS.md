@@ -9,3 +9,7 @@ belonging **v1**.
 - **Results:** `docs/evidence/2026-10-01-belonging-v2-test-set/README.md` § *Result: the v2 prompt*.
 - ⛔ **Not ready to label with.** About half of the held-out passers are still junk.
 - ⛔ The `v1_heldout_top` test rows must stay out of any v2 training draw.
+- ⛔ **The prompt's contrast examples paraphrase test-set rows** (review 2026-10-02). Rewrite them from rows
+  outside every evaluation set before the next evaluation.
+- ⚠️ **Cliff risk (FILTER_PLAYBOOK §1b):** the 2.5 cap on community_fabric plus the code gatekeeper (< 3.0 caps
+  the score at 3.42) make a step. Before any deploy, check student scores on capped rows near 3.0.

@@ -1,211 +1,79 @@
 # LLM Distillery - TODO
 
-## ▶️ START HERE — the ordered queue, as of 2026-10-01 (close)
+## ▶️ START HERE — the ordered queue, as of 2026-10-02 (close)
 
-*A bare "continue" means this list, top down. Each line names the FIRST action. The previous block
-(2026-09-28 close) moved VERBATIM to `docs/TODO-archive.md` § *Moved 2026-09-29 — the START HERE block of
-2026-09-28 (close)*. Session record: `memory/project_session_2026_10_01_decision0.md` (previous: `memory/archive/project_session_2026_09_29_cloud_pilots.md`).*
+*A bare "continue" means this list, top down. Each line names the FIRST action. The previous block (2026-10-01 close)
+moved VERBATIM to `docs/TODO-archive.md` § *Moved 2026-10-02*; its numbered items 1–8 are re-listed below as one-liners.
+Session record: `memory/project_session_2026_10_02_belonging_v2.md`.*
 
-0. ▶ **BELONGING v2, built to the #130 ruling ("cohesion holding or growing") — owner agreed 2026-10-01.** Why:
-   the #130 ruling, the `H-HD17` hand-check (35/50 harm-flagged rows junk) and ovr EXP-025 (Belonging lowest,
-   1.33, top picks grievance-framed at 9.97+) all point at the oracle rewarding the TOPIC. A harm cap cannot
-   fix it ("San communities…" belonging 9.99, harm 0.22). **First action, free and local:** build the v2 test
-   set BEFORE touching the prompt — EXP-025's weak top picks (ovr `data/held-out/blind-selection-2026-09-28/`),
-   the 50 hand-check rows (`docs/evidence/2026-09-28-per-lens-harm-rates/harm_handcheck_list.tsv`), the #130
-   worked examples — as the pass/fail bar. Then prompt rewrite → ~100-article oracle validation → only then
-   relabel/retrain (`docs/FILTER_PLAYBOOK.md`; ADR-021 gate, judge on specificity). ⛔ No $ figure until the
-   prompt exists. The shadow harm cap (NexusMind side, low priority) is v2's before/after instrument.
-   ✅ **Test set BUILT 2026-10-01**: `docs/evidence/2026-10-01-belonging-v2-test-set/` — 108 rows (10 P / 70 F /
-   28 B; 99 scorable). 64 labels are Claude's (12 of them revisions of hand-check verdicts). The owner has NOT reviewed them. ▶ **Next, owner:** (1) review the labels,
-   and rule on the Morwell-march vs Charleville shape; (2) approve the **v1-prompt oracle CONTROL run** on
-   this set. Every score on these rows today is the STUDENT's, so if v1's oracle already rejects the F rows,
-   the prompt is not the defect. (3) Set the bar's numbers after the control.
-   ✅ **Control RAN 2026-10-01** (README § Result): the v1 ORACLE passes 41/65 F rows (EXP-025 5/5, hand-check
-   23/31) → the prompt rewrite is justified. It also REJECTS 15/28 random-stratum F rows the student passed →
-   a second, student-side defect that no prompt fixes. Both need a plan.
-   ✅ **v2 prompt drafted and tested 2026-10-01** (`filters/belonging/v2/`, DRAFT; README § *Result: the v2 prompt*):
-   - Test set: F rows >= 4.0 drop 41 → 11–14 of 65, all 19 P kept.
-   - Held-out production sample: v1 passes 121/150, v2 passes 71/150, but ~33 of v2's 71 passers are junk by
-     my reading (animals, donations, ceremonies, essays).
-   - The oracle ignores the prompt's 2.5 cap (its own `official_event` tag still passes).
-   ▶ **Owner decision:** how to make the cap arithmetic instead of advisory (code-side, at label time).
-   Options are in the session report. No relabel until the passer list is clean.
-   ✅ **Probes run 2026-10-01** (README § *two oracle probes*): a code cap does not help (Flash judges
-   31/33 junk as cohesion); Gemini Pro passes 15/33 junk vs Flash's 33/33.
-   ▶ **Owner decision FIRST: the definition.** Does a prosocial event or act count as belonging (a
-   donation, a crowd welcoming a ship, a crew working well together), or only a community's own lasting
-   bonds as the subject? That ruling sets the yardstick; oracle choice (Pro costs more) comes after. Open: 9 rows are under the
-   300-char floor (2 of them P), and the recall side is thin (8 scorable P rows). Add P rows first.
+0. ▶ **BELONGING v2 — blocked on OWNER RULINGS, then a clean re-test.** Evidence:
+   `docs/evidence/2026-10-01-belonging-v2-test-set/README.md` (read § *Review corrections* FIRST) and ledger `H-BV1`–`H-BV6`.
+   - **Where it stands:** a v2 DRAFT prompt (`filters/belonging/v2/`) halves the passers on 150 held-out production
+     rows (v1 121 → v2 71). About half of the 71 still read as junk (Claude's verdicts only).
+   - **Ruled out:** a code cap (probe A). Gemini Pro (probe B) cuts the junk further; that result is weak.
+   ▶ **First, ask the owner:**
+   - (a) **The definition (`H-BV6`).** Does a prosocial event or act count as belonging (a donation, a crowd
+     welcoming a ship, a crew working well), or only a community's own lasting bonds as the subject?
+   - (b) Robinvale (#130 rules it F on the headline; the body is the community protecting the site).
+   - (c) Solidarity marches after a harm: B or F?
+   - (d) Optionally, skim Claude's 75 test labels and the 71 passer verdicts
+     (`v2_draft2_prod_passers_read.tsv`).
+   ▶ **Then, per the ruling:**
+   - Rewrite the prompt's contrast examples from rows OUTSIDE every evaluation set. Today's examples
+     paraphrase test rows (leakage).
+   - Build a fresh held-out sample.
+   - Score Flash ×2 (a noise control) and Pro on all of it.
+   - Read every passer.
+   ⛔ **No relabel until the passer list is clean** (FILTER_PLAYBOOK §1b). Watch the cliff risk
+   (`filters/belonging/v2/STATUS.md`). Pro's cost is unmeasured; measure it before proposing Pro for a 7K relabel.
 
-0b. ▶ **THE MIGRATION (NexusMind#395) — the owner's focus since 2026-09-29.** gpu-server (HCL) went offline
-   ~2026-09-28 21:20; last scored cycle 09-28 16:08. `nexusmind-44` owns NM#395 step 1: a scorer-only image
-   on **sadaltager, which is ON** (woken 2026-09-29 16:34; normal state is off). Parity, measured by
-   nexusmind-44 and read by our rules (flips split at 0.16 from the op-point): **0 flips beyond the band over
-   18,466 rows, 6/99 = 6.1% inside it, 0 `stage_used` mismatches**, a same-order rerun bit-identical; a
-   shuffled control was still running at close. **Go/no-go is the owner's + nexusmind-44's.** Our part:
-   ⚠️ **H-V8-23** (bf16 vs fp32 moved one article at the op-point) is the dtype question any box move
-   inherits — ask whether the image pins the production dtype. First action: `ListAgents`; if
-   nexusmind-44 is gone, read NM#395's latest comments before assuming its state.
-   **2026-10-01 read:** NexusMind#395 step 1 is **LIVE**: production has scored through the
-   `nexusmind-scorer` container on sadaltager since 2026-09-29 (owner go). sadalsuud wrote 4 belonging
-   cycles today. `deploy/scorer-image/` sets no dtype, so the image runs the scorer code's default, the same
-   code path gpu-server ran. H-V8-23 is answered by the parity run, not by a pin. ⚠️ sadalsuud no longer
-   auto-pulls (NM#395 comment 2026-09-30), so the decision-0 sync (item 1) also needs a manual pull and an
-   image rebuild.
+1. **Decision-0 sync to NexusMind** — ONE NexusMind commit. The sequence is in the archived block (item 1):
+   - dry-run diff first
+   - copy `filters/common/{filter_base_scorer,hybrid_scorer,cli}.py` together with every live package, deleting their `prefilter.py`
+   - retarget NM's `test_prefilter.py` / `test_shared_infrastructure.py`
+   - run the NM unit suite
+   - ⚠️ since NexusMind#395 step 1, sadalsuud no longer auto-pulls: a **manual pull + scorer-image rebuild** is needed
+   NexusMind's session runs it; ours is to tell them. LD#52 and LD#86 are closed.
 
-1. ✅ **DONE 2026-10-01 — decision 0 executed: every per-lens prefilter DELETED** (28 `prefilter.py`, 28
-   `prefilter:` blocks; `ai-engineering-practice` kept, separate product). Outcome proven on one pre-enrichment
-   production cycle via batch_scorer's own loader: exactly the lens-blocked rows now pass, none newly blocked,
-   floor unchanged (numbers: `docs/evidence/2026-10-01-decision-0-prefilter-deletion/`). Record: ADR-019
-   *Amendment 2026-10-01*; guard: `tests/unit/test_no_per_lens_prefilters.py`. Eight boxes moved to
-   `docs/TODO-archive.md` § *Moved 2026-10-01*. ▶ **Left:** tell NexusMind our side landed. ⛔ **The NM sync
-   is ONE NexusMind commit** (review sync-safety lens, measured on scratch NM copies, 1,829-test suite):
-   (1) dry-run diff first — NM-only drift exists in inactive `uplifting v6` (`GATEKEEPER_CAP 2.9`, a
-   `weighted_average >= 4.0` check) and `cultural_discovery v4` (`importlib` import); land or discard
-   explicitly. (2) Copy `filters/common/{filter_base_scorer,hybrid_scorer,cli}.py` WITH every live package
-   and delete their `prefilter.py` — `common` alone makes NM's own package copies (default
-   `use_prefilter=True`) raise on `scripts/run_filters.py:66` and the `smoke_test.py` hub path; packages
-   alone break `tests/unit/test_prefilter.py`. (3) Same commit: retarget `test_prefilter.py` and
-   `test_shared_infrastructure.py:367,496` (expect `ValueError`); pass `use_prefilter=False` in those two
-   callers or flip NM's `foresight v1` / `sustainability_technology v3` defaults. (4) NM unit suite, then
-   rebuild the scorer image from NM HEAD. Production GPU path (`main.py:755`, `use_prefilter=False`) is safe
-   either way; the shadow evaluator logs "unavailable" per filter until stripped. LD#52 and LD#86 can close
-   (owner).
+2. **THE READ SURFACE (#163) — owner: "prune, thin, mechanize, retire".**
+   - **Done 2026-10-02:**
+     - 2a: six dated entries moved out from under the gotcha-log template heading, verbatim (103.2 → 92.1 KB).
+     - The START HERE block went 19.1 KB → this one.
+     - Default refcheck 1 → 0 (a moot recall-cost hypothesis was marked).
+   - **Open, in order:**
+     - c. **The unreachable-mechanism catalogue**: 55 dated `###` entries are kept by rule. Mechanize, then retire
+       entries whose class has a `live` row in § *Mechanized*. Changing the keep-rule is an **owner call**.
+     - d. **Propose a rotation for `memory/session-log.md`** (152 KB, unbounded by design). Then
+       `corroboration-feature-hypotheses.md` (79 KB) and `working-rules.md` (65 KB).
+     - e. **`docs/TODO.md` below START HERE** (~31 KB of section backlog). Audit each section: close, archive or
+       keep. Example: § *Commerce Prefilter SLM* and § *Prefilter Quality (Apr 2026)*. Check them against
+       decision 0 and ADR-004 before touching them.
 
-2. **THE READ SURFACE (`#163`) — owner, 2026-09-28 and again 2026-09-29: "prune, thin, mechanize, retire".**
-   Done 2026-09-29 (verbatim + `LC_ALL=C sort | comm` lossless check, mutation-tested): the live `H-V8`
-   ledger section → archive (`hypothesis-ledger.md` 83.5 → 44.1 KB, six OPEN rows keep a pointer);
-   `cross-repo-prioritization.md` 70.9 → 37.3 KB (August P0–P4/batches/decisions → archive; the cloud
-   triage + pilots → the session file). Still open, in order:
-   a. **Unshield the gotcha log**: five `### ` entries dated 2026-09-10 (~12 KB) sit under the template
-      heading `## [Short description]`, which `retire_memory.py` `KEEP_HEADINGS` always keeps. Move them out
-      verbatim; make the script REPORT dated entries under a keep-heading (seeded test).
-   b. ✅ **DONE 2026-10-01**: `retire_memory.py gotcha` moved 42 entries (live log 158,044 → 100,946 chars,
-      reconstruction check passed); `sessions` moved 18 files (09-17..09-29) to `memory/archive/`. Default
-      refcheck 5 → **0** — ⚠️ the 5 (item e) moved WITH their entries into the unscanned archive; not fixed, out of view.
-   c. **The unreachable-mechanism catalogue** (~71 KB of `memory/gotcha-log.md`): mechanize → retire — an
-      entry whose class has a `live` row in § *Mechanized* moves verbatim. Changing the keep-rule is an owner call.
-   d. **Next-largest files**: `memory/session-log.md` (151 KB, unbounded by design — propose a rotation),
-      `memory/corroboration-feature-hypotheses.md` (79 KB), `memory/working-rules.md` (65 KB).
-   e. **The default refcheck is not 0**: 5 findings in `memory/gotcha-log.md` from the 2026-09-27 curate
-      (`adj_post2_20260925.sh` <!-- placeholder -->, `check_committed_idiom.py`,
-      `scripts/deployment/deploy_to_nexusmind.sh` <!-- placeholder -->, `x.sh` <!-- placeholder -->, `x2.sh` <!-- placeholder -->). Mark or fix; a check that is never 0 stops being read.
+3. **Owner, standing:**
+   - H-TV5: one last look at the Thriving tab ~2026-10-06, then close.
+   - #156 adverse pool (~$3.2–3.6): DEFERRED.
+   - Belonging shadow harm cap: a NexusMind change, low priority, v2's before/after instrument.
 
-3. **OWNER DECISIONS waiting:**
-   - ✅ **#134 RULED 2026-10-01 (owner):** **(a)** `docs/TODO-archive.md` stays UNTOUCHED — the marking pass
-     does not edit it; its findings are counted, not fixed. **(c)** ADR templates KEEP the code span +
-     placeholder form PR #168 left. *(Gloss, not ruled: the archive therefore never goes to 0 under
-     `--docs-live`, so promotion to the default set must exclude it or count it separately.)*
-   - ✅ **Harm caps (`H-HD17`) RULED 2026-10-01 (owner):** hand-check marked (belonging 35/50 junk, v9 4/19;
-     title-only, Claude's calls accepted). **belonging: SHADOW cap first, threshold later on real cycles;
-     human_thriving v9: no cap.** ▶ Next: the shadow stamp is a NexusMind change (ADR-022 drop point, OFF).
-   - ✅ **Cloud billing — DROPPED 2026-10-01 (owner):** owner believes the ≥ $6.89 came from the $100 credit; **not verified**, and not worth chasing while cloud pilots are stopped.
-   - **#156 adverse pool (~$3.2–3.6) — RULED 2026-10-01 (owner): DEFER until the harm hand-check above is
-     marked.** *(Gloss: the pool measures what the detector MISSES, which only matters if a cap goes in.)*
-   - Standing: H-TV5 (Thriving fullness under v9) — **owner 2026-10-01: tab "seems all right"** (day 5 of the ~10-day v7 drain, so v7 articles still fill it); one last look ~2026-10-06, then close.
+4. **Small, ours** (detail in the archived block's numbered items):
+   - `cultural_discovery v5` `raw_min` 4.0006 vs 4.0 (read `test_normalization_op_point.py`).
+   - LD#134 step 3, the marking pass (`docs/decisions/2026-09-17-refcheck-docs-tier.md`).
+   - The retracted 19.9%/13.0% framing still in `CLAUDE.md` (grep `19.9%`).
+   - LD#160: an ADR-009 note, a rename of `cross_filter_landscape.py`, and `check_framework_language.py`
+     (red first).
+   - H-MECH-1: watch, 2 batteries left.
+   - #158: the heldout detector band (b650).
+   - #104 item 1: likely MOOT if gpu-server is retired.
 
-4. **Small, ours:** `cultural_discovery v5` `normalization.json` `raw_min` **4.0006** vs `TIER_THRESHOLDS`
-   **4.0** — breaks the must-equal rule. Read `tests/unit/test_normalization_op_point.py` to see why it
-   passes; fix or record the tolerance. Then numbered items 3 (#134 step 3, continued) and 4 (19.9% framing).
+5. **NexusMind's, nothing of ours:**
+   - NexusMind#395: step 1 LIVE on sadaltager since 2026-09-29.
+   - ⚠️ **gpu-server answers SSH again** (2026-10-02 07:03, `up 99 days`): it never went down; the
+     2026-09-28 "outage" was reachability. Tell the owner and the NexusMind session before they decide anything
+     on "gpu-server is gone" (#104 item 1, orphan dirs).
+   - NM#286 item 3 (PR #561): its outcome check.
+   - ADR-024 steps 4–5.
+   - NexusMind#558 (OOM).
 
-5. **NexusMind's, nothing of ours:** NM#286 item 3 = NexusMind PR #561 **MERGED 2026-09-28** — its outcome
-   check (all six filters log 0 unstamped violence survivors) resumes when cycles do; ADR-024 steps 4–5;
-   gpu-server orphan dirs (moot if gpu-server is retired); NexusMind#558 (OOM in pre-enrichment).
-
-**Cloud pilots: STOPPED by the owner 2026-09-29.** Standing rules: `memory/cross-repo-prioritization.md`
-§ *The cloud angle*. Do not start one without the owner.
-
-
-*Numbered work items (numbers are NOT reused when an item closes):*
-
-1. ✅ **MEASURED 2026-09-28 — THE PER-LENS HARM FLAG RATES (`#156` step 2), `EXP-044`,
-   `docs/evidence/2026-09-28-per-lens-harm-rates/`.** Third census read taken: 99.28% of 195,901 rows (12
-   cycles) — plateaued. At harm ≥ 0.5 above each lens's own op-point (2 days, filtered population):
-   belonging **10.9%**, human_thriving 7.7%, uplifting 5.7%, nature_recovery 5.3% (**n=38**, useless),
-   solutions **1.9%**, cd 1.2%. ⛔ Flag rates, NOT harm rates — detector precision off the Thriving lenses
-   is unmeasured. ⛔ **The `uplifting v7` cap this method ended in is MOOT** (found 2026-09-28): Thriving reads
-   `human_thriving v9` since 2026-09-26 (ovr.news#373) and v7 is draining; a cap acts at scoring time, so it
-   would change nothing a reader sees. ▶ **NEXT, owner:** no cap is justified yet on any lens. Hand-check the
-   18 flagged v9 rows (only the 8 at ≥ 0.7 were read: mostly good-outcome stories) and ~50 flagged belonging
-   rows (junk vs constitutive; the ≥ 0.7 sample reads mostly harm-dominated);
-   a cap only if most are real misfits. NexusMind#286 item 3 raised with the `nexusmind-55` session.
-   *Original wording kept below.*
-   ~~DATE-GATED (earliest ~2026-09-24)~~ — THE PER-LENS HARM FLAG RATES (`#156` step 2).
-   🆕 **MEASURED 2026-09-28 (journal, sadalsuud): the harm stage has reported `0 files deferred` every cycle
-   since 2026-09-27 04:17** — the cycle before it said 132. In that one cycle `already stamped` went 57,000 →
-   108,000 (+51,000 against a 6,000 cap; 2,834 stamped) and `too old` 1,537 → 454,072. ⚠️ **Explained, INFERRED from the log
-   line** (nexusmind-55, 2026-09-28, not traced in code): that cycle finished draining the backlog, so it scanned
-   the long-deferred files for the first time and their rows entered `already stamped` / `too old` at once. No
-   out-of-band backfill; the only harm commit is `3f8f0a0` (cap 3,000 → 6,000, 09-25). So the "unstamped tail
-   persists" premise below may be void, but part of the old tail left by AGEING OUT, not by being stamped.
-   The census is still the instrument that decides it.
-   **First command: `NexusMind/scripts/stamp_census.py`** on sadalsuud — CLAUDE.md's rule is to
-   run it before quoting any stamped field, and it is the mandated instrument for exactly this.
-   ⛔ **DO NOT WAIT FOR THE BACKLOG TO CLEAR** (`H-HD13`, `NM#522`): the 3,000/run cap sits below
-   the intake measured so far, so the unstamped tail persists **at the current cap and intake**
-   and is systematically the OLDEST rows. ⚠️ **Not "permanent"** — both sources carry a dated
-   expiry: GN retires **2026-10-15** (6.71% of delivered rows) and the deficit may close on its
-   own. ⚠️ And the deficit rests on **n=2 cycles**, one of which (3,072) is only 2.4% above the
-   cap. Wait instead for filtered-population presence to plateau — two census reads so far,
-   **61.17%** (2026-09-21, 23,520 rows) and **85.29%** (2026-09-22, 36,838 rows); ⛔ two points
-   are not a plateau, so take a third before calling it one.
-   Method: for each lens, among rows at/above **that lens's own op-point**, the share with
-   `_harm_is_subject_score` above candidate thresholds. ⛔ **Per-lens, never pooled** — every harm
-   figure that exists today is the `uplifting v7` / `human_thriving v8` panel. `solutions`,
-   `belonging`, `nature_recovery` and `cultural_discovery` have **no computed rate** (their rows
-   *are* stamped — what is missing is the analysis, not the data), and for **Solutions and Nature
-   Recovery** the ADR argues "no cap, ever" may be right: one is about responses to harm, the
-   other is literally about recovering from damage. Then, and only then, a cap on `uplifting v7`.
-
-2. ⏸️ **OWNER DECISION, STILL OPEN: the ~$3.2–3.6 adverse-pool spend (`#156`).** ⚠️ **Item 1
-   did NOT answer this** — the shadow stamp counts what the detector FINDS and is structurally
-   blind to what it misses, so it narrows the per-lens GATING decision, not this one.
-   `EXP-039` closed the last free route with a negative — the per-run votes buy nothing — so the
-   pool is now the route to new signal rather than a ranked option. ⛔ **Do not re-run the free
-   arm**; its one untested variant needs a bigger positive class AND a new pre-registered bar.
-   The pool is sha256-pinned, so nothing degrades while it waits.
-   Owner said 2026-09-17: *"i need to think about this later."*
-
-3. **LD#134 step 3 — the MARKING PASS over the live tier.** Steps 1 and 2 are done and must
-   not be redone (`docs/decisions/2026-09-17-refcheck-docs-tier.md`). The tier is in code;
-   `--docs-live` prints the promotion preview. ⛔ **Read the record before quoting a number
-   here** — this line deliberately carries none, and the "~8× faster" framing it used to
-   carry was refuted: that was a count over a population that grew 168 → 242 files.
-   Promotion to the default set comes AFTER marking, in a separate change.
-   **Progress 2026-09-29: PR #168 merged (`30e668d` + review fix `d489c7c`)** — a partial pass over
-   `<root>`, `adr/`, `agents/`, `agents/templates/`, `templates/`. ⛔ Count only IN PLACE on this machine
-   (a clone lacks sibling repos + auto-memory and over-counts: 409 vs 277). Remaining work: the files
-   `CLAUDE.md` routes into under `decisions/` (in scope — "the directory is not the tier"), the
-   undated indexes, `docs/TODO-archive.md` (owner call (a)), and the rest of `<root>`. The PR body's
-   review addendum carries the breakdown.
-4. **The retracted 19.9%/13.0% framing is still live in the always-loaded file** — `CLAUDE.md`'s
-   prefilter constraint, plus `docs/HUMAN_THRIVING_V8_PLAN.md:176` and
-   `memory/cross-repo-prioritization.md` (grep `19.9%`; its line numbers moved 2026-09-27 when dated sections were retired). Two copies carry the correction, four
-   carry the retraction. Deserves its own review. ⚠️ **Cite it by name, not by line** — it was
-   `CLAUDE.md:74` until 2026-09-17 and the frontmatter edits move these numbers every session.
-5. **LD#160 — two Dutch-name violations — RULED 2026-10-01 (owner): ADR-009 gets a dated NOTE, not a rewrite;
-   the script is RENAMED to English AND `check_framework_language.py` is built (shown red on the script first).** Sites: `docs/adr/009-...:25,34,35,37,60`
-   and `scripts/analysis/cross_filter_landscape.py` (39 occurrences). Mechanize with
-   `check_framework_language.py` whose allowlist **is** the carve-out table; show it go red first.
-   ⚠️ It now has a `proposed` row in `memory/gotcha-log.md` § Mechanized — move it to `live`
-   only after a seeded positive, not after writing the script.
-6. **H-MECH-1 — watch, do not act yet. ⚠️ BATTERY 1 of 3 HAS RUN and the column DID move**
-   (to 1) — `memory/hypothesis-ledger.md` already records it, with a raised bar: an increment
-   must name whether the check *could* have fired. **Two batteries left**, so this line's old
-   "check whether it ever moved" is already answered and must not be re-asked.
-7. **The HELDOUT detector band (`#158`'s remaining half).** `EXP-040` measured out-of-fold bands;
-   the issue quotes **heldout** recall and the two are not comparable. Cheap on the 5090 (embed +
-   5 fits per detector) and it is what would give the live 0.85 obituary op-point a defensible
-   range. ⛔ Heldout corpora are on b650 at `filters/common/obituary_detector/training/data/`.
-8. **`#104` item 1 — the only arm that measures PRODUCTION's configuration.** `EXP-041` did the
-   device axis on one box; gpu-server's own GPU is untouched, and CUDA-to-CUDA across the two
-   boxes is now a comparison across two GPU ARCHITECTURES. ⚠️ Needs a gap between pipeline cycles
-   (`nexusmind-scorer` has `Conflicts=ollama.service`), which is what makes it the expensive one.
-   ⛔ This is NOT blocking anything: the shipped decision was stamp-and-band, already done.
-
-⚠️ **Before quoting `references 23 → 0`** (2026-09-17 audit): that is the DEFAULT scan set only,
-and `docs/` is still opt-in. See item 3.
-
+**Cloud pilots: STOPPED by the owner 2026-09-29.** Do not start one without the owner.
 ---
 
 ## Commerce Prefilter SLM - NEEDS REWORK
