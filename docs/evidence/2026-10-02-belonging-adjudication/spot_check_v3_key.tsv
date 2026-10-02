@@ -1,0 +1,9 @@
+n	id	stratum	score	oracle_in	consensus	A_verdict	B_verdict	A_reason
+1	south_american_brasil_de_fato_aa44f7ae3d03	random_pass	4.275486075878144	True	out	out_culture_topic	out_culture_topic	An album reissue interview; music as a culture topic.
+2	new_zealand_rnz_0ae22b25d9c6	retrieved_hi	7.923002052307128	True	out	out_other	out_other	A gathering to mourn and remember, turning to political grievance; remembering alone does not count.
+3	spanish_el_pais_f289e1f0d330	retrieved_hi	6.294166612625122	True	in	in_scope	in_scope	Lifelong friends from the same neighbourhood gather around a table to share memories and feel drawn back to their place, a long-standing bond told now.
+4	positive_news_the_better_india_620b60e76187	retrieved_hi	7.296780276298523	True	in	in_scope	in_scope	Named grandparents and families in a joint-family home share meals and care across generations, and the child learns belonging from them.
+5	greek_protothema_3d4a8e200a0b	random_pass	4.937537062168122	True	in	in_scope	in_scope	A woman returns to her family's village, marries her childhood friend and reopens a shop there, and the whole village celebrates their child; people keeping their place alive.
+6	global_news_NPR_world_51905221fabc	retrieved_lo	2.1019187211990356	False	out	out_one_moment	out_one_moment	A postcard portrait of one craftsman; no relationship is shown.
+7	arabic_khaleej_times_569838ad9455	retrieved_hi	5.665085244178772	True	out	out_gift_official	out_gift_official	A one-off wish granted by an official body.
+8	pan_african_global_voices_fr_c3cab5582405	retrieved_hi	5.7312499523162845	True	out	out_harm_is_story	out_harm_is_story	Flood deaths and destruction are the story.

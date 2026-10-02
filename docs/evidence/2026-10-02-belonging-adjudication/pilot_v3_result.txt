@@ -1,0 +1,24 @@
+1. controls, pass A: 4/4
+      in_scope expected            in_scope  arabic_khaleej_times_96980715085f
+      in_scope expected            in_scope  spanish_eldiario_1292add7258e
+           out expected      out_one_moment  south_american_cuba_headlines_d8011b247ea7
+           out expected  out_event_spectated  australian_abc_au_fb9f91573d7b
+1. controls, pass B: 4/4
+      in_scope expected            in_scope  arabic_khaleej_times_96980715085f
+      in_scope expected            in_scope  spanish_eldiario_1292add7258e
+           out expected      out_one_moment  south_american_cuba_headlines_d8011b247ea7
+           out expected  out_event_spectated  australian_abc_au_fb9f91573d7b
+2. A vs B binary agreement 0.960 (bar 0.90), kappa 0.579 (bar 0.75, NOT judged: < 10 consensus in_scope) on n=100, 3 consensus in_scope: PASS
+   exact-verdict agreement (8 classes): 86/100
+4. presence: consensus disagrees with the oracle on 73 of 96 consensus rows: PASS
+
+Per stratum (consensus rows; NOT pooled — design weighting, PREREGISTRATION.md):
+   retrieved_hi (pool 752): n=50, consensus 48, consensus in_scope 2/48, cannot_judge in either pass 0
+   retrieved_hi, consensus-out classes (pass A's class): {'out_other': 20, 'out_gift_official': 9, 'out_one_moment': 7, 'out_harm_is_story': 7, 'out_culture_topic': 3}
+   retrieved_lo (pool 1248): n=20, consensus 20, consensus in_scope 0/20, cannot_judge in either pass 0
+   retrieved_lo, consensus-out classes (pass A's class): {'out_harm_is_story': 5, 'out_one_moment': 5, 'out_other': 5, 'out_culture_topic': 3, 'out_gift_official': 2}
+    random_pass (pool 13024): n=30, consensus 28, consensus in_scope 1/28, cannot_judge in either pass 0
+   random_pass, consensus-out classes (pass A's class): {'out_other': 7, 'out_gift_official': 6, 'out_one_moment': 5, 'out_culture_topic': 5, 'out_harm_is_story': 3, 'out_event_spectated': 1}
+   WARNING: only 8 spot-check rows available
+
+3. owner spot-check: 8 rows -> spot_check_v3_blind.tsv (4 disagreements, 3 consensus in_scope)

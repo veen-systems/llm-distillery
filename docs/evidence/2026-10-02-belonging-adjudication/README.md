@@ -281,3 +281,52 @@ but intergenerational ties, care and slow presence barely appear among the candi
 - **The consequence for the plan:** phase 4's random harvest would yield almost no positives. Positives have to be
   RETRIEVED, using `scripts/screening/embedding_screener.py` (ADR-011, e5-small seeds) with the P exemplars as seeds.
   The pilot also needs an enriched stratum before κ and the in-scope side can be tested.
+
+## Pilot v3, the enriched pilot (2026-10-02, late evening)
+
+Pre-registered in `PREREGISTRATION_v3.md`; output `pilot_v3_result.txt`.
+- **Retrieval:** `extract_corpus_v3.py` and `retrieve_v3.py` (e5-small, nearest-seed) over 344,855 distinct
+  production stage2 rows. The seeds were the 13 P exemplars plus 5 pilot consensus-in rows.
+- **Cost:** $0 API. GPU: ~4.5 minutes of embedding on the b650 RTX 5090. Four subagents of ~115k tokens each.
+
+| bar item | result |
+|---|---|
+| 1. controls | 4/4 in both passes |
+| 2. A vs B | agreement 0.960; κ 0.579 NOT judged (only 3 consensus in-scope rows, below the pre-registered 10): PASS as pre-registered |
+| 3. owner spot-check | only 8 rows were available (3 consensus in, 5 out); not yet run |
+| 4. presence | 73 of 96 rows disagree with the student |
+
+**Consensus `in_scope` per stratum:**
+
+| stratum | in scope | pool | predicted |
+|---|---|---|---|
+| `retrieved_hi` | **2/48** | 752 | 25–50% |
+| `retrieved_lo` | **0/20** | 1,248 | 0–15% |
+| `random_pass` | **1/28** | 13,024 | 0–10% |
+
+**Retrieval gives no measurable lift** (2/48 against 1/28; the intervals overlap completely).
+
+**Every row any judge called in (7):**
+- **Both passes in (3):**
+  - grandparents in a joint family teaching a 4-year-old
+  - lifelong neighbourhood friends meeting around a table
+  - a Greek village celebrating a birth
+- **Split (4):**
+  - a youth association cleaning its health centre
+  - the Boti community keeping its forest
+  - a Turkish village that rejects smoking
+  - a Montana tribe welcoming children's remains home from Carlisle
+
+**Reading** (Claude's):
+- **The pilot shows rarity, not a judge defect.**
+  - The judges' out verdicts on the retrieved rows read as right: official ribbon-cuttings, grants, NGO founders,
+    research, harm.
+  - The owner agreed with this judge setup 7/0/3 in pilot v2.
+- **Claude's title-based predictions have now been too high three times running** (15–35%, 25–50%, 25–50%). Titles
+  overstate belonging. Only full-text judging measures it.
+- **The in-scope boundary is where the judges diverge:** 4 of 7 in-calls split. The out side is stable.
+- **Lived belonging, as the owner ruled it, is ~2–4% of what the student passes.** The point estimates are 1/28 and
+  2/48; the intervals are wide.
+  - That is roughly 10–20 articles a day out of ~500 passers. This is a guess built on n=76.
+- **The training problem:** positives cannot be found by e5 similarity, and sampling yields ~3 per 100 judged.
+  Hundreds of positives would need thousands of full-text judgements.
