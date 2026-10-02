@@ -14,15 +14,20 @@ Session records: `memory/project_session_2026_10_02_belonging_reshape.md` (lates
      cap (raw ≥ ~5.6), not every passer. Also measured: v1's positive count, and where the curator's picks score.
    - **Claude's read (owner not checked):** most reader-facing articles are off-lens, and the score does not separate
      fits from junk. Most v1 positives are feel-good stories from positive-news feeds.
-   - **Owner rulings 2026-10-02:** the middle definition plus the "doing" test. Detail in
+   - **Owner rulings 2026-10-02:** the middle definition plus the "doing" test, and three boundaries (Q1–Q3 in the
+     adjudication rubric). Detail in
      `docs/evidence/2026-10-01-belonging-v2-test-set/README.md` § *Owner rulings*. The v2 DRAFT prompt is PARKED.
    ▶ **Phases** (owner checkpoint after each):
-   1. **Rubric + exemplars.**
-      - Sources: the curator picks in our corpus (`datasets/external_curator/`, local only), the reader-sample fits,
-        and adverse examples per junk class.
-      - **Owner reviews them**, including: does a festival or tradition kept alive count?
-      - Re-run `build_test_set.py` first: `test_set.jsonl` and `test_set_full.jsonl` still carry the PRE-ruling labels.
-   2. **Adjudication pilot:** blind judges, hidden controls, a pass-B drift check, the owner's 10.
+   1. ✅ **Rubric + exemplars (2026-10-02).** `docs/evidence/2026-10-02-belonging-adjudication/`: the rubric and 51
+      exemplars. The owner ruled Q1–Q3 (festivals, marches, programmes), each time as proposed. The owner ruled the
+      lines, not the rows. The test set was rebuilt to the rulings (23 P / 68 F / 28 B).
+   2. ⛔ **Pilot run 2026-10-02: FAILED the owner check, 3/10.**
+      - Controls passed 4/4, and A vs B agreed 1.000. The rubric was stricter than the owner.
+      - The definition is REOPENED, and the curator is dropped as Belonging's yardstick.
+      - **The plan is being REVISED** (research-grounded rubric, then a fresh pilot). Evidence:
+        `docs/evidence/2026-10-02-belonging-adjudication/README.md`.
+      - ▶ **NEXT:** the revised plan for owner approval, then the rubric draft. Do NOT run phase 3 on the current
+        rubric.
    3. **Adjudicate v1's rows at ≥ 3.5** (b650 splits). Moved-out rows are capped at 2.0 **on every dimension**.
    4. **Production harvest, adjudicated.** Strata:
       - passers that win the cap (raw ≥ ~5.6)

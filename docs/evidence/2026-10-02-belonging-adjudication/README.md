@@ -1,0 +1,231 @@
+# Belonging adjudication: phase 1, rubric and exemplars (2026-10-02)
+
+`docs/TODO.md` ▶ START HERE item 0, phase 1 (the human_thriving v9 recipe applied to belonging).
+
+**Owner checkpoint, 2026-10-02: done.** The owner ruled the three open boundaries (Q1–Q3 in `rubric_belonging.md`),
+choosing Claude's proposal each time:
+- Q1, festivals: they count only when the people carry them.
+- Q2, marches: the doing test wins for training, and Morwell stays P in the test set.
+- Q3, programmes: they count when the participants build something.
+
+The owner ruled the LINES. The per-row verdicts in `exemplars.tsv` are Claude's readings against those lines, and
+the owner has not checked them row by row. Phase 2's owner spot-check is the row-level check.
+
+**Cost:** $0. No oracle, no GPU. Reads were read-only on sadalsuud `data/filtered/belonging/`.
+
+## Files
+
+| file | what |
+|---|---|
+| `rubric_belonging.md` | the judges' rubric: the owner's rulings, one `out_*` verdict per junk class, and Q1–Q3 (ruled 2026-10-02) |
+| `exemplars.tsv` | 51 exemplars: ids, titles, Claude's verdict and reason. No bodies (public-repo rule) |
+| `build_exemplars.py` | writes `exemplars.tsv` and the gitignored `datasets/belonging_adjudication/exemplars_full.jsonl` (full text for the judges) |
+| `fetch_exemplar_rows.py` | the sadalsuud fetch: reader-sample ids and curator-pick urls against every retained belonging file |
+| `PREREGISTRATION.md`, `judge_instructions.md` | phase 2 pilot design and bar, written before any judging |
+| `draw_pilot.py`, `build_pilot_inputs.py`, `key.jsonl` | the pilot sample (b650), the four blind judge inputs (gitignored), the key |
+| `analyse_pilot.py`, `pilot_result.txt` | bar items 1, 2, 4 and the owner spot-check list |
+
+## Where the exemplars come from
+
+- **Population:** two sets, both from `docs/evidence/2026-10-02-belonging-reader-snapshot/`:
+  - the 200-row reader sample (198 found in the retained files)
+  - the external curator's picks that reached belonging scoring (all 46 found, one under its reader-sample id; urls local-only in
+    `datasets/external_curator/`)
+- **Candidates read:** 83. These were 67 of the reader sample's 68 `fits` and `borderline` rows (one was not found)
+  plus 16 curator picks that score ≥ 4.0. The 17th pick is also in the reader sample, so it was fetched under its
+  reader id; it is in the reader sample's junk classes (cash aid from an NGO). Claude read the title and the first ~650 characters of each, a few further.
+- **Adverse rows:** picked from the reader sample's junk classes by title and opening, 3 per class (4 for gifts).
+
+| code | n | meaning |
+|---|---|---|
+| `P` | 6 | clear `in_scope` under the rulings as they stand |
+| `B` | 6 | borderline: kept for the record, never a teaching example |
+| `Q1` / `Q2` / `Q3` | 7 / 4 / 8 | illustrate a ruled boundary; the verdict is Claude's reading of the ruling |
+| `out_*` | 20 | 2–5 per junk class |
+
+**Review corrections (2026-10-02, same day):** the first draft had 14 `P` rows, and an adversarial review found
+that 8 of them contradict the rubric or teach badly when read in full.
+- Six moved to `B`: Kalumburu, Wayuu, the Nepal column, the Himalayan trails, the debate teaser and the mending event.
+- The tutoring row moved to `Q3 out_other`: a non-profit programme, with the communes paying the tutors.
+- The Gaza seed bank moved to `out_one_person`: one founder and his daughter.
+- The horse race moved to `Q1 out_event_crowd`.
+- Orange Shirt Day moved to `out_gift_official`: a government-sponsored commemoration.
+- The Hebron farmer moved to `out_one_person`.
+
+Six clear positives is thin. The pilot below says why: clear positives are rare in this corpus.
+
+**Measured:** the counts and the fetch. **Claude's read:** every verdict and reason. The owner ruled the Q1–Q3 lines,
+not the rows.
+
+## What the "doing" test moved
+
+The reader snapshot's verdicts predate the "doing" test. Re-read against it:
+- Two of Claude's snapshot `fits` now read as adverse exemplars: the restored-mosque reopening (`out_gift_official`)
+  and the charity run (`out_event_crowd`).
+- Several more moved into Q1/Q2 (festivals, remembrance marches).
+
+The snapshot's 16% `fits` share is therefore an upper bound under the current rules. It was not recounted.
+
+## Guards and exclusions
+
+- **No overlap with the v2 test set.** Three candidates were in it (Morwell, the Indigenous food summit, the convict
+  ancestry essay) and were left out.
+  - `build_exemplars.py` raises on an id or normalised-url overlap, and on a test row without an id.
+  - The normaliser keeps the query string, because one site addresses articles by `?p=<id>`. The first version
+    dropped it and flagged a false overlap.
+- ⚠️ **The exclusion is enforced only against the v2 test set.** Phase 3 draws from v1 rows, which predate every
+  exemplar. The phase-4 harvest builder must load `exemplars.tsv` and raise on any overlap.
+- **Mutation checks, 2026-10-02:** dropping one fetched row exits 1; swapping in a test-set id exits 1. A re-run
+  reproduces `exemplars.tsv` byte for byte.
+- ⛔ **Exemplar ids stay out of every training draw and every evaluation set** (the v2 leakage lesson).
+- **Phase 6/7 is unaffected.** The curator picks used here are not training rows, so the planned check of where the
+  curator's stories score stays a measurement of the student. The judges, though, have seen them.
+
+## Also done in this step
+
+`build_test_set.py` was re-run from the existing full rows (`datasets/belonging_v2_test/test_set_full.jsonl`, labels
+stripped). Exactly the three ruled labels changed, and the content is byte-identical. The test set is now 23 P / 68 F /
+28 B, with Robinvale F → P, Morwell B → P and Charleville F → B.
+
+## Rebuild
+
+```bash
+# want_ids.txt = reader_sample_200.tsv column 3; want_urls.txt = curator_match.tsv rows found (local only)
+scp fetch_exemplar_rows.py want_ids.txt want_urls.txt sadalsuud:/tmp/
+ssh sadalsuud 'python3 /tmp/fetch_exemplar_rows.py > /tmp/ex_rows.jsonl'   # ~1 min
+scp sadalsuud:/tmp/ex_rows.jsonl /tmp/ && python3 build_exemplars.py /tmp/ex_rows.jsonl
+```
+⚠️ The files rotate (the window opens 2026-09-03), so the fetch fails once the oldest exemplar rotates out. Keep
+`datasets/belonging_adjudication/exemplars_full.jsonl`.
+
+## Notes for later phases
+
+- **Morwell scores as a recall miss by design.** It stays P in the v2 test set (ruling (c)), but the training rubric
+  puts remembrance alone out (Q2). A phase-6 report on the test set must say so beside the recall figure.
+- **Ruling 1's "a community day" vs the doing test.** *(Claude's reconciliation; the owner has not checked it.)* A
+  community day that builds or cleans something counts. One held only to celebrate does not.
+
+## Phase 2 pilot result (2026-10-02)
+
+Pre-registered in `PREREGISTRATION.md` before any judging. The output is `pilot_result.txt`. **Cost:** $0, with four
+Claude subagents of ~80–100k tokens each.
+
+| bar item | result |
+|---|---|
+| 1. known-answer controls | **4/4 on both passes** |
+| 2. self-consistency A vs B (n=96) | **1.000 binary agreement, κ 1.000** (bar 0.90 / 0.75). Exact 8-class agreement is 90/96 |
+| 3. owner spot-check | **FAIL: 3/10** (bar ≥ 9/10). All 10 were rows the judges put out. The owner said out on 3, in on 6 and unsure on 1 (`spot_check_owner.tsv`) |
+| 4. presence | consensus disagrees with the oracle on 62 of 96 |
+
+**Per stratum (consensus `in_scope`; not pooled, because of design weighting):**
+- **`near`** [3.5, 4.0): **0/30**, against a prediction of 5–20%.
+- **`above`** ≥ 4.0: **4/66**, against a prediction of 15–35%.
+  - The out classes: one person 27, other 12, harm 6, gift/official 5, event 5, culture 5, cannot_judge 2.
+
+⚠️ **Below the predicted range, so Claude read all 66 `above` rows' titles and reasons before believing it.**
+- The verdicts read as right: v1's positives are mostly single-person viral and feel-good stories, such as a baby's
+  hair, a CPR rescue, celebrity tributes and gardening how-tos.
+- The prediction rested on a title-only read under a looser ruling, before the doing test and Q1–Q3.
+- **One pattern for the owner to test:** a volunteer initiative told through its founder. The judges put it out
+  every time but one (`out_one_person`: the lake man, the pet food bank, a founder's initiative).
+- ⚠️ **Same-source caveat:** the predictor, the judges and this read are all Claude.
+
+**What it means if item 3 passes:** of v1's 783 positives, roughly 6% (~45 rows, a per-stratum extrapolation with a
+wide interval at n=66) survive as `in_scope`. The retrain's positives would then come mostly from the phase-4
+production harvest, not from v1.
+
+**Judge plumbing:**
+- 8 quotes are not verbatim in `content`. Most are the article's title, which judges see as a separate field.
+- One judge reported that another judge overwrote its temporary script in the shared scratchpad. It then fixed its
+  `out.jsonl` by hand. The analyser checks that ids are in input order and that the verdict set is valid, and both
+  passed.
+- For the full run, give each judge its own scratch directory.
+
+### Item 3 failed (owner, 2026-10-02): the rubric is stricter than the owner
+
+**How the owner judged:** blind to the judges and the oracle, in session. Claude described each row in one or two
+sentences, with the relevant ruling beside it. The owner did not read the full text.
+
+| row | the story | owner |
+|---|---|---|
+| 1 | biography of the founder of Indian women's cricket | unsure |
+| 2 | a teen rescues his elderly neighbours from a fire | in |
+| 3 | a refugee organisation's children's festival, ~60 children | in |
+| 4 | the Munduruku protest, and the government's promise to consult | out |
+| 5 | a survey of disabled children at playgrounds | out |
+| 6 | a job vacancy | out |
+| 7 | the "Lake Man": a founder-led volunteer movement restoring 275 lakes | in |
+| 8 | an 85-year-old sings at senior-home karaoke | in |
+| 9 | 20,000 carers receive a national ribbon, nominated by neighbours and family | in |
+| 10 | youth protesters oust Peru's president | in |
+
+**What this means.** Per `PREREGISTRATION.md`, the rubric or the instructions get fixed, and the pilot re-runs on a
+fresh sample. Several of the owner's in-calls sit against the rubric's classes:
+- one person (2, 8)
+- an event attended (3)
+- an award campaign (9)
+- a protest (10)
+
+**Who decided what:**
+- The owner ruled the middle definition, the doing test and Q1–Q3.
+- `out_one_person` as a class, and "protest for demands is out", were Claude's labels. The owner never ruled on them.
+- The owner's in-calls are the evidence of where the line sits.
+
+### After item 3: the definition is reopened (owner, 2026-10-02)
+
+- **The owner's picks for the new line:** community events, recognising carers and helpers, and protests that achieve
+  a result.
+- **One person helping others: split it** (ruled). An ongoing relationship of care or contribution counts. A one-off
+  heroic act or a viral kindness does not.
+- **The owner's question: "are we changing our dimensions too much?"**
+  - *(Claude's read of the files.)* Yes. The doing test comes from ovr.news `docs/BRAND.md:84`, where it targets one
+    narrow case: belonging whose occasion is a harm. That passage marks it "Undecided".
+  - Applied to all of Belonging, it excludes what `intergenerational_bonds`, `rootedness` and `slow_presence` reward,
+    which is 0.50 of v1's weight.
+  - v1's prompt (STEP 1) defines lived belonging, and that definition covers the owner's in-calls.
+- **Not decided:** which definition the rewritten rubric starts from. The owner chose to talk it through first.
+- **Do not run phase 3 on `rubric_belonging.md`** as written.
+
+### Which lens do the curator's picks belong to? (measured 2026-10-02)
+
+**Method:** `curator_lens_match.py`, run on sadalsuud against every retained `data/filtered/<lens>/` file. The window
+is 09-03 → 10-02; human_thriving's files start 09-07. A pick passes a lens when its row is `stage2` with raw ≥ the
+lens's `normalization.json` `raw_min`:
+
+| lens | `raw_min` |
+|---|---|
+| belonging | 4.0 |
+| human_thriving | 4.5 |
+| solutions | 2.25 |
+| cultural_discovery | 4.0006 |
+| nature_recovery | 3.75 |
+| uplifting | 4.5 |
+
+The per-pick table is local-only, in `datasets/external_curator/curator_by_lens.json`.
+
+**Coverage:** all 46 picks that reach scoring are scored by every lens (36 for human_thriving, because of its
+shorter window). Some rows are `stage1_low`: 4 each for cd, nr and solutions. They count as not passing.
+
+| lens | picks passed |
+|---|---|
+| uplifting (still scored while it drains) | 38 / 45 |
+| solutions | 32 / 45 |
+| belonging | 17 / 46 |
+| human_thriving | 14 / 36 |
+| cultural_discovery | 8 / 46 |
+| nature_recovery | 2 / 46 |
+| no lens | 4 |
+
+**Reading** (Claude's, discussed with the owner and agreed):
+- The curator is a generalist constructive-news feed. Its nearest ovr analogue is the retired generalist lens, then
+  solutions. No single lens matches it.
+- Most of its belonging-passers also pass 3–4 other lenses: sailing, the 911 teams, NGO cash, vertical farming.
+  Chasing them would pull Belonging toward solutions. That is how the doing test got overextended.
+- **Owner decision (2026-10-02):** the curator is no longer Belonging's yardstick. It remains a question for ovr's
+  selection across lenses, which is EXP-025's original question, and that question belongs to ovr.news.
+- Belonging is replanned around a research-grounded definition: Baumeister & Leary 1995; McMillan & Chavis 1986.
+
+**Caveats:**
+- 46 picks over one month, matched on url.
+- About half of the curator's in-window stories never reached our scoring.
+- The pass counts are student scores, not oracle labels.

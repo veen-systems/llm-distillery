@@ -1,0 +1,11 @@
+n	id	stratum	oracle_wa	consensus	A_verdict	B_verdict	A_reason
+1	positive_news_the_better_india_22e2b9445aeb	above	6.175	out	out_one_person	out_one_person	A biography of one man who founded women's cricket in India.
+2	global_south_south_china_morning_post_8a5db0e9fdda	above	6.275	out	out_one_person	out_one_person	One individual's rescue.
+3	positive_news_vluchtelingenwerk_nederland_a942e2ed44ca	above	6.65	out	out_event_crowd	out_event_crowd	An organisation-run children's festival enjoyed by attendees; a celebration, not a built result.
+4	portuguese_conexao_planeta_adf9dae9ff98	above	4.8	out	out_harm_is_story	out_harm_is_story	A protest and the government's response to it are the story.
+5	dutch_news_nos_algemeen_ac4dc2434d8a	above	5.325	out	out_other	out_other	A foundation's survey and appeal to municipalities about accessible playgrounds.
+6	positive_news_vluchtelingenwerk_nederland_d45c6a061cbe	above	5.725	out	out_other	out_other	A job vacancy for a paid staff role.
+7	positive_news_the_better_india_9a08402d4ebf	above	6.375	out	out_one_person	out_one_person	The video centres on one changemaker; the volunteers are background.
+8	positive_news_upworthy_e9af4c3254b8	above	6.5	out	out_one_person	out_one_person	Profile of one 85-year-old singer.
+9	dutch_news_nos_algemeen_2e6c41d5a2a0	above	7.075	out	out_gift_official	out_gift_official	An award campaign for individual carers by an organisation.
+10	positive_news_waging_nonviolence_10306ee4d51d	above	5.075	out	out_harm_is_story	out_harm_is_story	A protest movement for political demands; the conflict is the story.

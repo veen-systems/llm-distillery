@@ -257,12 +257,17 @@ Asked with real examples from this set and the held-out passers.
    - Protests FOR DEMANDS (housing, Ayotzinapa) stay F. That was not re-asked.
 4. **The "doing" test (added later the same day, for the training rubric).** The bond must be DOING something with
    a concrete result: building, teaching, protecting, keeping a practice alive. A gathering only to celebrate or grieve
-   does not count. This is ovr.news `docs/BRAND.md:84`'s candidate test, adopted. Still open: does a festival or tradition kept
-   alive count as "keeping a practice"? To be settled at the exemplar review. `labels.tsv` was not re-labelled for this.
+   does not count. This is ovr.news `docs/BRAND.md:84`'s candidate test, adopted. `labels.tsv` was not re-labelled for this.
+5. **Three boundaries, ruled at the exemplar review (2026-10-02).** Full text and examples:
+   `../2026-10-02-belonging-adjudication/rubric_belonging.md` § Q1–Q3.
+   - Q1: a festival or tradition counts only when the people carry it.
+   - Q2: for training, the doing test wins: remembering or mourning alone is out. Morwell stays P here.
+   - Q3: a programme counts when the participants build something together. A staff-run service, a social club and a
+     group's one-off gift do not.
 
 ⚠️ `labels.tsv` now differs from the labels that every run above was scored against: 2 F/B → P, 1 F → B.
 Every count above stays as it was measured. Do not re-derive old counts from the new labels.
-⚠️ `test_set.jsonl` (committed) and `datasets/belonging_v2_test/test_set_full.jsonl` still carry the PRE-ruling labels.
-Re-run `build_test_set.py` before the next scoring run reads them.
+`test_set.jsonl` (committed) and `datasets/belonging_v2_test/test_set_full.jsonl` were rebuilt to these labels on
+2026-10-02 (`../2026-10-02-belonging-adjudication/README.md` § *Also done in this step*).
 Claude's 49 probe verdicts (`v2_draft2_prod_passers_read.tsv`) were made under the strict reading. **Re-read them
 under the middle ruling before using them as a yardstick again.**

@@ -1,0 +1,11 @@
+n	id	stratum	oracle_wa	consensus	owner	agree
+1	positive_news_the_better_india_22e2b9445aeb	above	6.175	out	unsure	False
+2	global_south_south_china_morning_post_8a5db0e9fdda	above	6.275	out	in	False
+3	positive_news_vluchtelingenwerk_nederland_a942e2ed44ca	above	6.65	out	in	False
+4	portuguese_conexao_planeta_adf9dae9ff98	above	4.8	out	out	True
+5	dutch_news_nos_algemeen_ac4dc2434d8a	above	5.325	out	out	True
+6	positive_news_vluchtelingenwerk_nederland_d45c6a061cbe	above	5.725	out	out	True
+7	positive_news_the_better_india_9a08402d4ebf	above	6.375	out	in	False
+8	positive_news_upworthy_e9af4c3254b8	above	6.5	out	in	False
+9	dutch_news_nos_algemeen_2e6c41d5a2a0	above	7.075	out	in	False
+10	positive_news_waging_nonviolence_10306ee4d51d	above	5.075	out	in	False

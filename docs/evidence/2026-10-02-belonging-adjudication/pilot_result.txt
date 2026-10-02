@@ -1,0 +1,28 @@
+   quote not verbatim in content: A1 community_social_reddit_uplifting_news_7761a9ad0917: 'I wrote to Dominic and sent him a letter'
+   quote not verbatim in content: A1 community_social_reddit_made_me_smile_531531d7a50c: 'I made a Christmas tree out of extra wrapping paper'
+   quote not verbatim in content: A1 community_social_reddit_made_me_smile_c707ce062971: 'my roommate along with a few others are being nothing but su'
+   quote not verbatim in content: A2 dutch_news_ad_algemeen_94e4f5c1e104: 'Songül richtte voedselbank op voor huisdieren'
+   quote not verbatim in content: B1 community_social_reddit_uplifting_news_7761a9ad0917: 'I wrote to Dominic and sent him a letter'
+   quote not verbatim in content: B1 community_social_reddit_made_me_smile_531531d7a50c: 'I made a Christmas tree out of extra wrapping paper'
+   quote not verbatim in content: B2 positive_news_upworthy_f7de40c22edf: 'Massachusetts woman writes her own obituary'
+   quote not verbatim in content: B2 community_social_reddit_made_me_smile_c707ce062971: 'Getting back into school'
+1. controls, pass A: 4/4
+      in_scope expected            in_scope  british_irish_guardian_uk_3243001d4d87
+      in_scope expected            in_scope  pan_african_alwihda_info_4f54e2c1d59c
+           out expected   out_gift_official  west_african_punch_ng_09d36ee26016
+           out expected     out_event_crowd  east_african_lexpress_madagascar_b156bebd2863
+1. controls, pass B: 4/4
+      in_scope expected            in_scope  british_irish_guardian_uk_3243001d4d87
+      in_scope expected            in_scope  pan_african_alwihda_info_4f54e2c1d59c
+           out expected   out_gift_official  west_african_punch_ng_09d36ee26016
+           out expected     out_event_crowd  east_african_lexpress_madagascar_b156bebd2863
+2. A vs B binary agreement 1.000 (bar 0.90), kappa 1.000 (bar 0.75) on n=96: PASS
+   exact-verdict agreement (8 classes): 90/96
+4. presence: consensus disagrees with the oracle on 62 of 96 consensus rows: PASS
+
+Per stratum (consensus rows; NOT pooled — design weighting, PREREGISTRATION.md):
+    near (pool 65): n=30, consensus 30, consensus in_scope 0/30, cannot_judge in either pass 1
+   above (pool 783): n=66, consensus 66, consensus in_scope 4/66, cannot_judge in either pass 2
+   above, consensus-out classes (pass A's class): {'out_one_person': 27, 'out_other': 12, 'out_harm_is_story': 6, 'out_gift_official': 5, 'out_event_crowd': 5, 'out_culture_topic': 5, 'cannot_judge': 2}
+
+3. owner spot-check: 10 rows -> spot_check_blind.tsv (10 disagreements)
