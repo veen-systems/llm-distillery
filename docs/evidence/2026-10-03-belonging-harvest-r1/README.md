@@ -66,3 +66,21 @@ Claude's neutral summaries, each with an in and an out reading spelled out. **Re
 
 **What that bounds:** for the out-rate among the 239 positives, 0 of 10 gives a 95% upper bound of ~28% (rule of
 three: 3/10 = 30%; Wilson 27.8%). It confirms the positives are not junk; it does not measure a small error rate.
+
+## Dimension labels for the positives (2026-10-03, owner-approved ~$2.50)
+
+**The run:** `ground_truth.batch_scorer --filter filters/belonging/v1 --llm gemini-flash`, three independent runs
+over the 239 positives (`dimscore/run{1,2,3}`), with 0 failures. `dimscore.py` combines them:
+- **the label:** per-dimension mean of the 3 runs
+- **the weighted average:** v1's weights and gatekeeper, read from `filters/belonging/v1/base_scorer.py`
+- **a missing run raises** (mutation-tested: one batch file removed → exit 1)
+
+**Result** (`positives_r1_labels.jsonl`, gitignored):
+- **237 kept, 2 dropped** under 4.0. The dropped two: DW at 1.40, and a Better India row at 3.42, the gatekeeper cap
+  (community_fabric < 3).
+- **Weighted average:** median 6.76, range 1.40–8.58. 89 rows are ≥ 7.0 (v1's high tier).
+- **Run-to-run spread of the weighted average:** median 0.23, max 1.08.
+
+**Cost:** NOT measured; `batch_scorer` does not record token counts. The estimate from character counts (prompt
+19,080 chars + content, chars/4, ~700 output tokens a call as a guess) is **≈ $2.46** at list price. Billing is
+unchecked.
