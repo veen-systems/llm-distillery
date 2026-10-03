@@ -1,6 +1,6 @@
 # LLM Distillery - TODO
 
-## ▶️ START HERE — the ordered queue, as of 2026-10-02 (evening close)
+## ▶️ START HERE — the ordered queue, as of 2026-10-03 (morning)
 
 *A bare "continue" means this list, top down. Each line names the FIRST action. Session record:
 `memory/project_session_2026_10_02_belonging_calibration.md`. Evidence: `docs/evidence/2026-10-02-belonging-adjudication/`
@@ -23,22 +23,20 @@
 
      - Supported: **Gemini over DeepSeek.** Gemini and Claude cannot be told apart.
    ▶ **Next, in order:**
-   1. **Re-label the 242-row calibration set under v2.1.**
-      - Two blind Claude judge passes (`judge_instructions_v2.md` pointed at v2.1), BLIND to the oracle verdicts,
-        every row.
-      - The owner's "unsure" rows get their own label.
-      - Then `calibrate_scope_oracles.py analyse --tag _v2_1` recomputes Gemini; no new calls are needed.
-      - **Plus one more Gemini v2.0 run as a noise floor** (APPROVED by the owner 2026-10-02, about $0.24 estimated):
-        `calibrate_scope_oracles.py run --oracle gemini --tag _v2_0_rep`. 15 of 242 verdicts flipped between runs,
-        so there is no floor yet.
-   2. **Owner check, 10 rows in both directions:** Gemini-vs-judge disagreements plus consensus-in rows. The owner
+   1. ✅ **DONE 2026-10-03** (`CALIBRATION.md` § Step 6): blind v2.1 relabel, 215 out / 21 in / 6 split, A/B agree
+      237/242. Gemini v2.0 repeat: **0/242 flips**, so v2.0 → v2.1 is the rubric. Against v2.1 labels: Gemini on the
+      v2.1 prompt spec **0.930**, recall **21/21**; on v2.0 0.958 / 19/21. ⚠️ Dev set; labels are Claude judges.
+   2. ▶ **Owner check, 10 rows — DRAWN, waiting on the owner:** fill the `owner` column of
+      `spot_check_v2_1_blind.tsv` (in / out / unsure; read the article's own opening). Row 7 is the kauri planting,
+      which the v2.1 judges put OUT against ruling 2's reading. Was: Gemini-vs-judge disagreements plus consensus-in rows. The owner
       reads the article's own opening. Positives anchored to the owner are the gap: 13 of 18 positives are Claude's
       exemplars.
    3. **Freeze v2.1, then draw a FRESH held-out set.** The calibration set is now a DEV set, because v2.1 was written
       from its disagreement rows.
    4. **If the screen holds:** a Gemini screen plus judge confirmation over production rows, at about $1 per 1,000
       articles on this prompt (owner approves the spend).
-      - ⚠️ The false ins will roughly equal the true ins (2–4 of 57 random passers), so the judging load is real.
+      - ⚠️ On the v2.1 prompt, false ins (~7% of outs on the dev set) will OUTNUMBER true ins (~2–4% in) about 2:1,
+        so the judging load is real.
       - The builder must call `belonging_exclusions.assert_disjoint()` (in the evidence dir; 771 ids from 10 sources,
         mutation-tested). It raises on any overlap, and on a missing source. v1's splits are excluded separately on
         b650.

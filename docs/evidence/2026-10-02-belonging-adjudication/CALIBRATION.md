@@ -275,3 +275,56 @@ nearest-seed method was chosen by eye after retrieval had run.
 - **`extract_corpus_v3.py`** excludes before it deduplicates.
 
   The 2026-10-02 corpus and pilot v3 were built by the old code; the fixes are noted in both files.
+
+## Step 6: blind re-label under rubric v2.1, and a Gemini v2.0 noise floor (2026-10-03)
+
+**The noise floor** (`run --oracle gemini --tag _v2_0_rep`, owner-approved; $0.237 at list price, billing unchecked):
+the same v2.0 prompt re-run one day later. **0 of 242 binary verdicts flipped** (1 row changed sub-category; served
+model `gemini-2.5-flash` both times; temperature 0, thinking budget 0). The headline reproduces exactly (208/218,
+16/18). So review item 5's "15 flips v2.0 → v2.1" is the RUBRIC: 12 rows to in, 3 to out. ⚠️ One repeat, on one
+day; it bounds same-prompt variation, not variation across vendor model updates.
+
+**The re-label** (`relabel_v2_1.py build` / `import`): two independent blind passes, A and B, over all 242 rows.
+- Each pass is its own shuffle (seeds 1003, 2003) into 5 batches of 48–49, with its own opaque ids.
+- The judges are Claude Opus 5.5 subagents, given `judge_instructions_v2.md` VERBATIM, which points at
+  `rubric_belonging_v2.md` (v2.1, sha `e569818e5b90565c`, checked again at import). They saw no oracle verdict and
+  no prior label.
+- Cost: 1,006,303 subagent tokens (10 judges); no API spend.
+- **A/B binary agreement: 237/242.**
+- Labels: `calib_key_v2_1.jsonl`: **215 out / 21 in / 6 split** (cannot_judge on one side counts as split).
+  `owner` is a SEPARATE column (the 10 pilot-v2 spot-check rows plus the DIY ruling), never folded into the label.
+
+**v2.0 → v2.1 label moves** (11 rows): split→in 4, out→split 4, out→in 1, in→split 1, **in→out 1**.
+- The in→out row is **the kauri planting** (`exemplar:new_zealand_rnz_ea40d98aca4b`). Both judges say out:
+  "a conservation and science project against a tree disease". Step 5's ruling 2 ("one-day action where people act
+  together") was written partly from it, and review item 2 called it "ruled in". ⚠️ **Which is right is the owner's
+  call**; it is row 7 of the owner check below.
+- Unlike the v2.0 → v2.1 rubric edit, this relabel CAN move labels away from the oracles; it moved 1 row that way.
+
+**Owner vs the new judge labels:** 8 of 8 rows where the owner gave in/out agree. Of the 3 owner-unsure rows, 2 are
+labelled out and 1 is split (`krone_2c17`: cannot_judge / in).
+
+**Results against the v2.1 labels** (`analyse --labels calib_key_v2_1.jsonl [--tag …]`; cannot_judge excluded):
+
+| oracle, prompt | specificity (215 out) | recall (21 in) | pilot positives (10) | named rows excluded: spec / recall |
+|---|---|---|---|---|
+| Gemini, rubric v2.0 (run 1 = repeat) | 206/215 = 0.958 [0.922, 0.978] | 19/21 = 0.905 [0.711, 0.973] | 9/10 | 202/211 / 16/17 |
+| **Gemini, rubric v2.1** | **200/215 = 0.930** [0.888, 0.957] | **21/21** [0.845, 1.000] | 10/10 | 197/211 / 17/17 |
+| DeepSeek, v2.0 | 214/215 = 0.995 | 11/20 = 0.550 | 4/9 | — |
+| Claude subagents, v2.0 | 213/215 = 0.991 | 18/21 = 0.857 | 10/10 | — |
+
+**Reading** (Claude's; the measured parts are the table and the counts):
+- **On the same rows, the v2.1 prompt trades specificity for recall:** 6 more false ins (9 → 15), 2 more hits
+  (19 → 21). With a noise floor of 0 flips, that is a prompt effect on this set, not run variation. Whether it
+  survives on unseen rows is unmeasured: this is a DEV set (review item 7).
+- **For a screen, v2.1 is the better prompt** (no misses), and its false ins cost judge time, not readers. At
+  15/215 ≈ 7% false ins on a population that is ~2–4% in, false ins will OUTNUMBER true ins about 2:1; the confirm
+  step must be budgeted for that.
+- **Gemini over DeepSeek still holds** (DeepSeek misses 9 of 20).
+- ⚠️ **Claude's row is still inflated by shared bias**: the labels are Claude Opus 5.5 judges reading the same rubric.
+- ⚠️ **Exemplars:** 11 of the 21 in-rows are Claude's exemplars. The 10 pilot positives are the less-biased recall
+  figure, and only 2 of them are owner-confirmed.
+
+**The owner check (TODO item 0.2) is drawn:** `spot_check_v2_1_blind.tsv` (titles and URLs only, for the owner) and
+`spot_check_v2_1_key.tsv` (why each was drawn). Seed 20261003, 10 rows: the kauri row, 5 of Gemini v2.1's 15 false
+ins, and 4 of the 8 consensus-in pilot rows the owner has not seen.

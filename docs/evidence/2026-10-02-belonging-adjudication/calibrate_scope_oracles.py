@@ -251,8 +251,9 @@ def wilson(k, n):
     return (max(0, c - h), min(1, c + h))
 
 
-def analyse(tag="", exclude_named=False):
-    key = {json.loads(l)["calib_id"]: json.loads(l) for l in open(HERE / "calib_key.jsonl")}
+def analyse(tag="", exclude_named=False, labels="calib_key.jsonl"):
+    key = {json.loads(l)["calib_id"]: json.loads(l) for l in open(HERE / labels)}
+    print(f"labels: {labels}; {len(key)} rows")
     if exclude_named:
         print(f"(excluding {sum(k['named_in_rubric_v2_1'] for k in key.values())} rows named in rubric v2.1's examples)")
         key = {c: k for c, k in key.items() if not k["named_in_rubric_v2_1"]}
@@ -322,11 +323,12 @@ if __name__ == "__main__":
     an = sub.add_parser("analyse")
     an.add_argument("--tag", default="")
     an.add_argument("--exclude-named", action="store_true")
+    an.add_argument("--labels", default="calib_key.jsonl", help="calib_key_v2_1.jsonl = the blind v2.1 relabel")
     sub.add_parser("import-subagents")
     a = ap.parse_args()
     if a.cmd == "run":
         run(a.oracle, a.limit, a.workers, a.rubric, a.tag)
     elif a.cmd == "analyse":
-        analyse(a.tag, a.exclude_named)
+        analyse(a.tag, a.exclude_named, a.labels)
     else:
         {"build": build, "import-subagents": import_subagents}[a.cmd]()
