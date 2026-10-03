@@ -1,0 +1,53 @@
+# Belonging v1 label adjudication: results (2026-10-03). NOT APPLIED, pending the owner
+
+**Rules:** `PLAN.md`, committed in `28d5a06` before judging. **Code:** `adjudicate.py`. **Verdicts:** gitignored
+`datasets/belonging_v1_adj/verdicts.jsonl`.
+
+## Judges (2 blind passes, frozen v2.2, ~3.4M subagent tokens)
+
+**A/B binary agreement 849/859.**
+
+| split | kept in (both) | moved out (both out) | split | cannot_judge |
+|---|---|---|---|---|
+| train | 30 | 638 | 9 | 7 |
+| val | 4 | 82 | 1 | 0 |
+| test | 3 | 84 | 0 | 1 |
+| **total** | **37** | **804 (93.6%)** | 10 | 8 |
+
+**Moved-out classes** (pass A):
+
+| class | rows |
+|---|---|
+| `out_other` | 306 |
+| `out_one_moment` | 253 |
+| `out_harm_is_story` | 112 |
+| `out_culture_topic` | 75 |
+| `out_gift_official` | 48 |
+| `out_event_spectated` | 10 |
+
+Of v1's 794 positives (≥ 4.0), 37 are kept in by both judges.
+
+## Owner check (seed 20261007; `owner_check_owner.tsv`, key `owner_check_key.tsv`)
+
+5 moved-out and 5 kept-in rows, blind, with Claude's neutral summaries and an in and an out reading spelled out.
+
+| judges | owner in | owner out | unsure |
+|---|---|---|---|
+| kept in (5) | 2 | **2** (the Shipibo film interview; a man adopting 10 sons) | 1 |
+| moved out (5) | **3** (a St Martin's lantern-festival column; solar backpacks for homeless people; a town petition saving its cobbler) | 2 | 0 |
+
+**Owner–judge agreement: 4 of 9 decided rows.** The earlier checks agreed far better: 10/10 on harvest positives,
+8/8 on calibration in/out.
+
+## What this means (Claude's reading; n = 10)
+
+- **On v1's own positives, the judges and the owner draw different lines, in both directions.**
+  - The judges demote community, tradition and kindness stories the owner would keep: `out_culture_topic`,
+    `out_gift_official`, and `out_harm_is_story` for a petition.
+  - The judges keep single-person or film stories the owner would drop.
+- **3 of 5 sampled moved-out rows are owner-in.** Applying the 804 demotions as hard negatives (≤ 2.0) could teach
+  the student against stories the owner wants. The interval on 3/5 is wide: Wilson ≈ [0.23, 0.88].
+- **Not applied.** The labels in `datasets/belonging_v1_adj/` are untouched; only verdicts are recorded.
+- ⚠️ **Phase 6 gates on v1's test ids**, and only 3 of the 88 judged test rows are kept in. A recall gate there
+  would rest on ~3 positives, so the gate set needs rethinking. The held-out set (`../2026-10-03-belonging-heldout/`)
+  is a candidate.

@@ -1,0 +1,11 @@
+n	id	outcome	split	v1_wavg	verdict_A	verdict_B
+1	positive_news_upworthy_481d8e1009af	moved_out	train	6.0	out_culture_topic	out_culture_topic
+2	dutch_news_nos_algemeen_59d374ccb2a1	kept_in	train	7.3	in_scope	in_scope
+3	dutch_news_ad_algemeen_7f3f782b07ef	moved_out	train	6.425	out_culture_topic	out_culture_topic
+4	spanish_mongabay_latam_5de90b6aeba3	kept_in	train	7.2	in_scope	in_scope
+5	positive_news_the_better_india_17fbb67ac121	kept_in	train	6.425	in_scope	in_scope
+6	global_south_south_china_morning_post_2db05c57b106	moved_out	test	4.7	out_one_moment	out_one_moment
+7	italian_greenme_b84ce35f6f62	moved_out	train	4.7	out_other	out_gift_official
+8	positive_news_upworthy_ff1656abe63c	kept_in	train	7.675	in_scope	in_scope
+9	positive_news_good_news_network_1788d547b48c	moved_out	train	4.825	out_harm_is_story	out_harm_is_story
+10	global_south_south_china_morning_post_3f2983891df3	kept_in	train	6.9	in_scope	in_scope
