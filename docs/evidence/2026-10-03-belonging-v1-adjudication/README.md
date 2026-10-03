@@ -51,3 +51,38 @@ Of v1's 794 positives (≥ 4.0), 37 are kept in by both judges.
 - ⚠️ **Phase 6 gates on v1's test ids**, and only 3 of the 88 judged test rows are kept in. A recall gate there
   would rest on ~3 positives, so the gate set needs rethinking. The held-out set (`../2026-10-03-belonging-heldout/`)
   is a candidate.
+
+## Second owner check: 20 more moved-out rows (seed 20261008; `owner_check2_owner.tsv`, key `owner_check2_key.tsv`)
+
+- **First check revised:** after Claude pointed at ruling 3 (one-way gifts are out), the owner changed the solar
+  backpacks to out (`owner_first_read` keeps the first answer). That makes the first check 2 of 5 moved-out rows
+  owner-in.
+- **This check: the owner would keep 11 of 20.** Combined: **13 of 25 ≈ 52%**, Wilson ≈ [0.33, 0.70].
+
+**By judge class** (pass A verdict; owner keep / demote):
+
+| judge class | owner keep | owner demote |
+|---|---|---|
+| `out_one_moment` | **0** | **6** |
+| `out_other` | 6 | 1 |
+| `out_harm_is_story` | 3 | 1 |
+| `out_gift_official` | 1 | 0 |
+| `out_culture_topic` | 1 | 0 |
+| `out_event_spectated` | 0 | 1 |
+
+**Asked what "keep" meant** (on the tab, or just "not junk"), the owner said they were not sure: several rows are
+genuinely hard.
+
+## Ruling (owner, 2026-10-03): treat by agreement, act only where it is clear
+
+⚠️ **This rule was chosen AFTER seeing the results.** It replaces PLAN.md's "both out → demote" rule. It is derived
+from n=25 owner reads and is reversible: nothing is written to labels until the retrain build.
+
+| rows | treatment | train | val | test | total |
+|---|---|---|---|---|---|
+| moved out, BOTH judges `out_one_moment` | **demote** (every dim → min(label, 2.0)) | 186 | 27 | 25 | **238** |
+| other moved out | **drop from training** (neither positive nor negative) | 452 | 55 | 59 | **566** |
+| kept in / split / cannot_judge | v1 labels unchanged | 46 | 5 | 4 | **55** |
+
+⚠️ **The test split loses 59 rows to "drop"**, and only 3 kept-in positives remain there. A gate on v1's test ids
+cannot measure recall; the gate set is an open decision (the held-out set is a candidate).
