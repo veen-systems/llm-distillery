@@ -31,8 +31,13 @@
       7 split. The judges were right on tutoring and the retirement piece (the owner revised both to out), so **the
       Claude judges stay the confirm step**. Owner-in rows: 3 judge-in, 3 split, 0 out → candidate rule "either judge
       says in" (n=14, untested).
-   3. ▶ **Freeze v2.2, then draw a FRESH held-out set.** The calibration set is a DEV set (v2.1 and v2.2 were written
-      from its rows). Optional first: Gemini on the v2.2 prompt over the dev set (~$0.26, needs approval).
+   3. ✅ **DONE 2026-10-03** (`docs/evidence/2026-10-03-belonging-heldout/README.md`): pre-registered held-out
+      on 1,200 fresh production rows. In-rate (both judges): hi 8.7% / mid 2.2% / near 0%; Gemini hit hi 0.38 /
+      mid 0.20. "Either judge" FAILED its owner bar → owner ruled **both judges in**; v2.2 stays frozen.
+   4. ✅ **Round 1 DONE 2026-10-03** (`docs/evidence/2026-10-03-belonging-harvest-r1/README.md`): hi band, 4,591
+      rows, $5.12 list → 930 Gemini-ins → **239 positives** (both judges), 76 split. ⚠️ Hit rate 0.257, below the
+      held-out's 0.38 (judge batch composition? untested). ▶ **Next:** owner spot-check of 10 positives; then
+      dimension scores on the positives (v1 prompt, k=3, ~$2.5, needs approval); then round 2 (mid band?) or phase 3.
    4. **If the screen holds:** a Gemini screen plus judge confirmation over production rows, at about $1 per 1,000
       articles on this prompt (owner approves the spend).
       - ⚠️ On the v2.1 prompt, false ins (~7% of outs on the dev set) will OUTNUMBER true ins (~2–4% in) about 2:1,
