@@ -1,5 +1,9 @@
 # Belonging v1 label adjudication (plan phase 3): rules fixed BEFORE judging (2026-10-03)
 
+> ⛔ **The label rule below is SUPERSEDED** by the owner's ruling after the owner checks (`README.md` § *Ruling*):
+> demote only rows where both judges said `out_one_moment` (238), drop the other moved-out rows (566), keep 55.
+> The build reads `treatment.jsonl` from `adjudicate.py ruling`, never `verdicts.jsonl`'s `outcome`.
+
 **Owner ruling (2026-10-03):** clean v1's data before harvesting more.
 
 ## The pool

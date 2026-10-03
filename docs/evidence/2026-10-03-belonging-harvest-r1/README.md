@@ -43,12 +43,19 @@ The positives are `positives_r1.jsonl`.
 Predicted: ~350 positives. Measured: 239.
 
 **The candidates:**
-- **(a) Judge batch composition.** Here every batch was 100% Gemini-ins (all borderline). Held-out batches mixed
-  them with clear outs. A contrast effect would make judges stricter in dense batches. This is the #95 mechanism
-  (score depends on batch composition) applied to judges.
-- **(b) Sampling variation,** at the held-out interval's edge.
+- **(a) Judge batch composition.** Here every batch was 100% Gemini-ins. Held-out batches were 39–57% Gemini-ins
+  (review: "mixed with clear outs" overstated it). A contrast effect would make judges stricter in dense batches.
+  This is the #95 mechanism (score depends on batch composition) applied to judges.
+- **(b) Judge-instance strictness.** Pass B's in-rate varies 0.14–0.53 across harvest batches (χ² p = 0.010). The
+  held-out's 0.38 rests on only 6 judges per pass, so its interval is too narrow.
+- **~~Sampling variation~~ is unlikely (review):**
+  - the held-out hi rows are an exchangeable random draw from the same pool
+  - Fisher's exact test, 35/92 vs 239/930: **p = 0.013**
+  - the drop appears in each pass separately (held-out A 0.42 / B 0.45; harvest A 0.30 / B 0.29) and in every raw
+    sub-band
 
-Neither is tested. Testing (a) means re-judging a held-out subset inside dense batches.
+None is tested. To test (a), re-judge the 92 held-out hi Gemini-ins in dense batches. ⚠️ Either way the training
+positives were judged under stricter conditions than the gate positives: narrower positives, lower gate recall.
 
 **By raw sub-band:**
 

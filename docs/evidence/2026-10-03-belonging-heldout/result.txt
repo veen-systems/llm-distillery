@@ -6,10 +6,10 @@ gemini no_reply rows: ['south_asian_scroll_in_e855e76155b4', 'balkan_index_hr_bb
   [hi] pool 4991: gemini in 92/400; hit 35/92 = 0.38; misses in 50 sampled outs: 0 (x6.16); in-rate 0.087 (~437 rows in the band); recall 1.00; specificity 0.844; 0 misses -> rule-of-3 recall lower bound 0.65
   [mid] pool 8820: gemini in 44/400; hit 9/44 = 0.20; misses in 50 sampled outs: 0 (x7.12); in-rate 0.022 (~198 rows in the band); recall 1.00; specificity 0.910; 0 misses -> rule-of-3 recall lower bound 0.30
   [near] pool 13728: gemini in 9/400; hit 0/9 = 0.00; misses in 50 sampled outs: 0 (x7.82); in-rate 0.000 (~0 rows in the band); recall nan; specificity 0.978; 0 misses -> rule-of-3 recall lower bound 0.00
-  [population, weighted] rows 27,539; est. positives 635 (rate 0.0231); gemini-in 2427; hit 0.26; recall 1.00; specificity 0.933
+  [population, weighted] rows 27,539; est. positives 635 (rate 0.0231); gemini-in 2427; hit 0.26; recall 1.00 (lower bound, rule of 3 where 0 misses: 0.30); specificity 0.933
 
 === label rule: either judge(s) say in
   [hi] pool 4991: gemini in 92/400; hit 45/92 = 0.49; misses in 50 sampled outs: 0 (x6.16); in-rate 0.113 (~561 rows in the band); recall 1.00; specificity 0.868; 0 misses -> rule-of-3 recall lower bound 0.71
   [mid] pool 8820: gemini in 44/400; hit 11/44 = 0.25; misses in 50 sampled outs: 0 (x7.12); in-rate 0.028 (~243 rows in the band); recall 1.00; specificity 0.915; 0 misses -> rule-of-3 recall lower bound 0.34
   [near] pool 13728: gemini in 9/400; hit 0/9 = 0.00; misses in 50 sampled outs: 1 (x7.82); in-rate 0.020 (~268 rows in the band); recall 0.00; specificity 0.977
-  [population, weighted] rows 27,539; est. positives 1072 (rate 0.0389); gemini-in 2427; hit 0.33; recall 0.75; specificity 0.939
+  [population, weighted] rows 27,539; est. positives 1072 (rate 0.0389); gemini-in 2427; hit 0.33; recall 0.75 (lower bound, rule of 3 where 0 misses: 0.45); specificity 0.939

@@ -7,7 +7,7 @@
 ## What was measured
 
 - **Population:** distinct `stage2` belonging rows in sadalsuud's 159 retained files, **`filtered_20260904_220817` ..
-  `filtered_20261003_084553`**. Excluded: news.google.com, content under 300 characters, 7,967 excluded ids, and
+  `filtered_20261003_084553`**. Excluded: news.google.com, content under 300 characters, 7,967 excluded tokens (7,964 ids; the extra 3 were the filenames `train/val/test.jsonl` from an `ls`, harmless), and
   duplicates.
 - **Bands** (student raw): `hi` ≥ 5.6 (pool 4,991), `mid` 4.0–5.6 (8,820), `near` 2.5–4.0 (13,728), 27,539 in all.
   The 314,075 rows below 2.5 are outside the population.

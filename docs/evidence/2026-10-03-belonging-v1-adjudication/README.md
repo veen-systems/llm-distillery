@@ -31,12 +31,12 @@ Of v1's 794 positives (≥ 4.0), 37 are kept in by both judges.
 
 5 moved-out and 5 kept-in rows, blind, with Claude's neutral summaries and an in and an out reading spelled out.
 
-| judges | owner in | owner out | unsure |
+| judges | owner in (first read) | owner out | unsure |
 |---|---|---|---|
 | kept in (5) | 2 | **2** (the Shipibo film interview; a man adopting 10 sons) | 1 |
 | moved out (5) | **3** (a St Martin's lantern-festival column; solar backpacks for homeless people; a town petition saving its cobbler) | 2 | 0 |
 
-**Owner–judge agreement: 4 of 9 decided rows.** The earlier checks agreed far better: 10/10 on harvest positives,
+**Owner–judge agreement: 4 of 9 decided rows** (first read; after the backpacks revision, 5 of 9). The earlier checks agreed far better: 10/10 on harvest positives,
 8/8 on calibration in/out.
 
 ## What this means (Claude's reading; n = 10)
@@ -74,6 +74,14 @@ Of v1's 794 positives (≥ 4.0), 37 are kept in by both judges.
 genuinely hard.
 
 ## Ruling (owner, 2026-10-03): treat by agreement, act only where it is clear
+
+⚠️ **Review (2026-10-03 close):**
+- The demote rule's evidence is **0 of 5** both-judge `out_one_moment` rows. The sixth row was A `out_one_moment`,
+  B `out_other`. The Wilson 95% upper bound on the owner-keep rate is ~0.43: consistent, not proven.
+- "Drop 566" removes most hard negatives near the op-point except the one-moment class. That cuts against the
+  specificity priority, so decide hard negatives before the build (TODO item 0).
+- The executable form is `adjudicate.py ruling` → `treatment.jsonl`, which asserts 238/566/55. **Never read
+  `verdicts.jsonl`'s `outcome`:** it holds PLAN.md's superseded rule.
 
 ⚠️ **This rule was chosen AFTER seeing the results.** It replaces PLAN.md's "both out → demote" rule. It is derived
 from n=25 owner reads and is reversible: nothing is written to labels until the retrain build.

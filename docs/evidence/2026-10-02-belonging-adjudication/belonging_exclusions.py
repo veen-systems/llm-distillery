@@ -65,15 +65,44 @@ def excluded_ids():
     return set().union(*load().values())
 
 
-def assert_disjoint(ids, purpose, except_sources=()):
-    """except_sources: source names NOT checked (only the held-out set's own check of itself uses it)."""
-    srcs = load()
-    unknown = set(except_sources) - set(srcs)
-    if unknown:
-        raise SystemExit(f"unknown exclusion source(s): {sorted(unknown)}")
-    hit = set(ids) & set().union(*(v for k, v in srcs.items() if k not in except_sources))
+def assert_disjoint(ids, purpose):
+    """For a TRAINING build or any draw: raises on any overlap with every source above."""
+    hit = set(ids) & excluded_ids()
     if hit:
-        raise SystemExit(f"{purpose}: {len(hit)} ids are excluded (pilot/exemplar/test/calibration), e.g. {sorted(hit)[:3]}")
+        raise SystemExit(f"{purpose}: {len(hit)} ids are excluded (pilot/exemplar/test/calibration/held-out), e.g. {sorted(hit)[:3]}")
+
+
+# v1's train/val/test ids (copied from b650 to the gitignored datasets/belonging_v1_adj/). The phase-5 build DRAWS
+# from them, so they are not in SOURCES; a fresh measurement or harvest draw must avoid them (review 2026-10-03:
+# this lived only in an uncommitted, hand-built exclude file).
+V1_SPLITS = [ROOT / "datasets" / "belonging_v1_adj" / f"{s}.jsonl" for s in ("train", "val", "test")]
+
+
+def assert_fresh_draw(ids, purpose):
+    """For a new held-out or harvest draw: everything assert_disjoint checks, plus v1's splits. A missing split raises."""
+    assert_disjoint(ids, purpose)
+    v1 = set()
+    for p in V1_SPLITS:
+        if not p.exists():
+            raise SystemExit(f"v1 split missing: {p}; refusing to draw without it")
+        v1 |= _jsonl_ids(p)
+    hit = set(ids) & v1
+    if hit:
+        raise SystemExit(f"{purpose}: {len(hit)} ids are in v1's train/val/test splits, e.g. {sorted(hit)[:3]}")
+
+
+def assert_is_source(ids, name):
+    """For a source checking ITSELF (the held-out set's own check): ids must BE that source exactly and be disjoint
+    from every other. Replaces the old `except_sources` bypass, which any copied caller would have inherited
+    (review 2026-10-03)."""
+    srcs = load()
+    if name not in srcs:
+        raise SystemExit(f"unknown exclusion source: {name!r}")
+    if set(ids) != srcs[name]:
+        raise SystemExit(f"{name}: ids are not exactly this source ({len(set(ids) ^ srcs[name])} differ)")
+    hit = set(ids) & set().union(*(v for k, v in srcs.items() if k != name))
+    if hit:
+        raise SystemExit(f"{name}: {len(hit)} ids overlap another exclusion source, e.g. {sorted(hit)[:3]}")
 
 
 if __name__ == "__main__":

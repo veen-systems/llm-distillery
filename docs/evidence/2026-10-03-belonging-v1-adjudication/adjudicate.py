@@ -1,12 +1,16 @@
 #!/usr/bin/env python3
 """Belonging v1 label adjudication (PLAN.md). Rows: gitignored datasets/belonging_v1_adj/.
 
-    .venv/bin/python docs/evidence/2026-10-03-belonging-v1-adjudication/adjudicate.py build|import
+    .venv/bin/python docs/evidence/2026-10-03-belonging-v1-adjudication/adjudicate.py build|import|ruling
 
 build   the pool (label weighted avg >= 3.5, v1 weights + gatekeeper read from base_scorer.py), two blind passes in
         batches of <= 50 with opaque ids, judges/{A,B}N/input.jsonl.
 import  checks every out.jsonl (ids = inputs in order, valid verdicts, both passes cover the pool once) and writes
         verdicts.jsonl with the PLAN.md outcome per row (kept_in / moved_out / unchanged_split / unchanged_cannot).
+        ⚠️ `outcome` is PLAN.md's SUPERSEDED rule; the build must read `treatment` from `ruling`.
+ruling  the owner's 2026-10-03 rule (README § Ruling) as data: writes treatment.jsonl with
+        demote (moved_out AND both judges out_one_moment) / drop (other moved_out) / keep_v1_label (the rest),
+        and asserts the ruled counts 238 / 566 / 55, so a changed verdicts file cannot silently move them.
 """
 import ast, hashlib, json, random, sys
 from collections import Counter
@@ -75,6 +79,8 @@ def build():
 
 
 def import_():
+    if hashlib.sha256(RUBRIC.read_bytes()).hexdigest()[:16] != RUBRIC_SHA:
+        raise SystemExit("rubric changed since the judges ran")
     P, m = pool(), json.load(open(J / "id_map.json"))
     v = {"A": {}, "B": {}}
     for d in sorted(J.glob("[AB][0-9]*")):
@@ -113,5 +119,25 @@ def import_():
     print("total", dict(tot), f"moved out share {tot['moved_out'] / len(P):.3f}")
 
 
+RULED = {"demote": 238, "drop": 566, "keep_v1_label": 55}  # owner ruling 2026-10-03
+
+
+def ruling():
+    V = [json.loads(l) for l in open(D / "verdicts.jsonl")]
+
+    def treat(v):
+        if v["outcome"] != "moved_out":
+            return "keep_v1_label"
+        return "demote" if v["verdict_A"] == v["verdict_B"] == "out_one_moment" else "drop"
+
+    got = Counter(treat(v) for v in V)
+    if dict(got) != RULED:
+        raise SystemExit(f"treatment counts {dict(got)} differ from the ruling {RULED}")
+    with open(D / "treatment.jsonl", "w") as f:
+        for v in V:
+            f.write(json.dumps(dict(id=v["id"], split=v["split"], treatment=treat(v))) + "\n")
+    print("treatment.jsonl:", dict(got), dict(Counter((v["split"], treat(v)) for v in V)))
+
+
 if __name__ == "__main__":
-    {"build": build, "import": import_}[sys.argv[1]]()
+    {"build": build, "import": import_, "ruling": ruling}[sys.argv[1]]()

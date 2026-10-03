@@ -18,7 +18,7 @@ ROOT = HERE.parents[2]
 CAL = ROOT / "docs" / "evidence" / "2026-10-02-belonging-adjudication"
 sys.path.insert(0, str(CAL)); sys.path.insert(0, str(ROOT))
 import calibrate_scope_oracles as cso  # noqa: E402
-from belonging_exclusions import assert_disjoint  # noqa: E402
+from belonging_exclusions import assert_is_source  # noqa: E402
 
 DATA = ROOT / "datasets" / "belonging_heldout"
 ROWS, GEM, JUDGE = DATA / "heldout_rows.jsonl", DATA / "gemini_v2_2.jsonl", DATA / "judges"
@@ -38,7 +38,7 @@ def check():
     ids = [r["id"] for r in rs]
     if len(ids) != 1200 or len(set(ids)) != 1200 or Counter(r["band"] for r in rs) != Counter({b: 400 for b in BANDS}):
         raise SystemExit(f"draw shape wrong: {len(ids)} rows, {len(set(ids))} distinct, {Counter(r['band'] for r in rs)}")
-    assert_disjoint(ids, purpose="held-out draw", except_sources=("held-out screen set 2026-10-03",))
+    assert_is_source(ids, "held-out screen set 2026-10-03")
     print("ok: 1200 distinct rows, 400/band, disjoint from belonging_exclusions, rubric frozen")
 
 
@@ -87,6 +87,9 @@ def gem_latest():
             g[r["id"]] = r
         else:
             err.setdefault(r["id"], []).append(r)
+    shas = {r.get("prompt_sha") for r in g.values()}
+    if len(shas) > 1:
+        raise SystemExit(f"{GEM.name} mixes prompts {shas}; a resumed run after a template edit")
     for i, es in err.items():
         if i in g:
             continue
@@ -190,10 +193,13 @@ def analyse():
                 line += f"; 0 misses -> rule-of-3 recall lower bound {tp / (tp + 3 / len(samp) * len(gout)) if tp else 0:.2f}"
             print(line)
             s_ = pool / 400
-            T.update(tp=tp * s_, fn=fn_est * s_, fp=fp * s_, tn=tn_est * s_, pop=pool, gin=len(gin) * s_)
+            fn_ub = max(fn_est, 3 / len(samp) * len(gout)) if miss == 0 else fn_est  # rule of 3 when 0 misses seen
+            T.update(tp=tp * s_, fn=fn_est * s_, fn_ub=fn_ub * s_, fp=fp * s_, tn=tn_est * s_, pop=pool,
+                     gin=len(gin) * s_)
         print(f"  [population, weighted] rows {T['pop']:,}; est. positives {T['tp'] + T['fn']:.0f} "
               f"(rate {(T['tp'] + T['fn']) / T['pop']:.4f}); gemini-in {T['gin']:.0f}; hit {T['tp'] / T['gin']:.2f}; "
-              f"recall {T['tp'] / (T['tp'] + T['fn']):.2f}; specificity {T['tn'] / (T['tn'] + T['fp']):.3f}")
+              f"recall {T['tp'] / (T['tp'] + T['fn']):.2f} (lower bound, rule of 3 where 0 misses: "
+              f"{T['tp'] / (T['tp'] + T['fn_ub']):.2f}); specificity {T['tn'] / (T['tn'] + T['fp']):.3f}")
 
 
 if __name__ == "__main__":

@@ -15,7 +15,7 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
 sys.path.insert(0, str(ROOT / "docs" / "evidence" / "2026-10-03-belonging-heldout"))
 import heldout as h  # noqa: E402
-from belonging_exclusions import assert_disjoint  # noqa: E402
+from belonging_exclusions import assert_fresh_draw  # noqa: E402
 
 DATA = ROOT / "datasets" / "belonging_harvest_r1"
 h.ROWS, h.GEM, h.JUDGE = DATA / "harvest_r1_rows.jsonl", DATA / "gemini_v2_2.jsonl", DATA / "judges"
@@ -31,7 +31,7 @@ def check():
     ids = [r["id"] for r in rs]
     if len(ids) != N_ROWS or len(set(ids)) != N_ROWS or any(r["raw"] < 5.6 for r in rs):
         raise SystemExit(f"extract shape wrong: {len(ids)} rows, {len(set(ids))} distinct")
-    assert_disjoint(ids, purpose="harvest round 1")
+    assert_fresh_draw(ids, purpose="harvest round 1")
     print(f"ok: {N_ROWS} distinct hi-band rows, disjoint from belonging_exclusions (incl. the held-out set), rubric frozen")
 
 

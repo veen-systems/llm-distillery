@@ -52,6 +52,9 @@ def make_repo(root, verifier_text, staged):
     hook = root / ".githooks" / "commit-msg"
     hook.parent.mkdir()
     shutil.copy(HOOK, hook)
+    # The hook execs the forbidden-name guard (added 2026-10-02) and fails closed without it. The copy has no
+    # denylist (config/credentials/ is absent here), so the guard passes with a note; these tests stay on the deploy check.
+    shutil.copy(HOOK.parent / "check_forbidden_names.sh", hook.parent / "check_forbidden_names.sh")
     verifier = root / "scripts" / "deployment" / "verify_filter_package.py"
     verifier.parent.mkdir(parents=True)
     verifier.write_text(verifier_text)

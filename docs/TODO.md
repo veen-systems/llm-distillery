@@ -1,61 +1,32 @@
 # LLM Distillery - TODO
 
-## ▶️ START HERE — the ordered queue, as of 2026-10-03 (morning)
+## ▶️ START HERE — the ordered queue, as of 2026-10-03 (evening close)
 
-*A bare "continue" means this list, top down. Each line names the FIRST action. Session record:
-`memory/project_session_2026_10_02_belonging_calibration.md`. Evidence: `docs/evidence/2026-10-02-belonging-adjudication/`
-(`README.md` and `CALIBRATION.md`; read each file's § *Review corrections* first).*
+*A bare "continue" means this list, top down. Each line names the FIRST action.*
 
-0. ▶ **BELONGING: find positives to retrain on (revised plan, owner-approved; local plan
-   `~/.claude/plans/splendid-purring-acorn.md`).**
-   - **Definition:** `rubric_belonging_v2.md`, now **v2.1**, approved. It rests on research and the owner's rulings.
-     v2.0 is kept as `rubric_belonging_v2_0.md`.
-   - **Where we are (measured, judge-relative):**
-     - Lived belonging is rare: random passers 1/58 under v2.0.
-     - e5 retrieval did not find more: 2/48, with a 95% upper bound of 14%.
-     - A scope oracle on rubric v2.0, against Claude-judge labels:
-
-       | oracle | specificity | recall |
-       |---|---|---|
-       | Gemini Flash | 0.954 | 0.889 |
-       | Claude (subagents) | 0.986 | 0.778 |
-       | DeepSeek | 0.991 | 0.556 |
-
-     - Supported: **Gemini over DeepSeek.** Gemini and Claude cannot be told apart.
+0. ▶ **BELONGING v1 → retrain on adjudicated labels (plan `~/.claude/plans/splendid-purring-acorn.md`).**
+   Session record: `memory/project_session_2026_10_03_belonging_heldout_harvest.md`.
+   - **Definition:** `rubric_belonging_v2.md` = **v2.2, FROZEN** (sha `d450b79510418cf7`, pinned by
+     `tests/unit/test_belonging_rubric_frozen.py`; a change needs a new held-out set). v2.0/v2.1 kept as copies.
+   - **Done 2026-10-03** (evidence in `docs/evidence/2026-10-0{2,3}-belonging-*/`):
+     - calibration relabels v2.1/v2.2 + Gemini noise floor (0/242 flips) — `CALIBRATION.md` §§ 6–7
+     - pre-registered held-out (1,200 rows): in-rate hi 8.7% / mid 2.2% / near 0%; confirm rule = **both judges**
+     - harvest r1 (hi band): **237 positives** with k=3 v1 dimension labels; owner 10/10 in
+     - v1 adjudication: judges move out 804/859; **ruled** demote 238 (both `out_one_moment`) / drop 566 / keep 55,
+       executable as `adjudicate.py ruling` → `datasets/belonging_v1_adj/treatment.jsonl` (asserts the counts)
    ▶ **Next, in order:**
-   1. ✅ **DONE 2026-10-03** (`CALIBRATION.md` § Step 6): blind v2.1 relabel, 215 out / 21 in / 6 split, A/B agree
-      237/242. Gemini v2.0 repeat: **0/242 flips**, so v2.0 → v2.1 is the rubric. Against v2.1 labels: Gemini on the
-      v2.1 prompt spec **0.930**, recall **21/21**; on v2.0 0.958 / 19/21. ⚠️ Dev set; labels are Claude judges.
-   2. ✅ **DONE 2026-10-03** (`CALIBRATION.md` § Step 7): the owner check, then **ruling 3 amended → rubric v2.2**
-      (a recurring peer setting counts; one-way service stays out). The second blind relabel: 213 out / 21 in /
-      7 split. The judges were right on tutoring and the retirement piece (the owner revised both to out), so **the
-      Claude judges stay the confirm step**. Owner-in rows: 3 judge-in, 3 split, 0 out → candidate rule "either judge
-      says in" (n=14, untested).
-   3. ✅ **DONE 2026-10-03** (`docs/evidence/2026-10-03-belonging-heldout/README.md`): pre-registered held-out
-      on 1,200 fresh production rows. In-rate (both judges): hi 8.7% / mid 2.2% / near 0%; Gemini hit hi 0.38 /
-      mid 0.20. "Either judge" FAILED its owner bar → owner ruled **both judges in**; v2.2 stays frozen.
-   4. ✅ **Round 1 DONE 2026-10-03** (`docs/evidence/2026-10-03-belonging-harvest-r1/README.md`): hi band, 4,591
-      rows, $5.12 list → 930 Gemini-ins → **239 positives** (both judges), 76 split. ⚠️ Hit rate 0.257, below the
-      held-out's 0.38 (judge batch composition? untested). Owner spot-check of 10 positives: **10/10 in**. Dimension labels
-      (v1 prompt, Gemini, k=3, ~$2.46 est.): **237 kept**, 2 dropped < 4.0. ▶ **Next (owner):** round 2 (mid band,
-      ~$9.70 est., ~200 positives at the held-out rate) vs phase 3 (adjudicate v1's own ≥ 3.5 rows) → phase 5 retrain.
-   4. **If the screen holds:** a Gemini screen plus judge confirmation over production rows, at about $1 per 1,000
-      articles on this prompt (owner approves the spend).
-      - ⚠️ On the v2.1 prompt, false ins (~7% of outs on the dev set) will OUTNUMBER true ins (~2–4% in) about 2:1,
-        so the judging load is real.
-      - The builder must call `belonging_exclusions.assert_disjoint()` (in the evidence dir; 771 ids from 10 sources,
-        mutation-tested). It raises on any overlap, and on a missing source. v1's splits are excluded separately on
-        b650.
-   5. **Phase 3 DONE 2026-10-03** (`docs/evidence/2026-10-03-belonging-v1-adjudication/README.md`): judges moved
-      out 804/859 of v1's ≥ 3.5 rows; owner keeps ~52% of those (13/25), but 0/6 of the single-person/viral ones.
-      **Ruled:** demote the 238 both-`out_one_moment` rows, DROP the other 566 from training, keep 55 as v1.
-      Not applied yet (at the build). ▶ **Next:**
-      - ✅ **Gate set decided + pre-registered** (`docs/evidence/2026-10-03-belonging-heldout/GATE.md`): the 295
-        judged held-out rows; pass = Δspec lower bound > 0 (paired bootstrap) AND recall ≥ 0.70 on the 44 positives.
-      - **Build `belonging_v1_adj1`:** v1 rows per the ruling + the 237 harvest positives (labels in
-        `datasets/belonging_harvest_r1/positives_r1_labels.jsonl`). Assert disjoint from `belonging_exclusions`.
-        Retrain on b650, then fit calibration.
-      - Optional: harvest round 2 (mid band, ~$9.70 est.) if the positive count is short. Today: 237 new + 37 kept.
+   1. **Re-rule the gate (owner).** Review REFUTED `docs/evidence/2026-10-03-belonging-heldout/GATE.md`: a model that
+      just scores lower passes (v1 itself passes at op-point 5.8). → see GATE.md § *Review*.
+   2. **Decide hard negatives (owner):** dropping 566 leaves few near-op-point negatives; candidates are the
+      harvest's 615 both-out Gemini-ins (v1 raw ≥ 5.6). Decide before the build.
+   3. **Build `belonging_v1_adj1`:** v1 rows per `treatment.jsonl` + the 237 positives
+      (`datasets/belonging_harvest_r1/positives_r1_labels.jsonl`); `belonging_exclusions.assert_disjoint()` on every
+      id (1,971 ids from 11 sources; v1 splits are the BASE, so `assert_fresh_draw` is for new draws only). Write the
+      training id list into the package so the gate can refuse overlap. Retrain on b650, fit calibration, run the gate.
+   4. Optional: harvest round 2 (mid band, ~$9.70 est.; ~125–200 positives, est. from 9/44 × the r1 shortfall).
+      First add held-out `content_hash`es to its exclusions (review found 4 content twins, 0 positives, in r1).
+   5. Open measurement: judges were stricter in the harvest than in the held-out (hit 0.257 vs 0.38, Fisher
+      p = 0.013, in both passes). Re-judge the 92 held-out hi Gemini-ins in dense batches to test batch composition.
    ⛔ **Never name the curator** in this repo or on GitHub. Its data stays in the gitignored `datasets/external_curator/`.
    **Ruled 2026-10-02 (owner): forward-only redaction plus a guard. Done:**
    - 41 tracked files (59 lines) now read `positive_news_curator_a` / `curator-a.invalid`; the reverse map is local

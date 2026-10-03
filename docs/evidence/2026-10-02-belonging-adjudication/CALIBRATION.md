@@ -375,4 +375,4 @@ held-out set.
 | rubric v2.0 | 205/212 = 0.967 [0.933, 0.984] | 19/21 = 0.905 |
 | rubric v2.1 | 199/212 = 0.939 [0.898, 0.964] | 21/21 [0.845, 1.000] |
 
-Gemini on the **v2.2** prompt has not run (~$0.26 at list price, not approved).
+Gemini on the **v2.2** prompt has not run on THIS calibration set. It ran on the 1,200 held-out rows: `../2026-10-03-belonging-heldout/`.

@@ -1,5 +1,7 @@
 # Belonging retrain gate: pre-registered (owner ruling 2026-10-03, written BEFORE any training)
 
+> ⛔ **REFUTED in review at the 2026-10-03 close; the owner re-rules before any gate is run.** See § *Review*.
+
 **The question:** is the retrained Belonging student (`belonging_v1_adj1`, or whatever version number the build
 assigns) better than the live v1? "Better" means it puts fewer non-belonging stories above the op-point while still
 finding most real ones (ADR-023: specificity first).
@@ -45,3 +47,29 @@ finding most real ones (ADR-023: specificity first).
 - the specificity of both models on v1's own test split under the 2026-10-03 adjudication ruling (demoted rows =
   negatives; dropped rows excluded)
 - the owner's 10 held-out rows (`owner_check_owner.tsv`) as a per-row table
+
+## Review (2026-10-03 close, 4 lenses): pass rule REFUTED, the owner re-rules
+
+- **BLOCKER: a lower-scoring model passes.**
+  - v1's own production scores on the 44/238 rows:
+    | v1 op-point | recall | weighted spec | unweighted spec |
+    |---|---|---|---|
+    | 4.0 (live) | 1.000 | 0.509 | 0.244 |
+    | 5.8 | 32/44 = 0.727 | 0.887 | 0.689 |
+  - At 5.8, Δspec is about +0.38 with recall above 0.70, so **both conditions hold for v1 against itself.**
+  - v1's specificity is fixed by construction, like its recall.
+  - **Fix candidate:** compare at matched recall. Set v1's threshold so its recall on the 44 equals the new
+    model's, then require Δspec > 0.
+- **The negatives are disputed.** 74 of the 89 hard negatives (Gemini-in, both judges out) fall in the classes the
+  owner's v1 ruling refused to train on as negatives. Report them apart, or exclude them.
+- **The weighting is blind to the hard cases.** 51% of the negative weight sits in `near`, where v1 is right by
+  construction; hard negatives carry 6%. Stratify the bootstrap by band × pick, and report hi+mid and the
+  hard-negative stratum unweighted.
+- **Batch noise (#95) does not cancel.** It is per model. Score under 2 batch orders and require the pass under
+  both. Report flips within ±0.16. The lowest positive's production raw is 4.079, so v1's recall is ≈ 1.0, not
+  exactly 1.0.
+- **One shot.** A second candidate needs a new held-out set. These positives come from the same Gemini + judge
+  chain as the training positives, so recall here means agreement with that chain.
+- **Weights:** the Gemini-outs/50 factor is computed by `heldout.py analyse` from `gemini_v2_2.jsonl`; it is not
+  stored. `no_reply` counts as out.
+- **No runner exists yet.** Condition on `stage_used`: a `stage1_low` row's raw is an e5 estimate.
