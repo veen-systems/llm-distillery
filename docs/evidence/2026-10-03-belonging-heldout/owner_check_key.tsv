@@ -1,0 +1,11 @@
+n	id	why_drawn	band	judge_A	judge_B	gemini
+1	belgian_het_nieuwsblad_02a95801cebf	gemini_in_both_out	hi	out_other	out_other	in_scope
+2	education_chalkbeat_df50e4e3305c	in	hi	in_scope	in_scope	in_scope
+3	canadian_vancouver_sun_33fdc118adc5	in	hi	in_scope	in_scope	in_scope
+4	south_american_perfil_caae466947aa	gemini_in_both_out	mid	out_one_moment	out_one_moment	in_scope
+5	positive_news_indian_country_today_8801cf4d9f92	split	hi	out_other	in_scope	in_scope
+6	italian_rai_news_abe580beb04a	in	hi	in_scope	in_scope	in_scope
+7	icelandic_ruv_ed4e10e0c01e	split	mid	out_gift_official	in_scope	in_scope
+8	austrian_krone_67869bec0e5a	gemini_in_both_out	mid	out_other	out_one_moment	in_scope
+9	japanese_greenz_jp_988162b779c3	split	mid	in_scope	out_other	in_scope
+10	science_mit_latest_c8916b5f008f	in	mid	in_scope	in_scope	in_scope

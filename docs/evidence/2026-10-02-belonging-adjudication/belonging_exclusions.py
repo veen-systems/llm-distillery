@@ -45,6 +45,7 @@ SOURCES = [
     ("pilot v2 key", HERE / "key_v2.jsonl", _jsonl_ids),
     ("pilot v3 key", HERE / "key_v3.jsonl", _jsonl_ids),
     ("calibration set", HERE / "calib_key.jsonl", _jsonl_ids),
+    ("held-out screen set 2026-10-03", ROOT / "datasets" / "belonging_heldout" / "heldout_rows.jsonl", _jsonl_ids),
 ]
 
 
@@ -64,8 +65,13 @@ def excluded_ids():
     return set().union(*load().values())
 
 
-def assert_disjoint(ids, purpose):
-    hit = set(ids) & excluded_ids()
+def assert_disjoint(ids, purpose, except_sources=()):
+    """except_sources: source names NOT checked (only the held-out set's own check of itself uses it)."""
+    srcs = load()
+    unknown = set(except_sources) - set(srcs)
+    if unknown:
+        raise SystemExit(f"unknown exclusion source(s): {sorted(unknown)}")
+    hit = set(ids) & set().union(*(v for k, v in srcs.items() if k not in except_sources))
     if hit:
         raise SystemExit(f"{purpose}: {len(hit)} ids are excluded (pilot/exemplar/test/calibration), e.g. {sorted(hit)[:3]}")
 
