@@ -328,3 +328,51 @@ labelled out and 1 is split (`krone_2c17`: cannot_judge / in).
 **The owner check (TODO item 0.2) is drawn:** `spot_check_v2_1_blind.tsv` (titles and URLs only, for the owner) and
 `spot_check_v2_1_key.tsv` (why each was drawn). Seed 20261003, 10 rows: the kauri row, 5 of Gemini v2.1's 15 false
 ins, and 4 of the 8 consensus-in pilot rows the owner has not seen.
+
+## Step 7: the owner check, ruling 3 amended (v2.2), and a second blind re-label (2026-10-03)
+
+**The owner check** (`spot_check_v2_1_owner.tsv`; the owner read Claude's neutral, translated summary of each opening,
+with no verdicts shown, and could open the URL):
+- **Consensus-in rows:** 3 in, 1 unsure, 0 out.
+- **Gemini-in / judges-out rows:** on first read 3 in (tutoring, adapted sailing, retirement community), 2 unsure,
+  0 out.
+- **The kauri planting:** unsure. Its label stays the judges' `out`.
+
+**Ruling 3 amended (owner, 2026-10-03) → rubric v2.2.** Claude recommended the wording, citing Baumeister & Leary
+(frequent interaction) and McMillan & Chavis (membership): *a recurring setting where people meet as peers counts
+even when an organisation runs it; one-way care, advice or treatment stays out; inclusion counts when it creates such
+a setting.* v2.1 is kept verbatim as `rubric_belonging_v2_1.md`. No calibration row was added to v2.2 as an example.
+
+**The second blind re-label** (`relabel_v2_1.py build|import v2_2`): the same procedure, with new seeds (1004, 2004)
+and new opaque ids. Rubric sha `d450b79510418cf7`; 1,001,196 subagent tokens.
+- **Labels:** 213 out / 21 in / 7 split / 1 cannot_judge. **A/B agreement 235/242.**
+- **v2.1 → v2.2 moves:** in→split 4, out→split 3, split→out 3, split→in 3, out→in 1, out→cannot_judge 1.
+
+**The judges still did not take two of the owner's in-rows,** and their reasons were close readings of the rubric:
+- tutoring: "**paid** tutors deliver help and pupils receive it"
+- retirement community: "**anonymous** Reddit answers"
+
+Told those details, **the owner changed both to out** (`owner_first_read` keeps the first answer). So the judges were
+right, and **the Claude judges stay as the confirm step; there is no v2.3.**
+
+**Owner vs v2.2 judges, on all 21 rows the owner has judged:**
+
+| owner says | judges in | judges split | judges out |
+|---|---|---|---|
+| in (6) | 3 | 3 | **0** |
+| out (8) | 0 | 0 | 8 |
+| unsure (7) | 2 | 0 | 5 |
+
+⚠️ **Half the owner's in-rows are SPLIT** (sailing, Carlisle, Wawonii; Wawonii's stored text is only a teaser). A
+confirm rule needing BOTH judges would lose them. **"Either judge says in" matches the owner on all 14 in/out rows
+here.** That is n=14 and hand-picked, so it is a candidate rule, not a measured one. It is to be tested on the fresh
+held-out set.
+
+**Gemini against the v2.2 labels** (no new calls; `analyse --labels calib_key_v2_2.jsonl`):
+
+| prompt | specificity | recall |
+|---|---|---|
+| rubric v2.0 | 205/212 = 0.967 [0.933, 0.984] | 19/21 = 0.905 |
+| rubric v2.1 | 199/212 = 0.939 [0.898, 0.964] | 21/21 [0.845, 1.000] |
+
+Gemini on the **v2.2** prompt has not run (~$0.26 at list price, not approved).

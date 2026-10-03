@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
 """Re-label the 242-row calibration set under rubric v2.1 (START HERE item 0.1, 2026-10-03). See CALIBRATION.md § Step 6.
 
-    .venv/bin/python docs/evidence/2026-10-02-belonging-adjudication/relabel_v2_1.py build
-    .venv/bin/python docs/evidence/2026-10-02-belonging-adjudication/relabel_v2_1.py import
+    .venv/bin/python docs/evidence/2026-10-02-belonging-adjudication/relabel_v2_1.py build [v2_1|v2_2]
+    .venv/bin/python docs/evidence/2026-10-02-belonging-adjudication/relabel_v2_1.py import [v2_1|v2_2]
+
+The version (default v2_1) picks the rubric copy whose sha the import checks, the seeds, the batch directory and the
+output key. v2_2 (2026-10-03) is the same procedure after the owner amended ruling 3; its judges read
+rubric_belonging_v2.md, which then held v2.2.
 
 build   two independent blind passes (A, B) over EVERY calibration row. Each pass is its own shuffle into 5 batches,
         with its own opaque ids, so neither the batch nor the id tells a judge (or the other pass) where a row came
@@ -23,13 +27,18 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
 DATA = ROOT / "datasets" / "belonging_adjudication"
-BASE = DATA / "relabel_v2_1"
-RUBRIC = HERE / "rubric_belonging_v2.md"
+# version -> (the verbatim rubric copy the judges read (via rubric_belonging_v2.md at the time), pass seeds)
+VERSIONS = {"v2_1": ("rubric_belonging_v2_1.md", (1003, 2003)), "v2_2": ("rubric_belonging_v2.md", (1004, 2004))}
+VER = sys.argv[2] if len(sys.argv) > 2 else "v2_1"
+BASE = DATA / f"relabel_{VER}"
+RUBRIC = HERE / VERSIONS[VER][0]
 VERDICTS = ["in_scope", "out_gift_official", "out_one_moment", "out_harm_is_story", "out_culture_topic",
             "out_event_spectated", "out_other", "cannot_judge"]
 NBATCH = 5
 # The owner's own verdicts on calibration rows, by article id. Pilot v2 spot-check (spot_check_v2_owner.tsv) and the
-# Step 5 DIY ruling. Recorded beside the judge label, never substituted for it.
+# Step 5 DIY ruling, and (v2_2 only, since it postdates the v2_1 relabel) the 2026-10-03 owner check
+# (spot_check_v2_1_owner.tsv, mapped through spot_check_v2_1_key.tsv). Recorded beside the judge label, never
+# substituted for it.
 OWNER = {"pilot3:british_irish_bbc_northern_ireland_dc99721a35e2": "in"}
 
 
@@ -45,6 +54,13 @@ def owner_labels(key):
         out[by_id[r["id"]]] = r["owner"]
     if len(out) != len(lines) - 1 + len(OWNER):
         raise SystemExit("owner rows overlap")
+    if VER != "v2_1":
+        n2c = {r.split("\t")[0]: r.split("\t")[1] for r in (HERE / "spot_check_v2_1_key.tsv").read_text().splitlines()[1:]}
+        for r in (HERE / "spot_check_v2_1_owner.tsv").read_text().splitlines()[1:]:
+            f = r.split("\t")
+            if n2c[f[0]] in out:
+                raise SystemExit(f"owner row {n2c[f[0]]} judged twice")
+            out[n2c[f[0]]] = f[-1]
     return out
 
 
@@ -57,7 +73,7 @@ def build():
         raise SystemExit(f"{BASE} exists; refusing to overwrite judge inputs")
     rubric_sha = hashlib.sha256(RUBRIC.read_bytes()).hexdigest()[:16]
     id_map = {}
-    for p, seed in (("A", 1003), ("B", 2003)):
+    for p, seed in zip("AB", VERSIONS[VER][1]):
         order = rows[:]
         random.Random(seed).shuffle(order)
         for b in range(NBATCH):
@@ -95,7 +111,7 @@ def import_():
         if sorted(v[p]) != sorted(k["calib_id"] for k in key):
             raise SystemExit(f"pass {p} does not cover the calibration set exactly once")
     owner = owner_labels(key)
-    with open(HERE / "calib_key_v2_1.jsonl", "w") as f:
+    with open(HERE / f"calib_key_{VER}.jsonl", "w") as f:
         for k in key:
             a, b = v["A"][k["calib_id"]]["verdict"], v["B"][k["calib_id"]]["verdict"]
             if "cannot_judge" in (a, b):
@@ -104,13 +120,13 @@ def import_():
                 ai, bi = a == "in_scope", b == "in_scope"
                 label = ("in" if ai else "out") if ai == bi else "split"
             f.write(json.dumps(dict(calib_id=k["calib_id"], id=k["id"], source_set=k["source_set"], label=label,
-                                    label_kind="judge_consensus_v2_1", verdict_A=a, verdict_B=b,
+                                    label_kind=f"judge_consensus_{VER}", verdict_A=a, verdict_B=b,
                                     owner=owner.get(k["calib_id"]), label_v2_0=k["label"],
                                     named_in_rubric_v2_1=k["named_in_rubric_v2_1"],
                                     rubric_sha=m["rubric_sha"])) + "\n")
-    ks = [json.loads(l) for l in open(HERE / "calib_key_v2_1.jsonl")]
+    ks = [json.loads(l) for l in open(HERE / f"calib_key_{VER}.jsonl")]
     print(len(ks), "rows;", dict(Counter(k["label"] for k in ks)))
-    print("v2.0 -> v2.1 label moves:", dict(Counter((k["label_v2_0"], k["label"]) for k in ks if k["label_v2_0"] != k["label"])))
+    print(f"v2.0 -> {VER} label moves:", dict(Counter((k["label_v2_0"], k["label"]) for k in ks if k["label_v2_0"] != k["label"])))
 
 
 if __name__ == "__main__":

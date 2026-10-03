@@ -1,6 +1,6 @@
-# Belonging adjudication rubric v2.2 (APPROVED by the owner 2026-10-02; v2.1 adds the calibration rulings; v2.2 amends ruling 3, owner 2026-10-03)
+# Belonging adjudication rubric v2.1 (APPROVED by the owner 2026-10-02; v2.1 adds the calibration rulings)
 
-*v2.0, the text pilots v2 and v3 and the first calibration ran on, is kept verbatim in `rubric_belonging_v2_0.md`. v2.1, the text of the 2026-10-03 blind relabel, is kept verbatim in `rubric_belonging_v2_1.md`.*
+*v2.0, the text pilots v2 and v3 and the first calibration ran on, is kept verbatim in `rubric_belonging_v2_0.md`.*
 
 *The owner approved the RULINGS. The "e.g." examples added in v2.1 and the list "(care, therapy, advice, a response team)" are Claude's wording; most are drawn from calibration rows (`CALIBRATION.md` § Review corrections, item 7).*
 
@@ -54,11 +54,8 @@ The article shows specific people, now, in one of these:
 - **Programmes where the participants create or build something together over time** (Q3, ruled), e.g. inmates
   making theatre together, women writing songs together, women who keep meeting in a workshop to build things. **The
   article does not need to spell out the bonds between them**; making something together is enough (ruled at
-  calibration, v2.1). This holds even when a charity or professional runs it.
-- **A recurring setting where people meet as peers** (ruled 2026-10-03, v2.2): it counts even when an organisation
-  runs it. A one-way service, where staff deliver care, advice or treatment and the people only receive it, does not
-  count. **Inclusion counts when it creates such a setting**: opening a shared activity to people who were shut out
-  of it. An accessibility measure with no people meeting in it does not.
+  calibration, v2.1). This holds even when a charity or professional runs it. A service delivered TO people by staff
+  (care, therapy, advice, a response team), with participants only receiving, does not count.
 - **A movement or protest, only when the article is about the community it built:** the people supporting each other,
   organising and sustaining one another (ruled). A protest's political fight or outcome is `out_harm_is_story`.
 - **A volunteer movement told through its founder:** in only when the article shows the volunteers and their bonds.

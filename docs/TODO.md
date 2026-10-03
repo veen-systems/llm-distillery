@@ -26,13 +26,13 @@
    1. ✅ **DONE 2026-10-03** (`CALIBRATION.md` § Step 6): blind v2.1 relabel, 215 out / 21 in / 6 split, A/B agree
       237/242. Gemini v2.0 repeat: **0/242 flips**, so v2.0 → v2.1 is the rubric. Against v2.1 labels: Gemini on the
       v2.1 prompt spec **0.930**, recall **21/21**; on v2.0 0.958 / 19/21. ⚠️ Dev set; labels are Claude judges.
-   2. ▶ **Owner check, 10 rows — DRAWN, waiting on the owner:** fill the `owner` column of
-      `spot_check_v2_1_blind.tsv` (in / out / unsure; read the article's own opening). Row 7 is the kauri planting,
-      which the v2.1 judges put OUT against ruling 2's reading. Was: Gemini-vs-judge disagreements plus consensus-in rows. The owner
-      reads the article's own opening. Positives anchored to the owner are the gap: 13 of 18 positives are Claude's
-      exemplars.
-   3. **Freeze v2.1, then draw a FRESH held-out set.** The calibration set is now a DEV set, because v2.1 was written
-      from its disagreement rows.
+   2. ✅ **DONE 2026-10-03** (`CALIBRATION.md` § Step 7): the owner check, then **ruling 3 amended → rubric v2.2**
+      (a recurring peer setting counts; one-way service stays out). The second blind relabel: 213 out / 21 in /
+      7 split. The judges were right on tutoring and the retirement piece (the owner revised both to out), so **the
+      Claude judges stay the confirm step**. Owner-in rows: 3 judge-in, 3 split, 0 out → candidate rule "either judge
+      says in" (n=14, untested).
+   3. ▶ **Freeze v2.2, then draw a FRESH held-out set.** The calibration set is a DEV set (v2.1 and v2.2 were written
+      from its rows). Optional first: Gemini on the v2.2 prompt over the dev set (~$0.26, needs approval).
    4. **If the screen holds:** a Gemini screen plus judge confirmation over production rows, at about $1 per 1,000
       articles on this prompt (owner approves the spend).
       - ⚠️ On the v2.1 prompt, false ins (~7% of outs on the dev set) will OUTNUMBER true ins (~2–4% in) about 2:1,
