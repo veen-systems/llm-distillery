@@ -57,3 +57,12 @@ Neither is tested. Testing (a) means re-judging a held-out subset inside dense b
 | 5.6–6.0 | 52/254 |
 | 6.0–6.5 | 83/326 |
 | ≥ 6.5 | 104/350 |
+
+## Owner spot-check of the positives (2026-10-03)
+
+10 positives drawn at random (seed 20261006; `owner_check_blind.tsv`, `owner_check_key.tsv`). The owner read
+Claude's neutral summaries, each with an in and an out reading spelled out. **Result: 10/10 in, 0 out, 0 unsure**
+(`owner_check_owner.tsv`).
+
+**What that bounds:** for the out-rate among the 239 positives, 0 of 10 gives a 95% upper bound of ~28% (rule of
+three: 3/10 = 30%; Wilson 27.8%). It confirms the positives are not junk; it does not measure a small error rate.
