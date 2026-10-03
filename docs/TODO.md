@@ -50,8 +50,8 @@
       out 804/859 of v1's ≥ 3.5 rows; owner keeps ~52% of those (13/25), but 0/6 of the single-person/viral ones.
       **Ruled:** demote the 238 both-`out_one_moment` rows, DROP the other 566 from training, keep 55 as v1.
       Not applied yet (at the build). ▶ **Next:**
-      - **Decide the gate set.** v1's test ids hold only 3 kept-in positives → recall unmeasurable. Candidate: the
-        held-out set (judged rows) plus its owner rows.
+      - ✅ **Gate set decided + pre-registered** (`docs/evidence/2026-10-03-belonging-heldout/GATE.md`): the 295
+        judged held-out rows; pass = Δspec lower bound > 0 (paired bootstrap) AND recall ≥ 0.70 on the 44 positives.
       - **Build `belonging_v1_adj1`:** v1 rows per the ruling + the 237 harvest positives (labels in
         `datasets/belonging_harvest_r1/positives_r1_labels.jsonl`). Assert disjoint from `belonging_exclusions`.
         Retrain on b650, then fit calibration.
