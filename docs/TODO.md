@@ -15,8 +15,9 @@
      - v1 adjudication: judges move out 804/859; **ruled** demote 238 (both `out_one_moment`) / drop 566 / keep 55,
        executable as `adjudicate.py ruling` → `datasets/belonging_v1_adj/treatment.jsonl` (asserts the counts)
    ▶ **Next, in order:**
-   1. **Re-rule the gate (owner).** Review REFUTED `docs/evidence/2026-10-03-belonging-heldout/GATE.md`: a model that
-      just scores lower passes (v1 itself passes at op-point 5.8). → see GATE.md § *Review*.
+   1. ✅ **Gate re-ruled (owner, at close):** `GATE.md` § *Pass rule v2*: matched recall (v1 at the threshold that
+      finds as many of the 44), Δspec CI > 0 under 2 scoring orders, k ≥ 31; disputed negatives reported apart;
+      one shot. The gate runner is not yet written.
    2. **Decide hard negatives (owner):** dropping 566 leaves few near-op-point negatives; candidates are the
       harvest's 615 both-out Gemini-ins (v1 raw ≥ 5.6). Decide before the build.
    3. **Build `belonging_v1_adj1`:** v1 rows per `treatment.jsonl` + the 237 positives

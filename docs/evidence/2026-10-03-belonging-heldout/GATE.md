@@ -1,6 +1,8 @@
 # Belonging retrain gate: pre-registered (owner ruling 2026-10-03, written BEFORE any training)
 
-> ⛔ **REFUTED in review at the 2026-10-03 close; the owner re-rules before any gate is run.** See § *Review*.
+> ✅ **Pass rule RE-RULED by the owner at the 2026-10-03 close, after review refuted the first version** (§ *Review*,
+> kept below). The binding rule is § *Pass rule v2*. The first rule (§ *Pass rule*) is SUPERSEDED. Still before any
+> training.
 
 **The question:** is the retrained Belonging student (`belonging_v1_adj1`, or whatever version number the build
 assigns) better than the live v1? "Better" means it puts fewer non-belonging stories above the op-point while still
@@ -35,7 +37,7 @@ finding most real ones (ADR-023: specificity first).
 - **"In" = raw weighted average ≥ the op-point**, read at gate time from the package's `base_scorer.py`
   `TIER_THRESHOLDS` "medium" (v1: 4.0; `normalization.json` `raw_min` 4.0). Never restated by hand.
 
-## Pass rule (both must hold)
+## Pass rule (SUPERSEDED: a lower-scoring model passes, see § Review)
 
 1. **Specificity is clearly better.** A paired bootstrap over the negatives (2,000 resamples, stratified by band,
    seed 20261009) gives the 95% interval of Δspec = spec(new) − spec(v1), weighted. **Its lower bound must be > 0.**
@@ -73,3 +75,42 @@ finding most real ones (ADR-023: specificity first).
 - **Weights:** the Gemini-outs/50 factor is computed by `heldout.py analyse` from `gemini_v2_2.jsonl`; it is not
   stored. `no_reply` counts as out.
 - **No runner exists yet.** Condition on `stage_used`: a `stage1_low` row's raw is an e5 estimate.
+
+## Pass rule v2 (owner, 2026-10-03 close): BINDING
+
+**Deciding negatives:**
+- every both-judges-out row **except** Gemini-in rows whose judge classes are disputed
+- "disputed" means any class other than `out_one_moment`, on either pass: the classes the owner kept about half the
+  time in the v1 ruling
+- the disputed hard negatives are **reported separately and do not decide**
+
+**Matched recall:**
+- The new model says "in" at its own op-point, read from its `base_scorer.py` `TIER_THRESHOLDS` "medium".
+- Let **k** be the number of the 44 positives it finds.
+- v1's comparison threshold **t\*** is the HIGHEST threshold at which v1 still finds ≥ k of the 44.
+- Both models are then compared on the deciding negatives: the new model at its op-point, v1 at t\*.
+
+**Scoring:**
+- Both packages run through `inference_hybrid.py` on b650 GPU, in **two row orders** (forward and reversed, at the
+  package's default batch size).
+- A row's "in" is read from `raw_weighted_average` only where `stage_used == "stage2"`. A `stage1_low` row is "out".
+
+**Pass, under BOTH orders:**
+1. Δspec = spec(new) − spec(v1 at t\*), weighted by the design (band scale × Gemini-out/50 for sampled outs).
+   - Use a paired bootstrap stratified by **band × pick** (6 strata), 2,000 resamples, seed 20261009.
+   - **The lower bound of the 95% interval must be > 0.**
+2. **k ≥ 31 of 44.**
+
+⚠️ At exactly 31/44 the Wilson interval is about [0.56, 0.82].
+
+**Also reported (not deciding):**
+- the flip count within ±0.16 of each threshold
+- unweighted figures
+- hi+mid only
+- the disputed-negative stratum
+- v1's test split under `treatment.jsonl`
+- the owner's 10 rows
+
+**One shot.** A second candidate needs a fresh held-out set.
+
+**Before scoring:** the gate refuses any package whose training ids (written by the build) intersect these 295 rows.
