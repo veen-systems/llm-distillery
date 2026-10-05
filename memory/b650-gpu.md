@@ -75,6 +75,16 @@ ssh b650-gpu        # account is `jeroen` (NOT jwasys); works from situla and sa
   `qwen3-coder:30b` (+128k/192k), `qwen3-vl:8b`. **`gemma3:27b` has since been pulled**
   (this line said it was missing); **`phi4` still is not** — pull before a 4-model panel.
   ⛔ Do not quote this list without re-running `curl -s .../api/tags`; it is a snapshot.
+- ⛔ **ovr.news shares this card (agreed 2026-10-05, ovr.news `9a11a4b`).** ovr's summarize
+  step loads `gemma3:27b` (~18-20 GB) into this box's Ollama **after each NexusMind cycle**
+  (~10-30 min, unloaded at the end). ovr gave two schedules the same day (03/07/11/15/19/23:00,
+  then "~1.5 h after 00/04/08/12/16/20:00"), so treat the hour as drifting: CHECK, never
+  schedule around it. ovr **skips this card whenever any non-Ollama compute process is on it**
+  (same rule on sadaltager, its third host), but it checks only when it loads, so a job we
+  start AFTER its load (including the ~2 min warmup) is unprotected and can OOM. **Before any
+  long GPU run here: `curl -s localhost:11434/api/ps` must show no `gemma3:27b`.** Our peak
+  VRAM (Gemma-3-1B LoRA, bf16, bs 8, len 512) is UNMEASURED — log
+  `torch.cuda.max_memory_allocated()` on the next run.
 - ⭐ **`nature_recovery v4`'s test split was staged 2026-09-17** at
   `datasets/training/nature_recovery_v4/test.jsonl` (391 rows) — it was the one live filter
   whose split this box lacked, so `EXP-041` could not have run without it. **Keep it**: it is

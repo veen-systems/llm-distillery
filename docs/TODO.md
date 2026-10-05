@@ -24,6 +24,8 @@
       (`datasets/belonging_harvest_r1/positives_r1_labels.jsonl`); `belonging_exclusions.assert_disjoint()` on every
       id (1,971 ids from 11 sources; v1 splits are the BASE, so `assert_fresh_draw` is for new draws only). Write the
       training id list into the package so the gate can refuse overlap. Retrain on b650, fit calibration, run the gate.
+      ⛔ b650's card is shared with ovr.news since 2026-10-05: before launching, `curl -s localhost:11434/api/ps` on
+      b650 must show no `gemma3:27b`, and log peak VRAM (`memory/b650-gpu.md`).
    4. Optional: harvest round 2 (mid band, ~$9.70 est.; ~125–200 positives, est. from 9/44 × the r1 shortfall).
       First add held-out `content_hash`es to its exclusions (review found 4 content twins, 0 positives, in r1).
    5. Open measurement: judges were stricter in the harvest than in the held-out (hit 0.257 vs 0.38, Fisher
