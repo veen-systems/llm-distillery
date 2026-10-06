@@ -108,7 +108,17 @@ ML classifier for commerce/promotional content detection. Cross-cutting prefilte
 **v2 is RETIRED (2026-09-27, owner):** it no longer ships (`RETIRED_DIRS`, `3e7f565`) and NexusMind PR #553 deleted it
 downstream — confirmed on sadalsuud 2026-09-28. The package stays here as a record.
 
+- [ ] **v1 @0.95 OVER-BLOCKS — owned here (owner, 2026-10-06)**, evidence on ducroq/NexusMind#527.
+      One judge (blind Claude subagents, v1 `prompt.md`): 60/80 uniform blocked rows are journalism
+      (rubric ≤4). In-sample, a cut near 0.995 keeps 9/12 commerce, releases 57/60 journalism —
+      but max gate score is 0.9964 (saturation), so the margin is ~0.0015. Open before proposing a
+      sweep: fresh 150-row draw, run-to-run flip count at 0.995, reader cost (lens ≥ op-point),
+      second judge. 0.95 was chosen on 0/3 high-tier sustainability_technology rows
+      (`BACKTEST_REPORT.md`) — never a general-traffic FP measurement. Data: sadalsuud `~/nm527/`.
+      Likely cause (untested): test-split negatives are 57/101 arXiv, positives consumer-tech.
+      NexusMind changes nothing until the owner approves a proposal.
 - [ ] **Re-measure the miss rate before retraining** ← **DO THIS FIRST (added 2026-08-07)**
+      (partly answered 2026-10-06: 0/120 rubric ≥7 in the reader-reachable 0.5–0.95 band, NM#527)
 - [ ] **NM#223 is a live input to this and is blocked** (found 2026-08-07 late) —
       NER entity-density as an *additive* commerce signal, explicitly "does not
       replace the v3 retrain planned in NM#185 Phase 2". It is blocked on
