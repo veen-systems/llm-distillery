@@ -157,7 +157,7 @@ floor" for 87–100% of blocking on four of six filters.
 
 **LD#86 is now measured and the answer is NO:** enforcing cd's gate costs 15.5%
 of surfacing articles (135/871 over 20 cycles), skewed non-English (19.9% vs
-13.0% English, p≈0.01). Zero high-tier losses. `no_cultural_topic_signal` is 86%
+13.0% English, p≈0.01). ⚠️ *Retracted framing (corrected 2026-08-02, `memory/prefilter-length-floor-hypotheses.md` item 7): pooled "non-English 19.9%" describes no real population — German 4.9% and French 5.3% sit BELOW English's 13.0%; the gap is `no_cultural_topic_signal` keyword coverage. Moot since per-lens prefilters were deleted 2026-10-01.* Zero high-tier losses. `no_cultural_topic_signal` is 86%
 of the loss — fix its multilingual coverage, then re-run the check.
 
 ### Chain 5: Solutions Lens — largely complete
@@ -342,7 +342,7 @@ FS#124 (mojibake at collection, 5.0%, non-English-concentrated) — FIXED ea25ae
   6.86x non-English skew) — the limb is LIVE, not closed
    → NM#231 (uplifting under-scores non-English documented-outcome news, 19 panel-confirmed)
    → NM#291 (dedup threshold misses cross-language same-story pairs at 0.836)
-   → LD#86 (cd prefilter enforce would cost 19.9% non-English vs 13.0% English, p≈0.01)
+   → LD#86 (cd prefilter enforce would cost 19.9% non-English vs 13.0% English, p≈0.01 — RETRACTED framing, see item 7 of memory/prefilter-length-floor-hypotheses.md; moot since 2026-10-01)
    ↔ LD#93 (sub-300 population is dominated by gn_* / spanish_* / french_* / gn_africa_*)
    ↔ FS#128 ✅ CLOSED 2026-08-06 (rferl_kazakh never collected Kazakh — both feeds
               hit a generic endpoint). The *class* survives it as FS#126 (also closed):

@@ -175,6 +175,7 @@ the ovr.news homepage with a trafficking price list as its pull quote.
 > Korean and Croatian matching `crime_violence` at **0.00%**. For reference,
 > enforcing `cultural_discovery`'s prefilter was measured to block **19.9% of non-English
 > against 13.0% of English** articles.
+> ⚠️ *Retracted framing (corrected 2026-08-02, `memory/prefilter-length-floor-hypotheses.md` item 7): pooled "non-English 19.9%" describes no real population — German 4.9% and French 5.3% sit BELOW English's 13.0%; the gap is `no_cultural_topic_signal` keyword coverage. Moot since per-lens prefilters were deleted 2026-10-01.*
 >
 > ⭐ **This is ADR-011 finally applied.** *"Embedding screening for needle filters — use
 > Phase 3 positives as e5-small seeds to screen corpora; replaces keyword screening."*
