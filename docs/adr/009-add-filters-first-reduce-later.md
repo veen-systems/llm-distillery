@@ -3,6 +3,12 @@
 **Date:** 2026-03-04
 **Status:** Accepted
 
+> **Note (2026-10-07, owner ruling 2026-10-01 on LD#160):** this record predates ADR-013 (English everywhere the
+> framework speaks) and is kept as written. Its Dutch tab names map to today's English lenses: **Welzijn** →
+> Thriving (scored by `uplifting`), **Vooruitgang** → Solutions (then `sustainability_technology`), **Erfgoed** →
+> Discovery (`cultural_discovery`). `scripts/analysis/cross_filter_landscape.py`, cited below, now uses the
+> English names. `scripts/verification/check_framework_language.py` exempts this file as a historical record.
+
 ## Decision
 
 Deploy new filters (belonging, ai-engineering-practice, nature_recovery, signs_of_wisdom) to ovr.news as separate tabs without pre-optimizing the taxonomy. Merge or remove tabs later if they feel redundant in practice.

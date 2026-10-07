@@ -96,8 +96,12 @@
    - LD#134 step 3, the marking pass (`docs/decisions/2026-09-17-refcheck-docs-tier.md`).
    - ✅ The retracted 19.9%/13.0% framing — **closed 2026-10-07:** already gone from `CLAUDE.md`; the 3 remaining copies
      (`docs/HUMAN_THRIVING_V8_PLAN.md`, `memory/cross-repo-prioritization.md` ×2) now carry the retraction beside them.
-   - LD#160: an ADR-009 note, a rename of `cross_filter_landscape.py`, and `check_framework_language.py`
-     (red first).
+   - ✅ LD#160 **done 2026-10-07** as ruled: ADR-009 dated note (no rewrite); `cross_filter_landscape.py` renamed to
+     English; `scripts/verification/check_framework_language.py` built and shown RED first (exit 1, 64 violations,
+     all in that script), green after (`tests/unit/test_framework_language.py` seeds the class). ⚠️ **LD#160 follow-up
+     (owner call):** the checker found a site nobody had listed: `filters/nature_recovery/{v1,v2,v4}/config.yaml`
+     carry "ovr.news 'Herstel' tab" in a notes string. v4 is DEPLOYED, so editing it changes a live package's bytes at
+     the next NexusMind sync. Listed as KNOWN OPEN in the checker until ruled.
    - H-MECH-1: watch, 2 batteries left.
    - #158: the heldout detector band (b650).
    - #104 item 1: likely MOOT if gpu-server is retired.
