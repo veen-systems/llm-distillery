@@ -114,3 +114,32 @@ finding most real ones (ADR-023: specificity first).
 **One shot.** A second candidate needs a fresh held-out set.
 
 **Before scoring:** the gate refuses any package whose training ids (written by the build) intersect these 295 rows.
+
+## The runner (`gate.py`, written 2026-10-07, before any candidate exists)
+
+Pass rule v2 as code; `tests/unit/test_belonging_gate.py` pins it (15 tests; 9 hand-made mutations of the rule each
+turn a test red: stage1_low counted, disputed rows deciding, t\* lowest instead of highest, `≥ 0` instead of `> 0`,
+k ≥ 30, no resampling, either-pass undisputed, splits kept, a 90% interval).
+
+- `gate.py score --package … --order forward|reversed --out …` on b650 GPU; refuses without CUDA. It writes per-row
+  `stage_used` + `weighted_average` with the package fingerprint, device, library versions, host and peak VRAM.
+- `gate.py evaluate --candidate filters/belonging/vN` reads both orders for both packages. It refuses if a package
+  changed since it was scored, or if the two were scored on different stacks. Exit 0 = PASS.
+- `gate.py controls` runs the rule on v1's **production** raws. Required and observed, 2026-10-07:
+  | control | k | Δspec 95% CI | verdict |
+  |---|---|---|---|
+  | v1 vs itself at 4.0 | 44 | [−0.050, −0.006] | FAIL ✓ |
+  | v1 at 5.8 vs v1 (the refuted rule's pass) | 32 | [−0.010, +0.000] | FAIL ✓ |
+  | a perfect candidate | 44 | [+0.425, +0.469] | PASS ✓ |
+  | perfect on negatives, 30/44 found | 30 | [+0.068, +0.110] | FAIL ✓ (k) |
+
+**The build's contract:** the candidate package must carry `training_ids.txt`, one training id per line. The gate
+refuses a package without it, and any package whose ids touch the 1,200 held-out rows (a superset of the 295).
+
+**Counts the rule produces** (labels 44 pos / 163 deciding neg / 75 disputed / 13 excluded): 14 of the 89 hard
+negatives decide, because both passes say `out_one_moment`. ⚠️ § *Review* above says 74 disputed; the literal v2 rule
+("any class other than `out_one_moment`, on EITHER pass") gives **75**. The extra rows have one pass
+`out_one_moment` and one other (6 rows). The runner follows the rule text; the review's 74 could not be reproduced.
+
+**Not computed by the runner** ("Also reported"): v1's test split under `treatment.jsonl` (plan phase 6,
+`ground_truth_gate.py`), and the owner's 10 rows as a per-row table.
