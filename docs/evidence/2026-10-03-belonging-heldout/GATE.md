@@ -250,3 +250,7 @@ pilot habit, never a ruling, and it replaces the ending that belonging's head+ta
 - **The labels are unchanged:** the judges labelled the cut text. For 133 rows the model now reads an ending no judge
   read; the owner accepted that cost over gating on an input production never sends.
 - v1 is re-scored on full text (both orders) as the reference.
+- **v1 full-text reference scored** (b650, `fe12a2f`, both orders, 295/295 stage 2): v1's weighted specificity at
+  4.0 on the deciding negatives is **0.5248**, matching production's 0.525 (it was 0.5387 on cut text). v1 as its own
+  candidate: Δspec −0.0188, CI [−0.0439, +0.0000], **FAIL (exit 1)** in both orders, 0 order-to-order flips. Same
+  verdict on this machine. The cut-text files are kept as `v1_*.cuttext.jsonl`.
