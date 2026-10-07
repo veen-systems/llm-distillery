@@ -213,8 +213,9 @@ on b650 and here; the v1 package fingerprint `bee0f4aafc6bd5d6` is identical on 
   recomputation). The ±0.16 band report under-covers this term, so the runner prints order-to-order flips at the
   deciding thresholds. Recorded in `memory/score-batch-shape-noise.md`.
 - v1 finds 44/44 positives at 4.0 in both orders (lowest 4.058; production 4.079).
-- **Re-scored at `12385a2`** after the review fixes, because the fingerprint now covers every package file (v1:
-  same scores). The earlier files are kept as `v1_*.pre12385a2.jsonl`. **End-to-end check of `evaluate`:** with v1
+- **Re-scored at `12385a2`, then at `6974177`** after each review round changed the fingerprint (v1: same scores
+  each time). The earlier files are kept as `v1_*.pre12385a2.jsonl` / `v1_*.pre6974177.jsonl`. Since `6974177`,
+  `evaluate` gives the same verdict here and on b650 (docs no longer in the fingerprint). **End-to-end check of `evaluate`:** with v1
   as its own candidate it runs both orders and prints **GATE VERDICT: FAIL, exit 1**, as it must
   (Δspec −0.0063, CI [−0.0188, +0.0000], since v1@4.0 is compared with v1@t\* = 4.0585); 0 order-to-order flips
   at 4.0 and at t\*.
