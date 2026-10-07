@@ -27,10 +27,12 @@ The rule, as code (each line is GATE.md § Pass rule v2):
   `gemini_v2_2.jsonl` here, as `heldout.py analyse` does; `no_reply` counts as out).
 - Δspec = spec(candidate @ op) − spec(v1 @ t*), weighted, on the deciding negatives; paired bootstrap stratified by
   band × pick, 2,000 resamples, seed 20261009. PASS needs the 95% lower bound > 0 AND k >= 31, under BOTH orders.
-- the gate REFUSES a candidate without `training_manifest.jsonl` (one {"id", "url", "title"} per training row,
-  written by the build), and any candidate whose training rows touch the 1,200 held-out rows (a superset of the 295
-  judged ones) by id, normalised url or normalised title: the same story can sit under two ids (review 2026-10-07
-  found held-out twins inside harvest r1).
+- the gate REFUSES a candidate without `training_manifest.jsonl` (one {"id", "url", "title", "text_head"} per
+  training row, text_head = the first 1,000 chars of the training text, written by the build; every field required),
+  and any candidate whose training rows touch the 1,200 held-out rows (a superset of the 295 judged ones) by id,
+  normalised url, normalised title or a normalised content window: the same story can sit under two ids, two
+  outlets and two titles (review 2026-10-07 found held-out twins inside harvest r1, one a deciding negative).
+- exit codes: 0 PASS, 1 FAIL, 2 REFUSED (a refusal is not a verdict).
 - a labelled row that is not a scored `stage1_low`/`stage2` row with a finite score RAISES. An invalid or failed row
   is not a correct rejection (review 2026-10-07: counting it as "out" let a candidate PASS with every negative unscored).
 """
@@ -47,7 +49,7 @@ SEED, NBOOT, K_MIN, N_POS, NOISE = 20261009, 2000, 31, 44, 0.16
 ORDERS = ("forward", "reversed")
 UNDISPUTED = {"out_one_moment"}
 V1 = ROOT / "filters" / "belonging" / "v1"
-TRAINING_MANIFEST = "training_manifest.jsonl"  # one {"id", "url", "title"} per training row, written by the build
+TRAINING_MANIFEST = "training_manifest.jsonl"  # one {"id", "url", "title", "text_head"} per training row (build)
 STAGES = {"stage1_low", "stage2"}
 MAX_NORMALIZATION_RAW_MIN = 4.5  # scripts/normalization/fit_normalization.py: NexusMind's loader silently falls back above it
 
@@ -187,8 +189,43 @@ def _norm_url(u):
 
 
 def _norm_title(t):
-    t = re.sub(r"[^0-9a-z]+", "", (t or "").lower())
+    """Letters and digits in ANY script (a Latin-only class erased 85 Arabic/Greek/Cyrillic/... held-out titles)."""
+    t = re.sub(r"[\W_]+", "", (t or "").lower())
     return t if len(t) >= 20 else None  # short titles ("Editorial") collide by chance
+
+
+SHINGLE, SHINGLE_HITS = 8, 20
+
+
+def _shingles(text):
+    """8-word runs from words 10..160. Alignment-free, so a dateline or "Country:" prefix that differs between
+    syndicated copies (newtimes.co.rw vs allafrica.com, review 2026-10-07) does not hide the twin; a fixed character
+    window did."""
+    w = re.findall(r"\w+", (text or "").lower())[10:160]
+    return {tuple(w[i:i + SHINGLE]) for i in range(len(w) - SHINGLE + 1)}
+
+
+def content_twins(train, held):
+    """[(train_id, held_id, shared_runs)] for pairs sharing >= SHINGLE_HITS distinctive 8-word runs. A run counts only
+    if it occurs in ONE held-out row and at most two training rows: site boilerplate (cookie banners, series intros,
+    newsletter footers) otherwise "matched" 13 different 20minutos stories to the same held-out row. Measured on
+    harvest r1 (2026-10-07): syndicated copies share 85-142 runs; 20-55 is a mix of real twins and same-series
+    boilerplate, so 20 over-refuses on purpose (a false hit costs one training row, a miss leaks a held-out story).
+    The build should call this BEFORE training and drop what it returns."""
+    hs = {r["id"]: _shingles(r.get("content")) for r in held}
+    ts = {r["id"]: _shingles(r.get("text_head")) for r in train}
+    dfh = Counter(sh for x in hs.values() for sh in x)
+    dft = Counter(sh for x in ts.values() for sh in x)
+    index = defaultdict(set)
+    for i, x in hs.items():
+        for sh in x:
+            if dfh[sh] == 1:
+                index[sh].add(i)
+    out = []
+    for i, x in ts.items():
+        c = Counter(h for sh in x if dft[sh] <= 2 for h in index.get(sh, ()))
+        out += [(i, h, n) for h, n in c.items() if n >= SHINGLE_HITS]
+    return sorted(out)
 
 
 def refuse_overlap(pkg, held=None):
@@ -202,6 +239,11 @@ def refuse_overlap(pkg, held=None):
     train = [json.loads(l) for l in open(f) if l.strip()]
     if not train:
         raise SystemExit(f"REFUSED: {f} is empty")
+    thin = [r.get("id") for r in train if not all(isinstance(r.get(k), str) and r[k].strip()
+                                                   for k in ("id", "url", "title", "text_head"))]
+    if thin:
+        raise SystemExit(f"REFUSED: {len(thin)} manifest rows lack id/url/title/text_head, e.g. {thin[:3]}; an id-only "
+                         "manifest would shrink the overlap check to ids")
     held = H.rows() if held is None else held
     keys = {"id": lambda r: r.get("id"), "url": lambda r: _norm_url(r.get("url")) or None,
             "title": lambda r: _norm_title(r.get("title"))}
@@ -210,7 +252,11 @@ def refuse_overlap(pkg, held=None):
         hit = sorted({k(r) for r in train} & hk)
         if hit:
             raise SystemExit(f"REFUSED: {len(hit)} training rows match held-out rows by {name}, e.g. {hit[:3]}")
-    return f"{len(train)} training rows, 0 of the {len(held)} held-out rows by id, url or title"
+    twins = content_twins(train, held)
+    if twins:
+        raise SystemExit(f"REFUSED: {len(twins)} training rows match held-out rows by content "
+                         f"(>= {SHINGLE_HITS} shared {SHINGLE}-word runs), e.g. {twins[:3]}")
+    return f"{len(train)} training rows, 0 of the {len(held)} held-out rows by id, url, title or content"
 
 
 def _hash_tree(root, files):
@@ -220,10 +266,16 @@ def _hash_tree(root, files):
     return h.hexdigest()[:16], len(files)
 
 
+def _scoring_file(name):
+    """What scoring can load: not docs (*.md: b650's v1 has a model/README.md this machine lacks, review 2026-10-07),
+    not hidden or editor files, not bytecode."""
+    return not (name.startswith(".") or name.endswith((".md", ".pyc", "~", ".swp", ".swo")))
+
+
 def pkg_fingerprint(pkg):
-    """Every file in the package, following symlinked folders (review 2026-10-07: rglob skipped a symlinked model/)."""
+    """Every scoring file in the package, following symlinked folders (rglob skipped a symlinked model/)."""
     files = sorted(os.path.join(d, f) for d, ds, fs in os.walk(pkg, followlinks=True) if "__pycache__" not in d
-                   for f in fs if not f.endswith(".pyc"))
+                   for f in fs if _scoring_file(f))
     return _hash_tree(pkg, files)
 
 
@@ -408,4 +460,10 @@ if __name__ == "__main__":
     e.add_argument("--scores-dir", default="datasets/belonging_gate")
     sub.add_parser("controls")
     a = ap.parse_args()
-    {"score": cmd_score, "evaluate": cmd_evaluate, "controls": cmd_controls}[a.cmd](a)
+    try:
+        {"score": cmd_score, "evaluate": cmd_evaluate, "controls": cmd_controls}[a.cmd](a)
+    except SystemExit as e:
+        if isinstance(e.code, str):  # a refusal or a broken input, never a verdict
+            print(e.code, file=sys.stderr)
+            sys.exit(2)
+        raise

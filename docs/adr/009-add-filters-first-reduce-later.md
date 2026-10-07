@@ -5,8 +5,8 @@
 
 > **Note (2026-10-07, owner ruling 2026-10-01 on LD#160):** this record predates ADR-013 (English everywhere the
 > framework speaks) and is kept as written. Its Dutch tab names map to today's English lenses: **Welzijn** →
-> Thriving (scored by `uplifting`), **Vooruitgang** → Solutions (then `sustainability_technology`), **Erfgoed** →
-> Discovery (`cultural_discovery`). `scripts/analysis/cross_filter_landscape.py`, cited below, now uses the
+> Thriving (then scored by `uplifting`; `human_thriving` since 2026-09-26), **Vooruitgang** → Solutions (then
+> `sustainability_technology`), **Erfgoed** → Discovery (`cultural_discovery`). `scripts/analysis/cross_filter_landscape.py`, cited below, now uses the
 > English names. `scripts/verification/check_framework_language.py` exempts this file as a historical record.
 
 ## Decision

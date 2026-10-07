@@ -133,7 +133,11 @@ rejection, and the reviewer built a full PASS with every deciding negative unsco
   sentence-transformers and tokenizers;
 - an op-point above 4.5 is refused (NexusMind's normalization loader silently falls back above it);
 - overlap is checked by id, normalised url (tracking parameters dropped, article-id queries such as WordPress
-  `?p=` KEPT) and normalised title;
+  `?p=` KEPT), normalised title (letters in any script) and CONTENT: ≥ 20 shared distinctive 8-word runs
+  (`content_twins`; second review round, which showed a syndicated copy passing the other three keys);
+- exit codes: 0 PASS, 1 FAIL, **2 REFUSED** (a refusal is not a verdict);
+- the fingerprint covers what scoring loads, not docs or editor files (b650's v1 has a `model/README.md` this
+  machine lacks, which made every cross-host `evaluate` refuse);
 - order-to-order flips are reported at the deciding thresholds (candidate op-point, v1's t\*) as well as at 4.0.
 
 - `gate.py score --package … --order forward|reversed --out …` on b650 GPU; refuses without CUDA. It writes per-row
@@ -148,12 +152,16 @@ rejection, and the reviewer built a full PASS with every deciding negative unsco
   | a perfect candidate | 44 | [+0.425, +0.469] | PASS ✓ |
   | perfect on negatives, 30/44 found | 30 | [+0.068, +0.110] | FAIL ✓ (k) |
 
-**The build's contract:** the candidate package must carry `training_manifest.jsonl`, one `{"id", "url", "title"}`
-per training row. The gate refuses a package without it, and any package whose rows touch the 1,200 held-out rows
-(a superset of the 295) by id, url or title. **Measured on harvest r1:** 0 of the 237 kept positives twin a held-out
-row; 5 of its 4,591 rows do (syndicated titles), and one twins a DECIDING negative
-(`south_asian_kathmandu_post_e9d635f22e58` ↔ `southeast_asian_straits_times_asia_840d6824f3e7`). If the build draws
-hard negatives from the harvest, those 5 must stay out, or the gate refuses it.
+**The build's contract:** the candidate package must carry `training_manifest.jsonl`, one
+`{"id", "url", "title", "text_head"}` per training row (`text_head` = the first 1,000 chars of the training text;
+every field required, so an id-only manifest is refused). The gate refuses any package whose rows touch the 1,200
+held-out rows (a superset of the 295) by id, url, title or content. **The build should call
+`gate.content_twins(rows, heldout.rows())` before training and drop what it returns.**
+**Measured on harvest r1 (2026-10-07):** 21 of its 4,591 rows twin a held-out row (all 5 url/title twins are among
+them); **0 of the 237 kept positives**; 2 twin DECIDING negatives (e.g. `east_african_new_times_rw_8f0babd81d2b` ↔
+`pan_african_all_africa_d5192d565ccc`, 127 shared runs). If the build draws hard negatives from the harvest, those
+21 must stay out, or the gate refuses it. Syndicated copies share 85–142 runs; 20–55 mixes real twins with
+same-series boilerplate, so the threshold over-refuses on purpose.
 
 **Not covered:** the base Gemma model and the e5 model come from the HuggingFace cache and are not fingerprinted;
 `score` files carry no signature, so a hand-edited file is a trust boundary, not a check.
@@ -205,6 +213,11 @@ on b650 and here; the v1 package fingerprint `bee0f4aafc6bd5d6` is identical on 
   recomputation). The ±0.16 band report under-covers this term, so the runner prints order-to-order flips at the
   deciding thresholds. Recorded in `memory/score-batch-shape-noise.md`.
 - v1 finds 44/44 positives at 4.0 in both orders (lowest 4.058; production 4.079).
+- **Re-scored at `12385a2`** after the review fixes, because the fingerprint now covers every package file (v1:
+  same scores). The earlier files are kept as `v1_*.pre12385a2.jsonl`. **End-to-end check of `evaluate`:** with v1
+  as its own candidate it runs both orders and prints **GATE VERDICT: FAIL, exit 1**, as it must
+  (Δspec −0.0063, CI [−0.0188, +0.0000], since v1@4.0 is compared with v1@t\* = 4.0585); 0 order-to-order flips
+  at 4.0 and at t\*.
 
 **The cut is the cause, proven (2026-10-07, b650, same stack):** v1 scored on the FULL text of the 117 judged cut
 rows still on sadalsuud reproduces production; on the cut text it does not.

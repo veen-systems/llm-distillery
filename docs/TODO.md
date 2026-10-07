@@ -100,7 +100,7 @@
      English; `scripts/verification/check_framework_language.py` built and shown RED first (exit 1, 64 violations,
      all in that script), green after (`tests/unit/test_framework_language.py` seeds the class). ⚠️ **LD#160 follow-up
      (owner call):** the checker found a site nobody had listed: `filters/nature_recovery/{v1,v2,v4}/config.yaml`
-     carry "ovr.news 'Herstel' tab" in a notes string. v4 is DEPLOYED, so editing it changes a live package's bytes at
+     carry `ovr.news 'Herstel' tab` in a notes string. v4 is DEPLOYED, so editing it changes a live package's bytes at
      the next NexusMind sync. Listed as KNOWN OPEN in the checker until ruled.
    - H-MECH-1: watch, 2 batteries left.
    - #158: the heldout detector band (b650).
@@ -329,7 +329,8 @@ queue is ▶ START HERE, not this list. Close or delete a line once checked agai
 
 
 **From:** 🔵 PREVIOUS SESSION — **ADR-013 widened to all framework text; review found my own evidence unsound and the compliance zero FALSE. Framework 6 releases behind, s
-- [ ] **Mechanize the language rule (#160)** — `scripts/verification/check_framework_language.py` whose
+- [x] **Mechanize the language rule (#160)** — done 2026-10-07: `scripts/verification/check_framework_language.py`
+  (names in framework text; commit messages still unread). See START HERE item 4.
 
 **From:** 2026-08-09 — corroboration: the shippable change was refuted, the gate is the lever
 

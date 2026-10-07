@@ -7,25 +7,28 @@ that the first compliance sweep could not see: Dutch LENS / TAB NAMES in framewo
 
 ⭐ Why names, not words. The first sweep (2026-09-17) searched Dutch FUNCTION words and returned zero, while two sites
 used Dutch lens names: a name contains no function word. The positive control must be of the CLASS UNDER TEST.
-`tests/unit/test_framework_language.py` seeds a true positive of that class (`s1_welzijn`, a bare `Welzijn:` in
+`tests/unit/test_framework_language.py` seeds a true positive of that class (a name inside an identifier, a bare name in
 prose) and asserts this script goes red on it.
 
 Scope: tracked `*.py *.md *.yaml *.yml *.sh *.toml` outside `datasets/`. Article text (`*.jsonl`, tokenizer files)
 is data in six languages and is out of scope by construction.
 
 The allowlist is ADR-013's carve-out table, by ROLE (the table itself says the class governs, not its examples):
-- MATCH PATTERNS: a hit inside a Python regex string literal (raw string, or one containing `\\b` or `|`). Deleting
-  it would change what the code matches, so it is data.
-- FIXTURES: any string literal in `tests/**.py`, and in this checker (its name list is what it matches). Comments in
-  those files are still checked.
-- MENTIONS: in Markdown, a hit inside backticks or quotes is a name being discussed, not used (ADR-013 itself does
-  this). ⚠️ This is the softest rule here: a doc that labels a tab in backticks passes. It is visible in `--all`.
+- MATCH PATTERNS: a hit inside a Python string that feeds `re.<fn>()`, sits in a tuple with an `re.` flag, or is
+  assigned to a name saying pattern/regex. Deleting it would change what the code matches, so it is data.
+- FIXTURES: non-docstring string literals in `tests/**.py` and in this checker (its name list is what it matches).
+  Comments and docstrings in those files are still checked (ADR-013: "comments, docstrings ... stay English").
+- MENTIONS: in Markdown, a hit inside BACKTICKS is a name being discussed, not used. Quotes do not count: they also
+  label a tab. ⚠️ Still the softest rule: a doc that labels a tab in backticks passes. It is visible in `--all`.
+- RECORDS: ADR-009 (owner ruling) and ADR-013 (the rule must cite the names) are exempt, and so are the verbatim
+  archives (`memory/archive/`, `docs/TODO-archive.md`, `memory/session-log.md`), which are never edited.
+- NOT CHECKED: commit messages, which ADR-013 also covers; nothing reads them yet.
 - HISTORICAL RECORDS (owner ruling 2026-10-01, LD#160): ADR-009 predates ADR-013 and gets a dated note mapping
   the names; it is not rewritten.
 - KNOWN OPEN: violations found and handed to the owner, each naming where it is tracked. Printed on every run so
   they cannot become silent; delete the entry when the line is fixed (a stale entry is reported).
 """
-import argparse, io, re, subprocess, sys, tokenize
+import argparse, ast, re, subprocess, sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -34,19 +37,23 @@ ROOT = Path(__file__).resolve().parents[2]
 # identifier (prefix_name) counts.
 # NOT "voor" (cross_filter_landscape.py's old Solutions column header): it is also the Dutch word "for", and adding it
 # measured 4 false hits, all article text quoted in evidence docs or fixture sentences (2026-10-07).
-NAMES = ["welzijn", "erfgoed", "vooruitgang", "herstel", "leren", "verwondering", "welz", "erfg"]
+# The Belonging tab's Dutch label (commit e7e8863, 2026-03-07) was missing until review 2026-10-07.
+# Compounds (natuurherstel) are NOT matched: names are delimited by non-letters by design.
+NAMES = ["welzijn", "erfgoed", "vooruitgang", "herstel", "leren", "verwondering", "verbondenheid", "welz", "erfg"]
 NAME_RE = re.compile(r"(?<![a-zA-Z])(" + "|".join(NAMES) + r")(?![a-zA-Z])", re.IGNORECASE)
 SUFFIXES = {".py", ".md", ".yaml", ".yml", ".sh", ".toml"}
 SELF = "scripts/verification/check_framework_language.py"
 
-HISTORICAL = {"docs/adr/009-add-filters-first-reduce-later.md": "owner 2026-10-01 (LD#160): note, never rewrite"}
+HISTORICAL = {"docs/adr/009-add-filters-first-reduce-later.md": "owner 2026-10-01 (LD#160): note, never rewrite",
+              "docs/adr/013-english-lens-names.md": "the rule's own text, which must cite the names it forbids"}
+FROZEN = ("memory/archive/", "docs/TODO-archive.md", "memory/session-log.md")  # verbatim records, never edited
 KNOWN_OPEN = {
     ("filters/nature_recovery/v1/config.yaml", "'Herstel' tab"): "docs/TODO.md START HERE item 4 (LD#160 follow-up)",
     ("filters/nature_recovery/v2/config.yaml", "'Herstel' tab"): "docs/TODO.md START HERE item 4 (LD#160 follow-up)",
     ("filters/nature_recovery/v4/config.yaml", "'Herstel' tab"): "docs/TODO.md START HERE item 4 (LD#160 follow-up)",
 }
 
-MD_QUOTED = re.compile(r"`[^`\n]*`|\"[^\"\n]*\"|“[^”\n]*”|'[^'\n]*'")
+MD_QUOTED = re.compile(r"`[^`\n]*`")  # backticks only: quotes also LABEL a tab, and apostrophes mis-pair
 
 
 def tracked():
@@ -58,32 +65,58 @@ def _spans(regex, text, keep=lambda m: True):
     return [(m.start(), m.end()) for m in regex.finditer(text) if keep(m)]
 
 
-def _py_strings(text):
-    """(start, end, token_text) of every string literal, from Python's own tokenizer: a regex over the source mis-pairs
-    quotes across an apostrophe in a comment or an escaped quote (found 2026-10-07 on this file)."""
-    starts, pos = [0], 0
-    for l in text.split("\n"):
-        pos += len(l) + 1; starts.append(pos)
-    kinds = {tokenize.STRING} | {getattr(tokenize, n) for n in ("FSTRING_MIDDLE",) if hasattr(tokenize, n)}
-    out = []
-    for t in tokenize.generate_tokens(io.StringIO(text).readline):
-        if t.type in kinds:
-            out.append((starts[t.start[0] - 1] + t.start[1], starts[t.end[0] - 1] + t.end[1], t.string))
-    return out
+RE_FUNCS = {"compile", "search", "match", "fullmatch", "findall", "finditer", "sub", "subn", "split"}
+PATTERN_NAME = re.compile(r"pattern|regex|_re$", re.IGNORECASE)
 
 
-def _is_pattern(tok):
-    prefix = re.match(r"[rRbBuUfF]*", tok).group(0)
-    return "r" in prefix.lower() or "\\b" in tok or "|" in tok
+def _py_string_spans(text):
+    """(docstrings, patterns, other strings) as character spans, from the AST. A string is a MATCH PATTERN only if it
+    feeds `re.<fn>(...)`, sits in a tuple carrying an `re.` flag, or is assigned (at any depth) to a name that says
+    pattern/regex (review 2026-10-07: a `|` in a docstring or a raw docstring had counted as a pattern)."""
+    tree = ast.parse(text)
+    lines = text.split("\n")
+    starts, pos = [], 0
+    for l in lines:
+        starts.append(pos); pos += len(l) + 1
+
+    def off(lineno, col_bytes):
+        line = lines[lineno - 1]
+        return starts[lineno - 1] + len(line.encode("utf-8")[:col_bytes].decode("utf-8", "ignore"))
+
+    def span(n):
+        return off(n.lineno, n.col_offset), off(n.end_lineno, n.end_col_offset)
+
+    def strs(n):
+        return [x for x in ast.walk(n) if isinstance(x, ast.Constant) and isinstance(x.value, str)]
+
+    docs, pats = set(), set()
+    for n in ast.walk(tree):
+        if isinstance(n, (ast.Module, ast.ClassDef, ast.FunctionDef, ast.AsyncFunctionDef)) and n.body \
+                and isinstance(n.body[0], ast.Expr) and isinstance(n.body[0].value, ast.Constant) \
+                and isinstance(n.body[0].value.value, str):
+            docs.add(span(n.body[0].value))
+        if isinstance(n, ast.Call) and isinstance(n.func, ast.Attribute) and n.func.attr in RE_FUNCS \
+                and isinstance(n.func.value, ast.Name) and n.func.value.id == "re" and n.args:
+            pats.update(span(x) for x in strs(n.args[0]))
+        if isinstance(n, ast.Tuple) and any(isinstance(e, ast.Attribute) and isinstance(e.value, ast.Name)
+                                            and e.value.id == "re" for e in n.elts):
+            pats.update(span(x) for x in strs(n))
+        if isinstance(n, (ast.Assign, ast.AnnAssign)):
+            targets = n.targets if isinstance(n, ast.Assign) else [n.target]
+            if any(isinstance(t, ast.Name) and PATTERN_NAME.search(t.id) for t in targets) and n.value is not None:
+                pats.update(span(x) for x in strs(n.value))
+    every = {span(x) for x in ast.walk(tree) if isinstance(x, ast.Constant) and isinstance(x.value, str)}
+    return docs, pats - docs, every - docs - pats
 
 
 def classify(path, text):
     """[(line_no, line, name, verdict)] for every name hit; verdict is 'violation' or the carve-out that admits it."""
     allowed = []
-    if path.endswith(".py") and (path.startswith("tests/") or path == SELF):
-        allowed = [(a, b) for a, b, _ in _py_strings(text)]  # fixture strings / this checker's name list: data, by role
-    elif path.endswith(".py"):
-        allowed = [(a, b) for a, b, tok in _py_strings(text) if _is_pattern(tok)]
+    if path.endswith(".py"):
+        docs, pats, other = _py_string_spans(text)
+        allowed = list(pats)
+        if path.startswith("tests/") or path == SELF:
+            allowed += list(other)  # fixture strings / this checker's name list: data, by role; docstrings are NOT
     elif path.endswith(".md"):
         allowed = _spans(MD_QUOTED, text)
     lines = text.split("\n")
@@ -96,6 +129,8 @@ def classify(path, text):
         line = lines[ln]
         if path in HISTORICAL:
             v = "historical: " + HISTORICAL[path]
+        elif path.startswith(FROZEN):
+            v = "frozen record"
         elif any(a <= m.start() and m.end() <= b for a, b in allowed):
             v = ("fixture/match data" if path.startswith("tests/") or path == SELF else "match pattern") \
                 if path.endswith(".py") else "quoted mention"

@@ -187,7 +187,16 @@ def test_load_scores_refuses_a_forward_file_posing_as_reversed(tmp_path):
         gate.load_scores(tmp_path / "short.jsonl", "forward", ids)
 
 
-HELD = [dict(id="held_1", url="https://www.example.org/story/one?utm_source=x", title="A long held-out story title here")]
+BODY = " ".join(f"word{i}" for i in range(200))  # 200 distinct words: a story body with no repeated runs
+HELD = [dict(id="held_1", url="https://www.example.org/story/one?utm_source=x", title="A long held-out story title here",
+             content="Rwanda: " + BODY)]
+
+
+def _row(**kw):
+    r = dict(id="other", url="https://other.org/a", title="An unrelated training title here",
+             text_head=" ".join(f"other{i}" for i in range(200)))
+    r.update(kw)
+    return r
 
 
 def _manifest(tmp_path, rows):
@@ -195,19 +204,42 @@ def _manifest(tmp_path, rows):
 
 
 @pytest.mark.parametrize("row,key", [
-    (dict(id="held_1", url="u", title="t"), "id"),
-    (dict(id="other", url="http://example.org/story/one/", title="t"), "url"),
-    (dict(id="other", url="u2", title="A LONG held-out story-title here!"), "title"),
+    (_row(id="held_1"), "id"),
+    (_row(url="http://example.org/story/one/"), "url"),
+    (_row(title="A LONG held-out story-title here!"), "title"),
+    (_row(text_head="KIGALI (newtimes) — " + BODY), "content"),  # a syndicated copy: other id, url, title, prefix
 ])
-def test_overlap_is_refused_by_id_url_or_title(tmp_path, row, key):
+def test_overlap_is_refused_by_id_url_title_or_content(tmp_path, row, key):
     _manifest(tmp_path, [row])
     with pytest.raises(SystemExit, match=f"by {key}"):
         gate.refuse_overlap(tmp_path, held=HELD)
 
 
 def test_clean_manifest_passes_and_short_titles_do_not_collide(tmp_path):
-    _manifest(tmp_path, [dict(id="x", url="https://other.org/a", title="Editorial")])
-    assert "0 of the 2 held-out" in gate.refuse_overlap(tmp_path, held=HELD + [dict(id="h2", url="z", title="Editorial")])
+    _manifest(tmp_path, [_row(title="Editorial")])
+    held = HELD + [dict(id="h2", url="z", title="Editorial", content="")]
+    assert "0 of the 2 held-out" in gate.refuse_overlap(tmp_path, held=held)
+
+
+def test_an_id_only_manifest_is_refused(tmp_path):
+    _manifest(tmp_path, [dict(id="x")])
+    with pytest.raises(SystemExit, match="lack id/url/title/text_head"):
+        gate.refuse_overlap(tmp_path, held=HELD)
+
+
+def test_non_latin_titles_stay_matchable():
+    assert gate._norm_title("Η κοινότητα επισκευάζει τη στέγη μαζί") is not None
+    assert gate._norm_title("Η κοινότητα επισκευάζει τη στέγη μαζί!") == gate._norm_title("η κοινότητα επισκευάζει τη στέγη μαζί")
+
+
+def test_docs_and_editor_files_do_not_change_the_fingerprint(tmp_path):
+    (tmp_path / "adapter.safetensors").write_bytes(b"w")
+    before = gate.pkg_fingerprint(tmp_path)
+    (tmp_path / "README.md").write_text("gate result: PASS")
+    (tmp_path / ".base_scorer.py.swp").write_bytes(b"x")
+    assert gate.pkg_fingerprint(tmp_path) == before
+    (tmp_path / "config.yaml").write_text("x: 1")
+    assert gate.pkg_fingerprint(tmp_path) != before
 
 
 def test_fingerprint_follows_a_symlinked_model_folder(tmp_path):
@@ -242,3 +274,11 @@ def test_url_normalisation_keeps_article_ids_in_the_query():
     n = gate._norm_url
     assert n("https://www.aib.media/?p=167850") != n("https://www.aib.media/?p=167985")
     assert n("http://example.org/a/?utm_source=x&fbclid=y#top") == n("https://www.example.org/a")
+
+
+def test_boilerplate_shared_across_rows_is_not_a_twin():
+    footer = " ".join(f"cookie{i}" for i in range(60))
+    held = [dict(id=f"h{j}", url="", title="", content=f"intro{j} " * 10 + footer) for j in range(3)]
+    train = [dict(id="t", text_head="lead " * 10 + footer)]
+    assert gate.content_twins(train, held) == []  # the footer's runs occur in 3 held rows: not distinctive
+    assert gate.content_twins([dict(id="t", text_head="KIGALI — " + BODY)], HELD)[0][:2] == ("t", "held_1")

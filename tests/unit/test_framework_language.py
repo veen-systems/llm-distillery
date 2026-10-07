@@ -25,11 +25,18 @@ def test_dutch_lens_names_in_identifiers_and_prose_are_violations():
 
 def test_carve_outs_admit_only_their_role():
     # a regex match pattern is data (deleting it changes what the code matches)
-    assert verdicts("filters/x.py", "P = [(r'\\b(heritage|erfgoed)\\b', 0)]\n") == ["match pattern"]
+    assert verdicts("filters/x.py", "import re\nP = [(r'\\b(heritage|erfgoed)\\b', re.IGNORECASE, 'h')]\n") == ["match pattern"]
+    assert verdicts("filters/x.py", "import re\nX = re.compile('erfgoed')\n") == ["match pattern"]
+    assert verdicts("filters/x.py", "HERITAGE_PATTERNS = ['erfgoed']\n") == ["match pattern"]
     # ...but a plain string literal in Python is NOT a pattern
     assert verdicts("filters/x.py", "LABEL = 'Erfgoed tab'\n") == ["violation"]
     # a backticked or quoted name in Markdown is a mention
-    assert verdicts("docs/x.md", "The `Herstel` tab and \"Leren\" were renamed.\n") == ["quoted mention"] * 2
+    assert verdicts("docs/x.md", "The `Herstel` tab and `Leren` were renamed.\n") == ["quoted mention"] * 2
+    # quotes LABEL a tab, and apostrophes mis-pair: neither is a mention (review 2026-10-07)
+    assert verdicts("docs/x.md", '**ovr.news tab:** "Herstel"\n') == ["violation"]
+    assert verdicts("docs/x.md", "The filter's Welzijn tab isn't ready.\n") == ["violation"]
+    # verbatim archives are records
+    assert verdicts("memory/archive/x.md", "Welzijn\n") == ["frozen record"]
     # the historical record the owner ruled on
     assert verdicts("docs/adr/009-add-filters-first-reduce-later.md", "Welzijn: x\n")[0].startswith("historical")
 
@@ -52,3 +59,15 @@ def test_string_detection_survives_apostrophes_in_comments():
     src = "# the checker's list\nLABEL = 'x'\nNOTE = \"the 'Erfgoed' tab\"\n"
     assert verdicts("scripts/x.py", src) == ["violation"]  # a plain string, not a pattern: still a violation
     assert verdicts("tests/unit/t.py", src) == ["fixture/match data"]
+
+
+def test_docstrings_and_pipes_are_not_data():
+    """Review 2026-10-07: a docstring in a test, a `|` in a docstring and a raw docstring all passed as data."""
+    assert verdicts("tests/unit/t.py", '"""The Welzijn tab must stay first."""\nX = 1\n') == ["violation"]
+    assert verdicts("scripts/x.py", '"""Columns: Welzijn | Erfgoed"""\n') == ["violation", "violation"]
+    assert verdicts("scripts/x.py", 'def f():\n    r"""The Welzijn tab."""\n') == ["violation"]
+    assert verdicts("scripts/x.py", 'HELP = "rank tabs: welzijn|erfgoed"\n') == ["violation", "violation"]
+
+
+def test_the_belonging_tab_name_is_in_the_list():
+    assert verdicts("docs/x.md", "the Verbondenheid tab\n") == ["violation"]

@@ -86,6 +86,18 @@ here would never execute. Advisory is defensible for prose in a repo whose *data
 legitimately six languages; it is not defensible for a compliance *claim*, which is why
 the claim is withdrawn rather than repaired.
 
+**Status update (2026-10-07, LD#160 as ruled 2026-10-01).** The paragraphs above are kept as the record of
+2026-09-17; this supersedes their present tense.
+- **Both open violations are resolved:** ADR-009 carries a dated note mapping the names (not rewritten), and
+  `scripts/analysis/cross_filter_landscape.py` uses English names. The "39 occurrences" above counted lines; the
+  checker counts **64 hits on 40 lines**.
+- **Names in framework text are now MECHANIZED:** `scripts/verification/check_framework_language.py`, run by
+  `tests/unit/test_framework_language.py`. Its allowlist is this ADR's carve-out table, applied by role. It was shown
+  red on the script before the rename, and its tests seed true positives of the class (names, not function words).
+- **Still unread:** commit messages. Nothing checks them.
+- **Found by the checker, open for the owner:** `filters/nature_recovery/{v1,v2,v4}/config.yaml` label the
+  Recovery tab with its old Dutch name in a notes string (v4 is deployed). The checker lists them as KNOWN OPEN.
+
 ## Decision (2026-03-28 — scope widened by the Amendment above)
 
 All ovr.news lens names and filter names use English. No Dutch naming.
