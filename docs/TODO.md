@@ -87,7 +87,12 @@
    - Belonging shadow harm cap: a NexusMind change, low priority, v2's before/after instrument.
 
 4. **Small, ours** (detail in the archived block's numbered items):
-   - `cultural_discovery v5` `raw_min` 4.0006 vs 4.0 (read `test_normalization_op_point.py`).
+   - ✅ `cultural_discovery v5` `raw_min` 4.0006 vs 4.0 — **closed 2026-10-07, no change:** a pre-anchor legacy fit
+     (2026-07-10; the fitter anchors raw_min to the op-point since 07-16). The tolerance IS recorded:
+     `OP_POINT_EPS = 0.01` (`scripts/normalization/fit_normalization.py`), enforced by
+     `tests/unit/test_normalization_invariant.py` (passes). Effect: raw in [4.0, 4.0006) normalizes to percentile 0.
+     A refit would be a NexusMind deploy for a 0.0006-wide band. `test_normalization_op_point.py` reads only
+     `base_scorer.py`, which is why it never saw this.
    - LD#134 step 3, the marking pass (`docs/decisions/2026-09-17-refcheck-docs-tier.md`).
    - The retracted 19.9%/13.0% framing still in `CLAUDE.md` (grep `19.9%`).
    - LD#160: an ADR-009 note, a rename of `cross_filter_landscape.py`, and `check_framework_language.py`
