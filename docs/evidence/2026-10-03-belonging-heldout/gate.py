@@ -315,6 +315,21 @@ def scoring_text(rs, ids):
     return out
 
 
+def assert_loads_from(pkg, scorer):
+    """The scorer must load its model and probe from THIS package. belonging v1's code imports
+    `filters.belonging.v1.inference`, whose default model path is v1/model: a copied package that keeps those imports
+    scores v1's weights under the candidate's name (found 2026-10-07 while staging the first candidate)."""
+    paths = {"model": getattr(scorer.stage2_scorer, "model_path", None), "probe": getattr(scorer, "_probe_path", None)}
+    for what, p in paths.items():
+        if p is None or pkg.resolve() not in Path(p).resolve().parents:
+            raise SystemExit(f"REFUSED: {pkg.name}'s scorer loads its {what} from {p}, outside the package")
+
+
+def refuse_v1_clone(pkg):
+    if pkg.resolve() != V1.resolve() and pkg_fingerprint(pkg)[0] == pkg_fingerprint(V1)[0]:
+        raise SystemExit(f"REFUSED: {pkg.name} is byte-identical to v1 (same fingerprint)")
+
+
 def scorer_for(pkg):
     mod = importlib.import_module(".".join(pkg.resolve().relative_to(ROOT).parts) + ".inference_hybrid")
     from filters.common.hybrid_scorer import HybridScorer
@@ -329,6 +344,7 @@ def scorer_for(pkg):
 def cmd_score(a):
     pkg = (ROOT / a.package).resolve()
     overlap = refuse_overlap(pkg)
+    refuse_v1_clone(pkg)
     import torch
     if not torch.cuda.is_available() and not a.allow_cpu:
         raise SystemExit("no CUDA: GATE.md scores both packages on b650 GPU (--allow-cpu only for a dry run)")
@@ -344,6 +360,7 @@ def cmd_score(a):
         raise SystemExit(f"{out} exists; refusing to overwrite (one shot)")
     out.parent.mkdir(parents=True, exist_ok=True)
     scorer = scorer_for(pkg)(use_prefilter=False)
+    assert_loads_from(pkg, scorer)
     batch_size = inspect.signature(scorer.score_batch).parameters["batch_size"].default
     t0 = time.time()
     res = scorer.score_batch(arts)  # the package's default batch size, as production calls it
@@ -406,6 +423,7 @@ def report(lab, cand, v1, op, ts, tag):
 def cmd_evaluate(a):
     cand_pkg = (ROOT / a.candidate).resolve()
     print(f"candidate {cand_pkg.relative_to(ROOT)}: {refuse_overlap(cand_pkg)}")
+    refuse_v1_clone(cand_pkg)
     op, v1_op = op_point(cand_pkg), op_point(V1)
     lab = labelled()
     print(f"labels: {dict(Counter(x['label'] for x in lab.values()))}; candidate op-point {op} (v1 live op-point {v1_op})")

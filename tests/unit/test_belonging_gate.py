@@ -294,3 +294,24 @@ def test_scoring_text_uses_full_text_for_cut_rows_and_raises_without_it(tmp_path
     f.write_text(gate.json.dumps(dict(id="b", content="something else")) + "\n")
     with pytest.raises(SystemExit, match="no matching full text"):
         gate.scoring_text(rs, ["a", "b"])
+
+
+def test_a_scorer_loading_from_outside_its_package_is_refused(tmp_path):
+    pkg = tmp_path / "v1_adj1"
+    (pkg / "model").mkdir(parents=True)
+    class S2: model_path = gate.V1 / "model"          # the unrewritten import: v1's weights
+    class Sc: stage2_scorer = S2(); _probe_path = pkg / "probe" / "p.pkl"
+    with pytest.raises(SystemExit, match="loads its model"):
+        gate.assert_loads_from(pkg, Sc())
+    S2.model_path = pkg / "model"
+    gate.assert_loads_from(pkg, Sc())
+
+
+def test_a_byte_copy_of_v1_is_refused(tmp_path, monkeypatch):
+    v1 = tmp_path / "v1"; v1.mkdir(); (v1 / "w.safetensors").write_bytes(b"w")
+    cp = tmp_path / "v1_copy"; cp.mkdir(); (cp / "w.safetensors").write_bytes(b"w")
+    monkeypatch.setattr(gate, "V1", v1)
+    with pytest.raises(SystemExit, match="byte-identical"):
+        gate.refuse_v1_clone(cp)
+    (cp / "w.safetensors").write_bytes(b"retrained")
+    gate.refuse_v1_clone(cp)

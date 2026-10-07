@@ -314,10 +314,20 @@ python training/prepare_data.py \
     --input datasets/scored/{name}_v{N}.jsonl \
     --output-dir datasets/training/{name}_v{N}
 
-# Validate splits
+# Validate splits AND their fit to production. ⛔ Required before every training run (owner, 2026-10-07):
+#    docs/checklists/training-data-fmea.md lists the failure modes; this runs the mechanized ones and FAILS
+#    without a production sample unless --no-production-sample "<reason>" says why.
 python training/validate_training_data.py \
-    --data-dir datasets/training/{name}_v{N}
+    --data-dir datasets/training/{name}_v{N} --filter filters/{name}/v{N} \
+    --production-sample <uniform random draw of recent production rows, full text> \
+    [--language-stamps <id -> language JSON>]
 ```
+
+⛔ **Read the FM-T1 table before training, not just the exit code.** A positive share that rises with text length
+while production articles are long is a shortcut the student will learn (belonging, 2026-10-07: training articles over
+2,000 chars were 12-21% positive vs ~2-9% in production, because v1's own rows are pre-enrichment snippets). Each row of
+`docs/checklists/training-data-fmea.md` that is not mechanized needs an owner acceptance in the build's evidence
+README.
 
 ### Train on GPU
 

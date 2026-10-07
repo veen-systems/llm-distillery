@@ -98,3 +98,48 @@ def test_coverage_counts_every_row_not_a_sample(tmp_path):
     assert v.stats["oracle_meta_coverage"] == (20, 21)
     assert len(warnings) == 1
     assert "PARTIAL" in warnings[0]
+
+
+# ---- production-fit checks (docs/checklists/training-data-fmea.md), added 2026-10-07 ----
+
+def _story(i, words=200, prefix="w"):
+    return " ".join(f"{prefix}{i}_{k}" for k in range(words))
+
+
+def _fit_dir(tmp_path, twin=False):
+    names = ["a", "b"]
+    mk = lambda i, lab, content: dict(id=f"src_{i:04d}", title=f"A sufficiently long title number {i}", url=f"https://x.org/{i}",
+                                      content=content, labels=lab, dimension_names=names)
+    train = [mk(i, [8.0, 8.0] if i < 3 else [1.0, 1.0], _story(i)) for i in range(10)]
+    val = [mk(100, [1.0, 1.0], ("KIGALI " + _story(0)) if twin else _story(100))]
+    test = [mk(200, [1.0, 1.0], _story(200))]
+    for name, rows in (("train.jsonl", train), ("val.jsonl", val), ("test.jsonl", test)):
+        (tmp_path / name).write_text("".join(json.dumps(r) + "\n" for r in rows), encoding="utf-8")
+    pkg = tmp_path / "pkg"; pkg.mkdir()
+    (pkg / "base_scorer.py").write_text('DIMENSION_WEIGHTS = {"a": 0.5, "b": 0.5}\n'
+                                         'TIER_THRESHOLDS = [("high", 7.0, "d"), ("medium", 4.0, "d"), ("low", 0.0, "d")]\n')
+    prod = tmp_path / "prod.jsonl"
+    prod.write_text("".join(json.dumps(dict(id=f"p_{i}", content=_story(i, prefix="p"))) + "\n" for i in range(5)))
+    return pkg, prod
+
+
+def test_production_fit_runs_with_a_sample_and_flags_a_cross_split_twin(tmp_path):
+    pkg, prod = _fit_dir(tmp_path, twin=True)
+    v = TrainingDataValidator(tmp_path, pkg, production_sample=prod)
+    assert v.load_data()
+    v.check_production_fit()
+    assert any(i.startswith("FM-D1") for i in v.issues)
+    assert v.stats["text_parity"]["positive_share_by_len"]
+    assert v.stats["mix"]["n"]["train_pos"] == 3
+
+
+def test_production_fit_without_a_sample_fails_unless_a_reason_is_given(tmp_path):
+    pkg, _ = _fit_dir(tmp_path)
+    v = TrainingDataValidator(tmp_path, pkg)
+    assert v.load_data()
+    v.check_production_fit()
+    assert any("not checked" in i for i in v.issues)
+    v2 = TrainingDataValidator(tmp_path, pkg, no_production_reason="historical rebuild, no sample exists")
+    assert v2.load_data()
+    v2.check_production_fit()
+    assert v2.issues == [] and any("SKIPPED" in w for w in v2.warnings)

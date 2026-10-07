@@ -2,8 +2,12 @@
 Standardized quality validation for training data.
 
 Usage:
-    python training/validate_training_data.py --data-dir datasets/training/uplifting_v4
-    python training/validate_training_data.py --data-dir datasets/training/uplifting_v4 --filter filters/uplifting/v4
+    python training/validate_training_data.py --data-dir datasets/training/uplifting_v4 --filter filters/uplifting/v4 \
+        --production-sample <uniform production draw .jsonl> [--language-stamps <id->language .json>]
+
+The production-fit checks (docs/checklists/training-data-fmea.md: FM-T1 text parity, FM-D1 cross-split twins,
+FM-D2 language/source mix, FM-D3 boilerplate) need --filter and --production-sample. Without a sample the run FAILS
+unless --no-production-sample "<reason>" says why: a skipped check must not read as a passed one.
 """
 
 # Standard library imports
@@ -19,9 +23,13 @@ import yaml
 
 
 class TrainingDataValidator:
-    def __init__(self, data_dir: Path, filter_dir: Path = None):
+    def __init__(self, data_dir: Path, filter_dir: Path = None, production_sample: Path = None,
+                 language_stamps: Path = None, no_production_reason: str = None):
         self.data_dir = data_dir
         self.filter_dir = filter_dir
+        self.production_sample = production_sample
+        self.language_stamps = language_stamps
+        self.no_production_reason = no_production_reason
         self.train_data = []
         self.val_data = []
         self.test_data = []
@@ -262,6 +270,34 @@ class TrainingDataValidator:
                     if config_dims != train_dims:
                         self.issues.append(f"Dimensions don't match config: {config_dims} vs {train_dims}")
 
+    def check_production_fit(self):
+        """FM-D1 cross-split twins (an ISSUE: the same story in train and val/test inflates the metric that picks
+        the checkpoint); FM-T1 / FM-D2 / FM-D3 reported in stats for a human to read. See training/data_quality.py."""
+        from training import data_quality as DQ
+        splits = {"train": self.train_data, "val": self.val_data, "test": self.test_data}
+        twins = DQ.cross_split_twins(splits)
+        self.stats['cross_split_twins'] = len(twins)
+        if twins:
+            self.issues.append(f"FM-D1: {len(twins)} val/test rows are the same story as a train row "
+                               f"(e.g. {twins[:2]}); drop them before training")
+        if self.filter_dir is None:
+            self.issues.append("FM-T1/FM-D2 not checked: pass --filter (the positive share needs its weights)")
+            return
+        if self.production_sample is None:
+            if self.no_production_reason:
+                self.warnings.append(f"Production-fit checks SKIPPED by request: {self.no_production_reason}")
+            else:
+                self.issues.append("FM-T1/FM-D2/FM-D3 not checked: pass --production-sample <uniform production "
+                                   "draw> or --no-production-sample \"<reason>\"")
+            return
+        c = DQ.scoring_constants(self.filter_dir)
+        rows = self.train_data + self.val_data + self.test_data
+        is_pos = lambda r: DQ.label_wa(c, r['dimension_names'], r['labels']) >= c['MEDIUM']  # noqa: E731
+        prod = [json.loads(l) for l in open(self.production_sample, encoding='utf-8') if l.strip()]
+        self.stats['text_parity'] = DQ.parity(rows, prod, is_pos)
+        self.stats['mix'] = DQ.mix(rows, prod, is_pos, DQ.load_language(self.language_stamps))
+        self.stats['boilerplate'] = DQ.boilerplate(rows, group=lambda r: "all")
+
     def calculate_score_distribution(self):
         """Calculate score distribution per dimension."""
         all_data = self.train_data + self.val_data + self.test_data
@@ -324,6 +360,9 @@ class TrainingDataValidator:
         print("Calculating score distributions...")
         self.calculate_score_distribution()
 
+        print("Checking fit to production (docs/checklists/training-data-fmea.md)...")
+        self.check_production_fit()
+
         # Print report
         self.print_report()
 
@@ -373,6 +412,15 @@ class TrainingDataValidator:
                     print(f"    - {dim}")
                 print()
 
+            # Fit to production (docs/checklists/training-data-fmea.md)
+            for key, title in (('text_parity', 'FM-T1 text parity (length; positive share by length bin)'),
+                               ('mix', 'FM-D2 language (collector stamp) and source mix'),
+                               ('boilerplate', 'FM-D3 boilerplate')):
+                if key in self.stats:
+                    print(f"  {title}:")
+                    print("    " + json.dumps(self.stats[key], ensure_ascii=False, indent=1).replace("\n", "\n    "))
+                    print()
+
             # Score statistics
             if 'score_min' in self.stats:
                 print(f"  Overall Score Statistics:")
@@ -420,14 +468,25 @@ def main():
     parser.add_argument('--data-dir', type=str, required=True,
                        help='Path to training data directory')
     parser.add_argument('--filter', type=str,
-                       help='Path to filter directory (optional, for config validation)')
+                       help='Path to filter directory (config validation; required by the production-fit checks)')
+    parser.add_argument('--production-sample', type=str,
+                       help='Uniform random draw of production articles (.jsonl with id, content), e.g. the '
+                            'easy-negative draw; needed for text parity / mix / boilerplate')
+    parser.add_argument('--language-stamps', type=str,
+                       help="id -> language JSON recovered from FluxusSource's collection archives")
+    parser.add_argument('--no-production-sample', type=str, metavar='REASON',
+                       help='Skip the production-fit checks, saying why (recorded as a warning)')
 
     args = parser.parse_args()
 
     data_dir = Path(args.data_dir)
     filter_dir = Path(args.filter) if args.filter else None
 
-    validator = TrainingDataValidator(data_dir, filter_dir)
+    validator = TrainingDataValidator(
+        data_dir, filter_dir,
+        production_sample=Path(args.production_sample) if args.production_sample else None,
+        language_stamps=Path(args.language_stamps) if args.language_stamps else None,
+        no_production_reason=args.no_production_sample)
     success = validator.run_all_checks()
 
     return 0 if success else 1

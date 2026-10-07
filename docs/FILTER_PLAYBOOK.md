@@ -85,6 +85,7 @@ one**; ADR-018/019's declarative shape governed the ones that existed until
 ### 2. Training data
 - **Trained on the raw feed → 99%+ noise, student predicts zero.** ENRICH: screen the corpus for signal-bearing articles first (ADR-003), use e5-seed screening for needles (ADR-011), active-learning for rare tiers (ADR-005). Raw nature_recovery is ~0.3% MEDIUM+; training is enriched to ~15%.
 - **Val set is NOT production-representative** (enriched) — don't fit normalization or read "real" rarity off it. ADR-014.
+- **Training text that does not look like production text → the student learns the difference, not the lens.** Before training, compare the training rows' text lengths with a uniform production sample, and the positive share per length bin. `belonging v1`'s own rows are pre-enrichment snippets (median 589 chars vs ~2,300 enriched in production); the 2026-10-07 retrain's new positives were all long, so articles over 2,000 chars were 12–21% positive against ~2–9% in production, a shortcut toward "in". Found only because the owner asked; addressed with ~800 production easy negatives. **The full list is `docs/checklists/training-data-fmea.md`, run by `training/validate_training_data.py --production-sample` (RUNBOOK § *Prepare data*).** Also check the cut: a draw that caps text at N chars replaces the ending a head+tail model reads (2026-10-07, GATE.md § *v1 reference run*).
 
 ### 3. Metrics (needle filters especially)
 
