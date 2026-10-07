@@ -40,3 +40,15 @@ def test_names_inside_english_words_do_not_match():
 
 def test_the_repository_is_clean_apart_from_known_open_entries():
     assert cfl.main([]) == 0
+
+
+def test_fixture_strings_in_tests_are_data_but_their_comments_are_not():
+    assert verdicts("tests/unit/test_x.py", "ROWS = ['Welzijn tab']  # a fixture\n") == ["fixture/match data"]
+    assert verdicts("tests/unit/test_x.py", "x = 1  # the Welzijn tab\n") == ["violation"]
+
+
+def test_string_detection_survives_apostrophes_in_comments():
+    """A regex over the source paired the apostrophe in "checker's" with a later quote and misread everything after."""
+    src = "# the checker's list\nLABEL = 'x'\nNOTE = \"the 'Erfgoed' tab\"\n"
+    assert verdicts("scripts/x.py", src) == ["violation"]  # a plain string, not a pattern: still a violation
+    assert verdicts("tests/unit/t.py", src) == ["fixture/match data"]

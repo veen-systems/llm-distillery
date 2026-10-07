@@ -16,6 +16,8 @@ is data in six languages and is out of scope by construction.
 The allowlist is ADR-013's carve-out table, by ROLE (the table itself says the class governs, not its examples):
 - MATCH PATTERNS: a hit inside a Python regex string literal (raw string, or one containing `\\b` or `|`). Deleting
   it would change what the code matches, so it is data.
+- FIXTURES: any string literal in `tests/**.py`, and in this checker (its name list is what it matches). Comments in
+  those files are still checked.
 - MENTIONS: in Markdown, a hit inside backticks or quotes is a name being discussed, not used (ADR-013 itself does
   this). ⚠️ This is the softest rule here: a doc that labels a tab in backticks passes. It is visible in `--all`.
 - HISTORICAL RECORDS (owner ruling 2026-10-01, LD#160): ADR-009 predates ADR-013 and gets a dated note mapping
@@ -23,17 +25,19 @@ The allowlist is ADR-013's carve-out table, by ROLE (the table itself says the c
 - KNOWN OPEN: violations found and handed to the owner, each naming where it is tracked. Printed on every run so
   they cannot become silent; delete the entry when the line is fixed (a stale entry is reported).
 """
-import argparse, re, subprocess, sys
+import argparse, io, re, subprocess, sys, tokenize
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 # ovr.news tab names that were Dutch at some point (ADR-009, ADR-013 Context), plus the abbreviations
-# cross_filter_landscape.py printed. Matched case-insensitively, delimited by NON-LETTERS, so `s1_welzijn` counts.
-# NOT "voor" (cross_filter_landscape.py's Vooruitgang column header): it is also the Dutch word "for", and adding it
+# cross_filter_landscape.py printed. Matched case-insensitively, delimited by NON-LETTERS, so a name inside an
+# identifier (prefix_name) counts.
+# NOT "voor" (cross_filter_landscape.py's old Solutions column header): it is also the Dutch word "for", and adding it
 # measured 4 false hits, all article text quoted in evidence docs or fixture sentences (2026-10-07).
 NAMES = ["welzijn", "erfgoed", "vooruitgang", "herstel", "leren", "verwondering", "welz", "erfg"]
 NAME_RE = re.compile(r"(?<![a-zA-Z])(" + "|".join(NAMES) + r")(?![a-zA-Z])", re.IGNORECASE)
 SUFFIXES = {".py", ".md", ".yaml", ".yml", ".sh", ".toml"}
+SELF = "scripts/verification/check_framework_language.py"
 
 HISTORICAL = {"docs/adr/009-add-filters-first-reduce-later.md": "owner 2026-10-01 (LD#160): note, never rewrite"}
 KNOWN_OPEN = {
@@ -42,7 +46,6 @@ KNOWN_OPEN = {
     ("filters/nature_recovery/v4/config.yaml", "'Herstel' tab"): "docs/TODO.md START HERE item 4 (LD#160 follow-up)",
 }
 
-PY_STR = re.compile(r"""(?P<prefix>[rRbBuUfF]{0,2})(?P<q>'''|\"\"\"|'|")(?P<body>.*?)(?P=q)""", re.DOTALL)
 MD_QUOTED = re.compile(r"`[^`\n]*`|\"[^\"\n]*\"|“[^”\n]*”|'[^'\n]*'")
 
 
@@ -55,15 +58,32 @@ def _spans(regex, text, keep=lambda m: True):
     return [(m.start(), m.end()) for m in regex.finditer(text) if keep(m)]
 
 
-def _is_pattern(m):
-    return "r" in m.group("prefix").lower() or "\\b" in m.group("body") or "|" in m.group("body")
+def _py_strings(text):
+    """(start, end, token_text) of every string literal, from Python's own tokenizer: a regex over the source mis-pairs
+    quotes across an apostrophe in a comment or an escaped quote (found 2026-10-07 on this file)."""
+    starts, pos = [0], 0
+    for l in text.split("\n"):
+        pos += len(l) + 1; starts.append(pos)
+    kinds = {tokenize.STRING} | {getattr(tokenize, n) for n in ("FSTRING_MIDDLE",) if hasattr(tokenize, n)}
+    out = []
+    for t in tokenize.generate_tokens(io.StringIO(text).readline):
+        if t.type in kinds:
+            out.append((starts[t.start[0] - 1] + t.start[1], starts[t.end[0] - 1] + t.end[1], t.string))
+    return out
+
+
+def _is_pattern(tok):
+    prefix = re.match(r"[rRbBuUfF]*", tok).group(0)
+    return "r" in prefix.lower() or "\\b" in tok or "|" in tok
 
 
 def classify(path, text):
     """[(line_no, line, name, verdict)] for every name hit; verdict is 'violation' or the carve-out that admits it."""
     allowed = []
-    if path.endswith(".py"):
-        allowed = _spans(PY_STR, text, _is_pattern)
+    if path.endswith(".py") and (path.startswith("tests/") or path == SELF):
+        allowed = [(a, b) for a, b, _ in _py_strings(text)]  # fixture strings / this checker's name list: data, by role
+    elif path.endswith(".py"):
+        allowed = [(a, b) for a, b, tok in _py_strings(text) if _is_pattern(tok)]
     elif path.endswith(".md"):
         allowed = _spans(MD_QUOTED, text)
     lines = text.split("\n")
@@ -77,7 +97,8 @@ def classify(path, text):
         if path in HISTORICAL:
             v = "historical: " + HISTORICAL[path]
         elif any(a <= m.start() and m.end() <= b for a, b in allowed):
-            v = "match pattern" if path.endswith(".py") else "quoted mention"
+            v = ("fixture/match data" if path.startswith("tests/") or path == SELF else "match pattern") \
+                if path.endswith(".py") else "quoted mention"
         else:
             k = next((k for k in KNOWN_OPEN if k[0] == path and k[1] in line), None)
             v = "known open: " + KNOWN_OPEN[k] if k else "violation"
