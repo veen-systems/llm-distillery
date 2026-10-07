@@ -171,3 +171,16 @@ on b650 and here; the v1 package fingerprint `bee0f4aafc6bd5d6` is identical on 
 - **Order noise (#95):** forward vs reversed max |Δ| **0.453**, 2 rows above 0.16, 12 above 0.01; **0 verdict
   flips at 4.0.** The ±0.16 report under-covers this term, so the runner also prints order-to-order flips.
 - v1 finds 44/44 positives at 4.0 in both orders (lowest 4.058; production 4.079).
+
+**The cut is the cause, proven (2026-10-07, b650, same stack):** v1 scored on the FULL text of the 117 judged cut
+rows still on sadalsuud reproduces production; on the cut text it does not.
+
+| text | n | median \|Δ\| vs production | p95 | max | flips at 4.0 |
+|---|---|---|---|---|---|
+| full (recovered) | 117 | 0.0000 | 0.087 | 0.262 | **0** |
+| cut at 4,000 (as judged) | 117 | 0.508 | 2.692 | 3.731 | **18** |
+
+**Full text recovered and kept** (gitignored, `datasets/belonging_heldout/cut_rows_full_content.jsonl`, here and on
+b650): 442 of the 1,200 draw's 509 cut rows. Every row starts with exactly the held-out text. The other 67 rows
+(23 files, 2026-09-04..08) are already gone from sadalsuud, whose `filtered/belonging/` keeps ~28 days. Of the 295
+judged rows, 117/133 cut rows are recovered and 16 are lost: 11 neg, 2 disputed, 2 excluded, 1 pos.

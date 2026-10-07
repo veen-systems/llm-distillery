@@ -18,6 +18,13 @@
    1. ✅ **Gate re-ruled (owner, at close):** `GATE.md` § *Pass rule v2*: matched recall (v1 at the threshold that
       finds as many of the 44), Δspec CI > 0 under 2 scoring orders, k ≥ 31; disputed negatives reported apart;
       one shot. The gate runner is not yet written.
+   1b. ✅ **Gate runner written 2026-10-07** (`gate.py`, 15 tests, controls on production raws) and **v1's reference
+      scored on b650** (`datasets/belonging_gate/`). ⚠️ **Owner decision found by it:** the held-out draw (and harvest
+      r1) cut content at 4,000 chars, and belonging reads head+TAIL tokens, so 133/295 judged rows score differently
+      from production (20 flips at 4.0). Full text is proven to reproduce production (0 flips on 117 recovered rows).
+      Options: (a) gate "on the judged text" as pre-registered, or (b) score on full text where recovered (117/133;
+      16 rows' files expired). Judges labelled the cut text either way. The build must decide the same for the 237
+      harvest positives. Evidence: `GATE.md` § *v1 reference run*.
    2. **Decide hard negatives (owner):** dropping 566 leaves few near-op-point negatives; candidates are the
       harvest's 615 both-out Gemini-ins (v1 raw ≥ 5.6). Decide before the build.
    3. **Build `belonging_v1_adj1`:** v1 rows per `treatment.jsonl` + the 237 positives
