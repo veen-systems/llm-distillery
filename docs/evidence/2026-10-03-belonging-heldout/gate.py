@@ -293,8 +293,26 @@ def _version(dist):
         return "absent"
 
 
-STACK = ("device", "host", "prefix", "batch_size", "common_fingerprint", "torch", "transformers", "peft",
-         "scikit-learn", "sentence-transformers", "tokenizers")
+STACK = ("text", "text_fingerprint", "device", "host", "prefix", "batch_size", "common_fingerprint", "torch",
+         "transformers", "peft", "scikit-learn", "sentence-transformers", "tokenizers")
+FULL_TEXT = H.DATA / "cut_rows_full_content.jsonl"
+CUT = 4000
+
+
+def scoring_text(rs, ids):
+    """FULL article text (owner ruling 2026-10-07, GATE.md § Amendment): the draw cut content at 4,000 chars, which
+    replaces the ending belonging's head+tail input reads. Every cut row must have its recovered full text, and that
+    text must start with the stored cut text, or this RAISES."""
+    full = {json.loads(l)["id"]: json.loads(l)["content"] for l in open(FULL_TEXT)}
+    out = {}
+    for i in ids:
+        c = rs[i]["content"]
+        if len(c) >= CUT:
+            if i not in full or not (full[i] or "").startswith(c):
+                raise SystemExit(f"{i}: cut at {CUT} chars and no matching full text in {FULL_TEXT.name}")
+            c = full[i]
+        out[i] = c
+    return out
 
 
 def scorer_for(pkg):
@@ -318,8 +336,9 @@ def cmd_score(a):
     ids = sorted(lab)
     if a.order == "reversed":
         ids.reverse()
-    arts = [dict(id=i, title=rs[i]["title"], content=rs[i]["content"], url=rs[i]["url"], source=rs[i]["source"])
-            for i in ids]
+    text = scoring_text(rs, ids)
+    arts = [dict(id=i, title=rs[i]["title"], content=text[i], url=rs[i]["url"], source=rs[i]["source"]) for i in ids]
+    text_fp = hashlib.sha256("".join(text[i] for i in sorted(text)).encode()).hexdigest()[:16]
     out = Path(a.out)
     if out.exists():
         raise SystemExit(f"{out} exists; refusing to overwrite (one shot)")
@@ -331,6 +350,7 @@ def cmd_score(a):
     fp, nfiles = pkg_fingerprint(pkg)
     meta = dict(package=str(pkg.relative_to(ROOT)), fingerprint=fp, n_files=nfiles, op_point=op_point(pkg),
                 order=a.order, n=len(ids), seconds=round(time.time() - t0, 1), overlap=overlap,
+                text="full (owner 2026-10-07)", text_fingerprint=text_fp,
                 device=torch.cuda.get_device_name(0) if torch.cuda.is_available() else "cpu",
                 peak_vram_mib=round(torch.cuda.max_memory_allocated() / 2**20) if torch.cuda.is_available() else None,
                 host=platform.node(), prefix=sys.prefix, batch_size=batch_size, common_fingerprint=common_fingerprint(),

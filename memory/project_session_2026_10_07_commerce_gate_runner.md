@@ -25,7 +25,7 @@ would llm-distillery own the retrain/recalibration? The owner confirmed, approve
 | Full text for cut rows | **closed**: all 509 held-out + 2,251 harvest rows (393 from the monthly archive) |
 | cd v5 raw_min 4.0006 | **closed**, no change (legacy fit inside `OP_POINT_EPS`) |
 | Retracted 19.9%/13.0% framing | **closed** (3 copies annotated; CLAUDE.md copy already gone) |
-| LD#160 | **closed as ruled**; follow-up open — owner call on nature_recovery `config.yaml` 'Herstel' (v4 deployed) |
+| LD#160 | **closed as ruled**; follow-up (nature_recovery `config.yaml` tab label, v4 deployed) ruled 2026-10-07: fixed in v1/v2/v4 |
 | LD#134 marking pass | **not started** (254 findings; needs judgement) |
 
 ## What I got wrong
@@ -43,3 +43,13 @@ would llm-distillery own the retrain/recalibration? The owner confirmed, approve
 build, which must write `training_manifest.jsonl` and drop `gate.content_twins(...)` (21 harvest rows) before
 training. Commits on main are **not pushed** (owner's call). b650's checkout is **detached at `6974177`**
 (was `main` at `8d8c510`); `git -C ~/llm-distillery checkout main` restores the old state.
+
+## Owner rulings, 2026-10-07 (after the session, "help me through decisions")
+
+1. **Gate text: FULL text** (not the pre-registered cut text). `gate.py` now scores recovered full text for every
+   row cut at 4,000 chars and raises if any is missing; v1 re-scored on full text.
+2. **Training text for harvest positives: FULL text** (oracle labels stay as made on the cut text).
+3. **Hard negatives: only the 121 harvest rows where BOTH judges said `out_one_moment`** (capped at 2.0), the class
+   the owner agreed was out every time on v1's rows; minus any `content_twins` hit.
+4. **Push** the session's commits.
+5. **Fix the nature_recovery v1/v2/v4 `config.yaml` tab label** (v4 is deployed: one-line diff at the next sync).

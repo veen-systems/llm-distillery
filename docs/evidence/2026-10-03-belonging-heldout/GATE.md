@@ -237,3 +237,16 @@ archive `data/archived/nexusmind_2026-09.tar.gz`, member `nexusmind_2026-09/belo
 ⛔ *An earlier version of this paragraph called those 67 rows (16 of them judged) "lost": the live window rolls, the
 monthly archives do not (`memory/nexusmind-data-sources.md`). Corrected the same day.* So all 133 judged cut rows
 have full text, and all 133 are re-scored in the table above.
+
+## Amendment (owner, 2026-10-07): score FULL text, not the cut text
+
+**Ruled before any candidate was scored** (only v1, the reference, had been run). The draw's 4,000-char cut was a
+pilot habit, never a ruling, and it replaces the ending that belonging's head+tail input reads (§ *v1 reference run*:
+20/295 v1 verdicts differ from production on cut text, 0 on full text).
+- `gate.py score` now feeds **recovered full text** for every row cut at 4,000 chars
+  (`datasets/belonging_heldout/cut_rows_full_content.jsonl`, all 133 judged cut rows), and RAISES if any is missing
+  or does not start with the stored cut text. The text mode and a text fingerprint are stamped in each score file
+  and are part of the same-stack check, so a cut-text run cannot be compared with a full-text run.
+- **The labels are unchanged:** the judges labelled the cut text. For 133 rows the model now reads an ending no judge
+  read; the owner accepted that cost over gating on an input production never sends.
+- v1 is re-scored on full text (both orders) as the reference.

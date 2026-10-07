@@ -28,12 +28,18 @@
       `datasets/belonging_{heldout,harvest_r1}/cut_rows_full_content.jsonl`. Sources: sadalsuud's live window
       (~28 days) and the monthly archive `nexusmind_2026-09.tar.gz` (393 rows I had first called "expired").
       Evidence: `GATE.md` § *v1 reference run*.
-   2. **Decide hard negatives (owner):** dropping 566 leaves few near-op-point negatives; candidates are the
+      ✅ **RULED 2026-10-07 (owner): FULL text** for the gate (GATE.md § *Amendment*) **and for training** the harvest
+      positives (oracle labels stay as made on the cut text).
+   2. ✅ **Hard negatives RULED 2026-10-07 (owner): only the 121 harvest rows where BOTH judges said `out_one_moment`**,
+      capped at 2.0 (the class the owner agreed was out every time on v1's rows), minus any `gate.content_twins` hit.
+      The other ~490 both-out rows are NOT used. Was: **Decide hard negatives (owner):** dropping 566 leaves few near-op-point negatives; candidates are the
       harvest's 615 both-out Gemini-ins (v1 raw ≥ 5.6). Decide before the build.
    3. **Build `belonging_v1_adj1`:** v1 rows per `treatment.jsonl` + the 237 positives
       (`datasets/belonging_harvest_r1/positives_r1_labels.jsonl`); `belonging_exclusions.assert_disjoint()` on every
       id (1,971 ids from 11 sources; v1 splits are the BASE, so `assert_fresh_draw` is for new draws only). Write the
-      training id list into the package so the gate can refuse overlap. Retrain on b650, fit calibration, run the gate.
+      training rows into the package as `training_manifest.jsonl` ({id, url, title, text_head}; GATE.md § *The runner*),
+      after dropping what `gate.content_twins(rows, heldout.rows())` returns. Use FULL text for cut rows
+      (`datasets/belonging_harvest_r1/cut_rows_full_content.jsonl`). Retrain on b650, fit calibration, run the gate.
       ⛔ b650's card is shared with ovr.news since 2026-10-05: before launching, `curl -s localhost:11434/api/ps` on
       b650 must show no `gemma3:27b`, and log peak VRAM (`memory/b650-gpu.md`).
    4. Optional: harvest round 2 (mid band, ~$9.70 est.; ~125–200 positives, est. from 9/44 × the r1 shortfall).

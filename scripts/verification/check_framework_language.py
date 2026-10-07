@@ -47,11 +47,7 @@ SELF = "scripts/verification/check_framework_language.py"
 HISTORICAL = {"docs/adr/009-add-filters-first-reduce-later.md": "owner 2026-10-01 (LD#160): note, never rewrite",
               "docs/adr/013-english-lens-names.md": "the rule's own text, which must cite the names it forbids"}
 FROZEN = ("memory/archive/", "docs/TODO-archive.md", "memory/session-log.md")  # verbatim records, never edited
-KNOWN_OPEN = {
-    ("filters/nature_recovery/v1/config.yaml", "'Herstel' tab"): "docs/TODO.md START HERE item 4 (LD#160 follow-up)",
-    ("filters/nature_recovery/v2/config.yaml", "'Herstel' tab"): "docs/TODO.md START HERE item 4 (LD#160 follow-up)",
-    ("filters/nature_recovery/v4/config.yaml", "'Herstel' tab"): "docs/TODO.md START HERE item 4 (LD#160 follow-up)",
-}
+KNOWN_OPEN = {}  # the nature_recovery v1/v2/v4 config.yaml tab label was fixed 2026-10-07 (owner ruling)
 
 MD_QUOTED = re.compile(r"`[^`\n]*`")  # backticks only: quotes also LABEL a tab, and apostrophes mis-pair
 

@@ -282,3 +282,15 @@ def test_boilerplate_shared_across_rows_is_not_a_twin():
     train = [dict(id="t", text_head="lead " * 10 + footer)]
     assert gate.content_twins(train, held) == []  # the footer's runs occur in 3 held rows: not distinctive
     assert gate.content_twins([dict(id="t", text_head="KIGALI — " + BODY)], HELD)[0][:2] == ("t", "held_1")
+
+
+def test_scoring_text_uses_full_text_for_cut_rows_and_raises_without_it(tmp_path, monkeypatch):
+    cut = "x" * gate.CUT
+    rs = {"a": dict(content="short"), "b": dict(content=cut)}
+    f = tmp_path / "full.jsonl"
+    f.write_text(gate.json.dumps(dict(id="b", content=cut + " the real ending")) + "\n")
+    monkeypatch.setattr(gate, "FULL_TEXT", f)
+    assert gate.scoring_text(rs, ["a", "b"]) == {"a": "short", "b": cut + " the real ending"}
+    f.write_text(gate.json.dumps(dict(id="b", content="something else")) + "\n")
+    with pytest.raises(SystemExit, match="no matching full text"):
+        gate.scoring_text(rs, ["a", "b"])
