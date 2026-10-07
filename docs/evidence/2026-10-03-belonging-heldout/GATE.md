@@ -200,7 +200,7 @@ on b650 and here; the v1 package fingerprint `bee0f4aafc6bd5d6` is identical on 
   - **(a) Gate on the judged (cut) text, as pre-registered.** Labels and text match; the gate reads a v1 that is
     more specific than the live one, on input production never sends.
   - **(b) Score on recovered full text.** The scores match production, but the population becomes mixed (162 uncut,
-    117 full, 16 still cut, holding 2 of the 20 flips), the labels were made on text whose tail the model now reads
+    133 full, all re-scored: 0 flips vs production), the labels were made on text whose tail the model now reads
     differently, and it changes the pre-registered set after the reference run. Whether that is a re-ruling under
     "one shot" is the owner's to say.
 - ⚠️ **The same cut is in harvest r1** (`extract_hi.py`: "cut at 4,000 chars, as in the held-out run"): 113 of the 237
@@ -227,8 +227,13 @@ rows still on sadalsuud reproduces production; on the cut text it does not.
 |---|---|---|---|---|---|
 | full (recovered) | 117 | 0.0000 | 0.087 | 0.262 | **0** |
 | cut at 4,000 (as judged) | 117 | 0.508 | 2.692 | 3.731 | **18** |
+| **full, all 133 cut judged rows** (after the archive recovery, same day) | 133 | 0.0000 | 0.075 | 0.391 | **0** |
+| cut, the same 133 | 133 | 0.518 | 2.483 | 3.731 | **20** |
 
 **Full text recovered and kept** (gitignored, `datasets/belonging_heldout/cut_rows_full_content.jsonl`, here and on
-b650): 442 of the 1,200 draw's 509 cut rows. Every row starts with exactly the held-out text. The other 67 rows
-(23 files, 2026-09-04..09) are already gone from sadalsuud, whose `filtered/belonging/` keeps ~28 days. Of the 295
-judged rows, 117/133 cut rows are recovered and 16 are lost: 11 neg, 2 disputed, 2 excluded, 1 pos.
+b650): **all 509 of the 1,200 draw's cut rows**, every one starting with exactly the held-out text. 442 came from
+sadalsuud's live `filtered/belonging/` window (~28 days); the other 67 (23 files, 2026-09-04..09) from the monthly
+archive `data/archived/nexusmind_2026-09.tar.gz`, member `nexusmind_2026-09/belonging/scored.jsonl`.
+⛔ *An earlier version of this paragraph called those 67 rows (16 of them judged) "lost": the live window rolls, the
+monthly archives do not (`memory/nexusmind-data-sources.md`). Corrected the same day.* So all 133 judged cut rows
+have full text, and all 133 are re-scored in the table above.

@@ -4,6 +4,49 @@
 
 *⚠️ **Entries dated before 2026-09-17 live in [`archive/gotcha-log-archive.md`](archive/gotcha-log-archive.md)**, verbatim (the 09-01 → 09-16 ones moved 2026-09-27 by an owner-approved MID-MONTH pass, `--before 2026-09-17`; earlier ones moved 2026-09-24; into `archive/` 2026-09-26 so curate's size measurement stops counting it, #163; the month-dated Feb–May entries followed on 2026-09-26). Next pass: `python3 scripts/maintenance/retire_memory.py gotcha --before <first of this month> --apply` (dry run without `--apply`). It retires top-level entries only; the `###` entries inside the catalogue are kept by rule and counted. The unreachable-mechanism catalogue stayed here. For a recurrence match, grep both: `grep -n <term> memory/gotcha-log*.md`.*
 
+## "THE SOURCE FILES EXPIRED" — WRITTEN INTO TWO DOCS, REFUTED BY THE MONTHLY ARCHIVE (2026-10-07) [17th occurrence of *establish what a source excludes*]
+**Problem**: Recovering full text for cut belonging rows, I found 23+25 source files gone from sadalsuud's live
+`filtered/` window and committed "67 rows lost", "16 judged rows' files expired", "the only copies left" to GATE.md
+and the TODO. All 393 rows were in `data/archived/nexusmind_2026-09.tar.gz`.
+**Root cause**: I treated the live window as the source. `memory/nexusmind-data-sources.md` § *THE LIVE WINDOW
+ROLLS. THE DATA DOES NOT* says exactly this, and the same mistake is the 09-01 entry in the archive. I read that
+memory file only at `/curate`, after writing the claim.
+**Fix**: Before writing "lost", "expired" or "unrecoverable" about NexusMind rows, list
+`~/local_dev/NexusMind/data/archived/` and stream the month's `nexusmind_YYYY-MM/<lens>/scored.jsonl` member.
+A prose lesson did not fire a 17th time: this wants a check (`feedback-prose-promotion-does-not-fire`).
+
+## A DRAW THAT CUT TEXT AT 4,000 CHARS BROKE A HEAD+TAIL MODEL'S INPUT (2026-10-07)
+**Problem**: v1 scored on the belonging held-out set disagreed with production on 20/295 verdicts (max |Δ| 3.73),
+all on the 133 rows the draw had cut at 4,000 chars. The uncut rows reproduced production exactly.
+**Root cause**: belonging reads the first 256 AND LAST 256 tokens. Cutting the text replaces the real ending with
+text from around char 4,000. The draw (and harvest r1, and its oracle labels) inherited a "harmless" cap from a pilot.
+**Fix**: Before capping article text for any measurement, read the filter's `preprocessing.head_tail`. Keep the full
+text, or prove the cap sits inside what the model reads. Proven by re-scoring 117 recovered full texts: 0 flips.
+Evidence: `docs/evidence/2026-10-03-belonging-heldout/GATE.md` § *v1 reference run*.
+
+## A GATE COUNTED AN UNSCORED ROW AS A CORRECT REJECTION — a forged PASS (2026-10-07)
+**Problem**: My belonging gate runner treated any row not `stage2` as "out". A reviewer set `stage_used: null` (what
+an invalid article returns) on every deciding negative and got PASS. A forward score file copied as `_reversed`
+also passed "both orders". 15 tests and 9 mutations had all been green.
+**Root cause**: The tests and mutations covered the RULE (`decide`), not the inputs it trusts. The refusals that
+guard the inputs had no test at all.
+**Fix**: In a gate, any input state the rule does not define RAISES (exit 2, distinct from FAIL). Mutation-test
+the refusals as well as the rule. The second review round still found gaps in the fixes (a syndicated twin, Latin-only
+titles): `feedback-articulating-is-not-applying` recurred.
+
+## STRIPPING A URL'S QUERY STRING MERGED SIX DIFFERENT ARTICLES (2026-10-07)
+**Problem**: A url-normaliser for an overlap check dropped `?…`. aib.media's WordPress urls are `/?p=167850`, so six
+different stories became one url and a clean build would have been refused.
+**Fix**: Drop only tracking parameters (`utm_*`, `fbclid`, `gclid`, `mc_*`, `ref`); keep the rest. Measure a
+dedup key on real data before trusting it. A near-duplicate key also needs a boilerplate filter: 13 different
+20minutos stories shared site text with the same held-out row.
+
+## A CHECKER COMMITTED IN THE SAME CHANGE AS ITS TEST FILE WAS RED AT THAT COMMIT (2026-10-07)
+**Problem**: `8c464cd` added `check_framework_language.py` and its test. The checker scans TRACKED files, and the
+test's own fixtures (and the checker's name list) were violations once committed. Green before `git add`, red after.
+**Fix**: Run a repo-scanning check AFTER staging (or over `git ls-files` plus the new files), then the full suite,
+before committing.
+
 ## A RULE BORROWED FROM ITS ORIGIN BECAME THE DEFINITION — the "doing" test (2026-10-02)
 **Problem**: I adopted ovr.news `BRAND.md:84`'s "doing, not feeling" test as the core of the belonging rubric.
 The first adjudication pilot passed every instrument check (controls 4/4, A vs B 1.000) and failed the owner
@@ -1075,7 +1118,7 @@ false finding in the reference audit, which trains readers to dismiss that audit
 | 2026-09-17 | An argument a CLI does not know scans the default set and prints a small, reassuring count — including a positional, which "starts with `--`" guards miss | `tests/fixtures/reference-integrity/run.sh`, the `guard_fail` block (7 rejected + 4 accepted) | live | 0 |
 | 2026-09-17 | A detector metric published as a POINT when `early_stopping=True` makes `random_state` pick the validation split — one draw read as a property of the model, and the artifact says nothing (#158). ⛔ The numbers live at TWO sites and the gitignored one is not the one a reader opens | `scripts/verification/check_detector_metric_bands.py` + `tests/unit/test_detector_metric_bands.py` (18 tests) | live | 0 |
 | 2026-09-17 | An ADR-021 gate artifact that does not say which DEVICE produced its numbers — the tree mixed 4 `cpu`, 1 CUDA and 3 silent, so a cross-filter comparison was already crossing hardware paths with nothing saying so (#104) | `scripts/verification/check_gate_device_stamp.py` + `tests/unit/test_gate_device_stamp.py` (10 tests) | live | 0 |
-| 2026-09-17 | Dutch NAMES in framework text (ADR-013) — a function-word sweep scores 0 on both real violation sites, so the instrument must carry the names themselves and its allowlist **is** the carve-out table | `scripts/verification/check_framework_language.py` <!-- placeholder --> | proposed | — |
+| 2026-09-17 | Dutch NAMES in framework text (ADR-013) — a function-word sweep scores 0 on both real violation sites, so the instrument must carry the names themselves and its allowlist **is** the carve-out table | `scripts/verification/check_framework_language.py` + `tests/unit/test_framework_language.py` (built 2026-10-07, shown red: 64 hits; carve-outs by ROLE via the AST; commit messages still unread) | live | 1 (2026-10-07: found an unlisted site, nature_recovery `config.yaml` 'Herstel' tab) |
 | 2026-09-26 | A "lossless" check that compares two quantities built from the same blocks — equal by construction, so it can never fail (`retire_memory.py`, round 1 of review) | `tests/unit/test_retire_memory.py::test_reconstruction_check_can_fail` — the split is mutated to drop a line and the run must refuse and write nothing | live | 0 |
 | 2026-09-26 | A file move that computes path edits BEFORE the move and writes them AFTER, recreating a moved file at its old path (introduced by a round-1 fix) | `tests/unit/test_retire_memory.py::test_a_moved_file_that_references_another_is_not_resurrected` | live | 0 |
 | 2026-09-26 | A trim of `CLAUDE.md` that keeps every token (paths, numbers, issue ids) but drops an operative CLAUSE — five were lost and only a review lens noticed; the token survival check passed | **REJECTED 2026-09-27** — lexical clause survival cannot separate compression from loss: best setting caught 2/3 seeds (never the polarity flip) at 52/125 false flags on the reviewed 09-26 trim; 1/3 at 25/125. Script and grid: `docs/evidence/2026-09-27-claude-md-trim-check/`. The working check is a clause-loss REVIEW LENS (caught 5 clauses on 09-26 and 2 on 09-27); mechanize its invocation, not its judgement | rejected | — |

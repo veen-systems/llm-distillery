@@ -22,11 +22,12 @@
       scored on b650** (`datasets/belonging_gate/`). ⚠️ **Owner decision found by it:** the held-out draw (and harvest
       r1) cut content at 4,000 chars, and belonging reads head+TAIL tokens, so 133/295 judged rows score differently
       from production (20 flips at 4.0). Full text is proven to reproduce production (0 flips on 117 recovered rows).
-      Options: (a) gate "on the judged text" as pre-registered, or (b) score on full text where recovered (117/133;
-      16 rows' files expired). Judges labelled the cut text either way. The build must decide the same for the 237
-      harvest positives: 113 were cut, full text recovered for 97 (1,925 of the harvest's 2,251 cut rows, in
-      gitignored `datasets/belonging_harvest_r1/cut_rows_full_content.jsonl`; 25 source files had expired).
-      sadalsuud keeps ~28 days, so these copies are the only ones left after that. Evidence: `GATE.md` § *v1 reference run*.
+      Options: (a) gate "on the judged text" as pre-registered, or (b) score on full text (recovered for ALL 133).
+      Judges labelled the cut text either way. The build must decide the same for the 237 harvest positives: 113 were
+      cut, full text recovered for all 113 (all 2,251 of the harvest's cut rows). Copies (gitignored):
+      `datasets/belonging_{heldout,harvest_r1}/cut_rows_full_content.jsonl`. Sources: sadalsuud's live window
+      (~28 days) and the monthly archive `nexusmind_2026-09.tar.gz` (393 rows I had first called "expired").
+      Evidence: `GATE.md` § *v1 reference run*.
    2. **Decide hard negatives (owner):** dropping 566 leaves few near-op-point negatives; candidates are the
       harvest's 615 both-out Gemini-ins (v1 raw ≥ 5.6). Decide before the build.
    3. **Build `belonging_v1_adj1`:** v1 rows per `treatment.jsonl` + the 237 positives
