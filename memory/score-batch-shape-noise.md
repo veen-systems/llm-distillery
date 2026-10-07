@@ -356,6 +356,16 @@ a falsifier — **not a term to quote.**
 and the previously recorded explanation for this exact gap was the device. Ask which program
 produced each number before reaching for a measured term that happens to be near the gap.
 
+## Belonging v1, row ORDER on b650 RTX 5090: max |Δ| 0.453 — nearly 3× the 0.16 floor (measured 2026-10-07)
+
+`gate.py score` scored the 295 judged held-out rows forward and reversed (same package, process kind, venv-prodparity,
+default batch 16; `docs/evidence/2026-10-03-belonging-heldout/GATE.md` § *v1 reference run*). **max |Δ| 0.453**
+(`us_news_civil_beat_62ff486b1bc9`), 2 rows above 0.16, 12 above 0.01, **10 of those 12 are rows cut at 4,000
+chars** (45% of the population), i.e. long texts that fill the 512-token head+tail window. **0 verdict flips** at 4.0
+or at v1's matched-recall thresholds. ⛔ So 0.16 is not a ceiling for this population and mechanism on this device;
+read the FLIP COUNT, as this file already says. Unisolated: whether the excess is length (full 512-token windows)
+or the device (CUDA, where the 0.16 was measured on a different card).
+
 ## Related
 
 - [[project_session_2026_08_03]]

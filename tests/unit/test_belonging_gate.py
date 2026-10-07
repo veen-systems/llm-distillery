@@ -121,7 +121,7 @@ def test_v1_op_point_is_read_from_its_package():
     assert gate.op_point(gate.V1) == 4.0
 
 
-def test_candidate_without_training_ids_is_refused(tmp_path):
+def test_candidate_without_training_manifest_is_refused(tmp_path):
     with pytest.raises(SystemExit, match="REFUSED"):
         gate.refuse_overlap(tmp_path)
 
@@ -148,3 +148,97 @@ def test_bootstrap_interval_has_width():
 def test_ci95_is_the_percentile_interval():
     assert gate.ci95(list(range(2000))[::-1]) == (50, 1949)
     assert gate.NBOOT == 2000 and gate.SEED == 20261009 and gate.K_MIN == 31
+
+
+# ---- refusals (review 2026-10-07, guarantees lens: two forged PASSes and four unreachable checks) ----
+
+def test_unscored_rows_raise_instead_of_counting_as_rejections():
+    """The blocker: stage_used None (an invalid article) or a NaN score made every negative 'out' -> PASS."""
+    for bad in (dict(stage_used=None, weighted_average=0.0), dict(stage_used="stage2", weighted_average=float("nan")),
+                dict(stage_used="stage2", weighted_average=None), dict(stage_used="stage2", weighted_average=True)):
+        with pytest.raises(SystemExit):
+            gate.is_in(bad, 4.0)
+    lab = _lab()
+    v1 = _v1(lab)
+    forged = {i: (dict(stage_used=None, weighted_average=0.0) if x["label"] == "neg" else v1[i]) for i, x in lab.items()}
+    with pytest.raises(SystemExit):
+        gate.decide(lab, forged, v1, 4.0, nboot=10)
+
+
+def _write_scores(path, order, ids, rows=None):
+    seq = sorted(ids)[::-1] if order == "reversed" else sorted(ids)
+    with open(path, "w") as f:
+        f.write(gate.json.dumps(dict(meta=dict(order=order, n=len(seq)))) + "\n")
+        for i in (rows or seq):
+            f.write(gate.json.dumps(dict(id=i, stage_used="stage2", weighted_average=5.0)) + "\n")
+
+
+def test_load_scores_refuses_a_forward_file_posing_as_reversed(tmp_path):
+    ids = ["a", "b", "c"]
+    _write_scores(tmp_path / "f.jsonl", "forward", ids)
+    gate.load_scores(tmp_path / "f.jsonl", "forward", ids)
+    with pytest.raises(SystemExit, match="meta order"):
+        gate.load_scores(tmp_path / "f.jsonl", "reversed", ids)
+    _write_scores(tmp_path / "r.jsonl", "reversed", ids, rows=sorted(ids))  # meta edited, rows not reordered
+    with pytest.raises(SystemExit, match="reversed order"):
+        gate.load_scores(tmp_path / "r.jsonl", "reversed", ids)
+    _write_scores(tmp_path / "short.jsonl", "forward", ids, rows=["a", "b"])
+    with pytest.raises(SystemExit):
+        gate.load_scores(tmp_path / "short.jsonl", "forward", ids)
+
+
+HELD = [dict(id="held_1", url="https://www.example.org/story/one?utm_source=x", title="A long held-out story title here")]
+
+
+def _manifest(tmp_path, rows):
+    (tmp_path / gate.TRAINING_MANIFEST).write_text("".join(gate.json.dumps(r) + "\n" for r in rows))
+
+
+@pytest.mark.parametrize("row,key", [
+    (dict(id="held_1", url="u", title="t"), "id"),
+    (dict(id="other", url="http://example.org/story/one/", title="t"), "url"),
+    (dict(id="other", url="u2", title="A LONG held-out story-title here!"), "title"),
+])
+def test_overlap_is_refused_by_id_url_or_title(tmp_path, row, key):
+    _manifest(tmp_path, [row])
+    with pytest.raises(SystemExit, match=f"by {key}"):
+        gate.refuse_overlap(tmp_path, held=HELD)
+
+
+def test_clean_manifest_passes_and_short_titles_do_not_collide(tmp_path):
+    _manifest(tmp_path, [dict(id="x", url="https://other.org/a", title="Editorial")])
+    assert "0 of the 2 held-out" in gate.refuse_overlap(tmp_path, held=HELD + [dict(id="h2", url="z", title="Editorial")])
+
+
+def test_fingerprint_follows_a_symlinked_model_folder(tmp_path):
+    real = tmp_path / "elsewhere"; real.mkdir()
+    (real / "adapter.safetensors").write_bytes(b"one")
+    pkg = tmp_path / "pkg"; pkg.mkdir()
+    (pkg / "model").symlink_to(real, target_is_directory=True)
+    before = gate.pkg_fingerprint(pkg)
+    (real / "adapter.safetensors").write_bytes(b"two")
+    assert before[1] == 1 and gate.pkg_fingerprint(pkg) != before
+
+
+def _pkg(tmp_path, medium, raw_min=None):
+    (tmp_path / "base_scorer.py").write_text(
+        f'class S:\n    TIER_THRESHOLDS = [("high", 7.0, "d"), ("medium", {medium}, "d"), ("low", 0.0, "d")]\n')
+    if raw_min is not None:
+        (tmp_path / "normalization.json").write_text(gate.json.dumps(dict(stats=dict(raw_min=raw_min))))
+    return tmp_path
+
+
+def test_op_point_guards(tmp_path):
+    assert gate.op_point(_pkg(tmp_path / "a", 4.25) if (tmp_path / "a").mkdir() is None else None) == 4.25
+    (tmp_path / "b").mkdir()
+    with pytest.raises(SystemExit, match="falls back"):
+        gate.op_point(_pkg(tmp_path / "b", 4.75))
+    (tmp_path / "c").mkdir()
+    with pytest.raises(SystemExit, match="raw_min"):
+        gate.op_point(_pkg(tmp_path / "c", 4.0, raw_min=4.2))
+
+
+def test_url_normalisation_keeps_article_ids_in_the_query():
+    n = gate._norm_url
+    assert n("https://www.aib.media/?p=167850") != n("https://www.aib.media/?p=167985")
+    assert n("http://example.org/a/?utm_source=x&fbclid=y#top") == n("https://www.example.org/a")

@@ -117,9 +117,24 @@ finding most real ones (ADR-023: specificity first).
 
 ## The runner (`gate.py`, written 2026-10-07, before any candidate exists)
 
-Pass rule v2 as code; `tests/unit/test_belonging_gate.py` pins it (15 tests; 9 hand-made mutations of the rule each
-turn a test red: stage1_low counted, disputed rows deciding, t\* lowest instead of highest, `≥ 0` instead of `> 0`,
-k ≥ 30, no resampling, either-pass undisputed, splits kept, a 90% interval).
+Pass rule v2 as code; `tests/unit/test_belonging_gate.py` pins it (24 tests). Each of 16 hand-made mutations turns a
+test red: 9 of the rule (stage1_low counted, disputed rows deciding, t\* lowest instead of highest, `≥ 0` instead of
+`> 0`, k ≥ 30, no resampling, either-pass undisputed, splits kept, a 90% interval) and 7 of the refusals below.
+
+**Hardened after a 3-lens review the same day** (rule fidelity, guarantees, claims + methodology), which found a
+BLOCKER: an unscored row (`stage_used` None, as an invalid article comes back, or a NaN score) counted as a correct
+rejection, and the reviewer built a full PASS with every deciding negative unscored. Fixed, with tests for each:
+- a labelled row that is not a scored `stage1_low`/`stage2` row with a finite score RAISES;
+- a score file must name its order and hold exactly the labelled ids in that order (a forward file copied to
+  `_reversed` had passed "both orders");
+- the fingerprint hashes every package file and follows symlinks (a symlinked `model/` was invisible), and the
+  shared `filters/common/*.py` code is fingerprinted separately;
+- "same stack" now also compares host, venv prefix, batch size, the common-code fingerprint, scikit-learn,
+  sentence-transformers and tokenizers;
+- an op-point above 4.5 is refused (NexusMind's normalization loader silently falls back above it);
+- overlap is checked by id, normalised url (tracking parameters dropped, article-id queries such as WordPress
+  `?p=` KEPT) and normalised title;
+- order-to-order flips are reported at the deciding thresholds (candidate op-point, v1's t\*) as well as at 4.0.
 
 - `gate.py score --package … --order forward|reversed --out …` on b650 GPU; refuses without CUDA. It writes per-row
   `stage_used` + `weighted_average` with the package fingerprint, device, library versions, host and peak VRAM.
@@ -128,13 +143,20 @@ k ≥ 30, no resampling, either-pass undisputed, splits kept, a 90% interval).
 - `gate.py controls` runs the rule on v1's **production** raws. Required and observed, 2026-10-07:
   | control | k | Δspec 95% CI | verdict |
   |---|---|---|---|
-  | v1 vs itself at 4.0 | 44 | [−0.050, −0.006] | FAIL ✓ |
-  | v1 at 5.8 vs v1 (the refuted rule's pass) | 32 | [−0.010, +0.000] | FAIL ✓ |
+  | v1@4.0 vs v1@t\* = 4.079 | 44 | [−0.050, −0.006] | FAIL ✓ |
+  | v1@5.8 vs v1@t\* = 5.818 (the refuted rule's pass; weak: t\* ≥ 5.8 makes Δ ≤ 0 by construction) | 32 | [−0.010, +0.000] | FAIL ✓ |
   | a perfect candidate | 44 | [+0.425, +0.469] | PASS ✓ |
   | perfect on negatives, 30/44 found | 30 | [+0.068, +0.110] | FAIL ✓ (k) |
 
-**The build's contract:** the candidate package must carry `training_ids.txt`, one training id per line. The gate
-refuses a package without it, and any package whose ids touch the 1,200 held-out rows (a superset of the 295).
+**The build's contract:** the candidate package must carry `training_manifest.jsonl`, one `{"id", "url", "title"}`
+per training row. The gate refuses a package without it, and any package whose rows touch the 1,200 held-out rows
+(a superset of the 295) by id, url or title. **Measured on harvest r1:** 0 of the 237 kept positives twin a held-out
+row; 5 of its 4,591 rows do (syndicated titles), and one twins a DECIDING negative
+(`south_asian_kathmandu_post_e9d635f22e58` ↔ `southeast_asian_straits_times_asia_840d6824f3e7`). If the build draws
+hard negatives from the harvest, those 5 must stay out, or the gate refuses it.
+
+**Not covered:** the base Gemma model and the e5 model come from the HuggingFace cache and are not fingerprinted;
+`score` files carry no signature, so a hand-edited file is a trust boundary, not a check.
 
 **Counts the rule produces** (labels 44 pos / 163 deciding neg / 75 disputed / 13 excluded): 14 of the 89 hard
 negatives decide, because both passes say `out_one_moment`. ⚠️ § *Review* above says 74 disputed; the literal v2 rule
@@ -153,7 +175,7 @@ on b650 and here; the v1 package fingerprint `bee0f4aafc6bd5d6` is identical on 
 
 **Harness check against production's own raws (`heldout_rows.jsonl` `raw`):**
 
-| rows | n | median \|Δ\| | p95 | max | verdict flips at 4.0 |
+| rows | n | median \|Δ\| | p95 (nearest rank, upper) | max | verdict flips at 4.0 |
 |---|---|---|---|---|---|
 | content < 4,000 chars | 162 | 0.0000 | 0.081 | 0.234 | 0 |
 | content cut at 4,000 chars | 133 | 0.518 | 2.483 | **3.731** | **20** |
@@ -162,14 +184,26 @@ on b650 and here; the v1 package fingerprint `bee0f4aafc6bd5d6` is identical on 
   reads the first 256 and the LAST 256 tokens (`config.yaml` `preprocessing.head_tail`). For a cut article, the
   "tail" is text from around char 4,000, not the real ending. On uncut rows the harness reproduces production.
 - **What it means for the gate:** the comparison is internally fair, because both models and both judges saw the
-  same cut text. But for 133/295 rows the gate measures behaviour on text production never scores, and v1's
-  verdict there already differs from production's on 20 rows. **Owner's call, not changed here:** accept the gate
-  as "on the judged text", or re-fetch full content (NexusMind `filtered_*.jsonl`, the row's `file`) for those 133
-  rows. The judges' labels were made on the cut text either way.
-- ⚠️ **The same cut is in harvest r1** (`extract_hi.py`: "cut at 4,000 chars, as in the held-out run"). If the build
-  trains on that text, the 237 positives' tails are not their real endings.
-- **Order noise (#95):** forward vs reversed max |Δ| **0.453**, 2 rows above 0.16, 12 above 0.01; **0 verdict
-  flips at 4.0.** The ±0.16 report under-covers this term, so the runner also prints order-to-order flips.
+  same cut text. But for 133/295 rows the gate measures behaviour on text production never scores. **All 20 flips
+  are DECIDING negatives,** the exact quantity the gate decides on, and 14 of them move out: **the cut flatters the
+  reference.** v1's specificity at 4.0 on the deciding negatives is 0.539 on cut text vs 0.525 on production
+  (weighted), 0.350 vs 0.301 (unweighted).
+- **Owner's call, not changed here. Neither option is neutral:**
+  - **(a) Gate on the judged (cut) text, as pre-registered.** Labels and text match; the gate reads a v1 that is
+    more specific than the live one, on input production never sends.
+  - **(b) Score on recovered full text.** The scores match production, but the population becomes mixed (162 uncut,
+    117 full, 16 still cut, holding 2 of the 20 flips), the labels were made on text whose tail the model now reads
+    differently, and it changes the pre-registered set after the reference run. Whether that is a re-ruling under
+    "one shot" is the owner's to say.
+- ⚠️ **The same cut is in harvest r1** (`extract_hi.py`: "cut at 4,000 chars, as in the held-out run"): 113 of the 237
+  positives are cut, and their k=3 ORACLE dimension labels (`positives_r1_labels.jsonl`) were also made on cut text.
+  Training on cut text gives head+tail a fake ending production never sends; training on full text pairs labels
+  with text the oracle never saw. The build has to pick one and say so.
+- **Order noise (#95, the batch-composition floor of 0.16):** forward vs reversed max |Δ| **0.453**, nearly 3× the
+  floor, on this population; 2 rows above 0.16 (both CUT rows, which suggests but does not show that the cut text
+  drives the excess), 12 above 0.01. **0 verdict flips at 4.0, and 0 at v1's t\* for k = 31, 35, 40, 44** (review
+  recomputation). The ±0.16 band report under-covers this term, so the runner prints order-to-order flips at the
+  deciding thresholds. Recorded in `memory/score-batch-shape-noise.md`.
 - v1 finds 44/44 positives at 4.0 in both orders (lowest 4.058; production 4.079).
 
 **The cut is the cause, proven (2026-10-07, b650, same stack):** v1 scored on the FULL text of the 117 judged cut
@@ -182,5 +216,5 @@ rows still on sadalsuud reproduces production; on the cut text it does not.
 
 **Full text recovered and kept** (gitignored, `datasets/belonging_heldout/cut_rows_full_content.jsonl`, here and on
 b650): 442 of the 1,200 draw's 509 cut rows. Every row starts with exactly the held-out text. The other 67 rows
-(23 files, 2026-09-04..08) are already gone from sadalsuud, whose `filtered/belonging/` keeps ~28 days. Of the 295
+(23 files, 2026-09-04..09) are already gone from sadalsuud, whose `filtered/belonging/` keeps ~28 days. Of the 295
 judged rows, 117/133 cut rows are recovered and 16 are lost: 11 neg, 2 disputed, 2 excluded, 1 pos.

@@ -27,10 +27,14 @@ The rule, as code (each line is GATE.md § Pass rule v2):
   `gemini_v2_2.jsonl` here, as `heldout.py analyse` does; `no_reply` counts as out).
 - Δspec = spec(candidate @ op) − spec(v1 @ t*), weighted, on the deciding negatives; paired bootstrap stratified by
   band × pick, 2,000 resamples, seed 20261009. PASS needs the 95% lower bound > 0 AND k >= 31, under BOTH orders.
-- the gate REFUSES a candidate without `training_ids.txt` (one id per line, written by the build), and any candidate
-  whose training ids touch the 1,200 held-out rows (a superset of the 295 judged ones).
+- the gate REFUSES a candidate without `training_manifest.jsonl` (one {"id", "url", "title"} per training row,
+  written by the build), and any candidate whose training rows touch the 1,200 held-out rows (a superset of the 295
+  judged ones) by id, normalised url or normalised title: the same story can sit under two ids (review 2026-10-07
+  found held-out twins inside harvest r1).
+- a labelled row that is not a scored `stage1_low`/`stage2` row with a finite score RAISES. An invalid or failed row
+  is not a correct rejection (review 2026-10-07: counting it as "out" let a candidate PASS with every negative unscored).
 """
-import argparse, ast, hashlib, importlib, json, math, platform, random, subprocess, sys, time
+import argparse, ast, hashlib, importlib, inspect, json, math, os, platform, random, re, subprocess, sys, time
 from collections import Counter, defaultdict
 from pathlib import Path
 
@@ -43,7 +47,9 @@ SEED, NBOOT, K_MIN, N_POS, NOISE = 20261009, 2000, 31, 44, 0.16
 ORDERS = ("forward", "reversed")
 UNDISPUTED = {"out_one_moment"}
 V1 = ROOT / "filters" / "belonging" / "v1"
-TRAINING_IDS = "training_ids.txt"
+TRAINING_MANIFEST = "training_manifest.jsonl"  # one {"id", "url", "title"} per training row, written by the build
+STAGES = {"stage1_low", "stage2"}
+MAX_NORMALIZATION_RAW_MIN = 4.5  # scripts/normalization/fit_normalization.py: NexusMind's loader silently falls back above it
 
 
 # ---------------------------------------------------------------- labels and weights (no model involved)
@@ -85,7 +91,15 @@ def labelled():
 
 # ---------------------------------------------------------------- the rule (pure; unit-tested)
 
+def check_row(row):
+    wa = row.get("weighted_average")
+    if row.get("stage_used") not in STAGES or isinstance(wa, bool) or not isinstance(wa, (int, float)) or not math.isfinite(wa):
+        raise SystemExit(f"row {row.get('id')}: stage_used={row.get('stage_used')!r} weighted_average={wa!r}. Only a "
+                         "scored stage1_low/stage2 row can be judged; an invalid or failed row is NOT a correct rejection")
+
+
 def is_in(row, t):
+    check_row(row)
     return row["stage_used"] == "stage2" and row["weighted_average"] >= t
 
 
@@ -115,7 +129,7 @@ def decide(lab, cand, v1, op, seed=SEED, nboot=NBOOT):
     """One row order. Returns the deciding numbers and the verdict for that order."""
     pos = sorted(i for i in lab if lab[i]["label"] == "pos")
     neg = sorted(i for i in lab if lab[i]["label"] == "neg")
-    missing = [i for i in pos + neg if i not in cand or i not in v1]
+    missing = [i for i in lab if i not in cand or i not in v1]
     if missing:
         raise SystemExit(f"{len(missing)} labelled rows not scored, e.g. {missing[:3]}")
     k = sum(is_in(cand[i], op) for i in pos)
@@ -151,6 +165,9 @@ def op_point(pkg):
     med = [t[1] for t in found[0] if t[0] == "medium"]
     if len(med) != 1:
         raise SystemExit(f"{pkg}: no single 'medium' tier in TIER_THRESHOLDS")
+    if med[0] > MAX_NORMALIZATION_RAW_MIN:
+        raise SystemExit(f"{pkg}: op-point {med[0]} > {MAX_NORMALIZATION_RAW_MIN}; NexusMind's normalization loader "
+                         "silently falls back above it (CLAUDE.md), so a production deploy would not run this op-point")
     norm = pkg / "normalization.json"
     if norm.exists():
         raw_min = json.load(open(norm))["stats"]["raw_min"]
@@ -160,31 +177,72 @@ def op_point(pkg):
     return float(med[0])
 
 
-def refuse_overlap(pkg):
-    """The candidate must carry its training ids, and none may be a held-out row. v1 is the reference: exempt
-    (the held-out draw was asserted disjoint from v1's sources when it was made)."""
+def _norm_url(u):
+    """Scheme, `www.`, fragment, trailing slash and TRACKING parameters dropped; the rest of the query is KEPT
+    (WordPress `?p=167850` IS the article id: stripping it made 6 distinct aib.media stories one url)."""
+    u = re.sub(r"^https?://(www\.)?", "", (u or "").strip().lower()).split("#")[0]
+    base, _, q = u.partition("?")
+    keep = sorted(x for x in q.split("&") if x and not re.match(r"(utm_[a-z]+|fbclid|gclid|mc_[a-z]+|ref)=", x))
+    return base.rstrip("/") + ("?" + "&".join(keep) if keep else "")
+
+
+def _norm_title(t):
+    t = re.sub(r"[^0-9a-z]+", "", (t or "").lower())
+    return t if len(t) >= 20 else None  # short titles ("Editorial") collide by chance
+
+
+def refuse_overlap(pkg, held=None):
+    """The candidate must carry its training manifest, and no training row may be a held-out row by id, url or title.
+    v1 is the reference: exempt (the held-out draw was asserted disjoint from v1's sources when it was made)."""
     if pkg.resolve() == V1.resolve():
         return "v1 (reference): exempt"
-    f = pkg / TRAINING_IDS
+    f = pkg / TRAINING_MANIFEST
     if not f.exists():
-        raise SystemExit(f"REFUSED: {f} missing. The build must write every training id (GATE.md, last line).")
-    train = {l.strip() for l in open(f) if l.strip()}
+        raise SystemExit(f"REFUSED: {f} missing. The build must write every training row (GATE.md § The runner).")
+    train = [json.loads(l) for l in open(f) if l.strip()]
     if not train:
         raise SystemExit(f"REFUSED: {f} is empty")
-    held = {r["id"] for r in H.rows()}
-    hit = train & held
-    if hit:
-        raise SystemExit(f"REFUSED: {len(hit)} training ids are held-out rows, e.g. {sorted(hit)[:3]}")
-    return f"{len(train)} training ids, 0 of the {len(held)} held-out rows"
+    held = H.rows() if held is None else held
+    keys = {"id": lambda r: r.get("id"), "url": lambda r: _norm_url(r.get("url")) or None,
+            "title": lambda r: _norm_title(r.get("title"))}
+    for name, k in keys.items():
+        hk = {k(r) for r in held} - {None}
+        hit = sorted({k(r) for r in train} & hk)
+        if hit:
+            raise SystemExit(f"REFUSED: {len(hit)} training rows match held-out rows by {name}, e.g. {hit[:3]}")
+    return f"{len(train)} training rows, 0 of the {len(held)} held-out rows by id, url or title"
+
+
+def _hash_tree(root, files):
+    h = hashlib.sha256()
+    for p in files:
+        h.update(os.path.relpath(p, root).encode()); h.update(Path(p).read_bytes())
+    return h.hexdigest()[:16], len(files)
 
 
 def pkg_fingerprint(pkg):
-    h = hashlib.sha256()
-    files = sorted(p for p in pkg.rglob("*") if p.is_file() and "__pycache__" not in p.parts
-                   and p.suffix in {".safetensors", ".bin", ".pkl", ".json", ".py", ".yaml"})
-    for p in files:
-        h.update(str(p.relative_to(pkg)).encode()); h.update(p.read_bytes())
-    return h.hexdigest()[:16], len(files)
+    """Every file in the package, following symlinked folders (review 2026-10-07: rglob skipped a symlinked model/)."""
+    files = sorted(os.path.join(d, f) for d, ds, fs in os.walk(pkg, followlinks=True) if "__pycache__" not in d
+                   for f in fs if not f.endswith(".pyc"))
+    return _hash_tree(pkg, files)
+
+
+def common_fingerprint():
+    """The shared scoring code every package runs through (hybrid_scorer, filter_base_scorer, model_loading, ...)."""
+    d = ROOT / "filters" / "common"
+    return _hash_tree(d, sorted(str(p) for p in d.glob("*.py")))[0]
+
+
+def _version(dist):
+    from importlib.metadata import version, PackageNotFoundError
+    try:
+        return version(dist)
+    except PackageNotFoundError:
+        return "absent"
+
+
+STACK = ("device", "host", "prefix", "batch_size", "common_fingerprint", "torch", "transformers", "peft",
+         "scikit-learn", "sentence-transformers", "tokenizers")
 
 
 def scorer_for(pkg):
@@ -210,23 +268,25 @@ def cmd_score(a):
         ids.reverse()
     arts = [dict(id=i, title=rs[i]["title"], content=rs[i]["content"], url=rs[i]["url"], source=rs[i]["source"])
             for i in ids]
-    scorer = scorer_for(pkg)(use_prefilter=False)
-    t0 = time.time()
-    res = scorer.score_batch(arts)  # the package's default batch size, as production calls it
     out = Path(a.out)
-    out.parent.mkdir(parents=True, exist_ok=True)
     if out.exists():
         raise SystemExit(f"{out} exists; refusing to overwrite (one shot)")
+    out.parent.mkdir(parents=True, exist_ok=True)
+    scorer = scorer_for(pkg)(use_prefilter=False)
+    batch_size = inspect.signature(scorer.score_batch).parameters["batch_size"].default
+    t0 = time.time()
+    res = scorer.score_batch(arts)  # the package's default batch size, as production calls it
     fp, nfiles = pkg_fingerprint(pkg)
-    import transformers, peft
     meta = dict(package=str(pkg.relative_to(ROOT)), fingerprint=fp, n_files=nfiles, op_point=op_point(pkg),
                 order=a.order, n=len(ids), seconds=round(time.time() - t0, 1), overlap=overlap,
                 device=torch.cuda.get_device_name(0) if torch.cuda.is_available() else "cpu",
                 peak_vram_mib=round(torch.cuda.max_memory_allocated() / 2**20) if torch.cuda.is_available() else None,
-                torch=torch.__version__, transformers=transformers.__version__, peft=peft.__version__,
-                host=platform.node(), git=subprocess.run(["git", "-C", str(ROOT), "rev-parse", "--short", "HEAD"],
-                                                         capture_output=True, text=True).stdout.strip(),
-                ts=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()))
+                host=platform.node(), prefix=sys.prefix, batch_size=batch_size, common_fingerprint=common_fingerprint(),
+                git=subprocess.run(["git", "-C", str(ROOT), "rev-parse", "--short", "HEAD"],
+                                   capture_output=True, text=True).stdout.strip(),
+                ts=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                **{k: _version(k) for k in ("torch", "transformers", "peft", "scikit-learn", "sentence-transformers",
+                                            "tokenizers")})
     with open(out, "w") as f:
         f.write(json.dumps(dict(meta=meta)) + "\n")
         for i, r in zip(ids, res):
@@ -235,12 +295,18 @@ def cmd_score(a):
     print(f"wrote {out}: {Counter(r.get('stage_used') for r in res)}; {meta['device']}, {meta['seconds']}s")
 
 
-def load_scores(path):
+def load_scores(path, order, ids):
+    """One `score` output: its meta must name `order`, and its rows must be exactly `ids` in that order, each scored."""
     lines = [json.loads(l) for l in open(path)]
-    meta, rows = lines[0]["meta"], {r["id"]: r for r in lines[1:]}
-    if len(rows) != meta["n"]:
-        raise SystemExit(f"{path}: {len(rows)} rows, meta says {meta['n']}")
-    return meta, rows
+    meta, body = lines[0]["meta"], lines[1:]
+    want = sorted(ids)[::-1] if order == "reversed" else sorted(ids)
+    if meta.get("order") != order:
+        raise SystemExit(f"{path}: meta order {meta.get('order')!r}, expected {order!r}")
+    if [r["id"] for r in body] != want or meta.get("n") != len(want):
+        raise SystemExit(f"{path}: rows are not the {len(want)} labelled ids in {order} order")
+    for r in body:
+        check_row(r)
+    return meta, {r["id"]: r for r in body}
 
 
 def report(lab, cand, v1, op, ts, tag):
@@ -251,8 +317,9 @@ def report(lab, cand, v1, op, ts, tag):
     himid = [i for i in by["neg"] if lab[i]["band"] in ("hi", "mid")]
     print(f"  [{tag}] unweighted spec on deciding negatives: cand {spec(cand, op, by['neg'], lab, False):.3f} | "
           f"v1@t* {spec(v1, ts, by['neg'], lab, False):.3f}")
-    print(f"  [{tag}] hi+mid only (weighted): cand {spec(cand, op, himid, lab):.3f} | v1@t* {spec(v1, ts, himid, lab):.3f} "
-          f"(n={len(himid)})")
+    print(f"  [{tag}] hi+mid only (n={len(himid)}): weighted cand {spec(cand, op, himid, lab):.3f} | v1@t* "
+          f"{spec(v1, ts, himid, lab):.3f}; unweighted cand {spec(cand, op, himid, lab, False):.3f} | v1@t* "
+          f"{spec(v1, ts, himid, lab, False):.3f}")
     d = by["disputed"]
     print(f"  [{tag}] DISPUTED hard negatives (do not decide), n={len(d)}: spec weighted cand "
           f"{spec(cand, op, d, lab):.3f} | v1@t* {spec(v1, ts, d, lab):.3f}; unweighted cand "
@@ -270,21 +337,22 @@ def cmd_evaluate(a):
     op, v1_op = op_point(cand_pkg), op_point(V1)
     lab = labelled()
     print(f"labels: {dict(Counter(x['label'] for x in lab.values()))}; candidate op-point {op} (v1 live op-point {v1_op})")
+    print("strata: the rule names 6 (band x pick); a stratum with no deciding negatives (near/gemini_in today: its "
+          "Gemini-in hard negatives are all disputed) simply has no rows to resample")
     sd, verdicts, scored = Path(a.scores_dir), [], {}
     cand_name = cand_pkg.name
     for order in ORDERS:
-        mc, cand = load_scores(sd / f"{cand_name}_{order}.jsonl")
-        mv, v1 = load_scores(sd / f"v1_{order}.jsonl")
+        mc, cand = load_scores(sd / f"{cand_name}_{order}.jsonl", order, lab)
+        mv, v1 = load_scores(sd / f"v1_{order}.jsonl", order, lab)
         if mc["package"] != str(cand_pkg.relative_to(ROOT)) or mv["package"] != "filters/belonging/v1":
             raise SystemExit(f"{order}: score files are for {mc['package']} / {mv['package']}")
         if mc["fingerprint"] != pkg_fingerprint(cand_pkg)[0] or mv["fingerprint"] != pkg_fingerprint(V1)[0]:
             raise SystemExit(f"{order}: a package changed since it was scored (fingerprint mismatch)")
-        same = ("device", "torch", "transformers", "peft", "host")
-        diff = {k: (mc[k], mv[k]) for k in same if mc[k] != mv[k]}
+        diff = {k: (mc.get(k), mv.get(k)) for k in STACK if mc.get(k) != mv.get(k) or mc.get(k) is None}
         if diff:
             raise SystemExit(f"{order}: the two packages were not scored on the same stack: {diff}")
         r = decide(lab, cand, v1, op)
-        scored[order] = (cand, v1)
+        scored[order] = (cand, v1, r["t_star"])
         verdicts.append(r["passed"])
         print(f"\n=== order {order} ({mc['device']}, torch {mc['torch']}, {mc['host']})")
         print(f"  k = {r['k']}/{N_POS} at op {op}; v1 matched at t* = {r['t_star']:.4f}")
@@ -293,10 +361,13 @@ def cmd_evaluate(a):
               f"95% CI [{r['lo']:+.4f}, {r['hi']:+.4f}]")
         print(f"  ORDER VERDICT: {'PASS' if r['passed'] else 'FAIL: ' + '; '.join(r['reasons'])}")
         report(lab, cand, v1, op, r["t_star"], order)
-    for name, j in (("cand", 0), ("v1", 1)):
+    ts = scored["forward"][2]
+    for name, j, t in (("cand", 0, op), ("v1", 1, ts), ("v1", 1, v1_op)):
         f, rv = scored["forward"][j], scored["reversed"][j]
-        flips = sum(is_in(f[i], op if j == 0 else v1_op) != is_in(rv[i], op if j == 0 else v1_op) for i in lab)
-        print(f"order-to-order verdict flips, {name} at its own op-point: {flips}/{len(lab)}")
+        flips = sum(is_in(f[i], t) != is_in(rv[i], t) for i in lab)
+        print(f"order-to-order verdict flips, {name} at {t:.4f}: {flips}/{len(lab)} (t* forward {ts:.4f}, "
+              f"reversed {scored['reversed'][2]:.4f})" if name == "v1" and t == ts else
+              f"order-to-order verdict flips, {name} at {t:.4f}: {flips}/{len(lab)}")
     print("\nNOT computed here (GATE.md 'Also reported'): v1's test split under treatment.jsonl "
           "(plan phase 6, ground_truth_gate.py), the owner's 10 rows (owner_check_*.tsv) as a per-row table.")
     ok = all(verdicts)
