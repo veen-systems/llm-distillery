@@ -110,10 +110,11 @@ downstream — confirmed on sadalsuud 2026-09-28. The package stays here as a re
 
 - [ ] **v1 @0.95 OVER-BLOCKS — owned here (owner, 2026-10-06)**, evidence on ducroq/NexusMind#527.
       One judge (blind Claude subagents, v1 `prompt.md`): 60/80 uniform blocked rows are journalism
-      (rubric ≤4). In-sample, a cut near 0.995 keeps 9/12 commerce, releases 57/60 journalism —
-      but max gate score is 0.9964 (saturation), so the margin is ~0.0015. Open before proposing a
-      sweep: fresh 150-row draw, run-to-run flip count at 0.995, reader cost (lens ≥ op-point),
-      second judge. 0.95 was chosen on 0/3 high-tier sustainability_technology rows
+      (rubric ≤4); second judge gemma3:27b agrees (70.0% on n=230, κ 0.61). Scores stable (0 flips,
+      two CPU generations; gate decides on round(score,4)). Reader cost: 4/228 blocked rows reachable,
+      all below 0.990, so 0.990/0.993/0.995 are reader-identical. **PROPOSAL POSTED 2026-10-06**
+      (NM#527 comment 6025385135): 0.990 + decide at the gate on `_commerce_score` (config-only
+      change = ~3-day ramp); 0.995 the owner's alternative. ✅ **APPROVED by owner 2026-10-07** (0.990 + score-based gate, obituary alongside); NexusMind implements; verify by outcome on NM#527. 0.95 was chosen on 0/3 high-tier sustainability_technology rows
       (`BACKTEST_REPORT.md`) — never a general-traffic FP measurement. Data: sadalsuud `~/nm527/`.
       Likely cause (untested): test-split negatives are 57/101 arXiv, positives consumer-tech.
       NexusMind changes nothing until the owner approves a proposal.
