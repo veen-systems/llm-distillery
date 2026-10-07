@@ -24,7 +24,9 @@
       from production (20 flips at 4.0). Full text is proven to reproduce production (0 flips on 117 recovered rows).
       Options: (a) gate "on the judged text" as pre-registered, or (b) score on full text where recovered (117/133;
       16 rows' files expired). Judges labelled the cut text either way. The build must decide the same for the 237
-      harvest positives. Evidence: `GATE.md` § *v1 reference run*.
+      harvest positives: 113 were cut, full text recovered for 97 (1,925 of the harvest's 2,251 cut rows, in
+      gitignored `datasets/belonging_harvest_r1/cut_rows_full_content.jsonl`; 25 source files had expired).
+      sadalsuud keeps ~28 days, so these copies are the only ones left after that. Evidence: `GATE.md` § *v1 reference run*.
    2. **Decide hard negatives (owner):** dropping 566 leaves few near-op-point negatives; candidates are the
       harvest's 615 both-out Gemini-ins (v1 raw ≥ 5.6). Decide before the build.
    3. **Build `belonging_v1_adj1`:** v1 rows per `treatment.jsonl` + the 237 positives
