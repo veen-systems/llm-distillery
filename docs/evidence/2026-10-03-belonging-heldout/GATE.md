@@ -143,3 +143,31 @@ negatives decide, because both passes say `out_one_moment`. ⚠️ § *Review* a
 
 **Not computed by the runner** ("Also reported"): v1's test split under `treatment.jsonl` (plan phase 6,
 `ground_truth_gate.py`), and the owner's 10 rows as a per-row table.
+
+## v1 reference run (b650, 2026-10-07 06:22 UTC, `d3b4e4e`)
+
+`gate.py score --package filters/belonging/v1`, both orders. RTX 5090, venv-prodparity (torch 2.11.0+cu130,
+transformers 5.0.0, peft 0.18.1), 295/295 stage 2, 5 s per order, **peak VRAM 3,647 MiB** (the first measurement
+`memory/b650-gpu.md` asked for). The files are in gitignored `datasets/belonging_gate/v1_{forward,reversed}.jsonl`,
+on b650 and here; the v1 package fingerprint `bee0f4aafc6bd5d6` is identical on both machines.
+
+**Harness check against production's own raws (`heldout_rows.jsonl` `raw`):**
+
+| rows | n | median \|Δ\| | p95 | max | verdict flips at 4.0 |
+|---|---|---|---|---|---|
+| content < 4,000 chars | 162 | 0.0000 | 0.081 | 0.234 | 0 |
+| content cut at 4,000 chars | 133 | 0.518 | 2.483 | **3.731** | **20** |
+
+- **The cause is the draw's 4,000-char cut (`draw_heldout.py:63`) meeting belonging's head+tail input.** The model
+  reads the first 256 and the LAST 256 tokens (`config.yaml` `preprocessing.head_tail`). For a cut article, the
+  "tail" is text from around char 4,000, not the real ending. On uncut rows the harness reproduces production.
+- **What it means for the gate:** the comparison is internally fair, because both models and both judges saw the
+  same cut text. But for 133/295 rows the gate measures behaviour on text production never scores, and v1's
+  verdict there already differs from production's on 20 rows. **Owner's call, not changed here:** accept the gate
+  as "on the judged text", or re-fetch full content (NexusMind `filtered_*.jsonl`, the row's `file`) for those 133
+  rows. The judges' labels were made on the cut text either way.
+- ⚠️ **The same cut is in harvest r1** (`extract_hi.py`: "cut at 4,000 chars, as in the held-out run"). If the build
+  trains on that text, the 237 positives' tails are not their real endings.
+- **Order noise (#95):** forward vs reversed max |Δ| **0.453**, 2 rows above 0.16, 12 above 0.01; **0 verdict
+  flips at 4.0.** The ±0.16 report under-covers this term, so the runner also prints order-to-order flips.
+- v1 finds 44/44 positives at 4.0 in both orders (lowest 4.058; production 4.079).
