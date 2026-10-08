@@ -66,3 +66,20 @@ the fresh set's judge A/B binary agreement must lie in [0.90, 0.97] (seen: 0.918
 both-in rate among Gemini-ins must lie in the first held-out's Wilson interval [0.29, 0.48]. Outside either → STOP and
 bring the owner rows. NOT delegated to ovr.news: its panel is another LLM on a different construct (reader gladness, on the
 headline), kept apart by agreement. Cannot catch: a subtle owner/judge disagreement that leaves both statistics unchanged.
+
+## 7. The c2a/c2b pick: delegated to a pre-set rule on ovr's panel (owner 2026-10-08: "can you have ovr do the comparison?")
+
+Fixed BEFORE any candidate-2 score was seen; amended the same hour on ovr.news's review (its points a–c), also before any score.
+- **Disagreement set:** rows of the 5,000-row leak-check draw that exactly ONE of c2a/c2b flags (stage2, weighted_average ≥ 4.0).
+  ovr.news rates them blind with its EXP-028 panel (3 LLM raters, publisher og:title + og:description; the variant is hidden).
+  Stories without a usable card drop out, and ovr reports how many.
+- **Two questions per story:** Q1 is the EXP-028 quality rating (1–3; weak = at least 2 of 3 raters give 1). Q2 is new: "Is this
+  story about a group, community or shared practice, not one person? yes/no" (majority of 3).
+- **The decision rests on Q1, paired:** d = weak share(c2b-only) − weak share(c2a-only), with a bootstrap 95% CI (10,000 resamples
+  within each side, seed 20261013). **c2b goes to the gate UNLESS the CI lies entirely above 0** (c2b's extra stories clearly
+  weaker). A tie goes to c2b: the owner's "no new single-person negatives" default, and c2b is the neutral variant.
+- **Q2 is reported, not deciding.** It shows how many c2b-only stories are single-person: the owner's open fit/reach question,
+  which a quality panel cannot answer (ovr's point a). The owner can veto on it.
+- 27/40 = 0.675 (ovr's PUBLISHED Belonging weak share) is a reference line only: a different population (ovr's point b).
+- A variant failing the leak check is out regardless. The free checks are reported beside the panel. **Ratings never become
+  training labels** (unpublished stories; ovr keeps them under data/held-out/).
