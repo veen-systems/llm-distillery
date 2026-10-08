@@ -1,6 +1,6 @@
 """Belonging adj1: ~800 'easy negatives', a uniform random draw from production (owner 2026-10-07), run on sadalsuud.
     python3 draw_easy_negatives.py exclude_ids.txt > easyneg_rows.jsonl     # counts and the window go to stderr
-Why: in the planned build, articles over 2,000 chars were 12-21% positive vs ~2-9% in production (all enriched),
+Why: in the planned build, articles over 2,000 chars were 12-21% positive vs 5.8-12.7% in production (corrected 2026-10-08),
 which would bias the student toward 'in'. These rows put production-like long articles on the negative side.
 Population: every distinct belonging row (ANY stage, any score: this is the production distribution, labelled by
 the oracle afterwards, not by the student) in every retained data/filtered/belonging/ file. Excludes news.google.com

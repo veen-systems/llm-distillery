@@ -7428,3 +7428,60 @@ read-surface steps −1.1–4) moved VERBATIM to `docs/TODO-archive.md` § *Move
 ⚠️ **Before quoting `references 23 → 0`** (2026-09-17 audit): that is the DEFAULT scan set only,
 and `docs/` is still opt-in. See item 3.
 
+## Moved 2026-10-08 — START HERE item 0 (belonging) as it stood before the adj1 build
+
+*Moved VERBATIM from `docs/TODO.md`.*
+
+0. ▶ **BELONGING v1 → retrain on adjudicated labels (plan `~/.claude/plans/splendid-purring-acorn.md`).**
+   Session record: `memory/project_session_2026_10_03_belonging_heldout_harvest.md`.
+   - **Definition:** `rubric_belonging_v2.md` = **v2.2, FROZEN** (sha `d450b79510418cf7`, pinned by
+     `tests/unit/test_belonging_rubric_frozen.py`; a change needs a new held-out set). v2.0/v2.1 kept as copies.
+   - **Done 2026-10-03** (evidence in `docs/evidence/2026-10-0{2,3}-belonging-*/`):
+     - calibration relabels v2.1/v2.2 + Gemini noise floor (0/242 flips) — `CALIBRATION.md` §§ 6–7
+     - pre-registered held-out (1,200 rows): in-rate hi 8.7% / mid 2.2% / near 0%; confirm rule = **both judges**
+     - harvest r1 (hi band): **237 positives** with k=3 v1 dimension labels; owner 10/10 in
+     - v1 adjudication: judges move out 804/859; **ruled** demote 238 (both `out_one_moment`) / drop 566 / keep 55,
+       executable as `adjudicate.py ruling` → `datasets/belonging_v1_adj/treatment.jsonl` (asserts the counts)
+   ▶ **Next, in order:**
+   1. ✅ **Gate re-ruled (owner, at close):** `GATE.md` § *Pass rule v2*: matched recall (v1 at the threshold that
+      finds as many of the 44), Δspec CI > 0 under 2 scoring orders, k ≥ 31; disputed negatives reported apart;
+      one shot. The gate runner is not yet written.
+   1b. ✅ **Gate runner written 2026-10-07** (`gate.py`, 15 tests, controls on production raws) and **v1's reference
+      scored on b650** (`datasets/belonging_gate/`). ⚠️ **Owner decision found by it:** the held-out draw (and harvest
+      r1) cut content at 4,000 chars, and belonging reads head+TAIL tokens, so 133/295 judged rows score differently
+      from production (20 flips at 4.0). Full text is proven to reproduce production (0 flips on 117 recovered rows).
+      Options: (a) gate "on the judged text" as pre-registered, or (b) score on full text (recovered for ALL 133).
+      Judges labelled the cut text either way. The build must decide the same for the 237 harvest positives: 113 were
+      cut, full text recovered for all 113 (all 2,251 of the harvest's cut rows). Copies (gitignored):
+      `datasets/belonging_{heldout,harvest_r1}/cut_rows_full_content.jsonl`. Sources: sadalsuud's live window
+      (~28 days) and the monthly archive `nexusmind_2026-09.tar.gz` (393 rows I had first called "expired").
+      Evidence: `GATE.md` § *v1 reference run*.
+      ✅ **RULED 2026-10-07 (owner): FULL text** for the gate (GATE.md § *Amendment*) **and for training** the harvest
+      positives (oracle labels stay as made on the cut text).
+   2. ✅ **Hard negatives RULED 2026-10-07 (owner): only the 121 harvest rows where BOTH judges said `out_one_moment`**,
+      capped at 2.0 (the class the owner agreed was out every time on v1's rows), minus any `gate.content_twins` hit.
+      The other ~490 both-out rows are NOT used. Was: **Decide hard negatives (owner):** dropping 566 leaves few near-op-point negatives; candidates are the
+      harvest's 615 both-out Gemini-ins (v1 raw ≥ 5.6). Decide before the build.
+   3. **Build `belonging_v1_adj1`:** v1 rows per `treatment.jsonl` + the 237 positives
+      (`datasets/belonging_harvest_r1/positives_r1_labels.jsonl`); `belonging_exclusions.assert_disjoint()` on every
+      id (1,971 ids from 11 sources; v1 splits are the BASE, so `assert_fresh_draw` is for new draws only). Write the
+      training rows into the package as `training_manifest.jsonl` ({id, url, title, text_head}; GATE.md § *The runner*),
+      after dropping what `gate.content_twins(rows, heldout.rows())` returns. Use FULL text for cut rows
+      (`datasets/belonging_harvest_r1/cut_rows_full_content.jsonl`). Retrain on b650, fit calibration, run the gate.
+      ⛔ b650's card is shared with ovr.news since 2026-10-05: before launching, `curl -s localhost:11434/api/ps` on
+      b650 must show no `gemma3:27b`, and log peak VRAM (`memory/b650-gpu.md`).
+   4. Optional: harvest round 2 (mid band, ~$9.70 est.; ~125–200 positives, est. from 9/44 × the r1 shortfall).
+      First add held-out `content_hash`es to its exclusions (review found 4 content twins, 0 positives, in r1).
+   5. Open measurement: judges were stricter in the harvest than in the held-out (hit 0.257 vs 0.38, Fisher
+      p = 0.013, in both passes). Re-judge the 92 held-out hi Gemini-ins in dense batches to test batch composition.
+   ⛔ **Never name the curator** in this repo or on GitHub. Its data stays in the gitignored `datasets/external_curator/`.
+   **Ruled 2026-10-02 (owner): forward-only redaction plus a guard. Done:**
+   - 41 tracked files (59 lines) now read `positive_news_curator_a` / `curator-a.invalid`; the reverse map is local
+     in `datasets/external_curator/redaction_map.json`.
+   - The #130 comment was edited. GitHub keeps its edit history, and only deleting it would remove that.
+   - `.githooks/pre-commit` and `commit-msg` block the name. The patterns are in the gitignored
+     `config/credentials/forbidden_names.txt`; another clone needs that file.
+   - History was NOT rewritten.
+   - **Cross-repo:** the curator question (cross-lens selection, EXP-025) belongs to ovr.news. Post nothing without the
+     owner.
+

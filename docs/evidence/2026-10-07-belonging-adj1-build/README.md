@@ -20,7 +20,8 @@ build's result per row.
 | FM-H1 | the build drops `gate.content_twins`; the gate refuses on overlap |
 | FM-H2 | `assert_disjoint` on every id |
 | FM-L1..L3, FM-P1 | raised by the build (exact counts: 237 positives, treatment 238/566/55, oracle covers every row) |
-| FM-L5 | **accepted by owner 2026-10-07** (easy negatives at k=1) |
+| FM-L4 | not mechanized; measured: one `prompt_hash` (`99ea1765a7ea`) across the hard and easy negatives |
+| FM-L5 | **accepted by owner 2026-10-07** (easy negatives at k=1); 796 of 798 scored, 2 failed permanently |
 | FM-S1 | **open** (TODO item 0.5) |
 | FM-S2 | the easy-negative draw excludes `news.google.com` |
 | FM-S3 | **open**, not mechanized (cost here: 393 rows briefly called lost) |
@@ -39,4 +40,9 @@ build's result per row.
 
 ## Result
 
-*(filled after the build runs)*
+**Not built yet (2026-10-08).** Two blockers, both in `docs/TODO.md` item 0: the 2 unscored easy negatives,
+and `assert_disjoint` refusing 61 of v1's own surviving rows (pilot, calibration and v2-test ids drawn FROM v1's splits;
+6 are v2-test rows). A reviewer's scratch build (2 easy negatives dropped, the disjoint check on new rows only) gave:
+train 6,365 / val 778 / test 781 rows; MEDIUM+ labels 273 / 32 / 30; 44 of 794 easy negatives labelled positive; 1 held-out
+twin and 33 cross-split twins dropped; FM-T1 still coupled (training median 900 chars vs 2,235 production; positive share
+10.7 / 15.6 / 18.9% at 2–4k / 4–8k / >8k vs production 5.8 / 10.6 / 12.7%). Not an official run: re-run after the rulings.

@@ -39,10 +39,7 @@ would llm-distillery own the retrain/recalibration? The owner confirmed, approve
 
 ## Next
 
-`docs/TODO.md` ▶ START HERE item 0: the owner's call on 0.1b (cut vs full text) and step 2 (hard negatives), then the
-build, which must write `training_manifest.jsonl` and drop `gate.content_twins(...)` (21 harvest rows) before
-training. Commits on main are **not pushed** (owner's call). b650's checkout is **detached at `6974177`**
-(was `main` at `8d8c510`); `git -C ~/llm-distillery checkout main` restores the old state.
+*(Superseded by § Second half below: everything was pushed and b650 is back on `main`.)*
 
 ## Owner rulings, 2026-10-07 (after the session, "help me through decisions")
 
@@ -53,3 +50,26 @@ training. Commits on main are **not pushed** (owner's call). b650's checkout is 
    the owner agreed was out every time on v1's rows; minus any `content_twins` hit.
 4. **Push** the session's commits.
 5. **Fix the nature_recovery v1/v2/v4 `config.yaml` tab label** (v4 is deployed: one-line diff at the next sync).
+
+## Second half (2026-10-07 afternoon → 10-08 close)
+
+**Spend:** Gemini oracle, k=3 × 121 hard negatives + k=1 × 798 easy negatives (estimates ~$1.25 + ~$2.80, NOT
+measured), **plus an unknown amount from ~74k failed calls** in an overnight `batch_scorer` loop (2 rows, fixed; owner to
+check billing). b650 GPU: a few 5-second v1 scorings. 4 more reviewer subagents.
+
+| Thread | State |
+|---|---|
+| Commerce | **closed**: deployed 2026-10-07 21:28 (NM PR #618), verified by outcome (blocks 34,385 → 13,597) |
+| Owner rulings | full text (gate + training), hard negatives = 121 one-moment rows, easy negatives k=1, push, nature_recovery tab label |
+| Gate | v1 full-text reference scored (spec 0.5248 = production 0.525); two more refusals (model path, v1 clone) |
+| Build | script + easy-negative draw written; **NOT run**: 2 unscored easy negatives, and an owner ruling on 61 excluded v1 rows (TODO 0.1b), and the length coupling only partly fixed (TODO 0.1c) |
+| Data FMEA | owner: "part of the runbook" → `docs/checklists/training-data-fmea.md` + `training/data_quality.py`, run by `validate_training_data.py --production-sample` (RUNBOOK § Prepare data) |
+| Read surface | 857,038 → ~799k chars: session-log entries 09-01..09-17 moved verbatim; `retire_memory.py sessionlog` added |
+
+**Mine:** I answered "are the articles enriched?" only after the owner asked, and first misread v1's short training
+text as "consistent"; I wrote "~2–9% in production" without measuring (production also rises with length, review
+corrected it); I let a background oracle run go unchecked for 12 hours; one patch deleted most of the build script
+(self-caught).
+
+**Next:** `docs/TODO.md` ▶ START HERE item 0, steps 1 → 1b → 1c (owner rulings first), then build, validate, stage,
+train, gate.

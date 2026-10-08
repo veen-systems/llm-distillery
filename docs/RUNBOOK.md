@@ -325,7 +325,7 @@ python training/validate_training_data.py \
 
 ⛔ **Read the FM-T1 table before training, not just the exit code.** A positive share that rises with text length
 while production articles are long is a shortcut the student will learn (belonging, 2026-10-07: training articles over
-2,000 chars were 12-21% positive vs ~2-9% in production, because v1's own rows are pre-enrichment snippets). Each row of
+2,000 chars were 12-21% positive; production, measured 2026-10-08 on the 798-row production sample (oracle k=1): 5.8% / 10.6% / 12.7% positive at 2–4k / 4–8k / >8k chars, so production ALSO rises with length, and the easy negatives only brought training to 10.7-18.9%, about 1.5-1.8x production per bin. Compare per bin, not against one production rate). Each row of
 `docs/checklists/training-data-fmea.md` that is not mechanized needs an owner acceptance in the build's evidence
 README.
 

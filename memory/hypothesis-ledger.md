@@ -339,6 +339,15 @@ unless it says otherwise. The one repeat measured: 3/110 verdicts flip with the 
 | H-BV11 | e5 nearest-seed retrieval concentrates belonging positives | ❌ **REFUTED at this seed set (2026-10-02):** 18 seeds, 344,855 rows; retrieved ∩ student-pass **2/48** vs random pass **1/28**, retrieved ∩ fail **0/20**. Centroid ranking looked worse by eye. Evidence `docs/evidence/2026-10-02-belonging-adjudication/PREREGISTRATION_v3.md`, `pilot_v3_result.txt` |
 | H-BV12 | An LLM scope oracle given rubric v2 can screen for belonging candidates | ⏳ **OPEN, promising:** on 242 judged rows (post-override labels, `cannot_judge` excluded), Gemini Flash spec **0.954** / recall **0.889**; Claude Opus 5.5 (subagents) 0.986 / 0.778; DeepSeek 0.991 / 0.556 (rubric v2.0). Supported: Gemini over DeepSeek only; recall is anchored to Claude's exemplars, not to the owner. On rubric v2.1 Gemini reads **0.921** against STALE v2.0 labels. ⚠️ recall n=17 (13 exemplars); Claude's figure shares the judges' bias. **Next test:** re-label the set under v2.1, recompute. Evidence `docs/evidence/2026-10-02-belonging-adjudication/CALIBRATION.md` |
 
+### Belonging adj1 build and gate — `H-BB` (2026-10-07, `docs/evidence/2026-10-07-belonging-adj1-build/`, `docs/evidence/2026-10-03-belonging-heldout/GATE.md`)
+
+| id | hypothesis | status |
+|---|---|---|
+| H-BB1 | Cutting article text at 4,000 chars changes a head+tail student's verdicts (the tail it reads is no longer the ending) | ✅ **CONFIRMED 2026-10-07:** v1 on cut text vs production 20/133 flips at 4.0 (max \|Δ\| 3.73); on recovered full text **0/133** (max 0.39), same rows, same stack. Owner ruled full text everywhere |
+| H-BB2 | In the planned adj1 data, positive share rises with text length (v1 rows are pre-enrichment snippets, new positives are enriched) and biases the student toward "in" on long production articles | ⏳ **OPEN.** Coupling MEASURED (0.7% positive under 1,000 chars → 12–21% over 2,000). ⚠️ Corrected 2026-10-08: production also rises with length (oracle k=1 on 798 production rows: 5.8 / 10.6 / 12.7% at 2–4k / 4–8k / >8k), so the excess is ~1.5–1.8× per bin, and the easy negatives only bring training to 10.7 / 15.6 / 18.9% (review's scratch build). The BIAS is predicted, not measured. Test: the build's FM-T1 table, then the gate's specificity |
+| H-BB3 | Run-to-run (row order) score noise above the 0.16 floor is driven by long texts that fill the 512-token window | ⏳ **OPEN, suggestive:** v1 forward vs reversed max \|Δ\| 0.453; 10 of 12 rows with \|Δ\| > 0.01 are cut (long) rows, which are 45% of the set. 0 verdict flips. Unisolated from the device term |
+| H-BB4 | Commerce v1 @0.95 blocks mostly journalism, and 0.990 releases it without letting commerce reach readers | ✅ **CONFIRMED by outcome (NM#527, 2026-10-08):** ~70% of blocks were journalism (two judges, n=230); after 0.990 blocks per cycle 34,385 → 13,597 (39.5%, predicted 38.9%). ⚠️ Reader-side effect after deploy NOT measured (pre-deploy: 4 of 228 sampled blocked rows would have reached a reader — 3 journalism, 1 commerce) |
+
 ## Where the *experiments* live, as opposed to the hypotheses
 
 | kind | home |

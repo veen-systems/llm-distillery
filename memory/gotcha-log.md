@@ -4,6 +4,16 @@
 
 *⚠️ **Entries dated before 2026-09-17 live in [`archive/gotcha-log-archive.md`](archive/gotcha-log-archive.md)**, verbatim (the 09-01 → 09-16 ones moved 2026-09-27 by an owner-approved MID-MONTH pass, `--before 2026-09-17`; earlier ones moved 2026-09-24; into `archive/` 2026-09-26 so curate's size measurement stops counting it, #163; the month-dated Feb–May entries followed on 2026-09-26). Next pass: `python3 scripts/maintenance/retire_memory.py gotcha --before <first of this month> --apply` (dry run without `--apply`). It retires top-level entries only; the `###` entries inside the catalogue are kept by rule and counted. The unreachable-mechanism catalogue stayed here. For a recurrence match, grep both: `grep -n <term> memory/gotcha-log*.md`.*
 
+## A BACKGROUND ORACLE RUN LOOPED ALL NIGHT ON TWO FAILING ROWS — ~74k failed calls (2026-10-07/08)
+**Problem**: `ground_truth.batch_scorer` (sequential mode) scored 796/798 easy negatives, then re-fetched the 2
+permanently failing rows (`llm_api_error`) as "unscored" for ~6,100 batches until killed 12 hours later. Billing
+impact unknown (the error text was never logged).
+**Root cause**: a failed article was never recorded, so `load_unscored_articles` returned it forever. The 2026-09-01
+"402 is not a per-row error" entry is the same family: the scorer has no per-run failure budget.
+**Fix**: failures are now skipped for the rest of the run (`_failed_this_run`, test in `test_batch_scorer.py`).
+**And**: a background oracle run gets a completion check, not just a start: I launched it and never looked at its
+log again until the next morning. Read the log tail (or the row count vs expected) before reporting "running".
+
 ## "THE SOURCE FILES EXPIRED" — WRITTEN INTO TWO DOCS, REFUTED BY THE MONTHLY ARCHIVE (2026-10-07) [17th occurrence of *establish what a source excludes*]
 **Problem**: Recovering full text for cut belonging rows, I found 23+25 source files gone from sadalsuud's live
 `filtered/` window and committed "67 rows lost", "16 judged rows' files expired", "the only copies left" to GATE.md

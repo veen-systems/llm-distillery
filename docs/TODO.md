@@ -1,61 +1,50 @@
 # LLM Distillery - TODO
 
-## ▶️ START HERE — the ordered queue, as of 2026-10-03 (evening close)
+## ▶️ START HERE — the ordered queue, as of 2026-10-08 (session close)
 
 *A bare "continue" means this list, top down. Each line names the FIRST action.*
 
-0. ▶ **BELONGING v1 → retrain on adjudicated labels (plan `~/.claude/plans/splendid-purring-acorn.md`).**
-   Session record: `memory/project_session_2026_10_03_belonging_heldout_harvest.md`.
-   - **Definition:** `rubric_belonging_v2.md` = **v2.2, FROZEN** (sha `d450b79510418cf7`, pinned by
-     `tests/unit/test_belonging_rubric_frozen.py`; a change needs a new held-out set). v2.0/v2.1 kept as copies.
-   - **Done 2026-10-03** (evidence in `docs/evidence/2026-10-0{2,3}-belonging-*/`):
-     - calibration relabels v2.1/v2.2 + Gemini noise floor (0/242 flips) — `CALIBRATION.md` §§ 6–7
-     - pre-registered held-out (1,200 rows): in-rate hi 8.7% / mid 2.2% / near 0%; confirm rule = **both judges**
-     - harvest r1 (hi band): **237 positives** with k=3 v1 dimension labels; owner 10/10 in
-     - v1 adjudication: judges move out 804/859; **ruled** demote 238 (both `out_one_moment`) / drop 566 / keep 55,
-       executable as `adjudicate.py ruling` → `datasets/belonging_v1_adj/treatment.jsonl` (asserts the counts)
+0. ▶ **BELONGING v1 → adj1 retrain: run the build, check it, train, gate.** Plan `~/.claude/plans/splendid-purring-acorn.md`;
+   session `memory/project_session_2026_10_07_commerce_gate_runner.md`; build `docs/evidence/2026-10-07-belonging-adj1-build/`
+   (README = this build's FMEA status); gate `docs/evidence/2026-10-03-belonging-heldout/GATE.md` (+ `gate.py`).
+   All owner rulings are in (2026-10-03 adjudication; 2026-10-07 full text everywhere, hard negatives = 121
+   one-moment rows, ~800 production easy negatives at k=1). History before 2026-10-08: `docs/TODO-archive.md`.
    ▶ **Next, in order:**
-   1. ✅ **Gate re-ruled (owner, at close):** `GATE.md` § *Pass rule v2*: matched recall (v1 at the threshold that
-      finds as many of the 44), Δspec CI > 0 under 2 scoring orders, k ≥ 31; disputed negatives reported apart;
-      one shot. The gate runner is not yet written.
-   1b. ✅ **Gate runner written 2026-10-07** (`gate.py`, 15 tests, controls on production raws) and **v1's reference
-      scored on b650** (`datasets/belonging_gate/`). ⚠️ **Owner decision found by it:** the held-out draw (and harvest
-      r1) cut content at 4,000 chars, and belonging reads head+TAIL tokens, so 133/295 judged rows score differently
-      from production (20 flips at 4.0). Full text is proven to reproduce production (0 flips on 117 recovered rows).
-      Options: (a) gate "on the judged text" as pre-registered, or (b) score on full text (recovered for ALL 133).
-      Judges labelled the cut text either way. The build must decide the same for the 237 harvest positives: 113 were
-      cut, full text recovered for all 113 (all 2,251 of the harvest's cut rows). Copies (gitignored):
-      `datasets/belonging_{heldout,harvest_r1}/cut_rows_full_content.jsonl`. Sources: sadalsuud's live window
-      (~28 days) and the monthly archive `nexusmind_2026-09.tar.gz` (393 rows I had first called "expired").
-      Evidence: `GATE.md` § *v1 reference run*.
-      ✅ **RULED 2026-10-07 (owner): FULL text** for the gate (GATE.md § *Amendment*) **and for training** the harvest
-      positives (oracle labels stay as made on the cut text).
-   2. ✅ **Hard negatives RULED 2026-10-07 (owner): only the 121 harvest rows where BOTH judges said `out_one_moment`**,
-      capped at 2.0 (the class the owner agreed was out every time on v1's rows), minus any `gate.content_twins` hit.
-      The other ~490 both-out rows are NOT used. Was: **Decide hard negatives (owner):** dropping 566 leaves few near-op-point negatives; candidates are the
-      harvest's 615 both-out Gemini-ins (v1 raw ≥ 5.6). Decide before the build.
-   3. **Build `belonging_v1_adj1`:** v1 rows per `treatment.jsonl` + the 237 positives
-      (`datasets/belonging_harvest_r1/positives_r1_labels.jsonl`); `belonging_exclusions.assert_disjoint()` on every
-      id (1,971 ids from 11 sources; v1 splits are the BASE, so `assert_fresh_draw` is for new draws only). Write the
-      training rows into the package as `training_manifest.jsonl` ({id, url, title, text_head}; GATE.md § *The runner*),
-      after dropping what `gate.content_twins(rows, heldout.rows())` returns. Use FULL text for cut rows
-      (`datasets/belonging_harvest_r1/cut_rows_full_content.jsonl`). Retrain on b650, fit calibration, run the gate.
-      ⛔ b650's card is shared with ovr.news since 2026-10-05: before launching, `curl -s localhost:11434/api/ps` on
-      b650 must show no `gemma3:27b`, and log peak VRAM (`memory/b650-gpu.md`).
-   4. Optional: harvest round 2 (mid band, ~$9.70 est.; ~125–200 positives, est. from 9/44 × the r1 shortfall).
-      First add held-out `content_hash`es to its exclusions (review found 4 content twins, 0 positives, in r1).
-   5. Open measurement: judges were stricter in the harvest than in the held-out (hit 0.257 vs 0.38, Fisher
-      p = 0.013, in both passes). Re-judge the 92 held-out hi Gemini-ins in dense batches to test batch composition.
-   ⛔ **Never name the curator** in this repo or on GitHub. Its data stays in the gitignored `datasets/external_curator/`.
-   **Ruled 2026-10-02 (owner): forward-only redaction plus a guard. Done:**
-   - 41 tracked files (59 lines) now read `positive_news_curator_a` / `curator-a.invalid`; the reverse map is local
-     in `datasets/external_curator/redaction_map.json`.
-   - The #130 comment was edited. GitHub keeps its edit history, and only deleting it would remove that.
-   - `.githooks/pre-commit` and `commit-msg` block the name. The patterns are in the gitignored
-     `config/credentials/forbidden_names.txt`; another clone needs that file.
-   - History was NOT rewritten.
-   - **Cross-repo:** the curator question (cross-lens selection, EXP-025) belongs to ovr.news. Post nothing without the
-     owner.
+   1. **Easy negatives: 796 of 798 scored.** The oracle failed permanently on `south_african_mail_guardian_df80259e0965`
+      and `greek_to_vima_d5748141857e` (`llm_api_error`, cause not logged). `build_adj1.py` REFUSES on incomplete
+      coverage: drop those 2 from `datasets/belonging_easyneg_articles.jsonl` with a recorded reason (or retry once).
+      ⚠️ **Owner: check Google billing for 2026-10-07 ~20:00 → 10-08 08:19** — a `batch_scorer` bug (fixed this
+      session) retried them ~74k times overnight; whether failed calls were billed is unknown.
+   1b. ⛔ **OWNER RULING NEEDED — the build refuses on v1's own rows** (review 2026-10-08): `assert_disjoint` finds **61** of
+      v1's surviving rows (49 demoted, 12 kept) in the exclusion list, because pilot 1/v2 keys, the calibration set and the
+      v2 test set were drawn FROM v1's splits. **6 of them are v2-test rows.** Options: (a) drop all 61 from training
+      (safest; loses 12 kept positives' worth of v1 rows), (b) drop only the 6 v2-test rows and keep pilot/calibration rows
+      (they are evaluation sets no longer used), (c) as (b) and retire the v2 test set as an evaluation. "Check only new
+      rows" is NOT an option: it lets the 6 in silently.
+   1c. ⛔ **OWNER CALL — the length coupling is only partly fixed** (measured on a reviewer's scratch build): long-text
+      positive share 10.7 / 15.6 / 18.9% at 2–4k / 4–8k / >8k chars vs production 5.8 / 10.6 / 12.7% (production also rises
+      with length, corrected 2026-10-08). Options: train anyway and let the gate judge; add more production negatives
+      (~$0.0035/row, k=1); or down-weight long positives. Decide before training.
+   2. **Run** `.venv/bin/python docs/evidence/2026-10-07-belonging-adj1-build/build_adj1.py`, then
+      `python training/validate_training_data.py --data-dir datasets/training/belonging_v1_adj1 --filter filters/belonging/v1
+      --production-sample datasets/belonging_easyneg_rows.jsonl --language-stamps datasets/belonging_language_stamps.json`.
+      **Read FM-T1** (positive share by length vs production 5.8 / 10.6 / 12.7% at 2–4k / 4–8k / >8k chars) and FM-D2/D3; fill the README § *Result*. If the long-text
+      positive share is still far above production, stop and ask the owner before training.
+   3. **Stage the candidate** `filters/belonging/v1_adj1/` (untracked on b650, as `v8_adj3` was): copy v1's package, REWRITE every
+      `filters.belonging.v1.` import to `v1_adj1` (v1's code loads `v1/model` otherwise; `gate.assert_loads_from` refuses it),
+      copy `training_manifest.jsonl` in. rsync the build + language stamps + easy-neg files to b650 (gitignored data).
+   4. **Train on b650** (RUNBOOK § *Train on GPU*): commit+push first (train.py refuses a dirty/unpushed tree); check
+      `curl -s localhost:11434/api/ps` shows no `gemma3:27b`. Flags: `--batch-size 8 --seed 42 --select-metric recall_medium
+      --medium-threshold 4.0 --use-head-tail --head-tokens 256 --tail-tokens 256`. ⚠️ **Epochs are a choice to settle
+      first:** v1 trained 3; the human_thriving adj retrains used 6 with checkpoint selection. recall_medium saturates on a
+      thin val positive count (#144), so read `training_history.json` per epoch.
+   5. **Fit calibration** on the candidate's val (`scripts/calibration/fit_calibration.py ... --no-config-update`).
+   6. **Gate** (one shot): `gate.py score --package filters/belonging/v1_adj1 --order forward|reversed` on b650, then
+      `gate.py evaluate --candidate filters/belonging/v1_adj1`. v1's full-text reference is already scored (`fe12a2f`).
+      Exit 0 PASS / 1 FAIL / 2 REFUSED. Then plan phase 6 secondary (v1 test split under treatment) and phase 7 live audit.
+   7. Open, not blocking: harvest round 2 (~$9.70 est.); FM-S1 judge strictness (re-judge the 92 held-out hi Gemini-ins in
+      dense batches).
+   ⛔ **Never name the curator** in this repo or on GitHub (guards: `.githooks/`, gitignored `config/credentials/forbidden_names.txt`).
 
 1. **Decision-0 sync to NexusMind** — ONE NexusMind commit. The sequence is in the archived block (item 1):
    - dry-run diff first
@@ -140,7 +129,7 @@ downstream — confirmed on sadalsuud 2026-09-28. The package stays here as a re
       two CPU generations; gate decides on round(score,4)). Reader cost: 4/228 blocked rows reachable,
       all below 0.990, so 0.990/0.993/0.995 are reader-identical. **PROPOSAL POSTED 2026-10-06**
       (NM#527 comment 6025385135): 0.990 + decide at the gate on `_commerce_score` (config-only
-      change = ~3-day ramp); 0.995 the owner's alternative. ✅ **APPROVED by owner 2026-10-07** (0.990 + score-based gate, obituary alongside); NexusMind implements; verify by outcome on NM#527. 0.95 was chosen on 0/3 high-tier sustainability_technology rows
+      change = ~3-day ramp); 0.995 the owner's alternative. ✅ **APPROVED 2026-10-07; DEPLOYED 2026-10-07 21:28 CEST** (NexusMind PR #618, `78f4dd1`); **VERIFIED by outcome** (NM#527, 2026-10-08): commerce blocks per cycle 34,385 → 13,597 (39.5%; predicted 38.9%), obituary unchanged, 1,557 released articles reach all 6 lenses, 0 stale `_is_commerce: true` in Contract B. Nothing left on our side; NexusMind closes NM#527. A v3 retrain is NOT planned. 0.95 was chosen on 0/3 high-tier sustainability_technology rows
       (`BACKTEST_REPORT.md`) — never a general-traffic FP measurement. Data: sadalsuud `~/nm527/`.
       Likely cause (untested): test-split negatives are 57/101 arXiv, positives consumer-tech.
       NexusMind changes nothing until the owner approves a proposal.
