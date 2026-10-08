@@ -104,3 +104,7 @@ wedding human-interest items (weak), a restaurant profile and a farming-tech pie
 
 ⚠️ **Volume (not gated; the owner's call at switch):** 25 vs v1's 109 flags on the draw ≈ a quarter. My extrapolation, not
 measured: ovr's ~81/day published Belonging would fall to roughly 20/day.
+
+**OWNER VETO (2026-10-08, after the panel result): gate c2a, not c2b.** The rule's pick was c2b; the owner exercised the veto
+the rule reserved. Recorded as the owner's decision; no reason was given. c2a: 6/27 weak and 7/13 good on ovr's 40, 8 flags of 5,000.
+Known risk, stated beforehand: c2a's low flag rate may miss the recall bar (k ≥ 45 of 63).
