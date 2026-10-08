@@ -52,6 +52,18 @@ Hub upload (`jeergrvgreg/belonging-filter-v3`), pre-placing the adapter on gpu-s
 The owner approved the switch on Claude's recommendation (ADR-023: a weak story costs a reader; v1's published Belonging is 27/40
 weak on ovr.news's EXP-028 panel). Expected range, estimated, not measured: ~20–36 published Belonging stories/day, about half
 of them good, vs ~81/day with ~26 good today. **Check:** ovr.news re-runs its EXP-028 panel on a fresh post-switch Belonging sample
-~2 weeks after the switch. **Roll back to v1** (remove `filters/belonging/v3` from NexusMind; v1 then loads again) if good
+~2 weeks after the switch. **Roll back to v1**: ⛔ NOT by removing `filters/belonging/v3` (corrected 2026-10-08 by NexusMind's review, PR #627: the v3 image
+carries no v1 weights, so removing v3 on it stops the scorer and takes all six filters down). Rollback = the kept previous scorer
+image plus a sadalsuud revert, or a new build; NexusMind owns it if good
 stories per day fall clearly below ~26, or if the weak share does not fall below 27/40. "Clearly" means outside the panel's
 95% interval.
+
+## NexusMind review notes (PR #627, 2026-10-08), for the refit
+
+- **Refit population:** `data/filtered/belonging` is keyed by filter NAME, so it mixes v1 and v3 rows. Fit only rows with
+  `nexus_mind_attributes.belonging.version == "3.0"`.
+- **Ceiling until the refit:** v3's calibration caps community_fabric at 6.33 and slow_presence at 6.78. Its highest weighted
+  raw is ~7.79, below v1's fitted raw_max 7.97, so the top ~1% of v1's normalized curve is unreachable until the refit.
+  Smoke article: v3 raw 5.71 → normalized 6.57; v1 raw 6.45 → 8.74.
+- `filter_version: "1.0"` also sits in `calibration.json` (and `normalization.json`). Nothing reads it. It is left as is
+  because changing calibration.json would change the gated package's bytes; it gets fixed at the refit.
