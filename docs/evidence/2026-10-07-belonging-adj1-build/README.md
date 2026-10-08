@@ -44,7 +44,7 @@ build's result per row.
 `build_adj1.py` as `V1_EXCLUDED_DROP`), and 1c = train anyway and let the gate judge. `build_adj1.py` exit 0;
 `validate_training_data.py --production-sample ...` exit 0, no critical issues.
 
-- **Splits:** train 6,322 / val 768 / test 778; MEDIUM+ labels 266 / 29 / 28 (323 total: 236 harvest, 44 easy
+- **Splits:** train 6,320 / val 768 / test 778 (6,322 before the late-twin fix below); MEDIUM+ labels 266 / 29 / 28 (323 total: 236 harvest, 44 easy
   negatives, 43 v1). Dropped: 61 v1 (ruling 1b), 1 held-out twin, 28 cross-split twins (val/test copy).
 - **FM-T1: still coupled, ACCEPTED (ruling 1c).** Training median 894 chars vs production 2,235. Positive share
   0.7 / 2.0 / 10.6 / 15.9 / 18.6% at <1k / 1–2k / 2–4k / 4–8k / >8k (production 5.8 / 10.6 / 12.7% at the top three bins).
@@ -56,3 +56,11 @@ build's result per row.
 - **FM-D3:** boilerplate markers 2.1%, mostly-shared 0.3%.
 - **Validator warnings:** 1,392 all-zero rows (v1 1,269 = 19% of v1, easy 123 = 15.5%: the oracle's normal output for
   off-topic rows, not a failure); no `oracle_meta` (llm-distillery#155, the scope_verdict stamp). belonging v1 does not use it.
+
+**Late held-out twins (2026-10-08, after training run 2).** `gate.py score` REFUSED (held-out NOT spent): 2 train rows
+(`positive_news_the_better_india_ee08ad3a0e48`, `..._ff35f438c63c`, both negatives) "matched" held-out
+`..._50d6d373957f` by 28 shared runs, which turned out to be the site's social-media footer, not the story. The build's twin check
+ran BEFORE its cross-split drop, when ~10 rows carried that footer (discounted as boilerplate at > 2 training rows); after
+the drops only 2 did. Owner: drop them as the gate prescribes and retrain. `build_adj1.py` now repeats the check on the
+surviving rows until empty and ends with the gate's own `refuse_overlap` on the written manifest (mutation-tested: without
+the loop the build refuses with the gate's exact message).

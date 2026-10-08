@@ -20,6 +20,8 @@
    ⚠️ **Run 1 (2026-10-08, `baf7d06`) DISCARDED:** `--select-metric recall_medium` kept EPOCH 1 (0.966 on 29 val positives,
       loss 1.68 vs 0.39; it over-scores negatives) — the #144 saturation. **Owner: retrain with `--select-metric last`**
       (new option, final epoch ships; epoch 6 of run 1 had val MAE 0.374, recall_medium 0.86).
+   ⚠️ **Run 2 (`20637ec`, epoch 6) leak check NOT LEAKED (`docs/evidence/2026-10-08-belonging-adj1-leak-check/`), but the gate
+      REFUSED it before scoring (held-out NOT spent): 2 late footer "twins". Owner: drop + retrain (run 3); build fixed.**
    ▶ **Owner 2026-10-08: no new data yet; train, CHECK, then gate.** Epochs = **6, final epoch (`--select-metric last`)** (read
       `training_history.json` per epoch; if recall_medium saturates on the 29 val positives (#144), tell the owner before
       using the checkpoint). **New step 5b (before the one-shot gate):** score a few thousand UNLABELLED production rows

@@ -182,6 +182,18 @@ def main():
     cross = DQ.cross_split_twins(rows)
     gone = {(sp, i) for sp, i, _, _ in cross}
     rows = {sp: [r for r in rows[sp] if (sp, r["id"]) not in gone] for sp in SPLITS}
+    # Re-run the held-out twin check on the rows that SURVIVED: content_twins discounts a run seen in > 2 training rows
+    # as boilerplate, so dropping rows can turn a discounted footer into a "twin" (2026-10-08: the gate refused 2
+    # The Better India rows sharing only a social-media footer, which ~10 rows carried at the first check). Owner:
+    # drop them, as the gate's docstring prescribes; repeat until the check is empty.
+    while True:
+        late = gate.content_twins([dict(id=r["id"], text_head=r["content"][:1000]) for s in SPLITS for r in rows[s]],
+                                  H.rows())
+        if not late:
+            break
+        twins += late
+        bad = {t for t, _, _ in late}
+        rows = {sp: [r for r in rows[sp] if r["id"] not in bad] for sp in SPLITS}
     for r in (r for s in SPLITS for r in rows[s]):
         if len(r["labels"]) != len(names) or not 0 <= min(r["labels"]) <= max(r["labels"]) <= 10:
             fail(f"FM-L3: {r['id']} labels out of range or ragged: {r['labels']}")
@@ -216,6 +228,8 @@ def main():
     report["mix"] = DQ.mix(built, production, is_pos, DQ.load_language(LANG))
     report["boilerplate"] = DQ.boilerplate(built)
     json.dump(report, open(OUT / "build_report.json", "w"), indent=1)
+    # The gate's OWN check on the exact manifest just written: a refusal must surface here, not after training.
+    print(gate.refuse_overlap(OUT), file=sys.stderr)
     print(json.dumps(report, indent=1))
 
 
