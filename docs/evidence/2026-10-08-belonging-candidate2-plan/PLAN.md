@@ -83,3 +83,24 @@ Fixed BEFORE any candidate-2 score was seen; amended the same hour on ovr.news's
 - 27/40 = 0.675 (ovr's PUBLISHED Belonging weak share) is a reference line only: a different population (ovr's point b).
 - A variant failing the leak check is out regardless. The free checks are reported beside the panel. **Ratings never become
   training labels** (unpublished stories; ovr keeps them under data/held-out/).
+
+## 8. Results (2026-10-08): both variants, free checks, ovr's panel. **c2b goes to the gate**
+
+Trained at `49d52a9`, `--select-metric last` (epoch 6), calibrated on val; b650 GPU. Measured:
+
+| | v1 (live) | v1_adj1 (FAILED) | c2a | c2b |
+|---|---|---|---|---|
+| leak check (`leak_c2{a,b}.json`) | | NOT LEAKED | NOT LEAKED | NOT LEAKED |
+| proxy recall, test-split harvest positives | 23/23 | 22/23 | 22/23 | 23/23 |
+| ovr's 40 (EXP-028): weak stories still passed | 27/27 | 13/27 | 6/27 | 9/27 |
+| ovr's 40: good stories kept | 13/13 | 7/13 | 7/13 | 9/13 |
+| flags on the 5,000-row production draw | 109 | 42 | **8** | **25** |
+
+**ovr's panel (ovr.news EXP-029, ovr `f40c016`; input sha256 `1c4857e259d6f420`):** 21 disagreement rows; 2 c2b_only dropped (no
+card); rated c2a_only 2, c2b_only 17. d = 4/17 − 2/2 = **−0.765**, CI95 [−0.941, −0.529] (re-derived here from the per-story rows).
+Not entirely above 0 → **c2b**. As stated before the ratings, n=2 on the c2a side made this near-automatic. Informative:
+c2b_only weak 4/17 (0.235); no story got a 3 from any rater; Q2: 13/17 about a group. The 4 single-person ones are two
+wedding human-interest items (weak), a restaurant profile and a farming-tech piece.
+
+⚠️ **Volume (not gated; the owner's call at switch):** 25 vs v1's 109 flags on the draw ≈ a quarter. My extrapolation, not
+measured: ovr's ~81/day published Belonging would fall to roughly 20/day.
