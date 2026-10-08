@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
-"""Belonging retrain gate runner, HELD-OUT SET 2 (PREREGISTRATION.md here). A copy of ../2026-10-03-belonging-heldout/gate.py:
+"""Belonging retrain gate runner, HELD-OUT SET 3 (PREREGISTRATION.md here; set 2's gate2.py with new seeds). A copy of ../2026-10-08-belonging-heldout2/gate2.py:
 the SAME pass rule v2 (GATE.md, owner 2026-10-03, BINDING; one shot), on a 2x set (owner 2026-10-08: "only the size changes").
 Changes, all size or seed: 800 rows/band, 100 sampled Gemini-outs/band, k_min scaled, new bootstrap seed, full text from the draw.
 
     # on b650 (GPU), once per package and row order; v1 is the reference
-    PYTHONPATH=. .venv/bin/python docs/evidence/2026-10-08-belonging-heldout2/gate2.py score \
-        --package filters/belonging/v1 --order forward  --out datasets/belonging_gate2/v1_forward.jsonl
+    PYTHONPATH=. .venv/bin/python docs/evidence/2026-10-08-belonging-heldout3/gate3.py score \
+        --package filters/belonging/v1 --order forward  --out datasets/belonging_gate3/v1_forward.jsonl
     ... --order reversed ...; then the same for the candidate package
 
     # anywhere: the verdict (exit 0 = PASS, 1 = FAIL)
-    .venv/bin/python docs/evidence/2026-10-08-belonging-heldout2/gate2.py evaluate \
-        --candidate filters/belonging/vN --scores-dir datasets/belonging_gate2
+    .venv/bin/python docs/evidence/2026-10-08-belonging-heldout3/gate3.py evaluate \
+        --candidate filters/belonging/vN --scores-dir datasets/belonging_gate3
 
     # anywhere, needs no GPU: the rule run on v1's PRODUCTION raws, with controls that must FAIL / PASS
-    .venv/bin/python docs/evidence/2026-10-08-belonging-heldout2/gate2.py controls
+    .venv/bin/python docs/evidence/2026-10-08-belonging-heldout3/gate3.py controls
 
 The rule, as code (each line is GATE.md § Pass rule v2):
 - positives = both judges `in_scope` (N_POS, fixed in PREREGISTRATION.md § Result before any candidate is scored); a split or `cannot_judge` on either pass is excluded.
@@ -28,7 +28,7 @@ The rule, as code (each line is GATE.md § Pass rule v2):
 - weight = band pool / rows held in the band (800 minus Amendment-1 drops), times band Gemini-outs / 100 for a sampled Gemini-out row (computed from
   `gemini_v2_2.jsonl` here, as `heldout.py analyse` does; `no_reply` counts as out).
 - Δspec = spec(candidate @ op) − spec(v1 @ t*), weighted, on the deciding negatives; paired bootstrap stratified by
-  band × pick, 2,000 resamples, seed 20261012. PASS needs the 95% lower bound > 0 AND k >= K_MIN = ceil(31/44 × N_POS),
+  band × pick, 2,000 resamples, seed 20261022. PASS needs the 95% lower bound > 0 AND k >= K_MIN = ceil(31/44 × N_POS),
   under BOTH orders (set 1's recall bar as a share, Claude's translation; owner ruling: only the size changes).
 - the gate REFUSES a candidate without `training_manifest.jsonl` (one {"id", "url", "title", "text_head"} per
   training row, text_head = the first 1,000 chars of the training text, written by the build; every field required),
@@ -46,10 +46,10 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 ROOT = HERE.parents[2]
 sys.path.insert(0, str(HERE)); sys.path.insert(0, str(ROOT))
-import heldout2 as H  # noqa: E402  (rows, judges, Gemini verdicts: one implementation)
+import heldout3 as H  # noqa: E402  (rows, judges, Gemini verdicts: one implementation)
 
-N_POS = 63  # PREREGISTRATION.md § Result (2026-10-08), fixed BEFORE any candidate is scored
-SEED, NBOOT, NOISE = 20261012, 2000, 0.16
+N_POS = None  # set from PREREGISTRATION.md § Result once the judges are in, BEFORE any candidate is scored; None refuses
+SEED, NBOOT, NOISE = 20261022, 2000, 0.16
 K_MIN = None if N_POS is None else math.ceil(31 / 44 * N_POS)
 ORDERS = ("forward", "reversed")
 UNDISPUTED = {"out_one_moment"}
@@ -502,7 +502,7 @@ if __name__ == "__main__":
     s = sub.add_parser("score"); s.add_argument("--package", required=True); s.add_argument("--order", choices=ORDERS, required=True)
     s.add_argument("--out", required=True); s.add_argument("--allow-cpu", action="store_true")
     e = sub.add_parser("evaluate"); e.add_argument("--candidate", required=True)
-    e.add_argument("--scores-dir", default="datasets/belonging_gate2")
+    e.add_argument("--scores-dir", default="datasets/belonging_gate3")
     sub.add_parser("controls")
     a = ap.parse_args()
     try:

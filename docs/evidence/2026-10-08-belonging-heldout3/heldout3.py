@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Belonging held-out set 2 (PREREGISTRATION.md here). A copy of ../2026-10-03-belonging-heldout/heldout.py at 2x:
-800 rows per band, 100 sampled Gemini-outs per band, new seeds. Rows: gitignored datasets/belonging_heldout2/.
+"""Belonging held-out set 3 (PREREGISTRATION.md here). Set 2's heldout2.py with new seeds and a wider source; 2x of set 1:
+800 rows per band, 100 sampled Gemini-outs per band, new seeds. Rows: gitignored datasets/belonging_heldout3/.
 
-    .venv/bin/python docs/evidence/2026-10-08-belonging-heldout2/heldout2.py check
-    .venv/bin/python docs/evidence/2026-10-08-belonging-heldout2/heldout2.py gemini [--limit N]
-    .venv/bin/python docs/evidence/2026-10-08-belonging-heldout2/heldout2.py build-judges
-    .venv/bin/python docs/evidence/2026-10-08-belonging-heldout2/heldout2.py analyse
+    .venv/bin/python docs/evidence/2026-10-08-belonging-heldout3/heldout3.py check
+    .venv/bin/python docs/evidence/2026-10-08-belonging-heldout3/heldout3.py gemini [--limit N]
+    .venv/bin/python docs/evidence/2026-10-08-belonging-heldout3/heldout3.py build-judges
+    .venv/bin/python docs/evidence/2026-10-08-belonging-heldout3/heldout3.py analyse
 
 Stage A reuses the calibration's call()/parse()/prompt_for() unchanged (same prompt template and Gemini settings).
 """
@@ -21,17 +21,15 @@ sys.path.insert(0, str(CAL)); sys.path.insert(0, str(ROOT))
 import calibrate_scope_oracles as cso  # noqa: E402
 from belonging_exclusions import assert_is_source  # noqa: E402
 
-DATA = ROOT / "datasets" / "belonging_heldout2"
-ROWS, GEM, JUDGE = DATA / "heldout2_rows.jsonl", DATA / "gemini_v2_2.jsonl", DATA / "judges"
+DATA = ROOT / "datasets" / "belonging_heldout3"
+ROWS, GEM, JUDGE = DATA / "heldout3_rows.jsonl", DATA / "gemini_v2_2.jsonl", DATA / "judges"
 RUBRIC = CAL / "rubric_belonging_v2.md"
 RUBRIC_SHA = "d450b79510418cf7"  # frozen v2.2 (PREREGISTRATION.md)
 BANDS, N_OUT, PER_BATCH, N_BAND = ("hi", "mid", "near"), 100, 50, 800
 
 
-# Dropped AFTER the draw, BEFORE any oracle or judge call (PREREGISTRATION.md § Amendment 1): twins of v1_adj1/c2a/c2b
-# training rows by gate2's own overlap check (title or 8-word-run content). The draw excluded ids only.
-DROPPED = {"positive_news_upworthy_35dd196e7214", "romanian_hotnews_1e3c52d614a9",
-           "british_irish_independent_uk_b7b6d44c13aa", "austrian_krone_a1b472c6c601"}
+# Dropped AFTER the draw, BEFORE any oracle or judge call: twins of a training row by gate3's own overlap check.
+DROPPED = set()  # filled only by PREREGISTRATION.md amendments, before any oracle call
 
 
 def drawn():
@@ -57,7 +55,7 @@ def check():
     ids = [r["id"] for r in rs]
     if len(ids) != 3 * N_BAND or len(set(ids)) != 3 * N_BAND or Counter(r["band"] for r in rs) != Counter({b: N_BAND for b in BANDS}):
         raise SystemExit(f"draw shape wrong: {len(ids)} rows, {len(set(ids))} distinct, {Counter(r['band'] for r in rs)}")
-    assert_is_source(ids, "held-out set 2 2026-10-08")
+    assert_is_source(ids, "held-out set 3 2026-10-08")
     print(f"ok: {3 * N_BAND} distinct rows drawn, {N_BAND}/band, in belonging_exclusions as a source, rubric frozen; "
           f"held after drops: {dict(band_n(rows()))}")
 
@@ -127,14 +125,14 @@ def build_judges():
     if JUDGE.exists():
         raise SystemExit(f"{JUDGE} exists; refusing to overwrite")
     pick = {i: "gemini_in" for i in rs if g[i]["verdict"] == "in_scope"}
-    rng = random.Random(20261011)
+    rng = random.Random(20261021)
     for b in BANDS:
         outs = sorted(i for i in rs if rs[i]["band"] == b and g[i]["verdict"] != "in_scope")
         for i in rng.sample(outs, N_OUT):
             pick[i] = "gemini_out_sample"
     ids, id_map = sorted(pick), {}
     nb = -(-len(ids) // PER_BATCH)
-    for p, seed in (("A", 41), ("B", 42)):
+    for p, seed in (("A", 51), ("B", 52)):
         order = ids[:]
         random.Random(seed).shuffle(order)
         for b in range(nb):
@@ -142,7 +140,7 @@ def build_judges():
             (d / "scratch").mkdir(parents=True)
             with open(d / "input.jsonl", "w") as f:
                 for i in order[b::nb]:
-                    oid = hashlib.sha256(f"heldout2:{p}:{i}".encode()).hexdigest()[:12]
+                    oid = hashlib.sha256(f"heldout3:{p}:{i}".encode()).hexdigest()[:12]
                     id_map[oid] = i
                     r = rs[i]
                     f.write(json.dumps(dict(id=oid, title=r["title"], url=r["url"], source=r["source"],
