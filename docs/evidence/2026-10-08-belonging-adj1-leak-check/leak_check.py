@@ -9,7 +9,7 @@
     PYTHONPATH=. HF_HUB_OFFLINE=1 venv-prodparity/bin/python leak_check.py score --package filters/belonging/v1
     PYTHONPATH=. HF_HUB_OFFLINE=1 venv-prodparity/bin/python leak_check.py score --package filters/belonging/v1_adj1
     # anywhere: the verdict (exit 0 NOT LEAKED / 1 LEAKED / 2 REFUSED)
-    python3 leak_check.py evaluate
+    python3 leak_check.py evaluate [CANDIDATE]   # CANDIDATE = a package name under filters/belonging/ (default v1_adj1)
 """
 import glob, json, os, random, sys
 from collections import Counter
@@ -20,7 +20,7 @@ ROOT = HERE.parents[2]
 D = ROOT / "datasets"
 ROWS, OUT = D / "belonging_leak_rows.jsonl", D / "belonging_leak_scores"
 N, SEED, NBOOT, OP, RATIO, LONG = 5000, 20261008, 10000, 4.0, 1.5, 4000
-PKGS = ("filters/belonging/v1", "filters/belonging/v1_adj1")
+PKGS = ("filters/belonging/v1", "filters/belonging/v1_adj1")  # evaluate CANDIDATE replaces the second
 BINS = [(0, 1000), (1000, 2000), (2000, 4000), (4000, 8000), (8000, None)]
 
 
@@ -147,10 +147,11 @@ def compare(ids, v1, cand):
                 ratio=None if ratio is None else round(ratio, 3), gap_ci95=[round(lo, 4), round(hi, 4)], leaked=leaked)
 
 
-def cmd_evaluate():
+def cmd_evaluate(candidate="v1_adj1"):
+    pkgs = (PKGS[0], f"filters/belonging/{candidate}")
     rows = {r["id"]: r for r in jl(ROWS)}
     sc = {}
-    for p in PKGS:
+    for p in pkgs:
         f = OUT / f"{Path(p).name}.jsonl"
         if not f.exists():
             print(f"REFUSED: {f} missing"); sys.exit(2)
@@ -158,7 +159,7 @@ def cmd_evaluate():
         sc[p] = {r["id"]: r for r in recs[1:]}
         if set(sc[p]) != set(rows):
             print(f"REFUSED: {f} does not cover the drawn rows"); sys.exit(2)
-    v1, cand = sc[PKGS[0]], sc[PKGS[1]]
+    v1, cand = sc[pkgs[0]], sc[pkgs[1]]
     split = sum((v1[i]["stage_used"] == "stage1_low") != (cand[i]["stage_used"] == "stage1_low") for i in rows)
     ids = sorted(rows)
     L = lambda i: len(rows[i]["content"] or "")  # noqa: E731
@@ -174,7 +175,7 @@ def cmd_evaluate():
                decisive={k: compare(v, v1, cand) for k, v in groups.items()},
                context={k: compare(v, v1, cand) for k, v in ctx.items()})
     rep["verdict"] = "LEAKED" if any(g.get("leaked") for g in rep["decisive"].values()) else "NOT LEAKED"
-    json.dump(rep, open(OUT / "result.json", "w"), indent=1)
+    json.dump(rep, open(OUT / f"result_{candidate}.json", "w"), indent=1)
     print(json.dumps(rep, indent=1))
     sys.exit(1 if rep["verdict"] == "LEAKED" else 0)
 
@@ -188,6 +189,6 @@ if __name__ == "__main__":
     elif cmd == "score" and sys.argv[2:3] == ["--package"]:
         cmd_score(sys.argv[3])
     elif cmd == "evaluate":
-        cmd_evaluate()
+        cmd_evaluate(*sys.argv[2:3])
     else:
         raise SystemExit(__doc__)
