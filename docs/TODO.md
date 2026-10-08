@@ -8,14 +8,12 @@
    owner's GO on the switch** (#170). Read `filters/belonging/v3/STATUS.md` first. History: v1_adj1 FAILED set 1; c2a FAILED set 2
    on recall (owner veto picked c2a over the panel's c2b); c2b PASSED set 3 (k 76/83, Δspec +0.350 [+0.322, +0.376], size partly
    by band construction, PLAN.md § 10). All three held-out sets are SPENT.
-   ▶ **On GO, in order** (RUNBOOK § Deployment to NexusMind):
-   1. Hub: `upload_to_huggingface.py --filter filters/belonging/v3 --repo-name jeergrvgreg/belonging-filter-v3 --private`, then
-      `verify_filter_package.py --check-hub`.
-   2. Pre-place the adapter on gpu-server (guard D), or confirm by hand.
-   3. `deploy_to_nexusmind.sh belonging v3 --dry-run` (⚠️ it writes to NexusMind's tree), then `git -C NexusMind diff --stat`;
-      a NexusMind PR on a chore/ branch. NexusMind loads the highest vN, so v3 goes live on the next cycle.
-   4. Post the switch date on #170 and tell ovr.news (its post-switch panel; normalized ≥ 4.5 watch item).
-   5. After ~2 weeks of production: refit `normalization.json` on v3's own raws, then post the refit date on #170.
+   ▶ **GO given 2026-10-08.** Done: Hub upload (`jeergrvgreg/belonging-filter-v3`, private, check-hub 9/9), probe sidecar
+      (`dd98e79`), rollback rule (STATUS.md). **Handed to the NexusMind session (`nexusmind-dc`)**: since NM#395 production
+      scores on sadaltager from an image (stage.py, docker build, restart, manual sadalsuud pull), so our RUNBOOK's
+      deploy_to_nexusmind.sh/gpu-server path is STALE for this (⚠️ RUNBOOK § Deployment needs a rewrite). filters/common diffed:
+      no runtime difference. ▶ **Waiting on:** the first cycle scored by v3 → post on #170 + tell ovr.news; refit normalization
+      ~2 weeks later; ovr's post-switch panel → rollback rule.
    ⚠️ **Volume:** v3 flags ~¼ of v1's (25 vs 109 per 5,000, measured), so ~20/day vs ~81/day on ovr (extrapolated).
    Open, not blocking: single-person stories (owner unsure; ovr raised it with the owner); FM-S1 judge strictness.
    ⚠️ **Run 2 (`20637ec`, epoch 6) leak check NOT LEAKED (`docs/evidence/2026-10-08-belonging-adj1-leak-check/`), but the gate
