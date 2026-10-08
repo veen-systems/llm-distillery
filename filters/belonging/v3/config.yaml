@@ -1,0 +1,270 @@
+# Belonging Filter - Version 1.0
+# Detects social fabric, rootedness, and intergenerational continuity
+# Grounded in Simone Weil, communitarianism, and Blue Zones research
+# See DEEP_ROOTS.md for philosophical foundations
+
+filter:
+  name: belonging
+  version: "3.0"
+  created: "2025-01-12"
+  updated: "2026-03-01"
+  description: "Rate content for evidence of genuine belonging - social fabric that cannot be purchased or optimized"
+  focus: "Gemeinschaft over Gesellschaft: organic community bonds, rootedness, intergenerational ties"
+
+  core_insight: |
+    Derived from Blue Zones research but deliberately excludes commercially-capturable dimensions
+    (diet, exercise, longevity hacks). Focuses on what cannot be purchased: the relational
+    infrastructure of a good life.
+
+  changelog_v1_reiteration: |
+    Phase 1-2 reiteration (2026-03-01):
+    - Prompt restructured with Step 1 scope check (production pattern)
+    - Inline critical filters added per dimension (before scale tables)
+    - Anti-hallucination rule: evidence must be EXACT QUOTE
+    - community_fabric added as gatekeeper dimension (threshold 3.0)
+    - Model updated from Qwen2.5-1.5B to Gemma-3-1B
+    - head_tail preprocessing added (256+256 tokens)
+    - target_samples increased to 10000
+
+# Per-filter source-type allowlist (NexusMind#189). Excludes only the
+# three new aggregator-style types. The generic "aggregator" type is
+# intentionally NOT excluded — production data shows positive-news
+# outlets like positive_news_tiny_buddha / sunny_skyz tagged that way,
+# which are exactly the content this filter wants. Phase 4b enforcing
+# from 2026-05-04 12:30 CEST after FluxusSource#78 cache-poisoning fix
+# (post-fix shadow showed 2 medium-tier / 0 high-tier would-be losses,
+# all firehose noise).
+source_filter:
+  excluded_source_types: [code_repo, developer_aggregator, firehose_aggregator, eval_aggregator]
+  shadow_mode: false
+
+oracle:
+  recommended: gemini-flash
+  candidates:
+    - gemini-flash
+    - gemini-pro
+    - claude-sonnet
+  target_model: "Gemini Flash 2.0 / Claude Haiku"
+
+scoring:
+  score_scale_factor: 1.1869  # 10.0 / 8.43 (calibrated max)
+
+  dimensions:
+    # === RELATIONAL DIMENSIONS ===
+
+    intergenerational_bonds:
+      weight: 0.25
+      category: relational
+      description: "Youth-elder connections, mentorship across ages, traditional knowledge transfer"
+      scale: |
+        0-2: No intergenerational element, or age-segregated contexts
+        3-4: Passing mention of different generations, minimal interaction
+        5-6: Meaningful cross-generational activity or learning
+        7-8: Deep intergenerational relationship, sustained mentorship, living tradition
+        9-10: Transformative knowledge transfer across generations, elders central to community
+      evidence_focus: "Grandparents involved, elder wisdom transmitted, youth learning from old, multi-age gatherings"
+      critical_filters: |
+        Score 0-2 if: Age-segregated contexts (retirement homes, youth programs without elders),
+        elders mentioned only as care burden or longevity examples,
+        professional mentorship (career coaching, business networking)
+
+    community_fabric:
+      weight: 0.25
+      category: relational
+      description: "Mutual aid, neighborly ties, third places, local institutions, civic participation"
+      gatekeeper: true
+      gatekeeper_threshold: 3
+      gatekeeper_max_score: 3.42
+      scale: |
+        0-2: Isolated individuals, transactional relationships, or online-only connection
+        3-4: Loose acquaintance networks, event-based gathering
+        5-6: Active community participation, regular mutual support
+        7-8: Strong mutual aid networks, deep neighborly bonds, thriving local institutions
+        9-10: Thick social fabric - everyone knows everyone, decades-long relationships, organic solidarity
+      evidence_focus: "Neighbors helping neighbors, community institutions, third places, civic engagement, mutual aid"
+      critical_filters: |
+        Score 0-2 if: Professional networking, LinkedIn, "building social capital",
+        online-only communities without in-person component,
+        corporate team-building or company culture,
+        self-help "find your tribe" framing
+
+    reciprocal_care:
+      weight: 0.10
+      category: relational
+      description: "Family proximity, multigenerational living, elder care at home, mutual dependency as good"
+      scale: |
+        0-2: Outsourced care, institutionalized elderly, fragmented family
+        3-4: Occasional family contact, care at distance
+        5-6: Regular family involvement, some shared responsibility
+        7-8: Multigenerational household or close proximity, daily care exchange
+        9-10: Deep interdependence across generations, care woven into daily life, aging at home as norm
+      evidence_focus: "Grandparents living with family, home care for elders, daily family meals, shared childcare"
+      critical_filters: |
+        Score 0-2 if: Care framed as burden, institutionalization as solution,
+        independence idealized over interdependence,
+        paid caregiving services without family/community context
+
+    # === PLACE & MEANING DIMENSIONS ===
+
+    rootedness:
+      weight: 0.15
+      category: place
+      description: "Long-term residence, place attachment, local knowledge, staying put"
+      scale: |
+        0-2: Mobility, transience, no place attachment, digital nomad framing
+        3-4: Recent arrival, developing local ties
+        5-6: Several years in place, growing roots, local involvement
+        7-8: Decades in one place, deep local knowledge, committed to staying
+        9-10: Generational rootedness - family in same place for generations, identity tied to land
+      evidence_focus: "Years/generations in place, local knowledge, commitment to staying, place-based identity"
+      critical_filters: |
+        Score 0-2 if: Mobility celebrated, location independence, digital nomad framing,
+        tourism framing ("visit this authentic community"),
+        "anywhere" lifestyle as aspiration
+
+    purpose_beyond_self:
+      weight: 0.15
+      category: meaning
+      description: "Meaning through contribution, ikigai/plan de vida, service to others, vocation"
+      scale: |
+        0-2: Self-focused goals, personal optimization, career advancement
+        3-4: Some contribution but primarily self-interested motivation
+        5-6: Clear sense of purpose oriented toward others or community
+        7-8: Deep vocation, life organized around contribution, ikigai evident
+        9-10: Purpose inseparable from community wellbeing, life as gift to others
+      evidence_focus: "Service motivation, vocation language, contribution to others, meaning through giving"
+      critical_filters: |
+        Score 0-2 if: Purpose as personal fulfillment or longevity benefit,
+        "find your ikigai" self-help framing,
+        career advancement or personal optimization
+
+    slow_presence:
+      weight: 0.10
+      category: meaning
+      description: "Unhurried time together, rituals, shared meals, sabbath practices, presence over productivity"
+      scale: |
+        0-2: Rushed, optimized time, efficiency-focused, productivity framing
+        3-4: Occasional slow moments, but primarily busy lifestyle
+        5-6: Regular unhurried time, some rituals or traditions
+        7-8: Rhythm of life includes significant slow time, established rituals, shared meals
+        9-10: Life organized around presence - daily rituals, extended meals, sabbath practices, anti-hurry culture
+      evidence_focus: "Shared meals, rituals, unhurried time, traditions, presence practices, rest"
+      critical_filters: |
+        Score 0-2 if: Mindfulness for productivity, optimized rest,
+        "slow living" as aesthetic/brand/lifestyle product,
+        wellness retreat/tourism framing
+
+  tiers:
+    high:
+      threshold: 7.0
+      description: "Strong evidence of genuine belonging - thick social fabric, rootedness, intergenerational bonds"
+
+    medium:
+      threshold: 4.0
+      description: "Some belonging elements present, moderate community connection"
+
+    low:
+      threshold: 0.0
+      description: "Minimal belonging evidence, isolated/transactional relationships, or commercially-framed content"
+
+  gatekeepers:
+    community_fabric_gatekeeper:
+      dimension: community_fabric
+      threshold: 3
+      max_score: 3.42
+      reason: "Without community fabric evidence, content is unlikely to be genuinely about belonging"
+
+  content_type_caps:
+    wellness_industry:
+      max_score: 2.0
+      triggers:
+        - "Longevity hacks, biohacking, anti-aging"
+        - "Supplements, optimization, life extension"
+        - "Blue Zone diet tips, superfood"
+        - "Wellness retreats, health tourism"
+      exceptions:
+        - "Traditional medicine within community context"
+        - "Elder health as family/community concern"
+
+    networking_professional:
+      max_score: 2.0
+      triggers:
+        - "Professional networking, LinkedIn, conferences"
+        - "Building your network, social capital for career"
+        - "Mastermind groups, business communities"
+        - "Coworking, startup ecosystem"
+      exceptions:
+        - "Worker cooperatives"
+        - "Guild or craft traditions"
+
+    tourism_consumption:
+      max_score: 2.0
+      triggers:
+        - "Visit Blue Zones, Okinawa tourism, Sardinia travel"
+        - "Experience authentic community (as tourist)"
+        - "Destination wellness, retreat tourism"
+      exceptions:
+        - "Diaspora returning home"
+        - "Pilgrimage with genuine spiritual practice"
+
+    self_help:
+      max_score: 3.0
+      triggers:
+        - "Find your tribe, build community (individual project)"
+        - "Loneliness solutions, connection tips"
+        - "Intentional community marketing"
+        - "Personal development, life design"
+      exceptions:
+        - "Mutual aid organizing guides"
+        - "Community organizing (collective action)"
+
+    corporate_belonging:
+      max_score: 2.0
+      triggers:
+        - "Company culture, workplace belonging"
+        - "Team building, corporate retreats"
+        - "Employee engagement, organizational community"
+      exceptions:
+        - "Worker cooperatives with genuine ownership"
+
+    online_only:
+      max_score: 3.0
+      triggers:
+        - "Discord server, online community, virtual community"
+        - "Social media group, Facebook group, subreddit"
+        - "Digital nomad community, remote work community"
+      exceptions:
+        - "Online coordination for in-person mutual aid"
+        - "Diaspora communities maintaining ties"
+
+preprocessing:
+  head_tail:
+    enabled: true
+    head_tokens: 256
+    tail_tokens: 256
+    separator: " [...] "
+
+training:
+  target_samples: 10000
+  train_val_test_split: [0.8, 0.1, 0.1]
+  quality_threshold: 0.7
+  recommended_model: "google/gemma-3-1b-pt"
+  expected_mae: "<1.0 per dimension"
+
+hybrid_inference:
+  stage1:
+    embedding_model: "intfloat/multilingual-e5-small"
+    probe_path: "probe/embedding_probe_e5small.pkl"
+    threshold: 1.00  # Calibrated on v1 val (738 articles): 0.0% FN on MEDIUM+
+  stage2:
+    model: "current"
+
+deployment:
+  inference_time: "~20ms"
+  inference_time_hybrid: "~12ms avg"
+  cost_per_article: "$0.00"
+  use_cases:
+    - "Curating stories of community resilience"
+    - "Identifying examples of social fabric"
+    - "Finding intergenerational content"
+    - "Counter-programming to loneliness/atomization narratives"

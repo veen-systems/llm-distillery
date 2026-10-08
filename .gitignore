@@ -78,6 +78,8 @@ filters/**/model/
 !filters/*/v*/probe/*.pkl
 # But track model metadata
 !filters/**/training_*.json
+# ...but NOT the gate's training manifest: it carries the first 1,000 chars of every training article (2026-10-08)
+filters/**/training_manifest.jsonl
 
 # Datasets and data (large files - track metadata only)
 datasets/*

@@ -196,6 +196,7 @@ class TestResolveOpPoint:
         ("filters/nature_recovery/v2", 4.0),
         ("filters/cultural_discovery/v5", 4.0),
         ("filters/belonging/v1", 4.0),
+        ("filters/belonging/v3", 4.0),  # 2026-10-08: candidate 2 (c2b), passed held-out set 3
         # 4.0 -> 4.5 on 2026-08-10 (llm-distillery#102). This assertion is the THIRD
         # place uplifting v7's op-point is written down (config.yaml scoring.tiers,
         # base_scorer.py TIER_THRESHOLDS, here) and the fourth is normalization.json
