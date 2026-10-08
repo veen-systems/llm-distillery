@@ -11,7 +11,7 @@
    ▶ **GO given 2026-10-08.** Done: Hub upload (`jeergrvgreg/belonging-filter-v3`, private, check-hub 9/9), probe sidecar
       (`dd98e79`), rollback rule (STATUS.md). **Handed to the NexusMind session (`nexusmind-dc`)**: since NM#395 production
       scores on sadaltager from an image (stage.py, docker build, restart, manual sadalsuud pull), so our RUNBOOK's
-      deploy_to_nexusmind.sh/gpu-server path is STALE for this (⚠️ RUNBOOK § Deployment needs a rewrite). filters/common diffed:
+      deploy_to_nexusmind.sh/gpu-server path is STALE for this (⚠️ RUNBOOK § Deployment needs a rewrite; when it lands, TELL pipeline-atlas: its verify greps deploy_to_nexusmind.sh's gpu-server probe and goes red, pipeline-atlas PR #122). filters/common diffed:
       no runtime difference. ✅ **v3 LIVE from NexusMind run `bd00dad6` (2026-10-09 00:08–01:24 CEST)**: 3,673/3,673 rows
       `version "3.0"`, 19 stage-2 raw ≥ 4.0 (0.52%, predicted 0.50%). Posted on #170; ovr.news and pipeline-atlas told.
       ▶ **Waiting on:** ovr's post-switch panel → rollback rule; then the refit.
