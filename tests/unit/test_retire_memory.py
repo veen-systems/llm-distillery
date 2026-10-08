@@ -195,3 +195,18 @@ def test_unclosed_fence_refuses(mod, capsys):
     assert _run(mod, "gotcha", "--before", "2026-09-01", "--apply") == 1
     assert "unclosed" in capsys.readouterr().out
     assert "OLD" in open(mod.LOG).read()
+
+
+def test_sessionlog_moves_dated_entries_verbatim_and_keeps_the_rest(tmp_path):
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("rm2", SCRIPT)
+    m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
+    (tmp_path / "archive").mkdir()
+    m.SESSION_LOG, m.SESSION_LOG_ARCHIVE = str(tmp_path / "session-log.md"), str(tmp_path / "archive" / "sl.md")
+    live = ("# Session log\n\n*header*\n\n- **2026-09-20 — newer** keep\n- **2026-09-10 — older** move\n"
+            "  continuation line\n- **Undated note** keep\n- **2026-09-05 (late) — oldest** move\n\n---\n")
+    open(m.SESSION_LOG, "w").write(live)
+    assert m.sessionlog(__import__("datetime").date(2026, 9, 15), True) == 0
+    new, arch = open(m.SESSION_LOG).read(), open(m.SESSION_LOG_ARCHIVE).read()
+    assert "older" not in new and "oldest" not in new and "newer" in new and "Undated" in new and "---" in new
+    assert "- **2026-09-10 — older** move\n  continuation line\n" in arch and arch.startswith(m.SESSION_LOG_HEADER)

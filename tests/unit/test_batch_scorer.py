@@ -308,3 +308,36 @@ class TestRepairJson:
         result = repair_json(json_str)
         data = json.loads(result)
         assert data["nested"]["bool"] is True
+
+
+class TestFailedArticlesAreNotReloaded:
+    """2026-10-07: two permanently failing articles were re-loaded as 'unscored' for ~6,100 batches (~74k failed
+    API calls) because a failure was never recorded. A failed id is now skipped for the rest of the run."""
+
+    def _scorer(self):
+        from ground_truth.batch_scorer import GenericBatchScorer
+        s = object.__new__(GenericBatchScorer)  # the loader needs only state and the failed set
+        s.state = {"processed": ["done"]}
+        return s
+
+    def test_failed_ids_are_skipped_by_the_loader(self, tmp_path):
+        src = tmp_path / "a.jsonl"
+        src.write_text("".join(json.dumps({"id": i, "title": "t", "content": "x"}) + "\n" for i in ("done", "bad", "ok")))
+        s = self._scorer()
+        assert [a["id"] for a in s.load_unscored_articles([str(src)], batch_size=10)] == ["bad", "ok"]
+        s._failed_this_run().add("bad")
+        assert [a["id"] for a in s.load_unscored_articles([str(src)], batch_size=10)] == ["ok"]
+        s.state["processed"].append("ok")
+        assert s.load_unscored_articles([str(src)], batch_size=10) == []  # the run can end
+
+    def test_process_batch_records_a_failure(self, tmp_path):
+        """The other half: process_batch must put a failed article in the per-run set (review 2026-10-08: the
+        loader test alone passed with the recording line deleted)."""
+        import logging
+        s = self._scorer()
+        s.state = {"processed": [], "total_scored": 0, "batches_completed": 0}
+        s.output_dir, s.logger, s.llm_provider, s.filter_name = tmp_path, logging.getLogger("t"), "x", "x"
+        s.analyze_article = lambda article: None   # a permanent failure
+        s._save_state = lambda: None
+        r = s.process_batch([{"id": "bad", "title": "t", "content": "x"}], 1)
+        assert r["articles_failed"] == 1 and "bad" in s._failed_this_run()

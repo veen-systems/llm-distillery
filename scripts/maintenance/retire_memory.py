@@ -25,7 +25,13 @@ Two moves, DRY-RUN BY DEFAULT (`--apply` writes):
             (docs/evidence/, *-archive.md), which are verbatim by contract; those are
             counted, not changed. `[[name]]` wikilinks resolve by name and are left alone.
 
-Checks that can fail (gotcha): the new archive must START with the old archive's exact
+  sessionlog  Dated top-level bullets (`- **YYYY-MM-DD ...`) of memory/session-log.md dated before --before go,
+            verbatim and in order, to the END of memory/archive/session-log-archive.md (created with a header
+            if absent). Undated bullets and everything that is not a bullet stay. Same reconstruction checks
+            as gotcha. Added 2026-10-08 after the second hand-written rotation (owner: "pruning, thinning,
+            mechanizing, retiring").
+
+Checks that can fail (gotcha, sessionlog): the new archive must START with the old archive's exact
 text, the appended text must equal the removed blocks in order, and deleting those blocks
 from the old log by string search must reproduce the new log exactly. Both files are
 re-read after writing and compared. The archive is written first, so a failure between
@@ -34,6 +40,7 @@ the two writes leaves entries duplicated, never lost.
 Usage:
   python3 scripts/maintenance/retire_memory.py gotcha   --before 2026-09-01 [--apply]
   python3 scripts/maintenance/retire_memory.py sessions --before 2026-09-01 [--apply]
+  python3 scripts/maintenance/retire_memory.py sessionlog --before 2026-09-22 [--apply]
 
 Exit: 0 done (or dry run), 1 a check failed (nothing written, or say what was), 2 bad input.
 """
@@ -50,6 +57,11 @@ ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)
 LOG = os.path.join(ROOT, "memory", "gotcha-log.md")
 ARCHIVE = os.path.join(ROOT, "memory", "archive", "gotcha-log-archive.md")
 SESSION_ARCHIVE = os.path.join("memory", "archive")
+SESSION_LOG = os.path.join(ROOT, "memory", "session-log.md")
+SESSION_LOG_ARCHIVE = os.path.join(ROOT, "memory", "archive", "session-log-archive.md")
+SESSION_LOG_HEADER = ("# Session log, archived\n\n*Entries moved VERBATIM from `memory/session-log.md` by "
+                      "`scripts/maintenance/retire_memory.py sessionlog`. Nothing is edited or shortened. Earlier "
+                      "rotations: `session-log-2026-08-and-appendix.md`, `session-log-2026-09-01-to-17.md`.*\n")
 
 KEEP_HEADINGS = ("[Short description]", "The unreachable-mechanism catalogue", "Mechanized")
 MONTH_NAMES = ["January", "February", "March", "April", "May", "June", "July",
@@ -268,9 +280,62 @@ def sessions(before, apply):
     return 0
 
 
+def sessionlog(before, apply):
+    old_live = open(SESSION_LOG, encoding="utf-8").read()
+    old_arch = open(SESSION_LOG_ARCHIVE, encoding="utf-8").read() if os.path.exists(SESSION_LOG_ARCHIVE) \
+        else SESSION_LOG_HEADER
+    lines = old_live.splitlines(keepends=True)
+    blocks, cur = [], None  # (is_entry, [lines]); an entry runs to the next bullet, rule or heading
+    for ln in lines:
+        starts = ln.startswith("- **") or ln.startswith("---") or ln.startswith("#")
+        if starts or cur is None:
+            cur = (ln.startswith("- **"), [ln])
+            blocks.append(cur)
+        else:
+            cur[1].append(ln)
+    move, keep = [], []
+    for is_entry, b in blocks:
+        d = heading_date(b[0].rstrip("\n")) if is_entry else None
+        if is_entry and d is not None and d < before:
+            move.append(b)
+            print(f"  move  {d}  {b[0][:90].rstrip()}")
+        else:
+            keep.append(b)
+            if is_entry and d is None:
+                print(f"  UNDATED, kept: {b[0][:90].rstrip()}")
+    if not move:
+        print("sessionlog: no entry dated before", before)
+        return 0
+    moved = ["".join(b) for b in move]
+    new_live = "".join("".join(b) for b in keep)
+    sep = "" if old_arch.endswith("\n") else "\n"
+    new_arch = old_arch + sep + "\n" + "".join(moved)
+    rest, pos = old_live, 0
+    for t in moved:
+        i = rest.find(t, pos)
+        if i < 0:
+            print("CHECK FAILED: a moved entry is not a contiguous run of the old log — nothing written")
+            return 1
+        rest, pos = rest[:i] + rest[i + len(t):], i
+    if rest != new_live or not new_arch.startswith(old_arch) \
+            or new_arch[len(old_arch) + len(sep) + 1:] != "".join(moved):
+        print("CHECK FAILED: live + archive do not reconstruct the originals — nothing written")
+        return 1
+    print(f"sessionlog: {len(move)} entries; live log {len(old_live):,} -> {len(new_live):,} chars; "
+          f"reconstruction check passed")
+    if apply:
+        open(SESSION_LOG_ARCHIVE, "w", encoding="utf-8").write(new_arch)
+        open(SESSION_LOG, "w", encoding="utf-8").write(new_live)
+        if open(SESSION_LOG_ARCHIVE, encoding="utf-8").read() != new_arch or \
+                open(SESSION_LOG, encoding="utf-8").read() != new_live:
+            print("CHECK FAILED after writing: re-read differs — inspect `git diff memory/`")
+            return 1
+    return 0
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
-    ap.add_argument("what", choices=("gotcha", "sessions"))
+    ap.add_argument("what", choices=("gotcha", "sessions", "sessionlog"))
     ap.add_argument("--before", required=True, type=datetime.date.fromisoformat,
                     help="retire entries dated strictly before this ISO date")
     ap.add_argument("--apply", action="store_true", help="write (default: dry run)")
@@ -278,7 +343,7 @@ def main(argv=None):
     if a.before > datetime.date.today():
         print("--before is in the future; refusing")
         return 2
-    rc = (gotcha if a.what == "gotcha" else sessions)(a.before, a.apply)
+    rc = {"gotcha": gotcha, "sessions": sessions, "sessionlog": sessionlog}[a.what](a.before, a.apply)
     if not a.apply and rc == 0:
         print("(dry run — pass --apply to write)")
     return rc

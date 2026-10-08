@@ -21,6 +21,11 @@ from typing import Any, Dict, List, Tuple
 # Third-party imports
 import yaml
 
+# `from training import data_quality` must work when run as a script from the repo root WITHOUT PYTHONPATH=.
+# (review 2026-10-08: the RUNBOOK command crashed with ModuleNotFoundError, which exits 1 like a real failure).
+import sys as _sys
+_sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
 
 class TrainingDataValidator:
     def __init__(self, data_dir: Path, filter_dir: Path = None, production_sample: Path = None,

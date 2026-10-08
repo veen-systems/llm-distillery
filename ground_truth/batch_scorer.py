@@ -1239,6 +1239,10 @@ class GenericBatchScorer:
                 print(f"     SUCCESS")
             else:
                 num_failed += 1
+                # Attempted once per run. Without this, sequential mode re-loaded the same permanently failing
+                # articles as "unscored" forever: 2 rows looped ~6,100 batches / ~74k failed calls overnight
+                # (belonging easy negatives, 2026-10-07). load_unscored_articles skips these.
+                self._failed_this_run().add(article_id)
                 print(f"     FAILED to analyze")
 
         if num_scored > 0:
@@ -1252,6 +1256,11 @@ class GenericBatchScorer:
             'articles_processed': num_scored,
             'articles_failed': num_failed,
         }
+
+    def _failed_this_run(self) -> set:
+        if not hasattr(self, "_failed_ids"):
+            self._failed_ids = set()
+        return self._failed_ids
 
     def load_unscored_articles(
         self,
@@ -1269,7 +1278,7 @@ class GenericBatchScorer:
                        Should return True to include article, False to skip
         """
         articles = []
-        processed_ids = set(self.state['processed'])
+        processed_ids = set(self.state['processed']) | self._failed_this_run()
 
         # Iterate through all source files
         for source_file in source_files:
@@ -1473,7 +1482,9 @@ class GenericBatchScorer:
                 articles = self.load_unscored_articles(source_files, batch_size, pre_filter)
 
                 if not articles:
-                    print(f"\nDONE - No more unscored articles found")
+                    failed = len(self._failed_this_run())
+                    print(f"\nDONE - No more unscored articles found"
+                          + (f" ({failed} failed this run and were NOT retried; re-run to retry them)" if failed else ""))
                     break
 
                 # Process batch

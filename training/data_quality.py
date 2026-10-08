@@ -82,10 +82,19 @@ def cross_split_twins(splits, hits=20):
     out = []
     for s in ("val", "test"):
         for r in splits[s]:
-            hit = next(((k[0], sorted(keys[k])[0]) for k in (("url", _nu(r.get("url"))), ("title", _nt(r.get("title"))))
-                        if k[1] and keys.get(k)), None)
+            c = Counter(t for x in sh[r["id"]] if df[x] <= 3 for t in index.get(x, ()))
+            hit = None
+            u = _nu(r.get("url"))
+            if u and keys.get(("url", u)):
+                hit = ("url", sorted(keys[("url", u)])[0])
+            t = _nt(r.get("title"))
+            if not hit and t and keys.get(("title", t)):
+                # A shared title alone is not a twin ("Post by @x", podcast episode names, review 2026-10-08):
+                # it also needs >= 3 distinctive shared runs with the train row carrying that title.
+                tw = [i for i in sorted(keys[("title", t)]) if c.get(i, 0) >= 3]
+                if tw:
+                    hit = ("title", tw[0])
             if not hit:
-                c = Counter(t for x in sh[r["id"]] if df[x] <= 3 for t in index.get(x, ()))
                 best = c.most_common(1)
                 if best and best[0][1] >= hits:
                     hit = ("content", best[0][0])
@@ -119,14 +128,14 @@ def load_language(path):
 def mix(rows, production, is_pos, lang):
     """FM-D2. Language (the collector's stamp) and source of training positives / negatives vs production. Report."""
     def src(r):
-        return r["id"].rsplit("_", 1)[0]
+        return (r.get("id") or "?").rsplit("_", 1)[0]
 
     def share(rs, f, n=8):
         c = Counter(f(r) for r in rs)
         return {k: round(v / max(1, len(rs)), 3) for k, v in c.most_common(n)}
     pos = [r for r in rows if is_pos(r)]
     neg = [r for r in rows if not is_pos(r)]
-    lg = lambda r: lang.get(r["id"]) or "unstamped"  # noqa: E731
+    lg = lambda r: lang.get(r.get("id")) or "unstamped"  # noqa: E731
     return dict(language=dict(train_pos=share(pos, lg), train_neg=share(neg, lg), production=share(production, lg)),
                 top_sources_train_pos=share(pos, src),
                 top_source_share_pos=round(max(Counter(map(src, pos)).values()) / len(pos), 3) if pos else None,
@@ -140,14 +149,14 @@ BOILER = re.compile(r"cookie|subscribe|newsletter|all rights reserved|enable jav
 def boilerplate(rows, group=lambda r: r.get("origin", "all")):
     """FM-D3. Share of rows with a site-furniture marker, and of rows whose text is mostly runs shared with >= 10
     other rows. Report, by group."""
-    sh = {r["id"]: shingles(r.get("content")) for r in rows}
+    sh = {i: shingles(r.get("content")) for i, r in enumerate(rows)}
     df = Counter(x for v in sh.values() for x in v)
     by = defaultdict(Counter)
-    for r in rows:
+    for i, r in enumerate(rows):
         g = group(r)
         by[g]["n"] += 1
         by[g]["marker"] += bool(BOILER.search(r.get("content") or ""))
-        s = sh[r["id"]]
+        s = sh[i]
         by[g]["mostly_shared"] += bool(s) and sum(df[x] >= 10 for x in s) / len(s) > 0.5
     return {g: dict(n=c["n"], marker_share=round(c["marker"] / c["n"], 3),
                     mostly_shared_share=round(c["mostly_shared"] / c["n"], 3)) for g, c in by.items()}
