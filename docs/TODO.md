@@ -4,7 +4,7 @@
 
 *A bare "continue" means this list, top down. Each line names the FIRST action.*
 
-0. ▶ **BELONGING v1 → adj1 retrain: run the build, check it, train, gate.** Plan `~/.claude/plans/splendid-purring-acorn.md`;
+0. ▶ **BELONGING v1 → adj1 retrain: run the build, check it, train, gate** (tracked in #170, the belonging adj1 retrain). Plan `~/.claude/plans/splendid-purring-acorn.md`;
    session `memory/project_session_2026_10_07_commerce_gate_runner.md`; build `docs/evidence/2026-10-07-belonging-adj1-build/`
    (README = this build's FMEA status); gate `docs/evidence/2026-10-03-belonging-heldout/GATE.md` (+ `gate.py`).
    All owner rulings are in (2026-10-03 adjudication; 2026-10-07 full text everywhere, hard negatives = 121
