@@ -118,3 +118,20 @@ Full output: `../2026-10-08-belonging-heldout2/result_v1_c2a.txt`. Both orders i
   unweighted 0.951 vs v1@t* 0.718.
 - Disputed rows (not deciding), unweighted spec, candidate @4.0 vs live v1 @4.0: out_gift_official 0.750 vs 0.050,
   out_harm_is_story 0.971 vs 0.147, out_one_moment 0.923 vs 0.231. So candidate 2 learned the targeted classes.
+
+## 10. GATE on held-out set 3: **c2b PASSED** (2026-10-08). Set 3 is spent
+
+Full output: `../2026-10-08-belonging-heldout3/result_v1_c2b.txt`. Owner approved gating c2b on set 3 after c2a's FAIL.
+- **Recall: k = 76/83 ≥ K_MIN 59.** v1 matched at t* = 4.0317.
+- **Specificity: weighted Δspec +0.350, 95% CI [+0.322, +0.376]**, identical in both orders; 0/585 order flips.
+- ⚠️ **Read the size with its mechanism, not as population specificity.** The bands ARE v1's production raw (hi ≥ 5.6, mid
+  4.0–5.6), and c2b's recall puts v1's matched threshold at ~4.03, so v1 passes almost every hi/mid row by construction
+  (hi+mid weighted spec v1@t* 0.024). The +0.35 says: of the stories v1 lets through, c2b rejects most (hi+mid weighted 0.863) while
+  keeping 76/83 positives. On set 2, c2a's lower recall put t* at 5.74, which is why its Δ was +0.019. Same rule; different t*.
+- Not deciding: disputed rows, candidate vs live v1 @4.0 (unweighted spec): out_gift_official 0.706 vs 0.176, out_harm_is_story
+  0.800 vs 0.150, out_one_moment 0.500 vs 0.250, out_other 0.391 vs 0.159.
+- 22 of the candidate's judged rows lie within ±0.16 of 4.0 (#95, batch-composition noise), with 0 flips between orders.
+
+**A PASS is not a switch.** Not measured by the gate, and the owner's call: volume (c2b flags 25 vs v1's 109 on the 5,000-row
+draw); the normalized-score shift until a refit (ovr's ≥ 4.5 display gate, NexusMind's enrichment min_score, NexusMind NM#319);
+and the deploy itself (RUNBOOK; diff before sync; the decision-0 sync is still pending).
