@@ -108,3 +108,13 @@ measured: ovr's ~81/day published Belonging would fall to roughly 20/day.
 **OWNER VETO (2026-10-08, after the panel result): gate c2a, not c2b.** The rule's pick was c2b; the owner exercised the veto
 the rule reserved. Recorded as the owner's decision; no reason was given. c2a: 6/27 weak and 7/13 good on ovr's 40, 8 flags of 5,000.
 Known risk, stated beforehand: c2a's low flag rate may miss the recall bar (k ≥ 45 of 63).
+
+## 9. GATE on held-out set 2: c2a FAILED (2026-10-08). Set 2 is SPENT; v1 stays live
+
+Full output: `../2026-10-08-belonging-heldout2/result_v1_c2a.txt`. Both orders identical in verdict (1/539 order flip for the candidate).
+- **Recall: k = 43/63 < K_MIN 45 → FAIL.** None of the 20 missed positives is within ±0.16 of 4.0 (scores 1.47–3.56, most
+  2.3–2.9), so batch noise (#95) is not the explanation: c2a is genuinely too strict. This is the risk stated before the veto.
+- **Specificity: PASSES on its own.** Weighted Δspec +0.019, 95% CI [+0.003, +0.031] (forward; reversed +0.019 [+0.002, +0.030]);
+  unweighted 0.951 vs v1@t* 0.718.
+- Disputed rows (not deciding), unweighted spec, candidate @4.0 vs live v1 @4.0: out_gift_official 0.750 vs 0.050,
+  out_harm_is_story 0.971 vs 0.147, out_one_moment 0.923 vs 0.231. So candidate 2 learned the targeted classes.

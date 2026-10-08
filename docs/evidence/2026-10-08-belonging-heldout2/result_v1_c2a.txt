@@ -1,0 +1,38 @@
+candidate filters/belonging/v1_c2a: 8000 training rows, 0 of the 2396 held-out rows by id, url, title or content
+labels: {'disputed': 129, 'pos': 63, 'excluded': 21, 'neg': 326}; candidate op-point 4.0 (v1 live op-point 4.0)
+strata: the rule names 6 (band x pick); a stratum with no deciding negatives (near/gemini_in today: its Gemini-in hard negatives are all disputed) simply has no rows to resample
+
+=== order forward (NVIDIA GeForce RTX 5090, torch 2.11.0+cu130, jwasys-B650-EAGLE-AX)
+  k = 43/63 at op 4.0; v1 matched at t* = 5.7411
+  deciding negatives n=326 {'hi/gemini_in': 13, 'hi/gemini_out_sample': 97, 'mid/gemini_in': 11, 'mid/gemini_out_sample': 99, 'near/gemini_in': 8, 'near/gemini_out_sample': 98}
+  spec weighted: cand 0.9845 | v1@t* 0.9654 | Δ +0.0191 95% CI [+0.0027, +0.0308]
+  ORDER VERDICT: FAIL: k = 43 < 45
+  [forward] unweighted spec on deciding negatives: cand 0.951 | v1@t* 0.718
+  [forward] hi+mid only (n=220): weighted cand 0.977 | v1@t* 0.914; unweighted cand 0.932 | v1@t* 0.582
+  [forward] DISPUTED hard negatives (do not decide), n=129: spec weighted cand 0.912 | v1@t* 0.899; unweighted cand 0.783 | v1@t* 0.504
+  [forward] cand: 5 judged rows within ±0.16 of its threshold 4.000 (could flip on batch composition, #95)
+  [forward] v1: 61 judged rows within ±0.16 of its threshold 5.741 (could flip on batch composition, #95)
+
+=== order reversed (NVIDIA GeForce RTX 5090, torch 2.11.0+cu130, jwasys-B650-EAGLE-AX)
+  k = 43/63 at op 4.0; v1 matched at t* = 5.7411
+  deciding negatives n=326 {'hi/gemini_in': 13, 'hi/gemini_out_sample': 97, 'mid/gemini_in': 11, 'mid/gemini_out_sample': 99, 'near/gemini_in': 8, 'near/gemini_out_sample': 98}
+  spec weighted: cand 0.9841 | v1@t* 0.9654 | Δ +0.0187 95% CI [+0.0023, +0.0304]
+  ORDER VERDICT: FAIL: k = 43 < 45
+  [reversed] unweighted spec on deciding negatives: cand 0.948 | v1@t* 0.718
+  [reversed] hi+mid only (n=220): weighted cand 0.975 | v1@t* 0.914; unweighted cand 0.927 | v1@t* 0.582
+  [reversed] DISPUTED hard negatives (do not decide), n=129: spec weighted cand 0.912 | v1@t* 0.899; unweighted cand 0.783 | v1@t* 0.504
+  [reversed] cand: 5 judged rows within ±0.16 of its threshold 4.000 (could flip on batch composition, #95)
+  [reversed] v1: 59 judged rows within ±0.16 of its threshold 5.741 (could flip on batch composition, #95)
+order-to-order verdict flips, cand at 4.0000: 1/539
+order-to-order verdict flips, v1 at 5.7411: 0/539 (t* forward 5.7411, reversed 5.7411)
+order-to-order verdict flips, v1 at 4.0000: 0/539
+
+DISPUTED rows by judge class (do not decide; PREREGISTRATION.md: the classes candidate 2 targets are mostly here):
+  out_culture_topic: n=19; unweighted spec cand@op 0.684 | v1@t* 0.421 | v1@4.0 0.158
+  out_event_spectated: n=6; unweighted spec cand@op 0.500 | v1@t* 0.500 | v1@4.0 0.167
+  out_gift_official: n=20; unweighted spec cand@op 0.750 | v1@t* 0.450 | v1@4.0 0.050
+  out_harm_is_story: n=34; unweighted spec cand@op 0.971 | v1@t* 0.618 | v1@4.0 0.147
+  out_one_moment: n=13; unweighted spec cand@op 0.923 | v1@t* 0.615 | v1@4.0 0.231
+  out_other: n=57; unweighted spec cand@op 0.737 | v1@t* 0.474 | v1@4.0 0.140
+
+GATE VERDICT (both orders must pass): FAIL
