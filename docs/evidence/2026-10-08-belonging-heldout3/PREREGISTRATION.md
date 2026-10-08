@@ -40,6 +40,13 @@ Gemini-outs per band**; **the binding pass rule v2 unchanged**, with `K_MIN = ce
 
 Positives 55–80; deciding negatives 300–360; hi Gemini-in rate 0.14–0.24.
 
+## Amendment 1 (after the draw, BEFORE any oracle or judge call)
+
+Draw (measured): 1,263,152 rows read (2 archives + 158 filtered files, 2026-08-01 .. `filtered_20261008_132509`); pools hi 4,355 /
+mid 16,205 / near 25,111. gate3's overlap check against c2b's training manifest found 3 content twins (mid
+`arabic_emirates247_72fdc71cf09e`, mid `british_irish_independent_uk_cd5b2bf20ff2`, near `east_african_the_citizen_tz_827a8a62edfc`),
+which are DROPPED (`heldout3.DROPPED`). Rows held: hi 800, mid 798, near 799.
+
 ## Result
 
 *(filled after the judges; N_POS is then written into gate3.py, before c2b is scored)*

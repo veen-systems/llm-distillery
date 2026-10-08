@@ -29,7 +29,8 @@ BANDS, N_OUT, PER_BATCH, N_BAND = ("hi", "mid", "near"), 100, 50, 800
 
 
 # Dropped AFTER the draw, BEFORE any oracle or judge call: twins of a training row by gate3's own overlap check.
-DROPPED = set()  # filled only by PREREGISTRATION.md amendments, before any oracle call
+DROPPED = {"arabic_emirates247_72fdc71cf09e", "british_irish_independent_uk_cd5b2bf20ff2",
+           "east_african_the_citizen_tz_827a8a62edfc"}  # Amendment 1
 
 
 def drawn():
