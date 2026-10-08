@@ -48,7 +48,7 @@ ROOT = HERE.parents[2]
 sys.path.insert(0, str(HERE)); sys.path.insert(0, str(ROOT))
 import heldout2 as H  # noqa: E402  (rows, judges, Gemini verdicts: one implementation)
 
-N_POS = None  # set from PREREGISTRATION.md § Result once the judges are in, BEFORE any candidate is scored; None refuses
+N_POS = 63  # PREREGISTRATION.md § Result (2026-10-08), fixed BEFORE any candidate is scored
 SEED, NBOOT, NOISE = 20261012, 2000, 0.16
 K_MIN = None if N_POS is None else math.ceil(31 / 44 * N_POS)
 ORDERS = ("forward", "reversed")

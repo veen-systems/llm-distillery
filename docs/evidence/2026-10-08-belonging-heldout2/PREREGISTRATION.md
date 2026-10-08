@@ -68,4 +68,17 @@ infinite-population assumption makes the hi stratum's interval CONSERVATIVE.
 
 ## Result
 
-*(filled after the judges; N_POS is then written into gate2.py, before any candidate is scored)*
+**Judged 2026-10-08, BEFORE any candidate was scored on this set** (judge outputs: 1,078 rows, 0 malformed, every quote verbatim).
+
+- Stage A: Gemini said in on 239 of 2,396 (hi 138, mid 73, near 28); 0 errors; 6.72M in / 0.25M out tokens = **$2.64 at list**
+  (billing unchecked). Judged: 239 Gemini-ins + 300 sampled outs = 539 rows × 2 passes (22 Opus subagents, ~2.4M tokens).
+  The judge prompt was `judge_instructions_v2.md` verbatim plus one appended line naming the repo root for the relative rubric path.
+- **Tripwire: PASSED, no owner check.** A/B binary agreement 521/539 = **0.967** (bound 0.97: inside, at the edge); hi both-in
+  among Gemini-ins 47/138 = **0.341** (bound [0.29, 0.48]).
+- **Labels:** pos **63**, deciding neg **326**, disputed **129**, excluded (split / cannot_judge) **21**.
+  Disputed rows by judge class (a row counts once per distinct class across its two passes): {'out_gift_official': 20, 'out_culture_topic': 19, 'out_one_moment': 13, 'out_harm_is_story': 34, 'out_other': 57, 'out_event_spectated': 6}.
+- **N_POS = 63 → K_MIN = ceil(31/44 × 63) = 45**, written into gate2.py.
+- `gate2.py controls`: all four controls give their required verdict (v1 vs itself FAIL, refuted rule FAIL, perfect PASS,
+  perfect-on-negatives with 44/63 FAIL).
+- Predictions: deciding negatives 300–360 → **326, hit**; positives 70–110 → **63, miss (low)**; hi Gemini-in rate 0.18–0.28 →
+  **0.17, miss (low)**.
