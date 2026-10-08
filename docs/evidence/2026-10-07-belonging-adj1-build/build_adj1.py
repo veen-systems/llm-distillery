@@ -13,7 +13,8 @@ adj1 = v1's own splits under the 2026-10-03 adjudication ruling
   Every treated id must sit exactly once in the split it names, and the counts must be 238 / 566 / 55.
 - Text: FULL text for every harvest row the draw cut at 4,000 chars (owner 2026-10-07); v1's own rows were never cut.
 - New rows are split 80/10/10 with seed 20261007; v1's rows keep their split.
-- Every id is checked against `belonging_exclusions.assert_disjoint`; every row is checked against the held-out set
+- v1 rows in the exclusion list are DROPPED (owner ruling 1b, 2026-10-08; exactly 61, pinned); then every id is
+  checked against `belonging_exclusions.assert_disjoint`; every row is checked against the held-out set
   with `gate.content_twins` and DROPPED if it twins one.
 - The FMEA checks (docs/checklists/training-data-fmea.md, `training/data_quality.py`): cross-split twins DROP the val/test copy (FM-D1); label sanity RAISES
   (FM-L1..3); text parity, language/source mix and boilerplate are REPORTED every run (FM-T1, FM-D2, FM-D3).
@@ -31,7 +32,7 @@ sys.path.insert(0, str(ROOT / "docs" / "evidence" / "2026-10-02-belonging-adjudi
 sys.path.insert(0, str(ROOT))
 import gate  # noqa: E402  (content_twins)
 import heldout as H  # noqa: E402  (the held-out rows)
-from belonging_exclusions import assert_disjoint  # noqa: E402
+from belonging_exclusions import assert_disjoint, excluded_ids  # noqa: E402
 from training import data_quality as DQ  # noqa: E402
 
 D = ROOT / "datasets"
@@ -41,6 +42,9 @@ LANG = D / "belonging_language_stamps.json"
 OUT = D / "training" / "belonging_v1_adj1"
 SPLITS, CAP, SEED, CUT = ("train", "val", "test"), 2.0, 20261007, 4000
 TREAT_COUNTS = {"demote": 238, "drop": 566, "keep_v1_label": 55}
+# owner ruling 1b (2026-10-08): v1 rows that later sets (pilot 1/v2 keys, calibration, v2 test) were drawn from are
+# DROPPED from training, all of them -- no evaluation set may ever overlap training. Pinned: a change raises.
+V1_EXCLUDED_DROP = 61
 
 
 def fail(msg):
@@ -92,6 +96,11 @@ def main():
                 r["labels"] = [min(x, CAP) for x in r["labels"]]
                 r["origin"] = "v1_demoted"
             rows[s].append(r)
+    ex = excluded_ids()
+    v1_excluded = sorted(r["id"] for s in SPLITS for r in rows[s] if r["id"] in ex)
+    if len(v1_excluded) != V1_EXCLUDED_DROP:
+        fail(f"{len(v1_excluded)} surviving v1 rows are in the exclusion list, ruling 1b covers {V1_EXCLUDED_DROP}")
+    rows = {s: [r for r in rows[s] if r["id"] not in ex] for s in SPLITS}
 
     # --- harvest r1 (full text where the draw cut it)
     hv = {r["id"]: r for r in jl(HV / "harvest_r1_rows.jsonl")}
@@ -187,7 +196,7 @@ def main():
     report = dict(seed=SEED, cap=CAP, medium=MEDIUM, heldout_twins_dropped=twins,
                   cross_split_twins_dropped=dict(n=len(cross), by=dict(Counter(b for _, _, b, _ in cross)),
                                                  examples=cross[:5]),
-                  hard_negatives_with_a_dim_above_cap=uncapped_hi, splits={})
+                  hard_negatives_with_a_dim_above_cap=uncapped_hi, v1_excluded_dropped=v1_excluded, splits={})
     with open(OUT / "training_manifest.jsonl", "w", encoding="utf-8") as man:
         for s in SPLITS:
             with open(OUT / f"{s}.jsonl", "w", encoding="utf-8") as f:

@@ -10,31 +10,26 @@
    All owner rulings are in (2026-10-03 adjudication; 2026-10-07 full text everywhere, hard negatives = 121
    one-moment rows, ~800 production easy negatives at k=1). History before 2026-10-08: `docs/TODO-archive.md`.
    ▶ **Next, in order:**
-   1. **Easy negatives: 796 of 798 scored.** The oracle failed permanently on `south_african_mail_guardian_df80259e0965`
-      and `greek_to_vima_d5748141857e` (`llm_api_error`, cause not logged). `build_adj1.py` REFUSES on incomplete
-      coverage: drop those 2 from `datasets/belonging_easyneg_articles.jsonl` with a recorded reason (or retry once).
-      ⚠️ **Owner: check Google billing for 2026-10-07 ~20:00 → 10-08 08:19** — a `batch_scorer` bug (fixed this
-      session) retried them ~74k times overnight; whether failed calls were billed is unknown.
-   1b. ⛔ **OWNER RULING NEEDED — the build refuses on v1's own rows** (review 2026-10-08): `assert_disjoint` finds **61** of
-      v1's surviving rows (49 demoted, 12 kept) in the exclusion list, because pilot 1/v2 keys, the calibration set and the
-      v2 test set were drawn FROM v1's splits. **6 of them are v2-test rows.** Options: (a) drop all 61 from training
-      (safest; loses 12 kept positives' worth of v1 rows), (b) drop only the 6 v2-test rows and keep pilot/calibration rows
-      (they are evaluation sets no longer used), (c) as (b) and retire the v2 test set as an evaluation. "Check only new
-      rows" is NOT an option: it lets the 6 in silently.
-   1c. ⛔ **OWNER CALL — the length coupling is only partly fixed** (measured on a reviewer's scratch build): long-text
-      positive share 10.7 / 15.6 / 18.9% at 2–4k / 4–8k / >8k chars vs production 5.8 / 10.6 / 12.7% (production also rises
-      with length, corrected 2026-10-08). Options: train anyway and let the gate judge; add more production negatives
-      (~$0.0035/row, k=1); or down-weight long positives. Decide before training.
-   2. **Run** `.venv/bin/python docs/evidence/2026-10-07-belonging-adj1-build/build_adj1.py`, then
-      `python training/validate_training_data.py --data-dir datasets/training/belonging_v1_adj1 --filter filters/belonging/v1
-      --production-sample datasets/belonging_easyneg_rows.jsonl --language-stamps datasets/belonging_language_stamps.json`.
-      **Read FM-T1** (positive share by length vs production 5.8 / 10.6 / 12.7% at 2–4k / 4–8k / >8k chars) and FM-D2/D3; fill the README § *Result*. If the long-text
-      positive share is still far above production, stop and ask the owner before training.
+   1. ✅ **Easy negatives: the 2 permanent failures DROPPED 2026-10-08** (deterministic, ~3.7 s per failure across the
+      whole loop; reason in the build README § FM-L5). The build now passes coverage and refuses only at 1b.
+      ⚠️ **Owner: check Google billing for 2026-10-07 ~20:00 → 10-08 08:19** — a `batch_scorer` bug (since fixed) retried them
+      ~74k times overnight; whether failed calls were billed is unknown.
+   1b/1c/2. ✅ **Ruled + built 2026-10-08:** 1b = (a) drop all 61 (pinned in `build_adj1.py`); 1c = train anyway, the gate
+      judges. Build + validator exit 0; results in the build README § *Result* (FM-T1 still coupled as accepted; a
+      NEW FM-D2 French skew among positives: read the gate FPs by language).
+   ▶ **Owner 2026-10-08: no new data yet; train, CHECK, then gate.** Epochs = **6, keep best** (read
+      `training_history.json` per epoch; if recall_medium saturates on the 29 val positives (#144), tell the owner before
+      using the checkpoint). **New step 5b (before the one-shot gate):** score a few thousand UNLABELLED production rows
+      (in neither training nor the held-out set) with the candidate and with live v1, and compare flag rate (raw ≥ 4.0) by
+      length bin and by collector language. If the candidate flags far more long or French rows than v1 → buy long
+      production negatives (~1,900 rows ≈ $6.70 est., k=1) and rebuild BEFORE gating. Otherwise → gate. **Leak rule (owner
+      2026-10-08, fixed BEFORE looking):** leaked if, among >4k-char rows OR among French rows, the candidate's flag rate
+      is ≥ 1.5× v1's AND the 95% bootstrap CI of the gap excludes 0. 1.5× is a judgement call, not a measured figure.
    3. **Stage the candidate** `filters/belonging/v1_adj1/` (untracked on b650, as `v8_adj3` was): copy v1's package, REWRITE every
       `filters.belonging.v1.` import to `v1_adj1` (v1's code loads `v1/model` otherwise; `gate.assert_loads_from` refuses it),
       copy `training_manifest.jsonl` in. rsync the build + language stamps + easy-neg files to b650 (gitignored data).
    4. **Train on b650** (RUNBOOK § *Train on GPU*): commit+push first (train.py refuses a dirty/unpushed tree); check
-      `curl -s localhost:11434/api/ps` shows no `gemma3:27b`. Flags: `--batch-size 8 --seed 42 --select-metric recall_medium
+      `curl -s localhost:11434/api/ps` shows no `gemma3:27b`. Flags: `--epochs 6 --batch-size 8 --seed 42 --select-metric recall_medium
       --medium-threshold 4.0 --use-head-tail --head-tokens 256 --tail-tokens 256`. ⚠️ **Epochs are a choice to settle
       first:** v1 trained 3; the human_thriving adj retrains used 6 with checkpoint selection. recall_medium saturates on a
       thin val positive count (#144), so read `training_history.json` per epoch.

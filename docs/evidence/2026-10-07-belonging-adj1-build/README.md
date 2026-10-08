@@ -21,7 +21,7 @@ build's result per row.
 | FM-H2 | `assert_disjoint` on every id |
 | FM-L1..L3, FM-P1 | raised by the build (exact counts: 237 positives, treatment 238/566/55, oracle covers every row) |
 | FM-L4 | not mechanized; measured: one `prompt_hash` (`99ea1765a7ea`) across the hard and easy negatives |
-| FM-L5 | **accepted by owner 2026-10-07** (easy negatives at k=1); 796 of 798 scored, 2 failed permanently |
+| FM-L5 | **accepted by owner 2026-10-07** (easy negatives at k=1); 796 of 798 scored. The 2 failures (`south_african_mail_guardian_df80259e0965`, `greek_to_vima_d5748141857e`) were **dropped 2026-10-08** from `datasets/belonging_easyneg_articles.jsonl`: each failed every attempt in ~3.6–3.7 s across the overnight loop (`distillation.log`), so the failure is deterministic and a retry buys nothing. Cause still not logged |
 | FM-S1 | **open** (TODO item 0.5) |
 | FM-S2 | the easy-negative draw excludes `news.google.com` |
 | FM-S3 | **open**, not mechanized (cost here: 393 rows briefly called lost) |
@@ -40,9 +40,19 @@ build's result per row.
 
 ## Result
 
-**Not built yet (2026-10-08).** Two blockers, both in `docs/TODO.md` item 0: the 2 unscored easy negatives,
-and `assert_disjoint` refusing 61 of v1's own surviving rows (pilot, calibration and v2-test ids drawn FROM v1's splits;
-6 are v2-test rows). A reviewer's scratch build (2 easy negatives dropped, the disjoint check on new rows only) gave:
-train 6,365 / val 778 / test 781 rows; MEDIUM+ labels 273 / 32 / 30; 44 of 794 easy negatives labelled positive; 1 held-out
-twin and 33 cross-split twins dropped; FM-T1 still coupled (training median 900 chars vs 2,235 production; positive share
-10.7 / 15.6 / 18.9% at 2–4k / 4–8k / >8k vs production 5.8 / 10.6 / 12.7%). Not an official run: re-run after the rulings.
+**Built 2026-10-08** after owner rulings 1b = (a), drop all 61 v1 rows that an evaluation set was drawn from (pinned in
+`build_adj1.py` as `V1_EXCLUDED_DROP`), and 1c = train anyway and let the gate judge. `build_adj1.py` exit 0;
+`validate_training_data.py --production-sample ...` exit 0, no critical issues.
+
+- **Splits:** train 6,322 / val 768 / test 778; MEDIUM+ labels 266 / 29 / 28 (323 total: 236 harvest, 44 easy
+  negatives, 43 v1). Dropped: 61 v1 (ruling 1b), 1 held-out twin, 28 cross-split twins (val/test copy).
+- **FM-T1: still coupled, ACCEPTED (ruling 1c).** Training median 894 chars vs production 2,235. Positive share
+  0.7 / 2.0 / 10.6 / 15.9 / 18.6% at <1k / 1–2k / 2–4k / 4–8k / >8k (production 5.8 / 10.6 / 12.7% at the top three bins).
+  Cause: 73% of positives are harvest rows (recent, full text), while 85% of rows are v1's older, shorter articles.
+- **FM-D2: language skew found here, not previously listed.** Among STAMPED rows only (v1 rows are mostly unstamped),
+  French is 14.5% of positives vs 3.6% of negatives and ~5% of production. 30 of the 33 French positives are harvest rows,
+  mostly Walloon local news (source id `belgian_dh_les_sports`, 4% of positives; the titles read as genuine
+  community stories). Risk: "French local news ⇒ belonging". Not acted on; read the gate's false positives by language.
+- **FM-D3:** boilerplate markers 2.1%, mostly-shared 0.3%.
+- **Validator warnings:** 1,392 all-zero rows (v1 1,269 = 19% of v1, easy 123 = 15.5%: the oracle's normal output for
+  off-topic rows, not a failure); no `oracle_meta` (llm-distillery#155, the scope_verdict stamp). belonging v1 does not use it.
