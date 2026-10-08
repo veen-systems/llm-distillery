@@ -12,8 +12,9 @@
       (`dd98e79`), rollback rule (STATUS.md). **Handed to the NexusMind session (`nexusmind-dc`)**: since NM#395 production
       scores on sadaltager from an image (stage.py, docker build, restart, manual sadalsuud pull), so our RUNBOOK's
       deploy_to_nexusmind.sh/gpu-server path is STALE for this (⚠️ RUNBOOK § Deployment needs a rewrite). filters/common diffed:
-      no runtime difference. ▶ **Waiting on:** the first cycle scored by v3 → post on #170 + tell ovr.news; refit normalization
-      ~2 weeks later; ovr's post-switch panel → rollback rule.
+      no runtime difference. ✅ **v3 LIVE from NexusMind run `bd00dad6` (2026-10-09 00:08–01:24 CEST)**: 3,673/3,673 rows
+      `version "3.0"`, 19 stage-2 raw ≥ 4.0 (0.52%, predicted 0.50%). Posted on #170; ovr.news and pipeline-atlas told.
+      ▶ **Waiting on:** ovr's post-switch panel → rollback rule; then the refit.
       📅 **ovr's rollback panel is due 2026-10-23** (ovr hypothesis log). **Refit normalization AFTER it (≥ 2026-10-24)**, so the panel
       sees one scale (ovr's point). Exception: if ovr's normalized ≥ 4.5 pass count drops below 100% for Belonging, decide an earlier
       refit WITH ovr. Post the refit date on #170. Refit ONLY rows with `belonging.version == "3.0"` (filtered/ mixes v1 and v3; NexusMind PR #627 review).

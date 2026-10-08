@@ -1,8 +1,10 @@
 # belonging v3: STATUS (2026-10-08)
 
-**State: GATE PASSED, NOT DEPLOYED.** Production runs belonging **v1**. Switching is the owner's decision, separate from the
-gate (it weighs volume and the score-scale shift below). NexusMind loads the HIGHEST `vN` on disk, so landing this directory in
-NexusMind makes it live on the next cycle: there is no separate cutover step.
+**State: LIVE since NexusMind run `bd00dad6-9dd8-4f95-b9f4-242ad90cab68` (2026-10-09 00:08–01:24 CEST),** replacing v1
+(NexusMind PR #627, scorer image `nexusmind-scorer:facfa8ba21e2-we1173758`). Checked by Claude on sadalsuud: all 3,673 rows of
+`data/filtered/belonging/filtered_20261009_012040.jsonl` carry `version "3.0"` (3,139 stage2, 534 stage1_low); 19 stage-2 rows
+have raw ≥ 4.0 (0.52%; the 5,000-row pre-switch draw predicted 25/5,000 = 0.50%, v1 109/5,000). One cycle, so read it as the
+direction only.
 
 ## What it is
 
@@ -42,10 +44,10 @@ Trained at `49d52a9`, 6 epochs, `--select-metric last` (epoch 6), seed 42, head+
   differed on any of 5,000), v1 and v3 split identically. The held-out sets are stage-2 rows by design, so they say nothing here.
 - Op-point 4.0 (`base_scorer.py` TIER_THRESHOLDS), as v1; pinned in `tests/unit/test_normalization_op_point.py`.
 
-## Not done (deploy steps, owner's go required)
+## Switch steps (done)
 
-Hub upload (`jeergrvgreg/belonging-filter-v3`), pre-placing the adapter on gpu-server, `deploy_to_nexusmind.sh belonging v3
---dry-run` + diff, NexusMind PR. RUNBOOK § Deployment to NexusMind.
+Hub `jeergrvgreg/belonging-filter-v3` (adapter `c262424`); NexusMind built the scorer image and switched sadalsuud (PR #627).
+Our RUNBOOK's gpu-server path was not used: it is stale since NexusMind NM#395 (`docs/TODO.md`).
 
 ## Switch decision and rollback rule (owner GO 2026-10-08; fixed BEFORE the switch)
 
