@@ -17,7 +17,10 @@
    1b/1c/2. ✅ **Ruled + built 2026-10-08:** 1b = (a) drop all 61 (pinned in `build_adj1.py`); 1c = train anyway, the gate
       judges. Build + validator exit 0; results in the build README § *Result* (FM-T1 still coupled as accepted; a
       NEW FM-D2 French skew among positives: read the gate FPs by language).
-   ▶ **Owner 2026-10-08: no new data yet; train, CHECK, then gate.** Epochs = **6, keep best** (read
+   ⚠️ **Run 1 (2026-10-08, `baf7d06`) DISCARDED:** `--select-metric recall_medium` kept EPOCH 1 (0.966 on 29 val positives,
+      loss 1.68 vs 0.39; it over-scores negatives) — the #144 saturation. **Owner: retrain with `--select-metric last`**
+      (new option, final epoch ships; epoch 6 of run 1 had val MAE 0.374, recall_medium 0.86).
+   ▶ **Owner 2026-10-08: no new data yet; train, CHECK, then gate.** Epochs = **6, final epoch (`--select-metric last`)** (read
       `training_history.json` per epoch; if recall_medium saturates on the 29 val positives (#144), tell the owner before
       using the checkpoint). **New step 5b (before the one-shot gate):** score a few thousand UNLABELLED production rows
       (in neither training nor the held-out set) with the candidate and with live v1, and compare flag rate (raw ≥ 4.0) by
@@ -29,7 +32,7 @@
       `filters.belonging.v1.` import to `v1_adj1` (v1's code loads `v1/model` otherwise; `gate.assert_loads_from` refuses it),
       copy `training_manifest.jsonl` in. rsync the build + language stamps + easy-neg files to b650 (gitignored data).
    4. **Train on b650** (RUNBOOK § *Train on GPU*): commit+push first (train.py refuses a dirty/unpushed tree); check
-      `curl -s localhost:11434/api/ps` shows no `gemma3:27b`. Flags: `--epochs 6 --batch-size 8 --seed 42 --select-metric recall_medium
+      `curl -s localhost:11434/api/ps` shows no `gemma3:27b`. Flags: `--epochs 6 --batch-size 8 --seed 42 --select-metric last
       --medium-threshold 4.0 --use-head-tail --head-tokens 256 --tail-tokens 256`. ⚠️ **Epochs are a choice to settle
       first:** v1 trained 3; the human_thriving adj retrains used 6 with checkpoint selection. recall_medium saturates on a
       thin val positive count (#144), so read `training_history.json` per epoch.
@@ -96,6 +99,13 @@
    - H-MECH-1: watch, 2 batteries left.
    - #158: the heldout detector band (b650).
    - #104 item 1: likely MOOT if gpu-server is retired.
+
+4b. **Oracle model migration (Google notice, 2026-10-08) — NOT urgent, nothing breaks on `gemini-2.5-flash`.** Google will
+   reject `thinking_budget` (400) and `temperature`/`top_p`/`top_k` on its UPCOMING models; our call sites send both
+   (`ground_truth/batch_scorer.py:805-833`, `scripts/score_ollama_oracle.py:274-277`). ▶ First action: find the retirement
+   date of `gemini-2.5-flash` (the real trigger; unknown). When migrating: `thinking_budget=0` is the cost lever (~80% of
+   output tokens per the code comment) and `thinking_level="minimal"` is not known to equal it — measure $/article NAMING THE
+   PROMPT; dropping `temperature=0.3` plus a new model = a new oracle, calibrate against the current one first (ADR-010).
 
 5. **NexusMind's, nothing of ours:**
    - NexusMind#395: step 1 LIVE on sadaltager since 2026-09-29.

@@ -16,6 +16,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from training.train import (  # noqa: E402
     _medium_threshold_from_config,
+    checkpoint_improved,
     compute_metrics,
     resolve_medium_threshold,
 )
@@ -153,3 +154,44 @@ class TestRealFilterConfigs:
             pytest.skip(f"{rel} not on disk")
         cfg = yaml.safe_load(cfg_path.read_text(encoding="utf-8"))
         assert _medium_threshold_from_config(cfg) == expected
+
+
+# belonging v1_adj1's actual val history (2026-10-08): recall_medium saturated at epoch 1 on 29 positives.
+ADJ1_HISTORY = [dict(mae=m, recall_medium=r, recall_at_20=k) for m, r, k in
+                [(0.8001, 0.9655, 0.55), (0.4560, 0.7931, 0.70), (0.3899, 0.7241, 0.75),
+                 (0.3738, 0.7241, 0.80), (0.3715, 0.7586, 0.80), (0.3740, 0.8621, 0.80)]]
+
+
+def _shipped_epoch(metric, history=ADJ1_HISTORY):
+    """Replays train.py's loop: returns the 1-based epoch whose weights end up on disk."""
+    best_recall, best_mae, shipped = -1.0, float("inf"), None
+    for epoch, val in enumerate(history, 1):
+        best_mae = min(best_mae, val["mae"])
+        improved, value = checkpoint_improved(metric, val, best_recall, best_mae)
+        if improved:
+            if value is not None:
+                best_recall = value
+            shipped = epoch
+    return shipped
+
+
+class TestCheckpointSelection:
+    def test_last_ships_the_final_epoch(self):
+        assert _shipped_epoch("last") == 6
+
+    def test_recall_medium_reproduces_the_saturation_it_was_added_for(self):
+        assert _shipped_epoch("recall_medium") == 1
+
+    def test_recall_at_20_ships_the_first_epoch_reaching_its_max(self):
+        assert _shipped_epoch("recall_at_20") == 4
+
+    def test_last_saves_even_when_every_metric_got_worse(self):
+        assert checkpoint_improved("last", dict(mae=9.0, recall_medium=0.0), 1.0, 0.1) == (True, None)
+
+    def test_missing_metric_still_falls_back_to_mae(self):
+        assert checkpoint_improved("recall_medium", dict(mae=0.5), 0.9, 0.5) == (True, None)
+        assert checkpoint_improved("recall_medium", dict(mae=0.6), 0.9, 0.5) == (False, None)
+
+    def test_last_is_a_cli_choice(self):
+        src = (Path(__file__).resolve().parents[2] / "training" / "train.py").read_text(encoding="utf-8")
+        assert 'choices=["recall_at_20", "recall_medium", "last"]' in src

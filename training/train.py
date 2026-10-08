@@ -666,6 +666,18 @@ def evaluate(model, dataloader, device, dimension_names: List[str], dimension_we
     return metrics
 
 
+
+def checkpoint_improved(select_metric, val_metrics, best_val_recall, best_val_mae):
+    """(save this epoch?, the selection value). `last` saves every epoch, so the final one ships.
+    A metric compute_metrics did not emit falls back to MAE (see the comment at the call site)."""
+    if select_metric == "last":
+        return True, None
+    val_recall = val_metrics.get(select_metric)
+    if val_recall is not None:
+        return val_recall > best_val_recall, val_recall
+    return val_metrics["mae"] <= best_val_mae, None
+
+
 def main():
     parser = argparse.ArgumentParser(description="Train filter model")
     parser.add_argument(
@@ -782,13 +794,17 @@ def main():
     )
     parser.add_argument(
         "--select-metric",
-        choices=["recall_at_20", "recall_medium"],
+        choices=["recall_at_20", "recall_medium", "last"],
         default="recall_at_20",
         help="Validation metric to select the best checkpoint on (both maximized). "
              "recall_at_20 = top-20 ranking precision (default). recall_medium = "
              "recall on MEDIUM+ positives (1 - FN-rate); prefer this when the "
              "deploy gate penalizes missing/over-demoting positives (needle filters "
-             "where not-missing-positives matters more than top-20 precision).",
+             "where not-missing-positives matters more than top-20 precision). "
+             "last = no selection: every epoch overwrites, the FINAL epoch ships. Use it "
+             "when the val positive count is too thin for either metric (#144): "
+             "belonging v1_adj1's recall_medium picked an undertrained epoch 1 "
+             "(0.966 on 29 positives) that over-scores negatives.",
     )
 
     args = parser.parse_args()
@@ -1110,21 +1126,21 @@ def main():
         # metric compute_metrics did not emit: recall_medium is set only under
         # n_pos > 0, so a val split with zero MEDIUM+ positives silently selects on
         # aggregate MAE — the exact defect this plumbing exists to remove.
-        val_recall = val_metrics.get(args.select_metric)
-        if val_recall is not None:
-            selection_metric_available = True
         if val_metrics["mae"] < best_val_mae:
             best_val_mae = val_metrics["mae"]
-        if val_recall is not None:
-            improved = val_recall > best_val_recall
-        else:
-            improved = val_metrics["mae"] <= best_val_mae
+        improved, val_recall = checkpoint_improved(args.select_metric, val_metrics,
+                                                   best_val_recall, best_val_mae)
+        if val_recall is not None or args.select_metric == "last":
+            selection_metric_available = True
         if improved:
             if val_recall is not None:
                 best_val_recall = val_recall
                 print(f"\n✓ New best checkpoint ({args.select_metric}={val_recall:.3f}, "
                       f"Recall@20={val_metrics.get('recall_at_20', float('nan')):.3f}, "
                       f"recall_medium={val_metrics.get('recall_medium', float('nan')):.3f}, "
+                      f"MAE={val_metrics['mae']:.4f})")
+            elif args.select_metric == "last":
+                print(f"\n✓ Saving epoch {epoch + 1} (--select-metric last: the final epoch ships; "
                       f"MAE={val_metrics['mae']:.4f})")
             else:
                 print(f"\n✓ New best checkpoint (MAE={val_metrics['mae']:.4f})")
