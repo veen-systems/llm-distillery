@@ -14,6 +14,9 @@
       deploy_to_nexusmind.sh/gpu-server path is STALE for this (⚠️ RUNBOOK § Deployment needs a rewrite). filters/common diffed:
       no runtime difference. ▶ **Waiting on:** the first cycle scored by v3 → post on #170 + tell ovr.news; refit normalization
       ~2 weeks later; ovr's post-switch panel → rollback rule.
+      📅 **ovr's rollback panel is due 2026-10-23** (ovr hypothesis log). **Refit normalization AFTER it (≥ 2026-10-24)**, so the panel
+      sees one scale (ovr's point). Exception: if ovr's normalized ≥ 4.5 pass count drops below 100% for Belonging, decide an earlier
+      refit WITH ovr. Post the refit date on #170.
    ⚠️ **Volume:** v3 flags ~¼ of v1's (25 vs 109 per 5,000, measured), so ~20/day vs ~81/day on ovr (extrapolated).
    Open, not blocking: single-person stories (owner unsure; ovr raised it with the owner); FM-S1 judge strictness.
    ⚠️ **Run 2 (`20637ec`, epoch 6) leak check NOT LEAKED (`docs/evidence/2026-10-08-belonging-adj1-leak-check/`), but the gate
