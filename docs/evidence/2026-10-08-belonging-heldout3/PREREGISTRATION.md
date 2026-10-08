@@ -49,4 +49,13 @@ which are DROPPED (`heldout3.DROPPED`). Rows held: hi 800, mid 798, near 799.
 
 ## Result
 
-*(filled after the judges; N_POS is then written into gate3.py, before c2b is scored)*
+**Judged 2026-10-08, BEFORE c2b was scored on this set** (judge outputs: 1,170 rows, 0 malformed, every quote verbatim).
+
+- Stage A: Gemini said in on 285 of 2,397 (hi 180, mid 75, near 30). 1 empty reply (`mexican_la_jornada_d21de9dd127c`, hi) counts as
+  `no_reply` = out, as in set 1. 6.73M in / 0.25M out tokens = **$2.64 at list** (billing unchecked). Judged: 285 Gemini-ins + 300
+  sampled outs = 585 rows × 2 passes (24 Opus subagents, ~2.6M tokens).
+- **Tripwire: PASSED, no owner check.** A/B agreement 557/585 = **0.952**; hi both-in among Gemini-ins 66/180 = **0.367**.
+- **Labels:** pos **83**, deciding neg **339**, disputed **133**, excluded **30**. Disputed by judge class: {'out_harm_is_story': 40, 'out_other': 69, 'out_gift_official': 17, 'out_culture_topic': 13, 'out_one_moment': 4, 'out_event_spectated': 3}.
+- **N_POS = 83 → K_MIN = ceil(31/44 × 83) = 59**, written into gate3.py. `gate3.py controls`: all four give the required verdict.
+- Predictions: positives 55–80 → **83, miss (high)**; deciding negatives 300–360 → **339, hit**; hi Gemini-in rate 0.14–0.24 →
+  **0.225, hit**.
