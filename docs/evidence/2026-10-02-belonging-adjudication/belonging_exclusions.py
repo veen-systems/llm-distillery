@@ -46,6 +46,7 @@ SOURCES = [
     ("pilot v3 key", HERE / "key_v3.jsonl", _jsonl_ids),
     ("calibration set", HERE / "calib_key.jsonl", _jsonl_ids),
     ("held-out screen set 2026-10-03", ROOT / "datasets" / "belonging_heldout" / "heldout_rows.jsonl", _jsonl_ids),
+    ("held-out set 2 2026-10-08", ROOT / "datasets" / "belonging_heldout2" / "heldout2_rows.jsonl", _jsonl_ids),
 ]
 
 

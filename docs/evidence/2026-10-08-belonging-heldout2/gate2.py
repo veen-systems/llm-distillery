@@ -25,7 +25,7 @@ The rule, as code (each line is GATE.md § Pass rule v2):
 - the candidate's threshold is its own op-point, read from its `base_scorer.py` `TIER_THRESHOLDS` "medium".
 - k = positives the candidate finds; t* = the HIGHEST threshold at which v1 still finds >= k (v1's k-th highest
   stage-2 positive score).
-- weight = band pool / 800, times band Gemini-outs / 100 for a sampled Gemini-out row (computed from
+- weight = band pool / rows held in the band (800 minus Amendment-1 drops), times band Gemini-outs / 100 for a sampled Gemini-out row (computed from
   `gemini_v2_2.jsonl` here, as `heldout.py analyse` does; `no_reply` counts as out).
 - Δspec = spec(candidate @ op) − spec(v1 @ t*), weighted, on the deciding negatives; paired bootstrap stratified by
   band × pick, 2,000 resamples, seed 20261012. PASS needs the 95% lower bound > 0 AND k >= K_MIN = ceil(31/44 × N_POS),
@@ -76,6 +76,7 @@ def labelled():
     """id -> {label: pos|neg|disputed|excluded, band, pick, weight, a, b}. Asserts the shape GATE.md states."""
     rs, g = {r["id"]: r for r in H.rows()}, H.gem_latest()
     pick, v = H.judges()
+    nb = H.band_n(rs.values())
     gout, samp = Counter(), Counter()
     for i, r in rs.items():
         if g[i]["verdict"] != "in_scope":
@@ -88,7 +89,7 @@ def labelled():
         a, b = v["A"][i]["verdict"], v["B"][i]["verdict"]
         label = classify(a, b, p)
         band = rs[i]["band"]
-        w = rs[i]["n_in_band"] / H.N_BAND * (gout[band] / H.N_OUT if p == "gemini_out_sample" else 1)
+        w = rs[i]["n_in_band"] / nb[band] * (gout[band] / H.N_OUT if p == "gemini_out_sample" else 1)
         lab[i] = dict(label=label, band=band, pick=p, weight=w, a=a, b=b)
     n = Counter(x["label"] for x in lab.values())
     if N_POS is None:

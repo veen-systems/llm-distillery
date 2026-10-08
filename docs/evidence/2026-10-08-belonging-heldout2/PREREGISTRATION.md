@@ -53,6 +53,19 @@ unchanged. **STOP and bring the owner rows if EITHER:**
 
 Deciding negatives 300–360; positives 70–110; hi-band Gemini-in rate 0.18–0.28 (set 1: 0.23).
 
+## Amendment 1 (2026-10-08, after the draw, BEFORE any oracle or judge call)
+
+The draw excluded training rows by ID only. gate2's own overlap check then found 4 drawn rows that twin a v1_adj1/c2a/c2b
+training row by title or content (`positive_news_upworthy_35dd196e7214` mid, `romanian_hotnews_1e3c52d614a9` near,
+`british_irish_independent_uk_b7b6d44c13aa` mid, `austrian_krone_a1b472c6c601` mid). Some may be boilerplate false hits; none can be
+held-out. They are DROPPED (`heldout2.DROPPED`). Nothing about them beyond title and band was looked at. Rows held: hi 800, mid 797,
+near 799; design weights use the rows held per band. The alternative (retraining both variants without the 4 training twins)
+was rejected: a retrain for 4 rows, and the drop costs no information.
+
+Draw (measured): window `filtered_20260910_051711 .. filtered_20261008_093835` (157 files); pools hi 1,139 / mid 8,914 /
+near 14,057. ⚠️ The hi draw takes 70% of its pool (harvest r1 took that band's earlier rows), so the bootstrap's
+infinite-population assumption makes the hi stratum's interval CONSERVATIVE.
+
 ## Result
 
 *(filled after the judges; N_POS is then written into gate2.py, before any candidate is scored)*

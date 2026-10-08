@@ -28,19 +28,38 @@ RUBRIC_SHA = "d450b79510418cf7"  # frozen v2.2 (PREREGISTRATION.md)
 BANDS, N_OUT, PER_BATCH, N_BAND = ("hi", "mid", "near"), 100, 50, 800
 
 
-def rows():
+# Dropped AFTER the draw, BEFORE any oracle or judge call (PREREGISTRATION.md § Amendment 1): twins of v1_adj1/c2a/c2b
+# training rows by gate2's own overlap check (title or 8-word-run content). The draw excluded ids only.
+DROPPED = {"positive_news_upworthy_35dd196e7214", "romanian_hotnews_1e3c52d614a9",
+           "british_irish_independent_uk_b7b6d44c13aa", "austrian_krone_a1b472c6c601"}
+
+
+def drawn():
     return [json.loads(l) for l in open(ROWS)]
 
 
+def rows():
+    rs = [r for r in drawn() if r["id"] not in DROPPED]
+    if len(rs) != 3 * N_BAND - len(DROPPED):
+        raise SystemExit(f"{len(rs)} rows after dropping {len(DROPPED)}: a DROPPED id is not in the draw")
+    return rs
+
+
+def band_n(rs):
+    """Rows actually held per band (800 minus that band's drops): the design weight's denominator."""
+    return Counter(r["band"] for r in rs)
+
+
 def check():
-    rs = rows()
+    rs = drawn()
     if hashlib.sha256(RUBRIC.read_bytes()).hexdigest()[:16] != RUBRIC_SHA:
         raise SystemExit("rubric is not the frozen v2.2")
     ids = [r["id"] for r in rs]
     if len(ids) != 3 * N_BAND or len(set(ids)) != 3 * N_BAND or Counter(r["band"] for r in rs) != Counter({b: N_BAND for b in BANDS}):
         raise SystemExit(f"draw shape wrong: {len(ids)} rows, {len(set(ids))} distinct, {Counter(r['band'] for r in rs)}")
     assert_is_source(ids, "held-out set 2 2026-10-08")
-    print(f"ok: {3 * N_BAND} distinct rows, {N_BAND}/band, in belonging_exclusions as a source, rubric frozen")
+    print(f"ok: {3 * N_BAND} distinct rows drawn, {N_BAND}/band, in belonging_exclusions as a source, rubric frozen; "
+          f"held after drops: {dict(band_n(rows()))}")
 
 
 def gemini(limit, workers=8):
@@ -184,16 +203,16 @@ def analyse():
             fn_est = miss * w_out
             tn_est = (len(samp) - miss) * w_out
             pos = tp + fn_est
-            rate = pos / N_BAND
+            rate = pos / len(ids)
             rec = tp / pos if pos else float("nan")
             spec = tn_est / (tn_est + fp)
-            line = (f"  [{b}] pool {pool}: gemini in {len(gin)}/{N_BAND}; hit {tp}/{len(gin)} = {tp / max(1, len(gin)):.2f}; "
+            line = (f"  [{b}] pool {pool}: gemini in {len(gin)}/{len(ids)}; hit {tp}/{len(gin)} = {tp / max(1, len(gin)):.2f}; "
                     f"misses in {len(samp)} sampled outs: {miss} (x{w_out:.2f}); in-rate {rate:.3f} "
                     f"(~{rate * pool:.0f} rows in the band); recall {rec:.2f}; specificity {spec:.3f}")
             if miss == 0:
                 line += f"; 0 misses -> rule-of-3 recall lower bound {tp / (tp + 3 / len(samp) * len(gout)) if tp else 0:.2f}"
             print(line)
-            s_ = pool / N_BAND
+            s_ = pool / len(ids)
             fn_ub = max(fn_est, 3 / len(samp) * len(gout)) if miss == 0 else fn_est  # rule of 3 when 0 misses seen
             T.update(tp=tp * s_, fn=fn_est * s_, fn_ub=fn_ub * s_, fp=fp * s_, tn=tn_est * s_, pop=pool,
                      gin=len(gin) * s_)
