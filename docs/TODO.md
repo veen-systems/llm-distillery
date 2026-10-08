@@ -20,6 +20,15 @@
    ⚠️ **Run 1 (2026-10-08, `baf7d06`) DISCARDED:** `--select-metric recall_medium` kept EPOCH 1 (0.966 on 29 val positives,
       loss 1.68 vs 0.39; it over-scores negatives) — the #144 saturation. **Owner: retrain with `--select-metric last`**
       (new option, final epoch ships; epoch 6 of run 1 had val MAE 0.374, recall_medium 0.86).
+   ⛔ **RUN 3 (`875cb9f`) FAILED THE GATE 2026-10-08; the held-out set is SPENT. v1 STAYS LIVE.** k=40/44, Δspec +0.047
+      CI [−0.015, +0.105]. On ovr's 40 published stories (EXP-028) it drops weak and good alike and KEEPS state commemoration +
+      harm-led stories. Detail: `docs/evidence/2026-10-08-belonging-adj1-leak-check/README.md` § Run 3.
+   ▶ **Owner 2026-10-08: build CANDIDATE 2.** Ruling (single-person stories, owner unsure → act only where clear): hard
+      negatives ONLY from `out_gift_official` (state commemoration / official ceremony) and `out_harm_is_story`, where rubric
+      and ovr's reader panel agree. NO new `out_one_moment` negatives; the rubric text stays as written. Revisit with ovr's
+      post-switch panel. Measured basis: of 6 good single-person stories the candidate dropped, Thriving v9 passes 1, cd v5
+      1 (borderline), uplifting v7 5 (but also 16/27 weak). ▶ FIRST: write the candidate-2 plan (harvest r2 aimed at the
+      two classes ~$9.70 est.; FRESH held-out set ~$9 + owner review); nothing spent before the owner approves it.
    ⚠️ **Run 2 (`20637ec`, epoch 6) leak check NOT LEAKED (`docs/evidence/2026-10-08-belonging-adj1-leak-check/`), but the gate
       REFUSED it before scoring (held-out NOT spent): 2 late footer "twins". Owner: drop + retrain (run 3); build fixed.**
    ▶ **Owner 2026-10-08: no new data yet; train, CHECK, then gate.** Epochs = **6, final epoch (`--select-metric last`)** (read
@@ -42,6 +51,10 @@
    6. **Gate** (one shot): `gate.py score --package filters/belonging/v1_adj1 --order forward|reversed` on b650, then
       `gate.py evaluate --candidate filters/belonging/v1_adj1`. v1's full-text reference is already scored (`fe12a2f`).
       Exit 0 PASS / 1 FAIL / 2 REFUSED. Then plan phase 6 secondary (v1 test split under treatment) and phase 7 live audit.
+   6b. **ovr.news handshake (agreed 2026-10-08, recorded on #170):** after the gate, score ovr's 40 published Belonging stories
+      (EXP-028, 27 rated weak) with v1 and v1_adj1, counts with and without the 2 training URLs, and send them to ovr. At SWITCH
+      and at the normalization REFIT, post the dates on #170: ovr's normalized ≥ 4.5 display gate is inert for Belonging today
+      (829/829, ovr-measured) and may start removing stories. ovr's volume baseline: median 81 new Belonging stories/day.
    7. Open, not blocking: harvest round 2 (~$9.70 est.); FM-S1 judge strictness (re-judge the 92 held-out hi Gemini-ins in
       dense batches).
    ⛔ **Never name the curator** in this repo or on GitHub (guards: `.githooks/`, gitignored `config/credentials/forbidden_names.txt`).

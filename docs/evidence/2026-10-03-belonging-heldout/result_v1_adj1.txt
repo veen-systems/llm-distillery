@@ -1,0 +1,32 @@
+candidate filters/belonging/v1_adj1: 7866 training rows, 0 of the 1200 held-out rows by id, url, title or content
+labels: {'pos': 44, 'neg': 163, 'disputed': 75, 'excluded': 13}; candidate op-point 4.0 (v1 live op-point 4.0)
+strata: the rule names 6 (band x pick); a stratum with no deciding negatives (near/gemini_in today: its Gemini-in hard negatives are all disputed) simply has no rows to resample
+
+=== order forward (NVIDIA GeForce RTX 5090, torch 2.11.0+cu130, jwasys-B650-EAGLE-AX)
+  k = 40/44 at op 4.0; v1 matched at t* = 5.3504
+  deciding negatives n=163 {'hi/gemini_in': 10, 'hi/gemini_out_sample': 50, 'mid/gemini_in': 4, 'mid/gemini_out_sample': 50, 'near/gemini_out_sample': 49}
+  spec weighted: cand 0.8383 | v1@t* 0.7915 | Δ +0.0467 95% CI [-0.0153, +0.1050]
+  ORDER VERDICT: FAIL: Δspec 95% lower bound -0.0153 is not > 0
+  [forward] unweighted spec on deciding negatives: cand 0.804 | v1@t* 0.583
+  [forward] hi+mid only (n=114): weighted cand 0.727 | v1@t* 0.561; unweighted cand 0.746 | v1@t* 0.404
+  [forward] DISPUTED hard negatives (do not decide), n=75: spec weighted cand 0.472 | v1@t* 0.610; unweighted cand 0.400 | v1@t* 0.453
+  [forward] cand: 3 judged rows within ±0.16 of its threshold 4.000 (could flip on batch composition, #95)
+  [forward] v1: 20 judged rows within ±0.16 of its threshold 5.350 (could flip on batch composition, #95)
+
+=== order reversed (NVIDIA GeForce RTX 5090, torch 2.11.0+cu130, jwasys-B650-EAGLE-AX)
+  k = 40/44 at op 4.0; v1 matched at t* = 5.3504
+  deciding negatives n=163 {'hi/gemini_in': 10, 'hi/gemini_out_sample': 50, 'mid/gemini_in': 4, 'mid/gemini_out_sample': 50, 'near/gemini_out_sample': 49}
+  spec weighted: cand 0.8383 | v1@t* 0.7915 | Δ +0.0467 95% CI [-0.0153, +0.1050]
+  ORDER VERDICT: FAIL: Δspec 95% lower bound -0.0153 is not > 0
+  [reversed] unweighted spec on deciding negatives: cand 0.804 | v1@t* 0.583
+  [reversed] hi+mid only (n=114): weighted cand 0.727 | v1@t* 0.561; unweighted cand 0.746 | v1@t* 0.404
+  [reversed] DISPUTED hard negatives (do not decide), n=75: spec weighted cand 0.472 | v1@t* 0.610; unweighted cand 0.400 | v1@t* 0.453
+  [reversed] cand: 3 judged rows within ±0.16 of its threshold 4.000 (could flip on batch composition, #95)
+  [reversed] v1: 20 judged rows within ±0.16 of its threshold 5.350 (could flip on batch composition, #95)
+order-to-order verdict flips, cand at 4.0000: 0/295
+order-to-order verdict flips, v1 at 5.3504: 0/295 (t* forward 5.3504, reversed 5.3504)
+order-to-order verdict flips, v1 at 4.0000: 0/295
+
+NOT computed here (GATE.md 'Also reported'): v1's test split under treatment.jsonl (plan phase 6, ground_truth_gate.py), the owner's 10 rows (owner_check_*.tsv) as a per-row table.
+
+GATE VERDICT (both orders must pass): FAIL

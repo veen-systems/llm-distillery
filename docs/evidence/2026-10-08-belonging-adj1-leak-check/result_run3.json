@@ -1,0 +1,223 @@
+{
+ "stage1_split_disagreements": 0,
+ "language_source": {
+  "detected": 4820,
+  "script": 129,
+  "declared": 49,
+  "script_veto": 1,
+  "hint": 1
+ },
+ "decisive": {
+  "LONG (>4000 chars)": {
+   "n": 1260,
+   "v1_flags": 35,
+   "cand_flags": 12,
+   "v1_rate": 0.0278,
+   "cand_rate": 0.0095,
+   "ratio": 0.343,
+   "gap_ci95": [
+    -0.027,
+    -0.0095
+   ],
+   "leaked": false
+  },
+  "FRENCH (language=fr)": {
+   "n": 285,
+   "v1_flags": 15,
+   "cand_flags": 11,
+   "v1_rate": 0.0526,
+   "cand_rate": 0.0386,
+   "ratio": 0.733,
+   "gap_ci95": [
+    -0.0351,
+    0.0035
+   ],
+   "leaked": false
+  }
+ },
+ "context": {
+  "ALL": {
+   "n": 5000,
+   "v1_flags": 109,
+   "cand_flags": 42,
+   "v1_rate": 0.0218,
+   "cand_rate": 0.0084,
+   "ratio": 0.385,
+   "gap_ci95": [
+    -0.0172,
+    -0.0098
+   ],
+   "leaked": false
+  },
+  "len 0-1000": {
+   "n": 957,
+   "v1_flags": 8,
+   "cand_flags": 3,
+   "v1_rate": 0.0084,
+   "cand_rate": 0.0031,
+   "ratio": 0.375,
+   "gap_ci95": [
+    -0.0115,
+    0.001
+   ],
+   "leaked": false
+  },
+  "len 1000-2000": {
+   "n": 1307,
+   "v1_flags": 30,
+   "cand_flags": 9,
+   "v1_rate": 0.023,
+   "cand_rate": 0.0069,
+   "ratio": 0.3,
+   "gap_ci95": [
+    -0.023,
+    -0.0099
+   ],
+   "leaked": false
+  },
+  "len 2000-4000": {
+   "n": 1476,
+   "v1_flags": 36,
+   "cand_flags": 18,
+   "v1_rate": 0.0244,
+   "cand_rate": 0.0122,
+   "ratio": 0.5,
+   "gap_ci95": [
+    -0.0196,
+    -0.0047
+   ],
+   "leaked": false
+  },
+  "len 4000-8000": {
+   "n": 949,
+   "v1_flags": 31,
+   "cand_flags": 10,
+   "v1_rate": 0.0327,
+   "cand_rate": 0.0105,
+   "ratio": 0.323,
+   "gap_ci95": [
+    -0.0327,
+    -0.0116
+   ],
+   "leaked": false
+  },
+  "len 8000-inf": {
+   "n": 311,
+   "v1_flags": 4,
+   "cand_flags": 2,
+   "v1_rate": 0.0129,
+   "cand_rate": 0.0064,
+   "ratio": 0.5,
+   "gap_ci95": [
+    -0.0225,
+    0.0096
+   ],
+   "leaked": false
+  },
+  "lang en": {
+   "n": 2386,
+   "v1_flags": 43,
+   "cand_flags": 9,
+   "v1_rate": 0.018,
+   "cand_rate": 0.0038,
+   "ratio": 0.209,
+   "gap_ci95": [
+    -0.0197,
+    -0.0092
+   ],
+   "leaked": false
+  },
+  "lang es": {
+   "n": 470,
+   "v1_flags": 12,
+   "cand_flags": 5,
+   "v1_rate": 0.0255,
+   "cand_rate": 0.0106,
+   "ratio": 0.417,
+   "gap_ci95": [
+    -0.0298,
+    -0.0021
+   ],
+   "leaked": false
+  },
+  "lang de": {
+   "n": 361,
+   "v1_flags": 8,
+   "cand_flags": 6,
+   "v1_rate": 0.0222,
+   "cand_rate": 0.0166,
+   "ratio": 0.75,
+   "gap_ci95": [
+    -0.0222,
+    0.0111
+   ],
+   "leaked": false
+  },
+  "lang fr": {
+   "n": 285,
+   "v1_flags": 15,
+   "cand_flags": 11,
+   "v1_rate": 0.0526,
+   "cand_rate": 0.0386,
+   "ratio": 0.733,
+   "gap_ci95": [
+    -0.0351,
+    0.0035
+   ],
+   "leaked": false
+  },
+  "lang el": {
+   "n": 214,
+   "v1_flags": 3,
+   "cand_flags": 2,
+   "v1_rate": 0.014,
+   "cand_rate": 0.0093,
+   "ratio": 0.667,
+   "gap_ci95": [
+    -0.0187,
+    0.0093
+   ],
+   "leaked": false
+  },
+  "lang pt": {
+   "n": 140,
+   "v1_flags": 5,
+   "cand_flags": 1,
+   "v1_rate": 0.0357,
+   "cand_rate": 0.0071,
+   "ratio": 0.2,
+   "gap_ci95": [
+    -0.0571,
+    -0.0071
+   ],
+   "leaked": false
+  },
+  "lang ko": {
+   "n": 117,
+   "v1_flags": 0,
+   "cand_flags": 2,
+   "v1_rate": 0.0,
+   "cand_rate": 0.0171,
+   "ratio": null,
+   "gap_ci95": [
+    0.0,
+    0.0427
+   ],
+   "leaked": false
+  },
+  "lang hr": {
+   "n": 116,
+   "v1_flags": 5,
+   "cand_flags": 2,
+   "v1_rate": 0.0431,
+   "cand_rate": 0.0172,
+   "ratio": 0.4,
+   "gap_ci95": [
+    -0.0603,
+    0.0
+   ],
+   "leaked": false
+  }
+ },
+ "verdict": "NOT LEAKED"
+}
