@@ -46,3 +46,12 @@ Trained at `49d52a9`, 6 epochs, `--select-metric last` (epoch 6), seed 42, head+
 
 Hub upload (`jeergrvgreg/belonging-filter-v3`), pre-placing the adapter on gpu-server, `deploy_to_nexusmind.sh belonging v3
 --dry-run` + diff, NexusMind PR. RUNBOOK § Deployment to NexusMind.
+
+## Switch decision and rollback rule (owner GO 2026-10-08; fixed BEFORE the switch)
+
+The owner approved the switch on Claude's recommendation (ADR-023: a weak story costs a reader; v1's published Belonging is 27/40
+weak on ovr.news's EXP-028 panel). Expected range, estimated, not measured: ~20–36 published Belonging stories/day, about half
+of them good, vs ~81/day with ~26 good today. **Check:** ovr.news re-runs its EXP-028 panel on a fresh post-switch Belonging sample
+~2 weeks after the switch. **Roll back to v1** (remove `filters/belonging/v3` from NexusMind; v1 then loads again) if good
+stories per day fall clearly below ~26, or if the weak share does not fall below 27/40. "Clearly" means outside the panel's
+95% interval.
