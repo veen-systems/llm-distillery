@@ -4,31 +4,20 @@
 
 *A bare "continue" means this list, top down. Each line names the FIRST action.*
 
-0. ▶ **BELONGING v1 → adj1 retrain: run the build, check it, train, gate** (tracked in #170, the belonging adj1 retrain). Plan `~/.claude/plans/splendid-purring-acorn.md`;
-   session `memory/project_session_2026_10_07_commerce_gate_runner.md`; build `docs/evidence/2026-10-07-belonging-adj1-build/`
-   (README = this build's FMEA status); gate `docs/evidence/2026-10-03-belonging-heldout/GATE.md` (+ `gate.py`).
-   All owner rulings are in (2026-10-03 adjudication; 2026-10-07 full text everywhere, hard negatives = 121
-   one-moment rows, ~800 production easy negatives at k=1). History before 2026-10-08: `docs/TODO-archive.md`.
-   ▶ **Next, in order:**
-   1. ✅ **Easy negatives: the 2 permanent failures DROPPED 2026-10-08** (deterministic, ~3.7 s per failure across the
-      whole loop; reason in the build README § FM-L5). The build now passes coverage and refuses only at 1b.
-      ⚠️ **Owner: check Google billing for 2026-10-07 ~20:00 → 10-08 08:19** — a `batch_scorer` bug (since fixed) retried them
-      ~74k times overnight; whether failed calls were billed is unknown.
-   1b/1c/2. ✅ **Ruled + built 2026-10-08:** 1b = (a) drop all 61 (pinned in `build_adj1.py`); 1c = train anyway, the gate
-      judges. Build + validator exit 0; results in the build README § *Result* (FM-T1 still coupled as accepted; a
-      NEW FM-D2 French skew among positives: read the gate FPs by language).
-   ⚠️ **Run 1 (2026-10-08, `baf7d06`) DISCARDED:** `--select-metric recall_medium` kept EPOCH 1 (0.966 on 29 val positives,
-      loss 1.68 vs 0.39; it over-scores negatives) — the #144 saturation. **Owner: retrain with `--select-metric last`**
-      (new option, final epoch ships; epoch 6 of run 1 had val MAE 0.374, recall_medium 0.86).
-   ⛔ **RUN 3 (`875cb9f`) FAILED THE GATE 2026-10-08; the held-out set is SPENT. v1 STAYS LIVE.** k=40/44, Δspec +0.047
-      CI [−0.015, +0.105]. On ovr's 40 published stories (EXP-028) it drops weak and good alike and KEEPS state commemoration +
-      harm-led stories. Detail: `docs/evidence/2026-10-08-belonging-adj1-leak-check/README.md` § Run 3.
-   ▶ **Owner 2026-10-08: build CANDIDATE 2.** Ruling (single-person stories, owner unsure → act only where clear): hard
-      negatives ONLY from `out_gift_official` (state commemoration / official ceremony) and `out_harm_is_story`, where rubric
-      and ovr's reader panel agree. NO new `out_one_moment` negatives; the rubric text stays as written. Revisit with ovr's
-      post-switch panel. Measured basis: of 6 good single-person stories the candidate dropped, Thriving v9 passes 1, cd v5
-      1 (borderline), uplifting v7 5 (but also 16/27 weak). ▶ FIRST: write the candidate-2 plan (harvest r2 aimed at the
-      two classes ~$9.70 est.; FRESH held-out set ~$9 + owner review); nothing spent before the owner approves it.
+0. ▶ **BELONGING v3 (= candidate c2b) PASSED the gate 2026-10-08 and is PACKAGED (`filters/belonging/v3`, `218fb79`). Next: the
+   owner's GO on the switch** (#170). Read `filters/belonging/v3/STATUS.md` first. History: v1_adj1 FAILED set 1; c2a FAILED set 2
+   on recall (owner veto picked c2a over the panel's c2b); c2b PASSED set 3 (k 76/83, Δspec +0.350 [+0.322, +0.376], size partly
+   by band construction, PLAN.md § 10). All three held-out sets are SPENT.
+   ▶ **On GO, in order** (RUNBOOK § Deployment to NexusMind):
+   1. Hub: `upload_to_huggingface.py --filter filters/belonging/v3 --repo-name jeergrvgreg/belonging-filter-v3 --private`, then
+      `verify_filter_package.py --check-hub`.
+   2. Pre-place the adapter on gpu-server (guard D), or confirm by hand.
+   3. `deploy_to_nexusmind.sh belonging v3 --dry-run` (⚠️ it writes to NexusMind's tree), then `git -C NexusMind diff --stat`;
+      a NexusMind PR on a chore/ branch. NexusMind loads the highest vN, so v3 goes live on the next cycle.
+   4. Post the switch date on #170 and tell ovr.news (its post-switch panel; normalized ≥ 4.5 watch item).
+   5. After ~2 weeks of production: refit `normalization.json` on v3's own raws, then post the refit date on #170.
+   ⚠️ **Volume:** v3 flags ~¼ of v1's (25 vs 109 per 5,000, measured), so ~20/day vs ~81/day on ovr (extrapolated).
+   Open, not blocking: single-person stories (owner unsure; ovr raised it with the owner); FM-S1 judge strictness.
    ⚠️ **Run 2 (`20637ec`, epoch 6) leak check NOT LEAKED (`docs/evidence/2026-10-08-belonging-adj1-leak-check/`), but the gate
       REFUSED it before scoring (held-out NOT spent): 2 late footer "twins". Owner: drop + retrain (run 3); build fixed.**
    ▶ **Owner 2026-10-08: no new data yet; train, CHECK, then gate.** Epochs = **6, final epoch (`--select-metric last`)** (read
