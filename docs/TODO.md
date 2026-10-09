@@ -86,10 +86,14 @@
      and step 5 verifies from the output: both commands were run on sadalsuud, 4,812/4,812 belonging rows `3.0`,
      `revision_match: true`, scorer `hcl-ct102` (the host varies per cycle, NexusMind#591). New
      `scripts/deployment/check_adapter_matches_hub.py` (6 tests, 2 mutants caught; live 0/1/1/2 on real repos).
-   - ▶ **Open: the SCRIPT half.** Guard D (`preflight_deploy_guards.py` `_ssh_weights_probe`, gpu-server) →
-     call `check_adapter_matches_hub.py` instead, and drop the `deploy_filters.sh` lines the script prints at the end.
-     Interim, the RUNBOOK says to pass `--weights-preplaced` only on the check's exit 0. pipeline-atlas told
-     2026-10-09 BEFORE the change; land it only after they say what their verify greps.
+   - ✅ **SCRIPT half done 2026-10-09** (pipeline-atlas told first; they said go: their verify greps the old
+     `--weights-preplaced` help text and turning red is expected). Guard D now compares this checkout's adapter
+     with its Hub copy (fails closed when it cannot ask, skips `NO_HUB`); no ssh left in the deploy path.
+     `--weights-preplaced` survives with the new meaning. Guard C's rollback advice no longer says "remove vN".
+     FILTER_PLAYBOOK checklist items 5/7 and the chain line updated (item 7 said "rollback = delete the new dir").
+     Live run: belonging v3 → MATCH, uplifting v7 → NO_HUB skip, both exit 0. 5 mutants caught.
+     ▶ **Owed: message pipeline-atlas with the pushed commit** (they need (a) the commit on origin, (b) the flag
+     survives, (c) no ssh, (d) local adapter vs the Hub RECORD only — never what a scorer host serves).
 
 3. **Owner, standing:**
    - H-TV5: one last look at the Thriving tab ~2026-10-06, then close.

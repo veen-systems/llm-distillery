@@ -136,17 +136,13 @@ DISTILLERY_ROOT=$PWD NEXUSMIND_ROOT=/home/jeroen/repos/veen-systems/NexusMind \
 > (`git -C $NEXUSMIND_ROOT checkout -- <path> <path>`), never a bare
 > `git checkout .` (2026-08-13).
 
-> ⚠️ **Pre-flight guard D still probes `gpu-server` — a pre-#395 check, and the wrong place now.** It asks
-> gpu-server over ssh for `filters/{name}/v{N}/model/adapter_model.safetensors` and fails closed if it cannot
-> ask. gpu-server no longer serves production, so a new version will usually FAIL it while being perfectly
-> deployable. **Until the guard is rewritten** (to the step-1 adapter check; pipeline-atlas reads this guard,
-> so it is changed only after telling them): run `check_adapter_matches_hub.py` from step 1, and pass
-> `--weights-preplaced` only on its **exit 0**. That flag now means "the adapter is in this checkout and
-> matches the Hub", which is what NexusMind's staging needs.
+> **Pre-flight guard D compares this checkout's adapter with its Hub copy** (since 2026-10-09; before that it
+> ssh'd gpu-server, which no longer serves production). It fails closed if it cannot ask the Hub and skips
+> `NO_HUB` versions. `--weights-preplaced` skips it: pass it only offline, and only after
+> `check_adapter_matches_hub.py` (step 1) printed MATCH somewhere that could reach the Hub.
 
 Then push the NexusMind change **on a `chore/` branch and open a PR** (NexusMind uses them; two commits went
-straight to its `main` on 2026-08-13). ⚠️ The script's own closing lines (and its `--push`, which pushes `main`)
-still print the pre-#395 `deploy_filters.sh` commands: ignore them and follow step 4.
+straight to its `main` on 2026-08-13). ⚠️ The script's `--push` pushes NexusMind `main` directly: do not use it.
 
 ### 4. Hand-off: NexusMind builds the image and switches (theirs, not ours)
 

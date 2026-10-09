@@ -74,10 +74,11 @@ if [ -z "$FILTER_NAME" ] || [ -z "$VERSION" ]; then
     echo "Flags:"
     echo "  --push                      git push origin main on NexusMind after the commit"
     echo "  --dry-run                   copy files but skip the git add/commit/push in NexusMind"
-    echo "  --weights-preplaced         skip the gpu-server LoRA-weight probe, asserting by"
-    echo "                              hand that model/adapter_model.safetensors is already"
-    echo "                              there. Offline use only: a wrong assertion stops the"
-    echo "                              scorer STARTING and the cycle scores nothing at all."
+    echo "  --weights-preplaced         skip guard D's adapter-vs-Hub comparison, asserting by"
+    echo "                              hand that this checkout's model/adapter_model.safetensors"
+    echo "                              matches its Hub copy (check_adapter_matches_hub.py exit 0)."
+    echo "                              Offline use only: a wrong assertion fails NexusMind's"
+    echo "                              scorer-image staging after the PR has merged."
     echo "  --force-skip-owned-drift    proceed even if a NexusMind-owned file has drifted"
     echo "                              (use only after inspecting the drift and deciding"
     echo "                              the NexusMind copy is the one to keep)"
@@ -212,12 +213,12 @@ echo ""
 #   C. This deploy may BE the production cutover — NexusMind's
 #      filter_loader._find_latest_version() serves the highest vN on disk, so a
 #      new highest version goes live on the next load with nothing in between.
-#   D. gpu-server has no LoRA weights for the version being deployed. Neither
-#      rsync pass in deploy_filters.sh ships model/, so the code arrives without
-#      them and the scorer — which validates weights for EVERY discovered filter
-#      at startup — refuses to start: the cycle then scores nothing for all six
-#      filters, unattended. Documented as FILTER_PLAYBOOK item 5 since #67 closed
-#      in 2026-05-31 after exactly this took cd v5 down; never enforced until now.
+#   D. This checkout's LoRA adapter differs from its Hub copy. Since NexusMind#395
+#      (2026-09-29) the scorer is a container image that NexusMind's stage.py builds
+#      from an llm-distillery checkout's adapters, refusing one that differs from
+#      the Hub, so a mismatch fails THEIR build after merge. Until 2026-10-09 this
+#      guard ssh'd gpu-server for the weights (FILTER_PLAYBOOK item 5, #67); gpu-server
+#      no longer serves production.
 echo "0.5 Cross-repo pre-flight guards..."
 # Written as an if-block, not `[ ... ] && GUARD_FLAGS+=(...)`: the AND-list form
 # is tested-safe under `set -e` today only because it is not the last statement,
@@ -438,27 +439,19 @@ elif [ "$PUSH_FLAG" == "--push" ]; then
     git push origin main
 
     echo ""
-    echo "=== Deploy commands for servers ==="
-    echo ""
-    echo "# Sadalsuud (pull updated NexusMind from origin):"
-    echo "ssh sadalsuud \"cd ~/local_dev/NexusMind && git pull origin main\""
-    echo ""
-    echo "# gpu-server (rsync filters/ + src/ from sadalsuud and restart scorer):"
-    echo "# NOTE: gpu-server's ~/NexusMind is not a git checkout. The deploy_filters.sh"
-    echo "# script runs from sadalsuud's checkout and pushes to gpu-server over SSH."
-    echo "ssh sadalsuud \"cd ~/local_dev/NexusMind && bash scripts/deploy_filters.sh\""
+    echo "=== Next: hand off to NexusMind (llm-distillery docs/RUNBOOK.md, Deployment step 4) ==="
+    echo "# Production scores from a scorer IMAGE (NexusMind#395). NexusMind merges, rebuilds"
+    echo "# the image, swaps the container keeping the previous one, and pulls sadalsuud by hand."
+    echo "# deploy_filters.sh only reaches gpu-server, which no longer serves production."
 else
     echo ""
     echo "5. Skipping push (use --push flag to push automatically)"
     echo ""
     echo "=== Next steps ==="
     echo ""
-    echo "# Push to origin:"
-    echo "cd $NEXUSMIND_ROOT && git push origin main"
-    echo ""
-    echo "# Then on servers (sadalsuud first, then gpu-server via sadalsuud):"
-    echo "ssh sadalsuud \"cd ~/local_dev/NexusMind && git pull origin main\""
-    echo "ssh sadalsuud \"cd ~/local_dev/NexusMind && bash scripts/deploy_filters.sh\""
+    echo "# Push on a chore/ branch and open a NexusMind PR (NexusMind uses PRs), then hand"
+    echo "# off to NexusMind: llm-distillery docs/RUNBOOK.md, Deployment step 4. Production"
+    echo "# scores from a scorer IMAGE (NexusMind#395); deploy_filters.sh no longer reaches it."
 fi
 
 echo ""

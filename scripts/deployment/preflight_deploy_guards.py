@@ -26,7 +26,10 @@ the caller's own header:
      gpu-server**, and `NexusMind/scripts/deploy_filters.sh` ships `git archive
      HEAD` (never the working tree), hard-exits on uncommitted or untracked
      scorer-tree files, then rsyncs and restarts. So landing a directory in the
-     NexusMind checkout does NOT reach readers. What is missing is any step that
+     NexusMind checkout does NOT reach readers.
+     ⚠️ 2026-10-09: that chain is pre-NexusMind#395. Production now scores from a
+     container image NexusMind builds from its merged commit; the conclusion holds
+     (landing a directory does not reach readers; the image rebuild does). What is missing is any step that
      would make someone *choose* the version — so once it ships, it serves.
 
 The rule this encodes: a guard that fails beats a comment that explains. See
@@ -321,19 +324,22 @@ def check_cutover(filter_name: str, version: str, nexusmind_root: Path) -> list[
             f"  filter_loader._find_latest_version() will keep serving v{highest}, so this\n"
             "  deploy would change nothing while reporting success — and would then\n"
             "  commit (and with --push, push) that no-op.\n"
-            f"  If you mean to roll back, remove v{highest} from NexusMind explicitly."
+            "  To roll back, do NOT remove a version from NexusMind: the scorer image holds\n"
+            "  only the served version's weights, so a removal stops the scorer for every\n"
+            "  filter. Rollback is NexusMind's kept previous image plus a sadalsuud revert\n"
+            "  (NexusMind deploy/scorer-image/README.md, 'Rolling back a filter version')."
         )
     if incoming == highest:
-        return [f"replacing {version} in place (already the highest) — live immediately"]
+        return [f"replacing {version} in place (already the highest) — live from the first cycle on the next scorer image"]
     return [
         "*** THIS DEPLOY STARTS A VERSION CUTOVER ***",
         f"    NexusMind currently serves v{highest}; you are landing {version}.",
         "    filter_loader._find_latest_version() selects the HIGHEST vN on disk, so",
         "    NOTHING will ever name this version: there is no activation step to",
         "    forget and no config flip to review. It serves as soon as it ships.",
-        "    It is not live yet — sadalsuud's NexusMind/scripts/deploy_filters.sh",
-        "    still has to `git archive HEAD` and rsync to gpu-server (it refuses on",
-        "    uncommitted/untracked scorer files). That run is the last checkpoint.",
+        "    It is not live yet — NexusMind still has to merge, rebuild the scorer",
+        "    image from that commit and swap the container (NexusMind#395; RUNBOOK",
+        "    step 4). The first cycle on the new image is the cutover.",
         f"    Before it: confirm ACTIVE_FILTERS in tests/unit/test_filter_config_schema.py",
         f"    names ({filter_name}, {version}) — it is updated by hand, and the last",
         "    time it lagged, drift in the deployed version went unseen for 6 weeks.",
@@ -341,54 +347,41 @@ def check_cutover(filter_name: str, version: str, nexusmind_root: Path) -> list[
 
 
 # --- Guard D ----------------------------------------------------------------
+#
+# Rewritten 2026-10-09 for NexusMind#395. Until then this guard asked gpu-server over
+# ssh whether the adapter was on disk, because `deploy_filters.sh` never shipped
+# `model/` and a weightless highest version stopped the scorer starting. Production no
+# longer scores on gpu-server: it scores from a container image that NexusMind's
+# `deploy/scorer-image/stage.py` builds with `--weights-dir <an llm-distillery
+# checkout>`, refusing an adapter that differs from its Hub copy. So the precondition
+# moved HERE: this checkout's adapter must exist (guard E) and be byte-identical to the
+# Hub record (this guard). The gpu-server question is in git history before 2026-10-09.
 
 
 class ProbeUnavailable(Exception):
-    """The weights probe could not reach gpu-server. Not the same as 'absent'."""
+    """The Hub could not be asked. Not the same as 'matches', nor as 'differs'."""
 
 
-DEFAULT_GPU_HOST = "gpu-server"
-GPU_FILTERS_ROOT = "~/NexusMind/filters"
 _ADAPTER_NAME = "adapter_model.safetensors"
 
 
-def _ssh_weights_probe(gpu_host: str, filter_name: str, version: str, timeout: int = 20) -> bool:
-    """Ask gpu-server whether the LoRA adapter for this version is on disk.
+def _hub_probe(filter_dir: Path, filter_name: str, version: str) -> tuple[str, str]:
+    """Return (local sha256, Hub sha256) for this version's adapter.
 
-    Returns True/False. Raises ProbeUnavailable when the question could not be
-    ASKED — a transport failure must never read as "weights are present", and
-    must not read as "absent" either: those are different facts with different
-    remedies, and collapsing them is how a guard ends up firing on a VPN blip.
+    Raises ProbeUnavailable when the Hub could not be asked or lists no hash: a
+    transport failure must never read as a match, and must not read as a mismatch
+    either: those are different facts with different remedies.
     """
-    import subprocess
+    from scripts.deployment import check_adapter_matches_hub as cam
 
-    remote = (
-        f'test -f {GPU_FILTERS_ROOT}/{filter_name}/{version}/model/{_ADAPTER_NAME} '
-        f'&& echo PRESENT || echo ABSENT'
-    )
+    repo_id = f"{cam.HUB_OWNER}/{filter_name}-filter-{version}"
     try:
-        proc = subprocess.run(
-            [
-                "ssh",
-                "-o", "BatchMode=yes",
-                "-o", f"ConnectTimeout={timeout}",
-                gpu_host,
-                remote,
-            ],
-            capture_output=True,
-            text=True,
-            timeout=timeout + 10,
-        )
-    except (OSError, subprocess.TimeoutExpired) as exc:
-        raise ProbeUnavailable(f"{type(exc).__name__}: {exc}") from exc
-
-    answer = proc.stdout.strip().splitlines()[-1] if proc.stdout.strip() else ""
-    if proc.returncode != 0 or answer not in ("PRESENT", "ABSENT"):
-        raise ProbeUnavailable(
-            f"ssh {gpu_host} exit={proc.returncode} stdout={proc.stdout.strip()!r} "
-            f"stderr={proc.stderr.strip()[:200]!r}"
-        )
-    return answer == "PRESENT"
+        hub = cam.hub_sha256(repo_id, cam.token_from_secrets())
+    except Exception as exc:  # network, auth, a private repo the token cannot see (404)
+        raise ProbeUnavailable(f"{repo_id}: {type(exc).__name__}: {exc}") from exc
+    if hub is None:
+        raise ProbeUnavailable(f"{repo_id} lists no LFS sha256 for {_ADAPTER_NAME}")
+    return cam.sha256(filter_dir / "model" / _ADAPTER_NAME), hub
 
 
 # --- Guard E ----------------------------------------------------------------
@@ -435,8 +428,8 @@ def check_weights_backed_up(filter_dir: Path) -> list[str]:
 
     _fail(
         f"no local copy of this version's weights: {adapter}\n"
-        "  The deploy would ship a version whose adapter exists only on gpu-server\n"
-        "  (employer hardware) and in a private Hub repo behind one account —\n"
+        "  The deploy would ship a version whose adapter exists only inside scorer\n"
+        "  images and in a private Hub repo behind one account —\n"
         "  no Veen-owned copy, and nothing in the off-site backup, which covers this\n"
         "  tree but is blind to anything not on this disk.\n"
         "  ⚠️ `git status` will NOT show this, and neither will a repo grep:\n"
@@ -455,86 +448,65 @@ def check_weights_backed_up(filter_dir: Path) -> list[str]:
 def check_weights_channel(
     filter_name: str,
     version: str,
+    filter_dir: Path,
     *,
     probe=None,
     preplaced_ack: bool = False,
-    gpu_host: str = DEFAULT_GPU_HOST,
 ) -> list[str]:
-    """Refuse a deploy whose served version has no LoRA weights on gpu-server.
+    """Refuse a deploy whose adapter here is not byte-identical to its Hub copy.
 
-    This turns `docs/FILTER_PLAYBOOK.md` checklist item 5 — *"Pre-place `model/`
-    on gpu-server before `deploy_filters.sh`"* — from an instruction into a
-    check. The instruction has existed since llm-distillery#67 was closed, and
-    #67 was itself filed AFTER the omission took cultural_discovery v5 down on
-    2026-05-31. A documented step that has already been missed once is the
-    definition of what belongs in this module.
+    NexusMind's image staging takes the adapter from an llm-distillery checkout and
+    refuses one that differs from the Hub, so a mismatch here fails THEIR build later,
+    after the PR has merged. Checking it here moves the failure to the side that can
+    fix it: re-upload, or re-download the Hub copy.
 
-    Why weights cannot ride along with the code: `NexusMind/scripts/deploy_filters.sh`
-    rsyncs `filters/` to gpu-server with `--exclude='model/'`, deliberately — the
-    adapters are multi-GB and out-of-git, and `--delete` without that exclude
-    would WIPE gpu-server's only copy. Both rsync passes exclude it. So a code
-    deploy NEVER carries weights, for any version, ever.
-
-    Why the consequence is worse than in 2026-05-31: the check moved from first
-    scoring request to scorer STARTUP, and it iterates every discovered filter
-    (`nexusmind-scorer/main.py`, `#incident-2026-04-13`):
-
-        for name, cfg in state._filter_configs.items():
-            adapter = cfg["path"] / "model" / "adapter_model.safetensors"
-            ... raise RuntimeError("Cannot start scorer: ... missing model weights")
-
-    `cfg["path"]` is the version `_find_latest_version()` selected. So a weightless
-    highest version does not degrade one filter — the scorer never comes up and
-    the cycle scores NOTHING for all six. And nobody is watching when it happens:
-    `deploy_filters.sh` runs as `ExecStartPre` on `nexusmind.service`, unattended,
-    every four hours.
-
-    The check applies to Hub-backed filters too. The startup validation is a
-    plain disk check and does not care that the scorer would have loaded from the
-    Hub, so "it's on the Hub" does not make the local adapter optional.
+    `NO_HUB` versions (uplifting v7) have no Hub copy: staging records their sha256
+    and this checkout's file IS the served one, so there is nothing to compare.
+    Guard E has already required that the file exists.
 
     `probe` is injected so this is testable without a network; `preplaced_ack`
-    is the documented override for the offline case. Being unable to ask fails
-    CLOSED — see ProbeUnavailable.
+    (`--weights-preplaced`) is the override for the offline case. Being unable to
+    ask fails CLOSED. See ProbeUnavailable.
     """
-    if preplaced_ack:
+    if (filter_dir / "NO_HUB").exists():
         return [
-            "weights probe SKIPPED — operator asserted --weights-preplaced.",
-            f"    Nothing verified {filter_name}/{version}/model/{_ADAPTER_NAME} on {gpu_host}.",
-            "    If that assertion is wrong the scorer will not start and the cycle",
-            "    scores nothing for every filter, not just this one.",
+            f"NO_HUB version: no Hub copy to compare. NexusMind's staging records this "
+            f"checkout's {_ADAPTER_NAME} sha256 as the only record of it."
         ]
 
-    probe = probe or _ssh_weights_probe
+    if preplaced_ack:
+        return [
+            "adapter-vs-Hub check SKIPPED — operator asserted --weights-preplaced.",
+            f"    Nothing compared {filter_name}/{version}/model/{_ADAPTER_NAME} with its Hub copy.",
+            "    If they differ, NexusMind's image staging refuses the build after the PR has",
+            "    merged. Check by hand: scripts/deployment/check_adapter_matches_hub.py",
+        ]
+
+    probe = probe or _hub_probe
     try:
-        present = probe(gpu_host, filter_name, version)
+        local, hub = probe(filter_dir, filter_name, version)
     except ProbeUnavailable as exc:
         _fail(
-            f"could not ask {gpu_host} whether {filter_name}/{version} has weights: {exc}\n"
-            "  Failing CLOSED: 'unreachable' is not 'present'. The deploy path never\n"
-            "  ships model/ (deploy_filters.sh excludes it in both rsync passes), so a\n"
-            "  weightless highest version stops the scorer from STARTING — all six\n"
-            "  filters score nothing, unattended, on the next 4-hourly cycle.\n"
-            "  Either fix connectivity and re-run, or pass --weights-preplaced once you\n"
-            "  have confirmed by hand:\n"
-            f"    ssh {gpu_host} 'ls -l {GPU_FILTERS_ROOT}/{filter_name}/{version}/model/{_ADAPTER_NAME}'"
+            f"could not compare {filter_name}/{version}'s adapter with the Hub: {exc}\n"
+            "  Failing CLOSED: 'could not ask' is not 'matches'. NexusMind's image staging\n"
+            "  takes the adapter from an llm-distillery checkout and refuses one that\n"
+            "  differs from the Hub, so an unchecked mismatch fails their build after merge.\n"
+            "  Either fix Hub access (HF_TOKEN / config/credentials/secrets.ini) and re-run,\n"
+            "  or pass --weights-preplaced once you have confirmed by hand:\n"
+            f"    python3 scripts/deployment/check_adapter_matches_hub.py {filter_name} {version}"
         )
 
-    if not present:
+    if local != hub:
         _fail(
-            f"{gpu_host} has NO weights for {filter_name}/{version}:\n"
-            f"    {GPU_FILTERS_ROOT}/{filter_name}/{version}/model/{_ADAPTER_NAME} is absent.\n"
-            "  This deploy would ship the code without them — deploy_filters.sh excludes\n"
-            "  model/ from BOTH rsync passes, so nothing downstream will fill the gap.\n"
-            "  The scorer validates weights for every discovered filter at STARTUP, so it\n"
-            "  would refuse to start and the whole cycle would score nothing.\n"
-            "  Fix (FILTER_PLAYBOOK checklist item 5, llm-distillery#67): pre-place the\n"
-            "  adapter FIRST, then deploy:\n"
-            f"    ssh {gpu_host} 'mkdir -p {GPU_FILTERS_ROOT}/{filter_name}/{version}/model'\n"
-            f"    scp <adapter dir>/* {gpu_host}:{GPU_FILTERS_ROOT}/{filter_name}/{version}/model/"
+            f"{filter_name}/{version}: this checkout's adapter DIFFERS from the Hub copy:\n"
+            f"    local {local}\n"
+            f"    hub   {hub}\n"
+            "  NexusMind's image staging would refuse it. Decide which copy is the trained\n"
+            "  one, then re-upload it (scripts/deployment/upload_to_huggingface.py) or\n"
+            "  re-download the Hub copy into model/, and re-run."
         )
 
-    return [f"weights present on {gpu_host} for {filter_name}/{version}"]
+    return [f"adapter matches its Hub copy for {filter_name}/{version} ({local[:12]})"]
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -547,17 +519,12 @@ def build_parser() -> argparse.ArgumentParser:
     ap.add_argument("--distillery-root", required=True, type=Path)
     ap.add_argument("--nexusmind-root", required=True, type=Path)
     ap.add_argument(
-        "--gpu-host",
-        default=DEFAULT_GPU_HOST,
-        help="ssh host that serves the scorer (default: %(default)s)",
-    )
-    ap.add_argument(
         "--weights-preplaced",
         action="store_true",
         help=(
-            "Assert by hand that the LoRA adapter is already on the GPU host, "
-            "skipping the probe. For the offline case only — a wrong assertion "
-            "stops the scorer from starting and the cycle scores nothing."
+            "Assert by hand that this checkout's adapter matches its Hub copy, "
+            "skipping the comparison. For the offline case only: a wrong assertion "
+            "fails NexusMind's image staging after the PR has merged."
         ),
     )
     return ap
@@ -582,8 +549,8 @@ def main(argv: list[str] | None = None) -> int:
             lambda: check_weights_channel(
                 args.filter_name,
                 args.version,
+                filter_dir,
                 preplaced_ack=args.weights_preplaced,
-                gpu_host=args.gpu_host,
             ),
         ),
     ):

@@ -17,7 +17,6 @@ import pytest
 from scripts.deployment.preflight_deploy_guards import (
     GuardFailure,
     ProbeUnavailable,
-    _ssh_weights_probe,
     check_cutover,
     check_manifest_scope,
     check_tiers_documented,
@@ -253,8 +252,8 @@ def test_higher_version_is_flagged_as_cutover(tmp_path):
     root = _mk_nexusmind(tmp_path, ["v4", "v5"])
     notes = check_cutover("demo", "v6", root)
     assert any("VERSION CUTOVER" in n for n in notes), notes
-    # It must NOT claim the deploy itself reaches readers — deploy_filters.sh
-    # still has to ship it. Overclaiming that was a review blocker on 2026-08-12.
+    # It must NOT claim the deploy itself reaches readers — NexusMind still has to
+    # rebuild the scorer image (#395). Overclaiming that was a review blocker on 2026-08-12.
     assert any("not live yet" in n for n in notes), notes
 
 
@@ -331,20 +330,19 @@ def test_repo_manifest_scope_is_valid():
     check_manifest_scope(repo / ".nexusmind-owns")
 
 
-# --- Guard D: the weights channel -------------------------------------------
+# --- Guard D: this checkout's adapter vs its Hub copy -----------------------
 #
-# The defect: `deploy_filters.sh` excludes `model/` from BOTH rsync passes, so a
-# code deploy never carries LoRA weights. Landing a version whose weights are not
-# already on gpu-server makes the scorer refuse to START (it validates every
-# discovered filter), so the cycle scores nothing for all six filters — unattended,
-# because that deploy runs as ExecStartPre every four hours. Documented as
-# FILTER_PLAYBOOK checklist item 5 since #67 closed; never enforced until now.
+# Since NexusMind#395 (2026-09-29) production scores from a container image that
+# NexusMind's `deploy/scorer-image/stage.py` builds from an llm-distillery checkout's
+# adapters, refusing one that differs from the Hub. A mismatch here would fail their
+# build after merge. Until 2026-10-09 this guard asked gpu-server over ssh instead
+# (FILTER_PLAYBOOK item 5, #67); that probe and its tests are in git history.
 
 
 def _probe(answer):
-    """Build a probe stub. `answer` is True/False, or an exception to raise."""
+    """Probe stub. `answer` is (local, hub), or an exception to raise."""
 
-    def probe(gpu_host, filter_name, version):
+    def probe(filter_dir, filter_name, version):
         if isinstance(answer, Exception):
             raise answer
         return answer
@@ -352,147 +350,111 @@ def _probe(answer):
     return probe
 
 
-def test_absent_weights_abort_the_deploy():
-    """The defect: code ships, weights don't, scorer never starts."""
+def test_mismatch_aborts_the_deploy(tmp_path):
     with pytest.raises(GuardFailure) as exc:
-        check_weights_channel("cultural_discovery", "v6", probe=_probe(False))
+        check_weights_channel("f", "v2", tmp_path, probe=_probe(("a" * 64, "b" * 64)))
     msg = str(exc.value)
-    assert "NO weights" in msg
-    # The remedy must be in the failure, not in a doc the reader has to find.
-    assert "scp" in msg and "mkdir -p" in msg
+    assert "DIFFERS" in msg
+    assert "upload_to_huggingface.py" in msg  # the remedy is in the failure
 
 
-def test_present_weights_stay_quiet():
-    """The healthy case. A guard only tested on the defect can still be a guard
-    that fires on everything."""
-    notes = check_weights_channel("cultural_discovery", "v5", probe=_probe(True))
-    assert any("weights present" in n for n in notes)
+def test_match_stays_quiet(tmp_path):
+    notes = check_weights_channel("f", "v2", tmp_path, probe=_probe(("a" * 64, "a" * 64)))
+    assert any("matches its Hub copy" in n for n in notes)
 
 
-def test_unreachable_probe_fails_CLOSED():
-    """'Could not ask' must not read as 'present'. This is the case that decides
-    whether the guard is a safety device or a formality."""
+def test_unreachable_hub_fails_CLOSED(tmp_path):
     with pytest.raises(GuardFailure) as exc:
-        check_weights_channel(
-            "cultural_discovery", "v6", probe=_probe(ProbeUnavailable("no route to host"))
-        )
+        check_weights_channel("f", "v2", tmp_path, probe=_probe(ProbeUnavailable("404")))
     msg = str(exc.value)
     assert "Failing CLOSED" in msg
-    assert "--weights-preplaced" in msg  # the documented way out is named
+    assert "--weights-preplaced" in msg
+    assert "check_adapter_matches_hub.py f v2" in msg
 
 
-def test_unreachable_is_distinguishable_from_absent():
-    """Two different facts with two different remedies. Collapsing them would
-    make a VPN blip look like a missing adapter, and vice versa."""
-    with pytest.raises(GuardFailure) as absent:
-        check_weights_channel("f", "v2", probe=_probe(False))
+def test_unreachable_is_distinguishable_from_mismatch(tmp_path):
+    with pytest.raises(GuardFailure) as differs:
+        check_weights_channel("f", "v2", tmp_path, probe=_probe(("a" * 64, "b" * 64)))
     with pytest.raises(GuardFailure) as unreachable:
-        check_weights_channel("f", "v2", probe=_probe(ProbeUnavailable("timeout")))
-    assert str(absent.value) != str(unreachable.value)
-    assert "Failing CLOSED" not in str(absent.value)
+        check_weights_channel("f", "v2", tmp_path, probe=_probe(ProbeUnavailable("timeout")))
+    assert "Failing CLOSED" not in str(differs.value)
+    assert "DIFFERS" not in str(unreachable.value)
 
 
-def test_ack_skips_the_probe_but_says_so_loudly():
-    """The override exists for the offline case. It must not be able to pass
-    silently — an override that reads like a pass is how a checkbox replaces a
-    check."""
+def test_ack_skips_the_comparison_but_says_so_loudly(tmp_path):
     called = []
 
     def probe(*a):
         called.append(a)
-        return False
+        return ("a" * 64, "b" * 64)
 
-    notes = check_weights_channel("f", "v9", probe=probe, preplaced_ack=True)
-    assert called == []  # the probe genuinely did not run
+    notes = check_weights_channel("f", "v9", tmp_path, probe=probe, preplaced_ack=True)
+    assert called == []
     assert any("SKIPPED" in n for n in notes)
-    assert any("scores nothing" in n for n in notes)
+    assert any("refuses the build" in n for n in notes)
 
 
-# --- Guard D: the real ssh probe's answer parsing ---------------------------
+def test_no_hub_version_is_not_compared(tmp_path):
+    """uplifting v7 has no Hub copy; the guard must neither ask nor fail."""
+    (tmp_path / "NO_HUB").write_text("")
+    called = []
+    notes = check_weights_channel("uplifting", "v7", tmp_path, probe=lambda *a: called.append(a))
+    assert called == []
+    assert any("NO_HUB" in n for n in notes)
 
 
-def _fake_run(stdout="", returncode=0, exc=None):
-    def run(*args, **kwargs):
-        if exc is not None:
-            raise exc
-        class R:
-            pass
-        r = R()
-        r.stdout = stdout
-        r.stderr = ""
-        r.returncode = returncode
-        return r
+def test_default_probe_compares_the_package_adapter(tmp_path, monkeypatch):
+    """The real probe hashes filter_dir/model/adapter_model.safetensors and asks the
+    Hub repo named after the package, never a host."""
+    import hashlib
 
-    return run
+    from scripts.deployment import check_adapter_matches_hub as cam
 
-
-@pytest.mark.parametrize(
-    "stdout,expected",
-    [("PRESENT\n", True), ("ABSENT\n", False)],
-)
-def test_ssh_probe_reads_both_answers(monkeypatch, stdout, expected):
-    import subprocess
-
-    monkeypatch.setattr(subprocess, "run", _fake_run(stdout=stdout))
-    assert _ssh_weights_probe("gpu-host", "f", "v1") is expected
-
-
-@pytest.mark.parametrize(
-    "stdout,returncode",
-    [
-        ("", 255),            # ssh could not connect
-        ("PRESENT\n", 255),   # exit code disagrees with the payload — trust neither
-        ("bash: line 1: x\n", 0),  # a shell that answered something else entirely
-        ("", 0),              # answered nothing at all
-    ],
-)
-def test_ssh_probe_refuses_to_guess(monkeypatch, stdout, returncode):
-    """Anything that is not exactly PRESENT/ABSENT with exit 0 is 'could not ask'.
-    A probe that guesses on ambiguous output is worse than no probe, because it
-    reports a verification that did not happen."""
-    import subprocess
-
-    monkeypatch.setattr(subprocess, "run", _fake_run(stdout=stdout, returncode=returncode))
-    with pytest.raises(ProbeUnavailable):
-        _ssh_weights_probe("gpu-host", "f", "v1")
-
-
-def test_ssh_probe_maps_transport_errors(monkeypatch):
-    """OSError (no ssh binary) and TimeoutExpired must not escape as themselves —
-    the caller distinguishes ProbeUnavailable from every other exception."""
-    import subprocess
-
-    monkeypatch.setattr(subprocess, "run", _fake_run(exc=OSError("no ssh binary")))
-    with pytest.raises(ProbeUnavailable):
-        _ssh_weights_probe("gpu-host", "f", "v1")
-
-    monkeypatch.setattr(
-        subprocess, "run", _fake_run(exc=subprocess.TimeoutExpired("ssh", 30))
-    )
-    with pytest.raises(ProbeUnavailable):
-        _ssh_weights_probe("gpu-host", "f", "v1")
-
-
-def test_probe_asks_about_the_adapter_specifically(monkeypatch):
-    """The remote command must name adapter_model.safetensors. An earlier draft
-    tested the model/ DIRECTORY, which exists on gpu-server for a version whose
-    weights were never pushed — the exact state this guard exists to catch."""
-    import subprocess
-
+    (tmp_path / "model").mkdir()
+    (tmp_path / "model" / "adapter_model.safetensors").write_bytes(b"w")
     seen = {}
 
-    def run(argv, **kwargs):
-        seen["argv"] = argv
-        class R:
-            stdout, stderr, returncode = "PRESENT\n", "", 0
-        return R()
+    def hub(repo, tok):
+        seen["repo"] = repo
+        return hashlib.sha256(b"w").hexdigest()
 
-    monkeypatch.setattr(subprocess, "run", run)
-    _ssh_weights_probe("gpu-host", "cultural_discovery", "v6")
-    remote = seen["argv"][-1]
-    assert "adapter_model.safetensors" in remote
-    assert "cultural_discovery/v6/model/" in remote
-    assert "BatchMode=yes" in seen["argv"]  # never hang on a password prompt
+    monkeypatch.setattr(cam, "hub_sha256", hub)
+    monkeypatch.setattr(cam, "token_from_secrets", lambda: None)
+    assert check_weights_channel("demo", "v3", tmp_path) == [
+        f"adapter matches its Hub copy for demo/v3 ({hashlib.sha256(b'w').hexdigest()[:12]})"
+    ]
+    assert seen["repo"] == "jeergrvgreg/demo-filter-v3"
+
+    monkeypatch.setattr(cam, "hub_sha256", lambda repo, tok: None)
+    with pytest.raises(GuardFailure, match="Failing CLOSED"):
+        check_weights_channel("demo", "v3", tmp_path)
+
+    def boom(repo, tok):
+        raise OSError("no route")
+
+    monkeypatch.setattr(cam, "hub_sha256", boom)
+    with pytest.raises(GuardFailure, match="Failing CLOSED"):
+        check_weights_channel("demo", "v3", tmp_path)
+
+
+def test_guard_D_no_longer_reaches_for_a_host():
+    """The pre-#395 probe ssh'd gpu-server. Nothing in the guard module may now."""
+    from pathlib import Path
+
+    src = (Path(__file__).resolve().parents[2] / "scripts" / "deployment"
+           / "preflight_deploy_guards.py").read_text(encoding="utf-8")
+    assert "subprocess" not in src
+    assert '"ssh"' not in src
+
+
+def test_rollback_advice_never_says_remove_a_version(tmp_path):
+    """Since #395 removing vN from NexusMind stops the scorer for every filter."""
+    root = _mk_nexusmind(tmp_path, ["v4", "v7"])
+    with pytest.raises(GuardFailure) as exc:
+        check_cutover("demo", "v5", root)
+    msg = str(exc.value)
+    assert "do NOT remove" in msg
+    assert "kept previous image" in msg
 
 
 # --- Single caller ----------------------------------------------------------
