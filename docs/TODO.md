@@ -6,8 +6,16 @@
 2b/4b are done, so a bare "continue" before 2026-10-23 starts at item 2 (the read surface, ▶ lines).*
 
 ⏭ **FIRST, the 2026-10-09 close that was cut off by a usage limit:** review round 1 (6 lenses) fixed and
-committed (`235b1a1`); round 2 reachability = all REACHABLE; round 2 ADVERSARIAL's result was never read, so re-run
-one adversarial lens on `git diff 483c450..235b1a1`. Then `/curate` (session file, index rotation), post progress on
+committed (`235b1a1`); round 2 reachability = all REACHABLE; round 2 adversarial = 3 WARNINGS, 0 blockers, NOT yet
+fixed (its full report: this session's transcript). Fix, then re-run the battery:
+(a) hook: the loosened `ssh` branch is not anchored to command position, so mid-sentence mentions now BLOCK
+(`git commit -m "never ssh in and run <pg> -f"`, `gh issue comment --body "..."`); also misses `env -i`, `nice -n 10`,
+`timeout -s KILL 5`, `bash -lc`, `watch -n1 '...'`. Fix: anchor `ssh` at command position; let wrapper flags take
+values; allow `-\w*c`. (b) guards D/E: an LFS-pointer stub gets guard E "never re-upload" AND guard D "re-upload it"
+in the same run; the CLI has no size floor. Fix: stub check before hashing in `check_weights_channel` and the CLI.
+(c) CLI: NO_HUB with NO adapter exits 0 (stage.py errors); move the missing-adapter check above NO_HUB and give
+`test_no_hub_package_exits_0_without_asking` an adapter. Notes: RUNBOOK ~line 45 is a broken sentence fragment;
+"59,745 B as committed" should name `483c450`. Then `/curate` (session file, index rotation), post progress on
 LD#163 (read surface: today ~64.6 KB moved, not 108) and LD#134 (docs-live 231 → 168, new uncommitted marker), and
 the review-profile suite baseline (measured 2026-10-09: 1323 passed, 24 skipped). Small: the CLI's "NO REPO ID"
 message for a missing version dir; the hook silently off when `CLAUDE_PROJECT_DIR` is unset.
