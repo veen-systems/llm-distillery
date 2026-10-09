@@ -58,7 +58,7 @@ Details: `memory/filter-status.md`.
 | **human_thriving** | v9 | spec 0.998 / recall 0.348 (adjudicated labels) | **LIVE 2026-09-25**, replacing v8 (NM#530). **Thriving reads it since 2026-09-26** (ovr.news#373, #151 ruled); `uplifting v7` is still scored and its surfaced articles drain (~10 days) |
 | **cultural-discovery** | v5 | recall 0.59 / spec 0.98 | **LIVE** (v6 cutover failed 2026-08-13, reverted) |
 | **cultural-discovery** | v6 | (v5's) | **NOT DEPLOYED** — fixed and verified offline (`dcf2860`), never redeployed. v5 already runs two-stage; v6 changes the probe and threshold. → `memory/cd-v6-probe-hypotheses.md` |
-| **belonging** | v3 | gate set 3: k 76/83, Δspec vs v1 +0.350 [+0.322, +0.376] | **LIVE 2026-10-09** (NexusMind run `bd00dad6`), replacing v1. ~¼ of v1's volume. Rollback rule + refit ≥ 2026-10-24: `filters/belonging/v3/STATUS.md` |
+| **belonging** | v3 | recall 76/83 = 0.92 (83 pos / 339 deciding neg, 19.7% positive) / weighted spec 0.930 (held-out set 3; Δspec vs v1 +0.350 [+0.322, +0.376], partly by band construction) | **LIVE 2026-10-09** (NexusMind run `bd00dad6`), replacing v1. ~¼ of v1's volume. Rollback rule + refit ≥ 2026-10-24: `filters/belonging/v3/STATUS.md` |
 | **nature_recovery** | v4 | recall 0.65 / prec 0.85 | Deployed (recall-first probe, v5 planned #71) |
 | **solutions** | v6 | recall 0.67 / spec 0.97 | **LIVE** |
 | **sustainability_technology** v3, **foresight** v1 | — | — | Removed 2026-08-03, merged into solutions (#43) |

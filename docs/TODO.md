@@ -1,55 +1,23 @@
 # LLM Distillery - TODO
 
-## ▶️ START HERE — the ordered queue, as of 2026-10-08 (session close)
+## ▶️ START HERE — the ordered queue, as of 2026-10-09 (session close)
 
-*A bare "continue" means this list, top down. Each line names the FIRST action.*
+*A bare "continue" means this list, top down. Each line names the FIRST action. Item 0 is WAITING (dated), so a bare
+"continue" before 2026-10-23 starts at item 2 (the read surface), then item 2b (the RUNBOOK rewrite).*
 
-0. ▶ **BELONGING v3 (= candidate c2b) PASSED the gate 2026-10-08 and is PACKAGED (`filters/belonging/v3`, `218fb79`). Next: the
-   owner's GO on the switch** (#170). Read `filters/belonging/v3/STATUS.md` first. History: v1_adj1 FAILED set 1; c2a FAILED set 2
-   on recall (owner veto picked c2a over the panel's c2b); c2b PASSED set 3 (k 76/83, Δspec +0.350 [+0.322, +0.376], size partly
-   by band construction, PLAN.md § 10). All three held-out sets are SPENT.
-   ▶ **GO given 2026-10-08.** Done: Hub upload (`jeergrvgreg/belonging-filter-v3`, private, check-hub 9/9), probe sidecar
-      (`dd98e79`), rollback rule (STATUS.md). **Handed to the NexusMind session (`nexusmind-dc`)**: since NM#395 production
-      scores on sadaltager from an image (stage.py, docker build, restart, manual sadalsuud pull), so our RUNBOOK's
-      deploy_to_nexusmind.sh/gpu-server path is STALE for this (⚠️ RUNBOOK § Deployment needs a rewrite; when it lands, TELL pipeline-atlas: its verify greps deploy_to_nexusmind.sh's gpu-server probe and goes red, pipeline-atlas PR #122). filters/common diffed:
-      no runtime difference. ✅ **v3 LIVE from NexusMind run `bd00dad6` (2026-10-09 00:08–01:24 CEST)**: 3,673/3,673 rows
-      `version "3.0"`, 19 stage-2 raw ≥ 4.0 (0.52%, predicted 0.50%). Posted on #170; ovr.news and pipeline-atlas told.
-      ▶ **Waiting on:** ovr's post-switch panel → rollback rule; then the refit.
-      📅 **ovr's rollback panel is due 2026-10-23** (ovr hypothesis log). **Refit normalization AFTER it (≥ 2026-10-24)**, so the panel
-      sees one scale (ovr's point). Exception (reworded 2026-10-09): the old "< 100%" trigger compared different populations and fired falsely
-      (ovr: 12/19 = 63% of v3's raw ≥ 4.0 rows pass normalized ≥ 4.5, but v1 measured the same way was 469/872 = 54% over its
-      last 7 files, per file 47–66%; normalized 4.5 ≈ raw ~5.1 on v1's curve for BOTH versions). Trigger an earlier refit WITH
-      ovr only if that SAME measure for v3 falls clearly below v1's 47–66% over several files. Post the refit date on #170. Refit ONLY rows with `belonging.version == "3.0"` (filtered/ mixes v1 and v3; NexusMind PR #627 review).
-   ⚠️ **Volume:** v3 flags ~¼ of v1's (25 vs 109 per 5,000, measured), so ~20/day vs ~81/day on ovr (extrapolated).
-   Open, not blocking: single-person stories (owner unsure; ovr raised it with the owner); FM-S1 judge strictness.
-   ⚠️ **Run 2 (`20637ec`, epoch 6) leak check NOT LEAKED (`docs/evidence/2026-10-08-belonging-adj1-leak-check/`), but the gate
-      REFUSED it before scoring (held-out NOT spent): 2 late footer "twins". Owner: drop + retrain (run 3); build fixed.**
-   ▶ **Owner 2026-10-08: no new data yet; train, CHECK, then gate.** Epochs = **6, final epoch (`--select-metric last`)** (read
-      `training_history.json` per epoch; if recall_medium saturates on the 29 val positives (#144), tell the owner before
-      using the checkpoint). **New step 5b (before the one-shot gate):** score a few thousand UNLABELLED production rows
-      (in neither training nor the held-out set) with the candidate and with live v1, and compare flag rate (raw ≥ 4.0) by
-      length bin and by collector language. If the candidate flags far more long or French rows than v1 → buy long
-      production negatives (~1,900 rows ≈ $6.70 est., k=1) and rebuild BEFORE gating. Otherwise → gate. **Leak rule (owner
-      2026-10-08, fixed BEFORE looking):** leaked if, among >4k-char rows OR among French rows, the candidate's flag rate
-      is ≥ 1.5× v1's AND the 95% bootstrap CI of the gap excludes 0. 1.5× is a judgement call, not a measured figure.
-   3. **Stage the candidate** `filters/belonging/v1_adj1/` (untracked on b650, as `v8_adj3` was): copy v1's package, REWRITE every
-      `filters.belonging.v1.` import to `v1_adj1` (v1's code loads `v1/model` otherwise; `gate.assert_loads_from` refuses it),
-      copy `training_manifest.jsonl` in. rsync the build + language stamps + easy-neg files to b650 (gitignored data).
-   4. **Train on b650** (RUNBOOK § *Train on GPU*): commit+push first (train.py refuses a dirty/unpushed tree); check
-      `curl -s localhost:11434/api/ps` shows no `gemma3:27b`. Flags: `--epochs 6 --batch-size 8 --seed 42 --select-metric last
-      --medium-threshold 4.0 --use-head-tail --head-tokens 256 --tail-tokens 256`. ⚠️ **Epochs are a choice to settle
-      first:** v1 trained 3; the human_thriving adj retrains used 6 with checkpoint selection. recall_medium saturates on a
-      thin val positive count (#144), so read `training_history.json` per epoch.
-   5. **Fit calibration** on the candidate's val (`scripts/calibration/fit_calibration.py ... --no-config-update`).
-   6. **Gate** (one shot): `gate.py score --package filters/belonging/v1_adj1 --order forward|reversed` on b650, then
-      `gate.py evaluate --candidate filters/belonging/v1_adj1`. v1's full-text reference is already scored (`fe12a2f`).
-      Exit 0 PASS / 1 FAIL / 2 REFUSED. Then plan phase 6 secondary (v1 test split under treatment) and phase 7 live audit.
-   6b. **ovr.news handshake (agreed 2026-10-08, recorded on #170):** after the gate, score ovr's 40 published Belonging stories
-      (EXP-028, 27 rated weak) with v1 and v1_adj1, counts with and without the 2 training URLs, and send them to ovr. At SWITCH
-      and at the normalization REFIT, post the dates on #170: ovr's normalized ≥ 4.5 display gate is inert for Belonging today
-      (829/829, ovr-measured) and may start removing stories. ovr's volume baseline: median 81 new Belonging stories/day.
-   7. Open, not blocking: harvest round 2 (~$9.70 est.); FM-S1 judge strictness (re-judge the 92 held-out hi Gemini-ins in
-      dense batches).
+0. ⏸ **BELONGING v3 is LIVE (since NexusMind run `bd00dad6`, 2026-10-09 00:08–01:24 CEST), replacing v1. Nothing to do before
+   2026-10-23 unless ovr.news messages.** Read `filters/belonging/v3/STATUS.md` first (evidence, rollback rule, refit notes);
+   history in `docs/evidence/2026-10-08-belonging-candidate2-plan/PLAN.md`; all three held-out sets are SPENT. Measured first
+   file: 3,673/3,673 rows `version "3.0"`, 19 stage-2 raw ≥ 4.0 (0.52%; v1 ~2.2%). Posted on #170 (the belonging switch issue).
+   - 📅 **2026-10-23: ovr's rollback panel** (EXP-028 re-run). Agreed with ovr: sample and goods/day use **v3-scored rows only**
+     (ids from NexusMind rows with `belonging.version == "3.0"` joined to ovr's published_observations); too few → ovr delays
+     the panel, never mixes in v1. Apply the rollback rule in STATUS.md; rollback = NexusMind's kept previous scorer image +
+     sadalsuud revert (NOT removing v3).
+   - 📅 **≥ 2026-10-24: refit `normalization.json`** on `version == "3.0"` rows only (`fit_normalization.py --filter-version`);
+     fix `filter_version` in calibration.json + normalization.json then; post the date on #170. Earlier only if v3's share of
+     raw ≥ 4.0 rows passing normalized ≥ 4.5 falls clearly below v1's 47–66% per file (469/872 = 54% over v1's last 7 files;
+     the "< 100%" trigger was wrong — different populations — and fired falsely 2026-10-09).
+   - Open, not blocking: single-person stories (owner unsure); FM-S1 judge strictness; harvest round 2 (~$9.70 est.).
    ⛔ **Never name the curator** in this repo or on GitHub (guards: `.githooks/`, gitignored `config/credentials/forbidden_names.txt`).
 
 1. **Decision-0 sync to NexusMind** — ONE NexusMind commit. The sequence is in the archived block (item 1):
@@ -82,6 +50,11 @@
      - e. **`docs/TODO.md` below START HERE** (~31 KB of section backlog). Audit each section: close, archive or
        keep. Example: § *Commerce Prefilter SLM* and § *Prefilter Quality (Apr 2026)*. Check them against
        decision 0 and ADR-004 before touching them.
+
+2b. **Rewrite `docs/RUNBOOK.md` § Deployment for NexusMind's image path (NM#395).** Production scores from a container image
+   built by NexusMind (stage.py, docker build, restart, manual sadalsuud pull); our `deploy_to_nexusmind.sh` still probes
+   gpu-server. belonging v3 went in by hand (NM 4901fb5). ⚠️ When it lands, TELL pipeline-atlas first: its verify greps the
+   script's gpu-server probe and goes red (pipeline-atlas PR #122).
 
 3. **Owner, standing:**
    - H-TV5: one last look at the Thriving tab ~2026-10-06, then close.
@@ -127,61 +100,12 @@
 **Cloud pilots: STOPPED by the owner 2026-09-29.** Do not start one without the owner.
 ---
 
-## Commerce Prefilter SLM - NEEDS REWORK
+## Backlog sections — MOVED 2026-10-09 to `docs/TODO-archive.md` (read surface, #163 item e)
 
-ML classifier for commerce/promotional content detection. Cross-cutting prefilter for all filters.
-
-**Status:** v1 complete but needs redo - concerns about multilingual embeddings and context size.
-**v1 is the version running in production** — force-pinned by LD#80 because **v2 underperformed v1** on production traffic. There is no v3.
-**v2 is RETIRED (2026-09-27, owner):** it no longer ships (`RETIRED_DIRS`, `3e7f565`) and NexusMind PR #553 deleted it
-downstream — confirmed on sadalsuud 2026-09-28. The package stays here as a record.
-
-- [ ] **v1 @0.95 OVER-BLOCKS — owned here (owner, 2026-10-06)**, evidence on ducroq/NexusMind#527.
-      One judge (blind Claude subagents, v1 `prompt.md`): 60/80 uniform blocked rows are journalism
-      (rubric ≤4); second judge gemma3:27b agrees (70.0% on n=230, κ 0.61). Scores stable (0 flips,
-      two CPU generations; gate decides on round(score,4)). Reader cost: 4/228 blocked rows reachable,
-      all below 0.990, so 0.990/0.993/0.995 are reader-identical. **PROPOSAL POSTED 2026-10-06**
-      (NM#527 comment 6025385135): 0.990 + decide at the gate on `_commerce_score` (config-only
-      change = ~3-day ramp); 0.995 the owner's alternative. ✅ **APPROVED 2026-10-07; DEPLOYED 2026-10-07 21:28 CEST** (NexusMind PR #618, `78f4dd1`); **VERIFIED by outcome** (NM#527, 2026-10-08): commerce blocks per cycle 34,385 → 13,597 (39.5%; predicted 38.9%), obituary unchanged, 1,557 released articles reach all 6 lenses, 0 stale `_is_commerce: true` in Contract B. Nothing left on our side; NexusMind closes NM#527. A v3 retrain is NOT planned. 0.95 was chosen on 0/3 high-tier sustainability_technology rows
-      (`BACKTEST_REPORT.md`) — never a general-traffic FP measurement. Data: sadalsuud `~/nm527/`.
-      Likely cause (untested): test-split negatives are 57/101 arXiv, positives consumer-tech.
-      NexusMind changes nothing until the owner approves a proposal.
-- [ ] **Re-measure the miss rate before retraining** ← **DO THIS FIRST (added 2026-08-07)**
-      (partly answered 2026-10-06: 0/120 rubric ≥7 in the reader-reachable 0.5–0.95 band, NM#527)
-- [ ] **NM#223 is a live input to this and is blocked** (found 2026-08-07 late) —
-      NER entity-density as an *additive* commerce signal, explicitly "does not
-      replace the v3 retrain planned in NM#185 Phase 2". It is blocked on
-      **NM#232**, not on the closed `FluxusSource#85` its body still names.
-      Nothing here should assume entity features will be available.
-- [ ] **Redo with proper multilingual embeddings** - Current approach may not handle Dutch/multilingual well
-- [ ] **Redo with proper context size** - May need longer context
-
-### The v3 case is tracked in ducroq/NexusMind#185, and its evidence has decayed
-
-Found 2026-08-07 while re-querying the cross-repo chains. NM#185 bundles the
-obituary blocker (shipped, enforcing at 0.85 since 07-30) with a **commerce v3
-retrain that was never started** — which is why Chain 1 read as complete when it
-was half done.
-
-**Before any v3 training run, re-measure.** NM#185's commerce evidence is the
-2026-06-25 reader-flag audit, whose headline was that the recoverable miss set
-was **100% scored by `sustainability_technology`** — a filter **deleted
-2026-08-03** (#64, superseded by `solutions`). The product-launch-in-
-sustainability-framing pattern presumably still arrives, but it is now scored by
-`solutions v6`, which has a different prompt, a different op-point and an e5
-probe in front of it.
-
-**Open hypothesis:** the commerce miss rate under the current five-lens set is
-materially lower than the 2026-06-25 audit implies, and v3 may not be warranted
-at all. Unmeasured. Deciding it costs one count, not a training run.
-
-See `filters/common/commerce_prefilter/docs/` for full documentation.
-<!-- verify: ls filters/common/commerce_prefilter/ | grep -E '^v[0-9]+$' -->
-<!-- verify: gh issue view 185 -R ducroq/NexusMind --json state --jq .state -->
-
----
-
----
+*Moved VERBATIM, not re-verified: Commerce Prefilter SLM, Training Pipeline, Score Calibration, Hybrid Inference, Energy-Efficient
+Inference, Deployment, Infrastructure, Post-#52 followups, Prefilter Quality, Cross-Filter Normalization, Documentation. Their
+open boxes: `grep -n '^- \[ \]' docs/TODO-archive.md` under § *Moved 2026-10-09*. Commerce v1 0.990 is LIVE and verified
+(NM#527); its open retrain/multilingual boxes are there.*
 
 ## Filters
 
@@ -203,128 +127,6 @@ Current filter state lives in `memory/filter-status.md` and the `CLAUDE.md` tabl
 - [ ] **Measuring "true AI adoption" in SMEs and larger companies** - PARKED 2026-08-11 by Jeroen ("interesting, park it as an idea"). Owner side question. **Answer: not as asked** — our corpus is articles, adoption happens at firms, so it measures adoption *discourse*, not adoption. SMEs are ~99% of firms and ~0% of coverage; 25.7% of the corpus is GN headline stubs; no firm-level ground truth to validate against. **What it WOULD answer well:** of AI-adoption claims in the press, what share are concrete deployments vs announcements — the `solutions v6` shape, whose tech/hybrid tiebreak already makes that discrimination. **The pivot that reaches the literal question: job postings** (firm-level, size-linkable, exists for SMEs; needs a FluxusSource vacancies feed). **Cheap first probe with a kill criterion: base-rate screen of the existing corpus, ~1h, no oracle spend — if AI-adoption content is a fraction of a percent, stop.** Precedent for that kill: `solutions v6`'s `community_practice_strength` is a sourcing problem, not a modelling one. Full note in **`docs/ideas/ai-adoption-measurement.md`**. Re-check #103 (DeepSeek price rise) before any oracle spend.
 
 - [ ] **Re-enchantment outlets (wonder lens / standalone digests)** - PARKED 2026-07-16 by Jeroen ("some other time"). Byung-Chul Han-inspired exploration: wonder/mystery/myth as lens or standalone oracle-only outlet (no distillation needed at digest scale, ~$6.50/wk). Six ideas + four cheap probe plans (<$3 total: Residue query $0 → Wonder probe ~$0.50 → form-scoring feasibility ~$1-2 → Ledger design note $0) with kill criteria in **`docs/ideas/re-enchantment-outlets.md`**. Hard constraint if resumed: "unexplained" needs an `epistemic_honesty` gatekeeper (misinformation magnet otherwise). Below solutions v4 (#43) and the #62 check in priority.
-
-## Training Pipeline
-
-- [x] **Data preparation pipeline** - Stratified splits working
-- [x] **Training script** - Gemma-3-1B + LoRA working (was Qwen2.5-1.5B)
-- [x] **Context length experiments** - 1024/2048/head+tail tested
-  - 1024tok: MAE 0.652, 2048tok: MAE 0.627
-  - head+tail (256+256): MAE ~0.69 (deployed to production)
-  - See `docs/IDEAS.md` for full results
-- [x] **Stage 2 model comparison** - Gemma-3-1B adopted as default Stage 2. Wins on both uplifting (MAE 0.652 vs 0.660) and cultural-discovery (MAE 0.743 vs 0.755). 8% faster, fewer params. Qwen-0.5B rejected (MAE 0.760)
-- [x] **Gemma-3-1B training support** - `training/train.py` updated with `load_base_model_for_seq_cls()` for both initial and resume paths
-- [x] **Stage 2 model selection** - Gemma-3-1B adopted as default (was Qwen2.5-1.5B). Larger models deferred.
-- [ ] **Training monitoring improvements** - Better logging, early stopping
-
-## Score Calibration (ADR-008)
-
-Post-hoc isotonic regression to correct MSE score compression at inference time.
-
-- [x] **Shared calibration library** - `filters/common/score_calibration.py` (fit, apply, save, load)
-- [x] **CLI fitting tool** - `scripts/calibration/fit_calibration.py` (works for any filter)
-- [x] **Uplifting v6 calibration** - Fitted on 1,049 val articles, val MAE 0.673 -> 0.653 (+3.1%)
-- [x] **Cultural-discovery v4 calibration** - Fitted on 803 val articles, test MAE 0.77 -> 0.74 (+4.4%)
-- [x] **Base scorer integration** - `_load_calibration()` + `apply_calibration()` in `_process_raw_scores()`
-- [x] **sustainability_technology v3 calibration** - Fitted on 1,061 val articles, test MAE 0.725 -> 0.724
-- [x] **investment-risk v6 calibration** - Fitted on 1,045 val articles, val MAE 0.497 -> 0.465 (+6.5%)
-- [x] **belonging v1 calibration** - Fitted on 738 val articles, val MAE 0.534 -> 0.489 (+8.3%)
-- [x] **nature_recovery v1 calibration** - Fitted on 328 val articles, val MAE 0.540 -> 0.507 (+6.2%)
-- [x] **nature_recovery v2 calibration** - Fitted on 352 val articles, val MAE 0.632 -> 0.533 (+15.7%)
-
-## Hybrid Inference Pipeline (ADR-006)
-
-Two-stage pipeline: fast embedding probe (Stage 1) + fine-tuned model (Stage 2).
-
-- [x] **Shared infrastructure** - `filters/common/embedding_stage.py`, `hybrid_scorer.py`
-- [x] **Uplifting v5 integration** - `inference_hybrid.py` + MLP probe
-- [x] **Calibration script** - `evaluation/calibrate_hybrid_threshold.py`
-- [x] **Threshold calibration** - Calibrated on 24K production articles. Probe retrained (v2): MAE 0.49, bias +0.007. Threshold 3.5 → 1.7% FN rate on MEDIUM+
-- [x] **Speed benchmark** - RTX 4080: e5-small 1.3ms + Qwen 37.9ms. Threshold 4.5 → 2.09x on skewed data, ~2.5-3x in production
-- [x] **Stage 2 model evaluation** - Gemma-3-1B adopted as default Stage 2 model. Confirmed on two filters: uplifting v5 (MAE 0.652 vs 0.660, tier 86.6% vs 85.4%) and cultural-discovery v3 (MAE 0.743 vs 0.755, tier 94.6% vs 94.5%). 8% faster inference, 38% faster training
-- [x] **Generalize to other filters** - Phase A complete: inference_hybrid.py + probe dirs + calibration fix for sustainability_technology v2, investment-risk v5, cultural-discovery v3
-- [x] **Train probes + calibrate thresholds** - Phase B complete: e5-small MLP probes trained and calibrated for all 3 filters
-  - sustainability_technology v2: probe MAE 0.707, threshold 1.25, 1.2% FN, 1.25x speedup
-  - investment-risk v5: probe MAE 0.497, threshold 1.50, 0.8% FN, 1.07x speedup
-  - cultural-discovery v3: probe MAE 0.609, threshold 1.25, 0.0% FN, 1.52x speedup
-- [x] **Cultural-discovery v4 probe** - Retrained for Gemma-3-1B, MAE 0.87, threshold 1.25, 3% FN, 1.51x speedup
-- [x] **Sustainability_technology v3 probe** - Trained for Gemma-3-1B, MAE 0.91, threshold 1.25 (to be calibrated)
-- [x] **Investment-risk v6 probe** - Trained for Gemma-3-1B, MAE 0.557, threshold 1.50
-- [x] **Belonging v1 probe** - Trained for Gemma-3-1B, MAE 0.54
-- [x] **Nature_recovery v1 probe** - Trained for Gemma-3-1B, MAE 0.50
-- [x] **Nature_recovery v2 probe** - Retrained for v2 model, MAE 0.49 (early stop epoch 24)
-- [x] **Foresight v1 probe** - Trained for Gemma-3-1B, threshold 2.25
-- [x] **Foresight v1 calibration** - Fitted, calibration.json committed with filter package
-- [x] **Uplifting v7 probe** - Trained for Gemma-3-1B, MAE 1.10, threshold 1.00 (#34)
-- [x] **Harmonize all filters** (2026-04-06) - All 7 production filters now have hybrid inference with calibrated thresholds and `--compare` CLI. Fixed investment-risk import path bug (hyphen vs underscore). Deployed to sadalsuud + gpu-server.
-
-## Energy-Efficient Inference (#24)
-
-- [x] **PyTorch dynamic quantization experiment** - 2026-03-07
-  - Tested FP32/FP16/INT8 on uplifting v6, CPU-only
-  - INT8: 2.6x faster, 3.3x smaller, but MAE +0.63 (unusable)
-  - FP16: NaN on CPU (no native fp16 ALUs)
-  - **Verdict:** Naive quantization rejected
-  - See `docs/experiments/quantization-benchmark-2026-03-07.md`
-- [ ] **ONNX Runtime INT8** - Calibrated quantization with representative data
-- [ ] **Smaller base model retraining** - SmolLM-360M or similar sub-1B models
-- [ ] **llama.cpp / GGUF** - Purpose-built CPU inference engine
-
-## Deployment
-
-- [ ] **Inference server** - Unified prefilter + model + postfilter pipeline
-- [ ] **Batch processing** - High-volume article scoring
-- [ ] **Production monitoring** - Latency, accuracy drift detection
-
-## Infrastructure
-
-- [x] **Prefilter evaluation framework** - Complete for sustainability_technology
-- [ ] **Dataset QA pipeline** - Automated quality checks
-- [ ] **Cost tracking** - Monitor API usage for oracle scoring
-- [x] **Hub scorers: add torch_dtype parameter** - All 6 `inference_hub.py` files now accept optional `torch_dtype` param and pass it to `from_pretrained()`. Use `torch_dtype=torch.float16` on hardware without bfloat16 support.
-- [x] **Deploy all filters to NexusMind** (#7) - All 6 filters deployed to gpu-server + sadalsuud + HuggingFace Hub
-- [x] **Auto-compute score_scale_factor** (#22/#26) - Calibration script writes `score_scale_factor` to config.yaml; backfilled to all 6 filters
-- [x] **Harmonize filters: llm-distillery as single source of truth** - Fixed drift between llm-distillery and NexusMind
-  - base_prefilter.py: threading.Lock() for commerce detector (was bool flag)
-  - investment-risk v5: merged source-based + content-pattern approaches, removed academic source blocking
-  - Deployed all production prefilters to NexusMind (sadalsuud + gpu-server)
-  - Verified 0 diff between all three locations
-- [x] **Manifest-aware deploy script (#50)** - 2026-04-28. `.nexusmind-owns` at repo root + `--dry-run` + `--force-skip-owned-drift` in both `.sh` and `.ps1`. Lists `filter_base_scorer.py` and `hybrid_scorer.py` (NexusMind-owned). Deploy now exits non-zero on drift between distillery and NexusMind copies.
-
-## Post-#52 Review-Battery Followups
-
-Items surfaced by the multi-agent code review of the migration commits (2026-04-29). Triaged in TODO.md as committed batches.
-
-- [ ] **Extend `_is_excluded` for per-category exceptions + migrate CD v4 / uplifting v7 to base pipeline** - Path narrowed by the belonging migration above: the architecturally-correct next move is the two-step path filed as **#66** (base `EXCLUSION_REASON_PREFIX` class attr + move domain checks into `_pre_exclusion_check`), which unblocks fully-declarative migration for belonging v1, CD v4, uplifting v7, foresight v1, and NR v2 simultaneously. ADR-019's hook signature widening (raw-article access) deferred until a second filter shows up needing case-sensitive raw fields. Original open questions still apply: (a) reason-string convention — covered by the prefix attr in #66; (b) CD v4 missing `validate_article` + `check_content_length` — base would add both, fixing the regression but changing observable behavior; (c) uplifting v7's count-based `pure_speculation` block doesn't fit the dict shape regardless.
-- [ ] **Migrate nature_recovery v2 to fully-declarative shape via `_pre_exclusion_check`** - Bundle with #66 (the reason-prefix attr is the prerequisite). NR v2 has the same shape concerns as the post-#52 cluster: bare reason strings, missing `check_content_length`, and order-of-checks differences from the base pipeline.
-
-## Prefilter Quality (Apr 2026)
-
-- [ ] **Obituary v6 (#85) — PARKED indefinitely (owner, 2026-07-30)**: v5@0.85 enforcement meets the recall-first requirement. Reactivate only if an obit reaches the site (owner flag) or over-blocking visibly hurts the feed. Plan preserved on the issue; b650 env + adjudicated golden set (14 rows) stay ready. **2026-07-31 FN evidence banked for reactivation** (memory/obituary-v4-hypotheses.md addendum 7 + #85 comment): community-mourning class regresses monotonically v3 0.68 → v4 0.44 → v5 0.12 (hard-negative interference); biography-rich obits are a stable all-version blind spot (~0.2–0.3, threshold can't reach).
-
-## Cross-Filter Normalization (ADR-014)
-
-- [x] **uplifting v6 normalization** - Fitted on production CDF
-- [x] **belonging v1 normalization** - Fitted on production CDF
-- [x] **cultural-discovery v4 normalization** - Fitted on production CDF
-- [x] **sustainability_technology v3 normalization** - Fitted on production CDF
-- [x] **uplifting v7 normalization** - Fitted on 73,986 production articles (2026-04-06)
-- [x] **foresight v1 normalization** - Fitted on 623 articles (thin LUT, improves as data accumulates)
-- [x] **nature_recovery v1 normalization** - Refitted on 76,500 articles (still clamped — extreme needle filter, #32)
-- [x] **nature_recovery v2 normalization** - Fitted on 1,397 v2 production articles (filter_version=2.0, weighted_average >= 1.5), deployed to sadalsuud + gpu-server (2026-04-28). Patched `fit_normalization.py` with `--filter-version` to exclude v1 leftovers (19,948 articles correctly skipped). Curve: raw range 1.50–7.08, p95=4.49.
-  - [x] **Follow-up VERIFIED 2026-05-04**: sustainability_technology JSONL on sadalsuud (1142 articles, 19:22 UTC pipeline run) shows `weighted_average=1.81`, `raw_weighted_average=4.42`, `normalization_method="percentile"` — both audit fields populated end-to-end for the first time since 2026-04-16. The verification revealed that the runtime application code itself had been silently deleted from NexusMind and gone unnoticed for 18 days; fix landed via Path B extraction into `NexusMind/src/scoring/production_scorer.py` wrapper class (NexusMind merge `0e80d92`). All 7 filters now populate the audit fields. See `memory/gotcha-log.md` "Manifest as Anti-Pattern" entry for full diagnosis.
-
-## Documentation
-
-- [ ] **Update filters/README.md** - Current status is outdated (Nov 2025)
-- [ ] **Training guide** - Step-by-step for new filters
-- [ ] **Deployment guide** - Production setup instructions
-- [x] **HF Hub model card relicensing** (2026-05-22, commits `fb67d05` + `41d2108`, #65 closed). Source-side: `upload_to_huggingface.py:28` now declares `license: eupl-1.2` in the model-card YAML frontmatter. Hub-side: one-shot script `scripts/deployment/relicense_hub_repos.py` walked all 14 `jeergrvgreg/*` repos and rewrote the frontmatter `license:` line; verified post-upload on 3 repos (public uplifting-filter-v5, private belonging-filter-v1, private sustainability-technology-v3). Repo LICENSE + pyproject + upload template + 14 Hub model cards now all carry EUPL-1.2 consistently.
-- [x] **deploy_to_nexusmind hardening: refuse-on-dirty + explicit staging** (2026-05-23, commits `4cf75dd` + `dd11727`). Fix for the origin-contamination hazard discovered during the 2026-05-22 belonging deploy: `git add -A` on NexusMind's working tree swept ~1,400 lines of unrelated story-dedup WIP into commit `7a595c4` and pushed it to origin without the author's review. Both `.sh` and `.ps1` now do (a) pre-flight `git status --porcelain` refuse-on-dirty check with `--force-dirty`/`-ForceDirty` escape hatch, and (b) explicit `git add $FILTER_PATH filters/common/` instead of blanket add. Printed server-pull instructions also corrected (sadalsuud at `~/local_dev/NexusMind`, gpu-server deploy via `bash scripts/deploy_filters.sh` from sadalsuud — not `git pull` on a stale `llm-distiller` hostname). Cross-referenced with NexusMind-side gotcha-log entry and `b12d554` documentation commit.
-
----
-
-*Last updated: 2026-08-01*
 
 ## ☐ Open threads inside ARCHIVED ledger rows (2026-09-27 retire; rows in `memory/archive/hypothesis-ledger-archive.md`)
 - [ ] `H-V8-3`: the reorder's multiplicity question "is still open": no pre-registered family was ever run. v8 is superseded by v9, so likely moot; close it or run it.

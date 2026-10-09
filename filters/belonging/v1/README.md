@@ -1,7 +1,7 @@
 # Belonging Filter v1
 
 **Date:** 2026-03-04
-**Status:** Deployed (HuggingFace Hub + gpu-server)
+**Status:** REPLACED by v3 in production 2026-10-09 (NexusMind run `bd00dad6`); see `filters/belonging/v3/STATUS.md`. Kept as the record and v3's template
 **Base model:** Gemma-3-1B + LoRA
 
 ## Purpose

@@ -43,6 +43,7 @@ At each filter's op-point **as of 2026-08-10** (i.e. before the two moves above)
 | nature_recovery v4 | 0.650 | 0.979 | 2.1% | 391 | 15.3% |
 | cultural_discovery v5 | 0.587 | 0.980 | 2.0% | 857 | 8.8% |
 | belonging v1 | 0.600 | 0.985 | 1.5% | 738 | 11.5% |
+| belonging v3 ⚠️ different instrument | 0.916 | 0.930 (weighted) | — | 422 (held-out set 3, judged) | 19.7% |
 
 **Read recall and specificity only.** They are conditional on the true class, so
 the split's positive rate does not distort them. Precision, MAE and F1 are
@@ -118,7 +119,8 @@ hygiene**: the new name is the one the lens's definition matches.
 | cultural_discovery | v5 | — | 0.697 (val) | 8.5K | `jeergrvgreg/cultural-discovery-filter-v5` | 2026-07-31 multilingual topic gate added to prefilter (LD#86); **gate VALIDATED in production 2026-08-01 via NM#284 shadow: observed pass 0.255 vs declared 0.25 (n=2099, full cycle)** — but still NOT ENFORCED (NM#284); 2026-05-31 v5 (#62 flags; DeepSeek oracle) |
 | cultural_discovery | v6 | — | (v5's, reused) | 8.5K | `jeergrvgreg/cultural-discovery-filter-v6` | ⛔ **CUTOVER ATTEMPTED, FAILED AND REVERTED 2026-08-13** *(this row said "DOES NOT EXIST YET / blocked on two things" until 2026-08-16 — it was two days behind an event only `CLAUDE.md` recorded)*: NM#348 merged `d5943d3`, stage 2 loaded from the Hub, which cannot work on gpu-server under `HF_HUB_OFFLINE`. Scorer returned 500, the smoke test caught it, **one cycle lost and no bad data**. Fixed and verified offline (`dcf2860`), **not redeployed**. Rollback of a future cutover = delete v6's dir on gpu-server, which makes v5 latest again. ⚠️ **v5 ALREADY runs two-stage** — `filter_loader.py:148` sets `hybrid_class` from the PRESENCE of `inference_hybrid.py`, not from `config.yaml`, so v6 does not introduce probe screening; it changes the probe and threshold (~63.7% vs a measured 54.9% `stage1_low`). Earlier state, still true of the package: **package parity reached 2026-08-06.** v6 = v5's student weights + an e5 probe + a commerce-only prefilter; **no retrain** (#98). Keyword gate, 4 exclusion categories, 3 domain blocklists and the `evidence_quality` gatekeeper (#94) all removed. `score_scale_factor` 1.0. *(Superseded 2026-08-08, `4ee3b58`: normalization fitted and the Hub repo created — both blockers cleared; this row said "no normalization.json" until 2026-09-26.)* Ships stamping-only per ADR-022. |
 | cultural-discovery | v4 | 0.74 | — | 8K | `jeergrvgreg/cultural-discovery-v4` | 2026-02-20 (superseded by v5) |
-| belonging | v1 | 0.534 | 0.489 | 7.4K | `jeergrvgreg/belonging-filter-v1` | 2026-07-31 normalization REFIT (Mar-30 fit drifted, survivors under-ranked +1.0–2.1; NM#279) |
+| belonging | v3 | — | — | v1 splits reshaped + 237 pos + 135 hard neg + ~800 easy neg | `jeergrvgreg/belonging-filter-v3` | **LIVE 2026-10-09** (NexusMind run `bd00dad6`), replacing v1. Gated on held-out set 3 (binding pass rule v2): PASS. ~¼ of v1's volume. Rollback rule + refit ≥ 2026-10-24: `filters/belonging/v3/STATUS.md` |
+| belonging | v1 | 0.534 | 0.489 | 7.4K | `jeergrvgreg/belonging-filter-v1` | REPLACED 2026-10-09 by v3. Earlier:  2026-07-31 normalization REFIT (Mar-30 fit drifted, survivors under-ranked +1.0–2.1; NM#279) |
 | belonging | v2 | — | — | — | — | **DRAFT prompt only (2026-10-01), PARKED 2026-10-02.** The definition was ruled (MIDDLE + "doing"). The next model reshapes v1's TRAINING DATA instead, the human_thriving v9 recipe (`docs/TODO.md` item 0; ledger `H-BV7`). Evidence: `docs/evidence/2026-10-02-belonging-reader-snapshot/` |
 | nature_recovery | v4 | recall 0.65 / prec 0.85 @3.75 | 0.48 | 3.9K | `jeergrvgreg/nature-recovery-filter-v4` | 2026-07-10 (DeepSeek oracle; #70 protection scope; op-point 3.75 wired into TIER_THRESHOLDS + validated in prod output, F1) |
 | nature_recovery | v2 | 0.63 | 0.53 | 3.5K | `jeergrvgreg/nature-recovery-filter-v2` | 2026-04-19 — kept as fallback (rollback = delete v4 dir; discovery falls back) |
@@ -291,5 +293,5 @@ the host contributes 0.0000 once pins and device match (2026-08-10 decomposition
 the 32.7% test positive rate is enriched and does not transfer to production's
 ~9% surfacing rate without reweighting.
 
-**Ground-truth gates still missing:** `belonging v1`, `cultural_discovery v5`,
+**Ground-truth gates still missing:** `cultural_discovery v5` (belonging v3 PASSED held-out set 3, 2026-10-08),
 `investment_risk v6`.

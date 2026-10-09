@@ -1,7 +1,7 @@
 # Belonging Filter v3
 
 **Date:** 2026-10-08
-**Status:** Gate passed, NOT deployed. Production runs v1 (see `STATUS.md`).
+**Status:** LIVE since NexusMind run `bd00dad6` (2026-10-09), replacing v1 (see `STATUS.md`).
 **Base model:** Gemma-3-1B + LoRA, same architecture, prompt and dimensions as v1; retrained on reshaped data.
 
 > Everything below `## Purpose` describes the LENS and is v1's text, unchanged. v1's metrics further down are **v1's, not v3's**.
@@ -83,7 +83,7 @@ See `DEEP_ROOTS.md` for philosophical grounding (Simone Weil, Tönnies, Blue Zon
 ### Local Inference
 
 ```python
-from filters.belonging.v1.inference import BelongingScorer
+from filters.belonging.v3.inference import BelongingScorer
 
 scorer = BelongingScorer()
 result = scorer.score_article({"title": "...", "content": "..."})
@@ -95,10 +95,10 @@ result = scorer.score_article({"title": "...", "content": "..."})
 ### HuggingFace Hub Inference
 
 ```python
-from filters.belonging.v1.inference_hub import BelongingScorerHub
+from filters.belonging.v3.inference_hub import BelongingScorerHub
 
 scorer = BelongingScorerHub(
-    repo_id="jeergrvgreg/belonging-filter-v1",
+    repo_id="jeergrvgreg/belonging-filter-v3",
     token="hf_...",
 )
 ```
@@ -106,7 +106,7 @@ scorer = BelongingScorerHub(
 ### Hybrid Inference
 
 ```python
-from filters.belonging.v1.inference_hybrid import BelongingHybridScorer
+from filters.belonging.v3.inference_hybrid import BelongingHybridScorer
 
 scorer = BelongingHybridScorer()
 result = scorer.score_article(article)
@@ -145,7 +145,7 @@ Phase 3 flagged community_fabric-rootedness at r=0.845 (n=19). Re-evaluated with
 ## Files
 
 ```
-filters/belonging/v1/
+filters/belonging/v3/
 ├── README.md                    # This file
 ├── STATUS.md                    # Development status tracker
 ├── DEEP_ROOTS.md                # Philosophical grounding
