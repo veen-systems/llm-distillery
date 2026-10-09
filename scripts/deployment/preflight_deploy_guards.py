@@ -372,6 +372,8 @@ def _hub_probe(filter_dir: Path, filter_name: str, version: str) -> tuple[str, s
     transport failure must never read as a match, and must not read as a mismatch
     either: those are different facts with different remedies.
     """
+    # pipeline-atlas (PR #128) greps this import as its witness that guard D checks the
+    # Hub record. Renaming or moving it turns the atlas check red: tell them first.
     from scripts.deployment import check_adapter_matches_hub as cam
 
     repo_id = f"{cam.HUB_OWNER}/{filter_name}-filter-{version}"
