@@ -43,7 +43,15 @@
        - **Keep-rule CHANGED (owner, 2026-10-02):** an entry whose class has a `live` row in § *Mechanized* moves
          VERBATIM to `memory/archive/`.
        - **Measured 2026-10-02:** 0 of the 55 entries NAME a live check, so this needs a per-entry judgement of which
-         live check covers each class. ▶ First action next time: that pass, then move the covered entries.
+         live check covers each class.
+       - **Done 2026-10-09: the per-entry pass covers 1 of 55.** Moved verbatim: *THE COMMIT GUARD CANNOT READ
+         NEGATION* (2026-08-28), covered by the 2026-09-29 negation row (`tests/unit/test_commit_msg_hook.py`, 101
+         passed; it tests both gaps the entry names). Lossless check: 13 lines removed, 0 missing (`sort | comm`, C locale; a
+         mutant dropping one line reported 1). Log 107,340 → 106,233 B. The other 54 have no `live` row: their fixes
+         are prose rules, one-script fixes or tests without a Mechanized row (e.g. the 402 abort, `prepare_data.py` 0
+         examples). Closest misses: the `|`-in-table entry (the `/review-changes` structural pre-check catches it but has
+         no row), *mention is use* (the guard deliberately still counts mention). ⚠️ **This keep-rule cannot shrink the
+         catalogue.** Shrinking it needs either new `live` rows (mechanize first) or a different rule. That is the owner's call.
      - d. ✅ session-log rotated (above). **Next: `corroboration-feature-hypotheses.md` (79 KB) and `working-rules.md`
        (65 KB)**. Retire closed rows verbatim into `memory/archive/`. Also the hypothesis ledger (50 KB): move CLOSED rows
        into `memory/archive/hypothesis-ledger-archive.md`.

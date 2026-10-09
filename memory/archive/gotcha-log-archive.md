@@ -6857,3 +6857,19 @@ llm-distillery#157's proposed "stamp the served model" buys the **tier**, not th
 would not have distinguished V4 from V4.1.
 
 ---
+
+## Moved 2026-10-09 — one `###` entry from *The unreachable-mechanism catalogue* (docs/TODO.md item 2c). Owner keep-rule 2026-10-02: an entry whose class has a `live` row in § *Mechanized* moves verbatim. Covering row: the 2026-09-29 lexical-guard negation row, `tests/unit/test_commit_msg_hook.py` (101 passed 2026-10-09). Verbatim.
+
+### THE COMMIT GUARD CANNOT READ NEGATION, AND ITS REMEDY POINTS AT --no-verify (2026-08-28)
+**Problem**: A commit was rejected for a "deploy-class word" — the words were
+**"Nothing deployed"**, in the preamble this repo puts on every session commit.
+**Root cause**: Two gaps. The word test has no negation handling; and the verifier failed a
+directory with no `config.yaml` and no `inference_hub.py` on
+`hub: cannot check — no repo_id extracted from inference_hub.py`, i.e. it derived a hard
+failure from a file it had already logged as legitimately absent.
+**Fix**: Reworded (remedy 2), **not** `--no-verify` — that override is what cost three days in
+#44. Filed as #136. ⭐ Recorded because of the *direction* of the failure: a guard that fires
+on correct messages spends operator trust, and the cheapest-looking exit is the dangerous
+one. **A false positive in a safety check is a safety problem, not an annoyance.**
+**2026-09-29: PR #167 (merged `4ec7850`).** Prose-only `filters/*/v*/` dirs verify as N/A; "nothing deployed", "not deployed" and "deploy N/A" pass. Mention still counts as use.
+
