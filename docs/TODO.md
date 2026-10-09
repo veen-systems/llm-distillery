@@ -16,8 +16,10 @@
       `version "3.0"`, 19 stage-2 raw ≥ 4.0 (0.52%, predicted 0.50%). Posted on #170; ovr.news and pipeline-atlas told.
       ▶ **Waiting on:** ovr's post-switch panel → rollback rule; then the refit.
       📅 **ovr's rollback panel is due 2026-10-23** (ovr hypothesis log). **Refit normalization AFTER it (≥ 2026-10-24)**, so the panel
-      sees one scale (ovr's point). Exception: if ovr's normalized ≥ 4.5 pass count drops below 100% for Belonging, decide an earlier
-      refit WITH ovr. Post the refit date on #170. Refit ONLY rows with `belonging.version == "3.0"` (filtered/ mixes v1 and v3; NexusMind PR #627 review).
+      sees one scale (ovr's point). Exception (reworded 2026-10-09): the old "< 100%" trigger compared different populations and fired falsely
+      (ovr: 12/19 = 63% of v3's raw ≥ 4.0 rows pass normalized ≥ 4.5, but v1 measured the same way was 469/872 = 54% over its
+      last 7 files, per file 47–66%; normalized 4.5 ≈ raw ~5.1 on v1's curve for BOTH versions). Trigger an earlier refit WITH
+      ovr only if that SAME measure for v3 falls clearly below v1's 47–66% over several files. Post the refit date on #170. Refit ONLY rows with `belonging.version == "3.0"` (filtered/ mixes v1 and v3; NexusMind PR #627 review).
    ⚠️ **Volume:** v3 flags ~¼ of v1's (25 vs 109 per 5,000, measured), so ~20/day vs ~81/day on ovr (extrapolated).
    Open, not blocking: single-person stories (owner unsure; ovr raised it with the owner); FM-S1 judge strictness.
    ⚠️ **Run 2 (`20637ec`, epoch 6) leak check NOT LEAKED (`docs/evidence/2026-10-08-belonging-adj1-leak-check/`), but the gate
