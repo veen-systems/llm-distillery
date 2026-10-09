@@ -160,3 +160,14 @@ SECTION, never on absence from FINDINGS — absence is what the bug looked like.
 
 36. **brace group** — `filters/{seedname}/v{N}/never_extracted.py`
 37. **Windows path** — `C:\dev\seed_notes.md`
+
+### #134 step 3 — the DELIBERATELY-UNCOMMITTED marker (2026-10-09, owner ruling)
+
+A real file kept out of git on purpose (#97). 41 is the case it was built for; 42-44 are
+what a marker newly permits: hiding a COMMITTED file, a marker with no reason, and a
+marker that absorbs a path it does not sit beside.
+
+41. **counted** — `seed_cohort_fulltext.jsonl` <!-- uncommitted: #97 -->
+42. **stale: the path is committed** — `scripts/remote_deploy.sh` <!-- uncommitted: #97 -->
+43. **no reason given** — `seed_reasonless_cohort.jsonl` <!-- uncommitted -->
+44. **not adjacent** — `seed_far_cohort.jsonl` and intervening words <!-- uncommitted: #97 -->

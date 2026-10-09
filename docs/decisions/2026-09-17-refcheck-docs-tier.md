@@ -235,6 +235,10 @@ hazard) is a correct reference to a file that will never be on disk. The extract
 directory that follows the #97 rule generates permanent findings. This record's own
 reference to it is one of the 124.
 
+✅ **Settled 2026-10-09 (owner): a new counted marker**, `<!-- uncommitted: #NNN -->`. A real file kept out of
+git on purpose is now counted in `SKIPPED AS DELIBERATELY-UNCOMMITTED`. The marker is refused when the path is
+committed, when it names no issue, or when it is not adjacent to the path (`run.sh` seeds 41-44).
+
 ## Reproduce
 
 ```bash

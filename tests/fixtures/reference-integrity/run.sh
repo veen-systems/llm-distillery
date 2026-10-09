@@ -147,6 +147,17 @@ grep -q 'no_such_outside_seed_file.md' <<<"$ofind" \
 grep -q '\.\./exists_outside_root.md' <<<"$ofind" \
   && echo "  ok    caught  ../ escape outside ROOT (40)" || { echo "  FAIL  ../ escape outside ROOT laundered (40)"; fail=1; }
 rm -rf "$outdir"
-total=$(( ${#must_catch[@]} + ${#must_be_silent[@]} + ${#must_be_placeheld[@]} + 13 ))
+# 41-44 (#134 step 3, 2026-10-09) — the DELIBERATELY-UNCOMMITTED marker. 41 is what it is for;
+# 42-44 are what any marker newly permits. Asserted on the SECTION and on the finding TEXT.
+uncs="$(sed -n '/### SKIPPED AS DELIBERATELY-UNCOMMITTED/,/### LINK URLS/p' <<<"$out")"
+grep -q 'seed_cohort_fulltext.jsonl' <<<"$uncs" && ! grep -q 'seed_cohort_fulltext.jsonl' <<<"$findings" \
+  && echo "  ok    counted uncommitted artefact (41)" || { echo "  FAIL  uncommitted artefact not counted (41)"; fail=1; }
+grep -q 'scripts/remote_deploy.sh .*STALE UNCOMMITTED MARKER' <<<"$findings" \
+  && echo "  ok    caught  marker on a COMMITTED file (42)" || { echo "  FAIL  marker hid a committed file (42)"; fail=1; }
+grep -q 'UNCOMMITTED MARKER NEEDS A REASON' <<<"$findings" && grep -q 'seed_reasonless_cohort.jsonl' <<<"$findings" \
+  && echo "  ok    caught  reasonless marker, path still reported (43)" || { echo "  FAIL  reasonless marker accepted (43)"; fail=1; }
+grep -q 'UNCOMMITTED MARKER COVERS NO PATH' <<<"$findings" && grep -q 'seed_far_cohort.jsonl' <<<"$findings" \
+  && echo "  ok    caught  non-adjacent marker, path still reported (44)" || { echo "  FAIL  non-adjacent marker absorbed a path (44)"; fail=1; }
+total=$(( ${#must_catch[@]} + ${#must_be_silent[@]} + ${#must_be_placeheld[@]} + 17 ))
 [ $fail -eq 0 ] && echo "SENSITIVITY: $total/$total PASS" || echo "SENSITIVITY: FAILED"
 exit $fail

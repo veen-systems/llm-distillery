@@ -352,6 +352,23 @@ def _link_urls(line):
     return refs, dec
 
 PLACEHOLDER_RE = re.compile(r"<!--\s*placeholder\s*-->")
+# 2026-10-09 (#134 step 3, owner ruling): a DELIBERATELY UNCOMMITTED artefact -- a real
+# file that must never enter git (#97: article text in a public repo) -- is neither a
+# placeholder (it exists) nor asserted-absent (it was not deleted). The marker must carry
+# the reason as an issue number, and the path must NOT be committed: a marker on a
+# tracked file would hide a real reference, the failure every marker here guards against.
+UNCOMMITTED_RE = re.compile(r"<!--\s*uncommitted:\s*#\d+\s*-->")
+UNCOMMITTED_BARE_RE = re.compile(r"<!--\s*uncommitted\b(?!:\s*#\d+\s*-->)[^>]*-->")
+_TRACKED = None
+def tracked_paths():
+    """git ls-files of ROOT, once. None when git cannot answer -- never an empty set,
+    which would read as 'nothing is committed' and pass every marker."""
+    global _TRACKED
+    if _TRACKED is None:
+        import subprocess
+        r = subprocess.run(["git", "-C", ROOT, "ls-files"], capture_output=True, text=True)
+        _TRACKED = set(r.stdout.splitlines()) if r.returncode == 0 and r.stdout else False
+    return _TRACKED or None
 ANGLE_SEG_RE   = re.compile(r"<[^>]+>")
 SPAN_RE        = re.compile(r"`[^`]*`")
 def _mask_spans(line):
@@ -543,6 +560,7 @@ AUTOMEM_RE = r"((feedback|reference|project)-[a-z0-9-]+|project_session_[0-9a-z_
 AUTOMEM=os.path.expanduser("~/.claude/projects/"
     + ROOT.replace("/", "-") + "/memory")
 findings, resolved, skipped, generic, placeheld = [], [], [], [], []
+uncommitted = []
 declined, identifiers = [], []
 dropped_shapes = []   # backticked path shapes outside the population (#122)
 seen_ext=set()
@@ -610,10 +628,32 @@ for doc in DOCS:
                     "nearest backticked path before it. Either none is there, or the token "
                     "is not extractable (directory, glob, URL, or an extension outside the "
                     "whitelist -- that last one is a whitelist gap, not a marker problem)"))
+        uncommitted_frags=set()
+        for um in UNCOMMITTED_RE.finditer(_mask_spans(mline)):
+            before=[m for m in eligible if m.end()<=um.start()]
+            if before and line[before[-1].end():um.start()].strip()=="":
+                uncommitted_frags.add(before[-1].group(1))
+            else:
+                findings.append((doc,f"(line {ln+1})",
+                    "UNCOMMITTED MARKER COVERS NO PATH -- only whitespace may sit between "
+                    "the backticked path and its marker"))
+        for _ in UNCOMMITTED_BARE_RE.finditer(_mask_spans(mline)):
+            findings.append((doc,f"(line {ln+1})",
+                "UNCOMMITTED MARKER NEEDS A REASON -- write <!-- uncommitted: #NNN -->, "
+                "naming the issue that keeps the file out of git"))
         for frag in [m.group(1) for m in PATH_RE.finditer(mline)] + url_refs:
             seen_ext.add(frag.rsplit(".",1)[-1])
             if _is_identifier_not_path(frag): identifiers.append((doc,frag)); continue
             if frag in absent: skipped.append((doc,frag)); continue
+            if frag in uncommitted_frags:
+                tr = tracked_paths()
+                if tr is None:
+                    findings.append((doc,frag,"UNCOMMITTED MARKER CANNOT BE CHECKED (git ls-files failed)"))
+                elif any(t==frag or t.endswith("/"+frag) for t in tr):
+                    findings.append((doc,frag,"STALE UNCOMMITTED MARKER (the path is committed)"))
+                else:
+                    uncommitted.append((doc,frag))
+                continue
             if frag in placeheld_frags or ANGLE_SEG_RE.search(frag):
                 # A marker on a path that DOES resolve is the failure this skip
                 # newly permits: mislabelling is how a real break gets hidden.
@@ -774,6 +814,9 @@ if not placeheld: print("  (none)")
 print(f"\n### SKIPPED AS ASSERTED-ABSENT ({len(set(skipped))} unique)")
 for d,f in sorted(set(skipped)): print(f"  {d:22s} {f}")
 if not skipped: print("  (none)")
+print(f"\n### SKIPPED AS DELIBERATELY-UNCOMMITTED ({len(set(uncommitted))} unique) — real, kept out of git on purpose (issue in the marker); counted, not dropped")
+for d,f in sorted(set(uncommitted)): print(f"  {d:22s} {f}")
+if not uncommitted: print("  (none)")
 print(f"\n### LINK URLS DECLINED ({len(set(declined))} unique) — masking a label is a SILENT LOSS unless the URL is named")
 for d,u,w in sorted(set(declined))[:40]: print(f"  {d:22s} {u:44s} {w}")
 if not declined: print("  (none)")

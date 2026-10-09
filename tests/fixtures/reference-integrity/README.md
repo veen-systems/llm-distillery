@@ -5,6 +5,11 @@
 into **findings**, **resolved below rung 1**, **generic artifact names** and
 **skipped as asserted-absent**.
 
+**Deliberately uncommitted** (2026-10-09, #134 step 3): `` `path` <!-- uncommitted: #97 --> `` marks a real
+file kept out of git on purpose. Counted in its own section, never dropped. It is a finding when the path IS
+committed, when the marker names no issue, or when it does not sit directly after its path (seeds 41-44, each
+mutation-tested). ⚠️ The branch where `git ls-files` itself fails (reported `CANNOT BE CHECKED`) has no seed.
+
     python3 tests/fixtures/reference-integrity/refcheck.py     # the audit
     ./tests/fixtures/reference-integrity/run.sh                # the sensitivity test
 
