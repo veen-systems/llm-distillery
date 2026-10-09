@@ -6873,3 +6873,632 @@ on correct messages spends operator trust, and the cheapest-looking exit is the 
 one. **A false positive in a safety check is a safety problem, not an annoyance.**
 **2026-09-29: PR #167 (merged `4ec7850`).** Prose-only `filters/*/v*/` dirs verify as N/A; "nothing deployed", "not deployed" and "deploy N/A" pass. Mention still counts as use.
 
+
+## Moved 2026-10-09 — catalogue: 43 `###` entries from *The unreachable-mechanism catalogue*, dated before 2026-09-01 (docs/TODO.md item 2c; owner rule 2026-10-09: date rule, except classes that recurred on/after 2026-09-01). Original order. Verbatim.
+
+### A backwards index-slice silently duplicated a document — twice in one session (2026-08-21) [x2]
+**Problem**: `s[:i] + new + s[j:]` where `i` and `j` come from `s.index(...)` on two anchors.
+When the second anchor precedes the first, the slice is backwards: the first form duplicated
+§1e–§1g of a plan (923 → 1,007 lines), the second produced an **empty** `old`, and
+`s.replace("", new)` inserts `new` between **every character** — 38 KB → **16.5 MB**.
+**Root cause**: no assertion that `i < j`, and none that `old` is non-empty. The second
+occurrence happened ~20 minutes after fixing the first, on a section whose order I had myself
+changed earlier in the session — the anchors were correct when written and stale when used.
+**Fix**: before any two-anchor slice, `assert i < j`; before any `.replace(old, new)`,
+`assert s.count(old) == 1` and `assert old`. Both corruptions were recoverable exactly
+(uniform insertion → `"".join(s.split(new))`; duplication → drop the truncated copy), but only
+because the damage was deterministic. **Prefer anchored `.replace()` with a count assertion
+over index arithmetic.**
+
+### A hand-keyed dict transposed two article IDs, so two training rows carried each other's rationale (2026-08-21)
+**Problem**: six adverse examples were promoted into `datasets/adverse/uplifting.jsonl` with
+per-row `why_adverse` text supplied from a hand-written `{id: (why, features)}` dict. Two IDs
+from the same publisher were swapped, so the helpline article shipped the Travelodge rationale
+and vice versa — including each other's normalized scores. Both rows carry
+`training_use: HARD NEGATIVE`, so the text a future adjudicator reads was **confidently wrong,
+not absent**. Found by the adversarial review lens, not by me.
+**Root cause**: a mapping built by eye between two similar-looking opaque IDs
+(`british_irish_independent_uk_5985bde5bb3a` / `..._a4fdcb129620`), with nothing coupling the
+prose to the record it described.
+**Fix**: assert an invariant that ties the text to its own row — each `why_adverse` now must
+contain its record's `observed.normalized_weighted_average`, checked at write time. A
+hand-built mapping needs a machine-checkable link back, not proofreading.
+
+### A pipe inside a code span silently deleted a table cell that carried a BLOCKING flag (2026-08-21)
+**Problem**: an acceptance criterion written as `` `|student_raw − oracle_k_run_mean|` `` inside
+a markdown table row parsed as 7 cells against a 5-cell table. GFM drops the excess, so the
+row rendered without its last three cells — including `Blocking? = YES`. The criterion would
+have rendered as non-blocking.
+**Root cause**: GFM splits a row into cells **before** parsing inline content, so backticks do
+not protect a `|`. It reads correctly in the diff and is wrong only when rendered.
+**Fix**: escape as `\|` inside tables. Caught by `/review-changes`' structural pre-check, which
+exists for exactly this; it is the one check that reads *structure* rather than content.
+
+### A free-tier API key turned k=3 into k=1 and the run still looked successful (2026-08-23)
+**Problem**: A Gate A run scored 15 rows × k=3 on Gemini and reported results. It had actually
+completed 14 of 45 and 8 of 45 calls; **8 articles carried a single sample while the run was
+labelled k=3**, so every per-article mean and spread was computed over a sample size nobody
+had chosen.
+**Root cause**: `gemini_api_key` in `secrets.ini` is **free-tier** and returns
+`429 RESOURCE_EXHAUSTED` partway through any real batch. Errors were counted but the surviving
+rows were written and summarised normally — a *partially populated* result set is
+indistinguishable from a complete one unless something checks per-article completeness.
+**Fix**: Use `gemini_billing_api_key`, now the script's default with the free-tier fallback
+labelled aloud. The catch came from the `⚠️ N articles have fewer than k successful runs`
+warning added to `score_ollama_oracle.py` hours earlier for an unrelated reason — **without
+it the numbers would have been read as a k=3 measurement.** ⭐ *Generalises: an error count is
+not a completeness check. Assert the shape of the result, not just the absence of errors.*
+
+### `grep -rl <article_id>` matched three files that do not contain the article (2026-08-23)
+**Problem**: Looking for an article's full text in production, `grep -rl` returned three
+`filtered_*.jsonl` files. None of them held the article. Parsing and comparing the `id` field
+found it in none of the three.
+**Root cause**: The id appeared inside a **different row's** `nexus_mind_attributes` — the
+Express Tribune "Poison on our plates" row carries it as a **cluster co-member** of "The
+silent crisis on our plates". Near-identical titles, co-clustered: the centroid-inheritance
+shape behind NM#188/#228/#278.
+**Fix**: Parse and compare the `id` field; never accept a substring hit as a row hit. ⭐ *A
+grep for a string is not a grep for a row — and in a corpus with cross-references, an id is
+exactly the string most likely to appear somewhere that is not its own record.*
+
+### `b650-gpu` resolves for ssh and not for anything else (2026-08-23)
+**Problem**: `ssh b650-gpu` works; `http://b650-gpu:11434` fails DNS resolution, so a scoring
+run against the box errored on every call.
+**Root cause**: `b650-gpu` is an **SSH-config `Host` alias**, not a hostname. Its real address
+is the Tailscale name in the `HostName` line.
+**Fix**: `B650_HOST` in `scripts/score_ollama_oracle.py` now carries the Tailscale name, with
+the reason in a comment. ⚠️ *If a name only ever appears after the word `ssh`, do not assume
+anything else can resolve it.*
+
+### A judge that scores everything zero looks perfect on the adverse set (2026-08-23) [x2]
+**Problem**: `qwen3:14b` scored two known-bad class-A rows at 0.0 and 1.0 against production's
+6.846 and 5.976. Reported as evidence the prompt already handled them.
+**Root cause**: **No positive control had been run.** The same judge scores all three
+no-regression *true positives* at 3.733 / 0.767 / 1.333 — it puts nearly everything in the
+0–2 band, so getting the adverse set "right" costs it nothing and carries no information.
+**Fix**: Run the positive control **before** reading the negative arm. `qwen2.5:14b` is the
+usable instrument here — run-to-run spread 0.383 mean / 0.650 max against qwen3's 1.700 /
+2.950. ⭐ *The standing rule is "prove the instrument could say yes"; this is the same rule
+one step over — prove it can still say **no** to something good.* Model-specific, not a
+property of local judges.
+
+### A verification that scanned zero files reported CLEAN (2026-08-23)
+**Problem**: To prove violence enforcement worked I searched the cycle's output for the 74
+flagged article ids and got "0 present — CLEAN". It scanned **0 files**. The zero was guaranteed.
+**Root cause**: The flagged files are named in **UTC** (`flagged_20260823_144622`) and the
+filtered files in **local time** (`filtered_20260823_164812`). I globbed `filtered_20260823_14*`
+against a 16:xx file. Two naming conventions in one directory tree, neither documented.
+**Fix**: Re-ran with an explicit `rows scanned > 0` control printed beside the verdict. Every
+negative needs a control proving the instrument could have said yes — and a *count of what was
+examined*, not just the finding. 2nd occurrence of the 2026-08-09 entry above.
+
+### A stamp that is CONSTANT because its positives are deleted upstream (2026-08-23)
+**Problem**: `_is_commerce` and `_is_obituary` are `False` on 100% of 25,122 rows — 1 distinct
+value each. Reads like two broken stamps.
+**Root cause**: Neither is broken. Each gate's positives are **dropped before persistence**, so
+the saved population is the gate's negatives and nothing else. Constant *by construction*.
+**Fix**: New status in `NexusMind/docs/ARTICLE_RECORD.md`: `CONSTANT-BY-CONSTRUCTION` — the field
+is fine, the place it was measured is not. ⭐ **Corollary that cost us today: turning a gate ON
+removes it from the record.** `_is_violence_promotion` had 2 distinct values only while in
+shadow; enforcing it makes it constant-`False` too.
+
+### Assumed today's date was one later than it was, and it reached a production config (2026-08-23)
+**Problem**: Dated an evidence file, a GitHub issue body, two issue comments and a **production
+config comment** `2026-08-24`. It was the 23rd.
+**Root cause**: The previous session record was dated 2026-08-23, so I inferred today must be the
+24th rather than reading the date I was given.
+**Fix**: Corrected all five surfaces; sadalsuud's `date -u` is what caught it. In a project whose
+memory is date-indexed, a wrong date makes evidence unfindable. Read the date, never derive it.
+
+### An unsized bucket in a prose clause carried 85% of the volume (2026-08-24)
+**Problem**: Predicted the block ledger's first flush at "~22,237 rows, ~42 MB". Actual:
+**168,486 rows, 320 MB** — 7.6× low.
+**Root cause**: The estimate enumerated and counted the gate-blocked classes, and disposed of
+everything else in a prose clause — *"plus freshness and dedup rows"*. `freshness.too_old`
+turned out to be **142,899 rows, 85% of the ledger**. The part I counted was nearly exact
+(22,494 vs 22,237, **1.2% off**); the part I described in words was never a number at all.
+**Fix**: Size every bucket against its own counter, or state explicitly that a bucket is
+unsized and therefore unbounded. ⭐ **A prose clause inside a quantitative estimate reads as
+though it has been accounted for and has not.** The decomposition only existed because the
+prediction was pre-registered in `docs/TODO.md` before the deploy — without it, 320 MB would
+have been a number with nothing to compare against, and the real defect invisible.
+
+### Asserted a deployed SHA I had inferred rather than checked (2026-08-24)
+**Problem**: Reported "sadalsuud is at `7f57708`". It was at `8eed8d9`, one commit behind, so
+the box's copy of a research script cited the wrong issue number.
+**Root cause**: I pulled to the box in the same command chain as one commit, then made a
+second commit and pushed it — and carried the *intent* forward as if it were the state. The
+pull had run before the second commit existed.
+**Fix**: `git rev-parse --short HEAD` on the box before naming a SHA. **A push is not a
+deploy, and a deploy earlier in the same session is not a deploy now** — this is
+`feedback-verify-call-path` applied to my own reporting rather than to a gate.
+
+### A fix for one defect introduced another, caught by asking why a test PASSED on the old code (2026-08-24)
+**Problem**: Fixing the census's un-attributable reader count, I marked every shared leaf
+name `RDRS-AMBIGUOUS` and suppressed its consumer finding. That silently dropped TRUE
+findings: a shared count of **zero** is an upper bound on every field sharing the name, so
+it proves absence for all of them.
+**Root cause**: I treated "shared" as "unknowable" without asking what the shared number
+actually bounds. The tell was there: one of my 15 tests passed against the OLD script too,
+and I nearly logged that as "it's a control" instead of chasing it.
+**Fix**: Only a NON-ZERO shared count is ambiguous. `test_shared_leaf_with_zero_readers_
+still_raises_for_both` kills the over-suppressing mutation. **A test that passes against
+the code you are replacing is either a control you can name, or a defect you have not
+found yet — decide which, out loud.**
+
+### A number derived from a rounded percentage, published as if measured (2026-08-24)
+**Problem**: Wrote "`_post_enriched` sits on **44** of 145,301 rows" into NexusMind's
+`ARTICLE_RECORD.md`. An independent `grep -c` over the same 72 files says **46**.
+**Root cause**: The census printed `0.03`, I multiplied by the row count, and a *derived*
+number entered a document in the same sentence shape as a *measured* one. Nothing in the
+text distinguished them.
+**Fix**: Counted it with a second instrument and corrected the doc, which now says the 46
+was counted rather than read off the percentage. **If a number came out of arithmetic on a
+displayed value, either measure it or print the raw count in the tool.**
+
+### The tidied script and the tested script were not the same program (2026-08-24) [x2]
+**Problem**: A probe worked in the scratchpad, was cleaned up for commit, and died on its
+first real run with `ModuleNotFoundError: No module named 'filters'`.
+**Root cause**: The scratchpad version carried `sys.path.insert(0, REPO)`; tidying it into
+a well-structured module dropped that line. The committed artifact had never been run.
+**Fix**: Ran the committed version on the box before citing anything from it. **Verifying
+version A and shipping version B is the same defect as not verifying at all — and the
+tidy-up step is exactly where it hides, because the change feels cosmetic.**
+
+### An issue number guessed before the issue was filed (2026-08-24) [x2]
+**Problem**: Wrote `llm-distillery#125` into a script docstring and a commit message. The
+issue was created as **#130**.
+**Root cause**: Filed the artifact before filing the issue, and guessed the next number
+from the ones I had seen.
+**Fix**: Corrected the docstring; the pushed commit message cannot be edited in place and
+carries the wrong number permanently, so the follow-up commit is the correction of record.
+**File the issue first, or leave the reference blank until it exists.**
+
+### A one-line class selector picked the empty base class (2026-08-24)
+**Problem**: `next(v for v in vars(mod).values() if hasattr(v, "EXCLUSION_PATTERNS"))`
+selected `BasePreFilter` — imported into the module and carrying an EMPTY dict — instead
+of the subclass that defines the patterns.
+**Root cause**: `hasattr` tests for the attribute's existence, not for it containing
+anything. The module namespace holds its imports as well as its definitions.
+**Fix**: Select on the CONTENT (`"crime_violence" in ...`) and require exactly one match,
+exiting otherwise. It happened to raise `KeyError` here; had the category been present but
+empty, the probe would have screened on nothing and returned a clean-looking zero.
+
+### A NEGATIVE-EXISTENCE PROBE MATCHED THE DOCUMENT ASSERTING THE NEGATIVE (2026-08-25)
+**Problem**: Wrote a probe for "there is still no Gemini Batch call site" —
+`grep -rqE '\.batches\b' --include=*.py …` — and it fired **CLAIM REFUTED** on its first run.
+**Root cause**: The only match was `scripts/analysis/oracle_cost.py:178`, the banner line I
+had written that same hour saying *"`.batches` appears nowhere"*. The probe found the
+sentence claiming absence and read it as presence. A negative-existence check searches the
+same tree that holds the prose about the absence, and prose is not excluded by `--include=*.py`
+when the prose lives inside a `print()`.
+**Fix**: Match a call *shape* rather than a name — `\.batches\.` needs the trailing dot a
+real invocation has and the prose does not — plus an explicit exclusion of the analysis
+script, then **seed-tested it**: planted `client.batches.create(...)` in a throwaway file,
+confirmed CLAIM REFUTED, removed it. **A negative-existence probe must be seed-tested in
+both directions; the false-positive direction is the one that discredits the probe, because
+the next reader will "fix" the claim rather than the check.**
+
+### A PRICE THAT WAS VERIFIED THREE TIMES AND COULD NEVER HAVE BEEN PAID (2026-08-25)
+**Problem**: llm-distillery#103 spent three days deciding between oracles by comparing
+DeepSeek's per-article cost against "Gemini Batch, ~$0.0018". Both rate cards were read
+first-hand at the vendors, an outside contributor independently checked the arithmetic,
+and the flip point was computed to four decimals. **There is no Gemini Batch API call site
+in the repo** — `ground_truth/batch_scorer.py:819` and `scripts/score_ollama_oracle.py:266`
+both call `models.generate_content`, the real-time endpoint, and `.batches` appears in no
+`.py` file. Against the path that exists, DeepSeek off-peak is 1.74× *cheaper*, so the
+conclusion was backwards for nine days.
+**Root cause**: A price is a property of a vendor; **being able to pay it is a property of
+your code**, and only the first one looks like a fact to be checked. Nobody grepped for the
+call site because the number was not in dispute.
+**Fix**: `scripts/analysis/oracle_cost.py` now prints the implemented-path column with a
+banner saying the other one is unreachable. **Durable lesson**: `feedback-verify-call-path`
+applies to *prices, rates and quotas*, not only to gates and stamps. Before comparing
+against an option, name the function that would invoke it. A number can be correct,
+independently confirmed, and still not be an option.
+
+### A DEAD FIELD REPORTED AS A MEASUREMENT, AND IT HAPPENED TO BE RIGHT (2026-08-25)
+**Problem**: Published "cache-hit 0% (measured)" and built a decision table on it.
+**Root cause**: The run it came from used `scripts/score_ollama_oracle.py`, which reads
+`prompt_cache_hit_tokens` into `_cached_tokens` at line 359 and then **never sums it, never
+persists it into the result row, and never prints it**. The run logs contain no cache line
+at all. There was no instrument; the 0 was the absence of one.
+**Fix**: Requalified as unmeasured, then measured properly from a different log whose
+instrument *can* report non-zero and did (1% mid-run, 0.34% total, n=3,641). **The trap is
+that the dead field's answer was nearly right.** A wrong-but-close number produces no
+symptom, so the only defence is the standing rule: before believing a zero, prove the
+instrument could have said yes. Being lucky is not being right.
+
+### A MID-RUN PROGRESS READING CARRIED FOR MONTHS AS A RUN TOTAL (2026-08-25)
+**Problem**: "14% cache hit" was quoted as a project constant in `CLAUDE.md`'s pointer
+table and in `memory/oracle-pricing-scheduling.md`, and used in every per-article cost
+estimate since.
+**Root cause**: `nr_v4_positives.log` shows the shape — its progress lines read
+**14% → 7% → 5%** and its final total is **4.9%**. An early reading is computed over a
+small denominator and drifts as the run proceeds. Someone quoted the first line.
+**Fix**: The real number is structural and per-prompt: `build_prompt` inserts the article
+into the MIDDLE of the template, so the prefix cache can only hit what precedes the
+placeholder — a ceiling of 1.5% (`human_thriving/v8`) to 35.7% (`solutions/v6`). 14% is cd
+v5's own ceiling, not a project property. Filed as #131. **Quote a run's summary line, never
+a progress line — and when a "constant" varies 7× across subsystems, it is a per-subsystem
+property that nobody has decomposed yet.**
+
+### THE SHIPPED ARTIFACT EXITED 1 ON A CLEAN CLONE (2026-08-25)
+**Problem**: Committed `scripts/analysis/oracle_cost.py`, ran it, cited its output in a
+memory file, a commit message and a public issue comment. On a fresh clone it exits **1**.
+**Root cause**: The DeepSeek batch log the whole analysis rests on lives under `datasets/`,
+which is gitignored (`.gitignore:76` — and #97, article text in a public repo, is why it
+stays that way). My working tree had the file; the repo never did.
+**Fix**: Copied the two logs — **counters only, no article text** — to
+`docs/evidence/2026-08-24-deepseek-token-counts/`, made the parser try both locations, and
+**proved the clean clone now exits 0**. Third occurrence of this family in two sessions.
+**A script is not shipped until it has run somewhere that only has what you committed.**
+`git clone --depth 1 file://$PWD /tmp/x && cd /tmp/x && <run it>` is the whole test.
+
+### Keyword mining for hard negatives was 92% wrong (2026-08-23)
+**Problem**: Harvested 244 candidate false positives with multilingual regexes for four classes;
+judged 100; **8 survived**.
+**Root cause**: Most POW/remains/prisoner matches are war roundups that genuinely *are* violence
+(*"103 POWs returned home — Russian drone strike kills 2"*). A keyword is a candidate generator,
+never a labelled set.
+**Fix**: Mine where the error is dense instead: FPs run **~50%** among articles that are flagged
+*and* clear a lens op-point, vs ~8% among keyword matches.
+
+### A COVERAGE TEST WRITTEN FOR ONE QUESTION, REUSED FOR ANOTHER — prefix vs exact (2026-08-25) [2nd occurrence of *a check that answers a NARROWER question*]
+**Problem**: Building the register's `scope` column, I reused the coverage predicate
+I had just written for the ghost check — "is this declared path observed, itself or
+through a child?" — to answer "is this observed field declared?". The first run
+reported **every one of the 31 `nexus_mind_attributes.*` lens fields as declared in
+Contract B**, including the seven undeclared fields that are the reason the register
+exists. It looked plausible: Contract B *does* declare `nexus_mind_attributes`.
+**Root cause**: prefix matching is correct for the ghost direction (a populated object
+never appears as its own census row, so a child proves the parent) and wrong for the
+attribution direction (a parent declared as an open object says nothing about its
+children). One predicate, two questions, and the wrong answer was **true for the other
+question** — the 2026-08-14 shape exactly: a check that is correct forever about
+something you did not ask.
+**Fix**: `scope_of()` matches EXACT paths only and says so in its docstring;
+`_observed()` keeps the prefix rule for ghosts. `test_declared_parent_does_not_declare_its_children`
+pins both directions. ⭐ The tell was the same as last time: the wrong answer was the
+*comfortable* one — "the contracts declare almost everything" is the answer you want.
+
+### I CALLED A DECLARATION DEAD IN THREE DOCUMENTS BEFORE READING WHAT IT SAID (2026-08-25)
+**Problem**: The census's new top-level check reported `_corroboration` as declared in
+Contract B and present on **0 of 164,572 rows**. I wrote it up as a live
+declared-but-dead field — "either the declaration goes or the pop moves; the pop is
+deliberate, so the declaration is the wrong half" — in a commit message, a TODO block
+and a session record. Then I opened the declaration to delete it. Its description reads:
+*"Intermediate field — consumed by scripts/main.py and re-emitted under
+nexus_mind_attributes.{filter}.source_quality before JSONL write."* It was right, and
+had been since it was written.
+**Root cause**: two failures stacked. (1) I read the *measurement* (0 rows) and inferred
+the *intent*, when the intent was written down one file away. A zero has at least two
+explanations — dead, or never meant to appear — and I only priced one. (2) The
+instrument genuinely could not tell them apart, because **the fact lived in prose**. A
+`description` is documentation; a checker cannot act on it.
+**Fix**: Contract B `1.18.0 → 1.18.1` marks the field `x-intermediate: true` (annotation
+only — `x-` keywords are ignored by validators, so nothing validates differently), and
+check A excludes marked fields from the ghost list while still printing them once;
+hiding them would be the other failure. The right disambiguation was already available
+and free: an intermediate has an **in-process reader** (`display_ranking._corroboration_boost`)
+and zero persisted rows, where a corpse has neither. ⭐ **When a schema's prose states a
+fact a checker needs, move the fact into the schema.** ⭐⭐ And: *0 rows* is a
+measurement; *dead* is a conclusion — the gap between them is where the declaration's own
+words were sitting.
+
+### A CYCLE IS A WINDOW, AND MY VERIFIER TREATED IT AS AN INSTANT (2026-08-25)
+**Problem**: The deploy verifier decided which lenses had written "this cycle" by comparing
+each file's timestamp to the newest timestamp with `==`. Run against production it reported
+**one** lens as current and five as stale — and had the deploy already landed, that is
+precisely the output a successful pause of five filters would produce.
+**Root cause**: a cycle writes one file per lens as each finishes, minutes apart —
+2026-08-25's ran 17:10:29 → 17:17:46. There is no single cycle timestamp to compare
+against. I built the population by an equality the data can never satisfy for more than one
+member. This is `feedback-hand-built-population` in its purest form.
+**Fix**: membership by window (2h; cycles are 4h apart and run ~1h20m, so they cannot
+overlap). ⭐ **The reason I caught it is that I ran the verifier BEFORE the deploy, expecting
+failure.** A checker you have only ever seen pass is indistinguishable from one that cannot
+fail — and here the wrong answer was the *encouraging* one, which is the shape that ships.
+
+### A VERIFICATION COMMAND THAT ERRORED AND PRINTED THE REASSURING BRANCH (2026-08-27) [2nd occurrence of *prove the instrument could say yes*, same day]
+**Problem**: Checking that escaping the pipes in an evidence doc cleared the table
+check, I ran `awk ... && echo 'silent (FIXED)'` inside a `$( ... )` with escaped inner
+quotes. awk received a filename with literal quotes, failed to open it, printed nothing —
+and the `[ -z ]` test read the empty output as success. **The report said `silent
+(FIXED)` on a run that never examined the file.**
+**Root cause**: An empty result and a failed run are byte-identical to `[ -z ]`. The
+check had no way to distinguish "nothing to report" from "nothing happened", which is
+the same defect as a grep over 0 files.
+**Fix**: Capture the output and the exit status separately (`out=$(...); rc=$?`), print
+both, and run a positive control in the same breath. Re-run: file clean, control fires,
+repo-wide sweep 1 → 0. ⭐ **The tell was that I wrote the success string myself, in the
+same command that was supposed to earn it.** A verdict that a command can print without
+having done the work is not a verdict.
+
+### `git archive HEAD` AS A BASELINE TREE — IT EXCLUDES EVERY GITIGNORED PATH (2026-08-27) [11th occurrence of *establish what a source excludes*]
+**Problem**: To get a before/after baseline for the reference checker I extracted
+`git archive HEAD` into a temp tree and ran the checker against it. It reported **240
+findings against the real 1** — and for about a minute that looked like a catastrophic
+regression in my own edit.
+**Root cause**: `git archive` ships tracked files only. `datasets/`, `data/` and every
+other gitignored path are absent, so the references that resolve against them cannot
+resolve. **The baseline was not a worse version of the tree; it was a different tree.**
+**Fix**: Baseline from the working tree with only the changed files reverted. ⚠️ And the
+cheap copy tricks do not work here either: `cp -al` cannot hardlink across filesystems
+(/tmp is tmpfs, the repo is on ext4) and my `|| cp -a` fallback then copied the repo
+*into* the half-made directory. Swap the two files in place, run, restore, and
+`md5sum -c` the restore. ⭐ This is the same shape as the 2026-08-24 keeper — *the
+shipped artifact exited 1 on a clean clone* — approached from the other side: there,
+gitignored evidence was missing from a clone; here I built the clone myself.
+
+### THE HEADROOM FIGURE IS MEASURED AT EXACTLY THE MOMENT THAT HIDES THE GROWTH (2026-08-27)
+**Problem**: I was one sentence from recommending we skip a second `CLAUDE.md` trim, on
+the grounds that the file had moved "one byte in a full cycle" — a figure from that
+morning's own write-up.
+**Root cause**: That figure is **headroom at audit time**, and the file is trimmed to the
+wall at each audit and then refills. Two audits both reporting ~45 bytes free describes a
+file that grew by whatever the trim removed, not a file that did not grow. Measured over
+25 commits: **35,094 → 39,955 bytes in 10 days, ~486/day.**
+**Fix**: Measure the series, not the endpoint, before quoting a rate. ⭐ **A quantity
+sampled only at the moment it is reset cannot show a trend, and it reads as stability.**
+Filed as #133 with the routing-rule options.
+
+### A VERBATIM MOVE RELOCATED A REFERENCE OUT OF ITS EVIDENCE (2026-08-27)
+**Problem**: Rotating the oldest session entry from `memory/MEMORY.md` into
+`memory/session-log.md` — byte-for-byte, as #123 requires — took the reference checker
+from **1 finding to 2**. Nothing about the entry changed; `diff` on the moved text is
+empty.
+**Root cause**: `refcheck.py`'s cross-repo rung resolves `NexusMind/data/exports/aegis/latest/narrative_risk.json` by looking
+for an unbackticked sibling-repo name in a **3-line window** around the reference. In the
+index that window held other session entries naming NexusMind in prose. In the log the
+same line sits between different neighbours, and the evidence did not travel with the
+bytes. **A positional window is part of the reference's meaning, and moving text verbatim
+does not move it.**
+**Fix**: None applied, deliberately — the finding is real, the entry stays verbatim, and
+loosening the rung to silence it would be fixing the control. Recorded in
+`memory/session-log.md`'s header so the next rotation is not surprised. ⭐ **Second time
+in one session that relocating text changed what a checker could see** — the first was
+dropping a qualified path from `CLAUDE.md`, which exposed an unqualified twin underneath
+that had been resolving to the wrong repo. **Both directions are the same lesson: a
+reference's resolvability is a property of where it sits, not only of what it says.**
+
+### I SUPPLIED A MECHANISM AND IT SHIPPED AS A MEASUREMENT (2026-08-27)
+**Problem**: Reporting that a residual exposure had no instance in this estate, I added
+that "a CI runner cloning siblings with `--depth 1` reproduces the case immediately."
+Plausible, confidently phrased, and **false**. It was accepted by the framework
+maintainer and shipped in a release note as *"a shallow or partial sibling checkout"*
+before they ran it and refuted it.
+**Root cause**: `--depth 1` truncates **history**, not the working tree — a shallow clone
+has every file. `--filter=blob:none` fetches blobs at checkout. Only **sparse checkout**
+removes tracked files from disk. I reasoned from "incomplete clone" to "missing files"
+without cloning anything, in a message whose whole subject was the difference between a
+measurement and a window.
+**Fix**: Verified all three modes afterwards, on this machine: `--depth 1` → `is-shallow:
+true`, **58 files present**; sparse → **58 tracked, 13 on disk**, a tracked file outside
+the cone genuinely absent; `--filter=blob:none` **inconclusive here** (the local `file://`
+transport ignored the filter — recorded as untested rather than confirmed). Corrected in
+`docs/TODO.md`. ⭐ **The estate sweep itself survived, and only by luck of construction**:
+I had checked `core.sparseCheckout` alongside the other three flags, so the finding rested
+on the one mode that matters. **A superset check saved a conclusion whose stated reason
+was wrong.** ⛔⛔ **The reusable half: a mechanism offered to a peer is load-bearing the
+moment they act on it.** Inside this repo an unverified mechanism is a hypothesis and gets
+a ledger row; sent across a repo boundary it arrives as a finding, with none of the
+hedging the ledger would have forced. **Say "I have not run this" in the sentence that
+offers it, or run it first.** See [[feedback-nothing-verifies-an-estimate]].
+
+### A VACUOUS ASSERTION IN THE FILE WHOSE DOCSTRING FORBIDS THEM (2026-08-27)
+**Problem**: `tests/unit/test_pointer_row_cap.py` shipped with
+`assert "1 rows" in out or "38 rows" not in out`. Its own module docstring says *"each one
+seeds the failure it claims to catch"*.
+**Root cause**: the second disjunct is true whenever the output does not mention 38 — which
+is almost always — so the `or` made the assertion unfalsifiable. **Proven, not argued**:
+deleting the delimiter-row skip from the guard (the exact defect the test names) left the
+test green.
+**Fix**: seed three rows and assert `"3 rows"` exactly; the same mutant now turns it red.
+⭐ **Caught by a peer's message about a defect in someone else's fixture** — an authored
+fixture reporting 26/26 green with three assertions that could not fail. Not by writing the
+test, not by re-reading it, not by the 361-test suite. ⛔ **The compounding detail: this is
+[[feedback-articulating-is-not-applying]] firing inside the hour, in a file written to
+enforce the opposite** — and the guard it tests was itself built to close a rule this repo
+had just articulated. **An `or` in an assertion is a smell: it gives the test two ways to
+pass and you only ever exercise one.**
+
+⭐ **THE DISCRIMINATOR, from the framework maintainer running the smell against their own
+fixtures: a disjunction in a PASS condition is the hole; in a FAIL condition it is the
+opposite and is correct.** Their sweep found 3 hits, **all safe** — shell `[ a ] || [ b ]`
+guards where the disjunction *widens* failure detection. So the lintable form is a Python
+`assert A or B`, where the disjunction unambiguously **is** the pass condition; in shell
+the two shapes are indistinguishable and a lint would be all false positives. They declined
+to build the rule for that reason, which is the right call and is why this is a rule for
+authors, not a check.
+
+⛔ **Swept this estate with the detector SEEDED FIRST (a negative from an unproven detector
+is worthless): 5 raw hits, 1 of them my own docstring quoting the old form** — a detector
+matching its own documentation — **2 loose but genuinely falsifiable, and 2 UNCONDITIONAL:**
+
+- `tests/unit/test_short_content_split.py:488` — `assert checked or True, "no live
+  prefilters on disk"`, directly beneath the comment *"A pass with nothing checked is
+  indistinguishable from a disabled test."* ⭐⭐ **The comment states the rule and the next
+  line defeats it.** `or True` permitted exactly the case the comment names.
+- `tests/unit/test_base_prefilter.py:280` — `assert "&amp;" not in result or "&" in
+  result`, in a test named `test_html_entities_removed`. A **tautology**: `&amp;` contains
+  `&`, so whenever the first disjunct is false the second is true. Measured: it passed on
+  the decoded output, on the raw undecoded input, and on the empty string alike.
+
+Both now pin measured behaviour and both mutants die (`checked` forced empty → red;
+`sanitize_text_comprehensive` made a no-op → red). ⚠️ The other two hits were left: a
+2- and a 3-way disjunction over message wording, loose but able to fail, and pinning exact
+wording would trade a weak test for a brittle one.
+
+### I CALLED A REFERENCE UNFIXABLE FOR WEEKS WITHOUT ONCE TRACING IT (2026-08-27)
+**Problem**: ~~`NexusMind/scripts/research/nm188_mojibake_derived.py`~~ was the reference
+checker's one standing finding, carried across sessions and repeatedly described — by me,
+today, three times — as *"needing someone who remembers the experiment."* It needed no
+memory at all. Ten minutes of tracing settled it.
+**Root cause**: I treated *the file is absent* as the end of the enquiry instead of the
+start. The sibling that DOES exist, `NexusMind/scripts/research/nm188_mojibake_invert.py`,
+**names the missing file in
+its own docstring** — as being in llm-distillery at commit `5d5467e`. That commit is real
+and touches **only** `memory/corroboration-feature-hypotheses.md`. The script is in no
+commit, under any path, in either repo: an uncommitted working file from 2026-08-17.
+**Fix**: struck in the memory file per the `ABSENT_SPANS` convention, so it is counted as
+asserted-absent rather than reported as a break, with the diagnosis and the surviving
+method beside it; the misdirecting NexusMind docstring corrected (`946d6f0`).
+⛔ **TWO DOCUMENTS DISAGREED ABOUT WHICH REPO HELD IT AND IT WAS IN NEITHER** — mine said
+NexusMind, NexusMind's said llm-distillery. Each looked authoritative from the other side.
+⭐ **A path plus a commit hash reads as the strongest kind of reference there is, and
+neither half was checkable until someone tried.** The hash resolving is what sells it: I
+verified `5d5467e` exists and stopped, when the question was what it *contained*.
+⛔ **The reusable half is about the STANDING finding, not the file.** A finding that
+survives many runs stops being read as a question. I defended keeping it — correctly,
+"zero is not the target" — and that defence became the reason nobody asked what it *was*.
+**A deliberately-unfixed finding still needs a diagnosis on the record, or the decision to
+keep it decays into never having looked.**
+⛔⛔ **AND THIS ENTRY ADDED TWO FINDINGS OF ITS OWN, caught only by re-running the checker
+after committing it.** Writing up a reference defect, I wrote the dead path unstruck (so it
+read as live) and the surviving sibling as a bare filename with no repo prefix (so it did not
+resolve). **The document explaining that references need care could not itself pass the
+check it was explaining** — 1 finding became 3. Struck and qualified; back to 1.
+⭐ **The habit that saved it is small and worth naming: re-run the checker AFTER writing the
+prose about the checker, not before.** The write-up is new text and new text is where new
+broken references come from — but it arrives feeling like documentation of work already
+verified, which is precisely when nobody re-verifies.
+⛔⛔ **FOUR OCCURRENCES IN ONE EVENING, and the fourth was inside the warning about the
+third.** Writing the paragraph that explains *illustrative example paths get reported as
+breaks*, I put the illustrative example path in a code span. Same file, same session,
+one sentence after describing the mechanism. The framework maintainer hit the same class
+independently at **86 findings** over their `CHANGELOG.md` — every one an invented path
+quoted to explain a check — which reopened an issue they had closed that morning as
+needing a second adopter's instance. **Two instances arrived the same day and one of them
+was written by the person documenting it.**
+⭐ **The durable form: an extractor cannot see intent, so in any corpus that documents its
+own tooling, a code span IS a reference.** The only reliable move is to write illustrative
+paths WITHOUT a code span — which costs the formatting and buys the check back.
+⚠️ **Why this estate showed 1 finding and theirs showed 86 is a writing habit, not a
+protection**: prose here quotes real files, which resolve at rung 2 or rung 4. The first
+genuinely invented example path written into `memory/` is reported as a break, and the
+reflex is to "fix" a reference that was never meant to resolve.
+
+### THE NULL ARM WAS THE RESULT — a treatment sitting inside its own control (2026-08-28)
+**Problem**: A prompt-reorder probe showed 16/30 rows moving past the #95 band and 3
+crossing the op-point. Read alone that is a damning parity failure and the change dies.
+**Root cause**: There was nothing to compare it to. Running the *same* prompt twice on the
+same 30 articles gives 16/30 and **5** crossings — the treatment is inside its own null.
+**Fix**: Never report a delta against a single baseline run when the mechanism is sampled.
+The null arm costs one extra run and it decided the question in both directions: it cleared
+the change *and* it was the only thing that could have found the instability underneath.
+⭐ Say **"no effect detectable above noise"**, never "no effect" — the instrument's
+resolution is part of the finding.
+
+### A NUMBER THAT IS REAL, CORRECT, AND ABOUT A DIFFERENT QUESTION — 99.4% cache (2026-08-28)
+**Problem**: The null arm reported a 99.4% prompt-cache hit rate. Quoting it would have
+claimed a cost saving nothing can reproduce.
+**Root cause**: It re-sent the **same 30 articles**, so the whole prompt matched — not the
+shared prefix. A corpus run sends distinct articles, where only the template caches. The
+number is arithmetically correct and answers a question nobody asked.
+**Fix**: Recorded as **unquotable** in three places rather than dropped, because a deleted
+number gets re-derived. Same treatment for the arm's 76.0% aggregate: with concurrency N the
+first N requests race and all miss, so a short run's aggregate is warm-up, not steady state.
+⭐ The generalisation: **a cache rate is a property of a RUN, so ask what varied between the
+requests before believing it** — the sibling of *establish what a source excludes*.
+
+### MY TRIAGE COUNTED THE PARENT DIRECTORY AS A SIBLING REPO (2026-08-28)
+**Problem**: Classifying 338 reference findings, I reported **137 of 156** cross-repo refs as
+matching more than one sibling repo. The real answer is **13**.
+**Root cause**: `veen-systems` is this repo's own parent *and* is re-listed as a child of the
+grandparent, so its tree contains every other repo. Every match also matched through it.
+**Fix**: Exclude the container. ⛔ The tell was not the total — **both versions summed to
+exactly 156**. *Closed accounting is not attribution*, third occurrence, and the first where
+the miscounted bucket was one I had invented five minutes earlier.
+
+### READING A NESTED SCORER FIELD AT THE ROW ROOT EMPTIES A DRAW SILENTLY (2026-08-28)
+**Problem**: A cohort sampler read `raw_weighted_average` and `stage_used` off the archive
+row root. Both are `None` on every row — they live under
+`nexus_mind_attributes.<lens>`. Every band came back empty.
+**Fix**: It **raised** instead of returning a short draw, so it cost two minutes rather than
+a corpus. That is the *make the missing case raise, never return `None`* rule paying out —
+worth recording as the rule WORKING, not only as the near miss. ⚠️ The first failure printed
+`FATAL: band 0.0-2.5 has 0 eligible` with **no denominators**, which is unactionable; the
+guard now prints the exclusion stats before it dies.
+
+### A MORE PERMISSIVE RESOLVER LAUNDERED A WRONG PATH FOR 15 DAYS (2026-08-28)
+**Problem**: `CLAUDE.md` cited ~~`ovr.news/BRAND.md`~~ (no such file). The real path is
+`ovr.news/docs/BRAND.md`. Wrong since 2026-08-13, in an always-loaded file.
+**Root cause**: The repo's own `refcheck.py` **resolved** it — rung 4 strips the sibling repo
+name and matches by *suffix*, so the basename found the real file one directory down and the
+reference reported clean. The generic extractor in `/curate`, which requires the **exact**
+path inside the sibling, caught it on the first run.
+**Fix**: Path corrected. ⭐ The keeper: **two instruments with different strictness are not
+redundant** — the looser one was silently absorbing a class of error the stricter one exists
+to find, and neither is wrong. Do not consolidate them without checking which findings die.
+⛔ **[2nd occurrence] — the first draft of THIS entry added two more unresolved references**
+(the wrong path and its bare basename, both quoted as live paths), exactly as `75f08d4` did on
+2026-08-27. **An entry about a broken reference is written in the one register that creates
+them: quoting paths as evidence.** Strike the dead one so the absence rung claims it, and
+fully qualify the live one.
+
+### A BOOTSTRAP QUANTILE IN THE FAR TAIL IS ONE ORDER STATISTIC, AND I PRINTED IT AS A DECISION (2026-08-29)
+**Problem**: To "handle multiplicity" I added a Bonferroni interval to an evidence script and
+reported that a finding **survived** it. Two independent reviewers re-ran the identical
+bootstrap across seeds: the bound's Monte-Carlo sd was ~0.014 against a reported −0.010, and
+it sat above zero in **24/30 and 408/500** replications. The published verdict was decided by
+`seed=17`.
+**Root cause**: at α=0.05/21 on 4,000 draws, each bound is `vals[4]` — the 5th smallest of
+4,000. A percentile that far into the tail is a single order statistic; the estimator has no
+resolution there. Nothing in the output said so, because a printed interval looks like an
+interval whatever its variance.
+**Fix**: removed, not recomputed. The **permutation** test (20,000 draws, stable to 4
+figures) is the multiplicity-relevant statistic, and it had been *contradicting* the
+Bonferroni line in the same file all along — p=0.0049 does not clear 0.05/21.
+⭐ **A resampling estimator has a resolution, and the correction that needs the deepest tail
+is exactly where it runs out. Before quoting a bootstrap bound, re-run it under a different
+seed** — one line, and it is the whole check.
+
+### A HAND-COUNTED CONSTANT GOVERNING A DECISION, WHERE THE QUANTITY IS DATA-DEPENDENT (2026-08-29)
+**Problem**: `N_INTERVALS = 21`, commented "every interval this script prints". It printed 15
+nominal / 22 total, and 17 on a null fixture. Three reviewers counting independently got
+three different answers, none of them 21.
+**Root cause**: the count is data-dependent **by construction** — the block emitted a
+correction line only in its non-holding branches, so the number of intervals varies with the
+result. A hand-count of one run was frozen as a property of the script.
+**Fix**: derived — every printed interval increments the family — and the arithmetic replaced
+by an explicit statement: **no family was pre-registered**, p clears 0.05 and 0.05/2 but not
+0.05/16, and *picking the family that keeps the result is not the way out*.
+⭐ **If a constant describes what the code does, the code should compute it.** The tell is a
+comment that begins "every".
+
+### I RE-INTRODUCED A TAUTOLOGICAL ASSERTION IN THE COMMIT THAT REMOVED TWO (2026-08-29)
+**Problem**: a mutation hardcoding `PROMPT_FILE = "prompt-candidate.md"` survived all 15
+tests. The assertion was `prompt_file == "prompt-candidate.md"` — and the harness only ever
+passed that one prompt.
+**Root cause**: the test was written from the *writer's* side (does the field arrive?) rather
+than from the property's side (can the two arms be told apart?). The commit message two
+paragraphs above claimed to have deleted two tautologies of exactly this shape.
+**Fix**: drive **both** prompts, hold the oracle response identical so only the prompt varies,
+and require the persisted rows to differ. Five mutations re-seeded, five caught.
+⭐ **A test that supplies only one value cannot test a distinction.** Articulating the rule in
+the same commit did not prevent it — [[feedback-articulating-is-not-applying]], again.
+
+### THE RETRACTION SWEEP STOPPED AT THE REPO BOUNDARY (2026-08-29)
+**Problem**: a wrong rule was corrected across nine repo surfaces and announced as "finished
+properly". It was still live in `~/.claude/projects/.../memory/` — the **auto-memory**, which
+loads into every session for this project, i.e. a stronger re-injection than the repo files
+that were fixed.
+**Root cause**: every sweep, including the one that found four sites "by grep rather than
+recall", was rooted at the repo. The auto-memory is not under it and was in no operand list.
+**Fix**: corrected there too. ⭐ **The always-loaded layer for this project spans TWO trees.**
+A grep whose root is the repo cannot see half of it, and reports clean.
+
+### THE SOURCE DOCUMENT DREW THE WRONG CONCLUSION FROM ITS OWN CORRECT TABLE (2026-08-29)
+**Problem**: I wrote into memory that "production scoring is gpu-server on CPU", licensing
+exactly the comparison a device term forbids. A peer session caught it; this repo had said
+"production serves on GPU" in two files the whole time.
+**Root cause**: I read an **experiment's arm label** as a description of production. Run P is
+labelled `gpu-server | CPU`: its venv is production's, its device is the study's control. And
+I did not invent it — the 2026-08-10 evidence document's own "What it means operationally"
+section says the same thing, drawn from a table that does not support it.
+**Fix**: corrected in the source document as well as the copies. ⭐ **An arm label says what
+was held fixed to isolate a term. It is not a statement about production** — and when a
+propagated error is found, the copy you are looking at may not be the origin.
+
+

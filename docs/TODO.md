@@ -52,6 +52,14 @@
          examples). Closest misses: the `|`-in-table entry (the `/review-changes` structural pre-check catches it but has
          no row), *mention is use* (the guard deliberately still counts mention). ⚠️ **This keep-rule cannot shrink the
          catalogue.** Shrinking it needs either new `live` rows (mechanize first) or a different rule. That is the owner's call.
+       - ✅ **Ruled and done 2026-10-09 (owner): date rule + recent repeats.** Entries dated before 2026-09-01 move
+         verbatim, except classes that recurred on/after 2026-09-01. **43 moved** (47.6 KB; log 106,233 → 58,949 B; 625
+         lines removed, 0 missing, mutant → 1). **11 stay**: 6 dated 09-01/02, plus pkill -f (10-02), the pgrep watcher
+         (same class), the wrong interpreter (09-28), "aged out of retention" (recurred 10-07 as "source files expired"),
+         the wrong-population precision bar (recurred 10-09 as the trigger comparing two populations).
+       - ✅ **Owner also ruled: mechanize the top recurring class.** `scripts/hooks/block_pattern_kill.py`, a PreToolUse
+         hook in the new `.claude/settings.json`, refuses `pkill -f` / `pgrep -f` in command position. Live row in
+         § *Mechanized*. Undo: delete `.claude/settings.json`.
      - d. ✅ session-log rotated (above). **Next: `corroboration-feature-hypotheses.md` (79 KB) and `working-rules.md`
        (65 KB)**. Retire closed rows verbatim into `memory/archive/`. Also the hypothesis ledger (50 KB): move CLOSED rows
        into `memory/archive/hypothesis-ledger-archive.md`.
