@@ -5,6 +5,13 @@
 *A bare "continue" means this list, top down. Each line names the FIRST action. Item 0 is WAITING (dated) and items
 2b/4b are done, so a bare "continue" before 2026-10-23 starts at item 2 (the read surface, ▶ lines).*
 
+⏭ **FIRST, the 2026-10-09 close that was cut off by a usage limit:** review round 1 (6 lenses) fixed and
+committed (`235b1a1`); round 2 reachability = all REACHABLE; round 2 ADVERSARIAL's result was never read, so re-run
+one adversarial lens on `git diff 483c450..235b1a1`. Then `/curate` (session file, index rotation), post progress on
+LD#163 (read surface: today ~64.6 KB moved, not 108) and LD#134 (docs-live 231 → 168, new uncommitted marker), and
+the review-profile suite baseline (measured 2026-10-09: 1323 passed, 24 skipped). Small: the CLI's "NO REPO ID"
+message for a missing version dir; the hook silently off when `CLAUDE_PROJECT_DIR` is unset.
+
 0. ⏸ **BELONGING v3 is LIVE (since NexusMind run `bd00dad6`, 2026-10-09 00:08–01:24 CEST), replacing v1. Nothing to do before
    2026-10-23 unless ovr.news messages.** Read `filters/belonging/v3/STATUS.md` first (evidence, rollback rule, refit notes);
    history in `docs/evidence/2026-10-08-belonging-candidate2-plan/PLAN.md`; all three held-out sets are SPENT. Measured first
@@ -117,7 +124,7 @@
      ✅ **Non-basename pass done 2026-10-09 (owner: "the 75"):** 45 live references dispositioned by hand in 23
      files: placeholder for class names and upstream/private paths, strike for removed/never-committed files,
      repo prefix where the context names the repo. `--docs-live` 214 → **168**, 0 live non-basename findings
-     left, default 0, run.sh 47/47. Three of my markers were wrong (COVERS NO PATH) and were fixed.
+     left, default 0, run.sh 47/47 then (48/48 after the close review). Three of my markers were wrong (COVERS NO PATH) and were fixed.
      ▶ **Left:** 118 bare basenames (rule-level question: most are run outputs) and the ~51 findings inside the
      two verbatim archives (`docs/TODO-archive.md`, `docs/CONTRACTS_PLAN-rounds-archive.md`). Those are a TIER
      question, not a marking one: the archives sit in the live tier because they live in `docs/` root.
