@@ -727,7 +727,7 @@ priority was framed to me.
 > fractional digits, so **every one of the 21,441 naive rows also differs from its
 > canonical form.** Shapes: 21,441 naive / 405 canonical `Z` / 79 offset. Anything
 > reasoning from "79 rows" is off by two orders of magnitude. Population taken from the
-> shipped dry run (`scripts/backfill-published-date-tz.ts`, rows where
+> shipped dry run (`ovr.news/scripts/backfill-published-date-tz.ts`, rows where
 > `canonicalizePublishedDate(x) !== x`), **not hand-built.**
 >
 > **(b) ⛔ "The backfill's value increases with delay" DOES NOT HOLD. The naive
@@ -799,7 +799,7 @@ priority was framed to me.
 > **cannot reach these sites even hypothetically.**
 >
 > ⚠️ **The one real task that came out of this, and it is NOT an argument for the
-> backfill:** `tests/published-date-write-boundary.test.ts:52-53` asserts in its header
+> backfill:** `ovr.news/tests/published-date-write-boundary.test.ts:52-53` asserts in its header
 > that *"every naive value has none"* (no fractional part) and that a naive
 > `…T13:32:48.5` is a shape *"no producer emits today."* **That is false — 313 naive rows
 > in the corpus carry a fraction**, and it is the one shape that genuinely **can** invert
@@ -809,7 +809,7 @@ priority was framed to me.
 > follow-up.
 >
 > Also resolved: **the write-boundary integration test EXISTS AND IS GREEN**
-> (`tests/published-date-write-boundary.test.ts`, `5ab2dda`) — real `upsertArticle`, read
+> (`ovr.news/tests/published-date-write-boundary.test.ts`, `5ab2dda`) — real `upsertArticle`, read
 > back through both the production `ORDER BY` and the imported `pruneToMostRecentArticles`,
 > covering naive/`Z`/`+00:00`/`+02:00`/`-05:00`/`+0200`, with a positive control asserting
 > the raw shapes really do sort wrongly. It **was** the prerequisite and it is satisfied;

@@ -108,6 +108,12 @@
      A refit would be a NexusMind deploy for a 0.0006-wide band. `test_normalization_op_point.py` reads only
      `base_scorer.py`, which is why it never saw this.
    - LD#134 step 3, the marking pass (`docs/decisions/2026-09-17-refcheck-docs-tier.md`).
+     **Started 2026-10-09:** the mechanical slice. `--docs-live` 231 → **214** unique, 0 new findings, default scan
+     still 0: unqualified sibling paths that exist in exactly ONE sibling got the repo prefix, in 9 live docs. NOT
+     touched: `docs/TODO-archive.md` and `docs/CONTRACTS_PLAN-rounds-archive.md` (verbatim archives; their ~20 such
+     refs stay), and one command run from inside the NexusMind checkout. The rest is judgement, classified then:
+     115 bare basenames, 48 paths found nowhere, 12 collisions, 10 sibling-prefixed but gone, 5 in several siblings.
+     Open owner question from the record: the disposition for deliberately-uncommitted artefacts (#97).
    - ✅ The retracted 19.9%/13.0% framing — **closed 2026-10-07:** already gone from `CLAUDE.md`; the 3 remaining copies
      (`docs/HUMAN_THRIVING_V8_PLAN.md`, `memory/cross-repo-prioritization.md` ×2) now carry the retraction beside them.
    - ✅ LD#160 **done 2026-10-07** as ruled: ADR-009 dated note (no rewrite); `cross_filter_landscape.py` renamed to

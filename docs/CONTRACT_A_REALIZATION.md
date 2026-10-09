@@ -398,7 +398,7 @@ them in.
 
    ⭐ **`source_group` is not merely undeclared — it is the production contract check's
    ONLY NON-CIRCULAR ACCEPTANCE CONTROL**, and that was already written down: NM#304,
-   `contracts/CHANGELOG.md` 1.18.0, guarded by a pre-existing test I had not read
+   `NexusMind/contracts/CHANGELOG.md` 1.18.0, guarded by a pre-existing test I had not read
    (`tests/unit/test_contracts.py:178`, `test_source_group_is_deliberately_still_undeclared`),
    which failed by design the moment NexusMind tried it. An independent field
    **that the check was never shown** — and therefore the only evidence the check

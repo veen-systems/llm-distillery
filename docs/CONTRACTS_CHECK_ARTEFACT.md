@@ -75,7 +75,7 @@ ambiguity.
 ## Path, ownership, mode — a hard constraint, not a preference
 
 ⚠️ **The reader runs inside a systemd mount namespace**
-(`ops/pipeline-atlas-refresh.service`): `ProtectSystem=strict`,
+(`pipeline-atlas/ops/pipeline-atlas-refresh.service`): `ProtectSystem=strict`,
 `ProtectHome=tmpfs`, `PrivateTmp=yes`, and `BindReadOnlyPaths=` exactly three
 sibling roots — NexusMind, FluxusSource, ovr.news. Inside it, `/var/lib`, `/run`,
 `/srv`, `/tmp` and `$HOME` **do not exist**.
@@ -261,7 +261,7 @@ compares bytes against a schema:
   subtracts NexusMind's own stamps to reconstruct producer output. Add a stamp
   without extending the strip and the check reports `additionalProperties` violations
   **against the producer, for keys the producer never emitted: a false red pointing at
-  the wrong repo.** The mirror of the frozenset class. *(`validate/validate_contract_a.py`
+  the wrong repo.** The mirror of the frozenset class. *(`NexusMind/validate/validate_contract_a.py`
   reads the producer's directory directly and carries no such dependency — which is
   the strongest argument for scheduling that one instead.)*
 

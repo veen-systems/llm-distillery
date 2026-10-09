@@ -76,7 +76,7 @@ Pre-req: `ssh sadalsuud true && ssh gpu-server true` both succeed.
    # minimally: construct the v4 scorer + score the canonical article, expect wa>=4.0
    '
    ```
-   Then run the deploy smoke test (`deploy/smoke_test_articles.jsonl` has the Yellowstone
+   Then run the deploy smoke test (`NexusMind/deploy/smoke_test_articles.jsonl` has the Yellowstone
    wolves article, `min_weighted_average: 4.0`).
 5. **Restart + health:** confirm `/health` healthy, v4 in discovered list, "Model
    validation passed: all N filters have weights" (guards the investment-risk-class

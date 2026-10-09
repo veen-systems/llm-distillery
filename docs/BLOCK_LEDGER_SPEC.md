@@ -15,7 +15,7 @@ live — while entries dated 08-25 and 08-26 further down already assumed it was
 **13:05**: exit 0 over 168,486 rows, every mechanism reconciling against that cycle's own
 journal counters. The offline proof below is kept as the pre-deploy evidence it was.
 
-`src/archiving/block_ledger.py` + wiring in `scripts/main.py`. **Write-only: no admission
+`NexusMind/src/archiving/block_ledger.py` + wiring in `NexusMind/scripts/main.py`. **Write-only: no admission
 decision changes.** Rollback = `pipeline.block_ledger.enabled: false`.
 Verify **from the NexusMind checkout** with `python3 scripts/verify_block_ledger.py` — the script lives there, not in this repo.
 
@@ -24,7 +24,7 @@ six filter loops): **428 unique blocked articles**, 404 carrying full content, e
 `placements: 6`, and the placement tallies reconcile exactly —
 `commerce 1,698 = 283 × 6`, `obituary 330 = 55 × 6`, `too_old 396 = 66 × 6`,
 `duplicate_title 144 = 24 × 6`. All 428 rows validate against
-`contracts/article-record.schema.json` v0.3.0, with a negative control proving the schema is
+`NexusMind/contracts/article-record.schema.json` v0.3.0, with a negative control proving the schema is
 not merely permissive.
 
 **Three deliberate deviations from §3 below, each with its reason:**
@@ -79,7 +79,7 @@ was scored there either — `shuffle_input` plus `max_items_per_filter` decides 
 separately, and neither of these two was ever scored by any lens.
 
 ⚠️ **`placements` becomes 5, not 6, from 2026-08-25** — `investment_risk` is paused.
-`scripts/verify_block_ledger.py` prints the histogram and asserts nothing about it, so
+`NexusMind/scripts/verify_block_ledger.py` prints the histogram and asserts nothing about it, so
 this changes no check; anything downstream that hard-codes 6 is now wrong.
 
 ⚠️ **What a blocked row structurally cannot tell you.** §3 wants every gate's verdict so that

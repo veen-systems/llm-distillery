@@ -73,7 +73,7 @@ Gate-Module Contract does not reach it.** Signals are recorded here as the excep
    in code, not prose: `tests/unit/test_harm_preprocessor.py::test_the_declared_harm_shape_carries_no_verdict`
    (NexusMind), which goes red when a `verdict` member or a boolean `_harm_*` appears.
 2. **A signal is declared under `nexusmind.signals.*`, never `nexusmind.gates.*`**
-   (`contracts/article-record.schema.json` 0.7.0). The filing location is the assertion.
+   (`NexusMind/contracts/article-record.schema.json` 0.7.0). The filing location is the assertion.
 3. **Consumption is per-lens, config-gated, and must CAP rather than DROP.** One cap per lens
    per concern, in that lens's own `config.yaml`.
    ⛔ **This is the carve-out to clause 2 of the Decision, stated here so the two do not
@@ -91,7 +91,7 @@ Gate-Module Contract does not reach it.** Signals are recorded here as the excep
    threshold as applied.
    **A lens that consumes a signal MUST record its EVALUATION, not merely its firing**, and
    MUST do so by `$ref`-ing the existing `$defs.gate_verdict` in
-   `contracts/article-record.schema.json` rather than minting a fourth vocabulary. That
+   `NexusMind/contracts/article-record.schema.json` rather than minting a fourth vocabulary. That
    definition already carries exactly the members this needs, with `score`, `verdict`,
    `model`, `enforced` and `stamped` required and `threshold` declared:
    - `stamped` — whether the lens evaluated this row at all;
@@ -232,7 +232,7 @@ Concretely, each gate module MUST provide:
    (bool at the deployed op-point), `_<detector>_model` (version string).
    Stamps are always written, enforced or not.
 2. **One enforcement point**: the central load/dedup gate in
-   `scripts/main.py`, gated by `pipeline.<detector>.enforce` — never a drop
+   `NexusMind/scripts/main.py`, gated by `pipeline.<detector>.enforce` — never a drop
    inside the detector, never a consumer-side drop.
 3. **Uniform accounting**: one skip counter per detector in the Loaded log
    line (`… 5415 commerce, 1249 obituary, …`).

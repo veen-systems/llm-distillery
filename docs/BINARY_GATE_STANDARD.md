@@ -37,11 +37,11 @@ All three are the same machine and the same contract:
 | `oracle.py` + `prompt.md` in package | ✗ | ✗ (prompt embedded in a validation script) | **✓** |
 | `calibration_report.json` | ✗ (`training/backtest_results*.json`) | ✓ per version | ✓ |
 | panel/validation tooling | `docs/compare_commerce.py` | **✓ `validation/panel_audit*.py`** | ✗ |
-| pipeline stage | `src/preprocessing/commerce.py` | `src/preprocessing/obituary.py` | **`scripts/main.py`, two inline methods** |
+| pipeline stage | `NexusMind/src/preprocessing/commerce.py` | `NexusMind/src/preprocessing/obituary.py` | **`NexusMind/scripts/main.py`, two inline methods** |
 | drop point | `_is_duplicate` load gate | `_is_duplicate` load gate | **`_enforce_violence_promotion()`** |
 | **saves what it blocks** | ✗ (`save_blocked: true` is **inert**) | ✗ | **✓ `data/prefiltered_out/violence_promotion/`** |
 
-⚠️ **`commerce_prefilter` runs v1 in production DELIBERATELY.** `src/preprocessing/commerce.py`
+⚠️ **`commerce_prefilter` runs v1 in production DELIBERATELY.** `NexusMind/src/preprocessing/commerce.py`
 imports `commerce_prefilter.v1.inference.CommercePrefilterSLM` and stamps `_commerce_model: v1`.
 v2 exists in both repos and was cut over once **on 190-sample test-set parity alone**; the
 Phase-5 shadow comparison that `V2_DESIGN.md` required was never run until later, and when it
@@ -54,7 +54,7 @@ validated. Either roll back to v1 or retrain v2 on representative production tra
 - ⭐ **The drop-point split is load-bearing, and correctly documented.** `_is_duplicate` runs inside
   `load_articles`, which `_run_shared_dedup` calls **before** violence stamping — so a check there
   is a no-op for violence. Commerce and obituary work there only because their preprocessors
-  rewrite the input JSONL earlier in the run. `scripts/main.py:1115` warns against "restoring" a
+  rewrite the input JSONL earlier in the run. `NexusMind/scripts/main.py:1115` warns against "restoring" a
   check without moving the stamping. **The cause is ORDERING, not design.**
 - **The `enforce`-default split is deliberate**: commerce has enforced unconditionally since
   ADR-004, so a missing key must preserve enforcement; the other two were opt-in after a shadow

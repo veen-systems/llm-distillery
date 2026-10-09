@@ -40,7 +40,7 @@ argument is made on, and the ledger by construction never holds it.
 
 Aegis is dormant, so the filter and its export are off. **PAUSED ≠ REMOVED** — the
 package, Hub repo, Contract C and 251 days of archives all stay. Un-pausing is
-**three** files, not two: the missing `deploy/smoke_test_articles.jsonl` row failed
+**three** files, not two: the missing `NexusMind/deploy/smoke_test_articles.jsonl` row failed
 the fail-closed deploy gate and cost a production cycle.
 
 ### 2026-08-14: The Contract A Envelope

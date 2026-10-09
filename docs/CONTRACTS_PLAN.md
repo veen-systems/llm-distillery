@@ -514,7 +514,7 @@ than leaving it naive. *"Add an offset" reads like a one-liner and is not.*
 | W2.2 | Declare `source_group` (+ decide `eval_query`) | Arrives tonight; NM#304 argues `eval_query` should stay failing since ADR-007 retires the eval arms — **that is a decision to record, not an omission** |
 | W2.3 | Declare the 34 undeclared metadata keys, with status | Principle 1. Include "declared, no known consumer" as an explicit status |
 | 🔨 **W2.4 BUILT, NOT MERGED** (`b8a191c`, NM#357, branch `fix/357-…`) — see round 2 | Fix `validate_production_contract.py`'s grouping + labelling | It counts **errors, not rows**, and merges distinct `required` failures into one line — which hid the `priority` defect for five days. No baseline file exists, so zero migration cost. **Must land with a test**: one row missing two required properties → two distinct groups |
-| W2.5 | Record Contract B's top-level-openness tradeoff | Deliberate-by-policy, defended nowhere in `contracts/CHANGELOG.md`, and it means **B structurally cannot detect a `source_group`-class event**. May well be the right call for B — but it should be a written decision |
+| W2.5 | Record Contract B's top-level-openness tradeoff | Deliberate-by-policy, defended nowhere in `NexusMind/contracts/CHANGELOG.md`, and it means **B structurally cannot detect a `source_group`-class event**. May well be the right call for B — but it should be a written decision |
 | W2.6 | Land the four NM#304 additions | priority ceiling is 10 not 9; `priority`-absent at 928; `source_group`; the `_get_priority` collision |
 
 ✅ **RETRACTED in review round 1 — draft 1 claimed `_get_priority` made this the
