@@ -429,7 +429,9 @@ def check_weights_backed_up(filter_dir: Path) -> list[str]:
     adapter = filter_dir / "model" / _ADAPTER_NAME
     # Review 2026-10-09: a git-LFS pointer or other stub passed `size > 0`, and guard D
     # would then call it a MISMATCH and advise re-uploading it over the real Hub copy.
-    # Every real LoRA adapter here is ~52 MB (smallest measured 52,254,448 B).
+    # Not from this repo's git (no .gitattributes, model/ is gitignored): the route is a
+    # `git clone` of a Hub repo on a machine without git-lfs. Floor and measured sizes:
+    # MIN_ADAPTER_BYTES in check_adapter_matches_hub.py (a test pins the two equal).
     if adapter.is_file() and 0 < adapter.stat().st_size < _MIN_ADAPTER_BYTES:
         _fail(
             f"{adapter} is only {adapter.stat().st_size} bytes — a git-LFS pointer or a stub,\n"
@@ -493,6 +495,21 @@ def check_weights_channel(
         _fail(
             f"no local {_ADAPTER_NAME} for {filter_name}/{version}, so there is nothing to\n"
             "  compare with the Hub. Guard E reports the same absence with its remedy."
+        )
+    size = (filter_dir / "model" / _ADAPTER_NAME).stat().st_size
+    if size == 0:
+        _fail(
+            f"{filter_name}/{version}'s local {_ADAPTER_NAME} is EMPTY, so it was NOT compared\n"
+            "  with the Hub. Re-download the Hub copy; never re-upload this file. Guard E\n"
+            "  reports the same empty file."
+        )
+    if size < _MIN_ADAPTER_BYTES:
+        # Review round 2, 2026-10-09: hashing a stub reported a MISMATCH whose remedy is
+        # "re-upload", in the same run where guard E says "never re-upload it".
+        _fail(
+            f"{filter_name}/{version}'s local {_ADAPTER_NAME} is only {size} bytes — a git-LFS\n"
+            "  pointer or a stub, so it was NOT compared with the Hub. Re-download the Hub copy;\n"
+            "  never re-upload this file. Guard E reports the same stub."
         )
 
     if (filter_dir / "NO_HUB").exists():

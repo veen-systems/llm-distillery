@@ -16,8 +16,9 @@ exactly as stage.py's `hub_repo_id()` reads it — never derived from the direct
 which uses underscores where the Hub repos use hyphens (cultural_discovery, human_thriving,
 nature_recovery: review 2026-10-09).
 
-Exit 0 = match (or `NO_HUB`: nothing to compare), 1 = mismatch or missing adapter,
-2 = could not ask the Hub, or the package names no repo id.
+Exit 0 = match (or `NO_HUB` with an adapter present: nothing to compare), 1 = mismatch,
+or a missing / stub (< 1 MB, e.g. a git-LFS pointer) adapter, 2 = no such package, could
+not ask the Hub, or the package names no repo id.
 `--local PATH` compares another file (used by the negative control in the tests).
 Token: `HF_TOKEN` from the environment first, then `config/credentials/secrets.ini`.
 """
@@ -31,6 +32,12 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 ADAPTER = "adapter_model.safetensors"
+# Every real LoRA adapter here is ~52 MB (11 on disk, 52,254,448–52,263,664 B, measured
+# 2026-10-09: `find filters -name adapter_model.safetensors -printf '%s\n' | sort -n`).
+# Below this it is a stub, e.g. a git-LFS pointer from cloning a Hub repo without git-lfs,
+# and hashing it would report a MISMATCH whose advice (re-upload) replaces the real Hub copy. Guard E in preflight_deploy_guards.py uses the
+# same floor (a test pins them equal).
+MIN_ADAPTER_BYTES = 1_000_000
 
 
 def sha256(path: Path) -> str:
@@ -84,6 +91,19 @@ def main(argv=None) -> int:
 
     filter_dir = ROOT / "filters" / args.name / args.version
     local = args.local or filter_dir / "model" / ADAPTER
+    if not args.local and not filter_dir.is_dir():
+        print(f"NO PACKAGE: {filter_dir} does not exist")
+        return 2
+    # Before NO_HUB (review round 2, 2026-10-09): a NO_HUB version's local file is the ONLY
+    # copy staging can serve, so its absence is the worst case, not "nothing to compare".
+    if not local.is_file():
+        print(f"MISSING: {local} — NexusMind's image staging reads the adapter from this checkout")
+        return 1
+    size = local.stat().st_size
+    if size < MIN_ADAPTER_BYTES:
+        print(f"STUB: {local} is only {size} bytes — a git-LFS pointer or a stub, not an adapter.\n"
+              "  Re-download it from the Hub; never re-upload it, which would replace the real Hub copy.")
+        return 1
     if not args.repo_id and (filter_dir / "NO_HUB").exists():
         print(f"NO_HUB: {args.name}/{args.version} has no Hub copy to compare (staging records its sha256)")
         return 0
@@ -92,9 +112,6 @@ def main(argv=None) -> int:
         print(f"NO REPO ID: {filter_dir}/inference_hub.py names no `repo_id: str = \"...\"` and there is "
               "no NO_HUB file. NexusMind's staging would stage a local adapter UNCHECKED.")
         return 2
-    if not local.is_file():
-        print(f"MISSING: {local} — NexusMind's image staging reads the adapter from this checkout")
-        return 1
     try:
         hub = hub_sha256(repo_id, token_from_secrets())
     except Exception as e:  # network, auth, 404 for a private repo the token cannot see

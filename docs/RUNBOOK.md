@@ -42,15 +42,18 @@ Eight checks: imports match dir version, `repo_id` matches dir version, `config.
 `last_modified` ≥ local `model/adapter_model.safetensors` <!-- placeholder --> mtime. Catches the
 v_new-config × v_old-weights class (#44).
 
-Then, because staging uses this checkout's adapter when present and compares BYTES with the Hub (the
-freshness check above compares only times). The Hub repo comes from the package's `inference_hub.py`:
+Then compare bytes: staging uses this checkout's adapter when present and refuses it if its BYTES
+differ from the Hub copy, and the freshness check above compares only times. The Hub repo comes from
+the package's `inference_hub.py`:
 
 ```bash
 .venv/bin/python3 scripts/deployment/check_adapter_matches_hub.py {name} v{N}
-# 0 MATCH · 1 MISMATCH or adapter missing here · 2 could not ask the Hub (never a pass)
+# 0 MATCH (or NO_HUB with an adapter here) · 1 MISMATCH, adapter missing, or a < 1 MB stub (LFS pointer)
+# · 2 no such package, no repo id, or could not ask the Hub (never a pass)
 ```
 
-Not for `NO_HUB` versions (uplifting v7): staging records their sha256 and has nothing to compare it to.
+For `NO_HUB` versions (uplifting v7) there is no Hub copy to compare: staging records their sha256. The
+command still checks that the adapter is present and not a stub (exit 1 otherwise), since it is the only copy.
 
 ### 2. Upload to HuggingFace Hub
 

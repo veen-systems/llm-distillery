@@ -42,6 +42,38 @@ BLOCK = [
     "/usr/bin/pgrep -f x",
     "if true; then :; elif pgrep -f x; then :; fi",
     "{ pkill -f x; }",
+    # review round 2, 2026-10-09: wrapper options that take values, and `-lc`
+    "env -i pgrep -f x",
+    "nice -n 10 pkill -f x",
+    "timeout -s KILL 5 pgrep -f x",
+    "bash -lc 'pgrep -f x'",
+    "sudo bash -c 'pkill -f x'",
+    "watch -n1 'pgrep -f x'",
+    "watch -n 1 'pgrep -af x'",
+    "ssh host 'cd /x && pkill -f y'",
+    "ssh host bash -lc 'pgrep -f x'",
+    # review round 3, 2026-10-09: blocked at HEAD, lost by the round-2 regex
+    "su -c 'pkill -f x'",
+    "su root -c 'pkill -f x'",
+    "docker exec c sh -c 'pgrep -f x'",
+    "sshpass -p x ssh host 'pkill -f x'",
+    "flock /tmp/l -c 'pkill -f x'",
+    # ... and missed by HEAD too
+    "time -p pgrep -f x",
+    "exec -a name pkill -f x",
+    "setsid pkill -f x",
+    "stdbuf -oL pgrep -f x",
+    "ionice -c3 pkill -f x",
+    "chrt 1 pkill -f x",
+    "systemd-run --user pkill -f x",
+    "runuser -u x -- pkill -f y",
+    "flock /tmp/l pkill -f x",
+    "docker exec -it c pgrep -f x",
+    'ssh -t host "bash -lc \'pgrep -f x\'"',
+    'echo "$(pgrep -f x)"',
+    "bash -o pipefail -c 'pgrep -f x'",
+    "pgrep -f x \\",                                    # trailing backslash: shlex raises (fuzz)
+    "ssh host 'pkill -f x",                             # unbalanced quote
 ]
 
 PASS = [
@@ -55,6 +87,17 @@ PASS = [
     # 2026-10-09: a backtick trigger blocked the heredoc writing this hook's own table row
     "python3 - <<'EOF'\nrow = '| `pkill -f` / `pgrep -f` matches its own shell |'\nEOF",
     "systemctl list-units 'nexusmind*' --all",
+    # review round 2, 2026-10-09: the loosened ssh branch matched mid-sentence
+    'git commit -m "never ssh in and run pgrep -f"',
+    'gh issue comment 1 --body "ssh sadalsuud and pkill -f the scorer"',
+    "echo run bash -c pgrep -f later",
+    "python3 -c 'print(1)'",
+    # review round 3, 2026-10-09: a quoted separator no longer starts a command
+    'git commit -m "first line; pkill -f was the trap"',
+    'gh issue create --body "then pkill -f the thing"',
+    "bash script.sh -f",
+    "su",
+    "ssh host",
     "",
 ]
 
@@ -75,6 +118,19 @@ def test_blocks(command):
 def test_passes(command):
     r = run(command)
     assert r.returncode == 0, (command, r.stderr)
+
+
+@pytest.mark.parametrize("unit", ["ssh h ", "ssh h\n", "watch -n1 ", "env -i ",
+                                  "sudo -u x env -i nice -n 1 ", "bash -c "])
+def test_no_catastrophic_backtracking(unit):
+    """Review round 3, 2026-10-09: the round-2 regex took 13 s on 25 x `ssh h ` and 61 s
+    on 25 x the sudo/env/nice chain; this hook runs before every Bash call."""
+    payload = json.dumps({"tool_name": "Bash", "tool_input": {"command": unit * 2000}})
+    try:  # a subprocess, so a regression fails here instead of hanging the suite
+        subprocess.run([sys.executable, str(HOOK)], input=payload, capture_output=True,
+                       text=True, timeout=5)
+    except subprocess.TimeoutExpired:
+        pytest.fail(f"hook took > 5 s on 2000 x {unit!r}")
 
 
 def test_malformed_input_does_not_block():

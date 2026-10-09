@@ -5,20 +5,18 @@
 *A bare "continue" means this list, top down. Each line names the FIRST action. Item 0 is WAITING (dated) and items
 2b/4b are done, so a bare "continue" before 2026-10-23 starts at item 2 (the read surface, ▶ lines).*
 
-⏭ **FIRST, the 2026-10-09 close that was cut off by a usage limit:** review round 1 (6 lenses) fixed and
-committed (`235b1a1`); round 2 reachability = all REACHABLE; round 2 adversarial = 3 WARNINGS, 0 blockers, NOT yet
-fixed (its full report: this session's transcript). Fix, then re-run the battery:
-(a) hook: the loosened `ssh` branch is not anchored to command position, so mid-sentence mentions now BLOCK
-(`git commit -m "never ssh in and run <pg> -f"`, `gh issue comment --body "..."`); also misses `env -i`, `nice -n 10`,
-`timeout -s KILL 5`, `bash -lc`, `watch -n1 '...'`. Fix: anchor `ssh` at command position; let wrapper flags take
-values; allow `-\w*c`. (b) guards D/E: an LFS-pointer stub gets guard E "never re-upload" AND guard D "re-upload it"
-in the same run; the CLI has no size floor. Fix: stub check before hashing in `check_weights_channel` and the CLI.
-(c) CLI: NO_HUB with NO adapter exits 0 (stage.py errors); move the missing-adapter check above NO_HUB and give
-`test_no_hub_package_exits_0_without_asking` an adapter. Notes: RUNBOOK ~line 45 is a broken sentence fragment;
-"59,745 B as committed" should name `483c450`. Then `/curate` (session file, index rotation), post progress on
-LD#163 (read surface: today ~64.6 KB moved, not 108) and LD#134 (docs-live 231 → 168, new uncommitted marker), and
-the review-profile suite baseline (measured 2026-10-09: 1323 passed, 24 skipped). Small: the CLI's "NO REPO ID"
-message for a missing version dir; the hook silently off when `CLAUDE_PROJECT_DIR` is unset.
+⏭ **FIRST, finish the 2026-10-09 close** (cut off by a usage limit, resumed the same day). ✅ Done: round 2's 3
+warnings fixed, and a round 3 run on the fixes (adversarial, guarantee+doc, reachability+claims): 1 BLOCKER (the round-2
+hook regex backtracked exponentially: 13 s on 25 × `ssh h `) + 4 warnings, all fixed. The hook is now a `shlex`
+TOKENIZER (`scripts/hooks/block_pattern_kill.py`), not a regex; guard D and `check_adapter_matches_hub.py` refuse an
+empty/stub (< 1 MB) adapter before hashing, so they never advise re-uploading one; the CLI checks a missing adapter
+before `NO_HUB` and says NO PACKAGE for a missing version dir. Suite 1374 passed / 24 skipped (`.venv/bin/python`).
+⚠️ **The tokenizer rewrite has had NO independent review** (the two-round cap was already spent; round 3 ran because
+round 2 found the stub class again). Tests: 83 in its file, 6 mutants caught, the round-2 regex seeded red, 60,000
+fuzz inputs with 0 exceptions. Owner: one fresh adversarial pass on that file alone, or accept. Still open from the
+close: `/curate` (session file, index rotation), progress posts on LD#163 (the read surface: ~64.6 KB moved today,
+not 108) and LD#134 (refcheck docs tier: docs-live 231 → 168, new uncommitted marker), the review-profile suite
+baseline line (now 1374 / 24). Small: the hook is silently off when `CLAUDE_PROJECT_DIR` is unset.
 
 0. ⏸ **BELONGING v3 is LIVE (since NexusMind run `bd00dad6`, 2026-10-09 00:08–01:24 CEST), replacing v1. Nothing to do before
    2026-10-23 unless ovr.news messages.** Read `filters/belonging/v3/STATUS.md` first (evidence, rollback rule, refit notes);
@@ -68,7 +66,7 @@ message for a missing version dir; the hook silently off when `CLAUDE_PROJECT_DI
          no row), *mention is use* (the guard deliberately still counts mention). ⚠️ **This keep-rule cannot shrink the
          catalogue.** Shrinking it needs either new `live` rows (mechanize first) or a different rule. That is the owner's call.
        - ✅ **Ruled and done 2026-10-09 (owner): date rule + recent repeats.** Entries dated before 2026-09-01 move
-         verbatim, except classes that recurred on/after 2026-09-01. **43 moved** (47.6 KB; log 106,233 → 59,745 B as committed (58,949 before the Mechanized row); 625
+         verbatim, except classes that recurred on/after 2026-09-01. **43 moved** (47.6 KB; log 106,233 → 59,745 B as committed in `d742873` (58,949 before the Mechanized row; 61,817 B after `235b1a1`); 625
          lines removed, 0 missing, mutant → 1). **11 stay**: 6 dated 09-01/02, plus pkill -f (10-02), the pgrep watcher
          (same class), the wrong interpreter (09-28), "aged out of retention" (recurred 10-07 as "source files expired"),
          the wrong-population precision bar (recurred 10-09 as the trigger comparing two populations).

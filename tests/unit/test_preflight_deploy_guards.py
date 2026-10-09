@@ -339,10 +339,13 @@ def test_repo_manifest_scope_is_valid():
 # (FILTER_PLAYBOOK item 5, #67); that probe and its tests are in git history.
 
 
+WEIGHTS = b"w" * 1_000_000  # at the stub floor: the smallest size guard D will hash
+
+
 def _pkg(tmp_path, repo_id="jeergrvgreg/demo-filter-v3"):
     """A package dir with an adapter and (unless None) an inference_hub.py repo_id."""
     (tmp_path / "model").mkdir(exist_ok=True)
-    (tmp_path / "model" / "adapter_model.safetensors").write_bytes(b"w")
+    (tmp_path / "model" / "adapter_model.safetensors").write_bytes(WEIGHTS)
     if repo_id is not None:
         (tmp_path / "inference_hub.py").write_text(f'    repo_id: str = "{repo_id}"\n')
     return tmp_path
@@ -427,12 +430,12 @@ def test_default_probe_reads_the_repo_id_from_the_package(tmp_path, monkeypatch)
 
     def hub(repo, tok):
         seen["repo"] = repo
-        return hashlib.sha256(b"w").hexdigest()
+        return hashlib.sha256(WEIGHTS).hexdigest()
 
     monkeypatch.setattr(cam, "hub_sha256", hub)
     monkeypatch.setattr(cam, "token_from_secrets", lambda: None)
     assert check_weights_channel("human_thriving", "v9", pkg) == [
-        f"adapter matches its Hub copy for human_thriving/v9 ({hashlib.sha256(b'w').hexdigest()[:12]})"
+        f"adapter matches its Hub copy for human_thriving/v9 ({hashlib.sha256(WEIGHTS).hexdigest()[:12]})"
     ]
     assert seen["repo"] == "jeergrvgreg/human-thriving-filter-v9"
 
@@ -455,6 +458,28 @@ def test_no_repo_id_and_no_NO_HUB_fails_closed(tmp_path, monkeypatch):
     monkeypatch.setattr(cam, "hub_sha256", lambda r, t: pytest.fail("Hub must not be asked"))
     with pytest.raises(GuardFailure, match="names no `repo_id"):
         check_weights_channel("demo", "v3", _pkg(tmp_path, repo_id=None))
+
+
+def test_stub_adapter_is_never_called_a_mismatch(tmp_path):
+    """Review round 2, 2026-10-09: an LFS pointer got guard E's "never re-upload" AND
+    guard D's "re-upload it" in the same run. D must refuse it before probing."""
+    pkg = _pkg(tmp_path)
+    (pkg / "model" / "adapter_model.safetensors").write_text(
+        "version https://git-lfs.github.com/spec/v1\noid sha256:abc\nsize 52254448\n")
+    with pytest.raises(GuardFailure) as exc:
+        check_weights_channel("f", "v2", pkg, probe=lambda *a: pytest.fail("must not probe"))
+    msg = str(exc.value)
+    assert "never re-upload" in msg and "DIFFERS" not in msg and "upload_to_huggingface" not in msg
+
+
+def test_empty_adapter_is_called_empty_by_guard_D_too(tmp_path):
+    """Review round 3, 2026-10-09: D called a 0-byte file "a git-LFS pointer or a stub"
+    and said guard E reports the same stub, while E says EMPTY."""
+    pkg = _pkg(tmp_path)
+    (pkg / "model" / "adapter_model.safetensors").write_bytes(b"")
+    with pytest.raises(GuardFailure, match="is EMPTY") as exc:
+        check_weights_channel("f", "v2", pkg, probe=lambda *a: pytest.fail("must not probe"))
+    assert "never re-upload" in str(exc.value)
 
 
 def test_missing_adapter_is_a_guard_failure_not_a_traceback(tmp_path):
