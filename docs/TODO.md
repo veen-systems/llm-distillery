@@ -12,7 +12,7 @@ TOKENIZER (`scripts/hooks/block_pattern_kill.py`), not a regex; guard D and `che
 empty/stub (< 1 MB) adapter before hashing, so they never advise re-uploading one; the CLI checks a missing adapter
 before `NO_HUB` and says NO PACKAGE for a missing version dir. Suite 1374 passed / 24 skipped (`.venv/bin/python`).
 ✅ **Round 4 (owner-granted exception to the cap): one adversarial pass on the tokenizer alone** found 2 BLOCKERS (a `\`-newline line continuation split a command, so a wrapped `ssh -o ... \` line slipped through; it was a regression vs the regex) and regressions/false blocks (`function`/`coproc`, `2>/dev/null` as a separator, wrong value letters for `xargs -i`/`sshpass -e`/`watch -d`, the `"$(cat <<'EOF' ...)"` commit idiom). All fixed: 106 tests, 9 more mutants caught, 60,000 fuzz inputs with 0 exceptions (worst 2.6 ms); known gaps listed in the hook's docstring. Suite 1397 / 24. Still open from the
-close: `/curate` (session file, index rotation), ✅ progress posted on LD#163 and LD#134 (docs-live now 170, +1 untraced), the review-profile suite
+close: ✅ `/curate` done (`memory/project_session_2026_10_09_close_review_rounds.md`), ✅ progress posted on LD#163 and LD#134 (docs-live now 170, +1 untraced), the review-profile suite
 baseline line (now 1397 / 24). Small: the hook is silently off when `CLAUDE_PROJECT_DIR` is unset.
 
 0. ⏸ **BELONGING v3 is LIVE (since NexusMind run `bd00dad6`, 2026-10-09 00:08–01:24 CEST), replacing v1. Nothing to do before

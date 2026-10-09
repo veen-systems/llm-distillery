@@ -4,6 +4,20 @@
 
 *⚠️ **Entries dated before 2026-09-17 live in [`archive/gotcha-log-archive.md`](archive/gotcha-log-archive.md)**, verbatim (the 09-01 → 09-16 ones moved 2026-09-27 by an owner-approved MID-MONTH pass, `--before 2026-09-17`; earlier ones moved 2026-09-24; into `archive/` 2026-09-26 so curate's size measurement stops counting it, #163; the month-dated Feb–May entries followed on 2026-09-26). Next pass: `python3 scripts/maintenance/retire_memory.py gotcha --before <first of this month> --apply` (dry run without `--apply`). It retires top-level entries only; the `###` entries inside the catalogue are kept by rule and counted (⚠️ superseded 2026-10-09: 43 of them moved by date; see the note under the catalogue heading). The unreachable-mechanism catalogue stayed here. For a recurrence match, grep both: `grep -n <term> memory/gotcha-log.md memory/archive/gotcha-log-archive.md` (a `memory/gotcha-log*.md` glob does NOT reach the archive). Was: `grep -n <term> memory/gotcha-log*.md`.*
 
+## REPLACING A GUARD'S IMPLEMENTATION LOST POSITIVES THE OLD ONE CAUGHT — twice in one day (2026-10-09)
+**Problem**: The kill-pattern hook was rewritten twice to fix review findings. Each rewrite fixed what it targeted and quietly
+stopped blocking shapes the previous version blocked: round 2's anchoring dropped the old "`-c` anywhere" branch, which
+un-blocked `su -c`, `docker exec … sh -c`, `sshpass` and `flock -c`; round 3's tokenizer split on a `\`-newline line
+continuation, so a wrapped `ssh -o … \` line slipped through. Both survived a green suite, mutation testing and fuzzing,
+because every test and mutant was built FROM THE NEW CODE'S model of the problem. Each was found only by a reviewer who ran
+the old and new versions side by side (round 2's fix also backtracked exponentially: 13 s on 25 × `ssh h `).
+**Root cause**: The tests encode what the author thought of. A rewrite throws away the old version's implicit positives,
+the cases it caught without anyone listing them, and nothing compares the two.
+**Fix**: When replacing a guard, run a DIFFERENTIAL check before committing: the same corpus of inputs through
+`git show HEAD:<file>` and the working copy, and read every verdict that changed (NEW=None, OLD=hit is a regression until
+explained). Build the corpus adversarially, not from the new tests. Then add each changed-and-correct verdict as a test.
+The backtracking half is mechanized (`test_no_catastrophic_backtracking`, § *Mechanized*); the differential half is not yet.
+
 ## AN ALARM TRIGGER I WROTE COMPARED TWO POPULATIONS — and fired falsely at 02:47 (2026-10-09) [*rate needs population*, again]
 **Problem**: belonging v3's early-refit trigger was "if ovr's normalized ≥ 4.5 pass count drops below 100%". ovr measured
 12/19 = 63% on v3's raw ≥ 4.0 rows and escalated to the owner. v1 on the SAME measure was 469/872 = 54% (47–66% per file).
@@ -430,7 +444,7 @@ run's output file.
 **Fix**: A fresh subdirectory per invocation. ⭐ A test fixture that reuses a path reuses more
 than the path — the interpreter's import cache and any resume-capable artefact under it.
 
-### FOR A LEXICAL GUARD, MENTION *IS* USE — I tripped the commit hook by naming the word that trips it (2026-09-02)
+### FOR A LEXICAL GUARD, MENTION *IS* USE — I tripped the commit hook by naming the word that trips it (2026-09-02) [x2: 2026-10-09 — the new PreToolUse kill-pattern hook refused my own edits to its tests twice: a heredoc line starting `"{ <cmd> -f`, and a sed argument holding "then <cmd> -f". The Edit tool, which no Bash hook sees, was the way round]
 
 **Problem**: `.githooks/commit-msg` rejected the same commit three times. The third rejection was
 caused by a paragraph I had added **to explain the second one**, because explaining it meant
