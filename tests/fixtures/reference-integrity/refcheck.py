@@ -652,7 +652,12 @@ for doc in DOCS:
                 elif any(t==frag or t.endswith("/"+frag) for t in tr):
                     findings.append((doc,frag,"STALE UNCOMMITTED MARKER (the path is committed)"))
                 else:
-                    uncommitted.append((doc,frag))
+                    # Review 2026-10-09: "not committed" alone counted a MISSPELLED path as
+                    # deliberate. Still counted (the file may live on another host), but a
+                    # path found nowhere on this machine is labelled, so a typo is visible.
+                    _here = (os.path.exists(os.path.join(ROOT, frag))
+                             or any(p == frag or p.endswith("/" + frag) for p in TREE))
+                    uncommitted.append((doc, frag if _here else frag + "   (absent on this machine: check the spelling)"))
                 continue
             if frag in placeheld_frags or ANGLE_SEG_RE.search(frag):
                 # A marker on a path that DOES resolve is the failure this skip

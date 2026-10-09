@@ -2,8 +2,8 @@
 
 ## ▶️ START HERE — the ordered queue, as of 2026-10-09 (session close)
 
-*A bare "continue" means this list, top down. Each line names the FIRST action. Item 0 is WAITING (dated), so a bare
-"continue" before 2026-10-23 starts at item 2 (the read surface), then item 2b (the RUNBOOK rewrite).*
+*A bare "continue" means this list, top down. Each line names the FIRST action. Item 0 is WAITING (dated) and items
+2b/4b are done, so a bare "continue" before 2026-10-23 starts at item 2 (the read surface, ▶ lines).*
 
 0. ⏸ **BELONGING v3 is LIVE (since NexusMind run `bd00dad6`, 2026-10-09 00:08–01:24 CEST), replacing v1. Nothing to do before
    2026-10-23 unless ovr.news messages.** Read `filters/belonging/v3/STATUS.md` first (evidence, rollback rule, refit notes);
@@ -53,7 +53,7 @@
          no row), *mention is use* (the guard deliberately still counts mention). ⚠️ **This keep-rule cannot shrink the
          catalogue.** Shrinking it needs either new `live` rows (mechanize first) or a different rule. That is the owner's call.
        - ✅ **Ruled and done 2026-10-09 (owner): date rule + recent repeats.** Entries dated before 2026-09-01 move
-         verbatim, except classes that recurred on/after 2026-09-01. **43 moved** (47.6 KB; log 106,233 → 58,949 B; 625
+         verbatim, except classes that recurred on/after 2026-09-01. **43 moved** (47.6 KB; log 106,233 → 59,745 B as committed (58,949 before the Mechanized row); 625
          lines removed, 0 missing, mutant → 1). **11 stay**: 6 dated 09-01/02, plus pkill -f (10-02), the pgrep watcher
          (same class), the wrong interpreter (09-28), "aged out of retention" (recurred 10-07 as "source files expired"),
          the wrong-population precision bar (recurred 10-09 as the trigger comparing two populations).
@@ -70,9 +70,7 @@
          the 08-15/16 population recurrences). 65,110 → 50,641 B (estimate was 35–40 KB off; measured 14.5 KB, because
          most of the largest bullet is September stories). Reconstructed byte-for-byte from the files on disk vs HEAD;
          a one-word mutant fails. The pgrep block carries a pre-existing duplicated fragment, kept as found.
-     - d. ✅ session-log rotated (above). **Next: `corroboration-feature-hypotheses.md` (79 KB) and `working-rules.md`
-       (65 KB)**. Retire closed rows verbatim into `memory/archive/`. Also the hypothesis ledger (50 KB): move CLOSED rows
-       into `memory/archive/hypothesis-ledger-archive.md`.
+     - d. ✅ session-log rotated (above); corroboration, working-rules and the ledger handled 2026-10-09 (above).
      - e. **`docs/TODO.md` below START HERE** (~31 KB of section backlog). Audit each section: close, archive or
        keep. Example: § *Commerce Prefilter SLM* and § *Prefilter Quality (Apr 2026)*. Check them against
        decision 0 and ADR-004 before touching them.
@@ -83,9 +81,11 @@
    script's gpu-server probe and goes red (pipeline-atlas PR #122).
    - ✅ **RUNBOOK half done 2026-10-09:** § Deployment rewritten. Steps 1–3 are ours, step 4 is NexusMind's hand-off
      (image build, container swap keeping the previous one, manual sadalsuud pull, rollback = kept image + revert),
-     and step 5 verifies from the output: both commands were run on sadalsuud, 4,812/4,812 belonging rows `3.0`,
+     and step 5 verifies from the output: both commands were run on sadalsuud, 4,812/4,812 rows of `filtered_20261009_093632.jsonl` `3.0`,
      `revision_match: true`, scorer `hcl-ct102` (the host varies per cycle, NexusMind#591). New
-     `scripts/deployment/check_adapter_matches_hub.py` (6 tests, 2 mutants caught; live 0/1/1/2 on real repos).
+     `scripts/deployment/check_adapter_matches_hub.py` (6 tests, 2 mutants caught). ⛔ **Its first version derived the Hub repo from the directory name and 404'd for
+     cultural_discovery, human_thriving and nature_recovery; my "live" check had used only belonging. Fixed at close
+     (review): repo id from `inference_hub.py`, all six live filters checked against the real Hub.**
    - ✅ **SCRIPT half done 2026-10-09** (pipeline-atlas told first; they said go: their verify greps the old
      `--weights-preplaced` help text and turning red is expected). Guard D now compares this checkout's adapter
      with its Hub copy (fails closed when it cannot ask, skips `NO_HUB`); no ssh left in the deploy path.

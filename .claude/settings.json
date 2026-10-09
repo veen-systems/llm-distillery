@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"$CLAUDE_PROJECT_DIR\"/scripts/hooks/block_pattern_kill.py"
+            "command": "f=\"$CLAUDE_PROJECT_DIR/scripts/hooks/block_pattern_kill.py\"; [ -f \"$f\" ] || exit 0; exec python3 \"$f\""
           }
         ]
       }

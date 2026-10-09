@@ -20,16 +20,16 @@ the caller's own header:
      directory on disk. So there is NO VERSION-SELECTION STEP anywhere: nothing
      names the version, and a new highest `vN` activates itself.
      ⚠️ Scoped precisely, because an earlier version of this text said "the deploy
-     and the cutover are the same keystroke" and that is FALSE. The canonical
-     chain (`docs/FILTER_PLAYBOOK.md` §"Deploy safety checklist") is
-     **llm-distillery git -> NexusMind git -> sadalsuud `deploy_filters.sh` ->
-     gpu-server**, and `NexusMind/scripts/deploy_filters.sh` ships `git archive
+     and the cutover are the same keystroke" and that is FALSE. The pre-#395
+     chain was **llm-distillery git -> NexusMind git -> sadalsuud
+     `deploy_filters.sh` -> gpu-server** (`docs/FILTER_PLAYBOOK.md` §"Deploy safety
+     checklist" now states the image chain), and `NexusMind/scripts/deploy_filters.sh` ships `git archive
      HEAD` (never the working tree), hard-exits on uncommitted or untracked
      scorer-tree files, then rsyncs and restarts. So landing a directory in the
      NexusMind checkout does NOT reach readers.
-     ⚠️ 2026-10-09: that chain is pre-NexusMind#395. Production now scores from a
-     container image NexusMind builds from its merged commit; the conclusion holds
-     (landing a directory does not reach readers; the image rebuild does). What is missing is any step that
+     ⚠️ Since NexusMind#395 (2026-09-29) production scores from a container image
+     NexusMind builds from its merged commit; the conclusion holds (landing a
+     directory does not reach readers; the image rebuild does). What is missing is any step that
      would make someone *choose* the version — so once it ships, it serves.
 
 The rule this encodes: a guard that fails beats a comment that explains. See
@@ -353,9 +353,10 @@ def check_cutover(filter_name: str, version: str, nexusmind_root: Path) -> list[
 # `model/` and a weightless highest version stopped the scorer starting. Production no
 # longer scores on gpu-server: it scores from a container image that NexusMind's
 # `deploy/scorer-image/stage.py` builds with `--weights-dir <an llm-distillery
-# checkout>`, refusing an adapter that differs from its Hub copy. So the precondition
-# moved HERE: this checkout's adapter must exist (guard E) and be byte-identical to the
-# Hub record (this guard). The gpu-server question is in git history before 2026-10-09.
+# checkout>`. A local adapter found there is used and REFUSED if it differs from the Hub
+# copy (absent locally, staging downloads the Hub copy; NO_HUB must be local). Guard E
+# already requires the local copy here (backup), so this guard checks it is byte-identical
+# to the Hub record. The gpu-server question is in git history before 2026-10-09.
 
 
 class ProbeUnavailable(Exception):
@@ -363,20 +364,29 @@ class ProbeUnavailable(Exception):
 
 
 _ADAPTER_NAME = "adapter_model.safetensors"
+_MIN_ADAPTER_BYTES = 1_000_000
 
 
 def _hub_probe(filter_dir: Path, filter_name: str, version: str) -> tuple[str, str]:
     """Return (local sha256, Hub sha256) for this version's adapter.
 
-    Raises ProbeUnavailable when the Hub could not be asked or lists no hash: a
-    transport failure must never read as a match, and must not read as a mismatch
-    either: those are different facts with different remedies.
+    Raises ProbeUnavailable when the Hub could not be asked, lists no hash, or the
+    package names no repo id: a transport failure must never read as a match, and must
+    not read as a mismatch either: those are different facts with different remedies.
+    The repo id comes from the package's inference_hub.py, as NexusMind's stage.py reads
+    it. Deriving it from the directory name 404'd for cultural_discovery, human_thriving
+    and nature_recovery (review 2026-10-09).
     """
     # pipeline-atlas (PR #128) greps this import as its witness that guard D checks the
     # Hub record. Renaming or moving it turns the atlas check red: tell them first.
     from scripts.deployment import check_adapter_matches_hub as cam
 
-    repo_id = f"{cam.HUB_OWNER}/{filter_name}-filter-{version}"
+    repo_id = cam.hub_repo_id(filter_dir)
+    if not repo_id:
+        raise ProbeUnavailable(
+            f"{filter_dir}/inference_hub.py names no `repo_id: str = \"...\"` and there is no "
+            "NO_HUB file — NexusMind's staging would stage this adapter UNCHECKED"
+        )
     try:
         hub = cam.hub_sha256(repo_id, cam.token_from_secrets())
     except Exception as exc:  # network, auth, a private repo the token cannot see (404)
@@ -417,6 +427,15 @@ def check_weights_backed_up(filter_dir: Path) -> list[str]:
     precondition for off-site, not a proof of it.
     """
     adapter = filter_dir / "model" / _ADAPTER_NAME
+    # Review 2026-10-09: a git-LFS pointer or other stub passed `size > 0`, and guard D
+    # would then call it a MISMATCH and advise re-uploading it over the real Hub copy.
+    # Every real LoRA adapter here is ~52 MB (smallest measured 52,254,448 B).
+    if adapter.is_file() and 0 < adapter.stat().st_size < _MIN_ADAPTER_BYTES:
+        _fail(
+            f"{adapter} is only {adapter.stat().st_size} bytes — a git-LFS pointer or a stub,\n"
+            "  not an adapter (real ones here are ~52 MB). Re-download it from the Hub; never\n"
+            "  re-upload it, which would replace the real Hub copy."
+        )
     if adapter.is_file() and adapter.stat().st_size > 0:
         mb = adapter.stat().st_size / (1024 * 1024)
         return [f"weights present locally for backup ({mb:.0f} MB) — {adapter}"]
@@ -470,6 +489,12 @@ def check_weights_channel(
     (`--weights-preplaced`) is the override for the offline case. Being unable to
     ask fails CLOSED. See ProbeUnavailable.
     """
+    if not (filter_dir / "model" / _ADAPTER_NAME).is_file():
+        _fail(
+            f"no local {_ADAPTER_NAME} for {filter_name}/{version}, so there is nothing to\n"
+            "  compare with the Hub. Guard E reports the same absence with its remedy."
+        )
+
     if (filter_dir / "NO_HUB").exists():
         return [
             f"NO_HUB version: no Hub copy to compare. NexusMind's staging records this "
@@ -491,10 +516,11 @@ def check_weights_channel(
         _fail(
             f"could not compare {filter_name}/{version}'s adapter with the Hub: {exc}\n"
             "  Failing CLOSED: 'could not ask' is not 'matches'. NexusMind's image staging\n"
-            "  takes the adapter from an llm-distillery checkout and refuses one that\n"
-            "  differs from the Hub, so an unchecked mismatch fails their build after merge.\n"
-            "  Either fix Hub access (HF_TOKEN / config/credentials/secrets.ini) and re-run,\n"
-            "  or pass --weights-preplaced once you have confirmed by hand:\n"
+            "  uses a local adapter when one is present and refuses it if it differs from\n"
+            "  the Hub, so an unchecked mismatch fails their build after merge.\n"
+            "  Fix the cause above (Hub access: HF_TOKEN or config/credentials/secrets.ini;\n"
+            "  or the repo_id in inference_hub.py) and re-run, or pass --weights-preplaced\n"
+            "  once you have confirmed by hand:\n"
             f"    python3 scripts/deployment/check_adapter_matches_hub.py {filter_name} {version}"
         )
 

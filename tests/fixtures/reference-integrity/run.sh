@@ -80,7 +80,7 @@ grep -q 'C:\\dev\\seed_notes.md .*Windows path' <<<"$shapes" \
 grep -q "seed_notes.md" <<<"$findings" \
   && { echo "  FAIL  a NOT-EXTRACTED shape leaked into FINDINGS"; fail=1; } \
   || echo "  ok    shapes are not findings (deliberate)"
-grep -q "COVERS NO PATH" <<<"$findings" && echo "  ok    caught  marker-covering-no-path" \
+grep -q "PLACEHOLDER MARKER COVERS NO PATH" <<<"$findings" && echo "  ok    caught  marker-covering-no-path" \
   || { echo "  FAIL  missed  marker-covering-no-path"; fail=1; }
 # --- back-port assertions that need an exact SECTION, not mere absence ---
 # 25: rung 1b must actually FIRE. Asserted on the rung label rather than through
@@ -158,6 +158,10 @@ grep -q 'UNCOMMITTED MARKER NEEDS A REASON' <<<"$findings" && grep -q 'seed_reas
   && echo "  ok    caught  reasonless marker, path still reported (43)" || { echo "  FAIL  reasonless marker accepted (43)"; fail=1; }
 grep -q 'UNCOMMITTED MARKER COVERS NO PATH' <<<"$findings" && grep -q 'seed_far_cohort.jsonl' <<<"$findings" \
   && echo "  ok    caught  non-adjacent marker, path still reported (44)" || { echo "  FAIL  non-adjacent marker absorbed a path (44)"; fail=1; }
-total=$(( ${#must_catch[@]} + ${#must_be_silent[@]} + ${#must_be_placeheld[@]} + 17 ))
+# 45 (review 2026-10-09): the marker checked only "not committed", so a MISSPELLED path was
+# counted as deliberate. A path absent on this machine is still counted but must be LABELLED.
+grep -q 'seed_cohort_fulltext.jsonl .*(absent on this machine' <<<"$uncs" \
+  && echo "  ok    labelled uncommitted path absent here (45)" || { echo "  FAIL  absent uncommitted path not labelled (45)"; fail=1; }
+total=$(( ${#must_catch[@]} + ${#must_be_silent[@]} + ${#must_be_placeheld[@]} + 18 ))
 [ $fail -eq 0 ] && echo "SENSITIVITY: $total/$total PASS" || echo "SENSITIVITY: FAILED"
 exit $fail

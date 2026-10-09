@@ -339,6 +339,15 @@ def test_repo_manifest_scope_is_valid():
 # (FILTER_PLAYBOOK item 5, #67); that probe and its tests are in git history.
 
 
+def _pkg(tmp_path, repo_id="jeergrvgreg/demo-filter-v3"):
+    """A package dir with an adapter and (unless None) an inference_hub.py repo_id."""
+    (tmp_path / "model").mkdir(exist_ok=True)
+    (tmp_path / "model" / "adapter_model.safetensors").write_bytes(b"w")
+    if repo_id is not None:
+        (tmp_path / "inference_hub.py").write_text(f'    repo_id: str = "{repo_id}"\n')
+    return tmp_path
+
+
 def _probe(answer):
     """Probe stub. `answer` is (local, hub), or an exception to raise."""
 
@@ -352,20 +361,20 @@ def _probe(answer):
 
 def test_mismatch_aborts_the_deploy(tmp_path):
     with pytest.raises(GuardFailure) as exc:
-        check_weights_channel("f", "v2", tmp_path, probe=_probe(("a" * 64, "b" * 64)))
+        check_weights_channel("f", "v2", _pkg(tmp_path), probe=_probe(("a" * 64, "b" * 64)))
     msg = str(exc.value)
     assert "DIFFERS" in msg
     assert "upload_to_huggingface.py" in msg  # the remedy is in the failure
 
 
 def test_match_stays_quiet(tmp_path):
-    notes = check_weights_channel("f", "v2", tmp_path, probe=_probe(("a" * 64, "a" * 64)))
+    notes = check_weights_channel("f", "v2", _pkg(tmp_path), probe=_probe(("a" * 64, "a" * 64)))
     assert any("matches its Hub copy" in n for n in notes)
 
 
 def test_unreachable_hub_fails_CLOSED(tmp_path):
     with pytest.raises(GuardFailure) as exc:
-        check_weights_channel("f", "v2", tmp_path, probe=_probe(ProbeUnavailable("404")))
+        check_weights_channel("f", "v2", _pkg(tmp_path), probe=_probe(ProbeUnavailable("404")))
     msg = str(exc.value)
     assert "Failing CLOSED" in msg
     assert "--weights-preplaced" in msg
@@ -374,9 +383,9 @@ def test_unreachable_hub_fails_CLOSED(tmp_path):
 
 def test_unreachable_is_distinguishable_from_mismatch(tmp_path):
     with pytest.raises(GuardFailure) as differs:
-        check_weights_channel("f", "v2", tmp_path, probe=_probe(("a" * 64, "b" * 64)))
+        check_weights_channel("f", "v2", _pkg(tmp_path), probe=_probe(("a" * 64, "b" * 64)))
     with pytest.raises(GuardFailure) as unreachable:
-        check_weights_channel("f", "v2", tmp_path, probe=_probe(ProbeUnavailable("timeout")))
+        check_weights_channel("f", "v2", _pkg(tmp_path), probe=_probe(ProbeUnavailable("timeout")))
     assert "Failing CLOSED" not in str(differs.value)
     assert "DIFFERS" not in str(unreachable.value)
 
@@ -388,7 +397,7 @@ def test_ack_skips_the_comparison_but_says_so_loudly(tmp_path):
         called.append(a)
         return ("a" * 64, "b" * 64)
 
-    notes = check_weights_channel("f", "v9", tmp_path, probe=probe, preplaced_ack=True)
+    notes = check_weights_channel("f", "v9", _pkg(tmp_path), probe=probe, preplaced_ack=True)
     assert called == []
     assert any("SKIPPED" in n for n in notes)
     assert any("refuses the build" in n for n in notes)
@@ -396,6 +405,7 @@ def test_ack_skips_the_comparison_but_says_so_loudly(tmp_path):
 
 def test_no_hub_version_is_not_compared(tmp_path):
     """uplifting v7 has no Hub copy; the guard must neither ask nor fail."""
+    _pkg(tmp_path, repo_id=None)
     (tmp_path / "NO_HUB").write_text("")
     called = []
     notes = check_weights_channel("uplifting", "v7", tmp_path, probe=lambda *a: called.append(a))
@@ -403,15 +413,16 @@ def test_no_hub_version_is_not_compared(tmp_path):
     assert any("NO_HUB" in n for n in notes)
 
 
-def test_default_probe_compares_the_package_adapter(tmp_path, monkeypatch):
-    """The real probe hashes filter_dir/model/adapter_model.safetensors and asks the
-    Hub repo named after the package, never a host."""
+def test_default_probe_reads_the_repo_id_from_the_package(tmp_path, monkeypatch):
+    """The real probe hashes filter_dir/model/adapter_model.safetensors and asks the Hub
+    repo the package's inference_hub.py names (as NexusMind's stage.py does), never one
+    derived from the directory name: human_thriving's repo is human-thriving-filter-v9,
+    and the derived name 404'd for three live filters (review 2026-10-09)."""
     import hashlib
 
     from scripts.deployment import check_adapter_matches_hub as cam
 
-    (tmp_path / "model").mkdir()
-    (tmp_path / "model" / "adapter_model.safetensors").write_bytes(b"w")
+    pkg = _pkg(tmp_path, repo_id="jeergrvgreg/human-thriving-filter-v9")
     seen = {}
 
     def hub(repo, tok):
@@ -420,21 +431,52 @@ def test_default_probe_compares_the_package_adapter(tmp_path, monkeypatch):
 
     monkeypatch.setattr(cam, "hub_sha256", hub)
     monkeypatch.setattr(cam, "token_from_secrets", lambda: None)
-    assert check_weights_channel("demo", "v3", tmp_path) == [
-        f"adapter matches its Hub copy for demo/v3 ({hashlib.sha256(b'w').hexdigest()[:12]})"
+    assert check_weights_channel("human_thriving", "v9", pkg) == [
+        f"adapter matches its Hub copy for human_thriving/v9 ({hashlib.sha256(b'w').hexdigest()[:12]})"
     ]
-    assert seen["repo"] == "jeergrvgreg/demo-filter-v3"
+    assert seen["repo"] == "jeergrvgreg/human-thriving-filter-v9"
 
     monkeypatch.setattr(cam, "hub_sha256", lambda repo, tok: None)
     with pytest.raises(GuardFailure, match="Failing CLOSED"):
-        check_weights_channel("demo", "v3", tmp_path)
+        check_weights_channel("human_thriving", "v9", pkg)
 
     def boom(repo, tok):
         raise OSError("no route")
 
     monkeypatch.setattr(cam, "hub_sha256", boom)
     with pytest.raises(GuardFailure, match="Failing CLOSED"):
-        check_weights_channel("demo", "v3", tmp_path)
+        check_weights_channel("human_thriving", "v9", pkg)
+
+
+def test_no_repo_id_and_no_NO_HUB_fails_closed(tmp_path, monkeypatch):
+    """stage.py would stage such an adapter UNCHECKED; the guard must not pass it."""
+    from scripts.deployment import check_adapter_matches_hub as cam
+
+    monkeypatch.setattr(cam, "hub_sha256", lambda r, t: pytest.fail("Hub must not be asked"))
+    with pytest.raises(GuardFailure, match="names no `repo_id"):
+        check_weights_channel("demo", "v3", _pkg(tmp_path, repo_id=None))
+
+
+def test_missing_adapter_is_a_guard_failure_not_a_traceback(tmp_path):
+    """Review 2026-10-09: hashing an absent file raised FileNotFoundError past main()."""
+    (tmp_path / "inference_hub.py").write_text('    repo_id: str = "jeergrvgreg/demo-filter-v3"\n')
+    with pytest.raises(GuardFailure, match="no local adapter_model.safetensors"):
+        check_weights_channel("demo", "v3", tmp_path, probe=lambda *a: pytest.fail("not reached"))
+
+
+def test_every_hub_backed_package_names_a_repo_id():
+    """Every filters/*/v*/ with an inference_hub.py must yield a repo id by stage.py's
+    rule — else guard D (and NexusMind's staging check) cannot run for it."""
+    from pathlib import Path
+
+    from scripts.deployment import check_adapter_matches_hub as cam
+
+    repo = Path(__file__).resolve().parents[2]
+    pkgs = sorted(p.parent for p in repo.glob("filters/*/v*/inference_hub.py"))
+    assert len(pkgs) >= 6, pkgs  # the instrument must see the live packages
+    missing = [str(p.relative_to(repo)) for p in pkgs
+               if not (p / "NO_HUB").exists() and not cam.hub_repo_id(p)]
+    assert missing == []
 
 
 def test_guard_D_no_longer_reaches_for_a_host():
@@ -503,9 +545,21 @@ def test_absent_weights_abort_the_deploy(tmp_path):
 def test_present_weights_stay_quiet(tmp_path):
     d = tmp_path / "filters" / "demo" / "v3"
     (d / "model").mkdir(parents=True)
-    (d / "model" / "adapter_model.safetensors").write_bytes(b"x" * 2048)
+    with open(d / "model" / "adapter_model.safetensors", "wb") as f:
+        f.truncate(2_000_000)  # sparse: real-adapter size without writing 2 MB
     notes = check_weights_backed_up(d)
     assert any("weights present locally" in n for n in notes)
+
+
+def test_lfs_pointer_sized_adapter_is_refused(tmp_path):
+    """Review 2026-10-09: a git-LFS pointer passed `size > 0`, and guard D would then
+    advise re-uploading it over the real Hub copy."""
+    d = tmp_path / "filters" / "demo" / "v3"
+    (d / "model").mkdir(parents=True)
+    (d / "model" / "adapter_model.safetensors").write_text(
+        "version https://git-lfs.github.com/spec/v1\noid sha256:abc\nsize 52254448\n")
+    with pytest.raises(GuardFailure, match="git-LFS pointer"):
+        check_weights_backed_up(d)
 
 
 def test_empty_adapter_is_worse_than_absent(tmp_path):

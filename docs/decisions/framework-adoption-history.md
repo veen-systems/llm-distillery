@@ -96,7 +96,7 @@ mechanization, English only.
 | v1.46.0 | installer Git Bash guard (#198) | **N/a** — Linux estate |
 | v1.46.0–v1.48.1 | lint rules 8/11/17/18/19/20–23, fixtures, ablation guards | **N/a** — maintainer tooling |
 | v1.47.0 | `audit-context`/`update-drift`/`release` thinned | **Already in force** (`release` not installed here) |
-| v1.47.0 | `curate` archive pass above ~300k, project-file flag above ~15k | **Adopted** → session files before 2026-09 moved to `memory/archive/` (79 files); `CLAUDE.md` trimmed 38,141 → 17,749 chars (`wc -m`), every dropped span checked present in its pointed file. ⚠️ The gotcha archive stays at ~~`memory/gotcha-log-archive.md`~~, outside `archive/`, so curate's size measurement still counts it — moving it is open |
+| v1.47.0 | `curate` archive pass above ~300k, project-file flag above ~15k | **Adopted** → session files before 2026-09 moved to `memory/archive/` (79 files); `CLAUDE.md` trimmed 38,141 → 17,749 chars (`wc -m`), every dropped span checked present in its pointed file. ⚠️ The gotcha archive stays at ~~`memory/gotcha-log-archive.md`~~, outside `archive/`, so curate's size measurement still counts it — moving it is open *(done 2026-09-26: now `memory/archive/gotcha-log-archive.md`)* |
 | v1.47.0 | project-file template: Hard Constraints lead with the rule, no narrative | **Adopted** as the trim rule for `CLAUDE.md` |
 | v1.47.0 | `refcheck.py` gitignored-resolution listing (#154) | **Already in force** |
 | v1.48.0 | `update-drift`/`curate`/`review-changes`/`audit-context` step changes | **Already in force** |

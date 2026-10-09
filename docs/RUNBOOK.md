@@ -11,9 +11,10 @@ is a `nexusmind-scorer` container on whichever host NexusMind's ordered `pipelin
 picks that cycle (NexusMind#591; the 2026-10-09 09:36 cycle ran on `hcl-ct102`, an RTX 4080, not sadaltager;
 `data/last_run.json` `scorer` names it). ⚠️ Different hosts are different devices: compare production scores
 across cycles only after checking `scorer.device_name` (#95, `memory/score-batch-shape-noise.md`). Every host
-runs the image built by NexusMind's `deploy/scorer-image/stage.py`, which takes every
-served adapter **from an llm-distillery checkout** (`--weights-dir`) and refuses one that differs from its Hub
-copy. sadalsuud no longer auto-pulls and no longer runs `deploy_filters.sh` per cycle. So:
+runs the image built by NexusMind's `deploy/scorer-image/stage.py`. It reads each served version's Hub repo
+from that package's `inference_hub.py`; a version's adapter found in the llm-distillery checkout it is given
+(`--weights-dir`) is used and **refused if it differs from its Hub copy**; with none there, the Hub copy is
+downloaded; a `NO_HUB` version must be local (`stage.py` `fill_weights`, read 2026-10-09). sadalsuud no longer auto-pulls and no longer runs `deploy_filters.sh` per cycle. So:
 - **Ours (steps 1–3):** a verified package, an adapter on the Hub byte-identical to this checkout's, and a
   NexusMind PR carrying the package.
 - **NexusMind's (step 4):** merge, image rebuild, container swap, manual sadalsuud pull — in that repo's
@@ -41,8 +42,8 @@ Eight checks: imports match dir version, `repo_id` matches dir version, `config.
 `last_modified` ≥ local `model/adapter_model.safetensors` <!-- placeholder --> mtime. Catches the
 v_new-config × v_old-weights class (#44).
 
-Then, because the image is staged from THIS checkout's adapter and staging compares BYTES (the
-freshness check above compares only times):
+Then, because staging uses this checkout's adapter when present and compares BYTES with the Hub (the
+freshness check above compares only times). The Hub repo comes from the package's `inference_hub.py`:
 
 ```bash
 .venv/bin/python3 scripts/deployment/check_adapter_matches_hub.py {name} v{N}
@@ -102,7 +103,7 @@ DISTILLERY_ROOT=$PWD NEXUSMIND_ROOT=/home/jeroen/repos/veen-systems/NexusMind \
 > To change a packaged detector: rebuild, upload (`upload_detector_to_hub.py`), rewrite the manifest
 > (`verify_detector_package.py write`), commit, deploy — never edit a manifest by hand.
 > ⚠️ Limits (ADR-024 step 5, NexusMind's): NexusMind gitignores `*.safetensors`, so commerce v1's model stays in
-> the deploying checkout; `deploy_filters.sh` does not delete under `models/` on gpu-server.
+> the deploying checkout; `deploy_filters.sh` does not delete under `models/` on gpu-server (pre-#395 path; gpu-server is now a fallback only).
 
 > **Step 2b ships the other `filters/common/` RUNTIME files** (owner ruling, #164, 2026-09-26).
 > The selection is one module, `scripts/deployment/common_runtime_files.py --unpackaged`. It excludes
@@ -152,8 +153,8 @@ whether this is a **new filter name** (then step 4b applies, and `pipeline.enabl
 version bump, and the rollback rule if the switch has one. NexusMind then, per its
 `deploy/scorer-image/README.md` (Build, Run, Rolling back a filter version):
 - merges the PR;
-- stages and builds the image (`stage.py --weights-dir <llm-distillery checkout>`, which needs THIS repo's
-  adapter and the Hub token), and swaps the container, **keeping the previous one stopped** — that container is
+- stages and builds the image (`stage.py --weights-dir <llm-distillery checkout>` and the Hub token; a
+  local adapter that differs from the Hub stops the build, a `NO_HUB` one must be local), and swaps the container, **keeping the previous one stopped** — that container is
   the rollback;
 - pulls sadalsuud by hand, between the same two cycles as the swap (sadalsuud no longer auto-pulls).
 

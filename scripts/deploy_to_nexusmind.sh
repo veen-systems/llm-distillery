@@ -7,7 +7,7 @@
 #
 # Examples:
 #   ./scripts/deploy_to_nexusmind.sh uplifting v5
-#   ./scripts/deploy_to_nexusmind.sh sustainability_technology v2 --push
+#   ./scripts/deploy_to_nexusmind.sh belonging v3 --dry-run
 #   ./scripts/deploy_to_nexusmind.sh nature_recovery v2 --dry-run
 #
 # What it does:
@@ -32,7 +32,8 @@
 #      THIS IS THE ONLY STEP THAT CONSULTS .nexusmind-owns (step 0.7 refuses an entry inside a
 #      packaged detector, whose files ship by MANIFEST.json only).
 #   3. Commits changes to NexusMind repo
-#   4. Optionally pushes and shows pull commands for servers
+#   4. Optionally pushes (--push pushes NexusMind main directly; NexusMind takes PRs,
+#      so do not use it there) and prints the hand-off to NexusMind
 
 set -e  # Exit on error
 
@@ -72,7 +73,8 @@ if [ -z "$FILTER_NAME" ] || [ -z "$VERSION" ]; then
     echo "Usage: $0 <filter_name> <version> [--push] [--dry-run] [--force-skip-owned-drift] [--force-dirty] [--weights-preplaced] [--allow-untracked]"
     echo ""
     echo "Flags:"
-    echo "  --push                      git push origin main on NexusMind after the commit"
+    echo "  --push                      git push origin main on NexusMind after the commit."
+    echo "                              Do NOT use it for NexusMind: it takes PRs (RUNBOOK step 3)."
     echo "  --dry-run                   copy files but skip the git add/commit/push in NexusMind"
     echo "  --weights-preplaced         skip guard D's adapter-vs-Hub comparison, asserting by"
     echo "                              hand that this checkout's model/adapter_model.safetensors"
@@ -92,7 +94,7 @@ if [ -z "$FILTER_NAME" ] || [ -z "$VERSION" ]; then
     echo ""
     echo "Examples:"
     echo "  $0 uplifting v5"
-    echo "  $0 sustainability_technology v2 --push"
+    echo "  $0 belonging v3 --dry-run"
     exit 1
 fi
 
@@ -445,7 +447,7 @@ elif [ "$PUSH_FLAG" == "--push" ]; then
     echo "# deploy_filters.sh only reaches gpu-server, which no longer serves production."
 else
     echo ""
-    echo "5. Skipping push (use --push flag to push automatically)"
+    echo "5. Not pushed (NexusMind takes PRs: push a chore/ branch, see below)"
     echo ""
     echo "=== Next steps ==="
     echo ""
