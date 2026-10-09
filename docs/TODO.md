@@ -11,12 +11,9 @@ hook regex backtracked exponentially: 13 s on 25 × `ssh h `) + 4 warnings, all 
 TOKENIZER (`scripts/hooks/block_pattern_kill.py`), not a regex; guard D and `check_adapter_matches_hub.py` refuse an
 empty/stub (< 1 MB) adapter before hashing, so they never advise re-uploading one; the CLI checks a missing adapter
 before `NO_HUB` and says NO PACKAGE for a missing version dir. Suite 1374 passed / 24 skipped (`.venv/bin/python`).
-⚠️ **The tokenizer rewrite has had NO independent review** (the two-round cap was already spent; round 3 ran because
-round 2 found the stub class again). Tests: 83 in its file, 6 mutants caught, the round-2 regex seeded red, 60,000
-fuzz inputs with 0 exceptions. Owner: one fresh adversarial pass on that file alone, or accept. Still open from the
-close: `/curate` (session file, index rotation), progress posts on LD#163 (the read surface: ~64.6 KB moved today,
-not 108) and LD#134 (refcheck docs tier: docs-live 231 → 168, new uncommitted marker), the review-profile suite
-baseline line (now 1374 / 24). Small: the hook is silently off when `CLAUDE_PROJECT_DIR` is unset.
+✅ **Round 4 (owner-granted exception to the cap): one adversarial pass on the tokenizer alone** found 2 BLOCKERS (a `\`-newline line continuation split a command, so a wrapped `ssh -o ... \` line slipped through; it was a regression vs the regex) and regressions/false blocks (`function`/`coproc`, `2>/dev/null` as a separator, wrong value letters for `xargs -i`/`sshpass -e`/`watch -d`, the `"$(cat <<'EOF' ...)"` commit idiom). All fixed: 106 tests, 9 more mutants caught, 60,000 fuzz inputs with 0 exceptions (worst 2.6 ms); known gaps listed in the hook's docstring. Suite 1397 / 24. Still open from the
+close: `/curate` (session file, index rotation), ✅ progress posted on LD#163 and LD#134 (docs-live now 170, +1 untraced), the review-profile suite
+baseline line (now 1397 / 24). Small: the hook is silently off when `CLAUDE_PROJECT_DIR` is unset.
 
 0. ⏸ **BELONGING v3 is LIVE (since NexusMind run `bd00dad6`, 2026-10-09 00:08–01:24 CEST), replacing v1. Nothing to do before
    2026-10-23 unless ovr.news messages.** Read `filters/belonging/v3/STATUS.md` first (evidence, rollback rule, refit notes);

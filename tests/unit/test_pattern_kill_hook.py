@@ -74,6 +74,24 @@ BLOCK = [
     "bash -o pipefail -c 'pgrep -f x'",
     "pgrep -f x \\",                                    # trailing backslash: shlex raises (fuzz)
     "ssh host 'pkill -f x",                             # unbalanced quote
+    # review round 4, 2026-10-09 (one adversarial pass on the tokenizer)
+    "ssh -o BatchMode=yes \\\nsadalsuud 'pgrep -f main.py'",   # line continuation
+    "pgrep -u me \\\n-f x",
+    "function f { pgrep -f x; }",
+    "coproc W { pgrep -f x; }",
+    "coproc pgrep -f x",
+    "xargs -i pkill -f {}",                             # -i: optional ATTACHED value
+    "sshpass -e ssh host 'pkill -f x'",                 # -e takes no value
+    "watch -d 'pgrep -f x'",
+    "watch -n 1 -d 'pgrep -f x'",
+    "pgrep 2>/dev/null -f x",                           # a redirection is not a separator
+    "2>/dev/null pgrep -f x",
+    "pgrep -f x >/dev/null 2>&1",
+    "env -S 'pgrep -f x'",
+    "docker compose exec svc pgrep -f x",
+    "flock /tmp/l pgrep -c -f x",                       # the command's own -c
+    "ssh h " * 8 + "'pgrep -f x'",                     # past the nesting limit
+    "ssh host bash -s <<EOF\npkill -f x\nEOF",          # a heredoc body that RUNS
 ]
 
 PASS = [
@@ -96,6 +114,14 @@ PASS = [
     'git commit -m "first line; pkill -f was the trap"',
     'gh issue create --body "then pkill -f the thing"',
     "bash script.sh -f",
+    # review round 4, 2026-10-09: the commit/issue-body idiom and heredoc'd markdown
+    "git commit -m \"$(cat <<'EOF'\nfix: (pkill -f matched its own shell); pgrep -f too\n"
+    "| pkill -f | row |\npkill -f at line start\nEOF\n)\"",
+    "gh issue comment 1 --body \"$(cat <<EOF\n| \\`pgrep -f\\` | blocked |\nEOF\n)\"",
+    "cat > doc.md <<'EOF'\n> pkill -f matches its own shell\nEOF",
+    "tee -a notes.md <<'EOF' >/dev/null\npgrep -f x is the trap\nEOF\necho done",
+    "pgrep -x -- -f",                                   # -f after `--` is the pattern
+    "find . -name '*.py' -exec grep -l x {} \\;",
     "su",
     "ssh host",
     "",
