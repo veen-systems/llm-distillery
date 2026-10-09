@@ -92,7 +92,7 @@
      `--weights-preplaced` survives with the new meaning. Guard C's rollback advice no longer says "remove vN".
      FILTER_PLAYBOOK checklist items 5/7 and the chain line updated (item 7 said "rollback = delete the new dir").
      Live run: belonging v3 → MATCH, uplifting v7 → NO_HUB skip, both exit 0. 5 mutants caught.
-     ▶ **Owed: message pipeline-atlas with the pushed commit** (they need (a) the commit on origin, (b) the flag
+     ✅ **pipeline-atlas messaged 2026-10-09 with `3e6244f` on origin** (was: owed: message pipeline-atlas with the pushed commit) (they need (a) the commit on origin, (b) the flag
      survives, (c) no ssh, (d) local adapter vs the Hub RECORD only — never what a scorer host serves).
 
 3. **Owner, standing:**
