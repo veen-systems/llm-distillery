@@ -81,6 +81,15 @@
    built by NexusMind (stage.py, docker build, restart, manual sadalsuud pull); our `deploy_to_nexusmind.sh` still probes
    gpu-server. belonging v3 went in by hand (NM 4901fb5). ⚠️ When it lands, TELL pipeline-atlas first: its verify greps the
    script's gpu-server probe and goes red (pipeline-atlas PR #122).
+   - ✅ **RUNBOOK half done 2026-10-09:** § Deployment rewritten. Steps 1–3 are ours, step 4 is NexusMind's hand-off
+     (image build, container swap keeping the previous one, manual sadalsuud pull, rollback = kept image + revert),
+     and step 5 verifies from the output: both commands were run on sadalsuud, 4,812/4,812 belonging rows `3.0`,
+     `revision_match: true`, scorer `hcl-ct102` (the host varies per cycle, NexusMind#591). New
+     `scripts/deployment/check_adapter_matches_hub.py` (6 tests, 2 mutants caught; live 0/1/1/2 on real repos).
+   - ▶ **Open: the SCRIPT half.** Guard D (`preflight_deploy_guards.py` `_ssh_weights_probe`, gpu-server) →
+     call `check_adapter_matches_hub.py` instead, and drop the `deploy_filters.sh` lines the script prints at the end.
+     Interim, the RUNBOOK says to pass `--weights-preplaced` only on the check's exit 0. pipeline-atlas told
+     2026-10-09 BEFORE the change; land it only after they say what their verify greps.
 
 3. **Owner, standing:**
    - H-TV5: one last look at the Thriving tab ~2026-10-06, then close.

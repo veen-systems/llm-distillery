@@ -6,6 +6,22 @@ Operational how-to for deployment, training, and scoring. For project identity a
 
 ## Deployment to NexusMind
 
+⛔ **Since 2026-09-29 production scores from a CONTAINER IMAGE, not gpu-server (NexusMind#395).** The scorer
+is a `nexusmind-scorer` container on whichever host NexusMind's ordered `pipeline.gpu_scoring.scorers` list
+picks that cycle (NexusMind#591; the 2026-10-09 09:36 cycle ran on `hcl-ct102`, an RTX 4080, not sadaltager;
+`data/last_run.json` `scorer` names it). ⚠️ Different hosts are different devices: compare production scores
+across cycles only after checking `scorer.device_name` (#95, `memory/score-batch-shape-noise.md`). Every host
+runs the image built by NexusMind's `deploy/scorer-image/stage.py`, which takes every
+served adapter **from an llm-distillery checkout** (`--weights-dir`) and refuses one that differs from its Hub
+copy. sadalsuud no longer auto-pulls and no longer runs `deploy_filters.sh` per cycle. So:
+- **Ours (steps 1–3):** a verified package, an adapter on the Hub byte-identical to this checkout's, and a
+  NexusMind PR carrying the package.
+- **NexusMind's (step 4):** merge, image rebuild, container swap, manual sadalsuud pull — in that repo's
+  `deploy/scorer-image/README.md`. Its "Rolling back a filter version" is the only rollback: deleting
+  `filters/<name>/vN` is NOT one (the image holds only the served version's weights).
+- belonging v3 went this way on 2026-10-08 (NexusMind PR #627, `4901fb5`). Rewritten 2026-10-09 (TODO item 2b);
+  the gpu-server text of step 4 is in git history before that date.
+
 One-time per clone, enable the commit-msg hook that blocks unverified deploy claims
 (llm-distillery#44 background):
 
@@ -24,6 +40,16 @@ Eight checks: imports match dir version, `repo_id` matches dir version, `config.
 `filter.version` matches, `base_scorer.FILTER_VERSION` matches, Hub repo exists, Hub
 `last_modified` ≥ local `model/adapter_model.safetensors` mtime. Catches the
 v_new-config × v_old-weights class (#44).
+
+Then, because the image is staged from THIS checkout's adapter and staging compares BYTES (the
+freshness check above compares only times):
+
+```bash
+.venv/bin/python3 scripts/deployment/check_adapter_matches_hub.py {name} v{N}
+# 0 MATCH · 1 MISMATCH or adapter missing here · 2 could not ask the Hub (never a pass)
+```
+
+Not for `NO_HUB` versions (uplifting v7): staging records their sha256 and has nothing to compare it to.
 
 ### 2. Upload to HuggingFace Hub
 
@@ -110,48 +136,40 @@ DISTILLERY_ROOT=$PWD NEXUSMIND_ROOT=/home/jeroen/repos/veen-systems/NexusMind \
 > (`git -C $NEXUSMIND_ROOT checkout -- <path> <path>`), never a bare
 > `git checkout .` (2026-08-13).
 
-> ⚠️ **Since 2026-08-13 the deploy needs ssh reachability to `gpu-server`.**
-> Pre-flight guard D probes it for
-> `filters/{name}/v{N}/model/adapter_model.safetensors` and **fails closed** if it
-> cannot ask — because `deploy_filters.sh` excludes `model/` from both rsync passes,
-> so the code never carries weights and a weightless *highest* version stops the
-> scorer **starting**, which costs the whole cycle for all six filters. Pre-place the
-> adapter first (checklist item 5 / #67), or pass `--weights-preplaced` once you have
-> confirmed it by hand:
-> `ssh gpu-server 'ls -l ~/NexusMind/filters/{name}/v{N}/model/adapter_model.safetensors'`.
+> ⚠️ **Pre-flight guard D still probes `gpu-server` — a pre-#395 check, and the wrong place now.** It asks
+> gpu-server over ssh for `filters/{name}/v{N}/model/adapter_model.safetensors` and fails closed if it cannot
+> ask. gpu-server no longer serves production, so a new version will usually FAIL it while being perfectly
+> deployable. **Until the guard is rewritten** (to the step-1 adapter check; pipeline-atlas reads this guard,
+> so it is changed only after telling them): run `check_adapter_matches_hub.py` from step 1, and pass
+> `--weights-preplaced` only on its **exit 0**. That flag now means "the adapter is in this checkout and
+> matches the Hub", which is what NexusMind's staging needs.
 
-Then `cd $NEXUSMIND_ROOT && git push origin main` — **on a `chore/` branch and a PR
-if the target repo uses them**; NexusMind does, and two commits went straight to its
-`main` on 2026-08-13 for want of checking.
+Then push the NexusMind change **on a `chore/` branch and open a PR** (NexusMind uses them; two commits went
+straight to its `main` on 2026-08-13). ⚠️ The script's own closing lines (and its `--push`, which pushes `main`)
+still print the pre-#395 `deploy_filters.sh` commands: ignore them and follow step 4.
 
-### 4. Deploy to gpu-server (via sadalsuud)
+### 4. Hand-off: NexusMind builds the image and switches (theirs, not ours)
 
-```bash
-# Wrapper that SSHes to sadalsuud, pulls, and runs deploy_filters.sh there.
-# Refuses if your local NexusMind has unpushed filter commits.
-bash scripts/remote_deploy.sh
-```
+Nothing in this repo deploys to production any more. Tell the NexusMind session (or the owner) that the PR is
+ready, and name: the package path and llm-distillery commit, the Hub repo and adapter sha256 (step 1's output),
+whether this is a **new filter name** (then step 4b applies, and `pipeline.enabled_filters` changes) or a
+version bump, and the rollback rule if the switch has one. NexusMind then, per its
+`deploy/scorer-image/README.md` (Build, Run, Rolling back a filter version):
+- merges the PR;
+- stages and builds the image (`stage.py --weights-dir <llm-distillery checkout>`, which needs THIS repo's
+  adapter and the Hub token), and swaps the container, **keeping the previous one stopped** — that container is
+  the rollback;
+- pulls sadalsuud by hand, between the same two cycles as the swap (sadalsuud no longer auto-pulls).
 
-The wrapped `NexusMind/scripts/deploy_filters.sh` (Fix B, 2026-07-17: ships the
-`git archive` of HEAD, never the working tree):
-- Verifies local HEAD matches `origin/$CURRENT_BRANCH` for the full `SCORER_PATHS` set (fails closed on origin-unreachable; set `SKIP_ORIGIN_CHECK=1` to override).
-- Blocks on uncommitted OR untracked files under `SCORER_PATHS` (untracked `*/model/` configs exempt — out-of-band channel).
-- rsyncs a git-archive staging tree of HEAD to gpu-server (model/ directories deliberately excluded — weights live out-of-band).
-- Restarts `nexusmind-scorer` systemd service.
-- Round-trips a CODE_REVISION hash via `/health`, then asserts push-completeness (every `SCORER_PATHS` entry shipped).
-- Runs a post-deploy smoke test (`deploy/smoke_test_articles.jsonl`) — POSTs known positives, asserts per-fixture `weighted_average` bounds. Catches "weights loaded but nonsense."
+⛔ **The scorer serves the highest `vN` it was built with.** A version bump goes live on the first cycle after
+the swap, with nothing in between; there is no per-version switch to flip later.
 
-**⚠ Committed-only deploys (Fix B).** A filter package that is file-copied onto
-sadalsuud but not committed+pushed no longer ships silently — it BLOCKS the
-every-4h pipeline cycle (fail-closed by design) until committed or removed.
-Deploy flow is now strictly: commit → push → pull on sadalsuud → deploy. A
-blocked gate fires the `nexusmind-alert@` EMAIL alert (sent via the chain's
-existing Gmail sender — FluxusSource `[email_credentials]` on sadalsuud; 3h
-burst guard; alerts also append to `data/alerts.log`).
+⛔ **Rollback is the kept previous image plus a sadalsuud revert, both between the same two cycles** — NOT
+deleting `filters/{name}/v{N}`. The image carries only the served version's weights, so a deletion on it stops
+the scorer and takes every filter down (NexusMind PR #627 review, 2026-10-08).
 
-**Why not run `deploy_filters.sh` directly from the workstation?** Its rsync fails
-intermittently from Windows Git Bash with `dup() in/out/err failed`. `remote_deploy.sh`
-sidesteps by running it on sadalsuud (Linux) instead.
+*`scripts/remote_deploy.sh` and `deploy_filters.sh` push to gpu-server, which is NexusMind's FALLBACK only
+(`deploy/scorer-image/README.md` § Rollback to gpu-server). Running them deploys nothing to production.*
 
 ### 4b. A NEW filter needs its `processed_ids` seeded BEFORE its first cycle
 
@@ -214,13 +232,22 @@ return to their normal bands (og:image 2.6k–3.1k, hero 3.3k–4.0k). If they s
 start is not the whole story; back the filter out of `enabled_filters` and re-diagnose rather
 than guessing again.
 
-### 5. Monitor
+### 5. Verify the switch from the OUTPUT, after the first cycle on the new image
+
+Predict first (expected share of rows at or above the op-point, from the gate run), then read. Checked this
+way for belonging v3 (`filters/belonging/v3/STATUS.md`):
 
 ```bash
-ssh gpu-server "journalctl -u nexusmind-scorer -f"
-# In NexusMind
-python scripts/run_filters.py --filter {name} --hub --max-items 50
+# Every row of the newest filtered file carries the new version (stage1_low rows too):
+ssh sadalsuud 'cd ~/local_dev/NexusMind && f=$(ls -t data/filtered/{name}/filtered_*.jsonl | head -1) && \
+  echo $f && jq -r ".nexus_mind_attributes.{name}.version" $f | sort | uniq -c'
+# The scorer served the code sadalsuud holds (false = image and checkout disagree):
+ssh sadalsuud 'cd ~/local_dev/NexusMind && jq ".scorer" data/last_run.json'
 ```
+
+⚠️ The newest file must be NEWER than the swap. A file written before it carries the old version and reads as
+a failed deploy; a count of 0 rows means the cycle did not run, not that it passed. Then the op-point share
+against the prediction; condition on `stage_used` before reading `raw_weighted_average`.
 
 ---
 
