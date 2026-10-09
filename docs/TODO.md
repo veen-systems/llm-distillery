@@ -60,6 +60,10 @@
        - ✅ **Owner also ruled: mechanize the top recurring class.** `scripts/hooks/block_pattern_kill.py`, a PreToolUse
          hook in the new `.claude/settings.json`, refuses `pkill -f` / `pgrep -f` in command position. Live row in
          § *Mechanized*. Undo: delete `.claude/settings.json`.
+     - d. **2026-10-09:** the hypothesis ledger got the 09-27 rule again: 5 closed rows (H-HD16, H-BV4, H-BV9, H-BV11,
+       H-BB1) moved verbatim, 56,148 → 53,622 B, 0 lines missing. Kept: H-JO1 (partial), H-BB4 (⚠️), H-BB2 / H-BV6
+       (verdict word outside the rule). `corroboration-feature-hypotheses.md` and `working-rules.md` have NO closed rows,
+       so any cut there is an owner call (asked 2026-10-09).
      - d. ✅ session-log rotated (above). **Next: `corroboration-feature-hypotheses.md` (79 KB) and `working-rules.md`
        (65 KB)**. Retire closed rows verbatim into `memory/archive/`. Also the hypothesis ledger (50 KB): move CLOSED rows
        into `memory/archive/hypothesis-ledger-archive.md`.
