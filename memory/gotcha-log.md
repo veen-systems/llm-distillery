@@ -4,6 +4,30 @@
 
 *⚠️ **Entries dated before 2026-09-17 live in [`archive/gotcha-log-archive.md`](archive/gotcha-log-archive.md)**, verbatim (the 09-01 → 09-16 ones moved 2026-09-27 by an owner-approved MID-MONTH pass, `--before 2026-09-17`; earlier ones moved 2026-09-24; into `archive/` 2026-09-26 so curate's size measurement stops counting it, #163; the month-dated Feb–May entries followed on 2026-09-26). Next pass: `python3 scripts/maintenance/retire_memory.py gotcha --before <first of this month> --apply` (dry run without `--apply`). It retires top-level entries only; the `###` entries inside the catalogue are kept by rule and counted. The unreachable-mechanism catalogue stayed here. For a recurrence match, grep both: `grep -n <term> memory/gotcha-log*.md`.*
 
+## AN ALARM TRIGGER I WROTE COMPARED TWO POPULATIONS — and fired falsely at 02:47 (2026-10-09) [*rate needs population*, again]
+**Problem**: belonging v3's early-refit trigger was "if ovr's normalized ≥ 4.5 pass count drops below 100%". ovr measured
+12/19 = 63% on v3's raw ≥ 4.0 rows and escalated to the owner. v1 on the SAME measure was 469/872 = 54% (47–66% per file).
+**Root cause**: the "100%" baseline came from ovr.db's published top-50 (winners of a cap); the trigger was read on every
+raw ≥ 4.0 row in a file. Different populations; nothing in the rule named its population, so ovr could not see it.
+**Fix**: trigger reworded to the same measure on both sides (`docs/TODO.md` item 0, ledger `H-BB5`). **Action:** a
+trigger handed to another session names its population AND quotes the baseline measured on that population before it
+ships. A threshold with no baseline number beside it is the tell.
+
+## "TELL ME ONLY IF IT FAILS" WOULD HAVE HIDDEN A CHECK THAT NEVER RAN (2026-10-09)
+**Problem**: ovr offered to message only if Belonging's pass check failed. I asked for a line either way. The 02:47
+check then could not run at all (ovr's summarizer OOM-died before ingesting v3), which the silence-means-pass deal
+would have reported as a pass.
+**Fix / action**: a delegated check reports `N/M` or "could not run, because …", always. Silence is not a verdict
+(*before believing a negative, prove the instrument could have said yes*).
+
+## ROLLBACK STATED FROM THE OLD DEPLOY MECHANISM (2026-10-08)
+**Problem**: I wrote "rollback = remove `filters/belonging/v3`, v1 loads" into STATUS, #170 and peer messages. NexusMind's
+review: since NM#395 the scorer image bakes only the served version, so removing v3 stops the scorer (all six filters).
+**Root cause**: "NexusMind loads the highest vN on disk" was true of the gpu-server path, which is stale; I imported the
+mechanism with the precedent (*a precedent is a mechanism claim*). It also survived into NM commit 4901fb5's message.
+**Fix**: corrected in STATUS (`d71f972`), #170, ovr and pipeline-atlas. **Action:** state a rollback only after the
+deploying session confirms the mechanism on the CURRENT path; `docs/TODO.md` item 2b rewrites the stale RUNBOOK path.
+
 ## A BACKGROUND ORACLE RUN LOOPED ALL NIGHT ON TWO FAILING ROWS — ~74k failed calls (2026-10-07/08)
 **Problem**: `ground_truth.batch_scorer` (sequential mode) scored 796/798 easy negatives, then re-fetched the 2
 permanently failing rows (`llm_api_error`) as "unscored" for ~6,100 batches until killed 12 hours later. Billing
