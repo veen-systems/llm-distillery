@@ -46,7 +46,7 @@ it; the block itself still governs. Its "121 KB" was true when written — measu
     `memory/gotcha-log.md`'s `## Mechanized` table (added 2026-09-17) has its
     own `Occurrences`, counting sightings after a check went `live`.
   - OPEN, pre-dating the v1.19/v1.20 gap: this file has no framework-drift
-    session row (`templates/project-file.md:25` ships one). Its absence is the
+    session row (`templates/project-file.md` <!-- placeholder --> line 25 ships one). Its absence is the
     likely reason that drift sat two releases unreviewed. Engineer's call.
   Verify installs: agent-ready-projects/scripts/install-global-skills.sh --check ~/repos
 ```
@@ -96,7 +96,7 @@ mechanization, English only.
 | v1.46.0 | installer Git Bash guard (#198) | **N/a** — Linux estate |
 | v1.46.0–v1.48.1 | lint rules 8/11/17/18/19/20–23, fixtures, ablation guards | **N/a** — maintainer tooling |
 | v1.47.0 | `audit-context`/`update-drift`/`release` thinned | **Already in force** (`release` not installed here) |
-| v1.47.0 | `curate` archive pass above ~300k, project-file flag above ~15k | **Adopted** → session files before 2026-09 moved to `memory/archive/` (79 files); `CLAUDE.md` trimmed 38,141 → 17,749 chars (`wc -m`), every dropped span checked present in its pointed file. ⚠️ The gotcha archive stays at `memory/gotcha-log-archive.md`, outside `archive/`, so curate's size measurement still counts it — moving it is open |
+| v1.47.0 | `curate` archive pass above ~300k, project-file flag above ~15k | **Adopted** → session files before 2026-09 moved to `memory/archive/` (79 files); `CLAUDE.md` trimmed 38,141 → 17,749 chars (`wc -m`), every dropped span checked present in its pointed file. ⚠️ The gotcha archive stays at ~~`memory/gotcha-log-archive.md`~~, outside `archive/`, so curate's size measurement still counts it — moving it is open |
 | v1.47.0 | project-file template: Hard Constraints lead with the rule, no narrative | **Adopted** as the trim rule for `CLAUDE.md` |
 | v1.47.0 | `refcheck.py` gitignored-resolution listing (#154) | **Already in force** |
 | v1.48.0 | `update-drift`/`curate`/`review-changes`/`audit-context` step changes | **Already in force** |
@@ -349,7 +349,7 @@ ran the block with a synthetic `findings=[]` — a state the real program never 
 branch works in isolation and never asked whether the program can reach it.
 
 **Reverted**: the exit block is gone from `refcheck.py` (0 `sys.exit`, exits 0 as before) and
-`tests/unit/test_refcheck_exit_contract.py` is deleted.
+~~`tests/unit/test_refcheck_exit_contract.py`~~ is deleted.
 
 ⚠️ **The observation that motivated it is still true and still not a defect**: the script
 cannot fail. The decline's answer is that a status nothing reads is a mechanism with no
@@ -383,7 +383,7 @@ snapshot, not an invariant.
 | v1.39.0 | BOM/awk portability (`sub(/^\357\273\277/, "")`) | **Not applicable** — maintainer lint fixture |
 | v1.39.0 | Step 5 statistic re-derived: 24 introduced / 13 missed (65%), 24 / 219 (11%) | **Already in force** — installed line 458 |
 | v1.40.0 | `review-changes` → user-global skill + per-repo `.claude/review-profile.md` | **ADOPTED** — see below |
-| v1.40.0 | `audit-context` Step 4 → `tests/fixtures/reference-integrity/SPEC.md` | **ADOPTED (partial)** — skill body is in force; this repo's `refcheck.py` differs from the framework's by **1,629 lines** (re-mapped) and has no `SPEC.md`. Deferred to `/audit-context`, NOT silently copied |
+| v1.40.0 | `audit-context` Step 4 → `tests/fixtures/reference-integrity/SPEC.md` <!-- placeholder --> | **ADOPTED (partial)** — skill body is in force; this repo's `refcheck.py` differs from the framework's by **1,629 lines** (re-mapped) and has no `SPEC.md`. Deferred to `/audit-context`, NOT silently copied |
 
 **Verified by execution**, not by reading the changelog:
 
@@ -506,7 +506,7 @@ failure this repo catalogues.
 No release rows: upstream's latest tag is **v1.36.1**, which is what this repo pins.
 Checked against the REMOTE — the clone's HEAD (`9084baf`) equals `git ls-remote origin
 HEAD`, so the clone is in sync and not a stale baseline. One commit sits past the tag
-(`9084baf`, `tests/fixtures/dead-reference/run.sh` only): **not applicable**, a
+(`9084baf`, `tests/fixtures/dead-reference/run.sh` <!-- placeholder --> only): **not applicable**, a
 framework-side fixture with no adopter surface. No `(candidate, unreleased)` changelog
 block; `git diff v1.36.1..HEAD -- templates .claude` is empty.
 
@@ -590,7 +590,7 @@ corrections that refuted them** — one class, and the one this whole day produc
 correction ships, the superseded text stays, and the surface asserts both. Ten releases in
 a day made it near-certain.
 
-**`templates/review-changes.md` is the only one touching a surface this repo owns**, and it
+**`templates/review-changes.md` <!-- placeholder --> is the only one touching a surface this repo owns**, and it
 does not apply: the stale sentence ("Step 1.5 does not catch emphasis", left standing by
 the release that added the emphasis check) **was never in the re-mapped copy** — 0 hits for
 it in `.claude/skills/review-changes/SKILL.md`. The re-map is why; it carries the awk and
@@ -598,8 +598,8 @@ its comments, not that prose passage.
 
 ### ⭐ The correction that DID bear on a judgement made here — re-weighed by measurement
 
-`templates/curate.md` stated the cross-repo cost **flat**: *"a genuinely dead
-`oldpkg/foo.py` … also lands here rather than in DEAD."* v1.34.0's sibling rung, forty
+`templates/curate.md` <!-- placeholder --> stated the cross-repo cost **flat**: *"a genuinely dead
+`oldpkg/foo.py` <!-- placeholder --> … also lands here rather than in DEAD."* v1.34.0's sibling rung, forty
 lines below in the same file, decides exactly that case when a sibling of that name is on
 disk. **The cost is conditional and was written unconditional** — and it is the sentence an
 adopter reads to judge whether the sensitivity loss is acceptable.
@@ -610,8 +610,8 @@ from the installed v1.36.1 `curate`, against both halves:
 
 | case | disposition |
 |---|---|
-| `NexusMind/scripts/research/nm188_mojibake_derived.py` — sibling on disk, file absent | **DEAD** — *absent in the sibling NexusMind, which IS on disk* |
-| `AbsentRepo/scripts/nothing.py` — no sibling of that name | **CANNOT VERIFY** — *no sibling on disk to decide it* |
+| ~~`NexusMind/scripts/research/nm188_mojibake_derived.py`~~ — sibling on disk, file absent | **DEAD** — *absent in the sibling NexusMind, which IS on disk* |
+| `AbsentRepo/scripts/nothing.py` <!-- placeholder --> — no sibling of that name | **CANNOT VERIFY** — *no sibling on disk to decide it* |
 
 **So the trade is acceptable here specifically**, and for a reason that is a property of
 this estate rather than of the checker: all 16 sibling repos are full checkouts, so the
@@ -627,7 +627,7 @@ happened to lack an `oldpkg` sibling. Both halves are seeded there now.
 
 ## v1.36.0 — triaged 2026-08-27 (late); **stamp → v1.36.0.** 0 adopt, 1 in force, 2 n/a
 
-`templates/curate.md` +4 lines; `coordination.md` and `project-file.md` are the version
+`templates/curate.md` <!-- placeholder --> +4 lines; `coordination.md` and `project-file.md` are the version
 stamp only (verified by diff, not assumed). The local `curate` install already bottoms at
 v1.36.0 on the per-tag diff, so **already in force** with nothing to do here.
 
@@ -656,7 +656,7 @@ understated it. Flagged rather than assumed.
 
 ### The triage was decided by two file-level facts, not by reading six changelogs
 
-1. **`templates/review-changes.md` is UNCHANGED since v1.31.0** (`git log v1.31.0..v1.35.0
+1. **`templates/review-changes.md` <!-- placeholder --> is UNCHANGED since v1.31.0** (`git log v1.31.0..v1.35.0
    -- templates/review-changes.md` is empty). That is the only re-mapped project-local
    surface here, so the expensive half of the last adoption had nothing to do.
 2. **All three user-global skills are byte-identical to v1.35.0's templates** apart from
@@ -672,7 +672,7 @@ Everything else in the gap lands in `curate.md` and `update-drift.md`, both user
 
 | item | where it landed |
 |---|---|
-| **v1.34.0 `templates/project-file.md`** — the stamp line carries an inline `# a NUMBER, not a status — never write "current" here; the framework's release cadence falsifies the adjective, not the pin` | `CLAUDE.md:5` |
+| **v1.34.0 `templates/project-file.md` <!-- placeholder -->** — the stamp line carries an inline `# a NUMBER, not a status — never write "current" here; the framework's release cadence falsifies the adjective, not the pin` | `CLAUDE.md:5` |
 
 ⭐ That comment exists because of this repo: the footer here said *"current"* on 2026-08-27
 and was false within hours, because v1.32.0 and v1.33.0 tagged the same evening. Upstream
@@ -681,8 +681,8 @@ cannot see the next tag coming, so it is the framework's job to warn.**
 
 ### Not applicable — three
 
-`templates/release.md` (no release skill here — only `review-changes` and
-`test-verify-memory` locally, and the three globals); `templates/coordination.md` (no
+`templates/release.md` <!-- placeholder --> (no release skill here — only `review-changes` and
+`test-verify-memory` locally, and the three globals); `templates/coordination.md` <!-- placeholder --> (no
 Layer 5 doc, which upstream's own v1.31.0 survey says **0 of 58** adopters have);
 **lint rule 10** (v1.32.0) — a lint over the framework's own templates, and this repo has
 no template suite for it to run against.
@@ -765,7 +765,7 @@ disjunction: it runs rung 1, self-strip, rung 1b, rung 3, rung 4, rung 5, and co
 
 ### Not applicable — four
 
-v1.31.0 #47 (no `docs/GUIDE.md` here), v1.28.0 #90 and #48, v1.31.0 #95–#98 — framework
+v1.31.0 #47 (no `docs/GUIDE.md` <!-- placeholder --> here), v1.28.0 #90 and #48, v1.31.0 #95–#98 — framework
 -side test fixtures and oracle report rows with no counterpart surface in this repo.
 
 ### ⛔ A live defect the newly-adopted check found on its first real run
@@ -869,7 +869,7 @@ NexusMind / ovr.news; the prose simply did not name the repo), now qualified in 
 rung 4 strips backticked paths before looking for a repo name, so a reference may not
 mark itself; **4** marked as genuinely unresolvable; **2** resolved by the rung-5
 extension; **1** left standing. The one remaining is a genuine break —
-`NexusMind/scripts/research/nm188_mojibake_derived.py`, never committed there and absent
+~~`NexusMind/scripts/research/nm188_mojibake_derived.py`~~, never committed there and absent
 from disk, while its `nm188_*` siblings exist. **Zero is not the target**; a change that
 drove this to zero would have disabled the check rather than fixed it. Proven alive
 after the change by a live mutation on the real corpus: two fabricated references
@@ -925,9 +925,9 @@ before it was believed.
 | v1.26.0 | `curate` Step 0 sub-step 5 takes the project file | **Already in force** — global `curate` verified byte-identical to the v1.26.0 tag by `diff`, and its runner invocation names `CLAUDE.md` explicitly |
 | v1.26.0 | `audit-context` repo-specific count attributed, not probed | **Already in force** — global `audit-context` byte-identical to the tag |
 | v1.26.0 | Probe a project-file count against its source of truth | **Adopted** → `CLAUDE.md`. **It caught a live drift on contact**, which is why it earns its place: the file read *"10th occurrence"* while `memory/working-rules.md` read **12th** — in a rule whose own subject is mechanisms that never ran. Corrected to 12th and probed. (Upstream's "third time that line has lagged" is about the **framework's** own project file; this is the first such lag measured here, and no earlier one was looked for) |
-| v1.26.0 | `templates/test-verify-memory.md` claim fix | **Not applicable** — the over-broad phrase is absent, and our copy already states the correct thing (the disposition comes from the `CANNOT VERIFY:` prefix, not the exit status) |
-| v1.26.0 | `templates/gotcha-log.md` claim fix | **Not applicable** — the claim is about a Promoted table, and we have none. Already declined for the same reason at v1.20.0 |
-| v1.26.0 | `docs/claim-audit-sample-2026-08-13.md` | **Not applicable** — framework-internal evidence, no counterpart surface |
+| v1.26.0 | `templates/test-verify-memory.md` <!-- placeholder --> claim fix | **Not applicable** — the over-broad phrase is absent, and our copy already states the correct thing (the disposition comes from the `CANNOT VERIFY:` prefix, not the exit status) |
+| v1.26.0 | `templates/gotcha-log.md` <!-- placeholder --> claim fix | **Not applicable** — the claim is about a Promoted table, and we have none. Already declined for the same reason at v1.20.0 |
+| v1.26.0 | `docs/claim-audit-sample-2026-08-13.md` <!-- placeholder --> | **Not applicable** — framework-internal evidence, no counterpart surface |
 
 ### Two stamp defects found independently of the gap
 
@@ -963,7 +963,7 @@ shipped the same day we adopted v1.23.0 — upstream velocity, not neglect.
 | v1.24.0 | `[RESOLVED]` + recurrence count belong in an entry's **heading** | **Adopted** → `memory/gotcha-log.md`. Measured before acting: 5 resolution markers were already in headings but in **3 incompatible formats**, and recurrence was **7 in bodies, 0 in headings**. Normalised all five to a `[RESOLVED…` prefix findable by one grep, tagged 5 headings (`[5x verify-the-call-path]`, `[4x verify-the-call-path]`, `[3x restated-set drift]`, two `[2x]`), and documented the forms in the file's template comment |
 | v1.24.0 | lint rule 8 — ratchet adopter-facing template sizes | **Not applicable** — no `templates/` dir; we ship no templates upstream |
 | v1.25.0 | adversarial lens: one rule — a claim needing a measurement gets one, gets hedged, or is not ready | **Adopted** → `.claude/skills/review-changes/SKILL.md`. We already had the negatives half (v1.22.0); the **absolutes-in-descriptions** half is new. Grounded in the same day's own failure rather than upstream's example — see below |
-| v1.25.0 | `hypothesis-log` gains a trigger in the working path | **Adopted, adapted** — we have no `templates/hypothesis-log.md`; we have per-topic `memory/*-hypotheses.md`. Landed as a lens clause: report an unmeasurable claim as a finding **at the moment it is made**, register during `/curate`, home is the topic file. This was the exact gap hit hours earlier — a hypothesis noticed while writing results up, not when the claim was made |
+| v1.25.0 | `hypothesis-log` gains a trigger in the working path | **Adopted, adapted** — we have no `templates/hypothesis-log.md` <!-- placeholder -->; we have per-topic `memory/*-hypotheses.md`. Landed as a lens clause: report an unmeasurable claim as a finding **at the moment it is made**, register during `/curate`, home is the topic file. This was the exact gap hit hours earlier — a hypothesis noticed while writing results up, not when the claim was made |
 | v1.25.0 | shape rule: never end a bolded phrase with a `**`-suffixed glob | **Already in force — nothing to fix.** 0 hits across 451 markdown files. **Verified by execution with a seeded control**: my first two sweep patterns were wrong (one covered only the single-glob shape; the second had the backticks in the wrong order and matched **0 of 2** known positives). Only the third — 2/2 positives, 0/2 safe lines — makes "0 hits" mean anything |
 | v1.25.0 | gotcha-log "2–3 lines" rule **withdrawn** | **No action, and it vindicates this log.** llm-distillery IS the cited evidence upstream: 203 entries, median ~1,200 chars, 35% >1,500. Recorded the withdrawal and the real signal (>3,000 chars) in the file's template comment |
 
@@ -1003,7 +1003,7 @@ itself shipped to fix.
 |------|------|---------|
 | v1.22.0 | `curate` Step-0 verify runner | **Already in force** — global skill byte-identical to the v1.23.0 tag. But its *adopter action* was real work here, below |
 | v1.22.0 | `review-changes` adversarial lens: state the check before the claim, on any negative | **Adopted** → `.claude/skills/review-changes/SKILL.md`, adapted to this repo's terser lens style and grounded in its own three catalogued instances |
-| v1.22.0 | `templates/project-file.md` "Active work" section | **Not applicable** — by the template's own instruction: delete it where the tool has auto-memory (Claude Code) |
+| v1.22.0 | `templates/project-file.md` <!-- placeholder --> "Active work" section | **Not applicable** — by the template's own instruction: delete it where the tool has auto-memory (Claude Code) |
 | v1.23.0 | `audit-context` Step 4 placeholder skip | **Already in force** — global skill current |
 | v1.23.0 | Adopter action: mark placeholders with `<!-- placeholder -->` | **Deferred** to the next `audit-context` run. 0 paths marked here today, and a marker is only meaningful against a live findings list — marking speculatively is how a real break gets labelled intentional |
 
@@ -1043,8 +1043,8 @@ Three defects were real and are fixed:
 ### Also folded in: v1.21.0
 
 Triaged 2026-08-11, nothing adopter-facing — the `install-global-skills.sh`
-release guard (maintainer tool), `templates/release.md` Step 1 (we publish no
-package), `templates/coordination.md` (we have none), one `docs/GUIDE.md`
+release guard (maintainer tool), `templates/release.md` <!-- placeholder --> Step 1 (we publish no
+package), `templates/coordination.md` <!-- placeholder --> (we have none), one `docs/GUIDE.md` <!-- placeholder -->
 sentence, and two stamp bumps. Recorded here so the frontmatter can carry only
 the current reconciliation.
 
@@ -1081,7 +1081,7 @@ the framework itself declined for its own #38 Step 1 tally.
 
 **NOT APPLICABLE** — `physics-tests/` disclosure (no such surface); `.gitignore`
 `/memory/` anchoring (`memory/` is tracked here, no ignore pattern);
-`tests/lint/skill-sync.sh` (maintainer infra).
+`tests/lint/skill-sync.sh` <!-- placeholder --> (maintainer infra).
 
 **ALREADY IN FORCE** — the v1.20.0 session-start row; the memory-index "not
 auto-loaded" correction (this index never claimed it); `audit-context` Step 1,

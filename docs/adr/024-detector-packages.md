@@ -41,7 +41,7 @@ read-only sweep of both repos. File references are to the sweep; re-read them be
 - ⭐ **Filters do not load from the Hub in production either.** gpu-server calls
   `get_production_scorer(..., use_hub=False)` (`deploy/gpu-server/main.py:926-931`), runs with
   `HF_HUB_OFFLINE=1` (`deploy/gpu-server/.env.example`), and refuses to start without a local
-  `model/adapter_model.safetensors` (`main.py:~1041-1054`). The Hub is where adapters are RECORDED, not
+  `model/adapter_model.safetensors` <!-- placeholder --> (`main.py:~1041-1054`). The Hub is where adapters are RECORDED, not
   where production reads them, and no Hub `revision` is pinned anywhere (`load_lora_hub`,
   `filters/common/model_loading.py:337`). **#165's "weights on the Hub, like the filters" therefore means a
   Hub record plus a local copy, not a Hub fetch at load time.**
@@ -150,7 +150,7 @@ route detector weights have. A retrained detector today ships whatever the worki
 - **commerce v2, measured by NexusMind:**
   - The pipeline does NOT load v2. `src/preprocessing/commerce.py:190-197` (LD#80) forces local v1, so
     production commerce stamps come from v1.
-  - gpu-server DOES load v2 when `models/mlp_classifier.pkl` exists (`deploy/gpu-server/main.py:1059-1062`).
+  - gpu-server DOES load v2 when `models/mlp_classifier.pkl` <!-- placeholder --> exists (`deploy/gpu-server/main.py:1059-1062`).
     Its journal shows it loaded at 10:08:26 and unloaded at 10:08:35 on 2026-09-27; the caller is unidentified.
   - ▶ **Owner question (new): package v2 only if gpu-server's `/commerce/predict` should keep working.**
     Nothing in NexusMind's scoring depends on it.

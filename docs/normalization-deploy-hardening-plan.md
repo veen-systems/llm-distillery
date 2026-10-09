@@ -109,7 +109,7 @@ guard HALTS on untracked `model/` config files (production-halt regression, roun
 
 **Verification gates (NEVER let this run live-untested as ExecStartPre):** dry-run
 `deploy_filters.sh` in a scratch clone and confirm — (a) untracked `src/scoring/*.py` → BLOCKS;
-(b) untracked `model/generation_config.json` → does NOT block; (c) clean tree → deploys and the
+(b) untracked `model/generation_config.json` <!-- placeholder --> → does NOT block; (c) clean tree → deploys and the
 round-trip hash matches. Only after all three, deploy through the canonical chain.
 **Blast radius:** production deploy path. HIGH.
 

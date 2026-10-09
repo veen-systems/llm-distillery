@@ -108,7 +108,7 @@ screen by design: there the FN is the expensive error, hence `--objective recall
 
 ### 4. Stage-1 probe (hybrid inference, ADR-006) — **REQUIRED for needle-in-haystack filters**
 
-**Gate check before deploy: `probe/embedding_probe_e5small.pkl` must exist.**
+**Gate check before deploy: `probe/embedding_probe_e5small.pkl` <!-- placeholder --> must exist.**
 A 1B-param model cannot simultaneously screen for topic relevance AND score
 dimensional quality in a single forward pass. The solutions v4 quality gate
 (2026-07-26) proved this: without the probe, 27% of medium+ articles were

@@ -38,7 +38,7 @@ PYTHONPATH=. python scripts/deployment/verify_filter_package.py \
 
 Eight checks: imports match dir version, `repo_id` matches dir version, `config.yaml`
 `filter.version` matches, `base_scorer.FILTER_VERSION` matches, Hub repo exists, Hub
-`last_modified` ≥ local `model/adapter_model.safetensors` mtime. Catches the
+`last_modified` ≥ local `model/adapter_model.safetensors` <!-- placeholder --> mtime. Catches the
 v_new-config × v_old-weights class (#44).
 
 Then, because the image is staged from THIS checkout's adapter and staging compares BYTES (the
@@ -115,7 +115,7 @@ DISTILLERY_ROOT=$PWD NEXUSMIND_ROOT=/home/jeroen/repos/veen-systems/NexusMind \
 > - **Weights of an UNPACKAGED detector would reach NexusMind only through this copy** (gitignored here, so
 >   `git ls-files` would stop shipping them). Retired versions (`RETIRED_DIRS`: obituary v3/v4, commerce v2) never ship (owner, 2026-09-27).
 > - **Some "training"-named files are runtime.** `harm_detector/v1/inference.py` reads
->   `models/training_config.json` (and, if present, `models/SHA256SUMS.txt`) at load, so never exclude by
+>   `filters/common/harm_detector/v1/models/training_config.json` (and, if present, `models/SHA256SUMS.txt`) at load, so never exclude by
 >   those names.
 >
 > Untracked scratch files in `filters/common` outside the packaged dirs ship too, and are then committed in

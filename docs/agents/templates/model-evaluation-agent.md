@@ -19,7 +19,7 @@ You are evaluating a trained filter model to determine if it's ready for product
 - Test dataset: `datasets/training/{filter_name}/test.jsonl`
 
 **Your responsibilities:**
-1. Run test set evaluation using `sandbox/analysis_scripts/evaluate_model.py`
+1. Run test set evaluation using `sandbox/analysis_scripts/evaluate_model.py` <!-- placeholder -->
 2. Analyze training progression (epochs, convergence)
 3. Check for overfitting (train vs val vs test gaps)
 4. Identify problematic dimensions (high MAE)

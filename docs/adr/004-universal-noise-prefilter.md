@@ -210,6 +210,6 @@ The trained model learns filter-specific scope from:
 
 ## References
 
-- Analysis: `datasets/curation/sustainability_tech_review/prefilter_gap_analysis.md`
+- Analysis: ~~`datasets/curation/sustainability_tech_review/prefilter_gap_analysis.md`~~
 - Commerce prefilter v2: `filters/common/commerce_prefilter/v2/`
 - Data collected: `datasets/training/universal_noise_prefilter/` (repurpose for filter-specific training)

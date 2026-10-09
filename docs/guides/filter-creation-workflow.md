@@ -127,7 +127,7 @@ PYTHONPATH=. python scripts/screening/embedding_screener.py \
 ```
 This finds semantically similar articles via e5-small cosine similarity — much higher recall than keyword screening.
 
-**Important: Hand-craft seeds, don't use scored data.** Write 10-15 synthetic article summaries representing canonical examples of your concept. Seeds extracted from scored data get contaminated by corpus composition (e.g., an academic-heavy corpus produces academic-biased seeds). See `datasets/foresight/screening/seed_positives.jsonl` for an example.
+**Important: Hand-craft seeds, don't use scored data.** Write 10-15 synthetic article summaries representing canonical examples of your concept. Seeds extracted from scored data get contaminated by corpus composition (e.g., an academic-heavy corpus produces academic-biased seeds). See ~~`datasets/foresight/screening/seed_positives.jsonl`~~ for an example.
 
 ### 6. Prepare training splits
 

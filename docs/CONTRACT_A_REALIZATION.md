@@ -318,7 +318,7 @@ in CI, so the field's value is confined to the case the test cannot see — **na
 in the spec rather than leaving it implicit.**
 
 ⭐ **And that case is this plan's own signature shape.** The guard asserts a property of
-**the checkout's** `config/app.yaml` at **CI time**. Neither it nor CI can see the tick
+**the checkout's** `NexusMind/config/app.yaml` at **CI time**. Neither it nor CI can see the tick
 that actually ran, on the host, against the config that was actually live. **"A test
 passes" is not "the mechanism ran"** — present, configured, tested, and still able to
 diverge where nobody is looking. *(11th occurrence of the unreachable-mechanism shape.)*

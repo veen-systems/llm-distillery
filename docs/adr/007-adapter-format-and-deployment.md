@@ -58,7 +58,7 @@ Expects keys WITHOUT `.default.` suffix (PEFT adds it internally):
 When deploying a new filter to HuggingFace Hub:
 
 1. Do NOT run `resave_adapter.py`
-2. Write a proper `model/README.md` (not the PEFT template)
+2. Write a proper `model/README.md` <!-- placeholder --> (not the PEFT template)
 3. Use `load_base_model_for_seq_cls()` in both `inference.py` and `inference_hub.py`
 4. Run `upload_to_huggingface.py` — it will verify Hub loading automatically
 5. Run `inference_hub.py` to confirm scores match local inference

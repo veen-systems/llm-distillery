@@ -139,7 +139,7 @@ key. **⚠️ Include `content`**: violence's flagged files carry title/url/scor
 today's audit to re-hydrate from `data/filtered/`. Write enough to adjudicate from.
 
 ### P2 — one stage shape
-Move violence stamping to `src/preprocessing/violence.py`, running before the load gate, so all
+Move violence stamping to `src/preprocessing/violence.py` <!-- placeholder -->, running before the load gate, so all
 three stamp in preprocessing and all three drop in `_is_duplicate`. This deletes the two-phase
 special case and the warning comment that guards it. **Verify by executing**, not by reading:
 the current arrangement exists precisely because an earlier check silently did nothing.
@@ -153,7 +153,7 @@ changes. **~95% of the three inference files is already identical.**
 ### P4 — standard package contents
 Every gate ships: `v*/inference.py`, `v*/models/`, `v*/config.yaml`, `v*/calibration_report.json`,
 `oracle.py` + `prompt.md` (the labelling definition, in the package, not inside a validation
-script), `training/`, `validation/panel_audit.py`, `README.md`, `docs/CHANGE_REQUEST_NEXUSMIND.md`.
+script), `training/`, `validation/panel_audit.py`, `README.md`, `docs/CHANGE_REQUEST_NEXUSMIND.md` <!-- placeholder -->.
 
 ### ⛔ P5 — do NOT rename anything
 `commerce_prefilter` / `obituary_detector` / `violence_promotion` stay. Three deployed packages,

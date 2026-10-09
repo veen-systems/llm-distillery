@@ -99,4 +99,4 @@ to the config's tiers.medium.threshold so it always evaluates at what deploys.)
 
 - `scripts/gate/ground_truth_gate.py`, `tests/unit/test_ground_truth_gate.py`
 - `scripts/gate/agreement_gate.py` (Deprecated banner)
-- `memory/feedback-oracle-bias-vs-noise.md`, augmented-engineering#25
+- `feedback-oracle-bias-vs-noise.md`, augmented-engineering#25

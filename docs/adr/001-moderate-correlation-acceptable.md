@@ -82,6 +82,6 @@ Correlations are problematic when:
 
 ## References
 
-- Analysis: `sandbox/sustainability_technology_v1_calibration/analysis_summary.json`
+- Analysis: ~~`sandbox/sustainability_technology_v1_calibration/analysis_summary.json`~~
 - Visualizations: `sandbox/sustainability_technology_v1_calibration/*.png`
 - Updated guide: `docs/agents/filter-development-guide.md` (lines 449-485)

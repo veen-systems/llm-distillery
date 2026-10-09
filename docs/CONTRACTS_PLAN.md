@@ -549,7 +549,7 @@ it.**
 
 | # | item | why here |
 |---|---|---|
-| W4.1 | `reference/contracts.html`: the two-contract split | Currently the only page describing this layer to a reader, and it cannot presently say that the blob crosses both contracts undescribed |
+| W4.1 | `reference/contracts.html` <!-- placeholder -->: the two-contract split | Currently the only page describing this layer to a reader, and it cannot presently say that the blob crosses both contracts undescribed |
 | W4.2 | Numbers become verify commands, not prose | Their own standing rule. Every figure in the brief has a command |
 | W4.3 | Add the contracts check to the ops snapshot | Once W5.1 exists, "is Contract A green" is exactly the kind of armed/not-armed state the snapshot already reports for drop points |
 
@@ -647,7 +647,7 @@ dropped for being too small to look like work:**
 3. ✅ **DONE — tell pipeline-atlas the two unit names.** `nexusmind-contract-check.timer`
    and `nexusmind-contract-check.service`, delivered; they shipped the arming half as
    `ff9dcc6` and both render **NOT ARMED · unit not installed**.
-4. ⭐ **STILL OWED: tell pipeline-atlas the moment `deploy/install.sh` has run**, so
+4. ⭐ **STILL OWED: tell pipeline-atlas the moment `NexusMind/deploy/install.sh` has run**, so
    they flip `must_exist` to `True`. **This is not optional bookkeeping.**
    `LoadState=not-found` means **two opposite things**, and the flag is the only thing
    that separates them:
@@ -667,7 +667,7 @@ on **both** of these unit names exits **0** and reports
 snapshot querying the obvious properties would have drawn **two clean idle rows for
 units that do not exist.** `LoadState` is the only discriminator.
 | W5.2 | **Correct FluxusSource#164's stated justification** | See below — this is ours to answer and the reason on record is wrong |
-| W5.3 | Keep `memory/stamp-contract-integrity.md` § *The contracts layer* current | It is the only surviving copy of the measurements and traps. ⚠️ The round-1 working brief lived in a **session scratchpad and is gone**; its content was folded into that section before the session closed. If a peer cites a `scratchpad/CONTRACTS-BRIEF.md` path, it no longer exists — send them here |
+| W5.3 | Keep `memory/stamp-contract-integrity.md` § *The contracts layer* current | It is the only surviving copy of the measurements and traps. ⚠️ The round-1 working brief lived in a **session scratchpad and is gone**; its content was folded into that section before the session closed. If a peer cites a ~~`scratchpad/CONTRACTS-BRIEF.md`~~ path, it no longer exists — send them here |
 
 #### W5.2 — the FS#164 answer, resolved
 

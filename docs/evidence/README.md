@@ -37,6 +37,6 @@ This folder inherits the [llm-distillery](../../) repository's EUPL-1.2 license 
 
 ## Cross-references
 
-- Application: `freelance/grants/nlnet-commons-fund-2026-resubmit/application.md` (in the applicant's work-income repo, not public)
+- Application: `freelance/grants/nlnet-commons-fund-2026-resubmit/application.md` <!-- placeholder --> (in the applicant's work-income repo, not public)
 - Claim registry: companion `claims.md` in the same folder, with verification status per claim
 - Methodology source for the V&V method: https://github.com/ducroq/agent-ready-papers (private at submission)

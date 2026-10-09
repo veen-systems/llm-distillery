@@ -52,7 +52,7 @@ Probes are ~18% worse on MAE overall, and critically worse on boundary cases (ME
 ### Per-filter integration
 
 Each filter adds:
-- `probe/embedding_probe.pkl`: Trained MLP probe
+- `probe/embedding_probe.pkl` <!-- placeholder -->: Trained MLP probe
 - `inference_hybrid.py`: Filter-specific HybridScorer subclass
 - `config.yaml`: hybrid_inference section
 

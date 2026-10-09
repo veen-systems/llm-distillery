@@ -283,7 +283,7 @@ Calibrated scores + tier
 
 - Embedding: `intfloat/e5-small-v2` (33M params, 384-dim)
 - Classifier: MLP (384 -> 128 -> 1), trained on same training data
-- Stored in `probe/embedding_probe_e5small.pkl`
+- Stored in `probe/embedding_probe_e5small.pkl` <!-- placeholder -->
 
 ---
 

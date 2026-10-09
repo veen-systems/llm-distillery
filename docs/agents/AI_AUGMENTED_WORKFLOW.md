@@ -445,5 +445,5 @@ You're doing this right when:
 - `docs/agents/templates/ADR-TEMPLATE.md` - Architecture decision record template
 - `docs/decisions/` - Architecture Decision Records
 - `docs/SESSION_STATE.md` <!-- placeholder --> - Current project status (read this first!)
-- `sandbox/README.md` - Experimentation guidelines
+- ~~`sandbox/README.md`~~ - Experimentation guidelines
 - `C:\local_dev\AI_AUGMENTED_SOLO_DEV_FRAMEWORK.md` - Original framework inspiration

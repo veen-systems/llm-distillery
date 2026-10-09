@@ -253,7 +253,7 @@ Focus on: Has reasoning quality improved? Are tier distributions more accurate?"
 
 ### Example Output
 
-**File:** `reports/uplifting_oracle_calibration.md`
+**File:** `reports/uplifting_oracle_calibration.md` <!-- placeholder -->
 
 ```markdown
 # Oracle Calibration Report: Uplifting

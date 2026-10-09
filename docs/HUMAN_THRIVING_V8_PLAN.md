@@ -1119,7 +1119,7 @@ never received it. Remediation for the others is llm-distillery#126.
 | `__init__.py` | ✅ | |
 | `base_scorer.py` | ✅ | ⚠️ **added during review** — an `ls` pass over docs alone can bless a package that cannot score |
 | `inference.py`, `inference_hybrid.py` | ✅ | `filter_loader` sets `hybrid_class` from the **presence** of `inference_hybrid.py`, so omitting it silently disables two-stage scoring |
-| `model/adapter_config.json`, `model/adapter_model.safetensors`, `model/tokenizer*.json` | ✅ | pre-placed on gpu-server (F3); gitignored locally, must exist on the box |
+| `model/adapter_config.json` <!-- placeholder -->, `model/adapter_model.safetensors` <!-- placeholder -->, `model/tokenizer*.json` | ✅ | pre-placed on gpu-server (F3); gitignored locally, must exist on the box |
 | ~~`prefilter.py`~~ | ⛔ **NO** | see F2 |
 
 **Verify by `ls`, not by assertion** — the same discipline llm-distillery#126 records.

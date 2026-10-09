@@ -113,7 +113,14 @@
      touched: `docs/TODO-archive.md` and `docs/CONTRACTS_PLAN-rounds-archive.md` (verbatim archives; their ~20 such
      refs stay), and one command run from inside the NexusMind checkout. The rest is judgement, classified then:
      115 bare basenames, 48 paths found nowhere, 12 collisions, 10 sibling-prefixed but gone, 5 in several siblings.
-     Open owner question from the record: the disposition for deliberately-uncommitted artefacts (#97).
+     ✅ #97 disposition ruled (owner): a counted `<!-- uncommitted: #NNN -->` marker, built and seeded (`85e2845`).
+     ✅ **Non-basename pass done 2026-10-09 (owner: "the 75"):** 45 live references dispositioned by hand in 23
+     files: placeholder for class names and upstream/private paths, strike for removed/never-committed files,
+     repo prefix where the context names the repo. `--docs-live` 214 → **168**, 0 live non-basename findings
+     left, default 0, run.sh 47/47. Three of my markers were wrong (COVERS NO PATH) and were fixed.
+     ▶ **Left:** 118 bare basenames (rule-level question: most are run outputs) and the ~51 findings inside the
+     two verbatim archives (`docs/TODO-archive.md`, `docs/CONTRACTS_PLAN-rounds-archive.md`). Those are a TIER
+     question, not a marking one: the archives sit in the live tier because they live in `docs/` root.
    - ✅ The retracted 19.9%/13.0% framing — **closed 2026-10-07:** already gone from `CLAUDE.md`; the 3 remaining copies
      (`docs/HUMAN_THRIVING_V8_PLAN.md`, `memory/cross-repo-prioritization.md` ×2) now carry the retraction beside them.
    - ✅ LD#160 **done 2026-10-07** as ruled: ADR-009 dated note (no rewrite); `cross_filter_landscape.py` renamed to
