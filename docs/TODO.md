@@ -64,6 +64,12 @@
        H-BB1) moved verbatim, 56,148 → 53,622 B, 0 lines missing. Kept: H-JO1 (partial), H-BB4 (⚠️), H-BB2 / H-BV6
        (verdict word outside the rule). `corroboration-feature-hypotheses.md` and `working-rules.md` have NO closed rows,
        so any cut there is an owner call (asked 2026-10-09).
+       - ✅ **Ruled + done 2026-10-09.** Corroboration: kept, marked DORMANT with a stale-summary warning (owner). 
+         Working rules: rules and occurrence counts stay live; pre-2026-09-01 occurrence stories moved verbatim to
+         `memory/archive/working-rules-archive.md` (4 blocks: source-excludes 4–15, name-the-caller 9–16, pgrep 4–6,
+         the 08-15/16 population recurrences). 65,110 → 50,641 B (estimate was 35–40 KB off; measured 14.5 KB, because
+         most of the largest bullet is September stories). Reconstructed byte-for-byte from the files on disk vs HEAD;
+         a one-word mutant fails. The pgrep block carries a pre-existing duplicated fragment, kept as found.
      - d. ✅ session-log rotated (above). **Next: `corroboration-feature-hypotheses.md` (79 KB) and `working-rules.md`
        (65 KB)**. Retire closed rows verbatim into `memory/archive/`. Also the hypothesis ledger (50 KB): move CLOSED rows
        into `memory/archive/hypothesis-ledger-archive.md`.

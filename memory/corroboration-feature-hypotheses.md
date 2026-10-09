@@ -7,6 +7,11 @@ metadata:
 
 # Corroboration feature hypotheses
 
+⏸ **DORMANT since 2026-08-27 (owner, 2026-10-09: keep, do not archive).** NexusMind owns the programme. ⚠️ **The
+CONFIRMED / REFUTED / UNTESTED summary below dates from 2026-08-07 and is STALE**: the newest findings live only in
+the dated sections further down: the gate is the lever (08-09), production is 79.3% sub-threshold artefact
+(08-16/17), and combining features beats the threshold (08-17). Read those before quoting the summary.
+
 **Created 2026-08-07 (late).** The owner asked whether NER could be "just another
 feature" alongside the vector-space output and time dependency. It already is —
 and the answer to whether it *works* is more settled than the board suggests.
