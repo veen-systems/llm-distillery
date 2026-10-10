@@ -3,7 +3,7 @@
 ## ▶️ START HERE — the ordered queue, as of 2026-10-10 (session close)
 
 *A bare "continue" means this list, top down. Each line names the FIRST action. Item 0 is WAITING (dated), item 1 is
-NexusMind's, so a bare "continue" before 2026-10-23 starts at **item 2a** (the read surface, ▶ lines).*
+NexusMind's, so a bare "continue" before 2026-10-23 starts at **item 2, step 0** (the hook replay), then 2a.*
 
 0. ⏸ **BELONGING v3 is LIVE (since NexusMind run `bd00dad6`, 2026-10-09 00:08–01:24 CEST), replacing v1. Nothing to do before
    2026-10-23 unless ovr.news messages.** Read `filters/belonging/v3/STATUS.md` first (evidence, rollback rule, refit notes);
@@ -33,18 +33,29 @@ NexusMind's, so a bare "continue" before 2026-10-23 starts at **item 2a** (the r
    `docs/work-items/`). History of the passes so far: `docs/TODO-archive.md` § *Moved 2026-10-10*; posted on #163.
    Every move is VERBATIM to `memory/archive/` with a lossless check (`sort | comm`, C locale; a one-line mutant must
    report 1). Biggest lever first:
+   - 0. ▶ **FIRST (owner, 2026-10-10): the hook transcript replay.** Run every real Bash command from this project's
+     Claude Code transcripts (`~/.claude/projects/-home-jeroen-repos-veen-systems-llm-distillery/*.jsonl`, the
+     `tool_use` inputs where `name == "Bash"`) through `scripts/hooks/block_pattern_kill.py` at `caeaa4f` AND at HEAD
+     (`offending()` via importlib; build target names by concatenation so this hook does not refuse the script).
+     Print only the commands whose verdict DIFFERS and read each one: NEW=None/OLD=hit is a regression until
+     explained. Fix and add a test for each; also report how many commands the corpus held and how many HEAD blocks.
+     Local only, no agents. Why: the round-4 fixes (`b090140`) had no review, and each rewrite today lost positives.
    - a. ▶ **The 11 `memory/*-hypotheses.md` files: 261,785 chars (35% of the surface).** First action: per file, list
      the sections/rows whose verdict is closed (SUPPORTED / REFUTED / CLOSED / MOOT) with their bytes, then move them
-     under the 09-27 rule the ledger already uses. Largest first: `corroboration-feature-hypotheses.md` 78,438 (owner
-     2026-10-09: kept, marked DORMANT; ASK whether dormant now means "whole file to archive behind its pointer row"),
+     under the 09-27 rule the ledger already uses. Largest first: `corroboration-feature-hypotheses.md` 78,438 — **RULED 2026-10-10: THIN
+     it** (supersedes 10-09's "keep"): keep the file and its pointer; rewrite the stale 2026-08-07 summary into a short
+     current one (~5–10 KB) naming the three newest dated findings (the gate is the lever, 08-09; production is 79.3%
+     sub-threshold artefact, 08-16/17; combining features beats the threshold, 08-17); move every dated section
+     VERBATIM to `memory/archive/` (lossless check). Then
      `prefilter-length-floor-hypotheses.md` 37,478, `date-error-recency-boost-hypotheses.md` 33,176,
      `uplifting-oracle-genre-hypotheses.md` 29,543.
    - b. **The date rule on the reference files** (owner, 2026-10-09: dated before 2026-09-01 moves, unless the class
      recurred since): `cross-repo-prioritization.md` 37,191, `oracle-pricing-scheduling.md` 35,176,
      `stamp-contract-integrity.md` 34,024, `filter-status.md` 29,730, `nexusmind-data-sources.md` 27,275.
    - c. **Mechanize, then retire.** The gotcha log (63,914) keeps 11 catalogue entries only because their classes
-     have no `live` row; each new live check lets one move. And make the surface itself a check: a ceiling
-     (`check_index_budget.py --target surface`, red above a ratchet; propose the number, the owner sets it).
+     have no `live` row; each new live check lets one move. **RULED 2026-10-10: a RATCHET ceiling on the surface**:
+     `check_index_budget.py --target surface` (same command as `/curate` Step 0), ceiling = today's measurement + ~2%,
+     LOWERED to the new measurement after each pruning pass; green now, can only tighten. Seed it red first.
    - d. **`docs/TODO.md` below START HERE** (~25 KB of section backlog). Audit each section: close, archive or keep
      (§ *Commerce Prefilter SLM*, § *Prefilter Quality (Apr 2026)*; check against decision 0 and ADR-004 first).
 
@@ -74,7 +85,8 @@ NexusMind's, so a bare "continue" before 2026-10-23 starts at **item 2a** (the r
    - LD#134: `--docs-live` is **170** (2026-10-10), 168 at `483c450`: +1 is `filtered_20261009_093632.jsonl` in this
      file's archive copy (a sadalsuud data file), **+1 not yet traced**.
    - Hook: `block_pattern_kill.py` is silently OFF when `CLAUDE_PROJECT_DIR` is unset (settings entry exits 0).
-   - Owner: branch `docs/event-identity-encoder-plan` (one commit, 2026-08-06, on origin, no PR): merge, PR or delete?
+   - ✅ Branch `docs/event-identity-encoder-plan` — **ruled 2026-10-10:** plan posted verbatim on LD#100, branch deleted
+     (local + origin; was `0c283c6`).
    - H-MECH-1: watch, 2 batteries left.
    - #158: the heldout detector band (b650).
    - #104 item 1: likely MOOT if gpu-server is retired.
