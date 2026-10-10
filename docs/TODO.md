@@ -61,7 +61,8 @@ NexusMind's, so a bare "continue" before 2026-10-23 starts at **item 2, step 0**
 
 3. **Owner, standing:**
    - H-TV5: one last look at the Thriving tab ~2026-10-06, then close.
-   - #156 adverse pool (~$3.2–3.6): DEFERRED.
+   - #156 adverse pool (~$3.2–3.6): DEFERRED. ⚠️ When a lens first CONSUMES `harm_is_subject` (any NexusMind filter
+     `config.yaml` naming it), tell the pipeline-atlas session BEFORE it lands: its check goes red on that by design (2026-10-10).
    - Belonging shadow harm cap: a NexusMind change, low priority, v2's before/after instrument.
    - **Belonging single-person stories (H-BB6, 2026-10-10):** owner: the top of the page shows "at least half personal stories". Needs the
      owner's bar ("a few" = ≤ k of the top N), then the top-of-page composition check (`experiments/README.md` § *Protocol*).
