@@ -1,0 +1,75 @@
+{
+ "lab_root": "$LD_LAB (default ~/ld-lab, on situla)",
+ "entries": [
+  {
+   "path": "datasets/v8_corpus/v1/experiment_inputs/cache_ttl/Q0_in.jsonl",
+   "sha256": "e2f3cc0c6a12828e902d0d7e37a83d2ff92f6df7b16063ca09c2b8134f6d4c8f",
+   "size": 173745,
+   "origin": "b650-gpu:v8_corpus/experiment_inputs/cache_ttl/Q0_in.jsonl",
+   "pulled_at": "2026-10-10T08:50:12+02:00"
+  },
+  {
+   "path": "datasets/v8_corpus/v1/experiment_inputs/cache_ttl/Q0_out.jsonl",
+   "sha256": "d95f4877fbc8962cd8cb35af60f76ead0a82ca5244566151fa7fe6aa7c01f917",
+   "size": 228088,
+   "origin": "b650-gpu:v8_corpus/experiment_inputs/cache_ttl/Q0_out.jsonl",
+   "pulled_at": "2026-10-10T08:50:12+02:00"
+  },
+  {
+   "path": "datasets/v8_corpus/v1/experiment_inputs/cache_ttl/Q1_in.jsonl",
+   "sha256": "9e51ed1964d4948343b2e74a962e3c2b8cc031b81596910cde265b5ab7c2f37a",
+   "size": 199678,
+   "origin": "b650-gpu:v8_corpus/experiment_inputs/cache_ttl/Q1_in.jsonl",
+   "pulled_at": "2026-10-10T08:50:12+02:00"
+  },
+  {
+   "path": "datasets/v8_corpus/v1/experiment_inputs/cache_ttl/Q1_out.jsonl",
+   "sha256": "aa2bf447e1605ae3ad2e09011a5517c0ee3270873ea1925db75e48d16896a017",
+   "size": 256072,
+   "origin": "b650-gpu:v8_corpus/experiment_inputs/cache_ttl/Q1_out.jsonl",
+   "pulled_at": "2026-10-10T08:50:12+02:00"
+  },
+  {
+   "path": "datasets/v8_corpus/v1/experiment_inputs/cache_ttl/Q2_in.jsonl",
+   "sha256": "a39c61ae7d13521d3f17fabbdf87968862154f59a86f37a917425c4ec0dd0062",
+   "size": 185538,
+   "origin": "b650-gpu:v8_corpus/experiment_inputs/cache_ttl/Q2_in.jsonl",
+   "pulled_at": "2026-10-10T08:50:12+02:00"
+  },
+  {
+   "path": "datasets/v8_corpus/v1/experiment_inputs/cache_ttl/Q2_out.jsonl",
+   "sha256": "8337c1d125da07a89ee53955fbe9b797a0633418ea0171ebdfaa3a18099bffb9",
+   "size": 243632,
+   "origin": "b650-gpu:v8_corpus/experiment_inputs/cache_ttl/Q2_out.jsonl",
+   "pulled_at": "2026-10-10T08:50:12+02:00"
+  },
+  {
+   "path": "datasets/v8_corpus/v1/experiment_inputs/cache_ttl/Q3_in.jsonl",
+   "sha256": "debf5754c256d081ab46157b3a1f61edb6a3abc9de3d8473f75be5bda07084e4",
+   "size": 175345,
+   "origin": "b650-gpu:v8_corpus/experiment_inputs/cache_ttl/Q3_in.jsonl",
+   "pulled_at": "2026-10-10T08:50:12+02:00"
+  },
+  {
+   "path": "datasets/v8_corpus/v1/experiment_inputs/cache_ttl/Q3_out.jsonl",
+   "sha256": "8460b1883519dae6b05f9318ec3ee14083561f4cbf39de30f627ced6b98620a8",
+   "size": 232537,
+   "origin": "b650-gpu:v8_corpus/experiment_inputs/cache_ttl/Q3_out.jsonl",
+   "pulled_at": "2026-10-10T08:50:12+02:00"
+  },
+  {
+   "path": "datasets/v8_corpus/v1/experiment_inputs/cache_ttl/run.log",
+   "sha256": "1cde7c40dd79d5ce2a292a018c5815574c951a7331834915b0e8c9a89d40c99c",
+   "size": 4890,
+   "origin": "b650-gpu:v8_corpus/experiment_inputs/cache_ttl/run.log",
+   "pulled_at": "2026-10-10T08:50:12+02:00"
+  },
+  {
+   "path": "datasets/v8_corpus/v1/experiment_inputs/cache_ttl/run_ttl2.sh",
+   "sha256": "83cf18de8d00dce6838519a08afa70ac5250a0e9fb3c0a7d09f4f47b77d9963e",
+   "size": 987,
+   "origin": "b650-gpu:v8_corpus/experiment_inputs/cache_ttl/run_ttl2.sh",
+   "pulled_at": "2026-10-10T08:50:12+02:00"
+  }
+ ]
+}

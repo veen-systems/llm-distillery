@@ -1,5 +1,7 @@
 # Replacing the ADR-015 lens-overlap row in the no-regression set
 
+> **2026-10-10: the durable copy is now on situla**, `~/ld-lab/datasets/v8_corpus/v1/` (pulled from b650 and verified by sha256 on both sides; owner ruling: situla is the single source of truth, `docs/decisions/2026-10-10-situla-single-source-of-truth.md`). The files this dir rests on are listed with their hashes in `MANIFEST.json` here. Mentions of `b650-gpu:~/v8_corpus/` below are where the data WAS when this was written.
+
 **Date:** 2026-08-30 · **Spend:** $0 (read-only scans of production output; no oracle call) ·
 **Ruling:** `docs/decisions/2026-08-30-v8-phase-b-rulings.md` §2 · **Registry:** `EXP-006`
 

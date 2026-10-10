@@ -63,8 +63,19 @@ NexusMind's, so a bare "continue" before 2026-10-23 starts at **item 2, step 0**
    - H-TV5: one last look at the Thriving tab ~2026-10-06, then close.
    - #156 adverse pool (~$3.2–3.6): DEFERRED.
    - Belonging shadow harm cap: a NexusMind change, low priority, v2's before/after instrument.
+   - **Belonging single-person stories (H-BB6, 2026-10-10):** owner: the top of the page shows "at least half personal stories". Needs the
+     owner's bar ("a few" = ≤ k of the top N), then the top-of-page composition check (`experiments/README.md` § *Protocol*).
+     First, free: which positives c2a (EXP-046) missed. Evidence `docs/evidence/2026-10-10-belonging-v3-top-of-page/`.
+   - **Host data (situla = source of truth, 2026-10-10):** triage `~/ld-lab/inbox/` FIRST (a cited tree can only be
+     re-pulled while the host copy exists), then the owner's per-item go to delete host copies, only after a restic
+     snapshot holds them. List: `docs/evidence/2026-10-10-host-data-inventory/README.md`.
 
 4. **Small, ours** (detail in the archived block's numbered items):
+   - Enforce the experiment protocol (`experiments/README.md` § *Protocol*, 2026-10-10): it is prose today. Add a
+     `reader_visible` field plus composition / live-check artifacts to the registry schema and make
+     `check_experiment_registry.py` fail a reader-visible decision without them.
+   - The lab-manifest evidence backlog (`check_lab_manifests.py` BACKLOG lines, frozen in
+     `scripts/verification/lab_manifest_baseline.json`): cite what was pulled, shrink the baseline, mark the rest lost.
    - LD#134 step 3, the marking pass (`docs/decisions/2026-09-17-refcheck-docs-tier.md`).
      **Started 2026-10-09:** the mechanical slice. `--docs-live` 231 → **214** unique, 0 new findings, default scan
      still 0: unqualified sibling paths that exist in exactly ONE sibling got the repo prefix, in 9 live docs. NOT

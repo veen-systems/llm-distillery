@@ -85,6 +85,44 @@ python3 scripts/verification/check_experiment_registry.py      # schema + number
    was to automate the check. Adopting the registry without that check would be adopting the
    defect and waiting for the audit.
 
+## Protocol for an experiment that can change what readers see (added 2026-10-10)
+
+Assistant's proposal, made in session on 2026-10-10. The owner's reply was the ruling in
+`docs/decisions/2026-10-10-situla-single-source-of-truth.md` ("make sure we set up proper
+experiments"), not an item-by-item approval. The **bar values** below are still open: the
+owner has not yet said what share of single-person stories "a few" means.
+
+**Why:** belonging v3 passed its held-out gate (EXP-047), and the next morning the owner reported
+that the top of ovr.news's Belonging page showed "at least half personal stories"
+(`docs/evidence/2026-10-10-belonging-v3-top-of-page/README.md`; the share is Claude's read of
+titles, not a judged count). The gate asks "does this
+article pass at the op-point?". Nothing asked "what does the reader see at the top?", and
+the only reader-side check was the ovr panel two weeks later.
+
+Pre-register all three in the experiment's `PREREGISTRATION.md`, **before any score is seen**
+(skeleton: `PREREGISTRATION.template.md`). ⚠️ **Nothing enforces this yet**: the registry schema
+has no field for it and `check_experiment_registry.py` does not look; `docs/TODO.md` carries the
+item. Until then it holds only as far as the author follows it.
+
+1. **The gate**, as now: a fresh held-out set, the binding pass rule, one shot.
+2. **Top-of-page composition.** Score a fresh production draw with the candidate, take the
+   top N by the score the site ranks on, and have the blind judges classify each row with
+   the rubric's existing classes. The pass bar is a count, e.g. "≤ k of N in class X". The
+   draw must not overlap training or the gate's set.
+3. **A live check 48 h after the switch**: the same classification on what the site actually
+   shows (ovr.db, the build query, never `live_articles`), with the rollback bar fixed
+   before the switch. Rows the PREVIOUS version scored drain for days, so condition on the
+   version that scored each row: ovr.db has no version column, so join to NexusMind's
+   `filtered_*.jsonl` stamp.
+
+**Data:** inputs go to the GPU host from situla, and outputs come back with
+`scripts/lab/lab.py pull` and are cited with `lab.py cite`. Do not conclude an experiment whose
+evidence rests on a file that exists only on a GPU host. What is enforced:
+`scripts/verification/check_lab_manifests.py` (run by the test suite) fails any evidence dir
+or file that cites or names a scratch host without a covering `MANIFEST.json` (or a declared
+`lab-check: not-host-data: <reason>` line), except the citations frozen in its baseline on
+2026-10-10. It does not read `registry.jsonl`.
+
 ## Adding an entry
 
 1. Next id: `tail -1 registry.jsonl | python3 -c "import json,sys;print(json.loads(sys.stdin.read())['id'])"`

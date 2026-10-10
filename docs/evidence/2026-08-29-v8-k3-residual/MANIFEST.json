@@ -1,0 +1,54 @@
+{
+ "lab_root": "$LD_LAB (default ~/ld-lab, on situla)",
+ "entries": [
+  {
+   "path": "datasets/v8_corpus/v1/experiment_inputs/phaseA/phaseA_A1.jsonl",
+   "sha256": "603e5b9a1abc35971e1d4b20330a23c5665e4bef4ad78b93acb9f95c36ea1ea1",
+   "size": 998641,
+   "origin": "b650-gpu:v8_corpus/experiment_inputs/phaseA/phaseA_A1.jsonl",
+   "pulled_at": "2026-10-10T08:50:12+02:00"
+  },
+  {
+   "path": "datasets/v8_corpus/v1/experiment_inputs/phaseA/phaseA_A2.jsonl",
+   "sha256": "239f6640b0171cb94d56d33e9ca668979680087013fe3b699d22caea1c2d37db",
+   "size": 1001016,
+   "origin": "b650-gpu:v8_corpus/experiment_inputs/phaseA/phaseA_A2.jsonl",
+   "pulled_at": "2026-10-10T08:50:12+02:00"
+  },
+  {
+   "path": "datasets/v8_corpus/v1/experiment_inputs/phaseA/phaseA_A3.jsonl",
+   "sha256": "2a619bae8ae34e3dd32208b06fc858aeab82f9817e206797d7bbafc1289dfc49",
+   "size": 998308,
+   "origin": "b650-gpu:v8_corpus/experiment_inputs/phaseA/phaseA_A3.jsonl",
+   "pulled_at": "2026-10-10T08:50:12+02:00"
+  },
+  {
+   "path": "datasets/v8_corpus/v1/experiment_inputs/phaseA/phaseA_B1.jsonl",
+   "sha256": "9b6983da49e1b8666baf1fc74c62143580b4c1919ec59d738eb1530048766e45",
+   "size": 1009362,
+   "origin": "b650-gpu:v8_corpus/experiment_inputs/phaseA/phaseA_B1.jsonl",
+   "pulled_at": "2026-10-10T08:50:12+02:00"
+  },
+  {
+   "path": "datasets/v8_corpus/v1/experiment_inputs/phaseA/phaseA_B2.jsonl",
+   "sha256": "80e751fc06d734a7efac1a0db9487d34dc219a14804147e470ed3d9202b9f202",
+   "size": 1014488,
+   "origin": "b650-gpu:v8_corpus/experiment_inputs/phaseA/phaseA_B2.jsonl",
+   "pulled_at": "2026-10-10T08:50:12+02:00"
+  },
+  {
+   "path": "datasets/v8_corpus/v1/experiment_inputs/phaseA/phaseA_B3.jsonl",
+   "sha256": "74f6894cf97fe074cd9996f0feadf1a1674fb9775cea4eeae7c9353213e00efb",
+   "size": 1012260,
+   "origin": "b650-gpu:v8_corpus/experiment_inputs/phaseA/phaseA_B3.jsonl",
+   "pulled_at": "2026-10-10T08:50:12+02:00"
+  },
+  {
+   "path": "datasets/v8_corpus/v1/experiment_inputs/phaseA/phaseA_cohort200.jsonl",
+   "sha256": "2139c442e2fa7adbcc41d7ad07ad8cb0f4b4e258c222db9e7e9037afe5f02a15",
+   "size": 812475,
+   "origin": "b650-gpu:v8_corpus/experiment_inputs/phaseA/phaseA_cohort200.jsonl",
+   "pulled_at": "2026-10-10T08:50:12+02:00"
+  }
+ ]
+}

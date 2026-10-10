@@ -441,13 +441,26 @@ appends `model/` itself.
 **Seed 42 is not bit-reproducible on CUDA** — measured 0.5601 vs 0.5605 val MAE for the same
 epoch across two identical runs. Do not read a 4th-decimal difference as an effect (#95 family).
 
-**Pull the provenance back and commit it.** The weights are gitignored as large model
-checkpoints (`.gitignore` § *Model checkpoints (large files)*; ⚠️ **not** #97, the TDM assessment) and live only on
-the training host, so `training_history.json` + `training_metadata.json` ARE the traceability:
+**Pull the run back to situla, verify it, and commit the provenance.** ⛔ **situla is the
+single source of truth; the GPU host is scratch** (owner ruling 2026-10-10,
+`docs/decisions/2026-10-10-situla-single-source-of-truth.md`). Until then the weights lived
+only on the training host, and b650 held the only copy of three gated belonging candidates.
+The weights stay gitignored (`.gitignore` § *Model checkpoints (large files)*; ⚠️ **not**
+#97, the TDM assessment), so they go to the lab, hash-verified on both sides, and
+`training_history.json` + `training_metadata.json` are committed with the package: they are the
+traceability that lives in git (`.gitignore` re-includes `!filters/**/training_*.json`).
 
 ```bash
+RUN=experiments/$(date +%F)-{name}-v{N}             # the dest must be NEW; a second run that day: add a suffix
+python3 scripts/lab/lab.py pull b650-gpu:~/llm-distillery/filters/{name}/v{N} $RUN/filter   # prints OK or exits 1
 rsync -az b650-gpu:'~/llm-distillery/filters/{name}/v{N}/training_*.json' filters/{name}/v{N}/
+python3 scripts/lab/lab.py cite docs/evidence/<dir> $RUN/filter/model/<file>   # same shell, same $RUN
 ```
+
+The pull takes the whole filter dir on the host, including any leftover `model_*` dirs from
+earlier runs; that is intended (situla keeps everything). The host copy becomes disposable once
+the pull printed `OK` AND a restic snapshot taken after it contains it (daily at 12:00); deleting
+it is per item with the owner's go until the owner rules otherwise.
 
 Then register the run in `experiments/registry.jsonl` and run
 `python3 scripts/verification/check_experiment_registry.py` — it rejects any metric whose

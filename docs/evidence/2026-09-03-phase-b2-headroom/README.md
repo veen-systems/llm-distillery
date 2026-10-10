@@ -1,5 +1,7 @@
 # Phase B2 has **12 rows** of headroom, not a corpus — the draw already took 80% of it
 
+> **2026-10-10: the durable copy is now on situla**, `~/ld-lab/datasets/v8_corpus/v1/` (pulled from b650 and verified by sha256 on both sides; owner ruling: situla is the single source of truth, `docs/decisions/2026-10-10-situla-single-source-of-truth.md`). The files this dir rests on are listed with their hashes in `MANIFEST.json` here. Mentions below of the b650 pool are where the data WAS when this was written.
+
 **2026-09-03. $0** — no oracle calls. Reads the b650 pool (`/home/jeroen/v8_corpus/pool_v2.jsonl`)
 and the drawn corpus.
 

@@ -1,5 +1,7 @@
 # H-V8-6 — what repeating the oracle buys, and what it costs
 
+> **2026-10-10: the durable copy is now on situla**, `~/ld-lab/datasets/v8_corpus/v1/` (pulled from b650 and verified by sha256 on both sides; owner ruling: situla is the single source of truth, `docs/decisions/2026-10-10-situla-single-source-of-truth.md`). The files this dir rests on are listed with their hashes in `MANIFEST.json` here. Mentions of `b650-gpu:~/v8_corpus/` below are where the data WAS when this was written.
+
 **2026-08-29. $0 — no oracle calls.** Re-analysis of the 1,200 Phase A labels
 (`docs/evidence/2026-08-29-v8-phase-a-k3/`). No model, no threshold, nothing in `filters/`,
 nothing deployed.

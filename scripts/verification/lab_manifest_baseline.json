@@ -1,0 +1,154 @@
+{
+ "2026-08-09-cross-box-parity-uplifting-v7.md": [
+  "mention:b650",
+  "mention:gpu-server"
+ ],
+ "2026-08-10-b650-gpu-production-stack-parity.md": [
+  "mention:b650-gpu"
+ ],
+ "2026-08-10-fleet-deploy-gate-completion.md": [
+  "b650:llm-distillery/venv-prodparity",
+  "mention:b650"
+ ],
+ "2026-08-10-uplifting-v7-threshold-sweep-102.md": [
+  "b650-gpu:llm-distillery/datasets/training/uplifting_v7",
+  "mention:b650",
+  "mention:b650-gpu"
+ ],
+ "2026-08-12-cd-v5-cross-oracle-arm-a.md": [
+  "mention:gpu-server"
+ ],
+ "2026-08-12-pre-post-enrichment-score-delta.md": [
+  "mention:b650-gpu"
+ ],
+ "2026-08-20-class-a-valence-bakeoff-scores.json": [
+  "mention:b650"
+ ],
+ "2026-08-28-v8-phase0-drawable-population.md": [
+  "gpu-server:llm-distillery",
+  "mention:b650"
+ ],
+ "2026-08-31-clock-source-fail-open": [
+  "sadalsuud:/tmp"
+ ],
+ "2026-09-04-scoring-overhead": [
+  "mention:gpu-server"
+ ],
+ "2026-09-04-v8-checkpoint-selection": [
+  "mention:b650",
+  "mention:b650-gpu"
+ ],
+ "2026-09-04-v8-probe-calibration": [
+  "b650-gpu:/tmp/probe_seed42.pkl",
+  "b650-gpu:llm-distillery/ht_v8_test_dump",
+  "mention:b650",
+  "mention:b650-gpu",
+  "mention:gpu-server"
+ ],
+ "2026-09-05-adr023-op-point-table": [
+  "b650-gpu:llm-distillery/ht_v8_test_dump",
+  "b650-gpu:llm-distillery/ht_v8_test_dump/*.jsonl",
+  "b650-gpu:llm-distillery/logs/exp019_dump.log",
+  "b650-gpu:llm-distillery/logs/exp019_dump.log,",
+  "mention:b650-gpu"
+ ],
+ "2026-09-05-scorer-device-throughput": [
+  "b650-gpu:/tmp",
+  "b650-gpu:/tmp/probe_e5large.pkl",
+  "b650-gpu:llm-distillery/bench.py",
+  "b650-gpu:llm-distillery/rescued_probes/.",
+  "mention:b650",
+  "mention:b650-gpu"
+ ],
+ "2026-09-06-v8-deploy-gate": [
+  "b650-gpu:llm-distillery/logs/ht_v8_cuda_dump_20260906.log",
+  "mention:b650",
+  "mention:b650-gpu"
+ ],
+ "2026-09-06-v8-retrain-gate": [
+  "b650-gpu:llm-distillery",
+  "b650-gpu:llm-distillery/filters/human_thriving/v8/model_exp015_epoch4_prehatch",
+  "b650-gpu:llm-distillery/ht_v8_test_dump_cuda_retrain",
+  "b650:llm-distillery",
+  "mention:b650-gpu"
+ ],
+ "2026-09-07-v8-weighted-precision": [
+  "b650-gpu:llm-distillery/ht_v8_test_dump_cuda_retrain"
+ ],
+ "2026-09-08-v7-v8-same-articles": [
+  "sadalsuud:/tmp",
+  "sadalsuud:/tmp/v7v8_{records,lenses}.jsonl"
+ ],
+ "2026-09-10-detector-window-128-vs-512": [
+  "b650:llm-distillery/venv-prodparity",
+  "mention:b650",
+  "mention:b650-gpu"
+ ],
+ "2026-09-10-obituary-title-body-pooling": [
+  "mention:b650-gpu"
+ ],
+ "2026-09-10-obituary-version-ordering-multiseed": [
+  "mention:b650",
+  "mention:b650-gpu"
+ ],
+ "2026-09-17-b650-gpu-swap-parity": [
+  "mention:b650",
+  "mention:b650-gpu",
+  "mention:gpu-server"
+ ],
+ "2026-09-17-detector-seed-bands": [
+  "mention:b650"
+ ],
+ "2026-09-17-harm-vote-arm": [
+  "mention:b650"
+ ],
+ "2026-09-25-nature-recovery-relabel": [
+  "mention:b650"
+ ],
+ "2026-09-25-v8-adj-retrain-gate": [
+  "mention:b650"
+ ],
+ "2026-09-25-v8-adj3-live-audit": [
+  "mention:b650"
+ ],
+ "2026-09-26-v10-retrain-gate": [
+  "mention:b650"
+ ],
+ "2026-09-28-per-lens-harm-rates": [
+  "sadalsuud:/tmp"
+ ],
+ "2026-10-01-belonging-v2-test-set": [
+  "b650-gpu:/tmp",
+  "b650-gpu:/tmp/rows_v1.jsonl",
+  "sadalsuud:/tmp",
+  "sadalsuud:/tmp/rows.jsonl",
+  "mention:b650-gpu"
+ ],
+ "2026-10-02-belonging-adjudication": [
+  "sadalsuud:/tmp",
+  "sadalsuud:/tmp/ex_rows.jsonl",
+  "mention:b650",
+  "mention:b650-gpu"
+ ],
+ "2026-10-02-belonging-reader-snapshot": [
+  "sadalsuud:/tmp",
+  "sadalsuud:/tmp/bel_month.tsv",
+  "mention:b650-gpu"
+ ],
+ "2026-10-03-belonging-heldout": [
+  "mention:b650"
+ ],
+ "2026-10-08-belonging-adj1-leak-check": [
+  "mention:b650"
+ ],
+ "2026-10-08-belonging-heldout2": [
+  "mention:b650"
+ ],
+ "2026-10-08-belonging-heldout3": [
+  "mention:b650"
+ ],
+ "adr": [
+  "gpu-server:NexusMind/filters",
+  "mention:gpu-server"
+ ]
+}

@@ -1,0 +1,26 @@
+{
+ "lab_root": "$LD_LAB (default ~/ld-lab, on situla)",
+ "entries": [
+  {
+   "path": "datasets/v8_corpus/v1/corpus_v8_final.jsonl",
+   "sha256": "5e2cf72927bc634ef8b126fd8ddee259ff7b5b9dac578bfa12d1924877e371c2",
+   "size": 28748805,
+   "origin": "b650-gpu:v8_corpus/corpus_v8_final.jsonl",
+   "pulled_at": "2026-10-10T08:50:12+02:00"
+  },
+  {
+   "path": "datasets/v8_corpus/v1/pool_v2.jsonl",
+   "sha256": "ccf101ca96d75ff2a654f7ede38d2bb378af5a9bdcacf73c4aef7f2ad8b29681",
+   "size": 94607570,
+   "origin": "b650-gpu:v8_corpus/pool_v2.jsonl",
+   "pulled_at": "2026-10-10T09:56:51+02:00"
+  },
+  {
+   "path": "datasets/v8_corpus/v1/recall_cohort_final.jsonl",
+   "sha256": "48d740a79bd13d7eebbf6a6cbc34b0ee215a6c9f6cc5f93ea2e5c0c2ecaf14cc",
+   "size": 2345068,
+   "origin": "b650-gpu:v8_corpus/recall_cohort_final.jsonl",
+   "pulled_at": "2026-10-10T09:56:51+02:00"
+  }
+ ]
+}
