@@ -65,7 +65,8 @@ NexusMind's, so a bare "continue" before 2026-10-23 starts at **item 2, step 0**
      `config.yaml` naming it), tell the pipeline-atlas session BEFORE it lands: its check goes red on that by design (2026-10-10).
    - Belonging shadow harm cap: a NexusMind change, low priority, v2's before/after instrument.
    - **Belonging single-person stories (H-BB6, 2026-10-10):** owner: the top of the page shows "at least half personal stories". Needs the
-     owner's bar ("a few" = ≤ k of the top N), then the top-of-page composition check (`experiments/README.md` § *Protocol*).
+     owner's bar, RULED 2026-10-10: ≤ 6 of the top 30 (`docs/decisions/2026-10-10-belonging-personal-story-bar.md`).
+     Next: a judged count of v3's live top 30, then the top-of-page composition check (`experiments/README.md` § *Protocol*).
      First, free: which positives c2a (EXP-046) missed. Evidence `docs/evidence/2026-10-10-belonging-v3-top-of-page/`.
    - **Host data (situla = source of truth, 2026-10-10):** triage `~/ld-lab/inbox/` FIRST (a cited tree can only be
      re-pulled while the host copy exists), then the owner's per-item go to delete host copies, only after a restic

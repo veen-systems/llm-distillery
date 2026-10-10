@@ -89,8 +89,8 @@ python3 scripts/verification/check_experiment_registry.py      # schema + number
 
 Assistant's proposal, made in session on 2026-10-10. The owner's reply was the ruling in
 `docs/decisions/2026-10-10-situla-single-source-of-truth.md` ("make sure we set up proper
-experiments"), not an item-by-item approval. The **bar values** below are still open: the
-owner has not yet said what share of single-person stories "a few" means.
+experiments"), not an item-by-item approval. Bar values are per filter; belonging's is
+RULED: ≤ 6 single-person stories in the top 30 (`docs/decisions/2026-10-10-belonging-personal-story-bar.md`).
 
 **Why:** belonging v3 passed its held-out gate (EXP-047), and the next morning the owner reported
 that the top of ovr.news's Belonging page showed "at least half personal stories"
