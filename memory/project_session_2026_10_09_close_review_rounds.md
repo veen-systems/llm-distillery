@@ -16,7 +16,7 @@ post both issue comments now, and curate now.
 | Push | closed — `caeaa4f`, `b090140` on origin/main |
 | LD#163 / LD#134 progress comments | closed — posted (163: 64,590 B net over 4 commits; 134: docs-live 170 now, +1 traced, +1 NOT traced) |
 | `/curate` | this file |
-| Review-profile suite baseline line (1397 / 24) | open — the profile is a full-depth carve-out file; not edited here |
+| Review-profile suite baseline line | closed 2026-10-10 — re-measured on a clean tree at `5dd70ce` (1397 / 24), one fresh review (0 blockers; its 2 warnings and 3 notes applied) |
 | docs-live +1 untraced (168 at `483c450` → 170) | open |
 | Hook silently off when `CLAUDE_PROJECT_DIR` is unset | open, small |
 
@@ -39,3 +39,13 @@ post both issue comments now, and curate now.
   the NEW code's model. Fix: a differential run, old vs new on one adversarial corpus. Recorded as the seventh mutation
   direction in the user memory `feedback-articulating-is-not-applying.md`.
 - Mention-is-use recurred (x2): the hook refused my own edits to its tests; the Edit tool was the way round.
+
+## 2026-10-10 wrap-up (owner: "wrap up, clean up, update docs, curate, commit; merge/push/deploy if applicable")
+
+- Repo clean, no worktrees or stashes. Not merged: `docs/event-identity-encoder-plan` (owner's 2026-08-06 plan, on origin,
+  no PR); left alone and listed in TODO item 4 for the owner.
+- Deploy: not applicable. Nothing under `filters/` changed, and the hook and guards are local tooling.
+- TODO START HERE thinned 28,751 → 21,463 B, verbatim to `docs/TODO-archive.md` § *Moved 2026-10-10* (0 lines lost apart
+  from the 3 rewritten header lines; a mutant reported +1). Item 2a is where a bare "continue" starts.
+- Read surface 755,807 chars; the plan and the measurements were posted on LD#163.
+- Hypothesis ledger: no row touched this session, so no update.

@@ -96,7 +96,7 @@ agent that had not opened this file**: `python3 -m pytest` reported **13 failed,
 phantom baseline is not made harmless by being explained, because the explanation is what makes it
 believed. **Run `.venv/bin/python -m pytest` and say which interpreter produced the number.**
 
-**Measured 2026-09-27 (evening): `1102 passed, 25 skipped` in 139s** (clean tree at `5590f88`, alone on the machine; the +162 since 09-24 were not decomposed). *Prior: 2026-09-24: `940 passed, 25 skipped` in 127s* (+8 `gate-share-sample` tests; the tree held only that change) — `.venv/bin/python3 -m pytest tests/ -q`,
+**Measured 2026-10-10: `1397 passed, 24 skipped` in 148s** (clean tree at `5dd70ce`; other processes on the machine NOT checked; the +295 passed since 09-27 were not decomposed, except the last +74 over the 1323 measured 2026-10-09 at `235b1a1`: the deploy guards, `check_adapter_matches_hub.py` and the kill-pattern hook; skipped 25 → 24 not decomposed either — skip markers in `tests/` went 47 → 43). *Prior: 2026-09-27 (evening): `1102 passed, 25 skipped` in 139s* (clean tree at `5590f88`, alone on the machine; the +162 since 09-24 were not decomposed). *2026-09-24: `940 passed, 25 skipped` in 127s* (+8 `gate-share-sample` tests; the tree held only that change) — `.venv/bin/python3 -m pytest tests/ -q`,
 **on a clean tree, alone on the machine**. ⚠️ Both qualifiers are load-bearing and were learned
 the hard way in the same session: an earlier line said `926 passed` and was true when taken, then
 went stale twice — once because more tests were added, once because a `timeout`-killed run left

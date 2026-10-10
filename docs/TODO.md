@@ -1,19 +1,9 @@
 # LLM Distillery - TODO
 
-## ▶️ START HERE — the ordered queue, as of 2026-10-09 (session close)
+## ▶️ START HERE — the ordered queue, as of 2026-10-10 (session close)
 
-*A bare "continue" means this list, top down. Each line names the FIRST action. Item 0 is WAITING (dated) and items
-2b/4b are done, so a bare "continue" before 2026-10-23 starts at item 2 (the read surface, ▶ lines).*
-
-⏭ **FIRST, finish the 2026-10-09 close** (cut off by a usage limit, resumed the same day). ✅ Done: round 2's 3
-warnings fixed, and a round 3 run on the fixes (adversarial, guarantee+doc, reachability+claims): 1 BLOCKER (the round-2
-hook regex backtracked exponentially: 13 s on 25 × `ssh h `) + 4 warnings, all fixed. The hook is now a `shlex`
-TOKENIZER (`scripts/hooks/block_pattern_kill.py`), not a regex; guard D and `check_adapter_matches_hub.py` refuse an
-empty/stub (< 1 MB) adapter before hashing, so they never advise re-uploading one; the CLI checks a missing adapter
-before `NO_HUB` and says NO PACKAGE for a missing version dir. Suite 1374 passed / 24 skipped (`.venv/bin/python`).
-✅ **Round 4 (owner-granted exception to the cap): one adversarial pass on the tokenizer alone** found 2 BLOCKERS (a `\`-newline line continuation split a command, so a wrapped `ssh -o ... \` line slipped through; it was a regression vs the regex) and regressions/false blocks (`function`/`coproc`, `2>/dev/null` as a separator, wrong value letters for `xargs -i`/`sshpass -e`/`watch -d`, the `"$(cat <<'EOF' ...)"` commit idiom). All fixed: 106 tests, 9 more mutants caught, 60,000 fuzz inputs with 0 exceptions (worst 2.6 ms); known gaps listed in the hook's docstring. Suite 1397 / 24. Still open from the
-close: ✅ `/curate` done (`memory/project_session_2026_10_09_close_review_rounds.md`), ✅ progress posted on LD#163 and LD#134 (docs-live now 170, +1 untraced), the review-profile suite
-baseline line (now 1397 / 24). Small: the hook is silently off when `CLAUDE_PROJECT_DIR` is unset.
+*A bare "continue" means this list, top down. Each line names the FIRST action. Item 0 is WAITING (dated), item 1 is
+NexusMind's, so a bare "continue" before 2026-10-23 starts at **item 2a** (the read surface, ▶ lines).*
 
 0. ⏸ **BELONGING v3 is LIVE (since NexusMind run `bd00dad6`, 2026-10-09 00:08–01:24 CEST), replacing v1. Nothing to do before
    2026-10-23 unless ovr.news messages.** Read `filters/belonging/v3/STATUS.md` first (evidence, rollback rule, refit notes);
@@ -38,72 +28,25 @@ baseline line (now 1397 / 24). Small: the hook is silently off when `CLAUDE_PROJ
    - ⚠️ since NexusMind#395 step 1, sadalsuud no longer auto-pulls: a **manual pull + scorer-image rebuild** is needed
    NexusMind's session runs it; ours is to tell them. LD#52 and LD#86 are closed.
 
-2. **THE READ SURFACE (#163) — owner: "prune, thin, mechanize, retire".**
-   - **Done 2026-10-02:**
-     - 2a: six dated entries moved out from under the gotcha-log template heading, verbatim (103.2 → 92.1 KB).
-     - The START HERE block went 19.1 KB → this one.
-     - Default refcheck 1 → 0 (a moot recall-cost hypothesis was marked).
-     - Afternoon: § *Filters* `[x]` history moved verbatim to `docs/TODO-archive.md` (TODO 37.4 → 33.0 KB). Read surface
-       measured at 908,775 chars (`/curate` Step 0's command).
-   - **Done 2026-10-02 (evening):** `memory/session-log.md` rotated, 153 KB → 70 KB. Entries before 2026-09-01 and the
-     frozen appendix moved VERBATIM to `memory/archive/session-log-2026-08-and-appendix.md` (0 lines lost, checked).
-     Read surface: **911,068 → 838,699 chars** (`/curate` Step 0's command).
-   - **Open, in order:**
-     - c. **The unreachable-mechanism catalogue** (55 dated `###` entries).
-       - **Keep-rule CHANGED (owner, 2026-10-02):** an entry whose class has a `live` row in § *Mechanized* moves
-         VERBATIM to `memory/archive/`.
-       - **Measured 2026-10-02:** 0 of the 55 entries NAME a live check, so this needs a per-entry judgement of which
-         live check covers each class.
-       - **Done 2026-10-09: the per-entry pass covers 1 of 55.** Moved verbatim: *THE COMMIT GUARD CANNOT READ
-         NEGATION* (2026-08-28), covered by the 2026-09-29 negation row (`tests/unit/test_commit_msg_hook.py`, 101
-         passed; it tests both gaps the entry names). Lossless check: 13 lines removed, 0 missing (`sort | comm`, C locale; a
-         mutant dropping one line reported 1). Log 107,340 → 106,233 B. The other 54 have no `live` row: their fixes
-         are prose rules, one-script fixes or tests without a Mechanized row (e.g. the 402 abort, `prepare_data.py` 0
-         examples). Closest misses: the `|`-in-table entry (the `/review-changes` structural pre-check catches it but has
-         no row), *mention is use* (the guard deliberately still counts mention). ⚠️ **This keep-rule cannot shrink the
-         catalogue.** Shrinking it needs either new `live` rows (mechanize first) or a different rule. That is the owner's call.
-       - ✅ **Ruled and done 2026-10-09 (owner): date rule + recent repeats.** Entries dated before 2026-09-01 move
-         verbatim, except classes that recurred on/after 2026-09-01. **43 moved** (47.6 KB; log 106,233 → 59,745 B as committed in `d742873` (58,949 before the Mechanized row; 61,817 B after `235b1a1`); 625
-         lines removed, 0 missing, mutant → 1). **11 stay**: 6 dated 09-01/02, plus pkill -f (10-02), the pgrep watcher
-         (same class), the wrong interpreter (09-28), "aged out of retention" (recurred 10-07 as "source files expired"),
-         the wrong-population precision bar (recurred 10-09 as the trigger comparing two populations).
-       - ✅ **Owner also ruled: mechanize the top recurring class.** `scripts/hooks/block_pattern_kill.py`, a PreToolUse
-         hook in the new `.claude/settings.json`, refuses `pkill -f` / `pgrep -f` in command position. Live row in
-         § *Mechanized*. Undo: delete `.claude/settings.json`.
-     - d. **2026-10-09:** the hypothesis ledger got the 09-27 rule again: 5 closed rows (H-HD16, H-BV4, H-BV9, H-BV11,
-       H-BB1) moved verbatim, 56,148 → 53,622 B, 0 lines missing. Kept: H-JO1 (partial), H-BB4 (⚠️), H-BB2 / H-BV6
-       (verdict word outside the rule). `corroboration-feature-hypotheses.md` and `working-rules.md` have NO closed rows,
-       so any cut there is an owner call (asked 2026-10-09).
-       - ✅ **Ruled + done 2026-10-09.** Corroboration: kept, marked DORMANT with a stale-summary warning (owner). 
-         Working rules: rules and occurrence counts stay live; pre-2026-09-01 occurrence stories moved verbatim to
-         `memory/archive/working-rules-archive.md` (4 blocks: source-excludes 4–15, name-the-caller 9–16, pgrep 4–6,
-         the 08-15/16 population recurrences). 65,110 → 50,641 B (estimate was 35–40 KB off; measured 14.5 KB, because
-         most of the largest bullet is September stories). Reconstructed byte-for-byte from the files on disk vs HEAD;
-         a one-word mutant fails. The pgrep block carries a pre-existing duplicated fragment, kept as found.
-     - d. ✅ session-log rotated (above); corroboration, working-rules and the ledger handled 2026-10-09 (above).
-     - e. **`docs/TODO.md` below START HERE** (~31 KB of section backlog). Audit each section: close, archive or
-       keep. Example: § *Commerce Prefilter SLM* and § *Prefilter Quality (Apr 2026)*. Check them against
-       decision 0 and ADR-004 before touching them.
-
-2b. **Rewrite `docs/RUNBOOK.md` § Deployment for NexusMind's image path (NM#395).** Production scores from a container image
-   built by NexusMind (stage.py, docker build, restart, manual sadalsuud pull); our `deploy_to_nexusmind.sh` still probes
-   gpu-server. belonging v3 went in by hand (NM 4901fb5). ⚠️ When it lands, TELL pipeline-atlas first: its verify greps the
-   script's gpu-server probe and goes red (pipeline-atlas PR #122).
-   - ✅ **RUNBOOK half done 2026-10-09:** § Deployment rewritten. Steps 1–3 are ours, step 4 is NexusMind's hand-off
-     (image build, container swap keeping the previous one, manual sadalsuud pull, rollback = kept image + revert),
-     and step 5 verifies from the output: both commands were run on sadalsuud, 4,812/4,812 rows of `filtered_20261009_093632.jsonl` `3.0`,
-     `revision_match: true`, scorer `hcl-ct102` (the host varies per cycle, NexusMind#591). New
-     `scripts/deployment/check_adapter_matches_hub.py` (6 tests, 2 mutants caught). ⛔ **Its first version derived the Hub repo from the directory name and 404'd for
-     cultural_discovery, human_thriving and nature_recovery; my "live" check had used only belonging. Fixed at close
-     (review): repo id from `inference_hub.py`, all six live filters checked against the real Hub.**
-   - ✅ **SCRIPT half done 2026-10-09** (pipeline-atlas told first; they said go: their verify greps the old
-     `--weights-preplaced` help text and turning red is expected). Guard D now compares this checkout's adapter
-     with its Hub copy (fails closed when it cannot ask, skips `NO_HUB`); no ssh left in the deploy path.
-     `--weights-preplaced` survives with the new meaning. Guard C's rollback advice no longer says "remove vN".
-     FILTER_PLAYBOOK checklist items 5/7 and the chain line updated (item 7 said "rollback = delete the new dir").
-     Live run: belonging v3 → MATCH, uplifting v7 → NO_HUB skip, both exit 0. 5 mutants caught.
-     ✅ **pipeline-atlas messaged 2026-10-09 with `3e6244f` on origin** (was: owed: message pipeline-atlas with the pushed commit) (they need (a) the commit on origin, (b) the flag
-     survives, (c) no ssh, (d) local adapter vs the Hub RECORD only — never what a scorer host serves).
+2. **THE READ SURFACE (#163) — ▶ a bare "continue" starts HERE. Owner, 2026-10-10: "prune, thin, mechanize, retire".**
+   Measured 2026-10-10: **755,807 chars** (`/curate` Step 0's command; all of it in `memory/`, there is no
+   `docs/work-items/`). History of the passes so far: `docs/TODO-archive.md` § *Moved 2026-10-10*; posted on #163.
+   Every move is VERBATIM to `memory/archive/` with a lossless check (`sort | comm`, C locale; a one-line mutant must
+   report 1). Biggest lever first:
+   - a. ▶ **The 11 `memory/*-hypotheses.md` files: 261,785 chars (35% of the surface).** First action: per file, list
+     the sections/rows whose verdict is closed (SUPPORTED / REFUTED / CLOSED / MOOT) with their bytes, then move them
+     under the 09-27 rule the ledger already uses. Largest first: `corroboration-feature-hypotheses.md` 78,438 (owner
+     2026-10-09: kept, marked DORMANT; ASK whether dormant now means "whole file to archive behind its pointer row"),
+     `prefilter-length-floor-hypotheses.md` 37,478, `date-error-recency-boost-hypotheses.md` 33,176,
+     `uplifting-oracle-genre-hypotheses.md` 29,543.
+   - b. **The date rule on the reference files** (owner, 2026-10-09: dated before 2026-09-01 moves, unless the class
+     recurred since): `cross-repo-prioritization.md` 37,191, `oracle-pricing-scheduling.md` 35,176,
+     `stamp-contract-integrity.md` 34,024, `filter-status.md` 29,730, `nexusmind-data-sources.md` 27,275.
+   - c. **Mechanize, then retire.** The gotcha log (63,914) keeps 11 catalogue entries only because their classes
+     have no `live` row; each new live check lets one move. And make the surface itself a check: a ceiling
+     (`check_index_budget.py --target surface`, red above a ratchet; propose the number, the owner sets it).
+   - d. **`docs/TODO.md` below START HERE** (~25 KB of section backlog). Audit each section: close, archive or keep
+     (§ *Commerce Prefilter SLM*, § *Prefilter Quality (Apr 2026)*; check against decision 0 and ADR-004 first).
 
 3. **Owner, standing:**
    - H-TV5: one last look at the Thriving tab ~2026-10-06, then close.
@@ -111,12 +54,6 @@ baseline line (now 1397 / 24). Small: the hook is silently off when `CLAUDE_PROJ
    - Belonging shadow harm cap: a NexusMind change, low priority, v2's before/after instrument.
 
 4. **Small, ours** (detail in the archived block's numbered items):
-   - ✅ `cultural_discovery v5` `raw_min` 4.0006 vs 4.0 — **closed 2026-10-07, no change:** a pre-anchor legacy fit
-     (2026-07-10; the fitter anchors raw_min to the op-point since 07-16). The tolerance IS recorded:
-     `OP_POINT_EPS = 0.01` (`scripts/normalization/fit_normalization.py`), enforced by
-     `tests/unit/test_normalization_invariant.py` (passes). Effect: raw in [4.0, 4.0006) normalizes to percentile 0.
-     A refit would be a NexusMind deploy for a 0.0006-wide band. `test_normalization_op_point.py` reads only
-     `base_scorer.py`, which is why it never saw this.
    - LD#134 step 3, the marking pass (`docs/decisions/2026-09-17-refcheck-docs-tier.md`).
      **Started 2026-10-09:** the mechanical slice. `--docs-live` 231 → **214** unique, 0 new findings, default scan
      still 0: unqualified sibling paths that exist in exactly ONE sibling got the repo prefix, in 9 live docs. NOT
@@ -131,14 +68,13 @@ baseline line (now 1397 / 24). Small: the hook is silently off when `CLAUDE_PROJ
      ▶ **Left:** 118 bare basenames (rule-level question: most are run outputs) and the ~51 findings inside the
      two verbatim archives (`docs/TODO-archive.md`, `docs/CONTRACTS_PLAN-rounds-archive.md`). Those are a TIER
      question, not a marking one: the archives sit in the live tier because they live in `docs/` root.
-   - ✅ The retracted 19.9%/13.0% framing — **closed 2026-10-07:** already gone from `CLAUDE.md`; the 3 remaining copies
-     (`docs/HUMAN_THRIVING_V8_PLAN.md`, `memory/cross-repo-prioritization.md` ×2) now carry the retraction beside them.
-   - ✅ LD#160 **done 2026-10-07** as ruled: ADR-009 dated note (no rewrite); `cross_filter_landscape.py` renamed to
-     English; `scripts/verification/check_framework_language.py` built and shown RED first (exit 1, 64 violations,
-     all in that script), green after (`tests/unit/test_framework_language.py` seeds the class). ⚠️ **LD#160 follow-up
-     (owner call):** the checker found a site nobody had listed: `filters/nature_recovery/{v1,v2,v4}/config.yaml`
-     carry `ovr.news 'Herstel' tab` in a notes string. v4 is DEPLOYED, so editing it changes a live package's bytes at
-     the next NexusMind sync. Listed as KNOWN OPEN in the checker until ruled.
+   - ✅ LD#160 follow-up still OPEN (owner call): `filters/nature_recovery/{v1,v2,v4}/config.yaml` carry `ovr.news
+     'Herstel' tab` in a notes string; v4 is DEPLOYED (editing changes a live package's bytes at the next sync).
+     Listed as KNOWN OPEN in `check_framework_language.py`. Full history: TODO-archive § *Moved 2026-10-10*.
+   - LD#134: `--docs-live` is **170** (2026-10-10), 168 at `483c450`: +1 is `filtered_20261009_093632.jsonl` in this
+     file's archive copy (a sadalsuud data file), **+1 not yet traced**.
+   - Hook: `block_pattern_kill.py` is silently OFF when `CLAUDE_PROJECT_DIR` is unset (settings entry exits 0).
+   - Owner: branch `docs/event-identity-encoder-plan` (one commit, 2026-08-06, on origin, no PR): merge, PR or delete?
    - H-MECH-1: watch, 2 batteries left.
    - #158: the heldout detector band (b650).
    - #104 item 1: likely MOOT if gpu-server is retired.
