@@ -87,3 +87,17 @@ Not applicable: no switch is being made. This IS a live check of the current ver
 - **Judge agreement with the owner:** 22–28 of 30. The tag is new and tested only on its own 9 examples.
 - **v1-scored rows skipped before reaching 30 v3 rows:** 0–5 (v3 has been live three days; v1 rows drain for
   about 10).
+
+## Amendment A (2026-10-12, before the draw): a local tagger arm on b650
+
+Owner, 2026-10-12: no paid oracle; use b650 to find the personal rows in the TRAINING data and lower their
+scores. A tagger is needed for ~420 high-scoring training rows (max dimension ≥ 4.0: 342 train / 37 val / 41
+test in `datasets/training/belonging_c2b/`). Added before any page row was read:
+
+- **Arm 3:** `qwen3.8:27b` via ollama on b650 (local, $0), the same tag definition and worked examples as the
+  judges, one call per article, temperature 0. Same input fields (`title` + `content`).
+- **Binding rule for arm 3** (the same bar as rule 2): per-row agreement with the owner ≥ 26 of 30 and count
+  within ±2. If it passes, it may tag the training rows; if not, the training-data step uses the Claude judges
+  instead (also $0 oracle) or waits.
+- **Prediction:** arm 3 agrees with the owner on 20–27 of 30; it is weaker than the Claude judges on this
+  subtle a line.
