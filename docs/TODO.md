@@ -5,8 +5,8 @@
 *A bare "continue" means this list, top down. Each line names the FIRST action. Item 0 is WAITING (dated), item 1 is
 NexusMind's. Item 2 (#163, the read surface): rounds 1 and 2 landed 2026-10-12 (758,893 → 549,178 chars, ratchet
 `check_index_budget.py --target surface` at 560,200); `/curate` still flags it (>300k); the next levers are listed in
-item 2 and are not ruled. ▶ **A bare "continue" now starts at item 0a step 2, whose first action is the OWNER question
-in 0a step 1's ⚠️** (are c2a's ~9 single-person-looking `in_scope` rows "personal"?).*
+item 2 and are not ruled. ▶ **A bare "continue" now starts at item 0a step 1b**: the owner answered the step-1 question 2026-10-12
+(6 of 9 are personal, so the judges' line is wider than the owner's); sharpen and re-test the judges, then step 2.*
 
 0. ⏸ **BELONGING v3 is LIVE (since NexusMind run `bd00dad6`, 2026-10-09 00:08–01:24 CEST), replacing v1. Nothing to do before
    2026-10-23 unless ovr.news messages.** Read `filters/belonging/v3/STATUS.md` first (evidence, rollback rule, refit notes);
@@ -40,6 +40,12 @@ in 0a step 1's ⚠️** (are c2a's ~9 single-person-looking `in_scope` rows "per
      secret deal to care for wife") — and BOTH judges said `in_scope`. If rubric v2.2's judges draw the line wider
      than the owner does, step 2's judged count UNDERSTATES what the owner sees. Settle that before trusting it:
      show the owner these rows (owner call: are they "personal"?), or test the judges on the bar's own examples.
+     ✅ **OWNER ANSWERED 2026-10-12:** 6 of the 9 are personal (1, 2, 6, 7, 8, 9); 3, 4, 5 are not, *"cause these
+     touch groups of people"*. So the judges draw the line WIDER than the owner, and a v2.2 count would undercount.
+     Labels + gloss: `docs/decisions/2026-10-10-belonging-personal-story-bar.md` § *Owner labels*.
+   - **Step 1b (NEXT, before step 2):** run the two blind judges on the owner's 9 labels with an `out_one_moment`
+     definition sharpened to the owner's line (gloss, not ruled: *does it reach a group beyond the person or family*);
+     pre-register the rule first, and check on rows NOT among the 9 so the 9 do not become the test set.
    - **Step 2:** the judged count of v3's LIVE top 30. Pre-register first (`experiments/PREREGISTRATION.template.md` §2–3):
      top 30 by the score ovr.news ranks on (ovr.db, build query, never `live_articles`), kept only if NexusMind stamps them
      `belonging.version == "3.0"`; two blind judges, rubric v2.2 class `out_one_moment`; count both-say rows vs 6.

@@ -28,3 +28,30 @@ about community"*, after seeing the live page show "at least half personal stori
   judged count. So the first application is a judged count of v3's live top 30. If it is above 6, that
   is the case for the next candidate, not an automatic rollback: the v3 rollback rule
   (`filters/belonging/v3/STATUS.md`) was fixed before this bar existed, and changing it is the owner's call.
+
+## Owner labels on nine judged rows (2026-10-12)
+
+Shown nine held-out set-2 positives that both blind judges (rubric v2.2) called `in_scope`, and that Claude's
+title-only read flagged as single-person / single-family (`docs/evidence/2026-10-10-belonging-v3-top-of-page/c2a_missed_positives.txt`).
+Owner, verbatim: *"most of them, accept 3,4,5 . cause these touch groups of people"*.
+
+| # | title (gloss for non-English) | owner |
+|---|---|---|
+| 1 | A doctor said Tim was incapable of love. His mum knew otherwise | personal |
+| 2 | Nàng dâu Nga bỏ việc sang Việt Nam chăm mẹ chồng (Russian daughter-in-law quits job to care for mother-in-law) | personal |
+| 3 | A valet became a key source of support for cancer patients at a N.Y. care center | **not** personal (touches a group) |
+| 4 | Meet a 25-year-old third-generation zookeeper whose family has worked at the zoo since it opened 53 years ago | **not** personal (touches a group) |
+| 5 | Campanas Quintana: casi 400 años de historia y una sucesión que llega a los nietos | **not** personal (touches a group) |
+| 6 | Juan del Val y la madre que lo parió | personal |
+| 7 | 'Tuentifourseven', el documental que narra la vida de una familia marcada por la dependencia | personal |
+| 8 | Three Years After October 7, I Moved Back to Nahal Oz | personal |
+| 9 | 黄荷凤院士：我的百岁恩师王曼先生 (Academician Huang Hefeng: my centenarian mentor Wang Man) | personal |
+
+**What it shows (measured on these 9 only):** both judges said `in_scope` on 6 rows the owner calls personal, so
+rubric v2.2's judges draw the line WIDER than the owner. A judged count of v3's top 30 with this rubric would
+UNDERCOUNT against the bar.
+
+**The assistant's gloss, not ruled:** the owner's dividing line reads as *does the story reach a group beyond the
+person or family* (the valet supports many patients; the zookeeper's family serves a public zoo; the bell foundry
+spans generations of a trade). Before step 2's count, test the judges against these 9 labels and, if they still
+miss, tighten `out_one_moment` in the rubric, then re-test on held-back examples, not on these 9.
