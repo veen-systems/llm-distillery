@@ -19,6 +19,7 @@ Usage:
 
 # Standard library imports
 import argparse
+import sys
 import json
 import random
 from collections import Counter
@@ -28,7 +29,10 @@ from typing import Any, Dict, List, Tuple
 # Third-party imports
 import yaml
 
-# Local imports
+# Local imports. The repo root goes on sys.path, as in train.py: the documented call
+# (`python training/prepare_data.py ...`, CLAUDE.md and RUNBOOK) has no PYTHONPATH, and
+# without this it died on this import (found 2026-10-12).
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from ground_truth import analysis_field_name
 
 
@@ -674,6 +678,19 @@ Examples:
     train_data = convert_to_training_format(train_set, analysis_field, dimension_names)
     val_data = convert_to_training_format(val_set, analysis_field, dimension_names)
     test_data = convert_to_training_format(test_set, analysis_field, dimension_names)
+
+    # ⛔ ZERO EXAMPLES IS A FAILURE, NOT A RESULT (2026-10-12; memory/gotcha-log.md, the
+    # 2026-09-01 entry). A `--filter` whose `filter.name` differs from the one the labels were
+    # written under selects an analysis field no row carries; `convert_to_training_format`
+    # skips every row silently, and this used to print "COMPLETE" and exit 0 over three empty
+    # files. Refuse before anything is written.
+    if not (train_data or val_data or test_data):
+        sample = sorted(k for k in (labels[0] if labels else {}) if k.endswith("_analysis"))
+        print(f"\nFATAL: 0 training examples from {len(labels)} labels. No row carries "
+              f"'{analysis_field}' (from --filter {filter_dir}); the first row's analysis "
+              f"field(s): {sample or 'none'}. Is --filter the package the labels were written "
+              f"under? Nothing was written.", file=sys.stderr)
+        sys.exit(1)
 
     # Print statistics
     print_statistics(labels, train_set, val_set, test_set, analysis_field, tier_boundaries, dimension_names)

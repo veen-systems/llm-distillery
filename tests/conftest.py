@@ -217,3 +217,39 @@ def investment_risk_dimension_names() -> List[str]:
         "impact_breadth",
         "retail_actionability"
     ]
+
+
+# =============================================================================
+# The wrong-interpreter banner (memory/gotcha-log.md, "I EXPLAINED 78 TEST FAILURES AS
+# 'THE ENVIRONMENT' AND IT WAS THE WRONG INTERPRETER", 5 occurrences through 2026-10-12)
+# =============================================================================
+# Under system `python3` the suite reports ModuleNotFoundError (transformers, peft, ...) and
+# those rows have been explained away as "pre-existing environment noise" five times. The
+# fix was always "run .venv/bin/python"; prose never stopped it, so the suite says it itself.
+
+import sys as _sys
+
+_REPO = Path(__file__).resolve().parents[1]
+
+
+def wrong_interpreter_hint(failure_texts, executable, repo=_REPO):
+    """The banner lines, or [] when there is nothing to say."""
+    n = sum(1 for t in failure_texts if "ModuleNotFoundError" in t)
+    venv = repo / ".venv"
+    try:
+        inside = Path(executable).resolve().is_relative_to(venv.resolve())
+    except OSError:
+        inside = False
+    if not n or inside or not venv.is_dir():
+        return []
+    return [f"WRONG INTERPRETER? {n} failure(s)/error(s) are ModuleNotFoundError under "
+            f"{executable}. This repo's suite runs under {venv}/bin/python -- re-run there "
+            f"before calling any of them pre-existing or environmental."]
+
+
+def pytest_terminal_summary(terminalreporter, exitstatus, config):
+    texts = [str(getattr(r, "longrepr", "") or "")
+             for key in ("failed", "error")
+             for r in terminalreporter.stats.get(key, [])]
+    for line in wrong_interpreter_hint(texts, _sys.executable):
+        terminalreporter.write_sep("!", line, red=True, bold=True)

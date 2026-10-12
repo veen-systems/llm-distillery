@@ -102,6 +102,13 @@ NexusMind's. ▶ **A bare "continue" starts at item 2a** (step 0, the hook repla
      `verify:` line in `memory/MEMORY.md` (runner: 36 blocks). It prints "RATCHET: lower SURFACE_CEILING" once a pass
      leaves > ~4% headroom. ⚠️ `/curate` (user-global skill) still runs its own shell command — same number. Left in
      2c: the gotcha-log catalogue entries (needs a `live` check per class).
+     ✅ **Catalogue pass 2026-10-12: 4 of 11 entries moved** (verbatim, to `memory/archive/gotcha-log-archive.md`)
+     because their classes went `live` in `## Mechanized`: `pkill -f` (the hook), the 402 (NEW: `score_ollama_oracle.py`
+     had no 402 abort and a SystemExit the executor drained past; now a run-fatal flag, 4 tests), the wrong interpreter
+     (NEW: `tests/conftest.py` prints a banner), `prepare_data.py` zero examples (NEW: exits 1; also its DOCUMENTED call
+     died on `import ground_truth` without PYTHONPATH — fixed). Left (7): their classes are judgement-shaped (wrong
+     population, retention, monthly archives, head-N sampling, a self-matching watcher, shared temp dir, mention-is-use).
+     ⚠️ Still silent in `prepare_data.py`: a renamed dimension → a column of 0s (owner call: raise, or keep?).
    - d. **`docs/TODO.md` below START HERE** (~25 KB of section backlog). Audit each section: close, archive or keep
      (§ *Commerce Prefilter SLM*, § *Prefilter Quality (Apr 2026)*; check against decision 0 and ADR-004 first).
 

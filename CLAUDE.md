@@ -144,7 +144,7 @@ git config core.hooksPath .githooks          # once per clone: blocks unverified
 python -m ground_truth.batch_scorer --filter filters/{name}/v{N} --llm gemini-flash \
     --source datasets/raw/master_dataset.jsonl
 
-# Training splits. ⛔ No --data-source flag; the wrong --filter writes 0 examples and exits 0
+# Training splits. ⛔ No --data-source flag; the wrong --filter matches 0 rows (exits 1 since 2026-10-12)
 python training/prepare_data.py --filter filters/{name}/v{N} \
     --input datasets/scored/{name}_v{N}.jsonl --output-dir datasets/training/{name}_v{N}
 

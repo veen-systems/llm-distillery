@@ -310,14 +310,7 @@ data point, not a trend — but it is the only known way the list stops growing.
 
 *⚠️ **43 entries dated before 2026-09-01 moved VERBATIM to [`archive/gotcha-log-archive.md`](archive/gotcha-log-archive.md) § *Moved 2026-10-09 — catalogue*** (owner rule 2026-10-09: the date rule the rest of this log uses, except the classes that recurred on or after 2026-09-01, which stay below). Recurrence matching greps both files.*
 
-### `pkill -f "<pattern>"` killed the shell that carried the pattern (2026-08-21) [x5] (2026-10-02: `pkill -f` on a git-grep pattern killed its own shell, exit 144)
-**Problem**: `pkill -f -- "-L 11435:localhost:11434"` closed the SSH tunnel *and* the bash
-process running the command, which exited 144 mid-script and skipped the rest.
-**Root cause**: the documented `pgrep -f` trap — the pattern appears in the invoking shell's
-own argv — applies identically to `pkill`, which then kills it.
-**Fix**: kill by PID from `ps -eo pid,args | grep -v grep`, or `ssh` the target and kill there.
-The existing working rule says `pgrep -f` cannot answer "is it running?"; **extend it: `pkill -f`
-cannot answer "stop it" either.**
+### `pkill -f` killed its own shell (2026-08-21) [x5] — class now `live` (the kill-pattern hook, `## Mechanized` 2026-10-09); entry MOVED to [`archive/gotcha-log-archive.md`](archive/gotcha-log-archive.md) (2026-10-12)
 
 ### A precision bar measured on the wrong population blocked a good gate for 26 days (2026-08-23)
 **Problem**: `violence_promotion` sat in shadow from 2026-07-28 to 2026-08-23 waiting for
@@ -338,20 +331,7 @@ positive sits at 0.9546), so raising it shrinks cost and benefit together.
 **Fix**: **Absent from hot storage is not absent.** Search the archive before calling data lost.
 Same shape as *establish what your source excludes*, one directory over.
 
-### I EXPLAINED 78 TEST FAILURES AS "THE ENVIRONMENT" AND IT WAS THE WRONG INTERPRETER (2026-08-25) [x4: 2026-09-28 — `python3 -m pytest tests/unit -x` stopped on `ModuleNotFoundError: transformers`; caught before any claim, `.venv/bin/python3 -m pytest tests/` matched the baseline in `.claude/review-profile.md`]
-
-**Occurrence 3 (2026-09-17)**: `python3 -m pytest` on the #158 change reported **13 failed, 6 errors**, and I relayed them to the owner as *"all ModuleNotFoundError … pre-existing and unrelated"*. `.venv/bin/python -m pytest` returned **0 failed**. ⛔ The diagnosis was RIGHT and that is what made it useless — an explained phantom baseline is a believed one. `.claude/review-profile.md` carries the warning **six lines above** the baseline number and I had not opened the file. Recorded there too, as its occurrence two.
-**Problem**: `python3 -m pytest tests/unit` in NexusMind reported **78 failed, 123
-errors**. I checked that none of the failures named my files, attributed the rest to
-"this workstation's environment (missing deps)", and moved on. It was nearly a session
-finding. In `venv/bin/python` the same tree is **1,457 passed**.
-**Root cause**: I reached for an explanation that made the signal go away instead of a
-test that would have made it fail. The evidence I *did* collect — `ModuleNotFoundError:
-trafilatura` — was consistent with both "the environment is broken" and "I am not in
-the environment", and I only looked for confirmation of the first.
-**Fix**: `ls -d venv` before believing any suite-wide failure, and run the project's own
-interpreter. ⭐ The general form: **an explanation that dismisses a signal has to be
-tested at least as hard as the signal was.** A dismissal is a claim.
+### WRONG INTERPRETER (2026-08-25) [x5] — class now `live` (the suite prints a banner, `## Mechanized` 2026-10-12); entry MOVED to [`archive/gotcha-log-archive.md`](archive/gotcha-log-archive.md) (2026-10-12). ⭐ Its general form stays true: an explanation that dismisses a signal has to be tested as hard as the signal.
 
 ### THE WATCHER MATCHED ITSELF AND WAITED FOREVER (2026-08-25) [5th occurrence of the pgrep rule]
 **Problem**: A background wait-loop, `until ! ps -eo args | grep -q "[m]ain.py"; do sleep
@@ -370,55 +350,9 @@ rule was: it is in `CLAUDE.md`, in this log, and in `working-rules.md`, and I wr
 instance of it anyway. Knowing a rule and applying it at the moment you write the command
 are different acts (`feedback-articulating-is-not-applying`).
 
-### A 402 IS NOT A PER-ROW ERROR — 6,586 doomed calls in 11 minutes, then exit 0 (2026-09-01/02)
+### A 402 IS NOT A PER-ROW ERROR (2026-09-01/02) — class now `live` in both DeepSeek callers (`## Mechanized` 2026-10-12); entry MOVED to [`archive/gotcha-log-archive.md`](archive/gotcha-log-archive.md) (2026-10-12)
 
-**Problem**: A DeepSeek balance ran out during a 6,590-row k=3 corpus pass. Pass 2 wrote 2,500
-error rows and stopped scoring; pass 3 made **6,586 requests in 11 minutes against an empty
-account**, wrote 6,586 error rows, printed `Successful: 0  Errors: 6586` — and **exited 0**. A
-caller could not distinguish a catastrophe from a clean run. $1.11 of pass 2 was spent for
-labels that could not be aggregated.
-
-**Root cause**: Two independent defects.
-1. `call_deepseek` routed `402` through the generic `return {"error": ...}` branch. 401/403 had
-   a `raise SystemExit` — which does **not** work either: raised inside a `ThreadPoolExecutor`
-   worker it surfaces only when the main thread calls `future.result()`, and the executor's
-   context manager drains every queued future first. The existing "handling" was decorative.
-2. `main()` returned `None` regardless of outcome, so the exit status carried no information.
-
-**Fix**: An explicit `RUN_FATAL` flag that every worker checks **before** issuing a call, so the
-first fatal status stops all further requests deterministically. `FATAL_STATUSES = (401, 402,
-403)`. Exit **2** on abort with a block naming the status, the body and the resume command;
-exit **1** if any row errored; **0** only when clean. 7 tests, 5 mutations killed.
-
-⭐ **The generalisable half: an account-level condition is not a property of a row.** Any status
-that will be identical for every subsequent call must abort the run, not decorate each row with
-it. Retry logic is for transient failure; 402 is not transient.
-
-⭐ **What caught it downstream was a guard written the night before.** `aggregate_k_runs.py`
-refused to write anything — *"FATAL: 6586 id(s) are not in every run"*. The tool it replaced,
-`average_oracle_runs.py`, silently intersects the runs and would have produced a label file.
-
-### `training/prepare_data.py` WRITES 0 EXAMPLES, PRINTS "COMPLETE", AND EXITS 0 (2026-09-01)
-
-**Problem**: A filter package's `config.yaml` selects the analysis field via `filter.name`.
-Labels written under `uplifting`'s config carry `uplifting_analysis`; pointed at a v8 directory
-named `human_thriving`, `prepare_data.py` printed `Analysis field: human_thriving_analysis`,
-wrote **0 examples to all three splits**, printed `TRAINING DATA PREPARATION COMPLETE`, and
-exited 0.
-
-**Root cause**: `convert_to_training_format`'s own docstring states it: *"Articles without
-analysis are silently skipped; missing dimensions default to score 0."* The second clause is
-the worse one — a **renamed** dimension does not vanish, it becomes a silent column of zeros on
-every row, which is a wrong label rather than a missing one.
-
-**Fix**: Wrote `filters/human_thriving/v8/config.yaml` before labelling and proved the chain end
-to end (6 train / 2 test, non-zero labels) against a control that still writes 0. Added
-`IN_DEVELOPMENT_FILTERS` coverage to `tests/unit/test_filter_config_schema.py` plus a test that
-the config's dimension keys are keys the **prompt actually emits** — the pairing nothing checked.
-
-⚠️ The schema test had been passing **vacuously**: `ACTIVE_FILTERS` is a hand-maintained list, so
-the new package could be given `name: 12345` and a weight of 99 with the module still green.
-That file already records the same shape biting once (cd v5 invisible for six weeks).
+### `prepare_data.py` WRITES 0 EXAMPLES AND EXITS 0 (2026-09-01) — class now `live` (exits 1, `## Mechanized` 2026-10-12); entry MOVED to [`archive/gotcha-log-archive.md`](archive/gotcha-log-archive.md) (2026-10-12). ⚠️ Still silent: a renamed dimension becomes a column of zeros.
 
 ### "THE WINDOW HAS ROLLED, SO IT IS UNRECOVERABLE" IS FALSE — there are monthly archives (2026-09-01) [16th occurrence of *establish what a source excludes*]
 
@@ -545,6 +479,9 @@ false finding in the reference audit, which trains readers to dismiss that audit
 
 | Date | Finding shape | Check | Status | Occurrences |
 |------|---------------|-------|--------|-------------|
+| 2026-10-12 | `training/prepare_data.py` with a `--filter` whose `filter.name` the labels were not written under: 0 rows match, it wrote three empty splits, printed COMPLETE and exited 0. (Found alongside: the documented call died on `import ground_truth` without PYTHONPATH.) | `tests/unit/test_prepare_data_zero_examples.py` — seeded mismatched field → exit 1, nothing written; control writes all three; both run the documented call with NO PYTHONPATH; guard-off and no-sys.path mutants red | live — ⚠️ NOT covered: a renamed DIMENSION still becomes a silent column of 0s | 0 |
+| 2026-10-12 | ModuleNotFoundError rows under the wrong interpreter explained as "pre-existing environment" (5 occurrences while the fix was written down) | `tests/conftest.py` `pytest_terminal_summary` banner + `tests/unit/test_wrong_interpreter_hint.py`; seeded on the real tree: `python3 -m pytest tests/unit/test_fit_calibration_config_write.py` prints it, `.venv` prints nothing | live — a WARNING, it does not change the exit code | 0 |
+| 2026-10-12 | An account-level refusal (402 balance, 401/403 auth) handled as a per-row error, so every queued row retries against a dead account (2026-09-01: 6,586 doomed calls). `score_deepseek_production.py` was fixed then; `score_ollama_oracle.py` was not (402 fell through to retries, 401/403 used a `SystemExit` the executor drains past) | `tests/unit/test_scorer_run_fatal.py` + `tests/unit/test_ollama_oracle_run_fatal.py`; seeded 402 → one call, no later calls; mutants (402 dropped, pre-call check off, flag never set) all red | live (both DeepSeek callers; NOT `ground_truth/batch_scorer.py`'s Gemini path) | 0 |
 | 2026-10-10 | Evidence must rest on situla, not a GPU host: a host citation with no covering MANIFEST.json, a forged or drifted manifest entry, an empty manifest | `scripts/verification/check_lab_manifests.py` + `tests/unit/test_lab_storage.py::RealTree` (suite) | **live** — 12 guards mutation-tested 2026-10-10/12, all red when broken except the harmless remote-header guard | 0 |
 | 2026-10-09 | A Hub repo id DERIVED from the package directory name (`<dir>-filter-<v>`) where the real id lives in `inference_hub.py`: guard D and `check_adapter_matches_hub.py` 404'd for cultural_discovery, human_thriving and nature_recovery, failing closed toward the `--weights-preplaced` bypass. My "live" check used only belonging; found by 4 of 6 review lenses | `tests/unit/test_check_adapter_matches_hub.py::test_repo_id_comes_from_the_package_not_the_directory_name` (4 real packages) + `tests/unit/test_preflight_deploy_guards.py::test_every_hub_backed_package_names_a_repo_id` (every `filters/*/v*/inference_hub.py`). Seeded: re-deriving the name → 4 red. Live: all six live filters MATCH / NO_HUB against the real Hub | live | 0 |
 | 2026-10-09 | A hook whose script is missing exits **2** (python3 on a missing file), which Claude Code reads as BLOCK, so moving the script would have blocked every Bash call | `tests/unit/test_pattern_kill_hook.py::test_missing_script_does_not_block_every_bash_call` runs the settings command itself with an empty project dir. Seeded: the previous settings command → red | live | 0 |

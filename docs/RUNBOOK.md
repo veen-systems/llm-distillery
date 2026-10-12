@@ -332,10 +332,10 @@ rate the tool prints, and keep the per-run files.
 # ⛔ --input / --output-dir. There is NO --data-source flag (0 occurrences in the script);
 #    the form documented here until 2026-09-01 dies on argparse.
 # ⛔ --filter's config.yaml `filter.name` decides which analysis field is read. Point it at a
-#    filter whose name does not match the labels and it writes 0 examples to every split,
-#    prints "TRAINING DATA PREPARATION COMPLETE", and exits 0 (measured 2026-09-01). Its own
-#    docstring: "Articles without analysis are silently skipped; missing dimensions default
-#    to score 0" -- so a RENAMED dimension becomes a silent column of zeros.
+#    filter whose name does not match the labels and it matches 0 rows. Until 2026-10-12 it
+#    then wrote empty splits and exited 0; it now prints "FATAL: 0 training examples", writes
+#    nothing and exits 1. ⚠️ STILL SILENT: "missing dimensions default to score 0" (its
+#    docstring) -- a RENAMED dimension becomes a column of zeros. Check the label columns.
 python training/prepare_data.py \
     --filter filters/{name}/v{N} \
     --input datasets/scored/{name}_v{N}.jsonl \

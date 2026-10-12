@@ -226,6 +226,15 @@ def get_api_key(key_name: str, env_name: str = None) -> str:
                      f"{env_name or 'no env var'} unset")
 
 
+# ⛔ RUN-FATAL STATUSES (2026-10-12), the fix `score_deepseek_production.py` got on 2026-09-01
+# and this caller never did: a 402 (balance exhausted) fell through to the per-row retry path,
+# so every queued article retried three times against an empty account. A `raise SystemExit`
+# in a worker (the old 401/403 handling) does not stop the run either: the executor still
+# drains every queued future. A flag checked BEFORE each call does.
+RUN_FATAL = {"status": None, "body": ""}
+FATAL_STATUSES = (401, 402, 403)          # auth, balance, forbidden: account-level, not per-row
+
+
 def call_deepseek(model: str, prompt: str, api_key: str, max_retries: int = 3):
     """⚠️ model MUST be the `deepseek-chat` alias, not `deepseek-v4-flash`.
 
@@ -240,14 +249,19 @@ def call_deepseek(model: str, prompt: str, api_key: str, max_retries: int = 3):
         "max_tokens": 4096,
         "response_format": {"type": "json_object"},
     }
+    if RUN_FATAL["status"] is not None:    # a sibling worker already hit it
+        return {"error": f"aborted: HTTP {RUN_FATAL['status']} on an earlier row"}
     last_err = None
     for attempt in range(max_retries):
         try:
             resp = requests.post(DEEPSEEK_URL, headers=headers, json=body, timeout=180)
             if resp.status_code == 200:
                 return resp.json()
-            if resp.status_code in (401, 403):
-                raise SystemExit(f"DeepSeek auth failed: HTTP {resp.status_code}")
+            if resp.status_code in FATAL_STATUSES:
+                if RUN_FATAL["status"] is None:
+                    RUN_FATAL["status"] = resp.status_code
+                    RUN_FATAL["body"] = resp.text[:300]
+                return {"error": f"HTTP {resp.status_code}: {resp.text[:200]}"}
             last_err = f"HTTP {resp.status_code}: {resp.text[:200]}"
             time.sleep(2 ** attempt)
         except requests.exceptions.RequestException as e:
@@ -610,6 +624,12 @@ def main():
                   f"their means rest on fewer samples")
 
     print(f"Output: {output_path}")
+
+    if RUN_FATAL["status"] is not None:
+        print(f"\nFATAL: HTTP {RUN_FATAL['status']} — the run was ABORTED, not completed. "
+              f"An account-level refusal (auth or balance), not a property of any row; rows "
+              f"after it were never sent.\n  {RUN_FATAL['body']}")
+        sys.exit(2)
 
 
 if __name__ == "__main__":
