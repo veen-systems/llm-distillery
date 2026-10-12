@@ -73,7 +73,7 @@ metadata:
 > lever** (1.5%–35.7% per prompt, measured reachable to 90.2%) — it simply no longer has any
 > ranking to flip, so its whole justification is now cost, and ADR-010's consistency
 > objection to reordering the prompt is unopposed by any vendor argument. (c) The
-> AI-Studio-Prepay deadline of **2026-10-12** is untouched.
+> AI-Studio-Prepay deadline of **2026-10-12** is untouched (owner switched to Prepay the week before — see below).
 >
 > ⚠️⚠️ **THE REAL EXPOSURE IS NOT THE MONEY — THE MODEL SWAPPED UNDER US.** We call the
 > **`deepseek-chat` alias**, never a pinned id (`scripts/score_ollama_oracle.py:226` and
@@ -230,6 +230,8 @@ metadata:
 > **Action for the owner:** switch AI Studio to Prepay + enable auto-reload
 > before 2026-10-12 — it is now on the critical path for oracle work, not
 > housekeeping.
+> ✅ **DONE — owner, 2026-10-12: switched to Prepay "last week"** (owner-reported; billing not
+> checked from here, auto-reload not confirmed). Gemini oracle calls on 2026-10-07/08 succeeded.
 >
 > 🚫 **There is NO lighter DeepSeek tier to retreat to.** Verified 2026-08-14
 > against the live API with our key: `GET https://api.deepseek.com/models`
