@@ -2,6 +2,41 @@
  "lab_root": "$LD_LAB (default ~/ld-lab, on situla)",
  "entries": [
   {
+   "path": "inbox/b650-gpu/2026-10-12/belonging_comp_scores/v1_c2c_s42.jsonl",
+   "sha256": "929b1cec1385d0422863aef97b4104f8837ad04d79ac181bc440c98bc5fe14e5",
+   "size": 3201014,
+   "origin": "b650-gpu:llm-distillery/datasets/belonging_comp_scores/v1_c2c_s42.jsonl",
+   "pulled_at": "2026-10-12T19:16:21+02:00"
+  },
+  {
+   "path": "inbox/b650-gpu/2026-10-12/belonging_comp_scores/v1_c2c_s43.jsonl",
+   "sha256": "9208d6022bef7ecc01985a7bd815602b1aaecc3be69ef51270ad591524f3e8a8",
+   "size": 3200782,
+   "origin": "b650-gpu:llm-distillery/datasets/belonging_comp_scores/v1_c2c_s43.jsonl",
+   "pulled_at": "2026-10-12T19:16:21+02:00"
+  },
+  {
+   "path": "inbox/b650-gpu/2026-10-12/belonging_comp_scores/v3.jsonl",
+   "sha256": "6f2d2f957700366c02e6fcf7bad6fad9ff5d923ffd25b3f7bc3ce935b3f611e2",
+   "size": 3200810,
+   "origin": "b650-gpu:llm-distillery/datasets/belonging_comp_scores/v3.jsonl",
+   "pulled_at": "2026-10-12T19:16:21+02:00"
+  },
+  {
+   "path": "inbox/b650-gpu/2026-10-12/focus-tag-comp/input.jsonl",
+   "sha256": "a67df4f4b22513d3bec2d0360cb59209da9c7c609e7225bfc00c309a78f2299c",
+   "size": 1718055,
+   "origin": "b650-gpu:ld-scratch/2026-10-12-focus-tag-comp/input.jsonl",
+   "pulled_at": "2026-10-12T19:16:19+02:00"
+  },
+  {
+   "path": "inbox/b650-gpu/2026-10-12/focus-tag-comp/out.jsonl",
+   "sha256": "b63e2328e636065e53016a89ac1105c0004ec3af791d81f705699a58a9d509a7",
+   "size": 138363,
+   "origin": "b650-gpu:ld-scratch/2026-10-12-focus-tag-comp/out.jsonl",
+   "pulled_at": "2026-10-12T19:16:19+02:00"
+  },
+  {
    "path": "inbox/b650-gpu/2026-10-12/focus-tag-train/out.jsonl",
    "sha256": "19ee802d4dfecfc8c745b8d6f50dfc53ef89c623204f75fd24dd9d3e6bdb40d7",
    "size": 136581,
@@ -14,6 +49,34 @@
    "size": 12299,
    "origin": "b650-gpu:~/ld-scratch/2026-10-12-focus-tag/out.jsonl",
    "pulled_at": "2026-10-12T17:01:40+02:00"
+  },
+  {
+   "path": "inbox/b650-gpu/2026-10-12/v1_c2c_s42/calibration.json",
+   "sha256": "e0cee85a3c35ec8098ed7016954075f0ff2c171dc00e739ff92484f4995e954d",
+   "size": 17589,
+   "origin": "b650-gpu:llm-distillery/filters/belonging/v1_c2c_s42/calibration.json",
+   "pulled_at": "2026-10-12T19:16:30+02:00"
+  },
+  {
+   "path": "inbox/b650-gpu/2026-10-12/v1_c2c_s42/model/adapter_model.safetensors",
+   "sha256": "2470f97be32213944b77dac5a56b05639d397b1031aa2ab6a58b04eb826777ea",
+   "size": 52259056,
+   "origin": "b650-gpu:llm-distillery/filters/belonging/v1_c2c_s42/model/adapter_model.safetensors",
+   "pulled_at": "2026-10-12T19:16:30+02:00"
+  },
+  {
+   "path": "inbox/b650-gpu/2026-10-12/v1_c2c_s43/calibration.json",
+   "sha256": "bae8ec2406612b21f1b029cfb23bf30b0956cae721ed164ccce4e44c5ae8fb54",
+   "size": 18341,
+   "origin": "b650-gpu:llm-distillery/filters/belonging/v1_c2c_s43/calibration.json",
+   "pulled_at": "2026-10-12T19:16:39+02:00"
+  },
+  {
+   "path": "inbox/b650-gpu/2026-10-12/v1_c2c_s43/model/adapter_model.safetensors",
+   "sha256": "47afa1b104b9b95772db9f148e6fcda71b895cd873fb46dabfd9ed20eb7ac7a9",
+   "size": 52259056,
+   "origin": "b650-gpu:llm-distillery/filters/belonging/v1_c2c_s43/model/adapter_model.safetensors",
+   "pulled_at": "2026-10-12T19:16:39+02:00"
   },
   {
    "path": "inbox/sadalsuud/2026-10-12/belonging_comp_draw/belonging_comp_rows.jsonl",

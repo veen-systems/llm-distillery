@@ -5,8 +5,8 @@
 *A bare "continue" means this list, top down. Each line names the FIRST action. Item 0 is WAITING (dated), item 1 is
 NexusMind's. Item 2 (#163, the read surface): rounds 1 and 2 landed 2026-10-12 (758,893 → 549,178 chars, ratchet
 `check_index_budget.py --target surface` at 560,200); `/curate` still flags it (>300k); the next levers are listed in
-item 2 and are not ruled. ▶ **A bare "continue" now starts at item 0a "NOW: candidate c2c"**: v3 fails the owner's personal-story bar
-(10/30); c2c (personal training rows scaled to 4.4) is training on b650, then its pre-registered composition check.*
+item 2 and are not ruled. ▶ **A bare "continue" now starts at item 0a "NEXT: belonging after c2c"**: v3 fails the owner's
+personal-story bar (10/30); candidate c2c FAILED its pre-registered check (recall guard 0.81 / 0.86 < 0.9); the owner chooses the next step.*
 
 0. ⏸ **BELONGING v3 is LIVE (since NexusMind run `bd00dad6`, 2026-10-09 00:08–01:24 CEST), replacing v1. Nothing to do before
    2026-10-23 unless ovr.news messages.** Read `filters/belonging/v3/STATUS.md` first (evidence, rollback rule, refit notes);
@@ -48,11 +48,14 @@ item 2 and are not ruled. ▶ **A bare "continue" now starts at item 0a "NOW: ca
      (all v3): **9/30 pre-registered, 10/30 after the owner corrected one slip → v3 does NOT meet the ≤ 6 bar.**
      Local `qwen3.8:27b` on b650 passed as tagger (26/30; 27/30 corrected); Claude judges 25/30 (26/30 corrected).
      `docs/evidence/2026-10-12-belonging-personal-tag/`.
-   - ▶ **NOW: candidate c2c** (owner: no paid oracle; lower the personal rows in the training data): qwen tagged
-     the 331 rows ≥ 4.0; 42 personal rows scaled to 4.4 (`build_c2c.py`); training seeds 42 + 43 on b650
-     (`~/c2c_remote.sh`, logs `~/belonging_c2c_*`). Then the pre-registered composition check (amendment B,
-     `comp_check.py`; draw = 33,393 rows pulled to `~/ld-lab/inbox/sadalsuud/2026-10-12/belonging_comp_draw`):
-     score v3 + both seeds on b650, `tops`, qwen-tag, `evaluate`. It is a CHECK; a switch needs a fresh held-out gate.
+   - **Candidate c2c: FAILED 2026-10-12** (owner: no paid oracle; 42 qwen-tagged personal training rows scaled to
+     4.4; seeds 42 + 43 on b650). Amendment B: recall guard 222/275 = 0.807 (s42) and 237/275 = 0.862 (s43), below 0.9.
+     The composition half was UNDECIDABLE, because v3's raw top 30 on the 33,393-row draw holds only 5 personal by qwen,
+     against 7 by qwen and 10 by the owner on the site's ranked page. Models + scores + tags in `~/ld-lab/inbox/b650-gpu/2026-10-12/`.
+     `docs/evidence/2026-10-12-belonging-personal-tag/README.md` § *Candidate c2c*.
+   - ▶ **NEXT: the owner chooses** (not ruled). The raw-score top does not reproduce the page's excess, so a re-check needs
+     the site's ranking (ovr.db build query) as the population, not a raw top 30. Options to put to the owner: a softer
+     nudge (e.g. scale to the op-point + 0.2 only on the top rows), or look at the site's ranking first.
    - ~~**Step 1b (NEXT, before step 2):**~~ superseded by the owner's tag ruling: run the two blind judges on the owner's 9 labels with an `out_one_moment`
      definition sharpened to the owner's line (gloss, not ruled: *does it reach a group beyond the person or family*);
      pre-register the rule first, and check on rows NOT among the 9 so the 9 do not become the test set.

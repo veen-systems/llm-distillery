@@ -51,3 +51,40 @@ which stands as recorded (`tags.tsv` keeps the original label). Either way, v3 d
 No paid oracle. qwen on b650 tags the high-scoring rows of v3's training data (`datasets/training/belonging_c2b`);
 rows tagged `personal` get their targets scaled so the weighted score lands just above the op-point (owner chose
 "just above op-point": ~4.3–4.5, so they still pass but rank below community stories); then retrain v3's recipe on b650.
+
+## Candidate c2c: the composition check (amendment B, 2026-10-12)
+
+Run on b650 (RTX 5090, `venv-prodparity`, one device term). Both seeds trained and calibrated with exit 0 (best val
+MAE s42 0.407, s43 0.398). All lab files are cited in `MANIFEST.json` (`inbox/b650-gpu/2026-10-12/`: `focus-tag-comp`,
+`belonging_comp_scores`, `v1_c2c_s42`, `v1_c2c_s43`, `c2c-logs`). The draw has 33,393 rows, 28,384 at stage 2 for
+every model. qwen tagged the 340 distinct ids (each model's top 30 plus v3's 340 passes; every top-30 id was already
+a v3 pass): 275 group, 64 personal, 1 unparsed (a v3 pass outside every top 30).
+
+| measure | v3 | c2c s42 | c2c s43 | pre-registered rule | prediction |
+|---|---|---|---|---|---|
+| personal in top 30 (qwen) | **5** | 2 | 1 | ≤ 6; v3 must be > 6 | v3 8–14: **miss**; c2c 5–10: **miss (lower)** |
+| recall guard: v3's group passes kept at 4.0 | | **222/275 = 0.807** | **237/275 = 0.862** | ≥ 0.9 per seed | 0.92–0.99: **miss** |
+
+Personal in top 30 (qwen): v3 5, s42 2, s43 1.
+
+**Verdict per amendment B: c2c FAILS.** The recall guard fails on both seeds ("below that, the nudge costs
+community stories and c2c fails"). The composition half is UNDECIDABLE, because v3 is already ≤ 6 on this draw.
+⚠️ `comp_check.py evaluate` prints `CHECK: UNDECIDABLE`, because it tests the baseline condition before the guard.
+The pre-registered text decides, and the script's last line is not changed after the fact.
+
+**Post-hoc diagnostics (not pre-registered; for reading only):**
+- Passes at 4.0 on the draw: v3 340, s42 271, s43 461. s43 passes 186 rows that v3 does not, and those are untagged
+  and unjudged, so their cost to specificity is unknown. The two seeds move in opposite directions on volume. That is
+  the seed band, not the nudge.
+- Mean raw shift vs v3 on v3's passes: s42 group −0.24, personal −0.82; s43 group −0.47, personal −1.16. The nudge
+  pushes personal stories down 2–3× harder than group ones. But it also pulls community stories under the op-point.
+- **Why v3 shows only 5 here:** the draw ranks the raw score over 12 files. The page fetched at 14:58 is ranked by the
+  site (normalized score, recency, editor), and there the same tagger counted 7 and the owner 10. So the page's top
+  is not the raw-score top. GUESS, not measured: part of the page's personal-story excess comes from the site's
+  ranking, which this instrument cannot see. A future check needs the site's ranking, or the owner's count, not a
+  raw top 30.
+
+**Incident (no effect on the result):** the c2c packages were copies of `v1_c2b`, and their `.py` files imported
+`filters.belonging.v1_c2b.*`, so they loaded c2b's model. `gate.assert_loads_from` refused both before any score
+was written. The imports were rewritten to each package's own name on b650 (`.py` files only), then rescored.
+The first scoring attempt had also failed at `import gate` (script copied to the wrong path on b650; nothing written).
