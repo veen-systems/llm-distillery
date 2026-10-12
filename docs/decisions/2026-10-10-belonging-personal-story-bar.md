@@ -55,3 +55,13 @@ UNDERCOUNT against the bar.
 person or family* (the valet supports many patients; the zookeeper's family serves a public zoo; the bell foundry
 spans generations of a trade). Before step 2's count, test the judges against these 9 labels and, if they still
 miss, tighten `out_one_moment` in the rubric, then re-test on held-back examples, not on these 9.
+
+## How "personal" is measured — RULED 2026-10-12 (owner): a separate tag
+
+Asked whether to (a) keep the lens rulings and add an independent `focus` tag that the bar counts, or (b) narrow
+the lens so single-person / single-family stories become out of scope, the owner chose **(a), the separate tag**.
+So a personal story can be in scope and still count toward the 6. This REPLACES the gloss above that applied the
+bar through `out_one_moment`. That class is out-of-scope by definition, so it could never count an in-scope
+personal story: the bar's own example ("husband's secret deal to care for wife") is ongoing care, which rubric v2.2
+rules IN. The 10-02 lens rulings are unchanged. Tag definition and its first test:
+`docs/evidence/2026-10-12-belonging-personal-tag/PREREGISTRATION.md`.
