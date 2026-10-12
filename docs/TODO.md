@@ -3,10 +3,10 @@
 ## ▶️ START HERE — the ordered queue, as of 2026-10-12 (session close)
 
 *A bare "continue" means this list, top down. Each line names the FIRST action. Item 0 is WAITING (dated), item 1 is
-NexusMind's. ▶ **A bare "continue" starts at item 2, ROUND 2** (owner, 2026-10-12 close: "Large Read surface ?? that means
-we need to start pruning, thinning, mechanizing, retiring!"). Round 1 landed 2026-10-12 (758,893 → ~601,118 chars,
-ratchet `check_index_budget.py --target surface`); `/curate` still flags it (>300k). Then item 0a step 2, whose first
-action is the OWNER question in 0a step 1's ⚠️ (are c2a's ~9 single-person-looking `in_scope` rows "personal"?).*
+NexusMind's. Item 2 (#163, the read surface): rounds 1 and 2 landed 2026-10-12 (758,893 → 549,178 chars, ratchet
+`check_index_budget.py --target surface` at 560,200); `/curate` still flags it (>300k); the next levers are listed in
+item 2 and are not ruled. ▶ **A bare "continue" now starts at item 0a step 2, whose first action is the OWNER question
+in 0a step 1's ⚠️** (are c2a's ~9 single-person-looking `in_scope` rows "personal"?).*
 
 0. ⏸ **BELONGING v3 is LIVE (since NexusMind run `bd00dad6`, 2026-10-09 00:08–01:24 CEST), replacing v1. Nothing to do before
    2026-10-23 unless ovr.news messages.** Read `filters/belonging/v3/STATUS.md` first (evidence, rollback rule, refit notes);
@@ -61,6 +61,18 @@ action is the OWNER question in 0a step 1's ⚠️ (are c2a's ~9 single-person-l
    verbatim moves (`docs/evidence/2026-10-12-read-surface/mover.py`, lossless + mutant check), hook replay first, ratchet the ceiling down
    after. `retire_memory.py gotcha|sessions --before 2026-10-01` has nothing left to move. Target (Claude's proposal, not
    ruled): under 500K.
+   ✅ **Round 2, part 1 (2026-10-12, later) — within existing rulings: 603,408 → 586,944**, ceiling lowered 611,700 →
+   598,700. Verbatim, lossless + mutant 1 each: `hypothesis-ledger.md` 54,673 → 50,075 (closed rows H-CX1, cd-v6
+   H1–H3/H5–H7, sol-v6 ×8, H-CTX-2, H-BB2; kept H-CX3, H-CTX-1, H-BV6, H-BB4 — open marker or ruling);
+   `session-log.md` 13,906 → 6,018 (`retire_memory.py sessionlog --before 2026-10-01`, the monthly rule);
+   `project-obituary-detector.md` 13,173 → 9,195 (retired v3/v4 history, pre-09-01).
+   ✅ **Part 2 (owner RULED 2026-10-12, both "yes"): 586,944 → 549,178**, ceiling → 560,200. `working-rules.md` 50,046 →
+   ~26K: the 16 SEPTEMBER occurrence stories moved verbatim (exact reconstruction + mutant), each pointer keeps the
+   ordinal count (`check_doc_claims.py` rule-ordinals went RED on the first draft, which dropped it — fixed: 21 and 25,
+   unchanged). `gotcha-log.md` 64,720 → ~51K: `retire_memory.py gotcha --before 2026-10-09` (second mid-month pass).
+   ▶ **Next levers toward 500K (not ruled):** `hypothesis-ledger.md` H-CX3 (6.4K, no closed word — superseded by the
+   09-26 `CLAUDE.md` halving?), the gotcha log's `## Mechanized` "first positives in prose" (~4.5K, 09-17), and
+   `score-batch-shape-noise.md` (25K, judged standing — backs the #95 Hard Constraint).
    Measured 2026-10-12 at close: **758,893 chars** (+3,086 since 10-10).
    Measured 2026-10-10: **755,807 chars** (`/curate` Step 0's command; all of it in `memory/`, there is no
    `docs/work-items/`). History of the passes so far: `docs/TODO-archive.md` § *Moved 2026-10-10*; posted on #163.

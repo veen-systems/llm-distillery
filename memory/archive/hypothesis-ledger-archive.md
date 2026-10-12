@@ -221,3 +221,53 @@ not inside the analysis field. Read the writer before joining outputs from the t
 | id | hypothesis | status |
 |---|---|---|
 | H-BB1 | Cutting article text at 4,000 chars changes a head+tail student's verdicts (the tail it reads is no longer the ending) | ✅ **CONFIRMED 2026-10-07:** v1 on cut text vs production 20/133 flips at 4.0 (max \|Δ\| 3.73); on recovered full text **0/133** (max 0.39), same rows, same stack. Owner ruled full text everywhere |
+
+---
+
+## Moved 2026-10-12 — Hypothesis ledger (`docs/TODO.md` item 2 round 2, #163 the read surface)
+
+Rows whose verdict opens with a closed word (SPLIT VERDICT / CONFIRMED / REFUTED / BIAS NOT SEEN) and carry no open
+marker (⏳, OPEN, a revisit trigger). Kept live on purpose: H-CX3 (no closed word), H-CTX-1 (revisit trigger), H-BV6 (a ruling), H-BB4 (reader side NOT measured).
+
+### The article record / block ledger — measurements, with a `H-AR` prefix  *(context heading, repeated)*
+
+
+| id | claim | verdict |
+|---|---|---|
+| `H-CX1` | Capping pointer rows in `CLAUDE.md` (#133 option 1) holds the file at a stable size | ⭐ **SPLIT VERDICT 2026-08-29 (`/audit-context`) — the prediction HIT and the mechanism did NOT.** Measured **37,445 B**, 17 B from the predicted 37,462 and well inside ±500. But the number is an artifact of a manual trim landing the day before the audit: with the cap in force the file went **37,149 → 38,204 B in 29.3 h (~864 B/day, ABOVE the ~486 B/day it was meant to stop)**, then `1f78b5b` trimmed it back. Attributing that growth: **pointer table +0 B, rest of file +1,055 B.** So the cap is **CONFIRMED within its own scope** — it holds the rows it governs at exactly zero — and the claim *holds the FILE at a stable size* is **REFUTED**: the growth relocated rather than stopped, and the treadmill continued one section over. ⚠️ **Had the audit run a day earlier it would have read 38,204 and called the same cap a failure** — the verdict was one commit wide, the [[feedback-window-is-part-of-a-source]] shape. Next lever must target the non-pointer body. Source: #133. ⭐ **LEVER FOUND AND PULLED 2026-08-29 (later): 2,047 B of the non-pointer body — 5.5% of the file — was four inline `<!-- verify: -->` GUARD blocks**, i.e. mechanism spending the budget it polices, the same defect that moved `check_index_budget.py` out of `memory/MEMORY.md` on 2026-08-17. Moved to `scripts/verification/check_doc_claims.py`; **37,445 → 35,394 B with nothing removed**. ⚠️ **This is a ONE-OFF, not a cap** — you can only evict the mechanism once. Whether the body then holds is [[H-CX3]]. |
+### `cd-v6-probe-hypotheses.md` — cultural_discovery v6 probe (#98)  *(context heading, repeated)*
+
+
+| id | claim | verdict |
+|---|---|---|
+| cd-v6 H1 | a multilingual embedding probe removes the per-language coverage gap | CONFIRMED |
+| cd-v6 H2 | the probe beats the gate on **oracle** ground truth, not just agreement | REFUTED — screening is a regression vs the gate |
+| cd-v6 H3 | the probe is batch-invariant; #95 has no probe analogue | CONFIRMED |
+| cd-v6 H5 | "the probe screens at least as much as the gate" | REFUTED (labelled in file) |
+| cd-v6 H6 | "63.7% is fine because it matches nature_recovery v4's ~64%" | REFUTED (labelled) |
+| cd-v6 H7 | "the 5 positives the lower threshold recovers are recall wins" | REFUTED — 4 of 5 are off-lens |
+### `solutions-v6-dimension-hypotheses.md` — `community_practice_strength` and re-weighting  *(context heading, repeated)*
+
+
+| id | claim | verdict |
+|---|---|---|
+| sol-v6 H1 | the dimension is real, just **rare** | CONFIRMED |
+| sol-v6 H2 | the student learns it *better* than the other six | CONFIRMED |
+| sol-v6 H3 | the score ceiling really does differ by solution type | CONFIRMED |
+| sol-v6 H4 | the concreteness gatekeeper is inert on the training corpus too (#94) | CONFIRMED |
+| sol-v6 R1 | "the dimension is dead" | REFUTED three ways |
+| sol-v6 R2 | "re-weighting would recover the ceiling" | REFUTED — inert at matched volume |
+| sol-v6 R3 | "re-weighting fixes NM#319 enrichment starvation" | REFUTED — the gate reads the **normalized** score; a percentile CDF undoes any monotone rescale |
+| sol-v6 R4 | a decomposition of the 83.1% into "40.0% tech-shaped + 43.1% …" | REFUTED |
+### Cross-lens harm detector — `H-HD` (2026-09-10, `EXP-037`, `docs/evidence/2026-09-10-harm-detector/`)  *(context heading, repeated)*
+
+
+| id | hypothesis | status |
+|---|---|---|
+| **H-CTX-2** | the always-loaded layer is where context rot happens, so capping it is the fix | ⛔ **REFUTED 2026-09-22 — `#133` capped the right file and the growth moved next door.** Measured: the bare-"continue" path is **605,198 B / 7,362 lines** before any work starts, of which `docs/TODO.md` alone is **546,771 B / 6,977 lines**; `memory/gotcha-log.md` is **715,093 B**; `CLAUDE.md` routes to **30** topic files. The always-loaded budget PASSES (51,681 of 60,000) while the pointed-at layer has no budget at all — by design, because budgeting it would push the growth one level further out, which is what `#133` did. ⚠️ **Open, and the successor hypothesis is unstated on purpose**: it is not obvious that a budget anywhere is the right instrument, versus retiring dated records out of the routed path. Owner's four verbs 2026-09-22: **prune, thin, mechanize, retire**. **#163** |
+### Belonging adj1 build and gate — `H-BB` (2026-10-07, `docs/evidence/2026-10-07-belonging-adj1-build/`, `docs/evidence/2026-10-03-belonging-heldout/GATE.md`)  *(context heading, repeated)*
+
+
+| id | hypothesis | status |
+|---|---|---|
+| H-BB2 | In the planned adj1 data, positive share rises with text length (v1 rows are pre-enrichment snippets, new positives are enriched) and biases the student toward "in" on long production articles | ❌ **BIAS NOT SEEN (2026-10-08, leak check, rule fixed before looking):** on 5,000 unseen production rows v3 (c2b) flags long (> 4,000 chars) rows at 9/1,260 vs v1 35/1,260 and French rows at 6/285 vs v1 15/285 — LOWER, not ≥ 1.5× (`docs/evidence/2026-10-08-belonging-candidate2-plan/leak_c2b.json`; adj1 and c2a likewise NOT LEAKED). The coupling in the data is real; the predicted student bias did not appear. *(Earlier:)* OPEN. Coupling MEASURED (0.7% positive under 1,000 chars → 12–21% over 2,000). ⚠️ Corrected 2026-10-08: production also rises with length (oracle k=1 on 798 production rows: 5.8 / 10.6 / 12.7% at 2–4k / 4–8k / >8k), so the excess is ~1.5–1.8× per bin, and the easy negatives only bring training to 10.7 / 15.6 / 18.9% (review's scratch build). The BIAS is predicted, not measured. Test: the build's FM-T1 table, then the gate's specificity |

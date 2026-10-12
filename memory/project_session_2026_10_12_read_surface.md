@@ -23,6 +23,7 @@ metadata:
 | 2d: TODO backlog | ✅ ~12 KB (not 25); 4 boxes + 4 empty headings to `docs/TODO-archive.md` |
 | 0a step 1 (belonging) | ✅ gate reproduced 43/63; positives are both-judges `in_scope`, bar class is `out_one_moment` → premise fails by construction. ⚠️ ~9/20 misses look single-person by Claude's NON-blind title read; owner question before step 2 |
 | AI Studio Prepay | owner-reported switch recorded; billing and auto-reload NOT checked |
+| Item 2 ROUND 2 (later, same day) | ✅ 603,408 → 549,178, ceiling 560,200. Ledger closed rows; `sessionlog --before 2026-10-01`; obituary v3/v4 history; owner RULED both: working-rules September stories (pointers keep the ordinal — rule-ordinals check caught the first draft) and gotcha `--before 2026-10-09` |
 | Cross-session | ovr-news-68 (DeepSeek balance 1.59 after ovr's $3.92): replied nothing in LD needs DeepSeek soon. pipeline-atlas-5d: check inventory sent |
 
 ## What I got wrong
