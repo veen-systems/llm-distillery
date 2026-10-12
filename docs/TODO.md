@@ -84,8 +84,11 @@ NexusMind's. ▶ **A bare "continue" starts at item 2a** (step 0, the hook repla
    - b. **The date rule on the reference files** (owner, 2026-10-09: dated before 2026-09-01 moves, unless the class
      recurred since): ✅ `cross-repo-prioritization.md` **37,191 → 16,968** (2026-10-12: the 12 sections whose NEWEST date predates
      09-01 appended verbatim to its existing archive; standing rules, chains 2/4/6/7/12/14 stay). ⚠️ The newest-date proxy
-     is UNSAFE for the four below: their pre-09-01 sections are mostly standing traps CLAUDE.md points at — judge each. `oracle-pricing-scheduling.md` 35,176,
-     `stamp-contract-integrity.md` 34,024, `filter-status.md` 29,730, `nexusmind-data-sources.md` 27,275.
+     is UNSAFE for the four below: their pre-09-01 sections are mostly standing traps CLAUDE.md points at — judge each. ✅ `oracle-pricing-scheduling.md` **35,176 → 26,128**
+     (V4-card blocks + the superseded/historical ones; all 3 verify checks stay live), ✅ `stamp-contract-integrity.md`
+     **34,024 → 28,437** (NM#300 history, the 08-13 single-run measurements, the SUPERSEDED counts; lessons kept in hooks).
+     **Judged KEEP, untouched:** `filter-status.md` 29,730 (backs CLAUDE.md's recall/spec table) and
+     `nexusmind-data-sources.md` 27,275 (its pre-09-01 sections ARE the traps CLAUDE.md's ⛔ rows point at). 2b done.
    - c. **Mechanize, then retire.** The gotcha log (63,914) keeps 11 catalogue entries only because their classes
      have no `live` row; each new live check lets one move. **RULED 2026-10-10: a RATCHET ceiling on the surface**:
      `check_index_budget.py --target surface` (same command as `/curate` Step 0), ceiling = today's measurement + ~2%,
