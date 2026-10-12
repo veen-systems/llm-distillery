@@ -75,7 +75,12 @@ NexusMind's. ▶ **A bare "continue" starts at item 2a** (step 0, the hook repla
      "do not set the cap" decision stay; hypothesis 5's executable verify annotation kept live), ✅ `date-error-recency-boost-hypotheses.md` **33,176 → 16,811** (H-D1/H-D2 RESOLVED + two superseded framings
      moved verbatim),
      ✅ `uplifting-oracle-genre-hypotheses.md` **29,543 → 20,610** (H-UP1/2/3/7/11/12 + H-CV1 sections moved verbatim; the
-     table and the owner RULINGS stay). ▶ **Next in 2a:** the remaining 7 hypothesis files, largest first (re-measure).
+     table and the owner RULINGS stay). ✅ **2a DONE 2026-10-12 (second pass):** `google-news-corpus` 19,695 → 6,160,
+     `violence-promotion-v1` 12,412 → 7,709, `enrichment-delta` 9,306 → 6,270, `solutions-v6-dimension` 7,066 → 4,412.
+     **Deliberately NOT moved:** `cd-v6-probe` (a pending cutover; its CORRECTIONS section amends CONFIRMED, so
+     splitting them separates a correction from its claim), `obituary-v4` (same coupling: the 2026-09-10 addendum
+     amends items 3 and 5), `opinion-genre` (no closed section; its verify annotation greps its own text). The 11
+     files: 261,785 → 131,876 chars.
    - b. **The date rule on the reference files** (owner, 2026-10-09: dated before 2026-09-01 moves, unless the class
      recurred since): `cross-repo-prioritization.md` 37,191, `oracle-pricing-scheduling.md` 35,176,
      `stamp-contract-integrity.md` 34,024, `filter-status.md` 29,730, `nexusmind-data-sources.md` 27,275.
