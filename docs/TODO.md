@@ -70,7 +70,9 @@ NexusMind's. ▶ **A bare "continue" starts at item 2a** (step 0, the hook repla
      current one (~5–10 KB) naming the three newest dated findings (the gate is the lever, 08-09; production is 79.3%
      sub-threshold artefact, 08-16/17; combining features beats the threshold, 08-17); move every dated section
      VERBATIM to `memory/archive/` (lossless check). Then
-     `prefilter-length-floor-hypotheses.md` 37,478, `date-error-recency-boost-hypotheses.md` 33,176,
+     ✅ `prefilter-length-floor-hypotheses.md` **37,478 → 27,832** (2026-10-12: closed entries 1–7, Q9, H-LF1–3 moved
+     verbatim to `memory/archive/prefilter-length-floor-hypotheses-archive.md`; open H-L1/H-LF4/Q8/10–12 and the live
+     "do not set the cap" decision stay; hypothesis 5's executable verify annotation kept live), `date-error-recency-boost-hypotheses.md` 33,176,
      `uplifting-oracle-genre-hypotheses.md` 29,543.
    - b. **The date rule on the reference files** (owner, 2026-10-09: dated before 2026-09-01 moves, unless the class
      recurred since): `cross-repo-prioritization.md` 37,191, `oracle-pricing-scheduling.md` 35,176,
