@@ -7823,3 +7823,29 @@ Items surfaced by the multi-agent code review of the migration commits (2026-04-
 ---
 
 *Last updated: 2026-08-01*
+
+---
+
+## Moved 2026-10-12 — closed or duplicated boxes from § *Unchecked boxes carried out of the archived sections* (item 2d, #163)
+
+**From:** 🔵 PREVIOUS SESSION — **ADR-013 widened to all framework text; review found my own evidence unsound and the compliance zero FALSE. Framework 6 releases behind, s
+- [x] **Mechanize the language rule (#160)** — done 2026-10-07: `scripts/verification/check_framework_language.py`
+  (names in framework text; commit messages still unread). See START HERE item 4.
+
+**From:** 2026-08-09 — corroboration: the shippable change was refuted, the gate is the lever
+
+**From:** 2026-08-08 (afternoon) — proven by outcome, and a self-inflicted outage
+- [ ] Re-measure gated on **measured GN-URL share per cycle**, not on "migration
+
+**From:** 2026-08-07 (late) — coverage pass, a refuted plan, one instrument shipped
+
+**From:** 2026-08-06 evening — four owner decisions taken, three backlogs closed
+
+**From:** 2026-08-06 — cd v6 probe (#98), the English escape hatch (#99), and an instrument for FS#120
+
+**From:** 2026-08-02 — Chain 4 measured: two of the previous day's own P0 conclusions overturned
+- [ ] **Fit the solutions short-content cap** (#93 step 4) — **#92 no longer blocks it; #95 still does.** The second-op-point re-run ran 2026-08-05 and the defect is **identified**: D1 (both arms ≥2.25) −0.790, D2 (≥4.00) −0.861, **D3 (matched percentile depth) −1.119** [−1.61,−0.61], cluster-bootstrap p Holm-corrected 0.0032 / 0.0012 / <1.5e-4. The selection artifact predicted D2 markedly more negative and D3 → 0; D2 moved −0.071 and D3 is the *largest*. A gemini-2.5-flash cross-check on the same D3 sample gives **−1.351** [−1.73,−0.96] — two oracles with clearly different absolute bias, same gap, which rules out "the judge penalises short input". Harness + fixtures committed (`scripts/diagnostics/ld92_*.py`, `tests/fixtures/ld92/`). **Remaining blocker is Batch F.1 (#95)**: the cap value is a threshold fit and inherits the |Δ| ≤ 0.16 batch-composition noise floor. Also weigh the recall cost against NM#231/#292 before setting a value — `gn_africa_*` / `gn_asia_*` feeds lead solutions' short-and-clearing list.
+- [ ] **Does the scorer share the summariser's fixed-budget failure? (NEW, ovr#299)** For English sources, summary content words absent from the article *and* title run 31.6% (1000+ chars) → 73.9% (120–299) → **83.4% (<120)**, monotone over 18,756 summaries. The mechanism there is a fixed output length target (medians 1159/968/875/1065 against a 40× input range) that the model fills — compressing an article, generating from a headline. **Open for this repo: whether the student has an analogous behaviour, or whether its short-content error is purely vocabulary-without-subject.** The fixes differ — one is a budget, the other a cap — so this is worth one experiment before building either.
+- [ ] **NM#286 item 3** (violence stamping skipped in single-filter / `--no-dedup` / dedup-exception runs). Verified in code; **live blast radius zero today** (production runs multi-filter, violence `enforce: false`), so it is an audit gap, not admitted violence. Still a hard prerequisite for any violence enforce flip, with LD#82.
+  - ⛔ **2026-09-28: the premise is gone and the fix is not in.** Violence has ENFORCED since 2026-08-23 (`config/app.yaml` comment on sadalsuud); `_run_violence_promotion_prefilter` still returns with NO stamps when `_article_cache` is empty (read on sadalsuud today), and `_enforce_violence_promotion` fails open. Live multi-filter cycles stamp, so today's exposure is a shared-dedup exception or an ad-hoc single-filter run. `10344 unstamped articles left in place` (the **05:21** enforcement line, not 09:05 as first written) = dedup-removed copies: nexusmind-55 matched it exactly in 3 cycles (1,724 × 6 filters = 10,344; 1,395 × 6 = 8,370; 1,518 × 6 = 9,108), removed afterwards by per-filter cached dedup — arithmetic identity, not an id-level join. Confirmed unfixed at NexusMind HEAD `9dfcf2a`; scheduling is the owner's call in that session, fix = NM#286's plus an outcome check (unstamped SURVIVORS after dedup = 0). NexusMind's code; owner to decide whether to raise it on NM#286.
+
