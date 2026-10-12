@@ -38,3 +38,16 @@ Disagreements with the owner (owner / A / B / qwen):
   own example class includes "couple celebrates 75 years". It may be a slip. Asked the owner. Per rule 3 the
   table is not edited. If the owner corrects it, the count becomes 10 and every arm passes (A, B and both-say
   26/30, qwen 27/30), and that is reported as a correction, not as the pre-registered result.
+
+## Owner correction (after the result, 2026-10-12)
+
+Asked about pos 25, the owner answered: **"Slip: it's personal"**. Corrected owner count: **10 of 30**. With the
+correction: judge A 26/30 (count 8), judge B 26/30 (count 10), both-say 26/30 (count 8), qwen 27/30 (count 7);
+all pass rule 2. This is a post-hoc correction of the reference, reported beside the pre-registered result above,
+which stands as recorded (`tags.tsv` keeps the original label). Either way, v3 does not meet the bar.
+
+## Next (owner, 2026-10-12)
+
+No paid oracle. qwen on b650 tags the high-scoring rows of v3's training data (`datasets/training/belonging_c2b`);
+rows tagged `personal` get their targets scaled so the weighted score lands just above the op-point (owner chose
+"just above op-point": ~4.3–4.5, so they still pass but rank below community stories); then retrain v3's recipe on b650.

@@ -101,3 +101,28 @@ test in `datasets/training/belonging_c2b/`). Added before any page row was read:
   instead (also $0 oracle) or waits.
 - **Prediction:** arm 3 agrees with the owner on 20–27 of 30; it is weaker than the Claude judges on this
   subtle a line.
+
+## Amendment B (2026-10-12, before any c2c model exists): the check for candidate c2c
+
+**Candidate c2c** = v3's recipe (c2b data, `--epochs 6 --select-metric last --medium-threshold 4.0
+--use-head-tail --head-tokens 256 --tail-tokens 256`, b650 RTX 5090) on `datasets/training/belonging_c2c`
+(`build_c2c.py`): the 42 rows qwen tagged `personal` with weighted score > 4.4 scaled to 4.4 (32 train / 3 val /
+7 test). Two seeds, 42 and 43, because one seed cannot separate a 32-row change from the seed band
+(`docs/evidence/2026-10-08-belonging-candidate2-plan/PLAN.md` §1: 2 dropped rows moved val recall 0.862 → 0.759).
+
+**Composition check ($0 oracle; a CHECK, not the gate):**
+- Draw: every row of the newest 12 belonging `filtered_*.jsonl` files on sadalsuud at draw time (v3-scored, so
+  v3's own scores are on the rows), stage-2 text, deduplicated by id. Fixed at draw time, before c2c scores it.
+- Score with v3, c2c-s42, c2c-s43 on b650 (same box, same venv, same batch size: one device term).
+- For each model: the top 30 by raw score; qwen tags `focus` (the tagger that passed rule 2).
+- **Bar:** ≤ 6 of 30 personal. c2c passes this check if BOTH seeds reach ≤ 6 and v3 on the same draw is > 6 (so the
+  draw can show the difference). If v3 is already ≤ 6 on the draw, the check cannot discriminate: reported as
+  undecidable, not a pass.
+- **Recall guard:** of the draw's rows qwen tags `group` with v3 raw ≥ 4.0, the share c2c still passes at 4.0.
+  Bar: ≥ 0.9 per seed. Below that, the nudge costs community stories and c2c fails.
+
+**Not decided here:** the GATE. All three held-out sets are spent; a switch needs a fresh held-out set (judges,
+$0 oracle) and the owner's go. This check decides only whether building that gate is worth it.
+
+**Predictions:** v3 on the draw: 8–14 personal of 30. c2c: 5–10 per seed, a modest drop (32 changed rows of
+6,331); I would not be surprised by "no difference beyond the seed band". Recall guard: 0.92–0.99.
