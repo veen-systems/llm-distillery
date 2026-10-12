@@ -5,8 +5,26 @@
 *A bare "continue" means this list, top down. Each line names the FIRST action. Item 0 is WAITING (dated), item 1 is
 NexusMind's. Item 2 (#163, the read surface): rounds 1–3 landed 2026-10-12 (758,893 → 514,588 chars after the moves, 519,680 at close with this session's own records; ratchet
 `check_index_budget.py --target surface` at 524,900); `/curate` still flags it (>300k); the next levers are listed in
-item 2 and are not ruled. ▶ **A bare "continue" now starts at item 0a "NEXT: ask the owner"**: v3 fails the owner's
-personal-story bar (10/30); candidate c2c FAILED its pre-registered check (recall guard 0.81 / 0.86 < 0.9); the owner chooses the next step.*
+item 2 and are not ruled. ▶ **A bare "continue" now starts at item 00 "LAB LAYOUT RULES" (owner, 2026-10-12: "first thing
+next session"), THEN item 0a "NEXT: ask the owner"**: v3 fails the owner's personal-story bar (10/30); candidate c2c FAILED
+its pre-registered check (recall guard 0.81 / 0.86 < 0.9); the owner chooses the next step.*
+
+00. ▶ **LAB LAYOUT RULES — FIRST (owner, 2026-10-12: "yes, first thing next session").** The 10-12 data is intact and cited,
+   but misfiled and partly untracked: a pre-registered run (c2c) and a fixed corpus (the 33,393-row draw) sit in
+   `~/ld-lab/inbox/`, against `~/ld-lab/README.md` (planned run → `experiments/<date>-<name>/`, corpus → `datasets/<name>/vN`).
+   The training sets `datasets/training/belonging_{c2a,c2b,c2c}` (v3 was trained on c2b) are in no lab tree and no committed hash.
+   Steps (Claude's proposal; the owner approved doing it, not each detail):
+   1. `lab.py pull`/`adopt` refuse a dest outside `inbox/`, `experiments/`, `datasets/` (today's slip: `b650-gpu/...` at the lab root).
+   2. `check_lab_manifests.py` fails an evidence dir that has `PREREGISTRATION.md` and cites an `inbox/` path.
+   3. New `lab.py move SRC DEST`: moves a tree AND rewrites every evidence `MANIFEST.json` citing it, so a misfiled tree is
+      fixed, not frozen (the README's "never move once cited" then reads "never move except with `lab.py move`").
+   4. Training sets a model is trained on are adopted as `datasets/<name>/vN` and cited (c2b for v3, c2a, c2c, adj1).
+   5. Optional `lab` field in `experiments/registry.jsonl` (README schema + `check_experiment_registry.py`).
+   6. Apply: move 10-12 `inbox/b650-gpu/2026-10-12/*` + `inbox/sadalsuud/2026-10-12/belonging_comp_draw` to
+      `experiments/2026-10-12-belonging-c2c/` and `datasets/belonging_comp_draw/v1`; EXP-048 gets `lab`.
+   Each guard seeded RED first (mutation-test it). Tests + `lab.py verify` on every moved tree. ⚠️ Today's pulls are in no
+   restic snapshot until the 2026-10-13 12:00 run: no host copy may be deleted before it. The 10-10 inbox heap
+   (37 backlog citations) is a later pass, not this item.
 
 0. ⏸ **BELONGING v3 is LIVE (since NexusMind run `bd00dad6`, 2026-10-09 00:08–01:24 CEST), replacing v1. Nothing to do before
    2026-10-23 unless ovr.news messages.** Read `filters/belonging/v3/STATUS.md` first (evidence, rollback rule, refit notes);
