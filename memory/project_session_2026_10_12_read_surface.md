@@ -7,8 +7,8 @@ metadata:
 
 # Session 2026-10-12
 
-**Spend:** $0 oracle. One Claude review subagent (surface ratchet). No GPU. **Deployed:** nothing. Commits `1a936dd` ..
-`84bf683` (12) + this close, on main, **NOT pushed** (owner call; `git reset --hard 37aac9b` undoes all).
+**Spend:** $0 oracle. Three Claude review subagents (surface ratchet; close: code-correctness lens, doc-claims lens). No GPU. **Deployed:** nothing. Commits `1a936dd` ..
+`84bf683` (12) + two close commits, on main, pushed at close (owner: "merge, push and deploy if applicable"; deploy N/A, no package changed).
 
 ## Threads
 
@@ -29,10 +29,20 @@ metadata:
 
 - The kill-hook backtracking test was red at HEAD and the prior session's close did not catch it (`caeaa4f` was already
   over budget on `watch`). Caught only because step 0 ran the suite.
+- My wrong-interpreter banner fired under the RIGHT interpreter (symlinked venv python); its tests used a
+  non-symlink fake. Caught by the close review, not by me.
+
+## Close review (2 lenses)
+
+- Code lens: the wrong-interpreter banner FIRED UNDER `.venv` — `.venv/bin/python` is a uv symlink to an interpreter
+  outside the venv and the check resolved it. Fixed (judge by `sys.prefix`), symlink test added. Also: the 402 stop
+  covers the DeepSeek path only; Gemini 401/403 still retries 3× per row (noted in the gotcha stub, not fixed).
+- Docs lens: 0 lines lost in the moves; one stale ledger description (GN, violence sections "there") corrected.
+- GH: progress posted on #163 (the read surface) and #170 (belonging v3 switch).
 
 ## Owner calls pending
 
 `H-V8-3` moot now v9 is live?; § *Other Filters*; should `prepare_data.py` refuse a renamed dimension (today: a column of
-zeros); LD#160 'Herstel' test failure; push the 12 commits; AI Studio auto-reload unconfirmed; 0a judge-boundary question.
+zeros); the `test_framework_language` failure on a Dutch tab name in `docs/TODO.md` (LD#160, ADR-013, closed); AI Studio auto-reload unconfirmed; 0a judge-boundary question.
 
-Full suite (.venv): 1421 passed, 1 failed (`test_framework_language`, pre-existing at `37aac9b`).
+Full suite (.venv, at close): 1451 passed, 24 skipped, 1 deselected (`test_framework_language`: red on two pre-existing lines, pre-existing at `37aac9b`).

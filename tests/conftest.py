@@ -232,12 +232,17 @@ import sys as _sys
 _REPO = Path(__file__).resolve().parents[1]
 
 
-def wrong_interpreter_hint(failure_texts, executable, repo=_REPO):
-    """The banner lines, or [] when there is nothing to say."""
+def wrong_interpreter_hint(failure_texts, executable, repo=_REPO, prefix=None):
+    """The banner lines, or [] when there is nothing to say.
+
+    "Inside the venv" is decided by the environment root (`sys.prefix`), never by resolving
+    the executable: `.venv/bin/python` is a symlink to an interpreter OUTSIDE the venv (uv), so
+    resolving it made the banner fire under the right interpreter (review, 2026-10-12)."""
     n = sum(1 for t in failure_texts if "ModuleNotFoundError" in t)
     venv = repo / ".venv"
+    root = Path(prefix) if prefix else Path(executable).absolute().parent.parent
     try:
-        inside = Path(executable).resolve().is_relative_to(venv.resolve())
+        inside = root.resolve() == venv.resolve()
     except OSError:
         inside = False
     if not n or inside or not venv.is_dir():
@@ -251,5 +256,5 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config):
     texts = [str(getattr(r, "longrepr", "") or "")
              for key in ("failed", "error")
              for r in terminalreporter.stats.get(key, [])]
-    for line in wrong_interpreter_hint(texts, _sys.executable):
+    for line in wrong_interpreter_hint(texts, _sys.executable, prefix=_sys.prefix):
         terminalreporter.write_sep("!", line, red=True, bold=True)

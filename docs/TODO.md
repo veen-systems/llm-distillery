@@ -3,9 +3,10 @@
 ## ▶️ START HERE — the ordered queue, as of 2026-10-12 (session close)
 
 *A bare "continue" means this list, top down. Each line names the FIRST action. Item 0 is WAITING (dated), item 1 is
-NexusMind's. ▶ **A bare "continue" starts at item 0a step 2** — item 2's read-surface pass landed 2026-10-12 (758,893 →
-~597,723 chars; ratchet `check_index_budget.py --target surface`). ⚠️ Step 2's first action is the OWNER question in 0a
-step 1's ⚠️ (are c2a's ~9 single-person-looking `in_scope` rows "personal"?) — do not run the judged count before it.*
+NexusMind's. ▶ **A bare "continue" starts at item 2, ROUND 2** (owner, 2026-10-12 close: "Large Read surface ?? that means
+we need to start pruning, thinning, mechanizing, retiring!"). Round 1 landed 2026-10-12 (758,893 → ~601,118 chars,
+ratchet `check_index_budget.py --target surface`); `/curate` still flags it (>300k). Then item 0a step 2, whose first
+action is the OWNER question in 0a step 1's ⚠️ (are c2a's ~9 single-person-looking `in_scope` rows "personal"?).*
 
 0. ⏸ **BELONGING v3 is LIVE (since NexusMind run `bd00dad6`, 2026-10-09 00:08–01:24 CEST), replacing v1. Nothing to do before
    2026-10-23 unless ovr.news messages.** Read `filters/belonging/v3/STATUS.md` first (evidence, rollback rule, refit notes);
@@ -53,6 +54,13 @@ step 1's ⚠️ (are c2a's ~9 single-person-looking `in_scope` rows "personal"?)
    NexusMind's session runs it; ours is to tell them. LD#52 and LD#86 are closed.
 
 2. **THE READ SURFACE (#163) — ▶ a bare "continue" starts HERE (owner, 2026-10-12: cleaning FIRST). "prune, thin, mechanize, retire".**
+   ▶ **ROUND 2 (next session, FIRST).** Biggest files on the surface (`wc -m`, 2026-10-12): `gotcha-log.md` 64.6K (Mechanized
+   table ~22K, catalogue ~18.7K, ~23 dated entries), `hypothesis-ledger.md` 54.5K (26 rows: move closed/dormant rows to
+   `archive/hypothesis-ledger-archive.md`), `working-rules.md` 50.0K (keep each rule's text; move occurrence evidence to an
+   archive), `filter-status.md` 29.7K, `stamp-contract-integrity.md` 28.4K, `session-log.md` 13.9K. Same method as round 1:
+   verbatim moves (`docs/evidence/2026-10-12-read-surface/mover.py`, lossless + mutant check), hook replay first, ratchet the ceiling down
+   after. `retire_memory.py gotcha|sessions --before 2026-10-01` has nothing left to move. Target (Claude's proposal, not
+   ruled): under 500K.
    Measured 2026-10-12 at close: **758,893 chars** (+3,086 since 10-10).
    Measured 2026-10-10: **755,807 chars** (`/curate` Step 0's command; all of it in `memory/`, there is no
    `docs/work-items/`). History of the passes so far: `docs/TODO-archive.md` § *Moved 2026-10-10*; posted on #163.

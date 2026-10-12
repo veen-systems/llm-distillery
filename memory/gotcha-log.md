@@ -4,6 +4,14 @@
 
 *⚠️ **Entries dated before 2026-09-17 live in [`archive/gotcha-log-archive.md`](archive/gotcha-log-archive.md)**, verbatim (the 09-01 → 09-16 ones moved 2026-09-27 by an owner-approved MID-MONTH pass, `--before 2026-09-17`; earlier ones moved 2026-09-24; into `archive/` 2026-09-26 so curate's size measurement stops counting it, #163; the month-dated Feb–May entries followed on 2026-09-26). Next pass: `python3 scripts/maintenance/retire_memory.py gotcha --before <first of this month> --apply` (dry run without `--apply`). It retires top-level entries only; the `###` entries inside the catalogue are kept by rule and counted (⚠️ superseded 2026-10-09: 43 of them moved by date; see the note under the catalogue heading). The unreachable-mechanism catalogue stayed here. For a recurrence match, grep both: `grep -n <term> memory/gotcha-log.md memory/archive/gotcha-log-archive.md` (a `memory/gotcha-log*.md` glob does NOT reach the archive). Was: `grep -n <term> memory/gotcha-log*.md`.*
 
+## A TIMING TEST WENT RED AT HEAD AND THE SESSION CLOSE DID NOT SEE IT (2026-10-12)
+**Problem**: `test_no_catastrophic_backtracking` (the kill-pattern hook) took 8.03 s on 2000×`ssh h ` at `37aac9b`; `caeaa4f`
+was already over budget on `watch`. The 2026-10-09 close reported the suite green.
+**Root cause**: a latency test fails only when its input class is slow; the close ran the hook's tests, not the full
+suite, after the last hook change.
+**Fix**: `block_pattern_kill.py` re-reads the `shlex.join` form only when it differs from the plain string (0.30 s).
+Run the FULL suite (`.venv/bin/python`) as the last act before a close commit, and read every failure line.
+
 ## A CHECKER THAT SCANNED GITIGNORED MODEL DIRS TIMED OUT THE VERIFY BATTERY (2026-10-12)
 
 `check_claim_shapes.py` walked `filters/` with `os.walk` and parsed every `.json` it found, including ~12
@@ -350,7 +358,7 @@ rule was: it is in `CLAUDE.md`, in this log, and in `working-rules.md`, and I wr
 instance of it anyway. Knowing a rule and applying it at the moment you write the command
 are different acts (`feedback-articulating-is-not-applying`).
 
-### A 402 IS NOT A PER-ROW ERROR (2026-09-01/02) — class now `live` in both DeepSeek callers (`## Mechanized` 2026-10-12); entry MOVED to [`archive/gotcha-log-archive.md`](archive/gotcha-log-archive.md) (2026-10-12)
+### A 402 IS NOT A PER-ROW ERROR (2026-09-01/02) — class now `live` in both DeepSeek callers (`## Mechanized` 2026-10-12); ⚠️ NOT the Gemini or Ollama paths of `score_ollama_oracle.py` (review, 2026-10-12: a Gemini 401/403 still retries 3× per row); entry MOVED to [`archive/gotcha-log-archive.md`](archive/gotcha-log-archive.md) (2026-10-12)
 
 ### `prepare_data.py` WRITES 0 EXAMPLES AND EXITS 0 (2026-09-01) — class now `live` (exits 1, `## Mechanized` 2026-10-12); entry MOVED to [`archive/gotcha-log-archive.md`](archive/gotcha-log-archive.md) (2026-10-12). ⚠️ Still silent: a renamed dimension becomes a column of zeros.
 

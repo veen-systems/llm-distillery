@@ -30,3 +30,22 @@ def test_the_same_errors_inside_the_venv_are_left_alone(tmp_path):
 def test_ordinary_failures_say_nothing(tmp_path):
     assert cf.wrong_interpreter_hint(["AssertionError: 1 != 2"], "/usr/bin/python3",
                                      _repo(tmp_path)) == []
+
+
+def test_a_venv_python_symlinked_outside_the_venv_is_still_inside(tmp_path):
+    """uv makes .venv/bin/python a symlink to an interpreter outside the venv; resolving it misfired."""
+    repo = _repo(tmp_path)
+    real = tmp_path / "elsewhere" / "python3.12"
+    real.parent.mkdir()
+    real.write_text("")
+    exe = repo / ".venv" / "bin" / "python"
+    exe.symlink_to(real)
+    assert cf.wrong_interpreter_hint(["ModuleNotFoundError: x"], str(exe), repo) == []
+    assert cf.wrong_interpreter_hint(["ModuleNotFoundError: x"], str(real), repo,
+                                     prefix=str(repo / ".venv")) == []
+
+
+def test_the_live_interpreter_is_judged_by_its_prefix(tmp_path):
+    repo = _repo(tmp_path)
+    assert cf.wrong_interpreter_hint(["ModuleNotFoundError: x"], str(repo / ".venv" / "bin" / "python"),
+                                     repo, prefix="/usr")
