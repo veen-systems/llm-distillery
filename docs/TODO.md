@@ -74,7 +74,8 @@ NexusMind's. ▶ **A bare "continue" starts at item 2a** (step 0, the hook repla
      verbatim to `memory/archive/prefilter-length-floor-hypotheses-archive.md`; open H-L1/H-LF4/Q8/10–12 and the live
      "do not set the cap" decision stay; hypothesis 5's executable verify annotation kept live), ✅ `date-error-recency-boost-hypotheses.md` **33,176 → 16,811** (H-D1/H-D2 RESOLVED + two superseded framings
      moved verbatim),
-     `uplifting-oracle-genre-hypotheses.md` 29,543.
+     ✅ `uplifting-oracle-genre-hypotheses.md` **29,543 → 20,610** (H-UP1/2/3/7/11/12 + H-CV1 sections moved verbatim; the
+     table and the owner RULINGS stay). ▶ **Next in 2a:** the remaining 7 hypothesis files, largest first (re-measure).
    - b. **The date rule on the reference files** (owner, 2026-10-09: dated before 2026-09-01 moves, unless the class
      recurred since): `cross-repo-prioritization.md` 37,191, `oracle-pricing-scheduling.md` 35,176,
      `stamp-contract-integrity.md` 34,024, `filter-status.md` 29,730, `nexusmind-data-sources.md` 27,275.
