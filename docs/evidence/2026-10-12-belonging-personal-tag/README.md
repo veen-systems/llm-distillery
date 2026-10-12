@@ -36,14 +36,18 @@ Disagreements with the owner (owner / A / B / qwen):
   (where a wrong tag softens one label), not yet as the sole judge of a gate.
 - ⚠️ **pos 25 (post-hoc, not changed):** all three arms say personal and the owner said group, and the bar's
   own example class includes "couple celebrates 75 years". It may be a slip. Asked the owner. Per rule 3 the
-  table is not edited. If the owner corrects it, the count becomes 10 and every arm passes (A, B and both-say
-  26/30, qwen 27/30), and that is reported as a correction, not as the pre-registered result.
+  table is not edited. If the owner corrects it, the count becomes 10, and that is reported as a correction, not as
+  the pre-registered result (see the next section: under the correction qwen FAILS the ±2 count half).
 
 ## Owner correction (after the result, 2026-10-12)
 
 Asked about pos 25, the owner answered: **"Slip: it's personal"**. Corrected owner count: **10 of 30**. With the
-correction: judge A 26/30 (count 8), judge B 26/30 (count 10), both-say 26/30 (count 8), qwen 27/30 (count 7);
-all pass rule 2. This is a post-hoc correction of the reference, reported beside the pre-registered result above,
+correction: judge A 26/30 (count 8), judge B 26/30 (count 10), both-say 26/30 (count 8), qwen 27/30 (count 7).
+⚠️ **Correction to the first version of this paragraph (review, 2026-10-12):** rule 2 has TWO halves, agreement ≥ 26/30
+AND count within ±2. Against the corrected 10, A, B and both-say pass, but **qwen FAILS the count half (7 vs 10, a gap of
+3)**. It passes rule 2 only against the pre-registered reference (9, a gap of 2). qwen undercounts personal. Amendment
+B's "the tagger that passed rule 2" therefore rests on the uncorrected reference. A qwen count of personal stories
+should be read as a floor, not an estimate. This is a post-hoc correction of the reference, reported beside the pre-registered result above,
 which stands as recorded (`tags.tsv` keeps the original label). Either way, v3 does not meet the bar.
 
 ## Next (owner, 2026-10-12)
@@ -55,7 +59,7 @@ rows tagged `personal` get their targets scaled so the weighted score lands just
 ## Candidate c2c: the composition check (amendment B, 2026-10-12)
 
 Run on b650 (RTX 5090, `venv-prodparity`, one device term). Both seeds trained and calibrated with exit 0 (best val
-MAE s42 0.407, s43 0.398). All lab files are cited in `MANIFEST.json` (`inbox/b650-gpu/2026-10-12/`: `focus-tag-comp`,
+MAE s42 0.398, s43 0.407). All lab files are cited in `MANIFEST.json` (`inbox/b650-gpu/2026-10-12/`: `focus-tag-comp`,
 `belonging_comp_scores`, `v1_c2c_s42`, `v1_c2c_s43`, `c2c-logs`). The draw has 33,393 rows, 28,384 at stage 2 for
 every model. qwen tagged the 340 distinct ids (each model's top 30 plus v3's 340 passes; every top-30 id was already
 a v3 pass): 275 group, 64 personal, 1 unparsed (a v3 pass outside every top 30).
@@ -74,17 +78,35 @@ The pre-registered text decides, and the script's last line is not changed after
 
 **Post-hoc diagnostics (not pre-registered; for reading only):**
 - Passes at 4.0 on the draw: v3 340, s42 271, s43 461. s43 passes 186 rows that v3 does not, and those are untagged
-  and unjudged, so their cost to specificity is unknown. The two seeds move in opposite directions on volume. That is
-  the seed band, not the nudge.
+  and unjudged, so their cost to specificity is unknown. The two seeds move in opposite directions on volume. A GUESS,
+  not measured (no seed band on this draw): that is the seed band, not the nudge.
 - Mean raw shift vs v3 on v3's passes: s42 group −0.24, personal −0.82; s43 group −0.47, personal −1.16. The nudge
-  pushes personal stories down 2–3× harder than group ones. But it also pulls community stories under the op-point.
+  pushes personal stories down 2.5–3.5× harder (0.82/0.24 = 3.5×, 1.16/0.47 = 2.5×) than group ones. But it also pulls community stories under the op-point.
 - **Why v3 shows only 5 here:** the draw ranks the raw score over 12 files. The page fetched at 14:58 is ranked by the
-  site (normalized score, recency, editor), and there the same tagger counted 7 and the owner 10. So the page's top
-  is not the raw-score top. GUESS, not measured: part of the page's personal-story excess comes from the site's
-  ranking, which this instrument cannot see. A future check needs the site's ranking, or the owner's count, not a
+  site, and there the same tagger counted 7 and the owner 10. MEASURED (review, re-checked): all 30 page rows are in
+  the draw, but only 7 of them are in v3's raw top 30 (3 of those 7 owner-personal). So the page's top is not the
+  raw-score top. Which site term reorders it (normalized score, recency, editor) is a GUESS, not measured. So part
+  of the page's personal-story excess comes from the site's ranking, which this instrument cannot see. A future check needs the site's ranking, or the owner's count, not a
   raw top 30.
 
 **Incident (no effect on the result):** the c2c packages were copies of `v1_c2b`, and their `.py` files imported
 `filters.belonging.v1_c2b.*`, so they loaded c2b's model. `gate.assert_loads_from` refused both before any score
 was written. The imports were rewritten to each package's own name on b650 (`.py` files only), then rescored.
 The first scoring attempt had also failed at `import gate` (script copied to the wrong path on b650; nothing written).
+
+**⚠️ Build defect found in review (2026-10-12, after the verdict): c2c is not exactly the candidate the
+pre-registration describes.** `build_c2c.py` scaled the six labels on the plain weighted sum. It ignored the
+community_fabric gatekeeper (`base_scorer.py`: community_fabric < 3.0 caps the score at 3.42). Scaling pushed
+community_fabric under 3.0 on 11 of the 42 changed rows (8 train / 2 val / 1 test; one of the 8 was already capped
+before scaling). Those rows were trained to land at **3.42, below the op-point**, not at 4.4 as the owner chose. So
+for a quarter of the changed rows, c2c pushed toward *blocking* personal stories. The verdict stands for the model
+as built, because the guard fails on both seeds. It is a guess, not measured, that this stronger push explains
+part of the lost community stories. A retry must scale so that community_fabric stays ≥ 3.0 (for example, scale the
+other five dimensions only), and then check the effective (capped) score of every changed row.
+Two cosmetic script notes: `evaluate` prints `0 untagged`, but one row is tagged `None`. It is outside every top 30
+and outside the guard's 275, and both seeds pass it, so the verdict is unchanged.
+
+**Deviation not recorded before (review, 2026-10-12):** amendment A sized the training-row tagging as "max dimension ≥ 4.0"
+(~420 rows: 342 / 37 / 41). `build_c2c.py` and the tag run used **weighted score ≥ 4.0** instead: 331 rows (273 / 29 / 29),
+48 tagged personal (38 / 3 / 7). 42 of those score above 4.4 and were scaled (32 / 3 / 7). The 6 personal train rows at
+4.03–4.25 were left alone, as intended.

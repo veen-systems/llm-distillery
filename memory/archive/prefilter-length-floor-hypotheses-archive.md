@@ -181,3 +181,151 @@ headline-echo population — NOT VERIFIED, `source` was not captured.**
   vs **0.0%** for Japanese/CJK/Devanagari/Other. ⇒ **the targeted fix is the GN population
   (ADR-007), not a global floor.**
 
+
+
+---
+
+*Moved verbatim from the live file on 2026-10-12 (read-surface pruning, #163):*
+
+## Step 4 measured 2026-08-08 — VERDICT: do not set the cap
+
+Sized it, then found the sizing invalid. Both structural findings hold whatever
+the value:
+
+- **A cap ≥ the op-point cannot remove a single false positive.** Visibility
+  keys on the raw score (ADR-022/NM#280) and a cap leaves the row above the
+  op-point by construction. #92's ~47% oracle-negative short rows sit just
+  above solutions' 2.25 — a cap re-ranks them, only a gate suppresses them,
+  and #93 exists to avoid the gate. **The cap and the defect are not the same
+  shape.**
+- **No short article reaches `medium_high` (5.0); max is 4.93** over 8 cycles.
+  "Off the top of the feed" is already true with no cap, and any cap ≥ 5.0 is a
+  guaranteed no-op (the LD#94 shape).
+
+Mechanically fittable — cap 3.50 binds 71 of 173 short surfacing rows at mean
+displacement 0.37, i.e. 2.3× the #95 noise band. **But 87.9% of that population
+carries a Google News URL** (152 of 173) — and only the **A** slice below is
+retired, which is the trap that produced my 3× error. ADR-007 (FluxusSource,
+Accepted 2026-08-08) retires the **59** `gn_*` country proxies.
+**Migration is UNDERWAY, not pending** —
+`b869881` moved the first 6 African feeds to native RSS, first visible in
+`collection_20260808_120948`; ~29 proxies follow. `gn_*` items per collection
+went **565 → 528 → 202** across 08-08, so the corpus was already moving *during*
+the 8-cycle measurement window and its last cycle sits on the boundary. (I first
+wrote "decided, not implemented" from the 506 GN stubs still in the 12:49 cycle
+— the count was right, the inference wrong; the FluxusSource session caught it.)
+**There are THREE GN populations and ADR-007 retires only the first** (settled
+with the FluxusSource session, 2026-08-08; their `memory/gn-proxy-protocol.md`):
+
+| pop | what | enabled | query shape | fate |
+|---|---|---|---|---|
+| **A** | `gn_*` country proxies | 59 | `q=<Country>` | ADR-007 retires |
+| **B** | publisher-named repoints | 230 | `q=…site:<domain>` | slow #90 migration |
+| **C** | `google_news_*` topic feeds | 13 | `q="battery storage" OR …` | **editorial keep/drop** |
+
+C proxies **no publisher at all** — there is nothing to migrate to, so the only
+move is one line of config.
+
+Measured on `solutions v6`, 8 cycles, sub-300-char rows:
+
+| pop | short | surfacing | **surfacing rate** | /cycle |
+|---|---|---|---|---|
+| A | 3,736 | 109 | 2.9% | 13.6 |
+| B | 1,715 | 21 | 1.2% | 2.6 |
+| **C** | **137** | **22** | **16.1%** | 2.8 |
+| non-GN | 2,023 | 21 | 1.0% | 2.6 |
+
+```
+today                       21.6 surfacing rows/cycle
+after ADR-007 (A gone)       8.0
+after ADR-007 + dropping C   5.2
+```
+
+**C is 13× the non-GN surfacing rate off the smallest population, and supplies
+34% of everything surviving ADR-007** — so dropping 13 feeds is worth roughly
+what the entire 230-feed repoint migration is. Probably mechanistic rather than
+luck: LD#92's defect is the student reading a title dense in solution vocabulary
+with no subject to ground it, and a topic-query feed emits exactly that by
+construction. Predicts the rate persists after any migration.
+
+**Two errors of mine here, both caught by the FluxusSource session.** First I
+posted 2.6/cycle by counting only non-GN, assuming retirement clears GN broadly
+— understated 3×. Then I merged C into B, because I split on "not `gn_*`".
+Offsetting the first: H4 measured **0 of 14,198** GN-proxy rows ever enriched
+(pre-enrichment fetches from `url`; a GN `url` is a redirect), so migration
+converts part of the population into >300-char articles rather than deleting it.
+Of what remains, cap 3.50 would bind ~2.5/cycle — and
+they are named outlets with short RSS (`automotive_electrive` 6, `china_cgtn`,
+`nyt_world`, `trt_world`, `observador`), not broken-proxy stubs, so not what
+#92 measured.
+
+**The verdict rests on 1–2 above plus the one-feed finding — NOT on "too thin to
+fit", which the 3× correction weakened and which I withdraw as the primary
+ground.**
+
+**Do not gate the re-measure on "migration complete" — there is no near-term
+done.** FluxusSource expects GN-URL volume to step down as country-proxy batches
+land, then plateau well above zero; the next ~29 are blocked on a real defect in FluxusSource's
+`gn_to_native_upgrade.py` (it ranks candidate publishers by frequency in GN
+output, which the bare-country-name collision corrupts — it proposed a football
+site for Algeria over `aps.dz`). Gate on **measured GN-URL share per cycle**
+instead. #95 stopped being a blocker on 08-06 (noise band shipped).
+
+**Match GN on `news.google.com` in `url`, never on the `gn_` source prefix** —
+the prefix identifies only the country-proxy subset and under-counts GN feeds
+~5:1 in config (302 GN-URL feeds enabled, 59 of them `gn_*`). This supersedes
+the "use the union" note below.
+
+The trap for next time: the issue's own comment already said "a cap fitted
+before the GN decision would be tuned against a population that is about to
+change size." I sized it first and checked that second. **When a prior comment
+names a sequencing precondition, verify it is satisfied before doing the work,
+not after.** A decision being *taken* is not the precondition — the corpus
+changing is, and here it was changing *while I measured*.
+
+**The `gn_*` prefix is NOT a GN detector.** In `collection_20260808_120948`,
+**202** items carry a `gn_*` source but **441** carry a `news.google.com` URL.
+The gap is not a migration artifact and never resolves: it is two naming
+conventions — 59 country proxies named `gn_*`, and 243 publisher-named feeds
+repointed at GN. **`news.google.com` in `url` is the reliable signal**; the
+prefix identifies only the retirement target. I used the union and reported it
+as "GN", which conflated a population being retired with one that is not — the
+direct cause of the 3× residual error above.
+
+## 2026-08-11 — the #93 step-4 re-measure gate was run. It is still CLOSED.
+
+The 2026-08-08 comment left an encoded criterion rather than a date: *gate on
+measured GN-URL share per cycle, matching `news.google.com` in `url`*. Ran it.
+
+**GN-URL share has not moved: 24.1% (67 cycles before the first ADR-007 migration
+batch) → 25.1% (18 cycles after)**, pooled over 301k items in NexusMind
+`data/raw`. Per-cycle it ranges 15.7–39.0% with no trend.
+
+That is **not** evidence ADR-007 stalled — 6 migrated feeds against 311 remaining
+GN URLs predicts a flat population. See [[google-news-corpus-hypotheses]].
+
+**The decisive ground survives a window twice the original size.** "Nothing short
+reaches `medium_high`, so any cap ≥ 5.0 is a no-op": over the 16 cycles since
+`content_length` reached 100% population, `solutions v6` short rows are n=13,406,
+**max raw 4.878, zero at or above 5.0**. Previously 4.93 over 8 cycles.
+
+**Verdict unchanged: do not set `short_content.cap`.** The mechanism stays wired
+and off.
+
+Two things that did move:
+
+- Short surfacing rows for `solutions v6` fell 25.4 → 18.2 per cycle, and **the
+  only population that changed is B** (6.0 → 2.4/cycle), driven by one feed —
+  `energy_utilities_google_news_energy_storage`, 20 → 4. Population A (16.8 → 13.2)
+  and C (2.7 → 2.6) are flat. That is the "addressable at source" prediction from
+  08-08 coming true without a cap being set.
+- **`content_length` is now populated on 100% of rows in all six filters** — 0 nulls
+  in 230,070 scored rows since the 2026-08-08 17:10 cycle. NM#300's fix holds, so
+  `_apply_short_content_cap`'s silent-no-op hazard is no longer latent. A future
+  flip still needs a binding check at the end of a real run.
+
+**Same-instrument warning:** the before/after comparison used `len(content)` on the
+persisted row, because `content_length` was 0% populated before 2026-08-08 17:10
+and the stamped field would have compared two different quantities.
+
+---

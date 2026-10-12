@@ -1,6 +1,21 @@
 # Gotcha Log
 
-*Newest-first, dated entries. **One standing section lives at the BOTTOM**: [`## Mechanized`](#mechanized) — the destination for `/review-changes` Step 3.1, where a review finding that became a deterministic check is recorded. It is named here because nobody scrolls to the bottom of this file.*
+*Newest-first, dated entries. **One standing section lives at the BOTTOM**: [`### `cp -r` OF A FILTER PACKAGE LOADS THE SOURCE PACKAGE'S MODEL (2026-10-12)
+**Problem**: `filters/belonging/v1_c2c_s42` was a `cp -r` of `v1_c2b`. Its training wrote its own adapter, but scoring it loaded `v1_c2b/model`. `gate.assert_loads_from` refused both seeds before a score was written.
+**Root cause**: the package's `inference*.py` import `filters.belonging.v1_c2b.*` by ABSOLUTE module path, and the model path is `Path(__file__).parent / "model"` of the IMPORTED module. A copy keeps the source's module name.
+**Fix**: after any package copy, `sed` the module path to the new package name and `grep -c <old name>` = 0 before scoring. Keep `assert_loads_from` in every scoring script: it is what caught this.
+
+### SCALING LABELS TO A WEIGHTED TARGET IGNORES THE GATEKEEPER (2026-10-12)
+**Problem**: `build_c2c.py` scaled all six belonging labels so the plain weighted sum = 4.4. In 11 of 42 rows community_fabric fell below 3.0, so the scorer caps them at 3.42: trained to BLOCK, not "just above the op-point". Found by the session-close review, after the verdict.
+**Root cause**: the target was computed on the plain weighted average. The runtime score is gatekeeper-capped (`GATEKEEPER_MIN` / `GATEKEEPER_CAP` in `base_scorer.py`).
+**Fix**: any label edit asserts the EFFECTIVE (capped) score of every changed row, computed by the package's own rule, not a re-implementation of the sum. Belonging: keep community_fabric ≥ 3.0.
+
+### `lab.py pull` DEST IS RELATIVE TO THE LAB ROOT, NOT THE INBOX (2026-10-12)
+**Problem**: `lab.py pull host:path b650-gpu/2026-10-12/x` landed in `~/ld-lab/b650-gpu/`, outside `inbox/`, where every earlier pull lives.
+**Root cause**: dest is joined to `$LD_LAB`. The docstring example spells `inbox/...`, but nothing enforces it.
+**Fix**: always write `inbox/<host>/<date>/<name>`. Moved and `lab.py verify` re-run: manifests are relative, so a move keeps them valid.
+
+## Mechanized`](#mechanized) — the destination for `/review-changes` Step 3.1, where a review finding that became a deterministic check is recorded. It is named here because nobody scrolls to the bottom of this file.*
 
 *⚠️ **Entries dated before 2026-10-09 live in [`archive/gotcha-log-archive.md`](archive/gotcha-log-archive.md)**, verbatim (the 10-01 → 10-08 ones moved 2026-10-12 by a second owner-approved MID-MONTH pass, `--before 2026-10-09`, #163 round 2; the 09-01 → 09-16 ones moved 2026-09-27 by an owner-approved MID-MONTH pass, `--before 2026-09-17`; earlier ones moved 2026-09-24; into `archive/` 2026-09-26 so curate's size measurement stops counting it, #163; the month-dated Feb–May entries followed on 2026-09-26). Next pass: `python3 scripts/maintenance/retire_memory.py gotcha --before <first of this month> --apply` (dry run without `--apply`). It retires top-level entries only; the `###` entries inside the catalogue are kept by rule and counted (⚠️ superseded 2026-10-09: 43 of them moved by date; see the note under the catalogue heading). The unreachable-mechanism catalogue stayed here. For a recurrence match, grep both: `grep -n <term> memory/gotcha-log.md memory/archive/gotcha-log-archive.md` (a `memory/gotcha-log*.md` glob does NOT reach the archive). Was: `grep -n <term> memory/gotcha-log*.md`.*
 

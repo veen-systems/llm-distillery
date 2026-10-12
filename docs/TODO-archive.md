@@ -7849,3 +7849,15 @@ Items surfaced by the multi-agent code review of the migration commits (2026-04-
 - [ ] **NM#286 item 3** (violence stamping skipped in single-filter / `--no-dedup` / dedup-exception runs). Verified in code; **live blast radius zero today** (production runs multi-filter, violence `enforce: false`), so it is an audit gap, not admitted violence. Still a hard prerequisite for any violence enforce flip, with LD#82.
   - ⛔ **2026-09-28: the premise is gone and the fix is not in.** Violence has ENFORCED since 2026-08-23 (`config/app.yaml` comment on sadalsuud); `_run_violence_promotion_prefilter` still returns with NO stamps when `_article_cache` is empty (read on sadalsuud today), and `_enforce_violence_promotion` fails open. Live multi-filter cycles stamp, so today's exposure is a shared-dedup exception or an ad-hoc single-filter run. `10344 unstamped articles left in place` (the **05:21** enforcement line, not 09:05 as first written) = dedup-removed copies: nexusmind-55 matched it exactly in 3 cycles (1,724 × 6 filters = 10,344; 1,395 × 6 = 8,370; 1,518 × 6 = 9,108), removed afterwards by per-filter cached dedup — arithmetic identity, not an id-level join. Confirmed unfixed at NexusMind HEAD `9dfcf2a`; scheduling is the owner's call in that session, fix = NM#286's plus an outcome check (unstamped SURVIVORS after dedup = 0). NexusMind's code; owner to decide whether to raise it on NM#286.
 
+
+
+## Moved 2026-10-12 (session close): item 2's round-2 plan, done
+
+2. **THE READ SURFACE (#163) — ▶ a bare "continue" starts HERE (owner, 2026-10-12: cleaning FIRST). "prune, thin, mechanize, retire".**
+   ▶ **ROUND 2 (next session, FIRST).** Biggest files on the surface (`wc -m`, 2026-10-12): `gotcha-log.md` 64.6K (Mechanized
+   table ~22K, catalogue ~18.7K, ~23 dated entries), `hypothesis-ledger.md` 54.5K (26 rows: move closed/dormant rows to
+   `archive/hypothesis-ledger-archive.md`), `working-rules.md` 50.0K (keep each rule's text; move occurrence evidence to an
+   archive), `filter-status.md` 29.7K, `stamp-contract-integrity.md` 28.4K, `session-log.md` 13.9K. Same method as round 1:
+   verbatim moves (`docs/evidence/2026-10-12-read-surface/mover.py`, lossless + mutant check), hook replay first, ratchet the ceiling down
+   after. `retire_memory.py gotcha|sessions --before 2026-10-01` has nothing left to move. Target (Claude's proposal, not
+   ruled): under 500K.

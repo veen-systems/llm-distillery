@@ -3,9 +3,9 @@
 ## ▶️ START HERE — the ordered queue, as of 2026-10-12 (session close)
 
 *A bare "continue" means this list, top down. Each line names the FIRST action. Item 0 is WAITING (dated), item 1 is
-NexusMind's. Item 2 (#163, the read surface): rounds 1 and 2 landed 2026-10-12 (758,893 → 549,178 chars, ratchet
-`check_index_budget.py --target surface` at 560,200); `/curate` still flags it (>300k); the next levers are listed in
-item 2 and are not ruled. ▶ **A bare "continue" now starts at item 0a "NEXT: belonging after c2c"**: v3 fails the owner's
+NexusMind's. Item 2 (#163, the read surface): rounds 1–3 landed 2026-10-12 (758,893 → 514,588 chars after the moves, 519,680 at close with this session's own records; ratchet
+`check_index_budget.py --target surface` at 524,900); `/curate` still flags it (>300k); the next levers are listed in
+item 2 and are not ruled. ▶ **A bare "continue" now starts at item 0a "NEXT: ask the owner"**: v3 fails the owner's
 personal-story bar (10/30); candidate c2c FAILED its pre-registered check (recall guard 0.81 / 0.86 < 0.9); the owner chooses the next step.*
 
 0. ⏸ **BELONGING v3 is LIVE (since NexusMind run `bd00dad6`, 2026-10-09 00:08–01:24 CEST), replacing v1. Nothing to do before
@@ -23,7 +23,7 @@ personal-story bar (10/30); candidate c2c FAILED its pre-registered check (recal
    - Open, not blocking: FM-S1 judge strictness; harvest round 2 (~$9.70 est.). Single-person stories: see 0a.
    ⛔ **Never name the curator** in this repo or on GitHub (guards: `.githooks/`, gitignored `config/credentials/forbidden_names.txt`).
 
-0a. **BELONGING v3's TOP OF PAGE vs the owner's bar — AFTER item 2's pass (owner, 2026-10-12: cleaning first).** Owner (2026-10-10): the live page's
+0a. **BELONGING v3's TOP OF PAGE vs the owner's bar.** Owner (2026-10-10): the live page's
    top shows "at least half personal stories"; RULED bar: **≤ 6 of the top 30** are single-person / single-family
    (`docs/decisions/2026-10-10-belonging-personal-story-bar.md`; evidence `docs/evidence/2026-10-10-belonging-v3-top-of-page/`;
    ledger H-BB6; posted on #170).
@@ -46,22 +46,24 @@ personal-story bar (10/30); candidate c2c FAILED its pre-registered check (recal
    - ✅ **2026-10-12 later — step 2 DONE, with a new instrument (owner RULED: a separate `focus` tag, not
      `out_one_moment`, which can never count an in-scope personal story).** Owner count on the live page's top 30
      (all v3): **9/30 pre-registered, 10/30 after the owner corrected one slip → v3 does NOT meet the ≤ 6 bar.**
-     Local `qwen3.8:27b` on b650 passed as tagger (26/30; 27/30 corrected); Claude judges 25/30 (26/30 corrected).
+     Local `qwen3.8:27b` on b650 passed rule 2 against the pre-registered 9 (26/30, count 7). Against the corrected 10 it FAILS the
+     ±2 count half (27/30 but 7 vs 10): qwen undercounts, so read a qwen count as a floor. Claude judges 25/30 (26/30 corrected, pass).
      `docs/evidence/2026-10-12-belonging-personal-tag/`.
    - **Candidate c2c: FAILED 2026-10-12** (owner: no paid oracle; 42 qwen-tagged personal training rows scaled to
      4.4; seeds 42 + 43 on b650). Amendment B: recall guard 222/275 = 0.807 (s42) and 237/275 = 0.862 (s43), below 0.9.
      The composition half was UNDECIDABLE, because v3's raw top 30 on the 33,393-row draw holds only 5 personal by qwen,
      against 7 by qwen and 10 by the owner on the site's ranked page. Models + scores + tags in `~/ld-lab/inbox/b650-gpu/2026-10-12/`.
      `docs/evidence/2026-10-12-belonging-personal-tag/README.md` § *Candidate c2c*.
-   - ▶ **NEXT: the owner chooses** (not ruled). The raw-score top does not reproduce the page's excess, so a re-check needs
-     the site's ranking (ovr.db build query) as the population, not a raw top 30. Options to put to the owner: a softer
-     nudge (e.g. scale to the op-point + 0.2 only on the top rows), or look at the site's ranking first.
+     ⚠️ Review found a build defect: `build_c2c.py` ignored the community_fabric gatekeeper, so 11 of the 42 scaled rows
+     were trained to 3.42 (blocked), not 4.4. That is a stronger push than ruled, so a cap-aware retry is untested (H-BB8).
+   - ▶ **NEXT: ask the owner, one question at a time** (not ruled). (1) Rebuild the check on the site's own ranking (ovr.db build
+     query, the page's population, H-BB7) before any retrain: all 30 page rows were in the draw, but only 7 were in v3's raw top 30.
+     Recommended first. (2) A cap-aware retry "c2d": scale the five non-gatekeeper dimensions so community_fabric stays ≥ 3.0,
+     assert every changed row's EFFECTIVE (capped) score is 4.4, same two seeds, same check. $0 oracle either way.
    - ~~**Step 1b (NEXT, before step 2):**~~ superseded by the owner's tag ruling: run the two blind judges on the owner's 9 labels with an `out_one_moment`
      definition sharpened to the owner's line (gloss, not ruled: *does it reach a group beyond the person or family*);
      pre-register the rule first, and check on rows NOT among the 9 so the 9 do not become the test set.
-   - **Step 2:** the judged count of v3's LIVE top 30. Pre-register first (`experiments/PREREGISTRATION.template.md` §2–3):
-     top 30 by the score ovr.news ranks on (ovr.db, build query, never `live_articles`), kept only if NexusMind stamps them
-     `belonging.version == "3.0"`; two blind judges, rubric v2.2 class `out_one_moment`; count both-say rows vs 6.
+   - ~~**Step 2:** judged count with rubric v2.2 `out_one_moment`~~ superseded by the `focus` tag (done above).
    - Over 6 is the case for the next candidate, NOT an automatic rollback (v3's rollback rule predates the bar; owner's call).
 
 1. **Decision-0 sync to NexusMind** — ONE NexusMind commit. The sequence is in the archived block (item 1):
@@ -72,14 +74,11 @@ personal-story bar (10/30); candidate c2c FAILED its pre-registered check (recal
    - ⚠️ since NexusMind#395 step 1, sadalsuud no longer auto-pulls: a **manual pull + scorer-image rebuild** is needed
    NexusMind's session runs it; ours is to tell them. LD#52 and LD#86 are closed.
 
-2. **THE READ SURFACE (#163) — ▶ a bare "continue" starts HERE (owner, 2026-10-12: cleaning FIRST). "prune, thin, mechanize, retire".**
-   ▶ **ROUND 2 (next session, FIRST).** Biggest files on the surface (`wc -m`, 2026-10-12): `gotcha-log.md` 64.6K (Mechanized
-   table ~22K, catalogue ~18.7K, ~23 dated entries), `hypothesis-ledger.md` 54.5K (26 rows: move closed/dormant rows to
-   `archive/hypothesis-ledger-archive.md`), `working-rules.md` 50.0K (keep each rule's text; move occurrence evidence to an
-   archive), `filter-status.md` 29.7K, `stamp-contract-integrity.md` 28.4K, `session-log.md` 13.9K. Same method as round 1:
-   verbatim moves (`docs/evidence/2026-10-12-read-surface/mover.py`, lossless + mutant check), hook replay first, ratchet the ceiling down
-   after. `retire_memory.py gotcha|sessions --before 2026-10-01` has nothing left to move. Target (Claude's proposal, not
-   ruled): under 500K.
+2. **THE READ SURFACE (#163). "prune, thin, mechanize, retire".** Rounds 1–3 landed 2026-10-12: 758,893 → 514,588 chars (519,680 at close, after the session's new records).
+   ✅ **Round 3 (session close 2026-10-12): 549,572 → 514,588**, ceiling → 524,900. Verbatim moves: 6 session files before
+   10-09 (`retire_memory.py sessions --before 2026-10-09`); `gpu-server.md` 11,390 → 6,711 (the pre-07-22 ssh-agent saga);
+   `prefilter-length-floor-hypotheses.md` 27,832 → 20,683 (step-4 cap verdict and 08-11 re-measure, both closed, with a
+   one-line verdict pointer each). The round-2 plan text: `docs/TODO-archive.md` § *Moved 2026-10-12*.
    ✅ **Round 2, part 1 (2026-10-12, later) — within existing rulings: 603,408 → 586,944**, ceiling lowered 611,700 →
    598,700. Verbatim, lossless + mutant 1 each: `hypothesis-ledger.md` 54,673 → 50,075 (closed rows H-CX1, cd-v6
    H1–H3/H5–H7, sol-v6 ×8, H-CTX-2, H-BB2; kept H-CX3, H-CTX-1, H-BV6, H-BB4 — open marker or ruling);
