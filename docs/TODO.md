@@ -54,6 +54,10 @@ NexusMind's. ▶ **A bare "continue" starts at item 2a** (step 0, the hook repla
      already pinned at `tests/unit/test_pattern_kill_hook.py:79`). Of the 7 HEAD blocks, 6 are real invocations (one
      remote, inside `ssh … '…'`) and 1 is a `python3 <<EOF` body (the documented non-cat-heredoc gap). Script: session
      scratchpad, not kept. ⚠️ The corpus holds only 7 positives, so this measures FALSE positives far better than recall.
+     ⛔ **But the replay compared VERDICTS, not TIME, and missed a real failure** — the suite's 5 s bound
+     (`test_no_catastrophic_backtracking`) was RED at HEAD (2000 × `ssh h ` 8.03 s; `caeaa4f` was already over on
+     `watch`, 5.98 s). Cause: rest mode re-read every remainder twice per nesting level. Fixed 2026-10-12 (second
+     reading only when it differs): 0.30 s, 106/106, replay unchanged, dropping the second reading is caught.
      Original instruction: **FIRST (owner, 2026-10-10): the hook transcript replay.** Run every real Bash command from this project's
      Claude Code transcripts (`~/.claude/projects/-home-jeroen-repos-veen-systems-llm-distillery/*.jsonl`, the
      `tool_use` inputs where `name == "Bash"`) through `scripts/hooks/block_pattern_kill.py` at `caeaa4f` AND at HEAD
@@ -93,6 +97,11 @@ NexusMind's. ▶ **A bare "continue" starts at item 2a** (step 0, the hook repla
      have no `live` row; each new live check lets one move. **RULED 2026-10-10: a RATCHET ceiling on the surface**:
      `check_index_budget.py --target surface` (same command as `/curate` Step 0), ceiling = today's measurement + ~2%,
      LOWERED to the new measurement after each pruning pass; green now, can only tighten. Seed it red first.
+     ✅ **Ratchet BUILT 2026-10-12**: `--target surface`, ceiling 611,700 (= 599,709 + 2%); seeded red at 599,000
+     (exit 1) first; equals `/curate` Step 0's `wc -m` to the character; 6 tests, 5 mutants each caught; wired as a
+     `verify:` line in `memory/MEMORY.md` (runner: 36 blocks). It prints "RATCHET: lower SURFACE_CEILING" once a pass
+     leaves > ~4% headroom. ⚠️ `/curate` (user-global skill) still runs its own shell command — same number. Left in
+     2c: the gotcha-log catalogue entries (needs a `live` check per class).
    - d. **`docs/TODO.md` below START HERE** (~25 KB of section backlog). Audit each section: close, archive or keep
      (§ *Commerce Prefilter SLM*, § *Prefilter Quality (Apr 2026)*; check against decision 0 and ADR-004 first).
 

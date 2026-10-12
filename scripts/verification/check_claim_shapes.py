@@ -407,10 +407,44 @@ def _declaration(text):
     return None
 
 
+_IGNORED = {}          # ROOT -> (ignored file paths, ignored dir prefixes); one git call per run
+IGNORED_SKIPPED = set()
+
+
+def _git_ignored():
+    """What git IGNORES under ROOT, as (files, dir prefixes ending in '/').
+
+    ⛔ ADDED 2026-10-12: THE GITIGNORED `filters/**/model/` DIRECTORIES HELD ~12
+    33 MB GEMMA `tokenizer.json` FILES, and parsing them took the whole check to
+    ~112 s against the verify runner's 120 s timeout — it TIMED OUT under load. An
+    ignored file is not committed, so it is not a published claim; the population
+    is the repo's own ignore rules (`git ls-files --others --ignored`), not a list
+    chosen here. Outside a git checkout (the unit-test fixture) nothing is skipped.
+    What it excludes today, besides weights: two `training_config.json` and some
+    `validation/artifacts` under `filters/common/` — all untracked. The count is
+    printed on every run, so the exclusion is never silent.
+    """
+    root = ROOT
+    if root not in _IGNORED:
+        import subprocess
+        try:
+            res = subprocess.run(
+                ["git", "-C", root, "ls-files", "--others", "--ignored",
+                 "--exclude-standard", "--directory"],
+                capture_output=True, text=True, timeout=60)
+            entries = res.stdout.splitlines() if res.returncode == 0 else []
+        except (OSError, subprocess.SubprocessError):
+            entries = []
+        _IGNORED[root] = ({e for e in entries if not e.endswith("/")},
+                          tuple(e for e in entries if e.endswith("/")))
+    return _IGNORED[root]
+
+
 def _walk(roots, exts):
     """Files under `roots` with one of `exts`, ROOT-relative, plus the per-root
     counts — a caller that cannot see an EMPTY root cannot tell a narrowed
-    instrument from a clean one."""
+    instrument from a clean one. Git-ignored files are skipped (see `_git_ignored`)."""
+    ignored_files, ignored_dirs = _git_ignored()
     found, per_root = [], {}
     for rel in roots:
         base = os.path.join(ROOT, rel)
@@ -429,7 +463,11 @@ def _walk(roots, exts):
                            if d not in ("__pycache__", ".ipynb_checkpoints")]
             for fn in filenames:
                 if fn.endswith(exts):
-                    here.append(os.path.relpath(os.path.join(dirpath, fn), ROOT))
+                    relp = os.path.relpath(os.path.join(dirpath, fn), ROOT)
+                    if relp in ignored_files or relp.startswith(ignored_dirs):
+                        IGNORED_SKIPPED.add(relp)
+                        continue
+                    here.append(relp)
         per_root[rel] = len(set(here))
         found.extend(here)
     return sorted(set(found)), per_root
@@ -894,6 +932,9 @@ def main(argv=None):
     bad = sum(1 for l in lines if l.startswith(("FAIL", "CANNOT VERIFY")))
     for l in lines:
         print(l)
+    if IGNORED_SKIPPED:
+        print(f"NOTE git-ignored: {len(IGNORED_SKIPPED)} untracked file(s) under the scan "
+              f"roots skipped (not committed, so not a published claim)")
     verdict = "FAIL" if bad else "PASS"
     print(f"{verdict} {len(lines) - bad}/{len(lines)} claim-shape checks clean, "
           f"over {len(names)} check(s): {', '.join(names)}")

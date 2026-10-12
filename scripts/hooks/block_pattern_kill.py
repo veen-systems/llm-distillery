@@ -249,8 +249,14 @@ def _check_command(words: list[str], depth: int):
         if mode == "rest":
             # The remote shell sees the words joined by spaces; shlex.join also keeps a quoted
             # word whole (`ssh h bash -lc '...'`). Either reading blocks.
+            # ⚠️ Only re-read the second form when it DIFFERS (2026-10-12): the two are
+            # identical unless a word needs quoting, and re-reading both at every level
+            # doubled the work per nesting level — 2000 x `ssh h ` took 8 s (the suite's
+            # 5 s backtracking bound). Same string, same verdict, so nothing is lost.
             rest = words[i:]
-            return offending(" ".join(rest), depth + 1) or offending(shlex.join(rest), depth + 1)
+            plain, quoted = " ".join(rest), shlex.join(rest)
+            return offending(plain, depth + 1) or (
+                offending(quoted, depth + 1) if quoted != plain else None)
     return None
 
 

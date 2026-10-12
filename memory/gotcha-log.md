@@ -4,6 +4,16 @@
 
 *⚠️ **Entries dated before 2026-09-17 live in [`archive/gotcha-log-archive.md`](archive/gotcha-log-archive.md)**, verbatim (the 09-01 → 09-16 ones moved 2026-09-27 by an owner-approved MID-MONTH pass, `--before 2026-09-17`; earlier ones moved 2026-09-24; into `archive/` 2026-09-26 so curate's size measurement stops counting it, #163; the month-dated Feb–May entries followed on 2026-09-26). Next pass: `python3 scripts/maintenance/retire_memory.py gotcha --before <first of this month> --apply` (dry run without `--apply`). It retires top-level entries only; the `###` entries inside the catalogue are kept by rule and counted (⚠️ superseded 2026-10-09: 43 of them moved by date; see the note under the catalogue heading). The unreachable-mechanism catalogue stayed here. For a recurrence match, grep both: `grep -n <term> memory/gotcha-log.md memory/archive/gotcha-log-archive.md` (a `memory/gotcha-log*.md` glob does NOT reach the archive). Was: `grep -n <term> memory/gotcha-log*.md`.*
 
+## A CHECKER THAT SCANNED GITIGNORED MODEL DIRS TIMED OUT THE VERIFY BATTERY (2026-10-12)
+
+`check_claim_shapes.py` walked `filters/` with `os.walk` and parsed every `.json` it found, including ~12
+gitignored 33 MB Gemma `tokenizer.json` files under `filters/**/model/`: ~112 s alone against the verify
+runner's 120 s `VERIFY_TIMEOUT`, so under load it reported TIMEOUT (`errored=1`), which reads like "a check
+broke". The scan population was "whatever is on this disk", not "what the repo commits"; it grew silently with
+each downloaded model. Fix: the walk skips what `git ls-files --others --ignored --exclude-standard` lists (the
+repo's own rule, not a hand list) and PRINTS the skip count (42 today); 22 s. ⭐ A file walk over a working tree
+measures the machine, not the repo — scope it to tracked-or-unignored, and print what was excluded.
+
 ## `restic ls <snapshot> <path>` IS NOT RECURSIVE — my deletion guard read "0 of 17 in the backup" for data that was there (2026-10-12)
 
 Before deleting host copies I required "the newest restic snapshot lists every file of the pulled tree". The

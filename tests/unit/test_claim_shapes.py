@@ -637,3 +637,30 @@ def test_the_real_repository_is_clean(capsys):
     m = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(m)
     assert m.main([]) == 0, capsys.readouterr().out
+
+
+def _git_init(mod):
+    import subprocess
+    subprocess.run(["git", "init", "-q", str(mod._tmp)], check=True)
+    (mod._tmp / ".gitignore").write_text("filters/**/model/\n", encoding="utf-8")
+    mod._IGNORED.clear()
+    mod.IGNORED_SKIPPED.clear()
+
+
+def test_a_git_ignored_file_is_skipped_and_the_skip_is_printed(mod, capsys):
+    """2026-10-12: gitignored model dirs held 33 MB tokenizers that timed the check out.
+    An ignored file is not committed, so it is not a claim — but the skip must SHOW."""
+    _git_init(mod)
+    _write(mod, "filters/x/v1/model/bad.json", {"d": {"ci_low": 0.0, "ci_high": 0.0}})
+    assert mod.main(["--check", "zero-width-interval"]) == 0
+    out = capsys.readouterr().out
+    assert "NOTE git-ignored: 1 untracked file(s)" in out
+
+
+def test_the_same_defect_outside_an_ignored_dir_still_fails(mod, capsys):
+    """The control: the skip must not reach a file git would commit."""
+    _git_init(mod)
+    _write(mod, "filters/x/v1/model/bad.json", {"d": {"ci_low": 0.0, "ci_high": 0.0}})
+    _write(mod, "filters/x/v1/bad.json", {"d": {"ci_low": 0.0, "ci_high": 0.0}})
+    assert mod.main(["--check", "zero-width-interval"]) == 1
+    assert "filters/x/v1/bad.json" in capsys.readouterr().out

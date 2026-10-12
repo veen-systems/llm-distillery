@@ -84,6 +84,7 @@ this target to tell you WHEN to act and never to prevent anything.
     python3 scripts/verification/check_index_budget.py --target project
     python3 scripts/verification/check_index_budget.py --target loaded
     python3 scripts/verification/check_index_budget.py --target pointers
+    python3 scripts/verification/check_index_budget.py --target surface   # the read surface, a ratchet (#163)
 
 The project file has NO session-entry check — it carries no session log, and the
 thing that grows there is the pointer table and the Hard Constraints. Its remedy is
@@ -243,6 +244,64 @@ def _check_loaded():
                           f"still room to choose what goes.{short}"]
     return 0, rows + [f"PASS {head} ({LOADED_HARD - total:,} under the "
                       f"{LOADED_HARD:,} hard limit){short}"]
+
+
+# ---------------------------------------------------------------- read surface
+# llm-distillery#163, owner ruling 2026-10-10 (docs/TODO.md item 2c). THE SAME
+# QUANTITY AS `/curate` STEP 0, NOT A LOOKALIKE: characters (`wc -m`, not bytes) of
+# every `*.md` under `memory/` and `docs/work-items/`, any `archive/` folder
+# excluded. A guard measuring a different quantity from the number the session
+# reports would let the two drift apart with both "green".
+#
+# ⚠️ A RATCHET, NOT A BUDGET. The ceiling is the last measurement + ~2%, and it only
+# ever moves DOWN: after a pruning pass, lower it to the new measurement + ~2% in
+# the same commit. Raising it is the decision this guard exists to make visible --
+# never do it to get a green run; move material to `archive/` instead.
+# Seeded RED first (2026-10-12): at 599,000 against a measured 599,709 it printed
+# its failure line and exited 1, then was set to 599,709 + 2%.
+SURFACE_DIRS = ("memory", os.path.join("docs", "work-items"))
+SURFACE_CEILING = 611_700
+SURFACE_MARGIN = 0.02
+
+
+def _surface_chars(root):
+    """(total characters, files) over the read surface under `root`."""
+    total, files = 0, 0
+    for d in SURFACE_DIRS:
+        base = os.path.join(root, d)
+        for dirpath, dirnames, filenames in os.walk(base):
+            dirnames[:] = [n for n in dirnames if n != "archive"]   # find's ! -path '*/archive/*'
+            for name in filenames:
+                path = os.path.join(dirpath, name)
+                # `find -type f` skips a symlink and `wc -m` counts `\r`: match both
+                # (review 2026-10-12 -- zero of either today, so this is latent).
+                if name.endswith(".md") and not os.path.islink(path):
+                    with open(path, encoding="utf-8", errors="replace", newline="") as fh:
+                        total += len(fh.read())
+                    files += 1
+    return total, files
+
+
+def _check_surface():
+    """Ratchet the read surface. Returns (exit_code, lines); the verdict goes last."""
+    root = globals()["SURFACE_ROOT"]
+    if not os.path.isdir(os.path.join(root, "memory")):
+        return 1, [f"CANNOT VERIFY: no memory/ under {root} -- the surface measured nothing"]
+    total, files = _surface_chars(root)
+    ceiling = globals()["SURFACE_CEILING"]
+    head = f"read surface {total:,} chars over {files} files (ceiling {ceiling:,})"
+    if total > ceiling:
+        return 1, [f"FAIL {head}: {total - ceiling:,} over. Prune: move closed or dated "
+                   f"material VERBATIM to an archive/ folder beside it (docs/TODO.md "
+                   f"item 2). Do not raise the ceiling to fit."]
+    target = int(total * (1 + SURFACE_MARGIN))
+    if target < ceiling - int(total * SURFACE_MARGIN):
+        return 0, [f"PASS {head} -- RATCHET: lower SURFACE_CEILING to ~{target:,} "
+                   f"(this measurement + {SURFACE_MARGIN:.0%}) in this commit."]
+    return 0, [f"PASS {head} ({ceiling - total:,} of headroom)"]
+
+
+SURFACE_ROOT = ROOT
 
 
 # ---------------------------------------------------------------- pointer rows
@@ -441,6 +500,7 @@ def _session_entries(raw: bytes) -> int:
 EXTRA_TARGETS = {
     "pointers": _check_pointers,
     "loaded":   _check_loaded,
+    "surface":  _check_surface,
 }
 
 

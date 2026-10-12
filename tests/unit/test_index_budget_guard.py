@@ -463,3 +463,80 @@ def test_the_shipped_automem_index_obeys_its_own_cap():
     if not os.path.isfile(mod.AUTO_MEMORY):
         pytest.skip(f"auto-memory index not present at {mod.AUTO_MEMORY}")
     assert mod.main(["--target", "pointers"]) == 0
+
+
+# ------------------------------------------------------------ read surface (#163)
+@pytest.fixture
+def surface_guard(tmp_path, monkeypatch):
+    """The real script, pointed at a temp repo root with a small read surface."""
+    spec = importlib.util.spec_from_file_location("cib_surface", GUARD)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    (tmp_path / "memory" / "archive").mkdir(parents=True)
+    (tmp_path / "docs" / "work-items" / "archive").mkdir(parents=True)
+    monkeypatch.setattr(mod, "SURFACE_ROOT", str(tmp_path))
+    return mod
+
+
+def _write(path, text):
+    path.write_text(text, encoding="utf-8")
+
+
+def test_surface_counts_characters_not_bytes_and_skips_archives(surface_guard, tmp_path):
+    """The same quantity as /curate Step 0 (`wc -m`, `! -path '*/archive/*'`)."""
+    _write(tmp_path / "memory" / "a.md", "é" * 100)                     # 100 chars, 200 bytes
+    _write(tmp_path / "docs" / "work-items" / "w.md", "x" * 50)
+    _write(tmp_path / "memory" / "notes.txt", "x" * 999)                # not *.md
+    _write(tmp_path / "memory" / "archive" / "old.md", "x" * 10_000)
+    _write(tmp_path / "docs" / "work-items" / "archive" / "old.md", "x" * 10_000)
+    assert surface_guard._surface_chars(str(tmp_path)) == (150, 2)
+
+
+def test_surface_over_the_ceiling_fails_and_forbids_raising_it(surface_guard, tmp_path, monkeypatch):
+    _write(tmp_path / "memory" / "a.md", "x" * 1_001)
+    monkeypatch.setattr(surface_guard, "SURFACE_CEILING", 1_000)
+    code, lines = surface_guard._check_surface()
+    assert code == 1
+    assert lines[-1].startswith("FAIL") and "Do not raise the ceiling" in lines[-1]
+
+
+def test_surface_at_the_ceiling_passes(surface_guard, tmp_path, monkeypatch):
+    _write(tmp_path / "memory" / "a.md", "x" * 1_000)
+    monkeypatch.setattr(surface_guard, "SURFACE_CEILING", 1_000)
+    assert surface_guard._check_surface()[0] == 0
+
+
+def test_surface_asks_for_the_ratchet_after_a_pruning_pass(surface_guard, tmp_path, monkeypatch):
+    """Far under the ceiling is still a pass, but it must say LOWER it — a ratchet
+    that never tightens is a budget."""
+    _write(tmp_path / "memory" / "a.md", "x" * 1_000)
+    monkeypatch.setattr(surface_guard, "SURFACE_CEILING", 2_000)
+    code, lines = surface_guard._check_surface()
+    assert code == 0 and "lower SURFACE_CEILING to ~1,020" in lines[-1]
+    for word in ("FAIL", "ERROR", "CANNOT VERIFY"):
+        assert word not in lines[-1]
+
+
+def test_surface_with_no_memory_dir_cannot_verify(tmp_path, monkeypatch):
+    spec = importlib.util.spec_from_file_location("cib_surface_empty", GUARD)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    monkeypatch.setattr(mod, "SURFACE_ROOT", str(tmp_path))
+    code, lines = mod._check_surface()
+    assert code == 1 and lines[-1].startswith("CANNOT VERIFY")
+
+
+def test_the_shipped_surface_obeys_its_ceiling():
+    """The REAL repo. Red here means: prune, or (after a pass) lower the ceiling."""
+    spec = importlib.util.spec_from_file_location("cib_surface_shipped", GUARD)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    assert mod.main(["--target", "surface"]) == 0
+
+
+def test_surface_matches_find_and_wc_on_symlinks_and_crlf(surface_guard, tmp_path):
+    """`find -type f` skips a symlink; `wc -m` counts the `\\r` of a CRLF."""
+    _write(tmp_path / "memory" / "real.md", "x" * 10)
+    (tmp_path / "memory" / "real_crlf.md").write_bytes(b"ab\r\ncd\r\n")   # 8 chars
+    os.symlink(tmp_path / "memory" / "real.md", tmp_path / "memory" / "link.md")
+    assert surface_guard._surface_chars(str(tmp_path)) == (18, 2)

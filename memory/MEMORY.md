@@ -4,6 +4,7 @@
 <!-- verify: python3 scripts/verification/check_index_budget.py --target project -->
 <!-- verify: python3 scripts/verification/check_index_budget.py --target loaded -->
 <!-- verify: python3 scripts/verification/check_index_budget.py --target pointers -->
+<!-- verify: python3 scripts/verification/check_index_budget.py --target surface -->
 <!-- verify: python3 scripts/verification/check_doc_claims.py -->
 <!-- verify: python3 scripts/verification/check_claim_shapes.py -->
 <!-- verify: python3 scripts/verification/check_training_provenance.py -->
