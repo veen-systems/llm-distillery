@@ -29,6 +29,16 @@ NexusMind's. ▶ **A bare "continue" starts at item 2a** (step 0, the hook repla
    - **Step 1, free:** which positives c2a (EXP-046, had the 121 `out_one_moment` negatives, failed recall 43 < 45) missed on
      held-out set 2 (`docs/evidence/2026-10-08-belonging-heldout2/result_v1_c2a.txt` + the set-2 labels). If mostly
      single-person, c2a fits the bar better than its gate said → re-gate c2a rather than train new.
+     ✅ **Step 1 DONE 2026-10-12 — the premise cannot hold, by construction.** Reproduces the gate exactly (43/63,
+     both orders agree; `docs/evidence/2026-10-10-belonging-v3-top-of-page/c2a_missed_positives.{py,txt}`). A gate
+     POSITIVE is a row both blind judges called `in_scope`; the bar's class is `out_one_moment`, a different verdict.
+     So 0 of the 20 misses are single-person UNDER THE BAR'S INSTRUMENT, and re-gating c2a on that argument fails.
+     ⚠️ **What it found instead, for step 2:** by Claude's title reading (not blind, a guess) ~9 of the 20 look
+     single-person/family — e.g. *"A doctor said Tim was incapable of love. His mum knew otherwise"*, *"Russian
+     daughter-in-law quits job to care for mother-in-law in Vietnam"* (close to the bar's own example "husband's
+     secret deal to care for wife") — and BOTH judges said `in_scope`. If rubric v2.2's judges draw the line wider
+     than the owner does, step 2's judged count UNDERSTATES what the owner sees. Settle that before trusting it:
+     show the owner these rows (owner call: are they "personal"?), or test the judges on the bar's own examples.
    - **Step 2:** the judged count of v3's LIVE top 30. Pre-register first (`experiments/PREREGISTRATION.template.md` §2–3):
      top 30 by the score ovr.news ranks on (ovr.db, build query, never `live_articles`), kept only if NexusMind stamps them
      `belonging.version == "3.0"`; two blind judges, rubric v2.2 class `out_one_moment`; count both-say rows vs 6.

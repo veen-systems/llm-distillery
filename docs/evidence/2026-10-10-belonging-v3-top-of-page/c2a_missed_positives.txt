@@ -1,0 +1,22 @@
+pos 63  caught 43  missed 20  (gate said k=43/63)
+forward/reversed agree on every positive: True
+stage2      1.47  near  Y frwydr i achub iaith fechan sy'n cael ei siarad mewn un dref
+stage2      2.31  hi    Campanas Quintana: casi 400 años de historia y una sucesión que llega a los nietos
+stage2      2.36  hi    Juan del Val y la madre que lo parió: "Me gusta que mi hijo se meta en polémicas, porque yo también soy así"
+stage2      2.43  hi    Dialog Israel–Palästina – Jugendliche aus Nahost knüpfen in Leysin Fäden der Verständigung
+stage2      2.43  hi    Houet : Les appelés à l’IPO au service de la salubrité du CSPS de Péni
+stage2      2.46  hi    A valet became a key source of support for cancer patients at a N.Y. care center
+stage2      2.47  hi    A doctor said Tim was incapable of love. His mum knew otherwise
+stage2      2.51  hi    ‘Little Naham’ revives Qatar’s maritime musical heritage for a new generation
+stage2      2.53  hi    Three Years After October 7, I Moved Back to Nahal Oz
+stage2      2.64  hi    ‘Makes you happy’: Classic Greek treat finds a new home on Sydney Road
+stage2      2.75  hi    After October 7, I learned that movements need grief spaces
+stage2      2.75  mid   黄荷凤院士：我的百岁恩师王曼先生
+stage2      2.76  hi    Nàng dâu Nga bỏ việc sang Việt Nam chăm mẹ chồng
+stage2      2.78  hi    'Tuentifourseven', el documental que narra la vida de una familia marcada por la dependencia: "Los cuidadores 
+stage2      2.79  hi    Meet a 25-year-old third-generation zookeeper whose family has worked at the zoo since it opened 53 years ago
+stage2      2.80  hi    Côte d’Ivoire-AIP / La communauté catholique apporte son soutien à la famille d’un responsable paroissial décé
+stage2      2.87  hi    Cassou /Ziro : La jeunesse et la veille citoyenne mobilisées pour l’entretien des services publics
+stage2      2.97  mid   Welcome to Dogs Anonymous, the Online Support Group for People With Difficult Dogs
+stage2      3.44  mid   Waregem draait 24 uur non-stop potten voor Warmste Week: "Zwaar, maar we hebben afgelachen"
+stage2      3.56  hi    Youths defy rain, clean up Cross River streets, markets
