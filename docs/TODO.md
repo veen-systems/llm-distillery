@@ -3,7 +3,7 @@
 ## ▶️ START HERE — the ordered queue, as of 2026-10-12 (session close)
 
 *A bare "continue" means this list, top down. Each line names the FIRST action. Item 0 is WAITING (dated), item 1 is
-NexusMind's. ▶ **A bare "continue" starts at item 2, step 0** (the hook replay), then 2a: the read surface comes FIRST
+NexusMind's. ▶ **A bare "continue" starts at item 2a** (step 0, the hook replay, done 2026-10-12): the read surface comes FIRST
 (owner, 2026-10-12: "next session we need to start cleaning first … pruning, thinning, mechanizing, retiring"). Item 0a
 (the belonging top-30 count) follows once the read-surface pass has landed.*
 
@@ -48,7 +48,13 @@ NexusMind's. ▶ **A bare "continue" starts at item 2, step 0** (the hook replay
    `docs/work-items/`). History of the passes so far: `docs/TODO-archive.md` § *Moved 2026-10-10*; posted on #163.
    Every move is VERBATIM to `memory/archive/` with a lossless check (`sort | comm`, C locale; a one-line mutant must
    report 1). Biggest lever first:
-   - 0. ▶ **FIRST (owner, 2026-10-10): the hook transcript replay.** Run every real Bash command from this project's
+   - 0. ✅ **DONE 2026-10-12: the hook transcript replay — 0 regressions.** Corpus: 34 top-level transcripts (5,190 Bash
+     commands, 5,073 unique) + 397 subagent ones (4,405 / 4,349), timestamps 2026-09-11 → 2026-10-12. HEAD blocks 6 + 1,
+     `caeaa4f` 5 + 1. ONE verdict differs, OLD=None → NEW=pgrep: `pgrep -u nobody \⏎ -f …` (the line-continuation fix,
+     already pinned at `tests/unit/test_pattern_kill_hook.py:79`). Of the 7 HEAD blocks, 6 are real invocations (one
+     remote, inside `ssh … '…'`) and 1 is a `python3 <<EOF` body (the documented non-cat-heredoc gap). Script: session
+     scratchpad, not kept. ⚠️ The corpus holds only 7 positives, so this measures FALSE positives far better than recall.
+     Original instruction: **FIRST (owner, 2026-10-10): the hook transcript replay.** Run every real Bash command from this project's
      Claude Code transcripts (`~/.claude/projects/-home-jeroen-repos-veen-systems-llm-distillery/*.jsonl`, the
      `tool_use` inputs where `name == "Bash"`) through `scripts/hooks/block_pattern_kill.py` at `caeaa4f` AND at HEAD
      (`offending()` via importlib; build target names by concatenation so this hook does not refuse the script).
@@ -57,7 +63,9 @@ NexusMind's. ▶ **A bare "continue" starts at item 2, step 0** (the hook replay
      Local only, no agents. Why: the round-4 fixes (`b090140`) had no review, and each rewrite today lost positives.
    - a. ▶ **The 11 `memory/*-hypotheses.md` files: 261,785 chars (35% of the surface).** First action: per file, list
      the sections/rows whose verdict is closed (SUPPORTED / REFUTED / CLOSED / MOOT) with their bytes, then move them
-     under the 09-27 rule the ledger already uses. Largest first: `corroboration-feature-hypotheses.md` 78,438 — **RULED 2026-10-10: THIN
+     under the 09-27 rule the ledger already uses. Largest first: ✅ `corroboration-feature-hypotheses.md` **THINNED 2026-10-12: 78,438 → 7,401 chars**,
+     body VERBATIM in `memory/archive/corroboration-feature-hypotheses-archive.md` (`sort | comm` 0 missing, one-line
+     mutant 1); surface measured after it: **693,439**. Was: **RULED 2026-10-10: THIN
      it** (supersedes 10-09's "keep"): keep the file and its pointer; rewrite the stale 2026-08-07 summary into a short
      current one (~5–10 KB) naming the three newest dated findings (the gate is the lever, 08-09; production is 79.3%
      sub-threshold artefact, 08-16/17; combining features beats the threshold, 08-17); move every dated section
