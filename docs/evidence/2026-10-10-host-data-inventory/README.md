@@ -50,7 +50,12 @@ checking), `retired_2026-09-28/` (likely NexusMind's scorer retirement, NM#395).
 
 - **Backed up?** Not yet when written: the restic timer runs daily at 12:00 and `~/ld-lab` was created at
   08:51. A host copy is disposable only after a snapshot contains it (decision record, flow step 5).
-- **Host deletion:** none. Each needs the owner's go, item by item.
+- **Host deletion (2026-10-12):** owner's go 2026-10-10, narrowed in session to sadalsuud + sadaltager ("b650 and
+  gpu-server stay as they are for now"). **18 items deleted**: the 16 sadalsuud items above except
+  `contract_a_smoke.py` (the NexusMind session had already deleted it; LD's lab copy has the same sha256,
+  `72a57ea3…`) and both sadaltager items. Each passed three checks first: the lab copy verified; restic snapshot
+  `6b927ccf` (2026-10-12 08:22) lists every file and link of it (all 4,475 entries of `~/ld-lab`); the host copy
+  re-hashed identical to the manifest. Each path was confirmed gone afterwards. b650-gpu and gpu-server: untouched.
 - **Triage:** everything sits in `inbox/` except `v8_corpus`. Moving an item to `experiments/` or
   `datasets/` means pulling or adopting it again at the new path, not `mv`, once anything cites it.
 - **Pending:** nothing; `ls ~/ld-lab/inbox/*/2026-10-10/*/_LAB_MANIFEST.json`

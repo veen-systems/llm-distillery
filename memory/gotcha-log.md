@@ -4,6 +4,17 @@
 
 *⚠️ **Entries dated before 2026-09-17 live in [`archive/gotcha-log-archive.md`](archive/gotcha-log-archive.md)**, verbatim (the 09-01 → 09-16 ones moved 2026-09-27 by an owner-approved MID-MONTH pass, `--before 2026-09-17`; earlier ones moved 2026-09-24; into `archive/` 2026-09-26 so curate's size measurement stops counting it, #163; the month-dated Feb–May entries followed on 2026-09-26). Next pass: `python3 scripts/maintenance/retire_memory.py gotcha --before <first of this month> --apply` (dry run without `--apply`). It retires top-level entries only; the `###` entries inside the catalogue are kept by rule and counted (⚠️ superseded 2026-10-09: 43 of them moved by date; see the note under the catalogue heading). The unreachable-mechanism catalogue stayed here. For a recurrence match, grep both: `grep -n <term> memory/gotcha-log.md memory/archive/gotcha-log-archive.md` (a `memory/gotcha-log*.md` glob does NOT reach the archive). Was: `grep -n <term> memory/gotcha-log*.md`.*
 
+## `restic ls <snapshot> <path>` IS NOT RECURSIVE — my deletion guard read "0 of 17 in the backup" for data that was there (2026-10-12)
+
+Before deleting host copies I required "the newest restic snapshot lists every file of the pulled tree". The
+guard listed with `restic ls <id> ~/ld-lab --json` and found **none** of 18 items — true of the
+2026-10-10 snapshot too. restic 0.19 lists only the path's DIRECT children unless `--recursive` is given
+(5 nodes: `ld-lab`, `README.md`, `datasets`, `experiments`, `inbox`). With `--recursive`: 4,475 of 4,475 on
+disk. It failed SAFE (skipped all), but it could never have passed, and the decision record's own
+"confirm with `restic ls latest <path>`" told readers the same blind command. ⭐ The tell was the SHAPE: a
+guard that skips 100% is as suspect as one that passes 100% — check the instrument's own count (the guard now
+asserts > 1000 entries) before reading the verdict. Same family: *prove the bar is reachable*.
+
 ## REPLACING A GUARD'S IMPLEMENTATION LOST POSITIVES THE OLD ONE CAUGHT — twice in one day (2026-10-09)
 **Problem**: The kill-pattern hook was rewritten twice to fix review findings. Each rewrite fixed what it targeted and quietly
 stopped blocking shapes the previous version blocked: round 2's anchoring dropped the old "`-c` anywhere" branch, which

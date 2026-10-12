@@ -52,7 +52,8 @@ evidence dir when the path stops resolving.
 5. The host copy becomes disposable once **both**: the pull printed `OK`, **and** a restic snapshot
    taken after the pull contains it. The backup runs daily at 12:00 (`situla-home-backup.timer`), so a
    morning pull is not backed up until that afternoon. Confirm with
-   `restic snapshots` / `restic ls latest <path>`. ⛔ **Until the owner rules otherwise, deleting the host
+   `restic snapshots` / `restic ls latest <path> --recursive`. ⚠️ Without `--recursive`, restic 0.19 lists only the
+   path's direct children, so every file below reads as "not in the snapshot" (measured 2026-10-12). ⛔ **Until the owner rules otherwise, deleting the host
    copy is per item with the owner's go** — no tool here deletes anything on a host.
 
 ## The check
