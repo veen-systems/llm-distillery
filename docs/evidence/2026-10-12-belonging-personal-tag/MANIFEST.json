@@ -1,0 +1,12 @@
+{
+ "lab_root": "$LD_LAB (default ~/ld-lab, on situla)",
+ "entries": [
+  {
+   "path": "inbox/b650-gpu/2026-10-12/focus-tag/out.jsonl",
+   "sha256": "ceb629bc32e3b28f2701ff49d321d4b4297579720e4c166c24ac7deb112d8130",
+   "size": 12299,
+   "origin": "b650-gpu:~/ld-scratch/2026-10-12-focus-tag/out.jsonl",
+   "pulled_at": "2026-10-12T17:01:40+02:00"
+  }
+ ]
+}
