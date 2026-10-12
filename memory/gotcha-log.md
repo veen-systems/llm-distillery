@@ -15,6 +15,19 @@ disk. It failed SAFE (skipped all), but it could never have passed, and the deci
 guard that skips 100% is as suspect as one that passes 100% — check the instrument's own count (the guard now
 asserts > 1000 entries) before reading the verdict. Same family: *prove the bar is reachable*.
 
+## THREE TOOLING SLIPS IN ONE SESSION — each looked like success (2026-10-10)
+
+**Problem**: (1) a `while read h p; do lab.py pull …; done < list` loop pulled item 1 and stopped, exit 0 — `ssh` (and
+rsync's ssh) read the loop's stdin. (2) a Python one-liner did `open(p,'w').write(open(p).read().replace(…))`: the
+write-open truncates first, so the file was emptied (a scratch script; no harm). (3) `git add <files>; git commit -m
+"…inventory updated…"` ran after an edit script ABORTED on an assertion, so `36afa99`'s message claims an edit it does
+not contain (landed in `f49e1b8`).
+**Root cause**: each step reported success at its own level (loop exit 0, write OK, commit OK) while the thing it was for
+did not happen.
+**Fix**: `ssh -n` / `stdin=DEVNULL` in `scripts/lab/lab.py`; read-modify-write in two statements; chain the commit on the
+edit's exit status (`edit && git add … && git commit`) and `git diff --cached --stat` before writing a message that names
+an edit.
+
 ## REPLACING A GUARD'S IMPLEMENTATION LOST POSITIVES THE OLD ONE CAUGHT — twice in one day (2026-10-09)
 **Problem**: The kill-pattern hook was rewritten twice to fix review findings. Each rewrite fixed what it targeted and quietly
 stopped blocking shapes the previous version blocked: round 2's anchoring dropped the old "`-c` anywhere" branch, which
@@ -522,6 +535,7 @@ false finding in the reference audit, which trains readers to dismiss that audit
 
 | Date | Finding shape | Check | Status | Occurrences |
 |------|---------------|-------|--------|-------------|
+| 2026-10-10 | Evidence must rest on situla, not a GPU host: a host citation with no covering MANIFEST.json, a forged or drifted manifest entry, an empty manifest | `scripts/verification/check_lab_manifests.py` + `tests/unit/test_lab_storage.py::RealTree` (suite) | **live** — 12 guards mutation-tested 2026-10-10/12, all red when broken except the harmless remote-header guard | 0 |
 | 2026-10-09 | A Hub repo id DERIVED from the package directory name (`<dir>-filter-<v>`) where the real id lives in `inference_hub.py`: guard D and `check_adapter_matches_hub.py` 404'd for cultural_discovery, human_thriving and nature_recovery, failing closed toward the `--weights-preplaced` bypass. My "live" check used only belonging; found by 4 of 6 review lenses | `tests/unit/test_check_adapter_matches_hub.py::test_repo_id_comes_from_the_package_not_the_directory_name` (4 real packages) + `tests/unit/test_preflight_deploy_guards.py::test_every_hub_backed_package_names_a_repo_id` (every `filters/*/v*/inference_hub.py`). Seeded: re-deriving the name → 4 red. Live: all six live filters MATCH / NO_HUB against the real Hub | live | 0 |
 | 2026-10-09 | A hook whose script is missing exits **2** (python3 on a missing file), which Claude Code reads as BLOCK, so moving the script would have blocked every Bash call | `tests/unit/test_pattern_kill_hook.py::test_missing_script_does_not_block_every_bash_call` runs the settings command itself with an empty project dir. Seeded: the previous settings command → red | live | 0 |
 | 2026-10-09 | A regex fix that nests a repeated group inside a repeated group backtracks EXPONENTIALLY on input that almost matches: round 2's hook regex took 13 s on 25 × `ssh h ` and 61 s on a sudo/env/nice chain, in a hook that runs before every Bash call. 78 green tests never fed it a long near-miss (adversarial lens, round 3) | `tests/unit/test_pattern_kill_hook.py::test_no_catastrophic_backtracking` runs the hook in a subprocess on 2000 × six near-miss shapes with a 5 s timeout; the hook is now a `shlex` tokenizer, not a regex. Seeded: the round-2 regex → 5 of 6 red. Fuzz: 60,000 random inputs, 0 exceptions, worst 2 ms | live | 0 |

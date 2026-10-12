@@ -1,9 +1,9 @@
 # LLM Distillery - TODO
 
-## ▶️ START HERE — the ordered queue, as of 2026-10-10 (session close)
+## ▶️ START HERE — the ordered queue, as of 2026-10-12 (session close)
 
 *A bare "continue" means this list, top down. Each line names the FIRST action. Item 0 is WAITING (dated), item 1 is
-NexusMind's, so a bare "continue" before 2026-10-23 starts at **item 2, step 0** (the hook replay), then 2a.*
+NexusMind's. ▶ **A bare "continue" starts at item 0a** (owner, 2026-10-12), then item 2, step 0 (the hook replay), then 2a.*
 
 0. ⏸ **BELONGING v3 is LIVE (since NexusMind run `bd00dad6`, 2026-10-09 00:08–01:24 CEST), replacing v1. Nothing to do before
    2026-10-23 unless ovr.news messages.** Read `filters/belonging/v3/STATUS.md` first (evidence, rollback rule, refit notes);
@@ -17,8 +17,20 @@ NexusMind's, so a bare "continue" before 2026-10-23 starts at **item 2, step 0**
      fix `filter_version` in calibration.json + normalization.json then; post the date on #170. Earlier only if v3's share of
      raw ≥ 4.0 rows passing normalized ≥ 4.5 falls clearly below v1's 47–66% per file (469/872 = 54% over v1's last 7 files;
      the "< 100%" trigger was wrong — different populations — and fired falsely 2026-10-09).
-   - Open, not blocking: single-person stories (owner unsure); FM-S1 judge strictness; harvest round 2 (~$9.70 est.).
+   - Open, not blocking: FM-S1 judge strictness; harvest round 2 (~$9.70 est.). Single-person stories: see 0a.
    ⛔ **Never name the curator** in this repo or on GitHub (guards: `.githooks/`, gitignored `config/credentials/forbidden_names.txt`).
+
+0a. ▶ **BELONGING v3's TOP OF PAGE vs the owner's bar — a bare "continue" starts HERE.** Owner (2026-10-10): the live page's
+   top shows "at least half personal stories"; RULED bar: **≤ 6 of the top 30** are single-person / single-family
+   (`docs/decisions/2026-10-10-belonging-personal-story-bar.md`; evidence `docs/evidence/2026-10-10-belonging-v3-top-of-page/`;
+   ledger H-BB6; posted on #170).
+   - **Step 1, free:** which positives c2a (EXP-046, had the 121 `out_one_moment` negatives, failed recall 43 < 45) missed on
+     held-out set 2 (`docs/evidence/2026-10-08-belonging-heldout2/result_v1_c2a.txt` + the set-2 labels). If mostly
+     single-person, c2a fits the bar better than its gate said → re-gate c2a rather than train new.
+   - **Step 2:** the judged count of v3's LIVE top 30. Pre-register first (`experiments/PREREGISTRATION.template.md` §2–3):
+     top 30 by the score ovr.news ranks on (ovr.db, build query, never `live_articles`), kept only if NexusMind stamps them
+     `belonging.version == "3.0"`; two blind judges, rubric v2.2 class `out_one_moment`; count both-say rows vs 6.
+   - Over 6 is the case for the next candidate, NOT an automatic rollback (v3's rollback rule predates the bar; owner's call).
 
 1. **Decision-0 sync to NexusMind** — ONE NexusMind commit. The sequence is in the archived block (item 1):
    - dry-run diff first
@@ -28,7 +40,7 @@ NexusMind's, so a bare "continue" before 2026-10-23 starts at **item 2, step 0**
    - ⚠️ since NexusMind#395 step 1, sadalsuud no longer auto-pulls: a **manual pull + scorer-image rebuild** is needed
    NexusMind's session runs it; ours is to tell them. LD#52 and LD#86 are closed.
 
-2. **THE READ SURFACE (#163) — ▶ a bare "continue" starts HERE. Owner, 2026-10-10: "prune, thin, mechanize, retire".**
+2. **THE READ SURFACE (#163) — next after 0a. Owner, 2026-10-10 and again 2026-10-12: "prune, thin, mechanize, retire".**
    Measured 2026-10-10: **755,807 chars** (`/curate` Step 0's command; all of it in `memory/`, there is no
    `docs/work-items/`). History of the passes so far: `docs/TODO-archive.md` § *Moved 2026-10-10*; posted on #163.
    Every move is VERBATIM to `memory/archive/` with a lossless check (`sort | comm`, C locale; a one-line mutant must
@@ -64,20 +76,13 @@ NexusMind's, so a bare "continue" before 2026-10-23 starts at **item 2, step 0**
    - #156 adverse pool (~$3.2–3.6): DEFERRED. ⚠️ When a lens first CONSUMES `harm_is_subject` (any NexusMind filter
      `config.yaml` naming it), tell the pipeline-atlas session BEFORE it lands: its check goes red on that by design (2026-10-10).
    - Belonging shadow harm cap: a NexusMind change, low priority, v2's before/after instrument.
-   - **Belonging single-person stories (H-BB6, 2026-10-10):** owner: the top of the page shows "at least half personal stories". Needs the
-     owner's bar, RULED 2026-10-10: ≤ 6 of the top 30 (`docs/decisions/2026-10-10-belonging-personal-story-bar.md`).
-     Next: a judged count of v3's live top 30, then the top-of-page composition check (`experiments/README.md` § *Protocol*).
-     First, free: which positives c2a (EXP-046) missed. Evidence `docs/evidence/2026-10-10-belonging-v3-top-of-page/`.
-   - **Host data (situla = source of truth, 2026-10-10):** triage `~/ld-lab/inbox/` FIRST (a cited tree can only be
-     re-pulled while the host copy exists), then the owner's per-item go to delete host copies, only after a restic
-     snapshot holds them. List: `docs/evidence/2026-10-10-host-data-inventory/README.md`.
+   - **Host data (#172):** sadalsuud + sadaltager cleaned 2026-10-12; b650 + gpu-server wait for the owner ("stay as they
+     are for now"); triage `~/ld-lab/inbox/` before any cited tree's host copy goes.
+   - **#174:** do the oracle vendors' terms allow training on their outputs? Unassessed.
 
 4. **Small, ours** (detail in the archived block's numbered items):
-   - Enforce the experiment protocol (`experiments/README.md` § *Protocol*, 2026-10-10): it is prose today. Add a
-     `reader_visible` field plus composition / live-check artifacts to the registry schema and make
-     `check_experiment_registry.py` fail a reader-visible decision without them.
-   - The lab-manifest evidence backlog (`check_lab_manifests.py` BACKLOG lines, frozen in
-     `scripts/verification/lab_manifest_baseline.json`): cite what was pulled, shrink the baseline, mark the rest lost.
+   - **#173:** the experiment protocol is prose; make the registry enforce it.
+   - **#172:** the 37-unit lab-manifest evidence backlog (`scripts/verification/lab_manifest_baseline.json`).
    - LD#134 step 3, the marking pass (`docs/decisions/2026-09-17-refcheck-docs-tier.md`).
      **Started 2026-10-09:** the mechanical slice. `--docs-live` 231 → **214** unique, 0 new findings, default scan
      still 0: unqualified sibling paths that exist in exactly ONE sibling got the repo prefix, in 9 live docs. NOT
