@@ -82,7 +82,9 @@ NexusMind's. ▶ **A bare "continue" starts at item 2a** (step 0, the hook repla
      amends items 3 and 5), `opinion-genre` (no closed section; its verify annotation greps its own text). The 11
      files: 261,785 → 131,876 chars.
    - b. **The date rule on the reference files** (owner, 2026-10-09: dated before 2026-09-01 moves, unless the class
-     recurred since): `cross-repo-prioritization.md` 37,191, `oracle-pricing-scheduling.md` 35,176,
+     recurred since): ✅ `cross-repo-prioritization.md` **37,191 → 16,968** (2026-10-12: the 12 sections whose NEWEST date predates
+     09-01 appended verbatim to its existing archive; standing rules, chains 2/4/6/7/12/14 stay). ⚠️ The newest-date proxy
+     is UNSAFE for the four below: their pre-09-01 sections are mostly standing traps CLAUDE.md points at — judge each. `oracle-pricing-scheduling.md` 35,176,
      `stamp-contract-integrity.md` 34,024, `filter-status.md` 29,730, `nexusmind-data-sources.md` 27,275.
    - c. **Mechanize, then retire.** The gotcha log (63,914) keeps 11 catalogue entries only because their classes
      have no `live` row; each new live check lets one move. **RULED 2026-10-10: a RATCHET ceiling on the surface**:
