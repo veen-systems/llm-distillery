@@ -3,7 +3,9 @@
 ## ▶️ START HERE — the ordered queue, as of 2026-10-12 (session close)
 
 *A bare "continue" means this list, top down. Each line names the FIRST action. Item 0 is WAITING (dated), item 1 is
-NexusMind's. ▶ **A bare "continue" starts at item 0a** (owner, 2026-10-12), then item 2, step 0 (the hook replay), then 2a.*
+NexusMind's. ▶ **A bare "continue" starts at item 2, step 0** (the hook replay), then 2a: the read surface comes FIRST
+(owner, 2026-10-12: "next session we need to start cleaning first … pruning, thinning, mechanizing, retiring"). Item 0a
+(the belonging top-30 count) follows once the read-surface pass has landed.*
 
 0. ⏸ **BELONGING v3 is LIVE (since NexusMind run `bd00dad6`, 2026-10-09 00:08–01:24 CEST), replacing v1. Nothing to do before
    2026-10-23 unless ovr.news messages.** Read `filters/belonging/v3/STATUS.md` first (evidence, rollback rule, refit notes);
@@ -20,7 +22,7 @@ NexusMind's. ▶ **A bare "continue" starts at item 0a** (owner, 2026-10-12), th
    - Open, not blocking: FM-S1 judge strictness; harvest round 2 (~$9.70 est.). Single-person stories: see 0a.
    ⛔ **Never name the curator** in this repo or on GitHub (guards: `.githooks/`, gitignored `config/credentials/forbidden_names.txt`).
 
-0a. ▶ **BELONGING v3's TOP OF PAGE vs the owner's bar — a bare "continue" starts HERE.** Owner (2026-10-10): the live page's
+0a. **BELONGING v3's TOP OF PAGE vs the owner's bar — AFTER item 2's pass (owner, 2026-10-12: cleaning first).** Owner (2026-10-10): the live page's
    top shows "at least half personal stories"; RULED bar: **≤ 6 of the top 30** are single-person / single-family
    (`docs/decisions/2026-10-10-belonging-personal-story-bar.md`; evidence `docs/evidence/2026-10-10-belonging-v3-top-of-page/`;
    ledger H-BB6; posted on #170).
@@ -40,7 +42,8 @@ NexusMind's. ▶ **A bare "continue" starts at item 0a** (owner, 2026-10-12), th
    - ⚠️ since NexusMind#395 step 1, sadalsuud no longer auto-pulls: a **manual pull + scorer-image rebuild** is needed
    NexusMind's session runs it; ours is to tell them. LD#52 and LD#86 are closed.
 
-2. **THE READ SURFACE (#163) — next after 0a. Owner, 2026-10-10 and again 2026-10-12: "prune, thin, mechanize, retire".**
+2. **THE READ SURFACE (#163) — ▶ a bare "continue" starts HERE (owner, 2026-10-12: cleaning FIRST). "prune, thin, mechanize, retire".**
+   Measured 2026-10-12 at close: **758,893 chars** (+3,086 since 10-10).
    Measured 2026-10-10: **755,807 chars** (`/curate` Step 0's command; all of it in `memory/`, there is no
    `docs/work-items/`). History of the passes so far: `docs/TODO-archive.md` § *Moved 2026-10-10*; posted on #163.
    Every move is VERBATIM to `memory/archive/` with a lossless check (`sort | comm`, C locale; a one-line mutant must
