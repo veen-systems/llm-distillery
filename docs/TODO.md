@@ -3,9 +3,9 @@
 ## ▶️ START HERE — the ordered queue, as of 2026-10-12 (session close)
 
 *A bare "continue" means this list, top down. Each line names the FIRST action. Item 0 is WAITING (dated), item 1 is
-NexusMind's. ▶ **A bare "continue" starts at item 2a** (step 0, the hook replay, done 2026-10-12): the read surface comes FIRST
-(owner, 2026-10-12: "next session we need to start cleaning first … pruning, thinning, mechanizing, retiring"). Item 0a
-(the belonging top-30 count) follows once the read-surface pass has landed.*
+NexusMind's. ▶ **A bare "continue" starts at item 0a step 2** — item 2's read-surface pass landed 2026-10-12 (758,893 →
+~597,723 chars; ratchet `check_index_budget.py --target surface`). ⚠️ Step 2's first action is the OWNER question in 0a
+step 1's ⚠️ (are c2a's ~9 single-person-looking `in_scope` rows "personal"?) — do not run the judged count before it.*
 
 0. ⏸ **BELONGING v3 is LIVE (since NexusMind run `bd00dad6`, 2026-10-09 00:08–01:24 CEST), replacing v1. Nothing to do before
    2026-10-23 unless ovr.news messages.** Read `filters/belonging/v3/STATUS.md` first (evidence, rollback rule, refit notes);
