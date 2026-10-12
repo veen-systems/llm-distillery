@@ -2,11 +2,25 @@
  "lab_root": "$LD_LAB (default ~/ld-lab, on situla)",
  "entries": [
   {
+   "path": "inbox/b650-gpu/2026-10-12/focus-tag-train/out.jsonl",
+   "sha256": "19ee802d4dfecfc8c745b8d6f50dfc53ef89c623204f75fd24dd9d3e6bdb40d7",
+   "size": 136581,
+   "origin": "b650-gpu:~/ld-scratch/2026-10-12-focus-tag-train/out.jsonl",
+   "pulled_at": "2026-10-12T17:18:26+02:00"
+  },
+  {
    "path": "inbox/b650-gpu/2026-10-12/focus-tag/out.jsonl",
    "sha256": "ceb629bc32e3b28f2701ff49d321d4b4297579720e4c166c24ac7deb112d8130",
    "size": 12299,
    "origin": "b650-gpu:~/ld-scratch/2026-10-12-focus-tag/out.jsonl",
    "pulled_at": "2026-10-12T17:01:40+02:00"
+  },
+  {
+   "path": "inbox/sadalsuud/2026-10-12/belonging_comp_draw/belonging_comp_rows.jsonl",
+   "sha256": "30127d2d89777ca743a0ef0e5b36002aa1de59232267dfae120aca46fc9e6280",
+   "size": 120841499,
+   "origin": "sadalsuud:/tmp/ld_comp_draw/belonging_comp_rows.jsonl",
+   "pulled_at": "2026-10-12T17:23:07+02:00"
   }
  ]
 }

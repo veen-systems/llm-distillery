@@ -5,8 +5,8 @@
 *A bare "continue" means this list, top down. Each line names the FIRST action. Item 0 is WAITING (dated), item 1 is
 NexusMind's. Item 2 (#163, the read surface): rounds 1 and 2 landed 2026-10-12 (758,893 → 549,178 chars, ratchet
 `check_index_budget.py --target surface` at 560,200); `/curate` still flags it (>300k); the next levers are listed in
-item 2 and are not ruled. ▶ **A bare "continue" now starts at item 0a step 1b**: the owner answered the step-1 question 2026-10-12
-(6 of 9 are personal, so the judges' line is wider than the owner's); sharpen and re-test the judges, then step 2.*
+item 2 and are not ruled. ▶ **A bare "continue" now starts at item 0a "NOW: candidate c2c"**: v3 fails the owner's personal-story bar
+(10/30); c2c (personal training rows scaled to 4.4) is training on b650, then its pre-registered composition check.*
 
 0. ⏸ **BELONGING v3 is LIVE (since NexusMind run `bd00dad6`, 2026-10-09 00:08–01:24 CEST), replacing v1. Nothing to do before
    2026-10-23 unless ovr.news messages.** Read `filters/belonging/v3/STATUS.md` first (evidence, rollback rule, refit notes);
@@ -43,7 +43,17 @@ item 2 and are not ruled. ▶ **A bare "continue" now starts at item 0a step 1b*
      ✅ **OWNER ANSWERED 2026-10-12:** 6 of the 9 are personal (1, 2, 6, 7, 8, 9); 3, 4, 5 are not, *"cause these
      touch groups of people"*. So the judges draw the line WIDER than the owner, and a v2.2 count would undercount.
      Labels + gloss: `docs/decisions/2026-10-10-belonging-personal-story-bar.md` § *Owner labels*.
-   - **Step 1b (NEXT, before step 2):** run the two blind judges on the owner's 9 labels with an `out_one_moment`
+   - ✅ **2026-10-12 later — step 2 DONE, with a new instrument (owner RULED: a separate `focus` tag, not
+     `out_one_moment`, which can never count an in-scope personal story).** Owner count on the live page's top 30
+     (all v3): **9/30 pre-registered, 10/30 after the owner corrected one slip → v3 does NOT meet the ≤ 6 bar.**
+     Local `qwen3.8:27b` on b650 passed as tagger (26/30; 27/30 corrected); Claude judges 25/30 (26/30 corrected).
+     `docs/evidence/2026-10-12-belonging-personal-tag/`.
+   - ▶ **NOW: candidate c2c** (owner: no paid oracle; lower the personal rows in the training data): qwen tagged
+     the 331 rows ≥ 4.0; 42 personal rows scaled to 4.4 (`build_c2c.py`); training seeds 42 + 43 on b650
+     (`~/c2c_remote.sh`, logs `~/belonging_c2c_*`). Then the pre-registered composition check (amendment B,
+     `comp_check.py`; draw = 33,393 rows pulled to `~/ld-lab/inbox/sadalsuud/2026-10-12/belonging_comp_draw`):
+     score v3 + both seeds on b650, `tops`, qwen-tag, `evaluate`. It is a CHECK; a switch needs a fresh held-out gate.
+   - ~~**Step 1b (NEXT, before step 2):**~~ superseded by the owner's tag ruling: run the two blind judges on the owner's 9 labels with an `out_one_moment`
      definition sharpened to the owner's line (gloss, not ruled: *does it reach a group beyond the person or family*);
      pre-register the rule first, and check on rows NOT among the 9 so the 9 do not become the test set.
    - **Step 2:** the judged count of v3's LIVE top 30. Pre-register first (`experiments/PREREGISTRATION.template.md` §2–3):
