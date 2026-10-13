@@ -31,9 +31,10 @@ QWEN = [LAB / "experiments/2026-10-12-belonging-c2c/focus-tag/out.jsonl",
         LAB / "experiments/2026-10-12-belonging-c2c/focus-tag-comp/out.jsonl"]
 TAGS = HERE.parent / "2026-10-12-belonging-personal-tag" / "tags.tsv"
 N = 30
-# Owner correction after the pre-registered count (../2026-10-12-belonging-personal-tag/README.md § Owner
-# correction: "Slip: it's personal"). tags.tsv keeps the original label by rule 3; the correction is applied here.
-OWNER_CORRECTIONS = {"professional_business_business_insider_78697b7d3cf0": "personal"}
+# tags.tsv keeps the pre-registered labels (rule 3); the owner's later corrections live beside it as DATA, and every
+# consumer loads them (gotcha 2026-10-13: a correction kept only in prose was missed).
+_CORR = Path(__file__).resolve().parent.parent / "2026-10-12-belonging-personal-tag" / "owner_corrections.tsv"
+OWNER_CORRECTIONS = {row["id"]: row["owner"] for row in csv.DictReader(_CORR.open(encoding="utf-8"), delimiter="\t")}
 
 
 def pdate(s):
