@@ -93,6 +93,8 @@ its pre-registered check (recall guard 0.81 / 0.86 < 0.9); the owner chooses the
      ⏸ **Replay DONE (b083758, README § Formula replay); OWNER to review later (2026-10-13: "later I want to check
      the two options"; "home-page freshness is useful I suppose").** Claude's suggestion, not replayed: a hybrid of
      a few "new today" slots, then the rest score-first (C-like).
+     Hybrid H replayed (ovr.news's definition): same top-30 set as C in all lenses, only the order of the top differs.
+     ⛔ b650 HOLD (ovr.news, 2026-10-13 ~09:10 CEST, ~2–3 h): no qwen tagging there until ovr.news says the card is free.
      When ovr.news rules: send the ruling commit to the pipeline-atlas session (it will update Stage 10; it already
      carries the boost no-op as "ovr.news Chief Editor boosts" in its signature-failure register).
    - (was:) **NEXT: ask the owner, one question at a time** (not ruled). (1) Rebuild the check on the site's own ranking (ovr.db build

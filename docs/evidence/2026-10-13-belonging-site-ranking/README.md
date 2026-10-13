@@ -80,3 +80,10 @@ It does so by trading away same-day freshness. Whether C changes the share of pe
 from these labels. It needs qwen tags on C's untagged rows (b650, $0) and, for a real answer, the owner's eye.
 The saturation is ovr.news ADR-050's point: until the score is re-normalized, a "score-first" default can only
 partly rank by quality.
+
+**Hybrid H (added at ovr.news's request):** slots 1–5 are the five highest-scored cards under 24 h old, then C
+order. MEASURED on 10-13: H's top 30 is the **same SET as C's in all five lenses**, so every column above is
+identical. Under C those five fresh cards already sat at positions 15–21 (belonging), 10–18 (thriving), 1–7
+(solutions), 2–10 (discovery) and 1–12 (recovery). H only moves them to the top, which changes 21 / 18 / 3 / 10 / 11
+of the top-30 positions. So H changes what a reader sees FIRST, not which stories make the top 30. The same holds
+on the 10-12 page (`replay_result.txt`).

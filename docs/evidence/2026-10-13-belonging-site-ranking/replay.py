@@ -5,6 +5,8 @@ Formulas, as specified by ovr.news (s = normalized weighted_average, age_h = hou
   A        s x 0.5^(age_h/48)                          (half-life 2 days, no cliff)
   B        s x 0.5^(age_h/72)                          (half-life 3 days, no cliff)
   C        band (0: < 72 h, 1: 72 h-7 d, 2: older) ascending, then s descending
+  H        hybrid (ovr.news, later the same day): slots 1-5 = the 5 highest-s cards under 24 h old; then every other
+           card in C order. Fewer than 5 under 24 h: the remaining slots go to C order.
 
 Populations:
   10-13, all five lenses: exactly the cards each live page shows (built 2026-10-13T06:55:18Z), so the editor's,
@@ -50,6 +52,14 @@ FORMULAS = {
 }
 
 
+def order(name, rows, now):
+    if name != "H hybrid":
+        return sorted(rows, key=lambda r: FORMULAS[name](r, now))
+    fresh = sorted((r for r in rows if age_h(r, now) < 24), key=lambda r: -r["weighted_average"])[:5]
+    ids = {r["id"] for r in fresh}
+    return fresh + [r for r in sorted(rows, key=lambda r: FORMULAS["C bands"](r, now)) if r["id"] not in ids]
+
+
 def labels():
     owner = {t["id"]: t["owner"] for t in csv.DictReader(TAGS.open(encoding="utf-8"), delimiter="\t")}
     qwen = {}
@@ -63,7 +73,7 @@ def labels():
 
 
 def report(name, rows, now, control_top, lab=None, flag=frozenset()):
-    top = sorted(rows, key=lambda r: FORMULAS[name](r, now))[:N]
+    top = order(name, rows, now)[:N]
     ids = [r["id"] for r in top]
     ages = [age_h(r, now) for r in top]
     low = min(top, key=lambda r: r["weighted_average"])
@@ -95,7 +105,7 @@ def main():
         print(f"{lens} ({d['filter']}): {len(rows)} cards, {sum(age_h(r, now) < 24 for r in rows)} under 24 h")
         control = [r["id"] for r in rows][:N]
         assert [r["id"] for r in sorted(rows, key=lambda r: FORMULAS["control"](r, now))][:N] == control, lens
-        for name in FORMULAS:
+        for name in [*FORMULAS, "H hybrid"]:
             report(name, rows, now, control, lab if lens == "belonging" else None)
 
     print("\n== 10-12 Belonging, the owner-labelled page, rebuilt at 14:30Z")
@@ -111,7 +121,7 @@ def main():
     print(f"population {len(pop)}, dropped as removed {len(pop) - len(rows)}, removal status unknown {len(unknown)}")
     got = [r["id"] for r in sorted(rows, key=lambda r: FORMULAS["control"](r, now))][:N]
     print(f"control reproduces the labelled page: {sum(a == b for a, b in zip(got, page30))}/{N} positions")
-    for name in FORMULAS:
+    for name in [*FORMULAS, "H hybrid"]:
         report(name, rows, now, page30, lab, unknown)
 
 
