@@ -93,6 +93,8 @@ its pre-registered check (recall guard 0.81 / 0.86 < 0.9); the owner chooses the
      ⏸ **Replay DONE (b083758, README § Formula replay); OWNER to review later (2026-10-13: "later I want to check
      the two options"; "home-page freshness is useful I suppose").** Claude's suggestion, not replayed: a hybrid of
      a few "new today" slots, then the rest score-first (C-like).
+     When ovr.news rules: send the ruling commit to the pipeline-atlas session (it will update Stage 10; it already
+     carries the boost no-op as "ovr.news Chief Editor boosts" in its signature-failure register).
    - (was:) **NEXT: ask the owner, one question at a time** (not ruled). (1) Rebuild the check on the site's own ranking (ovr.db build
      query, the page's population, H-BB7) before any retrain: all 30 page rows were in the draw, but only 7 were in v3's raw top 30.
      Recommended first. (2) A cap-aware retry "c2d": scale the five non-gatekeeper dimensions so community_fabric stays ≥ 3.0,
