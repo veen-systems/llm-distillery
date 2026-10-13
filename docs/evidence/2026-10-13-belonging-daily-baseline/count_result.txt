@@ -1,0 +1,8 @@
+build               N  in_range  qwen_personal  qwen_group  unparsed  | owner (labelled rows only)
+2026-10-09T14:30Z  14  False                 6           8         0  | owner 0 personal of 0 labelled (qwen says 0 personal on those 0)
+2026-10-10T14:30Z  26  False                 8          18         0  | owner 0 personal of 0 labelled (qwen says 0 personal on those 0)
+2026-10-11T14:30Z  30  True                  4          26         0  | owner 0 personal of 0 labelled (qwen says 0 personal on those 0)
+2026-10-12T14:30Z  30  True                  8          22         0  | owner 10 personal of 28 labelled (qwen says 7 personal on those 28)
+2026-10-13T06:55Z  30  True                  5          25         0  | owner 0 personal of 6 labelled (qwen says 0 personal on those 6)
+
+in-range builds 3: qwen personal min 4, max 8, range 4

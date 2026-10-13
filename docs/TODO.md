@@ -94,7 +94,11 @@ its pre-registered check (recall guard 0.81 / 0.86 < 0.9); the owner chooses the
      the two options"; "home-page freshness is useful I suppose").** Claude's suggestion, not replayed: a hybrid of
      a few "new today" slots, then the rest score-first (C-like).
      Hybrid H replayed (ovr.news's definition): same top-30 set as C in all lenses, only the order of the top differs.
-     ⛔ b650 HOLD (ovr.news, 2026-10-13 ~09:10 CEST, ~2–3 h): no qwen tagging there until ovr.news says the card is free.
+     ✅ **Daily baseline DONE (2026-10-13, pre-registered, all 3 predictions hit):** qwen personal in the site-ranked top
+     30, per day: 10-11 **4**, 10-12 **8**, 10-13 **5** (a floor; on 10-12's labelled rows qwen 7 vs owner 10). One
+     day's count moves by 4, so the owner's 10/30 is one draw. `docs/evidence/2026-10-13-belonging-daily-baseline/`.
+     ▶ Owner, when back: is the bar meant per day, or as an average over days (e.g. a week)? The answer sets how
+     a candidate is judged.
      When ovr.news rules: send the ruling commit to the pipeline-atlas session (it will update Stage 10; it already
      carries the boost no-op as "ovr.news Chief Editor boosts" in its signature-failure register).
    - (was:) **NEXT: ask the owner, one question at a time** (not ruled). (1) Rebuild the check on the site's own ranking (ovr.db build
