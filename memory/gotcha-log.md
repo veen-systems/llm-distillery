@@ -1,6 +1,11 @@
 # Gotcha Log
 
-*Newest-first, dated entries. **One standing section lives at the BOTTOM**: [`### `cp -r` OF A FILTER PACKAGE LOADS THE SOURCE PACKAGE'S MODEL (2026-10-12)
+*Newest-first, dated entries. **One standing section lives at the BOTTOM**: [`### A POST-HOC LABEL CORRECTION KEPT ONLY IN PROSE IS INVISIBLE TO EVERY SCRIPT (2026-10-13)
+**Problem**: `replay.py` and `site_rank.py` counted the owner's personal stories from `tags.tsv` and reported 9 where the corrected count is 10. The same error went to the ovr.news session, which was preparing the owner's decision. Review caught it; a correction was sent (`8a8207c`).
+**Root cause**: rule 3 keeps `tags.tsv` as pre-registered, so the owner's pos-25 correction lived only in the README's prose. Every new consumer of the TSV inherits the uncorrected label silently.
+**Fix**: a correction travels as DATA next to the frozen file. Here that is `OWNER_CORRECTIONS` in each consumer; better is a committed `corrections.tsv` beside `tags.tsv` that consumers must load. Before counting from any labels file, grep its directory's README for "correction".
+
+### `cp -r` OF A FILTER PACKAGE LOADS THE SOURCE PACKAGE'S MODEL (2026-10-12)
 **Problem**: `filters/belonging/v1_c2c_s42` was a `cp -r` of `v1_c2b`. Its training wrote its own adapter, but scoring it loaded `v1_c2b/model`. `gate.assert_loads_from` refused both seeds before a score was written.
 **Root cause**: the package's `inference*.py` import `filters.belonging.v1_c2b.*` by ABSOLUTE module path, and the model path is `Path(__file__).parent / "model"` of the IMPORTED module. A copy keeps the source's module name.
 **Fix**: after any package copy, `sed` the module path to the new package name and `grep -c <old name>` = 0 before scoring. Keep `assert_loads_from` in every scoring script: it is what caught this.
