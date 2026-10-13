@@ -1,0 +1,3542 @@
+{
+"lens": "solutions",
+"filter": "solutions",
+"built": "2026-10-13T06:55:18Z",
+"page_order": [
+{
+"id": "australian_abc_au_6e2804df3a70",
+"published_date": "2026-10-13T01:50:50.000Z",
+"language": "en",
+"weighted_average": 9.905325,
+"raw_weighted_average": 5.087619018554688
+},
+{
+"id": "west_african_senego_12ef271aebb2",
+"published_date": "2026-10-12T22:10:48.000Z",
+"language": "fr",
+"weighted_average": 9.869408214721574,
+"raw_weighted_average": 4.944071336090565
+},
+{
+"id": "west_african_thisday_66fbdd147825",
+"published_date": "2026-10-12T23:24:00.000Z",
+"language": "en",
+"weighted_average": 9.668639,
+"raw_weighted_average": 4.725212252140046
+},
+{
+"id": "south_american_la_nacion_ar_3df87b751518",
+"published_date": "2026-10-12T17:32:45.000Z",
+"language": "es",
+"weighted_average": 9.97506692002229,
+"raw_weighted_average": 5.439010977745056
+},
+{
+"id": "north_african_le_360_93c630160740",
+"published_date": "2026-10-12T19:30:00.000Z",
+"language": "en",
+"weighted_average": 9.794174315399951,
+"raw_weighted_average": 4.866851937770844
+},
+{
+"id": "west_african_new_telegraph_ng_1da41e09768a",
+"published_date": "2026-10-12T19:36:28.000Z",
+"language": "en",
+"weighted_average": 9.786982,
+"raw_weighted_average": 4.838595557212829
+},
+{
+"id": "south_american_elsalvador_com_75cb1cf247ba",
+"published_date": "2026-10-12T23:49:29.000Z",
+"language": "ca",
+"weighted_average": 9.494736977020548,
+"raw_weighted_average": 4.5486538171768185
+},
+{
+"id": "greek_to_vima_1b60fdae80f2",
+"published_date": "2026-10-12T17:48:13.000Z",
+"language": "el",
+"weighted_average": 9.869822,
+"raw_weighted_average": 4.94826729297638
+},
+{
+"id": "west_african_new_telegraph_ng_34d0b7c2932d",
+"published_date": "2026-10-12T19:42:40.000Z",
+"language": "en",
+"weighted_average": 9.596633416121298,
+"raw_weighted_average": 4.633810079097748
+},
+{
+"id": "dutch_news_duurzaam_ondernemen_b71208fbcce7",
+"published_date": "2026-10-12T12:54:51.000Z",
+"language": "nl",
+"weighted_average": 9.964497,
+"raw_weighted_average": 5.296005296707153
+},
+{
+"id": "pan_african_caj_news_africa_0e79a93b5dd7",
+"published_date": "2026-10-12T13:35:00.000Z",
+"language": "en",
+"weighted_average": 9.91716,
+"raw_weighted_average": 5.1551056340336805
+},
+{
+"id": "west_african_seneweb_0040a5ca7f9f",
+"published_date": "2026-10-12T17:03:23.000Z",
+"language": "fr",
+"weighted_average": 9.668639,
+"raw_weighted_average": 4.739814841747284
+},
+{
+"id": "west_african_aib_burkina_a24b815697ef",
+"published_date": "2026-10-12T11:54:25.000Z",
+"language": "fr",
+"weighted_average": 9.988166,
+"raw_weighted_average": 5.689285683631897
+},
+{
+"id": "west_african_myjoyonline_88bb7a94f845",
+"published_date": "2026-10-12T19:26:23.000Z",
+"language": "en",
+"weighted_average": 9.471518428889807,
+"raw_weighted_average": 4.534178483486176
+},
+{
+"id": "west_african_le_quotidien_sn_b82c754370ca",
+"published_date": "2026-10-12T13:57:36.000Z",
+"language": "fr",
+"weighted_average": 9.78309885139621,
+"raw_weighted_average": 4.814822793006897
+},
+{
+"id": "west_african_benin_web_tv_e610bba87b37",
+"published_date": "2026-10-12T11:40:00.000Z",
+"language": "fr",
+"weighted_average": 9.922778037053018,
+"raw_weighted_average": 5.165767288208008
+},
+{
+"id": "southeast_asian_tuoi_tre_en_bc67eb6b478c",
+"published_date": "2026-10-12T21:02:00.000Z",
+"language": "en",
+"weighted_average": 9.301382803636379,
+"raw_weighted_average": 4.439470982551575
+},
+{
+"id": "east_african_mwananchi_tz_b817b9fd5b5c",
+"published_date": "2026-10-12T16:11:51.000Z",
+"language": "sw",
+"weighted_average": 9.586679004337329,
+"raw_weighted_average": 4.626356887817383
+},
+{
+"id": "south_american_prensa_libre_3be70d71d6c7",
+"published_date": "2026-10-12T11:00:00.000Z",
+"language": "es",
+"weighted_average": 9.905325,
+"raw_weighted_average": 5.086767268180847
+},
+{
+"id": "west_african_mosaique_guinee_319538371c06",
+"published_date": "2026-10-12T15:30:55.000Z",
+"language": "fr",
+"weighted_average": 9.604822995536757,
+"raw_weighted_average": 4.639941883087158
+},
+{
+"id": "community_social_hackernews_newest_807e5e229d73",
+"published_date": "2026-10-13T01:46:47.000Z",
+"language": "en",
+"weighted_average": 8.908623740492542,
+"raw_weighted_average": 4.322464847564698
+},
+{
+"id": "energy_utilities_charged_evs_f10cad1030ce",
+"published_date": "2026-10-12T15:33:20.000Z",
+"language": "en",
+"weighted_average": 9.482268662714253,
+"raw_weighted_average": 4.5393182530999185
+},
+{
+"id": "global_news_euronews_006a21076856",
+"published_date": "2026-10-12T13:00:18.000Z",
+"language": "en",
+"weighted_average": 9.632159894694263,
+"raw_weighted_average": 4.66041014790535
+},
+{
+"id": "south_african_club_of_mozambique_cccb8c772ff6",
+"published_date": "2026-10-12T12:27:54.000Z",
+"language": "en",
+"weighted_average": 9.655860922529941,
+"raw_weighted_average": 4.678156128525734
+},
+{
+"id": "south_american_brasil_de_fato_8d85b98c29c9",
+"published_date": "2026-10-12T16:51:46.000Z",
+"language": "pt",
+"weighted_average": 9.36596421200267,
+"raw_weighted_average": 4.463648934662342
+},
+{
+"id": "italian_punto_informatico_4b69adb06927",
+"published_date": "2026-10-12T15:48:19.000Z",
+"language": "it",
+"weighted_average": 9.405313434514769,
+"raw_weighted_average": 4.482440185546875
+},
+{
+"id": "korean_yonhap_kr_95aeee319c6f",
+"published_date": "2026-10-12T21:00:10.000Z",
+"language": "ko",
+"weighted_average": 9.076358024492759,
+"raw_weighted_average": 4.36563608199358
+},
+{
+"id": "south_asian_indian_express_198c3965a9b6",
+"published_date": "2026-10-12T08:34:06.000Z",
+"language": "en",
+"weighted_average": 9.869822,
+"raw_weighted_average": 5.012037074565887
+},
+{
+"id": "central_asian_open_kg_57961f9b92c2",
+"published_date": "2026-10-12T06:59:19.000Z",
+"language": "en",
+"weighted_average": 9.964497,
+"raw_weighted_average": 5.356785726547241
+},
+{
+"id": "south_asian_nepalnews_d256092a7d39",
+"published_date": "2026-10-12T15:35:13.000Z",
+"language": "ne",
+"weighted_average": 9.394531242328167,
+"raw_weighted_average": 4.477058048546314
+},
+{
+"id": "greek_ta_nea_209a97e99c80",
+"published_date": "2026-10-12T07:37:35.000Z",
+"language": "el",
+"weighted_average": 9.905325,
+"raw_weighted_average": 5.0909260511398315
+},
+{
+"id": "energy_utilities_canary_media_e5d4d626cdcc",
+"published_date": "2026-10-12T07:30:00.000Z",
+"language": "en",
+"weighted_average": 9.905325,
+"raw_weighted_average": 5.114953768253327
+},
+{
+"id": "climate_solutions_the_cool_down_2aee2fb2a7ce",
+"published_date": "2026-10-12T12:44:00.000Z",
+"language": "en",
+"weighted_average": 9.540141662245347,
+"raw_weighted_average": 4.585185268521309
+},
+{
+"id": "south_asian_times_of_india_4d1f52affa29",
+"published_date": "2026-10-12T10:30:00.000Z",
+"language": "en",
+"weighted_average": 9.668639,
+"raw_weighted_average": 4.702914190292359
+},
+{
+"id": "west_african_senego_6373456a5da7",
+"published_date": "2026-10-12T07:19:40.000Z",
+"language": "fr",
+"weighted_average": 9.786982,
+"raw_weighted_average": 4.829984414577484
+},
+{
+"id": "climate_solutions_the_cool_down_10f9d69693f1",
+"published_date": "2026-10-12T13:02:00.000Z",
+"language": "en",
+"weighted_average": 9.396256286924558,
+"raw_weighted_average": 4.477919137477875
+},
+{
+"id": "pan_african_all_africa_163fe8736481",
+"published_date": "2026-10-12T10:56:26.000Z",
+"language": "en",
+"weighted_average": 9.418399738584585,
+"raw_weighted_average": 4.499071818590164
+},
+{
+"id": "west_african_aib_burkina_58f76a316d3e",
+"published_date": "2026-10-12T21:14:35.000Z",
+"language": "fr",
+"weighted_average": 8.772174857091292,
+"raw_weighted_average": 4.249100565910339
+},
+{
+"id": "climate_solutions_the_cool_down_73da60d6cc13",
+"published_date": "2026-10-12T08:54:00.000Z",
+"language": "en",
+"weighted_average": 9.503570111166782,
+"raw_weighted_average": 4.555725169181824
+},
+{
+"id": "west_african_senego_15d7f3289cdb",
+"published_date": "2026-10-12T16:07:41.000Z",
+"language": "fr",
+"weighted_average": 9.034901603102782,
+"raw_weighted_average": 4.356816321611404
+},
+{
+"id": "korean_ecotiger_98d96ea9eb48",
+"published_date": "2026-10-12T10:23:57.000Z",
+"language": "ko",
+"weighted_average": 9.331311251577109,
+"raw_weighted_average": 4.450675578415394
+},
+{
+"id": "education_inside_higher_ed_378cb4a7933a",
+"published_date": "2026-10-12T07:00:00.000Z",
+"language": "en",
+"weighted_average": 9.504259528070616,
+"raw_weighted_average": 4.556757605075837
+},
+{
+"id": "west_african_benin_web_tv_14a765496173",
+"published_date": "2026-10-12T09:42:00.000Z",
+"language": "fr",
+"weighted_average": 9.31091602638034,
+"raw_weighted_average": 4.443040025234223
+},
+{
+"id": "south_american_village_voice_news_d17f0b76b855",
+"published_date": "2026-10-12T17:47:10.000Z",
+"language": "en",
+"weighted_average": 8.76345941637303,
+"raw_weighted_average": 4.244750332832337
+},
+{
+"id": "belgian_la_libre_d281c04efa61",
+"published_date": "2026-10-12T08:44:59.000Z",
+"language": "fr",
+"weighted_average": 9.316420046906563,
+"raw_weighted_average": 4.445100617408753
+},
+{
+"id": "pan_african_techafrica_news_26a6cd5cee93",
+"published_date": "2026-10-12T09:47:32.000Z",
+"language": "en",
+"weighted_average": 9.22439257845792,
+"raw_weighted_average": 4.409852087497711
+},
+{
+"id": "italian_qualenergia_618395190166",
+"published_date": "2026-10-12T13:00:33.000Z",
+"language": "it",
+"weighted_average": 9.010318374472273,
+"raw_weighted_average": 4.352725887298584
+},
+{
+"id": "south_african_herald_zw_16311e4f4594",
+"published_date": "2026-10-12T08:38:27.000Z",
+"language": "en",
+"weighted_average": 9.224785143294818,
+"raw_weighted_average": 4.410048043727875
+},
+{
+"id": "greek_ta_nea_c26734701721",
+"published_date": "2026-10-12T12:58:26.000Z",
+"language": "el",
+"weighted_average": 8.92878343621963,
+"raw_weighted_average": 4.333181643486023
+},
+{
+"id": "pan_african_techafrica_news_6c54622ed1d2",
+"published_date": "2026-10-12T09:23:51.000Z",
+"language": "en",
+"weighted_average": 9.14577713672907,
+"raw_weighted_average": 4.382961344718933
+},
+{
+"id": "energy_utilities_canary_media_c5a8c915e6c1",
+"published_date": "2026-10-12T07:30:00.000Z",
+"language": "en",
+"weighted_average": 9.240910029258629,
+"raw_weighted_average": 4.416831512749195
+},
+{
+"id": "central_asian_open_kg_6438a2bc5921",
+"published_date": "2026-10-12T10:27:06.000Z",
+"language": "en",
+"weighted_average": 9.026816259551332,
+"raw_weighted_average": 4.355470991134644
+},
+{
+"id": "west_african_myjoyonline_78035ac70493",
+"published_date": "2026-10-12T11:57:44.000Z",
+"language": "en",
+"weighted_average": 8.880243770483876,
+"raw_weighted_average": 4.301215541362763
+},
+{
+"id": "portuguese_observador_466affa17c57",
+"published_date": "2026-10-12T09:48:32.000Z",
+"language": "pt",
+"weighted_average": 8.92922237901694,
+"raw_weighted_average": 4.333400750160218
+},
+{
+"id": "italian_qualenergia_ba15351915f5",
+"published_date": "2026-10-12T06:55:40.000Z",
+"language": "it",
+"weighted_average": 9.06941499891618,
+"raw_weighted_average": 4.363903307914734
+},
+{
+"id": "greek_protothema_6547a354d8d9",
+"published_date": "2026-10-12T09:48:00.000Z",
+"language": "el",
+"weighted_average": 8.799978824464665,
+"raw_weighted_average": 4.259202685952187
+},
+{
+"id": "south_african_club_of_mozambique_a16028b9faef",
+"published_date": "2026-10-12T09:13:01.000Z",
+"language": "en",
+"weighted_average": 8.612328897905115,
+"raw_weighted_average": 4.2136483848094946
+},
+{
+"id": "south_asian_nepalnews_391e93eec230",
+"published_date": "2026-10-12T09:16:06.000Z",
+"language": "ne",
+"weighted_average": 8.575600956378853,
+"raw_weighted_average": 4.207537233829498
+},
+{
+"id": "south_american_telesur_en_361ad20542cd",
+"published_date": "2026-10-12T04:53:20.000Z",
+"language": "en",
+"weighted_average": 9.797933856504256,
+"raw_weighted_average": 4.872481560707093
+},
+{
+"id": "central_asian_asia_plus_037c53d333dd",
+"published_date": "2026-10-12T04:27:45.000Z",
+"language": "en",
+"weighted_average": 9.698941303218819,
+"raw_weighted_average": 4.761095559597015
+},
+{
+"id": "central_asian_uzdaily_en_9ba81ce75dc8",
+"published_date": "2026-10-12T05:15:00.000Z",
+"language": "en",
+"weighted_average": 9.411435936902622,
+"raw_weighted_average": 4.488643181324005
+},
+{
+"id": "south_american_telesur_en_76c73c853137",
+"published_date": "2026-10-12T06:29:15.000Z",
+"language": "en",
+"weighted_average": 9.297995500986417,
+"raw_weighted_average": 4.438202846050262
+},
+{
+"id": "south_asian_express_tribune_6e37364f05e5",
+"published_date": "2026-10-11T23:08:46.000Z",
+"language": "en",
+"weighted_average": 9.658037731211422,
+"raw_weighted_average": 4.6807090759277346
+},
+{
+"id": "japanese_sustainable_japan_1ae29f49f982",
+"published_date": "2026-10-11T22:40:51.000Z",
+"language": "ja",
+"weighted_average": 9.668639,
+"raw_weighted_average": 4.7185877680778505
+},
+{
+"id": "west_african_aib_burkina_5b64731f3c29",
+"published_date": "2026-10-11T22:42:29.000Z",
+"language": "fr",
+"weighted_average": 9.552798727134594,
+"raw_weighted_average": 4.592127978801727
+},
+{
+"id": "west_african_benin_web_tv_ddf137a4a30b",
+"published_date": "2026-10-11T16:50:00.000Z",
+"language": "fr",
+"weighted_average": 9.859337208060964,
+"raw_weighted_average": 4.928989505767822
+},
+{
+"id": "west_african_voice_of_nigeria_000af4e3ffba",
+"published_date": "2026-10-11T15:00:24.000Z",
+"language": "en",
+"weighted_average": 9.90865258708681,
+"raw_weighted_average": 5.126892805099487
+},
+{
+"id": "icelandic_ruv_15a227c30243",
+"published_date": "2026-10-11T19:34:00.000Z",
+"language": "is",
+"weighted_average": 9.581163534118831,
+"raw_weighted_average": 4.618756747245789
+},
+{
+"id": "south_asian_hasht_e_subh_en_cfb3b6327617",
+"published_date": "2026-10-11T17:53:25.000Z",
+"language": "en",
+"weighted_average": 9.668639,
+"raw_weighted_average": 4.724695855379105
+},
+{
+"id": "central_asian_open_kg_1f83180a1956",
+"published_date": "2026-10-12T06:35:26.000Z",
+"language": "en",
+"weighted_average": 8.847578110536809,
+"raw_weighted_average": 4.276756837964058
+},
+{
+"id": "central_asian_open_kg_fd8eba9953ec",
+"published_date": "2026-10-12T05:54:21.000Z",
+"language": "en",
+"weighted_average": 8.778177965456814,
+"raw_weighted_average": 4.252096962928772
+},
+{
+"id": "south_asian_scroll_in_0c8d3d233267",
+"published_date": "2026-10-11T14:00:00.000Z",
+"language": "en",
+"weighted_average": 9.770745339812567,
+"raw_weighted_average": 4.7963227987289425
+},
+{
+"id": "central_asian_open_kg_bcf79447ca27",
+"published_date": "2026-10-11T12:12:06.000Z",
+"language": "en",
+"weighted_average": 9.786982,
+"raw_weighted_average": 4.837037074565887
+},
+{
+"id": "west_african_aib_burkina_13de3fc77e54",
+"published_date": "2026-10-11T19:39:13.000Z",
+"language": "fr",
+"weighted_average": 9.28709998898167,
+"raw_weighted_average": 4.43412379026413
+},
+{
+"id": "west_african_senego_a447daf29f05",
+"published_date": "2026-10-11T09:05:05.000Z",
+"language": "fr",
+"weighted_average": 9.964497,
+"raw_weighted_average": 5.2998148679733275
+},
+{
+"id": "south_asian_newswire_lk_1d27d3259488",
+"published_date": "2026-10-11T15:01:22.000Z",
+"language": "en",
+"weighted_average": 9.508311379761434,
+"raw_weighted_average": 4.562825453281403
+},
+{
+"id": "south_american_dominican_today_118096184039",
+"published_date": "2026-10-11T12:19:17.000Z",
+"language": "en",
+"weighted_average": 9.682186224749369,
+"raw_weighted_average": 4.75482280254364
+},
+{
+"id": "belgian_vrt_nieuws_nl_de1832f57c7d",
+"published_date": "2026-10-11T18:01:06.000Z",
+"language": "nl",
+"weighted_average": 9.307742509815903,
+"raw_weighted_average": 4.441851925849915
+},
+{
+"id": "italian_vaielettrico_51c54d1855aa",
+"published_date": "2026-10-11T08:55:54.000Z",
+"language": "it",
+"weighted_average": 9.76421790535074,
+"raw_weighted_average": 4.7865476429462435
+},
+{
+"id": "arabic_middleeastmonitor_94016604f4c0",
+"published_date": "2026-10-11T15:44:20.000Z",
+"language": "en",
+"weighted_average": 9.302477923973935,
+"raw_weighted_average": 4.439880973100663
+},
+{
+"id": "west_african_aib_burkina_a97dc2a5bcf4",
+"published_date": "2026-10-11T12:31:49.000Z",
+"language": "fr",
+"weighted_average": 9.504400472979219,
+"raw_weighted_average": 4.5569686770439155
+},
+{
+"id": "korean_hankyung_07a25f7f05ea",
+"published_date": "2026-10-12T01:11:51.000Z",
+"language": "ko",
+"weighted_average": 8.70574751966271,
+"raw_weighted_average": 4.2291922807693485
+},
+{
+"id": "south_american_andina_f79f6ddfc62c",
+"published_date": "2026-10-11T22:00:00.000Z",
+"language": "es",
+"weighted_average": 8.887320974964755,
+"raw_weighted_average": 4.306514549255371
+},
+{
+"id": "west_african_benin_web_tv_96d8aa90ee33",
+"published_date": "2026-10-11T12:19:04.000Z",
+"language": "fr",
+"weighted_average": 9.48493222287151,
+"raw_weighted_average": 4.541312575340271
+},
+{
+"id": "east_asian_korea_times_66112b7f38f7",
+"published_date": "2026-10-11T06:02:04.000Z",
+"language": "en",
+"weighted_average": 9.881657,
+"raw_weighted_average": 5.039669080078602
+},
+{
+"id": "east_african_mwananchi_tz_24e78c2e268d",
+"published_date": "2026-10-11T20:45:00.000Z",
+"language": "sw",
+"weighted_average": 8.920835514750564,
+"raw_weighted_average": 4.329214286804199
+},
+{
+"id": "south_american_gestion_pe_fa68602713ea",
+"published_date": "2026-10-11T14:16:22.000Z",
+"language": "es",
+"weighted_average": 9.278487886863564,
+"raw_weighted_average": 4.430899596214295
+},
+{
+"id": "east_african_eastleigh_voice_25c9064b3e33",
+"published_date": "2026-10-11T05:01:09.000Z",
+"language": "en",
+"weighted_average": 9.869822,
+"raw_weighted_average": 4.95835137963295
+},
+{
+"id": "us_media_reason_39a32678e09b",
+"published_date": "2026-10-11T10:30:59.000Z",
+"language": "en",
+"weighted_average": 9.50875943268844,
+"raw_weighted_average": 4.5634964346885685
+},
+{
+"id": "south_american_andina_56053e57bb0d",
+"published_date": "2026-10-11T19:33:18.000Z",
+"language": "es",
+"weighted_average": 8.93314895876617,
+"raw_weighted_average": 4.3353607773780825
+},
+{
+"id": "south_american_proceso_hn_d6c85ac77972",
+"published_date": "2026-10-11T15:35:41.000Z",
+"language": "es",
+"weighted_average": 9.14391370753492,
+"raw_weighted_average": 4.38249626159668
+},
+{
+"id": "italian_repubblica_8306b71973ad",
+"published_date": "2026-10-11T04:00:00.000Z",
+"language": "en",
+"weighted_average": 9.869822,
+"raw_weighted_average": 4.972156155109405
+},
+{
+"id": "baltic_lrt_b793a1a50c7c",
+"published_date": "2026-10-11T19:30:00.000Z",
+"language": "lt",
+"weighted_average": 8.876378933783666,
+"raw_weighted_average": 4.298321771621704
+},
+{
+"id": "south_american_gestion_pe_26c13bb16cb3",
+"published_date": "2026-10-11T06:02:37.000Z",
+"language": "es",
+"weighted_average": 9.655860922529941,
+"raw_weighted_average": 4.678156128525734
+},
+{
+"id": "south_asian_kathmandu_post_8418805f6321",
+"published_date": "2026-10-11T08:03:07.000Z",
+"language": "en",
+"weighted_average": 9.47292153938408,
+"raw_weighted_average": 4.534703779220581
+},
+{
+"id": "east_african_mwananchi_tz_b9c38d341ecc",
+"published_date": "2026-10-11T20:45:00.000Z",
+"language": "sw",
+"weighted_average": 8.690920089285296,
+"raw_weighted_average": 4.226725149154663
+},
+{
+"id": "west_african_thisday_4c58dae35207",
+"published_date": "2026-10-11T00:35:09.000Z",
+"language": "en",
+"weighted_average": 9.928994,
+"raw_weighted_average": 5.182322788238525
+},
+{
+"id": "climate_solutions_the_cool_down_2b8b3c628cec",
+"published_date": "2026-10-11T13:56:00.000Z",
+"language": "en",
+"weighted_average": 9.001928866478572,
+"raw_weighted_average": 4.351329946517945
+},
+{
+"id": "central_asian_astana_times_b51b46392930",
+"published_date": "2026-10-11T06:00:23.000Z",
+"language": "en",
+"weighted_average": 9.49056448198394,
+"raw_weighted_average": 4.545529690384865
+},
+{
+"id": "finnish_yle_uutiset_734fdd3cd63a",
+"published_date": "2026-10-11T05:46:21.000Z",
+"language": "fi",
+"weighted_average": 9.482246960054583,
+"raw_weighted_average": 4.539302003383637
+},
+{
+"id": "southeast_asian_antara_en_6ed987e490e8",
+"published_date": "2026-10-11T12:55:31.000Z",
+"language": "en",
+"weighted_average": 8.842954317923459,
+"raw_weighted_average": 4.273294658958912
+},
+{
+"id": "west_african_vanguard_ng_ed0d69bd6dfd",
+"published_date": "2026-10-11T17:38:51.000Z",
+"language": "en",
+"weighted_average": 8.514528127871717,
+"raw_weighted_average": 4.193628227710724
+},
+{
+"id": "dutch_news_nos_algemeen_b222e835d09c",
+"published_date": "2026-10-11T13:35:23.000Z",
+"language": "nl",
+"weighted_average": 8.749085115303934,
+"raw_weighted_average": 4.237575531005859
+},
+{
+"id": "southeast_asian_antara_en_eea6e5c79c5a",
+"published_date": "2026-10-11T07:11:45.000Z",
+"language": "en",
+"weighted_average": 9.081267170989614,
+"raw_weighted_average": 4.366861259937286
+},
+{
+"id": "east_african_daily_news_tz_f0ea6e4747f8",
+"published_date": "2026-10-11T09:29:09.000Z",
+"language": "en",
+"weighted_average": 8.887055981609375,
+"raw_weighted_average": 4.306316137313843
+},
+{
+"id": "south_american_andina_837c893beb8f",
+"published_date": "2026-10-11T01:01:18.000Z",
+"language": "es",
+"weighted_average": 9.388753254757509,
+"raw_weighted_average": 4.474173855781555
+},
+{
+"id": "australian_abc_au_317463a8d5ed",
+"published_date": "2026-10-10T22:49:40.000Z",
+"language": "en",
+"weighted_average": 9.45849298464694,
+"raw_weighted_average": 4.529302024841309
+},
+{
+"id": "south_american_elsalvador_com_3e18424fffe5",
+"published_date": "2026-10-10T20:55:22.000Z",
+"language": "es",
+"weighted_average": 9.552038105429707,
+"raw_weighted_average": 4.591558444499969
+},
+{
+"id": "austrian_orf_wirtschaft_704e3b1911aa",
+"published_date": "2026-10-11T05:03:00.000Z",
+"language": "de",
+"weighted_average": 9.0151384369727,
+"raw_weighted_average": 4.353527903556824
+},
+{
+"id": "austrian_der_standard_6d038181bd91",
+"published_date": "2026-10-11T12:56:52.000Z",
+"language": "de",
+"weighted_average": 8.523633651077288,
+"raw_weighted_average": 4.197037148475647
+},
+{
+"id": "south_american_telesur_en_f9b005fcb612",
+"published_date": "2026-10-10T19:30:31.000Z",
+"language": "en",
+"weighted_average": 9.525450589519563,
+"raw_weighted_average": 4.577851939201355
+},
+{
+"id": "swedish_svt_nyheter_32fa3a61c2aa",
+"published_date": "2026-10-11T03:30:06.000Z",
+"language": "sv",
+"weighted_average": 9.011818455756405,
+"raw_weighted_average": 4.352975487709045
+},
+{
+"id": "swiss_nzz_zuerich_24d1d088696b",
+"published_date": "2026-10-11T03:05:00.000Z",
+"language": "de",
+"weighted_average": 8.973469090510086,
+"raw_weighted_average": 4.346594488620759
+},
+{
+"id": "south_asian_indian_express_a88c9fd4f308",
+"published_date": "2026-10-11T01:30:47.000Z",
+"language": "en",
+"weighted_average": 9.02252363990188,
+"raw_weighted_average": 4.3547567367553714
+},
+{
+"id": "greek_protothema_e82318543004",
+"published_date": "2026-10-11T05:05:00.000Z",
+"language": "el",
+"weighted_average": 8.774064614855302,
+"raw_weighted_average": 4.250043821334839
+},
+{
+"id": "west_african_aip_cote_divoire_79ebea6a84c5",
+"published_date": "2026-10-10T14:19:21.000Z",
+"language": "fr",
+"weighted_average": 9.668639,
+"raw_weighted_average": 4.716413688659668
+},
+{
+"id": "north_african_le_360_0e8d610d12bc",
+"published_date": "2026-10-10T11:00:00.000Z",
+"language": "en",
+"weighted_average": 9.881657,
+"raw_weighted_average": 5.04981484413147
+},
+{
+"id": "south_asian_nepalnews_2058bd56b225",
+"published_date": "2026-10-10T11:09:49.000Z",
+"language": "ne",
+"weighted_average": 9.785754802415921,
+"raw_weighted_average": 4.818800210952759
+},
+{
+"id": "west_african_le_quotidien_sn_f8c2ce693f2b",
+"published_date": "2026-10-10T14:17:06.000Z",
+"language": "fr",
+"weighted_average": 9.580082276063646,
+"raw_weighted_average": 4.61713764667511
+},
+{
+"id": "british_irish_inews_1af8e6289170",
+"published_date": "2026-10-10T09:00:00.000Z",
+"language": "en",
+"weighted_average": 9.905325,
+"raw_weighted_average": 5.112156176567078
+},
+{
+"id": "east_african_new_times_rw_25600d1e2750",
+"published_date": "2026-10-10T09:20:25.000Z",
+"language": "en",
+"weighted_average": 9.838908245673258,
+"raw_weighted_average": 4.903822791576386
+},
+{
+"id": "belgian_vrt_nieuws_nl_a4816f3e5578",
+"published_date": "2026-10-10T12:54:21.000Z",
+"language": "nl",
+"weighted_average": 9.59987729029289,
+"raw_weighted_average": 4.636238873004913
+},
+{
+"id": "east_african_daily_news_tz_5a3abfabdf5b",
+"published_date": "2026-10-11T09:15:32.000Z",
+"language": "en",
+"weighted_average": 8.339164139847137,
+"raw_weighted_average": 4.1564715027809145
+},
+{
+"id": "belgian_vrt_nieuws_nl_9cadcc3f4b25",
+"published_date": "2026-10-10T09:07:02.000Z",
+"language": "nl",
+"weighted_average": 9.795006650050118,
+"raw_weighted_average": 4.868098294734955
+},
+{
+"id": "energy_utilities_pv_magazine_a110e7c4cf1b",
+"published_date": "2026-10-10T09:00:00.000Z",
+"language": "en",
+"weighted_average": 9.797380701895802,
+"raw_weighted_average": 4.871653254330158
+},
+{
+"id": "west_african_aip_cote_divoire_4e3a6648dbce",
+"published_date": "2026-10-10T12:21:52.000Z",
+"language": "fr",
+"weighted_average": 9.571877506306745,
+"raw_weighted_average": 4.6064136862754825
+},
+{
+"id": "southeast_asian_antara_en_3ab913483667",
+"published_date": "2026-10-10T12:46:34.000Z",
+"language": "en",
+"weighted_average": 9.541906597977484,
+"raw_weighted_average": 4.586066269874573
+},
+{
+"id": "korean_yonhap_kr_7497b9805657",
+"published_date": "2026-10-10T22:50:00.000Z",
+"language": "ko",
+"weighted_average": 8.909357853603765,
+"raw_weighted_average": 4.323014509677887
+},
+{
+"id": "british_irish_bbc_scotland_d1278c093af3",
+"published_date": "2026-10-10T13:19:06.000Z",
+"language": "en",
+"weighted_average": 9.4721583861056,
+"raw_weighted_average": 4.534418070316315
+},
+{
+"id": "arabic_khaleej_times_7d2802ab44c1",
+"published_date": "2026-10-11T02:00:00.000Z",
+"language": "en",
+"weighted_average": 8.672545819605881,
+"raw_weighted_average": 4.223667860031128
+},
+{
+"id": "south_asian_hindustan_times_f5654d0fe8c7",
+"published_date": "2026-10-10T13:48:21.000Z",
+"language": "en",
+"weighted_average": 9.413893031898287,
+"raw_weighted_average": 4.49232280254364
+},
+{
+"id": "east_african_citizen_digital_fca28f8e8f85",
+"published_date": "2026-10-10T16:47:05.000Z",
+"language": "en",
+"weighted_average": 9.21729675051486,
+"raw_weighted_average": 4.4063100695610045
+},
+{
+"id": "west_african_aip_cote_divoire_1a855a0feec3",
+"published_date": "2026-10-10T12:18:03.000Z",
+"language": "fr",
+"weighted_average": 9.498328748289483,
+"raw_weighted_average": 4.5513431310653685
+},
+{
+"id": "east_african_fana_bc_d6bfd08d091d",
+"published_date": "2026-10-10T13:36:01.000Z",
+"language": "en",
+"weighted_average": 9.39808093248961,
+"raw_weighted_average": 4.478829944133759
+},
+{
+"id": "west_african_senego_a97fcc8763c5",
+"published_date": "2026-10-10T21:35:06.000Z",
+"language": "fr",
+"weighted_average": 8.759082470285312,
+"raw_weighted_average": 4.242565619945526
+},
+{
+"id": "south_asian_newswire_lk_de0bcff8c54d",
+"published_date": "2026-10-10T09:54:47.000Z",
+"language": "en",
+"weighted_average": 9.443984729794805,
+"raw_weighted_average": 4.523870432376862
+},
+{
+"id": "global_south_global_voices_66228e513764",
+"published_date": "2026-10-10T04:00:43.000Z",
+"language": "en",
+"weighted_average": 9.786982,
+"raw_weighted_average": 4.83253710269928
+},
+{
+"id": "ukrainian_ukrinform_en_d92c463bb5b1",
+"published_date": "2026-10-10T02:29:00.000Z",
+"language": "en",
+"weighted_average": 9.869822,
+"raw_weighted_average": 4.963114166259766
+},
+{
+"id": "south_american_andina_8e25136372f8",
+"published_date": "2026-10-10T03:50:03.000Z",
+"language": "es",
+"weighted_average": 9.750118812143342,
+"raw_weighted_average": 4.780254375934601
+},
+{
+"id": "south_asian_times_of_india_c2b8d1a64786",
+"published_date": "2026-10-10T12:57:37.000Z",
+"language": "en",
+"weighted_average": 9.152931856562128,
+"raw_weighted_average": 4.384747052192688
+},
+{
+"id": "south_american_andina_10b95882f57d",
+"published_date": "2026-10-10T14:00:04.000Z",
+"language": "es",
+"weighted_average": 9.069025898829087,
+"raw_weighted_average": 4.363806200027466
+},
+{
+"id": "hungarian_telex_78ba6b0fe28c",
+"published_date": "2026-10-10T09:59:36.000Z",
+"language": "hu",
+"weighted_average": 9.308661114936731,
+"raw_weighted_average": 4.44219583272934
+},
+{
+"id": "british_irish_bbc_northern_ireland_9cb088b24c89",
+"published_date": "2026-10-10T05:37:57.000Z",
+"language": "en",
+"weighted_average": 9.559107687435738,
+"raw_weighted_average": 4.596851968765259
+},
+{
+"id": "southeast_asian_cna_sg_35ba3d55bd5a",
+"published_date": "2026-10-10T22:00:00.000Z",
+"language": "en",
+"weighted_average": 8.512119046219649,
+"raw_weighted_average": 4.192726317048073
+},
+{
+"id": "central_asian_uzdaily_en_50c440198387",
+"published_date": "2026-10-10T15:00:00.000Z",
+"language": "en",
+"weighted_average": 8.855536964487214,
+"raw_weighted_average": 4.282716226577759
+},
+{
+"id": "dutch_news_NL_Times_00d8d662ff31",
+"published_date": "2026-10-09T22:00:00.000Z",
+"language": "en",
+"weighted_average": 9.869822,
+"raw_weighted_average": 5.015206372737885
+},
+{
+"id": "east_african_citizen_digital_9a69e07f949f",
+"published_date": "2026-10-10T08:04:23.000Z",
+"language": "en",
+"weighted_average": 9.186158823293576,
+"raw_weighted_average": 4.393039989471435
+},
+{
+"id": "climate_solutions_the_cool_down_5f6e5b3faed2",
+"published_date": "2026-10-10T05:41:00.000Z",
+"language": "en",
+"weighted_average": 9.329188861873845,
+"raw_weighted_average": 4.449880999326706
+},
+{
+"id": "west_african_benin_web_tv_a1ccdf48c09c",
+"published_date": "2026-10-10T12:15:15.000Z",
+"language": "fr",
+"weighted_average": 8.89833573846469,
+"raw_weighted_average": 4.314761777222157
+},
+{
+"id": "west_african_aip_cote_divoire_e2f28f6a87e6",
+"published_date": "2026-10-10T09:16:59.000Z",
+"language": "fr",
+"weighted_average": 9.078405057075607,
+"raw_weighted_average": 4.366146960854531
+},
+{
+"id": "west_african_fraternite_bj_c04c4dad57c6",
+"published_date": "2026-10-09T21:57:00.000Z",
+"language": "fr",
+"weighted_average": 9.769985776826354,
+"raw_weighted_average": 4.795185315608978
+},
+{
+"id": "geography_nature_mongabay_28ef5cabfca7",
+"published_date": "2026-10-09T23:58:15.000Z",
+"language": "en",
+"weighted_average": 9.633118696505786,
+"raw_weighted_average": 4.661128044128418
+},
+{
+"id": "dutch_news_nos_algemeen_bed8ae792e19",
+"published_date": "2026-10-10T05:50:25.000Z",
+"language": "nl",
+"weighted_average": 9.250605830284666,
+"raw_weighted_average": 4.420461344718933
+},
+{
+"id": "positive_news_human_progress_f7798512f73a",
+"published_date": "2026-10-09T18:33:34.000Z",
+"language": "en",
+"weighted_average": 9.964497,
+"raw_weighted_average": 5.296111142635346
+},
+{
+"id": "mexican_excelsior_77614fed8eb4",
+"published_date": "2026-10-10T02:32:42.000Z",
+"language": "es",
+"weighted_average": 9.318512596829459,
+"raw_weighted_average": 4.445884025096894
+},
+{
+"id": "north_african_le_360_50106689a834",
+"published_date": "2026-10-10T09:00:00.000Z",
+"language": "en",
+"weighted_average": 8.905462856077577,
+"raw_weighted_average": 4.320098157227039
+},
+{
+"id": "positive_news_waging_nonviolence_70e692263962",
+"published_date": "2026-10-09T17:28:15.000Z",
+"language": "en",
+"weighted_average": 9.869822,
+"raw_weighted_average": 5.0037302613258365
+},
+{
+"id": "positive_news_human_progress_a39baa08a6dd",
+"published_date": "2026-10-09T18:39:28.000Z",
+"language": "en",
+"weighted_average": 9.786982,
+"raw_weighted_average": 4.8470371007919315
+},
+{
+"id": "east_african_daily_news_tz_68f890cf3aec",
+"published_date": "2026-10-10T09:30:56.000Z",
+"language": "en",
+"weighted_average": 8.84563519062354,
+"raw_weighted_average": 4.275302028656006
+},
+{
+"id": "east_asian_scmp_85179522cf8d",
+"published_date": "2026-10-10T08:00:51.000Z",
+"language": "en",
+"weighted_average": 8.931322832545327,
+"raw_weighted_average": 4.334449231624603
+},
+{
+"id": "australian_abc_au_09e0b65d1ded",
+"published_date": "2026-10-10T08:45:30.000Z",
+"language": "en",
+"weighted_average": 8.875928887690389,
+"raw_weighted_average": 4.297984802722931
+},
+{
+"id": "geography_nature_mongabay_8b8f59afe6b7",
+"published_date": "2026-10-09T19:42:23.000Z",
+"language": "en",
+"weighted_average": 9.668639,
+"raw_weighted_average": 4.749047654867172
+},
+{
+"id": "southeast_asian_antara_en_3a5ff3b2db82",
+"published_date": "2026-10-10T07:44:33.000Z",
+"language": "en",
+"weighted_average": 8.897540971345327,
+"raw_weighted_average": 4.314166700839997
+},
+{
+"id": "west_african_mosaique_guinee_52ec794a7f90",
+"published_date": "2026-10-09T15:43:45.000Z",
+"language": "fr",
+"weighted_average": 9.915692116779384,
+"raw_weighted_average": 5.137433958053589
+},
+{
+"id": "south_african_mail_guardian_6fb275ef0468",
+"published_date": "2026-10-09T14:59:59.000Z",
+"language": "en",
+"weighted_average": 9.964497,
+"raw_weighted_average": 5.313941824436188
+},
+{
+"id": "polish_rzeczpospolita_154b368f94f0",
+"published_date": "2026-10-09T19:19:00.000Z",
+"language": "pl",
+"weighted_average": 9.668639,
+"raw_weighted_average": 4.741802060604096
+},
+{
+"id": "fintech_markets_insurance_journal_b259ac3393ae",
+"published_date": "2026-10-09T16:10:08.000Z",
+"language": "en",
+"weighted_average": 9.8730217958903,
+"raw_weighted_average": 5.020370447635651
+},
+{
+"id": "south_american_agencia_tierra_viva_cd8aaca44376",
+"published_date": "2026-10-09T20:45:18.000Z",
+"language": "es",
+"weighted_average": 9.542859101459491,
+"raw_weighted_average": 4.586541730165482
+},
+{
+"id": "west_african_sierraloaded_c2647e183ac2",
+"published_date": "2026-10-09T21:24:47.000Z",
+"language": "en",
+"weighted_average": 9.48529563545006,
+"raw_weighted_average": 4.541584677994251
+},
+{
+"id": "italian_lifegate_9d0ea96fedae",
+"published_date": "2026-10-09T15:46:08.000Z",
+"language": "it",
+"weighted_average": 9.808116557991971,
+"raw_weighted_average": 4.880767273902894
+},
+{
+"id": "pan_african_all_africa_42a04d6a696d",
+"published_date": "2026-10-09T13:20:21.000Z",
+"language": "en",
+"weighted_average": 9.927750814784508,
+"raw_weighted_average": 5.173214268684387
+},
+{
+"id": "community_social_hackernews_front_85ab7ec21feb",
+"published_date": "2026-10-09T15:05:24.000Z",
+"language": "en",
+"weighted_average": 9.779754804880934,
+"raw_weighted_average": 4.809814918041229
+},
+{
+"id": "china_nikkei_asia_4ee9606ac2e4",
+"published_date": "2026-10-10T00:06:51.000Z",
+"language": "en",
+"weighted_average": 9.187654309523737,
+"raw_weighted_average": 4.393413239717484
+},
+{
+"id": "south_american_village_voice_news_e780bb4d3132",
+"published_date": "2026-10-09T14:40:03.000Z",
+"language": "en",
+"weighted_average": 9.786982,
+"raw_weighted_average": 4.840811109542847
+},
+{
+"id": "portuguese_oeco_de44b8369e7c",
+"published_date": "2026-10-09T11:17:00.000Z",
+"language": "pt",
+"weighted_average": 9.940845539711848,
+"raw_weighted_average": 5.22826726436615
+},
+{
+"id": "west_african_journal_du_niger_781fc5df0a18",
+"published_date": "2026-10-09T15:11:45.000Z",
+"language": "fr",
+"weighted_average": 9.668639,
+"raw_weighted_average": 4.741968679428101
+},
+{
+"id": "positive_news_good_news_network_9b68288e4500",
+"published_date": "2026-10-09T15:30:11.000Z",
+"language": "en",
+"weighted_average": 9.588612222277975,
+"raw_weighted_average": 4.6278043508529665
+},
+{
+"id": "east_african_iwacu_burundi_2179c71f5f45",
+"published_date": "2026-10-09T13:25:55.000Z",
+"language": "fr",
+"weighted_average": 9.668639,
+"raw_weighted_average": 4.718224906921387
+},
+{
+"id": "climate_solutions_circular_online_264a7da76596",
+"published_date": "2026-10-09T10:31:51.000Z",
+"language": "en",
+"weighted_average": 9.770021032954231,
+"raw_weighted_average": 4.795238113403321
+},
+{
+"id": "west_african_thisday_845f89ad07c2",
+"published_date": "2026-10-10T00:34:22.000Z",
+"language": "en",
+"weighted_average": 8.88328237767621,
+"raw_weighted_average": 4.30349067747593
+},
+{
+"id": "east_asian_taipei_times_b7ca3f87aecc",
+"published_date": "2026-10-10T00:00:00.000Z",
+"language": "en",
+"weighted_average": 8.869701006496642,
+"raw_weighted_average": 4.293321719765664
+},
+{
+"id": "portuguese_observador_04e2c75ed870",
+"published_date": "2026-10-09T23:04:25.000Z",
+"language": "pt",
+"weighted_average": 8.8746161962005,
+"raw_weighted_average": 4.297001934051513
+},
+{
+"id": "global_news_euronews_1573273fb7cb",
+"published_date": "2026-10-09T08:02:48.000Z",
+"language": "en",
+"weighted_average": 9.790835256462916,
+"raw_weighted_average": 4.861851954460144
+},
+{
+"id": "east_african_mg_2424_57682577c9c1",
+"published_date": "2026-10-09T11:15:18.000Z",
+"language": "fr",
+"weighted_average": 9.568304259138957,
+"raw_weighted_average": 4.6037381291389465
+},
+{
+"id": "british_irish_uk_gov_news_c7bba3d816e4",
+"published_date": "2026-10-09T11:18:00.000Z",
+"language": "en",
+"weighted_average": 9.55948920825238,
+"raw_weighted_average": 4.5971376419067385
+},
+{
+"id": "pan_african_allAfrica_environment_76fb9c9f1abc",
+"published_date": "2026-10-09T11:43:48.000Z",
+"language": "en",
+"weighted_average": 9.530829812007202,
+"raw_weighted_average": 4.5805370807647705
+},
+{
+"id": "west_african_aip_cote_divoire_08e634985d7a",
+"published_date": "2026-10-09T12:12:40.000Z",
+"language": "fr",
+"weighted_average": 9.49264134193272,
+"raw_weighted_average": 4.547084724903107
+},
+{
+"id": "british_irish_uk_gov_news_6c8876c5c4dc",
+"published_date": "2026-10-09T12:10:54.000Z",
+"language": "en",
+"weighted_average": 9.484262479391132,
+"raw_weighted_average": 4.5408111095428465
+},
+{
+"id": "central_asian_times_ca_54b648503c9b",
+"published_date": "2026-10-09T11:51:21.000Z",
+"language": "en",
+"weighted_average": 9.498937632775572,
+"raw_weighted_average": 4.551799029111862
+},
+{
+"id": "south_american_prensa_libre_8bf7564fa51a",
+"published_date": "2026-10-09T17:00:00.000Z",
+"language": "es",
+"weighted_average": 9.170162892800303,
+"raw_weighted_average": 4.3890476524829865
+},
+{
+"id": "west_african_vanguard_ng_90cd7ce0a095",
+"published_date": "2026-10-09T09:30:01.000Z",
+"language": "en",
+"weighted_average": 9.631679542493561,
+"raw_weighted_average": 4.66005048751831
+},
+{
+"id": "south_american_village_voice_news_8fba1da1a519",
+"published_date": "2026-10-09T16:05:31.000Z",
+"language": "en",
+"weighted_average": 9.075892958894862,
+"raw_weighted_average": 4.365520015358925
+},
+{
+"id": "belgian_vrt_nieuws_nl_2048c7958f52",
+"published_date": "2026-10-09T03:22:37.000Z",
+"language": "nl",
+"weighted_average": 9.869822,
+"raw_weighted_average": 4.966991849243641
+},
+{
+"id": "energy_utilities_pv_magazine_0a5e1fb1cfb9",
+"published_date": "2026-10-09T07:26:46.000Z",
+"language": "en",
+"weighted_average": 9.551493772785683,
+"raw_weighted_average": 4.591150861978531
+},
+{
+"id": "korean_hankyung_63c6540d1d5d",
+"published_date": "2026-10-09T13:19:01.000Z",
+"language": "ko",
+"weighted_average": 9.162822255139334,
+"raw_weighted_average": 4.387215542793275
+},
+{
+"id": "british_irish_uk_gov_news_4ee601655b14",
+"published_date": "2026-10-09T10:41:52.000Z",
+"language": "en",
+"weighted_average": 9.326313026671789,
+"raw_weighted_average": 4.448804345726967
+},
+{
+"id": "global_news_euronews_63ad7db1ef51",
+"published_date": "2026-10-09T13:26:52.000Z",
+"language": "en",
+"weighted_average": 9.055736979699473,
+"raw_weighted_average": 4.360489678382874
+},
+{
+"id": "german_stern_15872ad1ebea",
+"published_date": "2026-10-09T10:00:33.000Z",
+"language": "de",
+"weighted_average": 9.251726750267371,
+"raw_weighted_average": 4.42088098526001
+},
+{
+"id": "central_asian_akipress_53b154a06c23",
+"published_date": "2026-10-09T09:16:41.000Z",
+"language": "en",
+"weighted_average": 9.26149272024111,
+"raw_weighted_average": 4.424537086486817
+},
+{
+"id": "south_asian_kathmandu_post_91d81226dacf",
+"published_date": "2026-10-09T04:05:05.000Z",
+"language": "en",
+"weighted_average": 9.568118402269757,
+"raw_weighted_average": 4.603598964214325
+},
+{
+"id": "southeast_asian_free_malaysia_3cd2fbee5f33",
+"published_date": "2026-10-09T05:26:10.000Z",
+"language": "en",
+"weighted_average": 9.460047534912253,
+"raw_weighted_average": 4.529884016513825
+},
+{
+"id": "east_african_lexpress_madagascar_c9aae03965fa",
+"published_date": "2026-10-09T02:50:00.000Z",
+"language": "fr",
+"weighted_average": 9.593952939439843,
+"raw_weighted_average": 4.631803119182587
+},
+{
+"id": "spanish_elpais_economia_4f7449f57c78",
+"published_date": "2026-10-09T03:45:01.000Z",
+"language": "es",
+"weighted_average": 9.506491808533989,
+"raw_weighted_average": 4.560100555419922
+},
+{
+"id": "east_african_lexpress_madagascar_acbe040ca38a",
+"published_date": "2026-10-09T02:50:00.000Z",
+"language": "fr",
+"weighted_average": 9.556016117463223,
+"raw_weighted_average": 4.594537079334259
+},
+{
+"id": "south_american_n_digital_do_73298dea3f62",
+"published_date": "2026-10-09T00:58:20.000Z",
+"language": "es",
+"weighted_average": 9.657687987875585,
+"raw_weighted_average": 4.680185317993164
+},
+{
+"id": "southeast_asian_free_malaysia_c8d827e3c277",
+"published_date": "2026-10-09T08:50:00.000Z",
+"language": "id",
+"weighted_average": 9.118436642248092,
+"raw_weighted_average": 4.376137661933899
+},
+{
+"id": "east_african_lexpress_madagascar_863aae0a041e",
+"published_date": "2026-10-09T02:45:00.000Z",
+"language": "fr",
+"weighted_average": 9.49889521059368,
+"raw_weighted_average": 4.551767265796662
+},
+{
+"id": "southeast_asian_tuoi_tre_en_e6bd9b91dbec",
+"published_date": "2026-10-09T05:41:00.000Z",
+"language": "en",
+"weighted_average": 9.299827982715462,
+"raw_weighted_average": 4.438888889551163
+},
+{
+"id": "ai_ars_technica_e80604803475",
+"published_date": "2026-10-08T19:57:17.000Z",
+"language": "en",
+"weighted_average": 9.928994,
+"raw_weighted_average": 5.178730118274689
+},
+{
+"id": "belgian_vrt_nieuws_nl_8660761b7550",
+"published_date": "2026-10-09T05:25:16.000Z",
+"language": "nl",
+"weighted_average": 9.287610688245284,
+"raw_weighted_average": 4.434314985573292
+},
+{
+"id": "mexican_mexico_news_daily_5dfb7d11a155",
+"published_date": "2026-10-08T22:14:22.000Z",
+"language": "en",
+"weighted_average": 9.649858223595375,
+"raw_weighted_average": 4.673661649227142
+},
+{
+"id": "southeast_asian_tuoi_tre_en_04876b2a0eb4",
+"published_date": "2026-10-08T22:52:00.000Z",
+"language": "en",
+"weighted_average": 9.601872219889891,
+"raw_weighted_average": 4.637732541561127
+},
+{
+"id": "west_african_vanguard_ng_826fee696ebe",
+"published_date": "2026-10-09T00:37:00.000Z",
+"language": "en",
+"weighted_average": 9.456358435342633,
+"raw_weighted_average": 4.528502893447876
+},
+{
+"id": "south_asian_newswire_lk_10858fb4819f",
+"published_date": "2026-10-09T10:52:19.000Z",
+"language": "en",
+"weighted_average": 8.773907990845288,
+"raw_weighted_average": 4.249965643882752
+},
+{
+"id": "southeast_asian_straits_times_e414136f8916",
+"published_date": "2026-10-09T04:24:00.000Z",
+"language": "en",
+"weighted_average": 9.117645354248737,
+"raw_weighted_average": 4.37594017982483
+},
+{
+"id": "south_american_colombia_one_6f04dd282901",
+"published_date": "2026-10-08T15:05:35.000Z",
+"language": "en",
+"weighted_average": 9.964497,
+"raw_weighted_average": 5.349814879894257
+},
+{
+"id": "southeast_asian_free_malaysia_f5d48ba8c184",
+"published_date": "2026-10-09T09:39:56.000Z",
+"language": "id",
+"weighted_average": 8.78136543347741,
+"raw_weighted_average": 4.253627979755402
+},
+{
+"id": "pan_african_all_africa_633b4f6c332d",
+"published_date": "2026-10-08T15:33:07.000Z",
+"language": "en",
+"weighted_average": 9.92389093346621,
+"raw_weighted_average": 5.167433905601501
+},
+{
+"id": "global_south_bne_intellinews_4bd77bb4f47a",
+"published_date": "2026-10-08T22:55:55.000Z",
+"language": "en",
+"weighted_average": 9.423968443884593,
+"raw_weighted_average": 4.507410417497158
+},
+{
+"id": "pacific_post_courier_png_a50f08f01dcc",
+"published_date": "2026-10-08T18:00:07.000Z",
+"language": "en",
+"weighted_average": 9.708127195217937,
+"raw_weighted_average": 4.764534568786621
+},
+{
+"id": "south_asian_kathmandu_post_d6ad4f108e34",
+"published_date": "2026-10-09T04:05:04.000Z",
+"language": "en",
+"weighted_average": 9.062301527105463,
+"raw_weighted_average": 4.3621279954910275
+},
+{
+"id": "southeast_asian_free_malaysia_ff69b14e637f",
+"published_date": "2026-10-09T08:38:00.000Z",
+"language": "id",
+"weighted_average": 8.761972825719884,
+"raw_weighted_average": 4.244008314609528
+},
+{
+"id": "portuguese_observador_52daa401e659",
+"published_date": "2026-10-08T13:22:53.000Z",
+"language": "pt",
+"weighted_average": 9.964497,
+"raw_weighted_average": 5.420042729377747
+},
+{
+"id": "east_african_new_times_rw_4efcacc79c78",
+"published_date": "2026-10-08T21:17:37.000Z",
+"language": "en",
+"weighted_average": 9.432678617317487,
+"raw_weighted_average": 4.519637656211853
+},
+{
+"id": "french_le_monde_a63cf68378cc",
+"published_date": "2026-10-08T13:39:01.000Z",
+"language": "fr",
+"weighted_average": 9.918326276273849,
+"raw_weighted_average": 5.1591005563735965
+},
+{
+"id": "french_bfmtv_1375583b27e3",
+"published_date": "2026-10-09T05:57:27.000Z",
+"language": "fr",
+"weighted_average": 8.877328541070872,
+"raw_weighted_average": 4.2990327835083
+},
+{
+"id": "east_african_observer_ug_a37821b1a1eb",
+"published_date": "2026-10-08T12:13:19.000Z",
+"language": "en",
+"weighted_average": 9.952663,
+"raw_weighted_average": 5.2470670461654665
+},
+{
+"id": "geography_nature_mongabay_ba794efea6a6",
+"published_date": "2026-10-08T14:41:57.000Z",
+"language": "en",
+"weighted_average": 9.786982,
+"raw_weighted_average": 4.84507942199707
+},
+{
+"id": "french_bfmtv_1dcb243ee647",
+"published_date": "2026-10-09T05:10:19.000Z",
+"language": "fr",
+"weighted_average": 8.868905210466226,
+"raw_weighted_average": 4.292725872993469
+},
+{
+"id": "southeast_asian_nst_b06aa48c7bab",
+"published_date": "2026-10-08T22:00:23.000Z",
+"language": "en",
+"weighted_average": 9.28693203921877,
+"raw_weighted_average": 4.434060913324356
+},
+{
+"id": "pan_african_ghanaian_chronicle_a8013f8d5b31",
+"published_date": "2026-10-09T05:42:25.000Z",
+"language": "en",
+"weighted_average": 8.812423398513124,
+"raw_weighted_average": 4.262929832935334
+},
+{
+"id": "south_american_gestion_pe_fd4080e715ab",
+"published_date": "2026-10-08T14:59:58.000Z",
+"language": "es",
+"weighted_average": 9.732938140683663,
+"raw_weighted_average": 4.773822784423828
+},
+{
+"id": "global_news_BBC_world_1b51ea68a87a",
+"published_date": "2026-10-08T16:24:05.000Z",
+"language": "en",
+"weighted_average": 9.625041716865628,
+"raw_weighted_average": 4.6550804615020756
+},
+{
+"id": "positive_news_good_news_network_7446305d4b57",
+"published_date": "2026-10-08T11:00:03.000Z",
+"language": "en",
+"weighted_average": 9.964497,
+"raw_weighted_average": 5.286322808265686
+},
+{
+"id": "fintech_markets_fintechnews_sg_dabc1191ce5a",
+"published_date": "2026-10-09T03:50:07.000Z",
+"language": "en",
+"weighted_average": 8.88072769700615,
+"raw_weighted_average": 4.301577877998352
+},
+{
+"id": "greek_protothema_692d78373b94",
+"published_date": "2026-10-09T05:20:42.000Z",
+"language": "el",
+"weighted_average": 8.754547467214023,
+"raw_weighted_average": 4.240302014350892
+},
+{
+"id": "british_irish_thejournal_ie_e78162163e97",
+"published_date": "2026-10-08T15:37:21.000Z",
+"language": "en",
+"weighted_average": 9.596411932413465,
+"raw_weighted_average": 4.633644247055054
+},
+{
+"id": "vietnamese_tuoitre_vn_ffb160815191",
+"published_date": "2026-10-08T19:15:00.000Z",
+"language": "vi",
+"weighted_average": 9.354642700017516,
+"raw_weighted_average": 4.459410393238068
+},
+{
+"id": "portuguese_valor_economico_081b47805235",
+"published_date": "2026-10-08T20:48:06.000Z",
+"language": "pt",
+"weighted_average": 9.256137160586228,
+"raw_weighted_average": 4.42253211736679
+},
+{
+"id": "arabic_emirates247_00ea1ae83337",
+"published_date": "2026-10-08T14:36:00.000Z",
+"language": "en",
+"weighted_average": 9.577519586203755,
+"raw_weighted_average": 4.613300216197968
+},
+{
+"id": "energy_utilities_utility_dive_0d0b9a99551f",
+"published_date": "2026-10-08T16:42:42.000Z",
+"language": "en",
+"weighted_average": 9.428159149404438,
+"raw_weighted_average": 4.513685321807862
+},
+{
+"id": "french_le_monde_0c00d4ab0da1",
+"published_date": "2026-10-08T12:50:25.000Z",
+"language": "fr",
+"weighted_average": 9.60310266370476,
+"raw_weighted_average": 4.638653814792633
+},
+{
+"id": "central_asian_uzdaily_en_2e882c985d2e",
+"published_date": "2026-10-08T07:45:00.000Z",
+"language": "en",
+"weighted_average": 9.938812003220153,
+"raw_weighted_average": 5.207499945163727
+},
+{
+"id": "climate_solutions_eco_business_asia_680d3006624d",
+"published_date": "2026-10-08T08:43:00.000Z",
+"language": "en",
+"weighted_average": 9.869822,
+"raw_weighted_average": 4.949873900413513
+},
+{
+"id": "greek_ta_nea_2d71da2f4aa1",
+"published_date": "2026-10-08T08:28:29.000Z",
+"language": "el",
+"weighted_average": 9.855362295665365,
+"raw_weighted_average": 4.923037099838257
+},
+{
+"id": "pan_african_alwihda_info_1510ff4b0488",
+"published_date": "2026-10-08T23:09:18.000Z",
+"language": "fr",
+"weighted_average": 8.884941410179799,
+"raw_weighted_average": 4.304732866585255
+},
+{
+"id": "canadian_globe_mail_a7de585467ec",
+"published_date": "2026-10-08T16:48:14.000Z",
+"language": "en",
+"weighted_average": 9.27063744287485,
+"raw_weighted_average": 4.42796061038971
+},
+{
+"id": "us_news_fox_news_f644be91dc77",
+"published_date": "2026-10-08T10:30:54.000Z",
+"language": "en",
+"weighted_average": 9.665152384383866,
+"raw_weighted_average": 4.691363620758057
+},
+{
+"id": "south_american_village_voice_news_d55bec40eed5",
+"published_date": "2026-10-08T18:32:47.000Z",
+"language": "en",
+"weighted_average": 9.152931856562128,
+"raw_weighted_average": 4.384747052192688
+},
+{
+"id": "south_african_mwebantu_zm_a48c65d68c8a",
+"published_date": "2026-10-08T10:44:57.000Z",
+"language": "en",
+"weighted_average": 9.636624126813041,
+"raw_weighted_average": 4.663752710819245
+},
+{
+"id": "south_asian_the_island_lk_35a0373827ae",
+"published_date": "2026-10-08T23:55:57.000Z",
+"language": "en",
+"weighted_average": 8.802898319986115,
+"raw_weighted_average": 4.260077074170113
+},
+{
+"id": "italian_vaielettrico_868eabd42faa",
+"published_date": "2026-10-08T16:34:33.000Z",
+"language": "it",
+"weighted_average": 9.227073559508412,
+"raw_weighted_average": 4.411190350353718
+},
+{
+"id": "south_american_la_nacion_ar_5d0fb3b4ca28",
+"published_date": "2026-10-08T09:34:00.000Z",
+"language": "es",
+"weighted_average": 9.662643326600042,
+"raw_weighted_average": 4.687606182694435
+},
+{
+"id": "south_asian_hindustan_times_bb30173a9c7f",
+"published_date": "2026-10-08T05:54:59.000Z",
+"language": "en",
+"weighted_average": 9.869822,
+"raw_weighted_average": 4.96213767528534
+},
+{
+"id": "pan_african_techafrica_news_d2118c10084f",
+"published_date": "2026-10-08T08:59:10.000Z",
+"language": "en",
+"weighted_average": 9.666743941042125,
+"raw_weighted_average": 4.693747055530548
+},
+{
+"id": "west_african_myjoyonline_140391bfe816",
+"published_date": "2026-10-08T05:53:00.000Z",
+"language": "en",
+"weighted_average": 9.869822,
+"raw_weighted_average": 4.958648128807545
+},
+{
+"id": "south_asian_hasht_e_subh_en_32e2e040d850",
+"published_date": "2026-10-08T11:47:43.000Z",
+"language": "en",
+"weighted_average": 9.481616494308389,
+"raw_weighted_average": 4.538829946517945
+},
+{
+"id": "positive_news_the_logical_indian_690631d0f9e9",
+"published_date": "2026-10-08T14:22:28.000Z",
+"language": "en",
+"weighted_average": 9.296245282640147,
+"raw_weighted_average": 4.437547600269317
+},
+{
+"id": "east_african_daily_monitor_ug_fbd8ceda0f8b",
+"published_date": "2026-10-08T04:20:07.000Z",
+"language": "en",
+"weighted_average": 9.940828,
+"raw_weighted_average": 5.220026540756225
+},
+{
+"id": "west_african_voice_of_nigeria_33765818eef6",
+"published_date": "2026-10-08T09:32:43.000Z",
+"language": "en",
+"weighted_average": 9.59108546497617,
+"raw_weighted_average": 4.629656147956848
+},
+{
+"id": "south_asian_hasht_e_subh_en_732d5e7b40fa",
+"published_date": "2026-10-08T14:55:19.000Z",
+"language": "en",
+"weighted_average": 9.24554369934522,
+"raw_weighted_average": 4.4185662269592285
+},
+{
+"id": "dutch_news_nos_algemeen_16981dbe8192",
+"published_date": "2026-10-08T12:25:29.000Z",
+"language": "nl",
+"weighted_average": 9.396277732551978,
+"raw_weighted_average": 4.477929842472077
+},
+{
+"id": "west_african_thisday_e7959aa94bf5",
+"published_date": "2026-10-08T12:42:39.000Z",
+"language": "en",
+"weighted_average": 9.376088369925514,
+"raw_weighted_average": 4.467851936817169
+},
+{
+"id": "positive_news_happy_eco_news_3b12004e33a2",
+"published_date": "2026-10-08T07:00:00.000Z",
+"language": "en",
+"weighted_average": 9.739250414420463,
+"raw_weighted_average": 4.776185786724091
+},
+{
+"id": "south_asian_times_of_india_cb7834dcae2e",
+"published_date": "2026-10-08T07:36:47.000Z",
+"language": "en",
+"weighted_average": 9.687111392542688,
+"raw_weighted_average": 4.756666684150696
+},
+{
+"id": "greek_ta_nea_2634b58e07c5",
+"published_date": "2026-10-08T07:47:17.000Z",
+"language": "el",
+"weighted_average": 9.668639,
+"raw_weighted_average": 4.749440717697143
+},
+{
+"id": "portuguese_ambientemagazine_bc9472ae5fbb",
+"published_date": "2026-10-08T09:11:41.000Z",
+"language": "pt",
+"weighted_average": 9.527295582160965,
+"raw_weighted_average": 4.5787729024887085
+},
+{
+"id": "austrian_orf_wirtschaft_f254ffbb3dfe",
+"published_date": "2026-10-08T04:54:21.000Z",
+"language": "de",
+"weighted_average": 9.683568701734051,
+"raw_weighted_average": 4.755340373516083
+},
+{
+"id": "energy_utilities_pv_magazine_6cfa9991dad4",
+"published_date": "2026-10-08T03:22:09.000Z",
+"language": "en",
+"weighted_average": 9.78308467013818,
+"raw_weighted_average": 4.814801555871964
+},
+{
+"id": "swiss_cash_ch_d099b0669c3d",
+"published_date": "2026-10-08T13:24:17.000Z",
+"language": "de",
+"weighted_average": 9.137926413148199,
+"raw_weighted_average": 4.3810019254684445
+},
+{
+"id": "healthcare_kff_health_news_a5349b9c6be2",
+"published_date": "2026-10-08T09:00:00.000Z",
+"language": "en",
+"weighted_average": 9.40421753429574,
+"raw_weighted_average": 4.481893146038056
+},
+{
+"id": "belgian_dh_les_sports_4eb2969ca956",
+"published_date": "2026-10-08T14:59:00.000Z",
+"language": "fr",
+"weighted_average": 8.99734362602031,
+"raw_weighted_average": 4.350567002594471
+},
+{
+"id": "italian_rinnovabili_773c98d82443",
+"published_date": "2026-10-08T11:59:29.000Z",
+"language": "it",
+"weighted_average": 9.173655210535046,
+"raw_weighted_average": 4.389919281005859
+},
+{
+"id": "south_asian_scroll_in_cbfc0429a076",
+"published_date": "2026-10-08T03:30:00.000Z",
+"language": "en",
+"weighted_average": 9.668639,
+"raw_weighted_average": 4.7145370721817015
+},
+{
+"id": "southeast_asian_antara_en_57d4f8a53ff8",
+"published_date": "2026-10-08T13:12:31.000Z",
+"language": "en",
+"weighted_average": 9.052228946156195,
+"raw_weighted_average": 4.359699440002442
+},
+{
+"id": "southeast_asian_free_malaysia_fcb7f6a8d288",
+"published_date": "2026-10-08T05:00:00.000Z",
+"language": "id",
+"weighted_average": 9.534386729321202,
+"raw_weighted_average": 4.58231258392334
+},
+{
+"id": "east_african_lexpress_madagascar_5271a90bac1e",
+"published_date": "2026-10-08T02:55:00.000Z",
+"language": "fr",
+"weighted_average": 9.666896831362083,
+"raw_weighted_average": 4.69397601634264
+},
+{
+"id": "care_systems_national_elf_mental_health_96a09a9d844d",
+"published_date": "2026-10-08T04:00:56.000Z",
+"language": "en",
+"weighted_average": 9.581455454687418,
+"raw_weighted_average": 4.619193875789643
+},
+{
+"id": "energy_utilities_the_driven_0d6a8ad34328",
+"published_date": "2026-10-07T23:04:13.000Z",
+"language": "en",
+"weighted_average": 9.900327968908046,
+"raw_weighted_average": 5.07898269891739
+},
+{
+"id": "portuguese_observador_2c49f932e596",
+"published_date": "2026-10-07T23:19:25.000Z",
+"language": "pt",
+"weighted_average": 9.869822,
+"raw_weighted_average": 5.0046958208084105
+},
+{
+"id": "west_african_thisday_baf63ab0a631",
+"published_date": "2026-10-07T23:20:00.000Z",
+"language": "en",
+"weighted_average": 9.84894034781361,
+"raw_weighted_average": 4.913420458137989
+},
+{
+"id": "pan_african_alwihda_info_ba3fa9e7b968",
+"published_date": "2026-10-08T00:54:06.000Z",
+"language": "en",
+"weighted_average": 9.731126104177077,
+"raw_weighted_average": 4.773144447803498
+},
+{
+"id": "south_asian_times_of_india_ede67fbdbcd2",
+"published_date": "2026-10-08T08:30:09.000Z",
+"language": "en",
+"weighted_average": 9.239833907705009,
+"raw_weighted_average": 4.416428643465042
+},
+{
+"id": "spanish_mongabay_latam_2b6b270dd723",
+"published_date": "2026-10-07T20:57:39.000Z",
+"language": "es",
+"weighted_average": 9.880688713190098,
+"raw_weighted_average": 5.031851065158844
+},
+{
+"id": "east_african_daily_monitor_ug_82f6db26c215",
+"published_date": "2026-10-08T02:34:07.000Z",
+"language": "en",
+"weighted_average": 9.50741230471896,
+"raw_weighted_average": 4.5614790439605715
+},
+{
+"id": "east_african_lexpress_madagascar_2d26508043fb",
+"published_date": "2026-10-08T02:40:00.000Z",
+"language": "fr",
+"weighted_average": 9.351449226582492,
+"raw_weighted_average": 4.458214822411537
+},
+{
+"id": "positive_news_optimist_daily_dbf669e22162",
+"published_date": "2026-10-08T00:00:55.000Z",
+"language": "en",
+"weighted_average": 9.512084891924736,
+"raw_weighted_average": 4.568476474285126
+},
+{
+"id": "west_african_le_sahel_129667aab889",
+"published_date": "2026-10-08T09:09:18.000Z",
+"language": "fr",
+"weighted_average": 8.867699270985941,
+"raw_weighted_average": 4.291822934150696
+},
+{
+"id": "spanish_la_vanguardia_92fbe8be9ece",
+"published_date": "2026-10-08T07:31:51.000Z",
+"language": "es",
+"weighted_average": 8.944721931597151,
+"raw_weighted_average": 4.341137647628784
+},
+{
+"id": "healthcare_medicalxpress_47c8f955f186",
+"published_date": "2026-10-07T23:26:11.000Z",
+"language": "en",
+"weighted_average": 9.429361390391817,
+"raw_weighted_average": 4.515485483407975
+},
+{
+"id": "east_african_mg_2424_8f549c515c56",
+"published_date": "2026-10-07T14:23:30.000Z",
+"language": "fr",
+"weighted_average": 9.988166,
+"raw_weighted_average": 5.524841237068176
+},
+{
+"id": "portuguese_oeco_8fae2b9c2ccb",
+"published_date": "2026-10-07T17:12:47.000Z",
+"language": "pt",
+"weighted_average": 9.78781062373813,
+"raw_weighted_average": 4.857322800159454
+},
+{
+"id": "vietnamese_tuoitre_vn_2e0dcec6d98b",
+"published_date": "2026-10-07T19:46:00.000Z",
+"language": "vi",
+"weighted_average": 9.613557222631718,
+"raw_weighted_average": 4.64648152589798
+},
+{
+"id": "energy_utilities_canarymedia_16d481168425",
+"published_date": "2026-10-08T07:30:00.000Z",
+"language": "en",
+"weighted_average": 8.852978527029594,
+"raw_weighted_average": 4.280800533294678
+},
+{
+"id": "south_american_la_nacion_ar_ba785e43d04a",
+"published_date": "2026-10-07T19:47:19.000Z",
+"language": "es",
+"weighted_average": 9.576656753102629,
+"raw_weighted_average": 4.61200819015503
+},
+{
+"id": "south_african_businesslive_1086711b698e",
+"published_date": "2026-10-07T17:49:32.000Z",
+"language": "en",
+"weighted_average": 9.668639,
+"raw_weighted_average": 4.740476202964783
+},
+{
+"id": "vietnamese_tuoitre_vn_4a63fe2f5fa7",
+"published_date": "2026-10-07T19:25:00.000Z",
+"language": "vi",
+"weighted_average": 9.49010449704771,
+"raw_weighted_average": 4.545185279846192
+},
+{
+"id": "spanish_expansion_a3f666fd4d5e",
+"published_date": "2026-10-08T01:15:58.000Z",
+"language": "es",
+"weighted_average": 9.08035489225608,
+"raw_weighted_average": 4.366633582115173
+},
+{
+"id": "spanish_mongabay_latam_6ccbdce0bc58",
+"published_date": "2026-10-07T19:08:46.000Z",
+"language": "es",
+"weighted_average": 9.409906419765617,
+"raw_weighted_average": 4.4863526538014415
+},
+{
+"id": "british_irish_guardian_world_d8f52035e8cf",
+"published_date": "2026-10-07T15:00:54.000Z",
+"language": "en",
+"weighted_average": 9.646068025734989,
+"raw_weighted_average": 4.670823764801026
+},
+{
+"id": "pan_african_alwihda_info_49a10ccf0207",
+"published_date": "2026-10-07T09:45:00.000Z",
+"language": "fr",
+"weighted_average": 9.988166,
+"raw_weighted_average": 5.629285669326782
+},
+{
+"id": "south_asian_hasht_e_subh_en_06de7f24e520",
+"published_date": "2026-10-07T12:15:38.000Z",
+"language": "en",
+"weighted_average": 9.815995351317826,
+"raw_weighted_average": 4.886666715145111
+},
+{
+"id": "south_american_cuba_headlines_ab6319b3dc46",
+"published_date": "2026-10-07T21:00:58.000Z",
+"language": "en",
+"weighted_average": 9.246334671235607,
+"raw_weighted_average": 4.418862344324589
+},
+{
+"id": "greek_protothema_0b854052a15d",
+"published_date": "2026-10-07T15:16:09.000Z",
+"language": "el",
+"weighted_average": 9.55221594827616,
+"raw_weighted_average": 4.591691608726978
+},
+{
+"id": "french_bfmtv_08ba1b16e26b",
+"published_date": "2026-10-07T12:47:42.000Z",
+"language": "fr",
+"weighted_average": 9.668639,
+"raw_weighted_average": 4.698037099838257
+},
+{
+"id": "german_pv_magazine_de_8f130590577f",
+"published_date": "2026-10-07T15:08:37.000Z",
+"language": "de",
+"weighted_average": 9.515081103267887,
+"raw_weighted_average": 4.572675812244416
+},
+{
+"id": "positive_news_happy_eco_news_981eb6b99ebe",
+"published_date": "2026-10-07T09:00:00.000Z",
+"language": "en",
+"weighted_average": 9.91716,
+"raw_weighted_average": 5.145925986766815
+},
+{
+"id": "central_asian_uzdaily_en_2813a6cc6833",
+"published_date": "2026-10-07T17:00:00.000Z",
+"language": "en",
+"weighted_average": 9.38891917477667,
+"raw_weighted_average": 4.474256677925587
+},
+{
+"id": "west_african_journal_du_niger_315f6d9f3425",
+"published_date": "2026-10-07T13:06:24.000Z",
+"language": "fr",
+"weighted_average": 9.63755860890873,
+"raw_weighted_average": 4.664452397823334
+},
+{
+"id": "luxembourg_lequotidien_a1234a784580",
+"published_date": "2026-10-07T16:42:18.000Z",
+"language": "fr",
+"weighted_average": 9.372881902343785,
+"raw_weighted_average": 4.4662513673305515
+},
+{
+"id": "belgian_la_libre_belgique_7b6a6fb77ec1",
+"published_date": "2026-10-07T14:30:57.000Z",
+"language": "fr",
+"weighted_average": 9.485878980254208,
+"raw_weighted_average": 4.542021453380585
+},
+{
+"id": "south_american_village_voice_news_17f190118b6f",
+"published_date": "2026-10-07T13:49:11.000Z",
+"language": "en",
+"weighted_average": 9.507359190673748,
+"raw_weighted_average": 4.561399503052235
+},
+{
+"id": "spanish_eldiario_857ac7afbf62",
+"published_date": "2026-10-07T07:01:12.000Z",
+"language": "es",
+"weighted_average": 9.905325,
+"raw_weighted_average": 5.099642749130726
+},
+{
+"id": "industry_intelligence_innovation_news_2ce401e190c4",
+"published_date": "2026-10-07T07:33:13.000Z",
+"language": "en",
+"weighted_average": 9.851204369328823,
+"raw_weighted_average": 4.916810750961304
+},
+{
+"id": "global_news_deutsche_welle_12aca96e8d8d",
+"published_date": "2026-10-07T07:48:00.000Z",
+"language": "en",
+"weighted_average": 9.830203451175734,
+"raw_weighted_average": 4.897305136919022
+},
+{
+"id": "west_african_sierraloaded_e9bd0223af0d",
+"published_date": "2026-10-07T13:55:25.000Z",
+"language": "en",
+"weighted_average": 9.41853061770549,
+"raw_weighted_average": 4.499267816543579
+},
+{
+"id": "positive_news_the_better_india_ba903b0938f5",
+"published_date": "2026-10-07T06:29:37.000Z",
+"language": "en",
+"weighted_average": 9.900268187124265,
+"raw_weighted_average": 5.078893172740937
+},
+{
+"id": "southeast_asian_phnom_penh_post_93de43196059",
+"published_date": "2026-10-07T06:42:07.000Z",
+"language": "en",
+"weighted_average": 9.869822,
+"raw_weighted_average": 5.015439522266388
+},
+{
+"id": "west_african_vanguard_ng_4c243ffa44ab",
+"published_date": "2026-10-07T17:52:41.000Z",
+"language": "en",
+"weighted_average": 9.134305379856231,
+"raw_weighted_average": 4.380098171532154
+},
+{
+"id": "southeast_asian_phnom_penh_post_9fd114117a31",
+"published_date": "2026-10-07T09:35:56.000Z",
+"language": "en",
+"weighted_average": 9.609511631932252,
+"raw_weighted_average": 4.643452417850495
+},
+{
+"id": "science_columbia_state_of_planet_0000c9ecddc1",
+"published_date": "2026-10-07T12:43:16.000Z",
+"language": "en",
+"weighted_average": 9.407652097499065,
+"raw_weighted_average": 4.48360757380724
+},
+{
+"id": "arabic_gulf_times_26d481ce42cc",
+"published_date": "2026-10-07T06:00:00.000Z",
+"language": "en",
+"weighted_average": 9.79615829894409,
+"raw_weighted_average": 4.869822800159454
+},
+{
+"id": "portuguese_valor_economico_d71dcdf80335",
+"published_date": "2026-10-07T20:09:57.000Z",
+"language": "pt",
+"weighted_average": 8.85438267456195,
+"raw_weighted_average": 4.281851923465728
+},
+{
+"id": "italian_qualenergia_875fb54841b0",
+"published_date": "2026-10-07T08:45:19.000Z",
+"language": "it",
+"weighted_average": 9.48142330580958,
+"raw_weighted_average": 4.538685297966004
+},
+{
+"id": "dutch_news_nos_algemeen_d46efc503698",
+"published_date": "2026-10-07T07:05:41.000Z",
+"language": "nl",
+"weighted_average": 9.566579009397,
+"raw_weighted_average": 4.602446305751801
+},
+{
+"id": "spanish_elpais_espana_7032e4a35441",
+"published_date": "2026-10-07T03:30:01.000Z",
+"language": "es",
+"weighted_average": 9.786982,
+"raw_weighted_average": 4.83947286605835
+},
+{
+"id": "pan_african_all_africa_9eff0a3ba831",
+"published_date": "2026-10-07T13:20:25.000Z",
+"language": "en",
+"weighted_average": 9.12890919550125,
+"raw_weighted_average": 4.378751367330551
+},
+{
+"id": "south_asian_hasht_e_subh_en_1e8d016d80e5",
+"published_date": "2026-10-07T07:36:42.000Z",
+"language": "en",
+"weighted_average": 9.48648294507274,
+"raw_weighted_average": 4.5424736678600315
+},
+{
+"id": "fintech_markets_fintech_times_699b9ba7a4c0",
+"published_date": "2026-10-07T09:00:24.000Z",
+"language": "en",
+"weighted_average": 9.379093360852753,
+"raw_weighted_average": 4.4693519353866575
+},
+{
+"id": "spanish_atalayar_862802283cad",
+"published_date": "2026-10-07T10:32:01.000Z",
+"language": "en",
+"weighted_average": 9.282303621414139,
+"raw_weighted_average": 4.432328128814698
+},
+{
+"id": "south_asian_indian_express_5730e70831cf",
+"published_date": "2026-10-07T00:50:44.000Z",
+"language": "en",
+"weighted_average": 9.869822,
+"raw_weighted_average": 5.0011376619339
+},
+{
+"id": "southeast_asian_khaosod_en_a561a977716a",
+"published_date": "2026-10-07T07:41:17.000Z",
+"language": "en",
+"weighted_average": 9.416403548405395,
+"raw_weighted_average": 4.496082425117493
+},
+{
+"id": "east_african_new_times_rw_591f2b52f236",
+"published_date": "2026-10-06T22:22:53.000Z",
+"language": "en",
+"weighted_average": 9.988166,
+"raw_weighted_average": 5.696785712242127
+},
+{
+"id": "west_african_myjoyonline_db579c33a86d",
+"published_date": "2026-10-07T13:05:28.000Z",
+"language": "en",
+"weighted_average": 9.041062965955739,
+"raw_weighted_average": 4.357841518521309
+},
+{
+"id": "arabic_ammonnews_en_1d323f083c13",
+"published_date": "2026-10-07T06:47:22.000Z",
+"language": "en",
+"weighted_average": 9.417703523592422,
+"raw_weighted_average": 4.498029202222824
+},
+{
+"id": "south_american_elsalvador_com_c29593a7f070",
+"published_date": "2026-10-07T11:45:00.000Z",
+"language": "es",
+"weighted_average": 9.088423930543264,
+"raw_weighted_average": 4.368647375702858
+},
+{
+"id": "southeast_asian_thaiger_280e872f6d30",
+"published_date": "2026-10-07T07:52:36.000Z",
+"language": "en",
+"weighted_average": 9.321992081594043,
+"raw_weighted_average": 4.447186672687531
+},
+{
+"id": "global_news_NPR_world_0bcf69891548",
+"published_date": "2026-10-07T13:32:37.000Z",
+"language": "en",
+"weighted_average": 8.900106524241867,
+"raw_weighted_average": 4.316087640821934
+},
+{
+"id": "north_african_le_360_84d85a7d8c3c",
+"published_date": "2026-10-06T21:00:00.000Z",
+"language": "en",
+"weighted_average": 9.942515081121812,
+"raw_weighted_average": 5.230767273902893
+},
+{
+"id": "greek_ta_nea_9c8939450f51",
+"published_date": "2026-10-07T14:00:17.000Z",
+"language": "el",
+"weighted_average": 8.85470730517044,
+"raw_weighted_average": 4.282094998657703
+},
+{
+"id": "west_african_sierraloaded_359ef9f6904c",
+"published_date": "2026-10-06T21:09:17.000Z",
+"language": "en",
+"weighted_average": 9.869822,
+"raw_weighted_average": 4.960767257213592
+},
+{
+"id": "central_asian_astana_times_31d033ceeaab",
+"published_date": "2026-10-07T04:02:57.000Z",
+"language": "en",
+"weighted_average": 9.407891280127933,
+"raw_weighted_average": 4.483726966381073
+},
+{
+"id": "education_chalkbeat_ce466f6f0e31",
+"published_date": "2026-10-06T20:19:06.000Z",
+"language": "en",
+"weighted_average": 9.869822,
+"raw_weighted_average": 4.955474829673768
+},
+{
+"id": "south_asian_radio_nepal_172f9e03bc21",
+"published_date": "2026-10-07T04:52:05.000Z",
+"language": "en",
+"weighted_average": 9.277054504391653,
+"raw_weighted_average": 4.430362975597382
+},
+{
+"id": "southeast_asian_vn_express_en_4a3f0213529d",
+"published_date": "2026-10-07T02:32:41.000Z",
+"language": "en",
+"weighted_average": 9.401347665150174,
+"raw_weighted_average": 4.480460596084595
+},
+{
+"id": "spanish_20minutos_es_c7c351e779ae",
+"published_date": "2026-10-06T18:53:45.000Z",
+"language": "es",
+"weighted_average": 9.869822,
+"raw_weighted_average": 4.951071465015412
+},
+{
+"id": "arabic_emirates247_787f2022fb0e",
+"published_date": "2026-10-07T01:20:00.000Z",
+"language": "en",
+"weighted_average": 9.425922478086246,
+"raw_weighted_average": 4.510336267948151
+},
+{
+"id": "spanish_20minutos_es_a083889de215",
+"published_date": "2026-10-07T08:38:38.000Z",
+"language": "es",
+"weighted_average": 8.963101367338371,
+"raw_weighted_average": 4.344869390130043
+},
+{
+"id": "mexican_el_financiero_137545a68e62",
+"published_date": "2026-10-06T22:42:20.000Z",
+"language": "es",
+"weighted_average": 9.585556417631016,
+"raw_weighted_average": 4.625334751605988
+},
+{
+"id": "west_african_seneweb_bf935e30e806",
+"published_date": "2026-10-06T20:42:12.000Z",
+"language": "fr",
+"weighted_average": 9.668639,
+"raw_weighted_average": 4.73186811208725
+},
+{
+"id": "west_african_myjoyonline_4146661c1b1a",
+"published_date": "2026-10-06T20:10:52.000Z",
+"language": "en",
+"weighted_average": 9.668639,
+"raw_weighted_average": 4.708994770050049
+},
+{
+"id": "luxembourg_lequotidien_937792a92f9b",
+"published_date": "2026-10-07T03:00:13.000Z",
+"language": "fr",
+"weighted_average": 9.213707497588917,
+"raw_weighted_average": 4.40451842546463
+},
+{
+"id": "science_phys_org_20d028b7175e",
+"published_date": "2026-10-06T23:56:01.000Z",
+"language": "en",
+"weighted_average": 9.404972226940417,
+"raw_weighted_average": 4.4822698652744295
+},
+{
+"id": "north_african_african_manager_b8a012ef25d2",
+"published_date": "2026-10-07T08:34:10.000Z",
+"language": "fr",
+"weighted_average": 8.86057798181144,
+"raw_weighted_average": 4.286490812897682
+},
+{
+"id": "west_african_le_sahel_3bde6744971b",
+"published_date": "2026-10-07T09:58:58.000Z",
+"language": "fr",
+"weighted_average": 8.763057049339068,
+"raw_weighted_average": 4.244549494981766
+},
+{
+"id": "positive_news_happy_eco_news_b9c2ae101457",
+"published_date": "2026-10-07T09:00:00.000Z",
+"language": "en",
+"weighted_average": 8.755747116853396,
+"raw_weighted_average": 4.2409008085727695
+},
+{
+"id": "portuguese_oeco_b45a87479644",
+"published_date": "2026-10-06T22:12:32.000Z",
+"language": "pt",
+"weighted_average": 9.402465608035246,
+"raw_weighted_average": 4.4810186386108395
+},
+{
+"id": "mexican_el_financiero_ed974107ec1f",
+"published_date": "2026-10-06T23:25:37.000Z",
+"language": "es",
+"weighted_average": 9.315360064034808,
+"raw_weighted_average": 4.444703781604767
+},
+{
+"id": "southeast_asian_phnom_penh_post_b46b31aed0bf",
+"published_date": "2026-10-07T04:56:33.000Z",
+"language": "en",
+"weighted_average": 8.96665897366686,
+"raw_weighted_average": 4.345461344718933
+},
+{
+"id": "spanish_expansion_683fd3dc2a4a",
+"published_date": "2026-10-06T22:55:31.000Z",
+"language": "es",
+"weighted_average": 9.312804533819463,
+"raw_weighted_average": 4.443747043609619
+},
+{
+"id": "caucasus_hetq_cf8bf29e5c6a",
+"published_date": "2026-10-06T17:44:00.000Z",
+"language": "en",
+"weighted_average": 9.583332761321385,
+"raw_weighted_average": 4.622004997730255
+},
+{
+"id": "mexican_mexico_news_daily_7165bed05ee7",
+"published_date": "2026-10-06T18:14:57.000Z",
+"language": "en",
+"weighted_average": 9.498128739523395,
+"raw_weighted_average": 4.551193375885487
+},
+{
+"id": "east_african_business_daily_ke_1fc4a733573a",
+"published_date": "2026-10-06T12:45:00.000Z",
+"language": "en",
+"weighted_average": 9.795826171529619,
+"raw_weighted_average": 4.8693254649639135
+},
+{
+"id": "dutch_news_nos_algemeen_8b7170c4b042",
+"published_date": "2026-10-07T05:52:12.000Z",
+"language": "nl",
+"weighted_average": 8.716126821229384,
+"raw_weighted_average": 4.230919289588928
+},
+{
+"id": "southeast_asian_tuoi_tre_en_099c86f0ed3e",
+"published_date": "2026-10-07T00:54:00.000Z",
+"language": "en",
+"weighted_average": 8.926808527973368,
+"raw_weighted_average": 4.332195830345154
+},
+{
+"id": "portuguese_observador_e3cc0fa7f2ae",
+"published_date": "2026-10-06T16:42:09.000Z",
+"language": "pt",
+"weighted_average": 9.427012682093622,
+"raw_weighted_average": 4.511968672275543
+},
+{
+"id": "pan_african_tchadinfos_8d831ce65bca",
+"published_date": "2026-10-06T18:00:08.000Z",
+"language": "fr",
+"weighted_average": 9.28968134292584,
+"raw_weighted_average": 4.43509019613266
+},
+{
+"id": "portuguese_valor_economico_a879811578b5",
+"published_date": "2026-10-06T17:44:11.000Z",
+"language": "pt",
+"weighted_average": 9.299284171922848,
+"raw_weighted_average": 4.438685297966003
+},
+{
+"id": "science_sciencedaily_cfdf4a4ba91d",
+"published_date": "2026-10-06T12:21:14.000Z",
+"language": "en",
+"weighted_average": 9.634890843550199,
+"raw_weighted_average": 4.662454926967621
+},
+{
+"id": "north_african_webdo_tn_7b466b72568a",
+"published_date": "2026-10-06T11:27:50.000Z",
+"language": "fr",
+"weighted_average": 9.627789247707842,
+"raw_weighted_average": 4.657137656211853
+},
+{
+"id": "east_african_citizen_digital_b091127e0f78",
+"published_date": "2026-10-06T10:46:54.000Z",
+"language": "en",
+"weighted_average": 9.657204551456049,
+"raw_weighted_average": 4.679461348056793
+},
+{
+"id": "south_asian_times_of_india_98b27ad97245",
+"published_date": "2026-10-06T14:27:36.000Z",
+"language": "en",
+"weighted_average": 9.36082562032471,
+"raw_weighted_average": 4.461725151538849
+},
+{
+"id": "south_american_el_comercio_ec_458a6e197714",
+"published_date": "2026-10-06T19:54:00.000Z",
+"language": "es",
+"weighted_average": 9.01156469284169,
+"raw_weighted_average": 4.352933263778687
+},
+{
+"id": "west_african_vanguard_ng_4a1cb4690fe6",
+"published_date": "2026-10-06T17:52:00.000Z",
+"language": "en",
+"weighted_average": 9.128737063295194,
+"raw_weighted_average": 4.378708405792714
+},
+{
+"id": "biotech_pharma_bioengineer_36443df755a9",
+"published_date": "2026-10-06T09:22:36.000Z",
+"language": "en",
+"weighted_average": 9.668639,
+"raw_weighted_average": 4.742087590694428
+},
+{
+"id": "east_african_new_times_rw_11de173f0c4a",
+"published_date": "2026-10-06T22:27:15.000Z",
+"language": "en",
+"weighted_average": 8.843597706435913,
+"raw_weighted_average": 4.273776412010193
+},
+{
+"id": "southeast_asian_phnom_penh_post_b95752eb1a2c",
+"published_date": "2026-10-06T09:13:13.000Z",
+"language": "en",
+"weighted_average": 9.605153780204567,
+"raw_weighted_average": 4.640189552307129
+},
+{
+"id": "energy_utilities_pv_magazine_4aef4d9cef99",
+"published_date": "2026-10-06T09:02:26.000Z",
+"language": "en",
+"weighted_average": 9.556801718560587,
+"raw_weighted_average": 4.595125317573547
+},
+{
+"id": "belgian_bruzz_b93b682de06f",
+"published_date": "2026-10-06T15:14:38.000Z",
+"language": "nl",
+"weighted_average": 9.139084363591556,
+"raw_weighted_average": 4.381290931999684
+},
+{
+"id": "hungarian_telex_2e3900edf04a",
+"published_date": "2026-10-06T16:34:42.000Z",
+"language": "hu",
+"weighted_average": 9.039383729988197,
+"raw_weighted_average": 4.357562108337879
+},
+{
+"id": "balkan_index_hr_71db95a806d8",
+"published_date": "2026-10-06T13:22:00.000Z",
+"language": "hr",
+"weighted_average": 9.235683730286517,
+"raw_weighted_average": 4.414874935150147
+},
+{
+"id": "global_news_euronews_59049a9820a2",
+"published_date": "2026-10-06T13:00:18.000Z",
+"language": "en",
+"weighted_average": 9.234492247305072,
+"raw_weighted_average": 4.414428877830505
+},
+{
+"id": "east_african_daily_monitor_ug_d93c999d56ef",
+"published_date": "2026-10-06T02:51:46.000Z",
+"language": "en",
+"weighted_average": 9.869822,
+"raw_weighted_average": 4.968822777271271
+},
+{
+"id": "east_african_daily_monitor_ug_d64d36f0b4d0",
+"published_date": "2026-10-06T13:56:23.000Z",
+"language": "en",
+"weighted_average": 9.138148630924533,
+"raw_weighted_average": 4.381057387590409
+},
+{
+"id": "south_american_infobae_politica_85afa3bdf771",
+"published_date": "2026-10-06T11:43:07.000Z",
+"language": "es",
+"weighted_average": 9.207030145959093,
+"raw_weighted_average": 4.401185297966004
+},
+{
+"id": "west_african_seneweb_e31936004045",
+"published_date": "2026-10-06T17:07:19.000Z",
+"language": "fr",
+"weighted_average": 8.855826830515783,
+"raw_weighted_average": 4.282933270931244
+},
+{
+"id": "swedish_expressen_666277804b02",
+"published_date": "2026-10-06T17:44:28.000Z",
+"language": "sv",
+"weighted_average": 8.815574148298156,
+"raw_weighted_average": 4.263873481750489
+},
+{
+"id": "pan_african_caj_news_africa_63f996b2789b",
+"published_date": "2026-10-06T07:48:48.000Z",
+"language": "en",
+"weighted_average": 9.427162714915662,
+"raw_weighted_average": 4.512193322181702
+},
+{
+"id": "central_asian_uzdaily_en_43e22afe5832",
+"published_date": "2026-10-06T12:00:00.000Z",
+"language": "en",
+"weighted_average": 9.150331824993646,
+"raw_weighted_average": 4.3840981245040895
+},
+{
+"id": "south_american_n_digital_do_58e8d88a82ae",
+"published_date": "2026-10-06T01:27:15.000Z",
+"language": "es",
+"weighted_average": 9.772328428711505,
+"raw_weighted_average": 4.798693552613258
+},
+{
+"id": "balkan_vijesti_1a0a72a2045b",
+"published_date": "2026-10-06T13:18:00.000Z",
+"language": "hr",
+"weighted_average": 8.96665897366686,
+"raw_weighted_average": 4.345461344718933
+},
+{
+"id": "southeast_asian_phnom_penh_post_6a9dc9840c66",
+"published_date": "2026-10-06T09:22:32.000Z",
+"language": "en",
+"weighted_average": 9.18504976434325,
+"raw_weighted_average": 4.392763185501099
+},
+{
+"id": "balkan_vecernji_ede0d4019f43",
+"published_date": "2026-10-06T05:48:00.000Z",
+"language": "hr",
+"weighted_average": 9.401368489857424,
+"raw_weighted_average": 4.480470991134644
+},
+{
+"id": "swiss_24heures_2ca13ecfaa9f",
+"published_date": "2026-10-06T13:53:37.000Z",
+"language": "fr",
+"weighted_average": 8.85620628165682,
+"raw_weighted_average": 4.28321739435196
+},
+{
+"id": "british_irish_bbc_uk_d1f193315f78",
+"published_date": "2026-10-05T23:00:46.000Z",
+"language": "en",
+"weighted_average": 9.76301808043908,
+"raw_weighted_average": 4.785083222389221
+},
+{
+"id": "south_american_n_digital_do_94d8117c24bc",
+"published_date": "2026-10-06T00:07:12.000Z",
+"language": "es",
+"weighted_average": 9.668639,
+"raw_weighted_average": 4.749267268180847
+},
+{
+"id": "korean_hankyung_401ed128eacd",
+"published_date": "2026-10-06T05:30:20.000Z",
+"language": "ko",
+"weighted_average": 9.308452073284741,
+"raw_weighted_average": 4.4421175718307495
+},
+{
+"id": "korean_yonhap_kr_6a9c8115f4a4",
+"published_date": "2026-10-06T01:10:47.000Z",
+"language": "ko",
+"weighted_average": 9.523447286116282,
+"raw_weighted_average": 4.576851952075958
+},
+{
+"id": "ai_the_next_web_8629ec9aa369",
+"published_date": "2026-10-05T22:18:32.000Z",
+"language": "en",
+"weighted_average": 9.667672102987119,
+"raw_weighted_average": 4.695137023925781
+},
+{
+"id": "austrian_die_presse_42facc3c0f95",
+"published_date": "2026-10-06T03:43:17.000Z",
+"language": "de",
+"weighted_average": 9.318827480743627,
+"raw_weighted_average": 4.44600191116333
+},
+{
+"id": "positive_news_good_news_network_3df2a615e56c",
+"published_date": "2026-10-05T18:30:19.000Z",
+"language": "en",
+"weighted_average": 9.88107795852705,
+"raw_weighted_average": 5.032433930039406
+},
+{
+"id": "south_american_dominican_today_e29d35e7bf4c",
+"published_date": "2026-10-05T17:26:31.000Z",
+"language": "en",
+"weighted_average": 9.91716,
+"raw_weighted_average": 5.151719608902932
+},
+{
+"id": "south_asian_newswire_lk_41c3c8c0ae02",
+"published_date": "2026-10-06T09:28:44.000Z",
+"language": "en",
+"weighted_average": 8.892957353701718,
+"raw_weighted_average": 4.310734748840332
+},
+{
+"id": "southeast_asian_tuoi_tre_en_933f83b34edf",
+"published_date": "2026-10-05T22:46:00.000Z",
+"language": "en",
+"weighted_average": 9.505143390997404,
+"raw_weighted_average": 4.558081233501435
+},
+{
+"id": "west_african_punch_ng_f404cf27a45e",
+"published_date": "2026-10-06T00:41:56.000Z",
+"language": "en",
+"weighted_average": 9.379163405424274,
+"raw_weighted_average": 4.469386899471283
+},
+{
+"id": "south_american_prensa_libre_9a6bb8069246",
+"published_date": "2026-10-05T22:33:33.000Z",
+"language": "es",
+"weighted_average": 9.494874397346107,
+"raw_weighted_average": 4.548756709694863
+},
+{
+"id": "korean_hankyung_06452f13228b",
+"published_date": "2026-10-06T04:31:52.000Z",
+"language": "ko",
+"weighted_average": 9.07418278854215,
+"raw_weighted_average": 4.365093207359314
+},
+{
+"id": "climate_solutions_smart_cities_dive_507824cff48c",
+"published_date": "2026-10-05T15:34:39.000Z",
+"language": "en",
+"weighted_average": 9.905325,
+"raw_weighted_average": 5.101785683631897
+},
+{
+"id": "korean_hankyung_d44b9254e868",
+"published_date": "2026-10-06T08:57:43.000Z",
+"language": "ko",
+"weighted_average": 8.797393383886538,
+"raw_weighted_average": 4.2584283471107485
+},
+{
+"id": "south_asian_radio_nepal_b6d54d28ca26",
+"published_date": "2026-10-06T01:20:39.000Z",
+"language": "en",
+"weighted_average": 9.220171993008053,
+"raw_weighted_average": 4.40774530172348
+},
+{
+"id": "south_american_prensa_libre_553f1e28c86b",
+"published_date": "2026-10-05T16:58:00.000Z",
+"language": "es",
+"weighted_average": 9.738868219067808,
+"raw_weighted_average": 4.776042711734772
+},
+{
+"id": "west_african_le_sahel_8c5096ec5cd9",
+"published_date": "2026-10-06T09:14:01.000Z",
+"language": "fr",
+"weighted_average": 8.719506012085409,
+"raw_weighted_average": 4.231481552124023
+},
+{
+"id": "austrian_vienna_at_359acc975275",
+"published_date": "2026-10-06T08:05:54.000Z",
+"language": "de",
+"weighted_average": 8.780306026723707,
+"raw_weighted_average": 4.253159165382385
+},
+{
+"id": "china_pandaily_a74fd52807a1",
+"published_date": "2026-10-06T01:55:17.000Z",
+"language": "en",
+"weighted_average": 9.147267536190142,
+"raw_weighted_average": 4.383333325386047
+},
+{
+"id": "us_media_vox_ffabd2b061d5",
+"published_date": "2026-10-05T20:24:01.000Z",
+"language": "en",
+"weighted_average": 9.482576577780875,
+"raw_weighted_average": 4.539548802375794
+},
+{
+"id": "us_media_deseret_news_0ec734f057f8",
+"published_date": "2026-10-06T00:35:30.000Z",
+"language": "en",
+"weighted_average": 9.203137454122233,
+"raw_weighted_average": 4.399242186546326
+},
+{
+"id": "healthcare_medicalxpress_79792eee36e2",
+"published_date": "2026-10-05T18:36:06.000Z",
+"language": "en",
+"weighted_average": 9.58048959875834,
+"raw_weighted_average": 4.617747581005097
+},
+{
+"id": "dutch_news_nu_dieren_64a0661bb2fe",
+"published_date": "2026-10-05T14:53:17.000Z",
+"language": "nl",
+"weighted_average": 9.799266028089374,
+"raw_weighted_average": 4.874140220880508
+},
+{
+"id": "south_american_telesur_en_7a92859996d5",
+"published_date": "2026-10-05T14:57:33.000Z",
+"language": "en",
+"weighted_average": 9.786982,
+"raw_weighted_average": 4.8530025199055675
+},
+{
+"id": "south_american_dominican_today_c22e336d6b8e",
+"published_date": "2026-10-05T20:35:52.000Z",
+"language": "en",
+"weighted_average": 9.417708789324776,
+"raw_weighted_average": 4.498037087917328
+},
+{
+"id": "education_chalkbeat_9c53ea89b6f4",
+"published_date": "2026-10-05T19:57:03.000Z",
+"language": "en",
+"weighted_average": 9.451973408570352,
+"raw_weighted_average": 4.526861229538918
+},
+{
+"id": "east_african_new_times_rw_4070144f3043",
+"published_date": "2026-10-05T18:18:56.000Z",
+"language": "en",
+"weighted_average": 9.509162852265025,
+"raw_weighted_average": 4.564100575447083
+},
+{
+"id": "east_african_nation_ke_39792cf77068",
+"published_date": "2026-10-06T03:00:00.000Z",
+"language": "en",
+"weighted_average": 8.888303395956926,
+"raw_weighted_average": 4.307250130176544
+},
+{
+"id": "south_american_colombia_one_e2e87968d993",
+"published_date": "2026-10-05T21:28:06.000Z",
+"language": "en",
+"weighted_average": 9.214221912038848,
+"raw_weighted_average": 4.404775205254555
+},
+{
+"id": "south_american_el_comercio_ec_935880c8e1f3",
+"published_date": "2026-10-06T02:31:10.000Z",
+"language": "es",
+"weighted_average": 8.903162849800001,
+"raw_weighted_average": 4.318376043438912
+},
+{
+"id": "south_american_biobio_14011443eced",
+"published_date": "2026-10-05T17:10:45.000Z",
+"language": "es",
+"weighted_average": 9.422101358261221,
+"raw_weighted_average": 4.504614758491517
+},
+{
+"id": "korean_yonhap_kr_0300e25f6375",
+"published_date": "2026-10-06T01:17:58.000Z",
+"language": "ko",
+"weighted_average": 8.908559816656815,
+"raw_weighted_average": 4.322416985034943
+},
+{
+"id": "caucasus_trend_az_000caeab5901",
+"published_date": "2026-10-05T09:52:06.000Z",
+"language": "en",
+"weighted_average": 9.880457895006197,
+"raw_weighted_average": 5.031505432724953
+},
+{
+"id": "south_asian_the_island_lk_71b0d7b07d0d",
+"published_date": "2026-10-06T00:00:36.000Z",
+"language": "en",
+"weighted_average": 8.97573196506159,
+"raw_weighted_average": 4.346971011161805
+},
+{
+"id": "pan_african_all_africa_064f44e6f9e5",
+"published_date": "2026-10-05T13:03:37.000Z",
+"language": "en",
+"weighted_average": 9.659234958945168,
+"raw_weighted_average": 4.682501983642578
+},
+{
+"id": "ai_engadget_91fb50e7995d",
+"published_date": "2026-10-05T18:55:40.000Z",
+"language": "en",
+"weighted_average": 9.242627626105742,
+"raw_weighted_average": 4.417474532127381
+},
+{
+"id": "south_asian_newswire_lk_098166648de8",
+"published_date": "2026-10-05T09:53:25.000Z",
+"language": "en",
+"weighted_average": 9.822213612065788,
+"raw_weighted_average": 4.8913227915763855
+},
+{
+"id": "central_asian_kun_uz_8e084587f8e9",
+"published_date": "2026-10-05T14:49:07.000Z",
+"language": "en",
+"weighted_average": 9.479343416842182,
+"raw_weighted_average": 4.537127995491028
+},
+{
+"id": "automotive_electrive_0d07302948ea",
+"published_date": "2026-10-05T13:00:00.000Z",
+"language": "en",
+"weighted_average": 9.519758859104291,
+"raw_weighted_average": 4.575010803341866
+},
+{
+"id": "south_asian_hindustan_times_9fca3d7151a4",
+"published_date": "2026-10-05T05:46:12.000Z",
+"language": "en",
+"weighted_average": 9.944493714898513,
+"raw_weighted_average": 5.233730125427247
+},
+{
+"id": "west_african_le_quotidien_sn_a2600542feb5",
+"published_date": "2026-10-05T10:14:59.000Z",
+"language": "fr",
+"weighted_average": 9.610921697813,
+"raw_weighted_average": 4.644508194923401
+},
+{
+"id": "spanish_eldiario_1ce00815b0ce",
+"published_date": "2026-10-05T16:00:32.000Z",
+"language": "es",
+"weighted_average": 9.22036478872093,
+"raw_weighted_average": 4.407841539382934
+},
+{
+"id": "pan_african_alwihda_info_60df15075d51",
+"published_date": "2026-10-05T14:08:25.000Z",
+"language": "fr",
+"weighted_average": 9.321354309524231,
+"raw_weighted_average": 4.446947903931141
+},
+{
+"id": "spanish_20minutos_es_ff554be4b5d9",
+"published_date": "2026-10-05T08:13:45.000Z",
+"language": "es",
+"weighted_average": 9.668639,
+"raw_weighted_average": 4.739637660980224
+},
+{
+"id": "swiss_srf_schweiz_6c3a6f708d80",
+"published_date": "2026-10-05T05:01:05.000Z",
+"language": "de",
+"weighted_average": 9.869822,
+"raw_weighted_average": 4.96685106754303
+},
+{
+"id": "german_tagesschau_81a75d26d7a9",
+"published_date": "2026-10-05T10:27:00.000Z",
+"language": "de",
+"weighted_average": 9.511270381041323,
+"raw_weighted_average": 4.5672567039728165
+},
+{
+"id": "british_irish_bbc_uk_aec6359abea3",
+"published_date": "2026-10-05T07:56:41.000Z",
+"language": "en",
+"weighted_average": 9.668639,
+"raw_weighted_average": 4.7307950258255005
+},
+{
+"id": "belgian_dh_belgique_a5c762e29558",
+"published_date": "2026-10-05T12:10:00.000Z",
+"language": "fr",
+"weighted_average": 9.392782835610372,
+"raw_weighted_average": 4.476185297966003
+},
+{
+"id": "energy_utilities_pv_magazine_8752ea8ec1ba",
+"published_date": "2026-10-05T09:49:55.000Z",
+"language": "en",
+"weighted_average": 9.5390626641898,
+"raw_weighted_average": 4.584646666049958
+},
+{
+"id": "east_african_fana_bc_b1ae858c8aa0",
+"published_date": "2026-10-05T04:54:30.000Z",
+"language": "en",
+"weighted_average": 9.79009323894304,
+"raw_weighted_average": 4.860740840435028
+},
+{
+"id": "west_african_punch_ng_98a5bc10284f",
+"published_date": "2026-10-05T18:11:49.000Z",
+"language": "en",
+"weighted_average": 8.935132589746749,
+"raw_weighted_average": 4.336350944638252
+},
+{
+"id": "hungarian_telex_9571abb7df69",
+"published_date": "2026-10-05T06:47:53.000Z",
+"language": "hu",
+"weighted_average": 9.510702571509706,
+"raw_weighted_average": 4.566406381130219
+},
+{
+"id": "austrian_kurier_bf2c39c45c7b",
+"published_date": "2026-10-05T04:46:04.000Z",
+"language": "de",
+"weighted_average": 9.581870141273301,
+"raw_weighted_average": 4.619814836978913
+},
+{
+"id": "south_asian_hindustan_times_b3c0f21df8d4",
+"published_date": "2026-10-05T02:13:30.000Z",
+"language": "en",
+"weighted_average": 9.657348322267879,
+"raw_weighted_average": 4.679676651954651
+},
+{
+"id": "dutch_news_nos_economie_c0a057d9cfe8",
+"published_date": "2026-10-05T14:00:02.000Z",
+"language": "nl",
+"weighted_average": 8.8995951634084,
+"raw_weighted_average": 4.315704762935638
+},
+{
+"id": "west_african_legit_ng_f9b2295b957b",
+"published_date": "2026-10-05T08:56:17.000Z",
+"language": "en",
+"weighted_average": 9.084664894595694,
+"raw_weighted_average": 4.367709231376648
+},
+{
+"id": "southeast_asian_straits_times_d36583866221",
+"published_date": "2026-10-04T21:10:00.000Z",
+"language": "en",
+"weighted_average": 9.835286669816407,
+"raw_weighted_average": 4.901111161708832
+},
+{
+"id": "canadian_globe_mail_b00e19c8b371",
+"published_date": "2026-10-05T09:00:00.000Z",
+"language": "en",
+"weighted_average": 9.022157575076141,
+"raw_weighted_average": 4.354695826768875
+},
+{
+"id": "arabic_dailynewsegypt_57ab58498d00",
+"published_date": "2026-10-04T18:27:07.000Z",
+"language": "en",
+"weighted_average": 9.867790185121281,
+"raw_weighted_average": 4.941648256778717
+},
+{
+"id": "caucasus_trend_az_e5535aba6635",
+"published_date": "2026-10-05T09:55:53.000Z",
+"language": "en",
+"weighted_average": 8.867699270985941,
+"raw_weighted_average": 4.291822934150696
+},
+{
+"id": "austrian_orf_wirtschaft_818d62990f85",
+"published_date": "2026-10-05T03:57:01.000Z",
+"language": "de",
+"weighted_average": 9.186105471922023,
+"raw_weighted_average": 4.393026673793793
+},
+{
+"id": "professional_business_forbes_innovation_3651f91e1c4e",
+"published_date": "2026-10-04T20:19:08.000Z",
+"language": "en",
+"weighted_average": 9.668639,
+"raw_weighted_average": 4.723262298107147
+},
+{
+"id": "west_african_voice_of_nigeria_7c8b93133e51",
+"published_date": "2026-10-05T04:57:06.000Z",
+"language": "en",
+"weighted_average": 9.097059447161266,
+"raw_weighted_average": 4.370802545547486
+},
+{
+"id": "east_african_daily_monitor_ug_948253e66847",
+"published_date": "2026-10-04T15:46:13.000Z",
+"language": "en",
+"weighted_average": 9.869822,
+"raw_weighted_average": 4.991719570755959
+},
+{
+"id": "pan_african_ghanaian_chronicle_a38b08bc3cf7",
+"published_date": "2026-10-05T01:53:51.000Z",
+"language": "en",
+"weighted_average": 9.155217439827444,
+"raw_weighted_average": 4.385317498445511
+},
+{
+"id": "west_african_anp_niger_986f409605f9",
+"published_date": "2026-10-04T17:09:41.000Z",
+"language": "fr",
+"weighted_average": 9.627368910674955,
+"raw_weighted_average": 4.65682293176651
+},
+{
+"id": "west_african_seneweb_09dd878ec9d8",
+"published_date": "2026-10-04T20:05:56.000Z",
+"language": "fr",
+"weighted_average": 9.424432993309914,
+"raw_weighted_average": 4.508106005191803
+},
+{
+"id": "austrian_vienna_at_c3b74eac1b7c",
+"published_date": "2026-10-05T04:06:02.000Z",
+"language": "de",
+"weighted_average": 8.91188614457299,
+"raw_weighted_average": 4.324747037887573
+},
+{
+"id": "southeast_asian_cna_sg_6c2e2c3e4e31",
+"published_date": "2026-10-04T22:00:00.000Z",
+"language": "en",
+"weighted_average": 9.207030145959093,
+"raw_weighted_average": 4.401185297966004
+},
+{
+"id": "west_african_voice_of_nigeria_ab5235c0f1d0",
+"published_date": "2026-10-04T13:39:43.000Z",
+"language": "en",
+"weighted_average": 9.625941984185978,
+"raw_weighted_average": 4.65575453042984
+},
+{
+"id": "south_african_iol_ea33d154ae03",
+"published_date": "2026-10-04T17:18:02.000Z",
+"language": "en",
+"weighted_average": 9.359284921257967,
+"raw_weighted_average": 4.461148345470429
+},
+{
+"id": "west_african_le_sahel_1017971b8185",
+"published_date": "2026-10-04T13:30:21.000Z",
+"language": "fr",
+"weighted_average": 9.553765568132503,
+"raw_weighted_average": 4.59285192489624
+},
+{
+"id": "east_african_taarifa_rw_50850405476b",
+"published_date": "2026-10-04T08:32:53.000Z",
+"language": "en",
+"weighted_average": 9.878129892358443,
+"raw_weighted_average": 5.028019428253174
+},
+{
+"id": "east_african_radio_tamazuj_8e5f0306992d",
+"published_date": "2026-10-04T12:49:39.000Z",
+"language": "en",
+"weighted_average": 9.594576329066502,
+"raw_weighted_average": 4.632269871234894
+},
+{
+"id": "south_american_dominican_today_3291c7c0755d",
+"published_date": "2026-10-04T16:12:25.000Z",
+"language": "en",
+"weighted_average": 9.284886822184786,
+"raw_weighted_average": 4.4332952260971075
+},
+{
+"id": "belgian_bruzz_3cc745e38b1c",
+"published_date": "2026-10-04T16:44:14.000Z",
+"language": "nl",
+"weighted_average": 9.250605830284666,
+"raw_weighted_average": 4.420461344718933
+},
+{
+"id": "british_irish_uk_gov_news_d03bbf036824",
+"published_date": "2026-10-04T23:01:12.000Z",
+"language": "en",
+"weighted_average": 8.840569446646068,
+"raw_weighted_average": 4.271508927643299
+},
+{
+"id": "south_asian_indian_express_209a030dcb37",
+"published_date": "2026-10-04T11:31:42.000Z",
+"language": "en",
+"weighted_average": 9.421565618878851,
+"raw_weighted_average": 4.503812575340271
+},
+{
+"id": "southeast_asian_straits_times_36417d3af63e",
+"published_date": "2026-10-04T10:03:00.000Z",
+"language": "en",
+"weighted_average": 9.508845228702498,
+"raw_weighted_average": 4.563624918460846
+},
+{
+"id": "german_t3n_00063d61d9fe",
+"published_date": "2026-10-04T15:15:00.000Z",
+"language": "de",
+"weighted_average": 8.805525971432838,
+"raw_weighted_average": 4.260864055156708
+},
+{
+"id": "east_african_citizen_digital_82f1d86efa28",
+"published_date": "2026-10-03T19:55:00.000Z",
+"language": "en",
+"weighted_average": 9.964497,
+"raw_weighted_average": 5.346322870254516
+},
+{
+"id": "south_american_el_comercio_pe_7a138e777c31",
+"published_date": "2026-10-04T19:39:00.000Z",
+"language": "es",
+"weighted_average": 8.39681755234529,
+"raw_weighted_average": 4.167943906784058
+},
+{
+"id": "british_irish_uk_gov_news_ddc05473d9d6",
+"published_date": "2026-10-04T23:01:12.000Z",
+"language": "en",
+"weighted_average": 8.177736517395708,
+"raw_weighted_average": 4.1189182043075565
+},
+{
+"id": "west_african_seneweb_a3ae8ced1be5",
+"published_date": "2026-10-03T16:44:02.000Z",
+"language": "fr",
+"weighted_average": 9.66393473054397,
+"raw_weighted_average": 4.689540123939515
+},
+{
+"id": "south_asian_express_tribune_9554348a2bca",
+"published_date": "2026-10-03T17:17:00.000Z",
+"language": "en",
+"weighted_average": 9.584864749224451,
+"raw_weighted_average": 4.624299031496048
+},
+{
+"id": "caucasus_report_az_a7072ab24c23",
+"published_date": "2026-10-03T11:00:10.000Z",
+"language": "en",
+"weighted_average": 9.928589980678549,
+"raw_weighted_average": 5.174470961093903
+},
+{
+"id": "caucasus_report_az_d6437a7ba969",
+"published_date": "2026-10-03T15:43:29.000Z",
+"language": "en",
+"weighted_average": 9.592229168568172,
+"raw_weighted_average": 4.630512475967407
+},
+{
+"id": "south_american_cuba_headlines_ed844cad1ac4",
+"published_date": "2026-10-03T19:20:29.000Z",
+"language": "en",
+"weighted_average": 9.27992780652002,
+"raw_weighted_average": 4.431438672542573
+},
+{
+"id": "finnish_yle_uutiset_053707f153c1",
+"published_date": "2026-10-03T13:03:44.000Z",
+"language": "fi",
+"weighted_average": 9.670478140936986,
+"raw_weighted_average": 4.750439536571503
+},
+{
+"id": "west_african_legit_ng_c9c67efb637b",
+"published_date": "2026-10-03T15:28:16.000Z",
+"language": "en",
+"weighted_average": 9.4255742936639,
+"raw_weighted_average": 4.509814918041229
+},
+{
+"id": "pan_african_alwihda_info_b77c201a46b2",
+"published_date": "2026-10-03T17:15:00.000Z",
+"language": "fr",
+"weighted_average": 8.988787286104735,
+"raw_weighted_average": 4.349143302440644
+},
+{
+"id": "east_african_daily_news_tz_fa89fd3aef9f",
+"published_date": "2026-10-04T07:30:55.000Z",
+"language": "en",
+"weighted_average": 8.133412144263222,
+"raw_weighted_average": 4.107391822338104
+},
+{
+"id": "southeast_asian_thaiger_019643e21929",
+"published_date": "2026-10-03T04:00:14.000Z",
+"language": "en",
+"weighted_average": 9.786982,
+"raw_weighted_average": 4.849426031112671
+},
+{
+"id": "global_news_UN_news_3d374dcd4305",
+"published_date": "2026-10-03T12:00:00.000Z",
+"language": "en",
+"weighted_average": 9.227324038108069,
+"raw_weighted_average": 4.411315381526947
+},
+{
+"id": "french_le_monde_1bf0ebe93d13",
+"published_date": "2026-10-03T11:09:33.000Z",
+"language": "fr",
+"weighted_average": 9.207030145959093,
+"raw_weighted_average": 4.401185297966004
+},
+{
+"id": "east_african_citizen_digital_60d7015ef8bc",
+"published_date": "2026-10-03T13:56:46.000Z",
+"language": "en",
+"weighted_average": 8.97912496938653,
+"raw_weighted_average": 4.34753557741642
+},
+{
+"id": "east_african_ktpress_rw_64f13e1b4fb8",
+"published_date": "2026-10-03T14:58:12.000Z",
+"language": "en",
+"weighted_average": 8.890659853031526,
+"raw_weighted_average": 4.309014511108399
+},
+{
+"id": "west_african_punch_ng_505f9fbccaca",
+"published_date": "2026-10-04T00:13:49.000Z",
+"language": "en",
+"weighted_average": 8.342969433798977,
+"raw_weighted_average": 4.157285571098328
+},
+{
+"id": "south_american_el_comercio_pe_50aae3e20f48",
+"published_date": "2026-10-03T21:31:09.000Z",
+"language": "es",
+"weighted_average": 8.31973417708752,
+"raw_weighted_average": 4.152314841747284
+},
+{
+"id": "south_asian_nepalnews_7e62f57ddc89",
+"published_date": "2026-10-03T01:14:51.000Z",
+"language": "ne",
+"weighted_average": 9.51973719257258,
+"raw_weighted_average": 4.574999988079071
+},
+{
+"id": "biotech_pharma_bioengineer_a9b654d9a6a7",
+"published_date": "2026-10-04T04:48:17.000Z",
+"language": "en",
+"weighted_average": 7.895963862078523,
+"raw_weighted_average": 4.059060889482499
+},
+{
+"id": "german_faz_wirtschaft_26bb85228868",
+"published_date": "2026-10-03T09:17:32.000Z",
+"language": "de",
+"weighted_average": 8.93931801559197,
+"raw_weighted_average": 4.338440179824829
+},
+{
+"id": "swedish_svt_nyheter_d1aafe217c0a",
+"published_date": "2026-10-03T09:30:04.000Z",
+"language": "sv",
+"weighted_average": 8.924663965231343,
+"raw_weighted_average": 4.331125330924988
+},
+{
+"id": "south_american_cuba_headlines_8d34d61e0f7f",
+"published_date": "2026-10-03T18:25:20.000Z",
+"language": "en",
+"weighted_average": 8.388656225390003,
+"raw_weighted_average": 4.166585946083069
+},
+{
+"id": "west_african_legit_ng_b689efc483c9",
+"published_date": "2026-10-03T11:32:15.000Z",
+"language": "en",
+"weighted_average": 8.757865708553354,
+"raw_weighted_average": 4.241958284378052
+},
+{
+"id": "south_american_inews_guyana_b568306ef0db",
+"published_date": "2026-10-03T13:09:59.000Z",
+"language": "en",
+"weighted_average": 8.587906352313793,
+"raw_weighted_average": 4.209584724903107
+},
+{
+"id": "east_african_daily_news_tz_f8d1dce3af0b",
+"published_date": "2026-10-03T08:18:50.000Z",
+"language": "en",
+"weighted_average": 8.864714003975585,
+"raw_weighted_average": 4.289587736129761
+},
+{
+"id": "positive_news_the_logical_indian_136abf4a7827",
+"published_date": "2026-10-03T13:02:13.000Z",
+"language": "en",
+"weighted_average": 8.49216092584352,
+"raw_weighted_average": 4.185254406929016
+},
+{
+"id": "west_african_punch_ng_7d434b6b117a",
+"published_date": "2026-10-03T12:49:00.000Z",
+"language": "en",
+"weighted_average": 8.49006835203925,
+"raw_weighted_average": 4.184470990300179
+},
+{
+"id": "austrian_vienna_at_ce39a3cfea57",
+"published_date": "2026-10-03T04:07:20.000Z",
+"language": "de",
+"weighted_average": 8.886525963056108,
+"raw_weighted_average": 4.305919289588928
+}
+]
+}

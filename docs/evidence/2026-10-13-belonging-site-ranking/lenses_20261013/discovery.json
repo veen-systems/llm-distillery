@@ -1,0 +1,3759 @@
+{
+"lens": "discovery",
+"filter": "cultural_discovery",
+"built": "2026-10-13T06:55:18Z",
+"page_order": [
+{
+"id": "science_phys_org_24b90eea212f",
+"published_date": "2026-10-12T23:56:08.000Z",
+"language": "en",
+"weighted_average": 9.737637942377152,
+"raw_weighted_average": 6.6085672855377195
+},
+{
+"id": "south_american_colombia_one_5e7a666a39a1",
+"published_date": "2026-10-12T21:00:00.000Z",
+"language": "en",
+"weighted_average": 9.911387,
+"raw_weighted_average": 7.009473657608032
+},
+{
+"id": "science_nautilus_magazine_bb9b2c1e5981",
+"published_date": "2026-10-12T18:30:00.000Z",
+"language": "en",
+"weighted_average": 9.914055511197793,
+"raw_weighted_average": 7.038885402679443
+},
+{
+"id": "art_art_newspaper_bfe0d2d0a5d7",
+"published_date": "2026-10-12T17:31:14.000Z",
+"language": "en",
+"weighted_average": 9.893596333021222,
+"raw_weighted_average": 6.92485830783844
+},
+{
+"id": "spanish_xataka_361086699c9c",
+"published_date": "2026-10-12T17:30:26.000Z",
+"language": "es",
+"weighted_average": 9.85338789882665,
+"raw_weighted_average": 6.797135519981384
+},
+{
+"id": "science_zme_science_762e6ba8bde4",
+"published_date": "2026-10-12T14:54:47.000Z",
+"language": "en",
+"weighted_average": 9.973416,
+"raw_weighted_average": 7.267723774909973
+},
+{
+"id": "science_livescience_de107148a501",
+"published_date": "2026-10-12T13:07:45.000Z",
+"language": "en",
+"weighted_average": 9.911387,
+"raw_weighted_average": 7.014114570617676
+},
+{
+"id": "south_american_el_nacional_59b8b7fd7068",
+"published_date": "2026-10-12T18:11:06.000Z",
+"language": "es",
+"weighted_average": 9.55793946594386,
+"raw_weighted_average": 6.420248222351074
+},
+{
+"id": "science_phys_org_dd00d0d56bde",
+"published_date": "2026-10-12T21:16:23.000Z",
+"language": "en",
+"weighted_average": 9.328470857489023,
+"raw_weighted_average": 6.2118274688720705
+},
+{
+"id": "south_american_brasil_de_fato_a8b96c972f9d",
+"published_date": "2026-10-12T14:28:50.000Z",
+"language": "pt",
+"weighted_average": 9.626086603702458,
+"raw_weighted_average": 6.499128842353821
+},
+{
+"id": "greek_ta_nea_0c70db9479bc",
+"published_date": "2026-10-12T15:50:00.000Z",
+"language": "el",
+"weighted_average": 9.499997334597758,
+"raw_weighted_average": 6.365774869918823
+},
+{
+"id": "south_asian_scroll_in_8457a08610d3",
+"published_date": "2026-10-12T14:00:00.000Z",
+"language": "en",
+"weighted_average": 9.59431997255593,
+"raw_weighted_average": 6.457745003700256
+},
+{
+"id": "south_american_la_nacion_ar_bceb0322e63f",
+"published_date": "2026-10-12T16:32:49.000Z",
+"language": "es",
+"weighted_average": 9.376464627410197,
+"raw_weighted_average": 6.25815782546997
+},
+{
+"id": "greek_naftemporiki_9a4546204876",
+"published_date": "2026-10-12T20:24:50.000Z",
+"language": "el",
+"weighted_average": 9.064194690098827,
+"raw_weighted_average": 6.0240891456604
+},
+{
+"id": "science_livescience_de212c2b48be",
+"published_date": "2026-10-12T14:00:00.000Z",
+"language": "en",
+"weighted_average": 9.445517572271969,
+"raw_weighted_average": 6.328076958656311
+},
+{
+"id": "science_zme_science_1f770a1f79bb",
+"published_date": "2026-10-12T15:40:18.000Z",
+"language": "en",
+"weighted_average": 9.3348067099326,
+"raw_weighted_average": 6.216990184783936
+},
+{
+"id": "mexican_aristegui_03e0de6acec9",
+"published_date": "2026-10-12T20:54:13.000Z",
+"language": "es",
+"weighted_average": 8.98449561434401,
+"raw_weighted_average": 5.965643763542175
+},
+{
+"id": "art_open_culture_990711d5d467",
+"published_date": "2026-10-12T08:00:28.000Z",
+"language": "en",
+"weighted_average": 9.605005819826664,
+"raw_weighted_average": 6.468629217147827
+},
+{
+"id": "science_conversation_science_b017013872a7",
+"published_date": "2026-10-12T12:19:57.000Z",
+"language": "en",
+"weighted_average": 9.304004383255078,
+"raw_weighted_average": 6.184824514389038
+},
+{
+"id": "mental_health_psypost_0a7351d8f1f5",
+"published_date": "2026-10-12T12:00:33.000Z",
+"language": "en",
+"weighted_average": 9.199662793968622,
+"raw_weighted_average": 6.114411807060241
+},
+{
+"id": "french_le_monde_tech_613300abeb89",
+"published_date": "2026-10-12T09:00:06.000Z",
+"language": "fr",
+"weighted_average": 9.366512728878796,
+"raw_weighted_average": 6.239335060119629
+},
+{
+"id": "longform_new_yorker_science_0e1d1561b4cb",
+"published_date": "2026-10-12T10:00:00.000Z",
+"language": "en",
+"weighted_average": 9.233520047488119,
+"raw_weighted_average": 6.145284485816956
+},
+{
+"id": "ukrainian_unian_en_b666e2ed0a03",
+"published_date": "2026-10-12T07:45:00.000Z",
+"language": "ru",
+"weighted_average": 9.274078472338868,
+"raw_weighted_average": 6.1726315259933475
+},
+{
+"id": "science_archaeology_magazine_523481bd44ee",
+"published_date": "2026-10-12T17:30:00.000Z",
+"language": "en",
+"weighted_average": 8.673412153949476,
+"raw_weighted_average": 5.772959554195404
+},
+{
+"id": "spanish_efeverde_3483634bb9ef",
+"published_date": "2026-10-12T22:01:24.000Z",
+"language": "es",
+"weighted_average": 8.387197815195469,
+"raw_weighted_average": 5.652401852607727
+},
+{
+"id": "south_asian_hindustan_times_2844874e101b",
+"published_date": "2026-10-12T09:39:39.000Z",
+"language": "en",
+"weighted_average": 9.110780060066393,
+"raw_weighted_average": 6.046499180793762
+},
+{
+"id": "science_skeptic_magazine_ef5591cc2ccb",
+"published_date": "2026-10-12T15:51:29.000Z",
+"language": "en",
+"weighted_average": 8.708519838052526,
+"raw_weighted_average": 5.790910935401916
+},
+{
+"id": "science_phys_org_2192b81f699c",
+"published_date": "2026-10-12T20:36:10.000Z",
+"language": "en",
+"weighted_average": 8.395100680995444,
+"raw_weighted_average": 5.657768630981446
+},
+{
+"id": "ukrainian_unian_en_4cbf419a0847",
+"published_date": "2026-10-12T09:01:00.000Z",
+"language": "ru",
+"weighted_average": 9.064194690098827,
+"raw_weighted_average": 6.0240891456604
+},
+{
+"id": "mexican_la_jornada_55ded0754391",
+"published_date": "2026-10-12T08:04:49.000Z",
+"language": "es",
+"weighted_average": 9.101170808310917,
+"raw_weighted_average": 6.0409062027931215
+},
+{
+"id": "geography_nature_physorg_earth_e9ee8d4031ca",
+"published_date": "2026-10-12T08:56:01.000Z",
+"language": "en",
+"weighted_average": 8.9956487611231,
+"raw_weighted_average": 5.9742981672286986
+},
+{
+"id": "south_asian_times_of_india_aae4ed912941",
+"published_date": "2026-10-12T10:52:31.000Z",
+"language": "en",
+"weighted_average": 8.867776315524374,
+"raw_weighted_average": 5.884328079223633
+},
+{
+"id": "science_new_scientist_abdcc2b14922",
+"published_date": "2026-10-12T17:00:00.000Z",
+"language": "en",
+"weighted_average": 8.426910903609699,
+"raw_weighted_average": 5.671227645874024
+},
+{
+"id": "science_phys_org_e7ed04f5e092",
+"published_date": "2026-10-12T19:56:11.000Z",
+"language": "en",
+"weighted_average": 8.253842687757064,
+"raw_weighted_average": 5.595773470401764
+},
+{
+"id": "science_livescience_18253e493696",
+"published_date": "2026-10-12T13:07:11.000Z",
+"language": "en",
+"weighted_average": 8.572437485134508,
+"raw_weighted_average": 5.738239073753357
+},
+{
+"id": "science_archaeology_magazine_803ceb63bc75",
+"published_date": "2026-10-12T17:00:00.000Z",
+"language": "en",
+"weighted_average": 8.333167658813341,
+"raw_weighted_average": 5.626788866519928
+},
+{
+"id": "us_news_wbur_9d39105be090",
+"published_date": "2026-10-12T09:02:24.000Z",
+"language": "en",
+"weighted_average": 8.785334941177993,
+"raw_weighted_average": 5.839906120300293
+},
+{
+"id": "global_news_le_monde_science_2921e0a45d84",
+"published_date": "2026-10-12T19:09:44.000Z",
+"language": "fr",
+"weighted_average": 8.165379510834097,
+"raw_weighted_average": 5.559011077880859
+},
+{
+"id": "arabic_aawsat_ar_dfd6e94c130a",
+"published_date": "2026-10-12T13:53:36.000Z",
+"language": "ar",
+"weighted_average": 8.395549752543728,
+"raw_weighted_average": 5.658073592185974
+},
+{
+"id": "romanian_adevarul_060734c3d8a3",
+"published_date": "2026-10-13T00:37:25.000Z",
+"language": "ro",
+"weighted_average": 7.739777801318842,
+"raw_weighted_average": 5.383750033378601
+},
+{
+"id": "us_media_wired_812d64b60aa8",
+"published_date": "2026-10-12T11:15:00.000Z",
+"language": "en",
+"weighted_average": 8.412245049938905,
+"raw_weighted_average": 5.665795469284058
+},
+{
+"id": "biotech_pharma_bioengineer_aad7c1d3ace4",
+"published_date": "2026-10-12T13:48:53.000Z",
+"language": "en",
+"weighted_average": 8.119382738563763,
+"raw_weighted_average": 5.531190526485443
+},
+{
+"id": "baltic_lrt_91231cb54376",
+"published_date": "2026-10-12T09:00:00.000Z",
+"language": "lt",
+"weighted_average": 8.262847493736205,
+"raw_weighted_average": 5.600359582901001
+},
+{
+"id": "british_irish_guardian_uk_c8f2c61e0d1f",
+"published_date": "2026-10-12T07:00:48.000Z",
+"language": "en",
+"weighted_average": 8.368695411409073,
+"raw_weighted_average": 5.641263937950134
+},
+{
+"id": "central_asian_open_kg_24b8fdfdec96",
+"published_date": "2026-10-12T15:35:36.000Z",
+"language": "en",
+"weighted_average": 7.8942803773160035,
+"raw_weighted_average": 5.455344307422638
+},
+{
+"id": "south_american_telesur_en_76e6ac68d0c1",
+"published_date": "2026-10-12T13:15:41.000Z",
+"language": "en",
+"weighted_average": 8.00210210348782,
+"raw_weighted_average": 5.4811561584472654
+},
+{
+"id": "global_news_euronews_a6ffa66c5147",
+"published_date": "2026-10-12T07:10:02.000Z",
+"language": "en",
+"weighted_average": 8.157492217568121,
+"raw_weighted_average": 5.555440473556518
+},
+{
+"id": "art_art_newspaper_55472807e0c7",
+"published_date": "2026-10-12T12:11:38.000Z",
+"language": "en",
+"weighted_average": 7.822762720695956,
+"raw_weighted_average": 5.420578050613403
+},
+{
+"id": "south_asian_times_of_india_4f8fedc34ebf",
+"published_date": "2026-10-12T12:30:00.000Z",
+"language": "en",
+"weighted_average": 7.681170289344742,
+"raw_weighted_average": 5.366550707817078
+},
+{
+"id": "caucasus_oc_media_853d0a39c0c1",
+"published_date": "2026-10-12T08:21:59.000Z",
+"language": "en",
+"weighted_average": 7.82969509980941,
+"raw_weighted_average": 5.424613332748413
+},
+{
+"id": "science_livescience_1050707027f8",
+"published_date": "2026-10-12T13:07:45.000Z",
+"language": "en",
+"weighted_average": 7.580911433763953,
+"raw_weighted_average": 5.333750009536743
+},
+{
+"id": "art_open_culture_fa68459937d1",
+"published_date": "2026-10-12T09:00:44.000Z",
+"language": "en",
+"weighted_average": 7.739777801318842,
+"raw_weighted_average": 5.383750033378601
+},
+{
+"id": "healthcare_medicalxpress_4be862761c51",
+"published_date": "2026-10-12T14:26:01.000Z",
+"language": "en",
+"weighted_average": 7.230077415982893,
+"raw_weighted_average": 5.2460426688194275
+},
+{
+"id": "romanian_romania_insider_b818f36c8a14",
+"published_date": "2026-10-12T10:46:24.000Z",
+"language": "en",
+"weighted_average": 7.217387967433607,
+"raw_weighted_average": 5.242595744132996
+},
+{
+"id": "italian_repubblica_0e328be4c3fd",
+"published_date": "2026-10-12T04:00:00.000Z",
+"language": "en",
+"weighted_average": 9.681102192514963,
+"raw_weighted_average": 6.546180653572082
+},
+{
+"id": "south_american_el_comercio_pe_d988bd7d06b1",
+"published_date": "2026-10-11T22:55:00.000Z",
+"language": "es",
+"weighted_average": 9.86708,
+"raw_weighted_average": 6.834649324417114
+},
+{
+"id": "mexican_la_jornada_192d907ac609",
+"published_date": "2026-10-12T08:04:49.000Z",
+"language": "es",
+"weighted_average": 7.1217363068498365,
+"raw_weighted_average": 5.216613674163819
+},
+{
+"id": "french_rfi_f6f8f7a806ab",
+"published_date": "2026-10-11T22:08:41.000Z",
+"language": "fr",
+"weighted_average": 9.680137257896684,
+"raw_weighted_average": 6.545160293579102
+},
+{
+"id": "ai_arxiv_cs_ai_8c7cb32f4b02",
+"published_date": "2026-10-12T04:00:00.000Z",
+"language": "en",
+"weighted_average": 9.248485371606455,
+"raw_weighted_average": 6.157479691505432
+},
+{
+"id": "australian_the_conversation_au_f4fce89e755f",
+"published_date": "2026-10-11T18:26:27.000Z",
+"language": "en",
+"weighted_average": 9.836230308987226,
+"raw_weighted_average": 6.767341613769531
+},
+{
+"id": "spanish_eldiario_fcc8985f2efc",
+"published_date": "2026-10-11T15:00:27.000Z",
+"language": "es",
+"weighted_average": 9.999999980489497,
+"raw_weighted_average": 7.593076920509338
+},
+{
+"id": "spanish_xataka_341e438ae9eb",
+"published_date": "2026-10-11T16:00:27.000Z",
+"language": "es",
+"weighted_average": 9.869861031946003,
+"raw_weighted_average": 6.84620099067688
+},
+{
+"id": "swiss_srf_international_6db32c692c9d",
+"published_date": "2026-10-11T17:33:07.000Z",
+"language": "de",
+"weighted_average": 9.753578097028472,
+"raw_weighted_average": 6.625146865844727
+},
+{
+"id": "romanian_adevarul_16447a586fff",
+"published_date": "2026-10-11T13:14:38.000Z",
+"language": "ro",
+"weighted_average": 9.973416,
+"raw_weighted_average": 7.274217224121093
+},
+{
+"id": "global_news_el_pais_america_3e9013933b71",
+"published_date": "2026-10-12T03:30:01.000Z",
+"language": "es",
+"weighted_average": 9.031191531933134,
+"raw_weighted_average": 6.00246901512146
+},
+{
+"id": "science_arxiv_cs_d715424485dc",
+"published_date": "2026-10-12T04:00:00.000Z",
+"language": "en",
+"weighted_average": 8.912843229311758,
+"raw_weighted_average": 5.920072674751282
+},
+{
+"id": "spanish_la_vanguardia_b3ad539570d5",
+"published_date": "2026-10-12T03:30:00.000Z",
+"language": "es",
+"weighted_average": 8.91652010600708,
+"raw_weighted_average": 5.923069047927856
+},
+{
+"id": "south_american_prensa_libre_027f93e83322",
+"published_date": "2026-10-11T21:00:00.000Z",
+"language": "es",
+"weighted_average": 9.302783205308359,
+"raw_weighted_average": 6.184326958656311
+},
+{
+"id": "science_phys_org_93e01a18e376",
+"published_date": "2026-10-11T16:22:35.000Z",
+"language": "en",
+"weighted_average": 9.591114758556856,
+"raw_weighted_average": 6.450616002082825
+},
+{
+"id": "caucasus_hetq_3ff28e13afdc",
+"published_date": "2026-10-12T03:46:00.000Z",
+"language": "en",
+"weighted_average": 8.861923701162965,
+"raw_weighted_average": 5.881943416595459
+},
+{
+"id": "ukrainian_kyiv_post_de2ebe0721c0",
+"published_date": "2026-10-11T12:59:00.000Z",
+"language": "en",
+"weighted_average": 9.765910569623337,
+"raw_weighted_average": 6.649326920509338
+},
+{
+"id": "science_arxiv_cs_1c5d84c2d18b",
+"published_date": "2026-10-12T04:00:00.000Z",
+"language": "en",
+"weighted_average": 8.766732755194864,
+"raw_weighted_average": 5.832327032089234
+},
+{
+"id": "spanish_la_vanguardia_6f7b8228b0e0",
+"published_date": "2026-10-12T03:35:00.000Z",
+"language": "es",
+"weighted_average": 8.770373023166924,
+"raw_weighted_average": 5.833810186386108
+},
+{
+"id": "korean_hankyung_141860d4b652",
+"published_date": "2026-10-12T09:15:10.000Z",
+"language": "ko",
+"weighted_average": 6.464408149372386,
+"raw_weighted_average": 5.0426733016967775
+},
+{
+"id": "science_arxiv_physics_0d1c4cf4a388",
+"published_date": "2026-10-12T04:00:00.000Z",
+"language": "en",
+"weighted_average": 8.651713943998525,
+"raw_weighted_average": 5.763799810409546
+},
+{
+"id": "ukrainian_kyiv_independent_19eda769223f",
+"published_date": "2026-10-11T09:35:30.000Z",
+"language": "en",
+"weighted_average": 9.74222524106924,
+"raw_weighted_average": 6.611682486534119
+},
+{
+"id": "south_asian_indian_express_d5ef58e945d8",
+"published_date": "2026-10-12T00:50:17.000Z",
+"language": "en",
+"weighted_average": 8.770373023166924,
+"raw_weighted_average": 5.833810186386108
+},
+{
+"id": "austrian_der_standard_20f12a09eb91",
+"published_date": "2026-10-12T05:43:35.000Z",
+"language": "de",
+"weighted_average": 8.472928650414158,
+"raw_weighted_average": 5.695576095581055
+},
+{
+"id": "british_irish_bbc_scotland_d5b22ee2ff3b",
+"published_date": "2026-10-11T08:05:38.000Z",
+"language": "en",
+"weighted_average": 9.804864890090133,
+"raw_weighted_average": 6.702232456207275
+},
+{
+"id": "care_systems_disabled_world_60b8c8065f17",
+"published_date": "2026-10-11T18:10:00.000Z",
+"language": "en",
+"weighted_average": 9.126654589107128,
+"raw_weighted_average": 6.055738806724548
+},
+{
+"id": "community_social_hackernews_front_1a1f88614791",
+"published_date": "2026-10-11T12:07:22.000Z",
+"language": "en",
+"weighted_average": 9.398660260921412,
+"raw_weighted_average": 6.276078414916992
+},
+{
+"id": "central_asian_astana_times_4c1ca4b042b2",
+"published_date": "2026-10-11T04:30:43.000Z",
+"language": "en",
+"weighted_average": 9.856008285384423,
+"raw_weighted_average": 6.801781392097473
+},
+{
+"id": "australian_the_conversation_au_016e2ef4557f",
+"published_date": "2026-10-12T04:45:37.000Z",
+"language": "en",
+"weighted_average": 8.331459205823721,
+"raw_weighted_average": 5.626092791557312
+},
+{
+"id": "spanish_eldiario_f46443b71657",
+"published_date": "2026-10-11T12:00:22.000Z",
+"language": "es",
+"weighted_average": 9.321184100507883,
+"raw_weighted_average": 6.2058899164199826
+},
+{
+"id": "balkan_vecernji_5ba7ad540fee",
+"published_date": "2026-10-11T19:59:00.000Z",
+"language": "hr",
+"weighted_average": 8.828710978328814,
+"raw_weighted_average": 5.864264678955078
+},
+{
+"id": "science_arxiv_cs_326978a1d62f",
+"published_date": "2026-10-12T04:00:00.000Z",
+"language": "en",
+"weighted_average": 8.320225632711761,
+"raw_weighted_average": 5.622155046463012
+},
+{
+"id": "south_asian_scroll_in_4199a37d6de0",
+"published_date": "2026-10-11T02:00:00.000Z",
+"language": "en",
+"weighted_average": 9.89027101893578,
+"raw_weighted_average": 6.911310148239136
+},
+{
+"id": "central_asian_open_kg_985b6d908471",
+"published_date": "2026-10-12T04:03:33.000Z",
+"language": "en",
+"weighted_average": 8.254137822542893,
+"raw_weighted_average": 5.5959237813949585
+},
+{
+"id": "science_mdpi_sustainability_cec91d6c28da",
+"published_date": "2026-10-12T00:00:00.000Z",
+"language": "en",
+"weighted_average": 8.452269305351615,
+"raw_weighted_average": 5.681546485424041
+},
+{
+"id": "ukrainian_unn_ua_cc3d2f93c620",
+"published_date": "2026-10-11T15:04:49.000Z",
+"language": "en",
+"weighted_average": 8.953816275705684,
+"raw_weighted_average": 5.949925065040588
+},
+{
+"id": "pubmed_d0d4ac1018f0",
+"published_date": "2026-10-12T00:00:00.000Z",
+"language": "en",
+"weighted_average": 8.398177967390467,
+"raw_weighted_average": 5.659858393669128
+},
+{
+"id": "south_asian_the_hindu_717be45b1256",
+"published_date": "2026-10-12T01:47:09.000Z",
+"language": "en",
+"weighted_average": 8.253885966702182,
+"raw_weighted_average": 5.595795512199402
+},
+{
+"id": "community_social_hackernews_front_e759558b983d",
+"published_date": "2026-10-10T21:07:07.000Z",
+"language": "en",
+"weighted_average": 9.911387,
+"raw_weighted_average": 7.005964899063111
+},
+{
+"id": "arabic_aawsat_ar_8454cec1dc34",
+"published_date": "2026-10-11T16:17:46.000Z",
+"language": "ar",
+"weighted_average": 8.692947111112726,
+"raw_weighted_average": 5.781803095340729
+},
+{
+"id": "spanish_la_vanguardia_4e2be2968086",
+"published_date": "2026-10-12T04:40:00.000Z",
+"language": "es",
+"weighted_average": 7.930287668885097,
+"raw_weighted_average": 5.464750504493714
+},
+{
+"id": "romanian_hotnews_7cf231cdb12f",
+"published_date": "2026-10-11T03:57:08.000Z",
+"language": "ro",
+"weighted_average": 9.325010979961785,
+"raw_weighted_average": 6.20900821685791
+},
+{
+"id": "pacific_post_courier_png_79251cb0a34e",
+"published_date": "2026-10-11T01:40:56.000Z",
+"language": "en",
+"weighted_average": 9.447668386584413,
+"raw_weighted_average": 6.3314391613006595
+},
+{
+"id": "ukrainian_unn_ua_a29497d90779",
+"published_date": "2026-10-10T23:27:37.000Z",
+"language": "en",
+"weighted_average": 9.489736928735425,
+"raw_weighted_average": 6.361159920692444
+},
+{
+"id": "south_asian_scroll_in_f649b8a3c37a",
+"published_date": "2026-10-10T16:30:00.000Z",
+"language": "en",
+"weighted_average": 9.911387,
+"raw_weighted_average": 7.001519131660461
+},
+{
+"id": "french_lemonde_culture_878598c0a873",
+"published_date": "2026-10-11T10:58:07.000Z",
+"language": "fr",
+"weighted_average": 8.716317835060794,
+"raw_weighted_average": 5.801502060890198
+},
+{
+"id": "swiss_nzz_wissenschaft_a48ae1d80b76",
+"published_date": "2026-10-11T03:30:00.000Z",
+"language": "de",
+"weighted_average": 9.114879833801023,
+"raw_weighted_average": 6.048885416984558
+},
+{
+"id": "science_sciencedaily_14d29a1282f2",
+"published_date": "2026-10-11T01:41:37.000Z",
+"language": "en",
+"weighted_average": 9.194968793352942,
+"raw_weighted_average": 6.106491160392761
+},
+{
+"id": "balkan_nova_rs_d5f3ecd12106",
+"published_date": "2026-10-11T20:18:48.000Z",
+"language": "hr",
+"weighted_average": 8.046808813357867,
+"raw_weighted_average": 5.508382201194763
+},
+{
+"id": "science_arxiv_cs_5b540517b8ca",
+"published_date": "2026-10-12T04:00:00.000Z",
+"language": "en",
+"weighted_average": 7.608499875277909,
+"raw_weighted_average": 5.341976428031922
+},
+{
+"id": "spanish_20minutos_es_cee7898bd9a7",
+"published_date": "2026-10-10T17:38:38.000Z",
+"language": "es",
+"weighted_average": 9.590382396362438,
+"raw_weighted_average": 6.44763150215149
+},
+{
+"id": "romanian_digi24_12d487346a5c",
+"published_date": "2026-10-10T13:10:31.000Z",
+"language": "ro",
+"weighted_average": 9.852418145948487,
+"raw_weighted_average": 6.793183612823486
+},
+{
+"id": "spanish_xataka_701d3648a34a",
+"published_date": "2026-10-10T14:00:27.000Z",
+"language": "es",
+"weighted_average": 9.72176991578966,
+"raw_weighted_average": 6.5965934038162235
+},
+{
+"id": "spanish_eldiario_6140626ba4e1",
+"published_date": "2026-10-10T19:46:18.000Z",
+"language": "es",
+"weighted_average": 9.27520011395479,
+"raw_weighted_average": 6.173088526725769
+},
+{
+"id": "spanish_xataka_c41661e75a4a",
+"published_date": "2026-10-11T12:00:27.000Z",
+"language": "es",
+"weighted_average": 8.267583741128808,
+"raw_weighted_average": 5.602771735191346
+},
+{
+"id": "biotech_pharma_bioengineer_ed0c38b7634a",
+"published_date": "2026-10-11T09:07:40.000Z",
+"language": "en",
+"weighted_average": 8.388966839715774,
+"raw_weighted_average": 5.653603184223175
+},
+{
+"id": "greek_protothema_87186fe7b67d",
+"published_date": "2026-10-12T05:44:25.000Z",
+"language": "el",
+"weighted_average": 7.285212246095783,
+"raw_weighted_average": 5.261018514633179
+},
+{
+"id": "spanish_xataka_62e326df363f",
+"published_date": "2026-10-10T08:00:27.000Z",
+"language": "es",
+"weighted_average": 9.923515386611058,
+"raw_weighted_average": 7.058157825469971
+},
+{
+"id": "us_media_the_atlantic_287ae3e22fa7",
+"published_date": "2026-10-11T19:39:59.000Z",
+"language": "en",
+"weighted_average": 7.7680133215297085,
+"raw_weighted_average": 5.391212058067322
+},
+{
+"id": "science_livescience_38e9f6965d07",
+"published_date": "2026-10-11T11:00:00.000Z",
+"language": "en",
+"weighted_average": 8.18250696918545,
+"raw_weighted_average": 5.5667647361755375
+},
+{
+"id": "south_american_el_pais_uy_7fb1f535481b",
+"published_date": "2026-10-11T07:30:00.000Z",
+"language": "es",
+"weighted_average": 8.37465260073173,
+"raw_weighted_average": 5.643882489204406
+},
+{
+"id": "german_t3n_8b6ba9308ebe",
+"published_date": "2026-10-11T03:55:00.000Z",
+"language": "de",
+"weighted_average": 8.551136055347719,
+"raw_weighted_average": 5.73201162815094
+},
+{
+"id": "swedish_dagens_nyheter_3e06315fd4c2",
+"published_date": "2026-10-12T05:00:00.000Z",
+"language": "sv",
+"weighted_average": 7.210119606975223,
+"raw_weighted_average": 5.240621387958527
+},
+{
+"id": "british_irish_irish_examiner_0b35f3b322a6",
+"published_date": "2026-10-11T06:09:00.000Z",
+"language": "en",
+"weighted_average": 8.396669148779013,
+"raw_weighted_average": 5.658833765983582
+},
+{
+"id": "ukrainian_unian_en_d701eb508d33",
+"published_date": "2026-10-10T14:37:00.000Z",
+"language": "ru",
+"weighted_average": 9.305838916572945,
+"raw_weighted_average": 6.186953330039978
+},
+{
+"id": "south_asian_the_island_lk_c81c7f0ad9e4",
+"published_date": "2026-10-10T23:58:51.000Z",
+"language": "en",
+"weighted_average": 8.719478942761542,
+"raw_weighted_average": 5.805795431137085
+},
+{
+"id": "spanish_la_vanguardia_93916714a19b",
+"published_date": "2026-10-12T04:00:00.000Z",
+"language": "es",
+"weighted_average": 7.192880987456579,
+"raw_weighted_average": 5.2359387397766115
+},
+{
+"id": "southeast_asian_free_malaysia_69078c18e5a3",
+"published_date": "2026-10-12T03:35:00.000Z",
+"language": "en",
+"weighted_average": 7.2000671503727505,
+"raw_weighted_average": 5.237890768051147
+},
+{
+"id": "indonesian_mongabay_id_19c84d448160",
+"published_date": "2026-10-10T12:02:48.000Z",
+"language": "id",
+"weighted_average": 9.387053688235579,
+"raw_weighted_average": 6.266787099838257
+},
+{
+"id": "south_asian_indian_express_edf30b73ab8d",
+"published_date": "2026-10-11T04:10:02.000Z",
+"language": "en",
+"weighted_average": 8.412245049938905,
+"raw_weighted_average": 5.665795469284058
+},
+{
+"id": "british_irish_bbc_wales_49679ebb03f6",
+"published_date": "2026-10-11T06:02:09.000Z",
+"language": "en",
+"weighted_average": 8.29488361698771,
+"raw_weighted_average": 5.6135502576828005
+},
+{
+"id": "arabic_aawsat_ar_ba4768306376",
+"published_date": "2026-10-10T14:43:20.000Z",
+"language": "ar",
+"weighted_average": 9.190102871131375,
+"raw_weighted_average": 6.096578669548035
+},
+{
+"id": "south_american_estado_de_minas_todos_os_artigos_19a2398482d8",
+"published_date": "2026-10-10T02:00:00.000Z",
+"language": "pt",
+"weighted_average": 9.973416,
+"raw_weighted_average": 7.276519107818603
+},
+{
+"id": "positive_news_good_news_network_8a2467348402",
+"published_date": "2026-10-10T13:46:41.000Z",
+"language": "en",
+"weighted_average": 9.200577009558499,
+"raw_weighted_average": 6.115343046188355
+},
+{
+"id": "spanish_eldiario_c2d54615cd61",
+"published_date": "2026-10-10T20:10:52.000Z",
+"language": "es",
+"weighted_average": 8.80287898427254,
+"raw_weighted_average": 5.84922845363617
+},
+{
+"id": "south_asian_prothom_alo_en_12cc12c67b72",
+"published_date": "2026-10-11T13:11:51.000Z",
+"language": "en",
+"weighted_average": 7.8388530515133334,
+"raw_weighted_average": 5.431212115287781
+},
+{
+"id": "biotech_pharma_bioengineer_035b8b3391e7",
+"published_date": "2026-10-11T09:35:04.000Z",
+"language": "en",
+"weighted_average": 7.979823480101267,
+"raw_weighted_average": 5.4759636402130125
+},
+{
+"id": "positive_news_the_logical_indian_3bf83a6ef6aa",
+"published_date": "2026-10-11T09:57:24.000Z",
+"language": "en",
+"weighted_average": 7.956031886443029,
+"raw_weighted_average": 5.470578074455261
+},
+{
+"id": "south_american_la_nacion_ar_48a81f8fe742",
+"published_date": "2026-10-10T03:10:00.000Z",
+"language": "es",
+"weighted_average": 9.79404243951162,
+"raw_weighted_average": 6.681701302528381
+},
+{
+"id": "ukrainian_unian_en_eaa330ec3ae0",
+"published_date": "2026-10-10T12:08:00.000Z",
+"language": "ru",
+"weighted_average": 9.120788389071533,
+"raw_weighted_average": 6.052324438095093
+},
+{
+"id": "south_asian_the_hindu_f6ff66a73199",
+"published_date": "2026-10-10T01:56:59.000Z",
+"language": "en",
+"weighted_average": 9.768832536455417,
+"raw_weighted_average": 6.653295493125915
+},
+{
+"id": "north_african_webdo_tn_7480075cca00",
+"published_date": "2026-10-10T17:04:09.000Z",
+"language": "fr",
+"weighted_average": 8.794982841773487,
+"raw_weighted_average": 5.844632172584534
+},
+{
+"id": "south_asian_express_tribune_74efe05f4e16",
+"published_date": "2026-10-11T01:14:02.000Z",
+"language": "en",
+"weighted_average": 8.293493043468477,
+"raw_weighted_average": 5.613078093528747
+},
+{
+"id": "southeast_asian_nst_876789aa1ede",
+"published_date": "2026-10-10T23:15:33.000Z",
+"language": "en",
+"weighted_average": 8.37516455142496,
+"raw_weighted_average": 5.644230151176453
+},
+{
+"id": "italian_il_fatto_884422985a47",
+"published_date": "2026-10-10T07:19:26.000Z",
+"language": "it",
+"weighted_average": 9.325010979961785,
+"raw_weighted_average": 6.20900821685791
+},
+{
+"id": "australian_abc_au_56f5cb8e84ed",
+"published_date": "2026-10-11T02:00:00.000Z",
+"language": "en",
+"weighted_average": 8.215810935513703,
+"raw_weighted_average": 5.579906177520752
+},
+{
+"id": "greek_ta_nea_3239e9978fe1",
+"published_date": "2026-10-10T13:20:14.000Z",
+"language": "el",
+"weighted_average": 8.94747720821953,
+"raw_weighted_average": 5.945620489120484
+},
+{
+"id": "southeast_asian_rappler_0896bfe42e99",
+"published_date": "2026-10-10T08:30:12.000Z",
+"language": "en",
+"weighted_average": 9.238579560198279,
+"raw_weighted_average": 6.149407577514649
+},
+{
+"id": "south_asian_scroll_in_8b39546c4a2d",
+"published_date": "2026-10-11T03:00:00.000Z",
+"language": "en",
+"weighted_average": 8.150520373910481,
+"raw_weighted_average": 5.551212096214295
+},
+{
+"id": "czech_ct24_2233445def44",
+"published_date": "2026-10-10T06:00:00.000Z",
+"language": "cs",
+"weighted_average": 9.335494513033142,
+"raw_weighted_average": 6.21755063533783
+},
+{
+"id": "china_scmp_china_7e2b94f97b27",
+"published_date": "2026-10-10T22:00:12.000Z",
+"language": "en",
+"weighted_average": 8.37275174010132,
+"raw_weighted_average": 5.64291660785675
+},
+{
+"id": "spanish_eldiario_b90021105f32",
+"published_date": "2026-10-11T04:01:03.000Z",
+"language": "es",
+"weighted_average": 8.020901832468413,
+"raw_weighted_average": 5.493922209739685
+},
+{
+"id": "balkan_vijesti_79a87a0f32bf",
+"published_date": "2026-10-10T14:12:00.000Z",
+"language": "hr",
+"weighted_average": 8.76214134081691,
+"raw_weighted_average": 5.830456352233887
+},
+{
+"id": "us_media_mother_jones_5316dbf2bbb7",
+"published_date": "2026-10-10T11:30:00.000Z",
+"language": "en",
+"weighted_average": 8.915123163778603,
+"raw_weighted_average": 5.921930646896362
+},
+{
+"id": "mexican_mexico_daily_post_acf1da40de95",
+"published_date": "2026-10-12T02:47:26.000Z",
+"language": "en",
+"weighted_average": 6.820206453822638,
+"raw_weighted_average": 5.135601902008057
+},
+{
+"id": "swedish_aftonbladet_c395d4485810",
+"published_date": "2026-10-11T11:00:11.000Z",
+"language": "sv",
+"weighted_average": 7.588706162752035,
+"raw_weighted_average": 5.336192941665649
+},
+{
+"id": "north_african_yabiladi_bc18eb7994b8",
+"published_date": "2026-10-09T18:00:00.000Z",
+"language": "fr",
+"weighted_average": 9.999999980489497,
+"raw_weighted_average": 7.593076920509338
+},
+{
+"id": "science_scitechdaily_a57239ec6f7f",
+"published_date": "2026-10-11T00:06:07.000Z",
+"language": "en",
+"weighted_average": 8.095596405622613,
+"raw_weighted_average": 5.5251333832740785
+},
+{
+"id": "portuguese_observador_ebef81430258",
+"published_date": "2026-10-11T17:46:37.000Z",
+"language": "pt",
+"weighted_average": 7.173391875592964,
+"raw_weighted_average": 5.230644774436951
+},
+{
+"id": "south_american_la_nacion_ar_3ab5a668b3fb",
+"published_date": "2026-10-10T03:00:00.000Z",
+"language": "es",
+"weighted_average": 9.300297196209288,
+"raw_weighted_average": 6.183314061164856
+},
+{
+"id": "science_wired_science_5587c45f4445",
+"published_date": "2026-10-10T09:30:00.000Z",
+"language": "en",
+"weighted_average": 8.89633633632609,
+"raw_weighted_average": 5.895964932441712
+},
+{
+"id": "central_asian_astana_times_1c2cd1ac891d",
+"published_date": "2026-10-10T06:00:01.000Z",
+"language": "en",
+"weighted_average": 9.108618304585393,
+"raw_weighted_average": 6.045240950584412
+},
+{
+"id": "belgian_bruzz_11d12fe78fac",
+"published_date": "2026-10-11T06:00:00.000Z",
+"language": "nl",
+"weighted_average": 7.703633340949353,
+"raw_weighted_average": 5.374545407295227
+},
+{
+"id": "mental_health_the_transmitter_2216854978de",
+"published_date": "2026-10-12T04:00:36.000Z",
+"language": "en",
+"weighted_average": 6.633144667583314,
+"raw_weighted_average": 5.082693767547608
+},
+{
+"id": "belonging_religion_news_bb7579e3dcaa",
+"published_date": "2026-10-09T16:36:54.000Z",
+"language": "en",
+"weighted_average": 9.895473484749656,
+"raw_weighted_average": 6.945643615722656
+},
+{
+"id": "positive_news_upworthy_a16a2b79e2f9",
+"published_date": "2026-10-12T02:51:05.000Z",
+"language": "en",
+"weighted_average": 6.662296606825888,
+"raw_weighted_average": 5.090185236930847
+},
+{
+"id": "romanian_digi24_0e12785a6921",
+"published_date": "2026-10-10T06:19:54.000Z",
+"language": "ro",
+"weighted_average": 8.99956785155903,
+"raw_weighted_average": 5.978290009498596
+},
+{
+"id": "italian_il_fatto_438102b630c3",
+"published_date": "2026-10-10T05:51:13.000Z",
+"language": "it",
+"weighted_average": 8.994678012042536,
+"raw_weighted_average": 5.973309397697449
+},
+{
+"id": "us_news_npr_a3eeaa7e44b3",
+"published_date": "2026-10-10T09:00:00.000Z",
+"language": "en",
+"weighted_average": 8.794183733245944,
+"raw_weighted_average": 5.844167017936707
+},
+{
+"id": "southeast_asian_antara_en_3e0d2f5d749a",
+"published_date": "2026-10-11T09:14:33.000Z",
+"language": "en",
+"weighted_average": 7.451633317297192,
+"raw_weighted_average": 5.3058452844619755
+},
+{
+"id": "biotech_pharma_bioengineer_4490dd266c22",
+"published_date": "2026-10-10T09:30:49.000Z",
+"language": "en",
+"weighted_average": 8.728977639023386,
+"raw_weighted_average": 5.812286710739135
+},
+{
+"id": "south_american_el_comercio_pe_62360890c8ce",
+"published_date": "2026-10-10T01:35:00.000Z",
+"language": "es",
+"weighted_average": 9.207630038068169,
+"raw_weighted_average": 6.122527408599853
+},
+{
+"id": "balkan_index_hr_833dd546f181",
+"published_date": "2026-10-12T05:40:00.000Z",
+"language": "hr",
+"weighted_average": 6.46394230185003,
+"raw_weighted_average": 5.042567849159241
+},
+{
+"id": "french_futura_sciences_4cb24ee75996",
+"published_date": "2026-10-10T07:00:00.000Z",
+"language": "fr",
+"weighted_average": 8.854418697509896,
+"raw_weighted_average": 5.87888548374176
+},
+{
+"id": "south_american_prensa_libre_695ac405e798",
+"published_date": "2026-10-11T19:25:43.000Z",
+"language": "es",
+"weighted_average": 6.880178497417169,
+"raw_weighted_average": 5.146851944923401
+},
+{
+"id": "british_irish_bbc_uk_37534d1f139e",
+"published_date": "2026-10-10T19:37:20.000Z",
+"language": "en",
+"weighted_average": 8.082612019886804,
+"raw_weighted_average": 5.521826934814453
+},
+{
+"id": "baltic_lrt_48470e7b9d61",
+"published_date": "2026-10-11T18:07:00.000Z",
+"language": "lt",
+"weighted_average": 6.939524090867587,
+"raw_weighted_average": 5.157598686218262
+},
+{
+"id": "spanish_20minutos_es_51bdbc469531",
+"published_date": "2026-10-10T16:37:22.000Z",
+"language": "es",
+"weighted_average": 8.228787265524963,
+"raw_weighted_average": 5.584712827205658
+},
+{
+"id": "arabic_aawsat_ar_533f531a0567",
+"published_date": "2026-10-10T17:27:35.000Z",
+"language": "ar",
+"weighted_average": 8.17774042383796,
+"raw_weighted_average": 5.5646069049835205
+},
+{
+"id": "central_asian_times_ca_b007d2039ed5",
+"published_date": "2026-10-09T12:08:16.000Z",
+"language": "en",
+"weighted_average": 9.96543889234538,
+"raw_weighted_average": 7.154999995231629
+},
+{
+"id": "art_art_newspaper_9e78f9ea11dc",
+"published_date": "2026-10-09T19:58:28.000Z",
+"language": "en",
+"weighted_average": 9.441552909095382,
+"raw_weighted_average": 6.3199999809265135
+},
+{
+"id": "science_scitechdaily_6e0c941d9508",
+"published_date": "2026-10-10T11:50:00.000Z",
+"language": "en",
+"weighted_average": 8.479937418180924,
+"raw_weighted_average": 5.699939298629761
+},
+{
+"id": "south_asian_scroll_in_c4164258b182",
+"published_date": "2026-10-10T12:00:00.000Z",
+"language": "en",
+"weighted_average": 8.412245049938905,
+"raw_weighted_average": 5.665795469284058
+},
+{
+"id": "french_le_monde_1a9252e03bfe",
+"published_date": "2026-10-10T17:00:08.000Z",
+"language": "fr",
+"weighted_average": 8.111286790432107,
+"raw_weighted_average": 5.529128909111023
+},
+{
+"id": "french_le_monde_ed2fb4e37bc0",
+"published_date": "2026-10-11T09:00:04.000Z",
+"language": "fr",
+"weighted_average": 7.2337028242578025,
+"raw_weighted_average": 5.24702742099762
+},
+{
+"id": "east_african_conversation_africa_6c65b99bddb7",
+"published_date": "2026-10-11T05:59:56.000Z",
+"language": "en",
+"weighted_average": 7.352095627094385,
+"raw_weighted_average": 5.278255939483643
+},
+{
+"id": "portuguese_conexao_planeta_11947a48ce6a",
+"published_date": "2026-10-09T23:36:58.000Z",
+"language": "pt",
+"weighted_average": 8.991622160788275,
+"raw_weighted_average": 5.97019681930542
+},
+{
+"id": "british_irish_guardian_world_20726b19d88c",
+"published_date": "2026-10-10T12:00:56.000Z",
+"language": "en",
+"weighted_average": 8.262847493736205,
+"raw_weighted_average": 5.600359582901001
+},
+{
+"id": "belgian_vrt_nieuws_nl_defb07e1ae34",
+"published_date": "2026-10-10T16:47:10.000Z",
+"language": "nl",
+"weighted_average": 7.973866655375931,
+"raw_weighted_average": 5.474615228176117
+},
+{
+"id": "southeast_asian_free_malaysia_da5622b0177d",
+"published_date": "2026-10-10T00:00:00.000Z",
+"language": "en",
+"weighted_average": 8.92123547355735,
+"raw_weighted_average": 5.92691171169281
+},
+{
+"id": "science_archaeology_magazine_35dc9fcee36d",
+"published_date": "2026-10-09T18:00:00.000Z",
+"language": "en",
+"weighted_average": 9.272316895794322,
+"raw_weighted_average": 6.17191379070282
+},
+{
+"id": "art_art_newspaper_e9f35c10184e",
+"published_date": "2026-10-09T14:31:12.000Z",
+"language": "en",
+"weighted_average": 9.458403763012491,
+"raw_weighted_average": 6.3460197925567625
+},
+{
+"id": "central_asian_times_ca_bd226d41baa0",
+"published_date": "2026-10-09T11:59:54.000Z",
+"language": "en",
+"weighted_average": 9.608145726828136,
+"raw_weighted_average": 6.471827411651612
+},
+{
+"id": "portuguese_oeco_65d14c1532d7",
+"published_date": "2026-10-09T19:01:08.000Z",
+"language": "pt",
+"weighted_average": 9.140107220074952,
+"raw_weighted_average": 6.065552067756653
+},
+{
+"id": "science_zme_science_58735b2f792a",
+"published_date": "2026-10-09T16:44:01.000Z",
+"language": "en",
+"weighted_average": 9.257364728786298,
+"raw_weighted_average": 6.164715361595154
+},
+{
+"id": "west_african_thisday_def15ea0bc66",
+"published_date": "2026-10-11T01:16:00.000Z",
+"language": "en",
+"weighted_average": 7.399341844094808,
+"raw_weighted_average": 5.293893265724182
+},
+{
+"id": "arabic_alquds_ar_94e3baaeaae2",
+"published_date": "2026-10-10T10:50:07.000Z",
+"language": "ar",
+"weighted_average": 8.139248446151885,
+"raw_weighted_average": 5.539730286598205
+},
+{
+"id": "community_social_hackernews_ai_7331a1247d7c",
+"published_date": "2026-10-09T11:36:20.000Z",
+"language": "en",
+"weighted_average": 9.523256766271874,
+"raw_weighted_average": 6.375251984596252
+},
+{
+"id": "south_american_elsalvador_com_47f9bb4f701a",
+"published_date": "2026-10-11T22:02:56.000Z",
+"language": "es",
+"weighted_average": 6.404618364066632,
+"raw_weighted_average": 5.029110717773437
+},
+{
+"id": "science_nautilus_magazine_3903369f850f",
+"published_date": "2026-10-09T22:30:00.000Z",
+"language": "en",
+"weighted_average": 8.81912339430813,
+"raw_weighted_average": 5.858684194087982
+},
+{
+"id": "ukrainian_unn_ua_853f98bdd25f",
+"published_date": "2026-10-09T22:38:23.000Z",
+"language": "en",
+"weighted_average": 8.804821952556548,
+"raw_weighted_average": 5.8503594398498535
+},
+{
+"id": "australian_the_saturday_paper_cad41d1c3f5b",
+"published_date": "2026-10-09T13:00:00.000Z",
+"language": "en",
+"weighted_average": 9.392481101943943,
+"raw_weighted_average": 6.271210026741028
+},
+{
+"id": "south_american_colombia_one_782f3fde4d21",
+"published_date": "2026-10-09T20:30:00.000Z",
+"language": "en",
+"weighted_average": 8.924584120905656,
+"raw_weighted_average": 5.929640603065491
+},
+{
+"id": "israeli_israel_hayom_576b3d538aa2",
+"published_date": "2026-10-11T05:44:06.000Z",
+"language": "he",
+"weighted_average": 7.122111455242975,
+"raw_weighted_average": 5.216715574264526
+},
+{
+"id": "arabic_alquds_ar_dfe09a6d76b9",
+"published_date": "2026-10-11T20:11:50.000Z",
+"language": "ar",
+"weighted_average": 6.441607214479868,
+"raw_weighted_average": 5.037511920928955
+},
+{
+"id": "south_american_el_comercio_pe_fbebca9692f6",
+"published_date": "2026-10-11T05:01:00.000Z",
+"language": "es",
+"weighted_average": 7.1238493911775,
+"raw_weighted_average": 5.2171876430511475
+},
+{
+"id": "positive_news_good_news_network_0a29efcb7b5f",
+"published_date": "2026-10-09T11:00:30.000Z",
+"language": "en",
+"weighted_average": 9.437607684615315,
+"raw_weighted_average": 6.311962604522705
+},
+{
+"id": "biotech_pharma_bioengineer_c4ffc3b63272",
+"published_date": "2026-10-09T18:00:02.000Z",
+"language": "en",
+"weighted_average": 8.985470588857149,
+"raw_weighted_average": 5.966140341758728
+},
+{
+"id": "french_futura_sciences_aeeaf77e3fc6",
+"published_date": "2026-10-09T14:00:00.000Z",
+"language": "fr",
+"weighted_average": 9.224430180568529,
+"raw_weighted_average": 6.13787693977356
+},
+{
+"id": "polish_polsat_2c67791744c2",
+"published_date": "2026-10-11T07:40:00.000Z",
+"language": "pl",
+"weighted_average": 6.934443300695734,
+"raw_weighted_average": 5.156119966506958
+},
+{
+"id": "south_american_la_nacion_ar_7e98d8bbb792",
+"published_date": "2026-10-10T03:00:00.000Z",
+"language": "es",
+"weighted_average": 8.404884380268857,
+"raw_weighted_average": 5.663069105148315
+},
+{
+"id": "canadian_globe_mail_c13fe48a95f8",
+"published_date": "2026-10-09T20:41:35.000Z",
+"language": "en",
+"weighted_average": 8.770373023166924,
+"raw_weighted_average": 5.833810186386108
+},
+{
+"id": "indonesian_mongabay_id_f63039a518db",
+"published_date": "2026-10-09T08:05:13.000Z",
+"language": "id",
+"weighted_average": 9.544275856495767,
+"raw_weighted_average": 6.3861403465271
+},
+{
+"id": "hungarian_index_hu_599221f37a2a",
+"published_date": "2026-10-10T10:19:00.000Z",
+"language": "hu",
+"weighted_average": 7.970044245847059,
+"raw_weighted_average": 5.47374997138977
+},
+{
+"id": "italian_greenme_d062cb531a58",
+"published_date": "2026-10-10T13:03:49.000Z",
+"language": "it",
+"weighted_average": 7.813252899149551,
+"raw_weighted_average": 5.415042459964752
+},
+{
+"id": "greek_protothema_374c968b2ead",
+"published_date": "2026-10-09T03:59:00.000Z",
+"language": "el",
+"weighted_average": 9.765910569623337,
+"raw_weighted_average": 6.649326920509338
+},
+{
+"id": "mental_health_psypost_27cabd644745",
+"published_date": "2026-10-11T10:00:18.000Z",
+"language": "en",
+"weighted_average": 6.763495647456249,
+"raw_weighted_average": 5.1179738402366635
+},
+{
+"id": "italian_repubblica_5a3cff5c49aa",
+"published_date": "2026-10-10T04:00:00.000Z",
+"language": "en",
+"weighted_average": 8.262847493736205,
+"raw_weighted_average": 5.600359582901001
+},
+{
+"id": "south_african_mail_guardian_bab9086b7af0",
+"published_date": "2026-10-10T10:22:48.000Z",
+"language": "en",
+"weighted_average": 7.886186959991225,
+"raw_weighted_average": 5.453145956993103
+},
+{
+"id": "spanish_la_vanguardia_ccbfdd1281b0",
+"published_date": "2026-10-09T22:30:00.000Z",
+"language": "es",
+"weighted_average": 8.5416417087783,
+"raw_weighted_average": 5.728494763374329
+},
+{
+"id": "south_asian_dawn_d7fd6214ecdf",
+"published_date": "2026-10-09T10:49:05.000Z",
+"language": "en",
+"weighted_average": 9.23897553635557,
+"raw_weighted_average": 6.149730253219604
+},
+{
+"id": "east_african_daily_news_tz_676cddc038c3",
+"published_date": "2026-10-10T13:30:59.000Z",
+"language": "en",
+"weighted_average": 7.709653017466144,
+"raw_weighted_average": 5.376078391075135
+},
+{
+"id": "balkan_vecernji_13278f33c008",
+"published_date": "2026-10-09T21:50:00.000Z",
+"language": "hr",
+"weighted_average": 8.546519414202573,
+"raw_weighted_average": 5.730301547050476
+},
+{
+"id": "czech_idnes_2e28196f69e2",
+"published_date": "2026-10-09T22:00:00.000Z",
+"language": "cs",
+"weighted_average": 8.531620277548681,
+"raw_weighted_average": 5.724782657623291
+},
+{
+"id": "portuguese_exame_1c5b17328c98",
+"published_date": "2026-10-09T14:56:05.000Z",
+"language": "pt",
+"weighted_average": 8.93314197028708,
+"raw_weighted_average": 5.935886073112488
+},
+{
+"id": "south_american_prensa_libre_bece9a9f604c",
+"published_date": "2026-10-10T16:59:40.000Z",
+"language": "es",
+"weighted_average": 7.472931439034943,
+"raw_weighted_average": 5.3091830015182495
+},
+{
+"id": "science_smithsonian_94091044ebe6",
+"published_date": "2026-10-09T14:35:25.000Z",
+"language": "en",
+"weighted_average": 8.931258475821402,
+"raw_weighted_average": 5.934607076644897
+},
+{
+"id": "art_hyperallergic_23eda67d86af",
+"published_date": "2026-10-09T22:36:03.000Z",
+"language": "en",
+"weighted_average": 8.440045751892722,
+"raw_weighted_average": 5.676092743873596
+},
+{
+"id": "south_asian_indian_express_fe6c800aa4ab",
+"published_date": "2026-10-09T14:41:13.000Z",
+"language": "en",
+"weighted_average": 8.902416178793816,
+"raw_weighted_average": 5.907650780677796
+},
+{
+"id": "british_irish_bbc_england_bb4f3e5ef91c",
+"published_date": "2026-10-10T06:24:04.000Z",
+"language": "en",
+"weighted_average": 7.999243340645283,
+"raw_weighted_average": 5.480359601974487
+},
+{
+"id": "spanish_el_mundo_f104ace78682",
+"published_date": "2026-10-09T00:06:08.000Z",
+"language": "es",
+"weighted_average": 9.792072786150557,
+"raw_weighted_average": 6.673676443099976
+},
+{
+"id": "norwegian_aftenposten_4f260267eb09",
+"published_date": "2026-10-09T05:03:22.000Z",
+"language": "no",
+"weighted_average": 9.408499619157148,
+"raw_weighted_average": 6.282759881019592
+},
+{
+"id": "greek_to_vima_2248b04a6617",
+"published_date": "2026-10-09T12:33:09.000Z",
+"language": "el",
+"weighted_average": 8.936220866674148,
+"raw_weighted_average": 5.937976813316345
+},
+{
+"id": "spanish_efeverde_eb818819043b",
+"published_date": "2026-10-09T05:30:01.000Z",
+"language": "es",
+"weighted_average": 9.369164735850376,
+"raw_weighted_average": 6.244737839698791
+},
+{
+"id": "austrian_die_presse_f8347d60e3cb",
+"published_date": "2026-10-10T17:23:54.000Z",
+"language": "de",
+"weighted_average": 7.324574163122456,
+"raw_weighted_average": 5.271247363090515
+},
+{
+"id": "south_american_el_pais_uy_f3735729fb93",
+"published_date": "2026-10-10T07:00:00.000Z",
+"language": "es",
+"weighted_average": 7.838318095313122,
+"raw_weighted_average": 5.430776166915893
+},
+{
+"id": "australian_the_saturday_paper_5da4656829cb",
+"published_date": "2026-10-09T13:00:00.000Z",
+"language": "en",
+"weighted_average": 8.801618514471075,
+"raw_weighted_average": 5.848494744300842
+},
+{
+"id": "french_futura_sciences_d145d4d008fb",
+"published_date": "2026-10-09T16:00:00.000Z",
+"language": "fr",
+"weighted_average": 8.613240709425295,
+"raw_weighted_average": 5.749322128295899
+},
+{
+"id": "spanish_mongabay_latam_d2283f856226",
+"published_date": "2026-10-10T15:09:13.000Z",
+"language": "es",
+"weighted_average": 7.3622807623471616,
+"raw_weighted_average": 5.28084967136383
+},
+{
+"id": "science_nautilus_magazine_c128fd720976",
+"published_date": "2026-10-08T22:00:00.000Z",
+"language": "en",
+"weighted_average": 9.713716012899896,
+"raw_weighted_average": 6.588389992713928
+},
+{
+"id": "science_aeon_philosophy_216545114b8a",
+"published_date": "2026-10-09T10:00:00.000Z",
+"language": "en",
+"weighted_average": 8.930855233507332,
+"raw_weighted_average": 5.934333252906799
+},
+{
+"id": "china_sciencenet_cn_f65526a0338c",
+"published_date": "2026-10-09T17:32:50.000Z",
+"language": "zh-cn",
+"weighted_average": 8.480631200205817,
+"raw_weighted_average": 5.700343108177185
+},
+{
+"id": "geography_nature_physorg_earth_2d1deea22c26",
+"published_date": "2026-10-10T01:16:05.000Z",
+"language": "en",
+"weighted_average": 8.016238195542567,
+"raw_weighted_average": 5.490755343437195
+},
+{
+"id": "south_american_la_nacion_ar_ee8f44f6232d",
+"published_date": "2026-10-10T05:18:47.000Z",
+"language": "es",
+"weighted_average": 7.792949110833981,
+"raw_weighted_average": 5.403911399841308
+},
+{
+"id": "korean_yonhap_kr_17f57806f67c",
+"published_date": "2026-10-09T22:00:01.000Z",
+"language": "ko",
+"weighted_average": 8.175926465410855,
+"raw_weighted_average": 5.563785719871521
+},
+{
+"id": "polish_onet_23200827955a",
+"published_date": "2026-10-10T04:24:24.000Z",
+"language": "pl",
+"weighted_average": 7.7857735916729345,
+"raw_weighted_average": 5.400257039070129
+},
+{
+"id": "french_lemonde_culture_a57e665561a2",
+"published_date": "2026-10-10T11:00:09.000Z",
+"language": "fr",
+"weighted_average": 7.443111877844247,
+"raw_weighted_average": 5.304509854316711
+},
+{
+"id": "french_rfi_4b87675f96d6",
+"published_date": "2026-10-10T22:49:37.000Z",
+"language": "fr",
+"weighted_average": 6.815237508263987,
+"raw_weighted_average": 5.134044480323792
+},
+{
+"id": "south_american_brasil_de_fato_1e791fbb9326",
+"published_date": "2026-10-08T18:14:04.000Z",
+"language": "pt",
+"weighted_average": 9.716967034530164,
+"raw_weighted_average": 6.591701364517212
+},
+{
+"id": "us_media_reason_35dc9d9fa6dc",
+"published_date": "2026-10-09T10:00:09.000Z",
+"language": "en",
+"weighted_average": 8.732068161285325,
+"raw_weighted_average": 5.814385461807251
+},
+{
+"id": "east_asian_korea_times_9bfe4537d2e4",
+"published_date": "2026-10-08T22:02:03.000Z",
+"language": "en",
+"weighted_average": 9.467572276940984,
+"raw_weighted_average": 6.351125907897949
+},
+{
+"id": "mental_health_psypost_880db1595de4",
+"published_date": "2026-10-10T14:00:30.000Z",
+"language": "en",
+"weighted_average": 7.194417769908874,
+"raw_weighted_average": 5.23635618686676
+},
+{
+"id": "australian_the_saturday_paper_d2039072576a",
+"published_date": "2026-10-09T13:00:00.000Z",
+"language": "en",
+"weighted_average": 8.516621375206265,
+"raw_weighted_average": 5.719226813316345
+},
+{
+"id": "austrian_der_standard_030c1bc45ce4",
+"published_date": "2026-10-10T04:00:00.000Z",
+"language": "de",
+"weighted_average": 7.652671124812573,
+"raw_weighted_average": 5.354939293861389
+},
+{
+"id": "us_news_civil_beat_8c7e12471ae8",
+"published_date": "2026-10-08T18:00:00.000Z",
+"language": "en",
+"weighted_average": 9.608396021482806,
+"raw_weighted_average": 6.472082352638244
+},
+{
+"id": "north_african_yabiladi_221f6c1b82aa",
+"published_date": "2026-10-08T17:15:00.000Z",
+"language": "fr",
+"weighted_average": 9.64708884117596,
+"raw_weighted_average": 6.5169894933700565
+},
+{
+"id": "south_american_andina_8a635b28b23c",
+"published_date": "2026-10-08T17:23:05.000Z",
+"language": "es",
+"weighted_average": 9.63624288338063,
+"raw_weighted_average": 6.509473657608032
+},
+{
+"id": "south_asian_hasht_e_subh_en_44e7f2485966",
+"published_date": "2026-10-08T18:39:36.000Z",
+"language": "en",
+"weighted_average": 9.548044796696706,
+"raw_weighted_average": 6.401495099067688
+},
+{
+"id": "portuguese_rtp_noticias_7200b5ef9d32",
+"published_date": "2026-10-09T17:48:21.000Z",
+"language": "pt",
+"weighted_average": 8.150520373910481,
+"raw_weighted_average": 5.551212096214295
+},
+{
+"id": "british_irish_bbc_scotland_66ab96056ef6",
+"published_date": "2026-10-09T08:07:22.000Z",
+"language": "en",
+"weighted_average": 8.679423554139499,
+"raw_weighted_average": 5.775680935382843
+},
+{
+"id": "east_african_daily_news_tz_46805682a696",
+"published_date": "2026-10-09T08:45:44.000Z",
+"language": "en",
+"weighted_average": 8.618848445977108,
+"raw_weighted_average": 5.750845313072205
+},
+{
+"id": "science_arxiv_cs_aea8eb7b9a22",
+"published_date": "2026-10-09T04:00:00.000Z",
+"language": "en",
+"weighted_average": 8.877562738706905,
+"raw_weighted_average": 5.888315582275391
+},
+{
+"id": "polish_rzeczpospolita_a88aa81db260",
+"published_date": "2026-10-09T11:45:36.000Z",
+"language": "pl",
+"weighted_average": 8.40950317602677,
+"raw_weighted_average": 5.6647798895835875
+},
+{
+"id": "italian_greenme_72b0db932c18",
+"published_date": "2026-10-08T19:15:34.000Z",
+"language": "it",
+"weighted_average": 9.367156604980638,
+"raw_weighted_average": 6.24064679145813
+},
+{
+"id": "ukrainian_unn_ua_e18caad2e923",
+"published_date": "2026-10-08T23:54:24.000Z",
+"language": "en",
+"weighted_average": 9.053600951492916,
+"raw_weighted_average": 6.017686355113983
+},
+{
+"id": "southeast_asian_free_malaysia_d17935f7196e",
+"published_date": "2026-10-09T00:15:00.000Z",
+"language": "en",
+"weighted_average": 9.020429016711619,
+"raw_weighted_average": 5.9951602697372435
+},
+{
+"id": "science_sci_news_cf411bd31009",
+"published_date": "2026-10-09T23:17:10.000Z",
+"language": "en",
+"weighted_average": 7.693718294448858,
+"raw_weighted_average": 5.37166314125061
+},
+{
+"id": "us_news_fox_news_75e467895172",
+"published_date": "2026-10-08T12:00:27.000Z",
+"language": "en",
+"weighted_average": 9.755395393059462,
+"raw_weighted_average": 6.632550573348999
+},
+{
+"id": "greek_protothema_cad898388aec",
+"published_date": "2026-10-09T09:14:00.000Z",
+"language": "el",
+"weighted_average": 8.41948856889187,
+"raw_weighted_average": 5.6684784412384035
+},
+{
+"id": "care_systems_disabled_world_3dafaf82c82e",
+"published_date": "2026-10-08T13:31:00.000Z",
+"language": "en",
+"weighted_average": 9.554013102728348,
+"raw_weighted_average": 6.413712096214295
+},
+{
+"id": "south_asian_the_hindu_997a45afd9c9",
+"published_date": "2026-10-09T08:34:47.000Z",
+"language": "en",
+"weighted_average": 8.39524483608709,
+"raw_weighted_average": 5.657866525650024
+},
+{
+"id": "art_art_newspaper_e01489d05afa",
+"published_date": "2026-10-09T10:54:37.000Z",
+"language": "en",
+"weighted_average": 8.254633997274432,
+"raw_weighted_average": 5.596176481246948
+},
+{
+"id": "science_scitechdaily_5ee9b4e6adf7",
+"published_date": "2026-10-08T19:52:19.000Z",
+"language": "en",
+"weighted_average": 9.109719172030573,
+"raw_weighted_average": 6.045881700515747
+},
+{
+"id": "swedish_sydsvenskan_1f83f5eacf6c",
+"published_date": "2026-10-08T18:00:00.000Z",
+"language": "sv",
+"weighted_average": 9.18589479490225,
+"raw_weighted_average": 6.093039274215698
+},
+{
+"id": "positive_news_upworthy_6a5916eee2ad",
+"published_date": "2026-10-09T00:42:09.000Z",
+"language": "en",
+"weighted_average": 8.770373023166924,
+"raw_weighted_average": 5.833810186386108
+},
+{
+"id": "italian_greenme_6bdfeb2214a8",
+"published_date": "2026-10-09T08:57:42.000Z",
+"language": "it",
+"weighted_average": 8.285460768104983,
+"raw_weighted_average": 5.61035076379776
+},
+{
+"id": "north_african_sudan_horizon_0de1e7a47fc8",
+"published_date": "2026-10-09T11:35:05.000Z",
+"language": "en",
+"weighted_average": 8.082612019886804,
+"raw_weighted_average": 5.521826934814453
+},
+{
+"id": "french_lemonde_culture_d4502aef9f1a",
+"published_date": "2026-10-09T14:00:22.000Z",
+"language": "fr",
+"weighted_average": 7.940459608150901,
+"raw_weighted_average": 5.467053067684174
+},
+{
+"id": "italian_repubblica_e7aea15989c0",
+"published_date": "2026-10-09T04:00:00.000Z",
+"language": "en",
+"weighted_average": 8.480631200205817,
+"raw_weighted_average": 5.700343108177185
+},
+{
+"id": "italian_industria_italiana_a9bb16806e8a",
+"published_date": "2026-10-09T07:31:26.000Z",
+"language": "it",
+"weighted_average": 8.261426942530562,
+"raw_weighted_average": 5.599636101722718
+},
+{
+"id": "east_african_conversation_africa_010d1f9b32cb",
+"published_date": "2026-10-08T13:44:14.000Z",
+"language": "en",
+"weighted_average": 9.316466404886894,
+"raw_weighted_average": 6.201387429237366
+},
+{
+"id": "german_die_welt_db7ad3d207cb",
+"published_date": "2026-10-08T15:03:44.000Z",
+"language": "de",
+"weighted_average": 9.20916324916458,
+"raw_weighted_average": 6.124089169502258
+},
+{
+"id": "science_popular_science_8911928bfca7",
+"published_date": "2026-10-08T15:50:45.000Z",
+"language": "en",
+"weighted_average": 9.064194690098827,
+"raw_weighted_average": 6.0240891456604
+},
+{
+"id": "science_archaeology_magazine_3887ef7a14c8",
+"published_date": "2026-10-08T17:30:00.000Z",
+"language": "en",
+"weighted_average": 8.960325720916005,
+"raw_weighted_average": 5.953333449363709
+},
+{
+"id": "science_scitechdaily_15a7c2e20aa1",
+"published_date": "2026-10-08T20:27:16.000Z",
+"language": "en",
+"weighted_average": 8.746102516102148,
+"raw_weighted_average": 5.82391608953476
+},
+{
+"id": "west_african_seneweb_cb306460998e",
+"published_date": "2026-10-08T14:26:02.000Z",
+"language": "fr",
+"weighted_average": 9.073003141976235,
+"raw_weighted_average": 6.028076982498169
+},
+{
+"id": "science_archaeology_magazine_b718b75ebef9",
+"published_date": "2026-10-08T17:00:00.000Z",
+"language": "en",
+"weighted_average": 8.885603149492614,
+"raw_weighted_average": 5.891591668128967
+},
+{
+"id": "french_lemonde_culture_f79a66b9942d",
+"published_date": "2026-10-09T11:00:22.000Z",
+"language": "fr",
+"weighted_average": 7.835109937966096,
+"raw_weighted_average": 5.428161764144898
+},
+{
+"id": "japanese_asahi_shimbun_jp_0f89d286b740",
+"published_date": "2026-10-09T02:00:00.000Z",
+"language": "ja",
+"weighted_average": 8.262847493736205,
+"raw_weighted_average": 5.600359582901001
+},
+{
+"id": "science_newspaceeconomy_868b3bdb5e53",
+"published_date": "2026-10-08T21:49:30.000Z",
+"language": "en",
+"weighted_average": 8.48386162659946,
+"raw_weighted_average": 5.7022233486175535
+},
+{
+"id": "science_biblical_archaeology_cd0a098a2f21",
+"published_date": "2026-10-08T11:00:45.000Z",
+"language": "en",
+"weighted_average": 9.127186651144166,
+"raw_weighted_average": 6.056048488616943
+},
+{
+"id": "science_helmholtz_f3304ad22694",
+"published_date": "2026-10-08T08:00:00.000Z",
+"language": "en",
+"weighted_average": 9.313171095325982,
+"raw_weighted_average": 6.196911787986755
+},
+{
+"id": "russian_rferl_russia_4d9fe45a895e",
+"published_date": "2026-10-08T16:55:52.000Z",
+"language": "ru",
+"weighted_average": 8.765838253905304,
+"raw_weighted_average": 5.831962585449219
+},
+{
+"id": "south_asian_the_hindu_7858aed74f1c",
+"published_date": "2026-10-09T09:10:49.000Z",
+"language": "en",
+"weighted_average": 7.850077945157923,
+"raw_weighted_average": 5.4403595447540285
+},
+{
+"id": "east_asian_scmp_a5e114536928",
+"published_date": "2026-10-09T02:50:31.000Z",
+"language": "en",
+"weighted_average": 8.148567210055372,
+"raw_weighted_average": 5.549222564697265
+},
+{
+"id": "global_news_el_pais_america_c5f01a1b5648",
+"published_date": "2026-10-09T03:30:01.000Z",
+"language": "es",
+"weighted_average": 8.102564713700172,
+"raw_weighted_average": 5.526907849311828
+},
+{
+"id": "global_south_indian_express_technology_c603272061f7",
+"published_date": "2026-10-08T07:11:56.000Z",
+"language": "en",
+"weighted_average": 9.199662793968622,
+"raw_weighted_average": 6.114411807060241
+},
+{
+"id": "greek_ta_nea_e9317b3bb65d",
+"published_date": "2026-10-08T13:49:06.000Z",
+"language": "el",
+"weighted_average": 8.794982841773487,
+"raw_weighted_average": 5.844632172584534
+},
+{
+"id": "south_asian_kathmandu_post_0d42cd382642",
+"published_date": "2026-10-09T04:05:04.000Z",
+"language": "en",
+"weighted_average": 7.978833528537904,
+"raw_weighted_average": 5.475739550590515
+},
+{
+"id": "spanish_elpais_cultura_9cfa4c0d0933",
+"published_date": "2026-10-08T03:30:01.000Z",
+"language": "es",
+"weighted_average": 9.366930058149066,
+"raw_weighted_average": 6.240185260772705
+},
+{
+"id": "us_media_the_atlantic_41d368a4c132",
+"published_date": "2026-10-08T16:13:08.000Z",
+"language": "en",
+"weighted_average": 8.588174205159213,
+"raw_weighted_average": 5.742513513565063
+},
+{
+"id": "global_news_le_monde_science_ff2697d8072d",
+"published_date": "2026-10-08T14:00:06.000Z",
+"language": "fr",
+"weighted_average": 8.706933921394006,
+"raw_weighted_average": 5.788756966590881
+},
+{
+"id": "australian_smh_b5991e814483",
+"published_date": "2026-10-08T18:00:00.000Z",
+"language": "en",
+"weighted_average": 8.460839423853564,
+"raw_weighted_average": 5.687366390228272
+},
+{
+"id": "belonging_the_local_france_36a344427cd8",
+"published_date": "2026-10-08T07:37:52.000Z",
+"language": "en",
+"weighted_average": 9.057164107315492,
+"raw_weighted_average": 6.020105934143066
+},
+{
+"id": "south_american_colombia_one_bb0f187e7122",
+"published_date": "2026-10-07T22:35:00.000Z",
+"language": "en",
+"weighted_average": 9.618937583481678,
+"raw_weighted_average": 6.491821217536926
+},
+{
+"id": "south_american_el_nacional_c31a57b1d154",
+"published_date": "2026-10-08T04:55:00.000Z",
+"language": "es",
+"weighted_average": 9.156319663133083,
+"raw_weighted_average": 6.077976775169373
+},
+{
+"id": "arabic_alquds_ar_4c0c47cf4dd0",
+"published_date": "2026-10-08T17:28:57.000Z",
+"language": "ar",
+"weighted_average": 8.398623844074324,
+"raw_weighted_average": 5.660161185264587
+},
+{
+"id": "science_newspaceeconomy_07f29997c467",
+"published_date": "2026-10-08T11:41:43.000Z",
+"language": "en",
+"weighted_average": 8.728557567013752,
+"raw_weighted_average": 5.81200144290924
+},
+{
+"id": "swedish_sydsvenskan_797ede50378e",
+"published_date": "2026-10-08T11:18:26.000Z",
+"language": "sv",
+"weighted_average": 8.740280086333172,
+"raw_weighted_average": 5.819962120056152
+},
+{
+"id": "global_news_euronews_a091c6d044b4",
+"published_date": "2026-10-08T07:33:42.000Z",
+"language": "en",
+"weighted_average": 8.899220450064053,
+"raw_weighted_average": 5.901140308380127
+},
+{
+"id": "south_african_timeslive_4a4ee7f11cd4",
+"published_date": "2026-10-08T17:38:19.000Z",
+"language": "en",
+"weighted_average": 8.276264692329873,
+"raw_weighted_average": 5.6071929097175595
+},
+{
+"id": "central_asian_uzdaily_en_800a15b60145",
+"published_date": "2026-10-08T04:05:00.000Z",
+"language": "en",
+"weighted_average": 9.058379557243965,
+"raw_weighted_average": 6.0209312915802
+},
+{
+"id": "caucasus_report_az_98e0a5e25271",
+"published_date": "2026-10-08T07:55:48.000Z",
+"language": "en",
+"weighted_average": 8.809713635403076,
+"raw_weighted_average": 5.853206849098205
+},
+{
+"id": "spanish_elpais_cultura_0214873a7097",
+"published_date": "2026-10-08T03:30:01.000Z",
+"language": "es",
+"weighted_average": 9.0521988023041,
+"raw_weighted_average": 6.016734218597412
+},
+{
+"id": "science_new_scientist_295103503a5a",
+"published_date": "2026-10-07T18:00:00.000Z",
+"language": "en",
+"weighted_average": 9.642764785269348,
+"raw_weighted_average": 6.514053058624268
+},
+{
+"id": "science_zme_science_b5f795ee79d3",
+"published_date": "2026-10-07T12:23:34.000Z",
+"language": "en",
+"weighted_average": 9.933827807399103,
+"raw_weighted_average": 7.097218799591064
+},
+{
+"id": "us_media_gizmodo_c19e8b76766d",
+"published_date": "2026-10-07T18:00:28.000Z",
+"language": "en",
+"weighted_average": 9.443419258021505,
+"raw_weighted_average": 6.323802185058594
+},
+{
+"id": "indonesian_mongabay_id_b37564b2b024",
+"published_date": "2026-10-08T00:01:55.000Z",
+"language": "id",
+"weighted_average": 9.055424319492522,
+"raw_weighted_average": 6.018924522399902
+},
+{
+"id": "portuguese_observador_39200692f3e0",
+"published_date": "2026-10-07T23:06:43.000Z",
+"language": "pt",
+"weighted_average": 9.074196265852159,
+"raw_weighted_average": 6.0286171436309814
+},
+{
+"id": "east_asian_korea_times_2bbe70c9f79d",
+"published_date": "2026-10-08T22:02:03.000Z",
+"language": "en",
+"weighted_average": 7.74072731077844,
+"raw_weighted_average": 5.383991837501526
+},
+{
+"id": "spanish_abc_es_ccb1a993dc98",
+"published_date": "2026-10-08T13:17:54.000Z",
+"language": "es",
+"weighted_average": 8.211028940785452,
+"raw_weighted_average": 5.578134846687317
+},
+{
+"id": "south_american_el_comercio_pe_a39fb2a8800b",
+"published_date": "2026-10-07T20:10:00.000Z",
+"language": "es",
+"weighted_average": 9.194279645531667,
+"raw_weighted_average": 6.1050872802734375
+},
+{
+"id": "science_biblical_archaeology_e2ee8aec996f",
+"published_date": "2026-10-07T10:45:05.000Z",
+"language": "en",
+"weighted_average": 9.793125520511504,
+"raw_weighted_average": 6.677965545654297
+},
+{
+"id": "austrian_die_presse_31fbb29bc297",
+"published_date": "2026-10-08T13:00:00.000Z",
+"language": "de",
+"weighted_average": 8.18250696918545,
+"raw_weighted_average": 5.5667647361755375
+},
+{
+"id": "baltic_err_ee_a3df2a200ec1",
+"published_date": "2026-10-07T07:50:00.000Z",
+"language": "en",
+"weighted_average": 9.928752087336818,
+"raw_weighted_average": 7.068826842308044
+},
+{
+"id": "global_news_euronews_4b1f74717615",
+"published_date": "2026-10-08T09:46:35.000Z",
+"language": "en",
+"weighted_average": 8.289828709511974,
+"raw_weighted_average": 5.611833882331848
+},
+{
+"id": "journalism_media_poynter_8c08da9de68f",
+"published_date": "2026-10-08T11:00:53.000Z",
+"language": "en",
+"weighted_average": 8.207793571689143,
+"raw_weighted_average": 5.576936411857605
+},
+{
+"id": "spanish_el_pais_68476a2c8872",
+"published_date": "2026-10-08T03:30:01.000Z",
+"language": "es",
+"weighted_average": 8.618906202494882,
+"raw_weighted_average": 5.75086100101471
+},
+{
+"id": "ukrainian_unian_en_845d259e1c6b",
+"published_date": "2026-10-08T01:03:00.000Z",
+"language": "ru",
+"weighted_average": 8.73503008147695,
+"raw_weighted_average": 5.816396880149841
+},
+{
+"id": "baltic_err_ee_5ebd58067e76",
+"published_date": "2026-10-07T10:00:00.000Z",
+"language": "en",
+"weighted_average": 9.654213915475603,
+"raw_weighted_average": 6.521828079223633
+},
+{
+"id": "us_news_npr_5fddb523b8e6",
+"published_date": "2026-10-07T15:00:47.000Z",
+"language": "en",
+"weighted_average": 9.322814849561594,
+"raw_weighted_average": 6.207218718528748
+},
+{
+"id": "science_john_hawks_36af322166da",
+"published_date": "2026-10-08T05:03:25.000Z",
+"language": "en",
+"weighted_average": 8.467870425194594,
+"raw_weighted_average": 5.6921410918235775
+},
+{
+"id": "art_open_culture_9787910dbcb8",
+"published_date": "2026-10-08T08:00:58.000Z",
+"language": "en",
+"weighted_average": 8.27516858106922,
+"raw_weighted_average": 5.606634664535522
+},
+{
+"id": "south_asian_indian_express_bd00fa2139c9",
+"published_date": "2026-10-08T13:27:18.000Z",
+"language": "en",
+"weighted_average": 7.952345293760733,
+"raw_weighted_average": 5.46974356174469
+},
+{
+"id": "science_arxiv_math_1592e95985bd",
+"published_date": "2026-10-08T04:00:00.000Z",
+"language": "en",
+"weighted_average": 8.47194768660127,
+"raw_weighted_average": 5.694909930229187
+},
+{
+"id": "ukrainian_unn_ua_dc550dd0c5b1",
+"published_date": "2026-10-07T11:50:26.000Z",
+"language": "en",
+"weighted_average": 9.412159275763376,
+"raw_weighted_average": 6.285244989395141
+},
+{
+"id": "dutch_news_nos_binnenland_363d4dc83bb8",
+"published_date": "2026-10-07T11:05:10.000Z",
+"language": "nl",
+"weighted_average": 9.431216208915622,
+"raw_weighted_average": 6.303076934814453
+},
+{
+"id": "korean_hankyung_d421db044682",
+"published_date": "2026-10-07T05:43:04.000Z",
+"language": "ko",
+"weighted_average": 9.752476228099791,
+"raw_weighted_average": 6.620657825469971
+},
+{
+"id": "us_news_npr_6194ceb0558f",
+"published_date": "2026-10-07T19:59:16.000Z",
+"language": "en",
+"weighted_average": 8.81912339430813,
+"raw_weighted_average": 5.858684194087982
+},
+{
+"id": "science_smithsonian_4427b143e371",
+"published_date": "2026-10-08T13:00:00.000Z",
+"language": "en",
+"weighted_average": 7.830516100879647,
+"raw_weighted_average": 5.425091230869294
+},
+{
+"id": "arabic_aawsat_ar_f154d6ce21d4",
+"published_date": "2026-10-07T15:52:59.000Z",
+"language": "ar",
+"weighted_average": 9.01716024910134,
+"raw_weighted_average": 5.992940473556518
+},
+{
+"id": "spanish_elpais_cultura_2ef43cc4430f",
+"published_date": "2026-10-07T19:15:45.000Z",
+"language": "es",
+"weighted_average": 8.793512580384217,
+"raw_weighted_average": 5.843776345252991
+},
+{
+"id": "science_zme_science_1e3a4f020569",
+"published_date": "2026-10-07T12:31:32.000Z",
+"language": "en",
+"weighted_average": 9.191742428034628,
+"raw_weighted_average": 6.09991865158081
+},
+{
+"id": "mexican_aristegui_9602cf8a2c97",
+"published_date": "2026-10-08T11:50:16.000Z",
+"language": "es",
+"weighted_average": 7.835109937966096,
+"raw_weighted_average": 5.428161764144898
+},
+{
+"id": "science_sci_news_5031792d0d33",
+"published_date": "2026-10-07T23:59:25.000Z",
+"language": "en",
+"weighted_average": 8.467943573546627,
+"raw_weighted_average": 5.692190766334534
+},
+{
+"id": "south_african_daily_maverick_9566933cca0c",
+"published_date": "2026-10-07T14:41:47.000Z",
+"language": "en",
+"weighted_average": 8.996822334778875,
+"raw_weighted_average": 5.97549352645874
+},
+{
+"id": "israeli_israel_hayom_caa0a371baf8",
+"published_date": "2026-10-08T10:00:59.000Z",
+"language": "he",
+"weighted_average": 7.884428590018082,
+"raw_weighted_average": 5.4526683449745175
+},
+{
+"id": "austrian_der_standard_0f4495293891",
+"published_date": "2026-10-07T10:00:00.000Z",
+"language": "de",
+"weighted_average": 9.235385387242731,
+"raw_weighted_average": 6.146804594993592
+},
+{
+"id": "science_newspaceeconomy_553ca72ade84",
+"published_date": "2026-10-07T10:20:35.000Z",
+"language": "en",
+"weighted_average": 9.206338774962044,
+"raw_weighted_average": 6.121212100982666
+},
+{
+"id": "british_irish_bbc_scotland_389e59ccbac2",
+"published_date": "2026-10-07T05:03:01.000Z",
+"language": "en",
+"weighted_average": 9.541169499439102,
+"raw_weighted_average": 6.382550573348999
+},
+{
+"id": "israeli_israel_hayom_1a62d442268f",
+"published_date": "2026-10-07T15:41:41.000Z",
+"language": "he",
+"weighted_average": 8.863320382348652,
+"raw_weighted_average": 5.882512497901916
+},
+{
+"id": "greek_naftemporiki_b4cb2e32ba97",
+"published_date": "2026-10-07T18:10:28.000Z",
+"language": "el",
+"weighted_average": 8.715543308641692,
+"raw_weighted_average": 5.800450110435486
+},
+{
+"id": "art_open_culture_733ab6b8b08a",
+"published_date": "2026-10-07T08:00:52.000Z",
+"language": "en",
+"weighted_average": 9.32076943485336,
+"raw_weighted_average": 6.20555202960968
+},
+{
+"id": "north_african_african_manager_e64ee1c81d51",
+"published_date": "2026-10-08T08:50:11.000Z",
+"language": "fr",
+"weighted_average": 7.826825558839086,
+"raw_weighted_average": 5.4229429960250854
+},
+{
+"id": "south_american_el_comercio_pe_7ea1a5d4c094",
+"published_date": "2026-10-07T20:10:00.000Z",
+"language": "es",
+"weighted_average": 8.500361448349055,
+"raw_weighted_average": 5.711826920509338
+},
+{
+"id": "south_american_colombia_one_e34d4819ff80",
+"published_date": "2026-10-07T16:19:14.000Z",
+"language": "en",
+"weighted_average": 8.711164562624509,
+"raw_weighted_average": 5.794502961635589
+},
+{
+"id": "austrian_der_standard_ccddcdff1bfd",
+"published_date": "2026-10-07T07:00:00.000Z",
+"language": "de",
+"weighted_average": 9.258641513441837,
+"raw_weighted_average": 6.165755796432495
+},
+{
+"id": "science_newspaceeconomy_79030b7ba957",
+"published_date": "2026-10-07T10:22:40.000Z",
+"language": "en",
+"weighted_average": 9.044493837060497,
+"raw_weighted_average": 6.011502122879028
+},
+{
+"id": "science_smithsonian_0d00c094141a",
+"published_date": "2026-10-06T20:33:52.000Z",
+"language": "en",
+"weighted_average": 9.914055511197793,
+"raw_weighted_average": 7.038885402679443
+},
+{
+"id": "geography_nature_physorg_earth_54c242543b53",
+"published_date": "2026-10-07T14:36:01.000Z",
+"language": "en",
+"weighted_average": 8.74163418222449,
+"raw_weighted_average": 5.820881676673889
+},
+{
+"id": "art_hyperallergic_7fdf50185701",
+"published_date": "2026-10-06T19:49:08.000Z",
+"language": "en",
+"weighted_average": 9.910529045863605,
+"raw_weighted_average": 6.9757956743240355
+},
+{
+"id": "italian_la_stampa_5808a9cbf1a1",
+"published_date": "2026-10-07T08:05:00.000Z",
+"language": "it",
+"weighted_average": 9.11558905869203,
+"raw_weighted_average": 6.049298214912414
+},
+{
+"id": "swedish_aftonbladet_293fd96183c7",
+"published_date": "2026-10-07T03:15:12.000Z",
+"language": "sv",
+"weighted_average": 9.368650552484741,
+"raw_weighted_average": 6.243690323829651
+},
+{
+"id": "art_hyperallergic_15c30355e7c8",
+"published_date": "2026-10-06T18:40:59.000Z",
+"language": "en",
+"weighted_average": 9.88482945040323,
+"raw_weighted_average": 6.889135789871216
+},
+{
+"id": "science_nautilus_magazine_6e45c0244008",
+"published_date": "2026-10-06T23:00:00.000Z",
+"language": "en",
+"weighted_average": 9.582982879280745,
+"raw_weighted_average": 6.434824514389038
+},
+{
+"id": "greek_protothema_723eef675bdd",
+"published_date": "2026-10-07T06:40:24.000Z",
+"language": "el",
+"weighted_average": 9.064194690098827,
+"raw_weighted_average": 6.0240891456604
+},
+{
+"id": "south_american_la_razon_bo_d87a72d2a914",
+"published_date": "2026-10-07T05:11:31.000Z",
+"language": "es",
+"weighted_average": 9.144348338787081,
+"raw_weighted_average": 6.069008255004883
+},
+{
+"id": "art_elephant_art_dc3088c36576",
+"published_date": "2026-10-06T20:27:41.000Z",
+"language": "en",
+"weighted_average": 9.613499098964477,
+"raw_weighted_average": 6.480741095542908
+},
+{
+"id": "science_scitechdaily_ddfe78f1f82a",
+"published_date": "2026-10-06T14:12:26.000Z",
+"language": "en",
+"weighted_average": 9.961324153000467,
+"raw_weighted_average": 7.149411725997925
+},
+{
+"id": "science_leiden_c15ea6efcbb0",
+"published_date": "2026-10-07T10:00:00.000Z",
+"language": "nl",
+"weighted_average": 8.687162040985138,
+"raw_weighted_average": 5.779184174537659
+},
+{
+"id": "japanese_mainichi_jp_0952df99d49b",
+"published_date": "2026-10-07T09:00:20.000Z",
+"language": "ja",
+"weighted_average": 8.658600704177914,
+"raw_weighted_average": 5.7666059017181395
+},
+{
+"id": "art_hyperallergic_07111ed2df02",
+"published_date": "2026-10-07T14:22:04.000Z",
+"language": "en",
+"weighted_average": 8.348117609958406,
+"raw_weighted_average": 5.63287992477417
+},
+{
+"id": "french_sciences_et_avenir_efb132c8cde4",
+"published_date": "2026-10-06T12:22:10.000Z",
+"language": "fr",
+"weighted_average": 9.948530512434923,
+"raw_weighted_average": 7.119999980926513
+},
+{
+"id": "austrian_die_presse_2fa859a51f5d",
+"published_date": "2026-10-07T03:59:52.000Z",
+"language": "de",
+"weighted_average": 8.92614291042424,
+"raw_weighted_average": 5.930910897254944
+},
+{
+"id": "east_asian_scmp_ccd4d4c75441",
+"published_date": "2026-10-07T04:00:05.000Z",
+"language": "en",
+"weighted_average": 8.894680992055175,
+"raw_weighted_average": 5.895290458202362
+},
+{
+"id": "british_irish_bbc_scotland_1ce7cc3406bb",
+"published_date": "2026-10-07T05:03:22.000Z",
+"language": "en",
+"weighted_average": 8.794800738415544,
+"raw_weighted_average": 5.844526171684265
+},
+{
+"id": "north_african_yabiladi_d1fe50e3b2ad",
+"published_date": "2026-10-07T12:28:00.000Z",
+"language": "fr",
+"weighted_average": 8.330254326747964,
+"raw_weighted_average": 5.625601887702942
+},
+{
+"id": "finnish_helsingin_sanomat_98fb2a54b538",
+"published_date": "2026-10-07T17:15:00.000Z",
+"language": "fi",
+"weighted_average": 8.022675466664111,
+"raw_weighted_average": 5.4951266050338745
+},
+{
+"id": "science_smithsonian_1d4c272efbc5",
+"published_date": "2026-10-06T14:10:50.000Z",
+"language": "en",
+"weighted_average": 9.628433329681938,
+"raw_weighted_average": 6.501519131660461
+},
+{
+"id": "mexican_excelsior_16f295c151ab",
+"published_date": "2026-10-06T08:51:09.000Z",
+"language": "es",
+"weighted_average": 9.973416,
+"raw_weighted_average": 7.285888361930847
+},
+{
+"id": "art_bmoreart_ef7c010e8863",
+"published_date": "2026-10-07T14:27:37.000Z",
+"language": "en",
+"weighted_average": 8.150520373910481,
+"raw_weighted_average": 5.551212096214295
+},
+{
+"id": "mexican_excelsior_b8e5780f7f72",
+"published_date": "2026-10-06T10:18:00.000Z",
+"language": "es",
+"weighted_average": 9.859956513917455,
+"raw_weighted_average": 6.807143521308899
+},
+{
+"id": "science_frontiers_psychology_3c04811c30a0",
+"published_date": "2026-10-07T00:00:00.000Z",
+"language": "en",
+"weighted_average": 8.982887103002522,
+"raw_weighted_average": 5.964824509620667
+},
+{
+"id": "balkan_delo_baccecf71714",
+"published_date": "2026-10-07T03:00:00.000Z",
+"language": "sl",
+"weighted_average": 8.737639197353925,
+"raw_weighted_average": 5.818168711662293
+},
+{
+"id": "science_frontiers_psychology_69e97d4639c4",
+"published_date": "2026-10-07T00:00:00.000Z",
+"language": "en",
+"weighted_average": 8.916740086081973,
+"raw_weighted_average": 5.923248314857483
+},
+{
+"id": "north_african_algerie_patriotique_ea0715e284ad",
+"published_date": "2026-10-06T10:03:13.000Z",
+"language": "fr",
+"weighted_average": 9.785310871184684,
+"raw_weighted_average": 6.667143559455871
+},
+{
+"id": "global_news_BBC_world_ced1efd20f03",
+"published_date": "2026-10-06T23:07:44.000Z",
+"language": "en",
+"weighted_average": 8.854418697509896,
+"raw_weighted_average": 5.87888548374176
+},
+{
+"id": "global_news_euronews_26786ba09158",
+"published_date": "2026-10-07T13:00:48.000Z",
+"language": "en",
+"weighted_average": 8.059848692973715,
+"raw_weighted_average": 5.515023541450501
+},
+{
+"id": "south_asian_times_of_india_9be102300e55",
+"published_date": "2026-10-06T04:50:49.000Z",
+"language": "en",
+"weighted_average": 9.973416,
+"raw_weighted_average": 7.256476616859436
+},
+{
+"id": "polish_wyborcza_88c0088c91ec",
+"published_date": "2026-10-07T04:38:00.000Z",
+"language": "pl",
+"weighted_average": 8.47647418136404,
+"raw_weighted_average": 5.69792355298996
+},
+{
+"id": "science_sciencedaily_c2dd4c14bedc",
+"published_date": "2026-10-06T13:37:48.000Z",
+"language": "en",
+"weighted_average": 9.377136826133524,
+"raw_weighted_average": 6.2587056159973145
+},
+{
+"id": "south_american_elsalvador_com_dd56402a8438",
+"published_date": "2026-10-07T11:55:00.000Z",
+"language": "es",
+"weighted_average": 8.06201627956513,
+"raw_weighted_average": 5.516127514839172
+},
+{
+"id": "science_plos_one_cceda1927535",
+"published_date": "2026-10-06T14:00:00.000Z",
+"language": "en",
+"weighted_average": 9.347792829825048,
+"raw_weighted_average": 6.226491141319275
+},
+{
+"id": "south_asian_times_of_india_ed646fce35f1",
+"published_date": "2026-10-07T08:45:42.000Z",
+"language": "en",
+"weighted_average": 8.143952990058624,
+"raw_weighted_average": 5.544522428512574
+},
+{
+"id": "global_news_csmonitor_442e3f6b83bb",
+"published_date": "2026-10-06T09:56:11.000Z",
+"language": "en",
+"weighted_average": 9.502643825722911,
+"raw_weighted_average": 6.366853189468384
+},
+{
+"id": "science_new_scientist_6aa4a2df0418",
+"published_date": "2026-10-06T17:00:00.000Z",
+"language": "en",
+"weighted_average": 8.903049147692071,
+"raw_weighted_average": 5.908940291404724
+},
+{
+"id": "belonging_religion_news_117c742bdcb9",
+"published_date": "2026-10-06T15:23:53.000Z",
+"language": "en",
+"weighted_average": 8.93037660928222,
+"raw_weighted_average": 5.934008240699768
+},
+{
+"id": "science_biblical_archaeology_fb80a0da5696",
+"published_date": "2026-10-06T11:00:28.000Z",
+"language": "en",
+"weighted_average": 9.171938329885334,
+"raw_weighted_average": 6.085931301116943
+},
+{
+"id": "spanish_mongabay_latam_d8e0762c3a71",
+"published_date": "2026-10-06T16:39:22.000Z",
+"language": "es",
+"weighted_average": 8.797272527314576,
+"raw_weighted_average": 5.845964980125427
+},
+{
+"id": "west_african_aib_burkina_7778846e2580",
+"published_date": "2026-10-06T17:38:52.000Z",
+"language": "fr",
+"weighted_average": 8.71670464186114,
+"raw_weighted_average": 5.802027416229248
+},
+{
+"id": "spanish_el_pais_fd7b387cb913",
+"published_date": "2026-10-06T15:04:45.000Z",
+"language": "es",
+"weighted_average": 8.819761882431225,
+"raw_weighted_average": 5.859055852890014
+},
+{
+"id": "british_irish_independent_uk_0c8438504db4",
+"published_date": "2026-10-06T09:51:50.000Z",
+"language": "en",
+"weighted_average": 9.06669163463683,
+"raw_weighted_average": 6.025219583511353
+},
+{
+"id": "science_skeptic_magazine_97c30f5fd698",
+"published_date": "2026-10-06T21:08:29.000Z",
+"language": "en",
+"weighted_average": 8.3692629158907,
+"raw_weighted_average": 5.641495156288147
+},
+{
+"id": "australian_abc_au_a3c0f106dd23",
+"published_date": "2026-10-07T03:00:00.000Z",
+"language": "en",
+"weighted_average": 8.043494939342812,
+"raw_weighted_average": 5.506694412231445
+},
+{
+"id": "russian_meduza_en_84f37487911c",
+"published_date": "2026-10-05T23:47:42.000Z",
+"language": "en",
+"weighted_average": 9.623832430333522,
+"raw_weighted_average": 6.496832823753357
+},
+{
+"id": "art_hyperallergic_bd9ff2ffb014",
+"published_date": "2026-10-05T20:04:12.000Z",
+"language": "en",
+"weighted_average": 9.850898578788817,
+"raw_weighted_average": 6.786991119384766
+},
+{
+"id": "geography_nature_mongabay_76beb10b1d62",
+"published_date": "2026-10-06T11:02:53.000Z",
+"language": "en",
+"weighted_average": 8.81912339430813,
+"raw_weighted_average": 5.858684194087982
+},
+{
+"id": "south_american_colombia_one_03558a6f8e64",
+"published_date": "2026-10-06T21:15:00.000Z",
+"language": "en",
+"weighted_average": 8.218964882935184,
+"raw_weighted_average": 5.581074452400207
+},
+{
+"id": "australian_abc_au_fa1523451013",
+"published_date": "2026-10-06T23:04:27.000Z",
+"language": "en",
+"weighted_average": 8.060071986599342,
+"raw_weighted_average": 5.515137267112732
+},
+{
+"id": "east_asian_korea_times_0753bf81b69e",
+"published_date": "2026-10-06T10:02:03.000Z",
+"language": "en",
+"weighted_average": 8.76481542333876,
+"raw_weighted_average": 5.8315458536148075
+},
+{
+"id": "central_asian_open_kg_8dfa3dee9ab5",
+"published_date": "2026-10-06T15:40:49.000Z",
+"language": "en",
+"weighted_average": 8.341129662425104,
+"raw_weighted_average": 5.6300328254699705
+},
+{
+"id": "greek_naftemporiki_ee1448637fcc",
+"published_date": "2026-10-06T08:00:19.000Z",
+"language": "el",
+"weighted_average": 8.730294028492775,
+"raw_weighted_average": 5.813180661201477
+},
+{
+"id": "greek_ta_nea_e41928b2d3e2",
+"published_date": "2026-10-06T16:01:47.000Z",
+"language": "el",
+"weighted_average": 8.189763856204223,
+"raw_weighted_average": 5.5700499534606935
+},
+{
+"id": "healthcare_medicalxpress_6a3625e3eca2",
+"published_date": "2026-10-05T22:36:01.000Z",
+"language": "en",
+"weighted_average": 9.190580006779655,
+"raw_weighted_average": 6.097550654411316
+},
+{
+"id": "global_news_euronews_628bae7a46ed",
+"published_date": "2026-10-05T12:59:22.000Z",
+"language": "en",
+"weighted_average": 9.796736476528825,
+"raw_weighted_average": 6.691193175315857
+},
+{
+"id": "spanish_el_pais_eb9bd4b1628d",
+"published_date": "2026-10-06T03:30:01.000Z",
+"language": "es",
+"weighted_average": 8.867504340403878,
+"raw_weighted_average": 5.884217262268066
+},
+{
+"id": "south_american_biobio_f5c2d1291f4e",
+"published_date": "2026-10-05T17:49:59.000Z",
+"language": "es",
+"weighted_average": 9.359456402140358,
+"raw_weighted_average": 6.2344117879867555
+},
+{
+"id": "greek_naftemporiki_a20b03f9f223",
+"published_date": "2026-10-06T09:07:29.000Z",
+"language": "el",
+"weighted_average": 8.408397871884832,
+"raw_weighted_average": 5.664370489120484
+},
+{
+"id": "italian_repubblica_economia_15def47beeaf",
+"published_date": "2026-10-06T08:00:00.000Z",
+"language": "it",
+"weighted_average": 8.440866965545746,
+"raw_weighted_average": 5.676396918296814
+},
+{
+"id": "belgian_bruzz_302a11846ad3",
+"published_date": "2026-10-06T09:16:42.000Z",
+"language": "nl",
+"weighted_average": 8.326625613219933,
+"raw_weighted_average": 5.624328136444092
+},
+{
+"id": "mexican_excelsior_65388529ab9f",
+"published_date": "2026-10-05T08:15:00.000Z",
+"language": "es",
+"weighted_average": 9.859956513917455,
+"raw_weighted_average": 6.807143521308899
+},
+{
+"id": "art_kaltblut_magazine_8e2b2bba022a",
+"published_date": "2026-10-05T14:00:00.000Z",
+"language": "en",
+"weighted_average": 9.476484072523323,
+"raw_weighted_average": 6.3551603078842165
+},
+{
+"id": "dutch_news_nos_buitenland_3fe60cb9718a",
+"published_date": "2026-10-05T12:21:59.000Z",
+"language": "nl",
+"weighted_average": 9.548837546832967,
+"raw_weighted_average": 6.403167653083801
+},
+{
+"id": "korean_hankyung_b95240c97ac6",
+"published_date": "2026-10-06T09:08:12.000Z",
+"language": "ko",
+"weighted_average": 8.266603329070815,
+"raw_weighted_average": 5.602272415161133
+},
+{
+"id": "science_new_scientist_a310dcab4a7d",
+"published_date": "2026-10-05T15:00:00.000Z",
+"language": "en",
+"weighted_average": 9.304004383255078,
+"raw_weighted_average": 6.184824514389038
+},
+{
+"id": "greek_ta_nea_5b28f68c7c68",
+"published_date": "2026-10-06T16:05:00.000Z",
+"language": "el",
+"weighted_average": 7.8159469925864204,
+"raw_weighted_average": 5.416610670089722
+},
+{
+"id": "korean_yonhap_kr_05a7f0e56b3d",
+"published_date": "2026-10-07T01:55:31.000Z",
+"language": "ko",
+"weighted_average": 7.296357586284966,
+"raw_weighted_average": 5.264045834541321
+},
+{
+"id": "belonging_religion_news_63203e5d2e18",
+"published_date": "2026-10-06T16:08:48.000Z",
+"language": "en",
+"weighted_average": 7.775376754792288,
+"raw_weighted_average": 5.394962120056152
+},
+{
+"id": "east_african_eastleigh_voice_482a77910071",
+"published_date": "2026-10-05T18:33:19.000Z",
+"language": "en",
+"weighted_average": 8.979616809674456,
+"raw_weighted_average": 5.9631588697433475
+},
+{
+"id": "mental_health_psypost_4a331e009852",
+"published_date": "2026-10-06T18:00:30.000Z",
+"language": "en",
+"weighted_average": 7.638697530611091,
+"raw_weighted_average": 5.350765192508698
+},
+{
+"id": "spanish_elpais_cultura_f3f6d27f5ea8",
+"published_date": "2026-10-06T03:30:01.000Z",
+"language": "es",
+"weighted_average": 8.397395366039296,
+"raw_weighted_average": 5.6593269348144535
+},
+{
+"id": "global_news_csmonitor_745bc0b28c44",
+"published_date": "2026-10-05T15:56:11.000Z",
+"language": "en",
+"weighted_average": 8.936220866674148,
+"raw_weighted_average": 5.937976813316345
+},
+{
+"id": "art_jstor_daily_7c9c57f27fad",
+"published_date": "2026-10-06T13:33:25.000Z",
+"language": "en",
+"weighted_average": 7.672501948050416,
+"raw_weighted_average": 5.36301896572113
+},
+{
+"id": "art_open_culture_e6ef01aef96a",
+"published_date": "2026-10-06T07:02:48.000Z",
+"language": "en",
+"weighted_average": 8.01472873158379,
+"raw_weighted_average": 5.489730334281921
+},
+{
+"id": "french_lemonde_culture_f7051acd9a08",
+"published_date": "2026-10-06T15:30:10.000Z",
+"language": "fr",
+"weighted_average": 7.563019935130501,
+"raw_weighted_average": 5.328142666816712
+},
+{
+"id": "british_irish_guardian_world_09b6cbb87014",
+"published_date": "2026-10-05T04:00:48.000Z",
+"language": "en",
+"weighted_average": 9.546683858300606,
+"raw_weighted_average": 6.395950603485107
+},
+{
+"id": "portuguese_tek_51962e26486a",
+"published_date": "2026-10-05T11:59:00.000Z",
+"language": "pt",
+"weighted_average": 8.9956487611231,
+"raw_weighted_average": 5.9742981672286986
+},
+{
+"id": "positive_news_good_good_good_67ebf8d3df1e",
+"published_date": "2026-10-05T21:06:00.000Z",
+"language": "en",
+"weighted_average": 8.439675665053246,
+"raw_weighted_average": 5.675955665111542
+},
+{
+"id": "east_asian_korea_times_85925d3ae78e",
+"published_date": "2026-10-06T10:02:03.000Z",
+"language": "en",
+"weighted_average": 7.717379788785372,
+"raw_weighted_average": 5.3780461072921755
+},
+{
+"id": "austrian_orf_wirtschaft_86288d73e124",
+"published_date": "2026-10-06T07:52:23.000Z",
+"language": "de",
+"weighted_average": 7.830034567337666,
+"raw_weighted_average": 5.424810934066772
+},
+{
+"id": "pubmed_9ac8f5c8fa3e",
+"published_date": "2026-10-06T00:00:00.000Z",
+"language": "en",
+"weighted_average": 8.254633997274432,
+"raw_weighted_average": 5.596176481246948
+},
+{
+"id": "science_arstechnica_0a13b97dffbc",
+"published_date": "2026-10-05T04:00:52.000Z",
+"language": "en",
+"weighted_average": 9.440446050288516,
+"raw_weighted_average": 6.317745041847229
+},
+{
+"id": "icelandic_ruv_e873f7a49f12",
+"published_date": "2026-10-05T04:30:41.000Z",
+"language": "is",
+"weighted_average": 9.400632022794802,
+"raw_weighted_average": 6.2774173498153685
+},
+{
+"id": "us_news_fox_news_a4453afaa8b8",
+"published_date": "2026-10-05T12:00:40.000Z",
+"language": "en",
+"weighted_average": 8.93037660928222,
+"raw_weighted_average": 5.934008240699768
+},
+{
+"id": "hungarian_index_hu_be3ccfd5caa9",
+"published_date": "2026-10-06T11:23:00.000Z",
+"language": "hu",
+"weighted_average": 7.591084599030377,
+"raw_weighted_average": 5.336907863616943
+},
+{
+"id": "german_ntv_b621c478c94b",
+"published_date": "2026-10-05T10:16:44.000Z",
+"language": "de",
+"weighted_average": 8.9956487611231,
+"raw_weighted_average": 5.9742981672286986
+},
+{
+"id": "german_t3n_071b99616c1f",
+"published_date": "2026-10-06T09:00:59.000Z",
+"language": "de",
+"weighted_average": 7.658300467319071,
+"raw_weighted_average": 5.357232856750488
+},
+{
+"id": "science_nautilus_magazine_a89338a339ab",
+"published_date": "2026-10-04T18:00:00.000Z",
+"language": "en",
+"weighted_average": 9.931794608904545,
+"raw_weighted_average": 7.093076920509338
+},
+{
+"id": "indonesian_mongabay_id_6a0ff18f5679",
+"published_date": "2026-10-06T00:01:28.000Z",
+"language": "id",
+"weighted_average": 8.039235391076582,
+"raw_weighted_average": 5.504524981975555
+},
+{
+"id": "healthcare_medicalxpress_2ac85915916b",
+"published_date": "2026-10-05T17:36:11.000Z",
+"language": "en",
+"weighted_average": 8.36313839675773,
+"raw_weighted_average": 5.6389998435974125
+},
+{
+"id": "portuguese_observador_b4cc4dabe990",
+"published_date": "2026-10-06T20:24:30.000Z",
+"language": "pt",
+"weighted_average": 6.949798064299482,
+"raw_weighted_average": 5.1605888366699215
+},
+{
+"id": "art_hi_fructose_ee9ad3eab300",
+"published_date": "2026-10-05T22:59:20.000Z",
+"language": "en",
+"weighted_average": 8.028604765419514,
+"raw_weighted_average": 5.499110698699951
+},
+{
+"id": "korean_hankyung_27e7af7741f8",
+"published_date": "2026-10-06T11:21:33.000Z",
+"language": "ko",
+"weighted_average": 7.351620023061954,
+"raw_weighted_average": 5.278134822845459
+},
+{
+"id": "caucasus_report_az_87d63fed1ab4",
+"published_date": "2026-10-06T17:36:14.000Z",
+"language": "en",
+"weighted_average": 7.02950501692171,
+"raw_weighted_average": 5.182567811012268
+},
+{
+"id": "science_illinois_edu_7a81fe735352",
+"published_date": "2026-10-05T12:49:39.000Z",
+"language": "en",
+"weighted_average": 8.520090067283798,
+"raw_weighted_average": 5.7205116748809814
+},
+{
+"id": "portuguese_valor_economico_805f3db6c88d",
+"published_date": "2026-10-06T08:00:01.000Z",
+"language": "pt",
+"weighted_average": 7.452763839624097,
+"raw_weighted_average": 5.306022453308105
+},
+{
+"id": "new_zealand_rnz_634431a12b07",
+"published_date": "2026-10-05T21:21:44.000Z",
+"language": "en",
+"weighted_average": 8.008905751061025,
+"raw_weighted_average": 5.485776209831238
+},
+{
+"id": "north_african_yabiladi_f00fa5a01e18",
+"published_date": "2026-10-05T11:58:00.000Z",
+"language": "fr",
+"weighted_average": 8.484051405906381,
+"raw_weighted_average": 5.7023338079452515
+},
+{
+"id": "greek_protothema_cfe6d26906fd",
+"published_date": "2026-10-05T07:30:00.000Z",
+"language": "el",
+"weighted_average": 8.726288897294523,
+"raw_weighted_average": 5.810460805892944
+},
+{
+"id": "french_futura_sciences_90d59be14c5d",
+"published_date": "2026-10-04T12:03:09.000Z",
+"language": "fr",
+"weighted_average": 9.892223409368043,
+"raw_weighted_average": 6.9192646741867065
+},
+{
+"id": "new_zealand_rnz_1fed2c1a17d8",
+"published_date": "2026-10-05T02:03:47.000Z",
+"language": "en",
+"weighted_average": 8.983931076576173,
+"raw_weighted_average": 5.965356230735779
+},
+{
+"id": "swedish_svt_nyheter_fb8f174b0767",
+"published_date": "2026-10-06T09:28:01.000Z",
+"language": "sv",
+"weighted_average": 7.246208426994035,
+"raw_weighted_average": 5.250424218177796
+},
+{
+"id": "ukrainian_kyiv_post_833e941dd7fb",
+"published_date": "2026-10-04T14:03:00.000Z",
+"language": "en",
+"weighted_average": 9.698279637319457,
+"raw_weighted_average": 6.569509816169739
+},
+{
+"id": "vietnamese_tuoitre_vn_9dc181d88bd6",
+"published_date": "2026-10-05T20:58:00.000Z",
+"language": "vi",
+"weighted_average": 7.853097105127134,
+"raw_weighted_average": 5.4428199291229244
+},
+{
+"id": "economics_nber_working_papers_2ca803fc4be2",
+"published_date": "2026-10-06T00:03:02.000Z",
+"language": "en",
+"weighted_average": 7.614333174858011,
+"raw_weighted_average": 5.343674159049987
+},
+{
+"id": "pan_african_alwihda_info_0f8882513830",
+"published_date": "2026-10-06T05:24:22.000Z",
+"language": "en",
+"weighted_average": 7.235794786397817,
+"raw_weighted_average": 5.247595643997192
+},
+{
+"id": "french_mediapart_e5cba450900f",
+"published_date": "2026-10-04T10:09:41.000Z",
+"language": "fr",
+"weighted_average": 9.682877424231366,
+"raw_weighted_average": 6.548591613769531
+},
+{
+"id": "south_asian_times_of_india_9eb47c332926",
+"published_date": "2026-10-05T12:30:00.000Z",
+"language": "en",
+"weighted_average": 8.097189791728608,
+"raw_weighted_average": 5.525539135932922
+},
+{
+"id": "baltic_postimees_75ec2156af51",
+"published_date": "2026-10-05T11:08:22.000Z",
+"language": "et",
+"weighted_average": 8.160689409485592,
+"raw_weighted_average": 5.556887853145599
+},
+{
+"id": "british_irish_bbc_scotland_9af367b21ff3",
+"published_date": "2026-10-04T07:02:42.000Z",
+"language": "en",
+"weighted_average": 9.869861031946003,
+"raw_weighted_average": 6.84620099067688
+},
+{
+"id": "south_asian_indian_express_18c469708bca",
+"published_date": "2026-10-06T07:00:32.000Z",
+"language": "en",
+"weighted_average": 7.12281944469994,
+"raw_weighted_average": 5.21690788269043
+},
+{
+"id": "science_sciencenews_dk_c01a0e8b8abe",
+"published_date": "2026-10-06T05:00:01.000Z",
+"language": "en",
+"weighted_average": 7.193005534506655,
+"raw_weighted_average": 5.235972571372986
+},
+{
+"id": "portuguese_observador_6a0f2b36a983",
+"published_date": "2026-10-05T13:03:26.000Z",
+"language": "pt",
+"weighted_average": 7.988654576896874,
+"raw_weighted_average": 5.477962684631348
+},
+{
+"id": "north_african_yabiladi_7e0fa9cdc335",
+"published_date": "2026-10-04T19:00:00.000Z",
+"language": "fr",
+"weighted_average": 8.91792898491205,
+"raw_weighted_average": 5.924217176437378
+},
+{
+"id": "italian_ansa_afdf3e271a91",
+"published_date": "2026-10-05T16:23:31.000Z",
+"language": "it",
+"weighted_average": 7.660443092251508,
+"raw_weighted_average": 5.3581058263778685
+},
+{
+"id": "finnish_yle_uutiset_e2aff61899aa",
+"published_date": "2026-10-06T12:32:50.000Z",
+"language": "fi",
+"weighted_average": 6.674328704191638,
+"raw_weighted_average": 5.093249356746673
+},
+{
+"id": "west_african_aib_burkina_df86dd8374e9",
+"published_date": "2026-10-05T15:07:19.000Z",
+"language": "fr",
+"weighted_average": 7.673875065462395,
+"raw_weighted_average": 5.363578414916992
+},
+{
+"id": "central_asian_astana_times_29347a776f64",
+"published_date": "2026-10-04T05:30:57.000Z",
+"language": "en",
+"weighted_average": 9.632746997597879,
+"raw_weighted_average": 6.50591287612915
+},
+{
+"id": "french_futura_sciences_34263119d5c8",
+"published_date": "2026-10-04T08:00:00.000Z",
+"language": "fr",
+"weighted_average": 9.457652917209394,
+"raw_weighted_average": 6.345000004768371
+},
+{
+"id": "healthcare_medicalxpress_da7e85fc1608",
+"published_date": "2026-10-05T17:16:13.000Z",
+"language": "en",
+"weighted_average": 7.540614653661045,
+"raw_weighted_average": 5.32112066745758
+},
+{
+"id": "spanish_mongabay_latam_c16663de0029",
+"published_date": "2026-10-04T12:08:26.000Z",
+"language": "es",
+"weighted_average": 9.181381940831557,
+"raw_weighted_average": 6.090740895271301
+},
+{
+"id": "climate_solutions_yale_climate_connections_a4b695571f76",
+"published_date": "2026-10-05T10:59:00.000Z",
+"language": "en",
+"weighted_average": 7.850077945157923,
+"raw_weighted_average": 5.4403595447540285
+},
+{
+"id": "spanish_20minutos_es_36975a8d9ca4",
+"published_date": "2026-10-04T11:00:44.000Z",
+"language": "es",
+"weighted_average": 9.184935355226534,
+"raw_weighted_average": 6.09255063533783
+},
+{
+"id": "central_asian_astana_times_e05ff12712a1",
+"published_date": "2026-10-04T06:00:24.000Z",
+"language": "en",
+"weighted_average": 9.384302986461236,
+"raw_weighted_average": 6.264545488357544
+},
+{
+"id": "polish_rzeczpospolita_dea7f50a50e9",
+"published_date": "2026-10-05T13:17:58.000Z",
+"language": "pl",
+"weighted_average": 7.4967407169465545,
+"raw_weighted_average": 5.312914252281189
+},
+{
+"id": "french_rfi_a1be7497b922",
+"published_date": "2026-10-04T09:55:22.000Z",
+"language": "fr",
+"weighted_average": 9.010613620805099,
+"raw_weighted_average": 5.98849470615387
+},
+{
+"id": "caucasus_oc_media_d687e011e3b8",
+"published_date": "2026-10-05T06:26:27.000Z",
+"language": "en",
+"weighted_average": 7.807795880810895,
+"raw_weighted_average": 5.411865973472596
+},
+{
+"id": "climate_solutions_the_cool_down_ab572901c255",
+"published_date": "2026-10-04T18:02:00.000Z",
+"language": "en",
+"weighted_average": 8.383741691606968,
+"raw_weighted_average": 5.650054824352265
+},
+{
+"id": "positive_news_the_better_india_ec0ffb243753",
+"published_date": "2026-10-05T04:27:34.000Z",
+"language": "en",
+"weighted_average": 7.811374789315227,
+"raw_weighted_average": 5.4139492273330685
+},
+{
+"id": "west_african_le_quotidien_sn_fb03647803ac",
+"published_date": "2026-10-05T10:30:29.000Z",
+"language": "fr",
+"weighted_average": 7.443415084814713,
+"raw_weighted_average": 5.304557371139526
+},
+{
+"id": "arabic_alquds_ar_98133db7f099",
+"published_date": "2026-10-05T17:32:16.000Z",
+"language": "ar",
+"weighted_average": 7.056314840775491,
+"raw_weighted_average": 5.189394783973694
+},
+{
+"id": "hungarian_index_hu_43442800aba9",
+"published_date": "2026-10-04T14:54:00.000Z",
+"language": "hu",
+"weighted_average": 8.382056330404588,
+"raw_weighted_average": 5.648910307884217
+},
+{
+"id": "science_mdpi_sustainability_28d120a7c018",
+"published_date": "2026-10-05T00:00:00.000Z",
+"language": "en",
+"weighted_average": 7.8436625959303505,
+"raw_weighted_average": 5.435131525993347
+},
+{
+"id": "global_news_UN_news_a4237241bdff",
+"published_date": "2026-10-04T12:00:00.000Z",
+"language": "en",
+"weighted_average": 8.499384779232946,
+"raw_weighted_average": 5.711258459091186
+},
+{
+"id": "greek_to_vima_883dfd0cc74d",
+"published_date": "2026-10-05T09:04:42.000Z",
+"language": "el",
+"weighted_average": 7.345635089326289,
+"raw_weighted_average": 5.276610708236694
+},
+{
+"id": "german_die_welt_065ac07ecbeb",
+"published_date": "2026-10-04T14:09:41.000Z",
+"language": "de",
+"weighted_average": 8.291715645594701,
+"raw_weighted_average": 5.612474584579468
+},
+{
+"id": "balkan_vecernji_ccccf153fe00",
+"published_date": "2026-10-05T13:43:00.000Z",
+"language": "hr",
+"weighted_average": 7.007293733629558,
+"raw_weighted_average": 5.1769118309021
+},
+{
+"id": "arabic_alquds_ar_cfd56f05ac4c",
+"published_date": "2026-10-04T20:15:49.000Z",
+"language": "ar",
+"weighted_average": 7.8142326569933775,
+"raw_weighted_average": 5.415612769126892
+},
+{
+"id": "south_asian_kathmandu_post_0eeb64ce2f9e",
+"published_date": "2026-10-03T08:01:53.000Z",
+"language": "en",
+"weighted_average": 9.914055511197793,
+"raw_weighted_average": 7.038885402679443
+},
+{
+"id": "australian_abc_au_0900cd267b99",
+"published_date": "2026-10-05T01:30:51.000Z",
+"language": "en",
+"weighted_average": 7.44298180159751,
+"raw_weighted_average": 5.304489469528198
+},
+{
+"id": "hungarian_index_hu_173aa0558464",
+"published_date": "2026-10-04T14:57:00.000Z",
+"language": "hu",
+"weighted_average": 7.983994568707754,
+"raw_weighted_average": 5.47690782546997
+},
+{
+"id": "community_social_hackernews_newest_2556f32a75a5",
+"published_date": "2026-10-03T17:56:02.000Z",
+"language": "en",
+"weighted_average": 9.197813759129797,
+"raw_weighted_average": 6.112286710739136
+},
+{
+"id": "portuguese_observador_83afcbb2e920",
+"published_date": "2026-10-04T14:29:09.000Z",
+"language": "pt",
+"weighted_average": 7.989534147649681,
+"raw_weighted_average": 5.478161787986755
+},
+{
+"id": "southeast_asian_tuoi_tre_en_a68eaba5ebb3",
+"published_date": "2026-10-05T02:16:00.000Z",
+"language": "en",
+"weighted_average": 7.364485673876253,
+"raw_weighted_average": 5.281411170959473
+},
+{
+"id": "italian_punto_informatico_0a09f4c62290",
+"published_date": "2026-10-05T08:03:25.000Z",
+"language": "it",
+"weighted_average": 7.079486948607631,
+"raw_weighted_average": 5.199415779113769
+},
+{
+"id": "south_american_republica_gt_25874503b9f2",
+"published_date": "2026-10-04T14:00:50.000Z",
+"language": "es",
+"weighted_average": 7.983994568707754,
+"raw_weighted_average": 5.47690782546997
+},
+{
+"id": "baltic_err_ee_db69aa5f485b",
+"published_date": "2026-10-05T12:37:00.000Z",
+"language": "en",
+"weighted_average": 6.837785634694455,
+"raw_weighted_average": 5.13965517282486
+},
+{
+"id": "german_sz_wissen_ac12c263d409",
+"published_date": "2026-10-04T08:43:06.000Z",
+"language": "de",
+"weighted_average": 8.230295304363183,
+"raw_weighted_average": 5.585271430015564
+},
+{
+"id": "indonesian_mongabay_id_adbcc85b598e",
+"published_date": "2026-10-03T04:05:46.000Z",
+"language": "id",
+"weighted_average": 9.986708,
+"raw_weighted_average": 7.4994117498397825
+},
+{
+"id": "south_american_prensa_libre_bcfb853f9cf4",
+"published_date": "2026-10-04T16:21:19.000Z",
+"language": "es",
+"weighted_average": 7.703899975039369,
+"raw_weighted_average": 5.3746133089065555
+},
+{
+"id": "science_frontiers_medicine_01c033f96649",
+"published_date": "2026-10-05T00:00:00.000Z",
+"language": "en",
+"weighted_average": 7.286900175938965,
+"raw_weighted_average": 5.261476993560791
+},
+{
+"id": "spanish_20minutos_es_885d204481bb",
+"published_date": "2026-10-03T10:47:10.000Z",
+"language": "es",
+"weighted_average": 9.24744665832611,
+"raw_weighted_average": 6.156633257865906
+},
+{
+"id": "west_african_senego_acbb28161ebb",
+"published_date": "2026-10-05T08:43:31.000Z",
+"language": "fr",
+"weighted_average": 6.771427143722557,
+"raw_weighted_average": 5.120312952995301
+},
+{
+"id": "australian_abc_au_a368c7a652ea",
+"published_date": "2026-10-04T19:50:33.000Z",
+"language": "en",
+"weighted_average": 7.365696357645027,
+"raw_weighted_average": 5.2817194819450375
+},
+{
+"id": "czech_novinky_c97603a03f5b",
+"published_date": "2026-10-03T03:52:00.000Z",
+"language": "cs",
+"weighted_average": 9.63169748282827,
+"raw_weighted_average": 6.5048438787460325
+},
+{
+"id": "french_rfi_ed2e657e3706",
+"published_date": "2026-10-03T05:53:07.000Z",
+"language": "fr",
+"weighted_average": 9.431216208915622,
+"raw_weighted_average": 6.303076934814453
+},
+{
+"id": "us_news_fox_news_10b0a263d506",
+"published_date": "2026-10-03T14:00:40.000Z",
+"language": "en",
+"weighted_average": 8.852832136964054,
+"raw_weighted_average": 5.878239035606384
+},
+{
+"id": "balkan_vijesti_f3a579ee63f4",
+"published_date": "2026-10-03T16:26:00.000Z",
+"language": "hr",
+"weighted_average": 8.680569424141465,
+"raw_weighted_average": 5.776199674606323
+},
+{
+"id": "romanian_hotnews_1b4cf25f9a50",
+"published_date": "2026-10-03T12:19:25.000Z",
+"language": "ro",
+"weighted_average": 8.921055604226265,
+"raw_weighted_average": 5.926765131950378
+},
+{
+"id": "icelandic_ruv_f3d5922509d2",
+"published_date": "2026-10-04T16:26:37.000Z",
+"language": "is",
+"weighted_average": 7.281405319146816,
+"raw_weighted_average": 5.259984469413757
+},
+{
+"id": "south_american_perfil_67fa890754ff",
+"published_date": "2026-10-03T15:34:00.000Z",
+"language": "es",
+"weighted_average": 8.600924175897704,
+"raw_weighted_average": 5.745976686477661
+},
+{
+"id": "arabic_aljazeera_en_01341565d7b9",
+"published_date": "2026-10-03T19:14:43.000Z",
+"language": "en",
+"weighted_average": 8.378398315960139,
+"raw_weighted_average": 5.646426177024841
+},
+{
+"id": "climate_solutions_the_cool_down_959db7a09e99",
+"published_date": "2026-10-04T11:58:00.000Z",
+"language": "en",
+"weighted_average": 7.417144779528425,
+"raw_weighted_average": 5.3004404425621034
+},
+{
+"id": "french_sciences_et_avenir_c9f97d68b4c7",
+"published_date": "2026-10-04T12:00:00.000Z",
+"language": "fr",
+"weighted_average": 7.307314043395909,
+"raw_weighted_average": 5.266851925849915
+},
+{
+"id": "czech_novinky_04fe0e83880f",
+"published_date": "2026-10-03T03:32:00.000Z",
+"language": "cs",
+"weighted_average": 9.073243494084716,
+"raw_weighted_average": 6.028185796737671
+},
+{
+"id": "czech_expats_cz_de96bac84992",
+"published_date": "2026-10-03T03:33:00.000Z",
+"language": "en",
+"weighted_average": 9.064477593588474,
+"raw_weighted_average": 6.024217224121093
+},
+{
+"id": "arabic_skynewsarabia_ar_33459b5dc274",
+"published_date": "2026-10-03T07:41:08.000Z",
+"language": "ar",
+"weighted_average": 8.724062972052666,
+"raw_weighted_average": 5.808949196338654
+},
+{
+"id": "us_media_the_atlantic_65df3c0f8005",
+"published_date": "2026-10-04T17:38:16.000Z",
+"language": "en",
+"weighted_average": 6.912085234236105,
+"raw_weighted_average": 5.152268552780152
+},
+{
+"id": "spanish_20minutos_es_3f935975a3fa",
+"published_date": "2026-10-03T09:18:01.000Z",
+"language": "es",
+"weighted_average": 8.264072037431614,
+"raw_weighted_average": 5.6009832382202145
+},
+{
+"id": "global_news_csmonitor_f6607294e9c0",
+"published_date": "2026-10-03T16:09:54.000Z",
+"language": "en",
+"weighted_average": 7.751339778220053,
+"raw_weighted_average": 5.386694431304932
+},
+{
+"id": "greek_to_vima_4e9f4c6c8bb9",
+"published_date": "2026-10-03T10:52:06.000Z",
+"language": "el",
+"weighted_average": 8.020901832468413,
+"raw_weighted_average": 5.493922209739685
+},
+{
+"id": "balkan_delo_5451977dfa4d",
+"published_date": "2026-10-03T03:00:00.000Z",
+"language": "sl",
+"weighted_average": 8.381278609121058,
+"raw_weighted_average": 5.64838216304779
+},
+{
+"id": "italian_il_fatto_eed37f2e2b43",
+"published_date": "2026-10-03T04:54:26.000Z",
+"language": "it",
+"weighted_average": 8.156659523067324,
+"raw_weighted_average": 5.555063509941101
+},
+{
+"id": "spanish_efeverde_a7bb3b008592",
+"published_date": "2026-10-03T09:37:45.000Z",
+"language": "es",
+"weighted_average": 7.887206520526508,
+"raw_weighted_average": 5.453422892093658
+},
+{
+"id": "hungarian_index_hu_63bfe60cbfef",
+"published_date": "2026-10-03T15:54:00.000Z",
+"language": "hu",
+"weighted_average": 7.35995367301053,
+"raw_weighted_average": 5.280257058143616
+},
+{
+"id": "east_african_daily_monitor_ug_a28d74abd600",
+"published_date": "2026-10-03T10:44:34.000Z",
+"language": "en",
+"weighted_average": 7.5009786162788625,
+"raw_weighted_average": 5.313578391075135
+},
+{
+"id": "swedish_svt_nyheter_a9a91c5bf0e8",
+"published_date": "2026-10-03T03:30:04.000Z",
+"language": "sv",
+"weighted_average": 7.835109937966096,
+"raw_weighted_average": 5.428161764144898
+},
+{
+"id": "balkan_mia_mk_95f6f2638f0d",
+"published_date": "2026-10-03T07:00:00.000Z",
+"language": "mk",
+"weighted_average": 7.616862674695593,
+"raw_weighted_average": 5.344410347938537
+},
+{
+"id": "german_die_welt_8f45d1966d0a",
+"published_date": "2026-10-03T13:13:58.000Z",
+"language": "de",
+"weighted_average": 7.264690688233764,
+"raw_weighted_average": 5.255444407463074
+},
+{
+"id": "east_african_lexpress_madagascar_a8d7f61730a1",
+"published_date": "2026-10-03T02:40:00.000Z",
+"language": "fr",
+"weighted_average": 7.6522519626552326,
+"raw_weighted_average": 5.354768514633179
+},
+{
+"id": "swiss_nzz_9feedfc15b8f",
+"published_date": "2026-10-03T03:30:00.000Z",
+"language": "de",
+"weighted_average": 7.566715250122351,
+"raw_weighted_average": 5.329300808906555
+},
+{
+"id": "austrian_der_standard_65a04e8aa8b0",
+"published_date": "2026-10-03T10:04:30.000Z",
+"language": "de",
+"weighted_average": 7.088067668445251,
+"raw_weighted_average": 5.20441038608551
+}
+]
+}

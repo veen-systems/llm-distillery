@@ -49,3 +49,34 @@ nothing here depends on the answer.
   recency term means a fresh personal pass still competes for a top-30 slot. It loses only to fresh passes that
   score higher, and about 30 of ~43 fresh rows make the cut. A GUESS, not measured: such a candidate would remove
   some personal stories from the top, not most. Only a row that falls below the op-point leaves the page for sure.
+
+## Formula replay for ovr.news (2026-10-13, later)
+
+The ovr.news session asked for this on the owner's behalf. Nothing ships from it. Formulas as they specified: A half-life
+2 d, B half-life 3 d (neither has the 24 h boost), C score-first within age bands (< 72 h, 72 h–7 d, older), and the
+current formula as the control. `replay.py` → `replay_result.txt`. The 10-13 inputs are each lens's live cards (build
+06:55:18Z, ids/dates/scores only) in `lenses_20261013/`. The qwen tags are the two 10-12 lab files cited in
+`MANIFEST.json`.
+
+**Measured (from `replay_result.txt`):**
+- **Overlap with today's top 30**, A / B / C: belonging 23 / 21 / 7, thriving 27 / 26 / 18, solutions 28 / 28 / 13,
+  discovery 26 / 28 / 10, recovery 29 / 29 / 25. A and B are close to the current order. C replaces most of it.
+- **Lowest normalized score in the top 30**, control → C: belonging 6.08 → 7.34, solutions 8.91 → 9.79 (raw 4.32 →
+  4.84), discovery 8.39 → 9.59. A and B barely move the floor.
+- **Age of the top 30 under C:** 7–16 under 24 h, the rest 1–3 days. Nothing older than 3 days, because band 0 holds
+  more than 30 rows in every lens except recovery.
+- **Normalized-score saturation, cards with s ≥ 9.5:** solutions 232/505, discovery 86/536, belonging 71/507,
+  thriving 33/326, recovery 7/121. Where most of the top is near 10, the score cannot order it, so A and B fall
+  back to age.
+- **Belonging personal count, 10-12 labelled page:** control 9 owner-personal of 28 labelled (+1 of 2 by qwen);
+  A 9 of 26 (+0 of 4); B 9 of 25 (+0 of 5); C 2 of 6 labelled (+2 of 19 by qwen, a floor) with 5 untagged.
+  C's count is therefore NOT known. The 10-13 page is mostly untagged (control 24 of 30).
+- **Rebuilding the 10-12 population** with "a removal is sticky for a day" gives 27/30 positions (28/30 overlap)
+  for the control, against 30/30 without that step. So the approximation adds about 2 rows the page did not show.
+
+**Reading (inference):** A and B change little anywhere, because recency still dominates and the normalized
+scores saturate. C is the only option that raises the floor at the top, by roughly +1.2 normalized on belonging.
+It does so by trading away same-day freshness. Whether C changes the share of personal stories cannot be told
+from these labels. It needs qwen tags on C's untagged rows (b650, $0) and, for a real answer, the owner's eye.
+The saturation is ovr.news ADR-050's point: until the score is re-normalized, a "score-first" default can only
+partly rank by quality.

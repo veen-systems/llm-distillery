@@ -1,0 +1,42 @@
+== 10-13 build 06:55:18Z, all five lenses (population = the page's own cards)
+belonging (belonging): 507 cards, 39 under 24 h
+  control  in control top 30: 30/30 | age <24h 30 1-3d  0 older  0 | lowest s 6.08 (raw 5.57) | median s 6.57
+           personal: owner 0 of 6 labelled; qwen 0 of 0 more tagged (floor); untagged 24
+  A hl=2d  in control top 30: 23/30 | age <24h 24 1-3d  6 older  0 | lowest s 5.98 (raw 5.54) | median s 7.11
+           personal: owner 2 of 8 labelled; qwen 0 of 0 more tagged (floor); untagged 22
+  B hl=3d  in control top 30: 21/30 | age <24h 21 1-3d  9 older  0 | lowest s 6.46 (raw 5.68) | median s 7.23
+           personal: owner 3 of 10 labelled; qwen 0 of 0 more tagged (floor); untagged 20
+  C bands  in control top 30:  7/30 | age <24h  7 1-3d 23 older  0 | lowest s 7.34 (raw 5.95) | median s 7.95
+           personal: owner 2 of 8 labelled; qwen 1 of 16 more tagged (floor); untagged 6
+thriving (human_thriving): 326 cards, 21 under 24 h
+  control  in control top 30: 30/30 | age <24h 19 1-3d 11 older  0 | lowest s 6.25 (raw 5.21) | median s 9.19
+  A hl=2d  in control top 30: 27/30 | age <24h 18 1-3d 12 older  0 | lowest s 6.25 (raw 5.21) | median s 8.52
+  B hl=3d  in control top 30: 26/30 | age <24h 15 1-3d 15 older  0 | lowest s 6.55 (raw 5.26) | median s 9.19
+  C bands  in control top 30: 18/30 | age <24h  7 1-3d 23 older  0 | lowest s 8.45 (raw 5.63) | median s 9.25
+solutions (solutions): 505 cards, 58 under 24 h
+  control  in control top 30: 30/30 | age <24h 30 1-3d  0 older  0 | lowest s 8.91 (raw 4.32) | median s 9.67
+  A hl=2d  in control top 30: 28/30 | age <24h 30 1-3d  0 older  0 | lowest s 8.77 (raw 4.25) | median s 9.66
+  B hl=3d  in control top 30: 28/30 | age <24h 30 1-3d  0 older  0 | lowest s 8.77 (raw 4.25) | median s 9.66
+  C bands  in control top 30: 13/30 | age <24h 16 1-3d 14 older  0 | lowest s 9.79 (raw 4.84) | median s 9.88
+discovery (cultural_discovery): 536 cards, 56 under 24 h
+  control  in control top 30: 30/30 | age <24h 30 1-3d  0 older  0 | lowest s 8.39 (raw 5.65) | median s 9.37
+  A hl=2d  in control top 30: 26/30 | age <24h 30 1-3d  0 older  0 | lowest s 7.74 (raw 5.38) | median s 9.37
+  B hl=3d  in control top 30: 28/30 | age <24h 29 1-3d  1 older  0 | lowest s 8.25 (raw 5.60) | median s 9.38
+  C bands  in control top 30: 10/30 | age <24h 10 1-3d 20 older  0 | lowest s 9.59 (raw 6.45) | median s 9.85
+recovery (nature_recovery): 121 cards, 12 under 24 h
+  control  in control top 30: 30/30 | age <24h 12 1-3d 14 older  4 | lowest s 5.32 (raw 5.00) | median s 7.91
+  A hl=2d  in control top 30: 29/30 | age <24h 12 1-3d 15 older  3 | lowest s 5.32 (raw 5.00) | median s 7.85
+  B hl=3d  in control top 30: 29/30 | age <24h 12 1-3d 14 older  4 | lowest s 5.32 (raw 5.00) | median s 7.91
+  C bands  in control top 30: 25/30 | age <24h 11 1-3d 19 older  0 | lowest s 5.34 (raw 5.00) | median s 7.66
+
+== 10-12 Belonging, the owner-labelled page, rebuilt at 14:30Z
+population 758, dropped as removed 198, removal status unknown 87
+control reproduces the labelled page: 27/30 positions
+  control  in control top 30: 28/30 | age <24h 29 1-3d  1 older  0 | lowest s 5.98 (raw 5.54) | median s 6.60
+           personal: owner 9 of 28 labelled; qwen 1 of 2 more tagged (floor); untagged 0; removal status unknown 0
+  A hl=2d  in control top 30: 26/30 | age <24h 27 1-3d  3 older  0 | lowest s 5.98 (raw 5.54) | median s 7.11
+           personal: owner 9 of 26 labelled; qwen 0 of 4 more tagged (floor); untagged 0; removal status unknown 0
+  B hl=3d  in control top 30: 25/30 | age <24h 24 1-3d  6 older  0 | lowest s 6.36 (raw 5.65) | median s 7.23
+           personal: owner 9 of 25 labelled; qwen 0 of 5 more tagged (floor); untagged 0; removal status unknown 0
+  C bands  in control top 30:  6/30 | age <24h  5 1-3d 25 older  0 | lowest s 7.40 (raw 5.97) | median s 8.13
+           personal: owner 2 of 6 labelled; qwen 2 of 19 more tagged (floor); untagged 5; removal status unknown 0

@@ -1,0 +1,19 @@
+{
+ "lab_root": "$LD_LAB (default ~/ld-lab, on situla)",
+ "entries": [
+  {
+   "path": "experiments/2026-10-12-belonging-c2c/focus-tag-comp/out.jsonl",
+   "sha256": "b63e2328e636065e53016a89ac1105c0004ec3af791d81f705699a58a9d509a7",
+   "size": 138363,
+   "origin": "b650-gpu:ld-scratch/2026-10-12-focus-tag-comp/out.jsonl",
+   "pulled_at": "2026-10-12T19:16:19+02:00"
+  },
+  {
+   "path": "experiments/2026-10-12-belonging-c2c/focus-tag/out.jsonl",
+   "sha256": "ceb629bc32e3b28f2701ff49d321d4b4297579720e4c166c24ac7deb112d8130",
+   "size": 12299,
+   "origin": "b650-gpu:~/ld-scratch/2026-10-12-focus-tag/out.jsonl",
+   "pulled_at": "2026-10-12T17:01:40+02:00"
+  }
+ ]
+}

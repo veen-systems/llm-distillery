@@ -1,0 +1,854 @@
+{
+"lens": "recovery",
+"filter": "nature_recovery",
+"built": "2026-10-13T06:55:18Z",
+"page_order": [
+{
+"id": "geography_nature_mongabay_f9532cd7b6dc",
+"published_date": "2026-10-12T21:11:47.000Z",
+"language": "en",
+"weighted_average": 9.852941,
+"raw_weighted_average": 6.8675000190734865
+},
+{
+"id": "science_phys_org_ad5b86a0ab59",
+"published_date": "2026-10-12T09:59:36.000Z",
+"language": "en",
+"weighted_average": 8.973092508684246,
+"raw_weighted_average": 5.743872547149659
+},
+{
+"id": "southeast_asian_antara_en_ce45f2b4fbe1",
+"published_date": "2026-10-12T09:43:26.000Z",
+"language": "en",
+"weighted_average": 8.161765,
+"raw_weighted_average": 5.428972792625427
+},
+{
+"id": "south_asian_the_island_lk_77532fde3911",
+"published_date": "2026-10-12T11:25:13.000Z",
+"language": "en",
+"weighted_average": 7.845172793047686,
+"raw_weighted_average": 5.3682653427124025
+},
+{
+"id": "italian_la_nuova_ecologia_d933168cd411",
+"published_date": "2026-10-12T10:08:50.000Z",
+"language": "it",
+"weighted_average": 7.905954911273709,
+"raw_weighted_average": 5.375331425666809
+},
+{
+"id": "geography_nature_mongabay_9e87ac341f3a",
+"published_date": "2026-10-12T13:27:56.000Z",
+"language": "en",
+"weighted_average": 7.662109096958897,
+"raw_weighted_average": 5.344070315361023
+},
+{
+"id": "climate_solutions_mit_tech_review_climate_5c30c081e063",
+"published_date": "2026-10-12T09:00:00.000Z",
+"language": "en",
+"weighted_average": 7.845159872594579,
+"raw_weighted_average": 5.368263840675354
+},
+{
+"id": "geography_nature_grist_108203442e25",
+"published_date": "2026-10-12T13:30:54.000Z",
+"language": "en",
+"weighted_average": 7.608190522902287,
+"raw_weighted_average": 5.339055752754212
+},
+{
+"id": "spanish_efeverde_b42a0eb1ab76",
+"published_date": "2026-10-11T10:47:46.000Z",
+"language": "es",
+"weighted_average": 9.742647,
+"raw_weighted_average": 6.349621152877807
+},
+{
+"id": "south_american_diario_libre_f3e56744389f",
+"published_date": "2026-10-12T00:02:00.000Z",
+"language": "es",
+"weighted_average": 8.860294,
+"raw_weighted_average": 5.680028557777405
+},
+{
+"id": "romanian_adevarul_e3ff51506874",
+"published_date": "2026-10-13T01:33:25.000Z",
+"language": "ro",
+"weighted_average": 5.7290623063113255,
+"raw_weighted_average": 5.088076519966125
+},
+{
+"id": "south_african_daily_maverick_47eab01f44a3",
+"published_date": "2026-10-11T23:11:47.000Z",
+"language": "en",
+"weighted_average": 8.832408641053856,
+"raw_weighted_average": 5.670002913475036
+},
+{
+"id": "french_sciences_et_avenir_bd055068be6b",
+"published_date": "2026-10-12T09:52:00.000Z",
+"language": "fr",
+"weighted_average": 5.993639629345566,
+"raw_weighted_average": 5.127727580070496
+},
+{
+"id": "geography_nature_mongabay_482d3f30d44f",
+"published_date": "2026-10-12T09:53:15.000Z",
+"language": "en",
+"weighted_average": 5.572379086023256,
+"raw_weighted_average": 5.039944815635681
+},
+{
+"id": "spanish_xataka_8ac69a91c5d4",
+"published_date": "2026-10-12T15:30:26.000Z",
+"language": "es",
+"weighted_average": 5.319886534051534,
+"raw_weighted_average": 4.9964923620223995
+},
+{
+"id": "us_news_wisconsin_watch_b40ec91aece3",
+"published_date": "2026-10-11T11:00:00.000Z",
+"language": "en",
+"weighted_average": 8.161765,
+"raw_weighted_average": 5.428161215782166
+},
+{
+"id": "southeast_asian_free_malaysia_43cf391d7814",
+"published_date": "2026-10-11T00:30:00.000Z",
+"language": "en",
+"weighted_average": 8.573479578046472,
+"raw_weighted_average": 5.592243218421936
+},
+{
+"id": "science_scitechdaily_d3a805c8ef3a",
+"published_date": "2026-10-10T11:15:21.000Z",
+"language": "en",
+"weighted_average": 8.95423943037047,
+"raw_weighted_average": 5.735105586051941
+},
+{
+"id": "geography_nature_focusing_on_wildlife_e6d4a5971216",
+"published_date": "2026-10-10T16:00:44.000Z",
+"language": "en",
+"weighted_average": 8.438123541066775,
+"raw_weighted_average": 5.516336035728455
+},
+{
+"id": "west_african_senego_8ceb8114d5f4",
+"published_date": "2026-10-11T18:38:50.000Z",
+"language": "fr",
+"weighted_average": 6.979587031008602,
+"raw_weighted_average": 5.308734679222107
+},
+{
+"id": "positive_news_human_progress_24fcfda2bff3",
+"published_date": "2026-10-09T16:13:52.000Z",
+"language": "en",
+"weighted_average": 9.35700697570397,
+"raw_weighted_average": 6.106079554557801
+},
+{
+"id": "southeast_asian_nst_00331348ee03",
+"published_date": "2026-10-11T00:00:25.000Z",
+"language": "en",
+"weighted_average": 7.522796644392906,
+"raw_weighted_average": 5.331949067115784
+},
+{
+"id": "swedish_expressen_cb01338535a9",
+"published_date": "2026-10-10T21:54:45.000Z",
+"language": "sv",
+"weighted_average": 7.522796644392906,
+"raw_weighted_average": 5.331949067115784
+},
+{
+"id": "australian_abc_au_24353f35d282",
+"published_date": "2026-10-10T21:54:42.000Z",
+"language": "en",
+"weighted_average": 7.522796644392906,
+"raw_weighted_average": 5.331949067115784
+},
+{
+"id": "british_irish_bbc_england_e83150c407f3",
+"published_date": "2026-10-10T06:24:00.000Z",
+"language": "en",
+"weighted_average": 8.161765,
+"raw_weighted_average": 5.421618795394898
+},
+{
+"id": "spanish_efeverde_5c31a2c14f69",
+"published_date": "2026-10-10T12:01:37.000Z",
+"language": "es",
+"weighted_average": 7.837434672156825,
+"raw_weighted_average": 5.367365765571594
+},
+{
+"id": "china_solidot_4eb3cac72879",
+"published_date": "2026-10-10T14:36:52.000Z",
+"language": "zh-cn",
+"weighted_average": 7.522796644392906,
+"raw_weighted_average": 5.331949067115784
+},
+{
+"id": "geography_nature_mongabay_54e5d1cec356",
+"published_date": "2026-10-10T07:40:19.000Z",
+"language": "en",
+"weighted_average": 7.662109096958897,
+"raw_weighted_average": 5.344070315361023
+},
+{
+"id": "southeast_asian_antara_en_30d3ab89d7f0",
+"published_date": "2026-10-09T04:23:15.000Z",
+"language": "en",
+"weighted_average": 8.860294,
+"raw_weighted_average": 5.683836030960084
+},
+{
+"id": "positive_news_human_progress_44fc1bbbbfea",
+"published_date": "2026-10-09T16:18:46.000Z",
+"language": "en",
+"weighted_average": 8.166283393833824,
+"raw_weighted_average": 5.452782368659973
+},
+{
+"id": "spanish_mongabay_latam_5a84406d54c7",
+"published_date": "2026-10-08T21:39:43.000Z",
+"language": "es",
+"weighted_average": 9.227941,
+"raw_weighted_average": 5.9996572971344
+},
+{
+"id": "spanish_mongabay_latam_8bf935973e1b",
+"published_date": "2026-10-08T13:45:29.000Z",
+"language": "es",
+"weighted_average": 9.714668430977262,
+"raw_weighted_average": 6.2254697561264045
+},
+{
+"id": "climate_solutions_rewilding_europe_d0730259ad52",
+"published_date": "2026-10-09T13:34:49.000Z",
+"language": "en",
+"weighted_average": 8.142490918042906,
+"raw_weighted_average": 5.414903616905212
+},
+{
+"id": "spanish_mongabay_latam_b985a8eee2fc",
+"published_date": "2026-10-09T13:55:00.000Z",
+"language": "es",
+"weighted_average": 7.985485627087778,
+"raw_weighted_average": 5.385454154014588
+},
+{
+"id": "greek_ta_nea_bd6a26374783",
+"published_date": "2026-10-08T21:00:11.000Z",
+"language": "el",
+"weighted_average": 8.637038166324292,
+"raw_weighted_average": 5.638893437385559
+},
+{
+"id": "science_phys_org_eeee80a5da05",
+"published_date": "2026-10-10T14:36:10.000Z",
+"language": "en",
+"weighted_average": 6.393274069241656,
+"raw_weighted_average": 5.2121573209762575
+},
+{
+"id": "science_phys_org_916b8933088c",
+"published_date": "2026-10-07T21:46:01.000Z",
+"language": "en",
+"weighted_average": 9.852941,
+"raw_weighted_average": 6.550978565216065
+},
+{
+"id": "positive_news_the_better_india_7ddfff4c3b4f",
+"published_date": "2026-10-08T04:30:37.000Z",
+"language": "en",
+"weighted_average": 9.281049518716777,
+"raw_weighted_average": 6.075123858451843
+},
+{
+"id": "southeast_asian_straits_times_asia_ecc4973d9440",
+"published_date": "2026-10-08T00:50:00.000Z",
+"language": "en",
+"weighted_average": 9.507173769660847,
+"raw_weighted_average": 6.1469975233078005
+},
+{
+"id": "finnish_helsingin_sanomat_3282750d5be1",
+"published_date": "2026-10-09T11:02:00.000Z",
+"language": "fi",
+"weighted_average": 7.522796644392906,
+"raw_weighted_average": 5.331949067115784
+},
+{
+"id": "australian_abc_au_b33173420cf6",
+"published_date": "2026-10-08T22:30:38.000Z",
+"language": "en",
+"weighted_average": 8.108974608695815,
+"raw_weighted_average": 5.409708762168885
+},
+{
+"id": "climate_solutions_the_cool_down_37c0058bcb50",
+"published_date": "2026-10-09T08:20:00.000Z",
+"language": "en",
+"weighted_average": 7.568939166859962,
+"raw_weighted_average": 5.335405278205871
+},
+{
+"id": "romanian_hotnews_d773e977ec30",
+"published_date": "2026-10-10T11:07:07.000Z",
+"language": "ro",
+"weighted_average": 6.11579467886105,
+"raw_weighted_average": 5.157750868797303
+},
+{
+"id": "german_faz_wirtschaft_47e1582b5b34",
+"published_date": "2026-10-08T06:00:38.000Z",
+"language": "de",
+"weighted_average": 8.461540808177725,
+"raw_weighted_average": 5.5401913881301885
+},
+{
+"id": "south_asian_the_hindu_955b55c23fa4",
+"published_date": "2026-10-07T22:07:35.000Z",
+"language": "en",
+"weighted_average": 8.791512492260644,
+"raw_weighted_average": 5.663664221763611
+},
+{
+"id": "portuguese_mongabay_brasil_d6c7303a8741",
+"published_date": "2026-10-08T08:04:26.000Z",
+"language": "pt",
+"weighted_average": 8.163524575719293,
+"raw_weighted_average": 5.452354741096497
+},
+{
+"id": "german_deutschlandfunk_49e14757b8a3",
+"published_date": "2026-10-10T14:00:58.000Z",
+"language": "de",
+"weighted_average": 5.625,
+"raw_weighted_average": 5.061141848564148
+},
+{
+"id": "spanish_efeverde_2eef4c064348",
+"published_date": "2026-10-07T23:01:55.000Z",
+"language": "es",
+"weighted_average": 8.602941,
+"raw_weighted_average": 5.620309209823609
+},
+{
+"id": "geography_nature_grist_ea73c92cd518",
+"published_date": "2026-10-10T13:00:00.000Z",
+"language": "en",
+"weighted_average": 5.640512493669099,
+"raw_weighted_average": 5.077782368659973
+},
+{
+"id": "australian_abc_au_02c2ef041c59",
+"published_date": "2026-10-07T22:04:03.000Z",
+"language": "en",
+"weighted_average": 8.59954635926642,
+"raw_weighted_average": 5.6043644666671755
+},
+{
+"id": "german_spiegel_wissenschaft_2ad3ddc1df24",
+"published_date": "2026-10-09T09:40:00.000Z",
+"language": "de",
+"weighted_average": 6.7552740621910425,
+"raw_weighted_average": 5.278933167457581
+},
+{
+"id": "positive_news_happy_eco_news_252267f7e5ff",
+"published_date": "2026-10-07T18:24:14.000Z",
+"language": "en",
+"weighted_average": 8.602941,
+"raw_weighted_average": 5.610330891609192
+},
+{
+"id": "south_american_la_razon_bo_083678302b85",
+"published_date": "2026-10-10T13:42:21.000Z",
+"language": "es",
+"weighted_average": 5.344094376479639,
+"raw_weighted_average": 5.002120852470398
+},
+{
+"id": "positive_news_good_good_good_28e51c7f24c6",
+"published_date": "2026-10-07T19:41:00.000Z",
+"language": "en",
+"weighted_average": 8.308483511292467,
+"raw_weighted_average": 5.486115670204162
+},
+{
+"id": "positive_news_good_news_network_a97f01c1e4e2",
+"published_date": "2026-10-07T13:00:15.000Z",
+"language": "en",
+"weighted_average": 8.470068262670308,
+"raw_weighted_average": 5.544156718254089
+},
+{
+"id": "south_asian_the_island_lk_dcb7fc2f4916",
+"published_date": "2026-10-10T01:26:45.000Z",
+"language": "en",
+"weighted_average": 5.572379086023256,
+"raw_weighted_average": 5.039944815635681
+},
+{
+"id": "romanian_hotnews_cb492961c359",
+"published_date": "2026-10-08T16:52:49.000Z",
+"language": "ro",
+"weighted_average": 6.89761848308117,
+"raw_weighted_average": 5.296577429771423
+},
+{
+"id": "belgian_vrt_nieuws_nl_f39516bd78a2",
+"published_date": "2026-10-08T03:24:24.000Z",
+"language": "nl",
+"weighted_average": 7.522796644392906,
+"raw_weighted_average": 5.331949067115784
+},
+{
+"id": "portuguese_conexao_planeta_8e8c27b3b88b",
+"published_date": "2026-10-08T22:28:11.000Z",
+"language": "pt",
+"weighted_average": 6.563018841058486,
+"raw_weighted_average": 5.244166302680969
+},
+{
+"id": "china_sciencenet_cn_8507f0b4b324",
+"published_date": "2026-10-10T16:39:26.000Z",
+"language": "zh-cn",
+"weighted_average": 4.773294964391175,
+"raw_weighted_average": 4.801975917816162
+},
+{
+"id": "southeast_asian_antara_en_4d7325975102",
+"published_date": "2026-10-06T12:19:27.000Z",
+"language": "en",
+"weighted_average": 8.818115509040059,
+"raw_weighted_average": 5.667787551879883
+},
+{
+"id": "positive_news_good_news_network_412c3a4d0c00",
+"published_date": "2026-10-09T13:00:08.000Z",
+"language": "en",
+"weighted_average": 5.368308781632947,
+"raw_weighted_average": 5.007750868797302
+},
+{
+"id": "positive_news_happy_eco_news_955338394054",
+"published_date": "2026-10-06T07:00:00.000Z",
+"language": "en",
+"weighted_average": 9.072509754525436,
+"raw_weighted_average": 5.826239395141601
+},
+{
+"id": "spanish_efeverde_0ab27737f51d",
+"published_date": "2026-10-08T08:34:04.000Z",
+"language": "es",
+"weighted_average": 6.369446500500537,
+"raw_weighted_average": 5.208463954925537
+},
+{
+"id": "south_asian_times_of_india_a7aa54c6ea28",
+"published_date": "2026-10-06T04:51:24.000Z",
+"language": "en",
+"weighted_average": 8.996137436378362,
+"raw_weighted_average": 5.7545879840850835
+},
+{
+"id": "geography_nature_focusing_on_wildlife_127e6ad17687",
+"published_date": "2026-10-05T16:00:53.000Z",
+"language": "en",
+"weighted_average": 9.565582566071386,
+"raw_weighted_average": 6.154573321342468
+},
+{
+"id": "korean_yonhap_kr_1488681a437e",
+"published_date": "2026-10-07T02:00:14.000Z",
+"language": "ko",
+"weighted_average": 7.522796644392906,
+"raw_weighted_average": 5.331949067115784
+},
+{
+"id": "positive_news_the_better_india_ad719fc58989",
+"published_date": "2026-10-05T09:43:40.000Z",
+"language": "en",
+"weighted_average": 9.742647,
+"raw_weighted_average": 6.30220582485199
+},
+{
+"id": "us_media_mother_jones_95ce3734916a",
+"published_date": "2026-10-09T11:00:00.000Z",
+"language": "en",
+"weighted_average": 5.0267397721163976,
+"raw_weighted_average": 4.93455319404602
+},
+{
+"id": "central_asian_uzdaily_en_24b2af8a8f90",
+"published_date": "2026-10-05T16:45:00.000Z",
+"language": "en",
+"weighted_average": 9.227941,
+"raw_weighted_average": 5.977951073646546
+},
+{
+"id": "geography_nature_mongabay_b8d89d522225",
+"published_date": "2026-10-06T14:44:29.000Z",
+"language": "en",
+"weighted_average": 7.941701088025835,
+"raw_weighted_average": 5.379487013816833
+},
+{
+"id": "science_phys_org_15fc54868e0a",
+"published_date": "2026-10-08T09:56:14.000Z",
+"language": "en",
+"weighted_average": 5.9155082354114406,
+"raw_weighted_average": 5.115309190750122
+},
+{
+"id": "china_sciencenet_cn_291512722fde",
+"published_date": "2026-10-09T13:58:08.000Z",
+"language": "zh-cn",
+"weighted_average": 4.781556385433347,
+"raw_weighted_average": 4.802782368659973
+},
+{
+"id": "spanish_mongabay_latam_ad8539da7160",
+"published_date": "2026-10-08T18:52:14.000Z",
+"language": "es",
+"weighted_average": 5.421699422364556,
+"raw_weighted_average": 5.020164561271668
+},
+{
+"id": "global_news_el_pais_america_ac7a2bd931f6",
+"published_date": "2026-10-08T09:30:00.000Z",
+"language": "es",
+"weighted_average": 5.689425842655093,
+"raw_weighted_average": 5.083468675613403
+},
+{
+"id": "arabic_skynewsarabia_ar_3f543fd96be1",
+"published_date": "2026-10-05T11:11:45.000Z",
+"language": "ar",
+"weighted_average": 9.007353,
+"raw_weighted_average": 5.7935796022415165
+},
+{
+"id": "positive_news_happy_eco_news_29bd6a59e60b",
+"published_date": "2026-10-05T07:00:00.000Z",
+"language": "en",
+"weighted_average": 9.193548945943837,
+"raw_weighted_average": 5.948958373069764
+},
+{
+"id": "swedish_aftonbladet_eb75b4aa16da",
+"published_date": "2026-10-08T04:00:13.000Z",
+"language": "sv",
+"weighted_average": 5.696362895453409,
+"raw_weighted_average": 5.084275126457214
+},
+{
+"id": "australian_abc_au_12db50845f15",
+"published_date": "2026-10-05T20:00:37.000Z",
+"language": "en",
+"weighted_average": 8.166283393833824,
+"raw_weighted_average": 5.452782368659973
+},
+{
+"id": "british_irish_uk_gov_news_b5d5b57ecb90",
+"published_date": "2026-10-07T16:14:30.000Z",
+"language": "en",
+"weighted_average": 6.000080108840459,
+"raw_weighted_average": 5.130722451210023
+},
+{
+"id": "global_news_euronews_0b56b447acae",
+"published_date": "2026-10-08T16:18:10.000Z",
+"language": "en",
+"weighted_average": 5.051961399999467,
+"raw_weighted_average": 4.946281218528748
+},
+{
+"id": "swedish_aftonbladet_89023a9c4831",
+"published_date": "2026-10-07T01:00:11.000Z",
+"language": "sv",
+"weighted_average": 6.319248654373604,
+"raw_weighted_average": 5.200683093070984
+},
+{
+"id": "greek_ta_nea_596fd7d18bd3",
+"published_date": "2026-10-05T08:09:00.000Z",
+"language": "el",
+"weighted_average": 8.166283393833824,
+"raw_weighted_average": 5.452782368659973
+},
+{
+"id": "italian_il_fatto_56b08c0ce702",
+"published_date": "2026-10-08T09:36:53.000Z",
+"language": "it",
+"weighted_average": 4.915582063944985,
+"raw_weighted_average": 4.831577563285828
+},
+{
+"id": "science_lake_scientist_96a320d4d547",
+"published_date": "2026-10-05T12:00:39.000Z",
+"language": "en",
+"weighted_average": 7.845159872594579,
+"raw_weighted_average": 5.368263840675354
+},
+{
+"id": "positive_news_good_news_magazin_de_ebcaf1c43c61",
+"published_date": "2026-10-06T12:36:42.000Z",
+"language": "de",
+"weighted_average": 6.6412195205811475,
+"raw_weighted_average": 5.256287550926209
+},
+{
+"id": "energy_utilities_pv_magazine_91c430809852",
+"published_date": "2026-10-07T09:59:00.000Z",
+"language": "en",
+"weighted_average": 5.640512493669099,
+"raw_weighted_average": 5.077782368659973
+},
+{
+"id": "indonesian_mongabay_id_b985aba8d084",
+"published_date": "2026-10-07T00:04:57.000Z",
+"language": "id",
+"weighted_average": 5.846379556557905,
+"raw_weighted_average": 5.104594302177429
+},
+{
+"id": "australian_the_conversation_au_70af79971292",
+"published_date": "2026-10-07T00:01:24.000Z",
+"language": "en",
+"weighted_average": 5.696362895453409,
+"raw_weighted_average": 5.084275126457214
+},
+{
+"id": "climate_solutions_rewilding_europe_7204a1cdfc6d",
+"published_date": "2026-10-05T12:03:50.000Z",
+"language": "en",
+"weighted_average": 7.2300741193778535,
+"raw_weighted_average": 5.32222683429718
+},
+{
+"id": "south_asian_indian_express_89b8a32d77d2",
+"published_date": "2026-10-04T06:48:45.000Z",
+"language": "en",
+"weighted_average": 8.742951112170214,
+"raw_weighted_average": 5.65613739490509
+},
+{
+"id": "positive_news_the_logical_indian_db96aa0d41c6",
+"published_date": "2026-10-07T13:50:38.000Z",
+"language": "en",
+"weighted_average": 4.963235,
+"raw_weighted_average": 4.885682129859925
+},
+{
+"id": "south_asian_times_of_india_22dd2a4349c0",
+"published_date": "2026-10-04T21:20:00.000Z",
+"language": "en",
+"weighted_average": 7.662109096958897,
+"raw_weighted_average": 5.344070315361023
+},
+{
+"id": "caucasus_report_az_1eaf218ee667",
+"published_date": "2026-10-06T14:10:55.000Z",
+"language": "en",
+"weighted_average": 5.6086037326456095,
+"raw_weighted_average": 5.05125961303711
+},
+{
+"id": "swiss_srf_schweiz_e586b9e8e22c",
+"published_date": "2026-10-04T11:58:14.000Z",
+"language": "de",
+"weighted_average": 7.763386797513138,
+"raw_weighted_average": 5.356142592430115
+},
+{
+"id": "french_20_minutes_9297975ea8d8",
+"published_date": "2026-10-04T07:44:37.000Z",
+"language": "fr",
+"weighted_average": 7.498515562906236,
+"raw_weighted_average": 5.331142616271973
+},
+{
+"id": "italian_greenme_63d97d031d95",
+"published_date": "2026-10-06T19:15:34.000Z",
+"language": "it",
+"weighted_average": 4.963235,
+"raw_weighted_average": 4.88623652458191
+},
+{
+"id": "arabic_gulf_times_5ec643ac1085",
+"published_date": "2026-10-05T21:00:00.000Z",
+"language": "en",
+"weighted_average": 5.74477890953812,
+"raw_weighted_average": 5.089903616905213
+},
+{
+"id": "positive_news_the_logical_indian_54346aa20bb6",
+"published_date": "2026-10-06T11:28:37.000Z",
+"language": "en",
+"weighted_average": 5.175499648501588,
+"raw_weighted_average": 4.976712107658386
+},
+{
+"id": "climate_solutions_the_cool_down_b153924ff65e",
+"published_date": "2026-10-04T01:33:00.000Z",
+"language": "en",
+"weighted_average": 7.652684126317172,
+"raw_weighted_average": 5.343193769454956
+},
+{
+"id": "pan_african_allAfrica_environment_087640374c7d",
+"published_date": "2026-10-05T10:07:36.000Z",
+"language": "en",
+"weighted_average": 6.134753125835693,
+"raw_weighted_average": 5.160689330101014
+},
+{
+"id": "south_asian_hindustan_times_4078f80381a5",
+"published_date": "2026-10-05T10:09:15.000Z",
+"language": "en",
+"weighted_average": 6.0690307762844515,
+"raw_weighted_average": 5.150502705574036
+},
+{
+"id": "climate_solutions_the_cool_down_3e93a5785a30",
+"published_date": "2026-10-06T14:54:00.000Z",
+"language": "en",
+"weighted_average": 4.963235,
+"raw_weighted_average": 4.8755817174911495
+},
+{
+"id": "swedish_aftonbladet_6ff7da9575a2",
+"published_date": "2026-10-04T16:24:40.000Z",
+"language": "sv",
+"weighted_average": 6.722212770848696,
+"raw_weighted_average": 5.27124674320221
+},
+{
+"id": "southeast_asian_free_malaysia_e71ffdcd101f",
+"published_date": "2026-10-06T23:30:00.000Z",
+"language": "en",
+"weighted_average": 4.568038035308219,
+"raw_weighted_average": 4.786068105697632
+},
+{
+"id": "positive_news_upworthy_ec8a4b7fec9c",
+"published_date": "2026-10-03T01:52:19.000Z",
+"language": "en",
+"weighted_average": 8.597464460195534,
+"raw_weighted_average": 5.603396368026734
+},
+{
+"id": "positive_news_good_news_network_85f397281855",
+"published_date": "2026-10-05T11:00:53.000Z",
+"language": "en",
+"weighted_average": 5.777286625008513,
+"raw_weighted_average": 5.0938852548599245
+},
+{
+"id": "global_news_el_pais_america_ad4d32f0e473",
+"published_date": "2026-10-03T09:30:00.000Z",
+"language": "es",
+"weighted_average": 7.662109096958897,
+"raw_weighted_average": 5.344070315361023
+},
+{
+"id": "south_african_club_of_mozambique_09cadcdba901",
+"published_date": "2026-10-06T11:34:46.000Z",
+"language": "en",
+"weighted_average": 4.564296342096009,
+"raw_weighted_average": 4.785778117179871
+},
+{
+"id": "balkan_index_hr_afb022ba2924",
+"published_date": "2026-10-03T06:54:00.000Z",
+"language": "hr",
+"weighted_average": 7.662109096958897,
+"raw_weighted_average": 5.344070315361023
+},
+{
+"id": "korean_yonhap_kr_3d5b8face1f5",
+"published_date": "2026-10-05T03:54:34.000Z",
+"language": "ko",
+"weighted_average": 5.565441627430684,
+"raw_weighted_average": 5.03913836479187
+},
+{
+"id": "science_sciencedaily_dcb32646829a",
+"published_date": "2026-10-04T12:46:46.000Z",
+"language": "en",
+"weighted_average": 5.993639629345566,
+"raw_weighted_average": 5.127727580070496
+},
+{
+"id": "finnish_yle_uutiset_05855e54f81e",
+"published_date": "2026-10-05T03:32:19.000Z",
+"language": "fi",
+"weighted_average": 5.319886534051534,
+"raw_weighted_average": 4.9964923620223995
+},
+{
+"id": "positive_news_the_better_india_6e62b4e12790",
+"published_date": "2026-10-03T07:30:37.000Z",
+"language": "en",
+"weighted_average": 7.019385627921353,
+"raw_weighted_average": 5.314903616905212
+},
+{
+"id": "portuguese_sonoticiaboa_d03022dff27f",
+"published_date": "2026-10-05T11:14:05.000Z",
+"language": "pt",
+"weighted_average": 4.912462983829772,
+"raw_weighted_average": 4.830127167701721
+},
+{
+"id": "central_asian_open_kg_a5a5b84bb4f0",
+"published_date": "2026-10-05T02:59:55.000Z",
+"language": "en",
+"weighted_average": 4.963235,
+"raw_weighted_average": 4.873560881614685
+},
+{
+"id": "positive_news_the_logical_indian_2fb1e9e72189",
+"published_date": "2026-10-04T11:36:45.000Z",
+"language": "en",
+"weighted_average": 5.372019387480655,
+"raw_weighted_average": 5.0086136102676395
+},
+{
+"id": "climate_solutions_the_cool_down_bb5675df6197",
+"published_date": "2026-10-03T03:19:00.000Z",
+"language": "en",
+"weighted_average": 6.670068365936276,
+"raw_weighted_average": 5.260759234428406
+},
+{
+"id": "central_asian_astana_times_c254edd0c521",
+"published_date": "2026-10-04T05:00:58.000Z",
+"language": "en",
+"weighted_average": 5.506492816305747,
+"raw_weighted_average": 5.032285809516907
+},
+{
+"id": "swiss_tagesanzeiger_ea69e09458d9",
+"published_date": "2026-10-03T09:35:28.000Z",
+"language": "de",
+"weighted_average": 5.625,
+"raw_weighted_average": 5.060335397720337
+},
+{
+"id": "south_asian_times_of_india_9b23aca9a54b",
+"published_date": "2026-10-03T05:30:00.000Z",
+"language": "en",
+"weighted_average": 5.338867781109672,
+"raw_weighted_average": 5.000905632972717
+}
+]
+}
