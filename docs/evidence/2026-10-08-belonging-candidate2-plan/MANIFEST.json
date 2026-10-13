@@ -1,0 +1,75 @@
+{
+ "lab_root": "$LD_LAB (default ~/ld-lab, on situla)",
+ "entries": [
+  {
+   "path": "datasets/belonging_c2a/v1/build_report.json",
+   "sha256": "303c0451a1514fb2020cee061cc822c58cb0f9f0e874416dda47a9cd31d631f6",
+   "size": 7058,
+   "origin": "b650-gpu:llm-distillery/datasets/training/belonging_c2a/build_report.json",
+   "pulled_at": "2026-10-13T08:39:00+02:00"
+  },
+  {
+   "path": "datasets/belonging_c2a/v1/test.jsonl",
+   "sha256": "3c75c821e2e9b9b8e4f42dcaeddf83aff6963511b6382a76c548cc9d390a0604",
+   "size": 1857735,
+   "origin": "b650-gpu:llm-distillery/datasets/training/belonging_c2a/test.jsonl",
+   "pulled_at": "2026-10-13T08:39:00+02:00"
+  },
+  {
+   "path": "datasets/belonging_c2a/v1/train.jsonl",
+   "sha256": "eaaf2b3b86c0de6a6d8806eea1877890b4e5b5f2572602d51338302f750a1f0a",
+   "size": 15148981,
+   "origin": "b650-gpu:llm-distillery/datasets/training/belonging_c2a/train.jsonl",
+   "pulled_at": "2026-10-13T08:39:00+02:00"
+  },
+  {
+   "path": "datasets/belonging_c2a/v1/training_manifest.jsonl",
+   "sha256": "a6c806489802ffabfa05d4e33552ebf8ec0bed01dc68a5073f75237b10a7626c",
+   "size": 7965668,
+   "origin": "b650-gpu:llm-distillery/datasets/training/belonging_c2a/training_manifest.jsonl",
+   "pulled_at": "2026-10-13T08:39:00+02:00"
+  },
+  {
+   "path": "datasets/belonging_c2a/v1/val.jsonl",
+   "sha256": "09bebc60c157022159761cd23a1315d6683c11d4413beaeabd8e8b4b5419df57",
+   "size": 1832382,
+   "origin": "b650-gpu:llm-distillery/datasets/training/belonging_c2a/val.jsonl",
+   "pulled_at": "2026-10-13T08:39:00+02:00"
+  },
+  {
+   "path": "datasets/belonging_c2b/v1/build_report.json",
+   "sha256": "3d6b7df017f85fc751e4a5e903f866f259cde7e560a36ed9cfd4252b5c72e4e1",
+   "size": 6822,
+   "origin": "b650-gpu:llm-distillery/datasets/training/belonging_c2b/build_report.json",
+   "pulled_at": "2026-10-13T08:39:03+02:00"
+  },
+  {
+   "path": "datasets/belonging_c2b/v1/test.jsonl",
+   "sha256": "65768e93b38b11bddd7fc3b67dc650c9242de7d79c9e613d7a7b8396f57d78a9",
+   "size": 1783489,
+   "origin": "b650-gpu:llm-distillery/datasets/training/belonging_c2b/test.jsonl",
+   "pulled_at": "2026-10-13T08:39:03+02:00"
+  },
+  {
+   "path": "datasets/belonging_c2b/v1/train.jsonl",
+   "sha256": "cf7ff2ee284f8ca085e9a45c1398a8b4a44cf2fc51f88342db3a71c2e4a240f1",
+   "size": 14710349,
+   "origin": "b650-gpu:llm-distillery/datasets/training/belonging_c2b/train.jsonl",
+   "pulled_at": "2026-10-13T08:39:03+02:00"
+  },
+  {
+   "path": "datasets/belonging_c2b/v1/training_manifest.jsonl",
+   "sha256": "2946e1cf46514a6a035605752211cff95bc275c35c93a2be0c8dade33bc3a466",
+   "size": 7809052,
+   "origin": "b650-gpu:llm-distillery/datasets/training/belonging_c2b/training_manifest.jsonl",
+   "pulled_at": "2026-10-13T08:39:03+02:00"
+  },
+  {
+   "path": "datasets/belonging_c2b/v1/val.jsonl",
+   "sha256": "48864bc73aad30ffe63bb84eceb327936f24412890cadd6c6e86fedf142df053",
+   "size": 1687968,
+   "origin": "b650-gpu:llm-distillery/datasets/training/belonging_c2b/val.jsonl",
+   "pulled_at": "2026-10-13T08:39:03+02:00"
+  }
+ ]
+}

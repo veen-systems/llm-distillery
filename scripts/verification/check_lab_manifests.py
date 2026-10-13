@@ -5,7 +5,7 @@ single source of truth; b650-gpu, gpu-server and sadaltager are scratch, and so 
 NexusMind's production tree. Before this check, six v8 evidence dirs named `b650-gpu:~/v8_corpus/`
 as the durable home of their inputs -- one host wipe from evidence nobody could re-open.
 
-Two checks:
+Four checks:
 1. Every docs/evidence/*/MANIFEST.json is non-empty, and (unless `--no-lab`) each entry exists under
    the lab root with its recorded size and sha256 (`--fast`: size only) AND agrees with the
    `_LAB_MANIFEST.json` of the pulled tree it sits in (same hash, same origin). Entries are written
@@ -24,6 +24,14 @@ Two checks:
    new citation added to an OLD dir fails too. ⛔ `--write-baseline` rewrites that file from the
    current state; a diff that ADDS baseline entries is a loosening and needs review as one.
 
+3. A PLANNED run cites no `inbox/` path: an evidence dir holding `PREREGISTRATION.md` whose
+   MANIFEST.json has an `inbox/...` entry fails (lab layout, ld-lab/README.md: inbox/ is for
+   clean-up pulls whose home is undecided; 2026-10-12 a pre-registered run landed there). Fix it
+   with `scripts/lab/lab.py move`, which rewrites the citing manifests. Runs with `--no-lab` too.
+4. (lab mode) Evidence TEXT naming a lab path -- `ld-lab/<inbox|experiments|datasets>/...`, or a
+   bare `inbox/<host>/<date>/...` -- must name one that exists: `lab.py move` lists such text but
+   never edits it, so a script reading the old path would otherwise break silently.
+
 A unit that names hosts without resting on host data (an inventory OF the hosts) declares it with a
 line `lab-check: not-host-data: <reason>`; it is reported as EXEMPT with the reason, never silently
 passed. A marker with no reason is a failure.
@@ -36,7 +44,10 @@ Exit 0 = pass, 1 = fail. With no lab root on this machine the check FAILS rather
 (`--no-lab` runs the lab-free parts, and says so) -- a check that passes where it cannot look is how
 an unreachable mechanism ships.
 
-⚠️ Known blind spots: prose that names no host ("the GPU box"); `/home/...` paths with no host;
+⚠️ Check 4's blind spots (review 2026-10-13): bare `experiments/...` / `datasets/...` text (they
+collide with repo paths), `$LD_LAB/...`, paths built with os.path.join, and any file outside
+docs/evidence/ (experiments/registry.jsonl notes, docs/TODO.md); globs or placeholders after `ld-lab/`
+are cut at the first non-path character and may false-fail. Other known blind spots: prose that names no host ("the GPU box"); `/home/...` paths with no host;
 experiments/registry.jsonl (not scanned); text files over 2 MB and binary files; a citation that
 is a PUSH to a host (`scp x b650-gpu:~/dir/`) reads as a citation and needs a manifest or a
 rephrase -- except a bare `host:~/`, which is skipped.
@@ -52,6 +63,8 @@ DEFAULT_EXEMPT = ["sadalsuud:local_dev"]
 MAX_BYTES = 2_000_000
 OPT_OUT = re.compile(r"lab-check:\s*not-host-data:?(.*)")
 LAB_MANIFEST = "_LAB_MANIFEST.json"
+LAB_TEXT = re.compile(r"(?:(?<![\w-])ld-lab/((?:inbox|experiments|datasets)/[\w.\-/]*[\w-])"
+                      r"|(?<![\w/.-])(inbox/[\w.-]+/\d{4}-\d{2}-\d{2}(?:/[\w.\-/]*[\w-])?))")
 SSH_OPTS = r"(?:-[bcDEeFIiJLlmOopQRSWw]\s*\S+\s+|-\w+\s+)*"
 
 
@@ -93,6 +106,17 @@ def unit_texts(unit):
         if b"\0" in raw[:8192]:
             continue
         yield raw.decode("utf-8", errors="replace")
+
+
+def stale_lab_paths(unit, root):
+    """Lab paths named in the unit's text (not its manifest) that do not exist under root."""
+    missing = set()
+    for text in unit_texts(unit):
+        for m in LAB_TEXT.finditer(text):
+            rel = m.group(1) or m.group(2)
+            if not (root / rel).exists():
+                missing.add(rel)
+    return sorted(missing)
 
 
 def exempted(host, path, exempt):
@@ -184,9 +208,19 @@ def main():
         entries = json.loads(mf.read_text(encoding="utf-8")).get("entries", [])
         if not entries:
             fails.append(f"{mf.parent.name}: MANIFEST.json has no entries")
+        inbox = [e["path"] for e in entries if e["path"].startswith("inbox/")]
+        if inbox and (mf.parent / "PREREGISTRATION.md").is_file():
+            fails.append(f"{mf.parent.name}: pre-registered, but cites {len(inbox)} inbox/ path(s) "
+                         f"(first: {inbox[0]}); file it under experiments/ or datasets/ with `lab.py move`")
         if not a.no_lab:
             n_entries += len(entries)
             check_lab_entries(mf, entries, root.resolve(), a.fast, fails)
+    if not a.no_lab:
+        for unit in sorted(a.evidence.iterdir()):
+            stale = stale_lab_paths(unit, root.resolve())
+            if stale:
+                fails.append(f"{unit.name}: text names {len(stale)} lab path(s) that do not exist "
+                             f"(first: {stale[0]}); a `lab.py move` left it behind?")
     baseline = json.loads(a.baseline.read_text(encoding="utf-8")) if a.baseline.is_file() else {}
     for unit in sorted(a.evidence.iterdir()):
         cites, mentions, marks = scan(unit, cite, bare, exempt)

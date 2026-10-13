@@ -11,10 +11,15 @@ null with an explanation in `notes`, never invented.
 
 Exit 0 = all checks pass. Exit 1 = at least one FAIL.
 
+Optional `lab`: a list of lab paths (relative to ~/ld-lab on situla) holding the run's data --
+each must sit under `experiments/` or `datasets/` (never `inbox/`, whose items have no home yet)
+and, where a lab root exists, must exist. Without a lab root only the shape is checked, and the
+output says so (`lab paths ... SKIPPED`).
+
 `--registry PATH` checks another file (tests plant defects in a temp copy, never in the tracked
 one -- llm-distillery#162). Artifact paths and commits still resolve against the repo.
 """
-import argparse, json, re, subprocess, sys
+import argparse, json, os, re, subprocess, sys
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
@@ -25,6 +30,7 @@ REQUIRED = ["id", "date", "title", "hypothesis", "subject", "oracle", "branch", 
 DECISIONS = {"kept", "parked", "rejected", "rolled_back", "superseded"}
 ID_RE = re.compile(r"^EXP-\d{3}$")
 DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+LAB_RE = re.compile(r"^(experiments|datasets)/[^/]")
 
 
 def artifact_text(entry, cache={}):
@@ -72,11 +78,15 @@ def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     ap.add_argument("--registry", type=Path, default=REG,
                     help="registry file to check (default: the tracked experiments/registry.jsonl)")
-    reg = ap.parse_args(argv).registry
+    ap.add_argument("--lab-root", type=Path,
+                    default=Path(os.environ.get("LD_LAB", Path.home() / "ld-lab")).expanduser(),
+                    help="lab root for the optional `lab` field (default $LD_LAB, else ~/ld-lab)")
+    args = ap.parse_args(argv)
+    reg, lab_root = args.registry, args.lab_root
     if not reg.exists():
         print(f"FAIL: {reg} does not exist")
         return 1
-    fails, entries = [], []
+    fails, entries, lab_paths = [], [], 0
     for n, line in enumerate(reg.read_text(encoding="utf-8").splitlines(), 1):
         if not line.strip():
             continue
@@ -98,6 +108,16 @@ def main(argv=None):
         for a in e.get("artifacts", []):
             if not (REPO / a).exists():
                 fails.append(f"{e.get('id')}: artifact does not exist: {a}")
+        lab = e.get("lab", [])
+        if not isinstance(lab, list) or not all(isinstance(x, str) for x in lab):
+            fails.append(f"{e.get('id')}: `lab` must be a list of lab paths")
+            lab = []
+        for x in lab:
+            lab_paths += 1
+            if not LAB_RE.match(x) or ".." in x.split("/"):
+                fails.append(f"{e.get('id')}: lab path {x!r} is not under experiments/ or datasets/")
+            elif lab_root.is_dir() and not (lab_root / x).exists():
+                fails.append(f"{e.get('id')}: lab path does not exist under {lab_root}: {x}")
     ids = [e["id"] for e in entries if "id" in e]
     if ids != sorted(ids):
         fails.append("ids are not in ascending order")
@@ -115,6 +135,8 @@ def main(argv=None):
                 fails.append(f"{e['id']}: metric `{k}` = {form} is NOT traceable to any cited "
                              f"artifact or commit message")
     print(f"entries {len(entries)}   metrics checked {checked}   untraceable {untraceable}")
+    print(f"lab paths {lab_paths}" + ("" if lab_root.is_dir() else
+          f" (existence SKIPPED: no lab root at {lab_root}; shape checked)"))
     print(f"spend recorded: ${sum(e.get('spend_usd') or 0 for e in entries):.4f}")
     for f in fails:
         print(f"  FAIL  {f}")

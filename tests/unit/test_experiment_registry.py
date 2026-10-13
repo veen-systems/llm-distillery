@@ -13,14 +13,14 @@ CHECK = REPO / "scripts" / "verification" / "check_experiment_registry.py"
 REG = REPO / "experiments" / "registry.jsonl"
 
 
-def run_against(lines):
+def run_against(lines, *extra):
     """Run the checker against a planted registry in a temp dir. ⛔ Never write the tracked file:
     the old swap-and-restore left it corrupted whenever a run was killed (llm-distillery#162)."""
     with tempfile.TemporaryDirectory() as d:
         planted = Path(d) / "registry.jsonl"
         planted.write_text("\n".join(json.dumps(e, ensure_ascii=False) for e in lines) + "\n",
                            encoding="utf-8")
-        return subprocess.run([sys.executable, str(CHECK), "--registry", str(planted)],
+        return subprocess.run([sys.executable, str(CHECK), "--registry", str(planted), *extra],
                               capture_output=True, text=True)
 
 
@@ -122,6 +122,31 @@ class RegistryTest(unittest.TestCase):
                                capture_output=True, text=True)
         self.assertEqual(r.returncode, 1, r.stdout + r.stderr)
         self.assertIn("`invented_figure` = 99.9999% is NOT traceable", r.stdout)
+
+    def test_the_lab_field_is_shape_and_existence_checked(self):
+        """Optional `lab` (2026-10-13): a pre-registered run's data must have a home -- never
+        inbox/ -- and the path must exist on situla."""
+        with tempfile.TemporaryDirectory() as lab:
+            for d in ("experiments/2026-10-12-x", "inbox/b650-gpu/2026-10-12/x"):
+                (Path(lab) / d).mkdir(parents=True)          # bad SHAPES exist, so only the shape check can fail them
+            for value, why in [(["experiments/2026-10-12-x"], None),
+                               ([], None),
+                               (["experiments/2026-10-12-gone"], "does not exist"),
+                               (["inbox/b650-gpu/2026-10-12/x"], "not under experiments/"),
+                               (["datasets/../inbox"], "not under experiments/"),
+                               ("experiments/2026-10-12-x", "must be a list")]:
+                with self.subTest(value=value):
+                    e = [{k: v for k, v in x.items() if k != "lab"} for x in entries()]   # only the planted one
+                    e[0]["lab"] = value
+                    r = run_against(e, "--lab-root", lab)
+                    self.assertEqual(r.returncode == 0, why is None, r.stdout)
+                    if why:
+                        self.assertIn(why, r.stdout)
+            e = [{k: v for k, v in x.items() if k != "lab"} for x in entries()]
+            e[0]["lab"] = ["experiments/2026-10-12-gone"]
+            r = run_against(e, "--lab-root", str(Path(lab) / "absent"))          # no lab root: shape only,
+            self.assertEqual(r.returncode, 0, r.stdout)                          # and it says so
+            self.assertIn("existence SKIPPED", r.stdout)
 
     def test_every_entry_states_its_spend(self):
         """`0` is a claim a reader can check; absent is not."""

@@ -5,11 +5,17 @@
 *A bare "continue" means this list, top down. Each line names the FIRST action. Item 0 is WAITING (dated), item 1 is
 NexusMind's. Item 2 (#163, the read surface): rounds 1–3 landed 2026-10-12 (758,893 → 514,588 chars after the moves, 519,680 at close with this session's own records; ratchet
 `check_index_budget.py --target surface` at 524,900); `/curate` still flags it (>300k); the next levers are listed in
-item 2 and are not ruled. ▶ **A bare "continue" now starts at item 00 "LAB LAYOUT RULES" (owner, 2026-10-12: "first thing
-next session"), THEN item 0a "NEXT: ask the owner"**: v3 fails the owner's personal-story bar (10/30); candidate c2c FAILED
+item 2 and are not ruled. ▶ **Item 00 (lab layout rules) DONE 2026-10-13; a bare "continue" now starts at item 0a
+"NEXT: ask the owner"**: v3 fails the owner's personal-story bar (10/30); candidate c2c FAILED
 its pre-registered check (recall guard 0.81 / 0.86 < 0.9); the owner chooses the next step.*
 
-00. ▶ **LAB LAYOUT RULES — FIRST (owner, 2026-10-12: "yes, first thing next session").** The 10-12 data is intact and cited,
+00. ✅ **DONE 2026-10-13: steps 1–4 and 6 landed; step 5 (the `lab` field) is in the checker, but NOT applied to EXP-048,
+   because the registry is append-only. Open owner question: add it in place, or allow it by README amendment?**
+   Guards seeded RED on the real tree, every guard mutation-tested, two review lenses (findings fixed, check-4 blind spots
+   documented in its docstring). Moved: `experiments/2026-10-12-belonging-c2c/` (7 trees), `datasets/belonging_comp_draw/v1`;
+   pulled + cited: `datasets/belonging_{c2a,c2b,c2c,v1_adj1}/v1`. The 10-10 inbox heap is still a later pass.
+   The original plan:
+   **LAB LAYOUT RULES — FIRST (owner, 2026-10-12: "yes, first thing next session").** The 10-12 data is intact and cited,
    but misfiled and partly untracked: a pre-registered run (c2c) and a fixed corpus (the 33,393-row draw) sit in
    `~/ld-lab/inbox/`, against `~/ld-lab/README.md` (planned run → `experiments/<date>-<name>/`, corpus → `datasets/<name>/vN`).
    The training sets `datasets/training/belonging_{c2a,c2b,c2c}` (v3 was trained on c2b) are in no lab tree and no committed hash.
@@ -70,7 +76,7 @@ its pre-registered check (recall guard 0.81 / 0.86 < 0.9); the owner chooses the
    - **Candidate c2c: FAILED 2026-10-12** (owner: no paid oracle; 42 qwen-tagged personal training rows scaled to
      4.4; seeds 42 + 43 on b650). Amendment B: recall guard 222/275 = 0.807 (s42) and 237/275 = 0.862 (s43), below 0.9.
      The composition half was UNDECIDABLE, because v3's raw top 30 on the 33,393-row draw holds only 5 personal by qwen,
-     against 7 by qwen and 10 by the owner on the site's ranked page. Models + scores + tags in `~/ld-lab/inbox/b650-gpu/2026-10-12/`.
+     against 7 by qwen and 10 by the owner on the site's ranked page. Models + scores + tags in `~/ld-lab/experiments/2026-10-12-belonging-c2c/` (moved from inbox 2026-10-13).
      `docs/evidence/2026-10-12-belonging-personal-tag/README.md` § *Candidate c2c*.
      ⚠️ Review found a build defect: `build_c2c.py` ignored the community_fabric gatekeeper, so 11 of the 42 scaled rows
      were trained to 3.42 (blocked), not 4.4. That is a stronger push than ruled, so a cap-aware retry is untested (H-BB8).

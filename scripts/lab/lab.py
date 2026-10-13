@@ -29,15 +29,27 @@ this tool) and replaces it only if host and copy are identical.
 dest must resolve inside the lab root and not inside another pulled tree. If rsync fails, the
 partial dest is left for inspection and the message says how to recover.
 
+Every dest (pull, adopt, move) must follow the lab layout (ld-lab/README.md), checked by
+`layout_problem`: `inbox/<host>/<YYYY-MM-DD>/<item>`, `experiments/<YYYY-MM-DD>-<name>[/...]`, or
+`datasets/<name>/v<N>[/...]`. A planned run goes to experiments/, a fixed corpus to datasets/; inbox/
+is only for clean-up pulls whose home is undecided (2026-10-12: a pre-registered run landed there).
+
+`move src dest` relocates pulled trees inside the lab and rewrites every evidence MANIFEST.json
+entry that cites them, so a misfiled tree is fixed rather than frozen. src is one pulled tree, or a
+directory holding only pulled trees; each is verified before and after; the move is recorded in
+each tree's manifest (`moves`). If it dies part-way (a rename done, a manifest not rewritten),
+`check_lab_manifests.py` fails the stale entry; recover with the reverse `move`. Text that names the old path (scripts, prose) is LISTED, never
+edited: a session record is history, a script is code, and only their author knows which.
+
 `verify dest` re-checks a pulled tree against its manifest. `cite <evidence dir> <lab paths>`
 writes the evidence dir's MANIFEST.json (path, sha256, size, origin, pulled_at) and refuses a
 file outside the lab root, one not recorded by `pull`/`adopt`, or one changed since. Checked by
-scripts/verification/check_lab_manifests.py. ⛔ Never move or rename a pulled tree after citing
-from it: MANIFEST.json records the lab path.
+scripts/verification/check_lab_manifests.py. ⛔ Never move or rename a pulled tree by hand after
+citing from it (MANIFEST.json records the lab path): use `move`.
 
 ⛔ This tool never deletes anything on a host. Host deletion is per item, with the owner's go.
 """
-import argparse, datetime, fnmatch, hashlib, json, os, posixpath, shlex, stat, subprocess, sys
+import argparse, datetime, fnmatch, hashlib, json, os, posixpath, re, shlex, stat, subprocess, sys
 from pathlib import Path
 
 LAB_MANIFEST = "_LAB_MANIFEST.json"
@@ -46,6 +58,25 @@ EVIDENCE_MANIFEST = "MANIFEST.json"
 # source tree is excluded too: inputs sent from the lab to a host carry one (flow step 1).
 EXCLUDES = ["__pycache__", "*.pyc", "venv", "venv-*", ".venv", ".git", LAB_MANIFEST]
 LAB_ROOT_FLAG = None
+REPO = Path(__file__).resolve().parents[2]
+EVIDENCE = REPO / "docs" / "evidence"
+DATE = r"[0-9]{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12][0-9]|3[01])"
+NAME = r"[A-Za-z0-9][A-Za-z0-9_.-]*"
+# area -> (pattern the dest's leading parts must match, the shape to print when they do not)
+LAYOUT = {
+    "inbox": (re.compile(rf"^inbox/{NAME}/{DATE}/{NAME}(/|\Z)"), "inbox/<host>/<YYYY-MM-DD>/<item>"),
+    "experiments": (re.compile(rf"^experiments/{DATE}-{NAME}(/|\Z)"), "experiments/<YYYY-MM-DD>-<name>[/...]"),
+    "datasets": (re.compile(rf"^datasets/{NAME}/v[0-9]+(/|\Z)"), "datasets/<name>/v<N>[/...]"),
+}
+
+
+def layout_problem(rel):
+    """None if `rel` (posix, relative to the lab root) follows the lab layout, else why not."""
+    area = rel.split("/", 1)[0]
+    if area not in LAYOUT:
+        return f"{rel}: not under inbox/, experiments/ or datasets/ (ld-lab/README.md)"
+    pat, shape = LAYOUT[area]
+    return None if pat.match(rel) else f"{rel!r}: an {area}/ dest must be {shape}"
 
 
 def lab_root():
@@ -217,11 +248,15 @@ def split_source(source):
 
 
 def lab_dest(rel):
-    """dest resolved inside the lab root, not inside (or equal to) another pulled tree."""
+    """dest resolved inside the lab root, following the layout, not inside (or equal to)
+    another pulled tree."""
     root = lab_root().resolve()
     dest = (root / rel).resolve()
     if not dest.is_relative_to(root) or dest == root:
         sys.exit(f"REFUSED: {rel} resolves outside the lab root {root}")
+    problem = layout_problem(dest.relative_to(root).as_posix())
+    if problem:
+        sys.exit(f"REFUSED: {problem}")
     for anc in dest.parents:
         if anc.is_relative_to(root) and anc != root and (anc / LAB_MANIFEST).exists():
             sys.exit(f"REFUSED: {rel} is inside the pulled tree {anc}; pick a dest outside it")
@@ -254,6 +289,9 @@ def cmd_adopt(a):
     dest = (root / a.dest).resolve()
     if not dest.is_relative_to(root) or dest == root:
         sys.exit(f"REFUSED: {a.dest} resolves outside the lab root {root}")
+    problem = layout_problem(dest.relative_to(root).as_posix())
+    if problem:
+        sys.exit(f"REFUSED: {problem} (a copy with no manifest is cited by nothing yet: mv it into the layout, then adopt)")
     if not dest.is_dir() or (root / a.dest).is_symlink():
         sys.exit(f"REFUSED: {dest} is not an existing directory (a single file must sit inside one)")
     if (dest / LAB_MANIFEST).exists() and not a.replace_manifest:
@@ -267,21 +305,135 @@ def cmd_adopt(a):
     finish(a, dest, kind, r_files, r_links, problems, "adopt")
 
 
-def cmd_verify(a):
-    dest = lab_root() / a.dest
-    mf = dest / LAB_MANIFEST
-    if not mf.is_file():
-        sys.exit(f"no {LAB_MANIFEST} in {dest}")
-    m = json.loads(mf.read_text(encoding="utf-8"))
-    l_files, l_links = local_listing(dest)
+def tree_problems(tree):
+    """(n files, n links, [missing/changed/extra paths]) for a pulled tree vs its manifest."""
+    m = json.loads((tree / LAB_MANIFEST).read_text(encoding="utf-8"))
+    l_files, l_links = local_listing(tree)
     m_files = {k: (v["sha256"], v["size"]) for k, v in m["files"].items()}
     missing, extra, differ = compare(m_files, m.get("links", {}), l_files, l_links)
+    return len(m_files), len(m.get("links", {})), (missing, differ, extra)
+
+
+def cmd_verify(a):
+    dest = lab_root() / a.dest
+    if not (dest / LAB_MANIFEST).is_file():
+        sys.exit(f"no {LAB_MANIFEST} in {dest}")
+    n_files, n_links, (missing, differ, extra) = tree_problems(dest)
     bad = missing + extra + differ
-    print(f"{'OK' if not bad else 'FAIL'} {dest}: {len(m_files)} files + {len(m.get('links', {}))} links "
+    print(f"{'OK' if not bad else 'FAIL'} {dest}: {n_files} files + {n_links} links "
           f"in manifest; {len(missing)} missing, {len(differ)} changed, {len(extra)} not in manifest")
     for k in bad[:20]:
         print("  ", k)
     sys.exit(1 if bad else 0)
+
+
+def trees_in(src):
+    """The pulled trees `src` consists of: itself, or the trees below it -- refused if anything
+    under src lies outside every tree (it would move unverified)."""
+    if (src / LAB_MANIFEST).is_file():
+        return [src]
+    trees, stray = [], []
+    for dirpath, dirnames, filenames in os.walk(src, followlinks=False):
+        d = Path(dirpath)
+        if (d / LAB_MANIFEST).is_file():
+            trees.append(d)
+            dirnames[:] = []
+            continue
+        stray += [d / f for f in filenames]
+        stray += [d / x for x in dirnames if (d / x).is_symlink()]
+    if stray:
+        sys.exit(f"REFUSED: {src} holds {len(stray)} entries outside any pulled tree "
+                 f"(first: {stray[0].relative_to(src)}); move pulled trees only")
+    if not trees:
+        sys.exit(f"REFUSED: {src} holds no pulled tree")
+    return sorted(trees)
+
+
+def text_mentions(evidence, old_rel):
+    """(file, line no) of every non-manifest text file under `evidence` naming the old lab path."""
+    hits = []
+    for f in sorted(evidence.rglob("*")):
+        if not f.is_file() or f.name == EVIDENCE_MANIFEST or f.stat().st_size > 2_000_000:
+            continue
+        raw = f.read_bytes()
+        if b"\0" in raw[:8192]:
+            continue
+        for n, line in enumerate(raw.decode("utf-8", errors="replace").splitlines(), 1):
+            if re.search(re.escape(old_rel) + r"(?![\w.-])", line):
+                hits.append((f, n))
+    return hits
+
+
+def cmd_move(a):
+    root = lab_root().resolve()
+    given = root / a.src
+    src = given.resolve()
+    if not src.is_relative_to(root) or src == root:
+        sys.exit(f"REFUSED: {a.src} resolves outside the lab root {root}")
+    if src.parent == root:
+        sys.exit(f"REFUSED: {a.src} is a whole lab area; move what is inside it")
+    if given.is_symlink() or not src.is_dir():
+        sys.exit(f"REFUSED: {src} is not a directory")
+    for anc in src.parents:
+        if anc.is_relative_to(root) and anc != root and (anc / LAB_MANIFEST).exists():
+            sys.exit(f"REFUSED: {a.src} is inside the pulled tree {anc}; move the whole tree")
+    dest = lab_dest(a.dest)
+    if dest.exists() or dest.is_symlink():
+        sys.exit(f"REFUSED: {dest} exists; a move never merges into or overwrites a tree")
+    if dest.is_relative_to(src):
+        sys.exit(f"REFUSED: {dest} lies inside {src}")
+    trees = trees_in(src)
+    for t in trees:
+        _, t_links = local_listing(t)
+        outside = sorted(k for k, tg in t_links.items() if link_problem(k, tg))
+        if outside:
+            sys.exit(f"REFUSED: {t} has {len(outside)} symlink(s) pointing outside it (first: {outside[0]}); "
+                     f"a move would leave them dangling while verify still passes")
+        _, _, (missing, differ, extra) = tree_problems(t)
+        if missing or differ or extra:
+            sys.exit(f"REFUSED: {t} does not verify ({len(missing)} missing, {len(differ)} changed, "
+                     f"{len(extra)} extra); a move must not carry a broken tree under a new name")
+    old_rel, new_rel = src.relative_to(root).as_posix(), dest.relative_to(root).as_posix()
+    evidence = Path(a.evidence)
+    rewrites = []                     # (manifest path, doc, n entries changed)
+    for mf in sorted(evidence.glob(f"*/{EVIDENCE_MANIFEST}")):
+        doc = json.loads(mf.read_text(encoding="utf-8"))
+        n = 0
+        for e in doc.get("entries", []):
+            if e["path"] == old_rel or e["path"].startswith(old_rel + "/"):
+                e["path"] = new_rel + e["path"][len(old_rel):]
+                n += 1
+        if n:
+            doc["entries"] = sorted(doc["entries"], key=lambda e: e["path"])
+            rewrites.append((mf, doc, n))
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    os.rename(src, dest)              # same filesystem: atomic, no copy, hashes cannot change
+    at = datetime.datetime.now().astimezone().isoformat(timespec="seconds")
+    for t in trees:
+        new_t = dest / t.relative_to(src)
+        lm_path = new_t / LAB_MANIFEST
+        lm = json.loads(lm_path.read_text(encoding="utf-8"))
+        lm.setdefault("moves", []).append({"from": t.relative_to(root).as_posix(),
+                                           "to": new_t.relative_to(root).as_posix(), "at": at})
+        lm_path.write_text(json.dumps(lm, indent=1) + "\n", encoding="utf-8")
+    for mf, doc, n in rewrites:      # temp + rename: a crash leaves each manifest old or new, never torn
+        tmp = mf.with_name(mf.name + ".tmp")
+        tmp.write_text(json.dumps(doc, indent=1) + "\n", encoding="utf-8")
+        os.replace(tmp, mf)
+        print(f"rewrote {n} entr{'y' if n == 1 else 'ies'} in {mf}")
+    for t in trees:
+        new_t = dest / t.relative_to(src)
+        _, _, (missing, differ, extra) = tree_problems(new_t)
+        if missing or differ or extra:
+            sys.exit(f"FAIL: {new_t} does not verify after the move")
+    parent = src.parent
+    while parent != root and parent.parent != root and not any(parent.iterdir()):
+        parent.rmdir()                # empty inbox/<host>/<date> dirs left behind
+        parent = parent.parent
+    print(f"OK moved {old_rel} -> {new_rel}: {len(trees)} pulled tree(s), all verify; "
+          f"{sum(n for _, _, n in rewrites)} evidence entries rewritten in {len(rewrites)} manifest(s)")
+    for f, n in text_mentions(evidence, old_rel):
+        print(f"   STILL NAMES THE OLD PATH (not edited): {f}:{n}")
 
 
 def cmd_cite(a):
@@ -335,6 +487,10 @@ def main():
                    help="re-list a tree that already has a manifest (e.g. an older format)")
     p.set_defaults(f=cmd_adopt)
     p = sub.add_parser("verify"); p.add_argument("dest"); p.set_defaults(f=cmd_verify)
+    p = sub.add_parser("move"); p.add_argument("src"); p.add_argument("dest")
+    p.add_argument("--evidence", default=str(EVIDENCE),
+                   help="evidence root whose */MANIFEST.json entries are rewritten (default %(default)s)")
+    p.set_defaults(f=cmd_move)
     p = sub.add_parser("cite"); p.add_argument("evidence_dir"); p.add_argument("lab_paths", nargs="+")
     p.set_defaults(f=cmd_cite)
     a = ap.parse_args()

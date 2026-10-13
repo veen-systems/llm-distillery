@@ -13,7 +13,7 @@
 ### `lab.py pull` DEST IS RELATIVE TO THE LAB ROOT, NOT THE INBOX (2026-10-12)
 **Problem**: `lab.py pull host:path b650-gpu/2026-10-12/x` landed in `~/ld-lab/b650-gpu/`, outside `inbox/`, where every earlier pull lives.
 **Root cause**: dest is joined to `$LD_LAB`. The docstring example spells `inbox/...`, but nothing enforces it.
-**Fix**: always write `inbox/<host>/<date>/<name>`. Moved and `lab.py verify` re-run: manifests are relative, so a move keeps them valid.
+**Fix**: always write `inbox/<host>/<date>/<name>`. Moved and `lab.py verify` re-run: manifests are relative, so a move keeps them valid. ⚠️ **Superseded 2026-10-13:** the `_LAB_MANIFEST.json` survives a move but an evidence `MANIFEST.json` does not; move with `lab.py move` (rewrites citations), and pull/adopt/move now refuse a dest outside the layout (mechanized).
 
 ## Mechanized`](#mechanized) — the destination for `/review-changes` Step 3.1, where a review finding that became a deterministic check is recorded. It is named here because nobody scrolls to the bottom of this file.*
 

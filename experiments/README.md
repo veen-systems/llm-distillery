@@ -68,6 +68,7 @@ python3 scripts/verification/check_experiment_registry.py      # schema + number
 | `references` | array<string> | yes | Ledger ids, issues, ADRs, gotcha entries |
 | `review` | string \| null | yes | Which review lenses ran, and what they found. `null` if none ran |
 | `notes` | string | no | Caveats, confounds, environment |
+| `lab` | array<string> | no | Lab paths (under `~/ld-lab` on situla) holding the run's off-repo data: `experiments/...` or `datasets/...`, never `inbox/`. Checked for shape always, for existence where a lab root exists (added 2026-10-13) |
 
 ### Decision values
 
@@ -121,7 +122,9 @@ evidence rests on a file that exists only on a GPU host. What is enforced:
 `scripts/verification/check_lab_manifests.py` (run by the test suite) fails any evidence dir
 or file that cites or names a scratch host without a covering `MANIFEST.json` (or a declared
 `lab-check: not-host-data: <reason>` line), except the citations frozen in its baseline on
-2026-10-10. It does not read `registry.jsonl`.
+2026-10-10; and (2026-10-13) a dir holding `PREREGISTRATION.md` whose manifest cites an `inbox/`
+path -- a planned run's data goes to `experiments/<date>-<name>/`. It does not read
+`registry.jsonl`; the registry's own checker validates the optional `lab` field.
 
 ## Adding an entry
 

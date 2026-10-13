@@ -29,15 +29,19 @@ Measured 2026-10-10; commands and full lists in `docs/evidence/2026-10-10-host-d
 
 | Where | What | Rule |
 |---|---|---|
-| `~/ld-lab/inbox/<host>/<date>/<item>` | a clean-up pull of host data whose home is not decided yet | triage it into `experiments/` or `datasets/` BEFORE the host copy is deleted: an uncited tree may simply be moved; a cited one cannot (re-pulling needs the host copy) |
+| `~/ld-lab/inbox/<host>/<date>/<item>` | a clean-up pull of host data whose home is not decided yet | triage it into `experiments/` or `datasets/` BEFORE the host copy is deleted, with `lab.py move` (it rewrites the citing manifests). ⛔ never for a PLANNED run: `check_lab_manifests.py` fails a dir with `PREREGISTRATION.md` that cites `inbox/` (2026-10-13) |
 | `~/ld-lab/experiments/<date>-<name>/` | a planned run's off-repo outputs: weights, dumps, logs | a planned run pulls STRAIGHT here (RUNBOOK) |
 | `~/ld-lab/datasets/<name>/<vN>/` | immutable corpora too large for the repo and cited by hash (`v8_corpus/v1`) | never edited in place; a change is a new `vN` |
 | repo `datasets/` (git-ignored, on situla) | the working inputs that scripts read by path | **unchanged**: it is already under `$HOME` and backed up, and hundreds of paths name it |
 | `docs/evidence/<dir>/MANIFEST.json` | which lab files an evidence dir rests on: path, sha256, size, origin host, date | written by `lab.py cite`, checked by `check_lab_manifests.py` |
 
 `$LD_LAB` or `--lab-root` overrides `~/ld-lab`. It is a plain directory, not a git repo. ⛔ **Never move or
-rename a tree after citing from it**: `MANIFEST.json` records the lab path, and the check fails the
-evidence dir when the path stops resolving.
+rename a tree BY HAND after citing from it**: `MANIFEST.json` records the lab path, and the check fails the
+evidence dir when the path stops resolving. **Amended 2026-10-13 (TODO item 00, owner-approved):** `lab.py move`
+moves a tree, rewrites every citing `MANIFEST.json`, records the move in the tree's `_LAB_MANIFEST.json` (`moves`),
+and LISTS (never edits) evidence text that names the old path; `check_lab_manifests.py` then fails any evidence text
+naming an `ld-lab/...` or `inbox/<host>/<date>` path that no longer exists. `pull`, `adopt` and `move` refuse a dest
+outside the three shapes above. The registry's optional `lab` field names an experiment's lab paths (never `inbox/`).
 
 ## The flow
 

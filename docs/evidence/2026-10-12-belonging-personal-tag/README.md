@@ -59,7 +59,7 @@ rows tagged `personal` get their targets scaled so the weighted score lands just
 ## Candidate c2c: the composition check (amendment B, 2026-10-12)
 
 Run on b650 (RTX 5090, `venv-prodparity`, one device term). Both seeds trained and calibrated with exit 0 (best val
-MAE s42 0.398, s43 0.407). All lab files are cited in `MANIFEST.json` (`inbox/b650-gpu/2026-10-12/`: `focus-tag-comp`,
+MAE s42 0.398, s43 0.407). All lab files are cited in `MANIFEST.json` (`experiments/2026-10-12-belonging-c2c/`, moved there from `inbox/` 2026-10-13: `focus-tag-comp`,
 `belonging_comp_scores`, `v1_c2c_s42`, `v1_c2c_s43`, `c2c-logs`). The draw has 33,393 rows, 28,384 at stage 2 for
 every model. qwen tagged the 340 distinct ids (each model's top 30 plus v3's 340 passes; every top-30 id was already
 a v3 pass): 275 group, 64 personal, 1 unparsed (a v3 pass outside every top 30).
