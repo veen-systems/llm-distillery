@@ -24,7 +24,7 @@ nothing here depends on the answer.
 
 | test | result |
 |---|---|
-| **1. live page**, built 2026-10-13T06:43:02Z, 507 cards | **507/507 positions reproduced.** All 507 cards are in the build population (710). The 203 not shown were removed after the sort |
+| **1. live page**, built 2026-10-13T06:43:02Z, 507 cards | **507/507 positions reproduced.** All 507 cards are in the build population (710). The 203 not shown were removed (editor, canonical lens, dedup) OR summarised after the build: this population has no summary time, so the split is unchecked. The check compares the RELATIVE order of the page's own cards, so it tests the formula, not the removals. It discriminates: without the 1.3 boost 431/507, decay 0.8 44/507, build time ±20 min 476/507 (review, 2026-10-13) |
 | **2. the owner-labelled page** of 2026-10-12 (`../2026-10-12-belonging-personal-tag/tags.tsv`) | **30/30 positions reproduced** at build times 14:30–14:50Z. The build time is unknown, so it was scanned on a 10-minute grid and only those 3 slots match, which makes this a FIT. 1 row ranked above #30 was not shown (removed) |
 | top 30 published < 24 h before the build | **30/30** (10-13); **29/30** (10-12, the oldest at 24.1 h) |
 | 10-12: rows in the 10-day window / rows < 24 h old | 758 / **43** |
@@ -68,9 +68,11 @@ current formula as the control. `replay.py` → `replay_result.txt`. The 10-13 i
 - **Normalized-score saturation, cards with s ≥ 9.5:** solutions 232/505, discovery 86/536, belonging 71/507,
   thriving 33/326, recovery 7/121. Where most of the top is near 10, the score cannot order it, so A and B fall
   back to age.
-- **Belonging personal count, 10-12 labelled page:** control 9 owner-personal of 28 labelled (+1 of 2 by qwen);
-  A 9 of 26 (+0 of 4); B 9 of 25 (+0 of 5); C 2 of 6 labelled (+2 of 19 by qwen, a floor) with 5 untagged.
-  C's count is therefore NOT known. The 10-13 page is mostly untagged (control 24 of 30).
+- **Belonging personal count, 10-12 labelled page** (the owner's labels WITH the pos-25 correction, 10 personal):
+  control 10 owner-personal of 28 labelled (+1 of 2 by qwen); A 10 of 26 (+0 of 4); B 10 of 25 (+0 of 5); C 3 of 6
+  labelled (+2 of 19 by qwen, a floor) with 5 untagged. C's count is therefore NOT known. The 10-13 page is mostly
+  untagged (control 24 of 30). ⚠️ The first version of this section used the uncorrected labels and read 9 / 9 / 9 / 2
+  (review, 2026-10-13).
 - **Rebuilding the 10-12 population** with "a removal is sticky for a day" gives 27/30 positions (28/30 overlap)
   for the control, against 30/30 without that step. So the approximation adds about 2 rows the page did not show.
 
@@ -85,5 +87,5 @@ partly rank by quality.
 order. MEASURED on 10-13: H's top 30 is the **same SET as C's in all five lenses**, so every column above is
 identical. Under C those five fresh cards already sat at positions 15–21 (belonging), 10–18 (thriving), 1–7
 (solutions), 2–10 (discovery) and 1–12 (recovery). H only moves them to the top, which changes 21 / 18 / 3 / 10 / 11
-of the top-30 positions. So H changes what a reader sees FIRST, not which stories make the top 30. The same holds
+of the top-30 positions (printed as `H vs C` in `replay_result.txt`). So H changes what a reader sees FIRST, not which stories make the top 30. The same holds
 on the 10-12 page (`replay_result.txt`).

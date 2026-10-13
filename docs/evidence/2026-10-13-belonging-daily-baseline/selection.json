@@ -1,5 +1,12 @@
 {
  "2026-10-09T14:30Z": {
+  "n": 14,
+  "in_range": false,
+  "v3_in_top60": 14,
+  "skipped_by_stamp": {
+   "1.0": 46
+  },
+  "skipped_scope": "whole top 60 (fewer than 30 v3)",
   "top30_v3": [
    "vietnamese_vnexpress_vn_c3e140e51220",
    "south_american_andina_c153d8dc09b7",
@@ -15,11 +22,16 @@
    "global_news_euronews_1a9029fcb49c",
    "british_irish_bbc_england_51b83fc56587",
    "british_irish_bbc_northern_ireland_1ce802af2449"
-  ],
-  "v1_skipped_before_30th": null,
-  "n": 14
+  ]
  },
  "2026-10-10T14:30Z": {
+  "n": 26,
+  "in_range": false,
+  "v3_in_top60": 26,
+  "skipped_by_stamp": {
+   "1.0": 34
+  },
+  "skipped_scope": "whole top 60 (fewer than 30 v3)",
   "top30_v3": [
    "west_african_legit_ng_b34ac7abc55b",
    "japanese_mainichi_jp_6c8d8fdbe844",
@@ -47,11 +59,14 @@
    "spanish_la_vanguardia_327de2107fe7",
    "dutch_news_nieuwe_oogst_b6ce335c32cd",
    "south_american_el_comercio_ec_18113f97ff09"
-  ],
-  "v1_skipped_before_30th": null,
-  "n": 26
+  ]
  },
  "2026-10-11T14:30Z": {
+  "n": 30,
+  "in_range": true,
+  "v3_in_top60": 56,
+  "skipped_by_stamp": {},
+  "skipped_scope": "through the 30th v3 row",
   "top30_v3": [
    "british_irish_bbc_northern_ireland_60f5ca85d454",
    "spanish_eldiario_715d85901d65",
@@ -83,11 +98,14 @@
    "spanish_xataka_3de62cbb2f8d",
    "south_asian_express_tribune_af6d5d4aa441",
    "arabic_enab_baladi_en_4d7f2a797ad8"
-  ],
-  "v1_skipped_before_30th": 0,
-  "n": 30
+  ]
  },
  "2026-10-12T14:30Z": {
+  "n": 30,
+  "in_range": true,
+  "v3_in_top60": 60,
+  "skipped_by_stamp": {},
+  "skipped_scope": "through the 30th v3 row",
   "top30_v3": [
    "luxembourg_lequotidien_e7bc94170b6b",
    "pan_african_tchadinfos_5be5ff8265a9",
@@ -119,11 +137,14 @@
    "south_american_elsalvador_com_efa60811fe38",
    "spanish_la_vanguardia_64a4f879c3f2",
    "south_american_village_voice_news_f3820a023a47"
-  ],
-  "v1_skipped_before_30th": 0,
-  "n": 30
+  ]
  },
  "2026-10-13T06:55Z": {
+  "n": 30,
+  "in_range": true,
+  "v3_in_top60": 60,
+  "skipped_by_stamp": {},
+  "skipped_scope": "through the 30th v3 row",
   "top30_v3": [
    "southeast_asian_free_malaysia_5d4ba7911b41",
    "west_african_aip_cote_divoire_0cb9edd9d64f",
@@ -155,8 +176,6 @@
    "australian_the_west_australian_6e8be26410e0",
    "romanian_adevarul_1396c6afaf72",
    "south_american_la_nacion_ar_0188026b888a"
-  ],
-  "v1_skipped_before_30th": 0,
-  "n": 30
+  ]
  }
 }

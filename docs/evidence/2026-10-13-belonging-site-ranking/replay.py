@@ -15,7 +15,7 @@ Populations:
     the 10-13 06:43 build population held but its page did not show are dropped as removed. ASSUMPTION: a removal
     is sticky across one day. Rows published before 10-03 have unknown removal status, so they are flagged.
 
-Labels (Belonging only): the owner's labels for the 30 rows of the 10-12 page (tags.tsv); otherwise qwen3.8:27b
+Labels (Belonging only): the owner's labels (with the owner's pos-25 correction, so 10 personal) for the 30 rows of the 10-12 page (tags.tsv); otherwise qwen3.8:27b
 tags from the 10-12 runs (a FLOOR: qwen undercounts personal, 7 vs the owner's 10 on the same 30); otherwise
 untagged. Counts are reported per source and never merged into one number.
 
@@ -31,6 +31,9 @@ QWEN = [LAB / "experiments/2026-10-12-belonging-c2c/focus-tag/out.jsonl",
         LAB / "experiments/2026-10-12-belonging-c2c/focus-tag-comp/out.jsonl"]
 TAGS = HERE.parent / "2026-10-12-belonging-personal-tag" / "tags.tsv"
 N = 30
+# Owner correction after the pre-registered count (../2026-10-12-belonging-personal-tag/README.md § Owner
+# correction: "Slip: it's personal"). tags.tsv keeps the original label by rule 3; the correction is applied here.
+OWNER_CORRECTIONS = {"professional_business_business_insider_78697b7d3cf0": "personal"}
 
 
 def pdate(s):
@@ -62,6 +65,7 @@ def order(name, rows, now):
 
 def labels():
     owner = {t["id"]: t["owner"] for t in csv.DictReader(TAGS.open(encoding="utf-8"), delimiter="\t")}
+    owner.update(OWNER_CORRECTIONS)
     qwen = {}
     for f in QWEN:
         for line in f.read_text(encoding="utf-8").splitlines():
@@ -79,8 +83,8 @@ def report(name, rows, now, control_top, lab=None, flag=frozenset()):
     low = min(top, key=lambda r: r["weighted_average"])
     line = (f"  {name:8} in control top {N}: {len(set(ids) & set(control_top)):2}/{N} | age <24h {sum(a < 24 for a in ages):2}"
             f" 1-3d {sum(24 <= a < 72 for a in ages):2} older {sum(a >= 72 for a in ages):2} | lowest s "
-            f"{low['weighted_average']:.2f} (raw {low.get('raw_weighted_average') or float('nan'):.2f}) | "
-            f"median s {sorted(r['weighted_average'] for r in top)[N // 2]:.2f}")
+            f"{low['weighted_average']:.2f} (raw {float('nan') if low.get('raw_weighted_average') is None else low['raw_weighted_average']:.2f}) | "
+            f"upper-median s {sorted(r['weighted_average'] for r in top)[N // 2]:.2f}")
     if lab:
         owner, qwen = lab
         o_p = sum(owner.get(i) == "personal" for i in ids)
@@ -107,6 +111,10 @@ def main():
         assert [r["id"] for r in sorted(rows, key=lambda r: FORMULAS["control"](r, now))][:N] == control, lens
         for name in [*FORMULAS, "H hybrid"]:
             report(name, rows, now, control, lab if lens == "belonging" else None)
+        c = [r["id"] for r in order("C bands", rows, now)]
+        h = [r["id"] for r in order("H hybrid", rows, now)]
+        print(f"  H vs C: same top-{N} set {set(c[:N]) == set(h[:N])}; C positions of H's slots 1-5 "
+              f"{[c.index(i) + 1 for i in h[:5]]}; top-{N} positions that differ {sum(a != b for a, b in zip(c[:N], h[:N]))}")
 
     print("\n== 10-12 Belonging, the owner-labelled page, rebuilt at 14:30Z")
     now = datetime(2026, 10, 12, 14, 30, tzinfo=timezone.utc)

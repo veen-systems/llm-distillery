@@ -1,0 +1,12 @@
+{
+ "lab_root": "$LD_LAB (default ~/ld-lab, on situla)",
+ "entries": [
+  {
+   "path": "experiments/2026-10-13-belonging-daily-baseline/extract/rows.jsonl",
+   "sha256": "1acc50e5a08ef7def6896f28d8b584f29a9099a5152f05b3c48f4afb59103e8e",
+   "size": 1186945,
+   "origin": "sadalsuud:ld-scratch/2026-10-13-belonging-daily-baseline/rows.jsonl",
+   "pulled_at": "2026-10-13T09:11:41+02:00"
+  }
+ ]
+}

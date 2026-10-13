@@ -28,6 +28,9 @@ from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
 TAGS = HERE.parent / "2026-10-12-belonging-personal-tag" / "tags.tsv"
+# Owner correction after the pre-registered count (../2026-10-12-belonging-personal-tag/README.md § Owner
+# correction: "Slip: it's personal"). tags.tsv keeps the original label by rule 3; the correction is applied here.
+OWNER_CORRECTIONS = {"professional_business_business_insider_78697b7d3cf0": "personal"}
 DECAY, RECENCY_H, RECENCY_BOOST = 0.85, 24, 1.3          # ovr.news src/lib/config.ts `ranking`
 
 
@@ -90,7 +93,9 @@ def owner_page():
     by_score = {r["id"] for r in sorted(pop, key=lambda r: -r["weighted_average"])[:30]}
     print(f"page top 30 that are also in the top 30 by normalized score alone: {len(by_score & set(page30))}")
     personal = {t_["id"] for t_ in tags if t_["owner"] == "personal"}
-    print(f"owner-personal in the page top 30 (tags.tsv, pre-registered labels): {len(personal)}")
+    corrected = personal | {i for i, v in OWNER_CORRECTIONS.items() if v == "personal" and i in page30}
+    print(f"owner-personal in the page top 30: {len(personal)} pre-registered (tags.tsv), {len(corrected)} after the "
+          f"owner's correction")
 
 
 if __name__ == "__main__":

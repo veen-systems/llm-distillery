@@ -9,4 +9,4 @@ build times (10-min grid, 00:00-14:58Z) whose order matches all 30: 3, 14:30-14:
 at 14:30Z: rows ranked above the page's #30 that the page did not show (removed): 1
 window population 758, of which < 24 h old 43; page top 30 < 24 h old 29/30 (oldest 24.1 h)
 page top 30 that are also in the top 30 by normalized score alone: 0
-owner-personal in the page top 30 (tags.tsv, pre-registered labels): 9
+owner-personal in the page top 30: 9 pre-registered (tags.tsv), 10 after the owner's correction
