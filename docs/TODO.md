@@ -86,6 +86,10 @@ its pre-registered check (recall guard 0.81 / 0.86 < 0.9); the owner chooses the
      ▶ **NEXT (not ruled), ask the owner:** a $0 baseline first: v3's day-by-day personal count in the site-ranked top 30
      (qwen on b650, a floor) over the last ~10 builds, to learn how much the 10/30 moves day to day before judging any
      candidate. Then c2d, judged on that same instrument.
+     ⚠️ **ovr.news may change the ranking (2026-10-13):** the proposal went to ovr-news; the boost no-op is ovr.news#390;
+     the recency-vs-score default is an OWNER decision, tied to ovr.news ADR-050 (Proposed). If the default changes,
+     RE-BASELINE the ≤ 6/30 bar: a new order changes the count with no model change (ovr-news caution). If they name
+     formulas, replay them on both pages with `site_order()` (offered).
    - (was:) **NEXT: ask the owner, one question at a time** (not ruled). (1) Rebuild the check on the site's own ranking (ovr.db build
      query, the page's population, H-BB7) before any retrain: all 30 page rows were in the draw, but only 7 were in v3's raw top 30.
      Recommended first. (2) A cap-aware retry "c2d": scale the five non-gatekeeper dimensions so community_fabric stays ≥ 3.0,
