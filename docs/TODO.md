@@ -80,7 +80,13 @@ its pre-registered check (recall guard 0.81 / 0.86 < 0.9); the owner chooses the
      `docs/evidence/2026-10-12-belonging-personal-tag/README.md` § *Candidate c2c*.
      ⚠️ Review found a build defect: `build_c2c.py` ignored the community_fabric gatekeeper, so 11 of the 42 scaled rows
      were trained to 3.42 (blocked), not 4.4. That is a stronger push than ruled, so a cap-aware retry is untested (H-BB8).
-   - ▶ **NEXT: ask the owner, one question at a time** (not ruled). (1) Rebuild the check on the site's own ranking (ovr.db build
+   - ✅ **2026-10-13 — option (1) DONE (owner: "pls do that"):** the site's ranking is reproduced offline: 507/507 on the
+     live page, 30/30 on the owner's 10-12 page. The reorderer is RECENCY: the top 30 ≈ the best of one day's ~43 fresh
+     passes, so the bar ≈ the personal share of a day's passes. `docs/evidence/2026-10-13-belonging-site-ranking/` (H-BB7).
+     ▶ **NEXT (not ruled), ask the owner:** a $0 baseline first: v3's day-by-day personal count in the site-ranked top 30
+     (qwen on b650, a floor) over the last ~10 builds, to learn how much the 10/30 moves day to day before judging any
+     candidate. Then c2d, judged on that same instrument.
+   - (was:) **NEXT: ask the owner, one question at a time** (not ruled). (1) Rebuild the check on the site's own ranking (ovr.db build
      query, the page's population, H-BB7) before any retrain: all 30 page rows were in the draw, but only 7 were in v3's raw top 30.
      Recommended first. (2) A cap-aware retry "c2d": scale the five non-gatekeeper dimensions so community_fabric stays ≥ 3.0,
      assert every changed row's EFFECTIVE (capped) score is 4.4, same two seeds, same check. $0 oracle either way.

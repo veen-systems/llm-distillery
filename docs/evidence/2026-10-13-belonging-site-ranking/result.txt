@@ -1,0 +1,12 @@
+== 1. live page, built 2026-10-13T06:43:02Z
+page cards 507; build population 710; page cards not in it 0; population rows the page does not show 203
+page order reproduced at 507/507 positions; top 30 at 30/30
+top 30 published < 24 h before the build: 30/30
+
+== 2. the 2026-10-12 page the owner labelled (fetched 14:58:38Z; build time unknown, scanned)
+page-30 ids absent from the population: 0
+build times (10-min grid, 00:00-14:58Z) whose order matches all 30: 3, 14:30-14:50Z
+at 14:30Z: rows ranked above the page's #30 that the page did not show (removed): 1
+window population 758, of which < 24 h old 43; page top 30 < 24 h old 29/30 (oldest 24.1 h)
+page top 30 that are also in the top 30 by normalized score alone: 0
+owner-personal in the page top 30 (tags.tsv, pre-registered labels): 9
