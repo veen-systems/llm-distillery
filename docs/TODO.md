@@ -1,6 +1,6 @@
 # LLM Distillery - TODO
 
-## ▶️ START HERE — the ordered queue, as of 2026-10-12 (session close)
+## ▶️ START HERE — the ordered queue, as of 2026-10-13 (owner away; daily baseline waits for b650)
 
 *A bare "continue" means this list, top down. Each line names the FIRST action. Item 0 is WAITING (dated), item 1 is
 NexusMind's. Item 2 (#163, the read surface): rounds 1–3 landed 2026-10-12 (758,893 → 514,588 chars after the moves, 519,680 at close with this session's own records; ratchet
