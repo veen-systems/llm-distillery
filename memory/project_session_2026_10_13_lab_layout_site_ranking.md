@@ -22,7 +22,7 @@ the peer sessions"; "continue the work you can do without me" (owner away for th
 | H-BB7: page order = normalized × 0.85^d × 1.3 (< 24 h) | ✅ 507/507 live, 30/30 on 10-12 (fit); review re-derived it from the source |
 | Editor boosts are a no-op (re-sort) | ovr.news#390, owner chose to correct the explainer page |
 | Formula replay A/B/C/H for ovr.news | ✅ for the owner's later review; H = C's top-30 set |
-| Daily baseline of v3's personal count | pre-registered `3b6bd6e`; populations built; qwen waits for ovr.news's b650 release |
+| Daily baseline of v3's personal count | ✅ qwen 4 / 8 / 5 on 10-11..13 (floor; range 4); 3/3 predictions hit |
 
 **Lessons:** a post-hoc label correction kept only in prose (gotcha 2026-10-13; now `owner_corrections.tsv`).
 ⛔ **Mine:** sent ovr.news owner counts 1 low (uncorrected labels) before review; a registry test that read the live
