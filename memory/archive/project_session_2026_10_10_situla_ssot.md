@@ -25,7 +25,7 @@ single-source-of-truth. gpu machines are slaves to that"; "look at b650, sadalsu
 | host cleanup | ✅ sadalsuud (16) + sadaltager (2) deleted after three checks; ⏳ b650 + gpu-server: owner "stay as they are for now" (#172) |
 | NexusMind port of the lab tools | not mine: NexusMind (told `cd34268`; it will `adopt`) |
 | oracle vendor terms on training from outputs | not mine: owner (#174) |
-| pre-existing suite failure `test_framework_language` on `docs/TODO.md` ('Herstel') | not mine this session: present at `a1b320d`; still red |
+| pre-existing suite failure `test_framework_language` on `docs/TODO.md` (`Herstel`) | not mine this session: present at `a1b320d`; still red |
 
 ## What I got wrong (all caught; listed so the next session reads them)
 

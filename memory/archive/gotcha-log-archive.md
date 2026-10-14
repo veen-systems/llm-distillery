@@ -7744,3 +7744,47 @@ background list.
 **Root cause**: I grepped for callers of the deleted MODULE, not for callers of the changed VALUE. A deletion changes two surfaces: who imports it, and who passes the argument whose meaning changed. The `add -A` was speed at the end of a long session; checked after the fact (25 files, all mine) rather than prevented.
 **Fix**: `test_no_caller_asks_for_use_prefilter_true` (AST, `live` in § Mechanized; it went red on the real missed caller). Sync sequence recorded in `docs/TODO.md` item 1 and sent to NexusMind. **Lesson: when a value changes meaning, enumerate callers of the VALUE across BOTH repos, and when shared code tightens a default, list who still runs the old default before shipping.**
 
+
+## THREE TOOLING SLIPS IN ONE SESSION — each looked like success (2026-10-10)
+
+**Problem**: (1) a `while read h p; do lab.py pull …; done < list` loop pulled item 1 and stopped, exit 0 — `ssh` (and
+rsync's ssh) read the loop's stdin. (2) a Python one-liner did `open(p,'w').write(open(p).read().replace(…))`: the
+write-open truncates first, so the file was emptied (a scratch script; no harm). (3) `git add <files>; git commit -m
+"…inventory updated…"` ran after an edit script ABORTED on an assertion, so `36afa99`'s message claims an edit it does
+not contain (landed in `f49e1b8`).
+**Root cause**: each step reported success at its own level (loop exit 0, write OK, commit OK) while the thing it was for
+did not happen.
+**Fix**: `ssh -n` / `stdin=DEVNULL` in `scripts/lab/lab.py`; read-modify-write in two statements; chain the commit on the
+edit's exit status (`edit && git add … && git commit`) and `git diff --cached --stat` before writing a message that names
+an edit.
+
+## REPLACING A GUARD'S IMPLEMENTATION LOST POSITIVES THE OLD ONE CAUGHT — twice in one day (2026-10-09)
+**Problem**: The kill-pattern hook was rewritten twice to fix review findings. Each rewrite fixed what it targeted and quietly
+stopped blocking shapes the previous version blocked: round 2's anchoring dropped the old "`-c` anywhere" branch, which
+un-blocked `su -c`, `docker exec … sh -c`, `sshpass` and `flock -c`; round 3's tokenizer split on a `\`-newline line
+continuation, so a wrapped `ssh -o … \` line slipped through. Both survived a green suite, mutation testing and fuzzing,
+because every test and mutant was built FROM THE NEW CODE'S model of the problem. Each was found only by a reviewer who ran
+the old and new versions side by side (round 2's fix also backtracked exponentially: 13 s on 25 × `ssh h `).
+**Root cause**: The tests encode what the author thought of. A rewrite throws away the old version's implicit positives,
+the cases it caught without anyone listing them, and nothing compares the two.
+**Fix**: When replacing a guard, run a DIFFERENTIAL check before committing: the same corpus of inputs through
+`git show HEAD:<file>` and the working copy, and read every verdict that changed (NEW=None, OLD=hit is a regression until
+explained). Build the corpus adversarially, not from the new tests. Then add each changed-and-correct verdict as a test.
+The backtracking half is mechanized (`test_no_catastrophic_backtracking`, § *Mechanized*); the differential half is not yet.
+
+## AN ALARM TRIGGER I WROTE COMPARED TWO POPULATIONS — and fired falsely at 02:47 (2026-10-09) [*rate needs population*, again]
+**Problem**: belonging v3's early-refit trigger was "if ovr's normalized ≥ 4.5 pass count drops below 100%". ovr measured
+12/19 = 63% on v3's raw ≥ 4.0 rows and escalated to the owner. v1 on the SAME measure was 469/872 = 54% (47–66% per file).
+**Root cause**: the "100%" baseline came from ovr.db's published top-50 (winners of a cap); the trigger was read on every
+raw ≥ 4.0 row in a file. Different populations; nothing in the rule named its population, so ovr could not see it.
+**Fix**: trigger reworded to the same measure on both sides (`docs/TODO.md` item 0, ledger `H-BB5`). **Action:** a
+trigger handed to another session names its population AND quotes the baseline measured on that population before it
+ships. A threshold with no baseline number beside it is the tell.
+
+## "TELL ME ONLY IF IT FAILS" WOULD HAVE HIDDEN A CHECK THAT NEVER RAN (2026-10-09)
+**Problem**: ovr offered to message only if Belonging's pass check failed. I asked for a line either way. The 02:47
+check then could not run at all (ovr's summarizer OOM-died before ingesting v3), which the silence-means-pass deal
+would have reported as a pass.
+**Fix / action**: a delegated check reports `N/M` or "could not run, because …", always. Silence is not a verdict
+(*before believing a negative, prove the instrument could have said yes*).
+

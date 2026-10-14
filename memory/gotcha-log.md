@@ -22,7 +22,23 @@
 
 ## Mechanized`](#mechanized) — the destination for `/review-changes` Step 3.1, where a review finding that became a deterministic check is recorded. It is named here because nobody scrolls to the bottom of this file.*
 
-*⚠️ **Entries dated before 2026-10-09 live in [`archive/gotcha-log-archive.md`](archive/gotcha-log-archive.md)**, verbatim (the 10-01 → 10-08 ones moved 2026-10-12 by a second owner-approved MID-MONTH pass, `--before 2026-10-09`, #163 round 2; the 09-01 → 09-16 ones moved 2026-09-27 by an owner-approved MID-MONTH pass, `--before 2026-09-17`; earlier ones moved 2026-09-24; into `archive/` 2026-09-26 so curate's size measurement stops counting it, #163; the month-dated Feb–May entries followed on 2026-09-26). Next pass: `python3 scripts/maintenance/retire_memory.py gotcha --before <first of this month> --apply` (dry run without `--apply`). It retires top-level entries only; the `###` entries inside the catalogue are kept by rule and counted (⚠️ superseded 2026-10-09: 43 of them moved by date; see the note under the catalogue heading). The unreachable-mechanism catalogue stayed here. For a recurrence match, grep both: `grep -n <term> memory/gotcha-log.md memory/archive/gotcha-log-archive.md` (a `memory/gotcha-log*.md` glob does NOT reach the archive). Was: `grep -n <term> memory/gotcha-log*.md`.*
+*⚠️ **Entries dated before 2026-10-12 live in [`archive/gotcha-log-archive.md`](archive/gotcha-log-archive.md)**, verbatim (the 10-01 → 10-08 ones moved 2026-10-12 by a second owner-approved MID-MONTH pass, `--before 2026-10-09`, #163 round 2; the 09-01 → 09-16 ones moved 2026-09-27 by an owner-approved MID-MONTH pass, `--before 2026-09-17`; earlier ones moved 2026-09-24; into `archive/` 2026-09-26 so curate's size measurement stops counting it, #163; the month-dated Feb–May entries followed on 2026-09-26). Next pass: `python3 scripts/maintenance/retire_memory.py gotcha --before <first of this month> --apply` (dry run without `--apply`). It retires top-level entries only; the `###` entries inside the catalogue are kept by rule and counted (⚠️ superseded 2026-10-09: 43 of them moved by date; see the note under the catalogue heading). The unreachable-mechanism catalogue stayed here. For a recurrence match, grep both: `grep -n <term> memory/gotcha-log.md memory/archive/gotcha-log-archive.md` (a `memory/gotcha-log*.md` glob does NOT reach the archive). Was: `grep -n <term> memory/gotcha-log*.md`.*
+
+## A VERBATIM MOVE BOUNDED BY "THE NEXT HEADING I REMEMBERED" TOOK 20K MORE THAN MEANT (2026-10-14)
+**Problem**: moving three prose paragraphs out of `hypothesis-ledger.md`, the end marker was a heading I had read
+~170 lines lower, not the next heading. 51,066 → 30,809 instead of → ~43,700. The script's assert ("no `H-CX` in the
+block") passed, because it checked a property of the block, not its SIZE or its headings.
+**Root cause**: the bound came from memory of the file. The guard tested something the error could not break.
+**Fix**: restored both files from HEAD (no other edits in them), redone with `end = the NEXT heading` plus an
+assert that the block holds no heading and ≤ 20 lines, and an EXACT reconstruction assert (pointer → block == HEAD).
+Predict the size delta before running a move; a delta 3× the prediction is the signal.
+
+## AN OWNER QUESTION BUILT ON A STALE TODO LINE (2026-10-14)
+**Problem**: I asked the owner how to fix the Dutch `Herstel` note in nature_recovery configs. Those notes had been
+fixed 2026-10-07 (`fe12a2f`, `KNOWN_OPEN = {}`); the TODO line was never updated, and the red test was doc text only.
+**Root cause**: I relayed a TODO line's premise as a decision without one `grep` of the thing it named.
+**Fix**: before putting any question to the owner, grep the object of the question (file, config key, issue state).
+Same family as `feedback-a-marker-is-a-claim` (auto-memory): a TODO line is a claim.
 
 ## A TIMING TEST WENT RED AT HEAD AND THE SESSION CLOSE DID NOT SEE IT (2026-10-12)
 **Problem**: `test_no_catastrophic_backtracking` (the kill-pattern hook) took 8.03 s on 2000×`ssh h ` at `37aac9b`; `caeaa4f`
@@ -52,49 +68,6 @@ disk. It failed SAFE (skipped all), but it could never have passed, and the deci
 "confirm with `restic ls latest <path>`" told readers the same blind command. ⭐ The tell was the SHAPE: a
 guard that skips 100% is as suspect as one that passes 100% — check the instrument's own count (the guard now
 asserts > 1000 entries) before reading the verdict. Same family: *prove the bar is reachable*.
-
-## THREE TOOLING SLIPS IN ONE SESSION — each looked like success (2026-10-10)
-
-**Problem**: (1) a `while read h p; do lab.py pull …; done < list` loop pulled item 1 and stopped, exit 0 — `ssh` (and
-rsync's ssh) read the loop's stdin. (2) a Python one-liner did `open(p,'w').write(open(p).read().replace(…))`: the
-write-open truncates first, so the file was emptied (a scratch script; no harm). (3) `git add <files>; git commit -m
-"…inventory updated…"` ran after an edit script ABORTED on an assertion, so `36afa99`'s message claims an edit it does
-not contain (landed in `f49e1b8`).
-**Root cause**: each step reported success at its own level (loop exit 0, write OK, commit OK) while the thing it was for
-did not happen.
-**Fix**: `ssh -n` / `stdin=DEVNULL` in `scripts/lab/lab.py`; read-modify-write in two statements; chain the commit on the
-edit's exit status (`edit && git add … && git commit`) and `git diff --cached --stat` before writing a message that names
-an edit.
-
-## REPLACING A GUARD'S IMPLEMENTATION LOST POSITIVES THE OLD ONE CAUGHT — twice in one day (2026-10-09)
-**Problem**: The kill-pattern hook was rewritten twice to fix review findings. Each rewrite fixed what it targeted and quietly
-stopped blocking shapes the previous version blocked: round 2's anchoring dropped the old "`-c` anywhere" branch, which
-un-blocked `su -c`, `docker exec … sh -c`, `sshpass` and `flock -c`; round 3's tokenizer split on a `\`-newline line
-continuation, so a wrapped `ssh -o … \` line slipped through. Both survived a green suite, mutation testing and fuzzing,
-because every test and mutant was built FROM THE NEW CODE'S model of the problem. Each was found only by a reviewer who ran
-the old and new versions side by side (round 2's fix also backtracked exponentially: 13 s on 25 × `ssh h `).
-**Root cause**: The tests encode what the author thought of. A rewrite throws away the old version's implicit positives,
-the cases it caught without anyone listing them, and nothing compares the two.
-**Fix**: When replacing a guard, run a DIFFERENTIAL check before committing: the same corpus of inputs through
-`git show HEAD:<file>` and the working copy, and read every verdict that changed (NEW=None, OLD=hit is a regression until
-explained). Build the corpus adversarially, not from the new tests. Then add each changed-and-correct verdict as a test.
-The backtracking half is mechanized (`test_no_catastrophic_backtracking`, § *Mechanized*); the differential half is not yet.
-
-## AN ALARM TRIGGER I WROTE COMPARED TWO POPULATIONS — and fired falsely at 02:47 (2026-10-09) [*rate needs population*, again]
-**Problem**: belonging v3's early-refit trigger was "if ovr's normalized ≥ 4.5 pass count drops below 100%". ovr measured
-12/19 = 63% on v3's raw ≥ 4.0 rows and escalated to the owner. v1 on the SAME measure was 469/872 = 54% (47–66% per file).
-**Root cause**: the "100%" baseline came from ovr.db's published top-50 (winners of a cap); the trigger was read on every
-raw ≥ 4.0 row in a file. Different populations; nothing in the rule named its population, so ovr could not see it.
-**Fix**: trigger reworded to the same measure on both sides (`docs/TODO.md` item 0, ledger `H-BB5`). **Action:** a
-trigger handed to another session names its population AND quotes the baseline measured on that population before it
-ships. A threshold with no baseline number beside it is the tell.
-
-## "TELL ME ONLY IF IT FAILS" WOULD HAVE HIDDEN A CHECK THAT NEVER RAN (2026-10-09)
-**Problem**: ovr offered to message only if Belonging's pass check failed. I asked for a line either way. The 02:47
-check then could not run at all (ovr's summarizer OOM-died before ingesting v3), which the silence-means-pass deal
-would have reported as a pass.
-**Fix / action**: a delegated check reports `N/M` or "could not run, because …", always. Silence is not a verdict
-(*before believing a negative, prove the instrument could have said yes*).
 
 ## [Short description] (YYYY-MM-DD)
 **Problem**: What went wrong or was confusing.

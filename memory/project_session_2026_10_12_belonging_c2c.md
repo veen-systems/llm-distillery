@@ -22,7 +22,7 @@ go through our training data on the B650 and reduce the score for the personal o
 | Candidate c2c | ✅ FAILED (recall guard 0.807 / 0.862 < 0.9); build defect: 11/42 rows trained to 3.42 |
 | Next belonging step | open — owner's choice (TODO 0a ▶ NEXT) |
 | Lab layout: 10-12 data misfiled in `inbox/`, training sets untracked | open — owner: FIRST next session (TODO 00) |
-| `test_framework_language` ('Herstel' quoted in the 10-10 session file) | open — owner not answered |
+| `test_framework_language` (`Herstel` quoted in the 10-10 session file) | closed 2026-10-14: the configs were fixed 10-07 (`fe12a2f`); stale doc mentions quoted |
 
 **Lessons (gotcha log, 2026-10-12):** a `cp -r` package loads the source's model; label scaling must assert the
 EFFECTIVE (gatekeeper-capped) score; `lab.py pull` dest is relative to the lab root.

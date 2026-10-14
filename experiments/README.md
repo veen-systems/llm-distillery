@@ -136,3 +136,6 @@ path -- a planned run's data goes to `experiments/<date>-<name>/`. It does not r
 ⛔ **Entries are append-only.** To correct one, append a follow-up that references it. Editing in
 place destroys the record that the earlier reading was ever believed — which is usually the most
 useful thing in the file.
+**One exception (owner, 2026-10-14):** ADDING a `lab` field to an existing entry, once its data sits in a lab
+`experiments/` or `datasets/` tree, is allowed in place. It is a pointer, not a reading: no other field may change in
+the same edit. First use: EXP-048 (its data moved out of `inbox/` on 2026-10-13).

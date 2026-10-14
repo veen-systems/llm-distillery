@@ -1,36 +1,11 @@
 # LLM Distillery - TODO
 
-## ▶️ START HERE — the ordered queue, as of 2026-10-13 (owner away; daily baseline waits for b650)
+## ▶️ START HERE — the ordered queue, as of 2026-10-14
 
-*A bare "continue" means this list, top down. Each line names the FIRST action. Item 0 is WAITING (dated), item 1 is
-NexusMind's. Item 2 (#163, the read surface): rounds 1–3 landed 2026-10-12 (758,893 → 514,588 chars after the moves, 519,680 at close with this session's own records; ratchet
-`check_index_budget.py --target surface` at 524,900); `/curate` still flags it (>300k); the next levers are listed in
-item 2 and are not ruled. ▶ **Item 00 (lab layout rules) DONE 2026-10-13; a bare "continue" now starts at item 0a
-"NEXT: ask the owner"**: v3 fails the owner's personal-story bar (10/30); candidate c2c FAILED
-its pre-registered check (recall guard 0.81 / 0.86 < 0.9); the owner chooses the next step.*
-
-00. ✅ **DONE 2026-10-13: steps 1–4 and 6 landed; step 5 (the `lab` field) is in the checker, but NOT applied to EXP-048,
-   because the registry is append-only. Open owner question: add it in place, or allow it by README amendment?**
-   Guards seeded RED on the real tree, every guard mutation-tested, two review lenses (findings fixed, check-4 blind spots
-   documented in its docstring). Moved: `experiments/2026-10-12-belonging-c2c/` (7 trees), `datasets/belonging_comp_draw/v1`;
-   pulled + cited: `datasets/belonging_{c2a,c2b,c2c,v1_adj1}/v1`. The 10-10 inbox heap is still a later pass.
-   The original plan:
-   **LAB LAYOUT RULES — FIRST (owner, 2026-10-12: "yes, first thing next session").** The 10-12 data is intact and cited,
-   but misfiled and partly untracked: a pre-registered run (c2c) and a fixed corpus (the 33,393-row draw) sit in
-   `~/ld-lab/inbox/`, against `~/ld-lab/README.md` (planned run → `experiments/<date>-<name>/`, corpus → `datasets/<name>/vN`).
-   The training sets `datasets/training/belonging_{c2a,c2b,c2c}` (v3 was trained on c2b) are in no lab tree and no committed hash.
-   Steps (Claude's proposal; the owner approved doing it, not each detail):
-   1. `lab.py pull`/`adopt` refuse a dest outside `inbox/`, `experiments/`, `datasets/` (today's slip: `b650-gpu/...` at the lab root).
-   2. `check_lab_manifests.py` fails an evidence dir that has `PREREGISTRATION.md` and cites an `inbox/` path.
-   3. New `lab.py move SRC DEST`: moves a tree AND rewrites every evidence `MANIFEST.json` citing it, so a misfiled tree is
-      fixed, not frozen (the README's "never move once cited" then reads "never move except with `lab.py move`").
-   4. Training sets a model is trained on are adopted as `datasets/<name>/vN` and cited (c2b for v3, c2a, c2c, adj1).
-   5. Optional `lab` field in `experiments/registry.jsonl` (README schema + `check_experiment_registry.py`).
-   6. Apply: move 10-12 `inbox/b650-gpu/2026-10-12/*` + `inbox/sadalsuud/2026-10-12/belonging_comp_draw` to
-      `experiments/2026-10-12-belonging-c2c/` and `datasets/belonging_comp_draw/v1`; EXP-048 gets `lab`.
-   Each guard seeded RED first (mutation-test it). Tests + `lab.py verify` on every moved tree. ⚠️ Today's pulls are in no
-   restic snapshot until the 2026-10-13 12:00 run: no host copy may be deleted before it. The 10-10 inbox heap
-   (37 backlog citations) is a later pass, not this item.
+*A bare "continue" means this list, top down. Each line names the FIRST action. Item 0 is WAITING (dated, ≥ 10-23/24),
+item 0a waits on ovr.news shipping the ranking the owner ruled on 2026-10-14; its offline replay on H can run meanwhile.
+Item 1 is NexusMind's. Item 2 (#163, the read surface): round 4 on 2026-10-14 took it to the figure in item 2;
+keep pruning (owner 2026-10-14: "pruning, thinning, mechanizing, retiring").*
 
 0. ⏸ **BELONGING v3 is LIVE (since NexusMind run `bd00dad6`, 2026-10-09 00:08–01:24 CEST), replacing v1. Nothing to do before
    2026-10-23 unless ovr.news messages.** Read `filters/belonging/v3/STATUS.md` first (evidence, rollback rule, refit notes);
@@ -47,69 +22,24 @@ its pre-registered check (recall guard 0.81 / 0.86 < 0.9); the owner chooses the
    - Open, not blocking: FM-S1 judge strictness; harvest round 2 (~$9.70 est.). Single-person stories: see 0a.
    ⛔ **Never name the curator** in this repo or on GitHub (guards: `.githooks/`, gitignored `config/credentials/forbidden_names.txt`).
 
-0a. **BELONGING v3's TOP OF PAGE vs the owner's bar.** Owner (2026-10-10): the live page's
-   top shows "at least half personal stories"; RULED bar: **≤ 6 of the top 30** are single-person / single-family
-   (`docs/decisions/2026-10-10-belonging-personal-story-bar.md`; evidence `docs/evidence/2026-10-10-belonging-v3-top-of-page/`;
-   ledger H-BB6; posted on #170).
-   - **Step 1, free:** which positives c2a (EXP-046, had the 121 `out_one_moment` negatives, failed recall 43 < 45) missed on
-     held-out set 2 (`docs/evidence/2026-10-08-belonging-heldout2/result_v1_c2a.txt` + the set-2 labels). If mostly
-     single-person, c2a fits the bar better than its gate said → re-gate c2a rather than train new.
-     ✅ **Step 1 DONE 2026-10-12 — the premise cannot hold, by construction.** Reproduces the gate exactly (43/63,
-     both orders agree; `docs/evidence/2026-10-10-belonging-v3-top-of-page/c2a_missed_positives.{py,txt}`). A gate
-     POSITIVE is a row both blind judges called `in_scope`; the bar's class is `out_one_moment`, a different verdict.
-     So 0 of the 20 misses are single-person UNDER THE BAR'S INSTRUMENT, and re-gating c2a on that argument fails.
-     ⚠️ **What it found instead, for step 2:** by Claude's title reading (not blind, a guess) ~9 of the 20 look
-     single-person/family — e.g. *"A doctor said Tim was incapable of love. His mum knew otherwise"*, *"Russian
-     daughter-in-law quits job to care for mother-in-law in Vietnam"* (close to the bar's own example "husband's
-     secret deal to care for wife") — and BOTH judges said `in_scope`. If rubric v2.2's judges draw the line wider
-     than the owner does, step 2's judged count UNDERSTATES what the owner sees. Settle that before trusting it:
-     show the owner these rows (owner call: are they "personal"?), or test the judges on the bar's own examples.
-     ✅ **OWNER ANSWERED 2026-10-12:** 6 of the 9 are personal (1, 2, 6, 7, 8, 9); 3, 4, 5 are not, *"cause these
-     touch groups of people"*. So the judges draw the line WIDER than the owner, and a v2.2 count would undercount.
-     Labels + gloss: `docs/decisions/2026-10-10-belonging-personal-story-bar.md` § *Owner labels*.
-   - ✅ **2026-10-12 later — step 2 DONE, with a new instrument (owner RULED: a separate `focus` tag, not
-     `out_one_moment`, which can never count an in-scope personal story).** Owner count on the live page's top 30
-     (all v3): **9/30 pre-registered, 10/30 after the owner corrected one slip → v3 does NOT meet the ≤ 6 bar.**
-     Local `qwen3.8:27b` on b650 passed rule 2 against the pre-registered 9 (26/30, count 7). Against the corrected 10 it FAILS the
-     ±2 count half (27/30 but 7 vs 10): qwen undercounts, so read a qwen count as a floor. Claude judges 25/30 (26/30 corrected, pass).
-     `docs/evidence/2026-10-12-belonging-personal-tag/`.
-   - **Candidate c2c: FAILED 2026-10-12** (owner: no paid oracle; 42 qwen-tagged personal training rows scaled to
-     4.4; seeds 42 + 43 on b650). Amendment B: recall guard 222/275 = 0.807 (s42) and 237/275 = 0.862 (s43), below 0.9.
-     The composition half was UNDECIDABLE, because v3's raw top 30 on the 33,393-row draw holds only 5 personal by qwen,
-     against 7 by qwen and 10 by the owner on the site's ranked page. Models + scores + tags in `~/ld-lab/experiments/2026-10-12-belonging-c2c/` (moved from inbox 2026-10-13).
-     `docs/evidence/2026-10-12-belonging-personal-tag/README.md` § *Candidate c2c*.
-     ⚠️ Review found a build defect: `build_c2c.py` ignored the community_fabric gatekeeper, so 11 of the 42 scaled rows
-     were trained to 3.42 (blocked), not 4.4. That is a stronger push than ruled, so a cap-aware retry is untested (H-BB8).
-   - ✅ **2026-10-13 — option (1) DONE (owner: "pls do that"):** the site's ranking is reproduced offline: 507/507 on the
-     live page, 30/30 on the owner's 10-12 page. The reorderer is RECENCY: the top 30 ≈ the best of one day's ~43 fresh
-     passes, so the bar ≈ the personal share of a day's passes. `docs/evidence/2026-10-13-belonging-site-ranking/` (H-BB7).
-     ▶ **NEXT (not ruled), ask the owner:** a $0 baseline first: v3's day-by-day personal count in the site-ranked top 30
-     (qwen on b650, a floor) over the last ~10 builds, to learn how much the 10/30 moves day to day before judging any
-     candidate. Then c2d, judged on that same instrument.
-     ⚠️ **ovr.news may change the ranking (2026-10-13):** the proposal went to ovr-news; the boost no-op is ovr.news#390;
-     the recency-vs-score default is an OWNER decision, tied to ovr.news ADR-050 (Proposed). If the default changes,
-     RE-BASELINE the ≤ 6/30 bar: a new order changes the count with no model change (ovr-news caution). If they name
-     formulas, replay them on both pages with `site_order()` (offered).
-     ⏸ **Replay DONE (b083758, README § Formula replay); OWNER to review later (2026-10-13: "later I want to check
-     the two options"; "home-page freshness is useful I suppose").** Claude's suggestion, not replayed: a hybrid of
-     a few "new today" slots, then the rest score-first (C-like).
-     Hybrid H replayed (ovr.news's definition): same top-30 set as C in all lenses, only the order of the top differs.
-     ✅ **Daily baseline DONE (2026-10-13, pre-registered, all 3 predictions hit):** qwen personal in the site-ranked top
-     30, per day: 10-11 **4**, 10-12 **8**, 10-13 **5** (a floor; on 10-12's labelled rows qwen 7 vs owner 10). One
-     day's count moves by 4, so the owner's 10/30 is one draw. `docs/evidence/2026-10-13-belonging-daily-baseline/`.
-     ▶ Owner, when back: is the bar meant per day, or as an average over days (e.g. a week)? The answer sets how
-     a candidate is judged.
-     When ovr.news rules: send the ruling commit to the pipeline-atlas session (it will update Stage 10; it already
-     carries the boost no-op as "ovr.news Chief Editor boosts" in its signature-failure register).
-   - (was:) **NEXT: ask the owner, one question at a time** (not ruled). (1) Rebuild the check on the site's own ranking (ovr.db build
-     query, the page's population, H-BB7) before any retrain: all 30 page rows were in the draw, but only 7 were in v3's raw top 30.
-     Recommended first. (2) A cap-aware retry "c2d": scale the five non-gatekeeper dimensions so community_fabric stays ≥ 3.0,
-     assert every changed row's EFFECTIVE (capped) score is 4.4, same two seeds, same check. $0 oracle either way.
-   - ~~**Step 1b (NEXT, before step 2):**~~ superseded by the owner's tag ruling: run the two blind judges on the owner's 9 labels with an `out_one_moment`
-     definition sharpened to the owner's line (gloss, not ruled: *does it reach a group beyond the person or family*);
-     pre-register the rule first, and check on rows NOT among the 9 so the 9 do not become the test set.
-   - ~~**Step 2:** judged count with rubric v2.2 `out_one_moment`~~ superseded by the `focus` tag (done above).
+0a. **BELONGING v3's TOP OF PAGE vs the owner's bar (≤ 6 of 30 single-person stories, judged as a WEEKLY AVERAGE,
+   ruled 2026-10-14).** Bar + rulings: `docs/decisions/2026-10-10-belonging-personal-story-bar.md`; ledger H-BB6–H-BB8;
+   history up to 2026-10-14: TODO-archive § *Moved 2026-10-14*. State: v3 fails on the owner's one count (10/30, 10-12);
+   qwen (a floor) counts 4 / 8 / 5 on 10-11 / 10-12 / 10-13 on the CURRENT ranking (`docs/evidence/2026-10-13-belonging-daily-baseline/`);
+   candidate c2c FAILED its recall guard (EXP-048, with a build defect: H-BB8).
+   - ⏸ **WAITING on ovr.news:** the owner ruled the default ranking on 2026-10-14: **H** (the 5 strongest articles under
+     24 h first, then score within age bands < 72 h / 72 h–7 d / older), a reader-facing selector later. Relayed to
+     ovr-news-0e; acknowledged 2026-10-14, tracked as ovr.news#391 (not shipped; after their C2 scoring). They will send
+     the ship commit and first H build time here, and the commit to pipeline-atlas (Stage 10). Ours too: when it
+     arrives, confirm pipeline-atlas has it, and send it if not.
+   - ▶ **NEXT once H is live:** re-baseline v3 on H: 7 daily builds, the qwen count per day (b650, $0; reuse
+     `count.py` / `select_v3.py`, add the H order from `replay.py` `order("H hybrid")`), report the weekly mean and the
+     worst day. Pre-register it first. Before H ships, the same can be replayed offline on H over the last 7 days.
+     That is $0, needs no owner, and is a reasonable thing to do while waiting.
+   - **Then:** c2d, a cap-aware retry (scale the five non-gatekeeper dimensions so community_fabric stays ≥ 3.0; assert
+     each changed row's EFFECTIVE score is 4.4; same seeds), judged on the same weekly H instrument. $0 oracle. Not ruled.
    - Over 6 is the case for the next candidate, NOT an automatic rollback (v3's rollback rule predates the bar; owner's call).
+   - Lab: the 10-10 `~/ld-lab/inbox/` heap (37 backlog citations) is still a later pass (#172, item 00 archived 2026-10-14).
 
 1. **Decision-0 sync to NexusMind** — ONE NexusMind commit. The sequence is in the archived block (item 1):
    - dry-run diff first
@@ -120,6 +50,12 @@ its pre-registered check (recall guard 0.81 / 0.86 < 0.9); the owner chooses the
    NexusMind's session runs it; ours is to tell them. LD#52 and LD#86 are closed.
 
 2. **THE READ SURFACE (#163). "prune, thin, mechanize, retire".** Rounds 1–3 landed 2026-10-12: 758,893 → 514,588 chars (519,680 at close, after the session's new records).
+   ✅ **Round 4 (2026-10-14, owner: "pruning, thinning, mechanizing, retiring"): 524,035 → 503,152**, ceiling → 513,215.
+   Verbatim: `retire_memory.py sessions --before 2026-10-12` (3 files) and `gotcha --before 2026-10-12` (4 entries);
+   `hypothesis-ledger.md` 51,066 → 43,662 at the move, 43,859 after the H-BB7 ruling (`H-CX3` row + the H-AR prose → archive § *Moved 2026-10-14*, exact
+   reconstruction asserted). ▶ **Next levers (no ruling needed for verbatim moves of closed material):** the gotcha log's
+   `## Mechanized` "first positives in prose" (~4.5K), `H-HD` prose paragraphs (8K section), and `score-batch-shape-noise.md`
+   (25K, standing: backs the #95 Hard Constraint). Thinning is the harder lever: a rule restated in 3 files is 2 too many.
    ✅ **Round 3 (session close 2026-10-12): 549,572 → 514,588**, ceiling → 524,900. Verbatim moves: 6 session files before
    10-09 (`retire_memory.py sessions --before 2026-10-09`); `gpu-server.md` 11,390 → 6,711 (the pre-07-22 ssh-agent saga);
    `prefilter-length-floor-hypotheses.md` 27,832 → 20,683 (step-4 cap verdict and 08-11 re-measure, both closed, with a
@@ -234,9 +170,9 @@ its pre-registered check (recall guard 0.81 / 0.86 < 0.9); the owner chooses the
      ▶ **Left:** 118 bare basenames (rule-level question: most are run outputs) and the ~51 findings inside the
      two verbatim archives (`docs/TODO-archive.md`, `docs/CONTRACTS_PLAN-rounds-archive.md`). Those are a TIER
      question, not a marking one: the archives sit in the live tier because they live in `docs/` root.
-   - ✅ LD#160 follow-up still OPEN (owner call): `filters/nature_recovery/{v1,v2,v4}/config.yaml` carry `ovr.news
-     'Herstel' tab` in a notes string; v4 is DEPLOYED (editing changes a live package's bytes at the next sync).
-     Listed as KNOWN OPEN in `check_framework_language.py`. Full history: TODO-archive § *Moved 2026-10-10*.
+   - ✅ LD#160 follow-up CLOSED: the nature_recovery v1/v2/v4 tab note was put in English on 2026-10-07 (`fe12a2f`,
+     owner ruling); `KNOWN_OPEN` is empty. This line stayed stale until 2026-10-14 and named the Dutch word outside a
+     quote, which kept the suite red. Full history: TODO-archive § *Moved 2026-10-10*.
    - LD#134: `--docs-live` is **170** (2026-10-10), 168 at `483c450`: +1 is `filtered_20261009_093632.jsonl` in this
      file's archive copy (a sadalsuud data file), **+1 not yet traced**.
    - Hook: `block_pattern_kill.py` is silently OFF when `CLAUDE_PROJECT_DIR` is unset (settings entry exits 0).

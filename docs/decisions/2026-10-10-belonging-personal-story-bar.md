@@ -65,3 +65,15 @@ bar through `out_one_moment`. That class is out-of-scope by definition, so it co
 personal story: the bar's own example ("husband's secret deal to care for wife") is ongoing care, which rubric v2.2
 rules IN. The 10-02 lens rulings are unchanged. Tag definition and its first test:
 `docs/evidence/2026-10-12-belonging-personal-tag/PREREGISTRATION.md`.
+
+## How the bar is judged over time — RULED 2026-10-14 (owner): a weekly average
+
+Asked whether "≤ 6 of the top 30" holds per day, as a weekly average, or on most days, the owner chose **the weekly
+average** (the recommended option): average the daily top-30 count over 7 daily builds, pass at ≤ 6, and report the
+worst day beside it. Why the question arose: on the site's ranking the count moves by 4 from day to day (qwen, a
+floor: 4 / 8 / 5 on 10-11 / 10-12 / 10-13, `docs/evidence/2026-10-13-belonging-daily-baseline/`), so one day is one draw.
+
+Same day, the owner ruled ovr.news's default ranking (H: the 5 strongest articles under 24 h first, then score within
+age bands; a reader-facing selector later). The bar is therefore re-baselined on H once ovr.news ships it. A new
+order changes the count with no model change. *Gloss, not ruled: "daily build" = one build per day at a fixed time,
+at a fixed time; the baseline used 14:30Z for its rebuilt days and the live 06:55Z page for 10-13.*
