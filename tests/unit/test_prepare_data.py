@@ -296,7 +296,9 @@ class TestConvertToTrainingFormat:
         """Articles without analysis should be skipped."""
         articles = [
             valid_article,  # No analysis
-            {**valid_article, "id": "with-analysis", "uplifting_analysis": {"dimensions": {}}}
+            # Full scores: an EMPTY dimensions block now raises (owner 2026-10-14), it no longer trains as zeros
+            {**valid_article, "id": "with-analysis",
+             "uplifting_analysis": {"dimensions": {d: 5.0 for d in uplifting_dimension_names}}}
         ]
 
         training_data = convert_to_training_format(

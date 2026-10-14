@@ -36,8 +36,9 @@ keep pruning (owner 2026-10-14: "pruning, thinning, mechanizing, retiring").*
      `count.py` / `select_v3.py`, add the H order from `replay.py` `order("H hybrid")`), report the weekly mean and the
      worst day. Pre-register it first. Before H ships, the same can be replayed offline on H over the last 7 days.
      That is $0, needs no owner, and is a reasonable thing to do while waiting.
-   - **Then:** c2d, a cap-aware retry (scale the five non-gatekeeper dimensions so community_fabric stays ≥ 3.0; assert
-     each changed row's EFFECTIVE score is 4.4; same seeds), judged on the same weekly H instrument. $0 oracle. Not ruled.
+   - **Then (owner RULED 2026-10-14: "prepare now, judge on H"):** c2d, a cap-aware retry (scale the five non-gatekeeper dimensions so community_fabric stays ≥ 3.0; assert
+     each changed row's EFFECTIVE score is 4.4; same seeds), judged on the same weekly H instrument. $0 oracle. Pre-register c2d, train on b650 (2 seeds), replay
+     v3 and c2d on H over the same 7 days; don't wait for ovr.news to ship H.
    - Over 6 is the case for the next candidate, NOT an automatic rollback (v3's rollback rule predates the bar; owner's call).
    - Lab: the 10-10 `~/ld-lab/inbox/` heap (37 backlog citations) is still a later pass (#172, item 00 archived 2026-10-14).
 
@@ -69,7 +70,7 @@ keep pruning (owner 2026-10-14: "pruning, thinning, mechanizing, retiring").*
    ~26K: the 16 SEPTEMBER occurrence stories moved verbatim (exact reconstruction + mutant), each pointer keeps the
    ordinal count (`check_doc_claims.py` rule-ordinals went RED on the first draft, which dropped it — fixed: 21 and 25,
    unchanged). `gotcha-log.md` 64,720 → ~51K: `retire_memory.py gotcha --before 2026-10-09` (second mid-month pass).
-   ▶ **Next levers toward 500K (not ruled):** `hypothesis-ledger.md` H-CX3 (6.4K, no closed word — superseded by the
+   ▶ (superseded by round 4 above; H-CX3 moved 2026-10-14) **Next levers toward 500K (not ruled):** `hypothesis-ledger.md` H-CX3 (6.4K, no closed word — superseded by the
    09-26 `CLAUDE.md` halving?), the gotcha log's `## Mechanized` "first positives in prose" (~4.5K, 09-17), and
    `score-batch-shape-noise.md` (25K, judged standing — backs the #95 Hard Constraint).
    Measured 2026-10-12 at close: **758,893 chars** (+3,086 since 10-10).
@@ -137,10 +138,11 @@ keep pruning (owner 2026-10-14: "pruning, thinning, mechanizing, retiring").*
      (NEW: `tests/conftest.py` prints a banner), `prepare_data.py` zero examples (NEW: exits 1; also its DOCUMENTED call
      died on `import ground_truth` without PYTHONPATH — fixed). Left (7): their classes are judgement-shaped (wrong
      population, retention, monthly archives, head-N sampling, a self-matching watcher, shared temp dir, mention-is-use).
-     ⚠️ Still silent in `prepare_data.py`: a renamed dimension → a column of 0s (owner call: raise, or keep?).
+     ✅ `prepare_data.py` renamed/missing dimension now RAISES (owner 2026-10-14; was a silent column of 0s);
+     `tests/unit/test_prepare_data_missing_dimension.py`, mutation-tested (6/10 red on the old code).
    - d. ✅ **2026-10-12: the backlog was ~12 KB, not 25** (the 10-09 pass had moved most). Moved verbatim: 4 boxes
-     closed on recorded evidence or duplicated elsewhere, + 4 empty headings. Left as OWNER calls: `H-V8-3` (moot now
-     v9 is live? you closed its twin H-V8-26 as moot), § *Other Filters* (non-ovr products, unchanged since summer).
+     closed on recorded evidence or duplicated elsewhere, + 4 empty headings. ✅ Both owner calls ruled 2026-10-14: `H-V8-3`
+     closed as moot; § *Other Filters* moved verbatim to TODO-archive § *Moved 2026-10-14*.
      Original line: **`docs/TODO.md` below START HERE** (~25 KB of section backlog). Audit each section: close, archive or keep
      (§ *Commerce Prefilter SLM*, § *Prefilter Quality (Apr 2026)*; check against decision 0 and ADR-004 first).
 
@@ -221,15 +223,6 @@ open boxes: `grep -n '^- \[ \]' docs/TODO-archive.md` under § *Moved 2026-10-09
 VERBATIM to `docs/TODO-archive.md` § *Moved 2026-10-02 (afternoon): § Filters history* (read surface, #163 item e).
 Current filter state lives in `memory/filter-status.md` and the `CLAUDE.md` table.*
 
-### Other Filters
-- [ ] ~~**future-of-education**~~ - DROPPED: education stories land naturally in Breakthroughs (research)
-- [ ] **ai-engineering-practice v2** - Ready for oracle scoring (not ovr.news, separate product)
-  - FluxusSource hardware sources active (1,193 articles)
-  - Prompt calibration complete (~60% tier accuracy)
-- [ ] **seece** - Corporate excellence (not ovr.news)
-- [ ] **sustainability_economic_viability** - Sustainability sub-dimension (not ovr.news)
-- [ ] **sustainability_policy_effectiveness** - Sustainability sub-dimension (not ovr.news)
-
 ### Parked Ideas
 
 - [ ] **Measuring "true AI adoption" in SMEs and larger companies** - PARKED 2026-08-11 by Jeroen ("interesting, park it as an idea"). Owner side question. **Answer: not as asked** — our corpus is articles, adoption happens at firms, so it measures adoption *discourse*, not adoption. SMEs are ~99% of firms and ~0% of coverage; 25.7% of the corpus is GN headline stubs; no firm-level ground truth to validate against. **What it WOULD answer well:** of AI-adoption claims in the press, what share are concrete deployments vs announcements — the `solutions v6` shape, whose tech/hybrid tiebreak already makes that discrimination. **The pivot that reaches the literal question: job postings** (firm-level, size-linkable, exists for SMEs; needs a FluxusSource vacancies feed). **Cheap first probe with a kill criterion: base-rate screen of the existing corpus, ~1h, no oracle spend — if AI-adoption content is a fraction of a percent, stop.** Precedent for that kill: `solutions v6`'s `community_practice_strength` is a sourcing problem, not a modelling one. Full note in **`docs/ideas/ai-adoption-measurement.md`**. Re-check #103 (DeepSeek price rise) before any oracle spend.
@@ -237,7 +230,7 @@ Current filter state lives in `memory/filter-status.md` and the `CLAUDE.md` tabl
 - [ ] **Re-enchantment outlets (wonder lens / standalone digests)** - PARKED 2026-07-16 by Jeroen ("some other time"). Byung-Chul Han-inspired exploration: wonder/mystery/myth as lens or standalone oracle-only outlet (no distillation needed at digest scale, ~$6.50/wk). Six ideas + four cheap probe plans (<$3 total: Residue query $0 → Wonder probe ~$0.50 → form-scoring feasibility ~$1-2 → Ledger design note $0) with kill criteria in **`docs/ideas/re-enchantment-outlets.md`**. Hard constraint if resumed: "unexplained" needs an `epistemic_honesty` gatekeeper (misinformation magnet otherwise). Below solutions v4 (#43) and the #62 check in priority.
 
 ## ☐ Open threads inside ARCHIVED ledger rows (2026-09-27 retire; rows in `memory/archive/hypothesis-ledger-archive.md`)
-- [ ] `H-V8-3`: the reorder's multiplicity question "is still open": no pre-registered family was ever run. v8 is superseded by v9, so likely moot; close it or run it.
+- [x] `H-V8-3`: the reorder's multiplicity question "is still open": no pre-registered family was ever run. v8 is superseded by v9, so likely moot; close it or run it. **CLOSED 2026-10-14 (owner): moot, v8 is retired.**
 - [x] `H-V8-26`: its revisit trigger is a ~50-article hand-audit of v8's reader-facing precision; no audit record was found (review 2026-09-27). Moot now that v9 is live? Owner call. **CLOSED 2026-10-01 (owner): moot — v8 no longer serves readers; the live question is `H-TV5`.**
 
 ## ☐ Unchecked boxes carried out of the archived sections (2026-09-24)

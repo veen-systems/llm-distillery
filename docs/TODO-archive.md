@@ -7950,3 +7950,13 @@ Items surfaced by the multi-agent code review of the migration commits (2026-04-
      pre-register the rule first, and check on rows NOT among the 9 so the 9 do not become the test set.
    - ~~**Step 2:** judged count with rubric v2.2 `out_one_moment`~~ superseded by the `focus` tag (done above).
    - Over 6 is the case for the next candidate, NOT an automatic rollback (v3's rollback rule predates the bar; owner's call).
+
+### Other Filters (moved verbatim 2026-10-14, owner: archive; non-ovr.news products, unchanged since summer)
+
+- [ ] ~~**future-of-education**~~ - DROPPED: education stories land naturally in Breakthroughs (research)
+- [ ] **ai-engineering-practice v2** - Ready for oracle scoring (not ovr.news, separate product)
+  - FluxusSource hardware sources active (1,193 articles)
+  - Prompt calibration complete (~60% tier accuracy)
+- [ ] **seece** - Corporate excellence (not ovr.news)
+- [ ] **sustainability_economic_viability** - Sustainability sub-dimension (not ovr.news)
+- [ ] **sustainability_policy_effectiveness** - Sustainability sub-dimension (not ovr.news)

@@ -36,3 +36,6 @@ before 10-12 retired, `H-CX3` + H-AR prose archived (see TODO item 2).
 ⛔ **Mine:** asked the owner a question whose premise a 1-line grep would have refuted (TODO line stale since 10-07);
 a verbatim move whose end marker was the wrong heading took 20K extra; caught by the size, restored from HEAD,
 redone with an exact reconstruction assert.
+**2026-10-14, second round of rulings:** scratch dirs deleted (sadalsuud + b650, owner go; every file hash-equal to
+the lab copy and in restic snapshot 336a0cdc of 10-13 12:23). c2d: prepare now, judge on H offline. `prepare_data.py`
+raises on a missing dimension (mutation-tested). `H-V8-3` closed as moot; § *Other Filters* archived.

@@ -423,7 +423,7 @@ def convert_to_training_format(
     Notes:
         - Articles without an analysis block are skipped, and the count is
           printed -- a dropped row must never be silent (#155)
-        - Missing dimensions default to score 0
+        - A missing dimension (or a {score: None}) raises ValueError, naming the row and dimension
         - Supports both nested format (dim: {score, reasoning})
           and flat format (dim: score)
         - Derived keys win over same-named source keys
@@ -447,14 +447,16 @@ def convert_to_training_format(
         # Handle nested structure (dimensions can be objects with score/reasoning vs. flat score values)
         score_array = []
         for dim in dimension_names:
-            dim_value = dimensions.get(dim, 0)
-
-            # If it's a dict with 'score' field, extract score
+            # A missing dimension raises: defaulting it to 0 trained a renamed dimension as a column of zeros,
+            # silently (owner ruling 2026-10-14).
+            dim_value = dimensions.get(dim)
             if isinstance(dim_value, dict):
-                score_array.append(dim_value.get('score', 0))
-            else:
-                # Otherwise assume it's the score directly
-                score_array.append(dim_value)
+                dim_value = dim_value.get('score')
+            if dim_value is None:
+                raise ValueError(
+                    f"row {label.get('id', '?')!r}: dimension {dim!r} is missing from {analysis_field!r} "
+                    f"(present: {sorted(dimensions)}). A renamed dimension? Fix the config or the data.")
+            score_array.append(dim_value)
 
         # Get content (handle different field names)
         content = label.get('content', label.get('description', ''))
