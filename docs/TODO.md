@@ -32,8 +32,8 @@ keep pruning (owner 2026-10-14: "pruning, thinning, mechanizing, retiring").*
      ageBandEdgesHours=[72,168]` (`src/lib/config.ts`). Their check: the live page's first 8 cards match H locally;
      Belonging top 30 = 6/24/0 (< 24 h / 1–3 d / older). Latent gap: page-level filters (short summary, NL without a
      Dutch translation) run AFTER the fresh slots, so fewer than 5 fresh cards can lead (0 cards today).
-     pipeline-atlas: NOT recorded as of 2026-10-15 (newest commit `93742df`, 10-14); asked ovr-news-47 whether they
-     send it, else we open an issue there.
+     pipeline-atlas: filed by ovr-news-47 as veen-systems/pipeline-atlas#170 (commit, build time, settings, the stale
+     Stage 9/10 lines); confirmed open 2026-10-15.
    - ▶ **NOW RUNNING (from 2026-10-15): re-baseline v3 on the LIVE H page**, 7 daily builds 10-15 → 10-21, read
      ≥ 2026-10-22. Fetch the live page once a day (card order + build time), as EXP-049 did. The qwen count per day (b650, $0; reuse
      `count.py` / `select_v3.py`, add the H order from `replay.py` `order("H hybrid")`), report the weekly mean and the
