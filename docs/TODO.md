@@ -55,6 +55,11 @@ keep pruning (owner 2026-10-14: "pruning, thinning, mechanizing, retiring").*
    - **Then (owner RULED 2026-10-14: "prepare now, judge on H"):** c2d, a cap-aware retry (scale the five non-gatekeeper dimensions so community_fabric stays ≥ 3.0; assert
      each changed row's EFFECTIVE score is 4.4; same seeds), judged on the same weekly H instrument. $0 oracle. Pre-register c2d, train on b650 (2 seeds), replay
      v3 and c2d on H over the same 7 days; don't wait for ovr.news to ship H.
+     ❌ **DONE 2026-10-15 (EXP-050, `docs/evidence/2026-10-15-belonging-c2d/`): NOT worth a gate.** Recall guard
+     0.902 / 0.804 (s42 / s43, bar 0.9): cap-aware lowering kept c2c's recall cost. H top-30 qwen personal: v3 arm 6.14,
+     both seeds 1.29 (qwen chose the lowered rows AND counts them; c2d also thins the display-eligible pool to 0.38–0.70
+     of v3's). ⏳ **Owner's call:** close the "lower personal training rows" lever, or label blind the rows that differ
+     between v3 and s42 in the top 30 to test the instrument. Trained packages: lab `experiments/2026-10-15-belonging-c2d/`.
    - Over 6 is the case for the next candidate, NOT an automatic rollback (v3's rollback rule predates the bar; owner's call).
    - Lab: the 10-10 `~/ld-lab/inbox/` heap (37 backlog citations) is still a later pass (#172, item 00 archived 2026-10-14).
 

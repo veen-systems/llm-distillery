@@ -1,0 +1,26 @@
+== 1. top-30 overlap per build
+2026-10-09T14:30Z  s42&s43 18  s42&v3 19  s43&v3 13
+2026-10-10T14:30Z  s42&s43 17  s42&v3 16  s43&v3 13
+2026-10-11T14:30Z  s42&s43 20  s42&v3 20  s43&v3 17
+2026-10-12T14:30Z  s42&s43 17  s42&v3 20  s43&v3 15
+2026-10-13T14:30Z  s42&s43 18  s42&v3 20  s43&v3 16
+2026-10-14T14:30Z  s42&s43 18  s42&v3 21  s43&v3 17
+2026-10-15T06:37Z  s42&s43 18  s42&v3 20  s43&v3 17
+
+== 2. median raw shift (c2d - v3) of v3's weekly top-30 rows, by qwen tag
+v1_c2d_s42  personal n  21  median shift -0.65
+v1_c2d_s42  group    n  86  median shift -0.15
+v1_c2d_s43  personal n  21  median shift -1.12
+v1_c2d_s43  group    n  86  median shift +0.00
+
+== 3. v3 comp scores: this run vs c2c's
+rows 33393  stage differs 0  max |raw delta| 0.0  flips at 4.0 0
+
+== 4. page geometry and the screen safety sample
+raw at normalized 4.5 (v3 curve): 5.15
+v1_c2d_s42  display-eligible population vs v3 per build: 0.66..0.70
+v1_c2d_s43  display-eligible population vs v3 per build: 0.38..0.42
+lowest raw in any arm's top 30: 5.72
+v3          below-screen max raw 2.98, >= 4.0: 0; stage1_low sample still stage1_low: 1000/1000
+v1_c2d_s42  below-screen max raw 3.02, >= 4.0: 0; stage1_low sample still stage1_low: 1000/1000
+v1_c2d_s43  below-screen max raw 4.10, >= 4.0: 1; stage1_low sample still stage1_low: 1000/1000

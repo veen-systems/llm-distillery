@@ -1,0 +1,222 @@
+{
+ "lab_root": "$LD_LAB (default ~/ld-lab, on situla)",
+ "entries": [
+  {
+   "path": "datasets/belonging_comp_draw/v1/belonging_comp_rows.jsonl",
+   "sha256": "30127d2d89777ca743a0ef0e5b36002aa1de59232267dfae120aca46fc9e6280",
+   "size": 120841499,
+   "origin": "sadalsuud:/tmp/ld_comp_draw/belonging_comp_rows.jsonl",
+   "pulled_at": "2026-10-12T17:23:07+02:00"
+  },
+  {
+   "path": "experiments/2026-10-12-belonging-c2c/belonging_comp_scores/v3.jsonl",
+   "sha256": "6f2d2f957700366c02e6fcf7bad6fad9ff5d923ffd25b3f7bc3ce935b3f611e2",
+   "size": 3200810,
+   "origin": "b650-gpu:llm-distillery/datasets/belonging_comp_scores/v3.jsonl",
+   "pulled_at": "2026-10-12T19:16:21+02:00"
+  },
+  {
+   "path": "experiments/2026-10-12-belonging-c2c/focus-tag-comp/out.jsonl",
+   "sha256": "b63e2328e636065e53016a89ac1105c0004ec3af791d81f705699a58a9d509a7",
+   "size": 138363,
+   "origin": "b650-gpu:ld-scratch/2026-10-12-focus-tag-comp/out.jsonl",
+   "pulled_at": "2026-10-12T19:16:19+02:00"
+  },
+  {
+   "path": "experiments/2026-10-12-belonging-c2c/focus-tag-train/out.jsonl",
+   "sha256": "19ee802d4dfecfc8c745b8d6f50dfc53ef89c623204f75fd24dd9d3e6bdb40d7",
+   "size": 136581,
+   "origin": "b650-gpu:~/ld-scratch/2026-10-12-focus-tag-train/out.jsonl",
+   "pulled_at": "2026-10-12T17:18:26+02:00"
+  },
+  {
+   "path": "experiments/2026-10-12-belonging-c2c/focus-tag/out.jsonl",
+   "sha256": "ceb629bc32e3b28f2701ff49d321d4b4297579720e4c166c24ac7deb112d8130",
+   "size": 12299,
+   "origin": "b650-gpu:~/ld-scratch/2026-10-12-focus-tag/out.jsonl",
+   "pulled_at": "2026-10-12T17:01:40+02:00"
+  },
+  {
+   "path": "experiments/2026-10-13-belonging-daily-baseline/tag/out.jsonl",
+   "sha256": "d332627d0fc1a036948b99864c1bed78d77c37c3afbfd35e2bc05f39e4d79c2e",
+   "size": 50195,
+   "origin": "b650-gpu:ld-scratch/2026-10-13-belonging-daily-baseline-tag/out.jsonl",
+   "pulled_at": "2026-10-13T09:30:58+02:00"
+  },
+  {
+   "path": "experiments/2026-10-15-belonging-c2d/population/norm_control.jsonl",
+   "sha256": "b2ae82c1ec0ac8bcc6eeee5ae1bec4fdd368e6319266d7933e75e50c57beb579",
+   "size": 8809930,
+   "origin": "sadalsuud:ld-scratch/2026-10-15-belonging-c2d-pop/norm_control.jsonl",
+   "pulled_at": "2026-10-15T09:34:33+02:00"
+  },
+  {
+   "path": "experiments/2026-10-15-belonging-c2d/population/population.jsonl",
+   "sha256": "d8b155c9a002fbd90132b7b96a5150328a00dcfa63987fc502531a4ad1c0fb71",
+   "size": 126743220,
+   "origin": "sadalsuud:ld-scratch/2026-10-15-belonging-c2d-pop/population.jsonl",
+   "pulled_at": "2026-10-15T09:34:33+02:00"
+  },
+  {
+   "path": "experiments/2026-10-15-belonging-c2d/scores/chain.log",
+   "sha256": "9338e13dcbecaa6c63b5002e887e802648ba299c908179db0e5d8eec0c87f796",
+   "size": 115,
+   "origin": "b650-gpu:ld-scratch/2026-10-15-belonging-c2d-scores/chain.log",
+   "pulled_at": "2026-10-15T11:37:31+02:00"
+  },
+  {
+   "path": "experiments/2026-10-15-belonging-c2d/scores/score_chain.log",
+   "sha256": "40f51c6d055781006d1ed55afdb68ab0a0cc527de2087cbd8bff0496043574d9",
+   "size": 184,
+   "origin": "b650-gpu:ld-scratch/2026-10-15-belonging-c2d-scores/score_chain.log",
+   "pulled_at": "2026-10-15T11:37:31+02:00"
+  },
+  {
+   "path": "experiments/2026-10-15-belonging-c2d/scores/score_chain2.log",
+   "sha256": "ee4a0b80886f121ea53da45c59e37e428657e3f33c7bcbc9bc718aba965adf5c",
+   "size": 137,
+   "origin": "b650-gpu:ld-scratch/2026-10-15-belonging-c2d-scores/score_chain2.log",
+   "pulled_at": "2026-10-15T11:37:31+02:00"
+  },
+  {
+   "path": "experiments/2026-10-15-belonging-c2d/scores/scores_comp/v1_c2d_s42.jsonl",
+   "sha256": "07ab6752cc5df22752cac476af61751a2b7db2136184e435a0272802c7cca31e",
+   "size": 3200792,
+   "origin": "b650-gpu:ld-scratch/2026-10-15-belonging-c2d-scores/scores_comp/v1_c2d_s42.jsonl",
+   "pulled_at": "2026-10-15T11:37:31+02:00"
+  },
+  {
+   "path": "experiments/2026-10-15-belonging-c2d/scores/scores_comp/v1_c2d_s43.jsonl",
+   "sha256": "e0477e3c086022735f45188820edfe6df2ef0183338f0cdbb943c713644f80ef",
+   "size": 3200911,
+   "origin": "b650-gpu:ld-scratch/2026-10-15-belonging-c2d-scores/scores_comp/v1_c2d_s43.jsonl",
+   "pulled_at": "2026-10-15T11:37:31+02:00"
+  },
+  {
+   "path": "experiments/2026-10-15-belonging-c2d/scores/scores_comp/v3.jsonl",
+   "sha256": "f58a5f6395ad0e95275ab503069d536a00e5ad8bd04bfa34bec40bc0bea88d63",
+   "size": 3200810,
+   "origin": "b650-gpu:ld-scratch/2026-10-15-belonging-c2d-scores/scores_comp/v3.jsonl",
+   "pulled_at": "2026-10-15T11:37:31+02:00"
+  },
+  {
+   "path": "experiments/2026-10-15-belonging-c2d/scores/scores_pop/v1_c2d_s42.jsonl",
+   "sha256": "8b216eb936db450fcfa551c067b410552d5f7ede873cd24796e6023d89c24759",
+   "size": 2480817,
+   "origin": "b650-gpu:ld-scratch/2026-10-15-belonging-c2d-scores/scores_pop/v1_c2d_s42.jsonl",
+   "pulled_at": "2026-10-15T11:37:31+02:00"
+  },
+  {
+   "path": "experiments/2026-10-15-belonging-c2d/scores/scores_pop/v1_c2d_s43.jsonl",
+   "sha256": "71be0a2c80179b604d11eaaec264cbdaaac5dfc894371538ab2438b0a8ca4ca2",
+   "size": 2480686,
+   "origin": "b650-gpu:ld-scratch/2026-10-15-belonging-c2d-scores/scores_pop/v1_c2d_s43.jsonl",
+   "pulled_at": "2026-10-15T11:37:31+02:00"
+  },
+  {
+   "path": "experiments/2026-10-15-belonging-c2d/scores/scores_pop/v3.jsonl",
+   "sha256": "87d54e8d74771dc98394d5d8f4a194d958bd534755c328ed947bd8d953ea3f2e",
+   "size": 2479837,
+   "origin": "b650-gpu:ld-scratch/2026-10-15-belonging-c2d-scores/scores_pop/v3.jsonl",
+   "pulled_at": "2026-10-15T11:37:31+02:00"
+  },
+  {
+   "path": "experiments/2026-10-15-belonging-c2d/tag-fill/out.jsonl",
+   "sha256": "5903b813dc8c2b698fdd35fffcc56f907d50e5f49322cf09992aaa77b93ee619",
+   "size": 115,
+   "origin": "b650-gpu:ld-scratch/2026-10-15-belonging-c2d-tagfill/out.jsonl",
+   "pulled_at": "2026-10-15T11:47:39+02:00"
+  },
+  {
+   "path": "experiments/2026-10-15-belonging-c2d/tag-fill/probe_raw.out",
+   "sha256": "444e4b6a360b664fe8c20eb11eeaca363bb22322792bb505556e59ebd564986d",
+   "size": 463,
+   "origin": "b650-gpu:ld-scratch/2026-10-15-belonging-c2d-tagfill/probe_raw.out",
+   "pulled_at": "2026-10-15T11:47:39+02:00"
+  },
+  {
+   "path": "experiments/2026-10-15-belonging-c2d/tag/tag-control/input.jsonl",
+   "sha256": "8ed53526348c5a1a6389b930a0fdd0d301480422ca45830e951495cea7716e01",
+   "size": 46396,
+   "origin": "b650-gpu:ld-scratch/2026-10-15-belonging-c2d-tag/tag-control/input.jsonl",
+   "pulled_at": "2026-10-15T11:40:23+02:00"
+  },
+  {
+   "path": "experiments/2026-10-15-belonging-c2d/tag/tag-control/out.jsonl",
+   "sha256": "7fef14fbab15adf0f2daf5f194a320ded90ec8f17f18f8592c3dca7f15caf3a4",
+   "size": 4116,
+   "origin": "b650-gpu:ld-scratch/2026-10-15-belonging-c2d-tag/tag-control/out.jsonl",
+   "pulled_at": "2026-10-15T11:40:23+02:00"
+  },
+  {
+   "path": "experiments/2026-10-15-belonging-c2d/tag/tag/input.jsonl",
+   "sha256": "aed797ccf29bbac858edc1f283d27d7c868abb244545e3a5affe1be597146d96",
+   "size": 378553,
+   "origin": "b650-gpu:ld-scratch/2026-10-15-belonging-c2d-tag/tag/input.jsonl",
+   "pulled_at": "2026-10-15T11:40:23+02:00"
+  },
+  {
+   "path": "experiments/2026-10-15-belonging-c2d/tag/tag/out.jsonl",
+   "sha256": "7f4768209935cfba16e6551cf9ce1d198b14bf15d221fde939baf4f2e4ab42bc",
+   "size": 29463,
+   "origin": "b650-gpu:ld-scratch/2026-10-15-belonging-c2d-tag/tag/out.jsonl",
+   "pulled_at": "2026-10-15T11:40:23+02:00"
+  },
+  {
+   "path": "experiments/2026-10-15-belonging-c2d/v1_c2d_s42/calibration.json",
+   "sha256": "61b47c83ba3a8e5922253cead4b2821a0ca9b7c42d9e00f155148d4e0fdf47aa",
+   "size": 17547,
+   "origin": "b650-gpu:llm-distillery/filters/belonging/v1_c2d_s42/calibration.json",
+   "pulled_at": "2026-10-15T11:42:20+02:00"
+  },
+  {
+   "path": "experiments/2026-10-15-belonging-c2d/v1_c2d_s42/model/adapter_model.safetensors",
+   "sha256": "89be17350ed3db1e846a2ef3a761a6573825ce40b8f91d062c30a59ea49edc6c",
+   "size": 52259056,
+   "origin": "b650-gpu:llm-distillery/filters/belonging/v1_c2d_s42/model/adapter_model.safetensors",
+   "pulled_at": "2026-10-15T11:42:20+02:00"
+  },
+  {
+   "path": "experiments/2026-10-15-belonging-c2d/v1_c2d_s42/training_metadata.json",
+   "sha256": "78c1fc3d4e09d2dc8b4d9933fe62def3ffa55ac4d1bf8b8eb6ce8a72db430782",
+   "size": 1267,
+   "origin": "b650-gpu:llm-distillery/filters/belonging/v1_c2d_s42/training_metadata.json",
+   "pulled_at": "2026-10-15T11:42:20+02:00"
+  },
+  {
+   "path": "experiments/2026-10-15-belonging-c2d/v1_c2d_s43/calibration.json",
+   "sha256": "b04b4887310370efa21d7fd130ad54304955e31cbffcfbfc1e5cda674f2ccd47",
+   "size": 19514,
+   "origin": "b650-gpu:llm-distillery/filters/belonging/v1_c2d_s43/calibration.json",
+   "pulled_at": "2026-10-15T11:42:29+02:00"
+  },
+  {
+   "path": "experiments/2026-10-15-belonging-c2d/v1_c2d_s43/model/adapter_model.safetensors",
+   "sha256": "eb942b274726249b1f96401293352aa97b53a8bea7d2d98ca3c1e9e6397d2919",
+   "size": 52259056,
+   "origin": "b650-gpu:llm-distillery/filters/belonging/v1_c2d_s43/model/adapter_model.safetensors",
+   "pulled_at": "2026-10-15T11:42:29+02:00"
+  },
+  {
+   "path": "experiments/2026-10-15-belonging-c2d/v1_c2d_s43/training_metadata.json",
+   "sha256": "e28e8caa4eb14c239ebfe8bf66887a78569887d64c9b8b1655493d0034837c91",
+   "size": 1268,
+   "origin": "b650-gpu:llm-distillery/filters/belonging/v1_c2d_s43/training_metadata.json",
+   "pulled_at": "2026-10-15T11:42:29+02:00"
+  },
+  {
+   "path": "experiments/2026-10-15-belonging-h-replay/tag-dated/out.jsonl",
+   "sha256": "44782cb5338b9ed713d9fea9614ce47a9ed769218175b0d34e69c1bf2fc4a0b3",
+   "size": 1915,
+   "origin": "b650-gpu:ld-scratch/2026-10-15-belonging-h-replay-tag-dated/out.jsonl",
+   "pulled_at": "2026-10-15T09:11:36+02:00"
+  },
+  {
+   "path": "experiments/2026-10-15-belonging-h-replay/tag/tag/out.jsonl",
+   "sha256": "250b51ec9efb4401beb3a8514c6cea7d15720b920d4dec61cafc95d1e23c3b27",
+   "size": 34591,
+   "origin": "b650-gpu:ld-scratch/2026-10-15-belonging-h-replay-tag/tag/out.jsonl",
+   "pulled_at": "2026-10-15T09:04:18+02:00"
+  }
+ ]
+}

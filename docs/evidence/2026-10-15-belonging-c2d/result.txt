@@ -1,0 +1,43 @@
+determinism control: 10/10 (PASS)
+normalization control: 103968/103968 within 0.01 (PASS)
+
+== Check A: recall guard. v3 (rescored) passes 340, qwen group among them 276, unparsed 1 ['portuguese_observador_8e7ee891bb52']
+v1_c2d_s42: 249/276 = 0.902 (PASS); passes at 4.0: 312
+v1_c2d_s43: 222/276 = 0.804 (FAIL); passes at 4.0: 396
+
+== Check B: qwen personal in the H top 30 (a FLOOR)
+v3          2026-10-09T14:30Z  N 30  personal  7  unparsed 0  removal-unknown 13  population 814
+v3          2026-10-10T14:30Z  N 30  personal  8  unparsed 0  removal-unknown  7  population 788
+v3          2026-10-11T14:30Z  N 30  personal  6  unparsed 0  removal-unknown  0  population 794
+v3          2026-10-12T14:30Z  N 30  personal  6  unparsed 0  removal-unknown  1  population 809
+v3          2026-10-13T14:30Z  N 30  personal  6  unparsed 0  removal-unknown  0  population 795
+v3          2026-10-14T14:30Z  N 30  personal  4  unparsed 0  removal-unknown  2  population 748
+v3          2026-10-15T06:37Z  N 30  personal  6  unparsed 0  removal-unknown  2  population 703
+v3          weekly mean 6.14  worst 8  safety (rows >= 5.0 raw): {'below': 0, 'stage1_low': 0}
+v1_c2d_s42  2026-10-09T14:30Z  N 30  personal  0  unparsed 0  removal-unknown 13  population 571
+v1_c2d_s42  2026-10-10T14:30Z  N 30  personal  2  unparsed 0  removal-unknown  3  population 544
+v1_c2d_s42  2026-10-11T14:30Z  N 30  personal  2  unparsed 0  removal-unknown  0  population 548
+v1_c2d_s42  2026-10-12T14:30Z  N 30  personal  3  unparsed 0  removal-unknown  1  population 549
+v1_c2d_s42  2026-10-13T14:30Z  N 30  personal  2  unparsed 0  removal-unknown  0  population 539
+v1_c2d_s42  2026-10-14T14:30Z  N 30  personal  0  unparsed 0  removal-unknown  2  population 501
+v1_c2d_s42  2026-10-15T06:37Z  N 30  personal  0  unparsed 0  removal-unknown  3  population 465
+v1_c2d_s42  weekly mean 1.29  worst 3  safety (rows >= 5.0 raw): {'below': 0, 'stage1_low': 0}
+v1_c2d_s43  2026-10-09T14:30Z  N 30  personal  3  unparsed 0  removal-unknown 16  population 339
+v1_c2d_s43  2026-10-10T14:30Z  N 30  personal  2  unparsed 0  removal-unknown 11  population 321
+v1_c2d_s43  2026-10-11T14:30Z  N 30  personal  2  unparsed 0  removal-unknown  2  population 327
+v1_c2d_s43  2026-10-12T14:30Z  N 30  personal  2  unparsed 0  removal-unknown  5  population 339
+v1_c2d_s43  2026-10-13T14:30Z  N 30  personal  0  unparsed 0  removal-unknown  5  population 316
+v1_c2d_s43  2026-10-14T14:30Z  N 30  personal  0  unparsed 0  removal-unknown  5  population 301
+v1_c2d_s43  2026-10-15T06:37Z  N 30  personal  0  unparsed 0  removal-unknown  5  population 269
+v1_c2d_s43  weekly mean 1.29  worst 3  safety (rows >= 5.0 raw): {'below': 0, 'stage1_low': 0}
+
+v1_c2d_s42: weekly mean 1.29 vs v3 6.14, difference -4.86 (meets the -1.0 bar); <= 6: True (undetermined on a floor)
+v1_c2d_s43: weekly mean 1.29 vs v3 6.14, difference -4.86 (meets the -1.0 bar); <= 6: True (undetermined on a floor)
+
+WORTH A GATE: False
+presence control: v3 arm personal >= 1 on some build: True
+rebuild control 2026-10-11T14:30Z: v3 arm top 30 vs EXP-049 dated H selection overlap 29/30
+rebuild control 2026-10-12T14:30Z: v3 arm top 30 vs EXP-049 dated H selection overlap 29/30
+rebuild control 2026-10-13T14:30Z: v3 arm top 30 vs EXP-049 dated H selection overlap 28/30
+rebuild control 2026-10-14T14:30Z: v3 arm top 30 vs EXP-049 dated H selection overlap 27/30
+rebuild control 2026-10-15T06:37Z: v3 arm top 30 vs EXP-049 dated H selection overlap 27/30
