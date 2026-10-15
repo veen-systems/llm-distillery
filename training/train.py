@@ -9,6 +9,7 @@ import argparse
 import json
 import subprocess
 import random
+import re
 import sys
 from pathlib import Path
 from typing import Dict, List
@@ -339,6 +340,26 @@ def resolve_medium_threshold(filter_dir: Path, config: dict, cli_override=None):
         f"found neither. Refusing to default to 4.0 — it decides which checkpoint "
         f"ships. Pass --medium-threshold explicitly."
     )
+
+
+_PACKAGE_MODULE = re.compile(r"\bfilters\.([A-Za-z0-9_]+)\.([A-Za-z0-9_]+)\b")
+
+
+def assert_package_imports_self(filter_dir: Path) -> None:
+    """Refuse a package whose inference*.py names ANOTHER package's module path.
+
+    A `cp -r` of a package keeps the source's absolute imports, and the model path is the IMPORTED module's
+    `Path(__file__).parent / "model"`: training writes the copy's adapter, scoring loads the source's (gotcha log
+    2026-10-12; recurred 2026-10-15 in c2d). Checked here so it fails before training, not after.
+    """
+    filter_dir = Path(filter_dir).resolve()
+    own = (filter_dir.parent.name, filter_dir.name)
+    foreign = sorted({(f.name, m.group(0)) for f in filter_dir.glob("inference*.py")
+                      for m in _PACKAGE_MODULE.finditer(f.read_text(encoding="utf-8"))
+                      if m.group(1) != "common" and (m.group(1), m.group(2)) != own})
+    if foreign:
+        raise SystemExit(f"REFUSED: {filter_dir} imports another package's modules, so scoring would load that "
+                         f"package's model: {foreign[:3]}. Rewrite them to filters.{own[0]}.{own[1]}.")
 
 
 def resolve_git_provenance(allow_missing: bool = False) -> dict:
@@ -833,6 +854,8 @@ def main():
     # Set random seed for reproducibility
     set_seed(args.seed)
     print(f"Random seed set to: {args.seed}")
+
+    assert_package_imports_self(args.filter)
 
     # Load filter config
     print(f"Loading filter config from {args.filter}")
