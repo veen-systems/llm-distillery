@@ -35,11 +35,15 @@ keep pruning (owner 2026-10-14: "pruning, thinning, mechanizing, retiring").*
      pipeline-atlas: filed by ovr-news-47 as veen-systems/pipeline-atlas#170 (commit, build time, settings, the stale
      Stage 9/10 lines); confirmed open 2026-10-15.
    - ▶ **NOW RUNNING (from 2026-10-15): re-baseline v3 on the LIVE H page**, 7 daily builds 10-15 → 10-21, read
-     ≥ 2026-10-22. ⏰ **Owner OK'd 2026-10-15: a user crontab line on situla** saves https://ovr.news/en/belonging/ daily
-     at 16:30 CEST (14:30Z) to `~/ld-lab/inbox/ovr-belonging-pages/belonging_<UTC>.html`; first file
-     `belonging_20261015T0750Z.html` (manual test run, page built 07:40:42Z = the first H build). The line carries a date guard and does
-     nothing from 2026-10-22 (UTC). ⛔ **Then REMOVE it** (`crontab -r`; it is the only line). Pre-register the on-site count BEFORE reading any of these pages'
-     tags; move the files into a lab `experiments/` tree (`lab.py move`) before citing them. The qwen count per day (b650, $0; reuse
+     ≥ 2026-10-22. ⏰ **Owner OK'd 2026-10-15: a user crontab line on situla** saves the five lens pages
+     (`https://ovr.news/en/{belonging,thriving,solutions,discovery,recovery}/`) daily at 16:30 local to
+     `~/ld-lab/inbox/ovr-lens-pages/<lens>_<UTC>.html`. Extended the same day (owner: all five lenses, until 2026-11-15)
+     so it also serves LENS ASSIGNMENT (H-LA2, "narrow lens first", tested only vs judges, never vs the owner; the owner
+     keeps wondering about tabs). First files 2026-10-15T0750Z (Belonging only) and T0755Z (all five); the first H build
+     was 07:40:42Z. 16:30 local is 14:30Z until 10-24, 15:30Z from 10-25 (CET); the Belonging re-baseline (10-15..10-21)
+     is unaffected. Date guard: inert from 2026-11-16 (UTC). ⛔ **Then REMOVE it** (`crontab -r`; it is the only line).
+     Pre-register the on-site count BEFORE reading any page's tags; move files into a lab `experiments/` tree
+     (`lab.py move`) before citing them. The qwen count per day (b650, $0; reuse
      `count.py` / `select_v3.py`, add the H order from `replay.py` `order("H hybrid")`), report the weekly mean and the
      worst day. Pre-register it first.
      ✅ **Offline replay DONE 2026-10-15 (EXP-049, `docs/evidence/2026-10-15-belonging-h-replay/`):** qwen floor, 5
