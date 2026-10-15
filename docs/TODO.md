@@ -27,12 +27,15 @@ keep pruning (owner 2026-10-14: "pruning, thinning, mechanizing, retiring").*
    history up to 2026-10-14: TODO-archive § *Moved 2026-10-14*. State: v3 fails on the owner's one count (10/30, 10-12);
    qwen (a floor) counts 4 / 8 / 5 on 10-11 / 10-12 / 10-13 on the CURRENT ranking (`docs/evidence/2026-10-13-belonging-daily-baseline/`);
    candidate c2c FAILED its recall guard (EXP-048, with a build defect: H-BB8).
-   - ⏸ **WAITING on ovr.news:** the owner ruled the default ranking on 2026-10-14: **H** (the 5 strongest articles under
-     24 h first, then score within age bands < 72 h / 72 h–7 d / older), a reader-facing selector later. Relayed to
-     ovr-news-0e; acknowledged 2026-10-14, tracked as ovr.news#391 (not shipped; after their C2 scoring). They will send
-     the ship commit and first H build time here, and the commit to pipeline-atlas (Stage 10). Ours too: when it
-     arrives, confirm pipeline-atlas has it, and send it if not.
-   - ▶ **NEXT once H is live:** re-baseline v3 on H: 7 daily builds, the qwen count per day (b650, $0; reuse
+   - ✅ **H is LIVE (ducroq/ovr.news#391):** ovr.news commit `07cdb7e0`, first production H build 2026-10-15 ~07:39Z
+     (Cloudflare Pages `bab11cb7`), per ovr-news-47; settings `ranking.freshSlots=5, freshSlotHours=24,
+     ageBandEdgesHours=[72,168]` (`src/lib/config.ts`). Their check: the live page's first 8 cards match H locally;
+     Belonging top 30 = 6/24/0 (< 24 h / 1–3 d / older). Latent gap: page-level filters (short summary, NL without a
+     Dutch translation) run AFTER the fresh slots, so fewer than 5 fresh cards can lead (0 cards today).
+     pipeline-atlas: NOT recorded as of 2026-10-15 (newest commit `93742df`, 10-14); asked ovr-news-47 whether they
+     send it, else we open an issue there.
+   - ▶ **NOW RUNNING (from 2026-10-15): re-baseline v3 on the LIVE H page**, 7 daily builds 10-15 → 10-21, read
+     ≥ 2026-10-22. Fetch the live page once a day (card order + build time), as EXP-049 did. The qwen count per day (b650, $0; reuse
      `count.py` / `select_v3.py`, add the H order from `replay.py` `order("H hybrid")`), report the weekly mean and the
      worst day. Pre-register it first.
      ✅ **Offline replay DONE 2026-10-15 (EXP-049, `docs/evidence/2026-10-15-belonging-h-replay/`):** qwen floor, 5
