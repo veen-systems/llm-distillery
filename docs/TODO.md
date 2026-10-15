@@ -58,8 +58,8 @@ keep pruning (owner 2026-10-14: "pruning, thinning, mechanizing, retiring").*
      ❌ **DONE 2026-10-15 (EXP-050, `docs/evidence/2026-10-15-belonging-c2d/`): NOT worth a gate.** Recall guard
      0.902 / 0.804 (s42 / s43, bar 0.9): cap-aware lowering kept c2c's recall cost. H top-30 qwen personal: v3 arm 6.14,
      both seeds 1.29 (qwen chose the lowered rows AND counts them; c2d also thins the display-eligible pool to 0.38–0.70
-     of v3's). ⏳ **Owner's call:** close the "lower personal training rows" lever, or label blind the rows that differ
-     between v3 and s42 in the top 30 to test the instrument. Trained packages: lab `experiments/2026-10-15-belonging-c2d/`.
+     of v3's). **Owner RULED 2026-10-15: CLOSE the "lower personal training rows" lever** (c2c and c2d both cost
+     community recall). The personal-story route is now ranking H + the on-site re-baseline (≥ 10-22). Trained packages: lab `experiments/2026-10-15-belonging-c2d/`.
    - Over 6 is the case for the next candidate, NOT an automatic rollback (v3's rollback rule predates the bar; owner's call).
    - Lab: the 10-10 `~/ld-lab/inbox/` heap (37 backlog citations) is still a later pass (#172, item 00 archived 2026-10-14).
 
