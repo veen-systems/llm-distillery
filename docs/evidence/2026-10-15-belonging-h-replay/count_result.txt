@@ -1,0 +1,32 @@
+determinism control: 10/10 re-tagged reused ids match their earlier tag (PASS)
+
+build               order    N  in_range  v1_skipped  <24h  qwen_personal  group  unparsed
+2026-10-09T14:30Z   H        2  False             58     2              1      1         0
+2026-10-09T14:30Z   control 12  False             48    12              5      7         0
+                    removal status unknown in population: 327 of 615
+2026-10-10T14:30Z   H        7  False             53     5              3      4         0
+2026-10-10T14:30Z   control 20  False             40    15              5     15         0
+                    removal status unknown in population: 289 of 607
+2026-10-11T14:30Z   H       30  True               5     9              6     24         0
+2026-10-11T14:30Z   control 30  True               0    29              3     26         1
+                    removal status unknown in population: 176 of 557
+2026-10-12T14:30Z   H       30  True               0     5              5     25         0
+2026-10-12T14:30Z   control 30  True               0    30              6     24         0
+                    removal status unknown in population: 87 of 520
+2026-10-13T14:30Z   H       30  True               0     5              4     26         0
+2026-10-13T14:30Z   control 30  True               0    27              4     26         0
+                    removal status unknown in population: 0 of 477
+2026-10-14T14:30Z   H       30  True               0     7              4     26         0
+2026-10-14T14:30Z   control 30  True               0    28              8     22         0
+                    removal status unknown in population: 0 of 508
+2026-10-15T06:37Z   H       30  True               0     6              5     25         0
+2026-10-15T06:37Z   control 30  True               0    30              7     23         0
+                    removal status unknown in population: 0 of 520
+
+H      : in-range builds 5, qwen personal [6, 5, 4, 4, 5], weekly mean 4.80, worst 6 (2026-10-11T14:30Z)
+control: in-range builds 5, qwen personal [3, 6, 4, 8, 7], weekly mean 5.60, worst 8 (2026-10-14T14:30Z)
+H - control per in-range build: {'2026-10-11T14:30Z': 3, '2026-10-12T14:30Z': -1, '2026-10-13T14:30Z': 0, '2026-10-14T14:30Z': -4, '2026-10-15T06:37Z': -2}
+
+presence control: control 10-12 qwen personal = 6 (PASS)
+rebuild check 2026-10-11T14:30Z: control top 30 overlaps the baseline's selection 27/30
+rebuild check 2026-10-12T14:30Z: control top 30 overlaps the baseline's selection 27/30

@@ -34,8 +34,13 @@ keep pruning (owner 2026-10-14: "pruning, thinning, mechanizing, retiring").*
      arrives, confirm pipeline-atlas has it, and send it if not.
    - ▶ **NEXT once H is live:** re-baseline v3 on H: 7 daily builds, the qwen count per day (b650, $0; reuse
      `count.py` / `select_v3.py`, add the H order from `replay.py` `order("H hybrid")`), report the weekly mean and the
-     worst day. Pre-register it first. Before H ships, the same can be replayed offline on H over the last 7 days.
-     That is $0, needs no owner, and is a reasonable thing to do while waiting.
+     worst day. Pre-register it first.
+     ✅ **Offline replay DONE 2026-10-15 (EXP-049, `docs/evidence/2026-10-15-belonging-h-replay/`):** qwen floor, 5
+     in-range builds. Primary (as pre-registered): H 4.80 vs control 5.60, both undetermined under the pre-registered
+     rule (a floor mean ≤ 6 cannot pass). Review refuted the sticky-removal rule; the post-hoc DATED variant
+     reproduces the 10-13 baseline 30/30 and gives H 5.20, **control 6.40: the current ranking fails the bar even on
+     the floor** (post hoc). Use the dated builds as c2d's H instrument (`--dated` on `build_population.py` /
+     `select_v3.py` / `count.py`). The on-site re-baseline above still runs once H ships.
    - **Then (owner RULED 2026-10-14: "prepare now, judge on H"):** c2d, a cap-aware retry (scale the five non-gatekeeper dimensions so community_fabric stays ≥ 3.0; assert
      each changed row's EFFECTIVE score is 4.4; same seeds), judged on the same weekly H instrument. $0 oracle. Pre-register c2d, train on b650 (2 seeds), replay
      v3 and c2d on H over the same 7 days; don't wait for ovr.news to ship H.

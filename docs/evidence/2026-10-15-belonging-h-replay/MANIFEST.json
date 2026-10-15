@@ -1,0 +1,89 @@
+{
+ "lab_root": "$LD_LAB (default ~/ld-lab, on situla)",
+ "entries": [
+  {
+   "path": "experiments/2026-10-12-belonging-c2c/focus-tag-comp/out.jsonl",
+   "sha256": "b63e2328e636065e53016a89ac1105c0004ec3af791d81f705699a58a9d509a7",
+   "size": 138363,
+   "origin": "b650-gpu:ld-scratch/2026-10-12-focus-tag-comp/out.jsonl",
+   "pulled_at": "2026-10-12T19:16:19+02:00"
+  },
+  {
+   "path": "experiments/2026-10-12-belonging-c2c/focus-tag/out.jsonl",
+   "sha256": "ceb629bc32e3b28f2701ff49d321d4b4297579720e4c166c24ac7deb112d8130",
+   "size": 12299,
+   "origin": "b650-gpu:~/ld-scratch/2026-10-12-focus-tag/out.jsonl",
+   "pulled_at": "2026-10-12T17:01:40+02:00"
+  },
+  {
+   "path": "experiments/2026-10-13-belonging-daily-baseline/tag/out.jsonl",
+   "sha256": "d332627d0fc1a036948b99864c1bed78d77c37c3afbfd35e2bc05f39e4d79c2e",
+   "size": 50195,
+   "origin": "b650-gpu:ld-scratch/2026-10-13-belonging-daily-baseline-tag/out.jsonl",
+   "pulled_at": "2026-10-13T09:30:58+02:00"
+  },
+  {
+   "path": "experiments/2026-10-15-belonging-h-replay/extract-dated/rows.jsonl",
+   "sha256": "b1d6f5c5675cd827626fef7bdb158e9eb48ca55debc6ef569ab5c341f029b74b",
+   "size": 157636,
+   "origin": "sadalsuud:ld-scratch/2026-10-15-belonging-h-replay-dated/rows.jsonl",
+   "pulled_at": "2026-10-15T09:11:13+02:00"
+  },
+  {
+   "path": "experiments/2026-10-15-belonging-h-replay/extract/rows.jsonl",
+   "sha256": "c73ddb0ac3e8e440595c32c7d5e39cc5ec277e193cddcbeba22e303aaada1829",
+   "size": 1843257,
+   "origin": "sadalsuud:ld-scratch/2026-10-15-belonging-h-replay/rows.jsonl",
+   "pulled_at": "2026-10-15T09:01:54+02:00"
+  },
+  {
+   "path": "experiments/2026-10-15-belonging-h-replay/tag-dated/input.jsonl",
+   "sha256": "31c520876869fa921b9b1c841a768167ca1a0116467c933c836bab971e3ffb68",
+   "size": 17634,
+   "origin": "b650-gpu:ld-scratch/2026-10-15-belonging-h-replay-tag-dated/input.jsonl",
+   "pulled_at": "2026-10-15T09:11:36+02:00"
+  },
+  {
+   "path": "experiments/2026-10-15-belonging-h-replay/tag-dated/out.jsonl",
+   "sha256": "44782cb5338b9ed713d9fea9614ce47a9ed769218175b0d34e69c1bf2fc4a0b3",
+   "size": 1915,
+   "origin": "b650-gpu:ld-scratch/2026-10-15-belonging-h-replay-tag-dated/out.jsonl",
+   "pulled_at": "2026-10-15T09:11:36+02:00"
+  },
+  {
+   "path": "experiments/2026-10-15-belonging-h-replay/tag/run.log",
+   "sha256": "af78ce27bfd26af402b7314aa00e1af8aa11ce267c9e23c3b5784362be8eeba7",
+   "size": 4026,
+   "origin": "b650-gpu:ld-scratch/2026-10-15-belonging-h-replay-tag/run.log",
+   "pulled_at": "2026-10-15T09:04:18+02:00"
+  },
+  {
+   "path": "experiments/2026-10-15-belonging-h-replay/tag/tag-control/input.jsonl",
+   "sha256": "8c86ebaefce9a2d409c5935202f1f0cdef02f51d4645a9d79ed8876daf46f09e",
+   "size": 46810,
+   "origin": "b650-gpu:ld-scratch/2026-10-15-belonging-h-replay-tag/tag-control/input.jsonl",
+   "pulled_at": "2026-10-15T09:04:18+02:00"
+  },
+  {
+   "path": "experiments/2026-10-15-belonging-h-replay/tag/tag-control/out.jsonl",
+   "sha256": "d519cc1e1fa8366f12446475f966ee062ab5a31e7892813faaba46a45138d511",
+   "size": 4247,
+   "origin": "b650-gpu:ld-scratch/2026-10-15-belonging-h-replay-tag/tag-control/out.jsonl",
+   "pulled_at": "2026-10-15T09:04:18+02:00"
+  },
+  {
+   "path": "experiments/2026-10-15-belonging-h-replay/tag/tag/input.jsonl",
+   "sha256": "d174e026e7148edd7e4e775d91884d88edee4b6539c7d86549ad656c8bfcf52c",
+   "size": 444329,
+   "origin": "b650-gpu:ld-scratch/2026-10-15-belonging-h-replay-tag/tag/input.jsonl",
+   "pulled_at": "2026-10-15T09:04:18+02:00"
+  },
+  {
+   "path": "experiments/2026-10-15-belonging-h-replay/tag/tag/out.jsonl",
+   "sha256": "250b51ec9efb4401beb3a8514c6cea7d15720b920d4dec61cafc95d1e23c3b27",
+   "size": 34591,
+   "origin": "b650-gpu:ld-scratch/2026-10-15-belonging-h-replay-tag/tag/out.jsonl",
+   "pulled_at": "2026-10-15T09:04:18+02:00"
+  }
+ ]
+}
