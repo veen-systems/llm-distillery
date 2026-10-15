@@ -37,8 +37,8 @@ keep pruning (owner 2026-10-14: "pruning, thinning, mechanizing, retiring").*
    - ▶ **NOW RUNNING (from 2026-10-15): re-baseline v3 on the LIVE H page**, 7 daily builds 10-15 → 10-21, read
      ≥ 2026-10-22. ⏰ **Owner OK'd 2026-10-15: a user crontab line on situla** saves https://ovr.news/en/belonging/ daily
      at 16:30 CEST (14:30Z) to `~/ld-lab/inbox/ovr-belonging-pages/belonging_<UTC>.html`; first file
-     `belonging_20261015T0750Z.html` (manual test run, page built 07:40:42Z = the first H build). ⛔ **REMOVE the line after
-     2026-10-21** (`crontab -e`; it is the only line). Pre-register the on-site count BEFORE reading any of these pages'
+     `belonging_20261015T0750Z.html` (manual test run, page built 07:40:42Z = the first H build). The line carries a date guard and does
+     nothing from 2026-10-22 (UTC). ⛔ **Then REMOVE it** (`crontab -r`; it is the only line). Pre-register the on-site count BEFORE reading any of these pages'
      tags; move the files into a lab `experiments/` tree (`lab.py move`) before citing them. The qwen count per day (b650, $0; reuse
      `count.py` / `select_v3.py`, add the H order from `replay.py` `order("H hybrid")`), report the weekly mean and the
      worst day. Pre-register it first.
