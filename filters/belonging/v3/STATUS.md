@@ -6,6 +6,12 @@
 have raw ≥ 4.0 (0.52%; the 5,000-row pre-switch draw predicted 25/5,000 = 0.50%, v1 109/5,000). One cycle, so read it as the
 direction only.
 
+**Top of page (added 2026-10-15):** the owner's bar is ≤ 6 single-person stories in the Belonging top 30, as a weekly
+average (`docs/decisions/2026-10-10-belonging-personal-story-bar.md`). v3 failed it on the owner's one count (10/30,
+2026-10-12, old ranking). ovr.news switched to ranking H on 2026-10-15; the on-site re-baseline reads ≥ 2026-10-22
+(`docs/TODO.md` item 0a). Lowering personal training rows is CLOSED (EXP-048, EXP-050: both cost community recall). The
+rollback rule below predates the bar; a count over 6 is the owner's call, not an automatic rollback.
+
 ## What it is
 
 belonging v1's architecture, prompt and dimensions (Gemma-3-1B + LoRA, hybrid e5 probe Stage 1, isotonic calibration), retrained

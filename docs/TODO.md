@@ -1,11 +1,11 @@
 # LLM Distillery - TODO
 
-## ▶️ START HERE — the ordered queue, as of 2026-10-14
+## ▶️ START HERE — the ordered queue, as of 2026-10-15
 
-*A bare "continue" means this list, top down. Each line names the FIRST action. Item 0 is WAITING (dated, ≥ 10-23/24),
-item 0a waits on ovr.news shipping the ranking the owner ruled on 2026-10-14; its offline replay on H can run meanwhile.
-Item 1 is NexusMind's. Item 2 (#163, the read surface): round 4 on 2026-10-14 took it to the figure in item 2;
-keep pruning (owner 2026-10-14: "pruning, thinning, mechanizing, retiring").*
+*A bare "continue" means this list, top down. Each line names the FIRST action. Item 0 is WAITING (dated, ≥ 10-23/24);
+item 0a's next action is dated ≥ 10-22 (the on-site count on live ranking H). **Item 0b (#157, label provenance) is
+the FIRST work to do now** (owner-agreed 2026-10-15, phase 1 of veen-systems/pipeline-atlas#169). Item 1 is NexusMind's.
+Item 2 (#163, the read surface): keep pruning (owner 2026-10-14 and 10-15: "pruning, thinning, mechanizing, retiring").*
 
 0. ⏸ **BELONGING v3 is LIVE (since NexusMind run `bd00dad6`, 2026-10-09 00:08–01:24 CEST), replacing v1. Nothing to do before
    2026-10-23 unless ovr.news messages.** Read `filters/belonging/v3/STATUS.md` first (evidence, rollback rule, refit notes);
@@ -24,44 +24,38 @@ keep pruning (owner 2026-10-14: "pruning, thinning, mechanizing, retiring").*
 
 0a. **BELONGING v3's TOP OF PAGE vs the owner's bar (≤ 6 of 30 single-person stories, judged as a WEEKLY AVERAGE,
    ruled 2026-10-14).** Bar + rulings: `docs/decisions/2026-10-10-belonging-personal-story-bar.md`; ledger H-BB6–H-BB8;
-   history up to 2026-10-14: TODO-archive § *Moved 2026-10-14*. State: v3 fails on the owner's one count (10/30, 10-12);
-   qwen (a floor) counts 4 / 8 / 5 on 10-11 / 10-12 / 10-13 on the CURRENT ranking (`docs/evidence/2026-10-13-belonging-daily-baseline/`);
-   candidate c2c FAILED its recall guard (EXP-048, with a build defect: H-BB8).
-   - ✅ **H is LIVE (ducroq/ovr.news#391):** ovr.news commit `07cdb7e0`, first production H build 2026-10-15 ~07:39Z
-     (Cloudflare Pages `bab11cb7`), per ovr-news-47; settings `ranking.freshSlots=5, freshSlotHours=24,
-     ageBandEdgesHours=[72,168]` (`src/lib/config.ts`). Their check: the live page's first 8 cards match H locally;
-     Belonging top 30 = 6/24/0 (< 24 h / 1–3 d / older). Latent gap: page-level filters (short summary, NL without a
-     Dutch translation) run AFTER the fresh slots, so fewer than 5 fresh cards can lead (0 cards today).
-     pipeline-atlas: filed by ovr-news-47 as veen-systems/pipeline-atlas#170 (commit, build time, settings, the stale
-     Stage 9/10 lines); confirmed open 2026-10-15.
-   - ▶ **NOW RUNNING (from 2026-10-15): re-baseline v3 on the LIVE H page**, 7 daily builds 10-15 → 10-21, read
-     ≥ 2026-10-22. ⏰ **Owner OK'd 2026-10-15: a user crontab line on situla** saves the five lens pages
-     (`https://ovr.news/en/{belonging,thriving,solutions,discovery,recovery}/`) daily at 16:30 local to
-     `~/ld-lab/inbox/ovr-lens-pages/<lens>_<UTC>.html`. Extended the same day (owner: all five lenses, until 2026-11-15)
-     so it also serves LENS ASSIGNMENT (H-LA2, "narrow lens first", tested only vs judges, never vs the owner; the owner
-     keeps wondering about tabs). First files 2026-10-15T0750Z (Belonging only) and T0755Z (all five); the first H build
-     was 07:40:42Z. 16:30 local is 14:30Z until 10-24, 15:30Z from 10-25 (CET); the Belonging re-baseline (10-15..10-21)
-     is unaffected. Date guard: inert from 2026-11-16 (UTC). ⛔ **Then REMOVE it** (`crontab -r`; it is the only line).
-     Pre-register the on-site count BEFORE reading any page's tags; move files into a lab `experiments/` tree
-     (`lab.py move`) before citing them. The qwen count per day (b650, $0; reuse
-     `count.py` / `select_v3.py`, add the H order from `replay.py` `order("H hybrid")`), report the weekly mean and the
-     worst day. Pre-register it first.
-     ✅ **Offline replay DONE 2026-10-15 (EXP-049, `docs/evidence/2026-10-15-belonging-h-replay/`):** qwen floor, 5
-     in-range builds. Primary (as pre-registered): H 4.80 vs control 5.60, both undetermined under the pre-registered
-     rule (a floor mean ≤ 6 cannot pass). Review refuted the sticky-removal rule; the post-hoc DATED variant
-     reproduces the 10-13 baseline 30/30 and gives H 5.20, **control 6.40: the current ranking fails the bar even on
-     the floor** (post hoc). Use the dated builds as c2d's H instrument (`--dated` on `build_population.py` /
-     `select_v3.py` / `count.py`). The on-site re-baseline above still runs once H ships.
-   - **Then (owner RULED 2026-10-14: "prepare now, judge on H"):** c2d, a cap-aware retry (scale the five non-gatekeeper dimensions so community_fabric stays ≥ 3.0; assert
-     each changed row's EFFECTIVE score is 4.4; same seeds), judged on the same weekly H instrument. $0 oracle. Pre-register c2d, train on b650 (2 seeds), replay
-     v3 and c2d on H over the same 7 days; don't wait for ovr.news to ship H.
-     ❌ **DONE 2026-10-15 (EXP-050, `docs/evidence/2026-10-15-belonging-c2d/`): NOT worth a gate.** Recall guard
-     0.902 / 0.804 (s42 / s43, bar 0.9): cap-aware lowering kept c2c's recall cost. H top-30 qwen personal: v3 arm 6.14,
-     both seeds 1.29 (qwen chose the lowered rows AND counts them; c2d also thins the display-eligible pool to 0.38–0.70
-     of v3's). **Owner RULED 2026-10-15: CLOSE the "lower personal training rows" lever** (c2c and c2d both cost
-     community recall). The personal-story route is now ranking H + the on-site re-baseline (≥ 10-22). Trained packages: lab `experiments/2026-10-15-belonging-c2d/`.
-   - Over 6 is the case for the next candidate, NOT an automatic rollback (v3's rollback rule predates the bar; owner's call).
+   history: TODO-archive § *Moved 2026-10-14* and § *Moved 2026-10-15* (the full 0a text of 2026-10-15, verbatim).
+   State: v3 fails on the owner's one count (10/30, 10-12, old ranking). Ranking H is LIVE since 2026-10-15 (first build
+   07:40:42Z; ovr.news commit `07cdb7e0`, ducroq/ovr.news#391, veen-systems/pipeline-atlas#170). Offline replay EXP-049:
+   on the qwen floor the OLD ranking fails the bar (6.40, dated, post hoc), H is undetermined (5.20). The training lever
+   is CLOSED (owner 2026-10-15): c2c (EXP-048) and c2d (EXP-050) both failed the community recall guard.
+   - ▶ **FIRST ACTION, on or after 2026-10-22: the on-site re-baseline of v3 on the LIVE H page.** Pages: the daily
+     capture in `~/ld-lab/inbox/ovr-lens-pages/` (`belonging_<UTC>.html`, 10-15 → 10-21, 7 builds). Steps: (1) write
+     `PREREGISTRATION.md` BEFORE reading any page's tags (bar = weekly mean ≤ 6; a qwen mean ≤ 6 is undetermined, > 6 is
+     conclusive; predictions); (2) `lab.py move` the 7 pages into a lab `experiments/` tree; (3) parse each page's top 30
+     ids, tag on b650 with EXP-049's qwen tagger unchanged (`tag_qwen.py`, `system.txt`, reuse rule + 10-id determinism
+     control), report the weekly mean and the worst day. ⚠️ The 10-15 T0750Z/T0755Z files were captured by hand that
+     morning; the 16:30 ones are the daily series. Owner's own count is the stronger instrument: offer it.
+   - **Over 6 is NOT an automatic rollback** (v3's rollback rule predates the bar; owner's call).
+   - ⏰ **The capture is a user crontab line on situla** (owner OK 2026-10-15; the only line): five lens pages
+     (`https://ovr.news/en/{belonging,thriving,solutions,discovery,recovery}/`) daily at 16:30 local (14:30Z until
+     10-24, 15:30Z from 10-25). Inert from 2026-11-16 (UTC date guard). Hardened at the 10-15 close (review): `curl -fsSL --retry 2`, so an error page is
+     never saved as a page; errors go to `curl.err` in the same dir (cron has no mail here). situla is a laptop: a run
+     missed while asleep is NOT caught up, so expect gaps; each file name carries its UTC time. ⛔ **After 2026-11-15 REMOVE it: `crontab -r`.**
+     Beyond Belonging it serves LENS ASSIGNMENT (H-LA2, "narrow lens first", never tested against the owner): when the
+     owner pastes an article that looks like it is on the wrong tab, find it in that day's pages and record it.
    - Lab: the 10-10 `~/ld-lab/inbox/` heap (37 backlog citations) is still a later pass (#172, item 00 archived 2026-10-14).
+
+0b. ▶ **#157 (oracle label provenance), phase 1 of veen-systems/pipeline-atlas#169 — START HERE on "continue".** Owner
+   agreed 2026-10-15 that it starts now, ahead of the atlas's other phases: every unstamped label is history that cannot
+   be fixed later (order: https://github.com/veen-systems/pipeline-atlas/issues/169#issuecomment-6189722887; relayed by
+   the pipeline-atlas session). Scope: on EVERY oracle label, stamp (a) the model the provider actually SERVED (the
+   response's `model` field, not the requested alias — `deepseek-chat` swapped V4 → V4.1 unseen on 2026-09-10) and (b)
+   the FULL prompt sha256 (both scorers truncate to 12 hex: `ground_truth/batch_scorer.py:506`,
+   `scripts/score_deepseek_production.py:313`). First action: list every oracle call site (Gemini, DeepSeek, Ollama
+   paths) and what each response carries; name the reader of each new stamp; prove the outcome by scoring a few rows and
+   reading the stamps back (working rule). ⚠️ Keep the 12-char field for old readers, or migrate them in the same commit.
+   When it lands: comment on #157 so the atlas can tick it off.
 
 1. **Decision-0 sync to NexusMind** — ONE NexusMind commit. The sequence is in the archived block (item 1):
    - dry-run diff first
@@ -72,6 +66,12 @@ keep pruning (owner 2026-10-14: "pruning, thinning, mechanizing, retiring").*
    NexusMind's session runs it; ours is to tell them. LD#52 and LD#86 are closed.
 
 2. **THE READ SURFACE (#163). "prune, thin, mechanize, retire".** Rounds 1–3 landed 2026-10-12: 758,893 → 514,588 chars (519,680 at close, after the session's new records).
+   ✅ **Round 5 (2026-10-15 close, owner: same words): 505,983 → 498,514**, ceiling → 508,484. Verbatim: gotcha + sessions
+   `--before 2026-10-13`/`10-14` (5 entries, 3 session files), H-BB8's row → ledger archive § *Moved 2026-10-15* (pointer
+   kept), TODO 0a's history → TODO-archive. Found and repaired: a substring-anchored insert had split the gotcha log's
+   intro and hidden 4 entries from `retire_memory.py`. MECHANIZED: the `cp -r` package-import gotcha (`train.py`).
+   ▶ **Next levers:** thinning the four 26–30K standing files (`filter-status.md`, `stamp-contract-integrity.md`,
+   `nexusmind-data-sources.md`, `oracle-pricing-scheduling.md`) — a rule restated in 3 files is 2 too many.
    ✅ **Round 4 (2026-10-14, owner: "pruning, thinning, mechanizing, retiring"): 524,035 → 503,152**, ceiling → 513,215.
    Verbatim: `retire_memory.py sessions --before 2026-10-12` (3 files) and `gotcha --before 2026-10-12` (4 entries);
    `hypothesis-ledger.md` 51,066 → 43,662 at the move, 43,859 after the H-BB7 ruling (`H-CX3` row + the H-AR prose → archive § *Moved 2026-10-14*, exact

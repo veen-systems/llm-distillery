@@ -306,3 +306,10 @@ hypotheses were stated — they are NOT what it reports now.
 invariance and article-level-ness are different properties, and `passed_prefilter` is
 invariant for the same reason `_is_commerce` is: the rows that would vary it are gone.
 
+## Moved 2026-10-15 — Hypothesis ledger (#163 round 5; H-BB8 closed by the owner's ruling)
+
+### Belonging adj1 build and gate — `H-BB` (2026-10-07, `docs/evidence/2026-10-07-belonging-adj1-build/`, `docs/evidence/2026-10-03-belonging-heldout/GATE.md`)  *(context heading, repeated)*
+
+| id | hypothesis | status |
+|---|---|---|
+| H-BB8 | Scaling personal training rows down lowers personal stories without costing community stories | ❌ **REFUTED, twice; lever CLOSED (EXP-048, EXP-050).** EXP-048, 2026-10-12: both seeds kept only 0.807 / 0.862 of v3's community passes (bar 0.9). Personal mean raw fell −0.82 / −1.16, community −0.24 / −0.47 (s42 / s43). ⚠️ The build ignored the community_fabric gatekeeper: 11 of 42 scaled rows were trained to 3.42 (blocked), not 4.4. So a cap-aware retry is untested, not refuted. **Cap-aware retry c2d (EXP-050, 2026-10-15): recall cost REMAINS** — 0.902 / 0.804 (s42 / s43; seed mean 0.853 vs c2c's 0.835), not worth a gate. It does cut the H top-30 qwen personal count (v3 arm 6.14 → 1.29 both seeds), but qwen chose the lowered rows and counts the result, and c2d thins the display-eligible population to 0.38–0.70 of v3's. Two lowering builds now land near 0.85. **Owner RULED 2026-10-15: lever CLOSED** (no further lowering builds). `docs/evidence/2026-10-15-belonging-c2d/` |

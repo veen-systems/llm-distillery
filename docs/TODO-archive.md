@@ -7960,3 +7960,46 @@ Items surfaced by the multi-agent code review of the migration commits (2026-04-
 - [ ] **seece** - Corporate excellence (not ovr.news)
 - [ ] **sustainability_economic_viability** - Sustainability sub-dimension (not ovr.news)
 - [ ] **sustainability_policy_effectiveness** - Sustainability sub-dimension (not ovr.news)
+
+## Moved 2026-10-15 — item 0a as it stood at the 2026-10-15 session close (verbatim)
+
+0a. **BELONGING v3's TOP OF PAGE vs the owner's bar (≤ 6 of 30 single-person stories, judged as a WEEKLY AVERAGE,
+   ruled 2026-10-14).** Bar + rulings: `docs/decisions/2026-10-10-belonging-personal-story-bar.md`; ledger H-BB6–H-BB8;
+   history up to 2026-10-14: TODO-archive § *Moved 2026-10-14*. State: v3 fails on the owner's one count (10/30, 10-12);
+   qwen (a floor) counts 4 / 8 / 5 on 10-11 / 10-12 / 10-13 on the CURRENT ranking (`docs/evidence/2026-10-13-belonging-daily-baseline/`);
+   candidate c2c FAILED its recall guard (EXP-048, with a build defect: H-BB8).
+   - ✅ **H is LIVE (ducroq/ovr.news#391):** ovr.news commit `07cdb7e0`, first production H build 2026-10-15 ~07:39Z
+     (Cloudflare Pages `bab11cb7`), per ovr-news-47; settings `ranking.freshSlots=5, freshSlotHours=24,
+     ageBandEdgesHours=[72,168]` (`src/lib/config.ts`). Their check: the live page's first 8 cards match H locally;
+     Belonging top 30 = 6/24/0 (< 24 h / 1–3 d / older). Latent gap: page-level filters (short summary, NL without a
+     Dutch translation) run AFTER the fresh slots, so fewer than 5 fresh cards can lead (0 cards today).
+     pipeline-atlas: filed by ovr-news-47 as veen-systems/pipeline-atlas#170 (commit, build time, settings, the stale
+     Stage 9/10 lines); confirmed open 2026-10-15.
+   - ▶ **NOW RUNNING (from 2026-10-15): re-baseline v3 on the LIVE H page**, 7 daily builds 10-15 → 10-21, read
+     ≥ 2026-10-22. ⏰ **Owner OK'd 2026-10-15: a user crontab line on situla** saves the five lens pages
+     (`https://ovr.news/en/{belonging,thriving,solutions,discovery,recovery}/`) daily at 16:30 local to
+     `~/ld-lab/inbox/ovr-lens-pages/<lens>_<UTC>.html`. Extended the same day (owner: all five lenses, until 2026-11-15)
+     so it also serves LENS ASSIGNMENT (H-LA2, "narrow lens first", tested only vs judges, never vs the owner; the owner
+     keeps wondering about tabs). First files 2026-10-15T0750Z (Belonging only) and T0755Z (all five); the first H build
+     was 07:40:42Z. 16:30 local is 14:30Z until 10-24, 15:30Z from 10-25 (CET); the Belonging re-baseline (10-15..10-21)
+     is unaffected. Date guard: inert from 2026-11-16 (UTC). ⛔ **Then REMOVE it** (`crontab -r`; it is the only line).
+     Pre-register the on-site count BEFORE reading any page's tags; move files into a lab `experiments/` tree
+     (`lab.py move`) before citing them. The qwen count per day (b650, $0; reuse
+     `count.py` / `select_v3.py`, add the H order from `replay.py` `order("H hybrid")`), report the weekly mean and the
+     worst day. Pre-register it first.
+     ✅ **Offline replay DONE 2026-10-15 (EXP-049, `docs/evidence/2026-10-15-belonging-h-replay/`):** qwen floor, 5
+     in-range builds. Primary (as pre-registered): H 4.80 vs control 5.60, both undetermined under the pre-registered
+     rule (a floor mean ≤ 6 cannot pass). Review refuted the sticky-removal rule; the post-hoc DATED variant
+     reproduces the 10-13 baseline 30/30 and gives H 5.20, **control 6.40: the current ranking fails the bar even on
+     the floor** (post hoc). Use the dated builds as c2d's H instrument (`--dated` on `build_population.py` /
+     `select_v3.py` / `count.py`). The on-site re-baseline above still runs once H ships.
+   - **Then (owner RULED 2026-10-14: "prepare now, judge on H"):** c2d, a cap-aware retry (scale the five non-gatekeeper dimensions so community_fabric stays ≥ 3.0; assert
+     each changed row's EFFECTIVE score is 4.4; same seeds), judged on the same weekly H instrument. $0 oracle. Pre-register c2d, train on b650 (2 seeds), replay
+     v3 and c2d on H over the same 7 days; don't wait for ovr.news to ship H.
+     ❌ **DONE 2026-10-15 (EXP-050, `docs/evidence/2026-10-15-belonging-c2d/`): NOT worth a gate.** Recall guard
+     0.902 / 0.804 (s42 / s43, bar 0.9): cap-aware lowering kept c2c's recall cost. H top-30 qwen personal: v3 arm 6.14,
+     both seeds 1.29 (qwen chose the lowered rows AND counts them; c2d also thins the display-eligible pool to 0.38–0.70
+     of v3's). **Owner RULED 2026-10-15: CLOSE the "lower personal training rows" lever** (c2c and c2d both cost
+     community recall). The personal-story route is now ranking H + the on-site re-baseline (≥ 10-22). Trained packages: lab `experiments/2026-10-15-belonging-c2d/`.
+   - Over 6 is the case for the next candidate, NOT an automatic rollback (v3's rollback rule predates the bar; owner's call).
+   - Lab: the 10-10 `~/ld-lab/inbox/` heap (37 backlog citations) is still a later pass (#172, item 00 archived 2026-10-14).

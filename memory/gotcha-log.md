@@ -1,28 +1,23 @@
 # Gotcha Log
 
-*Newest-first, dated entries. **One standing section lives at the BOTTOM**: [`### A POST-HOC LABEL CORRECTION KEPT ONLY IN PROSE IS INVISIBLE TO EVERY SCRIPT (2026-10-13)
-**Problem**: `replay.py` and `site_rank.py` counted the owner's personal stories from `tags.tsv` and reported 9 where the corrected count is 10. The same error went to the ovr.news session, which was preparing the owner's decision. Review caught it; a correction was sent (`8a8207c`).
-**Root cause**: rule 3 keeps `tags.tsv` as pre-registered, so the owner's pos-25 correction lived only in the README's prose. Every new consumer of the TSV inherits the uncorrected label silently.
-**Fix**: a correction travels as DATA next to the frozen file. Done: `2026-10-12-belonging-personal-tag/owner_corrections.tsv`, loaded by both consumers. Before counting from any labels file, grep its directory's README for "correction".
+*Newest-first, dated entries. **One standing section lives at the BOTTOM**: [`## Mechanized`](#mechanized) — the destination for `/review-changes` Step 3.1, where a review finding that became a deterministic check is recorded. It is named here because nobody scrolls to the bottom of this file.*
 
-### `cp -r` OF A FILTER PACKAGE LOADS THE SOURCE PACKAGE'S MODEL (2026-10-12)
-**Problem**: `filters/belonging/v1_c2c_s42` was a `cp -r` of `v1_c2b`. Its training wrote its own adapter, but scoring it loaded `v1_c2b/model`. `gate.assert_loads_from` refused both seeds before a score was written.
-**Root cause**: the package's `inference*.py` import `filters.belonging.v1_c2b.*` by ABSOLUTE module path, and the model path is `Path(__file__).parent / "model"` of the IMPORTED module. A copy keeps the source's module name.
-**Fix**: after any package copy, `sed` the module path to the new package name and `grep -c <old name>` = 0 before scoring. Keep `assert_loads_from` in every scoring script: it is what caught this.
+*⚠️ **Entries dated before 2026-10-13 live in (except the 10-12 `cp -r` entry, kept while its resolution is fresh) [`archive/gotcha-log-archive.md`](archive/gotcha-log-archive.md)**, verbatim (the 10-12 ones moved 2026-10-15, #163 round 5; the 10-01 → 10-08 ones moved 2026-10-12 by a second owner-approved MID-MONTH pass, `--before 2026-10-09`, #163 round 2; the 09-01 → 09-16 ones moved 2026-09-27 by an owner-approved MID-MONTH pass, `--before 2026-09-17`; earlier ones moved 2026-09-24; into `archive/` 2026-09-26 so curate's size measurement stops counting it, #163; the month-dated Feb–May entries followed on 2026-09-26). Next pass: `python3 scripts/maintenance/retire_memory.py gotcha --before <first of this month> --apply` (dry run without `--apply`). It retires top-level entries only; the `###` entries inside the catalogue are kept by rule and counted (⚠️ superseded 2026-10-09: 43 of them moved by date; see the note under the catalogue heading). The unreachable-mechanism catalogue stayed here. For a recurrence match, grep both: `grep -n <term> memory/gotcha-log.md memory/archive/gotcha-log-archive.md` (a `memory/gotcha-log*.md` glob does NOT reach the archive). Was: `grep -n <term> memory/gotcha-log*.md`.*
 
-### SCALING LABELS TO A WEIGHTED TARGET IGNORES THE GATEKEEPER (2026-10-12)
-**Problem**: `build_c2c.py` scaled all six belonging labels so the plain weighted sum = 4.4. In 11 of 42 rows community_fabric fell below 3.0, so the scorer caps them at 3.42: trained to BLOCK, not "just above the op-point". Found by the session-close review, after the verdict.
-**Root cause**: the target was computed on the plain weighted average. The runtime score is gatekeeper-capped (`GATEKEEPER_MIN` / `GATEKEEPER_CAP` in `base_scorer.py`).
-**Fix**: any label edit asserts the EFFECTIVE (capped) score of every changed row, computed by the package's own rule, not a re-implementation of the sum. Belonging: keep community_fabric ≥ 3.0.
+## A HEADING INSERTED BY SUBSTRING MATCH SPLIT THIS LOG'S INTRO, AND THE SPLIT HID ENTRIES FROM RETIREMENT (2026-10-15)
+**Problem**: four entries (10-12, 10-13) sat INSIDE the intro sentence, between "[`" and "## Mechanized`](#mechanized)". The 10-13 heading was mid-line, so no heading grep saw it, and `retire_memory.py` skipped those entries on two passes.
+**Root cause**: an insert anchored on the substring "## Mechanized" (the intro's link text), not on a line-start heading. Same class as curate's #233 warning, which names only `Promoted`.
+**Fix**: rebuilt 2026-10-15 with a line-multiset loss check (only the joined intro line and re-levelled headings differ). Insert entries above `^## Mechanized$` or after the intro's closing `*` line, never at a substring. Reconcile `grep -c '^\*\*Problem\*\*'` against the heading count at every curate.
 
-### `lab.py pull` DEST IS RELATIVE TO THE LAB ROOT, NOT THE INBOX (2026-10-12)
-**Problem**: `lab.py pull host:path b650-gpu/2026-10-12/x` landed in `~/ld-lab/b650-gpu/`, outside `inbox/`, where every earlier pull lives.
-**Root cause**: dest is joined to `$LD_LAB`. The docstring example spells `inbox/...`, but nothing enforces it.
-**Fix**: always write `inbox/<host>/<date>/<name>`. Moved and `lab.py verify` re-run: manifests are relative, so a move keeps them valid. ⚠️ **Superseded 2026-10-13:** the `_LAB_MANIFEST.json` survives a move but an evidence `MANIFEST.json` does not; move with `lab.py move` (rewrites citations), and pull/adopt/move now refuse a dest outside the layout (mechanized).
+## A CONTROL'S RESULT THAT LIVES ONLY IN THE TRANSCRIPT IS NOT EVIDENCE (2026-10-15)
+**Problem**: c2d's pre-registered normalization control "PASSED 103,968/103,968" before compaction, but no committed file printed it; writing the README, nothing could be cited.
+**Root cause**: the control ran as an ad-hoc command during the dry run; `analyse.py report` printed the other controls but not this one.
+**Fix**: every pre-registered control is a line in the committed report script's output (added to `analyse.py`, re-run, `result.txt` reproducible). Before the README, grep `result.txt` for each control named in `PREREGISTRATION.md` §4.
 
-## Mechanized`](#mechanized) — the destination for `/review-changes` Step 3.1, where a review finding that became a deterministic check is recorded. It is named here because nobody scrolls to the bottom of this file.*
-
-*⚠️ **Entries dated before 2026-10-12 live in [`archive/gotcha-log-archive.md`](archive/gotcha-log-archive.md)**, verbatim (the 10-01 → 10-08 ones moved 2026-10-12 by a second owner-approved MID-MONTH pass, `--before 2026-10-09`, #163 round 2; the 09-01 → 09-16 ones moved 2026-09-27 by an owner-approved MID-MONTH pass, `--before 2026-09-17`; earlier ones moved 2026-09-24; into `archive/` 2026-09-26 so curate's size measurement stops counting it, #163; the month-dated Feb–May entries followed on 2026-09-26). Next pass: `python3 scripts/maintenance/retire_memory.py gotcha --before <first of this month> --apply` (dry run without `--apply`). It retires top-level entries only; the `###` entries inside the catalogue are kept by rule and counted (⚠️ superseded 2026-10-09: 43 of them moved by date; see the note under the catalogue heading). The unreachable-mechanism catalogue stayed here. For a recurrence match, grep both: `grep -n <term> memory/gotcha-log.md memory/archive/gotcha-log-archive.md` (a `memory/gotcha-log*.md` glob does NOT reach the archive). Was: `grep -n <term> memory/gotcha-log*.md`.*
+## THE qwen TAGGER RETURNS `null` FOR A VERY LONG ARTICLE, DETERMINISTICALLY (2026-10-15)
+**Problem**: `portuguese_observador_8e7ee891bb52` (85,459 chars) got `focus: null` in c2c and again on re-tag; it silently fell out of Check A's denominator.
+**Root cause**: the prompt overflows the context (`prompt_eval_count` 8,194 despite `num_ctx` 16384), the system prompt is lost, and qwen answers as a chat reply without a `focus` key.
+**Fix**: report unparsed rows in every denominator (`analyse.py` Check A prints them) and bracket them both ways. If it recurs, truncate content to head+tail before tagging — an instrument change, so only in a new pre-registration.
 
 ## A VERBATIM MOVE BOUNDED BY "THE NEXT HEADING I REMEMBERED" TOOK 20K MORE THAN MEANT (2026-10-14)
 **Problem**: moving three prose paragraphs out of `hypothesis-ledger.md`, the end marker was a heading I had read
@@ -40,34 +35,15 @@ fixed 2026-10-07 (`fe12a2f`, `KNOWN_OPEN = {}`); the TODO line was never updated
 **Fix**: before putting any question to the owner, grep the object of the question (file, config key, issue state).
 Same family as `feedback-a-marker-is-a-claim` (auto-memory): a TODO line is a claim.
 
-## A TIMING TEST WENT RED AT HEAD AND THE SESSION CLOSE DID NOT SEE IT (2026-10-12)
-**Problem**: `test_no_catastrophic_backtracking` (the kill-pattern hook) took 8.03 s on 2000×`ssh h ` at `37aac9b`; `caeaa4f`
-was already over budget on `watch`. The 2026-10-09 close reported the suite green.
-**Root cause**: a latency test fails only when its input class is slow; the close ran the hook's tests, not the full
-suite, after the last hook change.
-**Fix**: `block_pattern_kill.py` re-reads the `shlex.join` form only when it differs from the plain string (0.30 s).
-Run the FULL suite (`.venv/bin/python`) as the last act before a close commit, and read every failure line.
+## A POST-HOC LABEL CORRECTION KEPT ONLY IN PROSE IS INVISIBLE TO EVERY SCRIPT (2026-10-13)
+**Problem**: `replay.py` and `site_rank.py` counted the owner's personal stories from `tags.tsv` and reported 9 where the corrected count is 10. The same error went to the ovr.news session, which was preparing the owner's decision. Review caught it; a correction was sent (`8a8207c`).
+**Root cause**: rule 3 keeps `tags.tsv` as pre-registered, so the owner's pos-25 correction lived only in the README's prose. Every new consumer of the TSV inherits the uncorrected label silently.
+**Fix**: a correction travels as DATA next to the frozen file. Done: `2026-10-12-belonging-personal-tag/owner_corrections.tsv`, loaded by both consumers. Before counting from any labels file, grep its directory's README for "correction".
 
-## A CHECKER THAT SCANNED GITIGNORED MODEL DIRS TIMED OUT THE VERIFY BATTERY (2026-10-12)
-
-`check_claim_shapes.py` walked `filters/` with `os.walk` and parsed every `.json` it found, including ~12
-gitignored 33 MB Gemma `tokenizer.json` files under `filters/**/model/`: ~112 s alone against the verify
-runner's 120 s `VERIFY_TIMEOUT`, so under load it reported TIMEOUT (`errored=1`), which reads like "a check
-broke". The scan population was "whatever is on this disk", not "what the repo commits"; it grew silently with
-each downloaded model. Fix: the walk skips what `git ls-files --others --ignored --exclude-standard` lists (the
-repo's own rule, not a hand list) and PRINTS the skip count (42 today); 22 s. ⭐ A file walk over a working tree
-measures the machine, not the repo — scope it to tracked-or-unignored, and print what was excluded.
-
-## `restic ls <snapshot> <path>` IS NOT RECURSIVE — my deletion guard read "0 of 17 in the backup" for data that was there (2026-10-12)
-
-Before deleting host copies I required "the newest restic snapshot lists every file of the pulled tree". The
-guard listed with `restic ls <id> ~/ld-lab --json` and found **none** of 18 items — true of the
-2026-10-10 snapshot too. restic 0.19 lists only the path's DIRECT children unless `--recursive` is given
-(5 nodes: `ld-lab`, `README.md`, `datasets`, `experiments`, `inbox`). With `--recursive`: 4,475 of 4,475 on
-disk. It failed SAFE (skipped all), but it could never have passed, and the decision record's own
-"confirm with `restic ls latest <path>`" told readers the same blind command. ⭐ The tell was the SHAPE: a
-guard that skips 100% is as suspect as one that passes 100% — check the instrument's own count (the guard now
-asserts > 1000 entries) before reading the verdict. Same family: *prove the bar is reachable*.
+## `cp -r` OF A FILTER PACKAGE LOADS THE SOURCE PACKAGE'S MODEL (2026-10-12) [x2] [RESOLVED 2026-10-15: mechanized in train.py]
+**Problem**: `filters/belonging/v1_c2c_s42` was a `cp -r` of `v1_c2b`. Its training wrote its own adapter, but scoring it loaded `v1_c2b/model`. `gate.assert_loads_from` refused both seeds before a score was written.
+**Root cause**: the package's `inference*.py` import `filters.belonging.v1_c2b.*` by ABSOLUTE module path, and the model path is `Path(__file__).parent / "model"` of the IMPORTED module. A copy keeps the source's module name.
+**Fix**: after any package copy, `sed` the module path to the new package name and `grep -c <old name>` = 0 before scoring. Keep `assert_loads_from` in every scoring script: it is what caught this. ⚠️ **Recurred 2026-10-15 (c2d) with this entry in place → MECHANIZED:** `train.py` now refuses such a package (`## Mechanized`).
 
 ## [Short description] (YYYY-MM-DD)
 **Problem**: What went wrong or was confusing.
@@ -326,6 +302,7 @@ false finding in the reference audit, which trains readers to dismiss that audit
 
 | Date | Finding shape | Check | Status | Occurrences |
 |------|---------------|-------|--------|-------------|
+| 2026-10-15 | A `cp -r` of a filter package keeps the source's absolute imports in `inference*.py`, so the copy trains its own adapter and SCORES the source's (gotcha 2026-10-12; recurred in c2d 2026-10-15 although written down) | `training/train.py` `assert_package_imports_self()` refuses before training; `tests/unit/test_package_imports_self.py` (seeded positive: a real copy of v3 and of solutions v6; all committed packages pass; mutation-tested 2026-10-15: disabling the refusal and ignoring the filter name each go red) | live | 0 |
 | 2026-10-12 | `training/prepare_data.py` with a `--filter` whose `filter.name` the labels were not written under: 0 rows match, it wrote three empty splits, printed COMPLETE and exited 0. (Found alongside: the documented call died on `import ground_truth` without PYTHONPATH.) | `tests/unit/test_prepare_data_zero_examples.py` — seeded mismatched field → exit 1, nothing written; control writes all three; both run the documented call with NO PYTHONPATH; guard-off and no-sys.path mutants red | live — ⚠️ NOT covered: a renamed DIMENSION still becomes a silent column of 0s | 0 |
 | 2026-10-12 | ModuleNotFoundError rows under the wrong interpreter explained as "pre-existing environment" (5 occurrences while the fix was written down) | `tests/conftest.py` `pytest_terminal_summary` banner + `tests/unit/test_wrong_interpreter_hint.py`; seeded on the real tree: `python3 -m pytest tests/unit/test_fit_calibration_config_write.py` prints it, `.venv` prints nothing | live — a WARNING, it does not change the exit code | 0 |
 | 2026-10-12 | An account-level refusal (402 balance, 401/403 auth) handled as a per-row error, so every queued row retries against a dead account (2026-09-01: 6,586 doomed calls). `score_deepseek_production.py` was fixed then; `score_ollama_oracle.py` was not (402 fell through to retries, 401/403 used a `SystemExit` the executor drains past) | `tests/unit/test_scorer_run_fatal.py` + `tests/unit/test_ollama_oracle_run_fatal.py`; seeded 402 → one call, no later calls; mutants (402 dropped, pre-call check off, flag never set) all red | live (both DeepSeek callers; NOT `ground_truth/batch_scorer.py`'s Gemini path) | 0 |

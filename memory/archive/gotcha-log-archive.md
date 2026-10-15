@@ -7788,3 +7788,44 @@ would have reported as a pass.
 **Fix / action**: a delegated check reports `N/M` or "could not run, because …", always. Silence is not a verdict
 (*before believing a negative, prove the instrument could have said yes*).
 
+
+## A TIMING TEST WENT RED AT HEAD AND THE SESSION CLOSE DID NOT SEE IT (2026-10-12)
+**Problem**: `test_no_catastrophic_backtracking` (the kill-pattern hook) took 8.03 s on 2000×`ssh h ` at `37aac9b`; `caeaa4f`
+was already over budget on `watch`. The 2026-10-09 close reported the suite green.
+**Root cause**: a latency test fails only when its input class is slow; the close ran the hook's tests, not the full
+suite, after the last hook change.
+**Fix**: `block_pattern_kill.py` re-reads the `shlex.join` form only when it differs from the plain string (0.30 s).
+Run the FULL suite (`.venv/bin/python`) as the last act before a close commit, and read every failure line.
+
+## A CHECKER THAT SCANNED GITIGNORED MODEL DIRS TIMED OUT THE VERIFY BATTERY (2026-10-12)
+
+`check_claim_shapes.py` walked `filters/` with `os.walk` and parsed every `.json` it found, including ~12
+gitignored 33 MB Gemma `tokenizer.json` files under `filters/**/model/`: ~112 s alone against the verify
+runner's 120 s `VERIFY_TIMEOUT`, so under load it reported TIMEOUT (`errored=1`), which reads like "a check
+broke". The scan population was "whatever is on this disk", not "what the repo commits"; it grew silently with
+each downloaded model. Fix: the walk skips what `git ls-files --others --ignored --exclude-standard` lists (the
+repo's own rule, not a hand list) and PRINTS the skip count (42 today); 22 s. ⭐ A file walk over a working tree
+measures the machine, not the repo — scope it to tracked-or-unignored, and print what was excluded.
+
+## `restic ls <snapshot> <path>` IS NOT RECURSIVE — my deletion guard read "0 of 17 in the backup" for data that was there (2026-10-12)
+
+Before deleting host copies I required "the newest restic snapshot lists every file of the pulled tree". The
+guard listed with `restic ls <id> ~/ld-lab --json` and found **none** of 18 items — true of the
+2026-10-10 snapshot too. restic 0.19 lists only the path's DIRECT children unless `--recursive` is given
+(5 nodes: `ld-lab`, `README.md`, `datasets`, `experiments`, `inbox`). With `--recursive`: 4,475 of 4,475 on
+disk. It failed SAFE (skipped all), but it could never have passed, and the decision record's own
+"confirm with `restic ls latest <path>`" told readers the same blind command. ⭐ The tell was the SHAPE: a
+guard that skips 100% is as suspect as one that passes 100% — check the instrument's own count (the guard now
+asserts > 1000 entries) before reading the verdict. Same family: *prove the bar is reachable*.
+
+
+## SCALING LABELS TO A WEIGHTED TARGET IGNORES THE GATEKEEPER (2026-10-12)
+**Problem**: `build_c2c.py` scaled all six belonging labels so the plain weighted sum = 4.4. In 11 of 42 rows community_fabric fell below 3.0, so the scorer caps them at 3.42: trained to BLOCK, not "just above the op-point". Found by the session-close review, after the verdict.
+**Root cause**: the target was computed on the plain weighted average. The runtime score is gatekeeper-capped (`GATEKEEPER_MIN` / `GATEKEEPER_CAP` in `base_scorer.py`).
+**Fix**: any label edit asserts the EFFECTIVE (capped) score of every changed row, computed by the package's own rule, not a re-implementation of the sum. Belonging: keep community_fabric ≥ 3.0.
+
+## `lab.py pull` DEST IS RELATIVE TO THE LAB ROOT, NOT THE INBOX (2026-10-12)
+**Problem**: `lab.py pull host:path b650-gpu/2026-10-12/x` landed in `~/ld-lab/b650-gpu/`, outside `inbox/`, where every earlier pull lives.
+**Root cause**: dest is joined to `$LD_LAB`. The docstring example spells `inbox/...`, but nothing enforces it.
+**Fix**: always write `inbox/<host>/<date>/<name>`. Moved and `lab.py verify` re-run: manifests are relative, so a move keeps them valid. ⚠️ **Superseded 2026-10-13:** the `_LAB_MANIFEST.json` survives a move but an evidence `MANIFEST.json` does not; move with `lab.py move` (rewrites citations), and pull/adopt/move now refuse a dest outside the layout (mechanized).
+
