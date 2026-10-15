@@ -314,6 +314,12 @@ unless it says otherwise. The one repeat measured: 3/110 verdicts flip with the 
 | H-BB7 | The page's personal-story excess comes partly from how ovr.news RANKS (normalized score, recency, editor), not only from v3's raw score | ✅ **MECHANISM MEASURED (2026-10-13): RECENCY.** ovr.news's formula (normalized × 0.85^days × 1.3 if < 24 h; the editor's reorders are undone by a re-sort) reproduces the live page 507/507 and the owner-labelled 10-12 page's top 30 at 30/30 (the build time is fitted). 29–30 of the top 30 are < 24 h old (10-12: 43 fresh rows in a 758-row window), and 0 are in the top 30 by score alone. So the bar ≈ the personal share of one day's passes. `docs/evidence/2026-10-13-belonging-site-ranking/`. Earlier: all 30 rows of the site-ranked page are in the 33,393-row draw, but only 7 are in v3's raw top 30. The raw top 30 holds 5 personal by qwen; the page held 7 by qwen and 10 by the owner. Which site term reorders it is not measured. **Test:** a pre-registered count on the site's own ranking (ovr.db build query), v3 vs a candidate re-ranked the same way. **Owner ruled 2026-10-14:** default ranking → H (5 strongest < 24 h first, then score within age bands; ovr.news ships it), a reader selector later; the bar is a WEEKLY AVERAGE, re-baselined on H |
 | H-BB8 | Scaling personal training rows down lowers personal stories without costing community stories | ❌ **REFUTED AS BUILT (EXP-048, 2026-10-12):** both seeds kept only 0.807 / 0.862 of v3's community passes (bar 0.9). Personal mean raw fell −0.82 / −1.16, community −0.24 / −0.47 (s42 / s43). ⚠️ The build ignored the community_fabric gatekeeper: 11 of 42 scaled rows were trained to 3.42 (blocked), not 4.4. So a cap-aware retry is untested, not refuted |
 
+### Student base model — `H-SB` (2026-10-15, llm-distillery#180)
+
+| id | hypothesis | status |
+|---|---|---|
+| H-SB1 | A Kev decision-model base (Qwen3.5 + pointer head, open weights) beats Gemma-3-1B on specificity at matched recall, and the gain comes from decision pre-training, not the newer base (Qwen3.5-0.8B-Base arm is the control) | ⏳ **OPEN, filed not scheduled (owner 2026-10-15).** Not tested. Prior pick (ADR-006, MAE, 1.2% gap) does not settle it under ADR-023. Method: #180 |
+
 ## Where the *experiments* live, as opposed to the hypotheses
 
 | kind | home |
