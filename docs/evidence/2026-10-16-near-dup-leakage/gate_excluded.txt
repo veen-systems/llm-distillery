@@ -1,0 +1,7 @@
+CONTROL — all 660 rows vs the published gate_adjudicated.json:
+  v8    n=660 pos=23 tp=9 fp=11 tn=626 fn=14  spec 0.9827 [0.9812, 0.9890]  recall 0.3913 [0.3478, 0.4783]  REPRODUCES
+  adj3  n=660 pos=23 tp=8 fp=1 tn=636 fn=15  spec 0.9984 [0.9984, 0.9984]  recall 0.3478 [0.2609, 0.3478]  REPRODUCES
+EXCLUDED — 6 leak rows removed:
+  v8    n=654 pos=23 tp=9 fp=10 tn=621 fn=14  spec 0.9842 [0.9826, 0.9905]  recall 0.3913 [0.3478, 0.4783]
+  adj3  n=654 pos=23 tp=8 fp=1 tn=630 fn=15  spec 0.9984 [0.9984, 0.9984]  recall 0.3478 [0.2609, 0.3478]
+WIN rule on the excluded set: adj3 spec lo 0.9984 > v8 spec hi 0.9905 and adj3 recall hi 0.3478 >= v8 recall lo 0.3478 -> WIN (unchanged)

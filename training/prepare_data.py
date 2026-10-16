@@ -144,8 +144,12 @@ def load_labels(input_path: Path) -> List[Dict[str, Any]]:
     # surface the same id across pool files. Keep the LAST occurrence (newest
     # label) and report the collapse. Records without an "id" are kept as-is.
     # (Review 2026-07-18: prepare_data had no dedup; upstream exact-id exclusion
-    # does not protect this stage. Near-duplicate *distinct* ids are handled at
-    # pool assembly, not here.)
+    # does not protect this stage.) ⚠️ Near-duplicate *distinct* ids are NOT removed
+    # anywhere between rows of one pool: scripts/screening/near_dup_filter.py only
+    # drops pool rows near a CALIBRATION file. Measured 2026-10-16 (#176,
+    # docs/evidence/2026-10-16-near-dup-leakage/): ~5% of test rows have a train row
+    # at e5 cosine >= 0.93; in the one set read closely, under 1% of rows were real
+    # cross-outlet copies, and none moved v9's gate verdict.
     by_id: Dict[str, Any] = {}
     no_id: List[Dict[str, Any]] = []
     for rec in labels:

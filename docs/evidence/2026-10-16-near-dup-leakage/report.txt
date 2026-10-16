@@ -1,0 +1,40 @@
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 35265.61it/s]
+[A1] query runs/near_dup_176/ht_v8_test.jsonl n=660   reference runs/near_dup_176/ht_adj3_train.jsonl n=5768
+  control exact   (must be >= 0.99): ['1.0000', '1.0000', '1.0000', '1.0000', '1.0000']
+  control rewrite (reported):        ['0.9754', '0.9734', '0.9719', '0.9757', '0.8905']
+  query ids also in reference (exact id leak): 0/660
+  max cosine >= 0.90: 147/660 = 22.27%
+  max cosine >= 0.93: 35/660 = 5.30%
+  max cosine >= 0.95: 11/660 = 1.67%
+  median max cosine: 0.8815
+  wrote runs/near_dup_176/A1.pairs.tsv
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 32850.54it/s]
+[A2] query runs/near_dup_176/ht_adj3_test.jsonl n=723   reference runs/near_dup_176/ht_adj3_train.jsonl n=5768
+  control exact   (must be >= 0.99): ['1.0000', '1.0000', '1.0000', '1.0000', '1.0000']
+  control rewrite (reported):        ['0.9754', '0.9734', '0.9719', '0.9757', '0.8905']
+  query ids also in reference (exact id leak): 0/723
+  max cosine >= 0.90: 153/723 = 21.16%
+  max cosine >= 0.93: 36/723 = 4.98%
+  max cosine >= 0.95: 12/723 = 1.66%
+  median max cosine: 0.8811
+  wrote runs/near_dup_176/A2.pairs.tsv
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 34719.90it/s]
+[B1] query runs/near_dup_176/bel_heldout3.jsonl n=2397   reference runs/near_dup_176/bel_c2b_train.jsonl n=6331
+  control exact   (must be >= 0.99): ['1.0000', '1.0000', '1.0000', '1.0000', '1.0000']
+  control rewrite (reported):        ['0.8333', '0.9551', '0.8559', '0.9364', '0.9353']
+  query ids also in reference (exact id leak): 0/2397
+  max cosine >= 0.90: 57/2397 = 2.38%
+  max cosine >= 0.93: 0/2397 = 0.00%
+  max cosine >= 0.95: 0/2397 = 0.00%
+  median max cosine: 0.8684
+  wrote runs/near_dup_176/B1.pairs.tsv
+Loading weights:   0%|          | 0/199 [00:00<?, ?it/s]Loading weights: 100%|██████████| 199/199 [00:00<00:00, 35987.86it/s]
+[B2] query runs/near_dup_176/bel_c2b_test.jsonl n=780   reference runs/near_dup_176/bel_c2b_train.jsonl n=6331
+  control exact   (must be >= 0.99): ['1.0000', '1.0000', '1.0000', '1.0000', '1.0000']
+  control rewrite (reported):        ['0.8333', '0.9551', '0.8559', '0.9364', '0.9353']
+  query ids also in reference (exact id leak): 0/780
+  max cosine >= 0.90: 216/780 = 27.69%
+  max cosine >= 0.93: 36/780 = 4.62%
+  max cosine >= 0.95: 14/780 = 1.79%
+  median max cosine: 0.8850
+  wrote runs/near_dup_176/B2.pairs.tsv

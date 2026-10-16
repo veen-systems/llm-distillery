@@ -1,0 +1,6 @@
+op-point 4.5; weighted averages, weights from filters/human_thriving/v9/config.yaml
+  community_social_hackernews_front_277debae3939  class b (syndicated, text 0.99)  label 1.59  v9 4.15  -> TN
+  east_asian_japan_today_7c585120c422  class b (wire copy, text 0.91)  label 0.90  v9 1.55  -> TN
+  east_asian_yonhap_en_8e7f2a520a1a  class b (agency rewrite, text 0.88)  label 0.15  v9 0.32  -> TN
+  science_helmholtz_23e36b84ee95  class b? (press release vs repost, text 0.28)  label 0.73  v9 1.07  -> TN
+leaks that are not true negatives: 0 of 4

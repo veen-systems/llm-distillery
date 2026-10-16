@@ -1,0 +1,37 @@
+0.9961	share 0.88	LEAK	community_social_hackernews_front_277debae3939	science_nautilus_magazine_695cb62b3c6d
+0.9940	share 0.79	LEAK	us_media_mashable_c3886fc7158b	us_media_mashable_ae9aa79a61ac
+0.9899	share 0.93	LEAK	east_asian_japan_today_7c585120c422	arabic_al_monitor_dcbeaf0d12af
+0.9896	share 0.16	-	disaster_alerts_noaa_nhc_pacific_central_a24eb81e22e4	disaster_alerts_noaa_nhc_pacific_central_520e49b6ce13
+0.9688	share 0.62	LEAK	science_helmholtz_23e36b84ee95	healthcare_medicalxpress_340b1f16eb21
+0.9655	share 0.13	-	east_asian_yonhap_en_8e7f2a520a1a	china_korea_herald_b55cbff91cae
+0.9650	share 0.78	LEAK	science_sciencedaily_0959ebb7b676	science_nautilus_magazine_695cb62b3c6d
+0.9612	share 0.00	-	balkan_delo_d57cd33c4912	balkan_delo_21e5a157d3c4
+0.9611	share 0.00	-	arabic_skynewsarabia_ar_c27e0a98d0e4	arabic_bbc_arabic_9d527bf006af
+0.9593	share 0.00	-	mexican_la_jornada_a6b34297c444	mexican_el_financiero_75e17708451f
+0.9507	share 0.00	-	arabic_aljazeera_en_c055105e08b7	east_asian_taipei_times_8e72601ffc0a
+0.9497	share 0.00	-	south_asian_times_of_india_6f689eca64ce	south_asian_indian_express_6613c6d07b6c
+0.9486	share 0.00	-	korean_hankyung_9e249d2bba58	korean_hankyung_4ac3e45f5440
+0.9476	share 0.04	-	south_american_el_nacional_c22d62dfeea1	south_american_talcual_1f95f6f99ae1
+0.9469	share 0.06	-	german_spiegel_politik_9a04bd33c965	german_sz_politik_3e0760b28623
+0.9457	share 0.00	-	mexican_la_jornada_c0f0533440cd	mexican_aristegui_dceed22f908e
+0.9453	share 0.00	-	south_asian_times_of_india_8b07960e5be0	global_news_BBC_world_c8658d2aa435
+0.9447	share 0.11	-	german_ntv_b84b94aa2410	german_die_welt_ba2130ef4f84
+0.9431	share 0.00	-	east_asian_taipei_times_eca960b61bef	south_asian_express_tribune_acd351510161
+0.9425	share 0.00	-	arabic_aawsat_ar_9a091c0f7df2	arabic_aawsat_ar_b749b282d37c
+0.9400	share 0.01	-	australian_the_saturday_paper_1d53e2c2532c	australian_sbs_55bf2fe879f4
+0.9399	share 0.00	-	china_sciencenet_cn_531dd3c90a2d	china_sciencenet_cn_2d91b427017e
+0.9395	share 0.00	-	us_news_pbs_9fe0ddd8f0fe	south_asian_indian_express_79c2e87de5a4
+0.9371	share 0.00	-	turkish_trt_world_0484d5195409	turkish_trt_world_7143ed38b2c0
+0.9364	share 0.00	-	russian_moscow_times_494472fefe20	ukrainian_ukrinform_en_cb58430a932a
+0.9350	share 0.00	-	australian_the_west_australian_23378480a2c8	arabic_aljazeera_en_ac269e0801f8
+0.9330	share 0.00	-	east_asian_scmp_c88fbef3c51d	us_news_pbs_d7dbfb34349d
+0.9322	share 0.04	-	south_asian_express_tribune_ffb863d0efe2	us_media_huffpost_2ac2350ed231
+0.9319	share 0.00	-	global_news_deutsche_welle_500cd3350bbf	us_media_wired_87ad28184cda
+0.9318	share 0.00	-	norwegian_dagbladet_37e9a26cf5af	norwegian_aftenposten_295e53805251
+0.9317	share 0.00	-	us_news_the_hill_d55227e1d93c	british_irish_guardian_us_news_8e37f6b09d66
+0.9316	share 0.00	-	french_le_monde_51c0203a776c	french_le_monde_politique_dbdd96a810b5
+0.9314	share 0.00	-	french_bfmtv_574c7a85e954	french_le_monde_15af8b273ff1
+0.9314	share 0.01	-	south_american_el_diario_venezuela_eldiario_com_2d9a19caad72	south_american_el_diario_venezuela_eldiario_com_73b540428516
+0.9312	share 0.00	-	french_20_minutes_c380d325b534	french_le_monde_international_970f3d033aa1
+leaks (share >= 0.5): 5 of the >= 0.93 pairs
+LEAK_IDS community_social_hackernews_front_277debae3939,us_media_mashable_c3886fc7158b,east_asian_japan_today_7c585120c422,science_helmholtz_23e36b84ee95,science_sciencedaily_0959ebb7b676

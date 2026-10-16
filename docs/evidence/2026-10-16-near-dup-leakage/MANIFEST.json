@@ -1,0 +1,61 @@
+{
+ "lab_root": "$LD_LAB (default ~/ld-lab, on situla)",
+ "entries": [
+  {
+   "path": "experiments/2026-10-16-near-dup-leakage/A2.pairs.tsv",
+   "sha256": "d17427e2d974e1676348d0324c63d8b3946d889b4c96cbcae35b3b6042731bfd",
+   "size": 38006,
+   "origin": "b650-gpu:/home/jeroen/llm-distillery/runs/near_dup_176/A2.pairs.tsv",
+   "pulled_at": "2026-10-16T10:32:40+02:00"
+  },
+  {
+   "path": "experiments/2026-10-16-near-dup-leakage/B2.pairs.tsv",
+   "sha256": "24c9e06a6d4694d171e4daaf4cd570cc8f9fdfa65956465e8f4bfaa1198d1e91",
+   "size": 44077,
+   "origin": "b650-gpu:/home/jeroen/llm-distillery/runs/near_dup_176/B2.pairs.tsv",
+   "pulled_at": "2026-10-16T10:32:40+02:00"
+  },
+  {
+   "path": "experiments/2026-10-16-near-dup-leakage/bel_c2b_test.jsonl",
+   "sha256": "65768e93b38b11bddd7fc3b67dc650c9242de7d79c9e613d7a7b8396f57d78a9",
+   "size": 1783489,
+   "origin": "b650-gpu:/home/jeroen/llm-distillery/runs/near_dup_176/bel_c2b_test.jsonl",
+   "pulled_at": "2026-10-16T10:32:40+02:00"
+  },
+  {
+   "path": "experiments/2026-10-16-near-dup-leakage/bel_c2b_train.jsonl",
+   "sha256": "cf7ff2ee284f8ca085e9a45c1398a8b4a44cf2fc51f88342db3a71c2e4a240f1",
+   "size": 14710349,
+   "origin": "b650-gpu:/home/jeroen/llm-distillery/runs/near_dup_176/bel_c2b_train.jsonl",
+   "pulled_at": "2026-10-16T10:32:40+02:00"
+  },
+  {
+   "path": "experiments/2026-10-16-near-dup-leakage/bel_heldout3.jsonl",
+   "sha256": "8ecb191d2a964a24af8cda8d09ab7c9efcdbf744942b45ed1f1c4c9bde8071aa",
+   "size": 20837801,
+   "origin": "b650-gpu:/home/jeroen/llm-distillery/runs/near_dup_176/bel_heldout3.jsonl",
+   "pulled_at": "2026-10-16T10:32:40+02:00"
+  },
+  {
+   "path": "experiments/2026-10-16-near-dup-leakage/ht_adj3_test.jsonl",
+   "sha256": "ff6545b37e8ee9331056d3cb7503e5092d042052ab3b579489c965df60034882",
+   "size": 3205436,
+   "origin": "b650-gpu:/home/jeroen/llm-distillery/runs/near_dup_176/ht_adj3_test.jsonl",
+   "pulled_at": "2026-10-16T10:32:40+02:00"
+  },
+  {
+   "path": "experiments/2026-10-16-near-dup-leakage/ht_adj3_train.jsonl",
+   "sha256": "ad2b02ee735f019c81b7b736c08de0036b41656730877042d53e1e46e63c411b",
+   "size": 24664753,
+   "origin": "b650-gpu:/home/jeroen/llm-distillery/runs/near_dup_176/ht_adj3_train.jsonl",
+   "pulled_at": "2026-10-16T10:32:40+02:00"
+  },
+  {
+   "path": "experiments/2026-10-16-near-dup-leakage/ht_v8_test.jsonl",
+   "sha256": "e361b5175c66252582c395bf256eb253bfa9b35f780f2479907231fc4d58d726",
+   "size": 2854255,
+   "origin": "b650-gpu:/home/jeroen/llm-distillery/runs/near_dup_176/ht_v8_test.jsonl",
+   "pulled_at": "2026-10-16T10:32:40+02:00"
+  }
+ ]
+}
