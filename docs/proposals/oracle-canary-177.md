@@ -1,6 +1,6 @@
 # Oracle canary set (#177) — design
 
-Status: **proposal, 2026-10-16.** Owner rulings it builds on: veen-systems/pipeline-atlas#169 (2026-10-15) — a
+Status: **design ruled 2026-10-16; build in progress.** Owner rulings it builds on: veen-systems/pipeline-atlas#169 (2026-10-15) — a
 frozen ~100-item set per filter, judged by a cross-family LLM panel with chance-corrected agreement; the same set
 is the canary; a one-off owner hand-label of ~30 items for the filter the Thriving tab reads, as a reference.
 
@@ -42,8 +42,10 @@ canary first: it is the one with a call site.
 6. **Panel (later, the anchor):** b650 local models + DeepSeek + Claude on the same 100, Krippendorff's alpha +
    AC1 (ovr's proposal), then the owner's ~30-item slice.
 
-## Open decisions (owner)
+## Owner rulings (2026-10-16)
 
-- **First filter:** `human_thriving` (Thriving tab; the ruling's hand-label slice) is assumed here.
-- **Freshness window:** per labelling run (strict, ~cents each) vs 7 days.
-- **Fail = refuse or warn:** #177 says refuse; pipeline-atlas#169 phase 2 starts contracts warn-only.
+- **First filter: `human_thriving`** (prompt `c4705408c477`, DeepSeek).
+- **Freshness: every labelling run.** The canary re-scores its set immediately before each run.
+- **No fresh pass, or a FAIL: REFUSE**, with `--skip-canary "<reason>"`; the reason is stamped on every label.
+- (#176 step 3, same sitting: `prepare_data.py` WARNS with its cross-split near-duplicate count; splits are not
+  restructured.)
