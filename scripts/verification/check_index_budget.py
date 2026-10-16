@@ -260,7 +260,7 @@ def _check_loaded():
 # Seeded RED first (2026-10-12): at 599,000 against a measured 599,709 it printed
 # its failure line and exited 1, then was set to 599,709 + 2%.
 SURFACE_DIRS = ("memory", os.path.join("docs", "work-items"))
-SURFACE_CEILING = 487_222
+SURFACE_CEILING = 478_386
 SURFACE_MARGIN = 0.02
 
 

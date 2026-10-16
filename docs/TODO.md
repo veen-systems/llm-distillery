@@ -73,6 +73,11 @@ Item 2 (#163, the read surface): keep pruning (owner 2026-10-14 and 10-15: "prun
    NexusMind's session runs it; ours is to tell them. LD#52 and LD#86 are closed.
 
 2. **THE READ SURFACE (#163). "prune, thin, mechanize, retire".** Rounds 1–3 landed 2026-10-12: 758,893 → 514,588 chars (519,680 at close, after the session's new records).
+   ✅ **Round 7 (2026-10-16): 477,749 → 469,006**, ceiling → 478,386. Verbatim: `gotcha-log.md` 50,962 → ~42.8K (the
+   `## Mechanized` post-table prose of 09-17, the 08-25 watcher entry — class `live` — and `retire_memory.py gotcha
+   --before 2026-10-15`, 3 entries); `hypothesis-ledger.md` H-HD11 + H-DEV2 (closed). ⏰ **OWED: H-CTX-3's revisit
+   (the CLAUDE.md halving) was due 2026-10-15** — its method is a count over ~10 sessions of findings rooted in a rule
+   that used to be spelled out in CLAUDE.md; not run.
    ✅ **Round 6 (2026-10-16): 498,514 → 477,669**, ceiling → 487,222. The four standing files thinned by VERBATIM
    moves of closed material to their `archive/*-archive.md` (each: `comm` lossless + 1-line mutant reports 1):
    `filter-status.md` 30,059 → ~17.5K, `stamp-contract-integrity.md` 28,704 → 25,753, `nexusmind-data-sources.md`

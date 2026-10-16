@@ -19,27 +19,6 @@
 **Root cause**: the prompt overflows the context (`prompt_eval_count` 8,194 despite `num_ctx` 16384), the system prompt is lost, and qwen answers as a chat reply without a `focus` key.
 **Fix**: report unparsed rows in every denominator (`analyse.py` Check A prints them) and bracket them both ways. If it recurs, truncate content to head+tail before tagging — an instrument change, so only in a new pre-registration.
 
-## A VERBATIM MOVE BOUNDED BY "THE NEXT HEADING I REMEMBERED" TOOK 20K MORE THAN MEANT (2026-10-14)
-**Problem**: moving three prose paragraphs out of `hypothesis-ledger.md`, the end marker was a heading I had read
-~170 lines lower, not the next heading. 51,066 → 30,809 instead of → ~43,700. The script's assert ("no `H-CX` in the
-block") passed, because it checked a property of the block, not its SIZE or its headings.
-**Root cause**: the bound came from memory of the file. The guard tested something the error could not break.
-**Fix**: restored both files from HEAD (no other edits in them), redone with `end = the NEXT heading` plus an
-assert that the block holds no heading and ≤ 20 lines, and an EXACT reconstruction assert (pointer → block == HEAD).
-Predict the size delta before running a move; a delta 3× the prediction is the signal.
-
-## AN OWNER QUESTION BUILT ON A STALE TODO LINE (2026-10-14)
-**Problem**: I asked the owner how to fix the Dutch `Herstel` note in nature_recovery configs. Those notes had been
-fixed 2026-10-07 (`fe12a2f`, `KNOWN_OPEN = {}`); the TODO line was never updated, and the red test was doc text only.
-**Root cause**: I relayed a TODO line's premise as a decision without one `grep` of the thing it named.
-**Fix**: before putting any question to the owner, grep the object of the question (file, config key, issue state).
-Same family as `feedback-a-marker-is-a-claim` (auto-memory): a TODO line is a claim.
-
-## A POST-HOC LABEL CORRECTION KEPT ONLY IN PROSE IS INVISIBLE TO EVERY SCRIPT (2026-10-13)
-**Problem**: `replay.py` and `site_rank.py` counted the owner's personal stories from `tags.tsv` and reported 9 where the corrected count is 10. The same error went to the ovr.news session, which was preparing the owner's decision. Review caught it; a correction was sent (`8a8207c`).
-**Root cause**: rule 3 keeps `tags.tsv` as pre-registered, so the owner's pos-25 correction lived only in the README's prose. Every new consumer of the TSV inherits the uncorrected label silently.
-**Fix**: a correction travels as DATA next to the frozen file. Done: `2026-10-12-belonging-personal-tag/owner_corrections.tsv`, loaded by both consumers. Before counting from any labels file, grep its directory's README for "correction".
-
 ## `cp -r` OF A FILTER PACKAGE LOADS THE SOURCE PACKAGE'S MODEL (2026-10-12) [x2] [RESOLVED 2026-10-15: mechanized in train.py]
 **Problem**: `filters/belonging/v1_c2c_s42` was a `cp -r` of `v1_c2b`. Its training wrote its own adapter, but scoring it loaded `v1_c2b/model`. `gate.assert_loads_from` refused both seeds before a score was written.
 **Root cause**: the package's `inference*.py` import `filters.belonging.v1_c2b.*` by ABSOLUTE module path, and the model path is `Path(__file__).parent / "model"` of the IMPORTED module. A copy keeps the source's module name.
@@ -156,26 +135,7 @@ Same shape as *establish what your source excludes*, one directory over.
 
 ### WRONG INTERPRETER (2026-08-25) [x5] — class now `live` (the suite prints a banner, `## Mechanized` 2026-10-12); entry MOVED to [`archive/gotcha-log-archive.md`](archive/gotcha-log-archive.md) (2026-10-12). ⭐ Its general form stays true: an explanation that dismisses a signal has to be tested as hard as the signal.
 
-### THE WATCHER MATCHED ITSELF AND WAITED FOREVER (2026-08-25) [5th occurrence of the pgrep rule]
-**Problem**: A background wait-loop, `until ! ps -eo args | grep -q "[m]ain.py"; do sleep
-10; done`, never exited. It held a deploy for ~20 minutes after the box had already gone
-idle, and three separate "is it still running?" polls reported a process that was my own
-waiter.
-**Root cause**: the `[m]ain.py` bracket trick stops the grep matching *itself* — and does
-nothing about the rest of the command line. The loop's own `echo "no main.py process
-running"` put the literal pattern on its argv, so the watcher matched itself on every
-iteration and could never terminate. The two other pollers matched it too.
-**Fix**: `ps -eo pid,etime,comm,args | awk '$3 ~ /python/'` plus `systemctl is-active`,
-which showed `nexusmind-cleanup.service` had been `dead` the whole time. ⭐ **The tell was
-in the output from the first poll: the matching line began `bash -c until`.** A count of
-matches cannot show you that the match is you — **print the line**. ⭐⭐ And note where the
-rule was: it is in `CLAUDE.md`, in this log, and in `working-rules.md`, and I wrote a fresh
-instance of it anyway. Knowing a rule and applying it at the moment you write the command
-are different acts (`feedback-articulating-is-not-applying`).
-
-### A 402 IS NOT A PER-ROW ERROR (2026-09-01/02) — class now `live` in both DeepSeek callers (`## Mechanized` 2026-10-12); ⚠️ NOT the Gemini or Ollama paths of `score_ollama_oracle.py` (review, 2026-10-12: a Gemini 401/403 still retries 3× per row); entry MOVED to [`archive/gotcha-log-archive.md`](archive/gotcha-log-archive.md) (2026-10-12)
-
-### `prepare_data.py` WRITES 0 EXAMPLES AND EXITS 0 (2026-09-01) — class now `live` (exits 1, `## Mechanized` 2026-10-12); entry MOVED to [`archive/gotcha-log-archive.md`](archive/gotcha-log-archive.md) (2026-10-12). ⚠️ Still silent: a renamed dimension becomes a column of zeros.
+### THE WATCHER MATCHED ITSELF AND WAITED FOREVER (2026-08-25) — class now `live` (the kill-pattern hook, `## Mechanized` 2026-10-09); entry MOVED to [`archive/gotcha-log-archive.md`](archive/gotcha-log-archive.md) (2026-10-16)
 
 ### "THE WINDOW HAS ROLLED, SO IT IS UNRECOVERABLE" IS FALSE — there are monthly archives (2026-09-01) [16th occurrence of *establish what a source excludes*]
 
@@ -342,55 +302,4 @@ false finding in the reference audit, which trains readers to dismiss that audit
 | 2026-10-02 | An oracle output file silently mixes verdicts from two rubric versions after the rubric file is edited in place | `calibrate_scope_oracles.py run` stamps `prompt_sha` and refuses a mixed file (mutation-tested: exit 1, file unchanged) | live (belonging only) | 1 |
  | 2026-09-27 | "Must be committed" enforced with `git ls-files --error-unmatch`, which passes a file that is only STAGED (ADR-024 step 3: in the code AND its real-tree test; found by 3 of 6 review lenses) | `tests/lint/check_committed_idiom.py` <!-- placeholder --> — flag `ls-files --error-unmatch` in `scripts/**` where the surrounding message or name says committed/commit; accept `cat-file -e HEAD:` or `diff --quiet HEAD` | proposed | 1 |
 
-⛔ **THE FIRST OCCURRENCE, AND IT IS A FINDING ABOUT THE CHECK (2026-09-17).** The #134
-step-2 battery found a number restated from prose — the decision record wrote its own copy
-of the suite count while citing, one sentence away, the rule that
-`.claude/review-profile.md` holds the only live copy. That is the row above's class
-exactly, and `check_doc_claims.py` **could not have fired**: its checks are four
-hand-listed CLAIM PAIRS between `CLAUDE.md` and named memory files, and the class is "any
-number restated anywhere". **Scoped to the wrong population**, per this table's own
-instruction to investigate the check rather than the finding. Remedy shipped in the same
-session: the `suite-baseline` check below, which walks the tree for the profile's CURRENT
-value and excepts only dated records. It went red on the real restatement (not a synthetic
-one) before `docs/TODO.md` was fixed, and `CANNOT VERIFY` when the protected line is
-deleted.
-
-**First positives, in prose** (they are what made the `live` rows live, and predate the
-occurrence counter):
-
-- **`check_framework_stamp.sh`** — on the tree it shipped into it printed `DRIFT` for all four
-  skills against the `v1.40.0` stamp, exit 1, with per-skill line counts 27/372/26/240 matching
-  an independently-run `diff` across tags; after the bump, `4 global skills byte-identical to
-  v1.45.1`, exit 0. **Thirteen mutations, thirteen killed**, each listed with the test that killed it
-  in `docs/decisions/framework-adoption-history.md`. Its automatic caller is a
-  `<!-- verify: -->` block in `memory/MEMORY.md`, run by
-  `scripts/verification/run_verify_annotations.py` (= `/curate` Step 0 sub-step 3); a seeded
-  `FRAMEWORK=/nope` arm made that runner report `CANNOT VERIFY` and exit 1, so the caller can
-  say no.
-  ⛔ **Its FIRST draft is the thing worth remembering, and a pre-commit review found all of
-  it**: `diff`'s exit status unchecked, so an unreadable file read as *identical*, exit 0;
-  `N_WANT=4` hand-written beside a four-name `WANT`, reproducing upstream's original false PASS
-  the moment the two disagree; `head -1` on the version, so prose naming an older release
-  outranked the stamp; `$HOME` unset exiting **1**, i.e. an environment fault reported as
-  DRIFT; and three branches — not-a-git-repo and both `$HOME` defaults — with **no test at
-  all**, proven by surviving mutants. Six of the eight were false PASSes in a probe whose
-  entire job is to refuse one.
-- **`--target pointers`** — live since **2026-08-27** (`5bd0cdb`; 11 tests in
-  `tests/unit/test_pointer_row_cap.py` at its first commit, mutation evidence in `768678f`).
-  **Extended** to the auto-memory index on 2026-09-17 (`ad6eba5`, 5 further tests in
-  `tests/unit/test_index_budget_guard.py`). ⚠️ This bullet first read *"added 2026-09-17 with
-  4 tests"* — wrong on date, count and citation, because it was copied from a TODO summary
-  instead of measured, and `ad6eba5`'s own message says *four* where the diff adds five.
-  **Occurrences 1**: on 2026-09-17 the check was found to read `CLAUDE.md` only while the
-  surface actually growing was the auto-memory index — a finding about the CHECK's population,
-  which is exactly what this column exists to surface.
-- **run.sh 34/35** — seeded both ways and both proven non-vacuous: case 34 FAILS on the
-  pre-change code, case 35 dies when rung 1 is removed. See the 2026-09-17 entry at the top
-  of this file. ⚠️ `/audit-context` Step 4 runs `refcheck.py`, **not** `run.sh` — so the rung
-  runs monthly while the 34/35 cases that prove it non-vacuous fire only by hand.
-- **`check_doc_claims.py`** — already owns the frontmatter-vs-footer stamp rung; printed
-  `PASS framework stamp: both say v1.45.1` during this review, and it is wired into
-  `memory/MEMORY.md`. ⛔ **NOT the same check as `check_framework_stamp.sh`**, though
-  `check_doc_claims.py:191` defines a function of that very name: it asks only whether two
-  lines of `CLAUDE.md` agree with *each other*, never whether either matches upstream. A
-  reader told "the framework-stamp check is green" gets the weaker one.
+**The 2026-09-17 first occurrence and the first positives of the `live` rows, in prose** — MOVED to [`archive/gotcha-log-archive.md`](archive/gotcha-log-archive.md) § *Moved 2026-10-16* (history: what made `check_framework_stamp.sh`, `--target pointers`, run.sh 34/35 and the `suite-baseline` check live).
