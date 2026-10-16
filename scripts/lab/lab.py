@@ -156,8 +156,10 @@ def remote_listing(host, path):
         '  while IFS= read -r -d "" f; do rec "$f" "${f#./}"; done; '
         'elif [ -L "$p" ]; then echo "the source itself is a symlink: $p -> $(readlink "$p"); pull its target" >&2; exit 3; '
         'else echo "no such file or directory: $p" >&2; exit 3; fi')
-    r = subprocess.run(["ssh", "-n", host, "bash -c " + shlex.quote(script)],
-                       capture_output=True, stdin=subprocess.DEVNULL)
+    # host "local": data already on situla (e.g. an API run in a session scratchpad). situla cannot ssh to itself,
+    # so the same listing script runs here; the verification is identical (2026-10-16).
+    argv = (["bash", "-c", script] if host == LOCAL_HOST else ["ssh", "-n", host, "bash -c " + shlex.quote(script)])
+    r = subprocess.run(argv, capture_output=True, stdin=subprocess.DEVNULL)
     if r.returncode != 0:
         sys.exit(f"remote listing failed on {host}:{path}: {r.stderr.decode(errors='replace').strip()}")
     kind, files, links, dangling = None, {}, {}, set()
@@ -240,10 +242,16 @@ def finish(a, dest, kind, r_files, r_links, problems, verb):
         print("   WARNING (recorded, target NOT pulled):", p)
 
 
+LOCAL_HOST = "local"   # `local:/abs/path`: a source already on situla, listed without ssh
+
+
 def split_source(source):
     host, _, path = source.partition(":")
     if not host or not path:
         sys.exit("source must be host:path")
+    if host == LOCAL_HOST and not path.startswith("/"):
+        sys.exit("a local: source must be an ABSOLUTE path (the listing and the copy would resolve a relative "
+                 "or ~ path against different directories)")
     return host, path
 
 
@@ -275,7 +283,7 @@ def cmd_pull(a):
     if rpath.startswith("~/"):
         rpath = rpath[2:]
     cmd = (["rsync", "-a", "--partial"] + [f"--exclude={e}" for e in EXCLUDES]
-           + [f"{host}:{rpath}", str(dest) + "/"])
+           + [rpath if host == LOCAL_HOST else f"{host}:{rpath}", str(dest) + "/"])
     rc = subprocess.run(cmd, stdin=subprocess.DEVNULL).returncode  # ssh/rsync must not eat a caller's stdin loop
     if rc != 0:
         sys.exit(f"FAIL rsync exited {rc}; {dest} holds a PARTIAL copy and no manifest. Inspect it, then either "

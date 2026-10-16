@@ -1,0 +1,124 @@
+{
+ "lab_root": "$LD_LAB (default ~/lab/llm-distillery, on situla)",
+ "entries": [
+  {
+   "path": "experiments/2026-10-16-oracle-canary/candidates/candidates.jsonl",
+   "sha256": "838bd73e57053773d854efdb6fec7d1ae06a806b9a5e60b9779105f81ee73bf6",
+   "size": 1381309,
+   "origin": "sadalsuud:/home/jeroen/canary_177/candidates.jsonl",
+   "pulled_at": "2026-10-16T10:41:15+02:00"
+  },
+  {
+   "path": "experiments/2026-10-16-oracle-canary/frozen/set.jsonl",
+   "sha256": "f6b06de160e71626fd16a4ec2373eef292e5326bdd863fc79c4bcc1f26d20998",
+   "size": 381096,
+   "origin": "b650-gpu:/home/jeroen/llm-distillery/runs/canary_177/frozen/set.jsonl",
+   "pulled_at": "2026-10-16T10:42:42+02:00"
+  },
+  {
+   "path": "experiments/2026-10-16-oracle-canary/runs/B1.jsonl",
+   "sha256": "62d8f26a46cb0a077d127140bcba94bd6bfbb280a983d2945d7fdd886722ad9b",
+   "size": 547018,
+   "origin": "local:/tmp/claude-1000/-home-jeroen-repos-veen-systems-llm-distillery/406953ae-525a-45da-a7b0-8fed8e10fcf4/scratchpad/canary_runs/B1.jsonl",
+   "pulled_at": "2026-10-16T12:11:48+02:00"
+  },
+  {
+   "path": "experiments/2026-10-16-oracle-canary/runs/B2.jsonl",
+   "sha256": "48c5181995609ebe2596de458181a46a75cd813db35fbb14bfcbc69701981037",
+   "size": 541665,
+   "origin": "local:/tmp/claude-1000/-home-jeroen-repos-veen-systems-llm-distillery/406953ae-525a-45da-a7b0-8fed8e10fcf4/scratchpad/canary_runs/B2.jsonl",
+   "pulled_at": "2026-10-16T12:11:48+02:00"
+  },
+  {
+   "path": "experiments/2026-10-16-oracle-canary/runs/B3.jsonl",
+   "sha256": "926081b2f4010473388d625db4e571ce4b89a90bad184491edb5f0e58774ea80",
+   "size": 541343,
+   "origin": "local:/tmp/claude-1000/-home-jeroen-repos-veen-systems-llm-distillery/406953ae-525a-45da-a7b0-8fed8e10fcf4/scratchpad/canary_runs/B3.jsonl",
+   "pulled_at": "2026-10-16T12:11:48+02:00"
+  },
+  {
+   "path": "experiments/2026-10-16-oracle-canary/runs/B4.jsonl",
+   "sha256": "f5d2cd84dd7839c720de0b9e55d1ddf69ca88a2aa8f22baa4254a47e639520f6",
+   "size": 547024,
+   "origin": "local:/tmp/claude-1000/-home-jeroen-repos-veen-systems-llm-distillery/406953ae-525a-45da-a7b0-8fed8e10fcf4/scratchpad/canary_runs/B4.jsonl",
+   "pulled_at": "2026-10-16T12:11:48+02:00"
+  },
+  {
+   "path": "experiments/2026-10-16-oracle-canary/runs/B5.jsonl",
+   "sha256": "8594b87f09659c88de228bdd2b37fed08f1def89aad0148dda2f40e65f2ec2ce",
+   "size": 545461,
+   "origin": "local:/tmp/claude-1000/-home-jeroen-repos-veen-systems-llm-distillery/406953ae-525a-45da-a7b0-8fed8e10fcf4/scratchpad/canary_runs/B5.jsonl",
+   "pulled_at": "2026-10-16T12:11:48+02:00"
+  },
+  {
+   "path": "experiments/2026-10-16-oracle-canary/runs/B6.jsonl",
+   "sha256": "04694c5c7a962a6dc8e468ca0f785ae1d4abbf97c05559df803a9fce6c69ebe0",
+   "size": 540356,
+   "origin": "local:/tmp/claude-1000/-home-jeroen-repos-veen-systems-llm-distillery/406953ae-525a-45da-a7b0-8fed8e10fcf4/scratchpad/canary_runs/B6.jsonl",
+   "pulled_at": "2026-10-16T12:11:48+02:00"
+  },
+  {
+   "path": "experiments/2026-10-16-oracle-canary/runs/C1.jsonl",
+   "sha256": "d5461ad8eb5144d09eeceea3e5b2740bc1b2c7d59b72fe63c49dadef8e646992",
+   "size": 538712,
+   "origin": "local:/tmp/claude-1000/-home-jeroen-repos-veen-systems-llm-distillery/406953ae-525a-45da-a7b0-8fed8e10fcf4/scratchpad/canary_runs/C1.jsonl",
+   "pulled_at": "2026-10-16T12:11:48+02:00"
+  },
+  {
+   "path": "experiments/2026-10-16-oracle-canary/runs/C2.jsonl",
+   "sha256": "e3f1f73dc9b567c1a4db909beeb4c55c13183737f9ad707aae4d8c644276a5df",
+   "size": 545168,
+   "origin": "local:/tmp/claude-1000/-home-jeroen-repos-veen-systems-llm-distillery/406953ae-525a-45da-a7b0-8fed8e10fcf4/scratchpad/canary_runs/C2.jsonl",
+   "pulled_at": "2026-10-16T12:11:48+02:00"
+  },
+  {
+   "path": "experiments/2026-10-16-oracle-canary/runs/C3.jsonl",
+   "sha256": "9319a2614f392e87f720c0396b1ebd90976f82788480b2a09ee7a737102c83d6",
+   "size": 537329,
+   "origin": "local:/tmp/claude-1000/-home-jeroen-repos-veen-systems-llm-distillery/406953ae-525a-45da-a7b0-8fed8e10fcf4/scratchpad/canary_runs/C3.jsonl",
+   "pulled_at": "2026-10-16T12:11:48+02:00"
+  },
+  {
+   "path": "experiments/2026-10-16-oracle-canary/runs/P1.jsonl",
+   "sha256": "569d4b1ae284f9cedb2c6b2ab434fdb3e3e0c00f076f0ece9c65aba3e2d1d0c8",
+   "size": 534251,
+   "origin": "local:/tmp/claude-1000/-home-jeroen-repos-veen-systems-llm-distillery/406953ae-525a-45da-a7b0-8fed8e10fcf4/scratchpad/canary_runs/P1.jsonl",
+   "pulled_at": "2026-10-16T12:11:48+02:00"
+  },
+  {
+   "path": "experiments/2026-10-16-oracle-canary/runs/P2.jsonl",
+   "sha256": "cf91b9566cddb028a0afc60b1896b4aa328e9afe8dbddbfab8a8653b3c8c8a10",
+   "size": 534757,
+   "origin": "local:/tmp/claude-1000/-home-jeroen-repos-veen-systems-llm-distillery/406953ae-525a-45da-a7b0-8fed8e10fcf4/scratchpad/canary_runs/P2.jsonl",
+   "pulled_at": "2026-10-16T12:11:48+02:00"
+  },
+  {
+   "path": "experiments/2026-10-16-oracle-canary/runs/P3.jsonl",
+   "sha256": "74c51cc667ddf9bf9aaaf0a48f9df5e5a00d26b3b07c5d9f7759e3c4ea43563d",
+   "size": 534595,
+   "origin": "local:/tmp/claude-1000/-home-jeroen-repos-veen-systems-llm-distillery/406953ae-525a-45da-a7b0-8fed8e10fcf4/scratchpad/canary_runs/P3.jsonl",
+   "pulled_at": "2026-10-16T12:11:48+02:00"
+  },
+  {
+   "path": "experiments/2026-10-16-oracle-canary/runs/V1.jsonl",
+   "sha256": "bcfdd7957d01df2196268b5cb426060df1aca5fbe2e6d5e9d454871bffb0f661",
+   "size": 544198,
+   "origin": "local:/tmp/claude-1000/-home-jeroen-repos-veen-systems-llm-distillery/406953ae-525a-45da-a7b0-8fed8e10fcf4/scratchpad/canary_runs/V1.jsonl",
+   "pulled_at": "2026-10-16T12:11:48+02:00"
+  },
+  {
+   "path": "experiments/2026-10-16-oracle-canary/runs/V2.jsonl",
+   "sha256": "c98c1df45c0dca498f87649ac185ad9838eb1ba59d33fc2c8f00eb3ba8ded75b",
+   "size": 547865,
+   "origin": "local:/tmp/claude-1000/-home-jeroen-repos-veen-systems-llm-distillery/406953ae-525a-45da-a7b0-8fed8e10fcf4/scratchpad/canary_runs/V2.jsonl",
+   "pulled_at": "2026-10-16T12:11:48+02:00"
+  },
+  {
+   "path": "experiments/2026-10-16-oracle-canary/runs/V3.jsonl",
+   "sha256": "07df268b4fe322ef831307a5d9a48d726347cbcd126a93a8d5d1651ecdb6c9fd",
+   "size": 547509,
+   "origin": "local:/tmp/claude-1000/-home-jeroen-repos-veen-systems-llm-distillery/406953ae-525a-45da-a7b0-8fed8e10fcf4/scratchpad/canary_runs/V3.jsonl",
+   "pulled_at": "2026-10-16T12:11:48+02:00"
+  }
+ ]
+}

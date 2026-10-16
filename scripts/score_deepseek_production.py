@@ -339,7 +339,8 @@ def main():
     print(f"Prompt: {PROMPT_FILE} sha256={PROMPT_SHA256}")
     # #177: before any oracle call. Refuses (SystemExit) when this prompt has a frozen canary set and no fresh
     # PASS; otherwise returns the stamp every label of this run carries.
-    canary_stamp = oracle_canary.gate(PROMPT_SHA256, args.skip_canary)
+    canary_stamp = oracle_canary.gate(PROMPT_SHA256, args.skip_canary,
+                                      oracle=oracle_canary.oracle_key(args.base_url, args.model))
     print(f"Scoring with: dims={DIMENSIONS} | field={ANALYSIS_FIELD} | prompt={prompt_path.name}")
     input_path = Path(args.input)
     output_path = Path(args.output)

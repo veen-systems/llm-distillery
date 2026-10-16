@@ -21,8 +21,12 @@ def dirs(tmp_path, monkeypatch):
     return cfg, data
 
 
-def _baseline(cfg, sha=SHA):
-    (cfg / "f.baseline.json").write_text(json.dumps({"filter": "f", "prompt_sha256": sha}))
+ORACLE = "https://api.deepseek.com/v1/chat/completions|deepseek-chat"
+
+
+def _baseline(cfg, sha=SHA, stripped=None, oracle=ORACLE):
+    (cfg / "f.baseline.json").write_text(json.dumps({"filter": "f", "prompt_sha256": sha,
+                                                    "prompt_sha256_stripped": stripped, "oracle": oracle}))
 
 
 def _record(verdict, age_h, now):
@@ -33,7 +37,7 @@ def _record(verdict, age_h, now):
 
 class TestGate:
     def test_no_set_stamps_and_never_refuses(self, dirs):
-        assert oc.gate(SHA) == {"verdict": "no-set"}
+        assert oc.gate(SHA, oracle=ORACLE) == {"verdict": "no-set"}
 
     def test_skip_is_stamped_with_its_reason(self, dirs):
         _baseline(dirs[0])
@@ -42,32 +46,59 @@ class TestGate:
     def test_a_guarded_prompt_with_no_record_is_REFUSED(self, dirs):
         _baseline(dirs[0])
         with pytest.raises(oc.CanaryRefused, match="no canary run on record"):
-            oc.gate(SHA)
+            oc.gate(SHA, oracle=ORACLE)
 
     def test_a_FAILED_latest_record_is_REFUSED_even_when_fresh(self, dirs):
         _baseline(dirs[0]); now = time.time()
         _record("PASS", 3, now)
         _record("FAIL", 1, now)                   # the latest wins
-        with pytest.raises(oc.CanaryRefused, match="FAILED"):
-            oc.gate(SHA, now=now)
+        with pytest.raises(oc.CanaryRefused, match="is FAIL "):
+            oc.gate(SHA, now=now, oracle=ORACLE)
 
     def test_a_stale_PASS_is_REFUSED(self, dirs):
         _baseline(dirs[0]); now = time.time()
         _record("PASS", oc.FRESH_HOURS + 0.5, now)
         with pytest.raises(oc.CanaryRefused, match="h old"):
-            oc.gate(SHA, now=now)
+            oc.gate(SHA, now=now, oracle=ORACLE)
 
     def test_a_fresh_PASS_lets_the_run_through_and_names_its_record(self, dirs):
         _baseline(dirs[0]); now = time.time()
         rec = _record("PASS", 1, now)
-        st = oc.gate(SHA, now=now)
+        st = oc.gate(SHA, now=now, oracle=ORACLE)
         assert st["verdict"] == "PASS" and st["record"] == rec["record"]
+
+    def test_a_PASS_admits_ONE_labelling_run(self, dirs):
+        """Owner 2026-10-16: the canary runs before EVERY labelling run, so a PASS is consumed by the run it admits."""
+        _baseline(dirs[0]); now = time.time()
+        _record("PASS", 0.1, now)
+        oc.gate(SHA, now=now, oracle=ORACLE)
+        with pytest.raises(oc.CanaryRefused, match="already used"):
+            oc.gate(SHA, now=now, oracle=ORACLE)
+
+    def test_a_NO_VERDICT_after_a_PASS_is_REFUSED(self, dirs):
+        _baseline(dirs[0]); now = time.time()
+        _record("PASS", 1, now)
+        oc.write_record("f", SHA, {"verdict": "NO-VERDICT", "reason": "x"}, set(), now=now)
+        with pytest.raises(oc.CanaryRefused, match="NO-VERDICT"):
+            oc.gate(SHA, now=now, oracle=ORACLE)
+
+    def test_ANOTHER_oracle_is_REFUSED_even_with_a_fresh_PASS(self, dirs):
+        _baseline(dirs[0]); now = time.time()
+        _record("PASS", 1, now)
+        with pytest.raises(oc.CanaryRefused, match="no canary covers it"):
+            oc.gate(SHA, now=now, oracle="https://generativelanguage.googleapis.com|gemini-2.5-flash")
+
+    def test_the_STRIPPED_digest_is_recognised_as_the_same_prompt(self, dirs):
+        """batch_scorer hashes the stripped template; matching only the raw digest left it unguarded (review)."""
+        _baseline(dirs[0], stripped="cd" * 32)
+        with pytest.raises(oc.CanaryRefused):
+            oc.gate("cd" * 32, oracle="batch_scorer|gemini-flash")
 
     def test_a_record_for_ANOTHER_prompt_does_not_count(self, dirs):
         _baseline(dirs[0]); now = time.time()
         oc.write_record("f", "cd" * 32, {"verdict": "PASS", "flips": 0, "shift": 0.0}, set(), now=now)
         with pytest.raises(oc.CanaryRefused):
-            oc.gate(SHA, now=now)
+            oc.gate(SHA, now=now, oracle=ORACLE)
 
 
 class TestComparison:
@@ -138,7 +169,9 @@ def test_batch_scorer_refuses_before_its_client_exists(dirs, tmp_path, monkeypat
     from ground_truth import batch_scorer as bs
     prompt = tmp_path / "p.md"
     prompt.write_text("  Score this. [Paste the summary of the article here]  \n")
-    _baseline(dirs[0], hashlib.sha256(prompt.read_text().strip().encode()).hexdigest())  # batch_scorer strips
+    raw = prompt.read_text()
+    _baseline(dirs[0], hashlib.sha256(raw.encode()).hexdigest(),          # as canary.py baseline writes it
+              stripped=hashlib.sha256(raw.strip().encode()).hexdigest())  # batch_scorer hashes this one
     built = []
     monkeypatch.setattr(bs.GenericBatchScorer, "_init_llm_client", lambda self, k: built.append(1))
     with pytest.raises(oc.CanaryRefused):
@@ -148,3 +181,105 @@ def test_batch_scorer_refuses_before_its_client_exists(dirs, tmp_path, monkeypat
     s = bs.GenericBatchScorer(prompt_path=str(prompt), llm_provider="gemini-flash", api_key="k",
                               output_dir=str(tmp_path / "o"), filter_name="f", skip_canary="test")
     assert s.canary_stamp == {"skipped": "test"} and built == [1]
+
+
+def test_canary_run_resumes_a_parse_error_instead_of_refusing_forever(dirs, monkeypatch, capsys):
+    """2026-10-16: 16 malformed-JSON rows in 1,500 calls. Without a resume, one bad reply leaves the set incomplete,
+    `evaluate` raises, and every labelling run of the filter is refused. The first pass here errors one row."""
+    import hashlib
+    import subprocess
+    sys.path.insert(0, str(ROOT / "scripts" / "oracle"))
+    import canary as cli
+    cfg, data = dirs
+    (data / "f").mkdir(parents=True)
+    body = '{"id": "a"}\n{"id": "b"}\n'
+    (data / "f" / "set.jsonl").write_text(body)
+    (cfg / "f.json").write_text(json.dumps({"set_sha256": hashlib.sha256(body.encode()).hexdigest()}))
+    dims = ["human_wellbeing_impact", "social_cohesion_impact", "justice_rights_impact", "evidence_level",
+            "benefit_distribution", "change_durability"]
+    (cfg / "f.baseline.json").write_text(json.dumps({
+        "filter": "f", "prompt_sha256": SHA, "k_ship": 1, "items": {"a": 6.0, "b": 1.0},
+        "oracle": ORACLE, "served_model": "m",
+        "config": str(ROOT / "filters/human_thriving/v9/config.yaml"), "prompt": "p.md",
+        "noise": {"k1": {"F": 0, "S": 0.0}, "k3": {"F": 0, "S": 0.0}}}))
+
+    def row(i, score):
+        return {"id": i, "human_thriving_analysis": dict({d: {"score": score} for d in dims},
+                                                         prompt_sha256=SHA, served_model="m")}
+    calls = []
+
+    def fake_run(argv, **kw):
+        out = Path(argv[argv.index("--output") + 1])
+        rows = [row("a", 6.0), {"id": "b", "error": "Parse failed"}] if not calls else [row("b", 1.0)]
+        with open(out, "a") as f:
+            f.writelines(json.dumps(r) + "\n" for r in rows)
+        calls.append(1)
+        return subprocess.CompletedProcess(argv, 1 if len(calls) == 1 else 0)
+    monkeypatch.setattr(cli.subprocess, "run", fake_run)
+    monkeypatch.setattr(sys, "argv", ["canary.py", "run", "--filter", "f"])
+    with pytest.raises(SystemExit) as ex:
+        cli.main()
+    assert ex.value.code == 0 and len(calls) == 2
+    assert "CANARY PASS" in capsys.readouterr().out
+    assert oc.latest_record("f", SHA)["verdict"] == "PASS"
+
+
+def _run_cli(dirs, monkeypatch, rows_per_call, served="m"):
+    """Drive `canary.py run` with the scorer stubbed: rows_per_call[i] is what the i-th scorer call appends."""
+    import hashlib
+    import subprocess
+    sys.path.insert(0, str(ROOT / "scripts" / "oracle"))
+    import canary as cli
+    cfg, data = dirs
+    (data / "f").mkdir(parents=True, exist_ok=True)
+    body = '{"id": "a"}\n{"id": "b"}\n'
+    (data / "f" / "set.jsonl").write_text(body)
+    (cfg / "f.json").write_text(json.dumps({"set_sha256": hashlib.sha256(body.encode()).hexdigest()}))
+    (cfg / "f.baseline.json").write_text(json.dumps({
+        "filter": "f", "prompt_sha256": SHA, "k_ship": 1, "items": {"a": 6.0, "b": 1.0}, "oracle": ORACLE,
+        "served_model": served, "config": "filters/human_thriving/v9/config.yaml", "prompt": "p.md",
+        "noise": {"k1": {"F": 0, "S": 0.0}, "k3": {"F": 0, "S": 0.0}}}))
+    calls = []
+
+    def fake_run(argv, **kw):
+        out = Path(argv[argv.index("--output") + 1])
+        rows = rows_per_call[min(len(calls), len(rows_per_call) - 1)]
+        with open(out, "a") as f:
+            f.writelines(json.dumps(r) + "\n" for r in rows)
+        calls.append(argv)
+        return subprocess.CompletedProcess(argv, 0)
+    monkeypatch.setattr(cli.subprocess, "run", fake_run)
+    monkeypatch.setattr(sys, "argv", ["canary.py", "run", "--filter", "f"])
+    with pytest.raises(SystemExit) as ex:
+        cli.main()
+    return ex.value.code, calls
+
+
+DIMS = ["human_wellbeing_impact", "social_cohesion_impact", "justice_rights_impact", "evidence_level",
+        "benefit_distribution", "change_durability"]
+
+
+def _row(i, score, served="m"):
+    return {"id": i, "human_thriving_analysis": dict({d: {"score": score} for d in DIMS},
+                                                     prompt_sha256=SHA, served_model=served)}
+
+
+def test_a_canary_served_by_ANOTHER_model_FAILS_even_with_zero_flips(dirs, monkeypatch):
+    code, _ = _run_cli(dirs, monkeypatch, [[_row("a", 6.0, "deepseek-v4-pro"), _row("b", 1.0, "deepseek-v4-pro")]],
+                       served="deepseek-flash")
+    rec = oc.latest_record("f", SHA)
+    assert code == 1 and rec["verdict"] == "FAIL" and "served" in rec["reason"]
+
+
+def test_an_unfinishable_canary_records_NO_VERDICT_so_an_older_PASS_cannot_stand(dirs, monkeypatch):
+    oc.write_record("f", SHA, {"verdict": "PASS", "flips": 0, "shift": 0.0}, set(), now=time.time() - 60)
+    code, calls = _run_cli(dirs, monkeypatch, [[_row("a", 6.0), {"id": "b", "error": "Parse failed"}]])
+    assert "NO-VERDICT" in str(code) and len(calls) == 4      # MAX_PASSES tries, then gives up
+    assert oc.latest_record("f", SHA)["verdict"] == "NO-VERDICT"
+
+
+def test_the_canary_requests_the_baselines_own_model_and_endpoint(dirs, monkeypatch):
+    _, calls = _run_cli(dirs, monkeypatch, [[_row("a", 6.0), _row("b", 1.0)]])
+    argv = calls[0]
+    assert argv[argv.index("--model") + 1] == "deepseek-chat"
+    assert argv[argv.index("--base-url") + 1] == "https://api.deepseek.com/v1/chat/completions"

@@ -509,7 +509,8 @@ class GenericBatchScorer:
         self.prompt_sha256 = prompt_sha256(self.prompt_template)
         self.prompt_hash = self.prompt_sha256[:12]
         # #177: before the client exists, so a refusal spends nothing. Stamped on every label.
-        self.canary_stamp = oracle_canary.gate(self.prompt_sha256, skip_canary)
+        self.canary_stamp = oracle_canary.gate(self.prompt_sha256, skip_canary,
+                                               oracle=oracle_canary.oracle_key("batch_scorer", self.llm_provider))
 
         # Initialize LLM client
         self.llm_client = self._init_llm_client(api_key)

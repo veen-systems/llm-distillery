@@ -9,12 +9,14 @@ Files per filter:
   datasets/canary/<filter>/set.jsonl    the article text (gitignored: the repo is public, the text is publishers')
   datasets/canary/<filter>/passes/      one record per canary run, keyed by prompt digest
 
-A scorer calls `gate(prompt_sha256, skip_reason)` before its first oracle call:
-  - a baseline exists for this prompt and a PASS record younger than FRESH_HOURS exists -> stamp {"verdict": "PASS"}
-  - a baseline exists but no fresh PASS (or the latest record FAILED)                 -> SystemExit (REFUSE)
-  - `skip_reason` given                                                               -> stamp {"skipped": reason}
-  - no baseline for this prompt                                                        -> stamp {"verdict": "no-set"}
-    and a loud banner: only filters with a frozen set can be guarded (owner ruling: human_thriving first).
+A scorer calls `gate(prompt_sha256, skip_reason, oracle)` before its first oracle call. A baseline matches the prompt
+by its RAW or STRIPPED digest (batch_scorer hashes the stripped template; review 2026-10-16 found it unguarded).
+  - `skip_reason` given                                                       -> stamp {"skipped": reason}
+  - no baseline for this prompt                                               -> stamp {"verdict": "no-set"} + banner
+  - a baseline, but for ANOTHER oracle (model / endpoint / scorer)            -> REFUSE: no canary covers this oracle
+  - the latest record is an unconsumed PASS younger than FRESH_HOURS          -> stamp {"verdict": "PASS"}, and the
+    record is CONSUMED: one PASS admits one labelling run ("every labelling run", owner 2026-10-16)
+  - anything else (no record, FAIL, NO-VERDICT, consumed, stale)              -> REFUSE
 """
 import hashlib
 import json
@@ -27,13 +29,19 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 CONFIG_DIR = ROOT / "config" / "canary"
 DATA_DIR = ROOT / "datasets" / "canary"
-FRESH_HOURS = 6          # "every labelling run" (owner, 2026-10-16): a pass covers one run's start, not a day
+FRESH_HOURS = 6          # backstop only: a PASS is single-use (consumed by the run it admits) AND at most this old
 OP = 4.5
 FLIP_MARGIN, SHIFT_MARGIN = 1, 0.15   # fixed in the pre-registration
 
 
 class CanaryRefused(SystemExit):
     pass
+
+
+def oracle_key(endpoint, model):
+    """What a canary PASS covers: the endpoint (or scorer) and the model name a run REQUESTS. A PASS for one key
+    never admits a run on another (review 2026-10-16: a flash PASS must not admit --model X or a Gemini base URL)."""
+    return f"{endpoint}|{model}"
 
 
 # --- scoring: the deploy gate's own arithmetic ---------------------------------------------------------------
@@ -124,9 +132,13 @@ def verify_set(filter_name):
 def baseline_for(prompt_sha256):
     for b in sorted(CONFIG_DIR.glob("*.baseline.json")):
         d = json.load(open(b))
-        if d["prompt_sha256"] == prompt_sha256:
+        if prompt_sha256 in (d["prompt_sha256"], d.get("prompt_sha256_stripped")):
             return d
     return None
+
+
+def record_path(filter_name, rec):
+    return DATA_DIR / filter_name / "passes" / rec["record"]
 
 
 def latest_record(filter_name, prompt_sha256):
@@ -135,7 +147,8 @@ def latest_record(filter_name, prompt_sha256):
     return json.load(open(recs[-1])) if recs else None
 
 
-def gate(prompt_sha256, skip_reason=None, now=None):
+def gate(prompt_sha256, skip_reason=None, now=None, oracle=None):
+    """oracle: the run's oracle key, e.g. "https://api.deepseek.com/chat/completions|deepseek-chat"."""
     now = time.time() if now is None else now
     if skip_reason:
         print(f"⚠️  CANARY SKIPPED: {skip_reason!r} — stamped on every label of this run")
@@ -145,16 +158,28 @@ def gate(prompt_sha256, skip_reason=None, now=None):
         print(f"⚠️  CANARY: no frozen set for prompt {prompt_sha256[:12]}… — this run is NOT guarded against a "
               f"silent oracle change (#177). Stamping canary=no-set.")
         return {"verdict": "no-set"}
-    rec = latest_record(b["filter"], prompt_sha256)
+    if oracle != b.get("oracle"):
+        raise CanaryRefused(
+            f"REFUSED by the oracle canary (#177): prompt {prompt_sha256[:12]}… is guarded for oracle "
+            f"{b.get('oracle')!r}, and this run uses {oracle!r} — no canary covers it.\n"
+            f"  Override: --skip-canary \"<reason>\" (stamped on every label)")
+    rec = latest_record(b["filter"], b["prompt_sha256"])
     age_h = (now - rec["time"]) / 3600 if rec else None
-    if rec is None or rec["verdict"] != "PASS" or age_h > FRESH_HOURS:
+    if rec is None or rec["verdict"] != "PASS" or rec.get("consumed") or age_h > FRESH_HOURS:
         why = ("no canary run on record" if rec is None else
-               f"the latest canary run FAILED ({rec['flips']} flips, shift {rec['shift']})"
-               if rec["verdict"] != "PASS" else f"the latest PASS is {age_h:.1f} h old (> {FRESH_HOURS} h)")
+               f"the latest canary run is {rec['verdict']} ({rec.get('reason') or str(rec.get('flips')) + ' flips'})"
+               if rec["verdict"] != "PASS" else
+               f"the latest PASS was already used by a labelling run ({rec['consumed']['at_utc']})"
+               if rec.get("consumed") else f"the latest PASS is {age_h:.1f} h old (> {FRESH_HOURS} h)")
         raise CanaryRefused(
             f"REFUSED by the oracle canary (#177): {why} for {b['filter']} prompt {prompt_sha256[:12]}….\n"
             f"  Run:      python scripts/oracle/canary.py run --filter {b['filter']}\n"
             f"  Override: --skip-canary \"<reason>\" (stamped on every label)")
+    rec["consumed"] = {"at_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(now)), "oracle": oracle}
+    p = record_path(b["filter"], rec)
+    tmp = p.with_suffix(".tmp")
+    tmp.write_text(json.dumps(rec, indent=1) + "\n")
+    tmp.replace(p)                       # atomic: a second run sees it consumed, never half-written
     return {"verdict": "PASS", "record": rec["record"], "flips": rec["flips"], "shift": rec["shift"],
             "age_h": round(age_h, 2)}
 

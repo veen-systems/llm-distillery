@@ -72,6 +72,30 @@ class Base(unittest.TestCase):
 
 
 class Pull(Base):
+    def test_local_source_pulls_without_ssh_and_verifies(self):
+        """`local:/abs/path` (2026-10-16): data already on situla, which cannot ssh to itself. ssh is made to FAIL
+        here, so the pull passes only if the local branch is taken; the manifest must still carry every hash."""
+        (self.bin / "ssh").write_text("#!/bin/sh\necho ssh-was-called >&2\nexit 99\n")
+        src = Path(self.tmp.name) / "scratch" / "runs"
+        src.mkdir(parents=True)
+        (src / "a.jsonl").write_bytes(b"one\n")
+        (src / "b.jsonl").write_bytes(b"two\n")
+        r = self.run_tool("pull", f"local:{src}", "experiments/2026-10-16-x/runs")
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertNotIn("ssh-was-called", r.stderr)
+        man = json.loads((self.lab / "experiments/2026-10-16-x/runs/_LAB_MANIFEST.json").read_text())
+        self.assertEqual(sorted(man["files"]), ["a.jsonl", "b.jsonl"])
+        self.assertTrue(man["origin"].startswith("local:"))
+        self.assertEqual(self.run_tool("verify", "experiments/2026-10-16-x/runs").returncode, 0)
+
+    def test_local_source_must_be_absolute(self):
+        """A relative or ~ local path is listed against $HOME but copied relative to the cwd (review 2026-10-16)."""
+        for src in ("local:scratch/runs", "local:~/scratch/runs"):
+            r = self.run_tool("pull", src, "experiments/2026-10-16-y/runs")
+            self.assertNotEqual(r.returncode, 0, src)
+            self.assertIn("ABSOLUTE", r.stderr + r.stdout)
+            self.assertFalse((self.lab / "experiments/2026-10-16-y/runs").exists())
+
     def test_pull_verify_and_odd_names(self):
         self.host_tree("run", {"model.bin": b"w", "dir with space/b c.txt": b"b",
                                "back\\slash": b"x", "nl\nname": b"y", "sub/x.pyc": b"skip",

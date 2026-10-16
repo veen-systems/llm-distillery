@@ -1,0 +1,17 @@
+# live proof of the #177 gate, 2026-10-16T10:22:25Z (situla); human_thriving prompt c4705408c477, DeepSeek
+## 1. labelling run with the earlier (unconsumed) PASS
+Successful: 1  Errors: 0  Scrape-junk skipped: 0
+  exit=0 output_file=yes
+  stamped canary: {'verdict': 'PASS', 'record': 'c4705408c477a511_20261016T101025Z.json', 'flips': 5, 'shift': -0.021, 'age_h': 0.2}
+## 2. a second labelling run: the PASS is single-use
+REFUSED by the oracle canary (#177): the latest PASS was already used by a labelling run (2026-10-16T10:22:25Z) for human_thriving prompt c4705408c477….
+  exit=1 output_file=no
+## 3. batch_scorer (Gemini) with the same prompt file: another oracle
+REFUSED by the oracle canary (#177): prompt 62c947319d87… is guarded for oracle 'https://api.deepseek.com/v1/chat/completions|deepseek-chat', and this run uses 'batch_scorer|gemini-flash' — no canary covers it.
+  exit=1
+## 4. canary.py run
+CANARY PASS: flips 5, shift -0.0065, k=1; record c4705408c477a511_20261016T102255Z.json
+## 5. labelling run after the new PASS
+Successful: 1  Errors: 0  Scrape-junk skipped: 0
+  exit=0 output_file=yes
+  stamped canary: {'verdict': 'PASS', 'record': 'c4705408c477a511_20261016T102255Z.json', 'flips': 5, 'shift': -0.0065, 'age_h': 0.0}
