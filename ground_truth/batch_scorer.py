@@ -46,6 +46,7 @@ from typing import Dict, List, Optional, Tuple
 from . import analysis_field_name
 from .secrets_manager import get_secrets_manager
 from .text_cleaning import clean_article as clean_article_comprehensive, sanitize_text_comprehensive
+from . import oracle_canary
 from .oracle_provenance import MissingServedModel, prompt_sha256, served_gemini, served_sdk_object
 
 # The #93 labelling floor lives on the shared base as a @staticmethod, so the
@@ -460,7 +461,8 @@ class GenericBatchScorer:
         output_dir: str = "datasets",
         filter_name: Optional[str] = None,
         filter_version: Optional[str] = None,
-        thinking_budget: int = 0
+        thinking_budget: int = 0,
+        skip_canary: Optional[str] = None
     ):
         """
         Initialize the batch scorer.
@@ -506,6 +508,8 @@ class GenericBatchScorer:
         # 12-hex prefix of the full digest; readers compare it to 12-char literals (#157).
         self.prompt_sha256 = prompt_sha256(self.prompt_template)
         self.prompt_hash = self.prompt_sha256[:12]
+        # #177: before the client exists, so a refusal spends nothing. Stamped on every label.
+        self.canary_stamp = oracle_canary.gate(self.prompt_sha256, skip_canary)
 
         # Initialize LLM client
         self.llm_client = self._init_llm_client(api_key)
@@ -983,6 +987,7 @@ class GenericBatchScorer:
                     analysis['filter_version'] = self.filter_version
                 analysis['prompt_hash'] = self.prompt_hash
                 analysis['prompt_sha256'] = self.prompt_sha256
+                analysis['canary'] = self.canary_stamp
                 analysis.update(served)    # served_model, system_fingerprint (#157)
 
                 # Log success metrics
@@ -1609,6 +1614,11 @@ if __name__ == '__main__':
         default=0,
         help='Token budget for Gemini 2.5 Flash thinking mode (0=disabled, max 24576). Default 0 to minimize costs.'
     )
+    parser.add_argument(
+        '--skip-canary',
+        metavar='REASON',
+        help='run without a fresh oracle-canary PASS (#177); REASON is stamped on every label'
+    )
 
     args = parser.parse_args()
 
@@ -1667,7 +1677,8 @@ if __name__ == '__main__':
         output_dir=args.output_dir,
         filter_name=filter_name,
         filter_version=filter_version,
-        thinking_budget=args.thinking_budget
+        thinking_budget=args.thinking_budget,
+        skip_canary=args.skip_canary
     )
 
     # Run scoring

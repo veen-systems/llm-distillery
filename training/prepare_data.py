@@ -544,6 +544,44 @@ def save_training_data(
     print(f"  Test:  {test_file} ({len(test_data)} examples)")
 
 
+NEAR_DUP_COS = 0.95
+
+
+def report_cross_split_near_dups(train_data, val_data, test_data, output_dir: Path, encode=None):
+    """WARN, never restructure (owner, 2026-10-16, #176 step 3): count val/test rows whose e5-small cosine to a
+    train row is >= NEAR_DUP_COS, print it, and write output_dir/near_dup_report.json so each split records its
+    own exposure. Measured 2026-10-16 (EXP-051): ~5% of test rows sit at >= 0.93, under 1% are real copies, none
+    moved a gate verdict. Without sentence-transformers it says NOT RUN in the same file -- never a silent zero.
+    """
+    report = output_dir / "near_dup_report.json"
+    if encode is None:
+        try:
+            from sentence_transformers import SentenceTransformer
+        except ImportError:
+            print("\n⚠️  NEAR-DUP CHECK NOT RUN: sentence-transformers is not installed here (#176). "
+                  "Cross-split near-duplicates are UNMEASURED for this split.")
+            report.write_text(json.dumps({"status": "not_run", "reason": "sentence-transformers missing"}) + "\n")
+            return None
+        sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts" / "screening"))
+        from near_dup_filter import text_of
+        model = SentenceTransformer("intfloat/multilingual-e5-small")
+        encode = lambda rows: model.encode([text_of(r) for r in rows], batch_size=256,
+                                           normalize_embeddings=True, show_progress_bar=False)
+    out = {"status": "measured", "cosine": NEAR_DUP_COS, "instrument": "intfloat/multilingual-e5-small"}
+    T = encode(train_data)
+    for name, rows in (("val", val_data), ("test", test_data)):
+        if not rows:
+            out[name] = {"n": 0, "near_dups": 0}
+            continue
+        mx = (encode(rows) @ T.T).max(1)
+        hits = [rows[i]["id"] for i in range(len(rows)) if mx[i] >= NEAR_DUP_COS]
+        out[name] = {"n": len(rows), "near_dups": len(hits), "ids": hits}
+        print(f"  near-dup check: {len(hits)}/{len(rows)} {name} rows have a train row at e5 >= {NEAR_DUP_COS}"
+              + ("   ⚠️ these test rows may be scored on leaked data (#176)" if hits and name == "test" else ""))
+    report.write_text(json.dumps(out, indent=1) + "\n")
+    return out
+
+
 def print_statistics(
     labels: List[Dict[str, Any]],
     train_set: List[Dict[str, Any]],
@@ -703,6 +741,7 @@ Examples:
 
     # Save data
     save_training_data(train_data, val_data, test_data, output_dir)
+    report_cross_split_near_dups(train_data, val_data, test_data, output_dir)
 
     print("\n" + "="*70)
     print("TRAINING DATA PREPARATION COMPLETE")

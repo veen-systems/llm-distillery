@@ -357,6 +357,7 @@ class TestOracleProvenance:
         s.filter_name, s.filter_version = "x", "1.0"
         s.prompt_sha256 = prompt_sha256("TEMPLATE")
         s.prompt_hash = s.prompt_sha256[:12]
+        s.canary_stamp = {"verdict": "no-set"}
         s.output_dir, s.logger = tmp_path, logging.getLogger("t")
         s.metrics_log_path = tmp_path / "metrics.jsonl"
         s.session_stats = {"articles_attempted": 0, "articles_succeeded": 0, "articles_failed": 0,

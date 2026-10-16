@@ -37,6 +37,7 @@ from ground_truth.text_cleaning import (
     sanitize_text_comprehensive,
 )
 from ground_truth import analysis_field_name
+from ground_truth import oracle_canary
 from ground_truth.oracle_provenance import (
     MissingServedModel, prompt_sha256, served_openai_compat,
 )
@@ -304,6 +305,8 @@ def main():
     parser.add_argument("--key-name", default="deepseek_api_key",
                         help="secrets.ini [api_keys] entry to use (e.g. gemini_api_key)")
     parser.add_argument("--oracle-label", help="analyzed_by label override (default: deepseek-<model>)")
+    parser.add_argument("--skip-canary", metavar="REASON",
+                        help="run without a fresh oracle-canary PASS (#177); REASON is stamped on every label")
     parser.add_argument("--max-tokens", type=int, default=4096,
                         help="Completion token budget (reasoning models like gemini-2.5 "
                         "spend thinking tokens from this budget; raise if JSON truncates)")
@@ -334,6 +337,9 @@ def main():
     except ValueError:                     # `prompt-compressed.md` names SIX different
         PROMPT_FILE = str(prompt_path)     # files, one per filter, and .name loses which
     print(f"Prompt: {PROMPT_FILE} sha256={PROMPT_SHA256}")
+    # #177: before any oracle call. Refuses (SystemExit) when this prompt has a frozen canary set and no fresh
+    # PASS; otherwise returns the stamp every label of this run carries.
+    canary_stamp = oracle_canary.gate(PROMPT_SHA256, args.skip_canary)
     print(f"Scoring with: dims={DIMENSIONS} | field={ANALYSIS_FIELD} | prompt={prompt_path.name}")
     input_path = Path(args.input)
     output_path = Path(args.output)
@@ -457,6 +463,7 @@ def main():
                     # provider actually served. ⚠️ served_model is the TIER for DeepSeek
                     # ("deepseek-flash" for any flash request), not the version.
                     analysis["prompt_sha256"] = PROMPT_SHA256
+                    analysis["canary"] = canary_stamp
                     analysis["served_model"] = parsed["served_model"]
                     analysis["system_fingerprint"] = parsed["system_fingerprint"]
                     analysis["analyzed_at"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
