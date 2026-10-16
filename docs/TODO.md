@@ -37,6 +37,9 @@ Item 2 (#163, the read surface): keep pruning (owner 2026-10-14 and 10-15: "prun
      control), report the weekly mean and the worst day. ⚠️ The 10-15 T0750Z/T0755Z files were captured by hand that
      morning; the 16:30 ones are the daily series. Owner's own count is the stronger instrument: offer it.
    - **Over 6 is NOT an automatic rollback** (v3's rollback rule predates the bar; owner's call).
+   - ovr (2026-10-16, ovr EXP-060 `9d60310f`): ducroq/ovr.news#391 closes on this count. ⚠️ **Never ship two ACTIVE scorers
+     on one lens** (e.g. a belonging version beside another) without telling ovr first: under ranking H, ADR-050's
+     per-lens normalisation moves no card only because each lens has one scorer; ovr re-runs `adr050-shadow-diff.ts`.
    - ⏰ **The capture is a user crontab line on situla** (owner OK 2026-10-15; the only line): five lens pages
      (`https://ovr.news/en/{belonging,thriving,solutions,discovery,recovery}/`) daily at 16:30 local (14:30Z until
      10-24, 15:30Z from 10-25). Inert from 2026-11-16 (UTC date guard). Hardened at the 10-15 close (review): `curl -fsSL --retry 2`, so an error page is
