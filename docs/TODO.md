@@ -2,9 +2,9 @@
 
 ## ▶️ START HERE — the ordered queue, as of 2026-10-15
 
-*▶ **NEXT SESSION (set 2026-10-16 close): (1) run `/curate` — it was NOT run at the 10-16 close (usage limit);
-(2) item 2, the read surface (#163) — owner 10-16: "pruning, thinning, mechanizing, retiring" — at 469K, ceiling
-478,386; levers listed in item 2; (3) #177 next: the cross-family panel and canaries for the other filters; #179 label
+*▶ **NEXT SESSION (set 2026-10-16 close; `/curate` done): (1) item 2, the read surface (#163) — owner 10-16:
+"pruning, thinning, mechanizing, retiring" — 475,230 after the close, ceiling 478,386, only 3,156 headroom; levers
+listed in item 2; (2) #177 next: the cross-family panel and canaries for the other filters; #179 label
 audit; #178 datasheets. Overdue: H-CTX-3's revisit (item 2). Item 0a stays dated ≥ 10-22.** 10-16 landed: #157,
 #176 (EXP-051), #177 canary LIVE (EXP-052), lab → `~/lab/llm-distillery`, b650 rule + 3.0 GB cleanup.*
 
