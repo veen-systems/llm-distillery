@@ -5,7 +5,11 @@ metadata:
   type: reference
 ---
 
-# NexusMind Data Sources
+# NexusMind Data Sources — what each one excludes
+
+Instances of the working rule *before using any source as evidence, establish what it
+EXCLUDES* (`CLAUDE.md` § Working rules). The two `filtered_*`/`data/raw` traps were found
+2026-08-02 (NM#285); each produced a clean-looking wrong number before being caught.
 
 ## ⚠️ `collected_date` IS NOT UNIFORMLY UTC — 8 of 768 sources carry a +2h skew (FS#176, 2026-08-14)
 
@@ -64,29 +68,7 @@ needed wherever it sits. **Whether ovr should enrich at all is an open architect
 question** — the owner's position is that enrichment is NexusMind's job; ovr's
 CLAUDE.md documents the consolidation as deliberate. Unresolved, owner's call.
 
-**RESOLVED (ducroq/ovr.news#312).** Both published stubs (106 and 131 chars) are far
-under 500 and carry **no upstream-enriched flag of any kind** — verified across every
-lens batch, top-level and per-lens, which eliminated `wasEnrichedUpstream`. The answer:
-**enrichment ran, refused, and the refusal is silent by construction.**
-`ovr.news src/lib/enrichment.ts:154–167` — when `resolveGoogleNewsUrl` returns nothing
-(always, per NM#310), it emits a debug line and returns **before** the fetch, **before**
-the `SKIP_DOMAINS` check, and **before** the `try/catch` at `:271` that calls
-`logError`. Nothing is persisted. **Three other early returns in the same function have
-the identical shape** (skip-domain, invalid URL, SSRF guard).
-
-The refusal is *correct* — fetching an unresolvable GN link retrieves a 60–100 char JS
-stub. **The silence is the defect**, and it falls at exactly the articles that trigger
-it: every refused article is one where refusal cannot be told from no-attempt, and
-those are precisely the ones an investigation picks.
-
-Verified not a dead-table artefact: `enrichment_errors` holds **453 rows, last written
-2026-08-11 10:56** — live. Separately, **`enrichment_history` has 0 rows ever**: its
-writer (`db-enrichments.ts:273`) has no callers while `db-maintenance.ts:30` prunes it
-at 90 days — maintenance for a table nothing writes.
-
-**Whichever way the "should ovr enrich at all" question goes, #312 stands** — a silent
-refusal is a defect at whichever layer performs it, and if enrichment moves upstream
-the observability requirement must move with it rather than being re-lost.
+**RESOLVED (ducroq/ovr.news#312): the silent GN enrichment refusal** — MOVED to [`archive/nexusmind-data-sources-archive.md`](archive/nexusmind-data-sources-archive.md) (2026-10-16). Verdict: enrichment ran and refused silently; the refusal is correct, the silence is the defect.
 
 **Read `len(content)` AFTER `enrich_articles`, NOT the `content_length` stamp.** The
 stamp is captured at scoring (`main.py:1240`), before post-scoring enrichment
@@ -102,11 +84,7 @@ Three fields, three stages:
 | publication (ovr.db) | `LENGTH(content)` | no `content_length` column exists there |
 | before 2026-08-08 | `len(content)` only | stamp absent or null |
 
-**A retracted conclusion, recorded because the wrong version is the intuitive one**:
-I first concluded the gate belonged at *publication*, reasoning that ovr.news
-re-enriches so a scoring-time gate would withhold articles about to become
-full-length. That was generalised from **one** article and the mechanism was never
-checked. See below — it was an intra-NexusMind artefact.
+**A retracted conclusion (gate at publication)** — MOVED to [`archive/nexusmind-data-sources-archive.md`](archive/nexusmind-data-sources-archive.md) (2026-10-16). Retracted: it was an intra-NexusMind artefact (next section).
 
 ## Post-scoring enrichment does not propagate across lenses (0.1%, real)
 
@@ -125,12 +103,6 @@ article, so it is permanently on the stub side.
 
 Reproduce: `/tmp/trace_one.py` and `/tmp/cross_lens_len.py` on sadalsuud; sources in
 this session's scratchpad.
- — what each one excludes
-
-Established 2026-08-02 during the NM#285 measurement. Both traps below produced
-a clean-looking wrong number before being caught. Concrete instances of the
-standing rule in `memory/MEMORY.md`: *before using any source as evidence,
-establish what it excludes*.
 
 ## ⭐⭐ THE LIVE WINDOW ROLLS. THE DATA DOES NOT — there are MONTHLY archives (2026-09-01)
 
@@ -189,26 +161,7 @@ Read off the deployed configs on sadalsuud. **Only `investment_risk v6` excludes
 `code_repo`, `developer_aggregator`, `firehose_aggregator`, `eval_aggregator` and
 nothing else. `uplifting v7` has no `source_filter` block at all.
 
-So "a `type_classification` change affects what reaches the filters" is **false
-for five of six by construction** — the label is not in their lists. This came up
-answering FluxusSource#144 (a plurality rule replacing any-intersection, so one
-science section stops academicising a whole publisher, plus GN feeds without a
-`site:` operator now labelled `proxy_aggregator`). Measured over 1,226,118 rows,
-`collected_date` ≤ 2026-08-10 vs ≥ 2026-08-12 (08-11 excluded — the scorer is
-batch-only, so the code date and the data date are different quantities and the
-regeneration window cannot be pinned tighter than 11:13–18:45 CEST):
-
-| `type_classification` | pre | post |
-|---|---|---|
-| `academic` | **25.4%** | **8.7%** |
-| `proxy_aggregator` | **0%** | **15.7%** |
-| `news_major` | 25.4% | 17.9% |
-| `unknown` | 29.3% | 37.9% |
-
-**`investment_risk v6` excludes both labels, so its excluded share went ~25.4% →
-~24.4% — the volume barely moved and the composition changed.** Wrongly-
-academicised publishers now reach it; GN proxy rows are now correctly kept out.
-That is a correctness win, not a volume win, and it is confined to one filter.
+**FS#144 `type_classification` before/after measurement (2026-08-12)** — MOVED to [`archive/nexusmind-data-sources-archive.md`](archive/nexusmind-data-sources-archive.md) (2026-10-16). It mattered only to `investment_risk v6`, retired downstream 2026-09-17.
 
 ⚠️ **NexusMind's `scripts/stamp_census.py:20` says `type_classification` is
 "stamped, ZERO consumers → an A/B".** That is contradicted by the enforcing
@@ -357,19 +310,7 @@ script made exactly this error. Verified here by grepping every `live_articles`
 reference in `src/` and `scripts/`: outside the schema DDL there is one, a function
 the build never calls.
 
-⚠️ **The deployed view HAD drifted from its own source and could not reconverge —
-FIXED 2026-08-16 by ovr#325.** *(Corrected 2026-08-17, reported by the ovr.news
-session. The paragraph below described the world before that fix and was still
-asserting permanence a day after it landed — a stale "permanent by construction"
-claim is worse than no claim, because it discourages the check.)*
-
-The drift was real: live DDL on sadalsuud filtered `tier IN ('high','medium')` while
-`db-schema.ts:793` said `weighted_average >= 4.5`, and it had been that way since
-**2026-04-10**. Mechanism: every statement in `createViews()` was
-`CREATE VIEW **IF NOT EXISTS**`, a no-op where the view already exists, and
-`recreateViews()` was exported and never called. **ovr#325 moved the view bodies into
-`VIEW_DEFINITIONS` and `reconcileViews()` now runs unconditionally from
-`initializeSchema`, writing only on mismatch — so the view self-heals.**
+**The `live_articles` view drift** — MOVED to [`archive/nexusmind-data-sources-archive.md`](archive/nexusmind-data-sources-archive.md) (2026-10-16). FIXED 2026-08-16 by ovr#325; the view self-heals.
 
 ⛔ **What has NOT changed: `live_articles` is still not the reader population.** It
 remains off the build path, and its only reader `getLiveArticles()`
@@ -445,9 +386,7 @@ versions to four significant figures — **and neither asked what was inside it.
 treating an aggregate over an unopened category as an observation. Before comparing a
 counter across versions, open it once.
 
-**Not caused by, and not worsened by, the 2026-08-16 id-before-url reorder** — these rows
-carry distinct ids, so the in-batch check never fires and the URL check drops them under
-both orderings. Confirmed by replay.
+**Not caused by the 2026-08-16 id-before-url reorder** — MOVED to [`archive/nexusmind-data-sources-archive.md`](archive/nexusmind-data-sources-archive.md) (2026-10-16). Confirmed by replay.
 
 ⚠️ **If anyone fixes it: measure old-vs-new KEPT SETS on identical input, never counter
 deltas.** `duplicate_url` falling is the *intended* effect and cannot distinguish a good

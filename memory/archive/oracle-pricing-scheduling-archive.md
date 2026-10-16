@@ -151,3 +151,66 @@ DeepSeek V4 officialised mid-July 2026, introducing **peak/valley API pricing**.
 
 Effective mid-July 2026 with 24h advance email notice. See [[cd-v5-reference-status]] (DeepSeek-as-default-oracle precedent). Next batch job on deck: solutions v4 (ADR-020 validation case).
 
+
+## Moved 2026-10-16 (#163 round 6)
+
+*Moved VERBATIM from `memory/oracle-pricing-scheduling.md` (#163 the read surface, round 6): closed, moot or done blocks only. Each was a blockquote fragment, so the `>` prefixes are kept.*
+
+### V4 Pro shutdown — cancelled 2026-09-11 (two fragments of the top banner)
+
+> ⛔ **THE V4 PRO SHUTDOWN IS OFF — CANCELLED, NOT POSTPONED AGAIN (vendor mail
+> 2026-09-11 20:17 +0800, surfaced by the owner and read 2026-09-17).** *"In response to
+> user demand, we have decided to continue providing API services for DeepSeek V4 Pro after
+> September 14, 2026, with the billing method remaining unchanged. We will provide further
+> notice should there be any changes."* There is now **no published end date and no
+> announced routing to Flash**. This passage previously read *"pushed back: 04:00 UTC
+> 2026-09-14"* — true when written on 2026-09-10, superseded the next day by a mail nobody
+> here had read until six days later.
+>
+> With the shutdown cancelled, `deepseek-v4-pro` simply stays available at Pro rates, so the
+> only thing that changes for us is that a cost comparison against Pro is **live again**
+> rather than expiring. DeepSeek claims V4.1 Flash *"comprehensively surpassed V4
+> Pro across all key metrics"* — **vendor assertion, unmeasured here.**
+
+### The unpulled lever — V4-card flip points (MOOT under V4.1)
+
+> ⭐⭐ **THE UNPULLED LEVER, worth more than the vendor choice.** Cache hit is the only
+> term that can reverse the ranking, and it needs less than people assume: each measured
+> shape flips at **19.0%–26.5%** (uplifting v7 19.0%, nature_recovery v3 23.8%,
+> human_thriving v8r2 26.5%), and **32.9%** flips it at *any* shape because DeepSeek's
+> blended input rate then falls below Gemini Batch's `$0.15/M`. Moving the placeholder to
+> the END of the template raises the ceiling toward ~97%: `uplifting v7` would cost
+> **$0.000324/article — $2.59 per 8K retrain, 79% below Gemini Batch**, against $14.04
+> today. ⚠️ `solutions/v6` is **already past every flip point on paper at 35.7%** — and
+> `cultural_discovery/v5`'s 16.9% sits just under, which is the likeliest reason cd v5
+> looked cheap enough to set the DeepSeek-as-default precedent in the first place.
+> ⛔ **NOT a free change, and not to be taken as decided.** Instructions-then-article is a
+> *different prompt* from article-then-instructions, and this project ranks oracle
+> consistency above cost (ADR-010). It needs a parity run — same articles, both orders,
+> compare label distributions against the ν decoder noise floor — **before** any retrain
+> uses it. Untested. Follow-up on #103.
+
+### AI Studio Postpay → Prepay coupling — DONE
+
+> ⛔ **Coupling the owner must not miss: the Gemini fallback has its own
+> deadline.** Google AI Studio forces **Postpay → Prepay by 2026-10-12** or the
+> Gemini API is interrupted (email 2026-08-12, to jVeen1@gmail.com). Our oracle
+> authenticates with an AI Studio **API key** (`ground_truth/secrets_manager.py`
+> → `API_GEMINI_API_KEY`), so it is in scope. **Production is NOT in scope** —
+> verified 2026-08-14: NexusMind's `get_gemini_key()` has **zero callers**
+> outside its own module, the scoring path is the local Gemma student, and
+> summarization is ollama. So the risk is a *silent oracle outage at the next
+> retrain*, not a pipeline failure.
+>
+> **Action for the owner:** switch AI Studio to Prepay + enable auto-reload
+> before 2026-10-12 — it is now on the critical path for oracle work, not
+> housekeeping.
+> ✅ **DONE — owner, 2026-10-12: switched to Prepay "last week"** (owner-reported; billing not
+> checked from here, auto-reload not confirmed). Gemini oracle calls on 2026-10-07/08 succeeded.
+
+### Correction 2026-08-17 — #109 Arm B names no judge model
+
+> ⛔ **Correction 2026-08-17: this line used to read "#109 Arm B names Qwen3:14b +
+> Phi4:14b". It does not.** #109's body names **no** judge model — that omission is
+> precisely its blocking gap #1. The two names come from the **cd v5 multi-oracle
+> precedent**, where they were actually run. Cite the precedent, not the issue.

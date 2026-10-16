@@ -18,7 +18,7 @@ For each lens, the share of rows at or above **that lens's own op-point** whose
   NexusMind later removes by dedup and rows never enriched.
 - ⚠️ **The op-point is not the effective reader bar.** NexusMind's `pipeline.enrichment.min_score`
   (4.0) reads the NORMALIZED score (NM#319); for `human_thriving v9` that is an effective raw bar of
-  4.794 (`memory/filter-status.md`), so rows between the op-point and that bar are counted here but
+  4.794 (`memory/archive/filter-status-archive.md`, the v8 row), so rows between the op-point and that bar are counted here but
   are likely never shown. The bar differs per lens and was not applied.
 - ⚠️ **Dedup rule, unmeasured bias:** an id is kept if ANY copy in the window reached the op-point,
   and the last such copy's harm score wins. Duplicate ids were not counted.

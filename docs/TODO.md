@@ -73,6 +73,13 @@ Item 2 (#163, the read surface): keep pruning (owner 2026-10-14 and 10-15: "prun
    NexusMind's session runs it; ours is to tell them. LD#52 and LD#86 are closed.
 
 2. **THE READ SURFACE (#163). "prune, thin, mechanize, retire".** Rounds 1–3 landed 2026-10-12: 758,893 → 514,588 chars (519,680 at close, after the session's new records).
+   ✅ **Round 6 (2026-10-16): 498,514 → 477,669**, ceiling → 487,222. The four standing files thinned by VERBATIM
+   moves of closed material to their `archive/*-archive.md` (each: `comm` lossless + 1-line mutant reports 1):
+   `filter-status.md` 30,059 → ~17.5K, `stamp-contract-integrity.md` 28,704 → 25,753, `nexusmind-data-sources.md`
+   27,550 → ~24.4K, `oracle-pricing-scheduling.md` 26,783 → ~24.2K. Also: a title split by an old mid-line insert in
+   `nexusmind-data-sources.md` restored; filter-status's stale "#151 not decided" corrected. ▶ **Next levers:**
+   un-applied thinning proposals (restatements of CLAUDE.md:33 ADR-023 in `filter-status.md`, ~1K; `data/raw`
+   written-back twice); `gotcha-log.md` (51K) and `hypothesis-ledger.md` (45K) remain the two largest.
    ✅ **Round 5 (2026-10-15 close, owner: same words): 505,983 → 498,514**, ceiling → 508,484. Verbatim: gotcha + sessions
    `--before 2026-10-13`/`10-14` (5 entries, 3 session files), H-BB8's row → ledger archive § *Moved 2026-10-15* (pointer
    kept), TODO 0a's history → TODO-archive. Found and repaired: a substring-anchored insert had split the gotcha log's

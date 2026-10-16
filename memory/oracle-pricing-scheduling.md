@@ -81,24 +81,16 @@ metadata:
 > `deepseek-v4-flash` enables reasoning mode and returns empty `content`). The alias resolves
 > **server-side**, so at 04:00 UTC 2026-09-10 the oracle behind every DeepSeek scoring run
 > becomes V4.1 Flash **with no code change, no config change and no signal in our logs**.
-> ⛔ **THE V4 PRO SHUTDOWN IS OFF — CANCELLED, NOT POSTPONED AGAIN (vendor mail
-> 2026-09-11 20:17 +0800, surfaced by the owner and read 2026-09-17).** *"In response to
-> user demand, we have decided to continue providing API services for DeepSeek V4 Pro after
-> September 14, 2026, with the billing method remaining unchanged. We will provide further
-> notice should there be any changes."* There is now **no published end date and no
-> announced routing to Flash**. This passage previously read *"pushed back: 04:00 UTC
-> 2026-09-14"* — true when written on 2026-09-10, superseded the next day by a mail nobody
-> here had read until six days later.
-> ⭐ **The transferable part is not the date, it is that the date moved TWICE in 48 hours.**
+> *Since 2026-10-16 (#157, `ae132c7`) every live label stamps `served_model` + `system_fingerprint` —
+> but `served_model` is the TIER (`deepseek-flash`), so this swap would still not show unless the
+> fingerprint moves (unknown). `ground_truth/oracle_provenance.py`.*
+> *The V4 **Pro** shutdown episode (postponed, then CANCELLED by vendor mail 2026-09-11; Pro stays at Pro rates) — MOVED to [`archive/oracle-pricing-scheduling-archive.md`](archive/oracle-pricing-scheduling-archive.md) (2026-10-16). Moot for us: we never call Pro.*
+> ⭐ **The transferable part is not the date, it is that the date moved TWICE in 48 hours** (postponed 09-10, cancelled 09-11).
 > A plan that assumes an alias keeps resolving to one model until a published date is unsafe
 > in **both** directions — the retirement can slip, and, as **#157** records, the
 > substitution can land early and silently. Schedule against measurement, never against a
 > vendor calendar. ⚠️ **This moves nothing of ours — we never call Pro**;
 > the exposure was always the Flash alias, which already flipped at 04:00 UTC 2026-09-10.
-> With the shutdown cancelled, `deepseek-v4-pro` simply stays available at Pro rates, so the
-> only thing that changes for us is that a cost comparison against Pro is **live again**
-> rather than expiring. DeepSeek claims V4.1 Flash *"comprehensively surpassed V4
-> Pro across all key metrics"* — **vendor assertion, unmeasured here.**
 > (Verified 2026-09-10: **zero `deepseek-v4-pro` call sites** in this repo — every DeepSeek
 > path takes the `deepseek-chat` alias, though `--model` is an overridable default on
 > `score_deepseek_production.py` / `validate_deepseek_oracle.py`.)
@@ -182,21 +174,7 @@ metadata:
 > hard cap. ⚠️ Note also how that log **decays 14% → 7% → 5% across progress lines** to a
 > 4.9% total — a mid-run cache reading is not a run cache rate.
 >
-> ⭐⭐ **THE UNPULLED LEVER, worth more than the vendor choice.** Cache hit is the only
-> term that can reverse the ranking, and it needs less than people assume: each measured
-> shape flips at **19.0%–26.5%** (uplifting v7 19.0%, nature_recovery v3 23.8%,
-> human_thriving v8r2 26.5%), and **32.9%** flips it at *any* shape because DeepSeek's
-> blended input rate then falls below Gemini Batch's `$0.15/M`. Moving the placeholder to
-> the END of the template raises the ceiling toward ~97%: `uplifting v7` would cost
-> **$0.000324/article — $2.59 per 8K retrain, 79% below Gemini Batch**, against $14.04
-> today. ⚠️ `solutions/v6` is **already past every flip point on paper at 35.7%** — and
-> `cultural_discovery/v5`'s 16.9% sits just under, which is the likeliest reason cd v5
-> looked cheap enough to set the DeepSeek-as-default precedent in the first place.
-> ⛔ **NOT a free change, and not to be taken as decided.** Instructions-then-article is a
-> *different prompt* from article-then-instructions, and this project ranks oracle
-> consistency above cost (ADR-010). It needs a parity run — same articles, both orders,
-> compare label distributions against the ν decoder noise floor — **before** any retrain
-> uses it. Untested. Follow-up on #103.
+> *"The unpulled lever" (V4-card flip points 19.0%–26.5% / 32.9% and the $2.59-per-retrain projection) — MOVED to [`archive/oracle-pricing-scheduling-archive.md`](archive/oracle-pricing-scheduling-archive.md) (2026-10-16). MOOT under V4.1 (banner); the measured reorder is in § The ceiling is REACHABLE.*
 >
 > *Two 2026-08-23 corrections ("cache-hit 0% measured" had NO instrument — a dead field; "n=45" was 15 articles × k=3) and the superseded ~1,174-token back-solve — MOVED to [`archive/oracle-pricing-scheduling-archive.md`](archive/oracle-pricing-scheduling-archive.md) (2026-10-12).*
 >
@@ -217,38 +195,18 @@ metadata:
 > differ), so this is a latent trap, not a live error: **it bites the day DeepSeek
 > moves a window.**
 >
-> ⛔ **Coupling the owner must not miss: the Gemini fallback has its own
-> deadline.** Google AI Studio forces **Postpay → Prepay by 2026-10-12** or the
-> Gemini API is interrupted (email 2026-08-12, to jVeen1@gmail.com). Our oracle
-> authenticates with an AI Studio **API key** (`ground_truth/secrets_manager.py`
-> → `API_GEMINI_API_KEY`), so it is in scope. **Production is NOT in scope** —
-> verified 2026-08-14: NexusMind's `get_gemini_key()` has **zero callers**
-> outside its own module, the scoring path is the local Gemma student, and
-> summarization is ollama. So the risk is a *silent oracle outage at the next
-> retrain*, not a pipeline failure.
->
-> **Action for the owner:** switch AI Studio to Prepay + enable auto-reload
-> before 2026-10-12 — it is now on the critical path for oracle work, not
-> housekeeping.
-> ✅ **DONE — owner, 2026-10-12: switched to Prepay "last week"** (owner-reported; billing not
-> checked from here, auto-reload not confirmed). Gemini oracle calls on 2026-10-07/08 succeeded.
+> *The Gemini AI Studio Postpay → Prepay deadline (2026-10-12) — MOVED to [`archive/oracle-pricing-scheduling-archive.md`](archive/oracle-pricing-scheduling-archive.md) (2026-10-16). DONE: owner switched to Prepay the week before (owner-reported).*
 >
 > 🚫 **There is NO lighter DeepSeek tier to retreat to.** Verified 2026-08-14
 > against the live API with our key: `GET https://api.deepseek.com/models`
 > returns exactly two IDs — `deepseek-v4-flash` and `deepseek-v4-pro` (~3.1×
 > flash on input-cache-miss). No lite/mini tier, and the V3-era models are gone
 > as distinct IDs. Flash is the floor, and the floor is what is rising.
-> ⚠️ **And do NOT "pin" the model name to save ambiguity** — our call sites use
-> the alias `deepseek-chat`, which resolves to v4-flash in *non-reasoning* mode;
-> the literal `deepseek-v4-flash` enables reasoning mode and returns **empty
-> `content`**, breaking the score parser. See `memory/gotcha-log.md` 2026-08-14.
+> ⚠️ **And do NOT "pin" the model name** — see the banner above and `ground_truth/deepseek_models.py`.
 > The real levers are Gemini Batch (~$0.0018/article), local judges on b650 at
 > $0 (`scripts/score_ollama_oracle.py`),
 > and the off-peak scheduling rule below, which survives the hike unchanged.
-> ⛔ **Correction 2026-08-17: this line used to read "#109 Arm B names Qwen3:14b +
-> Phi4:14b". It does not.** #109's body names **no** judge model — that omission is
-> precisely its blocking gap #1. The two names come from the **cd v5 multi-oracle
-> precedent**, where they were actually run. Cite the precedent, not the issue.
+> *Correction 2026-08-17 ("#109 Arm B names Qwen3:14b + Phi4:14b" was wrong; the names come from the cd v5 multi-oracle precedent) — MOVED to [`archive/oracle-pricing-scheduling-archive.md`](archive/oracle-pricing-scheduling-archive.md) (2026-10-16).*
 > The self-hosted-oracle question now has its own issue: **#124**.
 >
 > *The 2026-08-06 price-hike notice (+64% flip point, V4-era stakes) — superseded twice since — MOVED to [`archive/oracle-pricing-scheduling-archive.md`](archive/oracle-pricing-scheduling-archive.md) (2026-10-12).*
@@ -337,5 +295,5 @@ b650's 24 GB ceiling.
 and withdrawn in the originating conversation. Bit-level box determinism
 ([[b650-gpu]], `scripts/verification/box_parity.py`) governs **student scoring**, where a
 verdict flip at an op-point is a production defect. Oracle *labelling* has a far larger
-intrinsic decoder noise floor (ν = 0.436 / 0.687, see [[filter-status]] and the #109 Arm A
+intrinsic decoder noise floor (ν = 0.436 / 0.687, see `memory/score-batch-shape-noise.md` and the #109 Arm A
 follow-up), so an ephemeral rented box is an acceptable labelling instrument.

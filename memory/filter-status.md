@@ -16,15 +16,7 @@ reader and costs trust; a false negative is invisible and the slot refills withi
 raises recall without holding specificity is a regression. Read every recall figure beside
 its split's positive rate — the column is there — and never rank on MAE.
 
-⚠️ `human_thriving v8` gate-passed at **recall 0.314 / spec 0.9856 / precision 0.550**
-(20 surfaced, 9 FP) on the **retrained epoch-5** checkpoint, 2026-09-06, commit `64b469d`
-(EXP-027). ⛔ **The widely-quoted 0.343 / 0.992 / 0.706 is the SUPERSEDED epoch-4 model** —
-orphaned by a `git commit --amend` and retrained rather than shipped with a provenance
-exception. All four #95 bands overlap, so the two are **NOT DISTINGUISHABLE**; the point
-estimates move adversely and 6 of the 9 FPs are `in_scope` boundary cases, not junk.
-It is deliberately NOT
-in these tables: it is not deployed, and its positive class is not v7's (Jaccard 0.246), so
-its recall is not commensurable with the rows below.
+⚠️ `human_thriving v8` gate note (EXP-027, epoch 5 vs superseded epoch 4) — MOVED to [`archive/filter-status-archive.md`](archive/filter-status-archive.md) (2026-10-16). v8 is SUPERSEDED by v9 (2026-09-25).
 
 ## ADR-021 deploy-gate results — the whole fleet, first complete 2026-08-10
 
@@ -62,16 +54,8 @@ shape, second instance found in this project. Unexamined.
 > `ai-engineering-practice` excluded — neither is a production filter here).
 > This file may carry *extra* historical rows (cd v4, nr v2) — that's its job.
 >
-> **Anchoring history — two failures, both of the same kind.** (1) The original
-> `diff | head -20` form compared two differently-formatted tables and could
-> only ever emit MANUAL CHECK NEEDED. (2) Its 2026-08-01 replacement anchored
-> its awk range on the literal `**Per-filter`, and the very next commit renamed
-> that heading to `**Per-lens RULE prefilters:` — the range then ran unbounded
-> to EOF and swept in unrelated sections. It still printed PASS, because
-> `comm -23` tolerates junk in the second stream, so it looked healthy while
-> checking something else entirely. Caught by adversarial review the same day.
->
-> Hence: the range is now bounded by dedicated `prod-filters-table:{start,end}`
+> **Anchoring history** (two 2026-08-01 failures of the table check) — MOVED to [`archive/filter-status-archive.md`](archive/filter-status-archive.md) (2026-10-16).
+> Hence (two earlier anchors each broke the check): the range is now bounded by dedicated `prod-filters-table:{start,end}`
 > HTML sentinels that carry no other meaning and so have no reason to be
 > renamed, and the check **fails loudly if any anchor is missing** rather than
 > silently widening. A verify that cannot fail is worse than no verify.
@@ -83,9 +67,7 @@ shape, second instance found in this project. Unexamined.
 | Filter | Ver | MAE | Cal. MAE | Data | Hub Repo | Deployed |
 |--------|-----|-----|----------|------|----------|----------|
 | uplifting | v7 | **0.84** (see note; do NOT rank on this — ADR-023) | — | 5.3K | (none — file-copy to NexusMind only) | **2026-08-11 OP-POINT 4.0 → 4.5** (#102; recall 0.6111 / spec 0.9730, was 0.7361 / 0.9189; normalization refit n=15,698 raw_min 4.5 — exactly on MAX_NORMALIZATION_RAW_MIN). Deployed to NexusMind `e84c8fc`, activates at the first cycle after 12:02. 2026-07-31 normalization REFIT (Apr-06 fit was unit-mismatched ×1.1976, LD#76/NM#279; raw 5.0 → norm 5.17, was ~3.0) |
-| human_thriving | v9 | — (do NOT rank on MAE — ADR-023; gate on v8's 660 test ids, adjudicated labels: spec 0.998, FP 1, TP 8/23) | own calibration, 720 val | 5.8K | `jeergrvgreg/human-thriving-filter-v9` (private) | **2026-09-25 LIVE, REPLACES v8** in the reader-invisible slot (NM PR #530 `c9f955a`; production call read back `filter_version 9.0`, percentile normalization, CUDA). Student retrained on Claude-adjudicated labels + 186 new positives + 439 hard negatives; live-week junk share 33.8% → 14.9%. Op-point 4.5 (owner ruling; two band audits below 4.5 failed drift). ⚠️ Thriving still reads uplifting v7 (#151 not decided). ⚠️ v8's fitted normalization was never deployed; v9's is. `filters/human_thriving/v9/README.md` |
-| human_thriving | v8 **(superseded by v9 2026-09-25)** | 0.539 (gate, calibrated; do NOT rank on this — ADR-023) | 0.6066 test (**worse**, −3.6%) | 6.6K | `jeergrvgreg/human-thriving-filter-v8` (private) | **2026-09-07 DEPLOYED + ENABLED** — NexusMind `9245f2c` (PR #452 shipped the package, **PR #453 enabled it**: #452 alone left it out of `pipeline.enabled_filters`, so nothing called it). ✅ **SCORING CONFIRMED 2026-09-08** — first cycle to score was `filtered_20260907_180414.jsonl` <!-- placeholder -->, 6,210 articles, **63 above the 4.50 op-point** (the 12:10 cycle died in image enrichment, #152). ⭐ **First live-output audit (`EXP-029`, $0.16, n=62): scope precision 0.9677 [0.890, 0.991] vs the gate's 0.850, not distinguishable; only 2 of 62 off-lens. The defect is the PROMPT, not the student — swapping it for the documented rubric moves 12 articles out of `in_scope`, paired McNemar p=0.0034, and those 12 are STATUS.md's three owed v8.1 gaps (#153).** ✅ **Phase E FITTED 2026-09-22** on **2,976** rows (of 296,636 scored), `raw_min == op_point == 4.5` **exactly** — asserted as equality, not "under the cap", because the loader's test is a strict `>` and a failure is silent. #154 ruled (option 1) and fixed: the guard compared `sample_min` against an absolute 4.5 that IS this filter's op-point, making it a DENSITY test — it blocked the 202-row fit (`sample_min` 4.5069) and allowed the 2,976-row one only because `round(4.500042, 4) == 4.5`, a 5e-5 rounding window it had a ~22% chance of landing in (inferred from the measured density, not measured). Now `sample_gap > MAX_SAMPLE_GAP (0.5)`. ADR-021 gate (EXP-027, epoch 5, CUDA): recall **0.314** / spec **0.9856** / precision 0.550 panel, **0.6073 production-mix** (EXP-028), n=660, 35 positives. Op-point **4.50 calibrated**. ✅ **Phase E normalization FITTED** (`docs/decisions/2026-09-22-phase-e-fit-and-the-154-guard.md`). ⚠️ It also ARMED NM#319, owner-accepted. ⛔ **Do not quote a % here — 60.4% and 60.0% are the SAME TAUTOLOGY at two sample sizes**: normalized 4.0 is the fit sample's own 40th percentile, so ≈60% is arithmetic for any percentile-normalized filter (`memory/gotcha-log.md` § *in-sample share*). Quote the effective **raw** bar, **4.794** against op-point 4.50. `uplifting v7`'s 40%-un-enriched IS out-of-sample (82 cycles, 18,041 surfaced) and is the real comparison. ⛔ **Fitting is NOT a cutover**: v7 still scores. ⭐ **v7-vs-v8 on the same 15,372 production articles (`EXP-030`, $0): v7 surfaces 1,184, v8 surfaces 168** — a 7× cut, both 152 / v7-only 1,032 / v8-only 16, and volume-matching v8 does NOT reconstruct v7's set (57.0% at parity, Spearman 0.224 within the surfaced union). ⚠️ **`uplifting v7` remains LIVE**: this deploy CREATED human_thriving, it retired nothing, and which one feeds the Thriving tab is an OPEN OWNER DECISION. Adapter sha256 `074209ff…` |
-| sustainability_technology | v3 | 0.72 | — | 10.6K | `jeergrvgreg/sustainability-technology-v3` | 2026-02-21 (retired from ovr.news — superseded by solutions v6) |
+| human_thriving | v9 | — (do NOT rank on MAE — ADR-023; gate on v8's 660 test ids, adjudicated labels: spec 0.998, FP 1, TP 8/23) | own calibration, 720 val | 5.8K | `jeergrvgreg/human-thriving-filter-v9` (private) | **2026-09-25 LIVE, REPLACES v8** in the reader-invisible slot (NM PR #530 `c9f955a`; production call read back `filter_version 9.0`, percentile normalization, CUDA). Student retrained on Claude-adjudicated labels + 186 new positives + 439 hard negatives; live-week junk share 33.8% → 14.9%. Op-point 4.5 (owner ruling; two band audits below 4.5 failed drift). Thriving reads it since 2026-09-26 (#151 ruled, ovr.news#373); `uplifting v7` is still scored. ⚠️ v8's fitted normalization was never deployed; v9's is. `filters/human_thriving/v9/README.md` |
 | solutions | v6 | 0.476 | — | 8.2K | `jeergrvgreg/solutions-filter-v6` | 2026-07-27 gate passed; normalization fitted 2026-07-28; LIVE. v6 weights on Hub 2026-07-30 (was: v4 repo shared — that mismatch + FILTER_VERSION 5.0 fixed in 403429d). |
 | investment-risk **PAUSED 2026-08-25** | v6 | 0.497 | 0.465 | 10.4K | `jeergrvgreg/investment-risk-filter-v6` (private) | **2026-08-11 OP-POINT 4.0 → 4.25** (recall 0.7239 / spec 0.9740, was 0.7609 / 0.9550; normalization refit n=38,637 raw_min 4.25). Deployed `3d358d3`. **First accuracy number ever measured 2026-08-10.** 2026-02-21 |
 
@@ -106,13 +88,7 @@ false positives *by the lens's definition* while being true positives by the sco
 which is why ADR-012's rename `uplifting` → `human_thriving` is **load-bearing rather than
 hygiene**: the new name is the one the lens's definition matches.
 
-⛔ **`investment_risk` is RETIRED downstream since 2026-09-17 — NexusMind ADR-025 (NM#499), not merely paused.** It was paused 2026-08-25 (owner: *"aegis is dormant, nobody reads it - pause it"*); two things then made the pause permanent, per that ADR: **the corpus its op-point was measured on no longer exists** (FluxusSource retired all 194 publisher-named Google News proxies on 2026-09-16, enabled GN feeds 302 → 40 — exactly the `site:`-carrying population behind the 4.25 threshold, and one of the four feeds its config names as *"must keep passing this filter"* went with them), and **nothing consumed it**. ⛔ **Un-pausing is now a PROJECT, not a config edit**: the package must be restored from `/home/jeroen/repos/_archive/nexusmind-investment_risk/`, the op-point re-measured against a corpus without that population, and the Aegis consumer resurrected.
-
-⚠️ **This is a NexusMind decision and it does not name llm-distillery.** What it archived is NexusMind's deployed copy plus the export runtime (**Deleted**: `scripts/export_aegis_narrative.py` — archived, with the classifier, the `pipeline.aegis_export` config block and the stage-4 call site; git history retains all of it). **`filters/investment_risk/v6/` in THIS repo is untouched and stays** — this is where filters are made. Contract C, the 251 days of `narrative_risk` archives and the historical record are **deliberately kept** by the ADR too: *a contract outlives its producer*.
-
-⚠️ **The 2026-08-25 three-file un-pause procedure is now history, not instructions** — the `pipeline.aegis_export` block it names no longer exists in the deployed config. `TestSmokeFixtureAlignment` (`NexusMind/tests/unit/test_filter_integrity.py`), the guard born from that incident, is generic (*no fixture may name a disabled filter*) and stays. Records: `docs/decisions/2026-08-25-pause-investment-risk.md` (the pause, superseded) and NexusMind `docs/adr/ADR-025-retire-investment-risk-and-the-aegis-export.md` (the retirement).
-
-⛔ **Found by the curate verify runner on 2026-09-17, hours after the ADR landed** — the pause probe went FAIL because the config block it counted was gone. **The check was the control working**; it was rewritten to assert the retirement, not repaired to go green.
+⛔ **`investment_risk` RETIRED downstream 2026-09-17** (NexusMind ADR-025, NM#499); retirement narrative and the superseded un-pause procedure — MOVED to [`archive/filter-status-archive.md`](archive/filter-status-archive.md) (2026-10-16). The verify below still asserts the retirement.
 
 <!-- verify: if ! ssh -o BatchMode=yes -o ConnectTimeout=5 sadalsuud true 2>/dev/null; then echo "CANNOT VERIFY: sadalsuud unreachable"; else C=/home/jeroen/local_dev/NexusMind/config/app.yaml; L=$(ssh sadalsuud "grep -c \"^    - .investment_risk.\" $C" 2>/dev/null); A=$(ssh sadalsuud "grep -c \"^  aegis_export:\" $C" 2>/dev/null); R=$(test -d /home/jeroen/repos/_archive/nexusmind-investment_risk && echo 1 || echo 0); echo "enabled_filters lines: $L | aegis_export blocks: $A | archive present: $R"; if [ "$L" = 0 ] && [ "$A" = 0 ] && [ "$R" = 1 ]; then echo PASS; else echo "RETIREMENT NO LONGER HOLDS — a filter, an export block or the archive changed"; exit 1; fi; fi -->
 
@@ -124,64 +100,12 @@ hygiene**: the new name is the one the lens's definition matches.
 | belonging | v2 | — | — | — | — | **DRAFT prompt only (2026-10-01), PARKED 2026-10-02.** The definition was ruled (MIDDLE + "doing"). The next model reshapes v1's TRAINING DATA instead, the human_thriving v9 recipe (`docs/TODO.md` item 0; ledger `H-BV7`). Evidence: `docs/evidence/2026-10-02-belonging-reader-snapshot/` |
 | nature_recovery | v4 | recall 0.65 / prec 0.85 @3.75 | 0.48 | 3.9K | `jeergrvgreg/nature-recovery-filter-v4` | 2026-07-10 (DeepSeek oracle; #70 protection scope; op-point 3.75 wired into TIER_THRESHOLDS + validated in prod output, F1) |
 | nature_recovery | v2 | 0.63 | 0.53 | 3.5K | `jeergrvgreg/nature-recovery-filter-v2` | 2026-04-19 — kept as fallback (rollback = delete v4 dir; discovery falls back) |
-| foresight | v1 | 0.744 | 0.75 | 3.5K | `jeergrvgreg/foresight-filter-v1` | PARKED 2026-04-16 (#43) |
 
 <!-- prod-filters-table:end -->
 
-> ⛔ **2026-10-01: the per-lens rule prefilters below are DELETED** (decision 0; ADR-019 *Amendment 2026-10-01*). These two paragraphs are the 2026-08-01 finding that led there — history, not current state.
+Table rows `human_thriving v8` (superseded by v9 2026-09-25), `sustainability_technology v3` and `foresight v1` (both removed 2026-08-03) — MOVED to [`archive/filter-status-archive.md`](archive/filter-status-archive.md) (2026-10-16).
 
-**Per-lens RULE prefilters: DECLARED but NOT ENFORCED in production (NM#284, found 2026-08-01).** Scope precisely: this is the per-lens rule prefilter only — `filters/{name}/v{N}/prefilter.py`, the ADR-018/019 `BasePreFilter` subclasses (regex/keyword on title+content). Every filter's `config.yaml` said `prefilter: enabled: true` (blocks removed 2026-10-01), but the GPU scorer builds each with `use_prefilter=False` (NexusMind `deploy/gpu-server/main.py` L915) and calls `score_batch(skip_prefilter=True)` (L1318), which makes the guard `if self.use_prefilter and not skip_prefilter` false in **both** `filter_base_scorer.score_batch` and `hybrid_scorer.score_batch`. Dead since `66582e7` (2026-02-10).
-
-**Verified NOT affected** (each checked, not assumed): the **e5 probe** (Phase 2 of `hybrid_scorer.score_batch`, ungated by `skip_prefilter` — live log shows `stage1_low=7..19, stage2=77..85` per 100 articles); **commerce / obituary / violence** (separate `src/preprocessing/` stages with their own stamps); the **NM#189 source-type allowlist** (`shadow_mode: false`, enforced in NexusMind `src/scoring/source_filter.py`); and the same rule prefilters in the llm-distillery oracle/training path (true until their deletion on 2026-10-01).
-
-⚠️ **Do NOT verify prefilter state from `data/filtered/{name}/filtered_*.jsonl`.** That file only receives rows where `passed_prefilter` is true NexusMind `scripts/main.py`’s `if result["passed_prefilter"]:` write guard, so it is 100% passers by construction and can never show a block. An earlier version of this note cited "0 blocks per cycle" from exactly that file — invalid evidence, corrected 2026-08-01. Use instead the pipeline line `Filter X complete (N scored, M prefiltered)` and the NM#284 shadow log, both of which see pre-drop counts. The ~350–360 `prefiltered` per lens per cycle is the source-type allowlist plus validation failures, **not** lens rules (five lenses with different rules landing within 10 of each other is the tell; investment_risk differs at 821 because it also excludes `academic` + `social`).
-
-The finding rests on: (1) the code above; (2) the in-path shadow measurement — cd reports `observed_pass` 0.255 pooled over 2,099 articles *at the scorer*, which would read ≈1.000 if the gate were already enforcing upstream; (3) magnitude — cd's gate blocks 71% on replay vs 15.6% actually dropped.
-
-NM#284 stage 1 (shadow measurement, deployed 2026-08-01 `5d53774`) logs observed
-vs declared pass rate per batch. **Superseded by the 2026-08-02 measurement
-(NM#285) — the first-cycle n≈2,099 table is no longer the reference.**
-
-Full-contract replay, 4 cycles, n=8,283 per filter (same-row FULL vs
-`{title, content}` A/B, so the truncation effect is isolated):
-
-| filter | observed (full) | declared | length blocks | lens blocks | truncation effect |
-|---|---|---|---|---|---|
-| cultural_discovery v5 | 0.2605 | 0.25 | 0 | 6,103 | +0.0005 |
-| uplifting v7 | 0.5873 | 0.20 | 2,949 | 469 | +0.0028 |
-| investment_risk v6 | 0.7605 | *(none)* | 1,454 | 117 | +0.0097 |
-| belonging v1 | 0.6321 | 0.15 | 2,950 | 99 | +0.0008 |
-| nature_recovery v4 | 0.6438 | ~~0.85~~ **deleted** | 2,950 | **0** | +0.0000 |
-| solutions v6 | 0.6438 | ~~0.20~~ **deleted** | 2,950 | **0** | +0.0000 |
-
-Three things this replaced:
-
-1. **The "mismatch" verdicts were not drift.** `nature_recovery v4` and
-   `solutions v6` declare `EXCLUSION_PATTERNS = {}` by design (commerce upstream,
-   ADR-004) and their `POSITIVE_PATTERNS` are force-pass overrides — a no-op with
-   nothing to override. Both reduce to `validate_article()` +
-   `MIN_CONTENT_LENGTH` and are byte-identical because they are the same filter.
-   `expected_pass_rate` **deleted** from both (`3ed47e1`), not corrected: 0.644 is
-   "fraction of articles ≥300 chars", a corpus statistic.
-2. **"Stage 2 is a global short-content gate" is REFUTED** (#93). Length is
-   87–100% of blocking for four of six filters, and a length gate is the wrong
-   shape — short content clearing an op-point is as likely to be genuine as long
-   content (uplifting 67% vs 65% oracle-validated). Fix is a cap/penalty.
-3. **investment_risk's logged rate is biased by the shadow denominator**, which
-   counts articles `source_filter` discards *after* scoring (2,193 of 8,765).
-   ⚠️ Treat **0.129 as an upper bound on the discrepancy, not a measured bias**
-   (corrected 2026-08-02): the excluded rows' true pass rate is UNMEASURED. The
-   0.008 figure I first quoted came from `data/raw/`, which is pre-enrichment
-   and therefore invalid for anything length-dependent; the only other estimate
-   is circular. Measuring it properly needs the pipeline instrumented, not a
-   file replayed. See `memory/nexusmind-data-sources.md`.
-
-**cultural_discovery's rate matches and is still not safe to enforce** — 15.5%
-of surfacing articles blocked, 0% of high tier (#86). Rate agreement and
-safety-to-enforce are independent properties. The loss is **entirely
-`no_cultural_topic_signal`** (9.9% en vs 19.2% non-en; the other three rules fire
-*more* on English) — uneven `TOPIC_GATE_PATTERNS` keyword coverage, not a
-language effect: German 4.9% and French 5.3% sit *below* English.
+**Per-lens RULE prefilters + NM#284 shadow measurement (2026-08-01/02)** — MOVED to [`archive/filter-status-archive.md`](archive/filter-status-archive.md) (2026-10-16). Prefilters DELETED 2026-10-01 (decision 0); standing lessons live in CLAUDE.md Hard Constraints.
 
 **Runtime content-type caps: NONE (2026-07-14).** NexusMind's `cap_triggers.py` `_TRIGGER_REGISTRY` is empty, so `cap_applied` is permanently `null` on every filter. `nature_recovery/climate_doom` was the only one ever deployed (2026-05-08, #161) and was retired: 3 production bites, 3 false positives, 0 saves — all three the trigger word inside a non-doom construction (`evitar su extinción`, `en peligro crítico de extinción`, `deforestation-free`), which a polarity-blind regex cannot see. #161's actual cause was `normalization.json` fitted at raw ≥ 1.5 instead of the 4.0 tier threshold, inflating correctly-scored doom (raw 2.2–3.3) to normalized 5.2–8.3. Filters' `config.yaml` `content_type_caps` still declare the **oracle** contract and are inert at runtime; the scorer log reports them as INERT. Enforced by `tests/unit/test_normalization_invariant.py` (since 2026-07-16: raw_min must equal the op-point ±0.01 — the fitter anchors the CDF's lower edge there by construction; the old `[op_point, 4.5]` band is gone).
 
@@ -197,8 +121,8 @@ All use Gemma-3-1B base + LoRA. All have local, Hub, and hybrid inference paths.
 |--------|-----|--------|
 | thriving | v1 | PARKED indefinitely (ADR-015) — orthogonal lens design caused bimodal distribution |
 | solutions | v6 | **LIVE** — gate passed 2026-07-27 (F1 0.739), normalization fitted 2026-07-28, own Hub repo since 2026-07-30. |
-| foresight | v1 | **REMOVED 2026-08-03** (#43) — merged into solutions; the ~2026-08-01 delete-after date passed and the drain completed. Package in git history; production output archived to sadalsuud `~/retired_filters_foresight_sustech_20260803.tar.gz`. Closed #64 (its normalization refit) as superseded. |
-| sustainability_technology | v3 | **REMOVED 2026-08-03** — replaced by solutions (ADR-012). Same archive. |
+
+Rows `foresight v1` and `sustainability_technology v3` (REMOVED 2026-08-03, #43) — MOVED to [`archive/filter-status-archive.md`](archive/filter-status-archive.md) (2026-10-16).
 
 <!-- NOTE: consumer-side concerns (which ovr.news lens/tab uses which filter, frontend rollout)
      live in the NexusMind and ovr.news repos. This repo produces filters; mapping filters to
@@ -206,16 +130,7 @@ All use Gemma-3-1B base + LoRA. All have local, Hub, and hybrid inference paths.
 
 ## Repo-wide audit (2026-07-27)
 
-Ran `scripts/deployment/verify_filter_package.py --check-hub` across every `filters/*/v*/`.
-
-- `ai-engineering-practice/v2` — `config.yaml filter.version` says 1.0 in a v2 dir → **REMOVED** (LD#49)
-- `sustainability_technology/v2` — cross-version imports from v1 (#44 failure mode, pre-v3) → **REMOVED** (LD#49)
-- `cultural-discovery/v3` — no default `repo_id` in inference_hub.py signature → **REMOVED** (LD#49)
-- `investment-risk/v5` — references placeholder `your-username/investment-risk-filter-v5` → **REMOVED** (LD#49)
-- `uplifting/v5` — Hub `last_modified` before local `training_history.json` → **REMOVED** (LD#49)
-- `signs_of_wisdom/v1` — package structure incomplete (0 checks pass) → **REMOVED** (LD#49)
-
-All 6 superseded by newer versions in production. Cleaned up 2026-07-27.
+Six stale packages REMOVED (LD#49) — MOVED to [`archive/filter-status-archive.md`](archive/filter-status-archive.md) (2026-10-16). The verify below keeps asserting their absence.
 
 <!-- verify: for p in ai-engineering-practice/v2 sustainability_technology/v2 cultural-discovery/v3 investment-risk/v5 uplifting/v5 signs_of_wisdom/v1; do test -e "filters/$p" && { echo "FAIL: filters/$p still present"; exit 0; }; done; echo PASS -->
 
@@ -260,16 +175,7 @@ for identical quality. Composition explains **+0.0919 of the 0.3435** gap to
 nature_recovery — ~27%, not all of it, so the residual may be real; it simply is
 not the objective.
 
-**What this rule was written against** *(moved here from `CLAUDE.md` 2026-08-16;
-the imperative stays there)*: on **2026-08-09** an agent produced a six-filter
-quality ranking on mean absolute error and recommended a calibration change on
-it. **Both were retracted.** MAE is the wrong instrument twice over — it weights
-every article equally while the product only cares about the thin band at the
-op-point, *and* each split's own positive rate makes a more enriched split carry
-larger per-article error for identical model quality. ⚠️ **Do not overstate the
-retraction either.** Composition explains only the ~27% above, so the ranking was
-invalid **as made** while the residual it rested on may still be real. Two
-separate claims; retracting the first does not establish the second is false.
+**What the MAE rule was written against** (2026-08-09 MAE ranking, RETRACTED) — MOVED to [`archive/filter-status-archive.md`](archive/filter-status-archive.md) (2026-10-16).
 
 **The comparable numbers**, both conditional on the true class:
 
