@@ -46,12 +46,19 @@ V8_DIMENSIONS = [
 ]
 
 
-def _resp(payload: dict) -> dict:
-    """Shape an OpenAI-compatible chat-completions response around a JSON body."""
-    return {
+def _resp(payload: dict, model="deepseek-flash", fingerprint="fp_test") -> dict:
+    """Shape an OpenAI-compatible chat-completions response around a JSON body.
+
+    ``model`` / ``system_fingerprint`` are what the live envelope carries (#157);
+    pass ``model=None`` to drop the key."""
+    out = {
         "choices": [{"message": {"content": json.dumps(payload)}}],
         "usage": {"prompt_tokens": 100, "completion_tokens": 10},
+        "system_fingerprint": fingerprint,
     }
+    if model is not None:
+        out["model"] = model
+    return out
 
 
 def _v8_payload(verdict="in_scope", subject="a phrase", score: float = 6.0) -> dict:
@@ -168,7 +175,7 @@ class TestRecordWrite:
     read back off disk. Everything above this class passed while the record-write
     lines were deleted."""
 
-    def _run(self, tmp_path, monkeypatch, payload, prompt="prompt-candidate.md"):
+    def _run(self, tmp_path, monkeypatch, payload, prompt="prompt-candidate.md", **resp_kw):
         art = {
             "id": "test_row_1",
             "title": "A clinic reopens",
@@ -183,8 +190,9 @@ class TestRecordWrite:
         tmp_path.mkdir(parents=True, exist_ok=True)
         inp, outp = tmp_path / "in.jsonl", tmp_path / "out.jsonl"
         inp.write_text(json.dumps(art) + "\n", encoding="utf-8")
+        monkeypatch.setattr(sdp, "RUN_FATAL", {"status": None, "body": ""})  # module global
         monkeypatch.setattr(sdp, "get_deepseek_key", lambda *a, **k: "sk-test")
-        monkeypatch.setattr(sdp, "call_deepseek", lambda *a, **k: _resp(payload))
+        monkeypatch.setattr(sdp, "call_deepseek", lambda *a, **k: _resp(payload, **resp_kw))
         monkeypatch.setattr(sys, "argv", [
             "score_deepseek_production.py",
             "--input", str(inp), "--output", str(outp),
@@ -248,3 +256,69 @@ class TestRecordWrite:
         expected = hashlib.sha256(text.encode("utf-8")).hexdigest()[:12]
         rec = self._run(tmp_path, monkeypatch, _v8_payload())
         assert rec["uplifting_analysis"]["prompt_hash"] == expected
+
+
+class TestOracleProvenance:
+    """#157 / pipeline-atlas#169 phase 1: every label names the FULL prompt digest and
+    what the provider SERVED. Driven through main() and read back off disk."""
+
+    _run = TestRecordWrite._run
+
+    def test_the_full_digest_is_of_the_prompt_content_and_extends_the_legacy_hash(
+            self, tmp_path, monkeypatch):
+        import hashlib
+        text = (ROOT / "filters/human_thriving/v8/prompt-candidate.md").read_text(encoding="utf-8")
+        a = self._run(tmp_path, monkeypatch, _v8_payload())["uplifting_analysis"]
+        assert a["prompt_sha256"] == hashlib.sha256(text.encode("utf-8")).hexdigest()
+        assert len(a["prompt_sha256"]) == 64
+        assert a["prompt_sha256"].startswith(a["prompt_hash"])   # old readers unaffected
+
+    def test_the_served_model_comes_from_the_RESPONSE_not_the_request(
+            self, tmp_path, monkeypatch):
+        """Same request (alias deepseek-chat) both times; only the envelope differs.
+        A stamp derived from --model, a constant or the label fails here."""
+        a = self._run(tmp_path / "a", monkeypatch, _v8_payload(),
+                      model="deepseek-flash", fingerprint="fp_a")["uplifting_analysis"]
+        b = self._run(tmp_path / "b", monkeypatch, _v8_payload(),
+                      model="deepseek-v4-pro", fingerprint="fp_b")["uplifting_analysis"]
+        assert (a["served_model"], a["system_fingerprint"]) == ("deepseek-flash", "fp_a")
+        assert (b["served_model"], b["system_fingerprint"]) == ("deepseek-v4-pro", "fp_b")
+        assert a["analyzed_by"] == b["analyzed_by"] == "deepseek-deepseek-chat"
+
+    def test_an_absent_fingerprint_is_stamped_visibly_not_dropped(self, tmp_path, monkeypatch):
+        a = self._run(tmp_path, monkeypatch, _v8_payload(), fingerprint=None)["uplifting_analysis"]
+        assert a["system_fingerprint"] == "__absent__"
+
+    def test_later_rows_are_never_sent_after_the_abort(self, tmp_path, monkeypatch):
+        calls = []
+        art = {"title": "t", "content": "A long enough article body about a clinic. " * 10,
+               "url": "u", "source": "s", "published_date": "2026-10-16", "language": "en"}
+        inp, outp = tmp_path / "in.jsonl", tmp_path / "out.jsonl"
+        inp.write_text("".join(json.dumps(dict(art, id=f"r{i}")) + "\n" for i in range(5)))
+        monkeypatch.setattr(sdp, "RUN_FATAL", {"status": None, "body": ""})
+        monkeypatch.setattr(sdp, "get_deepseek_key", lambda *a, **k: "sk-test")
+        monkeypatch.setattr(sdp.requests, "post", lambda *a, **k: calls.append(1) or type(
+            "R", (), {"status_code": 200, "json": lambda self: _resp(_v8_payload(), model=None)})())
+        monkeypatch.setattr(sys, "argv", [
+            "x", "--input", str(inp), "--output", str(outp),
+            "--config", str(ROOT / "filters" / "uplifting" / "v7" / "config.yaml"),
+            "--prompt", str(ROOT / "filters" / "human_thriving" / "v8" / "prompt-candidate.md"),
+            "--concurrency", "1"])
+        with pytest.raises(SystemExit):
+            sdp.main()
+        assert len(calls) == 1          # rows 2-5 were never billed
+
+    def test_no_served_model_ABORTS_THE_RUN_and_writes_an_error_row(self, tmp_path, monkeypatch,
+                                                                     capsys):
+        """Run-fatal (exit 2), not per-row: a missing `model` is the endpoint's property,
+        and a per-row error would bill every row again on every resume."""
+        with pytest.raises(SystemExit) as ex:
+            self._run(tmp_path, monkeypatch, _v8_payload(), model=None)
+        assert ex.value.code == 2
+        assert sdp.RUN_FATAL["status"] == "NO-SERVED-MODEL"
+        said = capsys.readouterr().out
+        assert "FATAL: NO-SERVED-MODEL" in said and "HTTP NO-SERVED" not in said
+        assert "BILLED" in said and "fix the account" not in said   # not a refusal (round 2)
+        rec = json.loads((tmp_path / "out.jsonl").read_text(encoding="utf-8").strip())
+        assert "uplifting_analysis" not in rec
+        assert "Provenance" in rec["error"]

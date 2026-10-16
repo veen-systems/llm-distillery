@@ -46,6 +46,7 @@ from typing import Dict, List, Optional, Tuple
 from . import analysis_field_name
 from .secrets_manager import get_secrets_manager
 from .text_cleaning import clean_article as clean_article_comprehensive, sanitize_text_comprehensive
+from .oracle_provenance import MissingServedModel, prompt_sha256, served_gemini, served_sdk_object
 
 # The #93 labelling floor lives on the shared base as a @staticmethod, so the
 # oracle gate can apply it with no per-lens prefilter in existence (NM#284).
@@ -501,9 +502,10 @@ class GenericBatchScorer:
         # Load prompt template
         self.prompt_template = self._load_prompt_template()
 
-        # Compute prompt hash for reproducibility tracking
-        import hashlib
-        self.prompt_hash = hashlib.sha256(self.prompt_template.encode('utf-8')).hexdigest()[:12]
+        # Compute prompt hash for reproducibility tracking. prompt_hash is the legacy
+        # 12-hex prefix of the full digest; readers compare it to 12-char literals (#157).
+        self.prompt_sha256 = prompt_sha256(self.prompt_template)
+        self.prompt_hash = self.prompt_sha256[:12]
 
         # Initialize LLM client
         self.llm_client = self._init_llm_client(api_key)
@@ -776,7 +778,7 @@ class GenericBatchScorer:
         self,
         prompt: str,
         timeout_seconds: int
-    ) -> str:
+    ) -> Tuple[str, Dict[str, str]]:
         """
         Call LLM provider with timeout protection.
 
@@ -785,7 +787,8 @@ class GenericBatchScorer:
             timeout_seconds: Maximum time to wait
 
         Returns:
-            Response text from LLM
+            (response text, provenance stamps): the stamps name the model the provider
+            SERVED (`served_model`, `system_fingerprint`), from the response (#157)
 
         Raises:
             LLMTimeoutError: If call times out
@@ -793,7 +796,7 @@ class GenericBatchScorer:
             LLMAuthError: If authentication fails
             LLMError: For other LLM errors
         """
-        result = [None]  # Mutable container for thread result
+        result = [None, None]  # Mutable container for thread result: (text, served)
         exception = [None]  # Mutable container for exceptions
 
         def call_llm():
@@ -807,6 +810,7 @@ class GenericBatchScorer:
                         messages=[{"role": "user", "content": prompt}]
                     )
                     result[0] = message.content[0].text.strip()
+                    result[1] = served_sdk_object(message, "Anthropic")
 
                 elif self.llm_provider in ["gemini", "gemini-pro", "gemini-flash"]:
                     from google.genai import types as genai_types
@@ -825,6 +829,7 @@ class GenericBatchScorer:
                         )
                     )
                     result[0] = response.text.strip()
+                    result[1] = served_gemini(response)
 
                 elif self.llm_provider == "gpt4":
                     response = self.llm_client.chat.completions.create(
@@ -834,6 +839,7 @@ class GenericBatchScorer:
                         max_tokens=4096,
                     )
                     result[0] = response.choices[0].message.content.strip()
+                    result[1] = served_sdk_object(response, "OpenAI")
             except Exception as e:
                 exception[0] = e
 
@@ -855,7 +861,7 @@ class GenericBatchScorer:
         if not result[0]:
             raise LLMResponseError("Empty response from LLM", ErrorType.EMPTY_RESPONSE)
 
-        return result[0]
+        return result[0], result[1]
 
     def _classify_and_raise_exception(self, exc: Exception):
         """
@@ -869,6 +875,12 @@ class GenericBatchScorer:
             LLMAuthError: For authentication errors
             LLMError: For other errors
         """
+        if isinstance(exc, MissingServedModel):
+            # RUN-FATAL (#157): a missing model id is a property of the endpoint, so every
+            # retry, every later row and every resume would be billed and fail the same way.
+            # analyze_article re-raises it; the run stops with a traceback, nothing written.
+            raise exc
+
         error_str = str(exc).lower()
         error_type_str = type(exc).__name__.lower()
 
@@ -958,7 +970,7 @@ class GenericBatchScorer:
 
             try:
                 # Call LLM with timeout
-                response_text = self._call_llm_with_timeout(prompt, timeout_seconds)
+                response_text, served = self._call_llm_with_timeout(prompt, timeout_seconds)
 
                 # Parse JSON response
                 analysis = self._parse_json_response(response_text, state)
@@ -970,6 +982,8 @@ class GenericBatchScorer:
                 if self.filter_version:
                     analysis['filter_version'] = self.filter_version
                 analysis['prompt_hash'] = self.prompt_hash
+                analysis['prompt_sha256'] = self.prompt_sha256
+                analysis.update(served)    # served_model, system_fingerprint (#157)
 
                 # Log success metrics
                 self._log_metrics(
@@ -1037,6 +1051,9 @@ class GenericBatchScorer:
                     state.elapsed_time(), state.json_repaired, state.error_message
                 )
                 return None
+
+            except MissingServedModel:
+                raise                      # run-fatal, see _classify_and_raise_exception
 
             except Exception as e:
                 # Unexpected error - classify and handle

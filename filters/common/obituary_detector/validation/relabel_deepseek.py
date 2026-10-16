@@ -46,6 +46,8 @@ MODEL = "deepseek-chat"
 # reasoning-mode trap, and a constant nothing checks is a comment. llm-distillery#157.
 from ground_truth.deepseek_models import assert_safe_deepseek_model  # noqa: E402
 assert_safe_deepseek_model(MODEL)
+from ground_truth.oracle_provenance import (  # noqa: E402
+    MissingServedModel, prompt_sha256, served_openai_compat)
 
 # SHARPENED-BROAD rule (owner decision 2026-06-14): block death-EVENT reporting of a
 # specific PERSON (obituary, accident, crime, disaster), but DO NOT block politics /
@@ -79,6 +81,8 @@ ARTICLE:
 {content}
 """
 
+PROMPT_SHA256 = prompt_sha256(PROMPT)
+
 def call(prompt, t=90):
     body = {
         "model": MODEL,
@@ -93,8 +97,7 @@ def call(prompt, t=90):
             req = urllib.request.Request(
                 URL, data=json.dumps(body).encode(),
                 headers={"Content-Type": "application/json", "Authorization": f"Bearer {KEY}"})
-            out = json.loads(urllib.request.urlopen(req, timeout=t).read().decode())
-            return out["choices"][0]["message"]["content"]
+            return json.loads(urllib.request.urlopen(req, timeout=t).read().decode())
         except Exception as e:
             last = e
             # 402 = insufficient balance: stop fast, the run is resumable
@@ -109,16 +112,21 @@ def label(row):
     pr = PROMPT.format(title=row.get("title") or "",
                        content=(row.get("content") or "")[:1600])
     try:
-        txt = call(pr)
+        env = call(pr)
+        try:
+            served = served_openai_compat(env)
+        except MissingServedModel as e:     # halts the run: an endpoint property (#157)
+            raise RuntimeError(f"no served model in the DeepSeek response: {e}")
+        txt = env["choices"][0]["message"]["content"]
         o = json.loads(re.search(r"\{.*\}", txt, re.DOTALL).group(0))
         v = str(o.get("verdict", "")).lower().strip()
         if v not in ("obituary", "not_obituary", "borderline"):
             v = "parse_error"
-        return v, str(o.get("reason", ""))[:160]
+        return v, str(o.get("reason", ""))[:160], served
     except RuntimeError:
         raise
     except Exception as e:
-        return "error", str(e)[:120]
+        return "error", str(e)[:120], {}
 
 def main():
     ap = argparse.ArgumentParser()
@@ -154,13 +162,17 @@ def main():
         if halted:
             return None
         try:
-            v, reason = label(r)
+            v, reason, served = label(r)
         except RuntimeError as e:
             halted = True
             print(f"\n!! {e}")
             return None
         r["deepseek_verdict"] = v
         r["deepseek_reason"] = reason
+        # #157: the template is the labelling function; stamped beside what was served
+        r["prompt_sha256"] = PROMPT_SHA256
+        r["served_model"] = served.get("served_model", "__absent__")
+        r["system_fingerprint"] = served.get("system_fingerprint", "__absent__")
         r["label"] = "positive" if v == "obituary" else "negative"
         done += 1
         if done % 200 == 0:

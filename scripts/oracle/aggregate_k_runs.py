@@ -38,6 +38,17 @@ dimensions up by name and ignores the rest.
 
 ⚠️ A flip rate is reported against a stated denominator, never as a bare percentage.
 
+Provenance (#157)
+-----------------
+The k runs must be ONE labelling function. A row whose runs disagree on `prompt_hash` or on
+the provider's `served_model` is refused (FATAL, nothing written): its mean would describe no
+prompt and no model. A run without the stamp (written before #157) is not compared — absence
+is not a disagreement, but it is not evidence of agreement either: the row's top-level stamp
+reads `__partial__` unless EVERY run carries it (never run 1's value — that made the stamp
+depend on the order of --runs). `system_fingerprint` is
+NOT refused on: nobody knows yet what moves it (#157). It is kept per run, and the rows whose
+runs disagree on it are counted.
+
 Usage:
   python3 scripts/oracle/aggregate_k_runs.py --runs r1.jsonl r2.jsonl r3.jsonl \
       --config filters/human_thriving/v8/config.yaml --out labels.jsonl [--aggregate all|majority]
@@ -73,6 +84,27 @@ def load_run(path, field):
             dup += 1
         rows[rid] = r
     return rows, errors, skipped, dup
+
+
+ABSENT, PARTIAL = "__absent__", "__partial__"
+
+
+def stamp_of(a, key):
+    """One run's stamp, hashable; a non-string value is serialised, never crashes the set."""
+    v = a.get(key)
+    if v is None or v == "" or v == ABSENT:
+        return ABSENT
+    return v if isinstance(v, str) else json.dumps(v, sort_keys=True)
+
+
+def agreed(vals):
+    """The row-level stamp: the shared value only when EVERY run carries it."""
+    present = set(vals) - {ABSENT}
+    if not present:
+        return ABSENT
+    if ABSENT in vals:
+        return PARTIAL
+    return present.pop() if len(present) == 1 else PARTIAL
 
 
 def main():
@@ -119,7 +151,13 @@ def main():
         return sum(scores[d] * weights[d] for d in dims)
 
     out, flipped, verdict_counts = [], [], collections.Counter()
+    mixed = {"prompt_hash": [], "prompt_sha256": [], "served_model": []}
+    fp_split, fps_seen = [], set()
     for rid in sorted(common):
+        for key in mixed:
+            vals = {stamp_of(rows[rid][field], key) for rows in runs} - {ABSENT}
+            if len(vals) > 1:
+                mixed[key].append((rid, sorted(vals)))
         per_run = []
         for rows in runs:
             a = rows[rid][field]
@@ -130,11 +168,17 @@ def main():
                     raise SystemExit(f"FATAL: {rid} is missing dimension '{d}'. prepare_data "
                                      f"would silently score it 0; refusing to write that.")
                 sc[d] = float(v["score"] if isinstance(v, dict) else v)
-            per_run.append({"scope_verdict": a.get("scope_verdict", "__absent__"),
+            per_run.append({"served_model": stamp_of(a, "served_model"),
+                            "system_fingerprint": stamp_of(a, "system_fingerprint"),
+                            "scope_verdict": a.get("scope_verdict", "__absent__"),
                             "dominant_subject": a.get("dominant_subject", ""),
                             "content_type": a.get("content_type", ""),
                             "dimensions": sc, "weighted_average": round(wavg(sc), 4)})
 
+        fps = {r["system_fingerprint"] for r in per_run} - {ABSENT}
+        fps_seen |= fps
+        if len(fps) > 1:
+            fp_split.append(rid)
         verdicts = [r["scope_verdict"] for r in per_run]
         for v in verdicts:
             verdict_counts[v] += 1
@@ -149,7 +193,6 @@ def main():
         chosen = mean_all if args.aggregate == "all" else mean_maj
 
         base = dict(runs[0][rid])
-        a0 = runs[0][rid][field]
         agg = dict(chosen)
         agg.update({
             "scope_verdict": major,
@@ -162,14 +205,27 @@ def main():
             "aggregate_used": args.aggregate,
             "k": len(runs),
             "runs": per_run,
-            "filter_version": a0.get("filter_version", ""),
-            "analyzed_by": a0.get("analyzed_by", ""),
-            "prompt_hash": a0.get("prompt_hash", ""),
-            "prompt_file": a0.get("prompt_file", ""),
+            # Every provenance field is the value ALL runs share, never run 1's: a run-1
+            # value made the row's provenance depend on the order of --runs (review
+            # 2026-10-16, twice -- prompt_hash survived the first fix).
+            **{k: agreed([stamp_of(r[rid][field], k) for r in runs])
+               for k in ("filter_version", "analyzed_by", "prompt_hash", "prompt_file")},
+            "prompt_sha256": agreed([stamp_of(r[rid][field], "prompt_sha256") for r in runs]),
+            "served_model": agreed([stamp_of(r[rid][field], "served_model") for r in runs]),
+            # ABSENT kept when only some runs carry one, so a partial never reads as agreement
+            "system_fingerprints": sorted({r["system_fingerprint"] for r in per_run}) if fps else [],
         })
         base[field] = agg
         base.pop("usage", None)
         out.append(base)
+
+    for key, bad in mixed.items():
+        if bad:
+            for rid, vals in bad[:10]:
+                print(f"  MIXED {key} {rid}: {vals}")
+            raise SystemExit(f"FATAL: {len(bad)} row(s) were scored under more than one {key} "
+                             f"across the k runs. Their mean describes no single labelling "
+                             f"function (#157). No output written.")
 
     with open(args.out, "w", encoding="utf-8") as f:
         for r in out:
@@ -181,6 +237,8 @@ def main():
     print(f"⚠️ SCOPE GATE FLIP RATE: {len(flipped)}/{n} = {100*len(flipped)/n:.2f}% of rows "
           f"disagreed on scope_verdict across k={len(runs)} runs")
     print(f"   verdicts over all {n*len(runs)} run-rows: {dict(verdict_counts)}")
+    print(f"provenance: {len(fps_seen)} distinct system_fingerprint(s); {len(fp_split)}/{n} rows "
+          f"whose runs disagree on it (kept, not refused: what moves it is unknown, #157)")
     deltas = [abs(r[field]["weighted_mean_all"] - r[field]["weighted_mean_major"]) for r in out]
     moved = [d for d in deltas if d > 0]
     if moved:

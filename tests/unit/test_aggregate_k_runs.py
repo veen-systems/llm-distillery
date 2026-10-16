@@ -18,11 +18,12 @@ DIMS = ["human_wellbeing_impact", "social_cohesion_impact", "justice_rights_impa
         "evidence_level", "benefit_distribution", "change_durability"]
 
 
-def row(rid, verdict, scores, field="human_thriving_analysis"):
+def row(rid, verdict, scores, field="human_thriving_analysis", **stamps):
     a = {d: {"score": s, "evidence": "q"} for d, s in zip(DIMS, scores)}
     a.update({"scope_verdict": verdict, "dominant_subject": "x", "content_type": "y",
               "filter_version": "8.0-deepseek", "analyzed_by": "deepseek-chat",
               "prompt_hash": "abc123", "prompt_file": "p.md"})
+    a.update(stamps)
     return {"id": rid, "title": "t", "url": f"http://e/{rid}", "content": "c", field: a}
 
 
@@ -163,6 +164,92 @@ class TestAggregateKRuns(unittest.TestCase):
         self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
         ids = {json.loads(l)["id"] for l in out.read_text().strip().splitlines()}
         self.assertEqual(ids, {"a", "b"}, "a shared url must not merge two articles")
+
+
+
+class TestProvenance(unittest.TestCase):
+    """#157: the k runs must be ONE labelling function. Each refusal is seeded."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.d = Path(self.tmp.name)
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def _agg(self, *per_run_stamps):
+        paths = [write(self.d / f"r{i}.jsonl", [row("a", "in_scope", [6.0] * 6, **st)])
+                 for i, st in enumerate(per_run_stamps, 1)]
+        out = self.d / "o.jsonl"
+        r = run("--runs", *paths, "--config", str(CONFIG), "--out", str(out))
+        return r, out
+
+    def test_two_served_models_are_refused_with_nothing_written(self):
+        r, out = self._agg({"served_model": "deepseek-flash"}, {"served_model": "deepseek-v4-pro"})
+        self.assertNotEqual(r.returncode, 0)
+        self.assertIn("served_model", r.stderr + r.stdout)
+        self.assertFalse(out.exists())
+
+    def test_two_prompts_are_refused(self):
+        r, out = self._agg({"prompt_hash": "aaaaaaaaaaaa"}, {"prompt_hash": "bbbbbbbbbbbb"})
+        self.assertNotEqual(r.returncode, 0)
+        self.assertIn("prompt_hash", r.stderr + r.stdout)
+        self.assertFalse(out.exists())
+
+    def test_a_pre_157_run_beside_a_stamped_one_is_PARTIAL_in_either_order(self):
+        """Not a disagreement, so not refused -- but the row must not claim the stamped
+        run's provenance for a mean half made of an unstamped run (review 2026-10-16:
+        the stamp used to be run 1's, so it flipped with the order of --runs)."""
+        for order in (({}, {"served_model": "deepseek-flash"}),
+                      ({"served_model": "deepseek-flash"}, {})):
+            r, out = self._agg(*order)
+            self.assertEqual(r.returncode, 0, r.stderr + r.stdout)
+            a = json.loads(out.read_text())["human_thriving_analysis"]
+            self.assertEqual(a["served_model"], "__partial__")
+            self.assertEqual(a["prompt_sha256"], "__absent__")
+
+    def test_NO_provenance_field_depends_on_the_order_of_runs(self):
+        """Round 2 of the 2026-10-16 review: prompt_hash survived the first fix. Every
+        provenance field, both orders, one stamped run and one bare run."""
+        stamped = {"prompt_hash": "abc123abc123", "prompt_file": "q.md", "analyzed_by": "x",
+                   "filter_version": "9", "served_model": "m", "system_fingerprint": "fp"}
+        bare = {"prompt_hash": "", "prompt_file": "", "analyzed_by": "", "filter_version": ""}
+        outs = []
+        for order in ((stamped, bare), (bare, stamped)):
+            r, out = self._agg(*order)
+            self.assertEqual(r.returncode, 0, r.stderr + r.stdout)
+            a = json.loads(out.read_text())["human_thriving_analysis"]
+            outs.append({k: a[k] for k in ("prompt_hash", "prompt_file", "analyzed_by",
+                                           "filter_version", "served_model",
+                                           "system_fingerprints")})
+        self.assertEqual(outs[0], outs[1])
+        self.assertEqual(outs[0]["prompt_hash"], "__partial__")
+        self.assertEqual(outs[0]["system_fingerprints"], ["__absent__", "fp"])
+
+    def test_two_full_digests_with_one_12_hex_prefix_are_refused(self):
+        r, out = self._agg({"prompt_sha256": "abc123" + "0" * 58},
+                           {"prompt_sha256": "abc123" + "1" * 58})
+        self.assertNotEqual(r.returncode, 0)
+        self.assertIn("prompt_sha256", r.stderr + r.stdout)
+
+    def test_a_malformed_stamp_is_refused_with_the_message_not_a_traceback(self):
+        r, out = self._agg({"served_model": ["x"]}, {"served_model": "deepseek-flash"})
+        self.assertNotEqual(r.returncode, 0)
+        self.assertIn("FATAL", r.stderr + r.stdout)
+        self.assertNotIn("Traceback", r.stderr)
+
+    def test_a_fingerprint_split_is_kept_and_counted_not_refused(self):
+        r, out = self._agg({"served_model": "deepseek-flash", "system_fingerprint": "fp1",
+                            "prompt_sha256": "f" * 64},
+                           {"served_model": "deepseek-flash", "system_fingerprint": "fp2",
+                            "prompt_sha256": "f" * 64})
+        self.assertEqual(r.returncode, 0, r.stderr + r.stdout)
+        self.assertIn("1/1 rows whose runs disagree", r.stdout)
+        a = json.loads(out.read_text())["human_thriving_analysis"]
+        self.assertEqual(a["system_fingerprints"], ["fp1", "fp2"])
+        self.assertEqual(a["served_model"], "deepseek-flash")
+        self.assertEqual(a["prompt_sha256"], "f" * 64)
+        self.assertEqual([x["system_fingerprint"] for x in a["runs"]], ["fp1", "fp2"])
 
 
 if __name__ == "__main__":

@@ -3,8 +3,8 @@
 ## ▶️ START HERE — the ordered queue, as of 2026-10-15
 
 *A bare "continue" means this list, top down. Each line names the FIRST action. Item 0 is WAITING (dated, ≥ 10-23/24);
-item 0a's next action is dated ≥ 10-22 (the on-site count on live ranking H). **Item 0b (#157, label provenance) is
-the FIRST work to do now** (owner-agreed 2026-10-15, phase 1 of veen-systems/pipeline-atlas#169). Item 1 is NexusMind's.
+item 0a's next action is dated ≥ 10-22 (the on-site count on live ranking H). Item 0b (#157, label provenance) LANDED
+2026-10-16. Item 1 is NexusMind's.
 Item 2 (#163, the read surface): keep pruning (owner 2026-10-14 and 10-15: "pruning, thinning, mechanizing, retiring").*
 
 0. ⏸ **BELONGING v3 is LIVE (since NexusMind run `bd00dad6`, 2026-10-09 00:08–01:24 CEST), replacing v1. Nothing to do before
@@ -46,16 +46,20 @@ Item 2 (#163, the read surface): keep pruning (owner 2026-10-14 and 10-15: "prun
      owner pastes an article that looks like it is on the wrong tab, find it in that day's pages and record it.
    - Lab: the 10-10 `~/ld-lab/inbox/` heap (37 backlog citations) is still a later pass (#172, item 00 archived 2026-10-14).
 
-0b. ▶ **#157 (oracle label provenance), phase 1 of veen-systems/pipeline-atlas#169 — START HERE on "continue".** Owner
-   agreed 2026-10-15 that it starts now, ahead of the atlas's other phases: every unstamped label is history that cannot
-   be fixed later (order: https://github.com/veen-systems/pipeline-atlas/issues/169#issuecomment-6189722887; relayed by
-   the pipeline-atlas session). Scope: on EVERY oracle label, stamp (a) the model the provider actually SERVED (the
-   response's `model` field, not the requested alias — `deepseek-chat` swapped V4 → V4.1 unseen on 2026-09-10) and (b)
-   the FULL prompt sha256 (both scorers truncate to 12 hex: `ground_truth/batch_scorer.py:506`,
-   `scripts/score_deepseek_production.py:313`). First action: list every oracle call site (Gemini, DeepSeek, Ollama
-   paths) and what each response carries; name the reader of each new stamp; prove the outcome by scoring a few rows and
-   reading the stamps back (working rule). ⚠️ Keep the 12-char field for old readers, or migrate them in the same commit.
-   When it lands: comment on #157 so the atlas can tick it off.
+0b. ✅ **#157 (oracle label provenance), phase 1 of veen-systems/pipeline-atlas#169 — LANDED 2026-10-16** (owner order
+   2026-10-15: https://github.com/veen-systems/pipeline-atlas/issues/169#issuecomment-6189722887). Every live label
+   writer now stamps `prompt_sha256` (full; `prompt_hash` kept as its 12-hex prefix), `served_model` (from the
+   RESPONSE), `system_fingerprint` (DeepSeek; `__absent__` elsewhere) and `model_digest` (ollama). Writers:
+   `ground_truth/batch_scorer.py`, `scripts/score_deepseek_production.py`, `scripts/score_ollama_oracle.py` (record
+   root), the violence oracle and the obituary relabeller; one shared module, `ground_truth/oracle_provenance.py`. A
+   missing served model is RUN-FATAL everywhere. Reader that acts: `scripts/oracle/aggregate_k_runs.py` refuses k runs
+   that disagree on prompt or served model. Proven live 2026-10-16 (3 rows per scorer path + 1 per detector oracle,
+   stamps read back). ⚠️ What it does NOT buy: `served_model` is the TIER (`deepseek-flash`, bare `gemini-2.5-flash`),
+   so a V4→V4.1-style swap stays invisible unless `system_fingerprint` moves — UNKNOWN. ⚠️ batch_scorer and the scripts
+   hash the same prompt file differently (stripped vs raw): never join across scorers on the hash. Not stamped (legacy
+   or one-off): `scripts/validate_deepseek_oracle.py`, `ground_truth/llm_evaluators.py`, the commerce oracle,
+   `scripts/analysis/valence_bakeoff.py`; `scripts/oracle/average_oracle_runs.py` (superseded) drops all stamps.
+   ▶ Open: does the fingerprint move on a model change? Watch it across the next real runs (comment on #157).
 
 1. **Decision-0 sync to NexusMind** — ONE NexusMind commit. The sequence is in the archived block (item 1):
    - dry-run diff first

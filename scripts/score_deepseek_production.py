@@ -15,7 +15,6 @@ Usage:
 
 import argparse
 import configparser
-import hashlib
 import json
 import os
 import sys
@@ -38,6 +37,9 @@ from ground_truth.text_cleaning import (
     sanitize_text_comprehensive,
 )
 from ground_truth import analysis_field_name
+from ground_truth.oracle_provenance import (
+    MissingServedModel, prompt_sha256, served_openai_compat,
+)
 
 SECRETS_INI = PROJECT_ROOT / "config" / "credentials" / "secrets.ini"
 V5_PROMPT_PATH = PROJECT_ROOT / "filters" / "cultural_discovery" / "v5" / "prompt-compressed.md"
@@ -54,6 +56,7 @@ DIMENSIONS = [
 ]
 ANALYSIS_FIELD = "cultural_discovery_analysis"
 PROMPT_HASH = "unset"   # set in main() from the prompt actually loaded
+PROMPT_SHA256 = "unset"
 PROMPT_FILE = "unset"
 FILTER_VERSION = "5.0-deepseek-production"
 
@@ -113,6 +116,11 @@ def build_prompt(prompt_template: str, article: dict) -> str:
 # `future.result()`, and the executor's context manager still drains every queued future
 # first. An explicit flag stops new calls immediately and is deterministic to test.
 RUN_FATAL = {"status": None, "body": ""}
+
+
+def _fatal_label():
+    s = RUN_FATAL["status"]
+    return f"HTTP {s}" if isinstance(s, int) else str(s)
 FATAL_STATUSES = (401, 402, 403)          # auth, balance, forbidden — none is retryable,
                                           # and none is a property of the individual row
 
@@ -120,7 +128,7 @@ FATAL_STATUSES = (401, 402, 403)          # auth, balance, forbidden — none is
 def call_deepseek(api_key: str, model: str, prompt: str, max_retries: int = 3,
                   base_url: str = DEEPSEEK_URL, max_tokens: int = 4096):
     if RUN_FATAL["status"] is not None:    # a sibling worker already hit it
-        return {"error": f"aborted: HTTP {RUN_FATAL['status']} on an earlier row"}
+        return {"error": f"aborted: {_fatal_label()} on an earlier row"}
     headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
     body = {
         "model": model,
@@ -242,7 +250,16 @@ def parse_response(resp: dict):
             "scope_verdict": _scope_verdict(parsed),
             "dominant_subject": _dominant_subject(parsed),
             "usage": resp.get("usage", {}),
+            # What the provider SERVED, not the alias we sent (#157). Raises when the
+            # envelope names no model: an error row, and the whole run stops (below).
+            **served_openai_compat(resp),
         }
+    except MissingServedModel as e:
+        # RUN-FATAL, not per-row: a missing `model` is a property of the endpoint, so
+        # every later row would be billed and fail the same way, and on every resume.
+        if RUN_FATAL["status"] is None:
+            RUN_FATAL["status"], RUN_FATAL["body"] = "NO-SERVED-MODEL", str(e)
+        return {"error": f"Provenance: {e}"}
     except (json.JSONDecodeError, KeyError, IndexError) as e:
         raw = ""
         try:
@@ -309,13 +326,14 @@ def main():
 
     api_key = get_deepseek_key(args.key_name)
     prompt_template = prompt_path.read_text(encoding="utf-8")
-    global PROMPT_HASH, PROMPT_FILE
-    PROMPT_HASH = hashlib.sha256(prompt_template.encode("utf-8")).hexdigest()[:12]
+    global PROMPT_HASH, PROMPT_SHA256, PROMPT_FILE
+    PROMPT_SHA256 = prompt_sha256(prompt_template)
+    PROMPT_HASH = PROMPT_SHA256[:12]       # legacy readers compare 12-char literals
     try:                                   # repo-relative, never the bare basename:
         PROMPT_FILE = str(prompt_path.resolve().relative_to(PROJECT_ROOT))
     except ValueError:                     # `prompt-compressed.md` names SIX different
         PROMPT_FILE = str(prompt_path)     # files, one per filter, and .name loses which
-    print(f"Prompt: {PROMPT_FILE} sha256[:12]={PROMPT_HASH}")
+    print(f"Prompt: {PROMPT_FILE} sha256={PROMPT_SHA256}")
     print(f"Scoring with: dims={DIMENSIONS} | field={ANALYSIS_FIELD} | prompt={prompt_path.name}")
     input_path = Path(args.input)
     output_path = Path(args.output)
@@ -435,6 +453,12 @@ def main():
                     # is missing.
                     analysis["prompt_hash"] = PROMPT_HASH
                     analysis["prompt_file"] = PROMPT_FILE
+                    # #157: the full digest (prompt_hash is its first 12 hex) and what the
+                    # provider actually served. ⚠️ served_model is the TIER for DeepSeek
+                    # ("deepseek-flash" for any flash request), not the version.
+                    analysis["prompt_sha256"] = PROMPT_SHA256
+                    analysis["served_model"] = parsed["served_model"]
+                    analysis["system_fingerprint"] = parsed["system_fingerprint"]
                     analysis["analyzed_at"] = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
                     record = {
                         "id": article["id"],
@@ -506,11 +530,16 @@ def main():
     # `Successful: 0  Errors: 6586` and a clean run were indistinguishable to any caller.
     if RUN_FATAL["status"] is not None:
         print(f"\n{'='*60}")
-        print(f"FATAL: HTTP {RUN_FATAL['status']} — the run was ABORTED, not completed.")
+        print(f"FATAL: {_fatal_label()} — the run was ABORTED, not completed.")
         print(f"  {RUN_FATAL['body']}")
-        print("  This is an account-level condition, not a property of any row: every call")
-        print("  after the first one was refused. Nothing is lost — fix the account and")
-        print("  re-run the SAME command; already-scored ids are skipped on resume:")
+        if RUN_FATAL["status"] == "NO-SERVED-MODEL":
+            print("  The endpoint answered (and BILLED) but its response named no model, so no")
+            print("  label could carry provenance (#157). Every later row would do the same.")
+            print("  Check the endpoint / --base-url, then re-run the SAME command:")
+        else:
+            print("  This is an account-level condition, not a property of any row: every call")
+            print("  after the first one was refused. Nothing is lost — fix the account and")
+            print("  re-run the SAME command; already-scored ids are skipped on resume:")
         print(f"    --input {input_path} --output {output_path}")
         print(f"{'='*60}")
         sys.exit(2)

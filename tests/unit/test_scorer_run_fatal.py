@@ -31,7 +31,8 @@ class _Resp:
         self.status_code = code
         self.text = "{{\\"error\\":{{\\"message\\":\\"Insufficient Balance\\"}}}}" if code == 402 else "boom"
     def json(self):
-        return {{"choices": [{{"message": {{"content": _json.dumps({{
+        return {{"model": "deepseek-flash", "system_fingerprint": "fp_test",
+                "choices": [{{"message": {{"content": _json.dumps({{
                     "dominant_subject": "d", "scope_verdict": "in_scope", "content_type": "c",
                     "human_wellbeing_impact": {{"score": 5, "evidence": "e"}},
                     "social_cohesion_impact": {{"score": 5, "evidence": "e"}},

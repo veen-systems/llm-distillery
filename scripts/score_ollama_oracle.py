@@ -47,6 +47,10 @@ from pathlib import Path
 import requests
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from ground_truth.oracle_provenance import (
+    ABSENT, MissingServedModel, require_served, ollama_tag_digest, prompt_sha256,
+    served_ollama, served_openai_compat,
+)
 from ground_truth.deepseek_models import (
     UnsafeDeepSeekModel,
     assert_safe_deepseek_model,
@@ -250,7 +254,7 @@ def call_deepseek(model: str, prompt: str, api_key: str, max_retries: int = 3):
         "response_format": {"type": "json_object"},
     }
     if RUN_FATAL["status"] is not None:    # a sibling worker already hit it
-        return {"error": f"aborted: HTTP {RUN_FATAL['status']} on an earlier row"}
+        return {"error": f"aborted: {RUN_FATAL['status']} on an earlier row"}
     last_err = None
     for attempt in range(max_retries):
         try:
@@ -293,6 +297,7 @@ def call_gemini(model: str, prompt: str, api_key: str, max_retries: int = 3):
             )
             um = getattr(r, "usage_metadata", None)
             return {"_text": (r.text or "").strip(),
+                    "_model_version": getattr(r, "model_version", None),
                     "_in": getattr(um, "prompt_token_count", 0) or 0,
                     "_out": getattr(um, "candidates_token_count", 0) or 0}
         except Exception as e:
@@ -390,7 +395,20 @@ def parse_response(resp: dict, dimensions: list, provider: str = "ollama"):
         out["_eval_count"] = n_out
         out["_cached_tokens"] = n_cached
         out["_total_duration_s"] = secs
+        # What the provider SERVED (#157); raises when the envelope names no model.
+        if provider == "ollama":
+            out.update(served_ollama(resp))
+        elif provider == "deepseek":
+            out.update(served_openai_compat(resp))
+        else:
+            out.update({"served_model": require_served(resp.get("_model_version"), "Gemini"),
+                        "system_fingerprint": ABSENT})
         return out
+    except MissingServedModel as e:
+        # RUN-FATAL, not per-row: a missing model id is a property of the endpoint (#157).
+        if RUN_FATAL["status"] is None:
+            RUN_FATAL["status"], RUN_FATAL["body"] = "NO-SERVED-MODEL", str(e)
+        return {"error": f"Provenance: {e}"}
     except (json.JSONDecodeError, KeyError, IndexError, TypeError) as e:
         raw = ""
         try:
@@ -478,6 +496,7 @@ def main():
     output_path = output_dir / "results.jsonl"
 
     prompt_template = prompt_path.read_text(encoding="utf-8")
+    prompt_digest = prompt_sha256(prompt_template)   # #157; prompt_hash is its first 12 hex
     if PROMPT_PLACEHOLDER not in prompt_template:
         print(f"ERROR: {prompt_path} contains no {PROMPT_PLACEHOLDER!r} placeholder.")
         print("       Every article would be scored on the bare template with no article text,")
@@ -490,7 +509,7 @@ def main():
         sys.exit(1)
 
     print(f"Loaded {len(articles)} articles from {input_path}")
-    print(f"Prompt:  {prompt_path}")
+    print(f"Prompt:  {prompt_path} sha256={prompt_digest}")
     print(f"Config:  {args.config or '(none — no weighted average)'}")
     print(f"Dims:    {len(dimensions)} — {', '.join(dimensions)}")
     if gatekeeper:
@@ -505,12 +524,17 @@ def main():
     print()
 
     # Verify model exists on remote (ollama only; the paid providers 404 at call time)
+    model_digest = ABSENT                  # paid providers expose no weights digest
     if args.provider != "ollama":
         pass
     else:
       try:
         tags = requests.get(f"{args.host}/api/tags", timeout=10).json()
-        if not any(m["name"] == args.model for m in tags.get("models", [])):
+        if any(m["name"] == args.model for m in tags.get("models", [])):
+            # The tag's content identity at START; a re-pull mid-run would not show here.
+            model_digest = ollama_tag_digest(tags, args.model)
+            print(f"Digest:  {model_digest}")
+        else:
             print(f"ERROR: Model {args.model} not found on {args.host}")
             print(f"Available: {[m['name'] for m in tags.get('models', [])]}")
             sys.exit(1)
@@ -519,6 +543,8 @@ def main():
         sys.exit(1)
 
     def _process(article):
+        if RUN_FATAL["status"] is not None:    # every provider, not just deepseek
+            return article, {"error": f"aborted: {RUN_FATAL['status']} on an earlier row"}
         prompt = build_prompt(prompt_template, article)
         if args.provider == "ollama":
             resp = call_ollama(args.model, prompt, args.host)
@@ -579,6 +605,12 @@ def main():
                             "scope_verdict": parsed["scope_verdict"],
                             "dominant_subject": parsed["dominant_subject"],  # already <=200
                             "dims": {d: parsed[d] for d in dimensions},
+                            # #157 provenance. prompt_hash = first 12 hex of prompt_sha256.
+                            "prompt_sha256": prompt_digest,
+                            "prompt_hash": prompt_digest[:12],
+                            "served_model": parsed["served_model"],
+                            "system_fingerprint": parsed["system_fingerprint"],
+                            "model_digest": model_digest,
                             "_prompt_eval_count": parsed["_prompt_eval_count"],
                             "_eval_count": parsed["_eval_count"],
                             "_total_duration_s": round(parsed["_total_duration_s"], 2),
@@ -626,8 +658,9 @@ def main():
     print(f"Output: {output_path}")
 
     if RUN_FATAL["status"] is not None:
-        print(f"\nFATAL: HTTP {RUN_FATAL['status']} — the run was ABORTED, not completed. "
-              f"An account-level refusal (auth or balance), not a property of any row; rows "
+        print(f"\nFATAL: {'HTTP ' if isinstance(RUN_FATAL['status'], int) else ''}"
+              f"{RUN_FATAL['status']} — the run was ABORTED, not completed. "
+              f"An account- or endpoint-level condition, not a property of any row; rows "
               f"after it were never sent.\n  {RUN_FATAL['body']}")
         sys.exit(2)
 

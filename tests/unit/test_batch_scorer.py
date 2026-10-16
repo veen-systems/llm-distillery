@@ -341,3 +341,45 @@ class TestFailedArticlesAreNotReloaded:
         s._save_state = lambda: None
         r = s.process_batch([{"id": "bad", "title": "t", "content": "x"}], 1)
         assert r["articles_failed"] == 1 and "bad" in s._failed_this_run()
+
+
+class TestOracleProvenance:
+    """#157 / pipeline-atlas#169 phase 1: a Gemini label names the FULL prompt digest
+    and the model the provider SERVED (`model_version`), not the one requested."""
+
+    def _scorer(self, tmp_path, model_version):
+        import logging
+        from types import SimpleNamespace
+        from ground_truth.batch_scorer import GenericBatchScorer
+        from ground_truth.oracle_provenance import prompt_sha256
+        s = object.__new__(GenericBatchScorer)
+        s.llm_provider, s._gemini_model, s.thinking_budget = "gemini-flash", "gemini-2.5-flash", 0
+        s.filter_name, s.filter_version = "x", "1.0"
+        s.prompt_sha256 = prompt_sha256("TEMPLATE")
+        s.prompt_hash = s.prompt_sha256[:12]
+        s.output_dir, s.logger = tmp_path, logging.getLogger("t")
+        s.metrics_log_path = tmp_path / "metrics.jsonl"
+        s.session_stats = {"articles_attempted": 0, "articles_succeeded": 0, "articles_failed": 0,
+                           "total_retries": 0, "errors_by_type": {}, "total_processing_time": 0.0}
+        s.build_prompt = lambda article: "p"
+        reply = SimpleNamespace(text='{"d": {"score": 5}}', model_version=model_version)
+        s.llm_client = SimpleNamespace(models=SimpleNamespace(generate_content=lambda **kw: reply))
+        return s
+
+    def test_the_served_model_comes_from_the_response(self, tmp_path):
+        a = self._scorer(tmp_path, "gemini-2.5-flash-preview-09-2026").analyze_article({"id": "1"})
+        assert a["served_model"] == "gemini-2.5-flash-preview-09-2026"   # not the requested id
+        assert a["system_fingerprint"] == "__absent__"
+        assert len(a["prompt_sha256"]) == 64 and a["prompt_sha256"].startswith(a["prompt_hash"])
+
+    def test_no_model_version_STOPS_THE_RUN_after_ONE_call(self, tmp_path):
+        """A missing model id is a property of the endpoint: a per-row failure would
+        bill every row, and again on every resume (review 2026-10-16)."""
+        from ground_truth.oracle_provenance import MissingServedModel
+        s = self._scorer(tmp_path, None)
+        calls = []
+        inner = s.llm_client.models.generate_content
+        s.llm_client.models.generate_content = lambda **kw: calls.append(1) or inner(**kw)
+        with pytest.raises(MissingServedModel):
+            s.analyze_article({"id": "1"})
+        assert len(calls) == 1          # not retried: each retry is billed and identical

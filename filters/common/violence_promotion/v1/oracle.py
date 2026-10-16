@@ -64,6 +64,8 @@ def _load_api_key() -> Optional[str]:
 
 DEEPSEEK_URL = "https://api.deepseek.com/chat/completions"
 from ground_truth.deepseek_models import assert_safe_deepseek_model
+from ground_truth.oracle_provenance import (
+    MissingServedModel, prompt_sha256, served_openai_compat)
 
 DEEPSEEK_MODEL = "deepseek-chat"
 
@@ -122,6 +124,9 @@ class ViolencePromotionOracle:
             + '{{"violence_score":<0-10 integer>,"reasoning":"one short sentence",'
             + '"key_signals":["exact quote or \\"No evidence in article\\""]}}'
         )
+        # #157: of the whole user-message template (prompt.md + the JSON instruction),
+        # i.e. the labelling function, not of prompt.md alone
+        self.prompt_sha256 = prompt_sha256(self._user_template)
 
     # ------------------------------------------------------------------
     # Public API
@@ -148,8 +153,15 @@ class ViolencePromotionOracle:
             content=content[:3000],
         )
         try:
-            raw = self._call_api(prompt)
-            return self._parse_response(raw)
+            data = self._call_api(prompt)
+            try:
+                served = served_openai_compat(data)
+            except MissingServedModel as e:
+                # Halts score_batch (RuntimeError): an endpoint property, not a row's (#157)
+                raise RuntimeError(f"no served model in the DeepSeek response: {e}")
+            out = self._parse_response(data["choices"][0]["message"]["content"])
+            out.update(served, prompt_sha256=self.prompt_sha256)
+            return out
         except RuntimeError:
             raise
         except Exception as e:
@@ -235,6 +247,8 @@ class ViolencePromotionOracle:
             article["reasoning"] = result["reasoning"]
             article["key_signals"] = result.get("key_signals", [])
             article["label"] = self._binarize(result["violence_score"])
+            for k in ("prompt_sha256", "served_model", "system_fingerprint"):   # #157
+                article[k] = result.get(k, "__absent__")
             with lock:
                 done[0] += 1
                 current = done[0]
@@ -262,8 +276,8 @@ class ViolencePromotionOracle:
     # Internal
     # ------------------------------------------------------------------
 
-    def _call_api(self, prompt: str, timeout: int = 90) -> str:
-        """Call DeepSeek chat/completions with per-status-code retry logic.
+    def _call_api(self, prompt: str, timeout: int = 90) -> dict:
+        """Call DeepSeek chat/completions; returns the JSON envelope. Per-status-code retries:
 
         - 429 (rate limit): exponential backoff, read Retry-After header if present.
         - 5xx (server error): retry with backoff.
@@ -288,8 +302,7 @@ class ViolencePromotionOracle:
                     },
                 )
                 resp = urllib.request.urlopen(req, timeout=timeout)
-                data = json.loads(resp.read().decode())
-                return data["choices"][0]["message"]["content"]
+                return json.loads(resp.read().decode())   # the envelope: #157 stamps
             except urllib.error.HTTPError as e:
                 status = e.code
                 if status == 402:
