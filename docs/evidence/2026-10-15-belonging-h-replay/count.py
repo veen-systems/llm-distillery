@@ -11,7 +11,7 @@ import json, os, sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-LAB = Path(os.environ.get("LD_LAB", Path.home() / "ld-lab")).expanduser() / "experiments"
+LAB = Path(os.environ.get("LD_LAB", Path.home() / "lab" / "llm-distillery")).expanduser() / "experiments"
 NEW = LAB / "2026-10-15-belonging-h-replay/tag/tag/out.jsonl"
 CTRL = LAB / "2026-10-15-belonging-h-replay/tag/tag-control/out.jsonl"
 OLD = [LAB / "2026-10-13-belonging-daily-baseline/tag/out.jsonl", LAB / "2026-10-12-belonging-c2c/focus-tag/out.jsonl",

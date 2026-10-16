@@ -9,7 +9,7 @@ import csv, json, os
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-LAB = Path(os.environ.get("LD_LAB", Path.home() / "ld-lab")).expanduser()
+LAB = Path(os.environ.get("LD_LAB", Path.home() / "lab" / "llm-distillery")).expanduser()
 TAGS = LAB / "experiments/2026-10-13-belonging-daily-baseline/tag/out.jsonl"
 PT = HERE.parent / "2026-10-12-belonging-personal-tag"
 

@@ -1,5 +1,5 @@
 {
- "lab_root": "$LD_LAB (default ~/ld-lab, on situla)",
+ "lab_root": "$LD_LAB (default ~/lab/llm-distillery, on situla)",
  "entries": [
   {
    "path": "datasets/belonging_comp_draw/v1/belonging_comp_rows.jsonl",

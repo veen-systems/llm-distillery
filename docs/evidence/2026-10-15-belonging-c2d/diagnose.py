@@ -32,7 +32,7 @@ for p in PKGS[1:]:
         print(f"{p:11} {focus:8} n {len(rows):3}  median shift {statistics.median(d):+.2f}")
 
 print("\n== 3. v3 comp scores: this run vs c2c's")
-draw_ids = [r["id"] for r in jl(Path.home() / "ld-lab/datasets/belonging_comp_draw/v1/belonging_comp_rows.jsonl")]
+draw_ids = [r["id"] for r in jl(Path.home() / "lab/llm-distillery/datasets/belonging_comp_draw/v1/belonging_comp_rows.jsonl")]
 mine = scores("comp", "v3", draw_ids)[1]
 c2c = {r["id"]: r for r in jl(LABX / "2026-10-12-belonging-c2c/belonging_comp_scores/v3.jsonl")[1:]}
 assert c2c.keys() == mine.keys()

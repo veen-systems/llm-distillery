@@ -9,7 +9,7 @@ comparison and not somebody's recollection that the copy finished.
     python3 scripts/lab/lab.py verify inbox/b650-gpu/2026-10-10/v8_corpus
     python3 scripts/lab/lab.py cite docs/evidence/<dir> inbox/b650-gpu/2026-10-10/v8_corpus/pool_v2.jsonl
 
-Lab root: --lab-root, else $LD_LAB, else ~/ld-lab (inside $HOME, so situla's restic backup covers it).
+Lab root: --lab-root, else $LD_LAB, else ~/lab/llm-distillery (inside $HOME, so situla's restic backup covers it).
 
 `pull host:path dest`: dest (relative to the lab root) is always a NEW directory; a file source
 lands at dest/<its name>. Refuses if dest exists, so a verified, possibly cited copy is never
@@ -29,7 +29,7 @@ this tool) and replaces it only if host and copy are identical.
 dest must resolve inside the lab root and not inside another pulled tree. If rsync fails, the
 partial dest is left for inspection and the message says how to recover.
 
-Every dest (pull, adopt, move) must follow the lab layout (ld-lab/README.md), checked by
+Every dest (pull, adopt, move) must follow the lab layout (README.md at the lab root), checked by
 `layout_problem`: `inbox/<host>/<YYYY-MM-DD>/<item>`, `experiments/<YYYY-MM-DD>-<name>[/...]`, or
 `datasets/<name>/v<N>[/...]`. A planned run goes to experiments/, a fixed corpus to datasets/; inbox/
 is only for clean-up pulls whose home is undecided (2026-10-12: a pre-registered run landed there).
@@ -74,7 +74,7 @@ def layout_problem(rel):
     """None if `rel` (posix, relative to the lab root) follows the lab layout, else why not."""
     area = rel.split("/", 1)[0]
     if area not in LAYOUT:
-        return f"{rel}: not under inbox/, experiments/ or datasets/ (ld-lab/README.md)"
+        return f"{rel}: not under inbox/, experiments/ or datasets/ (README.md at the lab root)"
     pat, shape = LAYOUT[area]
     return None if pat.match(rel) else f"{rel!r}: an {area}/ dest must be {shape}"
 
@@ -82,7 +82,7 @@ def layout_problem(rel):
 def lab_root():
     if LAB_ROOT_FLAG:
         return Path(LAB_ROOT_FLAG).expanduser()
-    return Path(os.environ.get("LD_LAB", Path.home() / "ld-lab")).expanduser()
+    return Path(os.environ.get("LD_LAB", Path.home() / "lab" / "llm-distillery")).expanduser()
 
 
 def sha256_file(p):
@@ -445,7 +445,7 @@ def cmd_cite(a):
     root = lab_root().resolve()
     path = ev / EVIDENCE_MANIFEST
     doc = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {
-        "lab_root": "$LD_LAB (default ~/ld-lab, on situla)", "entries": []}
+        "lab_root": "$LD_LAB (default ~/lab/llm-distillery, on situla)", "entries": []}
     by_path = {e["path"]: e for e in doc["entries"]}
     for given in a.lab_paths:
         full = (root / given).resolve()
@@ -475,7 +475,7 @@ def cmd_cite(a):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--lab-root", help="lab root (default $LD_LAB, else ~/ld-lab)")
+    ap.add_argument("--lab-root", help="lab root (default $LD_LAB, else ~/lab/llm-distillery)")
     sub = ap.add_subparsers(dest="cmd", required=True)
     p = sub.add_parser("pull"); p.add_argument("source"); p.add_argument("dest")
     p.add_argument("--allow-external-links", action="store_true",

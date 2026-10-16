@@ -9,7 +9,7 @@ import collections, json, os, sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-LAB = Path(os.environ.get("LD_LAB", Path.home() / "ld-lab")).expanduser()
+LAB = Path(os.environ.get("LD_LAB", Path.home() / "lab" / "llm-distillery")).expanduser()
 ROWS = LAB / "experiments/2026-10-15-belonging-h-replay/extract/rows.jsonl"
 DATED = "--dated" in sys.argv
 rows = {}

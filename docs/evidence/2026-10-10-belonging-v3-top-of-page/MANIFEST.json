@@ -1,5 +1,5 @@
 {
- "lab_root": "$LD_LAB (default ~/ld-lab, on situla)",
+ "lab_root": "$LD_LAB (default ~/lab/llm-distillery, on situla)",
  "entries": [
   {
    "path": "inbox/b650-gpu/2026-10-10/llm-distillery/datasets/belonging_gate2/v1_c2a_forward.jsonl",

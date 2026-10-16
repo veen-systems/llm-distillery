@@ -18,7 +18,7 @@ Same tags as c2c (qwen on b650, lab experiments/2026-10-12-belonging-c2c/focus-t
 import json, os, shutil, sys
 
 SRC, DST = "datasets/training/belonging_c2b", "datasets/training/belonging_c2d"
-TAGS = os.path.expanduser("~/ld-lab/experiments/2026-10-12-belonging-c2c/focus-tag-train/out.jsonl")
+TAGS = os.path.expanduser("~/lab/llm-distillery/experiments/2026-10-12-belonging-c2c/focus-tag-train/out.jsonl")
 TARGET, GK, GK_MIN, GK_CAP = 4.4, "community_fabric", 3.0, 3.42
 W = dict(intergenerational_bonds=.25, community_fabric=.25, reciprocal_care=.10,
          rootedness=.15, purpose_beyond_self=.15, slow_presence=.10)   # filters/belonging/v3/config.yaml

@@ -1,5 +1,5 @@
 {
- "lab_root": "$LD_LAB (default ~/ld-lab, on situla)",
+ "lab_root": "$LD_LAB (default ~/lab/llm-distillery, on situla)",
  "entries": [
   {
    "path": "datasets/v8_corpus/v1/experiment_inputs/phaseA/phaseA_A1.jsonl",

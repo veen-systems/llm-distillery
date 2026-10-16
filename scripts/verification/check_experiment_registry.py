@@ -11,7 +11,7 @@ null with an explanation in `notes`, never invented.
 
 Exit 0 = all checks pass. Exit 1 = at least one FAIL.
 
-Optional `lab`: a list of lab paths (relative to ~/ld-lab on situla) holding the run's data --
+Optional `lab`: a list of lab paths (relative to ~/lab/llm-distillery on situla) holding the run's data --
 each must sit under `experiments/` or `datasets/` (never `inbox/`, whose items have no home yet)
 and, where a lab root exists, must exist. Without a lab root only the shape is checked, and the
 output says so (`lab paths ... SKIPPED`).
@@ -79,8 +79,8 @@ def main(argv=None):
     ap.add_argument("--registry", type=Path, default=REG,
                     help="registry file to check (default: the tracked experiments/registry.jsonl)")
     ap.add_argument("--lab-root", type=Path,
-                    default=Path(os.environ.get("LD_LAB", Path.home() / "ld-lab")).expanduser(),
-                    help="lab root for the optional `lab` field (default $LD_LAB, else ~/ld-lab)")
+                    default=Path(os.environ.get("LD_LAB", Path.home() / "lab" / "llm-distillery")).expanduser(),
+                    help="lab root for the optional `lab` field (default $LD_LAB, else ~/lab/llm-distillery)")
     args = ap.parse_args(argv)
     reg, lab_root = args.registry, args.lab_root
     if not reg.exists():

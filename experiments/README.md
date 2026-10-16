@@ -68,7 +68,7 @@ python3 scripts/verification/check_experiment_registry.py      # schema + number
 | `references` | array<string> | yes | Ledger ids, issues, ADRs, gotcha entries |
 | `review` | string \| null | yes | Which review lenses ran, and what they found. `null` if none ran |
 | `notes` | string | no | Caveats, confounds, environment |
-| `lab` | array<string> | no | Lab paths (under `~/ld-lab` on situla) holding the run's off-repo data: `experiments/...` or `datasets/...`, never `inbox/`. Checked for shape always, for existence where a lab root exists (added 2026-10-13) |
+| `lab` | array<string> | no | Lab paths (under `~/lab/llm-distillery` on situla) holding the run's off-repo data: `experiments/...` or `datasets/...`, never `inbox/`. Checked for shape always, for existence where a lab root exists (added 2026-10-13) |
 
 ### Decision values
 

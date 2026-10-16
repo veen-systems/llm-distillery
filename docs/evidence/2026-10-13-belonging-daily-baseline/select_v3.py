@@ -7,7 +7,7 @@ import collections, json, os
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-LAB = Path(os.environ.get("LD_LAB", Path.home() / "ld-lab")).expanduser()
+LAB = Path(os.environ.get("LD_LAB", Path.home() / "lab" / "llm-distillery")).expanduser()
 ROWS = LAB / "experiments/2026-10-13-belonging-daily-baseline/extract/rows.jsonl"
 rows = {json.loads(l)["id"]: json.loads(l) for l in ROWS.read_text(encoding="utf-8").splitlines() if l.strip()}
 out = {}

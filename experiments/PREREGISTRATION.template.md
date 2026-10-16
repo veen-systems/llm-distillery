@@ -31,7 +31,7 @@ only by writing why it does not apply (e.g. "changes nothing a reader sees").*
 ## 4. Data
 
 - Inputs sent to the GPU host from situla (paths). Outputs pulled back with `scripts/lab/lab.py pull` to
-  `~/ld-lab/experiments/<date>-<name>/` and cited with `lab.py cite`; `check_lab_manifests.py` must pass.
+  `~/lab/llm-distillery/experiments/<date>-<name>/` and cited with `lab.py cite`; `check_lab_manifests.py` must pass.
 
 ## 5. Predictions (before looking)
 

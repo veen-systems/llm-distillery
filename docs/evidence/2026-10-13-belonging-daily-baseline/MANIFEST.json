@@ -1,5 +1,5 @@
 {
- "lab_root": "$LD_LAB (default ~/ld-lab, on situla)",
+ "lab_root": "$LD_LAB (default ~/lab/llm-distillery, on situla)",
  "entries": [
   {
    "path": "experiments/2026-10-13-belonging-daily-baseline/extract/rows.jsonl",

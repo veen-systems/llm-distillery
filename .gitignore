@@ -303,3 +303,6 @@ docs/evidence/**/runs/*.status
 # ⚠️ This also makes `filters/common/obituary_detector/validation/panel_obit_test.py`
 # stageable — the second victim the 09-04 note named and nobody rescued. It is still
 # untracked; committing it is a separate decision, not a side effect of this line.
+
+# situla lab root (owner 2026-10-16: ~/lab/<repo>/); tooling resolves the absolute path, not this link
+/lab

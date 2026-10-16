@@ -1,5 +1,5 @@
 {
- "lab_root": "$LD_LAB (default ~/ld-lab, on situla)",
+ "lab_root": "$LD_LAB (default ~/lab/llm-distillery, on situla)",
  "entries": [
   {
    "path": "datasets/belonging_v1_adj1/v1/build_report.json",

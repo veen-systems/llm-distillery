@@ -9,7 +9,7 @@ EV = "docs/evidence/2026-10-08-belonging-heldout2"
 sys.path.insert(0, EV); sys.path.insert(0, ".")
 spec = importlib.util.spec_from_file_location("gate2", f"{EV}/gate2.py"); g = importlib.util.module_from_spec(spec); spec.loader.exec_module(g)
 lab = g.labelled()
-SD = os.path.expanduser("~/ld-lab/inbox/b650-gpu/2026-10-10/llm-distillery/datasets/belonging_gate2")
+SD = os.path.expanduser("~/lab/llm-distillery/inbox/b650-gpu/2026-10-10/llm-distillery/datasets/belonging_gate2")
 out = {}
 for order in ("forward", "reversed"):
     _, c = g.load_scores(f"{SD}/v1_c2a_{order}.jsonl", order, lab)

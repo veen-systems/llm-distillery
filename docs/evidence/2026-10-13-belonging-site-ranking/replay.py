@@ -26,7 +26,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-LAB = Path(os.environ.get("LD_LAB", Path.home() / "ld-lab")).expanduser()
+LAB = Path(os.environ.get("LD_LAB", Path.home() / "lab" / "llm-distillery")).expanduser()
 QWEN = [LAB / "experiments/2026-10-12-belonging-c2c/focus-tag/out.jsonl",
         LAB / "experiments/2026-10-12-belonging-c2c/focus-tag-comp/out.jsonl"]
 TAGS = HERE.parent / "2026-10-12-belonging-personal-tag" / "tags.tsv"

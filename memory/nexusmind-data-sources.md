@@ -276,7 +276,7 @@ defect in their tooling.** It remains a live trap for **anyone hand-rolling a ch
 **The canary's real constraint is corpus VINTAGE, not contamination:** local `data/raw`
 predates `source_group`, so a check run there misses the emitted-undeclared class entirely
 regardless of stamp handling. Point it at sadalsuud's delivered bytes — a mirror exists at
-`~/mirrors/sadalsuud/local_dev/FluxusSource/data/current/collection_*/` (52 collections,
+`~/ops/mirrors/sadalsuud/local_dev/FluxusSource/data/current/collection_*/` (52 collections,
 165,107 rows).
 
 ⭐ **And `source_group`'s 20.5% presence is a DATE, not a rate.** It landed mid-window on

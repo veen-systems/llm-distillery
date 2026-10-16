@@ -30,7 +30,7 @@ Item 2 (#163, the read surface): keep pruning (owner 2026-10-14 and 10-15: "prun
    on the qwen floor the OLD ranking fails the bar (6.40, dated, post hoc), H is undetermined (5.20). The training lever
    is CLOSED (owner 2026-10-15): c2c (EXP-048) and c2d (EXP-050) both failed the community recall guard.
    - ▶ **FIRST ACTION, on or after 2026-10-22: the on-site re-baseline of v3 on the LIVE H page.** Pages: the daily
-     capture in `~/ld-lab/inbox/ovr-lens-pages/` (`belonging_<UTC>.html`, 10-15 → 10-21, 7 builds). Steps: (1) write
+     capture in `~/lab/llm-distillery/inbox/ovr-lens-pages/` (`belonging_<UTC>.html`, 10-15 → 10-21, 7 builds). Steps: (1) write
      `PREREGISTRATION.md` BEFORE reading any page's tags (bar = weekly mean ≤ 6; a qwen mean ≤ 6 is undetermined, > 6 is
      conclusive; predictions); (2) `lab.py move` the 7 pages into a lab `experiments/` tree; (3) parse each page's top 30
      ids, tag on b650 with EXP-049's qwen tagger unchanged (`tag_qwen.py`, `system.txt`, reuse rule + 10-id determinism
@@ -47,7 +47,7 @@ Item 2 (#163, the read surface): keep pruning (owner 2026-10-14 and 10-15: "prun
      missed while asleep is NOT caught up, so expect gaps; each file name carries its UTC time. ⛔ **After 2026-11-15 REMOVE it: `crontab -r`.**
      Beyond Belonging it serves LENS ASSIGNMENT (H-LA2, "narrow lens first", never tested against the owner): when the
      owner pastes an article that looks like it is on the wrong tab, find it in that day's pages and record it.
-   - Lab: the 10-10 `~/ld-lab/inbox/` heap (37 backlog citations) is still a later pass (#172, item 00 archived 2026-10-14).
+   - Lab: the 10-10 `~/lab/llm-distillery/inbox/` heap (37 backlog citations) is still a later pass (#172, item 00 archived 2026-10-14).
 
 0b. ✅ **#157 (oracle label provenance), phase 1 of veen-systems/pipeline-atlas#169 — LANDED 2026-10-16** (owner order
    2026-10-15: https://github.com/veen-systems/pipeline-atlas/issues/169#issuecomment-6189722887). Every live label
@@ -192,7 +192,7 @@ Item 2 (#163, the read surface): keep pruning (owner 2026-10-14 and 10-15: "prun
      `config.yaml` naming it), tell the pipeline-atlas session BEFORE it lands: its check goes red on that by design (2026-10-10).
    - Belonging shadow harm cap: a NexusMind change, low priority, v2's before/after instrument.
    - **Host data (#172):** sadalsuud + sadaltager cleaned 2026-10-12; b650 + gpu-server wait for the owner ("stay as they
-     are for now"); triage `~/ld-lab/inbox/` before any cited tree's host copy goes.
+     are for now"); triage `~/lab/llm-distillery/inbox/` before any cited tree's host copy goes.
    - **#174:** do the oracle vendors' terms allow training on their outputs? Unassessed.
 
 4. **Small, ours** (detail in the archived block's numbered items):

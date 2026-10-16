@@ -401,7 +401,7 @@ class Check(Base):
 
 class Layout(Base):
     """2026-10-12: a pull landed at `b650-gpu/...` in the lab root, and a pre-registered run in
-    inbox/. pull/adopt/move refuse a dest outside the layout in ld-lab/README.md."""
+    inbox/. pull/adopt/move refuse a dest outside the layout in the lab README.md."""
     def test_pull_refuses_dests_outside_the_layout(self):
         self.host_tree("run", {"a": b"a"})
         for dest in ("b650-gpu/2026-10-12/run", "run", "inbox/run", "inbox/h/run",
@@ -437,7 +437,7 @@ class Move(Base):
         self.host_tree("draw", {"rows.jsonl": b"rows"})
         assert self.run_tool("pull", "host:run", I + "run").returncode == 0
         assert self.run_tool("pull", "host:draw", I + "draw").returncode == 0
-        self.d = self.evidence_dir("2026-10-11-x", "reads ~/ld-lab/inbox/h/2026-10-11/run/model.bin")
+        self.d = self.evidence_dir("2026-10-11-x", "reads ~/lab/llm-distillery/inbox/h/2026-10-11/run/model.bin")
         assert self.run_tool("cite", str(self.d), I + "run/model.bin", I + "draw/rows.jsonl").returncode == 0
 
     def move(self, src, dest):
@@ -447,7 +447,7 @@ class Move(Base):
         return [e["path"] for e in json.loads((self.d / "MANIFEST.json").read_text())["entries"]]
 
     def test_move_rewrites_citations_and_records_the_move(self):
-        self.evidence_dir("2026-10-11-sib", "a sibling: ~/ld-lab/inbox/h/2026-10-11/run2/x")
+        self.evidence_dir("2026-10-11-sib", "a sibling: ~/lab/llm-distillery/inbox/h/2026-10-11/run2/x")
         r = self.move(I + "run", "experiments/2026-10-11-x/run")
         self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
         self.assertEqual(self.entries(), ["experiments/2026-10-11-x/run/model.bin", I + "draw/rows.jsonl"])
@@ -464,7 +464,7 @@ class Move(Base):
         r = self.check()                                               # lab mode: the stale README path fails
         self.assertEqual(r.returncode, 1, r.stdout)
         self.assertIn("lab path(s) that do not exist", r.stdout)
-        (self.d / "README.md").write_text("reads ~/ld-lab/experiments/2026-10-11-x/run/model.bin")
+        (self.d / "README.md").write_text("reads ~/lab/llm-distillery/experiments/2026-10-11-x/run/model.bin")
         self.assertEqual(self.check().returncode, 0, self.check().stdout)
 
     def test_move_a_dir_of_trees_and_clean_empty_parents(self):
@@ -524,12 +524,17 @@ class PreregisteredInbox(Base):
     def test_stale_text_path_forms(self):
         self.host_tree("run", {"model.bin": b"weights"})
         self.run_tool("pull", "host:run", I + "run")
-        for text, bad in [("~/ld-lab/inbox/h/2026-10-11/gone/x.jsonl", True),
+        for text, bad in [("~/lab/llm-distillery/inbox/h/2026-10-11/gone/x.jsonl", True),
                           ("`inbox/h/2026-10-11/gone/`", True),
                           ("`inbox/h/2026-10-09/`: `a`, `b`", True),               # a date dir that is gone
-                          ("~/ld-lab/datasets/nope/v1", True),
-                          ("~/ld-lab/inbox/h/2026-10-11/run/model.bin.", False),   # sentence full stop
-                          ("`~/ld-lab/inbox/<host>/2026-10-10/`", False),          # a placeholder
+                          ("~/lab/llm-distillery/datasets/nope/v1", True),
+                          ("~/lab/llm-distillery/inbox/h/2026-10-11/run/model.bin.", False),   # sentence full stop
+                          ("`~/lab/llm-distillery/inbox/<host>/2026-10-10/`", False),          # a placeholder
+                          # the pre-2026-10-16 prefix: texts written before the move keep it and must
+                          # still be checked, against the CURRENT root
+                          ("~/ld-lab/inbox/h/2026-10-11/gone/x.jsonl", True),
+                          ("~/ld-lab/inbox/h/2026-10-11/run/model.bin", False),
+                          ("lab/models/x", False),                                # not a lab prefix
                           ("datasets/training/belonging_c2b", False),             # a REPO path
                           ("experiments/registry.jsonl", False)]:
             with self.subTest(text=text):
@@ -547,7 +552,7 @@ class RealTree(unittest.TestCase):
         r = subprocess.run([sys.executable, str(CHECK), "--no-lab"], capture_output=True, text=True)
         self.assertEqual(r.returncode, 0, r.stdout)
 
-    @unittest.skipUnless(Path(os.environ.get("LD_LAB", Path.home() / "ld-lab")).expanduser().is_dir(),
+    @unittest.skipUnless(Path(os.environ.get("LD_LAB", Path.home() / "lab" / "llm-distillery")).expanduser().is_dir(),
                          "no lab root on this machine (only situla has one)")
     def test_real_manifests_match_the_lab(self):
         r = subprocess.run([sys.executable, str(CHECK), "--fast"], capture_output=True, text=True)

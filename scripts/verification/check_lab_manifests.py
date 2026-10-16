@@ -25,10 +25,10 @@ Four checks:
    current state; a diff that ADDS baseline entries is a loosening and needs review as one.
 
 3. A PLANNED run cites no `inbox/` path: an evidence dir holding `PREREGISTRATION.md` whose
-   MANIFEST.json has an `inbox/...` entry fails (lab layout, ld-lab/README.md: inbox/ is for
+   MANIFEST.json has an `inbox/...` entry fails (lab layout, the lab README.md: inbox/ is for
    clean-up pulls whose home is undecided; 2026-10-12 a pre-registered run landed there). Fix it
    with `scripts/lab/lab.py move`, which rewrites the citing manifests. Runs with `--no-lab` too.
-4. (lab mode) Evidence TEXT naming a lab path -- `ld-lab/<inbox|experiments|datasets>/...`, or a
+4. (lab mode) Evidence TEXT naming a lab path -- `ld-lab/` or `lab/llm-distillery/` + `<inbox|experiments|datasets>/...`, or a
    bare `inbox/<host>/<date>/...` -- must name one that exists: `lab.py move` lists such text but
    never edits it, so a script reading the old path would otherwise break silently.
 
@@ -46,7 +46,7 @@ an unreachable mechanism ships.
 
 ⚠️ Check 4's blind spots (review 2026-10-13): bare `experiments/...` / `datasets/...` text (they
 collide with repo paths), `$LD_LAB/...`, paths built with os.path.join, and any file outside
-docs/evidence/ (experiments/registry.jsonl notes, docs/TODO.md); globs or placeholders after `ld-lab/`
+docs/evidence/ (experiments/registry.jsonl notes, docs/TODO.md); globs or placeholders after the lab prefix
 are cut at the first non-path character and may false-fail. Other known blind spots: prose that names no host ("the GPU box"); `/home/...` paths with no host;
 experiments/registry.jsonl (not scanned); text files over 2 MB and binary files; a citation that
 is a PUSH to a host (`scp x b650-gpu:~/dir/`) reads as a citation and needs a manifest or a
@@ -63,7 +63,9 @@ DEFAULT_EXEMPT = ["sadalsuud:local_dev"]
 MAX_BYTES = 2_000_000
 OPT_OUT = re.compile(r"lab-check:\s*not-host-data:?(.*)")
 LAB_MANIFEST = "_LAB_MANIFEST.json"
-LAB_TEXT = re.compile(r"(?:(?<![\w-])ld-lab/((?:inbox|experiments|datasets)/[\w.\-/]*[\w-])"
+# The lab moved 2026-10-16 (owner): ~/lab/llm-distillery -> ~/lab/llm-distillery, clean cut. Texts written before keep the old
+# prefix and must still be checked; the captured part is lab-relative, so both resolve against the current root.
+LAB_TEXT = re.compile(r"(?:(?:(?<![\w-])ld-lab|(?<![\w-])lab/llm-distillery)/((?:inbox|experiments|datasets)/[\w.\-/]*[\w-])"
                       r"|(?<![\w/.-])(inbox/[\w.-]+/\d{4}-\d{2}-\d{2}(?:/[\w.\-/]*[\w-])?))")
 SSH_OPTS = r"(?:-[bcDEeFIiJLlmOopQRSWw]\s*\S+\s+|-\w+\s+)*"
 
@@ -86,7 +88,7 @@ def norm(path):
 def lab_root(flag=None):
     if flag:
         return Path(flag).expanduser()
-    return Path(os.environ.get("LD_LAB", Path.home() / "ld-lab")).expanduser()
+    return Path(os.environ.get("LD_LAB", Path.home() / "lab" / "llm-distillery")).expanduser()
 
 
 def sha256_file(p):
@@ -191,7 +193,7 @@ def main():
     ap.add_argument("--baseline", type=Path, default=BASELINE)
     ap.add_argument("--write-baseline", action="store_true",
                     help="rewrite the baseline from the current state (a loosening: review the diff)")
-    ap.add_argument("--lab-root", help="lab root (default $LD_LAB, else ~/ld-lab)")
+    ap.add_argument("--lab-root", help="lab root (default $LD_LAB, else ~/lab/llm-distillery)")
     ap.add_argument("--hosts", nargs="+", default=DEFAULT_HOSTS, help="scratch host names")
     ap.add_argument("--exempt", nargs="*", default=DEFAULT_EXEMPT, metavar="HOST:PREFIX",
                     help="production paths that are not scratch (default %(default)s)")

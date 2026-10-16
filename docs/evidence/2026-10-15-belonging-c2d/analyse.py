@@ -3,7 +3,7 @@
     python3 analyse.py tag-input > tag_input.jsonl     # ids that need a qwen tag (neither A nor B has one yet)
     python3 analyse.py report > result.txt            # both checks, the controls, the predictions' inputs
 
-Lab layout (~/ld-lab/experiments/2026-10-15-belonging-c2d/): population/population.jsonl,
+Lab layout (~/lab/llm-distillery/experiments/2026-10-15-belonging-c2d/): population/population.jsonl,
 scores/scores_pop/<pkg>.jsonl, scores/scores_comp/<pkg>.jsonl, tag/out.jsonl (+ tag-control/out.jsonl).
 """
 import json, os, random, sys
@@ -19,7 +19,7 @@ from filters.common.score_normalization import apply_normalization, load_normali
 from replay import order                                   # H, as in EXP-049
 from site_rank import pdate
 
-LABX = Path(os.environ.get("LD_LAB", Path.home() / "ld-lab")).expanduser() / "experiments"
+LABX = Path(os.environ.get("LD_LAB", Path.home() / "lab" / "llm-distillery")).expanduser() / "experiments"
 LAB = LABX / "2026-10-15-belonging-c2d"
 PKGS = ["v3", "v1_c2d_s42", "v1_c2d_s43"]
 NORM = load_normalization(str(REPO / "filters/belonging/v3/normalization.json"))
@@ -91,7 +91,7 @@ def check_b():
 
 
 def check_a():
-    draw = jl(Path.home() / "ld-lab/datasets/belonging_comp_draw/v1/belonging_comp_rows.jsonl")
+    draw = jl(Path.home() / "lab/llm-distillery/datasets/belonging_comp_draw/v1/belonging_comp_rows.jsonl")
     ids = [r["id"] for r in draw]
     sc = {p: scores("comp", p, ids) for p in PKGS}
     v3pass = [i for i in ids if sc["v3"][1][i]["stage_used"] == "stage2" and sc["v3"][1][i]["raw"] >= OP]
