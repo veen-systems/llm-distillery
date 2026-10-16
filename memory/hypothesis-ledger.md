@@ -320,6 +320,15 @@ unless it says otherwise. The one repeat measured: 3/110 verdicts flip with the 
 |---|---|---|
 | H-SB1 | A Kev decision-model base (Qwen3.5 + pointer head, open weights) beats Gemma-3-1B on specificity at matched recall, and the gain comes from decision pre-training, not the newer base (Qwen3.5-0.8B-Base arm is the control) | ⏳ **OPEN, filed not scheduled (owner 2026-10-15).** Not tested. Prior pick (ADR-006, MAE, 1.2% gap) does not settle it under ADR-023. Method: #180 |
 
+### Oracle canary and data practice — `H-OC` (2026-10-16, #177 / #176, `EXP-051` / `EXP-052`)
+
+| id | hypothesis | status |
+|---|---|---|
+| `H-OC1` | the human_thriving canary at k = 1 FAILS a REAL oracle model swap, not only the simulated one-point drift | ⏳ **OPEN — untestable until a swap.** EXP-052 showed a simulated ~0.5-point drift fails (16–20 flips vs 7); EXP-042's V4→V4.1 swap moved 3 of 12 hand-picked rows, a different population. **Method:** on the next vendor model notice (DeepSeek or Gemini), run `canary.py run` within a day and keep the record. **Refuted if** a notified swap PASSES. |
+| `H-OC2` | an unchanged oracle FAILS (or NO-VERDICTs) the k = 1 canary less than 1 run in 10 | ⏳ **OPEN — 5 out-of-sample clean runs so far, max 5 flips.** **Method:** over the next 10 canary records with an unchanged `served_model`, count FAIL + NO-VERDICT. **Refuted if** ≥ 2. A false alarm costs a re-investigation, never a label. **Revisit:** at the 10th record (`datasets/canary/human_thriving/passes/`). |
+| `H-OC3` | DeepSeek's `system_fingerprint` moves when the served model changes, and only then | ⏳ **OPEN (#157).** `aeb56401ca74…` on every call 2026-10-12 → 10-16. **Method:** the canary records carry it (`served`); compare across records, and at the next swap. |
+| `H-ND1` | near-duplicate leakage inflates the live gates' numbers (#176) | ❌ **REFUTED at e5 ≥ 0.93 (EXP-051):** v9's gate without its 5–6 leaks is still a WIN; belonging v3's gate set has 0 rows ≥ 0.93. ⚠️ 0.93 misses rewritten copies (control 0.83–0.98). |
+
 ## Where the *experiments* live, as opposed to the hypotheses
 
 | kind | home |

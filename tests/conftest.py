@@ -5,7 +5,14 @@ Provides common test data and mock objects used across test modules.
 """
 
 import json
-import pytest
+import sys
+
+# No .pyc from a test run (2026-10-16). An in-place mutation test that restores its source within the same second, at
+# the same size, leaves a bytecode cache Python still trusts: the restored code then runs the MUTANT, and the suite
+# failed for a reason nobody could see in the source. Set before any project module is imported.
+sys.dont_write_bytecode = True
+
+import pytest  # noqa: E402
 import tempfile
 from pathlib import Path
 from typing import Dict, List

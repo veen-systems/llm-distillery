@@ -1,6 +1,10 @@
 # human_thriving v9 — status
 
 **2026-09-25: LIVE in NexusMind, replacing v8 in the reader-invisible slot.** Thriving still reads `uplifting v7`.
+*(Superseded: Thriving reads v9 since 2026-09-26, #151 ruled — `CLAUDE.md` Production Filters.)*
+
+⛔ **Labelling with this prompt (`c4705408c477`) is GUARDED by the oracle canary since 2026-10-16 (#177, EXP-052):**
+run `scripts/oracle/canary.py run --filter human_thriving` before every labelling run (`docs/RUNBOOK.md` § Oracle Scoring).
 
 | step | state |
 |---|---|
