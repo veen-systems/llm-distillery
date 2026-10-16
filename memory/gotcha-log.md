@@ -4,6 +4,26 @@
 
 *⚠️ **Entries dated before 2026-10-13 live in (except the 10-12 `cp -r` entry, kept while its resolution is fresh) [`archive/gotcha-log-archive.md`](archive/gotcha-log-archive.md)**, verbatim (the 10-12 ones moved 2026-10-15, #163 round 5; the 10-01 → 10-08 ones moved 2026-10-12 by a second owner-approved MID-MONTH pass, `--before 2026-10-09`, #163 round 2; the 09-01 → 09-16 ones moved 2026-09-27 by an owner-approved MID-MONTH pass, `--before 2026-09-17`; earlier ones moved 2026-09-24; into `archive/` 2026-09-26 so curate's size measurement stops counting it, #163; the month-dated Feb–May entries followed on 2026-09-26). Next pass: `python3 scripts/maintenance/retire_memory.py gotcha --before <first of this month> --apply` (dry run without `--apply`). It retires top-level entries only; the `###` entries inside the catalogue are kept by rule and counted (⚠️ superseded 2026-10-09: 43 of them moved by date; see the note under the catalogue heading). The unreachable-mechanism catalogue stayed here. For a recurrence match, grep both: `grep -n <term> memory/gotcha-log.md memory/archive/gotcha-log-archive.md` (a `memory/gotcha-log*.md` glob does NOT reach the archive). Was: `grep -n <term> memory/gotcha-log*.md`.*
 
+## AN IN-PLACE MUTANT OUTLIVED ITS RESTORE IN A `.pyc` AND FAILED THE SUITE (2026-10-16) [RESOLVED: mechanized]
+**Problem**: after a mutation pass, `test_canary_run_resumes…` failed on correct source: Python ran `MAX_PASSES = 1`.
+**Root cause**: the mutant was compiled, then the source restored within the same second at the same size, so the cached bytecode still looked valid.
+**Fix**: `tests/conftest.py` sets `sys.dont_write_bytecode` (pinned by `tests/unit/test_no_bytecode_from_tests.py`; seeded with the exact failure). Mutation drivers also set `PYTHONDONTWRITEBYTECODE=1`.
+
+## TWO NEAR-DUPLICATE INSTRUMENTS, TWO OPPOSITE MISSES (2026-10-16)
+**Problem**: a first-600-chars text comparison called a ScienceDaily copy of a training row "not a leak" (#176); a review found it.
+**Root cause**: ScienceDaily puts a Date/Source/Summary header before the body. The full-text shingle share fixed that, then mis-called a templated NYT Connections page a leak and missed an agency rewrite (share 0.13).
+**Fix**: compare FULL text, and report both a text instrument and a reading; gate on their union (EXP-051 `gate_excluded.py`).
+
+## "ALL 9 NOT FOUND" WAS MY PARSER, NOT THE LAB (2026-10-16)
+**Problem**: a hash check reported every ld-scratch file missing from the lab.
+**Root cause**: `_LAB_MANIFEST.json` keeps `files` as a DICT keyed by name; the parser read it as a list and found nothing.
+**Fix**: inspect one manifest before trusting a zero; the corrected parser found 9/9. Another case of *prove the instrument could have said yes*.
+
+## `crontab FILE` WITH A LONG PATH FAILS; THE OLD LINE STAYS (2026-10-16)
+**Problem**: `crontab <scratchpad file>` errored "No such file", leaving the old crontab installed.
+**Root cause**: the path was truncated (session scratchpad paths are long).
+**Fix**: `crontab - < file`, then `crontab -l` to confirm.
+
 ## A HEADING INSERTED BY SUBSTRING MATCH SPLIT THIS LOG'S INTRO, AND THE SPLIT HID ENTRIES FROM RETIREMENT (2026-10-15)
 **Problem**: four entries (10-12, 10-13) sat INSIDE the intro sentence, between "[`" and "## Mechanized`](#mechanized)". The 10-13 heading was mid-line, so no heading grep saw it, and `retire_memory.py` skipped those entries on two passes.
 **Root cause**: an insert anchored on the substring "## Mechanized" (the intro's link text), not on a line-start heading. Same class as curate's #233 warning, which names only `Promoted`.
@@ -262,6 +282,7 @@ false finding in the reference audit, which trains readers to dismiss that audit
 
 | Date | Finding shape | Check | Status | Occurrences |
 |------|---------------|-------|--------|-------------|
+| 2026-10-16 | An in-place mutation restored within the same second leaves a `.pyc` that still runs the MUTANT, so a correct tree fails the suite | `tests/conftest.py` `sys.dont_write_bytecode`, pinned by `tests/unit/test_no_bytecode_from_tests.py`; seeded: the 10-16 mutate-run-restore-run sequence passes after restore with no `__pycache__` written | live | 0 |
 | 2026-10-15 | A `cp -r` of a filter package keeps the source's absolute imports in `inference*.py`, so the copy trains its own adapter and SCORES the source's (gotcha 2026-10-12; recurred in c2d 2026-10-15 although written down) | `training/train.py` `assert_package_imports_self()` refuses before training; `tests/unit/test_package_imports_self.py` (seeded positive: a real copy of v3 and of solutions v6; all committed packages pass; mutation-tested 2026-10-15: disabling the refusal and ignoring the filter name each go red) | live | 0 |
 | 2026-10-12 | `training/prepare_data.py` with a `--filter` whose `filter.name` the labels were not written under: 0 rows match, it wrote three empty splits, printed COMPLETE and exited 0. (Found alongside: the documented call died on `import ground_truth` without PYTHONPATH.) | `tests/unit/test_prepare_data_zero_examples.py` — seeded mismatched field → exit 1, nothing written; control writes all three; both run the documented call with NO PYTHONPATH; guard-off and no-sys.path mutants red | live — ⚠️ NOT covered: a renamed DIMENSION still becomes a silent column of 0s | 0 |
 | 2026-10-12 | ModuleNotFoundError rows under the wrong interpreter explained as "pre-existing environment" (5 occurrences while the fix was written down) | `tests/conftest.py` `pytest_terminal_summary` banner + `tests/unit/test_wrong_interpreter_hint.py`; seeded on the real tree: `python3 -m pytest tests/unit/test_fit_calibration_config_write.py` prints it, `.venv` prints nothing | live — a WARNING, it does not change the exit code | 0 |
