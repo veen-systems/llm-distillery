@@ -35,6 +35,8 @@ Measured 2026-10-10; commands and full lists in `docs/evidence/2026-10-10-host-d
 | repo `datasets/` (git-ignored, on situla) | the working inputs that scripts read by path | **unchanged**: it is already under `$HOME` and backed up, and hundreds of paths name it |
 | `docs/evidence/<dir>/MANIFEST.json` | which lab files an evidence dir rests on: path, sha256, size, origin host, date | written by `lab.py cite`, checked by `check_lab_manifests.py` |
 
+**Amended 2026-10-16, b650 (owner; infra `nodes/b650-gpu.md` 55525ff, confirmed in this repo's session):** Veen data on b650-gpu (a third party's machine) is working copies only. When a run FINISHES, pull its results with `lab.py pull`, and delete the b650 copy once a restic snapshot holds the pull — no per-item go — re-hashing each file against the lab manifests right before its rm (a mismatch is skipped and reported). The checkout, its venvs and live filter packages are never in scope. Other hosts keep the per-item go.
+
 **Amended 2026-10-16 (owner, via the infra session; go given in this repo's session):** the lab moved `~/ld-lab` → `~/lab/llm-distillery` as a CLEAN CUT (no compatibility link) — situla's `~` now holds repo working data under `~/lab/<repo>/` and infra under `~/ops/`. The repo carries a gitignored `lab` symlink to it; tooling resolves the absolute root, never the symlink (a worktree has none). Texts written before the move keep `~/ld-lab/...`; `check_lab_manifests.py` reads both prefixes against the current root.
 
 `$LD_LAB` or `--lab-root` overrides `~/lab/llm-distillery`. It is a plain directory, not a git repo. ⛔ **Never move or
