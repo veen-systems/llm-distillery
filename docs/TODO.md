@@ -2,9 +2,8 @@
 
 ## ▶️ START HERE — the ordered queue, as of 2026-10-15
 
-*▶ **NEXT SESSION (set 2026-10-16 close; `/curate` done): (1) item 2, the read surface (#163) — owner 10-16:
-"pruning, thinning, mechanizing, retiring" — 475,230 after the close, ceiling 478,386, only 3,156 headroom; levers
-listed in item 2; (2) #177 next: the cross-family panel and canaries for the other filters; #179 label
+*▶ **NEXT SESSION (set 2026-10-16 close; `/curate` done): (1) item 2, the read surface (#163): round 8 done 2026-10-18
+(469,090, 9,296 headroom); H-CTX-3's revisit is the owed piece; (2) #177 next: the cross-family panel and canaries for the other filters; #179 label
 audit; #178 datasheets. Overdue: H-CTX-3's revisit (item 2). Item 0a stays dated ≥ 10-22.** 10-16 landed: #157,
 #176 (EXP-051), #177 canary LIVE (EXP-052), lab → `~/lab/llm-distillery`, b650 rule + 3.0 GB cleanup.*
 
@@ -79,6 +78,10 @@ Item 2 (#163, the read surface): keep pruning (owner 2026-10-14 and 10-15: "prun
    NexusMind's session runs it; ours is to tell them. LD#52 and LD#86 are closed.
 
 2. **THE READ SURFACE (#163). "prune, thin, mechanize, retire".** Rounds 1–3 landed 2026-10-12: 758,893 → 514,588 chars (519,680 at close, after the session's new records).
+   ✅ **Round 8 (2026-10-18): 475,230 → 469,090** (headroom 3,156 → 9,296; ceiling unchanged, already ~+2%). Verbatim,
+   tool-checked: `retire_memory.py gotcha --before 2026-10-16` (4 entries, 45,043 → 41,987) and `sessions --before
+   2026-10-16` (the 10-15 session file; index link rewritten). Ledger rows judged NOT movable yet: H-BB4/H-BB7 carry
+   ⚠️ open caveats or back live TODO 0a; H-ND1 is two days old. H-CTX-3's revisit still owed.
    ✅ **Round 7 (2026-10-16): 477,749 → 469,006**, ceiling → 478,386. Verbatim: `gotcha-log.md` 50,962 → ~42.8K (the
    `## Mechanized` post-table prose of 09-17, the 08-25 watcher entry — class `live` — and `retire_memory.py gotcha
    --before 2026-10-15`, 3 entries); `hypothesis-ledger.md` H-HD11 + H-DEV2 (closed). ⏰ **OWED: H-CTX-3's revisit

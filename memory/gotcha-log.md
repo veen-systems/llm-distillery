@@ -24,26 +24,6 @@
 **Root cause**: the path was truncated (session scratchpad paths are long).
 **Fix**: `crontab - < file`, then `crontab -l` to confirm.
 
-## A HEADING INSERTED BY SUBSTRING MATCH SPLIT THIS LOG'S INTRO, AND THE SPLIT HID ENTRIES FROM RETIREMENT (2026-10-15)
-**Problem**: four entries (10-12, 10-13) sat INSIDE the intro sentence, between "[`" and "## Mechanized`](#mechanized)". The 10-13 heading was mid-line, so no heading grep saw it, and `retire_memory.py` skipped those entries on two passes.
-**Root cause**: an insert anchored on the substring "## Mechanized" (the intro's link text), not on a line-start heading. Same class as curate's #233 warning, which names only `Promoted`.
-**Fix**: rebuilt 2026-10-15 with a line-multiset loss check (only the joined intro line and re-levelled headings differ). Insert entries above `^## Mechanized$` or after the intro's closing `*` line, never at a substring. Reconcile `grep -c '^\*\*Problem\*\*'` against the heading count at every curate.
-
-## A CONTROL'S RESULT THAT LIVES ONLY IN THE TRANSCRIPT IS NOT EVIDENCE (2026-10-15)
-**Problem**: c2d's pre-registered normalization control "PASSED 103,968/103,968" before compaction, but no committed file printed it; writing the README, nothing could be cited.
-**Root cause**: the control ran as an ad-hoc command during the dry run; `analyse.py report` printed the other controls but not this one.
-**Fix**: every pre-registered control is a line in the committed report script's output (added to `analyse.py`, re-run, `result.txt` reproducible). Before the README, grep `result.txt` for each control named in `PREREGISTRATION.md` §4.
-
-## THE qwen TAGGER RETURNS `null` FOR A VERY LONG ARTICLE, DETERMINISTICALLY (2026-10-15)
-**Problem**: `portuguese_observador_8e7ee891bb52` (85,459 chars) got `focus: null` in c2c and again on re-tag; it silently fell out of Check A's denominator.
-**Root cause**: the prompt overflows the context (`prompt_eval_count` 8,194 despite `num_ctx` 16384), the system prompt is lost, and qwen answers as a chat reply without a `focus` key.
-**Fix**: report unparsed rows in every denominator (`analyse.py` Check A prints them) and bracket them both ways. If it recurs, truncate content to head+tail before tagging — an instrument change, so only in a new pre-registration.
-
-## `cp -r` OF A FILTER PACKAGE LOADS THE SOURCE PACKAGE'S MODEL (2026-10-12) [x2] [RESOLVED 2026-10-15: mechanized in train.py]
-**Problem**: `filters/belonging/v1_c2c_s42` was a `cp -r` of `v1_c2b`. Its training wrote its own adapter, but scoring it loaded `v1_c2b/model`. `gate.assert_loads_from` refused both seeds before a score was written.
-**Root cause**: the package's `inference*.py` import `filters.belonging.v1_c2b.*` by ABSOLUTE module path, and the model path is `Path(__file__).parent / "model"` of the IMPORTED module. A copy keeps the source's module name.
-**Fix**: after any package copy, `sed` the module path to the new package name and `grep -c <old name>` = 0 before scoring. Keep `assert_loads_from` in every scoring script: it is what caught this. ⚠️ **Recurred 2026-10-15 (c2d) with this entry in place → MECHANIZED:** `train.py` now refuses such a package (`## Mechanized`).
-
 ## [Short description] (YYYY-MM-DD)
 **Problem**: What went wrong or was confusing.
 **Root cause**: Why it happened.
