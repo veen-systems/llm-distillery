@@ -34,7 +34,7 @@
     - G explicit obit exclusion: "G does NOT fire on obituaries of recently-deceased public figures"
   - [x] **522-article re-scoring (Gemini v3 + DeepSeek v3)** with tightened prompt: outputs `datasets/scored/cd_v5_softpenalty_rescored_v3/` and `cd_v5_softpenalty_deepseek_v3/`
   - [x] **Two-pool spot-check on DeepSeek v3** (Opus agent): Pool A false-neg 13/15 CORRECT, Pool B false-pos 11/15 CORRECT (4 wrong, above 20% threshold but mostly K-boundary cases)
-  - [x] **Haiku cross-validation of Opus** on handjudge_30: 77% exact agreement → agent layer validated
+  - [x] **Haiku cross-validation of Opus** on handjudge_30: 77% exact agreement → agent layer validated ⚠️ *Corrected 2026-10-19 (#179): 77% is RAW agreement with no chance correction and no class rates, on n=22 (`calibration_report.md:136`), so it validates nothing — over a three-way verdict (DeepSeek / Gemini / Unclear) with skewed rates, chance alone can reach a large share of it. The per-item verdicts were not kept, so alpha cannot be computed now; treat the agent layer as NOT validated by this figure. Compute it with `ground_truth/agreement.py` (`agreement_report`).*
   - [x] **Broader 2-oracle disagreement truth set** (Opus agent, n=30 stratified): DeepSeek 21 / Gemini 5 / Unclear 2 / Both wrong 2. Per-oracle accuracy on disagreement set: **DeepSeek 80.8% vs Gemini 19.2%**. Confirms v3 tightening did NOT close Gemini's K/I/G over-firing — Gemini's reading style appears to be a stable disposition.
 
 ## Phase 4–9 (Completed 2026-05-31 evening)

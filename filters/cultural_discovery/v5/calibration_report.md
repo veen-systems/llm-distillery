@@ -17,7 +17,7 @@ Evidence stack so far:
 - Earlier handjudge_30 (Opus agent, n=22): DeepSeek 12 / Gemini 6 / Unclear 4
 - Pool A spot-check (Opus agent, n=15, false-negative check on DS): 13/15 CORRECT, 1 WRONG (Greek 25-March schoolchildren parade missed as G)
 - Pool B spot-check (Opus agent, n=15, false-positive check on DS): 11/15 CORRECT, 4 WRONG (above 20% threshold but concentrated in K-boundary cases)
-- Haiku cross-validation of Opus on handjudge_30: 77% agreement → agent layer validated
+- Haiku cross-validation of Opus on handjudge_30: 77% agreement → agent layer validated ⚠️ *Corrected 2026-10-19 (#179): 77% is RAW agreement with no chance correction and no class rates, on n=22 (`calibration_report.md:136`), so it validates nothing — over a three-way verdict (DeepSeek / Gemini / Unclear) with skewed rates, chance alone can reach a large share of it. The per-item verdicts were not kept, so alpha cannot be computed now; treat the agent layer as NOT validated by this figure. Compute it with `ground_truth/agreement.py` (`agreement_report`).*
 - Dimension redundancy: **DeepSeek 20%** pairs above |r|=0.7, **Gemini 60%** — DS scores more orthogonal (better student signal)
 - F-K firing rate: Gemini-v3 (post-tightening) still 49.8%; DeepSeek-v3 29.7%. Tightening closed gap partially but not fully — supports the "Gemini's aggressive reading is stable disposition, not prompt-fixable" interpretation
 - Cost: ~$2 (DS direct, with auto-caching) vs ~$15 (Gem Batch) for full 8K retrain
@@ -176,7 +176,7 @@ Will populate when 4-oracle batch completes:
 | Tier distribution reasonable | ✅ no single bin >70% |
 | Pool A false-negative rate ≤ 20% | ✅ DS Pool A: 6.7% (1/15) |
 | Pool B false-positive rate ≤ 20% | 🟡 DS Pool B: 26.7% (4/15) — above threshold but K-boundary cases |
-| Agent layer validated (Haiku-Opus agreement ≥ 75%) | ✅ 77% |
+| Agent layer validated (Haiku-Opus agreement ≥ 75%) | ✅ 77% ⚠️ raw, not chance-corrected: does not validate (#179, line 20) |
 | 4-oracle consensus computed | ⏳ pending Qwen3 + Phi4 |
 | Per-oracle agent-judged accuracy > 75% on truth set | ✅ DS 80.8%, ❌ Gem 19.2% |
 

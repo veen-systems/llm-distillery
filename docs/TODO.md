@@ -13,8 +13,9 @@ Target ≥ 30K; then ratchet the ceiling to the measured size + 2%.
 **(2) #179 fixes, RULED 10-19 (issue comment 6267155020), in this order:** ✅ gate `scripts/score_ollama_oracle.py` for cloud
 providers (DONE 10-19: deepseek/gemini gated before any call, own oracle key so another scorer's PASS never admits it —
 a guarded prompt needs `--skip-canary` there; ollama ungated; 5 tests, 5/5 mutants killed) → ✅ human_thriving v9 mixed-prompt note in its package docs (DONE 10-19: `filters/human_thriving/v9/README.md`
-§ Label provenance; 1,067 labels differ from any oracle output, 350 unexplained; THREE rules differ, not one) → Krippendorff's alpha/AC1 in
-shared analysis code + fix `filters/cultural_discovery/v5/STATUS.md:37` → the reader validator (strict for all; missing
+§ Label provenance; 1,067 labels differ from any oracle output, 350 unexplained; THREE rules differ, not one) → ✅ Krippendorff's alpha/AC1 in
+shared analysis code + fix `filters/cultural_discovery/v5/STATUS.md:37` (DONE 10-19: `ground_truth/agreement.py`,
+reproduces Krippendorff 2011's published values; cd v5 line + `calibration_report.md` corrected: per-item verdicts lost) → the reader validator (strict for all; missing
 provenance raises for new rows only, legacy = explicit `unknown`) and splits that keep provenance.
 **(3)** #177 cross-family panel; review leftovers (the one-use PASS claim is read-check-write; a labelling run does not
 compare its served model to the PASS's); #178 datasheets. Cleanup: b650 `~/llm-distillery/runs/canary_177b` (149 MB)
