@@ -1,0 +1,56 @@
+== cultural_discovery  op 4.0  oracle https://api.deepseek.com/v1/chat/completions|deepseek-chat  served deepseek-flash
+   items scored per run [100, 100, 100, 100, 100, 100, 100, 100, 100]
+   B prompt ['6b65a534cd529c2972fc27ee422abb3e1132f6e11843e749505f82ee216551e4']
+   P prompt ['d7231e3b0ecda39e97718fda6cac35796ad7f29b7dd030766cfd071ed7bbc262']
+   baseline items >= op 25/100, within 0.5 of op 13
+   noise k1: F=5 S=0.0787  each 2/-0.0197 2/-0.0170 1/-0.0644 1/-0.0191 1/+0.0415 5/+0.0787
+   noise k3: F=3 S=0.0573  each 2/-0.0562 3/-0.0310 3/+0.0027 1/+0.0233 1/-0.0573 2/-0.0237 2/-0.0030 2/+0.0015 1/+0.0222 3/+0.0558
+   k=1 FAIL bar: flips > 6 or |shift| > 0.2287
+   P1: flips 8 shift -0.7502 -> FAIL on flips+shift
+   P2: flips 11 shift -0.7649 -> FAIL on flips+shift
+   P3: flips 11 shift -0.7677 -> FAIL on flips+shift
+   P triple: flips 11 shift -0.7609 -> k3 FAIL
+   rule: k = 1 ships; baseline k_ship 1
+   L1 record PASS flips 1 shift -0.0044 k 1
+== nature_recovery  op 3.75  oracle https://api.deepseek.com/v1/chat/completions|deepseek-chat  served deepseek-flash
+   items scored per run [100, 100, 100, 100, 100, 100, 100, 100, 100]
+   B prompt ['6dff6a9b99f09796d4f851f1d7a6e994566ad909f770f167754437dd89f5ac9b']
+   P prompt ['469a3f07bf894aee86af201571334b9aef46c8995dc99682a37490f295d5dba8']
+   baseline items >= op 28/100, within 0.5 of op 12
+   noise k1: F=3 S=0.0313  each 3/+0.0127 1/-0.0152 0/-0.0261 0/-0.0053 1/+0.0313 1/+0.0028
+   noise k3: F=3 S=0.0259  each 2/-0.0159 3/-0.0044 2/+0.0159 3/+0.0001 2/-0.0104 3/+0.0099 1/-0.0059 3/+0.0214 2/+0.0056 3/+0.0259
+   k=1 FAIL bar: flips > 4 or |shift| > 0.1813
+   P1: flips 8 shift -0.4487 -> FAIL on flips+shift
+   P2: flips 8 shift -0.4747 -> FAIL on flips+shift
+   P3: flips 6 shift -0.4627 -> FAIL on flips+shift
+   P triple: flips 7 shift -0.4620 -> k3 FAIL
+   rule: k = 1 ships; baseline k_ship 1
+   L1 record PASS flips 1 shift -0.0182 k 1
+== solutions  op 2.25  oracle https://api.deepseek.com/v1/chat/completions|deepseek-chat  served deepseek-flash
+   items scored per run [100, 100, 100, 100, 100, 100, 100, 100, 100]
+   B prompt ['8629d616796260b9354c13d94436efc113a5033e53b8d4b1165f60815e17eab9']
+   P prompt ['06631913cf30ffceaa383e64d821efef68e3d0f0f4dd48948490d4c6348e7db3']
+   baseline items >= op 32/100, within 0.5 of op 15
+   noise k1: F=11 S=0.0730  each 10/-0.0101 7/-0.0181 11/-0.0730 8/-0.0004 8/+0.0715 10/+0.0302
+   noise k3: F=7 S=0.0563  each 6/-0.0563 5/-0.0159 7/+0.0241 7/+0.0011 5/-0.0464 4/-0.0064 5/-0.0294 5/+0.0339 7/+0.0109 7/+0.0509
+   k=1 FAIL bar: flips > 12 or |shift| > 0.2230
+   P1: flips 8 shift -0.2409 -> FAIL on shift
+   P2: flips 9 shift -0.2356 -> FAIL on shift
+   P3: flips 3 shift -0.3109 -> FAIL on shift
+   P triple: flips 5 shift -0.2625 -> k3 FAIL
+   rule: k = 1 ships; baseline k_ship 1
+   L1 record PASS flips 6 shift -0.0634 k 1
+== belonging  op 4.0  oracle batch_scorer|gemini-flash  served gemini-2.5-flash
+   items scored per run [100, 100, 100, 100, 100, 100, 100, 100, 100]
+   B prompt ['99ea1765a7eaa6a470cdcd3ef0d6d766b41ecfb01e88f694158f3414976254d0']
+   P prompt ['98e4c3551b0d471a327b91c7be719b933ba5562fc299073ad780d33937b4eb8d']
+   baseline items >= op 47/100, within 0.5 of op 3
+   noise k1: F=3 S=0.0467  each 2/-0.0467 2/+0.0236 1/+0.0464 2/-0.0022 2/+0.0194 3/-0.0404
+   noise k3: F=2 S=0.0496  each 1/+0.0129 1/-0.0141 1/-0.0021 0/-0.0353 0/-0.0014 2/+0.0106 0/-0.0226 1/-0.0164 1/-0.0496 1/-0.0376
+   k=1 FAIL bar: flips > 4 or |shift| > 0.1967
+   P1: flips 3 shift -0.2792 -> FAIL on shift
+   P2: flips 5 shift -0.3532 -> FAIL on flips+shift
+   P3: flips 3 shift -0.2849 -> FAIL on shift
+   P triple: flips 2 shift -0.3057 -> k3 FAIL
+   rule: k = 1 ships; baseline k_ship 1
+   L1 record PASS flips 2 shift -0.0179 k 1

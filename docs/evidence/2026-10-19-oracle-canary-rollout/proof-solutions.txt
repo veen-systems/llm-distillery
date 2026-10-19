@@ -1,0 +1,17 @@
+### 1. DeepSeek labelling run after the L1 PASS -> admitted, stamped
+Successful: 1  Errors: 0  Scrape-junk skipped: 0
+exit 0
+stamp on the label: {'verdict': 'PASS', 'record': '8629d616796260b9_20261019T100741Z.json', 'flips': 6, 'shift': -0.0634, 'age_h': 0.0}
+
+### 2. a second labelling run on the same PASS -> refused
+REFUSED by the oracle canary (#177): the latest PASS was already used by a labelling run (2026-10-19T10:07:58Z) for solutions prompt 8629d6167962….
+  Run:      python scripts/oracle/canary.py run --filter solutions
+  Override: --skip-canary "<reason>" (stamped on every label)
+exit 1
+
+### 3. batch_scorer (Gemini) with solutions's prompt -> refused (another oracle)
+REFUSED by the oracle canary (#177): prompt 94610c2869c4… is guarded for oracle 'https://api.deepseek.com/v1/chat/completions|deepseek-chat', and this run uses 'batch_scorer|gemini-flash' — no canary covers it.
+  Override: --skip-canary "<reason>" (stamped on every label)
+Loading filter package: filters/solutions/v6
+  Prompt: prompt-compressed.md
+exit 1

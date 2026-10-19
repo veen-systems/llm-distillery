@@ -1,0 +1,17 @@
+### 1. DeepSeek labelling run after the L1 PASS -> admitted, stamped
+Successful: 1  Errors: 0  Scrape-junk skipped: 0
+exit 0
+stamp on the label: {'verdict': 'PASS', 'record': '6b65a534cd529c29_20261019T100648Z.json', 'flips': 1, 'shift': -0.0044, 'age_h': 0.02}
+
+### 2. a second labelling run on the same PASS -> refused
+REFUSED by the oracle canary (#177): the latest PASS was already used by a labelling run (2026-10-19T10:07:52Z) for cultural_discovery prompt 6b65a534cd52….
+  Run:      python scripts/oracle/canary.py run --filter cultural_discovery
+  Override: --skip-canary "<reason>" (stamped on every label)
+exit 1
+
+### 3. batch_scorer (Gemini) with cultural_discovery's prompt -> refused (another oracle)
+REFUSED by the oracle canary (#177): prompt fb510c4c78ea… is guarded for oracle 'https://api.deepseek.com/v1/chat/completions|deepseek-chat', and this run uses 'batch_scorer|gemini-flash' — no canary covers it.
+  Override: --skip-canary "<reason>" (stamped on every label)
+Loading filter package: filters/cultural_discovery/v5
+  Prompt: prompt-compressed.md
+exit 1
