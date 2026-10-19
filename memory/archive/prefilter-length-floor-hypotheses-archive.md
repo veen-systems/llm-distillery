@@ -329,3 +329,78 @@ persisted row, because `content_length` was 0% populated before 2026-08-08 17:10
 and the stamped field would have compared two different quantities.
 
 ---
+
+## Moved 2026-10-19 (#163 round 11). Verbatim.
+
+### From § Short vs long surfacing rate, all six lenses (2026-08-08)
+
+The baseline table that was missing from every prior discussion. 8 cycles,
+`filtered_*.jsonl` (survivors), split at 300 chars of persisted `content`,
+each lens against **its own** op-point:
+
+| filter | short n | short surf% | long n | long surf% | ratio |
+|---|---|---|---|---|---|
+| solutions | 7,611 | 2.3% | 15,805 | 4.6% | 0.49× |
+| uplifting | 7,615 | 2.3% | 15,805 | 13.4% | 0.17× |
+| investment_risk | 3,798 | 20.2% | 13,567 | 27.6% | 0.73× |
+| cultural_discovery | 7,615 | 0.2% | 15,805 | 2.3% | 0.09× |
+| belonging | 7,615 | 0.4% | 15,805 | 3.2% | 0.11× |
+| nature_recovery | 7,615 | 0.0% | 15,805 | 0.2% | 0.25× |
+
+**Every lens surfaces short content LESS often than long (0.09–0.73×).** So
+"the student over-scores stubs" is not true as a platform-wide *rate* claim.
+LD#92's defect is a **within-band** bias — short articles that clear the bar are
+likelier to be wrong — not an inflated rate of clearing it. Those are different
+claims and earlier framing (mine included) blurred them.
+
+`investment_risk` looked anomalous when only the short column was shown (20.2%
+vs ≤3% elsewhere). It is not: its ratio is 0.73×, same direction as the rest,
+and its absolute rates are high because that lens surfaces a lot of everything.
+**Never compare one length-group's rate across lenses with different base
+rates** — the within-lens ratio is the only comparable quantity. Its smaller
+short n (3,798) is the NM#189 source-type allowlist dropping rows from
+`filtered_*.jsonl` entirely, which also explains why it has zero GN rows.
+
+### From § What shipped (2026-08-03, #93 — llm-distillery side)
+
+**A/B verification, n=2,917** (`data/raw` — pre-enrichment, so a short-skewed
+*stress* corpus at 65.8% sub-300; not a rate estimate). Oracle-gate verdicts at
+HEAD vs after the split: **byte-identical for five of six filters**. The
+composition is order-preserving because every rule ANDs into the verdict, so
+only the *reason* string can move, not the boolean.
+<!-- verify: test -f scripts/diagnostics/prefilter_gate_ab.py && echo PASS || echo FAIL -->
+
+> **SUPERSEDED FOR cd AT v6 (2026-08-06).** Everything below about
+> cultural_discovery's prefilter describes **v5**, which is still the version
+> NexusMind runs — so it stays accurate for production today. But **cd v6's
+> prefilter has no lens rules at all**: the topic gate (453 stems), the four
+> exclusion categories and the three domain blocklists were deleted after the e5
+> probe beat the gate on held-out oracle labels (FN 0/75 vs 10/75, ADR-021).
+> Screening moved to the probe. So the enforcement question this file exists to
+> answer — *is it safe to enforce cd's declared 0.25 pass rate?* — **does not
+> carry forward to v6**: there is nothing left to enforce but `validate_article`.
+> The recall measurement that mattered (15.5% of surfacing articles, below) is
+> what justified deleting the gate rather than turning it on. See
+> [[cd-v6-probe-hypotheses]].
+
+**The one intended exception: cultural_discovery v5.** Its custom `apply_filter`
+never called `check_content_length` — a v3→v4 regression recorded in its own
+module docstring and in TODO "Prefilter Quality". So cd was the only filter
+whose *labelling* path had no floor, and hoisting the floor restores one there:
+**190/474 = ~40% of what cd would have sent to the oracle** on the stress
+corpus. Production-realistic share is lower (enriched corpora run ~35% sub-300,
+not 66%) and **unmeasured**. Pinned by a test so it stays a decision, not an
+accident. **Re-measure before the next cd oracle run (#87).**
+
+**Synced to NexusMind 2026-08-03** (`c932065` content + `c1df13c` record; 950
+NM tests pass). Syncing surfaced a second drift: `investment_risk v6` blocked
+`arxiv` / `mastodon_` / `bluesky` in NexusMind since 2026-05-18 and never
+upstream, so the oracle was labelling a population production never scores. A
+blind LD→NM copy would have deleted all three; they were ported *back* to
+llm-distillery instead (`e51309d`). **Diff the two copies before every sync —
+`.nexusmind-owns` is empty, so nothing else compares them.**
+
+**Still not done:** the NM#284 shadow re-run. Its pass rates will jump, and for
+the first time describe lens behaviour rather than a length floor (LD#90 item
+2). Nothing live changed — the per-filter prefilter does not execute in the
+production scoring path (NM#284).

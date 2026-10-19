@@ -322,3 +322,44 @@ invariant for the same reason `_is_commerce` is: the rows that would vary it are
 |---|---|---|
 | `H-HD11` | the **178** minority-vote rows are a trainable positive class on their own | ⛔ **NOT ANSWERED — the instrument could not say yes.** Arm C caught **0 of 9**, but its test recall is **0.0417–0.0833** and it flags **0.00%** of the panel at every threshold ≥0.40, so the pre-registration's own positive control **fails**. ⭐ **That zero is about 136 positives being too few for this architecture, not about what the rows contain** — the `feedback-prove-the-bar-is-reachable` shape, caught by a control written before the run. Re-asking it needs a bigger positive class or a different head, and a new bar. `EXP-039` |
 | `H-DEV2` | a lower op-point sits deeper in the score mass, so `solutions v6` (2.25) flips at least as often as the median filter | ⚠️ **UNFALSIFIABLE AS WRITTEN, and that is the keeper.** The median filter flipped **0** and `solutions v6` flipped **0**, so *"≥ median"* had no failing branch — the idea got no test at all. ⭐ **A comparative prediction against a statistic that can land on the floor cannot fail. Predict an absolute, or name the value that would refute it.** Same family as `feedback-prove-the-bar-is-reachable`, one level up: not an unreachable bar but an unmissable one. `EXP-041` |
+
+## Moved 2026-10-19 — Hypothesis ledger (#163 round 11). Verbatim.
+
+### From § Adverse-pool consult / judge instrument — `H-AP`
+
+**Method pinned for H-AP1/H-AP2, before any call** — a **four**-arm competence check (the fourth is
+the stratum control the review forced), each arm at **k=2** reading `unanimous` (never `majority`:
+`Counter.most_common` on an even-k tie returns vote order dressed as a verdict):
+
+1. ~50 **unchanged English** rows → the instrument's own reproducibility floor.
+2. ~50 **unchanged non-English** rows → reproducibility on the population of interest.
+3. ~50 **translated non-English** rows → the treatment.
+4. ⛔ **All three arms drawn WITHIN a single stratum, or stratum-balanced and reported per stratum.**
+   Pooling is what produced the sign reversal above.
+
+**Directional prediction:** fluency predicts translation moves the flip rate **DOWN toward the
+English floor**. A *reduction* is the positive signal. If arm 2 already flips above arm 1, that is
+the signal on its own and arm 3 is confirmatory — arm 3 alone cannot separate fluency from
+translationese.
+
+⛔ **A positive control on the control is REQUIRED, and the FILE-TOTAL form is not enough.**
+`judge.py`'s resume cache keys on `(id, pass)` in `<out.json>.partial.jsonl` (`judge.py:60-71`,
+`:76-78`), so an arm reusing the main run's output path returns cached verdicts with **no API call**
+and flips at **exactly 0%** — which the verdict rule would read as *"the contrast is sound and
+earned."* **The reassuring answer is the one the bug produces.** Requirements:
+- a distinct `<out.json>` per arm, and per-arm id suffixes so a merge cannot collide them;
+- ⛔ **count lines APPENDED BY THIS PROCESS, or assert a non-zero call/spend counter — not the
+  file's total.** An interrupted-then-rerun arm at its own path has exactly `n × k` lines with zero
+  API calls and reproduces the same reassuring 0%. **A zero has to be earned, not inherited.**
+
+⛔ **Do not borrow a floor across arms.** 45.8% is the **non-English** split-vote rate; DeepSeek's
+own k=3 rate is **43.1%** (59/137) and Gemini at k=1 has no such quantity at all. Measure the floor
+inside the arm on the same instrument. See `feedback-noise-floor-per-population` in the assistant
+auto-memory.
+
+### Closed rows
+
+| id | hypothesis | status |
+|---|---|---|
+| H-BV6 | Much of the residual "junk" is a DEFINITION gap: a prosocial event or act (a donation, a homecoming, a crew that works well) vs a community's own lasting bonds as the subject | ✅ **RULED 2026-10-02 (owner): MIDDLE.** Ordinary people acting together count (a volunteer clean-up, neighbours helping). One-off gifts by a person/company/official and crowds at an event do not. Robinvale P; marches after harm qualify when the gathering is the story (Morwell P; Charleville B in the test set, still adverse). Later the same day the owner added the "doing" test (ovr.news `docs/BRAND.md:84`) to the training rubric, then ruled three boundaries at the exemplar review: festivals only when people carry them, the doing test beats ruling (c) for training, programmes only when the participants build. Evidence README § *Owner rulings*; `docs/evidence/2026-10-02-belonging-adjudication/rubric_belonging.md` |
+| H-BB4 | Commerce v1 @0.95 blocks mostly journalism, and 0.990 releases it without letting commerce reach readers | ✅ **CONFIRMED by outcome (NM#527, 2026-10-08):** ~70% of blocks were journalism (two judges, n=230); after 0.990 blocks per cycle 34,385 → 13,597 (39.5%, predicted 38.9%). ⚠️ Reader-side effect after deploy NOT measured (pre-deploy: 4 of 228 sampled blocked rows would have reached a reader — 3 journalism, 1 commerce) |

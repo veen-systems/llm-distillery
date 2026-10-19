@@ -46,14 +46,7 @@ ssh b650-gpu        # account is `jeroen` (NOT jwasys); works from situla and sa
   `training_{history,metadata}.json`, `calibration.json` and `ground_truth_gate.json`,
   which are tracked, so the box shows modified files until those are pulled back and
   committed — that is the retrain working, not drift.)
-  Before that it was a **partial rsync**, and **12 tracked files differed**, of which
-  four are on the scoring path: `training/train.py` was the **pre-fix** version missing
-  176 lines of checkpoint-selection machinery, and `uplifting v7`'s `config.yaml` /
-  `normalization.json` / `base_scorer.py` all differed from what sadalsuud serves (main
-  and sadalsuud were byte-identical, so b650 was the stale one). The other eight were
-  `cultural_discovery v5` ×2, `investment_risk v6` ×3 and three `scripts/analysis/`
-  dumpers. Pre-checkout copies + per-file diffs, and the authoritative list:
-  `b650:~/b650-pre-checkout-2026-09-06/MODIFIED.txt`.
+  Before that it was a partial rsync with 12 stale tracked files (4 on the scoring path) — detail MOVED 2026-10-19 (#163 round 11) to `archive/b650-gpu-archive.md`.
   ⛔ **Sync with `git fetch && git checkout`, not rsync** — `training/train.py` now
   REFUSES to train outside a checkout, because a copy cannot name the commit that trains.
 - **sudo password**: in owner's Bitwarden (initial photo'd one is dead).
@@ -174,51 +167,17 @@ ssh b650-gpu        # account is `jeroen` (NOT jwasys); works from situla and sa
   host term is 0.0000 — but it was measured with the device held at **CPU** (P→C).
   Nobody has run gpu-server on CUDA against b650 on CUDA. The four runs do not
   contain production's own configuration.
-  ⛔ **This bullet said the exact opposite for one commit (`b7b1d6d`, corrected the
-  same day) — "production scoring is gpu-server on CPU (run P), so a CPU replay is
-  exact and needs no qualification."** It would have licensed precisely the
-  comparison the device term forbids. The mechanism is worth more than the fix:
-  **run P is labelled `gpu-server | CPU`, and I read an experiment's ARM LABEL as a
-  description of production.** P's *venv* is production's; P's *device* is the
-  study's control. An arm label describes what was held fixed to isolate a term, and
-  says nothing about what production does. Caught by the NexusMind session; confirmed
-  here against this repo's own two records, which had said "production serves on GPU"
-  all along.
+  ⛔ **An experiment's ARM LABEL is not a description of production** (run P is `gpu-server | CPU`: its venv is production's, its device is the study's control). This bullet once said the opposite for one commit (`b7b1d6d`); the story — MOVED 2026-10-19 to `archive/b650-gpu-archive.md`.
   ⚠️ **"Production parity" names a HOST here, and there is more than one candidate.**
   `venv-prodparity` is built to **gpu-server's** pins — the box that scores the
   student — **not sadalsuud's**, which runs the pipeline. The two are different
   stacks, and the stack is worth 3 flips at 4.5, so parity with one is not parity
   with the other. (Raised 2026-08-29 by the NexusMind session, which found its own
   b650 memory recorded the sadalsuud target; this repo's is gpu-server, per run P.)
-  *(An intermediate note here said pinning made agreement WORSE and that the
-  residual was hardware-level. That was confounded — it compared a mismatched-stack
-  CPU run against a matched-stack CUDA run. The opposite is true.)*
+  *(A confounded intermediate note — MOVED 2026-10-19 to `archive/b650-gpu-archive.md`.)*
   `docs/evidence/2026-08-10-b650-gpu-production-stack-parity.md`.
   **`sadaltager` is predicted to need the same fix; untested.**
-- 🗄️ **Historical — why the GPU was blocked (superseded by the entry above).**
-  *(Diagnosis corrected 2026-08-09 evening; the original note below was wrong.)* torch 2.13 JITs a triton kernel,
-  triton compiles its `cuda_utils` helper at first use, and that gcc call dies on:
-  `cuda_utils.c:9:10: fatal error: Python.h: No such file or directory`.
-  **`python3.12-dev` is not installed** (`/usr/include/python3.12` does not
-  exist) — same missing-dev-package family as the broken `python3 -m venv`
-  noted above. CUDA is fine: `libcuda.so.1` and the dev symlink `libcuda.so` are
-  both in `/lib/x86_64-linux-gnu` and in `ldconfig -p`, and
-  `gcc -shared -fPIC -l:libcuda.so.1 -L…/triton/backends/nvidia/lib` links a
-  trivial object with exit 0. The earlier "gcc cannot link libcuda.so.1" reading
-  came from the tail of the `CalledProcessError` (which prints the command line,
-  ending in the `-l:libcuda.so.1` flag) rather than from gcc's own stderr — the
-  fatal-error line is further up the traceback.
-  **Fix as originally proposed (needs sudo, NEVER RUN — the uv route above
-  solved it without root):** `sudo apt install python3.12-dev`. Repro in ~10 s:
-  ```bash
-  ssh b650-gpu '~/llm-distillery/venv/bin/python /tmp/tk.py'   # trivial triton kernel
-  ```
-  (write `/tmp/tk.py` as a *file* — a `python -c` heredoc fails differently,
-  `ValueError: @jit functions should be defined in a Python file`, which is an
-  artefact of the test and not this bug.)
-  The old CPU workaround (`CUDA_VISIBLE_DEVICES=""`) took ~16 min per 660
-  articles, not the ~7 first recorded here. The e5 probe path never JITs a triton kernel, which is
-  why probe work runs clean on GPU here regardless.
+- 🗄️ **Historical — why the GPU was blocked** (missing `Python.h` for triton's JIT; solved by the uv-managed CPython above, no sudo) — MOVED 2026-10-19 (#163 round 11) to `archive/b650-gpu-archive.md`.
 - ⚠️ **Read the venv, not `which python3`.** gpu-server's *system* python is a
   different stack (torch 2.5.1+cu124, ST 5.2.3, **no peft**) from the one systemd
   starts (`/home/hcl/gpu-server/nexusmind-scorer/venv`: torch 2.11.0+cu130, ST

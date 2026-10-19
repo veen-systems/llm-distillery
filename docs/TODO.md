@@ -2,28 +2,23 @@
 
 ## ▶️ START HERE — the ordered queue, as of 2026-10-19
 
-*▶ **NEXT SESSION (set 2026-10-19 close; `/curate` done, all pushed). "continue" = these, in order:**
-**(1) ✅ DONE 2026-10-19 (round 10, below in item 2: 472,366 → 444,103).** ~~#163 round 10, THINNING (owner 10-19: "start pruning, thinning, mechanizing, retiring").~~ Date-retirement is
-exhausted (nothing in the gotcha log or sessions predates 10-01; ledger rows left are open or carry ⚠️). The surface lives
-in the standing topic files: `working-rules` 26.0K, `stamp-contract-integrity` 25.5K, `score-batch-shape-noise` 25.4K,
-`nexusmind-data-sources` 24.2K, `oracle-pricing-scheduling` 24.0K, `calibration-history` 22.1K (`wc -m`, 10-19). Per file:
-move dated/closed narrative VERBATIM to its `archive/` twin (comm-lossless + 1-line mutant), keep each operative rule;
-any rule restated in 2+ files → one home + pointer; any rule a check now enforces → its Mechanized row, prose to archive.
-Target ≥ 30K; then ratchet the ceiling to the measured size + 2%.
-**(2) #179 fixes, RULED 10-19 (issue comment 6267155020), in this order:** ✅ gate `scripts/score_ollama_oracle.py` for cloud
-providers (DONE 10-19: deepseek/gemini gated before any call, own oracle key so another scorer's PASS never admits it —
-a guarded prompt needs `--skip-canary` there; ollama ungated; 5 tests, 5/5 mutants killed) → ✅ human_thriving v9 mixed-prompt note in its package docs (DONE 10-19: `filters/human_thriving/v9/README.md`
-§ Label provenance; 1,067 labels differ from any oracle output, 350 unexplained; THREE rules differ, not one) → ✅ Krippendorff's alpha/AC1 in
-shared analysis code + fix `filters/cultural_discovery/v5/STATUS.md:37` (DONE 10-19: `ground_truth/agreement.py`,
-reproduces Krippendorff 2011's published values; cd v5 line + `calibration_report.md` corrected: per-item verdicts lost) → ✅ the reader validator (strict for all; missing
-provenance raises for new rows only, legacy = explicit `unknown`) and splits that keep provenance (DONE 10-19:
-`training/split_validator.py`, run by prepare_data/train/fit_calibration/the gate; all 16 local + 36/37 lab splits pass —
-the one failure is a retired `uplifting_v6` copy with no `dimension_names`; 12/12 mutants killed). ⚠️ "New" is by
-`analyzed_at` ≥ 2026-10-20: a new row with NO date is treated as legacy — every live writer stamps it except
-`score_ollama_oracle.py` (record-root stamps, no timestamp), which prepare_data does not read as an analysis block.
-**(3)** #177 cross-family panel; review leftovers (the one-use PASS claim is read-check-write; a labelling run does not
-compare its served model to the PASS's); #178 datasheets. Cleanup: b650 `~/llm-distillery/runs/canary_177b` (149 MB)
-after the 2026-10-20 12:00 snapshot (re-hash, then rm; b650 rule). Item 0a stays dated ≥ 10-22, item 0 ≥ 10-23/24.*
+*▶ **NEXT SESSION (set 2026-10-19 second close; `/curate` done, all pushed). "continue" = these, in order:**
+**(1) #177 (the oracle canary) review leftovers, then the cross-family panel.** (a) The one-use PASS claim is
+read-check-write: two runs started together can both consume one PASS — make the claim atomic (`os.link`/`O_EXCL` on a
+claim file) with a seeded two-process test. (b) A labelling run does not compare its served model to the PASS's: stamp
+both and refuse a mismatch. (c) Then the cross-family panel (#177's issue body).
+**(2) b650 cleanup, after the 2026-10-20 12:00 restic snapshot:** `~/llm-distillery/runs/canary_177b` (149 MB) —
+confirm the snapshot holds the pull, re-hash against the lab MANIFEST, then rm (b650 rule: finished run, no ask).
+**(3) #178 (datasheets per training dataset).** Start from `training/split_validator.py`'s summary (provenance known /
+unknown per split) and `scripts/analysis/split_prompt_lineage.py` (prompt mix) — v9's README § Label provenance is the
+first worked example.
+**(4) #163 round 12 (the read surface; owner 10-19 again: "pruning, thinning, mechanizing, retiring").** Round 11 left
+431,087; biggest now: `hypothesis-ledger` ~40K, `gotcha-log` ~32K, `stamp-contract` 21.7K, `score-batch` 21.3K,
+`nexusmind-data-sources` 20.8K, `oracle-pricing` 20.8K, `working-rules` 20.5K. Next levers: the ledger's H-HD/H-BV
+paragraph blocks → their source files; cross-file dedup of rules restated in 2+ files; `filter-status` vs CLAUDE.md's table.
+**Open #179 follow-ups (not ruled, low):** `score_ollama_oracle.py` writes no `analyzed_at`, so its rows can never count
+as "new" for the provenance rule; a split row arriving with a stamped `provenance` dict is trusted as given (prepare_data
+regenerates it; train/fit_calibration read it). Item 0a stays dated ≥ 10-22, item 0 ≥ 10-23/24.*
 
 *A bare "continue" means this list, top down. Each line names the FIRST action. Item 0 is WAITING (dated, ≥ 10-23/24);
 item 0a's next action is dated ≥ 10-22 (the on-site count on live ranking H). Item 0b (#157, label provenance) LANDED
@@ -104,6 +99,10 @@ Item 2 (#163, the read surface): keep pruning (owner 2026-10-14 and 10-15: "prun
    elided with `…` + archive link — an excerpt, every kept fragment verbatim). −28.3K, short of the 30K target:
    what remains is operative or shares lines with a rule. No cross-file dedup done (rules' homes are within the set).
    Two stale claims corrected: `score_ollama_oracle.py` DOES stamp `prompt_hash` since #157; score-batch's "FOUR".
+   ✅ **Round 11 (2026-10-19, second close): 444,103 → 431,087**, ceiling 452,985 → 439,708, verbatim moves, each `comm`-lossless (C
+   locale) + 1-line mutant: gotcha-log's 9 further `live`/0-occurrence Mechanized rows (10-01..10-16); the ledger's H-AP
+   method block + closed H-BV6/H-BB4; prefilter-length-floor −3.4K, uplifting-oracle-genre −1.7K, b650-gpu −2.6K
+   (new twin `archive/b650-gpu-archive.md`).
    ⚠️ `comm` under the default locale gives false 'missing' lines — use `LC_ALL=C`.
    ✅ **Round 9 (2026-10-19): 474,995 → 472,012** (headroom 3,391 → 6,374; ceiling unchanged — +2% would raise it).
    Verbatim: 10 Mechanized rows (`live`, 0 occurrences, 09-17..09-26) → gotcha archive § *Mechanized rows moved

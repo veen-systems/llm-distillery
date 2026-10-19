@@ -192,3 +192,59 @@ disagreement is **closed**: arrest row **1.00 / 1.05**, both via `harm_is_subjec
 mean 0.543 → 0.237. Committing the verdict to an output field appears to *stabilise* the
 judgement, not merely record it. One run each side — suggestive, not established.
 
+## Moved 2026-10-19 (#163 round 11). Verbatim.
+
+### From § H-UP5 — the instrument shares the defect
+
+The genre concentrates exactly where that batch measured the worst precision:
+
+| band | n (12 cycles) | primary literature | 2026-08-09 AL precision |
+|---|---|---|---|
+| 4.0–4.5 | 1,029 | **17.1%** | 0.571 |
+| 4.5–5.5 | 1,670 | **17.3%** | 0.705 |
+| ≥5.5 | 873 | 6.6% | 1.000 |
+
+**Order is therefore prompt first, then active learning.** ADR-010 says prompt precision
+beats dataset size, so a targeted 2–3K set stratified above the op-point should *replace*
+the 5,271, not add to it. Oracle spend is not the constraint: cd v5's actual was $10.36
+per 8K; Gemini Batch ≈ $14.40 per 8K; a full 6,590-row re-score ≈ **$12** ⛔ *(k=1 estimate, SUPERSEDED 2026-08-29 — measured k=3 is ≈$6.9 reordered / ≈$21.7 as-is; `docs/evidence/2026-08-29-v8-phase-a-k3/`)*. The cost is
+adjudication time.
+
+### From § H-UP6 — the shadow instrument
+
+Offline replay over 12 cycles, before deploy:
+
+| filter | detected | would cap | of those, surfacing | share of surfaced |
+|---|---|---|---|---|
+| uplifting | 4,273 | 1,562 | **347** | **13.6%** |
+| cultural_discovery | 4,273 | 639 | 77 | 12.5% |
+| belonging | 4,273 | 0 | 0 | 0% |
+| solutions | 4,273 | 0 | 0 | 0% |
+
+The two zeros are the scope gate working as a negative control.
+
+**Measured null worth keeping:** this module's predicate (`is True`) is stricter than
+`story_dedup._is_primary_literature`'s (`bool(...)`), which would split the shadow count
+from the academic dedup gate's population. **0 divergent rows of 37,022** (32,300 False /
+4,722 True). Bounded null, not a guarantee; verify command in the module docstring.
+
+### From § 2026-08-23 evening — H-UP14 RULED and the accountability boundary RULED
+
+### ✅ H-UP14 RULED (owner, 2026-08-23) — money is not a protection
+
+> *"Money committed is not a protection established."* Funding secured, mobilised, pledged or
+> allocated scores as an **announcement**, whatever the sum. A facility **operating**, a law
+> **enacted**, a service **running** is a different thing. **Rwanda leaves the no-regression set
+> as out-of-lens** — it was rejected as adverse and never had an observed production score.
+
+### ✅ The accountability boundary RULED — and BRAND.md is more precise than the paraphrase
+
+ovr.news `docs/BRAND.md` verbatim: *"…or a protection established that will improve them. It does not
+qualify when the event **only** establishes that a harm occurred, or that one has been answered."*
+
+⭐ **The word "only" means the test was never "was it delivered" — it is IS ANYONE BETTER OFF.**
+A conviction reported as an event with no named beneficiary is still harm answered → 0-2. A
+settlement **paid to survivors**, an amnesty that **releases people**, a restorative-justice
+meeting **held**, remains **returned to families** are in — *because someone is better off*, not
+because the process finished. My "arrest out, conviction in" reconciliation was slightly too
+generous and is superseded.

@@ -128,19 +128,7 @@ that batch while rating academic rows on-lens at 55% overall. Active learning on
 current prompt therefore catches the subset the oracle rejects and **silently re-labels
 the ~55% it accepts as positives.**
 
-The genre concentrates exactly where that batch measured the worst precision:
-
-| band | n (12 cycles) | primary literature | 2026-08-09 AL precision |
-|---|---|---|---|
-| 4.0–4.5 | 1,029 | **17.1%** | 0.571 |
-| 4.5–5.5 | 1,670 | **17.3%** | 0.705 |
-| ≥5.5 | 873 | 6.6% | 1.000 |
-
-**Order is therefore prompt first, then active learning.** ADR-010 says prompt precision
-beats dataset size, so a targeted 2–3K set stratified above the op-point should *replace*
-the 5,271, not add to it. Oracle spend is not the constraint: cd v5's actual was $10.36
-per 8K; Gemini Batch ≈ $14.40 per 8K; a full 6,590-row re-score ≈ **$12** ⛔ *(k=1 estimate, SUPERSEDED 2026-08-29 — measured k=3 is ≈$6.9 reordered / ≈$21.7 as-is; `docs/evidence/2026-08-29-v8-phase-a-k3/`)*. The cost is
-adjudication time.
+**Order is therefore prompt first, then active learning** (ADR-010: a targeted 2–3K set stratified above the op-point should *replace* the 5,271, not add to it). The per-band primary-literature table and the superseded k=1 cost estimate — MOVED 2026-10-19 (#163 round 11) to `archive/uplifting-oracle-genre-hypotheses-archive.md` § *Moved 2026-10-19*.
 
 **Generalises beyond this filter: an instrument built from the thing under test cannot
 audit it.**
@@ -161,21 +149,7 @@ would have read `None` on 100% of rows while passing every test.
 **A serialization boundary is part of the call path** — 6th occurrence of
 `feedback-verify-call-path`.
 
-Offline replay over 12 cycles, before deploy:
-
-| filter | detected | would cap | of those, surfacing | share of surfaced |
-|---|---|---|---|---|
-| uplifting | 4,273 | 1,562 | **347** | **13.6%** |
-| cultural_discovery | 4,273 | 639 | 77 | 12.5% |
-| belonging | 4,273 | 0 | 0 | 0% |
-| solutions | 4,273 | 0 | 0 | 0% |
-
-The two zeros are the scope gate working as a negative control.
-
-**Measured null worth keeping:** this module's predicate (`is True`) is stricter than
-`story_dedup._is_primary_literature`'s (`bool(...)`), which would split the shadow count
-from the academic dedup gate's population. **0 divergent rows of 37,022** (32,300 False /
-4,722 True). Bounded null, not a guarantee; verify command in the module docstring.
+Offline replay before deploy (uplifting would cap 347 surfacing rows = 13.6% of surfaced; belonging/solutions 0 as the negative control) and the 0-of-37,022 predicate-divergence null — MOVED 2026-10-19 to `archive/uplifting-oracle-genre-hypotheses-archive.md` § *Moved 2026-10-19*.
 
 ## ⛔ Traps
 
@@ -251,24 +225,9 @@ only** (the v7 control file is untouched; its numbers are the earlier run). 45/4
 
 ### H-UP12 (✅ RESOLVED: "Gemini ignores step 1" was the wrong diagnosis) — MOVED to [`archive/uplifting-oracle-genre-hypotheses-archive.md`](archive/uplifting-oracle-genre-hypotheses-archive.md) (2026-10-12)
 
-### ✅ H-UP14 RULED (owner, 2026-08-23) — money is not a protection
+### ✅ H-UP14 and the accountability boundary — RULED 2026-08-23 (owner)
 
-> *"Money committed is not a protection established."* Funding secured, mobilised, pledged or
-> allocated scores as an **announcement**, whatever the sum. A facility **operating**, a law
-> **enacted**, a service **running** is a different thing. **Rwanda leaves the no-regression set
-> as out-of-lens** — it was rejected as adverse and never had an observed production score.
-
-### ✅ The accountability boundary RULED — and BRAND.md is more precise than the paraphrase
-
-ovr.news `docs/BRAND.md` verbatim: *"…or a protection established that will improve them. It does not
-qualify when the event **only** establishes that a harm occurred, or that one has been answered."*
-
-⭐ **The word "only" means the test was never "was it delivered" — it is IS ANYONE BETTER OFF.**
-A conviction reported as an event with no named beneficiary is still harm answered → 0-2. A
-settlement **paid to survivors**, an amnesty that **releases people**, a restorative-justice
-meeting **held**, remains **returned to families** are in — *because someone is better off*, not
-because the process finished. My "arrest out, conviction in" reconciliation was slightly too
-generous and is superseded.
+*"Money committed is not a protection established"* (funding pledged/mobilised scores as an announcement; Rwanda left the no-regression set), and BRAND.md's *"only"* makes the test **IS ANYONE BETTER OFF**, not "was it delivered". Full rulings verbatim — MOVED 2026-10-19 to `archive/uplifting-oracle-genre-hypotheses-archive.md` § *Moved 2026-10-19*.
 
 ### ⛔ Open — and the honest caveats
 
