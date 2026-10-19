@@ -6,7 +6,7 @@
 **(1) #177 (the oracle canary) review leftovers, then the cross-family panel.** (a) The one-use PASS claim is
 read-check-write: two runs started together can both consume one PASS — make the claim atomic (`os.link`/`O_EXCL` on a
 claim file) with a seeded two-process test. (b) A labelling run does not compare its served model to the PASS's: stamp
-both and refuse a mismatch. (c) Then the cross-family panel (#177's issue body).
+both and refuse a mismatch. (c) Then the cross-family panel (#177's issue body). When (a)/(b) land, tell the pipeline-atlas session (veen-systems/pipeline-atlas#208, monitor row `ld-oracle-canary`; asked 10-19).
 **(2) b650 cleanup, after the 2026-10-20 12:00 restic snapshot:** `~/llm-distillery/runs/canary_177b` (149 MB) —
 confirm the snapshot holds the pull, re-hash against the lab MANIFEST, then rm (b650 rule: finished run, no ask).
 **(3) #178 (datasheets per training dataset).** Start from `training/split_validator.py`'s summary (provenance known /
