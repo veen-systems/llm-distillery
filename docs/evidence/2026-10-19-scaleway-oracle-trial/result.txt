@@ -1,0 +1,33 @@
+== probe (5 articles; one article per DeepSeek thinking switch)
+deepseek-v4.1-flash      plain                  british_irish_bbc_northern_i 200 ok           out 1985 reasoning 1667 model deepseek-v4.1-flash fingerprint None
+deepseek-v4.1-flash      plain                  southeast_asian_phnom_penh_p 200 ok           out 1804 reasoning 1484 model deepseek-v4.1-flash fingerprint None
+deepseek-v4.1-flash      plain                  portuguese_sonoticiaboa_fafa 200 bad_json     out 4096 reasoning 4096 model deepseek-v4.1-flash fingerprint None
+deepseek-v4.1-flash      plain                  hungarian_origo_bbad2c1cb2bc 200 bad_json     out 4096 reasoning 4096 model deepseek-v4.1-flash fingerprint None
+deepseek-v4.1-flash      plain                  pubmed_268841b91e99          200 ok           out 791 reasoning 567 model deepseek-v4.1-flash fingerprint None
+mistral-medium-3.5       plain                  british_irish_bbc_northern_i 422 None         out None reasoning None model None fingerprint None
+mistral-medium-3.5       plain                  southeast_asian_phnom_penh_p 422 None         out None reasoning None model None fingerprint None
+mistral-medium-3.5       plain                  portuguese_sonoticiaboa_fafa 422 None         out None reasoning None model None fingerprint None
+mistral-medium-3.5       plain                  hungarian_origo_bbad2c1cb2bc 422 None         out None reasoning None model None fingerprint None
+mistral-medium-3.5       plain                  pubmed_268841b91e99          422 None         out None reasoning None model None fingerprint None
+deepseek-v4.1-flash      reasoning_effort=none  british_irish_bbc_northern_i 200 ok           out 327 reasoning 0 model deepseek-v4.1-flash fingerprint None
+deepseek-v4.1-flash      reasoning_effort=low   british_irish_bbc_northern_i 200 ok           out 1596 reasoning 1296 model deepseek-v4.1-flash fingerprint None
+deepseek-v4.1-flash      enable_thinking=false  british_irish_bbc_northern_i 200 ok           out 2250 reasoning 1944 model deepseek-v4.1-flash fingerprint None
+deepseek-v4.1-flash      thinking=disabled      british_irish_bbc_northern_i 200 ok           out 2088 reasoning 1779 model deepseek-v4.1-flash fingerprint None
+deepseek-v4.1-flash      reasoning_effort=none  british_irish_bbc_northern_i 200 ok           out 333 reasoning 0 model deepseek-v4.1-flash fingerprint None
+deepseek-v4.1-flash      reasoning_effort=none  southeast_asian_phnom_penh_p 200 ok           out 397 reasoning 0 model deepseek-v4.1-flash fingerprint None
+deepseek-v4.1-flash      reasoning_effort=none  portuguese_sonoticiaboa_fafa 200 ok           out 397 reasoning 0 model deepseek-v4.1-flash fingerprint None
+deepseek-v4.1-flash      reasoning_effort=none  hungarian_origo_bbad2c1cb2bc 200 ok           out 297 reasoning 0 model deepseek-v4.1-flash fingerprint None
+deepseek-v4.1-flash      reasoning_effort=none  pubmed_268841b91e99          200 ok           out 222 reasoning 0 model deepseek-v4.1-flash fingerprint None
+mistral-medium-3.5-128b  plain                  british_irish_bbc_northern_i 200 missing_dims out 2 reasoning None model mistral-medium-3.5-128b fingerprint None
+mistral-medium-3.5-128b  plain                  southeast_asian_phnom_penh_p 200 ok           out 479 reasoning 0 model mistral-medium-3.5-128b fingerprint None
+mistral-medium-3.5-128b  plain                  portuguese_sonoticiaboa_fafa 200 ok           out 354 reasoning None model mistral-medium-3.5-128b fingerprint None
+mistral-medium-3.5-128b  plain                  hungarian_origo_bbad2c1cb2bc 200 ok           out 615 reasoning None model mistral-medium-3.5-128b fingerprint None
+mistral-medium-3.5-128b  plain                  pubmed_268841b91e99          200 ok           out 2708 reasoning None model mistral-medium-3.5-128b fingerprint None
+probe usage {'in': 234769, 'out': 24837, 'cached': 10880, 'reasoning': 16929} calls 24
+
+== 100-item set (human_thriving canary set, baseline = DeepSeek API B1-B6 mean, op 4.5)
+scw_ds_none_R1.jsonl: n 100  flips 4  shift +0.0212  median|d| 0.13  max|d| 1.17  pass>=4.5: model 32 / baseline 30  served ['deepseek-v4.1-flash']
+   calls 102  errors {'HTTP 429': 2}  usage {'in': 1212380, 'out': 29367, 'cached': 1013824, 'reasoning': 0}
+   as a k=1 canary: PASS (bar flips > 5 + 1 or |shift| > 0.0693 + 0.15)
+scw_mistral_R1.jsonl: n 84  flips 21  shift +0.5061  median|d| 0.80  max|d| 4.68  pass>=4.5: model 38 / baseline 23  served ['mistral-medium-3.5-128b']
+   calls 172  errors {'missing dims': 80, 'HTTP 429': 5, 'bad json': 3}  usage {'in': 2082213, 'out': 55399, 'cached': 0, 'reasoning': 14569}
