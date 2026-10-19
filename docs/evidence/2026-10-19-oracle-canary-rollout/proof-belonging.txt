@@ -1,0 +1,18 @@
+### 1. batch_scorer (Gemini) labelling run after the L1 PASS -> admitted, stamped
+INFO: SUCCESS | positive_news_good_news_magazine_2fe4b0f089cf | attempts=1 | time=2.39s | repaired=False
+INFO: Success rate: 100.0%
+     SUCCESS
+SAVED 1 scored articles to scored_batch_001.jsonl
+DONE - No more unscored articles found
+exit 0
+stamp on the label: {'verdict': 'PASS', 'record': '27dc059101549111_20261019T071844Z.json', 'flips': 2, 'shift': -0.0179, 'age_h': 0.0}
+
+### 2. a second labelling run on the same PASS -> refused
+REFUSED by the oracle canary (#177): the latest PASS was already used by a labelling run (2026-10-19T07:19:02Z) for belonging prompt 99ea1765a7ea….
+  Run:      python scripts/oracle/canary.py run --filter belonging
+  Override: --skip-canary "<reason>" (stamped on every label)
+
+### 3. the DeepSeek scorer with belonging's prompt -> refused (another oracle)
+REFUSED by the oracle canary (#177): prompt 27dc05910154… is guarded for oracle 'batch_scorer|gemini-flash', and this run uses 'https://api.deepseek.com/v1/chat/completions|deepseek-chat' — no canary covers it.
+  Override: --skip-canary "<reason>" (stamped on every label)
+ls: cannot access '/tmp/claude-1000/-home-jeroen-repos-veen-systems-llm-distillery/733a6458-f3ba-4c29-aa67-06dc4ceb5596/scratchpad/proof_belonging/run3.jsonl': No such file or directory
