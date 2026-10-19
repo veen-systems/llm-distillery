@@ -1,0 +1,717 @@
+{
+ "filter": "belonging",
+ "set_sha256": "a44d8f07d2ee97baf01487fb3722a43397c8382d00a025ae7176b56b6fd74bf8",
+ "n": 100,
+ "exclusion": {
+  "cosine": 0.93,
+  "reference_rows": 8657,
+  "dropped": {
+   "id": 0,
+   "url": 0,
+   "cos_ref": 0,
+   "cos_self": 0
+  }
+ },
+ "items": [
+  {
+   "id": "positive_news_good_news_magazine_2fe4b0f089cf",
+   "stratum": "hi",
+   "student_raw": 5.766953253746033,
+   "student_version": "3.0",
+   "item_sha256": "b8d17cbb9e19f3db3b68f8933f9e1b89858874454dcf37632bf1a670138391df"
+  },
+  {
+   "id": "central_asian_open_kg_ee662af41f58",
+   "stratum": "hi",
+   "student_raw": 4.6088580846786495,
+   "student_version": "3.0",
+   "item_sha256": "3482e66c863d28d00e5230efa56ce4f3a01b5c57a84262135e7933ffe53b2430"
+  },
+  {
+   "id": "south_asian_express_tribune_5b1ec380afce",
+   "stratum": "hi",
+   "student_raw": 5.263439083099366,
+   "student_version": "3.0",
+   "item_sha256": "747a2fb0aa35f9a1fa4a4d013c37ab90f83d1e640325e037cdcd7e4ddc5d72b4"
+  },
+  {
+   "id": "austrian_kurier_5e29c5f643b6",
+   "stratum": "hi",
+   "student_raw": 5.229426002502441,
+   "student_version": "3.0",
+   "item_sha256": "cddf9220218eae48ee83181357696952dd409fb6da2a470a1fb5e5c982d45a62"
+  },
+  {
+   "id": "belgian_het_nieuwsblad_fa81f76cf382",
+   "stratum": "hi",
+   "student_raw": 5.413549017906189,
+   "student_version": "3.0",
+   "item_sha256": "9e38b350c7a943e727e394acd75180d08e72dde00fcea95cb18e74b0db0286b4"
+  },
+  {
+   "id": "italian_italiachecambia_338e35d7bda7",
+   "stratum": "hi",
+   "student_raw": 5.885290288925171,
+   "student_version": "3.0",
+   "item_sha256": "ce325505f3314e40d101270c8f27b7f3723019d75b6c5122abbccc0ef8ad962c"
+  },
+  {
+   "id": "new_zealand_rnz_6da82029c3d2",
+   "stratum": "hi",
+   "student_raw": 5.542832827568054,
+   "student_version": "3.0",
+   "item_sha256": "681d96956f443207bac8c78cebda3dcb4601642cb36aadc2e632ee10d9988161"
+  },
+  {
+   "id": "canadian_globe_mail_5353d0325d18",
+   "stratum": "hi",
+   "student_raw": 5.059178733825684,
+   "student_version": "3.0",
+   "item_sha256": "c11025ac6261b3e44a6130ad192c2d5f357ddd88f4506787905b7c8c4d0acbf7"
+  },
+  {
+   "id": "british_irish_bbc_northern_ireland_66cf28725bbb",
+   "stratum": "hi",
+   "student_raw": 5.446043705940246,
+   "student_version": "3.0",
+   "item_sha256": "a59dbff8e2668a0de8556bb936be5c65da2ea536cf09a6e6554a1e2526f8f490"
+  },
+  {
+   "id": "south_american_prensa_libre_1d9b784089c1",
+   "stratum": "hi",
+   "student_raw": 5.709557747840881,
+   "student_version": "3.0",
+   "item_sha256": "70e128d84d4a7463507c6e64139ef70a265dd7760723f7daa50253a5a05e731f"
+  },
+  {
+   "id": "australian_abc_au_447541ca7a4d",
+   "stratum": "hi",
+   "student_raw": 4.560490822792053,
+   "student_version": "3.0",
+   "item_sha256": "dd8e13a2478caa243a32c93d6360ab434e6431c3074a21f87bd8dec08dc5bead"
+  },
+  {
+   "id": "dutch_news_nieuwe_oogst_837043504fb1",
+   "stratum": "hi",
+   "student_raw": 5.607228302955628,
+   "student_version": "3.0",
+   "item_sha256": "e5dd86f4293659eaadd9b79e5cbfda5bbdcd3aa0aaa8837045a2a6c83ccb84cf"
+  },
+  {
+   "id": "balkan_delo_2cc6bc46ba8b",
+   "stratum": "hi",
+   "student_raw": 5.244180202484131,
+   "student_version": "3.0",
+   "item_sha256": "4b0d0427d2a3a8e85baf2614fbc3ab8fcc82f2036487a90a12b973e9a3c7c77f"
+  },
+  {
+   "id": "arabic_alquds_ar_594b5ce8f49e",
+   "stratum": "hi",
+   "student_raw": 5.395871949195862,
+   "student_version": "3.0",
+   "item_sha256": "8118c4b09495dc9a60aac908ff634877eec7a1b936f632a90bb931d27a96a25b"
+  },
+  {
+   "id": "south_asian_indian_express_14abd50f46b1",
+   "stratum": "hi",
+   "student_raw": 5.008865022659302,
+   "student_version": "3.0",
+   "item_sha256": "dbef1e0086a11ee05a918027ad7978eb39c69aecde2dfb2fed4a94bc945b3141"
+  },
+  {
+   "id": "north_african_sudan_horizon_3eb66f4448d2",
+   "stratum": "hi",
+   "student_raw": 4.8895204067230225,
+   "student_version": "3.0",
+   "item_sha256": "2ae79719a3df88ccba84f66bf17b59bc0711dffb57ae015d8c4cb056ccf727cd"
+  },
+  {
+   "id": "canadian_globe_mail_6a7c0c16bac6",
+   "stratum": "hi",
+   "student_raw": 5.428253626823425,
+   "student_version": "3.0",
+   "item_sha256": "1165aefa86a05b32e6c08ad4e37bd99ad10c81fe9b596f8ebe1de05eef4bedc3"
+  },
+  {
+   "id": "greek_protothema_37b653be14c4",
+   "stratum": "hi",
+   "student_raw": 5.353883576393128,
+   "student_version": "3.0",
+   "item_sha256": "3e3b7f198038287e71efad54aff01be8446709ff64bb948634506d01e02ec0ec"
+  },
+  {
+   "id": "pubmed_2d96d1da4952",
+   "stratum": "hi",
+   "student_raw": 4.109345960617065,
+   "student_version": "3.0",
+   "item_sha256": "d9c2f995643e301242226b8f7626212b8617bbe0d8aea03c16c9ec54cb1ecf1c"
+  },
+  {
+   "id": "british_irish_bbc_scotland_814c09d15dcd",
+   "stratum": "hi",
+   "student_raw": 4.018041110038757,
+   "student_version": "3.0",
+   "item_sha256": "1ac8cdd200f2095eae5631f7089e7303a1ffc3aec76ab01fd80c0be1eb629c79"
+  },
+  {
+   "id": "pan_african_allAfrica_environment_e0135f2f2611",
+   "stratum": "hi",
+   "student_raw": 4.30869152545929,
+   "student_version": "3.0",
+   "item_sha256": "a3fd982491a0f4485807071070e576e7f8b942499f004325755f41a082668326"
+  },
+  {
+   "id": "central_asian_open_kg_64864a87faf1",
+   "stratum": "hi",
+   "student_raw": 5.448264312744141,
+   "student_version": "3.0",
+   "item_sha256": "be2ce55baeb8c6b454289c71933f52df3b15c5f9b63da28e74005304165d9070"
+  },
+  {
+   "id": "austrian_kleine_zeitung_2fbebd28fe2a",
+   "stratum": "hi",
+   "student_raw": 5.13749840259552,
+   "student_version": "3.0",
+   "item_sha256": "1be03bc2fceafd133e80ad8cb2dd85ff67e5de6ab0f689e712c5e23c1accfdaf"
+  },
+  {
+   "id": "austrian_kleine_zeitung_348600e4f59a",
+   "stratum": "hi",
+   "student_raw": 5.702557778358459,
+   "student_version": "3.0",
+   "item_sha256": "85252b8af0b66e155e289ed71314b88a4e2d09013ebc9cfa1fb40183b34e74db"
+  },
+  {
+   "id": "energy_utilities_canarymedia_16097c48a705",
+   "stratum": "hi",
+   "student_raw": 4.825115656852722,
+   "student_version": "3.0",
+   "item_sha256": "a2469cfb32a5e5dbb6919ca41fb81e57bd2df56da76e1d31d3a27d00452059c3"
+  },
+  {
+   "id": "west_african_modern_ghana_66ccf9aabbbd",
+   "stratum": "hi",
+   "student_raw": 4.215159749984741,
+   "student_version": "3.0",
+   "item_sha256": "5db718af9da3f6f2dde01aa475cd7fc830f38d4c21c3ec7713bbc875ceb7c4b8"
+  },
+  {
+   "id": "british_irish_bbc_england_5378bf704aa6",
+   "stratum": "hi",
+   "student_raw": 5.002472972869873,
+   "student_version": "3.0",
+   "item_sha256": "54e435ebdc825109f4cb0f8d9271847597ee5da3cb2b34be3b6d1d4a55baa249"
+  },
+  {
+   "id": "belonging_daily_yonder_b848173104c6",
+   "stratum": "hi",
+   "student_raw": 5.019760799407959,
+   "student_version": "3.0",
+   "item_sha256": "500f40daa79663c67d4aaa8cf638613fb8d4fce969c268ef998b5bc77b1a59bb"
+  },
+  {
+   "id": "greek_to_vima_aa6554b6bf9e",
+   "stratum": "hi",
+   "student_raw": 6.1269241094589235,
+   "student_version": "3.0",
+   "item_sha256": "bd9d0fe8a8612d28ed953181c50766a7c8a2798ebbe988c0f2d61b3a3502d625"
+  },
+  {
+   "id": "austrian_kleine_zeitung_513e2cc27884",
+   "stratum": "hi",
+   "student_raw": 4.260771465301514,
+   "student_version": "3.0",
+   "item_sha256": "8fa6e9bc0686587e63172b14b283604832581ce63716b2d5df7359bdad9f7be2"
+  },
+  {
+   "id": "japanese_asahi_shimbun_jp_9d2fca7fa51d",
+   "stratum": "near",
+   "student_raw": 2.7093124389648438,
+   "student_version": "3.0",
+   "item_sha256": "ad30d183d0d95b6ee5ef413c1ecbf6267101780cb42417699089a13c2d364253"
+  },
+  {
+   "id": "british_irish_bbc_england_ace0cbb32f14",
+   "stratum": "near",
+   "student_raw": 3.0090248227119445,
+   "student_version": "3.0",
+   "item_sha256": "2fede55c98d9f8feae055f500da7b128c774791cc389e9cd0645ffb657856cae"
+  },
+  {
+   "id": "portuguese_rtp_noticias_08e8516780ad",
+   "stratum": "near",
+   "student_raw": 2.811836153268814,
+   "student_version": "3.0",
+   "item_sha256": "c18f28c5e0f3f80aa8284740d11f268eaf483ed1f3f3cb89d74e4d6e25cc81e2"
+  },
+  {
+   "id": "australian_abc_au_ae0b06548bf8",
+   "stratum": "near",
+   "student_raw": 3.1322917461395265,
+   "student_version": "3.0",
+   "item_sha256": "1fbf07d2afcaba42a4eed01f6b22ce1eac0e0e79c7339a91a8ce306810dbe884"
+  },
+  {
+   "id": "west_african_daily_intel_ed771d412418",
+   "stratum": "near",
+   "student_raw": 3.3133745193481445,
+   "student_version": "3.0",
+   "item_sha256": "643a4824a7c37210975ed0edab8096d271398589fbccc2eff655ef2d79d82d6c"
+  },
+  {
+   "id": "south_american_telesur_en_807384eb17a1",
+   "stratum": "near",
+   "student_raw": 2.937440025806427,
+   "student_version": "3.0",
+   "item_sha256": "40ffefdfa7da1b0b8eee0c2f65ae179f3aa7bbb513e0fdb00343840de7d5dd5d"
+  },
+  {
+   "id": "east_african_eye_radio_50cc2cbeb44e",
+   "stratum": "near",
+   "student_raw": 2.7105841636657715,
+   "student_version": "3.0",
+   "item_sha256": "084d9a2ee91e850c4ccfdb800bf8ea714f8b69f005d40d3bdcf08756318e365e"
+  },
+  {
+   "id": "korean_yonhap_kr_c26d05af0406",
+   "stratum": "near",
+   "student_raw": 3.4330570340156554,
+   "student_version": "3.0",
+   "item_sha256": "b339870f2c6e4c3463e6419421707afe845db0c37cfe0549685de29c36a671eb"
+  },
+  {
+   "id": "west_african_aip_cote_divoire_55dfe2fddb44",
+   "stratum": "near",
+   "student_raw": 3.9613006353378295,
+   "student_version": "3.0",
+   "item_sha256": "99ead394ce08fb66210c9a221dc4b0ae7c5ddae006da8ba0ec3172a63d448fcc"
+  },
+  {
+   "id": "balkan_mia_mk_b0864f2bb4f0",
+   "stratum": "near",
+   "student_raw": 3.762667417526245,
+   "student_version": "3.0",
+   "item_sha256": "f568682fcca119284089b3efda2e20a9f7f81a608f0e8eda9a9c527e698f2351"
+  },
+  {
+   "id": "west_african_africa_guinee_59cbe0f6718c",
+   "stratum": "near",
+   "student_raw": 3.558175456523895,
+   "student_version": "3.0",
+   "item_sha256": "6cd239f342ec895fec7c59ba6af0032519005968978f83b218fa927ec52ad53d"
+  },
+  {
+   "id": "pan_african_rfi_afrique_80add9af2687",
+   "stratum": "near",
+   "student_raw": 3.2625590324401856,
+   "student_version": "3.0",
+   "item_sha256": "b1320130b911a1549b3842022cd97f041a45cb8eedc6bccc82e1049ecf76631c"
+  },
+  {
+   "id": "french_france24_fr_c09988cb4a15",
+   "stratum": "near",
+   "student_raw": 3.422301375865936,
+   "student_version": "3.0",
+   "item_sha256": "753cd30122d4f590d6d3b639ca2febfb0d2717e2c8e0660e13f3e650dfa8b9f3"
+  },
+  {
+   "id": "professional_business_business_insider_49a2786f2011",
+   "stratum": "near",
+   "student_raw": 2.6643569707870483,
+   "student_version": "3.0",
+   "item_sha256": "a0f9b717b2c1ad11049ac384b62327ce3e359d95e89cc335cb24477bed41dd4a"
+  },
+  {
+   "id": "us_news_wbur_2069a10cb162",
+   "stratum": "near",
+   "student_raw": 2.9730926036834715,
+   "student_version": "3.0",
+   "item_sha256": "9771ecd9c16d29f8c2febebdc8ee7533dd256d96699d961b0bb82dadb91ecebe"
+  },
+  {
+   "id": "belonging_religion_news_cf2ab684ba3a",
+   "stratum": "near",
+   "student_raw": 3.7248677968978883,
+   "student_version": "3.0",
+   "item_sha256": "2a910546169c79394c39c7a1b51b64553a0be059fc9e073ed6a6ae5884944dd5"
+  },
+  {
+   "id": "portuguese_sonoticiaboa_7e32ab1c5e27",
+   "stratum": "near",
+   "student_raw": 2.521862518787384,
+   "student_version": "3.0",
+   "item_sha256": "bf74f16a5f81f66dc5f6ae4e2c5922507e0636df1de5db9ec6ceb8828b77f315"
+  },
+  {
+   "id": "east_african_daily_monitor_ug_de032390883a",
+   "stratum": "near",
+   "student_raw": 3.42,
+   "student_version": "3.0",
+   "item_sha256": "0145d05349fb5a017593260cdaf52cc836501df46ba7ad8d0cf21ad0173ca1da"
+  },
+  {
+   "id": "pan_african_tchadinfos_a4ce215cf736",
+   "stratum": "near",
+   "student_raw": 3.442580854892731,
+   "student_version": "3.0",
+   "item_sha256": "e8f6fbc372fad0b4be2aecc7eab878f83cab7df16e4b1f458d9025b2c04f446d"
+  },
+  {
+   "id": "positive_news_sunny_skyz_4f737f793085",
+   "stratum": "near",
+   "student_raw": 2.811499798297882,
+   "student_version": "3.0",
+   "item_sha256": "5d155069fca675bbed98eb3ded651f6f726aee7c95b54d9418e823b1c70755ca"
+  },
+  {
+   "id": "french_le_monde_6046f73dd715",
+   "stratum": "near",
+   "student_raw": 3.0089526057243345,
+   "student_version": "3.0",
+   "item_sha256": "56d36b87eb0f739e240df939d937f3a9c950fce3b08203fc301fad422cdde856"
+  },
+  {
+   "id": "korean_hankyung_1818eefecda9",
+   "stratum": "near",
+   "student_raw": 2.731499803066254,
+   "student_version": "3.0",
+   "item_sha256": "267c7df029d984c18870f50ba4bd870f44465c3128f891bbc35f921c4dcc7cd4"
+  },
+  {
+   "id": "south_american_el_comercio_ec_5d4190479d4f",
+   "stratum": "near",
+   "student_raw": 2.971597957611084,
+   "student_version": "3.0",
+   "item_sha256": "2e4029812a6a8b2d11b7675cc5d736605a188584888499c917a7c406206f41ca"
+  },
+  {
+   "id": "italian_rai_news_e065c179012d",
+   "stratum": "near",
+   "student_raw": 3.2248606026172637,
+   "student_version": "3.0",
+   "item_sha256": "edd89388e5912d17745b1f22ecd1d8c2357f65372b3ae782fc37cd4911229b6d"
+  },
+  {
+   "id": "austrian_krone_9ba47f603897",
+   "stratum": "near",
+   "student_raw": 3.2757270097732545,
+   "student_version": "3.0",
+   "item_sha256": "5435183bd7f70943e4641b6d80deb359182eda261483f2dd9a0fb9cf691998b6"
+  },
+  {
+   "id": "positive_news_good_good_good_0f4dd9e53d53",
+   "stratum": "near",
+   "student_raw": 2.794748032093048,
+   "student_version": "3.0",
+   "item_sha256": "07c5254626e1665042105fdaf2b51c8ebbb940efe113ee697500bd256b8dfa99"
+  },
+  {
+   "id": "austrian_krone_04665ec8dde7",
+   "stratum": "near",
+   "student_raw": 3.9392749547958372,
+   "student_version": "3.0",
+   "item_sha256": "1987e17a31b36bf978445f69f0b89f55ca4781da9fde9671ae0c9be0bc067176"
+  },
+  {
+   "id": "portuguese_rtp_noticias_2cc231f2ff35",
+   "stratum": "near",
+   "student_raw": 2.9691885113716125,
+   "student_version": "3.0",
+   "item_sha256": "18b052fb49a490139e96f5121240cc4dcbd884edeb6baac650a531b793f279c9"
+  },
+  {
+   "id": "southeast_asian_straits_times_asia_7c75d20855e4",
+   "stratum": "near",
+   "student_raw": 2.9688096404075623,
+   "student_version": "3.0",
+   "item_sha256": "37d5ac94d0047bce9797ea6268a4be5f648730fe7568f41f5d4b55ba51840522"
+  },
+  {
+   "id": "czech_ihned_29e917a4f35f",
+   "stratum": "near",
+   "student_raw": 3.787661075592041,
+   "student_version": "3.0",
+   "item_sha256": "d8fea71692d597619d1e69d7716ff84b147e333ae4b2201d608edd385cbf2eb9"
+  },
+  {
+   "id": "dutch_news_rtl_nieuws_8952f71df458",
+   "stratum": "lo",
+   "student_raw": 0.9003178089857101,
+   "student_version": "3.0",
+   "item_sha256": "01856583c7492ce0258911342e0e006b46df57533cb35c9d1eb780808c496036"
+  },
+  {
+   "id": "luxembourg_tageblatt_main_87adedcb9520",
+   "stratum": "lo",
+   "student_raw": 1.1598844319581985,
+   "student_version": "3.0",
+   "item_sha256": "f57e7983150f5cd527ff30eb6da826a709be21487b203eea3185242bbc543839"
+  },
+  {
+   "id": "swedish_svt_nyheter_0463674c5ad5",
+   "stratum": "lo",
+   "student_raw": 1.018664613366127,
+   "student_version": "3.0",
+   "item_sha256": "5f7b118d2bb9d741a8c835e34f7040f2c474d84788271c2fe40e217418647cc2"
+  },
+  {
+   "id": "us_news_cbs_news_b69456bcf7d9",
+   "stratum": "lo",
+   "student_raw": 1.26814044713974,
+   "student_version": "3.0",
+   "item_sha256": "3e0c62eef1375c4072112576bb1ed5175de26944a8f387e00d27c9d7096ecf83"
+  },
+  {
+   "id": "north_african_african_manager_4ac84cd4c61c",
+   "stratum": "lo",
+   "student_raw": 1.4358909249305725,
+   "student_version": "3.0",
+   "item_sha256": "f486160d7b8abdd2c5735ff232181fbf35ae272557e7f9f0a4cfcba4c1a4bb23"
+  },
+  {
+   "id": "west_african_mosaique_guinee_abba5d844b1d",
+   "stratum": "lo",
+   "student_raw": 1.6989197552204132,
+   "student_version": "3.0",
+   "item_sha256": "ca5ffb78b4bbb02dd88e24085c75564cc92c6a02683dfe58a6f8ecbafa79163d"
+  },
+  {
+   "id": "baltic_lrt_3ff2f43eb32f",
+   "stratum": "lo",
+   "student_raw": 0.8185831129550933,
+   "student_version": "3.0",
+   "item_sha256": "2874a1d6c678867725ea689a9acb37332fd48f2d3ee7e06f26bdd2b83118ff12"
+  },
+  {
+   "id": "belgian_dh_les_sports_789c6356dd38",
+   "stratum": "lo",
+   "student_raw": 1.1558200895786286,
+   "student_version": "3.0",
+   "item_sha256": "52a1dbc28decec0cbb4d95367e6ea40a1b4ef56d8f103b76261b73156dcef4f3"
+  },
+  {
+   "id": "dutch_news_rtl_nieuws_ed450ed751c2",
+   "stratum": "lo",
+   "student_raw": 1.0353161573410035,
+   "student_version": "3.0",
+   "item_sha256": "d136dadcde278e8c3a1c71c092cbb9dbbec6e9e80bf90a7b2723df5bbc9953b5"
+  },
+  {
+   "id": "arabic_gulf_times_a0ad91d0c7b6",
+   "stratum": "lo",
+   "student_raw": 1.0719813853502274,
+   "student_version": "3.0",
+   "item_sha256": "5e51849e1e4a9906b53582e220b1eb25a721eb7a00af3f724b6cd27647d723c5"
+  },
+  {
+   "id": "west_african_myjoyonline_94c3580520ee",
+   "stratum": "lo",
+   "student_raw": 0.9213687866926193,
+   "student_version": "3.0",
+   "item_sha256": "c97b012fb15238cf3779c79d7be6a4a93c9fa9b0769d98df4579a02ef2e41106"
+  },
+  {
+   "id": "spanish_20minutos_es_f4f126287b2c",
+   "stratum": "lo",
+   "student_raw": 1.1195086121559144,
+   "student_version": "3.0",
+   "item_sha256": "03ea36ab8bdb6a024f236727db4c86b1aac98c11b01b1d23d4e87675b580a57a"
+  },
+  {
+   "id": "german_faz_wissen_1a6d7ee737a2",
+   "stratum": "lo",
+   "student_raw": 0.8600418388843536,
+   "student_version": "3.0",
+   "item_sha256": "6c5e7fecded7a66ff03e30dd20a521f4e65deb2da2e155d7ab7e0fdb3bb7ca4c"
+  },
+  {
+   "id": "east_african_observer_ug_ceee6adc82e9",
+   "stratum": "lo",
+   "student_raw": 1.2019658088684082,
+   "student_version": "3.0",
+   "item_sha256": "0aa2092b5e8d95c18d918d1b0a3cdebb596622856cf60fd844f70941b4fe31c8"
+  },
+  {
+   "id": "mexican_el_financiero_ddac9ccb5289",
+   "stratum": "lo",
+   "student_raw": 0.9365984410047531,
+   "student_version": "3.0",
+   "item_sha256": "9b61d2408f2565a033d0e8eb6f1582c5d8552f75d0fbc9735bff27ab25ccba15"
+  },
+  {
+   "id": "luxembourg_lequotidien_799a338636cb",
+   "stratum": "lo",
+   "student_raw": 0.7267060518264771,
+   "student_version": "3.0",
+   "item_sha256": "33d8fd220ab51ffb869250c3688c40dc2f9f19fabd78b4b227719af66bdb908d"
+  },
+  {
+   "id": "german_spiegel_kultur_c1c3cc29ff33",
+   "stratum": "lo",
+   "student_raw": 1.6363803803920747,
+   "student_version": "3.0",
+   "item_sha256": "babe062a244165b610f522c8fe1a685521adf095b5c2f419e0b76e84edda32a3"
+  },
+  {
+   "id": "canadian_globe_mail_97725fff9ffd",
+   "stratum": "lo",
+   "student_raw": 0.5844261392951011,
+   "student_version": "3.0",
+   "item_sha256": "67846b8ddb2e4bf2c8fe96fd7649b7d635b5a8c136d90deb487005c085e8c7d2"
+  },
+  {
+   "id": "fintech_markets_insurance_journal_2cdfa2bb05e4",
+   "stratum": "lo",
+   "student_raw": 0.6189990907907486,
+   "student_version": "3.0",
+   "item_sha256": "de57564dbf6cc224f6f0ef30de4da8d682764256357af4702f1caff14af8aa39"
+  },
+  {
+   "id": "southeast_asian_straits_times_business_753689291966",
+   "stratum": "lo",
+   "student_raw": 0.7574626296758652,
+   "student_version": "3.0",
+   "item_sha256": "81fab73de9343c9875196d3171d4323c4ea6bdee7803486d018f138d86b002f1"
+  },
+  {
+   "id": "german_die_welt_ee6406c3d75e",
+   "stratum": "lo",
+   "student_raw": 1.1202616453170777,
+   "student_version": "3.0",
+   "item_sha256": "134de42eef238cc4e8062c06fa0c6ef045476a5aafb84d8f21cbc6efe7368c05"
+  },
+  {
+   "id": "west_african_senego_f63f41543bcf",
+   "stratum": "lo",
+   "student_raw": 0.9392784297466278,
+   "student_version": "3.0",
+   "item_sha256": "2ccfc46b0c948b2380d30d4f2476732c61d2023ebd365d59d6bff3412e8725e9"
+  },
+  {
+   "id": "austrian_krone_a20172a00021",
+   "stratum": "lo",
+   "student_raw": 0.9977283328771591,
+   "student_version": "3.0",
+   "item_sha256": "3af5906e5310e15b6f4e695280d59bc620741dbb8c21c85a4f42bc62393e32b0"
+  },
+  {
+   "id": "pubmed_38907e4aaa90",
+   "stratum": "lo",
+   "student_raw": 0.8296249330043792,
+   "student_version": "3.0",
+   "item_sha256": "26644eb451f60486deac24cc80dc8057e309c37317c64b57be98cca657a204eb"
+  },
+  {
+   "id": "south_asian_indian_express_4b4996ad5ed5",
+   "stratum": "lo",
+   "student_raw": 1.2020204842090607,
+   "student_version": "3.0",
+   "item_sha256": "488345d7145ca6eb09b2e3e6fb28199c12e2817d5a0b8f8890d9f116e3740db0"
+  },
+  {
+   "id": "us_news_fox_news_dd942a863b07",
+   "stratum": "lo",
+   "student_raw": 1.0763533413410187,
+   "student_version": "3.0",
+   "item_sha256": "324de9db71037ba70c28dac2b757fc6966e8a1416fe6cd2025f308bab7c332f8"
+  },
+  {
+   "id": "british_irish_independent_uk_63f92b6c0688",
+   "stratum": "lo",
+   "student_raw": 1.1204715311527251,
+   "student_version": "3.0",
+   "item_sha256": "ab1a0710ab3b5f581ed0330775ca405f3012ace6b573412b89be3807b683a9c8"
+  },
+  {
+   "id": "automotive_electrive_264c0d0b6978",
+   "stratum": "lo",
+   "student_raw": 0.7804040282964706,
+   "student_version": "3.0",
+   "item_sha256": "17fcecb4c685f8bb58a831935a6eb0983ad671f7b90f5ca9678a86981cd008d1"
+  },
+  {
+   "id": "greek_to_vima_5c4476b4f8c0",
+   "stratum": "lo",
+   "student_raw": 1.0813787877559662,
+   "student_version": "3.0",
+   "item_sha256": "9771481943e4ed845375940ae2b305f82b445e681697db7252ff5838ef384bd0"
+  },
+  {
+   "id": "australian_abc_au_1527240baec5",
+   "stratum": "lo",
+   "student_raw": 1.0574404716491699,
+   "student_version": "3.0",
+   "item_sha256": "d3f30d620bb40e81b432142bc19225b4b7261e62463207de280ab0291e63255f"
+  },
+  {
+   "id": "arabic_middleeastmonitor_0ded722ef9d1",
+   "stratum": "lo",
+   "student_raw": 1.0672100722789764,
+   "student_version": "3.0",
+   "item_sha256": "bd167da2e65463f93dcd5b1fa25cd7754014493890aeb562a83a23d623d46b29"
+  },
+  {
+   "id": "biotech_pharma_bioengineer_7e3a7d5529ce",
+   "stratum": "lo",
+   "student_raw": 0.7189772635698318,
+   "student_version": "3.0",
+   "item_sha256": "2c875353ab45fc23d01a447e1ce17e2a2249f569c9f1ab6d999bc8f3dab3694a"
+  },
+  {
+   "id": "south_american_brasil_de_fato_bf90cbf4eb77",
+   "stratum": "lo",
+   "student_raw": 1.6519532680511475,
+   "student_version": "3.0",
+   "item_sha256": "f3d7b963a788167c8a90b868a325b38182b6ef38b0aa1deacde4042a3e16e6aa"
+  },
+  {
+   "id": "spanish_20minutos_es_c681ba56bae4",
+   "stratum": "lo",
+   "student_raw": 0.9328716546297073,
+   "student_version": "3.0",
+   "item_sha256": "7be9f9789a9adf4dfe7363f279ed937086c984fba677b4b3cd82c10a3b4fabd1"
+  },
+  {
+   "id": "czech_idnes_5e911161fc74",
+   "stratum": "lo",
+   "student_raw": 0.8524630784988403,
+   "student_version": "3.0",
+   "item_sha256": "7ef0f19956d7c2dbc8e8be4eaacacfc15472e16e9791c1c7c70eb2f90ba5c824"
+  },
+  {
+   "id": "south_american_guyana_chronicle_522ebe955bd9",
+   "stratum": "lo",
+   "student_raw": 0.9237040013074875,
+   "student_version": "3.0",
+   "item_sha256": "4fd73376b5a4728a344fa4f59de4a42752487b2422531c66f6089f2e7b4b0e6c"
+  },
+  {
+   "id": "icelandic_ruv_15a4eadcbef5",
+   "stratum": "lo",
+   "student_raw": 0.9036256909370423,
+   "student_version": "3.0",
+   "item_sha256": "d5ef8d0c3d6e9d18140391095d6c9d99be3ff0ec7e565bae6cc5a6c3cb64de82"
+  },
+  {
+   "id": "science_mdpi_sensors_0b8a79e7885d",
+   "stratum": "lo",
+   "student_raw": 0.6094968274235725,
+   "student_version": "3.0",
+   "item_sha256": "6c945bb51591949db6b289d7630422140a77730ea42d986ab860226904e5d12f"
+  },
+  {
+   "id": "south_asian_newswire_lk_091f26910b32",
+   "stratum": "lo",
+   "student_raw": 1.4006188631057739,
+   "student_version": "3.0",
+   "item_sha256": "547a216b348ec4437325e2995638b4bb2e74b92ffacf20a9e33e5f8d110f2b53"
+  },
+  {
+   "id": "australian_the_saturday_paper_7f959f627112",
+   "stratum": "lo",
+   "student_raw": 1.3516109347343443,
+   "student_version": "3.0",
+   "item_sha256": "de68661cedbf3fe7cee0080e0aab120ff5886c4128bdd09ad2f4b558f2b3c78a"
+  }
+ ]
+}
