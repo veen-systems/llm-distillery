@@ -29,6 +29,9 @@ import torch
 import yaml
 from transformers import AutoTokenizer
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from training.split_validator import SplitInvalid, summary_line, validate_file  # noqa: E402
+
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
 
@@ -452,6 +455,17 @@ def main():
     logger.info(f"Filter: {filter_name} v{filter_version}")
     logger.info(f"Dimensions: {dimension_names}")
 
+    # #179: the shared validator, before the scorer loads. A dimension-order mismatch used to WARN and then
+    # adopt the file's order while the model head emits config order; it now refuses. Val and test ids must
+    # not overlap.
+    seen = set()
+    try:
+        for p in [val_path] + ([args.test_data.resolve()] if args.test_data else []):
+            logger.info(f"{p.name}: {summary_line(validate_file(p, dimension_names, seen_ids=seen))}")
+    except SplitInvalid as e:
+        print(f"ERROR: {e}", file=sys.stderr)
+        sys.exit(1)
+
     # Load scorer
     logger.info("Loading scorer...")
     scorer = load_scorer(filter_dir)
@@ -459,19 +473,6 @@ def main():
     # Load validation data
     val_articles = load_data(val_path)
     logger.info(f"Loaded {len(val_articles)} validation articles")
-
-    # Verify dimension alignment
-    sample = val_articles[0]
-    if "dimension_names" in sample:
-        data_dims = sample["dimension_names"]
-        if data_dims != dimension_names:
-            logger.warning(
-                f"Dimension order mismatch!\n"
-                f"  Config: {dimension_names}\n"
-                f"  Data:   {data_dims}\n"
-                f"Using data dimension order."
-            )
-            dimension_names = data_dims
 
     # Run inference to collect raw scores
     logger.info("Running inference on validation set...")

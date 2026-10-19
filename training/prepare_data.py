@@ -34,6 +34,7 @@ import yaml
 # without this it died on this import (found 2026-10-12).
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from ground_truth import analysis_field_name
+from training.split_validator import SplitInvalid, provenance_of, summary_line, validate_rows
 
 
 def load_filter_config(filter_dir: Path) -> Dict[str, Any]:
@@ -482,6 +483,8 @@ def convert_to_training_format(
             # non-dimensional output without knowing the analysis field name.
             'oracle_meta': analysis,
         })
+        # #179: per-row provenance, normalised; a legacy row says "unknown" explicitly, never nothing.
+        record['provenance'] = provenance_of(record)
         training_data.append(record)
 
     if skipped:
@@ -735,6 +738,17 @@ Examples:
               f"field(s): {sample or 'none'}. Is --filter the package the labels were written "
               f"under? Nothing was written.", file=sys.stderr)
         sys.exit(1)
+
+    # #179: the shared validator, BEFORE anything is written. Ids are unique across the three splits.
+    seen = set()
+    try:
+        results = [validate_rows(rows, dimension_names, where=f"{part} split", seen_ids=seen)
+                   for part, rows in (("train", train_data), ("val", val_data), ("test", test_data)) if rows]
+    except SplitInvalid as e:
+        print(f"\nFATAL: {e}. Nothing was written.", file=sys.stderr)
+        sys.exit(1)
+    for r in results:
+        print(summary_line(r))
 
     # Print statistics
     print_statistics(labels, train_set, val_set, test_set, analysis_field, tier_boundaries, dimension_names)

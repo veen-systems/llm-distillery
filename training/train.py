@@ -30,6 +30,7 @@ from peft import LoraConfig, get_peft_model, TaskType
 # Import Gemma-3 compatible model loader
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from filters.common.model_loading import load_base_model_for_seq_cls
+from training.split_validator import summary_line, validate_split_dir
 
 
 def set_seed(seed: int):
@@ -926,6 +927,11 @@ def main():
     )
     print(f"Needle metrics at MEDIUM+ threshold: {medium_threshold} "
           f"(source: {medium_threshold_source})")
+
+    # #179: every row of every split against THIS filter's dimensions (order included), before any tensor.
+    # FilterDataset reads dimension_names off the first row only, and never compares it to the config.
+    for part, r in validate_split_dir(args.data_dir, dimension_names).items():
+        print(f"{part}: {summary_line(r)}")
 
     train_dataset = FilterDataset(
         args.data_dir / "train.jsonl",

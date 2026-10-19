@@ -81,6 +81,9 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from training.split_validator import validate_rows  # noqa: E402
+
 # --- nature_recovery v4 defaults (kept so the unit tests + prior runs are
 #     unchanged when no scoring spec is supplied via --config) ---
 MEDIUM = 4.0
@@ -227,15 +230,20 @@ def spearman(xs, ys):
 
 
 def load_labels(path, spec=None):
+    rows = [json.loads(line) for line in open(path, encoding="utf-8") if line.strip()]
+    dims = (spec or {}).get("dims", DIMS)
+    for r in rows:                      # a held-out file without dimension_names is in the spec's order
+        r.setdefault("dimension_names", list(dims))
+    # #179: the shared validator. A duplicate id used to overwrite silently and nothing checked 0-10. Order
+    # is not compared (label_wa maps by name, so a reordered file is fine here); the dimension SET is.
+    validate_rows(rows, where=str(path))
+    if set(rows[0]["dimension_names"]) != set(dims):
+        raise ValueError(f"{path}: dimensions {rows[0]['dimension_names']} are not this filter's {list(dims)}")
     out = {}
-    for line in open(path, encoding="utf-8"):
-        line = line.strip()
-        if line:
-            r = json.loads(line)
-            # Use the record's own dimension order if present (robust to any
-            # config/label ordering drift); else the spec's dims.
-            names = r.get("dimension_names")
-            out[r["id"]] = label_wa(r["labels"], spec=spec, dim_names=names)
+    for r in rows:
+        # Use the record's own dimension order if present (robust to any
+        # config/label ordering drift); else the spec's dims.
+        out[r["id"]] = label_wa(r["labels"], spec=spec, dim_names=r["dimension_names"])
     return out
 
 

@@ -15,8 +15,12 @@ providers (DONE 10-19: deepseek/gemini gated before any call, own oracle key so 
 a guarded prompt needs `--skip-canary` there; ollama ungated; 5 tests, 5/5 mutants killed) → ✅ human_thriving v9 mixed-prompt note in its package docs (DONE 10-19: `filters/human_thriving/v9/README.md`
 § Label provenance; 1,067 labels differ from any oracle output, 350 unexplained; THREE rules differ, not one) → ✅ Krippendorff's alpha/AC1 in
 shared analysis code + fix `filters/cultural_discovery/v5/STATUS.md:37` (DONE 10-19: `ground_truth/agreement.py`,
-reproduces Krippendorff 2011's published values; cd v5 line + `calibration_report.md` corrected: per-item verdicts lost) → the reader validator (strict for all; missing
-provenance raises for new rows only, legacy = explicit `unknown`) and splits that keep provenance.
+reproduces Krippendorff 2011's published values; cd v5 line + `calibration_report.md` corrected: per-item verdicts lost) → ✅ the reader validator (strict for all; missing
+provenance raises for new rows only, legacy = explicit `unknown`) and splits that keep provenance (DONE 10-19:
+`training/split_validator.py`, run by prepare_data/train/fit_calibration/the gate; all 16 local + 36/37 lab splits pass —
+the one failure is a retired `uplifting_v6` copy with no `dimension_names`; 12/12 mutants killed). ⚠️ "New" is by
+`analyzed_at` ≥ 2026-10-20: a new row with NO date is treated as legacy — every live writer stamps it except
+`score_ollama_oracle.py` (record-root stamps, no timestamp), which prepare_data does not read as an analysis block.
 **(3)** #177 cross-family panel; review leftovers (the one-use PASS claim is read-check-write; a labelling run does not
 compare its served model to the PASS's); #178 datasheets. Cleanup: b650 `~/llm-distillery/runs/canary_177b` (149 MB)
 after the 2026-10-20 12:00 snapshot (re-hash, then rm; b650 rule). Item 0a stays dated ≥ 10-22, item 0 ≥ 10-23/24.*
