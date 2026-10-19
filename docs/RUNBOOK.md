@@ -253,17 +253,22 @@ against the prediction; condition on `stage_used` before reading `raw_weighted_a
 
 ## Oracle Scoring
 
-⛔ **A GUARDED PROMPT NEEDS A FRESH CANARY PASS FIRST (#177, live 2026-10-16).** human_thriving's prompt
-(`c4705408c477…`) is refused by both scorers unless the latest record in `datasets/canary/human_thriving/passes/` is
-an UNUSED PASS < 6 h old for the same oracle. One PASS admits ONE labelling run:
+⛔ **A GUARDED PROMPT NEEDS A FRESH CANARY PASS FIRST (#177, live 2026-10-16).** A prompt is guarded when a
+`config/canary/<filter>.baseline.json` names it — list them with `ls config/canary/*.baseline.json`, never from
+memory (human_thriving 2026-10-16 on DeepSeek; **belonging 2026-10-19 on Gemini via `batch_scorer`**, so its
+harvest runs need this too). Both scorers refuse a guarded prompt unless the latest record in
+`datasets/canary/<filter>/passes/` is an UNUSED PASS < 6 h old for the SAME oracle (a belonging PASS admits only
+`batch_scorer --llm gemini-flash`). One PASS admits ONE labelling run:
 
 ```bash
-python scripts/oracle/canary.py run --filter human_thriving   # ~$0.03 off-peak; exit 0 PASS, 1 FAIL
+python scripts/oracle/canary.py run --filter <filter>   # human_thriving ~$0.03 off-peak; belonging ~100 Gemini calls
 ```
 
 FAIL or NO-VERDICT = the oracle moved: investigate, do not re-run until it passes. `--skip-canary "<reason>"`
-overrides and is stamped on every label. Every other prompt labels with a `canary: no-set` banner. Design, bar and
-evidence: `docs/proposals/oracle-canary-177.md`, `docs/evidence/2026-10-16-oracle-canary/`.
+overrides and is stamped on every label. Every other prompt labels with a `canary: no-set` banner. Pass records
+are gitignored and live on situla only: a labelling run on another machine finds none and is refused. Design, bar
+and evidence: `docs/proposals/oracle-canary-177.md`, `docs/evidence/2026-10-16-oracle-canary/`,
+`docs/evidence/2026-10-19-oracle-canary-rollout/`.
 
 ⛔ **`--llm` DEFAULTS TO `claude`, AND THERE ARE TWO ORACLE PATHS, NOT ONE.** Corrected
 2026-08-29: this section documented neither fact for months.
