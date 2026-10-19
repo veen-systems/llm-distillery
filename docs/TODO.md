@@ -5,11 +5,12 @@
 *▶ **NEXT SESSION (set 2026-10-16 close; `/curate` done): (1) item 2, the read surface (#163): round 8 done 2026-10-18
 (469,090, 9,296 headroom); H-CTX-3 revisit DONE 10-18 (supported, weakly); (2) #177: canaries LIVE for five prompts 2026-10-19 (EXP-053; uplifting v7 out of scope;
 solutions' and belonging's power is thin, README); next the cross-family panel. Open from review 10-19:
-`scripts/score_ollama_oracle.py --provider deepseek|gemini` labels with NO gate; the one-use claim is read-check-write
+`scripts/score_ollama_oracle.py --provider deepseek|gemini` labels with NO gate (owner 10-19: GATE IT, cloud providers only); the one-use claim is read-check-write
 (two simultaneous runs can share a PASS); a labelling run does not compare its served model to the PASS's.
 Cleanup: b650 `~/llm-distillery/runs/canary_177b` (149 MB) may go after the 2026-10-20 12:00 snapshot (its seeded-control
 files were pulled after 10-19's); sadalsuud `~/canary_177b` deleted 2026-10-19 (owner's go; re-hashed against the lab copy, held by snapshot `6324912d`). Scaleway EU trial EXP-054 (parked, descriptive). #179 label
-audit DONE read-only 10-19 (fixes await the owner's rulings, issue comment); #178 datasheets. Item 0a stays dated ≥ 10-22.** 10-16 landed: #157,
+audit DONE read-only 10-19; owner RULED 10-19 (issue comment): (a) reader validator, strict for all, provenance strict for new rows only;
+(b) alpha/AC1 in shared code + fix cd v5 STATUS:37, old READMEs stay dated; (c) document human_thriving v9's mixed prompts, splits keep provenance, no relabel; #178 datasheets. Item 0a stays dated ≥ 10-22.** 10-16 landed: #157,
 #176 (EXP-051), #177 canary LIVE (EXP-052), lab → `~/lab/llm-distillery`, b650 rule + 3.0 GB cleanup.*
 
 *A bare "continue" means this list, top down. Each line names the FIRST action. Item 0 is WAITING (dated, ≥ 10-23/24);
