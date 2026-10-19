@@ -10,8 +10,9 @@ in the standing topic files: `working-rules` 26.0K, `stamp-contract-integrity` 2
 move dated/closed narrative VERBATIM to its `archive/` twin (comm-lossless + 1-line mutant), keep each operative rule;
 any rule restated in 2+ files → one home + pointer; any rule a check now enforces → its Mechanized row, prose to archive.
 Target ≥ 30K; then ratchet the ceiling to the measured size + 2%.
-**(2) #179 fixes, RULED 10-19 (issue comment 6267155020), in this order:** gate `scripts/score_ollama_oracle.py` for cloud
-providers (seeded refusal test) → human_thriving v9 mixed-prompt note in its package docs → Krippendorff's alpha/AC1 in
+**(2) #179 fixes, RULED 10-19 (issue comment 6267155020), in this order:** ✅ gate `scripts/score_ollama_oracle.py` for cloud
+providers (DONE 10-19: deepseek/gemini gated before any call, own oracle key so another scorer's PASS never admits it —
+a guarded prompt needs `--skip-canary` there; ollama ungated; 5 tests, 5/5 mutants killed) → human_thriving v9 mixed-prompt note in its package docs → Krippendorff's alpha/AC1 in
 shared analysis code + fix `filters/cultural_discovery/v5/STATUS.md:37` → the reader validator (strict for all; missing
 provenance raises for new rows only, legacy = explicit `unknown`) and splits that keep provenance.
 **(3)** #177 cross-family panel; review leftovers (the one-use PASS claim is read-check-write; a labelling run does not

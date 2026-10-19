@@ -424,3 +424,70 @@ def test_each_committed_baseline_matches_its_package(path):
 
 def test_the_baseline_census_is_not_empty():
     assert len(BASELINES) >= 5
+
+
+def _ollama_scorer(dirs, tmp_path, monkeypatch, provider, extra=()):
+    """score_ollama_oracle.py on a GUARDED prompt; returns (module, paid-call list, output path)."""
+    import hashlib
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("score_ollama_oracle_canary_t",
+                                                  ROOT / "scripts" / "score_ollama_oracle.py")
+    m = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(m)
+    prompt = tmp_path / "p.md"
+    prompt.write_text("Score this. [Paste the summary of the article here]\n")
+    _baseline(dirs[0], hashlib.sha256(prompt.read_text().encode()).hexdigest())
+    calls = []
+    for name in ("call_deepseek", "call_gemini", "call_ollama"):
+        monkeypatch.setattr(m, name, lambda *a, **k: calls.append(1) or {"error": "x"})
+    monkeypatch.setattr(m, "get_api_key", lambda *a, **k: "sk-test")
+    monkeypatch.setattr(m.requests, "get", lambda *a, **k: type("R", (), {"json": lambda self: {
+        "models": [{"name": "qwen3:14b", "digest": "d" * 64}]}})())
+    inp = tmp_path / "in.jsonl"
+    inp.write_text(json.dumps({"id": "r", "title": "t", "content": "word " * 100}) + "\n")
+    out = tmp_path / "o"
+    model = {"deepseek": "deepseek-chat", "gemini": "gemini-2.5-flash", "ollama": "qwen3:14b"}[provider]
+    monkeypatch.setattr(sys, "argv", ["x", "--provider", provider, "--model", model, "--prompt", str(prompt),
+                                      "--input", str(inp), "--output-dir", str(out), "--concurrency", "1",
+                                      *extra])
+    return m, calls, out / "results.jsonl"
+
+
+@pytest.mark.parametrize("provider", ["deepseek", "gemini"])
+def test_the_ollama_script_refuses_a_PAID_provider_BEFORE_its_first_call(dirs, tmp_path, monkeypatch, provider):
+    """#179 ruling 2026-10-19: score_ollama_oracle.py was the one ungated paid labelling path."""
+    m, calls, out = _ollama_scorer(dirs, tmp_path, monkeypatch, provider)
+    with pytest.raises(oc.CanaryRefused):
+        m.main()
+    assert calls == [] and not out.exists()
+
+
+def test_the_ollama_script_is_not_admitted_by_ANOTHER_scorers_fresh_PASS(dirs, tmp_path, monkeypatch):
+    """A PASS earned through score_deepseek_production.py's request shape covers that scorer only."""
+    import hashlib
+    m, calls, out = _ollama_scorer(dirs, tmp_path, monkeypatch, "deepseek")
+    sha = hashlib.sha256((tmp_path / "p.md").read_text().encode()).hexdigest()
+    oc.write_record("f", sha, {"verdict": "PASS", "flips": 0, "shift": 0.0}, set(), now=time.time() - 3600)
+    with pytest.raises(oc.CanaryRefused, match="no canary covers it"):   # the oracle check, not "no record"
+        m.main()
+    assert calls == []
+
+
+def _ok_parse(m, monkeypatch):
+    row = {d: 5 for d in m.DEFAULT_DIMENSIONS}
+    row.update(content_type="news", scope_verdict="in", dominant_subject="s", served_model="srv",
+               system_fingerprint="fp", _prompt_eval_count=1, _eval_count=1, _total_duration_s=0.1)
+    monkeypatch.setattr(m, "parse_response", lambda *a, **k: dict(row))
+
+
+def test_the_ollama_script_leaves_LOCAL_ollama_ungated_and_stamps_a_skip(dirs, tmp_path, monkeypatch):
+    m, calls, out = _ollama_scorer(dirs, tmp_path, monkeypatch, "ollama")
+    _ok_parse(m, monkeypatch)
+    m.main()                                   # guarded prompt, no record: local ollama is not gated
+    assert calls == [1]
+    assert "canary" not in json.loads(out.read_text().splitlines()[0])
+    m, calls, out = _ollama_scorer(dirs, tmp_path, monkeypatch, "deepseek", ("--skip-canary", "test"))
+    _ok_parse(m, monkeypatch)
+    m.main()
+    assert calls == [1]
+    assert json.loads(out.read_text().splitlines()[0])["canary"] == {"skipped": "test"}

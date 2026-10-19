@@ -47,6 +47,7 @@ from pathlib import Path
 import requests
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from ground_truth import oracle_canary
 from ground_truth.oracle_provenance import (
     ABSENT, MissingServedModel, require_served, ollama_tag_digest, prompt_sha256,
     served_ollama, served_openai_compat,
@@ -442,6 +443,9 @@ def main():
     parser.add_argument("--runs", type=int, default=1,
                         help="Score the set k times (default 1). ⚠️ oracle run-to-run noise is "
                              "0.82 mean / 2.25 max — a single run is NOT a measurement")
+    parser.add_argument("--skip-canary", metavar="REASON",
+                        help="deepseek/gemini only: run without a fresh oracle-canary PASS (#177); "
+                             "REASON is stamped on every label")
     args = parser.parse_args()
 
     if args.runs < 1:
@@ -502,6 +506,14 @@ def main():
         print("       Every article would be scored on the bare template with no article text,")
         print("       and the run would look successful. Refusing to start.")
         sys.exit(1)
+    # #177: paid providers are gated before any oracle call or output write; local ollama is not (owner,
+    # 2026-10-19). The key names THIS scorer, so a PASS earned through score_deepseek_production.py or
+    # batch_scorer (other request shapes) never admits it: a guarded prompt needs --skip-canary here.
+    canary_stamp = None
+    if args.provider != "ollama":
+        canary_stamp = oracle_canary.gate(
+            prompt_digest, args.skip_canary,
+            oracle=oracle_canary.oracle_key(f"score_ollama_oracle:{args.provider}", args.model))
 
     articles = load_articles(input_path)
     if not articles:
@@ -611,6 +623,7 @@ def main():
                             "served_model": parsed["served_model"],
                             "system_fingerprint": parsed["system_fingerprint"],
                             "model_digest": model_digest,
+                            **({"canary": canary_stamp} if canary_stamp is not None else {}),
                             "_prompt_eval_count": parsed["_prompt_eval_count"],
                             "_eval_count": parsed["_eval_count"],
                             "_total_duration_s": round(parsed["_total_duration_s"], 2),
