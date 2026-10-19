@@ -1,17 +1,22 @@
 # LLM Distillery - TODO
 
-## ▶️ START HERE — the ordered queue, as of 2026-10-15
+## ▶️ START HERE — the ordered queue, as of 2026-10-19
 
-*▶ **NEXT SESSION (set 2026-10-16 close; `/curate` done): (1) item 2, the read surface (#163): round 8 done 2026-10-18
-(469,090, 9,296 headroom); H-CTX-3 revisit DONE 10-18 (supported, weakly); (2) #177: canaries LIVE for five prompts 2026-10-19 (EXP-053; uplifting v7 out of scope;
-solutions' and belonging's power is thin, README); next the cross-family panel. Open from review 10-19:
-`scripts/score_ollama_oracle.py --provider deepseek|gemini` labels with NO gate (owner 10-19: GATE IT, cloud providers only); the one-use claim is read-check-write
-(two simultaneous runs can share a PASS); a labelling run does not compare its served model to the PASS's.
-Cleanup: b650 `~/llm-distillery/runs/canary_177b` (149 MB) may go after the 2026-10-20 12:00 snapshot (its seeded-control
-files were pulled after 10-19's); sadalsuud `~/canary_177b` deleted 2026-10-19 (owner's go; re-hashed against the lab copy, held by snapshot `6324912d`). Scaleway EU trial EXP-054 (parked, descriptive). #179 label
-audit DONE read-only 10-19; owner RULED 10-19 (issue comment): (a) reader validator, strict for all, provenance strict for new rows only;
-(b) alpha/AC1 in shared code + fix cd v5 STATUS:37, old READMEs stay dated; (c) document human_thriving v9's mixed prompts, splits keep provenance, no relabel; #178 datasheets. Item 0a stays dated ≥ 10-22.** 10-16 landed: #157,
-#176 (EXP-051), #177 canary LIVE (EXP-052), lab → `~/lab/llm-distillery`, b650 rule + 3.0 GB cleanup.*
+*▶ **NEXT SESSION (set 2026-10-19 close; `/curate` done, all pushed). "continue" = these, in order:**
+**(1) #163 round 10, THINNING (owner 10-19: "start pruning, thinning, mechanizing, retiring").** Date-retirement is
+exhausted (nothing in the gotcha log or sessions predates 10-01; ledger rows left are open or carry ⚠️). The surface lives
+in the standing topic files: `working-rules` 26.0K, `stamp-contract-integrity` 25.5K, `score-batch-shape-noise` 25.4K,
+`nexusmind-data-sources` 24.2K, `oracle-pricing-scheduling` 24.0K, `calibration-history` 22.1K (`wc -m`, 10-19). Per file:
+move dated/closed narrative VERBATIM to its `archive/` twin (comm-lossless + 1-line mutant), keep each operative rule;
+any rule restated in 2+ files → one home + pointer; any rule a check now enforces → its Mechanized row, prose to archive.
+Target ≥ 30K; then ratchet the ceiling to the measured size + 2%.
+**(2) #179 fixes, RULED 10-19 (issue comment 6267155020), in this order:** gate `scripts/score_ollama_oracle.py` for cloud
+providers (seeded refusal test) → human_thriving v9 mixed-prompt note in its package docs → Krippendorff's alpha/AC1 in
+shared analysis code + fix `filters/cultural_discovery/v5/STATUS.md:37` → the reader validator (strict for all; missing
+provenance raises for new rows only, legacy = explicit `unknown`) and splits that keep provenance.
+**(3)** #177 cross-family panel; review leftovers (the one-use PASS claim is read-check-write; a labelling run does not
+compare its served model to the PASS's); #178 datasheets. Cleanup: b650 `~/llm-distillery/runs/canary_177b` (149 MB)
+after the 2026-10-20 12:00 snapshot (re-hash, then rm; b650 rule). Item 0a stays dated ≥ 10-22, item 0 ≥ 10-23/24.*
 
 *A bare "continue" means this list, top down. Each line names the FIRST action. Item 0 is WAITING (dated, ≥ 10-23/24);
 item 0a's next action is dated ≥ 10-22 (the on-site count on live ranking H). Item 0b (#157, label provenance) LANDED
@@ -84,6 +89,9 @@ Item 2 (#163, the read surface): keep pruning (owner 2026-10-14 and 10-15: "prun
    NexusMind's session runs it; ours is to tell them. LD#52 and LD#86 are closed.
 
 2. **THE READ SURFACE (#163). "prune, thin, mechanize, retire".** Rounds 1–3 landed 2026-10-12: 758,893 → 514,588 chars (519,680 at close, after the session's new records).
+   ✅ **Round 9 (2026-10-19): 474,995 → 472,012** (headroom 3,391 → 6,374; ceiling unchanged — +2% would raise it).
+   Verbatim: 10 Mechanized rows (`live`, 0 occurrences, 09-17..09-26) → gotcha archive § *Mechanized rows moved
+   2026-10-19*, pointer left in the table. Ledger: nothing movable (H-JO1/BV6/BB4/BB7/ND1 still carry ⚠️ or rulings).
    ✅ **Round 8 (2026-10-18): 475,230 → 469,090** (headroom 3,156 → 9,296; ceiling unchanged, already ~+2%). Verbatim,
    tool-checked: `retire_memory.py gotcha --before 2026-10-16` (4 entries, 45,043 → 41,987) and `sessions --before
    2026-10-16` (the 10-15 session file; index link rewritten). Ledger rows judged NOT movable yet: H-BB4/H-BB7 carry

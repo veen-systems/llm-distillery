@@ -15,6 +15,8 @@ oracle trial" (infra's Scaleway credit; models: my recommendation) → "Use b650
 | #179 label audit, read-only, posted on the issue | closed; fixes await owner rulings |
 | review battery (4 lenses + round 2) and its fixes (`4a92805`) | closed |
 | #177 cross-family panel; #178 datasheets | open (not started) |
+| owner rulings at close: #179 fixes (validator, alpha, provenance), gate `score_ollama_oracle.py`; registry in-place exception | closed: recorded (#179 comment, TODO, `experiments/README.md`); nothing implemented |
+| #163 round 9: 10 Mechanized rows → archive (474,995 → 472,012) | closed; round 10 (thinning the standing files) is next session's (1) |
 | review leftovers: `score_ollama_oracle.py` ungated; one-use race; served model unchecked at labelling | open, in TODO |
 | host cleanup: b650 `runs/canary_177b` after the 10-20 12:00 snapshot; sadalsuud `~/canary_177b` | b650 open; sadalsuud deleted (owner's go, re-hashed first) |
 | push | closed: owner confirmed, pushed |
