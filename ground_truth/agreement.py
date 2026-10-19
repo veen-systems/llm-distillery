@@ -57,6 +57,8 @@ def krippendorff_alpha(units, level="nominal"):
     Units with fewer than two values are not pairable and drop out, as the method prescribes."""
     if level not in LEVELS:
         raise ValueError(f"level must be one of {LEVELS}, not {level!r}")
+    units = [list(u) for u in units]
+    _check_values([v for u in units for v in u if v is not None])
     o = defaultdict(float)                         # coincidence matrix o[(c, k)]
     for unit in units:
         vals = [v for v in unit if v is not None]
@@ -112,3 +114,12 @@ def _check_pairs(a, b):
         raise ValueError("no items")
     if any(v is None for v in a) or any(v is None for v in b):
         raise ValueError("a missing rating: use krippendorff_alpha, which handles missing values")
+    _check_values(list(a) + list(b))
+
+
+def _check_values(vals):
+    """NaN never equals itself and True == 1, so either would be counted silently as agreement or not (review 10-19)."""
+    if any(isinstance(v, bool) for v in vals):
+        raise ValueError("a bool rating: use explicit categories, True == 1 in Python")
+    if any(isinstance(v, float) and v != v for v in vals):
+        raise ValueError("a NaN rating: drop it or pass None to krippendorff_alpha")

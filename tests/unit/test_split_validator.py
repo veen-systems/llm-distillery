@@ -45,7 +45,7 @@ class TestRefuses:
 
     @pytest.mark.parametrize("rid", [None, ""])
     def test_a_row_with_no_id(self, rid):
-        with pytest.raises(sv.SplitInvalid, match="no id"):
+        with pytest.raises(sv.SplitInvalid, match="no usable id"):
             sv.validate_rows([_row(rid)], DIMS)
 
     def test_dimensions_in_ANOTHER_ORDER_than_the_filter(self):
@@ -59,6 +59,14 @@ class TestRefuses:
     def test_a_label_count_that_differs_from_the_dimensions(self):
         with pytest.raises(sv.SplitInvalid, match="1 labels for 2"):
             sv.validate_rows([_row(labels=(1.0,))], DIMS)
+
+    @pytest.mark.parametrize("row", [["not", "a", "row"], {"id": [1], "labels": [1, 2], "dimension_names": DIMS},
+                                     {"id": True, "labels": [1, 2], "dimension_names": DIMS},
+                                     {"id": "x", "labels": [10 ** 400, 1], "dimension_names": DIMS},
+                                     {"id": "x", "labels": [1, 2], "dimension_names": "ab"}])
+    def test_MALFORMED_input_raises_SplitInvalid_not_a_crash(self, row):
+        with pytest.raises(sv.SplitInvalid):
+            sv.validate_rows([row], DIMS)
 
     def test_an_empty_file(self):
         with pytest.raises(sv.SplitInvalid, match="no rows"):
@@ -89,8 +97,36 @@ class TestProvenance:
         with pytest.raises(sv.SplitInvalid, match="no served_model"):
             sv.validate_rows([_row(served_model="__absent__", prompt_sha256="ab" * 32, analyzed_at=NEW)], DIMS)
 
+    @pytest.mark.parametrize("when", ["2026-10-21 09:00:00", "2026-10-21", "2026-10-19T23:00:00-05:00",
+                                      1792573200, "1792573200", "1792573200.0"])
+    def test_a_NEW_date_in_ANY_format_is_new(self, when):
+        # each sorted BELOW the cutoff as a string (review 10-19); -05:00 at 23:00 is 04:00Z on the 20th
+        with pytest.raises(sv.SplitInvalid, match="no served_model"):
+            sv.validate_rows([_row(prompt_sha256="ab" * 32, analyzed_at=when)], DIMS)
+
+    @pytest.mark.parametrize("when", ["2026-10-19 23:59:59", "2026-10-19", "2026-10-20T01:00:00+02:00", 1760000000])
+    def test_an_OLD_date_in_any_format_stays_legacy(self, when):
+        sv.validate_rows([_row(prompt_hash="abc", analyzed_at=when)], DIMS)
+
+    def test_an_UNPARSEABLE_date_raises(self):
+        with pytest.raises(sv.SplitInvalid, match="is not a date"):
+            sv.validate_rows([_row(analyzed_at="last tuesday")], DIMS)
+
+    @pytest.mark.parametrize("blank", [" ", "unknown"])
+    def test_a_NEW_row_with_a_BLANK_or_unknown_stamp_is_refused(self, blank):
+        with pytest.raises(sv.SplitInvalid, match="no served_model"):
+            sv.validate_rows([_row(served_model=blank, prompt_sha256="ab" * 32, analyzed_at=NEW)], DIMS)
+        with pytest.raises(sv.SplitInvalid, match="no prompt digest"):
+            sv.validate_rows([_row(served_model="m", prompt_sha256=blank, analyzed_at=NEW)], DIMS)
+
     def test_a_complete_NEW_row_passes(self):
         sv.validate_rows([_row(served_model="deepseek-flash", prompt_sha256="ab" * 32, analyzed_at=NEW)], DIMS)
+
+    def test_a_provenance_dict_with_no_oracle_stamp_is_NOT_trusted(self):
+        row = _row(served_model="qwen3:14b", prompt_hash="abc")
+        row["provenance"] = {"source": "someone else's field"}
+        assert sv.provenance_of(row)["served_model"] == "qwen3:14b"
+        assert sv.provenance_of({"provenance": {"x": 1}}) == "unknown"
 
     def test_record_root_stamps_are_read_score_ollama_oracle_style(self):
         row = _row()
@@ -174,6 +210,10 @@ def _calls_before(path, func, first_name, before_name):
 
 def test_train_validates_every_split_before_building_a_dataset():
     _calls_before(REPO / "training" / "train.py", "main", "validate_split_dir", "FilterDataset")
+
+
+def test_train_probe_validates_before_embedding():
+    _calls_before(REPO / "scripts" / "train_probe.py", "main", "validate_split_dir", "generate_embeddings")
 
 
 def test_fit_calibration_validates_before_loading_the_scorer_and_no_longer_adopts_the_files_order():

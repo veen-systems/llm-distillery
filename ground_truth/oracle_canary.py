@@ -151,6 +151,7 @@ def latest_record(filter_name, prompt_sha256):
 def gate(prompt_sha256, skip_reason=None, now=None, oracle=None):
     """oracle: the run's oracle key, e.g. "https://api.deepseek.com/chat/completions|deepseek-chat"."""
     now = time.time() if now is None else now
+    skip_reason = (skip_reason or "").strip() or None      # a blank reason is no reason: enforce (review 10-19)
     if skip_reason:
         print(f"⚠️  CANARY SKIPPED: {skip_reason!r} — stamped on every label of this run")
         return {"skipped": skip_reason}

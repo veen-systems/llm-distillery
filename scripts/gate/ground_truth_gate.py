@@ -234,8 +234,9 @@ def load_labels(path, spec=None):
     dims = (spec or {}).get("dims", DIMS)
     for r in rows:                      # a held-out file without dimension_names is in the spec's order
         r.setdefault("dimension_names", list(dims))
-    # #179: the shared validator. A duplicate id used to overwrite silently and nothing checked 0-10. Order
-    # is not compared (label_wa maps by name, so a reordered file is fine here); the dimension SET is.
+    # #179: the shared validator. A duplicate id used to overwrite silently and nothing checked 0-10. The order
+    # is not compared to the spec's (label_wa maps by name); the dimension SET is. Rows must still agree with
+    # EACH OTHER on order -- a file mixing two orders raises (none committed does).
     validate_rows(rows, where=str(path))
     if set(rows[0]["dimension_names"]) != set(dims):
         raise ValueError(f"{path}: dimensions {rows[0]['dimension_names']} are not this filter's {list(dims)}")

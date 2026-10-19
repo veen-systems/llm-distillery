@@ -60,6 +60,15 @@ def test_undefined_statistics_RAISE_never_read_as_perfect():
         ag.gwet_ac1(["in", "x"], ["in", "out"], categories=["in", "out"])
 
 
+def test_NaN_and_bool_ratings_RAISE_rather_than_count():
+    with pytest.raises(ValueError, match="NaN"):
+        ag.krippendorff_alpha([(1.0, float("nan")), (2.0, 2.0)], "interval")
+    with pytest.raises(ValueError, match="bool"):
+        ag.cohen_kappa([1, 0, 1], [True, False, True])
+    with pytest.raises(ValueError, match="NaN"):
+        ag.raw_agreement([float("nan")], [float("nan")])
+
+
 def test_an_unused_category_enters_ac1s_chance_term():
     a, b = ["in", "out", "out", "out"], ["in", "out", "out", "in"]
     assert ag.gwet_ac1(a, b, categories=["in", "out", "unclear"]) != pytest.approx(ag.gwet_ac1(a, b))

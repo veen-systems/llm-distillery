@@ -58,7 +58,12 @@ import logging
 import pickle
 from pathlib import Path
 
+import sys
+
 import numpy as np
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from training.split_validator import validate_split_dir  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 logger = logging.getLogger(__name__)
@@ -481,6 +486,7 @@ def main():
     device = args.device or ("cuda" if torch.cuda.is_available() else "cpu")
     logger.info(f"Device: {device}  seed: {args.seed}")
 
+    validate_split_dir(args.data_dir, DIMENSION_NAMES, parts=("train", "val"))   # #179: raises before any embedding
     train_articles = load_data(args.data_dir / "train.jsonl")
     val_articles = load_data(args.data_dir / "val.jsonl")
     logger.info(f"Train: {len(train_articles)}, Val: {len(val_articles)}")

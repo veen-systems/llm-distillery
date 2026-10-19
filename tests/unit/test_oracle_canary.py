@@ -43,6 +43,12 @@ class TestGate:
         _baseline(dirs[0])
         assert oc.gate(SHA, "vendor outage") == {"skipped": "vendor outage"}
 
+    @pytest.mark.parametrize("blank", ["", " ", "\t"])
+    def test_a_BLANK_skip_reason_is_no_skip_the_gate_still_refuses(self, dirs, blank):
+        _baseline(dirs[0])
+        with pytest.raises(oc.CanaryRefused, match="no canary run on record"):
+            oc.gate(SHA, blank, oracle=ORACLE)
+
     def test_a_guarded_prompt_with_no_record_is_REFUSED(self, dirs):
         _baseline(dirs[0])
         with pytest.raises(oc.CanaryRefused, match="no canary run on record"):
@@ -480,7 +486,7 @@ def _ok_parse(m, monkeypatch):
     monkeypatch.setattr(m, "parse_response", lambda *a, **k: dict(row))
 
 
-def test_the_ollama_script_leaves_LOCAL_ollama_ungated_and_stamps_a_skip(dirs, tmp_path, monkeypatch):
+def test_the_ollama_script_leaves_LOCAL_ollama_ungated_and_unstamped(dirs, tmp_path, monkeypatch):
     m, calls, out = _ollama_scorer(dirs, tmp_path, monkeypatch, "ollama")
     _ok_parse(m, monkeypatch)
     m.main()                                   # guarded prompt, no record: local ollama is not gated

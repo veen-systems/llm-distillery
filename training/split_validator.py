@@ -18,6 +18,7 @@ explicit value, never an absent one. Every live split predates #155/#157 and is 
 """
 import json
 import math
+from datetime import datetime, timezone
 from pathlib import Path
 
 PROVENANCE_REQUIRED_FROM = "2026-10-20T00:00:00Z"
@@ -36,25 +37,42 @@ def provenance_of(row):
     already carries one, else the `oracle_meta` block (prepare_data's copy of the analysis block), else the
     row's top level (score_ollama_oracle.py writes its stamps at the record root)."""
     p = row.get("provenance")
-    if p == UNKNOWN or isinstance(p, dict):
-        return p
+    if p == UNKNOWN or (isinstance(p, dict) and _has_stamp(p)):
+        return p                # a dict with no oracle stamp is someone else's field: re-derive (review 10-19)
     for src in (row.get("oracle_meta"), row):
         if isinstance(src, dict):
             got = {k: src[k] for k in PROVENANCE_KEYS if src.get(k) not in (None, "")}
-            if any(k in got for k in ("prompt_sha256", "prompt_hash", "served_model")):
+            if _has_stamp(got):
                 return got
     return UNKNOWN
 
 
-def _is_new(prov):
-    return isinstance(prov, dict) and str(prov.get("analyzed_at", "")) >= PROVENANCE_REQUIRED_FROM
+def _has_stamp(d):
+    return any(d.get(k) not in (None, "") for k in ("prompt_sha256", "prompt_hash", "served_model"))
 
 
-def _date_of(row):
+def _date_of(row, at):
+    """The row's `analyzed_at` as a UTC datetime, or None when it has none. Parsed, never string-compared: an
+    epoch, a space separator, a date-only value or an offset each sorted below the cutoff as text (review 10-19).
+    An unparseable date RAISES -- it cannot be placed on either side of the cutoff."""
     for src in (row.get("oracle_meta"), row):
-        if isinstance(src, dict) and src.get("analyzed_at"):
-            return str(src["analyzed_at"])
-    return ""
+        if isinstance(src, dict) and src.get("analyzed_at") not in (None, ""):
+            v = src["analyzed_at"]
+            try:
+                if isinstance(v, (int, float)) and not isinstance(v, bool):
+                    return datetime.fromtimestamp(v, timezone.utc)
+                s = str(v).strip()
+                if s.replace(".", "", 1).isdigit():
+                    return datetime.fromtimestamp(float(s), timezone.utc)
+                d = datetime.fromisoformat(s.replace("Z", "+00:00"))
+                return d.replace(tzinfo=timezone.utc) if d.tzinfo is None else d.astimezone(timezone.utc)
+            except (ValueError, OverflowError, OSError) as e:
+                raise SplitInvalid(f"{at}: analyzed_at {v!r} is not a date ({e})") from None
+    return None
+
+
+def _missing(v):
+    return v is None or (isinstance(v, str) and v.strip() in ("", _ABSENT, UNKNOWN))
 
 
 def validate_rows(rows, dims=None, where="split", seen_ids=None):
@@ -65,17 +83,20 @@ def validate_rows(rows, dims=None, where="split", seen_ids=None):
     seen = set() if seen_ids is None else seen_ids
     want = list(dims) if dims is not None else None
     known = unknown = 0
+    cutoff = datetime.fromisoformat(PROVENANCE_REQUIRED_FROM.replace("Z", "+00:00"))
     for n, row in enumerate(rows, 1):
         at = f"{where} row {n}"
+        if not isinstance(row, dict):
+            raise SplitInvalid(f"{at}: not a JSON object")
         rid = row.get("id")
-        if rid in (None, ""):
-            raise SplitInvalid(f"{at}: no id")
+        if rid in (None, "") or isinstance(rid, bool) or not isinstance(rid, (str, int)):
+            raise SplitInvalid(f"{at}: no usable id ({rid!r})")
         if rid in seen:
             raise SplitInvalid(f"{at}: duplicate id {rid!r}")
         seen.add(rid)
         names = row.get("dimension_names")
-        if names is None:
-            raise SplitInvalid(f"{at}: no dimension_names")
+        if not isinstance(names, list):
+            raise SplitInvalid(f"{at}: dimension_names is {type(names).__name__}, not a list")
         if want is None:
             want = list(names)
         elif list(names) != want:
@@ -85,16 +106,16 @@ def validate_rows(rows, dims=None, where="split", seen_ids=None):
             raise SplitInvalid(f"{at}: {len(labels) if isinstance(labels, list) else 'no'} labels for "
                                f"{len(want)} dimensions")
         for d, v in zip(want, labels):
-            if isinstance(v, bool) or not isinstance(v, (int, float)) or not math.isfinite(v) or not 0 <= v <= 10:
+            if isinstance(v, bool) or not isinstance(v, (int, float)) or not 0 <= v <= 10 or not math.isfinite(v):
                 raise SplitInvalid(f"{at}: {d} = {v!r} is not a finite score in [0, 10]")
         prov = provenance_of(row)
-        date = _date_of(row)
-        if date >= PROVENANCE_REQUIRED_FROM:
+        date = _date_of(row, at)
+        if date is not None and date >= cutoff:
             p = prov if isinstance(prov, dict) else {}
-            if p.get("served_model") in (None, "", _ABSENT):
+            if _missing(p.get("served_model")):
                 raise SplitInvalid(f"{at}: labelled {date} with no served_model (required from "
                                    f"{PROVENANCE_REQUIRED_FROM}, #179)")
-            if not (p.get("prompt_sha256") or p.get("prompt_hash")):
+            if _missing(p.get("prompt_sha256")) and _missing(p.get("prompt_hash")):
                 raise SplitInvalid(f"{at}: labelled {date} with no prompt digest (required from "
                                    f"{PROVENANCE_REQUIRED_FROM}, #179)")
         if prov == UNKNOWN:
