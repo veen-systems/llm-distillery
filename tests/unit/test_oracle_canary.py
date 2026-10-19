@@ -104,10 +104,15 @@ class TestGate:
 class TestComparison:
     def test_flips_count_verdict_changes_at_the_op_point_only(self):
         base = {"a": 4.6, "b": 4.4, "c": 1.0}
-        assert oc.compare({"a": 4.4, "b": 4.6, "c": 3.0}, base)["flips"] == 2
+        assert oc.compare({"a": 4.4, "b": 4.6, "c": 3.0}, base, 4.5)["flips"] == 2
+
+    def test_flips_are_counted_at_THIS_filters_op_point(self):
+        """nature_recovery's op-point is 3.75: at a hard-coded 4.5 this pair would count 0 flips."""
+        assert oc.compare({"a": 3.7}, {"a": 3.8}, 3.75)["flips"] == 1
+        assert oc.compare({"a": 3.7}, {"a": 3.8}, 4.5)["flips"] == 0
 
     def test_shift_is_the_mean_signed_delta(self):
-        assert oc.compare({"a": 2.0, "b": 2.0}, {"a": 3.0, "b": 3.0})["shift"] == -1.0
+        assert oc.compare({"a": 2.0, "b": 2.0}, {"a": 3.0, "b": 3.0}, 4.5)["shift"] == -1.0
 
     def test_verdict_uses_the_preregistered_margins(self):
         bar = {"F": 3, "S": 0.10}
@@ -118,7 +123,7 @@ class TestComparison:
 
     def test_noise_k3_takes_each_split_of_six_once(self):
         runs = [{"a": float(i), "b": 4.5} for i in range(6)]
-        assert len(oc.noise(runs)["k3"]["each"]) == 10
+        assert len(oc.noise(runs, 4.5)["k3"]["each"]) == 10
 
     def test_a_missing_scoring_spec_RAISES_not_falls_back(self, tmp_path):
         bad = tmp_path / "c.yaml"; bad.write_text("filter: {name: x}\n")
@@ -198,7 +203,7 @@ def test_canary_run_resumes_a_parse_error_instead_of_refusing_forever(dirs, monk
     dims = ["human_wellbeing_impact", "social_cohesion_impact", "justice_rights_impact", "evidence_level",
             "benefit_distribution", "change_durability"]
     (cfg / "f.baseline.json").write_text(json.dumps({
-        "filter": "f", "prompt_sha256": SHA, "k_ship": 1, "items": {"a": 6.0, "b": 1.0},
+        "filter": "f", "prompt_sha256": SHA, "k_ship": 1, "items": {"a": 6.0, "b": 1.0}, "op": 4.5,
         "oracle": ORACLE, "served_model": "m",
         "config": str(ROOT / "filters/human_thriving/v9/config.yaml"), "prompt": "p.md",
         "noise": {"k1": {"F": 0, "S": 0.0}, "k3": {"F": 0, "S": 0.0}}}))
@@ -224,7 +229,7 @@ def test_canary_run_resumes_a_parse_error_instead_of_refusing_forever(dirs, monk
     assert oc.latest_record("f", SHA)["verdict"] == "PASS"
 
 
-def _run_cli(dirs, monkeypatch, rows_per_call, served="m"):
+def _run_cli(dirs, monkeypatch, rows_per_call, served="m", oracle=ORACLE, stripped=None):
     """Drive `canary.py run` with the scorer stubbed: rows_per_call[i] is what the i-th scorer call appends."""
     import hashlib
     import subprocess
@@ -236,13 +241,18 @@ def _run_cli(dirs, monkeypatch, rows_per_call, served="m"):
     (data / "f" / "set.jsonl").write_text(body)
     (cfg / "f.json").write_text(json.dumps({"set_sha256": hashlib.sha256(body.encode()).hexdigest()}))
     (cfg / "f.baseline.json").write_text(json.dumps({
-        "filter": "f", "prompt_sha256": SHA, "k_ship": 1, "items": {"a": 6.0, "b": 1.0}, "oracle": ORACLE,
-        "served_model": served, "config": "filters/human_thriving/v9/config.yaml", "prompt": "p.md",
+        "filter": "f", "prompt_sha256": SHA, "prompt_sha256_stripped": stripped, "k_ship": 1,
+        "items": {"a": 6.0, "b": 1.0}, "op": 4.5, "oracle": oracle, "served_model": served, "config": "filters/human_thriving/v9/config.yaml", "prompt": "p.md",
         "noise": {"k1": {"F": 0, "S": 0.0}, "k3": {"F": 0, "S": 0.0}}}))
     calls = []
 
     def fake_run(argv, **kw):
-        out = Path(argv[argv.index("--output") + 1])
+        if "--output-dir" in argv:      # batch_scorer: <dir>/<filter>/scored_batch_001.jsonl, appended per pass
+            d = Path(argv[argv.index("--output-dir") + 1]) / "human_thriving"
+            d.mkdir(parents=True, exist_ok=True)
+            out = d / "scored_batch_001.jsonl"
+        else:
+            out = Path(argv[argv.index("--output") + 1])
         rows = rows_per_call[min(len(calls), len(rows_per_call) - 1)]
         with open(out, "a") as f:
             f.writelines(json.dumps(r) + "\n" for r in rows)
@@ -259,9 +269,9 @@ DIMS = ["human_wellbeing_impact", "social_cohesion_impact", "justice_rights_impa
         "benefit_distribution", "change_durability"]
 
 
-def _row(i, score, served="m"):
+def _row(i, score, served="m", sha=SHA):
     return {"id": i, "human_thriving_analysis": dict({d: {"score": score} for d in DIMS},
-                                                     prompt_sha256=SHA, served_model=served)}
+                                                     prompt_sha256=sha, served_model=served)}
 
 
 def test_a_canary_served_by_ANOTHER_model_FAILS_even_with_zero_flips(dirs, monkeypatch):
@@ -283,3 +293,61 @@ def test_the_canary_requests_the_baselines_own_model_and_endpoint(dirs, monkeypa
     argv = calls[0]
     assert argv[argv.index("--model") + 1] == "deepseek-chat"
     assert argv[argv.index("--base-url") + 1] == "https://api.deepseek.com/v1/chat/completions"
+
+
+STRIPPED = "cd" * 32
+
+
+def test_a_batch_scorer_canary_drives_batch_scorer_and_accepts_its_STRIPPED_digest(dirs, monkeypatch):
+    """Gemini filters label through ground_truth.batch_scorer, which hashes the stripped template. A canary that
+    re-ran the DeepSeek scorer would measure a different oracle; one that demanded the raw digest would never PASS."""
+    code, calls = _run_cli(dirs, monkeypatch, [[_row("a", 6.0, sha=STRIPPED), _row("b", 1.0, sha=STRIPPED)]],
+                           oracle="batch_scorer|gemini-flash", stripped=STRIPPED)
+    argv = calls[0]
+    assert code == 0 and argv[1:3] == ["-m", "ground_truth.batch_scorer"]
+    assert argv[argv.index("--llm") + 1] == "gemini-flash" and "--skip-canary" in argv
+    assert oc.latest_record("f", SHA)["verdict"] == "PASS"
+
+
+def test_a_batch_scorer_canary_resumes_and_reads_every_pass(dirs, monkeypatch):
+    """batch_scorer appends per pass; the canary must see the first pass's rows AND the resumed one."""
+    code, calls = _run_cli(dirs, monkeypatch, [[_row("a", 6.0, sha=STRIPPED)], [_row("b", 1.0, sha=STRIPPED)]],
+                           oracle="batch_scorer|gemini-flash", stripped=STRIPPED)
+    assert code == 0 and len(calls) == 2
+
+
+def test_a_digest_that_is_neither_raw_nor_stripped_is_NO_VERDICT(dirs, monkeypatch):
+    code, _ = _run_cli(dirs, monkeypatch, [[_row("a", 6.0, sha="ef" * 32), _row("b", 1.0, sha="ef" * 32)]],
+                       oracle="batch_scorer|gemini-flash", stripped=STRIPPED)
+    assert "NO-VERDICT" in str(code) and oc.latest_record("f", SHA)["verdict"] == "NO-VERDICT"
+
+
+class TestBaselineOp:
+    def _cli(self):
+        sys.path.insert(0, str(ROOT / "scripts" / "oracle"))
+        import canary as cli
+        return cli
+
+    def test_the_op_point_must_match_the_packages_normalization(self):
+        cli = self._cli()
+        cfg = ROOT / "filters/nature_recovery/v4/config.yaml"
+        assert cli.checked_op(cfg, 3.75) == 3.75
+        with pytest.raises(SystemExit, match="raw_min"):
+            cli.checked_op(cfg, 4.5)          # the old hard-coded value, wrong for this filter
+
+    def test_cd_v5s_raw_min_is_within_tolerance_of_its_tier_threshold(self):
+        assert self._cli().checked_op(ROOT / "filters/cultural_discovery/v5/config.yaml", 4.0) == 4.0
+
+    def test_a_package_without_normalization_RAISES(self, tmp_path):
+        (tmp_path / "config.yaml").write_text("filter: {name: x}\n")
+        with pytest.raises(SystemExit, match="missing"):
+            self._cli().checked_op(tmp_path / "config.yaml", 4.5)
+
+    def test_a_baseline_without_op_cannot_be_evaluated(self, dirs, tmp_path):
+        """No silent default: a baseline missing `op` must raise, not compare at 4.5."""
+        (dirs[0] / "f.baseline.json").write_text(json.dumps({
+            "config": "filters/human_thriving/v9/config.yaml", "items": {"a": 1.0},
+            "noise": {"k1": {"F": 0, "S": 0.0}}}))
+        run = tmp_path / "r.jsonl"; run.write_text(json.dumps(_row("a", 1.0)) + "\n")
+        with pytest.raises(KeyError):
+            self._cli().evaluate("f", [run])

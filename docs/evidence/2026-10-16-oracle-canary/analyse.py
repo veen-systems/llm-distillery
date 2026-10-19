@@ -24,9 +24,9 @@ for r in b["runs"]:
         raise SystemExit(f"FATAL: {r['file']} in the lab is not the file the baseline was built from")
 spec, field = oc.spec_for(b["config"]), cli.field_of(b["config"])
 base = [oc.run_scores(RUNS / f"B{i}.jsonl", spec, field)[0] for i in range(1, 7)]
-nz = oc.noise(base)
+nz = oc.noise(base, b["op"])
 print(f"baseline: 6 runs, prompt {b['prompt_sha256'][:12]}, served {b['served_model']}, "
-      f"{sum(s >= oc.OP for s in b['items'].values())}/{len(b['items'])} items >= {oc.OP}, k_ship {b['k_ship']}")
+      f"{sum(s >= b['op'] for s in b['items'].values())}/{len(b['items'])} items >= {b['op']}, k_ship {b['k_ship']}")
 for k in ("k1", "k3"):
     print(f"noise {k}: F={nz[k]['F']} S={nz[k]['S']:.4f}  (each: "
           + ", ".join(f"{c['flips']}/{c['shift']:+.3f}" for c in nz[k]["each"]) + ")")

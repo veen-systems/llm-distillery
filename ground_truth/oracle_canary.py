@@ -30,7 +30,8 @@ ROOT = Path(__file__).resolve().parents[1]
 CONFIG_DIR = ROOT / "config" / "canary"
 DATA_DIR = ROOT / "datasets" / "canary"
 FRESH_HOURS = 6          # backstop only: a PASS is single-use (consumed by the run it admits) AND at most this old
-OP = 4.5
+# No default op-point: each filter's lives in its baseline (`op`, cross-checked against the package's
+# normalization.json raw_min when the baseline is written). A hard-coded 4.5 was right for human_thriving only.
 FLIP_MARGIN, SHIFT_MARGIN = 1, 0.15   # fixed in the pre-registration
 
 
@@ -83,7 +84,7 @@ def mean_scores(runs):
     return {i: statistics.fmean(r[i] for r in runs) for i in ids}
 
 
-def compare(canary, baseline, op=OP):
+def compare(canary, baseline, op):
     """flips = verdict changes at the op-point; shift = mean signed delta. Over the items both carry."""
     ids = sorted(set(canary) & set(baseline))
     if not ids:
@@ -93,7 +94,7 @@ def compare(canary, baseline, op=OP):
     return {"n": len(ids), "flips": flips, "shift": round(shift, 4)}
 
 
-def noise(base_runs, op=OP):
+def noise(base_runs, op):
     """F1/S1: each run vs the mean of the others. F3/S3: each split of 6 runs into two triples (pre-registration)."""
     k1 = [compare(r, mean_scores([o for o in base_runs if o is not r]), op) for r in base_runs]
     idx = range(len(base_runs))

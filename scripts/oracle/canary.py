@@ -1,7 +1,10 @@
 """Oracle canary CLI (#177). Library and rules: ground_truth/oracle_canary.py.
 
-  baseline  python scripts/oracle/canary.py baseline --filter human_thriving --runs B1.jsonl ... B6.jsonl --k-ship 3
+  baseline  python scripts/oracle/canary.py baseline --filter human_thriving --runs B1.jsonl ... B6.jsonl --k-ship 3 \
+                --op 4.5 [--base-url batch_scorer --model gemini-flash]
             -> config/canary/<filter>.baseline.json (per-item mean score + the noise bar; commit it)
+            --op is the filter's op-point; it must match the package's normalization.json raw_min (within 0.01).
+            --base-url batch_scorer: the baseline is for ground_truth.batch_scorer (Gemini), not the DeepSeek scorer.
   evaluate  python scripts/oracle/canary.py evaluate --filter human_thriving --runs X1.jsonl [X2 X3]
             -> prints flips / shift / PASS|FAIL against the bar for k = number of runs; writes nothing
   run       python scripts/oracle/canary.py run --filter human_thriving
@@ -19,6 +22,25 @@ from ground_truth import oracle_canary as oc  # noqa: E402
 import yaml  # noqa: E402
 
 MAX_PASSES = 4
+BATCH_SCORER = "batch_scorer"     # the oracle key's endpoint half for ground_truth.batch_scorer (its own gate's name)
+OP_TOLERANCE = 0.01               # cd v5's raw_min is 4.0006 against TIER_THRESHOLDS' 4.0
+
+
+def prompt_digests(text):
+    """(raw, stripped): the DeepSeek scorer hashes the file, batch_scorer the stripped template."""
+    return (hashlib.sha256(text.encode("utf-8")).hexdigest(),
+            hashlib.sha256(text.strip().encode("utf-8")).hexdigest())
+
+
+def checked_op(config, op):
+    """The op-point must be the package's runtime one, not a typo: refuse when normalization.json disagrees."""
+    norm = Path(config).parent / "normalization.json"
+    if not norm.exists():
+        raise SystemExit(f"FATAL: {norm} missing; cannot cross-check --op {op}")
+    raw_min = json.load(open(norm))["stats"]["raw_min"]
+    if abs(raw_min - op) > OP_TOLERANCE:
+        raise SystemExit(f"FATAL: --op {op} != {norm} stats.raw_min {raw_min}")
+    return op
 
 
 def field_of(config):
@@ -46,16 +68,16 @@ def cmd_baseline(a):
     short = [p for p, r in zip(a.runs, runs) if set(r) != ids]
     if short:
         raise SystemExit(f"FATAL: runs missing items (resume them first): {short}")
-    nz = oc.noise(runs)
-    sha = next(iter(stamps))[0]
-    text = (ROOT / a.prompt).read_text(encoding="utf-8")
-    if hashlib.sha256(text.encode("utf-8")).hexdigest() != sha:
+    op = checked_op(a.config, a.op)
+    nz = oc.noise(runs, op)
+    raw, stripped = prompt_digests((ROOT / a.prompt).read_text(encoding="utf-8"))
+    if next(iter(stamps))[0] not in (raw, stripped):
         raise SystemExit(f"FATAL: {a.prompt} is not the prompt the baseline runs were scored with")
-    out = {"filter": a.filter, "config": a.config, "prompt": a.prompt, "prompt_sha256": sha,
+    out = {"filter": a.filter, "config": a.config, "prompt": a.prompt, "prompt_sha256": raw,
            # batch_scorer hashes the stripped template: the same prompt must be recognised there too
-           "prompt_sha256_stripped": hashlib.sha256(text.strip().encode("utf-8")).hexdigest(),
+           "prompt_sha256_stripped": stripped,
            "oracle": oc.oracle_key(a.base_url, a.model),
-           "served_model": next(iter(stamps))[1], "set_sha256": man["set_sha256"], "op": oc.OP,
+           "served_model": next(iter(stamps))[1], "set_sha256": man["set_sha256"], "op": op,
            "k_ship": a.k_ship, "runs": [{"file": Path(p).name, "sha256": hashlib.sha256(Path(p).read_bytes()).hexdigest()}
                                         for p in a.runs],
            "noise": {k: {"F": v["F"], "S": v["S"]} for k, v in nz.items()},
@@ -65,8 +87,8 @@ def cmd_baseline(a):
     for k in ("k1", "k3"):
         print(f"noise {k}: F={nz[k]['F']} S={nz[k]['S']:.4f}  each: "
               + " ".join(f"{c['flips']}/{c['shift']:+.3f}" for c in nz[k]["each"]))
-    above = sum(s >= oc.OP for s in out["items"].values())
-    print(f"baseline: {len(out['items'])} items, {above} at >= {oc.OP}; served {out['served_model']}; wrote {p}")
+    above = sum(s >= op for s in out["items"].values())
+    print(f"baseline: {len(out['items'])} items, {above} at >= {op}; served {out['served_model']}; wrote {p}")
 
 
 def evaluate(filter_name, run_paths):
@@ -76,7 +98,7 @@ def evaluate(filter_name, run_paths):
     k = {1: "k1", 3: "k3"}.get(len(runs))
     if k is None:
         raise SystemExit("FATAL: the bar exists for k = 1 and k = 3 only")
-    cmp = oc.compare(oc.mean_scores(runs), b["items"])
+    cmp = oc.compare(oc.mean_scores(runs), b["items"], b["op"])
     if cmp["n"] != len(b["items"]):
         raise SystemExit(f"FATAL: {cmp['n']} of {len(b['items'])} items scored; an incomplete canary is not a verdict")
     v = oc.verdict(cmp, b["noise"][k])
@@ -109,12 +131,11 @@ def cmd_run(a):
             # (2026-10-16: 20 malformed rows in 1,520 calls, concentrated on a few articles). Resume -- the scorer
             # skips ids already scored -- until every item is in; otherwise no verdict.
             for attempt in range(1, MAX_PASSES + 1):
-                r = subprocess.run([sys.executable, str(ROOT / "scripts/score_deepseek_production.py"), "--input",
-                                    str(set_path), "--output", str(out), "--config", str(ROOT / b["config"]),
-                                    "--prompt", str(ROOT / b["prompt"]), "--model", model, "--base-url", endpoint,
-                                    "--concurrency", "8", "--skip-canary", "canary self-run"])
+                r = subprocess.run(scorer_argv(b, endpoint, model, set_path, out, Path(td) / f"bs_{i}"), cwd=ROOT)
                 if r.returncode == 2:
                     no_verdict("the scorer aborted the run (account or endpoint)")
+                if endpoint == BATCH_SCORER:
+                    collect_batch_scorer(Path(td) / f"bs_{i}", out)
                 done = ({json.loads(l)["id"] for l in open(out) if "error" not in json.loads(l)}
                         if out.exists() else set())
                 if want <= done:
@@ -123,7 +144,7 @@ def cmd_run(a):
                 no_verdict(f"{len(want - done)} items still unscored after {MAX_PASSES} passes")
             paths.append(out)
         res, stamps, _ = evaluate(a.filter, paths)
-    if {s for s, _ in stamps} != {b["prompt_sha256"]}:
+    if not {s for s, _ in stamps} <= {b["prompt_sha256"], b.get("prompt_sha256_stripped")}:
         no_verdict("the canary scored a different prompt than its baseline")
     served = {m for _, m in stamps}
     if served != {b["served_model"]}:
@@ -135,14 +156,35 @@ def cmd_run(a):
     sys.exit(0 if res["verdict"] == "PASS" else 1)
 
 
+def scorer_argv(b, endpoint, model, set_path, out, bs_dir):
+    """The labelling scorer the baseline was made with, told to skip its own gate (this IS the canary)."""
+    if endpoint == BATCH_SCORER:
+        # batch_scorer reads the package's own prompt; the stamp check after scoring catches a mismatch.
+        return [sys.executable, "-m", "ground_truth.batch_scorer", "--filter", str(ROOT / Path(b["config"]).parent),
+                "--source", str(set_path), "--output-dir", str(bs_dir), "--llm", model, "--batch-size", "100",
+                "--skip-canary", "canary self-run"]
+    return [sys.executable, str(ROOT / "scripts/score_deepseek_production.py"), "--input", str(set_path),
+            "--output", str(out), "--config", str(ROOT / b["config"]), "--prompt", str(ROOT / b["prompt"]),
+            "--model", model, "--base-url", endpoint, "--concurrency", "8", "--skip-canary", "canary self-run"]
+
+
+def collect_batch_scorer(bs_dir, out):
+    """batch_scorer writes <dir>/<filter>/scored_batch_*.jsonl and resumes from its own state file there; the
+    canary reads one flat file, rebuilt from every batch file after each pass (no row is written twice)."""
+    rows = [l for p in sorted(Path(bs_dir).glob("*/scored_batch_*.jsonl")) for l in open(p, encoding="utf-8")]
+    Path(out).write_text("".join(rows), encoding="utf-8")
+
+
 def main():
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
     s = sub.add_parser("baseline"); s.add_argument("--filter", required=True); s.add_argument("--runs", nargs="+", required=True)
     s.add_argument("--config", required=True); s.add_argument("--prompt", required=True)
     s.add_argument("--k-ship", type=int, choices=(1, 3), required=True)
+    s.add_argument("--op", type=float, required=True, help="the filter's op-point (raw weighted average)")
     s.add_argument("--base-url", default="https://api.deepseek.com/v1/chat/completions",
-                   help="the endpoint the baseline runs used (score_deepseek_production.py's default)")
+                   help="the endpoint the baseline runs used (score_deepseek_production.py's default), or "
+                        f"{BATCH_SCORER!r} for ground_truth.batch_scorer")
     s.add_argument("--model", default="deepseek-chat", help="the model the baseline runs REQUESTED")
     s = sub.add_parser("evaluate"); s.add_argument("--filter", required=True); s.add_argument("--runs", nargs="+", required=True)
     s = sub.add_parser("run"); s.add_argument("--filter", required=True)
