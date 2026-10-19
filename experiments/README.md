@@ -139,3 +139,6 @@ useful thing in the file.
 **One exception (owner, 2026-10-14):** ADDING a `lab` field to an existing entry, once its data sits in a lab
 `experiments/` or `datasets/` tree, is allowed in place. It is a pointer, not a reading: no other field may change in
 the same edit. First use: EXP-048 (its data moved out of `inbox/` on 2026-10-13).
+**Second exception (owner, 2026-10-19):** an entry that has never been PUSHED may be corrected in place by the
+session that wrote it. The rule protects readings someone else could have believed; an unpushed entry has had no
+reader. Once it is on `origin`, append. First use: EXP-053 and EXP-054 (spend and cost ratio, before the push).

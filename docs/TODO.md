@@ -8,7 +8,7 @@ solutions' and belonging's power is thin, README); next the cross-family panel. 
 `scripts/score_ollama_oracle.py --provider deepseek|gemini` labels with NO gate; the one-use claim is read-check-write
 (two simultaneous runs can share a PASS); a labelling run does not compare its served model to the PASS's.
 Cleanup: b650 `~/llm-distillery/runs/canary_177b` (149 MB) may go after the 2026-10-20 12:00 snapshot (its seeded-control
-files were pulled after 10-19's); sadalsuud `~/canary_177b` (5.8 MB) needs the owner's go. Scaleway EU trial EXP-054 (parked, descriptive). #179 label
+files were pulled after 10-19's); sadalsuud `~/canary_177b` deleted 2026-10-19 (owner's go; re-hashed against the lab copy, held by snapshot `6324912d`). Scaleway EU trial EXP-054 (parked, descriptive). #179 label
 audit DONE read-only 10-19 (fixes await the owner's rulings, issue comment); #178 datasheets. Item 0a stays dated ≥ 10-22.** 10-16 landed: #157,
 #176 (EXP-051), #177 canary LIVE (EXP-052), lab → `~/lab/llm-distillery`, b650 rule + 3.0 GB cleanup.*
 

@@ -16,8 +16,8 @@ oracle trial" (infra's Scaleway credit; models: my recommendation) → "Use b650
 | review battery (4 lenses + round 2) and its fixes (`4a92805`) | closed |
 | #177 cross-family panel; #178 datasheets | open (not started) |
 | review leftovers: `score_ollama_oracle.py` ungated; one-use race; served model unchecked at labelling | open, in TODO |
-| host cleanup: b650 `runs/canary_177b` after the 10-20 12:00 snapshot; sadalsuud `~/canary_177b` | open; sadalsuud needs the owner's go |
-| push | not yours: owner confirms |
+| host cleanup: b650 `runs/canary_177b` after the 10-20 12:00 snapshot; sadalsuud `~/canary_177b` | b650 open; sadalsuud deleted (owner's go, re-hashed first) |
+| push | closed: owner confirmed, pushed |
 
 ## What landed
 
@@ -39,4 +39,4 @@ oracle trial" (infra's Scaleway credit; models: my recommendation) → "Use b650
 - README "about a quarter of the simulated drift" (wrong, 0.85) and "$2.56" (a sum I added twice) — caught by me
   before commit; "~20×" Scaleway ratio mixed currencies (≈30×) — caught by review.
 - EXP-053/054 were corrected IN PLACE before the push (same session, unpushed); the append-only rule was read
-  as protecting published readings.
+  as protecting published readings. Owner ruled 2026-10-19: keep; the exception is now in `experiments/README.md`.
