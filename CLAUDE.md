@@ -141,7 +141,7 @@ git config core.hooksPath .githooks          # once per clone: blocks unverified
 # HF token: config/credentials/secrets.ini
 
 # Oracle scoring. ⛔ NAME --llm (default is `claude`); DeepSeek is scripts/score_deepseek_production.py
-# ⛔ human_thriving's prompt is GUARDED (#177): `python scripts/oracle/canary.py run --filter human_thriving` first
+# ⛔ Every live prompt is GUARDED (#177; `ls config/canary/*.baseline.json`): `python scripts/oracle/canary.py run --filter {name}` first
 python -m ground_truth.batch_scorer --filter filters/{name}/v{N} --llm gemini-flash \
     --source datasets/raw/master_dataset.jsonl
 

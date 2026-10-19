@@ -90,6 +90,11 @@ CALL_SITES = [
 ]
 
 
+# The default prompt (cd v5) is canary-guarded since 2026-10-19 (#177): without this the positive controls
+# depend on whether this machine holds an unused PASS, and stop at the canary instead of reaching setup.
+SKIP_CANARY = ("--skip-canary", "test: model-id guard positive control")
+
+
 @pytest.mark.parametrize("argv", CALL_SITES)
 def test_call_site_refuses_the_literal_id(argv):
     """The guard fires in the real script, not just in the helper."""
@@ -108,7 +113,7 @@ def test_call_site_lets_the_alias_through():
     proving the alias is accepted rather than the guard being unreachable.
     """
     r = _run("scripts/score_deepseek_production.py", "--model", "deepseek-chat",
-             "--input", "/nonexistent.jsonl", "--output", "/nonexistent/out.jsonl")
+             "--input", "/nonexistent.jsonl", "--output", "/nonexistent/out.jsonl", *SKIP_CANARY)
     assert "is a literal DeepSeek id" not in r.stdout
     assert "Scoring with:" in r.stdout, r.stdout + r.stderr
 
@@ -117,7 +122,7 @@ def test_call_site_lets_a_gemini_endpoint_through():
     """Second positive control: --base-url elsewhere must not be blocked."""
     r = _run("scripts/score_deepseek_production.py", "--model", "gemini-2.5-flash",
              "--base-url", GEMINI_URL, "--key-name", "gemini_api_key",
-             "--input", "/nonexistent.jsonl", "--output", "/nonexistent/out.jsonl")
+             "--input", "/nonexistent.jsonl", "--output", "/nonexistent/out.jsonl", *SKIP_CANARY)
     assert "is a literal DeepSeek id" not in r.stdout
     assert "Scoring with:" in r.stdout, r.stdout + r.stderr
 

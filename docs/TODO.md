@@ -3,8 +3,9 @@
 ## ▶️ START HERE — the ordered queue, as of 2026-10-15
 
 *▶ **NEXT SESSION (set 2026-10-16 close; `/curate` done): (1) item 2, the read surface (#163): round 8 done 2026-10-18
-(469,090, 9,296 headroom); H-CTX-3 revisit DONE 10-18 (supported, weakly); (2) #177 next: the cross-family panel and canaries for the other filters; #179 label
-audit; #178 datasheets. Item 0a stays dated ≥ 10-22.** 10-16 landed: #157,
+(469,090, 9,296 headroom); H-CTX-3 revisit DONE 10-18 (supported, weakly); (2) #177: canaries LIVE for all five live prompts 2026-10-19 (EXP-053;
+solutions' power is thin, README); next the cross-family panel. Scaleway EU trial EXP-054 (parked, descriptive). #179 label
+audit DONE read-only 10-19 (fixes await the owner's rulings, issue comment); #178 datasheets. Item 0a stays dated ≥ 10-22.** 10-16 landed: #157,
 #176 (EXP-051), #177 canary LIVE (EXP-052), lab → `~/lab/llm-distillery`, b650 rule + 3.0 GB cleanup.*
 
 *A bare "continue" means this list, top down. Each line names the FIRST action. Item 0 is WAITING (dated, ≥ 10-23/24);
@@ -242,8 +243,8 @@ Item 2 (#163, the read surface): keep pruning (owner 2026-10-14 and 10-15: "prun
    Vertex, so the Vertex/Enterprise retirement date a search summary quoted (2026-10-20, not opened) does not apply.
    ⚠️ **The nearer risk is ACCESS, not retirement**: changelog 2026-09-18, "we are limiting access to the 2.5 models
    to users who have actively used them in the past ... not deprecated and will continue to be served until further
-   notice". Unknown whether that is per key, project or account: a NEW key or project may be refused. Our last
-   Gemini calls were 2026-10-07/08 (belonging). ▶ Trigger now: a dated shutdown on that page, or a refusal. When migrating: `thinking_budget=0` is the cost lever (~80% of
+   notice". Unknown whether that is per key, project or account: a NEW key or project may be refused. ✅ **Access confirmed 2026-10-19**: belonging's
+   canary runs (EXP-053, 10 runs of 100 + L1) were served `gemini-2.5-flash`. ▶ Trigger now: a dated shutdown on that page, or a refusal. When migrating: `thinking_budget=0` is the cost lever (~80% of
    output tokens per the code comment) and `thinking_level="minimal"` is not known to equal it — measure $/article NAMING THE
    PROMPT; dropping `temperature=0.3` plus a new model = a new oracle, calibrate against the current one first (ADR-010).
 
