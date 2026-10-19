@@ -4,6 +4,16 @@
 
 *⚠️ **Entries dated before 2026-10-13 live in (except the 10-12 `cp -r` entry, kept while its resolution is fresh) [`archive/gotcha-log-archive.md`](archive/gotcha-log-archive.md)**, verbatim (the 10-12 ones moved 2026-10-15, #163 round 5; the 10-01 → 10-08 ones moved 2026-10-12 by a second owner-approved MID-MONTH pass, `--before 2026-10-09`, #163 round 2; the 09-01 → 09-16 ones moved 2026-09-27 by an owner-approved MID-MONTH pass, `--before 2026-09-17`; earlier ones moved 2026-09-24; into `archive/` 2026-09-26 so curate's size measurement stops counting it, #163; the month-dated Feb–May entries followed on 2026-09-26). Next pass: `python3 scripts/maintenance/retire_memory.py gotcha --before <first of this month> --apply` (dry run without `--apply`). It retires top-level entries only; the `###` entries inside the catalogue are kept by rule and counted (⚠️ superseded 2026-10-09: 43 of them moved by date; see the note under the catalogue heading). The unreachable-mechanism catalogue stayed here. For a recurrence match, grep both: `grep -n <term> memory/gotcha-log.md memory/archive/gotcha-log-archive.md` (a `memory/gotcha-log*.md` glob does NOT reach the archive). Was: `grep -n <term> memory/gotcha-log*.md`.*
 
+## TWO DEFINITIONS OF "DONE" LEFT AN OLDER CANARY PASS ADMITTING (2026-10-19) [RESOLVED: 4a92805]
+**Problem**: review found that a canary whose set came back with a scrape-junk row ended with no record, so an older unused PASS kept admitting labelling runs.
+**Root cause**: the resume loop counted a row as done when it lacked an `error` key; `run_scores` counts only rows carrying the analysis. The junk row (`{"skipped": …}`) passed the first and failed the second, and the evaluator's "incomplete" exit was not routed through the NO-VERDICT writer.
+**Fix**: one definition (row carries the analysis field) in both places, and every way out of `canary.py run` records NO-VERDICT (`NoVerdict` class; tests seeded with the junk row and a crash).
+
+## GUARDING A DEFAULT TURNED TWO POSITIVE CONTROLS INTO MACHINE-STATE TESTS (2026-10-19) [RESOLVED: 6ca23cb]
+**Problem**: `test_deepseek_model_guard`'s alias controls failed after cd v5's canary went live, because they stopped at the canary.
+**Root cause**: they ran the scorer with its DEFAULT prompt (cd v5), and had only ever passed because no canary covered it. Their outcome depended on the pass records on the machine, and the alias control would have consumed a live unused PASS.
+**Fix**: the controls pass `--skip-canary` (the model-id guard runs before the gate). When you guard something by default, grep the tests that run the real entry point with defaults.
+
 ## AN IN-PLACE MUTANT OUTLIVED ITS RESTORE IN A `.pyc` AND FAILED THE SUITE (2026-10-16) [RESOLVED: mechanized]
 **Problem**: after a mutation pass, `test_canary_run_resumes…` failed on correct source: Python ran `MAX_PASSES = 1`.
 **Root cause**: the mutant was compiled, then the source restored within the same second at the same size, so the cached bytecode still looked valid.
